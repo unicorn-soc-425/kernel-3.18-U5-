@@ -124,7 +124,11 @@ __mutex_fastpath_unlock(atomic_t *count, void (*fail_fn)(atomic_t *))
 static inline int
 __mutex_fastpath_trylock(atomic_t *count, int (*fail_fn)(atomic_t *))
 {
+<<<<<<< HEAD
 	if (likely(__mutex_cmpxchg_lock(count, 1, 0) == 1))
+=======
+	if (likely(atomic_read(count) == 1 && __mutex_cmpxchg_lock(count, 1, 0) == 1))
+>>>>>>> v4.9.227
 		return 1;
 	return 0;
 }

@@ -183,7 +183,11 @@ int dm_exception_store_set_chunk_size(struct dm_exception_store *store,
 
 	store->chunk_size = chunk_size;
 	store->chunk_mask = chunk_size - 1;
+<<<<<<< HEAD
 	store->chunk_shift = ffs(chunk_size) - 1;
+=======
+	store->chunk_shift = __ffs(chunk_size);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -203,7 +207,11 @@ int dm_exception_store_create(struct dm_target *ti, int argc, char **argv,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	tmp_store = kmalloc(sizeof(*tmp_store), GFP_KERNEL);
+=======
+	tmp_store = kzalloc(sizeof(*tmp_store), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!tmp_store) {
 		ti->error = "Exception store allocation failed";
 		return -ENOMEM;
@@ -215,7 +223,11 @@ int dm_exception_store_create(struct dm_target *ti, int argc, char **argv,
 	else if (persistent == 'N')
 		type = get_type("N");
 	else {
+<<<<<<< HEAD
 		ti->error = "Persistent flag is not P or N";
+=======
+		ti->error = "Exception store type is not P or N";
+>>>>>>> v4.9.227
 		r = -EINVAL;
 		goto bad_type;
 	}
@@ -233,7 +245,11 @@ int dm_exception_store_create(struct dm_target *ti, int argc, char **argv,
 	if (r)
 		goto bad;
 
+<<<<<<< HEAD
 	r = type->ctr(tmp_store, 0, NULL);
+=======
+	r = type->ctr(tmp_store, (strlen(argv[0]) > 1 ? &argv[0][1] : NULL));
+>>>>>>> v4.9.227
 	if (r) {
 		ti->error = "Exception store type constructor failed";
 		goto bad;

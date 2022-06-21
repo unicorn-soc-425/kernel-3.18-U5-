@@ -21,9 +21,27 @@ static DEFINE_PER_CPU_ALIGNED(spinlock_t, cpc_core_lock);
 
 static DEFINE_PER_CPU_ALIGNED(unsigned long, cpc_core_lock_flags);
 
+<<<<<<< HEAD
 phys_t __weak mips_cpc_phys_base(void)
 {
 	u32 cpc_base;
+=======
+phys_addr_t __weak mips_cpc_default_phys_base(void)
+{
+	return 0;
+}
+
+/**
+ * mips_cpc_phys_base - retrieve the physical base address of the CPC
+ *
+ * This function returns the physical base address of the Cluster Power
+ * Controller memory mapped registers, or 0 if no Cluster Power Controller
+ * is present.
+ */
+static phys_addr_t mips_cpc_phys_base(void)
+{
+	unsigned long cpc_base;
+>>>>>>> v4.9.227
 
 	if (!mips_cm_present())
 		return 0;
@@ -36,16 +54,30 @@ phys_t __weak mips_cpc_phys_base(void)
 	if (cpc_base & CM_GCR_CPC_BASE_CPCEN_MSK)
 		return cpc_base & CM_GCR_CPC_BASE_CPCBASE_MSK;
 
+<<<<<<< HEAD
 	/* Otherwise, give it the default address & enable it */
 	cpc_base = mips_cpc_default_phys_base();
+=======
+	/* Otherwise, use the default address */
+	cpc_base = mips_cpc_default_phys_base();
+	if (!cpc_base)
+		return cpc_base;
+
+	/* Enable the CPC, mapped at the default address */
+>>>>>>> v4.9.227
 	write_gcr_cpc_base(cpc_base | CM_GCR_CPC_BASE_CPCEN_MSK);
 	return cpc_base;
 }
 
 int mips_cpc_probe(void)
 {
+<<<<<<< HEAD
 	phys_t addr;
 	unsigned cpu;
+=======
+	phys_addr_t addr;
+	unsigned int cpu;
+>>>>>>> v4.9.227
 
 	for_each_possible_cpu(cpu)
 		spin_lock_init(&per_cpu(cpc_core_lock, cpu));
@@ -63,17 +95,45 @@ int mips_cpc_probe(void)
 
 void mips_cpc_lock_other(unsigned int core)
 {
+<<<<<<< HEAD
 	unsigned curr_core;
+=======
+	unsigned int curr_core;
+
+	if (mips_cm_revision() >= CM_REV_CM3)
+		/* Systems with CM >= 3 lock the CPC via mips_cm_lock_other */
+		return;
+
+>>>>>>> v4.9.227
 	preempt_disable();
 	curr_core = current_cpu_data.core;
 	spin_lock_irqsave(&per_cpu(cpc_core_lock, curr_core),
 			  per_cpu(cpc_core_lock_flags, curr_core));
 	write_cpc_cl_other(core << CPC_Cx_OTHER_CORENUM_SHF);
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Ensure the core-other region reflects the appropriate core &
+	 * VP before any accesses to it occur.
+	 */
+	mb();
+>>>>>>> v4.9.227
 }
 
 void mips_cpc_unlock_other(void)
 {
+<<<<<<< HEAD
 	unsigned curr_core = current_cpu_data.core;
+=======
+	unsigned int curr_core;
+
+	if (mips_cm_revision() >= CM_REV_CM3)
+		/* Systems with CM >= 3 lock the CPC via mips_cm_lock_other */
+		return;
+
+	curr_core = current_cpu_data.core;
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&per_cpu(cpc_core_lock, curr_core),
 			       per_cpu(cpc_core_lock_flags, curr_core));
 	preempt_enable();

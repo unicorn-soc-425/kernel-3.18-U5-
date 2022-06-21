@@ -61,5 +61,8 @@ int spi_write_flash(struct scsi_cmnd *srb, struct rtsx_chip *chip);
 int spi_erase_flash(struct scsi_cmnd *srb, struct rtsx_chip *chip);
 int spi_write_flash_status(struct scsi_cmnd *srb, struct rtsx_chip *chip);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #endif  /* __REALTEK_RTSX_SPI_H */

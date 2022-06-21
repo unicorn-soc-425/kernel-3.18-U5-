@@ -44,7 +44,10 @@ for_each_subchannel(int(*fn)(struct subchannel_id, void *), void *data)
 	int ret;
 
 	init_subchannel_id(&schid);
+<<<<<<< HEAD
 	ret = -ENODEV;
+=======
+>>>>>>> v4.9.227
 	do {
 		do {
 			ret = fn(schid, data);
@@ -391,7 +394,11 @@ static int css_evaluate_new_subchannel(struct subchannel_id schid, int slow)
 		/* Will be done on the slow path. */
 		return -EAGAIN;
 	}
+<<<<<<< HEAD
 	if (stsch_err(schid, &schib)) {
+=======
+	if (stsch(schid, &schib)) {
+>>>>>>> v4.9.227
 		/* Subchannel is not provided. */
 		return -ENXIO;
 	}
@@ -703,17 +710,24 @@ css_generate_pgid(struct channel_subsystem *css, u32 tod_high)
 		css->global_pgid.pgid_high.ext_cssid.version = 0x80;
 		css->global_pgid.pgid_high.ext_cssid.cssid = css->cssid;
 	} else {
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 		css->global_pgid.pgid_high.cpu_addr = stap();
 #else
 		css->global_pgid.pgid_high.cpu_addr = 0;
 #endif
+=======
+		css->global_pgid.pgid_high.cpu_addr = stap();
+>>>>>>> v4.9.227
 	}
 	get_cpu_id(&cpu_id);
 	css->global_pgid.cpu_id = cpu_id.ident;
 	css->global_pgid.cpu_model = cpu_id.machine;
 	css->global_pgid.tod_high = tod_high;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 }
 
 static void
@@ -1089,6 +1103,10 @@ void channel_subsystem_reinit(void)
 		if (chp)
 			chp_update_desc(chp);
 	}
+<<<<<<< HEAD
+=======
+	cmf_reactivate();
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_PROC_FS
@@ -1125,6 +1143,11 @@ device_initcall(cio_settle_init);
 
 int sch_is_pseudo_sch(struct subchannel *sch)
 {
+<<<<<<< HEAD
+=======
+	if (!sch->dev.parent)
+		return 0;
+>>>>>>> v4.9.227
 	return sch == to_css(sch->dev.parent)->pseudo_subchannel;
 }
 

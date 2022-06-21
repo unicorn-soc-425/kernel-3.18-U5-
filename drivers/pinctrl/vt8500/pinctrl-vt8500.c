@@ -478,7 +478,11 @@ static int vt8500_pinctrl_remove(struct platform_device *pdev)
 	return wmt_pinctrl_remove(pdev);
 }
 
+<<<<<<< HEAD
 static struct of_device_id wmt_pinctrl_of_match[] = {
+=======
+static const struct of_device_id wmt_pinctrl_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "via,vt8500-pinctrl" },
 	{ /* sentinel */ },
 };
@@ -488,7 +492,10 @@ static struct platform_driver wmt_pinctrl_driver = {
 	.remove	= vt8500_pinctrl_remove,
 	.driver = {
 		.name	= "pinctrl-vt8500",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= wmt_pinctrl_of_match,
 	},
 };

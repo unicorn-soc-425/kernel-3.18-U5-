@@ -20,12 +20,20 @@
  * the IOP3xx OCCDR must be mapped uncached and unbuffered.
  */
 static struct map_desc iop3xx_std_desc[] __initdata = {
+<<<<<<< HEAD
 	 {	/* mem mapped registers */
+=======
+	{	/* mem mapped registers */
+>>>>>>> v4.9.227
 		.virtual	= IOP3XX_PERIPHERAL_VIRT_BASE,
 		.pfn		= __phys_to_pfn(IOP3XX_PERIPHERAL_PHYS_BASE),
 		.length		= IOP3XX_PERIPHERAL_SIZE,
 		.type		= MT_UNCACHED,
+<<<<<<< HEAD
 	 },
+=======
+	},
+>>>>>>> v4.9.227
 };
 
 void __init iop3xx_map_io(void)

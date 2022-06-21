@@ -882,6 +882,10 @@ static void __exit exit_gdrom(void)
 	platform_device_unregister(pd);
 	platform_driver_unregister(&gdrom_driver);
 	kfree(gd.toc);
+<<<<<<< HEAD
+=======
+	kfree(gd.cd_info);
+>>>>>>> v4.9.227
 }
 
 module_init(init_gdrom);

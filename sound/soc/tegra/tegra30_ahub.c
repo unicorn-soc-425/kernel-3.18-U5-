@@ -521,7 +521,11 @@ static int tegra30_ahub_probe(struct platform_device *pdev)
 	const struct tegra30_ahub_soc_data *soc_data;
 	struct reset_control *rst;
 	int i;
+<<<<<<< HEAD
 	struct resource *res0, *res1, *region;
+=======
+	struct resource *res0, *res1;
+>>>>>>> v4.9.227
 	void __iomem *regs_apbif, *regs_ahub;
 	int ret = 0;
 
@@ -549,27 +553,40 @@ static int tegra30_ahub_probe(struct platform_device *pdev)
 			dev_err(&pdev->dev, "Can't get reset %s\n",
 				configlink_mods[i].rst_name);
 			ret = PTR_ERR(rst);
+<<<<<<< HEAD
 			goto err;
+=======
+			return ret;
+>>>>>>> v4.9.227
 		}
 
 		ret = reset_control_deassert(rst);
 		reset_control_put(rst);
 		if (ret)
+<<<<<<< HEAD
 			goto err;
+=======
+			return ret;
+>>>>>>> v4.9.227
 	}
 
 	ahub = devm_kzalloc(&pdev->dev, sizeof(struct tegra30_ahub),
 			    GFP_KERNEL);
 	if (!ahub) {
 		dev_err(&pdev->dev, "Can't allocate tegra30_ahub\n");
+<<<<<<< HEAD
 		ret = -ENOMEM;
 		goto err;
+=======
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	}
 	dev_set_drvdata(&pdev->dev, ahub);
 
 	ahub->soc_data = soc_data;
 	ahub->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	ahub->clk_d_audio = clk_get(&pdev->dev, "d_audio");
 	if (IS_ERR(ahub->clk_d_audio)) {
 		dev_err(&pdev->dev, "Can't retrieve ahub d_audio clock\n");
@@ -608,16 +625,44 @@ static int tegra30_ahub_probe(struct platform_device *pdev)
 		goto err_clk_put_apbif;
 	}
 
+=======
+	ahub->clk_d_audio = devm_clk_get(&pdev->dev, "d_audio");
+	if (IS_ERR(ahub->clk_d_audio)) {
+		dev_err(&pdev->dev, "Can't retrieve ahub d_audio clock\n");
+		ret = PTR_ERR(ahub->clk_d_audio);
+		return ret;
+	}
+
+	ahub->clk_apbif = devm_clk_get(&pdev->dev, "apbif");
+	if (IS_ERR(ahub->clk_apbif)) {
+		dev_err(&pdev->dev, "Can't retrieve ahub apbif clock\n");
+		ret = PTR_ERR(ahub->clk_apbif);
+		return ret;
+	}
+
+	res0 = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	regs_apbif = devm_ioremap_resource(&pdev->dev, res0);
+	if (IS_ERR(regs_apbif))
+		return PTR_ERR(regs_apbif);
+
+	ahub->apbif_addr = res0->start;
+
+>>>>>>> v4.9.227
 	ahub->regmap_apbif = devm_regmap_init_mmio(&pdev->dev, regs_apbif,
 					&tegra30_ahub_apbif_regmap_config);
 	if (IS_ERR(ahub->regmap_apbif)) {
 		dev_err(&pdev->dev, "apbif regmap init failed\n");
 		ret = PTR_ERR(ahub->regmap_apbif);
+<<<<<<< HEAD
 		goto err_clk_put_apbif;
+=======
+		return ret;
+>>>>>>> v4.9.227
 	}
 	regcache_cache_only(ahub->regmap_apbif, true);
 
 	res1 = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+<<<<<<< HEAD
 	if (!res1) {
 		dev_err(&pdev->dev, "No ahub memory resource\n");
 		ret = -ENODEV;
@@ -639,13 +684,22 @@ static int tegra30_ahub_probe(struct platform_device *pdev)
 		ret = -ENOMEM;
 		goto err_clk_put_apbif;
 	}
+=======
+	regs_ahub = devm_ioremap_resource(&pdev->dev, res1);
+	if (IS_ERR(regs_ahub))
+		return PTR_ERR(regs_ahub);
+>>>>>>> v4.9.227
 
 	ahub->regmap_ahub = devm_regmap_init_mmio(&pdev->dev, regs_ahub,
 					&tegra30_ahub_ahub_regmap_config);
 	if (IS_ERR(ahub->regmap_ahub)) {
 		dev_err(&pdev->dev, "ahub regmap init failed\n");
 		ret = PTR_ERR(ahub->regmap_ahub);
+<<<<<<< HEAD
 		goto err_clk_put_apbif;
+=======
+		return ret;
+>>>>>>> v4.9.227
 	}
 	regcache_cache_only(ahub->regmap_ahub, true);
 
@@ -662,12 +716,16 @@ static int tegra30_ahub_probe(struct platform_device *pdev)
 
 err_pm_disable:
 	pm_runtime_disable(&pdev->dev);
+<<<<<<< HEAD
 err_clk_put_apbif:
 	clk_put(ahub->clk_apbif);
 err_clk_put_d_audio:
 	clk_put(ahub->clk_d_audio);
 	ahub = NULL;
 err:
+=======
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -680,11 +738,14 @@ static int tegra30_ahub_remove(struct platform_device *pdev)
 	if (!pm_runtime_status_suspended(&pdev->dev))
 		tegra30_ahub_runtime_suspend(&pdev->dev);
 
+<<<<<<< HEAD
 	clk_put(ahub->clk_apbif);
 	clk_put(ahub->clk_d_audio);
 
 	ahub = NULL;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -723,7 +784,10 @@ static struct platform_driver tegra30_ahub_driver = {
 	.remove = tegra30_ahub_remove,
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = tegra30_ahub_of_match,
 		.pm = &tegra30_ahub_pm_ops,
 	},

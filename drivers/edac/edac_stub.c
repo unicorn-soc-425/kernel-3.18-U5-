@@ -16,7 +16,10 @@
 #include <linux/edac.h>
 #include <linux/atomic.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <asm/edac.h>
+=======
+>>>>>>> v4.9.227
 
 int edac_op_state = EDAC_OPSTATE_INVAL;
 EXPORT_SYMBOL_GPL(edac_op_state);
@@ -27,8 +30,11 @@ EXPORT_SYMBOL_GPL(edac_handlers);
 int edac_err_assert = 0;
 EXPORT_SYMBOL_GPL(edac_err_assert);
 
+<<<<<<< HEAD
 static atomic_t edac_subsys_valid = ATOMIC_INIT(0);
 
+=======
+>>>>>>> v4.9.227
 int edac_report_status = EDAC_REPORTING_ENABLED;
 EXPORT_SYMBOL_GPL(edac_report_status);
 
@@ -69,6 +75,7 @@ void edac_atomic_assert_error(void)
 	edac_err_assert++;
 }
 EXPORT_SYMBOL_GPL(edac_atomic_assert_error);
+<<<<<<< HEAD
 
 /*
  * sysfs object: /sys/devices/system/edac
@@ -108,3 +115,5 @@ void edac_put_sysfs_subsys(void)
 		bus_unregister(&edac_subsys);
 }
 EXPORT_SYMBOL_GPL(edac_put_sysfs_subsys);
+=======
+>>>>>>> v4.9.227

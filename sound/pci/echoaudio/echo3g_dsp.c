@@ -46,12 +46,20 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 	int err;
 
 	local_irq_enable();
+<<<<<<< HEAD
 	DE_INIT(("init_hw() - Echo3G\n"));
+=======
+>>>>>>> v4.9.227
 	if (snd_BUG_ON((subdevice_id & 0xfff0) != ECHO3G))
 		return -ENODEV;
 
 	if ((err = init_dsp_comm_page(chip))) {
+<<<<<<< HEAD
 		DE_INIT(("init_hw - could not initialize DSP comm page\n"));
+=======
+		dev_err(chip->card->dev,
+			"init_hw - could not initialize DSP comm page\n");
+>>>>>>> v4.9.227
 		return err;
 	}
 
@@ -59,8 +67,13 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 		cpu_to_le32((E3G_MAGIC_NUMBER / 48000) - 2);
 	chip->device_id = device_id;
 	chip->subdevice_id = subdevice_id;
+<<<<<<< HEAD
 	chip->bad_board = TRUE;
 	chip->has_midi = TRUE;
+=======
+	chip->bad_board = true;
+	chip->has_midi = true;
+>>>>>>> v4.9.227
 	chip->dsp_code_to_load = FW_ECHO3G_DSP;
 
 	/* Load the DSP code and the ASIC on the PCI card and get
@@ -78,8 +91,13 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 		chip->px_analog_in = chip->bx_analog_in = 14;
 		chip->px_digital_in = chip->bx_digital_in = 16;
 		chip->px_num = chip->bx_num = 24;
+<<<<<<< HEAD
 		chip->has_phantom_power = TRUE;
 		chip->hasnt_input_nominal_level = TRUE;
+=======
+		chip->has_phantom_power = true;
+		chip->hasnt_input_nominal_level = true;
+>>>>>>> v4.9.227
 	} else if (err == E3G_LAYLA3G_BOX_TYPE) {
 		chip->input_clock_types =	ECHO_CLOCK_BIT_INTERNAL |
 						ECHO_CLOCK_BIT_SPDIF |
@@ -98,7 +116,10 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 				ECHOCAPS_HAS_DIGITAL_MODE_SPDIF_OPTICAL |
 				ECHOCAPS_HAS_DIGITAL_MODE_ADAT;
 
+<<<<<<< HEAD
 	DE_INIT(("init_hw done\n"));
+=======
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -107,10 +128,17 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 static int set_mixer_defaults(struct echoaudio *chip)
 {
 	chip->digital_mode = DIGITAL_MODE_SPDIF_RCA;
+<<<<<<< HEAD
 	chip->professional_spdif = FALSE;
 	chip->non_audio_spdif = FALSE;
 	chip->bad_board = FALSE;
 	chip->phantom_power = FALSE;
+=======
+	chip->professional_spdif = false;
+	chip->non_audio_spdif = false;
+	chip->bad_board = false;
+	chip->phantom_power = false;
+>>>>>>> v4.9.227
 	return init_line_levels(chip);
 }
 

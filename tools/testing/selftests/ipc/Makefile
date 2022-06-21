@@ -12,6 +12,7 @@ endif
 CFLAGS += -I../../../../usr/include/
 
 all:
+<<<<<<< HEAD
 ifeq ($(ARCH),x86)
 	gcc $(CFLAGS) msgque.c -o msgque_test
 else
@@ -20,6 +21,13 @@ endif
 
 run_tests: all
 	./msgque_test
+=======
+	$(CC) $(CFLAGS) msgque.c -o msgque_test
+
+TEST_PROGS := msgque_test
+
+include ../lib.mk
+>>>>>>> v4.9.227
 
 clean:
 	rm -fr ./msgque_test

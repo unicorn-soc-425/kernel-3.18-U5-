@@ -464,7 +464,11 @@ static int arc_serial_poll_getchar(struct uart_port *port)
 }
 #endif
 
+<<<<<<< HEAD
 static struct uart_ops arc_serial_pops = {
+=======
+static const struct uart_ops arc_serial_pops = {
+>>>>>>> v4.9.227
 	.tx_empty	= arc_serial_tx_empty,
 	.set_mctrl	= arc_serial_set_mctrl,
 	.get_mctrl	= arc_serial_get_mctrl,
@@ -576,7 +580,10 @@ static int __init arc_early_console_setup(struct earlycon_device *dev,
 	dev->con->write = arc_early_serial_write;
 	return 0;
 }
+<<<<<<< HEAD
 EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
+=======
+>>>>>>> v4.9.227
 OF_EARLYCON_DECLARE(arc_uart, "snps,arc-uart", arc_early_console_setup);
 
 #endif	/* CONFIG_SERIAL_ARC_CONSOLE */
@@ -658,7 +665,10 @@ static struct platform_driver arc_platform_driver = {
 	.remove = arc_serial_remove,
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table  = arc_uart_dt_ids,
 	 },
 };

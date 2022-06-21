@@ -15,9 +15,15 @@ static inline char rdfs8(addr_t addr)
 #include "../cmdline.c"
 static unsigned long get_cmd_line_ptr(void)
 {
+<<<<<<< HEAD
 	unsigned long cmd_line_ptr = real_mode->hdr.cmd_line_ptr;
 
 	cmd_line_ptr |= (u64)real_mode->ext_cmd_line_ptr << 32;
+=======
+	unsigned long cmd_line_ptr = boot_params->hdr.cmd_line_ptr;
+
+	cmd_line_ptr |= (u64)boot_params->ext_cmd_line_ptr << 32;
+>>>>>>> v4.9.227
 
 	return cmd_line_ptr;
 }

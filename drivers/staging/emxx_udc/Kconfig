@@ -1,5 +1,9 @@
 config USB_EMXX
+<<<<<<< HEAD
 	boolean "EMXX USB Function Device Controller"
+=======
+	tristate "EMXX USB Function Device Controller"
+>>>>>>> v4.9.227
  	depends on USB_GADGET && (ARCH_SHMOBILE || (ARM && COMPILE_TEST))
 	help
 	   The Emma Mobile series of SoCs from Renesas Electronics and

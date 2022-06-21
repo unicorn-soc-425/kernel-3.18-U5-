@@ -43,9 +43,15 @@ enum kernfs_node_flag {
 	KERNFS_HAS_SEQ_SHOW	= 0x0040,
 	KERNFS_HAS_MMAP		= 0x0080,
 	KERNFS_LOCKDEP		= 0x0100,
+<<<<<<< HEAD
 	KERNFS_STATIC_NAME	= 0x0200,
 	KERNFS_SUICIDAL		= 0x0400,
 	KERNFS_SUICIDED		= 0x0800,
+=======
+	KERNFS_SUICIDAL		= 0x0400,
+	KERNFS_SUICIDED		= 0x0800,
+	KERNFS_EMPTY_DIR	= 0x1000,
+>>>>>>> v4.9.227
 };
 
 /* @flags for kernfs_create_root() */
@@ -152,6 +158,11 @@ struct kernfs_syscall_ops {
 	int (*rmdir)(struct kernfs_node *kn);
 	int (*rename)(struct kernfs_node *kn, struct kernfs_node *new_parent,
 		      const char *new_name);
+<<<<<<< HEAD
+=======
+	int (*show_path)(struct seq_file *sf, struct kernfs_node *kn,
+			 struct kernfs_root *root);
+>>>>>>> v4.9.227
 };
 
 struct kernfs_root {
@@ -177,8 +188,15 @@ struct kernfs_open_file {
 
 	/* private fields, do not use outside kernfs proper */
 	struct mutex		mutex;
+<<<<<<< HEAD
 	int			event;
 	struct list_head	list;
+=======
+	struct mutex		prealloc_mutex;
+	int			event;
+	struct list_head	list;
+	char			*prealloc_buf;
+>>>>>>> v4.9.227
 
 	size_t			atomic_write_len;
 	bool			mmapped;
@@ -214,6 +232,16 @@ struct kernfs_ops {
 	 * larger ones are rejected with -E2BIG.
 	 */
 	size_t atomic_write_len;
+<<<<<<< HEAD
+=======
+	/*
+	 * "prealloc" causes a buffer to be allocated at open for
+	 * all read/write requests.  As ->seq_show uses seq_read()
+	 * which does its own allocation, it is incompatible with
+	 * ->prealloc.  Provide ->read and ->write with ->prealloc.
+	 */
+	bool prealloc;
+>>>>>>> v4.9.227
 	ssize_t (*write)(struct kernfs_open_file *of, char *buf, size_t bytes,
 			 loff_t off);
 
@@ -258,19 +286,36 @@ static inline bool kernfs_ns_enabled(struct kernfs_node *kn)
 }
 
 int kernfs_name(struct kernfs_node *kn, char *buf, size_t buflen);
+<<<<<<< HEAD
 char * __must_check kernfs_path(struct kernfs_node *kn, char *buf,
 				size_t buflen);
+=======
+int kernfs_path_from_node(struct kernfs_node *root_kn, struct kernfs_node *kn,
+			  char *buf, size_t buflen);
+>>>>>>> v4.9.227
 void pr_cont_kernfs_name(struct kernfs_node *kn);
 void pr_cont_kernfs_path(struct kernfs_node *kn);
 struct kernfs_node *kernfs_get_parent(struct kernfs_node *kn);
 struct kernfs_node *kernfs_find_and_get_ns(struct kernfs_node *parent,
 					   const char *name, const void *ns);
+<<<<<<< HEAD
+=======
+struct kernfs_node *kernfs_walk_and_get_ns(struct kernfs_node *parent,
+					   const char *path, const void *ns);
+>>>>>>> v4.9.227
 void kernfs_get(struct kernfs_node *kn);
 void kernfs_put(struct kernfs_node *kn);
 
 struct kernfs_node *kernfs_node_from_dentry(struct dentry *dentry);
 struct kernfs_root *kernfs_root_from_sb(struct super_block *sb);
+<<<<<<< HEAD
 
+=======
+struct inode *kernfs_get_inode(struct super_block *sb, struct kernfs_node *kn);
+
+struct dentry *kernfs_node_dentry(struct kernfs_node *kn,
+				  struct super_block *sb);
+>>>>>>> v4.9.227
 struct kernfs_root *kernfs_create_root(struct kernfs_syscall_ops *scops,
 				       unsigned int flags, void *priv);
 void kernfs_destroy_root(struct kernfs_root *root);
@@ -278,12 +323,20 @@ void kernfs_destroy_root(struct kernfs_root *root);
 struct kernfs_node *kernfs_create_dir_ns(struct kernfs_node *parent,
 					 const char *name, umode_t mode,
 					 void *priv, const void *ns);
+<<<<<<< HEAD
+=======
+struct kernfs_node *kernfs_create_empty_dir(struct kernfs_node *parent,
+					    const char *name);
+>>>>>>> v4.9.227
 struct kernfs_node *__kernfs_create_file(struct kernfs_node *parent,
 					 const char *name,
 					 umode_t mode, loff_t size,
 					 const struct kernfs_ops *ops,
 					 void *priv, const void *ns,
+<<<<<<< HEAD
 					 bool name_is_static,
+=======
+>>>>>>> v4.9.227
 					 struct lock_class_key *key);
 struct kernfs_node *kernfs_create_link(struct kernfs_node *parent,
 				       const char *name,
@@ -322,9 +375,16 @@ static inline bool kernfs_ns_enabled(struct kernfs_node *kn)
 static inline int kernfs_name(struct kernfs_node *kn, char *buf, size_t buflen)
 { return -ENOSYS; }
 
+<<<<<<< HEAD
 static inline char * __must_check kernfs_path(struct kernfs_node *kn, char *buf,
 					      size_t buflen)
 { return NULL; }
+=======
+static inline int kernfs_path_from_node(struct kernfs_node *root_kn,
+					struct kernfs_node *kn,
+					char *buf, size_t buflen)
+{ return -ENOSYS; }
+>>>>>>> v4.9.227
 
 static inline void pr_cont_kernfs_name(struct kernfs_node *kn) { }
 static inline void pr_cont_kernfs_path(struct kernfs_node *kn) { }
@@ -336,6 +396,13 @@ static inline struct kernfs_node *
 kernfs_find_and_get_ns(struct kernfs_node *parent, const char *name,
 		       const void *ns)
 { return NULL; }
+<<<<<<< HEAD
+=======
+static inline struct kernfs_node *
+kernfs_walk_and_get_ns(struct kernfs_node *parent, const char *path,
+		       const void *ns)
+{ return NULL; }
+>>>>>>> v4.9.227
 
 static inline void kernfs_get(struct kernfs_node *kn) { }
 static inline void kernfs_put(struct kernfs_node *kn) { }
@@ -346,6 +413,13 @@ static inline struct kernfs_node *kernfs_node_from_dentry(struct dentry *dentry)
 static inline struct kernfs_root *kernfs_root_from_sb(struct super_block *sb)
 { return NULL; }
 
+<<<<<<< HEAD
+=======
+static inline struct inode *
+kernfs_get_inode(struct super_block *sb, struct kernfs_node *kn)
+{ return NULL; }
+
+>>>>>>> v4.9.227
 static inline struct kernfs_root *
 kernfs_create_root(struct kernfs_syscall_ops *scops, unsigned int flags,
 		   void *priv)
@@ -361,8 +435,12 @@ kernfs_create_dir_ns(struct kernfs_node *parent, const char *name,
 static inline struct kernfs_node *
 __kernfs_create_file(struct kernfs_node *parent, const char *name,
 		     umode_t mode, loff_t size, const struct kernfs_ops *ops,
+<<<<<<< HEAD
 		     void *priv, const void *ns, bool name_is_static,
 		     struct lock_class_key *key)
+=======
+		     void *priv, const void *ns, struct lock_class_key *key)
+>>>>>>> v4.9.227
 { return ERR_PTR(-ENOSYS); }
 
 static inline struct kernfs_node *
@@ -407,6 +485,25 @@ static inline void kernfs_init(void) { }
 
 #endif	/* CONFIG_KERNFS */
 
+<<<<<<< HEAD
+=======
+/**
+ * kernfs_path - build full path of a given node
+ * @kn: kernfs_node of interest
+ * @buf: buffer to copy @kn's name into
+ * @buflen: size of @buf
+ *
+ * Builds and returns the full path of @kn in @buf of @buflen bytes.  The
+ * path is built from the end of @buf so the returned pointer usually
+ * doesn't match @buf.  If @buf isn't long enough, @buf is nul terminated
+ * and %NULL is returned.
+ */
+static inline int kernfs_path(struct kernfs_node *kn, char *buf, size_t buflen)
+{
+	return kernfs_path_from_node(kn, NULL, buf, buflen);
+}
+
+>>>>>>> v4.9.227
 static inline struct kernfs_node *
 kernfs_find_and_get(struct kernfs_node *kn, const char *name)
 {
@@ -414,6 +511,15 @@ kernfs_find_and_get(struct kernfs_node *kn, const char *name)
 }
 
 static inline struct kernfs_node *
+<<<<<<< HEAD
+=======
+kernfs_walk_and_get(struct kernfs_node *kn, const char *path)
+{
+	return kernfs_walk_and_get_ns(kn, path, NULL);
+}
+
+static inline struct kernfs_node *
+>>>>>>> v4.9.227
 kernfs_create_dir(struct kernfs_node *parent, const char *name, umode_t mode,
 		  void *priv)
 {
@@ -431,7 +537,11 @@ kernfs_create_file_ns(struct kernfs_node *parent, const char *name,
 	key = (struct lock_class_key *)&ops->lockdep_key;
 #endif
 	return __kernfs_create_file(parent, name, mode, size, ops, priv, ns,
+<<<<<<< HEAD
 				    false, key);
+=======
+				    key);
+>>>>>>> v4.9.227
 }
 
 static inline struct kernfs_node *

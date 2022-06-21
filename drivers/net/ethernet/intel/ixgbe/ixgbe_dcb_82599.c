@@ -223,13 +223,22 @@ s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
 	reg |= IXGBE_MFLCN_DPF;
 
 	/*
+<<<<<<< HEAD
 	 * X540 supports per TC Rx priority flow control.  So
 	 * clear all TCs and only enable those that should be
+=======
+	 * X540 & X550 supports per TC Rx priority flow control.
+	 * So clear all TCs and only enable those that should be
+>>>>>>> v4.9.227
 	 * enabled.
 	 */
 	reg &= ~(IXGBE_MFLCN_RPFCE_MASK | IXGBE_MFLCN_RFCE);
 
+<<<<<<< HEAD
 	if (hw->mac.type == ixgbe_mac_X540)
+=======
+	if (hw->mac.type >= ixgbe_mac_X540)
+>>>>>>> v4.9.227
 		reg |= pfc_en << IXGBE_MFLCN_RPFCE_SHIFT;
 
 	if (pfc_en)
@@ -248,7 +257,11 @@ s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
 		int enabled = 0;
 
 		for (j = 0; j < MAX_USER_PRIORITY; j++) {
+<<<<<<< HEAD
 			if ((prio_tc[j] == i) && (pfc_en & (1 << j))) {
+=======
+			if ((prio_tc[j] == i) && (pfc_en & BIT(j))) {
+>>>>>>> v4.9.227
 				enabled = 1;
 				break;
 			}
@@ -259,7 +272,17 @@ s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
 			fcrtl = (hw->fc.low_water[i] << 10) | IXGBE_FCRTL_XONE;
 			IXGBE_WRITE_REG(hw, IXGBE_FCRTL_82599(i), fcrtl);
 		} else {
+<<<<<<< HEAD
 			reg = IXGBE_READ_REG(hw, IXGBE_RXPBSIZE(i)) - 32;
+=======
+			/* In order to prevent Tx hangs when the internal Tx
+			 * switch is enabled we must set the high water mark
+			 * to the Rx packet buffer size - 24KB.  This allows
+			 * the Tx switch to function even under heavy Rx
+			 * workloads.
+			 */
+			reg = IXGBE_READ_REG(hw, IXGBE_RXPBSIZE(i)) - 24576;
+>>>>>>> v4.9.227
 			IXGBE_WRITE_REG(hw, IXGBE_FCRTL_82599(i), 0);
 		}
 

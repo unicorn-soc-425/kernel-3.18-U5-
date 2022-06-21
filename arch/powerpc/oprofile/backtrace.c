@@ -10,7 +10,11 @@
 #include <linux/oprofile.h>
 #include <linux/sched.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 #include <asm/compat.h>
 #include <asm/oprofile_impl.h>
 
@@ -105,6 +109,10 @@ void op_powerpc_backtrace(struct pt_regs * const regs, unsigned int depth)
 			first_frame = 0;
 		}
 	} else {
+<<<<<<< HEAD
+=======
+		pagefault_disable();
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC64
 		if (!is_32bit_task()) {
 			while (depth--) {
@@ -113,7 +121,11 @@ void op_powerpc_backtrace(struct pt_regs * const regs, unsigned int depth)
 					break;
 				first_frame = 0;
 			}
+<<<<<<< HEAD
 
+=======
+			pagefault_enable();
+>>>>>>> v4.9.227
 			return;
 		}
 #endif
@@ -124,5 +136,9 @@ void op_powerpc_backtrace(struct pt_regs * const regs, unsigned int depth)
 				break;
 			first_frame = 0;
 		}
+<<<<<<< HEAD
+=======
+		pagefault_enable();
+>>>>>>> v4.9.227
 	}
 }

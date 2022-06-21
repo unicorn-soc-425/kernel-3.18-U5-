@@ -1216,11 +1216,19 @@ static int grcan_receive(struct net_device *dev, int budget)
 				cf->data[i] = (u8)(slot[j] >> shift);
 			}
 		}
+<<<<<<< HEAD
 		netif_receive_skb(skb);
+=======
+>>>>>>> v4.9.227
 
 		/* Update statistics and read pointer */
 		stats->rx_packets++;
 		stats->rx_bytes += cf->can_dlc;
+<<<<<<< HEAD
+=======
+		netif_receive_skb(skb);
+
+>>>>>>> v4.9.227
 		rd = grcan_ring_add(rd, GRCAN_MSG_SIZE, dma->rx.size);
 	}
 
@@ -1725,7 +1733,11 @@ static int grcan_remove(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id grcan_match[] = {
+=======
+static const struct of_device_id grcan_match[] = {
+>>>>>>> v4.9.227
 	{.name = "GAISLER_GRCAN"},
 	{.name = "01_03d"},
 	{.name = "GAISLER_GRHCAN"},
@@ -1738,7 +1750,10 @@ MODULE_DEVICE_TABLE(of, grcan_match);
 static struct platform_driver grcan_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = grcan_match,
 	},
 	.probe = grcan_probe,

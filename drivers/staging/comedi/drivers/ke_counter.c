@@ -19,7 +19,11 @@
 /*
  * Driver: ke_counter
  * Description: Driver for Kolter Electronic Counter Card
+<<<<<<< HEAD
  * Devices: (Kolter Electronic) PCI Counter Card [ke_counter]
+=======
+ * Devices: [Kolter Electronic] PCI Counter Card (ke_counter)
+>>>>>>> v4.9.227
  * Author: Michael Hillmann
  * Updated: Mon, 14 Apr 2008 15:42:42 +0100
  * Status: tested
@@ -28,9 +32,14 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 
 #include "../comedidev.h"
+=======
+
+#include "../comedi_pci.h"
+>>>>>>> v4.9.227
 
 /*
  * PCI BAR 0 Register I/O map
@@ -42,9 +51,16 @@
 #define KE_MSB_REG(x)			(0x0c + ((x) * 0x20))
 #define KE_SIGN_REG(x)			(0x10 + ((x) * 0x20))
 #define KE_OSC_SEL_REG			0xf8
+<<<<<<< HEAD
 #define KE_OSC_SEL_EXT			(1 << 0)
 #define KE_OSC_SEL_4MHZ			(2 << 0)
 #define KE_OSC_SEL_20MHZ		(3 << 0)
+=======
+#define KE_OSC_SEL_CLK(x)		(((x) & 0x3) << 0)
+#define KE_OSC_SEL_EXT			KE_OSC_SEL_CLK(1)
+#define KE_OSC_SEL_4MHZ			KE_OSC_SEL_CLK(2)
+#define KE_OSC_SEL_20MHZ		KE_OSC_SEL_CLK(3)
+>>>>>>> v4.9.227
 #define KE_DO_REG			0xfc
 
 static int ke_counter_insn_write(struct comedi_device *dev,

@@ -40,6 +40,12 @@ char *o2nm_fence_method_desc[O2NM_FENCE_METHODS] = {
 		"panic",	/* O2NM_FENCE_PANIC */
 };
 
+<<<<<<< HEAD
+=======
+static inline void o2nm_lock_subsystem(void);
+static inline void o2nm_unlock_subsystem(void);
+
+>>>>>>> v4.9.227
 struct o2nm_node *o2nm_get_node_by_num(u8 node_num)
 {
 	struct o2nm_node *node = NULL;
@@ -172,22 +178,36 @@ static void o2nm_node_release(struct config_item *item)
 	kfree(node);
 }
 
+<<<<<<< HEAD
 static ssize_t o2nm_node_num_read(struct o2nm_node *node, char *page)
 {
 	return sprintf(page, "%d\n", node->nd_num);
+=======
+static ssize_t o2nm_node_num_show(struct config_item *item, char *page)
+{
+	return sprintf(page, "%d\n", to_o2nm_node(item)->nd_num);
+>>>>>>> v4.9.227
 }
 
 static struct o2nm_cluster *to_o2nm_cluster_from_node(struct o2nm_node *node)
 {
 	/* through the first node_set .parent
 	 * mycluster/nodes/mynode == o2nm_cluster->o2nm_node_group->o2nm_node */
+<<<<<<< HEAD
 	return to_o2nm_cluster(node->nd_item.ci_parent->ci_parent);
+=======
+	if (node->nd_item.ci_parent)
+		return to_o2nm_cluster(node->nd_item.ci_parent->ci_parent);
+	else
+		return NULL;
+>>>>>>> v4.9.227
 }
 
 enum {
 	O2NM_NODE_ATTR_NUM = 0,
 	O2NM_NODE_ATTR_PORT,
 	O2NM_NODE_ATTR_ADDRESS,
+<<<<<<< HEAD
 	O2NM_NODE_ATTR_LOCAL,
 };
 
@@ -197,6 +217,18 @@ static ssize_t o2nm_node_num_write(struct o2nm_node *node, const char *page,
 	struct o2nm_cluster *cluster = to_o2nm_cluster_from_node(node);
 	unsigned long tmp;
 	char *p = (char *)page;
+=======
+};
+
+static ssize_t o2nm_node_num_store(struct config_item *item, const char *page,
+				   size_t count)
+{
+	struct o2nm_node *node = to_o2nm_node(item);
+	struct o2nm_cluster *cluster;
+	unsigned long tmp;
+	char *p = (char *)page;
+	int ret = 0;
+>>>>>>> v4.9.227
 
 	tmp = simple_strtoul(p, &p, 0);
 	if (!p || (*p && (*p != '\n')))
@@ -213,15 +245,32 @@ static ssize_t o2nm_node_num_write(struct o2nm_node *node, const char *page,
 	    !test_bit(O2NM_NODE_ATTR_PORT, &node->nd_set_attributes))
 		return -EINVAL; /* XXX */
 
+<<<<<<< HEAD
 	write_lock(&cluster->cl_nodes_lock);
 	if (cluster->cl_nodes[tmp])
 		p = NULL;
+=======
+	o2nm_lock_subsystem();
+	cluster = to_o2nm_cluster_from_node(node);
+	if (!cluster) {
+		o2nm_unlock_subsystem();
+		return -EINVAL;
+	}
+
+	write_lock(&cluster->cl_nodes_lock);
+	if (cluster->cl_nodes[tmp])
+		ret = -EEXIST;
+	else if (test_and_set_bit(O2NM_NODE_ATTR_NUM,
+			&node->nd_set_attributes))
+		ret = -EBUSY;
+>>>>>>> v4.9.227
 	else  {
 		cluster->cl_nodes[tmp] = node;
 		node->nd_num = tmp;
 		set_bit(tmp, cluster->cl_nodes_bitmap);
 	}
 	write_unlock(&cluster->cl_nodes_lock);
+<<<<<<< HEAD
 	if (p == NULL)
 		return -EEXIST;
 
@@ -235,6 +284,24 @@ static ssize_t o2nm_node_ipv4_port_read(struct o2nm_node *node, char *page)
 static ssize_t o2nm_node_ipv4_port_write(struct o2nm_node *node,
 					 const char *page, size_t count)
 {
+=======
+	o2nm_unlock_subsystem();
+
+	if (ret)
+		return ret;
+
+	return count;
+}
+static ssize_t o2nm_node_ipv4_port_show(struct config_item *item, char *page)
+{
+	return sprintf(page, "%u\n", ntohs(to_o2nm_node(item)->nd_ipv4_port));
+}
+
+static ssize_t o2nm_node_ipv4_port_store(struct config_item *item,
+					 const char *page, size_t count)
+{
+	struct o2nm_node *node = to_o2nm_node(item);
+>>>>>>> v4.9.227
 	unsigned long tmp;
 	char *p = (char *)page;
 
@@ -247,11 +314,17 @@ static ssize_t o2nm_node_ipv4_port_write(struct o2nm_node *node,
 	if (tmp >= (u16)-1)
 		return -ERANGE;
 
+<<<<<<< HEAD
+=======
+	if (test_and_set_bit(O2NM_NODE_ATTR_PORT, &node->nd_set_attributes))
+		return -EBUSY;
+>>>>>>> v4.9.227
 	node->nd_ipv4_port = htons(tmp);
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t o2nm_node_ipv4_address_read(struct o2nm_node *node, char *page)
 {
 	return sprintf(page, "%pI4\n", &node->nd_ipv4_address);
@@ -262,6 +335,19 @@ static ssize_t o2nm_node_ipv4_address_write(struct o2nm_node *node,
 					    size_t count)
 {
 	struct o2nm_cluster *cluster = to_o2nm_cluster_from_node(node);
+=======
+static ssize_t o2nm_node_ipv4_address_show(struct config_item *item, char *page)
+{
+	return sprintf(page, "%pI4\n", &to_o2nm_node(item)->nd_ipv4_address);
+}
+
+static ssize_t o2nm_node_ipv4_address_store(struct config_item *item,
+					    const char *page,
+					    size_t count)
+{
+	struct o2nm_node *node = to_o2nm_node(item);
+	struct o2nm_cluster *cluster;
+>>>>>>> v4.9.227
 	int ret, i;
 	struct rb_node **p, *parent;
 	unsigned int octets[4];
@@ -278,15 +364,36 @@ static ssize_t o2nm_node_ipv4_address_write(struct o2nm_node *node,
 		be32_add_cpu(&ipv4_addr, octets[i] << (i * 8));
 	}
 
+<<<<<<< HEAD
+=======
+	o2nm_lock_subsystem();
+	cluster = to_o2nm_cluster_from_node(node);
+	if (!cluster) {
+		o2nm_unlock_subsystem();
+		return -EINVAL;
+	}
+
+>>>>>>> v4.9.227
 	ret = 0;
 	write_lock(&cluster->cl_nodes_lock);
 	if (o2nm_node_ip_tree_lookup(cluster, ipv4_addr, &p, &parent))
 		ret = -EEXIST;
+<<<<<<< HEAD
+=======
+	else if (test_and_set_bit(O2NM_NODE_ATTR_ADDRESS,
+			&node->nd_set_attributes))
+		ret = -EBUSY;
+>>>>>>> v4.9.227
 	else {
 		rb_link_node(&node->nd_ip_node, parent, p);
 		rb_insert_color(&node->nd_ip_node, &cluster->cl_node_ip_tree);
 	}
 	write_unlock(&cluster->cl_nodes_lock);
+<<<<<<< HEAD
+=======
+	o2nm_unlock_subsystem();
+
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -295,6 +402,7 @@ static ssize_t o2nm_node_ipv4_address_write(struct o2nm_node *node,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t o2nm_node_local_read(struct o2nm_node *node, char *page)
 {
 	return sprintf(page, "%d\n", node->nd_local);
@@ -304,6 +412,18 @@ static ssize_t o2nm_node_local_write(struct o2nm_node *node, const char *page,
 				     size_t count)
 {
 	struct o2nm_cluster *cluster = to_o2nm_cluster_from_node(node);
+=======
+static ssize_t o2nm_node_local_show(struct config_item *item, char *page)
+{
+	return sprintf(page, "%d\n", to_o2nm_node(item)->nd_local);
+}
+
+static ssize_t o2nm_node_local_store(struct config_item *item, const char *page,
+				     size_t count)
+{
+	struct o2nm_node *node = to_o2nm_node(item);
+	struct o2nm_cluster *cluster;
+>>>>>>> v4.9.227
 	unsigned long tmp;
 	char *p = (char *)page;
 	ssize_t ret;
@@ -321,17 +441,38 @@ static ssize_t o2nm_node_local_write(struct o2nm_node *node, const char *page,
 	    !test_bit(O2NM_NODE_ATTR_PORT, &node->nd_set_attributes))
 		return -EINVAL; /* XXX */
 
+<<<<<<< HEAD
 	/* the only failure case is trying to set a new local node
 	 * when a different one is already set */
 	if (tmp && tmp == cluster->cl_has_local &&
 	    cluster->cl_local_node != node->nd_num)
 		return -EBUSY;
+=======
+	o2nm_lock_subsystem();
+	cluster = to_o2nm_cluster_from_node(node);
+	if (!cluster) {
+		ret = -EINVAL;
+		goto out;
+	}
+
+	/* the only failure case is trying to set a new local node
+	 * when a different one is already set */
+	if (tmp && tmp == cluster->cl_has_local &&
+	    cluster->cl_local_node != node->nd_num) {
+		ret = -EBUSY;
+		goto out;
+	}
+>>>>>>> v4.9.227
 
 	/* bring up the rx thread if we're setting the new local node. */
 	if (tmp && !cluster->cl_has_local) {
 		ret = o2net_start_listening(node);
 		if (ret)
+<<<<<<< HEAD
 			return ret;
+=======
+			goto out;
+>>>>>>> v4.9.227
 	}
 
 	if (!tmp && cluster->cl_has_local &&
@@ -346,6 +487,7 @@ static ssize_t o2nm_node_local_write(struct o2nm_node *node, const char *page,
 		cluster->cl_local_node = node->nd_num;
 	}
 
+<<<<<<< HEAD
 	return count;
 }
 
@@ -451,6 +593,30 @@ static struct configfs_item_operations o2nm_node_item_ops = {
 	.release		= o2nm_node_release,
 	.show_attribute		= o2nm_node_show,
 	.store_attribute	= o2nm_node_store,
+=======
+	ret = count;
+
+out:
+	o2nm_unlock_subsystem();
+	return ret;
+}
+
+CONFIGFS_ATTR(o2nm_node_, num);
+CONFIGFS_ATTR(o2nm_node_, ipv4_port);
+CONFIGFS_ATTR(o2nm_node_, ipv4_address);
+CONFIGFS_ATTR(o2nm_node_, local);
+
+static struct configfs_attribute *o2nm_node_attrs[] = {
+	&o2nm_node_attr_num,
+	&o2nm_node_attr_ipv4_port,
+	&o2nm_node_attr_ipv4_address,
+	&o2nm_node_attr_local,
+	NULL,
+};
+
+static struct configfs_item_operations o2nm_node_item_ops = {
+	.release		= o2nm_node_release,
+>>>>>>> v4.9.227
 };
 
 static struct config_item_type o2nm_node_type = {
@@ -475,12 +641,15 @@ static struct o2nm_node_group *to_o2nm_node_group(struct config_group *group)
 }
 #endif
 
+<<<<<<< HEAD
 struct o2nm_cluster_attribute {
 	struct configfs_attribute attr;
 	ssize_t (*show)(struct o2nm_cluster *, char *);
 	ssize_t (*store)(struct o2nm_cluster *, const char *, size_t);
 };
 
+=======
+>>>>>>> v4.9.227
 static ssize_t o2nm_cluster_attr_write(const char *page, ssize_t count,
                                        unsigned int *val)
 {
@@ -501,6 +670,7 @@ static ssize_t o2nm_cluster_attr_write(const char *page, ssize_t count,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t o2nm_cluster_attr_idle_timeout_ms_read(
 	struct o2nm_cluster *cluster, char *page)
 {
@@ -510,6 +680,18 @@ static ssize_t o2nm_cluster_attr_idle_timeout_ms_read(
 static ssize_t o2nm_cluster_attr_idle_timeout_ms_write(
 	struct o2nm_cluster *cluster, const char *page, size_t count)
 {
+=======
+static ssize_t o2nm_cluster_idle_timeout_ms_show(struct config_item *item,
+	char *page)
+{
+	return sprintf(page, "%u\n", to_o2nm_cluster(item)->cl_idle_timeout_ms);
+}
+
+static ssize_t o2nm_cluster_idle_timeout_ms_store(struct config_item *item,
+	const char *page, size_t count)
+{
+	struct o2nm_cluster *cluster = to_o2nm_cluster(item);
+>>>>>>> v4.9.227
 	ssize_t ret;
 	unsigned int val;
 
@@ -536,6 +718,7 @@ static ssize_t o2nm_cluster_attr_idle_timeout_ms_write(
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t o2nm_cluster_attr_keepalive_delay_ms_read(
 	struct o2nm_cluster *cluster, char *page)
 {
@@ -545,6 +728,19 @@ static ssize_t o2nm_cluster_attr_keepalive_delay_ms_read(
 static ssize_t o2nm_cluster_attr_keepalive_delay_ms_write(
 	struct o2nm_cluster *cluster, const char *page, size_t count)
 {
+=======
+static ssize_t o2nm_cluster_keepalive_delay_ms_show(
+	struct config_item *item, char *page)
+{
+	return sprintf(page, "%u\n",
+			to_o2nm_cluster(item)->cl_keepalive_delay_ms);
+}
+
+static ssize_t o2nm_cluster_keepalive_delay_ms_store(
+	struct config_item *item, const char *page, size_t count)
+{
+	struct o2nm_cluster *cluster = to_o2nm_cluster(item);
+>>>>>>> v4.9.227
 	ssize_t ret;
 	unsigned int val;
 
@@ -571,6 +767,7 @@ static ssize_t o2nm_cluster_attr_keepalive_delay_ms_write(
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t o2nm_cluster_attr_reconnect_delay_ms_read(
 	struct o2nm_cluster *cluster, char *page)
 {
@@ -587,6 +784,26 @@ static ssize_t o2nm_cluster_attr_reconnect_delay_ms_write(
 static ssize_t o2nm_cluster_attr_fence_method_read(
 	struct o2nm_cluster *cluster, char *page)
 {
+=======
+static ssize_t o2nm_cluster_reconnect_delay_ms_show(
+	struct config_item *item, char *page)
+{
+	return sprintf(page, "%u\n",
+			to_o2nm_cluster(item)->cl_reconnect_delay_ms);
+}
+
+static ssize_t o2nm_cluster_reconnect_delay_ms_store(
+	struct config_item *item, const char *page, size_t count)
+{
+	return o2nm_cluster_attr_write(page, count,
+                               &to_o2nm_cluster(item)->cl_reconnect_delay_ms);
+}
+
+static ssize_t o2nm_cluster_fence_method_show(
+	struct config_item *item, char *page)
+{
+	struct o2nm_cluster *cluster = to_o2nm_cluster(item);
+>>>>>>> v4.9.227
 	ssize_t ret = 0;
 
 	if (cluster)
@@ -595,8 +812,13 @@ static ssize_t o2nm_cluster_attr_fence_method_read(
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t o2nm_cluster_attr_fence_method_write(
 	struct o2nm_cluster *cluster, const char *page, size_t count)
+=======
+static ssize_t o2nm_cluster_fence_method_store(
+	struct config_item *item, const char *page, size_t count)
+>>>>>>> v4.9.227
 {
 	unsigned int i;
 
@@ -608,10 +830,17 @@ static ssize_t o2nm_cluster_attr_fence_method_write(
 			continue;
 		if (strncasecmp(page, o2nm_fence_method_desc[i], count - 1))
 			continue;
+<<<<<<< HEAD
 		if (cluster->cl_fence_method != i) {
 			printk(KERN_INFO "ocfs2: Changing fence method to %s\n",
 			       o2nm_fence_method_desc[i]);
 			cluster->cl_fence_method = i;
+=======
+		if (to_o2nm_cluster(item)->cl_fence_method != i) {
+			printk(KERN_INFO "ocfs2: Changing fence method to %s\n",
+			       o2nm_fence_method_desc[i]);
+			to_o2nm_cluster(item)->cl_fence_method = i;
+>>>>>>> v4.9.227
 		}
 		return count;
 	}
@@ -620,6 +849,7 @@ bail:
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct o2nm_cluster_attribute o2nm_cluster_attr_idle_timeout_ms = {
 	.attr	= { .ca_owner = THIS_MODULE,
 		    .ca_name = "idle_timeout_ms",
@@ -693,6 +923,20 @@ static ssize_t o2nm_cluster_store(struct config_item *item,
 out:
 	return ret;
 }
+=======
+CONFIGFS_ATTR(o2nm_cluster_, idle_timeout_ms);
+CONFIGFS_ATTR(o2nm_cluster_, keepalive_delay_ms);
+CONFIGFS_ATTR(o2nm_cluster_, reconnect_delay_ms);
+CONFIGFS_ATTR(o2nm_cluster_, fence_method);
+
+static struct configfs_attribute *o2nm_cluster_attrs[] = {
+	&o2nm_cluster_attr_idle_timeout_ms,
+	&o2nm_cluster_attr_keepalive_delay_ms,
+	&o2nm_cluster_attr_reconnect_delay_ms,
+	&o2nm_cluster_attr_fence_method,
+	NULL,
+};
+>>>>>>> v4.9.227
 
 static struct config_item *o2nm_node_group_make_item(struct config_group *group,
 						     const char *name)
@@ -721,6 +965,7 @@ static void o2nm_node_group_drop_item(struct config_group *group,
 	struct o2nm_node *node = to_o2nm_node(item);
 	struct o2nm_cluster *cluster = to_o2nm_cluster(group->cg_item.ci_parent);
 
+<<<<<<< HEAD
 	o2net_disconnect_node(node);
 
 	if (cluster->cl_has_local &&
@@ -728,6 +973,17 @@ static void o2nm_node_group_drop_item(struct config_group *group,
 		cluster->cl_has_local = 0;
 		cluster->cl_local_node = O2NM_INVALID_NODE_NUM;
 		o2net_stop_listening(node);
+=======
+	if (cluster->cl_nodes[node->nd_num] == node) {
+		o2net_disconnect_node(node);
+
+		if (cluster->cl_has_local &&
+		    (cluster->cl_local_node == node->nd_num)) {
+			cluster->cl_has_local = 0;
+			cluster->cl_local_node = O2NM_INVALID_NODE_NUM;
+			o2net_stop_listening(node);
+		}
+>>>>>>> v4.9.227
 	}
 
 	/* XXX call into net to stop this node from trading messages */
@@ -767,14 +1023,20 @@ static void o2nm_cluster_release(struct config_item *item)
 {
 	struct o2nm_cluster *cluster = to_o2nm_cluster(item);
 
+<<<<<<< HEAD
 	kfree(cluster->cl_group.default_groups);
+=======
+>>>>>>> v4.9.227
 	kfree(cluster);
 }
 
 static struct configfs_item_operations o2nm_cluster_item_ops = {
 	.release	= o2nm_cluster_release,
+<<<<<<< HEAD
 	.show_attribute		= o2nm_cluster_show,
 	.store_attribute	= o2nm_cluster_store,
+=======
+>>>>>>> v4.9.227
 };
 
 static struct config_item_type o2nm_cluster_type = {
@@ -805,7 +1067,10 @@ static struct config_group *o2nm_cluster_group_make_group(struct config_group *g
 	struct o2nm_cluster *cluster = NULL;
 	struct o2nm_node_group *ns = NULL;
 	struct config_group *o2hb_group = NULL, *ret = NULL;
+<<<<<<< HEAD
 	void *defs = NULL;
+=======
+>>>>>>> v4.9.227
 
 	/* this runs under the parent dir's i_mutex; there can be only
 	 * one caller in here at a time */
@@ -814,13 +1079,19 @@ static struct config_group *o2nm_cluster_group_make_group(struct config_group *g
 
 	cluster = kzalloc(sizeof(struct o2nm_cluster), GFP_KERNEL);
 	ns = kzalloc(sizeof(struct o2nm_node_group), GFP_KERNEL);
+<<<<<<< HEAD
 	defs = kcalloc(3, sizeof(struct config_group *), GFP_KERNEL);
 	o2hb_group = o2hb_alloc_hb_set();
 	if (cluster == NULL || ns == NULL || o2hb_group == NULL || defs == NULL)
+=======
+	o2hb_group = o2hb_alloc_hb_set();
+	if (cluster == NULL || ns == NULL || o2hb_group == NULL)
+>>>>>>> v4.9.227
 		goto out;
 
 	config_group_init_type_name(&cluster->cl_group, name,
 				    &o2nm_cluster_type);
+<<<<<<< HEAD
 	config_group_init_type_name(&ns->ns_group, "node",
 				    &o2nm_node_group_type);
 
@@ -828,6 +1099,14 @@ static struct config_group *o2nm_cluster_group_make_group(struct config_group *g
 	cluster->cl_group.default_groups[0] = &ns->ns_group;
 	cluster->cl_group.default_groups[1] = o2hb_group;
 	cluster->cl_group.default_groups[2] = NULL;
+=======
+	configfs_add_default_group(&ns->ns_group, &cluster->cl_group);
+
+	config_group_init_type_name(&ns->ns_group, "node",
+				    &o2nm_node_group_type);
+	configfs_add_default_group(o2hb_group, &cluster->cl_group);
+
+>>>>>>> v4.9.227
 	rwlock_init(&cluster->cl_nodes_lock);
 	cluster->cl_node_ip_tree = RB_ROOT;
 	cluster->cl_reconnect_delay_ms = O2NET_RECONNECT_DELAY_MS_DEFAULT;
@@ -843,7 +1122,10 @@ out:
 		kfree(cluster);
 		kfree(ns);
 		o2hb_free_hb_set(o2hb_group);
+<<<<<<< HEAD
 		kfree(defs);
+=======
+>>>>>>> v4.9.227
 		ret = ERR_PTR(-ENOMEM);
 	}
 
@@ -853,18 +1135,25 @@ out:
 static void o2nm_cluster_group_drop_item(struct config_group *group, struct config_item *item)
 {
 	struct o2nm_cluster *cluster = to_o2nm_cluster(item);
+<<<<<<< HEAD
 	int i;
 	struct config_item *killme;
+=======
+>>>>>>> v4.9.227
 
 	BUG_ON(o2nm_single_cluster != cluster);
 	o2nm_single_cluster = NULL;
 
+<<<<<<< HEAD
 	for (i = 0; cluster->cl_group.default_groups[i]; i++) {
 		killme = &cluster->cl_group.default_groups[i]->cg_item;
 		cluster->cl_group.default_groups[i] = NULL;
 		config_item_put(killme);
 	}
 
+=======
+	configfs_remove_default_groups(&cluster->cl_group);
+>>>>>>> v4.9.227
 	config_item_put(item);
 }
 
@@ -889,6 +1178,19 @@ static struct o2nm_cluster_group o2nm_cluster_group = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+static inline void o2nm_lock_subsystem(void)
+{
+	mutex_lock(&o2nm_cluster_group.cs_subsys.su_mutex);
+}
+
+static inline void o2nm_unlock_subsystem(void)
+{
+	mutex_unlock(&o2nm_cluster_group.cs_subsys.su_mutex);
+}
+
+>>>>>>> v4.9.227
 int o2nm_depend_item(struct config_item *item)
 {
 	return configfs_depend_item(&o2nm_cluster_group.cs_subsys, item);
@@ -896,7 +1198,11 @@ int o2nm_depend_item(struct config_item *item)
 
 void o2nm_undepend_item(struct config_item *item)
 {
+<<<<<<< HEAD
 	configfs_undepend_item(&o2nm_cluster_group.cs_subsys, item);
+=======
+	configfs_undepend_item(item);
+>>>>>>> v4.9.227
 }
 
 int o2nm_depend_this_node(void)

@@ -230,9 +230,12 @@ send_IPI_allbutself(enum ipi_message_type op)
 inline void 
 smp_send_stop(void)	{ send_IPI_allbutself(IPI_CPU_STOP); }
 
+<<<<<<< HEAD
 static inline void
 smp_send_start(void)	{ send_IPI_allbutself(IPI_CPU_START); }
 
+=======
+>>>>>>> v4.9.227
 void 
 smp_send_reschedule(int cpu) { send_IPI_single(cpu, IPI_RESCHEDULE); }
 
@@ -308,7 +311,11 @@ void __init smp_callin(void)
 
 	local_irq_enable();  /* Interrupts have been off until now */
 
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> v4.9.227
 
 	/* NOTREACHED */
 	panic("smp_callin() AAAAaaaaahhhh....\n");
@@ -415,8 +422,13 @@ void smp_cpus_done(unsigned int cpu_max)
 
 int __cpu_up(unsigned int cpu, struct task_struct *tidle)
 {
+<<<<<<< HEAD
 	if (cpu != 0 && cpu < parisc_max_cpus)
 		smp_boot_one_cpu(cpu, tidle);
+=======
+	if (cpu != 0 && cpu < parisc_max_cpus && smp_boot_one_cpu(cpu, tidle))
+		return -ENOSYS;
+>>>>>>> v4.9.227
 
 	return cpu_online(cpu) ? 0 : -ENOSYS;
 }

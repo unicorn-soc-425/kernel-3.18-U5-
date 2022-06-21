@@ -5,8 +5,13 @@
 #DEBUG	= -DDEBUGGING
 DEBUG	=
 PARANOID = -DPARANOID
+<<<<<<< HEAD
 EXTRA_CFLAGS	:= $(PARANOID) $(DEBUG) -fno-builtin $(MATH_EMULATION)
 EXTRA_AFLAGS	:= $(PARANOID)
+=======
+ccflags-y += $(PARANOID) $(DEBUG) -fno-builtin $(MATH_EMULATION)
+asflags-y += $(PARANOID)
+>>>>>>> v4.9.227
 
 # From 'C' language sources:
 C_OBJS =fpu_entry.o errors.o \

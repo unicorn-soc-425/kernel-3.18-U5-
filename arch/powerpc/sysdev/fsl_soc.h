@@ -19,8 +19,11 @@ extern u32 fsl_get_sys_freq(void);
 struct spi_board_info;
 struct device_node;
 
+<<<<<<< HEAD
 extern void fsl_rstcr_restart(char *cmd);
 
+=======
+>>>>>>> v4.9.227
 /* The different ports that the DIU can be connected to */
 enum fsl_diu_monitor_port {
 	FSL_DIU_PORT_DVI,	/* DVI */
@@ -42,8 +45,13 @@ struct platform_diu_data_ops {
 
 extern struct platform_diu_data_ops diu_ops;
 
+<<<<<<< HEAD
 void fsl_hv_restart(char *cmd);
 void fsl_hv_halt(void);
+=======
+void __noreturn fsl_hv_restart(char *cmd);
+void __noreturn fsl_hv_halt(void);
+>>>>>>> v4.9.227
 
 #endif
 #endif

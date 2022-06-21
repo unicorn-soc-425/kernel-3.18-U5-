@@ -211,6 +211,7 @@ static inline int omap243x_sram_init(void)
 
 #ifdef CONFIG_ARCH_OMAP3
 
+<<<<<<< HEAD
 static u32 (*_omap3_sram_configure_core_dpll)(
 			u32 m2, u32 unlock_dll, u32 f, u32 inc,
 			u32 sdrc_rfr_ctrl_0, u32 sdrc_actim_ctrl_a_0,
@@ -233,13 +234,18 @@ u32 omap3_configure_core_dpll(u32 m2, u32 unlock_dll, u32 f, u32 inc,
 			sdrc_actim_ctrl_b_1, sdrc_mr_1);
 }
 
+=======
+>>>>>>> v4.9.227
 void omap3_sram_restore_context(void)
 {
 	omap_sram_reset();
 
+<<<<<<< HEAD
 	_omap3_sram_configure_core_dpll =
 		omap_sram_push(omap3_sram_configure_core_dpll,
 			       omap3_sram_configure_core_dpll_sz);
+=======
+>>>>>>> v4.9.227
 	omap_push_sram_idle();
 }
 

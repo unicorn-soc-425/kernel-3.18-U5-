@@ -22,16 +22,26 @@ MODULE_DESCRIPTION("ip6tables filter table");
 			    (1 << NF_INET_FORWARD) | \
 			    (1 << NF_INET_LOCAL_OUT))
 
+<<<<<<< HEAD
+=======
+static int __net_init ip6table_filter_table_init(struct net *net);
+
+>>>>>>> v4.9.227
 static const struct xt_table packet_filter = {
 	.name		= "filter",
 	.valid_hooks	= FILTER_VALID_HOOKS,
 	.me		= THIS_MODULE,
 	.af		= NFPROTO_IPV6,
 	.priority	= NF_IP6_PRI_FILTER,
+<<<<<<< HEAD
+=======
+	.table_init	= ip6table_filter_table_init,
+>>>>>>> v4.9.227
 };
 
 /* The work comes in here from netfilter.c. */
 static unsigned int
+<<<<<<< HEAD
 ip6table_filter_hook(const struct nf_hook_ops *ops, struct sk_buff *skb,
 		     const struct net_device *in, const struct net_device *out,
 		     int (*okfn)(struct sk_buff *))
@@ -40,6 +50,12 @@ ip6table_filter_hook(const struct nf_hook_ops *ops, struct sk_buff *skb,
 
 	return ip6t_do_table(skb, ops->hooknum, in, out,
 			     net->ipv6.ip6table_filter);
+=======
+ip6table_filter_hook(void *priv, struct sk_buff *skb,
+		     const struct nf_hook_state *state)
+{
+	return ip6t_do_table(skb, state, state->net->ipv6.ip6table_filter);
+>>>>>>> v4.9.227
 }
 
 static struct nf_hook_ops *filter_ops __read_mostly;
@@ -48,9 +64,19 @@ static struct nf_hook_ops *filter_ops __read_mostly;
 static bool forward = true;
 module_param(forward, bool, 0000);
 
+<<<<<<< HEAD
 static int __net_init ip6table_filter_net_init(struct net *net)
 {
 	struct ip6t_replace *repl;
+=======
+static int __net_init ip6table_filter_table_init(struct net *net)
+{
+	struct ip6t_replace *repl;
+	int err;
+
+	if (net->ipv6.ip6table_filter)
+		return 0;
+>>>>>>> v4.9.227
 
 	repl = ip6t_alloc_initial_table(&packet_filter);
 	if (repl == NULL)
@@ -59,15 +85,37 @@ static int __net_init ip6table_filter_net_init(struct net *net)
 	((struct ip6t_standard *)repl->entries)[1].target.verdict =
 		forward ? -NF_ACCEPT - 1 : -NF_DROP - 1;
 
+<<<<<<< HEAD
 	net->ipv6.ip6table_filter =
 		ip6t_register_table(net, &packet_filter, repl);
 	kfree(repl);
 	return PTR_ERR_OR_ZERO(net->ipv6.ip6table_filter);
+=======
+	err = ip6t_register_table(net, &packet_filter, repl, filter_ops,
+				  &net->ipv6.ip6table_filter);
+	kfree(repl);
+	return err;
+}
+
+static int __net_init ip6table_filter_net_init(struct net *net)
+{
+	if (net == &init_net || !forward)
+		return ip6table_filter_table_init(net);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void __net_exit ip6table_filter_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	ip6t_unregister_table(net, net->ipv6.ip6table_filter);
+=======
+	if (!net->ipv6.ip6table_filter)
+		return;
+	ip6t_unregister_table(net, net->ipv6.ip6table_filter, filter_ops);
+	net->ipv6.ip6table_filter = NULL;
+>>>>>>> v4.9.227
 }
 
 static struct pernet_operations ip6table_filter_net_ops = {
@@ -79,6 +127,7 @@ static int __init ip6table_filter_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = register_pernet_subsys(&ip6table_filter_net_ops);
 	if (ret < 0)
 		return ret;
@@ -94,13 +143,28 @@ static int __init ip6table_filter_init(void)
 
  cleanup_table:
 	unregister_pernet_subsys(&ip6table_filter_net_ops);
+=======
+	filter_ops = xt_hook_ops_alloc(&packet_filter, ip6table_filter_hook);
+	if (IS_ERR(filter_ops))
+		return PTR_ERR(filter_ops);
+
+	ret = register_pernet_subsys(&ip6table_filter_net_ops);
+	if (ret < 0)
+		kfree(filter_ops);
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static void __exit ip6table_filter_fini(void)
 {
+<<<<<<< HEAD
 	xt_hook_unlink(&packet_filter, filter_ops);
 	unregister_pernet_subsys(&ip6table_filter_net_ops);
+=======
+	unregister_pernet_subsys(&ip6table_filter_net_ops);
+	kfree(filter_ops);
+>>>>>>> v4.9.227
 }
 
 module_init(ip6table_filter_init);

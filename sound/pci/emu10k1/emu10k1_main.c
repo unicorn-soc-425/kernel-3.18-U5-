@@ -712,6 +712,10 @@ static int emu1010_firmware_thread(void *data)
 {
 	struct snd_emu10k1 *emu = data;
 	u32 tmp, tmp2, reg;
+<<<<<<< HEAD
+=======
+	u32 last_reg = 0;
+>>>>>>> v4.9.227
 	int err;
 
 	for (;;) {
@@ -787,7 +791,19 @@ static int emu1010_firmware_thread(void *data)
 			msleep(10);
 			/* Unmute all. Default is muted after a firmware load */
 			snd_emu1010_fpga_write(emu, EMU_HANA_UNMUTE, EMU_UNMUTE);
+<<<<<<< HEAD
 		}
+=======
+		} else if (!reg && last_reg) {
+			/* Audio Dock removed */
+			dev_info(emu->card->dev,
+				 "emu1010: Audio Dock detached\n");
+			/* Unmute all */
+			snd_emu1010_fpga_write(emu, EMU_HANA_UNMUTE, EMU_UNMUTE);
+		}
+
+		last_reg = reg;
+>>>>>>> v4.9.227
 	}
 	dev_info(emu->card->dev, "emu1010: firmware thread stopping\n");
 	return 0;
@@ -1132,6 +1148,17 @@ static int snd_emu10k1_emu1010_init(struct snd_emu10k1 *emu)
 		emu->emu1010.firmware_thread =
 			kthread_create(emu1010_firmware_thread, emu,
 				       "emu1010_firmware");
+<<<<<<< HEAD
+=======
+		if (IS_ERR(emu->emu1010.firmware_thread)) {
+			err = PTR_ERR(emu->emu1010.firmware_thread);
+			emu->emu1010.firmware_thread = NULL;
+			dev_info(emu->card->dev,
+					"emu1010: Creating thread failed\n");
+			return err;
+		}
+
+>>>>>>> v4.9.227
 		wake_up_process(emu->emu1010.firmware_thread);
 	}
 
@@ -1294,10 +1321,15 @@ static int snd_emu10k1_free(struct snd_emu10k1 *emu)
 	}
 	if (emu->emu1010.firmware_thread)
 		kthread_stop(emu->emu1010.firmware_thread);
+<<<<<<< HEAD
 	if (emu->firmware)
 		release_firmware(emu->firmware);
 	if (emu->dock_fw)
 		release_firmware(emu->dock_fw);
+=======
+	release_firmware(emu->firmware);
+	release_firmware(emu->dock_fw);
+>>>>>>> v4.9.227
 	if (emu->irq >= 0)
 		free_irq(emu->irq, emu);
 	/* remove reserved page */
@@ -1306,8 +1338,12 @@ static int snd_emu10k1_free(struct snd_emu10k1 *emu)
 			(struct snd_util_memblk *)emu->reserved_page);
 		emu->reserved_page = NULL;
 	}
+<<<<<<< HEAD
 	if (emu->memhdr)
 		snd_util_memhdr_free(emu->memhdr);
+=======
+	snd_util_memhdr_free(emu->memhdr);
+>>>>>>> v4.9.227
 	if (emu->silent_page.area)
 		snd_dma_free_pages(&emu->silent_page);
 	if (emu->ptb_pages.area)
@@ -1333,6 +1369,25 @@ static int snd_emu10k1_dev_free(struct snd_device *device)
 }
 
 static struct snd_emu_chip_details emu_chip_details[] = {
+<<<<<<< HEAD
+=======
+	/* Audigy 5/Rx SB1550 */
+	/* Tested by michael@gernoth.net 28 Mar 2015 */
+	/* DSP: CA10300-IAT LF
+	 * DAC: Cirrus Logic CS4382-KQZ
+	 * ADC: Philips 1361T
+	 * AC97: Sigmatel STAC9750
+	 * CA0151: None
+	 */
+	{.vendor = 0x1102, .device = 0x0008, .subsystem = 0x10241102,
+	 .driver = "Audigy2", .name = "SB Audigy 5/Rx [SB1550]",
+	 .id = "Audigy2",
+	 .emu10k2_chip = 1,
+	 .ca0108_chip = 1,
+	 .spk71 = 1,
+	 .adc_1361t = 1,  /* 24 bit capture instead of 16bit */
+	 .ac97_chip = 1},
+>>>>>>> v4.9.227
 	/* Audigy4 (Not PRO) SB0610 */
 	/* Tested by James@superbug.co.uk 4th April 2006 */
 	/* A_IOCFG bits
@@ -1889,8 +1944,13 @@ int snd_emu10k1_create(struct snd_card *card,
 	emu->address_mode = is_audigy ? 0 : 1;
 	/* set the DMA transfer mask */
 	emu->dma_mask = emu->address_mode ? EMU10K1_DMA_MASK : AUDIGY_DMA_MASK;
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, emu->dma_mask) < 0 ||
 	    pci_set_consistent_dma_mask(pci, emu->dma_mask) < 0) {
+=======
+	if (dma_set_mask(&pci->dev, emu->dma_mask) < 0 ||
+	    dma_set_coherent_mask(&pci->dev, emu->dma_mask) < 0) {
+>>>>>>> v4.9.227
 		dev_err(card->dev,
 			"architecture does not support PCI busmaster DMA with mask 0x%lx\n",
 			emu->dma_mask);
@@ -2041,7 +2101,11 @@ int snd_emu10k1_create(struct snd_card *card,
 	if (err < 0)
 		goto error;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> v4.9.227
 	snd_emu10k1_proc_init(emu);
 #endif
 

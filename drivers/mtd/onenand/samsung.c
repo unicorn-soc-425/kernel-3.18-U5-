@@ -864,7 +864,10 @@ static int s3c_onenand_probe(struct platform_device *pdev)
 	this = (struct onenand_chip *) &mtd[1];
 	mtd->priv = this;
 	mtd->dev.parent = &pdev->dev;
+<<<<<<< HEAD
 	mtd->owner = THIS_MODULE;
+=======
+>>>>>>> v4.9.227
 	onenand->pdev = pdev;
 	onenand->type = platform_get_device_id(pdev)->driver_data;
 
@@ -1083,7 +1086,11 @@ static const struct dev_pm_ops s3c_pm_ops = {
 	.resume		= s3c_pm_ops_resume,
 };
 
+<<<<<<< HEAD
 static struct platform_device_id s3c_onenand_driver_ids[] = {
+=======
+static const struct platform_device_id s3c_onenand_driver_ids[] = {
+>>>>>>> v4.9.227
 	{
 		.name		= "s3c6400-onenand",
 		.driver_data	= TYPE_S3C6400,

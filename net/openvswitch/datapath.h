@@ -25,10 +25,18 @@
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <linux/u64_stats_sync.h>
+<<<<<<< HEAD
 
 #include "flow.h"
 #include "flow_table.h"
 #include "vport.h"
+=======
+#include <net/ip_tunnels.h>
+
+#include "conntrack.h"
+#include "flow.h"
+#include "flow_table.h"
+>>>>>>> v4.9.227
 
 #define DP_MAX_PORTS           USHRT_MAX
 #define DP_VPORT_HASH_BUCKETS  1024
@@ -67,6 +75,11 @@ struct dp_stats_percpu {
  * ovs_mutex and RCU.
  * @stats_percpu: Per-CPU datapath statistics.
  * @net: Reference to net namespace.
+<<<<<<< HEAD
+=======
+ * @max_headroom: the maximum headroom of all vports in this datapath; it will
+ * be used by all the internal vports in this dp.
+>>>>>>> v4.9.227
  *
  * Context: See the comment on locking at the top of datapath.c for additional
  * locking information.
@@ -84,16 +97,26 @@ struct datapath {
 	/* Stats. */
 	struct dp_stats_percpu __percpu *stats_percpu;
 
+<<<<<<< HEAD
 #ifdef CONFIG_NET_NS
 	/* Network namespace ref. */
 	struct net *net;
 #endif
 
 	u32 user_features;
+=======
+	/* Network namespace ref. */
+	possible_net_t net;
+
+	u32 user_features;
+
+	u32 max_headroom;
+>>>>>>> v4.9.227
 };
 
 /**
  * struct ovs_skb_cb - OVS data in skb CB
+<<<<<<< HEAD
  * @flow: The flow associated with this packet.  May be %NULL if no flow.
  * @egress_tun_key: Tunnel information about this packet on egress path.
  * NULL if the packet is not being tunneled.
@@ -104,12 +127,27 @@ struct ovs_skb_cb {
 	struct sw_flow		*flow;
 	struct ovs_tunnel_info  *egress_tun_info;
 	struct vport		*input_vport;
+=======
+ * @input_vport: The original vport packet came in on. This value is cached
+ * when a packet is received by OVS.
+ * @mru: The maximum received fragement size; 0 if the packet is not
+ * @acts_origlen: The netlink size of the flow actions applied to this skb.
+ * @cutlen: The number of bytes from the packet end to be removed.
+ * fragmented.
+ */
+struct ovs_skb_cb {
+	struct vport		*input_vport;
+	u16			mru;
+	u16			acts_origlen;
+	u32			cutlen;
+>>>>>>> v4.9.227
 };
 #define OVS_CB(skb) ((struct ovs_skb_cb *)(skb)->cb)
 
 /**
  * struct dp_upcall - metadata to include with a packet to send to userspace
  * @cmd: One of %OVS_PACKET_CMD_*.
+<<<<<<< HEAD
  * @key: Becomes %OVS_PACKET_ATTR_KEY.  Must be nonnull.
  * @userdata: If nonnull, its variable-length value is passed to userspace as
  * %OVS_PACKET_ATTR_USERDATA.
@@ -122,6 +160,24 @@ struct dp_upcall_info {
 	const struct sw_flow_key *key;
 	const struct nlattr *userdata;
 	u32 portid;
+=======
+ * @userdata: If nonnull, its variable-length value is passed to userspace as
+ * %OVS_PACKET_ATTR_USERDATA.
+ * @portid: Netlink portid to which packet should be sent.  If @portid is 0
+ * then no packet is sent and the packet is accounted in the datapath's @n_lost
+ * counter.
+ * @egress_tun_info: If nonnull, becomes %OVS_PACKET_ATTR_EGRESS_TUN_KEY.
+ * @mru: If not zero, Maximum received IP fragment size.
+ */
+struct dp_upcall_info {
+	struct ip_tunnel_info *egress_tun_info;
+	const struct nlattr *userdata;
+	const struct nlattr *actions;
+	int actions_len;
+	u32 portid;
+	u8 cmd;
+	u16 mru;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -132,7 +188,13 @@ struct dp_upcall_info {
 struct ovs_net {
 	struct list_head dps;
 	struct work_struct dp_notify_work;
+<<<<<<< HEAD
 	struct vport_net vport_net;
+=======
+
+	/* Module reference for configuring conntrack. */
+	bool xt_label;
+>>>>>>> v4.9.227
 };
 
 extern int ovs_net_id;
@@ -151,7 +213,11 @@ int lockdep_ovsl_is_held(void);
 #define rcu_dereference_ovsl(p)					\
 	rcu_dereference_check(p, lockdep_ovsl_is_held())
 
+<<<<<<< HEAD
 static inline struct net *ovs_dp_get_net(struct datapath *dp)
+=======
+static inline struct net *ovs_dp_get_net(const struct datapath *dp)
+>>>>>>> v4.9.227
 {
 	return read_pnet(&dp->net);
 }
@@ -187,23 +253,43 @@ extern struct genl_family dp_vport_genl_family;
 void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key);
 void ovs_dp_detach_port(struct vport *);
 int ovs_dp_upcall(struct datapath *, struct sk_buff *,
+<<<<<<< HEAD
 		  const struct dp_upcall_info *);
+=======
+		  const struct sw_flow_key *, const struct dp_upcall_info *,
+		  uint32_t cutlen);
+>>>>>>> v4.9.227
 
 const char *ovs_dp_name(const struct datapath *dp);
 struct sk_buff *ovs_vport_cmd_build_info(struct vport *, u32 pid, u32 seq,
 					 u8 cmd);
 
 int ovs_execute_actions(struct datapath *dp, struct sk_buff *skb,
+<<<<<<< HEAD
 			struct sw_flow_key *);
+=======
+			const struct sw_flow_actions *, struct sw_flow_key *);
+>>>>>>> v4.9.227
 
 void ovs_dp_notify_wq(struct work_struct *work);
 
 int action_fifos_init(void);
 void action_fifos_exit(void);
 
+<<<<<<< HEAD
 #define OVS_NLERR(fmt, ...)					\
 do {								\
 	if (net_ratelimit())					\
 		pr_info("netlink: " fmt, ##__VA_ARGS__);	\
+=======
+/* 'KEY' must not have any bits set outside of the 'MASK' */
+#define OVS_MASKED(OLD, KEY, MASK) ((KEY) | ((OLD) & ~(MASK)))
+#define OVS_SET_MASKED(OLD, KEY, MASK) ((OLD) = OVS_MASKED(OLD, KEY, MASK))
+
+#define OVS_NLERR(logging_allowed, fmt, ...)			\
+do {								\
+	if (logging_allowed && net_ratelimit())			\
+		pr_info("netlink: " fmt "\n", ##__VA_ARGS__);	\
+>>>>>>> v4.9.227
 } while (0)
 #endif /* datapath.h */

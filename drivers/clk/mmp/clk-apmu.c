@@ -10,7 +10,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/io.h>
 #include <linux/err.h>
 #include <linux/delay.h>
@@ -61,7 +64,11 @@ static void clk_apmu_disable(struct clk_hw *hw)
 		spin_unlock_irqrestore(apmu->lock, flags);
 }
 
+<<<<<<< HEAD
 struct clk_ops clk_apmu_ops = {
+=======
+static struct clk_ops clk_apmu_ops = {
+>>>>>>> v4.9.227
 	.enable = clk_apmu_enable,
 	.disable = clk_apmu_disable,
 };

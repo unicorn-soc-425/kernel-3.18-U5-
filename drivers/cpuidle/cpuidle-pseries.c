@@ -27,6 +27,11 @@ struct cpuidle_driver pseries_idle_driver = {
 
 static int max_idle_state;
 static struct cpuidle_state *cpuidle_state_table;
+<<<<<<< HEAD
+=======
+static u64 snooze_timeout;
+static bool snooze_timeout_en;
+>>>>>>> v4.9.227
 
 static inline void idle_loop_prolog(unsigned long *in_purr)
 {
@@ -58,14 +63,27 @@ static int snooze_loop(struct cpuidle_device *dev,
 			int index)
 {
 	unsigned long in_purr;
+<<<<<<< HEAD
+=======
+	u64 snooze_exit_time;
+>>>>>>> v4.9.227
 
 	idle_loop_prolog(&in_purr);
 	local_irq_enable();
 	set_thread_flag(TIF_POLLING_NRFLAG);
+<<<<<<< HEAD
+=======
+	snooze_exit_time = get_tb() + snooze_timeout;
+>>>>>>> v4.9.227
 
 	while (!need_resched()) {
 		HMT_low();
 		HMT_very_low();
+<<<<<<< HEAD
+=======
+		if (snooze_timeout_en && get_tb() > snooze_exit_time)
+			break;
+>>>>>>> v4.9.227
 	}
 
 	HMT_medium();
@@ -142,14 +160,20 @@ static struct cpuidle_state dedicated_states[] = {
 	{ /* Snooze */
 		.name = "snooze",
 		.desc = "snooze",
+<<<<<<< HEAD
 		.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 		.exit_latency = 0,
 		.target_residency = 0,
 		.enter = &snooze_loop },
 	{ /* CEDE */
 		.name = "CEDE",
 		.desc = "CEDE",
+<<<<<<< HEAD
 		.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 		.exit_latency = 10,
 		.target_residency = 100,
 		.enter = &dedicated_cede_loop },
@@ -162,12 +186,16 @@ static struct cpuidle_state shared_states[] = {
 	{ /* Shared Cede */
 		.name = "Shared Cede",
 		.desc = "Shared Cede",
+<<<<<<< HEAD
 		.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 		.exit_latency = 0,
 		.target_residency = 0,
 		.enter = &shared_cede_loop },
 };
 
+<<<<<<< HEAD
 static int pseries_cpuidle_add_cpu_notifier(struct notifier_block *n,
 			unsigned long action, void *hcpu)
 {
@@ -201,6 +229,31 @@ static int pseries_cpuidle_add_cpu_notifier(struct notifier_block *n,
 static struct notifier_block setup_hotplug_notifier = {
 	.notifier_call = pseries_cpuidle_add_cpu_notifier,
 };
+=======
+static int pseries_cpuidle_cpu_online(unsigned int cpu)
+{
+	struct cpuidle_device *dev = per_cpu(cpuidle_devices, cpu);
+
+	if (dev && cpuidle_get_driver()) {
+		cpuidle_pause_and_lock();
+		cpuidle_enable_device(dev);
+		cpuidle_resume_and_unlock();
+	}
+	return 0;
+}
+
+static int pseries_cpuidle_cpu_dead(unsigned int cpu)
+{
+	struct cpuidle_device *dev = per_cpu(cpuidle_devices, cpu);
+
+	if (dev && cpuidle_get_driver()) {
+		cpuidle_pause_and_lock();
+		cpuidle_disable_device(dev);
+		cpuidle_resume_and_unlock();
+	}
+	return 0;
+}
+>>>>>>> v4.9.227
 
 /*
  * pseries_cpuidle_driver_init()
@@ -237,7 +290,17 @@ static int pseries_idle_probe(void)
 		return -ENODEV;
 
 	if (firmware_has_feature(FW_FEATURE_SPLPAR)) {
+<<<<<<< HEAD
 		if (lppaca_shared_proc(get_lppaca())) {
+=======
+		/*
+		 * Use local_paca instead of get_lppaca() since
+		 * preemption is not disabled, and it is not required in
+		 * fact, since lppaca_ptr does not need to be the value
+		 * associated to the current CPU, it can be from any CPU.
+		 */
+		if (lppaca_shared_proc(local_paca->lppaca_ptr)) {
+>>>>>>> v4.9.227
 			cpuidle_state_table = shared_states;
 			max_idle_state = ARRAY_SIZE(shared_states);
 		} else {
@@ -247,6 +310,14 @@ static int pseries_idle_probe(void)
 	} else
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (max_idle_state > 1) {
+		snooze_timeout_en = true;
+		snooze_timeout = cpuidle_state_table[1].target_residency *
+				 tb_ticks_per_usec;
+	}
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -265,7 +336,18 @@ static int __init pseries_processor_idle_init(void)
 		return retval;
 	}
 
+<<<<<<< HEAD
 	register_cpu_notifier(&setup_hotplug_notifier);
+=======
+	retval = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
+					   "cpuidle/pseries:online",
+					   pseries_cpuidle_cpu_online, NULL);
+	WARN_ON(retval < 0);
+	retval = cpuhp_setup_state_nocalls(CPUHP_CPUIDLE_DEAD,
+					   "cpuidle/pseries:DEAD", NULL,
+					   pseries_cpuidle_cpu_dead);
+	WARN_ON(retval < 0);
+>>>>>>> v4.9.227
 	printk(KERN_DEBUG "pseries_idle_driver registered\n");
 	return 0;
 }

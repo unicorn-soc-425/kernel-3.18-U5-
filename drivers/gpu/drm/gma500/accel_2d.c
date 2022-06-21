@@ -28,7 +28,10 @@
 #include <linux/tty.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/console.h>
 

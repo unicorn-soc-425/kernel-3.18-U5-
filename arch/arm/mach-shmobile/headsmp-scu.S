@@ -12,11 +12,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/linkage.h>
@@ -27,12 +30,20 @@
  * Boot code for secondary CPUs.
  *
  * First we turn on L1 cache coherency for our CPU. Then we jump to
+<<<<<<< HEAD
  * shmobile_invalidate_start that invalidates the cache and hands over control
+=======
+ * secondary_startup that invalidates the cache and hands over control
+>>>>>>> v4.9.227
  * to the common ARM startup code.
  */
 ENTRY(shmobile_boot_scu)
 					@ r0 = SCU base address
+<<<<<<< HEAD
 	mrc     p15, 0, r1, c0, c0, 5	@ read MIPDR
+=======
+	mrc     p15, 0, r1, c0, c0, 5	@ read MPIDR
+>>>>>>> v4.9.227
 	and	r1, r1, #3		@ mask out cpu ID
 	lsl	r1, r1, #3		@ we will shift by cpu_id * 8 bits
 	ldr	r2, [r0, #8]		@ SCU Power Status Register
@@ -41,6 +52,7 @@ ENTRY(shmobile_boot_scu)
 	bic	r2, r2, r3		@ Clear bits of our CPU (Run Mode)
 	str	r2, [r0, #8]		@ write back
 
+<<<<<<< HEAD
 	b	shmobile_invalidate_start
 ENDPROC(shmobile_boot_scu)
 
@@ -49,3 +61,7 @@ ENDPROC(shmobile_boot_scu)
 	.globl	shmobile_scu_base
 shmobile_scu_base:
 	.space	4
+=======
+	b	secondary_startup
+ENDPROC(shmobile_boot_scu)
+>>>>>>> v4.9.227

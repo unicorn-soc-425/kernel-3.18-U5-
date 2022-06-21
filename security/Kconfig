@@ -6,11 +6,14 @@ menu "Security options"
 
 source security/keys/Kconfig
 
+<<<<<<< HEAD
 if ARCH_MSM
 source security/pfe/Kconfig
 endif
 
 
+=======
+>>>>>>> v4.9.227
 config SECURITY_DMESG_RESTRICT
 	bool "Restrict unprivileged access to the kernel syslog"
 	default n
@@ -23,6 +26,7 @@ config SECURITY_DMESG_RESTRICT
 
 	  If you are unsure how to answer this question, answer N.
 
+<<<<<<< HEAD
 config SECURITY_PERF_EVENTS_RESTRICT
 	bool "Restrict unprivileged use of performance events"
 	depends on PERF_EVENTS
@@ -35,6 +39,12 @@ config SECURITY_PERF_EVENTS_RESTRICT
 config SECURITY
 	bool "Enable different security models"
 	depends on SYSFS
+=======
+config SECURITY
+	bool "Enable different security models"
+	depends on SYSFS
+	depends on MULTIUSER
+>>>>>>> v4.9.227
 	help
 	  This allows you to choose different security modules to be
 	  configured into your kernel.
@@ -44,6 +54,19 @@ config SECURITY
 
 	  If you are unsure how to answer this question, answer N.
 
+<<<<<<< HEAD
+=======
+config PAGE_TABLE_ISOLATION
+	bool "Remove the kernel mapping in user mode"
+	default y
+	depends on X86_64 && SMP
+	help
+	  This enforces a strict kernel and user space isolation, in order
+	  to close hardware side channels on kernel address information.
+
+	  If you are unsure how to answer this question, answer Y.
+
+>>>>>>> v4.9.227
 config SECURITYFS
 	bool "Enable the securityfs filesystem"
 	help
@@ -163,7 +186,11 @@ config HARDENED_USERCOPY
 config HARDENED_USERCOPY_PAGESPAN
 	bool "Refuse to copy allocations that span multiple pages"
 	depends on HARDENED_USERCOPY
+<<<<<<< HEAD
 	depends on !COMPILE_TEST
+=======
+	depends on EXPERT
+>>>>>>> v4.9.227
 	help
 	  When a multi-page allocation is done without __GFP_COMP,
 	  hardened usercopy will reject attempts to copy it. There are,
@@ -175,6 +202,7 @@ source security/selinux/Kconfig
 source security/smack/Kconfig
 source security/tomoyo/Kconfig
 source security/apparmor/Kconfig
+<<<<<<< HEAD
 source security/yama/Kconfig
 
 source security/integrity/Kconfig
@@ -184,6 +212,12 @@ source security/samsung/defex_lsm/Kconfig
 source security/proca/Kconfig
 source security/samsung/dsms/Kconfig
 source security/samsung/five/Kconfig
+=======
+source security/loadpin/Kconfig
+source security/yama/Kconfig
+
+source security/integrity/Kconfig
+>>>>>>> v4.9.227
 
 choice
 	prompt "Default security module"
@@ -191,7 +225,10 @@ choice
 	default DEFAULT_SECURITY_SMACK if SECURITY_SMACK
 	default DEFAULT_SECURITY_TOMOYO if SECURITY_TOMOYO
 	default DEFAULT_SECURITY_APPARMOR if SECURITY_APPARMOR
+<<<<<<< HEAD
 	default DEFAULT_SECURITY_YAMA if SECURITY_YAMA
+=======
+>>>>>>> v4.9.227
 	default DEFAULT_SECURITY_DAC
 
 	help
@@ -210,9 +247,12 @@ choice
 	config DEFAULT_SECURITY_APPARMOR
 		bool "AppArmor" if SECURITY_APPARMOR=y
 
+<<<<<<< HEAD
 	config DEFAULT_SECURITY_YAMA
 		bool "Yama" if SECURITY_YAMA=y
 
+=======
+>>>>>>> v4.9.227
 	config DEFAULT_SECURITY_DAC
 		bool "Unix Discretionary Access Controls"
 
@@ -224,7 +264,10 @@ config DEFAULT_SECURITY
 	default "smack" if DEFAULT_SECURITY_SMACK
 	default "tomoyo" if DEFAULT_SECURITY_TOMOYO
 	default "apparmor" if DEFAULT_SECURITY_APPARMOR
+<<<<<<< HEAD
 	default "yama" if DEFAULT_SECURITY_YAMA
+=======
+>>>>>>> v4.9.227
 	default "" if DEFAULT_SECURITY_DAC
 
 endmenu

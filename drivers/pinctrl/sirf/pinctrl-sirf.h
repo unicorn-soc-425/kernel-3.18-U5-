@@ -49,7 +49,10 @@ struct sirfsoc_pmx {
 	u32 paden_regs[SIRFSOC_GPIO_NO_OF_BANKS];
 	u32 dspen_regs;
 	u32 rsc_regs[3];
+<<<<<<< HEAD
 	bool is_marco;
+=======
+>>>>>>> v4.9.227
 };
 
 /* SIRFSOC_GPIO_PAD_EN set */

@@ -94,6 +94,11 @@ do {									\
 
 #define edac_dev_name(dev) (dev)->dev_name
 
+<<<<<<< HEAD
+=======
+#define to_mci(k) container_of(k, struct mem_ctl_info, dev)
+
+>>>>>>> v4.9.227
 /*
  * The following are the structures to provide for a generic
  * or abstract 'edac_device'. This set of structures and the
@@ -221,11 +226,17 @@ struct edac_device_ctl_info {
 	/* Per instance controls for this edac_device */
 	int log_ue;		/* boolean for logging UEs */
 	int log_ce;		/* boolean for logging CEs */
+<<<<<<< HEAD
 	int panic_on_ce;	/* boolean for panic'ing on an CE */
 	int panic_on_ue;	/* boolean for panic'ing on an UE */
 	unsigned poll_msec;	/* number of milliseconds to poll interval */
 	unsigned long delay;	/* number of jiffies for poll_msec */
 	bool defer_work;	/* Create a deferrable work for polling */
+=======
+	int panic_on_ue;	/* boolean for panic'ing on an UE */
+	unsigned poll_msec;	/* number of milliseconds to poll interval */
+	unsigned long delay;	/* number of jiffies for poll_msec */
+>>>>>>> v4.9.227
 
 	/* Additional top controller level attributes, but specified
 	 * by the low level driver.
@@ -448,7 +459,13 @@ struct mem_ctl_info *edac_mc_alloc(unsigned mc_num,
 				   unsigned n_layers,
 				   struct edac_mc_layer *layers,
 				   unsigned sz_pvt);
+<<<<<<< HEAD
 extern int edac_mc_add_mc(struct mem_ctl_info *mci);
+=======
+extern int edac_mc_add_mc_with_groups(struct mem_ctl_info *mci,
+				      const struct attribute_group **groups);
+#define edac_mc_add_mc(mci)	edac_mc_add_mc_with_groups(mci, NULL)
+>>>>>>> v4.9.227
 extern void edac_mc_free(struct mem_ctl_info *mci);
 extern struct mem_ctl_info *edac_mc_find(int idx);
 extern struct mem_ctl_info *find_mci_by_dev(struct device *dev);

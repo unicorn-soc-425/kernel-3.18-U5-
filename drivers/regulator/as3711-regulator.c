@@ -267,7 +267,10 @@ static int as3711_regulator_probe(struct platform_device *pdev)
 static struct platform_driver as3711_regulator_driver = {
 	.driver	= {
 		.name	= "as3711-regulator",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= as3711_regulator_probe,
 };

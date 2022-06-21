@@ -1,7 +1,11 @@
 /*
  * dib3000mb_priv.h
  *
+<<<<<<< HEAD
  * Copyright (C) 2004 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License as

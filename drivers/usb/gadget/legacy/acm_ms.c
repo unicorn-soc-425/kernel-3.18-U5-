@@ -40,7 +40,11 @@ static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
+<<<<<<< HEAD
 	.bcdUSB =		cpu_to_le16(0x0200),
+=======
+	/* .bcdUSB = DYNAMIC */
+>>>>>>> v4.9.227
 
 	.bDeviceClass =		USB_CLASS_MISC /* 0xEF */,
 	.bDeviceSubClass =	2,
@@ -58,6 +62,7 @@ static struct usb_device_descriptor device_desc = {
 	/*.bNumConfigurations =	DYNAMIC*/
 };
 
+<<<<<<< HEAD
 static struct usb_otg_descriptor otg_descriptor = {
 	.bLength =		sizeof otg_descriptor,
 	.bDescriptorType =	USB_DT_OTG,
@@ -73,6 +78,9 @@ static const struct usb_descriptor_header *otg_desc[] = {
 	(struct usb_descriptor_header *) &otg_descriptor,
 	NULL,
 };
+=======
+static const struct usb_descriptor_header *otg_desc[2];
+>>>>>>> v4.9.227
 
 /* string IDs are assigned dynamically */
 static struct usb_string strings_dev[] = {
@@ -121,7 +129,11 @@ static struct usb_function *f_msg;
 /*
  * We _always_ have both ACM and mass storage functions.
  */
+<<<<<<< HEAD
 static int __init acm_ms_do_config(struct usb_configuration *c)
+=======
+static int acm_ms_do_config(struct usb_configuration *c)
+>>>>>>> v4.9.227
 {
 	struct fsg_opts *opts;
 	int	status;
@@ -147,10 +159,13 @@ static int __init acm_ms_do_config(struct usb_configuration *c)
 	if (status < 0)
 		goto put_msg;
 
+<<<<<<< HEAD
 	status = fsg_common_run_thread(opts->common);
 	if (status)
 		goto remove_acm;
 
+=======
+>>>>>>> v4.9.227
 	status = usb_add_function(c, f_msg);
 	if (status)
 		goto remove_acm;
@@ -174,7 +189,11 @@ static struct usb_configuration acm_ms_config_driver = {
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int __init acm_ms_bind(struct usb_composite_dev *cdev)
+=======
+static int acm_ms_bind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 	struct usb_gadget	*gadget = cdev->gadget;
 	struct fsg_opts		*opts;
@@ -200,10 +219,13 @@ static int __init acm_ms_bind(struct usb_composite_dev *cdev)
 	if (status)
 		goto fail;
 
+<<<<<<< HEAD
 	status = fsg_common_set_nluns(opts->common, config.nluns);
 	if (status)
 		goto fail_set_nluns;
 
+=======
+>>>>>>> v4.9.227
 	status = fsg_common_set_cdev(opts->common, cdev, config.can_stall);
 	if (status)
 		goto fail_set_cdev;
@@ -225,10 +247,28 @@ static int __init acm_ms_bind(struct usb_composite_dev *cdev)
 	device_desc.iManufacturer = strings_dev[USB_GADGET_MANUFACTURER_IDX].id;
 	device_desc.iProduct = strings_dev[USB_GADGET_PRODUCT_IDX].id;
 
+<<<<<<< HEAD
 	/* register our configuration */
 	status = usb_add_config(cdev, &acm_ms_config_driver, acm_ms_do_config);
 	if (status < 0)
 		goto fail_string_ids;
+=======
+	if (gadget_is_otg(gadget) && !otg_desc[0]) {
+		struct usb_descriptor_header *usb_desc;
+
+		usb_desc = usb_otg_descriptor_alloc(gadget);
+		if (!usb_desc)
+			goto fail_string_ids;
+		usb_otg_descriptor_init(gadget, usb_desc);
+		otg_desc[0] = usb_desc;
+		otg_desc[1] = NULL;
+	}
+
+	/* register our configuration */
+	status = usb_add_config(cdev, &acm_ms_config_driver, acm_ms_do_config);
+	if (status < 0)
+		goto fail_otg_desc;
+>>>>>>> v4.9.227
 
 	usb_composite_overwrite_options(cdev, &coverwrite);
 	dev_info(&gadget->dev, "%s, version: " DRIVER_VERSION "\n",
@@ -236,11 +276,20 @@ static int __init acm_ms_bind(struct usb_composite_dev *cdev)
 	return 0;
 
 	/* error recovery */
+<<<<<<< HEAD
 fail_string_ids:
 	fsg_common_remove_luns(opts->common);
 fail_set_cdev:
 	fsg_common_free_luns(opts->common);
 fail_set_nluns:
+=======
+fail_otg_desc:
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+fail_string_ids:
+	fsg_common_remove_luns(opts->common);
+fail_set_cdev:
+>>>>>>> v4.9.227
 	fsg_common_free_buffers(opts->common);
 fail:
 	usb_put_function_instance(fi_msg);
@@ -249,22 +298,40 @@ fail_get_msg:
 	return status;
 }
 
+<<<<<<< HEAD
 static int __exit acm_ms_unbind(struct usb_composite_dev *cdev)
+=======
+static int acm_ms_unbind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 	usb_put_function(f_msg);
 	usb_put_function_instance(fi_msg);
 	usb_put_function(f_acm);
 	usb_put_function_instance(f_acm_inst);
+<<<<<<< HEAD
 	return 0;
 }
 
 static __refdata struct usb_composite_driver acm_ms_driver = {
+=======
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+
+	return 0;
+}
+
+static struct usb_composite_driver acm_ms_driver = {
+>>>>>>> v4.9.227
 	.name		= "g_acm_ms",
 	.dev		= &device_desc,
 	.max_speed	= USB_SPEED_SUPER,
 	.strings	= dev_strings,
 	.bind		= acm_ms_bind,
+<<<<<<< HEAD
 	.unbind		= __exit_p(acm_ms_unbind),
+=======
+	.unbind		= acm_ms_unbind,
+>>>>>>> v4.9.227
 };
 
 module_usb_composite_driver(acm_ms_driver);

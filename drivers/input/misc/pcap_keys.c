@@ -121,7 +121,10 @@ static struct platform_driver pcap_keys_device_driver = {
 	.remove		= pcap_keys_remove,
 	.driver		= {
 		.name	= "pcap-keys",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	}
 };
 module_platform_driver(pcap_keys_device_driver);

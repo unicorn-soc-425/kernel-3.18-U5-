@@ -42,6 +42,7 @@ static int usb_w90x900_probe(const struct hc_driver *driver,
 	int retval = 0, irq;
 	unsigned long val;
 
+<<<<<<< HEAD
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
@@ -49,20 +50,31 @@ static int usb_w90x900_probe(const struct hc_driver *driver,
 		goto err1;
 	}
 
+=======
+>>>>>>> v4.9.227
 	hcd = usb_create_hcd(driver, &pdev->dev, "w90x900 EHCI");
 	if (!hcd) {
 		retval = -ENOMEM;
 		goto err1;
 	}
 
+<<<<<<< HEAD
 	hcd->rsrc_start = res->start;
 	hcd->rsrc_len = resource_size(res);
 
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> v4.9.227
 	hcd->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(hcd->regs)) {
 		retval = PTR_ERR(hcd->regs);
 		goto err2;
 	}
+<<<<<<< HEAD
+=======
+	hcd->rsrc_start = res->start;
+	hcd->rsrc_len = resource_size(res);
+>>>>>>> v4.9.227
 
 	ehci = hcd_to_ehci(hcd);
 	ehci->caps = hcd->regs;
@@ -82,8 +94,15 @@ static int usb_w90x900_probe(const struct hc_driver *driver,
 	__raw_writel(val, ehci->regs+PHY1_CTR);
 
 	irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (irq < 0)
 		goto err2;
+=======
+	if (irq < 0) {
+		retval = irq;
+		goto err2;
+	}
+>>>>>>> v4.9.227
 
 	retval = usb_add_hcd(hcd, irq, IRQF_SHARED);
 	if (retval != 0)
@@ -126,7 +145,10 @@ static struct platform_driver ehci_hcd_w90x900_driver = {
 	.remove = ehci_w90x900_remove,
 	.driver = {
 		.name = "w90x900-ehci",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

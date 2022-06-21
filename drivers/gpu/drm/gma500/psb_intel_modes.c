@@ -18,7 +18,10 @@
  */
 
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
+=======
+>>>>>>> v4.9.227
 #include <drm/drmP.h>
 #include "psb_intel_drv.h"
 

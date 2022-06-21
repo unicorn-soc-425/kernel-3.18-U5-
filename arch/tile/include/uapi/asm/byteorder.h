@@ -14,8 +14,13 @@
 
 #if defined (__BIG_ENDIAN__)
 #include <linux/byteorder/big_endian.h>
+<<<<<<< HEAD
 #elif defined (__LITTLE_ENDIAN__)
 #include <linux/byteorder/little_endian.h>
 #else
 #error "__BIG_ENDIAN__ or __LITTLE_ENDIAN__ must be defined."
+=======
+#else
+#include <linux/byteorder/little_endian.h>
+>>>>>>> v4.9.227
 #endif

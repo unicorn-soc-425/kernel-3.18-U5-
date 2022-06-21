@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
  * tps65912.h  --  TI TPS6591x
  *
  * Copyright 2011 Texas Instruments Inc.
@@ -10,11 +11,28 @@
  *  Free Software Foundation;  either version 2 of the License, or (at your
  *  option) any later version.
  *
+=======
+ * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+ *	Andrew F. Davis <afd@ti.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
+ * kind, whether expressed or implied; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * Based on the TPS65218 driver and the previous TPS65912 driver by
+ * Margarita Olaya Cabrera <magi@slimlogic.co.uk>
+>>>>>>> v4.9.227
  */
 
 #ifndef __LINUX_MFD_TPS65912_H
 #define __LINUX_MFD_TPS65912_H
 
+<<<<<<< HEAD
 /* TPS regulator type list */
 #define REGULATOR_LDO		0
 #define REGULATOR_DCDC		1
@@ -23,6 +41,12 @@
  * List of registers for TPS65912
  */
 
+=======
+#include <linux/device.h>
+#include <linux/regmap.h>
+
+/* List of registers for TPS65912 */
+>>>>>>> v4.9.227
 #define TPS65912_DCDC1_CTRL		0x00
 #define TPS65912_DCDC2_CTRL		0x01
 #define TPS65912_DCDC3_CTRL		0x02
@@ -126,6 +150,7 @@
 #define TPS65912_VERNUM			0x64
 #define TPS6591X_MAX_REGISTER		0x64
 
+<<<<<<< HEAD
 /* IRQ Definitions */
 #define TPS65912_IRQ_PWRHOLD_F		0
 #define TPS65912_IRQ_VMON		1
@@ -161,6 +186,47 @@
 #define TPS65912_NUM_IRQ		30
 
 /* GPIO 1 and 2 Register Definitions */
+=======
+/* INT_STS Register field definitions */
+#define TPS65912_INT_STS_PWRHOLD_F	BIT(0)
+#define TPS65912_INT_STS_VMON		BIT(1)
+#define TPS65912_INT_STS_PWRON		BIT(2)
+#define TPS65912_INT_STS_PWRON_LP	BIT(3)
+#define TPS65912_INT_STS_PWRHOLD_R	BIT(4)
+#define TPS65912_INT_STS_HOTDIE		BIT(5)
+#define TPS65912_INT_STS_GPIO1_R	BIT(6)
+#define TPS65912_INT_STS_GPIO1_F	BIT(7)
+
+/* INT_STS Register field definitions */
+#define TPS65912_INT_STS2_GPIO2_R	BIT(0)
+#define TPS65912_INT_STS2_GPIO2_F	BIT(1)
+#define TPS65912_INT_STS2_GPIO3_R	BIT(2)
+#define TPS65912_INT_STS2_GPIO3_F	BIT(3)
+#define TPS65912_INT_STS2_GPIO4_R	BIT(4)
+#define TPS65912_INT_STS2_GPIO4_F	BIT(5)
+#define TPS65912_INT_STS2_GPIO5_R	BIT(6)
+#define TPS65912_INT_STS2_GPIO5_F	BIT(7)
+
+/* INT_STS Register field definitions */
+#define TPS65912_INT_STS3_PGOOD_DCDC1	BIT(0)
+#define TPS65912_INT_STS3_PGOOD_DCDC2	BIT(1)
+#define TPS65912_INT_STS3_PGOOD_DCDC3	BIT(2)
+#define TPS65912_INT_STS3_PGOOD_DCDC4	BIT(3)
+#define TPS65912_INT_STS3_PGOOD_LDO1	BIT(4)
+#define TPS65912_INT_STS3_PGOOD_LDO2	BIT(5)
+#define TPS65912_INT_STS3_PGOOD_LDO3	BIT(6)
+#define TPS65912_INT_STS3_PGOOD_LDO4	BIT(7)
+
+/* INT_STS Register field definitions */
+#define TPS65912_INT_STS4_PGOOD_LDO5	BIT(0)
+#define TPS65912_INT_STS4_PGOOD_LDO6	BIT(1)
+#define TPS65912_INT_STS4_PGOOD_LDO7	BIT(2)
+#define TPS65912_INT_STS4_PGOOD_LDO8	BIT(3)
+#define TPS65912_INT_STS4_PGOOD_LDO9	BIT(4)
+#define TPS65912_INT_STS4_PGOOD_LDO10	BIT(5)
+
+/* GPIO 1 and 2 Register field definitions */
+>>>>>>> v4.9.227
 #define GPIO_SLEEP_MASK			0x80
 #define GPIO_SLEEP_SHIFT		7
 #define GPIO_DEB_MASK			0x10
@@ -172,7 +238,11 @@
 #define GPIO_SET_MASK			0x01
 #define GPIO_SET_SHIFT			0
 
+<<<<<<< HEAD
 /* GPIO 3 Register Definitions */
+=======
+/* GPIO 3 Register field definitions */
+>>>>>>> v4.9.227
 #define GPIO3_SLEEP_MASK		0x80
 #define GPIO3_SLEEP_SHIFT		7
 #define GPIO3_SEL_MASK			0x40
@@ -190,7 +260,11 @@
 #define GPIO3_SET_MASK			0x01
 #define GPIO3_SET_SHIFT			0
 
+<<<<<<< HEAD
 /* GPIO 4 Register Definitions */
+=======
+/* GPIO 4 Register field definitions */
+>>>>>>> v4.9.227
 #define GPIO4_SLEEP_MASK		0x80
 #define GPIO4_SLEEP_SHIFT		7
 #define GPIO4_SEL_MASK			0x40
@@ -264,6 +338,7 @@
 #define DCDC_LIMIT_MAX_SEL_MASK		0x3F
 #define DCDC_LIMIT_MAX_SEL_SHIFT	0
 
+<<<<<<< HEAD
 /**
  * struct tps65912_board
  * Board platform dat may be used to initialize regulators.
@@ -324,5 +399,77 @@ void tps65912_device_exit(struct tps65912 *tps65912);
 int tps65912_irq_init(struct tps65912 *tps65912, int irq,
 			struct tps65912_platform_data *pdata);
 int tps65912_irq_exit(struct tps65912 *tps65912);
+=======
+/* Define the TPS65912 IRQ numbers */
+enum tps65912_irqs {
+	/* INT_STS registers */
+	TPS65912_IRQ_PWRHOLD_F,
+	TPS65912_IRQ_VMON,
+	TPS65912_IRQ_PWRON,
+	TPS65912_IRQ_PWRON_LP,
+	TPS65912_IRQ_PWRHOLD_R,
+	TPS65912_IRQ_HOTDIE,
+	TPS65912_IRQ_GPIO1_R,
+	TPS65912_IRQ_GPIO1_F,
+	/* INT_STS2 registers */
+	TPS65912_IRQ_GPIO2_R,
+	TPS65912_IRQ_GPIO2_F,
+	TPS65912_IRQ_GPIO3_R,
+	TPS65912_IRQ_GPIO3_F,
+	TPS65912_IRQ_GPIO4_R,
+	TPS65912_IRQ_GPIO4_F,
+	TPS65912_IRQ_GPIO5_R,
+	TPS65912_IRQ_GPIO5_F,
+	/* INT_STS3 registers */
+	TPS65912_IRQ_PGOOD_DCDC1,
+	TPS65912_IRQ_PGOOD_DCDC2,
+	TPS65912_IRQ_PGOOD_DCDC3,
+	TPS65912_IRQ_PGOOD_DCDC4,
+	TPS65912_IRQ_PGOOD_LDO1,
+	TPS65912_IRQ_PGOOD_LDO2,
+	TPS65912_IRQ_PGOOD_LDO3,
+	TPS65912_IRQ_PGOOD_LDO4,
+	/* INT_STS4 registers */
+	TPS65912_IRQ_PGOOD_LDO5,
+	TPS65912_IRQ_PGOOD_LDO6,
+	TPS65912_IRQ_PGOOD_LDO7,
+	TPS65912_IRQ_PGOOD_LDO8,
+	TPS65912_IRQ_PGOOD_LDO9,
+	TPS65912_IRQ_PGOOD_LDO10,
+};
+
+/*
+ * struct tps65912 - state holder for the tps65912 driver
+ *
+ * Device data may be used to access the TPS65912 chip
+ */
+struct tps65912 {
+	struct device *dev;
+	struct regmap *regmap;
+
+	/* IRQ Data */
+	int irq;
+	struct regmap_irq_chip_data *irq_data;
+};
+
+static const struct regmap_range tps65912_yes_ranges[] = {
+	regmap_reg_range(TPS65912_INT_STS, TPS65912_GPIO5),
+};
+
+static const struct regmap_access_table tps65912_volatile_table = {
+	.yes_ranges = tps65912_yes_ranges,
+	.n_yes_ranges = ARRAY_SIZE(tps65912_yes_ranges),
+};
+
+static const struct regmap_config tps65912_regmap_config = {
+	.reg_bits = 8,
+	.val_bits = 8,
+	.cache_type = REGCACHE_RBTREE,
+	.volatile_table = &tps65912_volatile_table,
+};
+
+int tps65912_device_init(struct tps65912 *tps);
+int tps65912_device_exit(struct tps65912 *tps);
+>>>>>>> v4.9.227
 
 #endif /*  __LINUX_MFD_TPS65912_H */

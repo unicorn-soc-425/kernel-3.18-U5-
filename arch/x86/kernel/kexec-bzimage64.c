@@ -19,8 +19,12 @@
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/efi.h>
+<<<<<<< HEAD
 #include <linux/verify_pefile.h>
 #include <keys/system_keyring.h>
+=======
+#include <linux/verification.h>
+>>>>>>> v4.9.227
 
 #include <asm/bootparam.h>
 #include <asm/setup.h>
@@ -72,6 +76,7 @@ static int setup_cmdline(struct kimage *image, struct boot_params *params,
 			 unsigned long cmdline_len)
 {
 	char *cmdline_ptr = ((char *)params) + cmdline_offset;
+<<<<<<< HEAD
 	unsigned long cmdline_ptr_phys, len;
 	uint32_t cmdline_low_32, cmdline_ext_32;
 
@@ -81,6 +86,18 @@ static int setup_cmdline(struct kimage *image, struct boot_params *params,
 			" elfcorehdr=0x%lx", image->arch.elf_load_addr);
 		cmdline_len += len;
 	}
+=======
+	unsigned long cmdline_ptr_phys, len = 0;
+	uint32_t cmdline_low_32, cmdline_ext_32;
+
+	if (image->type == KEXEC_TYPE_CRASH) {
+		len = sprintf(cmdline_ptr,
+			"elfcorehdr=0x%lx ", image->arch.elf_load_addr);
+	}
+	memcpy(cmdline_ptr + len, cmdline, cmdline_len);
+	cmdline_len += len;
+
+>>>>>>> v4.9.227
 	cmdline_ptr[cmdline_len - 1] = '\0';
 
 	pr_debug("Final command line is: %s\n", cmdline_ptr);
@@ -99,14 +116,22 @@ static int setup_e820_entries(struct boot_params *params)
 {
 	unsigned int nr_e820_entries;
 
+<<<<<<< HEAD
 	nr_e820_entries = e820_saved.nr_map;
+=======
+	nr_e820_entries = e820_saved->nr_map;
+>>>>>>> v4.9.227
 
 	/* TODO: Pass entries more than E820MAX in bootparams setup data */
 	if (nr_e820_entries > E820MAX)
 		nr_e820_entries = E820MAX;
 
 	params->e820_entries = nr_e820_entries;
+<<<<<<< HEAD
 	memcpy(&params->e820_map, &e820_saved.map,
+=======
+	memcpy(&params->e820_map, &e820_saved->map,
+>>>>>>> v4.9.227
 	       nr_e820_entries * sizeof(struct e820entry));
 
 	return 0;
@@ -167,6 +192,12 @@ setup_efi_state(struct boot_params *params, unsigned long params_load_addr,
 	struct efi_info *current_ei = &boot_params.efi_info;
 	struct efi_info *ei = &params->efi_info;
 
+<<<<<<< HEAD
+=======
+	if (!efi_enabled(EFI_RUNTIME_SERVICES))
+		return 0;
+
+>>>>>>> v4.9.227
 	if (!current_ei->efi_memmap_size)
 		return 0;
 
@@ -222,9 +253,12 @@ setup_boot_parameters(struct kimage *image, struct boot_params *params,
 	memset(&params->hd0_info, 0, sizeof(params->hd0_info));
 	memset(&params->hd1_info, 0, sizeof(params->hd1_info));
 
+<<<<<<< HEAD
 	/* Default sysdesc table */
 	params->sys_desc_table.length = 0;
 
+=======
+>>>>>>> v4.9.227
 	if (image->type == KEXEC_TYPE_CRASH) {
 		ret = crash_setup_memmap_entries(image, params);
 		if (ret)
@@ -273,7 +307,11 @@ static int bzImage64_probe(const char *buf, unsigned long len)
 	int ret = -ENOEXEC;
 	struct setup_header *header;
 
+<<<<<<< HEAD
 	/* kernel should be atleast two sectors long */
+=======
+	/* kernel should be at least two sectors long */
+>>>>>>> v4.9.227
 	if (len < 2 * 512) {
 		pr_err("File is too short to be a bzImage\n");
 		return ret;
@@ -531,6 +569,7 @@ static int bzImage64_cleanup(void *loader_data)
 #ifdef CONFIG_KEXEC_BZIMAGE_VERIFY_SIG
 static int bzImage64_verify_sig(const char *kernel, unsigned long kernel_len)
 {
+<<<<<<< HEAD
 	bool trusted;
 	int ret;
 
@@ -541,6 +580,11 @@ static int bzImage64_verify_sig(const char *kernel, unsigned long kernel_len)
 	if (!trusted)
 		return -EKEYREJECTED;
 	return 0;
+=======
+	return verify_pefile_signature(kernel, kernel_len,
+				       VERIFY_USE_SECONDARY_KEYRING,
+				       VERIFYING_KEXEC_PE_SIGNATURE);
+>>>>>>> v4.9.227
 }
 #endif
 

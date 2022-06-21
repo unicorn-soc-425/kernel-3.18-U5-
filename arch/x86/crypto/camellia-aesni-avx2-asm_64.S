@@ -11,6 +11,11 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/frame.h>
+#include <asm/nospec-branch.h>
+>>>>>>> v4.9.227
 
 #define CAMELLIA_TABLE_BYTE_LEN 272
 
@@ -766,6 +771,10 @@ __camellia_enc_blk32:
 	 *	%ymm0..%ymm15: 32 encrypted blocks, order swapped:
 	 *       7, 8, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	leaq 8 * 32(%rax), %rcx;
 
@@ -820,6 +829,10 @@ __camellia_enc_blk32:
 		    %ymm8, %ymm9, %ymm10, %ymm11, %ymm12, %ymm13, %ymm14,
 		    %ymm15, (key_table)(CTX, %r8, 8), (%rax), 1 * 32(%rax));
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 
 .align 8
@@ -852,6 +865,10 @@ __camellia_dec_blk32:
 	 *	%ymm0..%ymm15: 16 plaintext blocks, order swapped:
 	 *       7, 8, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	leaq 8 * 32(%rax), %rcx;
 
@@ -905,6 +922,10 @@ __camellia_dec_blk32:
 		    %ymm8, %ymm9, %ymm10, %ymm11, %ymm12, %ymm13, %ymm14,
 		    %ymm15, (key_table)(CTX), (%rax), 1 * 32(%rax));
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 
 .align 8
@@ -930,6 +951,10 @@ ENTRY(camellia_ecb_enc_32way)
 	 *	%rsi: dst (32 blocks)
 	 *	%rdx: src (32 blocks)
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -948,6 +973,10 @@ ENTRY(camellia_ecb_enc_32way)
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(camellia_ecb_enc_32way)
 
@@ -957,6 +986,10 @@ ENTRY(camellia_ecb_dec_32way)
 	 *	%rsi: dst (32 blocks)
 	 *	%rdx: src (32 blocks)
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -980,6 +1013,10 @@ ENTRY(camellia_ecb_dec_32way)
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(camellia_ecb_dec_32way)
 
@@ -989,6 +1026,10 @@ ENTRY(camellia_cbc_dec_32way)
 	 *	%rsi: dst (32 blocks)
 	 *	%rdx: src (32 blocks)
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -1046,6 +1087,10 @@ ENTRY(camellia_cbc_dec_32way)
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(camellia_cbc_dec_32way)
 
@@ -1070,6 +1115,10 @@ ENTRY(camellia_ctr_32way)
 	 *	%rdx: src (32 blocks)
 	 *	%rcx: iv (little endian, 128bit)
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -1184,6 +1233,10 @@ ENTRY(camellia_ctr_32way)
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(camellia_ctr_32way)
 
@@ -1216,6 +1269,10 @@ camellia_xts_crypt_32way:
 	 *	%r8: index for input whitening key
 	 *	%r9: pointer to  __camellia_enc_blk32 or __camellia_dec_blk32
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -1323,7 +1380,11 @@ camellia_xts_crypt_32way:
 	vpxor 14 * 32(%rax), %ymm15, %ymm14;
 	vpxor 15 * 32(%rax), %ymm15, %ymm15;
 
+<<<<<<< HEAD
 	call *%r9;
+=======
+	CALL_NOSPEC %r9;
+>>>>>>> v4.9.227
 
 	addq $(16 * 32), %rsp;
 
@@ -1349,6 +1410,10 @@ camellia_xts_crypt_32way:
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(camellia_xts_crypt_32way)
 

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,13 +49,20 @@
 #include "accommon.h"
 #include "acevents.h"
 #include "acnamesp.h"
+<<<<<<< HEAD
+=======
+#include "acinterp.h"
+>>>>>>> v4.9.227
 
 #define _COMPONENT          ACPI_EVENTS
 ACPI_MODULE_NAME("evrgnini")
 
+<<<<<<< HEAD
 /* Local prototypes */
 static u8 acpi_ev_is_pci_root_bridge(struct acpi_namespace_node *node);
 
+=======
+>>>>>>> v4.9.227
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ev_system_memory_region_setup
@@ -66,7 +77,10 @@ static u8 acpi_ev_is_pci_root_bridge(struct acpi_namespace_node *node);
  * DESCRIPTION: Setup a system_memory operation region
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 acpi_status
 acpi_ev_system_memory_region_setup(acpi_handle handle,
 				   u32 function,
@@ -227,7 +241,11 @@ acpi_ev_pci_config_region_setup(acpi_handle handle,
 
 				/* Install a handler for this PCI root bridge */
 
+<<<<<<< HEAD
 				status = acpi_install_address_space_handler((acpi_handle) pci_root_node, ACPI_ADR_SPACE_PCI_CONFIG, ACPI_DEFAULT_HANDLER, NULL, NULL);
+=======
+				status = acpi_install_address_space_handler((acpi_handle)pci_root_node, ACPI_ADR_SPACE_PCI_CONFIG, ACPI_DEFAULT_HANDLER, NULL, NULL);
+>>>>>>> v4.9.227
 				if (ACPI_FAILURE(status)) {
 					if (status == AE_SAME_HANDLER) {
 						/*
@@ -346,7 +364,11 @@ acpi_ev_pci_config_region_setup(acpi_handle handle,
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 static u8 acpi_ev_is_pci_root_bridge(struct acpi_namespace_node *node)
+=======
+u8 acpi_ev_is_pci_root_bridge(struct acpi_namespace_node *node)
+>>>>>>> v4.9.227
 {
 	acpi_status status;
 	struct acpi_pnp_device_id *hid;
@@ -507,9 +529,12 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 	acpi_adr_space_type space_id;
 	struct acpi_namespace_node *node;
 	acpi_status status;
+<<<<<<< HEAD
 	struct acpi_namespace_node *method_node;
 	acpi_name *reg_name_ptr = (acpi_name *) METHOD_NAME__REG;
 	union acpi_operand_object *region_obj2;
+=======
+>>>>>>> v4.9.227
 
 	ACPI_FUNCTION_TRACE_U32(ev_initialize_region, acpi_ns_locked);
 
@@ -521,14 +546,19 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 		return_ACPI_STATUS(AE_OK);
 	}
 
+<<<<<<< HEAD
 	region_obj2 = acpi_ns_get_secondary_object(region_obj);
 	if (!region_obj2) {
 		return_ACPI_STATUS(AE_NOT_EXIST);
 	}
+=======
+	region_obj->common.flags |= AOPOBJ_OBJECT_INITIALIZED;
+>>>>>>> v4.9.227
 
 	node = region_obj->region.node->parent;
 	space_id = region_obj->region.space_id;
 
+<<<<<<< HEAD
 	/* Setup defaults */
 
 	region_obj->region.handler = NULL;
@@ -553,6 +583,11 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 	/*
 	 * The following loop depends upon the root Node having no parent
 	 * ie: acpi_gbl_root_node->parent_entry being set to NULL
+=======
+	/*
+	 * The following loop depends upon the root Node having no parent
+	 * ie: acpi_gbl_root_node->Parent being set to NULL
+>>>>>>> v4.9.227
 	 */
 	while (node) {
 
@@ -566,6 +601,7 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 
 			switch (node->type) {
 			case ACPI_TYPE_DEVICE:
+<<<<<<< HEAD
 
 				handler_obj = obj_desc->device.handler;
 				break;
@@ -578,6 +614,12 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 			case ACPI_TYPE_THERMAL:
 
 				handler_obj = obj_desc->thermal_zone.handler;
+=======
+			case ACPI_TYPE_PROCESSOR:
+			case ACPI_TYPE_THERMAL:
+
+				handler_obj = obj_desc->common_notify.handler;
+>>>>>>> v4.9.227
 				break;
 
 			case ACPI_TYPE_METHOD:
@@ -588,7 +630,12 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 				 *
 				 * See acpi_ns_exec_module_code
 				 */
+<<<<<<< HEAD
 				if (obj_desc->method.
+=======
+				if (!acpi_gbl_parse_table_as_term_list &&
+				    obj_desc->method.
+>>>>>>> v4.9.227
 				    info_flags & ACPI_METHOD_MODULE_LEVEL) {
 					handler_obj =
 					    obj_desc->method.dispatch.handler;
@@ -602,6 +649,7 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 				break;
 			}
 
+<<<<<<< HEAD
 			while (handler_obj) {
 
 				/* Is this handler of the correct type? */
@@ -656,6 +704,53 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 				/* Try next handler in the list */
 
 				handler_obj = handler_obj->address_space.next;
+=======
+			handler_obj =
+			    acpi_ev_find_region_handler(space_id, handler_obj);
+			if (handler_obj) {
+
+				/* Found correct handler */
+
+				ACPI_DEBUG_PRINT((ACPI_DB_OPREGION,
+						  "Found handler %p for region %p in obj %p\n",
+						  handler_obj, region_obj,
+						  obj_desc));
+
+				status =
+				    acpi_ev_attach_region(handler_obj,
+							  region_obj,
+							  acpi_ns_locked);
+
+				/*
+				 * Tell all users that this region is usable by
+				 * running the _REG method
+				 */
+				if (acpi_ns_locked) {
+					status =
+					    acpi_ut_release_mutex
+					    (ACPI_MTX_NAMESPACE);
+					if (ACPI_FAILURE(status)) {
+						return_ACPI_STATUS(status);
+					}
+				}
+
+				acpi_ex_exit_interpreter();
+				status =
+				    acpi_ev_execute_reg_method(region_obj,
+							       ACPI_REG_CONNECT);
+				acpi_ex_enter_interpreter();
+
+				if (acpi_ns_locked) {
+					status =
+					    acpi_ut_acquire_mutex
+					    (ACPI_MTX_NAMESPACE);
+					if (ACPI_FAILURE(status)) {
+						return_ACPI_STATUS(status);
+					}
+				}
+
+				return_ACPI_STATUS(AE_OK);
+>>>>>>> v4.9.227
 			}
 		}
 

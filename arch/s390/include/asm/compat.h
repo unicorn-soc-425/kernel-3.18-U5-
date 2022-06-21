@@ -284,7 +284,11 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
 
 static inline int is_compat_task(void)
 {
+<<<<<<< HEAD
 	return is_32bit_task();
+=======
+	return test_thread_flag(TIF_31BIT);
+>>>>>>> v4.9.227
 }
 
 static inline void __user *arch_compat_alloc_user_space(long len)

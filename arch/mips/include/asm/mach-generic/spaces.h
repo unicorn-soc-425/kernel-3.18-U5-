@@ -12,6 +12,11 @@
 
 #include <linux/const.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/mipsregs.h>
+
+>>>>>>> v4.9.227
 /*
  * This gives the physical RAM offset.
  */
@@ -52,11 +57,15 @@
 #ifdef CONFIG_64BIT
 
 #ifndef CAC_BASE
+<<<<<<< HEAD
 #ifdef CONFIG_DMA_NONCOHERENT
 #define CAC_BASE		_AC(0x9800000000000000, UL)
 #else
 #define CAC_BASE		_AC(0xa800000000000000, UL)
 #endif
+=======
+#define CAC_BASE	PHYS_TO_XKPHYS(read_c0_config() & CONF_CM_CMASK, 0)
+>>>>>>> v4.9.227
 #endif
 
 #ifndef IO_BASE

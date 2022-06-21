@@ -10,6 +10,10 @@
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/elf.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 
 static unsigned int __read_mostly vdso_enabled = 1;
@@ -60,7 +64,12 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	if (!vdso_enabled)
 		return 0;
 
+<<<<<<< HEAD
 	down_write(&mm->mmap_sem);
+=======
+	if (down_write_killable(&mm->mmap_sem))
+		return -EINTR;
+>>>>>>> v4.9.227
 
 	err = install_special_mapping(mm, um_vdso_addr, PAGE_SIZE,
 		VM_READ|VM_EXEC|

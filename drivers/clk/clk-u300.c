@@ -5,13 +5,22 @@
  * Author: Linus Walleij <linus.walleij@stericsson.com>
  * Author: Jonas Aaberg <jonas.aberg@stericsson.com>
  */
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/clkdev.h>
+=======
+#include <linux/clkdev.h>
+#include <linux/slab.h>
+>>>>>>> v4.9.227
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/clk-provider.h>
 #include <linux/spinlock.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/clk-u300.h>
+>>>>>>> v4.9.227
 
 /* APP side SYSCON registers */
 /* CLK Control Register 16bit (R/W) */
@@ -688,7 +697,11 @@ static const struct clk_ops syscon_clk_ops = {
 	.set_rate = syscon_clk_set_rate,
 };
 
+<<<<<<< HEAD
 static struct clk * __init
+=======
+static struct clk_hw * __init
+>>>>>>> v4.9.227
 syscon_clk_register(struct device *dev, const char *name,
 		    const char *parent_name, unsigned long flags,
 		    bool hw_ctrld,
@@ -696,9 +709,16 @@ syscon_clk_register(struct device *dev, const char *name,
 		    void __iomem *en_reg, u8 en_bit,
 		    u16 clk_val)
 {
+<<<<<<< HEAD
 	struct clk *clk;
 	struct clk_syscon *sclk;
 	struct clk_init_data init;
+=======
+	struct clk_hw *hw;
+	struct clk_syscon *sclk;
+	struct clk_init_data init;
+	int ret;
+>>>>>>> v4.9.227
 
 	sclk = kzalloc(sizeof(struct clk_syscon), GFP_KERNEL);
 	if (!sclk) {
@@ -721,11 +741,22 @@ syscon_clk_register(struct device *dev, const char *name,
 	sclk->en_bit = en_bit;
 	sclk->clk_val = clk_val;
 
+<<<<<<< HEAD
 	clk = clk_register(dev, &sclk->hw);
 	if (IS_ERR(clk))
 		kfree(sclk);
 
 	return clk;
+=======
+	hw = &sclk->hw;
+	ret = clk_hw_register(dev, hw);
+	if (ret) {
+		kfree(sclk);
+		hw = ERR_PTR(ret);
+	}
+
+	return hw;
+>>>>>>> v4.9.227
 }
 
 #define U300_CLK_TYPE_SLOW 0
@@ -867,7 +898,11 @@ static struct u300_clock const u300_clk_lookup[] __initconst = {
 
 static void __init of_u300_syscon_clk_init(struct device_node *np)
 {
+<<<<<<< HEAD
 	struct clk *clk = ERR_PTR(-EINVAL);
+=======
+	struct clk_hw *hw = ERR_PTR(-EINVAL);
+>>>>>>> v4.9.227
 	const char *clk_name = np->name;
 	const char *parent_name;
 	void __iomem *res_reg;
@@ -910,6 +945,7 @@ static void __init of_u300_syscon_clk_init(struct device_node *np)
 		const struct u300_clock *u3clk = &u300_clk_lookup[i];
 
 		if (u3clk->type == clk_type && u3clk->id == clk_id)
+<<<<<<< HEAD
 			clk = syscon_clk_register(NULL,
 						  clk_name, parent_name,
 						  0, u3clk->hw_ctrld,
@@ -920,6 +956,17 @@ static void __init of_u300_syscon_clk_init(struct device_node *np)
 
 	if (!IS_ERR(clk)) {
 		of_clk_add_provider(np, of_clk_src_simple_get, clk);
+=======
+			hw = syscon_clk_register(NULL, clk_name, parent_name,
+						 0, u3clk->hw_ctrld,
+						 res_reg, u3clk->id,
+						 en_reg, u3clk->id,
+						 u3clk->clk_val);
+	}
+
+	if (!IS_ERR(hw)) {
+		of_clk_add_hw_provider(np, of_clk_hw_simple_get, hw);
+>>>>>>> v4.9.227
 
 		/*
 		 * Some few system clocks - device tree does not
@@ -927,11 +974,19 @@ static void __init of_u300_syscon_clk_init(struct device_node *np)
 		 * for now we add these three clocks here.
 		 */
 		if (clk_type == U300_CLK_TYPE_REST && clk_id == 5)
+<<<<<<< HEAD
 			clk_register_clkdev(clk, NULL, "pl172");
 		if (clk_type == U300_CLK_TYPE_REST && clk_id == 9)
 			clk_register_clkdev(clk, NULL, "semi");
 		if (clk_type == U300_CLK_TYPE_REST && clk_id == 12)
 			clk_register_clkdev(clk, NULL, "intcon");
+=======
+			clk_hw_register_clkdev(hw, NULL, "pl172");
+		if (clk_type == U300_CLK_TYPE_REST && clk_id == 9)
+			clk_hw_register_clkdev(hw, NULL, "semi");
+		if (clk_type == U300_CLK_TYPE_REST && clk_id == 12)
+			clk_hw_register_clkdev(hw, NULL, "intcon");
+>>>>>>> v4.9.227
 	}
 }
 
@@ -1110,6 +1165,7 @@ static const struct clk_ops mclk_ops = {
 	.set_rate = mclk_clk_set_rate,
 };
 
+<<<<<<< HEAD
 static struct clk * __init
 mclk_clk_register(struct device *dev, const char *name,
 		  const char *parent_name, bool is_mspro)
@@ -1117,6 +1173,16 @@ mclk_clk_register(struct device *dev, const char *name,
 	struct clk *clk;
 	struct clk_mclk *mclk;
 	struct clk_init_data init;
+=======
+static struct clk_hw * __init
+mclk_clk_register(struct device *dev, const char *name,
+		  const char *parent_name, bool is_mspro)
+{
+	struct clk_hw *hw;
+	struct clk_mclk *mclk;
+	struct clk_init_data init;
+	int ret;
+>>>>>>> v4.9.227
 
 	mclk = kzalloc(sizeof(struct clk_mclk), GFP_KERNEL);
 	if (!mclk) {
@@ -1132,23 +1198,44 @@ mclk_clk_register(struct device *dev, const char *name,
 	mclk->hw.init = &init;
 	mclk->is_mspro = is_mspro;
 
+<<<<<<< HEAD
 	clk = clk_register(dev, &mclk->hw);
 	if (IS_ERR(clk))
 		kfree(mclk);
 
 	return clk;
+=======
+	hw = &mclk->hw;
+	ret = clk_hw_register(dev, hw);
+	if (ret) {
+		kfree(mclk);
+		hw = ERR_PTR(ret);
+	}
+
+	return hw;
+>>>>>>> v4.9.227
 }
 
 static void __init of_u300_syscon_mclk_init(struct device_node *np)
 {
+<<<<<<< HEAD
 	struct clk *clk = ERR_PTR(-EINVAL);
+=======
+	struct clk_hw *hw;
+>>>>>>> v4.9.227
 	const char *clk_name = np->name;
 	const char *parent_name;
 
 	parent_name = of_clk_get_parent_name(np, 0);
+<<<<<<< HEAD
 	clk = mclk_clk_register(NULL, clk_name, parent_name, false);
 	if (!IS_ERR(clk))
 		of_clk_add_provider(np, of_clk_src_simple_get, clk);
+=======
+	hw = mclk_clk_register(NULL, clk_name, parent_name, false);
+	if (!IS_ERR(hw))
+		of_clk_add_hw_provider(np, of_clk_hw_simple_get, hw);
+>>>>>>> v4.9.227
 }
 
 static const struct of_device_id u300_clk_match[] __initconst = {

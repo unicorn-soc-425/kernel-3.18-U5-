@@ -1,7 +1,11 @@
 #include <linux/mm.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #define PGALLOC_GFP GFP_KERNEL | __GFP_REPEAT | __GFP_ZERO
+=======
+#define PGALLOC_GFP GFP_KERNEL | __GFP_ZERO
+>>>>>>> v4.9.227
 
 static struct kmem_cache *pgd_cachep;
 #if PAGETABLE_LEVELS > 2

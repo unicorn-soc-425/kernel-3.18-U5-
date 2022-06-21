@@ -26,7 +26,11 @@
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <media/timb_radio.h>
+=======
+#include <linux/platform_data/media/timb_radio.h>
+>>>>>>> v4.9.227
 
 #define DRIVER_NAME "timb-radio"
 
@@ -138,8 +142,15 @@ static int timbradio_probe(struct platform_device *pdev)
 		i2c_get_adapter(pdata->i2c_adapter), pdata->tuner, NULL);
 	tr->sd_dsp = v4l2_i2c_new_subdev_board(&tr->v4l2_dev,
 		i2c_get_adapter(pdata->i2c_adapter), pdata->dsp, NULL);
+<<<<<<< HEAD
 	if (tr->sd_tuner == NULL || tr->sd_dsp == NULL)
 		goto err_video_req;
+=======
+	if (tr->sd_tuner == NULL || tr->sd_dsp == NULL) {
+		err = -ENODEV;
+		goto err_video_req;
+	}
+>>>>>>> v4.9.227
 
 	tr->v4l2_dev.ctrl_handler = tr->sd_dsp->ctrl_handler;
 
@@ -174,7 +185,10 @@ static int timbradio_remove(struct platform_device *pdev)
 static struct platform_driver timbradio_platform_driver = {
 	.driver = {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= timbradio_probe,
 	.remove		= timbradio_remove,

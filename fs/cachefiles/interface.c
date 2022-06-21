@@ -253,6 +253,11 @@ static void cachefiles_drop_object(struct fscache_object *_object)
 	struct cachefiles_object *object;
 	struct cachefiles_cache *cache;
 	const struct cred *saved_cred;
+<<<<<<< HEAD
+=======
+	struct inode *inode;
+	blkcnt_t i_blocks = 0;
+>>>>>>> v4.9.227
 
 	ASSERT(_object);
 
@@ -279,6 +284,13 @@ static void cachefiles_drop_object(struct fscache_object *_object)
 		    _object != cache->cache.fsdef
 		    ) {
 			_debug("- retire object OBJ%x", object->fscache.debug_id);
+<<<<<<< HEAD
+=======
+			inode = d_backing_inode(object->dentry);
+			if (inode)
+				i_blocks = inode->i_blocks;
+
+>>>>>>> v4.9.227
 			cachefiles_begin_secure(cache, &saved_cred);
 			cachefiles_delete_object(cache, object);
 			cachefiles_end_secure(cache, saved_cred);
@@ -291,6 +303,7 @@ static void cachefiles_drop_object(struct fscache_object *_object)
 	}
 
 	/* note that the object is now inactive */
+<<<<<<< HEAD
 	if (test_bit(CACHEFILES_OBJECT_ACTIVE, &object->flags)) {
 		write_lock(&cache->active_lock);
 		if (!test_and_clear_bit(CACHEFILES_OBJECT_ACTIVE,
@@ -300,6 +313,10 @@ static void cachefiles_drop_object(struct fscache_object *_object)
 		wake_up_bit(&object->flags, CACHEFILES_OBJECT_ACTIVE);
 		write_unlock(&cache->active_lock);
 	}
+=======
+	if (test_bit(CACHEFILES_OBJECT_ACTIVE, &object->flags))
+		cachefiles_mark_object_inactive(cache, object, i_blocks);
+>>>>>>> v4.9.227
 
 	dput(object->dentry);
 	object->dentry = NULL;
@@ -387,7 +404,11 @@ static void cachefiles_sync_cache(struct fscache_cache *_cache)
  * check if the backing cache is updated to FS-Cache
  * - called by FS-Cache when evaluates if need to invalidate the cache
  */
+<<<<<<< HEAD
 static bool cachefiles_check_consistency(struct fscache_operation *op)
+=======
+static int cachefiles_check_consistency(struct fscache_operation *op)
+>>>>>>> v4.9.227
 {
 	struct cachefiles_object *object;
 	struct cachefiles_cache *cache;
@@ -437,16 +458,28 @@ static int cachefiles_attr_changed(struct fscache_object *_object)
 	if (!object->backer)
 		return -ENOBUFS;
 
+<<<<<<< HEAD
 	ASSERT(S_ISREG(object->backer->d_inode->i_mode));
 
 	fscache_set_store_limit(&object->fscache, ni_size);
 
 	oi_size = i_size_read(object->backer->d_inode);
+=======
+	ASSERT(d_is_reg(object->backer));
+
+	fscache_set_store_limit(&object->fscache, ni_size);
+
+	oi_size = i_size_read(d_backing_inode(object->backer));
+>>>>>>> v4.9.227
 	if (oi_size == ni_size)
 		return 0;
 
 	cachefiles_begin_secure(cache, &saved_cred);
+<<<<<<< HEAD
 	mutex_lock(&object->backer->d_inode->i_mutex);
+=======
+	inode_lock(d_inode(object->backer));
+>>>>>>> v4.9.227
 
 	/* if there's an extension to a partial page at the end of the backing
 	 * file, we need to discard the partial page so that we pick up new
@@ -465,7 +498,11 @@ static int cachefiles_attr_changed(struct fscache_object *_object)
 	ret = notify_change(object->backer, &newattrs, NULL);
 
 truncate_failed:
+<<<<<<< HEAD
 	mutex_unlock(&object->backer->d_inode->i_mutex);
+=======
+	inode_unlock(d_inode(object->backer));
+>>>>>>> v4.9.227
 	cachefiles_end_secure(cache, saved_cred);
 
 	if (ret == -EIO) {
@@ -501,7 +538,11 @@ static void cachefiles_invalidate_object(struct fscache_operation *op)
 	       op->object->debug_id, (unsigned long long)ni_size);
 
 	if (object->backer) {
+<<<<<<< HEAD
 		ASSERT(S_ISREG(object->backer->d_inode->i_mode));
+=======
+		ASSERT(d_is_reg(object->backer));
+>>>>>>> v4.9.227
 
 		fscache_set_store_limit(&object->fscache, ni_size);
 

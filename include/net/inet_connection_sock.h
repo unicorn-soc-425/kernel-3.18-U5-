@@ -41,9 +41,17 @@ struct inet_connection_sock_af_ops {
 	int	    (*rebuild_header)(struct sock *sk);
 	void	    (*sk_rx_dst_set)(struct sock *sk, const struct sk_buff *skb);
 	int	    (*conn_request)(struct sock *sk, struct sk_buff *skb);
+<<<<<<< HEAD
 	struct sock *(*syn_recv_sock)(struct sock *sk, struct sk_buff *skb,
 				      struct request_sock *req,
 				      struct dst_entry *dst);
+=======
+	struct sock *(*syn_recv_sock)(const struct sock *sk, struct sk_buff *skb,
+				      struct request_sock *req,
+				      struct dst_entry *dst,
+				      struct request_sock *req_unhash,
+				      bool *own_req);
+>>>>>>> v4.9.227
 	u16	    net_header_len;
 	u16	    net_frag_header_len;
 	u16	    sockaddr_len;
@@ -98,8 +106,14 @@ struct inet_connection_sock {
 	const struct tcp_congestion_ops *icsk_ca_ops;
 	const struct inet_connection_sock_af_ops *icsk_af_ops;
 	unsigned int		  (*icsk_sync_mss)(struct sock *sk, u32 pmtu);
+<<<<<<< HEAD
 	__u8			  icsk_ca_state:7,
 				  icsk_ca_setsockopt:1;
+=======
+	__u8			  icsk_ca_state:6,
+				  icsk_ca_setsockopt:1,
+				  icsk_ca_dst_locked:1;
+>>>>>>> v4.9.227
 	__u8			  icsk_retransmits;
 	__u8			  icsk_pending;
 	__u8			  icsk_backoff;
@@ -126,10 +140,20 @@ struct inet_connection_sock {
 
 		/* Information on the current probe. */
 		int		  probe_size;
+<<<<<<< HEAD
 	} icsk_mtup;
 	u32			  icsk_ca_priv[16];
 	u32			  icsk_user_timeout;
 #define ICSK_CA_PRIV_SIZE	(16 * sizeof(u32))
+=======
+
+		u32		  probe_timestamp;
+	} icsk_mtup;
+	u32			  icsk_user_timeout;
+
+	u64			  icsk_ca_priv[88 / sizeof(u64)];
+#define ICSK_CA_PRIV_SIZE      (11 * sizeof(u64))
+>>>>>>> v4.9.227
 };
 
 #define ICSK_TIME_RETRANS	1	/* Retransmit timer */
@@ -254,15 +278,19 @@ inet_csk_rto_backoff(const struct inet_connection_sock *icsk,
 
 struct sock *inet_csk_accept(struct sock *sk, int flags, int *err);
 
+<<<<<<< HEAD
 struct request_sock *inet_csk_search_req(const struct sock *sk,
 					 struct request_sock ***prevp,
 					 const __be16 rport,
 					 const __be32 raddr,
 					 const __be32 laddr);
+=======
+>>>>>>> v4.9.227
 int inet_csk_bind_conflict(const struct sock *sk,
 			   const struct inet_bind_bucket *tb, bool relax);
 int inet_csk_get_port(struct sock *sk, unsigned short snum);
 
+<<<<<<< HEAD
 struct dst_entry *inet_csk_route_req(struct sock *sk, struct flowi4 *fl4,
 				     const struct request_sock *req);
 struct dst_entry *inet_csk_route_child_sock(struct sock *sk, struct sock *newsk,
@@ -290,6 +318,26 @@ static inline void inet_csk_reqsk_queue_added(struct sock *sk,
 {
 	if (reqsk_queue_added(&inet_csk(sk)->icsk_accept_queue) == 0)
 		inet_csk_reset_keepalive_timer(sk, timeout);
+=======
+struct dst_entry *inet_csk_route_req(const struct sock *sk, struct flowi4 *fl4,
+				     const struct request_sock *req);
+struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
+					    struct sock *newsk,
+					    const struct request_sock *req);
+
+struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
+				      struct request_sock *req,
+				      struct sock *child);
+void inet_csk_reqsk_queue_hash_add(struct sock *sk, struct request_sock *req,
+				   unsigned long timeout);
+struct sock *inet_csk_complete_hashdance(struct sock *sk, struct sock *child,
+					 struct request_sock *req,
+					 bool own_req);
+
+static inline void inet_csk_reqsk_queue_added(struct sock *sk)
+{
+	reqsk_queue_added(&inet_csk(sk)->icsk_accept_queue);
+>>>>>>> v4.9.227
 }
 
 static inline int inet_csk_reqsk_queue_len(const struct sock *sk)
@@ -297,6 +345,7 @@ static inline int inet_csk_reqsk_queue_len(const struct sock *sk)
 	return reqsk_queue_len(&inet_csk(sk)->icsk_accept_queue);
 }
 
+<<<<<<< HEAD
 static inline int inet_csk_reqsk_queue_young(const struct sock *sk)
 {
 	return reqsk_queue_len_young(&inet_csk(sk)->icsk_accept_queue);
@@ -327,6 +376,15 @@ void inet_csk_reqsk_queue_prune(struct sock *parent,
 				const unsigned long interval,
 				const unsigned long timeout,
 				const unsigned long max_rto);
+=======
+static inline int inet_csk_reqsk_queue_is_full(const struct sock *sk)
+{
+	return inet_csk_reqsk_queue_len(sk) >= sk->sk_max_ack_backlog;
+}
+
+void inet_csk_reqsk_queue_drop(struct sock *sk, struct request_sock *req);
+void inet_csk_reqsk_queue_drop_and_put(struct sock *sk, struct request_sock *req);
+>>>>>>> v4.9.227
 
 void inet_csk_destroy_sock(struct sock *sk);
 void inet_csk_prepare_forced_close(struct sock *sk);
@@ -340,7 +398,11 @@ static inline unsigned int inet_csk_listen_poll(const struct sock *sk)
 			(POLLIN | POLLRDNORM) : 0;
 }
 
+<<<<<<< HEAD
 int inet_csk_listen_start(struct sock *sk, const int nr_table_entries);
+=======
+int inet_csk_listen_start(struct sock *sk, int backlog);
+>>>>>>> v4.9.227
 void inet_csk_listen_stop(struct sock *sk);
 
 void inet_csk_addr2sockaddr(struct sock *sk, struct sockaddr *uaddr);

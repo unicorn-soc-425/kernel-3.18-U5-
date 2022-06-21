@@ -7,6 +7,10 @@
  * publishhed by the Free Software Foundation.
  */
 #include "stih41x-b2020x.dtsi"
+<<<<<<< HEAD
+=======
+#include <dt-bindings/gpio/gpio.h>
+>>>>>>> v4.9.227
 / {
 	memory{
 		device_type = "memory";
@@ -30,6 +34,7 @@
 		leds {
 			compatible	= "gpio-leds";
 			red {
+<<<<<<< HEAD
 				#gpio-cells = <1>;
 				label	= "Front Panel LED";
 				gpios	= <&PIO4 1>;
@@ -37,6 +42,14 @@
 			};
 			green {
 				gpios	= <&PIO4 7>;
+=======
+				label	= "Front Panel LED";
+				gpios	= <&pio4 1 GPIO_ACTIVE_HIGH>;
+				linux,default-trigger	= "heartbeat";
+			};
+			green {
+				gpios	= <&pio4 7 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 				default-state = "off";
 			};
 		};
@@ -68,11 +81,22 @@
 			phy-mode		= "rgmii-id";
 			max-speed		= <1000>;
 			st,tx-retime-src	= "clk_125";
+<<<<<<< HEAD
 			snps,reset-gpio 	= <&PIO3 0>;
+=======
+			snps,reset-gpio 	= <&pio3 0>;
+>>>>>>> v4.9.227
 			snps,reset-active-low;
 			snps,reset-delays-us 	= <0 10000 10000>;
 
 			pinctrl-0	= <&pinctrl_rgmii1>;
 		};
+<<<<<<< HEAD
+=======
+
+		mmc0: sdhci@fe81e000 {
+			bus-width = <8>;
+		};
+>>>>>>> v4.9.227
 	};
 };

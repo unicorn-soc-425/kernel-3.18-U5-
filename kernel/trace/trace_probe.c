@@ -36,6 +36,7 @@ const char *reserved_field_names[] = {
 };
 
 /* Printing  in basic type function template */
+<<<<<<< HEAD
 #define DEFINE_BASIC_PRINT_TYPE_FUNC(type, fmt)				\
 int PRINT_TYPE_FUNC_NAME(type)(struct trace_seq *s, const char *name,	\
 				void *data, void *ent)			\
@@ -53,6 +54,30 @@ DEFINE_BASIC_PRINT_TYPE_FUNC(s8,  "%d")
 DEFINE_BASIC_PRINT_TYPE_FUNC(s16, "%d")
 DEFINE_BASIC_PRINT_TYPE_FUNC(s32, "%d")
 DEFINE_BASIC_PRINT_TYPE_FUNC(s64, "%Ld")
+=======
+#define DEFINE_BASIC_PRINT_TYPE_FUNC(tname, type, fmt)			\
+int PRINT_TYPE_FUNC_NAME(tname)(struct trace_seq *s, const char *name,	\
+				void *data, void *ent)			\
+{									\
+	trace_seq_printf(s, " %s=" fmt, name, *(type *)data);		\
+	return !trace_seq_has_overflowed(s);				\
+}									\
+const char PRINT_TYPE_FMT_NAME(tname)[] = fmt;				\
+NOKPROBE_SYMBOL(PRINT_TYPE_FUNC_NAME(tname));
+
+DEFINE_BASIC_PRINT_TYPE_FUNC(u8,  u8,  "%u")
+DEFINE_BASIC_PRINT_TYPE_FUNC(u16, u16, "%u")
+DEFINE_BASIC_PRINT_TYPE_FUNC(u32, u32, "%u")
+DEFINE_BASIC_PRINT_TYPE_FUNC(u64, u64, "%Lu")
+DEFINE_BASIC_PRINT_TYPE_FUNC(s8,  s8,  "%d")
+DEFINE_BASIC_PRINT_TYPE_FUNC(s16, s16, "%d")
+DEFINE_BASIC_PRINT_TYPE_FUNC(s32, s32, "%d")
+DEFINE_BASIC_PRINT_TYPE_FUNC(s64, s64, "%Ld")
+DEFINE_BASIC_PRINT_TYPE_FUNC(x8,  u8,  "0x%x")
+DEFINE_BASIC_PRINT_TYPE_FUNC(x16, u16, "0x%x")
+DEFINE_BASIC_PRINT_TYPE_FUNC(x32, u32, "0x%x")
+DEFINE_BASIC_PRINT_TYPE_FUNC(x64, u64, "0x%Lx")
+>>>>>>> v4.9.227
 
 /* Print type function for string type */
 int PRINT_TYPE_FUNC_NAME(string)(struct trace_seq *s, const char *name,
@@ -61,10 +86,18 @@ int PRINT_TYPE_FUNC_NAME(string)(struct trace_seq *s, const char *name,
 	int len = *(u32 *)data >> 16;
 
 	if (!len)
+<<<<<<< HEAD
 		return trace_seq_printf(s, " %s=(fault)", name);
 	else
 		return trace_seq_printf(s, " %s=\"%s\"", name,
 					(const char *)get_loc_data(data, ent));
+=======
+		trace_seq_printf(s, " %s=(fault)", name);
+	else
+		trace_seq_printf(s, " %s=\"%s\"", name,
+				 (const char *)get_loc_data(data, ent));
+	return !trace_seq_has_overflowed(s);
+>>>>>>> v4.9.227
 }
 NOKPROBE_SYMBOL(PRINT_TYPE_FUNC_NAME(string));
 
@@ -216,6 +249,31 @@ free_bitfield_fetch_param(struct bitfield_fetch_param *data)
 	kfree(data);
 }
 
+<<<<<<< HEAD
+=======
+void FETCH_FUNC_NAME(comm, string)(struct pt_regs *regs,
+					  void *data, void *dest)
+{
+	int maxlen = get_rloc_len(*(u32 *)dest);
+	u8 *dst = get_rloc_data(dest);
+	long ret;
+
+	if (!maxlen)
+		return;
+
+	ret = strlcpy(dst, current->comm, maxlen);
+	*(u32 *)dest = make_data_rloc(ret, get_rloc_offs(*(u32 *)dest));
+}
+NOKPROBE_SYMBOL(FETCH_FUNC_NAME(comm, string));
+
+void FETCH_FUNC_NAME(comm, string_size)(struct pt_regs *regs,
+					       void *data, void *dest)
+{
+	*(u32 *)dest = strlen(current->comm) + 1;
+}
+NOKPROBE_SYMBOL(FETCH_FUNC_NAME(comm, string_size));
+
+>>>>>>> v4.9.227
 static const struct fetch_type *find_fetch_type(const char *type,
 						const struct fetch_type *ftbl)
 {
@@ -344,6 +402,14 @@ static int parse_probe_vars(char *arg, const struct fetch_type *t,
 			}
 		} else
 			ret = -EINVAL;
+<<<<<<< HEAD
+=======
+	} else if (strcmp(arg, "comm") == 0) {
+		if (strcmp(t->name, "string") != 0 &&
+		    strcmp(t->name, "string_size") != 0)
+			return -EINVAL;
+		f->fn = t->fetch[FETCH_MTD_comm];
+>>>>>>> v4.9.227
 	} else
 		ret = -EINVAL;
 
@@ -352,17 +418,26 @@ static int parse_probe_vars(char *arg, const struct fetch_type *t,
 
 /* Recursive argument parser */
 static int parse_probe_arg(char *arg, const struct fetch_type *t,
+<<<<<<< HEAD
 		     struct fetch_param *f, bool is_return, bool is_kprobe)
 {
 	const struct fetch_type *ftbl;
+=======
+		     struct fetch_param *f, bool is_return, bool is_kprobe,
+		     const struct fetch_type *ftbl)
+{
+>>>>>>> v4.9.227
 	unsigned long param;
 	long offset;
 	char *tmp;
 	int ret = 0;
 
+<<<<<<< HEAD
 	ftbl = is_kprobe ? kprobes_fetch_type_table : uprobes_fetch_type_table;
 	BUG_ON(ftbl == NULL);
 
+=======
+>>>>>>> v4.9.227
 	switch (arg[0]) {
 	case '$':
 		ret = parse_probe_vars(arg + 1, t, f, is_return, is_kprobe);
@@ -443,7 +518,11 @@ static int parse_probe_arg(char *arg, const struct fetch_type *t,
 			dprm->fetch_size = get_fetch_size_function(t,
 							dprm->fetch, ftbl);
 			ret = parse_probe_arg(arg, t2, &dprm->orig, is_return,
+<<<<<<< HEAD
 							is_kprobe);
+=======
+							is_kprobe, ftbl);
+>>>>>>> v4.9.227
 			if (ret)
 				kfree(dprm);
 			else {
@@ -501,6 +580,7 @@ static int __parse_bitfield_probe_arg(const char *bf,
 
 /* String length checking wrapper */
 int traceprobe_parse_probe_arg(char *arg, ssize_t *size,
+<<<<<<< HEAD
 		struct probe_arg *parg, bool is_return, bool is_kprobe)
 {
 	const struct fetch_type *ftbl;
@@ -510,6 +590,14 @@ int traceprobe_parse_probe_arg(char *arg, ssize_t *size,
 	ftbl = is_kprobe ? kprobes_fetch_type_table : uprobes_fetch_type_table;
 	BUG_ON(ftbl == NULL);
 
+=======
+		struct probe_arg *parg, bool is_return, bool is_kprobe,
+		const struct fetch_type *ftbl)
+{
+	const char *t;
+	int ret;
+
+>>>>>>> v4.9.227
 	if (strlen(arg) > MAX_ARGSTR_LEN) {
 		pr_info("Argument is too long.: %s\n",  arg);
 		return -ENOSPC;
@@ -524,6 +612,15 @@ int traceprobe_parse_probe_arg(char *arg, ssize_t *size,
 		arg[t - parg->comm] = '\0';
 		t++;
 	}
+<<<<<<< HEAD
+=======
+	/*
+	 * The default type of $comm should be "string", and it can't be
+	 * dereferenced.
+	 */
+	if (!t && strcmp(arg, "$comm") == 0)
+		t = "string";
+>>>>>>> v4.9.227
 	parg->type = find_fetch_type(t, ftbl);
 	if (!parg->type) {
 		pr_info("Unsupported type: %s\n", t);
@@ -531,7 +628,12 @@ int traceprobe_parse_probe_arg(char *arg, ssize_t *size,
 	}
 	parg->offset = *size;
 	*size += parg->type->size;
+<<<<<<< HEAD
 	ret = parse_probe_arg(arg, parg->type, &parg->fetch, is_return, is_kprobe);
+=======
+	ret = parse_probe_arg(arg, parg->type, &parg->fetch, is_return,
+			      is_kprobe, ftbl);
+>>>>>>> v4.9.227
 
 	if (ret >= 0 && t != NULL)
 		ret = __parse_bitfield_probe_arg(t, parg->type, &parg->fetch);
@@ -637,8 +739,13 @@ ssize_t traceprobe_probes_write(struct file *file, const char __user *buffer,
 			*tmp = '\0';
 			size = tmp - kbuf + 1;
 		} else if (done + size < count) {
+<<<<<<< HEAD
 			pr_warning("Line length is too long: "
 				   "Should be less than %d.", WRITE_BUFSIZE);
+=======
+			pr_warn("Line length is too long: Should be less than %d\n",
+				WRITE_BUFSIZE);
+>>>>>>> v4.9.227
 			ret = -EINVAL;
 			goto out;
 		}

@@ -91,6 +91,7 @@ static struct regmap_bus regmap_spmi_base = {
 	.val_format_endian_default	= REGMAP_ENDIAN_NATIVE,
 };
 
+<<<<<<< HEAD
 /**
  * regmap_init_spmi_base(): Create regmap for the Base register space
  * @sdev:	SPMI device that will be interacted with
@@ -121,6 +122,27 @@ struct regmap *devm_regmap_init_spmi_base(struct spmi_device *sdev,
 	return devm_regmap_init(&sdev->dev, &regmap_spmi_base, sdev, config);
 }
 EXPORT_SYMBOL_GPL(devm_regmap_init_spmi_base);
+=======
+struct regmap *__regmap_init_spmi_base(struct spmi_device *sdev,
+				       const struct regmap_config *config,
+				       struct lock_class_key *lock_key,
+				       const char *lock_name)
+{
+	return __regmap_init(&sdev->dev, &regmap_spmi_base, sdev, config,
+			     lock_key, lock_name);
+}
+EXPORT_SYMBOL_GPL(__regmap_init_spmi_base);
+
+struct regmap *__devm_regmap_init_spmi_base(struct spmi_device *sdev,
+					    const struct regmap_config *config,
+					    struct lock_class_key *lock_key,
+					    const char *lock_name)
+{
+	return __devm_regmap_init(&sdev->dev, &regmap_spmi_base, sdev, config,
+				  lock_key, lock_name);
+}
+EXPORT_SYMBOL_GPL(__devm_regmap_init_spmi_base);
+>>>>>>> v4.9.227
 
 static int regmap_spmi_ext_read(void *context,
 				const void *reg, size_t reg_size,
@@ -222,6 +244,7 @@ static struct regmap_bus regmap_spmi_ext = {
 	.val_format_endian_default	= REGMAP_ENDIAN_NATIVE,
 };
 
+<<<<<<< HEAD
 /**
  * regmap_init_spmi_ext(): Create regmap for Ext register space
  * @sdev:	Device that will be interacted with
@@ -252,5 +275,26 @@ struct regmap *devm_regmap_init_spmi_ext(struct spmi_device *sdev,
 	return devm_regmap_init(&sdev->dev, &regmap_spmi_ext, sdev, config);
 }
 EXPORT_SYMBOL_GPL(devm_regmap_init_spmi_ext);
+=======
+struct regmap *__regmap_init_spmi_ext(struct spmi_device *sdev,
+				      const struct regmap_config *config,
+				      struct lock_class_key *lock_key,
+				      const char *lock_name)
+{
+	return __regmap_init(&sdev->dev, &regmap_spmi_ext, sdev, config,
+			     lock_key, lock_name);
+}
+EXPORT_SYMBOL_GPL(__regmap_init_spmi_ext);
+
+struct regmap *__devm_regmap_init_spmi_ext(struct spmi_device *sdev,
+					   const struct regmap_config *config,
+					   struct lock_class_key *lock_key,
+					   const char *lock_name)
+{
+	return __devm_regmap_init(&sdev->dev, &regmap_spmi_ext, sdev, config,
+				  lock_key, lock_name);
+}
+EXPORT_SYMBOL_GPL(__devm_regmap_init_spmi_ext);
+>>>>>>> v4.9.227
 
 MODULE_LICENSE("GPL");

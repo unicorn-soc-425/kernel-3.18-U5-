@@ -15,6 +15,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/time.h>
 #include <mach/irqs.h>
+<<<<<<< HEAD
 #include <mach/pxa3xx.h>
 
 #include "generic.h"
@@ -43,11 +44,45 @@ static void __init pxa3xx_dt_init(void)
 }
 
 static const char *pxa3xx_dt_board_compat[] __initdata = {
+=======
+
+#include "generic.h"
+
+#ifdef CONFIG_PXA25x
+static const char * const pxa25x_dt_board_compat[] __initconst = {
+	"marvell,pxa250",
+	NULL,
+};
+
+DT_MACHINE_START(PXA25X_DT, "Marvell PXA25x (Device Tree Support)")
+	.map_io		= pxa25x_map_io,
+	.restart	= pxa_restart,
+	.dt_compat	= pxa25x_dt_board_compat,
+MACHINE_END
+#endif
+
+#ifdef CONFIG_PXA27x
+static const char * const pxa27x_dt_board_compat[] __initconst = {
+	"marvell,pxa270",
+	NULL,
+};
+
+DT_MACHINE_START(PXA27X_DT, "Marvell PXA27x (Device Tree Support)")
+	.map_io		= pxa27x_map_io,
+	.restart	= pxa_restart,
+	.dt_compat	= pxa27x_dt_board_compat,
+MACHINE_END
+#endif
+
+#ifdef CONFIG_PXA3xx
+static const char *const pxa3xx_dt_board_compat[] __initconst = {
+>>>>>>> v4.9.227
 	"marvell,pxa300",
 	"marvell,pxa310",
 	"marvell,pxa320",
 	NULL,
 };
+<<<<<<< HEAD
 #endif
 
 #ifdef CONFIG_PXA3xx
@@ -58,6 +93,12 @@ DT_MACHINE_START(PXA_DT, "Marvell PXA3xx (Device Tree Support)")
 	.init_time	= pxa_timer_init,
 	.restart	= pxa_restart,
 	.init_machine	= pxa3xx_dt_init,
+=======
+
+DT_MACHINE_START(PXA_DT, "Marvell PXA3xx (Device Tree Support)")
+	.map_io		= pxa3xx_map_io,
+	.restart	= pxa_restart,
+>>>>>>> v4.9.227
 	.dt_compat	= pxa3xx_dt_board_compat,
 MACHINE_END
 #endif

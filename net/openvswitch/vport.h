@@ -35,23 +35,31 @@ struct vport_parms;
 
 /* The following definitions are for users of the vport subsytem: */
 
+<<<<<<< HEAD
 struct vport_net {
 	struct vport __rcu *gre_vport;
 };
 
+=======
+>>>>>>> v4.9.227
 int ovs_vport_init(void);
 void ovs_vport_exit(void);
 
 struct vport *ovs_vport_add(const struct vport_parms *);
 void ovs_vport_del(struct vport *);
 
+<<<<<<< HEAD
 struct vport *ovs_vport_locate(struct net *net, const char *name);
+=======
+struct vport *ovs_vport_locate(const struct net *net, const char *name);
+>>>>>>> v4.9.227
 
 void ovs_vport_get_stats(struct vport *, struct ovs_vport_stats *);
 
 int ovs_vport_set_options(struct vport *, struct nlattr *options);
 int ovs_vport_get_options(const struct vport *, struct sk_buff *);
 
+<<<<<<< HEAD
 int ovs_vport_set_upcall_portids(struct vport *, struct nlattr *pids);
 int ovs_vport_get_upcall_portids(const struct vport *, struct sk_buff *);
 u32 ovs_vport_find_upcall_portid(const struct vport *, struct sk_buff *);
@@ -66,6 +74,12 @@ struct vport_err_stats {
 	atomic_long_t tx_dropped;
 	atomic_long_t tx_errors;
 };
+=======
+int ovs_vport_set_upcall_portids(struct vport *, const struct nlattr *pids);
+int ovs_vport_get_upcall_portids(const struct vport *, struct sk_buff *);
+u32 ovs_vport_find_upcall_portid(const struct vport *, struct sk_buff *);
+
+>>>>>>> v4.9.227
 /**
  * struct vport_portids - array of netlink portids of a vport.
  *                        must be protected by rcu.
@@ -84,19 +98,31 @@ struct vport_portids {
 
 /**
  * struct vport - one port within a datapath
+<<<<<<< HEAD
  * @rcu: RCU callback head for deferred destruction.
+=======
+ * @dev: Pointer to net_device.
+>>>>>>> v4.9.227
  * @dp: Datapath to which this port belongs.
  * @upcall_portids: RCU protected 'struct vport_portids'.
  * @port_no: Index into @dp's @ports array.
  * @hash_node: Element in @dev_table hash table in vport.c.
  * @dp_hash_node: Element in @datapath->ports hash table in datapath.c.
  * @ops: Class structure.
+<<<<<<< HEAD
  * @percpu_stats: Points to per-CPU statistics used and maintained by vport
  * @err_stats: Points to error statistics used and maintained by vport
  * @detach_list: list used for detaching vport in net-exit call.
  */
 struct vport {
 	struct rcu_head rcu;
+=======
+ * @detach_list: list used for detaching vport in net-exit call.
+ * @rcu: RCU callback head for deferred destruction.
+ */
+struct vport {
+	struct net_device *dev;
+>>>>>>> v4.9.227
 	struct datapath	*dp;
 	struct vport_portids __rcu *upcall_portids;
 	u16 port_no;
@@ -105,10 +131,15 @@ struct vport {
 	struct hlist_node dp_hash_node;
 	const struct vport_ops *ops;
 
+<<<<<<< HEAD
 	struct pcpu_sw_netstats __percpu *percpu_stats;
 
 	struct vport_err_stats err_stats;
 	struct list_head detach_list;
+=======
+	struct list_head detach_list;
+	struct rcu_head rcu;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -145,8 +176,12 @@ struct vport_parms {
  * @get_options: Appends vport-specific attributes for the configuration of an
  * existing vport to a &struct sk_buff.  May be %NULL for a vport that does not
  * have any configuration.
+<<<<<<< HEAD
  * @get_name: Get the device's name.
  * @send: Send a packet on the device.  Returns the length of the packet sent,
+=======
+ * @send: Send a packet on the device.
+>>>>>>> v4.9.227
  * zero for dropped packets or negative for error.
  */
 struct vport_ops {
@@ -159,6 +194,7 @@ struct vport_ops {
 	int (*set_options)(struct vport *, struct nlattr *);
 	int (*get_options)(const struct vport *, struct sk_buff *);
 
+<<<<<<< HEAD
 	/* Called with rcu_read_lock or ovs_mutex. */
 	const char *(*get_name)(const struct vport *);
 
@@ -170,6 +206,11 @@ enum vport_err_type {
 	VPORT_E_RX_ERROR,
 	VPORT_E_TX_DROPPED,
 	VPORT_E_TX_ERROR,
+=======
+	netdev_tx_t (*send) (struct sk_buff *skb);
+	struct module *owner;
+	struct list_head list;
+>>>>>>> v4.9.227
 };
 
 struct vport *ovs_vport_alloc(int priv_size, const struct vport_ops *,
@@ -208,6 +249,7 @@ static inline struct vport *vport_from_priv(void *priv)
 	return (struct vport *)((u8 *)priv - ALIGN(sizeof(struct vport), VPORT_ALIGN));
 }
 
+<<<<<<< HEAD
 void ovs_vport_receive(struct vport *, struct sk_buff *,
 		       struct ovs_tunnel_info *);
 
@@ -226,4 +268,24 @@ static inline void ovs_skb_postpush_rcsum(struct sk_buff *skb,
 		skb->csum = csum_add(skb->csum, csum_partial(start, len, 0));
 }
 
+=======
+int ovs_vport_receive(struct vport *, struct sk_buff *,
+		      const struct ip_tunnel_info *);
+
+static inline const char *ovs_vport_name(struct vport *vport)
+{
+	return vport->dev->name;
+}
+
+int __ovs_vport_ops_register(struct vport_ops *ops);
+#define ovs_vport_ops_register(ops)		\
+	({					\
+		(ops)->owner = THIS_MODULE;	\
+		__ovs_vport_ops_register(ops);	\
+	})
+
+void ovs_vport_ops_unregister(struct vport_ops *ops);
+void ovs_vport_send(struct vport *vport, struct sk_buff *skb);
+
+>>>>>>> v4.9.227
 #endif /* vport.h */

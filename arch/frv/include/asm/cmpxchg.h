@@ -69,8 +69,11 @@ extern uint32_t __xchg_32(uint32_t i, volatile void *v);
 
 #endif
 
+<<<<<<< HEAD
 #define tas(ptr) (xchg((ptr), 1))
 
+=======
+>>>>>>> v4.9.227
 /*****************************************************************************/
 /*
  * compare and conditionally exchange value with memory

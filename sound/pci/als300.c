@@ -37,8 +37,12 @@
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #include <sound/core.h>
 #include <sound/control.h>
@@ -564,7 +568,11 @@ static snd_pcm_uframes_t snd_als300_pointer(struct snd_pcm_substream *substream)
 	return bytes_to_frames(substream->runtime, current_ptr);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_als300_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_als300_playback_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_als300_playback_open,
 	.close =	snd_als300_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -575,7 +583,11 @@ static struct snd_pcm_ops snd_als300_playback_ops = {
 	.pointer =	snd_als300_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_als300_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_als300_capture_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_als300_capture_open,
 	.close =	snd_als300_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -659,8 +671,13 @@ static int snd_als300_create(struct snd_card *card,
 	if ((err = pci_enable_device(pci)) < 0)
 		return err;
 
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(28)) < 0 ||
 		pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(28)) < 0) {
+=======
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(28)) < 0 ||
+		dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(28)) < 0) {
+>>>>>>> v4.9.227
 		dev_err(card->dev, "error setting 28bit DMA mask\n");
 		pci_disable_device(pci);
 		return -ENXIO;
@@ -728,22 +745,29 @@ static int snd_als300_create(struct snd_card *card,
 #ifdef CONFIG_PM_SLEEP
 static int snd_als300_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_als300 *chip = card->private_data;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	snd_pcm_suspend_all(chip->pcm);
 	snd_ac97_suspend(chip->ac97);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int snd_als300_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_als300 *chip = card->private_data;
@@ -757,6 +781,11 @@ static int snd_als300_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_als300 *chip = card->private_data;
+
+>>>>>>> v4.9.227
 	snd_als300_init(chip);
 	snd_ac97_resume(chip->ac97);
 

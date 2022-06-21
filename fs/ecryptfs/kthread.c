@@ -144,7 +144,11 @@ int ecryptfs_privileged_open(struct file **lower_file,
 	/* Corresponding dput() and mntput() are done when the
 	 * lower file is fput() when all eCryptfs files for the inode are
 	 * released. */
+<<<<<<< HEAD
 	flags |= IS_RDONLY(lower_dentry->d_inode) ? O_RDONLY : O_RDWR;
+=======
+	flags |= IS_RDONLY(d_inode(lower_dentry)) ? O_RDONLY : O_RDWR;
+>>>>>>> v4.9.227
 	(*lower_file) = dentry_open(&req.path, flags, cred);
 	if (!IS_ERR(*lower_file))
 		goto out;

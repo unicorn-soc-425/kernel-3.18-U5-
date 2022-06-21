@@ -23,7 +23,11 @@
 #include "pvrusb2-hdw-internal.h"
 #include "pvrusb2-debug.h"
 #include <linux/videodev2.h>
+<<<<<<< HEAD
 #include <media/msp3400.h>
+=======
+#include <media/drv-intf/msp3400.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-common.h>
 
 
@@ -84,6 +88,7 @@ void pvr2_msp3400_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)
 			MSP_OUTPUT(MSP_SC_IN_DSP_SCART1), 0);
 	}
 }
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -94,3 +99,5 @@ void pvr2_msp3400_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

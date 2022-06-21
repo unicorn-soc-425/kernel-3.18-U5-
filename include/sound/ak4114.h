@@ -169,6 +169,10 @@ struct ak4114 {
 	ak4114_read_t * read;
 	void * private_data;
 	atomic_t wq_processing;
+<<<<<<< HEAD
+=======
+	struct mutex reinit_mutex;
+>>>>>>> v4.9.227
 	spinlock_t lock;
 	unsigned char regmap[6];
 	unsigned char txcsb[5];
@@ -199,5 +203,16 @@ int snd_ak4114_build(struct ak4114 *ak4114,
 int snd_ak4114_external_rate(struct ak4114 *ak4114);
 int snd_ak4114_check_rate_and_errors(struct ak4114 *ak4114, unsigned int flags);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM
+void snd_ak4114_suspend(struct ak4114 *chip);
+void snd_ak4114_resume(struct ak4114 *chip);
+#else
+static inline void snd_ak4114_suspend(struct ak4114 *chip) {}
+static inline void snd_ak4114_resume(struct ak4114 *chip) {}
+#endif
+
+>>>>>>> v4.9.227
 #endif /* __SOUND_AK4114_H */
 

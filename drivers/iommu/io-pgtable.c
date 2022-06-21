@@ -18,6 +18,7 @@
  * Author: Will Deacon <will.deacon@arm.com>
  */
 
+<<<<<<< HEAD
 #define pr_fmt(fmt)	"io-pgtable: " fmt
 
 #include <linux/bug.h>
@@ -39,12 +40,23 @@ extern struct io_pgtable_init_fns io_pgtable_av8l_fast_init_fns;
 static const struct io_pgtable_init_fns *
 io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =
 {
+=======
+#include <linux/bug.h>
+#include <linux/kernel.h>
+#include <linux/types.h>
+
+#include "io-pgtable.h"
+
+static const struct io_pgtable_init_fns *
+io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
+>>>>>>> v4.9.227
 #ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE
 	[ARM_32_LPAE_S1] = &io_pgtable_arm_32_lpae_s1_init_fns,
 	[ARM_32_LPAE_S2] = &io_pgtable_arm_32_lpae_s2_init_fns,
 	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
 	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_TZ_SMMU
 	[ARM_MSM_SECURE] = &io_pgtable_arm_msm_secure_init_fns,
 #endif
@@ -55,6 +67,13 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =
 
 static struct dentry *io_pgtable_top;
 
+=======
+#ifdef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
+	[ARM_V7S] = &io_pgtable_arm_v7s_init_fns,
+#endif
+};
+
+>>>>>>> v4.9.227
 struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
 					    struct io_pgtable_cfg *cfg,
 					    void *cookie)
@@ -92,6 +111,7 @@ void free_io_pgtable_ops(struct io_pgtable_ops *ops)
 		return;
 
 	iop = container_of(ops, struct io_pgtable, ops);
+<<<<<<< HEAD
 	io_pgtable_init_table[iop->fmt]->free(iop);
 }
 
@@ -147,3 +167,8 @@ static void io_pgtable_exit(void)
 
 module_init(io_pgtable_init);
 module_exit(io_pgtable_exit);
+=======
+	io_pgtable_tlb_flush_all(iop);
+	io_pgtable_init_table[iop->fmt]->free(iop);
+}
+>>>>>>> v4.9.227

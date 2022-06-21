@@ -57,6 +57,7 @@ struct	__queue	{
 		spin_lock_init(&((pqueue)->lock));	\
 	} while (0)
 
+<<<<<<< HEAD
 #define LIST_CONTAINOR(ptr, type, member) \
 	((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))
 
@@ -99,12 +100,19 @@ static inline u32 end_of_queue_search(struct list_head *head,
 		return true;
 	else
 		return false;
+=======
+static inline u32 end_of_queue_search(struct list_head *head,
+		struct list_head *plist)
+{
+	return (head == plist);
+>>>>>>> v4.9.227
 }
 
 static inline void sleep_schedulable(int ms)
 {
 	u32 delta;
 
+<<<<<<< HEAD
 	delta = (ms * HZ) / 1000;/*(ms)*/
 	if (delta == 0)
 		delta = 1;/* 1 ms */
@@ -116,6 +124,11 @@ static inline void sleep_schedulable(int ms)
 static inline unsigned char _cancel_timer_ex(struct timer_list *ptimer)
 {
 	return del_timer(ptimer);
+=======
+	delta = msecs_to_jiffies(ms);/*(ms)*/
+	set_current_state(TASK_INTERRUPTIBLE);
+	schedule_timeout(delta);
+>>>>>>> v4.9.227
 }
 
 static inline void flush_signals_thread(void)

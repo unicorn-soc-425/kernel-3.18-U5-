@@ -12,6 +12,7 @@
 #include <linux/clkdev.h>
 #include <linux/clk/at91_pmc.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_address.h>
 #include <linux/io.h>
 #include <linux/interrupt.h>
@@ -19,11 +20,16 @@
 #include <linux/irqchip/chained_irq.h>
 #include <linux/irqdomain.h>
 #include <linux/of_irq.h>
+=======
+#include <linux/mfd/syscon.h>
+#include <linux/regmap.h>
+>>>>>>> v4.9.227
 
 #include <asm/proc-fns.h>
 
 #include "pmc.h"
 
+<<<<<<< HEAD
 void __iomem *at91_pmc_base;
 EXPORT_SYMBOL_GPL(at91_pmc_base);
 
@@ -33,6 +39,8 @@ void at91sam9_idle(void)
 	cpu_do_idle();
 }
 
+=======
+>>>>>>> v4.9.227
 int of_at91_get_clk_range(struct device_node *np, const char *propname,
 			  struct clk_range *range)
 {
@@ -55,6 +63,7 @@ int of_at91_get_clk_range(struct device_node *np, const char *propname,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(of_at91_get_clk_range);
+<<<<<<< HEAD
 
 static void pmc_irq_mask(struct irq_data *d)
 {
@@ -416,3 +425,5 @@ static void __init of_sama5d3_pmc_setup(struct device_node *np)
 }
 CLK_OF_DECLARE(sama5d3_clk_pmc, "atmel,sama5d3-pmc",
 	       of_sama5d3_pmc_setup);
+=======
+>>>>>>> v4.9.227

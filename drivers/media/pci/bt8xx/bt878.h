@@ -142,6 +142,7 @@ void bt878_start(struct bt878 *bt, u32 controlreg, u32 op_sync_orin,
 		u32 irq_err_ignore);
 void bt878_stop(struct bt878 *bt);
 
+<<<<<<< HEAD
 #if defined(__powerpc__)	/* big-endian */
 static inline void io_st_le32(volatile unsigned __iomem *addr, unsigned val)
 {
@@ -155,5 +156,9 @@ static inline void io_st_le32(volatile unsigned __iomem *addr, unsigned val)
 #define bmtwrite(dat,adr)  writel((dat), (adr))
 #define bmtread(adr)       readl(adr)
 #endif
+=======
+#define bmtwrite(dat,adr)  writel((dat), (adr))
+#define bmtread(adr)       readl(adr)
+>>>>>>> v4.9.227
 
 #endif

@@ -17,13 +17,17 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
  *                                                                   USA
  */
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 %{
 #include <stdio.h>
 
 #include "dtc.h"
 #include "srcpos.h"
 
+<<<<<<< HEAD
 YYLTYPE yylloc;
 
 extern int yylex(void);
@@ -35,13 +39,29 @@ extern int treesource_error;
 
 static unsigned long long eval_literal(const char *s, int base, int bits);
 static unsigned char eval_char_literal(const char *s);
+=======
+extern int yylex(void);
+extern void yyerror(char const *s);
+#define ERROR(loc, ...) \
+	do { \
+		srcpos_error((loc), "Error", __VA_ARGS__); \
+		treesource_error = true; \
+	} while (0)
+
+extern struct boot_info *the_boot_info;
+extern bool treesource_error;
+>>>>>>> v4.9.227
 %}
 
 %union {
 	char *propnodename;
+<<<<<<< HEAD
 	char *literal;
 	char *labelref;
 	unsigned int cbase;
+=======
+	char *labelref;
+>>>>>>> v4.9.227
 	uint8_t byte;
 	struct data data;
 
@@ -65,9 +85,14 @@ static unsigned char eval_char_literal(const char *s);
 %token DT_DEL_PROP
 %token DT_DEL_NODE
 %token <propnodename> DT_PROPNODENAME
+<<<<<<< HEAD
 %token <literal> DT_LITERAL
 %token <literal> DT_CHAR_LITERAL
 %token <cbase> DT_BASE
+=======
+%token <integer> DT_LITERAL
+%token <integer> DT_CHAR_LITERAL
+>>>>>>> v4.9.227
 %token <byte> DT_BYTE
 %token <data> DT_STRING
 %token <labelref> DT_LABEL
@@ -145,6 +170,21 @@ devicetree:
 		{
 			$$ = merge_nodes($1, $3);
 		}
+<<<<<<< HEAD
+=======
+
+	| devicetree DT_LABEL DT_REF nodedef
+		{
+			struct node *target = get_node_by_ref($1, $3);
+
+			add_label(&target->labels, $2);
+			if (target)
+				merge_nodes(target, $4);
+			else
+				ERROR(&@3, "Label or path %s not found", $3);
+			$$ = $1;
+		}
+>>>>>>> v4.9.227
 	| devicetree DT_REF nodedef
 		{
 			struct node *target = get_node_by_ref($1, $2);
@@ -152,17 +192,29 @@ devicetree:
 			if (target)
 				merge_nodes(target, $3);
 			else
+<<<<<<< HEAD
 				print_error("label or path, '%s', not found", $2);
+=======
+				ERROR(&@2, "Label or path %s not found", $2);
+>>>>>>> v4.9.227
 			$$ = $1;
 		}
 	| devicetree DT_DEL_NODE DT_REF ';'
 		{
 			struct node *target = get_node_by_ref($1, $3);
 
+<<<<<<< HEAD
 			if (!target)
 				print_error("label or path, '%s', not found", $3);
 			else
 				delete_node(target);
+=======
+			if (target)
+				delete_node(target);
+			else
+				ERROR(&@3, "Label or path %s not found", $3);
+
+>>>>>>> v4.9.227
 
 			$$ = $1;
 		}
@@ -230,10 +282,16 @@ propdata:
 
 			if ($6 != 0)
 				if (fseek(f, $6, SEEK_SET) != 0)
+<<<<<<< HEAD
 					print_error("Couldn't seek to offset %llu in \"%s\": %s",
 						     (unsigned long long)$6,
 						     $4.val,
 						     strerror(errno));
+=======
+					die("Couldn't seek to offset %llu in \"%s\": %s",
+					    (unsigned long long)$6, $4.val,
+					    strerror(errno));
+>>>>>>> v4.9.227
 
 			d = data_copy_file(f, $8);
 
@@ -274,6 +332,7 @@ propdataprefix:
 arrayprefix:
 	DT_BITS DT_LITERAL '<'
 		{
+<<<<<<< HEAD
 			$$.data = empty_data;
 			$$.bits = eval_literal($2, 0, 7);
 
@@ -286,6 +345,21 @@ arrayprefix:
 					    " are currently supported");
 				$$.bits = 32;
 			}
+=======
+			unsigned long long bits;
+
+			bits = $2;
+
+			if ((bits !=  8) && (bits != 16) &&
+			    (bits != 32) && (bits != 64)) {
+				ERROR(&@2, "Array elements must be"
+				      " 8, 16, 32 or 64-bits");
+				bits = 32;
+			}
+
+			$$.data = empty_data;
+			$$.bits = bits;
+>>>>>>> v4.9.227
 		}
 	| '<'
 		{
@@ -305,9 +379,14 @@ arrayprefix:
 				 * mask), all bits are one.
 				 */
 				if (($2 > mask) && (($2 | mask) != -1ULL))
+<<<<<<< HEAD
 					print_error(
 						"integer value out of range "
 						"%016lx (%d bits)", $1.bits);
+=======
+					ERROR(&@2, "Value out of range for"
+					      " %d-bit array element", $1.bits);
+>>>>>>> v4.9.227
 			}
 
 			$$.data = data_append_integer($1.data, $2, $1.bits);
@@ -321,7 +400,11 @@ arrayprefix:
 							  REF_PHANDLE,
 							  $2);
 			else
+<<<<<<< HEAD
 				print_error("References are only allowed in "
+=======
+				ERROR(&@2, "References are only allowed in "
+>>>>>>> v4.9.227
 					    "arrays with 32-bit elements.");
 
 			$$.data = data_append_integer($1.data, val, $1.bits);
@@ -334,6 +417,7 @@ arrayprefix:
 
 integer_prim:
 	  DT_LITERAL
+<<<<<<< HEAD
 		{
 			$$ = eval_literal($1, 0, 64);
 		}
@@ -341,6 +425,9 @@ integer_prim:
 		{
 			$$ = eval_char_literal($1);
 		}
+=======
+	| DT_CHAR_LITERAL
+>>>>>>> v4.9.227
 	| '(' integer_expr ')'
 		{
 			$$ = $2;
@@ -409,8 +496,29 @@ integer_add:
 
 integer_mul:
 	  integer_mul '*' integer_unary { $$ = $1 * $3; }
+<<<<<<< HEAD
 	| integer_mul '/' integer_unary { $$ = $1 / $3; }
 	| integer_mul '%' integer_unary { $$ = $1 % $3; }
+=======
+	| integer_mul '/' integer_unary
+		{
+			if ($3 != 0) {
+				$$ = $1 / $3;
+			} else {
+				ERROR(&@$, "Division by zero");
+				$$ = 0;
+			}
+		}
+	| integer_mul '%' integer_unary
+		{
+			if ($3 != 0) {
+				$$ = $1 % $3;
+			} else {
+				ERROR(&@$, "Division by zero");
+				$$ = 0;
+			}
+		}
+>>>>>>> v4.9.227
 	| integer_unary
 	;
 
@@ -447,7 +555,11 @@ subnodes:
 		}
 	| subnode propdef
 		{
+<<<<<<< HEAD
 			print_error("syntax error: properties must precede subnodes");
+=======
+			ERROR(&@2, "Properties must precede subnodes");
+>>>>>>> v4.9.227
 			YYERROR;
 		}
 	;
@@ -470,6 +582,7 @@ subnode:
 
 %%
 
+<<<<<<< HEAD
 void print_error(char const *fmt, ...)
 {
 	va_list va;
@@ -529,4 +642,9 @@ static unsigned char eval_char_literal(const char *s)
 		print_error("malformed character literal");
 
 	return c;
+=======
+void yyerror(char const *s)
+{
+	ERROR(&yylloc, "%s", s);
+>>>>>>> v4.9.227
 }

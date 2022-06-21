@@ -40,6 +40,13 @@ static int ras_check_exception_token;
 #define EPOW_SENSOR_TOKEN	9
 #define EPOW_SENSOR_INDEX	0
 
+<<<<<<< HEAD
+=======
+/* EPOW events counter variable */
+static int num_epow_events;
+
+static irqreturn_t ras_hotplug_interrupt(int irq, void *dev_id);
+>>>>>>> v4.9.227
 static irqreturn_t ras_epow_interrupt(int irq, void *dev_id);
 static irqreturn_t ras_error_interrupt(int irq, void *dev_id);
 
@@ -62,6 +69,17 @@ static int __init init_ras_IRQ(void)
 		of_node_put(np);
 	}
 
+<<<<<<< HEAD
+=======
+	/* Hotplug Events */
+	np = of_find_node_by_path("/event-sources/hot-plug-events");
+	if (np != NULL) {
+		request_event_sources_irqs(np, ras_hotplug_interrupt,
+					   "RAS_HOTPLUG");
+		of_node_put(np);
+	}
+
+>>>>>>> v4.9.227
 	/* EPOW Events */
 	np = of_find_node_by_path("/event-sources/epow-events");
 	if (np != NULL) {
@@ -82,11 +100,16 @@ static void handle_system_shutdown(char event_modifier)
 {
 	switch (event_modifier) {
 	case EPOW_SHUTDOWN_NORMAL:
+<<<<<<< HEAD
 		pr_emerg("Firmware initiated power off");
+=======
+		pr_emerg("Power off requested\n");
+>>>>>>> v4.9.227
 		orderly_poweroff(true);
 		break;
 
 	case EPOW_SHUTDOWN_ON_UPS:
+<<<<<<< HEAD
 		pr_emerg("Loss of power reported by firmware, system is "
 			"running on UPS/battery");
 		break;
@@ -95,17 +118,36 @@ static void handle_system_shutdown(char event_modifier)
 		pr_emerg("Loss of system critical functions reported by "
 			"firmware");
 		pr_emerg("Check RTAS error log for details");
+=======
+		pr_emerg("Loss of system power detected. System is running on"
+			 " UPS/battery. Check RTAS error log for details\n");
+		orderly_poweroff(true);
+		break;
+
+	case EPOW_SHUTDOWN_LOSS_OF_CRITICAL_FUNCTIONS:
+		pr_emerg("Loss of system critical functions detected. Check"
+			 " RTAS error log for details\n");
+>>>>>>> v4.9.227
 		orderly_poweroff(true);
 		break;
 
 	case EPOW_SHUTDOWN_AMBIENT_TEMPERATURE_TOO_HIGH:
+<<<<<<< HEAD
 		pr_emerg("Ambient temperature too high reported by firmware");
 		pr_emerg("Check RTAS error log for details");
+=======
+		pr_emerg("High ambient temperature detected. Check RTAS"
+			 " error log for details\n");
+>>>>>>> v4.9.227
 		orderly_poweroff(true);
 		break;
 
 	default:
+<<<<<<< HEAD
 		pr_err("Unknown power/cooling shutdown event (modifier %d)",
+=======
+		pr_err("Unknown power/cooling shutdown event (modifier = %d)\n",
+>>>>>>> v4.9.227
 			event_modifier);
 	}
 }
@@ -143,6 +185,7 @@ static void rtas_parse_epow_errlog(struct rtas_error_log *log)
 
 	switch (action_code) {
 	case EPOW_RESET:
+<<<<<<< HEAD
 		pr_err("Non critical power or cooling issue cleared");
 		break;
 
@@ -154,6 +197,22 @@ static void rtas_parse_epow_errlog(struct rtas_error_log *log)
 	case EPOW_WARN_POWER:
 		pr_err("Non critical power issue reported by firmware");
 		pr_err("Check RTAS error log for details");
+=======
+		if (num_epow_events) {
+			pr_info("Non critical power/cooling issue cleared\n");
+			num_epow_events--;
+		}
+		break;
+
+	case EPOW_WARN_COOLING:
+		pr_info("Non-critical cooling issue detected. Check RTAS error"
+			" log for details\n");
+		break;
+
+	case EPOW_WARN_POWER:
+		pr_info("Non-critical power issue detected. Check RTAS error"
+			" log for details\n");
+>>>>>>> v4.9.227
 		break;
 
 	case EPOW_SYSTEM_SHUTDOWN:
@@ -161,23 +220,73 @@ static void rtas_parse_epow_errlog(struct rtas_error_log *log)
 		break;
 
 	case EPOW_SYSTEM_HALT:
+<<<<<<< HEAD
 		pr_emerg("Firmware initiated power off");
+=======
+		pr_emerg("Critical power/cooling issue detected. Check RTAS"
+			 " error log for details. Powering off.\n");
+>>>>>>> v4.9.227
 		orderly_poweroff(true);
 		break;
 
 	case EPOW_MAIN_ENCLOSURE:
 	case EPOW_POWER_OFF:
+<<<<<<< HEAD
 		pr_emerg("Critical power/cooling issue reported by firmware");
 		pr_emerg("Check RTAS error log for details");
 		pr_emerg("Immediate power off");
+=======
+		pr_emerg("System about to lose power. Check RTAS error log "
+			 " for details. Powering off immediately.\n");
+>>>>>>> v4.9.227
 		emergency_sync();
 		kernel_power_off();
 		break;
 
 	default:
+<<<<<<< HEAD
 		pr_err("Unknown power/cooling event (action code %d)",
 			action_code);
 	}
+=======
+		pr_err("Unknown power/cooling event (action code  = %d)\n",
+			action_code);
+	}
+
+	/* Increment epow events counter variable */
+	if (action_code != EPOW_RESET)
+		num_epow_events++;
+}
+
+static irqreturn_t ras_hotplug_interrupt(int irq, void *dev_id)
+{
+	struct pseries_errorlog *pseries_log;
+	struct pseries_hp_errorlog *hp_elog;
+
+	spin_lock(&ras_log_buf_lock);
+
+	rtas_call(ras_check_exception_token, 6, 1, NULL,
+		  RTAS_VECTOR_EXTERNAL_INTERRUPT, virq_to_hw(irq),
+		  RTAS_HOTPLUG_EVENTS, 0, __pa(&ras_log_buf),
+		  rtas_get_error_log_max());
+
+	pseries_log = get_pseries_errorlog((struct rtas_error_log *)ras_log_buf,
+					   PSERIES_ELOG_SECT_ID_HOTPLUG);
+	hp_elog = (struct pseries_hp_errorlog *)pseries_log->data;
+
+	/*
+	 * Since PCI hotplug is not currently supported on pseries, put PCI
+	 * hotplug events on the ras_log_buf to be handled by rtas_errd.
+	 */
+	if (hp_elog->resource == PSERIES_HP_ELOG_RESOURCE_MEM ||
+	    hp_elog->resource == PSERIES_HP_ELOG_RESOURCE_CPU)
+		queue_hotplug_event(hp_elog, NULL, NULL);
+	else
+		log_error(ras_log_buf, ERR_TYPE_RTAS_LOG, 0);
+
+	spin_unlock(&ras_log_buf_lock);
+	return IRQ_HANDLED;
+>>>>>>> v4.9.227
 }
 
 /* Handle environmental and power warning (EPOW) interrupts. */
@@ -247,6 +356,7 @@ static irqreturn_t ras_error_interrupt(int irq, void *dev_id)
 	log_error(ras_log_buf, ERR_TYPE_RTAS_LOG, fatal);
 
 	if (fatal) {
+<<<<<<< HEAD
 		pr_emerg("Fatal hardware error reported by firmware");
 		pr_emerg("Check RTAS error log for details");
 		pr_emerg("Immediate power off");
@@ -254,6 +364,14 @@ static irqreturn_t ras_error_interrupt(int irq, void *dev_id)
 		kernel_power_off();
 	} else {
 		pr_err("Recoverable hardware error reported by firmware");
+=======
+		pr_emerg("Fatal hardware error detected. Check RTAS error"
+			 " log for details. Powering off immediately\n");
+		emergency_sync();
+		kernel_power_off();
+	} else {
+		pr_err("Recoverable hardware error detected\n");
+>>>>>>> v4.9.227
 	}
 
 	spin_unlock(&ras_log_buf_lock);
@@ -303,8 +421,13 @@ static struct rtas_error_log *fwnmi_get_errinfo(struct pt_regs *regs)
 	/* If it isn't an extended log we can use the per cpu 64bit buffer */
 	h = (struct rtas_error_log *)&savep[1];
 	if (!rtas_error_extended(h)) {
+<<<<<<< HEAD
 		memcpy(&__get_cpu_var(mce_data_buf), h, sizeof(__u64));
 		errhdr = (struct rtas_error_log *)&__get_cpu_var(mce_data_buf);
+=======
+		memcpy(this_cpu_ptr(&mce_data_buf), h, sizeof(__u64));
+		errhdr = (struct rtas_error_log *)this_cpu_ptr(&mce_data_buf);
+>>>>>>> v4.9.227
 	} else {
 		int len, error_log_length;
 

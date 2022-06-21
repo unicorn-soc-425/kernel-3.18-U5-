@@ -242,6 +242,11 @@ int cond_read_bool(struct policydb *p, struct hashtab *h, void *fp)
 		goto err;
 
 	len = le32_to_cpu(buf[2]);
+<<<<<<< HEAD
+=======
+	if (((len == 0) || (len == (u32)-1)))
+		goto err;
+>>>>>>> v4.9.227
 
 	rc = -ENOMEM;
 	key = kmalloc(len + 1, GFP_KERNEL);

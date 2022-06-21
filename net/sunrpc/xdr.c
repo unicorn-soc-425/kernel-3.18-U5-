@@ -164,7 +164,11 @@ EXPORT_SYMBOL_GPL(xdr_inline_pages);
  * Note: the addresses pgto_base and pgfrom_base are both calculated in
  *       the same way:
  *            if a memory area starts at byte 'base' in page 'pages[i]',
+<<<<<<< HEAD
  *            then its address is given as (i << PAGE_CACHE_SHIFT) + base
+=======
+ *            then its address is given as (i << PAGE_SHIFT) + base
+>>>>>>> v4.9.227
  * Also note: pgfrom_base must be < pgto_base, but the memory areas
  * 	they point to may overlap.
  */
@@ -181,20 +185,36 @@ _shift_data_right_pages(struct page **pages, size_t pgto_base,
 	pgto_base += len;
 	pgfrom_base += len;
 
+<<<<<<< HEAD
 	pgto = pages + (pgto_base >> PAGE_CACHE_SHIFT);
 	pgfrom = pages + (pgfrom_base >> PAGE_CACHE_SHIFT);
 
 	pgto_base &= ~PAGE_CACHE_MASK;
 	pgfrom_base &= ~PAGE_CACHE_MASK;
+=======
+	pgto = pages + (pgto_base >> PAGE_SHIFT);
+	pgfrom = pages + (pgfrom_base >> PAGE_SHIFT);
+
+	pgto_base &= ~PAGE_MASK;
+	pgfrom_base &= ~PAGE_MASK;
+>>>>>>> v4.9.227
 
 	do {
 		/* Are any pointers crossing a page boundary? */
 		if (pgto_base == 0) {
+<<<<<<< HEAD
 			pgto_base = PAGE_CACHE_SIZE;
 			pgto--;
 		}
 		if (pgfrom_base == 0) {
 			pgfrom_base = PAGE_CACHE_SIZE;
+=======
+			pgto_base = PAGE_SIZE;
+			pgto--;
+		}
+		if (pgfrom_base == 0) {
+			pgfrom_base = PAGE_SIZE;
+>>>>>>> v4.9.227
 			pgfrom--;
 		}
 
@@ -236,11 +256,19 @@ _copy_to_pages(struct page **pages, size_t pgbase, const char *p, size_t len)
 	char *vto;
 	size_t copy;
 
+<<<<<<< HEAD
 	pgto = pages + (pgbase >> PAGE_CACHE_SHIFT);
 	pgbase &= ~PAGE_CACHE_MASK;
 
 	for (;;) {
 		copy = PAGE_CACHE_SIZE - pgbase;
+=======
+	pgto = pages + (pgbase >> PAGE_SHIFT);
+	pgbase &= ~PAGE_MASK;
+
+	for (;;) {
+		copy = PAGE_SIZE - pgbase;
+>>>>>>> v4.9.227
 		if (copy > len)
 			copy = len;
 
@@ -253,7 +281,11 @@ _copy_to_pages(struct page **pages, size_t pgbase, const char *p, size_t len)
 			break;
 
 		pgbase += copy;
+<<<<<<< HEAD
 		if (pgbase == PAGE_CACHE_SIZE) {
+=======
+		if (pgbase == PAGE_SIZE) {
+>>>>>>> v4.9.227
 			flush_dcache_page(*pgto);
 			pgbase = 0;
 			pgto++;
@@ -280,11 +312,19 @@ _copy_from_pages(char *p, struct page **pages, size_t pgbase, size_t len)
 	char *vfrom;
 	size_t copy;
 
+<<<<<<< HEAD
 	pgfrom = pages + (pgbase >> PAGE_CACHE_SHIFT);
 	pgbase &= ~PAGE_CACHE_MASK;
 
 	do {
 		copy = PAGE_CACHE_SIZE - pgbase;
+=======
+	pgfrom = pages + (pgbase >> PAGE_SHIFT);
+	pgbase &= ~PAGE_MASK;
+
+	do {
+		copy = PAGE_SIZE - pgbase;
+>>>>>>> v4.9.227
 		if (copy > len)
 			copy = len;
 
@@ -293,7 +333,11 @@ _copy_from_pages(char *p, struct page **pages, size_t pgbase, size_t len)
 		kunmap_atomic(vfrom);
 
 		pgbase += copy;
+<<<<<<< HEAD
 		if (pgbase == PAGE_CACHE_SIZE) {
+=======
+		if (pgbase == PAGE_SIZE) {
+>>>>>>> v4.9.227
 			pgbase = 0;
 			pgfrom++;
 		}
@@ -512,7 +556,11 @@ EXPORT_SYMBOL_GPL(xdr_commit_encode);
 static __be32 *xdr_get_next_encode_buffer(struct xdr_stream *xdr,
 		size_t nbytes)
 {
+<<<<<<< HEAD
 	static __be32 *p;
+=======
+	__be32 *p;
+>>>>>>> v4.9.227
 	int space_left;
 	int frag1bytes, frag2bytes;
 
@@ -617,9 +665,16 @@ void xdr_truncate_encode(struct xdr_stream *xdr, size_t len)
 	fraglen = min_t(int, buf->len - len, tail->iov_len);
 	tail->iov_len -= fraglen;
 	buf->len -= fraglen;
+<<<<<<< HEAD
 	if (tail->iov_len && buf->len == len) {
 		xdr->p = tail->iov_base + tail->iov_len;
 		/* xdr->end, xdr->iov should be set already */
+=======
+	if (tail->iov_len) {
+		xdr->p = tail->iov_base + tail->iov_len;
+		WARN_ON_ONCE(!xdr->end);
+		WARN_ON_ONCE(!xdr->iov);
+>>>>>>> v4.9.227
 		return;
 	}
 	WARN_ON_ONCE(fraglen);
@@ -631,6 +686,7 @@ void xdr_truncate_encode(struct xdr_stream *xdr, size_t len)
 
 	xdr->page_ptr = buf->pages + (new >> PAGE_SHIFT);
 
+<<<<<<< HEAD
 	if (buf->page_len && buf->len == len) {
 		xdr->p = page_address(*xdr->page_ptr);
 		xdr->end = (void *)xdr->p + PAGE_SIZE;
@@ -643,6 +699,19 @@ void xdr_truncate_encode(struct xdr_stream *xdr, size_t len)
 		xdr->page_ptr--;
 	}
 	/* (otherwise assume xdr->end is already set) */
+=======
+	if (buf->page_len) {
+		xdr->p = page_address(*xdr->page_ptr);
+		xdr->end = (void *)xdr->p + PAGE_SIZE;
+		xdr->p = (void *)xdr->p + (new % PAGE_SIZE);
+		WARN_ON_ONCE(xdr->iov);
+		return;
+	}
+	if (fraglen)
+		xdr->end = head->iov_base + head->iov_len;
+	/* (otherwise assume xdr->end is already set) */
+	xdr->page_ptr--;
+>>>>>>> v4.9.227
 	head->iov_len = len;
 	buf->len = len;
 	xdr->p = head->iov_base + head->iov_len;
@@ -766,7 +835,11 @@ static void xdr_set_next_page(struct xdr_stream *xdr)
 	newbase -= xdr->buf->page_base;
 
 	if (xdr_set_page_base(xdr, newbase, PAGE_SIZE) < 0)
+<<<<<<< HEAD
 		xdr_set_iov(xdr, xdr->buf->tail, xdr->buf->len);
+=======
+		xdr_set_iov(xdr, xdr->buf->tail, xdr->nwords << 2);
+>>>>>>> v4.9.227
 }
 
 static bool xdr_set_next_buffer(struct xdr_stream *xdr)
@@ -775,7 +848,11 @@ static bool xdr_set_next_buffer(struct xdr_stream *xdr)
 		xdr_set_next_page(xdr);
 	else if (xdr->iov == xdr->buf->head) {
 		if (xdr_set_page_base(xdr, 0, PAGE_SIZE) < 0)
+<<<<<<< HEAD
 			xdr_set_iov(xdr, xdr->buf->tail, xdr->buf->len);
+=======
+			xdr_set_iov(xdr, xdr->buf->tail, xdr->nwords << 2);
+>>>>>>> v4.9.227
 	}
 	return xdr->p != xdr->end;
 }
@@ -796,6 +873,11 @@ void xdr_init_decode(struct xdr_stream *xdr, struct xdr_buf *buf, __be32 *p)
 		xdr_set_iov(xdr, buf->head, buf->len);
 	else if (buf->page_len != 0)
 		xdr_set_page_base(xdr, 0, buf->len);
+<<<<<<< HEAD
+=======
+	else
+		xdr_set_iov(xdr, buf->head, buf->len);
+>>>>>>> v4.9.227
 	if (p != NULL && p > xdr->p && xdr->end >= p) {
 		xdr->nwords -= p - xdr->p;
 		xdr->p = p;
@@ -856,12 +938,23 @@ EXPORT_SYMBOL_GPL(xdr_set_scratch_buffer);
 static __be32 *xdr_copy_to_scratch(struct xdr_stream *xdr, size_t nbytes)
 {
 	__be32 *p;
+<<<<<<< HEAD
 	void *cpdest = xdr->scratch.iov_base;
+=======
+	char *cpdest = xdr->scratch.iov_base;
+>>>>>>> v4.9.227
 	size_t cplen = (char *)xdr->end - (char *)xdr->p;
 
 	if (nbytes > xdr->scratch.iov_len)
 		return NULL;
+<<<<<<< HEAD
 	memcpy(cpdest, xdr->p, cplen);
+=======
+	p = __xdr_inline_decode(xdr, cplen);
+	if (p == NULL)
+		return NULL;
+	memcpy(cpdest, p, cplen);
+>>>>>>> v4.9.227
 	cpdest += cplen;
 	nbytes -= cplen;
 	if (!xdr_set_next_buffer(xdr))
@@ -1037,8 +1130,13 @@ xdr_buf_subsegment(struct xdr_buf *buf, struct xdr_buf *subbuf,
 	if (base < buf->page_len) {
 		subbuf->page_len = min(buf->page_len - base, len);
 		base += buf->page_base;
+<<<<<<< HEAD
 		subbuf->page_base = base & ~PAGE_CACHE_MASK;
 		subbuf->pages = &buf->pages[base >> PAGE_CACHE_SHIFT];
+=======
+		subbuf->page_base = base & ~PAGE_MASK;
+		subbuf->pages = &buf->pages[base >> PAGE_SHIFT];
+>>>>>>> v4.9.227
 		len -= subbuf->page_len;
 		base = 0;
 	} else {
@@ -1296,9 +1394,15 @@ xdr_xcode_array2(struct xdr_buf *buf, unsigned int base,
 		todo -= avail_here;
 
 		base += buf->page_base;
+<<<<<<< HEAD
 		ppages = buf->pages + (base >> PAGE_CACHE_SHIFT);
 		base &= ~PAGE_CACHE_MASK;
 		avail_page = min_t(unsigned int, PAGE_CACHE_SIZE - base,
+=======
+		ppages = buf->pages + (base >> PAGE_SHIFT);
+		base &= ~PAGE_MASK;
+		avail_page = min_t(unsigned int, PAGE_SIZE - base,
+>>>>>>> v4.9.227
 					avail_here);
 		c = kmap(*ppages) + base;
 
@@ -1382,7 +1486,11 @@ xdr_xcode_array2(struct xdr_buf *buf, unsigned int base,
 			}
 
 			avail_page = min(avail_here,
+<<<<<<< HEAD
 				 (unsigned int) PAGE_CACHE_SIZE);
+=======
+				 (unsigned int) PAGE_SIZE);
+>>>>>>> v4.9.227
 		}
 		base = buf->page_len;  /* align to start of tail */
 	}
@@ -1478,9 +1586,15 @@ xdr_process_buf(struct xdr_buf *buf, unsigned int offset, unsigned int len,
 		if (page_len > len)
 			page_len = len;
 		len -= page_len;
+<<<<<<< HEAD
 		page_offset = (offset + buf->page_base) & (PAGE_CACHE_SIZE - 1);
 		i = (offset + buf->page_base) >> PAGE_CACHE_SHIFT;
 		thislen = PAGE_CACHE_SIZE - page_offset;
+=======
+		page_offset = (offset + buf->page_base) & (PAGE_SIZE - 1);
+		i = (offset + buf->page_base) >> PAGE_SHIFT;
+		thislen = PAGE_SIZE - page_offset;
+>>>>>>> v4.9.227
 		do {
 			if (thislen > page_len)
 				thislen = page_len;
@@ -1491,7 +1605,11 @@ xdr_process_buf(struct xdr_buf *buf, unsigned int offset, unsigned int len,
 			page_len -= thislen;
 			i++;
 			page_offset = 0;
+<<<<<<< HEAD
 			thislen = PAGE_CACHE_SIZE;
+=======
+			thislen = PAGE_SIZE;
+>>>>>>> v4.9.227
 		} while (page_len != 0);
 		offset = 0;
 	}

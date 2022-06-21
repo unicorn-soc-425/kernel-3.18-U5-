@@ -26,7 +26,11 @@
 static int edac_mc_log_ue = 1;
 static int edac_mc_log_ce = 1;
 static int edac_mc_panic_on_ue;
+<<<<<<< HEAD
 static int edac_mc_poll_msec = 1000;
+=======
+static unsigned int edac_mc_poll_msec = 1000;
+>>>>>>> v4.9.227
 
 /* Getter functions for above */
 int edac_mc_get_log_ue(void)
@@ -45,19 +49,28 @@ int edac_mc_get_panic_on_ue(void)
 }
 
 /* this is temporary */
+<<<<<<< HEAD
 int edac_mc_get_poll_msec(void)
+=======
+unsigned int edac_mc_get_poll_msec(void)
+>>>>>>> v4.9.227
 {
 	return edac_mc_poll_msec;
 }
 
 static int edac_set_poll_msec(const char *val, struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	unsigned long l;
+=======
+	unsigned int i;
+>>>>>>> v4.9.227
 	int ret;
 
 	if (!val)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = kstrtoul(val, 0, &l);
 	if (ret)
 		return ret;
@@ -69,6 +82,19 @@ static int edac_set_poll_msec(const char *val, struct kernel_param *kp)
 
 	/* notify edac_mc engine to reset the poll period */
 	edac_mc_reset_delay_period(l);
+=======
+	ret = kstrtouint(val, 0, &i);
+	if (ret)
+		return ret;
+
+	if (i < 1000)
+		return -EINVAL;
+
+	*((unsigned int *)kp->arg) = i;
+
+	/* notify edac_mc engine to reset the poll period */
+	edac_mc_reset_delay_period(i);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -82,7 +108,11 @@ MODULE_PARM_DESC(edac_mc_log_ue,
 module_param(edac_mc_log_ce, int, 0644);
 MODULE_PARM_DESC(edac_mc_log_ce,
 		 "Log correctable error to console: 0=off 1=on");
+<<<<<<< HEAD
 module_param_call(edac_mc_poll_msec, edac_set_poll_msec, param_get_int,
+=======
+module_param_call(edac_mc_poll_msec, edac_set_poll_msec, param_get_uint,
+>>>>>>> v4.9.227
 		  &edac_mc_poll_msec, 0644);
 MODULE_PARM_DESC(edac_mc_poll_msec, "Polling period in milliseconds");
 
@@ -157,7 +187,11 @@ struct dev_ch_attribute {
 };
 
 #define DEVICE_CHANNEL(_name, _mode, _show, _store, _var) \
+<<<<<<< HEAD
 	struct dev_ch_attribute dev_attr_legacy_##_name = \
+=======
+	static struct dev_ch_attribute dev_attr_legacy_##_name = \
+>>>>>>> v4.9.227
 		{ __ATTR(_name, _mode, _show, _store), (_var) }
 
 #define to_channel(k) (container_of(k, struct dev_ch_attribute, attr)->channel)
@@ -229,7 +263,11 @@ static ssize_t channel_dimm_label_show(struct device *dev,
 	if (!rank->dimm->label[0])
 		return 0;
 
+<<<<<<< HEAD
 	return snprintf(data, EDAC_MC_LABEL_LEN, "%s\n",
+=======
+	return snprintf(data, sizeof(rank->dimm->label) + 1, "%s\n",
+>>>>>>> v4.9.227
 			rank->dimm->label);
 }
 
@@ -240,6 +278,7 @@ static ssize_t channel_dimm_label_store(struct device *dev,
 	struct csrow_info *csrow = to_csrow(dev);
 	unsigned chan = to_channel(mattr);
 	struct rank_info *rank = csrow->channels[chan];
+<<<<<<< HEAD
 
 	ssize_t max_size = 0;
 
@@ -248,6 +287,23 @@ static ssize_t channel_dimm_label_store(struct device *dev,
 	rank->dimm->label[max_size] = '\0';
 
 	return max_size;
+=======
+	size_t copy_count = count;
+
+	if (count == 0)
+		return -EINVAL;
+
+	if (data[count - 1] == '\0' || data[count - 1] == '\n')
+		copy_count -= 1;
+
+	if (copy_count == 0 || copy_count >= sizeof(rank->dimm->label))
+		return -EINVAL;
+
+	strncpy(rank->dimm->label, data, copy_count);
+	rank->dimm->label[copy_count] = '\0';
+
+	return count;
+>>>>>>> v4.9.227
 }
 
 /* show function for dynamic chX_ce_count attribute */
@@ -306,9 +362,12 @@ static struct device_type csrow_attr_type = {
  * possible dynamic channel DIMM Label attribute files
  *
  */
+<<<<<<< HEAD
 
 #define EDAC_NR_CHANNELS	6
 
+=======
+>>>>>>> v4.9.227
 DEVICE_CHANNEL(ch0_dimm_label, S_IRUGO | S_IWUSR,
 	channel_dimm_label_show, channel_dimm_label_store, 0);
 DEVICE_CHANNEL(ch1_dimm_label, S_IRUGO | S_IWUSR,
@@ -321,6 +380,7 @@ DEVICE_CHANNEL(ch4_dimm_label, S_IRUGO | S_IWUSR,
 	channel_dimm_label_show, channel_dimm_label_store, 4);
 DEVICE_CHANNEL(ch5_dimm_label, S_IRUGO | S_IWUSR,
 	channel_dimm_label_show, channel_dimm_label_store, 5);
+<<<<<<< HEAD
 
 /* Total possible dynamic DIMM Label attribute file table */
 static struct device_attribute *dynamic_csrow_dimm_attr[] = {
@@ -330,6 +390,24 @@ static struct device_attribute *dynamic_csrow_dimm_attr[] = {
 	&dev_attr_legacy_ch3_dimm_label.attr,
 	&dev_attr_legacy_ch4_dimm_label.attr,
 	&dev_attr_legacy_ch5_dimm_label.attr
+=======
+DEVICE_CHANNEL(ch6_dimm_label, S_IRUGO | S_IWUSR,
+	channel_dimm_label_show, channel_dimm_label_store, 6);
+DEVICE_CHANNEL(ch7_dimm_label, S_IRUGO | S_IWUSR,
+	channel_dimm_label_show, channel_dimm_label_store, 7);
+
+/* Total possible dynamic DIMM Label attribute file table */
+static struct attribute *dynamic_csrow_dimm_attr[] = {
+	&dev_attr_legacy_ch0_dimm_label.attr.attr,
+	&dev_attr_legacy_ch1_dimm_label.attr.attr,
+	&dev_attr_legacy_ch2_dimm_label.attr.attr,
+	&dev_attr_legacy_ch3_dimm_label.attr.attr,
+	&dev_attr_legacy_ch4_dimm_label.attr.attr,
+	&dev_attr_legacy_ch5_dimm_label.attr.attr,
+	&dev_attr_legacy_ch6_dimm_label.attr.attr,
+	&dev_attr_legacy_ch7_dimm_label.attr.attr,
+	NULL
+>>>>>>> v4.9.227
 };
 
 /* possible dynamic channel ce_count attribute files */
@@ -345,6 +423,7 @@ DEVICE_CHANNEL(ch4_ce_count, S_IRUGO,
 		   channel_ce_count_show, NULL, 4);
 DEVICE_CHANNEL(ch5_ce_count, S_IRUGO,
 		   channel_ce_count_show, NULL, 5);
+<<<<<<< HEAD
 
 /* Total possible dynamic ce_count attribute file table */
 static struct device_attribute *dynamic_csrow_ce_count_attr[] = {
@@ -354,6 +433,62 @@ static struct device_attribute *dynamic_csrow_ce_count_attr[] = {
 	&dev_attr_legacy_ch3_ce_count.attr,
 	&dev_attr_legacy_ch4_ce_count.attr,
 	&dev_attr_legacy_ch5_ce_count.attr
+=======
+DEVICE_CHANNEL(ch6_ce_count, S_IRUGO,
+		   channel_ce_count_show, NULL, 6);
+DEVICE_CHANNEL(ch7_ce_count, S_IRUGO,
+		   channel_ce_count_show, NULL, 7);
+
+/* Total possible dynamic ce_count attribute file table */
+static struct attribute *dynamic_csrow_ce_count_attr[] = {
+	&dev_attr_legacy_ch0_ce_count.attr.attr,
+	&dev_attr_legacy_ch1_ce_count.attr.attr,
+	&dev_attr_legacy_ch2_ce_count.attr.attr,
+	&dev_attr_legacy_ch3_ce_count.attr.attr,
+	&dev_attr_legacy_ch4_ce_count.attr.attr,
+	&dev_attr_legacy_ch5_ce_count.attr.attr,
+	&dev_attr_legacy_ch6_ce_count.attr.attr,
+	&dev_attr_legacy_ch7_ce_count.attr.attr,
+	NULL
+};
+
+static umode_t csrow_dev_is_visible(struct kobject *kobj,
+				    struct attribute *attr, int idx)
+{
+	struct device *dev = kobj_to_dev(kobj);
+	struct csrow_info *csrow = container_of(dev, struct csrow_info, dev);
+
+	if (idx >= csrow->nr_channels)
+		return 0;
+
+	if (idx >= ARRAY_SIZE(dynamic_csrow_ce_count_attr) - 1) {
+		WARN_ONCE(1, "idx: %d\n", idx);
+		return 0;
+	}
+
+	/* Only expose populated DIMMs */
+	if (!csrow->channels[idx]->dimm->nr_pages)
+		return 0;
+
+	return attr->mode;
+}
+
+
+static const struct attribute_group csrow_dev_dimm_group = {
+	.attrs = dynamic_csrow_dimm_attr,
+	.is_visible = csrow_dev_is_visible,
+};
+
+static const struct attribute_group csrow_dev_ce_count_group = {
+	.attrs = dynamic_csrow_ce_count_attr,
+	.is_visible = csrow_dev_is_visible,
+};
+
+static const struct attribute_group *csrow_dev_groups[] = {
+	&csrow_dev_dimm_group,
+	&csrow_dev_ce_count_group,
+	NULL
+>>>>>>> v4.9.227
 };
 
 static inline int nr_pages_per_csrow(struct csrow_info *csrow)
@@ -370,6 +505,7 @@ static inline int nr_pages_per_csrow(struct csrow_info *csrow)
 static int edac_create_csrow_object(struct mem_ctl_info *mci,
 				    struct csrow_info *csrow, int index)
 {
+<<<<<<< HEAD
 	int err, chan;
 
 	if (csrow->nr_channels >= EDAC_NR_CHANNELS)
@@ -377,6 +513,13 @@ static int edac_create_csrow_object(struct mem_ctl_info *mci,
 
 	csrow->dev.type = &csrow_attr_type;
 	csrow->dev.bus = mci->bus;
+=======
+	int err;
+
+	csrow->dev.type = &csrow_attr_type;
+	csrow->dev.bus = mci->bus;
+	csrow->dev.groups = csrow_dev_groups;
+>>>>>>> v4.9.227
 	device_initialize(&csrow->dev);
 	csrow->dev.parent = &mci->dev;
 	csrow->mci = mci;
@@ -387,6 +530,7 @@ static int edac_create_csrow_object(struct mem_ctl_info *mci,
 		 dev_name(&csrow->dev));
 
 	err = device_add(&csrow->dev);
+<<<<<<< HEAD
 	if (err < 0)
 		return err;
 
@@ -417,6 +561,10 @@ error:
 					   dynamic_csrow_ce_count_attr[chan]);
 	}
 	put_device(&csrow->dev);
+=======
+	if (err)
+		put_device(&csrow->dev);
+>>>>>>> v4.9.227
 
 	return err;
 }
@@ -424,7 +572,11 @@ error:
 /* Create a CSROW object under specifed edac_mc_device */
 static int edac_create_csrow_objects(struct mem_ctl_info *mci)
 {
+<<<<<<< HEAD
 	int err, i, chan;
+=======
+	int err, i;
+>>>>>>> v4.9.227
 	struct csrow_info *csrow;
 
 	for (i = 0; i < mci->nr_csrows; i++) {
@@ -446,6 +598,7 @@ error:
 		csrow = mci->csrows[i];
 		if (!nr_pages_per_csrow(csrow))
 			continue;
+<<<<<<< HEAD
 		for (chan = csrow->nr_channels - 1; chan >= 0; chan--) {
 			if (!csrow->channels[chan]->dimm->nr_pages)
 				continue;
@@ -454,6 +607,8 @@ error:
 			device_remove_file(&csrow->dev,
 						dynamic_csrow_ce_count_attr[chan]);
 		}
+=======
+>>>>>>> v4.9.227
 		put_device(&mci->csrows[i]->dev);
 	}
 
@@ -462,13 +617,18 @@ error:
 
 static void edac_delete_csrow_objects(struct mem_ctl_info *mci)
 {
+<<<<<<< HEAD
 	int i, chan;
+=======
+	int i;
+>>>>>>> v4.9.227
 	struct csrow_info *csrow;
 
 	for (i = mci->nr_csrows - 1; i >= 0; i--) {
 		csrow = mci->csrows[i];
 		if (!nr_pages_per_csrow(csrow))
 			continue;
+<<<<<<< HEAD
 		for (chan = csrow->nr_channels - 1; chan >= 0; chan--) {
 			if (!csrow->channels[chan]->dimm->nr_pages)
 				continue;
@@ -479,6 +639,8 @@ static void edac_delete_csrow_objects(struct mem_ctl_info *mci)
 			device_remove_file(&csrow->dev,
 						dynamic_csrow_ce_count_attr[chan]);
 		}
+=======
+>>>>>>> v4.9.227
 		device_unregister(&mci->csrows[i]->dev);
 	}
 }
@@ -508,7 +670,11 @@ static ssize_t dimmdev_label_show(struct device *dev,
 	if (!dimm->label[0])
 		return 0;
 
+<<<<<<< HEAD
 	return snprintf(data, EDAC_MC_LABEL_LEN, "%s\n", dimm->label);
+=======
+	return snprintf(data, sizeof(dimm->label) + 1, "%s\n", dimm->label);
+>>>>>>> v4.9.227
 }
 
 static ssize_t dimmdev_label_store(struct device *dev,
@@ -517,6 +683,7 @@ static ssize_t dimmdev_label_store(struct device *dev,
 				   size_t count)
 {
 	struct dimm_info *dimm = to_dimm(dev);
+<<<<<<< HEAD
 
 	ssize_t max_size = 0;
 
@@ -525,6 +692,23 @@ static ssize_t dimmdev_label_store(struct device *dev,
 	dimm->label[max_size] = '\0';
 
 	return max_size;
+=======
+	size_t copy_count = count;
+
+	if (count == 0)
+		return -EINVAL;
+
+	if (data[count - 1] == '\0' || data[count - 1] == '\n')
+		copy_count -= 1;
+
+	if (copy_count == 0 || copy_count >= sizeof(dimm->label))
+		return -EINVAL;
+
+	strncpy(dimm->label, data, copy_count);
+	dimm->label[copy_count] = '\0';
+
+	return count;
+>>>>>>> v4.9.227
 }
 
 static ssize_t dimmdev_size_show(struct device *dev,
@@ -808,6 +992,7 @@ static ssize_t mci_max_location_show(struct device *dev,
 	return p - data;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_EDAC_DEBUG
 static ssize_t edac_fake_inject_write(struct file *file,
 				      const char __user *data,
@@ -864,6 +1049,24 @@ DEVICE_ATTR(max_location, S_IRUGO, mci_max_location_show, NULL);
 
 /* memory scrubber attribute file */
 DEVICE_ATTR(sdram_scrub_rate, 0, NULL, NULL);
+=======
+/* default Control file */
+static DEVICE_ATTR(reset_counters, S_IWUSR, NULL, mci_reset_counters_store);
+
+/* default Attribute files */
+static DEVICE_ATTR(mc_name, S_IRUGO, mci_ctl_name_show, NULL);
+static DEVICE_ATTR(size_mb, S_IRUGO, mci_size_mb_show, NULL);
+static DEVICE_ATTR(seconds_since_reset, S_IRUGO, mci_seconds_show, NULL);
+static DEVICE_ATTR(ue_noinfo_count, S_IRUGO, mci_ue_noinfo_show, NULL);
+static DEVICE_ATTR(ce_noinfo_count, S_IRUGO, mci_ce_noinfo_show, NULL);
+static DEVICE_ATTR(ue_count, S_IRUGO, mci_ue_count_show, NULL);
+static DEVICE_ATTR(ce_count, S_IRUGO, mci_ce_count_show, NULL);
+static DEVICE_ATTR(max_location, S_IRUGO, mci_max_location_show, NULL);
+
+/* memory scrubber attribute file */
+DEVICE_ATTR(sdram_scrub_rate, 0, mci_sdram_scrub_rate_show,
+	    mci_sdram_scrub_rate_store); /* umode set later in is_visible */
+>>>>>>> v4.9.227
 
 static struct attribute *mci_attrs[] = {
 	&dev_attr_reset_counters.attr,
@@ -875,11 +1078,37 @@ static struct attribute *mci_attrs[] = {
 	&dev_attr_ue_count.attr,
 	&dev_attr_ce_count.attr,
 	&dev_attr_max_location.attr,
+<<<<<<< HEAD
 	NULL
 };
 
 static struct attribute_group mci_attr_grp = {
 	.attrs	= mci_attrs,
+=======
+	&dev_attr_sdram_scrub_rate.attr,
+	NULL
+};
+
+static umode_t mci_attr_is_visible(struct kobject *kobj,
+				   struct attribute *attr, int idx)
+{
+	struct device *dev = kobj_to_dev(kobj);
+	struct mem_ctl_info *mci = to_mci(dev);
+	umode_t mode = 0;
+
+	if (attr != &dev_attr_sdram_scrub_rate.attr)
+		return attr->mode;
+	if (mci->get_sdram_scrub_rate)
+		mode |= S_IRUGO;
+	if (mci->set_sdram_scrub_rate)
+		mode |= S_IWUSR;
+	return mode;
+}
+
+static struct attribute_group mci_attr_grp = {
+	.attrs	= mci_attrs,
+	.is_visible = mci_attr_is_visible,
+>>>>>>> v4.9.227
 };
 
 static const struct attribute_group *mci_attr_groups[] = {
@@ -900,6 +1129,7 @@ static struct device_type mci_attr_type = {
 	.release	= mci_attr_release,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_EDAC_DEBUG
 static struct dentry *edac_debugfs;
 
@@ -965,6 +1195,8 @@ nomem:
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * Create a new Memory Controller kobject instance,
  *	mc<id> under the 'mc' directory
@@ -973,14 +1205,22 @@ nomem:
  *	0	Success
  *	!0	Failure
  */
+<<<<<<< HEAD
 int edac_create_sysfs_mci_device(struct mem_ctl_info *mci)
 {
+=======
+int edac_create_sysfs_mci_device(struct mem_ctl_info *mci,
+				 const struct attribute_group **groups)
+{
+	char *name;
+>>>>>>> v4.9.227
 	int i, err;
 
 	/*
 	 * The memory controller needs its own bus, in order to avoid
 	 * namespace conflicts at /sys/bus/edac.
 	 */
+<<<<<<< HEAD
 	mci->bus->name = kasprintf(GFP_KERNEL, "mc%d", mci->mc_idx);
 	if (!mci->bus->name)
 		return -ENOMEM;
@@ -990,6 +1230,21 @@ int edac_create_sysfs_mci_device(struct mem_ctl_info *mci)
 	err = bus_register(mci->bus);
 	if (err < 0)
 		return err;
+=======
+	name = kasprintf(GFP_KERNEL, "mc%d", mci->mc_idx);
+	if (!name)
+		return -ENOMEM;
+
+	mci->bus->name = name;
+
+	edac_dbg(0, "creating bus %s\n", mci->bus->name);
+
+	err = bus_register(mci->bus);
+	if (err < 0) {
+		kfree(name);
+		return err;
+	}
+>>>>>>> v4.9.227
 
 	/* get the /sys/devices/system/edac subsys reference */
 	mci->dev.type = &mci_attr_type;
@@ -997,6 +1252,10 @@ int edac_create_sysfs_mci_device(struct mem_ctl_info *mci)
 
 	mci->dev.parent = mci_pdev;
 	mci->dev.bus = mci->bus;
+<<<<<<< HEAD
+=======
+	mci->dev.groups = groups;
+>>>>>>> v4.9.227
 	dev_set_name(&mci->dev, "mc%d", mci->mc_idx);
 	dev_set_drvdata(&mci->dev, mci);
 	pm_runtime_forbid(&mci->dev);
@@ -1005,6 +1264,7 @@ int edac_create_sysfs_mci_device(struct mem_ctl_info *mci)
 	err = device_add(&mci->dev);
 	if (err < 0) {
 		edac_dbg(1, "failure: create device %s\n", dev_name(&mci->dev));
+<<<<<<< HEAD
 		bus_unregister(mci->bus);
 		kfree(mci->bus->name);
 		return err;
@@ -1026,14 +1286,25 @@ int edac_create_sysfs_mci_device(struct mem_ctl_info *mci)
 			goto fail2;
 		}
 	}
+=======
+		goto fail_unregister_bus;
+	}
+
+>>>>>>> v4.9.227
 	/*
 	 * Create the dimm/rank devices
 	 */
 	for (i = 0; i < mci->tot_dimms; i++) {
 		struct dimm_info *dimm = mci->dimms[i];
 		/* Only expose populated DIMMs */
+<<<<<<< HEAD
 		if (dimm->nr_pages == 0)
 			continue;
+=======
+		if (!dimm->nr_pages)
+			continue;
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_EDAC_DEBUG
 		edac_dbg(1, "creating dimm%d, located at ", i);
 		if (edac_debug_level >= 1) {
@@ -1048,13 +1319,18 @@ int edac_create_sysfs_mci_device(struct mem_ctl_info *mci)
 		err = edac_create_dimm_object(mci, dimm, i);
 		if (err) {
 			edac_dbg(1, "failure: create dimm %d obj\n", i);
+<<<<<<< HEAD
 			goto fail;
+=======
+			goto fail_unregister_dimm;
+>>>>>>> v4.9.227
 		}
 	}
 
 #ifdef CONFIG_EDAC_LEGACY_SYSFS
 	err = edac_create_csrow_objects(mci);
 	if (err < 0)
+<<<<<<< HEAD
 		goto fail;
 #endif
 
@@ -1074,6 +1350,27 @@ fail2:
 	device_unregister(&mci->dev);
 	bus_unregister(mci->bus);
 	kfree(mci->bus->name);
+=======
+		goto fail_unregister_dimm;
+#endif
+
+	edac_create_debugfs_nodes(mci);
+	return 0;
+
+fail_unregister_dimm:
+	for (i--; i >= 0; i--) {
+		struct dimm_info *dimm = mci->dimms[i];
+		if (!dimm->nr_pages)
+			continue;
+
+		device_unregister(&dimm->dev);
+	}
+	device_unregister(&mci->dev);
+fail_unregister_bus:
+	bus_unregister(mci->bus);
+	kfree(name);
+
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -1087,7 +1384,11 @@ void edac_remove_sysfs_mci_device(struct mem_ctl_info *mci)
 	edac_dbg(0, "\n");
 
 #ifdef CONFIG_EDAC_DEBUG
+<<<<<<< HEAD
 	debugfs_remove(mci->debugfs);
+=======
+	edac_debugfs_remove_recursive(mci->debugfs);
+>>>>>>> v4.9.227
 #endif
 #ifdef CONFIG_EDAC_LEGACY_SYSFS
 	edac_delete_csrow_objects(mci);
@@ -1104,10 +1405,20 @@ void edac_remove_sysfs_mci_device(struct mem_ctl_info *mci)
 
 void edac_unregister_sysfs(struct mem_ctl_info *mci)
 {
+<<<<<<< HEAD
 	edac_dbg(1, "Unregistering device %s\n", dev_name(&mci->dev));
 	device_unregister(&mci->dev);
 	bus_unregister(mci->bus);
 	kfree(mci->bus->name);
+=======
+	struct bus_type *bus = mci->bus;
+	const char *name = mci->bus->name;
+
+	edac_dbg(1, "Unregistering device %s\n", dev_name(&mci->dev));
+	device_unregister(&mci->dev);
+	bus_unregister(bus);
+	kfree(name);
+>>>>>>> v4.9.227
 }
 
 static void mc_attr_release(struct device *dev)
@@ -1129,6 +1440,7 @@ static struct device_type mc_attr_type = {
  */
 int __init edac_mc_sysfs_init(void)
 {
+<<<<<<< HEAD
 	struct bus_type *edac_subsys;
 	int err;
 
@@ -1147,28 +1459,54 @@ int __init edac_mc_sysfs_init(void)
 	}
 
 	mci_pdev->bus = edac_subsys;
+=======
+	int err;
+
+	mci_pdev = kzalloc(sizeof(*mci_pdev), GFP_KERNEL);
+	if (!mci_pdev) {
+		err = -ENOMEM;
+		goto out;
+	}
+
+	mci_pdev->bus = edac_get_sysfs_subsys();
+>>>>>>> v4.9.227
 	mci_pdev->type = &mc_attr_type;
 	device_initialize(mci_pdev);
 	dev_set_name(mci_pdev, "mc");
 
 	err = device_add(mci_pdev);
 	if (err < 0)
+<<<<<<< HEAD
 		goto out_dev_free;
+=======
+		goto out_put_device;
+>>>>>>> v4.9.227
 
 	edac_dbg(0, "device %s created\n", dev_name(mci_pdev));
 
 	return 0;
 
+<<<<<<< HEAD
  out_dev_free:
 	kfree(mci_pdev);
  out_put_sysfs:
 	edac_put_sysfs_subsys();
+=======
+ out_put_device:
+	put_device(mci_pdev);
+>>>>>>> v4.9.227
  out:
 	return err;
 }
 
+<<<<<<< HEAD
 void __exit edac_mc_sysfs_exit(void)
 {
 	device_unregister(mci_pdev);
 	edac_put_sysfs_subsys();
+=======
+void edac_mc_sysfs_exit(void)
+{
+	device_unregister(mci_pdev);
+>>>>>>> v4.9.227
 }

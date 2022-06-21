@@ -50,6 +50,10 @@ struct sgdma_descrip {
 	u8	control;
 } __packed;
 
+<<<<<<< HEAD
+=======
+#define SGDMA_DESC_LEN	sizeof(struct sgdma_descrip)
+>>>>>>> v4.9.227
 
 #define SGDMA_STATUS_ERR		BIT(0)
 #define SGDMA_STATUS_LENGTH_ERR		BIT(1)

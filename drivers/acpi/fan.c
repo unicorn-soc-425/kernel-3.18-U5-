@@ -16,10 +16,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+>>>>>>> v4.9.227
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
@@ -50,7 +53,11 @@ MODULE_DEVICE_TABLE(acpi, fan_device_ids);
 #ifdef CONFIG_PM_SLEEP
 static int acpi_fan_suspend(struct device *dev);
 static int acpi_fan_resume(struct device *dev);
+<<<<<<< HEAD
 static struct dev_pm_ops acpi_fan_pm = {
+=======
+static const struct dev_pm_ops acpi_fan_pm = {
+>>>>>>> v4.9.227
 	.resume = acpi_fan_resume,
 	.freeze = acpi_fan_suspend,
 	.thaw = acpi_fan_resume,
@@ -133,8 +140,23 @@ static int fan_get_state_acpi4(struct acpi_device *device, unsigned long *state)
 
 	control = obj->package.elements[1].integer.value;
 	for (i = 0; i < fan->fps_count; i++) {
+<<<<<<< HEAD
 		if (control == fan->fps[i].control)
 			break;
+=======
+		/*
+		 * When Fine Grain Control is set, return the state
+		 * corresponding to maximum fan->fps[i].control
+		 * value compared to the current speed. Here the
+		 * fan->fps[] is sorted array with increasing speed.
+		 */
+		if (fan->fif.fine_grain_ctrl && control < fan->fps[i].control) {
+			i = (i > 0) ? i - 1 : 0;
+			break;
+		} else if (control == fan->fps[i].control) {
+			break;
+		}
+>>>>>>> v4.9.227
 	}
 	if (i == fan->fps_count) {
 		dev_dbg(&device->dev, "Invalid control value returned\n");
@@ -158,8 +180,14 @@ static int fan_get_state(struct acpi_device *device, unsigned long *state)
 	if (result)
 		return result;
 
+<<<<<<< HEAD
 	*state = (acpi_state == ACPI_STATE_D3_COLD ? 0 :
 		 (acpi_state == ACPI_STATE_D0 ? 1 : -1));
+=======
+	*state = acpi_state == ACPI_STATE_D3_COLD
+			|| acpi_state == ACPI_STATE_D3_HOT ?
+		0 : (acpi_state == ACPI_STATE_D0 ? 1 : -1);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -325,6 +353,10 @@ static int acpi_fan_probe(struct platform_device *pdev)
 	struct thermal_cooling_device *cdev;
 	struct acpi_fan *fan;
 	struct acpi_device *device = ACPI_COMPANION(&pdev->dev);
+<<<<<<< HEAD
+=======
+	char *name;
+>>>>>>> v4.9.227
 
 	fan = devm_kzalloc(&pdev->dev, sizeof(*fan), GFP_KERNEL);
 	if (!fan) {
@@ -341,12 +373,25 @@ static int acpi_fan_probe(struct platform_device *pdev)
 	} else {
 		result = acpi_device_update_power(device, NULL);
 		if (result) {
+<<<<<<< HEAD
 			dev_err(&device->dev, "Setting initial power state\n");
+=======
+			dev_err(&device->dev, "Failed to set initial power state\n");
+>>>>>>> v4.9.227
 			goto end;
 		}
 	}
 
+<<<<<<< HEAD
 	cdev = thermal_cooling_device_register("Fan", device,
+=======
+	if (!strncmp(pdev->name, "PNP0C0B", strlen("PNP0C0B")))
+		name = "Fan";
+	else
+		name = acpi_device_bid(device);
+
+	cdev = thermal_cooling_device_register(name, device,
+>>>>>>> v4.9.227
 						&fan_cooling_ops);
 	if (IS_ERR(cdev)) {
 		result = PTR_ERR(cdev);

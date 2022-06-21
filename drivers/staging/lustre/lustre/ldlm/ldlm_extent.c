@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -58,12 +62,20 @@
 #include "../include/lustre_lib.h"
 #include "ldlm_internal.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /* When a lock is cancelled by a client, the KMS may undergo change if this
  * is the "highest lock".  This function returns the new KMS value.
  * Caller must hold lr_lock already.
  *
+<<<<<<< HEAD
  * NB: A lock on [x,y] protects a KMS of up to y + 1 bytes! */
+=======
+ * NB: A lock on [x,y] protects a KMS of up to y + 1 bytes!
+ */
+>>>>>>> v4.9.227
 __u64 ldlm_extent_shift_kms(struct ldlm_lock *lock, __u64 old_kms)
 {
 	struct ldlm_resource *res = lock->l_resource;
@@ -73,20 +85,35 @@ __u64 ldlm_extent_shift_kms(struct ldlm_lock *lock, __u64 old_kms)
 
 	/* don't let another thread in ldlm_extent_shift_kms race in
 	 * just after we finish and take our lock into account in its
+<<<<<<< HEAD
 	 * calculation of the kms */
 	lock->l_flags |= LDLM_FL_KMS_IGNORE;
+=======
+	 * calculation of the kms
+	 */
+	ldlm_set_kms_ignore(lock);
+>>>>>>> v4.9.227
 
 	list_for_each(tmp, &res->lr_granted) {
 		lck = list_entry(tmp, struct ldlm_lock, l_res_link);
 
+<<<<<<< HEAD
 		if (lck->l_flags & LDLM_FL_KMS_IGNORE)
+=======
+		if (ldlm_is_kms_ignore(lck))
+>>>>>>> v4.9.227
 			continue;
 
 		if (lck->l_policy_data.l_extent.end >= old_kms)
 			return old_kms;
 
 		/* This extent _has_ to be smaller than old_kms (checked above)
+<<<<<<< HEAD
 		 * so kms can only ever be smaller or the same as old_kms. */
+=======
+		 * so kms can only ever be smaller or the same as old_kms.
+		 */
+>>>>>>> v4.9.227
 		if (lck->l_policy_data.l_extent.end + 1 > kms)
 			kms = lck->l_policy_data.l_extent.end + 1;
 	}
@@ -97,13 +124,32 @@ __u64 ldlm_extent_shift_kms(struct ldlm_lock *lock, __u64 old_kms)
 EXPORT_SYMBOL(ldlm_extent_shift_kms);
 
 struct kmem_cache *ldlm_interval_slab;
+<<<<<<< HEAD
+=======
+
+/* interval tree, for LDLM_EXTENT. */
+static void ldlm_interval_attach(struct ldlm_interval *n, struct ldlm_lock *l)
+{
+	LASSERT(!l->l_tree_node);
+	LASSERT(l->l_resource->lr_type == LDLM_EXTENT);
+
+	list_add_tail(&l->l_sl_policy, &n->li_group);
+	l->l_tree_node = n;
+}
+
+>>>>>>> v4.9.227
 struct ldlm_interval *ldlm_interval_alloc(struct ldlm_lock *lock)
 {
 	struct ldlm_interval *node;
 
 	LASSERT(lock->l_resource->lr_type == LDLM_EXTENT);
+<<<<<<< HEAD
 	OBD_SLAB_ALLOC_PTR_GFP(node, ldlm_interval_slab, GFP_NOFS);
 	if (node == NULL)
+=======
+	node = kmem_cache_zalloc(ldlm_interval_slab, GFP_NOFS);
+	if (!node)
+>>>>>>> v4.9.227
 		return NULL;
 
 	INIT_LIST_HEAD(&node->li_group);
@@ -116,6 +162,7 @@ void ldlm_interval_free(struct ldlm_interval *node)
 	if (node) {
 		LASSERT(list_empty(&node->li_group));
 		LASSERT(!interval_is_intree(&node->li_node));
+<<<<<<< HEAD
 		OBD_SLAB_FREE(node, ldlm_interval_slab, sizeof(*node));
 	}
 }
@@ -131,11 +178,21 @@ void ldlm_interval_attach(struct ldlm_interval *n,
 	l->l_tree_node = n;
 }
 
+=======
+		kmem_cache_free(ldlm_interval_slab, node);
+	}
+}
+
+>>>>>>> v4.9.227
 struct ldlm_interval *ldlm_interval_detach(struct ldlm_lock *l)
 {
 	struct ldlm_interval *n = l->l_tree_node;
 
+<<<<<<< HEAD
 	if (n == NULL)
+=======
+	if (!n)
+>>>>>>> v4.9.227
 		return NULL;
 
 	LASSERT(!list_empty(&n->li_group));
@@ -145,13 +202,23 @@ struct ldlm_interval *ldlm_interval_detach(struct ldlm_lock *l)
 	return list_empty(&n->li_group) ? n : NULL;
 }
 
+<<<<<<< HEAD
 static inline int lock_mode_to_index(ldlm_mode_t mode)
+=======
+static inline int lock_mode_to_index(enum ldlm_mode mode)
+>>>>>>> v4.9.227
 {
 	int index;
 
 	LASSERT(mode != 0);
+<<<<<<< HEAD
 	LASSERT(IS_PO2(mode));
 	for (index = -1; mode; index++, mode >>= 1) ;
+=======
+	LASSERT(is_power_of_2(mode));
+	for (index = -1; mode; index++)
+		mode >>= 1;
+>>>>>>> v4.9.227
 	LASSERT(index < LCK_MODE_NUM);
 	return index;
 }
@@ -168,7 +235,11 @@ void ldlm_extent_add_lock(struct ldlm_resource *res,
 	LASSERT(lock->l_granted_mode == lock->l_req_mode);
 
 	node = lock->l_tree_node;
+<<<<<<< HEAD
 	LASSERT(node != NULL);
+=======
+	LASSERT(node);
+>>>>>>> v4.9.227
 	LASSERT(!interval_is_intree(&node->li_node));
 
 	idx = lock_mode_to_index(lock->l_granted_mode);
@@ -182,15 +253,26 @@ void ldlm_extent_add_lock(struct ldlm_resource *res,
 	root = &res->lr_itree[idx].lit_root;
 	found = interval_insert(&node->li_node, root);
 	if (found) { /* The policy group found. */
+<<<<<<< HEAD
 		struct ldlm_interval *tmp = ldlm_interval_detach(lock);
 		LASSERT(tmp != NULL);
+=======
+		struct ldlm_interval *tmp;
+
+		tmp = ldlm_interval_detach(lock);
+>>>>>>> v4.9.227
 		ldlm_interval_free(tmp);
 		ldlm_interval_attach(to_ldlm_interval(found), lock);
 	}
 	res->lr_itree[idx].lit_size++;
 
 	/* even though we use interval tree to manage the extent lock, we also
+<<<<<<< HEAD
 	 * add the locks into grant list, for debug purpose, .. */
+=======
+	 * add the locks into grant list, for debug purpose, ..
+	 */
+>>>>>>> v4.9.227
 	ldlm_resource_add_lock(res, &res->lr_granted, lock);
 }
 
@@ -209,7 +291,11 @@ void ldlm_extent_unlink_lock(struct ldlm_lock *lock)
 	LASSERT(lock->l_granted_mode == 1 << idx);
 	tree = &res->lr_itree[idx];
 
+<<<<<<< HEAD
 	LASSERT(tree->lit_root != NULL); /* assure the tree is not null */
+=======
+	LASSERT(tree->lit_root); /* assure the tree is not null */
+>>>>>>> v4.9.227
 
 	tree->lit_size--;
 	node = ldlm_interval_detach(lock);
@@ -220,7 +306,11 @@ void ldlm_extent_unlink_lock(struct ldlm_lock *lock)
 }
 
 void ldlm_extent_policy_wire_to_local(const ldlm_wire_policy_data_t *wpolicy,
+<<<<<<< HEAD
 				     ldlm_policy_data_t *lpolicy)
+=======
+				      ldlm_policy_data_t *lpolicy)
+>>>>>>> v4.9.227
 {
 	memset(lpolicy, 0, sizeof(*lpolicy));
 	lpolicy->l_extent.start = wpolicy->l_extent.start;
@@ -229,7 +319,11 @@ void ldlm_extent_policy_wire_to_local(const ldlm_wire_policy_data_t *wpolicy,
 }
 
 void ldlm_extent_policy_local_to_wire(const ldlm_policy_data_t *lpolicy,
+<<<<<<< HEAD
 				     ldlm_wire_policy_data_t *wpolicy)
+=======
+				      ldlm_wire_policy_data_t *wpolicy)
+>>>>>>> v4.9.227
 {
 	memset(wpolicy, 0, sizeof(*wpolicy));
 	wpolicy->l_extent.start = lpolicy->l_extent.start;

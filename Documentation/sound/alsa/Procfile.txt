@@ -101,10 +101,13 @@ card*/pcm*/xrun_debug
 	  bit 0 = Enable XRUN/jiffies debug messages
 	  bit 1 = Show stack trace at XRUN / jiffies check
 	  bit 2 = Enable additional jiffies check
+<<<<<<< HEAD
 	  bit 3 = Log hwptr update at each period interrupt
 	  bit 4 = Log hwptr update at each snd_pcm_update_hw_ptr()
 	  bit 5 = Show last 10 positions on error
 	  bit 6 = Do above only once
+=======
+>>>>>>> v4.9.227
 
 	When the bit 0 is set, the driver will show the messages to
 	kernel log when an xrun is detected.  The debug message is
@@ -121,6 +124,7 @@ card*/pcm*/xrun_debug
 	buggy) hardware that doesn't give smooth pointer updates.
 	This feature is enabled via the bit 2.
 
+<<<<<<< HEAD
 	Bits 3 and 4 are for logging the hwptr records.  Note that
 	these will give flood of kernel messages.
 
@@ -130,6 +134,8 @@ card*/pcm*/xrun_debug
 
 	When bit 6 is set, the full xrun log is shown only once.
 
+=======
+>>>>>>> v4.9.227
 card*/pcm*/sub*/info
 	The general information of this PCM sub-stream.
 
@@ -146,6 +152,13 @@ card*/pcm*/sub*/sw_params
 card*/pcm*/sub*/prealloc
 	The buffer pre-allocation information.
 
+<<<<<<< HEAD
+=======
+card*/pcm*/sub*/xrun_injection
+	Triggers an XRUN to the running stream when any value is
+	written to this proc file.  Used for fault injection.
+	This entry is write-only.
+>>>>>>> v4.9.227
 
 AC97 Codec Information
 ----------------------

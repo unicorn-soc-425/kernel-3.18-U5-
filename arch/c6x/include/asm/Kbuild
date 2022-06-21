@@ -4,6 +4,10 @@ generic-y += auxvec.h
 generic-y += barrier.h
 generic-y += bitsperlong.h
 generic-y += bugs.h
+<<<<<<< HEAD
+=======
+generic-y += clkdev.h
+>>>>>>> v4.9.227
 generic-y += cputime.h
 generic-y += current.h
 generic-y += device.h
@@ -15,7 +19,10 @@ generic-y += exec.h
 generic-y += fb.h
 generic-y += fcntl.h
 generic-y += futex.h
+<<<<<<< HEAD
 generic-y += hash.h
+=======
+>>>>>>> v4.9.227
 generic-y += hw_irq.h
 generic-y += io.h
 generic-y += ioctl.h
@@ -27,6 +34,10 @@ generic-y += kdebug.h
 generic-y += kmap_types.h
 generic-y += local.h
 generic-y += mcs_spinlock.h
+<<<<<<< HEAD
+=======
+generic-y += mm-arch-hooks.h
+>>>>>>> v4.9.227
 generic-y += mman.h
 generic-y += mmu.h
 generic-y += mmu_context.h
@@ -39,9 +50,15 @@ generic-y += poll.h
 generic-y += posix_types.h
 generic-y += preempt.h
 generic-y += resource.h
+<<<<<<< HEAD
 generic-y += scatterlist.h
 generic-y += segment.h
 generic-y += sembuf.h
+=======
+generic-y += segment.h
+generic-y += sembuf.h
+generic-y += serial.h
+>>>>>>> v4.9.227
 generic-y += shmbuf.h
 generic-y += shmparam.h
 generic-y += siginfo.h

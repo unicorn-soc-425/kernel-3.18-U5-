@@ -266,10 +266,21 @@ static int tas5086_set_deemph(struct snd_soc_codec *codec)
 	struct tas5086_private *priv = snd_soc_codec_get_drvdata(codec);
 	int i, val = 0;
 
+<<<<<<< HEAD
 	if (priv->deemph)
 		for (i = 0; i < ARRAY_SIZE(tas5086_deemph); i++)
 			if (tas5086_deemph[i] == priv->rate)
 				val = i;
+=======
+	if (priv->deemph) {
+		for (i = 0; i < ARRAY_SIZE(tas5086_deemph); i++) {
+			if (tas5086_deemph[i] == priv->rate) {
+				val = i;
+				break;
+			}
+		}
+	}
+>>>>>>> v4.9.227
 
 	return regmap_update_bits(priv->regmap, TAS5086_SYS_CONTROL_1,
 				  TAS5086_DEEMPH_MASK, val);
@@ -383,7 +394,11 @@ static int tas5086_hw_params(struct snd_pcm_substream *substream,
 	val = index_in_array(tas5086_ratios, ARRAY_SIZE(tas5086_ratios),
 			     priv->mclk / priv->rate);
 	if (val < 0) {
+<<<<<<< HEAD
 		dev_err(codec->dev, "Inavlid MCLK / Fs ratio\n");
+=======
+		dev_err(codec->dev, "Invalid MCLK / Fs ratio\n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -886,12 +901,23 @@ static struct snd_soc_codec_driver soc_codec_dev_tas5086 = {
 	.remove			= tas5086_remove,
 	.suspend		= tas5086_soc_suspend,
 	.resume			= tas5086_soc_resume,
+<<<<<<< HEAD
 	.controls		= tas5086_controls,
 	.num_controls		= ARRAY_SIZE(tas5086_controls),
 	.dapm_widgets		= tas5086_dapm_widgets,
 	.num_dapm_widgets	= ARRAY_SIZE(tas5086_dapm_widgets),
 	.dapm_routes		= tas5086_dapm_routes,
 	.num_dapm_routes	= ARRAY_SIZE(tas5086_dapm_routes),
+=======
+	.component_driver = {
+		.controls		= tas5086_controls,
+		.num_controls		= ARRAY_SIZE(tas5086_controls),
+		.dapm_widgets		= tas5086_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(tas5086_dapm_widgets),
+		.dapm_routes		= tas5086_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(tas5086_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct i2c_device_id tas5086_i2c_id[] = {
@@ -994,7 +1020,10 @@ static int tas5086_i2c_remove(struct i2c_client *i2c)
 static struct i2c_driver tas5086_i2c_driver = {
 	.driver = {
 		.name	= "tas5086",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(tas5086_dt_ids),
 	},
 	.id_table	= tas5086_i2c_id,

@@ -1109,7 +1109,11 @@ snd_ca0106_pcm_pointer_capture(struct snd_pcm_substream *substream)
 }
 
 /* operators */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ca0106_playback_front_ops = {
+=======
+static const struct snd_pcm_ops snd_ca0106_playback_front_ops = {
+>>>>>>> v4.9.227
 	.open =        snd_ca0106_pcm_open_playback_front,
 	.close =       snd_ca0106_pcm_close_playback,
 	.ioctl =       snd_pcm_lib_ioctl,
@@ -1120,7 +1124,11 @@ static struct snd_pcm_ops snd_ca0106_playback_front_ops = {
 	.pointer =     snd_ca0106_pcm_pointer_playback,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ca0106_capture_0_ops = {
+=======
+static const struct snd_pcm_ops snd_ca0106_capture_0_ops = {
+>>>>>>> v4.9.227
 	.open =        snd_ca0106_pcm_open_0_capture,
 	.close =       snd_ca0106_pcm_close_capture,
 	.ioctl =       snd_pcm_lib_ioctl,
@@ -1131,7 +1139,11 @@ static struct snd_pcm_ops snd_ca0106_capture_0_ops = {
 	.pointer =     snd_ca0106_pcm_pointer_capture,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ca0106_capture_1_ops = {
+=======
+static const struct snd_pcm_ops snd_ca0106_capture_1_ops = {
+>>>>>>> v4.9.227
 	.open =        snd_ca0106_pcm_open_1_capture,
 	.close =       snd_ca0106_pcm_close_capture,
 	.ioctl =       snd_pcm_lib_ioctl,
@@ -1142,7 +1154,11 @@ static struct snd_pcm_ops snd_ca0106_capture_1_ops = {
 	.pointer =     snd_ca0106_pcm_pointer_capture,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ca0106_capture_2_ops = {
+=======
+static const struct snd_pcm_ops snd_ca0106_capture_2_ops = {
+>>>>>>> v4.9.227
 	.open =        snd_ca0106_pcm_open_2_capture,
 	.close =       snd_ca0106_pcm_close_capture,
 	.ioctl =       snd_pcm_lib_ioctl,
@@ -1153,7 +1169,11 @@ static struct snd_pcm_ops snd_ca0106_capture_2_ops = {
 	.pointer =     snd_ca0106_pcm_pointer_capture,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ca0106_capture_3_ops = {
+=======
+static const struct snd_pcm_ops snd_ca0106_capture_3_ops = {
+>>>>>>> v4.9.227
 	.open =        snd_ca0106_pcm_open_3_capture,
 	.close =       snd_ca0106_pcm_close_capture,
 	.ioctl =       snd_pcm_lib_ioctl,
@@ -1164,7 +1184,11 @@ static struct snd_pcm_ops snd_ca0106_capture_3_ops = {
 	.pointer =     snd_ca0106_pcm_pointer_capture,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ca0106_playback_center_lfe_ops = {
+=======
+static const struct snd_pcm_ops snd_ca0106_playback_center_lfe_ops = {
+>>>>>>> v4.9.227
         .open =         snd_ca0106_pcm_open_playback_center_lfe,
         .close =        snd_ca0106_pcm_close_playback,
         .ioctl =        snd_pcm_lib_ioctl,
@@ -1175,7 +1199,11 @@ static struct snd_pcm_ops snd_ca0106_playback_center_lfe_ops = {
         .pointer =      snd_ca0106_pcm_pointer_playback, 
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ca0106_playback_unknown_ops = {
+=======
+static const struct snd_pcm_ops snd_ca0106_playback_unknown_ops = {
+>>>>>>> v4.9.227
         .open =         snd_ca0106_pcm_open_playback_unknown,
         .close =        snd_ca0106_pcm_close_playback,
         .ioctl =        snd_pcm_lib_ioctl,
@@ -1186,7 +1214,11 @@ static struct snd_pcm_ops snd_ca0106_playback_unknown_ops = {
         .pointer =      snd_ca0106_pcm_pointer_playback, 
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ca0106_playback_rear_ops = {
+=======
+static const struct snd_pcm_ops snd_ca0106_playback_rear_ops = {
+>>>>>>> v4.9.227
         .open =         snd_ca0106_pcm_open_playback_rear,
         .close =        snd_ca0106_pcm_close_playback,
         .ioctl =        snd_pcm_lib_ioctl,
@@ -1676,8 +1708,13 @@ static int snd_ca0106_create(int dev, struct snd_card *card,
 	err = pci_enable_device(pci);
 	if (err < 0)
 		return err;
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(32)) < 0 ||
 	    pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(32)) < 0) {
+=======
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(32)) < 0 ||
+	    dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(32)) < 0) {
+>>>>>>> v4.9.227
 		dev_err(card->dev, "error to set 32bit mask DMA\n");
 		pci_disable_device(pci);
 		return -ENXIO;
@@ -1885,7 +1922,11 @@ static int snd_ca0106_probe(struct pci_dev *pci,
 		goto error;
 	dev_dbg(card->dev, " done.\n");
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> v4.9.227
 	snd_ca0106_proc_init(chip);
 #endif
 
@@ -1910,7 +1951,10 @@ static void snd_ca0106_remove(struct pci_dev *pci)
 #ifdef CONFIG_PM_SLEEP
 static int snd_ca0106_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_ca0106 *chip = card->private_data;
 	int i;
@@ -1923,20 +1967,27 @@ static int snd_ca0106_suspend(struct device *dev)
 	snd_ca0106_mixer_suspend(chip);
 
 	ca0106_stop_chip(chip);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int snd_ca0106_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_ca0106 *chip = card->private_data;
 	int i;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 
@@ -1947,6 +1998,8 @@ static int snd_ca0106_resume(struct device *dev)
 
 	pci_set_master(pci);
 
+=======
+>>>>>>> v4.9.227
 	ca0106_init_chip(chip, 1);
 
 	if (chip->details->ac97)

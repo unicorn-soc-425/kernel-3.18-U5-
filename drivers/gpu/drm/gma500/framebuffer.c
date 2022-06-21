@@ -21,11 +21,18 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/pfn_t.h>
+>>>>>>> v4.9.227
 #include <linux/mm.h>
 #include <linux/tty.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/console.h>
 
@@ -132,7 +139,12 @@ static int psbfb_vm_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	for (i = 0; i < page_num; i++) {
 		pfn = (phys_addr >> PAGE_SHIFT);
 
+<<<<<<< HEAD
 		ret = vm_insert_mixed(vma, address, pfn);
+=======
+		ret = vm_insert_mixed(vma, address,
+				__pfn_to_pfn_t(pfn, PFN_DEV));
+>>>>>>> v4.9.227
 		if (unlikely((ret == -EBUSY) || (ret != 0 && i > 0)))
 			break;
 		else if (unlikely(ret != 0)) {
@@ -182,12 +194,15 @@ static int psbfb_mmap(struct fb_info *info, struct vm_area_struct *vma)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int psbfb_ioctl(struct fb_info *info, unsigned int cmd,
 						unsigned long arg)
 {
 	return -ENOTTY;
 }
 
+=======
+>>>>>>> v4.9.227
 static struct fb_ops psbfb_ops = {
 	.owner = THIS_MODULE,
 	.fb_check_var = drm_fb_helper_check_var,
@@ -199,7 +214,10 @@ static struct fb_ops psbfb_ops = {
 	.fb_imageblit = drm_fb_helper_cfb_imageblit,
 	.fb_mmap = psbfb_mmap,
 	.fb_sync = psbfb_sync,
+<<<<<<< HEAD
 	.fb_ioctl = psbfb_ioctl,
+=======
+>>>>>>> v4.9.227
 };
 
 static struct fb_ops psbfb_roll_ops = {
@@ -213,7 +231,10 @@ static struct fb_ops psbfb_roll_ops = {
 	.fb_imageblit = drm_fb_helper_cfb_imageblit,
 	.fb_pan_display = psbfb_pan,
 	.fb_mmap = psbfb_mmap,
+<<<<<<< HEAD
 	.fb_ioctl = psbfb_ioctl,
+=======
+>>>>>>> v4.9.227
 };
 
 static struct fb_ops psbfb_unaccel_ops = {
@@ -226,7 +247,10 @@ static struct fb_ops psbfb_unaccel_ops = {
 	.fb_copyarea = drm_fb_helper_cfb_copyarea,
 	.fb_imageblit = drm_fb_helper_cfb_imageblit,
 	.fb_mmap = psbfb_mmap,
+<<<<<<< HEAD
 	.fb_ioctl = psbfb_ioctl,
+=======
+>>>>>>> v4.9.227
 };
 
 /**
@@ -241,7 +265,11 @@ static struct fb_ops psbfb_unaccel_ops = {
  */
 static int psb_framebuffer_init(struct drm_device *dev,
 					struct psb_framebuffer *fb,
+<<<<<<< HEAD
 					struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+					const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 					struct gtt_range *gt)
 {
 	u32 bpp, depth;
@@ -284,7 +312,11 @@ static int psb_framebuffer_init(struct drm_device *dev,
 
 static struct drm_framebuffer *psb_framebuffer_create
 			(struct drm_device *dev,
+<<<<<<< HEAD
 			 struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+			 const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 			 struct gtt_range *gt)
 {
 	struct psb_framebuffer *fb;
@@ -406,12 +438,19 @@ static int psbfb_create(struct psb_fbdev *fbdev,
 
 	memset(dev_priv->vram_addr + backing->offset, 0, size);
 
+<<<<<<< HEAD
 	mutex_lock(&dev->struct_mutex);
 
 	info = drm_fb_helper_alloc_fbi(&fbdev->psb_fb_helper);
 	if (IS_ERR(info)) {
 		ret = PTR_ERR(info);
 		goto out_err1;
+=======
+	info = drm_fb_helper_alloc_fbi(&fbdev->psb_fb_helper);
+	if (IS_ERR(info)) {
+		ret = PTR_ERR(info);
+		goto err_free_range;
+>>>>>>> v4.9.227
 	}
 	info->par = fbdev;
 
@@ -419,7 +458,11 @@ static int psbfb_create(struct psb_fbdev *fbdev,
 
 	ret = psb_framebuffer_init(dev, psbfb, &mode_cmd, backing);
 	if (ret)
+<<<<<<< HEAD
 		goto out_unref;
+=======
+		goto err_release;
+>>>>>>> v4.9.227
 
 	fb = &psbfb->base;
 	psbfb->fbdev = info;
@@ -463,6 +506,7 @@ static int psbfb_create(struct psb_fbdev *fbdev,
 	dev_dbg(dev->dev, "allocated %dx%d fb\n",
 					psbfb->base.width, psbfb->base.height);
 
+<<<<<<< HEAD
 	mutex_unlock(&dev->struct_mutex);
 	return 0;
 out_unref:
@@ -474,6 +518,12 @@ out_unref:
 	drm_fb_helper_release_fbi(&fbdev->psb_fb_helper);
 out_err1:
 	mutex_unlock(&dev->struct_mutex);
+=======
+	return 0;
+err_release:
+	drm_fb_helper_release_fbi(&fbdev->psb_fb_helper);
+err_free_range:
+>>>>>>> v4.9.227
 	psb_gtt_free_range(dev, backing);
 	return ret;
 }
@@ -488,7 +538,11 @@ out_err1:
  */
 static struct drm_framebuffer *psb_user_framebuffer_create
 			(struct drm_device *dev, struct drm_file *filp,
+<<<<<<< HEAD
 			 struct drm_mode_fb_cmd2 *cmd)
+=======
+			 const struct drm_mode_fb_cmd2 *cmd)
+>>>>>>> v4.9.227
 {
 	struct gtt_range *r;
 	struct drm_gem_object *obj;
@@ -497,7 +551,11 @@ static struct drm_framebuffer *psb_user_framebuffer_create
 	 *	Find the GEM object and thus the gtt range object that is
 	 *	to back this space
 	 */
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, filp, cmd->handles[0]);
+=======
+	obj = drm_gem_object_lookup(filp, cmd->handles[0]);
+>>>>>>> v4.9.227
 	if (obj == NULL)
 		return ERR_PTR(-ENOENT);
 
@@ -533,6 +591,10 @@ static int psbfb_probe(struct drm_fb_helper *helper,
 		container_of(helper, struct psb_fbdev, psb_fb_helper);
 	struct drm_device *dev = psb_fbdev->psb_fb_helper.dev;
 	struct drm_psb_private *dev_priv = dev->dev_private;
+<<<<<<< HEAD
+=======
+	unsigned int fb_size;
+>>>>>>> v4.9.227
 	int bytespp;
 
 	bytespp = sizes->surface_bpp / 8;
@@ -542,8 +604,16 @@ static int psbfb_probe(struct drm_fb_helper *helper,
 	/* If the mode will not fit in 32bit then switch to 16bit to get
 	   a console on full resolution. The X mode setting server will
 	   allocate its own 32bit GEM framebuffer */
+<<<<<<< HEAD
 	if (ALIGN(sizes->fb_width * bytespp, 64) * sizes->fb_height >
 	                dev_priv->vram_stolen_size) {
+=======
+	fb_size = ALIGN(sizes->surface_width * bytespp, 64) *
+		  sizes->surface_height;
+	fb_size = ALIGN(fb_size, PAGE_SIZE);
+
+	if (fb_size > dev_priv->vram_stolen_size) {
+>>>>>>> v4.9.227
                 sizes->surface_bpp = 16;
                 sizes->surface_depth = 16;
         }
@@ -569,7 +639,11 @@ static int psb_fbdev_destroy(struct drm_device *dev, struct psb_fbdev *fbdev)
 	drm_framebuffer_cleanup(&psbfb->base);
 
 	if (psbfb->gtt)
+<<<<<<< HEAD
 		drm_gem_object_unreference(&psbfb->gtt->gem);
+=======
+		drm_gem_object_unreference_unlocked(&psbfb->gtt->gem);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -676,6 +750,7 @@ static const struct drm_mode_config_funcs psb_mode_funcs = {
 	.output_poll_changed = psbfb_output_poll_changed,
 };
 
+<<<<<<< HEAD
 static int psb_create_backlight_property(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = dev->dev_private;
@@ -691,14 +766,24 @@ static int psb_create_backlight_property(struct drm_device *dev)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static void psb_setup_outputs(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = dev->dev_private;
 	struct drm_connector *connector;
 
 	drm_mode_create_scaling_mode_property(dev);
+<<<<<<< HEAD
 	psb_create_backlight_property(dev);
 
+=======
+
+	/* It is ok for this to fail - we just don't get backlight control */
+	if (!dev_priv->backlight_property)
+		dev_priv->backlight_property = drm_property_create_range(dev, 0,
+							"backlight", 0, 100);
+>>>>>>> v4.9.227
 	dev_priv->ops->output_init(dev);
 
 	list_for_each_entry(connector, &dev->mode_config.connector_list,
@@ -784,6 +869,7 @@ void psb_modeset_cleanup(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = dev->dev_private;
 	if (dev_priv->modeset) {
+<<<<<<< HEAD
 		mutex_lock(&dev->struct_mutex);
 
 		drm_kms_helper_poll_fini(dev);
@@ -791,5 +877,10 @@ void psb_modeset_cleanup(struct drm_device *dev)
 		drm_mode_config_cleanup(dev);
 
 		mutex_unlock(&dev->struct_mutex);
+=======
+		drm_kms_helper_poll_fini(dev);
+		psb_fbdev_fini(dev);
+		drm_mode_config_cleanup(dev);
+>>>>>>> v4.9.227
 	}
 }

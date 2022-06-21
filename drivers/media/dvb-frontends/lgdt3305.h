@@ -22,7 +22,10 @@
 #ifndef _LGDT3305_H_
 #define _LGDT3305_H_
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 
@@ -37,6 +40,14 @@ enum lgdt3305_tp_clock_edge {
 	LGDT3305_TPCLK_FALLING_EDGE = 1,
 };
 
+<<<<<<< HEAD
+=======
+enum lgdt3305_tp_clock_mode {
+	LGDT3305_TPCLK_GATED = 0,
+	LGDT3305_TPCLK_FIXED = 1,
+};
+
+>>>>>>> v4.9.227
 enum lgdt3305_tp_valid_polarity {
 	LGDT3305_TP_VALID_LOW = 0,
 	LGDT3305_TP_VALID_HIGH = 1,
@@ -70,6 +81,10 @@ struct lgdt3305_config {
 
 	enum lgdt3305_mpeg_mode mpeg_mode;
 	enum lgdt3305_tp_clock_edge tpclk_edge;
+<<<<<<< HEAD
+=======
+	enum lgdt3305_tp_clock_mode tpclk_mode;
+>>>>>>> v4.9.227
 	enum lgdt3305_tp_valid_polarity tpvalid_polarity;
 	enum lgdt_demod_chip_type demod_chip;
 };

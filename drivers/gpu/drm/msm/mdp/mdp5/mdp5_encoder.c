@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014, 2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> v4.9.227
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
  *
@@ -38,9 +42,16 @@ static struct mdp5_kms *get_kms(struct drm_encoder *encoder)
 	return to_mdp5_kms(to_mdp_kms(priv->kms));
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_BUS_SCALING
 #include <linux/msm-bus.h>
 #include <linux/msm-bus-board.h>
+=======
+#ifdef DOWNSTREAM_CONFIG_MSM_BUS_SCALING
+#include <mach/board.h>
+#include <mach/msm_bus.h>
+#include <mach/msm_bus_board.h>
+>>>>>>> v4.9.227
 #define MDP_BUS_VECTOR_ENTRY(ab_val, ib_val)		\
 	{						\
 		.src = MSM_BUS_MASTER_MDP_PORT0,	\
@@ -111,6 +122,7 @@ static const struct drm_encoder_funcs mdp5_encoder_funcs = {
 	.destroy = mdp5_encoder_destroy,
 };
 
+<<<<<<< HEAD
 static bool mdp5_encoder_mode_fixup(struct drm_encoder *encoder,
 		const struct drm_display_mode *mode,
 		struct drm_display_mode *adjusted_mode)
@@ -118,6 +130,8 @@ static bool mdp5_encoder_mode_fixup(struct drm_encoder *encoder,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 static void mdp5_encoder_mode_set(struct drm_encoder *encoder,
 		struct drm_display_mode *mode,
 		struct drm_display_mode *adjusted_mode)
@@ -286,12 +300,36 @@ static void mdp5_encoder_enable(struct drm_encoder *encoder)
 }
 
 static const struct drm_encoder_helper_funcs mdp5_encoder_helper_funcs = {
+<<<<<<< HEAD
 	.mode_fixup = mdp5_encoder_mode_fixup,
+=======
+>>>>>>> v4.9.227
 	.mode_set = mdp5_encoder_mode_set,
 	.disable = mdp5_encoder_disable,
 	.enable = mdp5_encoder_enable,
 };
 
+<<<<<<< HEAD
+=======
+int mdp5_encoder_get_linecount(struct drm_encoder *encoder)
+{
+	struct mdp5_encoder *mdp5_encoder = to_mdp5_encoder(encoder);
+	struct mdp5_kms *mdp5_kms = get_kms(encoder);
+	int intf = mdp5_encoder->intf.num;
+
+	return mdp5_read(mdp5_kms, REG_MDP5_INTF_LINE_COUNT(intf));
+}
+
+u32 mdp5_encoder_get_framecount(struct drm_encoder *encoder)
+{
+	struct mdp5_encoder *mdp5_encoder = to_mdp5_encoder(encoder);
+	struct mdp5_kms *mdp5_kms = get_kms(encoder);
+	int intf = mdp5_encoder->intf.num;
+
+	return mdp5_read(mdp5_kms, REG_MDP5_INTF_FRAME_COUNT(intf));
+}
+
+>>>>>>> v4.9.227
 int mdp5_encoder_set_split_display(struct drm_encoder *encoder,
 					struct drm_encoder *slave_encoder)
 {
@@ -311,18 +349,30 @@ int mdp5_encoder_set_split_display(struct drm_encoder *encoder,
 	 * to use the master's enable signal for the slave encoder.
 	 */
 	if (intf_num == 1)
+<<<<<<< HEAD
 		data |= MDP5_MDP_SPLIT_DPL_LOWER_INTF2_TG_SYNC;
 	else if (intf_num == 2)
 		data |= MDP5_MDP_SPLIT_DPL_LOWER_INTF1_TG_SYNC;
+=======
+		data |= MDP5_SPLIT_DPL_LOWER_INTF2_TG_SYNC;
+	else if (intf_num == 2)
+		data |= MDP5_SPLIT_DPL_LOWER_INTF1_TG_SYNC;
+>>>>>>> v4.9.227
 	else
 		return -EINVAL;
 
 	/* Make sure clocks are on when connectors calling this function. */
 	mdp5_enable(mdp5_kms);
 	/* Dumb Panel, Sync mode */
+<<<<<<< HEAD
 	mdp5_write(mdp5_kms, REG_MDP5_MDP_SPLIT_DPL_UPPER(0), 0);
 	mdp5_write(mdp5_kms, REG_MDP5_MDP_SPLIT_DPL_LOWER(0), data);
 	mdp5_write(mdp5_kms, REG_MDP5_MDP_SPLIT_DPL_EN(0), 1);
+=======
+	mdp5_write(mdp5_kms, REG_MDP5_SPLIT_DPL_UPPER, 0);
+	mdp5_write(mdp5_kms, REG_MDP5_SPLIT_DPL_LOWER, data);
+	mdp5_write(mdp5_kms, REG_MDP5_SPLIT_DPL_EN, 1);
+>>>>>>> v4.9.227
 
 	mdp5_ctl_pair(mdp5_encoder->ctl, mdp5_slave_enc->ctl, true);
 
@@ -353,7 +403,11 @@ struct drm_encoder *mdp5_encoder_init(struct drm_device *dev,
 
 	spin_lock_init(&mdp5_encoder->intf_lock);
 
+<<<<<<< HEAD
 	drm_encoder_init(dev, encoder, &mdp5_encoder_funcs, enc_type);
+=======
+	drm_encoder_init(dev, encoder, &mdp5_encoder_funcs, enc_type, NULL);
+>>>>>>> v4.9.227
 
 	drm_encoder_helper_add(encoder, &mdp5_encoder_helper_funcs);
 

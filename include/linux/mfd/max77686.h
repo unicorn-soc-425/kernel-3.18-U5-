@@ -119,18 +119,22 @@ enum max77802_regulators {
 	MAX77802_REG_MAX,
 };
 
+<<<<<<< HEAD
 struct max77686_regulator_data {
 	int id;
 	struct regulator_init_data *initdata;
 	struct device_node *of_node;
 };
 
+=======
+>>>>>>> v4.9.227
 enum max77686_opmode {
 	MAX77686_OPMODE_NORMAL,
 	MAX77686_OPMODE_LP,
 	MAX77686_OPMODE_STANDBY,
 };
 
+<<<<<<< HEAD
 enum max77802_opmode {
 	MAX77802_OPMODE_OFF,
 	MAX77802_OPMODE_STANDBY,
@@ -165,4 +169,6 @@ struct max77686_platform_data {
 	unsigned int buck4_voltage[8];
 };
 
+=======
+>>>>>>> v4.9.227
 #endif /* __LINUX_MFD_MAX77686_H */

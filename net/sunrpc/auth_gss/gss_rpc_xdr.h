@@ -25,7 +25,11 @@
 #include <linux/sunrpc/clnt.h>
 #include <linux/sunrpc/xprtsock.h>
 
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> v4.9.227
 # define RPCDBG_FACILITY	RPCDBG_AUTH
 #endif
 

@@ -11,26 +11,43 @@
 
 #include <linux/linkage.h>
 #include <asm/alternative-asm.h>
+<<<<<<< HEAD
 #include <asm/dwarf2.h>
 
 /* if you want SMP support, implement these with real spinlocks */
 .macro LOCK reg
 	pushfl_cfi
+=======
+
+/* if you want SMP support, implement these with real spinlocks */
+.macro LOCK reg
+	pushfl
+>>>>>>> v4.9.227
 	cli
 .endm
 
 .macro UNLOCK reg
+<<<<<<< HEAD
 	popfl_cfi
+=======
+	popfl
+>>>>>>> v4.9.227
 .endm
 
 #define BEGIN(op) \
 .macro endp; \
+<<<<<<< HEAD
 	CFI_ENDPROC; \
+=======
+>>>>>>> v4.9.227
 ENDPROC(atomic64_##op##_386); \
 .purgem endp; \
 .endm; \
 ENTRY(atomic64_##op##_386); \
+<<<<<<< HEAD
 	CFI_STARTPROC; \
+=======
+>>>>>>> v4.9.227
 	LOCK v;
 
 #define ENDP endp

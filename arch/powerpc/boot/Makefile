@@ -19,15 +19,33 @@
 
 all: $(obj)/zImage
 
+<<<<<<< HEAD
 BOOTCFLAGS    := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		 -fno-strict-aliasing -Os -msoft-float -pipe \
 		 -fomit-frame-pointer -fno-builtin -fPIC -nostdinc \
 		 -isystem $(shell $(CROSS32CC) -print-file-name=include)
+=======
+compress-$(CONFIG_KERNEL_GZIP) := CONFIG_KERNEL_GZIP
+compress-$(CONFIG_KERNEL_XZ)   := CONFIG_KERNEL_XZ
+
+BOOTCFLAGS    := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+		 -fno-strict-aliasing -Os -msoft-float -pipe \
+		 -fomit-frame-pointer -fno-builtin -fPIC -nostdinc \
+		 -isystem $(shell $(CROSS32CC) -print-file-name=include) \
+		 -D$(compress-y)
+
+>>>>>>> v4.9.227
 ifdef CONFIG_PPC64_BOOT_WRAPPER
 BOOTCFLAGS	+= -m64
 endif
 ifdef CONFIG_CPU_BIG_ENDIAN
 BOOTCFLAGS	+= -mbig-endian
+<<<<<<< HEAD
+=======
+else
+BOOTCFLAGS	+= -mlittle-endian
+BOOTCFLAGS	+= $(call cc-option,-mabi=elfv2)
+>>>>>>> v4.9.227
 endif
 
 BOOTAFLAGS	:= -D__ASSEMBLY__ $(BOOTCFLAGS) -traditional -nostdinc
@@ -40,7 +58,11 @@ ifeq ($(call cc-option-yn, -fstack-protector),y)
 BOOTCFLAGS	+= -fno-stack-protector
 endif
 
+<<<<<<< HEAD
 BOOTCFLAGS	+= -I$(obj) -I$(srctree)/$(obj)
+=======
+BOOTCFLAGS	+= -I$(objtree)/$(obj) -I$(srctree)/$(obj)
+>>>>>>> v4.9.227
 
 DTC_FLAGS	?= -p 1024
 
@@ -56,6 +78,7 @@ $(obj)/treeboot-currituck.o: BOOTCFLAGS += -mcpu=405
 $(obj)/treeboot-akebono.o: BOOTCFLAGS += -mcpu=405
 $(obj)/virtex405-head.o: BOOTAFLAGS += -mcpu=405
 
+<<<<<<< HEAD
 
 zlib       := inffast.c inflate.c inftrees.c
 zlibheader := inffast.h inffixed.h inflate.h inftrees.h infutil.h
@@ -63,10 +86,37 @@ zliblinuxheader := zlib.h zconf.h zutil.h
 
 $(addprefix $(obj)/,$(zlib) cuboot-c2k.o gunzip_util.o main.o): \
 	$(addprefix $(obj)/,$(zliblinuxheader)) $(addprefix $(obj)/,$(zlibheader))
+=======
+# The pre-boot decompressors pull in a lot of kernel headers and other source
+# files. This creates a bit of a dependency headache since we need to copy
+# these files into the build dir, fix up any includes and ensure that dependent
+# files are copied in the right order.
+
+# these need to be seperate variables because they are copied out of different
+# directories in the kernel tree. Sure you COULd merge them, but it's a
+# cure-is-worse-than-disease situation.
+zlib-decomp-$(CONFIG_KERNEL_GZIP) := decompress_inflate.c
+zlib-$(CONFIG_KERNEL_GZIP) := inffast.c inflate.c inftrees.c
+zlibheader-$(CONFIG_KERNEL_GZIP) := inffast.h inffixed.h inflate.h inftrees.h infutil.h
+zliblinuxheader-$(CONFIG_KERNEL_GZIP) := zlib.h zconf.h zutil.h
+
+$(addprefix $(obj)/, decompress.o): \
+	$(addprefix $(obj)/,$(zlib-decomp-y))
+
+$(addprefix $(obj)/, $(zlib-decomp-y)): \
+	$(addprefix $(obj)/,$(zliblinuxheader-y)) \
+	$(addprefix $(obj)/,$(zlibheader-y)) \
+	$(addprefix $(obj)/,$(zlib-y))
+
+$(addprefix $(obj)/,$(zlib-y)): \
+	$(addprefix $(obj)/,$(zliblinuxheader-y)) \
+	$(addprefix $(obj)/,$(zlibheader-y))
+>>>>>>> v4.9.227
 
 libfdt       := fdt.c fdt_ro.c fdt_wip.c fdt_sw.c fdt_rw.c fdt_strerror.c
 libfdtheader := fdt.h libfdt.h libfdt_internal.h
 
+<<<<<<< HEAD
 $(addprefix $(obj)/,$(libfdt) libfdt-wrapper.o simpleboot.o epapr.o): \
 	$(addprefix $(obj)/,$(libfdtheader))
 
@@ -76,6 +126,19 @@ src-wlib-y := string.S crt0.S crtsavres.S stdio.c main.c \
 		gunzip_util.c elf_util.c $(zlib) devtree.c stdlib.c \
 		oflib.c ofconsole.c cuboot.c mpsc.c cpm-serial.c \
 		uartlite.c mpc52xx-psc.c
+=======
+$(addprefix $(obj)/,$(libfdt) libfdt-wrapper.o simpleboot.o epapr.o opal.o \
+	treeboot-akebono.o treeboot-currituck.o treeboot-iss4xx.o): \
+	$(addprefix $(obj)/,$(libfdtheader))
+
+src-wlib-y := string.S crt0.S crtsavres.S stdio.c decompress.c main.c \
+		$(libfdt) libfdt-wrapper.c \
+		ns16550.c serial.c simple_alloc.c div64.S util.S \
+		elf_util.c $(zlib-y) devtree.c stdlib.c \
+		oflib.c ofconsole.c cuboot.c mpsc.c cpm-serial.c \
+		uartlite.c mpc52xx-psc.c opal.c
+src-wlib-$(CONFIG_PPC64_BOOT_WRAPPER) +=  opal-calls.S
+>>>>>>> v4.9.227
 src-wlib-$(CONFIG_40x) += 4xx.c planetcore.c
 src-wlib-$(CONFIG_44x) += 4xx.c ebony.c bamboo.c
 src-wlib-$(CONFIG_8xx) += mpc8xx.c planetcore.c fsl-soc.c
@@ -110,8 +173,12 @@ src-plat-$(CONFIG_EPAPR_BOOT) += epapr.c epapr-wrapper.c
 src-plat-$(CONFIG_PPC_PSERIES) += pseries-head.S
 src-plat-$(CONFIG_PPC_POWERNV) += pseries-head.S
 src-plat-$(CONFIG_PPC_IBM_CELL_BLADE) += pseries-head.S
+<<<<<<< HEAD
 src-plat-$(CONFIG_PPC_CELLEB) += pseries-head.S
 src-plat-$(CONFIG_PPC_CELL_QPACE) += pseries-head.S
+=======
+src-plat-$(CONFIG_MVME7100) += motload-head.S mvme7100.c
+>>>>>>> v4.9.227
 
 src-wlib := $(sort $(src-wlib-y))
 src-plat := $(sort $(src-plat-y))
@@ -123,6 +190,7 @@ obj-wlib := $(addsuffix .o, $(basename $(addprefix $(obj)/, $(src-wlib))))
 obj-plat := $(addsuffix .o, $(basename $(addprefix $(obj)/, $(src-plat))))
 obj-plat: $(libfdt)
 
+<<<<<<< HEAD
 quiet_cmd_copy_zlib = COPY    $@
       cmd_copy_zlib = sed "s@__used@@;s@<linux/\([^>]*\).*@\"\1\"@" $< > $@
 
@@ -140,6 +208,22 @@ $(addprefix $(obj)/,$(zlibheader)): $(obj)/%: $(srctree)/lib/zlib_inflate/%
 
 $(addprefix $(obj)/,$(zliblinuxheader)): $(obj)/%: $(srctree)/include/linux/%
 	$(call cmd,copy_zliblinuxheader)
+=======
+quiet_cmd_copy_kern_src = COPY    $@
+      cmd_copy_kern_src = sed -f $(srctree)/arch/powerpc/boot/fixup-headers.sed $< > $@
+
+$(addprefix $(obj)/,$(zlib-y)): $(obj)/%: $(srctree)/lib/zlib_inflate/%
+	$(call cmd,copy_kern_src)
+
+$(addprefix $(obj)/,$(zlibheader-y)): $(obj)/%: $(srctree)/lib/zlib_inflate/%
+	$(call cmd,copy_kern_src)
+
+$(addprefix $(obj)/,$(zliblinuxheader-y)): $(obj)/%: $(srctree)/include/linux/%
+	$(call cmd,copy_kern_src)
+
+$(addprefix $(obj)/,$(zlib-decomp-y)): $(obj)/%: $(srctree)/lib/%
+	$(call cmd,copy_kern_src)
+>>>>>>> v4.9.227
 
 quiet_cmd_copy_libfdt = COPY    $@
       cmd_copy_libfdt = cp $< $@
@@ -148,17 +232,28 @@ $(addprefix $(obj)/,$(libfdt) $(libfdtheader)): $(obj)/%: $(srctree)/scripts/dtc
 	$(call cmd,copy_libfdt)
 
 $(obj)/empty.c:
+<<<<<<< HEAD
 	@touch $@
+=======
+	$(Q)touch $@
+>>>>>>> v4.9.227
 
 $(obj)/zImage.lds: $(obj)/%: $(srctree)/$(src)/%.S
 	$(CROSS32CC) $(cpp_flags) -E -Wp,-MD,$(depfile) -P -Upowerpc \
 		-D__ASSEMBLY__ -DLINKER_SCRIPT -o $@ $<
 
 $(obj)/zImage.coff.lds $(obj)/zImage.ps3.lds : $(obj)/%: $(srctree)/$(src)/%.S
+<<<<<<< HEAD
 	@cp $< $@
 
 clean-files := $(zlib) $(zlibheader) $(zliblinuxheader) \
 		$(libfdt) $(libfdtheader) \
+=======
+	$(Q)cp $< $@
+
+clean-files := $(zlib-) $(zlibheader-) $(zliblinuxheader-) \
+		$(zlib-decomp-) $(libfdt) $(libfdtheader) \
+>>>>>>> v4.9.227
 		empty.c zImage.coff.lds zImage.ps3.lds zImage.lds
 
 quiet_cmd_bootcc = BOOTCC  $@
@@ -205,18 +300,32 @@ CROSSWRAP := -C "$(CROSS_COMPILE)"
 endif
 endif
 
+<<<<<<< HEAD
 # args (to if_changed): 1 = (this rule), 2 = platform, 3 = dts 4=dtb 5=initrd
 quiet_cmd_wrap	= WRAP    $@
       cmd_wrap	=$(CONFIG_SHELL) $(wrapper) -c -o $@ -p $2 $(CROSSWRAP) \
 		$(if $3, -s $3)$(if $4, -d $4)$(if $5, -i $5) vmlinux
+=======
+compressor-$(CONFIG_KERNEL_GZIP) := gz
+compressor-$(CONFIG_KERNEL_XZ)   := xz
+
+# args (to if_changed): 1 = (this rule), 2 = platform, 3 = dts 4=dtb 5=initrd
+quiet_cmd_wrap	= WRAP    $@
+      cmd_wrap	=$(CONFIG_SHELL) $(wrapper) -Z $(compressor-y) -c -o $@ -p $2 \
+		$(CROSSWRAP) $(if $3, -s $3)$(if $4, -d $4)$(if $5, -i $5) \
+		vmlinux
+>>>>>>> v4.9.227
 
 image-$(CONFIG_PPC_PSERIES)		+= zImage.pseries
 image-$(CONFIG_PPC_POWERNV)		+= zImage.pseries
 image-$(CONFIG_PPC_MAPLE)		+= zImage.maple
 image-$(CONFIG_PPC_IBM_CELL_BLADE)	+= zImage.pseries
 image-$(CONFIG_PPC_PS3)			+= dtbImage.ps3
+<<<<<<< HEAD
 image-$(CONFIG_PPC_CELLEB)		+= zImage.pseries
 image-$(CONFIG_PPC_CELL_QPACE)		+= zImage.pseries
+=======
+>>>>>>> v4.9.227
 image-$(CONFIG_PPC_CHRP)		+= zImage.chrp
 image-$(CONFIG_PPC_EFIKA)		+= zImage.chrp
 image-$(CONFIG_PPC_PMAC)		+= zImage.pmac
@@ -297,6 +406,12 @@ image-$(CONFIG_TQM8560)			+= cuImage.tqm8560
 image-$(CONFIG_SBC8548)			+= cuImage.sbc8548
 image-$(CONFIG_KSI8560)			+= cuImage.ksi8560
 
+<<<<<<< HEAD
+=======
+# Board ports in arch/powerpc/platform/86xx/Kconfig
+image-$(CONFIG_MVME7100)                += dtbImage.mvme7100
+
+>>>>>>> v4.9.227
 # Board ports in arch/powerpc/platform/embedded6xx/Kconfig
 image-$(CONFIG_STORCENTER)		+= cuImage.storcenter
 image-$(CONFIG_MPC7448HPC2)		+= cuImage.mpc7448hpc2
@@ -317,7 +432,11 @@ endif
 # Allow extra targets to be added to the defconfig
 image-y	+= $(subst ",,$(CONFIG_EXTRA_TARGETS))
 
+<<<<<<< HEAD
 initrd-  := $(patsubst zImage%, zImage.initrd%, $(image-n) $(image-))
+=======
+initrd-  := $(patsubst zImage%, zImage.initrd%, $(image-))
+>>>>>>> v4.9.227
 initrd-y := $(patsubst zImage%, zImage.initrd%, \
 		$(patsubst dtbImage%, dtbImage.initrd%, \
 		$(patsubst simpleImage%, simpleImage.initrd%, \
@@ -379,15 +498,27 @@ $(obj)/treeImage.%: vmlinux $(obj)/%.dtb $(wrapperbits)
 $(obj)/%.dtb: $(src)/dts/%.dts FORCE
 	$(call if_changed_dep,dtc)
 
+<<<<<<< HEAD
+=======
+$(obj)/%.dtb: $(src)/dts/fsl/%.dts FORCE
+	$(call if_changed_dep,dtc)
+
+>>>>>>> v4.9.227
 # If there isn't a platform selected then just strip the vmlinux.
 ifeq (,$(image-y))
 image-y := vmlinux.strip
 endif
 
 $(obj)/zImage:		$(addprefix $(obj)/, $(image-y))
+<<<<<<< HEAD
 	@rm -f $@; ln $< $@
 $(obj)/zImage.initrd:	$(addprefix $(obj)/, $(initrd-y))
 	@rm -f $@; ln $< $@
+=======
+	$(Q)rm -f $@; ln $< $@
+$(obj)/zImage.initrd:	$(addprefix $(obj)/, $(initrd-y))
+	$(Q)rm -f $@; ln $< $@
+>>>>>>> v4.9.227
 
 # Only install the vmlinux
 install: $(CONFIGURE) $(addprefix $(obj)/, $(image-y))
@@ -404,8 +535,14 @@ clean-files += $(image-) $(initrd-) cuImage.* dtbImage.* treeImage.* \
 	zImage.maple simpleImage.* otheros.bld *.dtb
 
 # clean up files cached by wrapper
+<<<<<<< HEAD
 clean-kernel := vmlinux.strip vmlinux.bin
 clean-kernel += $(addsuffix .gz,$(clean-kernel))
+=======
+clean-kernel-base := vmlinux.strip vmlinux.bin
+clean-kernel := $(addsuffix .gz,$(clean-kernel-base))
+clean-kernel += $(addsuffix .xz,$(clean-kernel-base))
+>>>>>>> v4.9.227
 # If not absolute clean-files are relative to $(obj).
 clean-files += $(addprefix $(objtree)/, $(clean-kernel))
 

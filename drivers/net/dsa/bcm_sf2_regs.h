@@ -61,6 +61,13 @@
 #define  LPI_COUNT_SHIFT		9
 #define  LPI_COUNT_MASK			0x3F
 
+<<<<<<< HEAD
+=======
+#define REG_LED_CNTRL_BASE		0x90
+#define REG_LED_CNTRL(x)		(REG_LED_CNTRL_BASE + (x) * 4)
+#define  SPDLNK_SRC_SEL			(1 << 24)
+
+>>>>>>> v4.9.227
 /* Register set relative to 'INTRL2_0' and 'INTRL2_1' */
 #define INTRL2_CPU_STATUS		0x00
 #define INTRL2_CPU_SET			0x04
@@ -111,6 +118,7 @@
 #define  RX_BCST_EN			(1 << 2)
 #define  RX_MCST_EN			(1 << 3)
 #define  RX_UCST_EN			(1 << 4)
+<<<<<<< HEAD
 #define  G_MISTP_STATE_SHIFT		5
 #define  G_MISTP_NO_STP			(0 << G_MISTP_STATE_SHIFT)
 #define  G_MISTP_DIS_STATE		(1 << G_MISTP_STATE_SHIFT)
@@ -119,6 +127,8 @@
 #define  G_MISTP_LEARN_STATE		(4 << G_MISTP_STATE_SHIFT)
 #define  G_MISTP_FWD_STATE		(5 << G_MISTP_STATE_SHIFT)
 #define  G_MISTP_STATE_MASK		0x7
+=======
+>>>>>>> v4.9.227
 
 #define CORE_SWMODE			0x0002c
 #define  SW_FWDG_MODE			(1 << 0)
@@ -159,6 +169,24 @@
 #define  EN_CHIP_RST			(1 << 6)
 #define  EN_SW_RESET			(1 << 4)
 
+<<<<<<< HEAD
+=======
+#define CORE_FAST_AGE_CTRL		0x00220
+#define  EN_FAST_AGE_STATIC		(1 << 0)
+#define  EN_AGE_DYNAMIC			(1 << 1)
+#define  EN_AGE_PORT			(1 << 2)
+#define  EN_AGE_VLAN			(1 << 3)
+#define  EN_AGE_SPT			(1 << 4)
+#define  EN_AGE_MCAST			(1 << 5)
+#define  FAST_AGE_STR_DONE		(1 << 7)
+
+#define CORE_FAST_AGE_PORT		0x00224
+#define  AGE_PORT_MASK			0xf
+
+#define CORE_FAST_AGE_VID		0x00228
+#define  AGE_VID_MASK			0x3fff
+
+>>>>>>> v4.9.227
 #define CORE_LNKSTS			0x00400
 #define  LNK_STS_MASK			0x1ff
 
@@ -186,6 +214,7 @@
 #define  BRCM_HDR_EN_P5			(1 << 1)
 #define  BRCM_HDR_EN_P7			(1 << 2)
 
+<<<<<<< HEAD
 #define CORE_BRCM_HDR_CTRL2		0x0828
 
 #define CORE_HL_PRTC_CTRL		0x0940
@@ -207,17 +236,40 @@
 #define  MLD_QRY_EN			(1 << 17)
 #define  MLD_QRY_FWD_MODE		(1 << 18)
 
+=======
+>>>>>>> v4.9.227
 #define CORE_RST_MIB_CNT_EN		0x0950
 
 #define CORE_BRCM_HDR_RX_DIS		0x0980
 #define CORE_BRCM_HDR_TX_DIS		0x0988
 
+<<<<<<< HEAD
+=======
+#define CORE_ARLA_VTBL_RWCTRL		0x1600
+#define  ARLA_VTBL_CMD_WRITE		0
+#define  ARLA_VTBL_CMD_READ		1
+#define  ARLA_VTBL_CMD_CLEAR		2
+#define  ARLA_VTBL_STDN			(1 << 7)
+
+#define CORE_ARLA_VTBL_ADDR		0x1604
+#define  VTBL_ADDR_INDEX_MASK		0xfff
+
+#define CORE_ARLA_VTBL_ENTRY		0x160c
+#define  FWD_MAP_MASK			0x1ff
+#define  UNTAG_MAP_MASK			0x1ff
+#define  UNTAG_MAP_SHIFT		9
+#define  MSTP_INDEX_MASK		0x7
+#define  MSTP_INDEX_SHIFT		18
+#define  FWD_MODE			(1 << 21)
+
+>>>>>>> v4.9.227
 #define CORE_MEM_PSM_VDD_CTRL		0x2380
 #define  P_TXQ_PSM_VDD_SHIFT		2
 #define  P_TXQ_PSM_VDD_MASK		0x3
 #define  P_TXQ_PSM_VDD(x)		(P_TXQ_PSM_VDD_MASK << \
 					((x) * P_TXQ_PSM_VDD_SHIFT))
 
+<<<<<<< HEAD
 #define	CORE_P0_MIB_OFFSET		0x8000
 #define P_MIB_SIZE			0x400
 #define CORE_P_MIB_OFFSET(x)		(CORE_P0_MIB_OFFSET + (x) * P_MIB_SIZE)
@@ -225,6 +277,18 @@
 #define CORE_PORT_VLAN_CTL_PORT(x)	(0xc400 + ((x) * 0x8))
 #define  PORT_VLAN_CTRL_MASK		0x1ff
 
+=======
+#define CORE_PORT_VLAN_CTL_PORT(x)	(0xc400 + ((x) * 0x8))
+#define  PORT_VLAN_CTRL_MASK		0x1ff
+
+#define CORE_DEFAULT_1Q_TAG_P(x)	(0xd040 + ((x) * 8))
+#define  CFI_SHIFT			12
+#define  PRI_SHIFT			13
+#define  PRI_MASK			0x7
+
+#define CORE_JOIN_ALL_VLAN_EN		0xd140
+
+>>>>>>> v4.9.227
 #define CORE_EEE_EN_CTRL		0x24800
 #define CORE_EEE_LPI_INDICATE		0x24810
 

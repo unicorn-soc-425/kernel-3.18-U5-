@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2010 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ * Copyright (C) 2010 Red Hat, Inc., Peter Zijlstra
+>>>>>>> v4.9.227
  *
  * Provides a framework for enqueueing and running callbacks from hardirq
  * context. The enqueueing is NMI-safe.
@@ -175,11 +179,19 @@ EXPORT_SYMBOL_GPL(irq_work_run);
 
 void irq_work_tick(void)
 {
+<<<<<<< HEAD
 	struct llist_head *raised = &__get_cpu_var(raised_list);
 
 	if (!llist_empty(raised) && !arch_irq_work_has_interrupt())
 		irq_work_run_list(raised);
 	irq_work_run_list(&__get_cpu_var(lazy_list));
+=======
+	struct llist_head *raised = this_cpu_ptr(&raised_list);
+
+	if (!llist_empty(raised) && !arch_irq_work_has_interrupt())
+		irq_work_run_list(raised);
+	irq_work_run_list(this_cpu_ptr(&lazy_list));
+>>>>>>> v4.9.227
 }
 
 /*

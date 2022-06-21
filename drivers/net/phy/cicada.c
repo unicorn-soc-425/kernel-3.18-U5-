@@ -114,7 +114,10 @@ static struct phy_driver cis820x_driver[] = {
 	.read_status	= &genphy_read_status,
 	.ack_interrupt	= &cis820x_ack_interrupt,
 	.config_intr	= &cis820x_config_intr,
+<<<<<<< HEAD
 	.driver		= { .owner = THIS_MODULE,},
+=======
+>>>>>>> v4.9.227
 }, {
 	.phy_id		= 0x000fc440,
 	.name		= "Cicada Cis8204",
@@ -126,6 +129,7 @@ static struct phy_driver cis820x_driver[] = {
 	.read_status	= &genphy_read_status,
 	.ack_interrupt	= &cis820x_ack_interrupt,
 	.config_intr	= &cis820x_config_intr,
+<<<<<<< HEAD
 	.driver		= { .owner = THIS_MODULE,},
 } };
 
@@ -143,6 +147,11 @@ static void __exit cicada_exit(void)
 
 module_init(cicada_init);
 module_exit(cicada_exit);
+=======
+} };
+
+module_phy_driver(cis820x_driver);
+>>>>>>> v4.9.227
 
 static struct mdio_device_id __maybe_unused cicada_tbl[] = {
 	{ 0x000fc410, 0x000ffff0 },

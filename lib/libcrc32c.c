@@ -36,13 +36,21 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/crc32c.h>
+>>>>>>> v4.9.227
 
 static struct crypto_shash *tfm;
 
 u32 crc32c(u32 crc, const void *address, unsigned int length)
 {
 	SHASH_DESC_ON_STACK(shash, tfm);
+<<<<<<< HEAD
 	u32 *ctx = (u32 *)shash_desc_ctx(shash);
+=======
+	u32 ret, *ctx = (u32 *)shash_desc_ctx(shash);
+>>>>>>> v4.9.227
 	int err;
 
 	shash->tfm = tfm;
@@ -52,7 +60,13 @@ u32 crc32c(u32 crc, const void *address, unsigned int length)
 	err = crypto_shash_update(shash, address, length);
 	BUG_ON(err);
 
+<<<<<<< HEAD
 	return *ctx;
+=======
+	ret = *ctx;
+	barrier_data(ctx);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 EXPORT_SYMBOL(crc32c);

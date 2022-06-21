@@ -1,6 +1,10 @@
 /*
  * Linux ARCnet driver - RFC1201 (standard) packet encapsulation
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> v4.9.227
  * Written 1994-1999 by Avery Pennarun.
  * Derived from skeleton.c by Donald Becker.
  *
@@ -23,17 +27,30 @@
  *
  * **********************
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/gfp.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/if_arp.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/arcdevice.h>
 
 MODULE_LICENSE("GPL");
 #define VERSION "arcnet: RFC1201 \"standard\" (`a') encapsulation support loaded.\n"
 
+=======
+
+#include "arcdevice.h"
+
+MODULE_LICENSE("GPL");
+>>>>>>> v4.9.227
 
 static __be16 type_trans(struct sk_buff *skb, struct net_device *dev);
 static void rx(struct net_device *dev, int bufnum,
@@ -44,8 +61,12 @@ static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 		      int bufnum);
 static int continue_tx(struct net_device *dev, int bufnum);
 
+<<<<<<< HEAD
 static struct ArcProto rfc1201_proto =
 {
+=======
+static struct ArcProto rfc1201_proto = {
+>>>>>>> v4.9.227
 	.suffix		= 'a',
 	.mtu		= 1500,	/* could be more, but some receivers can't handle it... */
 	.is_ip          = 1,    /* This is for sending IP and ARP packages */
@@ -56,10 +77,16 @@ static struct ArcProto rfc1201_proto =
 	.ack_tx         = NULL
 };
 
+<<<<<<< HEAD
 
 static int __init arcnet_rfc1201_init(void)
 {
 	printk(VERSION);
+=======
+static int __init arcnet_rfc1201_init(void)
+{
+	pr_info("%s\n", "RFC1201 \"standard\" (`a') encapsulation support loaded");
+>>>>>>> v4.9.227
 
 	arc_proto_map[ARC_P_IP]
 	    = arc_proto_map[ARC_P_IPV6]
@@ -84,14 +111,23 @@ static void __exit arcnet_rfc1201_exit(void)
 module_init(arcnet_rfc1201_init);
 module_exit(arcnet_rfc1201_exit);
 
+<<<<<<< HEAD
 /*
  * Determine a packet's protocol ID.
  * 
+=======
+/* Determine a packet's protocol ID.
+ *
+>>>>>>> v4.9.227
  * With ARCnet we have to convert everything to Ethernet-style stuff.
  */
 static __be16 type_trans(struct sk_buff *skb, struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct archdr *pkt = (struct archdr *) skb->data;
+=======
+	struct archdr *pkt = (struct archdr *)skb->data;
+>>>>>>> v4.9.227
 	struct arc_rfc1201 *soft = &pkt->soft.rfc1201;
 	int hdr_size = ARC_HDR_SIZE + RFC1201_HDR_SIZE;
 
@@ -99,9 +135,15 @@ static __be16 type_trans(struct sk_buff *skb, struct net_device *dev)
 	skb_reset_mac_header(skb);
 	skb_pull(skb, hdr_size);
 
+<<<<<<< HEAD
 	if (pkt->hard.dest == 0)
 		skb->pkt_type = PACKET_BROADCAST;
 	else if (dev->flags & IFF_PROMISC) {
+=======
+	if (pkt->hard.dest == 0) {
+		skb->pkt_type = PACKET_BROADCAST;
+	} else if (dev->flags & IFF_PROMISC) {
+>>>>>>> v4.9.227
 		/* if we're not sending to ourselves :) */
 		if (pkt->hard.dest != dev->dev_addr[0])
 			skb->pkt_type = PACKET_OTHERHOST;
@@ -129,7 +171,10 @@ static __be16 type_trans(struct sk_buff *skb, struct net_device *dev)
 	return htons(ETH_P_IP);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /* packet receiver */
 static void rx(struct net_device *dev, int bufnum,
 	       struct archdr *pkthdr, int length)
@@ -141,7 +186,12 @@ static void rx(struct net_device *dev, int bufnum,
 	int saddr = pkt->hard.source, ofs;
 	struct Incoming *in = &lp->rfc1201.incoming[saddr];
 
+<<<<<<< HEAD
 	BUGMSG(D_DURING, "it's an RFC1201 packet (length=%d)\n", length);
+=======
+	arc_printk(D_DURING, dev, "it's an RFC1201 packet (length=%d)\n",
+		   length);
+>>>>>>> v4.9.227
 
 	if (length >= MinTU)
 		ofs = 512 - length;
@@ -149,11 +199,19 @@ static void rx(struct net_device *dev, int bufnum,
 		ofs = 256 - length;
 
 	if (soft->split_flag == 0xFF) {		/* Exception Packet */
+<<<<<<< HEAD
 		if (length >= 4 + RFC1201_HDR_SIZE)
 			BUGMSG(D_DURING, "compensating for exception packet\n");
 		else {
 			BUGMSG(D_EXTRA, "short RFC1201 exception packet from %02Xh",
 			       saddr);
+=======
+		if (length >= 4 + RFC1201_HDR_SIZE) {
+			arc_printk(D_DURING, dev, "compensating for exception packet\n");
+		} else {
+			arc_printk(D_EXTRA, dev, "short RFC1201 exception packet from %02Xh",
+				   saddr);
+>>>>>>> v4.9.227
 			return;
 		}
 
@@ -164,12 +222,22 @@ static void rx(struct net_device *dev, int bufnum,
 				      soft, sizeof(pkt->soft));
 	}
 	if (!soft->split_flag) {	/* not split */
+<<<<<<< HEAD
 		BUGMSG(D_RX, "incoming is not split (splitflag=%d)\n",
 		       soft->split_flag);
 
 		if (in->skb) {	/* already assembling one! */
 			BUGMSG(D_EXTRA, "aborting assembly (seq=%d) for unsplit packet (splitflag=%d, seq=%d)\n",
 			 in->sequence, soft->split_flag, soft->sequence);
+=======
+		arc_printk(D_RX, dev, "incoming is not split (splitflag=%d)\n",
+			   soft->split_flag);
+
+		if (in->skb) {	/* already assembling one! */
+			arc_printk(D_EXTRA, dev, "aborting assembly (seq=%d) for unsplit packet (splitflag=%d, seq=%d)\n",
+				   in->sequence, soft->split_flag,
+				   soft->sequence);
+>>>>>>> v4.9.227
 			lp->rfc1201.aborted_seq = soft->sequence;
 			dev_kfree_skb_irq(in->skb);
 			dev->stats.rx_errors++;
@@ -179,14 +247,19 @@ static void rx(struct net_device *dev, int bufnum,
 		in->sequence = soft->sequence;
 
 		skb = alloc_skb(length + ARC_HDR_SIZE, GFP_ATOMIC);
+<<<<<<< HEAD
 		if (skb == NULL) {
 			BUGMSG(D_NORMAL, "Memory squeeze, dropping packet.\n");
+=======
+		if (!skb) {
+>>>>>>> v4.9.227
 			dev->stats.rx_dropped++;
 			return;
 		}
 		skb_put(skb, length + ARC_HDR_SIZE);
 		skb->dev = dev;
 
+<<<<<<< HEAD
 		pkt = (struct archdr *) skb->data;
 		soft = &pkt->soft.rfc1201;
 
@@ -222,15 +295,61 @@ static void rx(struct net_device *dev, int bufnum,
 			} else {
 				BUGMSG(D_NORMAL, "funny-shaped ARP packet. (%Xh, %Xh)\n",
 				       arp->ar_hln, arp->ar_pln);
+=======
+		pkt = (struct archdr *)skb->data;
+		soft = &pkt->soft.rfc1201;
+
+		/* up to sizeof(pkt->soft) has already
+		 * been copied from the card
+		 */
+		memcpy(pkt, pkthdr, sizeof(struct archdr));
+		if (length > sizeof(pkt->soft))
+			lp->hw.copy_from_card(dev, bufnum,
+					      ofs + sizeof(pkt->soft),
+					      pkt->soft.raw + sizeof(pkt->soft),
+					      length - sizeof(pkt->soft));
+
+		/* ARP packets have problems when sent from some DOS systems:
+		 * the source address is always 0!
+		 * So we take the hardware source addr (which is impossible
+		 * to fumble) and insert it ourselves.
+		 */
+		if (soft->proto == ARC_P_ARP) {
+			struct arphdr *arp = (struct arphdr *)soft->payload;
+
+			/* make sure addresses are the right length */
+			if (arp->ar_hln == 1 && arp->ar_pln == 4) {
+				uint8_t *cptr = (uint8_t *)arp + sizeof(struct arphdr);
+
+				if (!*cptr) {	/* is saddr = 00? */
+					arc_printk(D_EXTRA, dev,
+						   "ARP source address was 00h, set to %02Xh\n",
+						   saddr);
+					dev->stats.rx_crc_errors++;
+					*cptr = saddr;
+				} else {
+					arc_printk(D_DURING, dev, "ARP source address (%Xh) is fine.\n",
+						   *cptr);
+				}
+			} else {
+				arc_printk(D_NORMAL, dev, "funny-shaped ARP packet. (%Xh, %Xh)\n",
+					   arp->ar_hln, arp->ar_pln);
+>>>>>>> v4.9.227
 				dev->stats.rx_errors++;
 				dev->stats.rx_crc_errors++;
 			}
 		}
+<<<<<<< HEAD
 		BUGLVL(D_SKB) arcnet_dump_skb(dev, skb, "rx");
+=======
+		if (BUGLVL(D_SKB))
+			arcnet_dump_skb(dev, skb, "rx");
+>>>>>>> v4.9.227
 
 		skb->protocol = type_trans(skb, dev);
 		netif_rx(skb);
 	} else {		/* split packet */
+<<<<<<< HEAD
 		/*
 		 * NOTE: MSDOS ARP packet correction should only need to apply to
 		 * unsplit packets, since ARP packets are so short.
@@ -255,6 +374,33 @@ static void rx(struct net_device *dev, int bufnum,
 			BUGMSG(D_EXTRA, "wrong seq number (saddr=%d, expected=%d, seq=%d, splitflag=%d)\n",
 			       saddr, in->sequence, soft->sequence,
 			       soft->split_flag);
+=======
+		/* NOTE: MSDOS ARP packet correction should only need to
+		 * apply to unsplit packets, since ARP packets are so short.
+		 *
+		 * My interpretation of the RFC1201 document is that if a
+		 * packet is received out of order, the entire assembly
+		 * process should be aborted.
+		 *
+		 * The RFC also mentions "it is possible for successfully
+		 * received packets to be retransmitted." As of 0.40 all
+		 * previously received packets are allowed, not just the
+		 * most recent one.
+		 *
+		 * We allow multiple assembly processes, one for each
+		 * ARCnet card possible on the network.
+		 * Seems rather like a waste of memory, but there's no
+		 * other way to be reliable.
+		 */
+
+		arc_printk(D_RX, dev, "packet is split (splitflag=%d, seq=%d)\n",
+			   soft->split_flag, in->sequence);
+
+		if (in->skb && in->sequence != soft->sequence) {
+			arc_printk(D_EXTRA, dev, "wrong seq number (saddr=%d, expected=%d, seq=%d, splitflag=%d)\n",
+				   saddr, in->sequence, soft->sequence,
+				   soft->split_flag);
+>>>>>>> v4.9.227
 			dev_kfree_skb_irq(in->skb);
 			in->skb = NULL;
 			dev->stats.rx_errors++;
@@ -262,6 +408,7 @@ static void rx(struct net_device *dev, int bufnum,
 			in->lastpacket = in->numpackets = 0;
 		}
 		if (soft->split_flag & 1) {	/* first packet in split */
+<<<<<<< HEAD
 			BUGMSG(D_RX, "brand new splitpacket (splitflag=%d)\n",
 			       soft->split_flag);
 			if (in->skb) {	/* already assembling one! */
@@ -269,17 +416,34 @@ static void rx(struct net_device *dev, int bufnum,
 				       "(splitflag=%d, seq=%d)\n",
 				       in->sequence, soft->split_flag,
 				       soft->sequence);
+=======
+			arc_printk(D_RX, dev, "brand new splitpacket (splitflag=%d)\n",
+				   soft->split_flag);
+			if (in->skb) {	/* already assembling one! */
+				arc_printk(D_EXTRA, dev, "aborting previous (seq=%d) assembly (splitflag=%d, seq=%d)\n",
+					   in->sequence, soft->split_flag,
+					   soft->sequence);
+>>>>>>> v4.9.227
 				dev->stats.rx_errors++;
 				dev->stats.rx_missed_errors++;
 				dev_kfree_skb_irq(in->skb);
 			}
 			in->sequence = soft->sequence;
+<<<<<<< HEAD
 			in->numpackets = ((unsigned) soft->split_flag >> 1) + 2;
 			in->lastpacket = 1;
 
 			if (in->numpackets > 16) {
 				BUGMSG(D_EXTRA, "incoming packet more than 16 segments; dropping. (splitflag=%d)\n",
 				       soft->split_flag);
+=======
+			in->numpackets = ((unsigned)soft->split_flag >> 1) + 2;
+			in->lastpacket = 1;
+
+			if (in->numpackets > 16) {
+				arc_printk(D_EXTRA, dev, "incoming packet more than 16 segments; dropping. (splitflag=%d)\n",
+					   soft->split_flag);
+>>>>>>> v4.9.227
 				lp->rfc1201.aborted_seq = soft->sequence;
 				dev->stats.rx_errors++;
 				dev->stats.rx_length_errors++;
@@ -287,14 +451,23 @@ static void rx(struct net_device *dev, int bufnum,
 			}
 			in->skb = skb = alloc_skb(508 * in->numpackets + ARC_HDR_SIZE,
 						  GFP_ATOMIC);
+<<<<<<< HEAD
 			if (skb == NULL) {
 				BUGMSG(D_NORMAL, "(split) memory squeeze, dropping packet.\n");
+=======
+			if (!skb) {
+				arc_printk(D_NORMAL, dev, "(split) memory squeeze, dropping packet.\n");
+>>>>>>> v4.9.227
 				lp->rfc1201.aborted_seq = soft->sequence;
 				dev->stats.rx_dropped++;
 				return;
 			}
 			skb->dev = dev;
+<<<<<<< HEAD
 			pkt = (struct archdr *) skb->data;
+=======
+			pkt = (struct archdr *)skb->data;
+>>>>>>> v4.9.227
 			soft = &pkt->soft.rfc1201;
 
 			memcpy(pkt, pkthdr, ARC_HDR_SIZE + RFC1201_HDR_SIZE);
@@ -302,37 +475,65 @@ static void rx(struct net_device *dev, int bufnum,
 
 			soft->split_flag = 0;	/* end result won't be split */
 		} else {	/* not first packet */
+<<<<<<< HEAD
 			int packetnum = ((unsigned) soft->split_flag >> 1) + 1;
 
 			/*
 			 * if we're not assembling, there's no point trying to
+=======
+			int packetnum = ((unsigned)soft->split_flag >> 1) + 1;
+
+			/* if we're not assembling, there's no point trying to
+>>>>>>> v4.9.227
 			 * continue.
 			 */
 			if (!in->skb) {
 				if (lp->rfc1201.aborted_seq != soft->sequence) {
+<<<<<<< HEAD
 					BUGMSG(D_EXTRA, "can't continue split without starting "
 					       "first! (splitflag=%d, seq=%d, aborted=%d)\n",
 					soft->split_flag, soft->sequence,
 					       lp->rfc1201.aborted_seq);
+=======
+					arc_printk(D_EXTRA, dev, "can't continue split without starting first! (splitflag=%d, seq=%d, aborted=%d)\n",
+						   soft->split_flag,
+						   soft->sequence,
+						   lp->rfc1201.aborted_seq);
+>>>>>>> v4.9.227
 					dev->stats.rx_errors++;
 					dev->stats.rx_missed_errors++;
 				}
 				return;
 			}
 			in->lastpacket++;
+<<<<<<< HEAD
 			if (packetnum != in->lastpacket) {	/* not the right flag! */
 				/* harmless duplicate? ignore. */
 				if (packetnum <= in->lastpacket - 1) {
 					BUGMSG(D_EXTRA, "duplicate splitpacket ignored! (splitflag=%d)\n",
 					       soft->split_flag);
+=======
+			/* if not the right flag */
+			if (packetnum != in->lastpacket) {
+				/* harmless duplicate? ignore. */
+				if (packetnum <= in->lastpacket - 1) {
+					arc_printk(D_EXTRA, dev, "duplicate splitpacket ignored! (splitflag=%d)\n",
+						   soft->split_flag);
+>>>>>>> v4.9.227
 					dev->stats.rx_errors++;
 					dev->stats.rx_frame_errors++;
 					return;
 				}
 				/* "bad" duplicate, kill reassembly */
+<<<<<<< HEAD
 				BUGMSG(D_EXTRA, "out-of-order splitpacket, reassembly "
 				       "(seq=%d) aborted (splitflag=%d, seq=%d)\n",
 				       in->sequence, soft->split_flag, soft->sequence);
+=======
+				arc_printk(D_EXTRA, dev, "out-of-order splitpacket, reassembly (seq=%d) aborted (splitflag=%d, seq=%d)\n",
+					   in->sequence, soft->split_flag,
+					   soft->sequence);
+>>>>>>> v4.9.227
 				lp->rfc1201.aborted_seq = soft->sequence;
 				dev_kfree_skb_irq(in->skb);
 				in->skb = NULL;
@@ -341,7 +542,11 @@ static void rx(struct net_device *dev, int bufnum,
 				in->lastpacket = in->numpackets = 0;
 				return;
 			}
+<<<<<<< HEAD
 			pkt = (struct archdr *) in->skb->data;
+=======
+			pkt = (struct archdr *)in->skb->data;
+>>>>>>> v4.9.227
 			soft = &pkt->soft.rfc1201;
 		}
 
@@ -357,11 +562,20 @@ static void rx(struct net_device *dev, int bufnum,
 			in->skb = NULL;
 			in->lastpacket = in->numpackets = 0;
 
+<<<<<<< HEAD
 	    BUGMSG(D_SKB_SIZE, "skb: received %d bytes from %02X (unsplit)\n",
     		skb->len, pkt->hard.source);
 	    BUGMSG(D_SKB_SIZE, "skb: received %d bytes from %02X (split)\n",
     		skb->len, pkt->hard.source);
 			BUGLVL(D_SKB) arcnet_dump_skb(dev, skb, "rx");
+=======
+			arc_printk(D_SKB_SIZE, dev, "skb: received %d bytes from %02X (unsplit)\n",
+				   skb->len, pkt->hard.source);
+			arc_printk(D_SKB_SIZE, dev, "skb: received %d bytes from %02X (split)\n",
+				   skb->len, pkt->hard.source);
+			if (BUGLVL(D_SKB))
+				arcnet_dump_skb(dev, skb, "rx");
+>>>>>>> v4.9.227
 
 			skb->protocol = type_trans(skb, dev);
 			netif_rx(skb);
@@ -369,14 +583,21 @@ static void rx(struct net_device *dev, int bufnum,
 	}
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /* Create the ARCnet hard/soft headers for RFC1201. */
 static int build_header(struct sk_buff *skb, struct net_device *dev,
 			unsigned short type, uint8_t daddr)
 {
 	struct arcnet_local *lp = netdev_priv(dev);
 	int hdr_size = ARC_HDR_SIZE + RFC1201_HDR_SIZE;
+<<<<<<< HEAD
 	struct archdr *pkt = (struct archdr *) skb_push(skb, hdr_size);
+=======
+	struct archdr *pkt = (struct archdr *)skb_push(skb, hdr_size);
+>>>>>>> v4.9.227
 	struct arc_rfc1201 *soft = &pkt->soft.rfc1201;
 
 	/* set the protocol ID according to RFC1201 */
@@ -402,19 +623,32 @@ static int build_header(struct sk_buff *skb, struct net_device *dev,
 		soft->proto = ARC_P_ATALK;
 		break;
 	default:
+<<<<<<< HEAD
 		BUGMSG(D_NORMAL, "RFC1201: I don't understand protocol %d (%Xh)\n",
 		       type, type);
+=======
+		arc_printk(D_NORMAL, dev, "RFC1201: I don't understand protocol %d (%Xh)\n",
+			   type, type);
+>>>>>>> v4.9.227
 		dev->stats.tx_errors++;
 		dev->stats.tx_aborted_errors++;
 		return 0;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Set the source hardware address.
 	 *
 	 * This is pretty pointless for most purposes, but it can help in
 	 * debugging.  ARCnet does not allow us to change the source address in
 	 * the actual packet sent)
+=======
+	/* Set the source hardware address.
+	 *
+	 * This is pretty pointless for most purposes, but it can help in
+	 * debugging.  ARCnet does not allow us to change the source address
+	 * in the actual packet sent.
+>>>>>>> v4.9.227
 	 */
 	pkt->hard.source = *dev->dev_addr;
 
@@ -424,10 +658,17 @@ static int build_header(struct sk_buff *skb, struct net_device *dev,
 	/* see linux/net/ethernet/eth.c to see where I got the following */
 
 	if (dev->flags & (IFF_LOOPBACK | IFF_NOARP)) {
+<<<<<<< HEAD
 		/* 
 		 * FIXME: fill in the last byte of the dest ipaddr here to better
 		 * comply with RFC1051 in "noarp" mode.  For now, always broadcasting
 		 * will probably at least get packets sent out :)
+=======
+		/* FIXME: fill in the last byte of the dest ipaddr here
+		 * to better comply with RFC1051 in "noarp" mode.
+		 * For now, always broadcasting will probably at least get
+		 * packets sent out :)
+>>>>>>> v4.9.227
 		 */
 		pkt->hard.dest = 0;
 		return hdr_size;
@@ -437,7 +678,10 @@ static int build_header(struct sk_buff *skb, struct net_device *dev,
 	return hdr_size;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static void load_pkt(struct net_device *dev, struct arc_hardware *hard,
 		     struct arc_rfc1201 *soft, int softlen, int bufnum)
 {
@@ -461,8 +705,14 @@ static void load_pkt(struct net_device *dev, struct arc_hardware *hard,
 		hard->offset[1] = ofs - RFC1201_HDR_SIZE;
 		lp->hw.copy_to_card(dev, bufnum, ofs - RFC1201_HDR_SIZE,
 				    &excsoft, RFC1201_HDR_SIZE);
+<<<<<<< HEAD
 	} else
 		hard->offset[0] = ofs = 256 - softlen;
+=======
+	} else {
+		hard->offset[0] = ofs = 256 - softlen;
+	}
+>>>>>>> v4.9.227
 
 	lp->hw.copy_to_card(dev, bufnum, 0, hard, ARC_HDR_SIZE);
 	lp->hw.copy_to_card(dev, bufnum, ofs, soft, softlen);
@@ -470,7 +720,10 @@ static void load_pkt(struct net_device *dev, struct arc_hardware *hard,
 	lp->lastload_dest = hard->dest;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 		      int bufnum)
 {
@@ -478,11 +731,19 @@ static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 	const int maxsegsize = XMTU - RFC1201_HDR_SIZE;
 	struct Outgoing *out;
 
+<<<<<<< HEAD
 
 	BUGMSG(D_DURING, "prepare_tx: txbufs=%d/%d/%d\n",
 	       lp->next_tx, lp->cur_tx, bufnum);
 
 	length -= ARC_HDR_SIZE;	/* hard header is not included in packet length */
+=======
+	arc_printk(D_DURING, dev, "prepare_tx: txbufs=%d/%d/%d\n",
+		   lp->next_tx, lp->cur_tx, bufnum);
+
+	/* hard header is not included in packet length */
+	length -= ARC_HDR_SIZE;
+>>>>>>> v4.9.227
 	pkt->soft.rfc1201.split_flag = 0;
 
 	/* need to do a split packet? */
@@ -494,9 +755,15 @@ static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 		out->numsegs = (out->dataleft + maxsegsize - 1) / maxsegsize;
 		out->segnum = 0;
 
+<<<<<<< HEAD
 		BUGMSG(D_DURING, "rfc1201 prep_tx: ready for %d-segment split "
 		       "(%d bytes, seq=%d)\n", out->numsegs, out->length,
 		       pkt->soft.rfc1201.sequence);
+=======
+		arc_printk(D_DURING, dev, "rfc1201 prep_tx: ready for %d-segment split (%d bytes, seq=%d)\n",
+			   out->numsegs, out->length,
+			   pkt->soft.rfc1201.sequence);
+>>>>>>> v4.9.227
 
 		return 0;	/* not done */
 	}
@@ -506,7 +773,10 @@ static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 	return 1;		/* done */
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static int continue_tx(struct net_device *dev, int bufnum)
 {
 	struct arcnet_local *lp = netdev_priv(dev);
@@ -516,9 +786,15 @@ static int continue_tx(struct net_device *dev, int bufnum)
 	int maxsegsize = XMTU - RFC1201_HDR_SIZE;
 	int seglen;
 
+<<<<<<< HEAD
 	BUGMSG(D_DURING,
 	  "rfc1201 continue_tx: loading segment %d(+1) of %d (seq=%d)\n",
 	       out->segnum, out->numsegs, soft->sequence);
+=======
+	arc_printk(D_DURING, dev,
+		   "rfc1201 continue_tx: loading segment %d(+1) of %d (seq=%d)\n",
+		   out->segnum, out->numsegs, soft->sequence);
+>>>>>>> v4.9.227
 
 	/* the "new" soft header comes right before the data chunk */
 	newsoft = (struct arc_rfc1201 *)

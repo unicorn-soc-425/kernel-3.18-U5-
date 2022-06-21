@@ -18,6 +18,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <linux/bitmap.h>
+<<<<<<< HEAD
+=======
+#include <linux/time64.h>
+>>>>>>> v4.9.227
 
 #include "perf.h"
 #include "svghelper.h"
@@ -274,6 +278,7 @@ static char *time_to_string(u64 duration)
 
 	text[0] = 0;
 
+<<<<<<< HEAD
 	if (duration < 1000) /* less than 1 usec */
 		return text;
 
@@ -282,6 +287,16 @@ static char *time_to_string(u64 duration)
 		return text;
 	}
 	sprintf(text, "%.1f ms", duration / 1000.0 / 1000);
+=======
+	if (duration < NSEC_PER_USEC) /* less than 1 usec */
+		return text;
+
+	if (duration < NSEC_PER_MSEC) { /* less than 1 msec */
+		sprintf(text, "%.1f us", duration / (double)NSEC_PER_USEC);
+		return text;
+	}
+	sprintf(text, "%.1f ms", duration / (double)NSEC_PER_MSEC);
+>>>>>>> v4.9.227
 
 	return text;
 }
@@ -297,7 +312,11 @@ void svg_waiting(int Yslot, int cpu, u64 start, u64 end, const char *backtrace)
 
 	style = "waiting";
 
+<<<<<<< HEAD
 	if (end-start > 10 * 1000000) /* 10 msec */
+=======
+	if (end-start > 10 * NSEC_PER_MSEC) /* 10 msec */
+>>>>>>> v4.9.227
 		style = "WAITING";
 
 	text = time_to_string(end-start);
@@ -333,7 +352,11 @@ static char *cpu_model(void)
 	if (file) {
 		while (fgets(buf, 255, file)) {
 			if (strstr(buf, "model name")) {
+<<<<<<< HEAD
 				strncpy(cpu_m, &buf[13], 255);
+=======
+				strlcpy(cpu_m, &buf[13], 255);
+>>>>>>> v4.9.227
 				break;
 			}
 		}
@@ -748,7 +771,11 @@ static int str_to_bitmap(char *s, cpumask_t *b)
 		set_bit(c, cpumask_bits(b));
 	}
 
+<<<<<<< HEAD
 	cpu_map__delete(m);
+=======
+	cpu_map__put(m);
+>>>>>>> v4.9.227
 
 	return ret;
 }

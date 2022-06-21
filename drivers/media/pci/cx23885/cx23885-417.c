@@ -30,7 +30,11 @@
 #include <linux/slab.h>
 #include <media/v4l2-common.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
 #include <media/cx2341x.h>
+=======
+#include <media/drv-intf/cx2341x.h>
+>>>>>>> v4.9.227
 
 #include "cx23885.h"
 #include "cx23885-ioctl.h"
@@ -1138,9 +1142,15 @@ static int cx23885_initialize_codec(struct cx23885_dev *dev, int startencoder)
 
 /* ------------------------------------------------------------------ */
 
+<<<<<<< HEAD
 static int queue_setup(struct vb2_queue *q, const struct v4l2_format *fmt,
 			   unsigned int *num_buffers, unsigned int *num_planes,
 			   unsigned int sizes[], void *alloc_ctxs[])
+=======
+static int queue_setup(struct vb2_queue *q,
+			   unsigned int *num_buffers, unsigned int *num_planes,
+			   unsigned int sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	struct cx23885_dev *dev = q->drv_priv;
 
@@ -1154,15 +1164,23 @@ static int queue_setup(struct vb2_queue *q, const struct v4l2_format *fmt,
 
 static int buffer_prepare(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct cx23885_dev *dev = vb->vb2_queue->drv_priv;
 	struct cx23885_buffer *buf =
 		container_of(vb, struct cx23885_buffer, vb);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct cx23885_dev *dev = vb->vb2_queue->drv_priv;
+	struct cx23885_buffer *buf =
+		container_of(vbuf, struct cx23885_buffer, vb);
+>>>>>>> v4.9.227
 
 	return cx23885_buf_prepare(buf, &dev->ts1);
 }
 
 static void buffer_finish(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct cx23885_dev *dev = vb->vb2_queue->drv_priv;
 	struct cx23885_buffer *buf = container_of(vb,
 		struct cx23885_buffer, vb);
@@ -1171,12 +1189,26 @@ static void buffer_finish(struct vb2_buffer *vb)
 	cx23885_free_buffer(dev, buf);
 
 	dma_unmap_sg(&dev->pci->dev, sgt->sgl, sgt->nents, DMA_FROM_DEVICE);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct cx23885_dev *dev = vb->vb2_queue->drv_priv;
+	struct cx23885_buffer *buf = container_of(vbuf,
+		struct cx23885_buffer, vb);
+
+	cx23885_free_buffer(dev, buf);
+>>>>>>> v4.9.227
 }
 
 static void buffer_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct cx23885_dev *dev = vb->vb2_queue->drv_priv;
 	struct cx23885_buffer   *buf = container_of(vb,
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct cx23885_dev *dev = vb->vb2_queue->drv_priv;
+	struct cx23885_buffer   *buf = container_of(vbuf,
+>>>>>>> v4.9.227
 		struct cx23885_buffer, vb);
 
 	cx23885_buf_queue(&dev->ts1, buf);
@@ -1203,7 +1235,11 @@ static int cx23885_start_streaming(struct vb2_queue *q, unsigned int count)
 			struct cx23885_buffer, queue);
 
 		list_del(&buf->queue);
+<<<<<<< HEAD
 		vb2_buffer_done(&buf->vb, VB2_BUF_STATE_QUEUED);
+=======
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_QUEUED);
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&dev->slock, flags);
 	return ret;
@@ -1223,7 +1259,11 @@ static void cx23885_stop_streaming(struct vb2_queue *q)
 	cx23885_cancel_buffers(&dev->ts1);
 }
 
+<<<<<<< HEAD
 static struct vb2_ops cx23885_qops = {
+=======
+static const struct vb2_ops cx23885_qops = {
+>>>>>>> v4.9.227
 	.queue_setup    = queue_setup,
 	.buf_prepare  = buffer_prepare,
 	.buf_finish = buffer_finish,
@@ -1341,6 +1381,7 @@ static int vidioc_querycap(struct file *file, void  *priv,
 	strlcpy(cap->driver, dev->name, sizeof(cap->driver));
 	strlcpy(cap->card, cx23885_boards[tsport->dev->board].name,
 		sizeof(cap->card));
+<<<<<<< HEAD
 	sprintf(cap->bus_info, "PCI:%s", pci_name(dev->pci));
 	cap->capabilities =
 		V4L2_CAP_VIDEO_CAPTURE |
@@ -1349,6 +1390,15 @@ static int vidioc_querycap(struct file *file, void  *priv,
 		0;
 	if (dev->tuner_type != TUNER_ABSENT)
 		cap->capabilities |= V4L2_CAP_TUNER;
+=======
+	sprintf(cap->bus_info, "PCIe:%s", pci_name(dev->pci));
+	cap->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_READWRITE |
+			   V4L2_CAP_STREAMING;
+	if (dev->tuner_type != TUNER_ABSENT)
+		cap->device_caps |= V4L2_CAP_TUNER;
+	cap->capabilities = cap->device_caps | V4L2_CAP_VBI_CAPTURE |
+		V4L2_CAP_AUDIO | V4L2_CAP_DEVICE_CAPS;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1553,6 +1603,10 @@ int cx23885_417_register(struct cx23885_dev *dev)
 	q->mem_ops = &vb2_dma_sg_memops;
 	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 	q->lock = &dev->lock;
+<<<<<<< HEAD
+=======
+	q->dev = &dev->pci->dev;
+>>>>>>> v4.9.227
 
 	err = vb2_queue_init(q);
 	if (err < 0)

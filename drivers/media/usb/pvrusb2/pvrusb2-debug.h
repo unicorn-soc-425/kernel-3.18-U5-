@@ -57,6 +57,7 @@ extern int pvrusb2_debug;
 
 
 #endif /* __PVRUSB2_HDW_INTERNAL_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -67,3 +68,5 @@ extern int pvrusb2_debug;
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

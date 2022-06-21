@@ -44,7 +44,10 @@ typedef struct xtregs_coprocessor {
 
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> v4.9.227
 	unsigned long		flags;		/* low level flags */
 	unsigned long		status;		/* thread-synchronous flags */
 	__u32			cpu;		/* current CPU */
@@ -61,6 +64,7 @@ struct thread_info {
 	xtregs_user_t		xtregs_user;
 };
 
+<<<<<<< HEAD
 #else /* !__ASSEMBLY__ */
 
 /* offsets into the thread_info struct for assembly code access */
@@ -72,6 +76,8 @@ struct thread_info {
 #define TI_PRE_COUNT	 0x00000014
 #define TI_ADDR_LIMIT	 0x00000018
 
+=======
+>>>>>>> v4.9.227
 #endif
 
 /*
@@ -83,7 +89,10 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> v4.9.227
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
@@ -124,6 +133,10 @@ static inline struct thread_info *current_thread_info(void)
 #define TIF_MEMDIE		5	/* is terminating due to OOM killer */
 #define TIF_RESTORE_SIGMASK	6	/* restore signal mask in do_signal() */
 #define TIF_NOTIFY_RESUME	7	/* callback before returning to user */
+<<<<<<< HEAD
+=======
+#define TIF_DB_DISABLED		8	/* debug trap disabled for syscall */
+>>>>>>> v4.9.227
 
 #define _TIF_SYSCALL_TRACE	(1<<TIF_SYSCALL_TRACE)
 #define _TIF_SIGPENDING		(1<<TIF_SIGPENDING)

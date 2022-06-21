@@ -40,21 +40,35 @@ nvkm_pmu_send(struct nvkm_pmu *pmu, u32 reply[2],
 	struct nvkm_device *device = subdev->device;
 	u32 addr;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&subdev->mutex);
+>>>>>>> v4.9.227
 	/* wait for a free slot in the fifo */
 	addr  = nvkm_rd32(device, 0x10a4a0);
 	if (nvkm_msec(device, 2000,
 		u32 tmp = nvkm_rd32(device, 0x10a4b0);
 		if (tmp != (addr ^ 8))
 			break;
+<<<<<<< HEAD
 	) < 0)
 		return -EBUSY;
+=======
+	) < 0) {
+		mutex_unlock(&subdev->mutex);
+		return -EBUSY;
+	}
+>>>>>>> v4.9.227
 
 	/* we currently only support a single process at a time waiting
 	 * on a synchronous reply, take the PMU mutex and tell the
 	 * receive handler what we're waiting for
 	 */
 	if (reply) {
+<<<<<<< HEAD
 		mutex_lock(&subdev->mutex);
+=======
+>>>>>>> v4.9.227
 		pmu->recv.message = message;
 		pmu->recv.process = process;
 	}
@@ -81,9 +95,15 @@ nvkm_pmu_send(struct nvkm_pmu *pmu, u32 reply[2],
 		wait_event(pmu->recv.wait, (pmu->recv.process == 0));
 		reply[0] = pmu->recv.data[0];
 		reply[1] = pmu->recv.data[1];
+<<<<<<< HEAD
 		mutex_unlock(&subdev->mutex);
 	}
 
+=======
+	}
+
+	mutex_unlock(&subdev->mutex);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -272,7 +292,11 @@ nvkm_pmu_new_(const struct nvkm_pmu_func *func, struct nvkm_device *device,
 	struct nvkm_pmu *pmu;
 	if (!(pmu = *ppmu = kzalloc(sizeof(*pmu), GFP_KERNEL)))
 		return -ENOMEM;
+<<<<<<< HEAD
 	nvkm_subdev_ctor(&nvkm_pmu, device, index, 0, &pmu->subdev);
+=======
+	nvkm_subdev_ctor(&nvkm_pmu, device, index, &pmu->subdev);
+>>>>>>> v4.9.227
 	pmu->func = func;
 	INIT_WORK(&pmu->recv.work, nvkm_pmu_recv);
 	init_waitqueue_head(&pmu->recv.wait);

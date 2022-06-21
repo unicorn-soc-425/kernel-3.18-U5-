@@ -61,12 +61,19 @@ struct mnt_namespace;
 #define MNT_DOOMED		0x1000000
 #define MNT_SYNC_UMOUNT		0x2000000
 #define MNT_MARKED		0x4000000
+<<<<<<< HEAD
+=======
+#define MNT_UMOUNT		0x8000000
+>>>>>>> v4.9.227
 
 struct vfsmount {
 	struct dentry *mnt_root;	/* root of the mounted tree */
 	struct super_block *mnt_sb;	/* pointer to superblock */
 	int mnt_flags;
+<<<<<<< HEAD
 	void *data;
+=======
+>>>>>>> v4.9.227
 };
 
 struct file; /* forward dec */
@@ -81,6 +88,10 @@ extern void mntput(struct vfsmount *mnt);
 extern struct vfsmount *mntget(struct vfsmount *mnt);
 extern struct vfsmount *mnt_clone_internal(struct path *path);
 extern int __mnt_is_readonly(struct vfsmount *mnt);
+<<<<<<< HEAD
+=======
+extern bool mnt_may_suid(struct vfsmount *mnt);
+>>>>>>> v4.9.227
 
 struct path;
 extern struct vfsmount *clone_private_mount(struct path *path);
@@ -89,10 +100,21 @@ struct file_system_type;
 extern struct vfsmount *vfs_kern_mount(struct file_system_type *type,
 				      int flags, const char *name,
 				      void *data);
+<<<<<<< HEAD
+=======
+extern struct vfsmount *vfs_submount(const struct dentry *mountpoint,
+				     struct file_system_type *type,
+				     const char *name, void *data);
+>>>>>>> v4.9.227
 
 extern void mnt_set_expiry(struct vfsmount *mnt, struct list_head *expiry_list);
 extern void mark_mounts_for_expiry(struct list_head *mounts);
 
 extern dev_t name_to_dev_t(const char *name);
 
+<<<<<<< HEAD
+=======
+extern unsigned int sysctl_mount_max;
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_MOUNT_H */

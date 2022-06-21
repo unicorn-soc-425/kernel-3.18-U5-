@@ -60,8 +60,21 @@ DEFINE_PER_CPU(cpumask_t, cpu_sibling_map) = CPU_MASK_NONE;
 cpumask_t cpu_core_map[NR_CPUS] __read_mostly =
 	{ [0 ... NR_CPUS-1] = CPU_MASK_NONE };
 
+<<<<<<< HEAD
 EXPORT_PER_CPU_SYMBOL(cpu_sibling_map);
 EXPORT_SYMBOL(cpu_core_map);
+=======
+cpumask_t cpu_core_sib_map[NR_CPUS] __read_mostly = {
+	[0 ... NR_CPUS-1] = CPU_MASK_NONE };
+
+cpumask_t cpu_core_sib_cache_map[NR_CPUS] __read_mostly = {
+	[0 ... NR_CPUS - 1] = CPU_MASK_NONE };
+
+EXPORT_PER_CPU_SYMBOL(cpu_sibling_map);
+EXPORT_SYMBOL(cpu_core_map);
+EXPORT_SYMBOL(cpu_core_sib_map);
+EXPORT_SYMBOL(cpu_core_sib_cache_map);
+>>>>>>> v4.9.227
 
 static cpumask_t smp_commenced_mask;
 
@@ -130,7 +143,11 @@ void smp_callin(void)
 
 	local_irq_enable();
 
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> v4.9.227
 }
 
 void cpu_panic(void)
@@ -613,6 +630,7 @@ retry:
 	}
 }
 
+<<<<<<< HEAD
 /* Multi-cpu list version.  */
 static void hypervisor_xcall_deliver(struct trap_per_cpu *tb, int cnt)
 {
@@ -629,6 +647,50 @@ static void hypervisor_xcall_deliver(struct trap_per_cpu *tb, int cnt)
 	prev_sent = 0;
 	do {
 		int forward_progress, n_sent;
+=======
+#define	CPU_MONDO_COUNTER(cpuid)	(cpu_mondo_counter[cpuid])
+#define	MONDO_USEC_WAIT_MIN		2
+#define	MONDO_USEC_WAIT_MAX		100
+#define	MONDO_RETRY_LIMIT		500000
+
+/* Multi-cpu list version.
+ *
+ * Deliver xcalls to 'cnt' number of cpus in 'cpu_list'.
+ * Sometimes not all cpus receive the mondo, requiring us to re-send
+ * the mondo until all cpus have received, or cpus are truly stuck
+ * unable to receive mondo, and we timeout.
+ * Occasionally a target cpu strand is borrowed briefly by hypervisor to
+ * perform guest service, such as PCIe error handling. Consider the
+ * service time, 1 second overall wait is reasonable for 1 cpu.
+ * Here two in-between mondo check wait time are defined: 2 usec for
+ * single cpu quick turn around and up to 100usec for large cpu count.
+ * Deliver mondo to large number of cpus could take longer, we adjusts
+ * the retry count as long as target cpus are making forward progress.
+ */
+static void hypervisor_xcall_deliver(struct trap_per_cpu *tb, int cnt)
+{
+	int this_cpu, tot_cpus, prev_sent, i, rem;
+	int usec_wait, retries, tot_retries;
+	u16 first_cpu = 0xffff;
+	unsigned long xc_rcvd = 0;
+	unsigned long status;
+	int ecpuerror_id = 0;
+	int enocpu_id = 0;
+	u16 *cpu_list;
+	u16 cpu;
+
+	this_cpu = smp_processor_id();
+	cpu_list = __va(tb->cpu_list_pa);
+	usec_wait = cnt * MONDO_USEC_WAIT_MIN;
+	if (usec_wait > MONDO_USEC_WAIT_MAX)
+		usec_wait = MONDO_USEC_WAIT_MAX;
+	retries = tot_retries = 0;
+	tot_cpus = cnt;
+	prev_sent = 0;
+
+	do {
+		int n_sent, mondo_delivered, target_cpu_busy;
+>>>>>>> v4.9.227
 
 		status = sun4v_cpu_mondo_send(cnt,
 					      tb->cpu_list_pa,
@@ -636,6 +698,7 @@ static void hypervisor_xcall_deliver(struct trap_per_cpu *tb, int cnt)
 
 		/* HV_EOK means all cpus received the xcall, we're done.  */
 		if (likely(status == HV_EOK))
+<<<<<<< HEAD
 			break;
 
 		/* First, see if we made any forward progress.
@@ -724,6 +787,115 @@ dump_cpu_list_and_out:
 	for (i = 0; i < cnt; i++)
 		printk("%u ", cpu_list[i]);
 	printk("]\n");
+=======
+			goto xcall_done;
+
+		/* If not these non-fatal errors, panic */
+		if (unlikely((status != HV_EWOULDBLOCK) &&
+			(status != HV_ECPUERROR) &&
+			(status != HV_ENOCPU)))
+			goto fatal_errors;
+
+		/* First, see if we made any forward progress.
+		 *
+		 * Go through the cpu_list, count the target cpus that have
+		 * received our mondo (n_sent), and those that did not (rem).
+		 * Re-pack cpu_list with the cpus remain to be retried in the
+		 * front - this simplifies tracking the truly stalled cpus.
+		 *
+		 * The hypervisor indicates successful sends by setting
+		 * cpu list entries to the value 0xffff.
+		 *
+		 * EWOULDBLOCK means some target cpus did not receive the
+		 * mondo and retry usually helps.
+		 *
+		 * ECPUERROR means at least one target cpu is in error state,
+		 * it's usually safe to skip the faulty cpu and retry.
+		 *
+		 * ENOCPU means one of the target cpu doesn't belong to the
+		 * domain, perhaps offlined which is unexpected, but not
+		 * fatal and it's okay to skip the offlined cpu.
+		 */
+		rem = 0;
+		n_sent = 0;
+		for (i = 0; i < cnt; i++) {
+			cpu = cpu_list[i];
+			if (likely(cpu == 0xffff)) {
+				n_sent++;
+			} else if ((status == HV_ECPUERROR) &&
+				(sun4v_cpu_state(cpu) == HV_CPU_STATE_ERROR)) {
+				ecpuerror_id = cpu + 1;
+			} else if (status == HV_ENOCPU && !cpu_online(cpu)) {
+				enocpu_id = cpu + 1;
+			} else {
+				cpu_list[rem++] = cpu;
+			}
+		}
+
+		/* No cpu remained, we're done. */
+		if (rem == 0)
+			break;
+
+		/* Otherwise, update the cpu count for retry. */
+		cnt = rem;
+
+		/* Record the overall number of mondos received by the
+		 * first of the remaining cpus.
+		 */
+		if (first_cpu != cpu_list[0]) {
+			first_cpu = cpu_list[0];
+			xc_rcvd = CPU_MONDO_COUNTER(first_cpu);
+		}
+
+		/* Was any mondo delivered successfully? */
+		mondo_delivered = (n_sent > prev_sent);
+		prev_sent = n_sent;
+
+		/* or, was any target cpu busy processing other mondos? */
+		target_cpu_busy = (xc_rcvd < CPU_MONDO_COUNTER(first_cpu));
+		xc_rcvd = CPU_MONDO_COUNTER(first_cpu);
+
+		/* Retry count is for no progress. If we're making progress,
+		 * reset the retry count.
+		 */
+		if (likely(mondo_delivered || target_cpu_busy)) {
+			tot_retries += retries;
+			retries = 0;
+		} else if (unlikely(retries > MONDO_RETRY_LIMIT)) {
+			goto fatal_mondo_timeout;
+		}
+
+		/* Delay a little bit to let other cpus catch up on
+		 * their cpu mondo queue work.
+		 */
+		if (!mondo_delivered)
+			udelay(usec_wait);
+
+		retries++;
+	} while (1);
+
+xcall_done:
+	if (unlikely(ecpuerror_id > 0)) {
+		pr_crit("CPU[%d]: SUN4V mondo cpu error, target cpu(%d) was in error state\n",
+		       this_cpu, ecpuerror_id - 1);
+	} else if (unlikely(enocpu_id > 0)) {
+		pr_crit("CPU[%d]: SUN4V mondo cpu error, target cpu(%d) does not belong to the domain\n",
+		       this_cpu, enocpu_id - 1);
+	}
+	return;
+
+fatal_errors:
+	/* fatal errors include bad alignment, etc */
+	pr_crit("CPU[%d]: Args were cnt(%d) cpulist_pa(%lx) mondo_block_pa(%lx)\n",
+	       this_cpu, tot_cpus, tb->cpu_list_pa, tb->cpu_mondo_block_pa);
+	panic("Unexpected SUN4V mondo error %lu\n", status);
+
+fatal_mondo_timeout:
+	/* some cpus being non-responsive to the cpu mondo */
+	pr_crit("CPU[%d]: SUN4V mondo timeout, cpu(%d) made no forward progress after %d retries. Total target cpus(%d).\n",
+	       this_cpu, first_cpu, (tot_retries + retries), tot_cpus);
+	panic("SUN4V mondo timeout panic\n");
+>>>>>>> v4.9.227
 }
 
 static void (*xcall_deliver_impl)(struct trap_per_cpu *, int);
@@ -955,6 +1127,7 @@ void flush_dcache_page_all(struct mm_struct *mm, struct page *page)
 	preempt_enable();
 }
 
+<<<<<<< HEAD
 void __irq_entry smp_new_mmu_context_version_client(int irq, struct pt_regs *regs)
 {
 	struct mm_struct *mm;
@@ -986,6 +1159,8 @@ void smp_new_mmu_context_version(void)
 	smp_cross_call(&xcall_new_mmu_context_version, 0, 0, 0);
 }
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_KGDB
 void kgdb_roundup_cpus(unsigned long flags)
 {
@@ -1223,6 +1398,23 @@ void __init smp_setup_processor_id(void)
 		xcall_deliver_impl = hypervisor_xcall_deliver;
 }
 
+<<<<<<< HEAD
+=======
+void __init smp_fill_in_cpu_possible_map(void)
+{
+	int possible_cpus = num_possible_cpus();
+	int i;
+
+	if (possible_cpus > nr_cpu_ids)
+		possible_cpus = nr_cpu_ids;
+
+	for (i = 0; i < possible_cpus; i++)
+		set_cpu_possible(i, true);
+	for (; i < NR_CPUS; i++)
+		set_cpu_possible(i, false);
+}
+
+>>>>>>> v4.9.227
 void smp_fill_in_sib_core_maps(void)
 {
 	unsigned int i;
@@ -1243,6 +1435,22 @@ void smp_fill_in_sib_core_maps(void)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	for_each_present_cpu(i)  {
+		unsigned int j;
+
+		for_each_present_cpu(j)  {
+			if (cpu_data(i).max_cache_id ==
+			    cpu_data(j).max_cache_id)
+				cpumask_set_cpu(j, &cpu_core_sib_cache_map[i]);
+
+			if (cpu_data(i).sock_id == cpu_data(j).sock_id)
+				cpumask_set_cpu(j, &cpu_core_sib_map[i]);
+		}
+	}
+
+>>>>>>> v4.9.227
 	for_each_present_cpu(i) {
 		unsigned int j;
 
@@ -1406,11 +1614,44 @@ void __irq_entry smp_receive_signal_client(int irq, struct pt_regs *regs)
 	scheduler_ipi();
 }
 
+<<<<<<< HEAD
 /* This is a nop because we capture all other cpus
  * anyways when making the PROM active.
  */
 void smp_send_stop(void)
 {
+=======
+static void stop_this_cpu(void *dummy)
+{
+	prom_stopself();
+}
+
+void smp_send_stop(void)
+{
+	int cpu;
+
+	if (tlb_type == hypervisor) {
+		int this_cpu = smp_processor_id();
+#ifdef CONFIG_SERIAL_SUNHV
+		sunhv_migrate_hvcons_irq(this_cpu);
+#endif
+		for_each_online_cpu(cpu) {
+			if (cpu == this_cpu)
+				continue;
+#ifdef CONFIG_SUN_LDOMS
+			if (ldom_domaining_enabled) {
+				unsigned long hv_err;
+				hv_err = sun4v_cpu_stop(cpu);
+				if (hv_err)
+					printk(KERN_ERR "sun4v_cpu_stop() "
+					       "failed err=%lu\n", hv_err);
+			} else
+#endif
+				prom_stopcpu_cpuid(cpu);
+		}
+	} else
+		smp_call_function(stop_this_cpu, NULL, 0);
+>>>>>>> v4.9.227
 }
 
 /**

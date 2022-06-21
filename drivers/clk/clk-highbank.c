@@ -17,6 +17,10 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/of.h>
@@ -274,7 +278,10 @@ static const struct clk_ops periclk_ops = {
 static __init struct clk *hb_clk_init(struct device_node *node, const struct clk_ops *ops)
 {
 	u32 reg;
+<<<<<<< HEAD
 	struct clk *clk;
+=======
+>>>>>>> v4.9.227
 	struct hb_clk *hb_clk;
 	const char *clk_name = node->name;
 	const char *parent_name;
@@ -293,6 +300,10 @@ static __init struct clk *hb_clk_init(struct device_node *node, const struct clk
 	/* Map system registers */
 	srnp = of_find_compatible_node(NULL, NULL, "calxeda,hb-sregs");
 	hb_clk->reg = of_iomap(srnp, 0);
+<<<<<<< HEAD
+=======
+	of_node_put(srnp);
+>>>>>>> v4.9.227
 	BUG_ON(!hb_clk->reg);
 	hb_clk->reg += reg;
 
@@ -307,6 +318,7 @@ static __init struct clk *hb_clk_init(struct device_node *node, const struct clk
 
 	hb_clk->hw.init = &init;
 
+<<<<<<< HEAD
 	clk = clk_register(NULL, &hb_clk->hw);
 	if (WARN_ON(IS_ERR(clk))) {
 		kfree(hb_clk);
@@ -314,6 +326,15 @@ static __init struct clk *hb_clk_init(struct device_node *node, const struct clk
 	}
 	rc = of_clk_add_provider(node, of_clk_src_simple_get, clk);
 	return clk;
+=======
+	rc = clk_hw_register(NULL, &hb_clk->hw);
+	if (WARN_ON(rc)) {
+		kfree(hb_clk);
+		return NULL;
+	}
+	rc = of_clk_add_hw_provider(node, of_clk_hw_simple_get, &hb_clk->hw);
+	return hb_clk->hw.clk;
+>>>>>>> v4.9.227
 }
 
 static void __init hb_pll_init(struct device_node *node)

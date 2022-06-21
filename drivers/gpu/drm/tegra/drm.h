@@ -30,7 +30,11 @@ struct tegra_fb {
 	unsigned int num_planes;
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_DRM_TEGRA_FBDEV
+=======
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+>>>>>>> v4.9.227
 struct tegra_fbdev {
 	struct drm_fb_helper base;
 	struct tegra_fb *fb;
@@ -46,7 +50,11 @@ struct tegra_drm {
 	struct mutex clients_lock;
 	struct list_head clients;
 
+<<<<<<< HEAD
 #ifdef CONFIG_DRM_TEGRA_FBDEV
+=======
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+>>>>>>> v4.9.227
 	struct tegra_fbdev *fbdev;
 #endif
 
@@ -57,6 +65,11 @@ struct tegra_drm {
 		struct work_struct work;
 		struct mutex lock;
 	} commit;
+<<<<<<< HEAD
+=======
+
+	struct drm_atomic_state *state;
+>>>>>>> v4.9.227
 };
 
 struct tegra_drm_client;
@@ -119,7 +132,11 @@ struct tegra_dc {
 	spinlock_t lock;
 
 	struct drm_crtc base;
+<<<<<<< HEAD
 	int powergate;
+=======
+	unsigned int powergate;
+>>>>>>> v4.9.227
 	int pipe;
 
 	struct clk *clk;
@@ -193,7 +210,10 @@ struct tegra_dc_window {
 u32 tegra_dc_get_vblank_counter(struct tegra_dc *dc);
 void tegra_dc_enable_vblank(struct tegra_dc *dc);
 void tegra_dc_disable_vblank(struct tegra_dc *dc);
+<<<<<<< HEAD
 void tegra_dc_cancel_page_flip(struct drm_crtc *crtc, struct drm_file *file);
+=======
+>>>>>>> v4.9.227
 void tegra_dc_commit(struct tegra_dc *dc);
 int tegra_dc_state_setup_clock(struct tegra_dc *dc,
 			       struct drm_crtc_state *crtc_state,
@@ -238,8 +258,11 @@ int tegra_output_init(struct drm_device *drm, struct tegra_output *output);
 void tegra_output_exit(struct tegra_output *output);
 
 int tegra_output_connector_get_modes(struct drm_connector *connector);
+<<<<<<< HEAD
 struct drm_encoder *
 tegra_output_connector_best_encoder(struct drm_connector *connector);
+=======
+>>>>>>> v4.9.227
 enum drm_connector_status
 tegra_output_connector_detect(struct drm_connector *connector, bool force);
 void tegra_output_connector_destroy(struct drm_connector *connector);
@@ -247,6 +270,7 @@ void tegra_output_connector_destroy(struct drm_connector *connector);
 void tegra_output_encoder_destroy(struct drm_encoder *encoder);
 
 /* from dpaux.c */
+<<<<<<< HEAD
 struct tegra_dpaux;
 struct drm_dp_link;
 
@@ -259,6 +283,19 @@ int tegra_dpaux_disable(struct tegra_dpaux *dpaux);
 int tegra_dpaux_prepare(struct tegra_dpaux *dpaux, u8 encoding);
 int tegra_dpaux_train(struct tegra_dpaux *dpaux, struct drm_dp_link *link,
 		      u8 pattern);
+=======
+struct drm_dp_link;
+
+struct drm_dp_aux *drm_dp_aux_find_by_of_node(struct device_node *np);
+enum drm_connector_status drm_dp_aux_detect(struct drm_dp_aux *aux);
+int drm_dp_aux_attach(struct drm_dp_aux *aux, struct tegra_output *output);
+int drm_dp_aux_detach(struct drm_dp_aux *aux);
+int drm_dp_aux_enable(struct drm_dp_aux *aux);
+int drm_dp_aux_disable(struct drm_dp_aux *aux);
+int drm_dp_aux_prepare(struct drm_dp_aux *aux, u8 encoding);
+int drm_dp_aux_train(struct drm_dp_aux *aux, struct drm_dp_link *link,
+		     u8 pattern);
+>>>>>>> v4.9.227
 
 /* from fb.c */
 struct tegra_bo *tegra_fb_get_plane(struct drm_framebuffer *framebuffer,
@@ -268,21 +305,38 @@ int tegra_fb_get_tiling(struct drm_framebuffer *framebuffer,
 			struct tegra_bo_tiling *tiling);
 struct drm_framebuffer *tegra_fb_create(struct drm_device *drm,
 					struct drm_file *file,
+<<<<<<< HEAD
 					struct drm_mode_fb_cmd2 *cmd);
+=======
+					const struct drm_mode_fb_cmd2 *cmd);
+>>>>>>> v4.9.227
 int tegra_drm_fb_prepare(struct drm_device *drm);
 void tegra_drm_fb_free(struct drm_device *drm);
 int tegra_drm_fb_init(struct drm_device *drm);
 void tegra_drm_fb_exit(struct drm_device *drm);
+<<<<<<< HEAD
 #ifdef CONFIG_DRM_TEGRA_FBDEV
+=======
+void tegra_drm_fb_suspend(struct drm_device *drm);
+void tegra_drm_fb_resume(struct drm_device *drm);
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+>>>>>>> v4.9.227
 void tegra_fbdev_restore_mode(struct tegra_fbdev *fbdev);
 void tegra_fb_output_poll_changed(struct drm_device *drm);
 #endif
 
 extern struct platform_driver tegra_dc_driver;
+<<<<<<< HEAD
 extern struct platform_driver tegra_dsi_driver;
 extern struct platform_driver tegra_sor_driver;
 extern struct platform_driver tegra_hdmi_driver;
 extern struct platform_driver tegra_dpaux_driver;
+=======
+extern struct platform_driver tegra_hdmi_driver;
+extern struct platform_driver tegra_dsi_driver;
+extern struct platform_driver tegra_dpaux_driver;
+extern struct platform_driver tegra_sor_driver;
+>>>>>>> v4.9.227
 extern struct platform_driver tegra_gr2d_driver;
 extern struct platform_driver tegra_gr3d_driver;
 

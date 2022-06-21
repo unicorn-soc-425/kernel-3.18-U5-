@@ -14,7 +14,10 @@
 #include <linux/pagemap.h>
 #include <linux/writeback.h>
 #include <linux/pagevec.h>
+<<<<<<< HEAD
 #include <linux/aio.h>
+=======
+>>>>>>> v4.9.227
 #include "internal.h"
 
 static int afs_write_back_from_locked_page(struct afs_writeback *wb,
@@ -94,10 +97,17 @@ static int afs_fill_page(struct afs_vnode *vnode, struct key *key,
 	_enter(",,%llu", (unsigned long long)pos);
 
 	i_size = i_size_read(&vnode->vfs_inode);
+<<<<<<< HEAD
 	if (pos + PAGE_CACHE_SIZE > i_size)
 		len = i_size - pos;
 	else
 		len = PAGE_CACHE_SIZE;
+=======
+	if (pos + PAGE_SIZE > i_size)
+		len = i_size - pos;
+	else
+		len = PAGE_SIZE;
+>>>>>>> v4.9.227
 
 	ret = afs_vnode_fetch_data(vnode, key, pos, len, page);
 	if (ret < 0) {
@@ -124,9 +134,15 @@ int afs_write_begin(struct file *file, struct address_space *mapping,
 	struct afs_vnode *vnode = AFS_FS_I(file_inode(file));
 	struct page *page;
 	struct key *key = file->private_data;
+<<<<<<< HEAD
 	unsigned from = pos & (PAGE_CACHE_SIZE - 1);
 	unsigned to = from + len;
 	pgoff_t index = pos >> PAGE_CACHE_SHIFT;
+=======
+	unsigned from = pos & (PAGE_SIZE - 1);
+	unsigned to = from + len;
+	pgoff_t index = pos >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 	int ret;
 
 	_enter("{%x:%u},{%lx},%u,%u",
@@ -150,8 +166,13 @@ int afs_write_begin(struct file *file, struct address_space *mapping,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	if (!PageUptodate(page) && len != PAGE_CACHE_SIZE) {
 		ret = afs_fill_page(vnode, key, index << PAGE_CACHE_SHIFT, page);
+=======
+	if (!PageUptodate(page) && len != PAGE_SIZE) {
+		ret = afs_fill_page(vnode, key, index << PAGE_SHIFT, page);
+>>>>>>> v4.9.227
 		if (ret < 0) {
 			unlock_page(page);
 			put_page(page);
@@ -270,7 +291,11 @@ int afs_write_end(struct file *file, struct address_space *mapping,
 	if (PageDirty(page))
 		_debug("dirtied");
 	unlock_page(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> v4.9.227
 
 	return copied;
 }
@@ -406,8 +431,12 @@ no_more:
 		switch (ret) {
 		case -EDQUOT:
 		case -ENOSPC:
+<<<<<<< HEAD
 			set_bit(AS_ENOSPC,
 				&wb->vnode->vfs_inode.i_mapping->flags);
+=======
+			mapping_set_error(wb->vnode->vfs_inode.i_mapping, -ENOSPC);
+>>>>>>> v4.9.227
 			break;
 		case -EROFS:
 		case -EIO:
@@ -417,7 +446,11 @@ no_more:
 		case -ENOMEDIUM:
 		case -ENXIO:
 			afs_kill_pages(wb->vnode, true, first, last);
+<<<<<<< HEAD
 			set_bit(AS_EIO, &wb->vnode->vfs_inode.i_mapping->flags);
+=======
+			mapping_set_error(wb->vnode->vfs_inode.i_mapping, -EIO);
+>>>>>>> v4.9.227
 			break;
 		case -EACCES:
 		case -EPERM:
@@ -488,7 +521,11 @@ static int afs_writepages_region(struct address_space *mapping,
 
 		if (page->index > end) {
 			*_next = index;
+<<<<<<< HEAD
 			page_cache_release(page);
+=======
+			put_page(page);
+>>>>>>> v4.9.227
 			_leave(" = 0 [%lx]", *_next);
 			return 0;
 		}
@@ -502,7 +539,11 @@ static int afs_writepages_region(struct address_space *mapping,
 
 		if (page->mapping != mapping) {
 			unlock_page(page);
+<<<<<<< HEAD
 			page_cache_release(page);
+=======
+			put_page(page);
+>>>>>>> v4.9.227
 			continue;
 		}
 
@@ -524,7 +565,11 @@ static int afs_writepages_region(struct address_space *mapping,
 
 		ret = afs_write_back_from_locked_page(wb, page);
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> v4.9.227
 		if (ret < 0) {
 			_leave(" = %d", ret);
 			return ret;
@@ -560,13 +605,22 @@ int afs_writepages(struct address_space *mapping,
 						    &next);
 		mapping->writeback_index = next;
 	} else if (wbc->range_start == 0 && wbc->range_end == LLONG_MAX) {
+<<<<<<< HEAD
 		end = (pgoff_t)(LLONG_MAX >> PAGE_CACHE_SHIFT);
+=======
+		end = (pgoff_t)(LLONG_MAX >> PAGE_SHIFT);
+>>>>>>> v4.9.227
 		ret = afs_writepages_region(mapping, wbc, 0, end, &next);
 		if (wbc->nr_to_write > 0)
 			mapping->writeback_index = next;
 	} else {
+<<<<<<< HEAD
 		start = wbc->range_start >> PAGE_CACHE_SHIFT;
 		end = wbc->range_end >> PAGE_CACHE_SHIFT;
+=======
+		start = wbc->range_start >> PAGE_SHIFT;
+		end = wbc->range_end >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 		ret = afs_writepages_region(mapping, wbc, start, end, &next);
 	}
 
@@ -652,10 +706,13 @@ ssize_t afs_file_write(struct kiocb *iocb, struct iov_iter *from)
 		return 0;
 
 	result = generic_file_write_iter(iocb, from);
+<<<<<<< HEAD
 	if (IS_ERR_VALUE(result)) {
 		_leave(" = %zd", result);
 		return result;
 	}
+=======
+>>>>>>> v4.9.227
 
 	_leave(" = %zd", result);
 	return result;
@@ -690,6 +747,7 @@ int afs_writeback_all(struct afs_vnode *vnode)
  */
 int afs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 {
+<<<<<<< HEAD
 	struct dentry *dentry = file->f_path.dentry;
 	struct inode *inode = file->f_mapping->host;
 	struct afs_writeback *wb, *xwb;
@@ -698,12 +756,25 @@ int afs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 
 	_enter("{%x:%u},{n=%s},%d",
 	       vnode->fid.vid, vnode->fid.vnode, dentry->d_name.name,
+=======
+	struct inode *inode = file_inode(file);
+	struct afs_writeback *wb, *xwb;
+	struct afs_vnode *vnode = AFS_FS_I(inode);
+	int ret;
+
+	_enter("{%x:%u},{n=%pD},%d",
+	       vnode->fid.vid, vnode->fid.vnode, file,
+>>>>>>> v4.9.227
 	       datasync);
 
 	ret = filemap_write_and_wait_range(inode->i_mapping, start, end);
 	if (ret)
 		return ret;
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+>>>>>>> v4.9.227
 
 	/* use a writeback record as a marker in the queue - when this reaches
 	 * the front of the queue, all the outstanding writes are either
@@ -745,7 +816,11 @@ int afs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	afs_put_writeback(wb);
 	_leave(" = %d", ret);
 out:
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_unlock(inode);
+>>>>>>> v4.9.227
 	return ret;
 }
 

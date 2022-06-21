@@ -4,6 +4,10 @@
 /* References to section boundaries */
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+>>>>>>> v4.9.227
 
 /*
  * Usage guidelines:
@@ -13,6 +17,11 @@
  * [_sdata, _edata]: contains .data.* sections, may also contain .rodata.*
  *                   and/or .init.* sections.
  * [__start_rodata, __end_rodata]: contains .rodata.* sections
+<<<<<<< HEAD
+=======
+ * [__start_data_ro_after_init, __end_data_ro_after_init]:
+ *		     contains data.ro_after_init section
+>>>>>>> v4.9.227
  * [__init_begin, __init_end]: contains .init.* sections, but .init.text.*
  *                   may be out of this range on some architectures.
  * [_sinittext, _einittext]: contains .init.text.* sections
@@ -30,6 +39,10 @@ extern char _data[], _sdata[], _edata[];
 extern char __bss_start[], __bss_stop[];
 extern char __init_begin[], __init_end[];
 extern char _sinittext[], _einittext[];
+<<<<<<< HEAD
+=======
+extern char __start_data_ro_after_init[], __end_data_ro_after_init[];
+>>>>>>> v4.9.227
 extern char _end[];
 extern char __per_cpu_load[], __per_cpu_start[], __per_cpu_end[];
 extern char __kprobes_text_start[], __kprobes_text_end[];
@@ -63,4 +76,71 @@ static inline int arch_is_kernel_data(unsigned long addr)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+/**
+ * memory_contains - checks if an object is contained within a memory region
+ * @begin: virtual address of the beginning of the memory region
+ * @end: virtual address of the end of the memory region
+ * @virt: virtual address of the memory object
+ * @size: size of the memory object
+ *
+ * Returns: true if the object specified by @virt and @size is entirely
+ * contained within the memory region defined by @begin and @end, false
+ * otherwise.
+ */
+static inline bool memory_contains(void *begin, void *end, void *virt,
+				   size_t size)
+{
+	return virt >= begin && virt + size <= end;
+}
+
+/**
+ * memory_intersects - checks if the region occupied by an object intersects
+ *                     with another memory region
+ * @begin: virtual address of the beginning of the memory regien
+ * @end: virtual address of the end of the memory region
+ * @virt: virtual address of the memory object
+ * @size: size of the memory object
+ *
+ * Returns: true if an object's memory region, specified by @virt and @size,
+ * intersects with the region specified by @begin and @end, false otherwise.
+ */
+static inline bool memory_intersects(void *begin, void *end, void *virt,
+				     size_t size)
+{
+	void *vend = virt + size;
+
+	return (virt >= begin && virt < end) || (vend >= begin && vend < end);
+}
+
+/**
+ * init_section_contains - checks if an object is contained within the init
+ *                         section
+ * @virt: virtual address of the memory object
+ * @size: size of the memory object
+ *
+ * Returns: true if the object specified by @virt and @size is entirely
+ * contained within the init section, false otherwise.
+ */
+static inline bool init_section_contains(void *virt, size_t size)
+{
+	return memory_contains(__init_begin, __init_end, virt, size);
+}
+
+/**
+ * init_section_intersects - checks if the region occupied by an object
+ *                           intersects with the init section
+ * @virt: virtual address of the memory object
+ * @size: size of the memory object
+ *
+ * Returns: true if an object's memory region, specified by @virt and @size,
+ * intersects with the init section, false otherwise.
+ */
+static inline bool init_section_intersects(void *virt, size_t size)
+{
+	return memory_intersects(__init_begin, __init_end, virt, size);
+}
+
+>>>>>>> v4.9.227
 #endif /* _ASM_GENERIC_SECTIONS_H_ */

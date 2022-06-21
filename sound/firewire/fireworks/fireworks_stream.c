@@ -31,7 +31,11 @@ init_stream(struct snd_efw *efw, struct amdtp_stream *stream)
 	if (err < 0)
 		goto end;
 
+<<<<<<< HEAD
 	err = amdtp_stream_init(stream, efw->unit, s_dir, CIP_BLOCKING);
+=======
+	err = amdtp_am824_init(stream, efw->unit, s_dir, CIP_BLOCKING);
+>>>>>>> v4.9.227
 	if (err < 0) {
 		amdtp_stream_destroy(stream);
 		cmp_connection_destroy(conn);
@@ -73,8 +77,15 @@ start_stream(struct snd_efw *efw, struct amdtp_stream *stream,
 		midi_ports = efw->midi_in_ports;
 	}
 
+<<<<<<< HEAD
 	amdtp_stream_set_parameters(stream, sampling_rate,
 				    pcm_channels, midi_ports);
+=======
+	err = amdtp_am824_set_parameters(stream, sampling_rate,
+					 pcm_channels, midi_ports, false);
+	if (err < 0)
+		goto end;
+>>>>>>> v4.9.227
 
 	/*  establish connection via CMP */
 	err = cmp_connection_establish(conn,
@@ -100,6 +111,7 @@ end:
 	return err;
 }
 
+<<<<<<< HEAD
 static void
 destroy_stream(struct snd_efw *efw, struct amdtp_stream *stream)
 {
@@ -128,6 +140,24 @@ get_sync_mode(struct snd_efw *efw, enum cip_flags *sync_mode)
 
 	*sync_mode = CIP_SYNC_TO_DEVICE;
 	return 0;
+=======
+/*
+ * This function should be called before starting the stream or after stopping
+ * the streams.
+ */
+static void
+destroy_stream(struct snd_efw *efw, struct amdtp_stream *stream)
+{
+	struct cmp_connection *conn;
+
+	if (stream == &efw->tx_stream)
+		conn = &efw->out_conn;
+	else
+		conn = &efw->in_conn;
+
+	amdtp_stream_destroy(stream);
+	cmp_connection_destroy(&efw->out_conn);
+>>>>>>> v4.9.227
 }
 
 static int
@@ -188,11 +218,14 @@ int snd_efw_stream_init_duplex(struct snd_efw *efw)
 		destroy_stream(efw, &efw->tx_stream);
 		goto end;
 	}
+<<<<<<< HEAD
 	/*
 	 * Fireworks ignores MIDI messages in more than first 8 data
 	 * blocks of an received AMDTP packet.
 	 */
 	efw->rx_stream.rx_blocks_for_midi = 8;
+=======
+>>>>>>> v4.9.227
 
 	/* set IEC61883 compliant mode (actually not fully compliant...) */
 	err = snd_efw_command_set_tx_mode(efw, SND_EFW_TRANSPORT_MODE_IEC61883);
@@ -206,6 +239,7 @@ end:
 
 int snd_efw_stream_start_duplex(struct snd_efw *efw, unsigned int rate)
 {
+<<<<<<< HEAD
 	struct amdtp_stream *master, *slave;
 	atomic_t *slave_substreams;
 	enum cip_flags sync_mode;
@@ -232,19 +266,39 @@ int snd_efw_stream_start_duplex(struct snd_efw *efw, unsigned int rate)
 		slave_substreams = &efw->capture_substreams;
 	}
 
+=======
+	unsigned int curr_rate;
+	int err = 0;
+
+	/* Need no substreams */
+	if (efw->playback_substreams == 0 && efw->capture_substreams  == 0)
+		goto end;
+
+>>>>>>> v4.9.227
 	/*
 	 * Considering JACK/FFADO streaming:
 	 * TODO: This can be removed hwdep functionality becomes popular.
 	 */
+<<<<<<< HEAD
 	err = check_connection_used_by_others(efw, master);
+=======
+	err = check_connection_used_by_others(efw, &efw->rx_stream);
+>>>>>>> v4.9.227
 	if (err < 0)
 		goto end;
 
 	/* packet queueing error */
+<<<<<<< HEAD
 	if (amdtp_streaming_error(slave))
 		stop_stream(efw, slave);
 	if (amdtp_streaming_error(master))
 		stop_stream(efw, master);
+=======
+	if (amdtp_streaming_error(&efw->tx_stream))
+		stop_stream(efw, &efw->tx_stream);
+	if (amdtp_streaming_error(&efw->rx_stream))
+		stop_stream(efw, &efw->rx_stream);
+>>>>>>> v4.9.227
 
 	/* stop streams if rate is different */
 	err = snd_efw_command_get_sampling_rate(efw, &curr_rate);
@@ -253,6 +307,7 @@ int snd_efw_stream_start_duplex(struct snd_efw *efw, unsigned int rate)
 	if (rate == 0)
 		rate = curr_rate;
 	if (rate != curr_rate) {
+<<<<<<< HEAD
 		stop_stream(efw, slave);
 		stop_stream(efw, master);
 	}
@@ -262,11 +317,23 @@ int snd_efw_stream_start_duplex(struct snd_efw *efw, unsigned int rate)
 		amdtp_stream_set_sync(sync_mode, master, slave);
 		efw->master = master;
 
+=======
+		stop_stream(efw, &efw->tx_stream);
+		stop_stream(efw, &efw->rx_stream);
+	}
+
+	/* master should be always running */
+	if (!amdtp_stream_running(&efw->rx_stream)) {
+>>>>>>> v4.9.227
 		err = snd_efw_command_set_sampling_rate(efw, rate);
 		if (err < 0)
 			goto end;
 
+<<<<<<< HEAD
 		err = start_stream(efw, master, rate);
+=======
+		err = start_stream(efw, &efw->rx_stream, rate);
+>>>>>>> v4.9.227
 		if (err < 0) {
 			dev_err(&efw->unit->device,
 				"fail to start AMDTP master stream:%d\n", err);
@@ -275,6 +342,7 @@ int snd_efw_stream_start_duplex(struct snd_efw *efw, unsigned int rate)
 	}
 
 	/* start slave if needed */
+<<<<<<< HEAD
 	if (atomic_read(slave_substreams) > 0 && !amdtp_stream_running(slave)) {
 		err = start_stream(efw, slave, rate);
 		if (err < 0) {
@@ -285,11 +353,24 @@ int snd_efw_stream_start_duplex(struct snd_efw *efw, unsigned int rate)
 	}
 end:
 	mutex_unlock(&efw->mutex);
+=======
+	if (efw->capture_substreams > 0 &&
+	    !amdtp_stream_running(&efw->tx_stream)) {
+		err = start_stream(efw, &efw->tx_stream, rate);
+		if (err < 0) {
+			dev_err(&efw->unit->device,
+				"fail to start AMDTP slave stream:%d\n", err);
+			stop_stream(efw, &efw->rx_stream);
+		}
+	}
+end:
+>>>>>>> v4.9.227
 	return err;
 }
 
 void snd_efw_stream_stop_duplex(struct snd_efw *efw)
 {
+<<<<<<< HEAD
 	struct amdtp_stream *master, *slave;
 	atomic_t *master_substreams, *slave_substreams;
 
@@ -315,16 +396,31 @@ void snd_efw_stream_stop_duplex(struct snd_efw *efw)
 	}
 
 	mutex_unlock(&efw->mutex);
+=======
+	if (efw->capture_substreams == 0) {
+		stop_stream(efw, &efw->tx_stream);
+
+		if (efw->playback_substreams == 0)
+			stop_stream(efw, &efw->rx_stream);
+	}
+>>>>>>> v4.9.227
 }
 
 void snd_efw_stream_update_duplex(struct snd_efw *efw)
 {
+<<<<<<< HEAD
 	if ((cmp_connection_update(&efw->out_conn) < 0) ||
 	    (cmp_connection_update(&efw->in_conn) < 0)) {
 		mutex_lock(&efw->mutex);
 		stop_stream(efw, &efw->rx_stream);
 		stop_stream(efw, &efw->tx_stream);
 		mutex_unlock(&efw->mutex);
+=======
+	if (cmp_connection_update(&efw->out_conn) < 0 ||
+	    cmp_connection_update(&efw->in_conn) < 0) {
+		stop_stream(efw, &efw->rx_stream);
+		stop_stream(efw, &efw->tx_stream);
+>>>>>>> v4.9.227
 	} else {
 		amdtp_stream_update(&efw->rx_stream);
 		amdtp_stream_update(&efw->tx_stream);
@@ -333,12 +429,17 @@ void snd_efw_stream_update_duplex(struct snd_efw *efw)
 
 void snd_efw_stream_destroy_duplex(struct snd_efw *efw)
 {
+<<<<<<< HEAD
 	mutex_lock(&efw->mutex);
 
 	destroy_stream(efw, &efw->rx_stream);
 	destroy_stream(efw, &efw->tx_stream);
 
 	mutex_unlock(&efw->mutex);
+=======
+	destroy_stream(efw, &efw->rx_stream);
+	destroy_stream(efw, &efw->tx_stream);
+>>>>>>> v4.9.227
 }
 
 void snd_efw_stream_lock_changed(struct snd_efw *efw)

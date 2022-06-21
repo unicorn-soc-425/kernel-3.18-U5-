@@ -40,7 +40,10 @@
 /*
  * XXX
  *  - build with sparse
+<<<<<<< HEAD
  *  - should we limit the size of a mr region?  let transport return failure?
+=======
+>>>>>>> v4.9.227
  *  - should we detect duplicate keys on a socket?  hmm.
  *  - an rdma is an mlock, apply rlimit?
  */
@@ -200,6 +203,17 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Restrict the size of mr irrespective of underlying transport
+	 * To account for unaligned mr regions, subtract one from nr_pages
+	 */
+	if ((nr_pages - 1) > (RDS_MAX_MSG_SIZE >> PAGE_SHIFT)) {
+		ret = -EMSGSIZE;
+		goto out;
+	}
+
+>>>>>>> v4.9.227
 	rdsdebug("RDS: get_mr addr %llx len %llu nr_pages %u\n",
 		args->vec.addr, args->vec.bytes, nr_pages);
 
@@ -435,9 +449,16 @@ void rds_rdma_unuse(struct rds_sock *rs, u32 r_key, int force)
 
 	/* If the MR was marked as invalidate, this will
 	 * trigger an async flush. */
+<<<<<<< HEAD
 	if (zot_me)
 		rds_destroy_mr(mr);
 	rds_mr_put(mr);
+=======
+	if (zot_me) {
+		rds_destroy_mr(mr);
+		rds_mr_put(mr);
+	}
+>>>>>>> v4.9.227
 }
 
 void rds_rdma_free_op(struct rm_rdma_op *ro)
@@ -451,7 +472,11 @@ void rds_rdma_free_op(struct rm_rdma_op *ro)
 		 * is the case for a RDMA_READ which copies from remote
 		 * to local memory */
 		if (!ro->op_write) {
+<<<<<<< HEAD
 			BUG_ON(irqs_disabled());
+=======
+			WARN_ON(!page->mapping && irqs_disabled());
+>>>>>>> v4.9.227
 			set_page_dirty(page);
 		}
 		put_page(page);
@@ -671,6 +696,11 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
 		ret = rds_pin_pages(iov->addr, nr, pages, !op->op_write);
 		if (ret < 0)
 			goto out;
+<<<<<<< HEAD
+=======
+		else
+			ret = 0;
+>>>>>>> v4.9.227
 
 		rdsdebug("RDS: nr_bytes %u nr %u iov->bytes %llu iov->addr %llx\n",
 			 nr_bytes, nr, iov->bytes, iov->addr);

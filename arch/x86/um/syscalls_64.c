@@ -6,6 +6,10 @@
  */
 
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 #include <asm/prctl.h> /* XXX This should get the constants from libc */
 #include <os.h>
 

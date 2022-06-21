@@ -19,12 +19,23 @@
 # define __percpu	__attribute__((noderef, address_space(3)))
 #ifdef CONFIG_SPARSE_RCU_POINTER
 # define __rcu		__attribute__((noderef, address_space(4)))
+<<<<<<< HEAD
 #else
 # define __rcu
 #endif
 extern void __chk_user_ptr(const volatile void __user *);
 extern void __chk_io_ptr(const volatile void __iomem *);
 #else
+=======
+#else /* CONFIG_SPARSE_RCU_POINTER */
+# define __rcu
+#endif /* CONFIG_SPARSE_RCU_POINTER */
+# define __private	__attribute__((noderef))
+extern void __chk_user_ptr(const volatile void __user *);
+extern void __chk_io_ptr(const volatile void __iomem *);
+# define ACCESS_PRIVATE(p, member) (*((typeof((p)->member) __force *) &(p)->member))
+#else /* __CHECKER__ */
+>>>>>>> v4.9.227
 # define __user
 # define __kernel
 # define __safe
@@ -42,7 +53,13 @@ extern void __chk_io_ptr(const volatile void __iomem *);
 # define __cond_lock(x,c) (c)
 # define __percpu
 # define __rcu
+<<<<<<< HEAD
 #endif
+=======
+# define __private
+# define ACCESS_PRIVATE(p, member) ((p)->member)
+#endif /* __CHECKER__ */
+>>>>>>> v4.9.227
 
 /* Indirect macros required for expanded argument pasting, eg. __LINE__. */
 #define ___PASTE(a,b) a##b
@@ -50,11 +67,38 @@ extern void __chk_io_ptr(const volatile void __iomem *);
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
+=======
+/*
+ * Minimal backport of compiler_attributes.h to add support for __copy
+ * to v4.9.y so that we can use it in init/exit_module to avoid
+ * -Werror=missing-attributes errors on GCC 9.
+ */
+#ifndef __has_attribute
+# define __has_attribute(x) __GCC4_has_attribute_##x
+# define __GCC4_has_attribute___copy__                0
+#endif
+
+#if __has_attribute(__copy__)
+# define __copy(symbol)                 __attribute__((__copy__(symbol)))
+#else
+# define __copy(symbol)
+#endif
+
+>>>>>>> v4.9.227
 #ifdef __GNUC__
 #include <linux/compiler-gcc.h>
 #endif
 
+<<<<<<< HEAD
 #define notrace __attribute__((no_instrument_function))
+=======
+#if defined(CC_USING_HOTPATCH) && !defined(__CHECKER__)
+#define notrace __attribute__((hotpatch(0,0)))
+#else
+#define notrace __attribute__((no_instrument_function))
+#endif
+>>>>>>> v4.9.227
 
 /* Intel compiler defines __GNUC__. So we will overwrite implementations
  * coming from above header files here
@@ -169,11 +213,45 @@ void ftrace_likely_update(struct ftrace_branch_data *f, int val, int expect);
 # define barrier_data(ptr) barrier()
 #endif
 
+<<<<<<< HEAD
+=======
+/* workaround for GCC PR82365 if needed */
+#ifndef barrier_before_unreachable
+# define barrier_before_unreachable() do { } while (0)
+#endif
+
+>>>>>>> v4.9.227
 /* Unreachable code */
 #ifndef unreachable
 # define unreachable() do { } while (1)
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * KENTRY - kernel entry point
+ * This can be used to annotate symbols (functions or data) that are used
+ * without their linker symbol being referenced explicitly. For example,
+ * interrupt vector handlers, or functions in the kernel image that are found
+ * programatically.
+ *
+ * Not required for symbols exported with EXPORT_SYMBOL, or initcalls. Those
+ * are handled in their own way (with KEEP() in linker scripts).
+ *
+ * KENTRY can be avoided if the symbols in question are marked as KEEP() in the
+ * linker script. For example an architecture could KEEP() its entire
+ * boot/exception vector code rather than annotate each function and data.
+ */
+#ifndef KENTRY
+# define KENTRY(sym)						\
+	extern typeof(sym) sym;					\
+	static const unsigned long __kentry_##sym		\
+	__used							\
+	__attribute__((section("___kentry" "+" #sym ), used))	\
+	= (unsigned long)&sym;
+#endif
+
+>>>>>>> v4.9.227
 #ifndef RELOC_HIDE
 # define RELOC_HIDE(ptr, off)					\
   ({ unsigned long __ptr;					\
@@ -214,11 +292,16 @@ void __read_once_size(const volatile void *p, void *res, int size)
 
 #ifdef CONFIG_KASAN
 /*
+<<<<<<< HEAD
  * This function is not 'inline' because __no_sanitize_address confilcts
+=======
+ * We can't declare function 'inline' because __no_sanitize_address confilcts
+>>>>>>> v4.9.227
  * with inlining. Attempt to inline it may cause a build failure.
  * 	https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67368
  * '__maybe_unused' allows us to avoid defined-but-not-used warnings.
  */
+<<<<<<< HEAD
 static __no_sanitize_address __maybe_unused
 void __read_once_size_nocheck(const volatile void *p, void *res, int size)
 {
@@ -226,11 +309,22 @@ void __read_once_size_nocheck(const volatile void *p, void *res, int size)
 }
 #else
 static __always_inline
+=======
+# define __no_kasan_or_inline __no_sanitize_address __maybe_unused
+#else
+# define __no_kasan_or_inline __always_inline
+#endif
+
+static __no_kasan_or_inline
+>>>>>>> v4.9.227
 void __read_once_size_nocheck(const volatile void *p, void *res, int size)
 {
 	__READ_ONCE_SIZE;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static __always_inline void __write_once_size(volatile void *p, void *res, int size)
 {
@@ -257,8 +351,14 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * In contrast to ACCESS_ONCE these two macros will also work on aggregate
  * data types like structs or unions. If the size of the accessed data
  * type exceeds the word size of the machine (e.g., 32 bits or 64 bits)
+<<<<<<< HEAD
  * READ_ONCE() and WRITE_ONCE()  will fall back to memcpy and print a
  * compile-time warning.
+=======
+ * READ_ONCE() and WRITE_ONCE() will fall back to memcpy(). There's at
+ * least two memcpy()s: one for the __builtin_memcpy() and then one for
+ * the macro doing the copy of variable - '__u' allocated on the stack.
+>>>>>>> v4.9.227
  *
  * Their two major use cases are: (1) Mediating communication between
  * process-level code and irq/NMI handlers, all running on the same CPU,
@@ -267,6 +367,10 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * with an explicit memory barrier or atomic instruction that provides the
  * required ordering.
  */
+<<<<<<< HEAD
+=======
+#include <linux/kasan-checks.h>
+>>>>>>> v4.9.227
 
 #define __READ_ONCE(x, check)						\
 ({									\
@@ -285,8 +389,25 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  */
 #define READ_ONCE_NOCHECK(x) __READ_ONCE(x, 0)
 
+<<<<<<< HEAD
 #define WRITE_ONCE(x, val) \
 	({ typeof(x) __val = (val); __write_once_size(&(x), &__val, sizeof(__val)); __val; })
+=======
+static __no_kasan_or_inline
+unsigned long read_word_at_a_time(const void *addr)
+{
+	kasan_check_read(addr, 1);
+	return *(unsigned long *)addr;
+}
+
+#define WRITE_ONCE(x, val) \
+({							\
+	union { typeof(x) __val; char __c[1]; } __u =	\
+		{ .__val = (__force typeof(x)) (val) }; \
+	__write_once_size(&(x), __u.__c, sizeof(x));	\
+	__u.__val;					\
+})
+>>>>>>> v4.9.227
 
 #endif /* __KERNEL__ */
 
@@ -324,6 +445,13 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 #define __deprecated_for_modules
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef __malloc
+#define __malloc
+#endif
+
+>>>>>>> v4.9.227
 /*
  * Allow us to avoid 'defined but not used' warnings on functions and data,
  * as well as force them to be emitted to the assembly file.
@@ -388,6 +516,13 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 # define __attribute_const__	/* unimplemented */
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef __latent_entropy
+# define __latent_entropy
+#endif
+
+>>>>>>> v4.9.227
 /*
  * Tell gcc if a function is cold. The compiler will assume any path
  * directly leading to the call is unlikely.
@@ -406,6 +541,17 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 #define __visible
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * Assume alignment of return value.
+ */
+#ifndef __assume_aligned
+#define __assume_aligned(a, ...)
+#endif
+
+
+>>>>>>> v4.9.227
 /* Are two types/vars the same type (ignoring qualifiers)? */
 #ifndef __same_type
 # define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
@@ -413,7 +559,15 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 
 /* Is this type a native word size -- useful for atomic operations */
 #ifndef __native_word
+<<<<<<< HEAD
 # define __native_word(t) (sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
+=======
+# define __native_word(t) (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
+#endif
+
+#ifndef __optimize
+# define __optimize(level)
+>>>>>>> v4.9.227
 #endif
 
 /* Compile time object size, -1 for unknown */
@@ -462,7 +616,11 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * compiler has support to do so.
  */
 #define compiletime_assert(condition, msg) \
+<<<<<<< HEAD
 	_compiletime_assert(condition, msg, __compiletime_assert_, __LINE__)
+=======
+	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>>>>>>> v4.9.227
 
 #define compiletime_assert_atomic_type(t)				\
 	compiletime_assert(__native_word(t),				\
@@ -475,12 +633,32 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * to make the compiler aware of ordering is to put the two invocations of
  * ACCESS_ONCE() in different C statements.
  *
+<<<<<<< HEAD
  * This macro does absolutely -nothing- to prevent the CPU from reordering,
  * merging, or refetching absolutely anything at any time.  Its main intended
  * use is to mediate communication between process-level code and irq/NMI
  * handlers, all running on the same CPU.
  */
 #define ACCESS_ONCE(x) (*(volatile typeof(x) *)&(x))
+=======
+ * ACCESS_ONCE will only work on scalar types. For union types, ACCESS_ONCE
+ * on a union member will work as long as the size of the member matches the
+ * size of the union and the size is smaller than word size.
+ *
+ * The major use cases of ACCESS_ONCE used to be (1) Mediating communication
+ * between process-level code and irq/NMI handlers, all running on the same CPU,
+ * and (2) Ensuring that the compiler does not  fold, spindle, or otherwise
+ * mutilate accesses that either do not require ordering or that interact
+ * with an explicit memory barrier or atomic instruction that provides the
+ * required ordering.
+ *
+ * If possible use READ_ONCE()/WRITE_ONCE() instead.
+ */
+#define __ACCESS_ONCE(x) ({ \
+	 __maybe_unused typeof(x) __var = (__force typeof(x)) 0; \
+	(volatile typeof(x) *)&(x); })
+#define ACCESS_ONCE(x) (*__ACCESS_ONCE(x))
+>>>>>>> v4.9.227
 
 /**
  * lockless_dereference() - safely load a pointer for later dereference
@@ -489,10 +667,22 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * Similar to rcu_dereference(), but for situations where the pointed-to
  * object's lifetime is managed by something other than RCU.  That
  * "something other" might be reference counting or simple immortality.
+<<<<<<< HEAD
  */
 #define lockless_dereference(p) \
 ({ \
 	typeof(p) _________p1 = ACCESS_ONCE(p); \
+=======
+ *
+ * The seemingly unused variable ___typecheck_p validates that @p is
+ * indeed a pointer type by using a pointer to typeof(*p) as the type.
+ * Taking a pointer to typeof(*p) again is needed in case p is void *.
+ */
+#define lockless_dereference(p) \
+({ \
+	typeof(p) _________p1 = READ_ONCE(p); \
+	typeof(*(p)) *___typecheck_p __maybe_unused; \
+>>>>>>> v4.9.227
 	smp_read_barrier_depends(); /* Dependency order vs. p above. */ \
 	(_________p1); \
 })
@@ -505,4 +695,14 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 # define __kprobes
 # define nokprobe_inline	inline
 #endif
+<<<<<<< HEAD
+=======
+
+/*
+ * This is needed in functions which generate the stack canary, see
+ * arch/x86/kernel/smpboot.c::start_secondary() for an example.
+ */
+#define prevent_tail_call_optimization()	mb()
+
+>>>>>>> v4.9.227
 #endif /* __LINUX_COMPILER_H */

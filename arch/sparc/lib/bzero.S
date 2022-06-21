@@ -5,6 +5,10 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	.text
 
@@ -78,6 +82,11 @@ __bzero_done:
 	 mov		%o3, %o0
 ENDPROC(__bzero)
 ENDPROC(memset)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__bzero)
+EXPORT_SYMBOL(memset)
+>>>>>>> v4.9.227
 
 #define EX_ST(x,y)		\
 98:	x,y;			\
@@ -143,3 +152,7 @@ __clear_user_done:
 	retl
 	 clr		%o0
 ENDPROC(__clear_user)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__clear_user)
+>>>>>>> v4.9.227

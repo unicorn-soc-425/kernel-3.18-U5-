@@ -186,7 +186,11 @@ static int cs5530_blank_display(struct fb_info *info, int blank_mode)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct geode_vid_ops cs5530_vid_ops = {
+=======
+const struct geode_vid_ops cs5530_vid_ops = {
+>>>>>>> v4.9.227
 	.set_dclk          = cs5530_set_dclk_frequency,
 	.configure_display = cs5530_configure_display,
 	.blank_display     = cs5530_blank_display,

@@ -37,10 +37,16 @@
 #ifndef _TIPC_CORE_H
 #define _TIPC_CORE_H
 
+<<<<<<< HEAD
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/tipc.h>
 #include <linux/tipc_config.h>
+=======
+#include <linux/tipc.h>
+#include <linux/tipc_config.h>
+#include <linux/tipc_netlink.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -58,6 +64,7 @@
 #include <linux/vmalloc.h>
 #include <linux/rtnetlink.h>
 #include <linux/etherdevice.h>
+<<<<<<< HEAD
 
 #define TIPC_MOD_VER "2.0.0"
 
@@ -79,10 +86,30 @@ int tipc_snprintf(char *buf, int len, const char *fmt, ...);
  */
 extern u32 tipc_own_addr __read_mostly;
 extern int tipc_max_ports __read_mostly;
+=======
+#include <net/netns/generic.h>
+#include <linux/rhashtable.h>
+
+struct tipc_node;
+struct tipc_bearer;
+struct tipc_bc_base;
+struct tipc_link;
+struct tipc_name_table;
+struct tipc_server;
+struct tipc_monitor;
+
+#define TIPC_MOD_VER "2.0.0"
+
+#define NODE_HTABLE_SIZE       512
+#define MAX_BEARERS	         3
+#define TIPC_DEF_MON_THRESHOLD  32
+
+>>>>>>> v4.9.227
 extern int tipc_net_id __read_mostly;
 extern int sysctl_tipc_rmem[3] __read_mostly;
 extern int sysctl_tipc_named_timeout __read_mostly;
 
+<<<<<<< HEAD
 /*
  * Other global variables
  */
@@ -99,6 +126,91 @@ int tipc_sock_create_local(int type, struct socket **res);
 void tipc_sock_release_local(struct socket *sock);
 int tipc_sock_accept_local(struct socket *sock, struct socket **newsock,
 			   int flags);
+=======
+struct tipc_net {
+	u32 own_addr;
+	int net_id;
+	int random;
+
+	/* Node table and node list */
+	spinlock_t node_list_lock;
+	struct hlist_head node_htable[NODE_HTABLE_SIZE];
+	struct list_head node_list;
+	u32 num_nodes;
+	u32 num_links;
+
+	/* Neighbor monitoring list */
+	struct tipc_monitor *monitors[MAX_BEARERS];
+	int mon_threshold;
+
+	/* Bearer list */
+	struct tipc_bearer __rcu *bearer_list[MAX_BEARERS + 1];
+
+	/* Broadcast link */
+	spinlock_t bclock;
+	struct tipc_bc_base *bcbase;
+	struct tipc_link *bcl;
+
+	/* Socket hash table */
+	struct rhashtable sk_rht;
+
+	/* Name table */
+	spinlock_t nametbl_lock;
+	struct name_table *nametbl;
+
+	/* Name dist queue */
+	struct list_head dist_queue;
+
+	/* Topology subscription server */
+	struct tipc_server *topsrv;
+	atomic_t subscription_count;
+};
+
+static inline struct tipc_net *tipc_net(struct net *net)
+{
+	return net_generic(net, tipc_net_id);
+}
+
+static inline int tipc_netid(struct net *net)
+{
+	return tipc_net(net)->net_id;
+}
+
+static inline struct list_head *tipc_nodes(struct net *net)
+{
+	return &tipc_net(net)->node_list;
+}
+
+static inline unsigned int tipc_hashfn(u32 addr)
+{
+	return addr & (NODE_HTABLE_SIZE - 1);
+}
+
+static inline u16 mod(u16 x)
+{
+	return x & 0xffffu;
+}
+
+static inline int less_eq(u16 left, u16 right)
+{
+	return mod(right - left) < 32768u;
+}
+
+static inline int more(u16 left, u16 right)
+{
+	return !less_eq(left, right);
+}
+
+static inline int less(u16 left, u16 right)
+{
+	return less_eq(left, right) && (mod(right) != mod(left));
+}
+
+static inline int in_range(u16 val, u16 min, u16 max)
+{
+	return !less(val, min) && !more(val, max);
+}
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_SYSCTL
 int tipc_register_sysctl(void);
@@ -107,6 +219,7 @@ void tipc_unregister_sysctl(void);
 #define tipc_register_sysctl() 0
 #define tipc_unregister_sysctl()
 #endif
+<<<<<<< HEAD
 
 /*
  * TIPC timer code
@@ -204,4 +317,6 @@ static inline struct tipc_msg *buf_msg(struct sk_buff *skb)
 
 struct sk_buff *tipc_buf_acquire(u32 size);
 
+=======
+>>>>>>> v4.9.227
 #endif

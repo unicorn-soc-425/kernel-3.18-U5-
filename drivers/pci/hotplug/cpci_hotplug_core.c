@@ -45,12 +45,21 @@
 #define dbg(format, arg...)					\
 	do {							\
 		if (cpci_debug)					\
+<<<<<<< HEAD
 			printk (KERN_DEBUG "%s: " format "\n",	\
 				MY_NAME , ## arg);		\
 	} while (0)
 #define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME , ## arg)
 #define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME , ## arg)
 #define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME , ## arg)
+=======
+			printk(KERN_DEBUG "%s: " format "\n",	\
+				MY_NAME, ## arg);		\
+	} while (0)
+#define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME, ## arg)
+#define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME, ## arg)
+#define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME, ## arg)
+>>>>>>> v4.9.227
 
 /* local variables */
 static DECLARE_RWSEM(list_rwsem);
@@ -214,8 +223,12 @@ static void release_slot(struct hotplug_slot *hotplug_slot)
 
 	kfree(slot->hotplug_slot->info);
 	kfree(slot->hotplug_slot);
+<<<<<<< HEAD
 	if (slot->dev)
 		pci_dev_put(slot->dev);
+=======
+	pci_dev_put(slot->dev);
+>>>>>>> v4.9.227
 	kfree(slot);
 }
 
@@ -239,21 +252,33 @@ cpci_hp_register_bus(struct pci_bus *bus, u8 first, u8 last)
 	 * with the pci_hotplug subsystem.
 	 */
 	for (i = first; i <= last; ++i) {
+<<<<<<< HEAD
 		slot = kzalloc(sizeof (struct slot), GFP_KERNEL);
+=======
+		slot = kzalloc(sizeof(struct slot), GFP_KERNEL);
+>>>>>>> v4.9.227
 		if (!slot) {
 			status = -ENOMEM;
 			goto error;
 		}
 
 		hotplug_slot =
+<<<<<<< HEAD
 			kzalloc(sizeof (struct hotplug_slot), GFP_KERNEL);
+=======
+			kzalloc(sizeof(struct hotplug_slot), GFP_KERNEL);
+>>>>>>> v4.9.227
 		if (!hotplug_slot) {
 			status = -ENOMEM;
 			goto error_slot;
 		}
 		slot->hotplug_slot = hotplug_slot;
 
+<<<<<<< HEAD
 		info = kzalloc(sizeof (struct hotplug_slot_info), GFP_KERNEL);
+=======
+		info = kzalloc(sizeof(struct hotplug_slot_info), GFP_KERNEL);
+>>>>>>> v4.9.227
 		if (!info) {
 			status = -ENOMEM;
 			goto error_hpslot;
@@ -720,6 +745,7 @@ cpci_hotplug_init(int debug)
 	cpci_debug = debug;
 	return 0;
 }
+<<<<<<< HEAD
 
 void __exit
 cpci_hotplug_exit(void)
@@ -730,3 +756,5 @@ cpci_hotplug_exit(void)
 	cpci_hp_stop();
 	cpci_hp_unregister_controller(controller);
 }
+=======
+>>>>>>> v4.9.227

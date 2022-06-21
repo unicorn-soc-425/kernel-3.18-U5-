@@ -17,6 +17,10 @@
 #include <linux/module.h>
 #include <linux/dmi.h>
 #include <linux/dell-led.h>
+<<<<<<< HEAD
+=======
+#include "../platform/x86/dell-smbios.h"
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Louis Davis/Jim Dailey");
 MODULE_DESCRIPTION("Dell LED Control Driver");
@@ -42,6 +46,7 @@ MODULE_ALIAS("wmi:" DELL_LED_BIOS_GUID);
 #define CMD_LED_OFF	17
 #define CMD_LED_BLINK	18
 
+<<<<<<< HEAD
 struct app_wmi_args {
 	u16 class;
 	u16 selector;
@@ -140,10 +145,20 @@ static int dell_micmute_led_set(int state)
 {
 	struct app_wmi_args args;
 	struct dell_bios_data_token *token;
+=======
+#define GLOBAL_MIC_MUTE_ENABLE	0x364
+#define GLOBAL_MIC_MUTE_DISABLE	0x365
+
+static int dell_micmute_led_set(int state)
+{
+	struct calling_interface_buffer *buffer;
+	struct calling_interface_token *token;
+>>>>>>> v4.9.227
 
 	if (!wmi_has_guid(DELL_APP_GUID))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (state == 0 || state == 1)
 		token = &dell_mic_tokens[state];
 	else
@@ -156,6 +171,23 @@ static int dell_micmute_led_set(int state)
 	args.arg2 = token->value;
 
 	dell_wmi_perform_query(&args);
+=======
+	if (state == 0)
+		token = dell_smbios_find_token(GLOBAL_MIC_MUTE_DISABLE);
+	else if (state == 1)
+		token = dell_smbios_find_token(GLOBAL_MIC_MUTE_ENABLE);
+	else
+		return -EINVAL;
+
+	if (!token)
+		return -ENODEV;
+
+	buffer = dell_smbios_get_buffer();
+	buffer->input[0] = token->location;
+	buffer->input[1] = token->value;
+	dell_smbios_send_request(1, 0);
+	dell_smbios_release_buffer();
+>>>>>>> v4.9.227
 
 	return state;
 }
@@ -177,6 +209,7 @@ int dell_app_wmi_led_set(int whichled, int on)
 }
 EXPORT_SYMBOL_GPL(dell_app_wmi_led_set);
 
+<<<<<<< HEAD
 static int __init dell_micmute_led_init(void)
 {
 	memset(dell_mic_tokens, 0, sizeof(struct dell_bios_data_token) * 2);
@@ -185,6 +218,8 @@ static int __init dell_micmute_led_init(void)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 struct bios_args {
 	unsigned char length;
 	unsigned char result_code;
@@ -330,9 +365,12 @@ static int __init dell_led_init(void)
 	if (!wmi_has_guid(DELL_LED_BIOS_GUID) && !wmi_has_guid(DELL_APP_GUID))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (wmi_has_guid(DELL_APP_GUID))
 		error = dell_micmute_led_init();
 
+=======
+>>>>>>> v4.9.227
 	if (wmi_has_guid(DELL_LED_BIOS_GUID)) {
 		error = led_off();
 		if (error != 0)

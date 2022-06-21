@@ -414,7 +414,11 @@ static int elm_probe(struct platform_device *pdev)
 	ret = devm_request_irq(&pdev->dev, irq->start, elm_isr, 0,
 			pdev->name, info);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "failure requesting irq %i\n", irq->start);
+=======
+		dev_err(&pdev->dev, "failure requesting %pr\n", irq);
+>>>>>>> v4.9.227
 		return ret;
 	}
 
@@ -563,7 +567,10 @@ MODULE_DEVICE_TABLE(of, elm_of_match);
 static struct platform_driver elm_driver = {
 	.driver	= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(elm_of_match),
 		.pm	= &elm_pm_ops,
 	},
@@ -575,5 +582,9 @@ module_platform_driver(elm_driver);
 
 MODULE_DESCRIPTION("ELM driver for BCH error correction");
 MODULE_AUTHOR("Texas Instruments");
+<<<<<<< HEAD
 MODULE_ALIAS("platform: elm");
+=======
+MODULE_ALIAS("platform:" DRIVER_NAME);
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL v2");

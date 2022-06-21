@@ -244,7 +244,10 @@ static struct pc87360_data *pc87360_update_device(struct device *dev);
 
 static struct platform_driver pc87360_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "pc87360",
 	},
 	.probe		= pc87360_probe,

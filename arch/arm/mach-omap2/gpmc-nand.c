@@ -12,14 +12,22 @@
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/omap-gpmc.h>
+>>>>>>> v4.9.227
 #include <linux/mtd/nand.h>
 #include <linux/platform_data/mtd-nand-omap2.h>
 
 #include <asm/mach/flash.h>
 
+<<<<<<< HEAD
 #include "gpmc.h"
 #include "soc.h"
 #include "gpmc-nand.h"
+=======
+#include "soc.h"
+>>>>>>> v4.9.227
 
 /* minimum size for IO mapping */
 #define	NAND_IO_SIZE	4
@@ -97,14 +105,28 @@ int gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data,
 	gpmc_nand_res[1].start = gpmc_get_client_irq(GPMC_IRQ_FIFOEVENTENABLE);
 	gpmc_nand_res[2].start = gpmc_get_client_irq(GPMC_IRQ_COUNT_EVENT);
 
+<<<<<<< HEAD
 	if (gpmc_t) {
 		err = gpmc_cs_set_timings(gpmc_nand_data->cs, gpmc_t);
 		if (err < 0) {
 			pr_err("omap2-gpmc: Unable to set gpmc timings: %d\n", err);
+=======
+	memset(&s, 0, sizeof(struct gpmc_settings));
+	gpmc_set_legacy(gpmc_nand_data, &s);
+
+	s.device_nand = true;
+
+	if (gpmc_t) {
+		err = gpmc_cs_set_timings(gpmc_nand_data->cs, gpmc_t, &s);
+		if (err < 0) {
+			pr_err("omap2-gpmc: Unable to set gpmc timings: %d\n",
+			       err);
+>>>>>>> v4.9.227
 			return err;
 		}
 	}
 
+<<<<<<< HEAD
 	memset(&s, 0, sizeof(struct gpmc_settings));
 	if (gpmc_nand_data->of_node)
 		gpmc_read_settings_dt(gpmc_nand_data->of_node, &s);
@@ -112,6 +134,8 @@ int gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data,
 		gpmc_set_legacy(gpmc_nand_data, &s);
 
 	s.device_nand = true;
+=======
+>>>>>>> v4.9.227
 	err = gpmc_cs_program_settings(gpmc_nand_data->cs, &s);
 	if (err < 0)
 		goto out_free_cs;
@@ -120,8 +144,11 @@ int gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data,
 	if (err < 0)
 		goto out_free_cs;
 
+<<<<<<< HEAD
 	gpmc_update_nand_reg(&gpmc_nand_data->reg, gpmc_nand_data->cs);
 
+=======
+>>>>>>> v4.9.227
 	if (!gpmc_hwecc_bch_capable(gpmc_nand_data->ecc_opt)) {
 		pr_err("omap2-nand: Unsupported NAND ECC scheme selected\n");
 		err = -EINVAL;

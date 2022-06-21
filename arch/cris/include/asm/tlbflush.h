@@ -22,6 +22,7 @@ extern void __flush_tlb_mm(struct mm_struct *mm);
 extern void __flush_tlb_page(struct vm_area_struct *vma,
 			   unsigned long addr);
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 extern void flush_tlb_all(void);
 extern void flush_tlb_mm(struct mm_struct *mm);
@@ -32,6 +33,11 @@ extern void flush_tlb_page(struct vm_area_struct *vma,
 #define flush_tlb_mm __flush_tlb_mm
 #define flush_tlb_page __flush_tlb_page
 #endif
+=======
+#define flush_tlb_all __flush_tlb_all
+#define flush_tlb_mm __flush_tlb_mm
+#define flush_tlb_page __flush_tlb_page
+>>>>>>> v4.9.227
 
 static inline void flush_tlb_range(struct vm_area_struct * vma, unsigned long start, unsigned long end)
 {

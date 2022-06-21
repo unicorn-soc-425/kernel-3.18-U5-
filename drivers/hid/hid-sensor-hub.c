@@ -16,6 +16,10 @@
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 #include <linux/device.h>
 #include <linux/hid.h>
 #include <linux/module.h>
@@ -29,6 +33,7 @@
 #define HID_SENSOR_HUB_ENUM_QUIRK	0x01
 
 /**
+<<<<<<< HEAD
  * struct sensor_hub_pending - Synchronous read pending information
  * @status:		Pending status true/false.
  * @ready:		Completion synchronization data.
@@ -47,11 +52,16 @@ struct sensor_hub_pending {
 };
 
 /**
+=======
+>>>>>>> v4.9.227
  * struct sensor_hub_data - Hold a instance data for a HID hub device
  * @hsdev:		Stored hid instance for current hub device.
  * @mutex:		Mutex to serialize synchronous request.
  * @lock:		Spin lock to protect pending request structure.
+<<<<<<< HEAD
  * @pending:		Holds information of pending sync read request.
+=======
+>>>>>>> v4.9.227
  * @dyn_callback_list:	Holds callback function
  * @dyn_callback_lock:	spin lock to protect callback list
  * @hid_sensor_hub_client_devs:	Stores all MFD cells for a hub instance.
@@ -61,7 +71,10 @@ struct sensor_hub_pending {
 struct sensor_hub_data {
 	struct mutex mutex;
 	spinlock_t lock;
+<<<<<<< HEAD
 	struct sensor_hub_pending pending;
+=======
+>>>>>>> v4.9.227
 	struct list_head dyn_callback_list;
 	spinlock_t dyn_callback_lock;
 	struct mfd_cell *hid_sensor_hub_client_devs;
@@ -106,7 +119,12 @@ static int sensor_hub_get_physical_device_count(struct hid_device *hdev)
 
 	for (i = 0; i < hdev->maxcollection; ++i) {
 		struct hid_collection *collection = &hdev->collection[i];
+<<<<<<< HEAD
 		if (collection->type == HID_COLLECTION_PHYSICAL)
+=======
+		if (collection->type == HID_COLLECTION_PHYSICAL ||
+		    collection->type == HID_COLLECTION_APPLICATION)
+>>>>>>> v4.9.227
 			++count;
 	}
 
@@ -135,20 +153,37 @@ static struct hid_sensor_hub_callbacks *sensor_hub_get_callback(
 {
 	struct hid_sensor_hub_callbacks_list *callback;
 	struct sensor_hub_data *pdata = hid_get_drvdata(hdev);
+<<<<<<< HEAD
 
 	spin_lock(&pdata->dyn_callback_lock);
 	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
 		if (callback->usage_id == usage_id &&
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
+	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
+		if ((callback->usage_id == usage_id ||
+		     callback->usage_id == HID_USAGE_SENSOR_COLLECTION) &&
+>>>>>>> v4.9.227
 			(collection_index >=
 				callback->hsdev->start_collection_index) &&
 			(collection_index <
 				callback->hsdev->end_collection_index)) {
 			*priv = callback->priv;
 			*hsdev = callback->hsdev;
+<<<<<<< HEAD
 			spin_unlock(&pdata->dyn_callback_lock);
 			return callback->usage_callback;
 		}
 	spin_unlock(&pdata->dyn_callback_lock);
+=======
+			spin_unlock_irqrestore(&pdata->dyn_callback_lock,
+					       flags);
+			return callback->usage_callback;
+		}
+	spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
+>>>>>>> v4.9.227
 
 	return NULL;
 }
@@ -177,7 +212,22 @@ int sensor_hub_register_callback(struct hid_sensor_hub_device *hsdev,
 	callback->usage_callback = usage_callback;
 	callback->usage_id = usage_id;
 	callback->priv = NULL;
+<<<<<<< HEAD
 	list_add_tail(&callback->list, &pdata->dyn_callback_list);
+=======
+	/*
+	 * If there is a handler registered for the collection type, then
+	 * it will handle all reports for sensors in this collection. If
+	 * there is also an individual sensor handler registration, then
+	 * we want to make sure that the reports are directed to collection
+	 * handler, as this may be a fusion sensor. So add collection handlers
+	 * to the beginning of the list, so that they are matched first.
+	 */
+	if (usage_id == HID_USAGE_SENSOR_COLLECTION)
+		list_add(&callback->list, &pdata->dyn_callback_list);
+	else
+		list_add_tail(&callback->list, &pdata->dyn_callback_list);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
 
 	return 0;
@@ -206,10 +256,21 @@ int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
 EXPORT_SYMBOL_GPL(sensor_hub_remove_callback);
 
 int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+<<<<<<< HEAD
 				u32 field_index, s32 value)
 {
 	struct hid_report *report;
 	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
+=======
+			   u32 field_index, int buffer_size, void *buffer)
+{
+	struct hid_report *report;
+	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
+	__s32 *buf32 = buffer;
+	int i = 0;
+	int remaining_bytes;
+	__s32 value;
+>>>>>>> v4.9.227
 	int ret = 0;
 
 	mutex_lock(&data->mutex);
@@ -218,7 +279,26 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
 		ret = -EINVAL;
 		goto done_proc;
 	}
+<<<<<<< HEAD
 	hid_set_field(report->field[field_index], 0, value);
+=======
+
+	remaining_bytes = buffer_size % sizeof(__s32);
+	buffer_size = buffer_size / sizeof(__s32);
+	if (buffer_size) {
+		for (i = 0; i < buffer_size; ++i) {
+			hid_set_field(report->field[field_index], i,
+				      (__force __s32)cpu_to_le32(*buf32));
+			++buf32;
+		}
+	}
+	if (remaining_bytes) {
+		value = 0;
+		memcpy(&value, (u8 *)buf32, remaining_bytes);
+		hid_set_field(report->field[field_index], i,
+			      (__force __s32)cpu_to_le32(value));
+	}
+>>>>>>> v4.9.227
 	hid_hw_request(hsdev->hdev, report, HID_REQ_SET_REPORT);
 	hid_hw_wait(hsdev->hdev);
 
@@ -230,11 +310,25 @@ done_proc:
 EXPORT_SYMBOL_GPL(sensor_hub_set_feature);
 
 int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+<<<<<<< HEAD
 				u32 field_index, s32 *value)
 {
 	struct hid_report *report;
 	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
 	int ret = 0;
+=======
+			   u32 field_index, int buffer_size, void *buffer)
+{
+	struct hid_report *report;
+	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
+	int report_size;
+	int ret = 0;
+	u8 *val_ptr;
+	int buffer_index = 0;
+	int i;
+
+	memset(buffer, 0, buffer_size);
+>>>>>>> v4.9.227
 
 	mutex_lock(&data->mutex);
 	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
@@ -245,7 +339,31 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
 	}
 	hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
 	hid_hw_wait(hsdev->hdev);
+<<<<<<< HEAD
 	*value = report->field[field_index]->value[0];
+=======
+
+	/* calculate number of bytes required to read this field */
+	report_size = DIV_ROUND_UP(report->field[field_index]->report_size,
+				   8) *
+				   report->field[field_index]->report_count;
+	if (!report_size) {
+		ret = -EINVAL;
+		goto done_proc;
+	}
+	ret = min(report_size, buffer_size);
+
+	val_ptr = (u8 *)report->field[field_index]->value;
+	for (i = 0; i < report->field[field_index]->report_count; ++i) {
+		if (buffer_index >= ret)
+			break;
+
+		memcpy(&((u8 *)buffer)[buffer_index], val_ptr,
+		       report->field[field_index]->report_size / 8);
+		val_ptr += sizeof(__s32);
+		buffer_index += (report->field[field_index]->report_size / 8);
+	}
+>>>>>>> v4.9.227
 
 done_proc:
 	mutex_unlock(&data->mutex);
@@ -257,13 +375,19 @@ EXPORT_SYMBOL_GPL(sensor_hub_get_feature);
 
 int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
 					u32 usage_id,
+<<<<<<< HEAD
 					u32 attr_usage_id, u32 report_id)
+=======
+					u32 attr_usage_id, u32 report_id,
+					enum sensor_hub_read_flags flag)
+>>>>>>> v4.9.227
 {
 	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
 	unsigned long flags;
 	struct hid_report *report;
 	int ret_val = 0;
 
+<<<<<<< HEAD
 	mutex_lock(&data->mutex);
 	memset(&data->pending, 0, sizeof(data->pending));
 	init_completion(&data->pending.ready);
@@ -298,6 +422,48 @@ int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
 err_free:
 	data->pending.status = false;
 	mutex_unlock(&data->mutex);
+=======
+	report = sensor_hub_report(report_id, hsdev->hdev,
+				   HID_INPUT_REPORT);
+	if (!report)
+		return -EINVAL;
+
+	mutex_lock(hsdev->mutex_ptr);
+	if (flag == SENSOR_HUB_SYNC) {
+		memset(&hsdev->pending, 0, sizeof(hsdev->pending));
+		init_completion(&hsdev->pending.ready);
+		hsdev->pending.usage_id = usage_id;
+		hsdev->pending.attr_usage_id = attr_usage_id;
+		hsdev->pending.raw_size = 0;
+
+		spin_lock_irqsave(&data->lock, flags);
+		hsdev->pending.status = true;
+		spin_unlock_irqrestore(&data->lock, flags);
+	}
+	mutex_lock(&data->mutex);
+	hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
+	mutex_unlock(&data->mutex);
+	if (flag == SENSOR_HUB_SYNC) {
+		wait_for_completion_interruptible_timeout(
+						&hsdev->pending.ready, HZ*5);
+		switch (hsdev->pending.raw_size) {
+		case 1:
+			ret_val = *(u8 *)hsdev->pending.raw_data;
+			break;
+		case 2:
+			ret_val = *(u16 *)hsdev->pending.raw_data;
+			break;
+		case 4:
+			ret_val = *(u32 *)hsdev->pending.raw_data;
+			break;
+		default:
+			ret_val = 0;
+		}
+		kfree(hsdev->pending.raw_data);
+		hsdev->pending.status = false;
+	}
+	mutex_unlock(hsdev->mutex_ptr);
+>>>>>>> v4.9.227
 
 	return ret_val;
 }
@@ -453,6 +619,7 @@ static int sensor_hub_raw_event(struct hid_device *hdev,
 					report->field[i]->report_count)/8);
 		sz = (report->field[i]->report_size *
 					report->field[i]->report_count)/8;
+<<<<<<< HEAD
 		if (pdata->pending.status && pdata->pending.attr_usage_id ==
 				report->field[i]->usage->hid) {
 			hid_dbg(hdev, "data was pending ...\n");
@@ -463,6 +630,8 @@ static int sensor_hub_raw_event(struct hid_device *hdev,
 				pdata->pending.raw_size = 0;
 			complete(&pdata->pending.ready);
 		}
+=======
+>>>>>>> v4.9.227
 		collection = &hdev->collection[
 				report->field[i]->usage->collection_index];
 		hid_dbg(hdev, "collection->usage %x\n",
@@ -472,8 +641,28 @@ static int sensor_hub_raw_event(struct hid_device *hdev,
 				report->field[i]->physical,
 				report->field[i]->usage[0].collection_index,
 				&hsdev, &priv);
+<<<<<<< HEAD
 
 		if (callback && callback->capture_sample) {
+=======
+		if (!callback) {
+			ptr += sz;
+			continue;
+		}
+		if (hsdev->pending.status && (hsdev->pending.attr_usage_id ==
+					      report->field[i]->usage->hid ||
+					      hsdev->pending.attr_usage_id ==
+					      report->field[i]->logical)) {
+			hid_dbg(hdev, "data was pending ...\n");
+			hsdev->pending.raw_data = kmemdup(ptr, sz, GFP_ATOMIC);
+			if (hsdev->pending.raw_data)
+				hsdev->pending.raw_size = sz;
+			else
+				hsdev->pending.raw_size = 0;
+			complete(&hsdev->pending.ready);
+		}
+		if (callback->capture_sample) {
+>>>>>>> v4.9.227
 			if (report->field[i]->logical)
 				callback->capture_sample(hsdev,
 					report->field[i]->logical, sz, ptr,
@@ -557,6 +746,23 @@ static __u8 *sensor_hub_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* Checks if the report descriptor of Thinkpad Helix 2 has a logical
+	 * minimum for magnetic flux axis greater than the maximum */
+	if (hdev->product == USB_DEVICE_ID_TEXAS_INSTRUMENTS_LENOVO_YOGA &&
+		*rsize == 2558 && rdesc[913] == 0x17 && rdesc[914] == 0x40 &&
+		rdesc[915] == 0x81 && rdesc[916] == 0x08 &&
+		rdesc[917] == 0x00 && rdesc[918] == 0x27 &&
+		rdesc[921] == 0x07 && rdesc[922] == 0x00) {
+		/* Sets negative logical minimum for mag x, y and z */
+		rdesc[914] = rdesc[935] = rdesc[956] = 0xc0;
+		rdesc[915] = rdesc[936] = rdesc[957] = 0x7e;
+		rdesc[916] = rdesc[937] = rdesc[958] = 0xf7;
+		rdesc[917] = rdesc[938] = rdesc[959] = 0xff;
+	}
+
+>>>>>>> v4.9.227
 	return rdesc;
 }
 
@@ -570,6 +776,10 @@ static int sensor_hub_probe(struct hid_device *hdev,
 	int dev_cnt;
 	struct hid_sensor_hub_device *hsdev;
 	struct hid_sensor_hub_device *last_hsdev = NULL;
+<<<<<<< HEAD
+=======
+	struct hid_sensor_hub_device *collection_hsdev = NULL;
+>>>>>>> v4.9.227
 
 	sd = devm_kzalloc(&hdev->dev, sizeof(*sd), GFP_KERNEL);
 	if (!sd) {
@@ -609,14 +819,24 @@ static int sensor_hub_probe(struct hid_device *hdev,
 						      GFP_KERNEL);
 	if (sd->hid_sensor_hub_client_devs == NULL) {
 		hid_err(hdev, "Failed to allocate memory for mfd cells\n");
+<<<<<<< HEAD
 			ret = -ENOMEM;
 			goto err_stop_hw;
+=======
+		ret = -ENOMEM;
+		goto err_stop_hw;
+>>>>>>> v4.9.227
 	}
 
 	for (i = 0; i < hdev->maxcollection; ++i) {
 		struct hid_collection *collection = &hdev->collection[i];
 
+<<<<<<< HEAD
 		if (collection->type == HID_COLLECTION_PHYSICAL) {
+=======
+		if (collection->type == HID_COLLECTION_PHYSICAL ||
+		    collection->type == HID_COLLECTION_APPLICATION) {
+>>>>>>> v4.9.227
 
 			hsdev = devm_kzalloc(&hdev->dev, sizeof(*hsdev),
 					     GFP_KERNEL);
@@ -628,6 +848,18 @@ static int sensor_hub_probe(struct hid_device *hdev,
 			hsdev->hdev = hdev;
 			hsdev->vendor_id = hdev->vendor;
 			hsdev->product_id = hdev->product;
+<<<<<<< HEAD
+=======
+			hsdev->usage = collection->usage;
+			hsdev->mutex_ptr = devm_kzalloc(&hdev->dev,
+							sizeof(struct mutex),
+							GFP_KERNEL);
+			if (!hsdev->mutex_ptr) {
+				ret = -ENOMEM;
+				goto err_stop_hw;
+			}
+			mutex_init(hsdev->mutex_ptr);
+>>>>>>> v4.9.227
 			hsdev->start_collection_index = i;
 			if (last_hsdev)
 				last_hsdev->end_collection_index = i;
@@ -637,6 +869,7 @@ static int sensor_hub_probe(struct hid_device *hdev,
 					      collection->usage);
 			if (name == NULL) {
 				hid_err(hdev, "Failed MFD device name\n");
+<<<<<<< HEAD
 					ret = -ENOMEM;
 					goto err_stop_hw;
 			}
@@ -644,6 +877,12 @@ static int sensor_hub_probe(struct hid_device *hdev,
 				sd->hid_sensor_client_cnt].id =
 							PLATFORM_DEVID_AUTO;
 			sd->hid_sensor_hub_client_devs[
+=======
+				ret = -ENOMEM;
+				goto err_stop_hw;
+			}
+			sd->hid_sensor_hub_client_devs[
+>>>>>>> v4.9.227
 				sd->hid_sensor_client_cnt].name = name;
 			sd->hid_sensor_hub_client_devs[
 				sd->hid_sensor_client_cnt].platform_data =
@@ -654,13 +893,30 @@ static int sensor_hub_probe(struct hid_device *hdev,
 			hid_dbg(hdev, "Adding %s:%d\n", name,
 					hsdev->start_collection_index);
 			sd->hid_sensor_client_cnt++;
+<<<<<<< HEAD
+=======
+			if (collection_hsdev)
+				collection_hsdev->end_collection_index = i;
+			if (collection->type == HID_COLLECTION_APPLICATION &&
+			    collection->usage == HID_USAGE_SENSOR_COLLECTION)
+				collection_hsdev = hsdev;
+>>>>>>> v4.9.227
 		}
 	}
 	if (last_hsdev)
 		last_hsdev->end_collection_index = i;
+<<<<<<< HEAD
 
 	ret = mfd_add_devices(&hdev->dev, 0, sd->hid_sensor_hub_client_devs,
 		sd->hid_sensor_client_cnt, NULL, 0, NULL);
+=======
+	if (collection_hsdev)
+		collection_hsdev->end_collection_index = i;
+
+	ret = mfd_add_hotplug_devices(&hdev->dev,
+			sd->hid_sensor_hub_client_devs,
+			sd->hid_sensor_client_cnt);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto err_stop_hw;
 
@@ -676,13 +932,26 @@ static void sensor_hub_remove(struct hid_device *hdev)
 {
 	struct sensor_hub_data *data = hid_get_drvdata(hdev);
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	int i;
+>>>>>>> v4.9.227
 
 	hid_dbg(hdev, " hardware removed\n");
 	hid_hw_close(hdev);
 	hid_hw_stop(hdev);
 	spin_lock_irqsave(&data->lock, flags);
+<<<<<<< HEAD
 	if (data->pending.status)
 		complete(&data->pending.ready);
+=======
+	for (i = 0; i < data->hid_sensor_client_cnt; ++i) {
+		struct hid_sensor_hub_device *hsdev =
+			data->hid_sensor_hub_client_devs[i].platform_data;
+		if (hsdev->pending.status)
+			complete(&hsdev->pending.ready);
+	}
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&data->lock, flags);
 	mfd_remove_devices(&hdev->dev);
 	hid_set_drvdata(hdev, NULL);
@@ -708,6 +977,15 @@ static const struct hid_device_id sensor_hub_devices[] = {
 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
 			USB_DEVICE_ID_MS_TYPE_COVER_2),
 			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+<<<<<<< HEAD
+=======
+	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
+			0x07bd), /* Microsoft Surface 3 */
+			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROCHIP,
+			0x0f01), /* MM7150 */
+			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+>>>>>>> v4.9.227
 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_STM_0,
 			USB_DEVICE_ID_STM_HID_SENSOR),
 			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
@@ -717,6 +995,21 @@ static const struct hid_device_id sensor_hub_devices[] = {
 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_TEXAS_INSTRUMENTS,
 			USB_DEVICE_ID_TEXAS_INSTRUMENTS_LENOVO_YOGA),
 			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+<<<<<<< HEAD
+=======
+	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_ITE,
+			USB_DEVICE_ID_ITE_LENOVO_YOGA),
+			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_ITE,
+			USB_DEVICE_ID_ITE_LENOVO_YOGA2),
+			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_ITE,
+			USB_DEVICE_ID_ITE_LENOVO_YOGA900),
+			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_INTEL_0,
+			0x22D8),
+			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+>>>>>>> v4.9.227
 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, HID_ANY_ID,
 		     HID_ANY_ID) },
 	{ }

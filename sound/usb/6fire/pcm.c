@@ -679,12 +679,16 @@ int usb6fire_pcm_init(struct sfire_chip *chip)
 void usb6fire_pcm_abort(struct sfire_chip *chip)
 {
 	struct pcm_runtime *rt = chip->pcm;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> v4.9.227
 	int i;
 
 	if (rt) {
 		rt->panic = true;
 
+<<<<<<< HEAD
 		if (rt->playback.instance) {
 			snd_pcm_stream_lock_irqsave(rt->playback.instance, flags);
 			snd_pcm_stop(rt->playback.instance,
@@ -698,6 +702,13 @@ void usb6fire_pcm_abort(struct sfire_chip *chip)
 					SNDRV_PCM_STATE_XRUN);
 			snd_pcm_stream_unlock_irqrestore(rt->capture.instance, flags);
 		}
+=======
+		if (rt->playback.instance)
+			snd_pcm_stop_xrun(rt->playback.instance);
+
+		if (rt->capture.instance)
+			snd_pcm_stop_xrun(rt->capture.instance);
+>>>>>>> v4.9.227
 
 		for (i = 0; i < PCM_N_URBS; i++) {
 			usb_poison_urb(&rt->in_urbs[i].instance);

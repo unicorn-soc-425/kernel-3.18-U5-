@@ -57,7 +57,11 @@ static int twl4030_wdt_set_timeout(struct watchdog_device *wdt,
 }
 
 static const struct watchdog_info twl4030_wdt_info = {
+<<<<<<< HEAD
 	.options = WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING,
+=======
+	.options = WDIOF_SETTIMEOUT | WDIOF_MAGICCLOSE | WDIOF_KEEPALIVEPING,
+>>>>>>> v4.9.227
 	.identity = "TWL4030 Watchdog",
 };
 
@@ -83,6 +87,10 @@ static int twl4030_wdt_probe(struct platform_device *pdev)
 	wdt->timeout		= 30;
 	wdt->min_timeout	= 1;
 	wdt->max_timeout	= 30;
+<<<<<<< HEAD
+=======
+	wdt->parent = &pdev->dev;
+>>>>>>> v4.9.227
 
 	watchdog_set_nowayout(wdt, nowayout);
 	platform_set_drvdata(pdev, wdt);
@@ -140,7 +148,10 @@ static struct platform_driver twl4030_wdt_driver = {
 	.suspend	= twl4030_wdt_suspend,
 	.resume		= twl4030_wdt_resume,
 	.driver		= {
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name		= "twl4030_wdt",
 		.of_match_table	= twl_wdt_of_match,
 	},

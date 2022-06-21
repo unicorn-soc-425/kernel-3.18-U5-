@@ -22,7 +22,11 @@
 #include <linux/linkage.h>
 #include <linux/init.h>
 
+<<<<<<< HEAD
 	.level	LEVEL
+=======
+	.level	PA_ASM_LEVEL
+>>>>>>> v4.9.227
 
 	__INITDATA
 ENTRY(boot_args)
@@ -69,12 +73,20 @@ $bss_loop:
 	stw,ma          %arg2,4(%r1)
 	stw,ma          %arg3,4(%r1)
 
+<<<<<<< HEAD
 	/* Initialize startup VM. Just map first 8/16 MB of memory */
+=======
+	/* Initialize startup VM. Just map first 16/32 MB of memory */
+>>>>>>> v4.9.227
 	load32		PA(swapper_pg_dir),%r4
 	mtctl		%r4,%cr24	/* Initialize kernel root pointer */
 	mtctl		%r4,%cr25	/* Initialize user root pointer */
 
+<<<<<<< HEAD
 #if PT_NLEVELS == 3
+=======
+#if CONFIG_PGTABLE_LEVELS == 3
+>>>>>>> v4.9.227
 	/* Set pmd in pgd */
 	load32		PA(pmd0),%r5
 	shrd            %r5,PxD_VALUE_SHIFT,%r3	
@@ -97,7 +109,11 @@ $bss_loop:
 	stw		%r3,0(%r4)
 	ldo		(PAGE_SIZE >> PxD_VALUE_SHIFT)(%r3),%r3
 	addib,>		-1,%r1,1b
+<<<<<<< HEAD
 #if PT_NLEVELS == 3
+=======
+#if CONFIG_PGTABLE_LEVELS == 3
+>>>>>>> v4.9.227
 	ldo             ASM_PMD_ENTRY_SIZE(%r4),%r4
 #else
 	ldo             ASM_PGD_ENTRY_SIZE(%r4),%r4
@@ -107,7 +123,11 @@ $bss_loop:
 	/* Now initialize the PTEs themselves.  We use RWX for
 	 * everything ... it will get remapped correctly later */
 	ldo		0+_PAGE_KERNEL_RWX(%r0),%r3 /* Hardwired 0 phys addr start */
+<<<<<<< HEAD
 	ldi		(1<<(KERNEL_INITIAL_ORDER-PAGE_SHIFT)),%r11 /* PFN count */
+=======
+	load32		(1<<(KERNEL_INITIAL_ORDER-PAGE_SHIFT)),%r11 /* PFN count */
+>>>>>>> v4.9.227
 	load32		PA(pg0),%r1
 
 $pgt_fill_loop:
@@ -129,6 +149,18 @@ $pgt_fill_loop:
 	/* And the stack pointer too */
 	ldo             THREAD_SZ_ALGN(%r6),%sp
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_64BIT) && defined(CONFIG_FUNCTION_TRACER)
+	.import _mcount,data
+	/* initialize mcount FPTR */
+	/* Get the global data pointer */
+	loadgp
+	load32		PA(_mcount), %r10
+	std		%dp,0x18(%r10)
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_SMP
 	/* Set the smp rendezvous address into page zero.
 	** It would be safer to do this in init_smp_config() but
@@ -245,7 +277,11 @@ stext_pdc_ret:
 	ldo		R%PA(fault_vector_11)(%r10),%r10
 
 $is_pa20:
+<<<<<<< HEAD
 	.level		LEVEL /* restore 1.1 || 2.0w */
+=======
+	.level		PA_ASM_LEVEL /* restore 1.1 || 2.0w */
+>>>>>>> v4.9.227
 #endif /*!CONFIG_64BIT*/
 	load32		PA(fault_vector_20),%r10
 

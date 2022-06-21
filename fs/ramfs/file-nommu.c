@@ -34,12 +34,26 @@ static unsigned long ramfs_nommu_get_unmapped_area(struct file *file,
 						   unsigned long flags);
 static int ramfs_nommu_mmap(struct file *file, struct vm_area_struct *vma);
 
+<<<<<<< HEAD
 const struct file_operations ramfs_file_operations = {
 	.mmap			= ramfs_nommu_mmap,
 	.get_unmapped_area	= ramfs_nommu_get_unmapped_area,
 	.read			= new_sync_read,
 	.read_iter		= generic_file_read_iter,
 	.write			= new_sync_write,
+=======
+static unsigned ramfs_mmap_capabilities(struct file *file)
+{
+	return NOMMU_MAP_DIRECT | NOMMU_MAP_COPY | NOMMU_MAP_READ |
+		NOMMU_MAP_WRITE | NOMMU_MAP_EXEC;
+}
+
+const struct file_operations ramfs_file_operations = {
+	.mmap_capabilities	= ramfs_mmap_capabilities,
+	.mmap			= ramfs_nommu_mmap,
+	.get_unmapped_area	= ramfs_nommu_get_unmapped_area,
+	.read_iter		= generic_file_read_iter,
+>>>>>>> v4.9.227
 	.write_iter		= generic_file_write_iter,
 	.fsync			= noop_fsync,
 	.splice_read		= generic_file_splice_read,
@@ -65,6 +79,10 @@ int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 	unsigned order;
 	void *data;
 	int ret;
+<<<<<<< HEAD
+=======
+	gfp_t gfp = mapping_gfp_mask(inode->i_mapping);
+>>>>>>> v4.9.227
 
 	/* make various checks */
 	order = get_order(newsize);
@@ -79,7 +97,11 @@ int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 
 	/* allocate enough contiguous pages to be able to satisfy the
 	 * request */
+<<<<<<< HEAD
 	pages = alloc_pages(mapping_gfp_mask(inode->i_mapping), order);
+=======
+	pages = alloc_pages(gfp, order);
+>>>>>>> v4.9.227
 	if (!pages)
 		return -ENOMEM;
 
@@ -103,7 +125,11 @@ int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 		struct page *page = pages + loop;
 
 		ret = add_to_page_cache_lru(page, inode->i_mapping, loop,
+<<<<<<< HEAD
 					GFP_KERNEL);
+=======
+					gfp);
+>>>>>>> v4.9.227
 		if (ret < 0)
 			goto add_error;
 
@@ -158,12 +184,20 @@ static int ramfs_nommu_resize(struct inode *inode, loff_t newsize, loff_t size)
  */
 static int ramfs_nommu_setattr(struct dentry *dentry, struct iattr *ia)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	unsigned int old_ia_valid = ia->ia_valid;
 	int ret = 0;
 
 	/* POSIX UID/GID verification for setting inode attributes */
+<<<<<<< HEAD
 	ret = inode_change_ok(inode, ia);
+=======
+	ret = setattr_prepare(dentry, ia);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -205,14 +239,21 @@ static unsigned long ramfs_nommu_get_unmapped_area(struct file *file,
 	struct page **pages = NULL, **ptr, *page;
 	loff_t isize;
 
+<<<<<<< HEAD
 	if (!(flags & MAP_SHARED))
 		return addr;
 
+=======
+>>>>>>> v4.9.227
 	/* the mapping mustn't extend beyond the EOF */
 	lpages = (len + PAGE_SIZE - 1) >> PAGE_SHIFT;
 	isize = i_size_read(inode);
 
+<<<<<<< HEAD
 	ret = -EINVAL;
+=======
+	ret = -ENOSYS;
+>>>>>>> v4.9.227
 	maxpages = (isize + PAGE_SIZE - 1) >> PAGE_SHIFT;
 	if (pgoff >= maxpages)
 		goto out;
@@ -221,7 +262,10 @@ static unsigned long ramfs_nommu_get_unmapped_area(struct file *file,
 		goto out;
 
 	/* gang-find the pages */
+<<<<<<< HEAD
 	ret = -ENOMEM;
+=======
+>>>>>>> v4.9.227
 	pages = kcalloc(lpages, sizeof(struct page *), GFP_KERNEL);
 	if (!pages)
 		goto out_free;
@@ -257,7 +301,11 @@ out:
  */
 static int ramfs_nommu_mmap(struct file *file, struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	if (!(vma->vm_flags & VM_SHARED))
+=======
+	if (!(vma->vm_flags & (VM_SHARED | VM_MAYSHARE)))
+>>>>>>> v4.9.227
 		return -ENOSYS;
 
 	file_accessed(file);

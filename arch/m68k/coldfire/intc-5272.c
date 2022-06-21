@@ -143,10 +143,17 @@ static int intc_irq_set_type(struct irq_data *d, unsigned int type)
  * We need to be careful with the masking/acking due to the side effects
  * of masking an interrupt.
  */
+<<<<<<< HEAD
 static void intc_external_irq(unsigned int irq, struct irq_desc *desc)
 {
 	irq_desc_get_chip(desc)->irq_ack(&desc->irq_data);
 	handle_simple_irq(irq, desc);
+=======
+static void intc_external_irq(struct irq_desc *desc)
+{
+	irq_desc_get_chip(desc)->irq_ack(&desc->irq_data);
+	handle_simple_irq(desc);
+>>>>>>> v4.9.227
 }
 
 static struct irq_chip intc_irq_chip = {

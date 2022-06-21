@@ -25,7 +25,10 @@
 #include <linux/notifier.h>
 #include <linux/rwsem.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/fips.h>
+=======
+>>>>>>> v4.9.227
 
 /* Crypto notification events. */
 enum {
@@ -88,7 +91,10 @@ void crypto_alg_tested(const char *name, int err);
 void crypto_remove_spawns(struct crypto_alg *alg, struct list_head *list,
 			  struct crypto_alg *nalg);
 void crypto_remove_final(struct list_head *list);
+<<<<<<< HEAD
 void crypto_shoot_alg(struct crypto_alg *alg);
+=======
+>>>>>>> v4.9.227
 struct crypto_tfm *__crypto_alloc_tfm(struct crypto_alg *alg, u32 type,
 				      u32 mask);
 void *crypto_create_tfm(struct crypto_alg *alg,
@@ -103,6 +109,14 @@ int crypto_register_notifier(struct notifier_block *nb);
 int crypto_unregister_notifier(struct notifier_block *nb);
 int crypto_probing_notify(unsigned long val, void *v);
 
+<<<<<<< HEAD
+=======
+unsigned int crypto_alg_extsize(struct crypto_alg *alg);
+
+int crypto_type_has_alg(const char *name, const struct crypto_type *frontend,
+			u32 type, u32 mask);
+
+>>>>>>> v4.9.227
 static inline struct crypto_alg *crypto_alg_get(struct crypto_alg *alg)
 {
 	atomic_inc(&alg->cra_refcnt);

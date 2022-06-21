@@ -147,6 +147,7 @@ void ufs_qcom_phy_qmp_20nm_set_tx_lane_enable(struct ufs_qcom_phy *phy, u32 val)
 	mb();
 }
 
+<<<<<<< HEAD
 static
 void ufs_qcom_phy_qmp_20nm_ctrl_rx_linecfg(struct ufs_qcom_phy *phy, bool ctrl)
 {
@@ -164,6 +165,8 @@ void ufs_qcom_phy_qmp_20nm_ctrl_rx_linecfg(struct ufs_qcom_phy *phy, bool ctrl)
 	mb();
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void ufs_qcom_phy_qmp_20nm_start_serdes(struct ufs_qcom_phy *phy)
 {
 	u32 tmp;
@@ -188,7 +191,11 @@ static int ufs_qcom_phy_qmp_20nm_is_pcs_ready(struct ufs_qcom_phy *phy_common)
 	return err;
 }
 
+<<<<<<< HEAD
 struct phy_ops ufs_qcom_phy_qmp_20nm_phy_ops = {
+=======
+static const struct phy_ops ufs_qcom_phy_qmp_20nm_phy_ops = {
+>>>>>>> v4.9.227
 	.init		= ufs_qcom_phy_qmp_20nm_init,
 	.exit		= ufs_qcom_phy_exit,
 	.power_on	= ufs_qcom_phy_power_on,
@@ -196,12 +203,19 @@ struct phy_ops ufs_qcom_phy_qmp_20nm_phy_ops = {
 	.owner		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 struct ufs_qcom_phy_specific_ops phy_20nm_ops = {
+=======
+static struct ufs_qcom_phy_specific_ops phy_20nm_ops = {
+>>>>>>> v4.9.227
 	.calibrate_phy		= ufs_qcom_phy_qmp_20nm_phy_calibrate,
 	.start_serdes		= ufs_qcom_phy_qmp_20nm_start_serdes,
 	.is_physical_coding_sublayer_ready = ufs_qcom_phy_qmp_20nm_is_pcs_ready,
 	.set_tx_lane_enable	= ufs_qcom_phy_qmp_20nm_set_tx_lane_enable,
+<<<<<<< HEAD
 	.ctrl_rx_linecfg	= ufs_qcom_phy_qmp_20nm_ctrl_rx_linecfg,
+=======
+>>>>>>> v4.9.227
 	.power_control		= ufs_qcom_phy_qmp_20nm_power_control,
 };
 
@@ -214,7 +228,10 @@ static int ufs_qcom_phy_qmp_20nm_probe(struct platform_device *pdev)
 
 	phy = devm_kzalloc(dev, sizeof(*phy), GFP_KERNEL);
 	if (!phy) {
+<<<<<<< HEAD
 		dev_err(dev, "%s: failed to allocate phy\n", __func__);
+=======
+>>>>>>> v4.9.227
 		err = -ENOMEM;
 		goto out;
 	}
@@ -265,7 +282,10 @@ static struct platform_driver ufs_qcom_phy_qmp_20nm_driver = {
 	.driver = {
 		.of_match_table = ufs_qcom_phy_qmp_20nm_of_match,
 		.name = "ufs_qcom_phy_qmp_20nm",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

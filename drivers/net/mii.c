@@ -302,7 +302,11 @@ void mii_check_link (struct mii_if_info *mii)
 }
 
 /**
+<<<<<<< HEAD
  * mii_check_media - check the MII interface for a duplex change
+=======
+ * mii_check_media - check the MII interface for a carrier/speed/duplex change
+>>>>>>> v4.9.227
  * @mii: the MII interface
  * @ok_to_print: OK to print link up/down messages
  * @init_media: OK to save duplex mode in @mii
@@ -318,10 +322,13 @@ unsigned int mii_check_media (struct mii_if_info *mii,
 	int advertise, lpa, media, duplex;
 	int lpa2 = 0;
 
+<<<<<<< HEAD
 	/* if forced media, go no further */
 	if (mii->force_media)
 		return 0; /* duplex did not change */
 
+=======
+>>>>>>> v4.9.227
 	/* check current and old link status */
 	old_carrier = netif_carrier_ok(mii->dev) ? 1 : 0;
 	new_carrier = (unsigned int) mii_link_ok(mii);
@@ -345,6 +352,15 @@ unsigned int mii_check_media (struct mii_if_info *mii,
 	 */
 	netif_carrier_on(mii->dev);
 
+<<<<<<< HEAD
+=======
+	if (mii->force_media) {
+		if (ok_to_print)
+			netdev_info(mii->dev, "link up\n");
+		return 0; /* duplex did not change */
+	}
+
+>>>>>>> v4.9.227
 	/* get MII advertise and LPA values */
 	if ((!init_media) && (mii->advertising))
 		advertise = mii->advertising;

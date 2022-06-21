@@ -6,6 +6,11 @@
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
  */
+<<<<<<< HEAD
+=======
+#include <linux/init.h>
+#include <linux/smp.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/memblock.h>
@@ -13,7 +18,13 @@
 
 #include <asm/cputype.h>
 #include <asm/cp15.h>
+<<<<<<< HEAD
 #include <asm/mcpm.h>
+=======
+#include <asm/cacheflush.h>
+#include <asm/smp.h>
+#include <asm/smp_plat.h>
+>>>>>>> v4.9.227
 
 #include "core.h"
 
@@ -94,11 +105,24 @@ static void hip04_set_snoop_filter(unsigned int cluster, unsigned int on)
 	} while (data != readl_relaxed(fabric + FAB_SF_MODE));
 }
 
+<<<<<<< HEAD
 static int hip04_mcpm_power_up(unsigned int cpu, unsigned int cluster)
 {
 	unsigned long data;
 	void __iomem *sys_dreq, *sys_status;
 
+=======
+static int hip04_boot_secondary(unsigned int l_cpu, struct task_struct *idle)
+{
+	unsigned int mpidr, cpu, cluster;
+	unsigned long data;
+	void __iomem *sys_dreq, *sys_status;
+
+	mpidr = cpu_logical_map(l_cpu);
+	cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+	cluster = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+
+>>>>>>> v4.9.227
 	if (!sysctrl)
 		return -ENODEV;
 	if (cluster >= HIP04_MAX_CLUSTERS || cpu >= HIP04_MAX_CPUS_PER_CLUSTER)
@@ -118,6 +142,10 @@ static int hip04_mcpm_power_up(unsigned int cpu, unsigned int cluster)
 			cpu_relax();
 			data = readl_relaxed(sys_status);
 		} while (data & CLUSTER_DEBUG_RESET_STATUS);
+<<<<<<< HEAD
+=======
+		hip04_set_snoop_filter(cluster, 1);
+>>>>>>> v4.9.227
 	}
 
 	data = CORE_RESET_BIT(cpu) | NEON_RESET_BIT(cpu) | \
@@ -126,11 +154,21 @@ static int hip04_mcpm_power_up(unsigned int cpu, unsigned int cluster)
 	do {
 		cpu_relax();
 	} while (data == readl_relaxed(sys_status));
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	/*
 	 * We may fail to power up core again without this delay.
 	 * It's not mentioned in document. It's found by test.
 	 */
 	udelay(20);
+<<<<<<< HEAD
+=======
+
+	arch_send_wakeup_ipi_mask(cpumask_of(l_cpu));
+
+>>>>>>> v4.9.227
 out:
 	hip04_cpu_table[cluster][cpu]++;
 	spin_unlock_irq(&boot_lock);
@@ -138,6 +176,7 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 static void hip04_mcpm_power_down(void)
 {
 	unsigned int mpidr, cpu, cluster;
@@ -155,14 +194,37 @@ static void hip04_mcpm_power_down(void)
 	if (hip04_cpu_table[cluster][cpu] == 1) {
 		/* A power_up request went ahead of us. */
 		skip_wfi = true;
+=======
+#ifdef CONFIG_HOTPLUG_CPU
+static void hip04_cpu_die(unsigned int l_cpu)
+{
+	unsigned int mpidr, cpu, cluster;
+	bool last_man;
+
+	mpidr = cpu_logical_map(l_cpu);
+	cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+	cluster = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+
+	spin_lock(&boot_lock);
+	hip04_cpu_table[cluster][cpu]--;
+	if (hip04_cpu_table[cluster][cpu] == 1) {
+		/* A power_up request went ahead of us. */
+		spin_unlock(&boot_lock);
+		return;
+>>>>>>> v4.9.227
 	} else if (hip04_cpu_table[cluster][cpu] > 1) {
 		pr_err("Cluster %d CPU%d boots multiple times\n", cluster, cpu);
 		BUG();
 	}
 
 	last_man = hip04_cluster_is_down(cluster);
+<<<<<<< HEAD
 	if (last_man && __mcpm_outbound_enter_critical(cpu, cluster)) {
 		spin_unlock(&boot_lock);
+=======
+	spin_unlock(&boot_lock);
+	if (last_man) {
+>>>>>>> v4.9.227
 		/* Since it's Cortex A15, disable L2 prefetching. */
 		asm volatile(
 		"mcr	p15, 1, %0, c15, c0, 3 \n\t"
@@ -170,6 +232,7 @@ static void hip04_mcpm_power_down(void)
 		"dsb	"
 		: : "r" (0x400) );
 		v7_exit_coherency_flush(all);
+<<<<<<< HEAD
 		hip04_set_snoop_filter(cluster, 0);
 		__mcpm_outbound_leave_critical(cluster, CLUSTER_DOWN);
 	} else {
@@ -188,16 +251,39 @@ static int hip04_mcpm_wait_for_powerdown(unsigned int cpu, unsigned int cluster)
 	unsigned int data, tries, count;
 	int ret = -ETIMEDOUT;
 
+=======
+	} else {
+		v7_exit_coherency_flush(louis);
+	}
+
+	for (;;)
+		wfi();
+}
+
+static int hip04_cpu_kill(unsigned int l_cpu)
+{
+	unsigned int mpidr, cpu, cluster;
+	unsigned int data, tries, count;
+
+	mpidr = cpu_logical_map(l_cpu);
+	cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+	cluster = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+>>>>>>> v4.9.227
 	BUG_ON(cluster >= HIP04_MAX_CLUSTERS ||
 	       cpu >= HIP04_MAX_CPUS_PER_CLUSTER);
 
 	count = TIMEOUT_MSEC / POLL_MSEC;
 	spin_lock_irq(&boot_lock);
 	for (tries = 0; tries < count; tries++) {
+<<<<<<< HEAD
 		if (hip04_cpu_table[cluster][cpu]) {
 			ret = -EBUSY;
 			goto err;
 		}
+=======
+		if (hip04_cpu_table[cluster][cpu])
+			goto err;
+>>>>>>> v4.9.227
 		cpu_relax();
 		data = readl_relaxed(sysctrl + SC_CPU_RESET_STATUS(cluster));
 		if (data & CORE_WFI_STATUS(cpu))
@@ -220,6 +306,7 @@ static int hip04_mcpm_wait_for_powerdown(unsigned int cpu, unsigned int cluster)
 	}
 	if (tries >= count)
 		goto err;
+<<<<<<< HEAD
 	spin_unlock_irq(&boot_lock);
 	return 0;
 err:
@@ -278,6 +365,24 @@ static const struct mcpm_platform_ops hip04_mcpm_ops = {
 	.power_down		= hip04_mcpm_power_down,
 	.wait_for_powerdown	= hip04_mcpm_wait_for_powerdown,
 	.powered_up		= hip04_mcpm_powered_up,
+=======
+	if (hip04_cluster_is_down(cluster))
+		hip04_set_snoop_filter(cluster, 0);
+	spin_unlock_irq(&boot_lock);
+	return 1;
+err:
+	spin_unlock_irq(&boot_lock);
+	return 0;
+}
+#endif
+
+static const struct smp_operations hip04_smp_ops __initconst = {
+	.smp_boot_secondary	= hip04_boot_secondary,
+#ifdef CONFIG_HOTPLUG_CPU
+	.cpu_die		= hip04_cpu_die,
+	.cpu_kill		= hip04_cpu_kill,
+#endif
+>>>>>>> v4.9.227
 };
 
 static bool __init hip04_cpu_table_init(void)
@@ -298,7 +403,11 @@ static bool __init hip04_cpu_table_init(void)
 	return true;
 }
 
+<<<<<<< HEAD
 static int __init hip04_mcpm_init(void)
+=======
+static int __init hip04_smp_init(void)
+>>>>>>> v4.9.227
 {
 	struct device_node *np, *np_sctl, *np_fab;
 	struct resource fab_res;
@@ -353,10 +462,13 @@ static int __init hip04_mcpm_init(void)
 		ret = -EINVAL;
 		goto err_table;
 	}
+<<<<<<< HEAD
 	ret = mcpm_platform_register(&hip04_mcpm_ops);
 	if (ret) {
 		goto err_table;
 	}
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * Fill the instruction address that is used after secondary core
@@ -364,6 +476,7 @@ static int __init hip04_mcpm_init(void)
 	 */
 	writel_relaxed(hip04_boot_method[0], relocation);
 	writel_relaxed(0xa5a5a5a5, relocation + 4);	/* magic number */
+<<<<<<< HEAD
 	writel_relaxed(virt_to_phys(mcpm_entry_point), relocation + 8);
 	writel_relaxed(0, relocation + 12);
 	iounmap(relocation);
@@ -371,6 +484,13 @@ static int __init hip04_mcpm_init(void)
 	mcpm_sync_init(hip04_mcpm_power_up_setup);
 	mcpm_smp_set_ops();
 	pr_info("HiP04 MCPM initialized\n");
+=======
+	writel_relaxed(virt_to_phys(secondary_startup), relocation + 8);
+	writel_relaxed(0, relocation + 12);
+	iounmap(relocation);
+
+	smp_set_ops(&hip04_smp_ops);
+>>>>>>> v4.9.227
 	return ret;
 err_table:
 	iounmap(fabric);
@@ -383,4 +503,8 @@ err_reloc:
 err:
 	return ret;
 }
+<<<<<<< HEAD
 early_initcall(hip04_mcpm_init);
+=======
+early_initcall(hip04_smp_init);
+>>>>>>> v4.9.227

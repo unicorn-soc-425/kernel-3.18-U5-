@@ -13,17 +13,25 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Ryusuke Konishi <ryusuke@osrg.net>
+=======
+ * Written by Ryusuke Konishi.
+>>>>>>> v4.9.227
  *
  */
 
 #include <linux/pagemap.h>
 #include <linux/buffer_head.h>
 #include <linux/writeback.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> v4.9.227
 #include <linux/bio.h>
 #include <linux/completion.h>
 #include <linux/blkdev.h>
@@ -48,18 +56,40 @@
  */
 #define SC_N_INODEVEC	16   /* Size of locally allocated inode vector */
 
+<<<<<<< HEAD
 #define SC_MAX_SEGDELTA 64   /* Upper limit of the number of segments
 				appended in collection retry loop */
+=======
+#define SC_MAX_SEGDELTA 64   /*
+			      * Upper limit of the number of segments
+			      * appended in collection retry loop
+			      */
+>>>>>>> v4.9.227
 
 /* Construction mode */
 enum {
 	SC_LSEG_SR = 1,	/* Make a logical segment having a super root */
+<<<<<<< HEAD
 	SC_LSEG_DSYNC,	/* Flush data blocks of a given file and make
 			   a logical segment without a super root */
 	SC_FLUSH_FILE,	/* Flush data files, leads to segment writes without
 			   creating a checkpoint */
 	SC_FLUSH_DAT,	/* Flush DAT file. This also creates segments without
 			   a checkpoint */
+=======
+	SC_LSEG_DSYNC,	/*
+			 * Flush data blocks of a given file and make
+			 * a logical segment without a super root.
+			 */
+	SC_FLUSH_FILE,	/*
+			 * Flush data files, leads to segment writes without
+			 * creating a checkpoint.
+			 */
+	SC_FLUSH_DAT,	/*
+			 * Flush DAT file.  This also creates segments
+			 * without a checkpoint.
+			 */
+>>>>>>> v4.9.227
 };
 
 /* Stage numbers of dirty block collection */
@@ -76,6 +106,39 @@ enum {
 	NILFS_ST_DONE,
 };
 
+<<<<<<< HEAD
+=======
+#define CREATE_TRACE_POINTS
+#include <trace/events/nilfs2.h>
+
+/*
+ * nilfs_sc_cstage_inc(), nilfs_sc_cstage_set(), nilfs_sc_cstage_get() are
+ * wrapper functions of stage count (nilfs_sc_info->sc_stage.scnt). Users of
+ * the variable must use them because transition of stage count must involve
+ * trace events (trace_nilfs2_collection_stage_transition).
+ *
+ * nilfs_sc_cstage_get() isn't required for the above purpose because it doesn't
+ * produce tracepoint events. It is provided just for making the intention
+ * clear.
+ */
+static inline void nilfs_sc_cstage_inc(struct nilfs_sc_info *sci)
+{
+	sci->sc_stage.scnt++;
+	trace_nilfs2_collection_stage_transition(sci);
+}
+
+static inline void nilfs_sc_cstage_set(struct nilfs_sc_info *sci, int next_scnt)
+{
+	sci->sc_stage.scnt = next_scnt;
+	trace_nilfs2_collection_stage_transition(sci);
+}
+
+static inline int nilfs_sc_cstage_get(struct nilfs_sc_info *sci)
+{
+	return sci->sc_stage.scnt;
+}
+
+>>>>>>> v4.9.227
 /* State flags of collection */
 #define NILFS_CF_NODE		0x0001	/* Collecting node blocks */
 #define NILFS_CF_IFILE_STARTED	0x0002	/* IFILE stage has started */
@@ -115,7 +178,12 @@ static void nilfs_dispose_list(struct the_nilfs *, struct list_head *, int);
 #define nilfs_cnt32_lt(a, b)  nilfs_cnt32_gt(b, a)
 #define nilfs_cnt32_le(a, b)  nilfs_cnt32_ge(b, a)
 
+<<<<<<< HEAD
 static int nilfs_prepare_segment_lock(struct nilfs_transaction_info *ti)
+=======
+static int nilfs_prepare_segment_lock(struct super_block *sb,
+				      struct nilfs_transaction_info *ti)
+>>>>>>> v4.9.227
 {
 	struct nilfs_transaction_info *cur_ti = current->journal_info;
 	void *save = NULL;
@@ -123,6 +191,7 @@ static int nilfs_prepare_segment_lock(struct nilfs_transaction_info *ti)
 	if (cur_ti) {
 		if (cur_ti->ti_magic == NILFS_TI_MAGIC)
 			return ++cur_ti->ti_count;
+<<<<<<< HEAD
 		else {
 			/*
 			 * If journal_info field is occupied by other FS,
@@ -134,6 +203,16 @@ static int nilfs_prepare_segment_lock(struct nilfs_transaction_info *ti)
 			       "FS\n");
 			save = current->journal_info;
 		}
+=======
+
+		/*
+		 * If journal_info field is occupied by other FS,
+		 * it is saved and will be restored on
+		 * nilfs_transaction_commit().
+		 */
+		nilfs_msg(sb, KERN_WARNING, "journal info from a different FS");
+		save = current->journal_info;
+>>>>>>> v4.9.227
 	}
 	if (!ti) {
 		ti = kmem_cache_alloc(nilfs_transaction_cachep, GFP_NOFS);
@@ -182,12 +261,28 @@ int nilfs_transaction_begin(struct super_block *sb,
 			    int vacancy_check)
 {
 	struct the_nilfs *nilfs;
+<<<<<<< HEAD
 	int ret = nilfs_prepare_segment_lock(ti);
 
 	if (unlikely(ret < 0))
 		return ret;
 	if (ret > 0)
 		return 0;
+=======
+	int ret = nilfs_prepare_segment_lock(sb, ti);
+	struct nilfs_transaction_info *trace_ti;
+
+	if (unlikely(ret < 0))
+		return ret;
+	if (ret > 0) {
+		trace_ti = current->journal_info;
+
+		trace_nilfs2_transaction_transition(sb, trace_ti,
+				    trace_ti->ti_count, trace_ti->ti_flags,
+				    TRACE_NILFS2_TRANSACTION_BEGIN);
+		return 0;
+	}
+>>>>>>> v4.9.227
 
 	sb_start_intwrite(sb);
 
@@ -198,6 +293,14 @@ int nilfs_transaction_begin(struct super_block *sb,
 		ret = -ENOSPC;
 		goto failed;
 	}
+<<<<<<< HEAD
+=======
+
+	trace_ti = current->journal_info;
+	trace_nilfs2_transaction_transition(sb, trace_ti, trace_ti->ti_count,
+					    trace_ti->ti_flags,
+					    TRACE_NILFS2_TRANSACTION_BEGIN);
+>>>>>>> v4.9.227
 	return 0;
 
  failed:
@@ -230,6 +333,11 @@ int nilfs_transaction_commit(struct super_block *sb)
 	ti->ti_flags |= NILFS_TI_COMMIT;
 	if (ti->ti_count > 0) {
 		ti->ti_count--;
+<<<<<<< HEAD
+=======
+		trace_nilfs2_transaction_transition(sb, ti, ti->ti_count,
+			    ti->ti_flags, TRACE_NILFS2_TRANSACTION_COMMIT);
+>>>>>>> v4.9.227
 		return 0;
 	}
 	if (nilfs->ns_writer) {
@@ -241,6 +349,12 @@ int nilfs_transaction_commit(struct super_block *sb)
 			nilfs_segctor_do_flush(sci, 0);
 	}
 	up_read(&nilfs->ns_segctor_sem);
+<<<<<<< HEAD
+=======
+	trace_nilfs2_transaction_transition(sb, ti, ti->ti_count,
+			    ti->ti_flags, TRACE_NILFS2_TRANSACTION_COMMIT);
+
+>>>>>>> v4.9.227
 	current->journal_info = ti->ti_save;
 
 	if (ti->ti_flags & NILFS_TI_SYNC)
@@ -259,10 +373,21 @@ void nilfs_transaction_abort(struct super_block *sb)
 	BUG_ON(ti == NULL || ti->ti_magic != NILFS_TI_MAGIC);
 	if (ti->ti_count > 0) {
 		ti->ti_count--;
+<<<<<<< HEAD
+=======
+		trace_nilfs2_transaction_transition(sb, ti, ti->ti_count,
+			    ti->ti_flags, TRACE_NILFS2_TRANSACTION_ABORT);
+>>>>>>> v4.9.227
 		return;
 	}
 	up_read(&nilfs->ns_segctor_sem);
 
+<<<<<<< HEAD
+=======
+	trace_nilfs2_transaction_transition(sb, ti, ti->ti_count,
+		    ti->ti_flags, TRACE_NILFS2_TRANSACTION_ABORT);
+
+>>>>>>> v4.9.227
 	current->journal_info = ti->ti_save;
 	if (ti->ti_flags & NILFS_TI_DYNAMIC_ALLOC)
 		kmem_cache_free(nilfs_transaction_cachep, ti);
@@ -308,6 +433,12 @@ static void nilfs_transaction_lock(struct super_block *sb,
 	current->journal_info = ti;
 
 	for (;;) {
+<<<<<<< HEAD
+=======
+		trace_nilfs2_transaction_transition(sb, ti, ti->ti_count,
+			    ti->ti_flags, TRACE_NILFS2_TRANSACTION_TRYLOCK);
+
+>>>>>>> v4.9.227
 		down_write(&nilfs->ns_segctor_sem);
 		if (!test_bit(NILFS_SC_PRIOR_FLUSH, &sci->sc_flags))
 			break;
@@ -315,10 +446,20 @@ static void nilfs_transaction_lock(struct super_block *sb,
 		nilfs_segctor_do_immediate_flush(sci);
 
 		up_write(&nilfs->ns_segctor_sem);
+<<<<<<< HEAD
 		yield();
 	}
 	if (gcflag)
 		ti->ti_flags |= NILFS_TI_GC;
+=======
+		cond_resched();
+	}
+	if (gcflag)
+		ti->ti_flags |= NILFS_TI_GC;
+
+	trace_nilfs2_transaction_transition(sb, ti, ti->ti_count,
+			    ti->ti_flags, TRACE_NILFS2_TRANSACTION_LOCK);
+>>>>>>> v4.9.227
 }
 
 static void nilfs_transaction_unlock(struct super_block *sb)
@@ -331,14 +472,27 @@ static void nilfs_transaction_unlock(struct super_block *sb)
 
 	up_write(&nilfs->ns_segctor_sem);
 	current->journal_info = ti->ti_save;
+<<<<<<< HEAD
+=======
+
+	trace_nilfs2_transaction_transition(sb, ti, ti->ti_count,
+			    ti->ti_flags, TRACE_NILFS2_TRANSACTION_UNLOCK);
+>>>>>>> v4.9.227
 }
 
 static void *nilfs_segctor_map_segsum_entry(struct nilfs_sc_info *sci,
 					    struct nilfs_segsum_pointer *ssp,
+<<<<<<< HEAD
 					    unsigned bytes)
 {
 	struct nilfs_segment_buffer *segbuf = sci->sc_curseg;
 	unsigned blocksize = sci->sc_super->s_blocksize;
+=======
+					    unsigned int bytes)
+{
+	struct nilfs_segment_buffer *segbuf = sci->sc_curseg;
+	unsigned int blocksize = sci->sc_super->s_blocksize;
+>>>>>>> v4.9.227
 	void *p;
 
 	if (unlikely(ssp->offset + bytes > blocksize)) {
@@ -360,8 +514,13 @@ static int nilfs_segctor_reset_segment_buffer(struct nilfs_sc_info *sci)
 {
 	struct nilfs_segment_buffer *segbuf = sci->sc_curseg;
 	struct buffer_head *sumbh;
+<<<<<<< HEAD
 	unsigned sumbytes;
 	unsigned flags = 0;
+=======
+	unsigned int sumbytes;
+	unsigned int flags = 0;
+>>>>>>> v4.9.227
 	int err;
 
 	if (nilfs_doing_gc())
@@ -382,8 +541,15 @@ static int nilfs_segctor_feed_segment(struct nilfs_sc_info *sci)
 {
 	sci->sc_nblk_this_inc += sci->sc_curseg->sb_sum.nblocks;
 	if (NILFS_SEGBUF_IS_LAST(sci->sc_curseg, &sci->sc_segbufs))
+<<<<<<< HEAD
 		return -E2BIG; /* The current segment is filled up
 				  (internal code) */
+=======
+		return -E2BIG; /*
+				* The current segment is filled up
+				* (internal code)
+				*/
+>>>>>>> v4.9.227
 	sci->sc_curseg = NILFS_NEXT_SEGBUF(sci->sc_curseg);
 	return nilfs_segctor_reset_segment_buffer(sci);
 }
@@ -410,9 +576,15 @@ static int nilfs_segctor_add_super_root(struct nilfs_sc_info *sci)
  */
 static int nilfs_segctor_segsum_block_required(
 	struct nilfs_sc_info *sci, const struct nilfs_segsum_pointer *ssp,
+<<<<<<< HEAD
 	unsigned binfo_size)
 {
 	unsigned blocksize = sci->sc_super->s_blocksize;
+=======
+	unsigned int binfo_size)
+{
+	unsigned int blocksize = sci->sc_super->s_blocksize;
+>>>>>>> v4.9.227
 	/* Size of finfo and binfo is enough small against blocksize */
 
 	return ssp->offset + binfo_size +
@@ -471,7 +643,11 @@ static void nilfs_segctor_end_finfo(struct nilfs_sc_info *sci,
 static int nilfs_segctor_add_file_block(struct nilfs_sc_info *sci,
 					struct buffer_head *bh,
 					struct inode *inode,
+<<<<<<< HEAD
 					unsigned binfo_size)
+=======
+					unsigned int binfo_size)
+>>>>>>> v4.9.227
 {
 	struct nilfs_segment_buffer *segbuf;
 	int required, err = 0;
@@ -555,7 +731,11 @@ static void nilfs_write_file_node_binfo(struct nilfs_sc_info *sci,
 	*vblocknr = binfo->bi_v.bi_vblocknr;
 }
 
+<<<<<<< HEAD
 static struct nilfs_sc_operations nilfs_sc_file_ops = {
+=======
+static const struct nilfs_sc_operations nilfs_sc_file_ops = {
+>>>>>>> v4.9.227
 	.collect_data = nilfs_collect_file_data,
 	.collect_node = nilfs_collect_file_node,
 	.collect_bmap = nilfs_collect_file_bmap,
@@ -604,7 +784,11 @@ static void nilfs_write_dat_node_binfo(struct nilfs_sc_info *sci,
 	*binfo_dat = binfo->bi_dat;
 }
 
+<<<<<<< HEAD
 static struct nilfs_sc_operations nilfs_sc_dat_ops = {
+=======
+static const struct nilfs_sc_operations nilfs_sc_dat_ops = {
+>>>>>>> v4.9.227
 	.collect_data = nilfs_collect_dat_data,
 	.collect_node = nilfs_collect_file_node,
 	.collect_bmap = nilfs_collect_dat_bmap,
@@ -612,7 +796,11 @@ static struct nilfs_sc_operations nilfs_sc_dat_ops = {
 	.write_node_binfo = nilfs_write_dat_node_binfo,
 };
 
+<<<<<<< HEAD
 static struct nilfs_sc_operations nilfs_sc_dsync_ops = {
+=======
+static const struct nilfs_sc_operations nilfs_sc_dsync_ops = {
+>>>>>>> v4.9.227
 	.collect_data = nilfs_collect_file_data,
 	.collect_node = NULL,
 	.collect_bmap = NULL,
@@ -643,17 +831,32 @@ static size_t nilfs_lookup_dirty_data_buffers(struct inode *inode,
 	pagevec_init(&pvec, 0);
  repeat:
 	if (unlikely(index > last) ||
+<<<<<<< HEAD
 	    !pagevec_lookup_range_tag(&pvec, mapping, &index, last,
 				PAGECACHE_TAG_DIRTY))
+=======
+	    !pagevec_lookup_tag(&pvec, mapping, &index, PAGECACHE_TAG_DIRTY,
+				min_t(pgoff_t, last - index,
+				      PAGEVEC_SIZE - 1) + 1))
+>>>>>>> v4.9.227
 		return ndirties;
 
 	for (i = 0; i < pagevec_count(&pvec); i++) {
 		struct buffer_head *bh, *head;
 		struct page *page = pvec.pages[i];
 
+<<<<<<< HEAD
 		lock_page(page);
 		if (!page_has_buffers(page))
 			create_empty_buffers(page, 1 << inode->i_blkbits, 0);
+=======
+		if (unlikely(page->index > last))
+			break;
+
+		lock_page(page);
+		if (!page_has_buffers(page))
+			create_empty_buffers(page, i_blocksize(inode), 0);
+>>>>>>> v4.9.227
 		unlock_page(page);
 
 		bh = head = page_buffers(page);
@@ -687,8 +890,13 @@ static void nilfs_lookup_dirty_node_buffers(struct inode *inode,
 
 	pagevec_init(&pvec, 0);
 
+<<<<<<< HEAD
 	while (pagevec_lookup_tag(&pvec, mapping, &index,
 					PAGECACHE_TAG_DIRTY)) {
+=======
+	while (pagevec_lookup_tag(&pvec, mapping, &index, PAGECACHE_TAG_DIRTY,
+				  PAGEVEC_SIZE)) {
+>>>>>>> v4.9.227
 		for (i = 0; i < pagevec_count(&pvec); i++) {
 			bh = head = page_buffers(pvec.pages[i]);
 			do {
@@ -711,7 +919,11 @@ static void nilfs_dispose_list(struct the_nilfs *nilfs,
 {
 	struct nilfs_inode_info *ii, *n;
 	struct nilfs_inode_info *ivec[SC_N_INODEVEC], **pii;
+<<<<<<< HEAD
 	unsigned nv = 0;
+=======
+	unsigned int nv = 0;
+>>>>>>> v4.9.227
 
 	while (!list_empty(head)) {
 		spin_lock(&nilfs->ns_inode_lock);
@@ -809,9 +1021,17 @@ static int nilfs_segctor_create_checkpoint(struct nilfs_sc_info *sci)
 	err = nilfs_cpfile_get_checkpoint(nilfs->ns_cpfile, nilfs->ns_cno, 1,
 					  &raw_cp, &bh_cp);
 	if (likely(!err)) {
+<<<<<<< HEAD
 		/* The following code is duplicated with cpfile.  But, it is
 		   needed to collect the checkpoint even if it was not newly
 		   created */
+=======
+		/*
+		 * The following code is duplicated with cpfile.  But, it is
+		 * needed to collect the checkpoint even if it was not newly
+		 * created.
+		 */
+>>>>>>> v4.9.227
 		mark_buffer_dirty(bh_cp);
 		nilfs_mdt_mark_dirty(nilfs->ns_cpfile);
 		nilfs_cpfile_put_checkpoint(
@@ -892,7 +1112,11 @@ static void nilfs_segctor_fill_in_super_root(struct nilfs_sc_info *sci,
 {
 	struct buffer_head *bh_sr;
 	struct nilfs_super_root *raw_sr;
+<<<<<<< HEAD
 	unsigned isz, srsz;
+=======
+	unsigned int isz, srsz;
+>>>>>>> v4.9.227
 
 	bh_sr = NILFS_LAST_SEGBUF(&sci->sc_segbufs)->sb_super_root;
 	raw_sr = (struct nilfs_super_root *)bh_sr->b_data;
@@ -977,7 +1201,11 @@ static size_t nilfs_segctor_buffer_rest(struct nilfs_sc_info *sci)
 
 static int nilfs_segctor_scan_file(struct nilfs_sc_info *sci,
 				   struct inode *inode,
+<<<<<<< HEAD
 				   struct nilfs_sc_operations *sc_ops)
+=======
+				   const struct nilfs_sc_operations *sc_ops)
+>>>>>>> v4.9.227
 {
 	LIST_HEAD(data_buffers);
 	LIST_HEAD(node_buffers);
@@ -1057,7 +1285,11 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 	size_t ndone;
 	int err = 0;
 
+<<<<<<< HEAD
 	switch (sci->sc_stage.scnt) {
+=======
+	switch (nilfs_sc_cstage_get(sci)) {
+>>>>>>> v4.9.227
 	case NILFS_ST_INIT:
 		/* Pre-processes */
 		sci->sc_stage.flags = 0;
@@ -1066,7 +1298,11 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 			sci->sc_nblk_inc = 0;
 			sci->sc_curseg->sb_sum.flags = NILFS_SS_LOGBGN;
 			if (mode == SC_LSEG_DSYNC) {
+<<<<<<< HEAD
 				sci->sc_stage.scnt = NILFS_ST_DSYNC;
+=======
+				nilfs_sc_cstage_set(sci, NILFS_ST_DSYNC);
+>>>>>>> v4.9.227
 				goto dsync_mode;
 			}
 		}
@@ -1074,10 +1310,17 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 		sci->sc_stage.dirty_file_ptr = NULL;
 		sci->sc_stage.gc_inode_ptr = NULL;
 		if (mode == SC_FLUSH_DAT) {
+<<<<<<< HEAD
 			sci->sc_stage.scnt = NILFS_ST_DAT;
 			goto dat_stage;
 		}
 		sci->sc_stage.scnt++;  /* Fall through */
+=======
+			nilfs_sc_cstage_set(sci, NILFS_ST_DAT);
+			goto dat_stage;
+		}
+		nilfs_sc_cstage_inc(sci);  /* Fall through */
+>>>>>>> v4.9.227
 	case NILFS_ST_GC:
 		if (nilfs_doing_gc()) {
 			head = &sci->sc_gc_inodes;
@@ -1098,7 +1341,11 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 			}
 			sci->sc_stage.gc_inode_ptr = NULL;
 		}
+<<<<<<< HEAD
 		sci->sc_stage.scnt++;  /* Fall through */
+=======
+		nilfs_sc_cstage_inc(sci);  /* Fall through */
+>>>>>>> v4.9.227
 	case NILFS_ST_FILE:
 		head = &sci->sc_dirty_files;
 		ii = list_prepare_entry(sci->sc_stage.dirty_file_ptr, head,
@@ -1120,10 +1367,17 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 		}
 		sci->sc_stage.dirty_file_ptr = NULL;
 		if (mode == SC_FLUSH_FILE) {
+<<<<<<< HEAD
 			sci->sc_stage.scnt = NILFS_ST_DONE;
 			return 0;
 		}
 		sci->sc_stage.scnt++;
+=======
+			nilfs_sc_cstage_set(sci, NILFS_ST_DONE);
+			return 0;
+		}
+		nilfs_sc_cstage_inc(sci);
+>>>>>>> v4.9.227
 		sci->sc_stage.flags |= NILFS_CF_IFILE_STARTED;
 		/* Fall through */
 	case NILFS_ST_IFILE:
@@ -1131,7 +1385,11 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 					      &nilfs_sc_file_ops);
 		if (unlikely(err))
 			break;
+<<<<<<< HEAD
 		sci->sc_stage.scnt++;
+=======
+		nilfs_sc_cstage_inc(sci);
+>>>>>>> v4.9.227
 		/* Creating a checkpoint */
 		err = nilfs_segctor_create_checkpoint(sci);
 		if (unlikely(err))
@@ -1142,7 +1400,11 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 					      &nilfs_sc_file_ops);
 		if (unlikely(err))
 			break;
+<<<<<<< HEAD
 		sci->sc_stage.scnt++;  /* Fall through */
+=======
+		nilfs_sc_cstage_inc(sci);  /* Fall through */
+>>>>>>> v4.9.227
 	case NILFS_ST_SUFILE:
 		err = nilfs_sufile_freev(nilfs->ns_sufile, sci->sc_freesegs,
 					 sci->sc_nfreesegs, &ndone);
@@ -1158,7 +1420,11 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 					      &nilfs_sc_file_ops);
 		if (unlikely(err))
 			break;
+<<<<<<< HEAD
 		sci->sc_stage.scnt++;  /* Fall through */
+=======
+		nilfs_sc_cstage_inc(sci);  /* Fall through */
+>>>>>>> v4.9.227
 	case NILFS_ST_DAT:
  dat_stage:
 		err = nilfs_segctor_scan_file(sci, nilfs->ns_dat,
@@ -1166,10 +1432,17 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 		if (unlikely(err))
 			break;
 		if (mode == SC_FLUSH_DAT) {
+<<<<<<< HEAD
 			sci->sc_stage.scnt = NILFS_ST_DONE;
 			return 0;
 		}
 		sci->sc_stage.scnt++;  /* Fall through */
+=======
+			nilfs_sc_cstage_set(sci, NILFS_ST_DONE);
+			return 0;
+		}
+		nilfs_sc_cstage_inc(sci);  /* Fall through */
+>>>>>>> v4.9.227
 	case NILFS_ST_SR:
 		if (mode == SC_LSEG_SR) {
 			/* Appending a super root */
@@ -1179,7 +1452,11 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 		}
 		/* End of a logical segment */
 		sci->sc_curseg->sb_sum.flags |= NILFS_SS_LOGEND;
+<<<<<<< HEAD
 		sci->sc_stage.scnt = NILFS_ST_DONE;
+=======
+		nilfs_sc_cstage_set(sci, NILFS_ST_DONE);
+>>>>>>> v4.9.227
 		return 0;
 	case NILFS_ST_DSYNC:
  dsync_mode:
@@ -1192,7 +1469,11 @@ static int nilfs_segctor_collect_blocks(struct nilfs_sc_info *sci, int mode)
 		if (unlikely(err))
 			break;
 		sci->sc_curseg->sb_sum.flags |= NILFS_SS_LOGEND;
+<<<<<<< HEAD
 		sci->sc_stage.scnt = NILFS_ST_DONE;
+=======
+		nilfs_sc_cstage_set(sci, NILFS_ST_DONE);
+>>>>>>> v4.9.227
 		return 0;
 	case NILFS_ST_DONE:
 		return 0;
@@ -1340,8 +1621,15 @@ static void nilfs_free_incomplete_logs(struct list_head *logs,
 	if (atomic_read(&segbuf->sb_err)) {
 		/* Case 1: The first segment failed */
 		if (segbuf->sb_pseg_start != segbuf->sb_fseg_start)
+<<<<<<< HEAD
 			/* Case 1a:  Partial segment appended into an existing
 			   segment */
+=======
+			/*
+			 * Case 1a:  Partial segment appended into an existing
+			 * segment
+			 */
+>>>>>>> v4.9.227
 			nilfs_terminate_segment(nilfs, segbuf->sb_fseg_start,
 						segbuf->sb_fseg_end);
 		else /* Case 1b:  New full segment */
@@ -1437,7 +1725,12 @@ static int nilfs_segctor_collect(struct nilfs_sc_info *sci,
 			goto failed;
 
 		/* The current segment is filled up */
+<<<<<<< HEAD
 		if (mode != SC_LSEG_SR || sci->sc_stage.scnt < NILFS_ST_CPFILE)
+=======
+		if (mode != SC_LSEG_SR ||
+		    nilfs_sc_cstage_get(sci) < NILFS_ST_CPFILE)
+>>>>>>> v4.9.227
 			break;
 
 		nilfs_clear_logs(&sci->sc_segbufs);
@@ -1483,7 +1776,11 @@ nilfs_segctor_update_payload_blocknr(struct nilfs_sc_info *sci,
 	sector_t blocknr;
 	unsigned long nfinfo = segbuf->sb_sum.nfinfo;
 	unsigned long nblocks = 0, ndatablk = 0;
+<<<<<<< HEAD
 	struct nilfs_sc_operations *sc_op = NULL;
+=======
+	const struct nilfs_sc_operations *sc_op = NULL;
+>>>>>>> v4.9.227
 	struct nilfs_segsum_pointer ssp;
 	struct nilfs_finfo *finfo = NULL;
 	union nilfs_binfo binfo;
@@ -1564,8 +1861,15 @@ static int nilfs_segctor_assign(struct nilfs_sc_info *sci, int mode)
 static void nilfs_begin_page_io(struct page *page)
 {
 	if (!page || PageWriteback(page))
+<<<<<<< HEAD
 		/* For split b-tree node pages, this function may be called
 		   twice.  We ignore the 2nd or later calls by this check. */
+=======
+		/*
+		 * For split b-tree node pages, this function may be called
+		 * twice.  We ignore the 2nd or later calls by this check.
+		 */
+>>>>>>> v4.9.227
 		return;
 
 	lock_page(page);
@@ -1584,7 +1888,10 @@ static void nilfs_segctor_prepare_write(struct nilfs_sc_info *sci)
 
 		list_for_each_entry(bh, &segbuf->sb_segsum_buffers,
 				    b_assoc_buffers) {
+<<<<<<< HEAD
 			set_buffer_async_write(bh);
+=======
+>>>>>>> v4.9.227
 			if (bh->b_page != bd_page) {
 				if (bd_page) {
 					lock_page(bd_page);
@@ -1684,7 +1991,10 @@ static void nilfs_abort_logs(struct list_head *logs, int err)
 	list_for_each_entry(segbuf, logs, sb_list) {
 		list_for_each_entry(bh, &segbuf->sb_segsum_buffers,
 				    b_assoc_buffers) {
+<<<<<<< HEAD
 			clear_buffer_async_write(bh);
+=======
+>>>>>>> v4.9.227
 			if (bh->b_page != bd_page) {
 				if (bd_page)
 					end_page_writeback(bd_page);
@@ -1764,7 +2074,10 @@ static void nilfs_segctor_complete_write(struct nilfs_sc_info *sci)
 				    b_assoc_buffers) {
 			set_buffer_uptodate(bh);
 			clear_buffer_dirty(bh);
+<<<<<<< HEAD
 			clear_buffer_async_write(bh);
+=======
+>>>>>>> v4.9.227
 			if (bh->b_page != bd_page) {
 				if (bd_page)
 					end_page_writeback(bd_page);
@@ -1784,12 +2097,22 @@ static void nilfs_segctor_complete_write(struct nilfs_sc_info *sci)
 		 */
 		list_for_each_entry(bh, &segbuf->sb_payload_buffers,
 				    b_assoc_buffers) {
+<<<<<<< HEAD
 			set_buffer_uptodate(bh);
 			clear_buffer_dirty(bh);
 			clear_buffer_async_write(bh);
 			clear_buffer_delay(bh);
 			clear_buffer_nilfs_volatile(bh);
 			clear_buffer_nilfs_redirected(bh);
+=======
+			const unsigned long set_bits = BIT(BH_Uptodate);
+			const unsigned long clear_bits =
+				(BIT(BH_Dirty) | BIT(BH_Async_Write) |
+				 BIT(BH_Delay) | BIT(BH_NILFS_Volatile) |
+				 BIT(BH_NILFS_Redirected));
+
+			set_mask_bits(&bh->b_state, clear_bits, set_bits);
+>>>>>>> v4.9.227
 			if (bh == segbuf->sb_super_root) {
 				if (bh->b_page != bd_page) {
 					end_page_writeback(bd_page);
@@ -1876,8 +2199,14 @@ static int nilfs_segctor_collect_dirty_files(struct nilfs_sc_info *sci,
 			err = nilfs_ifile_get_inode_block(
 				ifile, ii->vfs_inode.i_ino, &ibh);
 			if (unlikely(err)) {
+<<<<<<< HEAD
 				nilfs_warning(sci->sc_super, __func__,
 					      "failed to get inode block.\n");
+=======
+				nilfs_msg(sci->sc_super, KERN_WARNING,
+					  "log writer: error %d getting inode block (ino=%lu)",
+					  err, ii->vfs_inode.i_ino);
+>>>>>>> v4.9.227
 				return err;
 			}
 			spin_lock(&nilfs->ns_inode_lock);
@@ -1945,7 +2274,11 @@ static int nilfs_segctor_do_construct(struct nilfs_sc_info *sci, int mode)
 	struct the_nilfs *nilfs = sci->sc_super->s_fs_info;
 	int err;
 
+<<<<<<< HEAD
 	sci->sc_stage.scnt = NILFS_ST_INIT;
+=======
+	nilfs_sc_cstage_set(sci, NILFS_ST_INIT);
+>>>>>>> v4.9.227
 	sci->sc_cno = nilfs->ns_cno;
 
 	err = nilfs_segctor_collect_dirty_files(sci, nilfs);
@@ -1973,7 +2306,11 @@ static int nilfs_segctor_do_construct(struct nilfs_sc_info *sci, int mode)
 			goto failed;
 
 		/* Avoid empty segment */
+<<<<<<< HEAD
 		if (sci->sc_stage.scnt == NILFS_ST_DONE &&
+=======
+		if (nilfs_sc_cstage_get(sci) == NILFS_ST_DONE &&
+>>>>>>> v4.9.227
 		    nilfs_segbuf_empty(sci->sc_curseg)) {
 			nilfs_segctor_abort_construction(sci, nilfs, 1);
 			goto out;
@@ -1987,7 +2324,11 @@ static int nilfs_segctor_do_construct(struct nilfs_sc_info *sci, int mode)
 			nilfs_segctor_fill_in_file_bmap(sci);
 
 		if (mode == SC_LSEG_SR &&
+<<<<<<< HEAD
 		    sci->sc_stage.scnt >= NILFS_ST_CPFILE) {
+=======
+		    nilfs_sc_cstage_get(sci) >= NILFS_ST_CPFILE) {
+>>>>>>> v4.9.227
 			err = nilfs_segctor_fill_in_checkpoint(sci);
 			if (unlikely(err))
 				goto failed_to_write;
@@ -2006,8 +2347,13 @@ static int nilfs_segctor_do_construct(struct nilfs_sc_info *sci, int mode)
 		if (unlikely(err))
 			goto failed_to_write;
 
+<<<<<<< HEAD
 		if (sci->sc_stage.scnt == NILFS_ST_DONE ||
 		    nilfs->ns_blocksize_bits != PAGE_CACHE_SHIFT) {
+=======
+		if (nilfs_sc_cstage_get(sci) == NILFS_ST_DONE ||
+		    nilfs->ns_blocksize_bits != PAGE_SHIFT) {
+>>>>>>> v4.9.227
 			/*
 			 * At this point, we avoid double buffering
 			 * for blocksize < pagesize because page dirty
@@ -2019,7 +2365,11 @@ static int nilfs_segctor_do_construct(struct nilfs_sc_info *sci, int mode)
 			if (err)
 				goto failed_to_write;
 		}
+<<<<<<< HEAD
 	} while (sci->sc_stage.scnt != NILFS_ST_DONE);
+=======
+	} while (nilfs_sc_cstage_get(sci) != NILFS_ST_DONE);
+>>>>>>> v4.9.227
 
  out:
 	nilfs_segctor_drop_written_files(sci, nilfs);
@@ -2058,10 +2408,17 @@ static void nilfs_segctor_start_timer(struct nilfs_sc_info *sci)
 static void nilfs_segctor_do_flush(struct nilfs_sc_info *sci, int bn)
 {
 	spin_lock(&sci->sc_state_lock);
+<<<<<<< HEAD
 	if (!(sci->sc_flush_request & (1 << bn))) {
 		unsigned long prev_req = sci->sc_flush_request;
 
 		sci->sc_flush_request |= (1 << bn);
+=======
+	if (!(sci->sc_flush_request & BIT(bn))) {
+		unsigned long prev_req = sci->sc_flush_request;
+
+		sci->sc_flush_request |= BIT(bn);
+>>>>>>> v4.9.227
 		if (!prev_req)
 			wake_up(&sci->sc_wait_daemon);
 	}
@@ -2245,7 +2602,11 @@ int nilfs_construct_dsync_segment(struct super_block *sb, struct inode *inode,
 }
 
 #define FLUSH_FILE_BIT	(0x1) /* data file only */
+<<<<<<< HEAD
 #define FLUSH_DAT_BIT	(1 << NILFS_DAT_INO) /* DAT only */
+=======
+#define FLUSH_DAT_BIT	BIT(NILFS_DAT_INO) /* DAT only */
+>>>>>>> v4.9.227
 
 /**
  * nilfs_segctor_accept - record accepted sequence count of log-write requests
@@ -2332,6 +2693,10 @@ static int nilfs_segctor_construct(struct nilfs_sc_info *sci, int mode)
 static void nilfs_construction_timeout(unsigned long data)
 {
 	struct task_struct *p = (struct task_struct *)data;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	wake_up_process(p);
 }
 
@@ -2384,8 +2749,12 @@ int nilfs_clean_segments(struct super_block *sb, struct nilfs_argv *argv,
 		if (likely(!err))
 			break;
 
+<<<<<<< HEAD
 		nilfs_warning(sb, __func__,
 			      "segment construction failed. (err=%d)", err);
+=======
+		nilfs_msg(sb, KERN_WARNING, "error %d cleaning segments", err);
+>>>>>>> v4.9.227
 		set_current_state(TASK_INTERRUPTIBLE);
 		schedule_timeout(sci->sc_interval);
 	}
@@ -2393,9 +2762,15 @@ int nilfs_clean_segments(struct super_block *sb, struct nilfs_argv *argv,
 		int ret = nilfs_discard_segments(nilfs, sci->sc_freesegs,
 						 sci->sc_nfreesegs);
 		if (ret) {
+<<<<<<< HEAD
 			printk(KERN_WARNING
 			       "NILFS warning: error %d on discard request, "
 			       "turning discards off for the device\n", ret);
+=======
+			nilfs_msg(sb, KERN_WARNING,
+				  "error %d on discard request, turning discards off for the device",
+				  ret);
+>>>>>>> v4.9.227
 			nilfs_clear_opt(nilfs, DISCARD);
 		}
 	}
@@ -2429,7 +2804,10 @@ static void nilfs_segctor_thread_construct(struct nilfs_sc_info *sci, int mode)
 static void nilfs_segctor_do_immediate_flush(struct nilfs_sc_info *sci)
 {
 	int mode = 0;
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> v4.9.227
 
 	spin_lock(&sci->sc_state_lock);
 	mode = (sci->sc_flush_request & FLUSH_DAT_BIT) ?
@@ -2437,7 +2815,11 @@ static void nilfs_segctor_do_immediate_flush(struct nilfs_sc_info *sci)
 	spin_unlock(&sci->sc_state_lock);
 
 	if (mode) {
+<<<<<<< HEAD
 		err = nilfs_segctor_do_construct(sci, mode);
+=======
+		nilfs_segctor_do_construct(sci, mode);
+>>>>>>> v4.9.227
 
 		spin_lock(&sci->sc_state_lock);
 		sci->sc_flush_request &= (mode == SC_FLUSH_FILE) ?
@@ -2478,10 +2860,16 @@ static int nilfs_segctor_thread(void *arg)
 	/* start sync. */
 	sci->sc_task = current;
 	wake_up(&sci->sc_wait_task); /* for nilfs_segctor_start_thread() */
+<<<<<<< HEAD
 	printk(KERN_INFO
 	       "segctord starting. Construction interval = %lu seconds, "
 	       "CP frequency < %lu seconds\n",
 	       sci->sc_interval / HZ, sci->sc_mjcp_freq / HZ);
+=======
+	nilfs_msg(sci->sc_super, KERN_INFO,
+		  "segctord starting. Construction interval = %lu seconds, CP frequency < %lu seconds",
+		  sci->sc_interval / HZ, sci->sc_mjcp_freq / HZ);
+>>>>>>> v4.9.227
 
 	spin_lock(&sci->sc_state_lock);
  loop:
@@ -2493,10 +2881,17 @@ static int nilfs_segctor_thread(void *arg)
 
 		if (timeout || sci->sc_seq_request != sci->sc_seq_done)
 			mode = SC_LSEG_SR;
+<<<<<<< HEAD
 		else if (!sci->sc_flush_request)
 			break;
 		else
 			mode = nilfs_segctor_flush_mode(sci);
+=======
+		else if (sci->sc_flush_request)
+			mode = nilfs_segctor_flush_mode(sci);
+		else
+			break;
+>>>>>>> v4.9.227
 
 		spin_unlock(&sci->sc_state_lock);
 		nilfs_segctor_thread_construct(sci, mode);
@@ -2555,8 +2950,13 @@ static int nilfs_segctor_start_thread(struct nilfs_sc_info *sci)
 	if (IS_ERR(t)) {
 		int err = PTR_ERR(t);
 
+<<<<<<< HEAD
 		printk(KERN_ERR "NILFS: error %d creating segctord thread\n",
 		       err);
+=======
+		nilfs_msg(sci->sc_super, KERN_ERR,
+			  "error %d creating segctord thread", err);
+>>>>>>> v4.9.227
 		return err;
 	}
 	wait_event(sci->sc_wait_task, sci->sc_task != NULL);
@@ -2622,8 +3022,15 @@ static void nilfs_segctor_write_out(struct nilfs_sc_info *sci)
 {
 	int ret, retrycount = NILFS_SC_CLEANUP_RETRY;
 
+<<<<<<< HEAD
 	/* The segctord thread was stopped and its timer was removed.
 	   But some tasks remain. */
+=======
+	/*
+	 * The segctord thread was stopped and its timer was removed.
+	 * But some tasks remain.
+	 */
+>>>>>>> v4.9.227
 	do {
 		struct nilfs_transaction_info ti;
 
@@ -2664,14 +3071,24 @@ static void nilfs_segctor_destroy(struct nilfs_sc_info *sci)
 		nilfs_segctor_write_out(sci);
 
 	if (!list_empty(&sci->sc_dirty_files)) {
+<<<<<<< HEAD
 		nilfs_warning(sci->sc_super, __func__,
 			      "dirty file(s) after the final construction\n");
+=======
+		nilfs_msg(sci->sc_super, KERN_WARNING,
+			  "disposed unprocessed dirty file(s) when stopping log writer");
+>>>>>>> v4.9.227
 		nilfs_dispose_list(nilfs, &sci->sc_dirty_files, 1);
 	}
 
 	if (!list_empty(&sci->sc_iput_queue)) {
+<<<<<<< HEAD
 		nilfs_warning(sci->sc_super, __func__,
 			      "iput queue is not empty\n");
+=======
+		nilfs_msg(sci->sc_super, KERN_WARNING,
+			  "disposed unprocessed inode(s) in iput queue when stopping log writer");
+>>>>>>> v4.9.227
 		nilfs_dispose_list(nilfs, &sci->sc_iput_queue, 1);
 	}
 
@@ -2747,8 +3164,13 @@ void nilfs_detach_log_writer(struct super_block *sb)
 	spin_lock(&nilfs->ns_inode_lock);
 	if (!list_empty(&nilfs->ns_dirty_files)) {
 		list_splice_init(&nilfs->ns_dirty_files, &garbage_list);
+<<<<<<< HEAD
 		nilfs_warning(sb, __func__,
 			      "Hit dirty file after stopped log writer\n");
+=======
+		nilfs_msg(sb, KERN_WARNING,
+			  "disposed unprocessed dirty file(s) when detaching log writer");
+>>>>>>> v4.9.227
 	}
 	spin_unlock(&nilfs->ns_inode_lock);
 	up_write(&nilfs->ns_segctor_sem);

@@ -13,6 +13,7 @@
 #define __SIMPLE_CARD_H
 
 #include <sound/soc.h>
+<<<<<<< HEAD
 
 struct asoc_simple_dai {
 	const char *name;
@@ -21,6 +22,9 @@ struct asoc_simple_dai {
 	int slots;
 	int slot_width;
 };
+=======
+#include <sound/simple_card_utils.h>
+>>>>>>> v4.9.227
 
 struct asoc_simple_card_info {
 	const char *name;

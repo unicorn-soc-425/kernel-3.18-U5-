@@ -33,7 +33,11 @@
 
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_FB_OMAP) || defined(CONFIG_FB_OMAP_MODULE)
+=======
+#if IS_ENABLED(CONFIG_FB_OMAP)
+>>>>>>> v4.9.227
 
 static bool omapfb_lcd_configured;
 static struct omapfb_platform_data omapfb_config;

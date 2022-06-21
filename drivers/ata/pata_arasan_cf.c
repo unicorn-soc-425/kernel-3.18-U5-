@@ -4,7 +4,11 @@
  * Arasan Compact Flash host controller source file
  *
  * Copyright (C) 2011 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -565,7 +569,11 @@ chan_request_fail:
 	qc->ap->hsm_task_state = HSM_ST_ERR;
 
 	cf_ctrl_reset(acdev);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(qc->ap->lock, flags);
+=======
+	spin_unlock_irqrestore(&acdev->host->lock, flags);
+>>>>>>> v4.9.227
 sff_intr:
 	dma_complete(acdev);
 }
@@ -834,7 +842,11 @@ static int arasan_cf_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	acdev->clk = clk_get(&pdev->dev, NULL);
+=======
+	acdev->clk = devm_clk_get(&pdev->dev, NULL);
+>>>>>>> v4.9.227
 	if (IS_ERR(acdev->clk)) {
 		dev_warn(&pdev->dev, "Clock not found\n");
 		return PTR_ERR(acdev->clk);
@@ -843,9 +855,14 @@ static int arasan_cf_probe(struct platform_device *pdev)
 	/* allocate host */
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host) {
+<<<<<<< HEAD
 		ret = -ENOMEM;
 		dev_warn(&pdev->dev, "alloc host fail\n");
 		goto free_clk;
+=======
+		dev_warn(&pdev->dev, "alloc host fail\n");
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	}
 
 	ap = host->ports[0];
@@ -894,7 +911,11 @@ static int arasan_cf_probe(struct platform_device *pdev)
 
 	ret = cf_init(acdev);
 	if (ret)
+<<<<<<< HEAD
 		goto free_clk;
+=======
+		return ret;
+>>>>>>> v4.9.227
 
 	cf_card_detect(acdev, 0);
 
@@ -904,8 +925,12 @@ static int arasan_cf_probe(struct platform_device *pdev)
 		return 0;
 
 	cf_exit(acdev);
+<<<<<<< HEAD
 free_clk:
 	clk_put(acdev->clk);
+=======
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -916,7 +941,10 @@ static int arasan_cf_remove(struct platform_device *pdev)
 
 	ata_host_detach(host);
 	cf_exit(acdev);
+<<<<<<< HEAD
 	clk_put(acdev->clk);
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -961,7 +989,10 @@ static struct platform_driver arasan_cf_driver = {
 	.remove		= arasan_cf_remove,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &arasan_cf_pm_ops,
 		.of_match_table = of_match_ptr(arasan_cf_id_table),
 	},
@@ -969,7 +1000,11 @@ static struct platform_driver arasan_cf_driver = {
 
 module_platform_driver(arasan_cf_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Viresh Kumar <viresh.linux@gmail.com>");
+=======
+MODULE_AUTHOR("Viresh Kumar <vireshk@kernel.org>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Arasan ATA Compact Flash driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:" DRIVER_NAME);

@@ -5,6 +5,11 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/init.h>
+
+>>>>>>> v4.9.227
 #define ASSEMBLER_MACROS_ONLY
 /* The IO_* macros use the ## token concatenation operator, so
    -traditional must not be used when assembling this file.  */
@@ -25,7 +30,11 @@
 	.globl	romfs_in_flash
 	.globl  swapper_pg_dir
 
+<<<<<<< HEAD
 	.text
+=======
+	__HEAD
+>>>>>>> v4.9.227
 
 	;; This is the entry point of the kernel. We are in supervisor mode.
 	;; 0x00000000 if Flash, 0x40004000 if DRAM
@@ -159,7 +168,11 @@ _inflash0:
 
 	;; Put this in a suitable section where we can reclaim storage
 	;; after init.
+<<<<<<< HEAD
 	.section ".init.text", "ax"
+=======
+	__INIT
+>>>>>>> v4.9.227
 _inflash:
 #ifdef CONFIG_ETRAX_ETHERNET
 	;; Start MII clock to make sure it is running when tranceiver is reset
@@ -354,6 +367,7 @@ no_command_line:
 	blo	1b
 	nop
 
+<<<<<<< HEAD
 #ifdef CONFIG_BLK_DEV_ETRAXIDE
 	;; disable ATA before enabling it in genconfig below
 	moveq	0,$r0
@@ -411,6 +425,8 @@ no_command_line:
 	nop
 #endif
 
+=======
+>>>>>>> v4.9.227
 	;; Etrax product HW genconfig setup
 
 	moveq	0,$r0
@@ -447,6 +463,7 @@ no_command_line:
 		| IO_STATE (R_GEN_CONFIG, dma9, usb),$r0
 
 
+<<<<<<< HEAD
 #if defined(CONFIG_ETRAX_DEF_R_PORT_G0_DIR_OUT)
         or.d      IO_STATE (R_GEN_CONFIG, g0dir, out),$r0
 #endif
@@ -462,6 +479,8 @@ no_command_line:
        or.d      IO_STATE (R_GEN_CONFIG, g24dir, out),$r0
 #endif
 
+=======
+>>>>>>> v4.9.227
 	move.d	$r0,[genconfig_shadow] ; init a shadow register of R_GEN_CONFIG
 
 	move.d	$r0,[R_GEN_CONFIG]
@@ -500,6 +519,7 @@ no_command_line:
 	;; including their shadow registers
 
 	move.b	CONFIG_ETRAX_DEF_R_PORT_PA_DIR,$r0
+<<<<<<< HEAD
 #if defined(CONFIG_BLUETOOTH) && defined(CONFIG_BLUETOOTH_RESET_PA7)
 	or.b	IO_STATE (R_PORT_PA_DIR, dir7, output),$r0
 #endif
@@ -513,6 +533,11 @@ no_command_line:
 	or.b	(1 << 7),$r0
 #endif
 #endif
+=======
+	move.b	$r0,[port_pa_dir_shadow]
+	move.b	$r0,[R_PORT_PA_DIR]
+	move.b	CONFIG_ETRAX_DEF_R_PORT_PA_DATA,$r0
+>>>>>>> v4.9.227
 	move.b	$r0,[port_pa_data_shadow]
 	move.b	$r0,[R_PORT_PA_DATA]
 
@@ -520,6 +545,7 @@ no_command_line:
 	move.b	$r0,[port_pb_config_shadow]
 	move.b	$r0,[R_PORT_PB_CONFIG]
 	move.b	CONFIG_ETRAX_DEF_R_PORT_PB_DIR,$r0
+<<<<<<< HEAD
 #if defined(CONFIG_BLUETOOTH) && defined(CONFIG_BLUETOOTH_RESET_PB5)
 	or.b	IO_STATE (R_PORT_PB_DIR, dir5, output),$r0
 #endif
@@ -533,6 +559,11 @@ no_command_line:
 	or.b	(1 << 5),$r0
 #endif
 #endif
+=======
+	move.b	$r0,[port_pb_dir_shadow]
+	move.b	$r0,[R_PORT_PB_DIR]
+	move.b	CONFIG_ETRAX_DEF_R_PORT_PB_DATA,$r0
+>>>>>>> v4.9.227
 	move.b	$r0,[port_pb_data_shadow]
 	move.b	$r0,[R_PORT_PB_DATA]
 
@@ -541,6 +572,7 @@ no_command_line:
 	move.d  $r0, [R_PORT_PB_I2C]
 
 	moveq	0,$r0
+<<<<<<< HEAD
 #if defined(CONFIG_BLUETOOTH) && defined(CONFIG_BLUETOOTH_RESET_G10)
 #if defined(CONFIG_BLUETOOTH_RESET_ACTIVE_HIGH)
 	and.d	~(1 << 10),$r0
@@ -555,6 +587,8 @@ no_command_line:
 	or.d	(1 << 11),$r0
 #endif
 #endif
+=======
+>>>>>>> v4.9.227
 	move.d	$r0,[port_g_data_shadow]
 	move.d	$r0,[R_PORT_G_DATA]
 

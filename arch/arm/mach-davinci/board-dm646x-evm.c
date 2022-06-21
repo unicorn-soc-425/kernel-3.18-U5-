@@ -25,8 +25,13 @@
 #include <linux/platform_data/at24.h>
 #include <linux/i2c/pcf857x.h>
 
+<<<<<<< HEAD
 #include <media/tvp514x.h>
 #include <media/adv7343.h>
+=======
+#include <media/i2c/tvp514x.h>
+#include <media/i2c/adv7343.h>
+>>>>>>> v4.9.227
 
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/nand.h>
@@ -45,7 +50,10 @@
 #include <mach/irqs.h>
 #include <mach/serial.h>
 #include <mach/clock.h>
+<<<<<<< HEAD
 #include <mach/cdce949.h>
+=======
+>>>>>>> v4.9.227
 
 #include "davinci.h"
 #include "clock.h"
@@ -122,6 +130,10 @@ static struct platform_device davinci_nand_device = {
 
 #define HAS_ATA		IS_ENABLED(CONFIG_BLK_DEV_PALMCHIP_BK3710)
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_I2C
+>>>>>>> v4.9.227
 /* CPLD Register 0 bits to control ATA */
 #define DM646X_EVM_ATA_RST		BIT(0)
 #define DM646X_EVM_ATA_PWD		BIT(1)
@@ -317,6 +329,10 @@ static struct at24_platform_data eeprom_info = {
 	.setup          = davinci_get_mac_addr,
 	.context	= (void *)0x7f00,
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 static u8 dm646x_iis_serializer_direction[] = {
        TX_MODE, RX_MODE, INACTIVE_MODE, INACTIVE_MODE,
@@ -347,6 +363,10 @@ static struct snd_platform_data dm646x_evm_snd_data[] = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_I2C
+>>>>>>> v4.9.227
 static struct i2c_client *cpld_client;
 
 static int cpld_video_probe(struct i2c_client *client,
@@ -399,9 +419,12 @@ static struct i2c_board_info __initdata i2c_info[] =  {
 	{
 		I2C_BOARD_INFO("cpld_video", 0x3b),
 	},
+<<<<<<< HEAD
 	{
 		I2C_BOARD_INFO("cdce949", 0x6c),
 	},
+=======
+>>>>>>> v4.9.227
 };
 
 static struct davinci_i2c_platform_data i2c_pdata = {
@@ -538,7 +561,11 @@ static struct vpif_display_config dm646x_vpif_display_config = {
 		.outputs = dm6467_ch0_outputs,
 		.output_count = ARRAY_SIZE(dm6467_ch0_outputs),
 	},
+<<<<<<< HEAD
 	.card_name	= "DM646x EVM Video Display",
+=======
+	.card_name	= "DM646x EVM",
+>>>>>>> v4.9.227
 };
 
 /**
@@ -696,7 +723,10 @@ static struct vpif_capture_config dm646x_vpif_capture_cfg = {
 			.fid_pol = 0,
 		},
 	},
+<<<<<<< HEAD
 	.card_name = "DM646x EVM Video Capture",
+=======
+>>>>>>> v4.9.227
 };
 
 static void __init evm_init_video(void)
@@ -715,6 +745,7 @@ static void __init evm_init_i2c(void)
 	evm_init_cpld();
 	evm_init_video();
 }
+<<<<<<< HEAD
 
 #define CDCE949_XIN_RATE	27000000
 
@@ -740,6 +771,9 @@ static void __init cdce_clk_init(void)
 		clk_register(clk);
 	}
 }
+=======
+#endif
+>>>>>>> v4.9.227
 
 #define DM6467T_EVM_REF_FREQ		33000000
 
@@ -749,8 +783,11 @@ static void __init davinci_map_io(void)
 
 	if (machine_is_davinci_dm6467tevm())
 		davinci_set_refclk_rate(DM6467T_EVM_REF_FREQ);
+<<<<<<< HEAD
 
 	cdce_clk_init();
+=======
+>>>>>>> v4.9.227
 }
 
 #define DM646X_EVM_PHY_ID		"davinci_mdio-0:01"
@@ -796,7 +833,14 @@ static __init void evm_init(void)
 	if (ret)
 		pr_warn("%s: GPIO init failed: %d\n", __func__, ret);
 
+<<<<<<< HEAD
 	evm_init_i2c();
+=======
+#ifdef CONFIG_I2C
+	evm_init_i2c();
+#endif
+
+>>>>>>> v4.9.227
 	davinci_serial_init(dm646x_serial_device);
 	dm646x_init_mcasp0(&dm646x_evm_snd_data[0]);
 	dm646x_init_mcasp1(&dm646x_evm_snd_data[1]);

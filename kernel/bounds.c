@@ -12,7 +12,11 @@
 #include <linux/log2.h>
 #include <linux/spinlock_types.h>
 
+<<<<<<< HEAD
 void foo(void)
+=======
+int main(void)
+>>>>>>> v4.9.227
 {
 	/* The enum constants to put into include/generated/bounds.h */
 	DEFINE(NR_PAGEFLAGS, __NR_PAGEFLAGS);
@@ -22,4 +26,9 @@ void foo(void)
 #endif
 	DEFINE(SPINLOCK_SIZE, sizeof(spinlock_t));
 	/* End of constants */
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> v4.9.227
 }

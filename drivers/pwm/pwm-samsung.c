@@ -193,9 +193,24 @@ static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *chip,
 	 * divider settings and choose the lowest divisor that can generate
 	 * frequencies lower than requested.
 	 */
+<<<<<<< HEAD
 	for (div = variant->div_base; div < 4; ++div)
 		if ((rate >> (variant->bits + div)) < freq)
 			break;
+=======
+	if (variant->bits < 32) {
+		/* Only for s3c24xx */
+		for (div = variant->div_base; div < 4; ++div)
+			if ((rate >> (variant->bits + div)) < freq)
+				break;
+	} else {
+		/*
+		 * Other variants have enough counter bits to generate any
+		 * requested rate, so no need to check higher divisors.
+		 */
+		div = variant->div_base;
+	}
+>>>>>>> v4.9.227
 
 	pwm_samsung_set_divisor(chip, chan, BIT(div));
 
@@ -226,7 +241,10 @@ static int pwm_samsung_request(struct pwm_chip *chip, struct pwm_device *pwm)
 static void pwm_samsung_free(struct pwm_chip *chip, struct pwm_device *pwm)
 {
 	devm_kfree(chip->dev, pwm_get_chip_data(pwm));
+<<<<<<< HEAD
 	pwm_set_chip_data(pwm, NULL);
+=======
+>>>>>>> v4.9.227
 }
 
 static int pwm_samsung_enable(struct pwm_chip *chip, struct pwm_device *pwm)
@@ -269,12 +287,38 @@ static void pwm_samsung_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+static void pwm_samsung_manual_update(struct samsung_pwm_chip *chip,
+				      struct pwm_device *pwm)
+{
+	unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
+	u32 tcon;
+	unsigned long flags;
+
+	spin_lock_irqsave(&samsung_pwm_lock, flags);
+
+	tcon = readl(chip->base + REG_TCON);
+	tcon |= TCON_MANUALUPDATE(tcon_chan);
+	writel(tcon, chip->base + REG_TCON);
+
+	tcon &= ~TCON_MANUALUPDATE(tcon_chan);
+	writel(tcon, chip->base + REG_TCON);
+
+	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
+}
+
+>>>>>>> v4.9.227
 static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
 			      int duty_ns, int period_ns)
 {
 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
 	struct samsung_pwm_channel *chan = pwm_get_chip_data(pwm);
+<<<<<<< HEAD
 	u32 tin_ns = chan->tin_ns, tcnt, tcmp;
+=======
+	u32 tin_ns = chan->tin_ns, tcnt, tcmp, oldtcmp;
+>>>>>>> v4.9.227
 
 	/*
 	 * We currently avoid using 64bit arithmetic by using the
@@ -288,6 +332,10 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		return 0;
 
 	tcnt = readl(our_chip->base + REG_TCNTB(pwm->hwpwm));
+<<<<<<< HEAD
+=======
+	oldtcmp = readl(our_chip->base + REG_TCMPB(pwm->hwpwm));
+>>>>>>> v4.9.227
 
 	/* We need tick count for calculation, not last tick. */
 	++tcnt;
@@ -335,6 +383,19 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
 	writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
 
+<<<<<<< HEAD
+=======
+	/*
+	 * In case the PWM is currently at 100% duty cycle, force a manual
+	 * update to prevent the signal staying high if the PWM is disabled
+	 * shortly afer this update (before it autoreloaded the new values).
+	 */
+	if (oldtcmp == (u32) -1) {
+		dev_dbg(our_chip->chip.dev, "Forcing manual update");
+		pwm_samsung_manual_update(our_chip, pwm);
+	}
+
+>>>>>>> v4.9.227
 	chan->period_ns = period_ns;
 	chan->tin_ns = tin_ns;
 	chan->duty_ns = duty_ns;
@@ -426,6 +487,10 @@ static const struct of_device_id samsung_pwm_matches[] = {
 	{ .compatible = "samsung,exynos4210-pwm", .data = &s5p64x0_variant },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, samsung_pwm_matches);
+>>>>>>> v4.9.227
 
 static int pwm_samsung_parse_dt(struct samsung_pwm_chip *chip)
 {
@@ -601,7 +666,10 @@ static SIMPLE_DEV_PM_OPS(pwm_samsung_pm_ops, pwm_samsung_suspend,
 static struct platform_driver pwm_samsung_driver = {
 	.driver		= {
 		.name	= "samsung-pwm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &pwm_samsung_pm_ops,
 		.of_match_table = of_match_ptr(samsung_pwm_matches),
 	},

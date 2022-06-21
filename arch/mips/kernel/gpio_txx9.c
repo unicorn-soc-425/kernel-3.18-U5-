@@ -10,7 +10,11 @@
 
 #include <linux/init.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/errno.h>
 #include <linux/io.h>
 #include <asm/txx9pio.h>
@@ -21,7 +25,11 @@ static struct txx9_pio_reg __iomem *txx9_pioptr;
 
 static int txx9_gpio_get(struct gpio_chip *chip, unsigned int offset)
 {
+<<<<<<< HEAD
 	return __raw_readl(&txx9_pioptr->din) & (1 << offset);
+=======
+	return !!(__raw_readl(&txx9_pioptr->din) & (1 << offset));
+>>>>>>> v4.9.227
 }
 
 static void txx9_gpio_set_raw(unsigned int offset, int value)
@@ -85,5 +93,9 @@ int __init txx9_gpio_init(unsigned long baseaddr,
 		return -ENODEV;
 	txx9_gpio_chip.base = base;
 	txx9_gpio_chip.ngpio = num;
+<<<<<<< HEAD
 	return gpiochip_add(&txx9_gpio_chip);
+=======
+	return gpiochip_add_data(&txx9_gpio_chip, NULL);
+>>>>>>> v4.9.227
 }

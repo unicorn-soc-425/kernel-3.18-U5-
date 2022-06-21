@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config OMAP2_VRFB
 	bool
 
@@ -6,5 +7,10 @@ if ARCH_OMAP2PLUS
 source "drivers/video/fbdev/omap2/dss/Kconfig"
 source "drivers/video/fbdev/omap2/omapfb/Kconfig"
 source "drivers/video/fbdev/omap2/displays-new/Kconfig"
+=======
+if ARCH_OMAP2PLUS
+
+source "drivers/video/fbdev/omap2/omapfb/Kconfig"
+>>>>>>> v4.9.227
 
 endif

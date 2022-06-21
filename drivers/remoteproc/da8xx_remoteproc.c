@@ -26,8 +26,12 @@
 static char *da8xx_fw_name;
 module_param(da8xx_fw_name, charp, S_IRUGO);
 MODULE_PARM_DESC(da8xx_fw_name,
+<<<<<<< HEAD
 		 "\n\t\tName of DSP firmware file in /lib/firmware"
 		 " (if not specified defaults to 'rproc-dsp-fw')");
+=======
+		 "Name of DSP firmware file in /lib/firmware (if not specified defaults to 'rproc-dsp-fw')");
+>>>>>>> v4.9.227
 
 /*
  * OMAP-L138 Technical References:
@@ -148,7 +152,11 @@ static void da8xx_rproc_kick(struct rproc *rproc, int vqid)
 {
 	struct da8xx_rproc *drproc = (struct da8xx_rproc *)rproc->priv;
 
+<<<<<<< HEAD
 	/* Interupt remote proc */
+=======
+	/* Interrupt remote proc */
+>>>>>>> v4.9.227
 	writel(SYSCFG_CHIPSIG2, drproc->chipsig);
 }
 
@@ -224,6 +232,10 @@ static int da8xx_rproc_probe(struct platform_device *pdev)
 
 	drproc = rproc->priv;
 	drproc->rproc = rproc;
+<<<<<<< HEAD
+=======
+	rproc->has_iommu = false;
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, rproc);
 
@@ -261,7 +273,11 @@ static int da8xx_rproc_probe(struct platform_device *pdev)
 	return 0;
 
 free_rproc:
+<<<<<<< HEAD
 	rproc_put(rproc);
+=======
+	rproc_free(rproc);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -290,7 +306,11 @@ static int da8xx_rproc_remove(struct platform_device *pdev)
 	disable_irq(drproc->irq);
 
 	rproc_del(rproc);
+<<<<<<< HEAD
 	rproc_put(rproc);
+=======
+	rproc_free(rproc);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -300,7 +320,10 @@ static struct platform_driver da8xx_rproc_driver = {
 	.remove = da8xx_rproc_remove,
 	.driver = {
 		.name = "davinci-rproc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

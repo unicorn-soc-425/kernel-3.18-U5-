@@ -6,7 +6,10 @@
 header-y += asm-generic/
 header-y += linux/
 header-y += sound/
+<<<<<<< HEAD
 header-y += media/
+=======
+>>>>>>> v4.9.227
 header-y += mtd/
 header-y += rdma/
 header-y += video/

@@ -45,6 +45,7 @@ void mlx4_srq_event(struct mlx4_dev *dev, u32 srqn, int event_type)
 	struct mlx4_srq_table *srq_table = &mlx4_priv(dev)->srq_table;
 	struct mlx4_srq *srq;
 
+<<<<<<< HEAD
 	spin_lock(&srq_table->lock);
 
 	srq = radix_tree_lookup(&srq_table->tree, srqn & (dev->caps.num_srqs - 1));
@@ -54,6 +55,14 @@ void mlx4_srq_event(struct mlx4_dev *dev, u32 srqn, int event_type)
 	spin_unlock(&srq_table->lock);
 
 	if (!srq) {
+=======
+	rcu_read_lock();
+	srq = radix_tree_lookup(&srq_table->tree, srqn & (dev->caps.num_srqs - 1));
+	rcu_read_unlock();
+	if (srq)
+		atomic_inc(&srq->refcount);
+	else {
+>>>>>>> v4.9.227
 		mlx4_warn(dev, "Async event for bogus SRQ %08x\n", srqn);
 		return;
 	}
@@ -301,12 +310,20 @@ struct mlx4_srq *mlx4_srq_lookup(struct mlx4_dev *dev, u32 srqn)
 {
 	struct mlx4_srq_table *srq_table = &mlx4_priv(dev)->srq_table;
 	struct mlx4_srq *srq;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&srq_table->lock, flags);
 	srq = radix_tree_lookup(&srq_table->tree,
 				srqn & (dev->caps.num_srqs - 1));
 	spin_unlock_irqrestore(&srq_table->lock, flags);
+=======
+
+	rcu_read_lock();
+	srq = radix_tree_lookup(&srq_table->tree,
+				srqn & (dev->caps.num_srqs - 1));
+	rcu_read_unlock();
+>>>>>>> v4.9.227
 
 	return srq;
 }

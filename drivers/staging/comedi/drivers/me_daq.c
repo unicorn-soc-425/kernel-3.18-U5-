@@ -19,8 +19,12 @@
 /*
  * Driver: me_daq
  * Description: Meilhaus PCI data acquisition cards
+<<<<<<< HEAD
  * Devices: (Meilhaus) ME-2600i [me-2600i]
  *          (Meilhaus) ME-2000i [me-2000i]
+=======
+ * Devices: [Meilhaus] ME-2600i (me-2600i), ME-2000i (me-2000i)
+>>>>>>> v4.9.227
  * Author: Michael Hillmann <hillmann@syscongroup.de>
  * Status: experimental
  *
@@ -31,11 +35,18 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/interrupt.h>
 #include <linux/sched.h>
 
 #include "../comedidev.h"
+=======
+#include <linux/interrupt.h>
+#include <linux/sched.h>
+
+#include "../comedi_pci.h"
+>>>>>>> v4.9.227
 
 #include "plx9052.h"
 
@@ -43,6 +54,7 @@
 
 #define XILINX_DOWNLOAD_RESET	0x42	/* Xilinx registers */
 
+<<<<<<< HEAD
 #define ME_CONTROL_1			0x0000	/* - | W */
 #define   INTERRUPT_ENABLE		(1<<15)
 #define   COUNTER_B_IRQ			(1<<12)
@@ -121,6 +133,65 @@
 #define ME_COUNTER_VALUE_A		0x0020	/* R | - */
 #define ME_COUNTER_STARTDATA_B		0x0022	/* - | W */
 #define ME_COUNTER_VALUE_B		0x0022	/* R | - */
+=======
+/*
+ * PCI BAR2 Memory map (dev->mmio)
+ */
+#define ME_CTRL1_REG			0x00	/* R (ai start) | W */
+#define   ME_CTRL1_INT_ENA		BIT(15)
+#define   ME_CTRL1_COUNTER_B_IRQ	BIT(12)
+#define   ME_CTRL1_COUNTER_A_IRQ	BIT(11)
+#define   ME_CTRL1_CHANLIST_READY_IRQ	BIT(10)
+#define   ME_CTRL1_EXT_IRQ		BIT(9)
+#define   ME_CTRL1_ADFIFO_HALFFULL_IRQ	BIT(8)
+#define   ME_CTRL1_SCAN_COUNT_ENA	BIT(5)
+#define   ME_CTRL1_SIMULTANEOUS_ENA	BIT(4)
+#define   ME_CTRL1_TRIGGER_FALLING_EDGE	BIT(3)
+#define   ME_CTRL1_CONTINUOUS_MODE	BIT(2)
+#define   ME_CTRL1_ADC_MODE(x)		(((x) & 0x3) << 0)
+#define   ME_CTRL1_ADC_MODE_DISABLE	ME_CTRL1_ADC_MODE(0)
+#define   ME_CTRL1_ADC_MODE_SOFT_TRIG	ME_CTRL1_ADC_MODE(1)
+#define   ME_CTRL1_ADC_MODE_SCAN_TRIG	ME_CTRL1_ADC_MODE(2)
+#define   ME_CTRL1_ADC_MODE_EXT_TRIG	ME_CTRL1_ADC_MODE(3)
+#define   ME_CTRL1_ADC_MODE_MASK	ME_CTRL1_ADC_MODE(3)
+#define ME_CTRL2_REG			0x02	/* R (dac update) | W */
+#define   ME_CTRL2_ADFIFO_ENA		BIT(10)
+#define   ME_CTRL2_CHANLIST_ENA		BIT(9)
+#define   ME_CTRL2_PORT_B_ENA		BIT(7)
+#define   ME_CTRL2_PORT_A_ENA		BIT(6)
+#define   ME_CTRL2_COUNTER_B_ENA	BIT(4)
+#define   ME_CTRL2_COUNTER_A_ENA	BIT(3)
+#define   ME_CTRL2_DAC_ENA		BIT(1)
+#define   ME_CTRL2_BUFFERED_DAC		BIT(0)
+#define ME_STATUS_REG			0x04	/* R | W (clears interrupts) */
+#define   ME_STATUS_COUNTER_B_IRQ	BIT(12)
+#define   ME_STATUS_COUNTER_A_IRQ	BIT(11)
+#define   ME_STATUS_CHANLIST_READY_IRQ	BIT(10)
+#define   ME_STATUS_EXT_IRQ		BIT(9)
+#define   ME_STATUS_ADFIFO_HALFFULL_IRQ	BIT(8)
+#define   ME_STATUS_ADFIFO_FULL		BIT(4)
+#define   ME_STATUS_ADFIFO_HALFFULL	BIT(3)
+#define   ME_STATUS_ADFIFO_EMPTY	BIT(2)
+#define   ME_STATUS_CHANLIST_FULL	BIT(1)
+#define   ME_STATUS_FST_ACTIVE		BIT(0)
+#define ME_DIO_PORT_A_REG		0x06	/* R | W */
+#define ME_DIO_PORT_B_REG		0x08	/* R | W */
+#define ME_TIMER_DATA_REG(x)		(0x0a + ((x) * 2))	/* - | W */
+#define ME_AI_FIFO_REG			0x10	/* R (fifo) | W (chanlist) */
+#define   ME_AI_FIFO_CHANLIST_DIFF	BIT(7)
+#define   ME_AI_FIFO_CHANLIST_UNIPOLAR	BIT(6)
+#define   ME_AI_FIFO_CHANLIST_GAIN(x)	(((x) & 0x3) << 4)
+#define   ME_AI_FIFO_CHANLIST_CHAN(x)	(((x) & 0xf) << 0)
+#define ME_DAC_CTRL_REG			0x12	/* R (updates) | W */
+#define   ME_DAC_CTRL_BIPOLAR(x)	BIT(7 - ((x) & 0x3))
+#define   ME_DAC_CTRL_GAIN(x)		BIT(11 - ((x) & 0x3))
+#define   ME_DAC_CTRL_MASK(x)		(ME_DAC_CTRL_BIPOLAR(x) |	\
+					 ME_DAC_CTRL_GAIN(x))
+#define ME_AO_DATA_REG(x)		(0x14 + ((x) * 2))	/* - | W */
+#define ME_COUNTER_ENDDATA_REG(x)	(0x1c + ((x) * 2))	/* - | W */
+#define ME_COUNTER_STARTDATA_REG(x)	(0x20 + ((x) * 2))	/* - | W */
+#define ME_COUNTER_VALUE_REG(x)		(0x20 + ((x) * 2))	/* R | - */
+>>>>>>> v4.9.227
 
 static const struct comedi_lrange me_ai_range = {
 	8, {
@@ -168,6 +239,7 @@ static const struct me_board me_boards[] = {
 struct me_private_data {
 	void __iomem *plx_regbase;	/* PLX configuration base address */
 
+<<<<<<< HEAD
 	unsigned short control_1;	/* Mirror of CONTROL_1 register */
 	unsigned short control_2;	/* Mirror of CONTROL_2 register */
 	unsigned short dac_control;	/* Mirror of the DAC_CONTROL register */
@@ -177,6 +249,16 @@ static inline void sleep(unsigned sec)
 {
 	current->state = TASK_INTERRUPTIBLE;
 	schedule_timeout(sec * HZ);
+=======
+	unsigned short ctrl1;		/* Mirror of CONTROL_1 register */
+	unsigned short ctrl2;		/* Mirror of CONTROL_2 register */
+	unsigned short dac_ctrl;	/* Mirror of the DAC_CONTROL register */
+};
+
+static inline void sleep(unsigned int sec)
+{
+	schedule_timeout_interruptible(sec * HZ);
+>>>>>>> v4.9.227
 }
 
 static int me_dio_insn_config(struct comedi_device *dev,
@@ -199,6 +281,7 @@ static int me_dio_insn_config(struct comedi_device *dev,
 		return ret;
 
 	if (s->io_bits & 0x0000ffff)
+<<<<<<< HEAD
 		devpriv->control_2 |= ENABLE_PORT_A;
 	else
 		devpriv->control_2 &= ~ENABLE_PORT_A;
@@ -208,6 +291,17 @@ static int me_dio_insn_config(struct comedi_device *dev,
 		devpriv->control_2 &= ~ENABLE_PORT_B;
 
 	writew(devpriv->control_2, dev->mmio + ME_CONTROL_2);
+=======
+		devpriv->ctrl2 |= ME_CTRL2_PORT_A_ENA;
+	else
+		devpriv->ctrl2 &= ~ME_CTRL2_PORT_A_ENA;
+	if (s->io_bits & 0xffff0000)
+		devpriv->ctrl2 |= ME_CTRL2_PORT_B_ENA;
+	else
+		devpriv->ctrl2 &= ~ME_CTRL2_PORT_B_ENA;
+
+	writew(devpriv->ctrl2, dev->mmio + ME_CTRL2_REG);
+>>>>>>> v4.9.227
 
 	return insn->n;
 }
@@ -217,8 +311,13 @@ static int me_dio_insn_bits(struct comedi_device *dev,
 			    struct comedi_insn *insn,
 			    unsigned int *data)
 {
+<<<<<<< HEAD
 	void __iomem *mmio_porta = dev->mmio + ME_DIO_PORT_A;
 	void __iomem *mmio_portb = dev->mmio + ME_DIO_PORT_B;
+=======
+	void __iomem *mmio_porta = dev->mmio + ME_DIO_PORT_A_REG;
+	void __iomem *mmio_portb = dev->mmio + ME_DIO_PORT_B_REG;
+>>>>>>> v4.9.227
 	unsigned int mask;
 	unsigned int val;
 
@@ -252,8 +351,13 @@ static int me_ai_eoc(struct comedi_device *dev,
 {
 	unsigned int status;
 
+<<<<<<< HEAD
 	status = readw(dev->mmio + ME_STATUS);
 	if ((status & 0x0004) == 0)
+=======
+	status = readw(dev->mmio + ME_STATUS_REG);
+	if ((status & ME_STATUS_ADFIFO_EMPTY) == 0)
+>>>>>>> v4.9.227
 		return 0;
 	return -EBUSY;
 }
@@ -263,6 +367,7 @@ static int me_ai_insn_read(struct comedi_device *dev,
 			   struct comedi_insn *insn,
 			   unsigned int *data)
 {
+<<<<<<< HEAD
 	struct me_private_data *dev_private = dev->private;
 	unsigned int chan = CR_CHAN(insn->chanspec);
 	unsigned int rang = CR_RANGE(insn->chanspec);
@@ -314,6 +419,68 @@ static int me_ai_insn_read(struct comedi_device *dev,
 	writew(dev_private->control_1, dev->mmio + ME_CONTROL_1);
 
 	return 1;
+=======
+	struct me_private_data *devpriv = dev->private;
+	unsigned int chan = CR_CHAN(insn->chanspec);
+	unsigned int range = CR_RANGE(insn->chanspec);
+	unsigned int aref = CR_AREF(insn->chanspec);
+	unsigned int val;
+	int ret = 0;
+	int i;
+
+	/*
+	 * For differential operation, there are only 8 input channels
+	 * and only bipolar ranges are available.
+	 */
+	if (aref & AREF_DIFF) {
+		if (chan > 7 || comedi_range_is_unipolar(s, range))
+			return -EINVAL;
+	}
+
+	/* clear chanlist and ad fifo */
+	devpriv->ctrl2 &= ~(ME_CTRL2_ADFIFO_ENA | ME_CTRL2_CHANLIST_ENA);
+	writew(devpriv->ctrl2, dev->mmio + ME_CTRL2_REG);
+
+	writew(0x00, dev->mmio + ME_STATUS_REG);	/* clear interrupts */
+
+	/* enable the chanlist and ADC fifo */
+	devpriv->ctrl2 |= (ME_CTRL2_ADFIFO_ENA | ME_CTRL2_CHANLIST_ENA);
+	writew(devpriv->ctrl2, dev->mmio + ME_CTRL2_REG);
+
+	/* write to channel list fifo */
+	val = ME_AI_FIFO_CHANLIST_CHAN(chan) | ME_AI_FIFO_CHANLIST_GAIN(range);
+	if (comedi_range_is_unipolar(s, range))
+		val |= ME_AI_FIFO_CHANLIST_UNIPOLAR;
+	if (aref & AREF_DIFF)
+		val |= ME_AI_FIFO_CHANLIST_DIFF;
+	writew(val, dev->mmio + ME_AI_FIFO_REG);
+
+	/* set ADC mode to software trigger */
+	devpriv->ctrl1 |= ME_CTRL1_ADC_MODE_SOFT_TRIG;
+	writew(devpriv->ctrl1, dev->mmio + ME_CTRL1_REG);
+
+	for (i = 0; i < insn->n; i++) {
+		/* start ai conversion */
+		readw(dev->mmio + ME_CTRL1_REG);
+
+		/* wait for ADC fifo not empty flag */
+		ret = comedi_timeout(dev, s, insn, me_ai_eoc, 0);
+		if (ret)
+			break;
+
+		/* get value from ADC fifo */
+		val = readw(dev->mmio + ME_AI_FIFO_REG) & s->maxdata;
+
+		/* munge 2's complement value to offset binary */
+		data[i] = comedi_offset_munge(s, val);
+	}
+
+	/* stop any running conversion */
+	devpriv->ctrl1 &= ~ME_CTRL1_ADC_MODE_MASK;
+	writew(devpriv->ctrl1, dev->mmio + ME_CTRL1_REG);
+
+	return ret ? ret : insn->n;
+>>>>>>> v4.9.227
 }
 
 static int me_ao_insn_write(struct comedi_device *dev,
@@ -321,13 +488,20 @@ static int me_ao_insn_write(struct comedi_device *dev,
 			    struct comedi_insn *insn,
 			    unsigned int *data)
 {
+<<<<<<< HEAD
 	struct me_private_data *dev_private = dev->private;
 	unsigned int chan = CR_CHAN(insn->chanspec);
 	unsigned int rang = CR_RANGE(insn->chanspec);
+=======
+	struct me_private_data *devpriv = dev->private;
+	unsigned int chan = CR_CHAN(insn->chanspec);
+	unsigned int range = CR_RANGE(insn->chanspec);
+>>>>>>> v4.9.227
 	unsigned int val = s->readback[chan];
 	int i;
 
 	/* Enable all DAC */
+<<<<<<< HEAD
 	dev_private->control_2 |= ENABLE_DAC;
 	writew(dev_private->control_2, dev->mmio + ME_CONTROL_2);
 
@@ -350,17 +524,44 @@ static int me_ao_insn_write(struct comedi_device *dev,
 
 	/* Update dac-control register */
 	readw(dev->mmio + ME_DAC_CONTROL_UPDATE);
+=======
+	devpriv->ctrl2 |= ME_CTRL2_DAC_ENA;
+	writew(devpriv->ctrl2, dev->mmio + ME_CTRL2_REG);
+
+	/* and set DAC to "buffered" mode */
+	devpriv->ctrl2 |= ME_CTRL2_BUFFERED_DAC;
+	writew(devpriv->ctrl2, dev->mmio + ME_CTRL2_REG);
+
+	/* Set dac-control register */
+	devpriv->dac_ctrl &= ~ME_DAC_CTRL_MASK(chan);
+	if (range == 0)
+		devpriv->dac_ctrl |= ME_DAC_CTRL_GAIN(chan);
+	if (comedi_range_is_bipolar(s, range))
+		devpriv->dac_ctrl |= ME_DAC_CTRL_BIPOLAR(chan);
+	writew(devpriv->dac_ctrl, dev->mmio + ME_DAC_CTRL_REG);
+
+	/* Update dac-control register */
+	readw(dev->mmio + ME_DAC_CTRL_REG);
+>>>>>>> v4.9.227
 
 	/* Set data register */
 	for (i = 0; i < insn->n; i++) {
 		val = data[i];
 
+<<<<<<< HEAD
 		writew(val, dev->mmio + ME_DAC_DATA_A + (chan << 1));
+=======
+		writew(val, dev->mmio + ME_AO_DATA_REG(chan));
+>>>>>>> v4.9.227
 	}
 	s->readback[chan] = val;
 
 	/* Update dac with data registers */
+<<<<<<< HEAD
 	readw(dev->mmio + ME_DAC_UPDATE);
+=======
+	readw(dev->mmio + ME_CTRL2_REG);
+>>>>>>> v4.9.227
 
 	return insn->n;
 }
@@ -369,13 +570,21 @@ static int me2600_xilinx_download(struct comedi_device *dev,
 				  const u8 *data, size_t size,
 				  unsigned long context)
 {
+<<<<<<< HEAD
 	struct me_private_data *dev_private = dev->private;
+=======
+	struct me_private_data *devpriv = dev->private;
+>>>>>>> v4.9.227
 	unsigned int value;
 	unsigned int file_length;
 	unsigned int i;
 
 	/* disable irq's on PLX */
+<<<<<<< HEAD
 	writel(0x00, dev_private->plx_regbase + PLX9052_INTCSR);
+=======
+	writel(0x00, devpriv->plx_regbase + PLX9052_INTCSR);
+>>>>>>> v4.9.227
 
 	/* First, make a dummy read to reset xilinx */
 	value = readw(dev->mmio + XILINX_DOWNLOAD_RESET);
@@ -415,10 +624,17 @@ static int me2600_xilinx_download(struct comedi_device *dev,
 		writeb(0x00, dev->mmio + 0x0);
 
 	/* Test if there was an error during download -> INTB was thrown */
+<<<<<<< HEAD
 	value = readl(dev_private->plx_regbase + PLX9052_INTCSR);
 	if (value & PLX9052_INTCSR_LI2STAT) {
 		/* Disable interrupt */
 		writel(0x00, dev_private->plx_regbase + PLX9052_INTCSR);
+=======
+	value = readl(devpriv->plx_regbase + PLX9052_INTCSR);
+	if (value & PLX9052_INTCSR_LI2STAT) {
+		/* Disable interrupt */
+		writel(0x00, devpriv->plx_regbase + PLX9052_INTCSR);
+>>>>>>> v4.9.227
 		dev_err(dev->class_dev, "Xilinx download failed\n");
 		return -EIO;
 	}
@@ -430,13 +646,18 @@ static int me2600_xilinx_download(struct comedi_device *dev,
 	writel(PLX9052_INTCSR_LI1ENAB |
 	       PLX9052_INTCSR_LI1POL |
 	       PLX9052_INTCSR_PCIENAB,
+<<<<<<< HEAD
 	       dev_private->plx_regbase + PLX9052_INTCSR);
+=======
+	       devpriv->plx_regbase + PLX9052_INTCSR);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static int me_reset(struct comedi_device *dev)
 {
+<<<<<<< HEAD
 	struct me_private_data *dev_private = dev->private;
 
 	/* Reset board */
@@ -449,6 +670,20 @@ static int me_reset(struct comedi_device *dev)
 	dev_private->dac_control = 0;
 	dev_private->control_1 = 0;
 	dev_private->control_2 = 0;
+=======
+	struct me_private_data *devpriv = dev->private;
+
+	/* Reset board */
+	writew(0x00, dev->mmio + ME_CTRL1_REG);
+	writew(0x00, dev->mmio + ME_CTRL2_REG);
+	writew(0x00, dev->mmio + ME_STATUS_REG);	/* clear interrupts */
+	writew(0x00, dev->mmio + ME_DAC_CTRL_REG);
+
+	/* Save values in the board context */
+	devpriv->dac_ctrl = 0;
+	devpriv->ctrl1 = 0;
+	devpriv->ctrl2 = 0;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -458,7 +693,11 @@ static int me_auto_attach(struct comedi_device *dev,
 {
 	struct pci_dev *pcidev = comedi_to_pci_dev(dev);
 	const struct me_board *board = NULL;
+<<<<<<< HEAD
 	struct me_private_data *dev_private;
+=======
+	struct me_private_data *devpriv;
+>>>>>>> v4.9.227
 	struct comedi_subdevice *s;
 	int ret;
 
@@ -469,16 +708,26 @@ static int me_auto_attach(struct comedi_device *dev,
 	dev->board_ptr = board;
 	dev->board_name = board->name;
 
+<<<<<<< HEAD
 	dev_private = comedi_alloc_devpriv(dev, sizeof(*dev_private));
 	if (!dev_private)
+=======
+	devpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));
+	if (!devpriv)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	ret = comedi_pci_enable(dev);
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	dev_private->plx_regbase = pci_ioremap_bar(pcidev, 0);
 	if (!dev_private->plx_regbase)
+=======
+	devpriv->plx_regbase = pci_ioremap_bar(pcidev, 0);
+	if (!devpriv->plx_regbase)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	dev->mmio = pci_ioremap_bar(pcidev, 2);
@@ -501,7 +750,11 @@ static int me_auto_attach(struct comedi_device *dev,
 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
+<<<<<<< HEAD
 	s->subdev_flags	= SDF_READABLE | SDF_COMMON;
+=======
+	s->subdev_flags	= SDF_READABLE | SDF_COMMON | SDF_DIFF;
+>>>>>>> v4.9.227
 	s->n_chan	= 16;
 	s->maxdata	= 0x0fff;
 	s->len_chanlist	= 16;
@@ -511,13 +764,20 @@ static int me_auto_attach(struct comedi_device *dev,
 	s = &dev->subdevices[1];
 	if (board->has_ao) {
 		s->type		= COMEDI_SUBD_AO;
+<<<<<<< HEAD
 		s->subdev_flags	= SDF_WRITEABLE | SDF_COMMON;
+=======
+		s->subdev_flags	= SDF_WRITABLE | SDF_COMMON;
+>>>>>>> v4.9.227
 		s->n_chan	= 4;
 		s->maxdata	= 0x0fff;
 		s->len_chanlist	= 4;
 		s->range_table	= &me_ao_range;
 		s->insn_write	= me_ao_insn_write;
+<<<<<<< HEAD
 		s->insn_read	= comedi_readback_insn_read;
+=======
+>>>>>>> v4.9.227
 
 		ret = comedi_alloc_subdev_readback(s);
 		if (ret)
@@ -528,7 +788,11 @@ static int me_auto_attach(struct comedi_device *dev,
 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DIO;
+<<<<<<< HEAD
 	s->subdev_flags	= SDF_READABLE | SDF_WRITEABLE;
+=======
+	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE;
+>>>>>>> v4.9.227
 	s->n_chan	= 32;
 	s->maxdata	= 1;
 	s->len_chanlist	= 32;
@@ -541,6 +805,7 @@ static int me_auto_attach(struct comedi_device *dev,
 
 static void me_detach(struct comedi_device *dev)
 {
+<<<<<<< HEAD
 	struct me_private_data *dev_private = dev->private;
 
 	if (dev_private) {
@@ -548,6 +813,15 @@ static void me_detach(struct comedi_device *dev)
 			me_reset(dev);
 		if (dev_private->plx_regbase)
 			iounmap(dev_private->plx_regbase);
+=======
+	struct me_private_data *devpriv = dev->private;
+
+	if (devpriv) {
+		if (dev->mmio)
+			me_reset(dev);
+		if (devpriv->plx_regbase)
+			iounmap(devpriv->plx_regbase);
+>>>>>>> v4.9.227
 	}
 	comedi_pci_detach(dev);
 }

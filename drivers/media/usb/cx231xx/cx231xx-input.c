@@ -19,7 +19,10 @@
  */
 
 #include "cx231xx.h"
+<<<<<<< HEAD
 #include <linux/usb.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/bitrev.h>
 
@@ -63,7 +66,11 @@ int cx231xx_ir_init(struct cx231xx *dev)
 	struct i2c_board_info info;
 	u8 ir_i2c_bus;
 
+<<<<<<< HEAD
 	dev_dbg(&dev->udev->dev, "%s\n", __func__);
+=======
+	dev_dbg(dev->dev, "%s\n", __func__);
+>>>>>>> v4.9.227
 
 	/* Only initialize if a rc keycode map is defined */
 	if (!cx231xx_boards[dev->model].rc_map_name)
@@ -98,9 +105,16 @@ int cx231xx_ir_init(struct cx231xx *dev)
 
 	/* Load and bind ir-kbd-i2c */
 	ir_i2c_bus = cx231xx_boards[dev->model].ir_i2c_master;
+<<<<<<< HEAD
 	dev_dbg(&dev->udev->dev, "Trying to bind ir at bus %d, addr 0x%02x\n",
 		ir_i2c_bus, info.addr);
 	dev->ir_i2c_client = i2c_new_device(&dev->i2c_bus[ir_i2c_bus].i2c_adap, &info);
+=======
+	dev_dbg(dev->dev, "Trying to bind ir at bus %d, addr 0x%02x\n",
+		ir_i2c_bus, info.addr);
+	dev->ir_i2c_client = i2c_new_device(
+		cx231xx_get_i2c_adap(dev, ir_i2c_bus), &info);
+>>>>>>> v4.9.227
 
 	return 0;
 }

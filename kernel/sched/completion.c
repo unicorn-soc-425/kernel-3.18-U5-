@@ -148,7 +148,11 @@ EXPORT_SYMBOL(wait_for_completion_timeout);
  *
  * This waits to be signaled for completion of a specific task. It is NOT
  * interruptible and there is no timeout. The caller is accounted as waiting
+<<<<<<< HEAD
  * for IO.
+=======
+ * for IO (which traditionally means blkio only).
+>>>>>>> v4.9.227
  */
 void __sched wait_for_completion_io(struct completion *x)
 {
@@ -163,7 +167,12 @@ EXPORT_SYMBOL(wait_for_completion_io);
  *
  * This waits for either a completion of a specific task to be signaled or for a
  * specified timeout to expire. The timeout is in jiffies. It is not
+<<<<<<< HEAD
  * interruptible. The caller is accounted as waiting for IO.
+=======
+ * interruptible. The caller is accounted as waiting for IO (which traditionally
+ * means blkio only).
+>>>>>>> v4.9.227
  *
  * Return: 0 if timed out, and positive (at least 1, or number of jiffies left
  * till timeout) if completed.
@@ -267,6 +276,18 @@ bool try_wait_for_completion(struct completion *x)
 	unsigned long flags;
 	int ret = 1;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Since x->done will need to be locked only
+	 * in the non-blocking case, we check x->done
+	 * first without taking the lock so we can
+	 * return early in the blocking case.
+	 */
+	if (!READ_ONCE(x->done))
+		return 0;
+
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&x->wait.lock, flags);
 	if (!x->done)
 		ret = 0;
@@ -287,6 +308,7 @@ EXPORT_SYMBOL(try_wait_for_completion);
  */
 bool completion_done(struct completion *x)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	int ret = 1;
 
@@ -295,5 +317,23 @@ bool completion_done(struct completion *x)
 		ret = 0;
 	spin_unlock_irqrestore(&x->wait.lock, flags);
 	return ret;
+=======
+	if (!READ_ONCE(x->done))
+		return false;
+
+	/*
+	 * If ->done, we need to wait for complete() to release ->wait.lock
+	 * otherwise we can end up freeing the completion before complete()
+	 * is done referencing it.
+	 *
+	 * The RMB pairs with complete()'s RELEASE of ->wait.lock and orders
+	 * the loads of ->done and ->wait.lock such that we cannot observe
+	 * the lock before complete() acquires it while observing the ->done
+	 * after it's acquired the lock.
+	 */
+	smp_rmb();
+	spin_unlock_wait(&x->wait.lock);
+	return true;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(completion_done);

@@ -67,6 +67,10 @@ struct atmel_tc {
 	const struct atmel_tcb_config *tcb_config;
 	int			irq[3];
 	struct clk		*clk[3];
+<<<<<<< HEAD
+=======
+	struct clk		*slow_clk;
+>>>>>>> v4.9.227
 	struct list_head	node;
 	bool			allocated;
 };

@@ -18,13 +18,17 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/of.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/export.h>
 #include <linux/regulator/consumer.h>
 
 #include "opp.h"
 
 /*
+<<<<<<< HEAD
  * The root of the list of all devices. All device_opp structures branch off
  * from here, with each device_opp containing the list of opp it supports in
  * various states of availability.
@@ -69,11 +73,38 @@ static struct device_opp *_managed_opp(const struct device_node *np)
 			return dev_opp->shared_opp ? dev_opp : NULL;
 		}
 	}
+=======
+ * The root of the list of all opp-tables. All opp_table structures branch off
+ * from here, with each opp_table containing the list of opps it supports in
+ * various states of availability.
+ */
+LIST_HEAD(opp_tables);
+/* Lock to allow exclusive modification to the device and opp lists */
+DEFINE_MUTEX(opp_table_lock);
+
+#define opp_rcu_lockdep_assert()					\
+do {									\
+	RCU_LOCKDEP_WARN(!rcu_read_lock_held() &&			\
+			 !lockdep_is_held(&opp_table_lock),		\
+			 "Missing rcu_read_lock() or "			\
+			 "opp_table_lock protection");			\
+} while (0)
+
+static struct opp_device *_find_opp_dev(const struct device *dev,
+					struct opp_table *opp_table)
+{
+	struct opp_device *opp_dev;
+
+	list_for_each_entry(opp_dev, &opp_table->dev_list, node)
+		if (opp_dev->dev == dev)
+			return opp_dev;
+>>>>>>> v4.9.227
 
 	return NULL;
 }
 
 /**
+<<<<<<< HEAD
  * _find_device_opp() - find device_opp struct using device pointer
  * @dev:	device pointer used to lookup device OPPs
  *
@@ -92,6 +123,26 @@ static struct device_opp *_managed_opp(const struct device_node *np)
 struct device_opp *_find_device_opp(struct device *dev)
 {
 	struct device_opp *dev_opp;
+=======
+ * _find_opp_table() - find opp_table struct using device pointer
+ * @dev:	device pointer used to lookup OPP table
+ *
+ * Search OPP table for one containing matching device. Does a RCU reader
+ * operation to grab the pointer needed.
+ *
+ * Return: pointer to 'struct opp_table' if found, otherwise -ENODEV or
+ * -EINVAL based on type of error.
+ *
+ * Locking: For readers, this function must be called under rcu_read_lock().
+ * opp_table is a RCU protected pointer, which means that opp_table is valid
+ * as long as we are under RCU lock.
+ *
+ * For Writers, this function must be called with opp_table_lock held.
+ */
+struct opp_table *_find_opp_table(struct device *dev)
+{
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 
 	opp_rcu_lockdep_assert();
 
@@ -100,15 +151,25 @@ struct device_opp *_find_device_opp(struct device *dev)
 		return ERR_PTR(-EINVAL);
 	}
 
+<<<<<<< HEAD
 	list_for_each_entry_rcu(dev_opp, &dev_opp_list, node)
 		if (_find_list_dev(dev, dev_opp))
 			return dev_opp;
+=======
+	list_for_each_entry_rcu(opp_table, &opp_tables, node)
+		if (_find_opp_dev(dev, opp_table))
+			return opp_table;
+>>>>>>> v4.9.227
 
 	return ERR_PTR(-ENODEV);
 }
 
 /**
+<<<<<<< HEAD
  * dev_pm_opp_get_voltage() - Gets the voltage corresponding to an available opp
+=======
+ * dev_pm_opp_get_voltage() - Gets the voltage corresponding to an opp
+>>>>>>> v4.9.227
  * @opp:	opp for which voltage has to be returned for
  *
  * Return: voltage in micro volt corresponding to the opp, else
@@ -130,7 +191,11 @@ unsigned long dev_pm_opp_get_voltage(struct dev_pm_opp *opp)
 	opp_rcu_lockdep_assert();
 
 	tmp_opp = rcu_dereference(opp);
+<<<<<<< HEAD
 	if (IS_ERR_OR_NULL(tmp_opp) || !tmp_opp->available)
+=======
+	if (IS_ERR_OR_NULL(tmp_opp))
+>>>>>>> v4.9.227
 		pr_err("%s: Invalid parameters\n", __func__);
 	else
 		v = tmp_opp->u_volt;
@@ -215,16 +280,28 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_is_turbo);
  */
 unsigned long dev_pm_opp_get_max_clock_latency(struct device *dev)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
+=======
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 	unsigned long clock_latency_ns;
 
 	rcu_read_lock();
 
+<<<<<<< HEAD
 	dev_opp = _find_device_opp(dev);
 	if (IS_ERR(dev_opp))
 		clock_latency_ns = 0;
 	else
 		clock_latency_ns = dev_opp->clock_latency_ns_max;
+=======
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table))
+		clock_latency_ns = 0;
+	else
+		clock_latency_ns = opp_table->clock_latency_ns_max;
+>>>>>>> v4.9.227
 
 	rcu_read_unlock();
 	return clock_latency_ns;
@@ -241,7 +318,11 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_get_max_clock_latency);
  */
 unsigned long dev_pm_opp_get_max_volt_latency(struct device *dev)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
+=======
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 	struct dev_pm_opp *opp;
 	struct regulator *reg;
 	unsigned long latency_ns = 0;
@@ -250,23 +331,38 @@ unsigned long dev_pm_opp_get_max_volt_latency(struct device *dev)
 
 	rcu_read_lock();
 
+<<<<<<< HEAD
 	dev_opp = _find_device_opp(dev);
 	if (IS_ERR(dev_opp)) {
+=======
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table)) {
+>>>>>>> v4.9.227
 		rcu_read_unlock();
 		return 0;
 	}
 
+<<<<<<< HEAD
 	reg = dev_opp->regulator;
 	if (IS_ERR(reg)) {
 		/* Regulator may not be required for device */
 		if (reg)
 			dev_err(dev, "%s: Invalid regulator (%ld)\n", __func__,
 				PTR_ERR(reg));
+=======
+	reg = opp_table->regulator;
+	if (IS_ERR(reg)) {
+		/* Regulator may not be required for device */
+>>>>>>> v4.9.227
 		rcu_read_unlock();
 		return 0;
 	}
 
+<<<<<<< HEAD
 	list_for_each_entry_rcu(opp, &dev_opp->opp_list, node) {
+=======
+	list_for_each_entry_rcu(opp, &opp_table->opp_list, node) {
+>>>>>>> v4.9.227
 		if (!opp->available)
 			continue;
 
@@ -279,7 +375,11 @@ unsigned long dev_pm_opp_get_max_volt_latency(struct device *dev)
 	rcu_read_unlock();
 
 	/*
+<<<<<<< HEAD
 	 * The caller needs to ensure that dev_opp (and hence the regulator)
+=======
+	 * The caller needs to ensure that opp_table (and hence the regulator)
+>>>>>>> v4.9.227
 	 * isn't freed, while we are executing this routine.
 	 */
 	ret = regulator_set_voltage_time(reg, min_uV, max_uV);
@@ -322,6 +422,7 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_get_max_transition_latency);
  */
 struct dev_pm_opp *dev_pm_opp_get_suspend_opp(struct device *dev)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
 
 	opp_rcu_lockdep_assert();
@@ -332,11 +433,27 @@ struct dev_pm_opp *dev_pm_opp_get_suspend_opp(struct device *dev)
 		return NULL;
 
 	return dev_opp->suspend_opp;
+=======
+	struct opp_table *opp_table;
+
+	opp_rcu_lockdep_assert();
+
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table) || !opp_table->suspend_opp ||
+	    !opp_table->suspend_opp->available)
+		return NULL;
+
+	return opp_table->suspend_opp;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_get_suspend_opp);
 
 /**
+<<<<<<< HEAD
  * dev_pm_opp_get_opp_count() - Get number of opps available in the opp list
+=======
+ * dev_pm_opp_get_opp_count() - Get number of opps available in the opp table
+>>>>>>> v4.9.227
  * @dev:	device for which we do this operation
  *
  * Return: This function returns the number of available opps if there are any,
@@ -346,21 +463,36 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_get_suspend_opp);
  */
 int dev_pm_opp_get_opp_count(struct device *dev)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
+=======
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 	struct dev_pm_opp *temp_opp;
 	int count = 0;
 
 	rcu_read_lock();
 
+<<<<<<< HEAD
 	dev_opp = _find_device_opp(dev);
 	if (IS_ERR(dev_opp)) {
 		count = PTR_ERR(dev_opp);
 		dev_err(dev, "%s: device OPP not found (%d)\n",
+=======
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table)) {
+		count = PTR_ERR(opp_table);
+		dev_dbg(dev, "%s: OPP table not found (%d)\n",
+>>>>>>> v4.9.227
 			__func__, count);
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
 	list_for_each_entry_rcu(temp_opp, &dev_opp->opp_list, node) {
+=======
+	list_for_each_entry_rcu(temp_opp, &opp_table->opp_list, node) {
+>>>>>>> v4.9.227
 		if (temp_opp->available)
 			count++;
 	}
@@ -377,7 +509,11 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_get_opp_count);
  * @freq:		frequency to search for
  * @available:		true/false - match for available opp
  *
+<<<<<<< HEAD
  * Return: Searches for exact match in the opp list and returns pointer to the
+=======
+ * Return: Searches for exact match in the opp table and returns pointer to the
+>>>>>>> v4.9.227
  * matching opp if found, else returns ERR_PTR in case of error and should
  * be handled using IS_ERR. Error return values can be:
  * EINVAL:	for bad pointer
@@ -401,11 +537,16 @@ struct dev_pm_opp *dev_pm_opp_find_freq_exact(struct device *dev,
 					      unsigned long freq,
 					      bool available)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
+=======
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 	struct dev_pm_opp *temp_opp, *opp = ERR_PTR(-ERANGE);
 
 	opp_rcu_lockdep_assert();
 
+<<<<<<< HEAD
 	dev_opp = _find_device_opp(dev);
 	if (IS_ERR(dev_opp)) {
 		int r = PTR_ERR(dev_opp);
@@ -414,6 +555,17 @@ struct dev_pm_opp *dev_pm_opp_find_freq_exact(struct device *dev,
 	}
 
 	list_for_each_entry_rcu(temp_opp, &dev_opp->opp_list, node) {
+=======
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table)) {
+		int r = PTR_ERR(opp_table);
+
+		dev_err(dev, "%s: OPP table not found (%d)\n", __func__, r);
+		return ERR_PTR(r);
+	}
+
+	list_for_each_entry_rcu(temp_opp, &opp_table->opp_list, node) {
+>>>>>>> v4.9.227
 		if (temp_opp->available == available &&
 				temp_opp->rate == freq) {
 			opp = temp_opp;
@@ -425,6 +577,25 @@ struct dev_pm_opp *dev_pm_opp_find_freq_exact(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_find_freq_exact);
 
+<<<<<<< HEAD
+=======
+static noinline struct dev_pm_opp *_find_freq_ceil(struct opp_table *opp_table,
+						   unsigned long *freq)
+{
+	struct dev_pm_opp *temp_opp, *opp = ERR_PTR(-ERANGE);
+
+	list_for_each_entry_rcu(temp_opp, &opp_table->opp_list, node) {
+		if (temp_opp->available && temp_opp->rate >= *freq) {
+			opp = temp_opp;
+			*freq = opp->rate;
+			break;
+		}
+	}
+
+	return opp;
+}
+
+>>>>>>> v4.9.227
 /**
  * dev_pm_opp_find_freq_ceil() - Search for an rounded ceil freq
  * @dev:	device for which we do this operation
@@ -449,8 +620,12 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_find_freq_exact);
 struct dev_pm_opp *dev_pm_opp_find_freq_ceil(struct device *dev,
 					     unsigned long *freq)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
 	struct dev_pm_opp *temp_opp, *opp = ERR_PTR(-ERANGE);
+=======
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 
 	opp_rcu_lockdep_assert();
 
@@ -459,6 +634,7 @@ struct dev_pm_opp *dev_pm_opp_find_freq_ceil(struct device *dev,
 		return ERR_PTR(-EINVAL);
 	}
 
+<<<<<<< HEAD
 	dev_opp = _find_device_opp(dev);
 	if (IS_ERR(dev_opp))
 		return ERR_CAST(dev_opp);
@@ -472,6 +648,13 @@ struct dev_pm_opp *dev_pm_opp_find_freq_ceil(struct device *dev,
 	}
 
 	return opp;
+=======
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table))
+		return ERR_CAST(opp_table);
+
+	return _find_freq_ceil(opp_table, freq);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_find_freq_ceil);
 
@@ -499,7 +682,11 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_find_freq_ceil);
 struct dev_pm_opp *dev_pm_opp_find_freq_floor(struct device *dev,
 					      unsigned long *freq)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
+=======
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 	struct dev_pm_opp *temp_opp, *opp = ERR_PTR(-ERANGE);
 
 	opp_rcu_lockdep_assert();
@@ -509,11 +696,19 @@ struct dev_pm_opp *dev_pm_opp_find_freq_floor(struct device *dev,
 		return ERR_PTR(-EINVAL);
 	}
 
+<<<<<<< HEAD
 	dev_opp = _find_device_opp(dev);
 	if (IS_ERR(dev_opp))
 		return ERR_CAST(dev_opp);
 
 	list_for_each_entry_rcu(temp_opp, &dev_opp->opp_list, node) {
+=======
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table))
+		return ERR_CAST(opp_table);
+
+	list_for_each_entry_rcu(temp_opp, &opp_table->opp_list, node) {
+>>>>>>> v4.9.227
 		if (temp_opp->available) {
 			/* go to the next node, before choosing prev */
 			if (temp_opp->rate > *freq)
@@ -530,16 +725,25 @@ struct dev_pm_opp *dev_pm_opp_find_freq_floor(struct device *dev,
 EXPORT_SYMBOL_GPL(dev_pm_opp_find_freq_floor);
 
 /*
+<<<<<<< HEAD
  * The caller needs to ensure that device_opp (and hence the clk) isn't freed,
+=======
+ * The caller needs to ensure that opp_table (and hence the clk) isn't freed,
+>>>>>>> v4.9.227
  * while clk returned here is used.
  */
 static struct clk *_get_opp_clk(struct device *dev)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
+=======
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 	struct clk *clk;
 
 	rcu_read_lock();
 
+<<<<<<< HEAD
 	dev_opp = _find_device_opp(dev);
 	if (IS_ERR(dev_opp)) {
 		dev_err(dev, "%s: device opp doesn't exist\n", __func__);
@@ -548,6 +752,16 @@ static struct clk *_get_opp_clk(struct device *dev)
 	}
 
 	clk = dev_opp->clk;
+=======
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table)) {
+		dev_err(dev, "%s: device opp doesn't exist\n", __func__);
+		clk = ERR_CAST(opp_table);
+		goto unlock;
+	}
+
+	clk = opp_table->clk;
+>>>>>>> v4.9.227
 	if (IS_ERR(clk))
 		dev_err(dev, "%s: No clock available for the device\n",
 			__func__);
@@ -594,13 +808,21 @@ static int _set_opp_voltage(struct device *dev, struct regulator *reg,
  */
 int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
+=======
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 	struct dev_pm_opp *old_opp, *opp;
 	struct regulator *reg;
 	struct clk *clk;
 	unsigned long freq, old_freq;
 	unsigned long u_volt, u_volt_min, u_volt_max;
+<<<<<<< HEAD
 	unsigned long ou_volt, ou_volt_min, ou_volt_max;
+=======
+	unsigned long old_u_volt, old_u_volt_min, old_u_volt_max;
+>>>>>>> v4.9.227
 	int ret;
 
 	if (unlikely(!target_freq)) {
@@ -628,6 +850,7 @@ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
 
 	rcu_read_lock();
 
+<<<<<<< HEAD
 	dev_opp = _find_device_opp(dev);
 	if (IS_ERR(dev_opp)) {
 		dev_err(dev, "%s: device opp doesn't exist\n", __func__);
@@ -641,11 +864,26 @@ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
 		ou_volt_min = old_opp->u_volt_min;
 		ou_volt_max = old_opp->u_volt_max;
 	} else {
+=======
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table)) {
+		dev_err(dev, "%s: device opp doesn't exist\n", __func__);
+		rcu_read_unlock();
+		return PTR_ERR(opp_table);
+	}
+
+	old_opp = _find_freq_ceil(opp_table, &old_freq);
+	if (IS_ERR(old_opp)) {
+>>>>>>> v4.9.227
 		dev_err(dev, "%s: failed to find current OPP for freq %lu (%ld)\n",
 			__func__, old_freq, PTR_ERR(old_opp));
 	}
 
+<<<<<<< HEAD
 	opp = dev_pm_opp_find_freq_ceil(dev, &freq);
+=======
+	opp = _find_freq_ceil(opp_table, &freq);
+>>>>>>> v4.9.227
 	if (IS_ERR(opp)) {
 		ret = PTR_ERR(opp);
 		dev_err(dev, "%s: failed to find OPP for freq %lu (%d)\n",
@@ -654,16 +892,35 @@ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	if (IS_ERR(old_opp)) {
+		old_u_volt = 0;
+	} else {
+		old_u_volt = old_opp->u_volt;
+		old_u_volt_min = old_opp->u_volt_min;
+		old_u_volt_max = old_opp->u_volt_max;
+	}
+
+>>>>>>> v4.9.227
 	u_volt = opp->u_volt;
 	u_volt_min = opp->u_volt_min;
 	u_volt_max = opp->u_volt_max;
 
+<<<<<<< HEAD
 	reg = dev_opp->regulator;
+=======
+	reg = opp_table->regulator;
+>>>>>>> v4.9.227
 
 	rcu_read_unlock();
 
 	/* Scaling up? Scale voltage before frequency */
+<<<<<<< HEAD
 	if (freq > old_freq) {
+=======
+	if (freq >= old_freq) {
+>>>>>>> v4.9.227
 		ret = _set_opp_voltage(dev, reg, u_volt, u_volt_min,
 				       u_volt_max);
 		if (ret)
@@ -698,13 +955,21 @@ restore_freq:
 			__func__, old_freq);
 restore_voltage:
 	/* This shouldn't harm even if the voltages weren't updated earlier */
+<<<<<<< HEAD
 	if (!IS_ERR(old_opp))
 		_set_opp_voltage(dev, reg, ou_volt, ou_volt_min, ou_volt_max);
+=======
+	if (old_u_volt) {
+		_set_opp_voltage(dev, reg, old_u_volt, old_u_volt_min,
+				 old_u_volt_max);
+	}
+>>>>>>> v4.9.227
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_set_rate);
 
+<<<<<<< HEAD
 /* List-dev Helpers */
 static void _kfree_list_dev_rcu(struct rcu_head *head)
 {
@@ -740,11 +1005,57 @@ struct device_list_opp *_add_list_dev(const struct device *dev,
 
 /**
  * _add_device_opp() - Find device OPP table or allocate a new one
+=======
+/* OPP-dev Helpers */
+static void _kfree_opp_dev_rcu(struct rcu_head *head)
+{
+	struct opp_device *opp_dev;
+
+	opp_dev = container_of(head, struct opp_device, rcu_head);
+	kfree_rcu(opp_dev, rcu_head);
+}
+
+static void _remove_opp_dev(struct opp_device *opp_dev,
+			    struct opp_table *opp_table)
+{
+	opp_debug_unregister(opp_dev, opp_table);
+	list_del(&opp_dev->node);
+	call_srcu(&opp_table->srcu_head.srcu, &opp_dev->rcu_head,
+		  _kfree_opp_dev_rcu);
+}
+
+struct opp_device *_add_opp_dev(const struct device *dev,
+				struct opp_table *opp_table)
+{
+	struct opp_device *opp_dev;
+	int ret;
+
+	opp_dev = kzalloc(sizeof(*opp_dev), GFP_KERNEL);
+	if (!opp_dev)
+		return NULL;
+
+	/* Initialize opp-dev */
+	opp_dev->dev = dev;
+	list_add_rcu(&opp_dev->node, &opp_table->dev_list);
+
+	/* Create debugfs entries for the opp_table */
+	ret = opp_debug_register(opp_dev, opp_table);
+	if (ret)
+		dev_err(dev, "%s: Failed to register opp debugfs (%d)\n",
+			__func__, ret);
+
+	return opp_dev;
+}
+
+/**
+ * _add_opp_table() - Find OPP table or allocate a new one
+>>>>>>> v4.9.227
  * @dev:	device for which we do this operation
  *
  * It tries to find an existing table first, if it couldn't find one, it
  * allocates a new OPP table and returns that.
  *
+<<<<<<< HEAD
  * Return: valid device_opp pointer if success, else NULL.
  */
 static struct device_opp *_add_device_opp(struct device *dev)
@@ -797,11 +1108,52 @@ static struct device_opp *_add_device_opp(struct device *dev)
 	dev_opp->clk = clk_get(dev, NULL);
 	if (IS_ERR(dev_opp->clk)) {
 		ret = PTR_ERR(dev_opp->clk);
+=======
+ * Return: valid opp_table pointer if success, else NULL.
+ */
+static struct opp_table *_add_opp_table(struct device *dev)
+{
+	struct opp_table *opp_table;
+	struct opp_device *opp_dev;
+	int ret;
+
+	/* Check for existing table for 'dev' first */
+	opp_table = _find_opp_table(dev);
+	if (!IS_ERR(opp_table))
+		return opp_table;
+
+	/*
+	 * Allocate a new OPP table. In the infrequent case where a new
+	 * device is needed to be added, we pay this penalty.
+	 */
+	opp_table = kzalloc(sizeof(*opp_table), GFP_KERNEL);
+	if (!opp_table)
+		return NULL;
+
+	INIT_LIST_HEAD(&opp_table->dev_list);
+
+	opp_dev = _add_opp_dev(dev, opp_table);
+	if (!opp_dev) {
+		kfree(opp_table);
+		return NULL;
+	}
+
+	_of_init_opp_table(opp_table, dev);
+
+	/* Set regulator to a non-NULL error value */
+	opp_table->regulator = ERR_PTR(-ENXIO);
+
+	/* Find clk for the device */
+	opp_table->clk = clk_get(dev, NULL);
+	if (IS_ERR(opp_table->clk)) {
+		ret = PTR_ERR(opp_table->clk);
+>>>>>>> v4.9.227
 		if (ret != -EPROBE_DEFER)
 			dev_dbg(dev, "%s: Couldn't find clock: %d\n", __func__,
 				ret);
 	}
 
+<<<<<<< HEAD
 	srcu_init_notifier_head(&dev_opp->srcu_head);
 	INIT_LIST_HEAD(&dev_opp->opp_list);
 
@@ -812,10 +1164,23 @@ static struct device_opp *_add_device_opp(struct device *dev)
 
 /**
  * _kfree_device_rcu() - Free device_opp RCU handler
+=======
+	srcu_init_notifier_head(&opp_table->srcu_head);
+	INIT_LIST_HEAD(&opp_table->opp_list);
+
+	/* Secure the device table modification */
+	list_add_rcu(&opp_table->node, &opp_tables);
+	return opp_table;
+}
+
+/**
+ * _kfree_device_rcu() - Free opp_table RCU handler
+>>>>>>> v4.9.227
  * @head:	RCU head
  */
 static void _kfree_device_rcu(struct rcu_head *head)
 {
+<<<<<<< HEAD
 	struct device_opp *device_opp = container_of(head, struct device_opp, rcu_head);
 
 	kfree_rcu(device_opp, rcu_head);
@@ -857,6 +1222,50 @@ static void _remove_device_opp(struct device_opp *dev_opp)
 
 	list_del_rcu(&dev_opp->node);
 	call_srcu(&dev_opp->srcu_head.srcu, &dev_opp->rcu_head,
+=======
+	struct opp_table *opp_table = container_of(head, struct opp_table,
+						   rcu_head);
+
+	kfree_rcu(opp_table, rcu_head);
+}
+
+/**
+ * _remove_opp_table() - Removes a OPP table
+ * @opp_table: OPP table to be removed.
+ *
+ * Removes/frees OPP table if it doesn't contain any OPPs.
+ */
+static void _remove_opp_table(struct opp_table *opp_table)
+{
+	struct opp_device *opp_dev;
+
+	if (!list_empty(&opp_table->opp_list))
+		return;
+
+	if (opp_table->supported_hw)
+		return;
+
+	if (opp_table->prop_name)
+		return;
+
+	if (!IS_ERR(opp_table->regulator))
+		return;
+
+	/* Release clk */
+	if (!IS_ERR(opp_table->clk))
+		clk_put(opp_table->clk);
+
+	opp_dev = list_first_entry(&opp_table->dev_list, struct opp_device,
+				   node);
+
+	_remove_opp_dev(opp_dev, opp_table);
+
+	/* dev_list must be empty now */
+	WARN_ON(!list_empty(&opp_table->dev_list));
+
+	list_del_rcu(&opp_table->node);
+	call_srcu(&opp_table->srcu_head.srcu, &opp_table->rcu_head,
+>>>>>>> v4.9.227
 		  _kfree_device_rcu);
 }
 
@@ -873,6 +1282,7 @@ static void _kfree_opp_rcu(struct rcu_head *head)
 
 /**
  * _opp_remove()  - Remove an OPP from a table definition
+<<<<<<< HEAD
  * @dev_opp:	points back to the device_opp struct this opp belongs to
  * @opp:	pointer to the OPP to remove
  * @notify:	OPP_EVENT_REMOVE notification should be sent or not
@@ -885,12 +1295,27 @@ static void _kfree_opp_rcu(struct rcu_head *head)
  */
 static void _opp_remove(struct device_opp *dev_opp,
 			struct dev_pm_opp *opp, bool notify)
+=======
+ * @opp_table:	points back to the opp_table struct this opp belongs to
+ * @opp:	pointer to the OPP to remove
+ * @notify:	OPP_EVENT_REMOVE notification should be sent or not
+ *
+ * This function removes an opp definition from the opp table.
+ *
+ * Locking: The internal opp_table and opp structures are RCU protected.
+ * It is assumed that the caller holds required mutex for an RCU updater
+ * strategy.
+ */
+void _opp_remove(struct opp_table *opp_table, struct dev_pm_opp *opp,
+		 bool notify)
+>>>>>>> v4.9.227
 {
 	/*
 	 * Notify the changes in the availability of the operable
 	 * frequency/voltage list.
 	 */
 	if (notify)
+<<<<<<< HEAD
 		srcu_notifier_call_chain(&dev_opp->srcu_head, OPP_EVENT_REMOVE, opp);
 	list_del_rcu(&opp->node);
 	call_srcu(&dev_opp->srcu_head.srcu, &opp->rcu_head, _kfree_opp_rcu);
@@ -906,6 +1331,25 @@ static void _opp_remove(struct device_opp *dev_opp,
  * This function removes an opp from the opp list.
  *
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+		srcu_notifier_call_chain(&opp_table->srcu_head,
+					 OPP_EVENT_REMOVE, opp);
+	opp_debug_remove_one(opp);
+	list_del_rcu(&opp->node);
+	call_srcu(&opp_table->srcu_head.srcu, &opp->rcu_head, _kfree_opp_rcu);
+
+	_remove_opp_table(opp_table);
+}
+
+/**
+ * dev_pm_opp_remove()  - Remove an OPP from OPP table
+ * @dev:	device for which we do this operation
+ * @freq:	OPP to remove with matching 'freq'
+ *
+ * This function removes an opp from the opp table.
+ *
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function internally uses RCU updater strategy with mutex locks
  * to keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
@@ -914,6 +1358,7 @@ static void _opp_remove(struct device_opp *dev_opp,
 void dev_pm_opp_remove(struct device *dev, unsigned long freq)
 {
 	struct dev_pm_opp *opp;
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
 	bool found = false;
 
@@ -925,6 +1370,19 @@ void dev_pm_opp_remove(struct device *dev, unsigned long freq)
 		goto unlock;
 
 	list_for_each_entry(opp, &dev_opp->opp_list, node) {
+=======
+	struct opp_table *opp_table;
+	bool found = false;
+
+	/* Hold our table modification lock here */
+	mutex_lock(&opp_table_lock);
+
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table))
+		goto unlock;
+
+	list_for_each_entry(opp, &opp_table->opp_list, node) {
+>>>>>>> v4.9.227
 		if (opp->rate == freq) {
 			found = true;
 			break;
@@ -937,6 +1395,7 @@ void dev_pm_opp_remove(struct device *dev, unsigned long freq)
 		goto unlock;
 	}
 
+<<<<<<< HEAD
 	_opp_remove(dev_opp, opp, true);
 unlock:
 	mutex_unlock(&dev_opp_list_lock);
@@ -945,6 +1404,16 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_remove);
 
 static struct dev_pm_opp *_allocate_opp(struct device *dev,
 					struct device_opp **dev_opp)
+=======
+	_opp_remove(opp_table, opp, true);
+unlock:
+	mutex_unlock(&opp_table_lock);
+}
+EXPORT_SYMBOL_GPL(dev_pm_opp_remove);
+
+struct dev_pm_opp *_allocate_opp(struct device *dev,
+				 struct opp_table **opp_table)
+>>>>>>> v4.9.227
 {
 	struct dev_pm_opp *opp;
 
@@ -955,8 +1424,13 @@ static struct dev_pm_opp *_allocate_opp(struct device *dev,
 
 	INIT_LIST_HEAD(&opp->node);
 
+<<<<<<< HEAD
 	*dev_opp = _add_device_opp(dev);
 	if (!*dev_opp) {
+=======
+	*opp_table = _add_opp_table(dev);
+	if (!*opp_table) {
+>>>>>>> v4.9.227
 		kfree(opp);
 		return NULL;
 	}
@@ -964,21 +1438,54 @@ static struct dev_pm_opp *_allocate_opp(struct device *dev,
 	return opp;
 }
 
+<<<<<<< HEAD
 static int _opp_add(struct device *dev, struct dev_pm_opp *new_opp,
 		    struct device_opp *dev_opp)
 {
 	struct dev_pm_opp *opp;
 	struct list_head *head = &dev_opp->opp_list;
+=======
+static bool _opp_supported_by_regulators(struct dev_pm_opp *opp,
+					 struct opp_table *opp_table)
+{
+	struct regulator *reg = opp_table->regulator;
+
+	if (!IS_ERR(reg) &&
+	    !regulator_is_supported_voltage(reg, opp->u_volt_min,
+					    opp->u_volt_max)) {
+		pr_warn("%s: OPP minuV: %lu maxuV: %lu, not supported by regulator\n",
+			__func__, opp->u_volt_min, opp->u_volt_max);
+		return false;
+	}
+
+	return true;
+}
+
+int _opp_add(struct device *dev, struct dev_pm_opp *new_opp,
+	     struct opp_table *opp_table)
+{
+	struct dev_pm_opp *opp;
+	struct list_head *head = &opp_table->opp_list;
+	int ret;
+>>>>>>> v4.9.227
 
 	/*
 	 * Insert new OPP in order of increasing frequency and discard if
 	 * already present.
 	 *
+<<<<<<< HEAD
 	 * Need to use &dev_opp->opp_list in the condition part of the 'for'
 	 * loop, don't replace it with head otherwise it will become an infinite
 	 * loop.
 	 */
 	list_for_each_entry_rcu(opp, &dev_opp->opp_list, node) {
+=======
+	 * Need to use &opp_table->opp_list in the condition part of the 'for'
+	 * loop, don't replace it with head otherwise it will become an infinite
+	 * loop.
+	 */
+	list_for_each_entry_rcu(opp, &opp_table->opp_list, node) {
+>>>>>>> v4.9.227
 		if (new_opp->rate > opp->rate) {
 			head = &opp->node;
 			continue;
@@ -996,9 +1503,26 @@ static int _opp_add(struct device *dev, struct dev_pm_opp *new_opp,
 			0 : -EEXIST;
 	}
 
+<<<<<<< HEAD
 	new_opp->dev_opp = dev_opp;
 	list_add_rcu(&new_opp->node, head);
 
+=======
+	new_opp->opp_table = opp_table;
+	list_add_rcu(&new_opp->node, head);
+
+	ret = opp_debug_create_one(new_opp, opp_table);
+	if (ret)
+		dev_err(dev, "%s: Failed to register opp to debugfs (%d)\n",
+			__func__, ret);
+
+	if (!_opp_supported_by_regulators(new_opp, opp_table)) {
+		new_opp->available = false;
+		dev_warn(dev, "%s: OPP not supported by regulators (%lu)\n",
+			 __func__, new_opp->rate);
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1009,14 +1533,22 @@ static int _opp_add(struct device *dev, struct dev_pm_opp *new_opp,
  * @u_volt:	Voltage in uVolts for this OPP
  * @dynamic:	Dynamically added OPPs.
  *
+<<<<<<< HEAD
  * This function adds an opp definition to the opp list and returns status.
+=======
+ * This function adds an opp definition to the opp table and returns status.
+>>>>>>> v4.9.227
  * The opp is made available by default and it can be controlled using
  * dev_pm_opp_enable/disable functions and may be removed by dev_pm_opp_remove.
  *
  * NOTE: "dynamic" parameter impacts OPPs added by the dev_pm_opp_of_add_table
  * and freed by dev_pm_opp_of_remove_table.
  *
+<<<<<<< HEAD
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function internally uses RCU updater strategy with mutex locks
  * to keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
@@ -1029,18 +1561,32 @@ static int _opp_add(struct device *dev, struct dev_pm_opp *new_opp,
  *		Duplicate OPPs (both freq and volt are same) and !opp->available
  * -ENOMEM	Memory allocation failure
  */
+<<<<<<< HEAD
 static int _opp_add_v1(struct device *dev, unsigned long freq, long u_volt,
 		       bool dynamic)
 {
 	struct device_opp *dev_opp;
+=======
+int _opp_add_v1(struct device *dev, unsigned long freq, long u_volt,
+		bool dynamic)
+{
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 	struct dev_pm_opp *new_opp;
 	unsigned long tol;
 	int ret;
 
+<<<<<<< HEAD
 	/* Hold our list modification lock here */
 	mutex_lock(&dev_opp_list_lock);
 
 	new_opp = _allocate_opp(dev, &dev_opp);
+=======
+	/* Hold our table modification lock here */
+	mutex_lock(&opp_table_lock);
+
+	new_opp = _allocate_opp(dev, &opp_table);
+>>>>>>> v4.9.227
 	if (!new_opp) {
 		ret = -ENOMEM;
 		goto unlock;
@@ -1048,23 +1594,36 @@ static int _opp_add_v1(struct device *dev, unsigned long freq, long u_volt,
 
 	/* populate the opp table */
 	new_opp->rate = freq;
+<<<<<<< HEAD
 	tol = u_volt * dev_opp->voltage_tolerance_v1 / 100;
+=======
+	tol = u_volt * opp_table->voltage_tolerance_v1 / 100;
+>>>>>>> v4.9.227
 	new_opp->u_volt = u_volt;
 	new_opp->u_volt_min = u_volt - tol;
 	new_opp->u_volt_max = u_volt + tol;
 	new_opp->available = true;
 	new_opp->dynamic = dynamic;
 
+<<<<<<< HEAD
 	ret = _opp_add(dev, new_opp, dev_opp);
 	if (ret)
 		goto free_opp;
 
 	mutex_unlock(&dev_opp_list_lock);
+=======
+	ret = _opp_add(dev, new_opp, opp_table);
+	if (ret)
+		goto free_opp;
+
+	mutex_unlock(&opp_table_lock);
+>>>>>>> v4.9.227
 
 	/*
 	 * Notify the changes in the availability of the operable
 	 * frequency/voltage list.
 	 */
+<<<<<<< HEAD
 	srcu_notifier_call_chain(&dev_opp->srcu_head, OPP_EVENT_ADD, new_opp);
 	return 0;
 
@@ -1152,6 +1711,18 @@ static int opp_parse_supplies(struct dev_pm_opp *opp, struct device *dev,
 	return 0;
 }
 
+=======
+	srcu_notifier_call_chain(&opp_table->srcu_head, OPP_EVENT_ADD, new_opp);
+	return 0;
+
+free_opp:
+	_opp_remove(opp_table, new_opp, false);
+unlock:
+	mutex_unlock(&opp_table_lock);
+	return ret;
+}
+
+>>>>>>> v4.9.227
 /**
  * dev_pm_opp_set_supported_hw() - Set supported platforms
  * @dev: Device for which supported-hw has to be set.
@@ -1163,7 +1734,11 @@ static int opp_parse_supplies(struct dev_pm_opp *opp, struct device *dev,
  * OPPs, which are available for those versions, based on its 'opp-supported-hw'
  * property.
  *
+<<<<<<< HEAD
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function internally uses RCU updater strategy with mutex locks
  * to keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
@@ -1172,6 +1747,7 @@ static int opp_parse_supplies(struct dev_pm_opp *opp, struct device *dev,
 int dev_pm_opp_set_supported_hw(struct device *dev, const u32 *versions,
 				unsigned int count)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
 	int ret = 0;
 
@@ -1180,28 +1756,53 @@ int dev_pm_opp_set_supported_hw(struct device *dev, const u32 *versions,
 
 	dev_opp = _add_device_opp(dev);
 	if (!dev_opp) {
+=======
+	struct opp_table *opp_table;
+	int ret = 0;
+
+	/* Hold our table modification lock here */
+	mutex_lock(&opp_table_lock);
+
+	opp_table = _add_opp_table(dev);
+	if (!opp_table) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto unlock;
 	}
 
+<<<<<<< HEAD
 	/* Make sure there are no concurrent readers while updating dev_opp */
 	WARN_ON(!list_empty(&dev_opp->opp_list));
 
 	/* Do we already have a version hierarchy associated with dev_opp? */
 	if (dev_opp->supported_hw) {
+=======
+	/* Make sure there are no concurrent readers while updating opp_table */
+	WARN_ON(!list_empty(&opp_table->opp_list));
+
+	/* Do we already have a version hierarchy associated with opp_table? */
+	if (opp_table->supported_hw) {
+>>>>>>> v4.9.227
 		dev_err(dev, "%s: Already have supported hardware list\n",
 			__func__);
 		ret = -EBUSY;
 		goto err;
 	}
 
+<<<<<<< HEAD
 	dev_opp->supported_hw = kmemdup(versions, count * sizeof(*versions),
 					GFP_KERNEL);
 	if (!dev_opp->supported_hw) {
+=======
+	opp_table->supported_hw = kmemdup(versions, count * sizeof(*versions),
+					GFP_KERNEL);
+	if (!opp_table->supported_hw) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto err;
 	}
 
+<<<<<<< HEAD
 	dev_opp->supported_hw_count = count;
 	mutex_unlock(&dev_opp_list_lock);
 	return 0;
@@ -1210,6 +1811,16 @@ err:
 	_remove_device_opp(dev_opp);
 unlock:
 	mutex_unlock(&dev_opp_list_lock);
+=======
+	opp_table->supported_hw_count = count;
+	mutex_unlock(&opp_table_lock);
+	return 0;
+
+err:
+	_remove_opp_table(opp_table);
+unlock:
+	mutex_unlock(&opp_table_lock);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -1220,10 +1831,17 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_set_supported_hw);
  * @dev: Device for which supported-hw has to be put.
  *
  * This is required only for the V2 bindings, and is called for a matching
+<<<<<<< HEAD
  * dev_pm_opp_set_supported_hw(). Until this is called, the device_opp structure
  * will not be freed.
  *
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * dev_pm_opp_set_supported_hw(). Until this is called, the opp_table structure
+ * will not be freed.
+ *
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function internally uses RCU updater strategy with mutex locks
  * to keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
@@ -1231,6 +1849,7 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_set_supported_hw);
  */
 void dev_pm_opp_put_supported_hw(struct device *dev)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
 
 	/* Hold our list modification lock here */
@@ -1247,11 +1866,31 @@ void dev_pm_opp_put_supported_hw(struct device *dev)
 	WARN_ON(!list_empty(&dev_opp->opp_list));
 
 	if (!dev_opp->supported_hw) {
+=======
+	struct opp_table *opp_table;
+
+	/* Hold our table modification lock here */
+	mutex_lock(&opp_table_lock);
+
+	/* Check for existing table for 'dev' first */
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table)) {
+		dev_err(dev, "Failed to find opp_table: %ld\n",
+			PTR_ERR(opp_table));
+		goto unlock;
+	}
+
+	/* Make sure there are no concurrent readers while updating opp_table */
+	WARN_ON(!list_empty(&opp_table->opp_list));
+
+	if (!opp_table->supported_hw) {
+>>>>>>> v4.9.227
 		dev_err(dev, "%s: Doesn't have supported hardware list\n",
 			__func__);
 		goto unlock;
 	}
 
+<<<<<<< HEAD
 	kfree(dev_opp->supported_hw);
 	dev_opp->supported_hw = NULL;
 	dev_opp->supported_hw_count = 0;
@@ -1261,6 +1900,17 @@ void dev_pm_opp_put_supported_hw(struct device *dev)
 
 unlock:
 	mutex_unlock(&dev_opp_list_lock);
+=======
+	kfree(opp_table->supported_hw);
+	opp_table->supported_hw = NULL;
+	opp_table->supported_hw_count = 0;
+
+	/* Try freeing opp_table if this was the last blocking resource */
+	_remove_opp_table(opp_table);
+
+unlock:
+	mutex_unlock(&opp_table_lock);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_put_supported_hw);
 
@@ -1274,7 +1924,11 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_put_supported_hw);
  * which the extension will apply are opp-microvolt and opp-microamp. OPP core
  * should postfix the property name with -<name> while looking for them.
  *
+<<<<<<< HEAD
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function internally uses RCU updater strategy with mutex locks
  * to keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
@@ -1282,6 +1936,7 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_put_supported_hw);
  */
 int dev_pm_opp_set_prop_name(struct device *dev, const char *name)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
 	int ret = 0;
 
@@ -1290,10 +1945,21 @@ int dev_pm_opp_set_prop_name(struct device *dev, const char *name)
 
 	dev_opp = _add_device_opp(dev);
 	if (!dev_opp) {
+=======
+	struct opp_table *opp_table;
+	int ret = 0;
+
+	/* Hold our table modification lock here */
+	mutex_lock(&opp_table_lock);
+
+	opp_table = _add_opp_table(dev);
+	if (!opp_table) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto unlock;
 	}
 
+<<<<<<< HEAD
 	/* Make sure there are no concurrent readers while updating dev_opp */
 	WARN_ON(!list_empty(&dev_opp->opp_list));
 
@@ -1301,16 +1967,31 @@ int dev_pm_opp_set_prop_name(struct device *dev, const char *name)
 	if (dev_opp->prop_name) {
 		dev_err(dev, "%s: Already have prop-name %s\n", __func__,
 			dev_opp->prop_name);
+=======
+	/* Make sure there are no concurrent readers while updating opp_table */
+	WARN_ON(!list_empty(&opp_table->opp_list));
+
+	/* Do we already have a prop-name associated with opp_table? */
+	if (opp_table->prop_name) {
+		dev_err(dev, "%s: Already have prop-name %s\n", __func__,
+			opp_table->prop_name);
+>>>>>>> v4.9.227
 		ret = -EBUSY;
 		goto err;
 	}
 
+<<<<<<< HEAD
 	dev_opp->prop_name = kstrdup(name, GFP_KERNEL);
 	if (!dev_opp->prop_name) {
+=======
+	opp_table->prop_name = kstrdup(name, GFP_KERNEL);
+	if (!opp_table->prop_name) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto err;
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&dev_opp_list_lock);
 	return 0;
 
@@ -1318,6 +1999,15 @@ err:
 	_remove_device_opp(dev_opp);
 unlock:
 	mutex_unlock(&dev_opp_list_lock);
+=======
+	mutex_unlock(&opp_table_lock);
+	return 0;
+
+err:
+	_remove_opp_table(opp_table);
+unlock:
+	mutex_unlock(&opp_table_lock);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -1328,10 +2018,17 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_set_prop_name);
  * @dev: Device for which the prop-name has to be put.
  *
  * This is required only for the V2 bindings, and is called for a matching
+<<<<<<< HEAD
  * dev_pm_opp_set_prop_name(). Until this is called, the device_opp structure
  * will not be freed.
  *
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * dev_pm_opp_set_prop_name(). Until this is called, the opp_table structure
+ * will not be freed.
+ *
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function internally uses RCU updater strategy with mutex locks
  * to keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
@@ -1339,6 +2036,7 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_set_prop_name);
  */
 void dev_pm_opp_put_prop_name(struct device *dev)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
 
 	/* Hold our list modification lock here */
@@ -1355,10 +2053,30 @@ void dev_pm_opp_put_prop_name(struct device *dev)
 	WARN_ON(!list_empty(&dev_opp->opp_list));
 
 	if (!dev_opp->prop_name) {
+=======
+	struct opp_table *opp_table;
+
+	/* Hold our table modification lock here */
+	mutex_lock(&opp_table_lock);
+
+	/* Check for existing table for 'dev' first */
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table)) {
+		dev_err(dev, "Failed to find opp_table: %ld\n",
+			PTR_ERR(opp_table));
+		goto unlock;
+	}
+
+	/* Make sure there are no concurrent readers while updating opp_table */
+	WARN_ON(!list_empty(&opp_table->opp_list));
+
+	if (!opp_table->prop_name) {
+>>>>>>> v4.9.227
 		dev_err(dev, "%s: Doesn't have a prop-name\n", __func__);
 		goto unlock;
 	}
 
+<<<<<<< HEAD
 	kfree(dev_opp->prop_name);
 	dev_opp->prop_name = NULL;
 
@@ -1367,6 +2085,16 @@ void dev_pm_opp_put_prop_name(struct device *dev)
 
 unlock:
 	mutex_unlock(&dev_opp_list_lock);
+=======
+	kfree(opp_table->prop_name);
+	opp_table->prop_name = NULL;
+
+	/* Try freeing opp_table if this was the last blocking resource */
+	_remove_opp_table(opp_table);
+
+unlock:
+	mutex_unlock(&opp_table_lock);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_put_prop_name);
 
@@ -1380,12 +2108,17 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_put_prop_name);
  *
  * This must be called before any OPPs are initialized for the device.
  *
+<<<<<<< HEAD
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function internally uses RCU updater strategy with mutex locks
  * to keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
  * mutex cannot be locked.
  */
+<<<<<<< HEAD
 int dev_pm_opp_set_regulator(struct device *dev, const char *name)
 {
 	struct device_opp *dev_opp;
@@ -1396,18 +2129,38 @@ int dev_pm_opp_set_regulator(struct device *dev, const char *name)
 
 	dev_opp = _add_device_opp(dev);
 	if (!dev_opp) {
+=======
+struct opp_table *dev_pm_opp_set_regulator(struct device *dev, const char *name)
+{
+	struct opp_table *opp_table;
+	struct regulator *reg;
+	int ret;
+
+	mutex_lock(&opp_table_lock);
+
+	opp_table = _add_opp_table(dev);
+	if (!opp_table) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto unlock;
 	}
 
 	/* This should be called before OPPs are initialized */
+<<<<<<< HEAD
 	if (WARN_ON(!list_empty(&dev_opp->opp_list))) {
+=======
+	if (WARN_ON(!list_empty(&opp_table->opp_list))) {
+>>>>>>> v4.9.227
 		ret = -EBUSY;
 		goto err;
 	}
 
 	/* Already have a regulator set */
+<<<<<<< HEAD
 	if (WARN_ON(!IS_ERR(dev_opp->regulator))) {
+=======
+	if (WARN_ON(!IS_ERR(opp_table->regulator))) {
+>>>>>>> v4.9.227
 		ret = -EBUSY;
 		goto err;
 	}
@@ -1421,6 +2174,7 @@ int dev_pm_opp_set_regulator(struct device *dev, const char *name)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	dev_opp->regulator = reg;
 
 	mutex_unlock(&dev_opp_list_lock);
@@ -1432,19 +2186,39 @@ unlock:
 	mutex_unlock(&dev_opp_list_lock);
 
 	return ret;
+=======
+	opp_table->regulator = reg;
+
+	mutex_unlock(&opp_table_lock);
+	return opp_table;
+
+err:
+	_remove_opp_table(opp_table);
+unlock:
+	mutex_unlock(&opp_table_lock);
+
+	return ERR_PTR(ret);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_set_regulator);
 
 /**
  * dev_pm_opp_put_regulator() - Releases resources blocked for regulator
+<<<<<<< HEAD
  * @dev: Device for which regulator was set.
  *
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * @opp_table: OPP table returned from dev_pm_opp_set_regulator().
+ *
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function internally uses RCU updater strategy with mutex locks
  * to keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
  * mutex cannot be locked.
  */
+<<<<<<< HEAD
 void dev_pm_opp_put_regulator(struct device *dev)
 {
 	struct device_opp *dev_opp;
@@ -1613,17 +2387,50 @@ unlock:
 	return ret;
 }
 
+=======
+void dev_pm_opp_put_regulator(struct opp_table *opp_table)
+{
+	mutex_lock(&opp_table_lock);
+
+	if (IS_ERR(opp_table->regulator)) {
+		pr_err("%s: Doesn't have regulator set\n", __func__);
+		goto unlock;
+	}
+
+	/* Make sure there are no concurrent readers while updating opp_table */
+	WARN_ON(!list_empty(&opp_table->opp_list));
+
+	regulator_put(opp_table->regulator);
+	opp_table->regulator = ERR_PTR(-ENXIO);
+
+	/* Try freeing opp_table if this was the last blocking resource */
+	_remove_opp_table(opp_table);
+
+unlock:
+	mutex_unlock(&opp_table_lock);
+}
+EXPORT_SYMBOL_GPL(dev_pm_opp_put_regulator);
+
+>>>>>>> v4.9.227
 /**
  * dev_pm_opp_add()  - Add an OPP table from a table definitions
  * @dev:	device for which we do this operation
  * @freq:	Frequency in Hz for this OPP
  * @u_volt:	Voltage in uVolts for this OPP
  *
+<<<<<<< HEAD
  * This function adds an opp definition to the opp list and returns status.
  * The opp is made available by default and it can be controlled using
  * dev_pm_opp_enable/disable functions.
  *
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * This function adds an opp definition to the opp table and returns status.
+ * The opp is made available by default and it can be controlled using
+ * dev_pm_opp_enable/disable functions.
+ *
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function internally uses RCU updater strategy with mutex locks
  * to keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
@@ -1655,7 +2462,11 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_add);
  * copy operation, returns 0 if no modification was done OR modification was
  * successful.
  *
+<<<<<<< HEAD
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function internally uses RCU updater strategy with mutex locks to
  * keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
@@ -1664,7 +2475,11 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_add);
 static int _opp_set_availability(struct device *dev, unsigned long freq,
 				 bool availability_req)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp;
+=======
+	struct opp_table *opp_table;
+>>>>>>> v4.9.227
 	struct dev_pm_opp *new_opp, *tmp_opp, *opp = ERR_PTR(-ENODEV);
 	int r = 0;
 
@@ -1673,18 +2488,31 @@ static int _opp_set_availability(struct device *dev, unsigned long freq,
 	if (!new_opp)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	mutex_lock(&dev_opp_list_lock);
 
 	/* Find the device_opp */
 	dev_opp = _find_device_opp(dev);
 	if (IS_ERR(dev_opp)) {
 		r = PTR_ERR(dev_opp);
+=======
+	mutex_lock(&opp_table_lock);
+
+	/* Find the opp_table */
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table)) {
+		r = PTR_ERR(opp_table);
+>>>>>>> v4.9.227
 		dev_warn(dev, "%s: Device OPP not found (%d)\n", __func__, r);
 		goto unlock;
 	}
 
 	/* Do we have the frequency? */
+<<<<<<< HEAD
 	list_for_each_entry(tmp_opp, &dev_opp->opp_list, node) {
+=======
+	list_for_each_entry(tmp_opp, &opp_table->opp_list, node) {
+>>>>>>> v4.9.227
 		if (tmp_opp->rate == freq) {
 			opp = tmp_opp;
 			break;
@@ -1705,6 +2533,7 @@ static int _opp_set_availability(struct device *dev, unsigned long freq,
 	new_opp->available = availability_req;
 
 	list_replace_rcu(&opp->node, &new_opp->node);
+<<<<<<< HEAD
 	mutex_unlock(&dev_opp_list_lock);
 	call_srcu(&dev_opp->srcu_head.srcu, &opp->rcu_head, _kfree_opp_rcu);
 
@@ -1715,11 +2544,27 @@ static int _opp_set_availability(struct device *dev, unsigned long freq,
 	else
 		srcu_notifier_call_chain(&dev_opp->srcu_head, OPP_EVENT_DISABLE,
 					 new_opp);
+=======
+	mutex_unlock(&opp_table_lock);
+	call_srcu(&opp_table->srcu_head.srcu, &opp->rcu_head, _kfree_opp_rcu);
+
+	/* Notify the change of the OPP availability */
+	if (availability_req)
+		srcu_notifier_call_chain(&opp_table->srcu_head,
+					 OPP_EVENT_ENABLE, new_opp);
+	else
+		srcu_notifier_call_chain(&opp_table->srcu_head,
+					 OPP_EVENT_DISABLE, new_opp);
+>>>>>>> v4.9.227
 
 	return 0;
 
 unlock:
+<<<<<<< HEAD
 	mutex_unlock(&dev_opp_list_lock);
+=======
+	mutex_unlock(&opp_table_lock);
+>>>>>>> v4.9.227
 	kfree(new_opp);
 	return r;
 }
@@ -1733,7 +2578,11 @@ unlock:
  * corresponding error value. It is meant to be used for users an OPP available
  * after being temporarily made unavailable with dev_pm_opp_disable.
  *
+<<<<<<< HEAD
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function indirectly uses RCU and mutex locks to keep the
  * integrity of the internal data structures. Callers should ensure that
  * this function is *NOT* called under RCU protection or in contexts where
@@ -1759,7 +2608,11 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_enable);
  * control by users to make this OPP not available until the circumstances are
  * right to make it available again (with a call to dev_pm_opp_enable).
  *
+<<<<<<< HEAD
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function indirectly uses RCU and mutex locks to keep the
  * integrity of the internal data structures. Callers should ensure that
  * this function is *NOT* called under RCU protection or in contexts where
@@ -1777,20 +2630,31 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_disable);
 
 /**
  * dev_pm_opp_get_notifier() - find notifier_head of the device with opp
+<<<<<<< HEAD
  * @dev:	device pointer used to lookup device OPPs.
+=======
+ * @dev:	device pointer used to lookup OPP table.
+>>>>>>> v4.9.227
  *
  * Return: pointer to  notifier head if found, otherwise -ENODEV or
  * -EINVAL based on type of error casted as pointer. value must be checked
  *  with IS_ERR to determine valid pointer or error result.
  *
+<<<<<<< HEAD
  * Locking: This function must be called under rcu_read_lock(). dev_opp is a RCU
  * protected pointer. The reason for the same is that the opp pointer which is
  * returned will remain valid for use with opp_get_{voltage, freq} only while
+=======
+ * Locking: This function must be called under rcu_read_lock(). opp_table is a
+ * RCU protected pointer. The reason for the same is that the opp pointer which
+ * is returned will remain valid for use with opp_get_{voltage, freq} only while
+>>>>>>> v4.9.227
  * under the locked area. The pointer returned must be used prior to unlocking
  * with rcu_read_unlock() to maintain the integrity of the pointer.
  */
 struct srcu_notifier_head *dev_pm_opp_get_notifier(struct device *dev)
 {
+<<<<<<< HEAD
 	struct device_opp *dev_opp = _find_device_opp(dev);
 
 	if (IS_ERR(dev_opp))
@@ -1829,12 +2693,43 @@ void dev_pm_opp_of_remove_table(struct device *dev)
 
 		if (error != -ENODEV)
 			WARN(1, "%s: dev_opp: %d\n",
+=======
+	struct opp_table *opp_table = _find_opp_table(dev);
+
+	if (IS_ERR(opp_table))
+		return ERR_CAST(opp_table); /* matching type */
+
+	return &opp_table->srcu_head;
+}
+EXPORT_SYMBOL_GPL(dev_pm_opp_get_notifier);
+
+/*
+ * Free OPPs either created using static entries present in DT or even the
+ * dynamically added entries based on remove_all param.
+ */
+void _dev_pm_opp_remove_table(struct device *dev, bool remove_all)
+{
+	struct opp_table *opp_table;
+	struct dev_pm_opp *opp, *tmp;
+
+	/* Hold our table modification lock here */
+	mutex_lock(&opp_table_lock);
+
+	/* Check for existing table for 'dev' */
+	opp_table = _find_opp_table(dev);
+	if (IS_ERR(opp_table)) {
+		int error = PTR_ERR(opp_table);
+
+		if (error != -ENODEV)
+			WARN(1, "%s: opp_table: %d\n",
+>>>>>>> v4.9.227
 			     IS_ERR_OR_NULL(dev) ?
 					"Invalid device" : dev_name(dev),
 			     error);
 		goto unlock;
 	}
 
+<<<<<<< HEAD
 	/* Find if dev_opp manages a single device */
 	if (list_is_singular(&dev_opp->dev_list)) {
 		/* Free static OPPs */
@@ -1965,10 +2860,36 @@ static int _of_add_opp_table_v1(struct device *dev)
  * Register the initial OPP table with the OPP library for given device.
  *
  * Locking: The internal device_opp and opp structures are RCU protected.
+=======
+	/* Find if opp_table manages a single device */
+	if (list_is_singular(&opp_table->dev_list)) {
+		/* Free static OPPs */
+		list_for_each_entry_safe(opp, tmp, &opp_table->opp_list, node) {
+			if (remove_all || !opp->dynamic)
+				_opp_remove(opp_table, opp, true);
+		}
+	} else {
+		_remove_opp_dev(_find_opp_dev(dev, opp_table), opp_table);
+	}
+
+unlock:
+	mutex_unlock(&opp_table_lock);
+}
+
+/**
+ * dev_pm_opp_remove_table() - Free all OPPs associated with the device
+ * @dev:	device pointer used to lookup OPP table.
+ *
+ * Free both OPPs created using static entries present in DT and the
+ * dynamically added entries.
+ *
+ * Locking: The internal opp_table and opp structures are RCU protected.
+>>>>>>> v4.9.227
  * Hence this function indirectly uses RCU updater strategy with mutex locks
  * to keep the integrity of the internal data structures. Callers should ensure
  * that this function is *NOT* called under RCU protection or in contexts where
  * mutex cannot be locked.
+<<<<<<< HEAD
  *
  * Return:
  * 0		On success OR
@@ -2006,3 +2927,11 @@ int dev_pm_opp_of_add_table(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_of_add_table);
 #endif
+=======
+ */
+void dev_pm_opp_remove_table(struct device *dev)
+{
+	_dev_pm_opp_remove_table(dev, true);
+}
+EXPORT_SYMBOL_GPL(dev_pm_opp_remove_table);
+>>>>>>> v4.9.227

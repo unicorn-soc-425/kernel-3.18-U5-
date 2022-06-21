@@ -20,7 +20,10 @@
 
 #include <linux/types.h>
 #include <linux/omap3isp.h>
+<<<<<<< HEAD
 #include <linux/omap-dma.h>
+=======
+>>>>>>> v4.9.227
 #include <media/v4l2-event.h>
 
 #include "isp.h"
@@ -33,13 +36,21 @@
 #define STAT_NO_BUF		1	/* An error has occurred */
 #define STAT_BUF_WAITING_DMA	2	/* Histogram only: DMA is running */
 
+<<<<<<< HEAD
+=======
+struct dma_chan;
+>>>>>>> v4.9.227
 struct ispstat;
 
 struct ispstat_buffer {
 	struct sg_table sgt;
 	void *virt_addr;
 	dma_addr_t dma_addr;
+<<<<<<< HEAD
 	struct timespec ts;
+=======
+	struct timeval ts;
+>>>>>>> v4.9.227
 	u32 buf_size;
 	u32 frame_number;
 	u16 config_counter;
@@ -96,7 +107,10 @@ struct ispstat {
 	u8 inc_config;
 	atomic_t buf_err;
 	enum ispstat_state_t state;	/* enabling/disabling state */
+<<<<<<< HEAD
 	struct omap_dma_channel_params dma_config;
+=======
+>>>>>>> v4.9.227
 	struct isp_device *isp;
 	void *priv;		/* pointer to priv config struct */
 	void *recover_priv;	/* pointer to recover priv configuration */
@@ -110,7 +124,11 @@ struct ispstat {
 	u32 frame_number;
 	u32 buf_size;
 	u32 buf_alloc_size;
+<<<<<<< HEAD
 	int dma_ch;
+=======
+	struct dma_chan *dma_ch;
+>>>>>>> v4.9.227
 	unsigned long event_type;
 	struct ispstat_buffer *buf;
 	struct ispstat_buffer *active_buf;

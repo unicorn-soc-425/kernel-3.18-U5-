@@ -7,6 +7,14 @@ Required properties:
   region.
 - interrupts: rtc alarm interrupt
 
+<<<<<<< HEAD
+=======
+Optional properties:
+- stmp,crystal-freq: override crystal frequency as determined from fuse bits.
+  Only <32000> and <32768> are possible for the hardware.  Use <0> for
+  "no crystal".
+
+>>>>>>> v4.9.227
 Example:
 
 rtc@80056000 {

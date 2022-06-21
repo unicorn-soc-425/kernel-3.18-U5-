@@ -62,7 +62,18 @@ int g94_sor_dp_lnk_pwr(struct nvkm_output_dp *, int);
 int gf119_sor_dp_new(struct nvkm_disp *, int, struct dcb_output *,
 		     struct nvkm_output **);
 int gf119_sor_dp_lnk_ctl(struct nvkm_output_dp *, int, int, bool);
+<<<<<<< HEAD
 
 int  gm204_sor_dp_new(struct nvkm_disp *, int, struct dcb_output *,
 		      struct nvkm_output **);
+=======
+int gf119_sor_dp_drv_ctl(struct nvkm_output_dp *, int, int, int, int);
+
+int gm107_sor_dp_new(struct nvkm_disp *, int, struct dcb_output *,
+		     struct nvkm_output **);
+int gm107_sor_dp_pattern(struct nvkm_output_dp *, int);
+
+int gm200_sor_dp_new(struct nvkm_disp *, int, struct dcb_output *,
+		     struct nvkm_output **);
+>>>>>>> v4.9.227
 #endif

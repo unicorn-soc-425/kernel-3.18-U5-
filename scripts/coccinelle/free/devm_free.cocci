@@ -29,8 +29,29 @@ expression x;
 @@
 
 (
+<<<<<<< HEAD
  x = devm_kzalloc(...)
 |
+=======
+ x = devm_kmalloc(...)
+|
+ x = devm_kvasprintf(...)
+|
+ x = devm_kasprintf(...)
+|
+ x = devm_kzalloc(...)
+|
+ x = devm_kmalloc_array(...)
+|
+ x = devm_kcalloc(...)
+|
+ x = devm_kstrdup(...)
+|
+ x = devm_kmemdup(...)
+|
+ x = devm_get_free_pages(...)
+|
+>>>>>>> v4.9.227
  x = devm_request_irq(...)
 |
  x = devm_ioremap(...)
@@ -48,6 +69,19 @@ position p;
 (
 * kfree@p(x)
 |
+<<<<<<< HEAD
+=======
+* kzfree@p(x)
+|
+* __krealloc@p(x, ...)
+|
+* krealloc@p(x, ...)
+|
+* free_pages@p(x, ...)
+|
+* free_page@p(x)
+|
+>>>>>>> v4.9.227
 * free_irq@p(x)
 |
 * iounmap@p(x)

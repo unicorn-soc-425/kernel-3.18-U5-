@@ -507,6 +507,10 @@ static void pmic8xxx_kp_close(struct input_dev *dev)
  */
 static int pmic8xxx_kp_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
+=======
+	struct device_node *np = pdev->dev.of_node;
+>>>>>>> v4.9.227
 	unsigned int rows, cols;
 	bool repeat;
 	bool wakeup;
@@ -524,10 +528,18 @@ static int pmic8xxx_kp_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	repeat = !of_property_read_bool(pdev->dev.of_node,
 					"linux,input-no-autorepeat");
 	wakeup = of_property_read_bool(pdev->dev.of_node,
 					"linux,keypad-wakeup");
+=======
+	repeat = !of_property_read_bool(np, "linux,input-no-autorepeat");
+
+	wakeup = of_property_read_bool(np, "wakeup-source") ||
+		 /* legacy name */
+		 of_property_read_bool(np, "linux,keypad-wakeup");
+>>>>>>> v4.9.227
 
 	kp = devm_kzalloc(&pdev->dev, sizeof(*kp), GFP_KERNEL);
 	if (!kp)
@@ -687,7 +699,10 @@ static struct platform_driver pmic8xxx_kp_driver = {
 	.probe		= pmic8xxx_kp_probe,
 	.driver		= {
 		.name = "pm8xxx-keypad",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &pm8xxx_kp_pm_ops,
 		.of_match_table = pm8xxx_match_table,
 	},

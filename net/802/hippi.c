@@ -91,6 +91,7 @@ static int hippi_header(struct sk_buff *skb, struct net_device *dev,
 
 
 /*
+<<<<<<< HEAD
  * Rebuild the HIPPI MAC header. This is called after an ARP has
  * completed on this sk_buff. We now let ARP fill in the other fields.
  */
@@ -118,6 +119,8 @@ static int hippi_rebuild_header(struct sk_buff *skb)
 
 
 /*
+=======
+>>>>>>> v4.9.227
  *	Determine the packet's protocol ID.
  */
 
@@ -186,7 +189,10 @@ EXPORT_SYMBOL(hippi_neigh_setup_dev);
 
 static const struct header_ops hippi_header_ops = {
 	.create		= hippi_header,
+<<<<<<< HEAD
 	.rebuild	= hippi_rebuild_header,
+=======
+>>>>>>> v4.9.227
 };
 
 

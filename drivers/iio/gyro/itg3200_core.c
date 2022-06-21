@@ -223,6 +223,13 @@ static int itg3200_initial_setup(struct iio_dev *indio_dev)
 	int ret;
 	u8 val;
 
+<<<<<<< HEAD
+=======
+	ret = itg3200_reset(indio_dev);
+	if (ret)
+		goto err_ret;
+
+>>>>>>> v4.9.227
 	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_ADDRESS, &val);
 	if (ret)
 		goto err_ret;
@@ -233,10 +240,13 @@ static int itg3200_initial_setup(struct iio_dev *indio_dev)
 		goto err_ret;
 	}
 
+<<<<<<< HEAD
 	ret = itg3200_reset(indio_dev);
 	if (ret)
 		goto err_ret;
 
+=======
+>>>>>>> v4.9.227
 	ret = itg3200_enable_full_scale(indio_dev);
 err_ret:
 	return ret;
@@ -351,6 +361,29 @@ static int itg3200_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int __maybe_unused itg3200_suspend(struct device *dev)
+{
+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+	struct itg3200 *st = iio_priv(indio_dev);
+
+	dev_dbg(&st->i2c->dev, "suspend device");
+
+	return itg3200_write_reg_8(indio_dev, ITG3200_REG_POWER_MANAGEMENT,
+				   ITG3200_SLEEP);
+}
+
+static int __maybe_unused itg3200_resume(struct device *dev)
+{
+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+
+	return itg3200_initial_setup(indio_dev);
+}
+
+static SIMPLE_DEV_PM_OPS(itg3200_pm_ops, itg3200_suspend, itg3200_resume);
+
+>>>>>>> v4.9.227
 static const struct i2c_device_id itg3200_id[] = {
 	{ "itg3200", 0 },
 	{ }
@@ -359,8 +392,13 @@ MODULE_DEVICE_TABLE(i2c, itg3200_id);
 
 static struct i2c_driver itg3200_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
 		.name	= "itg3200",
+=======
+		.name	= "itg3200",
+		.pm	= &itg3200_pm_ops,
+>>>>>>> v4.9.227
 	},
 	.id_table	= itg3200_id,
 	.probe		= itg3200_probe,

@@ -113,7 +113,11 @@
 #define AB8500_SWITCH_OFF_STATUS	0x00
 
 #define AB8500_TURN_ON_STATUS		0x00
+<<<<<<< HEAD
 #define AB8505_TURN_ON_STATUS_2	0x04
+=======
+#define AB8505_TURN_ON_STATUS_2		0x04
+>>>>>>> v4.9.227
 
 #define AB8500_CH_USBCH_STAT1_REG	0x02
 #define VBUS_DET_DBNC100		0x02
@@ -211,7 +215,11 @@ static int set_register_interruptible(struct ab8500 *ab8500, u8 bank,
 	/*
 	 * Put the u8 bank and u8 register together into a an u16.
 	 * The bank on higher 8 bits and register in lower 8 bits.
+<<<<<<< HEAD
 	 * */
+=======
+	 */
+>>>>>>> v4.9.227
 	u16 addr = ((u16)bank) << 8 | reg;
 
 	dev_vdbg(ab8500->dev, "wr: addr %#x <= %#x\n", addr, data);
@@ -243,8 +251,11 @@ static int get_register_interruptible(struct ab8500 *ab8500, u8 bank,
 	u8 reg, u8 *value)
 {
 	int ret;
+<<<<<<< HEAD
 	/* put the u8 bank and u8 reg together into a an u16.
 	 * bank on higher 8 bits and reg in lower */
+=======
+>>>>>>> v4.9.227
 	u16 addr = ((u16)bank) << 8 | reg;
 
 	mutex_lock(&ab8500->lock);
@@ -259,7 +270,11 @@ static int get_register_interruptible(struct ab8500 *ab8500, u8 bank,
 	mutex_unlock(&ab8500->lock);
 	dev_vdbg(ab8500->dev, "rd: addr %#x => data %#x\n", addr, ret);
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return (ret < 0) ? ret : 0;
+>>>>>>> v4.9.227
 }
 
 static int ab8500_get_register(struct device *dev, u8 bank,
@@ -278,8 +293,11 @@ static int mask_and_set_register_interruptible(struct ab8500 *ab8500, u8 bank,
 	u8 reg, u8 bitmask, u8 bitvalues)
 {
 	int ret;
+<<<<<<< HEAD
 	/* put the u8 bank and u8 reg together into a an u16.
 	 * bank on higher 8 bits and reg in lower */
+=======
+>>>>>>> v4.9.227
 	u16 addr = ((u16)bank) << 8 | reg;
 
 	mutex_lock(&ab8500->lock);
@@ -449,12 +467,21 @@ static void update_latch_offset(u8 *offset, int i)
 {
 	/* Fix inconsistent ITFromLatch25 bit mapping... */
 	if (unlikely(*offset == 17))
+<<<<<<< HEAD
 			*offset = 24;
 	/* Fix inconsistent ab8540 bit mapping... */
 	if (unlikely(*offset == 16))
 			*offset = 25;
 	if ((i == 3) && (*offset >= 24))
 			*offset += 2;
+=======
+		*offset = 24;
+	/* Fix inconsistent ab8540 bit mapping... */
+	if (unlikely(*offset == 16))
+		*offset = 25;
+	if ((i == 3) && (*offset >= 24))
+		*offset += 2;
+>>>>>>> v4.9.227
 }
 
 static int ab8500_handle_hierarchical_line(struct ab8500 *ab8500,
@@ -565,16 +592,24 @@ static int ab8500_irq_map(struct irq_domain *d, unsigned int virq,
 	irq_set_chip_and_handler(virq, &ab8500_irq_chip,
 				handle_simple_irq);
 	irq_set_nested_thread(virq, 1);
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 	set_irq_flags(virq, IRQF_VALID);
 #else
 	irq_set_noprobe(virq);
 #endif
+=======
+	irq_set_noprobe(virq);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops ab8500_irq_ops = {
+=======
+static const struct irq_domain_ops ab8500_irq_ops = {
+>>>>>>> v4.9.227
 	.map    = ab8500_irq_map,
 	.xlate  = irq_domain_xlate_twocell,
 };
@@ -594,12 +629,21 @@ static int ab8500_irq_init(struct ab8500 *ab8500, struct device_node *np)
 
 	/* If ->irq_base is zero this will give a linear mapping */
 	ab8500->domain = irq_domain_add_simple(ab8500->dev->of_node,
+<<<<<<< HEAD
 			num_irqs, 0,
 			&ab8500_irq_ops, ab8500);
 
 	if (!ab8500->domain) {
 		dev_err(ab8500->dev, "Failed to create irqdomain\n");
 		return -ENOSYS;
+=======
+					       num_irqs, 0,
+					       &ab8500_irq_ops, ab8500);
+
+	if (!ab8500->domain) {
+		dev_err(ab8500->dev, "Failed to create irqdomain\n");
+		return -ENODEV;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -613,6 +657,7 @@ int ab8500_suspend(struct ab8500 *ab8500)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct resource ab8500_gpadc_resources[] = {
 	{
 		.name	= "HW_CONV_END",
@@ -1019,36 +1064,50 @@ static struct resource ab8500_temp_resources[] = {
 	},
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct mfd_cell ab8500_bm_devs[] = {
 	{
 		.name = "ab8500-charger",
 		.of_compatible = "stericsson,ab8500-charger",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_charger_resources),
 		.resources = ab8500_charger_resources,
+=======
+>>>>>>> v4.9.227
 		.platform_data = &ab8500_bm_data,
 		.pdata_size = sizeof(ab8500_bm_data),
 	},
 	{
 		.name = "ab8500-btemp",
 		.of_compatible = "stericsson,ab8500-btemp",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_btemp_resources),
 		.resources = ab8500_btemp_resources,
+=======
+>>>>>>> v4.9.227
 		.platform_data = &ab8500_bm_data,
 		.pdata_size = sizeof(ab8500_bm_data),
 	},
 	{
 		.name = "ab8500-fg",
 		.of_compatible = "stericsson,ab8500-fg",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_fg_resources),
 		.resources = ab8500_fg_resources,
+=======
+>>>>>>> v4.9.227
 		.platform_data = &ab8500_bm_data,
 		.pdata_size = sizeof(ab8500_bm_data),
 	},
 	{
 		.name = "ab8500-chargalg",
 		.of_compatible = "stericsson,ab8500-chargalg",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_chargalg_resources),
 		.resources = ab8500_chargalg_resources,
+=======
+>>>>>>> v4.9.227
 		.platform_data = &ab8500_bm_data,
 		.pdata_size = sizeof(ab8500_bm_data),
 	},
@@ -1059,8 +1118,11 @@ static const struct mfd_cell ab8500_devs[] = {
 	{
 		.name = "ab8500-debug",
 		.of_compatible = "stericsson,ab8500-debug",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_debug_resources),
 		.resources = ab8500_debug_resources,
+=======
+>>>>>>> v4.9.227
 	},
 #endif
 	{
@@ -1082,27 +1144,39 @@ static const struct mfd_cell ab8500_devs[] = {
 	{
 		.name = "ab8500-gpadc",
 		.of_compatible = "stericsson,ab8500-gpadc",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_gpadc_resources),
 		.resources = ab8500_gpadc_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab8500-rtc",
 		.of_compatible = "stericsson,ab8500-rtc",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_rtc_resources),
 		.resources = ab8500_rtc_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab8500-acc-det",
 		.of_compatible = "stericsson,ab8500-acc-det",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_av_acc_detect_resources),
 		.resources = ab8500_av_acc_detect_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 
 		.name = "ab8500-poweron-key",
 		.of_compatible = "stericsson,ab8500-poweron-key",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_poweronkey_db_resources),
 		.resources = ab8500_poweronkey_db_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab8500-pwm",
@@ -1130,14 +1204,20 @@ static const struct mfd_cell ab8500_devs[] = {
 	{
 		.name = "abx500-temp",
 		.of_compatible = "stericsson,abx500-temp",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_temp_resources),
 		.resources = ab8500_temp_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab8500-usb",
 		.of_compatible = "stericsson,ab8500-usb",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_usb_resources),
 		.resources = ab8500_usb_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab8500-codec",
@@ -1149,8 +1229,11 @@ static const struct mfd_cell ab9540_devs[] = {
 #ifdef CONFIG_DEBUG_FS
 	{
 		.name = "ab8500-debug",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_debug_resources),
 		.resources = ab8500_debug_resources,
+=======
+>>>>>>> v4.9.227
 	},
 #endif
 	{
@@ -1169,6 +1252,7 @@ static const struct mfd_cell ab9540_devs[] = {
 	{
 		.name = "ab8500-gpadc",
 		.of_compatible = "stericsson,ab8500-gpadc",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_gpadc_resources),
 		.resources = ab8500_gpadc_resources,
 	},
@@ -1186,6 +1270,17 @@ static const struct mfd_cell ab9540_devs[] = {
 		.name = "ab8500-poweron-key",
 		.num_resources = ARRAY_SIZE(ab8500_poweronkey_db_resources),
 		.resources = ab8500_poweronkey_db_resources,
+=======
+	},
+	{
+		.name = "ab8500-rtc",
+	},
+	{
+		.name = "ab8500-acc-det",
+	},
+	{
+		.name = "ab8500-poweron-key",
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab8500-pwm",
@@ -1193,8 +1288,11 @@ static const struct mfd_cell ab9540_devs[] = {
 	},
 	{
 		.name = "abx500-temp",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_temp_resources),
 		.resources = ab8500_temp_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "pinctrl-ab9540",
@@ -1202,16 +1300,22 @@ static const struct mfd_cell ab9540_devs[] = {
 	},
 	{
 		.name = "ab9540-usb",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_usb_resources),
 		.resources = ab8500_usb_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab9540-codec",
 	},
 	{
 		.name = "ab-iddet",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8505_iddet_resources),
 		.resources = ab8505_iddet_resources,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -1220,8 +1324,11 @@ static const struct mfd_cell ab8505_devs[] = {
 #ifdef CONFIG_DEBUG_FS
 	{
 		.name = "ab8500-debug",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_debug_resources),
 		.resources = ab8500_debug_resources,
+=======
+>>>>>>> v4.9.227
 	},
 #endif
 	{
@@ -1237,6 +1344,7 @@ static const struct mfd_cell ab8505_devs[] = {
 	{
 		.name = "ab8500-gpadc",
 		.of_compatible = "stericsson,ab8500-gpadc",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8505_gpadc_resources),
 		.resources = ab8505_gpadc_resources,
 	},
@@ -1254,6 +1362,17 @@ static const struct mfd_cell ab8505_devs[] = {
 		.name = "ab8500-poweron-key",
 		.num_resources = ARRAY_SIZE(ab8500_poweronkey_db_resources),
 		.resources = ab8500_poweronkey_db_resources,
+=======
+	},
+	{
+		.name = "ab8500-rtc",
+	},
+	{
+		.name = "ab8500-acc-det",
+	},
+	{
+		.name = "ab8500-poweron-key",
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab8500-pwm",
@@ -1264,16 +1383,22 @@ static const struct mfd_cell ab8505_devs[] = {
 	},
 	{
 		.name = "ab8500-usb",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_usb_resources),
 		.resources = ab8500_usb_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab8500-codec",
 	},
 	{
 		.name = "ab-iddet",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8505_iddet_resources),
 		.resources = ab8505_iddet_resources,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -1281,8 +1406,11 @@ static const struct mfd_cell ab8540_devs[] = {
 #ifdef CONFIG_DEBUG_FS
 	{
 		.name = "ab8500-debug",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_debug_resources),
 		.resources = ab8500_debug_resources,
+=======
+>>>>>>> v4.9.227
 	},
 #endif
 	{
@@ -1301,6 +1429,7 @@ static const struct mfd_cell ab8540_devs[] = {
 	{
 		.name = "ab8500-gpadc",
 		.of_compatible = "stericsson,ab8500-gpadc",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8505_gpadc_resources),
 		.resources = ab8505_gpadc_resources,
 	},
@@ -1313,6 +1442,14 @@ static const struct mfd_cell ab8540_devs[] = {
 		.name = "ab8500-poweron-key",
 		.num_resources = ARRAY_SIZE(ab8500_poweronkey_db_resources),
 		.resources = ab8500_poweronkey_db_resources,
+=======
+	},
+	{
+		.name = "ab8500-acc-det",
+	},
+	{
+		.name = "ab8500-poweron-key",
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab8500-pwm",
@@ -1320,24 +1457,33 @@ static const struct mfd_cell ab8540_devs[] = {
 	},
 	{
 		.name = "abx500-temp",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_temp_resources),
 		.resources = ab8500_temp_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "pinctrl-ab8540",
 	},
 	{
 		.name = "ab8540-usb",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_usb_resources),
 		.resources = ab8500_usb_resources,
+=======
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "ab8540-codec",
 	},
 	{
 		.name = "ab-iddet",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8505_iddet_resources),
 		.resources = ab8505_iddet_resources,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -1345,8 +1491,11 @@ static const struct mfd_cell ab8540_cut1_devs[] = {
 	{
 		.name = "ab8500-rtc",
 		.of_compatible = "stericsson,ab8500-rtc",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8500_rtc_resources),
 		.resources = ab8500_rtc_resources,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -1354,8 +1503,11 @@ static const struct mfd_cell ab8540_cut2_devs[] = {
 	{
 		.name = "ab8540-rtc",
 		.of_compatible = "stericsson,ab8540-rtc",
+<<<<<<< HEAD
 		.num_resources = ARRAY_SIZE(ab8540_rtc_resources),
 		.resources = ab8540_rtc_resources,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -1553,7 +1705,11 @@ static struct attribute_group ab9540_attr_group = {
 
 static int ab8500_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	static const char *switch_off_status[] = {
+=======
+	static const char * const switch_off_status[] = {
+>>>>>>> v4.9.227
 		"Swoff bit programming",
 		"Thermal protection activation",
 		"Vbat lower then BattOk falling threshold",
@@ -1562,7 +1718,11 @@ static int ab8500_probe(struct platform_device *pdev)
 		"Battery level lower than power on reset threshold",
 		"Power on key 1 pressed longer than 10 seconds",
 		"DB8500 thermal shutdown"};
+<<<<<<< HEAD
 	static const char *turn_on_status[] = {
+=======
+	static const char * const turn_on_status[] = {
+>>>>>>> v4.9.227
 		"Battery rising (Vbat)",
 		"Power On Key 1 dbF",
 		"Power On Key 2 dbF",
@@ -1571,7 +1731,10 @@ static int ab8500_probe(struct platform_device *pdev)
 		"Vbus Detect (USB)",
 		"USB ID Detect",
 		"UART Factory Mode Detect"};
+<<<<<<< HEAD
 	struct ab8500_platform_data *plat = dev_get_platdata(&pdev->dev);
+=======
+>>>>>>> v4.9.227
 	const struct platform_device_id *platid = platform_get_device_id(pdev);
 	enum ab8500_version version = AB8500_VERSION_UNDEFINED;
 	struct device_node *np = pdev->dev.of_node;
@@ -1703,9 +1866,12 @@ static int ab8500_probe(struct platform_device *pdev)
 		pr_cont("None\n");
 	}
 
+<<<<<<< HEAD
 	if (plat && plat->init)
 		plat->init(ab8500);
 
+=======
+>>>>>>> v4.9.227
 	if (is_ab9540(ab8500)) {
 		ret = get_register_interruptible(ab8500, AB8500_CHARGER,
 			AB8500_CH_USBCH_STAT1_REG, &value);
@@ -1754,12 +1920,15 @@ static int ab8500_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_FS
 	/* Pass to debugfs */
 	ab8500_debug_resources[0].start = ab8500->irq;
 	ab8500_debug_resources[0].end = ab8500->irq;
 #endif
 
+=======
+>>>>>>> v4.9.227
 	if (is_ab9540(ab8500))
 		ret = mfd_add_devices(ab8500->dev, 0, ab9540_devs,
 				ARRAY_SIZE(ab9540_devs), NULL,
@@ -1848,7 +2017,10 @@ static const struct platform_device_id ab8500_id[] = {
 static struct platform_driver ab8500_core_driver = {
 	.driver = {
 		.name = "ab8500-core",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe	= ab8500_probe,
 	.remove	= ab8500_remove,

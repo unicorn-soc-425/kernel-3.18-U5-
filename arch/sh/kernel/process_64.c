@@ -288,7 +288,11 @@ void show_regs(struct pt_regs *regs)
 /*
  * Free current thread data structures etc..
  */
+<<<<<<< HEAD
 void exit_thread(void)
+=======
+void exit_thread(struct task_struct *tsk)
+>>>>>>> v4.9.227
 {
 	/*
 	 * See arch/sparc/kernel/process.c for the precedent for doing
@@ -307,9 +311,14 @@ void exit_thread(void)
 	 * which it would get safely nulled.
 	 */
 #ifdef CONFIG_SH_FPU
+<<<<<<< HEAD
 	if (last_task_used_math == current) {
 		last_task_used_math = NULL;
 	}
+=======
+	if (last_task_used_math == tsk)
+		last_task_used_math = NULL;
+>>>>>>> v4.9.227
 #endif
 }
 

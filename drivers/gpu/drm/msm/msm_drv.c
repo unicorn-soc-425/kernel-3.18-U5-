@@ -2,8 +2,11 @@
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
  *
+<<<<<<< HEAD
  * Copyright (c) 2017-2018 The Linux Foundation. All rights reserved.
  *
+=======
+>>>>>>> v4.9.227
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -18,11 +21,29 @@
  */
 
 #include "msm_drv.h"
+<<<<<<< HEAD
 #include "msm_gpu.h"
 #include "msm_kms.h"
 #include "display_manager.h"
 #include "sde_wb.h"
 #include "msm_mmu.h"
+=======
+#include "msm_debugfs.h"
+#include "msm_fence.h"
+#include "msm_gpu.h"
+#include "msm_kms.h"
+
+
+/*
+ * MSM driver version:
+ * - 1.0.0 - initial interface
+ * - 1.1.0 - adds madvise, and support for submits with > 4 cmd buffers
+ * - 1.2.0 - adds explicit fence support for submit ioctl
+ */
+#define MSM_VERSION_MAJOR	1
+#define MSM_VERSION_MINOR	2
+#define MSM_VERSION_PATCHLEVEL	0
+>>>>>>> v4.9.227
 
 static void msm_fb_output_poll_changed(struct drm_device *dev)
 {
@@ -34,7 +55,11 @@ static void msm_fb_output_poll_changed(struct drm_device *dev)
 static const struct drm_mode_config_funcs mode_config_funcs = {
 	.fb_create = msm_framebuffer_create,
 	.output_poll_changed = msm_fb_output_poll_changed,
+<<<<<<< HEAD
 	.atomic_check = drm_atomic_helper_check,
+=======
+	.atomic_check = msm_atomic_check,
+>>>>>>> v4.9.227
 	.atomic_commit = msm_atomic_commit,
 };
 
@@ -66,7 +91,11 @@ module_param(fbdev, bool, 0600);
 #endif
 
 static char *vram = "16m";
+<<<<<<< HEAD
 MODULE_PARM_DESC(vram, "Configure VRAM size (for devices without IOMMU/GPUMMU");
+=======
+MODULE_PARM_DESC(vram, "Configure VRAM size (for devices without IOMMU/GPUMMU)");
+>>>>>>> v4.9.227
 module_param(vram, charp, 0);
 
 /*
@@ -99,8 +128,12 @@ void __iomem *msm_ioremap(struct platform_device *pdev, const char *name,
 	}
 
 	if (reglog)
+<<<<<<< HEAD
 		pr_debug("IO:region %s %pK %08lx\n",
 			dbgname, ptr, size);
+=======
+		printk(KERN_DEBUG "IO:region %s %p %08lx\n", dbgname, ptr, size);
+>>>>>>> v4.9.227
 
 	return ptr;
 }
@@ -108,7 +141,11 @@ void __iomem *msm_ioremap(struct platform_device *pdev, const char *name,
 void msm_writel(u32 data, void __iomem *addr)
 {
 	if (reglog)
+<<<<<<< HEAD
 		pr_debug("IO:W %pK %08x\n", addr, data);
+=======
+		printk(KERN_DEBUG "IO:W %p %08x\n", addr, data);
+>>>>>>> v4.9.227
 	writel(data, addr);
 }
 
@@ -116,7 +153,11 @@ u32 msm_readl(const void __iomem *addr)
 {
 	u32 val = readl(addr);
 	if (reglog)
+<<<<<<< HEAD
 		pr_debug("IO:R %pK %08x\n", addr, val);
+=======
+		printk(KERN_ERR "IO:R %p %08x\n", addr, val);
+>>>>>>> v4.9.227
 	return val;
 }
 
@@ -126,7 +167,11 @@ struct vblank_event {
 	bool enable;
 };
 
+<<<<<<< HEAD
 static void vblank_ctrl_worker(struct kthread_work *work)
+=======
+static void vblank_ctrl_worker(struct work_struct *work)
+>>>>>>> v4.9.227
 {
 	struct msm_vblank_ctrl *vbl_ctrl = container_of(work,
 						struct msm_vblank_ctrl, work);
@@ -174,11 +219,16 @@ static int vblank_ctrl_queue_work(struct msm_drm_private *priv,
 	list_add_tail(&vbl_ev->node, &vbl_ctrl->event_list);
 	spin_unlock_irqrestore(&vbl_ctrl->lock, flags);
 
+<<<<<<< HEAD
 	queue_kthread_work(&priv->disp_thread[crtc_id].worker, &vbl_ctrl->work);
+=======
+	queue_work(priv->wq, &vbl_ctrl->work);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * DRM operations:
  */
@@ -186,22 +236,37 @@ static int vblank_ctrl_queue_work(struct msm_drm_private *priv,
 static int msm_unload(struct drm_device *dev)
 {
 	struct msm_drm_private *priv = dev->dev_private;
+=======
+static int msm_drm_uninit(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct drm_device *ddev = platform_get_drvdata(pdev);
+	struct msm_drm_private *priv = ddev->dev_private;
+>>>>>>> v4.9.227
 	struct msm_kms *kms = priv->kms;
 	struct msm_gpu *gpu = priv->gpu;
 	struct msm_vblank_ctrl *vbl_ctrl = &priv->vblank_ctrl;
 	struct vblank_event *vbl_ev, *tmp;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> v4.9.227
 
 	/* We must cancel and cleanup any pending vblank enable/disable
 	 * work before drm_irq_uninstall() to avoid work re-enabling an
 	 * irq after uninstall has disabled it.
 	 */
+<<<<<<< HEAD
 	flush_kthread_work(&vbl_ctrl->work);
+=======
+	cancel_work_sync(&vbl_ctrl->work);
+>>>>>>> v4.9.227
 	list_for_each_entry_safe(vbl_ev, tmp, &vbl_ctrl->event_list, node) {
 		list_del(&vbl_ev->node);
 		kfree(vbl_ev);
 	}
 
+<<<<<<< HEAD
 	/* clean up display commit worker threads */
 	for (i = 0; i < priv->num_crtcs; i++) {
 		if (priv->disp_thread[i].thread) {
@@ -218,10 +283,28 @@ static int msm_unload(struct drm_device *dev)
 	pm_runtime_get_sync(dev->dev);
 	drm_irq_uninstall(dev);
 	pm_runtime_put_sync(dev->dev);
+=======
+	msm_gem_shrinker_cleanup(ddev);
+
+	drm_kms_helper_poll_fini(ddev);
+
+	drm_dev_unregister(ddev);
+
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+	if (fbdev && priv->fbdev)
+		msm_fbdev_free(ddev);
+#endif
+	drm_mode_config_cleanup(ddev);
+
+	pm_runtime_get_sync(dev);
+	drm_irq_uninstall(ddev);
+	pm_runtime_put_sync(dev);
+>>>>>>> v4.9.227
 
 	flush_workqueue(priv->wq);
 	destroy_workqueue(priv->wq);
 
+<<<<<<< HEAD
 	if (kms) {
 		pm_runtime_disable(dev->dev);
 		kms->funcs->destroy(kms);
@@ -231,10 +314,23 @@ static int msm_unload(struct drm_device *dev)
 		mutex_lock(&dev->struct_mutex);
 		gpu->funcs->pm_suspend(gpu);
 		mutex_unlock(&dev->struct_mutex);
+=======
+	flush_workqueue(priv->atomic_wq);
+	destroy_workqueue(priv->atomic_wq);
+
+	if (kms && kms->funcs)
+		kms->funcs->destroy(kms);
+
+	if (gpu) {
+		mutex_lock(&ddev->struct_mutex);
+		gpu->funcs->pm_suspend(gpu);
+		mutex_unlock(&ddev->struct_mutex);
+>>>>>>> v4.9.227
 		gpu->funcs->destroy(gpu);
 	}
 
 	if (priv->vram.paddr) {
+<<<<<<< HEAD
 		DEFINE_DMA_ATTRS(attrs);
 		dma_set_attr(DMA_ATTR_NO_KERNEL_MAPPING, &attrs);
 		drm_mm_takedown(&priv->vram.mm);
@@ -245,12 +341,27 @@ static int msm_unload(struct drm_device *dev)
 	component_unbind_all(dev->dev, dev);
 
 	dev->dev_private = NULL;
+=======
+		unsigned long attrs = DMA_ATTR_NO_KERNEL_MAPPING;
+		drm_mm_takedown(&priv->vram.mm);
+		dma_free_attrs(dev, priv->vram.size, NULL,
+			       priv->vram.paddr, attrs);
+	}
+
+	component_unbind_all(dev, ddev);
+
+	msm_mdss_destroy(ddev);
+
+	ddev->dev_private = NULL;
+	drm_dev_unref(ddev);
+>>>>>>> v4.9.227
 
 	kfree(priv);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #define KMS_MDP4 0
 #define KMS_MDP5 1
 #define KMS_SDE  2
@@ -274,6 +385,13 @@ static int get_mdp_ver(struct platform_device *pdev)
 		return (int)(unsigned long)match->data;
 #endif
 	return KMS_MDP4;
+=======
+static int get_mdp_ver(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+
+	return (int) (unsigned long) of_device_get_match_data(dev);
+>>>>>>> v4.9.227
 }
 
 #include <linux/of_address.h>
@@ -281,11 +399,18 @@ static int get_mdp_ver(struct platform_device *pdev)
 static int msm_init_vram(struct drm_device *dev)
 {
 	struct msm_drm_private *priv = dev->dev_private;
+<<<<<<< HEAD
 	unsigned long size = 0;
 	int ret = 0;
 	dma_addr_t start;
 
 #ifdef CONFIG_OF
+=======
+	struct device_node *node;
+	unsigned long size = 0;
+	int ret = 0;
+
+>>>>>>> v4.9.227
 	/* In the device-tree world, we could have a 'memory-region'
 	 * phandle, which gives us a link to our "vram".  Allocating
 	 * is all nicely abstracted behind the dma api, but we need
@@ -302,12 +427,16 @@ static int msm_init_vram(struct drm_device *dev)
 	 *     as corruption on screen before we have a chance to
 	 *     load and do initial modeset)
 	 */
+<<<<<<< HEAD
 	struct device_node *node;
+=======
+>>>>>>> v4.9.227
 
 	node = of_parse_phandle(dev->dev->of_node, "memory-region", 0);
 	if (node) {
 		struct resource r;
 		ret = of_address_to_resource(node, 0, &r);
+<<<<<<< HEAD
 		if (ret)
 			return ret;
 		size = r.end - r.start;
@@ -321,20 +450,55 @@ static int msm_init_vram(struct drm_device *dev)
 	 * mach-msm:
 	 */
 	if (!iommu_present(&platform_bus_type)) {
+=======
+		of_node_put(node);
+		if (ret)
+			return ret;
+		size = r.end - r.start;
+		DRM_INFO("using VRAM carveout: %lx@%pa\n", size, &r.start);
+
+		/* if we have no IOMMU, then we need to use carveout allocator.
+		 * Grab the entire CMA chunk carved out in early startup in
+		 * mach-msm:
+		 */
+	} else if (!iommu_present(&platform_bus_type)) {
+>>>>>>> v4.9.227
 		DRM_INFO("using %s VRAM carveout\n", vram);
 		size = memparse(vram, NULL);
 	}
 
 	if (size) {
+<<<<<<< HEAD
+=======
+		unsigned long attrs = 0;
+		void *p;
+
+>>>>>>> v4.9.227
 		priv->vram.size = size;
 
 		drm_mm_init(&priv->vram.mm, 0, (size >> PAGE_SHIFT) - 1);
 
+<<<<<<< HEAD
 		/*
 		 * The carveout physical memory region is defined in
 		 * dtsi file. Don't need to allocate from dma.
 		 */
 		priv->vram.paddr = start;
+=======
+		attrs |= DMA_ATTR_NO_KERNEL_MAPPING;
+		attrs |= DMA_ATTR_WRITE_COMBINE;
+
+		/* note that for no-kernel-mapping, the vaddr returned
+		 * is bogus, but non-null if allocation succeeded:
+		 */
+		p = dma_alloc_attrs(dev->dev, size,
+				&priv->vram.paddr, GFP_KERNEL, attrs);
+		if (!p) {
+			dev_err(dev->dev, "failed to allocate VRAM\n");
+			priv->vram.paddr = 0;
+			return -ENOMEM;
+		}
+>>>>>>> v4.9.227
 
 		dev_info(dev->dev, "VRAM: %08x->%08x\n",
 				(uint32_t)priv->vram.paddr,
@@ -344,6 +508,7 @@ static int msm_init_vram(struct drm_device *dev)
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef MSM_FORCE_SUBMIT
 static inline void msm_force_submit(struct msm_drm_private *priv)
 {
@@ -403,6 +568,82 @@ static int msm_load(struct drm_device *dev, unsigned long flags)
 		break;
 	case KMS_SDE:
 		kms = sde_kms_init(dev);
+=======
+static int msm_drm_init(struct device *dev, struct drm_driver *drv)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct drm_device *ddev;
+	struct msm_drm_private *priv;
+	struct msm_kms *kms;
+	int ret;
+
+	ddev = drm_dev_alloc(drv, dev);
+	if (IS_ERR(ddev)) {
+		dev_err(dev, "failed to allocate drm_device\n");
+		return PTR_ERR(ddev);
+	}
+
+	platform_set_drvdata(pdev, ddev);
+	ddev->platformdev = pdev;
+
+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+	if (!priv) {
+		drm_dev_unref(ddev);
+		return -ENOMEM;
+	}
+
+	ddev->dev_private = priv;
+	priv->dev = ddev;
+
+	ret = msm_mdss_init(ddev);
+	if (ret) {
+		kfree(priv);
+		drm_dev_unref(ddev);
+		return ret;
+	}
+
+	priv->wq = alloc_ordered_workqueue("msm", 0);
+	priv->atomic_wq = alloc_ordered_workqueue("msm:atomic", 0);
+	init_waitqueue_head(&priv->pending_crtcs_event);
+
+	INIT_LIST_HEAD(&priv->inactive_list);
+	INIT_LIST_HEAD(&priv->vblank_ctrl.event_list);
+	INIT_WORK(&priv->vblank_ctrl.work, vblank_ctrl_worker);
+	spin_lock_init(&priv->vblank_ctrl.lock);
+
+	drm_mode_config_init(ddev);
+
+	/* Bind all our sub-components: */
+	ret = component_bind_all(dev, ddev);
+	if (ret) {
+		msm_mdss_destroy(ddev);
+		kfree(priv);
+		drm_dev_unref(ddev);
+		return ret;
+	}
+
+	ret = msm_init_vram(ddev);
+	if (ret)
+		goto fail;
+
+	if (!dev->dma_parms) {
+		dev->dma_parms = devm_kzalloc(dev, sizeof(*dev->dma_parms),
+					      GFP_KERNEL);
+		if (!dev->dma_parms)
+			return -ENOMEM;
+	}
+	dma_set_max_seg_size(dev, DMA_BIT_MASK(32));
+
+	msm_gem_shrinker_init(ddev);
+
+	switch (get_mdp_ver(pdev)) {
+	case 4:
+		kms = mdp4_kms_init(ddev);
+		priv->kms = kms;
+		break;
+	case 5:
+		kms = mdp5_kms_init(ddev);
+>>>>>>> v4.9.227
 		break;
 	default:
 		kms = ERR_PTR(-ENODEV);
@@ -416,11 +657,16 @@ static int msm_load(struct drm_device *dev, unsigned long flags)
 		 * and (for example) use dmabuf/prime to share buffers with
 		 * imx drm driver on iMX5
 		 */
+<<<<<<< HEAD
 		dev_err(dev->dev, "failed to load kms\n");
+=======
+		dev_err(dev, "failed to load kms\n");
+>>>>>>> v4.9.227
 		ret = PTR_ERR(kms);
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	priv->kms = kms;
 
 	/* initialize commit thread structure */
@@ -442,19 +688,43 @@ static int msm_load(struct drm_device *dev, unsigned long flags)
 				kthread_stop(priv->disp_thread[i].thread);
 				priv->disp_thread[i].thread = NULL;
 			}
+=======
+	if (kms) {
+		ret = kms->funcs->hw_init(kms);
+		if (ret) {
+			dev_err(dev, "kms hw init failed: %d\n", ret);
+>>>>>>> v4.9.227
 			goto fail;
 		}
 	}
 
+<<<<<<< HEAD
 	if (kms) {
 		pm_runtime_enable(dev->dev);
 		ret = kms->funcs->hw_init(kms);
 		if (ret) {
 			dev_err(dev->dev, "kms hw init failed: %d\n", ret);
+=======
+	ddev->mode_config.funcs = &mode_config_funcs;
+
+	ret = drm_vblank_init(ddev, priv->num_crtcs);
+	if (ret < 0) {
+		dev_err(dev, "failed to initialize vblank\n");
+		goto fail;
+	}
+
+	if (kms) {
+		pm_runtime_get_sync(dev);
+		ret = drm_irq_install(ddev, kms->irq);
+		pm_runtime_put_sync(dev);
+		if (ret < 0) {
+			dev_err(dev, "failed to install IRQ handler\n");
+>>>>>>> v4.9.227
 			goto fail;
 		}
 	}
 
+<<<<<<< HEAD
 	dev->mode_config.funcs = &mode_config_funcs;
 
 	ret = drm_vblank_init(dev, priv->num_crtcs);
@@ -483,10 +753,29 @@ static int msm_load(struct drm_device *dev, unsigned long flags)
 		goto fail;
 
 	drm_kms_helper_poll_init(dev);
+=======
+	ret = drm_dev_register(ddev, 0);
+	if (ret)
+		goto fail;
+
+	drm_mode_config_reset(ddev);
+
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+	if (fbdev)
+		priv->fbdev = msm_fbdev_init(ddev);
+#endif
+
+	ret = msm_debugfs_late_init(ddev);
+	if (ret)
+		goto fail;
+
+	drm_kms_helper_poll_init(ddev);
+>>>>>>> v4.9.227
 
 	return 0;
 
 fail:
+<<<<<<< HEAD
 	msm_unload(dev);
 	return ret;
 }
@@ -496,6 +785,16 @@ static void load_gpu(struct drm_device *dev)
 {
 }
 #else
+=======
+	msm_drm_uninit(dev);
+	return ret;
+}
+
+/*
+ * DRM operations:
+ */
+
+>>>>>>> v4.9.227
 static void load_gpu(struct drm_device *dev)
 {
 	static DEFINE_MUTEX(init_lock);
@@ -508,7 +807,10 @@ static void load_gpu(struct drm_device *dev)
 
 	mutex_unlock(&init_lock);
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static int msm_open(struct drm_device *dev, struct drm_file *file)
 {
@@ -525,6 +827,7 @@ static int msm_open(struct drm_device *dev, struct drm_file *file)
 
 	file->driver_priv = ctx;
 
+<<<<<<< HEAD
 	if (dev && dev->dev_private) {
 		struct msm_drm_private *priv = dev->dev_private;
 		struct msm_kms *kms;
@@ -533,6 +836,8 @@ static int msm_open(struct drm_device *dev, struct drm_file *file)
 		if (kms && kms->funcs && kms->funcs->postopen)
 			kms->funcs->postopen(kms, file);
 	}
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -540,10 +845,13 @@ static void msm_preclose(struct drm_device *dev, struct drm_file *file)
 {
 	struct msm_drm_private *priv = dev->dev_private;
 	struct msm_file_private *ctx = file->driver_priv;
+<<<<<<< HEAD
 	struct msm_kms *kms = priv->kms;
 
 	if (kms)
 		kms->funcs->preclose(kms, file);
+=======
+>>>>>>> v4.9.227
 
 	mutex_lock(&dev->struct_mutex);
 	if (ctx == priv->lastctx)
@@ -599,7 +907,11 @@ static int msm_enable_vblank(struct drm_device *dev, unsigned int pipe)
 	struct msm_kms *kms = priv->kms;
 	if (!kms)
 		return -ENXIO;
+<<<<<<< HEAD
 	DBG("dev=%pK crtc=%u", dev, pipe);
+=======
+	DBG("dev=%p, crtc=%u", dev, pipe);
+>>>>>>> v4.9.227
 	return vblank_ctrl_queue_work(priv, pipe, true);
 }
 
@@ -609,11 +921,16 @@ static void msm_disable_vblank(struct drm_device *dev, unsigned int pipe)
 	struct msm_kms *kms = priv->kms;
 	if (!kms)
 		return;
+<<<<<<< HEAD
 	DBG("dev=%pK, crtc=%u", dev, pipe);
+=======
+	DBG("dev=%p, crtc=%u", dev, pipe);
+>>>>>>> v4.9.227
 	vblank_ctrl_queue_work(priv, pipe, false);
 }
 
 /*
+<<<<<<< HEAD
  * DRM debugfs:
  */
 
@@ -873,6 +1190,8 @@ void __msm_fence_worker(struct work_struct *work)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * DRM ioctls:
  */
 
@@ -929,7 +1248,11 @@ static int msm_ioctl_gem_cpu_prep(struct drm_device *dev, void *data,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file, args->handle);
+=======
+	obj = drm_gem_object_lookup(file, args->handle);
+>>>>>>> v4.9.227
 	if (!obj)
 		return -ENOENT;
 
@@ -947,7 +1270,11 @@ static int msm_ioctl_gem_cpu_fini(struct drm_device *dev, void *data,
 	struct drm_gem_object *obj;
 	int ret;
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file, args->handle);
+=======
+	obj = drm_gem_object_lookup(file, args->handle);
+>>>>>>> v4.9.227
 	if (!obj)
 		return -ENOENT;
 
@@ -965,6 +1292,7 @@ static int msm_ioctl_gem_info(struct drm_device *dev, void *data,
 	struct drm_gem_object *obj;
 	int ret = 0;
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file, args->handle);
 	if (!obj)
 		return -ENOENT;
@@ -978,6 +1306,16 @@ static int msm_ioctl_gem_info(struct drm_device *dev, void *data,
 	} else {
 		args->offset = msm_gem_mmap_offset(obj);
 	}
+=======
+	if (args->pad)
+		return -EINVAL;
+
+	obj = drm_gem_object_lookup(file, args->handle);
+	if (!obj)
+		return -ENOENT;
+
+	args->offset = msm_gem_mmap_offset(obj);
+>>>>>>> v4.9.227
 
 	drm_gem_object_unreference_unlocked(obj);
 
@@ -987,6 +1325,10 @@ static int msm_ioctl_gem_info(struct drm_device *dev, void *data,
 static int msm_ioctl_wait_fence(struct drm_device *dev, void *data,
 		struct drm_file *file)
 {
+<<<<<<< HEAD
+=======
+	struct msm_drm_private *priv = dev->dev_private;
+>>>>>>> v4.9.227
 	struct drm_msm_wait_fence *args = data;
 	ktime_t timeout = to_ktime(args->timeout);
 
@@ -995,6 +1337,7 @@ static int msm_ioctl_wait_fence(struct drm_device *dev, void *data,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	return msm_wait_fence(dev, args->fence, &timeout, true);
 }
 
@@ -1123,6 +1466,61 @@ static const struct drm_ioctl_desc msm_ioctls[] = {
 				DRM_UNLOCKED|DRM_AUTH|DRM_RENDER_ALLOW),
 	DRM_IOCTL_DEF_DRV(MSM_PERFCOUNTER_PUT, msm_ioctl_perfcounter_put,
 				DRM_UNLOCKED|DRM_AUTH|DRM_RENDER_ALLOW),
+=======
+	if (!priv->gpu)
+		return 0;
+
+	return msm_wait_fence(priv->gpu->fctx, args->fence, &timeout, true);
+}
+
+static int msm_ioctl_gem_madvise(struct drm_device *dev, void *data,
+		struct drm_file *file)
+{
+	struct drm_msm_gem_madvise *args = data;
+	struct drm_gem_object *obj;
+	int ret;
+
+	switch (args->madv) {
+	case MSM_MADV_DONTNEED:
+	case MSM_MADV_WILLNEED:
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	ret = mutex_lock_interruptible(&dev->struct_mutex);
+	if (ret)
+		return ret;
+
+	obj = drm_gem_object_lookup(file, args->handle);
+	if (!obj) {
+		ret = -ENOENT;
+		goto unlock;
+	}
+
+	ret = msm_gem_madvise(obj, args->madv);
+	if (ret >= 0) {
+		args->retained = ret;
+		ret = 0;
+	}
+
+	drm_gem_object_unreference(obj);
+
+unlock:
+	mutex_unlock(&dev->struct_mutex);
+	return ret;
+}
+
+static const struct drm_ioctl_desc msm_ioctls[] = {
+	DRM_IOCTL_DEF_DRV(MSM_GET_PARAM,    msm_ioctl_get_param,    DRM_AUTH|DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(MSM_GEM_NEW,      msm_ioctl_gem_new,      DRM_AUTH|DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(MSM_GEM_INFO,     msm_ioctl_gem_info,     DRM_AUTH|DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(MSM_GEM_CPU_PREP, msm_ioctl_gem_cpu_prep, DRM_AUTH|DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(MSM_GEM_CPU_FINI, msm_ioctl_gem_cpu_fini, DRM_AUTH|DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(MSM_GEM_SUBMIT,   msm_ioctl_gem_submit,   DRM_AUTH|DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(MSM_WAIT_FENCE,   msm_ioctl_wait_fence,   DRM_AUTH|DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(MSM_GEM_MADVISE,  msm_ioctl_gem_madvise,  DRM_AUTH|DRM_RENDER_ALLOW),
+>>>>>>> v4.9.227
 };
 
 static const struct vm_operations_struct vm_ops = {
@@ -1152,12 +1550,18 @@ static struct drm_driver msm_driver = {
 				DRIVER_RENDER |
 				DRIVER_ATOMIC |
 				DRIVER_MODESET,
+<<<<<<< HEAD
 	.load               = msm_load,
 	.unload             = msm_unload,
 	.open               = msm_open,
 	.preclose           = msm_preclose,
 	.lastclose          = msm_lastclose,
 	.set_busid          = drm_platform_set_busid,
+=======
+	.open               = msm_open,
+	.preclose           = msm_preclose,
+	.lastclose          = msm_lastclose,
+>>>>>>> v4.9.227
 	.irq_handler        = msm_irq,
 	.irq_preinstall     = msm_irq_preinstall,
 	.irq_postinstall    = msm_irq_postinstall,
@@ -1174,6 +1578,10 @@ static struct drm_driver msm_driver = {
 	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
 	.gem_prime_export   = drm_gem_prime_export,
 	.gem_prime_import   = drm_gem_prime_import,
+<<<<<<< HEAD
+=======
+	.gem_prime_res_obj  = msm_gem_prime_res_obj,
+>>>>>>> v4.9.227
 	.gem_prime_pin      = msm_gem_prime_pin,
 	.gem_prime_unpin    = msm_gem_prime_unpin,
 	.gem_prime_get_sg_table = msm_gem_prime_get_sg_table,
@@ -1188,11 +1596,20 @@ static struct drm_driver msm_driver = {
 	.ioctls             = msm_ioctls,
 	.num_ioctls         = DRM_MSM_NUM_IOCTLS,
 	.fops               = &fops,
+<<<<<<< HEAD
 	.name               = "msm_drm",
 	.desc               = "MSM Snapdragon DRM",
 	.date               = "20130625",
 	.major              = 1,
 	.minor              = 0,
+=======
+	.name               = "msm",
+	.desc               = "MSM Snapdragon DRM",
+	.date               = "20130625",
+	.major              = MSM_VERSION_MAJOR,
+	.minor              = MSM_VERSION_MINOR,
+	.patchlevel         = MSM_VERSION_PATCHLEVEL,
+>>>>>>> v4.9.227
 };
 
 #ifdef CONFIG_PM_SLEEP
@@ -1223,15 +1640,22 @@ static const struct dev_pm_ops msm_pm_ops = {
  * Componentized driver support:
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 /* NOTE: the CONFIG_OF case duplicates the same code as exynos or imx
  * (or probably any other).. so probably some room for some helpers
+=======
+/*
+ * NOTE: duplication of the same code as exynos or imx (or probably any other).
+ * so probably some room for some helpers
+>>>>>>> v4.9.227
  */
 static int compare_of(struct device *dev, void *data)
 {
 	return dev->of_node == data;
 }
 
+<<<<<<< HEAD
 static int add_components(struct device *dev, struct component_match **matchptr,
 		const char *name)
 {
@@ -1246,10 +1670,76 @@ static int add_components(struct device *dev, struct component_match **matchptr,
 			break;
 
 		component_match_add(dev, matchptr, compare_of, node);
+=======
+/*
+ * Identify what components need to be added by parsing what remote-endpoints
+ * our MDP output ports are connected to. In the case of LVDS on MDP4, there
+ * is no external component that we need to add since LVDS is within MDP4
+ * itself.
+ */
+static int add_components_mdp(struct device *mdp_dev,
+			      struct component_match **matchptr)
+{
+	struct device_node *np = mdp_dev->of_node;
+	struct device_node *ep_node;
+	struct device *master_dev;
+
+	/*
+	 * on MDP4 based platforms, the MDP platform device is the component
+	 * master that adds other display interface components to itself.
+	 *
+	 * on MDP5 based platforms, the MDSS platform device is the component
+	 * master that adds MDP5 and other display interface components to
+	 * itself.
+	 */
+	if (of_device_is_compatible(np, "qcom,mdp4"))
+		master_dev = mdp_dev;
+	else
+		master_dev = mdp_dev->parent;
+
+	for_each_endpoint_of_node(np, ep_node) {
+		struct device_node *intf;
+		struct of_endpoint ep;
+		int ret;
+
+		ret = of_graph_parse_endpoint(ep_node, &ep);
+		if (ret) {
+			dev_err(mdp_dev, "unable to parse port endpoint\n");
+			of_node_put(ep_node);
+			return ret;
+		}
+
+		/*
+		 * The LCDC/LVDS port on MDP4 is a speacial case where the
+		 * remote-endpoint isn't a component that we need to add
+		 */
+		if (of_device_is_compatible(np, "qcom,mdp4") &&
+		    ep.port == 0) {
+			of_node_put(ep_node);
+			continue;
+		}
+
+		/*
+		 * It's okay if some of the ports don't have a remote endpoint
+		 * specified. It just means that the port isn't connected to
+		 * any external interface.
+		 */
+		intf = of_graph_get_remote_port_parent(ep_node);
+		if (!intf) {
+			of_node_put(ep_node);
+			continue;
+		}
+
+		component_match_add(master_dev, matchptr, compare_of, intf);
+
+		of_node_put(intf);
+		of_node_put(ep_node);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 }
+<<<<<<< HEAD
 #else
 static int compare_dev(struct device *dev, void *data)
 {
@@ -1260,11 +1750,96 @@ static int compare_dev(struct device *dev, void *data)
 static int msm_drm_bind(struct device *dev)
 {
 	return drm_platform_init(&msm_driver, to_platform_device(dev));
+=======
+
+static int compare_name_mdp(struct device *dev, void *data)
+{
+	return (strstr(dev_name(dev), "mdp") != NULL);
+}
+
+static int add_display_components(struct device *dev,
+				  struct component_match **matchptr)
+{
+	struct device *mdp_dev;
+	int ret;
+
+	/*
+	 * MDP5 based devices don't have a flat hierarchy. There is a top level
+	 * parent: MDSS, and children: MDP5, DSI, HDMI, eDP etc. Populate the
+	 * children devices, find the MDP5 node, and then add the interfaces
+	 * to our components list.
+	 */
+	if (of_device_is_compatible(dev->of_node, "qcom,mdss")) {
+		ret = of_platform_populate(dev->of_node, NULL, NULL, dev);
+		if (ret) {
+			dev_err(dev, "failed to populate children devices\n");
+			return ret;
+		}
+
+		mdp_dev = device_find_child(dev, NULL, compare_name_mdp);
+		if (!mdp_dev) {
+			dev_err(dev, "failed to find MDSS MDP node\n");
+			of_platform_depopulate(dev);
+			return -ENODEV;
+		}
+
+		put_device(mdp_dev);
+
+		/* add the MDP component itself */
+		component_match_add(dev, matchptr, compare_of,
+				    mdp_dev->of_node);
+	} else {
+		/* MDP4 */
+		mdp_dev = dev;
+	}
+
+	ret = add_components_mdp(mdp_dev, matchptr);
+	if (ret)
+		of_platform_depopulate(dev);
+
+	return ret;
+}
+
+/*
+ * We don't know what's the best binding to link the gpu with the drm device.
+ * Fow now, we just hunt for all the possible gpus that we support, and add them
+ * as components.
+ */
+static const struct of_device_id msm_gpu_match[] = {
+	{ .compatible = "qcom,adreno-3xx" },
+	{ .compatible = "qcom,kgsl-3d0" },
+	{ },
+};
+
+static int add_gpu_components(struct device *dev,
+			      struct component_match **matchptr)
+{
+	struct device_node *np;
+
+	np = of_find_matching_node(NULL, msm_gpu_match);
+	if (!np)
+		return 0;
+
+	component_match_add(dev, matchptr, compare_of, np);
+
+	of_node_put(np);
+
+	return 0;
+}
+
+static int msm_drm_bind(struct device *dev)
+{
+	return msm_drm_init(dev, &msm_driver);
+>>>>>>> v4.9.227
 }
 
 static void msm_drm_unbind(struct device *dev)
 {
+<<<<<<< HEAD
 	drm_put_dev(platform_get_drvdata(to_platform_device(dev)));
+=======
+	msm_drm_uninit(dev);
+>>>>>>> v4.9.227
 }
 
 static const struct component_master_ops msm_drm_ops = {
@@ -1279,6 +1854,7 @@ static const struct component_master_ops msm_drm_ops = {
 static int msm_pdev_probe(struct platform_device *pdev)
 {
 	struct component_match *match = NULL;
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 	add_components(&pdev->dev, &match, "connectors");
 	add_components(&pdev->dev, &match, "gpus");
@@ -1308,6 +1884,17 @@ static int msm_pdev_probe(struct platform_device *pdev)
 		component_match_add(&pdev->dev, &match, compare_dev, dev);
 	}
 #endif
+=======
+	int ret;
+
+	ret = add_display_components(&pdev->dev, &match);
+	if (ret)
+		return ret;
+
+	ret = add_gpu_components(&pdev->dev, &match);
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 
 	pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
 	return component_master_add_with_match(&pdev->dev, &msm_drm_ops, match);
@@ -1316,10 +1903,15 @@ static int msm_pdev_probe(struct platform_device *pdev)
 static int msm_pdev_remove(struct platform_device *pdev)
 {
 	component_master_del(&pdev->dev, &msm_drm_ops);
+<<<<<<< HEAD
+=======
+	of_platform_depopulate(&pdev->dev);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct platform_device_id msm_id[] = {
 	{ "mdp", 0 },
 	{ }
@@ -1332,6 +1924,11 @@ static const struct platform_device_id msm_id[] = {
 static const struct of_device_id dt_match[] = {
 	{ .compatible = "qcom,mdp" },      /* mdp4 */
 	{ .compatible = "qcom,sde-kms" },  /* sde  */
+=======
+static const struct of_device_id dt_match[] = {
+	{ .compatible = "qcom,mdp4", .data = (void *)4 },	/* MDP4 */
+	{ .compatible = "qcom,mdss", .data = (void *)5 },	/* MDP5 MDSS */
+>>>>>>> v4.9.227
 	{}
 };
 MODULE_DEVICE_TABLE(of, dt_match);
@@ -1340,6 +1937,7 @@ static struct platform_driver msm_platform_driver = {
 	.probe      = msm_pdev_probe,
 	.remove     = msm_pdev_remove,
 	.driver     = {
+<<<<<<< HEAD
 		.name   = "msm_drm",
 		.of_match_table = dt_match,
 		.pm     = &msm_pm_ops,
@@ -1364,6 +1962,21 @@ static int __init msm_drm_register(void)
 	msm_dsi_register();
 	msm_edp_register();
 	hdmi_register();
+=======
+		.name   = "msm",
+		.of_match_table = dt_match,
+		.pm     = &msm_pm_ops,
+	},
+};
+
+static int __init msm_drm_register(void)
+{
+	DBG("init");
+	msm_mdp_register();
+	msm_dsi_register();
+	msm_edp_register();
+	msm_hdmi_register();
+>>>>>>> v4.9.227
 	adreno_register();
 	return platform_driver_register(&msm_platform_driver);
 }
@@ -1372,11 +1985,19 @@ static void __exit msm_drm_unregister(void)
 {
 	DBG("fini");
 	platform_driver_unregister(&msm_platform_driver);
+<<<<<<< HEAD
 	hdmi_unregister();
 	adreno_unregister();
 	msm_edp_unregister();
 	msm_dsi_unregister();
 	display_manager_unregister();
+=======
+	msm_hdmi_unregister();
+	adreno_unregister();
+	msm_edp_unregister();
+	msm_dsi_unregister();
+	msm_mdp_unregister();
+>>>>>>> v4.9.227
 }
 
 module_init(msm_drm_register);

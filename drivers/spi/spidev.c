@@ -14,10 +14,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/init.h>
@@ -33,6 +36,10 @@
 #include <linux/compat.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/acpi.h>
+>>>>>>> v4.9.227
 
 #include <linux/spi/spi.h>
 #include <linux/spi/spidev.h>
@@ -87,6 +94,10 @@ struct spidev_data {
 	unsigned		users;
 	u8			*tx_buffer;
 	u8			*rx_buffer;
+<<<<<<< HEAD
+=======
+	u32			speed_hz;
+>>>>>>> v4.9.227
 };
 
 static LIST_HEAD(device_list);
@@ -96,6 +107,7 @@ static unsigned bufsiz = 4096;
 module_param(bufsiz, uint, S_IRUGO);
 MODULE_PARM_DESC(bufsiz, "data bytes in biggest supported SPI message");
 
+<<<<<<< HEAD
 /*
  * This can be used for testing the controller, given the busnum and the
  * cs required to use. If those parameters are used, spidev is
@@ -131,11 +143,16 @@ static void spidev_complete(void *arg)
 	complete(arg);
 }
 
+=======
+/*-------------------------------------------------------------------------*/
+
+>>>>>>> v4.9.227
 static ssize_t
 spidev_sync(struct spidev_data *spidev, struct spi_message *message)
 {
 	DECLARE_COMPLETION_ONSTACK(done);
 	int status;
+<<<<<<< HEAD
 
 	message->complete = spidev_complete;
 	message->context = &done;
@@ -153,6 +170,22 @@ spidev_sync(struct spidev_data *spidev, struct spi_message *message)
 		if (status == 0)
 			status = message->actual_length;
 	}
+=======
+	struct spi_device *spi;
+
+	spin_lock_irq(&spidev->spi_lock);
+	spi = spidev->spi;
+	spin_unlock_irq(&spidev->spi_lock);
+
+	if (spi == NULL)
+		status = -ESHUTDOWN;
+	else
+		status = spi_sync(spi, message);
+
+	if (status == 0)
+		status = message->actual_length;
+
+>>>>>>> v4.9.227
 	return status;
 }
 
@@ -162,6 +195,10 @@ spidev_sync_write(struct spidev_data *spidev, size_t len)
 	struct spi_transfer	t = {
 			.tx_buf		= spidev->tx_buffer,
 			.len		= len,
+<<<<<<< HEAD
+=======
+			.speed_hz	= spidev->speed_hz,
+>>>>>>> v4.9.227
 		};
 	struct spi_message	m;
 
@@ -176,6 +213,10 @@ spidev_sync_read(struct spidev_data *spidev, size_t len)
 	struct spi_transfer	t = {
 			.rx_buf		= spidev->rx_buffer,
 			.len		= len,
+<<<<<<< HEAD
+=======
+			.speed_hz	= spidev->speed_hz,
+>>>>>>> v4.9.227
 		};
 	struct spi_message	m;
 
@@ -248,7 +289,11 @@ static int spidev_message(struct spidev_data *spidev,
 	struct spi_transfer	*k_xfers;
 	struct spi_transfer	*k_tmp;
 	struct spi_ioc_transfer *u_tmp;
+<<<<<<< HEAD
 	unsigned		n, total;
+=======
+	unsigned		n, total, tx_total, rx_total;
+>>>>>>> v4.9.227
 	u8			*tx_buf, *rx_buf;
 	int			status = -EFAULT;
 
@@ -264,36 +309,76 @@ static int spidev_message(struct spidev_data *spidev,
 	tx_buf = spidev->tx_buffer;
 	rx_buf = spidev->rx_buffer;
 	total = 0;
+<<<<<<< HEAD
+=======
+	tx_total = 0;
+	rx_total = 0;
+>>>>>>> v4.9.227
 	for (n = n_xfers, k_tmp = k_xfers, u_tmp = u_xfers;
 			n;
 			n--, k_tmp++, u_tmp++) {
 		k_tmp->len = u_tmp->len;
 
 		total += k_tmp->len;
+<<<<<<< HEAD
 		/* Check total length of transfers.  Also check each
 		 * transfer length to avoid arithmetic overflow.
 		 */
 		if (total > bufsiz || k_tmp->len > bufsiz) {
+=======
+		/* Since the function returns the total length of transfers
+		 * on success, restrict the total to positive int values to
+		 * avoid the return value looking like an error.  Also check
+		 * each transfer length to avoid arithmetic overflow.
+		 */
+		if (total > INT_MAX || k_tmp->len > INT_MAX) {
+>>>>>>> v4.9.227
 			status = -EMSGSIZE;
 			goto done;
 		}
 
 		if (u_tmp->rx_buf) {
+<<<<<<< HEAD
+=======
+			/* this transfer needs space in RX bounce buffer */
+			rx_total += k_tmp->len;
+			if (rx_total > bufsiz) {
+				status = -EMSGSIZE;
+				goto done;
+			}
+>>>>>>> v4.9.227
 			k_tmp->rx_buf = rx_buf;
 			if (!access_ok(VERIFY_WRITE, (u8 __user *)
 						(uintptr_t) u_tmp->rx_buf,
 						u_tmp->len))
 				goto done;
+<<<<<<< HEAD
 		}
 		if (u_tmp->tx_buf) {
+=======
+			rx_buf += k_tmp->len;
+		}
+		if (u_tmp->tx_buf) {
+			/* this transfer needs space in TX bounce buffer */
+			tx_total += k_tmp->len;
+			if (tx_total > bufsiz) {
+				status = -EMSGSIZE;
+				goto done;
+			}
+>>>>>>> v4.9.227
 			k_tmp->tx_buf = tx_buf;
 			if (copy_from_user(tx_buf, (const u8 __user *)
 						(uintptr_t) u_tmp->tx_buf,
 					u_tmp->len))
 				goto done;
+<<<<<<< HEAD
 		}
 		tx_buf += k_tmp->len;
 		rx_buf += k_tmp->len;
+=======
+			tx_buf += k_tmp->len;
+		}
+>>>>>>> v4.9.227
 
 		k_tmp->cs_change = !!u_tmp->cs_change;
 		k_tmp->tx_nbits = u_tmp->tx_nbits;
@@ -301,9 +386,17 @@ static int spidev_message(struct spidev_data *spidev,
 		k_tmp->bits_per_word = u_tmp->bits_per_word;
 		k_tmp->delay_usecs = u_tmp->delay_usecs;
 		k_tmp->speed_hz = u_tmp->speed_hz;
+<<<<<<< HEAD
 #ifdef VERBOSE
 		dev_dbg(&spidev->spi->dev,
 			"  xfer len %zd %s%s%s%dbits %u usec %uHz\n",
+=======
+		if (!k_tmp->speed_hz)
+			k_tmp->speed_hz = spidev->speed_hz;
+#ifdef VERBOSE
+		dev_dbg(&spidev->spi->dev,
+			"  xfer len %u %s%s%s%dbits %u usec %uHz\n",
+>>>>>>> v4.9.227
 			u_tmp->len,
 			u_tmp->rx_buf ? "rx " : "",
 			u_tmp->tx_buf ? "tx " : "",
@@ -329,8 +422,13 @@ static int spidev_message(struct spidev_data *spidev,
 				status = -EFAULT;
 				goto done;
 			}
+<<<<<<< HEAD
 		}
 		rx_buf += u_tmp->len;
+=======
+			rx_buf += u_tmp->len;
+		}
+>>>>>>> v4.9.227
 	}
 	status = total;
 
@@ -339,6 +437,40 @@ done:
 	return status;
 }
 
+<<<<<<< HEAD
+=======
+static struct spi_ioc_transfer *
+spidev_get_ioc_message(unsigned int cmd, struct spi_ioc_transfer __user *u_ioc,
+		unsigned *n_ioc)
+{
+	struct spi_ioc_transfer	*ioc;
+	u32	tmp;
+
+	/* Check type, command number and direction */
+	if (_IOC_TYPE(cmd) != SPI_IOC_MAGIC
+			|| _IOC_NR(cmd) != _IOC_NR(SPI_IOC_MESSAGE(0))
+			|| _IOC_DIR(cmd) != _IOC_WRITE)
+		return ERR_PTR(-ENOTTY);
+
+	tmp = _IOC_SIZE(cmd);
+	if ((tmp % sizeof(struct spi_ioc_transfer)) != 0)
+		return ERR_PTR(-EINVAL);
+	*n_ioc = tmp / sizeof(struct spi_ioc_transfer);
+	if (*n_ioc == 0)
+		return NULL;
+
+	/* copy into scratch area */
+	ioc = kmalloc(tmp, GFP_KERNEL);
+	if (!ioc)
+		return ERR_PTR(-ENOMEM);
+	if (__copy_from_user(ioc, u_ioc, tmp)) {
+		kfree(ioc);
+		return ERR_PTR(-EFAULT);
+	}
+	return ioc;
+}
+
+>>>>>>> v4.9.227
 static long
 spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
@@ -404,7 +536,11 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		retval = __put_user(spi->bits_per_word, (__u8 __user *)arg);
 		break;
 	case SPI_IOC_RD_MAX_SPEED_HZ:
+<<<<<<< HEAD
 		retval = __put_user(spi->max_speed_hz, (__u32 __user *)arg);
+=======
+		retval = __put_user(spidev->speed_hz, (__u32 __user *)arg);
+>>>>>>> v4.9.227
 		break;
 
 	/* write requests */
@@ -468,15 +604,24 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 			spi->max_speed_hz = tmp;
 			retval = spi_setup(spi);
+<<<<<<< HEAD
 			if (retval < 0)
 				spi->max_speed_hz = save;
 			else
 				dev_dbg(&spi->dev, "%d Hz (max)\n", tmp);
+=======
+			if (retval >= 0)
+				spidev->speed_hz = tmp;
+			else
+				dev_dbg(&spi->dev, "%d Hz (max)\n", tmp);
+			spi->max_speed_hz = save;
+>>>>>>> v4.9.227
 		}
 		break;
 
 	default:
 		/* segmented and/or full-duplex I/O request */
+<<<<<<< HEAD
 		if (_IOC_NR(cmd) != _IOC_NR(SPI_IOC_MESSAGE(0))
 				|| _IOC_DIR(cmd) != _IOC_WRITE) {
 			retval = -ENOTTY;
@@ -503,6 +648,17 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			retval = -EFAULT;
 			break;
 		}
+=======
+		/* Check message and copy into scratch area */
+		ioc = spidev_get_ioc_message(cmd,
+				(struct spi_ioc_transfer __user *)arg, &n_ioc);
+		if (IS_ERR(ioc)) {
+			retval = PTR_ERR(ioc);
+			break;
+		}
+		if (!ioc)
+			break;	/* n_ioc is also 0 */
+>>>>>>> v4.9.227
 
 		/* translate to spi_message, execute */
 		retval = spidev_message(spidev, ioc, n_ioc);
@@ -517,8 +673,72 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 #ifdef CONFIG_COMPAT
 static long
+<<<<<<< HEAD
 spidev_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
+=======
+spidev_compat_ioc_message(struct file *filp, unsigned int cmd,
+		unsigned long arg)
+{
+	struct spi_ioc_transfer __user	*u_ioc;
+	int				retval = 0;
+	struct spidev_data		*spidev;
+	struct spi_device		*spi;
+	unsigned			n_ioc, n;
+	struct spi_ioc_transfer		*ioc;
+
+	u_ioc = (struct spi_ioc_transfer __user *) compat_ptr(arg);
+	if (!access_ok(VERIFY_READ, u_ioc, _IOC_SIZE(cmd)))
+		return -EFAULT;
+
+	/* guard against device removal before, or while,
+	 * we issue this ioctl.
+	 */
+	spidev = filp->private_data;
+	spin_lock_irq(&spidev->spi_lock);
+	spi = spi_dev_get(spidev->spi);
+	spin_unlock_irq(&spidev->spi_lock);
+
+	if (spi == NULL)
+		return -ESHUTDOWN;
+
+	/* SPI_IOC_MESSAGE needs the buffer locked "normally" */
+	mutex_lock(&spidev->buf_lock);
+
+	/* Check message and copy into scratch area */
+	ioc = spidev_get_ioc_message(cmd, u_ioc, &n_ioc);
+	if (IS_ERR(ioc)) {
+		retval = PTR_ERR(ioc);
+		goto done;
+	}
+	if (!ioc)
+		goto done;	/* n_ioc is also 0 */
+
+	/* Convert buffer pointers */
+	for (n = 0; n < n_ioc; n++) {
+		ioc[n].rx_buf = (uintptr_t) compat_ptr(ioc[n].rx_buf);
+		ioc[n].tx_buf = (uintptr_t) compat_ptr(ioc[n].tx_buf);
+	}
+
+	/* translate to spi_message, execute */
+	retval = spidev_message(spidev, ioc, n_ioc);
+	kfree(ioc);
+
+done:
+	mutex_unlock(&spidev->buf_lock);
+	spi_dev_put(spi);
+	return retval;
+}
+
+static long
+spidev_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+{
+	if (_IOC_TYPE(cmd) == SPI_IOC_MAGIC
+			&& _IOC_NR(cmd) == _IOC_NR(SPI_IOC_MESSAGE(0))
+			&& _IOC_DIR(cmd) == _IOC_WRITE)
+		return spidev_compat_ioc_message(filp, cmd, arg);
+
+>>>>>>> v4.9.227
 	return spidev_ioctl(filp, cmd, (unsigned long)compat_ptr(arg));
 }
 #else
@@ -547,11 +767,19 @@ static int spidev_open(struct inode *inode, struct file *filp)
 	if (!spidev->tx_buffer) {
 		spidev->tx_buffer = kmalloc(bufsiz, GFP_KERNEL);
 		if (!spidev->tx_buffer) {
+<<<<<<< HEAD
 				dev_dbg(&spidev->spi->dev, "open/ENOMEM\n");
 				status = -ENOMEM;
 			goto err_find_dev;
 			}
 		}
+=======
+			dev_dbg(&spidev->spi->dev, "open/ENOMEM\n");
+			status = -ENOMEM;
+			goto err_find_dev;
+		}
+	}
+>>>>>>> v4.9.227
 
 	if (!spidev->rx_buffer) {
 		spidev->rx_buffer = kmalloc(bufsiz, GFP_KERNEL);
@@ -580,7 +808,10 @@ err_find_dev:
 static int spidev_release(struct inode *inode, struct file *filp)
 {
 	struct spidev_data	*spidev;
+<<<<<<< HEAD
 	int			status = 0;
+=======
+>>>>>>> v4.9.227
 
 	mutex_lock(&device_list_lock);
 	spidev = filp->private_data;
@@ -597,17 +828,34 @@ static int spidev_release(struct inode *inode, struct file *filp)
 		kfree(spidev->rx_buffer);
 		spidev->rx_buffer = NULL;
 
+<<<<<<< HEAD
 		/* ... after we unbound from the underlying device? */
 		spin_lock_irq(&spidev->spi_lock);
+=======
+		spin_lock_irq(&spidev->spi_lock);
+		if (spidev->spi)
+			spidev->speed_hz = spidev->spi->max_speed_hz;
+
+		/* ... after we unbound from the underlying device? */
+>>>>>>> v4.9.227
 		dofree = (spidev->spi == NULL);
 		spin_unlock_irq(&spidev->spi_lock);
 
 		if (dofree)
 			kfree(spidev);
 	}
+<<<<<<< HEAD
 	mutex_unlock(&device_list_lock);
 
 	return status;
+=======
+#ifdef CONFIG_SPI_SLAVE
+	spi_slave_abort(spidev->spi);
+#endif
+	mutex_unlock(&device_list_lock);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static const struct file_operations spidev_fops = {
@@ -634,6 +882,55 @@ static const struct file_operations spidev_fops = {
 
 static struct class *spidev_class;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id spidev_dt_ids[] = {
+	{ .compatible = "rohm,dh2228fv" },
+	{ .compatible = "lineartechnology,ltc2488" },
+	{},
+};
+MODULE_DEVICE_TABLE(of, spidev_dt_ids);
+#endif
+
+#ifdef CONFIG_ACPI
+
+/* Dummy SPI devices not to be used in production systems */
+#define SPIDEV_ACPI_DUMMY	1
+
+static const struct acpi_device_id spidev_acpi_ids[] = {
+	/*
+	 * The ACPI SPT000* devices are only meant for development and
+	 * testing. Systems used in production should have a proper ACPI
+	 * description of the connected peripheral and they should also use
+	 * a proper driver instead of poking directly to the SPI bus.
+	 */
+	{ "SPT0001", SPIDEV_ACPI_DUMMY },
+	{ "SPT0002", SPIDEV_ACPI_DUMMY },
+	{ "SPT0003", SPIDEV_ACPI_DUMMY },
+	{},
+};
+MODULE_DEVICE_TABLE(acpi, spidev_acpi_ids);
+
+static void spidev_probe_acpi(struct spi_device *spi)
+{
+	const struct acpi_device_id *id;
+
+	if (!has_acpi_companion(&spi->dev))
+		return;
+
+	id = acpi_match_device(spidev_acpi_ids, &spi->dev);
+	if (WARN_ON(!id))
+		return;
+
+	if (id->driver_data == SPIDEV_ACPI_DUMMY)
+		dev_warn(&spi->dev, "do not use this driver in production systems!\n");
+}
+#else
+static inline void spidev_probe_acpi(struct spi_device *spi) {}
+#endif
+
+>>>>>>> v4.9.227
 /*-------------------------------------------------------------------------*/
 
 static int spidev_probe(struct spi_device *spi)
@@ -642,6 +939,20 @@ static int spidev_probe(struct spi_device *spi)
 	int			status;
 	unsigned long		minor;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * spidev should never be referenced in DT without a specific
+	 * compatible string, it is a Linux implementation thing
+	 * rather than a description of the hardware.
+	 */
+	WARN(spi->dev.of_node &&
+	     of_device_is_compatible(spi->dev.of_node, "spidev"),
+	     "%pOF: buggy DT: spidev listed directly in DT\n", spi->dev.of_node);
+
+	spidev_probe_acpi(spi);
+
+>>>>>>> v4.9.227
 	/* Allocate driver data */
 	spidev = kzalloc(sizeof(*spidev), GFP_KERNEL);
 	if (!spidev)
@@ -677,6 +988,11 @@ static int spidev_probe(struct spi_device *spi)
 	}
 	mutex_unlock(&device_list_lock);
 
+<<<<<<< HEAD
+=======
+	spidev->speed_hz = spi->max_speed_hz;
+
+>>>>>>> v4.9.227
 	if (status == 0)
 		spi_set_drvdata(spi, spidev);
 	else
@@ -706,6 +1022,7 @@ static int spidev_remove(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct of_device_id spidev_dt_ids[] = {
 	{ .compatible = "rohm,dh2228fv", },
 	{ .compatible = "qcom,spi-msm-codec-slave", },
@@ -719,6 +1036,13 @@ static struct spi_driver spidev_spi_driver = {
 		.name =		"spidev",
 		.owner =	THIS_MODULE,
 		.of_match_table = of_match_ptr(spidev_dt_ids),
+=======
+static struct spi_driver spidev_spi_driver = {
+	.driver = {
+		.name =		"spidev",
+		.of_match_table = of_match_ptr(spidev_dt_ids),
+		.acpi_match_table = ACPI_PTR(spidev_acpi_ids),
+>>>>>>> v4.9.227
 	},
 	.probe =	spidev_probe,
 	.remove =	spidev_remove,
@@ -747,6 +1071,7 @@ static int __init spidev_init(void)
 
 	spidev_class = class_create(THIS_MODULE, "spidev");
 	if (IS_ERR(spidev_class)) {
+<<<<<<< HEAD
 		status = PTR_ERR(spidev_class);
 		goto error_class;
 	}
@@ -789,16 +1114,30 @@ error_register:
 	class_destroy(spidev_class);
 error_class:
 	unregister_chrdev(SPIDEV_MAJOR, spidev_spi_driver.driver.name);
+=======
+		unregister_chrdev(SPIDEV_MAJOR, spidev_spi_driver.driver.name);
+		return PTR_ERR(spidev_class);
+	}
+
+	status = spi_register_driver(&spidev_spi_driver);
+	if (status < 0) {
+		class_destroy(spidev_class);
+		unregister_chrdev(SPIDEV_MAJOR, spidev_spi_driver.driver.name);
+	}
+>>>>>>> v4.9.227
 	return status;
 }
 module_init(spidev_init);
 
 static void __exit spidev_exit(void)
 {
+<<<<<<< HEAD
 	if (spi) {
 		spi_unregister_device(spi);
 		spi = NULL;
 	}
+=======
+>>>>>>> v4.9.227
 	spi_unregister_driver(&spidev_spi_driver);
 	class_destroy(spidev_class);
 	unregister_chrdev(SPIDEV_MAJOR, spidev_spi_driver.driver.name);

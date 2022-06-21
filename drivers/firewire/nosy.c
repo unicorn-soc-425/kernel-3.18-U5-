@@ -33,6 +33,10 @@
 #include <linux/sched.h> /* required for linux/wait.h */
 #include <linux/slab.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/time64.h>
+>>>>>>> v4.9.227
 #include <linux/timex.h>
 #include <linux/uaccess.h>
 #include <linux/wait.h>
@@ -413,17 +417,29 @@ static void
 packet_irq_handler(struct pcilynx *lynx)
 {
 	struct client *client;
+<<<<<<< HEAD
 	u32 tcode_mask, tcode;
 	size_t length;
 	struct timeval tv;
+=======
+	u32 tcode_mask, tcode, timestamp;
+	size_t length;
+	struct timespec64 ts64;
+>>>>>>> v4.9.227
 
 	/* FIXME: Also report rcv_speed. */
 
 	length = __le32_to_cpu(lynx->rcv_pcl->pcl_status) & 0x00001fff;
 	tcode  = __le32_to_cpu(lynx->rcv_buffer[1]) >> 4 & 0xf;
 
+<<<<<<< HEAD
 	do_gettimeofday(&tv);
 	lynx->rcv_buffer[0] = (__force __le32)tv.tv_usec;
+=======
+	ktime_get_real_ts64(&ts64);
+	timestamp = ts64.tv_nsec / NSEC_PER_USEC;
+	lynx->rcv_buffer[0] = (__force __le32)timestamp;
+>>>>>>> v4.9.227
 
 	if (length == PHY_PACKET_SIZE)
 		tcode_mask = 1 << TCODE_PHY_PACKET;
@@ -444,14 +460,26 @@ static void
 bus_reset_irq_handler(struct pcilynx *lynx)
 {
 	struct client *client;
+<<<<<<< HEAD
 	struct timeval tv;
 
 	do_gettimeofday(&tv);
+=======
+	struct timespec64 ts64;
+	u32    timestamp;
+
+	ktime_get_real_ts64(&ts64);
+	timestamp = ts64.tv_nsec / NSEC_PER_USEC;
+>>>>>>> v4.9.227
 
 	spin_lock(&lynx->client_list_lock);
 
 	list_for_each_entry(client, &lynx->client_list, link)
+<<<<<<< HEAD
 		packet_buffer_put(&client->buffer, &tv.tv_usec, 4);
+=======
+		packet_buffer_put(&client->buffer, &timestamp, 4);
+>>>>>>> v4.9.227
 
 	spin_unlock(&lynx->client_list_lock);
 }
@@ -562,6 +590,14 @@ add_card(struct pci_dev *dev, const struct pci_device_id *unused)
 
 	lynx->registers = ioremap_nocache(pci_resource_start(dev, 0),
 					  PCILYNX_MAX_REGISTER);
+<<<<<<< HEAD
+=======
+	if (lynx->registers == NULL) {
+		dev_err(&dev->dev, "Failed to map registers\n");
+		ret = -ENOMEM;
+		goto fail_deallocate_lynx;
+	}
+>>>>>>> v4.9.227
 
 	lynx->rcv_start_pcl = pci_alloc_consistent(lynx->pci_device,
 				sizeof(struct pcl), &lynx->rcv_start_pcl_bus);
@@ -574,7 +610,11 @@ add_card(struct pci_dev *dev, const struct pci_device_id *unused)
 	    lynx->rcv_buffer == NULL) {
 		dev_err(&dev->dev, "Failed to allocate receive buffer\n");
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto fail_deallocate;
+=======
+		goto fail_deallocate_buffers;
+>>>>>>> v4.9.227
 	}
 	lynx->rcv_start_pcl->next	= cpu_to_le32(lynx->rcv_pcl_bus);
 	lynx->rcv_pcl->next		= cpu_to_le32(PCL_NEXT_INVALID);
@@ -637,7 +677,11 @@ add_card(struct pci_dev *dev, const struct pci_device_id *unused)
 		dev_err(&dev->dev,
 			"Failed to allocate shared interrupt %d\n", dev->irq);
 		ret = -EIO;
+<<<<<<< HEAD
 		goto fail_deallocate;
+=======
+		goto fail_deallocate_buffers;
+>>>>>>> v4.9.227
 	}
 
 	lynx->misc.parent = &dev->dev;
@@ -664,7 +708,11 @@ fail_free_irq:
 	reg_write(lynx, PCI_INT_ENABLE, 0);
 	free_irq(lynx->pci_device->irq, lynx);
 
+<<<<<<< HEAD
 fail_deallocate:
+=======
+fail_deallocate_buffers:
+>>>>>>> v4.9.227
 	if (lynx->rcv_start_pcl)
 		pci_free_consistent(lynx->pci_device, sizeof(struct pcl),
 				lynx->rcv_start_pcl, lynx->rcv_start_pcl_bus);
@@ -675,6 +723,11 @@ fail_deallocate:
 		pci_free_consistent(lynx->pci_device, PAGE_SIZE,
 				lynx->rcv_buffer, lynx->rcv_buffer_bus);
 	iounmap(lynx->registers);
+<<<<<<< HEAD
+=======
+
+fail_deallocate_lynx:
+>>>>>>> v4.9.227
 	kfree(lynx);
 
 fail_disable:

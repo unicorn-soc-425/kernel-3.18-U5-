@@ -17,6 +17,25 @@ menuconfig WLAN
 
 if WLAN
 
+<<<<<<< HEAD
+=======
+source "drivers/net/wireless/admtek/Kconfig"
+source "drivers/net/wireless/ath/Kconfig"
+source "drivers/net/wireless/atmel/Kconfig"
+source "drivers/net/wireless/broadcom/Kconfig"
+source "drivers/net/wireless/cisco/Kconfig"
+source "drivers/net/wireless/intel/Kconfig"
+source "drivers/net/wireless/intersil/Kconfig"
+source "drivers/net/wireless/marvell/Kconfig"
+source "drivers/net/wireless/mediatek/Kconfig"
+source "drivers/net/wireless/ralink/Kconfig"
+source "drivers/net/wireless/realtek/Kconfig"
+source "drivers/net/wireless/rsi/Kconfig"
+source "drivers/net/wireless/st/Kconfig"
+source "drivers/net/wireless/ti/Kconfig"
+source "drivers/net/wireless/zydas/Kconfig"
+
+>>>>>>> v4.9.227
 config PCMCIA_RAYCS
 	tristate "Aviator/Raytheon 2.4GHz wireless support"
 	depends on PCMCIA
@@ -32,6 +51,7 @@ config PCMCIA_RAYCS
 	  To compile this driver as a module, choose M here: the module will be
 	  called ray_cs.  If unsure, say N.
 
+<<<<<<< HEAD
 config LIBERTAS_THINFIRM
 	tristate "Marvell 8xxx Libertas WLAN driver support with thin firmware"
 	depends on MAC80211
@@ -136,6 +156,8 @@ config AIRO_CS
 	  and Cisco proprietary API, so both the Linux Wireless Tools and the
 	  Cisco Linux utilities can be used to configure the card.
 
+=======
+>>>>>>> v4.9.227
 config PCMCIA_WL3501
 	tristate "Planet WL3501 PCMCIA cards"
 	depends on CFG80211 && PCMCIA
@@ -146,6 +168,7 @@ config PCMCIA_WL3501
 	  It has basic support for Linux wireless extensions and initial
 	  micro support for ethtool.
 
+<<<<<<< HEAD
 config PRISM54
 	tristate 'Intersil Prism GT/Duette/Indigo PCI/Cardbus (DEPRECATED)'
 	depends on PCI
@@ -184,6 +207,20 @@ config USB_ZD1201
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called zd1201.
+=======
+config MAC80211_HWSIM
+	tristate "Simulated radio testing tool for mac80211"
+	depends on MAC80211
+	---help---
+	  This driver is a developer testing tool that can be used to test
+	  IEEE 802.11 networking stack (mac80211) functionality. This is not
+	  needed for normal wireless LAN usage and is only for testing. See
+	  Documentation/networking/mac80211_hwsim for more information on how
+	  to use this tool.
+
+	  To compile this driver as a module, choose M here: the module will be
+	  called mac80211_hwsim.  If unsure, say N.
+>>>>>>> v4.9.227
 
 config USB_NET_RNDIS_WLAN
 	tristate "Wireless RNDIS USB support"
@@ -214,6 +251,7 @@ config USB_NET_RNDIS_WLAN
 
 	  If you choose to build a module, it'll be called rndis_wlan.
 
+<<<<<<< HEAD
 source "drivers/net/wireless/rtl818x/Kconfig"
 
 config ADM8211
@@ -352,4 +390,6 @@ source "drivers/net/wireless/cnss2/Kconfig"
 source "drivers/net/wireless/cnss_utils/Kconfig"
 source "drivers/net/wireless/prima/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 endif # WLAN

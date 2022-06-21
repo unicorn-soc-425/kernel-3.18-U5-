@@ -226,12 +226,22 @@ static int stb6100_write_reg_range(struct stb6100_state *state, u8 buf[], int st
 
 static int stb6100_write_reg(struct stb6100_state *state, u8 reg, u8 data)
 {
+<<<<<<< HEAD
+=======
+	u8 tmp = data; /* see gcc.gnu.org/bugzilla/show_bug.cgi?id=81715 */
+
+>>>>>>> v4.9.227
 	if (unlikely(reg >= STB6100_NUMREGS)) {
 		dprintk(verbose, FE_ERROR, 1, "Invalid register offset 0x%x", reg);
 		return -EREMOTEIO;
 	}
+<<<<<<< HEAD
 	data = (data & stb6100_template[reg].mask) | stb6100_template[reg].set;
 	return stb6100_write_reg_range(state, &data, reg, 1);
+=======
+	tmp = (tmp & stb6100_template[reg].mask) | stb6100_template[reg].set;
+	return stb6100_write_reg_range(state, &tmp, reg, 1);
+>>>>>>> v4.9.227
 }
 
 
@@ -252,6 +262,10 @@ static int stb6100_get_bandwidth(struct dvb_frontend *fe, u32 *bandwidth)
 {
 	int rc;
 	u8 f;
+<<<<<<< HEAD
+=======
+	u32 bw;
+>>>>>>> v4.9.227
 	struct stb6100_state *state = fe->tuner_priv;
 
 	rc = stb6100_read_reg(state, STB6100_F);
@@ -259,9 +273,15 @@ static int stb6100_get_bandwidth(struct dvb_frontend *fe, u32 *bandwidth)
 		return rc;
 	f = rc & STB6100_F_F;
 
+<<<<<<< HEAD
 	state->status.bandwidth = (f + 5) * 2000;	/* x2 for ZIF	*/
 
 	*bandwidth = state->bandwidth = state->status.bandwidth * 1000;
+=======
+	bw = (f + 5) * 2000;	/* x2 for ZIF	*/
+
+	*bandwidth = state->bandwidth = bw * 1000;
+>>>>>>> v4.9.227
 	dprintk(verbose, FE_DEBUG, 1, "bandwidth = %u Hz", state->bandwidth);
 	return 0;
 }
@@ -345,7 +365,11 @@ static int stb6100_set_frequency(struct dvb_frontend *fe, u32 frequency)
 
 	if (fe->ops.get_frontend) {
 		dprintk(verbose, FE_DEBUG, 1, "Get frontend parameters");
+<<<<<<< HEAD
 		fe->ops.get_frontend(fe);
+=======
+		fe->ops.get_frontend(fe, p);
+>>>>>>> v4.9.227
 	}
 	srate = p->symbol_rate;
 
@@ -495,6 +519,7 @@ static int stb6100_sleep(struct dvb_frontend *fe)
 static int stb6100_init(struct dvb_frontend *fe)
 {
 	struct stb6100_state *state = fe->tuner_priv;
+<<<<<<< HEAD
 	struct tuner_state *status = &state->status;
 
 	status->tunerstep	= 125000;
@@ -504,11 +529,22 @@ static int stb6100_init(struct dvb_frontend *fe)
 	status->bandwidth	= 36000;	/* kHz	*/
 	state->bandwidth	= status->bandwidth * 1000;	/* Hz	*/
 	state->reference	= status->refclock / 1000;	/* kHz	*/
+=======
+	int refclk = 27000000; /* Hz */
+
+	/*
+	 * iqsense = 1
+	 * tunerstep = 125000
+	 */
+	state->bandwidth        = 36000000;		/* Hz	*/
+	state->reference	= refclk / 1000;	/* kHz	*/
+>>>>>>> v4.9.227
 
 	/* Set default bandwidth. Modified, PN 13-May-10	*/
 	return 0;
 }
 
+<<<<<<< HEAD
 static int stb6100_get_state(struct dvb_frontend *fe,
 			     enum tuner_param param,
 			     struct tuner_state *state)
@@ -529,10 +565,22 @@ static int stb6100_get_state(struct dvb_frontend *fe,
 	default:
 		break;
 	}
+=======
+static int stb6100_set_params(struct dvb_frontend *fe)
+{
+	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
+
+	if (c->frequency > 0)
+		stb6100_set_frequency(fe, c->frequency);
+
+	if (c->bandwidth_hz > 0)
+		stb6100_set_bandwidth(fe, c->bandwidth_hz);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int stb6100_set_state(struct dvb_frontend *fe,
 			     enum tuner_param param,
 			     struct tuner_state *state)
@@ -562,6 +610,9 @@ static int stb6100_set_state(struct dvb_frontend *fe,
 }
 
 static struct dvb_tuner_ops stb6100_ops = {
+=======
+static const struct dvb_tuner_ops stb6100_ops = {
+>>>>>>> v4.9.227
 	.info = {
 		.name			= "STB6100 Silicon Tuner",
 		.frequency_min		= 950000,
@@ -572,8 +623,14 @@ static struct dvb_tuner_ops stb6100_ops = {
 	.init		= stb6100_init,
 	.sleep          = stb6100_sleep,
 	.get_status	= stb6100_get_status,
+<<<<<<< HEAD
 	.get_state	= stb6100_get_state,
 	.set_state	= stb6100_set_state,
+=======
+	.set_params	= stb6100_set_params,
+	.get_frequency  = stb6100_get_frequency,
+	.get_bandwidth  = stb6100_get_bandwidth,
+>>>>>>> v4.9.227
 	.release	= stb6100_release
 };
 

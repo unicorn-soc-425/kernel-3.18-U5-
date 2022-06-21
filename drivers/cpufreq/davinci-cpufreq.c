@@ -38,6 +38,7 @@ struct davinci_cpufreq {
 };
 static struct davinci_cpufreq cpufreq;
 
+<<<<<<< HEAD
 static int davinci_verify_speed(struct cpufreq_policy *policy)
 {
 	struct davinci_cpufreq_config *pdata = cpufreq.dev->platform_data;
@@ -58,6 +59,8 @@ static int davinci_verify_speed(struct cpufreq_policy *policy)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int davinci_target(struct cpufreq_policy *policy, unsigned int idx)
 {
 	struct davinci_cpufreq_config *pdata = cpufreq.dev->platform_data;
@@ -121,7 +124,11 @@ static int davinci_cpu_init(struct cpufreq_policy *policy)
 
 static struct cpufreq_driver davinci_driver = {
 	.flags		= CPUFREQ_STICKY | CPUFREQ_NEED_INITIAL_FREQ_CHECK,
+<<<<<<< HEAD
 	.verify		= davinci_verify_speed,
+=======
+	.verify		= cpufreq_generic_frequency_table_verify,
+>>>>>>> v4.9.227
 	.target_index	= davinci_target,
 	.get		= cpufreq_generic_get,
 	.init		= davinci_cpu_init,

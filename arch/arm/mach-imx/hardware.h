@@ -22,6 +22,10 @@
 
 #ifndef __ASSEMBLY__
 #include <asm/io.h>
+<<<<<<< HEAD
+=======
+#include <soc/imx/revision.h>
+>>>>>>> v4.9.227
 #endif
 #include <asm/sizes.h>
 
@@ -111,8 +115,11 @@
 #include "mx2x.h"
 #include "mx21.h"
 #include "mx27.h"
+<<<<<<< HEAD
 #include "mx1.h"
 #include "mx25.h"
+=======
+>>>>>>> v4.9.227
 
 #define imx_map_entry(soc, name, _type)	{				\
 	.virtual = soc ## _IO_P2V(soc ## _ ## name ## _BASE_ADDR),	\
@@ -121,7 +128,11 @@
 	.type = _type,							\
 }
 
+<<<<<<< HEAD
 /* There's a off-by-one betweem the gpio bank number and the gpiochip */
+=======
+/* There's an off-by-one between the gpio bank number and the gpiochip */
+>>>>>>> v4.9.227
 /* range e.g. GPIO_1_5 is gpio 5 under linux */
 #define IMX_GPIO_NR(bank, nr)		(((bank) - 1) * 32 + (nr))
 

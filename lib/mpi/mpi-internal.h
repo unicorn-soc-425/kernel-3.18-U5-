@@ -84,7 +84,11 @@ static inline int RESIZE_IF_NEEDED(MPI a, unsigned b)
 	do {					\
 		mpi_size_t _i;			\
 		for (_i = 0; _i < (n); _i++)	\
+<<<<<<< HEAD
 			(d)[_i] = (d)[_i];	\
+=======
+			(d)[_i] = (s)[_i];	\
+>>>>>>> v4.9.227
 	} while (0)
 
 #define MPN_COPY_DECR(d, s, n) \
@@ -168,6 +172,7 @@ void mpi_rshift_limbs(MPI a, unsigned int count);
 int mpi_lshift_limbs(MPI a, unsigned int count);
 
 /*-- mpihelp-add.c --*/
+<<<<<<< HEAD
 mpi_limb_t mpihelp_add_1(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,
 			 mpi_size_t s1_size, mpi_limb_t s2_limb);
 mpi_limb_t mpihelp_add_n(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,
@@ -181,6 +186,21 @@ mpi_limb_t mpihelp_sub_1(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,
 mpi_limb_t mpihelp_sub_n(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,
 			 mpi_ptr_t s2_ptr, mpi_size_t size);
 mpi_limb_t mpihelp_sub(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr, mpi_size_t s1_size,
+=======
+static inline mpi_limb_t mpihelp_add_1(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,
+			 mpi_size_t s1_size, mpi_limb_t s2_limb);
+mpi_limb_t mpihelp_add_n(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,
+			 mpi_ptr_t s2_ptr, mpi_size_t size);
+static inline mpi_limb_t mpihelp_add(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr, mpi_size_t s1_size,
+		       mpi_ptr_t s2_ptr, mpi_size_t s2_size);
+
+/*-- mpihelp-sub.c --*/
+static inline mpi_limb_t mpihelp_sub_1(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,
+			 mpi_size_t s1_size, mpi_limb_t s2_limb);
+mpi_limb_t mpihelp_sub_n(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,
+			 mpi_ptr_t s2_ptr, mpi_size_t size);
+static inline mpi_limb_t mpihelp_sub(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr, mpi_size_t s1_size,
+>>>>>>> v4.9.227
 		       mpi_ptr_t s2_ptr, mpi_size_t s2_size);
 
 /*-- mpihelp-cmp.c --*/

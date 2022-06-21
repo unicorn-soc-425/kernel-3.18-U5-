@@ -32,7 +32,10 @@
 ******************************************************************************/
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
 //#include <linux/config.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/errno.h>
 #include <linux/if_arp.h>
 #include <linux/in6.h>
@@ -49,7 +52,11 @@
 #include <linux/types.h>
 #include <linux/wireless.h>
 #include <linux/etherdevice.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 #include <linux/if_vlan.h>
 
 #include "ieee80211.h"
@@ -195,9 +202,15 @@ int ieee80211_encrypt_fragment(
 	if (ieee->tkip_countermeasures &&
 	    crypt && crypt->ops && strcmp(crypt->ops->name, "TKIP") == 0) {
 		if (net_ratelimit()) {
+<<<<<<< HEAD
 			struct ieee80211_hdr_3addrqos *header;
 
 			header = (struct ieee80211_hdr_3addrqos *)frag->data;
+=======
+			struct rtl_80211_hdr_3addrqos *header;
+
+			header = (struct rtl_80211_hdr_3addrqos *)frag->data;
+>>>>>>> v4.9.227
 			printk(KERN_DEBUG "%s: TKIP countermeasures: dropped "
 			       "TX packet to %pM\n",
 			       ieee->dev->name, header->addr1);
@@ -309,7 +322,11 @@ static void ieee80211_tx_query_agg_cap(struct ieee80211_device *ieee,
 {
 	PRT_HIGH_THROUGHPUT	pHTInfo = ieee->pHTInfo;
 	PTX_TS_RECORD			pTxTs = NULL;
+<<<<<<< HEAD
 	struct ieee80211_hdr_1addr *hdr = (struct ieee80211_hdr_1addr *)skb->data;
+=======
+	struct rtl_80211_hdr_1addr *hdr = (struct rtl_80211_hdr_1addr *)skb->data;
+>>>>>>> v4.9.227
 
 	if (!pHTInfo->bCurrentHTSupport||!pHTInfo->bEnableHT)
 		return;
@@ -337,12 +354,20 @@ static void ieee80211_tx_query_agg_cap(struct ieee80211_device *ieee,
 			printk("===>can't get TS\n");
 			return;
 		}
+<<<<<<< HEAD
 		if (pTxTs->TxAdmittedBARecord.bValid == false)
+=======
+		if (!pTxTs->TxAdmittedBARecord.bValid)
+>>>>>>> v4.9.227
 		{
 			TsStartAddBaProcess(ieee, pTxTs);
 			goto FORCED_AGG_SETTING;
 		}
+<<<<<<< HEAD
 		else if (pTxTs->bUsingBa == false)
+=======
+		else if (!pTxTs->bUsingBa)
+>>>>>>> v4.9.227
 		{
 			if (SN_LESS(pTxTs->TxAdmittedBARecord.BaStartSeqCtrl.field.SeqNum, (pTxTs->TxCurSeq+1)%4096))
 				pTxTs->bUsingBa = true;
@@ -529,8 +554,12 @@ static void ieee80211_query_protectionmode(struct ieee80211_device *ieee,
 		}
 		}
 	// For test , CTS replace with RTS
+<<<<<<< HEAD
 	if( 0 )
 	{
+=======
+	if (0) {
+>>>>>>> v4.9.227
 		tcb_desc->bCTSEnable	= true;
 		tcb_desc->rts_rate = MGN_24M;
 		tcb_desc->bRTSEnable	= true;
@@ -555,16 +584,26 @@ static void ieee80211_txrate_selectmode(struct ieee80211_device *ieee,
 #ifdef TO_DO_LIST
 	if(!IsDataFrame(pFrame))
 	{
+<<<<<<< HEAD
 		pTcb->bTxDisableRateFallBack = TRUE;
 		pTcb->bTxUseDriverAssingedRate = TRUE;
+=======
+		pTcb->bTxDisableRateFallBack = true;
+		pTcb->bTxUseDriverAssingedRate = true;
+>>>>>>> v4.9.227
 		pTcb->RATRIndex = 7;
 		return;
 	}
 
 	if(pMgntInfo->ForcedDataRate!= 0)
 	{
+<<<<<<< HEAD
 		pTcb->bTxDisableRateFallBack = TRUE;
 		pTcb->bTxUseDriverAssingedRate = TRUE;
+=======
+		pTcb->bTxDisableRateFallBack = true;
+		pTcb->bTxUseDriverAssingedRate = true;
+>>>>>>> v4.9.227
 		return;
 	}
 #endif
@@ -600,14 +639,22 @@ int ieee80211_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct ieee80211_device *ieee = netdev_priv(dev);
 	struct ieee80211_txb *txb = NULL;
+<<<<<<< HEAD
 	struct ieee80211_hdr_3addrqos *frag_hdr;
+=======
+	struct rtl_80211_hdr_3addrqos *frag_hdr;
+>>>>>>> v4.9.227
 	int i, bytes_per_frag, nr_frags, bytes_last_frag, frag_size;
 	unsigned long flags;
 	struct net_device_stats *stats = &ieee->stats;
 	int ether_type = 0, encrypt;
 	int bytes, fc, qos_ctl = 0, hdr_len;
 	struct sk_buff *skb_frag;
+<<<<<<< HEAD
 	struct ieee80211_hdr_3addrqos header = { /* Ensure zero initialized */
+=======
+	struct rtl_80211_hdr_3addrqos header = { /* Ensure zero initialized */
+>>>>>>> v4.9.227
 		.duration_id = 0,
 		.seq_ctl = 0,
 		.qos_ctl = 0
@@ -789,7 +836,11 @@ int ieee80211_xmit(struct sk_buff *skb, struct net_device *dev)
 			{
 				tcb_desc->bHwSec = 0;
 			}
+<<<<<<< HEAD
 			frag_hdr = (struct ieee80211_hdr_3addrqos *)skb_put(skb_frag, hdr_len);
+=======
+			frag_hdr = (struct rtl_80211_hdr_3addrqos *)skb_put(skb_frag, hdr_len);
+>>>>>>> v4.9.227
 			memcpy(frag_hdr, &header, hdr_len);
 
 			/* If this is not the last fragment, then add the MOREFRAGS
@@ -847,7 +898,11 @@ int ieee80211_xmit(struct sk_buff *skb, struct net_device *dev)
 			ieee->seq_ctrl[0]++;
 		}
 	}else{
+<<<<<<< HEAD
 		if (unlikely(skb->len < sizeof(struct ieee80211_hdr_3addr))) {
+=======
+		if (unlikely(skb->len < sizeof(struct rtl_80211_hdr_3addr))) {
+>>>>>>> v4.9.227
 			printk(KERN_WARNING "%s: skb too small (%d).\n",
 			ieee->dev->name, skb->len);
 			goto success;

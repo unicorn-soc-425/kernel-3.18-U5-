@@ -101,6 +101,10 @@ static void raid6_altivec$#_gen_syndrome(int disks, size_t bytes, void **ptrs)
 
 	raid6_altivec$#_gen_syndrome_real(disks, bytes, ptrs);
 
+<<<<<<< HEAD
+=======
+	disable_kernel_altivec();
+>>>>>>> v4.9.227
 	preempt_enable();
 }
 
@@ -119,6 +123,10 @@ int raid6_have_altivec(void)
 
 const struct raid6_calls raid6_altivec$# = {
 	raid6_altivec$#_gen_syndrome,
+<<<<<<< HEAD
+=======
+	NULL,			/* XOR not yet implemented */
+>>>>>>> v4.9.227
 	raid6_have_altivec,
 	"altivecx$#",
 	0

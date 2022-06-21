@@ -477,7 +477,11 @@ static const struct ad7877_platform_data bfin_ad7877_ts_info = {
 #endif
 
 #if IS_ENABLED(CONFIG_TOUCHSCREEN_AD7879)
+<<<<<<< HEAD
 #include <linux/spi/ad7879.h>
+=======
+#include <linux/platform_data/ad7879.h>
+>>>>>>> v4.9.227
 static const struct ad7879_platform_data bfin_ad7879_ts_info = {
 	.model			= 7879,	/* Model = AD7879 */
 	.x_plate_ohms		= 620,	/* 620 Ohm from the touch datasheet */
@@ -1092,7 +1096,18 @@ static struct platform_device bfin_device_gpiokeys = {
 #endif
 
 #if IS_ENABLED(CONFIG_INPUT_BFIN_ROTARY)
+<<<<<<< HEAD
 #include <asm/bfin_rotary.h>
+=======
+#include <linux/platform_data/bfin_rotary.h>
+
+static const u16 per_cnt[] = {
+	P_CNT_CUD,
+	P_CNT_CDG,
+	P_CNT_CZM,
+	0
+};
+>>>>>>> v4.9.227
 
 static struct bfin_rotary_platform_data bfin_rotary_data = {
 	/*.rotary_up_key     = KEY_UP,*/
@@ -1102,10 +1117,22 @@ static struct bfin_rotary_platform_data bfin_rotary_data = {
 	.debounce	   = 10,	/* 0..17 */
 	.mode		   = ROT_QUAD_ENC | ROT_DEBE,
 	.pm_wakeup	   = 1,
+<<<<<<< HEAD
+=======
+	.pin_list	   = per_cnt,
+>>>>>>> v4.9.227
 };
 
 static struct resource bfin_rotary_resources[] = {
 	{
+<<<<<<< HEAD
+=======
+		.start = CNT_CONFIG,
+		.end   = CNT_CONFIG + 0xff,
+		.flags = IORESOURCE_MEM,
+	},
+	{
+>>>>>>> v4.9.227
 		.start = IRQ_CNT,
 		.end = IRQ_CNT,
 		.flags = IORESOURCE_IRQ,

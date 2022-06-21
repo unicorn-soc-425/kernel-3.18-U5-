@@ -15,12 +15,19 @@
 
 #include <linux/i2c-omap.h>
 #include <linux/platform_data/asoc-ti-mcbsp.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/hsmmc-omap.h>
+>>>>>>> v4.9.227
 #include <linux/platform_data/spi-omap2-mcspi.h>
 #include <linux/omap-dma.h>
 #include <plat/dmtimer.h>
 
 #include "omap_hwmod.h"
+<<<<<<< HEAD
 #include "mmc.h"
+=======
+>>>>>>> v4.9.227
 #include "l3_2xxx.h"
 
 #include "soc.h"
@@ -372,7 +379,11 @@ static struct omap_hwmod_opt_clk omap2430_mmc1_opt_clks[] = {
 	{ .role = "dbck", .clk = "mmchsdb1_fck" },
 };
 
+<<<<<<< HEAD
 static struct omap_mmc_dev_attr mmc1_dev_attr = {
+=======
+static struct omap_hsmmc_dev_attr mmc1_dev_attr = {
+>>>>>>> v4.9.227
 	.flags = OMAP_HSMMC_SUPPORTS_DUAL_VOLT,
 };
 

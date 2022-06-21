@@ -48,7 +48,11 @@ struct s3c2410fb_display {
 
 struct s3c2410fb_mach_info {
 
+<<<<<<< HEAD
 	struct s3c2410fb_display *displays;	/* attached diplays info */
+=======
+	struct s3c2410fb_display *displays;	/* attached displays info */
+>>>>>>> v4.9.227
 	unsigned num_displays;			/* number of defined displays */
 	unsigned default_display;
 

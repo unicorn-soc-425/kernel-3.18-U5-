@@ -1,4 +1,5 @@
 #ifndef _ASM_SECCOMP_H
+<<<<<<< HEAD
 
 #include <linux/unistd.h>
 
@@ -12,4 +13,14 @@
 #define __NR_seccomp_exit_32 __NR_exit
 #define __NR_seccomp_sigreturn_32 __NR_sigreturn
 
+=======
+#define _ASM_SECCOMP_H
+
+#include <linux/unistd.h>
+
+#define __NR_seccomp_sigreturn_32 __NR_sigreturn
+
+#include <asm-generic/seccomp.h>
+
+>>>>>>> v4.9.227
 #endif /* _ASM_SECCOMP_H */

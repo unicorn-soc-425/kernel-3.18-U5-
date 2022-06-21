@@ -31,7 +31,11 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org/ 
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> v4.9.227
  */
 
 #include "budget.h"
@@ -132,7 +136,12 @@ static int SendDiSEqCMsg (struct budget *budget, int len, u8 *msg, unsigned long
  *   Voltage must be set here.
  *   GPIO 1: LNBP EN, GPIO 2: LNBP VSEL
  */
+<<<<<<< HEAD
 static int SetVoltage_Activy (struct budget *budget, fe_sec_voltage_t voltage)
+=======
+static int SetVoltage_Activy(struct budget *budget,
+			     enum fe_sec_voltage voltage)
+>>>>>>> v4.9.227
 {
 	struct saa7146_dev *dev=budget->dev;
 
@@ -157,14 +166,24 @@ static int SetVoltage_Activy (struct budget *budget, fe_sec_voltage_t voltage)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int siemens_budget_set_voltage(struct dvb_frontend* fe, fe_sec_voltage_t voltage)
+=======
+static int siemens_budget_set_voltage(struct dvb_frontend *fe,
+				      enum fe_sec_voltage voltage)
+>>>>>>> v4.9.227
 {
 	struct budget* budget = (struct budget*) fe->dvb->priv;
 
 	return SetVoltage_Activy (budget, voltage);
 }
 
+<<<<<<< HEAD
 static int budget_set_tone(struct dvb_frontend* fe, fe_sec_tone_mode_t tone)
+=======
+static int budget_set_tone(struct dvb_frontend *fe,
+			   enum fe_sec_tone_mode tone)
+>>>>>>> v4.9.227
 {
 	struct budget* budget = (struct budget*) fe->dvb->priv;
 
@@ -193,7 +212,12 @@ static int budget_diseqc_send_master_cmd(struct dvb_frontend* fe, struct dvb_dis
 	return 0;
 }
 
+<<<<<<< HEAD
 static int budget_diseqc_send_burst(struct dvb_frontend* fe, fe_sec_mini_cmd_t minicmd)
+=======
+static int budget_diseqc_send_burst(struct dvb_frontend *fe,
+				    enum fe_sec_mini_cmd minicmd)
+>>>>>>> v4.9.227
 {
 	struct budget* budget = (struct budget*) fe->dvb->priv;
 
@@ -611,36 +635,76 @@ static void frontend_init(struct budget *budget)
 		break;
 
 	case 0x1016: // Hauppauge/TT Nova-S SE (samsung s5h1420/????(tda8260))
+<<<<<<< HEAD
 		budget->dvb_frontend = dvb_attach(s5h1420_attach, &s5h1420_config, &budget->i2c_adap);
 		if (budget->dvb_frontend) {
 			budget->dvb_frontend->ops.tuner_ops.set_params = s5h1420_tuner_set_params;
 			if (dvb_attach(lnbp21_attach, budget->dvb_frontend, &budget->i2c_adap, 0, 0) == NULL) {
+=======
+	{
+		struct dvb_frontend *fe;
+
+		fe = dvb_attach(s5h1420_attach, &s5h1420_config, &budget->i2c_adap);
+		if (fe) {
+			fe->ops.tuner_ops.set_params = s5h1420_tuner_set_params;
+			budget->dvb_frontend = fe;
+			if (dvb_attach(lnbp21_attach, fe, &budget->i2c_adap,
+				       0, 0) == NULL) {
+>>>>>>> v4.9.227
 				printk("%s: No LNBP21 found!\n", __func__);
 				goto error_out;
 			}
 			break;
 		}
+<<<<<<< HEAD
 
 	case 0x1018: // TT Budget-S-1401 (philips tda10086/philips tda8262)
+=======
+	}
+	/* fall through */
+	case 0x1018: // TT Budget-S-1401 (philips tda10086/philips tda8262)
+	{
+		struct dvb_frontend *fe;
+
+>>>>>>> v4.9.227
 		// gpio2 is connected to CLB - reset it + leave it high
 		saa7146_setgpio(budget->dev, 2, SAA7146_GPIO_OUTLO);
 		msleep(1);
 		saa7146_setgpio(budget->dev, 2, SAA7146_GPIO_OUTHI);
 		msleep(1);
 
+<<<<<<< HEAD
 		budget->dvb_frontend = dvb_attach(tda10086_attach, &tda10086_config, &budget->i2c_adap);
 		if (budget->dvb_frontend) {
 			if (dvb_attach(tda826x_attach, budget->dvb_frontend, 0x60, &budget->i2c_adap, 0) == NULL)
 				printk("%s: No tda826x found!\n", __func__);
 			if (dvb_attach(lnbp21_attach, budget->dvb_frontend, &budget->i2c_adap, 0, 0) == NULL) {
+=======
+		fe = dvb_attach(tda10086_attach, &tda10086_config, &budget->i2c_adap);
+		if (fe) {
+			budget->dvb_frontend = fe;
+			if (dvb_attach(tda826x_attach, fe, 0x60,
+				       &budget->i2c_adap, 0) == NULL)
+				printk("%s: No tda826x found!\n", __func__);
+			if (dvb_attach(lnbp21_attach, fe,
+				       &budget->i2c_adap, 0, 0) == NULL) {
+>>>>>>> v4.9.227
 				printk("%s: No LNBP21 found!\n", __func__);
 				goto error_out;
 			}
 			break;
 		}
+<<<<<<< HEAD
 
 	case 0x101c: { /* TT S2-1600 */
 			struct stv6110x_devctl *ctl;
+=======
+	}
+	/* fall through */
+
+	case 0x101c: { /* TT S2-1600 */
+			const struct stv6110x_devctl *ctl;
+>>>>>>> v4.9.227
 			saa7146_setgpio(budget->dev, 2, SAA7146_GPIO_OUTLO);
 			msleep(50);
 			saa7146_setgpio(budget->dev, 2, SAA7146_GPIO_OUTHI);
@@ -693,7 +757,11 @@ static void frontend_init(struct budget *budget)
 		break;
 
 	case 0x1020: { /* Omicom S2 */
+<<<<<<< HEAD
 			struct stv6110x_devctl *ctl;
+=======
+			const struct stv6110x_devctl *ctl;
+>>>>>>> v4.9.227
 			saa7146_setgpio(budget->dev, 2, SAA7146_GPIO_OUTLO);
 			msleep(50);
 			saa7146_setgpio(budget->dev, 2, SAA7146_GPIO_OUTHI);

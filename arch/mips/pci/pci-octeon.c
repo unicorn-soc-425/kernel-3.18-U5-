@@ -204,6 +204,11 @@ const char *octeon_get_pci_interrupts(void)
 	 * Interrupt Number (INTA# = 0, INTB# = 1, INTC# = 2, and
 	 * INTD# = 3)
 	 */
+<<<<<<< HEAD
+=======
+	if (of_machine_is_compatible("dlink,dsr-500n"))
+		return "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
+>>>>>>> v4.9.227
 	switch (octeon_bootinfo->board_type) {
 	case CVMX_BOARD_TYPE_NAO38:
 		/* This is really the NAC38 */
@@ -323,8 +328,13 @@ static int octeon_write_config(struct pci_bus *bus, unsigned int devfn,
 
 
 static struct pci_ops octeon_pci_ops = {
+<<<<<<< HEAD
 	octeon_read_config,
 	octeon_write_config,
+=======
+	.read	= octeon_read_config,
+	.write	= octeon_write_config,
+>>>>>>> v4.9.227
 };
 
 static struct resource octeon_pci_mem_resource = {
@@ -571,6 +581,14 @@ static int __init octeon_pci_setup(void)
 	if (octeon_has_feature(OCTEON_FEATURE_PCIE))
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if (!octeon_is_pci_host()) {
+		pr_notice("Not in host mode, PCI Controller not initialized\n");
+		return 0;
+	}
+
+>>>>>>> v4.9.227
 	/* Point pcibios_map_irq() to the PCI version of it */
 	octeon_pcibios_map_irq = octeon_pci_pcibios_map_irq;
 
@@ -582,11 +600,14 @@ static int __init octeon_pci_setup(void)
 	else
 		octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_BIG;
 
+<<<<<<< HEAD
 	if (!octeon_is_pci_host()) {
 		pr_notice("Not in host mode, PCI Controller not initialized\n");
 		return 0;
 	}
 
+=======
+>>>>>>> v4.9.227
 	/* PCI I/O and PCI MEM values */
 	set_io_port_base(OCTEON_PCI_IOSPACE_BASE);
 	ioport_resource.start = 0;
@@ -704,7 +725,11 @@ static int __init octeon_pci_setup(void)
 
 	if (IS_ERR(platform_device_register_simple("octeon_pci_edac",
 						   -1, NULL, 0)))
+<<<<<<< HEAD
 		pr_err("Registation of co_pci_edac failed!\n");
+=======
+		pr_err("Registration of co_pci_edac failed!\n");
+>>>>>>> v4.9.227
 
 	octeon_pci_dma_init();
 

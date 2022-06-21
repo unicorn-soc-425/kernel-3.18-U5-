@@ -1,6 +1,7 @@
 #ifndef _ASM_IRQ_H
 #define _ASM_IRQ_H
 
+<<<<<<< HEAD
 #define EXT_INTERRUPT	1
 #define IO_INTERRUPT	2
 #define THIN_INTERRUPT	3
@@ -15,6 +16,16 @@
 
 /* This number is used when no interrupt has been assigned */
 #define NO_IRQ		0
+=======
+#define EXT_INTERRUPT	0
+#define IO_INTERRUPT	1
+#define THIN_INTERRUPT	2
+
+#define NR_IRQS_BASE	3
+
+#define NR_IRQS	NR_IRQS_BASE
+#define NR_IRQS_LEGACY NR_IRQS_BASE
+>>>>>>> v4.9.227
 
 /* External interruption codes */
 #define EXT_IRQ_INTERRUPT_KEY	0x0040
@@ -50,7 +61,10 @@ enum interruption_class {
 	IRQEXT_IUC,
 	IRQEXT_CMS,
 	IRQEXT_CMC,
+<<<<<<< HEAD
 	IRQEXT_CMR,
+=======
+>>>>>>> v4.9.227
 	IRQEXT_FTP,
 	IRQIO_CIO,
 	IRQIO_QAI,
@@ -60,7 +74,10 @@ enum interruption_class {
 	IRQIO_TAP,
 	IRQIO_VMR,
 	IRQIO_LCS,
+<<<<<<< HEAD
 	IRQIO_CLW,
+=======
+>>>>>>> v4.9.227
 	IRQIO_CTC,
 	IRQIO_APB,
 	IRQIO_ADM,
@@ -100,6 +117,22 @@ enum irq_subclass {
 	IRQ_SUBCLASS_SERVICE_SIGNAL = 9,
 };
 
+<<<<<<< HEAD
+=======
+#define CR0_IRQ_SUBCLASS_MASK					  \
+	((1UL << (63 - 30))  /* Warning Track */		| \
+	 (1UL << (63 - 48))  /* Malfunction Alert */		| \
+	 (1UL << (63 - 49))  /* Emergency Signal */		| \
+	 (1UL << (63 - 50))  /* External Call */		| \
+	 (1UL << (63 - 52))  /* Clock Comparator */		| \
+	 (1UL << (63 - 53))  /* CPU Timer */			| \
+	 (1UL << (63 - 54))  /* Service Signal */		| \
+	 (1UL << (63 - 57))  /* Interrupt Key */		| \
+	 (1UL << (63 - 58))  /* Measurement Alert */		| \
+	 (1UL << (63 - 59))  /* Timing Alert */			| \
+	 (1UL << (63 - 62))) /* IUCV */
+
+>>>>>>> v4.9.227
 void irq_subclass_register(enum irq_subclass subclass);
 void irq_subclass_unregister(enum irq_subclass subclass);
 

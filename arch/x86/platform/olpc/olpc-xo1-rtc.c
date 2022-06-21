@@ -16,6 +16,10 @@
 
 #include <asm/msr.h>
 #include <asm/olpc.h>
+<<<<<<< HEAD
+=======
+#include <asm/x86_init.h>
+>>>>>>> v4.9.227
 
 static void rtc_wake_on(struct device *dev)
 {
@@ -75,6 +79,11 @@ static int __init xo1_rtc_init(void)
 	if (r)
 		return r;
 
+<<<<<<< HEAD
+=======
+	x86_platform.legacy.rtc = 0;
+
+>>>>>>> v4.9.227
 	device_init_wakeup(&xo1_rtc_device.dev, 1);
 	return 0;
 }

@@ -52,15 +52,25 @@
  * bitmap_bitremap(oldbit, old, new, nbits)	newbit = map(old, new)(oldbit)
  * bitmap_onto(dst, orig, relmap, nbits)	*dst = orig relative to relmap
  * bitmap_fold(dst, orig, sz, nbits)		dst bits = orig bits mod sz
+<<<<<<< HEAD
  * bitmap_scnprintf(buf, len, src, nbits)	Print bitmap src to buf
  * bitmap_parse(buf, buflen, dst, nbits)	Parse bitmap dst from kernel buf
  * bitmap_parse_user(ubuf, ulen, dst, nbits)	Parse bitmap dst from user buf
  * bitmap_scnlistprintf(buf, len, src, nbits)	Print bitmap src as list to buf
+=======
+ * bitmap_parse(buf, buflen, dst, nbits)	Parse bitmap dst from kernel buf
+ * bitmap_parse_user(ubuf, ulen, dst, nbits)	Parse bitmap dst from user buf
+>>>>>>> v4.9.227
  * bitmap_parselist(buf, dst, nbits)		Parse bitmap dst from kernel buf
  * bitmap_parselist_user(buf, dst, nbits)	Parse bitmap dst from user buf
  * bitmap_find_free_region(bitmap, bits, order)	Find and allocate bit region
  * bitmap_release_region(bitmap, pos, order)	Free specified bit region
  * bitmap_allocate_region(bitmap, pos, order)	Allocate specified bit region
+<<<<<<< HEAD
+=======
+ * bitmap_from_u32array(dst, nbits, buf, nwords) *dst = *buf (nwords 32b words)
+ * bitmap_to_u32array(buf, nwords, src, nbits)	*buf = *dst (nwords 32b words)
+>>>>>>> v4.9.227
  */
 
 /*
@@ -86,6 +96,17 @@
  */
 
 /*
+<<<<<<< HEAD
+=======
+ * Allocation and deallocation of bitmap.
+ * Provided in lib/bitmap.c to avoid circular dependency.
+ */
+extern unsigned long *bitmap_alloc(unsigned int nbits, gfp_t flags);
+extern unsigned long *bitmap_zalloc(unsigned int nbits, gfp_t flags);
+extern void bitmap_free(const unsigned long *bitmap);
+
+/*
+>>>>>>> v4.9.227
  * lib/bitmap.c provides these functions:
  */
 
@@ -95,10 +116,17 @@ extern int __bitmap_equal(const unsigned long *bitmap1,
 			  const unsigned long *bitmap2, unsigned int nbits);
 extern void __bitmap_complement(unsigned long *dst, const unsigned long *src,
 			unsigned int nbits);
+<<<<<<< HEAD
 extern void __bitmap_shift_right(unsigned long *dst,
                         const unsigned long *src, int shift, int bits);
 extern void __bitmap_shift_left(unsigned long *dst,
                         const unsigned long *src, int shift, int bits);
+=======
+extern void __bitmap_shift_right(unsigned long *dst, const unsigned long *src,
+				unsigned int shift, unsigned int nbits);
+extern void __bitmap_shift_left(unsigned long *dst, const unsigned long *src,
+				unsigned int shift, unsigned int nbits);
+>>>>>>> v4.9.227
 extern int __bitmap_and(unsigned long *dst, const unsigned long *bitmap1,
 			const unsigned long *bitmap2, unsigned int nbits);
 extern void __bitmap_or(unsigned long *dst, const unsigned long *bitmap1,
@@ -146,19 +174,26 @@ bitmap_find_next_zero_area(unsigned long *map,
 					      align_mask, 0);
 }
 
+<<<<<<< HEAD
 extern int bitmap_scnprintf(char *buf, unsigned int len,
 			const unsigned long *src, int nbits);
+=======
+>>>>>>> v4.9.227
 extern int __bitmap_parse(const char *buf, unsigned int buflen, int is_user,
 			unsigned long *dst, int nbits);
 extern int bitmap_parse_user(const char __user *ubuf, unsigned int ulen,
 			unsigned long *dst, int nbits);
+<<<<<<< HEAD
 extern int bitmap_scnlistprintf(char *buf, unsigned int len,
 			const unsigned long *src, int nbits);
+=======
+>>>>>>> v4.9.227
 extern int bitmap_parselist(const char *buf, unsigned long *maskp,
 			int nmaskbits);
 extern int bitmap_parselist_user(const char __user *ubuf, unsigned int ulen,
 			unsigned long *dst, int nbits);
 extern void bitmap_remap(unsigned long *dst, const unsigned long *src,
+<<<<<<< HEAD
 		const unsigned long *old, const unsigned long *new, int bits);
 extern int bitmap_bitremap(int oldbit,
 		const unsigned long *old, const unsigned long *new, int bits);
@@ -183,32 +218,93 @@ extern int bitmap_ord_to_pos(const unsigned long *bitmap, int n, int bits);
 	(__builtin_constant_p(nbits) && (nbits) <= BITS_PER_LONG)
 
 static inline void bitmap_zero(unsigned long *dst, int nbits)
+=======
+		const unsigned long *old, const unsigned long *new, unsigned int nbits);
+extern int bitmap_bitremap(int oldbit,
+		const unsigned long *old, const unsigned long *new, int bits);
+extern void bitmap_onto(unsigned long *dst, const unsigned long *orig,
+		const unsigned long *relmap, unsigned int bits);
+extern void bitmap_fold(unsigned long *dst, const unsigned long *orig,
+		unsigned int sz, unsigned int nbits);
+extern int bitmap_find_free_region(unsigned long *bitmap, unsigned int bits, int order);
+extern void bitmap_release_region(unsigned long *bitmap, unsigned int pos, int order);
+extern int bitmap_allocate_region(unsigned long *bitmap, unsigned int pos, int order);
+extern unsigned int bitmap_from_u32array(unsigned long *bitmap,
+					 unsigned int nbits,
+					 const u32 *buf,
+					 unsigned int nwords);
+extern unsigned int bitmap_to_u32array(u32 *buf,
+				       unsigned int nwords,
+				       const unsigned long *bitmap,
+				       unsigned int nbits);
+#ifdef __BIG_ENDIAN
+extern void bitmap_copy_le(unsigned long *dst, const unsigned long *src, unsigned int nbits);
+#else
+#define bitmap_copy_le bitmap_copy
+#endif
+extern unsigned int bitmap_ord_to_pos(const unsigned long *bitmap, unsigned int ord, unsigned int nbits);
+extern int bitmap_print_to_pagebuf(bool list, char *buf,
+				   const unsigned long *maskp, int nmaskbits);
+
+#define BITMAP_FIRST_WORD_MASK(start) (~0UL << ((start) & (BITS_PER_LONG - 1)))
+#define BITMAP_LAST_WORD_MASK(nbits) (~0UL >> (-(nbits) & (BITS_PER_LONG - 1)))
+
+/*
+ * The static inlines below do not handle constant nbits==0 correctly,
+ * so make such users (should any ever turn up) call the out-of-line
+ * versions.
+ */
+#define small_const_nbits(nbits) \
+	(__builtin_constant_p(nbits) && (nbits) <= BITS_PER_LONG && (nbits) > 0)
+
+static inline void bitmap_zero(unsigned long *dst, unsigned int nbits)
+>>>>>>> v4.9.227
 {
 	if (small_const_nbits(nbits))
 		*dst = 0UL;
 	else {
+<<<<<<< HEAD
 		int len = BITS_TO_LONGS(nbits) * sizeof(unsigned long);
+=======
+		unsigned int len = BITS_TO_LONGS(nbits) * sizeof(unsigned long);
+>>>>>>> v4.9.227
 		memset(dst, 0, len);
 	}
 }
 
+<<<<<<< HEAD
 static inline void bitmap_fill(unsigned long *dst, int nbits)
 {
 	size_t nlongs = BITS_TO_LONGS(nbits);
 	if (!small_const_nbits(nbits)) {
 		int len = (nlongs - 1) * sizeof(unsigned long);
+=======
+static inline void bitmap_fill(unsigned long *dst, unsigned int nbits)
+{
+	unsigned int nlongs = BITS_TO_LONGS(nbits);
+	if (!small_const_nbits(nbits)) {
+		unsigned int len = (nlongs - 1) * sizeof(unsigned long);
+>>>>>>> v4.9.227
 		memset(dst, 0xff,  len);
 	}
 	dst[nlongs - 1] = BITMAP_LAST_WORD_MASK(nbits);
 }
 
 static inline void bitmap_copy(unsigned long *dst, const unsigned long *src,
+<<<<<<< HEAD
 			int nbits)
+=======
+			unsigned int nbits)
+>>>>>>> v4.9.227
 {
 	if (small_const_nbits(nbits))
 		*dst = *src;
 	else {
+<<<<<<< HEAD
 		int len = BITS_TO_LONGS(nbits) * sizeof(unsigned long);
+=======
+		unsigned int len = BITS_TO_LONGS(nbits) * sizeof(unsigned long);
+>>>>>>> v4.9.227
 		memcpy(dst, src, len);
 	}
 }
@@ -260,9 +356,18 @@ static inline int bitmap_equal(const unsigned long *src1,
 			const unsigned long *src2, unsigned int nbits)
 {
 	if (small_const_nbits(nbits))
+<<<<<<< HEAD
 		return ! ((*src1 ^ *src2) & BITMAP_LAST_WORD_MASK(nbits));
 	else
 		return __bitmap_equal(src1, src2, nbits);
+=======
+		return !((*src1 ^ *src2) & BITMAP_LAST_WORD_MASK(nbits));
+#ifdef CONFIG_S390
+	if (__builtin_constant_p(nbits) && (nbits % BITS_PER_LONG) == 0)
+		return !memcmp(src1, src2, nbits / 8);
+#endif
+	return __bitmap_equal(src1, src2, nbits);
+>>>>>>> v4.9.227
 }
 
 static inline int bitmap_intersects(const unsigned long *src1,
@@ -287,25 +392,39 @@ static inline int bitmap_empty(const unsigned long *src, unsigned nbits)
 {
 	if (small_const_nbits(nbits))
 		return ! (*src & BITMAP_LAST_WORD_MASK(nbits));
+<<<<<<< HEAD
 	else
 		return __bitmap_empty(src, nbits);
+=======
+
+	return find_first_bit(src, nbits) == nbits;
+>>>>>>> v4.9.227
 }
 
 static inline int bitmap_full(const unsigned long *src, unsigned int nbits)
 {
 	if (small_const_nbits(nbits))
 		return ! (~(*src) & BITMAP_LAST_WORD_MASK(nbits));
+<<<<<<< HEAD
 	else
 		return __bitmap_full(src, nbits);
 }
 
 static inline int bitmap_weight(const unsigned long *src, unsigned int nbits)
+=======
+
+	return find_first_zero_bit(src, nbits) == nbits;
+}
+
+static __always_inline int bitmap_weight(const unsigned long *src, unsigned int nbits)
+>>>>>>> v4.9.227
 {
 	if (small_const_nbits(nbits))
 		return hweight_long(*src & BITMAP_LAST_WORD_MASK(nbits));
 	return __bitmap_weight(src, nbits);
 }
 
+<<<<<<< HEAD
 static inline void bitmap_shift_right(unsigned long *dst,
 			const unsigned long *src, int n, int nbits)
 {
@@ -322,6 +441,24 @@ static inline void bitmap_shift_left(unsigned long *dst,
 		*dst = (*src << n) & BITMAP_LAST_WORD_MASK(nbits);
 	else
 		__bitmap_shift_left(dst, src, n, nbits);
+=======
+static inline void bitmap_shift_right(unsigned long *dst, const unsigned long *src,
+				unsigned int shift, unsigned int nbits)
+{
+	if (small_const_nbits(nbits))
+		*dst = (*src & BITMAP_LAST_WORD_MASK(nbits)) >> shift;
+	else
+		__bitmap_shift_right(dst, src, shift, nbits);
+}
+
+static inline void bitmap_shift_left(unsigned long *dst, const unsigned long *src,
+				unsigned int shift, unsigned int nbits)
+{
+	if (small_const_nbits(nbits))
+		*dst = (*src << shift) & BITMAP_LAST_WORD_MASK(nbits);
+	else
+		__bitmap_shift_left(dst, src, shift, nbits);
+>>>>>>> v4.9.227
 }
 
 static inline int bitmap_parse(const char *buf, unsigned int buflen,
@@ -330,6 +467,27 @@ static inline int bitmap_parse(const char *buf, unsigned int buflen,
 	return __bitmap_parse(buf, buflen, 0, maskp, nmaskbits);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * bitmap_from_u64 - Check and swap words within u64.
+ *  @mask: source bitmap
+ *  @dst:  destination bitmap
+ *
+ * In 32-bit Big Endian kernel, when using (u32 *)(&val)[*]
+ * to read u64 mask, we will get the wrong word.
+ * That is "(u32 *)(&val)[0]" gets the upper 32 bits,
+ * but we expect the lower 32-bits of u64.
+ */
+static inline void bitmap_from_u64(unsigned long *dst, u64 mask)
+{
+	dst[0] = mask & ULONG_MAX;
+
+	if (sizeof(mask) > sizeof(unsigned long))
+		dst[1] = mask >> 32;
+}
+
+>>>>>>> v4.9.227
 #endif /* __ASSEMBLY__ */
 
 #endif /* __LINUX_BITMAP_H */

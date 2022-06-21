@@ -91,12 +91,21 @@ BYTE_FLIP_MASK = %ymm13
 X_BYTE_FLIP_MASK = %xmm13 # XMM version of BYTE_FLIP_MASK
 
 NUM_BLKS = %rdx	# 3rd arg
+<<<<<<< HEAD
 CTX	= %rsi  # 2nd arg
 INP	= %rdi	# 1st arg
 c	= %ecx
 d	= %r8d
 e       = %edx	# clobbers NUM_BLKS
 y3	= %edi	# clobbers INP
+=======
+INP	= %rsi  # 2nd arg
+CTX	= %rdi	# 1st arg
+c	= %ecx
+d	= %r8d
+e       = %edx	# clobbers NUM_BLKS
+y3	= %esi	# clobbers INP
+>>>>>>> v4.9.227
 
 
 TBL	= %rbp
@@ -523,8 +532,13 @@ STACK_SIZE	= _RSP      + _RSP_SIZE
 
 ########################################################################
 ## void sha256_transform_rorx(void *input_data, UINT32 digest[8], UINT64 num_blks)
+<<<<<<< HEAD
 ## arg 1 : pointer to input data
 ## arg 2 : pointer to digest
+=======
+## arg 1 : pointer to digest
+## arg 2 : pointer to input data
+>>>>>>> v4.9.227
 ## arg 3 : Num blocks
 ########################################################################
 .text

@@ -20,9 +20,16 @@
  *	(sct@redhat.com), 1993, 1998
  */
 
+<<<<<<< HEAD
 #include <linux/aio.h>
 #include "ext4_jbd2.h"
 #include "truncate.h"
+=======
+#include "ext4_jbd2.h"
+#include "truncate.h"
+#include <linux/dax.h>
+#include <linux/uio.h>
+>>>>>>> v4.9.227
 
 #include <trace/events/ext4.h>
 
@@ -554,18 +561,51 @@ int ext4_ind_map_blocks(handle_t *handle, struct inode *inode,
 		goto got_it;
 	}
 
+<<<<<<< HEAD
 	/* Next simple case - plain lookup or failed read of indirect block */
 	if ((flags & EXT4_GET_BLOCKS_CREATE) == 0 || err == -EIO)
+=======
+	/* Next simple case - plain lookup failed */
+	if ((flags & EXT4_GET_BLOCKS_CREATE) == 0) {
+		unsigned epb = inode->i_sb->s_blocksize / sizeof(u32);
+		int i;
+
+		/*
+		 * Count number blocks in a subtree under 'partial'. At each
+		 * level we count number of complete empty subtrees beyond
+		 * current offset and then descend into the subtree only
+		 * partially beyond current offset.
+		 */
+		count = 0;
+		for (i = partial - chain + 1; i < depth; i++)
+			count = count * epb + (epb - offsets[i] - 1);
+		count++;
+		/* Fill in size of a hole we found */
+		map->m_pblk = 0;
+		map->m_len = min_t(unsigned int, map->m_len, count);
+		goto cleanup;
+	}
+
+	/* Failed read of indirect block */
+	if (err == -EIO)
+>>>>>>> v4.9.227
 		goto cleanup;
 
 	/*
 	 * Okay, we need to do block allocation.
 	*/
+<<<<<<< HEAD
 	if (EXT4_HAS_RO_COMPAT_FEATURE(inode->i_sb,
 				       EXT4_FEATURE_RO_COMPAT_BIGALLOC)) {
 		EXT4_ERROR_INODE(inode, "Can't allocate blocks for "
 				 "non-extent mapped inodes with bigalloc");
 		return -EUCLEAN;
+=======
+	if (ext4_has_feature_bigalloc(inode->i_sb)) {
+		EXT4_ERROR_INODE(inode, "Can't allocate blocks for "
+				 "non-extent mapped inodes with bigalloc");
+		return -EFSCORRUPTED;
+>>>>>>> v4.9.227
 	}
 
 	/* Set up for the direct block allocation */
@@ -576,6 +616,11 @@ int ext4_ind_map_blocks(handle_t *handle, struct inode *inode,
 		ar.flags = EXT4_MB_HINT_DATA;
 	if (flags & EXT4_GET_BLOCKS_DELALLOC_RESERVE)
 		ar.flags |= EXT4_MB_DELALLOC_RESERVED;
+<<<<<<< HEAD
+=======
+	if (flags & EXT4_GET_BLOCKS_METADATA_NOFAIL)
+		ar.flags |= EXT4_MB_USE_RESERVED;
+>>>>>>> v4.9.227
 
 	ar.goal = ext4_find_goal(inode, map->m_lblk, partial);
 
@@ -632,6 +677,7 @@ out:
 }
 
 /*
+<<<<<<< HEAD
  * O_DIRECT for ext3 (or indirect map) based files
  *
  * If the O_DIRECT write will extend the file then add this inode to the
@@ -750,6 +796,8 @@ out:
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Calculate the number of metadata blocks need to reserve
  * to allocate a new block at @lblocks for non extent file based file
  */
@@ -1312,6 +1360,10 @@ int ext4_ind_remove_space(handle_t *handle, struct inode *inode,
 	ext4_lblk_t offsets[4], offsets2[4];
 	Indirect chain[4], chain2[4];
 	Indirect *partial, *partial2;
+<<<<<<< HEAD
+=======
+	Indirect *p = NULL, *p2 = NULL;
+>>>>>>> v4.9.227
 	ext4_lblk_t max_block;
 	__le32 nr = 0, nr2 = 0;
 	int n = 0, n2 = 0;
@@ -1353,7 +1405,11 @@ int ext4_ind_remove_space(handle_t *handle, struct inode *inode,
 		}
 
 
+<<<<<<< HEAD
 		partial = ext4_find_shared(inode, n, offsets, chain, &nr);
+=======
+		partial = p = ext4_find_shared(inode, n, offsets, chain, &nr);
+>>>>>>> v4.9.227
 		if (nr) {
 			if (partial == chain) {
 				/* Shared branch grows from the inode */
@@ -1378,13 +1434,20 @@ int ext4_ind_remove_space(handle_t *handle, struct inode *inode,
 				partial->p + 1,
 				(__le32 *)partial->bh->b_data+addr_per_block,
 				(chain+n-1) - partial);
+<<<<<<< HEAD
 			BUFFER_TRACE(partial->bh, "call brelse");
 			brelse(partial->bh);
+=======
+>>>>>>> v4.9.227
 			partial--;
 		}
 
 end_range:
+<<<<<<< HEAD
 		partial2 = ext4_find_shared(inode, n2, offsets2, chain2, &nr2);
+=======
+		partial2 = p2 = ext4_find_shared(inode, n2, offsets2, chain2, &nr2);
+>>>>>>> v4.9.227
 		if (nr2) {
 			if (partial2 == chain2) {
 				/*
@@ -1414,16 +1477,24 @@ end_range:
 					   (__le32 *)partial2->bh->b_data,
 					   partial2->p,
 					   (chain2+n2-1) - partial2);
+<<<<<<< HEAD
 			BUFFER_TRACE(partial2->bh, "call brelse");
 			brelse(partial2->bh);
+=======
+>>>>>>> v4.9.227
 			partial2--;
 		}
 		goto do_indirects;
 	}
 
 	/* Punch happened within the same level (n == n2) */
+<<<<<<< HEAD
 	partial = ext4_find_shared(inode, n, offsets, chain, &nr);
 	partial2 = ext4_find_shared(inode, n2, offsets2, chain2, &nr2);
+=======
+	partial = p = ext4_find_shared(inode, n, offsets, chain, &nr);
+	partial2 = p2 = ext4_find_shared(inode, n2, offsets2, chain2, &nr2);
+>>>>>>> v4.9.227
 
 	/* Free top, but only if partial2 isn't its subtree. */
 	if (nr) {
@@ -1480,11 +1551,15 @@ end_range:
 					   partial->p + 1,
 					   partial2->p,
 					   (chain+n-1) - partial);
+<<<<<<< HEAD
 			BUFFER_TRACE(partial->bh, "call brelse");
 			brelse(partial->bh);
 			BUFFER_TRACE(partial2->bh, "call brelse");
 			brelse(partial2->bh);
 			return 0;
+=======
+			goto cleanup;
+>>>>>>> v4.9.227
 		}
 
 		/*
@@ -1499,8 +1574,11 @@ end_range:
 					   partial->p + 1,
 					   (__le32 *)partial->bh->b_data+addr_per_block,
 					   (chain+n-1) - partial);
+<<<<<<< HEAD
 			BUFFER_TRACE(partial->bh, "call brelse");
 			brelse(partial->bh);
+=======
+>>>>>>> v4.9.227
 			partial--;
 		}
 		if (partial2 > chain2 && depth2 <= depth) {
@@ -1508,11 +1586,29 @@ end_range:
 					   (__le32 *)partial2->bh->b_data,
 					   partial2->p,
 					   (chain2+n2-1) - partial2);
+<<<<<<< HEAD
 			BUFFER_TRACE(partial2->bh, "call brelse");
 			brelse(partial2->bh);
 			partial2--;
 		}
 	}
+=======
+			partial2--;
+		}
+	}
+
+cleanup:
+	while (p && p > chain) {
+		BUFFER_TRACE(p->bh, "call brelse");
+		brelse(p->bh);
+		p--;
+	}
+	while (p2 && p2 > chain2) {
+		BUFFER_TRACE(p2->bh, "call brelse");
+		brelse(p2->bh);
+		p2--;
+	}
+>>>>>>> v4.9.227
 	return 0;
 
 do_indirects:
@@ -1520,7 +1616,11 @@ do_indirects:
 	switch (offsets[0]) {
 	default:
 		if (++n >= n2)
+<<<<<<< HEAD
 			return 0;
+=======
+			break;
+>>>>>>> v4.9.227
 		nr = i_data[EXT4_IND_BLOCK];
 		if (nr) {
 			ext4_free_branches(handle, inode, NULL, &nr, &nr+1, 1);
@@ -1528,7 +1628,11 @@ do_indirects:
 		}
 	case EXT4_IND_BLOCK:
 		if (++n >= n2)
+<<<<<<< HEAD
 			return 0;
+=======
+			break;
+>>>>>>> v4.9.227
 		nr = i_data[EXT4_DIND_BLOCK];
 		if (nr) {
 			ext4_free_branches(handle, inode, NULL, &nr, &nr+1, 2);
@@ -1536,7 +1640,11 @@ do_indirects:
 		}
 	case EXT4_DIND_BLOCK:
 		if (++n >= n2)
+<<<<<<< HEAD
 			return 0;
+=======
+			break;
+>>>>>>> v4.9.227
 		nr = i_data[EXT4_TIND_BLOCK];
 		if (nr) {
 			ext4_free_branches(handle, inode, NULL, &nr, &nr+1, 3);
@@ -1545,5 +1653,9 @@ do_indirects:
 	case EXT4_TIND_BLOCK:
 		;
 	}
+<<<<<<< HEAD
 	return 0;
+=======
+	goto cleanup;
+>>>>>>> v4.9.227
 }

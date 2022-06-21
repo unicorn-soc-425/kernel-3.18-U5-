@@ -13,6 +13,7 @@
 #include "xattr.h"
 #include "acl.h"
 
+<<<<<<< HEAD
 static int hfsplus_security_getxattr(struct dentry *dentry, const char *name,
 					void *buffer, size_t size, int type)
 {
@@ -63,6 +64,25 @@ static size_t hfsplus_security_listxattr(struct dentry *dentry, char *list,
 	 * It is used hfsplus_listxattr() instead of generic_listxattr().
 	 */
 	return -EOPNOTSUPP;
+=======
+static int hfsplus_security_getxattr(const struct xattr_handler *handler,
+				     struct dentry *unused, struct inode *inode,
+				     const char *name, void *buffer, size_t size)
+{
+	return hfsplus_getxattr(inode, name, buffer, size,
+				XATTR_SECURITY_PREFIX,
+				XATTR_SECURITY_PREFIX_LEN);
+}
+
+static int hfsplus_security_setxattr(const struct xattr_handler *handler,
+				     struct dentry *unused, struct inode *inode,
+				     const char *name, const void *buffer,
+				     size_t size, int flags)
+{
+	return hfsplus_setxattr(inode, name, buffer, size, flags,
+				XATTR_SECURITY_PREFIX,
+				XATTR_SECURITY_PREFIX_LEN);
+>>>>>>> v4.9.227
 }
 
 static int hfsplus_initxattrs(struct inode *inode,
@@ -118,7 +138,10 @@ int hfsplus_init_inode_security(struct inode *inode,
 
 const struct xattr_handler hfsplus_xattr_security_handler = {
 	.prefix	= XATTR_SECURITY_PREFIX,
+<<<<<<< HEAD
 	.list	= hfsplus_security_listxattr,
+=======
+>>>>>>> v4.9.227
 	.get	= hfsplus_security_getxattr,
 	.set	= hfsplus_security_setxattr,
 };

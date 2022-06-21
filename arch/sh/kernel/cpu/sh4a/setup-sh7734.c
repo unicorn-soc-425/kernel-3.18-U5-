@@ -28,7 +28,11 @@ static struct plat_sci_port scif0_platform_data = {
 	.flags          = UPF_BOOT_AUTOCONF,
 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
 	.type           = PORT_SCIF,
+<<<<<<< HEAD
 	.regtype        = SCIx_SH4_SCIF_REGTYPE,
+=======
+	.regtype        = SCIx_SH4_SCIF_BRG_REGTYPE,
+>>>>>>> v4.9.227
 };
 
 static struct resource scif0_resources[] = {
@@ -50,7 +54,11 @@ static struct plat_sci_port scif1_platform_data = {
 	.flags          = UPF_BOOT_AUTOCONF,
 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
 	.type           = PORT_SCIF,
+<<<<<<< HEAD
 	.regtype        = SCIx_SH4_SCIF_REGTYPE,
+=======
+	.regtype        = SCIx_SH4_SCIF_BRG_REGTYPE,
+>>>>>>> v4.9.227
 };
 
 static struct resource scif1_resources[] = {
@@ -72,7 +80,11 @@ static struct plat_sci_port scif2_platform_data = {
 	.flags          = UPF_BOOT_AUTOCONF,
 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
 	.type           = PORT_SCIF,
+<<<<<<< HEAD
 	.regtype        = SCIx_SH4_SCIF_REGTYPE,
+=======
+	.regtype        = SCIx_SH4_SCIF_BRG_REGTYPE,
+>>>>>>> v4.9.227
 };
 
 static struct resource scif2_resources[] = {
@@ -94,7 +106,11 @@ static struct plat_sci_port scif3_platform_data = {
 	.flags          = UPF_BOOT_AUTOCONF,
 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
 	.type           = PORT_SCIF,
+<<<<<<< HEAD
 	.regtype        = SCIx_SH4_SCIF_REGTYPE,
+=======
+	.regtype        = SCIx_SH4_SCIF_BRG_REGTYPE,
+>>>>>>> v4.9.227
 };
 
 static struct resource scif3_resources[] = {
@@ -116,7 +132,11 @@ static struct plat_sci_port scif4_platform_data = {
 	.flags          = UPF_BOOT_AUTOCONF,
 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
 	.type           = PORT_SCIF,
+<<<<<<< HEAD
 	.regtype        = SCIx_SH4_SCIF_REGTYPE,
+=======
+	.regtype        = SCIx_SH4_SCIF_BRG_REGTYPE,
+>>>>>>> v4.9.227
 };
 
 static struct resource scif4_resources[] = {
@@ -138,7 +158,11 @@ static struct plat_sci_port scif5_platform_data = {
 	.flags          = UPF_BOOT_AUTOCONF,
 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
 	.type           = PORT_SCIF,
+<<<<<<< HEAD
 	.regtype		= SCIx_SH4_SCIF_REGTYPE,
+=======
+	.regtype	= SCIx_SH4_SCIF_BRG_REGTYPE,
+>>>>>>> v4.9.227
 };
 
 static struct resource scif5_resources[] = {

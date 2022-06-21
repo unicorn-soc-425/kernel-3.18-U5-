@@ -28,8 +28,13 @@
 
 #include "ubifs.h"
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/random.h>
 #include <linux/math64.h>
+=======
+#include <linux/math64.h>
+#include <linux/uuid.h>
+>>>>>>> v4.9.227
 
 /*
  * Default journal size in logical eraseblocks as a percent of total

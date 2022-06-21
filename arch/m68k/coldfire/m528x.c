@@ -102,6 +102,7 @@ void wildfiremod_halt(void)
 	printk(KERN_INFO "WildFireMod hibernating...\n");
 
 	/* Set portE.5 to Digital IO */
+<<<<<<< HEAD
 	MCF5282_GPIO_PEPAR &= ~(1 << (5 * 2));
 
 	/* Make portE.5 an output */
@@ -110,6 +111,16 @@ void wildfiremod_halt(void)
 	/* Now toggle portE.5 from low to high */
 	MCF5282_GPIO_PORTE &= ~(1 << 5);
 	MCF5282_GPIO_PORTE |= (1 << 5);
+=======
+	writew(readw(MCFGPIO_PEPAR) & ~(1 << (5 * 2)), MCFGPIO_PEPAR);
+
+	/* Make portE.5 an output */
+	writeb(readb(MCFGPIO_PDDR_E) | (1 << 5), MCFGPIO_PDDR_E);
+
+	/* Now toggle portE.5 from low to high */
+	writeb(readb(MCFGPIO_PODR_E) & ~(1 << 5), MCFGPIO_PODR_E);
+	writeb(readb(MCFGPIO_PODR_E) | (1 << 5), MCFGPIO_PODR_E);
+>>>>>>> v4.9.227
 
 	printk(KERN_EMERG "Failed to hibernate. Halting!\n");
 }

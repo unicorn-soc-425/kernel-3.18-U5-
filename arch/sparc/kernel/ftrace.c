@@ -130,6 +130,7 @@ unsigned long prepare_ftrace_return(unsigned long parent,
 	if (unlikely(atomic_read(&current->tracing_graph_pause)))
 		return parent + 8UL;
 
+<<<<<<< HEAD
 	if (ftrace_push_return_trace(parent, self_addr, &trace.depth,
 				     frame_pointer) == -EBUSY)
 		return parent + 8UL;
@@ -141,6 +142,18 @@ unsigned long prepare_ftrace_return(unsigned long parent,
 		current->curr_ret_stack--;
 		return parent + 8UL;
 	}
+=======
+	trace.func = self_addr;
+	trace.depth = current->curr_ret_stack + 1;
+
+	/* Only trace if the calling function expects to */
+	if (!ftrace_graph_entry(&trace))
+		return parent + 8UL;
+
+	if (ftrace_push_return_trace(parent, self_addr, &trace.depth,
+				     frame_pointer, NULL) == -EBUSY)
+		return parent + 8UL;
+>>>>>>> v4.9.227
 
 	return return_hooker;
 }

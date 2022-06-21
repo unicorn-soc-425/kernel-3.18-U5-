@@ -56,6 +56,7 @@ static struct miscdevice bL_switcher_device = {
 	"b.L_switcher",
 	&bL_switcher_fops
 };
+<<<<<<< HEAD
 
 static int __init bL_switcher_dummy_if_init(void)
 {
@@ -69,3 +70,10 @@ static void __exit bL_switcher_dummy_if_exit(void)
 
 module_init(bL_switcher_dummy_if_init);
 module_exit(bL_switcher_dummy_if_exit);
+=======
+module_misc_device(bL_switcher_device);
+
+MODULE_AUTHOR("Nicolas Pitre <nico@linaro.org>");
+MODULE_LICENSE("GPL v2");
+MODULE_DESCRIPTION("big.LITTLE switcher dummy user interface");
+>>>>>>> v4.9.227

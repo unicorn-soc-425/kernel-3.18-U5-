@@ -15,6 +15,10 @@
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
@@ -41,6 +45,7 @@ static struct dma_chan *dw_dma_of_xlate(struct of_phandle_args *dma_spec,
 
 	slave.src_id = dma_spec->args[0];
 	slave.dst_id = dma_spec->args[0];
+<<<<<<< HEAD
 	slave.src_master = dma_spec->args[1];
 	slave.dst_master = dma_spec->args[2];
 
@@ -48,6 +53,15 @@ static struct dma_chan *dw_dma_of_xlate(struct of_phandle_args *dma_spec,
 		    slave.dst_id >= DW_DMA_MAX_NR_REQUESTS ||
 		    slave.src_master >= dw->nr_masters ||
 		    slave.dst_master >= dw->nr_masters))
+=======
+	slave.m_master = dma_spec->args[1];
+	slave.p_master = dma_spec->args[2];
+
+	if (WARN_ON(slave.src_id >= DW_DMA_MAX_NR_REQUESTS ||
+		    slave.dst_id >= DW_DMA_MAX_NR_REQUESTS ||
+		    slave.m_master >= dw->pdata->nr_masters ||
+		    slave.p_master >= dw->pdata->nr_masters))
+>>>>>>> v4.9.227
 		return NULL;
 
 	dma_cap_zero(cap);
@@ -65,8 +79,13 @@ static bool dw_dma_acpi_filter(struct dma_chan *chan, void *param)
 		.dma_dev = dma_spec->dev,
 		.src_id = dma_spec->slave_id,
 		.dst_id = dma_spec->slave_id,
+<<<<<<< HEAD
 		.src_master = 1,
 		.dst_master = 0,
+=======
+		.m_master = 0,
+		.p_master = 1,
+>>>>>>> v4.9.227
 	};
 
 	return dw_dma_filter(chan, &slave);
@@ -86,6 +105,7 @@ static void dw_dma_acpi_controller_register(struct dw_dma *dw)
 	dma_cap_set(DMA_SLAVE, info->dma_cap);
 	info->filter_fn = dw_dma_acpi_filter;
 
+<<<<<<< HEAD
 	ret = devm_acpi_dma_controller_register(dev, acpi_dma_simple_xlate,
 						info);
 	if (ret)
@@ -93,6 +113,22 @@ static void dw_dma_acpi_controller_register(struct dw_dma *dw)
 }
 #else /* !CONFIG_ACPI */
 static inline void dw_dma_acpi_controller_register(struct dw_dma *dw) {}
+=======
+	ret = acpi_dma_controller_register(dev, acpi_dma_simple_xlate, info);
+	if (ret)
+		dev_err(dev, "could not register acpi_dma_controller\n");
+}
+
+static void dw_dma_acpi_controller_free(struct dw_dma *dw)
+{
+	struct device *dev = dw->dma.dev;
+
+	acpi_dma_controller_free(dev);
+}
+#else /* !CONFIG_ACPI */
+static inline void dw_dma_acpi_controller_register(struct dw_dma *dw) {}
+static inline void dw_dma_acpi_controller_free(struct dw_dma *dw) {}
+>>>>>>> v4.9.227
 #endif /* !CONFIG_ACPI */
 
 #ifdef CONFIG_OF
@@ -101,19 +137,41 @@ dw_dma_parse_dt(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
 	struct dw_dma_platform_data *pdata;
+<<<<<<< HEAD
 	u32 tmp, arr[4];
+=======
+	u32 tmp, arr[DW_DMA_MAX_NR_MASTERS];
+	u32 nr_masters;
+	u32 nr_channels;
+>>>>>>> v4.9.227
 
 	if (!np) {
 		dev_err(&pdev->dev, "Missing DT data\n");
 		return NULL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (of_property_read_u32(np, "dma-masters", &nr_masters))
+		return NULL;
+	if (nr_masters < 1 || nr_masters > DW_DMA_MAX_NR_MASTERS)
+		return NULL;
+
+	if (of_property_read_u32(np, "dma-channels", &nr_channels))
+		return NULL;
+
+>>>>>>> v4.9.227
 	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata)
 		return NULL;
 
+<<<<<<< HEAD
 	if (of_property_read_u32(np, "dma-channels", &pdata->nr_channels))
 		return NULL;
+=======
+	pdata->nr_masters = nr_masters;
+	pdata->nr_channels = nr_channels;
+>>>>>>> v4.9.227
 
 	if (of_property_read_bool(np, "is_private"))
 		pdata->is_private = true;
@@ -127,6 +185,7 @@ dw_dma_parse_dt(struct platform_device *pdev)
 	if (!of_property_read_u32(np, "block_size", &tmp))
 		pdata->block_size = tmp;
 
+<<<<<<< HEAD
 	if (!of_property_read_u32(np, "dma-masters", &tmp)) {
 		if (tmp > 4)
 			return NULL;
@@ -138,6 +197,15 @@ dw_dma_parse_dt(struct platform_device *pdev)
 				pdata->nr_masters))
 		for (tmp = 0; tmp < pdata->nr_masters; tmp++)
 			pdata->data_width[tmp] = arr[tmp];
+=======
+	if (!of_property_read_u32_array(np, "data-width", arr, nr_masters)) {
+		for (tmp = 0; tmp < nr_masters; tmp++)
+			pdata->data_width[tmp] = arr[tmp];
+	} else if (!of_property_read_u32_array(np, "data_width", arr, nr_masters)) {
+		for (tmp = 0; tmp < nr_masters; tmp++)
+			pdata->data_width[tmp] = BIT(arr[tmp] & 0x07);
+	}
+>>>>>>> v4.9.227
 
 	return pdata;
 }
@@ -154,7 +222,11 @@ static int dw_probe(struct platform_device *pdev)
 	struct dw_dma_chip *chip;
 	struct device *dev = &pdev->dev;
 	struct resource *mem;
+<<<<<<< HEAD
 	struct dw_dma_platform_data *pdata;
+=======
+	const struct dw_dma_platform_data *pdata;
+>>>>>>> v4.9.227
 	int err;
 
 	chip = devm_kzalloc(dev, sizeof(*chip), GFP_KERNEL);
@@ -179,6 +251,10 @@ static int dw_probe(struct platform_device *pdev)
 		pdata = dw_dma_parse_dt(pdev);
 
 	chip->dev = dev;
+<<<<<<< HEAD
+=======
+	chip->pdata = pdata;
+>>>>>>> v4.9.227
 
 	chip->clk = devm_clk_get(chip->dev, "hclk");
 	if (IS_ERR(chip->clk))
@@ -187,7 +263,13 @@ static int dw_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	err = dw_dma_probe(chip, pdata);
+=======
+	pm_runtime_enable(&pdev->dev);
+
+	err = dw_dma_probe(chip);
+>>>>>>> v4.9.227
 	if (err)
 		goto err_dw_dma_probe;
 
@@ -207,6 +289,10 @@ static int dw_probe(struct platform_device *pdev)
 	return 0;
 
 err_dw_dma_probe:
+<<<<<<< HEAD
+=======
+	pm_runtime_disable(&pdev->dev);
+>>>>>>> v4.9.227
 	clk_disable_unprepare(chip->clk);
 	return err;
 }
@@ -215,10 +301,20 @@ static int dw_remove(struct platform_device *pdev)
 {
 	struct dw_dma_chip *chip = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
+=======
+	if (ACPI_HANDLE(&pdev->dev))
+		dw_dma_acpi_controller_free(chip->dw);
+
+>>>>>>> v4.9.227
 	if (pdev->dev.of_node)
 		of_dma_controller_free(pdev->dev.of_node);
 
 	dw_dma_remove(chip);
+<<<<<<< HEAD
+=======
+	pm_runtime_disable(&pdev->dev);
+>>>>>>> v4.9.227
 	clk_disable_unprepare(chip->clk);
 
 	return 0;
@@ -228,7 +324,23 @@ static void dw_shutdown(struct platform_device *pdev)
 {
 	struct dw_dma_chip *chip = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	dw_dma_disable(chip);
+=======
+	/*
+	 * We have to call dw_dma_disable() to stop any ongoing transfer. On
+	 * some platforms we can't do that since DMA device is powered off.
+	 * Moreover we have no possibility to check if the platform is affected
+	 * or not. That's why we call pm_runtime_get_sync() / pm_runtime_put()
+	 * unconditionally. On the other hand we can't use
+	 * pm_runtime_suspended() because runtime PM framework is not fully
+	 * used by the driver.
+	 */
+	pm_runtime_get_sync(chip->dev);
+	dw_dma_disable(chip);
+	pm_runtime_put_sync_suspend(chip->dev);
+
+>>>>>>> v4.9.227
 	clk_disable_unprepare(chip->clk);
 }
 

@@ -992,6 +992,7 @@ static struct isa_driver pcwd_isa_driver = {
 	},
 };
 
+<<<<<<< HEAD
 static int __init pcwd_init_module(void)
 {
 	return isa_register_driver(&pcwd_isa_driver, PCWD_ISA_NR_CARDS);
@@ -1005,6 +1006,9 @@ static void __exit pcwd_cleanup_module(void)
 
 module_init(pcwd_init_module);
 module_exit(pcwd_cleanup_module);
+=======
+module_isa_driver(pcwd_isa_driver, PCWD_ISA_NR_CARDS);
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Ken Hollis <kenji@bitgate.com>, "
 		"Wim Van Sebroeck <wim@iguana.be>");

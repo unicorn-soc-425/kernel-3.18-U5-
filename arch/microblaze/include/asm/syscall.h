@@ -97,7 +97,11 @@ static inline void syscall_set_arguments(struct task_struct *task,
 		microblaze_set_syscall_arg(regs, i++, *args++);
 }
 
+<<<<<<< HEAD
 asmlinkage long do_syscall_trace_enter(struct pt_regs *regs);
+=======
+asmlinkage unsigned long do_syscall_trace_enter(struct pt_regs *regs);
+>>>>>>> v4.9.227
 asmlinkage void do_syscall_trace_leave(struct pt_regs *regs);
 
 static inline int syscall_get_arch(void)

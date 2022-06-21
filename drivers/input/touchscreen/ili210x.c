@@ -169,7 +169,11 @@ static ssize_t ili210x_calibrate(struct device *dev,
 
 	return count;
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(calibrate, 0644, NULL, ili210x_calibrate);
+=======
+static DEVICE_ATTR(calibrate, S_IWUSR, NULL, ili210x_calibrate);
+>>>>>>> v4.9.227
 
 static struct attribute *ili210x_attributes[] = {
 	&dev_attr_calibrate.attr,
@@ -216,7 +220,11 @@ static int ili210x_i2c_probe(struct i2c_client *client,
 	/* get panel info */
 	error = ili210x_read_reg(client, REG_PANEL_INFO, &panel, sizeof(panel));
 	if (error) {
+<<<<<<< HEAD
 		dev_err(dev, "Failed to get panel informations, err: %d\n",
+=======
+		dev_err(dev, "Failed to get panel information, err: %d\n",
+>>>>>>> v4.9.227
 			error);
 		return error;
 	}
@@ -276,7 +284,11 @@ static int ili210x_i2c_probe(struct i2c_client *client,
 
 	error = input_register_device(priv->input);
 	if (error) {
+<<<<<<< HEAD
 		dev_err(dev, "Cannot regiser input device, err: %d\n", error);
+=======
+		dev_err(dev, "Cannot register input device, err: %d\n", error);
+>>>>>>> v4.9.227
 		goto err_remove_sysfs;
 	}
 
@@ -311,8 +323,12 @@ static int ili210x_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int ili210x_i2c_suspend(struct device *dev)
+=======
+static int __maybe_unused ili210x_i2c_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
@@ -322,7 +338,11 @@ static int ili210x_i2c_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ili210x_i2c_resume(struct device *dev)
+=======
+static int __maybe_unused ili210x_i2c_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
@@ -331,7 +351,10 @@ static int ili210x_i2c_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(ili210x_i2c_pm,
 			 ili210x_i2c_suspend, ili210x_i2c_resume);
@@ -345,7 +368,10 @@ MODULE_DEVICE_TABLE(i2c, ili210x_i2c_id);
 static struct i2c_driver ili210x_ts_driver = {
 	.driver = {
 		.name = "ili210x_i2c",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &ili210x_i2c_pm,
 	},
 	.id_table = ili210x_i2c_id,

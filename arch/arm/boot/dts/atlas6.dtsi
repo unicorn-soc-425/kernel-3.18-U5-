@@ -131,6 +131,10 @@
 				reg = <0x90020000 0x10000>;
 				interrupts = <31>;
 				clocks = <&clks 35>;
+<<<<<<< HEAD
+=======
+				resets = <&rstc 6>;
+>>>>>>> v4.9.227
 			};
 		};
 
@@ -312,6 +316,10 @@
 				#address-cells = <1>;
 				#size-cells = <0>;
 				clocks = <&clks 19>;
+<<<<<<< HEAD
+=======
+				resets = <&rstc 26>;
+>>>>>>> v4.9.227
 				status = "disabled";
 			};
 
@@ -327,6 +335,10 @@
 				#address-cells = <1>;
 				#size-cells = <0>;
 				clocks = <&clks 20>;
+<<<<<<< HEAD
+=======
+				resets = <&rstc 27>;
+>>>>>>> v4.9.227
 				status = "disabled";
 			};
 
@@ -522,6 +534,21 @@
                                                 sirf,function = "sdmmc5";
                                         };
                                 };
+<<<<<<< HEAD
+=======
+				i2s_mclk_pins_a: i2s_mclk@0 {
+                                        i2s_mclk {
+                                                sirf,pins = "i2smclkgrp";
+                                                sirf,function = "i2s_mclk";
+                                        };
+                                };
+				i2s_ext_clk_input_pins_a: i2s_ext_clk_input@0 {
+                                        i2s_ext_clk_input {
+                                                sirf,pins = "i2s_ext_clk_inputgrp";
+                                                sirf,function = "i2s_ext_clk_input";
+                                        };
+                                };
+>>>>>>> v4.9.227
                                 i2s_pins_a: i2s@0 {
                                         i2s {
                                                 sirf,pins = "i2sgrp";

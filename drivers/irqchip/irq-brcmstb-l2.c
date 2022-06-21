@@ -19,6 +19,10 @@
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/spinlock.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
@@ -30,10 +34,13 @@
 #include <linux/irqchip.h>
 #include <linux/irqchip/chained_irq.h>
 
+<<<<<<< HEAD
 #include <asm/mach/irq.h>
 
 #include "irqchip.h"
 
+=======
+>>>>>>> v4.9.227
 /* Register offsets in the L2 interrupt controller */
 #define CPU_STATUS	0x00
 #define CPU_SET		0x04
@@ -51,26 +58,49 @@ struct brcmstb_l2_intc_data {
 	u32 saved_mask; /* for suspend/resume */
 };
 
+<<<<<<< HEAD
 static void brcmstb_l2_intc_irq_handle(unsigned int irq, struct irq_desc *desc)
 {
 	struct brcmstb_l2_intc_data *b = irq_desc_get_handler_data(desc);
 	struct irq_chip *chip = irq_desc_get_chip(desc);
+=======
+static void brcmstb_l2_intc_irq_handle(struct irq_desc *desc)
+{
+	struct brcmstb_l2_intc_data *b = irq_desc_get_handler_data(desc);
+	struct irq_chip_generic *gc = irq_get_domain_generic_chip(b->domain, 0);
+	struct irq_chip *chip = irq_desc_get_chip(desc);
+	unsigned int irq;
+>>>>>>> v4.9.227
 	u32 status;
 
 	chained_irq_enter(chip, desc);
 
+<<<<<<< HEAD
 	status = __raw_readl(b->base + CPU_STATUS) &
 		~(__raw_readl(b->base + CPU_MASK_STATUS));
 
 	if (status == 0) {
 		do_bad_IRQ(irq, desc);
+=======
+	status = irq_reg_readl(gc, CPU_STATUS) &
+		~(irq_reg_readl(gc, CPU_MASK_STATUS));
+
+	if (status == 0) {
+		raw_spin_lock(&desc->lock);
+		handle_bad_irq(desc);
+		raw_spin_unlock(&desc->lock);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
 	do {
 		irq = ffs(status) - 1;
 		/* ack at our level */
+<<<<<<< HEAD
 		__raw_writel(1 << irq, b->base + CPU_CLEAR);
+=======
+		irq_reg_writel(gc, 1 << irq, CPU_CLEAR);
+>>>>>>> v4.9.227
 		status &= ~(1 << irq);
 		generic_handle_irq(irq_find_mapping(b->domain, irq));
 	} while (status);
@@ -85,12 +115,21 @@ static void brcmstb_l2_intc_suspend(struct irq_data *d)
 
 	irq_gc_lock(gc);
 	/* Save the current mask */
+<<<<<<< HEAD
 	b->saved_mask = __raw_readl(b->base + CPU_MASK_STATUS);
 
 	if (b->can_wake) {
 		/* Program the wakeup mask */
 		__raw_writel(~gc->wake_active, b->base + CPU_MASK_SET);
 		__raw_writel(gc->wake_active, b->base + CPU_MASK_CLEAR);
+=======
+	b->saved_mask = irq_reg_readl(gc, CPU_MASK_STATUS);
+
+	if (b->can_wake) {
+		/* Program the wakeup mask */
+		irq_reg_writel(gc, ~gc->wake_active, CPU_MASK_SET);
+		irq_reg_writel(gc, gc->wake_active, CPU_MASK_CLEAR);
+>>>>>>> v4.9.227
 	}
 	irq_gc_unlock(gc);
 }
@@ -102,6 +141,7 @@ static void brcmstb_l2_intc_resume(struct irq_data *d)
 
 	irq_gc_lock(gc);
 	/* Clear unmasked non-wakeup interrupts */
+<<<<<<< HEAD
 	__raw_writel(~b->saved_mask & ~gc->wake_active, b->base + CPU_CLEAR);
 
 	/* Restore the saved mask */
@@ -112,12 +152,28 @@ static void brcmstb_l2_intc_resume(struct irq_data *d)
 
 int __init brcmstb_l2_intc_of_init(struct device_node *np,
 					struct device_node *parent)
+=======
+	irq_reg_writel(gc, ~b->saved_mask & ~gc->wake_active, CPU_CLEAR);
+
+	/* Restore the saved mask */
+	irq_reg_writel(gc, b->saved_mask, CPU_MASK_SET);
+	irq_reg_writel(gc, ~b->saved_mask, CPU_MASK_CLEAR);
+	irq_gc_unlock(gc);
+}
+
+static int __init brcmstb_l2_intc_of_init(struct device_node *np,
+					  struct device_node *parent)
+>>>>>>> v4.9.227
 {
 	unsigned int clr = IRQ_NOREQUEST | IRQ_NOPROBE | IRQ_NOAUTOEN;
 	struct brcmstb_l2_intc_data *data;
 	struct irq_chip_generic *gc;
 	struct irq_chip_type *ct;
 	int ret;
+<<<<<<< HEAD
+=======
+	unsigned int flags;
+>>>>>>> v4.9.227
 
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	if (!data)
@@ -131,8 +187,17 @@ int __init brcmstb_l2_intc_of_init(struct device_node *np,
 	}
 
 	/* Disable all interrupts by default */
+<<<<<<< HEAD
 	__raw_writel(0xffffffff, data->base + CPU_MASK_SET);
 	__raw_writel(0xffffffff, data->base + CPU_CLEAR);
+=======
+	writel(0xffffffff, data->base + CPU_MASK_SET);
+
+	/* Wakeup interrupts may be retained from S5 (cold boot) */
+	data->can_wake = of_property_read_bool(np, "brcm,irq-can-wake");
+	if (!data->can_wake)
+		writel(0xffffffff, data->base + CPU_CLEAR);
+>>>>>>> v4.9.227
 
 	data->parent_irq = irq_of_parse_and_map(np, 0);
 	if (!data->parent_irq) {
@@ -148,17 +213,35 @@ int __init brcmstb_l2_intc_of_init(struct device_node *np,
 		goto out_unmap;
 	}
 
+<<<<<<< HEAD
 	/* Allocate a single Generic IRQ chip for this node */
 	ret = irq_alloc_domain_generic_chips(data->domain, 32, 1,
 				np->full_name, handle_edge_irq, clr, 0, 0);
+=======
+	/* MIPS chips strapped for BE will automagically configure the
+	 * peripheral registers for CPU-native byte order.
+	 */
+	flags = 0;
+	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+		flags |= IRQ_GC_BE_IO;
+
+	/* Allocate a single Generic IRQ chip for this node */
+	ret = irq_alloc_domain_generic_chips(data->domain, 32, 1,
+				np->full_name, handle_edge_irq, clr, 0, flags);
+>>>>>>> v4.9.227
 	if (ret) {
 		pr_err("failed to allocate generic irq chip\n");
 		goto out_free_domain;
 	}
 
 	/* Set the IRQ chaining logic */
+<<<<<<< HEAD
 	irq_set_handler_data(data->parent_irq, data);
 	irq_set_chained_handler(data->parent_irq, brcmstb_l2_intc_irq_handle);
+=======
+	irq_set_chained_handler_and_data(data->parent_irq,
+					 brcmstb_l2_intc_irq_handle, data);
+>>>>>>> v4.9.227
 
 	gc = irq_get_domain_generic_chip(data->domain, 0);
 	gc->reg_base = data->base;
@@ -177,8 +260,12 @@ int __init brcmstb_l2_intc_of_init(struct device_node *np,
 	ct->chip.irq_suspend = brcmstb_l2_intc_suspend;
 	ct->chip.irq_resume = brcmstb_l2_intc_resume;
 
+<<<<<<< HEAD
 	if (of_property_read_bool(np, "brcm,irq-can-wake")) {
 		data->can_wake = true;
+=======
+	if (data->can_wake) {
+>>>>>>> v4.9.227
 		/* This IRQ chip can wake the system, set all child interrupts
 		 * in wake_enabled mask
 		 */

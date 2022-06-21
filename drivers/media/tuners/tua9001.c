@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Infineon TUA 9001 silicon tuner driver
+=======
+ * Infineon TUA9001 silicon tuner driver
+>>>>>>> v4.9.227
  *
  * Copyright (C) 2009 Antti Palosaari <crope@iki.fi>
  *
@@ -12,6 +16,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *    You should have received a copy of the GNU General Public License along
  *    with this program; if not, write to the Free Software Foundation, Inc.,
@@ -112,11 +117,59 @@ err:
 	if (ret < 0)
 		dev_dbg(&priv->i2c->dev, "%s: failed=%d\n", __func__, ret);
 
+=======
+ */
+
+#include "tua9001_priv.h"
+
+static int tua9001_init(struct dvb_frontend *fe)
+{
+	struct tua9001_dev *dev = fe->tuner_priv;
+	struct i2c_client *client = dev->client;
+	int ret, i;
+	static const struct tua9001_reg_val data[] = {
+		{0x1e, 0x6512},
+		{0x25, 0xb888},
+		{0x39, 0x5460},
+		{0x3b, 0x00c0},
+		{0x3a, 0xf000},
+		{0x08, 0x0000},
+		{0x32, 0x0030},
+		{0x41, 0x703a},
+		{0x40, 0x1c78},
+		{0x2c, 0x1c00},
+		{0x36, 0xc013},
+		{0x37, 0x6f18},
+		{0x27, 0x0008},
+		{0x2a, 0x0001},
+		{0x34, 0x0a40},
+	};
+
+	dev_dbg(&client->dev, "\n");
+
+	if (fe->callback) {
+		ret = fe->callback(client->adapter,
+				   DVB_FRONTEND_COMPONENT_TUNER,
+				   TUA9001_CMD_RESETN, 0);
+		if (ret)
+			goto err;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(data); i++) {
+		ret = regmap_write(dev->regmap, data[i].reg, data[i].val);
+		if (ret)
+			goto err;
+	}
+	return 0;
+err:
+	dev_dbg(&client->dev, "failed=%d\n", ret);
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static int tua9001_sleep(struct dvb_frontend *fe)
 {
+<<<<<<< HEAD
 	struct tua9001_priv *priv = fe->tuner_priv;
 	int ret = 0;
 
@@ -129,11 +182,30 @@ static int tua9001_sleep(struct dvb_frontend *fe)
 	if (ret < 0)
 		dev_dbg(&priv->i2c->dev, "%s: failed=%d\n", __func__, ret);
 
+=======
+	struct tua9001_dev *dev = fe->tuner_priv;
+	struct i2c_client *client = dev->client;
+	int ret;
+
+	dev_dbg(&client->dev, "\n");
+
+	if (fe->callback) {
+		ret = fe->callback(client->adapter,
+				   DVB_FRONTEND_COMPONENT_TUNER,
+				   TUA9001_CMD_RESETN, 1);
+		if (ret)
+			goto err;
+	}
+	return 0;
+err:
+	dev_dbg(&client->dev, "failed=%d\n", ret);
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static int tua9001_set_params(struct dvb_frontend *fe)
 {
+<<<<<<< HEAD
 	struct tua9001_priv *priv = fe->tuner_priv;
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 	int ret = 0, i;
@@ -144,6 +216,18 @@ static int tua9001_set_params(struct dvb_frontend *fe)
 	dev_dbg(&priv->i2c->dev, "%s: delivery_system=%d frequency=%d " \
 			"bandwidth_hz=%d\n", __func__,
 			c->delivery_system, c->frequency, c->bandwidth_hz);
+=======
+	struct tua9001_dev *dev = fe->tuner_priv;
+	struct i2c_client *client = dev->client;
+	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
+	int ret, i;
+	u16 val;
+	struct tua9001_reg_val data[2];
+
+	dev_dbg(&client->dev,
+		"delivery_system=%u frequency=%u bandwidth_hz=%u\n",
+		c->delivery_system, c->frequency, c->bandwidth_hz);
+>>>>>>> v4.9.227
 
 	switch (c->delivery_system) {
 	case SYS_DVBT:
@@ -172,6 +256,7 @@ static int tua9001_set_params(struct dvb_frontend *fe)
 
 	data[0].reg = 0x04;
 	data[0].val = val;
+<<<<<<< HEAD
 
 	frequency = (c->frequency - 150000000);
 	frequency /= 100;
@@ -211,22 +296,61 @@ err:
 	if (ret < 0)
 		dev_dbg(&priv->i2c->dev, "%s: failed=%d\n", __func__, ret);
 
+=======
+	data[1].reg = 0x1f;
+	data[1].val = div_u64((u64) (c->frequency - 150000000) * 48, 1000000);
+
+	if (fe->callback) {
+		ret = fe->callback(client->adapter,
+				   DVB_FRONTEND_COMPONENT_TUNER,
+				   TUA9001_CMD_RXEN, 0);
+		if (ret)
+			goto err;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(data); i++) {
+		ret = regmap_write(dev->regmap, data[i].reg, data[i].val);
+		if (ret)
+			goto err;
+	}
+
+	if (fe->callback) {
+		ret = fe->callback(client->adapter,
+				   DVB_FRONTEND_COMPONENT_TUNER,
+				   TUA9001_CMD_RXEN, 1);
+		if (ret)
+			goto err;
+	}
+	return 0;
+err:
+	dev_dbg(&client->dev, "failed=%d\n", ret);
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static int tua9001_get_if_frequency(struct dvb_frontend *fe, u32 *frequency)
 {
+<<<<<<< HEAD
 	struct tua9001_priv *priv = fe->tuner_priv;
 
 	dev_dbg(&priv->i2c->dev, "%s:\n", __func__);
 
 	*frequency = 0; /* Zero-IF */
 
+=======
+	struct tua9001_dev *dev = fe->tuner_priv;
+	struct i2c_client *client = dev->client;
+
+	dev_dbg(&client->dev, "\n");
+
+	*frequency = 0; /* Zero-IF */
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static const struct dvb_tuner_ops tua9001_tuner_ops = {
 	.info = {
+<<<<<<< HEAD
 		.name           = "Infineon TUA 9001",
 
 		.frequency_min  = 170000000,
@@ -236,6 +360,13 @@ static const struct dvb_tuner_ops tua9001_tuner_ops = {
 
 	.release = tua9001_release,
 
+=======
+		.name           = "Infineon TUA9001",
+		.frequency_min  = 170000000,
+		.frequency_max  = 862000000,
+	},
+
+>>>>>>> v4.9.227
 	.init = tua9001_init,
 	.sleep = tua9001_sleep,
 	.set_params = tua9001_set_params,
@@ -243,6 +374,7 @@ static const struct dvb_tuner_ops tua9001_tuner_ops = {
 	.get_if_frequency = tua9001_get_if_frequency,
 };
 
+<<<<<<< HEAD
 struct dvb_frontend *tua9001_attach(struct dvb_frontend *fe,
 		struct i2c_adapter *i2c, struct tua9001_config *cfg)
 {
@@ -290,5 +422,109 @@ err:
 EXPORT_SYMBOL(tua9001_attach);
 
 MODULE_DESCRIPTION("Infineon TUA 9001 silicon tuner driver");
+=======
+static int tua9001_probe(struct i2c_client *client,
+			const struct i2c_device_id *id)
+{
+	struct tua9001_dev *dev;
+	struct tua9001_platform_data *pdata = client->dev.platform_data;
+	struct dvb_frontend *fe = pdata->dvb_frontend;
+	int ret;
+	static const struct regmap_config regmap_config = {
+		.reg_bits =  8,
+		.val_bits = 16,
+	};
+
+	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+	if (!dev) {
+		ret = -ENOMEM;
+		goto err;
+	}
+
+	dev->fe = pdata->dvb_frontend;
+	dev->client = client;
+	dev->regmap = devm_regmap_init_i2c(client, &regmap_config);
+	if (IS_ERR(dev->regmap)) {
+		ret = PTR_ERR(dev->regmap);
+		goto err_kfree;
+	}
+
+	if (fe->callback) {
+		ret = fe->callback(client->adapter,
+				   DVB_FRONTEND_COMPONENT_TUNER,
+				   TUA9001_CMD_CEN, 1);
+		if (ret)
+			goto err_kfree;
+
+		ret = fe->callback(client->adapter,
+				   DVB_FRONTEND_COMPONENT_TUNER,
+				   TUA9001_CMD_RXEN, 0);
+		if (ret)
+			goto err_kfree;
+
+		ret = fe->callback(client->adapter,
+				   DVB_FRONTEND_COMPONENT_TUNER,
+				   TUA9001_CMD_RESETN, 1);
+		if (ret)
+			goto err_kfree;
+	}
+
+	fe->tuner_priv = dev;
+	memcpy(&fe->ops.tuner_ops, &tua9001_tuner_ops,
+			sizeof(struct dvb_tuner_ops));
+	i2c_set_clientdata(client, dev);
+
+	dev_info(&client->dev, "Infineon TUA9001 successfully attached\n");
+	return 0;
+err_kfree:
+	kfree(dev);
+err:
+	dev_dbg(&client->dev, "failed=%d\n", ret);
+	return ret;
+}
+
+static int tua9001_remove(struct i2c_client *client)
+{
+	struct tua9001_dev *dev = i2c_get_clientdata(client);
+	struct dvb_frontend *fe = dev->fe;
+	int ret;
+
+	dev_dbg(&client->dev, "\n");
+
+	if (fe->callback) {
+		ret = fe->callback(client->adapter,
+				   DVB_FRONTEND_COMPONENT_TUNER,
+				   TUA9001_CMD_CEN, 0);
+		if (ret)
+			goto err_kfree;
+	}
+	kfree(dev);
+	return 0;
+err_kfree:
+	kfree(dev);
+	dev_dbg(&client->dev, "failed=%d\n", ret);
+	return ret;
+}
+
+static const struct i2c_device_id tua9001_id_table[] = {
+	{"tua9001", 0},
+	{}
+};
+MODULE_DEVICE_TABLE(i2c, tua9001_id_table);
+
+static struct i2c_driver tua9001_driver = {
+	.driver = {
+		.name	= "tua9001",
+		.suppress_bind_attrs = true,
+	},
+	.probe		= tua9001_probe,
+	.remove		= tua9001_remove,
+	.id_table	= tua9001_id_table,
+};
+
+module_i2c_driver(tua9001_driver);
+
+MODULE_DESCRIPTION("Infineon TUA9001 silicon tuner driver");
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Antti Palosaari <crope@iki.fi>");
 MODULE_LICENSE("GPL");

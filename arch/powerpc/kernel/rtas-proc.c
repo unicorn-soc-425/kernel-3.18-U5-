@@ -113,6 +113,7 @@
 #define SENSOR_PREFIX		"ibm,sensor-"
 #define cel_to_fahr(x)		((x*9/5)+32)
 
+<<<<<<< HEAD
 
 /* Globals */
 static struct rtas_sensors sensors;
@@ -124,6 +125,8 @@ static unsigned long rtas_tone_frequency = 1000;
 static unsigned long rtas_tone_volume = 0;
 
 /* ****************STRUCTS******************************************* */
+=======
+>>>>>>> v4.9.227
 struct individual_sensor {
 	unsigned int token;
 	unsigned int quant;
@@ -134,6 +137,18 @@ struct rtas_sensors {
 	unsigned int quant;
 };
 
+<<<<<<< HEAD
+=======
+/* Globals */
+static struct rtas_sensors sensors;
+static struct device_node *rtas_node = NULL;
+static unsigned long power_on_time = 0; /* Save the time the user set */
+static char progress_led[MAX_LINELENGTH];
+
+static unsigned long rtas_tone_frequency = 1000;
+static unsigned long rtas_tone_volume = 0;
+
+>>>>>>> v4.9.227
 /* ****************************************************************** */
 /* Declarations */
 static int ppc_rtas_sensors_show(struct seq_file *m, void *v);
@@ -700,7 +715,11 @@ static void check_location(struct seq_file *m, const char *c)
 /* 
  * Format: 
  * ${LETTER}${NUMBER}[[-/]${LETTER}${NUMBER} [ ... ] ]
+<<<<<<< HEAD
  * the '.' may be an abbrevation
+=======
+ * the '.' may be an abbreviation
+>>>>>>> v4.9.227
  */
 static void check_location_string(struct seq_file *m, const char *c)
 {

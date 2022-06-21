@@ -138,6 +138,7 @@ static struct w1_family w1_family_1d = {
 	.fid = W1_COUNTER_DS2423,
 	.fops = &w1_f1d_fops,
 };
+<<<<<<< HEAD
 
 static int __init w1_f1d_init(void)
 {
@@ -151,6 +152,9 @@ static void __exit w1_f1d_exit(void)
 
 module_init(w1_f1d_init);
 module_exit(w1_f1d_exit);
+=======
+module_w1_family(w1_family_1d);
+>>>>>>> v4.9.227
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mika Laitio <lamikr@pilppa.org>");

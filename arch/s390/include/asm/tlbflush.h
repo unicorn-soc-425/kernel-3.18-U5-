@@ -5,6 +5,10 @@
 #include <linux/sched.h>
 #include <asm/processor.h>
 #include <asm/pgalloc.h>
+<<<<<<< HEAD
+=======
+#include <asm/pgtable.h>
+>>>>>>> v4.9.227
 
 /*
  * Flush all TLB entries on the local CPU.
@@ -25,6 +29,7 @@ static inline void __tlb_flush_idte(unsigned long asce)
 		: : "a" (2048), "a" (asce) : "cc");
 }
 
+<<<<<<< HEAD
 /*
  * Flush TLB entries for a specific ASCE on the local CPU
  */
@@ -36,6 +41,8 @@ static inline void __tlb_flush_idte_local(unsigned long asce)
 		: : "a" (2048), "a" (asce) : "cc");
 }
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_SMP
 void smp_ptlb_all(void);
 
@@ -44,6 +51,7 @@ void smp_ptlb_all(void);
  */
 static inline void __tlb_flush_global(void)
 {
+<<<<<<< HEAD
 	register unsigned long reg2 asm("2");
 	register unsigned long reg3 asm("3");
 	register unsigned long reg4 asm("4");
@@ -62,12 +70,18 @@ static inline void __tlb_flush_global(void)
 	asm volatile(
 		"	csp	%0,%2"
 		: : "d" (reg2), "d" (reg3), "d" (reg4), "m" (dummy) : "cc" );
+=======
+	unsigned int dummy = 0;
+
+	csp(&dummy, 0, 0);
+>>>>>>> v4.9.227
 }
 
 /*
  * Flush TLB entries for a specific mm on all CPUs (in case gmap is used
  * this implicates multiple ASCEs!).
  */
+<<<<<<< HEAD
 static inline void __tlb_flush_full(struct mm_struct *mm)
 {
 	preempt_disable();
@@ -111,34 +125,74 @@ static inline void __tlb_flush_asce(struct mm_struct *mm, unsigned long asce)
 				     &mm->context.cpu_attach_mask);
 	}
 	atomic_sub(0x10000, &mm->context.attach_count);
+=======
+static inline void __tlb_flush_mm(struct mm_struct *mm)
+{
+	unsigned long gmap_asce;
+
+	/*
+	 * If the machine has IDTE we prefer to do a per mm flush
+	 * on all cpus instead of doing a local flush if the mm
+	 * only ran on the local cpu.
+	 */
+	preempt_disable();
+	atomic_inc(&mm->context.flush_count);
+	/* Reset TLB flush mask */
+	cpumask_copy(mm_cpumask(mm), &mm->context.cpu_attach_mask);
+	barrier();
+	gmap_asce = READ_ONCE(mm->context.gmap_asce);
+	if (MACHINE_HAS_IDTE && gmap_asce != -1UL) {
+		if (gmap_asce)
+			__tlb_flush_idte(gmap_asce);
+		__tlb_flush_idte(mm->context.asce);
+	} else {
+		/* Global TLB flush */
+		__tlb_flush_global();
+	}
+	atomic_dec(&mm->context.flush_count);
+>>>>>>> v4.9.227
 	preempt_enable();
 }
 
 static inline void __tlb_flush_kernel(void)
 {
 	if (MACHINE_HAS_IDTE)
+<<<<<<< HEAD
 		__tlb_flush_idte((unsigned long) init_mm.pgd |
 				 init_mm.context.asce_bits);
+=======
+		__tlb_flush_idte(init_mm.context.asce);
+>>>>>>> v4.9.227
 	else
 		__tlb_flush_global();
 }
 #else
 #define __tlb_flush_global()	__tlb_flush_local()
+<<<<<<< HEAD
 #define __tlb_flush_full(mm)	__tlb_flush_local()
+=======
+>>>>>>> v4.9.227
 
 /*
  * Flush TLB entries for a specific ASCE on all CPUs.
  */
+<<<<<<< HEAD
 static inline void __tlb_flush_asce(struct mm_struct *mm, unsigned long asce)
 {
 	if (MACHINE_HAS_TLB_LC)
 		__tlb_flush_idte_local(asce);
 	else
 		__tlb_flush_local();
+=======
+static inline void __tlb_flush_mm(struct mm_struct *mm)
+{
+	__tlb_flush_local();
+>>>>>>> v4.9.227
 }
 
 static inline void __tlb_flush_kernel(void)
 {
+<<<<<<< HEAD
 	if (MACHINE_HAS_TLB_LC)
 		__tlb_flush_idte_local((unsigned long) init_mm.pgd |
 				       init_mm.context.asce_bits);
@@ -167,6 +221,20 @@ static inline void __tlb_flush_mm_lazy(struct mm_struct * mm)
 		__tlb_flush_mm(mm);
 		mm->context.flush_mm = 0;
 	}
+=======
+	__tlb_flush_local();
+}
+#endif
+
+static inline void __tlb_flush_mm_lazy(struct mm_struct * mm)
+{
+	spin_lock(&mm->context.lock);
+	if (mm->context.flush_mm) {
+		mm->context.flush_mm = 0;
+		__tlb_flush_mm(mm);
+	}
+	spin_unlock(&mm->context.lock);
+>>>>>>> v4.9.227
 }
 
 /*

@@ -23,6 +23,17 @@
 #include <linux/sched.h>
 
 /*
+<<<<<<< HEAD
+=======
+ * Layout of key payload words.
+ */
+enum {
+	dns_key_data,
+	dns_key_error,
+};
+
+/*
+>>>>>>> v4.9.227
  * dns_key.c
  */
 extern const struct cred *dns_resolver_cache;

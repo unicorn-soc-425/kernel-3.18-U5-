@@ -49,6 +49,7 @@ static inline size_t buffer_start(struct persistent_ram_zone *prz)
 }
 
 /* increase and wrap the start pointer, returning the old value */
+<<<<<<< HEAD
 static size_t buffer_start_add_atomic(struct persistent_ram_zone *prz, size_t a)
 {
 	int old;
@@ -83,6 +84,9 @@ static void buffer_size_add_atomic(struct persistent_ram_zone *prz, size_t a)
 
 /* increase and wrap the start pointer, returning the old value */
 static size_t buffer_start_add_locked(struct persistent_ram_zone *prz, size_t a)
+=======
+static size_t buffer_start_add(struct persistent_ram_zone *prz, size_t a)
+>>>>>>> v4.9.227
 {
 	int old;
 	int new;
@@ -104,7 +108,11 @@ static size_t buffer_start_add_locked(struct persistent_ram_zone *prz, size_t a)
 }
 
 /* increase the size counter until it hits the max size */
+<<<<<<< HEAD
 static void buffer_size_add_locked(struct persistent_ram_zone *prz, size_t a)
+=======
+static void buffer_size_add(struct persistent_ram_zone *prz, size_t a)
+>>>>>>> v4.9.227
 {
 	size_t old;
 	size_t new;
@@ -127,9 +135,12 @@ exit:
 		raw_spin_unlock_irqrestore(&prz->buffer_lock, flags);
 }
 
+<<<<<<< HEAD
 static size_t (*buffer_start_add)(struct persistent_ram_zone *, size_t) = buffer_start_add_atomic;
 static void (*buffer_size_add)(struct persistent_ram_zone *, size_t) = buffer_size_add_atomic;
 
+=======
+>>>>>>> v4.9.227
 static void notrace persistent_ram_encode_rs8(struct persistent_ram_zone *prz,
 	uint8_t *data, size_t len, uint8_t *ecc)
 {
@@ -302,7 +313,11 @@ static void notrace persistent_ram_update(struct persistent_ram_zone *prz,
 	const void *s, unsigned int start, unsigned int count)
 {
 	struct persistent_ram_buffer *buffer = prz->buffer;
+<<<<<<< HEAD
 	memcpy(buffer->data + start, s, count);
+=======
+	memcpy_toio(buffer->data + start, s, count);
+>>>>>>> v4.9.227
 	persistent_ram_update_ecc(prz, start, count);
 }
 
@@ -335,8 +350,13 @@ void persistent_ram_save_old(struct persistent_ram_zone *prz)
 	}
 
 	prz->old_log_size = size;
+<<<<<<< HEAD
 	memcpy(prz->old_log, &buffer->data[start], size - start);
 	memcpy(prz->old_log + size - start, &buffer->data[0], start);
+=======
+	memcpy_fromio(prz->old_log, &buffer->data[start], size - start);
+	memcpy_fromio(prz->old_log + size - start, &buffer->data[0], start);
+>>>>>>> v4.9.227
 }
 
 int notrace persistent_ram_write(struct persistent_ram_zone *prz,
@@ -476,9 +496,12 @@ static void *persistent_ram_iomap(phys_addr_t start, size_t size,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	buffer_start_add = buffer_start_add_locked;
 	buffer_size_add = buffer_size_add_locked;
 
+=======
+>>>>>>> v4.9.227
 	if (memtype)
 		va = ioremap(start, size);
 	else
@@ -527,6 +550,14 @@ static int persistent_ram_post_init(struct persistent_ram_zone *prz, u32 sig,
 	sig ^= PERSISTENT_RAM_SIG;
 
 	if (prz->buffer->sig == sig) {
+<<<<<<< HEAD
+=======
+		if (buffer_size(prz) == 0) {
+			pr_debug("found existing empty buffer\n");
+			return 0;
+		}
+
+>>>>>>> v4.9.227
 		if (buffer_size(prz) > prz->buffer_size ||
 		    buffer_start(prz) > buffer_size(prz))
 			pr_info("found existing invalid buffer, size %zu, start %zu\n",

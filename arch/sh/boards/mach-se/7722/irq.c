@@ -11,9 +11,12 @@
 #define DRV_NAME "SE7722-FPGA"
 #define pr_fmt(fmt) DRV_NAME ": " fmt
 
+<<<<<<< HEAD
 #define irq_reg_readl	ioread16
 #define irq_reg_writel	iowrite16
 
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/irq.h>
 #include <linux/interrupt.h>
@@ -31,9 +34,15 @@
 static void __iomem *se7722_irq_regs;
 struct irq_domain *se7722_irq_domain;
 
+<<<<<<< HEAD
 static void se7722_irq_demux(unsigned int irq, struct irq_desc *desc)
 {
 	struct irq_data *data = irq_get_irq_data(irq);
+=======
+static void se7722_irq_demux(struct irq_desc *desc)
+{
+	struct irq_data *data = irq_desc_get_irq_data(desc);
+>>>>>>> v4.9.227
 	struct irq_chip *chip = irq_data_get_irq_chip(data);
 	unsigned long mask;
 	int bit;

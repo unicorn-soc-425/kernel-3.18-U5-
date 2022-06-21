@@ -122,7 +122,11 @@ static irqreturn_t ad7887_trigger_handler(int irq, void *p)
 		goto done;
 
 	iio_push_to_buffers_with_timestamp(indio_dev, st->data,
+<<<<<<< HEAD
 		iio_get_time_ns());
+=======
+		iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 done:
 	iio_trigger_notify_done(indio_dev->trig);
 
@@ -156,12 +160,20 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
 
 	switch (m) {
 	case IIO_CHAN_INFO_RAW:
+<<<<<<< HEAD
 		mutex_lock(&indio_dev->mlock);
 		if (iio_buffer_enabled(indio_dev))
 			ret = -EBUSY;
 		else
 			ret = ad7887_scan_direct(st, chan->address);
 		mutex_unlock(&indio_dev->mlock);
+=======
+		ret = iio_device_claim_direct_mode(indio_dev);
+		if (ret)
+			return ret;
+		ret = ad7887_scan_direct(st, chan->address);
+		iio_device_release_direct_mode(indio_dev);
+>>>>>>> v4.9.227
 
 		if (ret < 0)
 			return ret;
@@ -265,6 +277,10 @@ static int ad7887_probe(struct spi_device *spi)
 
 	/* Estabilish that the iio_dev is a child of the spi device */
 	indio_dev->dev.parent = &spi->dev;
+<<<<<<< HEAD
+=======
+	indio_dev->dev.of_node = spi->dev.of_node;
+>>>>>>> v4.9.227
 	indio_dev->name = spi_get_device_id(spi)->name;
 	indio_dev->info = &ad7887_info;
 	indio_dev->modes = INDIO_DIRECT_MODE;
@@ -356,7 +372,10 @@ MODULE_DEVICE_TABLE(spi, ad7887_id);
 static struct spi_driver ad7887_driver = {
 	.driver = {
 		.name	= "ad7887",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ad7887_probe,
 	.remove		= ad7887_remove,

@@ -25,7 +25,11 @@
 #include <linux/io.h>
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
+<<<<<<< HEAD
 #include <asm/qe.h>
+=======
+#include <soc/fsl/qe/qe.h>
+>>>>>>> v4.9.227
 #include <asm/fsl_gtm.h>
 #include "fhci.h"
 
@@ -288,7 +292,11 @@ static int scan_ed_list(struct fhci_usb *usb,
 	list_for_each_entry(ed, list, node) {
 		td = ed->td_head;
 
+<<<<<<< HEAD
 		if (!td || (td && td->status == USB_TD_INPROGRESS))
+=======
+		if (!td || td->status == USB_TD_INPROGRESS)
+>>>>>>> v4.9.227
 			continue;
 
 		if (ed->state != FHCI_ED_OPER) {

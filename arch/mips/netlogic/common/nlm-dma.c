@@ -45,6 +45,7 @@
 static char *nlm_swiotlb;
 
 static void *nlm_dma_alloc_coherent(struct device *dev, size_t size,
+<<<<<<< HEAD
 	dma_addr_t *dma_handle, gfp_t gfp, struct dma_attrs *attrs)
 {
 	void *ret;
@@ -52,6 +53,10 @@ static void *nlm_dma_alloc_coherent(struct device *dev, size_t size,
 	if (dma_alloc_from_coherent(dev, size, dma_handle, &ret))
 		return ret;
 
+=======
+	dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+{
+>>>>>>> v4.9.227
 	/* ignore region specifiers */
 	gfp &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
 
@@ -67,6 +72,7 @@ static void *nlm_dma_alloc_coherent(struct device *dev, size_t size,
 }
 
 static void nlm_dma_free_coherent(struct device *dev, size_t size,
+<<<<<<< HEAD
 	void *vaddr, dma_addr_t dma_handle, struct dma_attrs *attrs)
 {
 	int order = get_order(size);
@@ -74,6 +80,10 @@ static void nlm_dma_free_coherent(struct device *dev, size_t size,
 	if (dma_release_from_coherent(dev, order, vaddr))
 		return;
 
+=======
+	void *vaddr, dma_addr_t dma_handle, unsigned long attrs)
+{
+>>>>>>> v4.9.227
 	swiotlb_free_coherent(dev, size, vaddr, dma_handle);
 }
 

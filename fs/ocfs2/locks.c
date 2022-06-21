@@ -66,8 +66,16 @@ static int ocfs2_do_flock(struct file *file, struct inode *inode,
 		 * level.
 		 */
 
+<<<<<<< HEAD
 		flock_lock_file_wait(file,
 				     &(struct file_lock){.fl_type = F_UNLCK});
+=======
+		locks_lock_file_wait(file,
+				&(struct file_lock) {
+					.fl_type = F_UNLCK,
+					.fl_flags = FL_FLOCK
+				});
+>>>>>>> v4.9.227
 
 		ocfs2_file_unlock(file);
 	}
@@ -81,7 +89,11 @@ static int ocfs2_do_flock(struct file *file, struct inode *inode,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	ret = flock_lock_file_wait(file, fl);
+=======
+	ret = locks_lock_file_wait(file, fl);
+>>>>>>> v4.9.227
 	if (ret)
 		ocfs2_file_unlock(file);
 
@@ -98,7 +110,11 @@ static int ocfs2_do_funlock(struct file *file, int cmd, struct file_lock *fl)
 
 	mutex_lock(&fp->fp_mutex);
 	ocfs2_file_unlock(file);
+<<<<<<< HEAD
 	ret = flock_lock_file_wait(file, fl);
+=======
+	ret = locks_lock_file_wait(file, fl);
+>>>>>>> v4.9.227
 	mutex_unlock(&fp->fp_mutex);
 
 	return ret;
@@ -119,7 +135,11 @@ int ocfs2_flock(struct file *file, int cmd, struct file_lock *fl)
 
 	if ((osb->s_mount_opt & OCFS2_MOUNT_LOCALFLOCKS) ||
 	    ocfs2_mount_local(osb))
+<<<<<<< HEAD
 		return flock_lock_file_wait(file, fl);
+=======
+		return locks_lock_file_wait(file, fl);
+>>>>>>> v4.9.227
 
 	if (fl->fl_type == F_UNLCK)
 		return ocfs2_do_funlock(file, cmd, fl);

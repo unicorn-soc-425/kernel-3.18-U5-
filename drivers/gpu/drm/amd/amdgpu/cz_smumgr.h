@@ -77,7 +77,11 @@ struct cz_smu_private_data {
 	uint8_t		driver_buffer_length;
 	uint8_t		scratch_buffer_length;
 	uint16_t	toc_entry_used_count;
+<<<<<<< HEAD
 	uint16_t 	toc_entry_initialize_index;
+=======
+	uint16_t	toc_entry_initialize_index;
+>>>>>>> v4.9.227
 	uint16_t	toc_entry_power_profiling_index;
 	uint16_t	toc_entry_aram;
 	uint16_t	toc_entry_ih_register_restore_task_index;

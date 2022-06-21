@@ -20,6 +20,11 @@
 #include <asm/assembler.h>
 #include <asm/kvm_arm.h>
 #include <asm/kvm_mmu.h>
+<<<<<<< HEAD
+=======
+#include <asm/pgtable-hwdef.h>
+#include <asm/sysreg.h>
+>>>>>>> v4.9.227
 
 	.text
 	.pushsection	.hyp.idmap.text, "ax"
@@ -51,10 +56,16 @@ __invalid:
 	b	.
 
 	/*
+<<<<<<< HEAD
 	 * x0: HYP boot pgd
 	 * x1: HYP pgd
 	 * x2: HYP stack
 	 * x3: HYP vectors
+=======
+	 * x0: HYP pgd
+	 * x1: HYP stack
+	 * x2: HYP vectors
+>>>>>>> v4.9.227
 	 */
 __do_hyp_init:
 
@@ -63,6 +74,7 @@ __do_hyp_init:
 	mrs	x4, tcr_el1
 	ldr	x5, =TCR_EL2_MASK
 	and	x4, x4, x5
+<<<<<<< HEAD
 	ldr	x5, =TCR_EL2_FLAGS
 	orr	x4, x4, x5
 	msr	tcr_el2, x4
@@ -75,6 +87,37 @@ __do_hyp_init:
 	mrs	x5, ID_AA64MMFR0_EL1
 	bfi	x4, x5, #16, #3
 	msr	vtcr_el2, x4
+=======
+	mov	x5, #TCR_EL2_RES1
+	orr	x4, x4, x5
+
+#ifndef CONFIG_ARM64_VA_BITS_48
+	/*
+	 * If we are running with VA_BITS < 48, we may be running with an extra
+	 * level of translation in the ID map. This is only the case if system
+	 * RAM is out of range for the currently configured page size and number
+	 * of translation levels, in which case we will also need the extra
+	 * level for the HYP ID map, or we won't be able to enable the EL2 MMU.
+	 *
+	 * However, at EL2, there is only one TTBR register, and we can't switch
+	 * between translation tables *and* update TCR_EL2.T0SZ at the same
+	 * time. Bottom line: we need the extra level in *both* our translation
+	 * tables.
+	 *
+	 * So use the same T0SZ value we use for the ID map.
+	 */
+	ldr_l	x5, idmap_t0sz
+	bfi	x4, x5, TCR_T0SZ_OFFSET, TCR_TxSZ_WIDTH
+#endif
+	/*
+	 * Read the PARange bits from ID_AA64MMFR0_EL1 and set the PS bits in
+	 * TCR_EL2.
+	 */
+	mrs	x5, ID_AA64MMFR0_EL1
+	bfi	x4, x5, #16, #3
+
+	msr	tcr_el2, x4
+>>>>>>> v4.9.227
 
 	mrs	x4, mair_el1
 	msr	mair_el2, x4
@@ -84,6 +127,7 @@ __do_hyp_init:
 	tlbi	alle2
 	dsb	sy
 
+<<<<<<< HEAD
 	mrs	x4, sctlr_el2
 	and	x4, x4, #SCTLR_EL2_EE	// preserve endianness of EL2
 	ldr	x5, =SCTLR_EL2_FLAGS
@@ -110,11 +154,53 @@ target: /* We're now in the trampoline code, switch page tables */
 	mov	sp, x2
 	kern_hyp_va	x3
 	msr	vbar_el2, x3
+=======
+	/*
+	 * Preserve all the RES1 bits while setting the default flags,
+	 * as well as the EE bit on BE. Drop the A flag since the compiler
+	 * is allowed to generate unaligned accesses.
+	 */
+	ldr	x4, =(SCTLR_EL2_RES1 | (SCTLR_ELx_FLAGS & ~SCTLR_ELx_A))
+CPU_BE(	orr	x4, x4, #SCTLR_ELx_EE)
+	msr	sctlr_el2, x4
+	isb
+
+	/* Set the stack and new vectors */
+	kern_hyp_va	x1
+	mov	sp, x1
+	kern_hyp_va	x2
+	msr	vbar_el2, x2
+
+	/* copy tpidr_el1 into tpidr_el2 for use by HYP */
+	mrs	x1, tpidr_el1
+	msr	tpidr_el2, x1
+>>>>>>> v4.9.227
 
 	/* Hello, World! */
 	eret
 ENDPROC(__kvm_hyp_init)
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Reset kvm back to the hyp stub.
+	 */
+ENTRY(__kvm_hyp_reset)
+	/* We're now in idmap, disable MMU */
+	mrs	x0, sctlr_el2
+	ldr	x1, =SCTLR_ELx_FLAGS
+	bic	x0, x0, x1		// Clear SCTL_M and etc
+	msr	sctlr_el2, x0
+	isb
+
+	/* Install stub vectors */
+	adr_l	x0, __hyp_stub_vectors
+	msr	vbar_el2, x0
+
+	eret
+ENDPROC(__kvm_hyp_reset)
+
+>>>>>>> v4.9.227
 	.ltorg
 
 	.popsection

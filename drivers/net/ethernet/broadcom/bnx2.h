@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /* bnx2.h: QLogic NX2 network driver.
  *
  * Copyright (c) 2004-2014 Broadcom Corporation
  * Copyright (c) 2014 QLogic Corporation
+=======
+/* bnx2.h: QLogic bnx2 network driver.
+ *
+ * Copyright (c) 2004-2014 Broadcom Corporation
+ * Copyright (c) 2014-2015 QLogic Corporation
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -6928,6 +6935,10 @@ struct bnx2 {
 
 	dma_addr_t		status_blk_mapping;
 
+<<<<<<< HEAD
+=======
+	void *status_blk;
+>>>>>>> v4.9.227
 	struct statistics_block	*stats_blk;
 	struct statistics_block	*temp_stats_blk;
 	dma_addr_t		stats_blk_mapping;

@@ -20,9 +20,15 @@
 #include <linux/delay.h>
 #include <linux/sched.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <sound/core.h>
 #include <sound/mpu401.h>
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+#include <sound/core.h>
+#include <sound/mpu401.h>
+>>>>>>> v4.9.227
 #include "oxygen.h"
 
 u8 oxygen_read8(struct oxygen *chip, unsigned int reg)

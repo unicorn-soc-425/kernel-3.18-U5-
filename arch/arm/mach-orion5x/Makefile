@@ -1,10 +1,18 @@
+<<<<<<< HEAD
+=======
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-orion/include
+
+>>>>>>> v4.9.227
 obj-y				+= common.o pci.o irq.o mpp.o
 obj-$(CONFIG_MACH_DB88F5281)	+= db88f5281-setup.o
 obj-$(CONFIG_MACH_RD88F5182)	+= rd88f5182-setup.o
 obj-$(CONFIG_MACH_KUROBOX_PRO)	+= kurobox_pro-setup.o
 obj-$(CONFIG_MACH_TERASTATION_PRO2)	+= terastation_pro2-setup.o
 obj-$(CONFIG_MACH_LINKSTATION_PRO) += kurobox_pro-setup.o
+<<<<<<< HEAD
 obj-$(CONFIG_MACH_LINKSTATION_MINI) += lsmini-setup.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_MACH_LINKSTATION_LS_HGL) += ls_hgl-setup.o
 obj-$(CONFIG_MACH_DNS323)	+= dns323-setup.o
 obj-$(CONFIG_MACH_TS209)	+= ts209-setup.o tsx09-common.o

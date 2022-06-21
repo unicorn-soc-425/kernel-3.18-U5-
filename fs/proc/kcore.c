@@ -92,7 +92,11 @@ static size_t get_kcore_size(int *nphdr, size_t *elf_buflen)
 			     roundup(sizeof(CORE_STR), 4)) +
 			roundup(sizeof(struct elf_prstatus), 4) +
 			roundup(sizeof(struct elf_prpsinfo), 4) +
+<<<<<<< HEAD
 			roundup(sizeof(struct task_struct), 4);
+=======
+			roundup(arch_task_struct_size, 4);
+>>>>>>> v4.9.227
 	*elf_buflen = PAGE_ALIGN(*elf_buflen);
 	return size + *elf_buflen;
 }
@@ -415,7 +419,11 @@ static void elf_kcore_store_hdr(char *bufp, int nphdr, int dataoff)
 	/* set up the task structure */
 	notes[2].name	= CORE_STR;
 	notes[2].type	= NT_TASKSTRUCT;
+<<<<<<< HEAD
 	notes[2].datasz	= sizeof(struct task_struct);
+=======
+	notes[2].datasz	= arch_task_struct_size;
+>>>>>>> v4.9.227
 	notes[2].data	= current;
 
 	nhdr->p_filesz	+= notesize(&notes[2]);
@@ -505,14 +513,24 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
 			/* we have to zero-fill user buffer even if no read */
 			if (copy_to_user(buffer, buf, tsz))
 				return -EFAULT;
+<<<<<<< HEAD
 		} else {
 			if (kern_addr_valid(start)) {
 				unsigned long n;
 
+=======
+		} else if (m->type == KCORE_USER) {
+			/* User page is handled prior to normal kernel page: */
+			if (copy_to_user(buffer, (char *)start, tsz))
+				return -EFAULT;
+		} else {
+			if (kern_addr_valid(start)) {
+>>>>>>> v4.9.227
 				/*
 				 * Using bounce buffer to bypass the
 				 * hardened user copy kernel text checks.
 				 */
+<<<<<<< HEAD
 				memcpy(buf, (char *) start, tsz);
 				n = copy_to_user(buffer, buf, tsz);
 				/*
@@ -524,6 +542,13 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
 				if (n) { 
 					if (clear_user(buffer + tsz - n,
 								n))
+=======
+				if (probe_kernel_read(buf, (void *) start, tsz)) {
+					if (clear_user(buffer, tsz))
+						return -EFAULT;
+				} else {
+					if (copy_to_user(buffer, buf, tsz))
+>>>>>>> v4.9.227
 						return -EFAULT;
 				}
 			} else {
@@ -555,9 +580,15 @@ static int open_kcore(struct inode *inode, struct file *filp)
 	if (kcore_need_update)
 		kcore_update_ram();
 	if (i_size_read(inode) != proc_root_kcore->size) {
+<<<<<<< HEAD
 		mutex_lock(&inode->i_mutex);
 		i_size_write(inode, proc_root_kcore->size);
 		mutex_unlock(&inode->i_mutex);
+=======
+		inode_lock(inode);
+		i_size_write(inode, proc_root_kcore->size);
+		inode_unlock(inode);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }

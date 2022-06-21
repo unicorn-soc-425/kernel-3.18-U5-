@@ -5,9 +5,13 @@
  * 	Defines for the BPQETHER pseudo device driver
  */
 
+<<<<<<< HEAD
 #ifndef __LINUX_IF_ETHER_H
 #include <linux/if_ether.h>
 #endif
+=======
+#include <linux/if_ether.h>
+>>>>>>> v4.9.227
 
 #define SIOCSBPQETHOPT		(SIOCDEVPRIVATE+0)	/* reserved */
 #define SIOCSBPQETHADDR		(SIOCDEVPRIVATE+1)

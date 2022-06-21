@@ -112,6 +112,7 @@ EXPORT_PER_CPU_SYMBOL(__kmap_atomic_idx);
 
 unsigned int nr_free_highpages (void)
 {
+<<<<<<< HEAD
 	pg_data_t *pgdat;
 	unsigned int pages = 0;
 
@@ -122,6 +123,14 @@ unsigned int nr_free_highpages (void)
 			pages += zone_page_state(
 					&pgdat->node_zones[ZONE_MOVABLE],
 					NR_FREE_PAGES);
+=======
+	struct zone *zone;
+	unsigned int pages = 0;
+
+	for_each_populated_zone(zone) {
+		if (is_highmem(zone))
+			pages += zone_page_state(zone, NR_FREE_PAGES);
+>>>>>>> v4.9.227
 	}
 
 	return pages;

@@ -44,7 +44,11 @@
 #include <linux/ioport.h>
 #include <linux/kernel.h>
 #include <linux/serial_reg.h>
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/wait.h>
@@ -127,9 +131,15 @@ static int threshold = 3;
 static DEFINE_SPINLOCK(timer_lock);
 static struct timer_list timerlist;
 /* time of last signal change detected */
+<<<<<<< HEAD
 static struct timeval last_tv = {0, 0};
 /* time of last UART data ready interrupt */
 static struct timeval last_intr_tv = {0, 0};
+=======
+static ktime_t last;
+/* time of last UART data ready interrupt */
+static ktime_t last_intr_time;
+>>>>>>> v4.9.227
 static int last_value;
 
 static DECLARE_WAIT_QUEUE_HEAD(lirc_read_queue);
@@ -140,12 +150,15 @@ static int rx_buf[RBUF_LEN];
 static unsigned int rx_tail, rx_head;
 
 static bool debug;
+<<<<<<< HEAD
 #define dprintk(fmt, args...)						\
 	do {								\
 		if (debug)						\
 			printk(KERN_DEBUG LIRC_DRIVER_NAME ": "		\
 				fmt, ## args);				\
 	} while (0)
+=======
+>>>>>>> v4.9.227
 
 /* SECTION: Prototypes */
 
@@ -322,7 +335,11 @@ static void add_read_queue(int flag, unsigned long val)
 	unsigned int new_rx_tail;
 	int newval;
 
+<<<<<<< HEAD
 	dprintk("add flag %d with val %lu\n", flag, val);
+=======
+	pr_debug("add flag %d with val %lu\n", flag, val);
+>>>>>>> v4.9.227
 
 	newval = val & PULSE_MASK;
 
@@ -342,7 +359,11 @@ static void add_read_queue(int flag, unsigned long val)
 	}
 	new_rx_tail = (rx_tail + 1) & (RBUF_LEN - 1);
 	if (new_rx_tail == rx_head) {
+<<<<<<< HEAD
 		dprintk("Buffer overrun.\n");
+=======
+		pr_debug("Buffer overrun.\n");
+>>>>>>> v4.9.227
 		return;
 	}
 	rx_buf[rx_tail] = newval;
@@ -406,6 +427,7 @@ static void drop_chrdev(void)
 }
 
 /* SECTION: Hardware */
+<<<<<<< HEAD
 static long delta(struct timeval *tv1, struct timeval *tv2)
 {
 	unsigned long deltv;
@@ -420,6 +442,8 @@ static long delta(struct timeval *tv1, struct timeval *tv2)
 	return deltv;
 }
 
+=======
+>>>>>>> v4.9.227
 static void sir_timeout(unsigned long data)
 {
 	/*
@@ -438,11 +462,22 @@ static void sir_timeout(unsigned long data)
 		/* clear unread bits in UART and restart */
 		outb(UART_FCR_CLEAR_RCVR, io + UART_FCR);
 		/* determine 'virtual' pulse end: */
+<<<<<<< HEAD
 		pulse_end = delta(&last_tv, &last_intr_tv);
 		dprintk("timeout add %d for %lu usec\n", last_value, pulse_end);
 		add_read_queue(last_value, pulse_end);
 		last_value = 0;
 		last_tv = last_intr_tv;
+=======
+		pulse_end = min_t(unsigned long,
+				  ktime_us_delta(last, last_intr_time),
+				  PULSE_MASK);
+		dev_dbg(driver.dev, "timeout add %d for %lu usec\n",
+				    last_value, pulse_end);
+		add_read_queue(last_value, pulse_end);
+		last_value = 0;
+		last = last_intr_time;
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&timer_lock, flags);
 }
@@ -450,9 +485,15 @@ static void sir_timeout(unsigned long data)
 static irqreturn_t sir_interrupt(int irq, void *dev_id)
 {
 	unsigned char data;
+<<<<<<< HEAD
 	struct timeval curr_tv;
 	static unsigned long deltv;
 	unsigned long deltintrtv;
+=======
+	ktime_t curr_time;
+	static unsigned long delt;
+	unsigned long deltintr;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	int iir, lsr;
 
@@ -476,14 +517,28 @@ static irqreturn_t sir_interrupt(int irq, void *dev_id)
 			do {
 				del_timer(&timerlist);
 				data = inb(io + UART_RX);
+<<<<<<< HEAD
 				do_gettimeofday(&curr_tv);
 				deltv = delta(&last_tv, &curr_tv);
 				deltintrtv = delta(&last_intr_tv, &curr_tv);
 				dprintk("t %lu, d %d\n", deltintrtv, (int)data);
+=======
+				curr_time = ktime_get();
+				delt = min_t(unsigned long,
+					     ktime_us_delta(last, curr_time),
+					     PULSE_MASK);
+				deltintr = min_t(unsigned long,
+						 ktime_us_delta(last_intr_time,
+								curr_time),
+						 PULSE_MASK);
+				dev_dbg(driver.dev, "t %lu, d %d\n",
+						    deltintr, (int)data);
+>>>>>>> v4.9.227
 				/*
 				 * if nothing came in last X cycles,
 				 * it was gap
 				 */
+<<<<<<< HEAD
 				if (deltintrtv > TIME_CONST * threshold) {
 					if (last_value) {
 						dprintk("GAP\n");
@@ -497,11 +552,24 @@ static irqreturn_t sir_interrupt(int irq, void *dev_id)
 						last_tv.tv_usec =
 							last_intr_tv.tv_usec;
 						deltv = deltintrtv;
+=======
+				if (deltintr > TIME_CONST * threshold) {
+					if (last_value) {
+						dev_dbg(driver.dev, "GAP\n");
+						/* simulate signal change */
+						add_read_queue(last_value,
+							       delt -
+							       deltintr);
+						last_value = 0;
+						last = last_intr_time;
+						delt = deltintr;
+>>>>>>> v4.9.227
 					}
 				}
 				data = 1;
 				if (data ^ last_value) {
 					/*
+<<<<<<< HEAD
 					 * deltintrtv > 2*TIME_CONST, remember?
 					 * the other case is timeout
 					 */
@@ -518,6 +586,19 @@ static irqreturn_t sir_interrupt(int irq, void *dev_id)
 					}
 				}
 				last_intr_tv = curr_tv;
+=======
+					 * deltintr > 2*TIME_CONST, remember?
+					 * the other case is timeout
+					 */
+					add_read_queue(last_value,
+						       delt-TIME_CONST);
+					last_value = data;
+					last = curr_time;
+					last = ktime_sub_us(last,
+							    TIME_CONST);
+				}
+				last_intr_time = curr_time;
+>>>>>>> v4.9.227
 				if (data) {
 					/*
 					 * start timer for end of
@@ -687,9 +768,13 @@ static int init_port(void)
 	}
 	pr_info("I/O port 0x%.4x, IRQ %d.\n", io, irq);
 
+<<<<<<< HEAD
 	init_timer(&timerlist);
 	timerlist.function = sir_timeout;
 	timerlist.data = 0xabadcafe;
+=======
+	setup_timer(&timerlist, sir_timeout, 0);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -931,7 +1016,10 @@ static struct platform_driver lirc_sir_driver = {
 	.remove		= lirc_sir_remove,
 	.driver		= {
 		.name	= "lirc_sir",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

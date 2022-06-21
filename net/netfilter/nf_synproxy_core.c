@@ -11,15 +11,27 @@
 #include <asm/unaligned.h>
 #include <net/tcp.h>
 #include <net/netns/generic.h>
+<<<<<<< HEAD
+=======
+#include <linux/proc_fs.h>
+>>>>>>> v4.9.227
 
 #include <linux/netfilter_ipv4/ip_tables.h>
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter/xt_tcpudp.h>
 #include <linux/netfilter/xt_SYNPROXY.h>
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 #include <net/netfilter/nf_conntrack.h>
 #include <net/netfilter/nf_conntrack_extend.h>
 #include <net/netfilter/nf_conntrack_seqadj.h>
 #include <net/netfilter/nf_conntrack_synproxy.h>
+<<<<<<< HEAD
+=======
+#include <net/netfilter/nf_conntrack_zones.h>
+>>>>>>> v4.9.227
 
 int synproxy_net_id;
 EXPORT_SYMBOL_GPL(synproxy_net_id);
@@ -185,7 +197,11 @@ unsigned int synproxy_tstamp_adjust(struct sk_buff *skb,
 				    const struct nf_conn_synproxy *synproxy)
 {
 	unsigned int optoff, optend;
+<<<<<<< HEAD
 	u32 *ptr, old;
+=======
+	__be32 *ptr, old;
+>>>>>>> v4.9.227
 
 	if (synproxy->tsoff == 0)
 		return 1;
@@ -213,18 +229,30 @@ unsigned int synproxy_tstamp_adjust(struct sk_buff *skb,
 			if (op[0] == TCPOPT_TIMESTAMP &&
 			    op[1] == TCPOLEN_TIMESTAMP) {
 				if (CTINFO2DIR(ctinfo) == IP_CT_DIR_REPLY) {
+<<<<<<< HEAD
 					ptr = (u32 *)&op[2];
+=======
+					ptr = (__be32 *)&op[2];
+>>>>>>> v4.9.227
 					old = *ptr;
 					*ptr = htonl(ntohl(*ptr) -
 						     synproxy->tsoff);
 				} else {
+<<<<<<< HEAD
 					ptr = (u32 *)&op[6];
+=======
+					ptr = (__be32 *)&op[6];
+>>>>>>> v4.9.227
 					old = *ptr;
 					*ptr = htonl(ntohl(*ptr) +
 						     synproxy->tsoff);
 				}
 				inet_proto_csum_replace4(&th->check, skb,
+<<<<<<< HEAD
 							 old, *ptr, 0);
+=======
+							 old, *ptr, false);
+>>>>>>> v4.9.227
 				return 1;
 			}
 			optoff += op[1];
@@ -348,6 +376,7 @@ static void __net_exit synproxy_proc_exit(struct net *net)
 static int __net_init synproxy_net_init(struct net *net)
 {
 	struct synproxy_net *snet = synproxy_pernet(net);
+<<<<<<< HEAD
 	struct nf_conntrack_tuple t;
 	struct nf_conn *ct;
 	int err = -ENOMEM;
@@ -358,13 +387,26 @@ static int __net_init synproxy_net_init(struct net *net)
 		err = PTR_ERR(ct);
 		goto err1;
 	}
+=======
+	struct nf_conn *ct;
+	int err = -ENOMEM;
+
+	ct = nf_ct_tmpl_alloc(net, &nf_ct_zone_dflt, GFP_KERNEL);
+	if (!ct)
+		goto err1;
+>>>>>>> v4.9.227
 
 	if (!nfct_seqadj_ext_add(ct))
 		goto err2;
 	if (!nfct_synproxy_ext_add(ct))
 		goto err2;
 
+<<<<<<< HEAD
 	nf_conntrack_tmpl_insert(net, ct);
+=======
+	__set_bit(IPS_CONFIRMED_BIT, &ct->status);
+	nf_conntrack_get(&ct->ct_general);
+>>>>>>> v4.9.227
 	snet->tmpl = ct;
 
 	snet->stats = alloc_percpu(struct synproxy_stats);
@@ -380,7 +422,11 @@ static int __net_init synproxy_net_init(struct net *net)
 err3:
 	free_percpu(snet->stats);
 err2:
+<<<<<<< HEAD
 	nf_conntrack_free(ct);
+=======
+	nf_ct_tmpl_free(ct);
+>>>>>>> v4.9.227
 err1:
 	return err;
 }

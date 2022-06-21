@@ -1094,7 +1094,11 @@ int lmLogOpen(struct super_block *sb)
 		if (log->bdev->bd_dev == sbi->logdev) {
 			if (memcmp(log->uuid, sbi->loguuid,
 				   sizeof(log->uuid))) {
+<<<<<<< HEAD
 				jfs_warn("wrong uuid on JFS journal\n");
+=======
+				jfs_warn("wrong uuid on JFS journal");
+>>>>>>> v4.9.227
 				mutex_unlock(&jfs_log_mutex);
 				return -EINVAL;
 			}
@@ -1333,9 +1337,14 @@ int lmLogInit(struct jfs_log * log)
 				rc = -EINVAL;
 				goto errout20;
 			}
+<<<<<<< HEAD
 			jfs_info("lmLogInit: inline log:0x%p base:0x%Lx "
 				 "size:0x%x", log,
 				 (unsigned long long) log->base, log->size);
+=======
+			jfs_info("lmLogInit: inline log:0x%p base:0x%Lx size:0x%x",
+				 log, (unsigned long long)log->base, log->size);
+>>>>>>> v4.9.227
 		} else {
 			if (memcmp(logsuper->uuid, log->uuid, 16)) {
 				jfs_warn("wrong uuid on JFS log device");
@@ -1343,9 +1352,14 @@ int lmLogInit(struct jfs_log * log)
 			}
 			log->size = le32_to_cpu(logsuper->size);
 			log->l2bsize = le32_to_cpu(logsuper->l2bsize);
+<<<<<<< HEAD
 			jfs_info("lmLogInit: external log:0x%p base:0x%Lx "
 				 "size:0x%x", log,
 				 (unsigned long long) log->base, log->size);
+=======
+			jfs_info("lmLogInit: external log:0x%p base:0x%Lx size:0x%x",
+				 log, (unsigned long long)log->base, log->size);
+>>>>>>> v4.9.227
 		}
 
 		log->page = le32_to_cpu(logsuper->end) / LOGPSIZE;
@@ -1835,17 +1849,29 @@ static int lbmLogInit(struct jfs_log * log)
 	for (i = 0; i < LOGPAGES;) {
 		char *buffer;
 		uint offset;
+<<<<<<< HEAD
 		struct page *page;
 
 		buffer = (char *) get_zeroed_page(GFP_KERNEL);
 		if (buffer == NULL)
 			goto error;
 		page = virt_to_page(buffer);
+=======
+		struct page *page = alloc_page(GFP_KERNEL | __GFP_ZERO);
+
+		if (!page)
+			goto error;
+		buffer = page_address(page);
+>>>>>>> v4.9.227
 		for (offset = 0; offset < PAGE_SIZE; offset += LOGPSIZE) {
 			lbuf = kmalloc(sizeof(struct lbuf), GFP_KERNEL);
 			if (lbuf == NULL) {
 				if (offset == 0)
+<<<<<<< HEAD
 					free_page((unsigned long) buffer);
+=======
+					__free_page(page);
+>>>>>>> v4.9.227
 				goto error;
 			}
 			if (offset) /* we already have one reference */
@@ -1999,6 +2025,7 @@ static int lbmRead(struct jfs_log * log, int pn, struct lbuf ** bpp)
 
 	bio->bi_iter.bi_sector = bp->l_blkno << (log->l2bsize - 9);
 	bio->bi_bdev = log->bdev;
+<<<<<<< HEAD
 	bio->bi_io_vec[0].bv_page = bp->l_page;
 	bio->bi_io_vec[0].bv_len = LOGPSIZE;
 	bio->bi_io_vec[0].bv_offset = bp->l_offset;
@@ -2014,6 +2041,21 @@ static int lbmRead(struct jfs_log * log, int pn, struct lbuf ** bpp)
 		lbmIODone(bio, 0);
 	} else {
 		submit_bio(READ_SYNC, bio);
+=======
+
+	bio_add_page(bio, bp->l_page, LOGPSIZE, bp->l_offset);
+	BUG_ON(bio->bi_iter.bi_size != LOGPSIZE);
+
+	bio->bi_end_io = lbmIODone;
+	bio->bi_private = bp;
+	bio_set_op_attrs(bio, REQ_OP_READ, READ_SYNC);
+	/*check if journaling to disk has been disabled*/
+	if (log->no_integrity) {
+		bio->bi_iter.bi_size = 0;
+		lbmIODone(bio);
+	} else {
+		submit_bio(bio);
+>>>>>>> v4.9.227
 	}
 
 	wait_event(bp->l_ioevent, (bp->l_flag != lbmREAD));
@@ -2140,11 +2182,16 @@ static void lbmStartIO(struct lbuf * bp)
 	struct bio *bio;
 	struct jfs_log *log = bp->l_log;
 
+<<<<<<< HEAD
 	jfs_info("lbmStartIO\n");
+=======
+	jfs_info("lbmStartIO");
+>>>>>>> v4.9.227
 
 	bio = bio_alloc(GFP_NOFS, 1);
 	bio->bi_iter.bi_sector = bp->l_blkno << (log->l2bsize - 9);
 	bio->bi_bdev = log->bdev;
+<<<<<<< HEAD
 	bio->bi_io_vec[0].bv_page = bp->l_page;
 	bio->bi_io_vec[0].bv_len = LOGPSIZE;
 	bio->bi_io_vec[0].bv_offset = bp->l_offset;
@@ -2154,13 +2201,28 @@ static void lbmStartIO(struct lbuf * bp)
 
 	bio->bi_end_io = lbmIODone;
 	bio->bi_private = bp;
+=======
+
+	bio_add_page(bio, bp->l_page, LOGPSIZE, bp->l_offset);
+	BUG_ON(bio->bi_iter.bi_size != LOGPSIZE);
+
+	bio->bi_end_io = lbmIODone;
+	bio->bi_private = bp;
+	bio_set_op_attrs(bio, REQ_OP_WRITE, WRITE_SYNC);
+>>>>>>> v4.9.227
 
 	/* check if journaling to disk has been disabled */
 	if (log->no_integrity) {
 		bio->bi_iter.bi_size = 0;
+<<<<<<< HEAD
 		lbmIODone(bio, 0);
 	} else {
 		submit_bio(WRITE_SYNC, bio);
+=======
+		lbmIODone(bio);
+	} else {
+		submit_bio(bio);
+>>>>>>> v4.9.227
 		INCREMENT(lmStat.submitted);
 	}
 }
@@ -2196,7 +2258,11 @@ static int lbmIOWait(struct lbuf * bp, int flag)
  *
  * executed at INTIODONE level
  */
+<<<<<<< HEAD
 static void lbmIODone(struct bio *bio, int error)
+=======
+static void lbmIODone(struct bio *bio)
+>>>>>>> v4.9.227
 {
 	struct lbuf *bp = bio->bi_private;
 	struct lbuf *nextbp, *tail;
@@ -2212,7 +2278,11 @@ static void lbmIODone(struct bio *bio, int error)
 
 	bp->l_flag |= lbmDONE;
 
+<<<<<<< HEAD
 	if (!test_bit(BIO_UPTODATE, &bio->bi_flags)) {
+=======
+	if (bio->bi_error) {
+>>>>>>> v4.9.227
 		bp->l_flag |= lbmERROR;
 
 		jfs_err("lbmIODone: I/O error in JFS log");
@@ -2524,7 +2594,10 @@ static int jfs_lmstats_proc_open(struct inode *inode, struct file *file)
 }
 
 const struct file_operations jfs_lmstats_proc_fops = {
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	.open		= jfs_lmstats_proc_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,

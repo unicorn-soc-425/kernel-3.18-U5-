@@ -41,7 +41,11 @@ struct mcryptd_flush_list {
 static struct mcryptd_flush_list __percpu *mcryptd_flist;
 
 struct hashd_instance_ctx {
+<<<<<<< HEAD
 	struct crypto_shash_spawn spawn;
+=======
+	struct crypto_ahash_spawn spawn;
+>>>>>>> v4.9.227
 	struct mcryptd_queue *queue;
 };
 
@@ -130,6 +134,7 @@ static void mcryptd_opportunistic_flush(void)
 	flist = per_cpu_ptr(mcryptd_flist, smp_processor_id());
 	while (single_task_running()) {
 		mutex_lock(&flist->lock);
+<<<<<<< HEAD
 		if (list_empty(&flist->list)) {
 			mutex_unlock(&flist->lock);
 			return;
@@ -137,6 +142,11 @@ static void mcryptd_opportunistic_flush(void)
 		cstate = list_entry(flist->list.next,
 				struct mcryptd_alg_cstate, flush_list);
 		if (!cstate->flusher_engaged) {
+=======
+		cstate = list_first_entry_or_null(&flist->list,
+				struct mcryptd_alg_cstate, flush_list);
+		if (!cstate || !cstate->flusher_engaged) {
+>>>>>>> v4.9.227
 			mutex_unlock(&flist->lock);
 			return;
 		}
@@ -255,22 +265,55 @@ out_free_inst:
 	goto out;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool mcryptd_check_internal(struct rtattr **tb, u32 *type,
+					  u32 *mask)
+{
+	struct crypto_attr_type *algt;
+
+	algt = crypto_get_attr_type(tb);
+	if (IS_ERR(algt))
+		return false;
+
+	*type |= algt->type & CRYPTO_ALG_INTERNAL;
+	*mask |= algt->mask & CRYPTO_ALG_INTERNAL;
+
+	if (*type & *mask & CRYPTO_ALG_INTERNAL)
+		return true;
+	else
+		return false;
+}
+
+>>>>>>> v4.9.227
 static int mcryptd_hash_init_tfm(struct crypto_tfm *tfm)
 {
 	struct crypto_instance *inst = crypto_tfm_alg_instance(tfm);
 	struct hashd_instance_ctx *ictx = crypto_instance_ctx(inst);
+<<<<<<< HEAD
 	struct crypto_shash_spawn *spawn = &ictx->spawn;
 	struct mcryptd_hash_ctx *ctx = crypto_tfm_ctx(tfm);
 	struct crypto_shash *hash;
 
 	hash = crypto_spawn_shash(spawn);
+=======
+	struct crypto_ahash_spawn *spawn = &ictx->spawn;
+	struct mcryptd_hash_ctx *ctx = crypto_tfm_ctx(tfm);
+	struct crypto_ahash *hash;
+
+	hash = crypto_spawn_ahash(spawn);
+>>>>>>> v4.9.227
 	if (IS_ERR(hash))
 		return PTR_ERR(hash);
 
 	ctx->child = hash;
 	crypto_ahash_set_reqsize(__crypto_ahash_cast(tfm),
 				 sizeof(struct mcryptd_hash_request_ctx) +
+<<<<<<< HEAD
 				 crypto_shash_descsize(hash));
+=======
+				 crypto_ahash_reqsize(hash));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -278,13 +321,18 @@ static void mcryptd_hash_exit_tfm(struct crypto_tfm *tfm)
 {
 	struct mcryptd_hash_ctx *ctx = crypto_tfm_ctx(tfm);
 
+<<<<<<< HEAD
 	crypto_free_shash(ctx->child);
+=======
+	crypto_free_ahash(ctx->child);
+>>>>>>> v4.9.227
 }
 
 static int mcryptd_hash_setkey(struct crypto_ahash *parent,
 				   const u8 *key, unsigned int keylen)
 {
 	struct mcryptd_hash_ctx *ctx   = crypto_ahash_ctx(parent);
+<<<<<<< HEAD
 	struct crypto_shash *child = ctx->child;
 	int err;
 
@@ -293,6 +341,16 @@ static int mcryptd_hash_setkey(struct crypto_ahash *parent,
 				      CRYPTO_TFM_REQ_MASK);
 	err = crypto_shash_setkey(child, key, keylen);
 	crypto_ahash_set_flags(parent, crypto_shash_get_flags(child) &
+=======
+	struct crypto_ahash *child = ctx->child;
+	int err;
+
+	crypto_ahash_clear_flags(child, CRYPTO_TFM_REQ_MASK);
+	crypto_ahash_set_flags(child, crypto_ahash_get_flags(parent) &
+				      CRYPTO_TFM_REQ_MASK);
+	err = crypto_ahash_setkey(child, key, keylen);
+	crypto_ahash_set_flags(parent, crypto_ahash_get_flags(child) &
+>>>>>>> v4.9.227
 				       CRYPTO_TFM_RES_MASK);
 	return err;
 }
@@ -318,20 +376,36 @@ static int mcryptd_hash_enqueue(struct ahash_request *req,
 static void mcryptd_hash_init(struct crypto_async_request *req_async, int err)
 {
 	struct mcryptd_hash_ctx *ctx = crypto_tfm_ctx(req_async->tfm);
+<<<<<<< HEAD
 	struct crypto_shash *child = ctx->child;
 	struct ahash_request *req = ahash_request_cast(req_async);
 	struct mcryptd_hash_request_ctx *rctx = ahash_request_ctx(req);
 	struct shash_desc *desc = &rctx->desc;
+=======
+	struct crypto_ahash *child = ctx->child;
+	struct ahash_request *req = ahash_request_cast(req_async);
+	struct mcryptd_hash_request_ctx *rctx = ahash_request_ctx(req);
+	struct ahash_request *desc = &rctx->areq;
+>>>>>>> v4.9.227
 
 	if (unlikely(err == -EINPROGRESS))
 		goto out;
 
+<<<<<<< HEAD
 	desc->tfm = child;
 	desc->flags = CRYPTO_TFM_REQ_MAY_SLEEP;
 
 	err = crypto_shash_init(desc);
 
 	req->base.complete = rctx->complete;
+=======
+	ahash_request_set_tfm(desc, child);
+	ahash_request_set_callback(desc, CRYPTO_TFM_REQ_MAY_SLEEP,
+						rctx->complete, req_async);
+
+	rctx->out = req->result;
+	err = crypto_ahash_init(desc);
+>>>>>>> v4.9.227
 
 out:
 	local_bh_disable();
@@ -352,7 +426,12 @@ static void mcryptd_hash_update(struct crypto_async_request *req_async, int err)
 	if (unlikely(err == -EINPROGRESS))
 		goto out;
 
+<<<<<<< HEAD
 	err = shash_ahash_mcryptd_update(req, &rctx->desc);
+=======
+	rctx->out = req->result;
+	err = ahash_mcryptd_update(&rctx->areq);
+>>>>>>> v4.9.227
 	if (err) {
 		req->base.complete = rctx->complete;
 		goto out;
@@ -378,7 +457,12 @@ static void mcryptd_hash_final(struct crypto_async_request *req_async, int err)
 	if (unlikely(err == -EINPROGRESS))
 		goto out;
 
+<<<<<<< HEAD
 	err = shash_ahash_mcryptd_final(req, &rctx->desc);
+=======
+	rctx->out = req->result;
+	err = ahash_mcryptd_final(&rctx->areq);
+>>>>>>> v4.9.227
 	if (err) {
 		req->base.complete = rctx->complete;
 		goto out;
@@ -403,8 +487,13 @@ static void mcryptd_hash_finup(struct crypto_async_request *req_async, int err)
 
 	if (unlikely(err == -EINPROGRESS))
 		goto out;
+<<<<<<< HEAD
 
 	err = shash_ahash_mcryptd_finup(req, &rctx->desc);
+=======
+	rctx->out = req->result;
+	err = ahash_mcryptd_finup(&rctx->areq);
+>>>>>>> v4.9.227
 
 	if (err) {
 		req->base.complete = rctx->complete;
@@ -426,14 +515,22 @@ static int mcryptd_hash_finup_enqueue(struct ahash_request *req)
 static void mcryptd_hash_digest(struct crypto_async_request *req_async, int err)
 {
 	struct mcryptd_hash_ctx *ctx = crypto_tfm_ctx(req_async->tfm);
+<<<<<<< HEAD
 	struct crypto_shash *child = ctx->child;
 	struct ahash_request *req = ahash_request_cast(req_async);
 	struct mcryptd_hash_request_ctx *rctx = ahash_request_ctx(req);
 	struct shash_desc *desc = &rctx->desc;
+=======
+	struct crypto_ahash *child = ctx->child;
+	struct ahash_request *req = ahash_request_cast(req_async);
+	struct mcryptd_hash_request_ctx *rctx = ahash_request_ctx(req);
+	struct ahash_request *desc = &rctx->areq;
+>>>>>>> v4.9.227
 
 	if (unlikely(err == -EINPROGRESS))
 		goto out;
 
+<<<<<<< HEAD
 	desc->tfm = child;
 	desc->flags = CRYPTO_TFM_REQ_MAY_SLEEP;  /* check this again */
 
@@ -445,6 +542,15 @@ static void mcryptd_hash_digest(struct crypto_async_request *req_async, int err)
 	}
 
 	return;
+=======
+	ahash_request_set_tfm(desc, child);
+	ahash_request_set_callback(desc, CRYPTO_TFM_REQ_MAY_SLEEP,
+						rctx->complete, req_async);
+
+	rctx->out = req->result;
+	err = ahash_mcryptd_digest(desc);
+
+>>>>>>> v4.9.227
 out:
 	local_bh_disable();
 	rctx->complete(&req->base, err);
@@ -460,14 +566,22 @@ static int mcryptd_hash_export(struct ahash_request *req, void *out)
 {
 	struct mcryptd_hash_request_ctx *rctx = ahash_request_ctx(req);
 
+<<<<<<< HEAD
 	return crypto_shash_export(&rctx->desc, out);
+=======
+	return crypto_ahash_export(&rctx->areq, out);
+>>>>>>> v4.9.227
 }
 
 static int mcryptd_hash_import(struct ahash_request *req, const void *in)
 {
 	struct mcryptd_hash_request_ctx *rctx = ahash_request_ctx(req);
 
+<<<<<<< HEAD
 	return crypto_shash_import(&rctx->desc, in);
+=======
+	return crypto_ahash_import(&rctx->areq, in);
+>>>>>>> v4.9.227
 }
 
 static int mcryptd_create_hash(struct crypto_template *tmpl, struct rtattr **tb,
@@ -475,6 +589,7 @@ static int mcryptd_create_hash(struct crypto_template *tmpl, struct rtattr **tb,
 {
 	struct hashd_instance_ctx *ctx;
 	struct ahash_instance *inst;
+<<<<<<< HEAD
 	struct shash_alg *salg;
 	struct crypto_alg *alg;
 	int err;
@@ -484,6 +599,22 @@ static int mcryptd_create_hash(struct crypto_template *tmpl, struct rtattr **tb,
 		return PTR_ERR(salg);
 
 	alg = &salg->base;
+=======
+	struct hash_alg_common *halg;
+	struct crypto_alg *alg;
+	u32 type = 0;
+	u32 mask = 0;
+	int err;
+
+	if (!mcryptd_check_internal(tb, &type, &mask))
+		return -EINVAL;
+
+	halg = ahash_attr_alg(tb[1], type, mask);
+	if (IS_ERR(halg))
+		return PTR_ERR(halg);
+
+	alg = &halg->base;
+>>>>>>> v4.9.227
 	pr_debug("crypto: mcryptd hash alg: %s\n", alg->cra_name);
 	inst = mcryptd_alloc_instance(alg, ahash_instance_headroom(),
 					sizeof(*ctx));
@@ -494,15 +625,28 @@ static int mcryptd_create_hash(struct crypto_template *tmpl, struct rtattr **tb,
 	ctx = ahash_instance_ctx(inst);
 	ctx->queue = queue;
 
+<<<<<<< HEAD
 	err = crypto_init_shash_spawn(&ctx->spawn, salg,
+=======
+	err = crypto_init_ahash_spawn(&ctx->spawn, halg,
+>>>>>>> v4.9.227
 				      ahash_crypto_instance(inst));
 	if (err)
 		goto out_free_inst;
 
+<<<<<<< HEAD
 	inst->alg.halg.base.cra_flags = CRYPTO_ALG_ASYNC;
 
 	inst->alg.halg.digestsize = salg->digestsize;
 	inst->alg.halg.statesize = salg->statesize;
+=======
+	inst->alg.halg.base.cra_flags = CRYPTO_ALG_ASYNC |
+		(alg->cra_flags & (CRYPTO_ALG_INTERNAL |
+				   CRYPTO_ALG_OPTIONAL_KEY));
+
+	inst->alg.halg.digestsize = halg->digestsize;
+	inst->alg.halg.statesize = halg->statesize;
+>>>>>>> v4.9.227
 	inst->alg.halg.base.cra_ctxsize = sizeof(struct mcryptd_hash_ctx);
 
 	inst->alg.halg.base.cra_init = mcryptd_hash_init_tfm;
@@ -514,12 +658,21 @@ static int mcryptd_create_hash(struct crypto_template *tmpl, struct rtattr **tb,
 	inst->alg.finup  = mcryptd_hash_finup_enqueue;
 	inst->alg.export = mcryptd_hash_export;
 	inst->alg.import = mcryptd_hash_import;
+<<<<<<< HEAD
 	inst->alg.setkey = mcryptd_hash_setkey;
+=======
+	if (crypto_hash_alg_has_setkey(halg))
+		inst->alg.setkey = mcryptd_hash_setkey;
+>>>>>>> v4.9.227
 	inst->alg.digest = mcryptd_hash_digest_enqueue;
 
 	err = ahash_register_instance(tmpl, inst);
 	if (err) {
+<<<<<<< HEAD
 		crypto_drop_shash(&ctx->spawn);
+=======
+		crypto_drop_ahash(&ctx->spawn);
+>>>>>>> v4.9.227
 out_free_inst:
 		kfree(inst);
 	}
@@ -555,7 +708,11 @@ static void mcryptd_free(struct crypto_instance *inst)
 
 	switch (inst->alg.cra_flags & CRYPTO_ALG_TYPE_MASK) {
 	case CRYPTO_ALG_TYPE_AHASH:
+<<<<<<< HEAD
 		crypto_drop_shash(&hctx->spawn);
+=======
+		crypto_drop_ahash(&hctx->spawn);
+>>>>>>> v4.9.227
 		kfree(ahash_instance(inst));
 		return;
 	default:
@@ -592,6 +749,7 @@ struct mcryptd_ahash *mcryptd_alloc_ahash(const char *alg_name,
 }
 EXPORT_SYMBOL_GPL(mcryptd_alloc_ahash);
 
+<<<<<<< HEAD
 int shash_ahash_mcryptd_digest(struct ahash_request *req,
 			       struct shash_desc *desc)
 {
@@ -641,6 +799,35 @@ int shash_ahash_mcryptd_final(struct ahash_request *req,
 EXPORT_SYMBOL_GPL(shash_ahash_mcryptd_final);
 
 struct crypto_shash *mcryptd_ahash_child(struct mcryptd_ahash *tfm)
+=======
+int ahash_mcryptd_digest(struct ahash_request *desc)
+{
+	return crypto_ahash_init(desc) ?: ahash_mcryptd_finup(desc);
+}
+
+int ahash_mcryptd_update(struct ahash_request *desc)
+{
+	/* alignment is to be done by multi-buffer crypto algorithm if needed */
+
+	return crypto_ahash_update(desc);
+}
+
+int ahash_mcryptd_finup(struct ahash_request *desc)
+{
+	/* alignment is to be done by multi-buffer crypto algorithm if needed */
+
+	return crypto_ahash_finup(desc);
+}
+
+int ahash_mcryptd_final(struct ahash_request *desc)
+{
+	/* alignment is to be done by multi-buffer crypto algorithm if needed */
+
+	return crypto_ahash_final(desc);
+}
+
+struct crypto_ahash *mcryptd_ahash_child(struct mcryptd_ahash *tfm)
+>>>>>>> v4.9.227
 {
 	struct mcryptd_hash_ctx *ctx = crypto_ahash_ctx(&tfm->base);
 
@@ -648,12 +835,21 @@ struct crypto_shash *mcryptd_ahash_child(struct mcryptd_ahash *tfm)
 }
 EXPORT_SYMBOL_GPL(mcryptd_ahash_child);
 
+<<<<<<< HEAD
 struct shash_desc *mcryptd_shash_desc(struct ahash_request *req)
 {
 	struct mcryptd_hash_request_ctx *rctx = ahash_request_ctx(req);
 	return &rctx->desc;
 }
 EXPORT_SYMBOL_GPL(mcryptd_shash_desc);
+=======
+struct ahash_request *mcryptd_ahash_desc(struct ahash_request *req)
+{
+	struct mcryptd_hash_request_ctx *rctx = ahash_request_ctx(req);
+	return &rctx->areq;
+}
+EXPORT_SYMBOL_GPL(mcryptd_ahash_desc);
+>>>>>>> v4.9.227
 
 void mcryptd_free_ahash(struct mcryptd_ahash *tfm)
 {
@@ -661,7 +857,10 @@ void mcryptd_free_ahash(struct mcryptd_ahash *tfm)
 }
 EXPORT_SYMBOL_GPL(mcryptd_free_ahash);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static int __init mcryptd_init(void)
 {
 	int err, cpu;

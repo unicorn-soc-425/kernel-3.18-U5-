@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #define _RTL8188E_REDESC_C_
 
@@ -45,7 +48,11 @@ static void process_link_qual(struct adapter *padapter,
 	struct rx_pkt_attrib *pattrib;
 	struct signal_stat *signal_stat;
 
+<<<<<<< HEAD
 	if (prframe == NULL || padapter == NULL)
+=======
+	if (!prframe || !padapter)
+>>>>>>> v4.9.227
 		return;
 
 	pattrib = &prframe->attrib;
@@ -62,10 +69,16 @@ static void process_link_qual(struct adapter *padapter,
 	signal_stat->avg_val = signal_stat->total_val / signal_stat->total_num;
 }
 
+<<<<<<< HEAD
 void rtl8188e_process_phy_info(struct adapter *padapter, void *prframe)
 {
 	struct recv_frame *precvframe = (struct recv_frame *)prframe;
 
+=======
+void rtl8188e_process_phy_info(struct adapter *padapter,
+		               struct recv_frame *precvframe)
+{
+>>>>>>> v4.9.227
 	/*  Check RSSI */
 	process_rssi(padapter, precvframe);
 	/*  Check EVM */
@@ -145,7 +158,10 @@ void update_recvframe_phyinfo_88e(struct recv_frame *precvframe,
 {
 	struct adapter *padapter = precvframe->adapter;
 	struct rx_pkt_attrib *pattrib = &precvframe->attrib;
+<<<<<<< HEAD
 	struct hal_data_8188e *pHalData = GET_HAL_DATA(padapter);
+=======
+>>>>>>> v4.9.227
 	struct odm_phy_status_info *pPHYInfo  = (struct odm_phy_status_info *)(&pattrib->phy_info);
 	u8 *wlanhdr;
 	struct odm_per_pkt_info	pkt_info;
@@ -186,7 +202,12 @@ void update_recvframe_phyinfo_88e(struct recv_frame *precvframe,
 		pkt_info.StationID = psta->mac_id;
 	pkt_info.Rate = pattrib->mcs_rate;
 
+<<<<<<< HEAD
 	ODM_PhyStatusQuery(&pHalData->odmpriv, pPHYInfo, (u8 *)pphy_status, &(pkt_info));
+=======
+	ODM_PhyStatusQuery(&padapter->HalData->odmpriv, pPHYInfo,
+			   (u8 *)pphy_status, &(pkt_info));
+>>>>>>> v4.9.227
 
 	precvframe->psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&

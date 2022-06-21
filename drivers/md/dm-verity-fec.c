@@ -11,7 +11,10 @@
 
 #include "dm-verity-fec.h"
 #include <linux/math64.h>
+<<<<<<< HEAD
 #include <linux/sysfs.h>
+=======
+>>>>>>> v4.9.227
 
 #define DM_MSG_PREFIX	"verity-fec"
 
@@ -147,8 +150,11 @@ static int fec_decode_bufs(struct dm_verity *v, struct dm_verity_fec_io *fio,
 		block = fec_buffer_rs_block(v, fio, n, i);
 		res = fec_decode_rs8(v, fio, block, &par[offset], neras);
 		if (res < 0) {
+<<<<<<< HEAD
 			dm_bufio_release(buf);
 
+=======
+>>>>>>> v4.9.227
 			r = res;
 			goto error;
 		}
@@ -173,6 +179,7 @@ static int fec_decode_bufs(struct dm_verity *v, struct dm_verity_fec_io *fio,
 done:
 	r = corrected;
 error:
+<<<<<<< HEAD
 	if (r < 0 && neras)
 		DMERR_LIMIT("%s: FEC %llu: failed to correct: %d",
 			    v->data_dev->name, (unsigned long long)rsb, r);
@@ -181,6 +188,16 @@ error:
 			     v->data_dev->name, (unsigned long long)rsb, r);
 		atomic_add_unless(&v->fec->corrected, 1, INT_MAX);
 	}
+=======
+	dm_bufio_release(buf);
+
+	if (r < 0 && neras)
+		DMERR_LIMIT("%s: FEC %llu: failed to correct: %d",
+			    v->data_dev->name, (unsigned long long)rsb, r);
+	else if (r > 0)
+		DMWARN_LIMIT("%s: FEC %llu: corrected %d errors",
+			     v->data_dev->name, (unsigned long long)rsb, r);
+>>>>>>> v4.9.227
 
 	return r;
 }
@@ -266,19 +283,26 @@ static int fec_read_bufs(struct dm_verity *v, struct dm_verity_io *io,
 			continue;
 		}
 
+<<<<<<< HEAD
 		/* assumes block0's first 1024 bytes were all zeroes when encoding.*/
 		if(block == 0 && bufio == v->fec->data_bufio){
 			memset(bbuf, 0, 1024);
 			goto skip_erasure;
 		}
 
+=======
+>>>>>>> v4.9.227
 		/* locate erasures if the block is on the data device */
 		if (bufio == v->fec->data_bufio &&
 		    verity_hash_for_block(v, io, block, want_digest,
 					  &is_zero) == 0) {
 			/* skip known zero blocks entirely */
 			if (is_zero)
+<<<<<<< HEAD
 				continue;
+=======
+				goto done;
+>>>>>>> v4.9.227
 
 			/*
 			 * skip if we have already found the theoretical
@@ -289,7 +313,10 @@ static int fec_read_bufs(struct dm_verity *v, struct dm_verity_io *io,
 				fio->erasures[(*neras)++] = i;
 		}
 
+<<<<<<< HEAD
 skip_erasure :
+=======
+>>>>>>> v4.9.227
 		/*
 		 * deinterleave and copy the bytes that fit into bufs,
 		 * starting from block_offset
@@ -446,9 +473,12 @@ int verity_fec_decode(struct dm_verity *v, struct dm_verity_io *io,
 	struct dm_verity_fec_io *fio = fec_io(io);
 	u64 offset, res, rsb;
 
+<<<<<<< HEAD
 	if (block == 0)
 		return -1;
 
+=======
+>>>>>>> v4.9.227
 	if (!verity_fec_is_enabled(v))
 		return -EOPNOTSUPP;
 
@@ -459,6 +489,11 @@ int verity_fec_decode(struct dm_verity *v, struct dm_verity_io *io,
 
 	fio->level++;
 
+<<<<<<< HEAD
+=======
+	if (type == DM_VERITY_BLOCK_TYPE_METADATA)
+		block = block - v->hash_start + v->data_blocks;
+>>>>>>> v4.9.227
 
 	/*
 	 * For RS(M, N), the continuous FEC data is divided into blocks of N
@@ -567,7 +602,10 @@ unsigned verity_fec_status_table(struct dm_verity *v, unsigned sz,
 void verity_fec_dtr(struct dm_verity *v)
 {
 	struct dm_verity_fec *f = v->fec;
+<<<<<<< HEAD
 	struct kobject *kobj = &f->kobj_holder.kobj;
+=======
+>>>>>>> v4.9.227
 
 	if (!verity_fec_is_enabled(v))
 		goto out;
@@ -575,6 +613,10 @@ void verity_fec_dtr(struct dm_verity *v)
 	mempool_destroy(f->rs_pool);
 	mempool_destroy(f->prealloc_pool);
 	mempool_destroy(f->extra_pool);
+<<<<<<< HEAD
+=======
+	mempool_destroy(f->output_pool);
+>>>>>>> v4.9.227
 	kmem_cache_destroy(f->cache);
 
 	if (f->data_bufio)
@@ -584,12 +626,15 @@ void verity_fec_dtr(struct dm_verity *v)
 
 	if (f->dev)
 		dm_put_device(v->ti, f->dev);
+<<<<<<< HEAD
 
 	if (kobj->state_initialized) {
 		kobject_put(kobj);
 		wait_for_completion(dm_get_completion_from_kobject(kobj));
 	}
 
+=======
+>>>>>>> v4.9.227
 out:
 	kfree(f);
 	v->fec = NULL;
@@ -678,6 +723,7 @@ int verity_fec_parse_opt_args(struct dm_arg_set *as, struct dm_verity *v,
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t corrected_show(struct kobject *kobj, struct kobj_attribute *attr,
 			      char *buf)
 {
@@ -700,6 +746,8 @@ static struct kobj_type fec_ktype = {
 	.release = dm_kobject_release
 };
 
+=======
+>>>>>>> v4.9.227
 /*
  * Allocate dm_verity_fec for v->fec. Must be called before verity_fec_ctr.
  */
@@ -723,10 +771,15 @@ int verity_fec_ctr_alloc(struct dm_verity *v)
  */
 int verity_fec_ctr(struct dm_verity *v)
 {
+<<<<<<< HEAD
 	int r;
 	struct dm_verity_fec *f = v->fec;
 	struct dm_target *ti = v->ti;
 	struct mapped_device *md = dm_table_get_md(ti->table);
+=======
+	struct dm_verity_fec *f = v->fec;
+	struct dm_target *ti = v->ti;
+>>>>>>> v4.9.227
 	u64 hash_blocks;
 
 	if (!verity_fec_is_enabled(v)) {
@@ -734,6 +787,7 @@ int verity_fec_ctr(struct dm_verity *v)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	/* Create a kobject and sysfs attributes */
 	init_completion(&f->kobj_holder.completion);
 
@@ -744,6 +798,8 @@ int verity_fec_ctr(struct dm_verity *v)
 		return r;
 	}
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * FEC is computed over data blocks, possible metadata, and
 	 * hash blocks. In other words, FEC covers total of fec_blocks
@@ -872,7 +928,11 @@ int verity_fec_ctr(struct dm_verity *v)
 	}
 
 	/* Reserve space for our per-bio data */
+<<<<<<< HEAD
 	ti->per_bio_data_size += sizeof(struct dm_verity_fec_io);
+=======
+	ti->per_io_data_size += sizeof(struct dm_verity_fec_io);
+>>>>>>> v4.9.227
 
 	return 0;
 }

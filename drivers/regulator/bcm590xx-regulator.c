@@ -244,7 +244,11 @@ static int bcm590xx_get_enable_register(int id)
 			break;
 		case BCM590XX_REG_VBUS:
 			reg = BCM590XX_OTG_CTRL;
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> v4.9.227
 
 
 	return reg;
@@ -453,7 +457,10 @@ static int bcm590xx_probe(struct platform_device *pdev)
 static struct platform_driver bcm590xx_regulator_driver = {
 	.driver = {
 		.name = "bcm590xx-vregs",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = bcm590xx_probe,
 };

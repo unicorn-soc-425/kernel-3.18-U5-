@@ -44,8 +44,15 @@
 	#define MG_SET_ICV_SLOW
 	/* HW may miss ERR/CMDNK signal when sampling INT status. */
 	#define MS_SAMPLE_INT_ERR
+<<<<<<< HEAD
 	/* HW DO NOT support Wait_INT function during READ_BYTES
 	 * transfer mode */
+=======
+	/*
+	 * HW DO NOT support Wait_INT function
+	 * during READ_BYTES transfer mode
+	 */
+>>>>>>> v4.9.227
 	#define READ_BYTES_WAIT_INT
 #endif
 
@@ -101,18 +108,30 @@
 #define TRANSPORT_NO_SENSE	2  /* Command failed, no auto-sense    */
 #define TRANSPORT_ERROR		3   /* Transport bad (i.e. device dead) */
 
+<<<<<<< HEAD
 
 /*-----------------------------------
     Start-Stop-Unit
 -----------------------------------*/
+=======
+/*
+ * Start-Stop-Unit
+ */
+>>>>>>> v4.9.227
 #define STOP_MEDIUM			0x00    /* access disable         */
 #define MAKE_MEDIUM_READY		0x01    /* access enable          */
 #define UNLOAD_MEDIUM			0x02    /* unload                 */
 #define LOAD_MEDIUM			0x03    /* load                   */
 
+<<<<<<< HEAD
 /*-----------------------------------
     STANDARD_INQUIRY
 -----------------------------------*/
+=======
+/*
+ * STANDARD_INQUIRY
+ */
+>>>>>>> v4.9.227
 #define QULIFIRE                0x00
 #define AENC_FNC                0x00
 #define TRML_IOP                0x00
@@ -129,6 +148,7 @@
 #define PRDCT_REV_LEN           4               /* Product LOT Length       */
 
 /* Dynamic flag definitions: used in set_bit() etc. */
+<<<<<<< HEAD
 #define RTSX_FLIDX_TRANS_ACTIVE		18  /* 0x00040000  transfer is active */
 #define RTSX_FLIDX_ABORTING		20  /* 0x00100000 abort is in
 					     * progress */
@@ -140,6 +160,17 @@
 					     * in progress */
 #define RTSX_FLIDX_TIMED_OUT		23  /* 0x00800000 SCSI
 					     * midlayer timed out */
+=======
+#define RTSX_FLIDX_TRANS_ACTIVE		18  /* 0x00040000 transfer is active	 */
+#define RTSX_FLIDX_ABORTING		20  /* 0x00100000 abort is in progress	 */
+#define RTSX_FLIDX_DISCONNECTING	21  /* 0x00200000 disconnect in progress */
+
+#define ABORTING_OR_DISCONNECTING	((1UL << US_FLIDX_ABORTING) | \
+					 (1UL << US_FLIDX_DISCONNECTING))
+
+#define RTSX_FLIDX_RESETTING		22  /* 0x00400000 device reset in progress */
+#define RTSX_FLIDX_TIMED_OUT		23  /* 0x00800000 SCSI midlayer timed out  */
+>>>>>>> v4.9.227
 
 #define DRCT_ACCESS_DEV         0x00    /* Direct Access Device      */
 #define RMB_DISC                0x80    /* The Device is Removable   */
@@ -174,9 +205,15 @@
 #define	FIRST_RESET		0x01
 #define	USED_EXIST		0x02
 
+<<<<<<< HEAD
 /*-----------------------------------
     SENSE_DATA
 -----------------------------------*/
+=======
+/*
+ * SENSE_DATA
+ */
+>>>>>>> v4.9.227
 /*---- valid ----*/
 #define SENSE_VALID             0x80    /* Sense data is valid as SCSI2     */
 #define SENSE_INVALID           0x00    /* Sense data is invalid as SCSI2   */
@@ -228,7 +265,10 @@
 #define ASCQ_LOAD_EJCT_ERR      0x00
 #define	ASCQ_WRITE_PROTECT	0x00
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 struct sense_data_t {
 	unsigned char   err_code;	/* error code */
 	/* bit7 : valid */
@@ -268,6 +308,7 @@ struct sense_data_t {
 #define TRIG_DMA		(0x01 << 31)
 
 /* Bus interrupt pending register */
+<<<<<<< HEAD
 #define CMD_DONE_INT		(1 << 31)
 #define DATA_DONE_INT		(1 << 30)
 #define TRANS_OK_INT		(1 << 29)
@@ -284,6 +325,24 @@ struct sense_data_t {
 #define DELINK_INT		GPIO0_INT
 #define MS_OC_INT		(1 << 23)
 #define SD_OC_INT		(1 << 22)
+=======
+#define CMD_DONE_INT		BIT(31)
+#define DATA_DONE_INT		BIT(30)
+#define TRANS_OK_INT		BIT(29)
+#define TRANS_FAIL_INT		BIT(28)
+#define XD_INT			BIT(27)
+#define MS_INT			BIT(26)
+#define SD_INT			BIT(25)
+#define GPIO0_INT		BIT(24)
+#define OC_INT			BIT(23)
+#define SD_WRITE_PROTECT	BIT(19)
+#define XD_EXIST		BIT(18)
+#define MS_EXIST		BIT(17)
+#define SD_EXIST		BIT(16)
+#define DELINK_INT		GPIO0_INT
+#define MS_OC_INT		BIT(23)
+#define SD_OC_INT		BIT(22)
+>>>>>>> v4.9.227
 
 #define CARD_INT		(XD_INT | MS_INT | SD_INT)
 #define NEED_COMPLETE_INT	(DATA_DONE_INT | TRANS_OK_INT | TRANS_FAIL_INT)
@@ -305,7 +364,10 @@ struct sense_data_t {
 #define MS_OC_INT_EN		(1 << 23)
 #define SD_OC_INT_EN		(1 << 22)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #define READ_REG_CMD		0
 #define WRITE_REG_CMD		1
 #define CHECK_REG_CMD		2
@@ -313,7 +375,10 @@ struct sense_data_t {
 #define HOST_TO_DEVICE		0
 #define DEVICE_TO_HOST		1
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #define RTSX_RESV_BUF_LEN	4096
 #define HOST_CMDS_BUF_LEN	1024
 #define HOST_SG_TBL_BUF_LEN	(RTSX_RESV_BUF_LEN - HOST_CMDS_BUF_LEN)
@@ -332,7 +397,10 @@ struct sense_data_t {
 #define XD_FREE_TABLE_CNT	1200
 #define MS_FREE_TABLE_CNT	512
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /* Bit Operation */
 #define SET_BIT(data, idx)	((data) |= 1 << (idx))
 #define CLR_BIT(data, idx)	((data) &= ~(1 << (idx)))
@@ -618,7 +686,10 @@ struct spi_info {
 	int spi_clock;
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #ifdef _MSG_TRACE
 struct trace_msg_t {
 	u16 line;
@@ -689,7 +760,11 @@ struct trace_msg_t {
 #define CLR_SDIO_IGNORED(chip)		((chip)->sdio_func_exist &= ~SDIO_IGNORED)
 
 struct rtsx_chip {
+<<<<<<< HEAD
 	rtsx_dev_t	*rtsx;
+=======
+	struct rtsx_dev	*rtsx;
+>>>>>>> v4.9.227
 
 	u32		int_reg; /* Bus interrupt pending register */
 	char		max_lun;
@@ -712,9 +787,15 @@ struct rtsx_chip {
 	int			cur_card;
 
 	unsigned long	need_release;		/* need release bit map */
+<<<<<<< HEAD
 	unsigned long	need_reset;		/* need reset
 						 * bit map */
 	/* Flag to indicate that this card is just resumed from SS state,
+=======
+	unsigned long	need_reset;		/* need reset bit map */
+	/*
+	 * Flag to indicate that this card is just resumed from SS state,
+>>>>>>> v4.9.227
 	 * and need released before being resetted
 	 */
 	unsigned long		need_reinit;
@@ -732,8 +813,15 @@ struct rtsx_chip {
 	u8	card_ejected;	/* card ejected bit map */
 	u8	card_wp;	/* card write protected bit map */
 
+<<<<<<< HEAD
 	u8	lun_mc;		/* flag to indicate whether to answer
 				 * MediaChange */
+=======
+	u8	lun_mc;		/*
+				 * flag to indicate whether to answer
+				 * MediaChange
+				 */
+>>>>>>> v4.9.227
 
 #ifndef LED_AUTO_BLINK
 	int			led_toggle_counter;
@@ -950,7 +1038,10 @@ do {								\
 int rtsx_force_power_on(struct rtsx_chip *chip, u8 ctl);
 int rtsx_force_power_down(struct rtsx_chip *chip, u8 ctl);
 
+<<<<<<< HEAD
 void rtsx_disable_card_int(struct rtsx_chip *chip);
+=======
+>>>>>>> v4.9.227
 void rtsx_enable_card_int(struct rtsx_chip *chip);
 void rtsx_enable_bus_int(struct rtsx_chip *chip);
 void rtsx_disable_bus_int(struct rtsx_chip *chip);
@@ -958,7 +1049,10 @@ int rtsx_reset_chip(struct rtsx_chip *chip);
 int rtsx_init_chip(struct rtsx_chip *chip);
 void rtsx_release_chip(struct rtsx_chip *chip);
 void rtsx_polling_func(struct rtsx_chip *chip);
+<<<<<<< HEAD
 void rtsx_undo_delink(struct rtsx_chip *chip);
+=======
+>>>>>>> v4.9.227
 void rtsx_stop_cmd(struct rtsx_chip *chip, int card);
 int rtsx_write_register(struct rtsx_chip *chip, u16 addr, u8 mask, u8 data);
 int rtsx_read_register(struct rtsx_chip *chip, u16 addr, u8 *data);
@@ -975,7 +1069,10 @@ int rtsx_read_efuse(struct rtsx_chip *chip, u8 addr, u8 *val);
 int rtsx_write_efuse(struct rtsx_chip *chip, u8 addr, u8 val);
 int rtsx_clr_phy_reg_bit(struct rtsx_chip *chip, u8 reg, u8 bit);
 int rtsx_set_phy_reg_bit(struct rtsx_chip *chip, u8 reg, u8 bit);
+<<<<<<< HEAD
 int rtsx_check_link_ready(struct rtsx_chip *chip);
+=======
+>>>>>>> v4.9.227
 void rtsx_enter_ss(struct rtsx_chip *chip);
 void rtsx_exit_ss(struct rtsx_chip *chip);
 int rtsx_pre_handle_interrupt(struct rtsx_chip *chip);
@@ -988,6 +1085,7 @@ int rtsx_read_ppbuf(struct rtsx_chip *chip, u8 *buf, int buf_len);
 int rtsx_write_ppbuf(struct rtsx_chip *chip, u8 *buf, int buf_len);
 int rtsx_check_chip_exist(struct rtsx_chip *chip);
 
+<<<<<<< HEAD
 #define RTSX_WRITE_REG(chip, addr, mask, data)				\
 	do {								\
 		int retval = rtsx_write_register((chip), (addr), (mask), (data)); \
@@ -1004,4 +1102,6 @@ int rtsx_check_chip_exist(struct rtsx_chip *chip);
 		}							\
 	} while (0)
 
+=======
+>>>>>>> v4.9.227
 #endif  /* __REALTEK_RTSX_CHIP_H */

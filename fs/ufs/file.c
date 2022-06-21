@@ -35,9 +35,13 @@
  
 const struct file_operations ufs_file_operations = {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.read		= new_sync_read,
 	.read_iter	= generic_file_read_iter,
 	.write		= new_sync_write,
+=======
+	.read_iter	= generic_file_read_iter,
+>>>>>>> v4.9.227
 	.write_iter	= generic_file_write_iter,
 	.mmap		= generic_file_mmap,
 	.open           = generic_file_open,

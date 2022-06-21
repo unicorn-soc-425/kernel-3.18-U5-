@@ -227,6 +227,10 @@ static int pg_identify(struct pg *dev, int log);
 static char pg_scratch[512];	/* scratch block buffer */
 
 static struct class *pg_class;
+<<<<<<< HEAD
+=======
+static void *par_drv;		/* reference of parport driver */
+>>>>>>> v4.9.227
 
 /* kernel glue structures */
 
@@ -481,6 +485,15 @@ static int pg_detect(void)
 
 	printk("%s: %s version %s, major %d\n", name, name, PG_VERSION, major);
 
+<<<<<<< HEAD
+=======
+	par_drv = pi_register_driver(name);
+	if (!par_drv) {
+		pr_err("failed to register %s driver\n", name);
+		return -1;
+	}
+
+>>>>>>> v4.9.227
 	k = 0;
 	if (pg_drive_count == 0) {
 		if (pi_init(dev->pi, 1, -1, -1, -1, -1, -1, pg_scratch,
@@ -511,6 +524,10 @@ static int pg_detect(void)
 	if (k)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	pi_unregister_driver(par_drv);
+>>>>>>> v4.9.227
 	printk("%s: No ATAPI device detected\n", name);
 	return -1;
 }

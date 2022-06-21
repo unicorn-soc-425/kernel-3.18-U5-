@@ -38,11 +38,18 @@ static const DECLARE_TLV_DB_SCALE(earpiece_tlv, -600, 600, 0);
 static const DECLARE_TLV_DB_SCALE(outmix_tlv, -2100, 300, 0);
 static const DECLARE_TLV_DB_SCALE(spkmixout_tlv, -1800, 600, 1);
 static const DECLARE_TLV_DB_SCALE(outpga_tlv, -5700, 100, 0);
+<<<<<<< HEAD
 static const unsigned int spkboost_tlv[] = {
 	TLV_DB_RANGE_HEAD(2),
 	0, 6, TLV_DB_SCALE_ITEM(0, 150, 0),
 	7, 7, TLV_DB_SCALE_ITEM(1200, 0, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(spkboost_tlv,
+	0, 6, TLV_DB_SCALE_ITEM(0, 150, 0),
+	7, 7, TLV_DB_SCALE_ITEM(1200, 0, 0)
+);
+>>>>>>> v4.9.227
 static const DECLARE_TLV_DB_SCALE(line_tlv, -600, 600, 0);
 
 static const char *speaker_ref_text[] = {
@@ -500,7 +507,11 @@ SOC_SINGLE_TLV("LINEOUT2 Volume", WM8993_LINE_OUTPUTS_VOLUME, 0, 1, 1,
 static int hp_supply_event(struct snd_soc_dapm_widget *w,
 			   struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	struct wm_hubs_data *hubs = snd_soc_codec_get_drvdata(codec);
 
 	switch (event) {
@@ -542,7 +553,11 @@ static int hp_supply_event(struct snd_soc_dapm_widget *w,
 static int hp_event(struct snd_soc_dapm_widget *w,
 		    struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	unsigned int reg = snd_soc_read(codec, WM8993_ANALOGUE_HP_0);
 
 	switch (event) {
@@ -594,7 +609,11 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 static int earpiece_event(struct snd_soc_dapm_widget *w,
 			  struct snd_kcontrol *control, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	u16 reg = snd_soc_read(codec, WM8993_ANTIPOP1) & ~WM8993_HPOUT2_IN_ENA;
 
 	switch (event) {
@@ -619,7 +638,11 @@ static int earpiece_event(struct snd_soc_dapm_widget *w,
 static int lineout_event(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *control, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	struct wm_hubs_data *hubs = snd_soc_codec_get_drvdata(codec);
 	bool *flag;
 
@@ -649,7 +672,11 @@ static int lineout_event(struct snd_soc_dapm_widget *w,
 static int micbias_event(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	struct wm_hubs_data *hubs = snd_soc_codec_get_drvdata(codec);
 
 	switch (w->shift) {
@@ -1116,7 +1143,11 @@ static const struct snd_soc_dapm_route lineout2_se_routes[] = {
 
 int wm_hubs_add_analogue_controls(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 
 	/* Latch volume update bits & default ZC on */
 	snd_soc_update_bits(codec, WM8993_LEFT_LINE_INPUT_1_2_VOLUME,
@@ -1160,7 +1191,11 @@ int wm_hubs_add_analogue_routes(struct snd_soc_codec *codec,
 				int lineout1_diff, int lineout2_diff)
 {
 	struct wm_hubs_data *hubs = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 
 	hubs->codec = codec;
 

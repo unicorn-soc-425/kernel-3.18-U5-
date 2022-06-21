@@ -63,7 +63,10 @@ void *kmap_atomic(struct page *page);
 void __kunmap_atomic(void *kvaddr);
 void *kmap_atomic_pfn(unsigned long pfn);
 void *kmap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot);
+<<<<<<< HEAD
 struct page *kmap_atomic_to_page(void *ptr);
+=======
+>>>>>>> v4.9.227
 void *kmap_atomic_prot(struct page *page, pgprot_t prot);
 void kmap_atomic_fix_kpte(struct page *page, int finished);
 

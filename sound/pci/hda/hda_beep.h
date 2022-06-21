@@ -1,7 +1,11 @@
 /*
  * Digital Beep Input Interface for HD-audio codec
  *
+<<<<<<< HEAD
  * Author: Matthew Ranostay <mranostay@embeddedalley.com>
+=======
+ * Author: Matt Ranostay <mranostay@gmail.com>
+>>>>>>> v4.9.227
  * Copyright (c) 2008 Embedded Alley Solutions Inc
  *
  *  This driver is free software; you can redistribute it and/or modify
@@ -40,6 +44,10 @@ struct hda_beep {
 	unsigned int playing:1;
 	struct work_struct beep_work; /* scheduled task for beep event */
 	struct mutex mutex;
+<<<<<<< HEAD
+=======
+	void (*power_hook)(struct hda_beep *beep, bool on);
+>>>>>>> v4.9.227
 };
 
 #ifdef CONFIG_SND_HDA_INPUT_BEEP

@@ -25,12 +25,15 @@
  *	buffers of any input characters it may have queued to be
  *	delivered to the user mode process.
  *
+<<<<<<< HEAD
  * ssize_t (*chars_in_buffer)(struct tty_struct *tty);
  *
  *	This function returns the number of input characters the line
  *	discipline may have queued up to be delivered to the user mode
  *	process.
  *
+=======
+>>>>>>> v4.9.227
  * ssize_t (*read)(struct tty_struct * tty, struct file * file,
  *		   unsigned char * buf, size_t nr);
  *
@@ -104,11 +107,14 @@
  *	seek to perform this action quickly but should wait until
  *	any pending driver I/O is completed.
  *
+<<<<<<< HEAD
  * void (*fasync)(struct tty_struct *, int on)
  *
  *	Notify line discipline when signal-driven I/O is enabled or
  *	disabled.
  *
+=======
+>>>>>>> v4.9.227
  * void (*dcd_change)(struct tty_struct *tty, unsigned int status)
  *
  *	Tells the discipline that the DCD pin has changed its status.
@@ -188,7 +194,10 @@ struct tty_ldisc_ops {
 	int	(*open)(struct tty_struct *);
 	void	(*close)(struct tty_struct *);
 	void	(*flush_buffer)(struct tty_struct *tty);
+<<<<<<< HEAD
 	ssize_t	(*chars_in_buffer)(struct tty_struct *tty);
+=======
+>>>>>>> v4.9.227
 	ssize_t	(*read)(struct tty_struct *tty, struct file *file,
 			unsigned char __user *buf, size_t nr);
 	ssize_t	(*write)(struct tty_struct *tty, struct file *file,
@@ -209,7 +218,10 @@ struct tty_ldisc_ops {
 			       char *fp, int count);
 	void	(*write_wakeup)(struct tty_struct *);
 	void	(*dcd_change)(struct tty_struct *, unsigned int);
+<<<<<<< HEAD
 	void	(*fasync)(struct tty_struct *tty, int on);
+=======
+>>>>>>> v4.9.227
 	int	(*receive_buf2)(struct tty_struct *, const unsigned char *cp,
 				char *fp, int count);
 

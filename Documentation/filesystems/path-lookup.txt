@@ -379,4 +379,8 @@ Papers and other documentation on dcache locking
 
 2. http://lse.sourceforge.net/locking/dcache/dcache.html
 
+<<<<<<< HEAD
 
+=======
+3. path-lookup.md in this directory.
+>>>>>>> v4.9.227

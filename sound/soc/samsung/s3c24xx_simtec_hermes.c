@@ -99,7 +99,10 @@ static int simtec_audio_hermes_probe(struct platform_device *pd)
 
 static struct platform_driver simtec_audio_hermes_platdrv = {
 	.driver	= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "s3c24xx-simtec-hermes-snd",
 		.pm	= simtec_audio_pm,
 	},

@@ -40,7 +40,11 @@
  * to run the rebalance_domains for all idle cores and the cpu_capacity can be
  * updated during this sequence.
  */
+<<<<<<< HEAD
 static DEFINE_PER_CPU(unsigned long, cpu_scale);
+=======
+static DEFINE_PER_CPU(unsigned long, cpu_scale) = SCHED_CAPACITY_SCALE;
+>>>>>>> v4.9.227
 
 unsigned long arch_scale_cpu_capacity(struct sched_domain *sd, int cpu)
 {
@@ -52,6 +56,7 @@ static void set_capacity_scale(unsigned int cpu, unsigned long capacity)
 	per_cpu(cpu_scale, cpu) = capacity;
 }
 
+<<<<<<< HEAD
 static int __init get_cpu_for_node(struct device_node *node)
 {
 	struct device_node *cpu_node;
@@ -197,6 +202,8 @@ unsigned long arch_get_cpu_efficiency(int cpu)
 	return per_cpu(cpu_efficiency, cpu);
 }
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_OF
 struct cpu_efficiency {
 	const char *compatible;
@@ -232,6 +239,7 @@ static unsigned long middle_capacity = 1;
  * 'average' CPU is of middle capacity. Also see the comments near
  * table_efficiency[] and update_cpu_capacity().
  */
+<<<<<<< HEAD
 static int __init parse_dt_topology(void)
 {
 	const struct cpu_efficiency *cpu_eff;
@@ -266,6 +274,16 @@ static int __init parse_dt_topology(void)
 	for_each_possible_cpu(cpu)
 		if (cpu_topology[cpu].cluster_id == -1)
 			ret = -EINVAL;
+=======
+static void __init parse_dt_topology(void)
+{
+	const struct cpu_efficiency *cpu_eff;
+	struct device_node *cn = NULL;
+	unsigned long min_capacity = ULONG_MAX;
+	unsigned long max_capacity = 0;
+	unsigned long capacity = 0;
+	int cpu = 0;
+>>>>>>> v4.9.227
 
 	__cpu_capacity = kcalloc(nr_cpu_ids, sizeof(*__cpu_capacity),
 				 GFP_NOWAIT);
@@ -273,7 +291,10 @@ static int __init parse_dt_topology(void)
 	for_each_possible_cpu(cpu) {
 		const u32 *rate;
 		int len;
+<<<<<<< HEAD
 		u32 efficiency;
+=======
+>>>>>>> v4.9.227
 
 		/* too early to use cpu->of_node */
 		cn = of_get_cpu_node(cpu, NULL);
@@ -282,6 +303,7 @@ static int __init parse_dt_topology(void)
 			continue;
 		}
 
+<<<<<<< HEAD
 		/*
 		 * The CPU efficiency value passed from the device tree
 		 * overrides the value defined in the table_efficiency[]
@@ -302,6 +324,14 @@ static int __init parse_dt_topology(void)
 		}
 
 		per_cpu(cpu_efficiency, cpu) = efficiency;
+=======
+		for (cpu_eff = table_efficiency; cpu_eff->compatible; cpu_eff++)
+			if (of_device_is_compatible(cn, cpu_eff->compatible))
+				break;
+
+		if (cpu_eff->compatible == NULL)
+			continue;
+>>>>>>> v4.9.227
 
 		rate = of_get_property(cn, "clock-frequency", &len);
 		if (!rate || len != 4) {
@@ -310,7 +340,11 @@ static int __init parse_dt_topology(void)
 			continue;
 		}
 
+<<<<<<< HEAD
 		capacity = ((be32_to_cpup(rate)) >> 20) * efficiency;
+=======
+		capacity = ((be32_to_cpup(rate)) >> 20) * cpu_eff->efficiency;
+>>>>>>> v4.9.227
 
 		/* Save min capacity of the system */
 		if (capacity < min_capacity)
@@ -336,11 +370,15 @@ static int __init parse_dt_topology(void)
 	else
 		middle_capacity = ((max_capacity / 3)
 				>> (SCHED_CAPACITY_SHIFT-1)) + 1;
+<<<<<<< HEAD
 out_map:
 	of_node_put(map);
 out:
 	of_node_put(cn);
 	return ret;
+=======
+
+>>>>>>> v4.9.227
 }
 
 /*
@@ -355,12 +393,20 @@ static void update_cpu_capacity(unsigned int cpu)
 
 	set_capacity_scale(cpu, cpu_capacity(cpu) / middle_capacity);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "CPU%u: update cpu_capacity %lu\n",
+=======
+	pr_info("CPU%u: update cpu_capacity %lu\n",
+>>>>>>> v4.9.227
 		cpu, arch_scale_cpu_capacity(NULL, cpu));
 }
 
 #else
+<<<<<<< HEAD
 static inline int parse_dt_topology(void) {}
+=======
+static inline void parse_dt_topology(void) {}
+>>>>>>> v4.9.227
 static inline void update_cpu_capacity(unsigned int cpuid) {}
 #endif
 
@@ -393,7 +439,11 @@ static void update_siblings_masks(unsigned int cpuid)
 	for_each_possible_cpu(cpu) {
 		cpu_topo = &cpu_topology[cpu];
 
+<<<<<<< HEAD
 		if (cpuid_topo->cluster_id != cpu_topo->cluster_id)
+=======
+		if (cpuid_topo->socket_id != cpu_topo->socket_id)
+>>>>>>> v4.9.227
 			continue;
 
 		cpumask_set_cpu(cpuid, &cpu_topo->core_sibling);
@@ -420,8 +470,14 @@ void store_cpu_topology(unsigned int cpuid)
 	struct cputopo_arm *cpuid_topo = &cpu_topology[cpuid];
 	unsigned int mpidr;
 
+<<<<<<< HEAD
 	if (cpuid_topo->core_id != -1)
 		goto topology_populated;
+=======
+	/* If the cpu topology has been already set, just return */
+	if (cpuid_topo->core_id != -1)
+		return;
+>>>>>>> v4.9.227
 
 	mpidr = read_cpuid_mpidr();
 
@@ -436,12 +492,20 @@ void store_cpu_topology(unsigned int cpuid)
 			/* core performance interdependency */
 			cpuid_topo->thread_id = MPIDR_AFFINITY_LEVEL(mpidr, 0);
 			cpuid_topo->core_id = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+<<<<<<< HEAD
 			cpuid_topo->cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 2);
+=======
+			cpuid_topo->socket_id = MPIDR_AFFINITY_LEVEL(mpidr, 2);
+>>>>>>> v4.9.227
 		} else {
 			/* largely independent cores */
 			cpuid_topo->thread_id = -1;
 			cpuid_topo->core_id = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+<<<<<<< HEAD
 			cpuid_topo->cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+=======
+			cpuid_topo->socket_id = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+>>>>>>> v4.9.227
 		}
 	} else {
 		/*
@@ -451,6 +515,7 @@ void store_cpu_topology(unsigned int cpuid)
 		 */
 		cpuid_topo->thread_id = -1;
 		cpuid_topo->core_id = 0;
+<<<<<<< HEAD
 		cpuid_topo->cluster_id = -1;
 	}
 
@@ -462,6 +527,19 @@ void store_cpu_topology(unsigned int cpuid)
 topology_populated:
 	update_siblings_masks(cpuid);
 	update_cpu_capacity(cpuid);
+=======
+		cpuid_topo->socket_id = -1;
+	}
+
+	update_siblings_masks(cpuid);
+
+	update_cpu_capacity(cpuid);
+
+	pr_info("CPU%u: thread %d, cpu %d, socket %d, mpidr %x\n",
+		cpuid, cpu_topology[cpuid].thread_id,
+		cpu_topology[cpuid].core_id,
+		cpu_topology[cpuid].socket_id, mpidr);
+>>>>>>> v4.9.227
 }
 
 static inline int cpu_corepower_flags(void)
@@ -492,6 +570,7 @@ void __init init_cpu_topology(void)
 
 		cpu_topo->thread_id = -1;
 		cpu_topo->core_id =  -1;
+<<<<<<< HEAD
 		cpu_topo->cluster_id = -1;
 		cpumask_clear(&cpu_topo->core_sibling);
 		cpumask_clear(&cpu_topo->thread_sibling);
@@ -514,6 +593,15 @@ void __init init_cpu_topology(void)
 
 	for_each_possible_cpu(cpu)
 		update_siblings_masks(cpu);
+=======
+		cpu_topo->socket_id = -1;
+		cpumask_clear(&cpu_topo->core_sibling);
+		cpumask_clear(&cpu_topo->thread_sibling);
+	}
+	smp_wmb();
+
+	parse_dt_topology();
+>>>>>>> v4.9.227
 
 	/* Set scheduler topology descriptor */
 	set_sched_topology(arm_topology);

@@ -76,6 +76,11 @@ source "sound/isa/Kconfig"
 
 source "sound/pci/Kconfig"
 
+<<<<<<< HEAD
+=======
+source "sound/hda/Kconfig"
+
+>>>>>>> v4.9.227
 source "sound/ppc/Kconfig"
 
 source "sound/aoa/Kconfig"

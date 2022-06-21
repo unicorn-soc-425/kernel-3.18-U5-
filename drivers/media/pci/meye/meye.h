@@ -311,7 +311,11 @@ struct meye {
 	struct kfifo doneq;		/* queue for grabbed buffers */
 	spinlock_t doneq_lock;		/* lock protecting the queue */
 	wait_queue_head_t proc_list;	/* wait queue */
+<<<<<<< HEAD
 	struct video_device *vdev;	/* video device parameters */
+=======
+	struct video_device vdev;	/* video device parameters */
+>>>>>>> v4.9.227
 	u16 brightness;
 	u16 hue;
 	u16 contrast;

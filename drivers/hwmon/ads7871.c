@@ -66,14 +66,21 @@
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/mutex.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 
 #define DEVICE_NAME	"ads7871"
 
 struct ads7871_data {
+<<<<<<< HEAD
 	struct device	*hwmon_dev;
 	struct mutex	update_lock;
+=======
+	struct spi_device *spi;
+>>>>>>> v4.9.227
 };
 
 static int ads7871_read_reg8(struct spi_device *spi, int reg)
@@ -101,7 +108,12 @@ static int ads7871_write_reg8(struct spi_device *spi, int reg, u8 val)
 static ssize_t show_voltage(struct device *dev,
 		struct device_attribute *da, char *buf)
 {
+<<<<<<< HEAD
 	struct spi_device *spi = to_spi_device(dev);
+=======
+	struct ads7871_data *pdata = dev_get_drvdata(dev);
+	struct spi_device *spi = pdata->spi;
+>>>>>>> v4.9.227
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
 	int ret, val, i = 0;
 	uint8_t channel, mux_cnv;
@@ -139,12 +151,15 @@ static ssize_t show_voltage(struct device *dev,
 	}
 }
 
+<<<<<<< HEAD
 static ssize_t ads7871_show_name(struct device *dev,
 				 struct device_attribute *devattr, char *buf)
 {
 	return sprintf(buf, "%s\n", to_spi_device(dev)->modalias);
 }
 
+=======
+>>>>>>> v4.9.227
 static SENSOR_DEVICE_ATTR(in0_input, S_IRUGO, show_voltage, NULL, 0);
 static SENSOR_DEVICE_ATTR(in1_input, S_IRUGO, show_voltage, NULL, 1);
 static SENSOR_DEVICE_ATTR(in2_input, S_IRUGO, show_voltage, NULL, 2);
@@ -154,9 +169,13 @@ static SENSOR_DEVICE_ATTR(in5_input, S_IRUGO, show_voltage, NULL, 5);
 static SENSOR_DEVICE_ATTR(in6_input, S_IRUGO, show_voltage, NULL, 6);
 static SENSOR_DEVICE_ATTR(in7_input, S_IRUGO, show_voltage, NULL, 7);
 
+<<<<<<< HEAD
 static DEVICE_ATTR(name, S_IRUGO, ads7871_show_name, NULL);
 
 static struct attribute *ads7871_attributes[] = {
+=======
+static struct attribute *ads7871_attrs[] = {
+>>>>>>> v4.9.227
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in2_input.dev_attr.attr,
@@ -165,6 +184,7 @@ static struct attribute *ads7871_attributes[] = {
 	&sensor_dev_attr_in5_input.dev_attr.attr,
 	&sensor_dev_attr_in6_input.dev_attr.attr,
 	&sensor_dev_attr_in7_input.dev_attr.attr,
+<<<<<<< HEAD
 	&dev_attr_name.attr,
 	NULL
 };
@@ -180,6 +200,20 @@ static int ads7871_probe(struct spi_device *spi)
 	struct ads7871_data *pdata;
 
 	dev_dbg(&spi->dev, "probe\n");
+=======
+	NULL
+};
+
+ATTRIBUTE_GROUPS(ads7871);
+
+static int ads7871_probe(struct spi_device *spi)
+{
+	struct device *dev = &spi->dev;
+	int ret;
+	uint8_t val;
+	struct ads7871_data *pdata;
+	struct device *hwmon_dev;
+>>>>>>> v4.9.227
 
 	/* Configure the SPI bus */
 	spi->mode = (SPI_MODE_0);
@@ -193,7 +227,11 @@ static int ads7871_probe(struct spi_device *spi)
 	ads7871_write_reg8(spi, REG_OSC_CONTROL, val);
 	ret = ads7871_read_reg8(spi, REG_OSC_CONTROL);
 
+<<<<<<< HEAD
 	dev_dbg(&spi->dev, "REG_OSC_CONTROL write:%x, read:%x\n", val, ret);
+=======
+	dev_dbg(dev, "REG_OSC_CONTROL write:%x, read:%x\n", val, ret);
+>>>>>>> v4.9.227
 	/*
 	 * because there is no other error checking on an SPI bus
 	 * we need to make sure we really have a chip
@@ -201,6 +239,7 @@ static int ads7871_probe(struct spi_device *spi)
 	if (val != ret)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	pdata = devm_kzalloc(&spi->dev, sizeof(struct ads7871_data),
 			     GFP_KERNEL);
 	if (!pdata)
@@ -232,16 +271,33 @@ static int ads7871_remove(struct spi_device *spi)
 	hwmon_device_unregister(pdata->hwmon_dev);
 	sysfs_remove_group(&spi->dev.kobj, &ads7871_group);
 	return 0;
+=======
+	pdata = devm_kzalloc(dev, sizeof(struct ads7871_data), GFP_KERNEL);
+	if (!pdata)
+		return -ENOMEM;
+
+	pdata->spi = spi;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, spi->modalias,
+							   pdata,
+							   ads7871_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> v4.9.227
 }
 
 static struct spi_driver ads7871_driver = {
 	.driver = {
 		.name = DEVICE_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 
 	.probe = ads7871_probe,
 	.remove = ads7871_remove,
+=======
+	},
+	.probe = ads7871_probe,
+>>>>>>> v4.9.227
 };
 
 module_spi_driver(ads7871_driver);

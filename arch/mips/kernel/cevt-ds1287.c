@@ -59,14 +59,19 @@ static int ds1287_set_next_event(unsigned long delta,
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static void ds1287_set_mode(enum clock_event_mode mode,
 			    struct clock_event_device *evt)
+=======
+static int ds1287_shutdown(struct clock_event_device *evt)
+>>>>>>> v4.9.227
 {
 	u8 val;
 
 	spin_lock(&rtc_lock);
 
 	val = CMOS_READ(RTC_REG_B);
+<<<<<<< HEAD
 
 	switch (mode) {
 	case CLOCK_EVT_MODE_PERIODIC:
@@ -80,6 +85,27 @@ static void ds1287_set_mode(enum clock_event_mode mode,
 	CMOS_WRITE(val, RTC_REG_B);
 
 	spin_unlock(&rtc_lock);
+=======
+	val &= ~RTC_PIE;
+	CMOS_WRITE(val, RTC_REG_B);
+
+	spin_unlock(&rtc_lock);
+	return 0;
+}
+
+static int ds1287_set_periodic(struct clock_event_device *evt)
+{
+	u8 val;
+
+	spin_lock(&rtc_lock);
+
+	val = CMOS_READ(RTC_REG_B);
+	val |= RTC_PIE;
+	CMOS_WRITE(val, RTC_REG_B);
+
+	spin_unlock(&rtc_lock);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void ds1287_event_handler(struct clock_event_device *dev)
@@ -87,11 +113,21 @@ static void ds1287_event_handler(struct clock_event_device *dev)
 }
 
 static struct clock_event_device ds1287_clockevent = {
+<<<<<<< HEAD
 	.name		= "ds1287",
 	.features	= CLOCK_EVT_FEAT_PERIODIC,
 	.set_next_event = ds1287_set_next_event,
 	.set_mode	= ds1287_set_mode,
 	.event_handler	= ds1287_event_handler,
+=======
+	.name			= "ds1287",
+	.features		= CLOCK_EVT_FEAT_PERIODIC,
+	.set_next_event		= ds1287_set_next_event,
+	.set_state_shutdown	= ds1287_shutdown,
+	.set_state_periodic	= ds1287_set_periodic,
+	.tick_resume		= ds1287_shutdown,
+	.event_handler		= ds1287_event_handler,
+>>>>>>> v4.9.227
 };
 
 static irqreturn_t ds1287_interrupt(int irq, void *dev_id)

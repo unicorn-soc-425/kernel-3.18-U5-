@@ -56,11 +56,14 @@ static struct sk_buff *ath9k_build_tx99_skb(struct ath_softc *sc)
 	struct sk_buff *skb;
 	struct ath_vif *avp;
 
+<<<<<<< HEAD
 	if (!sc->tx99_vif)
 		return NULL;
 
 	avp = (struct ath_vif *)sc->tx99_vif->drv_priv;
 
+=======
+>>>>>>> v4.9.227
 	skb = alloc_skb(len, GFP_KERNEL);
 	if (!skb)
 		return NULL;
@@ -77,7 +80,14 @@ static struct sk_buff *ath9k_build_tx99_skb(struct ath_softc *sc)
 	memcpy(hdr->addr2, hw->wiphy->perm_addr, ETH_ALEN);
 	memcpy(hdr->addr3, hw->wiphy->perm_addr, ETH_ALEN);
 
+<<<<<<< HEAD
 	hdr->seq_ctrl |= cpu_to_le16(avp->seq_no);
+=======
+	if (sc->tx99_vif) {
+		avp = (struct ath_vif *) sc->tx99_vif->drv_priv;
+		hdr->seq_ctrl |= cpu_to_le16(avp->seq_no);
+	}
+>>>>>>> v4.9.227
 
 	tx_info = IEEE80211_SKB_CB(skb);
 	memset(tx_info, 0, sizeof(*tx_info));
@@ -99,7 +109,11 @@ static struct sk_buff *ath9k_build_tx99_skb(struct ath_softc *sc)
 
 static void ath9k_tx99_deinit(struct ath_softc *sc)
 {
+<<<<<<< HEAD
 	ath_reset(sc);
+=======
+	ath_reset(sc, NULL);
+>>>>>>> v4.9.227
 
 	ath9k_ps_wakeup(sc);
 	ath9k_tx99_stop(sc);
@@ -127,12 +141,19 @@ static int ath9k_tx99_init(struct ath_softc *sc)
 	memset(&txctl, 0, sizeof(txctl));
 	txctl.txq = sc->tx.txq_map[IEEE80211_AC_VO];
 
+<<<<<<< HEAD
 	ath_reset(sc);
+=======
+	ath_reset(sc, NULL);
+>>>>>>> v4.9.227
 
 	ath9k_ps_wakeup(sc);
 
 	ath9k_hw_disable_interrupts(ah);
+<<<<<<< HEAD
 	atomic_set(&ah->intr_ref_cnt, -1);
+=======
+>>>>>>> v4.9.227
 	ath_drain_all_txq(sc);
 	ath_stoprecv(sc);
 
@@ -276,7 +297,11 @@ static const struct file_operations fops_tx99_power = {
 
 void ath9k_tx99_init_debug(struct ath_softc *sc)
 {
+<<<<<<< HEAD
 	if (!AR_SREV_9300_20_OR_LATER(sc->sc_ah))
+=======
+	if (!AR_SREV_9280_20_OR_LATER(sc->sc_ah))
+>>>>>>> v4.9.227
 		return;
 
 	debugfs_create_file("tx99", S_IRUSR | S_IWUSR,

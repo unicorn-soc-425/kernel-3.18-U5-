@@ -35,6 +35,10 @@
 #ifndef _AHCI_H
 #define _AHCI_H
 
+<<<<<<< HEAD
+=======
+#include <linux/pci.h>
+>>>>>>> v4.9.227
 #include <linux/clk.h>
 #include <linux/libata.h>
 #include <linux/phy/phy.h>
@@ -181,6 +185,11 @@ enum {
 	PORT_CMD_ALPE		= (1 << 26), /* Aggressive Link PM enable */
 	PORT_CMD_ATAPI		= (1 << 24), /* Device is ATAPI */
 	PORT_CMD_FBSCP		= (1 << 22), /* FBS Capable Port */
+<<<<<<< HEAD
+=======
+	PORT_CMD_ESP		= (1 << 21), /* External Sata Port */
+	PORT_CMD_HPCP		= (1 << 18), /* HotPlug Capable Port */
+>>>>>>> v4.9.227
 	PORT_CMD_PMP		= (1 << 17), /* PMP attached */
 	PORT_CMD_LIST_ON	= (1 << 15), /* cmd list DMA engine running */
 	PORT_CMD_FIS_ON		= (1 << 14), /* FIS DMA engine running */
@@ -235,10 +244,24 @@ enum {
 	AHCI_HFLAG_DELAY_ENGINE		= (1 << 15), /* do not start engine on
 						        port start (wait until
 						        error-handling stage) */
+<<<<<<< HEAD
 	AHCI_HFLAG_MULTI_MSI		= (1 << 16), /* multiple PCI MSIs */
 	AHCI_HFLAG_NO_DEVSLP		= (1 << 17), /* no device sleep */
 	AHCI_HFLAG_NO_FBS		= (1 << 18), /* no FBS */
 
+=======
+	AHCI_HFLAG_NO_DEVSLP		= (1 << 17), /* no device sleep */
+	AHCI_HFLAG_NO_FBS		= (1 << 18), /* no FBS */
+
+#ifdef CONFIG_PCI_MSI
+	AHCI_HFLAG_MULTI_MSI		= (1 << 20), /* per-port MSI(-X) */
+#else
+	/* compile out MSI infrastructure */
+	AHCI_HFLAG_MULTI_MSI		= 0,
+#endif
+	AHCI_HFLAG_WAKE_BEFORE_STOP	= (1 << 22), /* wake before DMA stop */
+
+>>>>>>> v4.9.227
 	/* ap->flags bits */
 
 	AHCI_FLAG_COMMON		= ATA_FLAG_SATA | ATA_FLAG_PIO_DMA |
@@ -304,7 +327,10 @@ struct ahci_port_priv {
 	unsigned int		ncq_saw_d2h:1;
 	unsigned int		ncq_saw_dmas:1;
 	unsigned int		ncq_saw_sdb:1;
+<<<<<<< HEAD
 	atomic_t		intr_status;	/* interrupts to handle */
+=======
+>>>>>>> v4.9.227
 	spinlock_t		lock;		/* protects parent ata_port */
 	u32 			intr_mask;	/* interrupts to enable */
 	bool			fbs_supported;	/* set iff FBS is supported */
@@ -324,6 +350,10 @@ struct ahci_host_priv {
 	void __iomem *		mmio;		/* bus-independent mem map */
 	u32			cap;		/* cap to use */
 	u32			cap2;		/* cap2 to use */
+<<<<<<< HEAD
+=======
+	u32			version;	/* cached version */
+>>>>>>> v4.9.227
 	u32			port_map;	/* port map to use */
 	u32			saved_cap;	/* saved initial cap */
 	u32			saved_cap2;	/* saved initial cap2 */
@@ -333,7 +363,11 @@ struct ahci_host_priv {
 	u32			em_msg_type;	/* EM message type */
 	bool			got_runtime_pm; /* Did we do pm_runtime_get? */
 	struct clk		*clks[AHCI_MAX_CLKS]; /* Optional */
+<<<<<<< HEAD
 	struct regulator	*target_pwr;	/* Optional */
+=======
+	struct regulator	**target_pwrs;	/* Optional */
+>>>>>>> v4.9.227
 	/*
 	 * If platform uses PHYs. There is a 1:1 relation between the port number and
 	 * the PHY position in this array.
@@ -341,12 +375,24 @@ struct ahci_host_priv {
 	struct phy		**phys;
 	unsigned		nports;		/* Number of ports */
 	void			*plat_data;	/* Other platform data */
+<<<<<<< HEAD
+=======
+	unsigned int		irq;		/* interrupt line */
+>>>>>>> v4.9.227
 	/*
 	 * Optional ahci_start_engine override, if not set this gets set to the
 	 * default ahci_start_engine during ahci_save_initial_config, this can
 	 * be overridden anytime before the host is activated.
 	 */
 	void			(*start_engine)(struct ata_port *ap);
+<<<<<<< HEAD
+=======
+	irqreturn_t 		(*irq_handler)(int irq, void *dev_instance);
+
+	/* only required for per-port MSI(-X) support */
+	int			(*get_irq_vector)(struct ata_host *host,
+						  int port);
+>>>>>>> v4.9.227
 };
 
 extern int ahci_ignore_sss;
@@ -354,6 +400,13 @@ extern int ahci_ignore_sss;
 extern struct device_attribute *ahci_shost_attrs[];
 extern struct device_attribute *ahci_sdev_attrs[];
 
+<<<<<<< HEAD
+=======
+/*
+ * This must be instantiated by the edge drivers.  Read the comments
+ * for ATA_BASE_SHT
+ */
+>>>>>>> v4.9.227
 #define AHCI_SHT(drv_name)						\
 	ATA_NCQ_SHT(drv_name),						\
 	.can_queue		= AHCI_MAX_CMDS - 1,			\
@@ -389,9 +442,15 @@ void ahci_set_em_messages(struct ahci_host_priv *hpriv,
 			  struct ata_port_info *pi);
 int ahci_reset_em(struct ata_host *host);
 void ahci_print_info(struct ata_host *host, const char *scc_s);
+<<<<<<< HEAD
 int ahci_host_activate(struct ata_host *host, int irq,
 		       struct scsi_host_template *sht);
 void ahci_error_handler(struct ata_port *ap);
+=======
+int ahci_host_activate(struct ata_host *host, struct scsi_host_template *sht);
+void ahci_error_handler(struct ata_port *ap);
+u32 ahci_handle_port_intr(struct ata_host *host, u32 irq_masked);
+>>>>>>> v4.9.227
 
 static inline void __iomem *__ahci_port_base(struct ata_host *host,
 					     unsigned int port_no)

@@ -33,7 +33,11 @@
 #include <asm/io.h>
 #include <asm/msr.h>
 #include <asm/cpufeature.h>
+<<<<<<< HEAD
 #include <asm/i387.h>
+=======
+#include <asm/fpu/api.h>
+>>>>>>> v4.9.227
 
 
 
@@ -140,7 +144,11 @@ static int via_rng_init(struct hwrng *rng)
 	 * RNG configuration like it used to be the case in this
 	 * register */
 	if ((c->x86 == 6) && (c->x86_model >= 0x0f)) {
+<<<<<<< HEAD
 		if (!cpu_has_xstore_enabled) {
+=======
+		if (!boot_cpu_has(X86_FEATURE_XSTORE_EN)) {
+>>>>>>> v4.9.227
 			pr_err(PFX "can't enable hardware RNG "
 				"if XSTORE is not enabled\n");
 			return -ENODEV;
@@ -166,7 +174,11 @@ static int via_rng_init(struct hwrng *rng)
 	/* Enable secondary noise source on CPUs where it is present. */
 
 	/* Nehemiah stepping 8 and higher */
+<<<<<<< HEAD
 	if ((c->x86_model == 9) && (c->x86_mask > 7))
+=======
+	if ((c->x86_model == 9) && (c->x86_stepping > 7))
+>>>>>>> v4.9.227
 		lo |= VIA_NOISESRC2;
 
 	/* Esther */
@@ -200,8 +212,14 @@ static int __init mod_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	if (!cpu_has_xstore)
 		return -ENODEV;
+=======
+	if (!boot_cpu_has(X86_FEATURE_XSTORE))
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	pr_info("VIA RNG detected\n");
 	err = hwrng_register(&via_rng);
 	if (err) {

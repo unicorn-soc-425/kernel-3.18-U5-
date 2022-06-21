@@ -34,20 +34,28 @@
 
 static void __iomem *wdog_base;
 static struct clk *wdog_clk;
+<<<<<<< HEAD
+=======
+static int wcr_enable = (1 << 2);
+>>>>>>> v4.9.227
 
 /*
  * Reset the system. It is called by machine_restart().
  */
 void mxc_restart(enum reboot_mode mode, const char *cmd)
 {
+<<<<<<< HEAD
 	unsigned int wcr_enable;
 
+=======
+>>>>>>> v4.9.227
 	if (!wdog_base)
 		goto reset_fallback;
 
 	if (!IS_ERR(wdog_clk))
 		clk_enable(wdog_clk);
 
+<<<<<<< HEAD
 	if (cpu_is_mx1())
 		wcr_enable = (1 << 0);
 	else
@@ -55,6 +63,10 @@ void mxc_restart(enum reboot_mode mode, const char *cmd)
 
 	/* Assert SRS signal */
 	__raw_writew(wcr_enable, wdog_base);
+=======
+	/* Assert SRS signal */
+	imx_writew(wcr_enable, wdog_base);
+>>>>>>> v4.9.227
 	/*
 	 * Due to imx6q errata ERR004346 (WDOG: WDOG SRS bit requires to be
 	 * written twice), we add another two writes to ensure there must be at
@@ -62,8 +74,13 @@ void mxc_restart(enum reboot_mode mode, const char *cmd)
 	 * the target check here, since the writes shouldn't be a huge burden
 	 * for other platforms.
 	 */
+<<<<<<< HEAD
 	__raw_writew(wcr_enable, wdog_base);
 	__raw_writew(wcr_enable, wdog_base);
+=======
+	imx_writew(wcr_enable, wdog_base);
+	imx_writew(wcr_enable, wdog_base);
+>>>>>>> v4.9.227
 
 	/* wait for reset to assert... */
 	mdelay(500);
@@ -89,6 +106,17 @@ void __init mxc_arch_reset_init(void __iomem *base)
 		clk_prepare(wdog_clk);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SOC_IMX1
+void __init imx1_reset_init(void __iomem *base)
+{
+	wcr_enable = (1 << 0);
+	mxc_arch_reset_init(base);
+}
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_CACHE_L2X0
 void __init imx_init_l2cache(void)
 {
@@ -98,6 +126,7 @@ void __init imx_init_l2cache(void)
 
 	np = of_find_compatible_node(NULL, NULL, "arm,pl310-cache");
 	if (!np)
+<<<<<<< HEAD
 		goto out;
 
 	l2x0_base = of_iomap(np, 0);
@@ -127,5 +156,30 @@ void __init imx_init_l2cache(void)
 
 out:
 	l2x0_of_init(0, ~0);
+=======
+		return;
+
+	l2x0_base = of_iomap(np, 0);
+	if (!l2x0_base)
+		goto put_node;
+
+	if (!(readl_relaxed(l2x0_base + L2X0_CTRL) & L2X0_CTRL_EN)) {
+		/* Configure the L2 PREFETCH and POWER registers */
+		val = readl_relaxed(l2x0_base + L310_PREFETCH_CTRL);
+		val |= L310_PREFETCH_CTRL_DBL_LINEFILL |
+			L310_PREFETCH_CTRL_INSTR_PREFETCH |
+			L310_PREFETCH_CTRL_DATA_PREFETCH;
+
+		/* Set perfetch offset to improve performance */
+		val &= ~L310_PREFETCH_CTRL_OFFSET_MASK;
+		val |= 15;
+
+		writel_relaxed(val, l2x0_base + L310_PREFETCH_CTRL);
+	}
+
+	iounmap(l2x0_base);
+put_node:
+	of_node_put(np);
+>>>>>>> v4.9.227
 }
 #endif

@@ -1,5 +1,10 @@
 /*
+<<<<<<< HEAD
  * Coherency fabric (Aurora) support for Armada 370 and XP platforms.
+=======
+ * Coherency fabric (Aurora) support for Armada 370, 375, 38x and XP
+ * platforms.
+>>>>>>> v4.9.227
  *
  * Copyright (C) 2012 Marvell
  *
@@ -11,7 +16,11 @@
  * License version 2.  This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
  *
+<<<<<<< HEAD
  * The Armada 370 and Armada XP SOCs have a coherency fabric which is
+=======
+ * The Armada 370, 375, 38x and XP SOCs have a coherency fabric which is
+>>>>>>> v4.9.227
  * responsible for ensuring hardware coherency between all CPUs and between
  * CPUs and I/O masters. This file initializes the coherency fabric and
  * supplies basic routines for configuring and controlling hardware coherency
@@ -28,22 +37,35 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/mbus.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/pci.h>
 #include <asm/smp_plat.h>
 #include <asm/cacheflush.h>
 #include <asm/mach/map.h>
+<<<<<<< HEAD
 #include "armada-370-xp.h"
+=======
+#include <asm/dma-mapping.h>
+>>>>>>> v4.9.227
 #include "coherency.h"
 #include "mvebu-soc-id.h"
 
 unsigned long coherency_phys_base;
 void __iomem *coherency_base;
 static void __iomem *coherency_cpu_base;
+<<<<<<< HEAD
 
 /* Coherency fabric registers */
 #define COHERENCY_FABRIC_CFG_OFFSET		   0x4
 
+=======
+static void __iomem *cpu_config_base;
+
+/* Coherency fabric registers */
+>>>>>>> v4.9.227
 #define IO_SYNC_BARRIER_CTL_OFFSET		   0x0
 
 enum {
@@ -53,7 +75,11 @@ enum {
 	COHERENCY_FABRIC_TYPE_ARMADA_380,
 };
 
+<<<<<<< HEAD
 static struct of_device_id of_coherency_table[] = {
+=======
+static const struct of_device_id of_coherency_table[] = {
+>>>>>>> v4.9.227
 	{.compatible = "marvell,coherency-fabric",
 	 .data = (void *) COHERENCY_FABRIC_TYPE_ARMADA_370_XP },
 	{.compatible = "marvell,armada-375-coherency-fabric",
@@ -67,6 +93,7 @@ static struct of_device_id of_coherency_table[] = {
 int ll_enable_coherency(void);
 void ll_add_cpu_to_smp_group(void);
 
+<<<<<<< HEAD
 int set_cpu_coherent(void)
 {
 	if (!coherency_base) {
@@ -276,6 +303,33 @@ static struct dma_map_ops mvebu_hwcc_dma_ops = {
 	.set_dma_mask		= arm_dma_set_mask,
 };
 
+=======
+#define CPU_CONFIG_SHARED_L2 BIT(16)
+
+/*
+ * Disable the "Shared L2 Present" bit in CPU Configuration register
+ * on Armada XP.
+ *
+ * The "Shared L2 Present" bit affects the "level of coherence" value
+ * in the clidr CP15 register.  Cache operation functions such as
+ * "flush all" and "invalidate all" operate on all the cache levels
+ * that included in the defined level of coherence. When HW I/O
+ * coherency is used, this bit causes unnecessary flushes of the L2
+ * cache.
+ */
+static void armada_xp_clear_shared_l2(void)
+{
+	u32 reg;
+
+	if (!cpu_config_base)
+		return;
+
+	reg = readl(cpu_config_base);
+	reg &= ~CPU_CONFIG_SHARED_L2;
+	writel(reg, cpu_config_base);
+}
+
+>>>>>>> v4.9.227
 static int mvebu_hwcc_notifier(struct notifier_block *nb,
 			       unsigned long event, void *__dev)
 {
@@ -283,7 +337,11 @@ static int mvebu_hwcc_notifier(struct notifier_block *nb,
 
 	if (event != BUS_NOTIFY_ADD_DEVICE)
 		return NOTIFY_DONE;
+<<<<<<< HEAD
 	set_dma_ops(dev, &mvebu_hwcc_dma_ops);
+=======
+	set_dma_ops(dev, &arm_coherent_dma_ops);
+>>>>>>> v4.9.227
 
 	return NOTIFY_OK;
 }
@@ -292,6 +350,7 @@ static struct notifier_block mvebu_hwcc_nb = {
 	.notifier_call = mvebu_hwcc_notifier,
 };
 
+<<<<<<< HEAD
 static struct notifier_block mvebu_hwcc_pci_nb = {
 	.notifier_call = mvebu_hwcc_notifier,
 };
@@ -299,6 +358,22 @@ static struct notifier_block mvebu_hwcc_pci_nb = {
 static void __init armada_370_coherency_init(struct device_node *np)
 {
 	struct resource res;
+=======
+static struct notifier_block mvebu_hwcc_pci_nb __maybe_unused = {
+	.notifier_call = mvebu_hwcc_notifier,
+};
+
+static int armada_xp_clear_l2_starting(unsigned int cpu)
+{
+	armada_xp_clear_shared_l2();
+	return 0;
+}
+
+static void __init armada_370_coherency_init(struct device_node *np)
+{
+	struct resource res;
+	struct device_node *cpu_config_np;
+>>>>>>> v4.9.227
 
 	of_address_to_resource(np, 0, &res);
 	coherency_phys_base = res.start;
@@ -311,6 +386,27 @@ static void __init armada_370_coherency_init(struct device_node *np)
 	sync_cache_w(&coherency_phys_base);
 	coherency_base = of_iomap(np, 0);
 	coherency_cpu_base = of_iomap(np, 1);
+<<<<<<< HEAD
+=======
+
+	cpu_config_np = of_find_compatible_node(NULL, NULL,
+						"marvell,armada-xp-cpu-config");
+	if (!cpu_config_np)
+		goto exit;
+
+	cpu_config_base = of_iomap(cpu_config_np, 0);
+	if (!cpu_config_base) {
+		of_node_put(cpu_config_np);
+		goto exit;
+	}
+
+	of_node_put(cpu_config_np);
+
+	cpuhp_setup_state_nocalls(CPUHP_AP_ARM_MVEBU_COHERENCY,
+				  "AP_ARM_MVEBU_COHERENCY",
+				  armada_xp_clear_l2_starting, NULL);
+exit:
+>>>>>>> v4.9.227
 	set_cpu_coherent();
 }
 
@@ -334,6 +430,10 @@ static void __init armada_375_380_coherency_init(struct device_node *np)
 
 	coherency_cpu_base = of_iomap(np, 0);
 	arch_ioremap_caller = armada_wa_ioremap_caller;
+<<<<<<< HEAD
+=======
+	pci_ioremap_set_mem_type(MT_UNCACHED);
+>>>>>>> v4.9.227
 
 	/*
 	 * We should switch the PL310 to I/O coherency mode only if
@@ -399,6 +499,7 @@ static int coherency_type(void)
 	return type;
 }
 
+<<<<<<< HEAD
 /*
  * As a precaution, we currently completely disable hardware I/O
  * coherency, until enough testing is done with automatic I/O
@@ -407,6 +508,30 @@ static int coherency_type(void)
 int coherency_available(void)
 {
 	return false;
+=======
+int set_cpu_coherent(void)
+{
+	int type = coherency_type();
+
+	if (type == COHERENCY_FABRIC_TYPE_ARMADA_370_XP) {
+		if (!coherency_base) {
+			pr_warn("Can't make current CPU cache coherent.\n");
+			pr_warn("Coherency fabric is not initialized\n");
+			return 1;
+		}
+
+		armada_xp_clear_shared_l2();
+		ll_add_cpu_to_smp_group();
+		return ll_enable_coherency();
+	}
+
+	return 0;
+}
+
+int coherency_available(void)
+{
+	return coherency_type() != COHERENCY_FABRIC_TYPE_NONE;
+>>>>>>> v4.9.227
 }
 
 int __init coherency_init(void)
@@ -429,6 +554,7 @@ int __init coherency_init(void)
 
 static int __init coherency_late_init(void)
 {
+<<<<<<< HEAD
 	int type = coherency_type();
 
 	if (type == COHERENCY_FABRIC_TYPE_NONE)
@@ -446,6 +572,11 @@ static int __init coherency_late_init(void)
 		bus_register_notifier(&platform_bus_type,
 				      &mvebu_hwcc_nb);
 
+=======
+	if (coherency_available())
+		bus_register_notifier(&platform_bus_type,
+				      &mvebu_hwcc_nb);
+>>>>>>> v4.9.227
 	return 0;
 }
 

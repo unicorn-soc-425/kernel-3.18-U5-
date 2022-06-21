@@ -87,7 +87,10 @@ static int wm1133_ev1_hw_params(struct snd_pcm_substream *substream,
 	snd_pcm_format_t format = params_format(params);
 	unsigned int rate = params_rate(params);
 	unsigned int channels = params_channels(params);
+<<<<<<< HEAD
 	u32 dai_format;
+=======
+>>>>>>> v4.9.227
 
 	/* find the correct audio parameters */
 	for (i = 0; i < ARRAY_SIZE(wm8350_audio); i++) {
@@ -104,6 +107,7 @@ static int wm1133_ev1_hw_params(struct snd_pcm_substream *substream,
 	/* codec FLL input is 14.75 MHz from MCLK */
 	snd_soc_dai_set_pll(codec_dai, 0, 0, 14750000, wm8350_audio[i].sysclk);
 
+<<<<<<< HEAD
 	dai_format = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 		SND_SOC_DAIFMT_CBM_CFM;
 
@@ -120,6 +124,15 @@ static int wm1133_ev1_hw_params(struct snd_pcm_substream *substream,
 		break;
 	case 1:
 		snd_soc_dai_set_tdm_slot(cpu_dai, 0xffffffe, 0xffffffe, 1, 0);
+=======
+	/* TODO: The SSI driver should figure this out for us */
+	switch (channels) {
+	case 2:
+		snd_soc_dai_set_tdm_slot(cpu_dai, 0x3, 0x3, 2, 0);
+		break;
+	case 1:
+		snd_soc_dai_set_tdm_slot(cpu_dai, 0x1, 0x1, 1, 0);
+>>>>>>> v4.9.227
 		break;
 	default:
 		return -EINVAL;
@@ -212,6 +225,7 @@ static struct snd_soc_jack_pin mic_jack_pins[] = {
 static int wm1133_ev1_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
 	/* Headphone jack detection */
@@ -229,6 +243,22 @@ static int wm1133_ev1_init(struct snd_soc_pcm_runtime *rtd)
 			       SND_JACK_BTN_0);
 
 	snd_soc_dapm_force_enable_pin(dapm, "Mic Bias");
+=======
+
+	/* Headphone jack detection */
+	snd_soc_card_jack_new(rtd->card, "Headphone", SND_JACK_HEADPHONE,
+			      &hp_jack, hp_jack_pins, ARRAY_SIZE(hp_jack_pins));
+	wm8350_hp_jack_detect(codec, WM8350_JDR, &hp_jack, SND_JACK_HEADPHONE);
+
+	/* Microphone jack detection */
+	snd_soc_card_jack_new(rtd->card, "Microphone",
+			      SND_JACK_MICROPHONE | SND_JACK_BTN_0, &mic_jack,
+			      mic_jack_pins, ARRAY_SIZE(mic_jack_pins));
+	wm8350_mic_jack_detect(codec, &mic_jack, SND_JACK_MICROPHONE,
+			       SND_JACK_BTN_0);
+
+	snd_soc_dapm_force_enable_pin(&rtd->card->dapm, "Mic Bias");
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -244,6 +274,11 @@ static struct snd_soc_dai_link wm1133_ev1_dai = {
 	.init = wm1133_ev1_init,
 	.ops = &wm1133_ev1_ops,
 	.symmetric_rates = 1,
+<<<<<<< HEAD
+=======
+	.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+		   SND_SOC_DAIFMT_CBM_CFM,
+>>>>>>> v4.9.227
 };
 
 static struct snd_soc_card wm1133_ev1 = {

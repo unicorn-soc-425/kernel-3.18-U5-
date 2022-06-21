@@ -134,14 +134,19 @@ static irqreturn_t solo_isr(int irq, void *data)
 
 static void free_solo_dev(struct solo_dev *solo_dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev;
 
 	if (!solo_dev)
 		return;
+=======
+	struct pci_dev *pdev = solo_dev->pdev;
+>>>>>>> v4.9.227
 
 	if (solo_dev->dev.parent)
 		device_unregister(&solo_dev->dev);
 
+<<<<<<< HEAD
 	pdev = solo_dev->pdev;
 
 	/* If we never initialized the PCI device, then nothing else
@@ -151,6 +156,8 @@ static void free_solo_dev(struct solo_dev *solo_dev)
 		return;
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (solo_dev->reg_base) {
 		/* Bring down the sub-devices first */
 		solo_g723_exit(solo_dev);
@@ -164,9 +171,14 @@ static void free_solo_dev(struct solo_dev *solo_dev)
 
 		/* Now cleanup the PCI device */
 		solo_irq_off(solo_dev, ~0);
+<<<<<<< HEAD
 		pci_iounmap(pdev, solo_dev->reg_base);
 		if (pdev->irq)
 			free_irq(pdev->irq, solo_dev);
+=======
+		free_irq(pdev->irq, solo_dev);
+		pci_iounmap(pdev, solo_dev->reg_base);
+>>>>>>> v4.9.227
 	}
 
 	pci_release_regions(pdev);
@@ -182,7 +194,11 @@ static ssize_t eeprom_store(struct device *dev, struct device_attribute *attr,
 {
 	struct solo_dev *solo_dev =
 		container_of(dev, struct solo_dev, dev);
+<<<<<<< HEAD
 	unsigned short *p = (unsigned short *)buf;
+=======
+	u16 *p = (u16 *)buf;
+>>>>>>> v4.9.227
 	int i;
 
 	if (count & 0x1)
@@ -212,7 +228,11 @@ static ssize_t eeprom_show(struct device *dev, struct device_attribute *attr,
 {
 	struct solo_dev *solo_dev =
 		container_of(dev, struct solo_dev, dev);
+<<<<<<< HEAD
 	unsigned short *p = (unsigned short *)buf;
+=======
+	u16 *p = (u16 *)buf;
+>>>>>>> v4.9.227
 	int count = (full_eeprom ? 128 : 64);
 	int i;
 
@@ -483,7 +503,10 @@ static int solo_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	solo_dev->type = id->driver_data;
 	solo_dev->pdev = pdev;
+<<<<<<< HEAD
 	spin_lock_init(&solo_dev->reg_io_lock);
+=======
+>>>>>>> v4.9.227
 	ret = v4l2_device_register(&pdev->dev, &solo_dev->v4l2_dev);
 	if (ret)
 		goto fail_probe;

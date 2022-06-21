@@ -36,7 +36,10 @@ static struct led_classdev qube_front_led = {
 static int cobalt_qube_led_probe(struct platform_device *pdev)
 {
 	struct resource *res;
+<<<<<<< HEAD
 	int retval;
+=======
+>>>>>>> v4.9.227
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
@@ -49,6 +52,7 @@ static int cobalt_qube_led_probe(struct platform_device *pdev)
 	led_value = LED_FRONT_LEFT | LED_FRONT_RIGHT;
 	writeb(led_value, led_port);
 
+<<<<<<< HEAD
 	retval = led_classdev_register(&pdev->dev, &qube_front_led);
 	if (retval)
 		goto err_null;
@@ -69,14 +73,22 @@ static int cobalt_qube_led_remove(struct platform_device *pdev)
 		led_port = NULL;
 
 	return 0;
+=======
+	return devm_led_classdev_register(&pdev->dev, &qube_front_led);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver cobalt_qube_led_driver = {
 	.probe	= cobalt_qube_led_probe,
+<<<<<<< HEAD
 	.remove	= cobalt_qube_led_remove,
 	.driver	= {
 		.name	= "cobalt-qube-leds",
 		.owner	= THIS_MODULE,
+=======
+	.driver	= {
+		.name	= "cobalt-qube-leds",
+>>>>>>> v4.9.227
 	},
 };
 

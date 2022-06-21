@@ -82,7 +82,10 @@ static void __init tegra_dt_init_irq(void)
 {
 	tegra_init_irq();
 	irqchip_init();
+<<<<<<< HEAD
 	tegra_legacy_irq_syscore_init();
+=======
+>>>>>>> v4.9.227
 }
 
 static void __init tegra_dt_init(void)
@@ -91,8 +94,11 @@ static void __init tegra_dt_init(void)
 	struct soc_device *soc_dev;
 	struct device *parent = NULL;
 
+<<<<<<< HEAD
 	tegra_clocks_apply_init_table();
 
+=======
+>>>>>>> v4.9.227
 	soc_dev_attr = kzalloc(sizeof(*soc_dev_attr), GFP_KERNEL);
 	if (!soc_dev_attr)
 		goto out;
@@ -118,6 +124,7 @@ static void __init tegra_dt_init(void)
 	 * devices
 	 */
 out:
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, parent);
 }
 
@@ -147,6 +154,19 @@ static void __init tegra_dt_init_late(void)
 			break;
 		}
 	}
+=======
+	of_platform_default_populate(NULL, NULL, parent);
+}
+
+static void __init tegra_dt_init_late(void)
+{
+	tegra_init_suspend();
+	tegra_cpuidle_init();
+
+	if (IS_ENABLED(CONFIG_ARCH_TEGRA_2x_SOC) &&
+	    of_machine_is_compatible("compal,paz00"))
+		tegra_paz00_wifikill_init();
+>>>>>>> v4.9.227
 }
 
 static const char * const tegra_dt_board_compat[] = {
@@ -166,6 +186,9 @@ DT_MACHINE_START(TEGRA_DT, "NVIDIA Tegra SoC (Flattened Device Tree)")
 	.init_irq	= tegra_dt_init_irq,
 	.init_machine	= tegra_dt_init,
 	.init_late	= tegra_dt_init_late,
+<<<<<<< HEAD
 	.restart	= tegra_pmc_restart,
+=======
+>>>>>>> v4.9.227
 	.dt_compat	= tegra_dt_board_compat,
 MACHINE_END

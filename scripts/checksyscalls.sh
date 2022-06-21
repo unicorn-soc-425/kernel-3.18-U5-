@@ -212,5 +212,9 @@ EOF
     )
 }
 
+<<<<<<< HEAD
 (ignore_list && syscall_list $(dirname $0)/../arch/x86/syscalls/syscall_32.tbl) | \
+=======
+(ignore_list && syscall_list $(dirname $0)/../arch/x86/entry/syscalls/syscall_32.tbl) | \
+>>>>>>> v4.9.227
 $* -E -x c - > /dev/null

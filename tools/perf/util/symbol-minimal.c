@@ -129,6 +129,10 @@ int filename__read_build_id(const char *filename, void *bf, size_t size)
 
 		for (i = 0, phdr = buf; i < ehdr.e_phnum; i++, phdr++) {
 			void *tmp;
+<<<<<<< HEAD
+=======
+			long offset;
+>>>>>>> v4.9.227
 
 			if (need_swap) {
 				phdr->p_type = bswap_32(phdr->p_type);
@@ -140,12 +144,20 @@ int filename__read_build_id(const char *filename, void *bf, size_t size)
 				continue;
 
 			buf_size = phdr->p_filesz;
+<<<<<<< HEAD
+=======
+			offset = phdr->p_offset;
+>>>>>>> v4.9.227
 			tmp = realloc(buf, buf_size);
 			if (tmp == NULL)
 				goto out_free;
 
 			buf = tmp;
+<<<<<<< HEAD
 			fseek(fp, phdr->p_offset, SEEK_SET);
+=======
+			fseek(fp, offset, SEEK_SET);
+>>>>>>> v4.9.227
 			if (fread(buf, buf_size, 1, fp) != 1)
 				goto out_free;
 
@@ -178,6 +190,10 @@ int filename__read_build_id(const char *filename, void *bf, size_t size)
 
 		for (i = 0, phdr = buf; i < ehdr.e_phnum; i++, phdr++) {
 			void *tmp;
+<<<<<<< HEAD
+=======
+			long offset;
+>>>>>>> v4.9.227
 
 			if (need_swap) {
 				phdr->p_type = bswap_32(phdr->p_type);
@@ -189,12 +205,20 @@ int filename__read_build_id(const char *filename, void *bf, size_t size)
 				continue;
 
 			buf_size = phdr->p_filesz;
+<<<<<<< HEAD
+=======
+			offset = phdr->p_offset;
+>>>>>>> v4.9.227
 			tmp = realloc(buf, buf_size);
 			if (tmp == NULL)
 				goto out_free;
 
 			buf = tmp;
+<<<<<<< HEAD
 			fseek(fp, phdr->p_offset, SEEK_SET);
+=======
+			fseek(fp, offset, SEEK_SET);
+>>>>>>> v4.9.227
 			if (fread(buf, buf_size, 1, fp) != 1)
 				goto out_free;
 
@@ -242,13 +266,21 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 int symsrc__init(struct symsrc *ss, struct dso *dso __maybe_unused,
 		 const char *name,
+=======
+int symsrc__init(struct symsrc *ss, struct dso *dso, const char *name,
+>>>>>>> v4.9.227
 	         enum dso_binary_type type)
 {
 	int fd = open(name, O_RDONLY);
 	if (fd < 0)
+<<<<<<< HEAD
 		return -1;
+=======
+		goto out_errno;
+>>>>>>> v4.9.227
 
 	ss->name = strdup(name);
 	if (!ss->name)
@@ -260,6 +292,11 @@ int symsrc__init(struct symsrc *ss, struct dso *dso __maybe_unused,
 	return 0;
 out_close:
 	close(fd);
+<<<<<<< HEAD
+=======
+out_errno:
+	dso->load_errno = errno;
+>>>>>>> v4.9.227
 	return -1;
 }
 
@@ -282,8 +319,12 @@ void symsrc__destroy(struct symsrc *ss)
 
 int dso__synthesize_plt_symbols(struct dso *dso __maybe_unused,
 				struct symsrc *ss __maybe_unused,
+<<<<<<< HEAD
 				struct map *map __maybe_unused,
 				symbol_filter_t filter __maybe_unused)
+=======
+				struct map *map __maybe_unused)
+>>>>>>> v4.9.227
 {
 	return 0;
 }
@@ -329,10 +370,16 @@ enum dso_type dso__type_fd(int fd)
 int dso__load_sym(struct dso *dso, struct map *map __maybe_unused,
 		  struct symsrc *ss,
 		  struct symsrc *runtime_ss __maybe_unused,
+<<<<<<< HEAD
 		  symbol_filter_t filter __maybe_unused,
 		  int kmodule __maybe_unused)
 {
 	unsigned char *build_id[BUILD_ID_SIZE];
+=======
+		  int kmodule __maybe_unused)
+{
+	unsigned char build_id[BUILD_ID_SIZE];
+>>>>>>> v4.9.227
 	int ret;
 
 	ret = fd__is_64_bit(ss->fd);
@@ -341,7 +388,10 @@ int dso__load_sym(struct dso *dso, struct map *map __maybe_unused,
 
 	if (filename__read_build_id(ss->name, build_id, BUILD_ID_SIZE) > 0) {
 		dso__set_build_id(dso, build_id);
+<<<<<<< HEAD
 		return 1;
+=======
+>>>>>>> v4.9.227
 	}
 	return 0;
 }

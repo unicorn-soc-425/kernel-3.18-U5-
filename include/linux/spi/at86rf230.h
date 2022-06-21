@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  * Written by:
  * Dmitry Eremin-Solenikov <dmitry.baryshkov@siemens.com>
  */
@@ -26,6 +29,10 @@ struct at86rf230_platform_data {
 	int rstn;
 	int slp_tr;
 	int dig2;
+<<<<<<< HEAD
+=======
+	u8 xtal_trim;
+>>>>>>> v4.9.227
 };
 
 #endif

@@ -9,18 +9,45 @@
  * option) any later version.
  */
 
+<<<<<<< HEAD
 #include <drmP.h>
+=======
+#include <drm/drmP.h>
+>>>>>>> v4.9.227
 #include <drm/exynos_drm.h>
 
 #include <linux/dma-mapping.h>
 #include <linux/iommu.h>
+<<<<<<< HEAD
 #include <linux/kref.h>
 
 #include <asm/dma-iommu.h>
+=======
+>>>>>>> v4.9.227
 
 #include "exynos_drm_drv.h"
 #include "exynos_drm_iommu.h"
 
+<<<<<<< HEAD
+=======
+static inline int configure_dma_max_seg_size(struct device *dev)
+{
+	if (!dev->dma_parms)
+		dev->dma_parms = kzalloc(sizeof(*dev->dma_parms), GFP_KERNEL);
+	if (!dev->dma_parms)
+		return -ENOMEM;
+
+	dma_set_max_seg_size(dev, DMA_BIT_MASK(32));
+	return 0;
+}
+
+static inline void clear_dma_max_seg_size(struct device *dev)
+{
+	kfree(dev->dma_parms);
+	dev->dma_parms = NULL;
+}
+
+>>>>>>> v4.9.227
 /*
  * drm_create_iommu_mapping - create a mapping structure
  *
@@ -28,6 +55,7 @@
  */
 int drm_create_iommu_mapping(struct drm_device *drm_dev)
 {
+<<<<<<< HEAD
 	struct dma_iommu_mapping *mapping = NULL;
 	struct exynos_drm_private *priv = drm_dev->dev_private;
 	struct device *dev = drm_dev->dev;
@@ -55,12 +83,19 @@ int drm_create_iommu_mapping(struct drm_device *drm_dev)
 error:
 	arm_iommu_release_mapping(mapping);
 	return -ENOMEM;
+=======
+	struct exynos_drm_private *priv = drm_dev->dev_private;
+
+	return __exynos_iommu_create_mapping(priv, EXYNOS_DEV_ADDR_START,
+					     EXYNOS_DEV_ADDR_SIZE);
+>>>>>>> v4.9.227
 }
 
 /*
  * drm_release_iommu_mapping - release iommu mapping structure
  *
  * @drm_dev: DRM device
+<<<<<<< HEAD
  *
  * if mapping->kref becomes 0 then all things related to iommu mapping
  * will be released
@@ -70,6 +105,14 @@ void drm_release_iommu_mapping(struct drm_device *drm_dev)
 	struct device *dev = drm_dev->dev;
 
 	arm_iommu_release_mapping(dev->archdata.mapping);
+=======
+ */
+void drm_release_iommu_mapping(struct drm_device *drm_dev)
+{
+	struct exynos_drm_private *priv = drm_dev->dev_private;
+
+	__exynos_iommu_release_mapping(priv);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -84,6 +127,7 @@ void drm_release_iommu_mapping(struct drm_device *drm_dev)
 int drm_iommu_attach_device(struct drm_device *drm_dev,
 				struct device *subdrv_dev)
 {
+<<<<<<< HEAD
 	struct device *dev = drm_dev->dev;
 	int ret;
 
@@ -117,6 +161,24 @@ int drm_iommu_attach_device(struct drm_device *drm_dev,
 	 */
 	if (get_dma_ops(dev) == get_dma_ops(NULL))
 		set_dma_ops(dev, get_dma_ops(subdrv_dev));
+=======
+	struct exynos_drm_private *priv = drm_dev->dev_private;
+	int ret;
+
+	if (get_dma_ops(priv->dma_dev) != get_dma_ops(subdrv_dev)) {
+		DRM_ERROR("Device %s lacks support for IOMMU\n",
+			  dev_name(subdrv_dev));
+		return -EINVAL;
+	}
+
+	ret = configure_dma_max_seg_size(subdrv_dev);
+	if (ret)
+		return ret;
+
+	ret = __exynos_iommu_attach(priv, subdrv_dev);
+	if (ret)
+		clear_dma_max_seg_size(subdrv_dev);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -133,6 +195,7 @@ int drm_iommu_attach_device(struct drm_device *drm_dev,
 void drm_iommu_detach_device(struct drm_device *drm_dev,
 				struct device *subdrv_dev)
 {
+<<<<<<< HEAD
 	struct device *dev = drm_dev->dev;
 	struct dma_iommu_mapping *mapping = dev->archdata.mapping;
 
@@ -140,4 +203,10 @@ void drm_iommu_detach_device(struct drm_device *drm_dev,
 		return;
 
 	arm_iommu_detach_device(subdrv_dev);
+=======
+	struct exynos_drm_private *priv = drm_dev->dev_private;
+
+	__exynos_iommu_detach(priv, subdrv_dev);
+	clear_dma_max_seg_size(subdrv_dev);
+>>>>>>> v4.9.227
 }

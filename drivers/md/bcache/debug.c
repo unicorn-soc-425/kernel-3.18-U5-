@@ -52,9 +52,16 @@ void bch_btree_verify(struct btree *b)
 	bio->bi_bdev		= PTR_CACHE(b->c, &b->key, 0)->bdev;
 	bio->bi_iter.bi_sector	= PTR_OFFSET(&b->key, 0);
 	bio->bi_iter.bi_size	= KEY_SIZE(&v->key) << 9;
+<<<<<<< HEAD
 	bch_bio_map(bio, sorted);
 
 	submit_bio_wait(REQ_META|READ_SYNC, bio);
+=======
+	bio_set_op_attrs(bio, REQ_OP_READ, REQ_META|READ_SYNC);
+	bch_bio_map(bio, sorted);
+
+	submit_bio_wait(bio);
+>>>>>>> v4.9.227
 	bch_bbio_free(bio, b->c);
 
 	memcpy(ondisk, sorted, KEY_SIZE(&v->key) << 9);
@@ -106,18 +113,31 @@ void bch_data_verify(struct cached_dev *dc, struct bio *bio)
 {
 	char name[BDEVNAME_SIZE];
 	struct bio *check;
+<<<<<<< HEAD
 	struct bio_vec bv, *bv2;
 	struct bvec_iter iter;
 	int i;
+=======
+	struct bio_vec bv;
+	struct bvec_iter iter;
+>>>>>>> v4.9.227
 
 	check = bio_clone(bio, GFP_NOIO);
 	if (!check)
 		return;
+<<<<<<< HEAD
+=======
+	bio_set_op_attrs(check, REQ_OP_READ, READ_SYNC);
+>>>>>>> v4.9.227
 
 	if (bio_alloc_pages(check, GFP_NOIO))
 		goto out_put;
 
+<<<<<<< HEAD
 	submit_bio_wait(READ_SYNC, check);
+=======
+	submit_bio_wait(check);
+>>>>>>> v4.9.227
 
 	bio_for_each_segment(bv, bio, iter) {
 		void *p1 = kmap_atomic(bv.bv_page);
@@ -134,8 +154,12 @@ void bch_data_verify(struct cached_dev *dc, struct bio *bio)
 		kunmap_atomic(p1);
 	}
 
+<<<<<<< HEAD
 	bio_for_each_segment_all(bv2, check, i)
 		__free_page(bv2->bv_page);
+=======
+	bio_free_pages(check);
+>>>>>>> v4.9.227
 out_put:
 	bio_put(check);
 }

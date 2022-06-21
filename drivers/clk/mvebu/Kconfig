@@ -11,7 +11,10 @@ config ARMADA_370_CLK
 	bool
 	select MVEBU_CLK_COMMON
 	select MVEBU_CLK_CPU
+<<<<<<< HEAD
 	select MVEBU_CLK_COREDIV
+=======
+>>>>>>> v4.9.227
 
 config ARMADA_375_CLK
 	bool
@@ -21,11 +24,30 @@ config ARMADA_38X_CLK
 	bool
 	select MVEBU_CLK_COMMON
 
+<<<<<<< HEAD
+=======
+config ARMADA_39X_CLK
+	bool
+	select MVEBU_CLK_COMMON
+
+config ARMADA_37XX_CLK
+       bool
+
+>>>>>>> v4.9.227
 config ARMADA_XP_CLK
 	bool
 	select MVEBU_CLK_COMMON
 	select MVEBU_CLK_CPU
+<<<<<<< HEAD
 	select MVEBU_CLK_COREDIV
+=======
+
+config ARMADA_AP806_SYSCON
+	bool
+
+config ARMADA_CP110_SYSCON
+	bool
+>>>>>>> v4.9.227
 
 config DOVE_CLK
 	bool

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +49,10 @@
 #include "accommon.h"
 #include "acnamesp.h"
 #include "actables.h"
+<<<<<<< HEAD
+=======
+#include "acevents.h"
+>>>>>>> v4.9.227
 
 #define _COMPONENT          ACPI_TABLES
 ACPI_MODULE_NAME("tbdata")
@@ -73,7 +81,11 @@ acpi_tb_init_table_descriptor(struct acpi_table_desc *table_desc,
 	 * Initialize the table descriptor. Set the pointer to NULL, since the
 	 * table is not fully mapped at this time.
 	 */
+<<<<<<< HEAD
 	ACPI_MEMSET(table_desc, 0, sizeof(struct acpi_table_desc));
+=======
+	memset(table_desc, 0, sizeof(struct acpi_table_desc));
+>>>>>>> v4.9.227
 	table_desc->address = address;
 	table_desc->length = table->length;
 	table_desc->flags = flags;
@@ -368,7 +380,11 @@ acpi_status acpi_tb_validate_temp_table(struct acpi_table_desc *table_desc)
  *****************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_tb_verify_temp_table(struct acpi_table_desc * table_desc, char *signature)
+=======
+acpi_tb_verify_temp_table(struct acpi_table_desc *table_desc, char *signature)
+>>>>>>> v4.9.227
 {
 	acpi_status status = AE_OK;
 
@@ -401,12 +417,22 @@ acpi_tb_verify_temp_table(struct acpi_table_desc * table_desc, char *signature)
 			ACPI_EXCEPTION((AE_INFO, AE_NO_MEMORY,
 					"%4.4s 0x%8.8X%8.8X"
 					" Attempted table install failed",
+<<<<<<< HEAD
 					acpi_ut_valid_acpi_name(table_desc->
 								signature.
 								ascii) ?
 					table_desc->signature.ascii : "????",
 					ACPI_FORMAT_UINT64(table_desc->
 							   address)));
+=======
+					acpi_ut_valid_nameseg(table_desc->
+							      signature.
+							      ascii) ?
+					table_desc->signature.ascii : "????",
+					ACPI_FORMAT_UINT64(table_desc->
+							   address)));
+
+>>>>>>> v4.9.227
 			goto invalidate_and_exit;
 		}
 	}
@@ -453,7 +479,11 @@ acpi_status acpi_tb_resize_root_table_list(void)
 		table_count = acpi_gbl_root_table_list.current_table_count;
 	}
 
+<<<<<<< HEAD
 	tables = ACPI_ALLOCATE_ZEROED(((acpi_size) table_count +
+=======
+	tables = ACPI_ALLOCATE_ZEROED(((acpi_size)table_count +
+>>>>>>> v4.9.227
 				       ACPI_ROOT_TABLE_SIZE_INCREMENT) *
 				      sizeof(struct acpi_table_desc));
 	if (!tables) {
@@ -465,9 +495,14 @@ acpi_status acpi_tb_resize_root_table_list(void)
 	/* Copy and free the previous table array */
 
 	if (acpi_gbl_root_table_list.tables) {
+<<<<<<< HEAD
 		ACPI_MEMCPY(tables, acpi_gbl_root_table_list.tables,
 			    (acpi_size) table_count *
 			    sizeof(struct acpi_table_desc));
+=======
+		memcpy(tables, acpi_gbl_root_table_list.tables,
+		       (acpi_size)table_count * sizeof(struct acpi_table_desc));
+>>>>>>> v4.9.227
 
 		if (acpi_gbl_root_table_list.flags & ACPI_ROOT_ORIGIN_ALLOCATED) {
 			ACPI_FREE(acpi_gbl_root_table_list.tables);
@@ -484,19 +519,37 @@ acpi_status acpi_tb_resize_root_table_list(void)
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_tb_get_next_root_index
  *
  * PARAMETERS:  table_index         - Where table index is returned
  *
  * RETURN:      Status and table index.
+=======
+ * FUNCTION:    acpi_tb_get_next_table_descriptor
+ *
+ * PARAMETERS:  table_index         - Where table index is returned
+ *              table_desc          - Where table descriptor is returned
+ *
+ * RETURN:      Status and table index/descriptor.
+>>>>>>> v4.9.227
  *
  * DESCRIPTION: Allocate a new ACPI table entry to the global table list
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_tb_get_next_root_index(u32 *table_index)
 {
 	acpi_status status;
+=======
+acpi_status
+acpi_tb_get_next_table_descriptor(u32 *table_index,
+				  struct acpi_table_desc **table_desc)
+{
+	acpi_status status;
+	u32 i;
+>>>>>>> v4.9.227
 
 	/* Ensure that there is room for the table in the Root Table List */
 
@@ -508,8 +561,21 @@ acpi_status acpi_tb_get_next_root_index(u32 *table_index)
 		}
 	}
 
+<<<<<<< HEAD
 	*table_index = acpi_gbl_root_table_list.current_table_count;
 	acpi_gbl_root_table_list.current_table_count++;
+=======
+	i = acpi_gbl_root_table_list.current_table_count;
+	acpi_gbl_root_table_list.current_table_count++;
+
+	if (table_index) {
+		*table_index = i;
+	}
+	if (table_desc) {
+		*table_desc = &acpi_gbl_root_table_list.tables[i];
+	}
+
+>>>>>>> v4.9.227
 	return (AE_OK);
 }
 
@@ -601,6 +667,7 @@ acpi_status acpi_tb_delete_namespace_by_owner(u32 table_index)
 	 * lock may block, and also since the execution of a namespace walk
 	 * must be allowed to use the interpreter.
 	 */
+<<<<<<< HEAD
 	(void)acpi_ut_release_mutex(ACPI_MTX_INTERPRETER);
 	status = acpi_ut_acquire_write_lock(&acpi_gbl_namespace_rw_lock);
 
@@ -612,6 +679,14 @@ acpi_status acpi_tb_delete_namespace_by_owner(u32 table_index)
 	acpi_ut_release_write_lock(&acpi_gbl_namespace_rw_lock);
 
 	status = acpi_ut_acquire_mutex(ACPI_MTX_INTERPRETER);
+=======
+	status = acpi_ut_acquire_write_lock(&acpi_gbl_namespace_rw_lock);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+	acpi_ns_delete_namespace_by_owner(owner_id);
+	acpi_ut_release_write_lock(&acpi_gbl_namespace_rw_lock);
+>>>>>>> v4.9.227
 	return_ACPI_STATUS(status);
 }
 
@@ -688,7 +763,11 @@ acpi_status acpi_tb_release_owner_id(u32 table_index)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_tb_get_owner_id(u32 table_index, acpi_owner_id * owner_id)
+=======
+acpi_status acpi_tb_get_owner_id(u32 table_index, acpi_owner_id *owner_id)
+>>>>>>> v4.9.227
 {
 	acpi_status status = AE_BAD_PARAMETER;
 
@@ -759,3 +838,145 @@ void acpi_tb_set_table_loaded_flag(u32 table_index, u8 is_loaded)
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_TABLES);
 }
+<<<<<<< HEAD
+=======
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_tb_load_table
+ *
+ * PARAMETERS:  table_index             - Table index
+ *              parent_node             - Where table index is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Load an ACPI table
+ *
+ ******************************************************************************/
+
+acpi_status
+acpi_tb_load_table(u32 table_index, struct acpi_namespace_node *parent_node)
+{
+	struct acpi_table_header *table;
+	acpi_status status;
+	acpi_owner_id owner_id;
+
+	ACPI_FUNCTION_TRACE(tb_load_table);
+
+	/*
+	 * Note: Now table is "INSTALLED", it must be validated before
+	 * using.
+	 */
+	status = acpi_get_table_by_index(table_index, &table);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	status = acpi_ns_load_table(table_index, parent_node);
+
+	/* Execute any module-level code that was found in the table */
+
+	if (!acpi_gbl_parse_table_as_term_list
+	    && acpi_gbl_group_module_level_code) {
+		acpi_ns_exec_module_code_list();
+	}
+
+	/*
+	 * Update GPEs for any new _Lxx/_Exx methods. Ignore errors. The host is
+	 * responsible for discovering any new wake GPEs by running _PRW methods
+	 * that may have been loaded by this table.
+	 */
+	status = acpi_tb_get_owner_id(table_index, &owner_id);
+	if (ACPI_SUCCESS(status)) {
+		acpi_ev_update_gpes(owner_id);
+	}
+
+	/* Invoke table handler if present */
+
+	if (acpi_gbl_table_handler) {
+		(void)acpi_gbl_table_handler(ACPI_TABLE_EVENT_LOAD, table,
+					     acpi_gbl_table_handler_context);
+	}
+
+	return_ACPI_STATUS(status);
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_tb_install_and_load_table
+ *
+ * PARAMETERS:  table                   - Pointer to the table
+ *              address                 - Physical address of the table
+ *              flags                   - Allocation flags of the table
+ *              table_index             - Where table index is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install and load an ACPI table
+ *
+ ******************************************************************************/
+
+acpi_status
+acpi_tb_install_and_load_table(struct acpi_table_header *table,
+			       acpi_physical_address address,
+			       u8 flags, u8 override, u32 *table_index)
+{
+	acpi_status status;
+	u32 i;
+	acpi_owner_id owner_id;
+
+	ACPI_FUNCTION_TRACE(acpi_load_table);
+
+	(void)acpi_ut_acquire_mutex(ACPI_MTX_TABLES);
+
+	/* Install the table and load it into the namespace */
+
+	status = acpi_tb_install_standard_table(address, flags, TRUE,
+						override, &i);
+	if (ACPI_FAILURE(status)) {
+		goto unlock_and_exit;
+	}
+
+	/*
+	 * Note: Now table is "INSTALLED", it must be validated before
+	 * using.
+	 */
+	status = acpi_tb_validate_table(&acpi_gbl_root_table_list.tables[i]);
+	if (ACPI_FAILURE(status)) {
+		goto unlock_and_exit;
+	}
+
+	(void)acpi_ut_release_mutex(ACPI_MTX_TABLES);
+	status = acpi_ns_load_table(i, acpi_gbl_root_node);
+
+	/* Execute any module-level code that was found in the table */
+
+	if (!acpi_gbl_parse_table_as_term_list
+	    && acpi_gbl_group_module_level_code) {
+		acpi_ns_exec_module_code_list();
+	}
+
+	/*
+	 * Update GPEs for any new _Lxx/_Exx methods. Ignore errors. The host is
+	 * responsible for discovering any new wake GPEs by running _PRW methods
+	 * that may have been loaded by this table.
+	 */
+	status = acpi_tb_get_owner_id(i, &owner_id);
+	if (ACPI_SUCCESS(status)) {
+		acpi_ev_update_gpes(owner_id);
+	}
+
+	/* Invoke table handler if present */
+
+	if (acpi_gbl_table_handler) {
+		(void)acpi_gbl_table_handler(ACPI_TABLE_EVENT_LOAD, table,
+					     acpi_gbl_table_handler_context);
+	}
+	(void)acpi_ut_acquire_mutex(ACPI_MTX_TABLES);
+
+unlock_and_exit:
+	*table_index = i;
+	(void)acpi_ut_release_mutex(ACPI_MTX_TABLES);
+	return_ACPI_STATUS(status);
+}
+>>>>>>> v4.9.227

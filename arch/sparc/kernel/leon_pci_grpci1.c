@@ -357,7 +357,11 @@ static struct irq_chip grpci1_irq = {
 };
 
 /* Handle one or multiple IRQs from the PCI core */
+<<<<<<< HEAD
 static void grpci1_pci_flow_irq(unsigned int irq, struct irq_desc *desc)
+=======
+static void grpci1_pci_flow_irq(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct grpci1_priv *priv = grpci1priv;
 	int i, ack = 0;
@@ -708,7 +712,10 @@ static struct of_device_id grpci1_of_match[] = {
 static struct platform_driver grpci1_of_driver = {
 	.driver = {
 		.name = "grpci1",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = grpci1_of_match,
 	},
 	.probe = grpci1_of_probe,

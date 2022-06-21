@@ -45,20 +45,36 @@
 static int ecryptfs_d_revalidate(struct dentry *dentry, unsigned int flags)
 {
 	struct dentry *lower_dentry = ecryptfs_dentry_to_lower(dentry);
+<<<<<<< HEAD
 	int rc;
 
 	if (!(lower_dentry->d_flags & DCACHE_OP_REVALIDATE))
 		return 1;
+=======
+	int rc = 1;
+>>>>>>> v4.9.227
 
 	if (flags & LOOKUP_RCU)
 		return -ECHILD;
 
+<<<<<<< HEAD
 	rc = lower_dentry->d_op->d_revalidate(lower_dentry, flags);
 	if (dentry->d_inode) {
 		struct inode *lower_inode =
 			ecryptfs_inode_to_lower(dentry->d_inode);
 
 		fsstack_copy_attr_all(dentry->d_inode, lower_inode);
+=======
+	if (lower_dentry->d_flags & DCACHE_OP_REVALIDATE)
+		rc = lower_dentry->d_op->d_revalidate(lower_dentry, flags);
+
+	if (d_really_is_positive(dentry)) {
+		struct inode *inode = d_inode(dentry);
+
+		fsstack_copy_attr_all(inode, ecryptfs_inode_to_lower(inode));
+		if (!inode->i_nlink)
+			return 0;
+>>>>>>> v4.9.227
 	}
 	return rc;
 }

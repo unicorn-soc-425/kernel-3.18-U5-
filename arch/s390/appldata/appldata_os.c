@@ -113,6 +113,7 @@ static void appldata_get_os_data(void *data)
 	j = 0;
 	for_each_online_cpu(i) {
 		os_data->os_cpu[j].per_cpu_user =
+<<<<<<< HEAD
 			cputime_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_USER]);
 		os_data->os_cpu[j].per_cpu_nice =
 			cputime_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_NICE]);
@@ -128,6 +129,23 @@ static void appldata_get_os_data(void *data)
 			cputime_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_IOWAIT]);
 		os_data->os_cpu[j].per_cpu_steal =
 			cputime_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_STEAL]);
+=======
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_USER]);
+		os_data->os_cpu[j].per_cpu_nice =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_NICE]);
+		os_data->os_cpu[j].per_cpu_system =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_SYSTEM]);
+		os_data->os_cpu[j].per_cpu_idle =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_IDLE]);
+		os_data->os_cpu[j].per_cpu_irq =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_IRQ]);
+		os_data->os_cpu[j].per_cpu_softirq =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_SOFTIRQ]);
+		os_data->os_cpu[j].per_cpu_iowait =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_IOWAIT]);
+		os_data->os_cpu[j].per_cpu_steal =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_STEAL]);
+>>>>>>> v4.9.227
 		os_data->os_cpu[j].cpu_id = i;
 		j++;
 	}

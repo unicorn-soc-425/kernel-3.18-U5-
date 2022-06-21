@@ -33,7 +33,11 @@
 /* Packet buffers */
 #define CVMX_FPA_PACKET_POOL		    (0)
 #define CVMX_FPA_PACKET_POOL_SIZE	    CVMX_FPA_POOL_0_SIZE
+<<<<<<< HEAD
 /* Work queue entrys */
+=======
+/* Work queue entries */
+>>>>>>> v4.9.227
 #define CVMX_FPA_WQE_POOL		    (1)
 #define CVMX_FPA_WQE_POOL_SIZE		    CVMX_FPA_POOL_1_SIZE
 /* PKO queue command buffers */

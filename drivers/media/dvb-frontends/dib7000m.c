@@ -1151,9 +1151,15 @@ static int dib7000m_identify(struct dib7000m_state *state)
 }
 
 
+<<<<<<< HEAD
 static int dib7000m_get_frontend(struct dvb_frontend* fe)
 {
 	struct dtv_frontend_properties *fep = &fe->dtv_property_cache;
+=======
+static int dib7000m_get_frontend(struct dvb_frontend* fe,
+				 struct dtv_frontend_properties *fep)
+{
+>>>>>>> v4.9.227
 	struct dib7000m_state *state = fe->demodulator_priv;
 	u16 tps = dib7000m_read_word(state,480);
 
@@ -1246,7 +1252,11 @@ static int dib7000m_set_frontend(struct dvb_frontend *fe)
 		if (found == 0 || found == 1)
 			return 0; // no channel found
 
+<<<<<<< HEAD
 		dib7000m_get_frontend(fe);
+=======
+		dib7000m_get_frontend(fe, fep);
+>>>>>>> v4.9.227
 	}
 
 	ret = dib7000m_tune(fe);
@@ -1256,7 +1266,11 @@ static int dib7000m_set_frontend(struct dvb_frontend *fe)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int dib7000m_read_status(struct dvb_frontend *fe, fe_status_t *stat)
+=======
+static int dib7000m_read_status(struct dvb_frontend *fe, enum fe_status *stat)
+>>>>>>> v4.9.227
 {
 	struct dib7000m_state *state = fe->demodulator_priv;
 	u16 lock = dib7000m_read_word(state, 535);
@@ -1465,6 +1479,10 @@ static struct dvb_frontend_ops dib7000m_ops = {
 	.read_ucblocks        = dib7000m_read_unc_blocks,
 };
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Patrick Boettcher <pboettcher@dibcom.fr>");
+=======
+MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@posteo.de>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Driver for the DiBcom 7000MA/MB/PA/PB/MC COFDM demodulator");
 MODULE_LICENSE("GPL");

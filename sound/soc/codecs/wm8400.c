@@ -58,12 +58,18 @@ static struct regulator_bulk_data power[] = {
 
 /* codec private data */
 struct wm8400_priv {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
+=======
+>>>>>>> v4.9.227
 	struct wm8400 *wm8400;
 	u16 fake_register;
 	unsigned int sysclk;
 	unsigned int pcmclk;
+<<<<<<< HEAD
 	struct work_struct work;
+=======
+>>>>>>> v4.9.227
 	int fll_in, fll_out;
 };
 
@@ -326,6 +332,10 @@ SOC_SINGLE("RIN34 Mute Switch", WM8400_RIGHT_LINE_INPUT_3_4_VOLUME,
 static int outmixer_event (struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol * kcontrol, int event)
 {
+<<<<<<< HEAD
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
 	u32 reg_shift = mc->shift;
@@ -334,7 +344,11 @@ static int outmixer_event (struct snd_soc_dapm_widget *w,
 
 	switch (reg_shift) {
 	case WM8400_SPEAKER_MIXER | (WM8400_LDSPK << 8) :
+<<<<<<< HEAD
 		reg = snd_soc_read(w->codec, WM8400_OUTPUT_MIXER1);
+=======
+		reg = snd_soc_read(codec, WM8400_OUTPUT_MIXER1);
+>>>>>>> v4.9.227
 		if (reg & WM8400_LDLO) {
 			printk(KERN_WARNING
 			"Cannot set as Output Mixer 1 LDLO Set\n");
@@ -342,7 +356,11 @@ static int outmixer_event (struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case WM8400_SPEAKER_MIXER | (WM8400_RDSPK << 8):
+<<<<<<< HEAD
 		reg = snd_soc_read(w->codec, WM8400_OUTPUT_MIXER2);
+=======
+		reg = snd_soc_read(codec, WM8400_OUTPUT_MIXER2);
+>>>>>>> v4.9.227
 		if (reg & WM8400_RDRO) {
 			printk(KERN_WARNING
 			"Cannot set as Output Mixer 2 RDRO Set\n");
@@ -350,7 +368,11 @@ static int outmixer_event (struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case WM8400_OUTPUT_MIXER1 | (WM8400_LDLO << 8):
+<<<<<<< HEAD
 		reg = snd_soc_read(w->codec, WM8400_SPEAKER_MIXER);
+=======
+		reg = snd_soc_read(codec, WM8400_SPEAKER_MIXER);
+>>>>>>> v4.9.227
 		if (reg & WM8400_LDSPK) {
 			printk(KERN_WARNING
 			"Cannot set as Speaker Mixer LDSPK Set\n");
@@ -358,7 +380,11 @@ static int outmixer_event (struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case WM8400_OUTPUT_MIXER2 | (WM8400_RDRO << 8):
+<<<<<<< HEAD
 		reg = snd_soc_read(w->codec, WM8400_SPEAKER_MIXER);
+=======
+		reg = snd_soc_read(codec, WM8400_SPEAKER_MIXER);
+>>>>>>> v4.9.227
 		if (reg & WM8400_RDSPK) {
 			printk(KERN_WARNING
 			"Cannot set as Speaker Mixer RDSPK Set\n");
@@ -371,10 +397,14 @@ static int outmixer_event (struct snd_soc_dapm_widget *w,
 }
 
 /* INMIX dB values */
+<<<<<<< HEAD
 static const unsigned int in_mix_tlv[] = {
 	TLV_DB_RANGE_HEAD(1),
 	0,7, TLV_DB_SCALE_ITEM(-1200, 600, 0),
 };
+=======
+static const DECLARE_TLV_DB_SCALE(in_mix_tlv, -1200, 600, 0);
+>>>>>>> v4.9.227
 
 /* Left In PGA Connections */
 static const struct snd_kcontrol_new wm8400_dapm_lin12_pga_controls[] = {
@@ -1146,7 +1176,11 @@ static int wm8400_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			ret = regulator_bulk_enable(ARRAY_SIZE(power),
 						    &power[0]);
 			if (ret != 0) {
@@ -1233,7 +1267,10 @@ static int wm8400_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1278,6 +1315,7 @@ static struct snd_soc_dai_driver wm8400_dai = {
 	.ops = &wm8400_dai_ops,
 };
 
+<<<<<<< HEAD
 static int wm8400_suspend(struct snd_soc_codec *codec)
 {
 	wm8400_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -1302,6 +1340,8 @@ static void wm8400_probe_deferred(struct work_struct *work)
 	wm8400_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 }
 
+=======
+>>>>>>> v4.9.227
 static int wm8400_codec_probe(struct snd_soc_codec *codec)
 {
 	struct wm8400 *wm8400 = dev_get_platdata(codec->dev);
@@ -1316,7 +1356,10 @@ static int wm8400_codec_probe(struct snd_soc_codec *codec)
 
 	snd_soc_codec_set_drvdata(codec, priv);
 	priv->wm8400 = wm8400;
+<<<<<<< HEAD
 	priv->codec = codec;
+=======
+>>>>>>> v4.9.227
 
 	ret = devm_regulator_bulk_get(wm8400->dev,
 				 ARRAY_SIZE(power), &power[0]);
@@ -1325,8 +1368,11 @@ static int wm8400_codec_probe(struct snd_soc_codec *codec)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	INIT_WORK(&priv->work, wm8400_probe_deferred);
 
+=======
+>>>>>>> v4.9.227
 	wm8400_codec_reset(codec);
 
 	reg = snd_soc_read(codec, WM8400_POWER_MANAGEMENT_1);
@@ -1343,8 +1389,11 @@ static int wm8400_codec_probe(struct snd_soc_codec *codec)
 	snd_soc_write(codec, WM8400_LEFT_OUTPUT_VOLUME, 0x50 | (1<<8));
 	snd_soc_write(codec, WM8400_RIGHT_OUTPUT_VOLUME, 0x50 | (1<<8));
 
+<<<<<<< HEAD
 	if (!schedule_work(&priv->work))
 		return -EINVAL;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1366,6 +1415,7 @@ static struct regmap *wm8400_get_regmap(struct device *dev)
 	return wm8400->regmap;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_wm8400 = {
 	.probe =	wm8400_codec_probe,
 	.remove =	wm8400_codec_remove,
@@ -1380,6 +1430,23 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8400 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8400_dapm_widgets),
 	.dapm_routes = wm8400_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm8400_dapm_routes),
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8400 = {
+	.probe =	wm8400_codec_probe,
+	.remove =	wm8400_codec_remove,
+	.get_regmap =	wm8400_get_regmap,
+	.set_bias_level = wm8400_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8400_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8400_snd_controls),
+		.dapm_widgets		= wm8400_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8400_dapm_widgets),
+		.dapm_routes		= wm8400_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm8400_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static int wm8400_probe(struct platform_device *pdev)
@@ -1397,7 +1464,10 @@ static int wm8400_remove(struct platform_device *pdev)
 static struct platform_driver wm8400_codec_driver = {
 	.driver = {
 		   .name = "wm8400-codec",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   },
 	.probe = wm8400_probe,
 	.remove = wm8400_remove,

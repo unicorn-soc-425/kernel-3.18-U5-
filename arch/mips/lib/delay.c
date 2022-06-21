@@ -8,7 +8,11 @@
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
  * Copyright (C) 2007, 2014 Maciej W. Rozycki
  */
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/param.h>
 #include <linux/smp.h>
 #include <linux/stringify.h>

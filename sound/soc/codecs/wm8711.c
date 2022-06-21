@@ -310,7 +310,11 @@ static int wm8711_set_bias_level(struct snd_soc_codec *codec,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF)
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF)
+>>>>>>> v4.9.227
 			regcache_sync(wm8711->regmap);
 
 		snd_soc_write(codec, WM8711_PWR, reg | 0x0040);
@@ -320,7 +324,10 @@ static int wm8711_set_bias_level(struct snd_soc_codec *codec,
 		snd_soc_write(codec, WM8711_PWR, 0xffff);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -350,6 +357,7 @@ static struct snd_soc_dai_driver wm8711_dai = {
 	.ops = &wm8711_ops,
 };
 
+<<<<<<< HEAD
 static int wm8711_suspend(struct snd_soc_codec *codec)
 {
 	snd_soc_write(codec, WM8711_ACTIVE, 0x0);
@@ -363,6 +371,8 @@ static int wm8711_resume(struct snd_soc_codec *codec)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int wm8711_probe(struct snd_soc_codec *codec)
 {
 	int ret;
@@ -373,8 +383,11 @@ static int wm8711_probe(struct snd_soc_codec *codec)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	wm8711_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
+=======
+>>>>>>> v4.9.227
 	/* Latch the update bits */
 	snd_soc_update_bits(codec, WM8711_LOUT1V, 0x0100, 0x0100);
 	snd_soc_update_bits(codec, WM8711_ROUT1V, 0x0100, 0x0100);
@@ -383,6 +396,7 @@ static int wm8711_probe(struct snd_soc_codec *codec)
 
 }
 
+<<<<<<< HEAD
 /* power down chip */
 static int wm8711_remove(struct snd_soc_codec *codec)
 {
@@ -402,6 +416,21 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8711 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8711_dapm_widgets),
 	.dapm_routes = wm8711_intercon,
 	.num_dapm_routes = ARRAY_SIZE(wm8711_intercon),
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8711 = {
+	.probe =	wm8711_probe,
+	.set_bias_level = wm8711_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8711_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8711_snd_controls),
+		.dapm_widgets		= wm8711_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8711_dapm_widgets),
+		.dapm_routes		= wm8711_intercon,
+		.num_dapm_routes	= ARRAY_SIZE(wm8711_intercon),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct of_device_id wm8711_of_match[] = {
@@ -455,7 +484,10 @@ static int wm8711_spi_remove(struct spi_device *spi)
 static struct spi_driver wm8711_spi_driver = {
 	.driver = {
 		.name	= "wm8711",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = wm8711_of_match,
 	},
 	.probe		= wm8711_spi_probe,
@@ -502,7 +534,10 @@ MODULE_DEVICE_TABLE(i2c, wm8711_i2c_id);
 static struct i2c_driver wm8711_i2c_driver = {
 	.driver = {
 		.name = "wm8711",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = wm8711_of_match,
 	},
 	.probe =    wm8711_i2c_probe,

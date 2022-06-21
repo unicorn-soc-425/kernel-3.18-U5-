@@ -15,6 +15,11 @@
 
 #include <linux/atomic.h>
 #include <asm/intrinsics.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+#include <asm/processor.h>
+>>>>>>> v4.9.227
 
 #define arch_spin_lock_init(x)			((x)->lock = 0)
 
@@ -86,6 +91,11 @@ static __always_inline void __ticket_spin_unlock_wait(arch_spinlock_t *lock)
 			return;
 		cpu_relax();
 	}
+<<<<<<< HEAD
+=======
+
+	smp_acquire__after_ctrl_dep();
+>>>>>>> v4.9.227
 }
 
 static inline int __ticket_spin_is_locked(arch_spinlock_t *lock)

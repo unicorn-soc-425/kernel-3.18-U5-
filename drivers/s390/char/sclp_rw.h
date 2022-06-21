@@ -45,6 +45,10 @@ struct mdb_header {
 struct mdb {
 	struct mdb_header header;
 	struct go go;
+<<<<<<< HEAD
+=======
+	struct mto mto;
+>>>>>>> v4.9.227
 } __attribute__((packed));
 
 struct msg_buf {
@@ -52,6 +56,7 @@ struct msg_buf {
 	struct mdb mdb;
 } __attribute__((packed));
 
+<<<<<<< HEAD
 struct write_sccb {
 	struct sccb_header header;
 	struct msg_buf msg_buf;
@@ -60,6 +65,11 @@ struct write_sccb {
 /* The number of empty mto buffers that can be contained in a single sccb. */
 #define NR_EMPTY_MTO_PER_SCCB ((PAGE_SIZE - sizeof(struct sclp_buffer) - \
 			sizeof(struct write_sccb)) / sizeof(struct mto))
+=======
+/* The number of empty mto buffers that can be contained in a single sccb. */
+#define NR_EMPTY_MSG_PER_SCCB ((PAGE_SIZE - sizeof(struct sclp_buffer) - \
+			sizeof(struct sccb_header)) / sizeof(struct msg_buf))
+>>>>>>> v4.9.227
 
 /*
  * data structure for information about list of SCCBs (only for writing),
@@ -68,7 +78,12 @@ struct write_sccb {
 struct sclp_buffer {
 	struct list_head list;		/* list_head for sccb_info chain */
 	struct sclp_req request;
+<<<<<<< HEAD
 	struct write_sccb *sccb;
+=======
+	void *sccb;
+	struct msg_buf *current_msg;
+>>>>>>> v4.9.227
 	char *current_line;
 	int current_length;
 	int retry_count;
@@ -76,8 +91,13 @@ struct sclp_buffer {
 	unsigned short columns;
 	unsigned short htab;
 	/* statistics about this buffer */
+<<<<<<< HEAD
 	unsigned int mto_char_sum;	/* # chars in sccb */
 	unsigned int mto_number;	/* # mtos in sccb */
+=======
+	unsigned int char_sum;		/* # chars in sccb */
+	unsigned int messages;		/* # messages in sccb */
+>>>>>>> v4.9.227
 	/* Callback that is called after reaching final status. */
 	void (*callback)(struct sclp_buffer *, int);
 };

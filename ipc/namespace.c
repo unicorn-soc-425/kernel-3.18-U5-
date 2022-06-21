@@ -16,10 +16,24 @@
 
 #include "util.h"
 
+<<<<<<< HEAD
+=======
+static struct ucounts *inc_ipc_namespaces(struct user_namespace *ns)
+{
+	return inc_ucount(ns, current_euid(), UCOUNT_IPC_NAMESPACES);
+}
+
+static void dec_ipc_namespaces(struct ucounts *ucounts)
+{
+	dec_ucount(ucounts, UCOUNT_IPC_NAMESPACES);
+}
+
+>>>>>>> v4.9.227
 static struct ipc_namespace *create_ipc_ns(struct user_namespace *user_ns,
 					   struct ipc_namespace *old_ns)
 {
 	struct ipc_namespace *ns;
+<<<<<<< HEAD
 	int err;
 
 	ns = kmalloc(sizeof(struct ipc_namespace), GFP_KERNEL);
@@ -40,11 +54,39 @@ static struct ipc_namespace *create_ipc_ns(struct user_namespace *user_ns,
 		return ERR_PTR(err);
 	}
 	atomic_inc(&nr_ipc_ns);
+=======
+	struct ucounts *ucounts;
+	int err;
+
+	err = -ENOSPC;
+	ucounts = inc_ipc_namespaces(user_ns);
+	if (!ucounts)
+		goto fail;
+
+	err = -ENOMEM;
+	ns = kmalloc(sizeof(struct ipc_namespace), GFP_KERNEL);
+	if (ns == NULL)
+		goto fail_dec;
+
+	err = ns_alloc_inum(&ns->ns);
+	if (err)
+		goto fail_free;
+	ns->ns.ops = &ipcns_operations;
+
+	atomic_set(&ns->count, 1);
+	ns->user_ns = get_user_ns(user_ns);
+	ns->ucounts = ucounts;
+
+	err = mq_init_ns(ns);
+	if (err)
+		goto fail_put;
+>>>>>>> v4.9.227
 
 	sem_init_ns(ns);
 	msg_init_ns(ns);
 	shm_init_ns(ns);
 
+<<<<<<< HEAD
 	/*
 	 * msgmni has already been computed for the new ipc ns.
 	 * Thus, do the ipcns creation notification before registering that
@@ -56,6 +98,19 @@ static struct ipc_namespace *create_ipc_ns(struct user_namespace *user_ns,
 	ns->user_ns = get_user_ns(user_ns);
 
 	return ns;
+=======
+	return ns;
+
+fail_put:
+	put_user_ns(ns->user_ns);
+	ns_free_inum(&ns->ns);
+fail_free:
+	kfree(ns);
+fail_dec:
+	dec_ipc_namespaces(ucounts);
+fail:
+	return ERR_PTR(err);
+>>>>>>> v4.9.227
 }
 
 struct ipc_namespace *copy_ipcs(unsigned long flags,
@@ -99,6 +154,7 @@ void free_ipcs(struct ipc_namespace *ns, struct ipc_ids *ids,
 
 static void free_ipc_ns(struct ipc_namespace *ns)
 {
+<<<<<<< HEAD
 	/*
 	 * Unregistering the hotplug notifier at the beginning guarantees
 	 * that the ipc namespace won't be freed while we are inside the
@@ -120,6 +176,15 @@ static void free_ipc_ns(struct ipc_namespace *ns)
 	ipcns_notify(IPCNS_REMOVED);
 	put_user_ns(ns->user_ns);
 	proc_free_inum(ns->proc_inum);
+=======
+	sem_exit_ns(ns);
+	msg_exit_ns(ns);
+	shm_exit_ns(ns);
+
+	dec_ipc_namespaces(ns->ucounts);
+	put_user_ns(ns->user_ns);
+	ns_free_inum(&ns->ns);
+>>>>>>> v4.9.227
 	kfree(ns);
 }
 
@@ -149,7 +214,16 @@ void put_ipc_ns(struct ipc_namespace *ns)
 	}
 }
 
+<<<<<<< HEAD
 static void *ipcns_get(struct task_struct *task)
+=======
+static inline struct ipc_namespace *to_ipc_ns(struct ns_common *ns)
+{
+	return container_of(ns, struct ipc_namespace, ns);
+}
+
+static struct ns_common *ipcns_get(struct task_struct *task)
+>>>>>>> v4.9.227
 {
 	struct ipc_namespace *ns = NULL;
 	struct nsproxy *nsproxy;
@@ -160,6 +234,7 @@ static void *ipcns_get(struct task_struct *task)
 		ns = get_ipc_ns(nsproxy->ipc_ns);
 	task_unlock(task);
 
+<<<<<<< HEAD
 	return ns;
 }
 
@@ -171,6 +246,19 @@ static void ipcns_put(void *ns)
 static int ipcns_install(struct nsproxy *nsproxy, void *new)
 {
 	struct ipc_namespace *ns = new;
+=======
+	return ns ? &ns->ns : NULL;
+}
+
+static void ipcns_put(struct ns_common *ns)
+{
+	return put_ipc_ns(to_ipc_ns(ns));
+}
+
+static int ipcns_install(struct nsproxy *nsproxy, struct ns_common *new)
+{
+	struct ipc_namespace *ns = to_ipc_ns(new);
+>>>>>>> v4.9.227
 	if (!ns_capable(ns->user_ns, CAP_SYS_ADMIN) ||
 	    !ns_capable(current_user_ns(), CAP_SYS_ADMIN))
 		return -EPERM;
@@ -182,11 +270,17 @@ static int ipcns_install(struct nsproxy *nsproxy, void *new)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned int ipcns_inum(void *vp)
 {
 	struct ipc_namespace *ns = vp;
 
 	return ns->proc_inum;
+=======
+static struct user_namespace *ipcns_owner(struct ns_common *ns)
+{
+	return to_ipc_ns(ns)->user_ns;
+>>>>>>> v4.9.227
 }
 
 const struct proc_ns_operations ipcns_operations = {
@@ -195,5 +289,9 @@ const struct proc_ns_operations ipcns_operations = {
 	.get		= ipcns_get,
 	.put		= ipcns_put,
 	.install	= ipcns_install,
+<<<<<<< HEAD
 	.inum		= ipcns_inum,
+=======
+	.owner		= ipcns_owner,
+>>>>>>> v4.9.227
 };

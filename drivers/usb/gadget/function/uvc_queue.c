@@ -41,9 +41,15 @@
  * videobuf2 queue operations
  */
 
+<<<<<<< HEAD
 static int uvc_queue_setup(struct vb2_queue *vq, const struct v4l2_format *fmt,
 			   unsigned int *nbuffers, unsigned int *nplanes,
 			   unsigned int sizes[], void *alloc_ctxs[])
+=======
+static int uvc_queue_setup(struct vb2_queue *vq,
+			   unsigned int *nbuffers, unsigned int *nplanes,
+			   unsigned int sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	struct uvc_video_queue *queue = vb2_get_drv_priv(vq);
 	struct uvc_video *video = container_of(queue, struct uvc_video, queue);
@@ -61,9 +67,16 @@ static int uvc_queue_setup(struct vb2_queue *vq, const struct v4l2_format *fmt,
 static int uvc_buffer_prepare(struct vb2_buffer *vb)
 {
 	struct uvc_video_queue *queue = vb2_get_drv_priv(vb->vb2_queue);
+<<<<<<< HEAD
 	struct uvc_buffer *buf = container_of(vb, struct uvc_buffer, buf);
 
 	if (vb->v4l2_buf.type == V4L2_BUF_TYPE_VIDEO_OUTPUT &&
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct uvc_buffer *buf = container_of(vbuf, struct uvc_buffer, buf);
+
+	if (vb->type == V4L2_BUF_TYPE_VIDEO_OUTPUT &&
+>>>>>>> v4.9.227
 	    vb2_get_plane_payload(vb, 0) > vb2_plane_size(vb, 0)) {
 		uvc_trace(UVC_TRACE_CAPTURE, "[E] Bytes used out of bounds.\n");
 		return -EINVAL;
@@ -75,7 +88,11 @@ static int uvc_buffer_prepare(struct vb2_buffer *vb)
 	buf->state = UVC_BUF_STATE_QUEUED;
 	buf->mem = vb2_plane_vaddr(vb, 0);
 	buf->length = vb2_plane_size(vb, 0);
+<<<<<<< HEAD
 	if (vb->v4l2_buf.type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
+=======
+	if (vb->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
+>>>>>>> v4.9.227
 		buf->bytesused = 0;
 	else
 		buf->bytesused = vb2_get_plane_payload(vb, 0);
@@ -86,7 +103,12 @@ static int uvc_buffer_prepare(struct vb2_buffer *vb)
 static void uvc_buffer_queue(struct vb2_buffer *vb)
 {
 	struct uvc_video_queue *queue = vb2_get_drv_priv(vb->vb2_queue);
+<<<<<<< HEAD
 	struct uvc_buffer *buf = container_of(vb, struct uvc_buffer, buf);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct uvc_buffer *buf = container_of(vbuf, struct uvc_buffer, buf);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	spin_lock_irqsave(&queue->irqlock, flags);
@@ -98,12 +120,17 @@ static void uvc_buffer_queue(struct vb2_buffer *vb)
 		 * directly. The next QBUF call will fail with -ENODEV.
 		 */
 		buf->state = UVC_BUF_STATE_ERROR;
+<<<<<<< HEAD
 		vb2_buffer_done(&buf->buf, VB2_BUF_STATE_ERROR);
+=======
+		vb2_buffer_done(vb, VB2_BUF_STATE_ERROR);
+>>>>>>> v4.9.227
 	}
 
 	spin_unlock_irqrestore(&queue->irqlock, flags);
 }
 
+<<<<<<< HEAD
 static void uvc_wait_prepare(struct vb2_queue *vq)
 {
 	struct uvc_video_queue *queue = vb2_get_drv_priv(vq);
@@ -118,15 +145,26 @@ static void uvc_wait_finish(struct vb2_queue *vq)
 	mutex_lock(&queue->mutex);
 }
 
+=======
+>>>>>>> v4.9.227
 static struct vb2_ops uvc_queue_qops = {
 	.queue_setup = uvc_queue_setup,
 	.buf_prepare = uvc_buffer_prepare,
 	.buf_queue = uvc_buffer_queue,
+<<<<<<< HEAD
 	.wait_prepare = uvc_wait_prepare,
 	.wait_finish = uvc_wait_finish,
 };
 
 int uvcg_queue_init(struct uvc_video_queue *queue, enum v4l2_buf_type type)
+=======
+	.wait_prepare = vb2_ops_wait_prepare,
+	.wait_finish = vb2_ops_wait_finish,
+};
+
+int uvcg_queue_init(struct uvc_video_queue *queue, enum v4l2_buf_type type,
+		    struct mutex *lock)
+>>>>>>> v4.9.227
 {
 	int ret;
 
@@ -135,6 +173,10 @@ int uvcg_queue_init(struct uvc_video_queue *queue, enum v4l2_buf_type type)
 	queue->queue.drv_priv = queue;
 	queue->queue.buf_struct_size = sizeof(struct uvc_buffer);
 	queue->queue.ops = &uvc_queue_qops;
+<<<<<<< HEAD
+=======
+	queue->queue.lock = lock;
+>>>>>>> v4.9.227
 	queue->queue.mem_ops = &vb2_vmalloc_memops;
 	queue->queue.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC
 				     | V4L2_BUF_FLAG_TSTAMP_SRC_EOF;
@@ -142,7 +184,10 @@ int uvcg_queue_init(struct uvc_video_queue *queue, enum v4l2_buf_type type)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	mutex_init(&queue->mutex);
+=======
+>>>>>>> v4.9.227
 	spin_lock_init(&queue->irqlock);
 	INIT_LIST_HEAD(&queue->irqqueue);
 	queue->flags = 0;
@@ -155,9 +200,13 @@ int uvcg_queue_init(struct uvc_video_queue *queue, enum v4l2_buf_type type)
  */
 void uvcg_free_buffers(struct uvc_video_queue *queue)
 {
+<<<<<<< HEAD
 	mutex_lock(&queue->mutex);
 	vb2_queue_release(&queue->queue);
 	mutex_unlock(&queue->mutex);
+=======
+	vb2_queue_release(&queue->queue);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -168,15 +217,20 @@ int uvcg_alloc_buffers(struct uvc_video_queue *queue,
 {
 	int ret;
 
+<<<<<<< HEAD
 	mutex_lock(&queue->mutex);
 	ret = vb2_reqbufs(&queue->queue, rb);
 	mutex_unlock(&queue->mutex);
+=======
+	ret = vb2_reqbufs(&queue->queue, rb);
+>>>>>>> v4.9.227
 
 	return ret ? ret : rb->count;
 }
 
 int uvcg_query_buffer(struct uvc_video_queue *queue, struct v4l2_buffer *buf)
 {
+<<<<<<< HEAD
 	int ret;
 
 	mutex_lock(&queue->mutex);
@@ -184,6 +238,9 @@ int uvcg_query_buffer(struct uvc_video_queue *queue, struct v4l2_buffer *buf)
 	mutex_unlock(&queue->mutex);
 
 	return ret;
+=======
+	return vb2_querybuf(&queue->queue, buf);
+>>>>>>> v4.9.227
 }
 
 int uvcg_queue_buffer(struct uvc_video_queue *queue, struct v4l2_buffer *buf)
@@ -191,18 +248,27 @@ int uvcg_queue_buffer(struct uvc_video_queue *queue, struct v4l2_buffer *buf)
 	unsigned long flags;
 	int ret;
 
+<<<<<<< HEAD
 	mutex_lock(&queue->mutex);
 	ret = vb2_qbuf(&queue->queue, buf);
 	if (ret < 0)
 		goto done;
+=======
+	ret = vb2_qbuf(&queue->queue, buf);
+	if (ret < 0)
+		return ret;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&queue->irqlock, flags);
 	ret = (queue->flags & UVC_QUEUE_PAUSED) != 0;
 	queue->flags &= ~UVC_QUEUE_PAUSED;
 	spin_unlock_irqrestore(&queue->irqlock, flags);
+<<<<<<< HEAD
 
 done:
 	mutex_unlock(&queue->mutex);
+=======
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -213,6 +279,7 @@ done:
 int uvcg_dequeue_buffer(struct uvc_video_queue *queue, struct v4l2_buffer *buf,
 			int nonblocking)
 {
+<<<<<<< HEAD
 	int ret;
 
 	mutex_lock(&queue->mutex);
@@ -220,6 +287,9 @@ int uvcg_dequeue_buffer(struct uvc_video_queue *queue, struct v4l2_buffer *buf,
 	mutex_unlock(&queue->mutex);
 
 	return ret;
+=======
+	return vb2_dqbuf(&queue->queue, buf, nonblocking);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -231,6 +301,7 @@ int uvcg_dequeue_buffer(struct uvc_video_queue *queue, struct v4l2_buffer *buf,
 unsigned int uvcg_queue_poll(struct uvc_video_queue *queue, struct file *file,
 			     poll_table *wait)
 {
+<<<<<<< HEAD
 	unsigned int ret;
 
 	mutex_lock(&queue->mutex);
@@ -238,10 +309,14 @@ unsigned int uvcg_queue_poll(struct uvc_video_queue *queue, struct file *file,
 	mutex_unlock(&queue->mutex);
 
 	return ret;
+=======
+	return vb2_poll(&queue->queue, file, wait);
+>>>>>>> v4.9.227
 }
 
 int uvcg_queue_mmap(struct uvc_video_queue *queue, struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	int ret;
 
 	mutex_lock(&queue->mutex);
@@ -249,6 +324,9 @@ int uvcg_queue_mmap(struct uvc_video_queue *queue, struct vm_area_struct *vma)
 	mutex_unlock(&queue->mutex);
 
 	return ret;
+=======
+	return vb2_mmap(&queue->queue, vma);
+>>>>>>> v4.9.227
 }
 
 #ifndef CONFIG_MMU
@@ -260,12 +338,16 @@ int uvcg_queue_mmap(struct uvc_video_queue *queue, struct vm_area_struct *vma)
 unsigned long uvcg_queue_get_unmapped_area(struct uvc_video_queue *queue,
 					   unsigned long pgoff)
 {
+<<<<<<< HEAD
 	unsigned long ret;
 
 	mutex_lock(&queue->mutex);
 	ret = vb2_get_unmapped_area(&queue->queue, 0, 0, pgoff, 0);
 	mutex_unlock(&queue->mutex);
 	return ret;
+=======
+	return vb2_get_unmapped_area(&queue->queue, 0, 0, pgoff, 0);
+>>>>>>> v4.9.227
 }
 #endif
 
@@ -292,7 +374,11 @@ void uvcg_queue_cancel(struct uvc_video_queue *queue, int disconnect)
 				       queue);
 		list_del(&buf->queue);
 		buf->state = UVC_BUF_STATE_ERROR;
+<<<<<<< HEAD
 		vb2_buffer_done(&buf->buf, VB2_BUF_STATE_ERROR);
+=======
+		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
+>>>>>>> v4.9.227
 	}
 	/* This must be protected by the irqlock spinlock to avoid race
 	 * conditions between uvc_queue_buffer and the disconnection event that
@@ -327,18 +413,29 @@ int uvcg_queue_enable(struct uvc_video_queue *queue, int enable)
 	unsigned long flags;
 	int ret = 0;
 
+<<<<<<< HEAD
 	mutex_lock(&queue->mutex);
 	if (enable) {
 		ret = vb2_streamon(&queue->queue, queue->queue.type);
 		if (ret < 0)
 			goto done;
+=======
+	if (enable) {
+		ret = vb2_streamon(&queue->queue, queue->queue.type);
+		if (ret < 0)
+			return ret;
+>>>>>>> v4.9.227
 
 		queue->sequence = 0;
 		queue->buf_used = 0;
 	} else {
 		ret = vb2_streamoff(&queue->queue, queue->queue.type);
 		if (ret < 0)
+<<<<<<< HEAD
 			goto done;
+=======
+			return ret;
+>>>>>>> v4.9.227
 
 		spin_lock_irqsave(&queue->irqlock, flags);
 		INIT_LIST_HEAD(&queue->irqqueue);
@@ -353,8 +450,11 @@ int uvcg_queue_enable(struct uvc_video_queue *queue, int enable)
 		spin_unlock_irqrestore(&queue->irqlock, flags);
 	}
 
+<<<<<<< HEAD
 done:
 	mutex_unlock(&queue->mutex);
+=======
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -367,7 +467,11 @@ struct uvc_buffer *uvcg_queue_next_buffer(struct uvc_video_queue *queue,
 	if ((queue->flags & UVC_QUEUE_DROP_INCOMPLETE) &&
 	     buf->length != buf->bytesused) {
 		buf->state = UVC_BUF_STATE_QUEUED;
+<<<<<<< HEAD
 		vb2_set_plane_payload(&buf->buf, 0, 0);
+=======
+		vb2_set_plane_payload(&buf->buf.vb2_buf, 0, 0);
+>>>>>>> v4.9.227
 		return buf;
 	}
 
@@ -378,12 +482,21 @@ struct uvc_buffer *uvcg_queue_next_buffer(struct uvc_video_queue *queue,
 	else
 		nextbuf = NULL;
 
+<<<<<<< HEAD
 	buf->buf.v4l2_buf.field = V4L2_FIELD_NONE;
 	buf->buf.v4l2_buf.sequence = queue->sequence++;
 	v4l2_get_timestamp(&buf->buf.v4l2_buf.timestamp);
 
 	vb2_set_plane_payload(&buf->buf, 0, buf->bytesused);
 	vb2_buffer_done(&buf->buf, VB2_BUF_STATE_DONE);
+=======
+	buf->buf.field = V4L2_FIELD_NONE;
+	buf->buf.sequence = queue->sequence++;
+	buf->buf.vb2_buf.timestamp = ktime_get_ns();
+
+	vb2_set_plane_payload(&buf->buf.vb2_buf, 0, buf->bytesused);
+	vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_DONE);
+>>>>>>> v4.9.227
 
 	return nextbuf;
 }

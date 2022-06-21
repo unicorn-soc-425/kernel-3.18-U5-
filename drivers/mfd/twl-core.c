@@ -30,7 +30,10 @@
 
 #include <linux/init.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 #include <linux/clk.h>
@@ -207,7 +210,11 @@ static struct twl_mapping twl4030_map[] = {
 	{ 2, TWL5031_BASEADD_INTERRUPTS },
 };
 
+<<<<<<< HEAD
 static struct reg_default twl4030_49_defaults[] = {
+=======
+static const struct reg_default twl4030_49_defaults[] = {
+>>>>>>> v4.9.227
 	/* Audio Registers */
 	{ 0x01, 0x00}, /* CODEC_MODE	*/
 	{ 0x02, 0x00}, /* OPTION	*/
@@ -306,7 +313,11 @@ static const struct regmap_access_table twl4030_49_volatile_table = {
 	.n_yes_ranges = ARRAY_SIZE(twl4030_49_volatile_ranges),
 };
 
+<<<<<<< HEAD
 static struct regmap_config twl4030_regmap_config[4] = {
+=======
+static const struct regmap_config twl4030_regmap_config[4] = {
+>>>>>>> v4.9.227
 	{
 		/* Address 0x48 */
 		.reg_bits = 8,
@@ -369,7 +380,11 @@ static struct twl_mapping twl6030_map[] = {
 	{ 1, TWL6030_BASEADD_GASGAUGE },
 };
 
+<<<<<<< HEAD
 static struct regmap_config twl6030_regmap_config[3] = {
+=======
+static const struct regmap_config twl6030_regmap_config[3] = {
+>>>>>>> v4.9.227
 	{
 		/* Address 0x48 */
 		.reg_bits = 8,
@@ -622,11 +637,16 @@ add_numbered_child(unsigned mod_no, const char *name, int num,
 	twl = &twl_priv->twl_modules[sid];
 
 	pdev = platform_device_alloc(name, num);
+<<<<<<< HEAD
 	if (!pdev) {
 		dev_dbg(&twl->client->dev, "can't alloc dev\n");
 		status = -ENOMEM;
 		goto err;
 	}
+=======
+	if (!pdev)
+		return ERR_PTR(-ENOMEM);
+>>>>>>> v4.9.227
 
 	pdev->dev.parent = &twl->client->dev;
 
@@ -634,7 +654,11 @@ add_numbered_child(unsigned mod_no, const char *name, int num,
 		status = platform_device_add_data(pdev, pdata, pdata_len);
 		if (status < 0) {
 			dev_dbg(&pdev->dev, "can't add platform_data\n");
+<<<<<<< HEAD
 			goto err;
+=======
+			goto put_device;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -647,11 +671,16 @@ add_numbered_child(unsigned mod_no, const char *name, int num,
 		status = platform_device_add_resources(pdev, r, irq1 ? 2 : 1);
 		if (status < 0) {
 			dev_dbg(&pdev->dev, "can't add irqs\n");
+<<<<<<< HEAD
 			goto err;
+=======
+			goto put_device;
+>>>>>>> v4.9.227
 		}
 	}
 
 	status = platform_device_add(pdev);
+<<<<<<< HEAD
 	if (status == 0)
 		device_init_wakeup(&pdev->dev, can_wakeup);
 
@@ -662,6 +691,19 @@ err:
 		return ERR_PTR(status);
 	}
 	return &pdev->dev;
+=======
+	if (status)
+		goto put_device;
+
+	device_init_wakeup(&pdev->dev, can_wakeup);
+
+	return &pdev->dev;
+
+put_device:
+	platform_device_put(pdev);
+	dev_err(&twl->client->dev, "failed to add device %s\n", name);
+	return ERR_PTR(status);
+>>>>>>> v4.9.227
 }
 
 static inline struct device *add_child(unsigned mod_no, const char *name,
@@ -788,9 +830,14 @@ add_children(struct twl4030_platform_data *pdata, unsigned irq_base,
 		static struct regulator_consumer_supply usb1v8 = {
 			.supply =	"usb1v8",
 		};
+<<<<<<< HEAD
 		static struct regulator_consumer_supply usb3v1[] = {
 			{ .supply =	"usb3v1" },
 			{ .supply =	"bci3v1" },
+=======
+		static struct regulator_consumer_supply usb3v1 = {
+			.supply =	"usb3v1",
+>>>>>>> v4.9.227
 		};
 
 	/* First add the regulators so that they can be used by transceiver */
@@ -818,7 +865,11 @@ add_children(struct twl4030_platform_data *pdata, unsigned irq_base,
 				return PTR_ERR(child);
 
 			child = add_regulator_linked(TWL4030_REG_VUSB3V1,
+<<<<<<< HEAD
 						      &usb_fixed, usb3v1, 2,
+=======
+						      &usb_fixed, &usb3v1, 1,
+>>>>>>> v4.9.227
 						      features);
 			if (IS_ERR(child))
 				return PTR_ERR(child);
@@ -838,7 +889,11 @@ add_children(struct twl4030_platform_data *pdata, unsigned irq_base,
 		if (IS_ENABLED(CONFIG_REGULATOR_TWL4030) && child) {
 			usb1v5.dev_name = dev_name(child);
 			usb1v8.dev_name = dev_name(child);
+<<<<<<< HEAD
 			usb3v1[0].dev_name = dev_name(child);
+=======
+			usb3v1.dev_name = dev_name(child);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -983,7 +1038,11 @@ add_children(struct twl4030_platform_data *pdata, unsigned irq_base,
  * letting it generate the right frequencies for USB, MADC, and
  * other purposes.
  */
+<<<<<<< HEAD
 static inline int __init protect_pm_master(void)
+=======
+static inline int protect_pm_master(void)
+>>>>>>> v4.9.227
 {
 	int e = 0;
 
@@ -992,7 +1051,11 @@ static inline int __init protect_pm_master(void)
 	return e;
 }
 
+<<<<<<< HEAD
 static inline int __init unprotect_pm_master(void)
+=======
+static inline int unprotect_pm_master(void)
+>>>>>>> v4.9.227
 {
 	int e = 0;
 
@@ -1087,7 +1150,11 @@ twl_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	struct twl4030_platform_data	*pdata = dev_get_platdata(&client->dev);
 	struct device_node		*node = client->dev.of_node;
 	struct platform_device		*pdev;
+<<<<<<< HEAD
 	struct regmap_config		*twl_regmap_config;
+=======
+	const struct regmap_config	*twl_regmap_config;
+>>>>>>> v4.9.227
 	int				irq_base = 0;
 	int				status;
 	unsigned			i, num_slaves;
@@ -1261,7 +1328,10 @@ static const struct i2c_device_id twl_ids[] = {
 	{ "twl6032", TWL6030_CLASS | TWL6032_SUBCLASS }, /* "Phoenix lite" */
 	{ /* end of list */ },
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(i2c, twl_ids);
+=======
+>>>>>>> v4.9.227
 
 /* One Client Driver , 4 Clients */
 static struct i2c_driver twl_driver = {
@@ -1270,9 +1340,13 @@ static struct i2c_driver twl_driver = {
 	.probe		= twl_probe,
 	.remove		= twl_remove,
 };
+<<<<<<< HEAD
 
 module_i2c_driver(twl_driver);
 
 MODULE_AUTHOR("Texas Instruments, Inc.");
 MODULE_DESCRIPTION("I2C Core interface for TWL");
 MODULE_LICENSE("GPL");
+=======
+builtin_i2c_driver(twl_driver);
+>>>>>>> v4.9.227

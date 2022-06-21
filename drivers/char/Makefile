@@ -9,7 +9,10 @@ obj-$(CONFIG_ATARI_DSP56K)	+= dsp56k.o
 obj-$(CONFIG_VIRTIO_CONSOLE)	+= virtio_console.o
 obj-$(CONFIG_RAW_DRIVER)	+= raw.o
 obj-$(CONFIG_SGI_SNSC)		+= snsc.o snsc_event.o
+<<<<<<< HEAD
 obj-$(CONFIG_MSM_SMD_PKT)	+= msm_smd_pkt.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_MSPEC)		+= mspec.o
 obj-$(CONFIG_MMTIMER)		+= mmtimer.o
 obj-$(CONFIG_UV_MMTIMER)	+= uv_mmtimer.o
@@ -26,7 +29,10 @@ obj-$(CONFIG_APPLICOM)		+= applicom.o
 obj-$(CONFIG_SONYPI)		+= sonypi.o
 obj-$(CONFIG_RTC)		+= rtc.o
 obj-$(CONFIG_HPET)		+= hpet.o
+<<<<<<< HEAD
 obj-$(CONFIG_GEN_RTC)		+= genrtc.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_EFI_RTC)		+= efirtc.o
 obj-$(CONFIG_DS1302)		+= ds1302.o
 obj-$(CONFIG_XILINX_HWICAP)	+= xilinx_hwicap/
@@ -36,7 +42,10 @@ else
   obj-$(CONFIG_NVRAM)	+= nvram.o
 endif
 obj-$(CONFIG_TOSHIBA)		+= toshiba.o
+<<<<<<< HEAD
 obj-$(CONFIG_I8K)		+= i8k.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_DS1620)		+= ds1620.o
 obj-$(CONFIG_HW_RANDOM)		+= hw_random/
 obj-$(CONFIG_PPDEV)		+= ppdev.o
@@ -61,6 +70,7 @@ obj-$(CONFIG_JS_RTC)		+= js-rtc.o
 js-rtc-y = rtc.o
 
 obj-$(CONFIG_TILE_SROM)		+= tile-srom.o
+<<<<<<< HEAD
 obj-$(CONFIG_DIAG_CHAR)		+= diag/
 obj-$(CONFIG_XILLYBUS)		+= xillybus/
 obj-$(CONFIG_MSM_ADSPRPC)       += adsprpc.o
@@ -70,3 +80,7 @@ endif
 obj-$(CONFIG_MSM_MDSP_TS)       += smd_ts.o
 obj-$(CONFIG_MSM_RDBG)		+= rdbg.o
 obj-$(CONFIG_KNOX_KAP)		+= knox_kap.o
+=======
+obj-$(CONFIG_XILLYBUS)		+= xillybus/
+obj-$(CONFIG_POWERNV_OP_PANEL)	+= powernv-op-panel.o
+>>>>>>> v4.9.227

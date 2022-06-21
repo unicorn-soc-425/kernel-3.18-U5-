@@ -13,10 +13,18 @@
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/backlight.h>
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> v4.9.227
 #include <linux/err.h>
 #include <linux/of.h>
 #include <linux/platform_data/lp855x.h>
 #include <linux/pwm.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/consumer.h>
+>>>>>>> v4.9.227
 
 /* LP8550/1/2/3/6 Registers */
 #define LP855X_BRIGHTNESS_CTRL		0x00
@@ -72,6 +80,11 @@ struct lp855x {
 	struct device *dev;
 	struct lp855x_platform_data *pdata;
 	struct pwm_device *pwm;
+<<<<<<< HEAD
+=======
+	struct regulator *supply;	/* regulator for VDD input */
+	struct regulator *enable;	/* regulator for EN/VDDIO input */
+>>>>>>> v4.9.227
 };
 
 static int lp855x_write_byte(struct lp855x *lp, u8 reg, u8 data)
@@ -244,6 +257,15 @@ static void lp855x_pwm_ctrl(struct lp855x *lp, int br, int max_br)
 			return;
 
 		lp->pwm = pwm;
+<<<<<<< HEAD
+=======
+
+		/*
+		 * FIXME: pwm_apply_args() should be removed when switching to
+		 * the atomic PWM API.
+		 */
+		pwm_apply_args(pwm);
+>>>>>>> v4.9.227
 	}
 
 	pwm_config(lp->pwm, duty, period);
@@ -256,6 +278,7 @@ static void lp855x_pwm_ctrl(struct lp855x *lp, int br, int max_br)
 static int lp855x_bl_update_status(struct backlight_device *bl)
 {
 	struct lp855x *lp = bl_get_data(bl);
+<<<<<<< HEAD
 
 	if (bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
 		bl->props.brightness = 0;
@@ -271,6 +294,17 @@ static int lp855x_bl_update_status(struct backlight_device *bl)
 
 		lp855x_write_byte(lp, lp->cfg->reg_brightness, val);
 	}
+=======
+	int brightness = bl->props.brightness;
+
+	if (bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
+		brightness = 0;
+
+	if (lp->mode == PWM_BASED)
+		lp855x_pwm_ctrl(lp, brightness, bl->props.max_brightness);
+	else if (lp->mode == REGISTER_BASED)
+		lp855x_write_byte(lp, lp->cfg->reg_brightness, (u8)brightness);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -287,6 +321,10 @@ static int lp855x_backlight_register(struct lp855x *lp)
 	struct lp855x_platform_data *pdata = lp->pdata;
 	const char *name = pdata->name ? : DEFAULT_BL_NAME;
 
+<<<<<<< HEAD
+=======
+	memset(&props, 0, sizeof(props));
+>>>>>>> v4.9.227
 	props.type = BACKLIGHT_PLATFORM;
 	props.max_brightness = MAX_BRIGHTNESS;
 
@@ -341,8 +379,15 @@ static const struct attribute_group lp855x_attr_group = {
 };
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static int lp855x_parse_dt(struct device *dev, struct device_node *node)
 {
+=======
+static int lp855x_parse_dt(struct lp855x *lp)
+{
+	struct device *dev = lp->dev;
+	struct device_node *node = dev->of_node;
+>>>>>>> v4.9.227
 	struct lp855x_platform_data *pdata;
 	int rom_length;
 
@@ -381,12 +426,20 @@ static int lp855x_parse_dt(struct device *dev, struct device_node *node)
 		pdata->rom_data = &rom[0];
 	}
 
+<<<<<<< HEAD
 	dev->platform_data = pdata;
+=======
+	lp->pdata = pdata;
+>>>>>>> v4.9.227
 
 	return 0;
 }
 #else
+<<<<<<< HEAD
 static int lp855x_parse_dt(struct device *dev, struct device_node *node)
+=======
+static int lp855x_parse_dt(struct lp855x *lp)
+>>>>>>> v4.9.227
 {
 	return -EINVAL;
 }
@@ -395,6 +448,7 @@ static int lp855x_parse_dt(struct device *dev, struct device_node *node)
 static int lp855x_probe(struct i2c_client *cl, const struct i2c_device_id *id)
 {
 	struct lp855x *lp;
+<<<<<<< HEAD
 	struct lp855x_platform_data *pdata = dev_get_platdata(&cl->dev);
 	struct device_node *node = cl->dev.of_node;
 	int ret;
@@ -407,6 +461,10 @@ static int lp855x_probe(struct i2c_client *cl, const struct i2c_device_id *id)
 		pdata = dev_get_platdata(&cl->dev);
 	}
 
+=======
+	int ret;
+
+>>>>>>> v4.9.227
 	if (!i2c_check_functionality(cl->adapter, I2C_FUNC_SMBUS_I2C_BLOCK))
 		return -EIO;
 
@@ -414,16 +472,77 @@ static int lp855x_probe(struct i2c_client *cl, const struct i2c_device_id *id)
 	if (!lp)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (pdata->period_ns > 0)
+=======
+	lp->client = cl;
+	lp->dev = &cl->dev;
+	lp->chipname = id->name;
+	lp->chip_id = id->driver_data;
+	lp->pdata = dev_get_platdata(&cl->dev);
+
+	if (!lp->pdata) {
+		ret = lp855x_parse_dt(lp);
+		if (ret < 0)
+			return ret;
+	}
+
+	if (lp->pdata->period_ns > 0)
+>>>>>>> v4.9.227
 		lp->mode = PWM_BASED;
 	else
 		lp->mode = REGISTER_BASED;
 
+<<<<<<< HEAD
 	lp->client = cl;
 	lp->dev = &cl->dev;
 	lp->pdata = pdata;
 	lp->chipname = id->name;
 	lp->chip_id = id->driver_data;
+=======
+	lp->supply = devm_regulator_get(lp->dev, "power");
+	if (IS_ERR(lp->supply)) {
+		if (PTR_ERR(lp->supply) == -EPROBE_DEFER)
+			return -EPROBE_DEFER;
+		lp->supply = NULL;
+	}
+
+	lp->enable = devm_regulator_get_optional(lp->dev, "enable");
+	if (IS_ERR(lp->enable)) {
+		ret = PTR_ERR(lp->enable);
+		if (ret == -ENODEV) {
+			lp->enable = NULL;
+		} else {
+			if (ret != -EPROBE_DEFER)
+				dev_err(lp->dev, "error getting enable regulator: %d\n",
+					ret);
+			return ret;
+		}
+	}
+
+	if (lp->supply) {
+		ret = regulator_enable(lp->supply);
+		if (ret < 0) {
+			dev_err(&cl->dev, "failed to enable supply: %d\n", ret);
+			return ret;
+		}
+	}
+
+	if (lp->enable) {
+		ret = regulator_enable(lp->enable);
+		if (ret < 0) {
+			dev_err(lp->dev, "failed to enable vddio: %d\n", ret);
+			return ret;
+		}
+
+		/*
+		 * LP8555 datasheet says t_RESPONSE (time between VDDIO and
+		 * I2C) is 1ms.
+		 */
+		usleep_range(1000, 2000);
+	}
+
+>>>>>>> v4.9.227
 	i2c_set_clientdata(cl, lp);
 
 	ret = lp855x_configure(lp);
@@ -455,6 +574,11 @@ static int lp855x_remove(struct i2c_client *cl)
 
 	lp->bl->props.brightness = 0;
 	backlight_update_status(lp->bl);
+<<<<<<< HEAD
+=======
+	if (lp->supply)
+		regulator_disable(lp->supply);
+>>>>>>> v4.9.227
 	sysfs_remove_group(&lp->dev->kobj, &lp855x_attr_group);
 
 	return 0;

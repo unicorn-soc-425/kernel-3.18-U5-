@@ -7,6 +7,7 @@
  * License version 2.  This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
  */
+<<<<<<< HEAD
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -17,10 +18,18 @@
 #include <plat/irq.h>
 #include <asm/mach/irq.h>
 #include <mach/pm.h>
+=======
+#include <linux/init.h>
+#include <linux/irq.h>
+#include <linux/io.h>
+#include <asm/exception.h>
+#include <plat/irq.h>
+>>>>>>> v4.9.227
 #include <mach/bridge-regs.h>
 #include <plat/orion-gpio.h>
 #include "common.h"
 
+<<<<<<< HEAD
 static void pmu_irq_mask(struct irq_data *d)
 {
 	int pin = irq_to_pmu(d->irq);
@@ -87,6 +96,8 @@ static void pmu_irq_handler(unsigned int irq, struct irq_desc *desc)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static int __initdata gpio0_irqs[4] = {
 	IRQ_DOVE_GPIO_0_7,
 	IRQ_DOVE_GPIO_8_15,
@@ -108,6 +119,7 @@ static int __initdata gpio2_irqs[4] = {
 	0,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_MULTI_IRQ_HANDLER
 /*
  * Compiling with both non-DT and DT support enabled, will
@@ -116,6 +128,8 @@ static int __initdata gpio2_irqs[4] = {
  * if MULTI_IRQ_HANDLER is set.
  */
 
+=======
+>>>>>>> v4.9.227
 static void __iomem *dove_irq_base = IRQ_VIRT_BASE;
 
 static asmlinkage void
@@ -126,18 +140,27 @@ __exception_irq_entry dove_legacy_handle_irq(struct pt_regs *regs)
 	stat = readl_relaxed(dove_irq_base + IRQ_CAUSE_LOW_OFF);
 	stat &= readl_relaxed(dove_irq_base + IRQ_MASK_LOW_OFF);
 	if (stat) {
+<<<<<<< HEAD
 		unsigned int hwirq = __fls(stat);
+=======
+		unsigned int hwirq = 1 + __fls(stat);
+>>>>>>> v4.9.227
 		handle_IRQ(hwirq, regs);
 		return;
 	}
 	stat = readl_relaxed(dove_irq_base + IRQ_CAUSE_HIGH_OFF);
 	stat &= readl_relaxed(dove_irq_base + IRQ_MASK_HIGH_OFF);
 	if (stat) {
+<<<<<<< HEAD
 		unsigned int hwirq = 32 + __fls(stat);
+=======
+		unsigned int hwirq = 33 + __fls(stat);
+>>>>>>> v4.9.227
 		handle_IRQ(hwirq, regs);
 		return;
 	}
 }
+<<<<<<< HEAD
 #endif
 
 void __init dove_init_irq(void)
@@ -150,6 +173,15 @@ void __init dove_init_irq(void)
 #ifdef CONFIG_MULTI_IRQ_HANDLER
 	set_handle_irq(dove_legacy_handle_irq);
 #endif
+=======
+
+void __init dove_init_irq(void)
+{
+	orion_irq_init(1, IRQ_VIRT_BASE + IRQ_MASK_LOW_OFF);
+	orion_irq_init(33, IRQ_VIRT_BASE + IRQ_MASK_HIGH_OFF);
+
+	set_handle_irq(dove_legacy_handle_irq);
+>>>>>>> v4.9.227
 
 	/*
 	 * Initialize gpiolib for GPIOs 0-71.
@@ -162,6 +194,7 @@ void __init dove_init_irq(void)
 
 	orion_gpio_init(NULL, 64, 8, DOVE_GPIO2_VIRT_BASE, 0,
 			IRQ_DOVE_GPIO_START + 64, gpio2_irqs);
+<<<<<<< HEAD
 
 	/*
 	 * Mask and clear PMU interrupts
@@ -175,4 +208,6 @@ void __init dove_init_irq(void)
 		set_irq_flags(i, IRQF_VALID);
 	}
 	irq_set_chained_handler(IRQ_DOVE_PMU, pmu_irq_handler);
+=======
+>>>>>>> v4.9.227
 }

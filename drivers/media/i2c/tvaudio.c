@@ -36,7 +36,11 @@
 #include <linux/kthread.h>
 #include <linux/freezer.h>
 
+<<<<<<< HEAD
 #include <media/tvaudio.h>
+=======
+#include <media/i2c/tvaudio.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-device.h>
 #include <media/v4l2-ctrls.h>
 
@@ -272,7 +276,11 @@ static int chip_cmd(struct CHIPSTATE *chip, char *name, audiocmd *cmd)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* FIXME: it seems that the shadow bytes are wrong bellow !*/
+=======
+	/* FIXME: it seems that the shadow bytes are wrong below !*/
+>>>>>>> v4.9.227
 
 	/* update our shadow register set; print bytes if (debug > 0) */
 	v4l2_dbg(1, debug, sd, "chip_cmd(%s): reg=%d, data:",
@@ -1855,6 +1863,7 @@ static const struct v4l2_ctrl_ops tvaudio_ctrl_ops = {
 
 static const struct v4l2_subdev_core_ops tvaudio_core_ops = {
 	.log_status = tvaudio_log_status,
+<<<<<<< HEAD
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
 	.s_ext_ctrls = v4l2_subdev_s_ext_ctrls,
@@ -1862,6 +1871,8 @@ static const struct v4l2_subdev_core_ops tvaudio_core_ops = {
 	.s_ctrl = v4l2_subdev_s_ctrl,
 	.queryctrl = v4l2_subdev_queryctrl,
 	.querymenu = v4l2_subdev_querymenu,
+=======
+>>>>>>> v4.9.227
 };
 
 static const struct v4l2_subdev_tuner_ops tvaudio_tuner_ops = {
@@ -2051,7 +2062,10 @@ MODULE_DEVICE_TABLE(i2c, tvaudio_id);
 
 static struct i2c_driver tvaudio_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "tvaudio",
 	},
 	.probe		= tvaudio_probe,

@@ -19,6 +19,7 @@ config MMC_DEBUG
 	  This is an option for use by developers; most people should
 	  say N here.  This enables MMC core and driver debugging.
 
+<<<<<<< HEAD
 config MMC_PERF_PROFILING
 	bool "MMC performance profiling"
 	depends on MMC != n
@@ -45,6 +46,8 @@ config MMC_SUPPORT_STLOG
         depends on MMC && PROC_STLOG
         default y
 
+=======
+>>>>>>> v4.9.227
 if MMC
 
 source "drivers/mmc/core/Kconfig"

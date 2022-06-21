@@ -851,7 +851,11 @@ u16 capi20_get_manufacturer(u32 contr, u8 *buf)
 	u16 ret;
 
 	if (contr == 0) {
+<<<<<<< HEAD
 		strlcpy(buf, capi_manufakturer, CAPI_MANUFACTURER_LEN);
+=======
+		strncpy(buf, capi_manufakturer, CAPI_MANUFACTURER_LEN);
+>>>>>>> v4.9.227
 		return CAPI_NOERROR;
 	}
 
@@ -859,7 +863,11 @@ u16 capi20_get_manufacturer(u32 contr, u8 *buf)
 
 	ctr = get_capi_ctr_by_nr(contr);
 	if (ctr && ctr->state == CAPI_CTR_RUNNING) {
+<<<<<<< HEAD
 		strlcpy(buf, ctr->manu, CAPI_MANUFACTURER_LEN);
+=======
+		strncpy(buf, ctr->manu, CAPI_MANUFACTURER_LEN);
+>>>>>>> v4.9.227
 		ret = CAPI_NOERROR;
 	} else
 		ret = CAPI_REGNOTINSTALLED;

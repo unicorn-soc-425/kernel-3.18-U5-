@@ -141,6 +141,7 @@ static void parkbd_interrupt(void *dev_id)
 	parkbd_last = jiffies;
 }
 
+<<<<<<< HEAD
 static int parkbd_getport(void)
 {
 	struct parport *pp;
@@ -154,6 +155,18 @@ static int parkbd_getport(void)
 
 	parkbd_dev = parport_register_device(pp, "parkbd", NULL, NULL, parkbd_interrupt, PARPORT_DEV_EXCL, NULL);
 	parport_put_port(pp);
+=======
+static int parkbd_getport(struct parport *pp)
+{
+	struct pardev_cb parkbd_parport_cb;
+
+	memset(&parkbd_parport_cb, 0, sizeof(parkbd_parport_cb));
+	parkbd_parport_cb.irq_func = parkbd_interrupt;
+	parkbd_parport_cb.flags = PARPORT_FLAG_EXCL;
+
+	parkbd_dev = parport_register_dev_model(pp, "parkbd",
+						&parkbd_parport_cb, 0);
+>>>>>>> v4.9.227
 
 	if (!parkbd_dev)
 		return -ENODEV;
@@ -168,7 +181,11 @@ static int parkbd_getport(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct serio * __init parkbd_allocate_serio(void)
+=======
+static struct serio *parkbd_allocate_serio(void)
+>>>>>>> v4.9.227
 {
 	struct serio *serio;
 
@@ -183,6 +200,7 @@ static struct serio * __init parkbd_allocate_serio(void)
 	return serio;
 }
 
+<<<<<<< HEAD
 static int __init parkbd_init(void)
 {
 	int err;
@@ -190,12 +208,27 @@ static int __init parkbd_init(void)
 	err = parkbd_getport();
 	if (err)
 		return err;
+=======
+static void parkbd_attach(struct parport *pp)
+{
+	if (pp->number != parkbd_pp_no) {
+		pr_debug("Not using parport%d.\n", pp->number);
+		return;
+	}
+
+	if (parkbd_getport(pp))
+		return;
+>>>>>>> v4.9.227
 
 	parkbd_port = parkbd_allocate_serio();
 	if (!parkbd_port) {
 		parport_release(parkbd_dev);
 		parport_unregister_device(parkbd_dev);
+<<<<<<< HEAD
 		return -ENOMEM;
+=======
+		return;
+>>>>>>> v4.9.227
 	}
 
 	parkbd_writelines(3);
@@ -205,14 +238,45 @@ static int __init parkbd_init(void)
 	printk(KERN_INFO "serio: PARKBD %s adapter on %s\n",
                         parkbd_mode ? "AT" : "XT", parkbd_dev->port->name);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return;
+}
+
+static void parkbd_detach(struct parport *port)
+{
+	if (!parkbd_port || port->number != parkbd_pp_no)
+		return;
+
+	parport_release(parkbd_dev);
+	serio_unregister_port(parkbd_port);
+	parport_unregister_device(parkbd_dev);
+	parkbd_port = NULL;
+}
+
+static struct parport_driver parkbd_parport_driver = {
+	.name = "parkbd",
+	.match_port = parkbd_attach,
+	.detach = parkbd_detach,
+	.devmodel = true,
+};
+
+static int __init parkbd_init(void)
+{
+	return parport_register_driver(&parkbd_parport_driver);
+>>>>>>> v4.9.227
 }
 
 static void __exit parkbd_exit(void)
 {
+<<<<<<< HEAD
 	parport_release(parkbd_dev);
 	serio_unregister_port(parkbd_port);
 	parport_unregister_device(parkbd_dev);
+=======
+	parport_unregister_driver(&parkbd_parport_driver);
+>>>>>>> v4.9.227
 }
 
 module_init(parkbd_init);

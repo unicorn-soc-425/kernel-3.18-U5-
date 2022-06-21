@@ -12,7 +12,10 @@
 #include <asm/assembler.h>
 
 .syntax unified
+<<<<<<< HEAD
 .code   32
+=======
+>>>>>>> v4.9.227
 .fpu neon
 
 .text

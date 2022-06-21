@@ -19,7 +19,11 @@
 struct llc_sap_state_trans {
 	llc_sap_ev_t	  ev;
 	u8		  next_state;
+<<<<<<< HEAD
 	llc_sap_action_t *ev_actions;
+=======
+	const llc_sap_action_t *ev_actions;
+>>>>>>> v4.9.227
 };
 
 struct llc_sap_state {

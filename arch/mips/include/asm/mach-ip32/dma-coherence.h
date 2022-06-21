@@ -80,9 +80,19 @@ static inline int plat_dma_supported(struct device *dev, u64 mask)
 	return 1;
 }
 
+<<<<<<< HEAD
 static inline int plat_device_is_coherent(struct device *dev)
 {
 	return 0;		/* IP32 is non-cohernet */
+=======
+static inline void plat_post_dma_flush(struct device *dev)
+{
+}
+
+static inline int plat_device_is_coherent(struct device *dev)
+{
+	return 0;		/* IP32 is non-coherent */
+>>>>>>> v4.9.227
 }
 
 #endif /* __ASM_MACH_IP32_DMA_COHERENCE_H */

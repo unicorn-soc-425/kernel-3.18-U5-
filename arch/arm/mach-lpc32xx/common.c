@@ -17,6 +17,7 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -24,6 +25,8 @@
 #include <linux/i2c.h>
 #include <linux/i2c-pnx.h>
 #include <linux/io.h>
+=======
+>>>>>>> v4.9.227
 
 #include <asm/mach/map.h>
 #include <asm/system_info.h>
@@ -44,6 +47,7 @@ void lpc32xx_get_uid(u32 devid[4])
 }
 
 /*
+<<<<<<< HEAD
  * Returns SYSCLK source
  * 0 = PLL397, 1 = main oscillator
  */
@@ -57,6 +61,8 @@ int clk_is_sysclk_mainosc(void)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Detects and returns IRAM size for the device variation
  */
 #define LPC32XX_IRAM_BANK_SIZE SZ_128K
@@ -87,6 +93,7 @@ u32 lpc32xx_return_iram_size(void)
 }
 EXPORT_SYMBOL_GPL(lpc32xx_return_iram_size);
 
+<<<<<<< HEAD
 /*
  * Computes PLL rate from PLL register and input clock
  */
@@ -162,6 +169,8 @@ u32 clk_get_pclk_div(void)
 	return 1 + ((__raw_readl(LPC32XX_CLKPWR_HCLK_DIV) >> 2) & 0x1F);
 }
 
+=======
+>>>>>>> v4.9.227
 static struct map_desc lpc32xx_io_desc[] __initdata = {
 	{
 		.virtual	= (unsigned long)IO_ADDRESS(LPC32XX_AHB0_START),
@@ -194,6 +203,7 @@ void __init lpc32xx_map_io(void)
 	iotable_init(lpc32xx_io_desc, ARRAY_SIZE(lpc32xx_io_desc));
 }
 
+<<<<<<< HEAD
 void lpc23xx_restart(enum reboot_mode mode, const char *cmd)
 {
 	/* Make sure WDT clocks are enabled */
@@ -209,6 +219,8 @@ void lpc23xx_restart(enum reboot_mode mode, const char *cmd)
 		;
 }
 
+=======
+>>>>>>> v4.9.227
 static int __init lpc32xx_check_uid(void)
 {
 	u32 uid[4];

@@ -19,7 +19,11 @@
  * It should not be re-used except for that purpose.
  */
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+>>>>>>> v4.9.227
 
 #include <mach/isa-dma.h>
 

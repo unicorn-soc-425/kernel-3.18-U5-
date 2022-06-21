@@ -35,7 +35,11 @@ ENTRY(call_with_stack)
 	mov	r2, r0
 	mov	r0, r1
 
+<<<<<<< HEAD
 	adr	lr, BSYM(1f)
+=======
+	badr	lr, 1f
+>>>>>>> v4.9.227
 	ret	r2
 
 1:	ldr	lr, [sp]

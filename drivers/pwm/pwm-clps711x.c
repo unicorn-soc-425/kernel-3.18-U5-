@@ -48,7 +48,11 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
 static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
 {
 	/* Duty cycle 0..15 max */
+<<<<<<< HEAD
 	return DIV_ROUND_CLOSEST(v * 0xf, pwm_get_period(pwm));
+=======
+	return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+>>>>>>> v4.9.227
 }
 
 static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
@@ -60,7 +64,11 @@ static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 		return -EINVAL;
 
 	/* Store constant period value */
+<<<<<<< HEAD
 	pwm_set_period(pwm, DIV_ROUND_CLOSEST(NSEC_PER_SEC, freq));
+=======
+	pwm->args.period = DIV_ROUND_CLOSEST(NSEC_PER_SEC, freq);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -71,7 +79,11 @@ static int clps711x_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	struct clps711x_chip *priv = to_clps711x_chip(chip);
 	unsigned int duty;
 
+<<<<<<< HEAD
 	if (period_ns != pwm_get_period(pwm))
+=======
+	if (period_ns != pwm->args.period)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	duty = clps711x_get_duty(pwm, duty_ns);
@@ -155,7 +167,11 @@ static int clps711x_pwm_remove(struct platform_device *pdev)
 }
 
 static const struct of_device_id __maybe_unused clps711x_pwm_dt_ids[] = {
+<<<<<<< HEAD
 	{ .compatible = "cirrus,clps711x-pwm", },
+=======
+	{ .compatible = "cirrus,ep7209-pwm", },
+>>>>>>> v4.9.227
 	{ }
 };
 MODULE_DEVICE_TABLE(of, clps711x_pwm_dt_ids);
@@ -163,7 +179,10 @@ MODULE_DEVICE_TABLE(of, clps711x_pwm_dt_ids);
 static struct platform_driver clps711x_pwm_driver = {
 	.driver = {
 		.name = "clps711x-pwm",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(clps711x_pwm_dt_ids),
 	},
 	.probe = clps711x_pwm_probe,

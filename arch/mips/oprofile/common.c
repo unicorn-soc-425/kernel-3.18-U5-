@@ -18,6 +18,10 @@
 
 extern struct op_mips_model op_model_mipsxx_ops __weak;
 extern struct op_mips_model op_model_loongson2_ops __weak;
+<<<<<<< HEAD
+=======
+extern struct op_mips_model op_model_loongson3_ops __weak;
+>>>>>>> v4.9.227
 
 static struct op_mips_model *model;
 
@@ -76,7 +80,11 @@ int __init oprofile_arch_init(struct oprofile_operations *ops)
 	struct op_mips_model *lmodel = NULL;
 	int res;
 
+<<<<<<< HEAD
 	switch (current_cpu_type()) {
+=======
+	switch (boot_cpu_type()) {
+>>>>>>> v4.9.227
 	case CPU_5KC:
 	case CPU_M14KC:
 	case CPU_M14KEC:
@@ -90,6 +98,10 @@ int __init oprofile_arch_init(struct oprofile_operations *ops)
 	case CPU_INTERAPTIV:
 	case CPU_PROAPTIV:
 	case CPU_P5600:
+<<<<<<< HEAD
+=======
+	case CPU_I6400:
+>>>>>>> v4.9.227
 	case CPU_M5150:
 	case CPU_LOONGSON1:
 	case CPU_SB1:
@@ -97,6 +109,10 @@ int __init oprofile_arch_init(struct oprofile_operations *ops)
 	case CPU_R10000:
 	case CPU_R12000:
 	case CPU_R14000:
+<<<<<<< HEAD
+=======
+	case CPU_R16000:
+>>>>>>> v4.9.227
 	case CPU_XLR:
 		lmodel = &op_model_mipsxx_ops;
 		break;
@@ -104,8 +120,22 @@ int __init oprofile_arch_init(struct oprofile_operations *ops)
 	case CPU_LOONGSON2:
 		lmodel = &op_model_loongson2_ops;
 		break;
+<<<<<<< HEAD
 	};
 
+=======
+	case CPU_LOONGSON3:
+		lmodel = &op_model_loongson3_ops;
+		break;
+	};
+
+	/*
+	 * Always set the backtrace. This allows unsupported CPU types to still
+	 * use timer-based oprofile.
+	 */
+	ops->backtrace = op_mips_backtrace;
+
+>>>>>>> v4.9.227
 	if (!lmodel)
 		return -ENODEV;
 
@@ -121,7 +151,10 @@ int __init oprofile_arch_init(struct oprofile_operations *ops)
 	ops->start		= op_mips_start;
 	ops->stop		= op_mips_stop;
 	ops->cpu_type		= lmodel->cpu_type;
+<<<<<<< HEAD
 	ops->backtrace		= op_mips_backtrace;
+=======
+>>>>>>> v4.9.227
 
 	printk(KERN_INFO "oprofile: using %s performance monitoring.\n",
 	       lmodel->cpu_type);

@@ -316,9 +316,14 @@ static int ep93xxfb_mmap(struct fb_info *info, struct vm_area_struct *vma)
 	unsigned int offset = vma->vm_pgoff << PAGE_SHIFT;
 
 	if (offset < info->fix.smem_len) {
+<<<<<<< HEAD
 		return dma_mmap_writecombine(info->dev, vma, info->screen_base,
 					     info->fix.smem_start,
 					     info->fix.smem_len);
+=======
+		return dma_mmap_wc(info->dev, vma, info->screen_base,
+				   info->fix.smem_start, info->fix.smem_len);
+>>>>>>> v4.9.227
 	}
 
 	return -EINVAL;
@@ -419,6 +424,7 @@ static struct fb_ops ep93xxfb_ops = {
 	.fb_mmap	= ep93xxfb_mmap,
 };
 
+<<<<<<< HEAD
 static int ep93xxfb_calc_fbsize(struct ep93xxfb_mach_info *mach_info)
 {
 	int i, fb_size = 0;
@@ -444,13 +450,24 @@ static int ep93xxfb_calc_fbsize(struct ep93xxfb_mach_info *mach_info)
 static int ep93xxfb_alloc_videomem(struct fb_info *info)
 {
 	struct ep93xx_fbi *fbi = info->par;
+=======
+static int ep93xxfb_alloc_videomem(struct fb_info *info)
+{
+>>>>>>> v4.9.227
 	char __iomem *virt_addr;
 	dma_addr_t phys_addr;
 	unsigned int fb_size;
 
+<<<<<<< HEAD
 	fb_size = ep93xxfb_calc_fbsize(fbi->mach_info);
 	virt_addr = dma_alloc_writecombine(info->dev, fb_size,
 					   &phys_addr, GFP_KERNEL);
+=======
+	/* Maximum 16bpp -> used memory is maximum x*y*2 bytes */
+	fb_size = EP93XXFB_MAX_XRES * EP93XXFB_MAX_YRES * 2;
+
+	virt_addr = dma_alloc_wc(info->dev, fb_size, &phys_addr, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!virt_addr)
 		return -ENOMEM;
 
@@ -550,8 +567,12 @@ static int ep93xxfb_probe(struct platform_device *pdev)
 
 	fb_get_options("ep93xx-fb", &video_mode);
 	err = fb_find_mode(&info->var, info, video_mode,
+<<<<<<< HEAD
 			   fbi->mach_info->modes, fbi->mach_info->num_modes,
 			   fbi->mach_info->default_mode, fbi->mach_info->bpp);
+=======
+			   NULL, 0, NULL, 16);
+>>>>>>> v4.9.227
 	if (err == 0) {
 		dev_err(info->dev, "No suitable video mode found\n");
 		err = -EINVAL;
@@ -622,7 +643,10 @@ static struct platform_driver ep93xxfb_driver = {
 	.remove		= ep93xxfb_remove,
 	.driver = {
 		.name	= "ep93xx-fb",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(ep93xxfb_driver);

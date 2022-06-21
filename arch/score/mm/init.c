@@ -91,7 +91,11 @@ void free_initrd_mem(unsigned long start, unsigned long end)
 }
 #endif
 
+<<<<<<< HEAD
 void __init_refok free_initmem(void)
+=======
+void __ref free_initmem(void)
+>>>>>>> v4.9.227
 {
 	free_initmem_default(POISON_FREE_INITMEM);
 }

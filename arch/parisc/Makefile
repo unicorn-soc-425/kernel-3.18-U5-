@@ -62,9 +62,13 @@ cflags-y	+= -mdisable-fpregs
 
 # Without this, "ld -r" results in .text sections that are too big
 # (> 0x40000) for branches to reach stubs.
+<<<<<<< HEAD
 ifndef CONFIG_FUNCTION_TRACER
   cflags-y	+= -ffunction-sections
 endif
+=======
+cflags-y	+= -ffunction-sections
+>>>>>>> v4.9.227
 
 # Use long jumps instead of long branches (needed if your linker fails to
 # link a too big vmlinux executable). Not enabled for building modules.
@@ -84,7 +88,10 @@ head-y			:= arch/parisc/kernel/head.o
 KBUILD_CFLAGS	+= $(cflags-y)
 
 kernel-y			:= mm/ kernel/ math-emu/
+<<<<<<< HEAD
 kernel-$(CONFIG_HPUX)		+= hpux/
+=======
+>>>>>>> v4.9.227
 
 core-y	+= $(addprefix arch/parisc/, $(kernel-y))
 libs-y	+= arch/parisc/lib/ $(LIBGCC)
@@ -149,7 +156,11 @@ endef
 # we require gcc 3.3 or above to compile the kernel
 archprepare: checkbin
 checkbin:
+<<<<<<< HEAD
 	@if test "$(call cc-version)" -lt "0303"; then \
+=======
+	@if test "$(cc-version)" -lt "0303"; then \
+>>>>>>> v4.9.227
 		echo -n "Sorry, GCC v3.3 or above is required to build " ; \
 		echo "the kernel." ; \
 		false ; \

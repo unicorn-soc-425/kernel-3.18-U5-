@@ -24,23 +24,35 @@
 #include <linux/platform_data/omap_drm.h>
 #include <linux/types.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
 #include <video/omapdss.h>
+=======
+>>>>>>> v4.9.227
 
 #include <drm/drmP.h>
 #include <drm/drm_crtc_helper.h>
 #include <drm/drm_gem.h>
 #include <drm/omap_drm.h>
 
+<<<<<<< HEAD
+=======
+#include "dss/omapdss.h"
+
+>>>>>>> v4.9.227
 #define DBG(fmt, ...) DRM_DEBUG(fmt"\n", ##__VA_ARGS__)
 #define VERB(fmt, ...) if (0) DRM_DEBUG(fmt, ##__VA_ARGS__) /* verbose debug */
 
 #define MODULE_NAME     "omapdrm"
 
+<<<<<<< HEAD
 /* max # of mapper-id's that can be assigned.. todo, come up with a better
  * (but still inexpensive) way to store/access per-buffer mapper private
  * data..
  */
 #define MAX_MAPPERS 2
+=======
+struct omap_drm_usergart;
+>>>>>>> v4.9.227
 
 /* parameters which describe (unrotated) coordinates of scanout within a fb: */
 struct omap_drm_window {
@@ -97,6 +109,10 @@ struct omap_drm_private {
 	/* list of GEM objects: */
 	struct list_head obj_list;
 
+<<<<<<< HEAD
+=======
+	struct omap_drm_usergart *usergart;
+>>>>>>> v4.9.227
 	bool has_dmm;
 
 	/* properties: */
@@ -109,7 +125,10 @@ struct omap_drm_private {
 
 	/* atomic commit */
 	struct {
+<<<<<<< HEAD
 		struct list_head events;
+=======
+>>>>>>> v4.9.227
 		wait_queue_head_t wait;
 		u32 pending;
 		spinlock_t lock;	/* Protects commit.pending */
@@ -138,8 +157,23 @@ void omap_irq_unregister(struct drm_device *dev, struct omap_drm_irq *irq);
 void omap_drm_irq_uninstall(struct drm_device *dev);
 int omap_drm_irq_install(struct drm_device *dev);
 
+<<<<<<< HEAD
 struct drm_fb_helper *omap_fbdev_init(struct drm_device *dev);
 void omap_fbdev_free(struct drm_device *dev);
+=======
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+struct drm_fb_helper *omap_fbdev_init(struct drm_device *dev);
+void omap_fbdev_free(struct drm_device *dev);
+#else
+static inline struct drm_fb_helper *omap_fbdev_init(struct drm_device *dev)
+{
+	return NULL;
+}
+static inline void omap_fbdev_free(struct drm_device *dev)
+{
+}
+#endif
+>>>>>>> v4.9.227
 
 struct omap_video_timings *omap_crtc_timings(struct drm_crtc *crtc);
 enum omap_channel omap_crtc_channel(struct drm_crtc *crtc);
@@ -172,22 +206,37 @@ void copy_timings_drm_to_omap(struct omap_video_timings *timings,
 uint32_t omap_framebuffer_get_formats(uint32_t *pixel_formats,
 		uint32_t max_formats, enum omap_color_mode supported_modes);
 struct drm_framebuffer *omap_framebuffer_create(struct drm_device *dev,
+<<<<<<< HEAD
 		struct drm_file *file, struct drm_mode_fb_cmd2 *mode_cmd);
 struct drm_framebuffer *omap_framebuffer_init(struct drm_device *dev,
 		struct drm_mode_fb_cmd2 *mode_cmd, struct drm_gem_object **bos);
 struct drm_gem_object *omap_framebuffer_bo(struct drm_framebuffer *fb, int p);
+=======
+		struct drm_file *file, const struct drm_mode_fb_cmd2 *mode_cmd);
+struct drm_framebuffer *omap_framebuffer_init(struct drm_device *dev,
+		const struct drm_mode_fb_cmd2 *mode_cmd, struct drm_gem_object **bos);
+>>>>>>> v4.9.227
 int omap_framebuffer_pin(struct drm_framebuffer *fb);
 void omap_framebuffer_unpin(struct drm_framebuffer *fb);
 void omap_framebuffer_update_scanout(struct drm_framebuffer *fb,
 		struct omap_drm_window *win, struct omap_overlay_info *info);
 struct drm_connector *omap_framebuffer_get_next_connector(
 		struct drm_framebuffer *fb, struct drm_connector *from);
+<<<<<<< HEAD
+=======
+bool omap_framebuffer_supports_rotation(struct drm_framebuffer *fb);
+>>>>>>> v4.9.227
 
 void omap_gem_init(struct drm_device *dev);
 void omap_gem_deinit(struct drm_device *dev);
 
 struct drm_gem_object *omap_gem_new(struct drm_device *dev,
 		union omap_gem_size gsize, uint32_t flags);
+<<<<<<< HEAD
+=======
+struct drm_gem_object *omap_gem_new_dmabuf(struct drm_device *dev, size_t size,
+		struct sg_table *sgt);
+>>>>>>> v4.9.227
 int omap_gem_new_handle(struct drm_device *dev, struct drm_file *file,
 		union omap_gem_size gsize, uint32_t flags, uint32_t *handle);
 void omap_gem_free_object(struct drm_gem_object *obj);
@@ -220,7 +269,10 @@ int omap_gem_rotated_paddr(struct drm_gem_object *obj, uint32_t orient,
 		int x, int y, dma_addr_t *paddr);
 uint64_t omap_gem_mmap_offset(struct drm_gem_object *obj);
 size_t omap_gem_mmap_size(struct drm_gem_object *obj);
+<<<<<<< HEAD
 int omap_gem_tiled_size(struct drm_gem_object *obj, uint16_t *w, uint16_t *h);
+=======
+>>>>>>> v4.9.227
 int omap_gem_tiled_stride(struct drm_gem_object *obj, uint32_t orient);
 
 struct dma_buf *omap_gem_prime_export(struct drm_device *dev,
@@ -228,6 +280,7 @@ struct dma_buf *omap_gem_prime_export(struct drm_device *dev,
 struct drm_gem_object *omap_gem_prime_import(struct drm_device *dev,
 		struct dma_buf *buffer);
 
+<<<<<<< HEAD
 static inline int align_pitch(int pitch, int width, int bpp)
 {
 	int bytespp = (bpp + 7) / 8;
@@ -239,6 +292,8 @@ static inline int align_pitch(int pitch, int width, int bpp)
 	return roundup(pitch, 8 * bytespp);
 }
 
+=======
+>>>>>>> v4.9.227
 /* map crtc to vblank mask */
 uint32_t pipe2vbl(struct drm_crtc *crtc);
 struct omap_dss_device *omap_encoder_get_dssdev(struct drm_encoder *encoder);
@@ -246,14 +301,24 @@ struct omap_dss_device *omap_encoder_get_dssdev(struct drm_encoder *encoder);
 /* should these be made into common util helpers?
  */
 
+<<<<<<< HEAD
 static inline int objects_lookup(struct drm_device *dev,
 		struct drm_file *filp, uint32_t pixel_format,
 		struct drm_gem_object **bos, uint32_t *handles)
+=======
+static inline int objects_lookup(
+		struct drm_file *filp, uint32_t pixel_format,
+		struct drm_gem_object **bos, const uint32_t *handles)
+>>>>>>> v4.9.227
 {
 	int i, n = drm_format_num_planes(pixel_format);
 
 	for (i = 0; i < n; i++) {
+<<<<<<< HEAD
 		bos[i] = drm_gem_object_lookup(dev, filp, handles[i]);
+=======
+		bos[i] = drm_gem_object_lookup(filp, handles[i]);
+>>>>>>> v4.9.227
 		if (!bos[i])
 			goto fail;
 

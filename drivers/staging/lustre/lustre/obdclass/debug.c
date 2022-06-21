@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -40,11 +44,16 @@
 
 #define DEBUG_SUBSYSTEM D_OTHER
 
+<<<<<<< HEAD
+=======
+#include <asm/unaligned.h>
+>>>>>>> v4.9.227
 
 #include "../include/obd_support.h"
 #include "../include/lustre_debug.h"
 #include "../include/lustre_net.h"
 
+<<<<<<< HEAD
 void dump_lniobuf(struct niobuf_local *nb)
 {
 	CDEBUG(D_RPCTRACE,
@@ -55,11 +64,14 @@ void dump_lniobuf(struct niobuf_local *nb)
 }
 EXPORT_SYMBOL(dump_lniobuf);
 
+=======
+>>>>>>> v4.9.227
 #define LPDS sizeof(__u64)
 int block_debug_setup(void *addr, int len, __u64 off, __u64 id)
 {
 	LASSERT(addr);
 
+<<<<<<< HEAD
 	off = cpu_to_le64 (off);
 	id = cpu_to_le64 (id);
 	memcpy(addr, (char *)&off, LPDS);
@@ -68,6 +80,13 @@ int block_debug_setup(void *addr, int len, __u64 off, __u64 id)
 	addr += len - LPDS - LPDS;
 	memcpy(addr, (char *)&off, LPDS);
 	memcpy(addr + LPDS, (char *)&id, LPDS);
+=======
+	put_unaligned_le64(off, addr);
+	put_unaligned_le64(id, addr + LPDS);
+	addr += len - LPDS - LPDS;
+	put_unaligned_le64(off, addr);
+	put_unaligned_le64(id, addr + LPDS);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -80,8 +99,13 @@ int block_debug_check(char *who, void *addr, int end, __u64 off, __u64 id)
 
 	LASSERT(addr);
 
+<<<<<<< HEAD
 	ne_off = le64_to_cpu (off);
 	id = le64_to_cpu (id);
+=======
+	ne_off = le64_to_cpu(off);
+	id = le64_to_cpu(id);
+>>>>>>> v4.9.227
 	if (memcmp(addr, (char *)&ne_off, LPDS)) {
 		CDEBUG(D_ERROR, "%s: id %#llx offset %llu off: %#llx != %#llx\n",
 		       who, id, off, *(__u64 *)addr, ne_off);

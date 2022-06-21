@@ -152,8 +152,15 @@ static void skge_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 	memset(p, 0, regs->len);
 	memcpy_fromio(p, io, B3_RAM_ADDR);
 
+<<<<<<< HEAD
 	memcpy_fromio(p + B3_RI_WTO_R1, io + B3_RI_WTO_R1,
 		      regs->len - B3_RI_WTO_R1);
+=======
+	if (regs->len > B3_RI_WTO_R1) {
+		memcpy_fromio(p + B3_RI_WTO_R1, io + B3_RI_WTO_R1,
+			      regs->len - B3_RI_WTO_R1);
+	}
+>>>>>>> v4.9.227
 }
 
 /* Wake on Lan only supported on Yukon chips with rev 1 or above */
@@ -3112,7 +3119,11 @@ static struct sk_buff *skge_rx_get(struct net_device *dev,
 	skb_put(skb, len);
 
 	if (dev->features & NETIF_F_RXCSUM) {
+<<<<<<< HEAD
 		skb->csum = csum;
+=======
+		skb->csum = le16_to_cpu(csum);
+>>>>>>> v4.9.227
 		skb->ip_summed = CHECKSUM_COMPLETE;
 	}
 
@@ -3433,10 +3444,16 @@ static irqreturn_t skge_intr(int irq, void *dev_id)
 
 	if (status & IS_HW_ERR)
 		skge_error_irq(hw);
+<<<<<<< HEAD
 
 	skge_write32(hw, B0_IMSK, hw->intr_mask);
 	skge_read32(hw, B0_IMSK);
 out:
+=======
+out:
+	skge_write32(hw, B0_IMSK, hw->intr_mask);
+	skge_read32(hw, B0_IMSK);
+>>>>>>> v4.9.227
 	spin_unlock(&hw->hw_lock);
 
 	return IRQ_RETVAL(handled);

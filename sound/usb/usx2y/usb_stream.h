@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2007, 2008 Karsten Wiese <fzu@wemgehoertderstaat.de>
  *
@@ -71,6 +72,12 @@ enum usb_stream_state {
 };
 
 #if __KERNEL__
+=======
+#ifndef __USB_STREAM_H
+#define __USB_STREAM_H
+
+#include <uapi/sound/usb_stream.h>
+>>>>>>> v4.9.227
 
 #define USB_STREAM_NURBS 4
 #define USB_STREAM_URBDEPTH 4
@@ -108,5 +115,9 @@ void usb_stream_free(struct usb_stream_kernel *);
 int usb_stream_start(struct usb_stream_kernel *);
 void usb_stream_stop(struct usb_stream_kernel *);
 
+<<<<<<< HEAD
 
 #endif
+=======
+#endif /* __USB_STREAM_H */
+>>>>>>> v4.9.227

@@ -45,13 +45,20 @@ enum asn1_opcode {
 	ASN1_OP_MATCH_JUMP		= 0x04,
 	ASN1_OP_MATCH_JUMP_OR_SKIP	= 0x05,
 	ASN1_OP_MATCH_ANY		= 0x08,
+<<<<<<< HEAD
 	ASN1_OP_MATCH_ANY_ACT		= 0x0a,
+=======
+	ASN1_OP_MATCH_ANY_OR_SKIP	= 0x09,
+	ASN1_OP_MATCH_ANY_ACT		= 0x0a,
+	ASN1_OP_MATCH_ANY_ACT_OR_SKIP	= 0x0b,
+>>>>>>> v4.9.227
 	/* Everything before here matches unconditionally */
 
 	ASN1_OP_COND_MATCH_OR_SKIP	= 0x11,
 	ASN1_OP_COND_MATCH_ACT_OR_SKIP	= 0x13,
 	ASN1_OP_COND_MATCH_JUMP_OR_SKIP	= 0x15,
 	ASN1_OP_COND_MATCH_ANY		= 0x18,
+<<<<<<< HEAD
 	ASN1_OP_COND_MATCH_ANY_ACT	= 0x1a,
 
 	/* Everything before here will want a tag from the data */
@@ -62,6 +69,20 @@ enum asn1_opcode {
 	ASN1_OP_COMPLETE		= 0x1c,
 	ASN1_OP_ACT			= 0x1d,
 	ASN1_OP_RETURN			= 0x1e,
+=======
+	ASN1_OP_COND_MATCH_ANY_OR_SKIP	= 0x19,
+	ASN1_OP_COND_MATCH_ANY_ACT	= 0x1a,
+	ASN1_OP_COND_MATCH_ANY_ACT_OR_SKIP = 0x1b,
+
+	/* Everything before here will want a tag from the data */
+#define ASN1_OP__MATCHES_TAG ASN1_OP_COND_MATCH_ANY_ACT_OR_SKIP
+
+	/* These are here to help fill up space */
+	ASN1_OP_COND_FAIL		= 0x1c,
+	ASN1_OP_COMPLETE		= 0x1d,
+	ASN1_OP_ACT			= 0x1e,
+	ASN1_OP_MAYBE_ACT		= 0x1f,
+>>>>>>> v4.9.227
 
 	/* The following eight have bit 0 -> SET, 1 -> OF, 2 -> ACT */
 	ASN1_OP_END_SEQ			= 0x20,
@@ -76,6 +97,11 @@ enum asn1_opcode {
 #define ASN1_OP_END__OF			  0x02
 #define ASN1_OP_END__ACT		  0x04
 
+<<<<<<< HEAD
+=======
+	ASN1_OP_RETURN			= 0x28,
+
+>>>>>>> v4.9.227
 	ASN1_OP__NR
 };
 

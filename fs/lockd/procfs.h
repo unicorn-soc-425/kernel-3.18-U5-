@@ -6,8 +6,11 @@
 #ifndef _LOCKD_PROCFS_H
 #define _LOCKD_PROCFS_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> v4.9.227
 #if IS_ENABLED(CONFIG_PROC_FS)
 int lockd_create_procfs(void);
 void lockd_remove_procfs(void);

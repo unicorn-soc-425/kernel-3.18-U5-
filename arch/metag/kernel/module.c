@@ -176,8 +176,13 @@ static uint32_t do_plt_call(void *location, Elf32_Addr val,
 	tramp[1] = 0xac000001 | ((val & 0x0000ffff) << 3);
 
 	/* Init, or core PLT? */
+<<<<<<< HEAD
 	if (location >= mod->module_core
 	    && location < mod->module_core + mod->core_size)
+=======
+	if (location >= mod->core_layout.base
+	    && location < mod->core_layout.base + mod->core_layout.size)
+>>>>>>> v4.9.227
 		entry = (void *)sechdrs[mod->arch.core_plt_section].sh_addr;
 	else
 		entry = (void *)sechdrs[mod->arch.init_plt_section].sh_addr;

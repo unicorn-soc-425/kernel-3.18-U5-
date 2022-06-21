@@ -27,6 +27,7 @@ struct pvr2_v4l2;
 struct pvr2_v4l2 *pvr2_v4l2_create(struct pvr2_context *);
 
 #endif /* __PVRUSB2_V4L2_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -37,3 +38,5 @@ struct pvr2_v4l2 *pvr2_v4l2_create(struct pvr2_context *);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

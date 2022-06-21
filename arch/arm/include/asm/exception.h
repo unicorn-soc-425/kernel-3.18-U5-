@@ -7,7 +7,11 @@
 #ifndef __ASM_ARM_EXCEPTION_H
 #define __ASM_ARM_EXCEPTION_H
 
+<<<<<<< HEAD
 #include <linux/ftrace.h>
+=======
+#include <linux/interrupt.h>
+>>>>>>> v4.9.227
 
 #define __exception	__attribute__((section(".exception.text")))
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER

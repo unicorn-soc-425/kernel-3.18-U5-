@@ -301,7 +301,11 @@ void __init mem_init(void)
 
 
 	/* Saves us work later. */
+<<<<<<< HEAD
 	memset((void *)&empty_zero_page, 0, PAGE_SIZE);
+=======
+	memset((void *)empty_zero_page, 0, PAGE_SIZE);
+>>>>>>> v4.9.227
 
 	i = last_valid_pfn >> ((20 - PAGE_SHIFT) + 5);
 	i += 1;

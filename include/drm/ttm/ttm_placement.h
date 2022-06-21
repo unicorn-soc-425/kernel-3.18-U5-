@@ -30,6 +30,12 @@
 
 #ifndef _TTM_PLACEMENT_H_
 #define _TTM_PLACEMENT_H_
+<<<<<<< HEAD
+=======
+
+#include <linux/types.h>
+
+>>>>>>> v4.9.227
 /*
  * Memory regions for data placement.
  */
@@ -37,6 +43,7 @@
 #define TTM_PL_SYSTEM           0
 #define TTM_PL_TT               1
 #define TTM_PL_VRAM             2
+<<<<<<< HEAD
 #define TTM_PL_PRIV0            3
 #define TTM_PL_PRIV1            4
 #define TTM_PL_PRIV2            5
@@ -44,10 +51,14 @@
 #define TTM_PL_PRIV4            7
 #define TTM_PL_PRIV5            8
 #define TTM_PL_SWAPPED          15
+=======
+#define TTM_PL_PRIV             3
+>>>>>>> v4.9.227
 
 #define TTM_PL_FLAG_SYSTEM      (1 << TTM_PL_SYSTEM)
 #define TTM_PL_FLAG_TT          (1 << TTM_PL_TT)
 #define TTM_PL_FLAG_VRAM        (1 << TTM_PL_VRAM)
+<<<<<<< HEAD
 #define TTM_PL_FLAG_PRIV0       (1 << TTM_PL_PRIV0)
 #define TTM_PL_FLAG_PRIV1       (1 << TTM_PL_PRIV1)
 #define TTM_PL_FLAG_PRIV2       (1 << TTM_PL_PRIV2)
@@ -55,6 +66,9 @@
 #define TTM_PL_FLAG_PRIV4       (1 << TTM_PL_PRIV4)
 #define TTM_PL_FLAG_PRIV5       (1 << TTM_PL_PRIV5)
 #define TTM_PL_FLAG_SWAPPED     (1 << TTM_PL_SWAPPED)
+=======
+#define TTM_PL_FLAG_PRIV        (1 << TTM_PL_PRIV)
+>>>>>>> v4.9.227
 #define TTM_PL_MASK_MEM         0x0000FFFF
 
 /*
@@ -72,7 +86,10 @@
 #define TTM_PL_FLAG_CACHED      (1 << 16)
 #define TTM_PL_FLAG_UNCACHED    (1 << 17)
 #define TTM_PL_FLAG_WC          (1 << 18)
+<<<<<<< HEAD
 #define TTM_PL_FLAG_SHARED      (1 << 20)
+=======
+>>>>>>> v4.9.227
 #define TTM_PL_FLAG_NO_EVICT    (1 << 21)
 #define TTM_PL_FLAG_TOPDOWN     (1 << 22)
 
@@ -82,6 +99,7 @@
 
 #define TTM_PL_MASK_MEMTYPE     (TTM_PL_MASK_MEM | TTM_PL_MASK_CACHING)
 
+<<<<<<< HEAD
 /*
  * Access flags to be used for CPU- and GPU- mappings.
  * The idea is that the TTM synchronization mechanism will
@@ -91,5 +109,38 @@
 
 #define TTM_ACCESS_READ         (1 << 0)
 #define TTM_ACCESS_WRITE        (1 << 1)
+=======
+/**
+ * struct ttm_place
+ *
+ * @fpfn:	first valid page frame number to put the object
+ * @lpfn:	last valid page frame number to put the object
+ * @flags:	memory domain and caching flags for the object
+ *
+ * Structure indicating a possible place to put an object.
+ */
+struct ttm_place {
+	unsigned	fpfn;
+	unsigned	lpfn;
+	uint32_t	flags;
+};
+
+/**
+ * struct ttm_placement
+ *
+ * @num_placement:	number of preferred placements
+ * @placement:		preferred placements
+ * @num_busy_placement:	number of preferred placements when need to evict buffer
+ * @busy_placement:	preferred placements when need to evict buffer
+ *
+ * Structure indicating the placement you request for an object.
+ */
+struct ttm_placement {
+	unsigned		num_placement;
+	const struct ttm_place	*placement;
+	unsigned		num_busy_placement;
+	const struct ttm_place	*busy_placement;
+};
+>>>>>>> v4.9.227
 
 #endif

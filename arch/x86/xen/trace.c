@@ -1,5 +1,6 @@
 #include <linux/ftrace.h>
 #include <xen/interface/xen.h>
+<<<<<<< HEAD
 
 #define N(x)	[__HYPERVISOR_##x] = "("#x")"
 static const char *xen_hypercall_names[] = {
@@ -49,6 +50,15 @@ static const char *xen_hypercall_names[] = {
 	N(arch_7),
 };
 #undef N
+=======
+#include <xen/interface/xen-mca.h>
+
+#define HYPERCALL(x)	[__HYPERVISOR_##x] = "("#x")",
+static const char *xen_hypercall_names[] = {
+#include <asm/xen-hypercalls.h>
+};
+#undef HYPERCALL
+>>>>>>> v4.9.227
 
 static const char *xen_hypercall_name(unsigned op)
 {

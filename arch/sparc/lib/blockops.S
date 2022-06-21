@@ -6,6 +6,10 @@
 
 #include <linux/linkage.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	/* Zero out 64 bytes of memory at (buf + offset).
 	 * Assumes %g1 contains zero.
@@ -64,6 +68,10 @@ ENTRY(bzero_1page)
 	retl
 	 nop
 ENDPROC(bzero_1page)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(bzero_1page)
+>>>>>>> v4.9.227
 
 ENTRY(__copy_1page)
 /* NOTE: If you change the number of insns of this routine, please check
@@ -87,3 +95,7 @@ ENTRY(__copy_1page)
 	retl
 	 nop
 ENDPROC(__copy_1page)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__copy_1page)
+>>>>>>> v4.9.227

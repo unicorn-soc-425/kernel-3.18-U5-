@@ -21,8 +21,13 @@
 #include <linux/pinctrl/pinconf-generic.h>
 #include <linux/platform_data/pinctrl-adi2.h>
 #include <linux/spi/adi_spi3.h>
+<<<<<<< HEAD
 #include <asm/dma.h>
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+#include <asm/dma.h>
+>>>>>>> v4.9.227
 #include <asm/nand.h>
 #include <asm/dpmc.h>
 #include <asm/portmux.h>
@@ -75,7 +80,11 @@ static struct platform_device bfin_isp1760_device = {
 #endif
 
 #if IS_ENABLED(CONFIG_INPUT_BFIN_ROTARY)
+<<<<<<< HEAD
 #include <asm/bfin_rotary.h>
+=======
+#include <linux/platform_data/bfin_rotary.h>
+>>>>>>> v4.9.227
 
 static struct bfin_rotary_platform_data bfin_rotary_data = {
 	/*.rotary_up_key     = KEY_UP,*/
@@ -88,6 +97,14 @@ static struct bfin_rotary_platform_data bfin_rotary_data = {
 
 static struct resource bfin_rotary_resources[] = {
 	{
+<<<<<<< HEAD
+=======
+		.start = CNT_CONFIG,
+		.end   = CNT_CONFIG + 0xff,
+		.flags = IORESOURCE_MEM,
+	},
+	{
+>>>>>>> v4.9.227
 		.start = IRQ_CNT,
 		.end = IRQ_CNT,
 		.flags = IORESOURCE_IRQ,
@@ -775,8 +792,13 @@ static struct adi_spi3_chip spidev_chip_info = {
 };
 #endif
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_SND_BF5XX_I2S)
 static struct platform_device bfin_i2s_pcm = {
+=======
+#if IS_ENABLED(CONFIG_SND_BF6XX_PCM)
+static struct platform_device bfin_pcm = {
+>>>>>>> v4.9.227
 	.name = "bfin-i2s-pcm-audio",
 	.id = -1,
 };
@@ -928,7 +950,11 @@ static struct bfin_capture_config bfin_capture_data = {
 #endif
 
 #if IS_ENABLED(CONFIG_VIDEO_ADV7842)
+<<<<<<< HEAD
 #include <media/adv7842.h>
+=======
+#include <media/i2c/adv7842.h>
+>>>>>>> v4.9.227
 
 static struct v4l2_input adv7842_inputs[] = {
 	{
@@ -997,14 +1023,20 @@ static struct adv7842_output_format adv7842_opf[] = {
 	{
 		.op_ch_sel = ADV7842_OP_CH_SEL_BRG,
 		.op_format_sel = ADV7842_OP_FORMAT_SEL_SDR_ITU656_8,
+<<<<<<< HEAD
 		.op_656_range = 1,
+=======
+>>>>>>> v4.9.227
 		.blank_data = 1,
 		.insert_av_codes = 1,
 	},
 	{
 		.op_ch_sel = ADV7842_OP_CH_SEL_RGB,
 		.op_format_sel = ADV7842_OP_FORMAT_SEL_SDR_ITU656_16,
+<<<<<<< HEAD
 		.op_656_range = 1,
+=======
+>>>>>>> v4.9.227
 		.blank_data = 1,
 	},
 };
@@ -1029,7 +1061,10 @@ static struct adv7842_platform_data adv7842_data = {
 	.i2c_infoframe = 0x48,
 	.i2c_cec = 0x49,
 	.i2c_avlink = 0x4a,
+<<<<<<< HEAD
 	.i2c_ex = 0x26,
+=======
+>>>>>>> v4.9.227
 };
 
 static struct bfin_capture_config bfin_capture_data = {
@@ -1080,7 +1115,11 @@ static const struct ppi_info ppi_info = {
 };
 
 #if IS_ENABLED(CONFIG_VIDEO_ADV7511)
+<<<<<<< HEAD
 #include <media/adv7511.h>
+=======
+#include <media/i2c/adv7511.h>
+>>>>>>> v4.9.227
 
 static struct v4l2_output adv7511_outputs[] = {
 	{
@@ -1099,7 +1138,10 @@ static struct disp_route adv7511_routes[] = {
 
 static struct adv7511_platform_data adv7511_data = {
 	.edid_addr = 0x7e,
+<<<<<<< HEAD
 	.i2c_ex = 0x25,
+=======
+>>>>>>> v4.9.227
 };
 
 static struct bfin_display_config bfin_display_data = {
@@ -1122,7 +1164,11 @@ static struct bfin_display_config bfin_display_data = {
 #endif
 
 #if IS_ENABLED(CONFIG_VIDEO_ADV7343)
+<<<<<<< HEAD
 #include <media/adv7343.h>
+=======
+#include <media/i2c/adv7343.h>
+>>>>>>> v4.9.227
 
 static struct v4l2_output adv7343_outputs[] = {
 	{
@@ -1204,6 +1250,38 @@ static struct platform_device bfin_display_device = {
 };
 #endif
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_FB_BF609_NL8048) \
+	|| defined(CONFIG_FB_BF609_NL8048_MODULE)
+static struct resource nl8048_resources[] = {
+	{
+		.start = EPPI2_STAT,
+		.end = EPPI2_STAT,
+		.flags = IORESOURCE_MEM,
+	},
+	{
+		.start = CH_EPPI2_CH0,
+		.end = CH_EPPI2_CH0,
+		.flags = IORESOURCE_DMA,
+	},
+	{
+		.start = IRQ_EPPI2_STAT,
+		.end = IRQ_EPPI2_STAT,
+		.flags = IORESOURCE_IRQ,
+	},
+};
+static struct platform_device bfin_fb_device = {
+	.name = "bf609_nl8048",
+	.num_resources = ARRAY_SIZE(nl8048_resources),
+	.resource = nl8048_resources,
+	.dev = {
+		.platform_data = (void *)GPIO_PC15,
+	},
+};
+#endif
+
+>>>>>>> v4.9.227
 #if defined(CONFIG_BFIN_CRC)
 #define BFIN_CRC_NAME "bfin-crc"
 
@@ -1857,6 +1935,32 @@ static struct platform_device i2c_bfin_twi1_device = {
 };
 #endif
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_GPIO_MCP23S08)
+#include <linux/spi/mcp23s08.h>
+static const struct mcp23s08_platform_data bfin_mcp23s08_soft_switch0 = {
+	.base = 120,
+};
+static const struct mcp23s08_platform_data bfin_mcp23s08_soft_switch1 = {
+	.base = 130,
+};
+static const struct mcp23s08_platform_data bfin_mcp23s08_soft_switch2 = {
+	.base = 140,
+};
+# if IS_ENABLED(CONFIG_VIDEO_ADV7842)
+static const struct mcp23s08_platform_data bfin_adv7842_soft_switch = {
+	.base = 150,
+};
+# endif
+# if IS_ENABLED(CONFIG_VIDEO_ADV7511) || IS_ENABLED(CONFIG_VIDEO_ADV7343)
+static const struct mcp23s08_platform_data bfin_adv7511_soft_switch = {
+	.base = 160,
+};
+# endif
+#endif
+
+>>>>>>> v4.9.227
 static struct i2c_board_info __initdata bfin_i2c_board_info0[] = {
 #if IS_ENABLED(CONFIG_INPUT_ADXL34X_I2C)
 	{
@@ -1876,6 +1980,35 @@ static struct i2c_board_info __initdata bfin_i2c_board_info0[] = {
 		I2C_BOARD_INFO("ssm2602", 0x1b),
 	},
 #endif
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_GPIO_MCP23S08)
+	{
+		I2C_BOARD_INFO("mcp23017", 0x21),
+		.platform_data = (void *)&bfin_mcp23s08_soft_switch0
+	},
+	{
+		I2C_BOARD_INFO("mcp23017", 0x22),
+		.platform_data = (void *)&bfin_mcp23s08_soft_switch1
+	},
+	{
+		I2C_BOARD_INFO("mcp23017", 0x23),
+		.platform_data = (void *)&bfin_mcp23s08_soft_switch2
+	},
+# if IS_ENABLED(CONFIG_VIDEO_ADV7842)
+	{
+		I2C_BOARD_INFO("mcp23017", 0x26),
+		.platform_data = (void *)&bfin_adv7842_soft_switch
+	},
+# endif
+# if IS_ENABLED(CONFIG_VIDEO_ADV7511) || IS_ENABLED(CONFIG_VIDEO_ADV7343)
+	{
+		I2C_BOARD_INFO("mcp23017", 0x25),
+		.platform_data = (void *)&bfin_adv7511_soft_switch
+	},
+# endif
+#endif
+>>>>>>> v4.9.227
 };
 
 static struct i2c_board_info __initdata bfin_i2c_board_info1[] = {
@@ -2018,8 +2151,13 @@ static struct platform_device *ezkit_devices[] __initdata = {
 #if IS_ENABLED(CONFIG_MTD_PHYSMAP)
 	&ezkit_flash_device,
 #endif
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_SND_BF5XX_I2S)
 	&bfin_i2s_pcm,
+=======
+#if IS_ENABLED(CONFIG_SND_BF6XX_PCM)
+	&bfin_pcm,
+>>>>>>> v4.9.227
 #endif
 #if IS_ENABLED(CONFIG_SND_BF6XX_SOC_I2S)
 	&bfin_i2s,
@@ -2055,7 +2193,11 @@ static struct pinctrl_map __initdata bfin_pinmux_map[] = {
 	PIN_MAP_MUX_GROUP_DEFAULT("bfin-rotary",  "pinctrl-adi2.0", NULL, "rotary"),
 	PIN_MAP_MUX_GROUP_DEFAULT("bfin_can.0",  "pinctrl-adi2.0", NULL, "can0"),
 	PIN_MAP_MUX_GROUP_DEFAULT("physmap-flash.0",  "pinctrl-adi2.0", NULL, "smc0"),
+<<<<<<< HEAD
 	PIN_MAP_MUX_GROUP_DEFAULT("bf609_nl8048.2",  "pinctrl-adi2.0", "ppi2_16bgrp", "ppi2"),
+=======
+	PIN_MAP_MUX_GROUP_DEFAULT("bf609_nl8048.0",  "pinctrl-adi2.0", "ppi2_16bgrp", "ppi2"),
+>>>>>>> v4.9.227
 	PIN_MAP_MUX_GROUP("bfin_display.0", "8bit",  "pinctrl-adi2.0", "ppi2_8bgrp", "ppi2"),
 	PIN_MAP_MUX_GROUP_DEFAULT("bfin_display.0",  "pinctrl-adi2.0", "ppi2_16bgrp", "ppi2"),
 	PIN_MAP_MUX_GROUP("bfin_display.0", "16bit",  "pinctrl-adi2.0", "ppi2_16bgrp", "ppi2"),

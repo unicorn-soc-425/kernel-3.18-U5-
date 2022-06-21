@@ -22,6 +22,10 @@
 #include <linux/string.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> v4.9.227
 #include <linux/errno.h>
 #include <linux/netdevice.h>
 #include <linux/net.h>
@@ -58,7 +62,11 @@ void pppox_unbind_sock(struct sock *sk)
 {
 	/* Clear connection to ppp device, if attached. */
 
+<<<<<<< HEAD
 	if (sk->sk_state & (PPPOX_BOUND | PPPOX_CONNECTED | PPPOX_ZOMBIE)) {
+=======
+	if (sk->sk_state & (PPPOX_BOUND | PPPOX_CONNECTED)) {
+>>>>>>> v4.9.227
 		ppp_unregister_channel(&pppox_sk(sk)->chan);
 		sk->sk_state = PPPOX_DEAD;
 	}
@@ -103,6 +111,21 @@ int pppox_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 
 EXPORT_SYMBOL(pppox_ioctl);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+int pppox_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
+{
+	if (cmd == PPPOEIOCSFWD32)
+		cmd = PPPOEIOCSFWD;
+
+	return pppox_ioctl(sock, cmd, (unsigned long)compat_ptr(arg));
+}
+
+EXPORT_SYMBOL(pppox_compat_ioctl);
+#endif
+
+>>>>>>> v4.9.227
 static int pppox_create(struct net *net, struct socket *sock, int protocol,
 			int kern)
 {
@@ -113,12 +136,20 @@ static int pppox_create(struct net *net, struct socket *sock, int protocol,
 
 	rc = -EPROTONOSUPPORT;
 	if (!pppox_protos[protocol])
+<<<<<<< HEAD
 		request_module("pppox-proto-%d", protocol);
+=======
+		request_module("net-pf-%d-proto-%d", PF_PPPOX, protocol);
+>>>>>>> v4.9.227
 	if (!pppox_protos[protocol] ||
 	    !try_module_get(pppox_protos[protocol]->owner))
 		goto out;
 
+<<<<<<< HEAD
 	rc = pppox_protos[protocol]->create(net, sock);
+=======
+	rc = pppox_protos[protocol]->create(net, sock, kern);
+>>>>>>> v4.9.227
 
 	module_put(pppox_protos[protocol]->owner);
 out:
@@ -147,3 +178,7 @@ module_exit(pppox_exit);
 MODULE_AUTHOR("Michal Ostrowski <mostrows@speakeasy.net>");
 MODULE_DESCRIPTION("PPP over Ethernet driver (generic socket layer)");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS_NETPROTO(PF_PPPOX);
+>>>>>>> v4.9.227

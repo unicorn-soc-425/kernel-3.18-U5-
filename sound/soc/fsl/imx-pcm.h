@@ -20,6 +20,14 @@
  */
 #define IMX_SSI_DMABUF_SIZE	(64 * 1024)
 
+<<<<<<< HEAD
+=======
+#define IMX_DEFAULT_DMABUF_SIZE	(64 * 1024)
+#define IMX_SAI_DMABUF_SIZE	(64 * 1024)
+#define IMX_SPDIF_DMABUF_SIZE	(64 * 1024)
+#define IMX_ESAI_DMABUF_SIZE	(256 * 1024)
+
+>>>>>>> v4.9.227
 static inline void
 imx_pcm_dma_params_init_data(struct imx_dma_data *dma_data,
 	int dma, enum sdma_peripheral_type peripheral_type)
@@ -39,9 +47,15 @@ struct imx_pcm_fiq_params {
 };
 
 #if IS_ENABLED(CONFIG_SND_SOC_IMX_PCM_DMA)
+<<<<<<< HEAD
 int imx_pcm_dma_init(struct platform_device *pdev);
 #else
 static inline int imx_pcm_dma_init(struct platform_device *pdev)
+=======
+int imx_pcm_dma_init(struct platform_device *pdev, size_t size);
+#else
+static inline int imx_pcm_dma_init(struct platform_device *pdev, size_t size)
+>>>>>>> v4.9.227
 {
 	return -ENODEV;
 }

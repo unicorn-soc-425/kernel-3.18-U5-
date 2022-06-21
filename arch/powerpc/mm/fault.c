@@ -26,24 +26,38 @@
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/highmem.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/extable.h>
+>>>>>>> v4.9.227
 #include <linux/kprobes.h>
 #include <linux/kdebug.h>
 #include <linux/perf_event.h>
 #include <linux/ratelimit.h>
 #include <linux/context_tracking.h>
 #include <linux/hugetlb.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 
 #include <asm/firmware.h>
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <asm/mmu.h>
 #include <asm/mmu_context.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <asm/tlbflush.h>
 #include <asm/siginfo.h>
 #include <asm/debug.h>
 #include <mm/mmu_decl.h>
+=======
+#include <asm/tlbflush.h>
+#include <asm/siginfo.h>
+#include <asm/debug.h>
+>>>>>>> v4.9.227
 
 #include "icswx.h"
 
@@ -206,7 +220,11 @@ static int mm_fault_error(struct pt_regs *regs, unsigned long addr, int fault)
  * The return value is 0 if the fault was handled, or the signal
  * number if this is a kernel fault that can't be handled here.
  */
+<<<<<<< HEAD
 int __kprobes do_page_fault(struct pt_regs *regs, unsigned long address,
+=======
+int do_page_fault(struct pt_regs *regs, unsigned long address,
+>>>>>>> v4.9.227
 			    unsigned long error_code)
 {
 	enum ctx_state prev_state = exception_enter();
@@ -273,15 +291,27 @@ int __kprobes do_page_fault(struct pt_regs *regs, unsigned long address,
 	if (!arch_irq_disabled_regs(regs))
 		local_irq_enable();
 
+<<<<<<< HEAD
 	if (in_atomic() || mm == NULL) {
+=======
+	if (faulthandler_disabled() || mm == NULL) {
+>>>>>>> v4.9.227
 		if (!user_mode(regs)) {
 			rc = SIGSEGV;
 			goto bail;
 		}
+<<<<<<< HEAD
 		/* in_atomic() in user mode is really bad,
 		   as is current->mm == NULL. */
 		printk(KERN_EMERG "Page fault in user mode with "
 		       "in_atomic() = %d mm = %p\n", in_atomic(), mm);
+=======
+		/* faulthandler_disabled() in user mode is really bad,
+		   as is current->mm == NULL. */
+		printk(KERN_EMERG "Page fault in user mode with "
+		       "faulthandler_disabled() = %d mm = %p\n",
+		       faulthandler_disabled(), mm);
+>>>>>>> v4.9.227
 		printk(KERN_EMERG "NIP = %lx  MSR = %lx\n",
 		       regs->nip, regs->msr);
 		die("Weird page fault", regs, SIGSEGV);
@@ -380,12 +410,15 @@ good_area:
 		goto bad_area;
 #endif /* CONFIG_6xx */
 #if defined(CONFIG_8xx)
+<<<<<<< HEAD
 	/* 8xx sometimes need to load a invalid/non-present TLBs.
 	 * These must be invalidated separately as linux mm don't.
 	 */
 	if (error_code & 0x40000000) /* no translation? */
 		_tlbil_va(address, 0, 0, 0);
 
+=======
+>>>>>>> v4.9.227
         /* The MPC8xx seems to always set 0x80000000, which is
          * "undefined".  Of those that can be set, this is the only
          * one which seems bad.
@@ -396,6 +429,7 @@ good_area:
 #endif /* CONFIG_8xx */
 
 	if (is_exec) {
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_STD_MMU
 		/* Protection fault on exec go straight to failure on
 		 * Hash based MMUs as they either don't support per-page
@@ -409,6 +443,8 @@ good_area:
 			goto bad_area;
 #endif /* CONFIG_PPC_STD_MMU */
 
+=======
+>>>>>>> v4.9.227
 		/*
 		 * Allow execution from readable areas if the MMU does not
 		 * provide separate controls over reading and executing.
@@ -423,6 +459,17 @@ good_area:
 		    (cpu_has_feature(CPU_FTR_NOEXECUTE) ||
 		     !(vma->vm_flags & (VM_READ | VM_WRITE))))
 			goto bad_area;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_STD_MMU
+		/*
+		 * protfault should only happen due to us
+		 * mapping a region readonly temporarily. PROT_NONE
+		 * is also covered by the VMA check above.
+		 */
+		WARN_ON_ONCE(error_code & DSISR_PROTFAULT);
+#endif /* CONFIG_PPC_STD_MMU */
+>>>>>>> v4.9.227
 	/* a write */
 	} else if (is_write) {
 		if (!(vma->vm_flags & VM_WRITE))
@@ -430,11 +477,17 @@ good_area:
 		flags |= FAULT_FLAG_WRITE;
 	/* a read */
 	} else {
+<<<<<<< HEAD
 		/* protection fault */
 		if (error_code & 0x08000000)
 			goto bad_area;
 		if (!(vma->vm_flags & (VM_READ | VM_EXEC | VM_WRITE)))
 			goto bad_area;
+=======
+		if (!(vma->vm_flags & (VM_READ | VM_EXEC | VM_WRITE)))
+			goto bad_area;
+		WARN_ON_ONCE(error_code & DSISR_PROTFAULT);
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -442,7 +495,11 @@ good_area:
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> v4.9.227
 	if (unlikely(fault & (VM_FAULT_RETRY|VM_FAULT_ERROR))) {
 		if (fault & VM_FAULT_SIGSEGV)
 			goto bad_area;
@@ -511,8 +568,13 @@ bad_area_nosemaphore:
 bail:
 	exception_exit(prev_state);
 	return rc;
+<<<<<<< HEAD
 
 }
+=======
+}
+NOKPROBE_SYMBOL(do_page_fault);
+>>>>>>> v4.9.227
 
 /*
  * bad_page_fault is called when we have a bad access from the kernel.
@@ -534,6 +596,7 @@ void bad_page_fault(struct pt_regs *regs, unsigned long address, int sig)
 	switch (regs->trap) {
 	case 0x300:
 	case 0x380:
+<<<<<<< HEAD
 		printk(KERN_ALERT "Unable to handle kernel paging request for "
 			"data at address 0x%08lx\n", regs->dar);
 		break;
@@ -545,6 +608,24 @@ void bad_page_fault(struct pt_regs *regs, unsigned long address, int sig)
 	default:
 		printk(KERN_ALERT "Unable to handle kernel paging request for "
 			"unknown fault\n");
+=======
+		pr_alert("BUG: %s at 0x%08lx\n",
+			 regs->dar < PAGE_SIZE ? "Kernel NULL pointer dereference" :
+			 "Unable to handle kernel data access", regs->dar);
+		break;
+	case 0x400:
+	case 0x480:
+		pr_alert("BUG: Unable to handle kernel instruction fetch%s",
+			 regs->nip < PAGE_SIZE ? " (NULL pointer?)\n" : "\n");
+		break;
+	case 0x600:
+		pr_alert("BUG: Unable to handle kernel unaligned access at 0x%08lx\n",
+			 regs->dar);
+		break;
+	default:
+		pr_alert("BUG: Unable to handle unknown paging fault at 0x%08lx\n",
+			 regs->dar);
+>>>>>>> v4.9.227
 		break;
 	}
 	printk(KERN_ALERT "Faulting instruction address: 0x%08lx\n",

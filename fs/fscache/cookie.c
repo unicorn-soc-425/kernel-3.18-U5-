@@ -111,7 +111,11 @@ struct fscache_cookie *__fscache_acquire_cookie(
 
 	/* radix tree insertion won't use the preallocation pool unless it's
 	 * told it may not wait */
+<<<<<<< HEAD
 	INIT_RADIX_TREE(&cookie->stores, GFP_NOFS & ~__GFP_WAIT);
+=======
+	INIT_RADIX_TREE(&cookie->stores, GFP_NOFS & ~__GFP_DIRECT_RECLAIM);
+>>>>>>> v4.9.227
 
 	switch (cookie->def->type) {
 	case FSCACHE_COOKIE_TYPE_INDEX:
@@ -327,7 +331,12 @@ static int fscache_alloc_object(struct fscache_cache *cache,
 
 object_already_extant:
 	ret = -ENOBUFS;
+<<<<<<< HEAD
 	if (fscache_object_is_dead(object)) {
+=======
+	if (fscache_object_is_dying(object) ||
+	    fscache_cache_is_broken(object)) {
+>>>>>>> v4.9.227
 		spin_unlock(&cookie->lock);
 		goto error;
 	}
@@ -541,6 +550,10 @@ void __fscache_disable_cookie(struct fscache_cookie *cookie, bool invalidate)
 		hlist_for_each_entry(object, &cookie->backing_objects, cookie_link) {
 			if (invalidate)
 				set_bit(FSCACHE_OBJECT_RETIRED, &object->flags);
+<<<<<<< HEAD
+=======
+			clear_bit(FSCACHE_OBJECT_PENDING_WRITE, &object->flags);
+>>>>>>> v4.9.227
 			fscache_raise_event(object, FSCACHE_OBJECT_EV_KILL);
 		}
 	} else {
@@ -559,6 +572,13 @@ void __fscache_disable_cookie(struct fscache_cookie *cookie, bool invalidate)
 		wait_on_atomic_t(&cookie->n_active, fscache_wait_atomic_t,
 				 TASK_UNINTERRUPTIBLE);
 
+<<<<<<< HEAD
+=======
+	/* Make sure any pending writes are cancelled. */
+	if (cookie->def->type != FSCACHE_COOKIE_TYPE_INDEX)
+		fscache_invalidate_writes(cookie);
+
+>>>>>>> v4.9.227
 	/* Reset the cookie state if it wasn't relinquished */
 	if (!test_bit(FSCACHE_COOKIE_RELINQUISHED, &cookie->flags)) {
 		atomic_inc(&cookie->n_active);
@@ -671,7 +691,11 @@ int __fscache_check_consistency(struct fscache_cookie *cookie)
 	if (!op)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	fscache_operation_init(op, NULL, NULL);
+=======
+	fscache_operation_init(op, NULL, NULL, NULL);
+>>>>>>> v4.9.227
 	op->flags = FSCACHE_OP_MYTHREAD |
 		(1 << FSCACHE_OP_WAITING) |
 		(1 << FSCACHE_OP_UNUSE_COOKIE);
@@ -695,8 +719,12 @@ int __fscache_check_consistency(struct fscache_cookie *cookie)
 	/* the work queue now carries its own ref on the object */
 	spin_unlock(&cookie->lock);
 
+<<<<<<< HEAD
 	ret = fscache_wait_for_operation_activation(object, op,
 						    NULL, NULL, NULL);
+=======
+	ret = fscache_wait_for_operation_activation(object, op, NULL, NULL);
+>>>>>>> v4.9.227
 	if (ret == 0) {
 		/* ask the cache to honour the operation */
 		ret = object->cache->ops->check_consistency(op);

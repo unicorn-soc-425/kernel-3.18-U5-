@@ -7,6 +7,11 @@
 #ifndef _UAPI_LINUX_NFS_H
 #define _UAPI_LINUX_NFS_H
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+
+>>>>>>> v4.9.227
 #define NFS_PROGRAM	100003
 #define NFS_PORT	2049
 #define NFS_MAXDATA	8192

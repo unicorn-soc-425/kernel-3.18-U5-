@@ -809,7 +809,11 @@ static void wbsd_request(struct mmc_host *mmc, struct mmc_request *mrq)
 			cmd->error = -EINVAL;
 
 			goto done;
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -1914,7 +1918,10 @@ static struct platform_driver wbsd_driver = {
 	.resume		= wbsd_platform_resume,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

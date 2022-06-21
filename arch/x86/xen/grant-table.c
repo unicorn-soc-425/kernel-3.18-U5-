@@ -89,7 +89,11 @@ void arch_gnttab_unmap(void *shared, unsigned long nr_gframes)
 
 static int arch_gnttab_valloc(struct gnttab_vm_area *area, unsigned nr_frames)
 {
+<<<<<<< HEAD
 	area->ptes = kmalloc(sizeof(pte_t *) * nr_frames, GFP_KERNEL);
+=======
+	area->ptes = kmalloc_array(nr_frames, sizeof(*area->ptes), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (area->ptes == NULL)
 		return -ENOMEM;
 
@@ -111,6 +115,7 @@ int arch_gnttab_init(unsigned long nr_shared)
 }
 
 #ifdef CONFIG_XEN_PVH
+<<<<<<< HEAD
 #include <xen/balloon.h>
 #include <xen/events.h>
 #include <linux/slab.h>
@@ -162,12 +167,24 @@ static int __init xlated_setup_gnttab_pages(void)
 	return 0;
 }
 
+=======
+#include <xen/events.h>
+#include <xen/xen-ops.h>
+>>>>>>> v4.9.227
 static int __init xen_pvh_gnttab_setup(void)
 {
 	if (!xen_pvh_domain())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	return xlated_setup_gnttab_pages();
+=======
+	xen_auto_xlat_grant_frames.count = gnttab_max_grant_frames();
+
+	return xen_xlate_map_ballooned_pages(&xen_auto_xlat_grant_frames.pfn,
+					     &xen_auto_xlat_grant_frames.vaddr,
+					     xen_auto_xlat_grant_frames.count);
+>>>>>>> v4.9.227
 }
 /* Call it _before_ __gnttab_init as we need to initialize the
  * xen_auto_xlat_grant_frames first. */

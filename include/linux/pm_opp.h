@@ -19,6 +19,10 @@
 
 struct dev_pm_opp;
 struct device;
+<<<<<<< HEAD
+=======
+struct opp_table;
+>>>>>>> v4.9.227
 
 enum dev_pm_opp_event {
 	OPP_EVENT_ADD, OPP_EVENT_REMOVE, OPP_EVENT_ENABLE, OPP_EVENT_DISABLE,
@@ -62,9 +66,19 @@ int dev_pm_opp_set_supported_hw(struct device *dev, const u32 *versions,
 void dev_pm_opp_put_supported_hw(struct device *dev);
 int dev_pm_opp_set_prop_name(struct device *dev, const char *name);
 void dev_pm_opp_put_prop_name(struct device *dev);
+<<<<<<< HEAD
 int dev_pm_opp_set_regulator(struct device *dev, const char *name);
 void dev_pm_opp_put_regulator(struct device *dev);
 int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq);
+=======
+struct opp_table *dev_pm_opp_set_regulator(struct device *dev, const char *name);
+void dev_pm_opp_put_regulator(struct opp_table *opp_table);
+int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq);
+int dev_pm_opp_set_sharing_cpus(struct device *cpu_dev, const struct cpumask *cpumask);
+int dev_pm_opp_get_sharing_cpus(struct device *cpu_dev, struct cpumask *cpumask);
+void dev_pm_opp_remove_table(struct device *dev);
+void dev_pm_opp_cpumask_remove_table(const struct cpumask *cpumask);
+>>>>>>> v4.9.227
 #else
 static inline unsigned long dev_pm_opp_get_voltage(struct dev_pm_opp *opp)
 {
@@ -109,25 +123,41 @@ static inline struct dev_pm_opp *dev_pm_opp_get_suspend_opp(struct device *dev)
 static inline struct dev_pm_opp *dev_pm_opp_find_freq_exact(struct device *dev,
 					unsigned long freq, bool available)
 {
+<<<<<<< HEAD
 	return ERR_PTR(-EINVAL);
+=======
+	return ERR_PTR(-ENOTSUPP);
+>>>>>>> v4.9.227
 }
 
 static inline struct dev_pm_opp *dev_pm_opp_find_freq_floor(struct device *dev,
 					unsigned long *freq)
 {
+<<<<<<< HEAD
 	return ERR_PTR(-EINVAL);
+=======
+	return ERR_PTR(-ENOTSUPP);
+>>>>>>> v4.9.227
 }
 
 static inline struct dev_pm_opp *dev_pm_opp_find_freq_ceil(struct device *dev,
 					unsigned long *freq)
 {
+<<<<<<< HEAD
 	return ERR_PTR(-EINVAL);
+=======
+	return ERR_PTR(-ENOTSUPP);
+>>>>>>> v4.9.227
 }
 
 static inline int dev_pm_opp_add(struct device *dev, unsigned long freq,
 					unsigned long u_volt)
 {
+<<<<<<< HEAD
 	return -EINVAL;
+=======
+	return -ENOTSUPP;
+>>>>>>> v4.9.227
 }
 
 static inline void dev_pm_opp_remove(struct device *dev, unsigned long freq)
@@ -147,35 +177,77 @@ static inline int dev_pm_opp_disable(struct device *dev, unsigned long freq)
 static inline struct srcu_notifier_head *dev_pm_opp_get_notifier(
 							struct device *dev)
 {
+<<<<<<< HEAD
 	return ERR_PTR(-EINVAL);
+=======
+	return ERR_PTR(-ENOTSUPP);
+>>>>>>> v4.9.227
 }
 
 static inline int dev_pm_opp_set_supported_hw(struct device *dev,
 					      const u32 *versions,
 					      unsigned int count)
 {
+<<<<<<< HEAD
 	return -EINVAL;
+=======
+	return -ENOTSUPP;
+>>>>>>> v4.9.227
 }
 
 static inline void dev_pm_opp_put_supported_hw(struct device *dev) {}
 
 static inline int dev_pm_opp_set_prop_name(struct device *dev, const char *name)
 {
+<<<<<<< HEAD
 	return -EINVAL;
+=======
+	return -ENOTSUPP;
+>>>>>>> v4.9.227
 }
 
 static inline void dev_pm_opp_put_prop_name(struct device *dev) {}
 
+<<<<<<< HEAD
 static inline int dev_pm_opp_set_regulator(struct device *dev, const char *name)
+=======
+static inline struct opp_table *dev_pm_opp_set_regulator(struct device *dev, const char *name)
+{
+	return ERR_PTR(-ENOTSUPP);
+}
+
+static inline void dev_pm_opp_put_regulator(struct opp_table *opp_table) {}
+
+static inline int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
+{
+	return -ENOTSUPP;
+}
+
+static inline int dev_pm_opp_set_sharing_cpus(struct device *cpu_dev, const struct cpumask *cpumask)
+{
+	return -ENOTSUPP;
+}
+
+static inline int dev_pm_opp_get_sharing_cpus(struct device *cpu_dev, struct cpumask *cpumask)
+>>>>>>> v4.9.227
 {
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static inline void dev_pm_opp_put_regulator(struct device *dev) {}
 
 static inline int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
 {
 	return -EINVAL;
+=======
+static inline void dev_pm_opp_remove_table(struct device *dev)
+{
+}
+
+static inline void dev_pm_opp_cpumask_remove_table(const struct cpumask *cpumask)
+{
+>>>>>>> v4.9.227
 }
 
 #endif		/* CONFIG_PM_OPP */
@@ -183,6 +255,7 @@ static inline int dev_pm_opp_set_rate(struct device *dev, unsigned long target_f
 #if defined(CONFIG_PM_OPP) && defined(CONFIG_OF)
 int dev_pm_opp_of_add_table(struct device *dev);
 void dev_pm_opp_of_remove_table(struct device *dev);
+<<<<<<< HEAD
 int dev_pm_opp_of_cpumask_add_table(cpumask_var_t cpumask);
 void dev_pm_opp_of_cpumask_remove_table(cpumask_var_t cpumask);
 int dev_pm_opp_of_get_sharing_cpus(struct device *cpu_dev, cpumask_var_t cpumask);
@@ -191,12 +264,22 @@ int dev_pm_opp_set_sharing_cpus(struct device *cpu_dev, cpumask_var_t cpumask);
 static inline int dev_pm_opp_of_add_table(struct device *dev)
 {
 	return -EINVAL;
+=======
+int dev_pm_opp_of_cpumask_add_table(const struct cpumask *cpumask);
+void dev_pm_opp_of_cpumask_remove_table(const struct cpumask *cpumask);
+int dev_pm_opp_of_get_sharing_cpus(struct device *cpu_dev, struct cpumask *cpumask);
+#else
+static inline int dev_pm_opp_of_add_table(struct device *dev)
+{
+	return -ENOTSUPP;
+>>>>>>> v4.9.227
 }
 
 static inline void dev_pm_opp_of_remove_table(struct device *dev)
 {
 }
 
+<<<<<<< HEAD
 static inline int dev_pm_opp_of_cpumask_add_table(cpumask_var_t cpumask)
 {
 	return -ENOSYS;
@@ -214,6 +297,20 @@ static inline int dev_pm_opp_of_get_sharing_cpus(struct device *cpu_dev, cpumask
 static inline int dev_pm_opp_set_sharing_cpus(struct device *cpu_dev, cpumask_var_t cpumask)
 {
 	return -ENOSYS;
+=======
+static inline int dev_pm_opp_of_cpumask_add_table(const struct cpumask *cpumask)
+{
+	return -ENOTSUPP;
+}
+
+static inline void dev_pm_opp_of_cpumask_remove_table(const struct cpumask *cpumask)
+{
+}
+
+static inline int dev_pm_opp_of_get_sharing_cpus(struct device *cpu_dev, struct cpumask *cpumask)
+{
+	return -ENOTSUPP;
+>>>>>>> v4.9.227
 }
 #endif
 

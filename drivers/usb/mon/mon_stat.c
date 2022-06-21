@@ -28,7 +28,12 @@ static int mon_stat_open(struct inode *inode, struct file *file)
 	struct mon_bus *mbus;
 	struct snap *sp;
 
+<<<<<<< HEAD
 	if ((sp = kmalloc(sizeof(struct snap), GFP_KERNEL)) == NULL)
+=======
+	sp = kmalloc(sizeof(struct snap), GFP_KERNEL);
+	if (sp == NULL)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	mbus = inode->i_private;

@@ -526,6 +526,7 @@ int wm8350_irq_init(struct wm8350 *wm8350, int irq,
 					 handle_edge_irq);
 		irq_set_nested_thread(cur_irq, 1);
 
+<<<<<<< HEAD
 		/* ARM needs us to explicitly flag the IRQ as valid
 		 * and will set them noprobe when we do so. */
 #ifdef CONFIG_ARM
@@ -533,6 +534,9 @@ int wm8350_irq_init(struct wm8350 *wm8350, int irq,
 #else
 		irq_set_noprobe(cur_irq);
 #endif
+=======
+		irq_clear_status_flags(cur_irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> v4.9.227
 	}
 
 	ret = request_threaded_irq(irq, NULL, wm8350_irq, flags,

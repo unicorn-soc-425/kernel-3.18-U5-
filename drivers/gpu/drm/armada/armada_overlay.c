@@ -124,6 +124,10 @@ armada_ovl_plane_update(struct drm_plane *plane, struct drm_crtc *crtc,
 	int ret;
 
 	ret = drm_plane_helper_check_update(plane, crtc, fb, &src, &dest, &clip,
+<<<<<<< HEAD
+=======
+					    DRM_ROTATE_0,
+>>>>>>> v4.9.227
 					    0, INT_MAX, true, false, &visible);
 	if (ret)
 		return ret;
@@ -472,7 +476,11 @@ int armada_overlay_plane_create(struct drm_device *dev, unsigned long crtcs)
 				       &armada_ovl_plane_funcs,
 				       armada_ovl_formats,
 				       ARRAY_SIZE(armada_ovl_formats),
+<<<<<<< HEAD
 				       DRM_PLANE_TYPE_OVERLAY);
+=======
+				       DRM_PLANE_TYPE_OVERLAY, NULL);
+>>>>>>> v4.9.227
 	if (ret) {
 		kfree(dplane);
 		return ret;

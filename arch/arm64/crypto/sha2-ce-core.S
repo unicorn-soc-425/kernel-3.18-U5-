@@ -73,8 +73,13 @@
 	.word		0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 
 	/*
+<<<<<<< HEAD
 	 * void sha2_ce_transform(int blocks, u8 const *src, u32 *state,
 	 *                        u8 *head, long bytes)
+=======
+	 * void sha2_ce_transform(struct sha256_ce_state *sst, u8 const *src,
+	 *			  int blocks)
+>>>>>>> v4.9.227
 	 */
 ENTRY(sha2_ce_transform)
 	/* load round constants */
@@ -85,6 +90,7 @@ ENTRY(sha2_ce_transform)
 	ld1		{v12.4s-v15.4s}, [x8]
 
 	/* load state */
+<<<<<<< HEAD
 	ldp		dga, dgb, [x2]
 
 	/* load partial input (if supplied) */
@@ -97,12 +103,28 @@ ENTRY(sha2_ce_transform)
 	sub		w0, w0, #1
 
 1:
+=======
+	ld1		{dgav.4s, dgbv.4s}, [x0]
+
+	/* load sha256_ce_state::finalize */
+	ldr_l		w4, sha256_ce_offsetof_finalize, x4
+	ldr		w4, [x0, x4]
+
+	/* load input */
+0:	ld1		{v16.4s-v19.4s}, [x1], #64
+	sub		w2, w2, #1
+
+>>>>>>> v4.9.227
 CPU_LE(	rev32		v16.16b, v16.16b	)
 CPU_LE(	rev32		v17.16b, v17.16b	)
 CPU_LE(	rev32		v18.16b, v18.16b	)
 CPU_LE(	rev32		v19.16b, v19.16b	)
 
+<<<<<<< HEAD
 2:	add		t0.4s, v16.4s, v0.4s
+=======
+1:	add		t0.4s, v16.4s, v0.4s
+>>>>>>> v4.9.227
 	mov		dg0v.16b, dgav.16b
 	mov		dg1v.16b, dgbv.16b
 
@@ -131,6 +153,7 @@ CPU_LE(	rev32		v19.16b, v19.16b	)
 	add		dgbv.4s, dgbv.4s, dg1v.4s
 
 	/* handled all input blocks? */
+<<<<<<< HEAD
 	cbnz		w0, 0b
 
 	/*
@@ -140,6 +163,18 @@ CPU_LE(	rev32		v19.16b, v19.16b	)
 	 * handled by the C code.
 	 */
 	cbz		x4, 3f
+=======
+	cbnz		w2, 0b
+
+	/*
+	 * Final block: add padding and total bit count.
+	 * Skip if the input size was not a round multiple of the block size,
+	 * the padding is handled by the C code in that case.
+	 */
+	cbz		x4, 3f
+	ldr_l		w4, sha256_ce_offsetof_count, x4
+	ldr		x4, [x0, x4]
+>>>>>>> v4.9.227
 	movi		v17.2d, #0
 	mov		x8, #0x80000000
 	movi		v18.2d, #0
@@ -148,9 +183,16 @@ CPU_LE(	rev32		v19.16b, v19.16b	)
 	mov		x4, #0
 	mov		v19.d[0], xzr
 	mov		v19.d[1], x7
+<<<<<<< HEAD
 	b		2b
 
 	/* store new state */
 3:	stp		dga, dgb, [x2]
+=======
+	b		1b
+
+	/* store new state */
+3:	st1		{dgav.4s, dgbv.4s}, [x0]
+>>>>>>> v4.9.227
 	ret
 ENDPROC(sha2_ce_transform)

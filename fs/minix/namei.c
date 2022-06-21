@@ -104,9 +104,15 @@ out_fail:
 static int minix_link(struct dentry * old_dentry, struct inode * dir,
 	struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct inode *inode = old_dentry->d_inode;
 
 	inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	struct inode *inode = d_inode(old_dentry);
+
+	inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 	inode_inc_link_count(inode);
 	ihold(inode);
 	return add_nondir(dentry, inode);
@@ -151,7 +157,11 @@ out_dir:
 static int minix_unlink(struct inode * dir, struct dentry *dentry)
 {
 	int err = -ENOENT;
+<<<<<<< HEAD
 	struct inode * inode = dentry->d_inode;
+=======
+	struct inode * inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	struct page * page;
 	struct minix_dir_entry * de;
 
@@ -171,7 +181,11 @@ end_unlink:
 
 static int minix_rmdir(struct inode * dir, struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct inode * inode = dentry->d_inode;
+=======
+	struct inode * inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	int err = -ENOTEMPTY;
 
 	if (minix_empty_dir(inode)) {
@@ -185,16 +199,30 @@ static int minix_rmdir(struct inode * dir, struct dentry *dentry)
 }
 
 static int minix_rename(struct inode * old_dir, struct dentry *old_dentry,
+<<<<<<< HEAD
 			   struct inode * new_dir, struct dentry *new_dentry)
 {
 	struct inode * old_inode = old_dentry->d_inode;
 	struct inode * new_inode = new_dentry->d_inode;
+=======
+			struct inode * new_dir, struct dentry *new_dentry,
+			unsigned int flags)
+{
+	struct inode * old_inode = d_inode(old_dentry);
+	struct inode * new_inode = d_inode(new_dentry);
+>>>>>>> v4.9.227
 	struct page * dir_page = NULL;
 	struct minix_dir_entry * dir_de = NULL;
 	struct page * old_page;
 	struct minix_dir_entry * old_de;
 	int err = -ENOENT;
 
+<<<<<<< HEAD
+=======
+	if (flags & ~RENAME_NOREPLACE)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	old_de = minix_find_entry(old_dentry, &old_page);
 	if (!old_de)
 		goto out;
@@ -219,7 +247,11 @@ static int minix_rename(struct inode * old_dir, struct dentry *old_dentry,
 		if (!new_de)
 			goto out_dir;
 		minix_set_link(new_de, new_page, old_inode);
+<<<<<<< HEAD
 		new_inode->i_ctime = CURRENT_TIME_SEC;
+=======
+		new_inode->i_ctime = current_time(new_inode);
+>>>>>>> v4.9.227
 		if (dir_de)
 			drop_nlink(new_inode);
 		inode_dec_link_count(new_inode);
@@ -243,11 +275,19 @@ static int minix_rename(struct inode * old_dir, struct dentry *old_dentry,
 out_dir:
 	if (dir_de) {
 		kunmap(dir_page);
+<<<<<<< HEAD
 		page_cache_release(dir_page);
 	}
 out_old:
 	kunmap(old_page);
 	page_cache_release(old_page);
+=======
+		put_page(dir_page);
+	}
+out_old:
+	kunmap(old_page);
+	put_page(old_page);
+>>>>>>> v4.9.227
 out:
 	return err;
 }

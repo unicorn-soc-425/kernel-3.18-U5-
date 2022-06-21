@@ -20,6 +20,11 @@
 # -D dir	specify directory containing data files used by script
 #		(default ./arch/powerpc/boot)
 # -W dir	specify working directory for temporary files (default .)
+<<<<<<< HEAD
+=======
+# -z		use gzip (legacy)
+# -Z zsuffix    compression to use (gz, xz or none)
+>>>>>>> v4.9.227
 
 # Stop execution if any command fails
 set -e
@@ -38,7 +43,11 @@ dtb=
 dts=
 cacheit=
 binary=
+<<<<<<< HEAD
 gzip=.gz
+=======
+compression=.gz
+>>>>>>> v4.9.227
 pie=
 format=
 
@@ -59,10 +68,35 @@ tmpdir=.
 usage() {
     echo 'Usage: wrapper [-o output] [-p platform] [-i initrd]' >&2
     echo '       [-d devtree] [-s tree.dts] [-c] [-C cross-prefix]' >&2
+<<<<<<< HEAD
     echo '       [-D datadir] [-W workingdir] [--no-gzip] [vmlinux]' >&2
     exit 1
 }
 
+=======
+    echo '       [-D datadir] [-W workingdir] [-Z (gz|xz|none)]' >&2
+    echo '       [--no-compression] [vmlinux]' >&2
+    exit 1
+}
+
+run_cmd() {
+    if [ "$V" = 1 ]; then
+        $* 2>&1
+    else
+        local msg
+
+        set +e
+        msg=$($* 2>&1)
+
+        if [ $? -ne "0" ]; then
+                echo $msg
+                exit 1
+        fi
+        set -e
+    fi
+}
+
+>>>>>>> v4.9.227
 while [ "$#" -gt 0 ]; do
     case "$1" in
     -o)
@@ -109,8 +143,29 @@ while [ "$#" -gt 0 ]; do
 	[ "$#" -gt 0 ] || usage
 	tmpdir="$1"
 	;;
+<<<<<<< HEAD
     --no-gzip)
         gzip=
+=======
+    -z)
+	compression=.gz
+	;;
+    -Z)
+	shift
+	[ "$#" -gt 0 ] || usage
+        [ "$1" != "gz" -o "$1" != "xz" -o "$1" != "none" ] || usage
+
+	compression=".$1"
+
+        if [ $compression = ".none" ]; then
+                compression=
+        fi
+	;;
+    --no-gzip)
+        # a "feature" of the the wrapper script is that it can be used outside
+        # the kernel tree. So keeping this around for backwards compatibility.
+        compression=
+>>>>>>> v4.9.227
         ;;
     -?)
 	usage
@@ -123,6 +178,10 @@ while [ "$#" -gt 0 ]; do
     shift
 done
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 if [ -n "$dts" ]; then
     if [ ! -r "$dts" -a -r "$object/dts/$dts" ]; then
 	dts="$object/dts/$dts"
@@ -137,13 +196,42 @@ if [ -z "$kernel" ]; then
     kernel=vmlinux
 fi
 
+<<<<<<< HEAD
 elfformat="`${CROSS}objdump -p "$kernel" | grep 'file format' | awk '{print $4}'`"
+=======
+LANG=C elfformat="`${CROSS}objdump -p "$kernel" | grep 'file format' | awk '{print $4}'`"
+>>>>>>> v4.9.227
 case "$elfformat" in
     elf64-powerpcle)	format=elf64lppc	;;
     elf64-powerpc)	format=elf32ppc	;;
     elf32-powerpc)	format=elf32ppc	;;
 esac
 
+<<<<<<< HEAD
+=======
+ld_version()
+{
+    # Poached from scripts/ld-version.sh, but we don't want to call that because
+    # this script (wrapper) is distributed separately from the kernel source.
+    # Extract linker version number from stdin and turn into single number.
+    awk '{
+	gsub(".*\\)", "");
+	gsub(".*version ", "");
+	gsub("-.*", "");
+	split($1,a, ".");
+	print a[1]*100000000 + a[2]*1000000 + a[3]*10000;
+	exit
+    }'
+}
+
+# Do not include PT_INTERP segment when linking pie. Non-pie linking
+# just ignores this option.
+LD_VERSION=$(${CROSS}ld --version | ld_version)
+LD_NO_DL_MIN_VERSION=$(echo 2.26 | ld_version)
+if [ "$LD_VERSION" -ge "$LD_NO_DL_MIN_VERSION" ] ; then
+	nodl="--no-dynamic-linker"
+fi
+>>>>>>> v4.9.227
 
 platformo=$object/"$platform".o
 lds=$object/zImage.lds
@@ -195,7 +283,11 @@ miboot|uboot*)
     ;;
 cuboot*)
     binary=y
+<<<<<<< HEAD
     gzip=
+=======
+    compression=
+>>>>>>> v4.9.227
     case "$platform" in
     *-mpc866ads|*-mpc885ads|*-adder875*|*-ep88xc)
         platformo=$object/cuboot-8xx.o
@@ -226,7 +318,11 @@ cuboot*)
 ps3)
     platformo="$object/ps3-head.o $object/ps3-hvcall.o $object/ps3.o"
     lds=$object/zImage.ps3.lds
+<<<<<<< HEAD
     gzip=
+=======
+    compression=
+>>>>>>> v4.9.227
     ext=bin
     objflags="-O binary --set-section-flags=.bss=contents,alloc,load,data"
     ksection=.kernel:vmlinux.bin
@@ -277,7 +373,11 @@ treeboot-iss4xx-mpic)
     platformo="$object/treeboot-iss4xx.o"
     ;;
 epapr)
+<<<<<<< HEAD
     platformo="$object/epapr.o $object/epapr-wrapper.o"
+=======
+    platformo="$object/pseries-head.o $object/epapr.o $object/epapr-wrapper.o"
+>>>>>>> v4.9.227
     link_address='0x20000000'
     pie=-pie
     ;;
@@ -285,6 +385,7 @@ mvme5100)
     platformo="$object/fixed-head.o $object/mvme5100.o"
     binary=y
     ;;
+<<<<<<< HEAD
 esac
 
 vmz="$tmpdir/`basename \"$kernel\"`.$ext"
@@ -299,16 +400,56 @@ if [ -z "$cacheit" -o ! -f "$vmz$gzip" -o "$vmz$gzip" -ot "$kernel" ]; then
 
     if [ -n "$cacheit" ]; then
 	mv -f "$vmz.$$$gzip" "$vmz$gzip"
+=======
+mvme7100)
+    platformo="$object/motload-head.o $object/mvme7100.o"
+    link_address='0x4000000'
+    binary=y
+    ;;
+esac
+
+vmz="$tmpdir/`basename \"$kernel\"`.$ext"
+
+# Calculate the vmlinux.strip size
+${CROSS}objcopy $objflags "$kernel" "$vmz.$$"
+strip_size=$(stat -c %s $vmz.$$)
+
+if [ -z "$cacheit" -o ! -f "$vmz$compression" -o "$vmz$compression" -ot "$kernel" ]; then
+    # recompress the image if we need to
+    case $compression in
+    .xz)
+        xz --check=crc32 -f -6 "$vmz.$$"
+        ;;
+    .gz)
+        gzip -n -f -9 "$vmz.$$"
+        ;;
+    *)
+        # drop the compression suffix so the stripped vmlinux is used
+        compression=
+	;;
+    esac
+
+    if [ -n "$cacheit" ]; then
+	mv -f "$vmz.$$$compression" "$vmz$compression"
+>>>>>>> v4.9.227
     else
 	vmz="$vmz.$$"
     fi
 else
+<<<<<<< HEAD
     # Calculate the vmlinux.strip size
     ${CROSS}objcopy $objflags "$kernel" "$vmz.$$"
     strip_size=$(stat -c %s $vmz.$$)
     rm -f $vmz.$$
 fi
 
+=======
+    rm -f $vmz.$$
+fi
+
+vmz="$vmz$compression"
+
+>>>>>>> v4.9.227
 if [ "$make_space" = "y" ]; then
 	# Round the size to next higher MB limit
 	round_size=$(((strip_size + 0xfffff) & 0xfff00000))
@@ -324,8 +465,11 @@ if [ "$make_space" = "y" ]; then
 	fi
 fi
 
+<<<<<<< HEAD
 vmz="$vmz$gzip"
 
+=======
+>>>>>>> v4.9.227
 # Extract kernel version information, some platforms want to include
 # it in the image header
 version=`${CROSS}strings "$kernel" | grep '^Linux version [-0-9.]' | \
@@ -395,7 +539,12 @@ if [ "$platform" != "miboot" ]; then
     if [ -n "$link_address" ] ; then
         text_start="-Ttext $link_address"
     fi
+<<<<<<< HEAD
     ${CROSS}ld -m $format -T $lds $text_start $pie -o "$ofile" \
+=======
+#link everything
+    ${CROSS}ld -m $format -T $lds $text_start $pie $nodl -o "$ofile" \
+>>>>>>> v4.9.227
 	$platformo $tmp $object/wrapper.a
     rm $tmp
 fi
@@ -456,12 +605,21 @@ ps3)
 
     ${CROSS}objcopy -O binary "$ofile" "$ofile.bin"
 
+<<<<<<< HEAD
     dd if="$ofile.bin" of="$ofile.bin" conv=notrunc   \
         skip=$overlay_dest seek=$system_reset_kernel  \
         count=$overlay_size bs=1
 
     dd if="$ofile.bin" of="$ofile.bin" conv=notrunc   \
         skip=$system_reset_overlay seek=$overlay_dest \
+=======
+    run_cmd dd if="$ofile.bin" of="$ofile.bin" conv=notrunc   \
+        skip=$overlay_dest seek=$system_reset_kernel          \
+        count=$overlay_size bs=1
+
+    run_cmd dd if="$ofile.bin" of="$ofile.bin" conv=notrunc   \
+        skip=$system_reset_overlay seek=$overlay_dest         \
+>>>>>>> v4.9.227
         count=$overlay_size bs=1
 
     odir="$(dirname "$ofile.bin")"

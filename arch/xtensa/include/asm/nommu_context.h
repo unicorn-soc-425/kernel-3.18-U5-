@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+static inline void init_mmu(void)
+{
+}
+
+>>>>>>> v4.9.227
 static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
 {
 }

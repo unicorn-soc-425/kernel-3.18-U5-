@@ -59,22 +59,39 @@
 
 		power {
 			label = "Power Button";
+<<<<<<< HEAD
 			gpios = <&gpio1 8 0>;
 			linux,code = <116>; /* KEY_POWER */
+=======
+			gpios = <&gpio1 8 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_POWER>;
+>>>>>>> v4.9.227
 		};
 
 		volume-up {
 			label = "Volume Up";
+<<<<<<< HEAD
 			gpios = <&gpio2 14 0>;
 			linux,code = <115>; /* KEY_VOLUMEUP */
 			gpio-key,wakeup;
+=======
+			gpios = <&gpio2 14 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEUP>;
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 
 		volume-down {
 			label = "Volume Down";
+<<<<<<< HEAD
 			gpios = <&gpio2 15 0>;
 			linux,code = <114>; /* KEY_VOLUMEDOWN */
 			gpio-key,wakeup;
+=======
+			gpios = <&gpio2 15 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEDOWN>;
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 	};
 
@@ -130,6 +147,20 @@
 	};
 };
 
+<<<<<<< HEAD
+=======
+&cpu0 {
+	/* CPU rated to 1GHz, not 1.2GHz as per the default settings */
+	operating-points = <
+		/* kHz   uV */
+		166666  850000
+		400000  900000
+		800000  1050000
+		1000000 1200000
+	>;
+};
+
+>>>>>>> v4.9.227
 &esdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_esdhc1>;
@@ -228,10 +259,18 @@
 			>;
 		};
 
+<<<<<<< HEAD
 		pinctrl_i2c1: i2c1grp {
 			fsl,pins = <
 				MX53_PAD_CSI0_DAT8__I2C1_SDA		0xc0000000
 				MX53_PAD_CSI0_DAT9__I2C1_SCL		0xc0000000
+=======
+		/* open drain */
+		pinctrl_i2c1: i2c1grp {
+			fsl,pins = <
+				MX53_PAD_CSI0_DAT8__I2C1_SDA		0x400001ec
+				MX53_PAD_CSI0_DAT9__I2C1_SCL		0x400001ec
+>>>>>>> v4.9.227
 			>;
 		};
 
@@ -295,9 +334,16 @@
 &tve {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_vga_sync>;
+<<<<<<< HEAD
 	fsl,tve-mode = "vga";
 	fsl,hsync-pin = <4>;
 	fsl,vsync-pin = <6>;
+=======
+	ddc-i2c-bus = <&i2c2>;
+	fsl,tve-mode = "vga";
+	fsl,hsync-pin = <7>;	/* IPU DI1 PIN7 via EIM_OE */
+	fsl,vsync-pin = <8>;	/* IPU DI1 PIN8 via EIM_RW */
+>>>>>>> v4.9.227
 	status = "okay";
 };
 

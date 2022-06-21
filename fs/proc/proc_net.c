@@ -21,6 +21,10 @@
 #include <linux/bitops.h>
 #include <linux/mount.h>
 #include <linux/nsproxy.h>
+<<<<<<< HEAD
+=======
+#include <linux/uidgid.h>
+>>>>>>> v4.9.227
 #include <net/net_namespace.h>
 #include <linux/seq_file.h>
 
@@ -142,7 +146,11 @@ static struct dentry *proc_tgid_net_lookup(struct inode *dir,
 static int proc_tgid_net_getattr(struct vfsmount *mnt, struct dentry *dentry,
 		struct kstat *stat)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	struct net *net;
 
 	net = get_proc_task_net(inode);
@@ -179,12 +187,21 @@ static int proc_tgid_net_readdir(struct file *file, struct dir_context *ctx)
 const struct file_operations proc_net_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.iterate	= proc_tgid_net_readdir,
+=======
+	.iterate_shared	= proc_tgid_net_readdir,
+>>>>>>> v4.9.227
 };
 
 static __net_init int proc_net_ns_init(struct net *net)
 {
 	struct proc_dir_entry *netd, *net_statd;
+<<<<<<< HEAD
+=======
+	kuid_t uid;
+	kgid_t gid;
+>>>>>>> v4.9.227
 	int err;
 
 	err = -ENOMEM;
@@ -192,12 +209,29 @@ static __net_init int proc_net_ns_init(struct net *net)
 	if (!netd)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	netd->subdir = RB_ROOT;
+>>>>>>> v4.9.227
 	netd->data = net;
 	netd->nlink = 2;
 	netd->namelen = 3;
 	netd->parent = &proc_root;
 	memcpy(netd->name, "net", 4);
 
+<<<<<<< HEAD
+=======
+	uid = make_kuid(net->user_ns, 0);
+	if (!uid_valid(uid))
+		uid = netd->uid;
+
+	gid = make_kgid(net->user_ns, 0);
+	if (!gid_valid(gid))
+		gid = netd->gid;
+
+	proc_set_user(netd, uid, gid);
+
+>>>>>>> v4.9.227
 	err = -EEXIST;
 	net_statd = proc_net_mkdir(net, "stat", netd);
 	if (!net_statd)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************
  * This file is part of the Emulex RoCE Device Driver for          *
  * RoCE (RDMA over Converged Ethernet) adapters.                   *
@@ -16,6 +17,41 @@
  * TO BE LEGALLY INVALID.  See the GNU General Public License for  *
  * more details, a copy of which can be found in the file COPYING  *
  * included with this package.                                     *
+=======
+/* This file is part of the Emulex RoCE Device Driver for
+ * RoCE (RDMA over Converged Ethernet) adapters.
+ * Copyright (C) 2012-2015 Emulex. All rights reserved.
+ * EMULEX and SLI are trademarks of Emulex.
+ * www.emulex.com
+ *
+ * This software is available to you under a choice of one of two licenses.
+ * You may choose to be licensed under the terms of the GNU General Public
+ * License (GPL) Version 2, available from the file COPYING in the main
+ * directory of this source tree, or the BSD license below:
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in
+ *   the documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+>>>>>>> v4.9.227
  *
  * Contact Information:
  * linux-drivers@emulex.com
@@ -23,7 +59,11 @@
  * Emulex
  * 3333 Susan Street
  * Costa Mesa, CA 92626
+<<<<<<< HEAD
  *******************************************************************/
+=======
+ */
+>>>>>>> v4.9.227
 
 #ifndef __OCRDMA_H__
 #define __OCRDMA_H__
@@ -40,7 +80,11 @@
 #include <be_roce.h>
 #include "ocrdma_sli.h"
 
+<<<<<<< HEAD
 #define OCRDMA_ROCE_DRV_VERSION "10.2.287.0u"
+=======
+#define OCRDMA_ROCE_DRV_VERSION "11.0.0.0"
+>>>>>>> v4.9.227
 
 #define OCRDMA_ROCE_DRV_DESC "Emulex OneConnect RoCE Driver"
 #define OCRDMA_NODE_DESC "Emulex OneConnect RoCE HCA"
@@ -55,12 +99,25 @@
 #define OCRDMA_UVERBS(CMD_NAME) (1ull << IB_USER_VERBS_CMD_##CMD_NAME)
 
 #define convert_to_64bit(lo, hi) ((u64)hi << 32 | (u64)lo)
+<<<<<<< HEAD
+=======
+#define EQ_INTR_PER_SEC_THRSH_HI 150000
+#define EQ_INTR_PER_SEC_THRSH_LOW 100000
+#define EQ_AIC_MAX_EQD 20
+#define EQ_AIC_MIN_EQD 0
+
+void ocrdma_eqd_set_task(struct work_struct *work);
+>>>>>>> v4.9.227
 
 struct ocrdma_dev_attr {
 	u8 fw_ver[32];
 	u32 vendor_id;
 	u32 device_id;
 	u16 max_pd;
+<<<<<<< HEAD
+=======
+	u16 max_dpp_pds;
+>>>>>>> v4.9.227
 	u16 max_cq;
 	u16 max_cqe;
 	u16 max_qp;
@@ -92,6 +149,10 @@ struct ocrdma_dev_attr {
 	u8 local_ca_ack_delay;
 	u8 ird;
 	u8 num_ird_pages;
+<<<<<<< HEAD
+=======
+	u8 udp_encap;
+>>>>>>> v4.9.227
 };
 
 struct ocrdma_dma_mem {
@@ -116,12 +177,25 @@ struct ocrdma_queue_info {
 	bool created;
 };
 
+<<<<<<< HEAD
+=======
+struct ocrdma_aic_obj {         /* Adaptive interrupt coalescing (AIC) info */
+	u32 prev_eqd;
+	u64 eq_intr_cnt;
+	u64 prev_eq_intr_cnt;
+};
+
+>>>>>>> v4.9.227
 struct ocrdma_eq {
 	struct ocrdma_queue_info q;
 	u32 vector;
 	int cq_cnt;
 	struct ocrdma_dev *dev;
 	char irq_name[32];
+<<<<<<< HEAD
+=======
+	struct ocrdma_aic_obj aic_obj;
+>>>>>>> v4.9.227
 };
 
 struct ocrdma_mq {
@@ -164,6 +238,11 @@ struct ocrdma_mr {
 	struct ib_mr ibmr;
 	struct ib_umem *umem;
 	struct ocrdma_hw_mr hwmr;
+<<<<<<< HEAD
+=======
+	u64 *pages;
+	u32 npages;
+>>>>>>> v4.9.227
 };
 
 struct ocrdma_stats {
@@ -171,6 +250,24 @@ struct ocrdma_stats {
 	struct ocrdma_dev *dev;
 };
 
+<<<<<<< HEAD
+=======
+struct ocrdma_pd_resource_mgr {
+	u32 pd_norm_start;
+	u16 pd_norm_count;
+	u16 pd_norm_thrsh;
+	u16 max_normal_pd;
+	u32 pd_dpp_start;
+	u16 pd_dpp_count;
+	u16 pd_dpp_thrsh;
+	u16 max_dpp_pd;
+	u16 dpp_page_index;
+	unsigned long *pd_norm_bitmap;
+	unsigned long *pd_dpp_bitmap;
+	bool pd_prealloc_valid;
+};
+
+>>>>>>> v4.9.227
 struct stats_mem {
 	struct ocrdma_mqe mqe;
 	void *va;
@@ -186,6 +283,13 @@ struct phy_info {
 	u16 interface_type;
 };
 
+<<<<<<< HEAD
+=======
+enum ocrdma_flags {
+	OCRDMA_FLAGS_LINK_STATUS_INIT = 0x01
+};
+
+>>>>>>> v4.9.227
 struct ocrdma_dev {
 	struct ib_device ibdev;
 	struct ocrdma_dev_attr attr;
@@ -198,10 +302,17 @@ struct ocrdma_dev {
 
 	struct ocrdma_eq *eq_tbl;
 	int eq_cnt;
+<<<<<<< HEAD
 	u16 base_eqid;
 	u16 max_eq;
 
 	union ib_gid *sgid_tbl;
+=======
+	struct delayed_work eqd_work;
+	u16 base_eqid;
+	u16 max_eq;
+
+>>>>>>> v4.9.227
 	/* provided synchronization to sgid table for
 	 * updating gid entries triggered by notifier.
 	 */
@@ -234,7 +345,10 @@ struct ocrdma_dev {
 	u32 hba_port_num;
 
 	struct list_head entry;
+<<<<<<< HEAD
 	struct rcu_head rcu;
+=======
+>>>>>>> v4.9.227
 	int id;
 	u64 *stag_arr;
 	u8 sl; /* service level */
@@ -242,6 +356,10 @@ struct ocrdma_dev {
 	atomic_t update_sl;
 	u16 pvid;
 	u32 asic_id;
+<<<<<<< HEAD
+=======
+	u32 flags;
+>>>>>>> v4.9.227
 
 	ulong last_stats_time;
 	struct mutex stats_lock; /* provide synch for debugfs operations */
@@ -255,7 +373,16 @@ struct ocrdma_dev {
 	struct ocrdma_stats rx_qp_err_stats;
 	struct ocrdma_stats tx_dbg_stats;
 	struct ocrdma_stats rx_dbg_stats;
+<<<<<<< HEAD
 	struct dentry *dir;
+=======
+	struct ocrdma_stats driver_stats;
+	struct ocrdma_stats reset_stats;
+	struct dentry *dir;
+	atomic_t async_err_stats[OCRDMA_MAX_ASYNC_ERRORS];
+	atomic_t cqe_err_stats[OCRDMA_MAX_CQE_ERR];
+	struct ocrdma_pd_resource_mgr *pd_mgr;
+>>>>>>> v4.9.227
 };
 
 struct ocrdma_cq {
@@ -268,9 +395,12 @@ struct ocrdma_cq {
 			 */
 	u32 max_hw_cqe;
 	bool phase_change;
+<<<<<<< HEAD
 	bool deferred_arm, deferred_sol;
 	bool first_arm;
 
+=======
+>>>>>>> v4.9.227
 	spinlock_t cq_lock ____cacheline_aligned; /* provide synchronization
 						   * to cq polling
 						   */
@@ -304,6 +434,10 @@ struct ocrdma_ah {
 	struct ocrdma_av *av;
 	u16 sgid_index;
 	u32 id;
+<<<<<<< HEAD
+=======
+	u8 hdr_type;
+>>>>>>> v4.9.227
 };
 
 struct ocrdma_qp_hwq_info {
@@ -335,7 +469,10 @@ struct ocrdma_srq {
 
 struct ocrdma_qp {
 	struct ib_qp ibqp;
+<<<<<<< HEAD
 	struct ocrdma_dev *dev;
+=======
+>>>>>>> v4.9.227
 
 	u8 __iomem *sq_db;
 	struct ocrdma_qp_hwq_info sq;
@@ -481,6 +618,11 @@ static inline int ocrdma_resolve_dmac(struct ocrdma_dev *dev,
 	memcpy(&in6, ah_attr->grh.dgid.raw, sizeof(in6));
 	if (rdma_is_multicast_addr(&in6))
 		rdma_get_mcast_mac(&in6, mac_addr);
+<<<<<<< HEAD
+=======
+	else if (rdma_link_local_addr(&in6))
+		rdma_get_ll_mac(&in6, mac_addr);
+>>>>>>> v4.9.227
 	else
 		memcpy(mac_addr, ah_attr->dmac, ETH_ALEN);
 	return 0;
@@ -540,4 +682,18 @@ static inline u8 ocrdma_is_enabled_and_synced(u32 state)
 		(state & OCRDMA_STATE_FLAG_SYNC);
 }
 
+<<<<<<< HEAD
+=======
+static inline u8 ocrdma_get_ae_link_state(u32 ae_state)
+{
+	return ((ae_state & OCRDMA_AE_LSC_LS_MASK) >> OCRDMA_AE_LSC_LS_SHIFT);
+}
+
+static inline bool ocrdma_is_udp_encap_supported(struct ocrdma_dev *dev)
+{
+	return (dev->attr.udp_encap & OCRDMA_L3_TYPE_IPV4) ||
+	       (dev->attr.udp_encap & OCRDMA_L3_TYPE_IPV6);
+}
+
+>>>>>>> v4.9.227
 #endif

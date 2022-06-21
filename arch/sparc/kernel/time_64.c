@@ -28,7 +28,10 @@
 #include <linux/cpufreq.h>
 #include <linux/percpu.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
 #include <linux/rtc.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/rtc/m48t59.h>
 #include <linux/kernel_stat.h>
 #include <linux/clockchips.h>
@@ -394,6 +397,7 @@ static struct sparc64_tick_ops hbtick_operations __read_mostly = {
 
 static unsigned long timer_ticks_per_nsec_quotient __read_mostly;
 
+<<<<<<< HEAD
 int update_persistent_clock(struct timespec now)
 {
 	struct rtc_device *rtc = rtc_class_open("rtc0");
@@ -407,6 +411,8 @@ int update_persistent_clock(struct timespec now)
 	return err;
 }
 
+=======
+>>>>>>> v4.9.227
 unsigned long cmos_regs;
 EXPORT_SYMBOL(cmos_regs);
 
@@ -466,7 +472,10 @@ static struct platform_driver rtc_driver = {
 	.probe		= rtc_probe,
 	.driver = {
 		.name = "rtc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = rtc_match,
 	},
 };
@@ -499,7 +508,10 @@ static struct platform_driver bq4802_driver = {
 	.probe		= bq4802_probe,
 	.driver = {
 		.name = "bq4802",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = bq4802_match,
 	},
 };
@@ -563,7 +575,10 @@ static struct platform_driver mostek_driver = {
 	.probe		= mostek_probe,
 	.driver = {
 		.name = "mostek",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = mostek_match,
 	},
 };
@@ -691,6 +706,7 @@ static int sparc64_next_event(unsigned long delta,
 	return tick_ops->add_compare(delta) ? -ETIME : 0;
 }
 
+<<<<<<< HEAD
 static void sparc64_timer_setup(enum clock_event_mode mode,
 				struct clock_event_device *evt)
 {
@@ -717,6 +733,21 @@ static struct clock_event_device sparc64_clockevent = {
 	.rating		= 100,
 	.shift		= 30,
 	.irq		= -1,
+=======
+static int sparc64_timer_shutdown(struct clock_event_device *evt)
+{
+	tick_ops->disable_irq();
+	return 0;
+}
+
+static struct clock_event_device sparc64_clockevent = {
+	.features		= CLOCK_EVT_FEAT_ONESHOT,
+	.set_state_shutdown	= sparc64_timer_shutdown,
+	.set_next_event		= sparc64_next_event,
+	.rating			= 100,
+	.shift			= 30,
+	.irq			= -1,
+>>>>>>> v4.9.227
 };
 static DEFINE_PER_CPU(struct clock_event_device, sparc64_events);
 

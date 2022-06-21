@@ -68,7 +68,11 @@ DECLARE_PCI_FIXUP_HEADER(0x1033, 0x0035, quirk_ppc_currituck_usb_fixup);
 #define AVR_PWRCTL_RESET (0x02)
 
 static struct i2c_client *avr_i2c_client;
+<<<<<<< HEAD
 static void avr_halt_system(int pwrctl_flags)
+=======
+static void __noreturn avr_halt_system(int pwrctl_flags)
+>>>>>>> v4.9.227
 {
 	/* Request the AVR to reset the system */
 	i2c_smbus_write_byte_data(avr_i2c_client,
@@ -84,7 +88,11 @@ static void avr_power_off_system(void)
 	avr_halt_system(AVR_PWRCTL_PWROFF);
 }
 
+<<<<<<< HEAD
 static void avr_reset_system(char *cmd)
+=======
+static void __noreturn avr_reset_system(char *cmd)
+>>>>>>> v4.9.227
 {
 	avr_halt_system(AVR_PWRCTL_RESET);
 }
@@ -94,7 +102,11 @@ static int avr_probe(struct i2c_client *client,
 {
 	avr_i2c_client = client;
 	ppc_md.restart = avr_reset_system;
+<<<<<<< HEAD
 	ppc_md.power_off = avr_power_off_system;
+=======
+	pm_power_off = avr_power_off_system;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -275,12 +287,19 @@ static void ppc47x_pci_irq_fixup(struct pci_dev *dev)
  */
 static int __init ppc47x_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (of_flat_dt_is_compatible(root, "ibm,akebono"))
 		return 1;
 
 	if (of_flat_dt_is_compatible(root, "ibm,currituck")) {
+=======
+	if (of_machine_is_compatible("ibm,akebono"))
+		return 1;
+
+	if (of_machine_is_compatible("ibm,currituck")) {
+>>>>>>> v4.9.227
 		ppc_md.pci_irq_fixup = ppc47x_pci_irq_fixup;
 		return 1;
 	}

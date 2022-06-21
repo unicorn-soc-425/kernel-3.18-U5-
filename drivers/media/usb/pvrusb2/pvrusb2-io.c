@@ -473,7 +473,11 @@ static void buffer_complete(struct urb *urb)
 	}
 	spin_unlock_irqrestore(&sp->list_lock,irq_flags);
 	pvr2_buffer_set_ready(bp);
+<<<<<<< HEAD
 	if (sp && sp->callback_func) {
+=======
+	if (sp->callback_func) {
+>>>>>>> v4.9.227
 		sp->callback_func(sp->callback_data);
 	}
 }
@@ -514,12 +518,22 @@ void pvr2_stream_set_callback(struct pvr2_stream *sp,
 			      void *data)
 {
 	unsigned long irq_flags;
+<<<<<<< HEAD
 	mutex_lock(&sp->mutex); do {
+=======
+	mutex_lock(&sp->mutex);
+	do {
+>>>>>>> v4.9.227
 		spin_lock_irqsave(&sp->list_lock,irq_flags);
 		sp->callback_data = data;
 		sp->callback_func = func;
 		spin_unlock_irqrestore(&sp->list_lock,irq_flags);
+<<<<<<< HEAD
 	} while(0); mutex_unlock(&sp->mutex);
+=======
+	} while(0);
+	mutex_unlock(&sp->mutex);
+>>>>>>> v4.9.227
 }
 
 void pvr2_stream_get_stats(struct pvr2_stream *sp,
@@ -554,10 +568,19 @@ int pvr2_stream_set_buffer_count(struct pvr2_stream *sp,unsigned int cnt)
 {
 	int ret;
 	if (sp->buffer_target_count == cnt) return 0;
+<<<<<<< HEAD
 	mutex_lock(&sp->mutex); do {
 		sp->buffer_target_count = cnt;
 		ret = pvr2_stream_achieve_buffer_count(sp);
 	} while(0); mutex_unlock(&sp->mutex);
+=======
+	mutex_lock(&sp->mutex);
+	do {
+		sp->buffer_target_count = cnt;
+		ret = pvr2_stream_achieve_buffer_count(sp);
+	} while(0);
+	mutex_unlock(&sp->mutex);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -590,7 +613,12 @@ int pvr2_stream_get_ready_count(struct pvr2_stream *sp)
 void pvr2_stream_kill(struct pvr2_stream *sp)
 {
 	struct pvr2_buffer *bp;
+<<<<<<< HEAD
 	mutex_lock(&sp->mutex); do {
+=======
+	mutex_lock(&sp->mutex);
+	do {
+>>>>>>> v4.9.227
 		pvr2_stream_internal_flush(sp);
 		while ((bp = pvr2_stream_get_ready_buffer(sp)) != NULL) {
 			pvr2_buffer_set_idle(bp);
@@ -598,7 +626,12 @@ void pvr2_stream_kill(struct pvr2_stream *sp)
 		if (sp->buffer_total_count != sp->buffer_target_count) {
 			pvr2_stream_achieve_buffer_count(sp);
 		}
+<<<<<<< HEAD
 	} while(0); mutex_unlock(&sp->mutex);
+=======
+	} while(0);
+	mutex_unlock(&sp->mutex);
+>>>>>>> v4.9.227
 }
 
 int pvr2_buffer_queue(struct pvr2_buffer *bp)
@@ -612,7 +645,12 @@ int pvr2_buffer_queue(struct pvr2_buffer *bp)
 	struct pvr2_stream *sp;
 	if (!bp) return -EINVAL;
 	sp = bp->stream;
+<<<<<<< HEAD
 	mutex_lock(&sp->mutex); do {
+=======
+	mutex_lock(&sp->mutex);
+	do {
+>>>>>>> v4.9.227
 		pvr2_buffer_wipe(bp);
 		if (!sp->dev) {
 			ret = -EIO;
@@ -636,7 +674,12 @@ int pvr2_buffer_queue(struct pvr2_buffer *bp)
 				  buffer_complete,
 				  bp);
 		usb_submit_urb(bp->purb,GFP_KERNEL);
+<<<<<<< HEAD
 	} while(0); mutex_unlock(&sp->mutex);
+=======
+	} while(0);
+	mutex_unlock(&sp->mutex);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -647,7 +690,12 @@ int pvr2_buffer_set_buffer(struct pvr2_buffer *bp,void *ptr,unsigned int cnt)
 	struct pvr2_stream *sp;
 	if (!bp) return -EINVAL;
 	sp = bp->stream;
+<<<<<<< HEAD
 	mutex_lock(&sp->mutex); do {
+=======
+	mutex_lock(&sp->mutex);
+	do {
+>>>>>>> v4.9.227
 		spin_lock_irqsave(&sp->list_lock,irq_flags);
 		if (bp->state != pvr2_buffer_state_idle) {
 			ret = -EPERM;
@@ -664,7 +712,12 @@ int pvr2_buffer_set_buffer(struct pvr2_buffer *bp,void *ptr,unsigned int cnt)
 				   bp->stream->i_bcount,bp->stream->i_count);
 		}
 		spin_unlock_irqrestore(&sp->list_lock,irq_flags);
+<<<<<<< HEAD
 	} while(0); mutex_unlock(&sp->mutex);
+=======
+	} while(0);
+	mutex_unlock(&sp->mutex);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -682,6 +735,7 @@ int pvr2_buffer_get_id(struct pvr2_buffer *bp)
 {
 	return bp->id;
 }
+<<<<<<< HEAD
 
 
 /*
@@ -693,3 +747,5 @@ int pvr2_buffer_get_id(struct pvr2_buffer *bp)
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

@@ -22,10 +22,18 @@ static void tcp_scalable_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 	if (!tcp_is_cwnd_limited(sk))
 		return;
 
+<<<<<<< HEAD
 	if (tp->snd_cwnd <= tp->snd_ssthresh)
 		tcp_slow_start(tp, acked);
 	else
 		tcp_cong_avoid_ai(tp, min(tp->snd_cwnd, TCP_SCALABLE_AI_CNT));
+=======
+	if (tcp_in_slow_start(tp))
+		tcp_slow_start(tp, acked);
+	else
+		tcp_cong_avoid_ai(tp, min(tp->snd_cwnd, TCP_SCALABLE_AI_CNT),
+				  1);
+>>>>>>> v4.9.227
 }
 
 static u32 tcp_scalable_ssthresh(struct sock *sk)

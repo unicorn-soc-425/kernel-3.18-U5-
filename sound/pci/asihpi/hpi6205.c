@@ -1,7 +1,11 @@
 /******************************************************************************
 
     AudioScience HPI driver
+<<<<<<< HEAD
     Copyright (C) 1997-2011  AudioScience Inc. <support@audioscience.com>
+=======
+    Copyright (C) 1997-2014  AudioScience Inc. <support@audioscience.com>
+>>>>>>> v4.9.227
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of version 2 of the GNU General Public License as
@@ -163,6 +167,12 @@ static u16 create_adapter_obj(struct hpi_adapter_obj *pao,
 
 static void delete_adapter_obj(struct hpi_adapter_obj *pao);
 
+<<<<<<< HEAD
+=======
+static int adapter_irq_query_and_clear(struct hpi_adapter_obj *pao,
+	u32 message);
+
+>>>>>>> v4.9.227
 static void outstream_host_buffer_allocate(struct hpi_adapter_obj *pao,
 	struct hpi_message *phm, struct hpi_response *phr);
 
@@ -283,7 +293,10 @@ static void adapter_message(struct hpi_adapter_obj *pao,
 	case HPI_ADAPTER_DELETE:
 		adapter_delete(pao, phm, phr);
 		break;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	default:
 		hw_message(pao, phm, phr);
 		break;
@@ -673,6 +686,15 @@ static u16 create_adapter_obj(struct hpi_adapter_obj *pao,
 
 	HPI_DEBUG_LOG(INFO, "bootload DSP OK\n");
 
+<<<<<<< HEAD
+=======
+	pao->irq_query_and_clear = adapter_irq_query_and_clear;
+	pao->instream_host_buffer_status =
+		phw->p_interface_buffer->instream_host_buffer_status;
+	pao->outstream_host_buffer_status =
+		phw->p_interface_buffer->outstream_host_buffer_status;
+
+>>>>>>> v4.9.227
 	return hpi_add_adapter(pao);
 }
 
@@ -713,6 +735,24 @@ static void delete_adapter_obj(struct hpi_adapter_obj *pao)
 
 /*****************************************************************************/
 /* Adapter functions */
+<<<<<<< HEAD
+=======
+static int adapter_irq_query_and_clear(struct hpi_adapter_obj *pao,
+	u32 message)
+{
+	struct hpi_hw_obj *phw = pao->priv;
+	u32 hsr = 0;
+
+	hsr = ioread32(phw->prHSR);
+	if (hsr & C6205_HSR_INTSRC) {
+		/* reset the interrupt from the DSP */
+		iowrite32(C6205_HSR_INTSRC, phw->prHSR);
+		return HPI_IRQ_MIXER;
+	}
+
+	return HPI_IRQ_NONE;
+}
+>>>>>>> v4.9.227
 
 /*****************************************************************************/
 /* OutStream Host buffer functions */
@@ -1331,6 +1371,7 @@ static u16 adapter_boot_load_dsp(struct hpi_adapter_obj *pao,
 	if (boot_code_id[1] != 0) {
 		/* DSP 1 is a C6713 */
 		/* CLKX0 <- '1' release the C6205 bootmode pulldowns */
+<<<<<<< HEAD
 		boot_loader_write_mem32(pao, 0, (0x018C0024L), 0x00002202);
 		hpios_delay_micro_seconds(100);
 		/* Reset the 6713 #1 - revB */
@@ -1342,6 +1383,23 @@ static u16 adapter_boot_load_dsp(struct hpi_adapter_obj *pao,
 		hpios_delay_micro_seconds(100);
 		/* Release C6713 from reset - revB */
 		boot_loader_write_mem32(pao, 0, C6205_BAR0_TIMER1_CTL, 4);
+=======
+		boot_loader_write_mem32(pao, 0, 0x018C0024, 0x00002202);
+		hpios_delay_micro_seconds(100);
+		/* Reset the 6713 #1 - revB */
+		boot_loader_write_mem32(pao, 0, C6205_BAR0_TIMER1_CTL, 0);
+		/* value of bit 3 is unknown after DSP reset, other bits shoudl be 0 */
+		if (0 != (boot_loader_read_mem32(pao, 0,
+					(C6205_BAR0_TIMER1_CTL)) & ~8))
+			return HPI6205_ERROR_6205_REG;
+		hpios_delay_micro_seconds(100);
+
+		/* Release C6713 from reset - revB */
+		boot_loader_write_mem32(pao, 0, C6205_BAR0_TIMER1_CTL, 4);
+		if (4 != (boot_loader_read_mem32(pao, 0,
+					(C6205_BAR0_TIMER1_CTL)) & ~8))
+			return HPI6205_ERROR_6205_REG;
+>>>>>>> v4.9.227
 		hpios_delay_micro_seconds(100);
 	}
 
@@ -2089,7 +2147,11 @@ static u16 message_response_sequence(struct hpi_adapter_obj *pao,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	/* Assume buffer of type struct bus_master_interface
+=======
+	/* Assume buffer of type struct bus_master_interface_62
+>>>>>>> v4.9.227
 	   is allocated "noncacheable" */
 
 	if (!wait_dsp_ack(phw, H620_HIF_IDLE, HPI6205_TIMEOUT)) {

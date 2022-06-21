@@ -20,6 +20,10 @@
  */
 
 #include <asm/unaligned.h>
+<<<<<<< HEAD
+=======
+#include <asm/early_ioremap.h>
+>>>>>>> v4.9.227
 
 /* We don't use IO slowdowns on the ia64, but.. */
 #define __SLOW_DOWN_IO	do { } while (0)
@@ -393,6 +397,13 @@ __writeq (unsigned long val, volatile void __iomem *addr)
 #define writew(v,a)	__writew((v), (a))
 #define writel(v,a)	__writel((v), (a))
 #define writeq(v,a)	__writeq((v), (a))
+<<<<<<< HEAD
+=======
+#define writeb_relaxed(v,a)	__writeb((v), (a))
+#define writew_relaxed(v,a)	__writew((v), (a))
+#define writel_relaxed(v,a)	__writel((v), (a))
+#define writeq_relaxed(v,a)	__writeq((v), (a))
+>>>>>>> v4.9.227
 #define __raw_writeb	writeb
 #define __raw_writew	writew
 #define __raw_writel	writel
@@ -423,14 +434,22 @@ __writeq (unsigned long val, volatile void __iomem *addr)
 extern void __iomem * ioremap(unsigned long offset, unsigned long size);
 extern void __iomem * ioremap_nocache (unsigned long offset, unsigned long size);
 extern void iounmap (volatile void __iomem *addr);
+<<<<<<< HEAD
 extern void __iomem * early_ioremap (unsigned long phys_addr, unsigned long size);
 #define early_memremap(phys_addr, size)        early_ioremap(phys_addr, size)
 extern void early_iounmap (volatile void __iomem *addr, unsigned long size);
 #define early_memunmap(addr, size)             early_iounmap(addr, size)
+=======
+>>>>>>> v4.9.227
 static inline void __iomem * ioremap_cache (unsigned long phys_addr, unsigned long size)
 {
 	return ioremap(phys_addr, size);
 }
+<<<<<<< HEAD
+=======
+#define ioremap_cache ioremap_cache
+#define ioremap_uc ioremap_nocache
+>>>>>>> v4.9.227
 
 
 /*

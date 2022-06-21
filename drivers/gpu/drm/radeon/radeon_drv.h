@@ -119,6 +119,7 @@
 long radeon_drm_ioctl(struct file *filp,
 		      unsigned int cmd, unsigned long arg);
 
+<<<<<<< HEAD
 /* The rest of the file is DEPRECATED! */
 #ifdef CONFIG_DRM_RADEON_UMS
 
@@ -2167,4 +2168,6 @@ extern void radeon_commit_ring(drm_radeon_private_t *dev_priv);
 
 #endif				/* CONFIG_DRM_RADEON_UMS */
 
+=======
+>>>>>>> v4.9.227
 #endif				/* __RADEON_DRV_H__ */

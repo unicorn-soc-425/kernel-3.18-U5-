@@ -27,9 +27,12 @@
 
 #include <asm/sections.h>
 
+<<<<<<< HEAD
 #include <linux/sec_debug.h>
 #include <linux/sec_debug_summary.h>
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_KALLSYMS_ALL
 #define all_var 1
 #else
@@ -41,6 +44,10 @@
  * during the second link stage.
  */
 extern const unsigned long kallsyms_addresses[] __weak;
+<<<<<<< HEAD
+=======
+extern const int kallsyms_offsets[] __weak;
+>>>>>>> v4.9.227
 extern const u8 kallsyms_names[] __weak;
 
 /*
@@ -50,11 +57,18 @@ extern const u8 kallsyms_names[] __weak;
 extern const unsigned long kallsyms_num_syms
 __attribute__((weak, section(".rodata")));
 
+<<<<<<< HEAD
+=======
+extern const unsigned long kallsyms_relative_base
+__attribute__((weak, section(".rodata")));
+
+>>>>>>> v4.9.227
 extern const u8 kallsyms_token_table[] __weak;
 extern const u16 kallsyms_token_index[] __weak;
 
 extern const unsigned long kallsyms_markers[] __weak;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG_SUMMARY
 void sec_debug_summary_set_kallsyms_info(
 		struct sec_debug_summary_data_apss *apss)
@@ -77,6 +91,8 @@ void sec_debug_summary_set_kallsyms_info(
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 static inline int is_kernel_inittext(unsigned long addr)
 {
 	if (addr >= (unsigned long)_sinittext
@@ -201,6 +217,26 @@ static unsigned int get_symbol_offset(unsigned long pos)
 	return name - kallsyms_names;
 }
 
+<<<<<<< HEAD
+=======
+static unsigned long kallsyms_sym_address(int idx)
+{
+	if (!IS_ENABLED(CONFIG_KALLSYMS_BASE_RELATIVE))
+		return kallsyms_addresses[idx];
+
+	/* values are unsigned offsets if --absolute-percpu is not in effect */
+	if (!IS_ENABLED(CONFIG_KALLSYMS_ABSOLUTE_PERCPU))
+		return kallsyms_relative_base + (u32)kallsyms_offsets[idx];
+
+	/* ...otherwise, positive offsets are absolute values */
+	if (kallsyms_offsets[idx] >= 0)
+		return kallsyms_offsets[idx];
+
+	/* ...and negative offsets are relative to kallsyms_relative_base - 1 */
+	return kallsyms_relative_base - 1 - kallsyms_offsets[idx];
+}
+
+>>>>>>> v4.9.227
 /* Lookup the address for this symbol. Returns 0 if not found. */
 unsigned long kallsyms_lookup_name(const char *name)
 {
@@ -212,7 +248,11 @@ unsigned long kallsyms_lookup_name(const char *name)
 		off = kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
 
 		if (strcmp(namebuf, name) == 0)
+<<<<<<< HEAD
 			return kallsyms_addresses[i];
+=======
+			return kallsyms_sym_address(i);
+>>>>>>> v4.9.227
 	}
 	return module_kallsyms_lookup_name(name);
 }
@@ -229,7 +269,11 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
 
 	for (i = 0, off = 0; i < kallsyms_num_syms; i++) {
 		off = kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
+<<<<<<< HEAD
 		ret = fn(data, namebuf, NULL, kallsyms_addresses[i]);
+=======
+		ret = fn(data, namebuf, NULL, kallsyms_sym_address(i));
+>>>>>>> v4.9.227
 		if (ret != 0)
 			return ret;
 	}
@@ -245,7 +289,14 @@ static unsigned long get_symbol_pos(unsigned long addr,
 	unsigned long i, low, high, mid;
 
 	/* This kernel should never had been booted. */
+<<<<<<< HEAD
 	BUG_ON(!kallsyms_addresses);
+=======
+	if (!IS_ENABLED(CONFIG_KALLSYMS_BASE_RELATIVE))
+		BUG_ON(!kallsyms_addresses);
+	else
+		BUG_ON(!kallsyms_offsets);
+>>>>>>> v4.9.227
 
 	/* Do a binary search on the sorted kallsyms_addresses array. */
 	low = 0;
@@ -253,7 +304,11 @@ static unsigned long get_symbol_pos(unsigned long addr,
 
 	while (high - low > 1) {
 		mid = low + (high - low) / 2;
+<<<<<<< HEAD
 		if (kallsyms_addresses[mid] <= addr)
+=======
+		if (kallsyms_sym_address(mid) <= addr)
+>>>>>>> v4.9.227
 			low = mid;
 		else
 			high = mid;
@@ -263,6 +318,7 @@ static unsigned long get_symbol_pos(unsigned long addr,
 	 * Search for the first aliased symbol. Aliased
 	 * symbols are symbols with the same address.
 	 */
+<<<<<<< HEAD
 	while (low && kallsyms_addresses[low-1] == kallsyms_addresses[low])
 		--low;
 
@@ -272,6 +328,17 @@ static unsigned long get_symbol_pos(unsigned long addr,
 	for (i = low + 1; i < kallsyms_num_syms; i++) {
 		if (kallsyms_addresses[i] > symbol_start) {
 			symbol_end = kallsyms_addresses[i];
+=======
+	while (low && kallsyms_sym_address(low-1) == kallsyms_sym_address(low))
+		--low;
+
+	symbol_start = kallsyms_sym_address(low);
+
+	/* Search for next non-aliased symbol. */
+	for (i = low + 1; i < kallsyms_num_syms; i++) {
+		if (kallsyms_sym_address(i) > symbol_start) {
+			symbol_end = kallsyms_sym_address(i);
+>>>>>>> v4.9.227
 			break;
 		}
 	}
@@ -495,7 +562,11 @@ static unsigned long get_ksymbol_core(struct kallsym_iter *iter)
 	unsigned off = iter->nameoff;
 
 	iter->module_name[0] = '\0';
+<<<<<<< HEAD
 	iter->value = kallsyms_addresses[iter->pos];
+=======
+	iter->value = kallsyms_sym_address(iter->pos);
+>>>>>>> v4.9.227
 
 	iter->type = kallsyms_get_symbol_type(off);
 

@@ -19,7 +19,10 @@
  * for more details.
  */
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/sched.h>
 #include <linux/timer.h>
@@ -139,6 +142,7 @@ static int heartbeat_drv_probe(struct platform_device *pdev)
 	return mod_timer(&hd->timer, jiffies + 1);
 }
 
+<<<<<<< HEAD
 static int heartbeat_drv_remove(struct platform_device *pdev)
 {
 	struct heartbeat_data *hd = platform_get_drvdata(pdev);
@@ -159,6 +163,13 @@ static struct platform_driver heartbeat_driver = {
 	.remove		= heartbeat_drv_remove,
 	.driver		= {
 		.name	= DRV_NAME,
+=======
+static struct platform_driver heartbeat_driver = {
+	.probe		= heartbeat_drv_probe,
+	.driver		= {
+		.name			= DRV_NAME,
+		.suppress_bind_attrs	= true,
+>>>>>>> v4.9.227
 	},
 };
 
@@ -167,6 +178,7 @@ static int __init heartbeat_init(void)
 	printk(KERN_NOTICE DRV_NAME ": version %s loaded\n", DRV_VERSION);
 	return platform_driver_register(&heartbeat_driver);
 }
+<<<<<<< HEAD
 
 static void __exit heartbeat_exit(void)
 {
@@ -178,3 +190,6 @@ module_exit(heartbeat_exit);
 MODULE_VERSION(DRV_VERSION);
 MODULE_AUTHOR("Paul Mundt");
 MODULE_LICENSE("GPL v2");
+=======
+device_initcall(heartbeat_init);
+>>>>>>> v4.9.227

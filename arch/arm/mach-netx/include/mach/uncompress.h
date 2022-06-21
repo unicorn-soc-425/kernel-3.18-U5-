@@ -40,7 +40,11 @@
 #define FR_BUSY (1<<3)
 #define FR_TXFF (1<<5)
 
+<<<<<<< HEAD
 static void putc(char c)
+=======
+static inline void putc(char c)
+>>>>>>> v4.9.227
 {
 	unsigned long base;
 

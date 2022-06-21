@@ -172,9 +172,15 @@ static int osst_probe(struct device *);
 static int osst_remove(struct device *);
 
 static struct scsi_driver osst_template = {
+<<<<<<< HEAD
 	.owner			= THIS_MODULE,
 	.gendrv = {
 		.name		=  "osst",
+=======
+	.gendrv = {
+		.name		=  "osst",
+		.owner		= THIS_MODULE,
+>>>>>>> v4.9.227
 		.probe		= osst_probe,
 		.remove		= osst_remove,
 	}
@@ -259,9 +265,16 @@ static int osst_chk_result(struct osst_tape * STp, struct osst_request * SRpnt)
 		   SRpnt->cmd[0], SRpnt->cmd[1], SRpnt->cmd[2],
 		   SRpnt->cmd[3], SRpnt->cmd[4], SRpnt->cmd[5]);
 		if (scode) printk(OSST_DEB_MSG "%s:D: Sense: %02x, ASC: %02x, ASCQ: %02x\n",
+<<<<<<< HEAD
 			       	name, scode, sense[12], sense[13]);
 		if (cmdstatp->have_sense)
 			__scsi_print_sense("osst ", SRpnt->sense, SCSI_SENSE_BUFFERSIZE);
+=======
+				  name, scode, sense[12], sense[13]);
+		if (cmdstatp->have_sense)
+			__scsi_print_sense(STp->device, name,
+					   SRpnt->sense, SCSI_SENSE_BUFFERSIZE);
+>>>>>>> v4.9.227
 	}
 	else
 #endif
@@ -275,7 +288,12 @@ static int osst_chk_result(struct osst_tape * STp, struct osst_request * SRpnt)
 		 SRpnt->cmd[0] != TEST_UNIT_READY)) { /* Abnormal conditions for tape */
 		if (cmdstatp->have_sense) {
 			printk(KERN_WARNING "%s:W: Command with sense data:\n", name);
+<<<<<<< HEAD
 			__scsi_print_sense("osst ", SRpnt->sense, SCSI_SENSE_BUFFERSIZE);
+=======
+			__scsi_print_sense(STp->device, name,
+					   SRpnt->sense, SCSI_SENSE_BUFFERSIZE);
+>>>>>>> v4.9.227
 		}
 		else {
 			static	int	notyetprinted = 1;
@@ -3325,6 +3343,7 @@ static int osst_write_frame(struct osst_tape * STp, struct osst_request ** aSRpn
 /* Lock or unlock the drive door. Don't use when struct osst_request allocated. */
 static int do_door_lock(struct osst_tape * STp, int do_lock)
 {
+<<<<<<< HEAD
 	int retval, cmd;
 
 	cmd = do_lock ? SCSI_IOCTL_DOORLOCK : SCSI_IOCTL_DOORUNLOCK;
@@ -3338,6 +3357,20 @@ static int do_door_lock(struct osst_tape * STp, int do_lock)
 	else {
 		STp->door_locked = ST_LOCK_FAILS;
 	}
+=======
+	int retval;
+
+#if DEBUG
+	printk(OSST_DEB_MSG "%s:D: %socking drive door.\n", tape_name(STp), do_lock ? "L" : "Unl");
+#endif
+
+	retval = scsi_set_medium_removal(STp->device,
+			do_lock ? SCSI_REMOVAL_PREVENT : SCSI_REMOVAL_ALLOW);
+	if (!retval)
+		STp->door_locked = do_lock ? ST_LOCKED_EXPLICIT : ST_UNLOCKED;
+	else
+		STp->door_locked = ST_LOCK_FAILS;
+>>>>>>> v4.9.227
 	return retval;
 }
 
@@ -4967,10 +5000,17 @@ static long osst_ioctl(struct file * file,
 	 * may try and take the device offline, in which case all further
 	 * access to the device is prohibited.
 	 */
+<<<<<<< HEAD
 	if( !scsi_block_when_processing_errors(STp->device) ) {
 		retval = (-ENXIO);
 		goto out;
 	}
+=======
+	retval = scsi_ioctl_block_when_processing_errors(STp->device, cmd_in,
+			file->f_flags & O_NDELAY);
+	if (retval)
+		goto out;
+>>>>>>> v4.9.227
 
 	cmd_type = _IOC_TYPE(cmd_in);
 	cmd_nr   = _IOC_NR(cmd_in);

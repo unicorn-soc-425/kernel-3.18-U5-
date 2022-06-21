@@ -479,9 +479,12 @@ ixgb_get_drvinfo(struct net_device *netdev,
 		sizeof(drvinfo->version));
 	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->n_stats = IXGB_STATS_LEN;
 	drvinfo->regdump_len = ixgb_get_regs_len(netdev);
 	drvinfo->eedump_len = ixgb_get_eeprom_len(netdev);
+=======
+>>>>>>> v4.9.227
 }
 
 static void

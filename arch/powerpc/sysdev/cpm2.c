@@ -66,10 +66,13 @@ void __init cpm2_reset(void)
 	cpm2_immr = ioremap(get_immrbase(), CPM_MAP_SIZE);
 #endif
 
+<<<<<<< HEAD
 	/* Reclaim the DP memory for our use.
 	 */
 	cpm_muram_init();
 
+=======
+>>>>>>> v4.9.227
 	/* Tell everyone where the comm processor resides.
 	 */
 	cpmp = &cpm2_immr->im_cpm;

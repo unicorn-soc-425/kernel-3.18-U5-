@@ -44,7 +44,11 @@ int prof_on __read_mostly;
 EXPORT_SYMBOL_GPL(prof_on);
 
 static cpumask_var_t prof_cpu_mask;
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
+=======
+#if defined(CONFIG_SMP) && defined(CONFIG_PROC_FS)
+>>>>>>> v4.9.227
 static DEFINE_PER_CPU(struct profile_hit *[2], cpu_profile_hits);
 static DEFINE_PER_CPU(int, cpu_profile_flip);
 static DEFINE_MUTEX(profile_flip_mutex);
@@ -59,6 +63,10 @@ int profile_setup(char *str)
 
 	if (!strncmp(str, sleepstr, strlen(sleepstr))) {
 #ifdef CONFIG_SCHEDSTATS
+<<<<<<< HEAD
+=======
+		force_schedstat_enabled();
+>>>>>>> v4.9.227
 		prof_on = SLEEP_PROFILING;
 		if (str[strlen(sleepstr)] == ',')
 			str += strlen(sleepstr) + 1;
@@ -201,7 +209,11 @@ int profile_event_unregister(enum profile_type type, struct notifier_block *n)
 }
 EXPORT_SYMBOL_GPL(profile_event_unregister);
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
+=======
+#if defined(CONFIG_SMP) && defined(CONFIG_PROC_FS)
+>>>>>>> v4.9.227
 /*
  * Each cpu has a pair of open-addressed hashtables for pending
  * profile hits. read_profile() IPI's all cpus to request them
@@ -327,6 +339,7 @@ out:
 	put_cpu();
 }
 
+<<<<<<< HEAD
 static int profile_cpu_callback(struct notifier_block *info,
 					unsigned long action, void *__cpu)
 {
@@ -389,6 +402,59 @@ out_free:
 #define profile_flip_buffers()		do { } while (0)
 #define profile_discard_flip_buffers()	do { } while (0)
 #define profile_cpu_callback		NULL
+=======
+static int profile_dead_cpu(unsigned int cpu)
+{
+	struct page *page;
+	int i;
+
+	if (prof_cpu_mask != NULL)
+		cpumask_clear_cpu(cpu, prof_cpu_mask);
+
+	for (i = 0; i < 2; i++) {
+		if (per_cpu(cpu_profile_hits, cpu)[i]) {
+			page = virt_to_page(per_cpu(cpu_profile_hits, cpu)[i]);
+			per_cpu(cpu_profile_hits, cpu)[i] = NULL;
+			__free_page(page);
+		}
+	}
+	return 0;
+}
+
+static int profile_prepare_cpu(unsigned int cpu)
+{
+	int i, node = cpu_to_mem(cpu);
+	struct page *page;
+
+	per_cpu(cpu_profile_flip, cpu) = 0;
+
+	for (i = 0; i < 2; i++) {
+		if (per_cpu(cpu_profile_hits, cpu)[i])
+			continue;
+
+		page = __alloc_pages_node(node, GFP_KERNEL | __GFP_ZERO, 0);
+		if (!page) {
+			profile_dead_cpu(cpu);
+			return -ENOMEM;
+		}
+		per_cpu(cpu_profile_hits, cpu)[i] = page_address(page);
+
+	}
+	return 0;
+}
+
+static int profile_online_cpu(unsigned int cpu)
+{
+	if (prof_cpu_mask != NULL)
+		cpumask_set_cpu(cpu, prof_cpu_mask);
+
+	return 0;
+}
+
+#else /* !CONFIG_SMP */
+#define profile_flip_buffers()		do { } while (0)
+#define profile_discard_flip_buffers()	do { } while (0)
+>>>>>>> v4.9.227
 
 static void do_profile_hits(int type, void *__pc, unsigned int nr_hits)
 {
@@ -422,8 +488,12 @@ void profile_tick(int type)
 
 static int prof_cpu_mask_proc_show(struct seq_file *m, void *v)
 {
+<<<<<<< HEAD
 	seq_cpumask(m, prof_cpu_mask);
 	seq_putc(m, '\n');
+=======
+	seq_printf(m, "%*pb\n", cpumask_pr_args(prof_cpu_mask));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -531,6 +601,7 @@ static const struct file_operations proc_profile_operations = {
 	.llseek		= default_llseek,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 static void profile_nop(void *unused)
 {
@@ -587,10 +658,20 @@ out_cleanup:
 int __ref create_proc_profile(void) /* false positive from hotcpu_notifier */
 {
 	struct proc_dir_entry *entry;
+=======
+int __ref create_proc_profile(void)
+{
+	struct proc_dir_entry *entry;
+#ifdef CONFIG_SMP
+	enum cpuhp_state online_state;
+#endif
+
+>>>>>>> v4.9.227
 	int err = 0;
 
 	if (!prof_on)
 		return 0;
+<<<<<<< HEAD
 
 	cpu_notifier_register_begin();
 
@@ -608,6 +689,34 @@ int __ref create_proc_profile(void) /* false positive from hotcpu_notifier */
 
 out:
 	cpu_notifier_register_done();
+=======
+#ifdef CONFIG_SMP
+	err = cpuhp_setup_state(CPUHP_PROFILE_PREPARE, "PROFILE_PREPARE",
+				profile_prepare_cpu, profile_dead_cpu);
+	if (err)
+		return err;
+
+	err = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "AP_PROFILE_ONLINE",
+				profile_online_cpu, NULL);
+	if (err < 0)
+		goto err_state_prep;
+	online_state = err;
+	err = 0;
+#endif
+	entry = proc_create("profile", S_IWUSR | S_IRUGO,
+			    NULL, &proc_profile_operations);
+	if (!entry)
+		goto err_state_onl;
+	proc_set_size(entry, (1 + prof_len) * sizeof(atomic_t));
+
+	return err;
+err_state_onl:
+#ifdef CONFIG_SMP
+	cpuhp_remove_state(online_state);
+err_state_prep:
+	cpuhp_remove_state(CPUHP_PROFILE_PREPARE);
+#endif
+>>>>>>> v4.9.227
 	return err;
 }
 subsys_initcall(create_proc_profile);

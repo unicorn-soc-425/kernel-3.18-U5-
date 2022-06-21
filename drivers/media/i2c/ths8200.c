@@ -49,7 +49,11 @@ static const struct v4l2_dv_timings_cap ths8200_timings_cap = {
 	.type = V4L2_DV_BT_656_1120,
 	/* keep this initialization for compatibility with GCC < 4.4.6 */
 	.reserved = { 0 },
+<<<<<<< HEAD
 	V4L2_INIT_BT_TIMINGS(0, 1920, 0, 1080, 25000000, 148500000,
+=======
+	V4L2_INIT_BT_TIMINGS(640, 1920, 350, 1080, 25000000, 148500000,
+>>>>>>> v4.9.227
 		V4L2_DV_BT_STD_CEA861, V4L2_DV_BT_CAP_PROGRESSIVE)
 };
 
@@ -58,21 +62,27 @@ static inline struct ths8200_state *to_state(struct v4l2_subdev *sd)
 	return container_of(sd, struct ths8200_state, sd);
 }
 
+<<<<<<< HEAD
 static inline unsigned hblanking(const struct v4l2_bt_timings *t)
 {
 	return V4L2_DV_BT_BLANKING_WIDTH(t);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned htotal(const struct v4l2_bt_timings *t)
 {
 	return V4L2_DV_BT_FRAME_WIDTH(t);
 }
 
+<<<<<<< HEAD
 static inline unsigned vblanking(const struct v4l2_bt_timings *t)
 {
 	return V4L2_DV_BT_BLANKING_HEIGHT(t);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned vtotal(const struct v4l2_bt_timings *t)
 {
 	return V4L2_DV_BT_FRAME_HEIGHT(t);
@@ -489,7 +499,10 @@ static int ths8200_remove(struct i2c_client *client)
 
 	ths8200_s_power(sd, false);
 	v4l2_async_unregister_subdev(&decoder->sd);
+<<<<<<< HEAD
 	v4l2_device_unregister_subdev(sd);
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -510,7 +523,10 @@ MODULE_DEVICE_TABLE(of, ths8200_of_match);
 
 static struct i2c_driver ths8200_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "ths8200",
 		.of_match_table = of_match_ptr(ths8200_of_match),
 	},

@@ -23,7 +23,10 @@
 #ifndef HD29L2_H
 #define HD29L2_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/dvb/frontend.h>
 
 struct hd29l2_config {

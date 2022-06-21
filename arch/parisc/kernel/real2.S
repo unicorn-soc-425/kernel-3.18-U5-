@@ -61,7 +61,11 @@ save_cr_end:
 	 *	iodc_fn is the IODC function to call
 	 */
 
+<<<<<<< HEAD
 ENTRY(real32_call_asm)
+=======
+ENTRY_CFI(real32_call_asm)
+>>>>>>> v4.9.227
 	STREG	%rp, -RP_OFFSET(%sp)	/* save RP */
 #ifdef CONFIG_64BIT
 	callee_save
@@ -119,14 +123,22 @@ ric_ret:
 	LDREG	-RP_OFFSET(%sp), %rp	/* restore RP */
 	bv	0(%rp)
 	nop
+<<<<<<< HEAD
 ENDPROC(real32_call_asm)
+=======
+ENDPROC_CFI(real32_call_asm)
+>>>>>>> v4.9.227
 
 
 #  define PUSH_CR(r, where) mfctl r, %r1 ! STREG,ma %r1, REG_SZ(where)
 #  define POP_CR(r, where) LDREG,mb -REG_SZ(where), %r1 ! mtctl %r1, r
 
 	.text
+<<<<<<< HEAD
 save_control_regs:
+=======
+ENTRY_CFI(save_control_regs)
+>>>>>>> v4.9.227
 	load32	PA(save_cr_space), %r28
 	PUSH_CR(%cr24, %r28)
 	PUSH_CR(%cr25, %r28)
@@ -139,8 +151,14 @@ save_control_regs:
 	PUSH_CR(%cr15, %r28)
 	bv 0(%r2)
 	nop
+<<<<<<< HEAD
 
 restore_control_regs:
+=======
+ENDPROC_CFI(save_control_regs)
+
+ENTRY_CFI(restore_control_regs)
+>>>>>>> v4.9.227
 	load32	PA(save_cr_end), %r26
 	POP_CR(%cr15, %r26)
 	POP_CR(%cr31, %r26)
@@ -153,13 +171,21 @@ restore_control_regs:
 	POP_CR(%cr24, %r26)
 	bv 0(%r2)
 	nop
+<<<<<<< HEAD
+=======
+ENDPROC_CFI(restore_control_regs)
+>>>>>>> v4.9.227
 
 /* rfi_virt2real() and rfi_real2virt() could perhaps be adapted for
  * more general-purpose use by the several places which need RFIs
  */
 	.text
 	.align 128
+<<<<<<< HEAD
 rfi_virt2real:
+=======
+ENTRY_CFI(rfi_virt2real)
+>>>>>>> v4.9.227
 	/* switch to real mode... */
 	rsm		PSW_SM_I,%r0
 	load32		PA(rfi_v2r_1), %r1
@@ -191,10 +217,18 @@ rfi_v2r_1:
 	tophys_r1 %r2
 	bv	0(%r2)
 	nop
+<<<<<<< HEAD
 
 	.text
 	.align 128
 rfi_real2virt:
+=======
+ENDPROC_CFI(rfi_virt2real)
+
+	.text
+	.align 128
+ENTRY_CFI(rfi_real2virt)
+>>>>>>> v4.9.227
 	rsm		PSW_SM_I,%r0
 	load32		(rfi_r2v_1), %r1
 	nop
@@ -225,6 +259,10 @@ rfi_r2v_1:
 	tovirt_r1 %r2
 	bv	0(%r2)
 	nop
+<<<<<<< HEAD
+=======
+ENDPROC_CFI(rfi_real2virt)
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_64BIT
 
@@ -238,7 +276,11 @@ rfi_r2v_1:
 	 *	arg0p points to where saved arg values may be found
 	 *	iodc_fn is the IODC function to call
 	 */
+<<<<<<< HEAD
 ENTRY(real64_call_asm)
+=======
+ENTRY_CFI(real64_call_asm)
+>>>>>>> v4.9.227
 	std	%rp, -0x10(%sp)		/* save RP */
 	std	%sp, -8(%arg0)		/* save SP on real-mode stack */
 	copy	%arg0, %sp		/* adopt the real-mode SP */
@@ -284,7 +326,11 @@ r64_ret:
 	ldd	-0x10(%sp), %rp		/* restore RP */
 	bv	0(%rp)
 	nop
+<<<<<<< HEAD
 ENDPROC(real64_call_asm)
+=======
+ENDPROC_CFI(real64_call_asm)
+>>>>>>> v4.9.227
 
 #endif
 
@@ -293,12 +339,20 @@ ENDPROC(real64_call_asm)
 	**	GCC 3.3 and later has a new function in libgcc.a for
 	**	comparing function pointers.
 	*/
+<<<<<<< HEAD
 ENTRY(__canonicalize_funcptr_for_compare)
+=======
+ENTRY_CFI(__canonicalize_funcptr_for_compare)
+>>>>>>> v4.9.227
 #ifdef CONFIG_64BIT
 	bve (%r2)
 #else
 	bv %r0(%r2)
 #endif
 	copy %r26,%r28
+<<<<<<< HEAD
 ENDPROC(__canonicalize_funcptr_for_compare)
+=======
+ENDPROC_CFI(__canonicalize_funcptr_for_compare)
+>>>>>>> v4.9.227
 

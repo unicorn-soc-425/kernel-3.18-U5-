@@ -10,12 +10,22 @@ struct pata_platform_info {
 	unsigned int ioport_shift;
 };
 
+<<<<<<< HEAD
+=======
+struct scsi_host_template;
+
+>>>>>>> v4.9.227
 extern int __pata_platform_probe(struct device *dev,
 				 struct resource *io_res,
 				 struct resource *ctl_res,
 				 struct resource *irq_res,
 				 unsigned int ioport_shift,
+<<<<<<< HEAD
 				 int __pio_mask);
+=======
+				 int __pio_mask,
+				 struct scsi_host_template *sht);
+>>>>>>> v4.9.227
 
 /*
  * Marvell SATA private data

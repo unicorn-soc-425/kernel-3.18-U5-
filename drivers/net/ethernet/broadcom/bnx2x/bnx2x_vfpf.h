@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* bnx2x_vfpf.h: Broadcom Everest network driver.
  *
  * Copyright (c) 2011-2013 Broadcom Corporation
@@ -11,6 +12,27 @@
  * software in any way with any other Broadcom software provided under a
  * license other than the GPL, without Broadcom's express prior written
  * consent.
+=======
+/* bnx2x_vfpf.h: Qlogic Everest network driver.
+ *
+ * Copyright (c) 2011-2013 Broadcom Corporation
+ * Copyright (c) 2014 QLogic Corporation
+ * All rights reserved
+ *
+ * Unless you and Qlogic execute a separate written software license
+ * agreement governing use of this software, this software is licensed to you
+ * under the terms of the GNU General Public License version 2 (the “GPL”),
+ * available at http://www.gnu.org/licenses/gpl-2.0.html, with the following
+ * added to such license:
+ *
+ * As a special exception, the copyright holders of this software give you
+ * permission to link this software with independent modules, and to copy and
+ * distribute the resulting executable under terms of your choice, provided that
+ * you also meet, for each linked independent module, the terms and conditions
+ * of the license of that module.  An independent module is a module which is
+ * not derived from this software.  The special exception does not apply to any
+ * modifications of the software.
+>>>>>>> v4.9.227
  *
  * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
  * Written by: Ariel Elior <ariel.elior@qlogic.com>
@@ -64,6 +86,11 @@ struct hw_sb_info {
 #define VFPF_RX_MASK_ACCEPT_ALL_UNICAST		0x00000004
 #define VFPF_RX_MASK_ACCEPT_ALL_MULTICAST	0x00000008
 #define VFPF_RX_MASK_ACCEPT_BROADCAST		0x00000010
+<<<<<<< HEAD
+=======
+#define VFPF_RX_MASK_ACCEPT_ANY_VLAN		0x00000020
+
+>>>>>>> v4.9.227
 #define BULLETIN_CONTENT_SIZE		(sizeof(struct pf_vf_bulletin_content))
 #define BULLETIN_CONTENT_LEGACY_SIZE	(32)
 #define BULLETIN_ATTEMPTS	5 /* crc failures before throwing towel */
@@ -124,9 +151,16 @@ struct vfpf_acquire_tlv {
 #define VF_OS_UNDEFINED		(0 << VF_OS_SHIFT)
 #define VF_OS_WINDOWS		(1 << VF_OS_SHIFT)
 
+<<<<<<< HEAD
 		u8 padding;
 		u8 caps;
 #define VF_CAP_SUPPORT_EXT_BULLETIN	(1 << 0)
+=======
+		u8 fp_hsi_ver;
+		u8 caps;
+#define VF_CAP_SUPPORT_EXT_BULLETIN	(1 << 0)
+#define VF_CAP_SUPPORT_VLAN_FILTER	(1 << 1)
+>>>>>>> v4.9.227
 	} vfdev_info;
 
 	struct vf_pf_resc_request resc_request;
@@ -168,10 +202,19 @@ struct pfvf_acquire_resp_tlv {
 	struct pf_vf_pfdev_info {
 		u32 chip_num;
 		u32 pf_cap;
+<<<<<<< HEAD
 #define PFVF_CAP_RSS		0x00000001
 #define PFVF_CAP_DHC		0x00000002
 #define PFVF_CAP_TPA		0x00000004
 #define PFVF_CAP_TPA_UPDATE	0x00000008
+=======
+#define PFVF_CAP_RSS          0x00000001
+#define PFVF_CAP_DHC          0x00000002
+#define PFVF_CAP_TPA          0x00000004
+#define PFVF_CAP_TPA_UPDATE   0x00000008
+#define PFVF_CAP_VLAN_FILTER  0x00000010
+
+>>>>>>> v4.9.227
 		char fw_ver[32];
 		u16 db_size;
 		u8  indices_per_sb;
@@ -204,6 +247,15 @@ struct vfpf_port_phys_id_resp_tlv {
 	u8 padding[2];
 };
 
+<<<<<<< HEAD
+=======
+struct vfpf_fp_hsi_resp_tlv {
+	struct channel_tlv tl;
+	u8 is_supported;
+	u8 padding[3];
+};
+
+>>>>>>> v4.9.227
 #define VFPF_INIT_FLG_STATS_COALESCE	(1 << 0) /* when set the VFs queues
 						  * stats will be coalesced on
 						  * the leading RSS queue
@@ -282,7 +334,11 @@ struct vfpf_q_mac_vlan_filter {
 	u32 flags;
 #define VFPF_Q_FILTER_DEST_MAC_VALID	0x01
 #define VFPF_Q_FILTER_VLAN_TAG_VALID	0x02
+<<<<<<< HEAD
 #define VFPF_Q_FILTER_SET_MAC		0x100	/* set/clear */
+=======
+#define VFPF_Q_FILTER_SET		0x100	/* set/clear */
+>>>>>>> v4.9.227
 	u8  mac[ETH_ALEN];
 	u16 vlan_tag;
 };
@@ -448,6 +504,10 @@ enum channel_tlvs {
 	CHANNEL_TLV_UPDATE_RSS,
 	CHANNEL_TLV_PHYS_PORT_ID,
 	CHANNEL_TLV_UPDATE_TPA,
+<<<<<<< HEAD
+=======
+	CHANNEL_TLV_FP_HSI_SUPPORT,
+>>>>>>> v4.9.227
 	CHANNEL_TLV_MAX
 };
 

@@ -319,6 +319,12 @@ static int pxa2xx_i2s_probe(struct snd_soc_dai *dai)
 	/* Along with FIFO servicing */
 	SAIMR &= ~(SAIMR_RFS | SAIMR_TFS);
 
+<<<<<<< HEAD
+=======
+	snd_soc_dai_init_dma_data(dai, &pxa2xx_i2s_pcm_stereo_out,
+		&pxa2xx_i2s_pcm_stereo_in);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -367,6 +373,7 @@ static const struct snd_soc_component_driver pxa_i2s_component = {
 
 static int pxa2xx_i2s_drv_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_component(&pdev->dev, &pxa_i2s_component,
 					  &pxa_i2s_dai, 1);
 }
@@ -375,15 +382,25 @@ static int pxa2xx_i2s_drv_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_component(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_component(&pdev->dev, &pxa_i2s_component,
+					       &pxa_i2s_dai, 1);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver pxa2xx_i2s_driver = {
 	.probe = pxa2xx_i2s_drv_probe,
+<<<<<<< HEAD
 	.remove = pxa2xx_i2s_drv_remove,
 
 	.driver = {
 		.name = "pxa2xx-i2s",
 		.owner = THIS_MODULE,
+=======
+
+	.driver = {
+		.name = "pxa2xx-i2s",
+>>>>>>> v4.9.227
 	},
 };
 

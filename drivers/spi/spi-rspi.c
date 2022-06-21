@@ -15,11 +15,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/module.h>
@@ -182,6 +185,16 @@
 #define SPBFCR_RXRST		0x40	/* Receive Buffer Data Reset */
 #define SPBFCR_TXTRG_MASK	0x30	/* Transmit Buffer Data Triggering Number */
 #define SPBFCR_RXTRG_MASK	0x07	/* Receive Buffer Data Triggering Number */
+<<<<<<< HEAD
+=======
+/* QSPI on R-Car Gen2 */
+#define SPBFCR_TXTRG_1B		0x00	/* 31 bytes (1 byte available) */
+#define SPBFCR_TXTRG_32B	0x30	/* 0 byte (32 bytes available) */
+#define SPBFCR_RXTRG_1B		0x00	/* 1 byte (31 bytes available) */
+#define SPBFCR_RXTRG_32B	0x07	/* 32 bytes (0 byte available) */
+
+#define QSPI_BUFFER_SIZE        32u
+>>>>>>> v4.9.227
 
 struct rspi_data {
 	void __iomem *addr;
@@ -277,7 +290,12 @@ static int rspi_set_config_register(struct rspi_data *rspi, int access_size)
 	/* Sets parity, interrupt mask */
 	rspi_write8(rspi, 0x00, RSPI_SPCR2);
 
+<<<<<<< HEAD
 	/* Sets SPCMD */
+=======
+	/* Resets sequencer */
+	rspi_write8(rspi, 0, RSPI_SPSCR);
+>>>>>>> v4.9.227
 	rspi->spcmd |= SPCMD_SPB_8_TO_16(access_size);
 	rspi_write16(rspi, rspi->spcmd, RSPI_SPCMD0);
 
@@ -293,14 +311,34 @@ static int rspi_set_config_register(struct rspi_data *rspi, int access_size)
 static int rspi_rz_set_config_register(struct rspi_data *rspi, int access_size)
 {
 	int spbr;
+<<<<<<< HEAD
+=======
+	int div = 0;
+	unsigned long clksrc;
+>>>>>>> v4.9.227
 
 	/* Sets output mode, MOSI signal, and (optionally) loopback */
 	rspi_write8(rspi, rspi->sppcr, RSPI_SPPCR);
 
+<<<<<<< HEAD
 	/* Sets transfer bit rate */
 	spbr = DIV_ROUND_UP(clk_get_rate(rspi->clk),
 			    2 * rspi->max_speed_hz) - 1;
 	rspi_write8(rspi, clamp(spbr, 0, 255), RSPI_SPBR);
+=======
+	clksrc = clk_get_rate(rspi->clk);
+	while (div < 3) {
+		if (rspi->max_speed_hz >= clksrc/4) /* 4=(CLK/2)/2 */
+			break;
+		div++;
+		clksrc /= 2;
+	}
+
+	/* Sets transfer bit rate */
+	spbr = DIV_ROUND_UP(clksrc, 2 * rspi->max_speed_hz) - 1;
+	rspi_write8(rspi, clamp(spbr, 0, 255), RSPI_SPBR);
+	rspi->spcmd |= div << 2;
+>>>>>>> v4.9.227
 
 	/* Disable dummy transmission, set byte access */
 	rspi_write8(rspi, SPDCR_SPLBYTE, RSPI_SPDCR);
@@ -311,7 +349,12 @@ static int rspi_rz_set_config_register(struct rspi_data *rspi, int access_size)
 	rspi_write8(rspi, 0x00, RSPI_SSLND);
 	rspi_write8(rspi, 0x00, RSPI_SPND);
 
+<<<<<<< HEAD
 	/* Sets SPCMD */
+=======
+	/* Resets sequencer */
+	rspi_write8(rspi, 0, RSPI_SPSCR);
+>>>>>>> v4.9.227
 	rspi->spcmd |= SPCMD_SPB_8_TO_16(access_size);
 	rspi_write16(rspi, rspi->spcmd, RSPI_SPCMD0);
 
@@ -362,7 +405,12 @@ static int qspi_set_config_register(struct rspi_data *rspi, int access_size)
 	/* Sets buffer to allow normal operation */
 	rspi_write8(rspi, 0x00, QSPI_SPBFCR);
 
+<<<<<<< HEAD
 	/* Sets SPCMD */
+=======
+	/* Resets sequencer */
+	rspi_write8(rspi, 0, RSPI_SPSCR);
+>>>>>>> v4.9.227
 	rspi_write16(rspi, rspi->spcmd, RSPI_SPCMD0);
 
 	/* Enables SPI function in master mode */
@@ -371,6 +419,56 @@ static int qspi_set_config_register(struct rspi_data *rspi, int access_size)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void qspi_update(const struct rspi_data *rspi, u8 mask, u8 val, u8 reg)
+{
+	u8 data;
+
+	data = rspi_read8(rspi, reg);
+	data &= ~mask;
+	data |= (val & mask);
+	rspi_write8(rspi, data, reg);
+}
+
+static unsigned int qspi_set_send_trigger(struct rspi_data *rspi,
+					  unsigned int len)
+{
+	unsigned int n;
+
+	n = min(len, QSPI_BUFFER_SIZE);
+
+	if (len >= QSPI_BUFFER_SIZE) {
+		/* sets triggering number to 32 bytes */
+		qspi_update(rspi, SPBFCR_TXTRG_MASK,
+			     SPBFCR_TXTRG_32B, QSPI_SPBFCR);
+	} else {
+		/* sets triggering number to 1 byte */
+		qspi_update(rspi, SPBFCR_TXTRG_MASK,
+			     SPBFCR_TXTRG_1B, QSPI_SPBFCR);
+	}
+
+	return n;
+}
+
+static void qspi_set_receive_trigger(struct rspi_data *rspi, unsigned int len)
+{
+	unsigned int n;
+
+	n = min(len, QSPI_BUFFER_SIZE);
+
+	if (len >= QSPI_BUFFER_SIZE) {
+		/* sets triggering number to 32 bytes */
+		qspi_update(rspi, SPBFCR_RXTRG_MASK,
+			     SPBFCR_RXTRG_32B, QSPI_SPBFCR);
+	} else {
+		/* sets triggering number to 1 byte */
+		qspi_update(rspi, SPBFCR_RXTRG_MASK,
+			     SPBFCR_RXTRG_1B, QSPI_SPBFCR);
+	}
+}
+
+>>>>>>> v4.9.227
 #define set_config_register(spi, n) spi->ops->set_config_register(spi, n)
 
 static void rspi_enable_irq(const struct rspi_data *rspi, u8 enable)
@@ -616,11 +714,26 @@ static bool rspi_can_dma(struct spi_master *master, struct spi_device *spi,
 	return __rspi_can_dma(rspi, xfer);
 }
 
+<<<<<<< HEAD
+=======
+static int rspi_dma_check_then_transfer(struct rspi_data *rspi,
+					 struct spi_transfer *xfer)
+{
+	if (!rspi->master->can_dma || !__rspi_can_dma(rspi, xfer))
+		return -EAGAIN;
+
+	/* rx_buf can be NULL on RSPI on SH in TX-only Mode */
+	return rspi_dma_transfer(rspi, &xfer->tx_sg,
+				xfer->rx_buf ? &xfer->rx_sg : NULL);
+}
+
+>>>>>>> v4.9.227
 static int rspi_common_transfer(struct rspi_data *rspi,
 				struct spi_transfer *xfer)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (rspi->master->can_dma && __rspi_can_dma(rspi, xfer)) {
 		/* rx_buf can be NULL on RSPI on SH in TX-only Mode */
 		ret = rspi_dma_transfer(rspi, &xfer->tx_sg,
@@ -628,6 +741,11 @@ static int rspi_common_transfer(struct rspi_data *rspi,
 		if (ret != -EAGAIN)
 			return ret;
 	}
+=======
+	ret = rspi_dma_check_then_transfer(rspi, xfer);
+	if (ret != -EAGAIN)
+		return ret;
+>>>>>>> v4.9.227
 
 	ret = rspi_pio_transfer(rspi, xfer->tx_buf, xfer->rx_buf, xfer->len);
 	if (ret < 0)
@@ -668,12 +786,64 @@ static int rspi_rz_transfer_one(struct spi_master *master,
 	return rspi_common_transfer(rspi, xfer);
 }
 
+<<<<<<< HEAD
 static int qspi_transfer_out_in(struct rspi_data *rspi,
 				struct spi_transfer *xfer)
 {
 	qspi_receive_init(rspi);
 
 	return rspi_common_transfer(rspi, xfer);
+=======
+static int qspi_trigger_transfer_out_in(struct rspi_data *rspi, const u8 *tx,
+					u8 *rx, unsigned int len)
+{
+	unsigned int i, n;
+	int ret;
+
+	while (len > 0) {
+		n = qspi_set_send_trigger(rspi, len);
+		qspi_set_receive_trigger(rspi, len);
+		if (n == QSPI_BUFFER_SIZE) {
+			ret = rspi_wait_for_tx_empty(rspi);
+			if (ret < 0) {
+				dev_err(&rspi->master->dev, "transmit timeout\n");
+				return ret;
+			}
+			for (i = 0; i < n; i++)
+				rspi_write_data(rspi, *tx++);
+
+			ret = rspi_wait_for_rx_full(rspi);
+			if (ret < 0) {
+				dev_err(&rspi->master->dev, "receive timeout\n");
+				return ret;
+			}
+			for (i = 0; i < n; i++)
+				*rx++ = rspi_read_data(rspi);
+		} else {
+			ret = rspi_pio_transfer(rspi, tx, rx, n);
+			if (ret < 0)
+				return ret;
+		}
+		len -= n;
+	}
+
+	return 0;
+}
+
+static int qspi_transfer_out_in(struct rspi_data *rspi,
+				struct spi_transfer *xfer)
+{
+	int ret;
+
+	qspi_receive_init(rspi);
+
+	ret = rspi_dma_check_then_transfer(rspi, xfer);
+	if (ret != -EAGAIN)
+		return ret;
+
+	return qspi_trigger_transfer_out_in(rspi, xfer->tx_buf,
+					    xfer->rx_buf, xfer->len);
+>>>>>>> v4.9.227
 }
 
 static int qspi_transfer_out(struct rspi_data *rspi, struct spi_transfer *xfer)
@@ -920,7 +1090,10 @@ static struct dma_chan *rspi_request_dma_chan(struct device *dev,
 	}
 
 	memset(&cfg, 0, sizeof(cfg));
+<<<<<<< HEAD
 	cfg.slave_id = id;
+=======
+>>>>>>> v4.9.227
 	cfg.direction = dir;
 	if (dir == DMA_MEM_TO_DEV) {
 		cfg.dst_addr = port_addr;
@@ -1198,7 +1371,11 @@ error1:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct platform_device_id spi_driver_ids[] = {
+=======
+static const struct platform_device_id spi_driver_ids[] = {
+>>>>>>> v4.9.227
 	{ "rspi",	(kernel_ulong_t)&rspi_ops },
 	{ "rspi-rz",	(kernel_ulong_t)&rspi_rz_ops },
 	{ "qspi",	(kernel_ulong_t)&qspi_ops },
@@ -1207,13 +1384,43 @@ static struct platform_device_id spi_driver_ids[] = {
 
 MODULE_DEVICE_TABLE(platform, spi_driver_ids);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+static int rspi_suspend(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct rspi_data *rspi = platform_get_drvdata(pdev);
+
+	return spi_master_suspend(rspi->master);
+}
+
+static int rspi_resume(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct rspi_data *rspi = platform_get_drvdata(pdev);
+
+	return spi_master_resume(rspi->master);
+}
+
+static SIMPLE_DEV_PM_OPS(rspi_pm_ops, rspi_suspend, rspi_resume);
+#define DEV_PM_OPS	&rspi_pm_ops
+#else
+#define DEV_PM_OPS	NULL
+#endif /* CONFIG_PM_SLEEP */
+
+>>>>>>> v4.9.227
 static struct platform_driver rspi_driver = {
 	.probe =	rspi_probe,
 	.remove =	rspi_remove,
 	.id_table =	spi_driver_ids,
 	.driver		= {
 		.name = "renesas_spi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.pm = DEV_PM_OPS,
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(rspi_of_match),
 	},
 };

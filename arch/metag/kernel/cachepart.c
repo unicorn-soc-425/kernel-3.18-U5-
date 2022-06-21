@@ -15,7 +15,11 @@
 #define SYSC_DCPART(n)	(SYSC_DCPART0 + SYSC_xCPARTn_STRIDE * (n))
 #define SYSC_ICPART(n)	(SYSC_ICPART0 + SYSC_xCPARTn_STRIDE * (n))
 
+<<<<<<< HEAD
 #define CACHE_ASSOCIATIVITY 4 /* 4 way set-assosiative */
+=======
+#define CACHE_ASSOCIATIVITY 4 /* 4 way set-associative */
+>>>>>>> v4.9.227
 #define ICACHE 0
 #define DCACHE 1
 

@@ -1,7 +1,11 @@
 menu "Speakup console speech"
 
 config SPEAKUP
+<<<<<<< HEAD
 	depends on VT
+=======
+	depends on VT && !MN10300
+>>>>>>> v4.9.227
 	tristate "Speakup core"
 	---help---
 		This is the Speakup screen reader.  Think of it as a

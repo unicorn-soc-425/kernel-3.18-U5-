@@ -845,7 +845,11 @@ int r600_get_platform_caps(struct radeon_device *rdev)
 	struct radeon_mode_info *mode_info = &rdev->mode_info;
 	union power_info *power_info;
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
+<<<<<<< HEAD
         u16 data_offset;
+=======
+	u16 data_offset;
+>>>>>>> v4.9.227
 	u8 frev, crev;
 
 	if (!atom_parse_data_header(mode_info->atom_context, index, NULL,
@@ -875,7 +879,11 @@ int r600_parse_extended_power_table(struct radeon_device *rdev)
 	union fan_info *fan_info;
 	ATOM_PPLIB_Clock_Voltage_Dependency_Table *dep_table;
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
+<<<<<<< HEAD
         u16 data_offset;
+=======
+	u16 data_offset;
+>>>>>>> v4.9.227
 	u8 frev, crev;
 	int ret, i;
 
@@ -1071,7 +1079,11 @@ int r600_parse_extended_power_table(struct radeon_device *rdev)
 			ext_hdr->usVCETableOffset) {
 			VCEClockInfoArray *array = (VCEClockInfoArray *)
 				(mode_info->atom_context->bios + data_offset +
+<<<<<<< HEAD
                                  le16_to_cpu(ext_hdr->usVCETableOffset) + 1);
+=======
+				 le16_to_cpu(ext_hdr->usVCETableOffset) + 1);
+>>>>>>> v4.9.227
 			ATOM_PPLIB_VCE_Clock_Voltage_Limit_Table *limits =
 				(ATOM_PPLIB_VCE_Clock_Voltage_Limit_Table *)
 				(mode_info->atom_context->bios + data_offset +

@@ -12,6 +12,10 @@
 #define _ASM_C6X_SETUP_H
 
 #include <uapi/asm/setup.h>
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+>>>>>>> v4.9.227
 
 #ifndef __ASSEMBLY__
 extern int c6x_add_memory(phys_addr_t start, unsigned long size);

@@ -26,7 +26,11 @@
 #define ECHOCARD_HAS_SUPER_INTERLEAVE
 #define ECHOCARD_HAS_DIGITAL_IO
 #define ECHOCARD_HAS_EXTERNAL_CLOCK
+<<<<<<< HEAD
 #define ECHOCARD_HAS_ADAT	FALSE
+=======
+#define ECHOCARD_HAS_ADAT	false
+>>>>>>> v4.9.227
 #define ECHOCARD_HAS_OUTPUT_CLOCK_SWITCH
 #define ECHOCARD_HAS_MIDI
 
@@ -52,6 +56,10 @@
 #include <linux/module.h>
 #include <linux/firmware.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/info.h>
 #include <sound/control.h>
@@ -61,7 +69,10 @@
 #include <sound/asoundef.h>
 #include <sound/initval.h>
 #include <sound/rawmidi.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/atomic.h>
 #include "echoaudio.h"
 

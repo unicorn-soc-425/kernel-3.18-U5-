@@ -92,7 +92,18 @@
 /* One semaphore structure for each semaphore in the system. */
 struct sem {
 	int	semval;		/* current value */
+<<<<<<< HEAD
 	int	sempid;		/* pid of last operation */
+=======
+	/*
+	 * PID of the process that last modified the semaphore. For
+	 * Linux, specifically these are:
+	 *  - semop
+	 *  - semctl, via SETVAL and SETALL.
+	 *  - at task exit when performing undo adjustments (see exit_sem).
+	 */
+	int	sempid;
+>>>>>>> v4.9.227
 	spinlock_t	lock;	/* spinlock for fine-grained semtimedop */
 	struct list_head pending_alter; /* pending single-sop operations */
 					/* that alter the semaphore */
@@ -155,6 +166,7 @@ static int sysvipc_sem_proc_show(struct seq_file *s, void *it);
 
 /*
  * Locking:
+<<<<<<< HEAD
  *	sem_undo.id_next,
  *	sem_array.complex_count,
  *	sem_array.pending{_alter,_cont},
@@ -163,6 +175,23 @@ static int sysvipc_sem_proc_show(struct seq_file *s, void *it);
  *
  *	sem_array.sem_base[i].pending_{const,alter}:
  *		global or semaphore sem_lock() for read/write
+=======
+ * a) global sem_lock() for read/write
+ *	sem_undo.id_next,
+ *	sem_array.complex_count,
+ *	sem_array.complex_mode
+ *	sem_array.pending{_alter,_const},
+ *	sem_array.sem_undo
+ *
+ * b) global or semaphore sem_lock() for read/write:
+ *	sem_array.sem_base[i].pending_{const,alter}:
+ *	sem_array.complex_mode (for read)
+ *
+ * c) special:
+ *	sem_undo_list.list_proc:
+ *	* undo_list->lock for write
+ *	* rcu for read
+>>>>>>> v4.9.227
  */
 
 #define sc_semmsl	sem_ctls[0]
@@ -253,6 +282,7 @@ static void sem_rcu_free(struct rcu_head *head)
 }
 
 /*
+<<<<<<< HEAD
  * spin_unlock_wait() and !spin_is_locked() are not memory barriers, they
  * are only control barriers.
  * The code must pair with spin_unlock(&sem->lock) or
@@ -270,10 +300,17 @@ static void sem_rcu_free(struct rcu_head *head)
  * that a) sem_perm.lock is free and b) complex_count is 0.
  */
 static void sem_wait_array(struct sem_array *sma)
+=======
+ * Enter the mode suitable for non-simple operations:
+ * Caller must own sem_perm.lock.
+ */
+static void complexmode_enter(struct sem_array *sma)
+>>>>>>> v4.9.227
 {
 	int i;
 	struct sem *sem;
 
+<<<<<<< HEAD
 	if (sma->complex_count)  {
 		/* The thread that increased sma->complex_count waited on
 		 * all sem->lock locks. Thus we don't need to wait again.
@@ -281,14 +318,63 @@ static void sem_wait_array(struct sem_array *sma)
 		return;
 	}
 
+=======
+	if (sma->complex_mode)  {
+		/* We are already in complex_mode. Nothing to do */
+		return;
+	}
+
+	/* We need a full barrier after seting complex_mode:
+	 * The write to complex_mode must be visible
+	 * before we read the first sem->lock spinlock state.
+	 */
+	smp_store_mb(sma->complex_mode, true);
+
+>>>>>>> v4.9.227
 	for (i = 0; i < sma->sem_nsems; i++) {
 		sem = sma->sem_base + i;
 		spin_unlock_wait(&sem->lock);
 	}
+<<<<<<< HEAD
 	ipc_smp_acquire__after_spin_is_unlocked();
 }
 
 /*
+=======
+	/*
+	 * spin_unlock_wait() is not a memory barriers, it is only a
+	 * control barrier. The code must pair with spin_unlock(&sem->lock),
+	 * thus just the control barrier is insufficient.
+	 *
+	 * smp_rmb() is sufficient, as writes cannot pass the control barrier.
+	 */
+	smp_rmb();
+}
+
+/*
+ * Try to leave the mode that disallows simple operations:
+ * Caller must own sem_perm.lock.
+ */
+static void complexmode_tryleave(struct sem_array *sma)
+{
+	if (sma->complex_count)  {
+		/* Complex ops are sleeping.
+		 * We must stay in complex mode
+		 */
+		return;
+	}
+	/*
+	 * Immediately after setting complex_mode to false,
+	 * a simple op can start. Thus: all memory writes
+	 * performed by the current operation must be visible
+	 * before we set complex_mode to false.
+	 */
+	smp_store_release(&sma->complex_mode, false);
+}
+
+#define SEM_GLOBAL_LOCK	(-1)
+/*
+>>>>>>> v4.9.227
  * If the request contains only one semaphore operation, and there are
  * no complex transactions pending, lock only the semaphore involved.
  * Otherwise, lock the entire semaphore array, since we either have
@@ -304,15 +390,22 @@ static inline int sem_lock(struct sem_array *sma, struct sembuf *sops,
 		/* Complex operation - acquire a full lock */
 		ipc_lock_object(&sma->sem_perm);
 
+<<<<<<< HEAD
 		/* And wait until all simple ops that are processed
 		 * right now have dropped their locks.
 		 */
 		sem_wait_array(sma);
 		return -1;
+=======
+		/* Prevent parallel simple ops */
+		complexmode_enter(sma);
+		return SEM_GLOBAL_LOCK;
+>>>>>>> v4.9.227
 	}
 
 	/*
 	 * Only one semaphore affected - try to optimize locking.
+<<<<<<< HEAD
 	 * The rules are:
 	 * - optimized locking is possible if no complex operation
 	 *   is either enqueued or processed right now.
@@ -329,12 +422,27 @@ static inline int sem_lock(struct sem_array *sma, struct sembuf *sops,
 	sem = sma->sem_base + sops->sem_num;
 
 	if (sma->complex_count == 0) {
+=======
+	 * Optimized locking is possible if no complex operation
+	 * is either enqueued or processed right now.
+	 *
+	 * Both facts are tracked by complex_mode.
+	 */
+	sem = sma->sem_base + sops->sem_num;
+
+	/*
+	 * Initial check for complex_mode. Just an optimization,
+	 * no locking, no memory barrier.
+	 */
+	if (!sma->complex_mode) {
+>>>>>>> v4.9.227
 		/*
 		 * It appears that no complex operation is around.
 		 * Acquire the per-semaphore lock.
 		 */
 		spin_lock(&sem->lock);
 
+<<<<<<< HEAD
 		/* Then check that the global lock is free */
 		if (!spin_is_locked(&sma->sem_perm.lock)) {
 			/*
@@ -353,6 +461,19 @@ static inline int sem_lock(struct sem_array *sma, struct sembuf *sops,
 				/* fast path successful! */
 				return sops->sem_num;
 			}
+=======
+		/*
+		 * See 51d7d5205d33
+		 * ("powerpc: Add smp_mb() to arch_spin_is_locked()"):
+		 * A full barrier is required: the write of sem->lock
+		 * must be visible before the read is executed
+		 */
+		smp_mb();
+
+		if (!smp_load_acquire(&sma->complex_mode)) {
+			/* fast path successful! */
+			return sops->sem_num;
+>>>>>>> v4.9.227
 		}
 		spin_unlock(&sem->lock);
 	}
@@ -372,15 +493,26 @@ static inline int sem_lock(struct sem_array *sma, struct sembuf *sops,
 		/* Not a false alarm, thus complete the sequence for a
 		 * full lock.
 		 */
+<<<<<<< HEAD
 		sem_wait_array(sma);
 		return -1;
+=======
+		complexmode_enter(sma);
+		return SEM_GLOBAL_LOCK;
+>>>>>>> v4.9.227
 	}
 }
 
 static inline void sem_unlock(struct sem_array *sma, int locknum)
 {
+<<<<<<< HEAD
 	if (locknum == -1) {
 		unmerge_queues(sma);
+=======
+	if (locknum == SEM_GLOBAL_LOCK) {
+		unmerge_queues(sma);
+		complexmode_tryleave(sma);
+>>>>>>> v4.9.227
 		ipc_unlock_object(&sma->sem_perm);
 	} else {
 		struct sem *sem = sma->sem_base + locknum;
@@ -400,7 +532,11 @@ static inline struct sem_array *sem_obtain_lock(struct ipc_namespace *ns,
 	struct kern_ipc_perm *ipcp;
 	struct sem_array *sma;
 
+<<<<<<< HEAD
 	ipcp = ipc_obtain_object(&sem_ids(ns), id);
+=======
+	ipcp = ipc_obtain_object_idr(&sem_ids(ns), id);
+>>>>>>> v4.9.227
 	if (IS_ERR(ipcp))
 		return ERR_CAST(ipcp);
 
@@ -419,7 +555,11 @@ static inline struct sem_array *sem_obtain_lock(struct ipc_namespace *ns,
 
 static inline struct sem_array *sem_obtain_object(struct ipc_namespace *ns, int id)
 {
+<<<<<<< HEAD
 	struct kern_ipc_perm *ipcp = ipc_obtain_object(&sem_ids(ns), id);
+=======
+	struct kern_ipc_perm *ipcp = ipc_obtain_object_idr(&sem_ids(ns), id);
+>>>>>>> v4.9.227
 
 	if (IS_ERR(ipcp))
 		return ERR_CAST(ipcp);
@@ -532,6 +672,10 @@ static int newary(struct ipc_namespace *ns, struct ipc_params *params)
 	}
 
 	sma->complex_count = 0;
+<<<<<<< HEAD
+=======
+	sma->complex_mode = true; /* dropped by sem_unlock below */
+>>>>>>> v4.9.227
 	INIT_LIST_HEAD(&sma->pending_alter);
 	INIT_LIST_HEAD(&sma->pending_const);
 	INIT_LIST_HEAD(&sma->list_id);
@@ -1443,8 +1587,15 @@ static int semctl_main(struct ipc_namespace *ns, int semid, int semnum,
 			goto out_unlock;
 		}
 
+<<<<<<< HEAD
 		for (i = 0; i < nsems; i++)
 			sma->sem_base[i].semval = sem_io[i];
+=======
+		for (i = 0; i < nsems; i++) {
+			sma->sem_base[i].semval = sem_io[i];
+			sma->sem_base[i].sempid = task_tgid_vnr(current);
+		}
+>>>>>>> v4.9.227
 
 		ipc_assert_locked_object(&sma->sem_perm);
 		list_for_each_entry(un, &sma->list_id, list_id) {
@@ -1492,7 +1643,11 @@ out_rcu_wakeup:
 	wake_up_sem_queue_do(&tasks);
 out_free:
 	if (sem_io != fast_sem_io)
+<<<<<<< HEAD
 		ipc_free(sem_io, sizeof(ushort)*nsems);
+=======
+		ipc_free(sem_io);
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -1950,7 +2105,11 @@ SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
 	queue.sleeper = current;
 
 sleep_again:
+<<<<<<< HEAD
 	current->state = TASK_INTERRUPTIBLE;
+=======
+	__set_current_state(TASK_INTERRUPTIBLE);
+>>>>>>> v4.9.227
 	sem_unlock(sma, locknum);
 	rcu_read_unlock();
 
@@ -2080,6 +2239,11 @@ void exit_sem(struct task_struct *tsk)
 		struct list_head tasks;
 		int semid, i;
 
+<<<<<<< HEAD
+=======
+		cond_resched();
+
+>>>>>>> v4.9.227
 		rcu_read_lock();
 		un = list_entry_rcu(ulp->list_proc.next,
 				    struct sem_undo, list_proc);
@@ -2183,6 +2347,7 @@ static int sysvipc_sem_proc_show(struct seq_file *s, void *it)
 	/*
 	 * The proc interface isn't aware of sem_lock(), it calls
 	 * ipc_lock_object() directly (in sysvipc_find_ipc).
+<<<<<<< HEAD
 	 * In order to stay compatible with sem_lock(), we must wait until
 	 * all simple semop() calls have left their critical regions.
 	 */
@@ -2202,5 +2367,30 @@ static int sysvipc_sem_proc_show(struct seq_file *s, void *it)
 			  from_kgid_munged(user_ns, sma->sem_perm.cgid),
 			  sem_otime,
 			  sma->sem_ctime);
+=======
+	 * In order to stay compatible with sem_lock(), we must
+	 * enter / leave complex_mode.
+	 */
+	complexmode_enter(sma);
+
+	sem_otime = get_semotime(sma);
+
+	seq_printf(s,
+		   "%10d %10d  %4o %10u %5u %5u %5u %5u %10lu %10lu\n",
+		   sma->sem_perm.key,
+		   sma->sem_perm.id,
+		   sma->sem_perm.mode,
+		   sma->sem_nsems,
+		   from_kuid_munged(user_ns, sma->sem_perm.uid),
+		   from_kgid_munged(user_ns, sma->sem_perm.gid),
+		   from_kuid_munged(user_ns, sma->sem_perm.cuid),
+		   from_kgid_munged(user_ns, sma->sem_perm.cgid),
+		   sem_otime,
+		   sma->sem_ctime);
+
+	complexmode_tryleave(sma);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 #endif

@@ -8,6 +8,10 @@
 #include <linux/module.h>
 #include <linux/dma-mapping.h>
 #include <linux/dmaengine.h>
+<<<<<<< HEAD
+=======
+#include <linux/dma/pxa-dma.h>
+>>>>>>> v4.9.227
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -15,8 +19,11 @@
 #include <sound/pxa2xx-lib.h>
 #include <sound/dmaengine_pcm.h>
 
+<<<<<<< HEAD
 #include <mach/dma.h>
 
+=======
+>>>>>>> v4.9.227
 #include "pxa2xx-pcm.h"
 
 static const struct snd_pcm_hardware pxa2xx_pcm_hardware = {
@@ -31,7 +38,11 @@ static const struct snd_pcm_hardware pxa2xx_pcm_hardware = {
 	.period_bytes_min	= 32,
 	.period_bytes_max	= 8192 - 32,
 	.periods_min		= 1,
+<<<<<<< HEAD
 	.periods_max		= PAGE_SIZE/sizeof(pxa_dma_desc),
+=======
+	.periods_max		= 256,
+>>>>>>> v4.9.227
 	.buffer_bytes_max	= 128 * 1024,
 	.fifo_size		= 32,
 };
@@ -39,6 +50,7 @@ static const struct snd_pcm_hardware pxa2xx_pcm_hardware = {
 int __pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params)
 {
+<<<<<<< HEAD
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct pxa2xx_runtime_data *rtd = runtime->private_data;
 	size_t totsize = params_buffer_bytes(params);
@@ -98,6 +110,31 @@ int __pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
 		dma_buff_phys += period;
 	} while (totsize -= period);
 	dma_desc[-1].ddadr = rtd->dma_desc_array_phys;
+=======
+	struct dma_chan *chan = snd_dmaengine_pcm_get_chan(substream);
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_dmaengine_dai_dma_data *dma_params;
+	struct dma_slave_config config;
+	int ret;
+
+	dma_params = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
+	if (!dma_params)
+		return 0;
+
+	ret = snd_hwparams_to_dma_slave_config(substream, params, &config);
+	if (ret)
+		return ret;
+
+	snd_dmaengine_pcm_set_config_from_dai_data(substream,
+			snd_soc_dai_get_dma_data(rtd->cpu_dai, substream),
+			&config);
+
+	ret = dmaengine_slave_config(chan, &config);
+	if (ret)
+		return ret;
+
+	snd_pcm_set_runtime_buffer(substream, &substream->dma_buffer);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -105,6 +142,7 @@ EXPORT_SYMBOL(__pxa2xx_pcm_hw_params);
 
 int __pxa2xx_pcm_hw_free(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	struct pxa2xx_runtime_data *rtd = substream->runtime->private_data;
 
 	if (rtd && rtd->params && rtd->params->filter_data) {
@@ -112,6 +150,8 @@ int __pxa2xx_pcm_hw_free(struct snd_pcm_substream *substream)
 		DRCMR(req) = 0;
 	}
 
+=======
+>>>>>>> v4.9.227
 	snd_pcm_set_runtime_buffer(substream, NULL);
 	return 0;
 }
@@ -119,6 +159,7 @@ EXPORT_SYMBOL(__pxa2xx_pcm_hw_free);
 
 int pxa2xx_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 {
+<<<<<<< HEAD
 	struct pxa2xx_runtime_data *prtd = substream->runtime->private_data;
 	int ret = 0;
 
@@ -147,12 +188,16 @@ int pxa2xx_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	}
 
 	return ret;
+=======
+	return snd_dmaengine_pcm_trigger(substream, cmd);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(pxa2xx_pcm_trigger);
 
 snd_pcm_uframes_t
 pxa2xx_pcm_pointer(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct pxa2xx_runtime_data *prtd = runtime->private_data;
 
@@ -163,11 +208,15 @@ pxa2xx_pcm_pointer(struct snd_pcm_substream *substream)
 	if (x == runtime->buffer_size)
 		x = 0;
 	return x;
+=======
+	return snd_dmaengine_pcm_pointer(substream);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(pxa2xx_pcm_pointer);
 
 int __pxa2xx_pcm_prepare(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	struct pxa2xx_runtime_data *prtd = substream->runtime->private_data;
 	unsigned long req;
 
@@ -183,10 +232,13 @@ int __pxa2xx_pcm_prepare(struct snd_pcm_substream *substream)
 	req = *(unsigned long *) prtd->params->filter_data;
 	DRCMR(req) = prtd->dma_ch | DRCMR_MAPVLD;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 EXPORT_SYMBOL(__pxa2xx_pcm_prepare);
 
+<<<<<<< HEAD
 void pxa2xx_pcm_dma_irq(int dma_ch, void *dev_id)
 {
 	struct snd_pcm_substream *substream = dev_id;
@@ -211,10 +263,24 @@ int __pxa2xx_pcm_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct pxa2xx_runtime_data *rtd;
+=======
+int __pxa2xx_pcm_open(struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct snd_dmaengine_dai_dma_data *dma_params;
+>>>>>>> v4.9.227
 	int ret;
 
 	runtime->hw = pxa2xx_pcm_hardware;
 
+<<<<<<< HEAD
+=======
+	dma_params = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
+	if (!dma_params)
+		return 0;
+
+>>>>>>> v4.9.227
 	/*
 	 * For mysterious reasons (and despite what the manual says)
 	 * playback samples are lost if the DMA count is not a multiple
@@ -223,16 +289,25 @@ int __pxa2xx_pcm_open(struct snd_pcm_substream *substream)
 	ret = snd_pcm_hw_constraint_step(runtime, 0,
 		SNDRV_PCM_HW_PARAM_PERIOD_BYTES, 32);
 	if (ret)
+<<<<<<< HEAD
 		goto out;
+=======
+		return ret;
+>>>>>>> v4.9.227
 
 	ret = snd_pcm_hw_constraint_step(runtime, 0,
 		SNDRV_PCM_HW_PARAM_BUFFER_BYTES, 32);
 	if (ret)
+<<<<<<< HEAD
 		goto out;
+=======
+		return ret;
+>>>>>>> v4.9.227
 
 	ret = snd_pcm_hw_constraint_integer(runtime,
 					    SNDRV_PCM_HW_PARAM_PERIODS);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto out;
 
 	ret = -ENOMEM;
@@ -253,11 +328,19 @@ int __pxa2xx_pcm_open(struct snd_pcm_substream *substream)
 	kfree(rtd);
  out:
 	return ret;
+=======
+		return ret;
+
+	return snd_dmaengine_pcm_open_request_chan(substream,
+					pxad_filter_fn,
+					dma_params->filter_data);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(__pxa2xx_pcm_open);
 
 int __pxa2xx_pcm_close(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct pxa2xx_runtime_data *rtd = runtime->private_data;
 
@@ -265,6 +348,9 @@ int __pxa2xx_pcm_close(struct snd_pcm_substream *substream)
 			      rtd->dma_desc_array, rtd->dma_desc_array_phys);
 	kfree(rtd);
 	return 0;
+=======
+	return snd_dmaengine_pcm_close_release_chan(substream);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(__pxa2xx_pcm_close);
 
@@ -272,10 +358,15 @@ int pxa2xx_pcm_mmap(struct snd_pcm_substream *substream,
 	struct vm_area_struct *vma)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
+<<<<<<< HEAD
 	return dma_mmap_writecombine(substream->pcm->card->dev, vma,
 				     runtime->dma_area,
 				     runtime->dma_addr,
 				     runtime->dma_bytes);
+=======
+	return dma_mmap_wc(substream->pcm->card->dev, vma, runtime->dma_area,
+			   runtime->dma_addr, runtime->dma_bytes);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(pxa2xx_pcm_mmap);
 
@@ -287,8 +378,12 @@ int pxa2xx_pcm_preallocate_dma_buffer(struct snd_pcm *pcm, int stream)
 	buf->dev.type = SNDRV_DMA_TYPE_DEV;
 	buf->dev.dev = pcm->card->dev;
 	buf->private_data = NULL;
+<<<<<<< HEAD
 	buf->area = dma_alloc_writecombine(pcm->card->dev, size,
 					   &buf->addr, GFP_KERNEL);
+=======
+	buf->area = dma_alloc_wc(pcm->card->dev, size, &buf->addr, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!buf->area)
 		return -ENOMEM;
 	buf->bytes = size;
@@ -309,8 +404,12 @@ void pxa2xx_pcm_free_dma_buffers(struct snd_pcm *pcm)
 		buf = &substream->dma_buffer;
 		if (!buf->area)
 			continue;
+<<<<<<< HEAD
 		dma_free_writecombine(pcm->card->dev, buf->bytes,
 				      buf->area, buf->addr);
+=======
+		dma_free_wc(pcm->card->dev, buf->bytes, buf->area, buf->addr);
+>>>>>>> v4.9.227
 		buf->area = NULL;
 	}
 }

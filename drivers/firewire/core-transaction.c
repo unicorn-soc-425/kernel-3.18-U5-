@@ -1246,14 +1246,22 @@ static const u32 model_textual_descriptor[] = {
 
 static struct fw_descriptor vendor_id_descriptor = {
 	.length = ARRAY_SIZE(vendor_textual_descriptor),
+<<<<<<< HEAD
 	.immediate = 0x03d00d1e,
+=======
+	.immediate = 0x03001f11,
+>>>>>>> v4.9.227
 	.key = 0x81000000,
 	.data = vendor_textual_descriptor,
 };
 
 static struct fw_descriptor model_id_descriptor = {
 	.length = ARRAY_SIZE(model_textual_descriptor),
+<<<<<<< HEAD
 	.immediate = 0x17000001,
+=======
+	.immediate = 0x17023901,
+>>>>>>> v4.9.227
 	.key = 0x81000000,
 	.data = model_textual_descriptor,
 };

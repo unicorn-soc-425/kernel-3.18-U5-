@@ -32,19 +32,33 @@
 #include <linux/rculist.h>
 #include <linux/kref.h>
 #include <asm/unaligned.h>
+<<<<<<< HEAD
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_cmnd.h>
+=======
+>>>>>>> v4.9.227
 #include <scsi/libfc.h>
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
+<<<<<<< HEAD
 #include <target/target_core_configfs.h>
 #include <target/configfs_macros.h>
 
 #include "tcm_fc.h"
 
+=======
+
+#include "tcm_fc.h"
+
+#define TFC_SESS_DBG(lport, fmt, args...) \
+	pr_debug("host%u: rport %6.6x: " fmt,	   \
+		 (lport)->host->host_no,	   \
+		 (lport)->port_id, ##args )
+
+>>>>>>> v4.9.227
 static void ft_sess_delete_all(struct ft_tport *);
 
 /*
@@ -97,6 +111,10 @@ static void ft_tport_delete(struct ft_tport *tport)
 
 	ft_sess_delete_all(tport);
 	lport = tport->lport;
+<<<<<<< HEAD
+=======
+	lport->service_params &= ~FCP_SPPF_TARG_FCN;
+>>>>>>> v4.9.227
 	BUG_ON(tport != lport->prov[FC_TYPE_FCP]);
 	RCU_INIT_POINTER(lport->prov[FC_TYPE_FCP], NULL);
 
@@ -116,6 +134,10 @@ void ft_lport_add(struct fc_lport *lport, void *arg)
 {
 	mutex_lock(&ft_lport_lock);
 	ft_tport_get(lport);
+<<<<<<< HEAD
+=======
+	lport->service_params |= FCP_SPPF_TARG_FCN;
+>>>>>>> v4.9.227
 	mutex_unlock(&ft_lport_lock);
 }
 
@@ -171,36 +193,85 @@ static struct ft_sess *ft_sess_get(struct fc_lport *lport, u32 port_id)
 	struct ft_tport *tport;
 	struct hlist_head *head;
 	struct ft_sess *sess;
+<<<<<<< HEAD
 
 	rcu_read_lock();
 	tport = rcu_dereference(lport->prov[FC_TYPE_FCP]);
 	if (!tport)
 		goto out;
+=======
+	char *reason = "no session created";
+
+	rcu_read_lock();
+	tport = rcu_dereference(lport->prov[FC_TYPE_FCP]);
+	if (!tport) {
+		reason = "not an FCP port";
+		goto out;
+	}
+>>>>>>> v4.9.227
 
 	head = &tport->hash[ft_sess_hash(port_id)];
 	hlist_for_each_entry_rcu(sess, head, hash) {
 		if (sess->port_id == port_id) {
 			kref_get(&sess->kref);
 			rcu_read_unlock();
+<<<<<<< HEAD
 			pr_debug("port_id %x found %p\n", port_id, sess);
+=======
+			TFC_SESS_DBG(lport, "port_id %x found %p\n",
+				     port_id, sess);
+>>>>>>> v4.9.227
 			return sess;
 		}
 	}
 out:
 	rcu_read_unlock();
+<<<<<<< HEAD
 	pr_debug("port_id %x not found\n", port_id);
 	return NULL;
 }
 
+=======
+	TFC_SESS_DBG(lport, "port_id %x not found, %s\n",
+		     port_id, reason);
+	return NULL;
+}
+
+static int ft_sess_alloc_cb(struct se_portal_group *se_tpg,
+			    struct se_session *se_sess, void *p)
+{
+	struct ft_sess *sess = p;
+	struct ft_tport *tport = sess->tport;
+	struct hlist_head *head = &tport->hash[ft_sess_hash(sess->port_id)];
+
+	TFC_SESS_DBG(tport->lport, "port_id %x sess %p\n", sess->port_id, sess);
+	hlist_add_head_rcu(&sess->hash, head);
+	tport->sess_count++;
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /*
  * Allocate session and enter it in the hash for the local port.
  * Caller holds ft_lport_lock.
  */
 static struct ft_sess *ft_sess_create(struct ft_tport *tport, u32 port_id,
+<<<<<<< HEAD
 				      struct ft_node_acl *acl)
 {
 	struct ft_sess *sess;
 	struct hlist_head *head;
+=======
+				      struct fc_rport_priv *rdata)
+{
+	struct se_portal_group *se_tpg = &tport->tpg->se_tpg;
+	struct ft_sess *sess;
+	struct hlist_head *head;
+	unsigned char initiatorname[TRANSPORT_IQN_LEN];
+
+	ft_format_wwn(&initiatorname[0], TRANSPORT_IQN_LEN, rdata->ids.port_name);
+>>>>>>> v4.9.227
 
 	head = &tport->hash[ft_sess_hash(port_id)];
 	hlist_for_each_entry_rcu(sess, head, hash)
@@ -209,6 +280,7 @@ static struct ft_sess *ft_sess_create(struct ft_tport *tport, u32 port_id,
 
 	sess = kzalloc(sizeof(*sess), GFP_KERNEL);
 	if (!sess)
+<<<<<<< HEAD
 		return NULL;
 
 	sess->se_sess = transport_init_session_tags(TCM_FC_DEFAULT_TAGS,
@@ -229,6 +301,23 @@ static struct ft_sess *ft_sess_create(struct ft_tport *tport, u32 port_id,
 
 	transport_register_session(&tport->tpg->se_tpg, &acl->se_node_acl,
 				   sess->se_sess, sess);
+=======
+		return ERR_PTR(-ENOMEM);
+
+	kref_init(&sess->kref); /* ref for table entry */
+	sess->tport = tport;
+	sess->port_id = port_id;
+
+	sess->se_sess = target_alloc_session(se_tpg, TCM_FC_DEFAULT_TAGS,
+					     sizeof(struct ft_cmd),
+					     TARGET_PROT_NORMAL, &initiatorname[0],
+					     sess, ft_sess_alloc_cb);
+	if (IS_ERR(sess->se_sess)) {
+		int rc = PTR_ERR(sess->se_sess);
+		kfree(sess);
+		sess = ERR_PTR(rc);
+	}
+>>>>>>> v4.9.227
 	return sess;
 }
 
@@ -266,6 +355,17 @@ static struct ft_sess *ft_sess_delete(struct ft_tport *tport, u32 port_id)
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static void ft_close_sess(struct ft_sess *sess)
+{
+	transport_deregister_session_configfs(sess->se_sess);
+	target_sess_cmd_list_set_waiting(sess->se_sess);
+	target_wait_for_sess_cmds(sess->se_sess);
+	ft_sess_put(sess);
+}
+
+>>>>>>> v4.9.227
 /*
  * Delete all sessions from tport.
  * Caller holds ft_lport_lock.
@@ -279,8 +379,12 @@ static void ft_sess_delete_all(struct ft_tport *tport)
 	     head < &tport->hash[FT_SESS_HASH_SIZE]; head++) {
 		hlist_for_each_entry_rcu(sess, head, hash) {
 			ft_sess_unhash(sess);
+<<<<<<< HEAD
 			transport_deregister_session_configfs(sess->se_sess);
 			ft_sess_put(sess);	/* release from table */
+=======
+			ft_close_sess(sess);	/* release from table */
+>>>>>>> v4.9.227
 		}
 	}
 }
@@ -290,6 +394,7 @@ static void ft_sess_delete_all(struct ft_tport *tport)
  */
 
 /*
+<<<<<<< HEAD
  * Determine whether session is allowed to be shutdown in the current context.
  * Returns non-zero if the session should be shutdown.
  */
@@ -302,6 +407,8 @@ int ft_sess_shutdown(struct se_session *se_sess)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Remove session and send PRLO.
  * This is called when the ACL is being deleted or queue depth is changing.
  */
@@ -316,11 +423,18 @@ void ft_sess_close(struct se_session *se_sess)
 		mutex_unlock(&ft_lport_lock);
 		return;
 	}
+<<<<<<< HEAD
 	pr_debug("port_id %x\n", port_id);
 	ft_sess_unhash(sess);
 	mutex_unlock(&ft_lport_lock);
 	transport_deregister_session_configfs(se_sess);
 	ft_sess_put(sess);
+=======
+	TFC_SESS_DBG(sess->tport->lport, "port_id %x close session\n", port_id);
+	ft_sess_unhash(sess);
+	mutex_unlock(&ft_lport_lock);
+	ft_close_sess(sess);
+>>>>>>> v4.9.227
 	/* XXX Send LOGO or PRLO */
 	synchronize_rcu();		/* let transport deregister happen */
 }
@@ -349,17 +463,23 @@ static int ft_prli_locked(struct fc_rport_priv *rdata, u32 spp_len,
 {
 	struct ft_tport *tport;
 	struct ft_sess *sess;
+<<<<<<< HEAD
 	struct ft_node_acl *acl;
+=======
+>>>>>>> v4.9.227
 	u32 fcp_parm;
 
 	tport = ft_tport_get(rdata->local_port);
 	if (!tport)
 		goto not_target;	/* not a target for this local port */
 
+<<<<<<< HEAD
 	acl = ft_acl_get(tport->tpg, rdata);
 	if (!acl)
 		goto not_target;	/* no target for this remote */
 
+=======
+>>>>>>> v4.9.227
 	if (!rspp)
 		goto fill;
 
@@ -381,9 +501,20 @@ static int ft_prli_locked(struct fc_rport_priv *rdata, u32 spp_len,
 		spp->spp_flags |= FC_SPP_EST_IMG_PAIR;
 		if (!(fcp_parm & FCP_SPPF_INIT_FCN))
 			return FC_SPP_RESP_CONF;
+<<<<<<< HEAD
 		sess = ft_sess_create(tport, rdata->ids.port_id, acl);
 		if (!sess)
 			return FC_SPP_RESP_RES;
+=======
+		sess = ft_sess_create(tport, rdata->ids.port_id, rdata);
+		if (IS_ERR(sess)) {
+			if (PTR_ERR(sess) == -EACCES) {
+				spp->spp_flags &= ~FC_SPP_EST_IMG_PAIR;
+				return FC_SPP_RESP_CONF;
+			} else
+				return FC_SPP_RESP_RES;
+		}
+>>>>>>> v4.9.227
 		if (!sess->params)
 			rdata->prli_count++;
 		sess->params = fcp_parm;
@@ -426,8 +557,13 @@ static int ft_prli(struct fc_rport_priv *rdata, u32 spp_len,
 	mutex_lock(&ft_lport_lock);
 	ret = ft_prli_locked(rdata, spp_len, rspp, spp);
 	mutex_unlock(&ft_lport_lock);
+<<<<<<< HEAD
 	pr_debug("port_id %x flags %x ret %x\n",
 	       rdata->ids.port_id, rspp ? rspp->spp_flags : 0, ret);
+=======
+	TFC_SESS_DBG(rdata->local_port, "port_id %x flags %x ret %x\n",
+		     rdata->ids.port_id, rspp ? rspp->spp_flags : 0, ret);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -466,8 +602,12 @@ static void ft_prlo(struct fc_rport_priv *rdata)
 		return;
 	}
 	mutex_unlock(&ft_lport_lock);
+<<<<<<< HEAD
 	transport_deregister_session_configfs(sess->se_sess);
 	ft_sess_put(sess);		/* release from table */
+=======
+	ft_close_sess(sess);		/* release from table */
+>>>>>>> v4.9.227
 	rdata->prli_count--;
 	/* XXX TBD - clearing actions.  unit attn, see 4.10 */
 }
@@ -481,11 +621,19 @@ static void ft_recv(struct fc_lport *lport, struct fc_frame *fp)
 	struct ft_sess *sess;
 	u32 sid = fc_frame_sid(fp);
 
+<<<<<<< HEAD
 	pr_debug("sid %x\n", sid);
 
 	sess = ft_sess_get(lport, sid);
 	if (!sess) {
 		pr_debug("sid %x sess lookup failed\n", sid);
+=======
+	TFC_SESS_DBG(lport, "recv sid %x\n", sid);
+
+	sess = ft_sess_get(lport, sid);
+	if (!sess) {
+		TFC_SESS_DBG(lport, "sid %x sess lookup failed\n", sid);
+>>>>>>> v4.9.227
 		/* TBD XXX - if FCP_CMND, send PRLO */
 		fc_frame_free(fp);
 		return;

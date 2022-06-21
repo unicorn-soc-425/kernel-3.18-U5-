@@ -14,7 +14,11 @@
  *  Copyright (C) 2008-2009 Red Hat, Inc., Ingo Molnar
  *  Copyright (C) 2009 Jaswinder Singh Rajput
  *  Copyright (C) 2009 Advanced Micro Devices, Inc., Robert Richter
+<<<<<<< HEAD
  *  Copyright (C) 2008-2009 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ *  Copyright (C) 2008-2009 Red Hat, Inc., Peter Zijlstra
+>>>>>>> v4.9.227
  *  Copyright (C) 2009 Intel Corporation, <markus.t.metzger@intel.com>
  *
  * ppc:
@@ -453,6 +457,7 @@ static struct pmu pmu = {
 	.read        = bfin_pmu_read,
 };
 
+<<<<<<< HEAD
 static void bfin_pmu_setup(int cpu)
 {
 	struct cpu_hw_events *cpuhw = &per_cpu(cpu_hw_events, cpu);
@@ -476,6 +481,15 @@ bfin_pmu_notifier(struct notifier_block *self, unsigned long action, void *hcpu)
 	}
 
 	return NOTIFY_OK;
+=======
+static int bfin_pmu_prepare_cpu(unsigned int cpu)
+{
+	struct cpu_hw_events *cpuhw = &per_cpu(cpu_hw_events, cpu);
+
+	bfin_write_PFCTL(0);
+	memset(cpuhw, 0, sizeof(struct cpu_hw_events));
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int __init bfin_pmu_init(void)
@@ -491,8 +505,13 @@ static int __init bfin_pmu_init(void)
 
 	ret = perf_pmu_register(&pmu, "cpu", PERF_TYPE_RAW);
 	if (!ret)
+<<<<<<< HEAD
 		perf_cpu_notifier(bfin_pmu_notifier);
 
+=======
+		cpuhp_setup_state(CPUHP_PERF_BFIN, "PERF_BFIN",
+				  bfin_pmu_prepare_cpu, NULL);
+>>>>>>> v4.9.227
 	return ret;
 }
 early_initcall(bfin_pmu_init);

@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -47,6 +51,7 @@
 #include "../../include/lustre/lustre_idl.h"
 
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/pagemap.h> /* for PAGE_CACHE_SIZE */
 
 /*FIXME: Just copy from obdo_from_inode*/
@@ -146,6 +151,10 @@ void la_from_obdo(struct lu_attr *dst, struct obdo *obdo, u32 valid)
 EXPORT_SYMBOL(la_from_obdo);
 
 void obdo_refresh_inode(struct inode *dst, struct obdo *src, u32 valid)
+=======
+
+void obdo_refresh_inode(struct inode *dst, const struct obdo *src, u32 valid)
+>>>>>>> v4.9.227
 {
 	valid &= src->o_valid;
 
@@ -167,8 +176,13 @@ void obdo_refresh_inode(struct inode *dst, struct obdo *src, u32 valid)
 	if (valid & OBD_MD_FLBLKSZ && src->o_blksize > (1 << dst->i_blkbits))
 		dst->i_blkbits = ffs(src->o_blksize) - 1;
 
+<<<<<<< HEAD
 	if (dst->i_blkbits < PAGE_CACHE_SHIFT)
 		dst->i_blkbits = PAGE_CACHE_SHIFT;
+=======
+	if (dst->i_blkbits < PAGE_SHIFT)
+		dst->i_blkbits = PAGE_SHIFT;
+>>>>>>> v4.9.227
 
 	/* allocation of space */
 	if (valid & OBD_MD_FLBLOCKS && src->o_blocks > dst->i_blocks)
@@ -179,6 +193,7 @@ void obdo_refresh_inode(struct inode *dst, struct obdo *src, u32 valid)
 		dst->i_blocks = src->o_blocks;
 }
 EXPORT_SYMBOL(obdo_refresh_inode);
+<<<<<<< HEAD
 
 void obdo_to_inode(struct inode *dst, struct obdo *src, u32 valid)
 {
@@ -220,3 +235,5 @@ void obdo_to_inode(struct inode *dst, struct obdo *src, u32 valid)
 		dst->i_flags = src->o_flags;
 }
 EXPORT_SYMBOL(obdo_to_inode);
+=======
+>>>>>>> v4.9.227

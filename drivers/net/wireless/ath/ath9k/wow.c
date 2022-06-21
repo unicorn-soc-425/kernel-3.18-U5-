@@ -16,13 +16,18 @@
 
 #include "ath9k.h"
 
+<<<<<<< HEAD
 static const struct wiphy_wowlan_support ath9k_wowlan_support = {
+=======
+static const struct wiphy_wowlan_support ath9k_wowlan_support_legacy = {
+>>>>>>> v4.9.227
 	.flags = WIPHY_WOWLAN_MAGIC_PKT | WIPHY_WOWLAN_DISCONNECT,
 	.n_patterns = MAX_NUM_USER_PATTERN,
 	.pattern_min_len = 1,
 	.pattern_max_len = MAX_PATTERN_SIZE,
 };
 
+<<<<<<< HEAD
 static void ath9k_wow_map_triggers(struct ath_softc *sc,
 				   struct cfg80211_wowlan *wowlan,
 				   u32 *wow_triggers)
@@ -41,11 +46,42 @@ static void ath9k_wow_map_triggers(struct ath_softc *sc,
 }
 
 static void ath9k_wow_add_disassoc_deauth_pattern(struct ath_softc *sc)
+=======
+static const struct wiphy_wowlan_support ath9k_wowlan_support = {
+	.flags = WIPHY_WOWLAN_MAGIC_PKT | WIPHY_WOWLAN_DISCONNECT,
+	.n_patterns = MAX_NUM_PATTERN - 2,
+	.pattern_min_len = 1,
+	.pattern_max_len = MAX_PATTERN_SIZE,
+};
+
+static u8 ath9k_wow_map_triggers(struct ath_softc *sc,
+				 struct cfg80211_wowlan *wowlan)
+{
+	u8 wow_triggers = 0;
+
+	if (wowlan->disconnect)
+		wow_triggers |= AH_WOW_LINK_CHANGE |
+				AH_WOW_BEACON_MISS;
+	if (wowlan->magic_pkt)
+		wow_triggers |= AH_WOW_MAGIC_PATTERN_EN;
+
+	if (wowlan->n_patterns)
+		wow_triggers |= AH_WOW_USER_PATTERN_EN;
+
+	return wow_triggers;
+}
+
+static int ath9k_wow_add_disassoc_deauth_pattern(struct ath_softc *sc)
+>>>>>>> v4.9.227
 {
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	int pattern_count = 0;
+<<<<<<< HEAD
 	int i, byte_cnt;
+=======
+	int ret, i, byte_cnt = 0;
+>>>>>>> v4.9.227
 	u8 dis_deauth_pattern[MAX_PATTERN_SIZE];
 	u8 dis_deauth_mask[MAX_PATTERN_SIZE];
 
@@ -80,12 +116,16 @@ static void ath9k_wow_add_disassoc_deauth_pattern(struct ath_softc *sc)
 	 *			    | x:x:x:x:x:x  -- 22 bytes
 	 */
 
+<<<<<<< HEAD
 	/* Create Disassociate Pattern first */
 
 	byte_cnt = 0;
 
 	/* Fill out the mask with all FF's */
 
+=======
+	/* Fill out the mask with all FF's */
+>>>>>>> v4.9.227
 	for (i = 0; i < MAX_PATTERN_MASK_SIZE; i++)
 		dis_deauth_mask[i] = 0xff;
 
@@ -108,19 +148,32 @@ static void ath9k_wow_add_disassoc_deauth_pattern(struct ath_softc *sc)
 	byte_cnt += 6;
 
 	/* copy the bssid, its same as the source mac address */
+<<<<<<< HEAD
 
 	memcpy((dis_deauth_pattern + byte_cnt), common->curbssid, ETH_ALEN);
 
 	/* Create Disassociate pattern mask */
 
+=======
+	memcpy((dis_deauth_pattern + byte_cnt), common->curbssid, ETH_ALEN);
+
+	/* Create Disassociate pattern mask */
+>>>>>>> v4.9.227
 	dis_deauth_mask[0] = 0xfe;
 	dis_deauth_mask[1] = 0x03;
 	dis_deauth_mask[2] = 0xc0;
 
+<<<<<<< HEAD
 	ath_dbg(common, WOW, "Adding disassoc/deauth patterns for WoW\n");
 
 	ath9k_hw_wow_apply_pattern(ah, dis_deauth_pattern, dis_deauth_mask,
 				   pattern_count, byte_cnt);
+=======
+	ret = ath9k_hw_wow_apply_pattern(ah, dis_deauth_pattern, dis_deauth_mask,
+					 pattern_count, byte_cnt);
+	if (ret)
+		goto exit;
+>>>>>>> v4.9.227
 
 	pattern_count++;
 	/*
@@ -129,6 +182,7 @@ static void ath9k_wow_add_disassoc_deauth_pattern(struct ath_softc *sc)
 	 */
 	dis_deauth_pattern[0] = 0xC0;
 
+<<<<<<< HEAD
 	ath9k_hw_wow_apply_pattern(ah, dis_deauth_pattern, dis_deauth_mask,
 				   pattern_count, byte_cnt);
 
@@ -182,6 +236,41 @@ static void ath9k_wow_add_pattern(struct ath_softc *sc,
 
 	}
 
+=======
+	ret = ath9k_hw_wow_apply_pattern(ah, dis_deauth_pattern, dis_deauth_mask,
+					 pattern_count, byte_cnt);
+exit:
+	return ret;
+}
+
+static int ath9k_wow_add_pattern(struct ath_softc *sc,
+				 struct cfg80211_wowlan *wowlan)
+{
+	struct ath_hw *ah = sc->sc_ah;
+	struct cfg80211_pkt_pattern *patterns = wowlan->patterns;
+	u8 wow_pattern[MAX_PATTERN_SIZE];
+	u8 wow_mask[MAX_PATTERN_SIZE];
+	int mask_len, ret = 0;
+	s8 i = 0;
+
+	for (i = 0; i < wowlan->n_patterns; i++) {
+		mask_len = DIV_ROUND_UP(patterns[i].pattern_len, 8);
+		memset(wow_pattern, 0, MAX_PATTERN_SIZE);
+		memset(wow_mask, 0, MAX_PATTERN_SIZE);
+		memcpy(wow_pattern, patterns[i].pattern, patterns[i].pattern_len);
+		memcpy(wow_mask, patterns[i].mask, mask_len);
+
+		ret = ath9k_hw_wow_apply_pattern(ah,
+						 wow_pattern,
+						 wow_mask,
+						 i + 2,
+						 patterns[i].pattern_len);
+		if (ret)
+			break;
+	}
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 int ath9k_suspend(struct ieee80211_hw *hw,
@@ -190,28 +279,43 @@ int ath9k_suspend(struct ieee80211_hw *hw,
 	struct ath_softc *sc = hw->priv;
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
+<<<<<<< HEAD
 	u32 wow_triggers_enabled = 0;
+=======
+	u8 triggers;
+>>>>>>> v4.9.227
 	int ret = 0;
 
 	ath9k_deinit_channel_context(sc);
 
 	mutex_lock(&sc->mutex);
 
+<<<<<<< HEAD
 	ath_cancel_work(sc);
 	ath_stop_ani(sc);
 
 	if (test_bit(ATH_OP_INVALID, &common->op_flags)) {
 		ath_dbg(common, ANY, "Device not present\n");
 		ret = -EINVAL;
+=======
+	if (test_bit(ATH_OP_INVALID, &common->op_flags)) {
+		ath_err(common, "Device not present\n");
+		ret = -ENODEV;
+>>>>>>> v4.9.227
 		goto fail_wow;
 	}
 
 	if (WARN_ON(!wowlan)) {
+<<<<<<< HEAD
 		ath_dbg(common, WOW, "None of the WoW triggers enabled\n");
+=======
+		ath_err(common, "None of the WoW triggers enabled\n");
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 		goto fail_wow;
 	}
 
+<<<<<<< HEAD
 	if (!device_can_wakeup(sc->dev)) {
 		ath_dbg(common, WOW, "device_can_wakeup failed, WoW is not enabled\n");
 		ret = 1;
@@ -232,16 +336,45 @@ int ath9k_suspend(struct ieee80211_hw *hw,
 		goto fail_wow;
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (sc->cur_chan->nvifs > 1) {
 		ath_dbg(common, WOW, "WoW for multivif is not yet supported\n");
 		ret = 1;
 		goto fail_wow;
 	}
 
+<<<<<<< HEAD
 	ath9k_wow_map_triggers(sc, wowlan, &wow_triggers_enabled);
 
 	ath_dbg(common, WOW, "WoW triggers enabled 0x%x\n",
 		wow_triggers_enabled);
+=======
+	if (ath9k_is_chanctx_enabled()) {
+		if (test_bit(ATH_OP_MULTI_CHANNEL, &common->op_flags)) {
+			ath_dbg(common, WOW,
+				"Multi-channel WOW is not supported\n");
+			ret = 1;
+			goto fail_wow;
+		}
+	}
+
+	if (!test_bit(ATH_OP_PRIM_STA_VIF, &common->op_flags)) {
+		ath_dbg(common, WOW, "None of the STA vifs are associated\n");
+		ret = 1;
+		goto fail_wow;
+	}
+
+	triggers = ath9k_wow_map_triggers(sc, wowlan);
+	if (!triggers) {
+		ath_dbg(common, WOW, "No valid WoW triggers\n");
+		ret = 1;
+		goto fail_wow;
+	}
+
+	ath_cancel_work(sc);
+	ath_stop_ani(sc);
+>>>>>>> v4.9.227
 
 	ath9k_ps_wakeup(sc);
 
@@ -251,10 +384,28 @@ int ath9k_suspend(struct ieee80211_hw *hw,
 	 * Enable wake up on recieving disassoc/deauth
 	 * frame by default.
 	 */
+<<<<<<< HEAD
 	ath9k_wow_add_disassoc_deauth_pattern(sc);
 
 	if (wow_triggers_enabled & AH_WOW_USER_PATTERN_EN)
 		ath9k_wow_add_pattern(sc, wowlan);
+=======
+	ret = ath9k_wow_add_disassoc_deauth_pattern(sc);
+	if (ret) {
+		ath_err(common,
+			"Unable to add disassoc/deauth pattern: %d\n", ret);
+		goto fail_wow;
+	}
+
+	if (triggers & AH_WOW_USER_PATTERN_EN) {
+		ret = ath9k_wow_add_pattern(sc, wowlan);
+		if (ret) {
+			ath_err(common,
+				"Unable to add user pattern: %d\n", ret);
+			goto fail_wow;
+		}
+	}
+>>>>>>> v4.9.227
 
 	spin_lock_bh(&sc->sc_pcu_lock);
 	/*
@@ -278,12 +429,21 @@ int ath9k_suspend(struct ieee80211_hw *hw,
 	synchronize_irq(sc->irq);
 	tasklet_kill(&sc->intr_tq);
 
+<<<<<<< HEAD
 	ath9k_hw_wow_enable(ah, wow_triggers_enabled);
 
 	ath9k_ps_restore(sc);
 	ath_dbg(common, ANY, "WoW enabled in ath9k\n");
 	atomic_inc(&sc->wow_sleep_proc_intr);
 
+=======
+	ath9k_hw_wow_enable(ah, triggers);
+
+	ath9k_ps_restore(sc);
+	ath_dbg(common, WOW, "Suspend with WoW triggers: 0x%x\n", triggers);
+
+	set_bit(ATH_OP_WOW_ENABLED, &common->op_flags);
+>>>>>>> v4.9.227
 fail_wow:
 	mutex_unlock(&sc->mutex);
 	return ret;
@@ -294,7 +454,11 @@ int ath9k_resume(struct ieee80211_hw *hw)
 	struct ath_softc *sc = hw->priv;
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
+<<<<<<< HEAD
 	u32 wow_status;
+=======
+	u8 status;
+>>>>>>> v4.9.227
 
 	mutex_lock(&sc->mutex);
 
@@ -309,6 +473,7 @@ int ath9k_resume(struct ieee80211_hw *hw)
 
 	spin_unlock_bh(&sc->sc_pcu_lock);
 
+<<<<<<< HEAD
 	wow_status = ath9k_hw_wow_wakeup(ah);
 
 	if (atomic_read(&sc->wow_got_bmiss_intr) == 0) {
@@ -328,10 +493,19 @@ int ath9k_resume(struct ieee80211_hw *hw)
 		ath_dbg(common, ANY, "Waking up due to WoW triggers %s with WoW status = %x\n",
 			ath9k_hw_wow_event_to_string(wow_status), wow_status);
 	}
+=======
+	status = ath9k_hw_wow_wakeup(ah);
+	ath_dbg(common, WOW, "Resume with WoW status: 0x%x\n", status);
+>>>>>>> v4.9.227
 
 	ath_restart_work(sc);
 	ath9k_start_btcoex(sc);
 
+<<<<<<< HEAD
+=======
+	clear_bit(ATH_OP_WOW_ENABLED, &common->op_flags);
+
+>>>>>>> v4.9.227
 	ath9k_ps_restore(sc);
 	mutex_unlock(&sc->mutex);
 
@@ -341,16 +515,28 @@ int ath9k_resume(struct ieee80211_hw *hw)
 void ath9k_set_wakeup(struct ieee80211_hw *hw, bool enabled)
 {
 	struct ath_softc *sc = hw->priv;
+<<<<<<< HEAD
 
 	mutex_lock(&sc->mutex);
 	device_init_wakeup(sc->dev, 1);
 	device_set_wakeup_enable(sc->dev, enabled);
 	mutex_unlock(&sc->mutex);
+=======
+	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+
+	mutex_lock(&sc->mutex);
+	device_set_wakeup_enable(sc->dev, enabled);
+	mutex_unlock(&sc->mutex);
+
+	ath_dbg(common, WOW, "WoW wakeup source is %s\n",
+		(enabled) ? "enabled" : "disabled");
+>>>>>>> v4.9.227
 }
 
 void ath9k_init_wow(struct ieee80211_hw *hw)
 {
 	struct ath_softc *sc = hw->priv;
+<<<<<<< HEAD
 
 	if ((sc->sc_ah->caps.hw_caps & ATH9K_HW_WOW_DEVICE_CAPABLE) &&
 	    (sc->driver_data & ATH9K_PCI_WOW) &&
@@ -359,4 +545,24 @@ void ath9k_init_wow(struct ieee80211_hw *hw)
 
 	atomic_set(&sc->wow_sleep_proc_intr, -1);
 	atomic_set(&sc->wow_got_bmiss_intr, -1);
+=======
+	struct ath_hw *ah = sc->sc_ah;
+
+	if ((sc->driver_data & ATH9K_PCI_WOW) || sc->force_wow) {
+		if (AR_SREV_9462_20_OR_LATER(ah) || AR_SREV_9565_11_OR_LATER(ah))
+			hw->wiphy->wowlan = &ath9k_wowlan_support;
+		else
+			hw->wiphy->wowlan = &ath9k_wowlan_support_legacy;
+
+		device_init_wakeup(sc->dev, 1);
+	}
+}
+
+void ath9k_deinit_wow(struct ieee80211_hw *hw)
+{
+	struct ath_softc *sc = hw->priv;
+
+	if ((sc->driver_data & ATH9K_PCI_WOW) || sc->force_wow)
+		device_init_wakeup(sc->dev, 0);
+>>>>>>> v4.9.227
 }

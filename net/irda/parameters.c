@@ -52,7 +52,11 @@ static int irda_insert_no_value(void *self, __u8 *buf, int len, __u8 pi,
 static int irda_param_unpack(__u8 *buf, char *fmt, ...);
 
 /* Parameter value call table. Must match PV_TYPE */
+<<<<<<< HEAD
 static PV_HANDLER pv_extract_table[] = {
+=======
+static const PV_HANDLER pv_extract_table[] = {
+>>>>>>> v4.9.227
 	irda_extract_integer, /* Handler for any length integers */
 	irda_extract_integer, /* Handler for 8  bits integers */
 	irda_extract_integer, /* Handler for 16 bits integers */
@@ -62,7 +66,11 @@ static PV_HANDLER pv_extract_table[] = {
 	irda_extract_no_value /* Handler for no value parameters */
 };
 
+<<<<<<< HEAD
 static PV_HANDLER pv_insert_table[] = {
+=======
+static const PV_HANDLER pv_insert_table[] = {
+>>>>>>> v4.9.227
 	irda_insert_integer, /* Handler for any length integers */
 	irda_insert_integer, /* Handler for 8  bits integers */
 	irda_insert_integer, /* Handler for 16 bits integers */
@@ -146,6 +154,7 @@ static int irda_insert_integer(void *self, __u8 *buf, int len, __u8 pi,
 	 */
 	if (p.pl == 0) {
 		if (p.pv.i < 0xff) {
+<<<<<<< HEAD
 			IRDA_DEBUG(2, "%s(), using 1 byte\n", __func__);
 			p.pl = 1;
 		} else if (p.pv.i < 0xffff) {
@@ -153,17 +162,35 @@ static int irda_insert_integer(void *self, __u8 *buf, int len, __u8 pi,
 			p.pl = 2;
 		} else {
 			IRDA_DEBUG(2, "%s(), using 4 bytes\n", __func__);
+=======
+			pr_debug("%s(), using 1 byte\n", __func__);
+			p.pl = 1;
+		} else if (p.pv.i < 0xffff) {
+			pr_debug("%s(), using 2 bytes\n", __func__);
+			p.pl = 2;
+		} else {
+			pr_debug("%s(), using 4 bytes\n", __func__);
+>>>>>>> v4.9.227
 			p.pl = 4; /* Default length */
 		}
 	}
 	/* Check if buffer is long enough for insertion */
 	if (len < (2+p.pl)) {
+<<<<<<< HEAD
 		IRDA_WARNING("%s: buffer too short for insertion!\n",
 			     __func__);
 		return -1;
 	}
 	IRDA_DEBUG(2, "%s(), pi=%#x, pl=%d, pi=%d\n", __func__,
 		   p.pi, p.pl, p.pv.i);
+=======
+		net_warn_ratelimited("%s: buffer too short for insertion!\n",
+				     __func__);
+		return -1;
+	}
+	pr_debug("%s(), pi=%#x, pl=%d, pi=%d\n", __func__,
+		 p.pi, p.pl, p.pv.i);
+>>>>>>> v4.9.227
 	switch (p.pl) {
 	case 1:
 		n += irda_param_pack(buf, "bbb", p.pi, p.pl, (__u8) p.pv.i);
@@ -184,8 +211,13 @@ static int irda_insert_integer(void *self, __u8 *buf, int len, __u8 pi,
 
 		break;
 	default:
+<<<<<<< HEAD
 		IRDA_WARNING("%s: length %d not supported\n",
 			     __func__, p.pl);
+=======
+		net_warn_ratelimited("%s: length %d not supported\n",
+				     __func__, p.pl);
+>>>>>>> v4.9.227
 		/* Skip parameter */
 		return -1;
 	}
@@ -214,9 +246,14 @@ static int irda_extract_integer(void *self, __u8 *buf, int len, __u8 pi,
 
 	/* Check if buffer is long enough for parsing */
 	if (len < (2+p.pl)) {
+<<<<<<< HEAD
 		IRDA_WARNING("%s: buffer too short for parsing! "
 			     "Need %d bytes, but len is only %d\n",
 			     __func__, p.pl, len);
+=======
+		net_warn_ratelimited("%s: buffer too short for parsing! Need %d bytes, but len is only %d\n",
+				     __func__, p.pl, len);
+>>>>>>> v4.9.227
 		return -1;
 	}
 
@@ -226,9 +263,14 @@ static int irda_extract_integer(void *self, __u8 *buf, int len, __u8 pi,
 	 * PV_INTEGER means that the handler is flexible.
 	 */
 	if (((type & PV_MASK) != PV_INTEGER) && ((type & PV_MASK) != p.pl)) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s: invalid parameter length! "
 			   "Expected %d bytes, but value had %d bytes!\n",
 			   __func__, type & PV_MASK, p.pl);
+=======
+		net_err_ratelimited("%s: invalid parameter length! Expected %d bytes, but value had %d bytes!\n",
+				    __func__, type & PV_MASK, p.pl);
+>>>>>>> v4.9.227
 
 		/* Most parameters are bit/byte fields or little endian,
 		 * so it's ok to only extract a subset of it (the subset
@@ -265,15 +307,25 @@ static int irda_extract_integer(void *self, __u8 *buf, int len, __u8 pi,
 			le32_to_cpus(&p.pv.i);
 		break;
 	default:
+<<<<<<< HEAD
 		IRDA_WARNING("%s: length %d not supported\n",
 			     __func__, p.pl);
+=======
+		net_warn_ratelimited("%s: length %d not supported\n",
+				     __func__, p.pl);
+>>>>>>> v4.9.227
 
 		/* Skip parameter */
 		return p.pl+2;
 	}
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), pi=%#x, pl=%d, pi=%d\n", __func__,
 		   p.pi, p.pl, p.pv.i);
+=======
+	pr_debug("%s(), pi=%#x, pl=%d, pi=%d\n", __func__,
+		 p.pi, p.pl, p.pv.i);
+>>>>>>> v4.9.227
 	/* Call handler for this parameter */
 	err = (*func)(self, &p, PV_PUT);
 	if (err < 0)
@@ -292,13 +344,17 @@ static int irda_extract_string(void *self, __u8 *buf, int len, __u8 pi,
 	irda_param_t p;
 	int err;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	p.pi = pi;     /* In case handler needs to know */
 	p.pl = buf[1]; /* Extract length of value */
 	if (p.pl > 32)
 		p.pl = 32;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), pi=%#x, pl=%d\n", __func__,
 		   p.pi, p.pl);
 
@@ -307,6 +363,15 @@ static int irda_extract_string(void *self, __u8 *buf, int len, __u8 pi,
 		IRDA_WARNING("%s: buffer too short for parsing! "
 			     "Need %d bytes, but len is only %d\n",
 			     __func__, p.pl, len);
+=======
+	pr_debug("%s(), pi=%#x, pl=%d\n", __func__,
+		 p.pi, p.pl);
+
+	/* Check if buffer is long enough for parsing */
+	if (len < (2+p.pl)) {
+		net_warn_ratelimited("%s: buffer too short for parsing! Need %d bytes, but len is only %d\n",
+				     __func__, p.pl, len);
+>>>>>>> v4.9.227
 		return -1;
 	}
 
@@ -314,8 +379,13 @@ static int irda_extract_string(void *self, __u8 *buf, int len, __u8 pi,
 	 * checked that the buffer is long enough */
 	strncpy(str, buf+2, p.pl);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), str=0x%02x 0x%02x\n", __func__,
 		   (__u8) str[0], (__u8) str[1]);
+=======
+	pr_debug("%s(), str=0x%02x 0x%02x\n",
+		 __func__, (__u8)str[0], (__u8)str[1]);
+>>>>>>> v4.9.227
 
 	/* Null terminate string */
 	str[p.pl] = '\0';
@@ -343,6 +413,7 @@ static int irda_extract_octseq(void *self, __u8 *buf, int len, __u8 pi,
 
 	/* Check if buffer is long enough for parsing */
 	if (len < (2+p.pl)) {
+<<<<<<< HEAD
 		IRDA_WARNING("%s: buffer too short for parsing! "
 			     "Need %d bytes, but len is only %d\n",
 			     __func__, p.pl, len);
@@ -350,6 +421,14 @@ static int irda_extract_octseq(void *self, __u8 *buf, int len, __u8 pi,
 	}
 
 	IRDA_DEBUG(0, "%s(), not impl\n", __func__);
+=======
+		net_warn_ratelimited("%s: buffer too short for parsing! Need %d bytes, but len is only %d\n",
+				     __func__, p.pl, len);
+		return -1;
+	}
+
+	pr_debug("%s(), not impl\n", __func__);
+>>>>>>> v4.9.227
 
 	return p.pl+2; /* Extracted pl+2 bytes */
 }
@@ -455,7 +534,11 @@ static int irda_param_unpack(__u8 *buf, char *fmt, ...)
 int irda_param_insert(void *self, __u8 pi, __u8 *buf, int len,
 		      pi_param_info_t *info)
 {
+<<<<<<< HEAD
 	pi_minor_info_t *pi_minor_info;
+=======
+	const pi_minor_info_t *pi_minor_info;
+>>>>>>> v4.9.227
 	__u8 pi_minor;
 	__u8 pi_major;
 	int type;
@@ -472,8 +555,13 @@ int irda_param_insert(void *self, __u8 pi, __u8 *buf, int len,
 	if ((pi_major > info->len-1) ||
 	    (pi_minor > info->tables[pi_major].len-1))
 	{
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%s(), no handler for parameter=0x%02x\n",
 			   __func__, pi);
+=======
+		pr_debug("%s(), no handler for parameter=0x%02x\n",
+			 __func__, pi);
+>>>>>>> v4.9.227
 
 		/* Skip this parameter */
 		return -1;
@@ -487,7 +575,12 @@ int irda_param_insert(void *self, __u8 pi, __u8 *buf, int len,
 
 	/*  Check if handler has been implemented */
 	if (!pi_minor_info->func) {
+<<<<<<< HEAD
 		IRDA_MESSAGE("%s: no handler for pi=%#x\n", __func__, pi);
+=======
+		net_info_ratelimited("%s: no handler for pi=%#x\n",
+				     __func__, pi);
+>>>>>>> v4.9.227
 		/* Skip this parameter */
 		return -1;
 	}
@@ -509,7 +602,11 @@ EXPORT_SYMBOL(irda_param_insert);
 static int irda_param_extract(void *self, __u8 *buf, int len,
 			      pi_param_info_t *info)
 {
+<<<<<<< HEAD
 	pi_minor_info_t *pi_minor_info;
+=======
+	const pi_minor_info_t *pi_minor_info;
+>>>>>>> v4.9.227
 	__u8 pi_minor;
 	__u8 pi_major;
 	int type;
@@ -526,8 +623,13 @@ static int irda_param_extract(void *self, __u8 *buf, int len,
 	if ((pi_major > info->len-1) ||
 	    (pi_minor > info->tables[pi_major].len-1))
 	{
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%s(), no handler for parameter=0x%02x\n",
 			   __func__, buf[0]);
+=======
+		pr_debug("%s(), no handler for parameter=0x%02x\n",
+			 __func__, buf[0]);
+>>>>>>> v4.9.227
 
 		/* Skip this parameter */
 		return 2 + buf[n + 1];  /* Continue */
@@ -539,6 +641,7 @@ static int irda_param_extract(void *self, __u8 *buf, int len,
 	/* Find expected data type for this parameter identifier (pi)*/
 	type = pi_minor_info->type;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(3, "%s(), pi=[%d,%d], type=%d\n", __func__,
 		   pi_major, pi_minor, type);
 
@@ -546,6 +649,15 @@ static int irda_param_extract(void *self, __u8 *buf, int len,
 	if (!pi_minor_info->func) {
 		IRDA_MESSAGE("%s: no handler for pi=%#x\n",
 			     __func__, buf[n]);
+=======
+	pr_debug("%s(), pi=[%d,%d], type=%d\n", __func__,
+		 pi_major, pi_minor, type);
+
+	/*  Check if handler has been implemented */
+	if (!pi_minor_info->func) {
+		net_info_ratelimited("%s: no handler for pi=%#x\n",
+				     __func__, buf[n]);
+>>>>>>> v4.9.227
 		/* Skip this parameter */
 		return 2 + buf[n + 1]; /* Continue */
 	}

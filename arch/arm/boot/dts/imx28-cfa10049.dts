@@ -426,7 +426,11 @@
 
 	};
 
+<<<<<<< HEAD
 	onewire@0 {
+=======
+	onewire {
+>>>>>>> v4.9.227
 		compatible = "w1-gpio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&w1_gpio_pins>;

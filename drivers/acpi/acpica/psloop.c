@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,6 +55,10 @@
 
 #include <acpi/acpi.h>
 #include "accommon.h"
+<<<<<<< HEAD
+=======
+#include "acinterp.h"
+>>>>>>> v4.9.227
 #include "acparser.h"
 #include "acdispat.h"
 #include "amlcode.h"
@@ -108,10 +116,17 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 
 	case AML_INT_NAMEPATH_OP:	/* AML_NAMESTRING_ARG */
 
+<<<<<<< HEAD
 		status =
 		    acpi_ps_get_next_namepath(walk_state,
 					      &(walk_state->parser_state), op,
 					      1);
+=======
+		status = acpi_ps_get_next_namepath(walk_state,
+						   &(walk_state->parser_state),
+						   op,
+						   ACPI_POSSIBLE_METHOD_CALL);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
@@ -123,12 +138,18 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 		/*
 		 * Op is not a constant or string, append each argument to the Op
 		 */
+<<<<<<< HEAD
 		while (GET_CURRENT_ARG_TYPE(walk_state->arg_types)
 		       && !walk_state->arg_count) {
 			walk_state->aml_offset =
 			    (u32) ACPI_PTR_DIFF(walk_state->parser_state.aml,
 						walk_state->parser_state.
 						aml_start);
+=======
+		while (GET_CURRENT_ARG_TYPE(walk_state->arg_types) &&
+		       !walk_state->arg_count) {
+			walk_state->aml = walk_state->parser_state.aml;
+>>>>>>> v4.9.227
 
 			status =
 			    acpi_ps_get_next_arg(walk_state,
@@ -140,7 +161,10 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 			}
 
 			if (arg) {
+<<<<<<< HEAD
 				arg->common.aml_offset = walk_state->aml_offset;
+=======
+>>>>>>> v4.9.227
 				acpi_ps_append_arg(op, arg);
 			}
 
@@ -324,6 +348,11 @@ acpi_ps_link_module_code(union acpi_parse_object *parent_op,
 	union acpi_operand_object *method_obj;
 	struct acpi_namespace_node *parent_node;
 
+<<<<<<< HEAD
+=======
+	ACPI_FUNCTION_TRACE(ps_link_module_code);
+
+>>>>>>> v4.9.227
 	/* Get the tail of the list */
 
 	prev = next = acpi_gbl_module_code_list;
@@ -343,9 +372,19 @@ acpi_ps_link_module_code(union acpi_parse_object *parent_op,
 
 		method_obj = acpi_ut_create_internal_object(ACPI_TYPE_METHOD);
 		if (!method_obj) {
+<<<<<<< HEAD
 			return;
 		}
 
+=======
+			return_VOID;
+		}
+
+		ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+				  "Create/Link new code block: %p\n",
+				  method_obj));
+
+>>>>>>> v4.9.227
 		if (parent_op->common.node) {
 			parent_node = parent_op->common.node;
 		} else {
@@ -370,8 +409,19 @@ acpi_ps_link_module_code(union acpi_parse_object *parent_op,
 			prev->method.mutex = method_obj;
 		}
 	} else {
+<<<<<<< HEAD
 		prev->method.aml_length += aml_length;
 	}
+=======
+		ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+				  "Appending to existing code block: %p\n",
+				  prev));
+
+		prev->method.aml_length += aml_length;
+	}
+
+	return_VOID;
+>>>>>>> v4.9.227
 }
 
 /*******************************************************************************
@@ -494,6 +544,7 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 				continue;
 			}
 
+<<<<<<< HEAD
 			op->common.aml_offset = walk_state->aml_offset;
 
 			if (walk_state->op_info) {
@@ -504,6 +555,9 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 						  parser_state->aml,
 						  op->common.aml_offset));
 			}
+=======
+			acpi_ex_start_trace_opcode(op, walk_state);
+>>>>>>> v4.9.227
 		}
 
 		/*

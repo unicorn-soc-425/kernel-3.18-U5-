@@ -68,7 +68,11 @@
 
 		#address-cells = <1>;
 		#size-cells = <1>;
+<<<<<<< HEAD
 		compatible = "arm,amba-bus";
+=======
+		compatible = "simple-bus";
+>>>>>>> v4.9.227
 		interrupt-parent = <&gic>;
 		ranges = <0 0xfc000000 0x2000000>;
 

@@ -1,6 +1,10 @@
 /*
  * HighPoint RR3xxx/4xxx controller driver for Linux
+<<<<<<< HEAD
  * Copyright (C) 2006-2012 HighPoint Technologies, Inc. All Rights Reserved.
+=======
+ * Copyright (C) 2006-2015 HighPoint Technologies, Inc. All Rights Reserved.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -327,8 +331,13 @@ struct hptiop_hba {
 	struct hptiop_request reqs[HPTIOP_MAX_REQUESTS];
 
 	/* used to free allocated dma area */
+<<<<<<< HEAD
 	void        *dma_coherent;
 	dma_addr_t  dma_coherent_handle;
+=======
+	void        *dma_coherent[HPTIOP_MAX_REQUESTS];
+	dma_addr_t  dma_coherent_handle[HPTIOP_MAX_REQUESTS];
+>>>>>>> v4.9.227
 
 	atomic_t    reset_count;
 	atomic_t    resetting;

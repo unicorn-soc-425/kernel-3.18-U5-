@@ -377,8 +377,12 @@ static void free_buffer(struct videobuf_queue *vq, struct zr364xx_buffer *buf)
 {
 	_DBG("%s\n", __func__);
 
+<<<<<<< HEAD
 	if (in_interrupt())
 		BUG();
+=======
+	BUG_ON(in_interrupt());
+>>>>>>> v4.9.227
 
 	videobuf_vmalloc_free(&buf->vb);
 	buf->vb.state = VIDEOBUF_NEEDS_INIT;
@@ -712,7 +716,12 @@ static int zr364xx_vidioc_querycap(struct file *file, void *priv,
 	struct zr364xx_camera *cam = video_drvdata(file);
 
 	strlcpy(cap->driver, DRIVER_DESC, sizeof(cap->driver));
+<<<<<<< HEAD
 	strlcpy(cap->card, cam->udev->product, sizeof(cap->card));
+=======
+	if (cam->udev->product)
+		strlcpy(cap->card, cam->udev->product, sizeof(cap->card));
+>>>>>>> v4.9.227
 	strlcpy(cap->bus_info, dev_name(&cam->udev->dev),
 		sizeof(cap->bus_info));
 	cap->device_caps = V4L2_CAP_VIDEO_CAPTURE |
@@ -1054,10 +1063,15 @@ static int zr364xx_start_readpipe(struct zr364xx_camera *cam)
 	pipe_info->state = 1;
 	pipe_info->err_count = 0;
 	pipe_info->stream_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pipe_info->stream_urb) {
 		dev_err(&cam->udev->dev, "ReadStream: Unable to alloc URB\n");
 		return -ENOMEM;
 	}
+=======
+	if (!pipe_info->stream_urb)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	/* transfer buffer allocated in board_init */
 	usb_fill_bulk_urb(pipe_info->stream_urb, cam->udev,
 			  pipe,
@@ -1462,8 +1476,11 @@ static int zr364xx_probe(struct usb_interface *intf,
 	cam->vdev.v4l2_dev = &cam->v4l2_dev;
 	cam->vdev.ctrl_handler = &cam->ctrl_handler;
 	video_set_drvdata(&cam->vdev, cam);
+<<<<<<< HEAD
 	if (debug)
 		cam->vdev.debug = V4L2_DEBUG_IOCTL | V4L2_DEBUG_IOCTL_ARG;
+=======
+>>>>>>> v4.9.227
 
 	cam->udev = udev;
 

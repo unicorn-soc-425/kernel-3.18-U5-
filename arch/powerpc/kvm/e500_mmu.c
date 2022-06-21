@@ -377,7 +377,11 @@ int kvmppc_e500_emul_tlbsx(struct kvm_vcpu *vcpu, gva_t ea)
 			| MAS0_NV(vcpu_e500->gtlb_nv[tlbsel]);
 		vcpu->arch.shared->mas1 =
 			  (vcpu->arch.shared->mas6 & MAS6_SPID0)
+<<<<<<< HEAD
 			| (vcpu->arch.shared->mas6 & (MAS6_SAS ? MAS1_TS : 0))
+=======
+			| ((vcpu->arch.shared->mas6 & MAS6_SAS) ? MAS1_TS : 0)
+>>>>>>> v4.9.227
 			| (vcpu->arch.shared->mas4 & MAS4_TSIZED(~0));
 		vcpu->arch.shared->mas2 &= MAS2_EPN;
 		vcpu->arch.shared->mas2 |= vcpu->arch.shared->mas4 &
@@ -743,7 +747,11 @@ int kvm_vcpu_ioctl_config_tlb(struct kvm_vcpu *vcpu,
 	char *virt;
 	struct page **pages;
 	struct tlbe_priv *privs[2] = {};
+<<<<<<< HEAD
 	u64 *g2h_bitmap = NULL;
+=======
+	u64 *g2h_bitmap;
+>>>>>>> v4.9.227
 	size_t array_len;
 	u32 sets;
 	int num_pages, ret, i;
@@ -779,23 +787,36 @@ int kvm_vcpu_ioctl_config_tlb(struct kvm_vcpu *vcpu,
 
 	num_pages = DIV_ROUND_UP(cfg->array + array_len - 1, PAGE_SIZE) -
 		    cfg->array / PAGE_SIZE;
+<<<<<<< HEAD
 	pages = kmalloc(sizeof(struct page *) * num_pages, GFP_KERNEL);
+=======
+	pages = kmalloc_array(num_pages, sizeof(*pages), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!pages)
 		return -ENOMEM;
 
 	ret = get_user_pages_fast(cfg->array, num_pages, 1, pages);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto err_pages;
+=======
+		goto free_pages;
+>>>>>>> v4.9.227
 
 	if (ret != num_pages) {
 		num_pages = ret;
 		ret = -EFAULT;
+<<<<<<< HEAD
 		goto err_put_page;
+=======
+		goto put_pages;
+>>>>>>> v4.9.227
 	}
 
 	virt = vmap(pages, num_pages, VM_MAP, PAGE_KERNEL);
 	if (!virt) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto err_put_page;
 	}
 
@@ -814,6 +835,29 @@ int kvm_vcpu_ioctl_config_tlb(struct kvm_vcpu *vcpu,
 	if (!g2h_bitmap) {
 		ret = -ENOMEM;
 		goto err_privs;
+=======
+		goto put_pages;
+	}
+
+	privs[0] = kcalloc(params.tlb_sizes[0], sizeof(*privs[0]), GFP_KERNEL);
+	if (!privs[0]) {
+		ret = -ENOMEM;
+		goto put_pages;
+	}
+
+	privs[1] = kcalloc(params.tlb_sizes[1], sizeof(*privs[1]), GFP_KERNEL);
+	if (!privs[1]) {
+		ret = -ENOMEM;
+		goto free_privs_first;
+	}
+
+	g2h_bitmap = kcalloc(params.tlb_sizes[1],
+			     sizeof(*g2h_bitmap),
+			     GFP_KERNEL);
+	if (!g2h_bitmap) {
+		ret = -ENOMEM;
+		goto free_privs_second;
+>>>>>>> v4.9.227
 	}
 
 	free_gtlb(vcpu_e500);
@@ -845,6 +889,7 @@ int kvm_vcpu_ioctl_config_tlb(struct kvm_vcpu *vcpu,
 
 	kvmppc_recalc_tlb1map_range(vcpu_e500);
 	return 0;
+<<<<<<< HEAD
 
 err_privs:
 	kfree(privs[0]);
@@ -855,6 +900,16 @@ err_put_page:
 		put_page(pages[i]);
 
 err_pages:
+=======
+ free_privs_second:
+	kfree(privs[1]);
+ free_privs_first:
+	kfree(privs[0]);
+ put_pages:
+	for (i = 0; i < num_pages; i++)
+		put_page(pages[i]);
+ free_pages:
+>>>>>>> v4.9.227
 	kfree(pages);
 	return ret;
 }
@@ -904,11 +959,17 @@ static int vcpu_mmu_init(struct kvm_vcpu *vcpu,
 int kvmppc_e500_tlb_init(struct kvmppc_vcpu_e500 *vcpu_e500)
 {
 	struct kvm_vcpu *vcpu = &vcpu_e500->vcpu;
+<<<<<<< HEAD
 	int entry_size = sizeof(struct kvm_book3e_206_tlb_entry);
 	int entries = KVM_E500_TLB0_SIZE + KVM_E500_TLB1_SIZE;
 
 	if (e500_mmu_host_init(vcpu_e500))
 		goto err;
+=======
+
+	if (e500_mmu_host_init(vcpu_e500))
+		goto free_vcpu;
+>>>>>>> v4.9.227
 
 	vcpu_e500->gtlb_params[0].entries = KVM_E500_TLB0_SIZE;
 	vcpu_e500->gtlb_params[1].entries = KVM_E500_TLB1_SIZE;
@@ -920,13 +981,21 @@ int kvmppc_e500_tlb_init(struct kvmppc_vcpu_e500 *vcpu_e500)
 	vcpu_e500->gtlb_params[1].ways = KVM_E500_TLB1_SIZE;
 	vcpu_e500->gtlb_params[1].sets = 1;
 
+<<<<<<< HEAD
 	vcpu_e500->gtlb_arch = kmalloc(entries * entry_size, GFP_KERNEL);
+=======
+	vcpu_e500->gtlb_arch = kmalloc_array(KVM_E500_TLB0_SIZE +
+					     KVM_E500_TLB1_SIZE,
+					     sizeof(*vcpu_e500->gtlb_arch),
+					     GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!vcpu_e500->gtlb_arch)
 		return -ENOMEM;
 
 	vcpu_e500->gtlb_offset[0] = 0;
 	vcpu_e500->gtlb_offset[1] = KVM_E500_TLB0_SIZE;
 
+<<<<<<< HEAD
 	vcpu_e500->gtlb_priv[0] = kzalloc(sizeof(struct tlbe_ref) *
 					  vcpu_e500->gtlb_params[0].entries,
 					  GFP_KERNEL);
@@ -944,13 +1013,36 @@ int kvmppc_e500_tlb_init(struct kvmppc_vcpu_e500 *vcpu_e500)
 					  GFP_KERNEL);
 	if (!vcpu_e500->g2h_tlb1_map)
 		goto err;
+=======
+	vcpu_e500->gtlb_priv[0] = kcalloc(vcpu_e500->gtlb_params[0].entries,
+					  sizeof(struct tlbe_ref),
+					  GFP_KERNEL);
+	if (!vcpu_e500->gtlb_priv[0])
+		goto free_vcpu;
+
+	vcpu_e500->gtlb_priv[1] = kcalloc(vcpu_e500->gtlb_params[1].entries,
+					  sizeof(struct tlbe_ref),
+					  GFP_KERNEL);
+	if (!vcpu_e500->gtlb_priv[1])
+		goto free_vcpu;
+
+	vcpu_e500->g2h_tlb1_map = kcalloc(vcpu_e500->gtlb_params[1].entries,
+					  sizeof(*vcpu_e500->g2h_tlb1_map),
+					  GFP_KERNEL);
+	if (!vcpu_e500->g2h_tlb1_map)
+		goto free_vcpu;
+>>>>>>> v4.9.227
 
 	vcpu_mmu_init(vcpu, vcpu_e500->gtlb_params);
 
 	kvmppc_recalc_tlb1map_range(vcpu_e500);
 	return 0;
+<<<<<<< HEAD
 
 err:
+=======
+ free_vcpu:
+>>>>>>> v4.9.227
 	free_gtlb(vcpu_e500);
 	return -1;
 }

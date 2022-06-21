@@ -295,7 +295,11 @@ char *prom_getenv(char *env_name)
 
 	while (*var) {
 		if (strncmp(env_name, *var, i) == 0) {
+<<<<<<< HEAD
 			return (*var + strlen(env_name) + 1);
+=======
+			return *var + strlen(env_name) + 1;
+>>>>>>> v4.9.227
 		}
 		var++;
 	}

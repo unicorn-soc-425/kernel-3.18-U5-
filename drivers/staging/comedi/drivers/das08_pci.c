@@ -21,7 +21,11 @@
 /*
  * Driver: das08_pci
  * Description: DAS-08 PCI compatible boards
+<<<<<<< HEAD
  * Devices: (ComputerBoards) PCI-DAS08 [pci-das08]
+=======
+ * Devices: [ComputerBoards] PCI-DAS08 (pci-das08)
+>>>>>>> v4.9.227
  * Author: Warren Jasper, ds, Frank Hess
  * Updated: Fri, 31 Aug 2012 19:19:06 +0100
  * Status: works
@@ -32,9 +36,14 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 
 #include "../comedidev.h"
+=======
+
+#include "../comedi_pci.h"
+>>>>>>> v4.9.227
 
 #include "das08.h"
 

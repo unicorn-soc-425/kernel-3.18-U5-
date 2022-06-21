@@ -189,14 +189,19 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_NEC, PCI_DEVICE_ID_NEC_USB,
  */
 static int __init gef_ppc9a_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (of_flat_dt_is_compatible(root, "gef,ppc9a"))
+=======
+	if (of_machine_is_compatible("gef,ppc9a"))
+>>>>>>> v4.9.227
 		return 1;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static long __init mpc86xx_time_init(void)
 {
 	unsigned int temp;
@@ -228,6 +233,9 @@ static int __init declare_of_platform_devices(void)
 	return 0;
 }
 machine_arch_initcall(gef_ppc9a, declare_of_platform_devices);
+=======
+machine_arch_initcall(gef_ppc9a, mpc86xx_common_publish_devices);
+>>>>>>> v4.9.227
 
 define_machine(gef_ppc9a) {
 	.name			= "GE PPC9A",
@@ -236,7 +244,10 @@ define_machine(gef_ppc9a) {
 	.init_IRQ		= gef_ppc9a_init_irq,
 	.show_cpuinfo		= gef_ppc9a_show_cpuinfo,
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.time_init		= mpc86xx_time_init,
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,

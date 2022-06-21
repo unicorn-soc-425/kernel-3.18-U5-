@@ -232,7 +232,11 @@ static const struct clk_ops vt8500_gated_divisor_clk_ops = {
 static __init void vtwm_device_clk_init(struct device_node *node)
 {
 	u32 en_reg, div_reg;
+<<<<<<< HEAD
 	struct clk *clk;
+=======
+	struct clk_hw *hw;
+>>>>>>> v4.9.227
 	struct clk_device *dev_clk;
 	const char *clk_name = node->name;
 	const char *parent_name;
@@ -301,6 +305,7 @@ static __init void vtwm_device_clk_init(struct device_node *node)
 
 	dev_clk->hw.init = &init;
 
+<<<<<<< HEAD
 	clk = clk_register(NULL, &dev_clk->hw);
 	if (WARN_ON(IS_ERR(clk))) {
 		kfree(dev_clk);
@@ -308,6 +313,16 @@ static __init void vtwm_device_clk_init(struct device_node *node)
 	}
 	rc = of_clk_add_provider(node, of_clk_src_simple_get, clk);
 	clk_register_clkdev(clk, clk_name, NULL);
+=======
+	hw = &dev_clk->hw;
+	rc = clk_hw_register(NULL, hw);
+	if (WARN_ON(rc)) {
+		kfree(dev_clk);
+		return;
+	}
+	rc = of_clk_add_hw_provider(node, of_clk_hw_simple_get, hw);
+	clk_hw_register_clkdev(hw, clk_name, NULL);
+>>>>>>> v4.9.227
 }
 CLK_OF_DECLARE(vt8500_device, "via,vt8500-device-clock", vtwm_device_clk_init);
 
@@ -355,7 +370,11 @@ CLK_OF_DECLARE(vt8500_device, "via,vt8500-device-clock", vtwm_device_clk_init);
 #define WM8850_BITS_TO_VAL(m, d1, d2)					\
 		((((m / 2) - 1) << 16) | ((d1 - 1) << 8) | d2)
 
+<<<<<<< HEAD
 static void vt8500_find_pll_bits(unsigned long rate, unsigned long parent_rate,
+=======
+static int vt8500_find_pll_bits(unsigned long rate, unsigned long parent_rate,
+>>>>>>> v4.9.227
 				u32 *multiplier, u32 *prediv)
 {
 	unsigned long tclk;
@@ -365,7 +384,11 @@ static void vt8500_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 		pr_err("%s: requested rate out of range\n", __func__);
 		*multiplier = 0;
 		*prediv = 1;
+<<<<<<< HEAD
 		return;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 	if (rate <= parent_rate * 31)
 		/* use the prediv to double the resolution */
@@ -379,6 +402,7 @@ static void vt8500_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 	if (tclk != rate)
 		pr_warn("%s: requested rate %lu, found rate %lu\n", __func__,
 								rate, tclk);
+<<<<<<< HEAD
 }
 
 static void wm8650_find_pll_bits(unsigned long rate, unsigned long parent_rate,
@@ -420,6 +444,57 @@ static void wm8650_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 	*multiplier = best_mul;
 	*divisor1 = best_div1;
 	*divisor2 = best_div2;
+=======
+
+	return 0;
+}
+
+/*
+ * M * parent [O1] => / P [O2] => / D [O3]
+ * Where O1 is 900MHz...3GHz;
+ * O2 is 600MHz >= (M * parent) / P >= 300MHz;
+ * M is 36...120 [25MHz parent]; D is 1 or 2 or 4 or 8.
+ * Possible ranges (O3):
+ * D = 8: 37,5MHz...75MHz
+ * D = 4: 75MHz...150MHz
+ * D = 2: 150MHz...300MHz
+ * D = 1: 300MHz...600MHz
+ */
+static int wm8650_find_pll_bits(unsigned long rate,
+	unsigned long parent_rate, u32 *multiplier, u32 *divisor1,
+	u32 *divisor2)
+{
+	unsigned long O1, min_err, rate_err;
+
+	if (!parent_rate || (rate < 37500000) || (rate > 600000000))
+		return -EINVAL;
+
+	*divisor2 = rate <= 75000000 ? 3 : rate <= 150000000 ? 2 :
+					   rate <= 300000000 ? 1 : 0;
+	/*
+	 * Divisor P cannot be calculated. Test all divisors and find where M
+	 * will be as close as possible to the requested rate.
+	 */
+	min_err = ULONG_MAX;
+	for (*divisor1 = 5; *divisor1 >= 3; (*divisor1)--) {
+		O1 = rate * *divisor1 * (1 << (*divisor2));
+		rate_err = O1 % parent_rate;
+		if (rate_err < min_err) {
+			*multiplier = O1 / parent_rate;
+			if (rate_err == 0)
+				return 0;
+
+			min_err = rate_err;
+		}
+	}
+
+	if ((*multiplier < 3) || (*multiplier > 1023))
+		return -EINVAL;
+
+	pr_warn("%s: rate error is %lu\n", __func__, min_err);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static u32 wm8750_get_filter(u32 parent_rate, u32 divisor1)
@@ -449,11 +524,19 @@ static u32 wm8750_get_filter(u32 parent_rate, u32 divisor1)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void wm8750_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 				u32 *filter, u32 *multiplier, u32 *divisor1, u32 *divisor2)
 {
 	u32 mul, div1, div2;
 	u32 best_mul, best_div1, best_div2;
+=======
+static int wm8750_find_pll_bits(unsigned long rate, unsigned long parent_rate,
+				u32 *filter, u32 *multiplier, u32 *divisor1, u32 *divisor2)
+{
+	u32 mul;
+	int div1, div2;
+>>>>>>> v4.9.227
 	unsigned long tclk, rate_err, best_err;
 
 	best_err = (unsigned long)-1;
@@ -472,21 +555,40 @@ static void wm8750_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 					*multiplier = mul;
 					*divisor1 = div1;
 					*divisor2 = div2;
+<<<<<<< HEAD
 					return;
+=======
+					return 0;
+>>>>>>> v4.9.227
 				}
 
 				if (rate_err < best_err) {
 					best_err = rate_err;
+<<<<<<< HEAD
 					best_mul = mul;
 					best_div1 = div1;
 					best_div2 = div2;
 				}
 			}
 
+=======
+					*multiplier = mul;
+					*divisor1 = div1;
+					*divisor2 = div2;
+				}
+			}
+
+	if (best_err == (unsigned long)-1) {
+		pr_warn("%s: impossible rate %lu\n", __func__, rate);
+		return -EINVAL;
+	}
+
+>>>>>>> v4.9.227
 	/* if we got here, it wasn't an exact match */
 	pr_warn("%s: requested rate %lu, found rate %lu\n", __func__, rate,
 							rate - best_err);
 
+<<<<<<< HEAD
 	*filter = wm8750_get_filter(parent_rate, best_div1);
 	*multiplier = best_mul;
 	*divisor1 = best_div1;
@@ -498,6 +600,18 @@ static void wm8850_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 {
 	u32 mul, div1, div2;
 	u32 best_mul, best_div1, best_div2;
+=======
+	*filter = wm8750_get_filter(parent_rate, *divisor1);
+
+	return 0;
+}
+
+static int wm8850_find_pll_bits(unsigned long rate, unsigned long parent_rate,
+				u32 *multiplier, u32 *divisor1, u32 *divisor2)
+{
+	u32 mul;
+	int div1, div2;
+>>>>>>> v4.9.227
 	unsigned long tclk, rate_err, best_err;
 
 	best_err = (unsigned long)-1;
@@ -516,24 +630,46 @@ static void wm8850_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 					*multiplier = mul;
 					*divisor1 = div1;
 					*divisor2 = div2;
+<<<<<<< HEAD
 					return;
+=======
+					return 0;
+>>>>>>> v4.9.227
 				}
 
 				if (rate_err < best_err) {
 					best_err = rate_err;
+<<<<<<< HEAD
 					best_mul = mul;
 					best_div1 = div1;
 					best_div2 = div2;
 				}
 			}
 
+=======
+					*multiplier = mul;
+					*divisor1 = div1;
+					*divisor2 = div2;
+				}
+			}
+
+	if (best_err == (unsigned long)-1) {
+		pr_warn("%s: impossible rate %lu\n", __func__, rate);
+		return -EINVAL;
+	}
+
+>>>>>>> v4.9.227
 	/* if we got here, it wasn't an exact match */
 	pr_warn("%s: requested rate %lu, found rate %lu\n", __func__, rate,
 							rate - best_err);
 
+<<<<<<< HEAD
 	*multiplier = best_mul;
 	*divisor1 = best_div1;
 	*divisor2 = best_div2;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int vtwm_pll_set_rate(struct clk_hw *hw, unsigned long rate,
@@ -543,11 +679,16 @@ static int vtwm_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 	u32 filter, mul, div1, div2;
 	u32 pll_val;
 	unsigned long flags = 0;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	/* sanity check */
 
 	switch (pll->type) {
 	case PLL_TYPE_VT8500:
+<<<<<<< HEAD
 		vt8500_find_pll_bits(rate, parent_rate, &mul, &div1);
 		pll_val = VT8500_BITS_TO_VAL(mul, div1);
 		break;
@@ -568,6 +709,35 @@ static int vtwm_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 		return 0;
 	}
 
+=======
+		ret = vt8500_find_pll_bits(rate, parent_rate, &mul, &div1);
+		if (!ret)
+			pll_val = VT8500_BITS_TO_VAL(mul, div1);
+		break;
+	case PLL_TYPE_WM8650:
+		ret = wm8650_find_pll_bits(rate, parent_rate, &mul, &div1, &div2);
+		if (!ret)
+			pll_val = WM8650_BITS_TO_VAL(mul, div1, div2);
+		break;
+	case PLL_TYPE_WM8750:
+		ret = wm8750_find_pll_bits(rate, parent_rate, &filter, &mul, &div1, &div2);
+		if (!ret)
+			pll_val = WM8750_BITS_TO_VAL(filter, mul, div1, div2);
+		break;
+	case PLL_TYPE_WM8850:
+		ret = wm8850_find_pll_bits(rate, parent_rate, &mul, &div1, &div2);
+		if (!ret)
+			pll_val = WM8850_BITS_TO_VAL(mul, div1, div2);
+		break;
+	default:
+		pr_err("%s: invalid pll type\n", __func__);
+		ret = -EINVAL;
+	}
+
+	if (ret)
+		return ret;
+
+>>>>>>> v4.9.227
 	spin_lock_irqsave(pll->lock, flags);
 
 	vt8500_pmc_wait_busy();
@@ -585,6 +755,7 @@ static long vtwm_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 	struct clk_pll *pll = to_clk_pll(hw);
 	u32 filter, mul, div1, div2;
 	long round_rate;
+<<<<<<< HEAD
 
 	switch (pll->type) {
 	case PLL_TYPE_VT8500:
@@ -607,6 +778,38 @@ static long vtwm_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 		round_rate = 0;
 	}
 
+=======
+	int ret;
+
+	switch (pll->type) {
+	case PLL_TYPE_VT8500:
+		ret = vt8500_find_pll_bits(rate, *prate, &mul, &div1);
+		if (!ret)
+			round_rate = VT8500_BITS_TO_FREQ(*prate, mul, div1);
+		break;
+	case PLL_TYPE_WM8650:
+		ret = wm8650_find_pll_bits(rate, *prate, &mul, &div1, &div2);
+		if (!ret)
+			round_rate = WM8650_BITS_TO_FREQ(*prate, mul, div1, div2);
+		break;
+	case PLL_TYPE_WM8750:
+		ret = wm8750_find_pll_bits(rate, *prate, &filter, &mul, &div1, &div2);
+		if (!ret)
+			round_rate = WM8750_BITS_TO_FREQ(*prate, mul, div1, div2);
+		break;
+	case PLL_TYPE_WM8850:
+		ret = wm8850_find_pll_bits(rate, *prate, &mul, &div1, &div2);
+		if (!ret)
+			round_rate = WM8850_BITS_TO_FREQ(*prate, mul, div1, div2);
+		break;
+	default:
+		ret = -EINVAL;
+	}
+
+	if (ret)
+		return ret;
+
+>>>>>>> v4.9.227
 	return round_rate;
 }
 
@@ -650,7 +853,11 @@ static const struct clk_ops vtwm_pll_ops = {
 static __init void vtwm_pll_clk_init(struct device_node *node, int pll_type)
 {
 	u32 reg;
+<<<<<<< HEAD
 	struct clk *clk;
+=======
+	struct clk_hw *hw;
+>>>>>>> v4.9.227
 	struct clk_pll *pll_clk;
 	const char *clk_name = node->name;
 	const char *parent_name;
@@ -683,6 +890,7 @@ static __init void vtwm_pll_clk_init(struct device_node *node, int pll_type)
 
 	pll_clk->hw.init = &init;
 
+<<<<<<< HEAD
 	clk = clk_register(NULL, &pll_clk->hw);
 	if (WARN_ON(IS_ERR(clk))) {
 		kfree(pll_clk);
@@ -690,6 +898,16 @@ static __init void vtwm_pll_clk_init(struct device_node *node, int pll_type)
 	}
 	rc = of_clk_add_provider(node, of_clk_src_simple_get, clk);
 	clk_register_clkdev(clk, clk_name, NULL);
+=======
+	hw = &pll_clk->hw;
+	rc = clk_hw_register(NULL, &pll_clk->hw);
+	if (WARN_ON(rc)) {
+		kfree(pll_clk);
+		return;
+	}
+	rc = of_clk_add_hw_provider(node, of_clk_hw_simple_get, hw);
+	clk_hw_register_clkdev(hw, clk_name, NULL);
+>>>>>>> v4.9.227
 }
 
 

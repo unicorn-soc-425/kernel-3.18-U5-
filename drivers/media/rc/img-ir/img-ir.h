@@ -138,6 +138,10 @@ struct clk;
  * @dev:		Platform device.
  * @irq:		IRQ number.
  * @clk:		Input clock.
+<<<<<<< HEAD
+=======
+ * @sys_clk:		System clock.
+>>>>>>> v4.9.227
  * @reg_base:		Iomem base address of IR register block.
  * @lock:		Protects IR registers and variables in this struct.
  * @raw:		Driver data for raw decoder.
@@ -147,6 +151,10 @@ struct img_ir_priv {
 	struct device		*dev;
 	int			irq;
 	struct clk		*clk;
+<<<<<<< HEAD
+=======
+	struct clk		*sys_clk;
+>>>>>>> v4.9.227
 	void __iomem		*reg_base;
 	spinlock_t		lock;
 

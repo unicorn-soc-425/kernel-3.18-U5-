@@ -4,6 +4,7 @@
 
 #include <asm/thread_info.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm-generic/vmlinux.lds.h>
 
 #ifndef CONFIG_64BIT
@@ -12,11 +13,28 @@ OUTPUT_ARCH(s390:31-bit)
 ENTRY(startup)
 jiffies = jiffies_64 + 4;
 #else
+=======
+
+/*
+ * Put .bss..swapper_pg_dir as the first thing in .bss. This will
+ * make sure it has 16k alignment.
+ */
+#define BSS_FIRST_SECTIONS *(.bss..swapper_pg_dir)
+
+/* Handle ro_after_init data on our own. */
+#define RO_AFTER_INIT_DATA
+
+#include <asm-generic/vmlinux.lds.h>
+
+>>>>>>> v4.9.227
 OUTPUT_FORMAT("elf64-s390", "elf64-s390", "elf64-s390")
 OUTPUT_ARCH(s390:64-bit)
 ENTRY(startup)
 jiffies = jiffies_64;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 PHDRS {
 	text PT_LOAD FLAGS(5);	/* R_E */
@@ -38,9 +56,17 @@ SECTIONS
 	_text = 0x200;
 		TEXT_TEXT
 		SCHED_TEXT
+<<<<<<< HEAD
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
+=======
+		CPUIDLE_TEXT
+		LOCK_TEXT
+		KPROBES_TEXT
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+>>>>>>> v4.9.227
 		*(.fixup)
 		*(.gnu.warning)
 	} :text = 0x0700
@@ -61,7 +87,20 @@ SECTIONS
 	_eshared = .;		/* End of shareable data */
 	_sdata = .;		/* Start of data section */
 
+<<<<<<< HEAD
 	EXCEPTION_TABLE(16) :data
+=======
+	. = ALIGN(PAGE_SIZE);
+	__start_ro_after_init = .;
+	__start_data_ro_after_init = .;
+	.data..ro_after_init : {
+		 *(.data..ro_after_init)
+	}
+	__end_data_ro_after_init = .;
+	EXCEPTION_TABLE(16)
+	. = ALIGN(PAGE_SIZE);
+	__end_ro_after_init = .;
+>>>>>>> v4.9.227
 
 	RW_DATA_SECTION(0x100, PAGE_SIZE, THREAD_SIZE)
 
@@ -85,6 +124,46 @@ SECTIONS
 		EXIT_DATA
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * struct alt_inst entries. From the header (alternative.h):
+	 * "Alternative instructions for different CPU types or capabilities"
+	 * Think locking instructions on spinlocks.
+	 * Note, that it is a part of __init region.
+	 */
+	. = ALIGN(8);
+	.altinstructions : {
+		__alt_instructions = .;
+		*(.altinstructions)
+		__alt_instructions_end = .;
+	}
+
+	/*
+	 * And here are the replacement instructions. The linker sticks
+	 * them as binary blobs. The .altinstructions has enough data to
+	 * get the address and the length of them to patch the kernel safely.
+	 * Note, that it is a part of __init region.
+	 */
+	.altinstr_replacement : {
+		*(.altinstr_replacement)
+	}
+
+	/*
+	 * Table with the patch locations to undo expolines
+	*/
+	.nospec_call_table : {
+		__nospec_call_start = . ;
+		*(.s390_indirect*)
+		__nospec_call_end = . ;
+	}
+	.nospec_return_table : {
+		__nospec_return_start = . ;
+		*(.s390_return*)
+		__nospec_return_end = . ;
+	}
+
+>>>>>>> v4.9.227
 	/* early.c uses stsi, which requires page aligned data. */
 	. = ALIGN(PAGE_SIZE);
 	INIT_DATA_SECTION(0x100)
@@ -93,7 +172,11 @@ SECTIONS
 	. = ALIGN(PAGE_SIZE);
 	__init_end = .;		/* freed after init ends here */
 
+<<<<<<< HEAD
 	BSS_SECTION(0, 2, 0)
+=======
+	BSS_SECTION(PAGE_SIZE, 4 * PAGE_SIZE, PAGE_SIZE)
+>>>>>>> v4.9.227
 
 	_end = . ;
 

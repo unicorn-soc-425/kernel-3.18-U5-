@@ -50,6 +50,11 @@
 		pci0 = &pci0;
 		pci1 = &pci1;
 		pci2 = &pci2;
+<<<<<<< HEAD
+=======
+		vga = &display;
+		display = &display;
+>>>>>>> v4.9.227
 	};
 
 	cpus {

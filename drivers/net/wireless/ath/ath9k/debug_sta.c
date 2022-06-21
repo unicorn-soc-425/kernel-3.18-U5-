@@ -26,12 +26,19 @@ static ssize_t read_file_node_aggr(struct file *file, char __user *user_buf,
 	struct ath_node *an = file->private_data;
 	struct ath_softc *sc = an->sc;
 	struct ath_atx_tid *tid;
+<<<<<<< HEAD
 	struct ath_atx_ac *ac;
+=======
+>>>>>>> v4.9.227
 	struct ath_txq *txq;
 	u32 len = 0, size = 4096;
 	char *buf;
 	size_t retval;
+<<<<<<< HEAD
 	int tidno, acno;
+=======
+	int tidno;
+>>>>>>> v4.9.227
 
 	buf = kzalloc(size, GFP_KERNEL);
 	if (buf == NULL)
@@ -49,6 +56,7 @@ static ssize_t read_file_node_aggr(struct file *file, char __user *user_buf,
 			 an->mpdudensity);
 
 	len += scnprintf(buf + len, size - len,
+<<<<<<< HEAD
 			 "%2s%7s\n", "AC", "SCHED");
 
 	for (acno = 0, ac = &an->ac[acno];
@@ -62,13 +70,19 @@ static ssize_t read_file_node_aggr(struct file *file, char __user *user_buf,
 	}
 
 	len += scnprintf(buf + len, size - len,
+=======
+>>>>>>> v4.9.227
 			 "\n%3s%11s%10s%10s%10s%10s%9s%6s%8s\n",
 			 "TID", "SEQ_START", "SEQ_NEXT", "BAW_SIZE",
 			 "BAW_HEAD", "BAW_TAIL", "BAR_IDX", "SCHED", "PAUSED");
 
 	for (tidno = 0, tid = &an->tid[tidno];
 	     tidno < IEEE80211_NUM_TIDS; tidno++, tid++) {
+<<<<<<< HEAD
 		txq = tid->ac->txq;
+=======
+		txq = tid->txq;
+>>>>>>> v4.9.227
 		ath_txq_lock(sc, txq);
 		if (tid->active) {
 			len += scnprintf(buf + len, size - len,
@@ -80,7 +94,11 @@ static ssize_t read_file_node_aggr(struct file *file, char __user *user_buf,
 					 tid->baw_head,
 					 tid->baw_tail,
 					 tid->bar_index,
+<<<<<<< HEAD
 					 tid->sched);
+=======
+					 !list_empty(&tid->list));
+>>>>>>> v4.9.227
 		}
 		ath_txq_unlock(sc, txq);
 	}
@@ -153,7 +171,11 @@ void ath_debug_rate_stats(struct ath_softc *sc,
 	}
 
 	if (IS_OFDM_RATE(rs->rs_rate)) {
+<<<<<<< HEAD
 		if (ah->curchan->chan->band == IEEE80211_BAND_2GHZ)
+=======
+		if (ah->curchan->chan->band == NL80211_BAND_2GHZ)
+>>>>>>> v4.9.227
 			rstats->ofdm_stats[rxs->rate_idx - 4].ofdm_cnt++;
 		else
 			rstats->ofdm_stats[rxs->rate_idx].ofdm_cnt++;
@@ -187,7 +209,11 @@ static ssize_t read_file_node_recv(struct file *file, char __user *user_buf,
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_rx_rate_stats *rstats;
 	struct ieee80211_sta *sta = an->sta;
+<<<<<<< HEAD
 	enum ieee80211_band band;
+=======
+	enum nl80211_band band;
+>>>>>>> v4.9.227
 	u32 len = 0, size = 4096;
 	char *buf;
 	size_t retval;
@@ -220,7 +246,11 @@ static ssize_t read_file_node_recv(struct file *file, char __user *user_buf,
 	len += scnprintf(buf + len, size - len, "\n");
 
 legacy:
+<<<<<<< HEAD
 	if (band == IEEE80211_BAND_2GHZ) {
+=======
+	if (band == NL80211_BAND_2GHZ) {
+>>>>>>> v4.9.227
 		PRINT_CCK_RATE("CCK-1M/LP", 0, false);
 		PRINT_CCK_RATE("CCK-2M/LP", 1, false);
 		PRINT_CCK_RATE("CCK-5.5M/LP", 2, false);

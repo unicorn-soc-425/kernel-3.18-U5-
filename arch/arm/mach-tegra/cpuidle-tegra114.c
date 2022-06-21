@@ -15,7 +15,11 @@
  */
 
 #include <asm/firmware.h>
+<<<<<<< HEAD
 #include <linux/clockchips.h>
+=======
+#include <linux/tick.h>
+>>>>>>> v4.9.227
 #include <linux/cpuidle.h>
 #include <linux/cpu_pm.h>
 #include <linux/kernel.h>
@@ -24,7 +28,13 @@
 #include <asm/cpuidle.h>
 #include <asm/smp_plat.h>
 #include <asm/suspend.h>
+<<<<<<< HEAD
 
+=======
+#include <asm/psci.h>
+
+#include "cpuidle.h"
+>>>>>>> v4.9.227
 #include "pm.h"
 #include "sleep.h"
 
@@ -44,6 +54,7 @@ static int tegra114_idle_power_down(struct cpuidle_device *dev,
 	tegra_set_cpu_in_lp2();
 	cpu_pm_enter();
 
+<<<<<<< HEAD
 	clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_ENTER, &dev->cpu);
 
 	call_firmware_op(prepare_idle);
@@ -54,6 +65,14 @@ static int tegra114_idle_power_down(struct cpuidle_device *dev,
 
 	clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_EXIT, &dev->cpu);
 
+=======
+	call_firmware_op(prepare_idle);
+
+	/* Do suspend by ourselves if the firmware does not implement it */
+	if (call_firmware_op(do_idle, 0) == -ENOSYS)
+		cpu_suspend(0, tegra30_sleep_cpu_secondary_finish);
+
+>>>>>>> v4.9.227
 	cpu_pm_exit();
 	tegra_clear_cpu_in_lp2();
 
@@ -61,6 +80,16 @@ static int tegra114_idle_power_down(struct cpuidle_device *dev,
 
 	return index;
 }
+<<<<<<< HEAD
+=======
+
+static void tegra114_idle_enter_freeze(struct cpuidle_device *dev,
+				       struct cpuidle_driver *drv,
+				       int index)
+{
+       tegra114_idle_power_down(dev, drv, index);
+}
+>>>>>>> v4.9.227
 #endif
 
 static struct cpuidle_driver tegra_idle_driver = {
@@ -72,10 +101,18 @@ static struct cpuidle_driver tegra_idle_driver = {
 #ifdef CONFIG_PM_SLEEP
 		[1] = {
 			.enter			= tegra114_idle_power_down,
+<<<<<<< HEAD
 			.exit_latency		= 500,
 			.target_residency	= 1000,
 			.power_usage		= 0,
 			.flags			= CPUIDLE_FLAG_TIME_VALID,
+=======
+			.enter_freeze		= tegra114_idle_enter_freeze,
+			.exit_latency		= 500,
+			.target_residency	= 1000,
+			.flags			= CPUIDLE_FLAG_TIMER_STOP,
+			.power_usage		= 0,
+>>>>>>> v4.9.227
 			.name			= "powered-down",
 			.desc			= "CPU power gated",
 		},
@@ -85,5 +122,12 @@ static struct cpuidle_driver tegra_idle_driver = {
 
 int __init tegra114_cpuidle_init(void)
 {
+<<<<<<< HEAD
 	return cpuidle_register(&tegra_idle_driver, NULL);
+=======
+	if (!psci_smp_available())
+		return cpuidle_register(&tegra_idle_driver, NULL);
+
+	return 0;
+>>>>>>> v4.9.227
 }

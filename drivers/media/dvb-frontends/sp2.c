@@ -92,6 +92,12 @@ static int sp2_write_i2c(struct sp2 *s, u8 reg, u8 *buf, int len)
 			return -EIO;
 	}
 
+<<<<<<< HEAD
+=======
+	dev_dbg(&s->client->dev, "addr=0x%04x, reg = 0x%02x, data = %*ph\n",
+				client->addr, reg, len, buf);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -103,9 +109,12 @@ static int sp2_ci_op_cam(struct dvb_ca_en50221 *en50221, int slot, u8 acs,
 	int mem, ret;
 	int (*ci_op_cam)(void*, u8, int, u8, int*) = s->ci_control;
 
+<<<<<<< HEAD
 	dev_dbg(&s->client->dev, "slot=%d, acs=0x%02x, addr=0x%04x, data = 0x%02x",
 			slot, acs, addr, data);
 
+=======
+>>>>>>> v4.9.227
 	if (slot != 0)
 		return -EINVAL;
 
@@ -140,6 +149,7 @@ static int sp2_ci_op_cam(struct dvb_ca_en50221 *en50221, int slot, u8 acs,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if (read) {
 		dev_dbg(&s->client->dev, "cam read, addr=0x%04x, data = 0x%04x",
 				addr, mem);
@@ -147,6 +157,18 @@ static int sp2_ci_op_cam(struct dvb_ca_en50221 *en50221, int slot, u8 acs,
 	} else {
 		return 0;
 	}
+=======
+	dev_dbg(&s->client->dev, "%s: slot=%d, addr=0x%04x, %s, data=%x",
+			(read) ? "read" : "write", slot, addr,
+			(acs == SP2_CI_ATTR_ACS) ? "attr" : "io",
+			(read) ? mem : data);
+
+	if (read)
+		return mem;
+	else
+		return 0;
+
+>>>>>>> v4.9.227
 }
 
 int sp2_ci_read_attribute_mem(struct dvb_ca_en50221 *en50221,
@@ -407,6 +429,7 @@ err:
 
 static int sp2_remove(struct i2c_client *client)
 {
+<<<<<<< HEAD
 	struct si2157 *s = i2c_get_clientdata(client);
 
 	dev_dbg(&client->dev, "\n");
@@ -415,6 +438,13 @@ static int sp2_remove(struct i2c_client *client)
 	if (s != NULL)
 		kfree(s);
 
+=======
+	struct sp2 *s = i2c_get_clientdata(client);
+
+	dev_dbg(&client->dev, "\n");
+	sp2_exit(client);
+	kfree(s);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -426,7 +456,10 @@ MODULE_DEVICE_TABLE(i2c, sp2_id);
 
 static struct i2c_driver sp2_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "sp2",
 	},
 	.probe		= sp2_probe,

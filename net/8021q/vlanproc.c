@@ -184,12 +184,19 @@ int vlan_proc_add_dev(struct net_device *vlandev)
 /*
  *	Delete directory entry for VLAN device.
  */
+<<<<<<< HEAD
 int vlan_proc_rem_dev(struct net_device *vlandev)
+=======
+void vlan_proc_rem_dev(struct net_device *vlandev)
+>>>>>>> v4.9.227
 {
 	/** NOTE:  This will consume the memory pointed to by dent, it seems. */
 	proc_remove(vlan_dev_priv(vlandev)->dent);
 	vlan_dev_priv(vlandev)->dent = NULL;
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> v4.9.227
 }
 
 /****** Proc filesystem entry points ****************************************/

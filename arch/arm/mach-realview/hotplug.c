@@ -90,7 +90,11 @@ static inline void platform_do_lowpower(unsigned int cpu, int *spurious)
  *
  * Called with IRQs disabled
  */
+<<<<<<< HEAD
 void __ref realview_cpu_die(unsigned int cpu)
+=======
+void realview_cpu_die(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 	int spurious = 0;
 

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * ps3vram - Use extra PS3 video ram as MTD block device.
+=======
+ * ps3vram - Use extra PS3 video ram as block device.
+>>>>>>> v4.9.227
  *
  * Copyright 2009 Sony Corporation
  *
@@ -73,8 +77,13 @@ struct ps3vram_priv {
 
 	u64 memory_handle;
 	u64 context_handle;
+<<<<<<< HEAD
 	u32 *ctrl;
 	void *reports;
+=======
+	u32 __iomem *ctrl;
+	void __iomem *reports;
+>>>>>>> v4.9.227
 	u8 *xdr_buf;
 
 	u32 *fifo_base;
@@ -104,7 +113,11 @@ static char *size = "256M";
 module_param(size, charp, 0);
 MODULE_PARM_DESC(size, "memory size");
 
+<<<<<<< HEAD
 static u32 *ps3vram_get_notifier(void *reports, int notifier)
+=======
+static u32 __iomem *ps3vram_get_notifier(void __iomem *reports, int notifier)
+>>>>>>> v4.9.227
 {
 	return reports + DMA_NOTIFIER_OFFSET_BASE +
 	       DMA_NOTIFIER_SIZE * notifier;
@@ -113,22 +126,38 @@ static u32 *ps3vram_get_notifier(void *reports, int notifier)
 static void ps3vram_notifier_reset(struct ps3_system_bus_device *dev)
 {
 	struct ps3vram_priv *priv = ps3_system_bus_get_drvdata(dev);
+<<<<<<< HEAD
 	u32 *notify = ps3vram_get_notifier(priv->reports, NOTIFIER);
 	int i;
 
 	for (i = 0; i < 4; i++)
 		notify[i] = 0xffffffff;
+=======
+	u32 __iomem *notify = ps3vram_get_notifier(priv->reports, NOTIFIER);
+	int i;
+
+	for (i = 0; i < 4; i++)
+		iowrite32be(0xffffffff, notify + i);
+>>>>>>> v4.9.227
 }
 
 static int ps3vram_notifier_wait(struct ps3_system_bus_device *dev,
 				 unsigned int timeout_ms)
 {
 	struct ps3vram_priv *priv = ps3_system_bus_get_drvdata(dev);
+<<<<<<< HEAD
 	u32 *notify = ps3vram_get_notifier(priv->reports, NOTIFIER);
 	unsigned long timeout;
 
 	for (timeout = 20; timeout; timeout--) {
 		if (!notify[3])
+=======
+	u32 __iomem *notify = ps3vram_get_notifier(priv->reports, NOTIFIER);
+	unsigned long timeout;
+
+	for (timeout = 20; timeout; timeout--) {
+		if (!ioread32be(notify + 3))
+>>>>>>> v4.9.227
 			return 0;
 		udelay(10);
 	}
@@ -136,7 +165,11 @@ static int ps3vram_notifier_wait(struct ps3_system_bus_device *dev,
 	timeout = jiffies + msecs_to_jiffies(timeout_ms);
 
 	do {
+<<<<<<< HEAD
 		if (!notify[3])
+=======
+		if (!ioread32be(notify + 3))
+>>>>>>> v4.9.227
 			return 0;
 		msleep(1);
 	} while (time_before(jiffies, timeout));
@@ -148,8 +181,13 @@ static void ps3vram_init_ring(struct ps3_system_bus_device *dev)
 {
 	struct ps3vram_priv *priv = ps3_system_bus_get_drvdata(dev);
 
+<<<<<<< HEAD
 	priv->ctrl[CTRL_PUT] = FIFO_BASE + FIFO_OFFSET;
 	priv->ctrl[CTRL_GET] = FIFO_BASE + FIFO_OFFSET;
+=======
+	iowrite32be(FIFO_BASE + FIFO_OFFSET, priv->ctrl + CTRL_PUT);
+	iowrite32be(FIFO_BASE + FIFO_OFFSET, priv->ctrl + CTRL_GET);
+>>>>>>> v4.9.227
 }
 
 static int ps3vram_wait_ring(struct ps3_system_bus_device *dev,
@@ -159,14 +197,23 @@ static int ps3vram_wait_ring(struct ps3_system_bus_device *dev,
 	unsigned long timeout = jiffies + msecs_to_jiffies(timeout_ms);
 
 	do {
+<<<<<<< HEAD
 		if (priv->ctrl[CTRL_PUT] == priv->ctrl[CTRL_GET])
+=======
+		if (ioread32be(priv->ctrl + CTRL_PUT) == ioread32be(priv->ctrl + CTRL_GET))
+>>>>>>> v4.9.227
 			return 0;
 		msleep(1);
 	} while (time_before(jiffies, timeout));
 
 	dev_warn(&dev->core, "FIFO timeout (%08x/%08x/%08x)\n",
+<<<<<<< HEAD
 		 priv->ctrl[CTRL_PUT], priv->ctrl[CTRL_GET],
 		 priv->ctrl[CTRL_TOP]);
+=======
+		 ioread32be(priv->ctrl + CTRL_PUT), ioread32be(priv->ctrl + CTRL_GET),
+		 ioread32be(priv->ctrl + CTRL_TOP));
+>>>>>>> v4.9.227
 
 	return -ETIMEDOUT;
 }
@@ -189,7 +236,11 @@ static void ps3vram_rewind_ring(struct ps3_system_bus_device *dev)
 
 	ps3vram_out_ring(priv, 0x20000000 | (FIFO_BASE + FIFO_OFFSET));
 
+<<<<<<< HEAD
 	priv->ctrl[CTRL_PUT] = FIFO_BASE + FIFO_OFFSET;
+=======
+	iowrite32be(FIFO_BASE + FIFO_OFFSET, priv->ctrl + CTRL_PUT);
+>>>>>>> v4.9.227
 
 	/* asking the HV for a blit will kick the FIFO */
 	status = lv1_gpu_fb_blit(priv->context_handle, 0, 0, 0, 0);
@@ -207,8 +258,13 @@ static void ps3vram_fire_ring(struct ps3_system_bus_device *dev)
 
 	mutex_lock(&ps3_gpu_mutex);
 
+<<<<<<< HEAD
 	priv->ctrl[CTRL_PUT] = FIFO_BASE + FIFO_OFFSET +
 			       (priv->fifo_ptr - priv->fifo_base) * sizeof(u32);
+=======
+	iowrite32be(FIFO_BASE + FIFO_OFFSET + (priv->fifo_ptr - priv->fifo_base)
+		* sizeof(u32), priv->ctrl + CTRL_PUT);
+>>>>>>> v4.9.227
 
 	/* asking the HV for a blit will kick the FIFO */
 	status = lv1_gpu_fb_blit(priv->context_handle, 0, 0, 0, 0);
@@ -593,11 +649,20 @@ out:
 	next = bio_list_peek(&priv->list);
 	spin_unlock_irq(&priv->lock);
 
+<<<<<<< HEAD
 	bio_endio(bio, error);
 	return next;
 }
 
 static void ps3vram_make_request(struct request_queue *q, struct bio *bio)
+=======
+	bio->bi_error = error;
+	bio_endio(bio);
+	return next;
+}
+
+static blk_qc_t ps3vram_make_request(struct request_queue *q, struct bio *bio)
+>>>>>>> v4.9.227
 {
 	struct ps3_system_bus_device *dev = q->queuedata;
 	struct ps3vram_priv *priv = ps3_system_bus_get_drvdata(dev);
@@ -605,17 +670,31 @@ static void ps3vram_make_request(struct request_queue *q, struct bio *bio)
 
 	dev_dbg(&dev->core, "%s\n", __func__);
 
+<<<<<<< HEAD
+=======
+	blk_queue_split(q, &bio, q->bio_split);
+
+>>>>>>> v4.9.227
 	spin_lock_irq(&priv->lock);
 	busy = !bio_list_empty(&priv->list);
 	bio_list_add(&priv->list, bio);
 	spin_unlock_irq(&priv->lock);
 
 	if (busy)
+<<<<<<< HEAD
 		return;
+=======
+		return BLK_QC_T_NONE;
+>>>>>>> v4.9.227
 
 	do {
 		bio = ps3vram_do_bio(dev, bio);
 	} while (bio);
+<<<<<<< HEAD
+=======
+
+	return BLK_QC_T_NONE;
+>>>>>>> v4.9.227
 }
 
 static int ps3vram_probe(struct ps3_system_bus_device *dev)
@@ -768,14 +847,21 @@ static int ps3vram_probe(struct ps3_system_bus_device *dev)
 	gendisk->fops = &ps3vram_fops;
 	gendisk->queue = queue;
 	gendisk->private_data = dev;
+<<<<<<< HEAD
 	gendisk->driverfs_dev = &dev->core;
+=======
+>>>>>>> v4.9.227
 	strlcpy(gendisk->disk_name, DEVICE_NAME, sizeof(gendisk->disk_name));
 	set_capacity(gendisk, priv->size >> 9);
 
 	dev_info(&dev->core, "%s: Using %lu MiB of GPU memory\n",
 		 gendisk->disk_name, get_capacity(gendisk) >> 11);
 
+<<<<<<< HEAD
 	add_disk(gendisk);
+=======
+	device_add_disk(&dev->core, gendisk);
+>>>>>>> v4.9.227
 	return 0;
 
 fail_cleanup_queue:

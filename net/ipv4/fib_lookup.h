@@ -6,11 +6,21 @@
 #include <net/ip_fib.h>
 
 struct fib_alias {
+<<<<<<< HEAD
 	struct list_head	fa_list;
+=======
+	struct hlist_node	fa_list;
+>>>>>>> v4.9.227
 	struct fib_info		*fa_info;
 	u8			fa_tos;
 	u8			fa_type;
 	u8			fa_state;
+<<<<<<< HEAD
+=======
+	u8			fa_slen;
+	u32			tb_id;
+	s16			fa_default;
+>>>>>>> v4.9.227
 	struct rcu_head		rcu;
 };
 
@@ -32,7 +42,10 @@ int fib_dump_info(struct sk_buff *skb, u32 pid, u32 seq, int event, u32 tb_id,
 		  unsigned int);
 void rtmsg_fib(int event, __be32 key, struct fib_alias *fa, int dst_len,
 	       u32 tb_id, const struct nl_info *info, unsigned int nlm_flags);
+<<<<<<< HEAD
 struct fib_alias *fib_find_alias(struct list_head *fah, u8 tos, u32 prio);
+=======
+>>>>>>> v4.9.227
 
 static inline void fib_result_assign(struct fib_result *res,
 				     struct fib_info *fi)

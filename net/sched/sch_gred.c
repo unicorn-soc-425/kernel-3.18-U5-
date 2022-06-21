@@ -149,7 +149,12 @@ static inline int gred_use_harddrop(struct gred_sched *t)
 	return t->red_flags & TC_RED_HARDDROP;
 }
 
+<<<<<<< HEAD
 static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch)
+=======
+static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+			struct sk_buff **to_free)
+>>>>>>> v4.9.227
 {
 	struct gred_sched_data *q = NULL;
 	struct gred_sched *t = qdisc_priv(sch);
@@ -165,7 +170,12 @@ static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 			 * if no default DP has been configured. This
 			 * allows for DP flows to be left untouched.
 			 */
+<<<<<<< HEAD
 			if (skb_queue_len(&sch->q) < qdisc_dev(sch)->tx_queue_len)
+=======
+			if (likely(sch->qstats.backlog + qdisc_pkt_len(skb) <=
+					sch->limit))
+>>>>>>> v4.9.227
 				return qdisc_enqueue_tail(skb, sch);
 			else
 				goto drop;
@@ -229,17 +239,28 @@ static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		break;
 	}
 
+<<<<<<< HEAD
 	if (q->backlog + qdisc_pkt_len(skb) <= q->limit) {
+=======
+	if (gred_backlog(t, q, sch) + qdisc_pkt_len(skb) <= q->limit) {
+>>>>>>> v4.9.227
 		q->backlog += qdisc_pkt_len(skb);
 		return qdisc_enqueue_tail(skb, sch);
 	}
 
 	q->stats.pdrop++;
 drop:
+<<<<<<< HEAD
 	return qdisc_drop(skb, sch);
 
 congestion_drop:
 	qdisc_drop(skb, sch);
+=======
+	return qdisc_drop(skb, sch, to_free);
+
+congestion_drop:
+	qdisc_drop(skb, sch, to_free);
+>>>>>>> v4.9.227
 	return NET_XMIT_CN;
 }
 
@@ -275,6 +296,7 @@ static struct sk_buff *gred_dequeue(struct Qdisc *sch)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static unsigned int gred_drop(struct Qdisc *sch)
 {
 	struct sk_buff *skb;
@@ -309,6 +331,8 @@ static unsigned int gred_drop(struct Qdisc *sch)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static void gred_reset(struct Qdisc *sch)
 {
 	int i;
@@ -400,7 +424,14 @@ static inline int gred_change_vq(struct Qdisc *sch, int dp,
 
 	q->DP = dp;
 	q->prio = prio;
+<<<<<<< HEAD
 	q->limit = ctl->limit;
+=======
+	if (ctl->limit > sch->limit)
+		q->limit = sch->limit;
+	else
+		q->limit = ctl->limit;
+>>>>>>> v4.9.227
 
 	if (q->backlog == 0)
 		red_end_of_idle_period(&q->vars);
@@ -417,6 +448,10 @@ static const struct nla_policy gred_policy[TCA_GRED_MAX + 1] = {
 	[TCA_GRED_STAB]		= { .len = 256 },
 	[TCA_GRED_DPS]		= { .len = sizeof(struct tc_gred_sopt) },
 	[TCA_GRED_MAX_P]	= { .type = NLA_U32 },
+<<<<<<< HEAD
+=======
+	[TCA_GRED_LIMIT]	= { .type = NLA_U32 },
+>>>>>>> v4.9.227
 };
 
 static int gred_change(struct Qdisc *sch, struct nlattr *opt)
@@ -436,11 +471,23 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt)
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	if (tb[TCA_GRED_PARMS] == NULL && tb[TCA_GRED_STAB] == NULL)
 		return gred_change_table_def(sch, opt);
 
 	if (tb[TCA_GRED_PARMS] == NULL ||
 	    tb[TCA_GRED_STAB] == NULL)
+=======
+	if (tb[TCA_GRED_PARMS] == NULL && tb[TCA_GRED_STAB] == NULL) {
+		if (tb[TCA_GRED_LIMIT] != NULL)
+			sch->limit = nla_get_u32(tb[TCA_GRED_LIMIT]);
+		return gred_change_table_def(sch, tb[TCA_GRED_DPS]);
+	}
+
+	if (tb[TCA_GRED_PARMS] == NULL ||
+	    tb[TCA_GRED_STAB] == NULL ||
+	    tb[TCA_GRED_LIMIT] != NULL)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	max_P = tb[TCA_GRED_MAX_P] ? nla_get_u32(tb[TCA_GRED_MAX_P]) : 0;
@@ -504,6 +551,15 @@ static int gred_init(struct Qdisc *sch, struct nlattr *opt)
 	if (tb[TCA_GRED_PARMS] || tb[TCA_GRED_STAB])
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (tb[TCA_GRED_LIMIT])
+		sch->limit = nla_get_u32(tb[TCA_GRED_LIMIT]);
+	else
+		sch->limit = qdisc_dev(sch)->tx_queue_len
+		             * psched_mtu(qdisc_dev(sch));
+
+>>>>>>> v4.9.227
 	return gred_change_table_def(sch, tb[TCA_GRED_DPS]);
 }
 
@@ -534,6 +590,12 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
 	if (nla_put(skb, TCA_GRED_MAX_P, sizeof(max_p), max_p))
 		goto nla_put_failure;
 
+<<<<<<< HEAD
+=======
+	if (nla_put_u32(skb, TCA_GRED_LIMIT, sch->limit))
+		goto nla_put_failure;
+
+>>>>>>> v4.9.227
 	parms = nla_nest_start(skb, TCA_GRED_PARMS);
 	if (parms == NULL)
 		goto nla_put_failure;
@@ -556,7 +618,11 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
 
 		opt.limit	= q->limit;
 		opt.DP		= q->DP;
+<<<<<<< HEAD
 		opt.backlog	= q->backlog;
+=======
+		opt.backlog	= gred_backlog(table, q, sch);
+>>>>>>> v4.9.227
 		opt.prio	= q->prio;
 		opt.qth_min	= q->parms.qth_min >> q->parms.Wlog;
 		opt.qth_max	= q->parms.qth_max >> q->parms.Wlog;
@@ -608,7 +674,10 @@ static struct Qdisc_ops gred_qdisc_ops __read_mostly = {
 	.enqueue	=	gred_enqueue,
 	.dequeue	=	gred_dequeue,
 	.peek		=	qdisc_peek_head,
+<<<<<<< HEAD
 	.drop		=	gred_drop,
+=======
+>>>>>>> v4.9.227
 	.init		=	gred_init,
 	.reset		=	gred_reset,
 	.destroy	=	gred_destroy,

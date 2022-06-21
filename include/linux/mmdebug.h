@@ -1,6 +1,10 @@
 #ifndef LINUX_MM_DEBUG_H
 #define LINUX_MM_DEBUG_H 1
 
+<<<<<<< HEAD
+=======
+#include <linux/bug.h>
+>>>>>>> v4.9.227
 #include <linux/stringify.h>
 
 struct page;
@@ -8,8 +12,12 @@ struct vm_area_struct;
 struct mm_struct;
 
 extern void dump_page(struct page *page, const char *reason);
+<<<<<<< HEAD
 extern void dump_page_badflags(struct page *page, const char *reason,
 			       unsigned long badflags);
+=======
+extern void __dump_page(struct page *page, const char *reason);
+>>>>>>> v4.9.227
 void dump_vma(const struct vm_area_struct *vma);
 void dump_mm(const struct mm_struct *mm);
 
@@ -39,6 +47,10 @@ void dump_mm(const struct mm_struct *mm);
 #define VM_WARN_ON(cond) WARN_ON(cond)
 #define VM_WARN_ON_ONCE(cond) WARN_ON_ONCE(cond)
 #define VM_WARN_ONCE(cond, format...) WARN_ONCE(cond, format)
+<<<<<<< HEAD
+=======
+#define VM_WARN(cond, format...) WARN(cond, format)
+>>>>>>> v4.9.227
 #else
 #define VM_BUG_ON(cond) BUILD_BUG_ON_INVALID(cond)
 #define VM_BUG_ON_PAGE(cond, page) VM_BUG_ON(cond)
@@ -47,6 +59,10 @@ void dump_mm(const struct mm_struct *mm);
 #define VM_WARN_ON(cond) BUILD_BUG_ON_INVALID(cond)
 #define VM_WARN_ON_ONCE(cond) BUILD_BUG_ON_INVALID(cond)
 #define VM_WARN_ONCE(cond, format...) BUILD_BUG_ON_INVALID(cond)
+<<<<<<< HEAD
+=======
+#define VM_WARN(cond, format...) BUILD_BUG_ON_INVALID(cond)
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_DEBUG_VIRTUAL
@@ -55,4 +71,13 @@ void dump_mm(const struct mm_struct *mm);
 #define VIRTUAL_BUG_ON(cond) do { } while (0)
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DEBUG_VM_PGFLAGS
+#define VM_BUG_ON_PGFLAGS(cond, page) VM_BUG_ON_PAGE(cond, page)
+#else
+#define VM_BUG_ON_PGFLAGS(cond, page) BUILD_BUG_ON_INVALID(cond)
+#endif
+
+>>>>>>> v4.9.227
 #endif

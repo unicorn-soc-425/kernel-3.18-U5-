@@ -35,9 +35,12 @@
 #include <linux/init.h>
 #include <linux/security.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
 #include <linux/netfilter_ipv6.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/ip.h>
 #include <linux/tcp.h>

@@ -105,6 +105,7 @@ static ssize_t hostaudio_write(struct file *file, const char __user *buffer,
 	printk(KERN_DEBUG "hostaudio: write called, count = %d\n", count);
 #endif
 
+<<<<<<< HEAD
 	kbuf = kmalloc(count, GFP_KERNEL);
 	if (kbuf == NULL)
 		return -ENOMEM;
@@ -112,6 +113,11 @@ static ssize_t hostaudio_write(struct file *file, const char __user *buffer,
 	err = -EFAULT;
 	if (copy_from_user(kbuf, buffer, count))
 		goto out;
+=======
+	kbuf = memdup_user(buffer, count);
+	if (IS_ERR(kbuf))
+		return PTR_ERR(kbuf);
+>>>>>>> v4.9.227
 
 	err = os_write_file(state->fd, kbuf, count);
 	if (err < 0)
@@ -185,9 +191,15 @@ static int hostaudio_open(struct inode *inode, struct file *file)
 	int ret;
 
 #ifdef DEBUG
+<<<<<<< HEAD
 	kparam_block_sysfs_write(dsp);
 	printk(KERN_DEBUG "hostaudio: open called (host: %s)\n", dsp);
 	kparam_unblock_sysfs_write(dsp);
+=======
+	kernel_param_lock(THIS_MODULE);
+	printk(KERN_DEBUG "hostaudio: open called (host: %s)\n", dsp);
+	kernel_param_unlock(THIS_MODULE);
+>>>>>>> v4.9.227
 #endif
 
 	state = kmalloc(sizeof(struct hostaudio_state), GFP_KERNEL);
@@ -199,11 +211,19 @@ static int hostaudio_open(struct inode *inode, struct file *file)
 	if (file->f_mode & FMODE_WRITE)
 		w = 1;
 
+<<<<<<< HEAD
 	kparam_block_sysfs_write(dsp);
 	mutex_lock(&hostaudio_mutex);
 	ret = os_open_file(dsp, of_set_rw(OPENFLAGS(), r, w), 0);
 	mutex_unlock(&hostaudio_mutex);
 	kparam_unblock_sysfs_write(dsp);
+=======
+	kernel_param_lock(THIS_MODULE);
+	mutex_lock(&hostaudio_mutex);
+	ret = os_open_file(dsp, of_set_rw(OPENFLAGS(), r, w), 0);
+	mutex_unlock(&hostaudio_mutex);
+	kernel_param_unlock(THIS_MODULE);
+>>>>>>> v4.9.227
 
 	if (ret < 0) {
 		kfree(state);
@@ -260,6 +280,7 @@ static int hostmixer_open_mixdev(struct inode *inode, struct file *file)
 	if (file->f_mode & FMODE_WRITE)
 		w = 1;
 
+<<<<<<< HEAD
 	kparam_block_sysfs_write(mixer);
 	mutex_lock(&hostaudio_mutex);
 	ret = os_open_file(mixer, of_set_rw(OPENFLAGS(), r, w), 0);
@@ -271,6 +292,19 @@ static int hostmixer_open_mixdev(struct inode *inode, struct file *file)
 		printk(KERN_ERR "hostaudio_open_mixdev failed to open '%s', "
 		       "err = %d\n", dsp, -ret);
 		kparam_unblock_sysfs_write(dsp);
+=======
+	kernel_param_lock(THIS_MODULE);
+	mutex_lock(&hostaudio_mutex);
+	ret = os_open_file(mixer, of_set_rw(OPENFLAGS(), r, w), 0);
+	mutex_unlock(&hostaudio_mutex);
+	kernel_param_unlock(THIS_MODULE);
+
+	if (ret < 0) {
+		kernel_param_lock(THIS_MODULE);
+		printk(KERN_ERR "hostaudio_open_mixdev failed to open '%s', "
+		       "err = %d\n", dsp, -ret);
+		kernel_param_unlock(THIS_MODULE);
+>>>>>>> v4.9.227
 		kfree(state);
 		return ret;
 	}
@@ -326,10 +360,17 @@ MODULE_LICENSE("GPL");
 
 static int __init hostaudio_init_module(void)
 {
+<<<<<<< HEAD
 	__kernel_param_lock();
 	printk(KERN_INFO "UML Audio Relay (host dsp = %s, host mixer = %s)\n",
 	       dsp, mixer);
 	__kernel_param_unlock();
+=======
+	kernel_param_lock(THIS_MODULE);
+	printk(KERN_INFO "UML Audio Relay (host dsp = %s, host mixer = %s)\n",
+	       dsp, mixer);
+	kernel_param_unlock(THIS_MODULE);
+>>>>>>> v4.9.227
 
 	module_data.dev_audio = register_sound_dsp(&hostaudio_fops, -1);
 	if (module_data.dev_audio < 0) {

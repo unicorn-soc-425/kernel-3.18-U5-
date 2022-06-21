@@ -18,6 +18,16 @@
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
+=======
+#include <linux/errno.h>
+#include <linux/types.h>
+#include <asm/brk-imm.h>
+#include <asm/esr.h>
+#include <asm/insn.h>
+#include <asm/ptrace.h>
+
+>>>>>>> v4.9.227
 /* Low-level stepping controls. */
 #define DBG_MDSCR_SS		(1 << 0)
 #define DBG_SPSR_SS		(1 << 21)
@@ -38,6 +48,7 @@
 /*
  * Break point instruction encoding
  */
+<<<<<<< HEAD
 #define BREAK_INSTR_SIZE		4
 
 /*
@@ -55,6 +66,9 @@
 #define FAULT_BRK_IMM			0x100
 #define KGDB_DYN_DBG_BRK_IMM		0x400
 #define KGDB_COMPILED_DBG_BRK_IMM	0x401
+=======
+#define BREAK_INSTR_SIZE		AARCH64_INSN_SIZE
+>>>>>>> v4.9.227
 
 /*
  * BRK instruction encoding
@@ -68,6 +82,7 @@
  */
 #define AARCH64_BREAK_FAULT	(AARCH64_BREAK_MON | (FAULT_BRK_IMM << 5))
 
+<<<<<<< HEAD
 /*
  * Extract byte from BRK instruction
  */
@@ -90,6 +105,18 @@
 
 #define CACHE_FLUSH_IS_SAFE		1
 
+=======
+#define AARCH64_BREAK_KGDB_DYN_DBG	\
+	(AARCH64_BREAK_MON | (KGDB_DYN_DBG_BRK_IMM << 5))
+
+#define CACHE_FLUSH_IS_SAFE		1
+
+/* kprobes BRK opcodes with ESR encoding  */
+#define BRK64_ESR_MASK		0xFFFF
+#define BRK64_ESR_KPROBES	0x0004
+#define BRK64_OPCODE_KPROBES	(AARCH64_BREAK_MON | (BRK64_ESR_KPROBES << 5))
+
+>>>>>>> v4.9.227
 /* AArch32 */
 #define DBG_ESR_EVT_BKPT	0x4
 #define DBG_ESR_EVT_VECC	0x5
@@ -127,13 +154,22 @@ void unregister_break_hook(struct break_hook *hook);
 
 u8 debug_monitors_arch(void);
 
+<<<<<<< HEAD
 enum debug_el {
+=======
+enum dbg_active_el {
+>>>>>>> v4.9.227
 	DBG_ACTIVE_EL0 = 0,
 	DBG_ACTIVE_EL1,
 };
 
+<<<<<<< HEAD
 void enable_debug_monitors(enum debug_el el);
 void disable_debug_monitors(enum debug_el el);
+=======
+void enable_debug_monitors(enum dbg_active_el el);
+void disable_debug_monitors(enum dbg_active_el el);
+>>>>>>> v4.9.227
 
 void user_rewind_single_step(struct task_struct *task);
 void user_fastforward_single_step(struct task_struct *task);

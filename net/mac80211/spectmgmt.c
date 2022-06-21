@@ -8,6 +8,10 @@
  * Copyright 2007, Michael Wu <flamingice@sourmilk.net>
  * Copyright 2007-2008, Intel Corporation
  * Copyright 2008, Johannes Berg <johannes@sipsolutions.net>
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2018        Intel Corporation
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -23,30 +27,47 @@
 
 int ieee80211_parse_ch_switch_ie(struct ieee80211_sub_if_data *sdata,
 				 struct ieee802_11_elems *elems,
+<<<<<<< HEAD
 				 enum ieee80211_band current_band,
 				 u32 sta_flags, u8 *bssid,
 				 struct ieee80211_csa_ie *csa_ie)
 {
 	enum ieee80211_band new_band;
+=======
+				 enum nl80211_band current_band,
+				 u32 sta_flags, u8 *bssid,
+				 struct ieee80211_csa_ie *csa_ie)
+{
+	enum nl80211_band new_band = current_band;
+>>>>>>> v4.9.227
 	int new_freq;
 	u8 new_chan_no;
 	struct ieee80211_channel *new_chan;
 	struct cfg80211_chan_def new_vht_chandef = {};
 	const struct ieee80211_sec_chan_offs_ie *sec_chan_offs;
 	const struct ieee80211_wide_bw_chansw_ie *wide_bw_chansw_ie;
+<<<<<<< HEAD
 	const struct ieee80211_ht_operation *ht_oper;
+=======
+>>>>>>> v4.9.227
 	int secondary_channel_offset = -1;
 
 	sec_chan_offs = elems->sec_chan_offs;
 	wide_bw_chansw_ie = elems->wide_bw_chansw_ie;
+<<<<<<< HEAD
 	ht_oper = elems->ht_operation;
+=======
+>>>>>>> v4.9.227
 
 	if (sta_flags & (IEEE80211_STA_DISABLE_HT |
 			 IEEE80211_STA_DISABLE_40MHZ)) {
 		sec_chan_offs = NULL;
 		wide_bw_chansw_ie = NULL;
+<<<<<<< HEAD
 		/* only used for bandwidth here */
 		ht_oper = NULL;
+=======
+>>>>>>> v4.9.227
 	}
 
 	if (sta_flags & IEEE80211_STA_DISABLE_VHT)
@@ -57,15 +78,23 @@ int ieee80211_parse_ch_switch_ie(struct ieee80211_sub_if_data *sdata,
 				elems->ext_chansw_ie->new_operating_class,
 				&new_band)) {
 			sdata_info(sdata,
+<<<<<<< HEAD
 				   "cannot understand ECSA IE operating class %d, disconnecting\n",
 				   elems->ext_chansw_ie->new_operating_class);
 			return -EINVAL;
+=======
+				   "cannot understand ECSA IE operating class, %d, ignoring\n",
+				   elems->ext_chansw_ie->new_operating_class);
+>>>>>>> v4.9.227
 		}
 		new_chan_no = elems->ext_chansw_ie->new_ch_num;
 		csa_ie->count = elems->ext_chansw_ie->count;
 		csa_ie->mode = elems->ext_chansw_ie->mode;
 	} else if (elems->ch_switch_ie) {
+<<<<<<< HEAD
 		new_band = current_band;
+=======
+>>>>>>> v4.9.227
 		new_chan_no = elems->ch_switch_ie->new_ch_num;
 		csa_ie->count = elems->ch_switch_ie->count;
 		csa_ie->mode = elems->ch_switch_ie->mode;
@@ -133,6 +162,7 @@ int ieee80211_parse_ch_switch_ie(struct ieee80211_sub_if_data *sdata,
 	}
 
 	if (wide_bw_chansw_ie) {
+<<<<<<< HEAD
 		new_vht_chandef.chan = new_chan;
 		new_vht_chandef.center_freq1 =
 			ieee80211_channel_to_frequency(
@@ -160,15 +190,39 @@ int ieee80211_parse_ch_switch_ie(struct ieee80211_sub_if_data *sdata,
 			new_vht_chandef.width = NL80211_CHAN_WIDTH_80P80;
 			break;
 		}
+=======
+		struct ieee80211_vht_operation vht_oper = {
+			.chan_width =
+				wide_bw_chansw_ie->new_channel_width,
+			.center_freq_seg1_idx =
+				wide_bw_chansw_ie->new_center_freq_seg0,
+			.center_freq_seg2_idx =
+				wide_bw_chansw_ie->new_center_freq_seg1,
+			/* .basic_mcs_set doesn't matter */
+		};
+
+		/* default, for the case of IEEE80211_VHT_CHANWIDTH_USE_HT,
+		 * to the previously parsed chandef
+		 */
+		new_vht_chandef = csa_ie->chandef;
+
+		/* ignore if parsing fails */
+		if (!ieee80211_chandef_vht_oper(&vht_oper, &new_vht_chandef))
+			new_vht_chandef.chan = NULL;
+
+>>>>>>> v4.9.227
 		if (sta_flags & IEEE80211_STA_DISABLE_80P80MHZ &&
 		    new_vht_chandef.width == NL80211_CHAN_WIDTH_80P80)
 			ieee80211_chandef_downgrade(&new_vht_chandef);
 		if (sta_flags & IEEE80211_STA_DISABLE_160MHZ &&
 		    new_vht_chandef.width == NL80211_CHAN_WIDTH_160)
 			ieee80211_chandef_downgrade(&new_vht_chandef);
+<<<<<<< HEAD
 		if (sta_flags & IEEE80211_STA_DISABLE_40MHZ &&
 		    new_vht_chandef.width > NL80211_CHAN_WIDTH_20)
 			ieee80211_chandef_downgrade(&new_vht_chandef);
+=======
+>>>>>>> v4.9.227
 	}
 
 	/* if VHT data is there validate & use it */

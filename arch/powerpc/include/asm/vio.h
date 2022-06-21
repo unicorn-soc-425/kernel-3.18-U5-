@@ -19,9 +19,15 @@
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
 #include <linux/mod_devicetable.h>
+<<<<<<< HEAD
 
 #include <asm/hvcall.h>
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+
+#include <asm/hvcall.h>
+>>>>>>> v4.9.227
 
 /*
  * Architecture-specific constants for drivers to

@@ -67,6 +67,10 @@ struct scsi_disk {
 	atomic_t	openers;
 	sector_t	capacity;	/* size in logical blocks */
 	u32		max_xfer_blocks;
+<<<<<<< HEAD
+=======
+	u32		opt_xfer_blocks;
+>>>>>>> v4.9.227
 	u32		max_ws_blocks;
 	u32		max_unmap_blocks;
 	u32		unmap_granularity;
@@ -93,6 +97,7 @@ struct scsi_disk {
 	unsigned	lbpvpd : 1;
 	unsigned	ws10 : 1;
 	unsigned	ws16 : 1;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_STORAGE_DETECT
 	wait_queue_head_t	 delay_wait;
 	struct completion	scanning_done;
@@ -101,6 +106,8 @@ struct scsi_disk {
 	int		async_end;
 	int		prv_media_present;
 #endif
+=======
+>>>>>>> v4.9.227
 };
 #define to_scsi_disk(obj) container_of(obj,struct scsi_disk,dev)
 
@@ -111,9 +118,15 @@ static inline struct scsi_disk *scsi_disk(struct gendisk *disk)
 
 #define sd_printk(prefix, sdsk, fmt, a...)				\
         (sdsk)->disk ?							\
+<<<<<<< HEAD
 	sdev_printk(prefix, (sdsk)->device, "[%s] " fmt,		\
 		    (sdsk)->disk->disk_name, ##a) :			\
 	sdev_printk(prefix, (sdsk)->device, fmt, ##a)
+=======
+	      sdev_prefix_printk(prefix, (sdsk)->device,		\
+				 (sdsk)->disk->disk_name, fmt, ##a) :	\
+	      sdev_printk(prefix, (sdsk)->device, fmt, ##a)
+>>>>>>> v4.9.227
 
 #define sd_first_printk(prefix, sdsk, fmt, a...)			\
 	do {								\
@@ -158,6 +171,7 @@ static inline sector_t logical_to_sectors(struct scsi_device *sdev, sector_t blo
 	return blocks << (ilog2(sdev->sector_size) - 9);
 }
 
+<<<<<<< HEAD
 /*
  * A DIF-capable target device can be formatted with different
  * protection schemes.  Currently 0 through 3 are defined:
@@ -178,6 +192,12 @@ enum sd_dif_target_protection_types {
 	SD_DIF_TYPE2_PROTECTION = 0x2,
 	SD_DIF_TYPE3_PROTECTION = 0x3,
 };
+=======
+static inline unsigned int logical_to_bytes(struct scsi_device *sdev, sector_t blocks)
+{
+	return blocks * sdev->sector_size;
+}
+>>>>>>> v4.9.227
 
 /*
  * Look up the DIX operation based on whether the command is read or
@@ -241,6 +261,7 @@ static inline unsigned int sd_prot_flag_mask(unsigned int prot_op)
 	return flag_mask[prot_op];
 }
 
+<<<<<<< HEAD
 /*
  * Data Integrity Field tuple.
  */
@@ -250,6 +271,8 @@ struct sd_dif_tuple {
        __be32 ref_tag;		/* Target LBA or indirect LBA */
 };
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_BLK_DEV_INTEGRITY
 
 extern void sd_dif_config_host(struct scsi_disk *);

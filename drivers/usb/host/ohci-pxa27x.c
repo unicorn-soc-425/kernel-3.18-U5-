@@ -365,6 +365,7 @@ static int ohci_pxa_of_init(struct platform_device *pdev)
 	if (!pdata)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (of_get_property(np, "marvell,enable-port1", NULL))
 		pdata->flags |= ENABLE_PORT1;
 	if (of_get_property(np, "marvell,enable-port2", NULL))
@@ -378,6 +379,21 @@ static int ohci_pxa_of_init(struct platform_device *pdev)
 	if (of_get_property(np, "marvell,no-oc-protection", NULL))
 		pdata->flags |= NO_OC_PROTECTION;
 	if (of_get_property(np, "marvell,oc-mode-perport", NULL))
+=======
+	if (of_property_read_bool(np, "marvell,enable-port1"))
+		pdata->flags |= ENABLE_PORT1;
+	if (of_property_read_bool(np, "marvell,enable-port2"))
+		pdata->flags |= ENABLE_PORT2;
+	if (of_property_read_bool(np, "marvell,enable-port3"))
+		pdata->flags |= ENABLE_PORT3;
+	if (of_property_read_bool(np, "marvell,port-sense-low"))
+		pdata->flags |= POWER_SENSE_LOW;
+	if (of_property_read_bool(np, "marvell,power-control-low"))
+		pdata->flags |= POWER_CONTROL_LOW;
+	if (of_property_read_bool(np, "marvell,no-oc-protection"))
+		pdata->flags |= NO_OC_PROTECTION;
+	if (of_property_read_bool(np, "marvell,oc-mode-perport"))
+>>>>>>> v4.9.227
 		pdata->flags |= OC_MODE_PERPORT;
 	if (!of_property_read_u32(np, "marvell,power-on-delay", &tmp))
 		pdata->power_on_delay = tmp;
@@ -435,7 +451,11 @@ int usb_hcd_pxa27x_probe (const struct hc_driver *driver, struct platform_device
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		pr_err("no resource of IORESOURCE_IRQ");
+<<<<<<< HEAD
 		return -ENXIO;
+=======
+		return irq;
+>>>>>>> v4.9.227
 	}
 
 	usb_clk = devm_clk_get(&pdev->dev, NULL);
@@ -447,6 +467,7 @@ int usb_hcd_pxa27x_probe (const struct hc_driver *driver, struct platform_device
 		return -ENOMEM;
 
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!r) {
 		pr_err("no resource of IORESOURCE_MEM");
 		retval = -ENXIO;
@@ -456,11 +477,18 @@ int usb_hcd_pxa27x_probe (const struct hc_driver *driver, struct platform_device
 	hcd->rsrc_start = r->start;
 	hcd->rsrc_len = resource_size(r);
 
+=======
+>>>>>>> v4.9.227
 	hcd->regs = devm_ioremap_resource(&pdev->dev, r);
 	if (IS_ERR(hcd->regs)) {
 		retval = PTR_ERR(hcd->regs);
 		goto err;
 	}
+<<<<<<< HEAD
+=======
+	hcd->rsrc_start = r->start;
+	hcd->rsrc_len = resource_size(r);
+>>>>>>> v4.9.227
 
 	/* initialize "struct pxa27x_ohci" */
 	pxa_ohci = to_pxa27x_ohci(hcd);
@@ -610,7 +638,10 @@ static struct platform_driver ohci_hcd_pxa27x_driver = {
 	.shutdown	= usb_hcd_platform_shutdown,
 	.driver		= {
 		.name	= "pxa27x-ohci",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(pxa_ohci_dt_ids),
 #ifdef CONFIG_PM
 		.pm	= &ohci_hcd_pxa27x_pm_ops,

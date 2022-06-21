@@ -13,6 +13,10 @@ echo "Usage: ftracetest [options] [testcase(s)] [testcase-directory(s)]"
 echo " Options:"
 echo "		-h|--help  Show help message"
 echo "		-k|--keep  Keep passed test logs"
+<<<<<<< HEAD
+=======
+echo "		-v|--verbose Show all stdout messages in testcases"
+>>>>>>> v4.9.227
 echo "		-d|--debug Debug mode (trace all shell commands)"
 exit $1
 }
@@ -37,7 +41,11 @@ abspath() {
 }
 
 find_testcases() { #directory
+<<<<<<< HEAD
   echo `find $1 -name \*.tc`
+=======
+  echo `find $1 -name \*.tc | sort`
+>>>>>>> v4.9.227
 }
 
 parse_opts() { # opts
@@ -53,6 +61,13 @@ parse_opts() { # opts
       KEEP_LOG=1
       shift 1
     ;;
+<<<<<<< HEAD
+=======
+    --verbose|-v)
+      VERBOSE=1
+      shift 1
+    ;;
+>>>>>>> v4.9.227
     --debug|-d)
       DEBUG=1
       shift 1
@@ -83,20 +98,37 @@ parse_opts() { # opts
 
 # Parameters
 DEBUGFS_DIR=`grep debugfs /proc/mounts | cut -f2 -d' ' | head -1`
+<<<<<<< HEAD
 TRACING_DIR=$DEBUGFS_DIR/tracing
+=======
+if [ -z "$DEBUGFS_DIR" ]; then
+    TRACING_DIR=`grep tracefs /proc/mounts | cut -f2 -d' ' | head -1`
+else
+    TRACING_DIR=$DEBUGFS_DIR/tracing
+fi
+
+>>>>>>> v4.9.227
 TOP_DIR=`absdir $0`
 TEST_DIR=$TOP_DIR/test.d
 TEST_CASES=`find_testcases $TEST_DIR`
 LOG_DIR=$TOP_DIR/logs/`date +%Y%m%d-%H%M%S`/
 KEEP_LOG=0
 DEBUG=0
+<<<<<<< HEAD
+=======
+VERBOSE=0
+>>>>>>> v4.9.227
 # Parse command-line options
 parse_opts $*
 
 [ $DEBUG -ne 0 ] && set -x
 
 # Verify parameters
+<<<<<<< HEAD
 if [ -z "$DEBUGFS_DIR" -o ! -d "$TRACING_DIR" ]; then
+=======
+if [ -z "$TRACING_DIR" -o ! -d "$TRACING_DIR" ]; then
+>>>>>>> v4.9.227
   errexit "No ftrace directory found"
 fi
 
@@ -135,6 +167,7 @@ TOTAL_RESULT=0
 CASENO=0
 testcase() { # testfile
   CASENO=$((CASENO+1))
+<<<<<<< HEAD
   prlog -n "[$CASENO]"`grep "^#[ \t]*description:" $1 | cut -f2 -d:`
 }
 
@@ -144,6 +177,14 @@ eval_result() { # retval sigval
     test $1 -ne 0 && retval=$FAIL
   fi
   case $retval in
+=======
+  desc=`grep "^#[ \t]*description:" $1 | cut -f2 -d:`
+  prlog -n "[$CASENO]$desc"
+}
+
+eval_result() { # sigval
+  case $1 in
+>>>>>>> v4.9.227
     $PASS)
       prlog "	[PASS]"
       PASSED_CASES="$PASSED_CASES $CASENO"
@@ -187,6 +228,12 @@ SIG_RESULT=
 SIG_BASE=36	# Use realtime signals
 SIG_PID=$$
 
+<<<<<<< HEAD
+=======
+SIG_FAIL=$((SIG_BASE + FAIL))
+trap 'SIG_RESULT=$FAIL' $SIG_FAIL
+
+>>>>>>> v4.9.227
 SIG_UNRESOLVED=$((SIG_BASE + UNRESOLVED))
 exit_unresolved () {
   kill -s $SIG_UNRESOLVED $SIG_PID
@@ -215,6 +262,7 @@ exit_xfail () {
 }
 trap 'SIG_RESULT=$XFAIL' $SIG_XFAIL
 
+<<<<<<< HEAD
 # Run one test case
 run_test() { # testfile
   local testname=`basename $1`
@@ -226,6 +274,27 @@ run_test() { # testfile
   (cd $TRACING_DIR; read PID _ < /proc/self/stat ;
    set -e; set -x; . $1) >> $testlog 2>&1
   eval_result $? $SIG_RESULT
+=======
+__run_test() { # testfile
+  # setup PID and PPID, $$ is not updated.
+  (cd $TRACING_DIR; read PID _ < /proc/self/stat ; set -e; set -x; . $1)
+  [ $? -ne 0 ] && kill -s $SIG_FAIL $SIG_PID
+}
+
+# Run one test case
+run_test() { # testfile
+  local testname=`basename $1`
+  local testlog=`mktemp $LOG_DIR/${testname}-log.XXXXXX`
+  testcase $1
+  echo "execute: "$1 > $testlog
+  SIG_RESULT=0
+  if [ $VERBOSE -ne 0 ]; then
+    __run_test $1 2>> $testlog | tee -a $testlog
+  else
+    __run_test $1 >> $testlog 2>&1
+  fi
+  eval_result $SIG_RESULT
+>>>>>>> v4.9.227
   if [ $? -eq 0 ]; then
     # Remove test log if the test was done as it was expected.
     [ $KEEP_LOG -eq 0 ] && rm $testlog
@@ -235,6 +304,12 @@ run_test() { # testfile
   fi
 }
 
+<<<<<<< HEAD
+=======
+# load in the helper functions
+. $TEST_DIR/functions
+
+>>>>>>> v4.9.227
 # Main loop
 for t in $TEST_CASES; do
   run_test $t

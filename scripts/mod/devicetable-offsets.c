@@ -63,6 +63,11 @@ int main(void)
 
 	DEVID(acpi_device_id);
 	DEVID_FIELD(acpi_device_id, id);
+<<<<<<< HEAD
+=======
+	DEVID_FIELD(acpi_device_id, cls);
+	DEVID_FIELD(acpi_device_id, cls_msk);
+>>>>>>> v4.9.227
 
 	DEVID(pnp_device_id);
 	DEVID_FIELD(pnp_device_id, id);
@@ -168,6 +173,12 @@ int main(void)
 	DEVID_FIELD(amba_id, id);
 	DEVID_FIELD(amba_id, mask);
 
+<<<<<<< HEAD
+=======
+	DEVID(mips_cdmm_device_id);
+	DEVID_FIELD(mips_cdmm_device_id, type);
+
+>>>>>>> v4.9.227
 	DEVID(x86_cpu_id);
 	DEVID_FIELD(x86_cpu_id, feature);
 	DEVID_FIELD(x86_cpu_id, family);
@@ -179,6 +190,11 @@ int main(void)
 
 	DEVID(mei_cl_device_id);
 	DEVID_FIELD(mei_cl_device_id, name);
+<<<<<<< HEAD
+=======
+	DEVID_FIELD(mei_cl_device_id, uuid);
+	DEVID_FIELD(mei_cl_device_id, version);
+>>>>>>> v4.9.227
 
 	DEVID(rio_device_id);
 	DEVID_FIELD(rio_device_id, did);
@@ -186,5 +202,21 @@ int main(void)
 	DEVID_FIELD(rio_device_id, asm_did);
 	DEVID_FIELD(rio_device_id, asm_vid);
 
+<<<<<<< HEAD
+=======
+	DEVID(ulpi_device_id);
+	DEVID_FIELD(ulpi_device_id, vendor);
+	DEVID_FIELD(ulpi_device_id, product);
+
+	DEVID(hda_device_id);
+	DEVID_FIELD(hda_device_id, vendor_id);
+	DEVID_FIELD(hda_device_id, rev_id);
+	DEVID_FIELD(hda_device_id, api_version);
+
+	DEVID(fsl_mc_device_id);
+	DEVID_FIELD(fsl_mc_device_id, vendor);
+	DEVID_FIELD(fsl_mc_device_id, obj_type);
+
+>>>>>>> v4.9.227
 	return 0;
 }

@@ -51,6 +51,15 @@
 /*
  * TI81XX PRM module offsets
  */
+<<<<<<< HEAD
+=======
+#define TI814X_PRM_DSP_MOD				0x0a00
+#define TI814X_PRM_HDVICP_MOD				0x0c00
+#define TI814X_PRM_ISP_MOD				0x0d00
+#define TI814X_PRM_HDVPSS_MOD				0x0e00
+#define TI814X_PRM_GFX_MOD				0x0f00
+
+>>>>>>> v4.9.227
 #define TI81XX_PRM_DEVICE_MOD			0x0000
 #define TI816X_PRM_ACTIVE_MOD			0x0a00
 #define TI81XX_PRM_DEFAULT_MOD			0x0b00
@@ -472,6 +481,10 @@ struct omap_prcm_irq {
  * struct omap_prcm_irq_setup - PRCM interrupt controller details
  * @ack: PRM register offset for the first PRM_IRQSTATUS_MPU register
  * @mask: PRM register offset for the first PRM_IRQENABLE_MPU register
+<<<<<<< HEAD
+=======
+ * @pm_ctrl: PRM register offset for the PRM_IO_PMCTRL register
+>>>>>>> v4.9.227
  * @nr_regs: number of PRM_IRQ{STATUS,ENABLE}_MPU* registers
  * @nr_irqs: number of entries in the @irqs array
  * @irqs: ptr to an array of PRCM interrupt bits (see @nr_irqs)
@@ -494,10 +507,18 @@ struct omap_prcm_irq {
 struct omap_prcm_irq_setup {
 	u16 ack;
 	u16 mask;
+<<<<<<< HEAD
+=======
+	u16 pm_ctrl;
+>>>>>>> v4.9.227
 	u8 nr_regs;
 	u8 nr_irqs;
 	const struct omap_prcm_irq *irqs;
 	int irq;
+<<<<<<< HEAD
+=======
+	unsigned int (*xlate_irq)(unsigned int);
+>>>>>>> v4.9.227
 	void (*read_pending_irqs)(unsigned long *events);
 	void (*ocp_barrier)(void);
 	void (*save_and_clear_irqen)(u32 *saved_mask);
@@ -517,6 +538,29 @@ struct omap_prcm_irq_setup {
 	.priority = _priority				\
 	}
 
+<<<<<<< HEAD
+=======
+/**
+ * struct omap_prcm_init_data - PRCM driver init data
+ * @index: clock memory mapping index to be used
+ * @mem: IO mem pointer for this module
+ * @offset: module base address offset from the IO base
+ * @flags: PRCM module init flags
+ * @device_inst_offset: device instance offset within the module address space
+ * @init: low level PRCM init function for this module
+ * @np: device node for this PRCM module
+ */
+struct omap_prcm_init_data {
+	int index;
+	void __iomem *mem;
+	s16 offset;
+	u16 flags;
+	s32 device_inst_offset;
+	int (*init)(const struct omap_prcm_init_data *data);
+	struct device_node *np;
+};
+
+>>>>>>> v4.9.227
 extern void omap_prcm_irq_cleanup(void);
 extern int omap_prcm_register_chain_handler(
 	struct omap_prcm_irq_setup *irq_setup);

@@ -1,4 +1,5 @@
 #
+<<<<<<< HEAD
 #Makefile for BMI160 IIO Driver
 #
 obj-${CONFIG_SENSORS_BMI160_IIO}   += bmi160_i2c.o bmi160_core.o bmi160.o
@@ -7,3 +8,10 @@ obj-${CONFIG_SENSORS_BMI160_IIO_RING}   += bmi160_ring.o
 EXTRA_CFLAGS += -DBMI160_ENABLE_INT1
 
 EXTRA_CFLAGS += -DBMI_USE_BASIC_I2C_FUNC
+=======
+# Makefile for Bosch BMI160 IMU
+#
+obj-$(CONFIG_BMI160) += bmi160_core.o
+obj-$(CONFIG_BMI160_I2C) += bmi160_i2c.o
+obj-$(CONFIG_BMI160_SPI) += bmi160_spi.o
+>>>>>>> v4.9.227

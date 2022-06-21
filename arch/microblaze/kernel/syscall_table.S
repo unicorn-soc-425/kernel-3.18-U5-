@@ -388,3 +388,10 @@ ENTRY(sys_call_table)
 	.long sys_getrandom		/* 385 */
 	.long sys_memfd_create
 	.long sys_bpf
+<<<<<<< HEAD
+=======
+	.long sys_execveat
+	.long sys_userfaultfd
+	.long sys_membarrier		/* 390 */
+	.long sys_mlock2
+>>>>>>> v4.9.227

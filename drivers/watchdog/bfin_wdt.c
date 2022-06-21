@@ -407,7 +407,10 @@ static struct platform_driver bfin_wdt_driver = {
 	.resume    = bfin_wdt_resume,
 	.driver    = {
 		.name  = WATCHDOG_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

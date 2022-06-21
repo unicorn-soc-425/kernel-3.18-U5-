@@ -44,10 +44,21 @@
 #define __ARM_NR_compat_cacheflush	(__ARM_NR_COMPAT_BASE+2)
 #define __ARM_NR_compat_set_tls		(__ARM_NR_COMPAT_BASE+5)
 
+<<<<<<< HEAD
 #define __NR_compat_syscalls		386
 #endif
 
 #define __ARCH_WANT_SYS_CLONE
 #include <uapi/asm/unistd.h>
+=======
+#define __NR_compat_syscalls		394
+#endif
+
+#define __ARCH_WANT_SYS_CLONE
+
+#ifndef __COMPAT_SYSCALL_NR
+#include <uapi/asm/unistd.h>
+#endif
+>>>>>>> v4.9.227
 
 #define NR_syscalls (__NR_syscalls)

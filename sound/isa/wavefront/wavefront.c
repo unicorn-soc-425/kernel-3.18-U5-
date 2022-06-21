@@ -380,11 +380,19 @@ snd_wavefront_probe (struct snd_card *card, int dev)
 		return err;
 	}
 
+<<<<<<< HEAD
 	err = snd_wss_pcm(chip, 0, NULL);
 	if (err < 0)
 		return err;
 
 	err = snd_wss_timer(chip, 0, NULL);
+=======
+	err = snd_wss_pcm(chip, 0);
+	if (err < 0)
+		return err;
+
+	err = snd_wss_timer(chip, 0);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return err;
 

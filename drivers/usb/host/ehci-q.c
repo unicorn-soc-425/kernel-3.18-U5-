@@ -40,6 +40,13 @@
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+/* PID Codes that are used here, from EHCI specification, Table 3-16. */
+#define PID_CODE_IN    1
+#define PID_CODE_SETUP 2
+
+>>>>>>> v4.9.227
 /* fill a qtd, returning how much of the buffer we were able to queue up */
 
 static int
@@ -132,10 +139,21 @@ qh_refresh (struct ehci_hcd *ehci, struct ehci_qh *qh)
 	 * qtd is updated in qh_completions(). Update the QH
 	 * overlay here.
 	 */
+<<<<<<< HEAD
 	if (qh->hw->hw_token & ACTIVE_BIT(ehci))
 		qh->hw->hw_qtd_next = qtd->hw_next;
 	else
 		qh_update(ehci, qh, qtd);
+=======
+	if (qh->hw->hw_token & ACTIVE_BIT(ehci)) {
+		qh->hw->hw_qtd_next = qtd->hw_next;
+		if (qh->should_be_inactive)
+			ehci_warn(ehci, "qh %p should be inactive!\n", qh);
+	} else {
+		qh_update(ehci, qh, qtd);
+	}
+	qh->should_be_inactive = 0;
+>>>>>>> v4.9.227
 }
 
 /*-------------------------------------------------------------------------*/
@@ -199,7 +217,11 @@ static int qtd_copy_status (
 	int	status = -EINPROGRESS;
 
 	/* count IN/OUT bytes, not SETUP (even short packets) */
+<<<<<<< HEAD
 	if (likely (QTD_PID (token) != 2))
+=======
+	if (likely(QTD_PID(token) != PID_CODE_SETUP))
+>>>>>>> v4.9.227
 		urb->actual_length += length - QTD_LENGTH (token);
 
 	/* don't modify error codes */
@@ -215,6 +237,16 @@ static int qtd_copy_status (
 		if (token & QTD_STS_BABBLE) {
 			/* FIXME "must" disable babbling device's port too */
 			status = -EOVERFLOW;
+<<<<<<< HEAD
+=======
+		/*
+		 * When MMF is active and PID Code is IN, queue is halted.
+		 * EHCI Specification, Table 4-13.
+		 */
+		} else if ((token & QTD_STS_MMF) &&
+					(QTD_PID(token) == PID_CODE_IN)) {
+			status = -EPROTO;
+>>>>>>> v4.9.227
 		/* CERR nonzero + halt --> stall */
 		} else if (QTD_CERR(token)) {
 			status = -EPIPE;
@@ -264,7 +296,11 @@ ehci_urb_done(struct ehci_hcd *ehci, struct urb *urb, int status)
 
 #ifdef EHCI_URB_TRACE
 	ehci_dbg (ehci,
+<<<<<<< HEAD
 		"%s %s urb %pK ep%d%s status %d len %d/%d\n",
+=======
+		"%s %s urb %p ep%d%s status %d len %d/%d\n",
+>>>>>>> v4.9.227
 		__func__, urb->dev->devpath, urb,
 		usb_pipeendpoint (urb->pipe),
 		usb_pipein (urb->pipe) ? "in" : "out",
@@ -350,7 +386,11 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 			/* Report Data Buffer Error: non-fatal but useful */
 			if (token & QTD_STS_DBE)
 				ehci_dbg(ehci,
+<<<<<<< HEAD
 					"detected DataBufferErr for urb %pK ep%d%s len %d, qtd %pK [qh %pK]\n",
+=======
+					"detected DataBufferErr for urb %p ep%d%s len %d, qtd %p [qh %p]\n",
+>>>>>>> v4.9.227
 					urb,
 					usb_endpoint_num(&urb->ep->desc),
 					usb_endpoint_dir_in(&urb->ep->desc) ? "in" : "out",
@@ -390,6 +430,10 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 					goto retry_xacterr;
 				}
 				stopped = 1;
+<<<<<<< HEAD
+=======
+				qh->unlink_reason |= QH_UNLINK_HALTED;
+>>>>>>> v4.9.227
 
 			/* magic dummy for some short reads; qh won't advance.
 			 * that silicon quirk can kick in with this dummy too.
@@ -404,6 +448,10 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 					&& !(qtd->hw_alt_next
 						& EHCI_LIST_END(ehci))) {
 				stopped = 1;
+<<<<<<< HEAD
+=======
+				qh->unlink_reason |= QH_UNLINK_SHORT_READ;
+>>>>>>> v4.9.227
 			}
 
 		/* stop scanning when we reach qtds the hc is using */
@@ -416,8 +464,15 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 			stopped = 1;
 
 			/* cancel everything if we halt, suspend, etc */
+<<<<<<< HEAD
 			if (ehci->rh_state < EHCI_RH_RUNNING)
 				last_status = -ESHUTDOWN;
+=======
+			if (ehci->rh_state < EHCI_RH_RUNNING) {
+				last_status = -ESHUTDOWN;
+				qh->unlink_reason |= QH_UNLINK_SHUTDOWN;
+			}
+>>>>>>> v4.9.227
 
 			/* this qtd is active; skip it unless a previous qtd
 			 * for its urb faulted, or its urb was canceled.
@@ -438,6 +493,10 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 					(hw->hw_token & ACTIVE_BIT(ehci))) {
 				token = hc32_to_cpu(ehci, hw->hw_token);
 				hw->hw_token &= ~ACTIVE_BIT(ehci);
+<<<<<<< HEAD
+=======
+				qh->should_be_inactive = 1;
+>>>>>>> v4.9.227
 
 				/* An unlink may leave an incomplete
 				 * async transaction in the TT buffer.
@@ -533,10 +592,17 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 	 * except maybe high bandwidth ...
 	 */
 	if (stopped != 0 || hw->hw_qtd_next == EHCI_LIST_END(ehci))
+<<<<<<< HEAD
 		qh->exception = 1;
 
 	/* Let the caller know if the QH needs to be unlinked. */
 	return qh->exception;
+=======
+		qh->unlink_reason |= QH_UNLINK_DUMMY_OVERLAY;
+
+	/* Let the caller know if the QH needs to be unlinked. */
+	return qh->unlink_reason;
+>>>>>>> v4.9.227
 }
 
 /*-------------------------------------------------------------------------*/
@@ -924,7 +990,11 @@ qh_make (
 		}
 		break;
 	default:
+<<<<<<< HEAD
 		ehci_dbg(ehci, "bogus dev %pK speed %d\n", urb->dev,
+=======
+		ehci_dbg(ehci, "bogus dev %p speed %d\n", urb->dev,
+>>>>>>> v4.9.227
 			urb->dev->speed);
 done:
 		qh_destroy(ehci, qh);
@@ -998,7 +1068,11 @@ static void qh_link_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
 
 	qh->qh_state = QH_STATE_LINKED;
 	qh->xacterrs = 0;
+<<<<<<< HEAD
 	qh->exception = 0;
+=======
+	qh->unlink_reason = 0;
+>>>>>>> v4.9.227
 	/* qtd completions reported later by interrupt */
 
 	enable_async(ehci);
@@ -1112,7 +1186,11 @@ submit_async (
 		struct ehci_qtd *qtd;
 		qtd = list_entry(qtd_list->next, struct ehci_qtd, qtd_list);
 		ehci_dbg(ehci,
+<<<<<<< HEAD
 			 "%s %s urb %pK ep%d%s len %d, qtd %pK [qh %pK]\n",
+=======
+			 "%s %s urb %p ep%d%s len %d, qtd %p [qh %p]\n",
+>>>>>>> v4.9.227
 			 __func__, urb->dev->devpath, urb,
 			 epnum & 0x0f, (epnum & USB_DIR_IN) ? "in" : "out",
 			 urb->transfer_buffer_length,
@@ -1274,17 +1352,26 @@ static void single_unlink_async(struct ehci_hcd *ehci, struct ehci_qh *qh)
 
 static void start_iaa_cycle(struct ehci_hcd *ehci)
 {
+<<<<<<< HEAD
 	/* Do nothing if an IAA cycle is already running */
 	if (ehci->iaa_in_progress)
 		return;
 	ehci->iaa_in_progress = true;
 
+=======
+>>>>>>> v4.9.227
 	/* If the controller isn't running, we don't have to wait for it */
 	if (unlikely(ehci->rh_state < EHCI_RH_RUNNING)) {
 		end_unlink_async(ehci);
 
+<<<<<<< HEAD
 	/* Otherwise start a new IAA cycle */
 	} else if (likely(ehci->rh_state == EHCI_RH_RUNNING)) {
+=======
+	/* Otherwise start a new IAA cycle if one isn't already running */
+	} else if (ehci->rh_state == EHCI_RH_RUNNING &&
+			!ehci->iaa_in_progress) {
+>>>>>>> v4.9.227
 
 		/* Make sure the unlinks are all visible to the hardware */
 		wmb();
@@ -1292,10 +1379,15 @@ static void start_iaa_cycle(struct ehci_hcd *ehci)
 		ehci_writel(ehci, ehci->command | CMD_IAAD,
 				&ehci->regs->command);
 		ehci_readl(ehci, &ehci->regs->command);
+<<<<<<< HEAD
+=======
+		ehci->iaa_in_progress = true;
+>>>>>>> v4.9.227
 		ehci_enable_event(ehci, EHCI_HRTIMER_IAA_WATCHDOG, true);
 	}
 }
 
+<<<<<<< HEAD
 /* the async qh for the qtds being unlinked are now gone from the HC */
 
 static void end_unlink_async(struct ehci_hcd *ehci)
@@ -1303,6 +1395,10 @@ static void end_unlink_async(struct ehci_hcd *ehci)
 	struct ehci_qh		*qh;
 	bool			early_exit;
 
+=======
+static void end_iaa_cycle(struct ehci_hcd *ehci)
+{
+>>>>>>> v4.9.227
 	if (ehci->has_synopsys_hc_bug)
 		ehci_writel(ehci, (u32) ehci->async->qh_dma,
 			    &ehci->regs->async_next);
@@ -1310,6 +1406,19 @@ static void end_unlink_async(struct ehci_hcd *ehci)
 	/* The current IAA cycle has ended */
 	ehci->iaa_in_progress = false;
 
+<<<<<<< HEAD
+=======
+	end_unlink_async(ehci);
+}
+
+/* See if the async qh for the qtds being unlinked are now gone from the HC */
+
+static void end_unlink_async(struct ehci_hcd *ehci)
+{
+	struct ehci_qh		*qh;
+	bool			early_exit;
+
+>>>>>>> v4.9.227
 	if (list_empty(&ehci->async_unlink))
 		return;
 	qh = list_first_entry(&ehci->async_unlink, struct ehci_qh,
@@ -1330,6 +1439,7 @@ static void end_unlink_async(struct ehci_hcd *ehci)
 	 * after the IAA interrupt occurs.  In self-defense, always go
 	 * through two IAA cycles for each QH.
 	 */
+<<<<<<< HEAD
 	else if (qh->qh_state == QH_STATE_UNLINK_WAIT) {
 		qh->qh_state = QH_STATE_UNLINK;
 		early_exit = true;
@@ -1338,6 +1448,62 @@ static void end_unlink_async(struct ehci_hcd *ehci)
 	/* Otherwise process only the first waiting QH (NVIDIA bug?) */
 	else
 		list_move_tail(&qh->unlink_node, &ehci->async_idle);
+=======
+	else if (qh->qh_state == QH_STATE_UNLINK) {
+		/*
+		 * Second IAA cycle has finished.  Process only the first
+		 * waiting QH (NVIDIA (?) bug).
+		 */
+		list_move_tail(&qh->unlink_node, &ehci->async_idle);
+	}
+
+	/*
+	 * AMD/ATI (?) bug: The HC can continue to use an active QH long
+	 * after the IAA interrupt occurs.  To prevent problems, QHs that
+	 * may still be active will wait until 2 ms have passed with no
+	 * change to the hw_current and hw_token fields (this delay occurs
+	 * between the two IAA cycles).
+	 *
+	 * The EHCI spec (4.8.2) says that active QHs must not be removed
+	 * from the async schedule and recommends waiting until the QH
+	 * goes inactive.  This is ridiculous because the QH will _never_
+	 * become inactive if the endpoint NAKs indefinitely.
+	 */
+
+	/* Some reasons for unlinking guarantee the QH can't be active */
+	else if (qh->unlink_reason & (QH_UNLINK_HALTED |
+			QH_UNLINK_SHORT_READ | QH_UNLINK_DUMMY_OVERLAY))
+		goto DelayDone;
+
+	/* The QH can't be active if the queue was and still is empty... */
+	else if	((qh->unlink_reason & QH_UNLINK_QUEUE_EMPTY) &&
+			list_empty(&qh->qtd_list))
+		goto DelayDone;
+
+	/* ... or if the QH has halted */
+	else if	(qh->hw->hw_token & cpu_to_hc32(ehci, QTD_STS_HALT))
+		goto DelayDone;
+
+	/* Otherwise we have to wait until the QH stops changing */
+	else {
+		__hc32		qh_current, qh_token;
+
+		qh_current = qh->hw->hw_current;
+		qh_token = qh->hw->hw_token;
+		if (qh_current != ehci->old_current ||
+				qh_token != ehci->old_token) {
+			ehci->old_current = qh_current;
+			ehci->old_token = qh_token;
+			ehci_enable_event(ehci,
+					EHCI_HRTIMER_ACTIVE_UNLINK, true);
+			return;
+		}
+ DelayDone:
+		qh->qh_state = QH_STATE_UNLINK;
+		early_exit = true;
+	}
+	ehci->old_current = ~0;		/* Prepare for next QH */
+>>>>>>> v4.9.227
 
 	/* Start a new IAA cycle if any QHs are waiting for it */
 	if (!list_empty(&ehci->async_unlink))
@@ -1390,6 +1556,10 @@ static void unlink_empty_async(struct ehci_hcd *ehci)
 
 	/* If nothing else is being unlinked, unlink the last empty QH */
 	if (list_empty(&ehci->async_unlink) && qh_to_unlink) {
+<<<<<<< HEAD
+=======
+		qh_to_unlink->unlink_reason |= QH_UNLINK_QUEUE_EMPTY;
+>>>>>>> v4.9.227
 		start_unlink_async(ehci, qh_to_unlink);
 		--count;
 	}
@@ -1401,8 +1571,15 @@ static void unlink_empty_async(struct ehci_hcd *ehci)
 	}
 }
 
+<<<<<<< HEAD
 /* The root hub is suspended; unlink all the async QHs */
 static void __maybe_unused unlink_empty_async_suspended(struct ehci_hcd *ehci)
+=======
+#ifdef	CONFIG_PM
+
+/* The root hub is suspended; unlink all the async QHs */
+static void unlink_empty_async_suspended(struct ehci_hcd *ehci)
+>>>>>>> v4.9.227
 {
 	struct ehci_qh		*qh;
 
@@ -1411,9 +1588,16 @@ static void __maybe_unused unlink_empty_async_suspended(struct ehci_hcd *ehci)
 		WARN_ON(!list_empty(&qh->qtd_list));
 		single_unlink_async(ehci, qh);
 	}
+<<<<<<< HEAD
 	start_iaa_cycle(ehci);
 }
 
+=======
+}
+
+#endif
+
+>>>>>>> v4.9.227
 /* makes sure the async qh will become idle */
 /* caller must own ehci->lock */
 

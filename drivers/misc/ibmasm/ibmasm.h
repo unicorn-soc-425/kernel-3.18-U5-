@@ -34,6 +34,10 @@
 #include <linux/kref.h>
 #include <linux/device.h>
 #include <linux/input.h>
+<<<<<<< HEAD
+=======
+#include <linux/time64.h>
+>>>>>>> v4.9.227
 
 /* Driver identification */
 #define DRIVER_NAME	"ibmasm"
@@ -53,9 +57,17 @@ extern int ibmasm_debug;
 
 static inline char *get_timestamp(char *buf)
 {
+<<<<<<< HEAD
 	struct timeval now;
 	do_gettimeofday(&now);
 	sprintf(buf, "%lu.%lu", now.tv_sec, now.tv_usec);
+=======
+	struct timespec64 now;
+
+	ktime_get_real_ts64(&now);
+	sprintf(buf, "%llu.%.08lu", (long long)now.tv_sec,
+				now.tv_nsec / NSEC_PER_USEC);
+>>>>>>> v4.9.227
 	return buf;
 }
 
@@ -211,7 +223,11 @@ void ibmasmfs_unregister(void);
 void ibmasmfs_add_sp(struct service_processor *sp);
 
 /* uart */
+<<<<<<< HEAD
 #ifdef CONFIG_SERIAL_8250
+=======
+#if IS_ENABLED(CONFIG_SERIAL_8250)
+>>>>>>> v4.9.227
 void ibmasm_register_uart(struct service_processor *sp);
 void ibmasm_unregister_uart(struct service_processor *sp);
 #else

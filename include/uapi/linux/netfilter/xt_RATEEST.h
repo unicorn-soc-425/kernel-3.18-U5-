@@ -2,6 +2,10 @@
 #define _XT_RATEEST_TARGET_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/if.h>
+>>>>>>> v4.9.227
 
 struct xt_rateest_target_info {
 	char			name[IFNAMSIZ];

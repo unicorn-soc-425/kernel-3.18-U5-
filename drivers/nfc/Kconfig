@@ -2,6 +2,7 @@
 # Near Field Communication (NFC) devices
 #
 
+<<<<<<< HEAD
 config SAMSUNG_NFC
 	bool "Samsung NFC driver"
 	default n
@@ -81,6 +82,10 @@ config NFC_PM_BBCLK2
 	  This option enables device driver support for the NFC.
 	  It is used by many services. NFC is fully controlled using I2C
 	  to communicate the AP chip.
+=======
+menu "Near Field Communication (NFC) devices"
+	depends on NFC
+>>>>>>> v4.9.227
 
 config NFC_WILINK
 	tristate "Texas Instruments NFC WiLink driver"
@@ -117,6 +122,10 @@ config NFC_MEI_PHY
 
 config NFC_SIM
 	tristate "NFC hardware simulator driver"
+<<<<<<< HEAD
+=======
+	depends on NFC_DIGITAL
+>>>>>>> v4.9.227
 	help
 	  This driver declares two virtual NFC devices supporting NFC-DEP
 	  protocol. An LLCP connection can be established between them and
@@ -135,6 +144,7 @@ config NFC_PORT100
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
 config NFC_NQ
 	tristate "Qualcomm NCI based NFC Controller Driver for NQx"
 	depends on I2C
@@ -144,3 +154,16 @@ config NFC_NQ
 	  resides in the usermode and it has no other NFC dependencies.
 
 source "drivers/nfc/nfc_logger/Kconfig"
+=======
+source "drivers/nfc/fdp/Kconfig"
+source "drivers/nfc/pn544/Kconfig"
+source "drivers/nfc/pn533/Kconfig"
+source "drivers/nfc/microread/Kconfig"
+source "drivers/nfc/nfcmrvl/Kconfig"
+source "drivers/nfc/st21nfca/Kconfig"
+source "drivers/nfc/st-nci/Kconfig"
+source "drivers/nfc/nxp-nci/Kconfig"
+source "drivers/nfc/s3fwrn5/Kconfig"
+source "drivers/nfc/st95hf/Kconfig"
+endmenu
+>>>>>>> v4.9.227

@@ -233,10 +233,13 @@ static void atl1c_get_drvinfo(struct net_device *netdev,
 		sizeof(drvinfo->version));
 	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->n_stats = 0;
 	drvinfo->testinfo_len = 0;
 	drvinfo->regdump_len = atl1c_get_regs_len(netdev);
 	drvinfo->eedump_len = atl1c_get_eeprom_len(netdev);
+=======
+>>>>>>> v4.9.227
 }
 
 static void atl1c_get_wol(struct net_device *netdev,

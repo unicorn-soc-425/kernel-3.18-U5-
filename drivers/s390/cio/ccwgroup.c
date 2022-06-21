@@ -369,7 +369,11 @@ int ccwgroup_create_dev(struct device *parent, struct ccwgroup_driver *gdrv,
 		goto error;
 	}
 	/* Check for trailing stuff. */
+<<<<<<< HEAD
 	if (i == num_devices && strlen(buf) > 0) {
+=======
+	if (i == num_devices && buf && strlen(buf) > 0) {
+>>>>>>> v4.9.227
 		rc = -EINVAL;
 		goto error;
 	}

@@ -60,7 +60,12 @@ extern void bfin_internal_mask_irq(unsigned int irq);
 extern void bfin_internal_unmask_irq(unsigned int irq);
 
 struct irq_desc;
+<<<<<<< HEAD
 extern void bfin_demux_mac_status_irq(unsigned int, struct irq_desc *);
 extern void bfin_demux_gpio_irq(unsigned int, struct irq_desc *);
+=======
+extern void bfin_demux_mac_status_irq(struct irq_desc *);
+extern void bfin_demux_gpio_irq(struct irq_desc *);
+>>>>>>> v4.9.227
 
 #endif

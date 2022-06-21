@@ -27,12 +27,20 @@
 #include <core/client.h>
 
 #include <nvif/class.h>
+<<<<<<< HEAD
+=======
+#include <nvif/cl507a.h>
+>>>>>>> v4.9.227
 #include <nvif/unpack.h>
 
 int
 nv50_disp_curs_new(const struct nv50_disp_chan_func *func,
 		   const struct nv50_disp_chan_mthd *mthd,
+<<<<<<< HEAD
 		   struct nv50_disp_root *root, int chid,
+=======
+		   struct nv50_disp_root *root, int ctrl, int user,
+>>>>>>> v4.9.227
 		   const struct nvkm_oclass *oclass, void *data, u32 size,
 		   struct nvkm_object **pobject)
 {
@@ -41,10 +49,17 @@ nv50_disp_curs_new(const struct nv50_disp_chan_func *func,
 	} *args = data;
 	struct nvkm_object *parent = oclass->parent;
 	struct nv50_disp *disp = root->disp;
+<<<<<<< HEAD
 	int head, ret;
 
 	nvif_ioctl(parent, "create disp cursor size %d\n", size);
 	if (nvif_unpack(args->v0, 0, 0, false)) {
+=======
+	int head, ret = -ENOSYS;
+
+	nvif_ioctl(parent, "create disp cursor size %d\n", size);
+	if (!(ret = nvif_unpack(ret, &data, &size, args->v0, 0, 0, false))) {
+>>>>>>> v4.9.227
 		nvif_ioctl(parent, "create disp cursor vers %d head %d\n",
 			   args->v0.version, args->v0.head);
 		if (args->v0.head > disp->base.head.nr)
@@ -53,7 +68,11 @@ nv50_disp_curs_new(const struct nv50_disp_chan_func *func,
 	} else
 		return ret;
 
+<<<<<<< HEAD
 	return nv50_disp_chan_new_(func, mthd, root, chid + head,
+=======
+	return nv50_disp_chan_new_(func, mthd, root, ctrl + head, user + head,
+>>>>>>> v4.9.227
 				   head, oclass, pobject);
 }
 
@@ -64,5 +83,9 @@ nv50_disp_curs_oclass = {
 	.base.maxver = 0,
 	.ctor = nv50_disp_curs_new,
 	.func = &nv50_disp_pioc_func,
+<<<<<<< HEAD
 	.chid = 7,
+=======
+	.chid = { 7, 7 },
+>>>>>>> v4.9.227
 };

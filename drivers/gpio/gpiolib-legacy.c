@@ -24,6 +24,13 @@ int gpio_request_one(unsigned gpio, unsigned long flags, const char *label)
 
 	desc = gpio_to_desc(gpio);
 
+<<<<<<< HEAD
+=======
+	/* Compatibility: assume unavailable "valid" GPIOs will appear later */
+	if (!desc && gpio_is_valid(gpio))
+		return -EPROBE_DEFER;
+
+>>>>>>> v4.9.227
 	err = gpiod_request(desc, label);
 	if (err)
 		return err;
@@ -62,7 +69,17 @@ EXPORT_SYMBOL_GPL(gpio_request_one);
 
 int gpio_request(unsigned gpio, const char *label)
 {
+<<<<<<< HEAD
 	return gpiod_request(gpio_to_desc(gpio), label);
+=======
+	struct gpio_desc *desc = gpio_to_desc(gpio);
+
+	/* Compatibility: assume unavailable "valid" GPIOs will appear later */
+	if (!desc && gpio_is_valid(gpio))
+		return -EPROBE_DEFER;
+
+	return gpiod_request(desc, label);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(gpio_request);
 

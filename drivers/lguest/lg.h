@@ -50,7 +50,14 @@ struct lg_cpu {
 	/* Bitmap of what has changed: see CHANGED_* above. */
 	int changed;
 
+<<<<<<< HEAD
 	unsigned long pending_notify; /* pfn from LHCALL_NOTIFY */
+=======
+	/* Pending operation. */
+	struct lguest_pending pending;
+
+	unsigned long *reg_read; /* register from LHREQ_GETREG */
+>>>>>>> v4.9.227
 
 	/* At end of a page shared mapped over lguest_pages in guest. */
 	unsigned long regs_page;
@@ -78,6 +85,7 @@ struct lg_cpu {
 	struct lg_cpu_arch arch;
 };
 
+<<<<<<< HEAD
 struct lg_eventfd {
 	unsigned long addr;
 	struct eventfd_ctx *event;
@@ -88,14 +96,25 @@ struct lg_eventfd_map {
 	struct lg_eventfd map[];
 };
 
+=======
+>>>>>>> v4.9.227
 /* The private info the thread maintains about the guest. */
 struct lguest {
 	struct lguest_data __user *lguest_data;
 	struct lg_cpu cpus[NR_CPUS];
 	unsigned int nr_cpus;
 
+<<<<<<< HEAD
 	u32 pfn_limit;
 
+=======
+	/* Valid guest memory pages must be < this. */
+	u32 pfn_limit;
+
+	/* Device memory is >= pfn_limit and < device_limit. */
+	u32 device_limit;
+
+>>>>>>> v4.9.227
 	/*
 	 * This provides the offset to the base of guest-physical memory in the
 	 * Launcher.
@@ -105,13 +124,20 @@ struct lguest {
 
 	struct pgdir pgdirs[4];
 
+<<<<<<< HEAD
 	unsigned long noirq_start, noirq_end;
+=======
+	unsigned long noirq_iret;
+>>>>>>> v4.9.227
 
 	unsigned int stack_pages;
 	u32 tsc_khz;
 
+<<<<<<< HEAD
 	struct lg_eventfd_map *eventfds;
 
+=======
+>>>>>>> v4.9.227
 	/* Dead? */
 	const char *dead;
 };
@@ -172,6 +198,10 @@ void guest_set_clockevent(struct lg_cpu *cpu, unsigned long delta);
 bool send_notify_to_eventfd(struct lg_cpu *cpu);
 void init_clockdev(struct lg_cpu *cpu);
 bool check_syscall_vector(struct lguest *lg);
+<<<<<<< HEAD
+=======
+bool could_be_syscall(unsigned int num);
+>>>>>>> v4.9.227
 int init_interrupts(void);
 void free_interrupts(void);
 
@@ -197,8 +227,15 @@ void guest_pagetable_flush_user(struct lg_cpu *cpu);
 void guest_set_pte(struct lg_cpu *cpu, unsigned long gpgdir,
 		   unsigned long vaddr, pte_t val);
 void map_switcher_in_guest(struct lg_cpu *cpu, struct lguest_pages *pages);
+<<<<<<< HEAD
 bool demand_page(struct lg_cpu *cpu, unsigned long cr2, int errcode);
 void pin_page(struct lg_cpu *cpu, unsigned long vaddr);
+=======
+bool demand_page(struct lg_cpu *cpu, unsigned long cr2, int errcode,
+		 unsigned long *iomem);
+void pin_page(struct lg_cpu *cpu, unsigned long vaddr);
+bool __guest_pa(struct lg_cpu *cpu, unsigned long vaddr, unsigned long *paddr);
+>>>>>>> v4.9.227
 unsigned long guest_pa(struct lg_cpu *cpu, unsigned long vaddr);
 void page_table_guest_data_init(struct lg_cpu *cpu);
 
@@ -210,6 +247,10 @@ void lguest_arch_handle_trap(struct lg_cpu *cpu);
 int lguest_arch_init_hypercalls(struct lg_cpu *cpu);
 int lguest_arch_do_hcall(struct lg_cpu *cpu, struct hcall_args *args);
 void lguest_arch_setup_regs(struct lg_cpu *cpu, unsigned long start);
+<<<<<<< HEAD
+=======
+unsigned long *lguest_arch_regptr(struct lg_cpu *cpu, size_t reg_off, bool any);
+>>>>>>> v4.9.227
 
 /* <arch>/switcher.S: */
 extern char start_switcher_text[], end_switcher_text[], switch_to_guest[];

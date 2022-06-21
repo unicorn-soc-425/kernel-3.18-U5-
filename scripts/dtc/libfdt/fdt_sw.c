@@ -107,6 +107,41 @@ int fdt_create(void *buf, int bufsize)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int fdt_resize(void *fdt, void *buf, int bufsize)
+{
+	size_t headsize, tailsize;
+	char *oldtail, *newtail;
+
+	FDT_SW_CHECK_HEADER(fdt);
+
+	headsize = fdt_off_dt_struct(fdt);
+	tailsize = fdt_size_dt_strings(fdt);
+
+	if ((headsize + tailsize) > bufsize)
+		return -FDT_ERR_NOSPACE;
+
+	oldtail = (char *)fdt + fdt_totalsize(fdt) - tailsize;
+	newtail = (char *)buf + bufsize - tailsize;
+
+	/* Two cases to avoid clobbering data if the old and new
+	 * buffers partially overlap */
+	if (buf <= fdt) {
+		memmove(buf, fdt, headsize);
+		memmove(newtail, oldtail, tailsize);
+	} else {
+		memmove(newtail, oldtail, tailsize);
+		memmove(buf, fdt, headsize);
+	}
+
+	fdt_set_off_dt_strings(buf, bufsize);
+	fdt_set_totalsize(buf, bufsize);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 int fdt_add_reservemap_entry(void *fdt, uint64_t addr, uint64_t size)
 {
 	struct fdt_reserve_entry *re;
@@ -153,7 +188,11 @@ int fdt_begin_node(void *fdt, const char *name)
 
 int fdt_end_node(void *fdt)
 {
+<<<<<<< HEAD
 	uint32_t *en;
+=======
+	fdt32_t *en;
+>>>>>>> v4.9.227
 
 	FDT_SW_CHECK_HEADER(fdt);
 
@@ -213,7 +252,11 @@ int fdt_property(void *fdt, const char *name, const void *val, int len)
 int fdt_finish(void *fdt)
 {
 	char *p = (char *)fdt;
+<<<<<<< HEAD
 	uint32_t *end;
+=======
+	fdt32_t *end;
+>>>>>>> v4.9.227
 	int oldstroffset, newstroffset;
 	uint32_t tag;
 	int offset, nextoffset;

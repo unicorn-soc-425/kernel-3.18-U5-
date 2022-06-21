@@ -143,6 +143,7 @@ static int jmicron_init_one (struct pci_dev *pdev, const struct pci_device_id *i
 	};
 	const struct ata_port_info *ppi[] = { &info, NULL };
 
+<<<<<<< HEAD
 	/*
 	 * The JMicron chip 361/363 contains one SATA controller and one
 	 * PATA controller,for powering on these both controllers, we must
@@ -155,6 +156,8 @@ static int jmicron_init_one (struct pci_dev *pdev, const struct pci_device_id *i
 		pdev->device == PCI_DEVICE_ID_JMICRON_JMB361))
 		device_disable_async_suspend(&pdev->dev);
 
+=======
+>>>>>>> v4.9.227
 	return ata_pci_bmdma_init_one(pdev, ppi, &jmicron_sht, NULL, 0);
 }
 

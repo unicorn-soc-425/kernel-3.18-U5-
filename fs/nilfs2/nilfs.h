@@ -13,12 +13,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Koji Sato <koji@osrg.net>
  *            Ryusuke Konishi <ryusuke@osrg.net>
+=======
+ * Written by Koji Sato and Ryusuke Konishi.
+>>>>>>> v4.9.227
  */
 
 #ifndef _NILFS_H
@@ -28,7 +32,12 @@
 #include <linux/buffer_head.h>
 #include <linux/spinlock.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <linux/nilfs2_fs.h>
+=======
+#include <linux/nilfs2_api.h>
+#include <linux/nilfs2_ondisk.h>
+>>>>>>> v4.9.227
 #include "the_nilfs.h"
 #include "bmap.h"
 
@@ -69,8 +78,15 @@ struct nilfs_inode_info {
 	 */
 	struct rw_semaphore xattr_sem;
 #endif
+<<<<<<< HEAD
 	struct buffer_head *i_bh;	/* i_bh contains a new or dirty
 					   disk inode */
+=======
+	struct buffer_head *i_bh;	/*
+					 * i_bh contains a new or dirty
+					 * disk inode.
+					 */
+>>>>>>> v4.9.227
 	struct nilfs_root *i_root;
 	struct inode vfs_inode;
 };
@@ -100,8 +116,15 @@ enum {
 	NILFS_I_NEW = 0,		/* Inode is newly created */
 	NILFS_I_DIRTY,			/* The file is dirty */
 	NILFS_I_QUEUED,			/* inode is in dirty_files list */
+<<<<<<< HEAD
 	NILFS_I_BUSY,			/* inode is grabbed by a segment
 					   constructor */
+=======
+	NILFS_I_BUSY,			/*
+					 * Inode is grabbed by a segment
+					 * constructor
+					 */
+>>>>>>> v4.9.227
 	NILFS_I_COLLECTED,		/* All dirty blocks are collected */
 	NILFS_I_UPDATED,		/* The file has been written back */
 	NILFS_I_INODE_SYNC,		/* dsync is not allowed for inode */
@@ -120,6 +143,7 @@ enum {
 /*
  * Macros to check inode numbers
  */
+<<<<<<< HEAD
 #define NILFS_MDT_INO_BITS   \
 	((unsigned int)(1 << NILFS_DAT_INO | 1 << NILFS_CPFILE_INO |	\
 			1 << NILFS_SUFILE_INO | 1 << NILFS_IFILE_INO |	\
@@ -127,13 +151,27 @@ enum {
 
 #define NILFS_SYS_INO_BITS   \
 	((unsigned int)(1 << NILFS_ROOT_INO) | NILFS_MDT_INO_BITS)
+=======
+#define NILFS_MDT_INO_BITS						\
+	(BIT(NILFS_DAT_INO) | BIT(NILFS_CPFILE_INO) |			\
+	 BIT(NILFS_SUFILE_INO) | BIT(NILFS_IFILE_INO) |			\
+	 BIT(NILFS_ATIME_INO) | BIT(NILFS_SKETCH_INO))
+
+#define NILFS_SYS_INO_BITS (BIT(NILFS_ROOT_INO) | NILFS_MDT_INO_BITS)
+>>>>>>> v4.9.227
 
 #define NILFS_FIRST_INO(sb) (((struct the_nilfs *)sb->s_fs_info)->ns_first_ino)
 
 #define NILFS_MDT_INODE(sb, ino) \
+<<<<<<< HEAD
 	((ino) < NILFS_FIRST_INO(sb) && (NILFS_MDT_INO_BITS & (1 << (ino))))
 #define NILFS_VALID_INODE(sb, ino) \
 	((ino) >= NILFS_FIRST_INO(sb) || (NILFS_SYS_INO_BITS & (1 << (ino))))
+=======
+	((ino) < NILFS_FIRST_INO(sb) && (NILFS_MDT_INO_BITS & BIT(ino)))
+#define NILFS_VALID_INODE(sb, ino) \
+	((ino) >= NILFS_FIRST_INO(sb) || (NILFS_SYS_INO_BITS & BIT(ino)))
+>>>>>>> v4.9.227
 
 /**
  * struct nilfs_transaction_info: context information for synchronization
@@ -145,8 +183,15 @@ enum {
 struct nilfs_transaction_info {
 	u32			ti_magic;
 	void		       *ti_save;
+<<<<<<< HEAD
 				/* This should never used. If this happens,
 				   one of other filesystems has a bug. */
+=======
+				/*
+				 * This should never be used.  If it happens,
+				 * one of other filesystems has a bug.
+				 */
+>>>>>>> v4.9.227
 	unsigned short		ti_flags;
 	unsigned short		ti_count;
 };
@@ -156,8 +201,15 @@ struct nilfs_transaction_info {
 
 /* ti_flags */
 #define NILFS_TI_DYNAMIC_ALLOC	0x0001  /* Allocated from slab */
+<<<<<<< HEAD
 #define NILFS_TI_SYNC		0x0002	/* Force to construct segment at the
 					   end of transaction. */
+=======
+#define NILFS_TI_SYNC		0x0002	/*
+					 * Force to construct segment at the
+					 * end of transaction.
+					 */
+>>>>>>> v4.9.227
 #define NILFS_TI_GC		0x0004	/* GC context */
 #define NILFS_TI_COMMIT		0x0008	/* Change happened or not */
 #define NILFS_TI_WRITER		0x0010	/* Constructor context */
@@ -279,7 +331,11 @@ extern void nilfs_write_failed(struct address_space *mapping, loff_t to);
 int nilfs_permission(struct inode *inode, int mask);
 int nilfs_load_inode_block(struct inode *inode, struct buffer_head **pbh);
 extern int nilfs_inode_dirty(struct inode *);
+<<<<<<< HEAD
 int nilfs_set_file_dirty(struct inode *inode, unsigned nr_dirty);
+=======
+int nilfs_set_file_dirty(struct inode *inode, unsigned int nr_dirty);
+>>>>>>> v4.9.227
 extern int __nilfs_mark_inode_dirty(struct inode *, int);
 extern void nilfs_dirty_inode(struct inode *, int flags);
 int nilfs_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
@@ -296,10 +352,43 @@ static inline int nilfs_mark_inode_dirty_sync(struct inode *inode)
 /* super.c */
 extern struct inode *nilfs_alloc_inode(struct super_block *);
 extern void nilfs_destroy_inode(struct inode *);
+<<<<<<< HEAD
 extern __printf(3, 4)
 void nilfs_error(struct super_block *, const char *, const char *, ...);
 extern __printf(3, 4)
 void nilfs_warning(struct super_block *, const char *, const char *, ...);
+=======
+
+extern __printf(3, 4)
+void __nilfs_msg(struct super_block *sb, const char *level,
+		 const char *fmt, ...);
+extern __printf(3, 4)
+void __nilfs_error(struct super_block *sb, const char *function,
+		   const char *fmt, ...);
+
+#ifdef CONFIG_PRINTK
+
+#define nilfs_msg(sb, level, fmt, ...)					\
+	__nilfs_msg(sb, level, fmt, ##__VA_ARGS__)
+#define nilfs_error(sb, fmt, ...)					\
+	__nilfs_error(sb, __func__, fmt, ##__VA_ARGS__)
+
+#else
+
+#define nilfs_msg(sb, level, fmt, ...)					\
+	do {								\
+		no_printk(fmt, ##__VA_ARGS__);				\
+		(void)(sb);						\
+	} while (0)
+#define nilfs_error(sb, fmt, ...)					\
+	do {								\
+		no_printk(fmt, ##__VA_ARGS__);				\
+		__nilfs_error(sb, "", " ");				\
+	} while (0)
+
+#endif /* CONFIG_PRINTK */
+
+>>>>>>> v4.9.227
 extern struct nilfs_super_block *
 nilfs_read_super_block(struct super_block *, u64, int, struct buffer_head **);
 extern int nilfs_store_magic_and_option(struct super_block *,

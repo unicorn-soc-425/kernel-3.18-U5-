@@ -15,7 +15,10 @@
 #include <linux/module.h>
 #include <linux/usb/composite.h>
 
+<<<<<<< HEAD
 #include "gadget_chips.h"
+=======
+>>>>>>> v4.9.227
 #define DRIVER_DESC		"Linux USB Audio Gadget"
 #define DRIVER_VERSION		"Feb 2, 2012"
 
@@ -124,7 +127,11 @@ static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
+<<<<<<< HEAD
 	.bcdUSB =		__constant_cpu_to_le16(0x200),
+=======
+	/* .bcdUSB = DYNAMIC */
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_GADGET_UAC1
 	.bDeviceClass =		USB_CLASS_PER_INTERFACE,
@@ -141,8 +148,13 @@ static struct usb_device_descriptor device_desc = {
 	 * we support.  (As does bNumConfigurations.)  These values can
 	 * also be overridden by module parameters.
 	 */
+<<<<<<< HEAD
 	.idVendor =		__constant_cpu_to_le16(AUDIO_VENDOR_NUM),
 	.idProduct =		__constant_cpu_to_le16(AUDIO_PRODUCT_NUM),
+=======
+	.idVendor =		cpu_to_le16(AUDIO_VENDOR_NUM),
+	.idProduct =		cpu_to_le16(AUDIO_PRODUCT_NUM),
+>>>>>>> v4.9.227
 	/* .bcdDevice = f(hardware) */
 	/* .iManufacturer = DYNAMIC */
 	/* .iProduct = DYNAMIC */
@@ -150,6 +162,7 @@ static struct usb_device_descriptor device_desc = {
 	.bNumConfigurations =	1,
 };
 
+<<<<<<< HEAD
 static struct usb_otg_descriptor otg_descriptor = {
 	.bLength =		sizeof otg_descriptor,
 	.bDescriptorType =	USB_DT_OTG,
@@ -168,6 +181,13 @@ static const struct usb_descriptor_header *otg_desc[] = {
 /*-------------------------------------------------------------------------*/
 
 static int __init audio_do_config(struct usb_configuration *c)
+=======
+static const struct usb_descriptor_header *otg_desc[2];
+
+/*-------------------------------------------------------------------------*/
+
+static int audio_do_config(struct usb_configuration *c)
+>>>>>>> v4.9.227
 {
 	int status;
 
@@ -216,7 +236,11 @@ static struct usb_configuration audio_config_driver = {
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int __init audio_bind(struct usb_composite_dev *cdev)
+=======
+static int audio_bind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 #ifndef CONFIG_GADGET_UAC1
 	struct f_uac2_opts	*uac2_opts;
@@ -259,14 +283,39 @@ static int __init audio_bind(struct usb_composite_dev *cdev)
 	device_desc.iManufacturer = strings_dev[USB_GADGET_MANUFACTURER_IDX].id;
 	device_desc.iProduct = strings_dev[USB_GADGET_PRODUCT_IDX].id;
 
+<<<<<<< HEAD
 	status = usb_add_config(cdev, &audio_config_driver, audio_do_config);
 	if (status < 0)
 		goto fail;
+=======
+	if (gadget_is_otg(cdev->gadget) && !otg_desc[0]) {
+		struct usb_descriptor_header *usb_desc;
+
+		usb_desc = usb_otg_descriptor_alloc(cdev->gadget);
+		if (!usb_desc) {
+			status = -ENOMEM;
+			goto fail;
+		}
+		usb_otg_descriptor_init(cdev->gadget, usb_desc);
+		otg_desc[0] = usb_desc;
+		otg_desc[1] = NULL;
+	}
+
+	status = usb_add_config(cdev, &audio_config_driver, audio_do_config);
+	if (status < 0)
+		goto fail_otg_desc;
+>>>>>>> v4.9.227
 	usb_composite_overwrite_options(cdev, &coverwrite);
 
 	INFO(cdev, "%s, version: %s\n", DRIVER_DESC, DRIVER_VERSION);
 	return 0;
 
+<<<<<<< HEAD
+=======
+fail_otg_desc:
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+>>>>>>> v4.9.227
 fail:
 #ifndef CONFIG_GADGET_UAC1
 	usb_put_function_instance(fi_uac2);
@@ -276,7 +325,11 @@ fail:
 	return status;
 }
 
+<<<<<<< HEAD
 static int __exit audio_unbind(struct usb_composite_dev *cdev)
+=======
+static int audio_unbind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 #ifdef CONFIG_GADGET_UAC1
 	if (!IS_ERR_OR_NULL(f_uac1))
@@ -289,16 +342,30 @@ static int __exit audio_unbind(struct usb_composite_dev *cdev)
 	if (!IS_ERR_OR_NULL(fi_uac2))
 		usb_put_function_instance(fi_uac2);
 #endif
+<<<<<<< HEAD
 	return 0;
 }
 
 static __refdata struct usb_composite_driver audio_driver = {
+=======
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+
+	return 0;
+}
+
+static struct usb_composite_driver audio_driver = {
+>>>>>>> v4.9.227
 	.name		= "g_audio",
 	.dev		= &device_desc,
 	.strings	= audio_strings,
 	.max_speed	= USB_SPEED_HIGH,
 	.bind		= audio_bind,
+<<<<<<< HEAD
 	.unbind		= __exit_p(audio_unbind),
+=======
+	.unbind		= audio_unbind,
+>>>>>>> v4.9.227
 };
 
 module_usb_composite_driver(audio_driver);

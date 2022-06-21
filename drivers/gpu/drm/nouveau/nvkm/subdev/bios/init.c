@@ -786,20 +786,36 @@ init_io_flag_condition(struct nvbios_init *init)
 }
 
 /**
+<<<<<<< HEAD
  * INIT_DP_CONDITION - opcode 0x3a
  *
  */
 static void
 init_dp_condition(struct nvbios_init *init)
+=======
+ * INIT_GENERIC_CONDITION - opcode 0x3a
+ *
+ */
+static void
+init_generic_condition(struct nvbios_init *init)
+>>>>>>> v4.9.227
 {
 	struct nvkm_bios *bios = init->bios;
 	struct nvbios_dpout info;
 	u8  cond = nvbios_rd08(bios, init->offset + 1);
+<<<<<<< HEAD
 	u8  unkn = nvbios_rd08(bios, init->offset + 2);
 	u8  ver, hdr, cnt, len;
 	u16 data;
 
 	trace("DP_CONDITION\t0x%02x 0x%02x\n", cond, unkn);
+=======
+	u8  size = nvbios_rd08(bios, init->offset + 2);
+	u8  ver, hdr, cnt, len;
+	u16 data;
+
+	trace("GENERIC_CONDITION\t0x%02x 0x%02x\n", cond, size);
+>>>>>>> v4.9.227
 	init->offset += 3;
 
 	switch (cond) {
@@ -828,7 +844,12 @@ init_dp_condition(struct nvbios_init *init)
 			init_exec_set(init, false);
 		break;
 	default:
+<<<<<<< HEAD
 		warn("unknown dp condition 0x%02x\n", cond);
+=======
+		warn("INIT_GENERIC_CONDITON: unknown 0x%02x\n", cond);
+		init->offset += size;
+>>>>>>> v4.9.227
 		break;
 	}
 }
@@ -2205,7 +2226,11 @@ static struct nvbios_init_opcode {
 	[0x37] = { init_copy },
 	[0x38] = { init_not },
 	[0x39] = { init_io_flag_condition },
+<<<<<<< HEAD
 	[0x3a] = { init_dp_condition },
+=======
+	[0x3a] = { init_generic_condition },
+>>>>>>> v4.9.227
 	[0x3b] = { init_io_mask_or },
 	[0x3c] = { init_io_or },
 	[0x47] = { init_andn_reg },

@@ -59,7 +59,11 @@ static unsigned short keymap_Lifebook_Tseries[KEYMAP_LEN] __initdata = {
 	KEY_RESERVED,
 	KEY_SCROLLDOWN,
 	KEY_SCROLLUP,
+<<<<<<< HEAD
 	KEY_DIRECTION,
+=======
+	KEY_ROTATE_DISPLAY,
+>>>>>>> v4.9.227
 	KEY_LEFTCTRL,
 	KEY_BRIGHTNESSUP,
 	KEY_BRIGHTNESSDOWN,
@@ -116,7 +120,11 @@ static unsigned short keymap_Lifebook_U810[KEYMAP_LEN] __initdata = {
 	KEY_RESERVED,
 	KEY_PROG1,
 	KEY_PROG2,
+<<<<<<< HEAD
 	KEY_DIRECTION,
+=======
+	KEY_ROTATE_DISPLAY,
+>>>>>>> v4.9.227
 	KEY_RESERVED,
 	KEY_RESERVED,
 	KEY_RESERVED,
@@ -153,7 +161,11 @@ static unsigned short keymap_Stylistic_ST5xxx[KEYMAP_LEN] __initdata = {
 	KEY_RESERVED,
 	KEY_RESERVED,
 	KEY_MAIL,
+<<<<<<< HEAD
 	KEY_DIRECTION,
+=======
+	KEY_ROTATE_DISPLAY,
+>>>>>>> v4.9.227
 	KEY_ESC,
 	KEY_ENTER,
 	KEY_BRIGHTNESSUP,

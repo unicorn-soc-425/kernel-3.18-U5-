@@ -57,6 +57,10 @@ asmlinkage long xtensa_fadvise64_64(int fd, int advice,
 	return sys_fadvise64_64(fd, offset, len, advice);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+>>>>>>> v4.9.227
 unsigned long arch_get_unmapped_area(struct file *filp, unsigned long addr,
 		unsigned long len, unsigned long pgoff, unsigned long flags)
 {
@@ -93,3 +97,7 @@ unsigned long arch_get_unmapped_area(struct file *filp, unsigned long addr,
 			addr = COLOUR_ALIGN(addr, pgoff);
 	}
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227

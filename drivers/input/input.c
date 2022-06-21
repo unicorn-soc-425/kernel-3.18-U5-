@@ -29,10 +29,13 @@
 #include <linux/rcupdate.h>
 #include "input-compat.h"
 
+<<<<<<< HEAD
 #if !defined(CONFIG_INPUT_BOOSTER) // Input Booster +
 #include <linux/input/input.h>
 #endif // Input Booster -
 
+=======
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Vojtech Pavlik <vojtech@suse.cz>");
 MODULE_DESCRIPTION("Input core");
 MODULE_LICENSE("GPL");
@@ -104,6 +107,7 @@ static unsigned int input_to_handler(struct input_handle *handle,
 	struct input_value *end = vals;
 	struct input_value *v;
 
+<<<<<<< HEAD
 	for (v = vals; v != vals + count; v++) {
 		if (handler->filter &&
 		    handler->filter(handle, v->type, v->code, v->value))
@@ -114,13 +118,30 @@ static unsigned int input_to_handler(struct input_handle *handle,
 	}
 
 	count = end - vals;
+=======
+	if (handler->filter) {
+		for (v = vals; v != vals + count; v++) {
+			if (handler->filter(handle, v->type, v->code, v->value))
+				continue;
+			if (end != v)
+				*end = *v;
+			end++;
+		}
+		count = end - vals;
+	}
+
+>>>>>>> v4.9.227
 	if (!count)
 		return 0;
 
 	if (handler->events)
 		handler->events(handle, vals, count);
 	else if (handler->event)
+<<<<<<< HEAD
 		for (v = vals; v != end; v++)
+=======
+		for (v = vals; v != vals + count; v++)
+>>>>>>> v4.9.227
 			handler->event(handle, v->type, v->code, v->value);
 
 	return count;
@@ -147,12 +168,21 @@ static void input_pass_values(struct input_dev *dev,
 		count = input_to_handler(handle, vals, count);
 	} else {
 		list_for_each_entry_rcu(handle, &dev->h_list, d_node)
+<<<<<<< HEAD
 			if (handle->open)
 				count = input_to_handler(handle, vals, count);
+=======
+			if (handle->open) {
+				count = input_to_handler(handle, vals, count);
+				if (!count)
+					break;
+			}
+>>>>>>> v4.9.227
 	}
 
 	rcu_read_unlock();
 
+<<<<<<< HEAD
 	add_input_randomness(vals->type, vals->code, vals->value);
 
 	/* trigger auto repeat for key events */
@@ -162,6 +192,17 @@ static void input_pass_values(struct input_dev *dev,
 				input_start_autorepeat(dev, v->code);
 			else
 				input_stop_autorepeat(dev);
+=======
+	/* trigger auto repeat for key events */
+	if (test_bit(EV_REP, dev->evbit) && test_bit(EV_KEY, dev->evbit)) {
+		for (v = vals; v != vals + count; v++) {
+			if (v->type == EV_KEY && v->value != 2) {
+				if (v->value)
+					input_start_autorepeat(dev, v->code);
+				else
+					input_stop_autorepeat(dev);
+			}
+>>>>>>> v4.9.227
 		}
 	}
 }
@@ -271,8 +312,11 @@ static int input_get_disposition(struct input_dev *dev,
 	case EV_SYN:
 		switch (code) {
 		case SYN_CONFIG:
+<<<<<<< HEAD
 		case SYN_TIME_SEC:
 		case SYN_TIME_NSEC:
+=======
+>>>>>>> v4.9.227
 			disposition = INPUT_PASS_TO_ALL;
 			break;
 
@@ -371,9 +415,16 @@ static int input_get_disposition(struct input_dev *dev,
 static void input_handle_event(struct input_dev *dev,
 			       unsigned int type, unsigned int code, int value)
 {
+<<<<<<< HEAD
 	int disposition;
 
 	disposition = input_get_disposition(dev, type, code, &value);
+=======
+	int disposition = input_get_disposition(dev, type, code, &value);
+
+	if (disposition != INPUT_IGNORE_EVENT && type != EV_SYN)
+		add_input_randomness(type, code, value);
+>>>>>>> v4.9.227
 
 	if ((disposition & INPUT_PASS_TO_DEVICE) && dev->event)
 		dev->event(dev, type, code, value);
@@ -409,6 +460,7 @@ static void input_handle_event(struct input_dev *dev,
 
 }
 
+<<<<<<< HEAD
 
 #if !defined(CONFIG_INPUT_BOOSTER) // Input Booster +
 // ********** Define Timeout Functions ********** //
@@ -787,6 +839,8 @@ void input_booster_init()
 }
 #endif  // Input Booster -
 
+=======
+>>>>>>> v4.9.227
 /**
  * input_event() - report new input event
  * @dev: device that generated the event
@@ -808,13 +862,17 @@ void input_event(struct input_dev *dev,
 		 unsigned int type, unsigned int code, int value)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	int idx;
+=======
+>>>>>>> v4.9.227
 
 	if (is_event_supported(type, dev->evbit, EV_MAX)) {
 
 		spin_lock_irqsave(&dev->event_lock, flags);
 		input_handle_event(dev, type, code, value);
 		spin_unlock_irqrestore(&dev->event_lock, flags);
+<<<<<<< HEAD
 
 #if !defined(CONFIG_INPUT_BOOSTER) // Input Booster +
 		if(device_tree_infor != NULL) {
@@ -836,6 +894,8 @@ void input_event(struct input_dev *dev,
 			}
 		}
 #endif  // Input Booster -
+=======
+>>>>>>> v4.9.227
 	}
 }
 EXPORT_SYMBOL(input_event);
@@ -1000,6 +1060,7 @@ int input_open_device(struct input_handle *handle)
 
 	handle->open++;
 
+<<<<<<< HEAD
 	dev->users_private++;
 	if (!dev->disabled && !dev->users++ && dev->open)
 		retval = dev->open(dev);
@@ -1008,6 +1069,13 @@ int input_open_device(struct input_handle *handle)
 		dev->users_private--;
 		if (!dev->disabled)
 			dev->users--;
+=======
+	if (!dev->users++ && dev->open)
+		retval = dev->open(dev);
+
+	if (retval) {
+		dev->users--;
+>>>>>>> v4.9.227
 		if (!--handle->open) {
 			/*
 			 * Make sure we are not delivering any more events
@@ -1055,8 +1123,12 @@ void input_close_device(struct input_handle *handle)
 
 	__input_release_device(handle);
 
+<<<<<<< HEAD
 	--dev->users_private;
 	if (!dev->disabled && !--dev->users && dev->close)
+=======
+	if (!--dev->users && dev->close)
+>>>>>>> v4.9.227
 		dev->close(dev);
 
 	if (!--handle->open) {
@@ -1072,6 +1144,7 @@ void input_close_device(struct input_handle *handle)
 }
 EXPORT_SYMBOL(input_close_device);
 
+<<<<<<< HEAD
 static int input_enable_device(struct input_dev *dev)
 {
 	int retval;
@@ -1116,6 +1189,8 @@ static int input_disable_device(struct input_dev *dev)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Simulate keyup events for all keys that are marked as pressed.
  * The function must be called with dev->event_lock held.
@@ -1469,7 +1544,11 @@ static int input_bits_to_string(char *buf, int buf_size,
 {
 	int len = 0;
 
+<<<<<<< HEAD
 	if (INPUT_COMPAT_TEST) {
+=======
+	if (in_compat_syscall()) {
+>>>>>>> v4.9.227
 		u32 dword = bits >> 32;
 		if (dword || !skip_empty)
 			len += snprintf(buf, buf_size, "%x ", dword);
@@ -1844,6 +1923,7 @@ static ssize_t input_dev_show_properties(struct device *dev,
 }
 static DEVICE_ATTR(properties, S_IRUGO, input_dev_show_properties, NULL);
 
+<<<<<<< HEAD
 static ssize_t input_dev_show_enabled(struct device *dev,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -1902,13 +1982,18 @@ static ssize_t input_dev_store_enabled(struct device *dev,
 static DEVICE_ATTR(enabled, S_IRUGO | S_IWUSR,
 		   input_dev_show_enabled, input_dev_store_enabled);
 
+=======
+>>>>>>> v4.9.227
 static struct attribute *input_dev_attrs[] = {
 	&dev_attr_name.attr,
 	&dev_attr_phys.attr,
 	&dev_attr_uniq.attr,
 	&dev_attr_modalias.attr,
 	&dev_attr_properties.attr,
+<<<<<<< HEAD
 	&dev_attr_enabled.attr,
+=======
+>>>>>>> v4.9.227
 	NULL
 };
 
@@ -2180,6 +2265,7 @@ void input_reset_device(struct input_dev *dev)
 	mutex_lock(&dev->mutex);
 	spin_lock_irqsave(&dev->event_lock, flags);
 
+<<<<<<< HEAD
 	/*
 	 * Keys that have been pressed at suspend time are unlikely
 	 * to be still pressed when we resume.
@@ -2188,6 +2274,10 @@ void input_reset_device(struct input_dev *dev)
 		input_dev_toggle(dev, true);
 		input_dev_release_keys(dev);
 	}
+=======
+	input_dev_toggle(dev, true);
+	input_dev_release_keys(dev);
+>>>>>>> v4.9.227
 
 	spin_unlock_irqrestore(&dev->event_lock, flags);
 	mutex_unlock(&dev->mutex);
@@ -2201,6 +2291,15 @@ static int input_dev_suspend(struct device *dev)
 
 	spin_lock_irq(&input_dev->event_lock);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Keys that are pressed now are unlikely to be
+	 * still pressed when we resume.
+	 */
+	input_dev_release_keys(input_dev);
+
+>>>>>>> v4.9.227
 	/* Turn off LEDs and sounds, if any are active. */
 	input_dev_toggle(input_dev, false);
 
@@ -2294,7 +2393,11 @@ EXPORT_SYMBOL_GPL(input_class);
  */
 struct input_dev *input_allocate_device(void)
 {
+<<<<<<< HEAD
 	static atomic_t input_no = ATOMIC_INIT(0);
+=======
+	static atomic_t input_no = ATOMIC_INIT(-1);
+>>>>>>> v4.9.227
 	struct input_dev *dev;
 
 	dev = kzalloc(sizeof(struct input_dev), GFP_KERNEL);
@@ -2309,7 +2412,11 @@ struct input_dev *input_allocate_device(void)
 		INIT_LIST_HEAD(&dev->node);
 
 		dev_set_name(&dev->dev, "input%lu",
+<<<<<<< HEAD
 			     (unsigned long) atomic_inc_return(&input_no) - 1);
+=======
+			     (unsigned long)atomic_inc_return(&input_no));
+>>>>>>> v4.9.227
 
 		__module_get(THIS_MODULE);
 	}
@@ -2558,6 +2665,26 @@ static void devm_input_device_unregister(struct device *dev, void *res)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * input_enable_softrepeat - enable software autorepeat
+ * @dev: input device
+ * @delay: repeat delay
+ * @period: repeat period
+ *
+ * Enable software autorepeat on the input device.
+ */
+void input_enable_softrepeat(struct input_dev *dev, int delay, int period)
+{
+	dev->timer.data = (unsigned long) dev;
+	dev->timer.function = input_repeat_key;
+	dev->rep[REP_DELAY] = delay;
+	dev->rep[REP_PERIOD] = period;
+}
+EXPORT_SYMBOL(input_enable_softrepeat);
+
+/**
+>>>>>>> v4.9.227
  * input_register_device - register device with input core
  * @dev: device to be registered
  *
@@ -2621,12 +2748,17 @@ int input_register_device(struct input_dev *dev)
 	 * If delay and period are pre-set by the driver, then autorepeating
 	 * is handled by the driver itself and we don't do it in input.c.
 	 */
+<<<<<<< HEAD
 	if (!dev->rep[REP_DELAY] && !dev->rep[REP_PERIOD]) {
 		dev->timer.data = (long) dev;
 		dev->timer.function = input_repeat_key;
 		dev->rep[REP_DELAY] = 250;
 		dev->rep[REP_PERIOD] = 33;
 	}
+=======
+	if (!dev->rep[REP_DELAY] && !dev->rep[REP_PERIOD])
+		input_enable_softrepeat(dev, 250, 33);
+>>>>>>> v4.9.227
 
 	if (!dev->getkeycode)
 		dev->getkeycode = input_default_getkeycode;
@@ -2765,7 +2897,11 @@ EXPORT_SYMBOL(input_unregister_handler);
  *
  * Iterate over @bus's list of devices, and call @fn for each, passing
  * it @data and stop when @fn returns a non-zero value. The function is
+<<<<<<< HEAD
  * using RCU to traverse the list and therefore may be usind in atonic
+=======
+ * using RCU to traverse the list and therefore may be using in atomic
+>>>>>>> v4.9.227
  * contexts. The @fn callback is invoked from RCU critical section and
  * thus must not sleep.
  */
@@ -2935,10 +3071,13 @@ static int __init input_init(void)
 		goto fail2;
 	}
 
+<<<<<<< HEAD
 #if !defined(CONFIG_INPUT_BOOSTER) // Input Booster +
 	input_booster_init();
 #endif  // Input Booster -
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 
  fail2:	input_proc_exit();
@@ -2949,7 +3088,10 @@ static int __init input_init(void)
 static void __exit input_exit(void)
 {
 	input_proc_exit();
+<<<<<<< HEAD
 	pm_qos_remove_request(&lpm_bias_pm_qos_request);
+=======
+>>>>>>> v4.9.227
 	unregister_chrdev_region(MKDEV(INPUT_MAJOR, 0),
 				 INPUT_MAX_CHAR_DEVICES);
 	class_unregister(&input_class);

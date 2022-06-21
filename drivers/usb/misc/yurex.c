@@ -64,6 +64,10 @@ struct usb_yurex {
 
 	struct kref		kref;
 	struct mutex		io_mutex;
+<<<<<<< HEAD
+=======
+	unsigned long		disconnected:1;
+>>>>>>> v4.9.227
 	struct fasync_struct	*async_queue;
 	wait_queue_head_t	waitq;
 
@@ -96,7 +100,10 @@ static void yurex_delete(struct kref *kref)
 
 	dev_dbg(&dev->interface->dev, "%s\n", __func__);
 
+<<<<<<< HEAD
 	usb_put_dev(dev->udev);
+=======
+>>>>>>> v4.9.227
 	if (dev->cntl_urb) {
 		usb_kill_urb(dev->cntl_urb);
 		kfree(dev->cntl_req);
@@ -112,6 +119,11 @@ static void yurex_delete(struct kref *kref)
 				dev->int_buffer, dev->urb->transfer_dma);
 		usb_free_urb(dev->urb);
 	}
+<<<<<<< HEAD
+=======
+	usb_put_intf(dev->interface);
+	usb_put_dev(dev->udev);
+>>>>>>> v4.9.227
 	kfree(dev);
 }
 
@@ -136,6 +148,10 @@ static void yurex_interrupt(struct urb *urb)
 	switch (status) {
 	case 0: /*success*/
 		break;
+<<<<<<< HEAD
+=======
+	/* The device is terminated or messed up, give up */
+>>>>>>> v4.9.227
 	case -EOVERFLOW:
 		dev_err(&dev->interface->dev,
 			"%s - overflow with length %d, actual length is %d\n",
@@ -144,12 +160,21 @@ static void yurex_interrupt(struct urb *urb)
 	case -ENOENT:
 	case -ESHUTDOWN:
 	case -EILSEQ:
+<<<<<<< HEAD
 		/* The device is terminated, clean up */
+=======
+	case -EPROTO:
+	case -ETIME:
+>>>>>>> v4.9.227
 		return;
 	default:
 		dev_err(&dev->interface->dev,
 			"%s - unknown status received: %d\n", __func__, status);
+<<<<<<< HEAD
 		goto exit;
+=======
+		return;
+>>>>>>> v4.9.227
 	}
 
 	/* handle received message */
@@ -181,7 +206,10 @@ static void yurex_interrupt(struct urb *urb)
 		break;
 	}
 
+<<<<<<< HEAD
 exit:
+=======
+>>>>>>> v4.9.227
 	retval = usb_submit_urb(dev->urb, GFP_ATOMIC);
 	if (retval) {
 		dev_err(&dev->interface->dev, "%s - usb_submit_urb failed: %d\n",
@@ -200,17 +228,26 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 
 	/* allocate memory for our device state and initialize it */
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!dev) {
 		dev_err(&interface->dev, "Out of memory\n");
 		goto error;
 	}
+=======
+	if (!dev)
+		goto error;
+>>>>>>> v4.9.227
 	kref_init(&dev->kref);
 	mutex_init(&dev->io_mutex);
 	spin_lock_init(&dev->lock);
 	init_waitqueue_head(&dev->waitq);
 
 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
+<<<<<<< HEAD
 	dev->interface = interface;
+=======
+	dev->interface = usb_get_intf(interface);
+>>>>>>> v4.9.227
 
 	/* set up the endpoint information */
 	iface_desc = interface->cur_altsetting;
@@ -231,6 +268,7 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 
 	/* allocate control URB */
 	dev->cntl_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!dev->cntl_urb) {
 		dev_err(&interface->dev, "Could not allocate control URB\n");
 		goto error;
@@ -242,6 +280,15 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 		dev_err(&interface->dev, "Could not allocate cntl_req\n");
 		goto error;
 	}
+=======
+	if (!dev->cntl_urb)
+		goto error;
+
+	/* allocate buffer for control req */
+	dev->cntl_req = kmalloc(YUREX_BUF_SIZE, GFP_KERNEL);
+	if (!dev->cntl_req)
+		goto error;
+>>>>>>> v4.9.227
 
 	/* allocate buffer for control msg */
 	dev->cntl_buffer = usb_alloc_coherent(dev->udev, YUREX_BUF_SIZE,
@@ -269,10 +316,15 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 
 	/* allocate interrupt URB */
 	dev->urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!dev->urb) {
 		dev_err(&interface->dev, "Could not allocate URB\n");
 		goto error;
 	}
+=======
+	if (!dev->urb)
+		goto error;
+>>>>>>> v4.9.227
 
 	/* allocate buffer for interrupt in */
 	dev->int_buffer = usb_alloc_coherent(dev->udev, YUREX_BUF_SIZE,
@@ -332,8 +384,15 @@ static void yurex_disconnect(struct usb_interface *interface)
 	usb_deregister_dev(interface, &yurex_class);
 
 	/* prevent more I/O from starting */
+<<<<<<< HEAD
 	mutex_lock(&dev->io_mutex);
 	dev->interface = NULL;
+=======
+	usb_poison_urb(dev->urb);
+	usb_poison_urb(dev->cntl_urb);
+	mutex_lock(&dev->io_mutex);
+	dev->disconnected = 1;
+>>>>>>> v4.9.227
 	mutex_unlock(&dev->io_mutex);
 
 	/* wakeup waiters */
@@ -410,17 +469,26 @@ static int yurex_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t yurex_read(struct file *file, char *buffer, size_t count, loff_t *ppos)
 {
 	struct usb_yurex *dev;
 	int retval = 0;
 	int bytes_read = 0;
+=======
+static ssize_t yurex_read(struct file *file, char __user *buffer, size_t count,
+			  loff_t *ppos)
+{
+	struct usb_yurex *dev;
+	int len = 0;
+>>>>>>> v4.9.227
 	char in_buffer[20];
 	unsigned long flags;
 
 	dev = file->private_data;
 
 	mutex_lock(&dev->io_mutex);
+<<<<<<< HEAD
 	if (!dev->interface) {		/* already disconnected */
 		retval = -ENODEV;
 		goto exit;
@@ -449,12 +517,40 @@ static ssize_t yurex_write(struct file *file, const char *user_buffer, size_t co
 	struct usb_yurex *dev;
 	int i, set = 0, retval = 0;
 	char buffer[16];
+=======
+	if (dev->disconnected) {		/* already disconnected */
+		mutex_unlock(&dev->io_mutex);
+		return -ENODEV;
+	}
+
+	spin_lock_irqsave(&dev->lock, flags);
+	len = snprintf(in_buffer, 20, "%lld\n", dev->bbu);
+	spin_unlock_irqrestore(&dev->lock, flags);
+	mutex_unlock(&dev->io_mutex);
+
+	if (WARN_ON_ONCE(len >= sizeof(in_buffer)))
+		return -EIO;
+
+	return simple_read_from_buffer(buffer, count, ppos, in_buffer, len);
+}
+
+static ssize_t yurex_write(struct file *file, const char __user *user_buffer,
+			   size_t count, loff_t *ppos)
+{
+	struct usb_yurex *dev;
+	int i, set = 0, retval = 0;
+	char buffer[16 + 1];
+>>>>>>> v4.9.227
 	char *data = buffer;
 	unsigned long long c, c2 = 0;
 	signed long timeout = 0;
 	DEFINE_WAIT(wait);
 
+<<<<<<< HEAD
 	count = min(sizeof(buffer), count);
+=======
+	count = min(sizeof(buffer) - 1, count);
+>>>>>>> v4.9.227
 	dev = file->private_data;
 
 	/* verify that we actually have some data to write */
@@ -462,7 +558,11 @@ static ssize_t yurex_write(struct file *file, const char *user_buffer, size_t co
 		goto error;
 
 	mutex_lock(&dev->io_mutex);
+<<<<<<< HEAD
 	if (!dev->interface) {		/* already disconnected */
+=======
+	if (dev->disconnected) {		/* already disconnected */
+>>>>>>> v4.9.227
 		mutex_unlock(&dev->io_mutex);
 		retval = -ENODEV;
 		goto error;
@@ -473,6 +573,10 @@ static ssize_t yurex_write(struct file *file, const char *user_buffer, size_t co
 		retval = -EFAULT;
 		goto error;
 	}
+<<<<<<< HEAD
+=======
+	buffer[count] = 0;
+>>>>>>> v4.9.227
 	memset(dev->cntl_buffer, CMD_PADDING, YUREX_BUF_SIZE);
 
 	switch (buffer[0]) {

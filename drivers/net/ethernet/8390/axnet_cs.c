@@ -484,11 +484,16 @@ static int axnet_open(struct net_device *dev)
     link->open++;
 
     info->link_status = 0x00;
+<<<<<<< HEAD
     init_timer(&info->watchdog);
     info->watchdog.function = ei_watchdog;
     info->watchdog.data = (u_long)dev;
     info->watchdog.expires = jiffies + HZ;
     add_timer(&info->watchdog);
+=======
+    setup_timer(&info->watchdog, ei_watchdog, (u_long)dev);
+    mod_timer(&info->watchdog, jiffies + HZ);
+>>>>>>> v4.9.227
 
     return ax_open(dev);
 } /* axnet_open */
@@ -1044,7 +1049,11 @@ static netdev_tx_t axnet_start_xmit(struct sk_buff *skb,
 	{
 		ei_local->txing = 1;
 		NS8390_trigger_send(dev, send_length, output_page);
+<<<<<<< HEAD
 		dev->trans_start = jiffies;
+=======
+		netif_trans_update(dev);
+>>>>>>> v4.9.227
 		if (output_page == ei_local->tx_start_page) 
 		{
 			ei_local->tx1 = -1;
@@ -1273,7 +1282,11 @@ static void ei_tx_intr(struct net_device *dev)
 		{
 			ei_local->txing = 1;
 			NS8390_trigger_send(dev, ei_local->tx2, ei_local->tx_start_page + 6);
+<<<<<<< HEAD
 			dev->trans_start = jiffies;
+=======
+			netif_trans_update(dev);
+>>>>>>> v4.9.227
 			ei_local->tx2 = -1,
 			ei_local->lasttx = 2;
 		}
@@ -1290,7 +1303,11 @@ static void ei_tx_intr(struct net_device *dev)
 		{
 			ei_local->txing = 1;
 			NS8390_trigger_send(dev, ei_local->tx1, ei_local->tx_start_page);
+<<<<<<< HEAD
 			dev->trans_start = jiffies;
+=======
+			netif_trans_update(dev);
+>>>>>>> v4.9.227
 			ei_local->tx1 = -1;
 			ei_local->lasttx = 1;
 		}

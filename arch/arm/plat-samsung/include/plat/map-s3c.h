@@ -27,10 +27,13 @@
 #define S3C2410_PA_UART		(0x50000000)
 #define S3C24XX_PA_UART		S3C2410_PA_UART
 
+<<<<<<< HEAD
 #ifndef S3C_UART_OFFSET
 #define S3C_UART_OFFSET		(0x400)
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * GPIO ports
  *

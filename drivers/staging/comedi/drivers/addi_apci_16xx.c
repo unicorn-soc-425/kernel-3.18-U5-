@@ -23,9 +23,14 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 
 #include "../comedidev.h"
+=======
+
+#include "../comedi_pci.h"
+>>>>>>> v4.9.227
 
 /*
  * Register I/O map
@@ -140,7 +145,11 @@ static int apci16xx_auto_attach(struct comedi_device *dev,
 	for (i = 0; i < n_subdevs; i++) {
 		s = &dev->subdevices[i];
 		s->type		= COMEDI_SUBD_DIO;
+<<<<<<< HEAD
 		s->subdev_flags	= SDF_WRITEABLE | SDF_READABLE;
+=======
+		s->subdev_flags	= SDF_WRITABLE | SDF_READABLE;
+>>>>>>> v4.9.227
 		s->n_chan	= ((i * 32) < board->n_chan) ? 32 : last;
 		s->maxdata	= 1;
 		s->range_table	= &range_digital;

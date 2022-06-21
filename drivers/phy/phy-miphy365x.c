@@ -25,7 +25,11 @@
 #include <linux/mfd/syscon.h>
 #include <linux/regmap.h>
 
+<<<<<<< HEAD
 #include <dt-bindings/phy/phy-miphy365x.h>
+=======
+#include <dt-bindings/phy/phy.h>
+>>>>>>> v4.9.227
 
 #define HFC_TIMEOUT		100
 
@@ -141,7 +145,11 @@ struct miphy365x_phy {
 	bool pcie_tx_pol_inv;
 	bool sata_tx_pol_inv;
 	u32 sata_gen;
+<<<<<<< HEAD
 	u64 ctrlreg;
+=======
+	u32 ctrlreg;
+>>>>>>> v4.9.227
 	u8 type;
 };
 
@@ -150,6 +158,10 @@ struct miphy365x_dev {
 	struct regmap *regmap;
 	struct mutex miphy_mutex;
 	struct miphy365x_phy **phys;
+<<<<<<< HEAD
+=======
+	int nphys;
+>>>>>>> v4.9.227
 };
 
 /*
@@ -176,10 +188,17 @@ static u8 rx_tx_spd[] = {
 static int miphy365x_set_path(struct miphy365x_phy *miphy_phy,
 			      struct miphy365x_dev *miphy_dev)
 {
+<<<<<<< HEAD
 	bool sata = (miphy_phy->type == MIPHY_TYPE_SATA);
 
 	return regmap_update_bits(miphy_dev->regmap,
 				  (unsigned int)miphy_phy->ctrlreg,
+=======
+	bool sata = (miphy_phy->type == PHY_TYPE_SATA);
+
+	return regmap_update_bits(miphy_dev->regmap,
+				  miphy_phy->ctrlreg,
+>>>>>>> v4.9.227
 				  SYSCFG_SELECT_SATA_MASK,
 				  sata << SYSCFG_SELECT_SATA_POS);
 }
@@ -430,7 +449,11 @@ static int miphy365x_init(struct phy *phy)
 	}
 
 	/* Initialise Miphy for PCIe or SATA */
+<<<<<<< HEAD
 	if (miphy_phy->type == MIPHY_TYPE_PCIE)
+=======
+	if (miphy_phy->type == PHY_TYPE_PCIE)
+>>>>>>> v4.9.227
 		ret = miphy365x_init_pcie_port(miphy_phy, miphy_dev);
 	else
 		ret = miphy365x_init_sata_port(miphy_phy, miphy_dev);
@@ -440,12 +463,20 @@ static int miphy365x_init(struct phy *phy)
 	return ret;
 }
 
+<<<<<<< HEAD
 int miphy365x_get_addr(struct device *dev, struct miphy365x_phy *miphy_phy,
 		       int index)
 {
 	struct device_node *phynode = miphy_phy->phy->dev.of_node;
 	const char *name;
 	const __be32 *taddr;
+=======
+static int miphy365x_get_addr(struct device *dev,
+		struct miphy365x_phy *miphy_phy, int index)
+{
+	struct device_node *phynode = miphy_phy->phy->dev.of_node;
+	const char *name;
+>>>>>>> v4.9.227
 	int type = miphy_phy->type;
 	int ret;
 
@@ -455,6 +486,7 @@ int miphy365x_get_addr(struct device *dev, struct miphy365x_phy *miphy_phy,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	if (!strncmp(name, "syscfg", 6)) {
 		taddr = of_get_address(phynode, index, NULL, NULL);
 		if (!taddr) {
@@ -473,6 +505,10 @@ int miphy365x_get_addr(struct device *dev, struct miphy365x_phy *miphy_phy,
 
 	if (!((!strncmp(name, "sata", 4) && type == MIPHY_TYPE_SATA) ||
 	      (!strncmp(name, "pcie", 4) && type == MIPHY_TYPE_PCIE)))
+=======
+	if (!((!strncmp(name, "sata", 4) && type == PHY_TYPE_SATA) ||
+	      (!strncmp(name, "pcie", 4) && type == PHY_TYPE_PCIE)))
+>>>>>>> v4.9.227
 		return 0;
 
 	miphy_phy->base = of_iomap(phynode, index);
@@ -492,17 +528,24 @@ static struct phy *miphy365x_xlate(struct device *dev,
 	struct device_node *phynode = args->np;
 	int ret, index;
 
+<<<<<<< HEAD
 	if (!of_device_is_available(phynode)) {
 		dev_warn(dev, "Requested PHY is disabled\n");
 		return ERR_PTR(-ENODEV);
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (args->args_count != 1) {
 		dev_err(dev, "Invalid number of cells in 'phy' property\n");
 		return ERR_PTR(-EINVAL);
 	}
 
+<<<<<<< HEAD
 	for (index = 0; index < of_get_child_count(dev->of_node); index++)
+=======
+	for (index = 0; index < miphy_dev->nphys; index++)
+>>>>>>> v4.9.227
 		if (phynode == miphy_dev->phys[index]->phy->dev.of_node) {
 			miphy_phy = miphy_dev->phys[index];
 			break;
@@ -515,8 +558,13 @@ static struct phy *miphy365x_xlate(struct device *dev,
 
 	miphy_phy->type = args->args[0];
 
+<<<<<<< HEAD
 	if (!(miphy_phy->type == MIPHY_TYPE_SATA ||
 	      miphy_phy->type == MIPHY_TYPE_PCIE)) {
+=======
+	if (!(miphy_phy->type == PHY_TYPE_SATA ||
+	      miphy_phy->type == PHY_TYPE_PCIE)) {
+>>>>>>> v4.9.227
 		dev_err(dev, "Unsupported device type: %d\n", miphy_phy->type);
 		return ERR_PTR(-EINVAL);
 	}
@@ -531,7 +579,11 @@ static struct phy *miphy365x_xlate(struct device *dev,
 	return miphy_phy->phy;
 }
 
+<<<<<<< HEAD
 static struct phy_ops miphy365x_ops = {
+=======
+static const struct phy_ops miphy365x_ops = {
+>>>>>>> v4.9.227
 	.init		= miphy365x_init,
 	.owner		= THIS_MODULE,
 };
@@ -558,16 +610,26 @@ static int miphy365x_probe(struct platform_device *pdev)
 	struct miphy365x_dev *miphy_dev;
 	struct phy_provider *provider;
 	struct phy *phy;
+<<<<<<< HEAD
 	int chancount, port = 0;
 	int ret;
+=======
+	int ret, port = 0;
+>>>>>>> v4.9.227
 
 	miphy_dev = devm_kzalloc(&pdev->dev, sizeof(*miphy_dev), GFP_KERNEL);
 	if (!miphy_dev)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	chancount = of_get_child_count(np);
 	miphy_dev->phys = devm_kzalloc(&pdev->dev, sizeof(phy) * chancount,
 				       GFP_KERNEL);
+=======
+	miphy_dev->nphys = of_get_child_count(np);
+	miphy_dev->phys = devm_kcalloc(&pdev->dev, miphy_dev->nphys,
+				       sizeof(*miphy_dev->phys), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!miphy_dev->phys)
 		return -ENOMEM;
 
@@ -588,6 +650,7 @@ static int miphy365x_probe(struct platform_device *pdev)
 
 		miphy_phy = devm_kzalloc(&pdev->dev, sizeof(*miphy_phy),
 					 GFP_KERNEL);
+<<<<<<< HEAD
 		if (!miphy_phy)
 			return -ENOMEM;
 
@@ -597,12 +660,27 @@ static int miphy365x_probe(struct platform_device *pdev)
 		if (IS_ERR(phy)) {
 			dev_err(&pdev->dev, "failed to create PHY\n");
 			return PTR_ERR(phy);
+=======
+		if (!miphy_phy) {
+			ret = -ENOMEM;
+			goto put_child;
+		}
+
+		miphy_dev->phys[port] = miphy_phy;
+
+		phy = devm_phy_create(&pdev->dev, child, &miphy365x_ops);
+		if (IS_ERR(phy)) {
+			dev_err(&pdev->dev, "failed to create PHY\n");
+			ret = PTR_ERR(phy);
+			goto put_child;
+>>>>>>> v4.9.227
 		}
 
 		miphy_dev->phys[port]->phy = phy;
 
 		ret = miphy365x_of_probe(child, miphy_phy);
 		if (ret)
+<<<<<<< HEAD
 			return ret;
 
 		phy_set_drvdata(phy, miphy_dev->phys[port]);
@@ -614,6 +692,27 @@ static int miphy365x_probe(struct platform_device *pdev)
 		return PTR_ERR(provider);
 
 	return 0;
+=======
+			goto put_child;
+
+		phy_set_drvdata(phy, miphy_dev->phys[port]);
+
+		port++;
+		/* sysconfig offsets are indexed from 1 */
+		ret = of_property_read_u32_index(np, "st,syscfg", port,
+					&miphy_phy->ctrlreg);
+		if (ret) {
+			dev_err(&pdev->dev, "No sysconfig offset found\n");
+			goto put_child;
+		}
+	}
+
+	provider = devm_of_phy_provider_register(&pdev->dev, miphy365x_xlate);
+	return PTR_ERR_OR_ZERO(provider);
+put_child:
+	of_node_put(child);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static const struct of_device_id miphy365x_of_match[] = {

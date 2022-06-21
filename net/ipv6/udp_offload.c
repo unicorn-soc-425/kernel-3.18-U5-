@@ -37,6 +37,7 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
 
 	if (skb_gso_ok(skb, features | NETIF_F_GSO_ROBUST)) {
 		/* Packet is from an untrusted source, reset gso_segs. */
+<<<<<<< HEAD
 		int type = skb_shinfo(skb)->gso_type;
 
 		if (unlikely(type & ~(SKB_GSO_UDP |
@@ -53,6 +54,15 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
 
 		skb_shinfo(skb)->gso_segs = DIV_ROUND_UP(skb->len, mss);
 
+=======
+
+		skb_shinfo(skb)->gso_segs = DIV_ROUND_UP(skb->len, mss);
+
+		/* Set the IPv6 fragment id if not set yet */
+		if (!skb_shinfo(skb)->ip6_frag_id)
+			ipv6_proxy_select_ident(dev_net(skb->dev), skb);
+
+>>>>>>> v4.9.227
 		segs = NULL;
 		goto out;
 	}
@@ -64,6 +74,12 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
 		const struct ipv6hdr *ipv6h;
 		struct udphdr *uh;
 
+<<<<<<< HEAD
+=======
+		if (!(skb_shinfo(skb)->gso_type & SKB_GSO_UDP))
+			goto out;
+
+>>>>>>> v4.9.227
 		if (!pskb_may_pull(skb, sizeof(struct udphdr)))
 			goto out;
 
@@ -78,12 +94,25 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
 		csum = skb_checksum(skb, 0, skb->len, 0);
 		uh->check = udp_v6_check(skb->len, &ipv6h->saddr,
 					  &ipv6h->daddr, csum);
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 		if (uh->check == 0)
 			uh->check = CSUM_MANGLED_0;
 
 		skb->ip_summed = CHECKSUM_UNNECESSARY;
 
+<<<<<<< HEAD
+=======
+		/* If there is no outer header we can fake a checksum offload
+		 * due to the fact that we have already done the checksum in
+		 * software prior to segmenting the frame.
+		 */
+		if (!skb->encap_hdr_csum)
+			features |= NETIF_F_HW_CSUM;
+
+>>>>>>> v4.9.227
 		/* Check if there is enough headroom to insert fragment header. */
 		tnl_hlen = skb_tnl_header_len(skb);
 		if (skb->mac_header < (tnl_hlen + frag_hdr_sz)) {
@@ -112,6 +141,11 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
 		fptr = (struct frag_hdr *)(skb_network_header(skb) + unfrag_ip6hlen);
 		fptr->nexthdr = nexthdr;
 		fptr->reserved = 0;
+<<<<<<< HEAD
+=======
+		if (!skb_shinfo(skb)->ip6_frag_id)
+			ipv6_proxy_select_ident(dev_net(skb->dev), skb);
+>>>>>>> v4.9.227
 		fptr->identification = skb_shinfo(skb)->ip6_frag_id;
 
 		/* Fragment the skb. ipv6 header and the remaining fields of the
@@ -145,7 +179,11 @@ static struct sk_buff **udp6_gro_receive(struct sk_buff **head,
 
 skip:
 	NAPI_GRO_CB(skb)->is_ipv6 = 1;
+<<<<<<< HEAD
 	return udp_gro_receive(head, skb, uh);
+=======
+	return udp_gro_receive(head, skb, uh, udp6_lib_lookup_skb);
+>>>>>>> v4.9.227
 
 flush:
 	NAPI_GRO_CB(skb)->flush = 1;
@@ -157,11 +195,23 @@ static int udp6_gro_complete(struct sk_buff *skb, int nhoff)
 	const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
 
+<<<<<<< HEAD
 	if (uh->check)
 		uh->check = ~udp_v6_check(skb->len - nhoff, &ipv6h->saddr,
 					  &ipv6h->daddr, 0);
 
 	return udp_gro_complete(skb, nhoff);
+=======
+	if (uh->check) {
+		skb_shinfo(skb)->gso_type |= SKB_GSO_UDP_TUNNEL_CSUM;
+		uh->check = ~udp_v6_check(skb->len - nhoff, &ipv6h->saddr,
+					  &ipv6h->daddr, 0);
+	} else {
+		skb_shinfo(skb)->gso_type |= SKB_GSO_UDP_TUNNEL;
+	}
+
+	return udp_gro_complete(skb, nhoff, udp6_lib_lookup_skb);
+>>>>>>> v4.9.227
 }
 
 static const struct net_offload udpv6_offload = {
@@ -172,7 +222,19 @@ static const struct net_offload udpv6_offload = {
 	},
 };
 
+<<<<<<< HEAD
 int __init udp_offload_init(void)
 {
 	return inet6_add_offload(&udpv6_offload, IPPROTO_UDP);
 }
+=======
+int udpv6_offload_init(void)
+{
+	return inet6_add_offload(&udpv6_offload, IPPROTO_UDP);
+}
+
+int udpv6_offload_exit(void)
+{
+	return inet6_del_offload(&udpv6_offload, IPPROTO_UDP);
+}
+>>>>>>> v4.9.227

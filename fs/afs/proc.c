@@ -230,6 +230,7 @@ static ssize_t afs_proc_cells_write(struct file *file, const char __user *buf,
 	if (size <= 1 || size >= PAGE_SIZE)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	kbuf = kmalloc(size + 1, GFP_KERNEL);
 	if (!kbuf)
 		return -ENOMEM;
@@ -238,6 +239,11 @@ static ssize_t afs_proc_cells_write(struct file *file, const char __user *buf,
 	if (copy_from_user(kbuf, buf, size) != 0)
 		goto done;
 	kbuf[size] = 0;
+=======
+	kbuf = memdup_user_nul(buf, size);
+	if (IS_ERR(kbuf))
+		return PTR_ERR(kbuf);
+>>>>>>> v4.9.227
 
 	/* trim to first NL */
 	name = memchr(kbuf, '\n', size);
@@ -315,6 +321,7 @@ static ssize_t afs_proc_rootcell_write(struct file *file,
 	if (size <= 1 || size >= PAGE_SIZE)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = -ENOMEM;
 	kbuf = kmalloc(size + 1, GFP_KERNEL);
 	if (!kbuf)
@@ -324,6 +331,11 @@ static ssize_t afs_proc_rootcell_write(struct file *file,
 	if (copy_from_user(kbuf, buf, size) != 0)
 		goto infault;
 	kbuf[size] = 0;
+=======
+	kbuf = memdup_user_nul(buf, size);
+	if (IS_ERR(kbuf))
+		return PTR_ERR(kbuf);
+>>>>>>> v4.9.227
 
 	/* trim to first NL */
 	s = memchr(kbuf, '\n', size);
@@ -337,9 +349,13 @@ static ssize_t afs_proc_rootcell_write(struct file *file,
 	if (ret >= 0)
 		ret = size;	/* consume everything, always */
 
+<<<<<<< HEAD
 infault:
 	kfree(kbuf);
 nomem:
+=======
+	kfree(kbuf);
+>>>>>>> v4.9.227
 	_leave(" = %d", ret);
 	return ret;
 }

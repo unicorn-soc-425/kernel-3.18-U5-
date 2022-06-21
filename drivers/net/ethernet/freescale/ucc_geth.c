@@ -40,11 +40,20 @@
 #include <asm/uaccess.h>
 #include <asm/irq.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/immap_qe.h>
 #include <asm/qe.h>
 #include <asm/ucc.h>
 #include <asm/ucc_fast.h>
 #include <asm/machdep.h>
+=======
+#include <soc/fsl/qe/immap_qe.h>
+#include <soc/fsl/qe/qe.h>
+#include <soc/fsl/qe/ucc.h>
+#include <soc/fsl/qe/ucc_fast.h>
+#include <asm/machdep.h>
+#include <net/sch_generic.h>
+>>>>>>> v4.9.227
 
 #include "ucc_geth.h"
 
@@ -1384,6 +1393,11 @@ static int adjust_enet_interface(struct ucc_geth_private *ugeth)
 		value = phy_read(tbiphy, ENET_TBI_MII_CR);
 		value &= ~0x1000;	/* Turn off autonegotiation */
 		phy_write(tbiphy, ENET_TBI_MII_CR, value);
+<<<<<<< HEAD
+=======
+
+		put_device(&tbiphy->mdio.dev);
+>>>>>>> v4.9.227
 	}
 
 	init_check_frame_length_mode(ug_info->lengthCheckRx, &ug_regs->maccfg2);
@@ -1549,11 +1563,16 @@ static int ugeth_disable(struct ucc_geth_private *ugeth, enum comm_dir mode)
 
 static void ugeth_quiesce(struct ucc_geth_private *ugeth)
 {
+<<<<<<< HEAD
 	/* Prevent any further xmits, plus detach the device. */
 	netif_device_detach(ugeth->ndev);
 
 	/* Wait for any current xmits to finish. */
 	netif_tx_disable(ugeth->ndev);
+=======
+	/* Prevent any further xmits */
+	netif_tx_stop_all_queues(ugeth->ndev);
+>>>>>>> v4.9.227
 
 	/* Disable the interrupt to avoid NAPI rescheduling. */
 	disable_irq(ugeth->ug_info->uf_info.irq);
@@ -1566,7 +1585,14 @@ static void ugeth_activate(struct ucc_geth_private *ugeth)
 {
 	napi_enable(&ugeth->napi);
 	enable_irq(ugeth->ug_info->uf_info.irq);
+<<<<<<< HEAD
 	netif_device_attach(ugeth->ndev);
+=======
+
+	/* allow to xmit again  */
+	netif_tx_wake_all_queues(ugeth->ndev);
+	__netdev_watchdog_up(ugeth->ndev);
+>>>>>>> v4.9.227
 }
 
 /* Called every time the controller might need to be made
@@ -1702,8 +1728,15 @@ static void uec_configure_serdes(struct net_device *dev)
 	 * everything for us?  Resetting it takes the link down and requires
 	 * several seconds for it to come back.
 	 */
+<<<<<<< HEAD
 	if (phy_read(tbiphy, ENET_TBI_MII_SR) & TBISR_LSTATUS)
 		return;
+=======
+	if (phy_read(tbiphy, ENET_TBI_MII_SR) & TBISR_LSTATUS) {
+		put_device(&tbiphy->mdio.dev);
+		return;
+	}
+>>>>>>> v4.9.227
 
 	/* Single clk mode, mii mode off(for serdes communication) */
 	phy_write(tbiphy, ENET_TBI_MII_ANA, TBIANA_SETTINGS);
@@ -1711,6 +1744,11 @@ static void uec_configure_serdes(struct net_device *dev)
 	phy_write(tbiphy, ENET_TBI_MII_TBICON, TBICON_CLK_SELECT);
 
 	phy_write(tbiphy, ENET_TBI_MII_CR, TBICR_SETTINGS);
+<<<<<<< HEAD
+=======
+
+	put_device(&tbiphy->mdio.dev);
+>>>>>>> v4.9.227
 }
 
 /* Configure the PHY for dev.
@@ -1882,6 +1920,11 @@ static void ucc_geth_free_tx(struct ucc_geth_private *ugeth)
 	u16 i, j;
 	u8 __iomem *bd;
 
+<<<<<<< HEAD
+=======
+	netdev_reset_queue(ugeth->ndev);
+
+>>>>>>> v4.9.227
 	ug_info = ugeth->ug_info;
 	uf_info = &ug_info->uf_info;
 
@@ -2588,11 +2631,18 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 		} else if (ugeth->ug_info->uf_info.bd_mem_part ==
 			   MEM_PART_MURAM) {
 			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].bd_ring_base,
+<<<<<<< HEAD
 				 (u32) immrbar_virt_to_phys(ugeth->
 							    p_tx_bd_ring[i]));
 			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
 				 last_bd_completed_address,
 				 (u32) immrbar_virt_to_phys(endOfRing));
+=======
+				 (u32)qe_muram_dma(ugeth->p_tx_bd_ring[i]));
+			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
+				 last_bd_completed_address,
+				 (u32)qe_muram_dma(endOfRing));
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -2838,8 +2888,12 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 		} else if (ugeth->ug_info->uf_info.bd_mem_part ==
 			   MEM_PART_MURAM) {
 			out_be32(&ugeth->p_rx_bd_qs_tbl[i].externalbdbaseptr,
+<<<<<<< HEAD
 				 (u32) immrbar_virt_to_phys(ugeth->
 							    p_rx_bd_ring[i]));
+=======
+				 (u32)qe_muram_dma(ugeth->p_rx_bd_ring[i]));
+>>>>>>> v4.9.227
 		}
 		/* rest of fields handled by QE */
 	}
@@ -3750,7 +3804,11 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 			return -EINVAL;
 		}
 		if ((*prop < QE_CLK_NONE) || (*prop > QE_CLK24)) {
+<<<<<<< HEAD
 			pr_err("invalid rx-clock propperty\n");
+=======
+			pr_err("invalid rx-clock property\n");
+>>>>>>> v4.9.227
 			return -EINVAL;
 		}
 		ug_info->uf_info.rx_clock = *prop;
@@ -3862,9 +3920,14 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 	dev = alloc_etherdev(sizeof(*ugeth));
 
 	if (dev == NULL) {
+<<<<<<< HEAD
 		of_node_put(ug_info->tbi_node);
 		of_node_put(ug_info->phy_node);
 		return -ENOMEM;
+=======
+		err = -ENOMEM;
+		goto err_deregister_fixed_link;
+>>>>>>> v4.9.227
 	}
 
 	ugeth = netdev_priv(dev);
@@ -3893,15 +3956,25 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 	ugeth->phy_interface = phy_interface;
 	ugeth->max_speed = max_speed;
 
+<<<<<<< HEAD
+=======
+	/* Carrier starts down, phylib will bring it up */
+	netif_carrier_off(dev);
+
+>>>>>>> v4.9.227
 	err = register_netdev(dev);
 	if (err) {
 		if (netif_msg_probe(ugeth))
 			pr_err("%s: Cannot register net device, aborting\n",
 			       dev->name);
+<<<<<<< HEAD
 		free_netdev(dev);
 		of_node_put(ug_info->tbi_node);
 		of_node_put(ug_info->phy_node);
 		return err;
+=======
+		goto err_free_netdev;
+>>>>>>> v4.9.227
 	}
 
 	mac_addr = of_get_mac_address(np);
@@ -3914,23 +3987,49 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 	ugeth->node = np;
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_free_netdev:
+	free_netdev(dev);
+err_deregister_fixed_link:
+	if (of_phy_is_fixed_link(np))
+		of_phy_deregister_fixed_link(np);
+	of_node_put(ug_info->tbi_node);
+	of_node_put(ug_info->phy_node);
+
+	return err;
+>>>>>>> v4.9.227
 }
 
 static int ucc_geth_remove(struct platform_device* ofdev)
 {
 	struct net_device *dev = platform_get_drvdata(ofdev);
 	struct ucc_geth_private *ugeth = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+	struct device_node *np = ofdev->dev.of_node;
+>>>>>>> v4.9.227
 
 	unregister_netdev(dev);
 	free_netdev(dev);
 	ucc_geth_memclean(ugeth);
+<<<<<<< HEAD
+=======
+	if (of_phy_is_fixed_link(np))
+		of_phy_deregister_fixed_link(np);
+>>>>>>> v4.9.227
 	of_node_put(ugeth->ug_info->tbi_node);
 	of_node_put(ugeth->ug_info->phy_node);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id ucc_geth_match[] = {
+=======
+static const struct of_device_id ucc_geth_match[] = {
+>>>>>>> v4.9.227
 	{
 		.type = "network",
 		.compatible = "ucc_geth",
@@ -3943,7 +4042,10 @@ MODULE_DEVICE_TABLE(of, ucc_geth_match);
 static struct platform_driver ucc_geth_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ucc_geth_match,
 	},
 	.probe		= ucc_geth_probe,

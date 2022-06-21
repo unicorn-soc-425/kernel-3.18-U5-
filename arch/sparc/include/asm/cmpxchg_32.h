@@ -34,7 +34,10 @@ static inline unsigned long __xchg(unsigned long x, __volatile__ void * ptr, int
  *
  * Cribbed from <asm-parisc/atomic.h>
  */
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG	1
+=======
+>>>>>>> v4.9.227
 
 /* bug catcher for when unsupported size is used - won't link */
 void __cmpxchg_called_with_bad_pointer(void);

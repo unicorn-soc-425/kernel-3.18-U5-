@@ -44,12 +44,21 @@
 
 #define offset_devp(off)	\
 	({ \
+<<<<<<< HEAD
 		int _offset = (off); \
 		check_err(_offset) ? NULL : (void *)(_offset+1); \
 	})
 
 #define devp_offset_find(devp)	(((int)(devp))-1)
 #define devp_offset(devp)	(devp ? ((int)(devp))-1 : 0)
+=======
+		unsigned long _offset = (off); \
+		check_err(_offset) ? NULL : (void *)(_offset+1); \
+	})
+
+#define devp_offset_find(devp)	(((unsigned long)(devp))-1)
+#define devp_offset(devp)	(devp ? ((unsigned long)(devp))-1 : 0)
+>>>>>>> v4.9.227
 
 static void *fdt;
 static void *buf; /* = NULL */

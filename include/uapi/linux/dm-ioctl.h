@@ -267,9 +267,15 @@ enum {
 #define DM_DEV_SET_GEOMETRY	_IOWR(DM_IOCTL, DM_DEV_SET_GEOMETRY_CMD, struct dm_ioctl)
 
 #define DM_VERSION_MAJOR	4
+<<<<<<< HEAD
 #define DM_VERSION_MINOR	28
 #define DM_VERSION_PATCHLEVEL	0
 #define DM_VERSION_EXTRA	"-ioctl (2014-09-17)"
+=======
+#define DM_VERSION_MINOR	35
+#define DM_VERSION_PATCHLEVEL	0
+#define DM_VERSION_EXTRA	"-ioctl (2016-06-23)"
+>>>>>>> v4.9.227
 
 /* Status bits */
 #define DM_READONLY_FLAG	(1 << 0) /* In/Out */
@@ -352,4 +358,12 @@ enum {
  */
 #define DM_DEFERRED_REMOVE		(1 << 17) /* In/Out */
 
+<<<<<<< HEAD
+=======
+/*
+ * If set, the device is suspended internally.
+ */
+#define DM_INTERNAL_SUSPEND_FLAG	(1 << 18) /* Out */
+
+>>>>>>> v4.9.227
 #endif				/* _LINUX_DM_IOCTL_H */

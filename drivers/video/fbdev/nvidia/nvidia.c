@@ -21,6 +21,7 @@
 #include <linux/pci.h>
 #include <linux/console.h>
 #include <linux/backlight.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 #include <asm/mtrr.h>
 #endif
@@ -28,6 +29,8 @@
 #include <asm/prom.h>
 #include <asm/pci-bridge.h>
 #endif
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_BOOTX_TEXT
 #include <asm/btext.h>
 #endif
@@ -80,9 +83,13 @@ static int paneltweak = 0;
 static int vram = 0;
 static int bpp = 8;
 static int reverse_i2c;
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 static bool nomtrr = false;
 #endif
+=======
+static bool nomtrr = false;
+>>>>>>> v4.9.227
 #ifdef CONFIG_PMAC_BACKLIGHT
 static int backlight = 1;
 #else
@@ -1365,7 +1372,12 @@ static int nvidiafb_probe(struct pci_dev *pd, const struct pci_device_id *ent)
 	par->ScratchBufferStart = par->FbUsableSize - par->ScratchBufferSize;
 	par->CursorStart = par->FbUsableSize + (32 * 1024);
 
+<<<<<<< HEAD
 	info->screen_base = ioremap(nvidiafb_fix.smem_start, par->FbMapSize);
+=======
+	info->screen_base = ioremap_wc(nvidiafb_fix.smem_start,
+				       par->FbMapSize);
+>>>>>>> v4.9.227
 	info->screen_size = par->FbUsableSize;
 	nvidiafb_fix.smem_len = par->RamAmountKBytes * 1024;
 
@@ -1376,6 +1388,7 @@ static int nvidiafb_probe(struct pci_dev *pd, const struct pci_device_id *ent)
 
 	par->FbStart = info->screen_base;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	if (!nomtrr) {
 		par->mtrr.vram = mtrr_add(nvidiafb_fix.smem_start,
@@ -1390,6 +1403,11 @@ static int nvidiafb_probe(struct pci_dev *pd, const struct pci_device_id *ent)
 		}
 	}
 #endif				/* CONFIG_MTRR */
+=======
+	if (!nomtrr)
+		par->wc_cookie = arch_phys_wc_add(nvidiafb_fix.smem_start,
+						  par->RamAmountKBytes * 1024);
+>>>>>>> v4.9.227
 
 	info->fbops = &nvidia_fb_ops;
 	info->fix = nvidiafb_fix;
@@ -1447,6 +1465,7 @@ static void nvidiafb_remove(struct pci_dev *pd)
 	unregister_framebuffer(info);
 
 	nvidia_bl_exit(par);
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTRR
 	if (par->mtrr.vram_valid)
@@ -1454,6 +1473,9 @@ static void nvidiafb_remove(struct pci_dev *pd)
 			 info->fix.smem_len);
 #endif				/* CONFIG_MTRR */
 
+=======
+	arch_phys_wc_del(par->wc_cookie);
+>>>>>>> v4.9.227
 	iounmap(info->screen_base);
 	fb_destroy_modedb(info->monspecs.modedb);
 	nvidia_delete_i2c_busses(par);
@@ -1505,10 +1527,15 @@ static int nvidiafb_setup(char *options)
 			vram = simple_strtoul(this_opt+5, NULL, 0);
 		} else if (!strncmp(this_opt, "backlight:", 10)) {
 			backlight = simple_strtoul(this_opt+10, NULL, 0);
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 		} else if (!strncmp(this_opt, "nomtrr", 6)) {
 			nomtrr = true;
 #endif
+=======
+		} else if (!strncmp(this_opt, "nomtrr", 6)) {
+			nomtrr = true;
+>>>>>>> v4.9.227
 		} else if (!strncmp(this_opt, "fpdither:", 9)) {
 			fpdither = simple_strtol(this_opt+9, NULL, 0);
 		} else if (!strncmp(this_opt, "bpp:", 4)) {
@@ -1596,11 +1623,17 @@ MODULE_PARM_DESC(bpp, "pixel width in bits"
 		 "(default=8)");
 module_param(reverse_i2c, int, 0);
 MODULE_PARM_DESC(reverse_i2c, "reverse port assignment of the i2c bus");
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 module_param(nomtrr, bool, false);
 MODULE_PARM_DESC(nomtrr, "Disables MTRR support (0 or 1=disabled) "
 		 "(default=0)");
 #endif
+=======
+module_param(nomtrr, bool, false);
+MODULE_PARM_DESC(nomtrr, "Disables MTRR support (0 or 1=disabled) "
+		 "(default=0)");
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Antonino Daplas");
 MODULE_DESCRIPTION("Framebuffer driver for nVidia graphics chipset");

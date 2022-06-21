@@ -5,6 +5,7 @@ config DRM_RADEON_USERPTR
 	help
 	  This option selects CONFIG_MMU_NOTIFIER if it isn't already
 	  selected to enabled full userptr support.
+<<<<<<< HEAD
 
 config DRM_RADEON_UMS
 	bool "Enable userspace modesetting on radeon (DEPRECATED)"
@@ -14,3 +15,5 @@ config DRM_RADEON_UMS
 
 	  Userspace modesetting is deprecated for quite some time now, so
 	  enable this only if you have ancient versions of the DDX drivers.
+=======
+>>>>>>> v4.9.227

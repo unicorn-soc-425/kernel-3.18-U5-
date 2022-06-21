@@ -17,7 +17,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+<<<<<<< HEAD
  * Maintained by: Arvind Kumar <arvindkumar@vmware.com>
+=======
+ * Maintained by: Jim Gill <jgill@vmware.com>
+>>>>>>> v4.9.227
  *
  */
 
@@ -26,7 +30,11 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 #define PVSCSI_DRIVER_VERSION_STRING   "1.0.5.0-k"
+=======
+#define PVSCSI_DRIVER_VERSION_STRING   "1.0.7.0-k"
+>>>>>>> v4.9.227
 
 #define PVSCSI_MAX_NUM_SG_ENTRIES_PER_SEGMENT 128
 

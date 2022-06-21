@@ -1,6 +1,10 @@
 config PPC_XICS
        def_bool n
        select PPC_SMP_MUXED_IPI
+<<<<<<< HEAD
+=======
+       select HARDIRQS_SW_RESEND
+>>>>>>> v4.9.227
 
 config PPC_ICP_NATIVE
        def_bool n

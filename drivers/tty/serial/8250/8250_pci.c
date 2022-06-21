@@ -25,9 +25,12 @@
 #include <asm/byteorder.h>
 #include <asm/io.h>
 
+<<<<<<< HEAD
 #include <linux/dmaengine.h>
 #include <linux/platform_data/dma-dw.h>
 
+=======
+>>>>>>> v4.9.227
 #include "8250.h"
 
 /*
@@ -54,7 +57,10 @@ struct pci_serial_quirk {
 struct serial_private {
 	struct pci_dev		*dev;
 	unsigned int		nr;
+<<<<<<< HEAD
 	void __iomem		*remapped_bar[PCI_NUM_BAR_RESOURCES];
+=======
+>>>>>>> v4.9.227
 	struct pci_serial_quirk	*quirk;
 	const struct pciserial_board *board;
 	int			line[0];
@@ -80,11 +86,15 @@ setup_port(struct serial_private *priv, struct uart_8250_port *port,
 	   int bar, int offset, int regshift)
 {
 	struct pci_dev *dev = priv->dev;
+<<<<<<< HEAD
 	unsigned long base, len;
+=======
+>>>>>>> v4.9.227
 
 	if (bar >= PCI_NUM_BAR_RESOURCES)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	base = pci_resource_start(dev, bar);
 
 	if (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {
@@ -93,16 +103,29 @@ setup_port(struct serial_private *priv, struct uart_8250_port *port,
 		if (!priv->remapped_bar[bar])
 			priv->remapped_bar[bar] = ioremap_nocache(base, len);
 		if (!priv->remapped_bar[bar])
+=======
+	if (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {
+		if (!pcim_iomap(dev, bar, 0) && !pcim_iomap_table(dev))
+>>>>>>> v4.9.227
 			return -ENOMEM;
 
 		port->port.iotype = UPIO_MEM;
 		port->port.iobase = 0;
+<<<<<<< HEAD
 		port->port.mapbase = base + offset;
 		port->port.membase = priv->remapped_bar[bar] + offset;
 		port->port.regshift = regshift;
 	} else {
 		port->port.iotype = UPIO_PORT;
 		port->port.iobase = base + offset;
+=======
+		port->port.mapbase = pci_resource_start(dev, bar) + offset;
+		port->port.membase = pcim_iomap_table(dev)[bar] + offset;
+		port->port.regshift = regshift;
+	} else {
+		port->port.iotype = UPIO_PORT;
+		port->port.iobase = pci_resource_start(dev, bar) + offset;
+>>>>>>> v4.9.227
 		port->port.mapbase = 0;
 		port->port.membase = NULL;
 		port->port.regshift = 0;
@@ -227,13 +250,21 @@ pci_hp_diva_setup(struct serial_private *priv,
  */
 static int pci_inteli960ni_init(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	unsigned long oldval;
+=======
+	u32 oldval;
+>>>>>>> v4.9.227
 
 	if (!(dev->subsystem_device & 0x1000))
 		return -ENODEV;
 
 	/* is firmware started? */
+<<<<<<< HEAD
 	pci_read_config_dword(dev, 0x44, (void *)&oldval);
+=======
+	pci_read_config_dword(dev, 0x44, &oldval);
+>>>>>>> v4.9.227
 	if (oldval == 0x00001000L) { /* RESET value */
 		dev_dbg(&dev->dev, "Local i960 firmware missing\n");
 		return -ENODEV;
@@ -318,7 +349,10 @@ static void pci_plx9050_exit(struct pci_dev *dev)
 static void pci_ni8420_exit(struct pci_dev *dev)
 {
 	void __iomem *p;
+<<<<<<< HEAD
 	unsigned long base, len;
+=======
+>>>>>>> v4.9.227
 	unsigned int bar = 0;
 
 	if ((pci_resource_flags(dev, bar) & IORESOURCE_MEM) == 0) {
@@ -326,9 +360,13 @@ static void pci_ni8420_exit(struct pci_dev *dev)
 		return;
 	}
 
+<<<<<<< HEAD
 	base = pci_resource_start(dev, bar);
 	len =  pci_resource_len(dev, bar);
 	p = ioremap_nocache(base, len);
+=======
+	p = pci_ioremap_bar(dev, bar);
+>>>>>>> v4.9.227
 	if (p == NULL)
 		return;
 
@@ -350,7 +388,10 @@ static void pci_ni8420_exit(struct pci_dev *dev)
 static void pci_ni8430_exit(struct pci_dev *dev)
 {
 	void __iomem *p;
+<<<<<<< HEAD
 	unsigned long base, len;
+=======
+>>>>>>> v4.9.227
 	unsigned int bar = 0;
 
 	if ((pci_resource_flags(dev, bar) & IORESOURCE_MEM) == 0) {
@@ -358,9 +399,13 @@ static void pci_ni8430_exit(struct pci_dev *dev)
 		return;
 	}
 
+<<<<<<< HEAD
 	base = pci_resource_start(dev, bar);
 	len =  pci_resource_len(dev, bar);
 	p = ioremap_nocache(base, len);
+=======
+	p = pci_ioremap_bar(dev, bar);
+>>>>>>> v4.9.227
 	if (p == NULL)
 		return;
 
@@ -683,7 +728,10 @@ static int pci_xircom_init(struct pci_dev *dev)
 static int pci_ni8420_init(struct pci_dev *dev)
 {
 	void __iomem *p;
+<<<<<<< HEAD
 	unsigned long base, len;
+=======
+>>>>>>> v4.9.227
 	unsigned int bar = 0;
 
 	if ((pci_resource_flags(dev, bar) & IORESOURCE_MEM) == 0) {
@@ -691,9 +739,13 @@ static int pci_ni8420_init(struct pci_dev *dev)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	base = pci_resource_start(dev, bar);
 	len =  pci_resource_len(dev, bar);
 	p = ioremap_nocache(base, len);
+=======
+	p = pci_ioremap_bar(dev, bar);
+>>>>>>> v4.9.227
 	if (p == NULL)
 		return -ENOMEM;
 
@@ -715,7 +767,11 @@ static int pci_ni8420_init(struct pci_dev *dev)
 static int pci_ni8430_init(struct pci_dev *dev)
 {
 	void __iomem *p;
+<<<<<<< HEAD
 	unsigned long base, len;
+=======
+	struct pci_bus_region region;
+>>>>>>> v4.9.227
 	u32 device_window;
 	unsigned int bar = 0;
 
@@ -724,6 +780,7 @@ static int pci_ni8430_init(struct pci_dev *dev)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	base = pci_resource_start(dev, bar);
 	len =  pci_resource_len(dev, bar);
 	p = ioremap_nocache(base, len);
@@ -733,6 +790,20 @@ static int pci_ni8430_init(struct pci_dev *dev)
 	/* Set device window address and size in BAR0 */
 	device_window = ((base + MITE_IOWBSR1_WIN_OFFSET) & 0xffffff00)
 	                | MITE_IOWBSR1_WENAB | MITE_IOWBSR1_WSIZE;
+=======
+	p = pci_ioremap_bar(dev, bar);
+	if (p == NULL)
+		return -ENOMEM;
+
+	/*
+	 * Set device window address and size in BAR0, while acknowledging that
+	 * the resource structure may contain a translated address that differs
+	 * from the address the device responds to.
+	 */
+	pcibios_resource_to_bus(dev->bus, &region, &dev->resource[bar]);
+	device_window = ((region.start + MITE_IOWBSR1_WIN_OFFSET) & 0xffffff00)
+			| MITE_IOWBSR1_WENAB | MITE_IOWBSR1_WSIZE;
+>>>>>>> v4.9.227
 	writel(device_window, p + MITE_IOWBSR1);
 
 	/* Set window access to go to RAMSEL IO address space */
@@ -758,8 +829,13 @@ pci_ni8430_setup(struct serial_private *priv,
 		 const struct pciserial_board *board,
 		 struct uart_8250_port *port, int idx)
 {
+<<<<<<< HEAD
 	void __iomem *p;
 	unsigned long base, len;
+=======
+	struct pci_dev *dev = priv->dev;
+	void __iomem *p;
+>>>>>>> v4.9.227
 	unsigned int bar, offset = board->first_offset;
 
 	if (idx >= board->num_ports)
@@ -768,9 +844,15 @@ pci_ni8430_setup(struct serial_private *priv,
 	bar = FL_GET_BASE(board->flags);
 	offset += idx * board->uart_offset;
 
+<<<<<<< HEAD
 	base = pci_resource_start(priv->dev, bar);
 	len =  pci_resource_len(priv->dev, bar);
 	p = ioremap_nocache(base, len);
+=======
+	p = pci_ioremap_bar(dev, bar);
+	if (!p)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	/* enable the transceiver */
 	writeb(readb(p + offset + NI8430_PORTCON) | NI8430_PORTCON_TXVR_ENABLE,
@@ -814,12 +896,21 @@ static int pci_netmos_9900_numports(struct pci_dev *dev)
 	unsigned int pi;
 	unsigned short sub_serports;
 
+<<<<<<< HEAD
 	pi = (c & 0xff);
 
 	if (pi == 2) {
 		return 1;
 	} else if ((pi == 0) &&
 			   (dev->device == PCI_DEVICE_ID_NETMOS_9900)) {
+=======
+	pi = c & 0xff;
+
+	if (pi == 2)
+		return 1;
+
+	if ((pi == 0) && (dev->device == PCI_DEVICE_ID_NETMOS_9900)) {
+>>>>>>> v4.9.227
 		/* two possibilities: 0x30ps encodes number of parallel and
 		 * serial ports, or 0x1000 indicates *something*. This is not
 		 * immediately obvious, since the 2s1p+4s configuration seems
@@ -827,12 +918,21 @@ static int pci_netmos_9900_numports(struct pci_dev *dev)
 		 * advertising the same function 3 as the 4s+2s1p config.
 		 */
 		sub_serports = dev->subsystem_device & 0xf;
+<<<<<<< HEAD
 		if (sub_serports > 0) {
 			return sub_serports;
 		} else {
 			dev_err(&dev->dev, "NetMos/Mostech serial driver ignoring port on ambiguous config.\n");
 			return 0;
 		}
+=======
+		if (sub_serports > 0)
+			return sub_serports;
+
+		dev_err(&dev->dev,
+			"NetMos/Mostech serial driver ignoring port on ambiguous config.\n");
+		return 0;
+>>>>>>> v4.9.227
 	}
 
 	moan_device("unknown NetMos/Mostech program interface", dev);
@@ -853,6 +953,7 @@ static int pci_netmos_init(struct pci_dev *dev)
 		return 0;
 
 	switch (dev->device) { /* FALLTHROUGH on all */
+<<<<<<< HEAD
 		case PCI_DEVICE_ID_NETMOS_9904:
 		case PCI_DEVICE_ID_NETMOS_9912:
 		case PCI_DEVICE_ID_NETMOS_9922:
@@ -868,6 +969,23 @@ static int pci_netmos_init(struct pci_dev *dev)
 
 	if (num_serial == 0)
 		return -ENODEV;
+=======
+	case PCI_DEVICE_ID_NETMOS_9904:
+	case PCI_DEVICE_ID_NETMOS_9912:
+	case PCI_DEVICE_ID_NETMOS_9922:
+	case PCI_DEVICE_ID_NETMOS_9900:
+		num_serial = pci_netmos_9900_numports(dev);
+		break;
+
+	default:
+		break;
+	}
+
+	if (num_serial == 0) {
+		moan_device("unknown NetMos/Mostech device", dev);
+		return -ENODEV;
+	}
+>>>>>>> v4.9.227
 
 	return num_serial;
 }
@@ -1004,6 +1122,43 @@ static void pci_ite887x_exit(struct pci_dev *dev)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * EndRun Technologies.
+ * Determine the number of ports available on the device.
+ */
+#define PCI_VENDOR_ID_ENDRUN			0x7401
+#define PCI_DEVICE_ID_ENDRUN_1588	0xe100
+
+static int pci_endrun_init(struct pci_dev *dev)
+{
+	u8 __iomem *p;
+	unsigned long deviceID;
+	unsigned int  number_uarts = 0;
+
+	/* EndRun device is all 0xexxx */
+	if (dev->vendor == PCI_VENDOR_ID_ENDRUN &&
+		(dev->device & 0xf000) != 0xe000)
+		return 0;
+
+	p = pci_iomap(dev, 0, 5);
+	if (p == NULL)
+		return -ENOMEM;
+
+	deviceID = ioread32(p);
+	/* EndRun device */
+	if (deviceID == 0x07000200) {
+		number_uarts = ioread8(p + 4);
+		dev_dbg(&dev->dev,
+			"%d ports detected on EndRun PCI Express device\n",
+			number_uarts);
+	}
+	pci_iounmap(dev, p);
+	return number_uarts;
+}
+
+/*
+>>>>>>> v4.9.227
  * Oxford Semiconductor Inc.
  * Check that device is part of the Tornado range of devices, then determine
  * the number of ports available on the device.
@@ -1116,11 +1271,19 @@ static int pci_quatech_rqopr(struct uart_8250_port *port)
 static void pci_quatech_wqopr(struct uart_8250_port *port, u8 qopr)
 {
 	unsigned long base = port->port.iobase;
+<<<<<<< HEAD
 	u8 LCR, val;
 
 	LCR = inb(base + UART_LCR);
 	outb(0xBF, base + UART_LCR);
 	val = inb(base + UART_SCR);
+=======
+	u8 LCR;
+
+	LCR = inb(base + UART_LCR);
+	outb(0xBF, base + UART_LCR);
+	inb(base + UART_SCR);
+>>>>>>> v4.9.227
 	outb(qopr, base + UART_SCR);
 	outb(LCR, base + UART_LCR);
 }
@@ -1175,8 +1338,14 @@ static int pci_quatech_has_qmcr(struct uart_8250_port *port)
 
 static int pci_quatech_test(struct uart_8250_port *port)
 {
+<<<<<<< HEAD
 	u8 reg;
 	u8 qopr = pci_quatech_rqopr(port);
+=======
+	u8 reg, qopr;
+
+	qopr = pci_quatech_rqopr(port);
+>>>>>>> v4.9.227
 	pci_quatech_wqopr(port, qopr & QPCR_TEST_FOR1);
 	reg = pci_quatech_rqopr(port) & 0xC0;
 	if (reg != QPCR_TEST_GET1)
@@ -1263,6 +1432,10 @@ static int pci_quatech_init(struct pci_dev *dev)
 		unsigned long base = pci_resource_start(dev, 0);
 		if (base) {
 			u32 tmp;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			outl(inl(base + 0x38) | 0x00002000, base + 0x38);
 			tmp = inl(base + 0x3c);
 			outl(tmp | 0x01000000, base + 0x3c);
@@ -1323,14 +1496,23 @@ static int pci_pericom_setup(struct serial_private *priv,
 	else
 		offset += idx * board->uart_offset;
 
+<<<<<<< HEAD
+=======
+	if (idx==3)
+		offset = 0x38;
+
+>>>>>>> v4.9.227
 	maxnr = (pci_resource_len(priv->dev, bar) - board->first_offset) >>
 		(board->reg_shift + 3);
 
 	if (board->flags & FL_REGION_SZ_CAP && idx >= maxnr)
 		return 1;
 
+<<<<<<< HEAD
 	port->port.uartclk = 14745600;
 
+=======
+>>>>>>> v4.9.227
 	return setup_port(priv, port, bar, offset, board->reg_shift);
 }
 
@@ -1350,6 +1532,7 @@ ce4100_serial_setup(struct serial_private *priv,
 	return ret;
 }
 
+<<<<<<< HEAD
 #define PCI_DEVICE_ID_INTEL_BYT_UART1	0x0f0a
 #define PCI_DEVICE_ID_INTEL_BYT_UART2	0x0f0c
 
@@ -1508,6 +1691,8 @@ byt_serial_setup(struct serial_private *priv,
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static int
 pci_omegapci_setup(struct serial_private *priv,
 		      const struct pciserial_board *board,
@@ -1528,11 +1713,67 @@ pci_brcm_trumanage_setup(struct serial_private *priv,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/* RTS will control by MCR if this bit is 0 */
+#define FINTEK_RTS_CONTROL_BY_HW	BIT(4)
+/* only worked with FINTEK_RTS_CONTROL_BY_HW on */
+#define FINTEK_RTS_INVERT		BIT(5)
+
+/* We should do proper H/W transceiver setting before change to RS485 mode */
+static int pci_fintek_rs485_config(struct uart_port *port,
+			       struct serial_rs485 *rs485)
+{
+	struct pci_dev *pci_dev = to_pci_dev(port->dev);
+	u8 setting;
+	u8 *index = (u8 *) port->private_data;
+
+	pci_read_config_byte(pci_dev, 0x40 + 8 * *index + 7, &setting);
+
+	if (!rs485)
+		rs485 = &port->rs485;
+	else if (rs485->flags & SER_RS485_ENABLED)
+		memset(rs485->padding, 0, sizeof(rs485->padding));
+	else
+		memset(rs485, 0, sizeof(*rs485));
+
+	/* F81504/508/512 not support RTS delay before or after send */
+	rs485->flags &= SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND;
+
+	if (rs485->flags & SER_RS485_ENABLED) {
+		/* Enable RTS H/W control mode */
+		setting |= FINTEK_RTS_CONTROL_BY_HW;
+
+		if (rs485->flags & SER_RS485_RTS_ON_SEND) {
+			/* RTS driving high on TX */
+			setting &= ~FINTEK_RTS_INVERT;
+		} else {
+			/* RTS driving low on TX */
+			setting |= FINTEK_RTS_INVERT;
+		}
+
+		rs485->delay_rts_after_send = 0;
+		rs485->delay_rts_before_send = 0;
+	} else {
+		/* Disable RTS H/W control mode */
+		setting &= ~(FINTEK_RTS_CONTROL_BY_HW | FINTEK_RTS_INVERT);
+	}
+
+	pci_write_config_byte(pci_dev, 0x40 + 8 * *index + 7, setting);
+
+	if (rs485 != &port->rs485)
+		port->rs485 = *rs485;
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int pci_fintek_setup(struct serial_private *priv,
 			    const struct pciserial_board *board,
 			    struct uart_8250_port *port, int idx)
 {
 	struct pci_dev *pdev = priv->dev;
+<<<<<<< HEAD
 	unsigned long base;
 	unsigned long iobase;
 	unsigned long ciobase = 0;
@@ -1589,10 +1830,103 @@ static int pci_fintek_setup(struct serial_private *priv,
 	port->port.mapbase = 0;
 	port->port.membase = NULL;
 	port->port.regshift = 0;
+=======
+	u8 *data;
+	u8 config_base;
+	u16 iobase;
+
+	config_base = 0x40 + 0x08 * idx;
+
+	/* Get the io address from configuration space */
+	pci_read_config_word(pdev, config_base + 4, &iobase);
+
+	dev_dbg(&pdev->dev, "%s: idx=%d iobase=0x%x", __func__, idx, iobase);
+
+	port->port.iotype = UPIO_PORT;
+	port->port.iobase = iobase;
+	port->port.rs485_config = pci_fintek_rs485_config;
+
+	data = devm_kzalloc(&pdev->dev, sizeof(u8), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	/* preserve index in PCI configuration space */
+	*data = idx;
+	port->port.private_data = data;
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int pci_fintek_init(struct pci_dev *dev)
+{
+	unsigned long iobase;
+	u32 max_port, i;
+	u32 bar_data[3];
+	u8 config_base;
+	struct serial_private *priv = pci_get_drvdata(dev);
+	struct uart_8250_port *port;
+
+	switch (dev->device) {
+	case 0x1104: /* 4 ports */
+	case 0x1108: /* 8 ports */
+		max_port = dev->device & 0xff;
+		break;
+	case 0x1112: /* 12 ports */
+		max_port = 12;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	/* Get the io address dispatch from the BIOS */
+	pci_read_config_dword(dev, 0x24, &bar_data[0]);
+	pci_read_config_dword(dev, 0x20, &bar_data[1]);
+	pci_read_config_dword(dev, 0x1c, &bar_data[2]);
+
+	for (i = 0; i < max_port; ++i) {
+		/* UART0 configuration offset start from 0x40 */
+		config_base = 0x40 + 0x08 * i;
+
+		/* Calculate Real IO Port */
+		iobase = (bar_data[i / 4] & 0xffffffe0) + (i % 4) * 8;
+
+		/* Enable UART I/O port */
+		pci_write_config_byte(dev, config_base + 0x00, 0x01);
+
+		/* Select 128-byte FIFO and 8x FIFO threshold */
+		pci_write_config_byte(dev, config_base + 0x01, 0x33);
+
+		/* LSB UART */
+		pci_write_config_byte(dev, config_base + 0x04,
+				(u8)(iobase & 0xff));
+
+		/* MSB UART */
+		pci_write_config_byte(dev, config_base + 0x05,
+				(u8)((iobase & 0xff00) >> 8));
+
+		pci_write_config_byte(dev, config_base + 0x06, dev->irq);
+
+		if (priv) {
+			/* re-apply RS232/485 mode when
+			 * pciserial_resume_ports()
+			 */
+			port = serial8250_get_port(priv->line[i]);
+			pci_fintek_rs485_config(&port->port, NULL);
+		} else {
+			/* First init without port data
+			 * force init to RS232 Mode
+			 */
+			pci_write_config_byte(dev, config_base + 0x07, 0x01);
+		}
+	}
+
+	return max_port;
+}
+
+>>>>>>> v4.9.227
 static int skip_tx_en_setup(struct serial_private *priv,
 			const struct pciserial_board *board,
 			struct uart_8250_port *port, int idx)
@@ -1659,6 +1993,25 @@ static int pci_eg20t_init(struct pci_dev *dev)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#define PCI_DEVICE_ID_EXAR_XR17V4358	0x4358
+#define PCI_DEVICE_ID_EXAR_XR17V8358	0x8358
+
+#define UART_EXAR_MPIOINT_7_0	0x8f	/* MPIOINT[7:0] */
+#define UART_EXAR_MPIOLVL_7_0	0x90	/* MPIOLVL[7:0] */
+#define UART_EXAR_MPIO3T_7_0	0x91	/* MPIO3T[7:0] */
+#define UART_EXAR_MPIOINV_7_0	0x92	/* MPIOINV[7:0] */
+#define UART_EXAR_MPIOSEL_7_0	0x93	/* MPIOSEL[7:0] */
+#define UART_EXAR_MPIOOD_7_0	0x94	/* MPIOOD[7:0] */
+#define UART_EXAR_MPIOINT_15_8	0x95	/* MPIOINT[15:8] */
+#define UART_EXAR_MPIOLVL_15_8	0x96	/* MPIOLVL[15:8] */
+#define UART_EXAR_MPIO3T_15_8	0x97	/* MPIO3T[15:8] */
+#define UART_EXAR_MPIOINV_15_8	0x98	/* MPIOINV[15:8] */
+#define UART_EXAR_MPIOSEL_15_8	0x99	/* MPIOSEL[15:8] */
+#define UART_EXAR_MPIOOD_15_8	0x9a	/* MPIOOD[15:8] */
+
+>>>>>>> v4.9.227
 static int
 pci_xr17c154_setup(struct serial_private *priv,
 		  const struct pciserial_board *board,
@@ -1668,6 +2021,18 @@ pci_xr17c154_setup(struct serial_private *priv,
 	return pci_default_setup(priv, board, port, idx);
 }
 
+<<<<<<< HEAD
+=======
+static inline int
+xr17v35x_has_slave(struct serial_private *priv)
+{
+	const int dev_id = priv->dev->device;
+
+	return ((dev_id == PCI_DEVICE_ID_EXAR_XR17V4358) ||
+		(dev_id == PCI_DEVICE_ID_EXAR_XR17V8358));
+}
+
+>>>>>>> v4.9.227
 static int
 pci_xr17v35x_setup(struct serial_private *priv,
 		  const struct pciserial_board *board,
@@ -1682,6 +2047,7 @@ pci_xr17v35x_setup(struct serial_private *priv,
 	port->port.flags |= UPF_EXAR_EFR;
 
 	/*
+<<<<<<< HEAD
 	 * Setup Multipurpose Input/Output pins.
 	 */
 	if (idx == 0) {
@@ -1697,6 +2063,30 @@ pci_xr17v35x_setup(struct serial_private *priv,
 		writeb(0x00, p + 0x98); /*MPIOINV[15:8]*/
 		writeb(0x00, p + 0x99); /*MPIOSEL[15:8]*/
 		writeb(0x00, p + 0x9a); /*MPIOOD[15:8]*/
+=======
+	 * Setup the uart clock for the devices on expansion slot to
+	 * half the clock speed of the main chip (which is 125MHz)
+	 */
+	if (xr17v35x_has_slave(priv) && idx >= 8)
+		port->port.uartclk = (7812500 * 16 / 2);
+
+	/*
+	 * Setup Multipurpose Input/Output pins.
+	 */
+	if (idx == 0) {
+		writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
+		writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
+		writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
+		writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
+		writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
+		writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
+		writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
+		writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
+		writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
+		writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
+		writeb(0x00, p + UART_EXAR_MPIOSEL_15_8);
+		writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
+>>>>>>> v4.9.227
 	}
 	writeb(0x00, p + UART_EXAR_8XMODE);
 	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
@@ -1732,6 +2122,7 @@ pci_fastcom335_setup(struct serial_private *priv,
 		switch (priv->dev->device) {
 		case PCI_DEVICE_ID_COMMTECH_4222PCI335:
 		case PCI_DEVICE_ID_COMMTECH_4224PCI335:
+<<<<<<< HEAD
 			writeb(0x78, p + 0x90); /* MPIOLVL[7:0] */
 			writeb(0x00, p + 0x92); /* MPIOINV[7:0] */
 			writeb(0x00, p + 0x93); /* MPIOSEL[7:0] */
@@ -1746,6 +2137,22 @@ pci_fastcom335_setup(struct serial_private *priv,
 		writeb(0x00, p + 0x8f); /* MPIOINT[7:0] */
 		writeb(0x00, p + 0x91); /* MPIO3T[7:0] */
 		writeb(0x00, p + 0x94); /* MPIOOD[7:0] */
+=======
+			writeb(0x78, p + UART_EXAR_MPIOLVL_7_0);
+			writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
+			writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
+			break;
+		case PCI_DEVICE_ID_COMMTECH_2324PCI335:
+		case PCI_DEVICE_ID_COMMTECH_2328PCI335:
+			writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
+			writeb(0xc0, p + UART_EXAR_MPIOINV_7_0);
+			writeb(0xc0, p + UART_EXAR_MPIOSEL_7_0);
+			break;
+		}
+		writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
+		writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
+		writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
+>>>>>>> v4.9.227
 	}
 	writeb(0x00, p + UART_EXAR_8XMODE);
 	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
@@ -1758,8 +2165,23 @@ pci_fastcom335_setup(struct serial_private *priv,
 
 static int
 pci_wch_ch353_setup(struct serial_private *priv,
+<<<<<<< HEAD
                     const struct pciserial_board *board,
                     struct uart_8250_port *port, int idx)
+=======
+		    const struct pciserial_board *board,
+		    struct uart_8250_port *port, int idx)
+{
+	port->port.flags |= UPF_FIXED_TYPE;
+	port->port.type = PORT_16550A;
+	return pci_default_setup(priv, board, port, idx);
+}
+
+static int
+pci_wch_ch355_setup(struct serial_private *priv,
+		const struct pciserial_board *board,
+		struct uart_8250_port *port, int idx)
+>>>>>>> v4.9.227
 {
 	port->port.flags |= UPF_FIXED_TYPE;
 	port->port.type = PORT_16550A;
@@ -1768,8 +2190,13 @@ pci_wch_ch353_setup(struct serial_private *priv,
 
 static int
 pci_wch_ch38x_setup(struct serial_private *priv,
+<<<<<<< HEAD
                     const struct pciserial_board *board,
                     struct uart_8250_port *port, int idx)
+=======
+		    const struct pciserial_board *board,
+		    struct uart_8250_port *port, int idx)
+>>>>>>> v4.9.227
 {
 	port->port.flags |= UPF_FIXED_TYPE;
 	port->port.type = PORT_16850;
@@ -1817,6 +2244,10 @@ pci_wch_ch38x_setup(struct serial_private *priv,
 #define PCI_DEVICE_ID_WCH_CH353_2S1PF	0x5046
 #define PCI_DEVICE_ID_WCH_CH353_1S1P	0x5053
 #define PCI_DEVICE_ID_WCH_CH353_2S1P	0x7053
+<<<<<<< HEAD
+=======
+#define PCI_DEVICE_ID_WCH_CH355_4S	0x7173
+>>>>>>> v4.9.227
 #define PCI_VENDOR_ID_AGESTAR		0x5372
 #define PCI_DEVICE_ID_AGESTAR_9375	0x6872
 #define PCI_VENDOR_ID_ASIX		0x9710
@@ -1825,7 +2256,10 @@ pci_wch_ch38x_setup(struct serial_private *priv,
 #define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
 #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
 #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
+<<<<<<< HEAD
 #define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
+=======
+>>>>>>> v4.9.227
 
 #define PCI_VENDOR_ID_SUNIX		0x1fd4
 #define PCI_DEVICE_ID_SUNIX_1999	0x1999
@@ -1835,8 +2269,53 @@ pci_wch_ch38x_setup(struct serial_private *priv,
 #define PCIE_DEVICE_ID_WCH_CH384_4S	0x3470
 #define PCIE_DEVICE_ID_WCH_CH382_2S	0x3253
 
+<<<<<<< HEAD
 #define PCI_DEVICE_ID_EXAR_XR17V4358	0x4358
 #define PCI_DEVICE_ID_EXAR_XR17V8358	0x8358
+=======
+#define PCI_VENDOR_ID_PERICOM			0x12D8
+#define PCI_DEVICE_ID_PERICOM_PI7C9X7951	0x7951
+#define PCI_DEVICE_ID_PERICOM_PI7C9X7952	0x7952
+#define PCI_DEVICE_ID_PERICOM_PI7C9X7954	0x7954
+#define PCI_DEVICE_ID_PERICOM_PI7C9X7958	0x7958
+
+#define PCI_VENDOR_ID_ACCESIO			0x494f
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_2SDB	0x1051
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM_2S	0x1053
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SDB	0x105C
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4S	0x105E
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM232_2DB	0x1091
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM232_2	0x1093
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4DB	0x1099
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM232_4	0x109B
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_2SMDB	0x10D1
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM_2SM	0x10D3
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SMDB	0x10DA
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4SM	0x10DC
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_1	0x1108
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM422_2	0x1110
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_2	0x1111
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM422_4	0x1118
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_4	0x1119
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM_2S	0x1152
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4S	0x115A
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM232_2	0x1190
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM232_2	0x1191
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM232_4	0x1198
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM232_4	0x1199
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM_2SM	0x11D0
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM422_4	0x105A
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM485_4	0x105B
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM422_8	0x106A
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM485_8	0x106B
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4	0x1098
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM232_8	0x10A9
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SM	0x10D9
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_8SM	0x10E9
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4SM	0x11D8
+
+
+>>>>>>> v4.9.227
 
 /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
 #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
@@ -1929,6 +2408,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.subdevice	= PCI_ANY_ID,
 		.setup		= kt_serial_setup,
 	},
+<<<<<<< HEAD
 	{
 		.vendor		= PCI_VENDOR_ID_INTEL,
 		.device		= PCI_DEVICE_ID_INTEL_BYT_UART1,
@@ -1978,6 +2458,8 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.subdevice	= PCI_ANY_ID,
 		.setup		= byt_serial_setup,
 	},
+=======
+>>>>>>> v4.9.227
 	/*
 	 * ITE
 	 */
@@ -2142,15 +2624,24 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.exit		= pci_plx9050_exit,
 	},
 	/*
+<<<<<<< HEAD
 	 * Pericom
 	 */
 	{
 		.vendor		= 0x12d8,
 		.device		= 0x7952,
+=======
+	 * Pericom (Only 7954 - It have a offset jump for port 4)
+	 */
+	{
+		.vendor		= PCI_VENDOR_ID_PERICOM,
+		.device		= PCI_DEVICE_ID_PERICOM_PI7C9X7954,
+>>>>>>> v4.9.227
 		.subvendor	= PCI_ANY_ID,
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_pericom_setup,
 	},
+<<<<<<< HEAD
 	{
 		.vendor		= 0x12d8,
 		.device		= 0x7954,
@@ -2166,11 +2657,14 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.setup		= pci_pericom_setup,
 	},
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * PLX
 	 */
 	{
 		.vendor		= PCI_VENDOR_ID_PLX,
+<<<<<<< HEAD
 		.device		= PCI_DEVICE_ID_PLX_9030,
 		.subvendor	= PCI_SUBVENDOR_ID_PERLE,
 		.subdevice	= PCI_ANY_ID,
@@ -2178,6 +2672,8 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_PLX,
+=======
+>>>>>>> v4.9.227
 		.device		= PCI_DEVICE_ID_PLX_9050,
 		.subvendor	= PCI_SUBVENDOR_ID_EXSYS,
 		.subdevice	= PCI_SUBDEVICE_ID_EXSYS_4055,
@@ -2203,6 +2699,114 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.setup		= pci_default_setup,
 		.exit		= pci_plx9050_exit,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SDB,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4S,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4DB,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_COM232_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SMDB,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4SM,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_ICM422_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4S,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_ICM232_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_ICM232_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM422_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM485_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SM,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4SM,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+>>>>>>> v4.9.227
 	/*
 	 * SBS Technologies, Inc., PMC-OCTALPRO 232
 	 */
@@ -2397,6 +3001,20 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.setup		= pci_netmos_9900_setup,
 	},
 	/*
+<<<<<<< HEAD
+=======
+	 * EndRun Technologies
+	*/
+	{
+		.vendor		= PCI_VENDOR_ID_ENDRUN,
+		.device		= PCI_ANY_ID,
+		.subvendor	= PCI_ANY_ID,
+		.subdevice	= PCI_ANY_ID,
+		.init		= pci_endrun_init,
+		.setup		= pci_default_setup,
+	},
+	/*
+>>>>>>> v4.9.227
 	 * For Oxford Semiconductor Tornado based devices
 	 */
 	{
@@ -2545,6 +3163,17 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_wch_ch353_setup,
 	},
+<<<<<<< HEAD
+=======
+	/* WCH CH355 4S card (16550 clone) */
+	{
+		.vendor		= PCI_VENDOR_ID_WCH,
+		.device		= PCI_DEVICE_ID_WCH_CH355_4S,
+		.subvendor	= PCI_ANY_ID,
+		.subdevice	= PCI_ANY_ID,
+		.setup		= pci_wch_ch355_setup,
+	},
+>>>>>>> v4.9.227
 	/* WCH CH382 2S card (16850 clone) */
 	{
 		.vendor         = PCIE_VENDOR_ID_WCH,
@@ -2648,6 +3277,10 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.subvendor	= PCI_ANY_ID,
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_fintek_setup,
+<<<<<<< HEAD
+=======
+		.init		= pci_fintek_init,
+>>>>>>> v4.9.227
 	},
 	{
 		.vendor		= 0x1c29,
@@ -2655,6 +3288,10 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.subvendor	= PCI_ANY_ID,
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_fintek_setup,
+<<<<<<< HEAD
+=======
+		.init		= pci_fintek_init,
+>>>>>>> v4.9.227
 	},
 	{
 		.vendor		= 0x1c29,
@@ -2662,6 +3299,10 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.subvendor	= PCI_ANY_ID,
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_fintek_setup,
+<<<<<<< HEAD
+=======
+		.init		= pci_fintek_init,
+>>>>>>> v4.9.227
 	},
 
 	/*
@@ -2831,6 +3472,10 @@ enum pci_board_num_t {
 	pbn_panacom2,
 	pbn_panacom4,
 	pbn_plx_romulus,
+<<<<<<< HEAD
+=======
+	pbn_endrun_2_4000000,
+>>>>>>> v4.9.227
 	pbn_oxsemi,
 	pbn_oxsemi_1_4000000,
 	pbn_oxsemi_2_4000000,
@@ -2861,8 +3506,11 @@ enum pci_board_num_t {
 	pbn_ADDIDATA_PCIe_4_3906250,
 	pbn_ADDIDATA_PCIe_8_3906250,
 	pbn_ce4100_1_115200,
+<<<<<<< HEAD
 	pbn_byt,
 	pbn_qrk,
+=======
+>>>>>>> v4.9.227
 	pbn_omegapci,
 	pbn_NETMOS9900_2s_115200,
 	pbn_brcm_trumanage,
@@ -2871,6 +3519,13 @@ enum pci_board_num_t {
 	pbn_fintek_12,
 	pbn_wch382_2,
 	pbn_wch384_4,
+<<<<<<< HEAD
+=======
+	pbn_pericom_PI7C9X7951,
+	pbn_pericom_PI7C9X7952,
+	pbn_pericom_PI7C9X7954,
+	pbn_pericom_PI7C9X7958,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -3387,6 +4042,23 @@ static struct pciserial_board pci_boards[] = {
 	},
 
 	/*
+<<<<<<< HEAD
+=======
+	 * EndRun Technologies
+	* Uses the size of PCI Base region 0 to
+	* signal now many ports are available
+	* 2 port 952 Uart support
+	*/
+	[pbn_endrun_2_4000000] = {
+		.flags		= FL_BASE0,
+		.num_ports	= 2,
+		.base_baud	= 4000000,
+		.uart_offset	= 0x200,
+		.first_offset	= 0x1000,
+	},
+
+	/*
+>>>>>>> v4.9.227
 	 * This board uses the size of PCI Base region 0 to
 	 * signal now many ports are available
 	 */
@@ -3627,6 +4299,7 @@ static struct pciserial_board pci_boards[] = {
 		.base_baud	= 921600,
 		.reg_shift      = 2,
 	},
+<<<<<<< HEAD
 	/*
 	 * Intel BayTrail HSUART reference clock is 44.2368 MHz at power-on,
 	 * but is overridden by byt_set_termios.
@@ -3644,6 +4317,8 @@ static struct pciserial_board pci_boards[] = {
 		.base_baud	= 2764800,
 		.reg_shift	= 2,
 	},
+=======
+>>>>>>> v4.9.227
 	[pbn_omegapci] = {
 		.flags		= FL_BASE0,
 		.num_ports	= 8,
@@ -3693,6 +4368,36 @@ static struct pciserial_board pci_boards[] = {
 		.uart_offset    = 8,
 		.first_offset   = 0xC0,
 	},
+<<<<<<< HEAD
+=======
+	/*
+	 * Pericom PI7C9X795[1248] Uno/Dual/Quad/Octal UART
+	 */
+	[pbn_pericom_PI7C9X7951] = {
+		.flags          = FL_BASE0,
+		.num_ports      = 1,
+		.base_baud      = 921600,
+		.uart_offset	= 0x8,
+	},
+	[pbn_pericom_PI7C9X7952] = {
+		.flags          = FL_BASE0,
+		.num_ports      = 2,
+		.base_baud      = 921600,
+		.uart_offset	= 0x8,
+	},
+	[pbn_pericom_PI7C9X7954] = {
+		.flags          = FL_BASE0,
+		.num_ports      = 4,
+		.base_baud      = 921600,
+		.uart_offset	= 0x8,
+	},
+	[pbn_pericom_PI7C9X7958] = {
+		.flags          = FL_BASE0,
+		.num_ports      = 8,
+		.base_baud      = 921600,
+		.uart_offset	= 0x8,
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct pci_device_id blacklist[] = {
@@ -3704,8 +4409,44 @@ static const struct pci_device_id blacklist[] = {
 	/* multi-io cards handled by parport_serial */
 	{ PCI_DEVICE(0x4348, 0x7053), }, /* WCH CH353 2S1P */
 	{ PCI_DEVICE(0x4348, 0x5053), }, /* WCH CH353 1S1P */
+<<<<<<< HEAD
 	{ PCI_DEVICE(0x1c00, 0x3250), }, /* WCH CH382 2S1P */
 	{ PCI_DEVICE(0x1c00, 0x3470), }, /* WCH CH384 4S */
+=======
+	{ PCI_DEVICE(0x4348, 0x7173), }, /* WCH CH355 4S */
+	{ PCI_DEVICE(0x1c00, 0x3250), }, /* WCH CH382 2S1P */
+	{ PCI_DEVICE(0x1c00, 0x3470), }, /* WCH CH384 4S */
+
+	/* Moxa Smartio MUE boards handled by 8250_moxa */
+	{ PCI_VDEVICE(MOXA, 0x1024), },
+	{ PCI_VDEVICE(MOXA, 0x1025), },
+	{ PCI_VDEVICE(MOXA, 0x1045), },
+	{ PCI_VDEVICE(MOXA, 0x1144), },
+	{ PCI_VDEVICE(MOXA, 0x1160), },
+	{ PCI_VDEVICE(MOXA, 0x1161), },
+	{ PCI_VDEVICE(MOXA, 0x1182), },
+	{ PCI_VDEVICE(MOXA, 0x1183), },
+	{ PCI_VDEVICE(MOXA, 0x1322), },
+	{ PCI_VDEVICE(MOXA, 0x1342), },
+	{ PCI_VDEVICE(MOXA, 0x1381), },
+	{ PCI_VDEVICE(MOXA, 0x1683), },
+
+	/* Intel platforms with MID UART */
+	{ PCI_VDEVICE(INTEL, 0x081b), },
+	{ PCI_VDEVICE(INTEL, 0x081c), },
+	{ PCI_VDEVICE(INTEL, 0x081d), },
+	{ PCI_VDEVICE(INTEL, 0x1191), },
+	{ PCI_VDEVICE(INTEL, 0x19d8), },
+
+	/* Intel platforms with DesignWare UART */
+	{ PCI_VDEVICE(INTEL, 0x0936), },
+	{ PCI_VDEVICE(INTEL, 0x0f0a), },
+	{ PCI_VDEVICE(INTEL, 0x0f0c), },
+	{ PCI_VDEVICE(INTEL, 0x228a), },
+	{ PCI_VDEVICE(INTEL, 0x228c), },
+	{ PCI_VDEVICE(INTEL, 0x9ce3), },
+	{ PCI_VDEVICE(INTEL, 0x9ce4), },
+>>>>>>> v4.9.227
 };
 
 /*
@@ -3888,12 +4629,15 @@ void pciserial_detach_ports(struct serial_private *priv)
 	for (i = 0; i < priv->nr; i++)
 		serial8250_unregister_port(priv->line[i]);
 
+<<<<<<< HEAD
 	for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) {
 		if (priv->remapped_bar[i])
 			iounmap(priv->remapped_bar[i]);
 		priv->remapped_bar[i] = NULL;
 	}
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * Find the exit quirks.
 	 */
@@ -3969,7 +4713,11 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
 
 	board = &pci_boards[ent->driver_data];
 
+<<<<<<< HEAD
 	rc = pci_enable_device(dev);
+=======
+	rc = pcim_enable_device(dev);
+>>>>>>> v4.9.227
 	pci_save_state(dev);
 	if (rc)
 		return rc;
@@ -3988,7 +4736,11 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
 		 */
 		rc = serial_pci_guess_board(dev, &tmp);
 		if (rc)
+<<<<<<< HEAD
 			goto disable;
+=======
+			return rc;
+>>>>>>> v4.9.227
 	} else {
 		/*
 		 * We matched an explicit entry.  If we are able to
@@ -4004,6 +4756,7 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
 	}
 
 	priv = pciserial_init_ports(dev, board);
+<<<<<<< HEAD
 	if (!IS_ERR(priv)) {
 		pci_set_drvdata(dev, priv);
 		return 0;
@@ -4014,6 +4767,13 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
  disable:
 	pci_disable_device(dev);
 	return rc;
+=======
+	if (IS_ERR(priv))
+		return PTR_ERR(priv);
+
+	pci_set_drvdata(dev, priv);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void pciserial_remove_one(struct pci_dev *dev)
@@ -4021,6 +4781,7 @@ static void pciserial_remove_one(struct pci_dev *dev)
 	struct serial_private *priv = pci_get_drvdata(dev);
 
 	pciserial_remove_ports(priv);
+<<<<<<< HEAD
 
 	pci_disable_device(dev);
 }
@@ -4029,10 +4790,20 @@ static void pciserial_remove_one(struct pci_dev *dev)
 static int pciserial_suspend_one(struct pci_dev *dev, pm_message_t state)
 {
 	struct serial_private *priv = pci_get_drvdata(dev);
+=======
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int pciserial_suspend_one(struct device *dev)
+{
+	struct pci_dev *pdev = to_pci_dev(dev);
+	struct serial_private *priv = pci_get_drvdata(pdev);
+>>>>>>> v4.9.227
 
 	if (priv)
 		pciserial_suspend_ports(priv);
 
+<<<<<<< HEAD
 	pci_save_state(dev);
 	pci_set_power_state(dev, pci_choose_state(dev, state));
 	return 0;
@@ -4045,21 +4816,44 @@ static int pciserial_resume_one(struct pci_dev *dev)
 
 	pci_set_power_state(dev, PCI_D0);
 	pci_restore_state(dev);
+=======
+	return 0;
+}
+
+static int pciserial_resume_one(struct device *dev)
+{
+	struct pci_dev *pdev = to_pci_dev(dev);
+	struct serial_private *priv = pci_get_drvdata(pdev);
+	int err;
+>>>>>>> v4.9.227
 
 	if (priv) {
 		/*
 		 * The device may have been disabled.  Re-enable it.
 		 */
+<<<<<<< HEAD
 		err = pci_enable_device(dev);
 		/* FIXME: We cannot simply error out here */
 		if (err)
 			dev_err(&dev->dev, "Unable to re-enable ports, trying to continue.\n");
+=======
+		err = pci_enable_device(pdev);
+		/* FIXME: We cannot simply error out here */
+		if (err)
+			dev_err(dev, "Unable to re-enable ports, trying to continue.\n");
+>>>>>>> v4.9.227
 		pciserial_resume_ports(priv);
 	}
 	return 0;
 }
 #endif
 
+<<<<<<< HEAD
+=======
+static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
+			 pciserial_resume_one);
+
+>>>>>>> v4.9.227
 static struct pci_device_id serial_pci_tbl[] = {
 	/* Advantech use PCI_DEVICE_ID_ADVANTECH_PCI3620 (0x3620) as 'PCI_SUBVENDOR_ID' */
 	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI3620,
@@ -4296,6 +5090,16 @@ static struct pci_device_id serial_pci_tbl[] = {
 		0x10b5, 0x106a, 0, 0,
 		pbn_plx_romulus },
 	/*
+<<<<<<< HEAD
+=======
+	* EndRun Technologies. PCI express device range.
+	*    EndRun PTP/1588 has 2 Native UARTs.
+	*/
+	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_endrun_2_4000000 },
+	/*
+>>>>>>> v4.9.227
 	 * Quatech cards. These actually have configurable clocks but for
 	 * now we just use the default.
 	 *
@@ -4396,7 +5200,11 @@ static struct pci_device_id serial_pci_tbl[] = {
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b0_bt_2_921600 },
 	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI958,
+<<<<<<< HEAD
 		PCI_ANY_ID , PCI_ANY_ID, 0, 0,
+=======
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+>>>>>>> v4.9.227
 		pbn_b2_8_1152000 },
 
 	/*
@@ -4956,6 +5764,130 @@ static struct pci_device_id serial_pci_tbl[] = {
 		0,
 		0, pbn_exar_XR17V8358 },
 	/*
+<<<<<<< HEAD
+=======
+	 * Pericom PI7C9X795[1248] Uno/Dual/Quad/Octal UART
+	 */
+	{   PCI_VENDOR_ID_PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7951,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0,
+		0, pbn_pericom_PI7C9X7951 },
+	{   PCI_VENDOR_ID_PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7952,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0,
+		0, pbn_pericom_PI7C9X7952 },
+	{   PCI_VENDOR_ID_PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7954,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0,
+		0, pbn_pericom_PI7C9X7954 },
+	{   PCI_VENDOR_ID_PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7958,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0,
+		0, pbn_pericom_PI7C9X7958 },
+	/*
+	 * ACCES I/O Products quad
+	 */
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_2SDB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM_2S,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SDB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4S,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM232_2DB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM232_2,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4DB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM232_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_2SMDB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM_2SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SMDB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_1,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7951 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM422_2,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_2,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM422_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM_2S,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4S,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM232_2,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM232_2,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM232_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM232_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM_2SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM422_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM485_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM422_8,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7958 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM485_8,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7958 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM232_8,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7958 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_8SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7958 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	/*
+>>>>>>> v4.9.227
 	 * Topic TP560 Data/Fax/Voice 56k modem (reported by Evan Clarke)
 	 */
 	{	PCI_VENDOR_ID_TOPIC, PCI_DEVICE_ID_TOPIC_TP560,
@@ -5374,6 +6306,7 @@ static struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CE4100_UART,
 		PCI_ANY_ID,  PCI_ANY_ID, 0, 0,
 		pbn_ce4100_1_115200 },
+<<<<<<< HEAD
 	/* Intel BayTrail */
 	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BYT_UART1,
 		PCI_ANY_ID,  PCI_ANY_ID,
@@ -5408,6 +6341,9 @@ static struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_qrk },
+=======
+
+>>>>>>> v4.9.227
 	/*
 	 * Cronyx Omega PCI
 	 */
@@ -5441,9 +6377,15 @@ static struct pci_device_id serial_pci_tbl[] = {
 		PCI_ANY_ID, PCI_ANY_ID,
 		0, 0, pbn_b0_bt_2_115200 },
 
+<<<<<<< HEAD
 	{	PCI_VENDOR_ID_WCH, PCI_DEVICE_ID_WCH_CH352_2S,
 		PCI_ANY_ID, PCI_ANY_ID,
 		0, 0, pbn_b0_bt_2_115200 },
+=======
+	{	PCI_VENDOR_ID_WCH, PCI_DEVICE_ID_WCH_CH355_4S,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0, 0, pbn_b0_bt_4_115200 },
+>>>>>>> v4.9.227
 
 	{	PCIE_VENDOR_ID_WCH, PCIE_DEVICE_ID_WCH_CH382_2S,
 		PCI_ANY_ID, PCI_ANY_ID,
@@ -5550,17 +6492,28 @@ static pci_ers_result_t serial8250_io_slot_reset(struct pci_dev *dev)
 static void serial8250_io_resume(struct pci_dev *dev)
 {
 	struct serial_private *priv = pci_get_drvdata(dev);
+<<<<<<< HEAD
 	const struct pciserial_board *board;
+=======
+	struct serial_private *new;
+>>>>>>> v4.9.227
 
 	if (!priv)
 		return;
 
+<<<<<<< HEAD
 	board = priv->board;
 	kfree(priv);
 	priv = pciserial_init_ports(dev, board);
 
 	if (!IS_ERR(priv)) {
 		pci_set_drvdata(dev, priv);
+=======
+	new = pciserial_init_ports(dev, priv->board);
+	if (!IS_ERR(new)) {
+		pci_set_drvdata(dev, new);
+		kfree(priv);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -5574,10 +6527,16 @@ static struct pci_driver serial_pci_driver = {
 	.name		= "serial",
 	.probe		= pciserial_init_one,
 	.remove		= pciserial_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	.suspend	= pciserial_suspend_one,
 	.resume		= pciserial_resume_one,
 #endif
+=======
+	.driver         = {
+		.pm     = &pciserial_pm_ops,
+	},
+>>>>>>> v4.9.227
 	.id_table	= serial_pci_tbl,
 	.err_handler	= &serial8250_err_handler,
 };

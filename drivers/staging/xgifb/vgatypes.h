@@ -27,14 +27,24 @@ struct xgi_hw_device_info {
 					    /* of Linear VGA memory */
 
 	unsigned long ulVideoMemorySize; /* size, in bytes, of the
+<<<<<<< HEAD
 					    memory on the board */
+=======
+					  * memory on the board
+					  */
+>>>>>>> v4.9.227
 
 	unsigned char jChipType; /* Used to Identify Graphics Chip */
 				 /* defined in the data structure type  */
 				 /* "XGI_CHIP_TYPE" */
 
 	unsigned char jChipRevision; /* Used to Identify Graphics
+<<<<<<< HEAD
 					Chip Revision */
+=======
+				      * Chip Revision
+				      */
+>>>>>>> v4.9.227
 
 	unsigned char ujVBChipID; /* the ID of video bridge */
 				  /* defined in the data structure type */
@@ -46,4 +56,7 @@ struct xgi_hw_device_info {
 /* Additional IOCTL for communication xgifb <> X driver        */
 /* If changing this, xgifb.h must also be changed (for xgifb) */
 #endif
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227

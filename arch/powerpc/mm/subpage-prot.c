@@ -134,8 +134,13 @@ static void subpage_prot_clear(unsigned long addr, unsigned long len)
 static int subpage_walk_pmd_entry(pmd_t *pmd, unsigned long addr,
 				  unsigned long end, struct mm_walk *walk)
 {
+<<<<<<< HEAD
 	struct vm_area_struct *vma = walk->private;
 	split_huge_page_pmd(vma, addr, pmd);
+=======
+	struct vm_area_struct *vma = walk->vma;
+	split_huge_pmd(vma, pmd, addr);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -163,9 +168,13 @@ static void subpage_mark_vma_nohuge(struct mm_struct *mm, unsigned long addr,
 		if (vma->vm_start >= (addr + len))
 			break;
 		vma->vm_flags |= VM_NOHUGEPAGE;
+<<<<<<< HEAD
 		subpage_proto_walk.private = vma;
 		walk_page_range(vma->vm_start, vma->vm_end,
 				&subpage_proto_walk);
+=======
+		walk_page_vma(vma, &subpage_proto_walk);
+>>>>>>> v4.9.227
 		vma = vma->vm_next;
 	}
 }

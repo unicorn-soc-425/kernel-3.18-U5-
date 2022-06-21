@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,7 +77,11 @@ void *acpi_os_allocate_zeroed(acpi_size size)
 
 		/* Clear the memory block */
 
+<<<<<<< HEAD
 		ACPI_MEMSET(allocation, 0, size);
+=======
+		memset(allocation, 0, size);
+>>>>>>> v4.9.227
 	}
 
 	return (allocation);
@@ -181,7 +189,11 @@ acpi_status acpi_ut_delete_caches(void)
 	char buffer[7];
 
 	if (acpi_gbl_display_final_mem_stats) {
+<<<<<<< HEAD
 		ACPI_STRCPY(buffer, "MEMORY");
+=======
+		strcpy(buffer, "MEMORY");
+>>>>>>> v4.9.227
 		(void)acpi_db_display_statistics(buffer);
 	}
 #endif
@@ -231,7 +243,11 @@ acpi_status acpi_ut_delete_caches(void)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_ut_validate_buffer(struct acpi_buffer * buffer)
+=======
+acpi_status acpi_ut_validate_buffer(struct acpi_buffer *buffer)
+>>>>>>> v4.9.227
 {
 
 	/* Obviously, the structure pointer must be valid */
@@ -272,8 +288,12 @@ acpi_status acpi_ut_validate_buffer(struct acpi_buffer * buffer)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ut_initialize_buffer(struct acpi_buffer * buffer,
 			  acpi_size required_length)
+=======
+acpi_ut_initialize_buffer(struct acpi_buffer *buffer, acpi_size required_length)
+>>>>>>> v4.9.227
 {
 	acpi_size input_buffer_length;
 
@@ -337,6 +357,10 @@ acpi_ut_initialize_buffer(struct acpi_buffer * buffer,
 
 	/* Have a valid buffer, clear it */
 
+<<<<<<< HEAD
 	ACPI_MEMSET(buffer->pointer, 0, required_length);
+=======
+	memset(buffer->pointer, 0, required_length);
+>>>>>>> v4.9.227
 	return (AE_OK);
 }

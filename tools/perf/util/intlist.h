@@ -57,6 +57,7 @@ static inline struct int_node *intlist__next(struct int_node *in)
 }
 
 /**
+<<<<<<< HEAD
  * intlist_for_each      - iterate over a intlist
  * @pos:	the &struct int_node to use as a loop cursor.
  * @ilist:	the &struct intlist for loop.
@@ -66,12 +67,27 @@ static inline struct int_node *intlist__next(struct int_node *in)
 
 /**
  * intlist_for_each_safe - iterate over a intlist safe against removal of
+=======
+ * intlist__for_each_entry      - iterate over a intlist
+ * @pos:	the &struct int_node to use as a loop cursor.
+ * @ilist:	the &struct intlist for loop.
+ */
+#define intlist__for_each_entry(pos, ilist)	\
+	for (pos = intlist__first(ilist); pos; pos = intlist__next(pos))
+
+/**
+ * intlist__for_each_entry_safe - iterate over a intlist safe against removal of
+>>>>>>> v4.9.227
  *                         int_node
  * @pos:	the &struct int_node to use as a loop cursor.
  * @n:		another &struct int_node to use as temporary storage.
  * @ilist:	the &struct intlist for loop.
  */
+<<<<<<< HEAD
 #define intlist__for_each_safe(pos, n, ilist)	\
+=======
+#define intlist__for_each_entry_safe(pos, n, ilist)	\
+>>>>>>> v4.9.227
 	for (pos = intlist__first(ilist), n = intlist__next(pos); pos;\
 	     pos = n, n = intlist__next(n))
 #endif /* __PERF_INTLIST_H */

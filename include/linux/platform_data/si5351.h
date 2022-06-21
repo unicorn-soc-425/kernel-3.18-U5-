@@ -5,8 +5,11 @@
 #ifndef __LINUX_PLATFORM_DATA_SI5351_H__
 #define __LINUX_PLATFORM_DATA_SI5351_H__
 
+<<<<<<< HEAD
 struct clk;
 
+=======
+>>>>>>> v4.9.227
 /**
  * enum si5351_pll_src - Si5351 pll clock source
  * @SI5351_PLL_SRC_DEFAULT: default, do not change eeprom config
@@ -107,8 +110,11 @@ struct si5351_clkout_config {
  * @clkout: array of clkout configuration
  */
 struct si5351_platform_data {
+<<<<<<< HEAD
 	struct clk *clk_xtal;
 	struct clk *clk_clkin;
+=======
+>>>>>>> v4.9.227
 	enum si5351_pll_src pll_src[2];
 	struct si5351_clkout_config clkout[8];
 };

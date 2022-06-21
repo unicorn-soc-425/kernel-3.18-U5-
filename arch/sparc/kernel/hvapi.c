@@ -39,6 +39,10 @@ static struct api_info api_table[] = {
 	{ .group = HV_GRP_SDIO,					},
 	{ .group = HV_GRP_SDIO_ERR,				},
 	{ .group = HV_GRP_REBOOT_DATA,				},
+<<<<<<< HEAD
+=======
+	{ .group = HV_GRP_ATU,		.flags = FLAG_PRE_API	},
+>>>>>>> v4.9.227
 	{ .group = HV_GRP_NIAG_PERF,	.flags = FLAG_PRE_API	},
 	{ .group = HV_GRP_FIRE_PERF,				},
 	{ .group = HV_GRP_N2_CPU,				},
@@ -48,6 +52,10 @@ static struct api_info api_table[] = {
 	{ .group = HV_GRP_VT_CPU,				},
 	{ .group = HV_GRP_T5_CPU,				},
 	{ .group = HV_GRP_DIAG,		.flags = FLAG_PRE_API	},
+<<<<<<< HEAD
+=======
+	{ .group = HV_GRP_M7_PERF,				},
+>>>>>>> v4.9.227
 };
 
 static DEFINE_SPINLOCK(hvapi_lock);

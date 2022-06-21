@@ -26,8 +26,11 @@
 struct clk;
 struct reset_control;
 
+<<<<<<< HEAD
 void tegra_pmc_restart(enum reboot_mode mode, const char *cmd);
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM_SLEEP
 enum tegra_suspend_mode tegra_pmc_get_suspend_mode(void);
 void tegra_pmc_set_suspend_mode(enum tegra_suspend_mode mode);
@@ -35,9 +38,15 @@ void tegra_pmc_enter_suspend_mode(enum tegra_suspend_mode mode);
 #endif /* CONFIG_PM_SLEEP */
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 bool tegra_pmc_cpu_is_powered(int cpuid);
 int tegra_pmc_cpu_power_on(int cpuid);
 int tegra_pmc_cpu_remove_clamping(int cpuid);
+=======
+bool tegra_pmc_cpu_is_powered(unsigned int cpuid);
+int tegra_pmc_cpu_power_on(unsigned int cpuid);
+int tegra_pmc_cpu_remove_clamping(unsigned int cpuid);
+>>>>>>> v4.9.227
 #endif /* CONFIG_SMP */
 
 /*
@@ -69,6 +78,15 @@ int tegra_pmc_cpu_remove_clamping(int cpuid);
 #define TEGRA_POWERGATE_XUSBC	22
 #define TEGRA_POWERGATE_VIC	23
 #define TEGRA_POWERGATE_IRAM	24
+<<<<<<< HEAD
+=======
+#define TEGRA_POWERGATE_NVDEC	25
+#define TEGRA_POWERGATE_NVJPG	26
+#define TEGRA_POWERGATE_AUD	27
+#define TEGRA_POWERGATE_DFD	28
+#define TEGRA_POWERGATE_VE2	29
+#define TEGRA_POWERGATE_MAX	TEGRA_POWERGATE_VE2
+>>>>>>> v4.9.227
 
 #define TEGRA_POWERGATE_3D0	TEGRA_POWERGATE_3D
 
@@ -105,6 +123,7 @@ int tegra_pmc_cpu_remove_clamping(int cpuid);
 #define TEGRA_IO_RAIL_SYS_DDC	58
 
 #ifdef CONFIG_ARCH_TEGRA
+<<<<<<< HEAD
 int tegra_powergate_is_powered(int id);
 int tegra_powergate_power_on(int id);
 int tegra_powergate_power_off(int id);
@@ -118,37 +137,77 @@ int tegra_io_rail_power_on(int id);
 int tegra_io_rail_power_off(int id);
 #else
 static inline int tegra_powergate_is_powered(int id)
+=======
+int tegra_powergate_is_powered(unsigned int id);
+int tegra_powergate_power_on(unsigned int id);
+int tegra_powergate_power_off(unsigned int id);
+int tegra_powergate_remove_clamping(unsigned int id);
+
+/* Must be called with clk disabled, and returns with clk enabled */
+int tegra_powergate_sequence_power_up(unsigned int id, struct clk *clk,
+				      struct reset_control *rst);
+
+int tegra_io_rail_power_on(unsigned int id);
+int tegra_io_rail_power_off(unsigned int id);
+#else
+static inline int tegra_powergate_is_powered(unsigned int id)
+>>>>>>> v4.9.227
 {
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 static inline int tegra_powergate_power_on(int id)
+=======
+static inline int tegra_powergate_power_on(unsigned int id)
+>>>>>>> v4.9.227
 {
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 static inline int tegra_powergate_power_off(int id)
+=======
+static inline int tegra_powergate_power_off(unsigned int id)
+>>>>>>> v4.9.227
 {
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 static inline int tegra_powergate_remove_clamping(int id)
+=======
+static inline int tegra_powergate_remove_clamping(unsigned int id)
+>>>>>>> v4.9.227
 {
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 static inline int tegra_powergate_sequence_power_up(int id, struct clk *clk,
+=======
+static inline int tegra_powergate_sequence_power_up(unsigned int id,
+						    struct clk *clk,
+>>>>>>> v4.9.227
 						    struct reset_control *rst)
 {
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 static inline int tegra_io_rail_power_on(int id)
+=======
+static inline int tegra_io_rail_power_on(unsigned int id)
+>>>>>>> v4.9.227
 {
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 static inline int tegra_io_rail_power_off(int id)
+=======
+static inline int tegra_io_rail_power_off(unsigned int id)
+>>>>>>> v4.9.227
 {
 	return -ENOSYS;
 }

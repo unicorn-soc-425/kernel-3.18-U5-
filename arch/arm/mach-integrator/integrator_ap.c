@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -53,6 +54,21 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/map.h>
 #include <asm/mach/time.h>
+=======
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/syscore_ops.h>
+#include <linux/amba/bus.h>
+#include <linux/io.h>
+#include <linux/irqchip.h>
+#include <linux/of_irq.h>
+#include <linux/of_address.h>
+#include <linux/of_platform.h>
+#include <linux/termios.h>
+
+#include <asm/mach/arch.h>
+#include <asm/mach/map.h>
+>>>>>>> v4.9.227
 
 #include "hardware.h"
 #include "cm.h"
@@ -77,6 +93,7 @@ static void __iomem *ebi_base;
 
 /*
  * Logical      Physical
+<<<<<<< HEAD
  * ef000000			Cache flush
  * f1100000	11000000	System controller registers
  * f1300000	13000000	Counter/Timer
@@ -85,15 +102,22 @@ static void __iomem *ebi_base;
  * f1700000	17000000	UART 1
  * f1a00000	1a000000	Debug LEDs
  * f1b00000	1b000000	GPIO
+=======
+ * f1400000	14000000	Interrupt controller
+ * f1600000	16000000	UART 0
+>>>>>>> v4.9.227
  */
 
 static struct map_desc ap_io_desc[] __initdata __maybe_unused = {
 	{
+<<<<<<< HEAD
 		.virtual	= IO_ADDRESS(INTEGRATOR_CT_BASE),
 		.pfn		= __phys_to_pfn(INTEGRATOR_CT_BASE),
 		.length		= SZ_4K,
 		.type		= MT_DEVICE
 	}, {
+=======
+>>>>>>> v4.9.227
 		.virtual	= IO_ADDRESS(INTEGRATOR_IC_BASE),
 		.pfn		= __phys_to_pfn(INTEGRATOR_IC_BASE),
 		.length		= SZ_4K,
@@ -103,6 +127,7 @@ static struct map_desc ap_io_desc[] __initdata __maybe_unused = {
 		.pfn		= __phys_to_pfn(INTEGRATOR_UART0_BASE),
 		.length		= SZ_4K,
 		.type		= MT_DEVICE
+<<<<<<< HEAD
 	}, {
 		.virtual	= IO_ADDRESS(INTEGRATOR_DBG_BASE),
 		.pfn		= __phys_to_pfn(INTEGRATOR_DBG_BASE),
@@ -113,6 +138,8 @@ static struct map_desc ap_io_desc[] __initdata __maybe_unused = {
 		.pfn		= __phys_to_pfn(INTEGRATOR_AP_GPIO_BASE),
 		.length		= SZ_4K,
 		.type		= MT_DEVICE
+=======
+>>>>>>> v4.9.227
 	}
 };
 
@@ -160,6 +187,7 @@ static int __init irq_syscore_init(void)
 device_initcall(irq_syscore_init);
 
 /*
+<<<<<<< HEAD
  * Flash handling.
  */
 static int ap_flash_init(struct platform_device *dev)
@@ -219,6 +247,8 @@ static struct physmap_flash_data ap_flash_data = {
 };
 
 /*
+=======
+>>>>>>> v4.9.227
  * For the PL010 found in the Integrator/AP some of the UART control is
  * implemented in the system controller and accessed using a callback
  * from the driver.
@@ -257,6 +287,7 @@ struct amba_pl010_data ap_uart_data = {
 	.set_mctrl = integrator_uart_set_mctrl,
 };
 
+<<<<<<< HEAD
 /*
  * Where is the timer (VA)?
  */
@@ -387,10 +418,13 @@ static void integrator_clockevent_init(unsigned long inrate,
 					0xffffU);
 }
 
+=======
+>>>>>>> v4.9.227
 void __init ap_init_early(void)
 {
 }
 
+<<<<<<< HEAD
 static void __init ap_of_timer_init(void)
 {
 	struct device_node *node;
@@ -439,6 +473,8 @@ static void __init ap_of_timer_init(void)
 	integrator_clockevent_init(rate, base, irq);
 }
 
+=======
+>>>>>>> v4.9.227
 static void __init ap_init_irq_of(void)
 {
 	cm_init();
@@ -447,18 +483,24 @@ static void __init ap_init_irq_of(void)
 
 /* For the Device Tree, add in the UART callbacks as AUXDATA */
 static struct of_dev_auxdata ap_auxdata_lookup[] __initdata = {
+<<<<<<< HEAD
 	OF_DEV_AUXDATA("arm,primecell", INTEGRATOR_RTC_BASE,
 		"rtc", NULL),
+=======
+>>>>>>> v4.9.227
 	OF_DEV_AUXDATA("arm,primecell", INTEGRATOR_UART0_BASE,
 		"uart0", &ap_uart_data),
 	OF_DEV_AUXDATA("arm,primecell", INTEGRATOR_UART1_BASE,
 		"uart1", &ap_uart_data),
+<<<<<<< HEAD
 	OF_DEV_AUXDATA("arm,primecell", KMI0_BASE,
 		"kmi0", NULL),
 	OF_DEV_AUXDATA("arm,primecell", KMI1_BASE,
 		"kmi1", NULL),
 	OF_DEV_AUXDATA("cfi-flash", INTEGRATOR_FLASH_BASE,
 		"physmap-flash", &ap_flash_data),
+=======
+>>>>>>> v4.9.227
 	{ /* sentinel */ },
 };
 
@@ -477,10 +519,13 @@ static void __init ap_init_of(void)
 	unsigned long sc_dec;
 	struct device_node *syscon;
 	struct device_node *ebi;
+<<<<<<< HEAD
 	struct device *parent;
 	struct soc_device *soc_dev;
 	struct soc_device_attribute *soc_dev_attr;
 	u32 ap_sc_id;
+=======
+>>>>>>> v4.9.227
 	int i;
 
 	syscon = of_find_matching_node(NULL, ap_syscon_match);
@@ -497,6 +542,7 @@ static void __init ap_init_of(void)
 	if (!ebi_base)
 		return;
 
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table,
 			ap_auxdata_lookup, NULL);
 
@@ -521,6 +567,9 @@ static void __init ap_init_of(void)
 
 	parent = soc_device_to_device(soc_dev);
 	integrator_init_sysfs(parent, ap_sc_id);
+=======
+	of_platform_default_populate(NULL, ap_auxdata_lookup, NULL);
+>>>>>>> v4.9.227
 
 	sc_dec = readl(ap_syscon_base + INTEGRATOR_SC_DEC_OFFSET);
 	for (i = 0; i < 4; i++) {
@@ -553,8 +602,12 @@ DT_MACHINE_START(INTEGRATOR_AP_DT, "ARM Integrator/AP (Device Tree)")
 	.map_io		= ap_map_io,
 	.init_early	= ap_init_early,
 	.init_irq	= ap_init_irq_of,
+<<<<<<< HEAD
 	.init_time	= ap_of_timer_init,
 	.init_machine	= ap_init_of,
 	.restart	= integrator_restart,
+=======
+	.init_machine	= ap_init_of,
+>>>>>>> v4.9.227
 	.dt_compat      = ap_dt_board_compat,
 MACHINE_END

@@ -21,7 +21,11 @@
 #include <linux/module.h>
 #include <linux/seq_file.h>
 #include <linux/mount.h>
+<<<<<<< HEAD
 #include <linux/aio.h>
+=======
+#include <linux/uio.h>
+>>>>>>> v4.9.227
 #include <asm/ebcdic.h>
 #include "hypfs.h"
 
@@ -48,10 +52,17 @@ static struct dentry *hypfs_last_dentry;
 static void hypfs_update_update(struct super_block *sb)
 {
 	struct hypfs_sb_info *sb_info = sb->s_fs_info;
+<<<<<<< HEAD
 	struct inode *inode = sb_info->update_file->d_inode;
 
 	sb_info->last_update = get_seconds();
 	inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+	struct inode *inode = d_inode(sb_info->update_file);
+
+	sb_info->last_update = get_seconds();
+	inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 }
 
 /* directory tree removal functions */
@@ -62,16 +73,20 @@ static void hypfs_add_dentry(struct dentry *dentry)
 	hypfs_last_dentry = dentry;
 }
 
+<<<<<<< HEAD
 static inline int hypfs_positive(struct dentry *dentry)
 {
 	return dentry->d_inode && !d_unhashed(dentry);
 }
 
+=======
+>>>>>>> v4.9.227
 static void hypfs_remove(struct dentry *dentry)
 {
 	struct dentry *parent;
 
 	parent = dentry->d_parent;
+<<<<<<< HEAD
 	mutex_lock(&parent->d_inode->i_mutex);
 	if (hypfs_positive(dentry)) {
 		if (S_ISDIR(dentry->d_inode->i_mode))
@@ -82,6 +97,18 @@ static void hypfs_remove(struct dentry *dentry)
 	d_delete(dentry);
 	dput(dentry);
 	mutex_unlock(&parent->d_inode->i_mutex);
+=======
+	inode_lock(d_inode(parent));
+	if (simple_positive(dentry)) {
+		if (d_is_dir(dentry))
+			simple_rmdir(d_inode(parent), dentry);
+		else
+			simple_unlink(d_inode(parent), dentry);
+	}
+	d_delete(dentry);
+	dput(dentry);
+	inode_unlock(d_inode(parent));
+>>>>>>> v4.9.227
 }
 
 static void hypfs_delete_tree(struct dentry *root)
@@ -104,7 +131,11 @@ static struct inode *hypfs_make_inode(struct super_block *sb, umode_t mode)
 		ret->i_mode = mode;
 		ret->i_uid = hypfs_info->uid;
 		ret->i_gid = hypfs_info->gid;
+<<<<<<< HEAD
 		ret->i_atime = ret->i_mtime = ret->i_ctime = CURRENT_TIME;
+=======
+		ret->i_atime = ret->i_mtime = ret->i_ctime = current_time(ret);
+>>>>>>> v4.9.227
 		if (S_ISDIR(mode))
 			set_nlink(ret, 2);
 	}
@@ -144,6 +175,7 @@ static int hypfs_open(struct inode *inode, struct file *filp)
 	return nonseekable_open(inode, filp);
 }
 
+<<<<<<< HEAD
 static ssize_t hypfs_aio_read(struct kiocb *iocb, const struct iovec *iov,
 			      unsigned long nr_segs, loff_t offset)
 {
@@ -169,11 +201,38 @@ static ssize_t hypfs_aio_read(struct kiocb *iocb, const struct iovec *iov,
 }
 static ssize_t hypfs_aio_write(struct kiocb *iocb, const struct iovec *iov,
 			      unsigned long nr_segs, loff_t offset)
+=======
+static ssize_t hypfs_read_iter(struct kiocb *iocb, struct iov_iter *to)
+{
+	struct file *file = iocb->ki_filp;
+	char *data = file->private_data;
+	size_t available = strlen(data);
+	loff_t pos = iocb->ki_pos;
+	size_t count;
+
+	if (pos < 0)
+		return -EINVAL;
+	if (pos >= available || !iov_iter_count(to))
+		return 0;
+	count = copy_to_iter(data + pos, available - pos, to);
+	if (!count)
+		return -EFAULT;
+	iocb->ki_pos = pos + count;
+	file_accessed(file);
+	return count;
+}
+
+static ssize_t hypfs_write_iter(struct kiocb *iocb, struct iov_iter *from)
+>>>>>>> v4.9.227
 {
 	int rc;
 	struct super_block *sb = file_inode(iocb->ki_filp)->i_sb;
 	struct hypfs_sb_info *fs_info = sb->s_fs_info;
+<<<<<<< HEAD
 	size_t count = iov_length(iov, nr_segs);
+=======
+	size_t count = iov_iter_count(from);
+>>>>>>> v4.9.227
 
 	/*
 	 * Currently we only allow one update per second for two reasons:
@@ -202,6 +261,10 @@ static ssize_t hypfs_aio_write(struct kiocb *iocb, const struct iovec *iov,
 	}
 	hypfs_update_update(sb);
 	rc = count;
+<<<<<<< HEAD
+=======
+	iov_iter_advance(from, count);
+>>>>>>> v4.9.227
 out:
 	mutex_unlock(&fs_info->lock);
 	return rc;
@@ -275,7 +338,11 @@ static int hypfs_show_options(struct seq_file *s, struct dentry *root)
 static int hypfs_fill_super(struct super_block *sb, void *data, int silent)
 {
 	struct inode *root_inode;
+<<<<<<< HEAD
 	struct dentry *root_dentry;
+=======
+	struct dentry *root_dentry, *update_file;
+>>>>>>> v4.9.227
 	int rc = 0;
 	struct hypfs_sb_info *sbi;
 
@@ -286,8 +353,13 @@ static int hypfs_fill_super(struct super_block *sb, void *data, int silent)
 	sbi->uid = current_uid();
 	sbi->gid = current_gid();
 	sb->s_fs_info = sbi;
+<<<<<<< HEAD
 	sb->s_blocksize = PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits = PAGE_CACHE_SHIFT;
+=======
+	sb->s_blocksize = PAGE_SIZE;
+	sb->s_blocksize_bits = PAGE_SHIFT;
+>>>>>>> v4.9.227
 	sb->s_magic = HYPFS_MAGIC;
 	sb->s_op = &hypfs_s_ops;
 	if (hypfs_parse_options(data, sb))
@@ -306,9 +378,16 @@ static int hypfs_fill_super(struct super_block *sb, void *data, int silent)
 		rc = hypfs_diag_create_files(root_dentry);
 	if (rc)
 		return rc;
+<<<<<<< HEAD
 	sbi->update_file = hypfs_create_update_file(root_dentry);
 	if (IS_ERR(sbi->update_file))
 		return PTR_ERR(sbi->update_file);
+=======
+	update_file = hypfs_create_update_file(root_dentry);
+	if (IS_ERR(update_file))
+		return PTR_ERR(update_file);
+	sbi->update_file = update_file;
+>>>>>>> v4.9.227
 	hypfs_update_update(sb);
 	pr_info("Hypervisor filesystem mounted\n");
 	return 0;
@@ -339,7 +418,11 @@ static struct dentry *hypfs_create_file(struct dentry *parent, const char *name,
 	struct dentry *dentry;
 	struct inode *inode;
 
+<<<<<<< HEAD
 	mutex_lock(&parent->d_inode->i_mutex);
+=======
+	inode_lock(d_inode(parent));
+>>>>>>> v4.9.227
 	dentry = lookup_one_len(name, parent, strlen(name));
 	if (IS_ERR(dentry)) {
 		dentry = ERR_PTR(-ENOMEM);
@@ -360,14 +443,22 @@ static struct dentry *hypfs_create_file(struct dentry *parent, const char *name,
 	} else if (S_ISDIR(mode)) {
 		inode->i_op = &simple_dir_inode_operations;
 		inode->i_fop = &simple_dir_operations;
+<<<<<<< HEAD
 		inc_nlink(parent->d_inode);
+=======
+		inc_nlink(d_inode(parent));
+>>>>>>> v4.9.227
 	} else
 		BUG();
 	inode->i_private = data;
 	d_instantiate(dentry, inode);
 	dget(dentry);
 fail:
+<<<<<<< HEAD
 	mutex_unlock(&parent->d_inode->i_mutex);
+=======
+	inode_unlock(d_inode(parent));
+>>>>>>> v4.9.227
 	return dentry;
 }
 
@@ -440,10 +531,15 @@ struct dentry *hypfs_create_str(struct dentry *dir,
 static const struct file_operations hypfs_file_ops = {
 	.open		= hypfs_open,
 	.release	= hypfs_release,
+<<<<<<< HEAD
 	.read		= do_sync_read,
 	.write		= do_sync_write,
 	.aio_read	= hypfs_aio_read,
 	.aio_write	= hypfs_aio_write,
+=======
+	.read_iter	= hypfs_read_iter,
+	.write_iter	= hypfs_write_iter,
+>>>>>>> v4.9.227
 	.llseek		= no_llseek,
 };
 
@@ -461,8 +557,11 @@ static const struct super_operations hypfs_s_ops = {
 	.show_options	= hypfs_show_options,
 };
 
+<<<<<<< HEAD
 static struct kobject *s390_kobj;
 
+=======
+>>>>>>> v4.9.227
 static int __init hypfs_init(void)
 {
 	int rc;
@@ -482,18 +581,34 @@ static int __init hypfs_init(void)
 		rc = -ENODATA;
 		goto fail_hypfs_vm_exit;
 	}
+<<<<<<< HEAD
 	s390_kobj = kobject_create_and_add("s390", hypervisor_kobj);
 	if (!s390_kobj) {
 		rc = -ENOMEM;
 		goto fail_hypfs_sprp_exit;
 	}
+=======
+	if (hypfs_diag0c_init()) {
+		rc = -ENODATA;
+		goto fail_hypfs_sprp_exit;
+	}
+	rc = sysfs_create_mount_point(hypervisor_kobj, "s390");
+	if (rc)
+		goto fail_hypfs_diag0c_exit;
+>>>>>>> v4.9.227
 	rc = register_filesystem(&hypfs_type);
 	if (rc)
 		goto fail_filesystem;
 	return 0;
 
 fail_filesystem:
+<<<<<<< HEAD
 	kobject_put(s390_kobj);
+=======
+	sysfs_remove_mount_point(hypervisor_kobj, "s390");
+fail_hypfs_diag0c_exit:
+	hypfs_diag0c_exit();
+>>>>>>> v4.9.227
 fail_hypfs_sprp_exit:
 	hypfs_sprp_exit();
 fail_hypfs_vm_exit:
@@ -509,7 +624,12 @@ fail_dbfs_exit:
 static void __exit hypfs_exit(void)
 {
 	unregister_filesystem(&hypfs_type);
+<<<<<<< HEAD
 	kobject_put(s390_kobj);
+=======
+	sysfs_remove_mount_point(hypervisor_kobj, "s390");
+	hypfs_diag0c_exit();
+>>>>>>> v4.9.227
 	hypfs_sprp_exit();
 	hypfs_vm_exit();
 	hypfs_diag_exit();

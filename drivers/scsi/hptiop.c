@@ -1,6 +1,10 @@
 /*
  * HighPoint RR3xxx/4xxx controller driver for Linux
+<<<<<<< HEAD
  * Copyright (C) 2006-2012 HighPoint Technologies, Inc. All Rights Reserved.
+=======
+ * Copyright (C) 2006-2015 HighPoint Technologies, Inc. All Rights Reserved.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +46,11 @@ MODULE_DESCRIPTION("HighPoint RocketRAID 3xxx/4xxx Controller Driver");
 
 static char driver_name[] = "hptiop";
 static const char driver_name_long[] = "RocketRAID 3xxx/4xxx Controller driver";
+<<<<<<< HEAD
 static const char driver_ver[] = "v1.8";
+=======
+static const char driver_ver[] = "v1.10.0";
+>>>>>>> v4.9.227
 
 static int iop_send_sync_msg(struct hptiop_hba *hba, u32 msg, u32 millisec);
 static void hptiop_finish_scsi_req(struct hptiop_hba *hba, u32 tag,
@@ -764,9 +772,13 @@ static void hptiop_finish_scsi_req(struct hptiop_hba *hba, u32 tag,
 		scsi_set_resid(scp,
 			scsi_bufflen(scp) - le32_to_cpu(req->dataxfer_length));
 		scp->result = SAM_STAT_CHECK_CONDITION;
+<<<<<<< HEAD
 		memcpy(scp->sense_buffer, &req->sg_list,
 				min_t(size_t, SCSI_SENSE_BUFFERSIZE,
 					le32_to_cpu(req->dataxfer_length)));
+=======
+		memcpy(scp->sense_buffer, &req->sg_list, SCSI_SENSE_BUFFERSIZE);
+>>>>>>> v4.9.227
 		goto skip_resid;
 		break;
 
@@ -1037,8 +1049,14 @@ static int hptiop_queuecommand_lck(struct scsi_cmnd *scp,
 
 	scp->result = 0;
 
+<<<<<<< HEAD
 	if (scp->device->channel || scp->device->lun ||
 			scp->device->id > hba->max_devices) {
+=======
+	if (scp->device->channel ||
+			(scp->device->id > hba->max_devices) ||
+			((scp->device->id == (hba->max_devices-1)) && scp->device->lun)) {
+>>>>>>> v4.9.227
 		scp->result = DID_BAD_TARGET << 16;
 		free_req(hba, _req);
 		goto cmd_done;
@@ -1118,6 +1136,7 @@ static int hptiop_reset(struct scsi_cmnd *scp)
 }
 
 static int hptiop_adjust_disk_queue_depth(struct scsi_device *sdev,
+<<<<<<< HEAD
 					  int queue_depth, int reason)
 {
 	struct hptiop_hba *hba = (struct hptiop_hba *)sdev->host->hostdata;
@@ -1129,6 +1148,15 @@ static int hptiop_adjust_disk_queue_depth(struct scsi_device *sdev,
 		queue_depth = hba->max_requests;
 	scsi_adjust_queue_depth(sdev, MSG_ORDERED_TAG, queue_depth);
 	return queue_depth;
+=======
+					  int queue_depth)
+{
+	struct hptiop_hba *hba = (struct hptiop_hba *)sdev->host->hostdata;
+
+	if (queue_depth > hba->max_requests)
+		queue_depth = hba->max_requests;
+	return scsi_change_queue_depth(sdev, queue_depth);
+>>>>>>> v4.9.227
 }
 
 static ssize_t hptiop_show_version(struct device *dev,
@@ -1172,6 +1200,17 @@ static struct device_attribute *hptiop_attrs[] = {
 	NULL
 };
 
+<<<<<<< HEAD
+=======
+static int hptiop_slave_config(struct scsi_device *sdev)
+{
+	if (sdev->type == TYPE_TAPE)
+		blk_queue_max_hw_sectors(sdev->request_queue, 8192);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static struct scsi_host_template driver_template = {
 	.module                     = THIS_MODULE,
 	.name                       = driver_name,
@@ -1183,6 +1222,10 @@ static struct scsi_host_template driver_template = {
 	.use_clustering             = ENABLE_CLUSTERING,
 	.proc_name                  = driver_name,
 	.shost_attrs                = hptiop_attrs,
+<<<<<<< HEAD
+=======
+	.slave_configure            = hptiop_slave_config,
+>>>>>>> v4.9.227
 	.this_id                    = -1,
 	.change_queue_depth         = hptiop_adjust_disk_queue_depth,
 };
@@ -1327,6 +1370,10 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	}
 
 	hba = (struct hptiop_hba *)host->hostdata;
+<<<<<<< HEAD
+=======
+	memset(hba, 0, sizeof(struct hptiop_hba));
+>>>>>>> v4.9.227
 
 	hba->ops = iop_ops;
 	hba->pcidev = pcidev;
@@ -1340,7 +1387,11 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	init_waitqueue_head(&hba->reset_wq);
 	init_waitqueue_head(&hba->ioctl_wq);
 
+<<<<<<< HEAD
 	host->max_lun = 1;
+=======
+	host->max_lun = 128;
+>>>>>>> v4.9.227
 	host->max_channel = 0;
 	host->io_port = 0;
 	host->n_io_port = 0;
@@ -1432,6 +1483,7 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	dprintk("req_size=%d, max_requests=%d\n", req_size, hba->max_requests);
 
 	hba->req_size = req_size;
+<<<<<<< HEAD
 	start_virt = dma_alloc_coherent(&pcidev->dev,
 				hba->req_size*hba->max_requests + 0x20,
 				&start_phy, GFP_KERNEL);
@@ -1453,13 +1505,40 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 
 	hba->req_list = NULL;
 	for (i = 0; i < hba->max_requests; i++) {
+=======
+	hba->req_list = NULL;
+
+	for (i = 0; i < hba->max_requests; i++) {
+		start_virt = dma_alloc_coherent(&pcidev->dev,
+					hba->req_size + 0x20,
+					&start_phy, GFP_KERNEL);
+
+		if (!start_virt) {
+			printk(KERN_ERR "scsi%d: fail to alloc request mem\n",
+						hba->host->host_no);
+			goto free_request_mem;
+		}
+
+		hba->dma_coherent[i] = start_virt;
+		hba->dma_coherent_handle[i] = start_phy;
+
+		if ((start_phy & 0x1f) != 0) {
+			offset = ((start_phy + 0x1f) & ~0x1f) - start_phy;
+			start_phy += offset;
+			start_virt += offset;
+		}
+
+>>>>>>> v4.9.227
 		hba->reqs[i].next = NULL;
 		hba->reqs[i].req_virt = start_virt;
 		hba->reqs[i].req_shifted_phy = start_phy >> 5;
 		hba->reqs[i].index = i;
 		free_req(hba, &hba->reqs[i]);
+<<<<<<< HEAD
 		start_virt = (char *)start_virt + hba->req_size;
 		start_phy = start_phy + hba->req_size;
+=======
+>>>>>>> v4.9.227
 	}
 
 	/* Enable Interrupt and start background task */
@@ -1478,11 +1557,24 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	return 0;
 
 free_request_mem:
+<<<<<<< HEAD
 	dma_free_coherent(&hba->pcidev->dev,
 			hba->req_size * hba->max_requests + 0x20,
 			hba->dma_coherent, hba->dma_coherent_handle);
 
 free_request_irq:
+=======
+	for (i = 0; i < hba->max_requests; i++) {
+		if (hba->dma_coherent[i] && hba->dma_coherent_handle[i])
+			dma_free_coherent(&hba->pcidev->dev,
+					hba->req_size + 0x20,
+					hba->dma_coherent[i],
+					hba->dma_coherent_handle[i]);
+		else
+			break;
+	}
+
+>>>>>>> v4.9.227
 	free_irq(hba->pcidev->irq, hba);
 
 unmap_pci_bar:
@@ -1550,6 +1642,10 @@ static void hptiop_remove(struct pci_dev *pcidev)
 {
 	struct Scsi_Host *host = pci_get_drvdata(pcidev);
 	struct hptiop_hba *hba = (struct hptiop_hba *)host->hostdata;
+<<<<<<< HEAD
+=======
+	u32 i;
+>>>>>>> v4.9.227
 
 	dprintk("scsi%d: hptiop_remove\n", hba->host->host_no);
 
@@ -1559,10 +1655,22 @@ static void hptiop_remove(struct pci_dev *pcidev)
 
 	free_irq(hba->pcidev->irq, hba);
 
+<<<<<<< HEAD
 	dma_free_coherent(&hba->pcidev->dev,
 			hba->req_size * hba->max_requests + 0x20,
 			hba->dma_coherent,
 			hba->dma_coherent_handle);
+=======
+	for (i = 0; i < hba->max_requests; i++) {
+		if (hba->dma_coherent[i] && hba->dma_coherent_handle[i])
+			dma_free_coherent(&hba->pcidev->dev,
+					hba->req_size + 0x20,
+					hba->dma_coherent[i],
+					hba->dma_coherent_handle[i]);
+		else
+			break;
+	}
+>>>>>>> v4.9.227
 
 	hba->ops->internal_memfree(hba);
 
@@ -1657,6 +1765,17 @@ static struct pci_device_id hptiop_id_table[] = {
 	{ PCI_VDEVICE(TTI, 0x3020), (kernel_ulong_t)&hptiop_mv_ops },
 	{ PCI_VDEVICE(TTI, 0x4520), (kernel_ulong_t)&hptiop_mvfrey_ops },
 	{ PCI_VDEVICE(TTI, 0x4522), (kernel_ulong_t)&hptiop_mvfrey_ops },
+<<<<<<< HEAD
+=======
+	{ PCI_VDEVICE(TTI, 0x3610), (kernel_ulong_t)&hptiop_mvfrey_ops },
+	{ PCI_VDEVICE(TTI, 0x3611), (kernel_ulong_t)&hptiop_mvfrey_ops },
+	{ PCI_VDEVICE(TTI, 0x3620), (kernel_ulong_t)&hptiop_mvfrey_ops },
+	{ PCI_VDEVICE(TTI, 0x3622), (kernel_ulong_t)&hptiop_mvfrey_ops },
+	{ PCI_VDEVICE(TTI, 0x3640), (kernel_ulong_t)&hptiop_mvfrey_ops },
+	{ PCI_VDEVICE(TTI, 0x3660), (kernel_ulong_t)&hptiop_mvfrey_ops },
+	{ PCI_VDEVICE(TTI, 0x3680), (kernel_ulong_t)&hptiop_mvfrey_ops },
+	{ PCI_VDEVICE(TTI, 0x3690), (kernel_ulong_t)&hptiop_mvfrey_ops },
+>>>>>>> v4.9.227
 	{},
 };
 

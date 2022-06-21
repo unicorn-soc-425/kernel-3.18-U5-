@@ -13,8 +13,11 @@
 #include <linux/rtc.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.4"
 
+=======
+>>>>>>> v4.9.227
 /* Registers */
 
 #define DS1672_REG_CNT_BASE	0
@@ -60,7 +63,12 @@ static int ds1672_get_datetime(struct i2c_client *client, struct rtc_time *tm)
 		"%s: raw read data - counters=%02x,%02x,%02x,%02x\n",
 		__func__, buf[0], buf[1], buf[2], buf[3]);
 
+<<<<<<< HEAD
 	time = (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0];
+=======
+	time = ((unsigned long)buf[3] << 24) | (buf[2] << 16) |
+	       (buf[1] << 8) | buf[0];
+>>>>>>> v4.9.227
 
 	rtc_time_to_tm(time, tm);
 
@@ -165,8 +173,11 @@ static int ds1672_probe(struct i2c_client *client,
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	dev_info(&client->dev, "chip found, driver version " DRV_VERSION "\n");
 
+=======
+>>>>>>> v4.9.227
 	rtc = devm_rtc_device_register(&client->dev, ds1672_driver.driver.name,
 				  &ds1672_rtc_ops, THIS_MODULE);
 
@@ -198,6 +209,10 @@ static struct i2c_device_id ds1672_id[] = {
 	{ "ds1672", 0 },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, ds1672_id);
+>>>>>>> v4.9.227
 
 static struct i2c_driver ds1672_driver = {
 	.driver = {
@@ -212,4 +227,7 @@ module_i2c_driver(ds1672_driver);
 MODULE_AUTHOR("Alessandro Zummo <a.zummo@towertech.it>");
 MODULE_DESCRIPTION("Dallas/Maxim DS1672 timekeeper driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227

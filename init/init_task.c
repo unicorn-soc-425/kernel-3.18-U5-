@@ -7,17 +7,23 @@
 #include <linux/init.h>
 #include <linux/fs.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/task_integrity.h>
+=======
+>>>>>>> v4.9.227
 
 #include <asm/pgtable.h>
 #include <asm/uaccess.h>
 
 static struct signal_struct init_signals = INIT_SIGNALS(init_signals);
 static struct sighand_struct init_sighand = INIT_SIGHAND(init_sighand);
+<<<<<<< HEAD
 #ifdef CONFIG_FIVE
 static struct task_integrity init_integrity =
 					INIT_TASK_INTEGRITY(init_integrity);
 #endif
+=======
+>>>>>>> v4.9.227
 
 /* Initial task structure */
 struct task_struct init_task = INIT_TASK(init_task);
@@ -27,5 +33,13 @@ EXPORT_SYMBOL(init_task);
  * Initial thread structure. Alignment of this is handled by a special
  * linker map entry.
  */
+<<<<<<< HEAD
 union thread_union init_thread_union __init_task_data =
 	{ INIT_THREAD_INFO(init_task) };
+=======
+union thread_union init_thread_union __init_task_data = {
+#ifndef CONFIG_THREAD_INFO_IN_TASK
+	INIT_THREAD_INFO(init_task)
+#endif
+};
+>>>>>>> v4.9.227

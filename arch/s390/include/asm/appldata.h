@@ -7,6 +7,7 @@
 #ifndef _ASM_S390_APPLDATA_H
 #define _ASM_S390_APPLDATA_H
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
 #ifndef CONFIG_64BIT
@@ -31,6 +32,11 @@ struct appldata_parameter_list {
 
 #else /* CONFIG_64BIT */
 
+=======
+#include <asm/diag.h>
+#include <asm/io.h>
+
+>>>>>>> v4.9.227
 #define APPLDATA_START_INTERVAL_REC	0x80
 #define APPLDATA_STOP_REC		0x81
 #define APPLDATA_GEN_EVENT_REC		0x82
@@ -51,8 +57,11 @@ struct appldata_parameter_list {
 	u64 buffer_addr;
 } __attribute__ ((packed));
 
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
 
+=======
+>>>>>>> v4.9.227
 struct appldata_product_id {
 	char prod_nr[7];	/* product number */
 	u16  prod_fn;		/* product function */
@@ -77,6 +86,10 @@ static inline int appldata_asm(struct appldata_product_id *id,
 	parm_list.buffer_length = length;
 	parm_list.product_id_addr = (unsigned long) id;
 	parm_list.buffer_addr = virt_to_phys(buffer);
+<<<<<<< HEAD
+=======
+	diag_stat_inc(DIAG_STAT_X0DC);
+>>>>>>> v4.9.227
 	asm volatile(
 		"	diag	%1,%0,0xdc"
 		: "=d" (ry)

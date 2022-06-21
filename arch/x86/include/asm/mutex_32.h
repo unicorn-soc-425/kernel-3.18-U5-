@@ -101,7 +101,11 @@ static inline int __mutex_fastpath_trylock(atomic_t *count,
 					   int (*fail_fn)(atomic_t *))
 {
 	/* cmpxchg because it never induces a false contention state. */
+<<<<<<< HEAD
 	if (likely(atomic_cmpxchg(count, 1, 0) == 1))
+=======
+	if (likely(atomic_read(count) == 1 && atomic_cmpxchg(count, 1, 0) == 1))
+>>>>>>> v4.9.227
 		return 1;
 
 	return 0;

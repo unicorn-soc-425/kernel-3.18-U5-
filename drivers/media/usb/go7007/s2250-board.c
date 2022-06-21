@@ -405,12 +405,29 @@ static int s2250_s_ctrl(struct v4l2_ctrl *ctrl)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s2250_s_mbus_fmt(struct v4l2_subdev *sd,
 			struct v4l2_mbus_framefmt *fmt)
 {
 	struct s2250 *state = to_state(sd);
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
+=======
+static int s2250_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *fmt = &format->format;
+	struct s2250 *state = to_state(sd);
+	struct i2c_client *client = v4l2_get_subdevdata(sd);
+
+	if (format->pad)
+		return -EINVAL;
+
+	if (format->which == V4L2_SUBDEV_FORMAT_TRY)
+		return 0;
+
+>>>>>>> v4.9.227
 	if (fmt->height < 640) {
 		write_reg_fp(client, 0x12b, state->reg12b_val | 0x400);
 		write_reg_fp(client, 0x140, 0x060);
@@ -479,13 +496,24 @@ static const struct v4l2_subdev_audio_ops s2250_audio_ops = {
 static const struct v4l2_subdev_video_ops s2250_video_ops = {
 	.s_std = s2250_s_std,
 	.s_routing = s2250_s_video_routing,
+<<<<<<< HEAD
 	.s_mbus_fmt = s2250_s_mbus_fmt,
+=======
+};
+
+static const struct v4l2_subdev_pad_ops s2250_pad_ops = {
+	.set_fmt = s2250_set_fmt,
+>>>>>>> v4.9.227
 };
 
 static const struct v4l2_subdev_ops s2250_ops = {
 	.core = &s2250_core_ops,
 	.audio = &s2250_audio_ops,
 	.video = &s2250_video_ops,
+<<<<<<< HEAD
+=======
+	.pad = &s2250_pad_ops,
+>>>>>>> v4.9.227
 };
 
 /* --------------------------------------------------------------------------*/
@@ -617,7 +645,10 @@ MODULE_DEVICE_TABLE(i2c, s2250_id);
 
 static struct i2c_driver s2250_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "s2250",
 	},
 	.probe		= s2250_probe,

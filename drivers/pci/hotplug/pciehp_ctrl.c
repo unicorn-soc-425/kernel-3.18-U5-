@@ -37,11 +37,16 @@
 
 static void interrupt_event_handler(struct work_struct *work);
 
+<<<<<<< HEAD
 static int queue_interrupt_event(struct slot *p_slot, u32 event_type)
+=======
+void pciehp_queue_interrupt_event(struct slot *p_slot, u32 event_type)
+>>>>>>> v4.9.227
 {
 	struct event_info *info;
 
 	info = kmalloc(sizeof(*info), GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!info)
 		return -ENOMEM;
 
@@ -169,6 +174,17 @@ void pciehp_handle_linkstate_change(struct slot *p_slot)
 	}
 
 	queue_interrupt_event(p_slot, event_type);
+=======
+	if (!info) {
+		ctrl_err(p_slot->ctrl, "dropped event %d (ENOMEM)\n", event_type);
+		return;
+	}
+
+	INIT_WORK(&info->work, interrupt_event_handler);
+	info->event_type = event_type;
+	info->p_slot = p_slot;
+	queue_work(p_slot->wq, &info->work);
+>>>>>>> v4.9.227
 }
 
 /* The following routines constitute the bulk of the
@@ -224,7 +240,11 @@ static int board_added(struct slot *p_slot)
 
 	/* Check for a power fault */
 	if (ctrl->power_fault_detected || pciehp_query_power_fault(p_slot)) {
+<<<<<<< HEAD
 		ctrl_err(ctrl, "Power fault on slot %s\n", slot_name(p_slot));
+=======
+		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(p_slot));
+>>>>>>> v4.9.227
 		retval = -EIO;
 		goto err_exit;
 	}
@@ -238,6 +258,10 @@ static int board_added(struct slot *p_slot)
 	}
 
 	pciehp_green_led_on(p_slot);
+<<<<<<< HEAD
+=======
+	pciehp_set_attention_status(p_slot, 0);
+>>>>>>> v4.9.227
 	return 0;
 
 err_exit:
@@ -298,10 +322,13 @@ static void pciehp_power_thread(struct work_struct *work)
 
 	switch (info->req) {
 	case DISABLE_REQ:
+<<<<<<< HEAD
 		ctrl_dbg(p_slot->ctrl,
 			 "Disabling domain:bus:device=%04x:%02x:00\n",
 			 pci_domain_nr(p_slot->ctrl->pcie->port->subordinate),
 			 p_slot->ctrl->pcie->port->subordinate->number);
+=======
+>>>>>>> v4.9.227
 		mutex_lock(&p_slot->hotplug_lock);
 		pciehp_disable_slot(p_slot);
 		mutex_unlock(&p_slot->hotplug_lock);
@@ -310,10 +337,13 @@ static void pciehp_power_thread(struct work_struct *work)
 		mutex_unlock(&p_slot->lock);
 		break;
 	case ENABLE_REQ:
+<<<<<<< HEAD
 		ctrl_dbg(p_slot->ctrl,
 			 "Enabling domain:bus:device=%04x:%02x:00\n",
 			 pci_domain_nr(p_slot->ctrl->pcie->port->subordinate),
 			 p_slot->ctrl->pcie->port->subordinate->number);
+=======
+>>>>>>> v4.9.227
 		mutex_lock(&p_slot->hotplug_lock);
 		ret = pciehp_enable_slot(p_slot);
 		mutex_unlock(&p_slot->hotplug_lock);
@@ -330,6 +360,7 @@ static void pciehp_power_thread(struct work_struct *work)
 	kfree(info);
 }
 
+<<<<<<< HEAD
 void pciehp_queue_pushbutton_work(struct work_struct *work)
 {
 	struct slot *p_slot = container_of(work, struct slot, work.work);
@@ -339,14 +370,37 @@ void pciehp_queue_pushbutton_work(struct work_struct *work)
 	if (!info) {
 		ctrl_err(p_slot->ctrl, "%s: Cannot allocate memory\n",
 			 __func__);
+=======
+static void pciehp_queue_power_work(struct slot *p_slot, int req)
+{
+	struct power_work_info *info;
+
+	p_slot->state = (req == ENABLE_REQ) ? POWERON_STATE : POWEROFF_STATE;
+
+	info = kmalloc(sizeof(*info), GFP_KERNEL);
+	if (!info) {
+		ctrl_err(p_slot->ctrl, "no memory to queue %s request\n",
+			 (req == ENABLE_REQ) ? "poweron" : "poweroff");
+>>>>>>> v4.9.227
 		return;
 	}
 	info->p_slot = p_slot;
 	INIT_WORK(&info->work, pciehp_power_thread);
+<<<<<<< HEAD
+=======
+	info->req = req;
+	queue_work(p_slot->wq, &info->work);
+}
+
+void pciehp_queue_pushbutton_work(struct work_struct *work)
+{
+	struct slot *p_slot = container_of(work, struct slot, work.work);
+>>>>>>> v4.9.227
 
 	mutex_lock(&p_slot->lock);
 	switch (p_slot->state) {
 	case BLINKINGOFF_STATE:
+<<<<<<< HEAD
 		p_slot->state = POWEROFF_STATE;
 		info->req = DISABLE_REQ;
 		break;
@@ -360,6 +414,16 @@ void pciehp_queue_pushbutton_work(struct work_struct *work)
 	}
 	queue_work(p_slot->wq, &info->work);
  out:
+=======
+		pciehp_queue_power_work(p_slot, DISABLE_REQ);
+		break;
+	case BLINKINGON_STATE:
+		pciehp_queue_power_work(p_slot, ENABLE_REQ);
+		break;
+	default:
+		break;
+	}
+>>>>>>> v4.9.227
 	mutex_unlock(&p_slot->lock);
 }
 
@@ -376,11 +440,19 @@ static void handle_button_press_event(struct slot *p_slot)
 		pciehp_get_power_status(p_slot, &getstatus);
 		if (getstatus) {
 			p_slot->state = BLINKINGOFF_STATE;
+<<<<<<< HEAD
 			ctrl_info(ctrl, "PCI slot #%s - powering off due to button press\n",
 				  slot_name(p_slot));
 		} else {
 			p_slot->state = BLINKINGON_STATE;
 			ctrl_info(ctrl, "PCI slot #%s - powering on due to button press\n",
+=======
+			ctrl_info(ctrl, "Slot(%s): Powering off due to button press\n",
+				  slot_name(p_slot));
+		} else {
+			p_slot->state = BLINKINGON_STATE;
+			ctrl_info(ctrl, "Slot(%s) Powering on due to button press\n",
+>>>>>>> v4.9.227
 				  slot_name(p_slot));
 		}
 		/* blink green LED and turn off amber */
@@ -395,14 +467,22 @@ static void handle_button_press_event(struct slot *p_slot)
 		 * press the attention again before the 5 sec. limit
 		 * expires to cancel hot-add or hot-remove
 		 */
+<<<<<<< HEAD
 		ctrl_info(ctrl, "Button cancel on Slot(%s)\n", slot_name(p_slot));
+=======
+		ctrl_info(ctrl, "Slot(%s): Button cancel\n", slot_name(p_slot));
+>>>>>>> v4.9.227
 		cancel_delayed_work(&p_slot->work);
 		if (p_slot->state == BLINKINGOFF_STATE)
 			pciehp_green_led_on(p_slot);
 		else
 			pciehp_green_led_off(p_slot);
 		pciehp_set_attention_status(p_slot, 0);
+<<<<<<< HEAD
 		ctrl_info(ctrl, "PCI slot #%s - action canceled due to button press\n",
+=======
+		ctrl_info(ctrl, "Slot(%s): Action canceled due to button press\n",
+>>>>>>> v4.9.227
 			  slot_name(p_slot));
 		p_slot->state = STATIC_STATE;
 		break;
@@ -413,10 +493,19 @@ static void handle_button_press_event(struct slot *p_slot)
 		 * this means that the previous attention button action
 		 * to hot-add or hot-remove is undergoing
 		 */
+<<<<<<< HEAD
 		ctrl_info(ctrl, "Button ignore on Slot(%s)\n", slot_name(p_slot));
 		break;
 	default:
 		ctrl_warn(ctrl, "Not a valid state\n");
+=======
+		ctrl_info(ctrl, "Slot(%s): Button ignored\n",
+			  slot_name(p_slot));
+		break;
+	default:
+		ctrl_err(ctrl, "Slot(%s): Ignoring invalid state %#x\n",
+			 slot_name(p_slot), p_slot->state);
+>>>>>>> v4.9.227
 		break;
 	}
 }
@@ -424,6 +513,7 @@ static void handle_button_press_event(struct slot *p_slot)
 /*
  * Note: This function must be called with slot->lock held
  */
+<<<<<<< HEAD
 static void handle_surprise_event(struct slot *p_slot)
 {
 	u8 getstatus;
@@ -467,6 +557,11 @@ static void handle_link_event(struct slot *p_slot, u32 event)
 	info->p_slot = p_slot;
 	info->req = event == INT_LINK_UP ? ENABLE_REQ : DISABLE_REQ;
 	INIT_WORK(&info->work, pciehp_power_thread);
+=======
+static void handle_link_event(struct slot *p_slot, u32 event)
+{
+	struct controller *ctrl = p_slot->ctrl;
+>>>>>>> v4.9.227
 
 	switch (p_slot->state) {
 	case BLINKINGON_STATE:
@@ -474,6 +569,7 @@ static void handle_link_event(struct slot *p_slot, u32 event)
 		cancel_delayed_work(&p_slot->work);
 		/* Fall through */
 	case STATIC_STATE:
+<<<<<<< HEAD
 		p_slot->state = event == INT_LINK_UP ?
 		    POWERON_STATE : POWEROFF_STATE;
 		queue_work(p_slot->wq, &info->work);
@@ -490,10 +586,24 @@ static void handle_link_event(struct slot *p_slot, u32 event)
 				  slot_name(p_slot));
 			p_slot->state = POWEROFF_STATE;
 			queue_work(p_slot->wq, &info->work);
+=======
+		pciehp_queue_power_work(p_slot, event == INT_LINK_UP ?
+					ENABLE_REQ : DISABLE_REQ);
+		break;
+	case POWERON_STATE:
+		if (event == INT_LINK_UP) {
+			ctrl_info(ctrl, "Slot(%s): Link Up event ignored; already powering on\n",
+				  slot_name(p_slot));
+		} else {
+			ctrl_info(ctrl, "Slot(%s): Link Down event queued; currently getting powered on\n",
+				  slot_name(p_slot));
+			pciehp_queue_power_work(p_slot, DISABLE_REQ);
+>>>>>>> v4.9.227
 		}
 		break;
 	case POWEROFF_STATE:
 		if (event == INT_LINK_UP) {
+<<<<<<< HEAD
 			ctrl_info(ctrl,
 				  "Link Up event queued on slot(%s): currently getting powered off\n",
 				  slot_name(p_slot));
@@ -510,6 +620,19 @@ static void handle_link_event(struct slot *p_slot, u32 event)
 		ctrl_err(ctrl, "Not a valid state on slot(%s)\n",
 			 slot_name(p_slot));
 		kfree(info);
+=======
+			ctrl_info(ctrl, "Slot(%s): Link Up event queued; currently getting powered off\n",
+				  slot_name(p_slot));
+			pciehp_queue_power_work(p_slot, ENABLE_REQ);
+		} else {
+			ctrl_info(ctrl, "Slot(%s): Link Down event ignored; already powering off\n",
+				  slot_name(p_slot));
+		}
+		break;
+	default:
+		ctrl_err(ctrl, "Slot(%s): Ignoring invalid state %#x\n",
+			 slot_name(p_slot), p_slot->state);
+>>>>>>> v4.9.227
 		break;
 	}
 }
@@ -532,18 +655,26 @@ static void interrupt_event_handler(struct work_struct *work)
 		pciehp_green_led_off(p_slot);
 		break;
 	case INT_PRESENCE_ON:
+<<<<<<< HEAD
 		if (!HP_SUPR_RM(ctrl))
 			break;
 		ctrl_dbg(ctrl, "Surprise Insertion\n");
 		handle_surprise_event(p_slot);
+=======
+		pciehp_queue_power_work(p_slot, ENABLE_REQ);
+>>>>>>> v4.9.227
 		break;
 	case INT_PRESENCE_OFF:
 		/*
 		 * Regardless of surprise capability, we need to
 		 * definitely remove a card that has been pulled out!
 		 */
+<<<<<<< HEAD
 		ctrl_dbg(ctrl, "Surprise Removal\n");
 		handle_surprise_event(p_slot);
+=======
+		pciehp_queue_power_work(p_slot, DISABLE_REQ);
+>>>>>>> v4.9.227
 		break;
 	case INT_LINK_UP:
 	case INT_LINK_DOWN:
@@ -563,18 +694,29 @@ static void interrupt_event_handler(struct work_struct *work)
 int pciehp_enable_slot(struct slot *p_slot)
 {
 	u8 getstatus = 0;
+<<<<<<< HEAD
 	int rc;
+=======
+>>>>>>> v4.9.227
 	struct controller *ctrl = p_slot->ctrl;
 
 	pciehp_get_adapter_status(p_slot, &getstatus);
 	if (!getstatus) {
+<<<<<<< HEAD
 		ctrl_info(ctrl, "No adapter on slot(%s)\n", slot_name(p_slot));
+=======
+		ctrl_info(ctrl, "Slot(%s): No adapter\n", slot_name(p_slot));
+>>>>>>> v4.9.227
 		return -ENODEV;
 	}
 	if (MRL_SENS(p_slot->ctrl)) {
 		pciehp_get_latch_status(p_slot, &getstatus);
 		if (getstatus) {
+<<<<<<< HEAD
 			ctrl_info(ctrl, "Latch open on slot(%s)\n",
+=======
+			ctrl_info(ctrl, "Slot(%s): Latch open\n",
+>>>>>>> v4.9.227
 				  slot_name(p_slot));
 			return -ENODEV;
 		}
@@ -583,12 +725,17 @@ int pciehp_enable_slot(struct slot *p_slot)
 	if (POWER_CTRL(p_slot->ctrl)) {
 		pciehp_get_power_status(p_slot, &getstatus);
 		if (getstatus) {
+<<<<<<< HEAD
 			ctrl_info(ctrl, "Already enabled on slot(%s)\n",
+=======
+			ctrl_info(ctrl, "Slot(%s): Already enabled\n",
+>>>>>>> v4.9.227
 				  slot_name(p_slot));
 			return -EINVAL;
 		}
 	}
 
+<<<<<<< HEAD
 	pciehp_get_latch_status(p_slot, &getstatus);
 
 	rc = board_added(p_slot);
@@ -596,6 +743,9 @@ int pciehp_enable_slot(struct slot *p_slot)
 		pciehp_get_latch_status(p_slot, &getstatus);
 
 	return rc;
+=======
+	return board_added(p_slot);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -612,7 +762,11 @@ int pciehp_disable_slot(struct slot *p_slot)
 	if (POWER_CTRL(p_slot->ctrl)) {
 		pciehp_get_power_status(p_slot, &getstatus);
 		if (!getstatus) {
+<<<<<<< HEAD
 			ctrl_info(ctrl, "Already disabled on slot(%s)\n",
+=======
+			ctrl_info(ctrl, "Slot(%s): Already disabled\n",
+>>>>>>> v4.9.227
 				  slot_name(p_slot));
 			return -EINVAL;
 		}
@@ -640,17 +794,30 @@ int pciehp_sysfs_enable_slot(struct slot *p_slot)
 		p_slot->state = STATIC_STATE;
 		break;
 	case POWERON_STATE:
+<<<<<<< HEAD
 		ctrl_info(ctrl, "Slot %s is already in powering on state\n",
+=======
+		ctrl_info(ctrl, "Slot(%s): Already in powering on state\n",
+>>>>>>> v4.9.227
 			  slot_name(p_slot));
 		break;
 	case BLINKINGOFF_STATE:
 	case POWEROFF_STATE:
+<<<<<<< HEAD
 		ctrl_info(ctrl, "Already enabled on slot %s\n",
 			  slot_name(p_slot));
 		break;
 	default:
 		ctrl_err(ctrl, "Not a valid state on slot %s\n",
 			 slot_name(p_slot));
+=======
+		ctrl_info(ctrl, "Slot(%s): Already enabled\n",
+			  slot_name(p_slot));
+		break;
+	default:
+		ctrl_err(ctrl, "Slot(%s): Invalid state %#x\n",
+			 slot_name(p_slot), p_slot->state);
+>>>>>>> v4.9.227
 		break;
 	}
 	mutex_unlock(&p_slot->lock);
@@ -670,22 +837,41 @@ int pciehp_sysfs_disable_slot(struct slot *p_slot)
 	case STATIC_STATE:
 		p_slot->state = POWEROFF_STATE;
 		mutex_unlock(&p_slot->lock);
+<<<<<<< HEAD
 		retval = pciehp_disable_slot(p_slot);
+=======
+		mutex_lock(&p_slot->hotplug_lock);
+		retval = pciehp_disable_slot(p_slot);
+		mutex_unlock(&p_slot->hotplug_lock);
+>>>>>>> v4.9.227
 		mutex_lock(&p_slot->lock);
 		p_slot->state = STATIC_STATE;
 		break;
 	case POWEROFF_STATE:
+<<<<<<< HEAD
 		ctrl_info(ctrl, "Slot %s is already in powering off state\n",
+=======
+		ctrl_info(ctrl, "Slot(%s): Already in powering off state\n",
+>>>>>>> v4.9.227
 			  slot_name(p_slot));
 		break;
 	case BLINKINGON_STATE:
 	case POWERON_STATE:
+<<<<<<< HEAD
 		ctrl_info(ctrl, "Already disabled on slot %s\n",
 			  slot_name(p_slot));
 		break;
 	default:
 		ctrl_err(ctrl, "Not a valid state on slot %s\n",
 			 slot_name(p_slot));
+=======
+		ctrl_info(ctrl, "Slot(%s): Already disabled\n",
+			  slot_name(p_slot));
+		break;
+	default:
+		ctrl_err(ctrl, "Slot(%s): Invalid state %#x\n",
+			 slot_name(p_slot), p_slot->state);
+>>>>>>> v4.9.227
 		break;
 	}
 	mutex_unlock(&p_slot->lock);

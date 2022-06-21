@@ -79,7 +79,14 @@ struct pid_namespace init_pid_ns = {
 	.level = 0,
 	.child_reaper = &init_task,
 	.user_ns = &init_user_ns,
+<<<<<<< HEAD
 	.proc_inum = PROC_PID_INIT_INO,
+=======
+	.ns.inum = PROC_PID_INIT_INO,
+#ifdef CONFIG_PID_NS
+	.ns.ops = &pidns_operations,
+#endif
+>>>>>>> v4.9.227
 };
 EXPORT_SYMBOL_GPL(init_pid_ns);
 
@@ -179,7 +186,11 @@ static int alloc_pidmap(struct pid_namespace *pid_ns)
 			spin_unlock_irq(&pidmap_lock);
 			kfree(page);
 			if (unlikely(!map->page))
+<<<<<<< HEAD
 				break;
+=======
+				return -ENOMEM;
+>>>>>>> v4.9.227
 		}
 		if (likely(atomic_read(&map->nr_free))) {
 			for ( ; ; ) {
@@ -207,7 +218,11 @@ static int alloc_pidmap(struct pid_namespace *pid_ns)
 		}
 		pid = mk_pid(pid_ns, map, offset);
 	}
+<<<<<<< HEAD
 	return -1;
+=======
+	return -EAGAIN;
+>>>>>>> v4.9.227
 }
 
 int next_pidmap(struct pid_namespace *pid_ns, unsigned int last)
@@ -298,17 +313,32 @@ struct pid *alloc_pid(struct pid_namespace *ns)
 	int i, nr;
 	struct pid_namespace *tmp;
 	struct upid *upid;
+<<<<<<< HEAD
 
 	pid = kmem_cache_alloc(ns->pid_cachep, GFP_KERNEL);
 	if (!pid)
 		goto out;
+=======
+	int retval = -ENOMEM;
+
+	pid = kmem_cache_alloc(ns->pid_cachep, GFP_KERNEL);
+	if (!pid)
+		return ERR_PTR(retval);
+>>>>>>> v4.9.227
 
 	tmp = ns;
 	pid->level = ns->level;
 	for (i = ns->level; i >= 0; i--) {
 		nr = alloc_pidmap(tmp);
+<<<<<<< HEAD
 		if (nr < 0)
 			goto out_free;
+=======
+		if (nr < 0) {
+			retval = nr;
+			goto out_free;
+		}
+>>>>>>> v4.9.227
 
 		pid->numbers[i].nr = nr;
 		pid->numbers[i].ns = tmp;
@@ -338,7 +368,10 @@ struct pid *alloc_pid(struct pid_namespace *ns)
 	}
 	spin_unlock_irq(&pidmap_lock);
 
+<<<<<<< HEAD
 out:
+=======
+>>>>>>> v4.9.227
 	return pid;
 
 out_unlock:
@@ -350,8 +383,12 @@ out_free:
 		free_pidmap(pid->numbers + i);
 
 	kmem_cache_free(ns->pid_cachep, pid);
+<<<<<<< HEAD
 	pid = NULL;
 	goto out;
+=======
+	return ERR_PTR(retval);
+>>>>>>> v4.9.227
 }
 
 void disable_pid_allocation(struct pid_namespace *ns)
@@ -449,9 +486,14 @@ EXPORT_SYMBOL(pid_task);
  */
 struct task_struct *find_task_by_pid_ns(pid_t nr, struct pid_namespace *ns)
 {
+<<<<<<< HEAD
 	rcu_lockdep_assert(rcu_read_lock_held(),
 			   "find_task_by_pid_ns() needs rcu_read_lock()"
 			   " protection");
+=======
+	RCU_LOCKDEP_WARN(!rcu_read_lock_held(),
+			 "find_task_by_pid_ns() needs rcu_read_lock() protection");
+>>>>>>> v4.9.227
 	return pid_task(find_pid_ns(nr, ns), PIDTYPE_PID);
 }
 
@@ -466,7 +508,11 @@ struct pid *get_task_pid(struct task_struct *task, enum pid_type type)
 	rcu_read_lock();
 	if (type != PIDTYPE_PID)
 		task = task->group_leader;
+<<<<<<< HEAD
 	pid = get_pid(task->pids[type].pid);
+=======
+	pid = get_pid(rcu_dereference(task->pids[type].pid));
+>>>>>>> v4.9.227
 	rcu_read_unlock();
 	return pid;
 }
@@ -530,7 +576,11 @@ pid_t __task_pid_nr_ns(struct task_struct *task, enum pid_type type,
 				type = PIDTYPE_PID;
 			task = task->group_leader;
 		}
+<<<<<<< HEAD
 		nr = pid_nr_ns(task->pids[type].pid, ns);
+=======
+		nr = pid_nr_ns(rcu_dereference(task->pids[type].pid), ns);
+>>>>>>> v4.9.227
 	}
 	rcu_read_unlock();
 
@@ -572,12 +622,18 @@ void __init pidhash_init(void)
 {
 	unsigned int i, pidhash_size;
 
+<<<<<<< HEAD
 	set_memsize_kernel_type(MEMSIZE_KERNEL_PIDHASH);
+=======
+>>>>>>> v4.9.227
 	pid_hash = alloc_large_system_hash("PID", sizeof(*pid_hash), 0, 18,
 					   HASH_EARLY | HASH_SMALL,
 					   &pidhash_shift, NULL,
 					   0, 4096);
+<<<<<<< HEAD
 	set_memsize_kernel_type(MEMSIZE_KERNEL_OTHERS);
+=======
+>>>>>>> v4.9.227
 	pidhash_size = 1U << pidhash_shift;
 
 	for (i = 0; i < pidhash_size; i++)
@@ -586,7 +642,11 @@ void __init pidhash_init(void)
 
 void __init pidmap_init(void)
 {
+<<<<<<< HEAD
 	/* Veryify no one has done anything silly */
+=======
+	/* Verify no one has done anything silly: */
+>>>>>>> v4.9.227
 	BUILD_BUG_ON(PID_MAX_LIMIT >= PIDNS_HASH_ADDING);
 
 	/* bump default and minimum pid_max based on number of cpus */
@@ -602,5 +662,9 @@ void __init pidmap_init(void)
 	atomic_dec(&init_pid_ns.pidmap[0].nr_free);
 
 	init_pid_ns.pid_cachep = KMEM_CACHE(pid,
+<<<<<<< HEAD
 			SLAB_HWCACHE_ALIGN | SLAB_PANIC);
+=======
+			SLAB_HWCACHE_ALIGN | SLAB_PANIC | SLAB_ACCOUNT);
+>>>>>>> v4.9.227
 }

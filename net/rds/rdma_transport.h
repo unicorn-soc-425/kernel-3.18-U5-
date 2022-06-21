@@ -16,9 +16,12 @@ extern struct rds_transport rds_ib_transport;
 int rds_ib_init(void);
 void rds_ib_exit(void);
 
+<<<<<<< HEAD
 /* from iw.c */
 extern struct rds_transport rds_iw_transport;
 int rds_iw_init(void);
 void rds_iw_exit(void);
 
+=======
+>>>>>>> v4.9.227
 #endif

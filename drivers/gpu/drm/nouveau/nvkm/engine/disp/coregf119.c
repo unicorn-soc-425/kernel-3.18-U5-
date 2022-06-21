@@ -171,7 +171,11 @@ gf119_disp_core_chan_mthd = {
 	}
 };
 
+<<<<<<< HEAD
 static void
+=======
+void
+>>>>>>> v4.9.227
 gf119_disp_core_fini(struct nv50_disp_dmac *chan)
 {
 	struct nv50_disp *disp = chan->base.root->disp;

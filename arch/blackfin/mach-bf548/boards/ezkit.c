@@ -20,9 +20,15 @@
 #include <linux/pinctrl/machine.h>
 #include <linux/pinctrl/pinconf-generic.h>
 #include <linux/platform_data/pinctrl-adi2.h>
+<<<<<<< HEAD
 #include <asm/bfin5xx_spi.h>
 #include <asm/dma.h>
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+#include <asm/bfin5xx_spi.h>
+#include <asm/dma.h>
+>>>>>>> v4.9.227
 #include <asm/nand.h>
 #include <asm/dpmc.h>
 #include <asm/bfin_sport.h>
@@ -159,7 +165,11 @@ static struct platform_device bf54x_kpad_device = {
 #endif
 
 #if IS_ENABLED(CONFIG_INPUT_BFIN_ROTARY)
+<<<<<<< HEAD
 #include <asm/bfin_rotary.h>
+=======
+#include <linux/platform_data/bfin_rotary.h>
+>>>>>>> v4.9.227
 
 static struct bfin_rotary_platform_data bfin_rotary_data = {
 	/*.rotary_up_key     = KEY_UP,*/
@@ -173,6 +183,14 @@ static struct bfin_rotary_platform_data bfin_rotary_data = {
 
 static struct resource bfin_rotary_resources[] = {
 	{
+<<<<<<< HEAD
+=======
+		.start = CNT_CONFIG,
+		.end   = CNT_CONFIG + 0xff,
+		.flags = IORESOURCE_MEM,
+	},
+	{
+>>>>>>> v4.9.227
 		.start = IRQ_CNT,
 		.end = IRQ_CNT,
 		.flags = IORESOURCE_IRQ,

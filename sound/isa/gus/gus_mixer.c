@@ -109,7 +109,11 @@ static int snd_ics_put_double(struct snd_kcontrol *kcontrol, struct snd_ctl_elem
 	unsigned long flags;
 	int addr = kcontrol->private_value & 0xff;
 	int change;
+<<<<<<< HEAD
 	unsigned char val1, val2, oval1, oval2, tmp;
+=======
+	unsigned char val1, val2, oval1, oval2;
+>>>>>>> v4.9.227
 	
 	val1 = ucontrol->value.integer.value[0] & 127;
 	val2 = ucontrol->value.integer.value[1] & 127;
@@ -120,11 +124,16 @@ static int snd_ics_put_double(struct snd_kcontrol *kcontrol, struct snd_ctl_elem
 	gus->gf1.ics_regs[addr][0] = val1;
 	gus->gf1.ics_regs[addr][1] = val2;
 	if (gus->ics_flag && gus->ics_flipped &&
+<<<<<<< HEAD
 	    (addr == SNDRV_ICS_GF1_DEV || addr == SNDRV_ICS_MASTER_DEV)) {
 		tmp = val1;
 		val1 = val2;
 		val2 = tmp;
 	}
+=======
+	    (addr == SNDRV_ICS_GF1_DEV || addr == SNDRV_ICS_MASTER_DEV))
+		swap(val1, val2);
+>>>>>>> v4.9.227
 	addr <<= 3;
 	outb(addr | 0, GUSP(gus, MIXCNTRLPORT));
 	outb(1, GUSP(gus, MIXDATAPORT));

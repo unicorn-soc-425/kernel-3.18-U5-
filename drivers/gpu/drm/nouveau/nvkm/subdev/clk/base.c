@@ -176,6 +176,10 @@ nvkm_pstate_prog(struct nvkm_clk *clk, int pstatei)
 {
 	struct nvkm_subdev *subdev = &clk->subdev;
 	struct nvkm_ram *ram = subdev->device->fb->ram;
+<<<<<<< HEAD
+=======
+	struct nvkm_pci *pci = subdev->device->pci;
+>>>>>>> v4.9.227
 	struct nvkm_pstate *pstate;
 	int ret, idx = 0;
 
@@ -187,6 +191,11 @@ nvkm_pstate_prog(struct nvkm_clk *clk, int pstatei)
 	nvkm_debug(subdev, "setting performance state %d\n", pstatei);
 	clk->pstate = pstatei;
 
+<<<<<<< HEAD
+=======
+	nvkm_pcie_set_link(pci, pstate->pcie_speed, pstate->pcie_width);
+
+>>>>>>> v4.9.227
 	if (ram && ram->func->calc) {
 		int khz = pstate->base.domain[nv_clk_src_mem];
 		do {
@@ -330,6 +339,11 @@ nvkm_pstate_new(struct nvkm_clk *clk, int idx)
 
 	pstate->pstate = perfE.pstate;
 	pstate->fanspeed = perfE.fanspeed;
+<<<<<<< HEAD
+=======
+	pstate->pcie_speed = perfE.pcie_speed;
+	pstate->pcie_width = perfE.pcie_width;
+>>>>>>> v4.9.227
 	cstate->voltage = perfE.voltage;
 	cstate->domain[nv_clk_src_core] = perfE.core;
 	cstate->domain[nv_clk_src_shader] = perfE.shader;
@@ -559,7 +573,11 @@ nvkm_clk_ctor(const struct nvkm_clk_func *func, struct nvkm_device *device,
 	int ret, idx, arglen;
 	const char *mode;
 
+<<<<<<< HEAD
 	nvkm_subdev_ctor(&nvkm_clk, device, index, 0, &clk->subdev);
+=======
+	nvkm_subdev_ctor(&nvkm_clk, device, index, &clk->subdev);
+>>>>>>> v4.9.227
 	clk->func = func;
 	INIT_LIST_HEAD(&clk->states);
 	clk->domains = func->domains;

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Silicon Labs Si2147/2157/2158 silicon tuner driver
+=======
+ * Silicon Labs Si2146/2147/2148/2157/2158 silicon tuner driver
+>>>>>>> v4.9.227
  *
  * Copyright (C) 2014 Antti Palosaari <crope@iki.fi>
  *
@@ -17,7 +21,11 @@
 #ifndef SI2157_H
 #define SI2157_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+#include <media/media-device.h>
+>>>>>>> v4.9.227
 #include "dvb_frontend.h"
 
 /*
@@ -30,10 +38,26 @@ struct si2157_config {
 	 */
 	struct dvb_frontend *fe;
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_MEDIA_CONTROLLER)
+	struct media_device *mdev;
+#endif
+
+>>>>>>> v4.9.227
 	/*
 	 * Spectral Inversion
 	 */
 	bool inversion;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Port selection
+	 * Select the RF interface to use (pins 9+11 or 12+13)
+	 */
+	u8 if_port;
+>>>>>>> v4.9.227
 };
 
 #endif

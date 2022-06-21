@@ -63,6 +63,10 @@ static int patch_ca0110(struct hda_codec *codec)
 		return -ENOMEM;
 	snd_hda_gen_spec_init(spec);
 	codec->spec = spec;
+<<<<<<< HEAD
+=======
+	codec->patch_ops = ca0110_patch_ops;
+>>>>>>> v4.9.227
 
 	spec->multi_cap_vol = 1;
 	codec->bus->needs_damn_long_delay = 1;
@@ -71,8 +75,11 @@ static int patch_ca0110(struct hda_codec *codec)
 	if (err < 0)
 		goto error;
 
+<<<<<<< HEAD
 	codec->patch_ops = ca0110_patch_ops;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 
  error:
@@ -84,6 +91,7 @@ static int patch_ca0110(struct hda_codec *codec)
 /*
  * patch entries
  */
+<<<<<<< HEAD
 static const struct hda_codec_preset snd_hda_preset_ca0110[] = {
 	{ .id = 0x1102000a, .name = "CA0110-IBG", .patch = patch_ca0110 },
 	{ .id = 0x1102000b, .name = "CA0110-IBG", .patch = patch_ca0110 },
@@ -94,10 +102,20 @@ static const struct hda_codec_preset snd_hda_preset_ca0110[] = {
 MODULE_ALIAS("snd-hda-codec-id:1102000a");
 MODULE_ALIAS("snd-hda-codec-id:1102000b");
 MODULE_ALIAS("snd-hda-codec-id:1102000d");
+=======
+static const struct hda_device_id snd_hda_id_ca0110[] = {
+	HDA_CODEC_ENTRY(0x1102000a, "CA0110-IBG", patch_ca0110),
+	HDA_CODEC_ENTRY(0x1102000b, "CA0110-IBG", patch_ca0110),
+	HDA_CODEC_ENTRY(0x1102000d, "SB0880 X-Fi", patch_ca0110),
+	{} /* terminator */
+};
+MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_ca0110);
+>>>>>>> v4.9.227
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Creative CA0110-IBG HD-audio codec");
 
+<<<<<<< HEAD
 static struct hda_codec_preset_list ca0110_list = {
 	.preset = snd_hda_preset_ca0110,
 	.owner = THIS_MODULE,
@@ -115,3 +133,10 @@ static void __exit patch_ca0110_exit(void)
 
 module_init(patch_ca0110_init)
 module_exit(patch_ca0110_exit)
+=======
+static struct hda_codec_driver ca0110_driver = {
+	.id = snd_hda_id_ca0110,
+};
+
+module_hda_codec_driver(ca0110_driver);
+>>>>>>> v4.9.227

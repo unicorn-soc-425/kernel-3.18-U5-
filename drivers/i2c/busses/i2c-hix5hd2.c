@@ -478,10 +478,15 @@ static int hix5hd2_i2c_probe(struct platform_device *pdev)
 	pm_runtime_enable(priv->dev);
 
 	ret = i2c_add_adapter(&priv->adap);
+<<<<<<< HEAD
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to add bus to i2c core\n");
 		goto err_runtime;
 	}
+=======
+	if (ret < 0)
+		goto err_runtime;
+>>>>>>> v4.9.227
 
 	return ret;
 
@@ -500,6 +505,10 @@ static int hix5hd2_i2c_remove(struct platform_device *pdev)
 	i2c_del_adapter(&priv->adap);
 	pm_runtime_disable(priv->dev);
 	pm_runtime_set_suspended(priv->dev);
+<<<<<<< HEAD
+=======
+	clk_disable_unprepare(priv->clk);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -528,7 +537,11 @@ static int hix5hd2_i2c_runtime_resume(struct device *dev)
 #endif
 
 static const struct dev_pm_ops hix5hd2_i2c_pm_ops = {
+<<<<<<< HEAD
 	SET_PM_RUNTIME_PM_OPS(hix5hd2_i2c_runtime_suspend,
+=======
+	SET_RUNTIME_PM_OPS(hix5hd2_i2c_runtime_suspend,
+>>>>>>> v4.9.227
 			      hix5hd2_i2c_runtime_resume,
 			      NULL)
 };
@@ -554,4 +567,8 @@ module_platform_driver(hix5hd2_i2c_driver);
 MODULE_DESCRIPTION("Hix5hd2 I2C Bus driver");
 MODULE_AUTHOR("Wei Yan <sledge.yanwei@huawei.com>");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS("platform:i2c-hix5hd2");
+=======
+MODULE_ALIAS("platform:hix5hd2-i2c");
+>>>>>>> v4.9.227

@@ -40,8 +40,13 @@
 #include <linux/platform_data/mtd-davinci.h>
 #include <linux/platform_data/keyscan-davinci.h>
 
+<<<<<<< HEAD
 #include <media/ths7303.h>
 #include <media/tvp514x.h>
+=======
+#include <media/i2c/ths7303.h>
+#include <media/i2c/tvp514x.h>
+>>>>>>> v4.9.227
 
 #include "davinci.h"
 
@@ -176,10 +181,13 @@ static struct at24_platform_data eeprom_info = {
 	.context	= (void *)0x7f00,
 };
 
+<<<<<<< HEAD
 static struct snd_platform_data dm365_evm_snd_data __maybe_unused = {
 	.asp_chan_q = EVENTQ_3,
 };
 
+=======
+>>>>>>> v4.9.227
 static struct i2c_board_info i2c_info[] = {
 	{
 		I2C_BOARD_INFO("24c256", 0x50),
@@ -485,7 +493,11 @@ static struct vpbe_output dm365evm_vpbe_outputs[] = {
 		.default_mode	= "ntsc",
 		.num_modes	= ARRAY_SIZE(dm365evm_enc_std_timing),
 		.modes		= dm365evm_enc_std_timing,
+<<<<<<< HEAD
 		.if_params	= V4L2_MBUS_FMT_FIXED,
+=======
+		.if_params	= MEDIA_BUS_FMT_FIXED,
+>>>>>>> v4.9.227
 	},
 	{
 		.output		= {
@@ -498,7 +510,11 @@ static struct vpbe_output dm365evm_vpbe_outputs[] = {
 		.default_mode	= "480p59_94",
 		.num_modes	= ARRAY_SIZE(dm365evm_enc_preset_timing),
 		.modes		= dm365evm_enc_preset_timing,
+<<<<<<< HEAD
 		.if_params	= V4L2_MBUS_FMT_FIXED,
+=======
+		.if_params	= MEDIA_BUS_FMT_FIXED,
+>>>>>>> v4.9.227
 	},
 };
 
@@ -763,9 +779,15 @@ static __init void dm365_evm_init(void)
 	evm_init_cpld();
 
 #ifdef CONFIG_SND_DM365_AIC3X_CODEC
+<<<<<<< HEAD
 	dm365_init_asp(&dm365_evm_snd_data);
 #elif defined(CONFIG_SND_DM365_VOICE_CODEC)
 	dm365_init_vc(&dm365_evm_snd_data);
+=======
+	dm365_init_asp();
+#elif defined(CONFIG_SND_DM365_VOICE_CODEC)
+	dm365_init_vc();
+>>>>>>> v4.9.227
 #endif
 	dm365_init_rtc();
 	dm365_init_ks(&dm365evm_ks_data);

@@ -1,9 +1,40 @@
 /*
  * Copyright (C) 2013 Oskar Andero <oskar.andero@gmail.com>
+<<<<<<< HEAD
  *
  * Driver for Microchip Technology's MCP3204 and MCP3208 ADC chips.
  * Datasheet can be found here:
  * http://ww1.microchip.com/downloads/en/devicedoc/21298c.pdf
+=======
+ * Copyright (C) 2014 Rose Technology
+ * 	   Allan Bendorff Jensen <abj@rosetechnology.dk>
+ *	   Soren Andersen <san@rosetechnology.dk>
+ *
+ * Driver for following ADC chips from Microchip Technology's:
+ * 10 Bit converter
+ * MCP3001
+ * MCP3002
+ * MCP3004
+ * MCP3008
+ * ------------
+ * 12 bit converter
+ * MCP3201
+ * MCP3202
+ * MCP3204
+ * MCP3208
+ * ------------
+ * 13 bit converter
+ * MCP3301
+ *
+ * Datasheet can be found here:
+ * http://ww1.microchip.com/downloads/en/DeviceDoc/21293C.pdf  mcp3001
+ * http://ww1.microchip.com/downloads/en/DeviceDoc/21294E.pdf  mcp3002
+ * http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf  mcp3004/08
+ * http://ww1.microchip.com/downloads/en/DeviceDoc/21290D.pdf  mcp3201
+ * http://ww1.microchip.com/downloads/en/DeviceDoc/21034D.pdf  mcp3202
+ * http://ww1.microchip.com/downloads/en/DeviceDoc/21298c.pdf  mcp3204/08
+ * http://ww1.microchip.com/downloads/en/DeviceDoc/21700E.pdf  mcp3301
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -11,17 +42,40 @@
  */
 
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> v4.9.227
 #include <linux/spi/spi.h>
 #include <linux/module.h>
 #include <linux/iio/iio.h>
 #include <linux/regulator/consumer.h>
 
+<<<<<<< HEAD
 #define MCP_SINGLE_ENDED	(1 << 3)
 #define MCP_START_BIT		(1 << 4)
 
 enum {
 	mcp3204,
 	mcp3208,
+=======
+enum {
+	mcp3001,
+	mcp3002,
+	mcp3004,
+	mcp3008,
+	mcp3201,
+	mcp3202,
+	mcp3204,
+	mcp3208,
+	mcp3301,
+};
+
+struct mcp320x_chip_info {
+	const struct iio_chan_spec *channels;
+	unsigned int num_channels;
+	unsigned int resolution;
+>>>>>>> v4.9.227
 };
 
 struct mcp320x {
@@ -29,6 +83,7 @@ struct mcp320x {
 	struct spi_message msg;
 	struct spi_transfer transfer[2];
 
+<<<<<<< HEAD
 	u8 tx_buf;
 	u8 rx_buf[2];
 
@@ -47,6 +102,85 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 msg)
 
 	return ((adc->rx_buf[0] & 0x3f) << 6)  |
 		(adc->rx_buf[1] >> 2);
+=======
+	struct regulator *reg;
+	struct mutex lock;
+	const struct mcp320x_chip_info *chip_info;
+
+	u8 tx_buf ____cacheline_aligned;
+	u8 rx_buf[2];
+};
+
+static int mcp320x_channel_to_tx_data(int device_index,
+			const unsigned int channel, bool differential)
+{
+	int start_bit = 1;
+
+	switch (device_index) {
+	case mcp3001:
+	case mcp3201:
+	case mcp3301:
+		return 0;
+	case mcp3002:
+	case mcp3202:
+		return ((start_bit << 4) | (!differential << 3) |
+							(channel << 2));
+	case mcp3004:
+	case mcp3204:
+	case mcp3008:
+	case mcp3208:
+		return ((start_bit << 6) | (!differential << 5) |
+							(channel << 2));
+	default:
+		return -EINVAL;
+	}
+}
+
+static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+				  bool differential, int device_index, int *val)
+{
+	int ret;
+
+	adc->rx_buf[0] = 0;
+	adc->rx_buf[1] = 0;
+	adc->tx_buf = mcp320x_channel_to_tx_data(device_index,
+						channel, differential);
+
+	if (device_index != mcp3001 && device_index != mcp3201 && device_index != mcp3301) {
+		ret = spi_sync(adc->spi, &adc->msg);
+		if (ret < 0)
+			return ret;
+	} else {
+		ret = spi_read(adc->spi, &adc->rx_buf, sizeof(adc->rx_buf));
+		if (ret < 0)
+			return ret;
+	}
+
+	switch (device_index) {
+	case mcp3001:
+		*val = (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
+		return 0;
+	case mcp3002:
+	case mcp3004:
+	case mcp3008:
+		*val = (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
+		return 0;
+	case mcp3201:
+		*val = (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
+		return 0;
+	case mcp3202:
+	case mcp3204:
+	case mcp3208:
+		*val = (adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4);
+		return 0;
+	case mcp3301:
+		*val = sign_extend32((adc->rx_buf[0] & 0x1f) << 8
+				    | adc->rx_buf[1], 12);
+		return 0;
+	default:
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 }
 
 static int mcp320x_read_raw(struct iio_dev *indio_dev,
@@ -55,6 +189,7 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
 {
 	struct mcp320x *adc = iio_priv(indio_dev);
 	int ret = -EINVAL;
+<<<<<<< HEAD
 
 	mutex_lock(&adc->lock);
 
@@ -71,15 +206,34 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
 			goto out;
 
 		*val = ret;
+=======
+	int device_index = 0;
+
+	mutex_lock(&adc->lock);
+
+	device_index = spi_get_device_id(adc->spi)->driver_data;
+
+	switch (mask) {
+	case IIO_CHAN_INFO_RAW:
+		ret = mcp320x_adc_conversion(adc, channel->address,
+			channel->differential, device_index, val);
+		if (ret < 0)
+			goto out;
+
+>>>>>>> v4.9.227
 		ret = IIO_VAL_INT;
 		break;
 
 	case IIO_CHAN_INFO_SCALE:
+<<<<<<< HEAD
 		/* Digital output code = (4096 * Vin) / Vref */
+=======
+>>>>>>> v4.9.227
 		ret = regulator_get_voltage(adc->reg);
 		if (ret < 0)
 			goto out;
 
+<<<<<<< HEAD
 		*val = ret / 1000;
 		*val2 = 12;
 		ret = IIO_VAL_FRACTIONAL_LOG2;
@@ -87,6 +241,13 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
 
 	default:
 		break;
+=======
+		/* convert regulator output voltage to mV */
+		*val = ret / 1000;
+		*val2 = adc->chip_info->resolution;
+		ret = IIO_VAL_FRACTIONAL_LOG2;
+		break;
+>>>>>>> v4.9.227
 	}
 
 out:
@@ -105,6 +266,7 @@ out:
 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
 	}
 
+<<<<<<< HEAD
 #define MCP320X_VOLTAGE_CHANNEL_DIFF(num)			\
 	{							\
 		.type = IIO_VOLTAGE,				\
@@ -112,18 +274,48 @@ out:
 		.channel = (num * 2),				\
 		.channel2 = (num * 2 + 1),			\
 		.address = (num * 2),				\
+=======
+#define MCP320X_VOLTAGE_CHANNEL_DIFF(chan1, chan2)		\
+	{							\
+		.type = IIO_VOLTAGE,				\
+		.indexed = 1,					\
+		.channel = (chan1),				\
+		.channel2 = (chan2),				\
+		.address = (chan1),				\
+>>>>>>> v4.9.227
 		.differential = 1,				\
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
 	}
 
+<<<<<<< HEAD
+=======
+static const struct iio_chan_spec mcp3201_channels[] = {
+	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
+};
+
+static const struct iio_chan_spec mcp3202_channels[] = {
+	MCP320X_VOLTAGE_CHANNEL(0),
+	MCP320X_VOLTAGE_CHANNEL(1),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0),
+};
+
+>>>>>>> v4.9.227
 static const struct iio_chan_spec mcp3204_channels[] = {
 	MCP320X_VOLTAGE_CHANNEL(0),
 	MCP320X_VOLTAGE_CHANNEL(1),
 	MCP320X_VOLTAGE_CHANNEL(2),
 	MCP320X_VOLTAGE_CHANNEL(3),
+<<<<<<< HEAD
 	MCP320X_VOLTAGE_CHANNEL_DIFF(0),
 	MCP320X_VOLTAGE_CHANNEL_DIFF(1),
+=======
+	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(2, 3),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(3, 2),
+>>>>>>> v4.9.227
 };
 
 static const struct iio_chan_spec mcp3208_channels[] = {
@@ -135,10 +327,21 @@ static const struct iio_chan_spec mcp3208_channels[] = {
 	MCP320X_VOLTAGE_CHANNEL(5),
 	MCP320X_VOLTAGE_CHANNEL(6),
 	MCP320X_VOLTAGE_CHANNEL(7),
+<<<<<<< HEAD
 	MCP320X_VOLTAGE_CHANNEL_DIFF(0),
 	MCP320X_VOLTAGE_CHANNEL_DIFF(1),
 	MCP320X_VOLTAGE_CHANNEL_DIFF(2),
 	MCP320X_VOLTAGE_CHANNEL_DIFF(3),
+=======
+	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(2, 3),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(3, 2),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(4, 5),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(5, 4),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(6, 7),
+	MCP320X_VOLTAGE_CHANNEL_DIFF(7, 6),
+>>>>>>> v4.9.227
 };
 
 static const struct iio_info mcp320x_info = {
@@ -146,6 +349,7 @@ static const struct iio_info mcp320x_info = {
 	.driver_module = THIS_MODULE,
 };
 
+<<<<<<< HEAD
 struct mcp3208_chip_info {
 	const struct iio_chan_spec *channels;
 	unsigned int num_channels;
@@ -159,6 +363,53 @@ static const struct mcp3208_chip_info mcp3208_chip_infos[] = {
 	[mcp3208] = {
 		.channels = mcp3208_channels,
 		.num_channels = ARRAY_SIZE(mcp3208_channels)
+=======
+static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
+	[mcp3001] = {
+		.channels = mcp3201_channels,
+		.num_channels = ARRAY_SIZE(mcp3201_channels),
+		.resolution = 10
+	},
+	[mcp3002] = {
+		.channels = mcp3202_channels,
+		.num_channels = ARRAY_SIZE(mcp3202_channels),
+		.resolution = 10
+	},
+	[mcp3004] = {
+		.channels = mcp3204_channels,
+		.num_channels = ARRAY_SIZE(mcp3204_channels),
+		.resolution = 10
+	},
+	[mcp3008] = {
+		.channels = mcp3208_channels,
+		.num_channels = ARRAY_SIZE(mcp3208_channels),
+		.resolution = 10
+	},
+	[mcp3201] = {
+		.channels = mcp3201_channels,
+		.num_channels = ARRAY_SIZE(mcp3201_channels),
+		.resolution = 12
+	},
+	[mcp3202] = {
+		.channels = mcp3202_channels,
+		.num_channels = ARRAY_SIZE(mcp3202_channels),
+		.resolution = 12
+	},
+	[mcp3204] = {
+		.channels = mcp3204_channels,
+		.num_channels = ARRAY_SIZE(mcp3204_channels),
+		.resolution = 12
+	},
+	[mcp3208] = {
+		.channels = mcp3208_channels,
+		.num_channels = ARRAY_SIZE(mcp3208_channels),
+		.resolution = 12
+	},
+	[mcp3301] = {
+		.channels = mcp3201_channels,
+		.num_channels = ARRAY_SIZE(mcp3201_channels),
+		.resolution = 13
+>>>>>>> v4.9.227
 	},
 };
 
@@ -166,7 +417,11 @@ static int mcp320x_probe(struct spi_device *spi)
 {
 	struct iio_dev *indio_dev;
 	struct mcp320x *adc;
+<<<<<<< HEAD
 	const struct mcp3208_chip_info *chip_info;
+=======
+	const struct mcp320x_chip_info *chip_info;
+>>>>>>> v4.9.227
 	int ret;
 
 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
@@ -177,15 +432,28 @@ static int mcp320x_probe(struct spi_device *spi)
 	adc->spi = spi;
 
 	indio_dev->dev.parent = &spi->dev;
+<<<<<<< HEAD
+=======
+	indio_dev->dev.of_node = spi->dev.of_node;
+>>>>>>> v4.9.227
 	indio_dev->name = spi_get_device_id(spi)->name;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->info = &mcp320x_info;
 	spi_set_drvdata(spi, indio_dev);
 
+<<<<<<< HEAD
 	chip_info = &mcp3208_chip_infos[spi_get_device_id(spi)->driver_data];
 	indio_dev->channels = chip_info->channels;
 	indio_dev->num_channels = chip_info->num_channels;
 
+=======
+	chip_info = &mcp320x_chip_infos[spi_get_device_id(spi)->driver_data];
+	indio_dev->channels = chip_info->channels;
+	indio_dev->num_channels = chip_info->num_channels;
+
+	adc->chip_info = chip_info;
+
+>>>>>>> v4.9.227
 	adc->transfer[0].tx_buf = &adc->tx_buf;
 	adc->transfer[0].len = sizeof(adc->tx_buf);
 	adc->transfer[1].rx_buf = adc->rx_buf;
@@ -227,9 +495,85 @@ static int mcp320x_remove(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct spi_device_id mcp320x_id[] = {
 	{ "mcp3204", mcp3204 },
 	{ "mcp3208", mcp3208 },
+=======
+#if defined(CONFIG_OF)
+static const struct of_device_id mcp320x_dt_ids[] = {
+	/* NOTE: The use of compatibles with no vendor prefix is deprecated. */
+	{
+		.compatible = "mcp3001",
+		.data = &mcp320x_chip_infos[mcp3001],
+	}, {
+		.compatible = "mcp3002",
+		.data = &mcp320x_chip_infos[mcp3002],
+	}, {
+		.compatible = "mcp3004",
+		.data = &mcp320x_chip_infos[mcp3004],
+	}, {
+		.compatible = "mcp3008",
+		.data = &mcp320x_chip_infos[mcp3008],
+	}, {
+		.compatible = "mcp3201",
+		.data = &mcp320x_chip_infos[mcp3201],
+	}, {
+		.compatible = "mcp3202",
+		.data = &mcp320x_chip_infos[mcp3202],
+	}, {
+		.compatible = "mcp3204",
+		.data = &mcp320x_chip_infos[mcp3204],
+	}, {
+		.compatible = "mcp3208",
+		.data = &mcp320x_chip_infos[mcp3208],
+	}, {
+		.compatible = "mcp3301",
+		.data = &mcp320x_chip_infos[mcp3301],
+	}, {
+		.compatible = "microchip,mcp3001",
+		.data = &mcp320x_chip_infos[mcp3001],
+	}, {
+		.compatible = "microchip,mcp3002",
+		.data = &mcp320x_chip_infos[mcp3002],
+	}, {
+		.compatible = "microchip,mcp3004",
+		.data = &mcp320x_chip_infos[mcp3004],
+	}, {
+		.compatible = "microchip,mcp3008",
+		.data = &mcp320x_chip_infos[mcp3008],
+	}, {
+		.compatible = "microchip,mcp3201",
+		.data = &mcp320x_chip_infos[mcp3201],
+	}, {
+		.compatible = "microchip,mcp3202",
+		.data = &mcp320x_chip_infos[mcp3202],
+	}, {
+		.compatible = "microchip,mcp3204",
+		.data = &mcp320x_chip_infos[mcp3204],
+	}, {
+		.compatible = "microchip,mcp3208",
+		.data = &mcp320x_chip_infos[mcp3208],
+	}, {
+		.compatible = "microchip,mcp3301",
+		.data = &mcp320x_chip_infos[mcp3301],
+	}, {
+	}
+};
+MODULE_DEVICE_TABLE(of, mcp320x_dt_ids);
+#endif
+
+static const struct spi_device_id mcp320x_id[] = {
+	{ "mcp3001", mcp3001 },
+	{ "mcp3002", mcp3002 },
+	{ "mcp3004", mcp3004 },
+	{ "mcp3008", mcp3008 },
+	{ "mcp3201", mcp3201 },
+	{ "mcp3202", mcp3202 },
+	{ "mcp3204", mcp3204 },
+	{ "mcp3208", mcp3208 },
+	{ "mcp3301", mcp3301 },
+>>>>>>> v4.9.227
 	{ }
 };
 MODULE_DEVICE_TABLE(spi, mcp320x_id);
@@ -237,7 +581,11 @@ MODULE_DEVICE_TABLE(spi, mcp320x_id);
 static struct spi_driver mcp320x_driver = {
 	.driver = {
 		.name = "mcp320x",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(mcp320x_dt_ids),
+>>>>>>> v4.9.227
 	},
 	.probe = mcp320x_probe,
 	.remove = mcp320x_remove,
@@ -246,5 +594,9 @@ static struct spi_driver mcp320x_driver = {
 module_spi_driver(mcp320x_driver);
 
 MODULE_AUTHOR("Oskar Andero <oskar.andero@gmail.com>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Microchip Technology MCP3204/08");
+=======
+MODULE_DESCRIPTION("Microchip Technology MCP3x01/02/04/08");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL v2");

@@ -12,5 +12,9 @@ config MTD_SPINAND_ONDIEECC
 	bool "Use SPINAND internal ECC"
 	depends on MTD_SPINAND_MT29F
 	help
+<<<<<<< HEAD
 	  Internel ECC.
+=======
+	  Internal ECC.
+>>>>>>> v4.9.227
 	  Enables Hardware ECC support for Micron SPI NAND.

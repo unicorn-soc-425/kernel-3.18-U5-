@@ -53,7 +53,11 @@ static int v9fs_cached_dentry_delete(const struct dentry *dentry)
 		 dentry, dentry);
 
 	/* Don't cache negative dentries */
+<<<<<<< HEAD
 	if (!dentry->d_inode)
+=======
+	if (d_really_is_negative(dentry))
+>>>>>>> v4.9.227
 		return 1;
 	return 0;
 }
@@ -83,7 +87,11 @@ static int v9fs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
 	if (flags & LOOKUP_RCU)
 		return -ECHILD;
 
+<<<<<<< HEAD
 	inode = dentry->d_inode;
+=======
+	inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	if (!inode)
 		goto out_valid;
 

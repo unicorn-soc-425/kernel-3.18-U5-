@@ -129,7 +129,11 @@ static int process_ep_req(struct mv_udc *udc, int index,
 {
 	struct mv_dtd	*curr_dtd;
 	struct mv_dqh	*curr_dqh;
+<<<<<<< HEAD
 	int td_complete, actual, remaining_length;
+=======
+	int actual, remaining_length;
+>>>>>>> v4.9.227
 	int i, direction;
 	int retval = 0;
 	u32 errors;
@@ -139,7 +143,10 @@ static int process_ep_req(struct mv_udc *udc, int index,
 	direction = index % 2;
 
 	curr_dtd = curr_req->head;
+<<<<<<< HEAD
 	td_complete = 0;
+=======
+>>>>>>> v4.9.227
 	actual = curr_req->req.length;
 
 	for (i = 0; i < curr_req->dtd_count; i++) {
@@ -412,11 +419,16 @@ static int req_to_dtd(struct mv_req *req)
 	unsigned count;
 	int is_last, is_first = 1;
 	struct mv_dtd *dtd, *last_dtd = NULL;
+<<<<<<< HEAD
 	struct mv_udc *udc;
 	dma_addr_t dma;
 
 	udc = req->ep->udc;
 
+=======
+	dma_addr_t dma;
+
+>>>>>>> v4.9.227
 	do {
 		dtd = build_dtd(req, &count, &dma, &is_last);
 		if (dtd == NULL)
@@ -567,7 +579,11 @@ static int  mv_ep_disable(struct usb_ep *_ep)
 	struct mv_udc *udc;
 	struct mv_ep *ep;
 	struct mv_dqh *dqh;
+<<<<<<< HEAD
 	u32 bit_pos, epctrlx, direction;
+=======
+	u32 epctrlx, direction;
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	ep = container_of(_ep, struct mv_ep, ep);
@@ -582,7 +598,10 @@ static int  mv_ep_disable(struct usb_ep *_ep)
 	spin_lock_irqsave(&udc->lock, flags);
 
 	direction = ep_dir(ep);
+<<<<<<< HEAD
 	bit_pos = 1 << ((direction == EP_DIR_OUT ? 0 : 16) + ep->ep_num);
+=======
+>>>>>>> v4.9.227
 
 	/* Reset the max packet length and the interrupt on Setup */
 	dqh->max_packet_length = 0;
@@ -1223,7 +1242,11 @@ static int mv_udc_pullup(struct usb_gadget *gadget, int is_on)
 }
 
 static int mv_udc_start(struct usb_gadget *, struct usb_gadget_driver *);
+<<<<<<< HEAD
 static int mv_udc_stop(struct usb_gadget *, struct usb_gadget_driver *);
+=======
+static int mv_udc_stop(struct usb_gadget *);
+>>>>>>> v4.9.227
 /* device controller usb_gadget_ops structure */
 static const struct usb_gadget_ops mv_ops = {
 
@@ -1257,6 +1280,12 @@ static int eps_init(struct mv_udc *udc)
 	ep->wedge = 0;
 	ep->stopped = 0;
 	usb_ep_set_maxpacket_limit(&ep->ep, EP0_MAX_PKT_SIZE);
+<<<<<<< HEAD
+=======
+	ep->ep.caps.type_control = true;
+	ep->ep.caps.dir_in = true;
+	ep->ep.caps.dir_out = true;
+>>>>>>> v4.9.227
 	ep->ep_num = 0;
 	ep->ep.desc = &mv_ep0_desc;
 	INIT_LIST_HEAD(&ep->queue);
@@ -1269,14 +1298,29 @@ static int eps_init(struct mv_udc *udc)
 		if (i % 2) {
 			snprintf(name, sizeof(name), "ep%din", i / 2);
 			ep->direction = EP_DIR_IN;
+<<<<<<< HEAD
 		} else {
 			snprintf(name, sizeof(name), "ep%dout", i / 2);
 			ep->direction = EP_DIR_OUT;
+=======
+			ep->ep.caps.dir_in = true;
+		} else {
+			snprintf(name, sizeof(name), "ep%dout", i / 2);
+			ep->direction = EP_DIR_OUT;
+			ep->ep.caps.dir_out = true;
+>>>>>>> v4.9.227
 		}
 		ep->udc = udc;
 		strncpy(ep->name, name, sizeof(ep->name));
 		ep->ep.name = ep->name;
 
+<<<<<<< HEAD
+=======
+		ep->ep.caps.type_iso = true;
+		ep->ep.caps.type_bulk = true;
+		ep->ep.caps.type_int = true;
+
+>>>>>>> v4.9.227
 		ep->ep.ops = &mv_ep_ops;
 		ep->stopped = 0;
 		usb_ep_set_maxpacket_limit(&ep->ep, (unsigned short) ~0);
@@ -1307,6 +1351,26 @@ static void nuke(struct mv_ep *ep, int status)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void gadget_reset(struct mv_udc *udc, struct usb_gadget_driver *driver)
+{
+	struct mv_ep	*ep;
+
+	nuke(&udc->eps[0], -ESHUTDOWN);
+
+	list_for_each_entry(ep, &udc->gadget.ep_list, ep.ep_list) {
+		nuke(ep, -ESHUTDOWN);
+	}
+
+	/* report reset; the driver is already quiesced */
+	if (driver) {
+		spin_unlock(&udc->lock);
+		usb_gadget_udc_reset(&udc->gadget, driver);
+		spin_lock(&udc->lock);
+	}
+}
+>>>>>>> v4.9.227
 /* stop all USB activities */
 static void stop_activity(struct mv_udc *udc, struct usb_gadget_driver *driver)
 {
@@ -1361,9 +1425,12 @@ static int mv_udc_start(struct usb_gadget *gadget,
 		}
 	}
 
+<<<<<<< HEAD
 	/* pullup is always on */
 	mv_udc_pullup(&udc->gadget, 1);
 
+=======
+>>>>>>> v4.9.227
 	/* When boot with cable attached, there will be no vbus irq occurred */
 	if (udc->qwork)
 		queue_work(udc->qwork, &udc->vbus_work);
@@ -1371,8 +1438,12 @@ static int mv_udc_start(struct usb_gadget *gadget,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mv_udc_stop(struct usb_gadget *gadget,
 		struct usb_gadget_driver *driver)
+=======
+static int mv_udc_stop(struct usb_gadget *gadget)
+>>>>>>> v4.9.227
 {
 	struct mv_udc *udc;
 	unsigned long flags;
@@ -1386,7 +1457,11 @@ static int mv_udc_stop(struct usb_gadget *gadget,
 
 	/* stop all usb activities */
 	udc->gadget.speed = USB_SPEED_UNKNOWN;
+<<<<<<< HEAD
 	stop_activity(udc, driver);
+=======
+	stop_activity(udc, NULL);
+>>>>>>> v4.9.227
 	mv_udc_disable(udc);
 
 	spin_unlock_irqrestore(&udc->lock, flags);
@@ -1882,7 +1957,11 @@ static void irq_process_reset(struct mv_udc *udc)
 		dev_info(&udc->dev->dev, "usb bus reset\n");
 		udc->usb_state = USB_STATE_DEFAULT;
 		/* reset all the queues, stop all USB activities */
+<<<<<<< HEAD
 		stop_activity(udc, udc->driver);
+=======
+		gadget_reset(udc, udc->driver);
+>>>>>>> v4.9.227
 	} else {
 		dev_info(&udc->dev->dev, "USB reset portsc 0x%x\n",
 			readl(&udc->op_regs->portsc));
@@ -2078,8 +2157,12 @@ static int mv_udc_remove(struct platform_device *pdev)
 	}
 
 	/* free memory allocated in probe */
+<<<<<<< HEAD
 	if (udc->dtd_pool)
 		dma_pool_destroy(udc->dtd_pool);
+=======
+	dma_pool_destroy(udc->dtd_pool);
+>>>>>>> v4.9.227
 
 	if (udc->ep_dqh)
 		dma_free_coherent(&pdev->dev, udc->ep_dqh_size,
@@ -2107,10 +2190,15 @@ static int mv_udc_probe(struct platform_device *pdev)
 	}
 
 	udc = devm_kzalloc(&pdev->dev, sizeof(*udc), GFP_KERNEL);
+<<<<<<< HEAD
 	if (udc == NULL) {
 		dev_err(&pdev->dev, "failed to allocate memory for udc\n");
 		return -ENOMEM;
 	}
+=======
+	if (udc == NULL)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	udc->done = &release_done;
 	udc->pdata = dev_get_platdata(&pdev->dev);
@@ -2156,7 +2244,11 @@ static int mv_udc_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	udc->phy_regs = ioremap(r->start, resource_size(r));
+=======
+	udc->phy_regs = devm_ioremap(&pdev->dev, r->start, resource_size(r));
+>>>>>>> v4.9.227
 	if (udc->phy_regs == NULL) {
 		dev_err(&pdev->dev, "failed to map phy I/O memory\n");
 		return -EBUSY;
@@ -2207,7 +2299,10 @@ static int mv_udc_probe(struct platform_device *pdev)
 	size = udc->max_eps * sizeof(struct mv_ep) *2;
 	udc->eps = devm_kzalloc(&pdev->dev, size, GFP_KERNEL);
 	if (udc->eps == NULL) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "allocate ep memory failed\n");
+=======
+>>>>>>> v4.9.227
 		retval = -ENOMEM;
 		goto err_destroy_dma;
 	}
@@ -2216,7 +2311,10 @@ static int mv_udc_probe(struct platform_device *pdev)
 	udc->status_req = devm_kzalloc(&pdev->dev, sizeof(struct mv_req),
 					GFP_KERNEL);
 	if (!udc->status_req) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "allocate status_req memory failed\n");
+=======
+>>>>>>> v4.9.227
 		retval = -ENOMEM;
 		goto err_destroy_dma;
 	}
@@ -2403,7 +2501,10 @@ static struct platform_driver udc_driver = {
 	.remove		= mv_udc_remove,
 	.shutdown	= mv_udc_shutdown,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "mv-udc",
 #ifdef CONFIG_PM
 		.pm	= &mv_udc_pm_ops,

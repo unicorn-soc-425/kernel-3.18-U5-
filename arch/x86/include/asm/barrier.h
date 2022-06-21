@@ -6,11 +6,16 @@
 
 /*
  * Force strict CPU ordering.
+<<<<<<< HEAD
  * And yes, this is required on UP too when we're talking
+=======
+ * And yes, this might be required on UP too when we're talking
+>>>>>>> v4.9.227
  * to devices.
  */
 
 #ifdef CONFIG_X86_32
+<<<<<<< HEAD
 /*
  * Some non-Intel clones support out of order store. wmb() ceases to be a
  * nop for these.
@@ -18,6 +23,14 @@
 #define mb() alternative("lock; addl $0,0(%%esp)", "mfence", X86_FEATURE_XMM2)
 #define rmb() alternative("lock; addl $0,0(%%esp)", "lfence", X86_FEATURE_XMM2)
 #define wmb() alternative("lock; addl $0,0(%%esp)", "sfence", X86_FEATURE_XMM)
+=======
+#define mb() asm volatile(ALTERNATIVE("lock; addl $0,0(%%esp)", "mfence", \
+				      X86_FEATURE_XMM2) ::: "memory", "cc")
+#define rmb() asm volatile(ALTERNATIVE("lock; addl $0,0(%%esp)", "lfence", \
+				       X86_FEATURE_XMM2) ::: "memory", "cc")
+#define wmb() asm volatile(ALTERNATIVE("lock; addl $0,0(%%esp)", "sfence", \
+				       X86_FEATURE_XMM2) ::: "memory", "cc")
+>>>>>>> v4.9.227
 #else
 #define mb() 	asm volatile("mfence":::"memory")
 #define rmb()	asm volatile("lfence":::"memory")
@@ -25,6 +38,7 @@
 #endif
 
 /**
+<<<<<<< HEAD
  * read_barrier_depends - Flush all pending reads that subsequents reads
  * depend on.
  *
@@ -95,6 +109,46 @@
 #define smp_read_barrier_depends()	do { } while (0)
 #define set_mb(var, value) do { var = value; barrier(); } while (0)
 #endif /* SMP */
+=======
+ * array_index_mask_nospec() - generate a mask that is ~0UL when the
+ * 	bounds check succeeds and 0 otherwise
+ * @index: array element index
+ * @size: number of elements in array
+ *
+ * Returns:
+ *     0 - (index < size)
+ */
+static inline unsigned long array_index_mask_nospec(unsigned long index,
+		unsigned long size)
+{
+	unsigned long mask;
+
+	asm volatile ("cmp %1,%2; sbb %0,%0;"
+			:"=r" (mask)
+			:"g"(size),"r" (index)
+			:"cc");
+	return mask;
+}
+
+/* Override the default implementation from linux/nospec.h. */
+#define array_index_mask_nospec array_index_mask_nospec
+
+/* Prevent speculative execution past this barrier. */
+#define barrier_nospec() alternative_2("", "mfence", X86_FEATURE_MFENCE_RDTSC, \
+					   "lfence", X86_FEATURE_LFENCE_RDTSC)
+
+#ifdef CONFIG_X86_PPRO_FENCE
+#define dma_rmb()	rmb()
+#else
+#define dma_rmb()	barrier()
+#endif
+#define dma_wmb()	barrier()
+
+#define __smp_mb()	mb()
+#define __smp_rmb()	dma_rmb()
+#define __smp_wmb()	barrier()
+#define __smp_store_mb(var, value) do { (void)xchg(&var, value); } while (0)
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_X86_PPRO_FENCE)
 
@@ -103,6 +157,7 @@
  * model and we should fall back to full barriers.
  */
 
+<<<<<<< HEAD
 #define smp_store_release(p, v)						\
 do {									\
 	compiletime_assert_atomic_type(*p);				\
@@ -115,11 +170,26 @@ do {									\
 	typeof(*p) ___p1 = ACCESS_ONCE(*p);				\
 	compiletime_assert_atomic_type(*p);				\
 	smp_mb();							\
+=======
+#define __smp_store_release(p, v)					\
+do {									\
+	compiletime_assert_atomic_type(*p);				\
+	__smp_mb();							\
+	WRITE_ONCE(*p, v);						\
+} while (0)
+
+#define __smp_load_acquire(p)						\
+({									\
+	typeof(*p) ___p1 = READ_ONCE(*p);				\
+	compiletime_assert_atomic_type(*p);				\
+	__smp_mb();							\
+>>>>>>> v4.9.227
 	___p1;								\
 })
 
 #else /* regular x86 TSO memory ordering */
 
+<<<<<<< HEAD
 #define smp_store_release(p, v)						\
 do {									\
 	compiletime_assert_atomic_type(*p);				\
@@ -130,6 +200,18 @@ do {									\
 #define smp_load_acquire(p)						\
 ({									\
 	typeof(*p) ___p1 = ACCESS_ONCE(*p);				\
+=======
+#define __smp_store_release(p, v)					\
+do {									\
+	compiletime_assert_atomic_type(*p);				\
+	barrier();							\
+	WRITE_ONCE(*p, v);						\
+} while (0)
+
+#define __smp_load_acquire(p)						\
+({									\
+	typeof(*p) ___p1 = READ_ONCE(*p);				\
+>>>>>>> v4.9.227
 	compiletime_assert_atomic_type(*p);				\
 	barrier();							\
 	___p1;								\
@@ -138,6 +220,7 @@ do {									\
 #endif
 
 /* Atomic operations are already serializing on x86 */
+<<<<<<< HEAD
 #define smp_mb__before_atomic()	barrier()
 #define smp_mb__after_atomic()	barrier()
 
@@ -153,5 +236,11 @@ static __always_inline void rdtsc_barrier(void)
 	alternative(ASM_NOP3, "mfence", X86_FEATURE_MFENCE_RDTSC);
 	alternative(ASM_NOP3, "lfence", X86_FEATURE_LFENCE_RDTSC);
 }
+=======
+#define __smp_mb__before_atomic()	do { } while (0)
+#define __smp_mb__after_atomic()	do { } while (0)
+
+#include <asm-generic/barrier.h>
+>>>>>>> v4.9.227
 
 #endif /* _ASM_X86_BARRIER_H */

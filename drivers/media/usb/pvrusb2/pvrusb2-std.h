@@ -47,6 +47,7 @@ struct v4l2_standard *pvr2_std_create_enum(unsigned int *countptr,
 v4l2_std_id pvr2_std_get_usable(void);
 
 #endif /* __PVRUSB2_STD_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -57,3 +58,5 @@ v4l2_std_id pvr2_std_get_usable(void);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

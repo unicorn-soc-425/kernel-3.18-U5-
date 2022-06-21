@@ -83,10 +83,16 @@ static int mdsc_show(struct seq_file *s, void *p)
 			if (IS_ERR(path))
 				path = NULL;
 			spin_lock(&req->r_dentry->d_lock);
+<<<<<<< HEAD
 			seq_printf(s, " #%llx/%.*s (%s)",
 				   ceph_ino(req->r_dentry->d_parent->d_inode),
 				   req->r_dentry->d_name.len,
 				   req->r_dentry->d_name.name,
+=======
+			seq_printf(s, " #%llx/%pd (%s)",
+				   ceph_ino(d_inode(req->r_dentry->d_parent)),
+				   req->r_dentry,
+>>>>>>> v4.9.227
 				   path ? path : "");
 			spin_unlock(&req->r_dentry->d_lock);
 			kfree(path);
@@ -103,6 +109,7 @@ static int mdsc_show(struct seq_file *s, void *p)
 			if (IS_ERR(path))
 				path = NULL;
 			spin_lock(&req->r_old_dentry->d_lock);
+<<<<<<< HEAD
 			seq_printf(s, " #%llx/%.*s (%s)",
 				   req->r_old_dentry_dir ?
 				   ceph_ino(req->r_old_dentry_dir) : 0,
@@ -112,6 +119,16 @@ static int mdsc_show(struct seq_file *s, void *p)
 			spin_unlock(&req->r_old_dentry->d_lock);
 			kfree(path);
 		} else if (req->r_path2) {
+=======
+			seq_printf(s, " #%llx/%pd (%s)",
+				   req->r_old_dentry_dir ?
+				   ceph_ino(req->r_old_dentry_dir) : 0,
+				   req->r_old_dentry,
+				   path ? path : "");
+			spin_unlock(&req->r_old_dentry->d_lock);
+			kfree(path);
+		} else if (req->r_path2 && req->r_op != CEPH_MDS_OP_SYMLINK) {
+>>>>>>> v4.9.227
 			if (req->r_ino2.ino)
 				seq_printf(s, " #%llx/%s", req->r_ino2.ino,
 					   req->r_path2);
@@ -150,8 +167,13 @@ static int dentry_lru_show(struct seq_file *s, void *ptr)
 	spin_lock(&mdsc->dentry_lru_lock);
 	list_for_each_entry(di, &mdsc->dentry_lru, lru) {
 		struct dentry *dentry = di->dentry;
+<<<<<<< HEAD
 		seq_printf(s, "%p %p\t%.*s\n",
 			   di, dentry, dentry->d_name.len, dentry->d_name.name);
+=======
+		seq_printf(s, "%p %p\t%pd\n",
+			   di, dentry, dentry);
+>>>>>>> v4.9.227
 	}
 	spin_unlock(&mdsc->dentry_lru_lock);
 

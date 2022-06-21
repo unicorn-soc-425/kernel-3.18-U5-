@@ -26,18 +26,24 @@
 #include <asm/dis.h>
 #include <asm/io.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
 #include <asm/mathemu.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/cpcmd.h>
 #include <asm/lowcore.h>
 #include <asm/debug.h>
 #include <asm/irq.h>
 
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 #define ONELONG "%08lx: "
 #else /* CONFIG_64BIT */
 #define ONELONG "%016lx: "
 #endif /* CONFIG_64BIT */
 
+=======
+>>>>>>> v4.9.227
 enum {
 	UNUSED,	/* Indicates the end of the operand list */
 	R_8,	/* GPR starting at position 8 */
@@ -137,7 +143,11 @@ enum {
 	INSTR_RSI_RRP,
 	INSTR_RSL_LRDFU, INSTR_RSL_R0RD,
 	INSTR_RSY_AARD, INSTR_RSY_CCRD, INSTR_RSY_RRRD, INSTR_RSY_RURD,
+<<<<<<< HEAD
 	INSTR_RSY_RDRM,
+=======
+	INSTR_RSY_RDRM, INSTR_RSY_RMRD,
+>>>>>>> v4.9.227
 	INSTR_RS_AARD, INSTR_RS_CCRD, INSTR_RS_R0RD, INSTR_RS_RRRD,
 	INSTR_RS_RURD,
 	INSTR_RXE_FRRD, INSTR_RXE_RRRD, INSTR_RXE_RRRDM,
@@ -226,7 +236,10 @@ static const struct s390_operand operands[] =
 	[U16_32] = { 16, 32, 0 },
 	[J16_16] = { 16, 16, OPERAND_PCREL },
 	[J16_32] = { 16, 32, OPERAND_PCREL },
+<<<<<<< HEAD
 	[I16_32] = { 16, 32, OPERAND_SIGNED },
+=======
+>>>>>>> v4.9.227
 	[I24_24] = { 24, 24, OPERAND_SIGNED },
 	[J32_16] = { 32, 16, OPERAND_PCREL },
 	[I32_16] = { 32, 16, OPERAND_SIGNED },
@@ -308,6 +321,10 @@ static const unsigned char formats[][7] = {
 	[INSTR_RSY_AARD]  = { 0xff, A_8,A_12,D20_20,B_16,0,0 },
 	[INSTR_RSY_CCRD]  = { 0xff, C_8,C_12,D20_20,B_16,0,0 },
 	[INSTR_RSY_RDRM]  = { 0xff, R_8,D20_20,B_16,U4_12,0,0 },
+<<<<<<< HEAD
+=======
+	[INSTR_RSY_RMRD]  = { 0xff, R_8,U4_12,D20_20,B_16,0,0 },
+>>>>>>> v4.9.227
 	[INSTR_RSY_RRRD]  = { 0xff, R_8,R_12,D20_20,B_16,0,0 },
 	[INSTR_RSY_RURD]  = { 0xff, R_8,U4_12,D20_20,B_16,0,0 },
 	[INSTR_RS_AARD]	  = { 0xff, A_8,A_12,D_20,B_16,0,0 },
@@ -451,7 +468,12 @@ enum {
 	LONG_INSN_VERLLV,
 	LONG_INSN_VESRAV,
 	LONG_INSN_VESRLV,
+<<<<<<< HEAD
 	LONG_INSN_VSBCBI
+=======
+	LONG_INSN_VSBCBI,
+	LONG_INSN_STCCTM
+>>>>>>> v4.9.227
 };
 
 static char *long_insn_name[] = {
@@ -531,15 +553,25 @@ static char *long_insn_name[] = {
 	[LONG_INSN_VESRAV] = "vesrav",
 	[LONG_INSN_VESRLV] = "vesrlv",
 	[LONG_INSN_VSBCBI] = "vsbcbi",
+<<<<<<< HEAD
 };
 
 static struct s390_insn opcode[] = {
 #ifdef CONFIG_64BIT
+=======
+	[LONG_INSN_STCCTM] = "stcctm",
+};
+
+static struct s390_insn opcode[] = {
+>>>>>>> v4.9.227
 	{ "bprp", 0xc5, INSTR_MII_UPI },
 	{ "bpp", 0xc7, INSTR_SMI_U0RDP },
 	{ "trtr", 0xd0, INSTR_SS_L0RDRD },
 	{ "lmd", 0xef, INSTR_SS_RRRDRD3 },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "spm", 0x04, INSTR_RR_R0 },
 	{ "balr", 0x05, INSTR_RR_RR },
 	{ "bctr", 0x06, INSTR_RR_RR },
@@ -723,11 +755,17 @@ static struct s390_insn opcode[] = {
 };
 
 static struct s390_insn opcode_01[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 	{ "ptff", 0x04, INSTR_E },
 	{ "pfpo", 0x0a, INSTR_E },
 	{ "sam64", 0x0e, INSTR_E },
 #endif
+=======
+	{ "ptff", 0x04, INSTR_E },
+	{ "pfpo", 0x0a, INSTR_E },
+	{ "sam64", 0x0e, INSTR_E },
+>>>>>>> v4.9.227
 	{ "pr", 0x01, INSTR_E },
 	{ "upt", 0x02, INSTR_E },
 	{ "sckpf", 0x07, INSTR_E },
@@ -739,7 +777,10 @@ static struct s390_insn opcode_01[] = {
 };
 
 static struct s390_insn opcode_a5[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "iihh", 0x00, INSTR_RI_RU },
 	{ "iihl", 0x01, INSTR_RI_RU },
 	{ "iilh", 0x02, INSTR_RI_RU },
@@ -756,12 +797,18 @@ static struct s390_insn opcode_a5[] = {
 	{ "llihl", 0x0d, INSTR_RI_RU },
 	{ "llilh", 0x0e, INSTR_RI_RU },
 	{ "llill", 0x0f, INSTR_RI_RU },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "", 0, INSTR_INVALID }
 };
 
 static struct s390_insn opcode_a7[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "tmhh", 0x02, INSTR_RI_RU },
 	{ "tmhl", 0x03, INSTR_RI_RU },
 	{ "brctg", 0x07, INSTR_RI_RP },
@@ -769,7 +816,10 @@ static struct s390_insn opcode_a7[] = {
 	{ "aghi", 0x0b, INSTR_RI_RI },
 	{ "mghi", 0x0d, INSTR_RI_RI },
 	{ "cghi", 0x0f, INSTR_RI_RI },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "tmlh", 0x00, INSTR_RI_RU },
 	{ "tmll", 0x01, INSTR_RI_RU },
 	{ "brc", 0x04, INSTR_RI_UP },
@@ -783,18 +833,27 @@ static struct s390_insn opcode_a7[] = {
 };
 
 static struct s390_insn opcode_aa[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ { 0, LONG_INSN_RINEXT }, 0x00, INSTR_RI_RI },
 	{ "rion", 0x01, INSTR_RI_RI },
 	{ "tric", 0x02, INSTR_RI_RI },
 	{ "rioff", 0x03, INSTR_RI_RI },
 	{ { 0, LONG_INSN_RIEMIT }, 0x04, INSTR_RI_RI },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "", 0, INSTR_INVALID }
 };
 
 static struct s390_insn opcode_b2[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "stckf", 0x7c, INSTR_S_RD },
 	{ "lpp", 0x80, INSTR_S_RD },
 	{ "lcctl", 0x84, INSTR_S_RD },
@@ -817,7 +876,10 @@ static struct s390_insn opcode_b2[] = {
 	{ "tend", 0xf8, INSTR_S_00 },
 	{ "niai", 0xfa, INSTR_IE_UU },
 	{ { 0, LONG_INSN_TABORT }, 0xfc, INSTR_S_RD },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "stidp", 0x02, INSTR_S_RD },
 	{ "sck", 0x04, INSTR_S_RD },
 	{ "stck", 0x05, INSTR_S_RD },
@@ -906,7 +968,10 @@ static struct s390_insn opcode_b2[] = {
 };
 
 static struct s390_insn opcode_b3[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "maylr", 0x38, INSTR_RRF_F0FF },
 	{ "mylr", 0x39, INSTR_RRF_F0FF },
 	{ "mayr", 0x3a, INSTR_RRF_F0FF },
@@ -994,7 +1059,10 @@ static struct s390_insn opcode_b3[] = {
 	{ "qaxtr", 0xfd, INSTR_RRF_FUFF },
 	{ "iextr", 0xfe, INSTR_RRF_F0FR },
 	{ "rrxtr", 0xff, INSTR_RRF_FFRU },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "lpebr", 0x00, INSTR_RRE_FF },
 	{ "lnebr", 0x01, INSTR_RRE_FF },
 	{ "ltebr", 0x02, INSTR_RRE_FF },
@@ -1089,7 +1157,10 @@ static struct s390_insn opcode_b3[] = {
 };
 
 static struct s390_insn opcode_b9[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "lpgr", 0x00, INSTR_RRE_RR },
 	{ "lngr", 0x01, INSTR_RRE_RR },
 	{ "ltgr", 0x02, INSTR_RRE_RR },
@@ -1202,7 +1273,10 @@ static struct s390_insn opcode_b9[] = {
 	{ "srk", 0xf9, INSTR_RRF_R0RR2 },
 	{ "alrk", 0xfa, INSTR_RRF_R0RR2 },
 	{ "slrk", 0xfb, INSTR_RRF_R0RR2 },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "kmac", 0x1e, INSTR_RRE_RR },
 	{ "lrvr", 0x1f, INSTR_RRE_RR },
 	{ "km", 0x2e, INSTR_RRE_RR },
@@ -1222,7 +1296,10 @@ static struct s390_insn opcode_b9[] = {
 };
 
 static struct s390_insn opcode_c0[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "lgfi", 0x01, INSTR_RIL_RI },
 	{ "xihf", 0x06, INSTR_RIL_RU },
 	{ "xilf", 0x07, INSTR_RIL_RU },
@@ -1234,7 +1311,10 @@ static struct s390_insn opcode_c0[] = {
 	{ "oilf", 0x0d, INSTR_RIL_RU },
 	{ "llihf", 0x0e, INSTR_RIL_RU },
 	{ "llilf", 0x0f, INSTR_RIL_RU },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "larl", 0x00, INSTR_RIL_RP },
 	{ "brcl", 0x04, INSTR_RIL_UP },
 	{ "brasl", 0x05, INSTR_RIL_RP },
@@ -1242,7 +1322,10 @@ static struct s390_insn opcode_c0[] = {
 };
 
 static struct s390_insn opcode_c2[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "msgfi", 0x00, INSTR_RIL_RI },
 	{ "msfi", 0x01, INSTR_RIL_RI },
 	{ "slgfi", 0x04, INSTR_RIL_RU },
@@ -1255,12 +1338,18 @@ static struct s390_insn opcode_c2[] = {
 	{ "cfi", 0x0d, INSTR_RIL_RI },
 	{ "clgfi", 0x0e, INSTR_RIL_RU },
 	{ "clfi", 0x0f, INSTR_RIL_RU },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "", 0, INSTR_INVALID }
 };
 
 static struct s390_insn opcode_c4[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "llhrl", 0x02, INSTR_RIL_RP },
 	{ "lghrl", 0x04, INSTR_RIL_RP },
 	{ "lhrl", 0x05, INSTR_RIL_RP },
@@ -1272,12 +1361,18 @@ static struct s390_insn opcode_c4[] = {
 	{ "lrl", 0x0d, INSTR_RIL_RP },
 	{ { 0, LONG_INSN_LLGFRL }, 0x0e, INSTR_RIL_RP },
 	{ "strl", 0x0f, INSTR_RIL_RP },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "", 0, INSTR_INVALID }
 };
 
 static struct s390_insn opcode_c6[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "exrl", 0x00, INSTR_RIL_RP },
 	{ "pfdrl", 0x02, INSTR_RIL_UP },
 	{ "cghrl", 0x04, INSTR_RIL_RP },
@@ -1290,35 +1385,53 @@ static struct s390_insn opcode_c6[] = {
 	{ "crl", 0x0d, INSTR_RIL_RP },
 	{ { 0, LONG_INSN_CLGFRL }, 0x0e, INSTR_RIL_RP },
 	{ "clrl", 0x0f, INSTR_RIL_RP },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "", 0, INSTR_INVALID }
 };
 
 static struct s390_insn opcode_c8[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "mvcos", 0x00, INSTR_SSF_RRDRD },
 	{ "ectg", 0x01, INSTR_SSF_RRDRD },
 	{ "csst", 0x02, INSTR_SSF_RRDRD },
 	{ "lpd", 0x04, INSTR_SSF_RRDRD2 },
 	{ "lpdg", 0x05, INSTR_SSF_RRDRD2 },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "", 0, INSTR_INVALID }
 };
 
 static struct s390_insn opcode_cc[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "brcth", 0x06, INSTR_RIL_RP },
 	{ "aih", 0x08, INSTR_RIL_RI },
 	{ "alsih", 0x0a, INSTR_RIL_RI },
 	{ { 0, LONG_INSN_ALSIHN }, 0x0b, INSTR_RIL_RI },
 	{ "cih", 0x0d, INSTR_RIL_RI },
 	{ "clih", 0x0f, INSTR_RIL_RI },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "", 0, INSTR_INVALID }
 };
 
 static struct s390_insn opcode_e3[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "ltg", 0x02, INSTR_RXY_RRRD },
 	{ "lrag", 0x03, INSTR_RXY_RRRD },
 	{ "lg", 0x04, INSTR_RXY_RRRD },
@@ -1412,7 +1525,10 @@ static struct s390_insn opcode_e3[] = {
 	{ "clhf", 0xcf, INSTR_RXY_RRRD },
 	{ { 0, LONG_INSN_MPCIFC }, 0xd0, INSTR_RXY_RRRD },
 	{ { 0, LONG_INSN_STPCIFC }, 0xd4, INSTR_RXY_RRRD },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "lrv", 0x1e, INSTR_RXY_RRRD },
 	{ "lrvh", 0x1f, INSTR_RXY_RRRD },
 	{ "strv", 0x3e, INSTR_RXY_RRRD },
@@ -1424,7 +1540,10 @@ static struct s390_insn opcode_e3[] = {
 };
 
 static struct s390_insn opcode_e5[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "strag", 0x02, INSTR_SSE_RDRD },
 	{ "mvhhi", 0x44, INSTR_SIL_RDI },
 	{ "mvghi", 0x48, INSTR_SIL_RDI },
@@ -1437,7 +1556,10 @@ static struct s390_insn opcode_e5[] = {
 	{ { 0, LONG_INSN_CLFHSI }, 0x5d, INSTR_SIL_RDU },
 	{ { 0, LONG_INSN_TBEGIN }, 0x60, INSTR_SIL_RDU },
 	{ { 0, LONG_INSN_TBEGINC }, 0x61, INSTR_SIL_RDU },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "lasp", 0x00, INSTR_SSE_RDRD },
 	{ "tprot", 0x01, INSTR_SSE_RDRD },
 	{ "mvcsk", 0x0e, INSTR_SSE_RDRD },
@@ -1446,7 +1568,10 @@ static struct s390_insn opcode_e5[] = {
 };
 
 static struct s390_insn opcode_e7[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "lcbb", 0x27, INSTR_RXE_RRRDM },
 	{ "vgef", 0x13, INSTR_VRV_VVRDM },
 	{ "vgeg", 0x12, INSTR_VRV_VVRDM },
@@ -1586,11 +1711,18 @@ static struct s390_insn opcode_e7[] = {
 	{ "vfsq", 0xce, INSTR_VRR_VV000MM },
 	{ "vfs", 0xe2, INSTR_VRR_VVV00MM },
 	{ "vftci", 0x4a, INSTR_VRI_VVIMM },
+<<<<<<< HEAD
 #endif
 };
 
 static struct s390_insn opcode_eb[] = {
 #ifdef CONFIG_64BIT
+=======
+	{ "", 0, INSTR_INVALID }
+};
+
+static struct s390_insn opcode_eb[] = {
+>>>>>>> v4.9.227
 	{ "lmg", 0x04, INSTR_RSY_RRRD },
 	{ "srag", 0x0a, INSTR_RSY_RRRD },
 	{ "slag", 0x0b, INSTR_RSY_RRRD },
@@ -1656,7 +1788,11 @@ static struct s390_insn opcode_eb[] = {
 	{ "lric", 0x60, INSTR_RSY_RDRM },
 	{ "stric", 0x61, INSTR_RSY_RDRM },
 	{ "mric", 0x62, INSTR_RSY_RDRM },
+<<<<<<< HEAD
 #endif
+=======
+	{ { 0, LONG_INSN_STCCTM }, 0x17, INSTR_RSY_RMRD },
+>>>>>>> v4.9.227
 	{ "rll", 0x1d, INSTR_RSY_RRRD },
 	{ "mvclu", 0x8e, INSTR_RSY_RRRD },
 	{ "tp", 0xc0, INSTR_RSL_R0RD },
@@ -1664,7 +1800,10 @@ static struct s390_insn opcode_eb[] = {
 };
 
 static struct s390_insn opcode_ec[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "brxhg", 0x44, INSTR_RIE_RRP },
 	{ "brxlg", 0x45, INSTR_RIE_RRP },
 	{ { 0, LONG_INSN_RISBLG }, 0x51, INSTR_RIE_RRUUU },
@@ -1698,12 +1837,18 @@ static struct s390_insn opcode_ec[] = {
 	{ "clgib", 0xfd, INSTR_RIS_RURDU },
 	{ "cib", 0xfe, INSTR_RIS_RURDI },
 	{ "clib", 0xff, INSTR_RIS_RURDU },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "", 0, INSTR_INVALID }
 };
 
 static struct s390_insn opcode_ed[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	{ "mayl", 0x38, INSTR_RXF_FRRDF },
 	{ "myl", 0x39, INSTR_RXF_FRRDF },
 	{ "may", 0x3a, INSTR_RXF_FRRDF },
@@ -1728,7 +1873,10 @@ static struct s390_insn opcode_ed[] = {
 	{ "czxt", 0xa9, INSTR_RSL_LRDFU },
 	{ "cdzt", 0xaa, INSTR_RSL_LRDFU },
 	{ "cxzt", 0xab, INSTR_RSL_LRDFU },
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	{ "ldeb", 0x04, INSTR_RXE_FRRD },
 	{ "lxdb", 0x05, INSTR_RXE_FRRD },
 	{ "lxeb", 0x06, INSTR_RXE_FRRD },
@@ -1973,10 +2121,18 @@ static int print_insn(char *buffer, unsigned char *code, unsigned long addr)
 				ptr += sprintf(ptr, "%%c%i", value);
 			else if (operand->flags & OPERAND_VR)
 				ptr += sprintf(ptr, "%%v%i", value);
+<<<<<<< HEAD
 			else if (operand->flags & OPERAND_PCREL)
 				ptr += sprintf(ptr, "%lx", (signed int) value
 								      + addr);
 			else if (operand->flags & OPERAND_SIGNED)
+=======
+			else if (operand->flags & OPERAND_PCREL) {
+				void *pcrel = (void *)((int)value + addr);
+
+				ptr += sprintf(ptr, "%px", pcrel);
+			} else if (operand->flags & OPERAND_SIGNED)
+>>>>>>> v4.9.227
 				ptr += sprintf(ptr, "%i", value);
 			else
 				ptr += sprintf(ptr, "%u", value);
@@ -2048,7 +2204,11 @@ void show_code(struct pt_regs *regs)
 		else
 			*ptr++ = ' ';
 		addr = regs->psw.addr + start - 32;
+<<<<<<< HEAD
 		ptr += sprintf(ptr, ONELONG, addr);
+=======
+		ptr += sprintf(ptr, "%px: ", (void *)addr);
+>>>>>>> v4.9.227
 		if (start + opsize >= end)
 			break;
 		for (i = 0; i < opsize; i++)
@@ -2058,12 +2218,20 @@ void show_code(struct pt_regs *regs)
 			*ptr++ = '\t';
 		ptr += print_insn(ptr, code + start, addr);
 		start += opsize;
+<<<<<<< HEAD
 		printk(buffer);
+=======
+		pr_cont("%s", buffer);
+>>>>>>> v4.9.227
 		ptr = buffer;
 		ptr += sprintf(ptr, "\n\t  ");
 		hops++;
 	}
+<<<<<<< HEAD
 	printk("\n");
+=======
+	pr_cont("\n");
+>>>>>>> v4.9.227
 }
 
 void print_fn_code(unsigned char *code, unsigned long len)
@@ -2076,7 +2244,11 @@ void print_fn_code(unsigned char *code, unsigned long len)
 		opsize = insn_length(*code);
 		if (opsize > len)
 			break;
+<<<<<<< HEAD
 		ptr += sprintf(ptr, "%p: ", code);
+=======
+		ptr += sprintf(ptr, "%px: ", code);
+>>>>>>> v4.9.227
 		for (i = 0; i < opsize; i++)
 			ptr += sprintf(ptr, "%02x", code[i]);
 		*ptr++ = '\t';
@@ -2085,7 +2257,11 @@ void print_fn_code(unsigned char *code, unsigned long len)
 		ptr += print_insn(ptr, code, (unsigned long) code);
 		*ptr++ = '\n';
 		*ptr++ = 0;
+<<<<<<< HEAD
 		printk(buffer);
+=======
+		printk("%s", buffer);
+>>>>>>> v4.9.227
 		code += opsize;
 		len -= opsize;
 	}

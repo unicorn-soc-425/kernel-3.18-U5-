@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2010-2014 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2010-2016  B.A.T.M.A.N. contributors:
+>>>>>>> v4.9.227
  *
  * Marek Lindner
  *
@@ -18,6 +22,17 @@
 #ifndef _NET_BATMAN_ADV_SYSFS_H_
 #define _NET_BATMAN_ADV_SYSFS_H_
 
+<<<<<<< HEAD
+=======
+#include "main.h"
+
+#include <linux/sysfs.h>
+#include <linux/types.h>
+
+struct kobject;
+struct net_device;
+
+>>>>>>> v4.9.227
 #define BATADV_SYSFS_IF_MESH_SUBDIR "mesh"
 #define BATADV_SYSFS_IF_BAT_SUBDIR "batman_adv"
 /**

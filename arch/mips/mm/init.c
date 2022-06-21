@@ -10,7 +10,11 @@
  */
 #include <linux/bug.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/signal.h>
 #include <linux/sched.h>
 #include <linux/smp.h>
@@ -37,12 +41,20 @@
 #include <asm/cpu.h>
 #include <asm/dma.h>
 #include <asm/kmap_types.h>
+<<<<<<< HEAD
+=======
+#include <asm/maar.h>
+>>>>>>> v4.9.227
 #include <asm/mmu_context.h>
 #include <asm/sections.h>
 #include <asm/pgtable.h>
 #include <asm/pgalloc.h>
 #include <asm/tlb.h>
 #include <asm/fixmap.h>
+<<<<<<< HEAD
+=======
+#include <asm/maar.h>
+>>>>>>> v4.9.227
 
 /*
  * We have up to 8 empty zeroed pages so we can map one of the right colour
@@ -90,12 +102,22 @@ static void *__kmap_pgprot(struct page *page, unsigned long addr, pgprot_t prot)
 
 	BUG_ON(Page_dcache_dirty(page));
 
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> v4.9.227
 	pagefault_disable();
 	idx = (addr >> PAGE_SHIFT) & (FIX_N_COLOURS - 1);
 	idx += in_interrupt() ? FIX_N_COLOURS : 0;
 	vaddr = __fix_to_virt(FIX_CMAP_END - idx);
 	pte = mk_pte(page, prot);
+<<<<<<< HEAD
 #if defined(CONFIG_64BIT_PHYS_ADDR) && defined(CONFIG_CPU_MIPS32)
+=======
+#if defined(CONFIG_XPA)
+	entrylo = pte_to_entrylo(pte.pte_high);
+#elif defined(CONFIG_PHYS_ADDR_T_64BIT) && defined(CONFIG_CPU_MIPS32)
+>>>>>>> v4.9.227
 	entrylo = pte.pte_high;
 #else
 	entrylo = pte_to_entrylo(pte_val(pte));
@@ -106,7 +128,18 @@ static void *__kmap_pgprot(struct page *page, unsigned long addr, pgprot_t prot)
 	write_c0_entryhi(vaddr & (PAGE_MASK << 1));
 	write_c0_entrylo0(entrylo);
 	write_c0_entrylo1(entrylo);
+<<<<<<< HEAD
 	tlbidx = read_c0_wired();
+=======
+#ifdef CONFIG_XPA
+	if (cpu_has_xpa) {
+		entrylo = (pte.pte_low & _PFNX_MASK);
+		writex_c0_entrylo0(entrylo);
+		writex_c0_entrylo1(entrylo);
+	}
+#endif
+	tlbidx = num_wired_entries();
+>>>>>>> v4.9.227
 	write_c0_wired(tlbidx + 1);
 	write_c0_index(tlbidx);
 	mtc0_tlbw_hazard();
@@ -135,7 +168,11 @@ void kunmap_coherent(void)
 
 	local_irq_save(flags);
 	old_ctx = read_c0_entryhi();
+<<<<<<< HEAD
 	wired = read_c0_wired() - 1;
+=======
+	wired = num_wired_entries() - 1;
+>>>>>>> v4.9.227
 	write_c0_wired(wired);
 	write_c0_index(wired);
 	write_c0_entryhi(UNIQUE_ENTRYHI(wired));
@@ -147,6 +184,10 @@ void kunmap_coherent(void)
 	write_c0_entryhi(old_ctx);
 	local_irq_restore(flags);
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> v4.9.227
 }
 
 void copy_user_highpage(struct page *to, struct page *from,
@@ -156,7 +197,11 @@ void copy_user_highpage(struct page *to, struct page *from,
 
 	vto = kmap_atomic(to);
 	if (cpu_has_dc_aliases &&
+<<<<<<< HEAD
 	    page_mapped(from) && !Page_dcache_dirty(from)) {
+=======
+	    page_mapcount(from) && !Page_dcache_dirty(from)) {
+>>>>>>> v4.9.227
 		vfrom = kmap_coherent(from, vaddr);
 		copy_page(vto, vfrom);
 		kunmap_coherent();
@@ -178,7 +223,11 @@ void copy_to_user_page(struct vm_area_struct *vma,
 	unsigned long len)
 {
 	if (cpu_has_dc_aliases &&
+<<<<<<< HEAD
 	    page_mapped(page) && !Page_dcache_dirty(page)) {
+=======
+	    page_mapcount(page) && !Page_dcache_dirty(page)) {
+>>>>>>> v4.9.227
 		void *vto = kmap_coherent(page, vaddr) + (vaddr & ~PAGE_MASK);
 		memcpy(vto, src, len);
 		kunmap_coherent();
@@ -187,7 +236,11 @@ void copy_to_user_page(struct vm_area_struct *vma,
 		if (cpu_has_dc_aliases)
 			SetPageDcacheDirty(page);
 	}
+<<<<<<< HEAD
 	if ((vma->vm_flags & VM_EXEC) && !cpu_has_ic_fills_f_dc)
+=======
+	if (vma->vm_flags & VM_EXEC)
+>>>>>>> v4.9.227
 		flush_cache_page(vma, vaddr, page_to_pfn(page));
 }
 
@@ -196,7 +249,11 @@ void copy_from_user_page(struct vm_area_struct *vma,
 	unsigned long len)
 {
 	if (cpu_has_dc_aliases &&
+<<<<<<< HEAD
 	    page_mapped(page) && !Page_dcache_dirty(page)) {
+=======
+	    page_mapcount(page) && !Page_dcache_dirty(page)) {
+>>>>>>> v4.9.227
 		void *vfrom = kmap_coherent(page, vaddr) + (vaddr & ~PAGE_MASK);
 		memcpy(dst, vfrom, len);
 		kunmap_coherent();
@@ -244,6 +301,121 @@ void __init fixrange_init(unsigned long start, unsigned long end,
 #endif
 }
 
+<<<<<<< HEAD
+=======
+unsigned __weak platform_maar_init(unsigned num_pairs)
+{
+	struct maar_config cfg[BOOT_MEM_MAP_MAX];
+	unsigned i, num_configured, num_cfg = 0;
+
+	for (i = 0; i < boot_mem_map.nr_map; i++) {
+		switch (boot_mem_map.map[i].type) {
+		case BOOT_MEM_RAM:
+		case BOOT_MEM_INIT_RAM:
+			break;
+		default:
+			continue;
+		}
+
+		/* Round lower up */
+		cfg[num_cfg].lower = boot_mem_map.map[i].addr;
+		cfg[num_cfg].lower = (cfg[num_cfg].lower + 0xffff) & ~0xffff;
+
+		/* Round upper down */
+		cfg[num_cfg].upper = boot_mem_map.map[i].addr +
+					boot_mem_map.map[i].size;
+		cfg[num_cfg].upper = (cfg[num_cfg].upper & ~0xffff) - 1;
+
+		cfg[num_cfg].attrs = MIPS_MAAR_S;
+		num_cfg++;
+	}
+
+	num_configured = maar_config(cfg, num_cfg, num_pairs);
+	if (num_configured < num_cfg)
+		pr_warn("Not enough MAAR pairs (%u) for all bootmem regions (%u)\n",
+			num_pairs, num_cfg);
+
+	return num_configured;
+}
+
+void maar_init(void)
+{
+	unsigned num_maars, used, i;
+	phys_addr_t lower, upper, attr;
+	static struct {
+		struct maar_config cfgs[3];
+		unsigned used;
+	} recorded = { { { 0 } }, 0 };
+
+	if (!cpu_has_maar)
+		return;
+
+	/* Detect the number of MAARs */
+	write_c0_maari(~0);
+	back_to_back_c0_hazard();
+	num_maars = read_c0_maari() + 1;
+
+	/* MAARs should be in pairs */
+	WARN_ON(num_maars % 2);
+
+	/* Set MAARs using values we recorded already */
+	if (recorded.used) {
+		used = maar_config(recorded.cfgs, recorded.used, num_maars / 2);
+		BUG_ON(used != recorded.used);
+	} else {
+		/* Configure the required MAARs */
+		used = platform_maar_init(num_maars / 2);
+	}
+
+	/* Disable any further MAARs */
+	for (i = (used * 2); i < num_maars; i++) {
+		write_c0_maari(i);
+		back_to_back_c0_hazard();
+		write_c0_maar(0);
+		back_to_back_c0_hazard();
+	}
+
+	if (recorded.used)
+		return;
+
+	pr_info("MAAR configuration:\n");
+	for (i = 0; i < num_maars; i += 2) {
+		write_c0_maari(i);
+		back_to_back_c0_hazard();
+		upper = read_c0_maar();
+
+		write_c0_maari(i + 1);
+		back_to_back_c0_hazard();
+		lower = read_c0_maar();
+
+		attr = lower & upper;
+		lower = (lower & MIPS_MAAR_ADDR) << 4;
+		upper = ((upper & MIPS_MAAR_ADDR) << 4) | 0xffff;
+
+		pr_info("  [%d]: ", i / 2);
+		if (!(attr & MIPS_MAAR_V)) {
+			pr_cont("disabled\n");
+			continue;
+		}
+
+		pr_cont("%pa-%pa", &lower, &upper);
+
+		if (attr & MIPS_MAAR_S)
+			pr_cont(" speculate");
+
+		pr_cont("\n");
+
+		/* Record the setup for use on secondary CPUs */
+		if (used <= ARRAY_SIZE(recorded.cfgs)) {
+			recorded.cfgs[recorded.used].lower = lower;
+			recorded.cfgs[recorded.used].upper = upper;
+			recorded.cfgs[recorded.used].attrs = attr;
+			recorded.used++;
+		}
+	}
+}
+
+>>>>>>> v4.9.227
 #ifndef CONFIG_NEED_MULTIPLE_NODES
 int page_is_ram(unsigned long pagenr)
 {
@@ -315,6 +487,12 @@ static inline void mem_init_free_highmem(void)
 #ifdef CONFIG_HIGHMEM
 	unsigned long tmp;
 
+<<<<<<< HEAD
+=======
+	if (cpu_has_dc_aliases)
+		return;
+
+>>>>>>> v4.9.227
 	for (tmp = highstart_pfn; tmp < highend_pfn; tmp++) {
 		struct page *page = pfn_to_page(tmp);
 
@@ -326,6 +504,7 @@ static inline void mem_init_free_highmem(void)
 #endif
 }
 
+<<<<<<< HEAD
 unsigned __weak platform_maar_init(unsigned num_maars)
 {
 	return 0;
@@ -358,6 +537,8 @@ static void maar_init(void)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 void __init mem_init(void)
 {
 #ifdef CONFIG_HIGHMEM
@@ -410,7 +591,11 @@ void free_initrd_mem(unsigned long start, unsigned long end)
 
 void (*free_init_pages_eva)(void *begin, void *end) = NULL;
 
+<<<<<<< HEAD
 void __init_refok free_initmem(void)
+=======
+void __ref free_initmem(void)
+>>>>>>> v4.9.227
 {
 	prom_free_prom_memory();
 	/*

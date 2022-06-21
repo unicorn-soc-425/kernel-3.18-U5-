@@ -12,6 +12,13 @@ struct comm {
 	u64 start;
 	struct list_head list;
 	bool exec;
+<<<<<<< HEAD
+=======
+	union { /* Tool specific area */
+		void	*priv;
+		u64	db_id;
+	};
+>>>>>>> v4.9.227
 };
 
 void comm__free(struct comm *comm);

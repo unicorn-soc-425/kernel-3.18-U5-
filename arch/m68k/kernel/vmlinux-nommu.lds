@@ -44,7 +44,14 @@ SECTIONS {
 	.text : {
 		HEAD_TEXT
 		TEXT_TEXT
+<<<<<<< HEAD
 		SCHED_TEXT
+=======
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+		SCHED_TEXT
+		CPUIDLE_TEXT
+>>>>>>> v4.9.227
 		LOCK_TEXT
 		*(.fixup)
 		. = ALIGN(16);

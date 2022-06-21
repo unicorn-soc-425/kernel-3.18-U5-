@@ -11,12 +11,21 @@
 #include <linux/compiler.h>
 #include <linux/cache.h>
 #include <linux/kmod.h>
+<<<<<<< HEAD
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/elf.h>
 #include <linux/stringify.h>
 #include <linux/kobject.h>
 #include <linux/moduleparam.h>
 #include <linux/jump_label.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/extable.h>	/* only as arch move module.h -> extable.h */
+#include <linux/rbtree_latch.h>
+>>>>>>> v4.9.227
 
 #include <linux/percpu.h>
 #include <asm/module.h>
@@ -35,6 +44,10 @@ struct modversion_info {
 };
 
 struct module;
+<<<<<<< HEAD
+=======
+struct exception_table_entry;
+>>>>>>> v4.9.227
 
 struct module_kobject {
 	struct kobject kobj;
@@ -70,6 +83,7 @@ extern struct module_attribute module_uevent;
 extern int init_module(void);
 extern void cleanup_module(void);
 
+<<<<<<< HEAD
 /* Archs provide a method of finding the correct exception table. */
 struct exception_table_entry;
 
@@ -81,6 +95,90 @@ void sort_extable(struct exception_table_entry *start,
 		  struct exception_table_entry *finish);
 void sort_main_extable(void);
 void trim_init_extable(struct module *m);
+=======
+#ifndef MODULE
+/**
+ * module_init() - driver initialization entry point
+ * @x: function to be run at kernel boot time or module insertion
+ *
+ * module_init() will either be called during do_initcalls() (if
+ * builtin) or at module insertion time (if a module).  There can only
+ * be one per module.
+ */
+#define module_init(x)	__initcall(x);
+
+/**
+ * module_exit() - driver exit entry point
+ * @x: function to be run when driver is removed
+ *
+ * module_exit() will wrap the driver clean-up code
+ * with cleanup_module() when used with rmmod when
+ * the driver is a module.  If the driver is statically
+ * compiled into the kernel, module_exit() has no effect.
+ * There can only be one per module.
+ */
+#define module_exit(x)	__exitcall(x);
+
+#else /* MODULE */
+
+/*
+ * In most cases loadable modules do not need custom
+ * initcall levels. There are still some valid cases where
+ * a driver may be needed early if built in, and does not
+ * matter when built as a loadable module. Like bus
+ * snooping debug drivers.
+ */
+#define early_initcall(fn)		module_init(fn)
+#define core_initcall(fn)		module_init(fn)
+#define core_initcall_sync(fn)		module_init(fn)
+#define postcore_initcall(fn)		module_init(fn)
+#define postcore_initcall_sync(fn)	module_init(fn)
+#define arch_initcall(fn)		module_init(fn)
+#define subsys_initcall(fn)		module_init(fn)
+#define subsys_initcall_sync(fn)	module_init(fn)
+#define fs_initcall(fn)			module_init(fn)
+#define fs_initcall_sync(fn)		module_init(fn)
+#define rootfs_initcall(fn)		module_init(fn)
+#define device_initcall(fn)		module_init(fn)
+#define device_initcall_sync(fn)	module_init(fn)
+#define late_initcall(fn)		module_init(fn)
+#define late_initcall_sync(fn)		module_init(fn)
+
+#define console_initcall(fn)		module_init(fn)
+#define security_initcall(fn)		module_init(fn)
+
+/* Each module must use one module_init(). */
+#define module_init(initfn)					\
+	static inline initcall_t __maybe_unused __inittest(void)		\
+	{ return initfn; }					\
+	int init_module(void) __copy(initfn) __attribute__((alias(#initfn)));
+
+/* This is only required if you want to be unloadable. */
+#define module_exit(exitfn)					\
+	static inline exitcall_t __maybe_unused __exittest(void)		\
+	{ return exitfn; }					\
+	void cleanup_module(void) __copy(exitfn) __attribute__((alias(#exitfn)));
+
+#endif
+
+/* This means "can be init if no module support, otherwise module load
+   may call it." */
+#ifdef CONFIG_MODULES
+#define __init_or_module
+#define __initdata_or_module
+#define __initconst_or_module
+#define __INIT_OR_MODULE	.text
+#define __INITDATA_OR_MODULE	.data
+#define __INITRODATA_OR_MODULE	.section ".rodata","a",%progbits
+#else
+#define __init_or_module __init
+#define __initdata_or_module __initdata
+#define __initconst_or_module __initconst
+#define __INIT_OR_MODULE __INIT
+#define __INITDATA_OR_MODULE __INITDATA
+#define __INITRODATA_OR_MODULE __INITRODATA
+#endif /*CONFIG_MODULES*/
+>>>>>>> v4.9.227
 
 /* Generic info of form tag = "info" */
 #define MODULE_INFO(tag, info) __MODULE_INFO(tag, tag, info)
@@ -183,9 +281,12 @@ extern const typeof(name) __mod_##type##__##name##_device_table		\
  * files require multiple MODULE_FIRMWARE() specifiers */
 #define MODULE_FIRMWARE(_firmware) MODULE_INFO(firmware, _firmware)
 
+<<<<<<< HEAD
 /* Given an address, look for it in the exception tables */
 const struct exception_table_entry *search_exception_tables(unsigned long add);
 
+=======
+>>>>>>> v4.9.227
 struct notifier_block;
 
 #ifdef CONFIG_MODULES
@@ -210,6 +311,7 @@ enum module_state {
 	MODULE_STATE_UNFORMED,	/* Still setting it up. */
 };
 
+<<<<<<< HEAD
 /**
  * struct module_ref - per cpu module reference counts
  * @incs: number of module get on this cpu
@@ -223,6 +325,38 @@ struct module_ref {
 	unsigned long incs;
 	unsigned long decs;
 } __attribute((aligned(2 * sizeof(unsigned long))));
+=======
+struct module;
+
+struct mod_tree_node {
+	struct module *mod;
+	struct latch_tree_node node;
+};
+
+struct module_layout {
+	/* The actual code + data. */
+	void *base;
+	/* Total size. */
+	unsigned int size;
+	/* The size of the executable code.  */
+	unsigned int text_size;
+	/* Size of RO section of the module (text+rodata) */
+	unsigned int ro_size;
+	/* Size of RO after init section */
+	unsigned int ro_after_init_size;
+
+#ifdef CONFIG_MODULES_TREE_LOOKUP
+	struct mod_tree_node mtn;
+#endif
+};
+
+#ifdef CONFIG_MODULES_TREE_LOOKUP
+/* Only touch one cacheline for common rbtree-for-core-layout case. */
+#define __module_layout_align ____cacheline_aligned
+#else
+#define __module_layout_align
+#endif
+>>>>>>> v4.9.227
 
 struct mod_kallsyms {
 	Elf_Sym *symtab;
@@ -230,6 +364,18 @@ struct mod_kallsyms {
 	char *strtab;
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_LIVEPATCH
+struct klp_modinfo {
+	Elf_Ehdr hdr;
+	Elf_Shdr *sechdrs;
+	char *secstrings;
+	unsigned int symndx;
+};
+#endif
+
+>>>>>>> v4.9.227
 struct module {
 	enum module_state state;
 
@@ -252,6 +398,12 @@ struct module {
 	unsigned int num_syms;
 
 	/* Kernel parameters. */
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SYSFS
+	struct mutex param_lock;
+#endif
+>>>>>>> v4.9.227
 	struct kernel_param *kp;
 	unsigned int num_kp;
 
@@ -291,6 +443,7 @@ struct module {
 	/* Startup function. */
 	int (*init)(void);
 
+<<<<<<< HEAD
 	/* If this is non-NULL, vfree after init() returns */
 	void *module_init;
 
@@ -305,6 +458,11 @@ struct module {
 
 	/* Size of RO sections of the module (text+rodata) */
 	unsigned int init_ro_size, core_ro_size;
+=======
+	/* Core layout: rbtree is accessed frequently, so keep together. */
+	struct module_layout core_layout __module_layout_align;
+	struct module_layout init_layout;
+>>>>>>> v4.9.227
 
 	/* Arch-specific module values */
 	struct mod_arch_specific arch;
@@ -322,7 +480,11 @@ struct module {
 	/* Protected by RCU and/or module_mutex: use rcu_dereference() */
 	struct mod_kallsyms *kallsyms;
 	struct mod_kallsyms core_kallsyms;
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> v4.9.227
 	/* Section attributes */
 	struct module_sect_attrs *sect_attrs;
 
@@ -353,14 +515,32 @@ struct module {
 	const char **trace_bprintk_fmt_start;
 #endif
 #ifdef CONFIG_EVENT_TRACING
+<<<<<<< HEAD
 	struct ftrace_event_call **trace_events;
 	unsigned int num_trace_events;
+=======
+	struct trace_event_call **trace_events;
+	unsigned int num_trace_events;
+	struct trace_enum_map **trace_enums;
+	unsigned int num_trace_enums;
+>>>>>>> v4.9.227
 #endif
 #ifdef CONFIG_FTRACE_MCOUNT_RECORD
 	unsigned int num_ftrace_callsites;
 	unsigned long *ftrace_callsites;
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_LIVEPATCH
+	bool klp; /* Is this a livepatch module? */
+	bool klp_alive;
+
+	/* Elf information */
+	struct klp_modinfo *klp_info;
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_MODULE_UNLOAD
 	/* What modules depend on me? */
 	struct list_head source_list;
@@ -370,7 +550,11 @@ struct module {
 	/* Destruction function. */
 	void (*exit)(void);
 
+<<<<<<< HEAD
 	struct module_ref __percpu *refptr;
+=======
+	atomic_t refcnt;
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_CONSTRUCTORS
@@ -378,7 +562,11 @@ struct module {
 	ctor_fn_t *ctors;
 	unsigned int num_ctors;
 #endif
+<<<<<<< HEAD
 };
+=======
+} ____cacheline_aligned;
+>>>>>>> v4.9.227
 #ifndef MODULE_ARCH_INIT
 #define MODULE_ARCH_INIT {}
 #endif
@@ -402,15 +590,25 @@ bool is_module_text_address(unsigned long addr);
 static inline bool within_module_core(unsigned long addr,
 				      const struct module *mod)
 {
+<<<<<<< HEAD
 	return (unsigned long)mod->module_core <= addr &&
 	       addr < (unsigned long)mod->module_core + mod->core_size;
+=======
+	return (unsigned long)mod->core_layout.base <= addr &&
+	       addr < (unsigned long)mod->core_layout.base + mod->core_layout.size;
+>>>>>>> v4.9.227
 }
 
 static inline bool within_module_init(unsigned long addr,
 				      const struct module *mod)
 {
+<<<<<<< HEAD
 	return (unsigned long)mod->module_init <= addr &&
 	       addr < (unsigned long)mod->module_init + mod->init_size;
+=======
+	return (unsigned long)mod->init_layout.base <= addr &&
+	       addr < (unsigned long)mod->init_layout.base + mod->init_layout.size;
+>>>>>>> v4.9.227
 }
 
 static inline bool within_module(unsigned long addr, const struct module *mod)
@@ -432,14 +630,30 @@ struct symsearch {
 	bool unused;
 };
 
+<<<<<<< HEAD
 /* Search for an exported symbol by name. */
+=======
+/*
+ * Search for an exported symbol by name.
+ *
+ * Must be called with module_mutex held or preemption disabled.
+ */
+>>>>>>> v4.9.227
 const struct kernel_symbol *find_symbol(const char *name,
 					struct module **owner,
 					const unsigned long **crc,
 					bool gplok,
 					bool warn);
 
+<<<<<<< HEAD
 /* Walk the exported symbol table */
+=======
+/*
+ * Walk the exported symbol table
+ *
+ * Must be called with module_mutex held or preemption disabled.
+ */
+>>>>>>> v4.9.227
 bool each_symbol_section(bool (*fn)(const struct symsearch *arr,
 				    struct module *owner,
 				    void *data), void *data);
@@ -456,12 +670,21 @@ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
 					     struct module *, unsigned long),
 				   void *data);
 
+<<<<<<< HEAD
 extern void __module_put_and_exit(struct module *mod, long code)
 	__attribute__((noreturn));
 #define module_put_and_exit(code) __module_put_and_exit(THIS_MODULE, code)
 
 #ifdef CONFIG_MODULE_UNLOAD
 unsigned long module_refcount(struct module *mod);
+=======
+extern void __noreturn __module_put_and_exit(struct module *mod,
+			long code);
+#define module_put_and_exit(code) __module_put_and_exit(THIS_MODULE, code)
+
+#ifdef CONFIG_MODULE_UNLOAD
+int module_refcount(struct module *mod);
+>>>>>>> v4.9.227
 void __symbol_put(const char *symbol);
 #define symbol_put(x) __symbol_put(VMLINUX_SYMBOL_STR(x))
 void symbol_put_addr(void *addr);
@@ -511,9 +734,12 @@ const char *module_address_lookup(unsigned long addr,
 int lookup_module_symbol_name(unsigned long addr, char *symname);
 int lookup_module_symbol_attrs(unsigned long addr, unsigned long *size, unsigned long *offset, char *modname, char *name);
 
+<<<<<<< HEAD
 /* For extable.c to search modules' exception tables. */
 const struct exception_table_entry *search_module_extables(unsigned long addr);
 
+=======
+>>>>>>> v4.9.227
 int register_module_notifier(struct notifier_block *nb);
 int unregister_module_notifier(struct notifier_block *nb);
 
@@ -524,6 +750,7 @@ static inline bool module_requested_async_probing(struct module *module)
 	return module && module->async_probe_requested;
 }
 
+<<<<<<< HEAD
 #else /* !CONFIG_MODULES... */
 
 /* Given an address, look for it in the exception tables. */
@@ -532,6 +759,21 @@ search_module_extables(unsigned long addr)
 {
 	return NULL;
 }
+=======
+#ifdef CONFIG_LIVEPATCH
+static inline bool is_livepatch_module(struct module *mod)
+{
+	return mod->klp;
+}
+#else /* !CONFIG_LIVEPATCH */
+static inline bool is_livepatch_module(struct module *mod)
+{
+	return false;
+}
+#endif /* CONFIG_LIVEPATCH */
+
+#else /* !CONFIG_MODULES... */
+>>>>>>> v4.9.227
 
 static inline struct module *__module_address(unsigned long addr)
 {
@@ -657,9 +899,19 @@ extern int module_sysfs_initialized;
 #ifdef CONFIG_DEBUG_SET_MODULE_RONX
 extern void set_all_modules_text_rw(void);
 extern void set_all_modules_text_ro(void);
+<<<<<<< HEAD
 #else
 static inline void set_all_modules_text_rw(void) { }
 static inline void set_all_modules_text_ro(void) { }
+=======
+extern void module_enable_ro(const struct module *mod, bool after_init);
+extern void module_disable_ro(const struct module *mod);
+#else
+static inline void set_all_modules_text_rw(void) { }
+static inline void set_all_modules_text_ro(void) { }
+static inline void module_enable_ro(const struct module *mod, bool after_init) { }
+static inline void module_disable_ro(const struct module *mod) { }
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_GENERIC_BUG
@@ -677,4 +929,28 @@ static inline void module_bug_finalize(const Elf_Ehdr *hdr,
 static inline void module_bug_cleanup(struct module *mod) {}
 #endif	/* CONFIG_GENERIC_BUG */
 
+<<<<<<< HEAD
+=======
+#ifdef RETPOLINE
+extern bool retpoline_module_ok(bool has_retpoline);
+#else
+static inline bool retpoline_module_ok(bool has_retpoline)
+{
+	return true;
+}
+#endif
+
+#ifdef CONFIG_MODULE_SIG
+static inline bool module_sig_ok(struct module *module)
+{
+	return module->sig_ok;
+}
+#else	/* !CONFIG_MODULE_SIG */
+static inline bool module_sig_ok(struct module *module)
+{
+	return true;
+}
+#endif	/* CONFIG_MODULE_SIG */
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_MODULE_H */

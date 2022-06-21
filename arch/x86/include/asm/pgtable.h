@@ -9,15 +9,45 @@
 /*
  * Macro to mark a page protection value as UC-
  */
+<<<<<<< HEAD
 #define pgprot_noncached(prot)					\
 	((boot_cpu_data.x86 > 3)				\
 	 ? (__pgprot(pgprot_val(prot) | _PAGE_CACHE_UC_MINUS))	\
+=======
+#define pgprot_noncached(prot)						\
+	((boot_cpu_data.x86 > 3)					\
+	 ? (__pgprot(pgprot_val(prot) |					\
+		     cachemode2protval(_PAGE_CACHE_MODE_UC_MINUS)))	\
+>>>>>>> v4.9.227
 	 : (prot))
 
 #ifndef __ASSEMBLY__
 #include <asm/x86_init.h>
 
+<<<<<<< HEAD
 void ptdump_walk_pgd_level(struct seq_file *m, pgd_t *pgd);
+=======
+#ifdef CONFIG_PAGE_TABLE_ISOLATION
+extern int kaiser_enabled;
+/*
+ * Instead of one PGD, we acquire two PGDs.  Being order-1, it is
+ * both 8k in size and 8k-aligned.  That lets us just flip bit 12
+ * in a pointer to swap between the two 4k halves.
+ */
+#else
+#define kaiser_enabled 0
+#endif
+#define PGD_ALLOCATION_ORDER kaiser_enabled
+
+void ptdump_walk_pgd_level(struct seq_file *m, pgd_t *pgd);
+void ptdump_walk_pgd_level_checkwx(void);
+
+#ifdef CONFIG_DEBUG_WX
+#define debug_checkwx() ptdump_walk_pgd_level_checkwx()
+#else
+#define debug_checkwx() do { } while (0)
+#endif
+>>>>>>> v4.9.227
 
 /*
  * ZERO_PAGE is a global shared page that is always zero: used
@@ -61,9 +91,12 @@ extern struct mm_struct *pgd_page_get_mm(struct page *page);
 #define pmd_clear(pmd)			native_pmd_clear(pmd)
 
 #define pte_update(mm, addr, ptep)              do { } while (0)
+<<<<<<< HEAD
 #define pte_update_defer(mm, addr, ptep)        do { } while (0)
 #define pmd_update(mm, addr, ptep)              do { } while (0)
 #define pmd_update_defer(mm, addr, ptep)        do { } while (0)
+=======
+>>>>>>> v4.9.227
 
 #define pgd_val(x)	native_pgd_val(x)
 #define __pgd(x)	native_make_pgd(x)
@@ -94,6 +127,23 @@ static inline int pte_dirty(pte_t pte)
 	return pte_flags(pte) & _PAGE_DIRTY;
 }
 
+<<<<<<< HEAD
+=======
+
+static inline u32 read_pkru(void)
+{
+	if (boot_cpu_has(X86_FEATURE_OSPKE))
+		return __read_pkru();
+	return 0;
+}
+
+static inline void write_pkru(u32 pkru)
+{
+	if (boot_cpu_has(X86_FEATURE_OSPKE))
+		__write_pkru(pkru);
+}
+
+>>>>>>> v4.9.227
 static inline int pte_young(pte_t pte)
 {
 	return pte_flags(pte) & _PAGE_ACCESSED;
@@ -114,11 +164,14 @@ static inline int pte_write(pte_t pte)
 	return pte_flags(pte) & _PAGE_RW;
 }
 
+<<<<<<< HEAD
 static inline int pte_file(pte_t pte)
 {
 	return pte_flags(pte) & _PAGE_FILE;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int pte_huge(pte_t pte)
 {
 	return pte_flags(pte) & _PAGE_PSE;
@@ -136,6 +189,7 @@ static inline int pte_exec(pte_t pte)
 
 static inline int pte_special(pte_t pte)
 {
+<<<<<<< HEAD
 	/*
 	 * See CONFIG_NUMA_BALANCING pte_numa in include/asm-generic/pgtable.h.
 	 * On x86 we have _PAGE_BIT_NUMA == _PAGE_BIT_GLOBAL+1 ==
@@ -148,16 +202,47 @@ static inline int pte_special(pte_t pte)
 static inline unsigned long pte_pfn(pte_t pte)
 {
 	return (pte_val(pte) & PTE_PFN_MASK) >> PAGE_SHIFT;
+=======
+	return pte_flags(pte) & _PAGE_SPECIAL;
+}
+
+/* Entries that were set to PROT_NONE are inverted */
+
+static inline u64 protnone_mask(u64 val);
+
+static inline unsigned long pte_pfn(pte_t pte)
+{
+	phys_addr_t pfn = pte_val(pte);
+	pfn ^= protnone_mask(pfn);
+	return (pfn & PTE_PFN_MASK) >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 }
 
 static inline unsigned long pmd_pfn(pmd_t pmd)
 {
+<<<<<<< HEAD
 	return (pmd_val(pmd) & PTE_PFN_MASK) >> PAGE_SHIFT;
+=======
+	phys_addr_t pfn = pmd_val(pmd);
+	pfn ^= protnone_mask(pfn);
+	return (pfn & pmd_pfn_mask(pmd)) >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 }
 
 static inline unsigned long pud_pfn(pud_t pud)
 {
+<<<<<<< HEAD
 	return (pud_val(pud) & PTE_PFN_MASK) >> PAGE_SHIFT;
+=======
+	phys_addr_t pfn = pud_val(pud);
+	pfn ^= protnone_mask(pfn);
+	return (pfn & pud_pfn_mask(pud)) >> PAGE_SHIFT;
+}
+
+static inline unsigned long pgd_pfn(pgd_t pgd)
+{
+	return (pgd_val(pgd) & PTE_PFN_MASK) >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 }
 
 #define pte_page(pte)	pfn_to_page(pte_pfn(pte))
@@ -168,6 +253,7 @@ static inline int pmd_large(pmd_t pte)
 }
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+<<<<<<< HEAD
 static inline int pmd_trans_splitting(pmd_t pmd)
 {
 	return pmd_val(pmd) & _PAGE_SPLITTING;
@@ -182,6 +268,26 @@ static inline int has_transparent_hugepage(void)
 {
 	return cpu_has_pse;
 }
+=======
+/* NOTE: when predicate huge page, consider also pmd_devmap, or use pmd_large */
+static inline int pmd_trans_huge(pmd_t pmd)
+{
+	return (pmd_val(pmd) & (_PAGE_PSE|_PAGE_DEVMAP)) == _PAGE_PSE;
+}
+
+#define has_transparent_hugepage has_transparent_hugepage
+static inline int has_transparent_hugepage(void)
+{
+	return boot_cpu_has(X86_FEATURE_PSE);
+}
+
+#ifdef __HAVE_ARCH_PTE_DEVMAP
+static inline int pmd_devmap(pmd_t pmd)
+{
+	return !!(pmd_val(pmd) & _PAGE_DEVMAP);
+}
+#endif
+>>>>>>> v4.9.227
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
 
 static inline pte_t pte_set_flags(pte_t pte, pteval_t set)
@@ -258,6 +364,14 @@ static inline pte_t pte_mkspecial(pte_t pte)
 	return pte_set_flags(pte, _PAGE_SPECIAL);
 }
 
+<<<<<<< HEAD
+=======
+static inline pte_t pte_mkdevmap(pte_t pte)
+{
+	return pte_set_flags(pte, _PAGE_SPECIAL|_PAGE_DEVMAP);
+}
+
+>>>>>>> v4.9.227
 static inline pmd_t pmd_set_flags(pmd_t pmd, pmdval_t set)
 {
 	pmdval_t v = native_pmd_val(pmd);
@@ -277,6 +391,14 @@ static inline pmd_t pmd_mkold(pmd_t pmd)
 	return pmd_clear_flags(pmd, _PAGE_ACCESSED);
 }
 
+<<<<<<< HEAD
+=======
+static inline pmd_t pmd_mkclean(pmd_t pmd)
+{
+	return pmd_clear_flags(pmd, _PAGE_DIRTY);
+}
+
+>>>>>>> v4.9.227
 static inline pmd_t pmd_wrprotect(pmd_t pmd)
 {
 	return pmd_clear_flags(pmd, _PAGE_RW);
@@ -287,6 +409,14 @@ static inline pmd_t pmd_mkdirty(pmd_t pmd)
 	return pmd_set_flags(pmd, _PAGE_DIRTY | _PAGE_SOFT_DIRTY);
 }
 
+<<<<<<< HEAD
+=======
+static inline pmd_t pmd_mkdevmap(pmd_t pmd)
+{
+	return pmd_set_flags(pmd, _PAGE_DEVMAP);
+}
+
+>>>>>>> v4.9.227
 static inline pmd_t pmd_mkhuge(pmd_t pmd)
 {
 	return pmd_set_flags(pmd, _PAGE_PSE);
@@ -302,11 +432,14 @@ static inline pmd_t pmd_mkwrite(pmd_t pmd)
 	return pmd_set_flags(pmd, _PAGE_RW);
 }
 
+<<<<<<< HEAD
 static inline pmd_t pmd_mknotpresent(pmd_t pmd)
 {
 	return pmd_clear_flags(pmd, _PAGE_PRESENT);
 }
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_HAVE_ARCH_SOFT_DIRTY
 static inline int pte_soft_dirty(pte_t pte)
 {
@@ -328,11 +461,16 @@ static inline pmd_t pmd_mksoft_dirty(pmd_t pmd)
 	return pmd_set_flags(pmd, _PAGE_SOFT_DIRTY);
 }
 
+<<<<<<< HEAD
 static inline pte_t pte_file_clear_soft_dirty(pte_t pte)
+=======
+static inline pte_t pte_clear_soft_dirty(pte_t pte)
+>>>>>>> v4.9.227
 {
 	return pte_clear_flags(pte, _PAGE_SOFT_DIRTY);
 }
 
+<<<<<<< HEAD
 static inline pte_t pte_file_mksoft_dirty(pte_t pte)
 {
 	return pte_set_flags(pte, _PAGE_SOFT_DIRTY);
@@ -341,6 +479,11 @@ static inline pte_t pte_file_mksoft_dirty(pte_t pte)
 static inline int pte_file_soft_dirty(pte_t pte)
 {
 	return pte_flags(pte) & _PAGE_SOFT_DIRTY;
+=======
+static inline pmd_t pmd_clear_soft_dirty(pmd_t pmd)
+{
+	return pmd_clear_flags(pmd, _PAGE_SOFT_DIRTY);
+>>>>>>> v4.9.227
 }
 
 #endif /* CONFIG_HAVE_ARCH_SOFT_DIRTY */
@@ -361,12 +504,20 @@ static inline pgprotval_t massage_pgprot(pgprot_t pgprot)
 
 static inline pte_t pfn_pte(unsigned long page_nr, pgprot_t pgprot)
 {
+<<<<<<< HEAD
 	return __pte(((phys_addr_t)page_nr << PAGE_SHIFT) |
 		     massage_pgprot(pgprot));
+=======
+	phys_addr_t pfn = (phys_addr_t)page_nr << PAGE_SHIFT;
+	pfn ^= protnone_mask(pgprot_val(pgprot));
+	pfn &= PTE_PFN_MASK;
+	return __pte(pfn | massage_pgprot(pgprot));
+>>>>>>> v4.9.227
 }
 
 static inline pmd_t pfn_pmd(unsigned long page_nr, pgprot_t pgprot)
 {
+<<<<<<< HEAD
 	return __pmd(((phys_addr_t)page_nr << PAGE_SHIFT) |
 		     massage_pgprot(pgprot));
 }
@@ -374,6 +525,52 @@ static inline pmd_t pfn_pmd(unsigned long page_nr, pgprot_t pgprot)
 static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 {
 	pteval_t val = pte_val(pte);
+=======
+	phys_addr_t pfn = (phys_addr_t)page_nr << PAGE_SHIFT;
+	pfn ^= protnone_mask(pgprot_val(pgprot));
+	pfn &= PHYSICAL_PMD_PAGE_MASK;
+	return __pmd(pfn | massage_pgprot(pgprot));
+}
+
+static inline pud_t pfn_pud(unsigned long page_nr, pgprot_t pgprot)
+{
+	phys_addr_t pfn = (phys_addr_t)page_nr << PAGE_SHIFT;
+	pfn ^= protnone_mask(pgprot_val(pgprot));
+	pfn &= PHYSICAL_PUD_PAGE_MASK;
+	return __pud(pfn | massage_pgprot(pgprot));
+}
+
+static inline pmd_t pmd_mknotpresent(pmd_t pmd)
+{
+	return pfn_pmd(pmd_pfn(pmd),
+		       __pgprot(pmd_flags(pmd) & ~(_PAGE_PRESENT|_PAGE_PROTNONE)));
+}
+
+static inline pud_t pud_set_flags(pud_t pud, pudval_t set)
+{
+	pudval_t v = native_pud_val(pud);
+
+	return __pud(v | set);
+}
+
+static inline pud_t pud_clear_flags(pud_t pud, pudval_t clear)
+{
+	pudval_t v = native_pud_val(pud);
+
+	return __pud(v & ~clear);
+}
+
+static inline pud_t pud_mkhuge(pud_t pud)
+{
+	return pud_set_flags(pud, _PAGE_PSE);
+}
+
+static inline u64 flip_protnone_guard(u64 oldval, u64 val, u64 mask);
+
+static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
+{
+	pteval_t val = pte_val(pte), oldval = val;
+>>>>>>> v4.9.227
 
 	/*
 	 * Chop off the NX bit (if present), and add the NX portion of
@@ -381,17 +578,29 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 	 */
 	val &= _PAGE_CHG_MASK;
 	val |= massage_pgprot(newprot) & ~_PAGE_CHG_MASK;
+<<<<<<< HEAD
 
+=======
+	val = flip_protnone_guard(oldval, val, PTE_PFN_MASK);
+>>>>>>> v4.9.227
 	return __pte(val);
 }
 
 static inline pmd_t pmd_modify(pmd_t pmd, pgprot_t newprot)
 {
+<<<<<<< HEAD
 	pmdval_t val = pmd_val(pmd);
 
 	val &= _HPAGE_CHG_MASK;
 	val |= massage_pgprot(newprot) & ~_HPAGE_CHG_MASK;
 
+=======
+	pmdval_t val = pmd_val(pmd), oldval = val;
+
+	val &= _HPAGE_CHG_MASK;
+	val |= massage_pgprot(newprot) & ~_HPAGE_CHG_MASK;
+	val = flip_protnone_guard(oldval, val, PHYSICAL_PMD_PAGE_MASK);
+>>>>>>> v4.9.227
 	return __pmd(val);
 }
 
@@ -404,13 +613,24 @@ static inline pgprot_t pgprot_modify(pgprot_t oldprot, pgprot_t newprot)
 	return __pgprot(preservebits | addbits);
 }
 
+<<<<<<< HEAD
 #define pte_pgprot(x) __pgprot(pte_flags(x) & PTE_FLAGS_MASK)
+=======
+#define pte_pgprot(x) __pgprot(pte_flags(x))
+#define pmd_pgprot(x) __pgprot(pmd_flags(x))
+#define pud_pgprot(x) __pgprot(pud_flags(x))
+>>>>>>> v4.9.227
 
 #define canon_pgprot(p) __pgprot(massage_pgprot(p))
 
 static inline int is_new_memtype_allowed(u64 paddr, unsigned long size,
+<<<<<<< HEAD
 					 unsigned long flags,
 					 unsigned long new_flags)
+=======
+					 enum page_cache_mode pcm,
+					 enum page_cache_mode new_pcm)
+>>>>>>> v4.9.227
 {
 	/*
 	 * PAT type is always WB for untracked ranges, so no need to check.
@@ -423,11 +643,25 @@ static inline int is_new_memtype_allowed(u64 paddr, unsigned long size,
 	 * requested memtype:
 	 * - request is uncached, return cannot be write-back
 	 * - request is write-combine, return cannot be write-back
+<<<<<<< HEAD
 	 */
 	if ((flags == _PAGE_CACHE_UC_MINUS &&
 	     new_flags == _PAGE_CACHE_WB) ||
 	    (flags == _PAGE_CACHE_WC &&
 	     new_flags == _PAGE_CACHE_WB)) {
+=======
+	 * - request is write-through, return cannot be write-back
+	 * - request is write-through, return cannot be write-combine
+	 */
+	if ((pcm == _PAGE_CACHE_MODE_UC_MINUS &&
+	     new_pcm == _PAGE_CACHE_MODE_WB) ||
+	    (pcm == _PAGE_CACHE_MODE_WC &&
+	     new_pcm == _PAGE_CACHE_MODE_WB) ||
+	    (pcm == _PAGE_CACHE_MODE_WT &&
+	     new_pcm == _PAGE_CACHE_MODE_WB) ||
+	    (pcm == _PAGE_CACHE_MODE_WT &&
+	     new_pcm == _PAGE_CACHE_MODE_WC)) {
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -451,7 +685,11 @@ pte_t *populate_extra_pte(unsigned long vaddr);
 
 static inline int pte_none(pte_t pte)
 {
+<<<<<<< HEAD
 	return !pte.pte;
+=======
+	return !(pte.pte & ~(_PAGE_KNL_ERRATUM_MASK));
+>>>>>>> v4.9.227
 }
 
 #define __HAVE_ARCH_PTE_SAME
@@ -462,6 +700,7 @@ static inline int pte_same(pte_t a, pte_t b)
 
 static inline int pte_present(pte_t a)
 {
+<<<<<<< HEAD
 	return pte_flags(a) & (_PAGE_PRESENT | _PAGE_PROTNONE |
 			       _PAGE_NUMA);
 }
@@ -472,13 +711,29 @@ static inline int pte_present_nonuma(pte_t a)
 	return pte_flags(a) & (_PAGE_PRESENT | _PAGE_PROTNONE);
 }
 
+=======
+	return pte_flags(a) & (_PAGE_PRESENT | _PAGE_PROTNONE);
+}
+
+#ifdef __HAVE_ARCH_PTE_DEVMAP
+static inline int pte_devmap(pte_t a)
+{
+	return (pte_flags(a) & _PAGE_DEVMAP) == _PAGE_DEVMAP;
+}
+#endif
+
+>>>>>>> v4.9.227
 #define pte_accessible pte_accessible
 static inline bool pte_accessible(struct mm_struct *mm, pte_t a)
 {
 	if (pte_flags(a) & _PAGE_PRESENT)
 		return true;
 
+<<<<<<< HEAD
 	if ((pte_flags(a) & (_PAGE_PROTNONE | _PAGE_NUMA)) &&
+=======
+	if ((pte_flags(a) & _PAGE_PROTNONE) &&
+>>>>>>> v4.9.227
 			mm_tlb_flush_pending(mm))
 		return true;
 
@@ -498,27 +753,64 @@ static inline int pmd_present(pmd_t pmd)
 	 * the _PAGE_PSE flag will remain set at all times while the
 	 * _PAGE_PRESENT bit is clear).
 	 */
+<<<<<<< HEAD
 	return pmd_flags(pmd) & (_PAGE_PRESENT | _PAGE_PROTNONE | _PAGE_PSE |
 				 _PAGE_NUMA);
 }
 
+=======
+	return pmd_flags(pmd) & (_PAGE_PRESENT | _PAGE_PROTNONE | _PAGE_PSE);
+}
+
+#ifdef CONFIG_NUMA_BALANCING
+/*
+ * These work without NUMA balancing but the kernel does not care. See the
+ * comment in include/asm-generic/pgtable.h
+ */
+static inline int pte_protnone(pte_t pte)
+{
+	return (pte_flags(pte) & (_PAGE_PROTNONE | _PAGE_PRESENT))
+		== _PAGE_PROTNONE;
+}
+
+static inline int pmd_protnone(pmd_t pmd)
+{
+	return (pmd_flags(pmd) & (_PAGE_PROTNONE | _PAGE_PRESENT))
+		== _PAGE_PROTNONE;
+}
+#endif /* CONFIG_NUMA_BALANCING */
+
+>>>>>>> v4.9.227
 static inline int pmd_none(pmd_t pmd)
 {
 	/* Only check low word on 32-bit platforms, since it might be
 	   out of sync with upper half. */
+<<<<<<< HEAD
 	return (unsigned long)native_pmd_val(pmd) == 0;
+=======
+	unsigned long val = native_pmd_val(pmd);
+	return (val & ~_PAGE_KNL_ERRATUM_MASK) == 0;
+>>>>>>> v4.9.227
 }
 
 static inline unsigned long pmd_page_vaddr(pmd_t pmd)
 {
+<<<<<<< HEAD
 	return (unsigned long)__va(pmd_val(pmd) & PTE_PFN_MASK);
+=======
+	return (unsigned long)__va(pmd_val(pmd) & pmd_pfn_mask(pmd));
+>>>>>>> v4.9.227
 }
 
 /*
  * Currently stuck as a macro due to indirect forward reference to
  * linux/mmzone.h's __section_mem_map_addr() definition:
  */
+<<<<<<< HEAD
 #define pmd_page(pmd)	pfn_to_page((pmd_val(pmd) & PTE_PFN_MASK) >> PAGE_SHIFT)
+=======
+#define pmd_page(pmd)	pfn_to_page(pmd_pfn(pmd))
+>>>>>>> v4.9.227
 
 /*
  * the pmd page can be thought of an array like this: pmd_t[PTRS_PER_PMD]
@@ -558,11 +850,14 @@ static inline pte_t *pte_offset_kernel(pmd_t *pmd, unsigned long address)
 
 static inline int pmd_bad(pmd_t pmd)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_NUMA_BALANCING
 	/* pmd_numa check */
 	if ((pmd_flags(pmd) & (_PAGE_NUMA|_PAGE_PRESENT)) == _PAGE_NUMA)
 		return 0;
 #endif
+=======
+>>>>>>> v4.9.227
 	return (pmd_flags(pmd) & ~_PAGE_USER) != _KERNPG_TABLE;
 }
 
@@ -571,10 +866,17 @@ static inline unsigned long pages_to_mb(unsigned long npg)
 	return npg >> (20 - PAGE_SHIFT);
 }
 
+<<<<<<< HEAD
 #if PAGETABLE_LEVELS > 2
 static inline int pud_none(pud_t pud)
 {
 	return native_pud_val(pud) == 0;
+=======
+#if CONFIG_PGTABLE_LEVELS > 2
+static inline int pud_none(pud_t pud)
+{
+	return (native_pud_val(pud) & ~(_PAGE_KNL_ERRATUM_MASK)) == 0;
+>>>>>>> v4.9.227
 }
 
 static inline int pud_present(pud_t pud)
@@ -584,14 +886,22 @@ static inline int pud_present(pud_t pud)
 
 static inline unsigned long pud_page_vaddr(pud_t pud)
 {
+<<<<<<< HEAD
 	return (unsigned long)__va((unsigned long)pud_val(pud) & PTE_PFN_MASK);
+=======
+	return (unsigned long)__va(pud_val(pud) & pud_pfn_mask(pud));
+>>>>>>> v4.9.227
 }
 
 /*
  * Currently stuck as a macro due to indirect forward reference to
  * linux/mmzone.h's __section_mem_map_addr() definition:
  */
+<<<<<<< HEAD
 #define pud_page(pud)		pfn_to_page(pud_val(pud) >> PAGE_SHIFT)
+=======
+#define pud_page(pud)	pfn_to_page(pud_pfn(pud))
+>>>>>>> v4.9.227
 
 /* Find an entry in the second-level page table.. */
 static inline pmd_t *pmd_offset(pud_t *pud, unsigned long address)
@@ -614,9 +924,15 @@ static inline int pud_large(pud_t pud)
 {
 	return 0;
 }
+<<<<<<< HEAD
 #endif	/* PAGETABLE_LEVELS > 2 */
 
 #if PAGETABLE_LEVELS > 3
+=======
+#endif	/* CONFIG_PGTABLE_LEVELS > 2 */
+
+#if CONFIG_PGTABLE_LEVELS > 3
+>>>>>>> v4.9.227
 static inline int pgd_present(pgd_t pgd)
 {
 	return pgd_flags(pgd) & _PAGE_PRESENT;
@@ -631,7 +947,11 @@ static inline unsigned long pgd_page_vaddr(pgd_t pgd)
  * Currently stuck as a macro due to indirect forward reference to
  * linux/mmzone.h's __section_mem_map_addr() definition:
  */
+<<<<<<< HEAD
 #define pgd_page(pgd)		pfn_to_page(pgd_val(pgd) >> PAGE_SHIFT)
+=======
+#define pgd_page(pgd)		pfn_to_page(pgd_pfn(pgd))
+>>>>>>> v4.9.227
 
 /* to find an entry in a page-table-directory. */
 static inline unsigned long pud_index(unsigned long address)
@@ -646,14 +966,40 @@ static inline pud_t *pud_offset(pgd_t *pgd, unsigned long address)
 
 static inline int pgd_bad(pgd_t pgd)
 {
+<<<<<<< HEAD
 	return (pgd_flags(pgd) & ~_PAGE_USER) != _KERNPG_TABLE;
+=======
+	pgdval_t ignore_flags = _PAGE_USER;
+	/*
+	 * We set NX on KAISER pgds that map userspace memory so
+	 * that userspace can not meaningfully use the kernel
+	 * page table by accident; it will fault on the first
+	 * instruction it tries to run.  See native_set_pgd().
+	 */
+	if (kaiser_enabled)
+		ignore_flags |= _PAGE_NX;
+
+	return (pgd_flags(pgd) & ~ignore_flags) != _KERNPG_TABLE;
+>>>>>>> v4.9.227
 }
 
 static inline int pgd_none(pgd_t pgd)
 {
+<<<<<<< HEAD
 	return !native_pgd_val(pgd);
 }
 #endif	/* PAGETABLE_LEVELS > 3 */
+=======
+	/*
+	 * There is no need to do a workaround for the KNL stray
+	 * A/D bit erratum here.  PGDs only point to page tables
+	 * except on 32-bit non-PAE which is not supported on
+	 * KNL.
+	 */
+	return !native_pgd_val(pgd);
+}
+#endif	/* CONFIG_PGTABLE_LEVELS > 3 */
+>>>>>>> v4.9.227
 
 #endif	/* __ASSEMBLY__ */
 
@@ -686,6 +1032,26 @@ extern int direct_gbpages;
 void init_mem_mapping(void);
 void early_alloc_pgt_buf(void);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_64
+/* Realmode trampoline initialization. */
+extern pgd_t trampoline_pgd_entry;
+static inline void __meminit init_trampoline_default(void)
+{
+	/* Default trampoline pgd value */
+	trampoline_pgd_entry = init_level4_pgt[pgd_index(__PAGE_OFFSET)];
+}
+# ifdef CONFIG_RANDOMIZE_MEMORY
+void __meminit init_trampoline(void);
+# else
+#  define init_trampoline init_trampoline_default
+# endif
+#else
+static inline void init_trampoline(void) { }
+#endif
+
+>>>>>>> v4.9.227
 /* local pte updates need not use xchg for locking */
 static inline pte_t native_local_ptep_get_and_clear(pte_t *ptep)
 {
@@ -724,6 +1090,7 @@ static inline void native_set_pmd_at(struct mm_struct *mm, unsigned long addr,
  * updates should either be sets, clears, or set_pte_atomic for P->P
  * transitions, which means this hook should only be called for user PTEs.
  * This hook implies a P->P protection or access change has taken place, which
+<<<<<<< HEAD
  * requires a subsequent TLB flush.  The notification can optionally be delayed
  * until the TLB flush event by using the pte_update_defer form of the
  * interface, but care must be taken to assure that the flush happens while
@@ -732,6 +1099,11 @@ static inline void native_set_pmd_at(struct mm_struct *mm, unsigned long addr,
  */
 #define pte_update(mm, addr, ptep)		do { } while (0)
 #define pte_update_defer(mm, addr, ptep)	do { } while (0)
+=======
+ * requires a subsequent TLB flush.
+ */
+#define pte_update(mm, addr, ptep)		do { } while (0)
+>>>>>>> v4.9.227
 #endif
 
 /*
@@ -809,16 +1181,20 @@ extern int pmdp_clear_flush_young(struct vm_area_struct *vma,
 				  unsigned long address, pmd_t *pmdp);
 
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_PMDP_SPLITTING_FLUSH
 extern void pmdp_splitting_flush(struct vm_area_struct *vma,
 				 unsigned long addr, pmd_t *pmdp);
 
+=======
+>>>>>>> v4.9.227
 #define __HAVE_ARCH_PMD_WRITE
 static inline int pmd_write(pmd_t pmd)
 {
 	return pmd_flags(pmd) & _PAGE_RW;
 }
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_PMDP_GET_AND_CLEAR
 static inline pmd_t pmdp_get_and_clear(struct mm_struct *mm, unsigned long addr,
 				       pmd_t *pmdp)
@@ -826,6 +1202,13 @@ static inline pmd_t pmdp_get_and_clear(struct mm_struct *mm, unsigned long addr,
 	pmd_t pmd = native_pmdp_get_and_clear(pmdp);
 	pmd_update(mm, addr, pmdp);
 	return pmd;
+=======
+#define __HAVE_ARCH_PMDP_HUGE_GET_AND_CLEAR
+static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm, unsigned long addr,
+				       pmd_t *pmdp)
+{
+	return native_pmdp_get_and_clear(pmdp);
+>>>>>>> v4.9.227
 }
 
 #define __HAVE_ARCH_PMDP_SET_WRPROTECT
@@ -833,7 +1216,10 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
 				      unsigned long addr, pmd_t *pmdp)
 {
 	clear_bit(_PAGE_BIT_RW, (unsigned long *)pmdp);
+<<<<<<< HEAD
 	pmd_update(mm, addr, pmdp);
+=======
+>>>>>>> v4.9.227
 }
 
 /*
@@ -848,7 +1234,19 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
  */
 static inline void clone_pgd_range(pgd_t *dst, pgd_t *src, int count)
 {
+<<<<<<< HEAD
        memcpy(dst, src, count * sizeof(pgd_t));
+=======
+	memcpy(dst, src, count * sizeof(pgd_t));
+#ifdef CONFIG_PAGE_TABLE_ISOLATION
+	if (kaiser_enabled) {
+		/* Clone the shadow pgd part as well */
+		memcpy(native_get_shadow_pgd(dst),
+			native_get_shadow_pgd(src),
+			count * sizeof(pgd_t));
+	}
+#endif
+>>>>>>> v4.9.227
 }
 
 #define PTE_SHIFT ilog2(PTRS_PER_PTE)
@@ -881,23 +1279,74 @@ static inline void update_mmu_cache_pmd(struct vm_area_struct *vma,
 #ifdef CONFIG_HAVE_ARCH_SOFT_DIRTY
 static inline pte_t pte_swp_mksoft_dirty(pte_t pte)
 {
+<<<<<<< HEAD
 	VM_BUG_ON(pte_present_nonuma(pte));
+=======
+>>>>>>> v4.9.227
 	return pte_set_flags(pte, _PAGE_SWP_SOFT_DIRTY);
 }
 
 static inline int pte_swp_soft_dirty(pte_t pte)
 {
+<<<<<<< HEAD
 	VM_BUG_ON(pte_present_nonuma(pte));
+=======
+>>>>>>> v4.9.227
 	return pte_flags(pte) & _PAGE_SWP_SOFT_DIRTY;
 }
 
 static inline pte_t pte_swp_clear_soft_dirty(pte_t pte)
 {
+<<<<<<< HEAD
 	VM_BUG_ON(pte_present_nonuma(pte));
+=======
+>>>>>>> v4.9.227
 	return pte_clear_flags(pte, _PAGE_SWP_SOFT_DIRTY);
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#define PKRU_AD_BIT 0x1
+#define PKRU_WD_BIT 0x2
+#define PKRU_BITS_PER_PKEY 2
+
+static inline bool __pkru_allows_read(u32 pkru, u16 pkey)
+{
+	int pkru_pkey_bits = pkey * PKRU_BITS_PER_PKEY;
+	return !(pkru & (PKRU_AD_BIT << pkru_pkey_bits));
+}
+
+static inline bool __pkru_allows_write(u32 pkru, u16 pkey)
+{
+	int pkru_pkey_bits = pkey * PKRU_BITS_PER_PKEY;
+	/*
+	 * Access-disable disables writes too so we need to check
+	 * both bits here.
+	 */
+	return !(pkru & ((PKRU_AD_BIT|PKRU_WD_BIT) << pkru_pkey_bits));
+}
+
+static inline u16 pte_flags_pkey(unsigned long pte_flags)
+{
+#ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
+	/* ifdef to avoid doing 59-bit shift on 32-bit values */
+	return (pte_flags & _PAGE_PKEY_MASK) >> _PAGE_BIT_PKEY_BIT0;
+#else
+	return 0;
+#endif
+}
+
+
+#define __HAVE_ARCH_PFN_MODIFY_ALLOWED 1
+extern bool pfn_modify_allowed(unsigned long pfn, pgprot_t prot);
+
+static inline bool arch_has_pfn_modify_check(void)
+{
+	return boot_cpu_has_bug(X86_BUG_L1TF);
+}
+
+>>>>>>> v4.9.227
 #include <asm-generic/pgtable.h>
 #endif	/* __ASSEMBLY__ */
 

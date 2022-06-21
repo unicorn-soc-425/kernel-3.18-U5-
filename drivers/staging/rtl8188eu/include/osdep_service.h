@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __OSDEP_SERVICE_H_
 #define __OSDEP_SERVICE_H_
@@ -40,7 +43,11 @@
 #include <asm/byteorder.h>
 #include <linux/atomic.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/semaphore.h>
+=======
+#include <linux/mutex.h>
+>>>>>>> v4.9.227
 #include <linux/sem.h>
 #include <linux/sched.h>
 #include <linux/etherdevice.h>
@@ -49,7 +56,10 @@
 #include <linux/if_arp.h>
 #include <linux/rtnetlink.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/proc_fs.h>	/*  Necessary because we use the proc fs */
+=======
+>>>>>>> v4.9.227
 #include <linux/interrupt.h>	/*  for struct tasklet_struct */
 #include <linux/ip.h>
 #include <linux/kthread.h>
@@ -67,6 +77,7 @@ static inline struct list_head *get_list_head(struct __queue *queue)
 	return &(queue->queue);
 }
 
+<<<<<<< HEAD
 static inline int _enter_critical_mutex(struct mutex *pmutex,
 					unsigned long *pirqL)
 {
@@ -95,6 +106,8 @@ static inline void _set_timer(struct timer_list *ptimer, u32 delay_time)
 #define RTW_DECLARE_TIMER_HDL(name) \
 	void RTW_TIMER_HDL_NAME(name)(RTW_TIMER_HDL_ARGS)
 
+=======
+>>>>>>> v4.9.227
 static inline int rtw_netif_queue_stopped(struct net_device *pnetdev)
 {
 	return  netif_tx_queue_stopped(netdev_get_tx_queue(pnetdev, 0)) &&
@@ -103,6 +116,7 @@ static inline int rtw_netif_queue_stopped(struct net_device *pnetdev)
 		netif_tx_queue_stopped(netdev_get_tx_queue(pnetdev, 3));
 }
 
+<<<<<<< HEAD
 
 #define BIT0	0x00000001
 #define BIT1	0x00000002
@@ -143,6 +157,9 @@ static inline int rtw_netif_queue_stopped(struct net_device *pnetdev)
 #define BIT36	0x1000000000
 
 extern int RTW_STATUS_CODE(int error_code);
+=======
+int RTW_STATUS_CODE(int error_code);
+>>>>>>> v4.9.227
 
 #define rtw_update_mem_stat(flag, sz) do {} while (0)
 u8 *_rtw_malloc(u32 sz);
@@ -150,6 +167,7 @@ u8 *_rtw_malloc(u32 sz);
 
 void *rtw_malloc2d(int h, int w, int size);
 
+<<<<<<< HEAD
 u32  _rtw_down_sema(struct semaphore *sema);
 
 void _rtw_init_queue(struct __queue *pqueue);
@@ -162,6 +180,14 @@ struct rtw_netdev_priv_indicator {
 };
 struct net_device *rtw_alloc_etherdev_with_old_priv(int sizeof_priv,
 						    void *old_priv);
+=======
+void _rtw_init_queue(struct __queue *pqueue);
+
+struct rtw_netdev_priv_indicator {
+	void *priv;
+};
+struct net_device *rtw_alloc_etherdev_with_old_priv(void *old_priv);
+>>>>>>> v4.9.227
 
 #define rtw_netdev_priv(netdev)					\
 	(((struct rtw_netdev_priv_indicator *)netdev_priv(netdev))->priv)
@@ -176,14 +202,22 @@ void rtw_free_netdev(struct net_device *netdev);
 #define FUNC_ADPT_FMT "%s(%s)"
 #define FUNC_ADPT_ARG(adapter) __func__, adapter->pnetdev->name
 
+<<<<<<< HEAD
 #define rtw_signal_process(pid, sig) kill_pid(find_vpid((pid)), (sig), 1)
 
+=======
+>>>>>>> v4.9.227
 u64 rtw_modular64(u64 x, u64 y);
 
 /* Macros for handling unaligned memory accesses */
 
+<<<<<<< HEAD
 #define RTW_GET_BE24(a) ((((u32) (a)[0]) << 16) | (((u32) (a)[1]) << 8) | \
 			 ((u32) (a)[2]))
+=======
+#define RTW_GET_BE24(a) ((((u32)(a)[0]) << 16) | (((u32) (a)[1]) << 8) | \
+			 ((u32)(a)[2]))
+>>>>>>> v4.9.227
 
 void rtw_buf_free(u8 **buf, u32 *buf_len);
 void rtw_buf_update(u8 **buf, u32 *buf_len, u8 *src, u32 src_len);

@@ -399,7 +399,14 @@ static int __init wireless_nlevent_init(void)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	return register_netdevice_notifier(&wext_netdev_notifier);
+=======
+	err = register_netdevice_notifier(&wext_netdev_notifier);
+	if (err)
+		unregister_pernet_subsys(&wext_pernet_ops);
+	return err;
+>>>>>>> v4.9.227
 }
 
 subsys_initcall(wireless_nlevent_init);
@@ -656,7 +663,12 @@ struct iw_statistics *get_wireless_stats(struct net_device *dev)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int iw_handler_get_iwstats(struct net_device *		dev,
+=======
+/* noinline to avoid a bogus warning with -O3 */
+static noinline int iw_handler_get_iwstats(struct net_device *	dev,
+>>>>>>> v4.9.227
 				  struct iw_request_info *	info,
 				  union iwreq_data *		wrqu,
 				  char *			extra)

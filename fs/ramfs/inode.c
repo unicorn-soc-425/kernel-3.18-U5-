@@ -50,6 +50,7 @@ static const struct address_space_operations ramfs_aops = {
 	.set_page_dirty	= __set_page_dirty_no_writeback,
 };
 
+<<<<<<< HEAD
 static struct backing_dev_info ramfs_backing_dev_info = {
 	.name		= "ramfs",
 	.ra_pages	= 0,	/* No readahead */
@@ -58,6 +59,8 @@ static struct backing_dev_info ramfs_backing_dev_info = {
 			  BDI_CAP_READ_MAP | BDI_CAP_WRITE_MAP | BDI_CAP_EXEC_MAP,
 };
 
+=======
+>>>>>>> v4.9.227
 struct inode *ramfs_get_inode(struct super_block *sb,
 				const struct inode *dir, umode_t mode, dev_t dev)
 {
@@ -67,10 +70,16 @@ struct inode *ramfs_get_inode(struct super_block *sb,
 		inode->i_ino = get_next_ino();
 		inode_init_owner(inode, dir, mode);
 		inode->i_mapping->a_ops = &ramfs_aops;
+<<<<<<< HEAD
 		inode->i_mapping->backing_dev_info = &ramfs_backing_dev_info;
 		mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
 		mapping_set_unevictable(inode->i_mapping);
 		inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+		mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
+		mapping_set_unevictable(inode->i_mapping);
+		inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 		switch (mode & S_IFMT) {
 		default:
 			init_special_inode(inode, mode, dev);
@@ -88,6 +97,10 @@ struct inode *ramfs_get_inode(struct super_block *sb,
 			break;
 		case S_IFLNK:
 			inode->i_op = &page_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+			inode_nohighmem(inode);
+>>>>>>> v4.9.227
 			break;
 		}
 	}
@@ -108,7 +121,11 @@ ramfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t dev)
 		d_instantiate(dentry, inode);
 		dget(dentry);	/* Extra count - pin the dentry in core */
 		error = 0;
+<<<<<<< HEAD
 		dir->i_mtime = dir->i_ctime = CURRENT_TIME;
+=======
+		dir->i_mtime = dir->i_ctime = current_time(dir);
+>>>>>>> v4.9.227
 	}
 	return error;
 }
@@ -138,7 +155,11 @@ static int ramfs_symlink(struct inode * dir, struct dentry *dentry, const char *
 		if (!error) {
 			d_instantiate(dentry, inode);
 			dget(dentry);
+<<<<<<< HEAD
 			dir->i_mtime = dir->i_ctime = CURRENT_TIME;
+=======
+			dir->i_mtime = dir->i_ctime = current_time(dir);
+>>>>>>> v4.9.227
 		} else
 			iput(inode);
 	}
@@ -231,8 +252,13 @@ int ramfs_fill_super(struct super_block *sb, void *data, int silent)
 		return err;
 
 	sb->s_maxbytes		= MAX_LFS_FILESIZE;
+<<<<<<< HEAD
 	sb->s_blocksize		= PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits	= PAGE_CACHE_SHIFT;
+=======
+	sb->s_blocksize		= PAGE_SIZE;
+	sb->s_blocksize_bits	= PAGE_SHIFT;
+>>>>>>> v4.9.227
 	sb->s_magic		= RAMFS_MAGIC;
 	sb->s_op		= &ramfs_ops;
 	sb->s_time_gran		= 1;
@@ -267,6 +293,7 @@ static struct file_system_type ramfs_fs_type = {
 int __init init_ramfs_fs(void)
 {
 	static unsigned long once;
+<<<<<<< HEAD
 	int err;
 
 	if (test_and_set_bit(0, &once))
@@ -281,5 +308,11 @@ int __init init_ramfs_fs(void)
 		bdi_destroy(&ramfs_backing_dev_info);
 
 	return err;
+=======
+
+	if (test_and_set_bit(0, &once))
+		return 0;
+	return register_filesystem(&ramfs_fs_type);
+>>>>>>> v4.9.227
 }
 fs_initcall(init_ramfs_fs);

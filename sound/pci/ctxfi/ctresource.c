@@ -127,7 +127,11 @@ static int rsc_master(struct rsc *rsc)
 	return rsc->conj = rsc->idx;
 }
 
+<<<<<<< HEAD
 static struct rsc_ops rsc_generic_ops = {
+=======
+static const struct rsc_ops rsc_generic_ops = {
+>>>>>>> v4.9.227
 	.index		= rsc_index,
 	.output_slot	= audio_ring_slot,
 	.master		= rsc_master,

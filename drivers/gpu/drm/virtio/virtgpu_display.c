@@ -29,8 +29,13 @@
 #include <drm/drm_crtc_helper.h>
 #include <drm/drm_atomic_helper.h>
 
+<<<<<<< HEAD
 #define XRES_MIN   320
 #define YRES_MIN   200
+=======
+#define XRES_MIN    32
+#define YRES_MIN    32
+>>>>>>> v4.9.227
 
 #define XRES_DEF  1024
 #define YRES_DEF   768
@@ -38,6 +43,7 @@
 #define XRES_MAX  8192
 #define YRES_MAX  8192
 
+<<<<<<< HEAD
 static void virtio_gpu_crtc_gamma_set(struct drm_crtc *crtc,
 				      u16 *red, u16 *green, u16 *blue,
 				      uint32_t start, uint32_t size)
@@ -178,6 +184,13 @@ static const struct drm_crtc_funcs virtio_gpu_crtc_funcs = {
 	.destroy                = drm_crtc_cleanup,
 
 	.page_flip              = virtio_gpu_page_flip,
+=======
+static const struct drm_crtc_funcs virtio_gpu_crtc_funcs = {
+	.set_config             = drm_atomic_helper_set_config,
+	.destroy                = drm_crtc_cleanup,
+
+	.page_flip              = drm_atomic_helper_page_flip,
+>>>>>>> v4.9.227
 	.reset                  = drm_atomic_helper_crtc_reset,
 	.atomic_duplicate_state = drm_atomic_helper_crtc_duplicate_state,
 	.atomic_destroy_state   = drm_atomic_helper_crtc_destroy_state,
@@ -188,8 +201,12 @@ static void virtio_gpu_user_framebuffer_destroy(struct drm_framebuffer *fb)
 	struct virtio_gpu_framebuffer *virtio_gpu_fb
 		= to_virtio_gpu_framebuffer(fb);
 
+<<<<<<< HEAD
 	if (virtio_gpu_fb->obj)
 		drm_gem_object_unreference_unlocked(virtio_gpu_fb->obj);
+=======
+	drm_gem_object_unreference_unlocked(virtio_gpu_fb->obj);
+>>>>>>> v4.9.227
 	drm_framebuffer_cleanup(fb);
 	kfree(virtio_gpu_fb);
 }
@@ -215,7 +232,11 @@ static const struct drm_framebuffer_funcs virtio_gpu_fb_funcs = {
 int
 virtio_gpu_framebuffer_init(struct drm_device *dev,
 			    struct virtio_gpu_framebuffer *vgfb,
+<<<<<<< HEAD
 			    struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+			    const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 			    struct drm_gem_object *obj)
 {
 	int ret;
@@ -237,6 +258,7 @@ virtio_gpu_framebuffer_init(struct drm_device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool virtio_gpu_crtc_mode_fixup(struct drm_crtc *crtc,
 				       const struct drm_display_mode *mode,
 				       struct drm_display_mode *adjusted_mode)
@@ -244,6 +266,8 @@ static bool virtio_gpu_crtc_mode_fixup(struct drm_crtc *crtc,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 static void virtio_gpu_crtc_mode_set_nofb(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -274,6 +298,7 @@ static int virtio_gpu_crtc_atomic_check(struct drm_crtc *crtc,
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct drm_crtc_helper_funcs virtio_gpu_crtc_helper_funcs = {
 	.enable        = virtio_gpu_crtc_enable,
 	.disable       = virtio_gpu_crtc_disable,
@@ -289,6 +314,28 @@ static bool virtio_gpu_enc_mode_fixup(struct drm_encoder *encoder,
 	return true;
 }
 
+=======
+static void virtio_gpu_crtc_atomic_flush(struct drm_crtc *crtc,
+					 struct drm_crtc_state *old_state)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&crtc->dev->event_lock, flags);
+	if (crtc->state->event)
+		drm_crtc_send_vblank_event(crtc, crtc->state->event);
+	crtc->state->event = NULL;
+	spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
+}
+
+static const struct drm_crtc_helper_funcs virtio_gpu_crtc_helper_funcs = {
+	.enable        = virtio_gpu_crtc_enable,
+	.disable       = virtio_gpu_crtc_disable,
+	.mode_set_nofb = virtio_gpu_crtc_mode_set_nofb,
+	.atomic_check  = virtio_gpu_crtc_atomic_check,
+	.atomic_flush  = virtio_gpu_crtc_atomic_flush,
+};
+
+>>>>>>> v4.9.227
 static void virtio_gpu_enc_mode_set(struct drm_encoder *encoder,
 				    struct drm_display_mode *mode,
 				    struct drm_display_mode *adjusted_mode)
@@ -352,6 +399,7 @@ static int virtio_gpu_conn_mode_valid(struct drm_connector *connector,
 	return MODE_BAD;
 }
 
+<<<<<<< HEAD
 static struct drm_encoder*
 virtio_gpu_best_encoder(struct drm_connector *connector)
 {
@@ -363,6 +411,9 @@ virtio_gpu_best_encoder(struct drm_connector *connector)
 
 static const struct drm_encoder_helper_funcs virtio_gpu_enc_helper_funcs = {
 	.mode_fixup = virtio_gpu_enc_mode_fixup,
+=======
+static const struct drm_encoder_helper_funcs virtio_gpu_enc_helper_funcs = {
+>>>>>>> v4.9.227
 	.mode_set   = virtio_gpu_enc_mode_set,
 	.enable     = virtio_gpu_enc_enable,
 	.disable    = virtio_gpu_enc_disable,
@@ -371,6 +422,7 @@ static const struct drm_encoder_helper_funcs virtio_gpu_enc_helper_funcs = {
 static const struct drm_connector_helper_funcs virtio_gpu_conn_helper_funcs = {
 	.get_modes    = virtio_gpu_conn_get_modes,
 	.mode_valid   = virtio_gpu_conn_mode_valid,
+<<<<<<< HEAD
 	.best_encoder = virtio_gpu_best_encoder,
 };
 
@@ -384,6 +436,10 @@ static void virtio_gpu_conn_restore(struct drm_connector *connector)
 	DRM_DEBUG("\n");
 }
 
+=======
+};
+
+>>>>>>> v4.9.227
 static enum drm_connector_status virtio_gpu_conn_detect(
 			struct drm_connector *connector,
 			bool force)
@@ -409,10 +465,15 @@ static void virtio_gpu_conn_destroy(struct drm_connector *connector)
 
 static const struct drm_connector_funcs virtio_gpu_connector_funcs = {
 	.dpms = drm_atomic_helper_connector_dpms,
+<<<<<<< HEAD
 	.save = virtio_gpu_conn_save,
 	.restore = virtio_gpu_conn_restore,
 	.detect = virtio_gpu_conn_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes_nomerge,
+=======
+	.detect = virtio_gpu_conn_detect,
+	.fill_modes = drm_helper_probe_single_connector_modes,
+>>>>>>> v4.9.227
 	.destroy = virtio_gpu_conn_destroy,
 	.reset = drm_atomic_helper_connector_reset,
 	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
@@ -430,7 +491,11 @@ static int vgdev_output_init(struct virtio_gpu_device *vgdev, int index)
 	struct drm_connector *connector = &output->conn;
 	struct drm_encoder *encoder = &output->enc;
 	struct drm_crtc *crtc = &output->crtc;
+<<<<<<< HEAD
 	struct drm_plane *plane;
+=======
+	struct drm_plane *primary, *cursor;
+>>>>>>> v4.9.227
 
 	output->index = index;
 	if (index == 0) {
@@ -439,6 +504,7 @@ static int vgdev_output_init(struct virtio_gpu_device *vgdev, int index)
 		output->info.r.height = cpu_to_le32(YRES_DEF);
 	}
 
+<<<<<<< HEAD
 	plane = virtio_gpu_plane_init(vgdev, index);
 	if (IS_ERR(plane))
 		return PTR_ERR(plane);
@@ -447,13 +513,30 @@ static int vgdev_output_init(struct virtio_gpu_device *vgdev, int index)
 	drm_mode_crtc_set_gamma_size(crtc, 256);
 	drm_crtc_helper_add(crtc, &virtio_gpu_crtc_helper_funcs);
 	plane->crtc = crtc;
+=======
+	primary = virtio_gpu_plane_init(vgdev, DRM_PLANE_TYPE_PRIMARY, index);
+	if (IS_ERR(primary))
+		return PTR_ERR(primary);
+	cursor = virtio_gpu_plane_init(vgdev, DRM_PLANE_TYPE_CURSOR, index);
+	if (IS_ERR(cursor))
+		return PTR_ERR(cursor);
+	drm_crtc_init_with_planes(dev, crtc, primary, cursor,
+				  &virtio_gpu_crtc_funcs, NULL);
+	drm_crtc_helper_add(crtc, &virtio_gpu_crtc_helper_funcs);
+	primary->crtc = crtc;
+	cursor->crtc = crtc;
+>>>>>>> v4.9.227
 
 	drm_connector_init(dev, connector, &virtio_gpu_connector_funcs,
 			   DRM_MODE_CONNECTOR_VIRTUAL);
 	drm_connector_helper_add(connector, &virtio_gpu_conn_helper_funcs);
 
 	drm_encoder_init(dev, encoder, &virtio_gpu_enc_funcs,
+<<<<<<< HEAD
 			 DRM_MODE_ENCODER_VIRTUAL);
+=======
+			 DRM_MODE_ENCODER_VIRTUAL, NULL);
+>>>>>>> v4.9.227
 	drm_encoder_helper_add(encoder, &virtio_gpu_enc_helper_funcs);
 	encoder->possible_crtcs = 1 << index;
 
@@ -465,14 +548,22 @@ static int vgdev_output_init(struct virtio_gpu_device *vgdev, int index)
 static struct drm_framebuffer *
 virtio_gpu_user_framebuffer_create(struct drm_device *dev,
 				   struct drm_file *file_priv,
+<<<<<<< HEAD
 				   struct drm_mode_fb_cmd2 *mode_cmd)
+=======
+				   const struct drm_mode_fb_cmd2 *mode_cmd)
+>>>>>>> v4.9.227
 {
 	struct drm_gem_object *obj = NULL;
 	struct virtio_gpu_framebuffer *virtio_gpu_fb;
 	int ret;
 
 	/* lookup object associated with res handle */
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file_priv, mode_cmd->handles[0]);
+=======
+	obj = drm_gem_object_lookup(file_priv, mode_cmd->handles[0]);
+>>>>>>> v4.9.227
 	if (!obj)
 		return ERR_PTR(-EINVAL);
 
@@ -483,14 +574,39 @@ virtio_gpu_user_framebuffer_create(struct drm_device *dev,
 	ret = virtio_gpu_framebuffer_init(dev, virtio_gpu_fb, mode_cmd, obj);
 	if (ret) {
 		kfree(virtio_gpu_fb);
+<<<<<<< HEAD
 		if (obj)
 			drm_gem_object_unreference_unlocked(obj);
+=======
+		drm_gem_object_unreference_unlocked(obj);
+>>>>>>> v4.9.227
 		return NULL;
 	}
 
 	return &virtio_gpu_fb->base;
 }
 
+<<<<<<< HEAD
+=======
+static void vgdev_atomic_commit_tail(struct drm_atomic_state *state)
+{
+	struct drm_device *dev = state->dev;
+
+	drm_atomic_helper_commit_modeset_disables(dev, state);
+	drm_atomic_helper_commit_modeset_enables(dev, state);
+	drm_atomic_helper_commit_planes(dev, state, 0);
+
+	drm_atomic_helper_commit_hw_done(state);
+
+	drm_atomic_helper_wait_for_vblanks(dev, state);
+	drm_atomic_helper_cleanup_planes(dev, state);
+}
+
+static struct drm_mode_config_helper_funcs virtio_mode_config_helpers = {
+	.atomic_commit_tail = vgdev_atomic_commit_tail,
+};
+
+>>>>>>> v4.9.227
 static const struct drm_mode_config_funcs virtio_gpu_mode_funcs = {
 	.fb_create = virtio_gpu_user_framebuffer_create,
 	.atomic_check = drm_atomic_helper_check,
@@ -502,7 +618,12 @@ int virtio_gpu_modeset_init(struct virtio_gpu_device *vgdev)
 	int i;
 
 	drm_mode_config_init(vgdev->ddev);
+<<<<<<< HEAD
 	vgdev->ddev->mode_config.funcs = (void *)&virtio_gpu_mode_funcs;
+=======
+	vgdev->ddev->mode_config.funcs = &virtio_gpu_mode_funcs;
+	vgdev->ddev->mode_config.helper_private = &virtio_mode_config_helpers;
+>>>>>>> v4.9.227
 
 	/* modes will be validated against the framebuffer size */
 	vgdev->ddev->mode_config.min_width = XRES_MIN;

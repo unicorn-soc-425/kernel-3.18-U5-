@@ -1,6 +1,7 @@
 #ifndef _ASM_X86_SIGCONTEXT_H
 #define _ASM_X86_SIGCONTEXT_H
 
+<<<<<<< HEAD
 #include <uapi/asm/sigcontext.h>
 
 #ifdef __i386__
@@ -76,4 +77,10 @@ struct sigcontext {
 	unsigned long reserved1[8];
 };
 #endif /* !__i386__ */
+=======
+/* This is a legacy header - all kernel code includes <uapi/asm/sigcontext.h> directly. */
+
+#include <uapi/asm/sigcontext.h>
+
+>>>>>>> v4.9.227
 #endif /* _ASM_X86_SIGCONTEXT_H */

@@ -18,12 +18,20 @@
 #include <linux/clk.h>
 #include <linux/gpio.h>
 #include <linux/smc91x.h>
+<<<<<<< HEAD
+=======
+#include <linux/pwm.h>
+>>>>>>> v4.9.227
 #include <linux/pwm_backlight.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
+<<<<<<< HEAD
 #include <mach/pxa930.h>
+=======
+#include "pxa930.h"
+>>>>>>> v4.9.227
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/keypad-pxa27x.h>
 
@@ -168,6 +176,7 @@ static inline void tavorevb_init_keypad(void) {}
 #endif /* CONFIG_KEYBOARD_PXA27x || CONFIG_KEYBOARD_PXA27x_MODULE */
 
 #if defined(CONFIG_FB_PXA) || defined(CONFIG_FB_PXA_MODULE)
+<<<<<<< HEAD
 static struct platform_pwm_backlight_data tavorevb_backlight_data[] = {
 	[0] = {
 		/* primary backlight */
@@ -175,14 +184,33 @@ static struct platform_pwm_backlight_data tavorevb_backlight_data[] = {
 		.max_brightness	= 100,
 		.dft_brightness	= 100,
 		.pwm_period_ns	= 100000,
+=======
+static struct pwm_lookup tavorevb_pwm_lookup[] = {
+	PWM_LOOKUP("pxa27x-pwm.0", 1, "pwm-backlight.0", NULL, 100000,
+		   PWM_POLARITY_NORMAL),
+	PWM_LOOKUP("pxa27x-pwm.0", 0, "pwm-backlight.1", NULL, 100000,
+		   PWM_POLARITY_NORMAL),
+};
+
+static struct platform_pwm_backlight_data tavorevb_backlight_data[] = {
+	[0] = {
+		/* primary backlight */
+		.max_brightness	= 100,
+		.dft_brightness	= 100,
+>>>>>>> v4.9.227
 		.enable_gpio	= -1,
 	},
 	[1] = {
 		/* secondary backlight */
+<<<<<<< HEAD
 		.pwm_id		= 0,
 		.max_brightness	= 100,
 		.dft_brightness	= 100,
 		.pwm_period_ns	= 100000,
+=======
+		.max_brightness	= 100,
+		.dft_brightness	= 100,
+>>>>>>> v4.9.227
 		.enable_gpio	= -1,
 	},
 };
@@ -470,6 +498,10 @@ static struct pxafb_mach_info tavorevb_lcd_info = {
 
 static void __init tavorevb_init_lcd(void)
 {
+<<<<<<< HEAD
+=======
+	pwm_add_table(tavorevb_pwm_lookup, ARRAY_SIZE(tavorevb_pwm_lookup));
+>>>>>>> v4.9.227
 	platform_device_register(&tavorevb_backlight_devices[0]);
 	platform_device_register(&tavorevb_backlight_devices[1]);
 	pxa_set_fb_info(NULL, &tavorevb_lcd_info);

@@ -406,8 +406,12 @@ static int ucb1400_ts_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int ucb1400_ts_suspend(struct device *dev)
+=======
+static int __maybe_unused ucb1400_ts_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct ucb1400_ts *ucb = dev_get_platdata(dev);
 	struct input_dev *idev = ucb->ts_idev;
@@ -421,7 +425,11 @@ static int ucb1400_ts_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ucb1400_ts_resume(struct device *dev)
+=======
+static int __maybe_unused ucb1400_ts_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct ucb1400_ts *ucb = dev_get_platdata(dev);
 	struct input_dev *idev = ucb->ts_idev;
@@ -434,7 +442,10 @@ static int ucb1400_ts_resume(struct device *dev)
 	mutex_unlock(&idev->mutex);
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(ucb1400_ts_pm_ops,
 			 ucb1400_ts_suspend, ucb1400_ts_resume);
@@ -444,7 +455,10 @@ static struct platform_driver ucb1400_ts_driver = {
 	.remove	= ucb1400_ts_remove,
 	.driver	= {
 		.name	= "ucb1400_ts",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &ucb1400_ts_pm_ops,
 	},
 };

@@ -17,11 +17,16 @@
 #ifndef __MACH_ZYNQ_COMMON_H__
 #define __MACH_ZYNQ_COMMON_H__
 
+<<<<<<< HEAD
 void zynq_secondary_startup(void);
 
 extern int zynq_slcr_init(void);
 extern int zynq_early_slcr_init(void);
 extern void zynq_slcr_system_reset(void);
+=======
+extern int zynq_slcr_init(void);
+extern int zynq_early_slcr_init(void);
+>>>>>>> v4.9.227
 extern void zynq_slcr_cpu_stop(int cpu);
 extern void zynq_slcr_cpu_start(int cpu);
 extern bool zynq_slcr_cpu_state_read(int cpu);
@@ -29,12 +34,19 @@ extern void zynq_slcr_cpu_state_write(int cpu, bool die);
 extern u32 zynq_slcr_get_device_id(void);
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 extern void secondary_startup(void);
+=======
+>>>>>>> v4.9.227
 extern char zynq_secondary_trampoline;
 extern char zynq_secondary_trampoline_jump;
 extern char zynq_secondary_trampoline_end;
 extern int zynq_cpun_start(u32 address, int cpu);
+<<<<<<< HEAD
 extern struct smp_operations zynq_smp_ops __initdata;
+=======
+extern const struct smp_operations zynq_smp_ops;
+>>>>>>> v4.9.227
 #endif
 
 extern void __iomem *zynq_scu_base;

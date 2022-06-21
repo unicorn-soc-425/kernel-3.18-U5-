@@ -7,6 +7,12 @@ int nl80211_init(void);
 void nl80211_exit(void);
 void nl80211_notify_wiphy(struct cfg80211_registered_device *rdev,
 			  enum nl80211_commands cmd);
+<<<<<<< HEAD
+=======
+void nl80211_notify_iface(struct cfg80211_registered_device *rdev,
+			  struct wireless_dev *wdev,
+			  enum nl80211_commands cmd);
+>>>>>>> v4.9.227
 void nl80211_send_scan_start(struct cfg80211_registered_device *rdev,
 			     struct wireless_dev *wdev);
 struct sk_buff *nl80211_build_scan_msg(struct cfg80211_registered_device *rdev,
@@ -17,7 +23,25 @@ void nl80211_send_sched_scan(struct cfg80211_registered_device *rdev,
 			     struct net_device *netdev, u32 cmd);
 void nl80211_send_sched_scan_results(struct cfg80211_registered_device *rdev,
 				     struct net_device *netdev);
+<<<<<<< HEAD
 void nl80211_send_reg_change_event(struct regulatory_request *request);
+=======
+void nl80211_common_reg_change_event(enum nl80211_commands cmd_id,
+				     struct regulatory_request *request);
+
+static inline void
+nl80211_send_reg_change_event(struct regulatory_request *request)
+{
+	nl80211_common_reg_change_event(NL80211_CMD_REG_CHANGE, request);
+}
+
+static inline void
+nl80211_send_wiphy_reg_change_event(struct regulatory_request *request)
+{
+	nl80211_common_reg_change_event(NL80211_CMD_WIPHY_REG_CHANGE, request);
+}
+
+>>>>>>> v4.9.227
 void nl80211_send_rx_auth(struct cfg80211_registered_device *rdev,
 			  struct net_device *netdev,
 			  const u8 *buf, size_t len, gfp_t gfp);

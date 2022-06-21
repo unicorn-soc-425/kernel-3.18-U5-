@@ -22,6 +22,10 @@
 #define NFS_ACLCNT		0x0002
 #define NFS_DFACL		0x0004
 #define NFS_DFACLCNT		0x0008
+<<<<<<< HEAD
+=======
+#define NFS_ACL_MASK		0x000f
+>>>>>>> v4.9.227
 
 /* Flag for Default ACL entries */
 #define NFS_ACL_DEFAULT		0x1000

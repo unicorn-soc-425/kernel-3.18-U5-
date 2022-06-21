@@ -9,6 +9,10 @@
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
+<<<<<<< HEAD
+=======
+#include <asm/unwind.h>
+>>>>>>> v4.9.227
 
 	.text
 	.align	5
@@ -18,6 +22,10 @@
  * mis-aligned by, and r1 is the number of bytes.  If r1 < 4, then we
  * don't bother; we use byte stores instead.
  */
+<<<<<<< HEAD
+=======
+UNWIND(	.fnstart			)
+>>>>>>> v4.9.227
 1:	subs	r1, r1, #4		@ 1 do we have enough
 	blt	5f			@ 1 bytes to align with?
 	cmp	r3, #2			@ 1
@@ -47,6 +55,12 @@ ENTRY(__memzero)
  * use the LR
  */
 	str	lr, [sp, #-4]!		@ 1
+<<<<<<< HEAD
+=======
+UNWIND(	.fnend				)
+UNWIND(	.fnstart			)
+UNWIND(	.save 	{lr}			)
+>>>>>>> v4.9.227
 	mov	ip, r2			@ 1
 	mov	lr, r2			@ 1
 
@@ -66,6 +80,10 @@ ENTRY(__memzero)
 	tst	r1, #16			@ 1 16 bytes or more?
 	stmneia	r0!, {r2, r3, ip, lr}	@ 4
 	ldr	lr, [sp], #4		@ 1
+<<<<<<< HEAD
+=======
+UNWIND(	.fnend				)
+>>>>>>> v4.9.227
 
 #else
 
@@ -75,6 +93,12 @@ ENTRY(__memzero)
  */
 
 	stmfd	sp!, {r4-r7, lr}
+<<<<<<< HEAD
+=======
+UNWIND(	.fnend		       )
+UNWIND(	.fnstart	       )
+UNWIND(	.save 	{r4-r7, lr}    )
+>>>>>>> v4.9.227
 	mov	r4, r2
 	mov	r5, r2
 	mov	r6, r2
@@ -105,9 +129,17 @@ ENTRY(__memzero)
 	tst	r1, #16
 	stmneia	r0!, {r4-r7}
 	ldmfd	sp!, {r4-r7, lr}
+<<<<<<< HEAD
 
 #endif
 
+=======
+UNWIND(	.fnend		       )
+
+#endif
+
+UNWIND(	.fnstart			)
+>>>>>>> v4.9.227
 4:	tst	r1, #8			@ 1 8 bytes or more?
 	stmneia	r0!, {r2, r3}		@ 2
 	tst	r1, #4			@ 1 4 bytes or more?
@@ -122,4 +154,8 @@ ENTRY(__memzero)
 	tst	r1, #1			@ 1 a byte left over
 	strneb	r2, [r0], #1		@ 1
 	ret	lr			@ 1
+<<<<<<< HEAD
+=======
+UNWIND(	.fnend				)
+>>>>>>> v4.9.227
 ENDPROC(__memzero)

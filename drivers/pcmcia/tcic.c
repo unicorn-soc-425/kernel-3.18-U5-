@@ -349,7 +349,10 @@ static int __init get_tcic_id(void)
 static struct platform_driver tcic_driver = {
 	.driver = {
 		.name = "tcic-pcmcia",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

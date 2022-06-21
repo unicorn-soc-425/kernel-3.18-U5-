@@ -56,7 +56,11 @@ ___TBIJumpX:
 /*
  * TBIRES __TBISwitch( TBIRES Switch, PTBICTX *rpSaveCtx )
  *
+<<<<<<< HEAD
  * Software syncronous context switch between soft threads, save only the
+=======
+ * Software synchronous context switch between soft threads, save only the
+>>>>>>> v4.9.227
  * registers which are actually valid on call entry.
  *
  *	A0FrP, D0RtP, D0.5, D0.6, D0.7      - Saved on stack
@@ -76,7 +80,11 @@ $LSwitchStart:
 	SETL	[A0StP+#8++],D0FrT,D1RtP
 /*
  * Save current frame state - we save all regs because we don't want
+<<<<<<< HEAD
  * uninitialised crap in the TBICTX structure that the asyncronous resumption
+=======
+ * uninitialised crap in the TBICTX structure that the asynchronous resumption
+>>>>>>> v4.9.227
  * of a thread will restore.
  */
 	MOVT	D1Re0,#HI($LSwitchExit)		/* ASync resume point here */
@@ -117,7 +125,11 @@ $LSwitchExit:
  * This routine causes the TBICTX structure specified in State.Sig.pCtx to
  * be restored. This implies that execution will not return to the caller.
  * The State.Sig.TrigMask field will be ored into TXMASKI during the
+<<<<<<< HEAD
  * context switch such that any immediately occuring interrupts occur in
+=======
+ * context switch such that any immediately occurring interrupts occur in
+>>>>>>> v4.9.227
  * the context of the newly specified task. The State.Sig.SaveMask parameter
  * is ignored.
  */

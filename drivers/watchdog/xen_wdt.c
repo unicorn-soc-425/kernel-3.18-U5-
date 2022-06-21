@@ -320,7 +320,10 @@ static struct platform_driver xen_wdt_driver = {
 	.suspend        = xen_wdt_suspend,
 	.resume         = xen_wdt_resume,
 	.driver         = {
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name   = DRV_NAME,
 	},
 };

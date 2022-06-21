@@ -111,6 +111,13 @@ struct bnep_ext_hdr {
 #define BNEPCONNDEL	_IOW('B', 201, int)
 #define BNEPGETCONNLIST	_IOR('B', 210, int)
 #define BNEPGETCONNINFO	_IOR('B', 211, int)
+<<<<<<< HEAD
+=======
+#define BNEPGETSUPPFEAT	_IOR('B', 212, int)
+
+#define BNEP_SETUP_RESPONSE	0
+#define BNEP_SETUP_RSP_SENT	10
+>>>>>>> v4.9.227
 
 struct bnep_connadd_req {
 	int   sock;		/* Connected socket */

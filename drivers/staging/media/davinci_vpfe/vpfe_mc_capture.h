@@ -67,8 +67,11 @@ struct vpfe_device {
 	/* CCDC IRQs used when CCDC/ISIF output to SDRAM */
 	unsigned int			ccdc_irq0;
 	unsigned int			ccdc_irq1;
+<<<<<<< HEAD
 	/* maximum video memory that is available*/
 	unsigned int			video_limit;
+=======
+>>>>>>> v4.9.227
 	/* media device */
 	struct media_device		media_dev;
 	/* ccdc subdevice */

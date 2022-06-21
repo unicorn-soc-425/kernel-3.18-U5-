@@ -56,6 +56,7 @@ void pvr2_wm8775_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)
 		sd->ops->audio->s_routing(sd, input, 0, 0);
 	}
 }
+<<<<<<< HEAD
 
 
 
@@ -68,3 +69,5 @@ void pvr2_wm8775_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

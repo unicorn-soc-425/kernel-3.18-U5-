@@ -124,10 +124,17 @@ static unsigned int icp_native_get_irq(void)
 	unsigned int irq;
 
 	if (vec == XICS_IRQ_SPURIOUS)
+<<<<<<< HEAD
 		return NO_IRQ;
 
 	irq = irq_find_mapping(xics_host, vec);
 	if (likely(irq != NO_IRQ)) {
+=======
+		return 0;
+
+	irq = irq_find_mapping(xics_host, vec);
+	if (likely(irq)) {
+>>>>>>> v4.9.227
 		xics_push_cppr(vec);
 		return irq;
 	}
@@ -138,7 +145,11 @@ static unsigned int icp_native_get_irq(void)
 	/* We might learn about it later, so EOI it */
 	icp_native_set_xirr(xirr);
 
+<<<<<<< HEAD
 	return NO_IRQ;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_SMP
@@ -147,6 +158,7 @@ static void icp_native_cause_ipi(int cpu, unsigned long data)
 {
 	kvmppc_set_host_ipi(cpu, 1);
 #ifdef CONFIG_PPC_DOORBELL
+<<<<<<< HEAD
 	if (cpu_has_feature(CPU_FTR_DBELL) &&
 	    (cpumask_test_cpu(cpu, cpu_sibling_mask(smp_processor_id()))))
 		doorbell_cause_ipi(cpu, data);
@@ -155,6 +167,41 @@ static void icp_native_cause_ipi(int cpu, unsigned long data)
 		icp_native_set_qirr(cpu, IPI_PRIORITY);
 }
 
+=======
+	if (cpu_has_feature(CPU_FTR_DBELL)) {
+		if (cpumask_test_cpu(cpu, cpu_sibling_mask(get_cpu()))) {
+			doorbell_cause_ipi(cpu, data);
+			put_cpu();
+			return;
+		}
+		put_cpu();
+	}
+#endif
+	icp_native_set_qirr(cpu, IPI_PRIORITY);
+}
+
+#ifdef CONFIG_KVM_BOOK3S_HV_POSSIBLE
+void icp_native_cause_ipi_rm(int cpu)
+{
+	/*
+	 * Currently not used to send IPIs to another CPU
+	 * on the same core. Only caller is KVM real mode.
+	 * Need the physical address of the XICS to be
+	 * previously saved in kvm_hstate in the paca.
+	 */
+	unsigned long xics_phys;
+
+	/*
+	 * Just like the cause_ipi functions, it is required to
+	 * include a full barrier (out8 includes a sync) before
+	 * causing the IPI.
+	 */
+	xics_phys = paca[cpu].kvm_hstate.xics_phys;
+	out_rm8((u8 *)(xics_phys + XICS_MFRR), IPI_PRIORITY);
+}
+#endif
+
+>>>>>>> v4.9.227
 /*
  * Called when an interrupt is received on an off-line CPU to
  * clear the interrupt, so that the CPU can go back to nap mode.

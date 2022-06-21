@@ -581,7 +581,10 @@ static int i5k_amb_remove(struct platform_device *pdev)
 
 static struct platform_driver i5k_amb_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = DRVNAME,
 	},
 	.probe = i5k_amb_probe,

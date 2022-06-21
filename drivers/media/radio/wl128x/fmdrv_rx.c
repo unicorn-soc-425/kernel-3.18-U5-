@@ -785,6 +785,7 @@ int fm_rx_set_rds_system(struct fmdev *fmdev, u8 rds_mode)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Returns current RDS operation mode */
 int fm_rx_get_rds_system(struct fmdev *fmdev, u8 *rds_mode)
 {
@@ -801,6 +802,8 @@ int fm_rx_get_rds_system(struct fmdev *fmdev, u8 *rds_mode)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Configures Alternate Frequency switch mode */
 int fm_rx_set_af_switch(struct fmdev *fmdev, u8 af_mode)
 {

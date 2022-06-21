@@ -24,10 +24,17 @@
 #include <linux/delay.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
 #include <plat/orion-gpio.h>
 #include "common.h"
 #include "mpp.h"
+=======
+#include <plat/orion-gpio.h>
+#include "common.h"
+#include "mpp.h"
+#include "orion5x.h"
+>>>>>>> v4.9.227
 
 /*****************************************************************************
  * LaCie 2Big Network Info
@@ -423,6 +430,10 @@ static void __init net2big_init(void)
 /* Warning: LaCie use a wrong mach-type (0x20e=526) in their bootloader. */
 MACHINE_START(NET2BIG, "LaCie 2Big Network")
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= ORION5X_NR_IRQS,
+>>>>>>> v4.9.227
 	.init_machine	= net2big_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,

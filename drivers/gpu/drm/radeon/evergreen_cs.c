@@ -1299,6 +1299,10 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 			return -EINVAL;
 		}
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> v4.9.227
 	case CB_TARGET_MASK:
 		track->cb_target_mask = radeon_get_ib_value(p, idx);
 		track->cb_dirty = true;
@@ -1816,8 +1820,13 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 
 		offset = reloc->gpu_offset +
+<<<<<<< HEAD
 		         (idx_value & 0xfffffff0) +
 		         ((u64)(tmp & 0xff) << 32);
+=======
+			 (idx_value & 0xfffffff0) +
+			 ((u64)(tmp & 0xff) << 32);
+>>>>>>> v4.9.227
 
 		ib[idx + 0] = offset;
 		ib[idx + 1] = (tmp & 0xffffff00) | (upper_32_bits(offset) & 0xff);
@@ -1862,8 +1871,13 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 
 		offset = reloc->gpu_offset +
+<<<<<<< HEAD
 		         idx_value +
 		         ((u64)(radeon_get_ib_value(p, idx+1) & 0xff) << 32);
+=======
+			 idx_value +
+			 ((u64)(radeon_get_ib_value(p, idx+1) & 0xff) << 32);
+>>>>>>> v4.9.227
 
 		ib[idx+0] = offset;
 		ib[idx+1] = upper_32_bits(offset) & 0xff;
@@ -1897,8 +1911,13 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 
 		offset = reloc->gpu_offset +
+<<<<<<< HEAD
 		         idx_value +
 		         ((u64)(radeon_get_ib_value(p, idx+1) & 0xff) << 32);
+=======
+			 idx_value +
+			 ((u64)(radeon_get_ib_value(p, idx+1) & 0xff) << 32);
+>>>>>>> v4.9.227
 
 		ib[idx+0] = offset;
 		ib[idx+1] = upper_32_bits(offset) & 0xff;
@@ -1925,8 +1944,13 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 
 		offset = reloc->gpu_offset +
+<<<<<<< HEAD
 		         radeon_get_ib_value(p, idx+1) +
 		         ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
+=======
+			 radeon_get_ib_value(p, idx+1) +
+			 ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
+>>>>>>> v4.9.227
 
 		ib[idx+1] = offset;
 		ib[idx+2] = upper_32_bits(offset) & 0xff;
@@ -2098,8 +2122,13 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			}
 
 			offset = reloc->gpu_offset +
+<<<<<<< HEAD
 			         (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
 			         ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
+=======
+				 (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
+				 ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
+>>>>>>> v4.9.227
 
 			ib[idx+1] = (ib[idx+1] & 0x3) | (offset & 0xfffffffc);
 			ib[idx+2] = upper_32_bits(offset) & 0xff;
@@ -2209,6 +2238,15 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 		break;
 	}
+<<<<<<< HEAD
+=======
+	case PACKET3_PFP_SYNC_ME:
+		if (pkt->count) {
+			DRM_ERROR("bad PFP_SYNC_ME\n");
+			return -EINVAL;
+		}
+		break;
+>>>>>>> v4.9.227
 	case PACKET3_SURFACE_SYNC:
 		if (pkt->count != 3) {
 			DRM_ERROR("bad SURFACE_SYNC\n");
@@ -2239,8 +2277,13 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 				return -EINVAL;
 			}
 			offset = reloc->gpu_offset +
+<<<<<<< HEAD
 			         (radeon_get_ib_value(p, idx+1) & 0xfffffff8) +
 			         ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
+=======
+				 (radeon_get_ib_value(p, idx+1) & 0xfffffff8) +
+				 ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
+>>>>>>> v4.9.227
 
 			ib[idx+1] = offset & 0xfffffff8;
 			ib[idx+2] = upper_32_bits(offset) & 0xff;
@@ -2261,8 +2304,13 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 
 		offset = reloc->gpu_offset +
+<<<<<<< HEAD
 		         (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
 		         ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
+=======
+			 (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
+			 ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
+>>>>>>> v4.9.227
 
 		ib[idx+1] = offset & 0xfffffffc;
 		ib[idx+2] = (ib[idx+2] & 0xffffff00) | (upper_32_bits(offset) & 0xff);
@@ -2283,8 +2331,13 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 
 		offset = reloc->gpu_offset +
+<<<<<<< HEAD
 		         (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
 		         ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
+=======
+			 (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
+			 ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
+>>>>>>> v4.9.227
 
 		ib[idx+1] = offset & 0xfffffffc;
 		ib[idx+2] = (ib[idx+2] & 0xffffff00) | (upper_32_bits(offset) & 0xff);
@@ -2608,6 +2661,54 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			}
 		}
 		break;
+<<<<<<< HEAD
+=======
+	case PACKET3_SET_APPEND_CNT:
+	{
+		uint32_t areg;
+		uint32_t allowed_reg_base;
+		uint32_t source_sel;
+		if (pkt->count != 2) {
+			DRM_ERROR("bad SET_APPEND_CNT (invalid count)\n");
+			return -EINVAL;
+		}
+
+		allowed_reg_base = GDS_APPEND_COUNT_0;
+		allowed_reg_base -= PACKET3_SET_CONTEXT_REG_START;
+		allowed_reg_base >>= 2;
+
+		areg = idx_value >> 16;
+		if (areg < allowed_reg_base || areg > (allowed_reg_base + 11)) {
+			dev_warn(p->dev, "forbidden register for append cnt 0x%08x at %d\n",
+				 areg, idx);
+			return -EINVAL;
+		}
+
+		source_sel = G_PACKET3_SET_APPEND_CNT_SRC_SELECT(idx_value);
+		if (source_sel == PACKET3_SAC_SRC_SEL_MEM) {
+			uint64_t offset;
+			uint32_t swap;
+			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
+			if (r) {
+				DRM_ERROR("bad SET_APPEND_CNT (missing reloc)\n");
+				return -EINVAL;
+			}
+			offset = radeon_get_ib_value(p, idx + 1);
+			swap = offset & 0x3;
+			offset &= ~0x3;
+
+			offset += ((u64)(radeon_get_ib_value(p, idx + 2) & 0xff)) << 32;
+
+			offset += reloc->gpu_offset;
+			ib[idx+1] = (offset & 0xfffffffc) | swap;
+			ib[idx+2] = upper_32_bits(offset) & 0xff;
+		} else {
+			DRM_ERROR("bad SET_APPEND_CNT (unsupported operation)\n");
+			return -EINVAL;
+		}
+		break;
+	}
+>>>>>>> v4.9.227
 	case PACKET3_NOP:
 		break;
 	default:
@@ -3336,6 +3437,10 @@ static int evergreen_vm_packet3_check(struct radeon_device *rdev,
 	case PACKET3_MPEG_INDEX:
 	case PACKET3_WAIT_REG_MEM:
 	case PACKET3_MEM_WRITE:
+<<<<<<< HEAD
+=======
+	case PACKET3_PFP_SYNC_ME:
+>>>>>>> v4.9.227
 	case PACKET3_SURFACE_SYNC:
 	case PACKET3_EVENT_WRITE:
 	case PACKET3_EVENT_WRITE_EOP:
@@ -3438,6 +3543,30 @@ static int evergreen_vm_packet3_check(struct radeon_device *rdev,
 			}
 		}
 		break;
+<<<<<<< HEAD
+=======
+	case PACKET3_SET_APPEND_CNT: {
+		uint32_t areg;
+		uint32_t allowed_reg_base;
+
+		if (pkt->count != 2) {
+			DRM_ERROR("bad SET_APPEND_CNT (invalid count)\n");
+			return -EINVAL;
+		}
+
+		allowed_reg_base = GDS_APPEND_COUNT_0;
+		allowed_reg_base -= PACKET3_SET_CONTEXT_REG_START;
+		allowed_reg_base >>= 2;
+
+		areg = idx_value >> 16;
+		if (areg < allowed_reg_base || areg > (allowed_reg_base + 11)) {
+			DRM_ERROR("forbidden register for append cnt 0x%08x at %d\n",
+				  areg, idx);
+			return -EINVAL;
+		}
+		break;
+	}
+>>>>>>> v4.9.227
 	default:
 		return -EINVAL;
 	}

@@ -4,6 +4,7 @@
 #include <uapi/linux/netfilter/nf_conntrack_common.h>
 
 struct ip_conntrack_stat {
+<<<<<<< HEAD
 	unsigned int searched;
 	unsigned int found;
 	unsigned int new;
@@ -11,6 +12,11 @@ struct ip_conntrack_stat {
 	unsigned int ignore;
 	unsigned int delete;
 	unsigned int delete_list;
+=======
+	unsigned int found;
+	unsigned int invalid;
+	unsigned int ignore;
+>>>>>>> v4.9.227
 	unsigned int insert;
 	unsigned int insert_failed;
 	unsigned int drop;

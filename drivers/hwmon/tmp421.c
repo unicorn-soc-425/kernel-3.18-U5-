@@ -72,6 +72,13 @@ MODULE_DEVICE_TABLE(i2c, tmp421_id);
 struct tmp421_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
+<<<<<<< HEAD
+=======
+	u32 temp_config[5];
+	struct hwmon_channel_info temp_info;
+	const struct hwmon_channel_info *info[2];
+	struct hwmon_chip_info chip;
+>>>>>>> v4.9.227
 	char valid;
 	unsigned long last_updated;
 	int channels;
@@ -125,6 +132,7 @@ static struct tmp421_data *tmp421_update_device(struct device *dev)
 	return data;
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_value(struct device *dev,
 			       struct device_attribute *devattr, char *buf)
 {
@@ -204,6 +212,48 @@ static const struct attribute_group *tmp421_groups[] = {
 	NULL
 };
 
+=======
+static int tmp421_read(struct device *dev, enum hwmon_sensor_types type,
+		       u32 attr, int channel, long *val)
+{
+	struct tmp421_data *tmp421 = tmp421_update_device(dev);
+
+	switch (attr) {
+	case hwmon_temp_input:
+		if (tmp421->config & TMP421_CONFIG_RANGE)
+			*val = temp_from_u16(tmp421->temp[channel]);
+		else
+			*val = temp_from_s16(tmp421->temp[channel]);
+		return 0;
+	case hwmon_temp_fault:
+		/*
+		 * The OPEN bit signals a fault. This is bit 0 of the temperature
+		 * register (low byte).
+		 */
+		*val = tmp421->temp[channel] & 0x01;
+		return 0;
+	default:
+		return -EOPNOTSUPP;
+	}
+
+}
+
+static umode_t tmp421_is_visible(const void *data, enum hwmon_sensor_types type,
+				 u32 attr, int channel)
+{
+	switch (attr) {
+	case hwmon_temp_fault:
+		if (channel == 0)
+			return 0;
+		return S_IRUGO;
+	case hwmon_temp_input:
+		return S_IRUGO;
+	default:
+		return 0;
+	}
+}
+
+>>>>>>> v4.9.227
 static int tmp421_init_client(struct i2c_client *client)
 {
 	int config, config_orig;
@@ -289,13 +339,25 @@ static int tmp421_detect(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static const struct hwmon_ops tmp421_ops = {
+	.is_visible = tmp421_is_visible,
+	.read = tmp421_read,
+};
+
+>>>>>>> v4.9.227
 static int tmp421_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
 {
 	struct device *dev = &client->dev;
 	struct device *hwmon_dev;
 	struct tmp421_data *data;
+<<<<<<< HEAD
 	int err;
+=======
+	int i, err;
+>>>>>>> v4.9.227
 
 	data = devm_kzalloc(dev, sizeof(struct tmp421_data), GFP_KERNEL);
 	if (!data)
@@ -309,8 +371,26 @@ static int tmp421_probe(struct i2c_client *client,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
 							   data, tmp421_groups);
+=======
+	for (i = 0; i < data->channels; i++)
+		data->temp_config[i] = HWMON_T_INPUT | HWMON_T_FAULT;
+
+	data->chip.ops = &tmp421_ops;
+	data->chip.info = data->info;
+
+	data->info[0] = &data->temp_info;
+
+	data->temp_info.type = hwmon_temp;
+	data->temp_info.config = data->temp_config;
+
+	hwmon_dev = devm_hwmon_device_register_with_info(dev, client->name,
+							 data,
+							 &data->chip,
+							 NULL);
+>>>>>>> v4.9.227
 	return PTR_ERR_OR_ZERO(hwmon_dev);
 }
 

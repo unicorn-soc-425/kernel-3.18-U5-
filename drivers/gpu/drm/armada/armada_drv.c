@@ -102,6 +102,10 @@ static int armada_drm_load(struct drm_device *dev, unsigned long flags)
 	dev->mode_config.preferred_depth = 24;
 	dev->mode_config.funcs = &armada_drm_mode_config_funcs;
 	drm_mm_init(&priv->linear, mem->start, resource_size(mem));
+<<<<<<< HEAD
+=======
+	mutex_init(&priv->linear_lock);
+>>>>>>> v4.9.227
 
 	ret = component_bind_all(dev->dev, dev);
 	if (ret)
@@ -112,7 +116,10 @@ static int armada_drm_load(struct drm_device *dev, unsigned long flags)
 		goto err_comp;
 
 	dev->irq_enabled = true;
+<<<<<<< HEAD
 	dev->vblank_disable_allowed = 1;
+=======
+>>>>>>> v4.9.227
 
 	ret = armada_fbdev_init(dev);
 	if (ret)
@@ -187,12 +194,17 @@ static const struct file_operations armada_drm_fops = {
 
 static struct drm_driver armada_drm_driver = {
 	.load			= armada_drm_load,
+<<<<<<< HEAD
 	.open			= NULL,
 	.preclose		= NULL,
 	.postclose		= NULL,
 	.lastclose		= armada_drm_lastclose,
 	.unload			= armada_drm_unload,
 	.set_busid		= drm_platform_set_busid,
+=======
+	.lastclose		= armada_drm_lastclose,
+	.unload			= armada_drm_unload,
+>>>>>>> v4.9.227
 	.get_vblank_counter	= drm_vblank_no_hw_counter,
 	.enable_vblank		= armada_drm_enable_vblank,
 	.disable_vblank		= armada_drm_disable_vblank,
@@ -200,7 +212,11 @@ static struct drm_driver armada_drm_driver = {
 	.debugfs_init		= armada_drm_debugfs_init,
 	.debugfs_cleanup	= armada_drm_debugfs_cleanup,
 #endif
+<<<<<<< HEAD
 	.gem_free_object	= armada_gem_free_object,
+=======
+	.gem_free_object_unlocked = armada_gem_free_object,
+>>>>>>> v4.9.227
 	.prime_handle_to_fd	= drm_gem_prime_handle_to_fd,
 	.prime_fd_to_handle	= drm_gem_prime_fd_to_handle,
 	.gem_prime_export	= armada_gem_prime_export,
@@ -215,7 +231,11 @@ static struct drm_driver armada_drm_driver = {
 	.desc			= "Armada SoC DRM",
 	.date			= "20120730",
 	.driver_features	= DRIVER_GEM | DRIVER_MODESET |
+<<<<<<< HEAD
 				  DRIVER_HAVE_IRQ | DRIVER_PRIME,
+=======
+				  DRIVER_PRIME,
+>>>>>>> v4.9.227
 	.ioctls			= armada_ioctls,
 	.fops			= &armada_drm_fops,
 };

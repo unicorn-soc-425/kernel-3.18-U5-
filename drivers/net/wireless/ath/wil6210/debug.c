@@ -30,6 +30,7 @@ void __wil_err(struct wil6210_priv *wil, const char *fmt, ...)
 	va_end(args);
 }
 
+<<<<<<< HEAD
 void __wil_info(struct wil6210_priv *wil, const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -43,6 +44,8 @@ void __wil_info(struct wil6210_priv *wil, const char *fmt, ...)
 	va_end(args);
 }
 
+=======
+>>>>>>> v4.9.227
 void __wil_err_ratelimited(struct wil6210_priv *wil, const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -75,6 +78,22 @@ void wil_dbg_ratelimited(const struct wil6210_priv *wil, const char *fmt, ...)
 	va_end(args);
 }
 
+<<<<<<< HEAD
+=======
+void __wil_info(struct wil6210_priv *wil, const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+	netdev_info(wil_to_ndev(wil), "%pV", &vaf);
+	trace_wil6210_log_info(&vaf);
+	va_end(args);
+}
+
+>>>>>>> v4.9.227
 void wil_dbg_trace(struct wil6210_priv *wil, const char *fmt, ...)
 {
 	struct va_format vaf;

@@ -6,6 +6,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  */
 
 #ifndef __OMAP2_GPMC_H
@@ -229,3 +230,11 @@ extern void gpmc_read_settings_dt(struct device_node *np,
 				  struct gpmc_settings *p);
 
 #endif
+=======
+ *
+ * Do not include this file in any new code, this will get removed
+ * once omap3 boots in device tree only mode.
+ *
+ */
+#include <linux/omap-gpmc.h>
+>>>>>>> v4.9.227

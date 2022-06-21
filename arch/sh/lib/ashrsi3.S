@@ -54,6 +54,7 @@ Boston, MA 02110-1301, USA.  */
 !
 ! (none)
 !
+<<<<<<< HEAD
 
 	.global	__ashrsi3
 	
@@ -70,6 +71,39 @@ __ashrsi3:
 	braf	r5
 #endif
 	mov	r4,r0
+=======
+! __ashrsi3_r0
+!
+! Entry:
+!
+! r4: Value to shift
+! r0: Shifts
+!
+! Exit:
+!
+! r0: Result
+!
+! Destroys:
+!
+! (none)
+
+	.global	__ashrsi3
+	.global	__ashrsi3_r0
+	
+	.align	2
+__ashrsi3:
+	mov	r5,r0
+	.align	2
+__ashrsi3_r0:
+	and	#31,r0
+	mov.l	r4,@-r15
+	mov	r0,r4
+	mova	ashrsi3_table,r0
+	mov.b	@(r0,r4),r4
+	add	r4,r0
+	jmp	@r0
+	mov.l	@r15+,r0
+>>>>>>> v4.9.227
 
 	.align	2
 ashrsi3_table:

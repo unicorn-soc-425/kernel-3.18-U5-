@@ -22,8 +22,11 @@
 #include "xfs_format.h"
 #include "xfs_log_format.h"
 #include "xfs_trans_resv.h"
+<<<<<<< HEAD
 #include "xfs_sb.h"
 #include "xfs_ag.h"
+=======
+>>>>>>> v4.9.227
 #include "xfs_mount.h"
 #include "xfs_inode.h"
 #include "xfs_extent_busy.h"
@@ -49,6 +52,7 @@ xfs_trans_init(
 }
 
 /*
+<<<<<<< HEAD
  * This routine is called to allocate a transaction structure.
  * The type parameter indicates the type of the transaction.  These
  * are enumerated in xfs_trans.h.
@@ -90,6 +94,8 @@ _xfs_trans_alloc(
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Free the transaction structure.  If there is more clean up
  * to do when the structure is freed, add it here.
  */
@@ -101,7 +107,11 @@ xfs_trans_free(
 	xfs_extent_busy_clear(tp->t_mountp, &tp->t_busy, false);
 
 	atomic_dec(&tp->t_mountp->m_active_trans);
+<<<<<<< HEAD
 	if (tp->t_flags & XFS_TRANS_FREEZE_PROT)
+=======
+	if (!(tp->t_flags & XFS_TRANS_NO_WRITECOUNT))
+>>>>>>> v4.9.227
 		sb_end_intwrite(tp->t_mountp->m_super);
 	xfs_trans_free_dqinfo(tp);
 	kmem_zone_free(xfs_trans_zone, tp);
@@ -115,7 +125,11 @@ xfs_trans_free(
  * blocks.  Locks and log items, however, are no inherited.  They must
  * be added to the new transaction explicitly.
  */
+<<<<<<< HEAD
 xfs_trans_t *
+=======
+STATIC xfs_trans_t *
+>>>>>>> v4.9.227
 xfs_trans_dup(
 	xfs_trans_t	*tp)
 {
@@ -127,7 +141,10 @@ xfs_trans_dup(
 	 * Initialize the new transaction structure.
 	 */
 	ntp->t_magic = XFS_TRANS_HEADER_MAGIC;
+<<<<<<< HEAD
 	ntp->t_type = tp->t_type;
+=======
+>>>>>>> v4.9.227
 	ntp->t_mountp = tp->t_mountp;
 	INIT_LIST_HEAD(&ntp->t_items);
 	INIT_LIST_HEAD(&ntp->t_busy);
@@ -137,9 +154,15 @@ xfs_trans_dup(
 
 	ntp->t_flags = XFS_TRANS_PERM_LOG_RES |
 		       (tp->t_flags & XFS_TRANS_RESERVE) |
+<<<<<<< HEAD
 		       (tp->t_flags & XFS_TRANS_FREEZE_PROT);
 	/* We gave our writer reference to the new transaction */
 	tp->t_flags &= ~XFS_TRANS_FREEZE_PROT;
+=======
+		       (tp->t_flags & XFS_TRANS_NO_WRITECOUNT);
+	/* We gave our writer reference to the new transaction */
+	tp->t_flags |= XFS_TRANS_NO_WRITECOUNT;
+>>>>>>> v4.9.227
 	ntp->t_ticket = xfs_log_ticket_get(tp->t_ticket);
 	ntp->t_blk_res = tp->t_blk_res - tp->t_blk_res_used;
 	tp->t_blk_res = tp->t_blk_res_used;
@@ -167,7 +190,11 @@ xfs_trans_dup(
  * This does not do quota reservations. That typically is done by the
  * caller afterwards.
  */
+<<<<<<< HEAD
 int
+=======
+static int
+>>>>>>> v4.9.227
 xfs_trans_reserve(
 	struct xfs_trans	*tp,
 	struct xfs_trans_res	*resp,
@@ -175,7 +202,11 @@ xfs_trans_reserve(
 	uint			rtextents)
 {
 	int		error = 0;
+<<<<<<< HEAD
 	int		rsvd = (tp->t_flags & XFS_TRANS_RESERVE) != 0;
+=======
+	bool		rsvd = (tp->t_flags & XFS_TRANS_RESERVE) != 0;
+>>>>>>> v4.9.227
 
 	/* Mark this thread as being in a transaction */
 	current_set_flags_nested(&tp->t_pflags, PF_FSTRANS);
@@ -186,8 +217,12 @@ xfs_trans_reserve(
 	 * fail if the count would go below zero.
 	 */
 	if (blocks > 0) {
+<<<<<<< HEAD
 		error = xfs_icsb_modify_counters(tp->t_mountp, XFS_SBS_FDBLOCKS,
 					  -((int64_t)blocks), rsvd);
+=======
+		error = xfs_mod_fdblocks(tp->t_mountp, -((int64_t)blocks), rsvd);
+>>>>>>> v4.9.227
 		if (error != 0) {
 			current_restore_flags_nested(&tp->t_pflags, PF_FSTRANS);
 			return -ENOSPC;
@@ -222,7 +257,11 @@ xfs_trans_reserve(
 						resp->tr_logres,
 						resp->tr_logcount,
 						&tp->t_ticket, XFS_TRANSACTION,
+<<<<<<< HEAD
 						permanent, tp->t_type);
+=======
+						permanent);
+>>>>>>> v4.9.227
 		}
 
 		if (error)
@@ -238,8 +277,12 @@ xfs_trans_reserve(
 	 * fail if the count would go below zero.
 	 */
 	if (rtextents > 0) {
+<<<<<<< HEAD
 		error = xfs_mod_incore_sb(tp->t_mountp, XFS_SBS_FREXTENTS,
 					  -((int64_t)rtextents), rsvd);
+=======
+		error = xfs_mod_frextents(tp->t_mountp, -((int64_t)rtextents));
+>>>>>>> v4.9.227
 		if (error) {
 			error = -ENOSPC;
 			goto undo_log;
@@ -255,6 +298,7 @@ xfs_trans_reserve(
 	 */
 undo_log:
 	if (resp->tr_logres > 0) {
+<<<<<<< HEAD
 		int		log_flags;
 
 		if (resp->tr_logflags & XFS_TRANS_PERM_LOG_RES) {
@@ -263,6 +307,9 @@ undo_log:
 			log_flags = 0;
 		}
 		xfs_log_done(tp->t_mountp, tp->t_ticket, NULL, log_flags);
+=======
+		xfs_log_done(tp->t_mountp, tp->t_ticket, NULL, false);
+>>>>>>> v4.9.227
 		tp->t_ticket = NULL;
 		tp->t_log_res = 0;
 		tp->t_flags &= ~XFS_TRANS_PERM_LOG_RES;
@@ -270,8 +317,12 @@ undo_log:
 
 undo_blocks:
 	if (blocks > 0) {
+<<<<<<< HEAD
 		xfs_icsb_modify_counters(tp->t_mountp, XFS_SBS_FDBLOCKS,
 					 (int64_t)blocks, rsvd);
+=======
+		xfs_mod_fdblocks(tp->t_mountp, (int64_t)blocks, rsvd);
+>>>>>>> v4.9.227
 		tp->t_blk_res = 0;
 	}
 
@@ -280,6 +331,67 @@ undo_blocks:
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+int
+xfs_trans_alloc(
+	struct xfs_mount	*mp,
+	struct xfs_trans_res	*resp,
+	uint			blocks,
+	uint			rtextents,
+	uint			flags,
+	struct xfs_trans	**tpp)
+{
+	struct xfs_trans	*tp;
+	int			error;
+
+	if (!(flags & XFS_TRANS_NO_WRITECOUNT))
+		sb_start_intwrite(mp->m_super);
+
+	WARN_ON(mp->m_super->s_writers.frozen == SB_FREEZE_COMPLETE);
+	atomic_inc(&mp->m_active_trans);
+
+	tp = kmem_zone_zalloc(xfs_trans_zone,
+		(flags & XFS_TRANS_NOFS) ? KM_NOFS : KM_SLEEP);
+	tp->t_magic = XFS_TRANS_HEADER_MAGIC;
+	tp->t_flags = flags;
+	tp->t_mountp = mp;
+	INIT_LIST_HEAD(&tp->t_items);
+	INIT_LIST_HEAD(&tp->t_busy);
+
+	error = xfs_trans_reserve(tp, resp, blocks, rtextents);
+	if (error) {
+		xfs_trans_cancel(tp);
+		return error;
+	}
+
+	*tpp = tp;
+	return 0;
+}
+
+/*
+ * Create an empty transaction with no reservation.  This is a defensive
+ * mechanism for routines that query metadata without actually modifying
+ * them -- if the metadata being queried is somehow cross-linked (think a
+ * btree block pointer that points higher in the tree), we risk deadlock.
+ * However, blocks grabbed as part of a transaction can be re-grabbed.
+ * The verifiers will notice the corrupt block and the operation will fail
+ * back to userspace without deadlocking.
+ *
+ * Note the zero-length reservation; this transaction MUST be cancelled
+ * without any dirty data.
+ */
+int
+xfs_trans_alloc_empty(
+	struct xfs_mount		*mp,
+	struct xfs_trans		**tpp)
+{
+	struct xfs_trans_res		resv = {0};
+
+	return xfs_trans_alloc(mp, &resv, 0, 0, XFS_TRANS_NO_WRITECOUNT, tpp);
+}
+
+>>>>>>> v4.9.227
 /*
  * Record the indicated change to the given field for application
  * to the file system's superblock when the transaction commits.
@@ -336,7 +448,10 @@ xfs_trans_mod_sb(
 		 * in-core superblock's counter.  This should only
 		 * be applied to the on-disk superblock.
 		 */
+<<<<<<< HEAD
 		ASSERT(delta < 0);
+=======
+>>>>>>> v4.9.227
 		tp->t_res_fdblocks_delta += delta;
 		if (xfs_sb_version_haslazysbcount(&mp->m_sb))
 			flags &= ~XFS_TRANS_SB_DIRTY;
@@ -490,6 +605,57 @@ xfs_trans_apply_sb_deltas(
 				  sizeof(sbp->sb_frextents) - 1);
 }
 
+<<<<<<< HEAD
+=======
+STATIC int
+xfs_sb_mod8(
+	uint8_t			*field,
+	int8_t			delta)
+{
+	int8_t			counter = *field;
+
+	counter += delta;
+	if (counter < 0) {
+		ASSERT(0);
+		return -EINVAL;
+	}
+	*field = counter;
+	return 0;
+}
+
+STATIC int
+xfs_sb_mod32(
+	uint32_t		*field,
+	int32_t			delta)
+{
+	int32_t			counter = *field;
+
+	counter += delta;
+	if (counter < 0) {
+		ASSERT(0);
+		return -EINVAL;
+	}
+	*field = counter;
+	return 0;
+}
+
+STATIC int
+xfs_sb_mod64(
+	uint64_t		*field,
+	int64_t			delta)
+{
+	int64_t			counter = *field;
+
+	counter += delta;
+	if (counter < 0) {
+		ASSERT(0);
+		return -EINVAL;
+	}
+	*field = counter;
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /*
  * xfs_trans_unreserve_and_mod_sb() is called to release unused reservations
  * and apply superblock counter changes to the in-core superblock.  The
@@ -497,6 +663,7 @@ xfs_trans_apply_sb_deltas(
  * applied to the in-core superblock.  The idea is that that has already been
  * done.
  *
+<<<<<<< HEAD
  * This is done efficiently with a single call to xfs_mod_incore_sb_batch().
  * However, we have to ensure that we only modify each superblock field only
  * once because the application of the delta values may not be atomic. That can
@@ -504,6 +671,8 @@ xfs_trans_apply_sb_deltas(
  * free space counter to put back the entire reservation and then take away
  * what we used.
  *
+=======
+>>>>>>> v4.9.227
  * If we are not logging superblock counters, then the inode allocated/free and
  * used block counts are not updated in the on disk superblock. In this case,
  * XFS_TRANS_SB_DIRTY will not be set when the transaction is updated but we
@@ -511,6 +680,7 @@ xfs_trans_apply_sb_deltas(
  */
 void
 xfs_trans_unreserve_and_mod_sb(
+<<<<<<< HEAD
 	xfs_trans_t	*tp)
 {
 	xfs_mod_sb_t	msb[9];	/* If you add cases, add entries */
@@ -526,6 +696,17 @@ xfs_trans_unreserve_and_mod_sb(
 
 	msbp = msb;
 	rsvd = (tp->t_flags & XFS_TRANS_RESERVE) != 0;
+=======
+	struct xfs_trans	*tp)
+{
+	struct xfs_mount	*mp = tp->t_mountp;
+	bool			rsvd = (tp->t_flags & XFS_TRANS_RESERVE) != 0;
+	int64_t			blkdelta = 0;
+	int64_t			rtxdelta = 0;
+	int64_t			idelta = 0;
+	int64_t			ifreedelta = 0;
+	int			error;
+>>>>>>> v4.9.227
 
 	/* calculate deltas */
 	if (tp->t_blk_res > 0)
@@ -549,26 +730,39 @@ xfs_trans_unreserve_and_mod_sb(
 
 	/* apply the per-cpu counters */
 	if (blkdelta) {
+<<<<<<< HEAD
 		error = xfs_icsb_modify_counters(mp, XFS_SBS_FDBLOCKS,
 						 blkdelta, rsvd);
+=======
+		error = xfs_mod_fdblocks(mp, blkdelta, rsvd);
+>>>>>>> v4.9.227
 		if (error)
 			goto out;
 	}
 
 	if (idelta) {
+<<<<<<< HEAD
 		error = xfs_icsb_modify_counters(mp, XFS_SBS_ICOUNT,
 						 idelta, rsvd);
+=======
+		error = xfs_mod_icount(mp, idelta);
+>>>>>>> v4.9.227
 		if (error)
 			goto out_undo_fdblocks;
 	}
 
 	if (ifreedelta) {
+<<<<<<< HEAD
 		error = xfs_icsb_modify_counters(mp, XFS_SBS_IFREE,
 						 ifreedelta, rsvd);
+=======
+		error = xfs_mod_ifree(mp, ifreedelta);
+>>>>>>> v4.9.227
 		if (error)
 			goto out_undo_icount;
 	}
 
+<<<<<<< HEAD
 	/* apply remaining deltas */
 	if (rtxdelta != 0) {
 		msbp->msb_field = XFS_SBS_FREXTENTS;
@@ -640,6 +834,100 @@ out_undo_icount:
 out_undo_fdblocks:
 	if (blkdelta)
 		xfs_icsb_modify_counters(mp, XFS_SBS_FDBLOCKS, -blkdelta, rsvd);
+=======
+	if (rtxdelta == 0 && !(tp->t_flags & XFS_TRANS_SB_DIRTY))
+		return;
+
+	/* apply remaining deltas */
+	spin_lock(&mp->m_sb_lock);
+	if (rtxdelta) {
+		error = xfs_sb_mod64(&mp->m_sb.sb_frextents, rtxdelta);
+		if (error)
+			goto out_undo_ifree;
+	}
+
+	if (tp->t_dblocks_delta != 0) {
+		error = xfs_sb_mod64(&mp->m_sb.sb_dblocks, tp->t_dblocks_delta);
+		if (error)
+			goto out_undo_frextents;
+	}
+	if (tp->t_agcount_delta != 0) {
+		error = xfs_sb_mod32(&mp->m_sb.sb_agcount, tp->t_agcount_delta);
+		if (error)
+			goto out_undo_dblocks;
+	}
+	if (tp->t_imaxpct_delta != 0) {
+		error = xfs_sb_mod8(&mp->m_sb.sb_imax_pct, tp->t_imaxpct_delta);
+		if (error)
+			goto out_undo_agcount;
+	}
+	if (tp->t_rextsize_delta != 0) {
+		error = xfs_sb_mod32(&mp->m_sb.sb_rextsize,
+				     tp->t_rextsize_delta);
+		if (error)
+			goto out_undo_imaxpct;
+	}
+	if (tp->t_rbmblocks_delta != 0) {
+		error = xfs_sb_mod32(&mp->m_sb.sb_rbmblocks,
+				     tp->t_rbmblocks_delta);
+		if (error)
+			goto out_undo_rextsize;
+	}
+	if (tp->t_rblocks_delta != 0) {
+		error = xfs_sb_mod64(&mp->m_sb.sb_rblocks, tp->t_rblocks_delta);
+		if (error)
+			goto out_undo_rbmblocks;
+	}
+	if (tp->t_rextents_delta != 0) {
+		error = xfs_sb_mod64(&mp->m_sb.sb_rextents,
+				     tp->t_rextents_delta);
+		if (error)
+			goto out_undo_rblocks;
+	}
+	if (tp->t_rextslog_delta != 0) {
+		error = xfs_sb_mod8(&mp->m_sb.sb_rextslog,
+				     tp->t_rextslog_delta);
+		if (error)
+			goto out_undo_rextents;
+	}
+	spin_unlock(&mp->m_sb_lock);
+	return;
+
+out_undo_rextents:
+	if (tp->t_rextents_delta)
+		xfs_sb_mod64(&mp->m_sb.sb_rextents, -tp->t_rextents_delta);
+out_undo_rblocks:
+	if (tp->t_rblocks_delta)
+		xfs_sb_mod64(&mp->m_sb.sb_rblocks, -tp->t_rblocks_delta);
+out_undo_rbmblocks:
+	if (tp->t_rbmblocks_delta)
+		xfs_sb_mod32(&mp->m_sb.sb_rbmblocks, -tp->t_rbmblocks_delta);
+out_undo_rextsize:
+	if (tp->t_rextsize_delta)
+		xfs_sb_mod32(&mp->m_sb.sb_rextsize, -tp->t_rextsize_delta);
+out_undo_imaxpct:
+	if (tp->t_rextsize_delta)
+		xfs_sb_mod8(&mp->m_sb.sb_imax_pct, -tp->t_imaxpct_delta);
+out_undo_agcount:
+	if (tp->t_agcount_delta)
+		xfs_sb_mod32(&mp->m_sb.sb_agcount, -tp->t_agcount_delta);
+out_undo_dblocks:
+	if (tp->t_dblocks_delta)
+		xfs_sb_mod64(&mp->m_sb.sb_dblocks, -tp->t_dblocks_delta);
+out_undo_frextents:
+	if (rtxdelta)
+		xfs_sb_mod64(&mp->m_sb.sb_frextents, -rtxdelta);
+out_undo_ifree:
+	spin_unlock(&mp->m_sb_lock);
+	if (ifreedelta)
+		xfs_mod_ifree(mp, -ifreedelta);
+out_undo_icount:
+	if (idelta)
+		xfs_mod_icount(mp, -idelta);
+out_undo_fdblocks:
+	if (blkdelta)
+		xfs_mod_fdblocks(mp, -blkdelta, rsvd);
+>>>>>>> v4.9.227
 out:
 	ASSERT(error == 0);
 	return;
@@ -696,7 +984,11 @@ void
 xfs_trans_free_items(
 	struct xfs_trans	*tp,
 	xfs_lsn_t		commit_lsn,
+<<<<<<< HEAD
 	int			flags)
+=======
+	bool			abort)
+>>>>>>> v4.9.227
 {
 	struct xfs_log_item_desc *lidp, *next;
 
@@ -707,7 +999,11 @@ xfs_trans_free_items(
 
 		if (commit_lsn != NULLCOMMITLSN)
 			lip->li_ops->iop_committing(lip, commit_lsn);
+<<<<<<< HEAD
 		if (flags & XFS_TRANS_ABORT)
+=======
+		if (abort)
+>>>>>>> v4.9.227
 			lip->li_flags |= XFS_LI_ABORTED;
 		lip->li_ops->iop_unlock(lip);
 
@@ -844,14 +1140,22 @@ xfs_trans_committed_bulk(
  * have already been unlocked as if the commit had succeeded.
  * Do not reference the transaction structure after this call.
  */
+<<<<<<< HEAD
 int
 xfs_trans_commit(
 	struct xfs_trans	*tp,
 	uint			flags)
+=======
+static int
+__xfs_trans_commit(
+	struct xfs_trans	*tp,
+	bool			regrant)
+>>>>>>> v4.9.227
 {
 	struct xfs_mount	*mp = tp->t_mountp;
 	xfs_lsn_t		commit_lsn = -1;
 	int			error = 0;
+<<<<<<< HEAD
 	int			log_flags = 0;
 	int			sync = tp->t_flags & XFS_TRANS_SYNC;
 
@@ -865,6 +1169,11 @@ xfs_trans_commit(
 	}
 
 	/*
+=======
+	int			sync = tp->t_flags & XFS_TRANS_SYNC;
+
+	/*
+>>>>>>> v4.9.227
 	 * If there is nothing to be logged by the transaction,
 	 * then unlock all of the items associated with the
 	 * transaction and free the transaction structure.
@@ -888,7 +1197,11 @@ xfs_trans_commit(
 		xfs_trans_apply_sb_deltas(tp);
 	xfs_trans_apply_dquot_deltas(tp);
 
+<<<<<<< HEAD
 	xfs_log_commit_cil(mp, tp, &commit_lsn, flags);
+=======
+	xfs_log_commit_cil(mp, tp, &commit_lsn, regrant);
+>>>>>>> v4.9.227
 
 	current_restore_flags_nested(&tp->t_pflags, PF_FSTRANS);
 	xfs_trans_free(tp);
@@ -899,9 +1212,15 @@ xfs_trans_commit(
 	 */
 	if (sync) {
 		error = _xfs_log_force_lsn(mp, commit_lsn, XFS_LOG_SYNC, NULL);
+<<<<<<< HEAD
 		XFS_STATS_INC(xs_trans_sync);
 	} else {
 		XFS_STATS_INC(xs_trans_async);
+=======
+		XFS_STATS_INC(mp, xs_trans_sync);
+	} else {
+		XFS_STATS_INC(mp, xs_trans_async);
+>>>>>>> v4.9.227
 	}
 
 	return error;
@@ -916,11 +1235,16 @@ out_unreserve:
 	 */
 	xfs_trans_unreserve_and_mod_dquots(tp);
 	if (tp->t_ticket) {
+<<<<<<< HEAD
 		commit_lsn = xfs_log_done(mp, tp->t_ticket, NULL, log_flags);
+=======
+		commit_lsn = xfs_log_done(mp, tp->t_ticket, NULL, regrant);
+>>>>>>> v4.9.227
 		if (commit_lsn == -1 && !error)
 			error = -EIO;
 	}
 	current_restore_flags_nested(&tp->t_pflags, PF_FSTRANS);
+<<<<<<< HEAD
 	xfs_trans_free_items(tp, NULLCOMMITLSN, error ? XFS_TRANS_ABORT : 0);
 	xfs_trans_free(tp);
 
@@ -928,6 +1252,22 @@ out_unreserve:
 	return error;
 }
 
+=======
+	xfs_trans_free_items(tp, NULLCOMMITLSN, !!error);
+	xfs_trans_free(tp);
+
+	XFS_STATS_INC(mp, xs_trans_empty);
+	return error;
+}
+
+int
+xfs_trans_commit(
+	struct xfs_trans	*tp)
+{
+	return __xfs_trans_commit(tp, false);
+}
+
+>>>>>>> v4.9.227
 /*
  * Unlock all of the transaction's items and free the transaction.
  * The transaction must not have modified any of its items, because
@@ -938,6 +1278,7 @@ out_unreserve:
  */
 void
 xfs_trans_cancel(
+<<<<<<< HEAD
 	xfs_trans_t		*tp,
 	int			flags)
 {
@@ -951,16 +1292,32 @@ xfs_trans_cancel(
 	if ((flags & XFS_TRANS_ABORT) && !(tp->t_flags & XFS_TRANS_DIRTY))
 		flags &= ~XFS_TRANS_ABORT;
 	/*
+=======
+	struct xfs_trans	*tp)
+{
+	struct xfs_mount	*mp = tp->t_mountp;
+	bool			dirty = (tp->t_flags & XFS_TRANS_DIRTY);
+
+	/*
+>>>>>>> v4.9.227
 	 * See if the caller is relying on us to shut down the
 	 * filesystem.  This happens in paths where we detect
 	 * corruption and decide to give up.
 	 */
+<<<<<<< HEAD
 	if ((tp->t_flags & XFS_TRANS_DIRTY) && !XFS_FORCED_SHUTDOWN(mp)) {
+=======
+	if (dirty && !XFS_FORCED_SHUTDOWN(mp)) {
+>>>>>>> v4.9.227
 		XFS_ERROR_REPORT("xfs_trans_cancel", XFS_ERRLEVEL_LOW, mp);
 		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_INCORE);
 	}
 #ifdef DEBUG
+<<<<<<< HEAD
 	if (!(flags & XFS_TRANS_ABORT) && !XFS_FORCED_SHUTDOWN(mp)) {
+=======
+	if (!dirty && !XFS_FORCED_SHUTDOWN(mp)) {
+>>>>>>> v4.9.227
 		struct xfs_log_item_desc *lidp;
 
 		list_for_each_entry(lidp, &tp->t_items, lid_trans)
@@ -970,6 +1327,7 @@ xfs_trans_cancel(
 	xfs_trans_unreserve_and_mod_sb(tp);
 	xfs_trans_unreserve_and_mod_dquots(tp);
 
+<<<<<<< HEAD
 	if (tp->t_ticket) {
 		if (flags & XFS_TRANS_RELEASE_LOG_RES) {
 			ASSERT(tp->t_flags & XFS_TRANS_PERM_LOG_RES);
@@ -979,35 +1337,64 @@ xfs_trans_cancel(
 		}
 		xfs_log_done(mp, tp->t_ticket, NULL, log_flags);
 	}
+=======
+	if (tp->t_ticket)
+		xfs_log_done(mp, tp->t_ticket, NULL, false);
+>>>>>>> v4.9.227
 
 	/* mark this thread as no longer being in a transaction */
 	current_restore_flags_nested(&tp->t_pflags, PF_FSTRANS);
 
+<<<<<<< HEAD
 	xfs_trans_free_items(tp, NULLCOMMITLSN, flags);
+=======
+	xfs_trans_free_items(tp, NULLCOMMITLSN, dirty);
+>>>>>>> v4.9.227
 	xfs_trans_free(tp);
 }
 
 /*
  * Roll from one trans in the sequence of PERMANENT transactions to
  * the next: permanent transactions are only flushed out when
+<<<<<<< HEAD
  * committed with XFS_TRANS_RELEASE_LOG_RES, but we still want as soon
+=======
+ * committed with xfs_trans_commit(), but we still want as soon
+>>>>>>> v4.9.227
  * as possible to let chunks of it go to the log. So we commit the
  * chunk we've been working on and get a new transaction to continue.
  */
 int
+<<<<<<< HEAD
 xfs_trans_roll(
 	struct xfs_trans	**tpp,
 	struct xfs_inode	*dp)
+=======
+__xfs_trans_roll(
+	struct xfs_trans	**tpp,
+	struct xfs_inode	*dp,
+	int			*committed)
+>>>>>>> v4.9.227
 {
 	struct xfs_trans	*trans;
 	struct xfs_trans_res	tres;
 	int			error;
 
+<<<<<<< HEAD
+=======
+	*committed = 0;
+
+>>>>>>> v4.9.227
 	/*
 	 * Ensure that the inode is always logged.
 	 */
 	trans = *tpp;
+<<<<<<< HEAD
 	xfs_trans_log_inode(trans, dp, XFS_ILOG_CORE);
+=======
+	if (dp)
+		xfs_trans_log_inode(trans, dp, XFS_ILOG_CORE);
+>>>>>>> v4.9.227
 
 	/*
 	 * Copy the critical parameters from one trans to the next.
@@ -1023,6 +1410,7 @@ xfs_trans_roll(
 	 * is in progress. The caller takes the responsibility to cancel
 	 * the duplicate transaction that gets returned.
 	 */
+<<<<<<< HEAD
 	error = xfs_trans_commit(trans, 0);
 	if (error)
 		return error;
@@ -1037,6 +1425,16 @@ xfs_trans_roll(
 
 
 	/*
+=======
+	error = __xfs_trans_commit(trans, true);
+	if (error)
+		return error;
+
+	*committed = 1;
+	trans = *tpp;
+
+	/*
+>>>>>>> v4.9.227
 	 * Reserve space in the log for th next transaction.
 	 * This also pushes items in the "AIL", the list of logged items,
 	 * out to disk if they are taking up space at the tail of the log
@@ -1052,6 +1450,22 @@ xfs_trans_roll(
 	if (error)
 		return error;
 
+<<<<<<< HEAD
 	xfs_trans_ijoin(trans, dp, 0);
 	return 0;
 }
+=======
+	if (dp)
+		xfs_trans_ijoin(trans, dp, 0);
+	return 0;
+}
+
+int
+xfs_trans_roll(
+	struct xfs_trans	**tpp,
+	struct xfs_inode	*dp)
+{
+	int			committed;
+	return __xfs_trans_roll(tpp, dp, &committed);
+}
+>>>>>>> v4.9.227

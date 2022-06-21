@@ -57,6 +57,10 @@ static int stw481x_vmmc_regulator_probe(struct platform_device *pdev)
 {
 	struct stw481x *stw481x = dev_get_platdata(&pdev->dev);
 	struct regulator_config config = { };
+<<<<<<< HEAD
+=======
+	struct regulator_dev *rdev;
+>>>>>>> v4.9.227
 	int ret;
 
 	/* First disable the external VMMC if it's active */
@@ -73,6 +77,7 @@ static int stw481x_vmmc_regulator_probe(struct platform_device *pdev)
 	config.regmap = stw481x->map;
 	config.of_node = pdev->dev.of_node;
 	config.init_data = of_get_regulator_init_data(&pdev->dev,
+<<<<<<< HEAD
 						      pdev->dev.of_node);
 
 	stw481x->vmmc_regulator = devm_regulator_register(&pdev->dev,
@@ -81,6 +86,16 @@ static int stw481x_vmmc_regulator_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev,
 			"error initializing STw481x VMMC regulator\n");
 		return PTR_ERR(stw481x->vmmc_regulator);
+=======
+						      pdev->dev.of_node,
+						      &vmmc_regulator);
+
+	rdev = devm_regulator_register(&pdev->dev, &vmmc_regulator, &config);
+	if (IS_ERR(rdev)) {
+		dev_err(&pdev->dev,
+			"error initializing STw481x VMMC regulator\n");
+		return PTR_ERR(rdev);
+>>>>>>> v4.9.227
 	}
 
 	dev_info(&pdev->dev, "initialized STw481x VMMC regulator\n");
@@ -95,7 +110,10 @@ static const struct of_device_id stw481x_vmmc_match[] = {
 static struct platform_driver stw481x_vmmc_regulator_driver = {
 	.driver = {
 		.name  = "stw481x-vmmc-regulator",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = stw481x_vmmc_match,
 	},
 	.probe = stw481x_vmmc_regulator_probe,

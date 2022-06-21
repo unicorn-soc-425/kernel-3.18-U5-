@@ -1,8 +1,12 @@
 Binding for Fairchild FAN53555 regulators
 
 Required properties:
+<<<<<<< HEAD
   - compatible: one of "fcs,fan53555", "silergy,syr827", "silergy,syr828" or
     "halo,hl7509"
+=======
+  - compatible: one of "fcs,fan53555", "silergy,syr827", "silergy,syr828"
+>>>>>>> v4.9.227
   - reg: I2C address
 
 Optional properties:
@@ -11,10 +15,13 @@ Optional properties:
 		voltage. The other one is used for the runtime voltage setting
 		Possible values are either <0> or <1>
   - vin-supply: regulator supplying the vin pin
+<<<<<<< HEAD
   - fcs,disable-suspend: Boolean flag which specifies if suspend voltage
 		configuration should be avoided. If this property is present,
 		then the voltage selector register defined by
 		fcs,suspend-voltage-selector should not be modified at runtime.
+=======
+>>>>>>> v4.9.227
 
 Example:
 
@@ -26,6 +33,7 @@ Example:
 		vin-supply = <&parent_reg>;
 		fcs,suspend-voltage-selector = <1>;
 	};
+<<<<<<< HEAD
 
 	regulator@60 {
 		compatible = "halo,hl7509";
@@ -35,3 +43,5 @@ Example:
 		fcs,suspend-voltage-selector = <1>;
 		fcs,disable-suspend;
 	};
+=======
+>>>>>>> v4.9.227

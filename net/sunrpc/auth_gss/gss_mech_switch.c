@@ -46,7 +46,11 @@
 #include <linux/sunrpc/gss_api.h>
 #include <linux/sunrpc/clnt.h>
 
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> v4.9.227
 # define RPCDBG_FACILITY        RPCDBG_AUTH
 #endif
 
@@ -361,6 +365,21 @@ gss_pseudoflavor_to_service(struct gss_api_mech *gm, u32 pseudoflavor)
 }
 EXPORT_SYMBOL(gss_pseudoflavor_to_service);
 
+<<<<<<< HEAD
+=======
+bool
+gss_pseudoflavor_to_datatouch(struct gss_api_mech *gm, u32 pseudoflavor)
+{
+	int i;
+
+	for (i = 0; i < gm->gm_pf_num; i++) {
+		if (gm->gm_pfs[i].pseudoflavor == pseudoflavor)
+			return gm->gm_pfs[i].datatouch;
+	}
+	return false;
+}
+
+>>>>>>> v4.9.227
 char *
 gss_service_to_auth_domain_name(struct gss_api_mech *gm, u32 service)
 {

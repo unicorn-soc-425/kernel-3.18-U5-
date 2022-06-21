@@ -286,6 +286,7 @@ see the section named "pin control requests from drivers" and
 "drivers needing both pin control and GPIOs" below for details. But in some
 situations a cross-subsystem mapping between pins and GPIOs is needed.
 
+<<<<<<< HEAD
 Since the pin controller subsystem have its pinspace local to the pin
 controller we need a mapping so that the pin control subsystem can figure out
 which pin controller handles control of a certain GPIO pin. Since a single
@@ -293,6 +294,15 @@ pin controller may be muxing several GPIO ranges (typically SoCs that have
 one set of pins, but internally several GPIO silicon blocks, each modelled as
 a struct gpio_chip) any number of GPIO ranges can be added to a pin controller
 instance like this:
+=======
+Since the pin controller subsystem has its pinspace local to the pin controller
+we need a mapping so that the pin control subsystem can figure out which pin
+controller handles control of a certain GPIO pin. Since a single pin controller
+may be muxing several GPIO ranges (typically SoCs that have one set of pins,
+but internally several GPIO silicon blocks, each modelled as a struct
+gpio_chip) any number of GPIO ranges can be added to a pin controller instance
+like this:
+>>>>>>> v4.9.227
 
 struct gpio_chip chip_a;
 struct gpio_chip chip_b;
@@ -493,12 +503,21 @@ Definitions:
 - The combination of a FUNCTION and a PIN GROUP determine a certain function
   for a certain set of pins. The knowledge of the functions and pin groups
   and their machine-specific particulars are kept inside the pinmux driver,
+<<<<<<< HEAD
   from the outside only the enumerators are known, and the driver core can:
 
   - Request the name of a function with a certain selector (>= 0)
   - A list of groups associated with a certain function
   - Request that a certain group in that list to be activated for a certain
     function
+=======
+  from the outside only the enumerators are known, and the driver core can
+  request:
+
+  - The name of a function with a certain selector (>= 0)
+  - A list of groups associated with a certain function
+  - That a certain group in that list to be activated for a certain function
+>>>>>>> v4.9.227
 
   As already described above, pin groups are in turn self-descriptive, so
   the core will retrieve the actual pin range in a certain group from the
@@ -681,12 +700,20 @@ static const struct foo_pmx_func foo_functions[] = {
 	},
 };
 
+<<<<<<< HEAD
 int foo_get_functions_count(struct pinctrl_dev *pctldev)
+=======
+static int foo_get_functions_count(struct pinctrl_dev *pctldev)
+>>>>>>> v4.9.227
 {
 	return ARRAY_SIZE(foo_functions);
 }
 
+<<<<<<< HEAD
 const char *foo_get_fname(struct pinctrl_dev *pctldev, unsigned selector)
+=======
+static const char *foo_get_fname(struct pinctrl_dev *pctldev, unsigned selector)
+>>>>>>> v4.9.227
 {
 	return foo_functions[selector].name;
 }
@@ -700,7 +727,11 @@ static int foo_get_groups(struct pinctrl_dev *pctldev, unsigned selector,
 	return 0;
 }
 
+<<<<<<< HEAD
 int foo_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
+=======
+static int foo_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
+>>>>>>> v4.9.227
 		unsigned group)
 {
 	u8 regbit = (1 << selector + group);
@@ -709,11 +740,19 @@ int foo_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
 	return 0;
 }
 
+<<<<<<< HEAD
 struct pinmux_ops foo_pmxops = {
+=======
+static struct pinmux_ops foo_pmxops = {
+>>>>>>> v4.9.227
 	.get_functions_count = foo_get_functions_count,
 	.get_function_name = foo_get_fname,
 	.get_function_groups = foo_get_groups,
 	.set_mux = foo_set_mux,
+<<<<<<< HEAD
+=======
+	.strict = true,
+>>>>>>> v4.9.227
 };
 
 /* Pinmux operations are handled by some pin controller */
@@ -830,6 +869,14 @@ separate memory range only intended for GPIO driving, and the register
 range dealing with pin config and pin multiplexing get placed into a
 different memory range and a separate section of the data sheet.
 
+<<<<<<< HEAD
+=======
+A flag "strict" in struct pinmux_ops is available to check and deny
+simultaneous access to the same pin from GPIO and pin multiplexing
+consumers on hardware of this type. The pinctrl driver should set this flag
+accordingly.
+
+>>>>>>> v4.9.227
 (B)
 
                        pin config
@@ -850,6 +897,14 @@ possible that the GPIO, pin config and pin multiplex registers are placed into
 the same memory range and the same section of the data sheet, although that
 need not be the case.
 
+<<<<<<< HEAD
+=======
+In some pin controllers, although the physical pins are designed in the same
+way as (B), the GPIO function still can't be enabled at the same time as the
+peripheral functions. So again the "strict" flag should be set, denying
+simultaneous activation by GPIO and other muxed in devices.
+
+>>>>>>> v4.9.227
 From a kernel point of view, however, these are different aspects of the
 hardware and shall be put into different subsystems:
 

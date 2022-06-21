@@ -26,7 +26,15 @@
 #ifndef __SAVAGE_DRM_H__
 #define __SAVAGE_DRM_H__
 
+<<<<<<< HEAD
 #include <drm/drm.h>
+=======
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+>>>>>>> v4.9.227
 
 #ifndef __SAVAGE_SAREA_DEFINES__
 #define __SAVAGE_SAREA_DEFINES__
@@ -209,4 +217,11 @@ union drm_savage_cmd_header {
 	} clear1;		/* SAVAGE_CMD_CLEAR data */
 };
 
+<<<<<<< HEAD
+=======
+#if defined(__cplusplus)
+}
+#endif
+
+>>>>>>> v4.9.227
 #endif

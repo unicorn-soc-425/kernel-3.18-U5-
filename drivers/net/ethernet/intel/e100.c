@@ -414,7 +414,11 @@ enum cb_status {
 
 /**
  * cb_command - Command Block flags
+<<<<<<< HEAD
  * @cb_tx_nc:  0: controler does CRC (normal),  1: CRC from skb memory
+=======
+ * @cb_tx_nc:  0: controller does CRC (normal),  1: CRC from skb memory
+>>>>>>> v4.9.227
  */
 enum cb_command {
 	cb_nop    = 0x0000,
@@ -874,7 +878,11 @@ static int e100_exec_cb(struct nic *nic, struct sk_buff *skb,
 {
 	struct cb *cb;
 	unsigned long flags;
+<<<<<<< HEAD
 	int err = 0;
+=======
+	int err;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&nic->cb_lock, flags);
 
@@ -899,7 +907,11 @@ static int e100_exec_cb(struct nic *nic, struct sk_buff *skb,
 	/* Order is important otherwise we'll be in a race with h/w:
 	 * set S-bit in current first, then clear S-bit in previous. */
 	cb->command |= cpu_to_le16(cb_s);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> v4.9.227
 	cb->prev->command &= cpu_to_le16(~cb_s);
 
 	while (nic->cb_to_send != nic->cb_to_use) {
@@ -1370,8 +1382,13 @@ static inline int e100_load_ucode_wait(struct nic *nic)
 
 	fw = e100_request_firmware(nic);
 	/* If it's NULL, then no ucode is required */
+<<<<<<< HEAD
 	if (!fw || IS_ERR(fw))
 		return PTR_ERR(fw);
+=======
+	if (IS_ERR_OR_NULL(fw))
+		return PTR_ERR_OR_ZERO(fw);
+>>>>>>> v4.9.227
 
 	if ((err = e100_exec_cb(nic, (void *)fw, e100_setup_ucode)))
 		netif_err(nic, probe, nic->netdev,
@@ -1543,7 +1560,11 @@ static int e100_phy_init(struct nic *nic)
 		mdio_write(netdev, nic->mii.phy_id, MII_BMCR, bmcr);
 	} else if ((nic->mac >= mac_82550_D102) || ((nic->flags & ich) &&
 	   (mdio_read(netdev, nic->mii.phy_id, MII_TPISTATUS) & 0x8000) &&
+<<<<<<< HEAD
 		!(nic->eeprom[eeprom_cnfg_mdix] & eeprom_mdix_enabled))) {
+=======
+		(nic->eeprom[eeprom_cnfg_mdix] & eeprom_mdix_enabled))) {
+>>>>>>> v4.9.227
 		/* enable/disable MDI/MDI-X auto-switching. */
 		mdio_write(netdev, nic->mii.phy_id, MII_NCONFIG,
 				nic->mii.force_media ? 0 : NCONFIG_AUTO_SWITCH);
@@ -1770,8 +1791,16 @@ static int e100_xmit_prepare(struct nic *nic, struct cb *cb,
 	dma_addr = pci_map_single(nic->pdev,
 				  skb->data, skb->len, PCI_DMA_TODEVICE);
 	/* If we can't map the skb, have the upper layer try later */
+<<<<<<< HEAD
 	if (pci_dma_mapping_error(nic->pdev, dma_addr))
 		return -ENOMEM;
+=======
+	if (pci_dma_mapping_error(nic->pdev, dma_addr)) {
+		dev_kfree_skb_any(skb);
+		skb = NULL;
+		return -ENOMEM;
+	}
+>>>>>>> v4.9.227
 
 	/*
 	 * Use the last 4 bytes of the SKB payload packet as the CRC, used for
@@ -1843,7 +1872,11 @@ static int e100_tx_clean(struct nic *nic)
 	for (cb = nic->cb_to_clean;
 	    cb->status & cpu_to_le16(cb_complete);
 	    cb = nic->cb_to_clean = cb->next) {
+<<<<<<< HEAD
 		rmb(); /* read skb after status */
+=======
+		dma_rmb(); /* read skb after status */
+>>>>>>> v4.9.227
 		netif_printk(nic, tx_done, KERN_DEBUG, nic->netdev,
 			     "cb[%d]->status = 0x%04X\n",
 			     (int)(((void*)cb - (void*)nic->cbs)/sizeof(struct cb)),
@@ -1993,7 +2026,11 @@ static int e100_rx_indicate(struct nic *nic, struct rx *rx,
 
 	netif_printk(nic, rx_status, KERN_DEBUG, nic->netdev,
 		     "status=0x%04X\n", rfd_status);
+<<<<<<< HEAD
 	rmb(); /* read size after status bit */
+=======
+	dma_rmb(); /* read size after status bit */
+>>>>>>> v4.9.227
 
 	/* If data isn't ready, nothing to indicate */
 	if (unlikely(!(rfd_status & cb_complete))) {
@@ -2922,9 +2959,13 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_set_master(pdev);
 
+<<<<<<< HEAD
 	init_timer(&nic->watchdog);
 	nic->watchdog.function = e100_watchdog;
 	nic->watchdog.data = (unsigned long)nic;
+=======
+	setup_timer(&nic->watchdog, e100_watchdog, (unsigned long)nic);
+>>>>>>> v4.9.227
 
 	INIT_WORK(&nic->tx_timeout_task, e100_tx_timeout_task);
 
@@ -2969,6 +3010,14 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			   nic->params.cbs.max * sizeof(struct cb),
 			   sizeof(u32),
 			   0);
+<<<<<<< HEAD
+=======
+	if (!nic->cbs_pool) {
+		netif_err(nic, probe, nic->netdev, "Cannot create DMA pool, aborting\n");
+		err = -ENOMEM;
+		goto err_out_pool;
+	}
+>>>>>>> v4.9.227
 	netif_info(nic, probe, nic->netdev,
 		   "addr 0x%llx, irq %d, MAC addr %pM\n",
 		   (unsigned long long)pci_resource_start(pdev, use_io ? 1 : 0),
@@ -2976,6 +3025,11 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+err_out_pool:
+	unregister_netdev(netdev);
+>>>>>>> v4.9.227
 err_out_free:
 	e100_free(nic);
 err_out_iounmap:

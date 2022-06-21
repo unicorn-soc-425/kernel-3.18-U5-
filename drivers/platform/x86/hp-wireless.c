@@ -85,6 +85,12 @@ static int hpwl_add(struct acpi_device *device)
 	int err;
 
 	err = hp_wireless_input_setup();
+<<<<<<< HEAD
+=======
+	if (err)
+		pr_err("Failed to setup hp wireless hotkeys\n");
+
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -111,6 +117,7 @@ static int __init hpwl_init(void)
 
 	pr_info("Initializing HPQ6001 module\n");
 	err = acpi_bus_register_driver(&hpwl_driver);
+<<<<<<< HEAD
 	if (err) {
 		pr_err("Unable to register HP wireless control driver.\n");
 		goto error_acpi_register;
@@ -119,6 +126,11 @@ static int __init hpwl_init(void)
 	return 0;
 
 error_acpi_register:
+=======
+	if (err)
+		pr_err("Unable to register HP wireless control driver.\n");
+
+>>>>>>> v4.9.227
 	return err;
 }
 

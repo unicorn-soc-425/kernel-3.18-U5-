@@ -266,7 +266,10 @@ static struct platform_driver vt8500_pwm_driver = {
 	.remove		= vt8500_pwm_remove,
 	.driver		= {
 		.name	= "vt8500-pwm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = vt8500_pwm_dt_ids,
 	},
 };

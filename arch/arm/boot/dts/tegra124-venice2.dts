@@ -8,17 +8,34 @@
 	compatible = "nvidia,venice2", "nvidia,tegra124";
 
 	aliases {
+<<<<<<< HEAD
 		rtc0 = "/i2c@0,7000d000/pmic@40";
 		rtc1 = "/rtc@0,7000e000";
 		serial0 = &uarta;
 	};
 
+=======
+		rtc0 = "/i2c@7000d000/pmic@40";
+		rtc1 = "/rtc@7000e000";
+		serial0 = &uarta;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+>>>>>>> v4.9.227
 	memory {
 		reg = <0x0 0x80000000 0x0 0x80000000>;
 	};
 
+<<<<<<< HEAD
 	host1x@0,50000000 {
 		hdmi@0,54280000 {
+=======
+	host1x@50000000 {
+		hdmi@54280000 {
+>>>>>>> v4.9.227
 			status = "okay";
 
 			vdd-supply = <&vdd_3v3_hdmi>;
@@ -30,20 +47,40 @@
 				<&gpio TEGRA_GPIO(N, 7) GPIO_ACTIVE_HIGH>;
 		};
 
+<<<<<<< HEAD
 		sor@0,54540000 {
+=======
+		sor@54540000 {
+>>>>>>> v4.9.227
 			status = "okay";
 
 			nvidia,dpaux = <&dpaux>;
 			nvidia,panel = <&panel>;
 		};
 
+<<<<<<< HEAD
 		dpaux@0,545c0000 {
+=======
+		dpaux@545c0000 {
+>>>>>>> v4.9.227
 			vdd-supply = <&vdd_3v3_panel>;
 			status = "okay";
 		};
 	};
 
+<<<<<<< HEAD
 	pinmux: pinmux@0,70000868 {
+=======
+	gpu@0,57000000 {
+		/*
+		 * Node left disabled on purpose - the bootloader will enable
+		 * it after having set the VPR up
+		 */
+		vdd-supply = <&vdd_gpu>;
+	};
+
+	pinmux: pinmux@70000868 {
+>>>>>>> v4.9.227
 		pinctrl-names = "boot";
 		pinctrl-0 = <&pinmux_boot>;
 
@@ -584,6 +621,7 @@
 		};
 	};
 
+<<<<<<< HEAD
 	serial@0,70006000 {
 		status = "okay";
 	};
@@ -593,6 +631,17 @@
 	};
 
 	i2c@0,7000c000 {
+=======
+	serial@70006000 {
+		status = "okay";
+	};
+
+	pwm@7000a000 {
+		status = "okay";
+	};
+
+	i2c@7000c000 {
+>>>>>>> v4.9.227
 		status = "okay";
 		clock-frequency = <100000>;
 
@@ -604,7 +653,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	i2c@0,7000c400 {
+=======
+	i2c@7000c400 {
+>>>>>>> v4.9.227
 		status = "okay";
 		clock-frequency = <100000>;
 
@@ -617,17 +670,29 @@
 		};
 	};
 
+<<<<<<< HEAD
 	i2c@0,7000c500 {
+=======
+	i2c@7000c500 {
+>>>>>>> v4.9.227
 		status = "okay";
 		clock-frequency = <100000>;
 	};
 
+<<<<<<< HEAD
 	hdmi_ddc: i2c@0,7000c700 {
+=======
+	hdmi_ddc: i2c@7000c700 {
+>>>>>>> v4.9.227
 		status = "okay";
 		clock-frequency = <100000>;
 	};
 
+<<<<<<< HEAD
 	i2c@0,7000d000 {
+=======
+	i2c@7000d000 {
+>>>>>>> v4.9.227
 		status = "okay";
 		clock-frequency = <400000>;
 
@@ -735,7 +800,11 @@
 					regulator-always-on;
 				};
 
+<<<<<<< HEAD
 				sd6 {
+=======
+				vdd_gpu: sd6 {
+>>>>>>> v4.9.227
 					regulator-name = "+VDD_GPU_AP";
 					regulator-min-microvolt = <650000>;
 					regulator-max-microvolt = <1200000>;
@@ -745,7 +814,11 @@
 					regulator-always-on;
 				};
 
+<<<<<<< HEAD
 				ldo0 {
+=======
+				avdd_1v05_run: ldo0 {
+>>>>>>> v4.9.227
 					regulator-name = "+1.05V_RUN_AVDD";
 					regulator-min-microvolt = <1050000>;
 					regulator-max-microvolt = <1050000>;
@@ -822,7 +895,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	spi@0,7000d400 {
+=======
+	spi@7000d400 {
+>>>>>>> v4.9.227
 		status = "okay";
 
 		cros_ec: cros-ec@0 {
@@ -862,7 +939,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	spi@0,7000da00 {
+=======
+	spi@7000da00 {
+>>>>>>> v4.9.227
 		status = "okay";
 		spi-max-frequency = <25000000>;
 		spi-flash@0 {
@@ -872,7 +953,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	pmc@0,7000e400 {
+=======
+	pmc@7000e400 {
+>>>>>>> v4.9.227
 		nvidia,invert-interrupt;
 		nvidia,suspend-mode = <1>;
 		nvidia,cpu-pwr-good-time = <500>;
@@ -883,11 +968,118 @@
 		nvidia,sys-clock-req-active-high;
 	};
 
+<<<<<<< HEAD
 	hda@0,70030000 {
 		status = "okay";
 	};
 
 	sdhci@0,700b0400 {
+=======
+	hda@70030000 {
+		status = "okay";
+	};
+
+	usb@70090000 {
+		phys = <&{/padctl@7009f000/pads/usb2/lanes/usb2-0}>, /* 1st USB A */
+		       <&{/padctl@7009f000/pads/usb2/lanes/usb2-1}>, /* Internal USB */
+		       <&{/padctl@7009f000/pads/usb2/lanes/usb2-2}>, /* 2nd USB A */
+		       <&{/padctl@7009f000/pads/pcie/lanes/pcie-0}>, /* 1st USB A */
+		       <&{/padctl@7009f000/pads/pcie/lanes/pcie-1}>; /* 2nd USB A */
+		phy-names = "usb2-0", "usb2-1", "usb2-2", "usb3-0", "usb3-1";
+
+		avddio-pex-supply = <&vdd_1v05_run>;
+		dvddio-pex-supply = <&vdd_1v05_run>;
+		avdd-usb-supply = <&vdd_3v3_lp0>;
+		avdd-pll-utmip-supply = <&vddio_1v8>;
+		avdd-pll-erefe-supply = <&avdd_1v05_run>;
+		avdd-usb-ss-pll-supply = <&vdd_1v05_run>;
+		hvdd-usb-ss-supply = <&vdd_3v3_lp0>;
+		hvdd-usb-ss-pll-e-supply = <&vdd_3v3_lp0>;
+
+		status = "okay";
+	};
+
+	padctl@7009f000 {
+		pads {
+			usb2 {
+				status = "okay";
+
+				lanes {
+					usb2-0 {
+						nvidia,function = "xusb";
+						status = "okay";
+					};
+
+					usb2-1 {
+						nvidia,function = "xusb";
+						status = "okay";
+					};
+
+					usb2-2 {
+						nvidia,function = "xusb";
+						status = "okay";
+					};
+				};
+			};
+
+			pcie {
+				status = "okay";
+
+				lanes {
+					pcie-0 {
+						nvidia,function = "usb3-ss";
+						status = "okay";
+					};
+
+					pcie-1 {
+						nvidia,function = "usb3-ss";
+						status = "okay";
+					};
+
+					pcie-1 {
+						nvidia,function = "usb3-ss";
+						status = "okay";
+					};
+				};
+			};
+		};
+
+		ports {
+			usb2-0 {
+				status = "okay";
+				mode = "otg";
+
+				vbus-supply = <&vdd_usb1_vbus>;
+			};
+
+			usb2-1 {
+				status = "okay";
+				mode = "host";
+
+				vbus-supply = <&vdd_run_cam>;
+			};
+
+			usb2-2 {
+				status = "okay";
+				mode = "host";
+
+				vbus-supply = <&vdd_usb3_vbus>;
+			};
+
+			usb3-0 {
+				nvidia,usb2-companion = <0>;
+				status = "okay";
+			};
+
+			usb3-1 {
+				nvidia,usb2-companion = <2>;
+				status = "okay";
+			};
+		};
+	};
+
+	sdhci@700b0400 {
+>>>>>>> v4.9.227
 		cd-gpios = <&gpio TEGRA_GPIO(V, 2) GPIO_ACTIVE_HIGH>;
 		power-gpios = <&gpio TEGRA_GPIO(R, 0) GPIO_ACTIVE_HIGH>;
 		wp-gpios = <&gpio TEGRA_GPIO(Q, 4) GPIO_ACTIVE_LOW>;
@@ -896,6 +1088,7 @@
 		vqmmc-supply = <&vddio_sdmmc3>;
 	};
 
+<<<<<<< HEAD
 	sdhci@0,700b0600 {
 		status = "okay";
 		bus-width = <8>;
@@ -903,33 +1096,67 @@
 
 	ahub@0,70300000 {
 		i2s@0,70301100 {
+=======
+	sdhci@700b0600 {
+		status = "okay";
+		bus-width = <8>;
+		non-removable;
+	};
+
+	ahub@70300000 {
+		i2s@70301100 {
+>>>>>>> v4.9.227
 			status = "okay";
 		};
 	};
 
+<<<<<<< HEAD
 	usb@0,7d000000 {
 		status = "okay";
 	};
 
 	usb-phy@0,7d000000 {
+=======
+	usb@7d000000 {
+		status = "okay";
+	};
+
+	usb-phy@7d000000 {
+>>>>>>> v4.9.227
 		status = "okay";
 		vbus-supply = <&vdd_usb1_vbus>;
 	};
 
+<<<<<<< HEAD
 	usb@0,7d004000 {
 		status = "okay";
 	};
 
 	usb-phy@0,7d004000 {
+=======
+	usb@7d004000 {
+		status = "okay";
+	};
+
+	usb-phy@7d004000 {
+>>>>>>> v4.9.227
 		status = "okay";
 		vbus-supply = <&vdd_run_cam>;
 	};
 
+<<<<<<< HEAD
 	usb@0,7d008000 {
 		status = "okay";
 	};
 
 	usb-phy@0,7d008000 {
+=======
+	usb@7d008000 {
+		status = "okay";
+	};
+
+	usb-phy@7d008000 {
+>>>>>>> v4.9.227
 		status = "okay";
 		vbus-supply = <&vdd_usb3_vbus>;
 	};
@@ -966,7 +1193,11 @@
 			gpios = <&gpio TEGRA_GPIO(Q, 0) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
 			debounce-interval = <10>;
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 	};
 
@@ -1040,6 +1271,11 @@
 			compatible = "regulator-fixed";
 			reg = <5>;
 			regulator-name = "+VDD_LED";
+<<<<<<< HEAD
+=======
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+>>>>>>> v4.9.227
 			gpio = <&gpio TEGRA_GPIO(P, 2) GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 			vin-supply = <&vdd_mux>;

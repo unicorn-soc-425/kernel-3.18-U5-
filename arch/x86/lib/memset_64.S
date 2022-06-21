@@ -1,13 +1,22 @@
 /* Copyright 2002 Andi Kleen, SuSE Labs */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/dwarf2.h>
 #include <asm/cpufeature.h>
 #include <asm/alternative-asm.h>
+=======
+#include <asm/cpufeatures.h>
+#include <asm/alternative-asm.h>
+#include <asm/export.h>
+
+.weak memset
+>>>>>>> v4.9.227
 
 /*
  * ISO C memset - set a memory block to a byte value. This function uses fast
  * string to get better performance than the original function. The code is
+<<<<<<< HEAD
  * simpler and shorter than the orignal function as well.
  *	
  * rdi   destination
@@ -18,6 +27,27 @@
  */	
 	.section .altinstr_replacement, "ax", @progbits
 .Lmemset_c:
+=======
+ * simpler and shorter than the original function as well.
+ *
+ * rdi   destination
+ * rsi   value (char)
+ * rdx   count (bytes)
+ *
+ * rax   original destination
+ */
+ENTRY(memset)
+ENTRY(__memset)
+	/*
+	 * Some CPUs support enhanced REP MOVSB/STOSB feature. It is recommended
+	 * to use it when possible. If not available, use fast string instructions.
+	 *
+	 * Otherwise, use original memset function.
+	 */
+	ALTERNATIVE_2 "jmp memset_orig", "", X86_FEATURE_REP_GOOD, \
+		      "jmp memset_erms", X86_FEATURE_ERMS
+
+>>>>>>> v4.9.227
 	movq %rdi,%r9
 	movq %rdx,%rcx
 	andl $7,%edx
@@ -31,8 +61,15 @@
 	rep stosb
 	movq %r9,%rax
 	ret
+<<<<<<< HEAD
 .Lmemset_e:
 	.previous
+=======
+ENDPROC(memset)
+ENDPROC(__memset)
+EXPORT_SYMBOL(memset)
+EXPORT_SYMBOL(__memset)
+>>>>>>> v4.9.227
 
 /*
  * ISO C memset - set a memory block to a byte value. This function uses
@@ -45,14 +82,19 @@
  *
  * rax   original destination
  */
+<<<<<<< HEAD
 	.section .altinstr_replacement, "ax", @progbits
 .Lmemset_c_e:
+=======
+ENTRY(memset_erms)
+>>>>>>> v4.9.227
 	movq %rdi,%r9
 	movb %sil,%al
 	movq %rdx,%rcx
 	rep stosb
 	movq %r9,%rax
 	ret
+<<<<<<< HEAD
 .Lmemset_e_e:
 	.previous
 
@@ -61,6 +103,11 @@
 ENTRY(memset)
 ENTRY(__memset)
 	CFI_STARTPROC
+=======
+ENDPROC(memset_erms)
+
+ENTRY(memset_orig)
+>>>>>>> v4.9.227
 	movq %rdi,%r10
 
 	/* expand byte value  */
@@ -72,7 +119,10 @@ ENTRY(__memset)
 	movl  %edi,%r9d
 	andl  $7,%r9d
 	jnz  .Lbad_alignment
+<<<<<<< HEAD
 	CFI_REMEMBER_STATE
+=======
+>>>>>>> v4.9.227
 .Lafter_bad_alignment:
 
 	movq  %rdx,%rcx
@@ -122,7 +172,10 @@ ENTRY(__memset)
 	movq	%r10,%rax
 	ret
 
+<<<<<<< HEAD
 	CFI_RESTORE_STATE
+=======
+>>>>>>> v4.9.227
 .Lbad_alignment:
 	cmpq $7,%rdx
 	jbe	.Lhandle_7
@@ -133,6 +186,7 @@ ENTRY(__memset)
 	subq %r8,%rdx
 	jmp .Lafter_bad_alignment
 .Lfinal:
+<<<<<<< HEAD
 	CFI_ENDPROC
 ENDPROC(memset)
 ENDPROC(__memset)
@@ -154,3 +208,6 @@ ENDPROC(__memset)
 	altinstruction_entry __memset,.Lmemset_c_e,X86_FEATURE_ERMS, \
 			     .Lfinal-__memset,.Lmemset_e_e-.Lmemset_c_e
 	.previous
+=======
+ENDPROC(memset_orig)
+>>>>>>> v4.9.227

@@ -396,7 +396,11 @@ static irqreturn_t apds9300_interrupt_handler(int irq, void *private)
 		       IIO_UNMOD_EVENT_CODE(IIO_INTENSITY, 0,
 					    IIO_EV_TYPE_THRESH,
 					    IIO_EV_DIR_EITHER),
+<<<<<<< HEAD
 		       iio_get_time_ns());
+=======
+		       iio_get_time_ns(dev_info));
+>>>>>>> v4.9.227
 
 	apds9300_clear_intr(data);
 
@@ -515,7 +519,10 @@ MODULE_DEVICE_TABLE(i2c, apds9300_id);
 static struct i2c_driver apds9300_driver = {
 	.driver = {
 		.name	= APDS9300_DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= APDS9300_PM_OPS,
 	},
 	.probe		= apds9300_probe,

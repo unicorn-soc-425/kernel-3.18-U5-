@@ -8,7 +8,11 @@
  * I like traps on v9, :))))
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/extable.h>
+>>>>>>> v4.9.227
 #include <linux/sched.h>
 #include <linux/linkage.h>
 #include <linux/kernel.h>
@@ -2051,6 +2055,76 @@ void sun4v_resum_overflow(struct pt_regs *regs)
 	atomic_inc(&sun4v_resum_oflow_cnt);
 }
 
+<<<<<<< HEAD
+=======
+/* Given a set of registers, get the virtual addressi that was being accessed
+ * by the faulting instructions at tpc.
+ */
+static unsigned long sun4v_get_vaddr(struct pt_regs *regs)
+{
+	unsigned int insn;
+
+	if (!copy_from_user(&insn, (void __user *)regs->tpc, 4)) {
+		return compute_effective_address(regs, insn,
+						 (insn >> 25) & 0x1f);
+	}
+	return 0;
+}
+
+/* Attempt to handle non-resumable errors generated from userspace.
+ * Returns true if the signal was handled, false otherwise.
+ */
+bool sun4v_nonresum_error_user_handled(struct pt_regs *regs,
+				  struct sun4v_error_entry *ent) {
+
+	unsigned int attrs = ent->err_attrs;
+
+	if (attrs & SUN4V_ERR_ATTRS_MEMORY) {
+		unsigned long addr = ent->err_raddr;
+		siginfo_t info;
+
+		if (addr == ~(u64)0) {
+			/* This seems highly unlikely to ever occur */
+			pr_emerg("SUN4V NON-RECOVERABLE ERROR: Memory error detected in unknown location!\n");
+		} else {
+			unsigned long page_cnt = DIV_ROUND_UP(ent->err_size,
+							      PAGE_SIZE);
+
+			/* Break the unfortunate news. */
+			pr_emerg("SUN4V NON-RECOVERABLE ERROR: Memory failed at %016lX\n",
+				 addr);
+			pr_emerg("SUN4V NON-RECOVERABLE ERROR:   Claiming %lu ages.\n",
+				 page_cnt);
+
+			while (page_cnt-- > 0) {
+				if (pfn_valid(addr >> PAGE_SHIFT))
+					get_page(pfn_to_page(addr >> PAGE_SHIFT));
+				addr += PAGE_SIZE;
+			}
+		}
+		info.si_signo = SIGKILL;
+		info.si_errno = 0;
+		info.si_trapno = 0;
+		force_sig_info(info.si_signo, &info, current);
+
+		return true;
+	}
+	if (attrs & SUN4V_ERR_ATTRS_PIO) {
+		siginfo_t info;
+
+		info.si_signo = SIGBUS;
+		info.si_code = BUS_ADRERR;
+		info.si_addr = (void __user *)sun4v_get_vaddr(regs);
+		force_sig_info(info.si_signo, &info, current);
+
+		return true;
+	}
+
+	/* Default to doing nothing */
+	return false;
+}
+
+>>>>>>> v4.9.227
 /* We run with %pil set to PIL_NORMAL_MAX and PSTATE_IE enabled in %pstate.
  * Log the event, clear the first word of the entry, and die.
  */
@@ -2075,6 +2149,15 @@ void sun4v_nonresum_error(struct pt_regs *regs, unsigned long offset)
 
 	put_cpu();
 
+<<<<<<< HEAD
+=======
+	if (!(regs->tstate & TSTATE_PRIV) &&
+	    sun4v_nonresum_error_user_handled(regs, &local_copy)) {
+		/* DON'T PANIC: This userspace error was handled. */
+		return;
+	}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PCI
 	/* Check for the special PCI poke sequence. */
 	if (pci_poke_in_progress && pci_poke_cpu == cpu) {
@@ -2427,6 +2510,11 @@ void __noreturn die_if_kernel(char *str, struct pt_regs *regs)
 		}
 		user_instruction_dump ((unsigned int __user *) regs->tpc);
 	}
+<<<<<<< HEAD
+=======
+	if (panic_on_oops)
+		panic("Fatal exception");
+>>>>>>> v4.9.227
 	if (regs->tstate & TSTATE_PRIV)
 		do_exit(SIGKILL);
 	do_exit(SIGSEGV);
@@ -2564,6 +2652,7 @@ void do_cee(struct pt_regs *regs)
 	die_if_kernel("TL0: Cache Error Exception", regs);
 }
 
+<<<<<<< HEAD
 void do_cee_tl1(struct pt_regs *regs)
 {
 	exception_enter();
@@ -2585,6 +2674,8 @@ void do_iae_tl1(struct pt_regs *regs)
 	die_if_kernel("TL1: Instruction Access Exception", regs);
 }
 
+=======
+>>>>>>> v4.9.227
 void do_div0_tl1(struct pt_regs *regs)
 {
 	exception_enter();
@@ -2592,6 +2683,7 @@ void do_div0_tl1(struct pt_regs *regs)
 	die_if_kernel("TL1: DIV0 Exception", regs);
 }
 
+<<<<<<< HEAD
 void do_fpdis_tl1(struct pt_regs *regs)
 {
 	exception_enter();
@@ -2599,6 +2691,8 @@ void do_fpdis_tl1(struct pt_regs *regs)
 	die_if_kernel("TL1: FPU Disabled", regs);
 }
 
+=======
+>>>>>>> v4.9.227
 void do_fpieee_tl1(struct pt_regs *regs)
 {
 	exception_enter();
@@ -2685,6 +2779,10 @@ void do_getpsr(struct pt_regs *regs)
 	}
 }
 
+<<<<<<< HEAD
+=======
+u64 cpu_mondo_counter[NR_CPUS] = {0};
+>>>>>>> v4.9.227
 struct trap_per_cpu trap_block[NR_CPUS];
 EXPORT_SYMBOL(trap_block);
 
@@ -2717,8 +2815,11 @@ void __init trap_init(void)
 					       fault_address) ||
 		     TI_KREGS != offsetof(struct thread_info, kregs) ||
 		     TI_UTRAPS != offsetof(struct thread_info, utraps) ||
+<<<<<<< HEAD
 		     TI_EXEC_DOMAIN != offsetof(struct thread_info,
 						exec_domain) ||
+=======
+>>>>>>> v4.9.227
 		     TI_REG_WINDOW != offsetof(struct thread_info,
 					       reg_window) ||
 		     TI_RWIN_SPTRS != offsetof(struct thread_info,

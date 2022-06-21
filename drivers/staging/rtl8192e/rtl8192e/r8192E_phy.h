@@ -6,10 +6,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -41,6 +44,7 @@
 #define Rtl819XPHY_REGArray			Rtl8192PciEPHY_REGArray
 #define Rtl819XPHY_REG_1T2RArray		Rtl8192PciEPHY_REG_1T2RArray
 
+<<<<<<< HEAD
 extern u32 rtl819XMACPHY_Array_PG[];
 extern u32 rtl819XPHY_REG_1T2RArray[];
 extern u32 rtl819XAGCTAB_Array[];
@@ -48,6 +52,9 @@ extern u32 rtl819XRadioA_Array[];
 extern u32 rtl819XRadioB_Array[];
 extern u32 rtl819XRadioC_Array[];
 extern u32 rtl819XRadioD_Array[];
+=======
+extern u32 rtl819XAGCTAB_Array[];
+>>>>>>> v4.9.227
 
 enum hw90_block {
 	HW90_BLOCK_MAC = 0,
@@ -73,6 +80,7 @@ enum rf90_radio_path {
 #define bMaskLWord                0x0000ffff
 #define bMaskDWord                0xffffffff
 
+<<<<<<< HEAD
 extern u8 rtl8192_phy_CheckIsLegalRFPath(struct net_device *dev,
 					 u32 eRFPath);
 extern void rtl8192_setBBreg(struct net_device *dev, u32 dwRegAddr,
@@ -116,5 +124,38 @@ SetRFPowerState(
 #define PHY_SetRFPowerState SetRFPowerState
 
 extern void PHY_ScanOperationBackup8192(struct net_device *dev, u8 Operation);
+=======
+u8 rtl92e_is_legal_rf_path(struct net_device *dev, u32 eRFPath);
+void rtl92e_set_bb_reg(struct net_device *dev, u32 dwRegAddr,
+		       u32 dwBitMask, u32 dwData);
+u32 rtl92e_get_bb_reg(struct net_device *dev, u32 dwRegAddr, u32 dwBitMask);
+void rtl92e_set_rf_reg(struct net_device *dev, enum rf90_radio_path eRFPath,
+		       u32 RegAddr, u32 BitMask, u32 Data);
+u32 rtl92e_get_rf_reg(struct net_device *dev, enum rf90_radio_path eRFPath,
+		      u32 RegAddr, u32 BitMask);
+void rtl92e_config_mac(struct net_device *dev);
+bool rtl92e_check_bb_and_rf(struct net_device *dev,
+			    enum hw90_block CheckBlock,
+			    enum rf90_radio_path eRFPath);
+bool rtl92e_config_bb(struct net_device *dev);
+void rtl92e_get_tx_power(struct net_device *dev);
+void rtl92e_set_tx_power(struct net_device *dev, u8 channel);
+bool rtl92e_config_phy(struct net_device *dev);
+u8 rtl92e_config_rf_path(struct net_device *dev, enum rf90_radio_path eRFPath);
+
+u8 rtl92e_set_channel(struct net_device *dev, u8 channel);
+void rtl92e_set_bw_mode(struct net_device *dev,
+			enum ht_channel_width Bandwidth,
+			enum ht_extchnl_offset Offset);
+void rtl92e_init_gain(struct net_device *dev, u8 Operation);
+
+void rtl92e_set_rf_off(struct net_device *dev);
+
+bool rtl92e_set_rf_power_state(struct net_device *dev,
+			       enum rt_rf_power_state eRFPowerState);
+#define PHY_SetRFPowerState rtl92e_set_rf_power_state
+
+void rtl92e_scan_op_backup(struct net_device *dev, u8 Operation);
+>>>>>>> v4.9.227
 
 #endif

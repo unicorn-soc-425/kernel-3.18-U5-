@@ -25,8 +25,17 @@ int nv50_disp_dmac_bind(struct nv50_disp_dmac *, struct nvkm_object *, u32);
 extern const struct nv50_disp_dmac_func nv50_disp_core_func;
 
 extern const struct nv50_disp_dmac_func gf119_disp_dmac_func;
+<<<<<<< HEAD
 int gf119_disp_dmac_bind(struct nv50_disp_dmac *, struct nvkm_object *, u32);
 extern const struct nv50_disp_dmac_func gf119_disp_core_func;
+=======
+void gf119_disp_dmac_fini(struct nv50_disp_dmac *);
+int gf119_disp_dmac_bind(struct nv50_disp_dmac *, struct nvkm_object *, u32);
+extern const struct nv50_disp_dmac_func gf119_disp_core_func;
+void gf119_disp_core_fini(struct nv50_disp_dmac *);
+
+extern const struct nv50_disp_dmac_func gp104_disp_dmac_func;
+>>>>>>> v4.9.227
 
 struct nv50_disp_dmac_oclass {
 	int (*ctor)(const struct nv50_disp_dmac_func *,
@@ -87,5 +96,15 @@ extern const struct nv50_disp_dmac_oclass gk110_disp_base_oclass;
 
 extern const struct nv50_disp_dmac_oclass gm107_disp_core_oclass;
 
+<<<<<<< HEAD
 extern const struct nv50_disp_dmac_oclass gm204_disp_core_oclass;
+=======
+extern const struct nv50_disp_dmac_oclass gm200_disp_core_oclass;
+
+extern const struct nv50_disp_dmac_oclass gp100_disp_core_oclass;
+
+extern const struct nv50_disp_dmac_oclass gp104_disp_core_oclass;
+extern const struct nv50_disp_dmac_oclass gp104_disp_base_oclass;
+extern const struct nv50_disp_dmac_oclass gp104_disp_ovly_oclass;
+>>>>>>> v4.9.227
 #endif

@@ -306,7 +306,11 @@ int ocfs2_slot_to_node_num_locked(struct ocfs2_super *osb, int slot_num,
 	assert_spin_locked(&osb->osb_lock);
 
 	BUG_ON(slot_num < 0);
+<<<<<<< HEAD
 	BUG_ON(slot_num > osb->max_slots);
+=======
+	BUG_ON(slot_num >= osb->max_slots);
+>>>>>>> v4.9.227
 
 	if (!si->si_slots[slot_num].sl_valid)
 		return -ENOENT;
@@ -322,8 +326,12 @@ static void __ocfs2_free_slot_info(struct ocfs2_slot_info *si)
 	if (si == NULL)
 		return;
 
+<<<<<<< HEAD
 	if (si->si_inode)
 		iput(si->si_inode);
+=======
+	iput(si->si_inode);
+>>>>>>> v4.9.227
 	if (si->si_bh) {
 		for (i = 0; i < si->si_blocks; i++) {
 			if (si->si_bh[i]) {
@@ -427,7 +435,11 @@ int ocfs2_init_slot_info(struct ocfs2_super *osb)
 	if (!si) {
 		status = -ENOMEM;
 		mlog_errno(status);
+<<<<<<< HEAD
 		goto bail;
+=======
+		return status;
+>>>>>>> v4.9.227
 	}
 
 	si->si_extended = ocfs2_uses_extended_slot_map(osb);
@@ -452,7 +464,11 @@ int ocfs2_init_slot_info(struct ocfs2_super *osb)
 
 	osb->slot_info = (struct ocfs2_slot_info *)si;
 bail:
+<<<<<<< HEAD
 	if (status < 0 && si)
+=======
+	if (status < 0)
+>>>>>>> v4.9.227
 		__ocfs2_free_slot_info(si);
 
 	return status;
@@ -503,8 +519,22 @@ int ocfs2_find_slot(struct ocfs2_super *osb)
 	trace_ocfs2_find_slot(osb->slot_num);
 
 	status = ocfs2_update_disk_slot(osb, si, osb->slot_num);
+<<<<<<< HEAD
 	if (status < 0)
 		mlog_errno(status);
+=======
+	if (status < 0) {
+		mlog_errno(status);
+		/*
+		 * if write block failed, invalidate slot to avoid overwrite
+		 * slot during dismount in case another node rightly has mounted
+		 */
+		spin_lock(&osb->osb_lock);
+		ocfs2_invalidate_slot(si, osb->slot_num);
+		osb->slot_num = OCFS2_INVALID_SLOT;
+		spin_unlock(&osb->osb_lock);
+	}
+>>>>>>> v4.9.227
 
 bail:
 	return status;
@@ -527,6 +557,7 @@ void ocfs2_put_slot(struct ocfs2_super *osb)
 	spin_unlock(&osb->osb_lock);
 
 	status = ocfs2_update_disk_slot(osb, si, slot_num);
+<<<<<<< HEAD
 	if (status < 0) {
 		mlog_errno(status);
 		goto bail;
@@ -536,3 +567,10 @@ bail:
 	ocfs2_free_slot_info(osb);
 }
 
+=======
+	if (status < 0)
+		mlog_errno(status);
+
+	ocfs2_free_slot_info(osb);
+}
+>>>>>>> v4.9.227

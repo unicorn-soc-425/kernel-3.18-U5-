@@ -350,7 +350,11 @@ V.  Recent Changes
     incorrectly defined and corrected (as per Michel Mueller).
 
 02/23/1999 EPK Corrected the Tx full check to check that at least 4 slots
+<<<<<<< HEAD
     were available before reseting the tbusy and tx_full flags
+=======
+    were available before resetting the tbusy and tx_full flags
+>>>>>>> v4.9.227
     (as per Michel Mueller).
 
 03/11/1999 EPK Added Pete Wyckoff's hardware checksumming support.
@@ -1144,7 +1148,11 @@ static void hamachi_tx_timeout(struct net_device *dev)
 	hmp->rx_ring[RX_RING_SIZE-1].status_n_length |= cpu_to_le32(DescEndRing);
 
 	/* Trigger an immediate transmit demand. */
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	dev->stats.tx_errors++;
 
 	/* Restart the chip's Tx/Rx processes . */

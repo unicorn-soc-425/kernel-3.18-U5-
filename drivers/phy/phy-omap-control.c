@@ -29,10 +29,16 @@
 /**
  * omap_control_pcie_pcs - set the PCS delay count
  * @dev: the control module device
+<<<<<<< HEAD
  * @id: index of the pcie PHY (should be 1 or 2)
  * @delay: 8 bit delay value
  */
 void omap_control_pcie_pcs(struct device *dev, u8 id, u8 delay)
+=======
+ * @delay: 8 bit delay value
+ */
+void omap_control_pcie_pcs(struct device *dev, u8 delay)
+>>>>>>> v4.9.227
 {
 	u32 val;
 	struct omap_control_phy	*control_phy;
@@ -55,8 +61,13 @@ void omap_control_pcie_pcs(struct device *dev, u8 id, u8 delay)
 
 	val = readl(control_phy->pcie_pcs);
 	val &= ~(OMAP_CTRL_PCIE_PCS_MASK <<
+<<<<<<< HEAD
 		(id * OMAP_CTRL_PCIE_PCS_DELAY_COUNT_SHIFT));
 	val |= delay << (id * OMAP_CTRL_PCIE_PCS_DELAY_COUNT_SHIFT);
+=======
+		OMAP_CTRL_PCIE_PCS_DELAY_COUNT_SHIFT);
+	val |= (delay << OMAP_CTRL_PCIE_PCS_DELAY_COUNT_SHIFT);
+>>>>>>> v4.9.227
 	writel(val, control_phy->pcie_pcs);
 }
 EXPORT_SYMBOL_GPL(omap_control_pcie_pcs);
@@ -217,7 +228,10 @@ void omap_control_usb_set_mode(struct device *dev,
 		return;
 
 	ctrl_phy = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	if (!ctrl_phy) {
 		dev_err(dev, "Invalid control phy device\n");
 		return;
@@ -242,8 +256,11 @@ void omap_control_usb_set_mode(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(omap_control_usb_set_mode);
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 
+=======
+>>>>>>> v4.9.227
 static const enum omap_control_phy_type otghs_data = OMAP_CTRL_TYPE_OTGHS;
 static const enum omap_control_phy_type usb2_data = OMAP_CTRL_TYPE_USB2;
 static const enum omap_control_phy_type pipe3_data = OMAP_CTRL_TYPE_PIPE3;
@@ -279,8 +296,11 @@ static const struct of_device_id omap_control_phy_id_table[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, omap_control_phy_id_table);
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> v4.9.227
 
 static int omap_control_phy_probe(struct platform_device *pdev)
 {
@@ -288,8 +308,12 @@ static int omap_control_phy_probe(struct platform_device *pdev)
 	const struct of_device_id *of_id;
 	struct omap_control_phy *control_phy;
 
+<<<<<<< HEAD
 	of_id = of_match_device(of_match_ptr(omap_control_phy_id_table),
 				&pdev->dev);
+=======
+	of_id = of_match_device(omap_control_phy_id_table, &pdev->dev);
+>>>>>>> v4.9.227
 	if (!of_id)
 		return -EINVAL;
 
@@ -345,7 +369,11 @@ static struct platform_driver omap_control_phy_driver = {
 	.probe		= omap_control_phy_probe,
 	.driver		= {
 		.name	= "omap-control-phy",
+<<<<<<< HEAD
 		.of_match_table = of_match_ptr(omap_control_phy_id_table),
+=======
+		.of_match_table = omap_control_phy_id_table,
+>>>>>>> v4.9.227
 	},
 };
 
@@ -361,7 +389,11 @@ static void __exit omap_control_phy_exit(void)
 }
 module_exit(omap_control_phy_exit);
 
+<<<<<<< HEAD
 MODULE_ALIAS("platform: omap_control_phy");
+=======
+MODULE_ALIAS("platform:omap_control_phy");
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Texas Instruments Inc.");
 MODULE_DESCRIPTION("OMAP Control Module PHY Driver");
 MODULE_LICENSE("GPL v2");

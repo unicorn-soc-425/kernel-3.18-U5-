@@ -484,9 +484,14 @@ static struct scsi_host_template eesox_template = {
 	.eh_abort_handler		= fas216_eh_abort,
 	.can_queue			= 1,
 	.this_id			= 7,
+<<<<<<< HEAD
 	.sg_tablesize			= SCSI_MAX_SG_CHAIN_SEGMENTS,
 	.dma_boundary			= IOMD_DMA_BOUNDARY,
 	.cmd_per_lun			= 1,
+=======
+	.sg_tablesize			= SG_MAX_SEGMENTS,
+	.dma_boundary			= IOMD_DMA_BOUNDARY,
+>>>>>>> v4.9.227
 	.use_clustering			= DISABLE_CLUSTERING,
 	.proc_name			= "eesox",
 };

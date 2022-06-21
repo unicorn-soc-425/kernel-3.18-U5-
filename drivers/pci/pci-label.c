@@ -16,7 +16,11 @@
  * the instance number and string from the type 41 record and exports
  * it to sysfs.
  *
+<<<<<<< HEAD
  * Please see http://linux.dell.com/wiki/index.php/Oss/libnetdevname for more
+=======
+ * Please see http://linux.dell.com/files/biosdevname/ for more
+>>>>>>> v4.9.227
  * information.
  */
 
@@ -31,8 +35,11 @@
 #include <linux/pci-acpi.h>
 #include "pci.h"
 
+<<<<<<< HEAD
 #define	DEVICE_LABEL_DSM	0x07
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_DMI
 enum smbios_attr_enum {
 	SMBIOS_ATTR_NONE = 0,
@@ -79,7 +86,11 @@ static umode_t smbios_instance_string_exist(struct kobject *kobj,
 	struct device *dev;
 	struct pci_dev *pdev;
 
+<<<<<<< HEAD
 	dev = container_of(kobj, struct device, kobj);
+=======
+	dev = kobj_to_dev(kobj);
+>>>>>>> v4.9.227
 	pdev = to_pci_dev(dev);
 
 	return find_smbios_instance_string(pdev, NULL, SMBIOS_ATTR_NONE) ?
@@ -148,11 +159,14 @@ static inline void pci_remove_smbiosname_file(struct pci_dev *pdev)
 #endif
 
 #ifdef CONFIG_ACPI
+<<<<<<< HEAD
 static const char device_label_dsm_uuid[] = {
 	0xD0, 0x37, 0xC9, 0xE5, 0x53, 0x35, 0x7A, 0x4D,
 	0x91, 0x17, 0xEA, 0x4D, 0x19, 0xC3, 0x43, 0x4D
 };
 
+=======
+>>>>>>> v4.9.227
 enum acpi_attr_enum {
 	ACPI_ATTR_LABEL_SHOW,
 	ACPI_ATTR_INDEX_SHOW,
@@ -179,7 +193,11 @@ static int dsm_get_label(struct device *dev, char *buf,
 	if (!handle)
 		return -1;
 
+<<<<<<< HEAD
 	obj = acpi_evaluate_dsm(handle, device_label_dsm_uuid, 0x2,
+=======
+	obj = acpi_evaluate_dsm(handle, pci_acpi_dsm_uuid, 0x2,
+>>>>>>> v4.9.227
 				DEVICE_LABEL_DSM, NULL);
 	if (!obj)
 		return -1;
@@ -219,7 +237,11 @@ static bool device_has_dsm(struct device *dev)
 	if (!handle)
 		return false;
 
+<<<<<<< HEAD
 	return !!acpi_check_dsm(handle, device_label_dsm_uuid, 0x2,
+=======
+	return !!acpi_check_dsm(handle, pci_acpi_dsm_uuid, 0x2,
+>>>>>>> v4.9.227
 				1 << DEVICE_LABEL_DSM);
 }
 
@@ -228,7 +250,11 @@ static umode_t acpi_index_string_exist(struct kobject *kobj,
 {
 	struct device *dev;
 
+<<<<<<< HEAD
 	dev = container_of(kobj, struct device, kobj);
+=======
+	dev = kobj_to_dev(kobj);
+>>>>>>> v4.9.227
 
 	if (device_has_dsm(dev))
 		return S_IRUGO;

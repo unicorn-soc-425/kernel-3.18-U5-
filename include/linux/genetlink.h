@@ -8,9 +8,19 @@
 extern void genl_lock(void);
 extern void genl_unlock(void);
 #ifdef CONFIG_LOCKDEP
+<<<<<<< HEAD
 extern int lockdep_genl_is_held(void);
 #endif
 
+=======
+extern bool lockdep_genl_is_held(void);
+#endif
+
+/* for synchronisation between af_netlink and genetlink */
+extern atomic_t genl_sk_destructing_cnt;
+extern wait_queue_head_t genl_sk_destructing_waitq;
+
+>>>>>>> v4.9.227
 /**
  * rcu_dereference_genl - rcu_dereference with debug checking
  * @p: The pointer to read, prior to dereferencing

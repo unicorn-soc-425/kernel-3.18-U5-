@@ -222,11 +222,17 @@ static tilepro_bundle_bits rewrite_load_store_unaligned(
 	}
 
 	if (unaligned_printk || unaligned_fixup_count == 0) {
+<<<<<<< HEAD
 		pr_info("Process %d/%s: PC %#lx: Fixup of"
 			" unaligned %s at %#lx.\n",
 			current->pid, current->comm, regs->pc,
 			(mem_op == MEMOP_LOAD ||
 			 mem_op == MEMOP_LOAD_POSTINCR) ?
+=======
+		pr_info("Process %d/%s: PC %#lx: Fixup of unaligned %s at %#lx\n",
+			current->pid, current->comm, regs->pc,
+			mem_op == MEMOP_LOAD || mem_op == MEMOP_LOAD_POSTINCR ?
+>>>>>>> v4.9.227
 			"load" : "store",
 			(unsigned long)addr);
 		if (!unaligned_printk) {

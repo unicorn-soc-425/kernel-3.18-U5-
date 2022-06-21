@@ -107,8 +107,15 @@ static struct usbmix_name_map extigy_map[] = {
  * e.g. no Master and fake PCM volume
  *			Pavel Mihaylov <bin@bash.info>
  */
+<<<<<<< HEAD
 static struct usbmix_dB_map mp3plus_dB_1 = {-4781, 0};	/* just guess */
 static struct usbmix_dB_map mp3plus_dB_2 = {-1781, 618}; /* just guess */
+=======
+static struct usbmix_dB_map mp3plus_dB_1 = {.min = -4781, .max = 0};
+						/* just guess */
+static struct usbmix_dB_map mp3plus_dB_2 = {.min = -1781, .max = 618};
+						/* just guess */
+>>>>>>> v4.9.227
 
 static struct usbmix_name_map mp3plus_map[] = {
 	/* 1: IT pcm */
@@ -179,6 +186,14 @@ static struct usbmix_name_map audigy2nx_map[] = {
 	{ 0 } /* terminator */
 };
 
+<<<<<<< HEAD
+=======
+static struct usbmix_name_map mbox1_map[] = {
+	{ 1, "Clock" },
+	{ 0 } /* terminator */
+};
+
+>>>>>>> v4.9.227
 static struct usbmix_selector_map c400_selectors[] = {
 	{
 		.id = 0x80,
@@ -343,6 +358,7 @@ static struct usbmix_name_map bose_companion5_map[] = {
 	{ 0 }	/* terminator */
 };
 
+<<<<<<< HEAD
 /* Dragonfly DAC 1.2, the dB conversion factor is 1 instead of 256 */
 static struct usbmix_dB_map dragonfly_1_2_dB = {0, 5000};
 static struct usbmix_name_map dragonfly_1_2_map[] = {
@@ -350,6 +366,8 @@ static struct usbmix_name_map dragonfly_1_2_map[] = {
 	{ 0 }	/* terminator */
 };
 
+=======
+>>>>>>> v4.9.227
 /*
  * Dell usb dock with ALC4020 codec had a firmware problem where it got
  * screwed up when zero volume is passed; just skip it as a workaround
@@ -363,6 +381,17 @@ static const struct usbmix_name_map dell_alc4020_map[] = {
 	{ 0 }
 };
 
+<<<<<<< HEAD
+=======
+/* Some mobos shipped with a dummy HD-audio show the invalid GET_MIN/GET_MAX
+ * response for Input Gain Pad (id=19, control=12).  Skip it.
+ */
+static const struct usbmix_name_map asus_rog_map[] = {
+	{ 19, NULL, 12 }, /* FU, Input Gain Pad */
+	{}
+};
+
+>>>>>>> v4.9.227
 /*
  * Control map entries
  */
@@ -450,6 +479,13 @@ static struct usbmix_ctl_map usbmix_ctl_maps[] = {
 		.map = dell_alc4020_map,
 	},
 	{
+<<<<<<< HEAD
+=======
+		.id = USB_ID(0x0dba, 0x1000),
+		.map = mbox1_map,
+	},
+	{
+>>>>>>> v4.9.227
 		.id = USB_ID(0x13e5, 0x0001),
 		.map = scratch_live_map,
 		.ignore_ctl_error = 1,
@@ -478,10 +514,32 @@ static struct usbmix_ctl_map usbmix_ctl_maps[] = {
 		.id = USB_ID(0x05a7, 0x1020),
 		.map = bose_companion5_map,
 	},
+<<<<<<< HEAD
 	{
 		/* Dragonfly DAC 1.2 */
 		.id = USB_ID(0x21b4, 0x0081),
 		.map = dragonfly_1_2_map,
+=======
+	{	/* Gigabyte TRX40 Aorus Pro WiFi */
+		.id = USB_ID(0x0414, 0xa002),
+		.map = asus_rog_map,
+	},
+	{	/* ASUS ROG Zenith II */
+		.id = USB_ID(0x0b05, 0x1916),
+		.map = asus_rog_map,
+	},
+	{	/* ASUS ROG Strix */
+		.id = USB_ID(0x0b05, 0x1917),
+		.map = asus_rog_map,
+	},
+	{	/* MSI TRX40 Creator */
+		.id = USB_ID(0x0db0, 0x0d64),
+		.map = asus_rog_map,
+	},
+	{	/* MSI TRX40 */
+		.id = USB_ID(0x0db0, 0x543d),
+		.map = asus_rog_map,
+>>>>>>> v4.9.227
 	},
 	{ 0 } /* terminator */
 };

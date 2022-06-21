@@ -2,8 +2,11 @@
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
  *
+<<<<<<< HEAD
  * Copyright (c) 2017 The Linux Foundation. All rights reserved.
  *
+=======
+>>>>>>> v4.9.227
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -33,6 +36,7 @@
 #include <linux/iommu.h>
 #include <linux/types.h>
 #include <linux/of_graph.h>
+<<<<<<< HEAD
 #include <asm/sizes.h>
 #include <linux/kthread.h>
 
@@ -41,6 +45,10 @@
 #include <mach/socinfo.h>
 #include <mach/iommu_domains.h>
 #endif
+=======
+#include <linux/of_device.h>
+#include <asm/sizes.h>
+>>>>>>> v4.9.227
 
 #include <drm/drmP.h>
 #include <drm/drm_atomic.h>
@@ -51,6 +59,7 @@
 #include <drm/msm_drm.h>
 #include <drm/drm_gem.h>
 
+<<<<<<< HEAD
 #include "msm_evtlog.h"
 
 struct msm_kms;
@@ -66,6 +75,19 @@ struct msm_gem_submit;
 #define MAX_ENCODERS   8
 #define MAX_BRIDGES    8
 #define MAX_CONNECTORS 8
+=======
+struct msm_kms;
+struct msm_gpu;
+struct msm_mmu;
+struct msm_mdss;
+struct msm_rd_state;
+struct msm_perf_state;
+struct msm_gem_submit;
+struct msm_fence_context;
+struct msm_fence_cb;
+
+#define NUM_DOMAINS 2    /* one for KMS, then one per gpu core (?) */
+>>>>>>> v4.9.227
 
 struct msm_file_private {
 	/* currently we don't do anything useful with this.. but when
@@ -76,6 +98,7 @@ struct msm_file_private {
 };
 
 enum msm_mdp_plane_property {
+<<<<<<< HEAD
 	/* blob properties, always put these first */
 	PLANE_PROP_SCALER,
 	PLANE_PROP_CSC,
@@ -145,10 +168,21 @@ enum msm_mdp_display_id {
 
 struct msm_vblank_ctrl {
 	struct kthread_work work;
+=======
+	PLANE_PROP_ZPOS,
+	PLANE_PROP_ALPHA,
+	PLANE_PROP_PREMULTIPLIED,
+	PLANE_PROP_MAX_NUM
+};
+
+struct msm_vblank_ctrl {
+	struct work_struct work;
+>>>>>>> v4.9.227
 	struct list_head event_list;
 	spinlock_t lock;
 };
 
+<<<<<<< HEAD
 #define MAX_H_TILES_PER_DISPLAY 2
 
 /**
@@ -226,11 +260,23 @@ struct msm_drm_commit {
 
 struct msm_drm_private {
 
+=======
+struct msm_drm_private {
+
+	struct drm_device *dev;
+
+>>>>>>> v4.9.227
 	struct msm_kms *kms;
 
 	/* subordinate devices, if present: */
 	struct platform_device *gpu_pdev;
 
+<<<<<<< HEAD
+=======
+	/* top level MDSS wrapper device (for MDP5 only) */
+	struct msm_mdss *mdss;
+
+>>>>>>> v4.9.227
 	/* possibly this should be in the kms component, but it is
 	 * shared by both mdp4 and mdp5..
 	 */
@@ -245,18 +291,24 @@ struct msm_drm_private {
 	/* DSI is shared by mdp4 and mdp5 */
 	struct msm_dsi *dsi[2];
 
+<<<<<<< HEAD
 	/* Display manager for SDE driver */
 	struct display_manager *dm;
 
+=======
+>>>>>>> v4.9.227
 	/* when we have more than one 'msm_gpu' these need to be an array: */
 	struct msm_gpu *gpu;
 	struct msm_file_private *lastctx;
 
 	struct drm_fb_helper *fbdev;
 
+<<<<<<< HEAD
 	uint32_t next_fence, completed_fence;
 	wait_queue_head_t fence_event;
 
+=======
+>>>>>>> v4.9.227
 	struct msm_rd_state *rd;
 	struct msm_perf_state *perf;
 
@@ -264,9 +316,13 @@ struct msm_drm_private {
 	struct list_head inactive_list;
 
 	struct workqueue_struct *wq;
+<<<<<<< HEAD
 
 	/* callbacks deferred until bo is inactive: */
 	struct list_head fence_cbs;
+=======
+	struct workqueue_struct *atomic_wq;
+>>>>>>> v4.9.227
 
 	/* crtcs pending async atomic updates: */
 	uint32_t pending_crtcs;
@@ -277,6 +333,7 @@ struct msm_drm_private {
 	struct msm_mmu *mmus[NUM_DOMAINS];
 
 	unsigned int num_planes;
+<<<<<<< HEAD
 	struct drm_plane *planes[MAX_PLANES];
 
 	unsigned int num_crtcs;
@@ -297,6 +354,24 @@ struct msm_drm_private {
 	struct drm_property *plane_property[PLANE_PROP_COUNT];
 	struct drm_property *crtc_property[CRTC_PROP_COUNT];
 	struct drm_property *conn_property[CONNECTOR_PROP_COUNT];
+=======
+	struct drm_plane *planes[8];
+
+	unsigned int num_crtcs;
+	struct drm_crtc *crtcs[8];
+
+	unsigned int num_encoders;
+	struct drm_encoder *encoders[8];
+
+	unsigned int num_bridges;
+	struct drm_bridge *bridges[8];
+
+	unsigned int num_connectors;
+	struct drm_connector *connectors[8];
+
+	/* Properties */
+	struct drm_property *plane_property[PLANE_PROP_MAX_NUM];
+>>>>>>> v4.9.227
 
 	/* VRAM carveout, used when no IOMMU: */
 	struct {
@@ -308,6 +383,7 @@ struct msm_drm_private {
 		struct drm_mm mm;
 	} vram;
 
+<<<<<<< HEAD
 	struct msm_vblank_ctrl vblank_ctrl;
 
 	struct msm_evtlog evtlog;
@@ -329,10 +405,25 @@ struct msm_drm_private {
 /* Helper macro for accessing msm_drm_private's event log */
 #define MSM_EVT(dev, x, y) MSM_EVTMSG((dev), 0, (x), (y))
 
+=======
+	struct notifier_block vmap_notifier;
+	struct shrinker shrinker;
+
+	struct msm_vblank_ctrl vblank_ctrl;
+
+	/* task holding struct_mutex.. currently only used in submit path
+	 * to detect and reject faults from copy_from_user() for submit
+	 * ioctl.
+	 */
+	struct task_struct *struct_mutex_task;
+};
+
+>>>>>>> v4.9.227
 struct msm_format {
 	uint32_t pixel_format;
 };
 
+<<<<<<< HEAD
 /* callback from wq once fence has passed: */
 struct msm_fence_cb {
 	struct work_struct work;
@@ -361,6 +452,22 @@ void msm_update_fence(struct drm_device *dev, uint32_t fence);
 int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
 		struct drm_file *file);
 
+=======
+int msm_atomic_check(struct drm_device *dev,
+		     struct drm_atomic_state *state);
+int msm_atomic_commit(struct drm_device *dev,
+		struct drm_atomic_state *state, bool nonblock);
+
+int msm_register_mmu(struct drm_device *dev, struct msm_mmu *mmu);
+
+void msm_gem_submit_free(struct msm_gem_submit *submit);
+int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
+		struct drm_file *file);
+
+void msm_gem_shrinker_init(struct drm_device *dev);
+void msm_gem_shrinker_cleanup(struct drm_device *dev);
+
+>>>>>>> v4.9.227
 int msm_gem_mmap_obj(struct drm_gem_object *obj,
 			struct vm_area_struct *vma);
 int msm_gem_mmap(struct file *filp, struct vm_area_struct *vma);
@@ -381,10 +488,15 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj);
 void *msm_gem_prime_vmap(struct drm_gem_object *obj);
 void msm_gem_prime_vunmap(struct drm_gem_object *obj, void *vaddr);
 int msm_gem_prime_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma);
+<<<<<<< HEAD
+=======
+struct reservation_object *msm_gem_prime_res_obj(struct drm_gem_object *obj);
+>>>>>>> v4.9.227
 struct drm_gem_object *msm_gem_prime_import_sg_table(struct drm_device *dev,
 		struct dma_buf_attachment *attach, struct sg_table *sg);
 int msm_gem_prime_pin(struct drm_gem_object *obj);
 void msm_gem_prime_unpin(struct drm_gem_object *obj);
+<<<<<<< HEAD
 void *msm_gem_vaddr_locked(struct drm_gem_object *obj);
 void *msm_gem_vaddr(struct drm_gem_object *obj);
 int msm_gem_queue_inactive_cb(struct drm_gem_object *obj,
@@ -394,6 +506,21 @@ void msm_gem_move_to_active(struct drm_gem_object *obj,
 void msm_gem_move_to_inactive(struct drm_gem_object *obj);
 int msm_gem_cpu_prep(struct drm_gem_object *obj, uint32_t op,
 		ktime_t *timeout);
+=======
+void *msm_gem_get_vaddr_locked(struct drm_gem_object *obj);
+void *msm_gem_get_vaddr(struct drm_gem_object *obj);
+void msm_gem_put_vaddr_locked(struct drm_gem_object *obj);
+void msm_gem_put_vaddr(struct drm_gem_object *obj);
+int msm_gem_madvise(struct drm_gem_object *obj, unsigned madv);
+void msm_gem_purge(struct drm_gem_object *obj);
+void msm_gem_vunmap(struct drm_gem_object *obj);
+int msm_gem_sync_object(struct drm_gem_object *obj,
+		struct msm_fence_context *fctx, bool exclusive);
+void msm_gem_move_to_active(struct drm_gem_object *obj,
+		struct msm_gpu *gpu, bool exclusive, struct fence *fence);
+void msm_gem_move_to_inactive(struct drm_gem_object *obj);
+int msm_gem_cpu_prep(struct drm_gem_object *obj, uint32_t op, ktime_t *timeout);
+>>>>>>> v4.9.227
 int msm_gem_cpu_fini(struct drm_gem_object *obj);
 void msm_gem_free_object(struct drm_gem_object *obj);
 int msm_gem_new_handle(struct drm_device *dev, struct drm_file *file,
@@ -401,7 +528,11 @@ int msm_gem_new_handle(struct drm_device *dev, struct drm_file *file,
 struct drm_gem_object *msm_gem_new(struct drm_device *dev,
 		uint32_t size, uint32_t flags);
 struct drm_gem_object *msm_gem_import(struct drm_device *dev,
+<<<<<<< HEAD
 		uint32_t size, struct sg_table *sgt);
+=======
+		struct dma_buf *dmabuf, struct sg_table *sgt);
+>>>>>>> v4.9.227
 
 int msm_framebuffer_prepare(struct drm_framebuffer *fb, int id);
 void msm_framebuffer_cleanup(struct drm_framebuffer *fb, int id);
@@ -409,6 +540,7 @@ uint32_t msm_framebuffer_iova(struct drm_framebuffer *fb, int id, int plane);
 struct drm_gem_object *msm_framebuffer_bo(struct drm_framebuffer *fb, int plane);
 const struct msm_format *msm_framebuffer_format(struct drm_framebuffer *fb);
 struct drm_framebuffer *msm_framebuffer_init(struct drm_device *dev,
+<<<<<<< HEAD
 		struct drm_mode_fb_cmd2 *mode_cmd, struct drm_gem_object **bos);
 struct drm_framebuffer *msm_framebuffer_create(struct drm_device *dev,
 		struct drm_file *file, struct drm_mode_fb_cmd2 *mode_cmd);
@@ -420,6 +552,20 @@ int hdmi_modeset_init(struct hdmi *hdmi, struct drm_device *dev,
 		struct drm_encoder *encoder);
 void __init hdmi_register(void);
 void __exit hdmi_unregister(void);
+=======
+		const struct drm_mode_fb_cmd2 *mode_cmd, struct drm_gem_object **bos);
+struct drm_framebuffer *msm_framebuffer_create(struct drm_device *dev,
+		struct drm_file *file, const struct drm_mode_fb_cmd2 *mode_cmd);
+
+struct drm_fb_helper *msm_fbdev_init(struct drm_device *dev);
+void msm_fbdev_free(struct drm_device *dev);
+
+struct hdmi;
+int msm_hdmi_modeset_init(struct hdmi *hdmi, struct drm_device *dev,
+		struct drm_encoder *encoder);
+void __init msm_hdmi_register(void);
+void __exit msm_hdmi_unregister(void);
+>>>>>>> v4.9.227
 
 struct msm_edp;
 void __init msm_edp_register(void);
@@ -453,6 +599,12 @@ static inline int msm_dsi_modeset_init(struct msm_dsi *msm_dsi,
 }
 #endif
 
+<<<<<<< HEAD
+=======
+void __init msm_mdp_register(void);
+void __exit msm_mdp_unregister(void);
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_DEBUG_FS
 void msm_gem_describe(struct drm_gem_object *obj, struct seq_file *m);
 void msm_gem_describe_objects(struct list_head *list, struct seq_file *m);
@@ -476,12 +628,15 @@ u32 msm_readl(const void __iomem *addr);
 #define DBG(fmt, ...) DRM_DEBUG(fmt"\n", ##__VA_ARGS__)
 #define VERB(fmt, ...) if (0) DRM_DEBUG(fmt"\n", ##__VA_ARGS__)
 
+<<<<<<< HEAD
 static inline bool fence_completed(struct drm_device *dev, uint32_t fence)
 {
 	struct msm_drm_private *priv = dev->dev_private;
 	return priv->completed_fence >= fence;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int align_pitch(int width, int bpp)
 {
 	int bytespp = (bpp + 7) / 8;
@@ -489,6 +644,7 @@ static inline int align_pitch(int width, int bpp)
 	return bytespp * ALIGN(width, 32);
 }
 
+<<<<<<< HEAD
 static inline enum msm_mdp_display_id msm_get_display_id(
 	const char *display_type)
 {
@@ -506,6 +662,8 @@ static inline enum msm_mdp_display_id msm_get_display_id(
 		return DISPLAY_ID_NONE;
 };
 
+=======
+>>>>>>> v4.9.227
 /* for the generated headers: */
 #define INVALID_IDX(idx) ({BUG(); 0;})
 #define fui(x)                ({BUG(); 0;})
@@ -517,4 +675,23 @@ static inline enum msm_mdp_display_id msm_get_display_id(
 /* for conditionally setting boolean flag(s): */
 #define COND(bool, val) ((bool) ? (val) : 0)
 
+<<<<<<< HEAD
+=======
+static inline unsigned long timeout_to_jiffies(const ktime_t *timeout)
+{
+	ktime_t now = ktime_get();
+	unsigned long remaining_jiffies;
+
+	if (ktime_compare(*timeout, now) < 0) {
+		remaining_jiffies = 0;
+	} else {
+		ktime_t rem = ktime_sub(*timeout, now);
+		struct timespec ts = ktime_to_timespec(rem);
+		remaining_jiffies = timespec_to_jiffies(&ts);
+	}
+
+	return remaining_jiffies;
+}
+
+>>>>>>> v4.9.227
 #endif /* __MSM_DRV_H__ */

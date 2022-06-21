@@ -74,6 +74,15 @@
 				status = "okay";
 			};
 
+<<<<<<< HEAD
+=======
+			i2c: i2c@80058000 {
+				pinctrl-names = "default";
+				pinctrl-0 = <&i2c_pins_b>;
+				status = "okay";
+			};
+
+>>>>>>> v4.9.227
 			duart: serial@80070000 {
 				pinctrl-names = "default";
 				pinctrl-0 = <&duart_pins_a>;

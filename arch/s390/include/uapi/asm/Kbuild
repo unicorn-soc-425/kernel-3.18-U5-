@@ -6,6 +6,10 @@ header-y += bitsperlong.h
 header-y += byteorder.h
 header-y += chpid.h
 header-y += chsc.h
+<<<<<<< HEAD
+=======
+header-y += clp.h
+>>>>>>> v4.9.227
 header-y += cmb.h
 header-y += dasd.h
 header-y += debug.h

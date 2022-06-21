@@ -666,7 +666,11 @@ void tomoyo_fill_path_info(struct tomoyo_path_info *ptr)
 	ptr->const_len = tomoyo_const_part_length(name);
 	ptr->is_dir = len && (name[len - 1] == '/');
 	ptr->is_patterned = (ptr->const_len < len);
+<<<<<<< HEAD
 	ptr->hash = full_name_hash(name, len);
+=======
+	ptr->hash = full_name_hash(NULL, name, len);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -948,6 +952,7 @@ bool tomoyo_path_matches_pattern(const struct tomoyo_path_info *filename,
  */
 const char *tomoyo_get_exe(void)
 {
+<<<<<<< HEAD
 	struct mm_struct *mm = current->mm;
 	const char *cp = NULL;
 
@@ -957,6 +962,20 @@ const char *tomoyo_get_exe(void)
 	if (mm->exe_file)
 		cp = tomoyo_realpath_from_path(&mm->exe_file->f_path);
 	up_read(&mm->mmap_sem);
+=======
+	struct file *exe_file;
+	const char *cp;
+	struct mm_struct *mm = current->mm;
+
+	if (!mm)
+		return NULL;
+	exe_file = get_mm_exe_file(mm);
+	if (!exe_file)
+		return NULL;
+
+	cp = tomoyo_realpath_from_path(&exe_file->f_path);
+	fput(exe_file);
+>>>>>>> v4.9.227
 	return cp;
 }
 

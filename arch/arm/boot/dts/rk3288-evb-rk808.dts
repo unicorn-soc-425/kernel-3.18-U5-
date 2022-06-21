@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -8,6 +9,45 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+ * This file is dual-licensed: you can use it either under the terms
+ * of the GPL or the X11 license, at your option. Note that this dual
+ * licensing only applies to this file, and not this project as a
+ * whole.
+ *
+ *  a) This file is free software; you can redistribute it and/or
+ *     modify it under the terms of the GNU General Public License as
+ *     published by the Free Software Foundation; either version 2 of the
+ *     License, or (at your option) any later version.
+ *
+ *     This file is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ * Or, alternatively,
+ *
+ *  b) Permission is hereby granted, free of charge, to any person
+ *     obtaining a copy of this software and associated documentation
+ *     files (the "Software"), to deal in the Software without
+ *     restriction, including without limitation the rights to use,
+ *     copy, modify, merge, publish, distribute, sublicense, and/or
+ *     sell copies of the Software, and to permit persons to whom the
+ *     Software is furnished to do so, subject to the following
+ *     conditions:
+ *
+ *     The above copyright notice and this permission notice shall be
+ *     included in all copies or substantial portions of the Software.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *     OTHER DEALINGS IN THE SOFTWARE.
+>>>>>>> v4.9.227
  */
 
 /dts-v1/;
@@ -19,7 +59,10 @@
 
 &i2c0 {
 	clock-frequency = <400000>;
+<<<<<<< HEAD
 	status = "okay";
+=======
+>>>>>>> v4.9.227
 
 	rk808: pmic@1b {
 		compatible = "rockchip,rk808";
@@ -27,15 +70,32 @@
 		interrupt-parent = <&gpio0>;
 		interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
 		pinctrl-names = "default";
+<<<<<<< HEAD
 		pinctrl-0 = <&pmic_int>;
+=======
+		pinctrl-0 = <&pmic_int &global_pwroff>;
+>>>>>>> v4.9.227
 		rockchip,system-power-controller;
 		wakeup-source;
 		#clock-cells = <1>;
 		clock-output-names = "xin32k", "rk808-clkout2";
 
+<<<<<<< HEAD
 		vcc8-supply = <&vcc_18>;
 		vcc9-supply = <&vcc_io>;
 		vcc10-supply = <&vcc_io>;
+=======
+		vcc1-supply = <&vcc_sys>;
+		vcc2-supply = <&vcc_sys>;
+		vcc3-supply = <&vcc_sys>;
+		vcc4-supply = <&vcc_sys>;
+		vcc6-supply = <&vcc_sys>;
+		vcc7-supply = <&vcc_sys>;
+		vcc8-supply = <&vcc_18>;
+		vcc9-supply = <&vcc_io>;
+		vcc10-supply = <&vcc_io>;
+		vcc11-supply = <&vcc_sys>;
+>>>>>>> v4.9.227
 		vcc12-supply = <&vcc_io>;
 		vddio-supply = <&vccio_pmu>;
 
@@ -44,8 +104,16 @@
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-min-microvolt = <750000>;
+<<<<<<< HEAD
 				regulator-max-microvolt = <1300000>;
 				regulator-name = "vdd_arm";
+=======
+				regulator-max-microvolt = <1350000>;
+				regulator-name = "vdd_arm";
+				regulator-state-mem {
+					regulator-off-in-suspend;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vdd_gpu: DCDC_REG2 {
@@ -54,12 +122,25 @@
 				regulator-min-microvolt = <850000>;
 				regulator-max-microvolt = <1250000>;
 				regulator-name = "vdd_gpu";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+					regulator-suspend-microvolt = <1000000>;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vcc_ddr: DCDC_REG3 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-name = "vcc_ddr";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vcc_io: DCDC_REG4 {
@@ -68,6 +149,13 @@
 				regulator-min-microvolt = <3300000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-name = "vcc_io";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+					regulator-suspend-microvolt = <3300000>;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vccio_pmu: LDO_REG1 {
@@ -76,6 +164,13 @@
 				regulator-min-microvolt = <3300000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-name = "vccio_pmu";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+					regulator-suspend-microvolt = <3300000>;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vcc_tp: LDO_REG2 {
@@ -84,6 +179,12 @@
 				regulator-min-microvolt = <3300000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-name = "vcc_tp";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-off-in-suspend;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vdd_10: LDO_REG3 {
@@ -92,6 +193,13 @@
 				regulator-min-microvolt = <1000000>;
 				regulator-max-microvolt = <1000000>;
 				regulator-name = "vdd_10";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+					regulator-suspend-microvolt = <1000000>;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vcc18_lcd: LDO_REG4 {
@@ -100,6 +208,13 @@
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-name = "vcc18_lcd";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+					regulator-suspend-microvolt = <1800000>;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vccio_sd: LDO_REG5 {
@@ -108,6 +223,13 @@
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-name = "vccio_sd";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+					regulator-suspend-microvolt = <3300000>;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vdd10_lcd: LDO_REG6 {
@@ -116,6 +238,13 @@
 				regulator-min-microvolt = <1000000>;
 				regulator-max-microvolt = <1000000>;
 				regulator-name = "vdd10_lcd";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+					regulator-suspend-microvolt = <1000000>;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vcc_18: LDO_REG7 {
@@ -124,6 +253,13 @@
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-name = "vcc_18";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+					regulator-suspend-microvolt = <1800000>;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vcca_codec: LDO_REG8 {
@@ -132,19 +268,45 @@
 				regulator-min-microvolt = <3300000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-name = "vcca_codec";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+					regulator-suspend-microvolt = <3300000>;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vcc_wl: SWITCH_REG1 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-name = "vcc_wl";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+				};
+>>>>>>> v4.9.227
 			};
 
 			vcc_lcd: SWITCH_REG2 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-name = "vcc_lcd";
+<<<<<<< HEAD
+=======
+				regulator-state-mem {
+					regulator-on-in-suspend;
+				};
+>>>>>>> v4.9.227
 			};
 		};
 	};
 };
+<<<<<<< HEAD
+=======
+
+&panel {
+	power-supply = <&vcc_lcd>;
+};
+>>>>>>> v4.9.227

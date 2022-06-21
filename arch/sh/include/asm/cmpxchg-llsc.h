@@ -22,6 +22,7 @@ static inline unsigned long xchg_u32(volatile u32 *m, unsigned long val)
 	return retval;
 }
 
+<<<<<<< HEAD
 static inline unsigned long xchg_u8(volatile u8 *m, unsigned long val)
 {
 	unsigned long retval;
@@ -45,6 +46,10 @@ static inline unsigned long xchg_u8(volatile u8 *m, unsigned long val)
 
 static inline unsigned long
 __cmpxchg_u32(volatile int *m, unsigned long old, unsigned long new)
+=======
+static inline unsigned long
+__cmpxchg_u32(volatile u32 *m, unsigned long old, unsigned long new)
+>>>>>>> v4.9.227
 {
 	unsigned long retval;
 	unsigned long tmp;
@@ -68,4 +73,9 @@ __cmpxchg_u32(volatile int *m, unsigned long old, unsigned long new)
 	return retval;
 }
 
+<<<<<<< HEAD
+=======
+#include <asm/cmpxchg-xchg.h>
+
+>>>>>>> v4.9.227
 #endif /* __ASM_SH_CMPXCHG_LLSC_H */

@@ -26,6 +26,10 @@
 #include <linux/pm.h>
 #include <linux/pnp.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/wss.h>
 #include <sound/mpu401.h>
@@ -33,8 +37,11 @@
 #include <sound/initval.h>
 #include <sound/tlv.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
+=======
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Yamaha OPL3SA2+");
 MODULE_LICENSE("GPL");
@@ -684,7 +691,11 @@ static int snd_opl3sa2_probe(struct snd_card *card, int dev)
 		return err;
 	}
 	chip->wss = wss;
+<<<<<<< HEAD
 	err = snd_wss_pcm(wss, 0, NULL);
+=======
+	err = snd_wss_pcm(wss, 0);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return err;
 	err = snd_wss_mixer(wss);
@@ -693,7 +704,11 @@ static int snd_opl3sa2_probe(struct snd_card *card, int dev)
 	err = snd_opl3sa2_mixer(card);
 	if (err < 0)
 		return err;
+<<<<<<< HEAD
 	err = snd_wss_timer(wss, 0, NULL);
+=======
+	err = snd_wss_timer(wss, 0);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return err;
 	if (fm_port[dev] >= 0x340 && fm_port[dev] < 0x400) {

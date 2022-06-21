@@ -77,6 +77,10 @@ void hpfs_read_inode(struct inode *i)
 			kfree(ea);
 			i->i_mode = S_IFLNK | 0777;
 			i->i_op = &page_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+			inode_nohighmem(i);
+>>>>>>> v4.9.227
 			i->i_data.a_ops = &hpfs_symlink_aops;
 			set_nlink(i, 1);
 			i->i_size = ea_size;
@@ -257,7 +261,11 @@ void hpfs_write_inode_nolock(struct inode *i)
 
 int hpfs_setattr(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	int error = -EINVAL;
 
 	hpfs_lock(inode->i_sb);
@@ -272,7 +280,11 @@ int hpfs_setattr(struct dentry *dentry, struct iattr *attr)
 	if ((attr->ia_valid & ATTR_SIZE) && attr->ia_size > inode->i_size)
 		goto out_unlock;
 
+<<<<<<< HEAD
 	error = inode_change_ok(inode, attr);
+=======
+	error = setattr_prepare(dentry, attr);
+>>>>>>> v4.9.227
 	if (error)
 		goto out_unlock;
 

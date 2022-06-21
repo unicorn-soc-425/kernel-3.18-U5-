@@ -8,16 +8,22 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/moduleparam.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/device.h>
 #include <linux/string.h>
@@ -35,7 +41,11 @@
 #define DEVICE_NAME "device"
 #define CLASS_NAME  "fpgaboot"
 
+<<<<<<< HEAD
 static uint8_t bits_magic[] = {
+=======
+static u8 bits_magic[] = {
+>>>>>>> v4.9.227
 	0x0, 0x9, 0xf, 0xf0, 0xf, 0xf0,
 	0xf, 0xf0, 0xf, 0xf0, 0x0, 0x0, 0x1};
 
@@ -46,6 +56,7 @@ static char	*file = "xlinx_fpga_firmware.bit";
 module_param(file, charp, S_IRUGO);
 MODULE_PARM_DESC(file, "Xilinx FPGA firmware file.");
 
+<<<<<<< HEAD
 #ifdef DEBUG_FPGA
 static void datadump(char *msg, void *m, int n)
 {
@@ -67,6 +78,8 @@ static void datadump(char *msg, void *m, int n)
 }
 #endif /* DEBUG_FPGA */
 
+=======
+>>>>>>> v4.9.227
 static void read_bitstream(char *bitdata, char *buf, int *offset, int rdsize)
 {
 	memcpy(buf, bitdata + *offset, rdsize);
@@ -76,7 +89,11 @@ static void read_bitstream(char *bitdata, char *buf, int *offset, int rdsize)
 static void readinfo_bitstream(char *bitdata, char *buf, int *offset)
 {
 	char tbuf[64];
+<<<<<<< HEAD
 	int32_t len;
+=======
+	s32 len;
+>>>>>>> v4.9.227
 
 	/* read section char */
 	read_bitstream(bitdata, tbuf, offset, 1);
@@ -115,7 +132,10 @@ static int readlength_bitstream(char *bitdata, int *lendata, int *offset)
 	return 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  * read first 13 bytes to check bitstream magic number
  */
@@ -157,12 +177,18 @@ static void gs_print_header(struct fpgaimage *fimage)
 static void gs_read_bitstream(struct fpgaimage *fimage)
 {
 	char *bitdata;
+<<<<<<< HEAD
 	int size;
+=======
+>>>>>>> v4.9.227
 	int offset;
 
 	offset = 0;
 	bitdata = (char *)fimage->fw_entry->data;
+<<<<<<< HEAD
 	size = fimage->fw_entry->size;
+=======
+>>>>>>> v4.9.227
 
 	readmagic_bitstream(bitdata, &offset);
 	readinfo_bitstream(bitdata, fimage->filename, &offset);
@@ -195,6 +221,7 @@ static int gs_read_image(struct fpgaimage *fimage)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int gs_load_image(struct fpgaimage *fimage, char *file)
 {
 	int err;
@@ -204,6 +231,17 @@ static int gs_load_image(struct fpgaimage *fimage, char *file)
 	err = request_firmware(&fimage->fw_entry, file, &firmware_pdev->dev);
 	if (err != 0) {
 		pr_err("firmware %s is missing, cannot continue.\n", file);
+=======
+static int gs_load_image(struct fpgaimage *fimage, char *fw_file)
+{
+	int err;
+
+	pr_info("load fpgaimage %s\n", fw_file);
+
+	err = request_firmware(&fimage->fw_entry, fw_file, &firmware_pdev->dev);
+	if (err != 0) {
+		pr_err("firmware %s is missing, cannot continue.\n", fw_file);
+>>>>>>> v4.9.227
 		return err;
 	}
 
@@ -220,12 +258,21 @@ static int gs_download_image(struct fpgaimage *fimage, enum wbus bus_bytes)
 	size = fimage->lendata;
 
 #ifdef DEBUG_FPGA
+<<<<<<< HEAD
 	datadump("bitfile sample", bitdata, 0x100);
 #endif /* DEBUG_FPGA */
 
 	if (!xl_supported_prog_bus_width(bus_bytes)) {
 		pr_err("unsupported program bus width %d\n",
 				bus_bytes);
+=======
+	print_hex_dump_bytes("bitfile sample: ", DUMP_PREFIX_OFFSET,
+			     bitdata, 0x100);
+#endif /* DEBUG_FPGA */
+	if (!xl_supported_prog_bus_width(bus_bytes)) {
+		pr_err("unsupported program bus width %d\n",
+		       bus_bytes);
+>>>>>>> v4.9.227
 		return -1;
 	}
 
@@ -246,7 +293,11 @@ static int gs_download_image(struct fpgaimage *fimage, enum wbus bus_bytes)
 	pr_info("device init done\n");
 
 	for (i = 0; i < size; i += bus_bytes)
+<<<<<<< HEAD
 		xl_shift_bytes_out(bus_bytes, bitdata+i);
+=======
+		xl_shift_bytes_out(bus_bytes, bitdata + i);
+>>>>>>> v4.9.227
 
 	pr_info("program done\n");
 
@@ -301,6 +352,7 @@ static int gs_set_download_method(struct fpgaimage *fimage)
 static int init_driver(void)
 {
 	firmware_pdev = platform_device_register_simple("fpgaboot", -1,
+<<<<<<< HEAD
 							 NULL, 0);
 	return PTR_ERR_OR_ZERO(firmware_pdev);
 }
@@ -310,16 +362,28 @@ static void finish_driver(void)
 	platform_device_unregister(firmware_pdev);
 }
 
+=======
+							NULL, 0);
+	return PTR_ERR_OR_ZERO(firmware_pdev);
+}
+
+>>>>>>> v4.9.227
 static int gs_fpgaboot(void)
 {
 	int err;
 	struct fpgaimage	*fimage;
 
+<<<<<<< HEAD
 	fimage = kmalloc(sizeof(struct fpgaimage), GFP_KERNEL);
 	if (fimage == NULL) {
 		pr_err("No memory is available\n");
 		goto err_out;
 	}
+=======
+	fimage = kmalloc(sizeof(*fimage), GFP_KERNEL);
+	if (!fimage)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	err = gs_load_image(fimage, file);
 	if (err) {
@@ -361,43 +425,64 @@ err_out2:
 err_out1:
 	kfree(fimage);
 
+<<<<<<< HEAD
 err_out:
 	return -1;
 
+=======
+	return -1;
+>>>>>>> v4.9.227
 }
 
 static int __init gs_fpgaboot_init(void)
 {
+<<<<<<< HEAD
 	int err, r;
 
 	r = -1;
+=======
+	int err;
+>>>>>>> v4.9.227
 
 	pr_info("FPGA DOWNLOAD --->\n");
 
 	pr_info("FPGA image file name: %s\n", file);
 
 	err = init_driver();
+<<<<<<< HEAD
 	if (err != 0) {
 		pr_err("FPGA DRIVER INIT FAIL!!\n");
 		return r;
+=======
+	if (err) {
+		pr_err("FPGA DRIVER INIT FAIL!!\n");
+		return err;
+>>>>>>> v4.9.227
 	}
 
 	err = xl_init_io();
 	if (err) {
 		pr_err("GPIO INIT FAIL!!\n");
+<<<<<<< HEAD
 		r = -1;
+=======
+>>>>>>> v4.9.227
 		goto errout;
 	}
 
 	err = gs_fpgaboot();
 	if (err) {
 		pr_err("FPGA DOWNLOAD FAIL!!\n");
+<<<<<<< HEAD
 		r = -1;
+=======
+>>>>>>> v4.9.227
 		goto errout;
 	}
 
 	pr_info("FPGA DOWNLOAD DONE <---\n");
 
+<<<<<<< HEAD
 	r = 0;
 	return r;
 
@@ -405,11 +490,23 @@ errout:
 	finish_driver();
 
 	return r;
+=======
+	return 0;
+
+errout:
+	platform_device_unregister(firmware_pdev);
+
+	return err;
+>>>>>>> v4.9.227
 }
 
 static void __exit gs_fpgaboot_exit(void)
 {
+<<<<<<< HEAD
 	finish_driver();
+=======
+	platform_device_unregister(firmware_pdev);
+>>>>>>> v4.9.227
 	pr_info("FPGA image download module removed\n");
 }
 

@@ -155,6 +155,7 @@
 #define DIDmib_dot11smt_dot11WEPDefaultKeysTable \
 			(P80211DID_MKSECTION(1) | \
 			P80211DID_MKGROUP(4))
+<<<<<<< HEAD
 #define DIDmib_dot11smt_dot11WEPDefaultKeysTable_dot11WEPDefaultKey0 \
 			(P80211DID_MKSECTION(1) | \
 			P80211DID_MKGROUP(4) | \
@@ -171,6 +172,11 @@
 			(P80211DID_MKSECTION(1) | \
 			P80211DID_MKGROUP(4) | \
 			P80211DID_MKITEM(4) | 0x0c000000)
+=======
+#define DIDmib_dot11smt_dot11WEPDefaultKeysTable_key(_i) \
+			(DIDmib_dot11smt_dot11WEPDefaultKeysTable | \
+			P80211DID_MKITEM(_i) | 0x0c000000)
+>>>>>>> v4.9.227
 #define DIDmib_dot11smt_dot11PrivacyTable \
 			(P80211DID_MKSECTION(1) | \
 			P80211DID_MKGROUP(6))

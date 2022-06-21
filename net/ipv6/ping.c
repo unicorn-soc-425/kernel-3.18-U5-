@@ -26,6 +26,7 @@
 #include <net/transp_v6.h>
 #include <net/ping.h>
 
+<<<<<<< HEAD
 struct proto pingv6_prot = {
 	.name =		"PINGv6",
 	.owner =	THIS_MODULE,
@@ -55,6 +56,8 @@ static struct inet_protosw pingv6_protosw = {
 };
 
 
+=======
+>>>>>>> v4.9.227
 /* Compatibility glue so we can support IPv6 when it's compiled as a module */
 static int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
 				 int *addr_len)
@@ -77,8 +80,12 @@ static int dummy_ipv6_chk_addr(struct net *net, const struct in6_addr *addr,
 	return 0;
 }
 
+<<<<<<< HEAD
 int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		    size_t len)
+=======
+static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>>>>>>> v4.9.227
 {
 	struct inet_sock *inet = inet_sk(sk);
 	struct ipv6_pinfo *np = inet6_sk(sk);
@@ -88,10 +95,18 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	int oif = 0;
 	struct flowi6 fl6;
 	int err;
+<<<<<<< HEAD
 	int hlimit;
 	struct dst_entry *dst;
 	struct rt6_info *rt;
 	struct pingfakehdr pfh;
+=======
+	struct dst_entry *dst;
+	struct rt6_info *rt;
+	struct pingfakehdr pfh;
+	struct sockcm_cookie junk = {0};
+	struct ipcm6_cookie ipc6;
+>>>>>>> v4.9.227
 
 	pr_debug("ping_v6_sendmsg(sk=%p,sk->num=%u)\n", inet, inet->inet_num);
 
@@ -142,25 +157,47 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	fl6.daddr = *daddr;
 	fl6.flowi6_oif = oif;
 	fl6.flowi6_mark = sk->sk_mark;
+<<<<<<< HEAD
 	fl6.flowi6_uid = sk->sk_uid;
+=======
+>>>>>>> v4.9.227
 	fl6.fl6_icmp_type = user_icmph.icmp6_type;
 	fl6.fl6_icmp_code = user_icmph.icmp6_code;
 	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
 
+<<<<<<< HEAD
+=======
+	ipc6.tclass = np->tclass;
+	fl6.flowlabel = ip6_make_flowinfo(ipc6.tclass, fl6.flowlabel);
+
+>>>>>>> v4.9.227
 	dst = ip6_sk_dst_lookup_flow(sk, &fl6,  daddr);
 	if (IS_ERR(dst))
 		return PTR_ERR(dst);
 	rt = (struct rt6_info *) dst;
 
 	np = inet6_sk(sk);
+<<<<<<< HEAD
 	if (!np)
 		return -EBADF;
+=======
+	if (!np) {
+		err = -EBADF;
+		goto dst_err_out;
+	}
+
+	if (!fl6.flowi6_oif && ipv6_addr_is_multicast(&fl6.daddr))
+		fl6.flowi6_oif = np->mcast_oif;
+	else if (!fl6.flowi6_oif)
+		fl6.flowi6_oif = np->ucast_oif;
+>>>>>>> v4.9.227
 
 	pfh.icmph.type = user_icmph.icmp6_type;
 	pfh.icmph.code = user_icmph.icmp6_code;
 	pfh.icmph.checksum = 0;
 	pfh.icmph.un.echo.id = inet->inet_sport;
 	pfh.icmph.un.echo.sequence = user_icmph.icmp6_sequence;
+<<<<<<< HEAD
 	pfh.iov = msg->msg_iov;
 	pfh.wcheck = 0;
 	pfh.family = AF_INET6;
@@ -172,6 +209,20 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 			      0, hlimit,
 			      np->tclass, NULL, &fl6, rt,
 			      MSG_DONTWAIT, np->dontfrag);
+=======
+	pfh.msg = msg;
+	pfh.wcheck = 0;
+	pfh.family = AF_INET6;
+
+	ipc6.hlimit = ip6_sk_dst_hoplimit(np, &fl6, dst);
+	ipc6.dontfrag = np->dontfrag;
+	ipc6.opt = NULL;
+
+	lock_sock(sk);
+	err = ip6_append_data(sk, ping_getfrag, &pfh, len,
+			      0, &ipc6, &fl6, rt,
+			      MSG_DONTWAIT, &junk);
+>>>>>>> v4.9.227
 
 	if (err) {
 		ICMP6_INC_STATS(sock_net(sk), rt->rt6i_idev,
@@ -184,12 +235,49 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	}
 	release_sock(sk);
 
+<<<<<<< HEAD
+=======
+dst_err_out:
+	dst_release(dst);
+
+>>>>>>> v4.9.227
 	if (err)
 		return err;
 
 	return len;
 }
 
+<<<<<<< HEAD
+=======
+struct proto pingv6_prot = {
+	.name =		"PINGv6",
+	.owner =	THIS_MODULE,
+	.init =		ping_init_sock,
+	.close =	ping_close,
+	.connect =	ip6_datagram_connect_v6_only,
+	.disconnect =	__udp_disconnect,
+	.setsockopt =	ipv6_setsockopt,
+	.getsockopt =	ipv6_getsockopt,
+	.sendmsg =	ping_v6_sendmsg,
+	.recvmsg =	ping_recvmsg,
+	.bind =		ping_bind,
+	.backlog_rcv =	ping_queue_rcv_skb,
+	.hash =		ping_hash,
+	.unhash =	ping_unhash,
+	.get_port =	ping_get_port,
+	.obj_size =	sizeof(struct raw6_sock),
+};
+EXPORT_SYMBOL_GPL(pingv6_prot);
+
+static struct inet_protosw pingv6_protosw = {
+	.type =      SOCK_DGRAM,
+	.protocol =  IPPROTO_ICMPV6,
+	.prot =      &pingv6_prot,
+	.ops =       &inet6_sockraw_ops,
+	.flags =     INET_PROTOSW_REUSE,
+};
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PROC_FS
 static void *ping_v6_seq_start(struct seq_file *seq, loff_t *pos)
 {
@@ -227,7 +315,11 @@ static int __net_init ping_v6_proc_init_net(struct net *net)
 	return ping_proc_register(net, &ping_v6_seq_afinfo);
 }
 
+<<<<<<< HEAD
 static void __net_init ping_v6_proc_exit_net(struct net *net)
+=======
+static void __net_exit ping_v6_proc_exit_net(struct net *net)
+>>>>>>> v4.9.227
 {
 	return ping_proc_unregister(net, &ping_v6_seq_afinfo);
 }

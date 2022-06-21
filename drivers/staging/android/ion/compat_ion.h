@@ -1,5 +1,8 @@
 /*
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
  * drivers/staging/android/ion/compat_ion.h
  *
  * Copyright (C) 2013 Google, Inc.
@@ -22,8 +25,11 @@
 
 long compat_ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg);
 
+<<<<<<< HEAD
 #define compat_ion_user_handle_t compat_int_t
 
+=======
+>>>>>>> v4.9.227
 #else
 
 #define compat_ion_ioctl  NULL

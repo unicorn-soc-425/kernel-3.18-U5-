@@ -95,7 +95,11 @@ static int write_eraseblock2(int ebnum)
 	loff_t addr = (loff_t)ebnum * mtd->erasesize;
 
 	for (k = 1; k < 33; ++k) {
+<<<<<<< HEAD
 		if (addr + (subpgsize * k) > (ebnum + 1) * mtd->erasesize)
+=======
+		if (addr + (subpgsize * k) > (loff_t)(ebnum + 1) * mtd->erasesize)
+>>>>>>> v4.9.227
 			break;
 		prandom_bytes_state(&rnd_state, writebuf, subpgsize * k);
 		err = mtd_write(mtd, addr, subpgsize * k, &written, writebuf);
@@ -195,7 +199,11 @@ static int verify_eraseblock2(int ebnum)
 	loff_t addr = (loff_t)ebnum * mtd->erasesize;
 
 	for (k = 1; k < 33; ++k) {
+<<<<<<< HEAD
 		if (addr + (subpgsize * k) > (ebnum + 1) * mtd->erasesize)
+=======
+		if (addr + (subpgsize * k) > (loff_t)(ebnum + 1) * mtd->erasesize)
+>>>>>>> v4.9.227
 			break;
 		prandom_bytes_state(&rnd_state, writebuf, subpgsize * k);
 		clear_data(readbuf, subpgsize * k);
@@ -269,7 +277,14 @@ static int verify_all_eraseblocks_ff(void)
 			return err;
 		if (i % 256 == 0)
 			pr_info("verified up to eraseblock %u\n", i);
+<<<<<<< HEAD
 		cond_resched();
+=======
+
+		err = mtdtest_relax();
+		if (err)
+			return err;
+>>>>>>> v4.9.227
 	}
 	pr_info("verified %u eraseblocks\n", i);
 	return 0;
@@ -346,7 +361,14 @@ static int __init mtd_subpagetest_init(void)
 			goto out;
 		if (i % 256 == 0)
 			pr_info("written up to eraseblock %u\n", i);
+<<<<<<< HEAD
 		cond_resched();
+=======
+
+		err = mtdtest_relax();
+		if (err)
+			goto out;
+>>>>>>> v4.9.227
 	}
 	pr_info("written %u eraseblocks\n", i);
 
@@ -360,7 +382,14 @@ static int __init mtd_subpagetest_init(void)
 			goto out;
 		if (i % 256 == 0)
 			pr_info("verified up to eraseblock %u\n", i);
+<<<<<<< HEAD
 		cond_resched();
+=======
+
+		err = mtdtest_relax();
+		if (err)
+			goto out;
+>>>>>>> v4.9.227
 	}
 	pr_info("verified %u eraseblocks\n", i);
 
@@ -383,7 +412,14 @@ static int __init mtd_subpagetest_init(void)
 			goto out;
 		if (i % 256 == 0)
 			pr_info("written up to eraseblock %u\n", i);
+<<<<<<< HEAD
 		cond_resched();
+=======
+
+		err = mtdtest_relax();
+		if (err)
+			goto out;
+>>>>>>> v4.9.227
 	}
 	pr_info("written %u eraseblocks\n", i);
 
@@ -398,7 +434,14 @@ static int __init mtd_subpagetest_init(void)
 			goto out;
 		if (i % 256 == 0)
 			pr_info("verified up to eraseblock %u\n", i);
+<<<<<<< HEAD
 		cond_resched();
+=======
+
+		err = mtdtest_relax();
+		if (err)
+			goto out;
+>>>>>>> v4.9.227
 	}
 	pr_info("verified %u eraseblocks\n", i);
 

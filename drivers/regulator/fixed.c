@@ -40,13 +40,22 @@ struct fixed_voltage_data {
 /**
  * of_get_fixed_voltage_config - extract fixed_voltage_config structure info
  * @dev: device requesting for fixed_voltage_config
+<<<<<<< HEAD
+=======
+ * @desc: regulator description
+>>>>>>> v4.9.227
  *
  * Populates fixed_voltage_config structure by extracting data from device
  * tree node, returns a pointer to the populated structure of NULL if memory
  * alloc fails.
  */
 static struct fixed_voltage_config *
+<<<<<<< HEAD
 of_get_fixed_voltage_config(struct device *dev)
+=======
+of_get_fixed_voltage_config(struct device *dev,
+			    const struct regulator_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct fixed_voltage_config *config;
 	struct device_node *np = dev->of_node;
@@ -57,7 +66,11 @@ of_get_fixed_voltage_config(struct device *dev)
 	if (!config)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
 	config->init_data = of_get_regulator_init_data(dev, dev->of_node);
+=======
+	config->init_data = of_get_regulator_init_data(dev, dev->of_node, desc);
+>>>>>>> v4.9.227
 	if (!config->init_data)
 		return ERR_PTR(-EINVAL);
 
@@ -77,6 +90,7 @@ of_get_fixed_voltage_config(struct device *dev)
 		config->enabled_at_boot = true;
 
 	config->gpio = of_get_named_gpio(np, "gpio", 0);
+<<<<<<< HEAD
 	/*
 	 * of_get_named_gpio() currently returns ENODEV rather than
 	 * EPROBE_DEFER. This code attempts to be compatible with both
@@ -89,6 +103,10 @@ of_get_fixed_voltage_config(struct device *dev)
 	 */
 	if ((config->gpio == -ENODEV) || (config->gpio == -EPROBE_DEFER))
 		return ERR_PTR(-EPROBE_DEFER);
+=======
+	if ((config->gpio < 0) && (config->gpio != -ENOENT))
+		return ERR_PTR(config->gpio);
+>>>>>>> v4.9.227
 
 	of_property_read_u32(np, "startup-delay-us", &config->startup_delay);
 
@@ -112,8 +130,19 @@ static int reg_fixed_voltage_probe(struct platform_device *pdev)
 	struct regulator_config cfg = { };
 	int ret;
 
+<<<<<<< HEAD
 	if (pdev->dev.of_node) {
 		config = of_get_fixed_voltage_config(&pdev->dev);
+=======
+	drvdata = devm_kzalloc(&pdev->dev, sizeof(struct fixed_voltage_data),
+			       GFP_KERNEL);
+	if (!drvdata)
+		return -ENOMEM;
+
+	if (pdev->dev.of_node) {
+		config = of_get_fixed_voltage_config(&pdev->dev,
+						     &drvdata->desc);
+>>>>>>> v4.9.227
 		if (IS_ERR(config))
 			return PTR_ERR(config);
 	} else {
@@ -123,11 +152,14 @@ static int reg_fixed_voltage_probe(struct platform_device *pdev)
 	if (!config)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	drvdata = devm_kzalloc(&pdev->dev, sizeof(struct fixed_voltage_data),
 			       GFP_KERNEL);
 	if (!drvdata)
 		return -ENOMEM;
 
+=======
+>>>>>>> v4.9.227
 	drvdata->desc.name = devm_kstrdup(&pdev->dev,
 					  config->supply_name,
 					  GFP_KERNEL);
@@ -157,8 +189,16 @@ static int reg_fixed_voltage_probe(struct platform_device *pdev)
 
 	drvdata->desc.fixed_uV = config->microvolts;
 
+<<<<<<< HEAD
 	if (config->gpio >= 0)
 		cfg.ena_gpio = config->gpio;
+=======
+	if (gpio_is_valid(config->gpio)) {
+		cfg.ena_gpio = config->gpio;
+		if (pdev->dev.of_node)
+			cfg.ena_gpio_initialized = true;
+	}
+>>>>>>> v4.9.227
 	cfg.ena_gpio_invert = !config->enable_high;
 	if (config->enabled_at_boot) {
 		if (config->enable_high)
@@ -207,7 +247,10 @@ static struct platform_driver regulator_fixed_voltage_driver = {
 	.probe		= reg_fixed_voltage_probe,
 	.driver		= {
 		.name		= "reg-fixed-voltage",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(fixed_of_match),
 	},
 };

@@ -466,7 +466,15 @@ The generic parser supports the following hints:
 - add_jack_modes (bool): add "xxx Jack Mode" enum controls to each
   I/O jack for allowing to change the headphone amp and mic bias VREF
   capabilities
+<<<<<<< HEAD
 - power_down_unused (bool): power down the unused widgets
+=======
+- power_save_node (bool): advanced power management for each widget,
+  controlling the power sate (D0/D3) of each widget node depending on
+  the actual pin and stream states
+- power_down_unused (bool): power down the unused widgets, a subset of
+  power_save_node, and will be dropped in future
+>>>>>>> v4.9.227
 - add_hp_mic (bool): add the headphone to capture source if possible
 - hp_mic_detect (bool): enable/disable the hp/mic shared input for a
   single built-in mic case; default true
@@ -651,6 +659,7 @@ development branches in general while the development for the current
 and next kernels are found in for-linus and for-next branches,
 respectively.
 
+<<<<<<< HEAD
 If you are using the latest Linus tree, it'd be better to pull the
 above GIT tree onto it.  If you are using the older kernels, an easy
 way to try the latest ALSA code is to build from the snapshot
@@ -662,6 +671,8 @@ are found at:
 
 - ftp://ftp.suse.com/pub/people/tiwai/snapshot/
 
+=======
+>>>>>>> v4.9.227
 
 Sending a Bug Report
 ~~~~~~~~~~~~~~~~~~~~
@@ -695,7 +706,16 @@ problems.
 alsa-info
 ~~~~~~~~~
 The script `alsa-info.sh` is a very useful tool to gather the audio
+<<<<<<< HEAD
 device information.  You can fetch the latest version from:
+=======
+device information.  It's included in alsa-utils package.  The latest
+version can be found on git repository:
+
+- git://git.alsa-project.org/alsa-utils.git
+
+The script can be fetched directly from the following URL, too:
+>>>>>>> v4.9.227
 
 - http://www.alsa-project.org/alsa-info.sh
 
@@ -832,6 +852,7 @@ can get a proc-file dump at the current state, get a list of control
 (mixer) elements, set/get the control element value, simulate the PCM
 operation, the jack plugging simulation, etc.
 
+<<<<<<< HEAD
 The package is found in:
 
 - ftp://ftp.suse.com/pub/people/tiwai/misc/
@@ -841,6 +862,13 @@ A git repository is available:
 - git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/hda-emu.git
 
 See README file in the tarball for more details about hda-emu
+=======
+The program is found in the git repository below:
+
+- git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/hda-emu.git
+
+See README file in the repository for more details about hda-emu
+>>>>>>> v4.9.227
 program.
 
 

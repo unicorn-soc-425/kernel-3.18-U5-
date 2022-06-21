@@ -196,12 +196,15 @@ void tfh_write_restart(struct gru_tlb_fault_handle *tfh,
 	start_instruction(tfh);
 }
 
+<<<<<<< HEAD
 void tfh_restart(struct gru_tlb_fault_handle *tfh)
 {
 	tfh->opc = TFHOP_RESTART;
 	start_instruction(tfh);
 }
 
+=======
+>>>>>>> v4.9.227
 void tfh_user_polling_mode(struct gru_tlb_fault_handle *tfh)
 {
 	tfh->opc = TFHOP_USER_POLLING_MODE;

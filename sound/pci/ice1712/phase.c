@@ -723,6 +723,7 @@ static int phase28_oversampling_info(struct snd_kcontrol *k,
 {
 	static const char * const texts[2] = { "128x", "64x"	};
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 2;
@@ -734,6 +735,9 @@ static int phase28_oversampling_info(struct snd_kcontrol *k,
 		texts[uinfo->value.enumerated.item]);
 
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> v4.9.227
 }
 
 static int phase28_oversampling_get(struct snd_kcontrol *kcontrol,

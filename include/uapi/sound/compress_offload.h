@@ -32,7 +32,11 @@
 
 #define SNDRV_COMPRESS_VERSION SNDRV_PROTOCOL_VERSION(0, 1, 2)
 /**
+<<<<<<< HEAD
  * struct snd_compressed_buffer: compressed buffer
+=======
+ * struct snd_compressed_buffer - compressed buffer
+>>>>>>> v4.9.227
  * @fragment_size: size of buffer fragment in bytes
  * @fragments: number of such fragments
  */
@@ -42,7 +46,11 @@ struct snd_compressed_buffer {
 } __attribute__((packed, aligned(4)));
 
 /**
+<<<<<<< HEAD
  * struct snd_compr_params: compressed stream params
+=======
+ * struct snd_compr_params - compressed stream params
+>>>>>>> v4.9.227
  * @buffer: buffer description
  * @codec: codec parameters
  * @no_wake_mode: dont wake on fragment elapsed
@@ -54,7 +62,11 @@ struct snd_compr_params {
 } __attribute__((packed, aligned(4)));
 
 /**
+<<<<<<< HEAD
  * struct snd_compr_tstamp: timestamp descriptor
+=======
+ * struct snd_compr_tstamp - timestamp descriptor
+>>>>>>> v4.9.227
  * @byte_offset: Byte offset in ring buffer to DSP
  * @copied_total: Total number of bytes copied from/to ring buffer to/by DSP
  * @pcm_frames: Frames decoded or encoded by DSP. This field will evolve by
@@ -66,6 +78,7 @@ struct snd_compr_params {
  */
 struct snd_compr_tstamp {
 	__u32 byte_offset;
+<<<<<<< HEAD
 	__u64 copied_total;
 	__u32 pcm_frames;
 	__u32 pcm_io_frames;
@@ -77,6 +90,18 @@ struct snd_compr_tstamp {
  * struct snd_compr_avail: avail descriptor
  * @avail: Number of bytes available in ring buffer for writing/reading
  * @tstamp: timestamp infomation
+=======
+	__u32 copied_total;
+	__u32 pcm_frames;
+	__u32 pcm_io_frames;
+	__u32 sampling_rate;
+} __attribute__((packed, aligned(4)));
+
+/**
+ * struct snd_compr_avail - avail descriptor
+ * @avail: Number of bytes available in ring buffer for writing/reading
+ * @tstamp: timestamp information
+>>>>>>> v4.9.227
  */
 struct snd_compr_avail {
 	__u64 avail;
@@ -89,7 +114,11 @@ enum snd_compr_direction {
 };
 
 /**
+<<<<<<< HEAD
  * struct snd_compr_caps: caps descriptor
+=======
+ * struct snd_compr_caps - caps descriptor
+>>>>>>> v4.9.227
  * @codecs: pointer to array of codecs
  * @direction: direction supported. Of type snd_compr_direction
  * @min_fragment_size: minimum fragment supported by DSP
@@ -111,7 +140,11 @@ struct snd_compr_caps {
 } __attribute__((packed, aligned(4)));
 
 /**
+<<<<<<< HEAD
  * struct snd_compr_codec_caps: query capability of codec
+=======
+ * struct snd_compr_codec_caps - query capability of codec
+>>>>>>> v4.9.227
  * @codec: codec for which capability is queried
  * @num_descriptors: number of codec descriptors
  * @descriptor: array of codec capability descriptor
@@ -123,6 +156,7 @@ struct snd_compr_codec_caps {
 } __attribute__((packed, aligned(4)));
 
 /**
+<<<<<<< HEAD
  * struct snd_compr_audio_info: compressed input audio information
  * @frame_size: legth of the encoded frame with valid data
  * @reserved: reserved for furture use
@@ -133,11 +167,15 @@ struct snd_compr_audio_info {
 } __attribute__((packed, aligned(4)));
 
 /**
+=======
+ * enum sndrv_compress_encoder
+>>>>>>> v4.9.227
  * @SNDRV_COMPRESS_ENCODER_PADDING: no of samples appended by the encoder at the
  * end of the track
  * @SNDRV_COMPRESS_ENCODER_DELAY: no of samples inserted by the encoder at the
  * beginning of the track
  */
+<<<<<<< HEAD
 enum {
 	SNDRV_COMPRESS_ENCODER_PADDING = 1,
 	SNDRV_COMPRESS_ENCODER_DELAY = 2,
@@ -147,6 +185,15 @@ enum {
 
 /**
  * struct snd_compr_metadata: compressed stream metadata
+=======
+enum sndrv_compress_encoder {
+	SNDRV_COMPRESS_ENCODER_PADDING = 1,
+	SNDRV_COMPRESS_ENCODER_DELAY = 2,
+};
+
+/**
+ * struct snd_compr_metadata - compressed stream metadata
+>>>>>>> v4.9.227
  * @key: key id
  * @value: key value
  */
@@ -171,8 +218,11 @@ struct snd_compr_metadata {
  * SNDRV_COMPRESS_STOP: stop a running stream, discarding ring buffer content
  * and the buffers currently with DSP
  * SNDRV_COMPRESS_DRAIN: Play till end of buffers and stop after that
+<<<<<<< HEAD
  * SNDRV_COMPRESS_SET_NEXT_TRACK_PARAM: send codec specific data for the next
  * track in gapless
+=======
+>>>>>>> v4.9.227
  * SNDRV_COMPRESS_IOCTL_VERSION: Query the API version
  */
 #define SNDRV_COMPRESS_IOCTL_VERSION	_IOR('C', 0x00, int)
@@ -194,8 +244,11 @@ struct snd_compr_metadata {
 #define SNDRV_COMPRESS_DRAIN		_IO('C', 0x34)
 #define SNDRV_COMPRESS_NEXT_TRACK	_IO('C', 0x35)
 #define SNDRV_COMPRESS_PARTIAL_DRAIN	_IO('C', 0x36)
+<<<<<<< HEAD
 #define SNDRV_COMPRESS_SET_NEXT_TRACK_PARAM\
 					_IOW('C', 0x80, union snd_codec_options)
+=======
+>>>>>>> v4.9.227
 /*
  * TODO
  * 1. add mmap support
@@ -204,6 +257,9 @@ struct snd_compr_metadata {
 #define SND_COMPR_TRIGGER_DRAIN 7 /*FIXME move this to pcm.h */
 #define SND_COMPR_TRIGGER_NEXT_TRACK 8
 #define SND_COMPR_TRIGGER_PARTIAL_DRAIN 9
+<<<<<<< HEAD
 
 #define SNDRV_COMPRESS_METADATA_MODE          _IOW('C', 0x99, bool)
+=======
+>>>>>>> v4.9.227
 #endif

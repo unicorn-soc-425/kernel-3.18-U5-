@@ -17,7 +17,12 @@
 #ifndef OMAP3_ISP_CORE_H
 #define OMAP3_ISP_CORE_H
 
+<<<<<<< HEAD
 #include <media/omap3isp.h>
+=======
+#include <media/media-entity.h>
+#include <media/v4l2-async.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-device.h>
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -26,6 +31,10 @@
 #include <linux/platform_device.h>
 #include <linux/wait.h>
 
+<<<<<<< HEAD
+=======
+#include "omap3isp.h"
+>>>>>>> v4.9.227
 #include "ispstat.h"
 #include "ispccdc.h"
 #include "ispreg.h"
@@ -59,8 +68,11 @@ enum isp_mem_resources {
 	OMAP3_ISP_IOMEM_CSI2C_REGS1,
 	OMAP3_ISP_IOMEM_CSIPHY1,
 	OMAP3_ISP_IOMEM_CSI2C_REGS2,
+<<<<<<< HEAD
 	OMAP3_ISP_IOMEM_343X_CONTROL_CSIRXFE,
 	OMAP3_ISP_IOMEM_3630_CONTROL_CAMERA_PHY_CTRL,
+=======
+>>>>>>> v4.9.227
 	OMAP3_ISP_IOMEM_LAST
 };
 
@@ -93,6 +105,7 @@ enum isp_subclk_resource {
 /* ISP2P: OMAP 36xx */
 #define ISP_REVISION_15_0		0xF0
 
+<<<<<<< HEAD
 /*
  * struct isp_res_mapping - Map ISP io resources to ISP revision.
  * @isp_rev: ISP_REVISION_x_x
@@ -101,6 +114,23 @@ enum isp_subclk_resource {
 struct isp_res_mapping {
 	u32 isp_rev;
 	u32 map;
+=======
+#define ISP_PHY_TYPE_3430		0
+#define ISP_PHY_TYPE_3630		1
+
+struct regmap;
+
+/*
+ * struct isp_res_mapping - Map ISP io resources to ISP revision.
+ * @isp_rev: ISP_REVISION_x_x
+ * @offset: register offsets of various ISP sub-blocks
+ * @phy_type: ISP_PHY_TYPE_{3430,3630}
+ */
+struct isp_res_mapping {
+	u32 isp_rev;
+	u32 offset[OMAP3_ISP_IOMEM_LAST];
+	u32 phy_type;
+>>>>>>> v4.9.227
 };
 
 /*
@@ -122,7 +152,10 @@ enum isp_xclk_id {
 struct isp_xclk {
 	struct isp_device *isp;
 	struct clk_hw hw;
+<<<<<<< HEAD
 	struct clk_lookup *lookup;
+=======
+>>>>>>> v4.9.227
 	struct clk *clk;
 	enum isp_xclk_id id;
 
@@ -138,13 +171,25 @@ struct isp_xclk {
  * @irq_num: Currently used IRQ number.
  * @mmio_base: Array with kernel base addresses for ioremapped ISP register
  *             regions.
+<<<<<<< HEAD
  * @mmio_base_phys: Array with physical L4 bus addresses for ISP register
  *                  regions.
+=======
+ * @mmio_hist_base_phys: Physical L4 bus address for ISP hist block register
+ *			 region.
+ * @syscon: Regmap for the syscon register space
+ * @syscon_offset: Offset of the CSIPHY control register in syscon
+ * @phy_type: ISP_PHY_TYPE_{3430,3630}
+>>>>>>> v4.9.227
  * @mapping: IOMMU mapping
  * @stat_lock: Spinlock for handling statistics
  * @isp_mutex: Mutex for serializing requests to ISP.
  * @stop_failure: Indicates that an entity failed to stop.
+<<<<<<< HEAD
  * @crashed: Bitmask of crashed entities (indexed by entity ID)
+=======
+ * @crashed: Crashed ent_enum
+>>>>>>> v4.9.227
  * @has_context: Context has been saved at least once and can be restored.
  * @ref_count: Reference count for handling multiple ISP requests.
  * @cam_ick: Pointer to camera interface clock structure.
@@ -166,16 +211,30 @@ struct isp_xclk {
  */
 struct isp_device {
 	struct v4l2_device v4l2_dev;
+<<<<<<< HEAD
+=======
+	struct v4l2_async_notifier notifier;
+>>>>>>> v4.9.227
 	struct media_device media_dev;
 	struct device *dev;
 	u32 revision;
 
 	/* platform HW resources */
+<<<<<<< HEAD
 	struct isp_platform_data *pdata;
 	unsigned int irq_num;
 
 	void __iomem *mmio_base[OMAP3_ISP_IOMEM_LAST];
 	unsigned long mmio_base_phys[OMAP3_ISP_IOMEM_LAST];
+=======
+	unsigned int irq_num;
+
+	void __iomem *mmio_base[OMAP3_ISP_IOMEM_LAST];
+	unsigned long mmio_hist_base_phys;
+	struct regmap *syscon;
+	u32 syscon_offset;
+	u32 phy_type;
+>>>>>>> v4.9.227
 
 	struct dma_iommu_mapping *mapping;
 
@@ -183,7 +242,11 @@ struct isp_device {
 	spinlock_t stat_lock;	/* common lock for statistic drivers */
 	struct mutex isp_mutex;	/* For handling ref_count field */
 	bool stop_failure;
+<<<<<<< HEAD
 	u32 crashed;
+=======
+	struct media_entity_enum crashed;
+>>>>>>> v4.9.227
 	int has_context;
 	int ref_count;
 	unsigned int autoidle;
@@ -209,6 +272,18 @@ struct isp_device {
 
 	unsigned int sbl_resources;
 	unsigned int subclk_resources;
+<<<<<<< HEAD
+=======
+
+#define ISP_MAX_SUBDEVS		8
+	struct v4l2_subdev *subdevs[ISP_MAX_SUBDEVS];
+};
+
+struct isp_async_subdev {
+	struct v4l2_subdev *sd;
+	struct isp_bus_cfg bus;
+	struct v4l2_async_subdev asd;
+>>>>>>> v4.9.227
 };
 
 #define v4l2_dev_to_isp_device(dev) \
@@ -229,7 +304,11 @@ int omap3isp_pipeline_set_stream(struct isp_pipeline *pipe,
 void omap3isp_pipeline_cancel_stream(struct isp_pipeline *pipe);
 void omap3isp_configure_bridge(struct isp_device *isp,
 			       enum ccdc_input_entity input,
+<<<<<<< HEAD
 			       const struct isp_parallel_platform_data *pdata,
+=======
+			       const struct isp_parallel_cfg *buscfg,
+>>>>>>> v4.9.227
 			       unsigned int shift, unsigned int bridge);
 
 struct isp_device *omap3isp_get(struct isp_device *isp);
@@ -245,8 +324,11 @@ void omap3isp_subclk_enable(struct isp_device *isp,
 void omap3isp_subclk_disable(struct isp_device *isp,
 			     enum isp_subclk_resource res);
 
+<<<<<<< HEAD
 int omap3isp_pipeline_pm_use(struct media_entity *entity, int use);
 
+=======
+>>>>>>> v4.9.227
 int omap3isp_register_entities(struct platform_device *pdev,
 			       struct v4l2_device *v4l2_dev);
 void omap3isp_unregister_entities(struct platform_device *pdev);

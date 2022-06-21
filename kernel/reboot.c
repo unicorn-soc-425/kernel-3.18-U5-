@@ -16,7 +16,10 @@
 #include <linux/syscalls.h>
 #include <linux/syscore_ops.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 #include <linux/sec_monitor_battery_removal.h>
+=======
+>>>>>>> v4.9.227
 
 /*
  * this indicates whether you can reboot with ctrl-alt-del: the default is yes
@@ -44,7 +47,10 @@ int reboot_default = 1;
 int reboot_cpu;
 enum reboot_type reboot_type = BOOT_ACPI;
 int reboot_force;
+<<<<<<< HEAD
 int ignore_fs_panic = 0; // To prevent kernel panic by EIO during shutdown
+=======
+>>>>>>> v4.9.227
 
 /*
  * If set, this is used for preparing the system to power off.
@@ -71,9 +77,13 @@ void kernel_restart_prepare(char *cmd)
 {
 	blocking_notifier_call_chain(&reboot_notifier_list, SYS_RESTART, cmd);
 	system_state = SYSTEM_RESTART;
+<<<<<<< HEAD
 	freeze_processes();
 	usermodehelper_disable();
 	ignore_fs_panic = 1;
+=======
+	usermodehelper_disable();
+>>>>>>> v4.9.227
 	device_shutdown();
 }
 
@@ -217,7 +227,10 @@ void migrate_to_reboot_cpu(void)
  */
 void kernel_restart(char *cmd)
 {
+<<<<<<< HEAD
 	sec_set_normal_pwroff(NORMAL_POWEROFF);
+=======
+>>>>>>> v4.9.227
 	kernel_restart_prepare(cmd);
 	migrate_to_reboot_cpu();
 	syscore_shutdown();
@@ -235,9 +248,13 @@ static void kernel_shutdown_prepare(enum system_states state)
 	blocking_notifier_call_chain(&reboot_notifier_list,
 		(state == SYSTEM_HALT) ? SYS_HALT : SYS_POWER_OFF, NULL);
 	system_state = state;
+<<<<<<< HEAD
 	freeze_processes();
 	usermodehelper_disable();
 	ignore_fs_panic = 1;
+=======
+	usermodehelper_disable();
+>>>>>>> v4.9.227
 	device_shutdown();
 }
 /**
@@ -263,7 +280,10 @@ EXPORT_SYMBOL_GPL(kernel_halt);
  */
 void kernel_power_off(void)
 {
+<<<<<<< HEAD
 	sec_set_normal_pwroff(NORMAL_POWEROFF);
+=======
+>>>>>>> v4.9.227
 	kernel_shutdown_prepare(SYSTEM_POWER_OFF);
 	if (pm_power_off_prepare)
 		pm_power_off_prepare();
@@ -354,7 +374,11 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
 		kernel_restart(buffer);
 		break;
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> v4.9.227
 	case LINUX_REBOOT_CMD_KEXEC:
 		ret = kernel_kexec();
 		break;
@@ -395,8 +419,14 @@ void ctrl_alt_del(void)
 }
 
 char poweroff_cmd[POWEROFF_CMD_PATH_LEN] = "/sbin/poweroff";
+<<<<<<< HEAD
 
 static int __orderly_poweroff(bool force)
+=======
+static const char reboot_cmd[] = "/sbin/reboot";
+
+static int run_cmd(const char *cmd)
+>>>>>>> v4.9.227
 {
 	char **argv;
 	static char *envp[] = {
@@ -405,8 +435,12 @@ static int __orderly_poweroff(bool force)
 		NULL
 	};
 	int ret;
+<<<<<<< HEAD
 
 	argv = argv_split(GFP_KERNEL, poweroff_cmd, NULL);
+=======
+	argv = argv_split(GFP_KERNEL, cmd, NULL);
+>>>>>>> v4.9.227
 	if (argv) {
 		ret = call_usermodehelper(argv[0], argv, envp, UMH_WAIT_EXEC);
 		argv_free(argv);
@@ -414,8 +448,38 @@ static int __orderly_poweroff(bool force)
 		ret = -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	if (ret && force) {
 		pr_warn("Failed to start orderly shutdown: forcing the issue\n");
+=======
+	return ret;
+}
+
+static int __orderly_reboot(void)
+{
+	int ret;
+
+	ret = run_cmd(reboot_cmd);
+
+	if (ret) {
+		pr_warn("Failed to start orderly reboot: forcing the issue\n");
+		emergency_sync();
+		kernel_restart(NULL);
+	}
+
+	return ret;
+}
+
+static int __orderly_poweroff(bool force)
+{
+	int ret;
+
+	ret = run_cmd(poweroff_cmd);
+
+	if (ret && force) {
+		pr_warn("Failed to start orderly shutdown: forcing the issue\n");
+
+>>>>>>> v4.9.227
 		/*
 		 * I guess this should try to kick off some daemon to sync and
 		 * poweroff asap.  Or not even bother syncing if we're doing an
@@ -444,15 +508,44 @@ static DECLARE_WORK(poweroff_work, poweroff_work_func);
  * This may be called from any context to trigger a system shutdown.
  * If the orderly shutdown fails, it will force an immediate shutdown.
  */
+<<<<<<< HEAD
 int orderly_poweroff(bool force)
+=======
+void orderly_poweroff(bool force)
+>>>>>>> v4.9.227
 {
 	if (force) /* do not override the pending "true" */
 		poweroff_force = true;
 	schedule_work(&poweroff_work);
+<<<<<<< HEAD
 	return 0;
 }
 EXPORT_SYMBOL_GPL(orderly_poweroff);
 
+=======
+}
+EXPORT_SYMBOL_GPL(orderly_poweroff);
+
+static void reboot_work_func(struct work_struct *work)
+{
+	__orderly_reboot();
+}
+
+static DECLARE_WORK(reboot_work, reboot_work_func);
+
+/**
+ * orderly_reboot - Trigger an orderly system reboot
+ *
+ * This may be called from any context to trigger a system reboot.
+ * If the orderly reboot fails, it will force an immediate reboot.
+ */
+void orderly_reboot(void)
+{
+	schedule_work(&reboot_work);
+}
+EXPORT_SYMBOL_GPL(orderly_reboot);
+
+>>>>>>> v4.9.227
 static int __init reboot_setup(char *str)
 {
 	for (;;) {

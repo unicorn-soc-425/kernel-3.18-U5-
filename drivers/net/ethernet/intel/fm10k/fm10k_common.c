@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /* Intel Ethernet Switch Host Interface Driver
  * Copyright(c) 2013 - 2014 Intel Corporation.
+=======
+/* Intel(R) Ethernet Switch Host Interface Driver
+ * Copyright(c) 2013 - 2016 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -207,6 +212,12 @@ s32 fm10k_disable_queues_generic(struct fm10k_hw *hw, u16 q_cnt)
 	/* clear tx_ready to prevent any false hits for reset */
 	hw->mac.tx_ready = false;
 
+<<<<<<< HEAD
+=======
+	if (FM10K_REMOVED(hw->hw_addr))
+		return 0;
+
+>>>>>>> v4.9.227
 	/* clear the enable bit for all rings */
 	for (i = 0; i < q_cnt; i++) {
 		reg = fm10k_read_reg(hw, FM10K_TXDCTL(i));
@@ -398,7 +409,11 @@ static void fm10k_update_hw_stats_rx_q(struct fm10k_hw *hw,
 	/* Retrieve RX Owner Data */
 	id_rx = fm10k_read_reg(hw, FM10K_RXQCTL(idx));
 
+<<<<<<< HEAD
 	/* Process RX Ring*/
+=======
+	/* Process RX Ring */
+>>>>>>> v4.9.227
 	do {
 		rx_drops = fm10k_read_hw_stats_32b(hw, FM10K_QPRDC(idx),
 						   &q->rx_drops);
@@ -466,7 +481,10 @@ void fm10k_update_hw_stats_q(struct fm10k_hw *hw, struct fm10k_hw_stats_q *q,
  *  Function invalidates the index values for the queues so any updates that
  *  may have happened are ignored and the base for the queue stats is reset.
  **/
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 void fm10k_unbind_hw_stats_q(struct fm10k_hw_stats_q *q, u32 idx, u32 count)
 {
 	u32 i;
@@ -520,8 +538,17 @@ s32 fm10k_get_host_state_generic(struct fm10k_hw *hw, bool *host_ready)
 		goto out;
 
 	/* interface cannot receive traffic without logical ports */
+<<<<<<< HEAD
 	if (mac->dglort_map == FM10K_DGLORTMAP_NONE)
 		goto out;
+=======
+	if (mac->dglort_map == FM10K_DGLORTMAP_NONE) {
+		if (hw->mac.ops.request_lport_map)
+			ret_val = hw->mac.ops.request_lport_map(hw);
+
+		goto out;
+	}
+>>>>>>> v4.9.227
 
 	/* if we passed all the tests above then the switch is ready and we no
 	 * longer need to check for link

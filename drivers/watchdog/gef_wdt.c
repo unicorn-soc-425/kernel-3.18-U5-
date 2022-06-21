@@ -303,11 +303,18 @@ static const struct of_device_id gef_wdt_ids[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, gef_wdt_ids);
+>>>>>>> v4.9.227
 
 static struct platform_driver gef_wdt_driver = {
 	.driver = {
 		.name = "gef_wdt",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = gef_wdt_ids,
 	},
 	.probe		= gef_wdt_probe,

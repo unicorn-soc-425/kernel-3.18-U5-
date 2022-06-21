@@ -107,8 +107,11 @@ __xchg_local(unsigned long x, volatile void *ptr, int size)
 	((__typeof__(*(ptr)))__xchg_local((unsigned long)(x), (ptr),	\
 			sizeof(*(ptr))))
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG	1
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned long
 __cmpxchg_u32(volatile unsigned int *p, unsigned int old, unsigned int new)
 {

@@ -18,7 +18,10 @@
 #include "io.h"
 #include "ops.h"
 #include "elf.h"
+<<<<<<< HEAD
 #include "gunzip_util.h"
+=======
+>>>>>>> v4.9.227
 #include "mv64x60.h"
 #include "cuboot.h"
 #include "ppcboot.h"

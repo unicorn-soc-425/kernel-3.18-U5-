@@ -52,6 +52,11 @@ struct srp_internal {
 	struct transport_container rport_attr_cont;
 };
 
+<<<<<<< HEAD
+=======
+static int scsi_is_srp_rport(const struct device *dev);
+
+>>>>>>> v4.9.227
 #define to_srp_internal(tmpl) container_of(tmpl, struct srp_internal, t)
 
 #define	dev_to_rport(d)	container_of(d, struct srp_rport, dev)
@@ -61,6 +66,29 @@ static inline struct Scsi_Host *rport_to_shost(struct srp_rport *r)
 	return dev_to_shost(r->dev.parent);
 }
 
+<<<<<<< HEAD
+=======
+static int find_child_rport(struct device *dev, void *data)
+{
+	struct device **child = data;
+
+	if (scsi_is_srp_rport(dev)) {
+		WARN_ON_ONCE(*child);
+		*child = dev;
+	}
+	return 0;
+}
+
+static inline struct srp_rport *shost_to_rport(struct Scsi_Host *shost)
+{
+	struct device *child = NULL;
+
+	WARN_ON_ONCE(device_for_each_child(&shost->shost_gendev, &child,
+					   find_child_rport) < 0);
+	return child ? dev_to_rport(child) : NULL;
+}
+
+>>>>>>> v4.9.227
 /**
  * srp_tmo_valid() - check timeout combination validity
  * @reconnect_delay: Reconnect delay in seconds.
@@ -198,7 +226,11 @@ static ssize_t srp_show_tmo(char *buf, int tmo)
 	return tmo >= 0 ? sprintf(buf, "%d\n", tmo) : sprintf(buf, "off\n");
 }
 
+<<<<<<< HEAD
 static int srp_parse_tmo(int *tmo, const char *buf)
+=======
+int srp_parse_tmo(int *tmo, const char *buf)
+>>>>>>> v4.9.227
 {
 	int res = 0;
 
@@ -209,6 +241,10 @@ static int srp_parse_tmo(int *tmo, const char *buf)
 
 	return res;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(srp_parse_tmo);
+>>>>>>> v4.9.227
 
 static ssize_t show_reconnect_delay(struct device *dev,
 				    struct device_attribute *attr, char *buf)
@@ -439,8 +475,15 @@ static void __rport_fail_io_fast(struct srp_rport *rport)
 
 	/* Involve the LLD if possible to terminate all I/O on the rport. */
 	i = to_srp_internal(shost->transportt);
+<<<<<<< HEAD
 	if (i->f->terminate_rport_io)
 		i->f->terminate_rport_io(rport);
+=======
+	if (i->f->terminate_rport_io) {
+		srp_wait_for_queuecommand(shost);
+		i->f->terminate_rport_io(rport);
+	}
+>>>>>>> v4.9.227
 }
 
 /**
@@ -626,9 +669,18 @@ static enum blk_eh_timer_return srp_timed_out(struct scsi_cmnd *scmd)
 	struct scsi_device *sdev = scmd->device;
 	struct Scsi_Host *shost = sdev->host;
 	struct srp_internal *i = to_srp_internal(shost->transportt);
+<<<<<<< HEAD
 
 	pr_debug("timeout for sdev %s\n", dev_name(&sdev->sdev_gendev));
 	return i->f->reset_timer_if_blocked && scsi_device_blocked(sdev) ?
+=======
+	struct srp_rport *rport = shost_to_rport(shost);
+
+	pr_debug("timeout for sdev %s\n", dev_name(&sdev->sdev_gendev));
+	return rport && rport->fast_io_fail_tmo < 0 &&
+		rport->dev_loss_tmo < 0 &&
+		i->f->reset_timer_if_blocked && scsi_device_blocked(sdev) ?
+>>>>>>> v4.9.227
 		BLK_EH_RESET_TIMER : BLK_EH_NOT_HANDLED;
 }
 

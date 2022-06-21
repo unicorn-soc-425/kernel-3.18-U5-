@@ -168,7 +168,11 @@ static void nlm_init_node(void)
 
 	nodep = nlm_current_node();
 	nodep->picbase = nlm_mmio_base(NETLOGIC_IO_PIC_OFFSET);
+<<<<<<< HEAD
 	nodep->ebase = read_c0_ebase() & (~((1 << 12) - 1));
+=======
+	nodep->ebase = read_c0_ebase() & MIPS_EBASE_BASE;
+>>>>>>> v4.9.227
 	spin_lock_init(&nodep->piclock);
 }
 

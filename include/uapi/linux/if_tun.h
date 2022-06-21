@@ -1,7 +1,10 @@
 /*
  *  Universal TUN/TAP device driver.
  *  Copyright (C) 1999-2000 Maxim Krasnyansky <max_mk@yahoo.com>
+<<<<<<< HEAD
  *  Copyright (c) 2015 Samsung Electronics Co., Ltd.
+=======
+>>>>>>> v4.9.227
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,6 +16,7 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU General Public License for more details.
  */
+<<<<<<< HEAD
 /*
  *  Changes:
  *  KwnagHyun Kim <kh0304.kim@samsung.com> 2015/07/08
@@ -21,6 +25,8 @@
  *    Add codes to share UID/PID information
  *
  */
+=======
+>>>>>>> v4.9.227
 
 #ifndef _UAPI__IF_TUN_H
 #define _UAPI__IF_TUN_H
@@ -31,6 +37,7 @@
 
 /* Read queue size */
 #define TUN_READQ_SIZE	500
+<<<<<<< HEAD
 
 /* TUN device flags */
 #define TUN_TUN_DEV 	0x0001	
@@ -46,6 +53,13 @@
 #define TUN_VNET_HDR 	0x0200
 #define TUN_TAP_MQ      0x0400
 
+=======
+/* TUN device type flags: deprecated. Use IFF_TUN/IFF_TAP instead. */
+#define TUN_TUN_DEV 	IFF_TUN
+#define TUN_TAP_DEV	IFF_TAP
+#define TUN_TYPE_MASK   0x000f
+
+>>>>>>> v4.9.227
 /* Ioctl defines */
 #define TUNSETNOCSUM  _IOW('T', 200, int) 
 #define TUNSETDEBUG   _IOW('T', 201, int) 
@@ -67,6 +81,17 @@
 #define TUNSETQUEUE  _IOW('T', 217, int)
 #define TUNSETIFINDEX	_IOW('T', 218, unsigned int)
 #define TUNGETFILTER _IOR('T', 219, struct sock_fprog)
+<<<<<<< HEAD
+=======
+#define TUNSETVNETLE _IOW('T', 220, int)
+#define TUNGETVNETLE _IOR('T', 221, int)
+/* The TUNSETVNETBE and TUNGETVNETBE ioctls are for cross-endian support on
+ * little-endian hosts. Not all kernel configurations support them, but all
+ * configurations that support SET also support GET.
+ */
+#define TUNSETVNETBE _IOW('T', 222, int)
+#define TUNGETVNETBE _IOR('T', 223, int)
+>>>>>>> v4.9.227
 
 /* TUNSETIFF ifr flags */
 #define IFF_TUN		0x0001
@@ -93,6 +118,7 @@
 #define TUN_F_TSO_ECN	0x08	/* I can handle TSO with ECN bits. */
 #define TUN_F_UFO	0x10	/* I can handle UFO packets */
 
+<<<<<<< HEAD
 // ------------- START of KNOX_VPN ------------------//
 #define TUN_META_HDR	0x0800
 #define TUNGETMETAPARAM _IOR('T', 218, int)
@@ -102,6 +128,8 @@
 #define DEFAULT_IHL 5
 // ------------- END of KNOX_VPN -------------------//
 
+=======
+>>>>>>> v4.9.227
 /* Protocol info prepended to the packets (when IFF_NO_PI is not set) */
 #define TUN_PKT_STRIP	0x0001
 struct tun_pi {

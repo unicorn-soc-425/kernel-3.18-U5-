@@ -57,12 +57,21 @@ DEFINE_EVENT(ppc64_interrupt_class, timer_interrupt_exit,
 extern void hcall_tracepoint_regfunc(void);
 extern void hcall_tracepoint_unregfunc(void);
 
+<<<<<<< HEAD
 TRACE_EVENT_FN(hcall_entry,
+=======
+TRACE_EVENT_FN_COND(hcall_entry,
+>>>>>>> v4.9.227
 
 	TP_PROTO(unsigned long opcode, unsigned long *args),
 
 	TP_ARGS(opcode, args),
 
+<<<<<<< HEAD
+=======
+	TP_CONDITION(cpu_online(raw_smp_processor_id())),
+
+>>>>>>> v4.9.227
 	TP_STRUCT__entry(
 		__field(unsigned long, opcode)
 	),
@@ -76,13 +85,22 @@ TRACE_EVENT_FN(hcall_entry,
 	hcall_tracepoint_regfunc, hcall_tracepoint_unregfunc
 );
 
+<<<<<<< HEAD
 TRACE_EVENT_FN(hcall_exit,
+=======
+TRACE_EVENT_FN_COND(hcall_exit,
+>>>>>>> v4.9.227
 
 	TP_PROTO(unsigned long opcode, unsigned long retval,
 		unsigned long *retbuf),
 
 	TP_ARGS(opcode, retval, retbuf),
 
+<<<<<<< HEAD
+=======
+	TP_CONDITION(cpu_online(raw_smp_processor_id())),
+
+>>>>>>> v4.9.227
 	TP_STRUCT__entry(
 		__field(unsigned long, opcode)
 		__field(unsigned long, retval)
@@ -144,6 +162,29 @@ TRACE_EVENT_FN(opal_exit,
 );
 #endif
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(hash_fault,
+
+	    TP_PROTO(unsigned long addr, unsigned long access, unsigned long trap),
+	    TP_ARGS(addr, access, trap),
+	    TP_STRUCT__entry(
+		    __field(unsigned long, addr)
+		    __field(unsigned long, access)
+		    __field(unsigned long, trap)
+		    ),
+
+	    TP_fast_assign(
+		    __entry->addr = addr;
+		    __entry->access = access;
+		    __entry->trap = trap;
+		    ),
+
+	    TP_printk("hash fault with addr 0x%lx and access = 0x%lx trap = 0x%lx",
+		      __entry->addr, __entry->access, __entry->trap)
+);
+
+>>>>>>> v4.9.227
 #endif /* _TRACE_POWERPC_H */
 
 #undef TRACE_INCLUDE_PATH

@@ -3,7 +3,11 @@
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
+<<<<<<< HEAD
  *  Copyright (C) 2012 John Crispin <blogic@openwrt.org>
+=======
+ *  Copyright (C) 2012 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  *  Copyright (C) 2010 Sameer Ahmad, Lantiq GmbH
  */
 
@@ -46,7 +50,10 @@ static struct platform_driver dcdc_driver = {
 	.probe = dcdc_probe,
 	.driver = {
 		.name = "dcdc-xrx200",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = dcdc_match,
 	},
 };

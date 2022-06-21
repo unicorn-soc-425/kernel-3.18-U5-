@@ -229,6 +229,7 @@ static int __init dmi_id_init(void)
 
 	ret = device_register(dmi_dev);
 	if (ret)
+<<<<<<< HEAD
 		goto fail_free_dmi_dev;
 
 	return 0;
@@ -237,6 +238,16 @@ fail_free_dmi_dev:
 	kfree(dmi_dev);
 fail_class_unregister:
 
+=======
+		goto fail_put_dmi_dev;
+
+	return 0;
+
+fail_put_dmi_dev:
+	put_device(dmi_dev);
+
+fail_class_unregister:
+>>>>>>> v4.9.227
 	class_unregister(&dmi_class);
 
 	return ret;

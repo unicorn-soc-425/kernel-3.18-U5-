@@ -687,7 +687,10 @@ static struct platform_driver venc_driver = {
 	.remove		= venc_remove,
 	.driver		= {
 		.name	= MODULE_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.id_table	= vpbe_venc_devtype
 };

@@ -61,12 +61,21 @@ void pvclock_resume(void)
 u8 pvclock_read_flags(struct pvclock_vcpu_time_info *src)
 {
 	unsigned version;
+<<<<<<< HEAD
 	cycle_t ret;
 	u8 flags;
 
 	do {
 		version = __pvclock_read_cycles(src, &ret, &flags);
 	} while ((src->version & 1) || version != src->version);
+=======
+	u8 flags;
+
+	do {
+		version = pvclock_read_begin(src);
+		flags = src->flags;
+	} while (pvclock_read_retry(src, version));
+>>>>>>> v4.9.227
 
 	return flags & valid_flags;
 }
@@ -79,8 +88,15 @@ cycle_t pvclock_clocksource_read(struct pvclock_vcpu_time_info *src)
 	u8 flags;
 
 	do {
+<<<<<<< HEAD
 		version = __pvclock_read_cycles(src, &ret, &flags);
 	} while ((src->version & 1) || version != src->version);
+=======
+		version = pvclock_read_begin(src);
+		ret = __pvclock_read_cycles(src, rdtsc_ordered());
+		flags = src->flags;
+	} while (pvclock_read_retry(src, version));
+>>>>>>> v4.9.227
 
 	if (unlikely((flags & PVCLOCK_GUEST_STOPPED) != 0)) {
 		src->flags &= ~PVCLOCK_GUEST_STOPPED;
@@ -140,6 +156,7 @@ void pvclock_read_wallclock(struct pvclock_wall_clock *wall_clock,
 
 	set_normalized_timespec(ts, now.tv_sec, now.tv_nsec);
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_X86_64
 /*
@@ -164,3 +181,5 @@ int __init pvclock_init_vsyscall(struct pvclock_vsyscall_time_info *i,
 	return 0;
 }
 #endif
+=======
+>>>>>>> v4.9.227

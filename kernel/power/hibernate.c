@@ -28,6 +28,10 @@
 #include <linux/syscore_ops.h>
 #include <linux/ctype.h>
 #include <linux/genhd.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <trace/events/power.h>
 
 #include "power.h"
@@ -51,6 +55,10 @@ enum {
 #ifdef CONFIG_SUSPEND
 	HIBERNATION_SUSPEND,
 #endif
+<<<<<<< HEAD
+=======
+	HIBERNATION_TEST_RESUME,
+>>>>>>> v4.9.227
 	/* keep last */
 	__HIBERNATION_AFTER_LAST
 };
@@ -232,20 +240,32 @@ static void platform_recover(int platform_mode)
  * @nr_pages: Number of memory pages processed between @start and @stop.
  * @msg: Additional diagnostic message to print.
  */
+<<<<<<< HEAD
 void swsusp_show_speed(struct timeval *start, struct timeval *stop,
 			unsigned nr_pages, char *msg)
 {
+=======
+void swsusp_show_speed(ktime_t start, ktime_t stop,
+		      unsigned nr_pages, char *msg)
+{
+	ktime_t diff;
+>>>>>>> v4.9.227
 	u64 elapsed_centisecs64;
 	unsigned int centisecs;
 	unsigned int k;
 	unsigned int kps;
 
+<<<<<<< HEAD
 	elapsed_centisecs64 = timeval_to_ns(stop) - timeval_to_ns(start);
 	/*
 	 * If "(s64)elapsed_centisecs64 < 0", it will print long elapsed time,
 	 * it is obvious enough for what went wrong.
 	 */
 	do_div(elapsed_centisecs64, NSEC_PER_SEC / 100);
+=======
+	diff = ktime_sub(stop, start);
+	elapsed_centisecs64 = ktime_divns(diff, 10*NSEC_PER_MSEC);
+>>>>>>> v4.9.227
 	centisecs = elapsed_centisecs64;
 	if (centisecs == 0)
 		centisecs = 1;	/* avoid div-by-zero */
@@ -257,6 +277,14 @@ void swsusp_show_speed(struct timeval *start, struct timeval *stop,
 			kps / 1000, (kps % 1000) / 10);
 }
 
+<<<<<<< HEAD
+=======
+__weak int arch_resume_nosmt(void)
+{
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /**
  * create_image - Create a hibernation image.
  * @platform_mode: Whether or not to use the platform driver.
@@ -301,14 +329,26 @@ static int create_image(int platform_mode)
 	save_processor_state();
 	trace_suspend_resume(TPS("machine_suspend"), PM_EVENT_HIBERNATE, true);
 	error = swsusp_arch_suspend();
+<<<<<<< HEAD
+=======
+	/* Restore control flow magically appears here */
+	restore_processor_state();
+>>>>>>> v4.9.227
 	trace_suspend_resume(TPS("machine_suspend"), PM_EVENT_HIBERNATE, false);
 	if (error)
 		printk(KERN_ERR "PM: Error %d creating hibernation image\n",
 			error);
+<<<<<<< HEAD
 	/* Restore control flow magically appears here */
 	restore_processor_state();
 	if (!in_suspend)
 		events_check_enabled = false;
+=======
+	if (!in_suspend) {
+		events_check_enabled = false;
+		clear_free_pages();
+	}
+>>>>>>> v4.9.227
 
 	platform_leave(platform_mode);
 
@@ -321,6 +361,13 @@ static int create_image(int platform_mode)
  Enable_cpus:
 	enable_nonboot_cpus();
 
+<<<<<<< HEAD
+=======
+	/* Allow architectures to do nosmt-specific post-resume dances */
+	if (!in_suspend)
+		error = arch_resume_nosmt();
+
+>>>>>>> v4.9.227
  Platform_finish:
 	platform_finish(platform_mode);
 
@@ -341,6 +388,10 @@ int hibernation_snapshot(int platform_mode)
 	pm_message_t msg;
 	int error;
 
+<<<<<<< HEAD
+=======
+	pm_suspend_clear_flags();
+>>>>>>> v4.9.227
 	error = platform_begin(platform_mode);
 	if (error)
 		goto Close;
@@ -410,6 +461,14 @@ int hibernation_snapshot(int platform_mode)
 	goto Close;
 }
 
+<<<<<<< HEAD
+=======
+int __weak hibernate_resume_nonboot_cpu_disable(void)
+{
+	return disable_nonboot_cpus();
+}
+
+>>>>>>> v4.9.227
 /**
  * resume_target_kernel - Restore system state from a hibernation image.
  * @platform_mode: Whether or not to use the platform driver.
@@ -434,7 +493,11 @@ static int resume_target_kernel(bool platform_mode)
 	if (error)
 		goto Cleanup;
 
+<<<<<<< HEAD
 	error = disable_nonboot_cpus();
+=======
+	error = hibernate_resume_nonboot_cpu_disable();
+>>>>>>> v4.9.227
 	if (error)
 		goto Enable_cpus;
 
@@ -554,7 +617,11 @@ int hibernation_platform_enter(void)
 
 	error = disable_nonboot_cpus();
 	if (error)
+<<<<<<< HEAD
 		goto Platform_finish;
+=======
+		goto Enable_cpus;
+>>>>>>> v4.9.227
 
 	local_irq_disable();
 	syscore_suspend();
@@ -570,6 +637,11 @@ int hibernation_platform_enter(void)
  Power_up:
 	syscore_resume();
 	local_irq_enable();
+<<<<<<< HEAD
+=======
+
+ Enable_cpus:
+>>>>>>> v4.9.227
 	enable_nonboot_cpus();
 
  Platform_finish:
@@ -641,12 +713,45 @@ static void power_down(void)
 		cpu_relax();
 }
 
+<<<<<<< HEAD
+=======
+static int load_image_and_restore(void)
+{
+	int error;
+	unsigned int flags;
+
+	pr_debug("PM: Loading hibernation image.\n");
+
+	lock_device_hotplug();
+	error = create_basic_memory_bitmaps();
+	if (error)
+		goto Unlock;
+
+	error = swsusp_read(&flags);
+	swsusp_close(FMODE_READ);
+	if (!error)
+		hibernation_restore(flags & SF_PLATFORM_MODE);
+
+	printk(KERN_ERR "PM: Failed to load hibernation image, recovering.\n");
+	swsusp_free();
+	free_basic_memory_bitmaps();
+ Unlock:
+	unlock_device_hotplug();
+
+	return error;
+}
+
+>>>>>>> v4.9.227
 /**
  * hibernate - Carry out system hibernation, including saving the image.
  */
 int hibernate(void)
 {
 	int error, nr_calls = 0;
+<<<<<<< HEAD
+=======
+	bool snapshot_test = false;
+>>>>>>> v4.9.227
 
 	if (!hibernation_available()) {
 		pr_debug("PM: Hibernation not available.\n");
@@ -698,8 +803,17 @@ int hibernate(void)
 		pr_debug("PM: writing image.\n");
 		error = swsusp_write(flags);
 		swsusp_free();
+<<<<<<< HEAD
 		if (!error)
 			power_down();
+=======
+		if (!error) {
+			if (hibernation_mode == HIBERNATION_TEST_RESUME)
+				snapshot_test = true;
+			else
+				power_down();
+		}
+>>>>>>> v4.9.227
 		in_suspend = 0;
 		pm_restore_gfp_mask();
 	} else {
@@ -710,6 +824,15 @@ int hibernate(void)
 	free_basic_memory_bitmaps();
  Thaw:
 	unlock_device_hotplug();
+<<<<<<< HEAD
+=======
+	if (snapshot_test) {
+		pr_debug("PM: Checking hibernation image\n");
+		error = swsusp_check();
+		if (!error)
+			error = load_image_and_restore();
+	}
+>>>>>>> v4.9.227
 	thaw_processes();
 
 	/* Don't bother checking whether freezer_test_done is true */
@@ -735,14 +858,21 @@ int hibernate(void)
  * contents of memory is restored from the saved image.
  *
  * If this is successful, control reappears in the restored target kernel in
+<<<<<<< HEAD
  * hibernation_snaphot() which returns to hibernate().  Otherwise, the routine
+=======
+ * hibernation_snapshot() which returns to hibernate().  Otherwise, the routine
+>>>>>>> v4.9.227
  * attempts to recover gracefully and make the kernel return to the normal mode
  * of operation.
  */
 static int software_resume(void)
 {
 	int error, nr_calls = 0;
+<<<<<<< HEAD
 	unsigned int flags;
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * If the user said "noresume".. bail out early.
@@ -839,6 +969,7 @@ static int software_resume(void)
 	if (error)
 		goto Close_Finish;
 
+<<<<<<< HEAD
 	pr_debug("PM: Loading hibernation image.\n");
 
 	lock_device_hotplug();
@@ -856,6 +987,15 @@ static int software_resume(void)
 	free_basic_memory_bitmaps();
  Thaw:
 	unlock_device_hotplug();
+=======
+	error = freeze_kernel_threads();
+	if (error) {
+		thaw_processes();
+		goto Close_Finish;
+	}
+
+	error = load_image_and_restore();
+>>>>>>> v4.9.227
 	thaw_processes();
  Finish:
 	__pm_notifier_call_chain(PM_POST_RESTORE, nr_calls, NULL);
@@ -881,6 +1021,10 @@ static const char * const hibernation_modes[] = {
 #ifdef CONFIG_SUSPEND
 	[HIBERNATION_SUSPEND]	= "suspend",
 #endif
+<<<<<<< HEAD
+=======
+	[HIBERNATION_TEST_RESUME]	= "test_resume",
+>>>>>>> v4.9.227
 };
 
 /*
@@ -927,6 +1071,10 @@ static ssize_t disk_show(struct kobject *kobj, struct kobj_attribute *attr,
 #ifdef CONFIG_SUSPEND
 		case HIBERNATION_SUSPEND:
 #endif
+<<<<<<< HEAD
+=======
+		case HIBERNATION_TEST_RESUME:
+>>>>>>> v4.9.227
 			break;
 		case HIBERNATION_PLATFORM:
 			if (hibernation_ops)
@@ -973,6 +1121,10 @@ static ssize_t disk_store(struct kobject *kobj, struct kobj_attribute *attr,
 #ifdef CONFIG_SUSPEND
 		case HIBERNATION_SUSPEND:
 #endif
+<<<<<<< HEAD
+=======
+		case HIBERNATION_TEST_RESUME:
+>>>>>>> v4.9.227
 			hibernation_mode = mode;
 			break;
 		case HIBERNATION_PLATFORM:
@@ -1118,6 +1270,7 @@ static int __init resume_offset_setup(char *str)
 
 static int __init hibernate_setup(char *str)
 {
+<<<<<<< HEAD
 	if (!strncmp(str, "noresume", 8))
 		noresume = 1;
 	else if (!strncmp(str, "nocompress", 10))
@@ -1125,6 +1278,18 @@ static int __init hibernate_setup(char *str)
 	else if (!strncmp(str, "no", 2)) {
 		noresume = 1;
 		nohibernate = 1;
+=======
+	if (!strncmp(str, "noresume", 8)) {
+		noresume = 1;
+	} else if (!strncmp(str, "nocompress", 10)) {
+		nocompress = 1;
+	} else if (!strncmp(str, "no", 2)) {
+		noresume = 1;
+		nohibernate = 1;
+	} else if (IS_ENABLED(CONFIG_DEBUG_RODATA)
+		   && !strncmp(str, "protect_image", 13)) {
+		enable_restore_image_protection();
+>>>>>>> v4.9.227
 	}
 	return 1;
 }
@@ -1157,11 +1322,14 @@ static int __init nohibernate_setup(char *str)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __init kaslr_nohibernate_setup(char *str)
 {
 	return nohibernate_setup(str);
 }
 
+=======
+>>>>>>> v4.9.227
 __setup("noresume", noresume_setup);
 __setup("resume_offset=", resume_offset_setup);
 __setup("resume=", resume_setup);
@@ -1169,4 +1337,7 @@ __setup("hibernate=", hibernate_setup);
 __setup("resumewait", resumewait_setup);
 __setup("resumedelay=", resumedelay_setup);
 __setup("nohibernate", nohibernate_setup);
+<<<<<<< HEAD
 __setup("kaslr", kaslr_nohibernate_setup);
+=======
+>>>>>>> v4.9.227

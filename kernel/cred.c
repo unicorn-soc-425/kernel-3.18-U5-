@@ -20,15 +20,34 @@
 #include <linux/cn_proc.h>
 
 #if 0
+<<<<<<< HEAD
 #define kdebug(FMT, ...) \
 	printk("[%-5.5s%5u] "FMT"\n", current->comm, current->pid ,##__VA_ARGS__)
 #else
 #define kdebug(FMT, ...) \
 	no_printk("[%-5.5s%5u] "FMT"\n", current->comm, current->pid ,##__VA_ARGS__)
+=======
+#define kdebug(FMT, ...)						\
+	printk("[%-5.5s%5u] " FMT "\n",					\
+	       current->comm, current->pid, ##__VA_ARGS__)
+#else
+#define kdebug(FMT, ...)						\
+do {									\
+	if (0)								\
+		no_printk("[%-5.5s%5u] " FMT "\n",			\
+			  current->comm, current->pid, ##__VA_ARGS__);	\
+} while (0)
+>>>>>>> v4.9.227
 #endif
 
 static struct kmem_cache *cred_jar;
 
+<<<<<<< HEAD
+=======
+/* init to 2 - one for init_task, one to ensure it is never freed */
+struct group_info init_groups = { .usage = ATOMIC_INIT(2) };
+
+>>>>>>> v4.9.227
 /*
  * The initial credentials for the initial task
  */
@@ -138,7 +157,14 @@ void __put_cred(struct cred *cred)
 	BUG_ON(cred == current->cred);
 	BUG_ON(cred == current->real_cred);
 
+<<<<<<< HEAD
 	call_rcu(&cred->rcu, put_cred_rcu);
+=======
+	if (cred->non_rcu)
+		put_cred_rcu(&cred->rcu);
+	else
+		call_rcu(&cred->rcu, put_cred_rcu);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(__put_cred);
 
@@ -208,7 +234,11 @@ struct cred *cred_alloc_blank(void)
 	new->magic = CRED_MAGIC;
 #endif
 
+<<<<<<< HEAD
 	if (security_cred_alloc_blank(new, GFP_KERNEL) < 0)
+=======
+	if (security_cred_alloc_blank(new, GFP_KERNEL_ACCOUNT) < 0)
+>>>>>>> v4.9.227
 		goto error;
 
 	return new;
@@ -249,6 +279,10 @@ struct cred *prepare_creds(void)
 	old = task->cred;
 	memcpy(new, old, sizeof(struct cred));
 
+<<<<<<< HEAD
+=======
+	new->non_rcu = 0;
+>>>>>>> v4.9.227
 	atomic_set(&new->usage, 1);
 	set_cred_subscribers(new, 0);
 	get_group_info(new->group_info);
@@ -266,7 +300,11 @@ struct cred *prepare_creds(void)
 	new->security = NULL;
 #endif
 
+<<<<<<< HEAD
 	if (security_prepare_creds(new, old, GFP_KERNEL) < 0)
+=======
+	if (security_prepare_creds(new, old, GFP_KERNEL_ACCOUNT) < 0)
+>>>>>>> v4.9.227
 		goto error;
 	validate_creds(new);
 	return new;
@@ -439,6 +477,18 @@ int commit_creds(struct cred *new)
 		if (task->mm)
 			set_dumpable(task->mm, suid_dumpable);
 		task->pdeath_signal = 0;
+<<<<<<< HEAD
+=======
+		/*
+		 * If a task drops privileges and becomes nondumpable,
+		 * the dumpability change must become visible before
+		 * the credential change; otherwise, a __ptrace_may_access()
+		 * racing with this change may be able to attach to a task it
+		 * shouldn't be able to attach to (as if the task had dropped
+		 * privileges without becoming nondumpable).
+		 * Pairs with a read barrier in __ptrace_may_access().
+		 */
+>>>>>>> v4.9.227
 		smp_wmb();
 	}
 
@@ -519,7 +569,23 @@ const struct cred *override_creds(const struct cred *new)
 
 	validate_creds(old);
 	validate_creds(new);
+<<<<<<< HEAD
 	get_cred(new);
+=======
+
+	/*
+	 * NOTE! This uses 'get_new_cred()' rather than 'get_cred()'.
+	 *
+	 * That means that we do not clear the 'non_rcu' flag, since
+	 * we are only installing the cred into the thread-synchronous
+	 * '->cred' pointer, not the '->real_cred' pointer that is
+	 * visible to other threads under RCU.
+	 *
+	 * Also note that we did validate_creds() manually, not depending
+	 * on the validation in 'get_cred()'.
+	 */
+	get_new_cred((struct cred *)new);
+>>>>>>> v4.9.227
 	alter_cred_subscribers(new, 1);
 	rcu_assign_pointer(current->cred, new);
 	alter_cred_subscribers(old, -1);
@@ -561,8 +627,13 @@ EXPORT_SYMBOL(revert_creds);
 void __init cred_init(void)
 {
 	/* allocate a slab in which we can store credentials */
+<<<<<<< HEAD
 	cred_jar = kmem_cache_create("cred_jar", sizeof(struct cred),
 				     0, SLAB_HWCACHE_ALIGN|SLAB_PANIC, NULL);
+=======
+	cred_jar = kmem_cache_create("cred_jar", sizeof(struct cred), 0,
+			SLAB_HWCACHE_ALIGN|SLAB_PANIC|SLAB_ACCOUNT, NULL);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -602,6 +673,10 @@ struct cred *prepare_kernel_cred(struct task_struct *daemon)
 	validate_creds(old);
 
 	*new = *old;
+<<<<<<< HEAD
+=======
+	new->non_rcu = 0;
+>>>>>>> v4.9.227
 	atomic_set(&new->usage, 1);
 	set_cred_subscribers(new, 0);
 	get_uid(new->user);
@@ -619,7 +694,11 @@ struct cred *prepare_kernel_cred(struct task_struct *daemon)
 #ifdef CONFIG_SECURITY
 	new->security = NULL;
 #endif
+<<<<<<< HEAD
 	if (security_prepare_creds(new, old, GFP_KERNEL) < 0)
+=======
+	if (security_prepare_creds(new, old, GFP_KERNEL_ACCOUNT) < 0)
+>>>>>>> v4.9.227
 		goto error;
 
 	put_cred(old);
@@ -681,6 +760,11 @@ EXPORT_SYMBOL(set_security_override_from_ctx);
  */
 int set_create_files_as(struct cred *new, struct inode *inode)
 {
+<<<<<<< HEAD
+=======
+	if (!uid_valid(inode->i_uid) || !gid_valid(inode->i_gid))
+		return -EINVAL;
+>>>>>>> v4.9.227
 	new->fsuid = inode->i_uid;
 	new->fsgid = inode->i_gid;
 	return security_kernel_create_files_as(new, inode);

@@ -30,7 +30,10 @@
 #include <linux/idr.h>
 #include <linux/spinlock.h>
 #include <linux/percpu.h>
+<<<<<<< HEAD
 #include <linux/hardirq.h>
+=======
+>>>>>>> v4.9.227
 
 #define MAX_IDR_SHIFT		(sizeof(int) * 8 - 1)
 #define MAX_IDR_BIT		(1U << MAX_IDR_SHIFT)
@@ -400,7 +403,11 @@ void idr_preload(gfp_t gfp_mask)
 	 * allocation guarantee.  Disallow usage from those contexts.
 	 */
 	WARN_ON_ONCE(in_interrupt());
+<<<<<<< HEAD
 	might_sleep_if(gfp_mask & __GFP_WAIT);
+=======
+	might_sleep_if(gfpflags_allow_blocking(gfp_mask));
+>>>>>>> v4.9.227
 
 	preempt_disable();
 
@@ -454,7 +461,11 @@ int idr_alloc(struct idr *idr, void *ptr, int start, int end, gfp_t gfp_mask)
 	struct idr_layer *pa[MAX_IDR_LEVEL + 1];
 	int id;
 
+<<<<<<< HEAD
 	might_sleep_if(gfp_mask & __GFP_WAIT);
+=======
+	might_sleep_if(gfpflags_allow_blocking(gfp_mask));
+>>>>>>> v4.9.227
 
 	/* sanity checks */
 	if (WARN_ON_ONCE(start < 0))

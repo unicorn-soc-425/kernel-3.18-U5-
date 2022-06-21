@@ -67,7 +67,11 @@ static __init int sysfb_init(void)
 
 	pd = platform_device_register_resndata(NULL, name, 0,
 					       NULL, 0, si, sizeof(*si));
+<<<<<<< HEAD
 	return IS_ERR(pd) ? PTR_ERR(pd) : 0;
+=======
+	return PTR_ERR_OR_ZERO(pd);
+>>>>>>> v4.9.227
 }
 
 /* must execute after PCI subsystem for EFI quirks */

@@ -63,7 +63,11 @@ struct pdc_tlb_cf {		/* for PDC_CACHE (I/D-TLB's) */
 		tc_page : 1,	/* 0 = 2K page-size-machine, 1 = 4k page size */
 		tc_cst  : 3,	/* 0 = incoherent operations, else coherent operations */
 		tc_aid  : 5,	/* ITLB: width of access ids of processor (encoded!) */
+<<<<<<< HEAD
 		tc_pad1 : 8;	/* ITLB: width of space-registers (encoded) */
+=======
+		tc_sr   : 8;	/* ITLB: width of space-registers (encoded) */
+>>>>>>> v4.9.227
 };
 
 struct pdc_cache_info {		/* main-PDC_CACHE-structure (caches & TLB's) */

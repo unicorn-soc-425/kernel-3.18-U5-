@@ -18,10 +18,17 @@
 #include <linux/i2c.h>
 #include <linux/platform_data/pca953x.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #ifdef CONFIG_OF_GPIO
 #include <linux/of_platform.h>
 #endif
 #include <asm/unaligned.h>
+=======
+#include <asm/unaligned.h>
+#include <linux/of_platform.h>
+#include <linux/acpi.h>
+#include <linux/regulator/consumer.h>
+>>>>>>> v4.9.227
 
 #define PCA953X_INPUT		0
 #define PCA953X_OUTPUT		1
@@ -39,10 +46,25 @@
 #define PCA957X_MSK		6
 #define PCA957X_INTS		7
 
+<<<<<<< HEAD
 #define PCA_GPIO_MASK		0x00FF
 #define PCA_INT			0x0100
 #define PCA953X_TYPE		0x1000
 #define PCA957X_TYPE		0x2000
+=======
+#define PCAL953X_IN_LATCH	34
+#define PCAL953X_INT_MASK	37
+#define PCAL953X_INT_STAT	38
+
+#define PCA_GPIO_MASK		0x00FF
+#define PCA_INT			0x0100
+#define PCA_PCAL		0x0200
+#define PCA953X_TYPE		0x1000
+#define PCA957X_TYPE		0x2000
+#define PCA_TYPE_MASK		0xF000
+
+#define PCA_CHIP_TYPE(x)	((x) & PCA_TYPE_MASK)
+>>>>>>> v4.9.227
 
 static const struct i2c_device_id pca953x_id[] = {
 	{ "pca9505", 40 | PCA953X_TYPE | PCA_INT, },
@@ -60,6 +82,11 @@ static const struct i2c_device_id pca953x_id[] = {
 	{ "pca9575", 16 | PCA957X_TYPE | PCA_INT, },
 	{ "pca9698", 40 | PCA953X_TYPE, },
 
+<<<<<<< HEAD
+=======
+	{ "pcal9555a", 16 | PCA953X_TYPE | PCA_INT | PCA_PCAL, },
+
+>>>>>>> v4.9.227
 	{ "max7310", 8  | PCA953X_TYPE, },
 	{ "max7312", 16 | PCA953X_TYPE | PCA_INT, },
 	{ "max7313", 16 | PCA953X_TYPE | PCA_INT, },
@@ -68,16 +95,50 @@ static const struct i2c_device_id pca953x_id[] = {
 	{ "tca6408", 8  | PCA953X_TYPE | PCA_INT, },
 	{ "tca6416", 16 | PCA953X_TYPE | PCA_INT, },
 	{ "tca6424", 24 | PCA953X_TYPE | PCA_INT, },
+<<<<<<< HEAD
+=======
+	{ "tca9539", 16 | PCA953X_TYPE | PCA_INT, },
+>>>>>>> v4.9.227
 	{ "xra1202", 8  | PCA953X_TYPE },
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, pca953x_id);
 
+<<<<<<< HEAD
+=======
+static const struct acpi_device_id pca953x_acpi_ids[] = {
+	{ "INT3491", 16 | PCA953X_TYPE | PCA_INT | PCA_PCAL, },
+	{ }
+};
+MODULE_DEVICE_TABLE(acpi, pca953x_acpi_ids);
+
+>>>>>>> v4.9.227
 #define MAX_BANK 5
 #define BANK_SZ 8
 
 #define NBANK(chip) DIV_ROUND_UP(chip->gpio_chip.ngpio, BANK_SZ)
 
+<<<<<<< HEAD
+=======
+struct pca953x_reg_config {
+	int direction;
+	int output;
+	int input;
+};
+
+static const struct pca953x_reg_config pca953x_regs = {
+	.direction = PCA953X_DIRECTION,
+	.output = PCA953X_OUTPUT,
+	.input = PCA953X_INPUT,
+};
+
+static const struct pca953x_reg_config pca957x_regs = {
+	.direction = PCA957X_CFG,
+	.output = PCA957X_OUT,
+	.input = PCA957X_IN,
+};
+
+>>>>>>> v4.9.227
 struct pca953x_chip {
 	unsigned gpio_start;
 	u8 reg_output[MAX_BANK];
@@ -95,6 +156,7 @@ struct pca953x_chip {
 	struct i2c_client *client;
 	struct gpio_chip gpio_chip;
 	const char *const *names;
+<<<<<<< HEAD
 	int	chip_type;
 };
 
@@ -102,6 +164,16 @@ static inline struct pca953x_chip *to_pca(struct gpio_chip *gc)
 {
 	return container_of(gc, struct pca953x_chip, gpio_chip);
 }
+=======
+	unsigned long driver_data;
+	struct regulator *regulator;
+
+	const struct pca953x_reg_config *regs;
+
+	int (*write_regs)(struct pca953x_chip *, int, u8 *);
+	int (*read_regs)(struct pca953x_chip *, int, u8 *);
+};
+>>>>>>> v4.9.227
 
 static int pca953x_read_single(struct pca953x_chip *chip, int reg, u32 *val,
 				int off)
@@ -125,7 +197,11 @@ static int pca953x_read_single(struct pca953x_chip *chip, int reg, u32 *val,
 static int pca953x_write_single(struct pca953x_chip *chip, int reg, u32 val,
 				int off)
 {
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret;
+>>>>>>> v4.9.227
 	int bank_shift = fls((chip->gpio_chip.ngpio - 1) / BANK_SZ);
 	int offset = off / BANK_SZ;
 
@@ -140,10 +216,47 @@ static int pca953x_write_single(struct pca953x_chip *chip, int reg, u32 val,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int pca953x_write_regs_8(struct pca953x_chip *chip, int reg, u8 *val)
+{
+	return i2c_smbus_write_byte_data(chip->client, reg, *val);
+}
+
+static int pca953x_write_regs_16(struct pca953x_chip *chip, int reg, u8 *val)
+{
+	__le16 word = cpu_to_le16(get_unaligned((u16 *)val));
+
+	return i2c_smbus_write_word_data(chip->client,
+					 reg << 1, (__force u16)word);
+}
+
+static int pca957x_write_regs_16(struct pca953x_chip *chip, int reg, u8 *val)
+{
+	int ret;
+
+	ret = i2c_smbus_write_byte_data(chip->client, reg << 1, val[0]);
+	if (ret < 0)
+		return ret;
+
+	return i2c_smbus_write_byte_data(chip->client, (reg << 1) + 1, val[1]);
+}
+
+static int pca953x_write_regs_24(struct pca953x_chip *chip, int reg, u8 *val)
+{
+	int bank_shift = fls((chip->gpio_chip.ngpio - 1) / BANK_SZ);
+
+	return i2c_smbus_write_i2c_block_data(chip->client,
+					      (reg << bank_shift) | REG_ADDR_AI,
+					      NBANK(chip), val);
+}
+
+>>>>>>> v4.9.227
 static int pca953x_write_regs(struct pca953x_chip *chip, int reg, u8 *val)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (chip->gpio_chip.ngpio <= 8)
 		ret = i2c_smbus_write_byte_data(chip->client, reg, *val);
 	else if (chip->gpio_chip.ngpio >= 24) {
@@ -169,6 +282,9 @@ static int pca953x_write_regs(struct pca953x_chip *chip, int reg, u8 *val)
 		}
 	}
 
+=======
+	ret = chip->write_regs(chip, reg, val);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(&chip->client->dev, "failed writing register\n");
 		return ret;
@@ -177,10 +293,44 @@ static int pca953x_write_regs(struct pca953x_chip *chip, int reg, u8 *val)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int pca953x_read_regs_8(struct pca953x_chip *chip, int reg, u8 *val)
+{
+	int ret;
+
+	ret = i2c_smbus_read_byte_data(chip->client, reg);
+	*val = ret;
+
+	return ret;
+}
+
+static int pca953x_read_regs_16(struct pca953x_chip *chip, int reg, u8 *val)
+{
+	int ret;
+
+	ret = i2c_smbus_read_word_data(chip->client, reg << 1);
+	val[0] = (u16)ret & 0xFF;
+	val[1] = (u16)ret >> 8;
+
+	return ret;
+}
+
+static int pca953x_read_regs_24(struct pca953x_chip *chip, int reg, u8 *val)
+{
+	int bank_shift = fls((chip->gpio_chip.ngpio - 1) / BANK_SZ);
+
+	return i2c_smbus_read_i2c_block_data(chip->client,
+					     (reg << bank_shift) | REG_ADDR_AI,
+					     NBANK(chip), val);
+}
+
+>>>>>>> v4.9.227
 static int pca953x_read_regs(struct pca953x_chip *chip, int reg, u8 *val)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (chip->gpio_chip.ngpio <= 8) {
 		ret = i2c_smbus_read_byte_data(chip->client, reg);
 		*val = ret;
@@ -195,6 +345,9 @@ static int pca953x_read_regs(struct pca953x_chip *chip, int reg, u8 *val)
 		val[0] = (u16)ret & 0xFF;
 		val[1] = (u16)ret >> 8;
 	}
+=======
+	ret = chip->read_regs(chip, reg, val);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(&chip->client->dev, "failed reading register\n");
 		return ret;
@@ -205,13 +358,20 @@ static int pca953x_read_regs(struct pca953x_chip *chip, int reg, u8 *val)
 
 static int pca953x_gpio_direction_input(struct gpio_chip *gc, unsigned off)
 {
+<<<<<<< HEAD
 	struct pca953x_chip *chip = to_pca(gc);
 	u8 reg_val;
 	int ret, offset = 0;
+=======
+	struct pca953x_chip *chip = gpiochip_get_data(gc);
+	u8 reg_val;
+	int ret;
+>>>>>>> v4.9.227
 
 	mutex_lock(&chip->i2c_lock);
 	reg_val = chip->reg_direction[off / BANK_SZ] | (1u << (off % BANK_SZ));
 
+<<<<<<< HEAD
 	switch (chip->chip_type) {
 	case PCA953X_TYPE:
 		offset = PCA953X_DIRECTION;
@@ -221,11 +381,17 @@ static int pca953x_gpio_direction_input(struct gpio_chip *gc, unsigned off)
 		break;
 	}
 	ret = pca953x_write_single(chip, offset, reg_val, off);
+=======
+	ret = pca953x_write_single(chip, chip->regs->direction, reg_val, off);
+>>>>>>> v4.9.227
 	if (ret)
 		goto exit;
 
 	chip->reg_direction[off / BANK_SZ] = reg_val;
+<<<<<<< HEAD
 	ret = 0;
+=======
+>>>>>>> v4.9.227
 exit:
 	mutex_unlock(&chip->i2c_lock);
 	return ret;
@@ -234,9 +400,15 @@ exit:
 static int pca953x_gpio_direction_output(struct gpio_chip *gc,
 		unsigned off, int val)
 {
+<<<<<<< HEAD
 	struct pca953x_chip *chip = to_pca(gc);
 	u8 reg_val;
 	int ret, offset = 0;
+=======
+	struct pca953x_chip *chip = gpiochip_get_data(gc);
+	u8 reg_val;
+	int ret;
+>>>>>>> v4.9.227
 
 	mutex_lock(&chip->i2c_lock);
 	/* set output level */
@@ -247,6 +419,7 @@ static int pca953x_gpio_direction_output(struct gpio_chip *gc,
 		reg_val = chip->reg_output[off / BANK_SZ]
 			& ~(1u << (off % BANK_SZ));
 
+<<<<<<< HEAD
 	switch (chip->chip_type) {
 	case PCA953X_TYPE:
 		offset = PCA953X_OUTPUT;
@@ -256,6 +429,9 @@ static int pca953x_gpio_direction_output(struct gpio_chip *gc,
 		break;
 	}
 	ret = pca953x_write_single(chip, offset, reg_val, off);
+=======
+	ret = pca953x_write_single(chip, chip->regs->output, reg_val, off);
+>>>>>>> v4.9.227
 	if (ret)
 		goto exit;
 
@@ -263,6 +439,7 @@ static int pca953x_gpio_direction_output(struct gpio_chip *gc,
 
 	/* then direction */
 	reg_val = chip->reg_direction[off / BANK_SZ] & ~(1u << (off % BANK_SZ));
+<<<<<<< HEAD
 	switch (chip->chip_type) {
 	case PCA953X_TYPE:
 		offset = PCA953X_DIRECTION;
@@ -272,11 +449,17 @@ static int pca953x_gpio_direction_output(struct gpio_chip *gc,
 		break;
 	}
 	ret = pca953x_write_single(chip, offset, reg_val, off);
+=======
+	ret = pca953x_write_single(chip, chip->regs->direction, reg_val, off);
+>>>>>>> v4.9.227
 	if (ret)
 		goto exit;
 
 	chip->reg_direction[off / BANK_SZ] = reg_val;
+<<<<<<< HEAD
 	ret = 0;
+=======
+>>>>>>> v4.9.227
 exit:
 	mutex_unlock(&chip->i2c_lock);
 	return ret;
@@ -284,6 +467,7 @@ exit:
 
 static int pca953x_gpio_get_value(struct gpio_chip *gc, unsigned off)
 {
+<<<<<<< HEAD
 	struct pca953x_chip *chip = to_pca(gc);
 	u32 reg_val;
 	int ret, offset = 0;
@@ -298,6 +482,14 @@ static int pca953x_gpio_get_value(struct gpio_chip *gc, unsigned off)
 		break;
 	}
 	ret = pca953x_read_single(chip, offset, &reg_val, off);
+=======
+	struct pca953x_chip *chip = gpiochip_get_data(gc);
+	u32 reg_val;
+	int ret;
+
+	mutex_lock(&chip->i2c_lock);
+	ret = pca953x_read_single(chip, chip->regs->input, &reg_val, off);
+>>>>>>> v4.9.227
 	mutex_unlock(&chip->i2c_lock);
 	if (ret < 0) {
 		/* NOTE:  diagnostic already emitted; that's all we should
@@ -312,9 +504,15 @@ static int pca953x_gpio_get_value(struct gpio_chip *gc, unsigned off)
 
 static void pca953x_gpio_set_value(struct gpio_chip *gc, unsigned off, int val)
 {
+<<<<<<< HEAD
 	struct pca953x_chip *chip = to_pca(gc);
 	u8 reg_val;
 	int ret, offset = 0;
+=======
+	struct pca953x_chip *chip = gpiochip_get_data(gc);
+	u8 reg_val;
+	int ret;
+>>>>>>> v4.9.227
 
 	mutex_lock(&chip->i2c_lock);
 	if (val)
@@ -324,6 +522,7 @@ static void pca953x_gpio_set_value(struct gpio_chip *gc, unsigned off, int val)
 		reg_val = chip->reg_output[off / BANK_SZ]
 			& ~(1u << (off % BANK_SZ));
 
+<<<<<<< HEAD
 	switch (chip->chip_type) {
 	case PCA953X_TYPE:
 		offset = PCA953X_OUTPUT;
@@ -333,6 +532,9 @@ static void pca953x_gpio_set_value(struct gpio_chip *gc, unsigned off, int val)
 		break;
 	}
 	ret = pca953x_write_single(chip, offset, reg_val, off);
+=======
+	ret = pca953x_write_single(chip, chip->regs->output, reg_val, off);
+>>>>>>> v4.9.227
 	if (ret)
 		goto exit;
 
@@ -341,6 +543,44 @@ exit:
 	mutex_unlock(&chip->i2c_lock);
 }
 
+<<<<<<< HEAD
+=======
+static void pca953x_gpio_set_multiple(struct gpio_chip *gc,
+				      unsigned long *mask, unsigned long *bits)
+{
+	struct pca953x_chip *chip = gpiochip_get_data(gc);
+	unsigned int bank_mask, bank_val;
+	int bank_shift, bank;
+	u8 reg_val[MAX_BANK];
+	int ret;
+
+	bank_shift = fls((chip->gpio_chip.ngpio - 1) / BANK_SZ);
+
+	mutex_lock(&chip->i2c_lock);
+	memcpy(reg_val, chip->reg_output, NBANK(chip));
+	for (bank = 0; bank < NBANK(chip); bank++) {
+		bank_mask = mask[bank / sizeof(*mask)] >>
+			   ((bank % sizeof(*mask)) * 8);
+		if (bank_mask) {
+			bank_val = bits[bank / sizeof(*bits)] >>
+				  ((bank % sizeof(*bits)) * 8);
+			bank_val &= bank_mask;
+			reg_val[bank] = (reg_val[bank] & ~bank_mask) | bank_val;
+		}
+	}
+
+	ret = i2c_smbus_write_i2c_block_data(chip->client,
+					     chip->regs->output << bank_shift,
+					     NBANK(chip), reg_val);
+	if (ret)
+		goto exit;
+
+	memcpy(chip->reg_output, reg_val, NBANK(chip));
+exit:
+	mutex_unlock(&chip->i2c_lock);
+}
+
+>>>>>>> v4.9.227
 static void pca953x_setup_gpio(struct pca953x_chip *chip, int gpios)
 {
 	struct gpio_chip *gc;
@@ -351,12 +591,20 @@ static void pca953x_setup_gpio(struct pca953x_chip *chip, int gpios)
 	gc->direction_output = pca953x_gpio_direction_output;
 	gc->get = pca953x_gpio_get_value;
 	gc->set = pca953x_gpio_set_value;
+<<<<<<< HEAD
+=======
+	gc->set_multiple = pca953x_gpio_set_multiple;
+>>>>>>> v4.9.227
 	gc->can_sleep = true;
 
 	gc->base = chip->gpio_start;
 	gc->ngpio = gpios;
 	gc->label = chip->client->name;
+<<<<<<< HEAD
 	gc->dev = &chip->client->dev;
+=======
+	gc->parent = &chip->client->dev;
+>>>>>>> v4.9.227
 	gc->owner = THIS_MODULE;
 	gc->names = chip->names;
 }
@@ -365,7 +613,11 @@ static void pca953x_setup_gpio(struct pca953x_chip *chip, int gpios)
 static void pca953x_irq_mask(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	struct pca953x_chip *chip = to_pca(gc);
+=======
+	struct pca953x_chip *chip = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 
 	chip->irq_mask[d->hwirq / BANK_SZ] &= ~(1 << (d->hwirq % BANK_SZ));
 }
@@ -373,7 +625,11 @@ static void pca953x_irq_mask(struct irq_data *d)
 static void pca953x_irq_unmask(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	struct pca953x_chip *chip = to_pca(gc);
+=======
+	struct pca953x_chip *chip = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 
 	chip->irq_mask[d->hwirq / BANK_SZ] |= 1 << (d->hwirq % BANK_SZ);
 }
@@ -381,7 +637,11 @@ static void pca953x_irq_unmask(struct irq_data *d)
 static void pca953x_irq_bus_lock(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	struct pca953x_chip *chip = to_pca(gc);
+=======
+	struct pca953x_chip *chip = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 
 	mutex_lock(&chip->irq_lock);
 }
@@ -389,9 +649,27 @@ static void pca953x_irq_bus_lock(struct irq_data *d)
 static void pca953x_irq_bus_sync_unlock(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	struct pca953x_chip *chip = to_pca(gc);
 	u8 new_irqs;
 	int level, i;
+=======
+	struct pca953x_chip *chip = gpiochip_get_data(gc);
+	u8 new_irqs;
+	int level, i;
+	u8 invert_irq_mask[MAX_BANK];
+
+	if (chip->driver_data & PCA_PCAL) {
+		/* Enable latch on interrupt-enabled inputs */
+		pca953x_write_regs(chip, PCAL953X_IN_LATCH, chip->irq_mask);
+
+		for (i = 0; i < NBANK(chip); i++)
+			invert_irq_mask[i] = ~chip->irq_mask[i];
+
+		/* Unmask enabled interrupts */
+		pca953x_write_regs(chip, PCAL953X_INT_MASK, invert_irq_mask);
+	}
+>>>>>>> v4.9.227
 
 	/* Look for any newly setup interrupt */
 	for (i = 0; i < NBANK(chip); i++) {
@@ -412,7 +690,11 @@ static void pca953x_irq_bus_sync_unlock(struct irq_data *d)
 static int pca953x_irq_set_type(struct irq_data *d, unsigned int type)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	struct pca953x_chip *chip = to_pca(gc);
+=======
+	struct pca953x_chip *chip = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	int bank_nb = d->hwirq / BANK_SZ;
 	u8 mask = 1 << (d->hwirq % BANK_SZ);
 
@@ -444,6 +726,7 @@ static struct irq_chip pca953x_irq_chip = {
 	.irq_set_type		= pca953x_irq_set_type,
 };
 
+<<<<<<< HEAD
 static u8 pca953x_irq_pending(struct pca953x_chip *chip, u8 *pending)
 {
 	u8 cur_stat[MAX_BANK];
@@ -463,6 +746,43 @@ static u8 pca953x_irq_pending(struct pca953x_chip *chip, u8 *pending)
 	ret = pca953x_read_regs(chip, offset, cur_stat);
 	if (ret)
 		return 0;
+=======
+static bool pca953x_irq_pending(struct pca953x_chip *chip, u8 *pending)
+{
+	u8 cur_stat[MAX_BANK];
+	u8 old_stat[MAX_BANK];
+	bool pending_seen = false;
+	bool trigger_seen = false;
+	u8 trigger[MAX_BANK];
+	int ret, i;
+
+	if (chip->driver_data & PCA_PCAL) {
+		/* Read the current interrupt status from the device */
+		ret = pca953x_read_regs(chip, PCAL953X_INT_STAT, trigger);
+		if (ret)
+			return false;
+
+		/* Check latched inputs and clear interrupt status */
+		ret = pca953x_read_regs(chip, PCA953X_INPUT, cur_stat);
+		if (ret)
+			return false;
+
+		for (i = 0; i < NBANK(chip); i++) {
+			/* Apply filter for rising/falling edge selection */
+			pending[i] = (~cur_stat[i] & chip->irq_trig_fall[i]) |
+				(cur_stat[i] & chip->irq_trig_raise[i]);
+			pending[i] &= trigger[i];
+			if (pending[i])
+				pending_seen = true;
+		}
+
+		return pending_seen;
+	}
+
+	ret = pca953x_read_regs(chip, chip->regs->input, cur_stat);
+	if (ret)
+		return false;
+>>>>>>> v4.9.227
 
 	/* Remove output pins from the equation */
 	for (i = 0; i < NBANK(chip); i++)
@@ -472,11 +792,20 @@ static u8 pca953x_irq_pending(struct pca953x_chip *chip, u8 *pending)
 
 	for (i = 0; i < NBANK(chip); i++) {
 		trigger[i] = (cur_stat[i] ^ old_stat[i]) & chip->irq_mask[i];
+<<<<<<< HEAD
 		triggers += trigger[i];
 	}
 
 	if (!triggers)
 		return 0;
+=======
+		if (trigger[i])
+			trigger_seen = true;
+	}
+
+	if (!trigger_seen)
+		return false;
+>>>>>>> v4.9.227
 
 	memcpy(chip->irq_stat, cur_stat, NBANK(chip));
 
@@ -484,10 +813,18 @@ static u8 pca953x_irq_pending(struct pca953x_chip *chip, u8 *pending)
 		pending[i] = (old_stat[i] & chip->irq_trig_fall[i]) |
 			(cur_stat[i] & chip->irq_trig_raise[i]);
 		pending[i] &= trigger[i];
+<<<<<<< HEAD
 		pendings += pending[i];
 	}
 
 	return pendings;
+=======
+		if (pending[i])
+			pending_seen = true;
+	}
+
+	return pending_seen;
+>>>>>>> v4.9.227
 }
 
 static irqreturn_t pca953x_irq_handler(int irq, void *devid)
@@ -515,6 +852,7 @@ static irqreturn_t pca953x_irq_handler(int irq, void *devid)
 }
 
 static int pca953x_irq_setup(struct pca953x_chip *chip,
+<<<<<<< HEAD
 			     const struct i2c_device_id *id,
 			     int irq_base)
 {
@@ -533,6 +871,17 @@ static int pca953x_irq_setup(struct pca953x_chip *chip,
 			break;
 		}
 		ret = pca953x_read_regs(chip, offset, chip->irq_stat);
+=======
+			     int irq_base)
+{
+	struct i2c_client *client = chip->client;
+	int ret, i;
+
+	if (client->irq && irq_base != -1
+			&& (chip->driver_data & PCA_INT)) {
+		ret = pca953x_read_regs(chip,
+					chip->regs->input, chip->irq_stat);
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 
@@ -568,6 +917,13 @@ static int pca953x_irq_setup(struct pca953x_chip *chip,
 				"could not connect irqchip to gpiochip\n");
 			return ret;
 		}
+<<<<<<< HEAD
+=======
+
+		gpiochip_set_chained_irqchip(&chip->gpio_chip,
+					     &pca953x_irq_chip,
+					     client->irq, NULL);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -575,12 +931,19 @@ static int pca953x_irq_setup(struct pca953x_chip *chip,
 
 #else /* CONFIG_GPIO_PCA953X_IRQ */
 static int pca953x_irq_setup(struct pca953x_chip *chip,
+<<<<<<< HEAD
 			     const struct i2c_device_id *id,
+=======
+>>>>>>> v4.9.227
 			     int irq_base)
 {
 	struct i2c_client *client = chip->client;
 
+<<<<<<< HEAD
 	if (irq_base != -1 && (id->driver_data & PCA_INT))
+=======
+	if (irq_base != -1 && (chip->driver_data & PCA_INT))
+>>>>>>> v4.9.227
 		dev_warn(&client->dev, "interrupt support not compiled in\n");
 
 	return 0;
@@ -592,12 +955,23 @@ static int device_pca953x_init(struct pca953x_chip *chip, u32 invert)
 	int ret;
 	u8 val[MAX_BANK];
 
+<<<<<<< HEAD
 	ret = pca953x_read_regs(chip, PCA953X_OUTPUT, chip->reg_output);
 	if (ret)
 		goto out;
 
 	ret = pca953x_read_regs(chip, PCA953X_DIRECTION,
 			       chip->reg_direction);
+=======
+	chip->regs = &pca953x_regs;
+
+	ret = pca953x_read_regs(chip, chip->regs->output, chip->reg_output);
+	if (ret)
+		goto out;
+
+	ret = pca953x_read_regs(chip, chip->regs->direction,
+				chip->reg_direction);
+>>>>>>> v4.9.227
 	if (ret)
 		goto out;
 
@@ -617,10 +991,20 @@ static int device_pca957x_init(struct pca953x_chip *chip, u32 invert)
 	int ret;
 	u8 val[MAX_BANK];
 
+<<<<<<< HEAD
 	ret = pca953x_read_regs(chip, PCA957X_OUT, chip->reg_output);
 	if (ret)
 		goto out;
 	ret = pca953x_read_regs(chip, PCA957X_CFG, chip->reg_direction);
+=======
+	chip->regs = &pca957x_regs;
+
+	ret = pca953x_read_regs(chip, chip->regs->output, chip->reg_output);
+	if (ret)
+		goto out;
+	ret = pca953x_read_regs(chip, chip->regs->direction,
+				chip->reg_direction);
+>>>>>>> v4.9.227
 	if (ret)
 		goto out;
 
@@ -629,25 +1013,48 @@ static int device_pca957x_init(struct pca953x_chip *chip, u32 invert)
 		memset(val, 0xFF, NBANK(chip));
 	else
 		memset(val, 0, NBANK(chip));
+<<<<<<< HEAD
 	pca953x_write_regs(chip, PCA957X_INVRT, val);
 
 	/* To enable register 6, 7 to controll pull up and pull down */
 	memset(val, 0x02, NBANK(chip));
 	pca953x_write_regs(chip, PCA957X_BKEN, val);
+=======
+	ret = pca953x_write_regs(chip, PCA957X_INVRT, val);
+	if (ret)
+		goto out;
+
+	/* To enable register 6, 7 to control pull up and pull down */
+	memset(val, 0x02, NBANK(chip));
+	ret = pca953x_write_regs(chip, PCA957X_BKEN, val);
+	if (ret)
+		goto out;
+>>>>>>> v4.9.227
 
 	return 0;
 out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int pca953x_probe(struct i2c_client *client,
 				   const struct i2c_device_id *id)
+=======
+static const struct of_device_id pca953x_dt_ids[];
+
+static int pca953x_probe(struct i2c_client *client,
+				   const struct i2c_device_id *i2c_id)
+>>>>>>> v4.9.227
 {
 	struct pca953x_platform_data *pdata;
 	struct pca953x_chip *chip;
 	int irq_base = 0;
 	int ret;
 	u32 invert = 0;
+<<<<<<< HEAD
+=======
+	struct regulator *reg;
+>>>>>>> v4.9.227
 
 	chip = devm_kzalloc(&client->dev,
 			sizeof(struct pca953x_chip), GFP_KERNEL);
@@ -667,20 +1074,97 @@ static int pca953x_probe(struct i2c_client *client,
 
 	chip->client = client;
 
+<<<<<<< HEAD
 	chip->chip_type = id->driver_data & (PCA953X_TYPE | PCA957X_TYPE);
 
 	mutex_init(&chip->i2c_lock);
+=======
+	reg = devm_regulator_get(&client->dev, "vcc");
+	if (IS_ERR(reg)) {
+		ret = PTR_ERR(reg);
+		if (ret != -EPROBE_DEFER)
+			dev_err(&client->dev, "reg get err: %d\n", ret);
+		return ret;
+	}
+	ret = regulator_enable(reg);
+	if (ret) {
+		dev_err(&client->dev, "reg en err: %d\n", ret);
+		return ret;
+	}
+	chip->regulator = reg;
+
+	if (i2c_id) {
+		chip->driver_data = i2c_id->driver_data;
+	} else {
+		const struct acpi_device_id *acpi_id;
+		const struct of_device_id *match;
+
+		match = of_match_device(pca953x_dt_ids, &client->dev);
+		if (match) {
+			chip->driver_data = (int)(uintptr_t)match->data;
+		} else {
+			acpi_id = acpi_match_device(pca953x_acpi_ids, &client->dev);
+			if (!acpi_id) {
+				ret = -ENODEV;
+				goto err_exit;
+			}
+
+			chip->driver_data = acpi_id->driver_data;
+		}
+	}
+
+	mutex_init(&chip->i2c_lock);
+	/*
+	 * In case we have an i2c-mux controlled by a GPIO provided by an
+	 * expander using the same driver higher on the device tree, read the
+	 * i2c adapter nesting depth and use the retrieved value as lockdep
+	 * subclass for chip->i2c_lock.
+	 *
+	 * REVISIT: This solution is not complete. It protects us from lockdep
+	 * false positives when the expander controlling the i2c-mux is on
+	 * a different level on the device tree, but not when it's on the same
+	 * level on a different branch (in which case the subclass number
+	 * would be the same).
+	 *
+	 * TODO: Once a correct solution is developed, a similar fix should be
+	 * applied to all other i2c-controlled GPIO expanders (and potentially
+	 * regmap-i2c).
+	 */
+	lockdep_set_subclass(&chip->i2c_lock,
+			     i2c_adapter_depth(client->adapter));
+>>>>>>> v4.9.227
 
 	/* initialize cached registers from their original values.
 	 * we can't share this chip with another i2c master.
 	 */
+<<<<<<< HEAD
 	pca953x_setup_gpio(chip, id->driver_data & PCA_GPIO_MASK);
 
 	if (chip->chip_type == PCA953X_TYPE)
+=======
+	pca953x_setup_gpio(chip, chip->driver_data & PCA_GPIO_MASK);
+
+	if (chip->gpio_chip.ngpio <= 8) {
+		chip->write_regs = pca953x_write_regs_8;
+		chip->read_regs = pca953x_read_regs_8;
+	} else if (chip->gpio_chip.ngpio >= 24) {
+		chip->write_regs = pca953x_write_regs_24;
+		chip->read_regs = pca953x_read_regs_24;
+	} else {
+		if (PCA_CHIP_TYPE(chip->driver_data) == PCA953X_TYPE)
+			chip->write_regs = pca953x_write_regs_16;
+		else
+			chip->write_regs = pca957x_write_regs_16;
+		chip->read_regs = pca953x_read_regs_16;
+	}
+
+	if (PCA_CHIP_TYPE(chip->driver_data) == PCA953X_TYPE)
+>>>>>>> v4.9.227
 		ret = device_pca953x_init(chip, invert);
 	else
 		ret = device_pca957x_init(chip, invert);
 	if (ret)
+<<<<<<< HEAD
 		return ret;
 
 	ret = gpiochip_add(&chip->gpio_chip);
@@ -690,6 +1174,17 @@ static int pca953x_probe(struct i2c_client *client,
 	ret = pca953x_irq_setup(chip, id, irq_base);
 	if (ret)
 		return ret;
+=======
+		goto err_exit;
+
+	ret = devm_gpiochip_add_data(&client->dev, &chip->gpio_chip, chip);
+	if (ret)
+		goto err_exit;
+
+	ret = pca953x_irq_setup(chip, irq_base);
+	if (ret)
+		goto err_exit;
+>>>>>>> v4.9.227
 
 	if (pdata && pdata->setup) {
 		ret = pdata->setup(client, chip->gpio_chip.base,
@@ -700,17 +1195,29 @@ static int pca953x_probe(struct i2c_client *client,
 
 	i2c_set_clientdata(client, chip);
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_exit:
+	regulator_disable(chip->regulator);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int pca953x_remove(struct i2c_client *client)
 {
 	struct pca953x_platform_data *pdata = dev_get_platdata(&client->dev);
 	struct pca953x_chip *chip = i2c_get_clientdata(client);
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	if (pdata && pdata->teardown) {
 		ret = pdata->teardown(client, chip->gpio_chip.base,
 				chip->gpio_chip.ngpio, pdata->context);
+<<<<<<< HEAD
 		if (ret < 0) {
 			dev_err(&client->dev, "%s failed, %d\n",
 					"teardown", ret);
@@ -750,6 +1257,54 @@ static const struct of_device_id pca953x_dt_ids[] = {
 	{ .compatible = "ti,tca6424", },
 
 	{ .compatible = "exar,xra1202", },
+=======
+		if (ret < 0)
+			dev_err(&client->dev, "%s failed, %d\n",
+					"teardown", ret);
+	} else {
+		ret = 0;
+	}
+
+	regulator_disable(chip->regulator);
+
+	return ret;
+}
+
+/* convenience to stop overlong match-table lines */
+#define OF_953X(__nrgpio, __int) (void *)(__nrgpio | PCA953X_TYPE | __int)
+#define OF_957X(__nrgpio, __int) (void *)(__nrgpio | PCA957X_TYPE | __int)
+
+static const struct of_device_id pca953x_dt_ids[] = {
+	{ .compatible = "nxp,pca9505", .data = OF_953X(40, PCA_INT), },
+	{ .compatible = "nxp,pca9534", .data = OF_953X( 8, PCA_INT), },
+	{ .compatible = "nxp,pca9535", .data = OF_953X(16, PCA_INT), },
+	{ .compatible = "nxp,pca9536", .data = OF_953X( 4, 0), },
+	{ .compatible = "nxp,pca9537", .data = OF_953X( 4, PCA_INT), },
+	{ .compatible = "nxp,pca9538", .data = OF_953X( 8, PCA_INT), },
+	{ .compatible = "nxp,pca9539", .data = OF_953X(16, PCA_INT), },
+	{ .compatible = "nxp,pca9554", .data = OF_953X( 8, PCA_INT), },
+	{ .compatible = "nxp,pca9555", .data = OF_953X(16, PCA_INT), },
+	{ .compatible = "nxp,pca9556", .data = OF_953X( 8, 0), },
+	{ .compatible = "nxp,pca9557", .data = OF_953X( 8, 0), },
+	{ .compatible = "nxp,pca9574", .data = OF_957X( 8, PCA_INT), },
+	{ .compatible = "nxp,pca9575", .data = OF_957X(16, PCA_INT), },
+	{ .compatible = "nxp,pca9698", .data = OF_953X(40, 0), },
+
+	{ .compatible = "maxim,max7310", .data = OF_953X( 8, 0), },
+	{ .compatible = "maxim,max7312", .data = OF_953X(16, PCA_INT), },
+	{ .compatible = "maxim,max7313", .data = OF_953X(16, PCA_INT), },
+	{ .compatible = "maxim,max7315", .data = OF_953X( 8, PCA_INT), },
+
+	{ .compatible = "ti,pca6107", .data = OF_953X( 8, PCA_INT), },
+	{ .compatible = "ti,pca9536", .data = OF_953X( 4, 0), },
+	{ .compatible = "ti,tca6408", .data = OF_953X( 8, PCA_INT), },
+	{ .compatible = "ti,tca6416", .data = OF_953X(16, PCA_INT), },
+	{ .compatible = "ti,tca6424", .data = OF_953X(24, PCA_INT), },
+
+	{ .compatible = "onsemi,pca9654", .data = OF_953X( 8, PCA_INT), },
+
+	{ .compatible = "exar,xra1202", .data = OF_953X( 8, 0), },
+>>>>>>> v4.9.227
 	{ }
 };
 
@@ -759,6 +1314,10 @@ static struct i2c_driver pca953x_driver = {
 	.driver = {
 		.name	= "pca953x",
 		.of_match_table = pca953x_dt_ids,
+<<<<<<< HEAD
+=======
+		.acpi_match_table = ACPI_PTR(pca953x_acpi_ids),
+>>>>>>> v4.9.227
 	},
 	.probe		= pca953x_probe,
 	.remove		= pca953x_remove,

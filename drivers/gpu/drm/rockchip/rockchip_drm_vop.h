@@ -15,6 +15,7 @@
 #ifndef _ROCKCHIP_DRM_VOP_H
 #define _ROCKCHIP_DRM_VOP_H
 
+<<<<<<< HEAD
 /* register definition */
 #define REG_CFG_DONE			0x0000
 #define VERSION_INFO			0x0004
@@ -120,6 +121,134 @@
 #define DSP_VS_ST_END_F1		0x0198
 #define DSP_VACT_ST_END_F1		0x019c
 /* register definition end */
+=======
+enum vop_data_format {
+	VOP_FMT_ARGB8888 = 0,
+	VOP_FMT_RGB888,
+	VOP_FMT_RGB565,
+	VOP_FMT_YUV420SP = 4,
+	VOP_FMT_YUV422SP,
+	VOP_FMT_YUV444SP,
+};
+
+struct vop_reg_data {
+	uint32_t offset;
+	uint32_t value;
+};
+
+struct vop_reg {
+	uint32_t offset;
+	uint32_t shift;
+	uint32_t mask;
+	bool write_mask;
+};
+
+struct vop_ctrl {
+	struct vop_reg standby;
+	struct vop_reg data_blank;
+	struct vop_reg gate_en;
+	struct vop_reg mmu_en;
+	struct vop_reg rgb_en;
+	struct vop_reg edp_en;
+	struct vop_reg hdmi_en;
+	struct vop_reg mipi_en;
+	struct vop_reg out_mode;
+	struct vop_reg dither_down;
+	struct vop_reg dither_up;
+	struct vop_reg pin_pol;
+	struct vop_reg rgb_pin_pol;
+	struct vop_reg hdmi_pin_pol;
+	struct vop_reg edp_pin_pol;
+	struct vop_reg mipi_pin_pol;
+
+	struct vop_reg htotal_pw;
+	struct vop_reg hact_st_end;
+	struct vop_reg vtotal_pw;
+	struct vop_reg vact_st_end;
+	struct vop_reg hpost_st_end;
+	struct vop_reg vpost_st_end;
+
+	struct vop_reg line_flag_num[2];
+
+	struct vop_reg cfg_done;
+};
+
+struct vop_intr {
+	const int *intrs;
+	uint32_t nintrs;
+	struct vop_reg enable;
+	struct vop_reg clear;
+	struct vop_reg status;
+};
+
+struct vop_scl_extension {
+	struct vop_reg cbcr_vsd_mode;
+	struct vop_reg cbcr_vsu_mode;
+	struct vop_reg cbcr_hsd_mode;
+	struct vop_reg cbcr_ver_scl_mode;
+	struct vop_reg cbcr_hor_scl_mode;
+	struct vop_reg yrgb_vsd_mode;
+	struct vop_reg yrgb_vsu_mode;
+	struct vop_reg yrgb_hsd_mode;
+	struct vop_reg yrgb_ver_scl_mode;
+	struct vop_reg yrgb_hor_scl_mode;
+	struct vop_reg line_load_mode;
+	struct vop_reg cbcr_axi_gather_num;
+	struct vop_reg yrgb_axi_gather_num;
+	struct vop_reg vsd_cbcr_gt2;
+	struct vop_reg vsd_cbcr_gt4;
+	struct vop_reg vsd_yrgb_gt2;
+	struct vop_reg vsd_yrgb_gt4;
+	struct vop_reg bic_coe_sel;
+	struct vop_reg cbcr_axi_gather_en;
+	struct vop_reg yrgb_axi_gather_en;
+	struct vop_reg lb_mode;
+};
+
+struct vop_scl_regs {
+	const struct vop_scl_extension *ext;
+
+	struct vop_reg scale_yrgb_x;
+	struct vop_reg scale_yrgb_y;
+	struct vop_reg scale_cbcr_x;
+	struct vop_reg scale_cbcr_y;
+};
+
+struct vop_win_phy {
+	const struct vop_scl_regs *scl;
+	const uint32_t *data_formats;
+	uint32_t nformats;
+
+	struct vop_reg enable;
+	struct vop_reg format;
+	struct vop_reg rb_swap;
+	struct vop_reg act_info;
+	struct vop_reg dsp_info;
+	struct vop_reg dsp_st;
+	struct vop_reg yrgb_mst;
+	struct vop_reg uv_mst;
+	struct vop_reg yrgb_vir;
+	struct vop_reg uv_vir;
+
+	struct vop_reg dst_alpha_ctl;
+	struct vop_reg src_alpha_ctl;
+};
+
+struct vop_win_data {
+	uint32_t base;
+	const struct vop_win_phy *phy;
+	enum drm_plane_type type;
+};
+
+struct vop_data {
+	const struct vop_reg_data *init_table;
+	unsigned int table_size;
+	const struct vop_ctrl *ctrl;
+	const struct vop_intr *intr;
+	const struct vop_win_data *win;
+	unsigned int win_size;
+};
+>>>>>>> v4.9.227
 
 /* interrupt define */
 #define DSP_HOLD_VALID_INTR		(1 << 0)
@@ -233,6 +362,14 @@ static inline uint16_t scl_cal_scale(int src, int dst, int shift)
 	return ((src * 2 - 3) << (shift - 1)) / (dst - 1);
 }
 
+<<<<<<< HEAD
+=======
+static inline uint16_t scl_cal_scale2(int src, int dst)
+{
+	return ((src - 1) << 12) / (dst - 1);
+}
+
+>>>>>>> v4.9.227
 #define GET_SCL_FT_BILI_DN(src, dst)	scl_cal_scale(src, dst, 12)
 #define GET_SCL_FT_BILI_UP(src, dst)	scl_cal_scale(src, dst, 16)
 #define GET_SCL_FT_BIC(src, dst)	scl_cal_scale(src, dst, 16)
@@ -286,4 +423,8 @@ static inline int scl_vop_cal_lb_mode(int width, bool is_yuv)
 	return lb_mode;
 }
 
+<<<<<<< HEAD
+=======
+extern const struct component_ops vop_component_ops;
+>>>>>>> v4.9.227
 #endif /* _ROCKCHIP_DRM_VOP_H */

@@ -11,6 +11,10 @@
 #define __FRAME_OFFSETS
 #include <asm/ptrace.h>
 #include <asm/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <asm/ptrace-abi.h>
+>>>>>>> v4.9.227
 
 /*
  * determines which flags the user has access to.
@@ -77,7 +81,15 @@ int putreg(struct task_struct *child, int regno, unsigned long value)
 	case RSI:
 	case RDI:
 	case RBP:
+<<<<<<< HEAD
 	case ORIG_RAX:
+=======
+		break;
+
+	case ORIG_RAX:
+		/* Update the syscall number. */
+		UPT_SYSCALL_NR(&child->thread.regs.regs) = value;
+>>>>>>> v4.9.227
 		break;
 
 	case FS:
@@ -207,7 +219,12 @@ int is_syscall(unsigned long addr)
 		 * slow, but that doesn't matter, since it will be called only
 		 * in case of singlestepping, if copy_from_user failed.
 		 */
+<<<<<<< HEAD
 		n = access_process_vm(current, addr, &instr, sizeof(instr), 0);
+=======
+		n = access_process_vm(current, addr, &instr, sizeof(instr),
+				FOLL_FORCE);
+>>>>>>> v4.9.227
 		if (n != sizeof(instr)) {
 			printk("is_syscall : failed to read instruction from "
 			       "0x%lx\n", addr);
@@ -221,6 +238,7 @@ int is_syscall(unsigned long addr)
 static int get_fpregs(struct user_i387_struct __user *buf, struct task_struct *child)
 {
 	int err, n, cpu = ((struct thread_info *) child->stack)->cpu;
+<<<<<<< HEAD
 	long fpregs[HOST_FP_SIZE];
 
 	BUG_ON(sizeof(*buf) != sizeof(fpregs));
@@ -229,6 +247,16 @@ static int get_fpregs(struct user_i387_struct __user *buf, struct task_struct *c
 		return err;
 
 	n = copy_to_user(buf, fpregs, sizeof(fpregs));
+=======
+	struct user_i387_struct fpregs;
+
+	err = save_i387_registers(userspace_pid[cpu],
+				  (unsigned long *) &fpregs);
+	if (err)
+		return err;
+
+	n = copy_to_user(buf, &fpregs, sizeof(fpregs));
+>>>>>>> v4.9.227
 	if (n > 0)
 		return -EFAULT;
 
@@ -238,6 +266,7 @@ static int get_fpregs(struct user_i387_struct __user *buf, struct task_struct *c
 static int set_fpregs(struct user_i387_struct __user *buf, struct task_struct *child)
 {
 	int n, cpu = ((struct thread_info *) child->stack)->cpu;
+<<<<<<< HEAD
 	long fpregs[HOST_FP_SIZE];
 
 	BUG_ON(sizeof(*buf) != sizeof(fpregs));
@@ -246,6 +275,16 @@ static int set_fpregs(struct user_i387_struct __user *buf, struct task_struct *c
 		return -EFAULT;
 
 	return restore_fp_registers(userspace_pid[cpu], fpregs);
+=======
+	struct user_i387_struct fpregs;
+
+	n = copy_from_user(&fpregs, buf, sizeof(fpregs));
+	if (n > 0)
+		return -EFAULT;
+
+	return restore_i387_registers(userspace_pid[cpu],
+				      (unsigned long *) &fpregs);
+>>>>>>> v4.9.227
 }
 
 long subarch_ptrace(struct task_struct *child, long request,

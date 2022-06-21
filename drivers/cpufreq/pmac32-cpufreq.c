@@ -13,6 +13,11 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -298,7 +303,11 @@ static int pmu_set_cpu_speed(int low_speed)
  		_set_L3CR(save_l3cr);
 
 	/* Restore userland MMU context */
+<<<<<<< HEAD
 	switch_mmu_context(NULL, current->active_mm);
+=======
+	switch_mmu_context(NULL, current->active_mm, NULL);
+>>>>>>> v4.9.227
 
 #ifdef DEBUG_FREQ
 	printk(KERN_DEBUG "HID1, after: %x\n", mfspr(SPRN_HID1));
@@ -481,13 +490,21 @@ static int pmac_cpufreq_init_MacRISC3(struct device_node *cpunode)
 		freqs = of_get_property(cpunode, "bus-frequencies", &lenp);
 		lenp /= sizeof(u32);
 		if (freqs == NULL || lenp != 2) {
+<<<<<<< HEAD
 			printk(KERN_ERR "cpufreq: bus-frequencies incorrect or missing\n");
+=======
+			pr_err("bus-frequencies incorrect or missing\n");
+>>>>>>> v4.9.227
 			return 1;
 		}
 		ratio = of_get_property(cpunode, "processor-to-bus-ratio*2",
 						NULL);
 		if (ratio == NULL) {
+<<<<<<< HEAD
 			printk(KERN_ERR "cpufreq: processor-to-bus-ratio*2 missing\n");
+=======
+			pr_err("processor-to-bus-ratio*2 missing\n");
+>>>>>>> v4.9.227
 			return 1;
 		}
 
@@ -549,8 +566,14 @@ static int pmac_cpufreq_init_7447A(struct device_node *cpunode)
 	volt_gpio_np = of_find_node_by_name(NULL, "cpu-vcore-select");
 	if (volt_gpio_np)
 		voltage_gpio = read_gpio(volt_gpio_np);
+<<<<<<< HEAD
 	if (!voltage_gpio){
 		printk(KERN_ERR "cpufreq: missing cpu-vcore-select gpio\n");
+=======
+	of_node_put(volt_gpio_np);
+	if (!voltage_gpio){
+		pr_err("missing cpu-vcore-select gpio\n");
+>>>>>>> v4.9.227
 		return 1;
 	}
 
@@ -585,6 +608,10 @@ static int pmac_cpufreq_init_750FX(struct device_node *cpunode)
 	if (volt_gpio_np)
 		voltage_gpio = read_gpio(volt_gpio_np);
 
+<<<<<<< HEAD
+=======
+	of_node_put(volt_gpio_np);
+>>>>>>> v4.9.227
 	pvr = mfspr(SPRN_PVR);
 	has_cpu_l2lve = !((pvr & 0xf00) == 0x100);
 
@@ -675,9 +702,15 @@ out:
 	pmac_cpu_freqs[CPUFREQ_HIGH].frequency = hi_freq;
 	ppc_proc_freq = cur_freq * 1000ul;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "Registering PowerMac CPU frequency driver\n");
 	printk(KERN_INFO "Low: %d Mhz, High: %d Mhz, Boot: %d Mhz\n",
 	       low_freq/1000, hi_freq/1000, cur_freq/1000);
+=======
+	pr_info("Registering PowerMac CPU frequency driver\n");
+	pr_info("Low: %d Mhz, High: %d Mhz, Boot: %d Mhz\n",
+		low_freq/1000, hi_freq/1000, cur_freq/1000);
+>>>>>>> v4.9.227
 
 	return cpufreq_register_driver(&pmac_cpufreq_driver);
 }

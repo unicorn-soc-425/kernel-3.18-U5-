@@ -36,4 +36,22 @@ do
      }' "Documentation/perf-$cmd.txt"
 done
 echo "#endif /* HAVE_LIBELF_SUPPORT */"
+<<<<<<< HEAD
+=======
+
+echo "#ifdef HAVE_LIBAUDIT_SUPPORT"
+sed -n -e 's/^perf-\([^ 	]*\)[ 	].* audit*/\1/p' command-list.txt |
+sort |
+while read cmd
+do
+     sed -n '
+     /^NAME/,/perf-'"$cmd"'/H
+     ${
+            x
+            s/.*perf-'"$cmd"' - \(.*\)/  {"'"$cmd"'", "\1"},/
+	    p
+     }' "Documentation/perf-$cmd.txt"
+done
+echo "#endif /* HAVE_LIBELF_SUPPORT */"
+>>>>>>> v4.9.227
 echo "};"

@@ -90,7 +90,10 @@ extern unsigned long __invalid_cmpxchg_size(volatile void *,
  * indicated by comparing RETURN with OLD.
  */
 #ifdef CONFIG_RMW_INSNS
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG	1
+=======
+>>>>>>> v4.9.227
 
 static inline unsigned long __cmpxchg(volatile void *p, unsigned long old,
 				      unsigned long new, int size)

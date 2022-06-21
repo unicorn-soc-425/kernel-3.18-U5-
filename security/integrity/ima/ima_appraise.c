@@ -15,7 +15,10 @@
 #include <linux/magic.h>
 #include <linux/ima.h>
 #include <linux/evm.h>
+<<<<<<< HEAD
 #include <crypto/hash_info.h>
+=======
+>>>>>>> v4.9.227
 
 #include "ima.h"
 
@@ -42,7 +45,11 @@ int ima_must_appraise(struct inode *inode, int mask, enum ima_hooks func)
 	if (!ima_appraise)
 		return 0;
 
+<<<<<<< HEAD
 	return ima_match_policy(inode, func, mask, IMA_APPRAISE);
+=======
+	return ima_match_policy(inode, func, mask, IMA_APPRAISE, NULL);
+>>>>>>> v4.9.227
 }
 
 static int ima_fix_xattr(struct dentry *dentry,
@@ -68,13 +75,18 @@ static int ima_fix_xattr(struct dentry *dentry,
 
 /* Return specific func appraised cached result */
 enum integrity_status ima_get_cache_status(struct integrity_iint_cache *iint,
+<<<<<<< HEAD
 					   int func)
+=======
+					   enum ima_hooks func)
+>>>>>>> v4.9.227
 {
 	switch (func) {
 	case MMAP_CHECK:
 		return iint->ima_mmap_status;
 	case BPRM_CHECK:
 		return iint->ima_bprm_status;
+<<<<<<< HEAD
 	case MODULE_CHECK:
 		return iint->ima_module_status;
 	case FIRMWARE_CHECK:
@@ -82,11 +94,24 @@ enum integrity_status ima_get_cache_status(struct integrity_iint_cache *iint,
 	case FILE_CHECK:
 	default:
 		return iint->ima_file_status;
+=======
+	case FILE_CHECK:
+	case POST_SETATTR:
+		return iint->ima_file_status;
+	case MODULE_CHECK ... MAX_CHECK - 1:
+	default:
+		return iint->ima_read_status;
+>>>>>>> v4.9.227
 	}
 }
 
 static void ima_set_cache_status(struct integrity_iint_cache *iint,
+<<<<<<< HEAD
 				 int func, enum integrity_status status)
+=======
+				 enum ima_hooks func,
+				 enum integrity_status status)
+>>>>>>> v4.9.227
 {
 	switch (func) {
 	case MMAP_CHECK:
@@ -95,6 +120,7 @@ static void ima_set_cache_status(struct integrity_iint_cache *iint,
 	case BPRM_CHECK:
 		iint->ima_bprm_status = status;
 		break;
+<<<<<<< HEAD
 	case MODULE_CHECK:
 		iint->ima_module_status = status;
 		break;
@@ -109,6 +135,21 @@ static void ima_set_cache_status(struct integrity_iint_cache *iint,
 }
 
 static void ima_cache_flags(struct integrity_iint_cache *iint, int func)
+=======
+	case FILE_CHECK:
+	case POST_SETATTR:
+		iint->ima_file_status = status;
+		break;
+	case MODULE_CHECK ... MAX_CHECK - 1:
+	default:
+		iint->ima_read_status = status;
+		break;
+	}
+}
+
+static void ima_cache_flags(struct integrity_iint_cache *iint,
+			     enum ima_hooks func)
+>>>>>>> v4.9.227
 {
 	switch (func) {
 	case MMAP_CHECK:
@@ -117,6 +158,7 @@ static void ima_cache_flags(struct integrity_iint_cache *iint, int func)
 	case BPRM_CHECK:
 		iint->flags |= (IMA_BPRM_APPRAISED | IMA_APPRAISED);
 		break;
+<<<<<<< HEAD
 	case MODULE_CHECK:
 		iint->flags |= (IMA_MODULE_APPRAISED | IMA_APPRAISED);
 		break;
@@ -132,27 +174,56 @@ static void ima_cache_flags(struct integrity_iint_cache *iint, int func)
 
 void ima_get_hash_algo(struct evm_ima_xattr_data *xattr_value, int xattr_len,
 		       struct ima_digest_data *hash)
+=======
+	case FILE_CHECK:
+	case POST_SETATTR:
+		iint->flags |= (IMA_FILE_APPRAISED | IMA_APPRAISED);
+		break;
+	case MODULE_CHECK ... MAX_CHECK - 1:
+	default:
+		iint->flags |= (IMA_READ_APPRAISED | IMA_APPRAISED);
+		break;
+	}
+}
+
+enum hash_algo ima_get_hash_algo(struct evm_ima_xattr_data *xattr_value,
+				 int xattr_len)
+>>>>>>> v4.9.227
 {
 	struct signature_v2_hdr *sig;
 
 	if (!xattr_value || xattr_len < 2)
+<<<<<<< HEAD
 		return;
+=======
+		/* return default hash algo */
+		return ima_hash_algo;
+>>>>>>> v4.9.227
 
 	switch (xattr_value->type) {
 	case EVM_IMA_XATTR_DIGSIG:
 		sig = (typeof(sig))xattr_value;
 		if (sig->version != 2 || xattr_len <= sizeof(*sig))
+<<<<<<< HEAD
 			return;
 		hash->algo = sig->hash_algo;
 		break;
 	case IMA_XATTR_DIGEST_NG:
 		hash->algo = xattr_value->digest[0];
+=======
+			return ima_hash_algo;
+		return sig->hash_algo;
+		break;
+	case IMA_XATTR_DIGEST_NG:
+		return xattr_value->digest[0];
+>>>>>>> v4.9.227
 		break;
 	case IMA_XATTR_DIGEST:
 		/* this is for backward compatibility */
 		if (xattr_len == 21) {
 			unsigned int zero = 0;
 			if (!memcmp(&xattr_value->digest[16], &zero, 4))
+<<<<<<< HEAD
 				hash->algo = HASH_ALGO_MD5;
 			else
 				hash->algo = HASH_ALGO_SHA1;
@@ -160,11 +231,24 @@ void ima_get_hash_algo(struct evm_ima_xattr_data *xattr_value, int xattr_len,
 			hash->algo = HASH_ALGO_MD5;
 		break;
 	}
+=======
+				return HASH_ALGO_MD5;
+			else
+				return HASH_ALGO_SHA1;
+		} else if (xattr_len == 17)
+			return HASH_ALGO_MD5;
+		break;
+	}
+
+	/* return default hash algo */
+	return ima_hash_algo;
+>>>>>>> v4.9.227
 }
 
 int ima_read_xattr(struct dentry *dentry,
 		   struct evm_ima_xattr_data **xattr_value)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 
 	if (!inode->i_op->getxattr)
@@ -172,6 +256,15 @@ int ima_read_xattr(struct dentry *dentry,
 
 	return vfs_getxattr_alloc(dentry, XATTR_NAME_IMA, (char **)xattr_value,
 				  0, GFP_NOFS);
+=======
+	ssize_t ret;
+
+	ret = vfs_getxattr_alloc(dentry, XATTR_NAME_IMA, (char **)xattr_value,
+				 0, GFP_NOFS);
+	if (ret == -EOPNOTSUPP)
+		ret = 0;
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -182,19 +275,33 @@ int ima_read_xattr(struct dentry *dentry,
  *
  * Return 0 on success, error code otherwise
  */
+<<<<<<< HEAD
 int ima_appraise_measurement(int func, struct integrity_iint_cache *iint,
+=======
+int ima_appraise_measurement(enum ima_hooks func,
+			     struct integrity_iint_cache *iint,
+>>>>>>> v4.9.227
 			     struct file *file, const unsigned char *filename,
 			     struct evm_ima_xattr_data *xattr_value,
 			     int xattr_len, int opened)
 {
 	static const char op[] = "appraise_data";
 	char *cause = "unknown";
+<<<<<<< HEAD
 	struct dentry *dentry = file->f_dentry;
 	struct inode *inode = dentry->d_inode;
 	enum integrity_status status = INTEGRITY_UNKNOWN;
 	int rc = xattr_len, hash_start = 0;
 
 	if (!inode->i_op->getxattr)
+=======
+	struct dentry *dentry = file_dentry(file);
+	struct inode *inode = d_backing_inode(dentry);
+	enum integrity_status status = INTEGRITY_UNKNOWN;
+	int rc = xattr_len, hash_start = 0;
+
+	if (!(inode->i_opflags & IOP_XATTR))
+>>>>>>> v4.9.227
 		return INTEGRITY_UNKNOWN;
 
 	if (rc <= 0) {
@@ -213,7 +320,13 @@ int ima_appraise_measurement(int func, struct integrity_iint_cache *iint,
 	}
 
 	status = evm_verifyxattr(dentry, XATTR_NAME_IMA, xattr_value, rc, iint);
+<<<<<<< HEAD
 	if ((status != INTEGRITY_PASS) && (status != INTEGRITY_UNKNOWN)) {
+=======
+	if ((status != INTEGRITY_PASS) &&
+	    (status != INTEGRITY_PASS_IMMUTABLE) &&
+	    (status != INTEGRITY_UNKNOWN)) {
+>>>>>>> v4.9.227
 		if ((status == INTEGRITY_NOLABEL)
 		    || (status == INTEGRITY_NOXATTRS))
 			cause = "missing-HMAC";
@@ -231,6 +344,10 @@ int ima_appraise_measurement(int func, struct integrity_iint_cache *iint,
 			status = INTEGRITY_FAIL;
 			break;
 		}
+<<<<<<< HEAD
+=======
+		clear_bit(IMA_DIGSIG, &iint->atomic_flags);
+>>>>>>> v4.9.227
 		if (xattr_len - sizeof(xattr_value->type) - hash_start >=
 				iint->ima_hash->length)
 			/* xattr length may be longer. md5 hash in previous
@@ -249,7 +366,11 @@ int ima_appraise_measurement(int func, struct integrity_iint_cache *iint,
 		status = INTEGRITY_PASS;
 		break;
 	case EVM_IMA_XATTR_DIGSIG:
+<<<<<<< HEAD
 		iint->flags |= IMA_DIGSIG;
+=======
+		set_bit(IMA_DIGSIG, &iint->atomic_flags);
+>>>>>>> v4.9.227
 		rc = integrity_digsig_verify(INTEGRITY_KEYRING_IMA,
 					     (const char *)xattr_value, rc,
 					     iint->ima_hash->digest,
@@ -276,6 +397,14 @@ out:
 		     xattr_value->type != EVM_IMA_XATTR_DIGSIG)) {
 			if (!ima_fix_xattr(dentry, iint))
 				status = INTEGRITY_PASS;
+<<<<<<< HEAD
+=======
+		} else if ((inode->i_size == 0) &&
+			   (iint->flags & IMA_NEW_FILE) &&
+			   (xattr_value &&
+			    xattr_value->type == EVM_IMA_XATTR_DIGSIG)) {
+			status = INTEGRITY_PASS;
+>>>>>>> v4.9.227
 		}
 		integrity_audit_msg(AUDIT_INTEGRITY_DATA, inode, filename,
 				    op, cause, rc, 0);
@@ -291,21 +420,39 @@ out:
  */
 void ima_update_xattr(struct integrity_iint_cache *iint, struct file *file)
 {
+<<<<<<< HEAD
 	struct dentry *dentry = file->f_dentry;
 	int rc = 0;
 
 	/* do not collect and update hash for digital signatures */
 	if (iint->flags & IMA_DIGSIG)
+=======
+	struct dentry *dentry = file_dentry(file);
+	int rc = 0;
+
+	/* do not collect and update hash for digital signatures */
+	if (test_bit(IMA_DIGSIG, &iint->atomic_flags))
+>>>>>>> v4.9.227
 		return;
 
 	if (iint->ima_file_status != INTEGRITY_PASS)
 		return;
 
+<<<<<<< HEAD
 	rc = ima_collect_measurement(iint, file, NULL, NULL);
 	if (rc < 0)
 		return;
 
 	ima_fix_xattr(dentry, iint);
+=======
+	rc = ima_collect_measurement(iint, file, NULL, 0, ima_hash_algo);
+	if (rc < 0)
+		return;
+
+	inode_lock(file_inode(file));
+	ima_fix_xattr(dentry, iint);
+	inode_unlock(file_inode(file));
+>>>>>>> v4.9.227
 }
 
 /**
@@ -319,6 +466,7 @@ void ima_update_xattr(struct integrity_iint_cache *iint, struct file *file)
  */
 void ima_inode_post_setattr(struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	struct integrity_iint_cache *iint;
 	int must_appraise, rc;
@@ -339,6 +487,25 @@ void ima_inode_post_setattr(struct dentry *dentry)
 	if (!must_appraise)
 		rc = inode->i_op->removexattr(dentry, XATTR_NAME_IMA);
 	return;
+=======
+	struct inode *inode = d_backing_inode(dentry);
+	struct integrity_iint_cache *iint;
+	int must_appraise;
+
+	if (!(ima_policy_flag & IMA_APPRAISE) || !S_ISREG(inode->i_mode)
+	    || !(inode->i_opflags & IOP_XATTR))
+		return;
+
+	must_appraise = ima_must_appraise(inode, MAY_ACCESS, POST_SETATTR);
+	if (!must_appraise)
+		__vfs_removexattr(dentry, XATTR_NAME_IMA);
+	iint = integrity_iint_find(inode);
+	if (iint) {
+		set_bit(IMA_CHANGE_ATTR, &iint->atomic_flags);
+		if (!must_appraise)
+			clear_bit(IMA_UPDATE_XATTR, &iint->atomic_flags);
+	}
+>>>>>>> v4.9.227
 }
 
 /*
@@ -367,11 +534,20 @@ static void ima_reset_appraise_flags(struct inode *inode, int digsig)
 	iint = integrity_iint_find(inode);
 	if (!iint)
 		return;
+<<<<<<< HEAD
 
 	iint->flags &= ~IMA_DONE_MASK;
 	if (digsig)
 		iint->flags |= IMA_DIGSIG;
 	return;
+=======
+	iint->measured_pcrs = 0;
+	set_bit(IMA_CHANGE_XATTR, &iint->atomic_flags);
+	if (digsig)
+		set_bit(IMA_DIGSIG, &iint->atomic_flags);
+	else
+		clear_bit(IMA_DIGSIG, &iint->atomic_flags);
+>>>>>>> v4.9.227
 }
 
 int ima_inode_setxattr(struct dentry *dentry, const char *xattr_name,
@@ -385,7 +561,11 @@ int ima_inode_setxattr(struct dentry *dentry, const char *xattr_name,
 	if (result == 1) {
 		if (!xattr_value_len || (xvalue->type >= IMA_XATTR_LAST))
 			return -EINVAL;
+<<<<<<< HEAD
 		ima_reset_appraise_flags(dentry->d_inode,
+=======
+		ima_reset_appraise_flags(d_backing_inode(dentry),
+>>>>>>> v4.9.227
 			 (xvalue->type == EVM_IMA_XATTR_DIGSIG) ? 1 : 0);
 		result = 0;
 	}
@@ -398,7 +578,11 @@ int ima_inode_removexattr(struct dentry *dentry, const char *xattr_name)
 
 	result = ima_protect_xattr(dentry, xattr_name, NULL, 0);
 	if (result == 1) {
+<<<<<<< HEAD
 		ima_reset_appraise_flags(dentry->d_inode, 0);
+=======
+		ima_reset_appraise_flags(d_backing_inode(dentry), 0);
+>>>>>>> v4.9.227
 		result = 0;
 	}
 	return result;

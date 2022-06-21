@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,10 +18,13 @@
 #ifndef UFS_QCOM_H_
 #define UFS_QCOM_H_
 
+<<<<<<< HEAD
 #include <linux/phy/phy.h>
 #include <linux/pm_qos.h>
 #include "ufshcd.h"
 
+=======
+>>>>>>> v4.9.227
 #define MAX_UFS_QCOM_HOSTS	1
 #define MAX_U32                 (~(u32)0)
 #define MPHY_TX_FSM_STATE       0x41
@@ -75,7 +82,10 @@ enum {
 	UFS_AH8_CFG				= 0xFC,
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /* QCOM UFS host controller vendor specific debug registers */
 enum {
 	UFS_DBG_RD_REG_UAWM			= 0x100,
@@ -99,7 +109,11 @@ enum {
 /* bit definitions for REG_UFS_CFG1 register */
 #define QUNIPRO_SEL	UFS_BIT(0)
 #define TEST_BUS_EN		BIT(18)
+<<<<<<< HEAD
 #define TEST_BUS_SEL		0x780000
+=======
+#define TEST_BUS_SEL		GENMASK(22, 19)
+>>>>>>> v4.9.227
 
 /* bit definitions for REG_UFS_CFG2 register */
 #define UAWM_HW_CGC_EN		(1 << 0)
@@ -170,8 +184,13 @@ static inline void ufs_qcom_assert_reset(struct ufs_hba *hba)
 			1 << OFFSET_UFS_PHY_SOFT_RESET, REG_UFS_CFG1);
 
 	/*
+<<<<<<< HEAD
 	 * make sure that this configuration is applied before
 	 * we continue
+=======
+	 * Make sure assertion of ufs phy reset is written to
+	 * register before returning
+>>>>>>> v4.9.227
 	 */
 	mb();
 }
@@ -182,8 +201,13 @@ static inline void ufs_qcom_deassert_reset(struct ufs_hba *hba)
 			0 << OFFSET_UFS_PHY_SOFT_RESET, REG_UFS_CFG1);
 
 	/*
+<<<<<<< HEAD
 	 * make sure that this configuration is applied before
 	 * we continue
+=======
+	 * Make sure de-assertion of ufs phy reset is written to
+	 * register before returning
+>>>>>>> v4.9.227
 	 */
 	mb();
 }
@@ -198,6 +222,7 @@ struct ufs_qcom_bus_vote {
 	struct device_attribute max_bus_bw;
 };
 
+<<<<<<< HEAD
 /**
  * struct ufs_qcom_ice_data - ICE related information
  * @vops:	pointer to variant operations of ICE
@@ -218,6 +243,8 @@ struct ufs_qcom_ice_data {
 	bool crypto_engine_err;
 };
 
+=======
+>>>>>>> v4.9.227
 /* Host controller hardware version: major.minor.step */
 struct ufs_hw_version {
 	u16 step;
@@ -225,6 +252,7 @@ struct ufs_hw_version {
 	u8 major;
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_FS
 struct qcom_debugfs_files {
 	struct dentry *debugfs_root;
@@ -238,11 +266,14 @@ struct qcom_debugfs_files {
 };
 #endif
 
+=======
+>>>>>>> v4.9.227
 struct ufs_qcom_testbus {
 	u8 select_major;
 	u8 select_minor;
 };
 
+<<<<<<< HEAD
 /* PM QoS voting state  */
 enum ufs_qcom_pm_qos_state {
 	PM_QOS_UNVOTED,
@@ -295,6 +326,8 @@ struct ufs_qcom_pm_qos {
 	bool is_enabled;
 };
 
+=======
+>>>>>>> v4.9.227
 struct ufs_qcom_host {
 	/*
 	 * Set this capability if host controller supports the QUniPro mode
@@ -319,6 +352,7 @@ struct ufs_qcom_host {
 	struct clk *tx_l0_sync_clk;
 	struct clk *rx_l1_sync_clk;
 	struct clk *tx_l1_sync_clk;
+<<<<<<< HEAD
 
 	/* PM Quality-of-Service (QoS) data */
 	struct ufs_qcom_pm_qos pm_qos;
@@ -340,6 +374,19 @@ struct ufs_qcom_host {
 
 	struct work_struct ice_cfg_work;
 	struct request *req_pending;
+=======
+	bool is_lane_clks_enabled;
+
+	void __iomem *dev_ref_clk_ctrl_mmio;
+	bool is_dev_ref_clk_enabled;
+	struct ufs_hw_version hw_ver;
+
+	u32 dev_ref_clk_en_mask;
+
+	/* Bitmask for enabling debug prints */
+	u32 dbg_print_en;
+	struct ufs_qcom_testbus testbus;
+>>>>>>> v4.9.227
 };
 
 static inline u32
@@ -355,12 +402,16 @@ ufs_qcom_get_debug_reg_offset(struct ufs_qcom_host *host, u32 reg)
 #define ufs_qcom_is_link_active(hba) ufshcd_is_link_active(hba)
 #define ufs_qcom_is_link_hibern8(hba) ufshcd_is_link_hibern8(hba)
 
+<<<<<<< HEAD
 bool ufs_qcom_testbus_cfg_is_ok(struct ufs_qcom_host *host, u8 select_major,
 		u8 select_minor);
 int ufs_qcom_testbus_config(struct ufs_qcom_host *host);
 void ufs_qcom_print_hw_debug_reg_all(struct ufs_hba *hba, void *priv,
 		void (*print_fn)(struct ufs_hba *hba, int offset, int num_regs,
 				char *str, void *priv));
+=======
+int ufs_qcom_testbus_config(struct ufs_qcom_host *host);
+>>>>>>> v4.9.227
 
 static inline bool ufs_qcom_cap_qunipro(struct ufs_qcom_host *host)
 {

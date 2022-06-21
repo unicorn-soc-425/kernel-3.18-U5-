@@ -3,7 +3,11 @@
  *
  *  Copyright (C) 2001-5, B2C2 inc.
  *
+<<<<<<< HEAD
  *  GPL/Linux driver written by Patrick Boettcher <patrick.boettcher@desy.de>
+=======
+ *  GPL/Linux driver written by Patrick Boettcher <patrick.boettcher@posteo.de>
+>>>>>>> v4.9.227
  *
  *  This driver is "hard-coded" to be used with the 1st generation of
  *  Technisat/B2C2's Air2PC ATSC PCI/USB cards/boxes. The pll-programming
@@ -289,7 +293,11 @@ static int bcm3510_refresh_state(struct bcm3510_state *st)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int bcm3510_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int bcm3510_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct bcm3510_state* st = fe->demodulator_priv;
 	bcm3510_refresh_state(st);
@@ -685,7 +693,11 @@ static int bcm3510_reset(struct bcm3510_state *st)
 	if ((ret = bcm3510_writeB(st,0xa0,v)) < 0)
 		return ret;
 
+<<<<<<< HEAD
     t = jiffies + 3*HZ;
+=======
+	t = jiffies + 3*HZ;
+>>>>>>> v4.9.227
 	while (time_before(jiffies, t)) {
 		msleep(10);
 		if ((ret = bcm3510_readB(st,0xa2,&v)) < 0)
@@ -708,7 +720,11 @@ static int bcm3510_clear_reset(struct bcm3510_state *st)
 	if ((ret = bcm3510_writeB(st,0xa0,v)) < 0)
 		return ret;
 
+<<<<<<< HEAD
     t = jiffies + 3*HZ;
+=======
+	t = jiffies + 3*HZ;
+>>>>>>> v4.9.227
 	while (time_before(jiffies, t)) {
 		msleep(10);
 		if ((ret = bcm3510_readB(st,0xa2,&v)) < 0)
@@ -865,5 +881,9 @@ static struct dvb_frontend_ops bcm3510_ops = {
 };
 
 MODULE_DESCRIPTION("Broadcom BCM3510 ATSC (8VSB/16VSB & ITU J83 AnnexB FEC QAM64/256) demodulator driver");
+<<<<<<< HEAD
 MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@desy.de>");
+=======
+MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@posteo.de>");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");

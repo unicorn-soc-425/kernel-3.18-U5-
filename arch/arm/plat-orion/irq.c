@@ -18,7 +18,10 @@
 #include <asm/exception.h>
 #include <plat/irq.h>
 #include <plat/orion-gpio.h>
+<<<<<<< HEAD
 #include <mach/bridge-regs.h>
+=======
+>>>>>>> v4.9.227
 
 void __init orion_irq_init(unsigned int irq_start, void __iomem *maskaddr)
 {

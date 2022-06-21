@@ -19,15 +19,26 @@
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
+=======
+#include <linux/pwm.h>
+>>>>>>> v4.9.227
 #include <linux/pwm_backlight.h>
 #include <linux/smc91x.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/pxa3xx.h>
 #include <mach/audio.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <mach/zylonite.h>
+=======
+#include "pxa3xx.h"
+#include <mach/audio.h>
+#include <linux/platform_data/video-pxafb.h>
+#include "zylonite.h"
+>>>>>>> v4.9.227
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <linux/platform_data/keypad-pxa27x.h>
@@ -120,11 +131,22 @@ static inline void zylonite_init_leds(void) {}
 #endif
 
 #if defined(CONFIG_FB_PXA) || defined(CONFIG_FB_PXA_MODULE)
+<<<<<<< HEAD
 static struct platform_pwm_backlight_data zylonite_backlight_data = {
 	.pwm_id		= 3,
 	.max_brightness	= 100,
 	.dft_brightness	= 100,
 	.pwm_period_ns	= 10000,
+=======
+static struct pwm_lookup zylonite_pwm_lookup[] = {
+	PWM_LOOKUP("pxa27x-pwm.1", 1, "pwm-backlight.0", NULL, 10000,
+		   PWM_POLARITY_NORMAL),
+};
+
+static struct platform_pwm_backlight_data zylonite_backlight_data = {
+	.max_brightness	= 100,
+	.dft_brightness	= 100,
+>>>>>>> v4.9.227
 	.enable_gpio	= -1,
 };
 
@@ -206,6 +228,10 @@ static struct pxafb_mach_info zylonite_sharp_lcd_info = {
 
 static void __init zylonite_init_lcd(void)
 {
+<<<<<<< HEAD
+=======
+	pwm_add_table(zylonite_pwm_lookup, ARRAY_SIZE(zylonite_pwm_lookup));
+>>>>>>> v4.9.227
 	platform_device_register(&zylonite_backlight_device);
 
 	if (lcd_id & 0x20) {

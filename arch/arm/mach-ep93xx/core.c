@@ -22,7 +22,10 @@
 #include <linux/interrupt.h>
 #include <linux/dma-mapping.h>
 #include <linux/sys_soc.h>
+<<<<<<< HEAD
 #include <linux/timex.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/irq.h>
 #include <linux/io.h>
 #include <linux/gpio.h>
@@ -38,6 +41,10 @@
 #include <linux/irqchip/arm-vic.h>
 #include <linux/reboot.h>
 #include <linux/usb/ohci_pdriver.h>
+<<<<<<< HEAD
+=======
+#include <linux/random.h>
+>>>>>>> v4.9.227
 
 #include <mach/hardware.h>
 #include <linux/platform_data/video-ep93xx.h>
@@ -47,7 +54,10 @@
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
+<<<<<<< HEAD
 #include <asm/mach/time.h>
+=======
+>>>>>>> v4.9.227
 
 #include "soc.h"
 
@@ -73,6 +83,7 @@ void __init ep93xx_map_io(void)
 	iotable_init(ep93xx_io_desc, ARRAY_SIZE(ep93xx_io_desc));
 }
 
+<<<<<<< HEAD
 
 /*************************************************************************
  * Timer handling for EP93xx
@@ -180,6 +191,8 @@ void __init ep93xx_timer_init(void)
 }
 
 
+=======
+>>>>>>> v4.9.227
 /*************************************************************************
  * EP93xx IRQ handling
  *************************************************************************/
@@ -971,6 +984,15 @@ static const char __init *ep93xx_get_soc_id(void)
 	if (id != id2)
 		return "invalid";
 
+<<<<<<< HEAD
+=======
+	/* Toss the unique ID into the entropy pool */
+	add_device_randomness(&id2, 4);
+	add_device_randomness(&id3, 4);
+	add_device_randomness(&id4, 4);
+	add_device_randomness(&id5, 4);
+
+>>>>>>> v4.9.227
 	snprintf(ep93xx_soc_id, sizeof(ep93xx_soc_id),
 		 "%08x%08x%08x%08x", id2, id3, id4, id5);
 

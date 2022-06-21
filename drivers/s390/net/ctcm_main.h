@@ -121,7 +121,11 @@ struct ctcm_profile {
 	unsigned long doios_multi;
 	unsigned long txlen;
 	unsigned long tx_time;
+<<<<<<< HEAD
 	struct timespec send_stamp;
+=======
+	unsigned long send_stamp;
+>>>>>>> v4.9.227
 };
 
 /*

@@ -18,8 +18,14 @@
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <drm/drmP.h>
+<<<<<<< HEAD
 #include <drm/drm_crtc_helper.h>
 #include <linux/fb.h>
+=======
+#include <drm/drm_atomic.h>
+#include <drm/drm_atomic_helper.h>
+#include <drm/drm_crtc_helper.h>
+>>>>>>> v4.9.227
 #include <linux/clk.h>
 #include <linux/errno.h>
 #include <drm/drm_gem_cma_helper.h>
@@ -41,6 +47,7 @@ struct ipu_crtc {
 
 	struct ipu_dc		*dc;
 	struct ipu_di		*di;
+<<<<<<< HEAD
 	int			enabled;
 	struct drm_pending_vblank_event *page_flip_event;
 	struct drm_framebuffer	*newfb;
@@ -219,10 +226,114 @@ static void ipu_crtc_handle_pageflip(struct ipu_crtc *ipu_crtc)
 	spin_unlock_irqrestore(&drm->event_lock, flags);
 }
 
+=======
+	int			irq;
+};
+
+static inline struct ipu_crtc *to_ipu_crtc(struct drm_crtc *crtc)
+{
+	return container_of(crtc, struct ipu_crtc, base);
+}
+
+static void ipu_crtc_enable(struct drm_crtc *crtc)
+{
+	struct ipu_crtc *ipu_crtc = to_ipu_crtc(crtc);
+	struct ipu_soc *ipu = dev_get_drvdata(ipu_crtc->dev->parent);
+
+	ipu_dc_enable(ipu);
+	ipu_dc_enable_channel(ipu_crtc->dc);
+	ipu_di_enable(ipu_crtc->di);
+}
+
+static void ipu_crtc_atomic_disable(struct drm_crtc *crtc,
+				    struct drm_crtc_state *old_crtc_state)
+{
+	struct ipu_crtc *ipu_crtc = to_ipu_crtc(crtc);
+	struct ipu_soc *ipu = dev_get_drvdata(ipu_crtc->dev->parent);
+
+	ipu_dc_disable_channel(ipu_crtc->dc);
+	ipu_di_disable(ipu_crtc->di);
+	/*
+	 * Planes must be disabled before DC clock is removed, as otherwise the
+	 * attached IDMACs will be left in undefined state, possibly hanging
+	 * the IPU or even system.
+	 */
+	drm_atomic_helper_disable_planes_on_crtc(old_crtc_state, false);
+	ipu_dc_disable(ipu);
+
+	drm_crtc_vblank_off(crtc);
+
+	spin_lock_irq(&crtc->dev->event_lock);
+	if (crtc->state->event && !crtc->state->active) {
+		drm_crtc_send_vblank_event(crtc, crtc->state->event);
+		crtc->state->event = NULL;
+	}
+	spin_unlock_irq(&crtc->dev->event_lock);
+}
+
+static void imx_drm_crtc_reset(struct drm_crtc *crtc)
+{
+	struct imx_crtc_state *state;
+
+	if (crtc->state) {
+		if (crtc->state->mode_blob)
+			drm_property_unreference_blob(crtc->state->mode_blob);
+
+		state = to_imx_crtc_state(crtc->state);
+		memset(state, 0, sizeof(*state));
+	} else {
+		state = kzalloc(sizeof(*state), GFP_KERNEL);
+		if (!state)
+			return;
+		crtc->state = &state->base;
+	}
+
+	state->base.crtc = crtc;
+}
+
+static struct drm_crtc_state *imx_drm_crtc_duplicate_state(struct drm_crtc *crtc)
+{
+	struct imx_crtc_state *state;
+
+	state = kzalloc(sizeof(*state), GFP_KERNEL);
+	if (!state)
+		return NULL;
+
+	__drm_atomic_helper_crtc_duplicate_state(crtc, &state->base);
+
+	WARN_ON(state->base.crtc != crtc);
+	state->base.crtc = crtc;
+
+	return &state->base;
+}
+
+static void imx_drm_crtc_destroy_state(struct drm_crtc *crtc,
+				       struct drm_crtc_state *state)
+{
+	__drm_atomic_helper_crtc_destroy_state(state);
+	kfree(to_imx_crtc_state(state));
+}
+
+static void imx_drm_crtc_destroy(struct drm_crtc *crtc)
+{
+	imx_drm_remove_crtc(to_ipu_crtc(crtc)->imx_crtc);
+}
+
+static const struct drm_crtc_funcs ipu_crtc_funcs = {
+	.set_config = drm_atomic_helper_set_config,
+	.destroy = imx_drm_crtc_destroy,
+	.page_flip = drm_atomic_helper_page_flip,
+	.reset = imx_drm_crtc_reset,
+	.atomic_duplicate_state = imx_drm_crtc_duplicate_state,
+	.atomic_destroy_state = imx_drm_crtc_destroy_state,
+};
+
+>>>>>>> v4.9.227
 static irqreturn_t ipu_irq_handler(int irq, void *dev_id)
 {
 	struct ipu_crtc *ipu_crtc = dev_id;
 
+<<<<<<< HEAD
 	imx_drm_handle_vblank(ipu_crtc->imx_crtc);
 
 	if (ipu_crtc->newfb) {
@@ -233,6 +344,9 @@ static irqreturn_t ipu_irq_handler(int irq, void *dev_id)
 				   plane->x, plane->y);
 		ipu_crtc_handle_pageflip(ipu_crtc);
 	}
+=======
+	drm_crtc_handle_vblank(&ipu_crtc->base);
+>>>>>>> v4.9.227
 
 	return IRQ_HANDLED;
 }
@@ -251,11 +365,18 @@ static bool ipu_crtc_mode_fixup(struct drm_crtc *crtc,
 	if (ret)
 		return false;
 
+<<<<<<< HEAD
+=======
+	if ((vm.vsync_len == 0) || (vm.hsync_len == 0))
+		return false;
+
+>>>>>>> v4.9.227
 	drm_display_mode_from_videomode(&vm, adjusted_mode);
 
 	return true;
 }
 
+<<<<<<< HEAD
 static void ipu_crtc_prepare(struct drm_crtc *crtc)
 {
 	struct ipu_crtc *ipu_crtc = to_ipu_crtc(crtc);
@@ -276,10 +397,109 @@ static struct drm_crtc_helper_funcs ipu_helper_funcs = {
 	.mode_set = ipu_crtc_mode_set,
 	.prepare = ipu_crtc_prepare,
 	.commit = ipu_crtc_commit,
+=======
+static int ipu_crtc_atomic_check(struct drm_crtc *crtc,
+				 struct drm_crtc_state *state)
+{
+	u32 primary_plane_mask = 1 << drm_plane_index(crtc->primary);
+
+	if (state->active && (primary_plane_mask & state->plane_mask) == 0)
+		return -EINVAL;
+
+	return 0;
+}
+
+static void ipu_crtc_atomic_begin(struct drm_crtc *crtc,
+				  struct drm_crtc_state *old_crtc_state)
+{
+	drm_crtc_vblank_on(crtc);
+}
+
+static void ipu_crtc_atomic_flush(struct drm_crtc *crtc,
+				  struct drm_crtc_state *old_crtc_state)
+{
+	spin_lock_irq(&crtc->dev->event_lock);
+	if (crtc->state->event) {
+		WARN_ON(drm_crtc_vblank_get(crtc));
+		drm_crtc_arm_vblank_event(crtc, crtc->state->event);
+		crtc->state->event = NULL;
+	}
+	spin_unlock_irq(&crtc->dev->event_lock);
+}
+
+static void ipu_crtc_mode_set_nofb(struct drm_crtc *crtc)
+{
+	struct drm_device *dev = crtc->dev;
+	struct drm_encoder *encoder;
+	struct ipu_crtc *ipu_crtc = to_ipu_crtc(crtc);
+	struct drm_display_mode *mode = &crtc->state->adjusted_mode;
+	struct imx_crtc_state *imx_crtc_state = to_imx_crtc_state(crtc->state);
+	struct ipu_di_signal_cfg sig_cfg = {};
+	unsigned long encoder_types = 0;
+
+	dev_dbg(ipu_crtc->dev, "%s: mode->hdisplay: %d\n", __func__,
+			mode->hdisplay);
+	dev_dbg(ipu_crtc->dev, "%s: mode->vdisplay: %d\n", __func__,
+			mode->vdisplay);
+
+	list_for_each_entry(encoder, &dev->mode_config.encoder_list, head) {
+		if (encoder->crtc == crtc)
+			encoder_types |= BIT(encoder->encoder_type);
+	}
+
+	dev_dbg(ipu_crtc->dev, "%s: attached to encoder types 0x%lx\n",
+		__func__, encoder_types);
+
+	/*
+	 * If we have DAC or LDB, then we need the IPU DI clock to be
+	 * the same as the LDB DI clock. For TVDAC, derive the IPU DI
+	 * clock from 27 MHz TVE_DI clock, but allow to divide it.
+	 */
+	if (encoder_types & (BIT(DRM_MODE_ENCODER_DAC) |
+			     BIT(DRM_MODE_ENCODER_LVDS)))
+		sig_cfg.clkflags = IPU_DI_CLKMODE_SYNC | IPU_DI_CLKMODE_EXT;
+	else if (encoder_types & BIT(DRM_MODE_ENCODER_TVDAC))
+		sig_cfg.clkflags = IPU_DI_CLKMODE_EXT;
+	else
+		sig_cfg.clkflags = 0;
+
+	sig_cfg.enable_pol = !(imx_crtc_state->bus_flags & DRM_BUS_FLAG_DE_LOW);
+	/* Default to driving pixel data on negative clock edges */
+	sig_cfg.clk_pol = !!(imx_crtc_state->bus_flags &
+			     DRM_BUS_FLAG_PIXDATA_POSEDGE);
+	sig_cfg.bus_format = imx_crtc_state->bus_format;
+	sig_cfg.v_to_h_sync = 0;
+	sig_cfg.hsync_pin = imx_crtc_state->di_hsync_pin;
+	sig_cfg.vsync_pin = imx_crtc_state->di_vsync_pin;
+
+	drm_display_mode_to_videomode(mode, &sig_cfg.mode);
+
+	ipu_dc_init_sync(ipu_crtc->dc, ipu_crtc->di,
+			 mode->flags & DRM_MODE_FLAG_INTERLACE,
+			 imx_crtc_state->bus_format, mode->hdisplay);
+	ipu_di_init_sync_panel(ipu_crtc->di, &sig_cfg);
+}
+
+static const struct drm_crtc_helper_funcs ipu_helper_funcs = {
+	.mode_fixup = ipu_crtc_mode_fixup,
+	.mode_set_nofb = ipu_crtc_mode_set_nofb,
+	.atomic_check = ipu_crtc_atomic_check,
+	.atomic_begin = ipu_crtc_atomic_begin,
+	.atomic_flush = ipu_crtc_atomic_flush,
+	.atomic_disable = ipu_crtc_atomic_disable,
+	.enable = ipu_crtc_enable,
+>>>>>>> v4.9.227
 };
 
 static int ipu_enable_vblank(struct drm_crtc *crtc)
 {
+<<<<<<< HEAD
+=======
+	struct ipu_crtc *ipu_crtc = to_ipu_crtc(crtc);
+
+	enable_irq(ipu_crtc->irq);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -287,6 +507,7 @@ static void ipu_disable_vblank(struct drm_crtc *crtc)
 {
 	struct ipu_crtc *ipu_crtc = to_ipu_crtc(crtc);
 
+<<<<<<< HEAD
 	ipu_crtc->page_flip_event = NULL;
 	ipu_crtc->newfb = NULL;
 }
@@ -301,12 +522,18 @@ static int ipu_set_interface_pix_fmt(struct drm_crtc *crtc,
 	ipu_crtc->di_vsync_pin = vsync_pin;
 
 	return 0;
+=======
+	disable_irq_nosync(ipu_crtc->irq);
+>>>>>>> v4.9.227
 }
 
 static const struct imx_drm_crtc_helper_funcs ipu_crtc_helper_funcs = {
 	.enable_vblank = ipu_enable_vblank,
 	.disable_vblank = ipu_disable_vblank,
+<<<<<<< HEAD
 	.set_interface_pix_fmt = ipu_set_interface_pix_fmt,
+=======
+>>>>>>> v4.9.227
 	.crtc_funcs = &ipu_crtc_funcs,
 	.crtc_helper_funcs = &ipu_helper_funcs,
 };
@@ -388,8 +615,21 @@ static int ipu_crtc_init(struct ipu_crtc *ipu_crtc,
 						IPU_DP_FLOW_SYNC_FG,
 						drm_crtc_mask(&ipu_crtc->base),
 						DRM_PLANE_TYPE_OVERLAY);
+<<<<<<< HEAD
 		if (IS_ERR(ipu_crtc->plane[1]))
 			ipu_crtc->plane[1] = NULL;
+=======
+		if (IS_ERR(ipu_crtc->plane[1])) {
+			ipu_crtc->plane[1] = NULL;
+		} else {
+			ret = ipu_plane_get_resources(ipu_crtc->plane[1]);
+			if (ret) {
+				dev_err(ipu_crtc->dev, "getting plane 1 "
+					"resources failed with %d.\n", ret);
+				goto err_put_plane0_res;
+			}
+		}
+>>>>>>> v4.9.227
 	}
 
 	ipu_crtc->irq = ipu_plane_irq(ipu_crtc->plane[0]);
@@ -397,12 +637,26 @@ static int ipu_crtc_init(struct ipu_crtc *ipu_crtc,
 			"imx_drm", ipu_crtc);
 	if (ret < 0) {
 		dev_err(ipu_crtc->dev, "irq request failed with %d.\n", ret);
+<<<<<<< HEAD
 		goto err_put_plane_res;
 	}
 
 	return 0;
 
 err_put_plane_res:
+=======
+		goto err_put_plane1_res;
+	}
+	/* Only enable IRQ when we actually need it to trigger work. */
+	disable_irq(ipu_crtc->irq);
+
+	return 0;
+
+err_put_plane1_res:
+	if (ipu_crtc->plane[1])
+		ipu_plane_put_resources(ipu_crtc->plane[1]);
+err_put_plane0_res:
+>>>>>>> v4.9.227
 	ipu_plane_put_resources(ipu_crtc->plane[0]);
 err_remove_crtc:
 	imx_drm_remove_crtc(ipu_crtc->imx_crtc);
@@ -439,10 +693,17 @@ static void ipu_drm_unbind(struct device *dev, struct device *master,
 {
 	struct ipu_crtc *ipu_crtc = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	imx_drm_remove_crtc(ipu_crtc->imx_crtc);
 
 	ipu_plane_put_resources(ipu_crtc->plane[0]);
 	ipu_put_resources(ipu_crtc);
+=======
+	ipu_put_resources(ipu_crtc);
+	if (ipu_crtc->plane[1])
+		ipu_plane_put_resources(ipu_crtc->plane[1]);
+	ipu_plane_put_resources(ipu_crtc->plane[0]);
+>>>>>>> v4.9.227
 }
 
 static const struct component_ops ipu_crtc_ops = {

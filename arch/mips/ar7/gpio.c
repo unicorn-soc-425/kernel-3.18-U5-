@@ -21,7 +21,14 @@
 #include <linux/module.h>
 #include <linux/gpio.h>
 
+<<<<<<< HEAD
 #include <asm/mach-ar7/gpio.h>
+=======
+#include <asm/mach-ar7/ar7.h>
+
+#define AR7_GPIO_MAX 32
+#define TITAN_GPIO_MAX 51
+>>>>>>> v4.9.227
 
 struct ar7_gpio_chip {
 	void __iomem		*regs;
@@ -30,17 +37,28 @@ struct ar7_gpio_chip {
 
 static int ar7_gpio_get_value(struct gpio_chip *chip, unsigned gpio)
 {
+<<<<<<< HEAD
 	struct ar7_gpio_chip *gpch =
 				container_of(chip, struct ar7_gpio_chip, chip);
 	void __iomem *gpio_in = gpch->regs + AR7_GPIO_INPUT;
 
 	return readl(gpio_in) & (1 << gpio);
+=======
+	struct ar7_gpio_chip *gpch = gpiochip_get_data(chip);
+	void __iomem *gpio_in = gpch->regs + AR7_GPIO_INPUT;
+
+	return !!(readl(gpio_in) & (1 << gpio));
+>>>>>>> v4.9.227
 }
 
 static int titan_gpio_get_value(struct gpio_chip *chip, unsigned gpio)
 {
+<<<<<<< HEAD
 	struct ar7_gpio_chip *gpch =
 				container_of(chip, struct ar7_gpio_chip, chip);
+=======
+	struct ar7_gpio_chip *gpch = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	void __iomem *gpio_in0 = gpch->regs + TITAN_GPIO_INPUT_0;
 	void __iomem *gpio_in1 = gpch->regs + TITAN_GPIO_INPUT_1;
 
@@ -50,8 +68,12 @@ static int titan_gpio_get_value(struct gpio_chip *chip, unsigned gpio)
 static void ar7_gpio_set_value(struct gpio_chip *chip,
 				unsigned gpio, int value)
 {
+<<<<<<< HEAD
 	struct ar7_gpio_chip *gpch =
 				container_of(chip, struct ar7_gpio_chip, chip);
+=======
+	struct ar7_gpio_chip *gpch = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	void __iomem *gpio_out = gpch->regs + AR7_GPIO_OUTPUT;
 	unsigned tmp;
 
@@ -64,8 +86,12 @@ static void ar7_gpio_set_value(struct gpio_chip *chip,
 static void titan_gpio_set_value(struct gpio_chip *chip,
 				unsigned gpio, int value)
 {
+<<<<<<< HEAD
 	struct ar7_gpio_chip *gpch =
 				container_of(chip, struct ar7_gpio_chip, chip);
+=======
+	struct ar7_gpio_chip *gpch = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	void __iomem *gpio_out0 = gpch->regs + TITAN_GPIO_OUTPUT_0;
 	void __iomem *gpio_out1 = gpch->regs + TITAN_GPIO_OUTPUT_1;
 	unsigned tmp;
@@ -78,8 +104,12 @@ static void titan_gpio_set_value(struct gpio_chip *chip,
 
 static int ar7_gpio_direction_input(struct gpio_chip *chip, unsigned gpio)
 {
+<<<<<<< HEAD
 	struct ar7_gpio_chip *gpch =
 				container_of(chip, struct ar7_gpio_chip, chip);
+=======
+	struct ar7_gpio_chip *gpch = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	void __iomem *gpio_dir = gpch->regs + AR7_GPIO_DIR;
 
 	writel(readl(gpio_dir) | (1 << gpio), gpio_dir);
@@ -89,8 +119,12 @@ static int ar7_gpio_direction_input(struct gpio_chip *chip, unsigned gpio)
 
 static int titan_gpio_direction_input(struct gpio_chip *chip, unsigned gpio)
 {
+<<<<<<< HEAD
 	struct ar7_gpio_chip *gpch =
 				container_of(chip, struct ar7_gpio_chip, chip);
+=======
+	struct ar7_gpio_chip *gpch = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	void __iomem *gpio_dir0 = gpch->regs + TITAN_GPIO_DIR_0;
 	void __iomem *gpio_dir1 = gpch->regs + TITAN_GPIO_DIR_1;
 
@@ -105,8 +139,12 @@ static int titan_gpio_direction_input(struct gpio_chip *chip, unsigned gpio)
 static int ar7_gpio_direction_output(struct gpio_chip *chip,
 					unsigned gpio, int value)
 {
+<<<<<<< HEAD
 	struct ar7_gpio_chip *gpch =
 				container_of(chip, struct ar7_gpio_chip, chip);
+=======
+	struct ar7_gpio_chip *gpch = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	void __iomem *gpio_dir = gpch->regs + AR7_GPIO_DIR;
 
 	ar7_gpio_set_value(chip, gpio, value);
@@ -118,8 +156,12 @@ static int ar7_gpio_direction_output(struct gpio_chip *chip,
 static int titan_gpio_direction_output(struct gpio_chip *chip,
 					unsigned gpio, int value)
 {
+<<<<<<< HEAD
 	struct ar7_gpio_chip *gpch =
 				container_of(chip, struct ar7_gpio_chip, chip);
+=======
+	struct ar7_gpio_chip *gpch = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	void __iomem *gpio_dir0 = gpch->regs + TITAN_GPIO_DIR_0;
 	void __iomem *gpio_dir1 = gpch->regs + TITAN_GPIO_DIR_1;
 
@@ -332,7 +374,11 @@ int __init ar7_gpio_init(void)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&gpch->chip);
+=======
+	ret = gpiochip_add_data(&gpch->chip, gpch);
+>>>>>>> v4.9.227
 	if (ret) {
 		printk(KERN_ERR "%s: failed to add gpiochip\n",
 					gpch->chip.label);

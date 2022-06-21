@@ -2,7 +2,11 @@
 #include <asm/cache.h>
 
 #include "entry.h"
+<<<<<<< HEAD
 #include "paravirt_inst.h"
+=======
+#include <asm/native/inst.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
 /* read ar.itc in advance, and use it before leaving bank 0 */

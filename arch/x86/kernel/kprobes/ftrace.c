@@ -26,8 +26,13 @@
 #include "common.h"
 
 static nokprobe_inline
+<<<<<<< HEAD
 int __skip_singlestep(struct kprobe *p, struct pt_regs *regs,
 		      struct kprobe_ctlblk *kcb)
+=======
+void __skip_singlestep(struct kprobe *p, struct pt_regs *regs,
+		      struct kprobe_ctlblk *kcb, unsigned long orig_ip)
+>>>>>>> v4.9.227
 {
 	/*
 	 * Emulate singlestep (and also recover regs->ip)
@@ -39,12 +44,18 @@ int __skip_singlestep(struct kprobe *p, struct pt_regs *regs,
 		p->post_handler(p, regs, 0);
 	}
 	__this_cpu_write(current_kprobe, NULL);
+<<<<<<< HEAD
 	return 1;
+=======
+	if (orig_ip)
+		regs->ip = orig_ip;
+>>>>>>> v4.9.227
 }
 
 int skip_singlestep(struct kprobe *p, struct pt_regs *regs,
 		    struct kprobe_ctlblk *kcb)
 {
+<<<<<<< HEAD
 	if (kprobe_ftrace(p))
 		return __skip_singlestep(p, regs, kcb);
 	else
@@ -53,6 +64,18 @@ int skip_singlestep(struct kprobe *p, struct pt_regs *regs,
 NOKPROBE_SYMBOL(skip_singlestep);
 
 /* Ftrace callback handler for kprobes */
+=======
+	if (kprobe_ftrace(p)) {
+		__skip_singlestep(p, regs, kcb, 0);
+		preempt_enable_no_resched();
+		return 1;
+	}
+	return 0;
+}
+NOKPROBE_SYMBOL(skip_singlestep);
+
+/* Ftrace callback handler for kprobes -- called under preepmt disabed */
+>>>>>>> v4.9.227
 void kprobe_ftrace_handler(unsigned long ip, unsigned long parent_ip,
 			   struct ftrace_ops *ops, struct pt_regs *regs)
 {
@@ -71,6 +94,7 @@ void kprobe_ftrace_handler(unsigned long ip, unsigned long parent_ip,
 	if (kprobe_running()) {
 		kprobes_inc_nmissed_count(p);
 	} else {
+<<<<<<< HEAD
 		/* Kprobe handler expects regs->ip = ip + 1 as breakpoint hit */
 		regs->ip = ip + sizeof(kprobe_opcode_t);
 
@@ -81,6 +105,23 @@ void kprobe_ftrace_handler(unsigned long ip, unsigned long parent_ip,
 		/*
 		 * If pre_handler returns !0, it sets regs->ip and
 		 * resets current kprobe.
+=======
+		unsigned long orig_ip = regs->ip;
+		/* Kprobe handler expects regs->ip = ip + 1 as breakpoint hit */
+		regs->ip = ip + sizeof(kprobe_opcode_t);
+
+		/* To emulate trap based kprobes, preempt_disable here */
+		preempt_disable();
+		__this_cpu_write(current_kprobe, p);
+		kcb->kprobe_status = KPROBE_HIT_ACTIVE;
+		if (!p->pre_handler || !p->pre_handler(p, regs)) {
+			__skip_singlestep(p, regs, kcb, orig_ip);
+			preempt_enable_no_resched();
+		}
+		/*
+		 * If pre_handler returns !0, it sets regs->ip and
+		 * resets current kprobe, and keep preempt count +1.
+>>>>>>> v4.9.227
 		 */
 	}
 end:

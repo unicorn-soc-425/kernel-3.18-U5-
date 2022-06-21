@@ -3,7 +3,11 @@
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
+<<<<<<< HEAD
  *  Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+ *  Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  */
 
 #include <linux/types.h>
@@ -13,15 +17,21 @@
 #include <linux/delay.h>
 #include <linux/mm.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clk.h>
 #include <linux/of_platform.h>
 #include <linux/of_gpio.h>
 #include <linux/of_irq.h>
 #include <linux/of_pci.h>
 
+<<<<<<< HEAD
 #include <asm/pci.h>
 #include <asm/gpio.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/addrspace.h>
 
 #include <lantiq_soc.h>
@@ -236,13 +246,19 @@ static const struct of_device_id ltq_pci_match[] = {
 	{ .compatible = "lantiq,pci-xway" },
 	{},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, ltq_pci_match);
+=======
+>>>>>>> v4.9.227
 
 static struct platform_driver ltq_pci_driver = {
 	.probe = ltq_pci_probe,
 	.driver = {
 		.name = "pci-xway",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ltq_pci_match,
 	},
 };

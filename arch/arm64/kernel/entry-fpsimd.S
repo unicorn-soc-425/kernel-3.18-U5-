@@ -64,6 +64,7 @@ ENTRY(fpsimd_load_partial_state)
 	ret
 ENDPROC(fpsimd_load_partial_state)
 
+<<<<<<< HEAD
 #ifdef CONFIG_ENABLE_FP_SIMD_SETTINGS
 ENTRY(fpsimd_enable_trap)
 	mrs x0, cpacr_el1
@@ -80,4 +81,6 @@ ENTRY(fpsimd_disable_trap)
 ENDPROC(fpsimd_disable_trap)
 #endif
 
+=======
+>>>>>>> v4.9.227
 #endif

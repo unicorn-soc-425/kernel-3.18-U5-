@@ -8,7 +8,10 @@ extern void pas_pci_dma_dev_setup(struct pci_dev *dev);
 
 extern void __iomem *pasemi_pci_getcfgaddr(struct pci_dev *dev, int offset);
 
+<<<<<<< HEAD
 extern void __init alloc_iobmap_l2(void);
+=======
+>>>>>>> v4.9.227
 extern void __init pasemi_map_registers(void);
 
 /* Power savings modes, implemented in asm */
@@ -30,5 +33,9 @@ static inline void restore_astate(int cpu)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+extern struct pci_controller_ops pasemi_pci_controller_ops;
+>>>>>>> v4.9.227
 
 #endif /* _PASEMI_PASEMI_H */

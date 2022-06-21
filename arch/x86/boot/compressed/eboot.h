@@ -11,6 +11,7 @@
 
 #define DESC_TYPE_CODE_DATA	(1 << 0)
 
+<<<<<<< HEAD
 #define EFI_CONSOLE_OUT_DEVICE_GUID    \
 	EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4, 0x9a, 0x46, 0x0, 0x90, 0x27, \
 		  0x3f, 0xc1, 0x4d)
@@ -85,6 +86,8 @@ struct efi_graphics_output_protocol {
 	struct efi_graphics_output_protocol_mode *mode;
 };
 
+=======
+>>>>>>> v4.9.227
 struct efi_uga_draw_protocol_32 {
 	u32 get_mode;
 	u32 set_mode;
@@ -103,6 +106,7 @@ struct efi_uga_draw_protocol {
 	void *blt;
 };
 
+<<<<<<< HEAD
 struct efi_config {
 	u64 image_handle;
 	u64 table;
@@ -119,4 +123,6 @@ struct efi_config {
 	bool is64;
 } __packed;
 
+=======
+>>>>>>> v4.9.227
 #endif /* BOOT_COMPRESSED_EBOOT_H */

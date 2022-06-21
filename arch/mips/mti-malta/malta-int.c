@@ -14,10 +14,19 @@
  */
 #include <linux/init.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip/mips-gic.h>
+#include <linux/of_irq.h>
+>>>>>>> v4.9.227
 #include <linux/kernel_stat.h>
 #include <linux/kernel.h>
 #include <linux/random.h>
@@ -33,6 +42,7 @@
 #include <asm/mips-boards/generic.h>
 #include <asm/mips-boards/msc01_pci.h>
 #include <asm/msc01_ic.h>
+<<<<<<< HEAD
 #include <asm/gic.h>
 #include <asm/setup.h>
 #include <asm/rtlx.h>
@@ -46,6 +56,11 @@ static DEFINE_RAW_SPINLOCK(mips_irq_lock);
 DECLARE_BITMAP(ipi_ints, GIC_NUM_INTRS);
 #endif
 
+=======
+#include <asm/setup.h>
+#include <asm/rtlx.h>
+
+>>>>>>> v4.9.227
 static inline int mips_pcibios_iack(void)
 {
 	int irq;
@@ -90,6 +105,7 @@ static inline int mips_pcibios_iack(void)
 	return irq;
 }
 
+<<<<<<< HEAD
 static inline int get_int(void)
 {
 	unsigned long flags;
@@ -147,6 +163,8 @@ static void malta_ipi_irqdispatch(void)
 		do_IRQ(MIPS_GIC_IRQ_BASE);
 }
 
+=======
+>>>>>>> v4.9.227
 static void corehi_irqdispatch(void)
 {
 	unsigned int intedge, intsteer, pcicmd, pcibadaddr;
@@ -203,6 +221,7 @@ static void corehi_irqdispatch(void)
 	die("CoreHi interrupt", regs);
 }
 
+<<<<<<< HEAD
 static inline int clz(unsigned long x)
 {
 	__asm__(
@@ -292,6 +311,12 @@ asmlinkage void plat_irq_dispatch(void)
 		malta_ipi_irqdispatch();
 	else
 		do_IRQ(MIPS_CPU_IRQ_BASE + irq);
+=======
+static irqreturn_t corehi_handler(int irq, void *dev_id)
+{
+	corehi_irqdispatch();
+	return IRQ_HANDLED;
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_MIPS_MT_SMP
@@ -312,6 +337,7 @@ static void ipi_call_dispatch(void)
 	do_IRQ(MIPS_CPU_IRQ_BASE + MIPS_CPU_IPI_CALL_IRQ);
 }
 
+<<<<<<< HEAD
 #endif /* CONFIG_MIPS_MT_SMP */
 
 #ifdef CONFIG_MIPS_GIC_IPI
@@ -319,6 +345,8 @@ static void ipi_call_dispatch(void)
 #define GIC_MIPS_CPU_IPI_RESCHED_IRQ	3
 #define GIC_MIPS_CPU_IPI_CALL_IRQ	4
 
+=======
+>>>>>>> v4.9.227
 static irqreturn_t ipi_resched_interrupt(int irq, void *dev_id)
 {
 #ifdef CONFIG_MIPS_VPE_APSP_API_CMP
@@ -333,7 +361,11 @@ static irqreturn_t ipi_resched_interrupt(int irq, void *dev_id)
 
 static irqreturn_t ipi_call_interrupt(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	smp_call_function_interrupt();
+=======
+	generic_smp_call_function_interrupt();
+>>>>>>> v4.9.227
 
 	return IRQ_HANDLED;
 }
@@ -349,6 +381,7 @@ static struct irqaction irq_call = {
 	.flags		= IRQF_PERCPU,
 	.name		= "IPI_call"
 };
+<<<<<<< HEAD
 #endif /* CONFIG_MIPS_GIC_IPI */
 
 static int gic_resched_int_base;
@@ -374,6 +407,12 @@ static struct irqaction i8259irq = {
 
 static struct irqaction corehi_irqaction = {
 	.handler = no_action,
+=======
+#endif /* CONFIG_MIPS_MT_SMP */
+
+static struct irqaction corehi_irqaction = {
+	.handler = corehi_handler,
+>>>>>>> v4.9.227
 	.name = "CoreHi",
 	.flags = IRQF_NO_THREAD,
 };
@@ -399,6 +438,7 @@ static msc_irqmap_t msc_eicirqmap[] __initdata = {
 
 static int msc_nr_eicirqs __initdata = ARRAY_SIZE(msc_eicirqmap);
 
+<<<<<<< HEAD
 /*
  * This GIC specific tabular array defines the association between External
  * Interrupts and CPUs/Core Interrupts. The nature of the External
@@ -453,6 +493,8 @@ static void __init fill_ipi_map(void)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 void __init arch_init_ipiirq(int irq, struct irqaction *action)
 {
 	setup_irq(irq, action);
@@ -461,6 +503,7 @@ void __init arch_init_ipiirq(int irq, struct irqaction *action)
 
 void __init arch_init_irq(void)
 {
+<<<<<<< HEAD
 	init_i8259_irqs();
 
 	if (!cpu_has_veic)
@@ -481,6 +524,12 @@ void __init arch_init_irq(void)
 	}
 	if (gic_present)
 		pr_debug("GIC present\n");
+=======
+	int corehi_irq;
+
+	i8259_set_poll(mips_pcibios_iack);
+	irqchip_init();
+>>>>>>> v4.9.227
 
 	switch (mips_revision_sconid) {
 	case MIPS_REVISION_SCON_SOCIT:
@@ -507,6 +556,7 @@ void __init arch_init_irq(void)
 					msc_nr_irqs);
 	}
 
+<<<<<<< HEAD
 	if (cpu_has_veic) {
 		set_vi_handler(MSC01E_INT_I8259A, malta_hw0_irqdispatch);
 		set_vi_handler(MSC01E_INT_COREHI, corehi_irqdispatch);
@@ -564,6 +614,10 @@ void __init arch_init_irq(void)
 					 GIC_CALL_INT(i), &irq_call);
 		}
 #endif
+=======
+	if (gic_present) {
+		corehi_irq = MIPS_CPU_IRQ_BASE + MIPSCPU_INT_COREHI;
+>>>>>>> v4.9.227
 	} else {
 #if defined(CONFIG_MIPS_MT_SMP)
 		/* set up ipi interrupts */
@@ -573,12 +627,15 @@ void __init arch_init_irq(void)
 			cpu_ipi_resched_irq = MSC01E_INT_SW0;
 			cpu_ipi_call_irq = MSC01E_INT_SW1;
 		} else {
+<<<<<<< HEAD
 			if (cpu_has_vint) {
 				set_vi_handler (MIPS_CPU_IPI_RESCHED_IRQ,
 					ipi_resched_dispatch);
 				set_vi_handler (MIPS_CPU_IPI_CALL_IRQ,
 					ipi_call_dispatch);
 			}
+=======
+>>>>>>> v4.9.227
 			cpu_ipi_resched_irq = MIPS_CPU_IRQ_BASE +
 				MIPS_CPU_IPI_RESCHED_IRQ;
 			cpu_ipi_call_irq = MIPS_CPU_IRQ_BASE +
@@ -587,6 +644,7 @@ void __init arch_init_irq(void)
 		arch_init_ipiirq(cpu_ipi_resched_irq, &irq_resched);
 		arch_init_ipiirq(cpu_ipi_call_irq, &irq_call);
 #endif
+<<<<<<< HEAD
 	}
 }
 
@@ -747,4 +805,16 @@ void __init gic_platform_init(int irqs, struct irq_chip *irq_controller)
 
 	for (i = gic_irq_base; i < (gic_irq_base + irqs); i++)
 		irq_set_chip(i, irq_controller);
+=======
+		if (cpu_has_veic) {
+			set_vi_handler(MSC01E_INT_COREHI,
+				       corehi_irqdispatch);
+			corehi_irq = MSC01E_INT_BASE + MSC01E_INT_COREHI;
+		} else {
+			corehi_irq = MIPS_CPU_IRQ_BASE + MIPSCPU_INT_COREHI;
+		}
+	}
+
+	setup_irq(corehi_irq, &corehi_irqaction);
+>>>>>>> v4.9.227
 }

@@ -11,17 +11,34 @@
 static void enable_hotplug_cpu(int cpu)
 {
 	if (!cpu_present(cpu))
+<<<<<<< HEAD
 		arch_register_cpu(cpu);
+=======
+		xen_arch_register_cpu(cpu);
+>>>>>>> v4.9.227
 
 	set_cpu_present(cpu, true);
 }
 
 static void disable_hotplug_cpu(int cpu)
 {
+<<<<<<< HEAD
 	if (cpu_present(cpu))
 		arch_unregister_cpu(cpu);
 
 	set_cpu_present(cpu, false);
+=======
+	if (!cpu_is_hotpluggable(cpu))
+		return;
+	lock_device_hotplug();
+	if (cpu_online(cpu))
+		device_offline(get_cpu_device(cpu));
+	if (!cpu_online(cpu) && cpu_present(cpu)) {
+		xen_arch_unregister_cpu(cpu);
+		set_cpu_present(cpu, false);
+	}
+	unlock_device_hotplug();
+>>>>>>> v4.9.227
 }
 
 static int vcpu_online(unsigned int cpu)
@@ -47,7 +64,11 @@ static int vcpu_online(unsigned int cpu)
 }
 static void vcpu_hotplug(unsigned int cpu)
 {
+<<<<<<< HEAD
 	if (!cpu_possible(cpu))
+=======
+	if (cpu >= nr_cpu_ids || !cpu_possible(cpu))
+>>>>>>> v4.9.227
 		return;
 
 	switch (vcpu_online(cpu)) {
@@ -55,7 +76,10 @@ static void vcpu_hotplug(unsigned int cpu)
 		enable_hotplug_cpu(cpu);
 		break;
 	case 0:
+<<<<<<< HEAD
 		(void)cpu_down(cpu);
+=======
+>>>>>>> v4.9.227
 		disable_hotplug_cpu(cpu);
 		break;
 	default:
@@ -102,7 +126,15 @@ static int __init setup_vcpu_hotplug_event(void)
 	static struct notifier_block xsn_cpu = {
 		.notifier_call = setup_cpu_watcher };
 
+<<<<<<< HEAD
 	if (!xen_pv_domain())
+=======
+#ifdef CONFIG_X86
+	if (!xen_pv_domain())
+#else
+	if (!xen_domain())
+#endif
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	register_xenstore_notifier(&xsn_cpu);

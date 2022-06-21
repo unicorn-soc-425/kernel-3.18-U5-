@@ -27,7 +27,11 @@
 #include <core/client.h>
 #include <subdev/timer.h>
 
+<<<<<<< HEAD
 #include <nvif/class.h>
+=======
+#include <nvif/cl5070.h>
+>>>>>>> v4.9.227
 #include <nvif/unpack.h>
 
 int
@@ -39,10 +43,17 @@ nv50_sor_power(NV50_DISP_MTHD_V1)
 	} *args = data;
 	const u32 soff = outp->or * 0x800;
 	u32 stat;
+<<<<<<< HEAD
 	int ret;
 
 	nvif_ioctl(object, "disp sor pwr size %d\n", size);
 	if (nvif_unpack(args->v0, 0, 0, false)) {
+=======
+	int ret = -ENOSYS;
+
+	nvif_ioctl(object, "disp sor pwr size %d\n", size);
+	if (!(ret = nvif_unpack(ret, &data, &size, args->v0, 0, 0, false))) {
+>>>>>>> v4.9.227
 		nvif_ioctl(object, "disp sor pwr vers %d state %d\n",
 			   args->v0.version, args->v0.state);
 		stat = !!args->v0.state;

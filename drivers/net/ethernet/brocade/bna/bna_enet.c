@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Linux network driver for Brocade Converged Network Adapter.
+=======
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -11,9 +15,16 @@
  * General Public License for more details.
  */
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2011 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> v4.9.227
  */
 #include "bna.h"
 
@@ -206,7 +217,11 @@ bna_bfi_stats_get_rsp(struct bna *bna, struct bfi_msgq_mhdr *msghdr)
 	for (i = 0; i < BFI_ENET_CFG_MAX; i++) {
 		stats_dst = (u64 *)&(bna->stats.hw_stats.rxf_stats[i]);
 		memset(stats_dst, 0, sizeof(struct bfi_enet_stats_rxf));
+<<<<<<< HEAD
 		if (rx_enet_mask & ((u32)(1 << i))) {
+=======
+		if (rx_enet_mask & BIT(i)) {
+>>>>>>> v4.9.227
 			int k;
 			count = sizeof(struct bfi_enet_stats_rxf) /
 				sizeof(u64);
@@ -221,7 +236,11 @@ bna_bfi_stats_get_rsp(struct bna *bna, struct bfi_msgq_mhdr *msghdr)
 	for (i = 0; i < BFI_ENET_CFG_MAX; i++) {
 		stats_dst = (u64 *)&(bna->stats.hw_stats.txf_stats[i]);
 		memset(stats_dst, 0, sizeof(struct bfi_enet_stats_txf));
+<<<<<<< HEAD
 		if (tx_enet_mask & ((u32)(1 << i))) {
+=======
+		if (tx_enet_mask & BIT(i)) {
+>>>>>>> v4.9.227
 			int k;
 			count = sizeof(struct bfi_enet_stats_txf) /
 				sizeof(u64);
@@ -883,6 +902,7 @@ do {									\
 	}								\
 } while (0)
 
+<<<<<<< HEAD
 #define call_enet_pause_cbfn(enet)					\
 do {									\
 	if ((enet)->pause_cbfn) {					\
@@ -893,6 +913,8 @@ do {									\
 	}								\
 } while (0)
 
+=======
+>>>>>>> v4.9.227
 #define call_enet_mtu_cbfn(enet)					\
 do {									\
 	if ((enet)->mtu_cbfn) {						\
@@ -924,7 +946,10 @@ bfa_fsm_state_decl(bna_enet, chld_stop_wait, struct bna_enet,
 static void
 bna_enet_sm_stopped_entry(struct bna_enet *enet)
 {
+<<<<<<< HEAD
 	call_enet_pause_cbfn(enet);
+=======
+>>>>>>> v4.9.227
 	call_enet_mtu_cbfn(enet);
 	call_enet_stop_cbfn(enet);
 }
@@ -946,7 +971,10 @@ bna_enet_sm_stopped(struct bna_enet *enet, enum bna_enet_event event)
 		break;
 
 	case ENET_E_PAUSE_CFG:
+<<<<<<< HEAD
 		call_enet_pause_cbfn(enet);
+=======
+>>>>>>> v4.9.227
 		break;
 
 	case ENET_E_MTU_CFG:
@@ -1038,7 +1066,10 @@ bna_enet_sm_started_entry(struct bna_enet *enet)
 	 * NOTE: Do not call bna_enet_chld_start() here, since it will be
 	 * inadvertently called during cfg_wait->started transition as well
 	 */
+<<<<<<< HEAD
 	call_enet_pause_cbfn(enet);
+=======
+>>>>>>> v4.9.227
 	call_enet_mtu_cbfn(enet);
 }
 
@@ -1210,8 +1241,11 @@ bna_enet_init(struct bna_enet *enet, struct bna *bna)
 	enet->stop_cbfn = NULL;
 	enet->stop_cbarg = NULL;
 
+<<<<<<< HEAD
 	enet->pause_cbfn = NULL;
 
+=======
+>>>>>>> v4.9.227
 	enet->mtu_cbfn = NULL;
 
 	bfa_fsm_set_state(enet, bna_enet_sm_stopped);
@@ -1307,6 +1341,7 @@ bna_enet_disable(struct bna_enet *enet, enum bna_cleanup_type type,
 
 void
 bna_enet_pause_config(struct bna_enet *enet,
+<<<<<<< HEAD
 		      struct bna_pause_config *pause_config,
 		      void (*cbfn)(struct bnad *))
 {
@@ -1314,6 +1349,12 @@ bna_enet_pause_config(struct bna_enet *enet,
 
 	enet->pause_cbfn = cbfn;
 
+=======
+		      struct bna_pause_config *pause_config)
+{
+	enet->pause_config = *pause_config;
+
+>>>>>>> v4.9.227
 	bfa_fsm_send_event(enet, ENET_E_PAUSE_CFG);
 }
 
@@ -1329,9 +1370,15 @@ bna_enet_mtu_set(struct bna_enet *enet, int mtu,
 }
 
 void
+<<<<<<< HEAD
 bna_enet_perm_mac_get(struct bna_enet *enet, mac_t *mac)
 {
 	*mac = bfa_nw_ioc_get_mac(&enet->bna->ioceth.ioc);
+=======
+bna_enet_perm_mac_get(struct bna_enet *enet, u8 *mac)
+{
+	bfa_nw_ioc_get_mac(&enet->bna->ioceth.ioc, mac);
+>>>>>>> v4.9.227
 }
 
 /* IOCETH */
@@ -1809,6 +1856,7 @@ bna_ucam_mod_init(struct bna_ucam_mod *ucam_mod, struct bna *bna,
 	res_info[BNA_MOD_RES_MEM_T_UCMAC_ARRAY].res_u.mem_info.mdl[0].kva;
 
 	INIT_LIST_HEAD(&ucam_mod->free_q);
+<<<<<<< HEAD
 	for (i = 0; i < bna->ioceth.attr.num_ucmac; i++) {
 		bfa_q_qe_init(&ucam_mod->ucmac[i].qe);
 		list_add_tail(&ucam_mod->ucmac[i].qe, &ucam_mod->free_q);
@@ -1820,6 +1868,15 @@ bna_ucam_mod_init(struct bna_ucam_mod *ucam_mod, struct bna *bna,
 		bfa_q_qe_init(&ucam_mod->ucmac[i].qe);
 		list_add_tail(&ucam_mod->ucmac[i].qe, &ucam_mod->del_q);
 	}
+=======
+	for (i = 0; i < bna->ioceth.attr.num_ucmac; i++)
+		list_add_tail(&ucam_mod->ucmac[i].qe, &ucam_mod->free_q);
+
+	/* A separate queue to allow synchronous setting of a list of MACs */
+	INIT_LIST_HEAD(&ucam_mod->del_q);
+	for (i = i; i < (bna->ioceth.attr.num_ucmac * 2); i++)
+		list_add_tail(&ucam_mod->ucmac[i].qe, &ucam_mod->del_q);
+>>>>>>> v4.9.227
 
 	ucam_mod->bna = bna;
 }
@@ -1827,6 +1884,7 @@ bna_ucam_mod_init(struct bna_ucam_mod *ucam_mod, struct bna *bna,
 static void
 bna_ucam_mod_uninit(struct bna_ucam_mod *ucam_mod)
 {
+<<<<<<< HEAD
 	struct list_head *qe;
 	int i;
 
@@ -1838,6 +1896,8 @@ bna_ucam_mod_uninit(struct bna_ucam_mod *ucam_mod)
 	list_for_each(qe, &ucam_mod->del_q)
 		i++;
 
+=======
+>>>>>>> v4.9.227
 	ucam_mod->bna = NULL;
 }
 
@@ -1851,15 +1911,21 @@ bna_mcam_mod_init(struct bna_mcam_mod *mcam_mod, struct bna *bna,
 	res_info[BNA_MOD_RES_MEM_T_MCMAC_ARRAY].res_u.mem_info.mdl[0].kva;
 
 	INIT_LIST_HEAD(&mcam_mod->free_q);
+<<<<<<< HEAD
 	for (i = 0; i < bna->ioceth.attr.num_mcmac; i++) {
 		bfa_q_qe_init(&mcam_mod->mcmac[i].qe);
 		list_add_tail(&mcam_mod->mcmac[i].qe, &mcam_mod->free_q);
 	}
+=======
+	for (i = 0; i < bna->ioceth.attr.num_mcmac; i++)
+		list_add_tail(&mcam_mod->mcmac[i].qe, &mcam_mod->free_q);
+>>>>>>> v4.9.227
 
 	mcam_mod->mchandle = (struct bna_mcam_handle *)
 	res_info[BNA_MOD_RES_MEM_T_MCHANDLE_ARRAY].res_u.mem_info.mdl[0].kva;
 
 	INIT_LIST_HEAD(&mcam_mod->free_handle_q);
+<<<<<<< HEAD
 	for (i = 0; i < bna->ioceth.attr.num_mcmac; i++) {
 		bfa_q_qe_init(&mcam_mod->mchandle[i].qe);
 		list_add_tail(&mcam_mod->mchandle[i].qe,
@@ -1872,6 +1938,16 @@ bna_mcam_mod_init(struct bna_mcam_mod *mcam_mod, struct bna *bna,
 		bfa_q_qe_init(&mcam_mod->mcmac[i].qe);
 		list_add_tail(&mcam_mod->mcmac[i].qe, &mcam_mod->del_q);
 	}
+=======
+	for (i = 0; i < bna->ioceth.attr.num_mcmac; i++)
+		list_add_tail(&mcam_mod->mchandle[i].qe,
+			      &mcam_mod->free_handle_q);
+
+	/* A separate queue to allow synchronous setting of a list of MACs */
+	INIT_LIST_HEAD(&mcam_mod->del_q);
+	for (i = i; i < (bna->ioceth.attr.num_mcmac * 2); i++)
+		list_add_tail(&mcam_mod->mcmac[i].qe, &mcam_mod->del_q);
+>>>>>>> v4.9.227
 
 	mcam_mod->bna = bna;
 }
@@ -1879,6 +1955,7 @@ bna_mcam_mod_init(struct bna_mcam_mod *mcam_mod, struct bna *bna,
 static void
 bna_mcam_mod_uninit(struct bna_mcam_mod *mcam_mod)
 {
+<<<<<<< HEAD
 	struct list_head *qe;
 	int i;
 
@@ -1891,6 +1968,8 @@ bna_mcam_mod_uninit(struct bna_mcam_mod *mcam_mod)
 	i = 0;
 	list_for_each(qe, &mcam_mod->free_handle_q) i++;
 
+=======
+>>>>>>> v4.9.227
 	mcam_mod->bna = NULL;
 }
 
@@ -2107,6 +2186,7 @@ bna_num_rxp_set(struct bna *bna, int num_rxp)
 struct bna_mac *
 bna_cam_mod_mac_get(struct list_head *head)
 {
+<<<<<<< HEAD
 	struct list_head *qe;
 
 	if (list_empty(head))
@@ -2120,11 +2200,21 @@ void
 bna_cam_mod_mac_put(struct list_head *tail, struct bna_mac *mac)
 {
 	list_add_tail(&mac->qe, tail);
+=======
+	struct bna_mac *mac;
+
+	mac = list_first_entry_or_null(head, struct bna_mac, qe);
+	if (mac)
+		list_del(&mac->qe);
+
+	return mac;
+>>>>>>> v4.9.227
 }
 
 struct bna_mcam_handle *
 bna_mcam_mod_handle_get(struct bna_mcam_mod *mcam_mod)
 {
+<<<<<<< HEAD
 	struct list_head *qe;
 
 	if (list_empty(&mcam_mod->free_handle_q))
@@ -2133,6 +2223,16 @@ bna_mcam_mod_handle_get(struct bna_mcam_mod *mcam_mod)
 	bfa_q_deq(&mcam_mod->free_handle_q, &qe);
 
 	return (struct bna_mcam_handle *)qe;
+=======
+	struct bna_mcam_handle *handle;
+
+	handle = list_first_entry_or_null(&mcam_mod->free_handle_q,
+					  struct bna_mcam_handle, qe);
+	if (handle)
+		list_del(&handle->qe);
+
+	return handle;
+>>>>>>> v4.9.227
 }
 
 void

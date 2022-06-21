@@ -538,6 +538,7 @@ int pvr2_encoder_stop(struct pvr2_hdw *hdw)
 
 	return status;
 }
+<<<<<<< HEAD
 
 
 /*
@@ -549,3 +550,5 @@ int pvr2_encoder_stop(struct pvr2_hdw *hdw)
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

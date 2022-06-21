@@ -43,10 +43,17 @@
 	nop;
 
 #ifdef CONFIG_KGDB
+<<<<<<< HEAD
 #define KGDB_TRAP(num) \
 	b kgdb_trap_low; \
 	rd %psr,%l0; \
 	nop; \
+=======
+#define KGDB_TRAP(num)                  \
+	mov num, %l7;                   \
+	b kgdb_trap_low;                \
+	rd %psr,%l0;                    \
+>>>>>>> v4.9.227
 	nop;
 #else
 #define KGDB_TRAP(num) \

@@ -26,6 +26,11 @@
 
 #include <drm/drm_rect.h>
 #include <drm/drm_crtc.h>
+<<<<<<< HEAD
+=======
+#include <drm/drm_modeset_helper_vtables.h>
+#include <drm/drm_modeset_helper.h>
+>>>>>>> v4.9.227
 
 /*
  * Drivers that don't allow primary plane scaling may pass this macro in place
@@ -36,6 +41,7 @@
  */
 #define DRM_PLANE_HELPER_NO_SCALING (1<<16)
 
+<<<<<<< HEAD
 /**
  * DOC: plane helpers
  *
@@ -76,12 +82,23 @@ static inline void drm_plane_helper_add(struct drm_plane *plane,
 	plane->helper_private = funcs;
 }
 
+=======
+int drm_plane_helper_check_state(struct drm_plane_state *state,
+				 const struct drm_rect *clip,
+				 int min_scale, int max_scale,
+				 bool can_position,
+				 bool can_update_disabled);
+>>>>>>> v4.9.227
 int drm_plane_helper_check_update(struct drm_plane *plane,
 				  struct drm_crtc *crtc,
 				  struct drm_framebuffer *fb,
 				  struct drm_rect *src,
 				  struct drm_rect *dest,
 				  const struct drm_rect *clip,
+<<<<<<< HEAD
+=======
+				  unsigned int rotation,
+>>>>>>> v4.9.227
 				  int min_scale,
 				  int max_scale,
 				  bool can_position,

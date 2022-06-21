@@ -916,7 +916,11 @@ struct ahc_softc {
 	/*
 	 * SCBs that have been sent to the controller
 	 */
+<<<<<<< HEAD
 	LIST_HEAD(, scb)	  pending_scbs;
+=======
+	BSD_LIST_HEAD(, scb)	  pending_scbs;
+>>>>>>> v4.9.227
 
 	/*
 	 * Counting lock for deferring the release of additional

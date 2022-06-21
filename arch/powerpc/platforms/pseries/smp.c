@@ -38,7 +38,10 @@
 #include <asm/cputable.h>
 #include <asm/firmware.h>
 #include <asm/rtas.h>
+<<<<<<< HEAD
 #include <asm/mpic.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/vdso_datapage.h>
 #include <asm/cputhreads.h>
 #include <asm/xics.h>
@@ -140,7 +143,11 @@ out:
 	return 1;
 }
 
+<<<<<<< HEAD
 static void smp_xics_setup_cpu(int cpu)
+=======
+static void smp_setup_cpu(int cpu)
+>>>>>>> v4.9.227
 {
 	if (cpu != boot_cpuid)
 		xics_setup_cpu();
@@ -197,14 +204,21 @@ static void pSeries_cause_ipi_mux(int cpu, unsigned long data)
 		xics_cause_ipi(cpu, data);
 }
 
+<<<<<<< HEAD
 static __init int pSeries_smp_probe(void)
 {
 	int ret = xics_smp_probe();
+=======
+static __init void pSeries_smp_probe(void)
+{
+	xics_smp_probe();
+>>>>>>> v4.9.227
 
 	if (cpu_has_feature(CPU_FTR_DBELL)) {
 		xics_cause_ipi = smp_ops->cause_ipi;
 		smp_ops->cause_ipi = pSeries_cause_ipi_mux;
 	}
+<<<<<<< HEAD
 
 	return ret;
 }
@@ -217,20 +231,37 @@ static struct smp_ops_t pSeries_mpic_smp_ops = {
 };
 
 static struct smp_ops_t pSeries_xics_smp_ops = {
+=======
+}
+
+static struct smp_ops_t pseries_smp_ops = {
+>>>>>>> v4.9.227
 	.message_pass	= NULL,	/* Use smp_muxed_ipi_message_pass */
 	.cause_ipi	= NULL,	/* Filled at runtime by pSeries_smp_probe() */
 	.probe		= pSeries_smp_probe,
 	.kick_cpu	= smp_pSeries_kick_cpu,
+<<<<<<< HEAD
 	.setup_cpu	= smp_xics_setup_cpu,
+=======
+	.setup_cpu	= smp_setup_cpu,
+>>>>>>> v4.9.227
 	.cpu_bootable	= smp_generic_cpu_bootable,
 };
 
 /* This is called very early */
+<<<<<<< HEAD
 static void __init smp_init_pseries(void)
+=======
+void __init smp_init_pseries(void)
+>>>>>>> v4.9.227
 {
 	int i;
 
 	pr_debug(" -> smp_init_pSeries()\n");
+<<<<<<< HEAD
+=======
+	smp_ops = &pseries_smp_ops;
+>>>>>>> v4.9.227
 
 	alloc_bootmem_cpumask_var(&of_spin_mask);
 
@@ -260,6 +291,7 @@ static void __init smp_init_pseries(void)
 
 	pr_debug(" <- smp_init_pSeries()\n");
 }
+<<<<<<< HEAD
 
 void __init smp_init_pseries_mpic(void)
 {
@@ -274,3 +306,5 @@ void __init smp_init_pseries_xics(void)
 
 	smp_init_pseries();
 }
+=======
+>>>>>>> v4.9.227

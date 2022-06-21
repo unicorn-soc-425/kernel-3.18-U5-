@@ -1085,9 +1085,13 @@ static int htc_setup_tx_complete(struct htc_target *target)
 	send_pkt->completion = NULL;
 	ath6kl_htc_tx_prep_pkt(send_pkt, 0, 0, 0);
 	status = ath6kl_htc_tx_issue(target, send_pkt);
+<<<<<<< HEAD
 
 	if (send_pkt != NULL)
 		htc_reclaim_txctrl_buf(target, send_pkt);
+=======
+	htc_reclaim_txctrl_buf(target, send_pkt);
+>>>>>>> v4.9.227
 
 	return status;
 }
@@ -2224,8 +2228,14 @@ int ath6kl_htc_rxmsg_pending_handler(struct htc_target *target,
 	}
 
 	if (status) {
+<<<<<<< HEAD
 		ath6kl_err("failed to get pending recv messages: %d\n",
 			   status);
+=======
+		if (status != -ECANCELED)
+			ath6kl_err("failed to get pending recv messages: %d\n",
+				   status);
+>>>>>>> v4.9.227
 
 		/* cleanup any packets in sync completion queue */
 		list_for_each_entry_safe(packets, tmp_pkt, &comp_pktq, list) {

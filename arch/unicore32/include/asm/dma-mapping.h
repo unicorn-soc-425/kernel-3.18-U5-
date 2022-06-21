@@ -18,8 +18,11 @@
 #include <linux/scatterlist.h>
 #include <linux/swiotlb.h>
 
+<<<<<<< HEAD
 #include <asm-generic/dma-coherent.h>
 
+=======
+>>>>>>> v4.9.227
 #include <asm/memory.h>
 #include <asm/cacheflush.h>
 
@@ -30,6 +33,7 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 	return &swiotlb_dma_map_ops;
 }
 
+<<<<<<< HEAD
 static inline int dma_supported(struct device *dev, u64 mask)
 {
 	struct dma_map_ops *dma_ops = get_dma_ops(dev);
@@ -52,6 +56,8 @@ static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 
 #include <asm-generic/dma-mapping-common.h>
 
+=======
+>>>>>>> v4.9.227
 static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
 {
 	if (dev && dev->dma_mask)
@@ -72,6 +78,7 @@ static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
 
 static inline void dma_mark_clean(void *addr, size_t size) {}
 
+<<<<<<< HEAD
 static inline int dma_set_mask(struct device *dev, u64 dma_mask)
 {
 	if (!dev->dma_mask || !dma_supported(dev, dma_mask))
@@ -107,6 +114,8 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
 #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
 #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
 
+=======
+>>>>>>> v4.9.227
 static inline void dma_cache_sync(struct device *dev, void *vaddr,
 		size_t size, enum dma_data_direction direction)
 {

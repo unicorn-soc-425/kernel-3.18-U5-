@@ -34,7 +34,11 @@
 
 #include <linux/i2c/tps65010.h>
 
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 
 
 /*-------------------------------------------------------------------------*/
@@ -477,7 +481,11 @@ tps65010_output(struct gpio_chip *chip, unsigned offset, int value)
 	if (offset < 4) {
 		struct tps65010		*tps;
 
+<<<<<<< HEAD
 		tps = container_of(chip, struct tps65010, chip);
+=======
+		tps = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 		if (!(tps->outmask & (1 << offset)))
 			return -EINVAL;
 		tps65010_set_gpio_out_value(offset + 1, value);
@@ -494,16 +502,28 @@ static int tps65010_gpio_get(struct gpio_chip *chip, unsigned offset)
 	int			value;
 	struct tps65010		*tps;
 
+<<<<<<< HEAD
 	tps = container_of(chip, struct tps65010, chip);
+=======
+	tps = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	if (offset < 4) {
 		value = i2c_smbus_read_byte_data(tps->client, TPS_DEFGPIO);
 		if (value < 0)
+<<<<<<< HEAD
 			return 0;
 		if (value & (1 << (offset + 4)))	/* output */
 			return !(value & (1 << offset));
 		else					/* input */
 			return (value & (1 << offset));
+=======
+			return value;
+		if (value & (1 << (offset + 4)))	/* output */
+			return !(value & (1 << offset));
+		else					/* input */
+			return !!(value & (1 << offset));
+>>>>>>> v4.9.227
 	}
 
 	/* REVISIT we *could* report LED1/nPG and LED2 state ... */
@@ -515,7 +535,11 @@ static int tps65010_gpio_get(struct gpio_chip *chip, unsigned offset)
 
 static struct tps65010 *the_tps;
 
+<<<<<<< HEAD
 static int __exit tps65010_remove(struct i2c_client *client)
+=======
+static int tps65010_remove(struct i2c_client *client)
+>>>>>>> v4.9.227
 {
 	struct tps65010		*tps = i2c_get_clientdata(client);
 	struct tps65010_board	*board = dev_get_platdata(&client->dev);
@@ -638,7 +662,11 @@ static int tps65010_probe(struct i2c_client *client,
 		tps->outmask = board->outmask;
 
 		tps->chip.label = client->name;
+<<<<<<< HEAD
 		tps->chip.dev = &client->dev;
+=======
+		tps->chip.parent = &client->dev;
+>>>>>>> v4.9.227
 		tps->chip.owner = THIS_MODULE;
 
 		tps->chip.set = tps65010_gpio_set;
@@ -651,7 +679,11 @@ static int tps65010_probe(struct i2c_client *client,
 		tps->chip.ngpio = 7;
 		tps->chip.can_sleep = 1;
 
+<<<<<<< HEAD
 		status = gpiochip_add(&tps->chip);
+=======
+		status = gpiochip_add_data(&tps->chip, tps);
+>>>>>>> v4.9.227
 		if (status < 0)
 			dev_err(&client->dev, "can't add gpiochip, err %d\n",
 					status);
@@ -684,7 +716,11 @@ static struct i2c_driver tps65010_driver = {
 		.name	= "tps65010",
 	},
 	.probe	= tps65010_probe,
+<<<<<<< HEAD
 	.remove	= __exit_p(tps65010_remove),
+=======
+	.remove	= tps65010_remove,
+>>>>>>> v4.9.227
 	.id_table = tps65010_id,
 };
 
@@ -1059,6 +1095,7 @@ EXPORT_SYMBOL(tps65013_set_low_pwr);
 
 static int __init tps_init(void)
 {
+<<<<<<< HEAD
 	u32	tries = 3;
 	int	status = -ENODEV;
 
@@ -1079,6 +1116,9 @@ static int __init tps_init(void)
 	}
 
 	return status;
+=======
+	return i2c_add_driver(&tps65010_driver);
+>>>>>>> v4.9.227
 }
 /* NOTE:  this MUST be initialized before the other parts of the system
  * that rely on it ... but after the i2c bus on which this relies.

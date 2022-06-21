@@ -2,7 +2,11 @@
  *  - TwinhanDTV Alpha/MagicBoxII USB2.0 DVB-T receiver
  *  - DigitalNow TinyUSB2 DVB-t receiver
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  *
  * Thanks to Twinhan who kindly provided hardware and information.
  *
@@ -296,7 +300,11 @@ static struct usb_driver vp7045_usb_driver = {
 
 module_usb_driver(vp7045_usb_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@desy.de>");
+=======
+MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@posteo.de>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Driver for Twinhan MagicBox/Alpha and DNTV tinyUSB2 DVB-T USB2.0");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");

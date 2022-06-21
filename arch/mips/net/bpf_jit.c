@@ -14,12 +14,19 @@
 #include <linux/errno.h>
 #include <linux/filter.h>
 #include <linux/if_vlan.h>
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/moduleloader.h>
 #include <linux/netdevice.h>
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm.h>
+>>>>>>> v4.9.227
 #include <asm/bitops.h>
 #include <asm/cacheflush.h>
 #include <asm/cpu-features.h>
@@ -28,6 +35,7 @@
 #include "bpf_jit.h"
 
 /* ABI
+<<<<<<< HEAD
  *
  * s0	1st scratch register
  * s1	2nd scratch register
@@ -36,6 +44,16 @@
  * s4	BPF register X
  * s5	*skb
  * s6	*scratch memory
+=======
+ * r_skb_hl	SKB header length
+ * r_data	SKB data pointer
+ * r_off	Offset
+ * r_A		BPF register A
+ * r_X		BPF register X
+ * r_skb	*skb
+ * r_M		*scratch memory
+ * r_skb_len	SKB length
+>>>>>>> v4.9.227
  *
  * On entry (*bpf_func)(*skb, *filter)
  * a0 = MIPS_R_A0 = skb;
@@ -63,6 +81,7 @@
  * ----------------------------------------------------
  */
 
+<<<<<<< HEAD
 #define RSIZE	(sizeof(unsigned long))
 #define ptr typeof(unsigned long)
 
@@ -101,6 +120,10 @@
 #define r_sp		MIPS_R_SP
 #define r_ra		MIPS_R_RA
 
+=======
+#define ptr typeof(unsigned long)
+
+>>>>>>> v4.9.227
 #define SCRATCH_OFF(k)		(4 * (k))
 
 /* JIT flags */
@@ -108,13 +131,21 @@
 #define SEEN_SREG_SFT		(BPF_MEMWORDS + 1)
 #define SEEN_SREG_BASE		(1 << SEEN_SREG_SFT)
 #define SEEN_SREG(x)		(SEEN_SREG_BASE << (x))
+<<<<<<< HEAD
 #define SEEN_S0			SEEN_SREG(0)
 #define SEEN_S1			SEEN_SREG(1)
+=======
+>>>>>>> v4.9.227
 #define SEEN_OFF		SEEN_SREG(2)
 #define SEEN_A			SEEN_SREG(3)
 #define SEEN_X			SEEN_SREG(4)
 #define SEEN_SKB		SEEN_SREG(5)
 #define SEEN_MEM		SEEN_SREG(6)
+<<<<<<< HEAD
+=======
+/* SEEN_SK_DATA also implies skb_hl an skb_len */
+#define SEEN_SKB_DATA		(SEEN_SREG(7) | SEEN_SREG(1) | SEEN_SREG(0))
+>>>>>>> v4.9.227
 
 /* Arguments used by JIT */
 #define ARGS_USED_BY_JIT	2 /* only applicable to 64-bit */
@@ -461,7 +492,11 @@ static inline void emit_load_ptr(unsigned int dst, unsigned int src,
 static inline void emit_load_func(unsigned int reg, ptr imm,
 				  struct jit_ctx *ctx)
 {
+<<<<<<< HEAD
 	if (config_enabled(CONFIG_64BIT)) {
+=======
+	if (IS_ENABLED(CONFIG_64BIT)) {
+>>>>>>> v4.9.227
 		/* At this point imm is always 64-bit */
 		emit_load_imm(r_tmp, (u64)imm >> 32, ctx);
 		emit_dsll(r_tmp_imm, r_tmp, 16, ctx); /* left shift by 16 */
@@ -551,7 +586,11 @@ static inline void emit_jr(unsigned int reg, struct jit_ctx *ctx)
 static inline u16 align_sp(unsigned int num)
 {
 	/* Double word alignment for 32-bit, quadword for 64-bit */
+<<<<<<< HEAD
 	unsigned int align = config_enabled(CONFIG_64BIT) ? 16 : 8;
+=======
+	unsigned int align = IS_ENABLED(CONFIG_64BIT) ? 16 : 8;
+>>>>>>> v4.9.227
 	num = (num + (align - 1)) & -align;
 	return num;
 }
@@ -565,6 +604,7 @@ static void save_bpf_jit_regs(struct jit_ctx *ctx, unsigned offset)
 	if (offset)
 		emit_stack_offset(-align_sp(offset), ctx);
 
+<<<<<<< HEAD
 	if (ctx->flags & SEEN_CALL) {
 		/* Argument save area */
 		if (config_enabled(CONFIG_64BIT))
@@ -579,13 +619,19 @@ static void save_bpf_jit_regs(struct jit_ctx *ctx, unsigned offset)
 		real_off = 0;
 	}
 
+=======
+>>>>>>> v4.9.227
 	tmp_flags = sflags = ctx->flags >> SEEN_SREG_SFT;
 	/* sflags is essentially a bitmap */
 	while (tmp_flags) {
 		if ((sflags >> i) & 0x1) {
 			emit_store_stack_reg(MIPS_R_S0 + i, r_sp, real_off,
 					     ctx);
+<<<<<<< HEAD
 			real_off += RSIZE;
+=======
+			real_off += SZREG;
+>>>>>>> v4.9.227
 		}
 		i++;
 		tmp_flags >>= 1;
@@ -594,13 +640,22 @@ static void save_bpf_jit_regs(struct jit_ctx *ctx, unsigned offset)
 	/* save return address */
 	if (ctx->flags & SEEN_CALL) {
 		emit_store_stack_reg(r_ra, r_sp, real_off, ctx);
+<<<<<<< HEAD
 		real_off += RSIZE;
+=======
+		real_off += SZREG;
+>>>>>>> v4.9.227
 	}
 
 	/* Setup r_M leaving the alignment gap if necessary */
 	if (ctx->flags & SEEN_MEM) {
+<<<<<<< HEAD
 		if (real_off % (RSIZE * 2))
 			real_off += RSIZE;
+=======
+		if (real_off % (SZREG * 2))
+			real_off += SZREG;
+>>>>>>> v4.9.227
 		emit_long_instr(ctx, ADDIU, r_M, r_sp, real_off);
 	}
 }
@@ -611,6 +666,7 @@ static void restore_bpf_jit_regs(struct jit_ctx *ctx,
 	int i, real_off = 0;
 	u32 sflags, tmp_flags;
 
+<<<<<<< HEAD
 	if (ctx->flags & SEEN_CALL) {
 		if (config_enabled(CONFIG_64BIT))
 			/* Bottom of current frame */
@@ -624,6 +680,8 @@ static void restore_bpf_jit_regs(struct jit_ctx *ctx,
 		real_off = 0;
 	}
 
+=======
+>>>>>>> v4.9.227
 	tmp_flags = sflags = ctx->flags >> SEEN_SREG_SFT;
 	/* sflags is a bitmap */
 	i = 0;
@@ -631,7 +689,11 @@ static void restore_bpf_jit_regs(struct jit_ctx *ctx,
 		if ((sflags >> i) & 0x1) {
 			emit_load_stack_reg(MIPS_R_S0 + i, r_sp, real_off,
 					    ctx);
+<<<<<<< HEAD
 			real_off += RSIZE;
+=======
+			real_off += SZREG;
+>>>>>>> v4.9.227
 		}
 		i++;
 		tmp_flags >>= 1;
@@ -652,12 +714,17 @@ static unsigned int get_stack_depth(struct jit_ctx *ctx)
 
 
 	/* How may s* regs do we need to preserved? */
+<<<<<<< HEAD
 	sp_off += hweight32(ctx->flags >> SEEN_SREG_SFT) * RSIZE;
+=======
+	sp_off += hweight32(ctx->flags >> SEEN_SREG_SFT) * SZREG;
+>>>>>>> v4.9.227
 
 	if (ctx->flags & SEEN_MEM)
 		sp_off += 4 * BPF_MEMWORDS; /* BPF_MEMWORDS are 32-bit */
 
 	if (ctx->flags & SEEN_CALL)
+<<<<<<< HEAD
 		/*
 		 * The JIT code make calls to external functions using 2
 		 * arguments. Therefore, for o32 we don't need to allocate
@@ -675,6 +742,11 @@ static unsigned int get_stack_depth(struct jit_ctx *ctx)
 	 * the location on the stack pointer.
 	 */
 	return sp_off - RSIZE;
+=======
+		sp_off += SZREG; /* Space for our ra register */
+
+	return sp_off;
+>>>>>>> v4.9.227
 }
 
 static void build_prologue(struct jit_ctx *ctx)
@@ -688,6 +760,22 @@ static void build_prologue(struct jit_ctx *ctx)
 	if (ctx->flags & SEEN_SKB)
 		emit_reg_move(r_skb, MIPS_R_A0, ctx);
 
+<<<<<<< HEAD
+=======
+	if (ctx->flags & SEEN_SKB_DATA) {
+		/* Load packet length */
+		emit_load(r_skb_len, r_skb, offsetof(struct sk_buff, len),
+			  ctx);
+		emit_load(r_tmp, r_skb, offsetof(struct sk_buff, data_len),
+			  ctx);
+		/* Load the data pointer */
+		emit_load_ptr(r_skb_data, r_skb,
+			      offsetof(struct sk_buff, data), ctx);
+		/* Load the header length */
+		emit_subu(r_skb_hl, r_skb_len, r_tmp, ctx);
+	}
+
+>>>>>>> v4.9.227
 	if (ctx->flags & SEEN_X)
 		emit_jit_reg_move(r_X, r_zero, ctx);
 
@@ -716,6 +804,7 @@ static void build_epilogue(struct jit_ctx *ctx)
 	emit_nop(ctx);
 }
 
+<<<<<<< HEAD
 static u64 jit_get_skb_b(struct sk_buff *skb, unsigned offset)
 {
 	u8 ret;
@@ -753,6 +842,19 @@ static int build_body(struct jit_ctx *ctx)
 	const struct sock_filter *inst;
 	unsigned int i, off, load_order, condt;
 	u32 k, b_off __maybe_unused;
+=======
+#define CHOOSE_LOAD_FUNC(K, func) \
+	((int)K < 0 ? ((int)K >= SKF_LL_OFF ? func##_negative : func) : \
+	 func##_positive)
+
+static int build_body(struct jit_ctx *ctx)
+{
+	const struct bpf_prog *prog = ctx->skf;
+	const struct sock_filter *inst;
+	unsigned int i, off, condt;
+	u32 k, b_off __maybe_unused;
+	u8 (*sk_load_func)(unsigned long *skb, int offset);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < prog->len; i++) {
 		u16 code;
@@ -786,6 +888,7 @@ static int build_body(struct jit_ctx *ctx)
 			break;
 		case BPF_LD | BPF_W | BPF_ABS:
 			/* A <- P[k:4] */
+<<<<<<< HEAD
 			load_order = 2;
 			goto load;
 		case BPF_LD | BPF_H | BPF_ABS:
@@ -816,11 +919,30 @@ load_common:
 
 			emit_load_func(r_s0, (ptr)load_func[load_order],
 				      ctx);
+=======
+			sk_load_func = CHOOSE_LOAD_FUNC(k, sk_load_word);
+			goto load;
+		case BPF_LD | BPF_H | BPF_ABS:
+			/* A <- P[k:2] */
+			sk_load_func = CHOOSE_LOAD_FUNC(k, sk_load_half);
+			goto load;
+		case BPF_LD | BPF_B | BPF_ABS:
+			/* A <- P[k:1] */
+			sk_load_func = CHOOSE_LOAD_FUNC(k, sk_load_byte);
+load:
+			emit_load_imm(r_off, k, ctx);
+load_common:
+			ctx->flags |= SEEN_CALL | SEEN_OFF |
+				SEEN_SKB | SEEN_A | SEEN_SKB_DATA;
+
+			emit_load_func(r_s0, (ptr)sk_load_func, ctx);
+>>>>>>> v4.9.227
 			emit_reg_move(MIPS_R_A0, r_skb, ctx);
 			emit_jalr(MIPS_R_RA, r_s0, ctx);
 			/* Load second argument to delay slot */
 			emit_reg_move(MIPS_R_A1, r_off, ctx);
 			/* Check the error value */
+<<<<<<< HEAD
 			if (config_enabled(CONFIG_64BIT)) {
 				/* Get error code from the top 32-bits */
 				emit_dsrl32(r_s0, r_val, 0, ctx);
@@ -851,6 +973,27 @@ load_common:
 		case BPF_LD | BPF_B | BPF_IND:
 			/* A <- P[X + k:1] */
 			load_order = 0;
+=======
+			emit_bcond(MIPS_COND_EQ, r_ret, 0, b_imm(i + 1, ctx),
+				   ctx);
+			/* Load return register on DS for failures */
+			emit_reg_move(r_ret, r_zero, ctx);
+			/* Return with error */
+			emit_b(b_imm(prog->len, ctx), ctx);
+			emit_nop(ctx);
+			break;
+		case BPF_LD | BPF_W | BPF_IND:
+			/* A <- P[X + k:4] */
+			sk_load_func = sk_load_word;
+			goto load_ind;
+		case BPF_LD | BPF_H | BPF_IND:
+			/* A <- P[X + k:2] */
+			sk_load_func = sk_load_half;
+			goto load_ind;
+		case BPF_LD | BPF_B | BPF_IND:
+			/* A <- P[X + k:1] */
+			sk_load_func = sk_load_byte;
+>>>>>>> v4.9.227
 load_ind:
 			ctx->flags |= SEEN_OFF | SEEN_X;
 			emit_addiu(r_off, r_X, k, ctx);
@@ -872,6 +1015,7 @@ load_ind:
 			emit_load(r_X, r_skb, off, ctx);
 			break;
 		case BPF_LDX | BPF_B | BPF_MSH:
+<<<<<<< HEAD
 			/* the interpreter will deal with the negative K */
 			if ((int)k < 0)
 				return -ENOTSUPP;
@@ -880,6 +1024,12 @@ load_ind:
 			ctx->flags |= SEEN_X | SEEN_CALL | SEEN_S0 | SEEN_SKB;
 			/* Load offset to a1 */
 			emit_load_func(r_s0, (ptr)jit_get_skb_b, ctx);
+=======
+			/* X <- 4 * (P[k:1] & 0xf) */
+			ctx->flags |= SEEN_X | SEEN_CALL | SEEN_SKB;
+			/* Load offset to a1 */
+			emit_load_func(r_s0, (ptr)sk_load_byte, ctx);
+>>>>>>> v4.9.227
 			/*
 			 * This may emit two instructions so it may not fit
 			 * in the delay slot. So use a0 in the delay slot.
@@ -888,6 +1038,7 @@ load_ind:
 			emit_jalr(MIPS_R_RA, r_s0, ctx);
 			emit_reg_move(MIPS_R_A0, r_skb, ctx); /* delay slot */
 			/* Check the error value */
+<<<<<<< HEAD
 			if (config_enabled(CONFIG_64BIT)) {
 				/* Top 32-bits of $v0 on 64-bit */
 				emit_dsrl32(r_s0, r_val, 0, ctx);
@@ -907,6 +1058,17 @@ load_ind:
 			/* Return with error */
 			emit_b(b_imm(prog->len, ctx), ctx);
 			emit_load_imm(r_ret, 0, ctx); /* delay slot */
+=======
+			emit_bcond(MIPS_COND_NE, r_ret, 0,
+				   b_imm(prog->len, ctx), ctx);
+			emit_reg_move(r_ret, r_zero, ctx);
+			/* We are good */
+			/* X <- P[1:K] & 0xf */
+			emit_andi(r_X, r_A, 0xf, ctx);
+			/* X << 2 */
+			emit_b(b_imm(i + 1, ctx), ctx);
+			emit_sll(r_X, r_X, 2, ctx); /* delay slot */
+>>>>>>> v4.9.227
 			break;
 		case BPF_ST:
 			/* M[k] <- A */
@@ -941,7 +1103,11 @@ load_ind:
 		case BPF_ALU | BPF_MUL | BPF_K:
 			/* A *= K */
 			/* Load K to scratch register before MUL */
+<<<<<<< HEAD
 			ctx->flags |= SEEN_A | SEEN_S0;
+=======
+			ctx->flags |= SEEN_A;
+>>>>>>> v4.9.227
 			emit_load_imm(r_s0, k, ctx);
 			emit_mul(r_A, r_A, r_s0, ctx);
 			break;
@@ -959,7 +1125,11 @@ load_ind:
 				emit_srl(r_A, r_A, k, ctx);
 				break;
 			}
+<<<<<<< HEAD
 			ctx->flags |= SEEN_A | SEEN_S0;
+=======
+			ctx->flags |= SEEN_A;
+>>>>>>> v4.9.227
 			emit_load_imm(r_s0, k, ctx);
 			emit_div(r_A, r_s0, ctx);
 			break;
@@ -969,7 +1139,11 @@ load_ind:
 				ctx->flags |= SEEN_A;
 				emit_jit_reg_move(r_A, r_zero, ctx);
 			} else {
+<<<<<<< HEAD
 				ctx->flags |= SEEN_A | SEEN_S0;
+=======
+				ctx->flags |= SEEN_A;
+>>>>>>> v4.9.227
 				emit_load_imm(r_s0, k, ctx);
 				emit_mod(r_A, r_s0, ctx);
 			}
@@ -980,7 +1154,11 @@ load_ind:
 			/* Check if r_X is zero */
 			emit_bcond(MIPS_COND_EQ, r_X, r_zero,
 				   b_imm(prog->len, ctx), ctx);
+<<<<<<< HEAD
 			emit_load_imm(r_val, 0, ctx); /* delay slot */
+=======
+			emit_load_imm(r_ret, 0, ctx); /* delay slot */
+>>>>>>> v4.9.227
 			emit_div(r_A, r_X, ctx);
 			break;
 		case BPF_ALU | BPF_MOD | BPF_X:
@@ -989,7 +1167,11 @@ load_ind:
 			/* Check if r_X is zero */
 			emit_bcond(MIPS_COND_EQ, r_X, r_zero,
 				   b_imm(prog->len, ctx), ctx);
+<<<<<<< HEAD
 			emit_load_imm(r_val, 0, ctx); /* delay slot */
+=======
+			emit_load_imm(r_ret, 0, ctx); /* delay slot */
+>>>>>>> v4.9.227
 			emit_mod(r_A, r_X, ctx);
 			break;
 		case BPF_ALU | BPF_OR | BPF_K:
@@ -1083,10 +1265,17 @@ jmp_cmp:
 			if ((condt & MIPS_COND_GE) ||
 			    (condt & MIPS_COND_GT)) {
 				if (condt & MIPS_COND_K) { /* K */
+<<<<<<< HEAD
 					ctx->flags |= SEEN_S0 | SEEN_A;
 					emit_sltiu(r_s0, r_A, k, ctx);
 				} else { /* X */
 					ctx->flags |= SEEN_S0 | SEEN_A |
+=======
+					ctx->flags |= SEEN_A;
+					emit_sltiu(r_s0, r_A, k, ctx);
+				} else { /* X */
+					ctx->flags |= SEEN_A |
+>>>>>>> v4.9.227
 						SEEN_X;
 					emit_sltu(r_s0, r_A, r_X, ctx);
 				}
@@ -1098,7 +1287,11 @@ jmp_cmp:
 				/* A > (K|X) ? scratch = 0 */
 				if (condt & MIPS_COND_GT) {
 					/* Checking for equality */
+<<<<<<< HEAD
 					ctx->flags |= SEEN_S0 | SEEN_A | SEEN_X;
+=======
+					ctx->flags |= SEEN_A | SEEN_X;
+>>>>>>> v4.9.227
 					if (condt & MIPS_COND_K)
 						emit_load_imm(r_s0, k, ctx);
 					else
@@ -1121,7 +1314,11 @@ jmp_cmp:
 			} else {
 				/* A == K|X */
 				if (condt & MIPS_COND_K) { /* K */
+<<<<<<< HEAD
 					ctx->flags |= SEEN_S0 | SEEN_A;
+=======
+					ctx->flags |= SEEN_A;
+>>>>>>> v4.9.227
 					emit_load_imm(r_s0, k, ctx);
 					/* jump true */
 					b_off = b_imm(i + inst->jt + 1, ctx);
@@ -1151,7 +1348,11 @@ jmp_cmp:
 			}
 			break;
 		case BPF_JMP | BPF_JSET | BPF_K:
+<<<<<<< HEAD
 			ctx->flags |= SEEN_S0 | SEEN_S1 | SEEN_A;
+=======
+			ctx->flags |= SEEN_A;
+>>>>>>> v4.9.227
 			/* pc += (A & K) ? pc -> jt : pc -> jf */
 			emit_load_imm(r_s1, k, ctx);
 			emit_and(r_s0, r_A, r_s1, ctx);
@@ -1165,7 +1366,11 @@ jmp_cmp:
 			emit_nop(ctx);
 			break;
 		case BPF_JMP | BPF_JSET | BPF_X:
+<<<<<<< HEAD
 			ctx->flags |= SEEN_S0 | SEEN_X | SEEN_A;
+=======
+			ctx->flags |= SEEN_X | SEEN_A;
+>>>>>>> v4.9.227
 			/* pc += (A & X) ? pc -> jt : pc -> jf */
 			emit_and(r_s0, r_A, r_X, ctx);
 			/* jump true */
@@ -1249,7 +1454,11 @@ jmp_cmp:
 			break;
 		case BPF_ANC | SKF_AD_IFINDEX:
 			/* A = skb->dev->ifindex */
+<<<<<<< HEAD
 			ctx->flags |= SEEN_SKB | SEEN_A | SEEN_S0;
+=======
+			ctx->flags |= SEEN_SKB | SEEN_A;
+>>>>>>> v4.9.227
 			off = offsetof(struct sk_buff, dev);
 			/* Load *dev pointer */
 			emit_load_ptr(r_s0, r_skb, off, ctx);
@@ -1276,7 +1485,11 @@ jmp_cmp:
 			break;
 		case BPF_ANC | SKF_AD_VLAN_TAG:
 		case BPF_ANC | SKF_AD_VLAN_TAG_PRESENT:
+<<<<<<< HEAD
 			ctx->flags |= SEEN_SKB | SEEN_S0 | SEEN_A;
+=======
+			ctx->flags |= SEEN_SKB | SEEN_A;
+>>>>>>> v4.9.227
 			BUILD_BUG_ON(FIELD_SIZEOF(struct sk_buff,
 						  vlan_tci) != 2);
 			off = offsetof(struct sk_buff, vlan_tci);
@@ -1323,8 +1536,11 @@ jmp_cmp:
 	return 0;
 }
 
+<<<<<<< HEAD
 int bpf_jit_enable __read_mostly;
 
+=======
+>>>>>>> v4.9.227
 void bpf_jit_compile(struct bpf_prog *fp)
 {
 	struct jit_ctx ctx;
@@ -1335,7 +1551,11 @@ void bpf_jit_compile(struct bpf_prog *fp)
 
 	memset(&ctx, 0, sizeof(ctx));
 
+<<<<<<< HEAD
 	ctx.offsets = kcalloc(fp->len, sizeof(*ctx.offsets), GFP_KERNEL);
+=======
+	ctx.offsets = kcalloc(fp->len + 1, sizeof(*ctx.offsets), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (ctx.offsets == NULL)
 		return;
 
@@ -1373,7 +1593,11 @@ void bpf_jit_compile(struct bpf_prog *fp)
 		bpf_jit_dump(fp->len, alloc_size, 2, ctx.target);
 
 	fp->bpf_func = (void *)ctx.target;
+<<<<<<< HEAD
 	fp->jited = true;
+=======
+	fp->jited = 1;
+>>>>>>> v4.9.227
 
 out:
 	kfree(ctx.offsets);

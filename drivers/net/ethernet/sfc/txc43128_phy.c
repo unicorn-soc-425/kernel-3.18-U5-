@@ -418,7 +418,11 @@ static void txc_reset_logic_mmd(struct efx_nic *efx, int mmd)
 
 	val |= (1 << TXC_GLCMD_LMTSWRST_LBN);
 	efx_mdio_write(efx, mmd, TXC_GLRGS_GLCMD, val);
+<<<<<<< HEAD
 	while (tries--) {
+=======
+	while (--tries) {
+>>>>>>> v4.9.227
 		val = efx_mdio_read(efx, mmd, TXC_GLRGS_GLCMD);
 		if (!(val & (1 << TXC_GLCMD_LMTSWRST_LBN)))
 			break;

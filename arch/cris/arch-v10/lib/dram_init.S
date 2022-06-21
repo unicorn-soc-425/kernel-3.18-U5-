@@ -3,7 +3,11 @@
  * This file is intended to be included from other assembler files
  *
  * Note: This file may not modify r9 because r9 is used to carry
+<<<<<<< HEAD
  *       information from the decompresser to the kernel
+=======
+ *       information from the decompressor to the kernel
+>>>>>>> v4.9.227
  *
  * Copyright (C) 2000-2012 Axis Communications AB
  *

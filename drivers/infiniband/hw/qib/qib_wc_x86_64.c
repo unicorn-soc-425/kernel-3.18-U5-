@@ -72,6 +72,10 @@ int qib_enable_wc(struct qib_devdata *dd)
 	if (dd->piobcnt2k && dd->piobcnt4k) {
 		/* 2 sizes for chip */
 		unsigned long pio2kbase, pio4kbase;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		pio2kbase = dd->piobufbase & 0xffffffffUL;
 		pio4kbase = (dd->piobufbase >> 32) & 0xffffffffUL;
 		if (pio2kbase < pio4kbase) {
@@ -91,7 +95,11 @@ int qib_enable_wc(struct qib_devdata *dd)
 	}
 
 	for (bits = 0; !(piolen & (1ULL << bits)); bits++)
+<<<<<<< HEAD
 		/* do nothing */ ;
+=======
+		; /* do nothing */
+>>>>>>> v4.9.227
 
 	if (piolen != (1ULL << bits)) {
 		piolen >>= bits;
@@ -100,8 +108,13 @@ int qib_enable_wc(struct qib_devdata *dd)
 		piolen = 1ULL << (bits + 1);
 	}
 	if (pioaddr & (piolen - 1)) {
+<<<<<<< HEAD
 		u64 atmp;
 		atmp = pioaddr & ~(piolen - 1);
+=======
+		u64 atmp = pioaddr & ~(piolen - 1);
+
+>>>>>>> v4.9.227
 		if (atmp < addr || (atmp + piolen) > (addr + len)) {
 			qib_dev_err(dd,
 				"No way to align address/size (%llx/%llx), no WC mtrr\n",
@@ -115,6 +128,7 @@ int qib_enable_wc(struct qib_devdata *dd)
 	}
 
 	if (!ret) {
+<<<<<<< HEAD
 		int cookie;
 
 		cookie = mtrr_add(pioaddr, piolen, MTRR_TYPE_WRCOMB, 0);
@@ -130,6 +144,12 @@ int qib_enable_wc(struct qib_devdata *dd)
 			dd->wc_base = (unsigned long) pioaddr;
 			dd->wc_len = (unsigned long) piolen;
 		}
+=======
+		dd->wc_cookie = arch_phys_wc_add(pioaddr, piolen);
+		if (dd->wc_cookie < 0)
+			/* use error from routine */
+			ret = dd->wc_cookie;
+>>>>>>> v4.9.227
 	}
 
 	return ret;
@@ -141,6 +161,7 @@ int qib_enable_wc(struct qib_devdata *dd)
  */
 void qib_disable_wc(struct qib_devdata *dd)
 {
+<<<<<<< HEAD
 	if (dd->wc_cookie) {
 		int r;
 
@@ -153,6 +174,9 @@ void qib_disable_wc(struct qib_devdata *dd)
 				 dd->wc_len, r);
 		dd->wc_cookie = 0; /* even on failure */
 	}
+=======
+	arch_phys_wc_del(dd->wc_cookie);
+>>>>>>> v4.9.227
 }
 
 /**

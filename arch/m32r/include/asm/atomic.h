@@ -28,7 +28,11 @@
  *
  * Atomically reads the value of @v.
  */
+<<<<<<< HEAD
 #define atomic_read(v)	ACCESS_ONCE((v)->counter)
+=======
+#define atomic_read(v)	READ_ONCE((v)->counter)
+>>>>>>> v4.9.227
 
 /**
  * atomic_set - set atomic variable
@@ -37,7 +41,11 @@
  *
  * Atomically sets the value of @v to @i.
  */
+<<<<<<< HEAD
 #define atomic_set(v,i)	(((v)->counter) = (i))
+=======
+#define atomic_set(v,i)	WRITE_ONCE(((v)->counter), (i))
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_CHIP_M32700_TS1
 #define __ATOMIC_CLOBBER	, "r4"
@@ -89,12 +97,51 @@ static __inline__ int atomic_##op##_return(int i, atomic_t *v)		\
 	return result;							\
 }
 
+<<<<<<< HEAD
 #define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_OP_RETURN(op)
+=======
+#define ATOMIC_FETCH_OP(op)						\
+static __inline__ int atomic_fetch_##op(int i, atomic_t *v)		\
+{									\
+	unsigned long flags;						\
+	int result, val;						\
+									\
+	local_irq_save(flags);						\
+	__asm__ __volatile__ (						\
+		"# atomic_fetch_" #op "		\n\t"			\
+		DCACHE_CLEAR("%0", "r4", "%2")				\
+		M32R_LOCK" %1, @%2;		\n\t"			\
+		"mv %0, %1			\n\t" 			\
+		#op " %1, %3;			\n\t"			\
+		M32R_UNLOCK" %1, @%2;		\n\t"			\
+		: "=&r" (result), "=&r" (val)				\
+		: "r" (&v->counter), "r" (i)				\
+		: "memory"						\
+		__ATOMIC_CLOBBER					\
+	);								\
+	local_irq_restore(flags);					\
+									\
+	return result;							\
+}
+
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_OP_RETURN(op) ATOMIC_FETCH_OP(op)
+>>>>>>> v4.9.227
 
 ATOMIC_OPS(add)
 ATOMIC_OPS(sub)
 
 #undef ATOMIC_OPS
+<<<<<<< HEAD
+=======
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_FETCH_OP(op)
+
+ATOMIC_OPS(and)
+ATOMIC_OPS(or)
+ATOMIC_OPS(xor)
+
+#undef ATOMIC_OPS
+#undef ATOMIC_FETCH_OP
+>>>>>>> v4.9.227
 #undef ATOMIC_OP_RETURN
 #undef ATOMIC_OP
 
@@ -239,6 +286,7 @@ static __inline__ int __atomic_add_unless(atomic_t *v, int a, int u)
 	return c;
 }
 
+<<<<<<< HEAD
 
 static __inline__ void atomic_clear_mask(unsigned long  mask, atomic_t *addr)
 {
@@ -280,4 +328,6 @@ static __inline__ void atomic_set_mask(unsigned long  mask, atomic_t *addr)
 	local_irq_restore(flags);
 }
 
+=======
+>>>>>>> v4.9.227
 #endif	/* _ASM_M32R_ATOMIC_H */

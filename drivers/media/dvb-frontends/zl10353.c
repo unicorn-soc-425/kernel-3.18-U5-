@@ -135,8 +135,12 @@ static void zl10353_calc_nominal_rate(struct dvb_frontend *fe,
 
 	value = (u64)10 * (1 << 23) / 7 * 125;
 	value = (bw * value) + adc_clock / 2;
+<<<<<<< HEAD
 	do_div(value, adc_clock);
 	*nominal_rate = value;
+=======
+	*nominal_rate = div_u64(value, adc_clock);
+>>>>>>> v4.9.227
 
 	dprintk("%s: bw %d, adc_clock %d => 0x%x\n",
 		__func__, bw, adc_clock, *nominal_rate);
@@ -163,8 +167,12 @@ static void zl10353_calc_input_freq(struct dvb_frontend *fe,
 		if (ife > adc_clock / 2)
 			ife = adc_clock - ife;
 	}
+<<<<<<< HEAD
 	value = (u64)65536 * ife + adc_clock / 2;
 	do_div(value, adc_clock);
+=======
+	value = div_u64((u64)65536 * ife + adc_clock / 2, adc_clock);
+>>>>>>> v4.9.227
 	*input_freq = -value;
 
 	dprintk("%s: if2 %d, ife %d, adc_clock %d => %d / 0x%x\n",
@@ -371,9 +379,15 @@ static int zl10353_set_parameters(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int zl10353_get_parameters(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
+=======
+static int zl10353_get_parameters(struct dvb_frontend *fe,
+				  struct dtv_frontend_properties *c)
+{
+>>>>>>> v4.9.227
 	struct zl10353_state *state = fe->demodulator_priv;
 	int s6, s9;
 	u16 tps;
@@ -462,7 +476,11 @@ static int zl10353_get_parameters(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int zl10353_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int zl10353_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct zl10353_state *state = fe->demodulator_priv;
 	int s6, s7, s8;
@@ -533,6 +551,7 @@ static int zl10353_read_snr(struct dvb_frontend *fe, u16 *snr)
 static int zl10353_read_ucblocks(struct dvb_frontend *fe, u32 *ucblocks)
 {
 	struct zl10353_state *state = fe->demodulator_priv;
+<<<<<<< HEAD
        u32 ubl = 0;
 
        ubl = zl10353_read_register(state, RS_UBC_1) << 8 |
@@ -540,6 +559,15 @@ static int zl10353_read_ucblocks(struct dvb_frontend *fe, u32 *ucblocks)
 
        state->ucblocks += ubl;
        *ucblocks = state->ucblocks;
+=======
+	u32 ubl = 0;
+
+	ubl = zl10353_read_register(state, RS_UBC_1) << 8 |
+	      zl10353_read_register(state, RS_UBC_0);
+
+	state->ucblocks += ubl;
+	*ucblocks = state->ucblocks;
+>>>>>>> v4.9.227
 
 	return 0;
 }

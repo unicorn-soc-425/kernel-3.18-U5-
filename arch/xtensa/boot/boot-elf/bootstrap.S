@@ -20,6 +20,10 @@
 #include <asm/page.h>
 #include <asm/cacheasm.h>
 #include <asm/initialize_mmu.h>
+<<<<<<< HEAD
+=======
+#include <asm/vectors.h>
+>>>>>>> v4.9.227
 #include <linux/linkage.h>
 
 	.section	.ResetVector.text, "ax"
@@ -36,9 +40,15 @@ _ResetVector:
 RomInitAddr:
 #if defined(CONFIG_INITIALIZE_XTENSA_MMU_INSIDE_VMLINUX) && \
 	XCHAL_HAVE_PTP_MMU && XCHAL_HAVE_SPANNING_WAY
+<<<<<<< HEAD
 	.word 0x00003000
 #else
 	.word 0xd0003000
+=======
+	.word	CONFIG_KERNEL_LOAD_ADDRESS
+#else
+	.word	KERNELOFFSET
+>>>>>>> v4.9.227
 #endif
 RomBootParam:
 	.word _bootparam
@@ -62,8 +72,11 @@ _SetupMMU:
 	wsr	a0, ps
 	rsync
 
+<<<<<<< HEAD
 	Offset = _SetupMMU - _ResetVector
 
+=======
+>>>>>>> v4.9.227
 #ifndef CONFIG_INITIALIZE_XTENSA_MMU_INSIDE_VMLINUX
 	initialize_mmu
 #endif
@@ -78,6 +91,7 @@ reset:
 	movi	a3, 0
 	movi	a4, 0
 	jx      a0
+<<<<<<< HEAD
 
 	.align 4
 
@@ -102,3 +116,5 @@ _RemappedSetupMMU:
 #endif
 
 	.end    no-absolute-literals
+=======
+>>>>>>> v4.9.227

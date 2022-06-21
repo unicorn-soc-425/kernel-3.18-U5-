@@ -123,7 +123,12 @@ SYSCALL_DEFINE3(ioprio_set, int, which, int, who, int, ioprio)
 				break;
 
 			do_each_thread(g, p) {
+<<<<<<< HEAD
 				if (!uid_eq(task_uid(p), uid))
+=======
+				if (!uid_eq(task_uid(p), uid) ||
+				    !task_pid_vnr(p))
+>>>>>>> v4.9.227
 					continue;
 				ret = set_task_ioprio(p, ioprio);
 				if (ret)
@@ -222,7 +227,12 @@ SYSCALL_DEFINE2(ioprio_get, int, which, int, who)
 				break;
 
 			do_each_thread(g, p) {
+<<<<<<< HEAD
 				if (!uid_eq(task_uid(p), user->uid))
+=======
+				if (!uid_eq(task_uid(p), user->uid) ||
+				    !task_pid_vnr(p))
+>>>>>>> v4.9.227
 					continue;
 				tmpio = get_task_ioprio(p);
 				if (tmpio < 0)

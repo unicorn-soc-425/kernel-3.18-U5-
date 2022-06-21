@@ -12,6 +12,10 @@
  * kind, whether express or implied.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/err.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -35,7 +39,13 @@ struct ocores_i2c {
 	int pos;
 	int nmsgs;
 	int state; /* see STATE_ */
+<<<<<<< HEAD
 	int clock_khz;
+=======
+	struct clk *clk;
+	int ip_clock_khz;
+	int bus_clock_khz;
+>>>>>>> v4.9.227
 	void (*setreg)(struct ocores_i2c *i2c, int reg, u8 value);
 	u8 (*getreg)(struct ocores_i2c *i2c, int reg);
 };
@@ -89,6 +99,19 @@ static void oc_setreg_32(struct ocores_i2c *i2c, int reg, u8 value)
 	iowrite32(value, i2c->base + (reg << i2c->reg_shift));
 }
 
+<<<<<<< HEAD
+=======
+static void oc_setreg_16be(struct ocores_i2c *i2c, int reg, u8 value)
+{
+	iowrite16be(value, i2c->base + (reg << i2c->reg_shift));
+}
+
+static void oc_setreg_32be(struct ocores_i2c *i2c, int reg, u8 value)
+{
+	iowrite32be(value, i2c->base + (reg << i2c->reg_shift));
+}
+
+>>>>>>> v4.9.227
 static inline u8 oc_getreg_8(struct ocores_i2c *i2c, int reg)
 {
 	return ioread8(i2c->base + (reg << i2c->reg_shift));
@@ -104,6 +127,19 @@ static inline u8 oc_getreg_32(struct ocores_i2c *i2c, int reg)
 	return ioread32(i2c->base + (reg << i2c->reg_shift));
 }
 
+<<<<<<< HEAD
+=======
+static inline u8 oc_getreg_16be(struct ocores_i2c *i2c, int reg)
+{
+	return ioread16be(i2c->base + (reg << i2c->reg_shift));
+}
+
+static inline u8 oc_getreg_32be(struct ocores_i2c *i2c, int reg)
+{
+	return ioread32be(i2c->base + (reg << i2c->reg_shift));
+}
+
+>>>>>>> v4.9.227
 static inline void oc_setreg(struct ocores_i2c *i2c, int reg, u8 value)
 {
 	i2c->setreg(i2c, reg, value);
@@ -155,10 +191,14 @@ static void ocores_process(struct ocores_i2c *i2c)
 		if (i2c->nmsgs) {	/* end? */
 			/* send start? */
 			if (!(msg->flags & I2C_M_NOSTART)) {
+<<<<<<< HEAD
 				u8 addr = (msg->addr << 1);
 
 				if (msg->flags & I2C_M_RD)
 					addr |= 1;
+=======
+				u8 addr = i2c_8bit_addr_from_msg(msg);
+>>>>>>> v4.9.227
 
 				i2c->state = STATE_START;
 
@@ -215,21 +255,47 @@ static int ocores_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 		return -ETIMEDOUT;
 }
 
+<<<<<<< HEAD
 static void ocores_init(struct ocores_i2c *i2c)
 {
 	int prescale;
+=======
+static int ocores_init(struct device *dev, struct ocores_i2c *i2c)
+{
+	int prescale;
+	int diff;
+>>>>>>> v4.9.227
 	u8 ctrl = oc_getreg(i2c, OCI2C_CONTROL);
 
 	/* make sure the device is disabled */
 	oc_setreg(i2c, OCI2C_CONTROL, ctrl & ~(OCI2C_CTRL_EN|OCI2C_CTRL_IEN));
 
+<<<<<<< HEAD
 	prescale = (i2c->clock_khz / (5*100)) - 1;
+=======
+	prescale = (i2c->ip_clock_khz / (5 * i2c->bus_clock_khz)) - 1;
+	prescale = clamp(prescale, 0, 0xffff);
+
+	diff = i2c->ip_clock_khz / (5 * (prescale + 1)) - i2c->bus_clock_khz;
+	if (abs(diff) > i2c->bus_clock_khz / 10) {
+		dev_err(dev,
+			"Unsupported clock settings: core: %d KHz, bus: %d KHz\n",
+			i2c->ip_clock_khz, i2c->bus_clock_khz);
+		return -EINVAL;
+	}
+
+>>>>>>> v4.9.227
 	oc_setreg(i2c, OCI2C_PRELOW, prescale & 0xff);
 	oc_setreg(i2c, OCI2C_PREHIGH, prescale >> 8);
 
 	/* Init the device */
 	oc_setreg(i2c, OCI2C_CMD, OCI2C_CMD_IACK);
 	oc_setreg(i2c, OCI2C_CONTROL, ctrl | OCI2C_CTRL_IEN | OCI2C_CTRL_EN);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 
@@ -304,6 +370,11 @@ static int ocores_i2c_of_probe(struct platform_device *pdev,
 	struct device_node *np = pdev->dev.of_node;
 	const struct of_device_id *match;
 	u32 val;
+<<<<<<< HEAD
+=======
+	u32 clock_frequency;
+	bool clock_frequency_present;
+>>>>>>> v4.9.227
 
 	if (of_property_read_u32(np, "reg-shift", &i2c->reg_shift)) {
 		/* no 'reg-shift', check for deprecated 'regstep' */
@@ -319,12 +390,52 @@ static int ocores_i2c_of_probe(struct platform_device *pdev,
 		}
 	}
 
+<<<<<<< HEAD
 	if (of_property_read_u32(np, "clock-frequency", &val)) {
 		dev_err(&pdev->dev,
 			"Missing required parameter 'clock-frequency'\n");
 		return -ENODEV;
 	}
 	i2c->clock_khz = val / 1000;
+=======
+	clock_frequency_present = !of_property_read_u32(np, "clock-frequency",
+							&clock_frequency);
+	i2c->bus_clock_khz = 100;
+
+	i2c->clk = devm_clk_get(&pdev->dev, NULL);
+
+	if (!IS_ERR(i2c->clk)) {
+		int ret = clk_prepare_enable(i2c->clk);
+
+		if (ret) {
+			dev_err(&pdev->dev,
+				"clk_prepare_enable failed: %d\n", ret);
+			return ret;
+		}
+		i2c->ip_clock_khz = clk_get_rate(i2c->clk) / 1000;
+		if (clock_frequency_present)
+			i2c->bus_clock_khz = clock_frequency / 1000;
+	}
+
+	if (i2c->ip_clock_khz == 0) {
+		if (of_property_read_u32(np, "opencores,ip-clock-frequency",
+						&val)) {
+			if (!clock_frequency_present) {
+				dev_err(&pdev->dev,
+					"Missing required parameter 'opencores,ip-clock-frequency'\n");
+				clk_disable_unprepare(i2c->clk);
+				return -ENODEV;
+			}
+			i2c->ip_clock_khz = clock_frequency / 1000;
+			dev_warn(&pdev->dev,
+				 "Deprecated usage of the 'clock-frequency' property, please update to 'opencores,ip-clock-frequency'\n");
+		} else {
+			i2c->ip_clock_khz = val / 1000;
+			if (clock_frequency_present)
+				i2c->bus_clock_khz = clock_frequency / 1000;
+		}
+	}
+>>>>>>> v4.9.227
 
 	of_property_read_u32(pdev->dev.of_node, "reg-io-width",
 				&i2c->reg_io_width);
@@ -368,7 +479,12 @@ static int ocores_i2c_probe(struct platform_device *pdev)
 	if (pdata) {
 		i2c->reg_shift = pdata->reg_shift;
 		i2c->reg_io_width = pdata->reg_io_width;
+<<<<<<< HEAD
 		i2c->clock_khz = pdata->clock_khz;
+=======
+		i2c->ip_clock_khz = pdata->clock_khz;
+		i2c->bus_clock_khz = 100;
+>>>>>>> v4.9.227
 	} else {
 		ret = ocores_i2c_of_probe(pdev, i2c);
 		if (ret)
@@ -379,6 +495,12 @@ static int ocores_i2c_probe(struct platform_device *pdev)
 		i2c->reg_io_width = 1; /* Set to default value */
 
 	if (!i2c->setreg || !i2c->getreg) {
+<<<<<<< HEAD
+=======
+		bool be = pdata ? pdata->big_endian :
+			of_device_is_big_endian(pdev->dev.of_node);
+
+>>>>>>> v4.9.227
 		switch (i2c->reg_io_width) {
 		case 1:
 			i2c->setreg = oc_setreg_8;
@@ -386,6 +508,7 @@ static int ocores_i2c_probe(struct platform_device *pdev)
 			break;
 
 		case 2:
+<<<<<<< HEAD
 			i2c->setreg = oc_setreg_16;
 			i2c->getreg = oc_getreg_16;
 			break;
@@ -393,23 +516,47 @@ static int ocores_i2c_probe(struct platform_device *pdev)
 		case 4:
 			i2c->setreg = oc_setreg_32;
 			i2c->getreg = oc_getreg_32;
+=======
+			i2c->setreg = be ? oc_setreg_16be : oc_setreg_16;
+			i2c->getreg = be ? oc_getreg_16be : oc_getreg_16;
+			break;
+
+		case 4:
+			i2c->setreg = be ? oc_setreg_32be : oc_setreg_32;
+			i2c->getreg = be ? oc_getreg_32be : oc_getreg_32;
+>>>>>>> v4.9.227
 			break;
 
 		default:
 			dev_err(&pdev->dev, "Unsupported I/O width (%d)\n",
 				i2c->reg_io_width);
+<<<<<<< HEAD
 			return -EINVAL;
 		}
 	}
 
 	ocores_init(i2c);
+=======
+			ret = -EINVAL;
+			goto err_clk;
+		}
+	}
+
+	ret = ocores_init(&pdev->dev, i2c);
+	if (ret)
+		goto err_clk;
+>>>>>>> v4.9.227
 
 	init_waitqueue_head(&i2c->wait);
 	ret = devm_request_irq(&pdev->dev, irq, ocores_isr, 0,
 			       pdev->name, i2c);
 	if (ret) {
 		dev_err(&pdev->dev, "Cannot claim IRQ\n");
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_clk;
+>>>>>>> v4.9.227
 	}
 
 	/* hook up driver to tree */
@@ -421,10 +568,15 @@ static int ocores_i2c_probe(struct platform_device *pdev)
 
 	/* add i2c adapter to i2c tree */
 	ret = i2c_add_adapter(&i2c->adap);
+<<<<<<< HEAD
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to add adapter\n");
 		return ret;
 	}
+=======
+	if (ret)
+		goto err_clk;
+>>>>>>> v4.9.227
 
 	/* add in known devices to the bus */
 	if (pdata) {
@@ -433,6 +585,13 @@ static int ocores_i2c_probe(struct platform_device *pdev)
 	}
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_clk:
+	clk_disable_unprepare(i2c->clk);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int ocores_i2c_remove(struct platform_device *pdev)
@@ -446,6 +605,12 @@ static int ocores_i2c_remove(struct platform_device *pdev)
 	/* remove adapter & data */
 	i2c_del_adapter(&i2c->adap);
 
+<<<<<<< HEAD
+=======
+	if (!IS_ERR(i2c->clk))
+		clk_disable_unprepare(i2c->clk);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -458,6 +623,11 @@ static int ocores_i2c_suspend(struct device *dev)
 	/* make sure the device is disabled */
 	oc_setreg(i2c, OCI2C_CONTROL, ctrl & ~(OCI2C_CTRL_EN|OCI2C_CTRL_IEN));
 
+<<<<<<< HEAD
+=======
+	if (!IS_ERR(i2c->clk))
+		clk_disable_unprepare(i2c->clk);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -465,9 +635,26 @@ static int ocores_i2c_resume(struct device *dev)
 {
 	struct ocores_i2c *i2c = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	ocores_init(i2c);
 
 	return 0;
+=======
+	if (!IS_ERR(i2c->clk)) {
+		unsigned long rate;
+		int ret = clk_prepare_enable(i2c->clk);
+
+		if (ret) {
+			dev_err(dev,
+				"clk_prepare_enable failed: %d\n", ret);
+			return ret;
+		}
+		rate = clk_get_rate(i2c->clk) / 1000;
+		if (rate)
+			i2c->ip_clock_khz = rate;
+	}
+	return ocores_init(dev, i2c);
+>>>>>>> v4.9.227
 }
 
 static SIMPLE_DEV_PM_OPS(ocores_i2c_pm, ocores_i2c_suspend, ocores_i2c_resume);
@@ -480,7 +667,10 @@ static struct platform_driver ocores_i2c_driver = {
 	.probe   = ocores_i2c_probe,
 	.remove  = ocores_i2c_remove,
 	.driver  = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "ocores-i2c",
 		.of_match_table = ocores_i2c_match,
 		.pm = OCORES_I2C_PM,

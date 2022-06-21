@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __RTW_DEBUG_H__
 #define __RTW_DEBUG_H__
@@ -106,7 +109,11 @@ extern u32 GlobalDebugLevel;
 			u8	*ptr = (u8 *)_hexdata;			\
 			pr_info("%s", DRIVER_PREFIX);			\
 			pr_info(_titlestring);				\
+<<<<<<< HEAD
 			for (__i = 0; __i < (int)_hexdatalen; __i++ ) {	\
+=======
+			for (__i = 0; __i < (int)_hexdatalen; __i++) {	\
+>>>>>>> v4.9.227
 				pr_info("%02X%s", ptr[__i],		\
 					 (((__i + 1) % 4) == 0) ?	\
 					 "  " : " ");	\
@@ -134,6 +141,7 @@ int proc_get_read_reg(char *page, char **start,
 int proc_set_read_reg(struct file *file, const char __user *buffer,
 		      unsigned long count, void *data);
 
+<<<<<<< HEAD
 int proc_get_fwstate(char *page, char **start,
 		     off_t offset, int count,
 		     int *eof, void *data);
@@ -157,10 +165,13 @@ int proc_get_ap_info(char *page, char **start,
 		     off_t offset, int count,
 		     int *eof, void *data);
 
+=======
+>>>>>>> v4.9.227
 int proc_get_adapter_state(char *page, char **start,
 			   off_t offset, int count,
 			   int *eof, void *data);
 
+<<<<<<< HEAD
 int proc_get_trx_info(char *page, char **start,
 		      off_t offset, int count,
 		      int *eof, void *data);
@@ -213,10 +224,13 @@ int proc_get_all_sta_info(char *page, char **start,
 
 #endif
 
+=======
+>>>>>>> v4.9.227
 int proc_get_best_channel(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data);
 
+<<<<<<< HEAD
 int proc_get_rx_signal(char *page, char **start,
 		       off_t offset, int count,
 		       int *eof, void *data);
@@ -263,4 +277,6 @@ int proc_get_rssi_disp(char *page, char **start,
 int proc_set_rssi_disp(struct file *file, const char __user *buffer,
 		       unsigned long count, void *data);
 
+=======
+>>>>>>> v4.9.227
 #endif	/* __RTW_DEBUG_H__ */

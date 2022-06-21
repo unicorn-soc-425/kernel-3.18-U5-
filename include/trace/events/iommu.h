@@ -83,7 +83,11 @@ DEFINE_EVENT(iommu_device_event, detach_device_from_domain,
 	TP_ARGS(dev)
 );
 
+<<<<<<< HEAD
 DECLARE_EVENT_CLASS(iommu_map_unmap,
+=======
+TRACE_EVENT(map,
+>>>>>>> v4.9.227
 
 	TP_PROTO(unsigned long iova, phys_addr_t paddr, size_t size),
 
@@ -92,7 +96,11 @@ DECLARE_EVENT_CLASS(iommu_map_unmap,
 	TP_STRUCT__entry(
 		__field(u64, iova)
 		__field(u64, paddr)
+<<<<<<< HEAD
 		__field(int, size)
+=======
+		__field(size_t, size)
+>>>>>>> v4.9.227
 	),
 
 	TP_fast_assign(
@@ -101,11 +109,16 @@ DECLARE_EVENT_CLASS(iommu_map_unmap,
 		__entry->size = size;
 	),
 
+<<<<<<< HEAD
 	TP_printk("IOMMU: iova=0x%016llx paddr=0x%016llx size=0x%x",
+=======
+	TP_printk("IOMMU: iova=0x%016llx paddr=0x%016llx size=%zu",
+>>>>>>> v4.9.227
 			__entry->iova, __entry->paddr, __entry->size
 	)
 );
 
+<<<<<<< HEAD
 DEFINE_EVENT(iommu_map_unmap, map,
 
 	TP_PROTO(unsigned long iova, phys_addr_t paddr, size_t size),
@@ -169,10 +182,23 @@ DECLARE_EVENT_CLASS(iommu_map_sg,
 	TP_STRUCT__entry(
 		__field(u64, iova)
 		__field(int, nents)
+=======
+TRACE_EVENT(unmap,
+
+	TP_PROTO(unsigned long iova, size_t size, size_t unmapped_size),
+
+	TP_ARGS(iova, size, unmapped_size),
+
+	TP_STRUCT__entry(
+		__field(u64, iova)
+		__field(size_t, size)
+		__field(size_t, unmapped_size)
+>>>>>>> v4.9.227
 	),
 
 	TP_fast_assign(
 		__entry->iova = iova;
+<<<<<<< HEAD
 		__entry->nents = nents;
 	),
 
@@ -195,6 +221,17 @@ DEFINE_EVENT(iommu_map_sg, map_sg_end,
 	TP_ARGS(iova, nents)
 );
 
+=======
+		__entry->size = size;
+		__entry->unmapped_size = unmapped_size;
+	),
+
+	TP_printk("IOMMU: iova=0x%016llx size=%zu unmapped_size=%zu",
+			__entry->iova, __entry->size, __entry->unmapped_size
+	)
+);
+
+>>>>>>> v4.9.227
 DECLARE_EVENT_CLASS(iommu_error,
 
 	TP_PROTO(struct device *dev, unsigned long iova, int flags),

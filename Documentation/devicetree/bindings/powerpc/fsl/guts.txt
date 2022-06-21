@@ -9,6 +9,14 @@ Required properties:
 
  - compatible : Should define the compatible device type for
    global-utilities.
+<<<<<<< HEAD
+=======
+   Possible compatibles:
+	"fsl,qoriq-device-config-1.0"
+	"fsl,qoriq-device-config-2.0"
+	"fsl,<chip>-device-config"
+	"fsl,<chip>-guts"
+>>>>>>> v4.9.227
  - reg : Offset and length of the register set for the device.
 
 Recommended properties:

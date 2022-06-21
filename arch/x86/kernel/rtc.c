@@ -13,7 +13,11 @@
 #include <asm/x86_init.h>
 #include <asm/time.h>
 #include <asm/intel-mid.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+#include <asm/setup.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_X86_32
 /*
@@ -46,6 +50,7 @@ int mach_set_rtc_mmss(const struct timespec *now)
 
 	rtc_time_to_tm(nowtime, &tm);
 	if (!rtc_valid_tm(&tm)) {
+<<<<<<< HEAD
 		retval = set_rtc_time(&tm);
 		if (retval)
 			printk(KERN_ERR "%s: RTC write failed with error %d\n",
@@ -54,6 +59,16 @@ int mach_set_rtc_mmss(const struct timespec *now)
 		printk(KERN_ERR
 		       "%s: Invalid RTC value: write of %lx to RTC failed\n",
 			__FUNCTION__, nowtime);
+=======
+		retval = mc146818_set_time(&tm);
+		if (retval)
+			printk(KERN_ERR "%s: RTC write failed with error %d\n",
+			       __func__, retval);
+	} else {
+		printk(KERN_ERR
+		       "%s: Invalid RTC value: write of %lx to RTC failed\n",
+			__func__, nowtime);
+>>>>>>> v4.9.227
 		retval = -EINVAL;
 	}
 	return retval;
@@ -185,6 +200,7 @@ static __init int add_rtc_cmos(void)
 		}
 	}
 #endif
+<<<<<<< HEAD
 	if (of_have_populated_dt())
 		return 0;
 
@@ -200,6 +216,11 @@ static __init int add_rtc_cmos(void)
 	}
 #endif
 
+=======
+	if (!x86_platform.legacy.rtc)
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	platform_device_register(&rtc_device);
 	dev_info(&rtc_device.dev,
 		 "registered platform RTC device (no PNP device found)\n");

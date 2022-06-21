@@ -22,7 +22,11 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> v4.9.227
  */
 
 #ifndef _ISL6421_H

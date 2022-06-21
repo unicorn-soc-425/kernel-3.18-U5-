@@ -1,5 +1,8 @@
 /*
+<<<<<<< HEAD
  * linux/drivers/i2c/chips/twl4030-power.c
+=======
+>>>>>>> v4.9.227
  *
  * Handle TWL4030 Power initialization
  *
@@ -264,7 +267,13 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int twl4030_config_wakeup12_sequence(u8 address)
+=======
+static int
+twl4030_config_wakeup12_sequence(const struct twl4030_power_data *pdata,
+				 u8 address)
+>>>>>>> v4.9.227
 {
 	int err = 0;
 	u8 data;
@@ -293,13 +302,22 @@ static int twl4030_config_wakeup12_sequence(u8 address)
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	if (machine_is_omap_3430sdp() || machine_is_omap_ldp()) {
+=======
+	if (pdata->ac_charger_quirk || machine_is_omap_3430sdp() ||
+	    machine_is_omap_ldp()) {
+>>>>>>> v4.9.227
 		/* Disabling AC charger effect on sleep-active transitions */
 		err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &data,
 				      R_CFG_P1_TRANSITION);
 		if (err)
 			goto out;
+<<<<<<< HEAD
 		data &= ~(1<<1);
+=======
+		data &= ~STARTON_CHG;
+>>>>>>> v4.9.227
 		err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, data,
 				       R_CFG_P1_TRANSITION);
 		if (err)
@@ -459,8 +477,14 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int load_twl4030_script(struct twl4030_script *tscript,
 	       u8 address)
+=======
+static int load_twl4030_script(const struct twl4030_power_data *pdata,
+			       struct twl4030_script *tscript,
+			       u8 address)
+>>>>>>> v4.9.227
 {
 	int err;
 	static int order;
@@ -487,7 +511,11 @@ static int load_twl4030_script(struct twl4030_script *tscript,
 		if (err)
 			goto out;
 
+<<<<<<< HEAD
 		err = twl4030_config_wakeup12_sequence(address);
+=======
+		err = twl4030_config_wakeup12_sequence(pdata, address);
+>>>>>>> v4.9.227
 		if (err)
 			goto out;
 		order = 1;
@@ -567,7 +595,11 @@ twl4030_power_configure_scripts(const struct twl4030_power_data *pdata)
 	u8 address = twl4030_start_script_address;
 
 	for (i = 0; i < pdata->num; i++) {
+<<<<<<< HEAD
 		err = load_twl4030_script(pdata->scripts[i], address);
+=======
+		err = load_twl4030_script(pdata, pdata->scripts[i], address);
+>>>>>>> v4.9.227
 		if (err)
 			return err;
 		address += pdata->scripts[i]->size;
@@ -698,6 +730,10 @@ static struct twl4030_ins omap3_wrst_seq[] = {
 	TWL_RESOURCE_RESET(RES_MAIN_REF),
 	TWL_RESOURCE_GROUP_RESET(RES_GRP_ALL, RES_TYPE_R0, RES_TYPE2_R2),
 	TWL_RESOURCE_RESET(RES_VUSB_3V1),
+<<<<<<< HEAD
+=======
+	TWL_RESOURCE_RESET(RES_VMMC1),
+>>>>>>> v4.9.227
 	TWL_RESOURCE_GROUP_RESET(RES_GRP_ALL, RES_TYPE_R0, RES_TYPE2_R1),
 	TWL_RESOURCE_GROUP_RESET(RES_GRP_RC, RES_TYPE_ALL, RES_TYPE2_R0),
 	TWL_RESOURCE_ON(RES_RESET),
@@ -829,7 +865,26 @@ static struct twl4030_power_data osc_off_idle = {
 	.board_config		= osc_off_rconfig,
 };
 
+<<<<<<< HEAD
 static struct of_device_id twl4030_power_of_match[] = {
+=======
+static struct twl4030_power_data omap3_idle_ac_quirk = {
+	.scripts		= omap3_idle_scripts,
+	.num			= ARRAY_SIZE(omap3_idle_scripts),
+	.resource_config	= omap3_idle_rconfig,
+	.ac_charger_quirk	= true,
+};
+
+static struct twl4030_power_data omap3_idle_ac_quirk_osc_off = {
+	.scripts		= omap3_idle_scripts,
+	.num			= ARRAY_SIZE(omap3_idle_scripts),
+	.resource_config	= omap3_idle_rconfig,
+	.board_config		= osc_off_rconfig,
+	.ac_charger_quirk	= true,
+};
+
+static const struct of_device_id twl4030_power_of_match[] = {
+>>>>>>> v4.9.227
 	{
 		.compatible = "ti,twl4030-power",
 	},
@@ -845,6 +900,21 @@ static struct of_device_id twl4030_power_of_match[] = {
 		.compatible = "ti,twl4030-power-idle-osc-off",
 		.data = &osc_off_idle,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.compatible = "ti,twl4030-power-omap3-sdp",
+		.data = &omap3_idle_ac_quirk,
+	},
+	{
+		.compatible = "ti,twl4030-power-omap3-ldp",
+		.data = &omap3_idle_ac_quirk_osc_off,
+	},
+	{
+		.compatible = "ti,twl4030-power-omap3-evm",
+		.data = &omap3_idle_ac_quirk,
+	},
+>>>>>>> v4.9.227
 	{ },
 };
 MODULE_DEVICE_TABLE(of, twl4030_power_of_match);
@@ -933,7 +1003,10 @@ static int twl4030_power_remove(struct platform_device *pdev)
 static struct platform_driver twl4030_power_driver = {
 	.driver = {
 		.name	= "twl4030_power",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(twl4030_power_of_match),
 	},
 	.probe		= twl4030_power_probe,

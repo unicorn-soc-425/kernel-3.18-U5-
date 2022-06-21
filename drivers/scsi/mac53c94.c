@@ -18,11 +18,18 @@
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/pci.h>
+>>>>>>> v4.9.227
 #include <asm/dbdma.h>
 #include <asm/io.h>
 #include <asm/pgtable.h>
 #include <asm/prom.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/macio.h>
 
 #include <scsi/scsi.h>
@@ -382,16 +389,27 @@ static void set_dma_cmds(struct fsc_state *state, struct scsi_cmnd *cmd)
 		if (dma_len > 0xffff)
 			panic("mac53c94: scatterlist element >= 64k");
 		total += dma_len;
+<<<<<<< HEAD
 		st_le16(&dcmds->req_count, dma_len);
 		st_le16(&dcmds->command, dma_cmd);
 		st_le32(&dcmds->phy_addr, dma_addr);
+=======
+		dcmds->req_count = cpu_to_le16(dma_len);
+		dcmds->command = cpu_to_le16(dma_cmd);
+		dcmds->phy_addr = cpu_to_le32(dma_addr);
+>>>>>>> v4.9.227
 		dcmds->xfer_status = 0;
 		++dcmds;
 	}
 
 	dma_cmd += OUTPUT_LAST - OUTPUT_MORE;
+<<<<<<< HEAD
 	st_le16(&dcmds[-1].command, dma_cmd);
 	st_le16(&dcmds->command, DBDMA_STOP);
+=======
+	dcmds[-1].command = cpu_to_le16(dma_cmd);
+	dcmds->command = cpu_to_le16(DBDMA_STOP);
+>>>>>>> v4.9.227
 	cmd->SCp.this_residual = total;
 }
 
@@ -403,7 +421,10 @@ static struct scsi_host_template mac53c94_template = {
 	.can_queue	= 1,
 	.this_id	= 7,
 	.sg_tablesize	= SG_ALL,
+<<<<<<< HEAD
 	.cmd_per_lun	= 1,
+=======
+>>>>>>> v4.9.227
 	.use_clustering	= DISABLE_CLUSTERING,
 };
 

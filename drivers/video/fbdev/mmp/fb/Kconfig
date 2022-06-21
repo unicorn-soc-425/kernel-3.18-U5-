@@ -1,7 +1,11 @@
 if MMP_DISP
 
 config MMP_FB
+<<<<<<< HEAD
 	bool "fb driver for Marvell MMP Display Subsystem"
+=======
+	tristate "fb driver for Marvell MMP Display Subsystem"
+>>>>>>> v4.9.227
 	depends on FB
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA

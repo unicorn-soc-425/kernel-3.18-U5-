@@ -14,12 +14,17 @@
 
 #include <crypto/algapi.h>
 #include <crypto/gf128mul.h>
+<<<<<<< HEAD
+=======
+#include <crypto/ghash.h>
+>>>>>>> v4.9.227
 #include <crypto/internal/hash.h>
 #include <linux/crypto.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #define GHASH_BLOCK_SIZE	16
 #define GHASH_DIGEST_SIZE	16
 
@@ -32,6 +37,8 @@ struct ghash_desc_ctx {
 	u32 bytes;
 };
 
+=======
+>>>>>>> v4.9.227
 static int ghash_init(struct shash_desc *desc)
 {
 	struct ghash_desc_ctx *dctx = shash_desc_ctx(desc);
@@ -45,6 +52,10 @@ static int ghash_setkey(struct crypto_shash *tfm,
 			const u8 *key, unsigned int keylen)
 {
 	struct ghash_ctx *ctx = crypto_shash_ctx(tfm);
+<<<<<<< HEAD
+=======
+	be128 k;
+>>>>>>> v4.9.227
 
 	if (keylen != GHASH_BLOCK_SIZE) {
 		crypto_shash_set_flags(tfm, CRYPTO_TFM_RES_BAD_KEY_LEN);
@@ -53,7 +64,16 @@ static int ghash_setkey(struct crypto_shash *tfm,
 
 	if (ctx->gf128)
 		gf128mul_free_4k(ctx->gf128);
+<<<<<<< HEAD
 	ctx->gf128 = gf128mul_init_4k_lle((be128 *)key);
+=======
+
+	BUILD_BUG_ON(sizeof(k) != GHASH_BLOCK_SIZE);
+	memcpy(&k, key, GHASH_BLOCK_SIZE); /* avoid violating alignment rules */
+	ctx->gf128 = gf128mul_init_4k_lle(&k);
+	memzero_explicit(&k, GHASH_BLOCK_SIZE);
+
+>>>>>>> v4.9.227
 	if (!ctx->gf128)
 		return -ENOMEM;
 

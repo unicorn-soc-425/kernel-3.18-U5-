@@ -544,7 +544,10 @@ static int scx200_remove(struct platform_device *pdev)
 static struct platform_driver scx200_pci_driver = {
 	.driver = {
 		.name = "cs5535-smb",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = scx200_probe,
 	.remove = scx200_remove,

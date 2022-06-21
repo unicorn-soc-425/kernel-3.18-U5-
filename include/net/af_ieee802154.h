@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * IEEE 802.15.4 inteface for userspace
+=======
+ * IEEE 802.15.4 interface for userspace
+>>>>>>> v4.9.227
  *
  * Copyright 2007, 2008 Siemens AG
  *
@@ -12,10 +16,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  * Written by:
  * Sergey Lapin <slapin@ossfans.org>
  * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>

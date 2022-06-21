@@ -186,8 +186,36 @@ static int usb3503_probe(struct usb3503 *hub)
 		hub->mode		= pdata->initial_mode;
 	} else if (np) {
 		struct clk *clk;
+<<<<<<< HEAD
 		hub->port_off_mask = 0;
 
+=======
+		u32 rate = 0;
+		hub->port_off_mask = 0;
+
+		if (!of_property_read_u32(np, "refclk-frequency", &rate)) {
+			switch (rate) {
+			case 38400000:
+			case 26000000:
+			case 19200000:
+			case 12000000:
+				hub->secondary_ref_clk = 0;
+				break;
+			case 24000000:
+			case 27000000:
+			case 25000000:
+			case 50000000:
+				hub->secondary_ref_clk = 1;
+				break;
+			default:
+				dev_err(dev,
+					"unsupported reference clock rate (%d)\n",
+					(int) rate);
+				return -EINVAL;
+			}
+		}
+
+>>>>>>> v4.9.227
 		clk = devm_clk_get(dev, "refclk");
 		if (IS_ERR(clk) && PTR_ERR(clk) != -ENOENT) {
 			dev_err(dev, "unable to request refclk (%ld)\n",
@@ -196,6 +224,7 @@ static int usb3503_probe(struct usb3503 *hub)
 		}
 
 		if (!IS_ERR(clk)) {
+<<<<<<< HEAD
 			u32 rate = 0;
 			hub->clk = clk;
 
@@ -221,6 +250,11 @@ static int usb3503_probe(struct usb3503 *hub)
 						(int) rate);
 					return -EINVAL;
 				}
+=======
+			hub->clk = clk;
+
+			if (rate != 0) {
+>>>>>>> v4.9.227
 				err = clk_set_rate(hub->clk, rate);
 				if (err) {
 					dev_err(dev,
@@ -316,10 +350,15 @@ static int usb3503_i2c_probe(struct i2c_client *i2c,
 	int err;
 
 	hub = devm_kzalloc(&i2c->dev, sizeof(struct usb3503), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!hub) {
 		dev_err(&i2c->dev, "private data alloc fail\n");
 		return -ENOMEM;
 	}
+=======
+	if (!hub)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	i2c_set_clientdata(i2c, hub);
 	hub->regmap = devm_regmap_init_i2c(i2c, &usb3503_regmap_config);
@@ -333,20 +372,55 @@ static int usb3503_i2c_probe(struct i2c_client *i2c,
 	return usb3503_probe(hub);
 }
 
+<<<<<<< HEAD
+=======
+static int usb3503_i2c_remove(struct i2c_client *i2c)
+{
+	struct usb3503 *hub;
+
+	hub = i2c_get_clientdata(i2c);
+	if (hub->clk)
+		clk_disable_unprepare(hub->clk);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int usb3503_platform_probe(struct platform_device *pdev)
 {
 	struct usb3503 *hub;
 
 	hub = devm_kzalloc(&pdev->dev, sizeof(struct usb3503), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!hub) {
 		dev_err(&pdev->dev, "private data alloc fail\n");
 		return -ENOMEM;
 	}
 	hub->dev = &pdev->dev;
+=======
+	if (!hub)
+		return -ENOMEM;
+	hub->dev = &pdev->dev;
+	platform_set_drvdata(pdev, hub);
+>>>>>>> v4.9.227
 
 	return usb3503_probe(hub);
 }
 
+<<<<<<< HEAD
+=======
+static int usb3503_platform_remove(struct platform_device *pdev)
+{
+	struct usb3503 *hub;
+
+	hub = platform_get_drvdata(pdev);
+	if (hub->clk)
+		clk_disable_unprepare(hub->clk);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM_SLEEP
 static int usb3503_i2c_suspend(struct device *dev)
 {
@@ -400,6 +474,10 @@ static struct i2c_driver usb3503_i2c_driver = {
 		.of_match_table = of_match_ptr(usb3503_of_match),
 	},
 	.probe		= usb3503_i2c_probe,
+<<<<<<< HEAD
+=======
+	.remove		= usb3503_i2c_remove,
+>>>>>>> v4.9.227
 	.id_table	= usb3503_id,
 };
 
@@ -407,16 +485,26 @@ static struct platform_driver usb3503_platform_driver = {
 	.driver = {
 		.name = USB3503_I2C_NAME,
 		.of_match_table = of_match_ptr(usb3503_of_match),
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe		= usb3503_platform_probe,
+=======
+	},
+	.probe		= usb3503_platform_probe,
+	.remove		= usb3503_platform_remove,
+>>>>>>> v4.9.227
 };
 
 static int __init usb3503_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	err = i2c_register_driver(THIS_MODULE, &usb3503_i2c_driver);
+=======
+	err = i2c_add_driver(&usb3503_i2c_driver);
+>>>>>>> v4.9.227
 	if (err != 0)
 		pr_err("usb3503: Failed to register I2C driver: %d\n", err);
 

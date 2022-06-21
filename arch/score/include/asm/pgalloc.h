@@ -42,8 +42,12 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm,
 {
 	pte_t *pte;
 
+<<<<<<< HEAD
 	pte = (pte_t *) __get_free_pages(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO,
 					PTE_ORDER);
+=======
+	pte = (pte_t *) __get_free_pages(GFP_KERNEL|__GFP_ZERO, PTE_ORDER);
+>>>>>>> v4.9.227
 
 	return pte;
 }
@@ -53,7 +57,11 @@ static inline struct page *pte_alloc_one(struct mm_struct *mm,
 {
 	struct page *pte;
 
+<<<<<<< HEAD
 	pte = alloc_pages(GFP_KERNEL | __GFP_REPEAT, PTE_ORDER);
+=======
+	pte = alloc_pages(GFP_KERNEL, PTE_ORDER);
+>>>>>>> v4.9.227
 	if (!pte)
 		return NULL;
 	clear_highpage(pte);

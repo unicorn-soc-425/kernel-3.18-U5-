@@ -18,7 +18,11 @@
 #include <linux/irq.h>
 #include <linux/of_platform.h>
 #include <linux/fsl-diu-fb.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> v4.9.227
 #include <sysdev/fsl_soc.h>
 
 #include <asm/cacheflush.h>
@@ -47,7 +51,11 @@ static void __init mpc512x_restart_init(void)
 	of_node_put(np);
 }
 
+<<<<<<< HEAD
 void mpc512x_restart(char *cmd)
+=======
+void __noreturn mpc512x_restart(char *cmd)
+>>>>>>> v4.9.227
 {
 	if (reset_module_base) {
 		/* Enable software reset "RSTE" */
@@ -188,7 +196,11 @@ static struct fsl_diu_shared_fb __attribute__ ((__aligned__(8))) diu_shared_fb;
 static inline void mpc512x_free_bootmem(struct page *page)
 {
 	BUG_ON(PageTail(page));
+<<<<<<< HEAD
 	BUG_ON(atomic_read(&page->_count) > 1);
+=======
+	BUG_ON(page_ref_count(page) > 1);
+>>>>>>> v4.9.227
 	free_reserved_page(page);
 }
 
@@ -297,14 +309,23 @@ static void __init mpc512x_setup_diu(void)
 	 * and so negatively affect boot time. Instead we reserve the
 	 * already configured frame buffer area so that it won't be
 	 * destroyed. The starting address of the area to reserve and
+<<<<<<< HEAD
 	 * also it's length is passed to reserve_bootmem(). It will be
+=======
+	 * also it's length is passed to memblock_reserve(). It will be
+>>>>>>> v4.9.227
 	 * freed later on first open of fbdev, when splash image is not
 	 * needed any more.
 	 */
 	if (diu_shared_fb.in_use) {
+<<<<<<< HEAD
 		ret = reserve_bootmem(diu_shared_fb.fb_phys,
 				      diu_shared_fb.fb_len,
 				      BOOTMEM_EXCLUSIVE);
+=======
+		ret = memblock_reserve(diu_shared_fb.fb_phys,
+				       diu_shared_fb.fb_len);
+>>>>>>> v4.9.227
 		if (ret) {
 			pr_err("%s: reserve bootmem failed\n", __func__);
 			diu_shared_fb.in_use = false;

@@ -64,6 +64,11 @@ struct plug_sched_data {
 	 */
 	bool unplug_indefinite;
 
+<<<<<<< HEAD
+=======
+	bool throttled;
+
+>>>>>>> v4.9.227
 	/* Queue Limit in bytes */
 	u32 limit;
 
@@ -86,7 +91,12 @@ struct plug_sched_data {
 	u32 pkts_to_release;
 };
 
+<<<<<<< HEAD
 static int plug_enqueue(struct sk_buff *skb, struct Qdisc *sch)
+=======
+static int plug_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+			struct sk_buff **to_free)
+>>>>>>> v4.9.227
 {
 	struct plug_sched_data *q = qdisc_priv(sch);
 
@@ -96,14 +106,22 @@ static int plug_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		return qdisc_enqueue_tail(skb, sch);
 	}
 
+<<<<<<< HEAD
 	return qdisc_reshape_fail(skb, sch);
+=======
+	return qdisc_drop(skb, sch, to_free);
+>>>>>>> v4.9.227
 }
 
 static struct sk_buff *plug_dequeue(struct Qdisc *sch)
 {
 	struct plug_sched_data *q = qdisc_priv(sch);
 
+<<<<<<< HEAD
 	if (qdisc_is_throttled(sch))
+=======
+	if (q->throttled)
+>>>>>>> v4.9.227
 		return NULL;
 
 	if (!q->unplug_indefinite) {
@@ -111,7 +129,11 @@ static struct sk_buff *plug_dequeue(struct Qdisc *sch)
 			/* No more packets to dequeue. Block the queue
 			 * and wait for the next release command.
 			 */
+<<<<<<< HEAD
 			qdisc_throttled(sch);
+=======
+			q->throttled = true;
+>>>>>>> v4.9.227
 			return NULL;
 		}
 		q->pkts_to_release--;
@@ -130,12 +152,17 @@ static int plug_init(struct Qdisc *sch, struct nlattr *opt)
 	q->unplug_indefinite = false;
 
 	if (opt == NULL) {
+<<<<<<< HEAD
 		/* We will set a default limit of 100 pkts (~150kB)
 		 * in case tx_queue_len is not available. The
 		 * default value is completely arbitrary.
 		 */
 		u32 pkt_limit = qdisc_dev(sch)->tx_queue_len ? : 100;
 		q->limit = pkt_limit * psched_mtu(qdisc_dev(sch));
+=======
+		q->limit = qdisc_dev(sch)->tx_queue_len
+		           * psched_mtu(qdisc_dev(sch));
+>>>>>>> v4.9.227
 	} else {
 		struct tc_plug_qopt *ctl = nla_data(opt);
 
@@ -145,7 +172,11 @@ static int plug_init(struct Qdisc *sch, struct nlattr *opt)
 		q->limit = ctl->limit;
 	}
 
+<<<<<<< HEAD
 	qdisc_throttled(sch);
+=======
+	q->throttled = true;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -177,7 +208,11 @@ static int plug_change(struct Qdisc *sch, struct nlattr *opt)
 		q->pkts_last_epoch = q->pkts_current_epoch;
 		q->pkts_current_epoch = 0;
 		if (q->unplug_indefinite)
+<<<<<<< HEAD
 			qdisc_throttled(sch);
+=======
+			q->throttled = true;
+>>>>>>> v4.9.227
 		q->unplug_indefinite = false;
 		break;
 	case TCQ_PLUG_RELEASE_ONE:
@@ -186,7 +221,11 @@ static int plug_change(struct Qdisc *sch, struct nlattr *opt)
 		 */
 		q->pkts_to_release += q->pkts_last_epoch;
 		q->pkts_last_epoch = 0;
+<<<<<<< HEAD
 		qdisc_unthrottled(sch);
+=======
+		q->throttled = false;
+>>>>>>> v4.9.227
 		netif_schedule_queue(sch->dev_queue);
 		break;
 	case TCQ_PLUG_RELEASE_INDEFINITE:
@@ -194,7 +233,11 @@ static int plug_change(struct Qdisc *sch, struct nlattr *opt)
 		q->pkts_to_release = 0;
 		q->pkts_last_epoch = 0;
 		q->pkts_current_epoch = 0;
+<<<<<<< HEAD
 		qdisc_unthrottled(sch);
+=======
+		q->throttled = false;
+>>>>>>> v4.9.227
 		netif_schedule_queue(sch->dev_queue);
 		break;
 	case TCQ_PLUG_LIMIT:
@@ -216,6 +259,10 @@ static struct Qdisc_ops plug_qdisc_ops __read_mostly = {
 	.peek        =       qdisc_peek_head,
 	.init        =       plug_init,
 	.change      =       plug_change,
+<<<<<<< HEAD
+=======
+	.reset       =	     qdisc_reset_queue,
+>>>>>>> v4.9.227
 	.owner       =       THIS_MODULE,
 };
 

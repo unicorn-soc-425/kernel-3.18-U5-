@@ -84,7 +84,11 @@
 	};
 
 	rtc: rtc@68 {
+<<<<<<< HEAD
 		compatible = "stm,m41t62";
+=======
+		compatible = "st,m41t62";
+>>>>>>> v4.9.227
 		reg = <0x68>;
 	};
 };

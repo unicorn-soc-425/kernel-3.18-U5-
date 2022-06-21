@@ -42,6 +42,14 @@ static inline unsigned int get_dcrn(u32 inst)
 	return ((inst >> 16) & 0x1f) | ((inst >> 6) & 0x3e0);
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned int get_tmrn(u32 inst)
+{
+	return ((inst >> 16) & 0x1f) | ((inst >> 6) & 0x3e0);
+}
+
+>>>>>>> v4.9.227
 static inline unsigned int get_rt(u32 inst)
 {
 	return (inst >> 21) & 0x1f;

@@ -744,7 +744,11 @@ static struct wmt_mci_caps wm8505_caps = {
 	.max_blk_size = 2048,
 };
 
+<<<<<<< HEAD
 static struct of_device_id wmt_mci_dt_ids[] = {
+=======
+static const struct of_device_id wmt_mci_dt_ids[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "wm,wm8505-sdhc", .data = &wm8505_caps },
 	{ /* Sentinel */ },
 };
@@ -991,7 +995,10 @@ static struct platform_driver wmt_mci_driver = {
 	.remove = wmt_mci_remove,
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = wmt_mci_pm_ops,
 		.of_match_table = wmt_mci_dt_ids,
 	},

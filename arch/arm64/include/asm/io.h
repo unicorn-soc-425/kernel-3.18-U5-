@@ -26,16 +26,24 @@
 
 #include <asm/byteorder.h>
 #include <asm/barrier.h>
+<<<<<<< HEAD
+=======
+#include <asm/memory.h>
+>>>>>>> v4.9.227
 #include <asm/pgtable.h>
 #include <asm/early_ioremap.h>
 #include <asm/alternative.h>
 #include <asm/cpufeature.h>
+<<<<<<< HEAD
 #include <linux/msm_rtb.h>
+=======
+>>>>>>> v4.9.227
 
 #include <xen/xen.h>
 
 /*
  * Generic IO read/write.  These perform native-endian accesses.
+<<<<<<< HEAD
  * that some architectures will want to re-define __raw_{read,write}w.
  */
 static inline void __raw_writeb_no_log(u8 val, volatile void __iomem *addr)
@@ -59,6 +67,35 @@ static inline void __raw_writeq_no_log(u64 val, volatile void __iomem *addr)
 }
 
 static inline u8 __raw_readb_no_log(const volatile void __iomem *addr)
+=======
+ */
+#define __raw_writeb __raw_writeb
+static inline void __raw_writeb(u8 val, volatile void __iomem *addr)
+{
+	asm volatile("strb %w0, [%1]" : : "rZ" (val), "r" (addr));
+}
+
+#define __raw_writew __raw_writew
+static inline void __raw_writew(u16 val, volatile void __iomem *addr)
+{
+	asm volatile("strh %w0, [%1]" : : "rZ" (val), "r" (addr));
+}
+
+#define __raw_writel __raw_writel
+static inline void __raw_writel(u32 val, volatile void __iomem *addr)
+{
+	asm volatile("str %w0, [%1]" : : "rZ" (val), "r" (addr));
+}
+
+#define __raw_writeq __raw_writeq
+static inline void __raw_writeq(u64 val, volatile void __iomem *addr)
+{
+	asm volatile("str %x0, [%1]" : : "rZ" (val), "r" (addr));
+}
+
+#define __raw_readb __raw_readb
+static inline u8 __raw_readb(const volatile void __iomem *addr)
+>>>>>>> v4.9.227
 {
 	u8 val;
 	asm volatile(ALTERNATIVE("ldrb %w0, [%1]",
@@ -68,7 +105,12 @@ static inline u8 __raw_readb_no_log(const volatile void __iomem *addr)
 	return val;
 }
 
+<<<<<<< HEAD
 static inline u16 __raw_readw_no_log(const volatile void __iomem *addr)
+=======
+#define __raw_readw __raw_readw
+static inline u16 __raw_readw(const volatile void __iomem *addr)
+>>>>>>> v4.9.227
 {
 	u16 val;
 
@@ -79,7 +121,12 @@ static inline u16 __raw_readw_no_log(const volatile void __iomem *addr)
 	return val;
 }
 
+<<<<<<< HEAD
 static inline u32 __raw_readl_no_log(const volatile void __iomem *addr)
+=======
+#define __raw_readl __raw_readl
+static inline u32 __raw_readl(const volatile void __iomem *addr)
+>>>>>>> v4.9.227
 {
 	u32 val;
 	asm volatile(ALTERNATIVE("ldr %w0, [%1]",
@@ -89,7 +136,12 @@ static inline u32 __raw_readl_no_log(const volatile void __iomem *addr)
 	return val;
 }
 
+<<<<<<< HEAD
 static inline u64 __raw_readq_no_log(const volatile void __iomem *addr)
+=======
+#define __raw_readq __raw_readq
+static inline u64 __raw_readq(const volatile void __iomem *addr)
+>>>>>>> v4.9.227
 {
 	u64 val;
 	asm volatile(ALTERNATIVE("ldr %0, [%1]",
@@ -99,6 +151,7 @@ static inline u64 __raw_readq_no_log(const volatile void __iomem *addr)
 	return val;
 }
 
+<<<<<<< HEAD
 /*
  * There may be cases when  clients don't want to support or can't support the
  * logging, The appropriate functions can be used but clinets should carefully
@@ -139,6 +192,8 @@ static inline u64 __raw_readq_no_log(const volatile void __iomem *addr)
 #define __raw_readl(a)		__raw_read_logged((a), l, u32)
 #define __raw_readq(a)		__raw_read_logged((a), q, u64)
 
+=======
+>>>>>>> v4.9.227
 /* IO barriers */
 #define __iormb()		rmb()
 #define __iowmb()		wmb()
@@ -150,16 +205,24 @@ static inline u64 __raw_readq_no_log(const volatile void __iomem *addr)
  * ordering rules but do not guarantee any ordering relative to Normal memory
  * accesses.
  */
+<<<<<<< HEAD
 #define readb_relaxed(c)	({ u8  __v = __raw_readb(c); __v; })
 #define readw_relaxed(c)	({ u16 __v = le16_to_cpu((__force __le16)__raw_readw(c)); __v; })
 #define readl_relaxed(c)	({ u32 __v = le32_to_cpu((__force __le32)__raw_readl(c)); __v; })
 #define readq_relaxed(c)	({ u64 __v = le64_to_cpu((__force __le64)__raw_readq(c)); __v; })
+=======
+#define readb_relaxed(c)	({ u8  __r = __raw_readb(c); __r; })
+#define readw_relaxed(c)	({ u16 __r = le16_to_cpu((__force __le16)__raw_readw(c)); __r; })
+#define readl_relaxed(c)	({ u32 __r = le32_to_cpu((__force __le32)__raw_readl(c)); __r; })
+#define readq_relaxed(c)	({ u64 __r = le64_to_cpu((__force __le64)__raw_readq(c)); __r; })
+>>>>>>> v4.9.227
 
 #define writeb_relaxed(v,c)	((void)__raw_writeb((v),(c)))
 #define writew_relaxed(v,c)	((void)__raw_writew((__force u16)cpu_to_le16(v),(c)))
 #define writel_relaxed(v,c)	((void)__raw_writel((__force u32)cpu_to_le32(v),(c)))
 #define writeq_relaxed(v,c)	((void)__raw_writeq((__force u64)cpu_to_le64(v),(c)))
 
+<<<<<<< HEAD
 #define readb_relaxed_no_log(c)	({ u8 __v = __raw_readb_no_log(c); __v; })
 #define readw_relaxed_no_log(c)	({ u16 __v = le16_to_cpu((__force __le16)__raw_readw_no_log(c)); __v; })
 #define readl_relaxed_no_log(c)	({ u32 __v = le32_to_cpu((__force __le32)__raw_readl_no_log(c)); __v; })
@@ -170,6 +233,8 @@ static inline u64 __raw_readq_no_log(const volatile void __iomem *addr)
 #define writel_relaxed_no_log(v, c)	((void)__raw_writel_no_log((__force u32)cpu_to_le32(v), (c)))
 #define writeq_relaxed_no_log(v, c)	((void)__raw_writeq_no_log((__force u64)cpu_to_le64(v), (c)))
 
+=======
+>>>>>>> v4.9.227
 /*
  * I/O memory access primitives. Reads are ordered relative to any
  * following Normal memory access. Writes are ordered relative to any prior
@@ -185,6 +250,7 @@ static inline u64 __raw_readq_no_log(const volatile void __iomem *addr)
 #define writel(v,c)		({ __iowmb(); writel_relaxed((v),(c)); })
 #define writeq(v,c)		({ __iowmb(); writeq_relaxed((v),(c)); })
 
+<<<<<<< HEAD
 #define readb_no_log(c)		({ u8  __v = readb_relaxed_no_log(c); __iormb(); __v; })
 #define readw_no_log(c)		({ u16 __v = readw_relaxed_no_log(c); __iormb(); __v; })
 #define readl_no_log(c)		({ u32 __v = readl_relaxed_no_log(c); __iormb(); __v; })
@@ -195,10 +261,13 @@ static inline u64 __raw_readq_no_log(const volatile void __iomem *addr)
 #define writel_no_log(v, c)		({ __iowmb(); writel_relaxed_no_log((v), (c)); })
 #define writeq_no_log(v, c)		({ __iowmb(); writeq_relaxed_no_log((v), (c)); })
 
+=======
+>>>>>>> v4.9.227
 /*
  *  I/O port access primitives.
  */
 #define arch_has_dev_port()	(1)
+<<<<<<< HEAD
 #define IO_SPACE_LIMIT		(SZ_32M - 1)
 #define PCI_IOBASE		((void __iomem *)(MODULES_VADDR - SZ_32M))
 
@@ -289,6 +358,10 @@ static inline void outsl(unsigned long addr, const void *buffer, int count)
 #define outsb_p(port,from,len)	outsb(port,from,len)
 #define outsw_p(port,from,len)	outsw(port,from,len)
 #define outsl_p(port,from,len)	outsl(port,from,len)
+=======
+#define IO_SPACE_LIMIT		(PCI_IO_SIZE - 1)
+#define PCI_IOBASE		((void __iomem *)PCI_IO_START)
+>>>>>>> v4.9.227
 
 /*
  * String version of I/O memory access operations.
@@ -311,11 +384,29 @@ extern void __iomem *ioremap_cache(phys_addr_t phys_addr, size_t size);
 #define ioremap(addr, size)		__ioremap((addr), (size), __pgprot(PROT_DEVICE_nGnRE))
 #define ioremap_nocache(addr, size)	__ioremap((addr), (size), __pgprot(PROT_DEVICE_nGnRE))
 #define ioremap_wc(addr, size)		__ioremap((addr), (size), __pgprot(PROT_NORMAL_NC))
+<<<<<<< HEAD
 #define ioremap_cached(addr, size)	__ioremap((addr), (size), __pgprot(PROT_NORMAL))
 #define iounmap				__iounmap
 
 #define ARCH_HAS_IOREMAP_WC
 #include <asm-generic/iomap.h>
+=======
+#define ioremap_wt(addr, size)		__ioremap((addr), (size), __pgprot(PROT_DEVICE_nGnRE))
+#define iounmap				__iounmap
+
+/*
+ * io{read,write}{16,32,64}be() macros
+ */
+#define ioread16be(p)		({ __u16 __v = be16_to_cpu((__force __be16)__raw_readw(p)); __iormb(); __v; })
+#define ioread32be(p)		({ __u32 __v = be32_to_cpu((__force __be32)__raw_readl(p)); __iormb(); __v; })
+#define ioread64be(p)		({ __u64 __v = be64_to_cpu((__force __be64)__raw_readq(p)); __iormb(); __v; })
+
+#define iowrite16be(v,p)	({ __iowmb(); __raw_writew((__force __u16)cpu_to_be16(v), p); })
+#define iowrite32be(v,p)	({ __iowmb(); __raw_writel((__force __u32)cpu_to_be32(v), p); })
+#define iowrite64be(v,p)	({ __iowmb(); __raw_writeq((__force __u64)cpu_to_be64(v), p); })
+
+#include <asm-generic/io.h>
+>>>>>>> v4.9.227
 
 /*
  * More restrictive address range checking than the default implementation
@@ -327,6 +418,7 @@ extern int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
 
 extern int devmem_is_allowed(unsigned long pfn);
 
+<<<<<<< HEAD
 /*
  * Convert a physical pointer to a virtual kernel pointer for /dev/mem
  * access
@@ -338,6 +430,8 @@ extern int devmem_is_allowed(unsigned long pfn);
  */
 #define xlate_dev_kmem_ptr(p)	p
 
+=======
+>>>>>>> v4.9.227
 struct bio_vec;
 extern bool xen_biovec_phys_mergeable(const struct bio_vec *vec1,
 				      const struct bio_vec *vec2);

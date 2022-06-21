@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,11 +55,19 @@ ACPI_MODULE_NAME("utobject")
 /* Local prototypes */
 static acpi_status
 acpi_ut_get_simple_object_size(union acpi_operand_object *obj,
+<<<<<<< HEAD
 			       acpi_size * obj_length);
 
 static acpi_status
 acpi_ut_get_package_object_size(union acpi_operand_object *obj,
 				acpi_size * obj_length);
+=======
+			       acpi_size *obj_length);
+
+static acpi_status
+acpi_ut_get_package_object_size(union acpi_operand_object *obj,
+				acpi_size *obj_length);
+>>>>>>> v4.9.227
 
 static acpi_status
 acpi_ut_get_element_length(u8 object_type,
@@ -112,9 +124,15 @@ union acpi_operand_object *acpi_ut_create_internal_object_dbg(const char
 
 		/* These types require a secondary object */
 
+<<<<<<< HEAD
 		second_object = acpi_ut_allocate_object_desc_dbg(module_name,
 								 line_number,
 								 component_id);
+=======
+		second_object =
+		    acpi_ut_allocate_object_desc_dbg(module_name, line_number,
+						     component_id);
+>>>>>>> v4.9.227
 		if (!second_object) {
 			acpi_ut_delete_object_desc(object);
 			return_PTR(NULL);
@@ -177,7 +195,11 @@ union acpi_operand_object *acpi_ut_create_package_object(u32 count)
 	 * Create the element array. Count+1 allows the array to be null
 	 * terminated.
 	 */
+<<<<<<< HEAD
 	package_elements = ACPI_ALLOCATE_ZEROED(((acpi_size) count +
+=======
+	package_elements = ACPI_ALLOCATE_ZEROED(((acpi_size)count +
+>>>>>>> v4.9.227
 						 1) * sizeof(void *));
 	if (!package_elements) {
 		ACPI_FREE(package_desc);
@@ -253,7 +275,12 @@ union acpi_operand_object *acpi_ut_create_buffer_object(acpi_size buffer_size)
 		buffer = ACPI_ALLOCATE_ZEROED(buffer_size);
 		if (!buffer) {
 			ACPI_ERROR((AE_INFO, "Could not allocate size %u",
+<<<<<<< HEAD
 				    (u32) buffer_size));
+=======
+				    (u32)buffer_size));
+
+>>>>>>> v4.9.227
 			acpi_ut_remove_reference(buffer_desc);
 			return_PTR(NULL);
 		}
@@ -305,7 +332,12 @@ union acpi_operand_object *acpi_ut_create_string_object(acpi_size string_size)
 	string = ACPI_ALLOCATE_ZEROED(string_size + 1);
 	if (!string) {
 		ACPI_ERROR((AE_INFO, "Could not allocate size %u",
+<<<<<<< HEAD
 			    (u32) string_size));
+=======
+			    (u32)string_size));
+
+>>>>>>> v4.9.227
 		acpi_ut_remove_reference(string_desc);
 		return_PTR(NULL);
 	}
@@ -452,7 +484,11 @@ void acpi_ut_delete_object_desc(union acpi_operand_object *object)
 
 static acpi_status
 acpi_ut_get_simple_object_size(union acpi_operand_object *internal_object,
+<<<<<<< HEAD
 			       acpi_size * obj_length)
+=======
+			       acpi_size *obj_length)
+>>>>>>> v4.9.227
 {
 	acpi_size length;
 	acpi_size size;
@@ -493,12 +529,20 @@ acpi_ut_get_simple_object_size(union acpi_operand_object *internal_object,
 	switch (internal_object->common.type) {
 	case ACPI_TYPE_STRING:
 
+<<<<<<< HEAD
 		length += (acpi_size) internal_object->string.length + 1;
+=======
+		length += (acpi_size)internal_object->string.length + 1;
+>>>>>>> v4.9.227
 		break;
 
 	case ACPI_TYPE_BUFFER:
 
+<<<<<<< HEAD
 		length += (acpi_size) internal_object->buffer.length;
+=======
+		length += (acpi_size)internal_object->buffer.length;
+>>>>>>> v4.9.227
 		break;
 
 	case ACPI_TYPE_INTEGER:
@@ -638,7 +682,11 @@ acpi_ut_get_element_length(u8 object_type,
 
 static acpi_status
 acpi_ut_get_package_object_size(union acpi_operand_object *internal_object,
+<<<<<<< HEAD
 				acpi_size * obj_length)
+=======
+				acpi_size *obj_length)
+>>>>>>> v4.9.227
 {
 	acpi_status status;
 	struct acpi_pkg_info info;
@@ -649,8 +697,14 @@ acpi_ut_get_package_object_size(union acpi_operand_object *internal_object,
 	info.object_space = 0;
 	info.num_packages = 1;
 
+<<<<<<< HEAD
 	status = acpi_ut_walk_package_tree(internal_object, NULL,
 					   acpi_ut_get_element_length, &info);
+=======
+	status =
+	    acpi_ut_walk_package_tree(internal_object, NULL,
+				      acpi_ut_get_element_length, &info);
+>>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -660,8 +714,14 @@ acpi_ut_get_package_object_size(union acpi_operand_object *internal_object,
 	 * just add the length of the package objects themselves.
 	 * Round up to the next machine word.
 	 */
+<<<<<<< HEAD
 	info.length += ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(union acpi_object)) *
 	    (acpi_size) info.num_packages;
+=======
+	info.length +=
+	    ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(union acpi_object)) *
+	    (acpi_size)info.num_packages;
+>>>>>>> v4.9.227
 
 	/* Return the total package length */
 
@@ -685,15 +745,24 @@ acpi_ut_get_package_object_size(union acpi_operand_object *internal_object,
 
 acpi_status
 acpi_ut_get_object_size(union acpi_operand_object *internal_object,
+<<<<<<< HEAD
 			acpi_size * obj_length)
+=======
+			acpi_size *obj_length)
+>>>>>>> v4.9.227
 {
 	acpi_status status;
 
 	ACPI_FUNCTION_ENTRY();
 
 	if ((ACPI_GET_DESCRIPTOR_TYPE(internal_object) ==
+<<<<<<< HEAD
 	     ACPI_DESC_TYPE_OPERAND)
 	    && (internal_object->common.type == ACPI_TYPE_PACKAGE)) {
+=======
+	     ACPI_DESC_TYPE_OPERAND) &&
+	    (internal_object->common.type == ACPI_TYPE_PACKAGE)) {
+>>>>>>> v4.9.227
 		status =
 		    acpi_ut_get_package_object_size(internal_object,
 						    obj_length);

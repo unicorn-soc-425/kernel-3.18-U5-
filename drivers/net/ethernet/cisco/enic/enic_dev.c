@@ -177,6 +177,7 @@ int enic_dev_intr_coal_timer_info(struct enic *enic)
 	return err;
 }
 
+<<<<<<< HEAD
 int enic_vnic_dev_deinit(struct enic *enic)
 {
 	int err;
@@ -211,6 +212,8 @@ int enic_dev_deinit_done(struct enic *enic, int *status)
 	return err;
 }
 
+=======
+>>>>>>> v4.9.227
 /* rtnl lock is held */
 int enic_vlan_rx_add_vid(struct net_device *netdev, __be16 proto, u16 vid)
 {
@@ -237,6 +240,7 @@ int enic_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid)
 	return err;
 }
 
+<<<<<<< HEAD
 int enic_dev_enable2(struct enic *enic, int active)
 {
 	int err;
@@ -259,6 +263,8 @@ int enic_dev_enable2_done(struct enic *enic, int *status)
 	return err;
 }
 
+=======
+>>>>>>> v4.9.227
 int enic_dev_status_to_errno(int devcmd_status)
 {
 	switch (devcmd_status) {

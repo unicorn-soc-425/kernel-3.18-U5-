@@ -20,6 +20,12 @@ minixdf				Makes `df' act like Minix.
 check=none, nocheck	(*)	Don't do extra checking of bitmaps on mount
 				(check=normal and check=strict options removed)
 
+<<<<<<< HEAD
+=======
+dax				Use direct access (no page cache).  See
+				Documentation/filesystems/dax.txt.
+
+>>>>>>> v4.9.227
 debug				Extra debugging information is sent to the
 				kernel syslog.  Useful for developers.
 
@@ -56,8 +62,11 @@ noacl				Don't support POSIX ACLs.
 
 nobh				Do not attach buffer_heads to file pagecache.
 
+<<<<<<< HEAD
 xip				Use execute in place (no caching) if possible
 
+=======
+>>>>>>> v4.9.227
 grpquota,noquota,quota,usrquota	Quota options are silently ignored by ext2.
 
 
@@ -359,8 +368,13 @@ and are copied into the filesystem.  If a transaction is incomplete at
 the time of the crash, then there is no guarantee of consistency for
 the blocks in that transaction so they are discarded (which means any
 filesystem changes they represent are also lost).
+<<<<<<< HEAD
 Check Documentation/filesystems/ext3.txt if you want to read more about
 ext3 and journaling.
+=======
+Check Documentation/filesystems/ext4.txt if you want to read more about
+ext4 and journaling.
+>>>>>>> v4.9.227
 
 References
 ==========

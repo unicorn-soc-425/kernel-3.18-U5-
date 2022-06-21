@@ -96,6 +96,10 @@ enum {
 	MLX4_QP_BIT_RRE				= 1 << 15,
 	MLX4_QP_BIT_RWE				= 1 << 14,
 	MLX4_QP_BIT_RAE				= 1 << 13,
+<<<<<<< HEAD
+=======
+	MLX4_QP_BIT_FPP				= 1 <<	3,
+>>>>>>> v4.9.227
 	MLX4_QP_BIT_RIC				= 1 <<	4,
 };
 
@@ -120,19 +124,35 @@ enum {
 	MLX4_RSS_QPC_FLAG_OFFSET		= 13,
 };
 
+<<<<<<< HEAD
+=======
+#define MLX4_EN_RSS_KEY_SIZE 40
+
+>>>>>>> v4.9.227
 struct mlx4_rss_context {
 	__be32			base_qpn;
 	__be32			default_qpn;
 	u16			reserved;
 	u8			hash_fn;
 	u8			flags;
+<<<<<<< HEAD
 	__be32			rss_key[10];
+=======
+	__be32			rss_key[MLX4_EN_RSS_KEY_SIZE / sizeof(__be32)];
+>>>>>>> v4.9.227
 	__be32			base_qpn_udp;
 };
 
 struct mlx4_qp_path {
 	u8			fl;
+<<<<<<< HEAD
 	u8			vlan_control;
+=======
+	union {
+		u8			vlan_control;
+		u8			control;
+	};
+>>>>>>> v4.9.227
 	u8			disable_pkey_check;
 	u8			pkey_index;
 	u8			counter_index;
@@ -153,9 +173,23 @@ struct mlx4_qp_path {
 };
 
 enum { /* fl */
+<<<<<<< HEAD
 	MLX4_FL_CV      = 1 << 6,
 	MLX4_FL_ETH_HIDE_CQE_VLAN       = 1 << 2
 };
+=======
+	MLX4_FL_CV	= 1 << 6,
+	MLX4_FL_SV	= 1 << 5,
+	MLX4_FL_ETH_HIDE_CQE_VLAN	= 1 << 2,
+	MLX4_FL_ETH_SRC_CHECK_MC_LB	= 1 << 1,
+	MLX4_FL_ETH_SRC_CHECK_UC_LB	= 1 << 0,
+};
+
+enum { /* control */
+	MLX4_CTRL_ETH_SRC_CHECK_IF_COUNTER	= 1 << 7,
+};
+
+>>>>>>> v4.9.227
 enum { /* vlan_control */
 	MLX4_VLAN_CTRL_ETH_TX_BLOCK_TAGGED	= 1 << 6,
 	MLX4_VLAN_CTRL_ETH_TX_BLOCK_PRIO_TAGGED	= 1 << 5, /* 802.1p priority tag */
@@ -181,7 +215,11 @@ struct mlx4_qp_context {
 	u8			mtu_msgmax;
 	u8			rq_size_stride;
 	u8			sq_size_stride;
+<<<<<<< HEAD
 	u8			rlkey;
+=======
+	u8			rlkey_roce_mode;
+>>>>>>> v4.9.227
 	__be32			usr_page;
 	__be32			local_qpn;
 	__be32			remote_qpn;
@@ -191,7 +229,12 @@ struct mlx4_qp_context {
 	u32			reserved1;
 	__be32			next_send_psn;
 	__be32			cqn_send;
+<<<<<<< HEAD
 	u32			reserved2[2];
+=======
+	__be16                  roce_entropy;
+	__be16                  reserved2[3];
+>>>>>>> v4.9.227
 	__be32			last_acked_psn;
 	__be32			ssn;
 	__be32			params2;
@@ -204,6 +247,7 @@ struct mlx4_qp_context {
 	__be32			msn;
 	__be16			rq_wqe_counter;
 	__be16			sq_wqe_counter;
+<<<<<<< HEAD
 	u32			reserved3[2];
 	__be32			param3;
 	__be32			nummmcpeers_basemkey;
@@ -212,6 +256,19 @@ struct mlx4_qp_context {
 	u8			mtt_base_addr_h;
 	__be32			mtt_base_addr_l;
 	u32			reserved5[10];
+=======
+	u32			reserved3;
+	__be16			rate_limit_params;
+	u8			reserved4;
+	u8			qos_vport;
+	__be32			param3;
+	__be32			nummmcpeers_basemkey;
+	u8			log_page_size;
+	u8			reserved5[2];
+	u8			mtt_base_addr_h;
+	__be32			mtt_base_addr_l;
+	u32			reserved6[10];
+>>>>>>> v4.9.227
 };
 
 struct mlx4_update_qp_context {
@@ -226,6 +283,11 @@ struct mlx4_update_qp_context {
 enum {
 	MLX4_UPD_QP_MASK_PM_STATE	= 32,
 	MLX4_UPD_QP_MASK_VSD		= 33,
+<<<<<<< HEAD
+=======
+	MLX4_UPD_QP_MASK_QOS_VPP	= 34,
+	MLX4_UPD_QP_MASK_RATE_LIMIT	= 35,
+>>>>>>> v4.9.227
 };
 
 enum {
@@ -246,6 +308,12 @@ enum {
 	MLX4_UPD_QP_PATH_MASK_SCHED_QUEUE		= 14 + 32,
 	MLX4_UPD_QP_PATH_MASK_IF_COUNTER_INDEX		= 15 + 32,
 	MLX4_UPD_QP_PATH_MASK_FVL_RX			= 16 + 32,
+<<<<<<< HEAD
+=======
+	MLX4_UPD_QP_PATH_MASK_ETH_SRC_CHECK_UC_LB	= 18 + 32,
+	MLX4_UPD_QP_PATH_MASK_ETH_SRC_CHECK_MC_LB	= 19 + 32,
+	MLX4_UPD_QP_PATH_MASK_SV			= 22 + 32,
+>>>>>>> v4.9.227
 };
 
 enum { /* param3 */
@@ -264,11 +332,17 @@ enum {
 	MLX4_WQE_CTRL_SOLICITED		= 1 << 1,
 	MLX4_WQE_CTRL_IP_CSUM		= 1 << 4,
 	MLX4_WQE_CTRL_TCP_UDP_CSUM	= 1 << 5,
+<<<<<<< HEAD
 	MLX4_WQE_CTRL_INS_VLAN		= 1 << 6,
+=======
+	MLX4_WQE_CTRL_INS_CVLAN		= 1 << 6,
+	MLX4_WQE_CTRL_INS_SVLAN		= 1 << 7,
+>>>>>>> v4.9.227
 	MLX4_WQE_CTRL_STRONG_ORDER	= 1 << 7,
 	MLX4_WQE_CTRL_FORCE_LOOPBACK	= 1 << 0,
 };
 
+<<<<<<< HEAD
 struct mlx4_wqe_ctrl_seg {
 	__be32			owner_opcode;
 	union {
@@ -279,6 +353,20 @@ struct mlx4_wqe_ctrl_seg {
 		};
 		__be32			bf_qpn;
 	};
+=======
+union mlx4_wqe_qpn_vlan {
+	struct {
+		__be16	vlan_tag;
+		u8	ins_vlan;
+		u8	fence_size;
+	};
+	__be32		bf_qpn;
+};
+
+struct mlx4_wqe_ctrl_seg {
+	__be32			owner_opcode;
+	union mlx4_wqe_qpn_vlan	qpn_vlan;
+>>>>>>> v4.9.227
 	/*
 	 * High 24 bits are SRC remote buffer; low 8 bits are flags:
 	 * [7]   SO (strong ordering)
@@ -424,17 +512,37 @@ struct mlx4_wqe_inline_seg {
 
 enum mlx4_update_qp_attr {
 	MLX4_UPDATE_QP_SMAC		= 1 << 0,
+<<<<<<< HEAD
 	MLX4_UPDATE_QP_VSD		= 1 << 2,
 	MLX4_UPDATE_QP_SUPPORTED_ATTRS	= (1 << 2) - 1
 };
 
 enum mlx4_update_qp_params_flags {
 	MLX4_UPDATE_QP_PARAMS_FLAGS_VSD_ENABLE		= 1 << 0,
+=======
+	MLX4_UPDATE_QP_VSD		= 1 << 1,
+	MLX4_UPDATE_QP_RATE_LIMIT	= 1 << 2,
+	MLX4_UPDATE_QP_QOS_VPORT	= 1 << 3,
+	MLX4_UPDATE_QP_ETH_SRC_CHECK_MC_LB      = 1 << 4,
+	MLX4_UPDATE_QP_SUPPORTED_ATTRS	= (1 << 5) - 1
+};
+
+enum mlx4_update_qp_params_flags {
+	MLX4_UPDATE_QP_PARAMS_FLAGS_ETH_CHECK_MC_LB     = 1 << 0,
+	MLX4_UPDATE_QP_PARAMS_FLAGS_VSD_ENABLE		= 1 << 1,
+>>>>>>> v4.9.227
 };
 
 struct mlx4_update_qp_params {
 	u8	smac_index;
+<<<<<<< HEAD
 	u32	flags;
+=======
+	u8	qos_vport;
+	u32	flags;
+	u16	rate_unit;
+	u16	rate_val;
+>>>>>>> v4.9.227
 };
 
 struct mlx4_qp *mlx4_qp_lookup(struct mlx4_dev *dev, u32 qpn);
@@ -460,4 +568,17 @@ static inline struct mlx4_qp *__mlx4_qp_lookup(struct mlx4_dev *dev, u32 qpn)
 
 void mlx4_qp_remove(struct mlx4_dev *dev, struct mlx4_qp *qp);
 
+<<<<<<< HEAD
+=======
+static inline u16 folded_qp(u32 q)
+{
+	u16 res;
+
+	res = ((q & 0xff) ^ ((q & 0xff0000) >> 16)) | (q & 0xff00);
+	return res;
+}
+
+u16 mlx4_qp_roce_entropy(struct mlx4_dev *dev, u32 qpn);
+
+>>>>>>> v4.9.227
 #endif /* MLX4_QP_H */

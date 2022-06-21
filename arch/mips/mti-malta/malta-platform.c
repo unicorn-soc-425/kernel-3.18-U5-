@@ -23,6 +23,7 @@
  */
 #include <linux/init.h>
 #include <linux/serial_8250.h>
+<<<<<<< HEAD
 #include <linux/mc146818rtc.h>
 #include <linux/module.h>
 #include <linux/irq.h>
@@ -31,6 +32,12 @@
 #include <linux/platform_device.h>
 #include <asm/mips-boards/maltaint.h>
 #include <mtd/mtd-abi.h>
+=======
+#include <linux/module.h>
+#include <linux/irq.h>
+#include <linux/platform_device.h>
+#include <asm/mips-boards/maltaint.h>
+>>>>>>> v4.9.227
 
 #define SMC_PORT(base, int)						\
 {									\
@@ -68,6 +75,7 @@ static struct platform_device malta_uart8250_device = {
 	},
 };
 
+<<<<<<< HEAD
 struct resource malta_rtc_resources[] = {
 	{
 		.start	= RTC_PORT(0),
@@ -131,10 +139,15 @@ static struct platform_device *malta_devices[] __initdata = {
 	&malta_uart8250_device,
 	&malta_rtc_device,
 	&malta_flash_device,
+=======
+static struct platform_device *malta_devices[] __initdata = {
+	&malta_uart8250_device,
+>>>>>>> v4.9.227
 };
 
 static int __init malta_add_devices(void)
 {
+<<<<<<< HEAD
 	int err;
 
 	err = platform_add_devices(malta_devices, ARRAY_SIZE(malta_devices));
@@ -142,6 +155,9 @@ static int __init malta_add_devices(void)
 		return err;
 
 	return 0;
+=======
+	return platform_add_devices(malta_devices, ARRAY_SIZE(malta_devices));
+>>>>>>> v4.9.227
 }
 
 device_initcall(malta_add_devices);

@@ -5,6 +5,7 @@
  */
 #include <linux/sched.h>
 #include <linux/stacktrace.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/uaccess.h>
 #include <asm/stacktrace.h>
@@ -55,29 +56,92 @@ static const struct stacktrace_ops save_stack_ops_nosched = {
 	.walk_stack	= print_context_stack,
 };
 
+=======
+#include <linux/export.h>
+#include <linux/uaccess.h>
+#include <asm/stacktrace.h>
+#include <asm/unwind.h>
+
+static int save_stack_address(struct stack_trace *trace, unsigned long addr,
+			      bool nosched)
+{
+	if (nosched && in_sched_functions(addr))
+		return 0;
+
+	if (trace->skip > 0) {
+		trace->skip--;
+		return 0;
+	}
+
+	if (trace->nr_entries >= trace->max_entries)
+		return -1;
+
+	trace->entries[trace->nr_entries++] = addr;
+	return 0;
+}
+
+static void __save_stack_trace(struct stack_trace *trace,
+			       struct task_struct *task, struct pt_regs *regs,
+			       bool nosched)
+{
+	struct unwind_state state;
+	unsigned long addr;
+
+	if (regs)
+		save_stack_address(trace, regs->ip, nosched);
+
+	for (unwind_start(&state, task, regs, NULL); !unwind_done(&state);
+	     unwind_next_frame(&state)) {
+		addr = unwind_get_return_address(&state);
+		if (!addr || save_stack_address(trace, addr, nosched))
+			break;
+	}
+
+	if (trace->nr_entries < trace->max_entries)
+		trace->entries[trace->nr_entries++] = ULONG_MAX;
+}
+
+>>>>>>> v4.9.227
 /*
  * Save stack-backtrace addresses into a stack_trace buffer.
  */
 void save_stack_trace(struct stack_trace *trace)
 {
+<<<<<<< HEAD
 	dump_trace(current, NULL, NULL, 0, &save_stack_ops, trace);
 	if (trace->nr_entries < trace->max_entries)
 		trace->entries[trace->nr_entries++] = ULONG_MAX;
+=======
+	__save_stack_trace(trace, current, NULL, false);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(save_stack_trace);
 
 void save_stack_trace_regs(struct pt_regs *regs, struct stack_trace *trace)
 {
+<<<<<<< HEAD
 	dump_trace(current, regs, NULL, 0, &save_stack_ops, trace);
 	if (trace->nr_entries < trace->max_entries)
 		trace->entries[trace->nr_entries++] = ULONG_MAX;
+=======
+	__save_stack_trace(trace, current, regs, false);
+>>>>>>> v4.9.227
 }
 
 void save_stack_trace_tsk(struct task_struct *tsk, struct stack_trace *trace)
 {
+<<<<<<< HEAD
 	dump_trace(tsk, NULL, NULL, 0, &save_stack_ops_nosched, trace);
 	if (trace->nr_entries < trace->max_entries)
 		trace->entries[trace->nr_entries++] = ULONG_MAX;
+=======
+	if (!try_get_task_stack(tsk))
+		return;
+
+	__save_stack_trace(trace, tsk, NULL, true);
+
+	put_task_stack(tsk);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(save_stack_trace_tsk);
 

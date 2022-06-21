@@ -50,7 +50,11 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
 	int ret;
 
 	buf = kzalloc(indio_dev->scan_bytes, GFP_KERNEL);
+<<<<<<< HEAD
 	if (buf == NULL)
+=======
+	if (!buf)
+>>>>>>> v4.9.227
 		return;
 
 	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
@@ -77,7 +81,12 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
 			goto done;
 	}
 
+<<<<<<< HEAD
 	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+=======
+	iio_push_to_buffers_with_timestamp(indio_dev, buf,
+					   iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 done:
 	gpio_set_value(st->pdata->gpio_convst, 0);
 	iio_trigger_notify_done(indio_dev->trig);

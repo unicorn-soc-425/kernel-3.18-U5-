@@ -24,7 +24,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/interrupt.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/llist.h>
 
 
@@ -67,12 +70,20 @@ struct llist_node *llist_del_first(struct llist_head *head)
 {
 	struct llist_node *entry, *old_entry, *next;
 
+<<<<<<< HEAD
 	entry = head->first;
+=======
+	entry = smp_load_acquire(&head->first);
+>>>>>>> v4.9.227
 	for (;;) {
 		if (entry == NULL)
 			return NULL;
 		old_entry = entry;
+<<<<<<< HEAD
 		next = entry->next;
+=======
+		next = READ_ONCE(entry->next);
+>>>>>>> v4.9.227
 		entry = cmpxchg(&head->first, old_entry, next);
 		if (entry == old_entry)
 			break;

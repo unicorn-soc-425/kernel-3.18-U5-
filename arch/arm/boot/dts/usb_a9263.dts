@@ -21,6 +21,7 @@
 	};
 
 	clocks {
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
@@ -30,6 +31,8 @@
 			clock-frequency = <12000000>;
 		};
 
+=======
+>>>>>>> v4.9.227
 		slow_xtal {
 			clock-frequency = <32768>;
 		};
@@ -143,11 +146,19 @@
 			label = "user_pb";
 			gpios = <&pioB 10 GPIO_ACTIVE_LOW>;
 			linux,code = <28>;
+<<<<<<< HEAD
 			gpio-key,wakeup;
 		};
 	};
 
 	i2c@0 {
+=======
+			wakeup-source;
+		};
+	};
+
+	i2c-gpio-0 {
+>>>>>>> v4.9.227
 		status = "okay";
 	};
 };

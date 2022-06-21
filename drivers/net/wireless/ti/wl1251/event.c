@@ -36,7 +36,15 @@ static int wl1251_event_scan_complete(struct wl1251 *wl,
 		     mbox->scheduled_scan_channels);
 
 	if (wl->scanning) {
+<<<<<<< HEAD
 		ieee80211_scan_completed(wl->hw, false);
+=======
+		struct cfg80211_scan_info info = {
+			.aborted = false,
+		};
+
+		ieee80211_scan_completed(wl->hw, &info);
+>>>>>>> v4.9.227
 		wl1251_debug(DEBUG_MAC80211, "mac80211 hw scan completed");
 		wl->scanning = false;
 		if (wl->hw->conf.flags & IEEE80211_CONF_IDLE)

@@ -19,11 +19,16 @@
 #include <linux/acpi.h>
 #include <linux/thermal.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include "int340x_thermal_zone.h"
+>>>>>>> v4.9.227
 
 #define INT3403_TYPE_SENSOR		0x03
 #define INT3403_TYPE_CHARGER		0x0B
 #define INT3403_TYPE_BATTERY		0x0C
 #define INT3403_PERF_CHANGED_EVENT	0x80
+<<<<<<< HEAD
 #define INT3403_THERMAL_EVENT		0x90
 
 #define DECI_KELVIN_TO_MILLI_CELSIUS(t, off) (((t) - (off)) * 100)
@@ -38,6 +43,14 @@ struct int3403_sensor {
 	unsigned long	psv_temp;
 	int		psv_trip_id;
 
+=======
+#define INT3403_PERF_TRIP_POINT_CHANGED	0x81
+#define INT3403_THERMAL_EVENT		0x90
+
+/* Preserved structure for future expandbility */
+struct int3403_sensor {
+	struct int34x_thermal_zone *int340x_zone;
+>>>>>>> v4.9.227
 };
 
 struct int3403_performance_state {
@@ -63,6 +76,7 @@ struct int3403_priv {
 	void *priv;
 };
 
+<<<<<<< HEAD
 static int sys_get_curr_temp(struct thermal_zone_device *tzone,
 				unsigned long *temp)
 {
@@ -183,6 +197,8 @@ static struct thermal_zone_params int3403_thermal_params = {
 	.no_hwmon = true,
 };
 
+=======
+>>>>>>> v4.9.227
 static void int3403_notify(acpi_handle handle,
 		u32 event, void *data)
 {
@@ -200,7 +216,17 @@ static void int3403_notify(acpi_handle handle,
 	case INT3403_PERF_CHANGED_EVENT:
 		break;
 	case INT3403_THERMAL_EVENT:
+<<<<<<< HEAD
 		thermal_zone_device_update(obj->tzone);
+=======
+		int340x_thermal_zone_device_update(obj->int340x_zone,
+						   THERMAL_TRIP_VIOLATED);
+		break;
+	case INT3403_PERF_TRIP_POINT_CHANGED:
+		int340x_thermal_read_trips(obj->int340x_zone);
+		int340x_thermal_zone_device_update(obj->int340x_zone,
+						   THERMAL_TRIP_CHANGED);
+>>>>>>> v4.9.227
 		break;
 	default:
 		dev_err(&priv->pdev->dev, "Unsupported event [0x%x]\n", event);
@@ -208,6 +234,7 @@ static void int3403_notify(acpi_handle handle,
 	}
 }
 
+<<<<<<< HEAD
 static int sys_get_trip_crt(struct acpi_device *device, unsigned long *temp)
 {
 	unsigned long long crt;
@@ -243,6 +270,12 @@ static int int3403_sensor_add(struct int3403_priv *priv)
 	struct int3403_sensor *obj;
 	unsigned long long trip_cnt;
 	int trip_mask = 0;
+=======
+static int int3403_sensor_add(struct int3403_priv *priv)
+{
+	int result = 0;
+	struct int3403_sensor *obj;
+>>>>>>> v4.9.227
 
 	obj = devm_kzalloc(&priv->pdev->dev, sizeof(*obj), GFP_KERNEL);
 	if (!obj)
@@ -250,6 +283,7 @@ static int int3403_sensor_add(struct int3403_priv *priv)
 
 	priv->priv = obj;
 
+<<<<<<< HEAD
 	status = acpi_evaluate_integer(priv->adev->handle, "PATC", NULL,
 						&trip_cnt);
 	if (ACPI_FAILURE(status))
@@ -283,6 +317,11 @@ static int int3403_sensor_add(struct int3403_priv *priv)
 		obj->tzone = NULL;
 		goto err_free_obj;
 	}
+=======
+	obj->int340x_zone = int340x_thermal_zone_add(priv->adev, NULL);
+	if (IS_ERR(obj->int340x_zone))
+		return PTR_ERR(obj->int340x_zone);
+>>>>>>> v4.9.227
 
 	result = acpi_install_notify_handler(priv->adev->handle,
 			ACPI_DEVICE_NOTIFY, int3403_notify,
@@ -293,8 +332,12 @@ static int int3403_sensor_add(struct int3403_priv *priv)
 	return 0;
 
  err_free_obj:
+<<<<<<< HEAD
 	if (obj->tzone)
 		thermal_zone_device_unregister(obj->tzone);
+=======
+	int340x_thermal_zone_remove(obj->int340x_zone);
+>>>>>>> v4.9.227
 	return result;
 }
 
@@ -302,7 +345,14 @@ static int int3403_sensor_remove(struct int3403_priv *priv)
 {
 	struct int3403_sensor *obj = priv->priv;
 
+<<<<<<< HEAD
 	thermal_zone_device_unregister(obj->tzone);
+=======
+	acpi_remove_notify_handler(priv->adev->handle,
+				   ACPI_DEVICE_NOTIFY, int3403_notify);
+	int340x_thermal_zone_remove(obj->int340x_zone);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -370,6 +420,10 @@ static int int3403_cdev_add(struct int3403_priv *priv)
 	p = buf.pointer;
 	if (!p || (p->type != ACPI_TYPE_PACKAGE)) {
 		printk(KERN_WARNING "Invalid PPSS data\n");
+<<<<<<< HEAD
+=======
+		kfree(buf.pointer);
+>>>>>>> v4.9.227
 		return -EFAULT;
 	}
 
@@ -382,6 +436,10 @@ static int int3403_cdev_add(struct int3403_priv *priv)
 
 	priv->priv = obj;
 
+<<<<<<< HEAD
+=======
+	kfree(buf.pointer);
+>>>>>>> v4.9.227
 	/* TODO: add ACPI notification support */
 
 	return result;

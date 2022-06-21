@@ -24,7 +24,11 @@
 #include <linux/v4l2-mediabus.h>
 #include <linux/videodev2.h>
 
+<<<<<<< HEAD
 #include <media/ov772x.h>
+=======
+#include <media/i2c/ov772x.h>
+>>>>>>> v4.9.227
 #include <media/soc_camera.h>
 #include <media/v4l2-clk.h>
 #include <media/v4l2-ctrls.h>
@@ -376,7 +380,11 @@
  */
 
 struct ov772x_color_format {
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode code;
+=======
+	u32 code;
+>>>>>>> v4.9.227
 	enum v4l2_colorspace colorspace;
 	u8 dsp3;
 	u8 dsp4;
@@ -408,7 +416,11 @@ struct ov772x_priv {
  */
 static const struct ov772x_color_format ov772x_cfmts[] = {
 	{
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_YUYV8_2X8,
+=======
+		.code		= MEDIA_BUS_FMT_YUYV8_2X8,
+>>>>>>> v4.9.227
 		.colorspace	= V4L2_COLORSPACE_JPEG,
 		.dsp3		= 0x0,
 		.dsp4		= DSP_OFMT_YUV,
@@ -416,7 +428,11 @@ static const struct ov772x_color_format ov772x_cfmts[] = {
 		.com7		= OFMT_YUV,
 	},
 	{
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_YVYU8_2X8,
+=======
+		.code		= MEDIA_BUS_FMT_YVYU8_2X8,
+>>>>>>> v4.9.227
 		.colorspace	= V4L2_COLORSPACE_JPEG,
 		.dsp3		= UV_ON,
 		.dsp4		= DSP_OFMT_YUV,
@@ -424,7 +440,11 @@ static const struct ov772x_color_format ov772x_cfmts[] = {
 		.com7		= OFMT_YUV,
 	},
 	{
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_UYVY8_2X8,
+=======
+		.code		= MEDIA_BUS_FMT_UYVY8_2X8,
+>>>>>>> v4.9.227
 		.colorspace	= V4L2_COLORSPACE_JPEG,
 		.dsp3		= 0x0,
 		.dsp4		= DSP_OFMT_YUV,
@@ -432,7 +452,11 @@ static const struct ov772x_color_format ov772x_cfmts[] = {
 		.com7		= OFMT_YUV,
 	},
 	{
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_RGB555_2X8_PADHI_LE,
+=======
+		.code		= MEDIA_BUS_FMT_RGB555_2X8_PADHI_LE,
+>>>>>>> v4.9.227
 		.colorspace	= V4L2_COLORSPACE_SRGB,
 		.dsp3		= 0x0,
 		.dsp4		= DSP_OFMT_YUV,
@@ -440,7 +464,11 @@ static const struct ov772x_color_format ov772x_cfmts[] = {
 		.com7		= FMT_RGB555 | OFMT_RGB,
 	},
 	{
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_RGB555_2X8_PADHI_BE,
+=======
+		.code		= MEDIA_BUS_FMT_RGB555_2X8_PADHI_BE,
+>>>>>>> v4.9.227
 		.colorspace	= V4L2_COLORSPACE_SRGB,
 		.dsp3		= 0x0,
 		.dsp4		= DSP_OFMT_YUV,
@@ -448,7 +476,11 @@ static const struct ov772x_color_format ov772x_cfmts[] = {
 		.com7		= FMT_RGB555 | OFMT_RGB,
 	},
 	{
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_RGB565_2X8_LE,
+=======
+		.code		= MEDIA_BUS_FMT_RGB565_2X8_LE,
+>>>>>>> v4.9.227
 		.colorspace	= V4L2_COLORSPACE_SRGB,
 		.dsp3		= 0x0,
 		.dsp4		= DSP_OFMT_YUV,
@@ -456,7 +488,11 @@ static const struct ov772x_color_format ov772x_cfmts[] = {
 		.com7		= FMT_RGB565 | OFMT_RGB,
 	},
 	{
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_RGB565_2X8_BE,
+=======
+		.code		= MEDIA_BUS_FMT_RGB565_2X8_BE,
+>>>>>>> v4.9.227
 		.colorspace	= V4L2_COLORSPACE_SRGB,
 		.dsp3		= 0x0,
 		.dsp4		= DSP_OFMT_YUV,
@@ -468,7 +504,11 @@ static const struct ov772x_color_format ov772x_cfmts[] = {
 		 * regardless of the COM7 value. We can thus only support 10-bit
 		 * Bayer until someone figures it out.
 		 */
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_SBGGR10_1X10,
+=======
+		.code		= MEDIA_BUS_FMT_SBGGR10_1X10,
+>>>>>>> v4.9.227
 		.colorspace	= V4L2_COLORSPACE_SRGB,
 		.dsp3		= 0x0,
 		.dsp4		= DSP_OFMT_RAW10,
@@ -851,6 +891,7 @@ ov772x_set_fmt_error:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ov772x_g_crop(struct v4l2_subdev *sd, struct v4l2_crop *a)
 {
 	a->c.left	= 0;
@@ -881,6 +922,42 @@ static int ov772x_g_fmt(struct v4l2_subdev *sd,
 {
 	struct ov772x_priv *priv = to_ov772x(sd);
 
+=======
+static int ov772x_get_selection(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_selection *sel)
+{
+	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE)
+		return -EINVAL;
+
+	sel->r.left = 0;
+	sel->r.top = 0;
+	switch (sel->target) {
+	case V4L2_SEL_TGT_CROP_BOUNDS:
+	case V4L2_SEL_TGT_CROP_DEFAULT:
+		sel->r.width = OV772X_MAX_WIDTH;
+		sel->r.height = OV772X_MAX_HEIGHT;
+		return 0;
+	case V4L2_SEL_TGT_CROP:
+		sel->r.width = VGA_WIDTH;
+		sel->r.height = VGA_HEIGHT;
+		return 0;
+	default:
+		return -EINVAL;
+	}
+}
+
+static int ov772x_get_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+	struct ov772x_priv *priv = to_ov772x(sd);
+
+	if (format->pad)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	mf->width	= priv->win->rect.width;
 	mf->height	= priv->win->rect.height;
 	mf->code	= priv->cfmt->code;
@@ -915,12 +992,26 @@ static int ov772x_s_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ov772x_try_fmt(struct v4l2_subdev *sd,
 			  struct v4l2_mbus_framefmt *mf)
 {
 	const struct ov772x_color_format *cfmt;
 	const struct ov772x_win_size *win;
 
+=======
+static int ov772x_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+	const struct ov772x_color_format *cfmt;
+	const struct ov772x_win_size *win;
+
+	if (format->pad)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	ov772x_select_params(mf, &cfmt, &win);
 
 	mf->code = cfmt->code;
@@ -929,6 +1020,12 @@ static int ov772x_try_fmt(struct v4l2_subdev *sd,
 	mf->field = V4L2_FIELD_NONE;
 	mf->colorspace = cfmt->colorspace;
 
+<<<<<<< HEAD
+=======
+	if (format->which == V4L2_SUBDEV_FORMAT_ACTIVE)
+		return ov772x_s_fmt(sd, mf);
+	cfg->try_fmt = *mf;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -989,6 +1086,7 @@ static struct v4l2_subdev_core_ops ov772x_subdev_core_ops = {
 	.s_power	= ov772x_s_power,
 };
 
+<<<<<<< HEAD
 static int ov772x_enum_fmt(struct v4l2_subdev *sd, unsigned int index,
 			   enum v4l2_mbus_pixelcode *code)
 {
@@ -996,6 +1094,16 @@ static int ov772x_enum_fmt(struct v4l2_subdev *sd, unsigned int index,
 		return -EINVAL;
 
 	*code = ov772x_cfmts[index].code;
+=======
+static int ov772x_enum_mbus_code(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_mbus_code_enum *code)
+{
+	if (code->pad || code->index >= ARRAY_SIZE(ov772x_cfmts))
+		return -EINVAL;
+
+	code->code = ov772x_cfmts[code->index].code;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1016,6 +1124,7 @@ static int ov772x_g_mbus_config(struct v4l2_subdev *sd,
 
 static struct v4l2_subdev_video_ops ov772x_subdev_video_ops = {
 	.s_stream	= ov772x_s_stream,
+<<<<<<< HEAD
 	.g_mbus_fmt	= ov772x_g_fmt,
 	.s_mbus_fmt	= ov772x_s_fmt,
 	.try_mbus_fmt	= ov772x_try_fmt,
@@ -1028,6 +1137,22 @@ static struct v4l2_subdev_video_ops ov772x_subdev_video_ops = {
 static struct v4l2_subdev_ops ov772x_subdev_ops = {
 	.core	= &ov772x_subdev_core_ops,
 	.video	= &ov772x_subdev_video_ops,
+=======
+	.g_mbus_config	= ov772x_g_mbus_config,
+};
+
+static const struct v4l2_subdev_pad_ops ov772x_subdev_pad_ops = {
+	.enum_mbus_code = ov772x_enum_mbus_code,
+	.get_selection	= ov772x_get_selection,
+	.get_fmt	= ov772x_get_fmt,
+	.set_fmt	= ov772x_set_fmt,
+};
+
+static struct v4l2_subdev_ops ov772x_subdev_ops = {
+	.core	= &ov772x_subdev_core_ops,
+	.video	= &ov772x_subdev_video_ops,
+	.pad	= &ov772x_subdev_pad_ops,
+>>>>>>> v4.9.227
 };
 
 /*

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,6 +66,13 @@ acpi_ns_check_package_elements(struct acpi_evaluate_info *info,
 			       u32 count1,
 			       u8 type2, u32 count2, u32 start_index);
 
+<<<<<<< HEAD
+=======
+static acpi_status
+acpi_ns_custom_package(struct acpi_evaluate_info *info,
+		       union acpi_operand_object **elements, u32 count);
+
+>>>>>>> v4.9.227
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ns_check_package
@@ -135,6 +146,14 @@ acpi_ns_check_package(struct acpi_evaluate_info *info,
 	 * PTYPE2 packages contain subpackages
 	 */
 	switch (package->ret_info.type) {
+<<<<<<< HEAD
+=======
+	case ACPI_PTYPE_CUSTOM:
+
+		status = acpi_ns_custom_package(info, elements, count);
+		break;
+
+>>>>>>> v4.9.227
 	case ACPI_PTYPE1_FIXED:
 		/*
 		 * The package count is fixed and there are no subpackages
@@ -179,6 +198,10 @@ acpi_ns_check_package(struct acpi_evaluate_info *info,
 			if (ACPI_FAILURE(status)) {
 				return (status);
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			elements++;
 		}
 		break;
@@ -225,6 +248,10 @@ acpi_ns_check_package(struct acpi_evaluate_info *info,
 					return (status);
 				}
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			elements++;
 		}
 		break;
@@ -233,8 +260,14 @@ acpi_ns_check_package(struct acpi_evaluate_info *info,
 
 		/* First element is the (Integer) revision */
 
+<<<<<<< HEAD
 		status = acpi_ns_check_object_type(info, elements,
 						   ACPI_RTYPE_INTEGER, 0);
+=======
+		status =
+		    acpi_ns_check_object_type(info, elements,
+					      ACPI_RTYPE_INTEGER, 0);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			return (status);
 		}
@@ -252,8 +285,14 @@ acpi_ns_check_package(struct acpi_evaluate_info *info,
 
 		/* First element is the (Integer) count of subpackages to follow */
 
+<<<<<<< HEAD
 		status = acpi_ns_check_object_type(info, elements,
 						   ACPI_RTYPE_INTEGER, 0);
+=======
+		status =
+		    acpi_ns_check_object_type(info, elements,
+					      ACPI_RTYPE_INTEGER, 0);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			return (status);
 		}
@@ -316,6 +355,16 @@ acpi_ns_check_package(struct acpi_evaluate_info *info,
 		    acpi_ns_check_package_list(info, package, elements, count);
 		break;
 
+<<<<<<< HEAD
+=======
+	case ACPI_PTYPE2_VAR_VAR:
+		/*
+		 * Returns a variable list of packages, each with a variable list
+		 * of objects.
+		 */
+		break;
+
+>>>>>>> v4.9.227
 	case ACPI_PTYPE2_UUID_PAIR:
 
 		/* The package must contain pairs of (UUID + type) */
@@ -487,6 +536,15 @@ acpi_ns_check_package_list(struct acpi_evaluate_info *info,
 			}
 			break;
 
+<<<<<<< HEAD
+=======
+		case ACPI_PTYPE2_VAR_VAR:
+			/*
+			 * Each subpackage has a fixed or variable number of elements
+			 */
+			break;
+
+>>>>>>> v4.9.227
 		case ACPI_PTYPE2_FIXED:
 
 			/* Each subpackage has a fixed length */
@@ -554,11 +612,19 @@ acpi_ns_check_package_list(struct acpi_evaluate_info *info,
 			if (sub_package->package.count < expected_count) {
 				goto package_too_small;
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			if (sub_package->package.count <
 			    package->ret_info.count1) {
 				expected_count = package->ret_info.count1;
 				goto package_too_small;
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			if (expected_count == 0) {
 				/*
 				 * Either the num_entries element was originally zero or it was
@@ -607,6 +673,86 @@ package_too_small:
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
+=======
+ * FUNCTION:    acpi_ns_custom_package
+ *
+ * PARAMETERS:  info                - Method execution information block
+ *              elements            - Pointer to the package elements array
+ *              count               - Element count for the package
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Check a returned package object for the correct count and
+ *              correct type of all sub-objects.
+ *
+ * NOTE: Currently used for the _BIX method only. When needed for two or more
+ * methods, probably a detect/dispatch mechanism will be required.
+ *
+ ******************************************************************************/
+
+static acpi_status
+acpi_ns_custom_package(struct acpi_evaluate_info *info,
+		       union acpi_operand_object **elements, u32 count)
+{
+	u32 expected_count;
+	u32 version;
+	acpi_status status = AE_OK;
+
+	ACPI_FUNCTION_NAME(ns_custom_package);
+
+	/* Get version number, must be Integer */
+
+	if ((*elements)->common.type != ACPI_TYPE_INTEGER) {
+		ACPI_WARN_PREDEFINED((AE_INFO, info->full_pathname,
+				      info->node_flags,
+				      "Return Package has invalid object type for version number"));
+		return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
+	}
+
+	version = (u32)(*elements)->integer.value;
+	expected_count = 21;	/* Version 1 */
+
+	if (version == 0) {
+		expected_count = 20;	/* Version 0 */
+	}
+
+	if (count < expected_count) {
+		ACPI_WARN_PREDEFINED((AE_INFO, info->full_pathname,
+				      info->node_flags,
+				      "Return Package is too small - found %u elements, expected %u",
+				      count, expected_count));
+		return_ACPI_STATUS(AE_AML_OPERAND_VALUE);
+	} else if (count > expected_count) {
+		ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
+				  "%s: Return Package is larger than needed - "
+				  "found %u, expected %u\n",
+				  info->full_pathname, count, expected_count));
+	}
+
+	/* Validate all elements of the returned package */
+
+	status = acpi_ns_check_package_elements(info, elements,
+						ACPI_RTYPE_INTEGER, 16,
+						ACPI_RTYPE_STRING, 4, 0);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Version 1 has a single trailing integer */
+
+	if (version > 0) {
+		status = acpi_ns_check_package_elements(info, elements + 20,
+							ACPI_RTYPE_INTEGER, 1,
+							0, 0, 20);
+	}
+
+	return_ACPI_STATUS(status);
+}
+
+/*******************************************************************************
+ *
+>>>>>>> v4.9.227
  * FUNCTION:    acpi_ns_check_package_elements
  *
  * PARAMETERS:  info            - Method execution information block
@@ -646,6 +792,10 @@ acpi_ns_check_package_elements(struct acpi_evaluate_info *info,
 		if (ACPI_FAILURE(status)) {
 			return (status);
 		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		this_element++;
 	}
 
@@ -656,6 +806,10 @@ acpi_ns_check_package_elements(struct acpi_evaluate_info *info,
 		if (ACPI_FAILURE(status)) {
 			return (status);
 		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		this_element++;
 	}
 

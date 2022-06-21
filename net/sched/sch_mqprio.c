@@ -28,6 +28,10 @@ static void mqprio_destroy(struct Qdisc *sch)
 {
 	struct net_device *dev = qdisc_dev(sch);
 	struct mqprio_sched *priv = qdisc_priv(sch);
+<<<<<<< HEAD
+=======
+	struct tc_to_netdev tc = {.type = TC_SETUP_MQPRIO};
+>>>>>>> v4.9.227
 	unsigned int ntx;
 
 	if (priv->qdiscs) {
@@ -39,7 +43,11 @@ static void mqprio_destroy(struct Qdisc *sch)
 	}
 
 	if (priv->hw_owned && dev->netdev_ops->ndo_setup_tc)
+<<<<<<< HEAD
 		dev->netdev_ops->ndo_setup_tc(dev, 0);
+=======
+		dev->netdev_ops->ndo_setup_tc(dev, sch->handle, 0, &tc);
+>>>>>>> v4.9.227
 	else
 		netdev_set_num_tc(dev, 0);
 }
@@ -117,6 +125,7 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt)
 	/* pre-allocate qdisc, attachment can't fail */
 	priv->qdiscs = kcalloc(dev->num_tx_queues, sizeof(priv->qdiscs[0]),
 			       GFP_KERNEL);
+<<<<<<< HEAD
 	if (priv->qdiscs == NULL) {
 		err = -ENOMEM;
 		goto err;
@@ -133,6 +142,22 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt)
 		}
 		priv->qdiscs[i] = qdisc;
 		qdisc->flags |= TCQ_F_ONETXQUEUE;
+=======
+	if (!priv->qdiscs)
+		return -ENOMEM;
+
+	for (i = 0; i < dev->num_tx_queues; i++) {
+		dev_queue = netdev_get_tx_queue(dev, i);
+		qdisc = qdisc_create_dflt(dev_queue,
+					  get_default_qdisc_ops(dev, i),
+					  TC_H_MAKE(TC_H_MAJ(sch->handle),
+						    TC_H_MIN(i + 1)));
+		if (!qdisc)
+			return -ENOMEM;
+
+		priv->qdiscs[i] = qdisc;
+		qdisc->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
+>>>>>>> v4.9.227
 	}
 
 	/* If the mqprio options indicate that hardware should own
@@ -140,10 +165,20 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt)
 	 * supplied and verified mapping
 	 */
 	if (qopt->hw) {
+<<<<<<< HEAD
 		priv->hw_owned = 1;
 		err = dev->netdev_ops->ndo_setup_tc(dev, qopt->num_tc);
 		if (err)
 			goto err;
+=======
+		struct tc_to_netdev tc = {.type = TC_SETUP_MQPRIO,
+					  { .tc = qopt->num_tc }};
+
+		priv->hw_owned = 1;
+		err = dev->netdev_ops->ndo_setup_tc(dev, sch->handle, 0, &tc);
+		if (err)
+			return err;
+>>>>>>> v4.9.227
 	} else {
 		netdev_set_num_tc(dev, qopt->num_tc);
 		for (i = 0; i < qopt->num_tc; i++)
@@ -157,10 +192,13 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt)
 
 	sch->flags |= TCQ_F_MQROOT;
 	return 0;
+<<<<<<< HEAD
 
 err:
 	mqprio_destroy(sch);
 	return err;
+=======
+>>>>>>> v4.9.227
 }
 
 static void mqprio_attach(struct Qdisc *sch)
@@ -177,7 +215,11 @@ static void mqprio_attach(struct Qdisc *sch)
 		if (old)
 			qdisc_destroy(old);
 		if (ntx < dev->real_num_tx_queues)
+<<<<<<< HEAD
 			qdisc_list_add(qdisc);
+=======
+			qdisc_hash_add(qdisc);
+>>>>>>> v4.9.227
 	}
 	kfree(priv->qdiscs);
 	priv->qdiscs = NULL;
@@ -209,7 +251,11 @@ static int mqprio_graft(struct Qdisc *sch, unsigned long cl, struct Qdisc *new,
 	*old = dev_graft_qdisc(dev_queue, new);
 
 	if (new)
+<<<<<<< HEAD
 		new->flags |= TCQ_F_ONETXQUEUE;
+=======
+		new->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
+>>>>>>> v4.9.227
 
 	if (dev->flags & IFF_UP)
 		dev_activate(dev);
@@ -337,7 +383,12 @@ static int mqprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
 		 * hold here is the look on dev_queue->qdisc_sleeping
 		 * also acquired below.
 		 */
+<<<<<<< HEAD
 		spin_unlock_bh(d->lock);
+=======
+		if (d->lock)
+			spin_unlock_bh(d->lock);
+>>>>>>> v4.9.227
 
 		for (i = tc.offset; i < tc.offset + tc.count; i++) {
 			struct netdev_queue *q = netdev_get_tx_queue(dev, i);
@@ -354,15 +405,26 @@ static int mqprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
 			spin_unlock_bh(qdisc_lock(qdisc));
 		}
 		/* Reclaim root sleeping lock before completing stats */
+<<<<<<< HEAD
 		spin_lock_bh(d->lock);
 		if (gnet_stats_copy_basic(d, NULL, &bstats) < 0 ||
+=======
+		if (d->lock)
+			spin_lock_bh(d->lock);
+		if (gnet_stats_copy_basic(NULL, d, NULL, &bstats) < 0 ||
+>>>>>>> v4.9.227
 		    gnet_stats_copy_queue(d, NULL, &qstats, qlen) < 0)
 			return -1;
 	} else {
 		struct netdev_queue *dev_queue = mqprio_queue_get(sch, cl);
 
 		sch = dev_queue->qdisc_sleeping;
+<<<<<<< HEAD
 		if (gnet_stats_copy_basic(d, NULL, &sch->bstats) < 0 ||
+=======
+		if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch), d,
+					  sch->cpu_bstats, &sch->bstats) < 0 ||
+>>>>>>> v4.9.227
 		    gnet_stats_copy_queue(d, NULL,
 					  &sch->qstats, sch->q.qlen) < 0)
 			return -1;

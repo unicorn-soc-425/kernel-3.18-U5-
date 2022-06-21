@@ -24,6 +24,7 @@
 #ifndef _I915_VGPU_H_
 #define _I915_VGPU_H_
 
+<<<<<<< HEAD
 /* The MMIO offset of the shared info between guest and host emulator */
 #define VGT_PVINFO_PAGE	0x78000
 #define VGT_PVINFO_SIZE	0x1000
@@ -117,5 +118,12 @@ struct vgt_if {
 extern void i915_check_vgpu(struct drm_device *dev);
 extern int intel_vgt_balloon(struct drm_device *dev);
 extern void intel_vgt_deballoon(void);
+=======
+#include "i915_pvinfo.h"
+
+void i915_check_vgpu(struct drm_i915_private *dev_priv);
+int intel_vgt_balloon(struct drm_i915_private *dev_priv);
+void intel_vgt_deballoon(struct drm_i915_private *dev_priv);
+>>>>>>> v4.9.227
 
 #endif /* _I915_VGPU_H_ */

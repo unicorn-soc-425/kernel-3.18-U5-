@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -59,6 +63,7 @@
 
 #include <linux/jiffies.h>
 
+<<<<<<< HEAD
 
 static inline void cfs_fs_time_usec(struct timespec *t, struct timeval *v)
 {
@@ -66,6 +71,8 @@ static inline void cfs_fs_time_usec(struct timespec *t, struct timeval *v)
 	v->tv_usec = t->tv_nsec / 1000;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Generic kernel stuff
  */
@@ -75,6 +82,7 @@ static inline unsigned long cfs_time_current(void)
 	return jiffies;
 }
 
+<<<<<<< HEAD
 static inline void cfs_fs_time_current(struct timespec *t)
 {
 	*t = CURRENT_TIME;
@@ -108,6 +116,16 @@ static inline void cfs_duration_usec(long d, struct timeval *s)
 	s->tv_sec = d / HZ;
 	s->tv_usec = ((d - (long)s->tv_sec * HZ) * ONE_MILLION) / HZ;
 #endif
+=======
+static inline long cfs_time_seconds(int seconds)
+{
+	return ((long)seconds) * msecs_to_jiffies(MSEC_PER_SEC);
+}
+
+static inline long cfs_duration_sec(long d)
+{
+	return d / msecs_to_jiffies(MSEC_PER_SEC);
+>>>>>>> v4.9.227
 }
 
 #define cfs_time_current_64 get_jiffies_64
@@ -138,7 +156,10 @@ static inline int cfs_time_beforeq_64(__u64 t1, __u64 t2)
  */
 #define CFS_TICK		(1)
 
+<<<<<<< HEAD
 #define CFS_TIME_T	      "%lu"
+=======
+>>>>>>> v4.9.227
 #define CFS_DURATION_T	  "%ld"
 
 #endif /* __LIBCFS_LINUX_LINUX_TIME_H__ */

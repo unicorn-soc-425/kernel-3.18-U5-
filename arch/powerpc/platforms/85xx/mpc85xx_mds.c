@@ -34,6 +34,10 @@
 #include <linux/of_device.h>
 #include <linux/phy.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
+=======
+#include <linux/fsl/guts.h>
+>>>>>>> v4.9.227
 
 #include <linux/atomic.h>
 #include <asm/time.h>
@@ -47,11 +51,18 @@
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
 #include <sysdev/simple_gpio.h>
+<<<<<<< HEAD
 #include <asm/qe.h>
 #include <asm/qe_ic.h>
 #include <asm/mpic.h>
 #include <asm/swiotlb.h>
 #include <asm/fsl_guts.h>
+=======
+#include <soc/fsl/qe/qe.h>
+#include <soc/fsl/qe/qe_ic.h>
+#include <asm/mpic.h>
+#include <asm/swiotlb.h>
+>>>>>>> v4.9.227
 #include "smp.h"
 
 #include "mpc85xx.h"
@@ -63,6 +74,11 @@
 #define DBG(fmt...)
 #endif
 
+<<<<<<< HEAD
+=======
+#if IS_BUILTIN(CONFIG_PHYLIB)
+
+>>>>>>> v4.9.227
 #define MV88E1111_SCR	0x10
 #define MV88E1111_SCR_125CLK	0x0010
 static int mpc8568_fixup_125_clock(struct phy_device *phydev)
@@ -152,6 +168,11 @@ static int mpc8568_mds_phy_fixups(struct phy_device *phydev)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+#endif
+
+>>>>>>> v4.9.227
 /* ************************************************************************
  *
  * Setup the architecture
@@ -313,6 +334,10 @@ static void __init mpc85xx_mds_setup_arch(void)
 	swiotlb_detect_4g();
 }
 
+<<<<<<< HEAD
+=======
+#if IS_BUILTIN(CONFIG_PHYLIB)
+>>>>>>> v4.9.227
 
 static int __init board_fixups(void)
 {
@@ -342,9 +367,18 @@ static int __init board_fixups(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 machine_arch_initcall(mpc8568_mds, board_fixups);
 machine_arch_initcall(mpc8569_mds, board_fixups);
 
+=======
+
+machine_arch_initcall(mpc8568_mds, board_fixups);
+machine_arch_initcall(mpc8569_mds, board_fixups);
+
+#endif
+
+>>>>>>> v4.9.227
 static int __init mpc85xx_publish_devices(void)
 {
 	if (machine_is(mpc8568_mds))
@@ -376,9 +410,13 @@ static void __init mpc85xx_mds_pic_init(void)
 
 static int __init mpc85xx_mds_probe(void)
 {
+<<<<<<< HEAD
         unsigned long root = of_get_flat_dt_root();
 
         return of_flat_dt_is_compatible(root, "MPC85xxMDS");
+=======
+	return of_machine_is_compatible("MPC85xxMDS");
+>>>>>>> v4.9.227
 }
 
 define_machine(mpc8568_mds) {
@@ -387,7 +425,10 @@ define_machine(mpc8568_mds) {
 	.setup_arch	= mpc85xx_mds_setup_arch,
 	.init_IRQ	= mpc85xx_mds_pic_init,
 	.get_irq	= mpic_get_irq,
+<<<<<<< HEAD
 	.restart	= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr	= generic_calibrate_decr,
 	.progress	= udbg_progress,
 #ifdef CONFIG_PCI
@@ -398,9 +439,13 @@ define_machine(mpc8568_mds) {
 
 static int __init mpc8569_mds_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,MPC8569EMDS");
+=======
+	return of_machine_is_compatible("fsl,MPC8569EMDS");
+>>>>>>> v4.9.227
 }
 
 define_machine(mpc8569_mds) {
@@ -409,7 +454,10 @@ define_machine(mpc8569_mds) {
 	.setup_arch	= mpc85xx_mds_setup_arch,
 	.init_IRQ	= mpc85xx_mds_pic_init,
 	.get_irq	= mpic_get_irq,
+<<<<<<< HEAD
 	.restart	= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr	= generic_calibrate_decr,
 	.progress	= udbg_progress,
 #ifdef CONFIG_PCI
@@ -420,9 +468,13 @@ define_machine(mpc8569_mds) {
 
 static int __init p1021_mds_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,P1021MDS");
+=======
+	return of_machine_is_compatible("fsl,P1021MDS");
+>>>>>>> v4.9.227
 
 }
 
@@ -432,7 +484,10 @@ define_machine(p1021_mds) {
 	.setup_arch	= mpc85xx_mds_setup_arch,
 	.init_IRQ	= mpc85xx_mds_pic_init,
 	.get_irq	= mpic_get_irq,
+<<<<<<< HEAD
 	.restart	= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr	= generic_calibrate_decr,
 	.progress	= udbg_progress,
 #ifdef CONFIG_PCI
@@ -440,4 +495,7 @@ define_machine(p1021_mds) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227

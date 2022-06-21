@@ -191,7 +191,11 @@ static u32 go7007_functionality(struct i2c_adapter *adapter)
 	return I2C_FUNC_SMBUS_BYTE_DATA;
 }
 
+<<<<<<< HEAD
 static struct i2c_algorithm go7007_algo = {
+=======
+static const struct i2c_algorithm go7007_algo = {
+>>>>>>> v4.9.227
 	.smbus_xfer	= go7007_smbus_xfer,
 	.master_xfer	= go7007_i2c_master_xfer,
 	.functionality	= go7007_functionality,

@@ -674,7 +674,11 @@ receive_emsg(struct IsdnCardState *cs)
 					ptr--;
 					*ptr++ = '\n';
 					*ptr = 0;
+<<<<<<< HEAD
 					HiSax_putstatus(cs, NULL, "%s", cs->dlog);
+=======
+					HiSax_putstatus(cs, NULL, cs->dlog);
+>>>>>>> v4.9.227
 				} else
 					HiSax_putstatus(cs, "LogEcho: ", "warning Frame too big (%d)", skb->len);
 			}
@@ -1159,7 +1163,12 @@ hfcsx_l2l1(struct PStack *st, int pr, void *arg)
 	case (PH_PULL | INDICATION):
 		spin_lock_irqsave(&bcs->cs->lock, flags);
 		if (bcs->tx_skb) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "hfc_l2l1: this shouldn't happen\n");
+=======
+			printk(KERN_WARNING "%s: this shouldn't happen\n",
+			       __func__);
+>>>>>>> v4.9.227
 		} else {
 //				test_and_set_bit(BC_FLG_BUSY, &bcs->Flag);
 			bcs->tx_skb = skb;

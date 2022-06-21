@@ -22,7 +22,10 @@
 #include "xfs_log_format.h"
 #include "xfs_trans_resv.h"
 #include "xfs_sb.h"
+<<<<<<< HEAD
 #include "xfs_ag.h"
+=======
+>>>>>>> v4.9.227
 #include "xfs_mount.h"
 #include "xfs_btree.h"
 #include "xfs_alloc_btree.h"
@@ -119,8 +122,11 @@ xfs_allocbt_free_block(
 	xfs_extent_busy_insert(cur->bc_tp, be32_to_cpu(agf->agf_seqno), bno, 1,
 			      XFS_EXTENT_BUSY_SKIP_DISCARD);
 	xfs_trans_agbtree_delta(cur->bc_tp, -1);
+<<<<<<< HEAD
 
 	xfs_trans_binval(cur->bc_tp, bp);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -215,6 +221,7 @@ xfs_allocbt_init_key_from_rec(
 }
 
 STATIC void
+<<<<<<< HEAD
 xfs_allocbt_init_rec_from_key(
 	union xfs_btree_key	*key,
 	union xfs_btree_rec	*rec)
@@ -226,6 +233,8 @@ xfs_allocbt_init_rec_from_key(
 }
 
 STATIC void
+=======
+>>>>>>> v4.9.227
 xfs_allocbt_init_rec_from_cur(
 	struct xfs_btree_cur	*cur,
 	union xfs_btree_rec	*rec)
@@ -294,6 +303,7 @@ xfs_allocbt_verify(
 	level = be16_to_cpu(block->bb_level);
 	switch (block->bb_magic) {
 	case cpu_to_be32(XFS_ABTB_CRC_MAGIC):
+<<<<<<< HEAD
 		if (!xfs_sb_version_hascrc(&mp->m_sb))
 			return false;
 		if (!uuid_equal(&block->bb_u.s.bb_uuid, &mp->m_sb.sb_uuid))
@@ -302,6 +312,9 @@ xfs_allocbt_verify(
 			return false;
 		if (pag &&
 		    be32_to_cpu(block->bb_u.s.bb_owner) != pag->pag_agno)
+=======
+		if (!xfs_btree_sblock_v5hdr_verify(bp))
+>>>>>>> v4.9.227
 			return false;
 		/* fall through */
 	case cpu_to_be32(XFS_ABTB_MAGIC):
@@ -312,6 +325,7 @@ xfs_allocbt_verify(
 			return false;
 		break;
 	case cpu_to_be32(XFS_ABTC_CRC_MAGIC):
+<<<<<<< HEAD
 		if (!xfs_sb_version_hascrc(&mp->m_sb))
 			return false;
 		if (!uuid_equal(&block->bb_u.s.bb_uuid, &mp->m_sb.sb_uuid))
@@ -320,6 +334,9 @@ xfs_allocbt_verify(
 			return false;
 		if (pag &&
 		    be32_to_cpu(block->bb_u.s.bb_owner) != pag->pag_agno)
+=======
+		if (!xfs_btree_sblock_v5hdr_verify(bp))
+>>>>>>> v4.9.227
 			return false;
 		/* fall through */
 	case cpu_to_be32(XFS_ABTC_MAGIC):
@@ -333,6 +350,7 @@ xfs_allocbt_verify(
 		return false;
 	}
 
+<<<<<<< HEAD
 	/* numrecs verification */
 	if (be16_to_cpu(block->bb_numrecs) > mp->m_alloc_mxr[level != 0])
 		return false;
@@ -348,6 +366,9 @@ xfs_allocbt_verify(
 		return false;
 
 	return true;
+=======
+	return xfs_btree_sblock_verify(bp, mp->m_alloc_mxr[level != 0]);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -437,7 +458,10 @@ static const struct xfs_btree_ops xfs_allocbt_ops = {
 	.get_minrecs		= xfs_allocbt_get_minrecs,
 	.get_maxrecs		= xfs_allocbt_get_maxrecs,
 	.init_key_from_rec	= xfs_allocbt_init_key_from_rec,
+<<<<<<< HEAD
 	.init_rec_from_key	= xfs_allocbt_init_rec_from_key,
+=======
+>>>>>>> v4.9.227
 	.init_rec_from_cur	= xfs_allocbt_init_rec_from_cur,
 	.init_ptr_from_cur	= xfs_allocbt_init_ptr_from_cur,
 	.key_diff		= xfs_allocbt_key_diff,
@@ -464,7 +488,11 @@ xfs_allocbt_init_cursor(
 
 	ASSERT(btnum == XFS_BTNUM_BNO || btnum == XFS_BTNUM_CNT);
 
+<<<<<<< HEAD
 	cur = kmem_zone_zalloc(xfs_btree_cur_zone, KM_SLEEP);
+=======
+	cur = kmem_zone_zalloc(xfs_btree_cur_zone, KM_NOFS);
+>>>>>>> v4.9.227
 
 	cur->bc_tp = tp;
 	cur->bc_mp = mp;

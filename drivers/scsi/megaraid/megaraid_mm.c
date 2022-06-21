@@ -179,8 +179,17 @@ mraid_mm_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 
 	/*
 	 * The following call will block till a kioc is available
+<<<<<<< HEAD
 	 */
 	kioc = mraid_mm_alloc_kioc(adp);
+=======
+	 * or return NULL if the list head is empty for the pointer
+	 * of type mraid_mmapt passed to mraid_mm_alloc_kioc
+	 */
+	kioc = mraid_mm_alloc_kioc(adp);
+	if (!kioc)
+		return -ENXIO;
+>>>>>>> v4.9.227
 
 	/*
 	 * User sent the old mimd_t ioctl packet. Convert it to uioc_t.

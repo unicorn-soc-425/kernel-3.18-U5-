@@ -18,7 +18,11 @@ cpu_thermal: cpu_thermal {
 			/* sensor       ID */
         thermal-sensors = <&bandgap     0>;
 
+<<<<<<< HEAD
         trips {
+=======
+	cpu_trips: trips {
+>>>>>>> v4.9.227
                 cpu_alert0: cpu_alert {
                         temperature = <100000>; /* millicelsius */
                         hysteresis = <2000>; /* millicelsius */
@@ -31,7 +35,11 @@ cpu_thermal: cpu_thermal {
                 };
         };
 
+<<<<<<< HEAD
 	cooling-maps {
+=======
+	cpu_cooling_maps: cooling-maps {
+>>>>>>> v4.9.227
 		map0 {
 			trip = <&cpu_alert0>;
 			cooling-device =

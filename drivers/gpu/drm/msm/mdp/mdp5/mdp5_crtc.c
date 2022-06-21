@@ -23,7 +23,10 @@
 #include "drm_crtc.h"
 #include "drm_crtc_helper.h"
 #include "drm_flip_work.h"
+<<<<<<< HEAD
 #include "mdp5_plane.h"
+=======
+>>>>>>> v4.9.227
 
 #define CURSOR_WIDTH	64
 #define CURSOR_HEIGHT	64
@@ -150,7 +153,11 @@ static void complete_flip(struct drm_crtc *crtc, struct drm_file *file)
 		if (!file || (event->base.file_priv == file)) {
 			mdp5_crtc->event = NULL;
 			DBG("%s: send event: %p", mdp5_crtc->name, event);
+<<<<<<< HEAD
 			drm_send_vblank_event(dev, mdp5_crtc->id, event);
+=======
+			drm_crtc_send_vblank_event(crtc, event);
+>>>>>>> v4.9.227
 		}
 	}
 	spin_unlock_irqrestore(&dev->event_lock, flags);
@@ -186,6 +193,7 @@ static void mdp5_crtc_destroy(struct drm_crtc *crtc)
 	kfree(mdp5_crtc);
 }
 
+<<<<<<< HEAD
 static bool mdp5_crtc_mode_fixup(struct drm_crtc *crtc,
 		const struct drm_display_mode *mode,
 		struct drm_display_mode *adjusted_mode)
@@ -193,6 +201,8 @@ static bool mdp5_crtc_mode_fixup(struct drm_crtc *crtc,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * blend_setup() - blend all the planes of a CRTC
  *
@@ -231,12 +241,16 @@ static void blend_setup(struct drm_crtc *crtc)
 		plane_cnt++;
 	}
 
+<<<<<<< HEAD
 	/*
 	* If there is no base layer, enable border color.
 	* Although it's not possbile in current blend logic,
 	* put it here as a reminder.
 	*/
 	if (!pstates[STAGE_BASE] && plane_cnt) {
+=======
+	if (!pstates[STAGE_BASE]) {
+>>>>>>> v4.9.227
 		ctl_blend_flags |= MDP5_CTL_BLEND_OP_FLAG_BORDER_OUT;
 		DBG("Border Color is enabled");
 	}
@@ -373,6 +387,18 @@ static int pstate_cmp(const void *a, const void *b)
 	return pa->state->zpos - pb->state->zpos;
 }
 
+<<<<<<< HEAD
+=======
+/* is there a helper for this? */
+static bool is_fullscreen(struct drm_crtc_state *cstate,
+		struct drm_plane_state *pstate)
+{
+	return (pstate->crtc_x <= 0) && (pstate->crtc_y <= 0) &&
+		((pstate->crtc_x + pstate->crtc_w) >= cstate->mode.hdisplay) &&
+		((pstate->crtc_y + pstate->crtc_h) >= cstate->mode.vdisplay);
+}
+
+>>>>>>> v4.9.227
 static int mdp5_crtc_atomic_check(struct drm_crtc *crtc,
 		struct drm_crtc_state *state)
 {
@@ -382,6 +408,7 @@ static int mdp5_crtc_atomic_check(struct drm_crtc *crtc,
 	struct drm_device *dev = crtc->dev;
 	struct plane_state pstates[STAGE_MAX + 1];
 	const struct mdp5_cfg_hw *hw_cfg;
+<<<<<<< HEAD
 	int cnt = 0, i;
 
 	DBG("%s: check", mdp5_crtc->name);
@@ -404,6 +431,14 @@ static int mdp5_crtc_atomic_check(struct drm_crtc *crtc,
 		 */
 		if (!pstate)
 			pstate = plane->state;
+=======
+	const struct drm_plane_state *pstate;
+	int cnt = 0, base = 0, i;
+
+	DBG("%s: check", mdp5_crtc->name);
+
+	drm_atomic_crtc_state_for_each_plane_state(plane, pstate, state) {
+>>>>>>> v4.9.227
 		pstates[cnt].plane = plane;
 		pstates[cnt].state = to_mdp5_plane_state(pstate);
 
@@ -413,8 +448,29 @@ static int mdp5_crtc_atomic_check(struct drm_crtc *crtc,
 	/* assign a stage based on sorted zpos property */
 	sort(pstates, cnt, sizeof(pstates[0]), pstate_cmp, NULL);
 
+<<<<<<< HEAD
 	for (i = 0; i < cnt; i++) {
 		pstates[i].state->stage = STAGE_BASE + i;
+=======
+	/* if the bottom-most layer is not fullscreen, we need to use
+	 * it for solid-color:
+	 */
+	if ((cnt > 0) && !is_fullscreen(state, &pstates[0].state->base))
+		base++;
+
+	/* verify that there are not too many planes attached to crtc
+	 * and that we don't have conflicting mixer stages:
+	 */
+	hw_cfg = mdp5_cfg_get_hw_config(mdp5_kms->cfg);
+
+	if ((cnt + base) >= hw_cfg->lm.nb_stages) {
+		dev_err(dev->dev, "too many planes!\n");
+		return -EINVAL;
+	}
+
+	for (i = 0; i < cnt; i++) {
+		pstates[i].state->stage = STAGE_BASE + i + base;
+>>>>>>> v4.9.227
 		DBG("%s: assign pipe %s on stage=%d", mdp5_crtc->name,
 				pipe2name(mdp5_plane_pipe(pstates[i].plane)),
 				pstates[i].state->stage);
@@ -469,6 +525,7 @@ static void mdp5_crtc_atomic_flush(struct drm_crtc *crtc,
 	request_pending(crtc, PENDING_FLIP);
 }
 
+<<<<<<< HEAD
 static int mdp5_crtc_set_property(struct drm_crtc *crtc,
 		struct drm_property *property, uint64_t val)
 {
@@ -476,6 +533,8 @@ static int mdp5_crtc_set_property(struct drm_crtc *crtc,
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 static void get_roi(struct drm_crtc *crtc, uint32_t *roi_w, uint32_t *roi_h)
 {
 	struct mdp5_crtc *mdp5_crtc = to_mdp5_crtc(crtc);
@@ -502,6 +561,7 @@ static void get_roi(struct drm_crtc *crtc, uint32_t *roi_w, uint32_t *roi_h)
 			mdp5_crtc->cursor.y);
 }
 
+<<<<<<< HEAD
 static enum mdp5_pipe get_cursor_pipe_id(u32 cursor_id)
 {
 	switch (cursor_id) {
@@ -511,6 +571,8 @@ static enum mdp5_pipe get_cursor_pipe_id(u32 cursor_id)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
 		struct drm_file *file, uint32_t handle,
 		uint32_t width, uint32_t height)
@@ -519,6 +581,7 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
 	struct drm_device *dev = crtc->dev;
 	struct mdp5_kms *mdp5_kms = get_kms(crtc);
 	struct drm_gem_object *cursor_bo, *old_bo = NULL;
+<<<<<<< HEAD
 	uint32_t cursor_addr, stride;
 	int ret, bpp, lm;
 	unsigned int depth;
@@ -546,6 +609,16 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
 			mdp5_crtc->id);
 		return 0;
 	}
+=======
+	uint32_t blendcfg, cursor_addr, stride;
+	int ret, lm;
+	enum mdp5_cursor_alpha cur_alpha = CURSOR_ALPHA_PER_PIXEL;
+	uint32_t flush_mask = mdp_ctl_flush_mask_cursor(0);
+	uint32_t roi_w, roi_h;
+	bool cursor_enable = true;
+	unsigned long flags;
+
+>>>>>>> v4.9.227
 	if ((width > CURSOR_WIDTH) || (height > CURSOR_HEIGHT)) {
 		dev_err(dev->dev, "bad cursor size: %dx%d\n", width, height);
 		return -EINVAL;
@@ -555,11 +628,16 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
 		return -EINVAL;
 
 	if (!handle) {
+<<<<<<< HEAD
 		DBG("Cursor off, handle is NULL\n");
+=======
+		DBG("Cursor off");
+>>>>>>> v4.9.227
 		cursor_enable = false;
 		goto set_cursor;
 	}
 
+<<<<<<< HEAD
 	cursor_bo = drm_gem_object_lookup(dev, file, handle);
 	if (!cursor_bo) {
 		dev_err(dev->dev, "cursor_bo is NULL\n");
@@ -581,6 +659,18 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
 	lm = mdp5_crtc->lm;
 	drm_fb_get_bpp_depth(pixel_fmt, &depth, &bpp);
 	stride = width * (bpp >> 3);
+=======
+	cursor_bo = drm_gem_object_lookup(file, handle);
+	if (!cursor_bo)
+		return -ENOENT;
+
+	ret = msm_gem_get_iova(cursor_bo, mdp5_kms->id, &cursor_addr);
+	if (ret)
+		return -EINVAL;
+
+	lm = mdp5_crtc->lm;
+	stride = width * drm_format_plane_cpp(DRM_FORMAT_ARGB8888, 0);
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&mdp5_crtc->cursor.lock, flags);
 	old_bo = mdp5_crtc->cursor.scanout_bo;
@@ -591,6 +681,7 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
 
 	get_roi(crtc, &roi_w, &roi_h);
 
+<<<<<<< HEAD
 	if (roi_w == 0 || roi_h == 0) {
 		/* Disable cursor if roi is 0*/
 		DBG("Cursor off, roi_w=%d or roi_h=%d is 0\n", roi_w, roi_h);
@@ -664,10 +755,27 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
 			(STAGE6 - STAGE0)), 0);
 	mdp5_write(mdp5_kms, REG_MDP5_LM_BLEND_BG_ALPHA(lm,
 			(STAGE6 - STAGE0)), 0xFF);
+=======
+	mdp5_write(mdp5_kms, REG_MDP5_LM_CURSOR_STRIDE(lm), stride);
+	mdp5_write(mdp5_kms, REG_MDP5_LM_CURSOR_FORMAT(lm),
+			MDP5_LM_CURSOR_FORMAT_FORMAT(CURSOR_FMT_ARGB8888));
+	mdp5_write(mdp5_kms, REG_MDP5_LM_CURSOR_IMG_SIZE(lm),
+			MDP5_LM_CURSOR_IMG_SIZE_SRC_H(height) |
+			MDP5_LM_CURSOR_IMG_SIZE_SRC_W(width));
+	mdp5_write(mdp5_kms, REG_MDP5_LM_CURSOR_SIZE(lm),
+			MDP5_LM_CURSOR_SIZE_ROI_H(roi_h) |
+			MDP5_LM_CURSOR_SIZE_ROI_W(roi_w));
+	mdp5_write(mdp5_kms, REG_MDP5_LM_CURSOR_BASE_ADDR(lm), cursor_addr);
+
+	blendcfg = MDP5_LM_CURSOR_BLEND_CONFIG_BLEND_EN;
+	blendcfg |= MDP5_LM_CURSOR_BLEND_CONFIG_BLEND_ALPHA_SEL(cur_alpha);
+	mdp5_write(mdp5_kms, REG_MDP5_LM_CURSOR_BLEND_CONFIG(lm), blendcfg);
+>>>>>>> v4.9.227
 
 	spin_unlock_irqrestore(&mdp5_crtc->cursor.lock, flags);
 
 set_cursor:
+<<<<<<< HEAD
 	ret = mdp5_ctl_set_cursor(mdp5_crtc->ctl, cursor_id, cursor_enable);
 	if (ret) {
 		dev_err(dev->dev, "failed to %sable cursor[%d]: %d\n",
@@ -676,6 +784,14 @@ set_cursor:
 	}
 	flush_mask = (mdp_ctl_flush_mask_cursor(mdp5_crtc->id) |
 				mdp_ctl_flush_mask_lm(lm));
+=======
+	ret = mdp5_ctl_set_cursor(mdp5_crtc->ctl, 0, cursor_enable);
+	if (ret) {
+		dev_err(dev->dev, "failed to %sable cursor: %d\n",
+				cursor_enable ? "en" : "dis", ret);
+		goto end;
+	}
+>>>>>>> v4.9.227
 
 	crtc_flush(crtc, flush_mask);
 
@@ -692,6 +808,7 @@ static int mdp5_crtc_cursor_move(struct drm_crtc *crtc, int x, int y)
 {
 	struct mdp5_kms *mdp5_kms = get_kms(crtc);
 	struct mdp5_crtc *mdp5_crtc = to_mdp5_crtc(crtc);
+<<<<<<< HEAD
 	struct drm_device *dev = crtc->dev;
 	int lm = mdp5_crtc->lm;
 	uint32_t flush_mask = (mdp_ctl_flush_mask_cursor(mdp5_crtc->id) |
@@ -709,6 +826,12 @@ static int mdp5_crtc_cursor_move(struct drm_crtc *crtc, int x, int y)
 	uint32_t pixel_fmt;
 	const struct mdp_format *format;
 	const struct msm_format *msm_format;
+=======
+	uint32_t flush_mask = mdp_ctl_flush_mask_cursor(0);
+	uint32_t roi_w;
+	uint32_t roi_h;
+	unsigned long flags;
+>>>>>>> v4.9.227
 
 	/* In case the CRTC is disabled, just drop the cursor update */
 	if (unlikely(!crtc->state->enable))
@@ -718,6 +841,7 @@ static int mdp5_crtc_cursor_move(struct drm_crtc *crtc, int x, int y)
 	mdp5_crtc->cursor.y = y = max(y, 0);
 
 	get_roi(crtc, &roi_w, &roi_h);
+<<<<<<< HEAD
 	cursor_id = mdp5_crtc->id;
 
 	mdp5_enable(mdp5_kms);
@@ -784,13 +908,32 @@ set_cursor:
 end:
 	mdp5_disable(mdp5_kms);
 	return ret;
+=======
+
+	spin_lock_irqsave(&mdp5_crtc->cursor.lock, flags);
+	mdp5_write(mdp5_kms, REG_MDP5_LM_CURSOR_SIZE(mdp5_crtc->lm),
+			MDP5_LM_CURSOR_SIZE_ROI_H(roi_h) |
+			MDP5_LM_CURSOR_SIZE_ROI_W(roi_w));
+	mdp5_write(mdp5_kms, REG_MDP5_LM_CURSOR_START_XY(mdp5_crtc->lm),
+			MDP5_LM_CURSOR_START_XY_Y_START(y) |
+			MDP5_LM_CURSOR_START_XY_X_START(x));
+	spin_unlock_irqrestore(&mdp5_crtc->cursor.lock, flags);
+
+	crtc_flush(crtc, flush_mask);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static const struct drm_crtc_funcs mdp5_crtc_funcs = {
 	.set_config = drm_atomic_helper_set_config,
 	.destroy = mdp5_crtc_destroy,
 	.page_flip = drm_atomic_helper_page_flip,
+<<<<<<< HEAD
 	.set_property = mdp5_crtc_set_property,
+=======
+	.set_property = drm_atomic_helper_crtc_set_property,
+>>>>>>> v4.9.227
 	.reset = drm_atomic_helper_crtc_reset,
 	.atomic_duplicate_state = drm_atomic_helper_crtc_duplicate_state,
 	.atomic_destroy_state = drm_atomic_helper_crtc_destroy_state,
@@ -799,7 +942,10 @@ static const struct drm_crtc_funcs mdp5_crtc_funcs = {
 };
 
 static const struct drm_crtc_helper_funcs mdp5_crtc_helper_funcs = {
+<<<<<<< HEAD
 	.mode_fixup = mdp5_crtc_mode_fixup,
+=======
+>>>>>>> v4.9.227
 	.mode_set_nofb = mdp5_crtc_mode_set_nofb,
 	.disable = mdp5_crtc_disable,
 	.enable = mdp5_crtc_enable,
@@ -886,12 +1032,15 @@ uint32_t mdp5_crtc_vblank(struct drm_crtc *crtc)
 	return mdp5_crtc->vblank.irqmask;
 }
 
+<<<<<<< HEAD
 void mdp5_crtc_cancel_pending_flip(struct drm_crtc *crtc, struct drm_file *file)
 {
 	DBG("cancel: %p", file);
 	complete_flip(crtc, file);
 }
 
+=======
+>>>>>>> v4.9.227
 void mdp5_crtc_set_pipeline(struct drm_crtc *crtc,
 		struct mdp5_interface *intf, struct mdp5_ctl *ctl)
 {
@@ -962,7 +1111,12 @@ struct drm_crtc *mdp5_crtc_init(struct drm_device *dev,
 	snprintf(mdp5_crtc->name, sizeof(mdp5_crtc->name), "%s:%d",
 			pipe2name(mdp5_plane_pipe(plane)), id);
 
+<<<<<<< HEAD
 	drm_crtc_init_with_planes(dev, crtc, plane, NULL, &mdp5_crtc_funcs);
+=======
+	drm_crtc_init_with_planes(dev, crtc, plane, NULL, &mdp5_crtc_funcs,
+				  NULL);
+>>>>>>> v4.9.227
 
 	drm_flip_work_init(&mdp5_crtc->unref_cursor_work,
 			"unref cursor", unref_cursor_worker);

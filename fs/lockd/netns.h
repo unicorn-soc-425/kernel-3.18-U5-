@@ -12,9 +12,13 @@ struct lockd_net {
 	struct delayed_work grace_period_end;
 	struct lock_manager lockd_manager;
 
+<<<<<<< HEAD
 	spinlock_t nsm_clnt_lock;
 	unsigned int nsm_users;
 	struct rpc_clnt *nsm_clnt;
+=======
+	struct list_head nsm_handles;
+>>>>>>> v4.9.227
 };
 
 extern int lockd_net_id;

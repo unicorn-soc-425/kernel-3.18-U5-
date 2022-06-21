@@ -125,6 +125,7 @@ static void ioport_write32r(void __iomem *addr, const void *s, unsigned long n)
 }
 
 static const struct iomap_ops ioport_ops = {
+<<<<<<< HEAD
 	ioport_read8,
 	ioport_read16,
 	ioport_read16,
@@ -141,6 +142,24 @@ static const struct iomap_ops ioport_ops = {
 	ioport_write8r,
 	ioport_write16r,
 	ioport_write32r,
+=======
+	.read8 = ioport_read8,
+	.read16 = ioport_read16,
+	.read16be = ioport_read16,
+	.read32 = ioport_read32,
+	.read32be = ioport_read32,
+	.write8 = ioport_write8,
+	.write16 = ioport_write16,
+	.write16be = ioport_write16,
+	.write32 = ioport_write32,
+	.write32be = ioport_write32,
+	.read8r = ioport_read8r,
+	.read16r = ioport_read16r,
+	.read32r = ioport_read32r,
+	.write8r = ioport_write8r,
+	.write16r = ioport_write16r,
+	.write32r = ioport_write32r,
+>>>>>>> v4.9.227
 };
 
 /* Legacy I/O memory ops */
@@ -244,6 +263,7 @@ static void iomem_write32r(void __iomem *addr, const void *s, unsigned long n)
 }
 
 static const struct iomap_ops iomem_ops = {
+<<<<<<< HEAD
 	iomem_read8,
 	iomem_read16,
 	iomem_read16be,
@@ -260,6 +280,24 @@ static const struct iomap_ops iomem_ops = {
 	iomem_write8r,
 	iomem_write16r,
 	iomem_write32r,
+=======
+	.read8 = iomem_read8,
+	.read16 = iomem_read16,
+	.read16be = iomem_read16be,
+	.read32 = iomem_read32,
+	.read32be = iomem_read32be,
+	.write8 = iomem_write8,
+	.write16 = iomem_write16,
+	.write16be = iomem_write16be,
+	.write32 = iomem_write32,
+	.write32be = iomem_write32be,
+	.read8r = iomem_read8r,
+	.read16r = iomem_read16r,
+	.read32r = iomem_read32r,
+	.write8r = iomem_write8r,
+	.write16r = iomem_write16r,
+	.write32r = iomem_write32r,
+>>>>>>> v4.9.227
 };
 
 static const struct iomap_ops *iomap_ops[8] = {

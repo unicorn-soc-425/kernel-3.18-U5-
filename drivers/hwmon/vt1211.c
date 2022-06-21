@@ -226,15 +226,31 @@ static inline void superio_select(int sio_cip, int ldn)
 	outb(ldn, sio_cip + 1);
 }
 
+<<<<<<< HEAD
 static inline void superio_enter(int sio_cip)
 {
 	outb(0x87, sio_cip);
 	outb(0x87, sio_cip);
+=======
+static inline int superio_enter(int sio_cip)
+{
+	if (!request_muxed_region(sio_cip, 2, DRVNAME))
+		return -EBUSY;
+
+	outb(0x87, sio_cip);
+	outb(0x87, sio_cip);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static inline void superio_exit(int sio_cip)
 {
 	outb(0xaa, sio_cip);
+<<<<<<< HEAD
+=======
+	release_region(sio_cip, 2);
+>>>>>>> v4.9.227
 }
 
 /* ---------------------------------------------------------------------
@@ -1233,7 +1249,10 @@ static int vt1211_remove(struct platform_device *pdev)
 
 static struct platform_driver vt1211_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name  = DRVNAME,
 	},
 	.probe  = vt1211_probe,
@@ -1283,11 +1302,22 @@ EXIT:
 
 static int __init vt1211_find(int sio_cip, unsigned short *address)
 {
+<<<<<<< HEAD
 	int err = -ENODEV;
 	int devid;
 
 	superio_enter(sio_cip);
 
+=======
+	int err;
+	int devid;
+
+	err = superio_enter(sio_cip);
+	if (err)
+		return err;
+
+	err = -ENODEV;
+>>>>>>> v4.9.227
 	devid = force_id ? force_id : superio_inb(sio_cip, SIO_VT1211_DEVID);
 	if (devid != SIO_VT1211_ID)
 		goto EXIT;

@@ -16,6 +16,10 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/suspend.h>
 #include <linux/platform_device.h>
 #include <linux/syscore_ops.h>
@@ -28,16 +32,28 @@
 #include <asm/irq.h>
 #include <asm/suspend.h>
 #include <mach/irqs.h>
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
 #include <mach/reset.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <mach/pm.h>
+=======
+#include "pxa27x.h"
+#include <mach/reset.h>
+#include <linux/platform_data/usb-ohci-pxa27x.h>
+#include "pm.h"
+>>>>>>> v4.9.227
 #include <mach/dma.h>
 #include <mach/smemc.h>
 
 #include "generic.h"
 #include "devices.h"
+<<<<<<< HEAD
 #include "clock.h"
+=======
+#include <linux/clk-provider.h>
+#include <linux/clkdev.h>
+>>>>>>> v4.9.227
 
 void pxa27x_clear_otgph(void)
 {
@@ -73,6 +89,7 @@ void pxa27x_configure_ac97reset(int reset_gpio, bool to_gpio)
 }
 EXPORT_SYMBOL_GPL(pxa27x_configure_ac97reset);
 
+<<<<<<< HEAD
 /* Crystal clock: 13MHz */
 #define BASE_CLK	13000000
 
@@ -241,6 +258,8 @@ static struct clk_lookup pxa27x_clkregs[] = {
 	INIT_CLKREG(&clk_dummy, "sa1100-rtc", NULL),
 };
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 
 #define SAVE(x)		sleep_save[SLEEP_SAVE_##x] = x
@@ -251,7 +270,11 @@ static struct clk_lookup pxa27x_clkregs[] = {
  */
 static unsigned int pwrmode = PWRMODE_SLEEP;
 
+<<<<<<< HEAD
 int __init pxa27x_set_pwrmode(unsigned int mode)
+=======
+int pxa27x_set_pwrmode(unsigned int mode)
+>>>>>>> v4.9.227
 {
 	switch (mode) {
 	case PWRMODE_SLEEP:
@@ -299,7 +322,12 @@ void pxa27x_cpu_pm_enter(suspend_state_t state)
 #ifndef CONFIG_IWMMXT
 	u64 acc0;
 
+<<<<<<< HEAD
 	asm volatile("mra %Q0, %R0, acc0" : "=r" (acc0));
+=======
+	asm volatile(".arch_extension xscale\n\t"
+		     "mra %Q0, %R0, acc0" : "=r" (acc0));
+>>>>>>> v4.9.227
 #endif
 
 	/* ensure voltage-change sequencer not initiated, which hangs */
@@ -318,7 +346,12 @@ void pxa27x_cpu_pm_enter(suspend_state_t state)
 	case PM_SUSPEND_MEM:
 		cpu_suspend(pwrmode, pxa27x_finish_suspend);
 #ifndef CONFIG_IWMMXT
+<<<<<<< HEAD
 		asm volatile("mar acc0, %Q0, %R0" : "=r" (acc0));
+=======
+		asm volatile(".arch_extension xscale\n\t"
+			     "mar acc0, %Q0, %R0" : "=r" (acc0));
+>>>>>>> v4.9.227
 #endif
 		break;
 	}
@@ -398,6 +431,19 @@ void __init pxa27x_init_irq(void)
 	pxa_init_irq(34, pxa27x_set_wake);
 }
 
+<<<<<<< HEAD
+=======
+static int __init
+pxa27x_dt_init_irq(struct device_node *node, struct device_node *parent)
+{
+	pxa_dt_irq_init(pxa27x_set_wake);
+	set_handle_irq(ichp_handle_irq);
+
+	return 0;
+}
+IRQCHIP_DECLARE(pxa27x_intc, "marvell,pxa-intc", pxa27x_dt_init_irq);
+
+>>>>>>> v4.9.227
 static struct map_desc pxa27x_io_desc[] __initdata = {
 	{	/* Mem Ctl */
 		.virtual	= (unsigned long)SMEMC_VIRT,
@@ -443,7 +489,10 @@ static struct platform_device *devices[] __initdata = {
 	&pxa_device_asoc_ssp2,
 	&pxa_device_asoc_ssp3,
 	&pxa_device_asoc_platform,
+<<<<<<< HEAD
 	&sa1100_device_rtc,
+=======
+>>>>>>> v4.9.227
 	&pxa_device_rtc,
 	&pxa27x_device_ssp1,
 	&pxa27x_device_ssp2,
@@ -460,19 +509,33 @@ static int __init pxa27x_init(void)
 
 		reset_status = RCSR;
 
+<<<<<<< HEAD
 		clkdev_add_table(pxa27x_clkregs, ARRAY_SIZE(pxa27x_clkregs));
 
 		if ((ret = pxa_init_dma(IRQ_DMA, 32)))
 			return ret;
 
+=======
+>>>>>>> v4.9.227
 		pxa27x_init_pm();
 
 		register_syscore_ops(&pxa_irq_syscore_ops);
 		register_syscore_ops(&pxa2xx_mfp_syscore_ops);
+<<<<<<< HEAD
 		register_syscore_ops(&pxa2xx_clock_syscore_ops);
 
 		pxa_register_device(&pxa27x_device_gpio, &pxa27x_gpio_info);
 		ret = platform_add_devices(devices, ARRAY_SIZE(devices));
+=======
+
+		if (!of_have_populated_dt()) {
+			pxa_register_device(&pxa27x_device_gpio,
+					    &pxa27x_gpio_info);
+			pxa2xx_set_dmac_info(32, 75);
+			ret = platform_add_devices(devices,
+						   ARRAY_SIZE(devices));
+		}
+>>>>>>> v4.9.227
 	}
 
 	return ret;

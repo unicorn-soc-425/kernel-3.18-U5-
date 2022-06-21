@@ -979,7 +979,10 @@ static int __init crc32c_test(void)
 	int i;
 	int errors = 0;
 	int bytes = 0;
+<<<<<<< HEAD
 	struct timespec start, stop;
+=======
+>>>>>>> v4.9.227
 	u64 nsec;
 	unsigned long flags;
 
@@ -999,20 +1002,31 @@ static int __init crc32c_test(void)
 	local_irq_save(flags);
 	local_irq_disable();
 
+<<<<<<< HEAD
 	getnstimeofday(&start);
+=======
+	nsec = ktime_get_ns();
+>>>>>>> v4.9.227
 	for (i = 0; i < 100; i++) {
 		if (test[i].crc32c_le != __crc32c_le(test[i].crc, test_buf +
 		    test[i].start, test[i].length))
 			errors++;
 	}
+<<<<<<< HEAD
 	getnstimeofday(&stop);
+=======
+	nsec = ktime_get_ns() - nsec;
+>>>>>>> v4.9.227
 
 	local_irq_restore(flags);
 	local_irq_enable();
 
+<<<<<<< HEAD
 	nsec = stop.tv_nsec - start.tv_nsec +
 		1000000000 * (stop.tv_sec - start.tv_sec);
 
+=======
+>>>>>>> v4.9.227
 	pr_info("crc32c: CRC_LE_BITS = %d\n", CRC_LE_BITS);
 
 	if (errors)
@@ -1065,7 +1079,10 @@ static int __init crc32_test(void)
 	int i;
 	int errors = 0;
 	int bytes = 0;
+<<<<<<< HEAD
 	struct timespec start, stop;
+=======
+>>>>>>> v4.9.227
 	u64 nsec;
 	unsigned long flags;
 
@@ -1088,7 +1105,11 @@ static int __init crc32_test(void)
 	local_irq_save(flags);
 	local_irq_disable();
 
+<<<<<<< HEAD
 	getnstimeofday(&start);
+=======
+	nsec = ktime_get_ns();
+>>>>>>> v4.9.227
 	for (i = 0; i < 100; i++) {
 		if (test[i].crc_le != crc32_le(test[i].crc, test_buf +
 		    test[i].start, test[i].length))
@@ -1098,14 +1119,21 @@ static int __init crc32_test(void)
 		    test[i].start, test[i].length))
 			errors++;
 	}
+<<<<<<< HEAD
 	getnstimeofday(&stop);
+=======
+	nsec = ktime_get_ns() - nsec;
+>>>>>>> v4.9.227
 
 	local_irq_restore(flags);
 	local_irq_enable();
 
+<<<<<<< HEAD
 	nsec = stop.tv_nsec - start.tv_nsec +
 		1000000000 * (stop.tv_sec - start.tv_sec);
 
+=======
+>>>>>>> v4.9.227
 	pr_info("crc32: CRC_LE_BITS = %d, CRC_BE BITS = %d\n",
 		 CRC_LE_BITS, CRC_BE_BITS);
 

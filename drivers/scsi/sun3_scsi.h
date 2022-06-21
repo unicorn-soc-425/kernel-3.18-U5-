@@ -13,6 +13,7 @@
  *	(Unix and Linux consulting and custom programming)
  *	drew@colorado.edu
  *      +1 (303) 440-4894
+<<<<<<< HEAD
  *
  * ALPHA RELEASE 1.
  *
@@ -27,11 +28,14 @@
  * Colorado Springs, CO 80916
  * 1+ (719) 578-3400
  * 1+ (800) 334-5454
+=======
+>>>>>>> v4.9.227
  */
 
 #ifndef SUN3_SCSI_H
 #define SUN3_SCSI_H
 
+<<<<<<< HEAD
 #define SUN3SCSI_PUBLIC_RELEASE 1
 
 /*
@@ -102,6 +106,8 @@ static int sun3scsi_release (struct Scsi_Host *);
 #define NCR5380_dma_read_setup(instance, data, count) sun3scsi_dma_setup(data, count, 0)
 #define NCR5380_dma_residual sun3scsi_dma_residual
 
+=======
+>>>>>>> v4.9.227
 /* additional registers - mainly DMA control regs */
 /* these start at regbase + 8 -- directly after the NCR regs */
 struct sun3_dma_regs {

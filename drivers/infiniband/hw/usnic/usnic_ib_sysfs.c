@@ -1,9 +1,30 @@
 /*
  * Copyright (c) 2013, Cisco Systems, Inc. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you may redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
+=======
+ * This software is available to you under a choice of one of two
+ * licenses.  You may choose to be licensed under the terms of the GNU
+ * General Public License (GPL) Version 2, available from the file
+ * COPYING in the main directory of this source tree, or the
+ * BSD license below:
+ *
+ *     Redistribution and use in source and binary forms, with or
+ *     without modification, are permitted provided that the following
+ *     conditions are met:
+ *
+ *      - Redistributions of source code must retain the above
+ *        copyright notice, this list of conditions and the following
+ *        disclaimer.
+ *
+ *      - Redistributions in binary form must reproduce the above
+ *        copyright notice, this list of conditions and the following
+ *        disclaimer in the documentation and/or other materials
+ *        provided with the distribution.
+>>>>>>> v4.9.227
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
@@ -30,6 +51,7 @@
 #include "usnic_ib_verbs.h"
 #include "usnic_log.h"
 
+<<<<<<< HEAD
 static ssize_t usnic_ib_show_fw_ver(struct device *device,
 					struct device_attribute *attr,
 					char *buf)
@@ -45,6 +67,8 @@ static ssize_t usnic_ib_show_fw_ver(struct device *device,
 	return scnprintf(buf, PAGE_SIZE, "%s\n", info.fw_version);
 }
 
+=======
+>>>>>>> v4.9.227
 static ssize_t usnic_ib_show_board(struct device *device,
 					struct device_attribute *attr,
 					char *buf)
@@ -177,7 +201,10 @@ usnic_ib_show_cq_per_vf(struct device *device, struct device_attribute *attr,
 			us_ibdev->vf_res_cnt[USNIC_VNIC_RES_TYPE_CQ]);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(fw_ver, S_IRUGO, usnic_ib_show_fw_ver, NULL);
+=======
+>>>>>>> v4.9.227
 static DEVICE_ATTR(board_id, S_IRUGO, usnic_ib_show_board, NULL);
 static DEVICE_ATTR(config, S_IRUGO, usnic_ib_show_config, NULL);
 static DEVICE_ATTR(iface, S_IRUGO, usnic_ib_show_iface, NULL);
@@ -186,7 +213,10 @@ static DEVICE_ATTR(qp_per_vf, S_IRUGO, usnic_ib_show_qp_per_vf, NULL);
 static DEVICE_ATTR(cq_per_vf, S_IRUGO, usnic_ib_show_cq_per_vf, NULL);
 
 static struct device_attribute *usnic_class_attributes[] = {
+<<<<<<< HEAD
 	&dev_attr_fw_ver,
+=======
+>>>>>>> v4.9.227
 	&dev_attr_board_id,
 	&dev_attr_config,
 	&dev_attr_iface,

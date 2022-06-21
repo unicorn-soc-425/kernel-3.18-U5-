@@ -22,7 +22,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 #include "nouveau_fbcon.h"
 
@@ -107,11 +111,19 @@ nv04_fbcon_imageblit(struct fb_info *info, const struct fb_image *image)
 			 ((image->dx + image->width) & 0xffff));
 	OUT_RING(chan, bg);
 	OUT_RING(chan, fg);
+<<<<<<< HEAD
 	OUT_RING(chan, (image->height << 16) | image->width);
 	OUT_RING(chan, (image->height << 16) | image->width);
 	OUT_RING(chan, (image->dy << 16) | (image->dx & 0xffff));
 
 	dsize = ALIGN(image->width * image->height, 32) >> 5;
+=======
+	OUT_RING(chan, (image->height << 16) | ALIGN(image->width, 8));
+	OUT_RING(chan, (image->height << 16) | image->width);
+	OUT_RING(chan, (image->dy << 16) | (image->dx & 0xffff));
+
+	dsize = ALIGN(ALIGN(image->width, 8) * image->height, 32) >> 5;
+>>>>>>> v4.9.227
 	while (dsize) {
 		int iter_len = dsize > 128 ? 128 : dsize;
 

@@ -35,7 +35,10 @@ endif
 
 platform-$(CONFIG_XTENSA_PLATFORM_XT2000)	:= xt2000
 platform-$(CONFIG_XTENSA_PLATFORM_ISS)		:= iss
+<<<<<<< HEAD
 platform-$(CONFIG_XTENSA_PLATFORM_S6105)	:= s6105
+=======
+>>>>>>> v4.9.227
 platform-$(CONFIG_XTENSA_PLATFORM_XTFPGA)	:= xtfpga
 
 PLATFORM = $(platform-y)
@@ -54,9 +57,17 @@ endif
 
 ifeq ($(shell echo __XTENSA_EB__ | $(CC) -E - | grep -v "\#"),1)
 CHECKFLAGS += -D__XTENSA_EB__
+<<<<<<< HEAD
 endif
 ifeq ($(shell echo __XTENSA_EL__ | $(CC) -E - | grep -v "\#"),1)
 CHECKFLAGS += -D__XTENSA_EL__
+=======
+KBUILD_CPPFLAGS += -DCONFIG_CPU_BIG_ENDIAN
+endif
+ifeq ($(shell echo __XTENSA_EL__ | $(CC) -E - | grep -v "\#"),1)
+CHECKFLAGS += -D__XTENSA_EL__
+KBUILD_CPPFLAGS += -DCONFIG_CPU_LITTLE_ENDIAN
+>>>>>>> v4.9.227
 endif
 
 vardirs := $(patsubst %,arch/xtensa/variants/%/,$(variant-y))
@@ -102,6 +113,15 @@ zImage: vmlinux
 %.dtb:
 	$(Q)$(MAKE) $(build)=$(boot)/dts $(boot)/dts/$@
 
+<<<<<<< HEAD
 define archhelp
   @echo '* zImage      - Compressed kernel image (arch/xtensa/boot/images/zImage.*)'
+=======
+dtbs: scripts
+	$(Q)$(MAKE) $(build)=$(boot)/dts
+
+define archhelp
+  @echo '* zImage      - Compressed kernel image (arch/xtensa/boot/images/zImage.*)'
+  @echo '  dtbs        - Build device tree blobs for enabled boards'
+>>>>>>> v4.9.227
 endef

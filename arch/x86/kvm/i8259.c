@@ -507,6 +507,10 @@ static int picdev_read(struct kvm_pic *s,
 		return -EOPNOTSUPP;
 
 	if (len != 1) {
+<<<<<<< HEAD
+=======
+		memset(val, 0, len);
+>>>>>>> v4.9.227
 		pr_pic_unimpl("non byte read\n");
 		return 0;
 	}
@@ -528,42 +532,66 @@ static int picdev_read(struct kvm_pic *s,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int picdev_master_write(struct kvm_io_device *dev,
+=======
+static int picdev_master_write(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+>>>>>>> v4.9.227
 			       gpa_t addr, int len, const void *val)
 {
 	return picdev_write(container_of(dev, struct kvm_pic, dev_master),
 			    addr, len, val);
 }
 
+<<<<<<< HEAD
 static int picdev_master_read(struct kvm_io_device *dev,
+=======
+static int picdev_master_read(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+>>>>>>> v4.9.227
 			      gpa_t addr, int len, void *val)
 {
 	return picdev_read(container_of(dev, struct kvm_pic, dev_master),
 			    addr, len, val);
 }
 
+<<<<<<< HEAD
 static int picdev_slave_write(struct kvm_io_device *dev,
+=======
+static int picdev_slave_write(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+>>>>>>> v4.9.227
 			      gpa_t addr, int len, const void *val)
 {
 	return picdev_write(container_of(dev, struct kvm_pic, dev_slave),
 			    addr, len, val);
 }
 
+<<<<<<< HEAD
 static int picdev_slave_read(struct kvm_io_device *dev,
+=======
+static int picdev_slave_read(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+>>>>>>> v4.9.227
 			     gpa_t addr, int len, void *val)
 {
 	return picdev_read(container_of(dev, struct kvm_pic, dev_slave),
 			    addr, len, val);
 }
 
+<<<<<<< HEAD
 static int picdev_eclr_write(struct kvm_io_device *dev,
+=======
+static int picdev_eclr_write(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+>>>>>>> v4.9.227
 			     gpa_t addr, int len, const void *val)
 {
 	return picdev_write(container_of(dev, struct kvm_pic, dev_eclr),
 			    addr, len, val);
 }
 
+<<<<<<< HEAD
 static int picdev_eclr_read(struct kvm_io_device *dev,
+=======
+static int picdev_eclr_read(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+>>>>>>> v4.9.227
 			    gpa_t addr, int len, void *val)
 {
 	return picdev_read(container_of(dev, struct kvm_pic, dev_eclr),
@@ -650,6 +678,7 @@ fail_unlock:
 	return NULL;
 }
 
+<<<<<<< HEAD
 void kvm_destroy_pic(struct kvm *kvm)
 {
 	struct kvm_pic *vpic = kvm->arch.vpic;
@@ -661,4 +690,12 @@ void kvm_destroy_pic(struct kvm *kvm)
 		kvm->arch.vpic = NULL;
 		kfree(vpic);
 	}
+=======
+void kvm_destroy_pic(struct kvm_pic *vpic)
+{
+	kvm_io_bus_unregister_dev(vpic->kvm, KVM_PIO_BUS, &vpic->dev_master);
+	kvm_io_bus_unregister_dev(vpic->kvm, KVM_PIO_BUS, &vpic->dev_slave);
+	kvm_io_bus_unregister_dev(vpic->kvm, KVM_PIO_BUS, &vpic->dev_eclr);
+	kfree(vpic);
+>>>>>>> v4.9.227
 }

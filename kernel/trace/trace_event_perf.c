@@ -1,7 +1,11 @@
 /*
  * trace event based perf event profiling/tracing
  *
+<<<<<<< HEAD
  * Copyright (C) 2009 Red Hat Inc, Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ * Copyright (C) 2009 Red Hat Inc, Peter Zijlstra
+>>>>>>> v4.9.227
  * Copyright (C) 2009-2010 Frederic Weisbecker <fweisbec@gmail.com>
  */
 
@@ -21,7 +25,11 @@ typedef typeof(unsigned long [PERF_MAX_TRACE_SIZE / sizeof(unsigned long)])
 /* Count the events in use (per event id, not per instance) */
 static int	total_ref_count;
 
+<<<<<<< HEAD
 static int perf_trace_event_perm(struct ftrace_event_call *tp_event,
+=======
+static int perf_trace_event_perm(struct trace_event_call *tp_event,
+>>>>>>> v4.9.227
 				 struct perf_event *p_event)
 {
 	if (tp_event->perf_perm) {
@@ -47,6 +55,12 @@ static int perf_trace_event_perm(struct ftrace_event_call *tp_event,
 		if (perf_paranoid_tracepoint_raw() && !capable(CAP_SYS_ADMIN))
 			return -EPERM;
 
+<<<<<<< HEAD
+=======
+		if (!is_sampling_event(p_event))
+			return 0;
+
+>>>>>>> v4.9.227
 		/*
 		 * We don't allow user space callchains for  function trace
 		 * event, due to issues with page faults while tracing page
@@ -83,7 +97,11 @@ static int perf_trace_event_perm(struct ftrace_event_call *tp_event,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int perf_trace_event_reg(struct ftrace_event_call *tp_event,
+=======
+static int perf_trace_event_reg(struct trace_event_call *tp_event,
+>>>>>>> v4.9.227
 				struct perf_event *p_event)
 {
 	struct hlist_head __percpu *list;
@@ -143,7 +161,11 @@ fail:
 
 static void perf_trace_event_unreg(struct perf_event *p_event)
 {
+<<<<<<< HEAD
 	struct ftrace_event_call *tp_event = p_event->tp_event;
+=======
+	struct trace_event_call *tp_event = p_event->tp_event;
+>>>>>>> v4.9.227
 	int i;
 
 	if (--tp_event->perf_refcount > 0)
@@ -172,17 +194,29 @@ out:
 
 static int perf_trace_event_open(struct perf_event *p_event)
 {
+<<<<<<< HEAD
 	struct ftrace_event_call *tp_event = p_event->tp_event;
+=======
+	struct trace_event_call *tp_event = p_event->tp_event;
+>>>>>>> v4.9.227
 	return tp_event->class->reg(tp_event, TRACE_REG_PERF_OPEN, p_event);
 }
 
 static void perf_trace_event_close(struct perf_event *p_event)
 {
+<<<<<<< HEAD
 	struct ftrace_event_call *tp_event = p_event->tp_event;
 	tp_event->class->reg(tp_event, TRACE_REG_PERF_CLOSE, p_event);
 }
 
 static int perf_trace_event_init(struct ftrace_event_call *tp_event,
+=======
+	struct trace_event_call *tp_event = p_event->tp_event;
+	tp_event->class->reg(tp_event, TRACE_REG_PERF_CLOSE, p_event);
+}
+
+static int perf_trace_event_init(struct trace_event_call *tp_event,
+>>>>>>> v4.9.227
 				 struct perf_event *p_event)
 {
 	int ret;
@@ -206,7 +240,11 @@ static int perf_trace_event_init(struct ftrace_event_call *tp_event,
 
 int perf_trace_init(struct perf_event *p_event)
 {
+<<<<<<< HEAD
 	struct ftrace_event_call *tp_event;
+=======
+	struct trace_event_call *tp_event;
+>>>>>>> v4.9.227
 	u64 event_id = p_event->attr.config;
 	int ret = -EINVAL;
 
@@ -236,7 +274,11 @@ void perf_trace_destroy(struct perf_event *p_event)
 
 int perf_trace_add(struct perf_event *p_event, int flags)
 {
+<<<<<<< HEAD
 	struct ftrace_event_call *tp_event = p_event->tp_event;
+=======
+	struct trace_event_call *tp_event = p_event->tp_event;
+>>>>>>> v4.9.227
 	struct hlist_head __percpu *pcpu_list;
 	struct hlist_head *list;
 
@@ -255,6 +297,7 @@ int perf_trace_add(struct perf_event *p_event, int flags)
 
 void perf_trace_del(struct perf_event *p_event, int flags)
 {
+<<<<<<< HEAD
 	struct ftrace_event_call *tp_event = p_event->tp_event;
 	if (!hlist_unhashed(&p_event->hlist_entry))
 		hlist_del_rcu(&p_event->hlist_entry);
@@ -268,10 +311,22 @@ void *perf_trace_buf_prepare(int size, unsigned short type,
 	unsigned long flags;
 	char *raw_data;
 	int pc;
+=======
+	struct trace_event_call *tp_event = p_event->tp_event;
+	hlist_del_rcu(&p_event->hlist_entry);
+	tp_event->class->reg(tp_event, TRACE_REG_PERF_DEL, p_event);
+}
+
+void *perf_trace_buf_alloc(int size, struct pt_regs **regs, int *rctxp)
+{
+	char *raw_data;
+	int rctx;
+>>>>>>> v4.9.227
 
 	BUILD_BUG_ON(PERF_MAX_TRACE_SIZE % sizeof(unsigned long));
 
 	if (WARN_ONCE(size > PERF_MAX_TRACE_SIZE,
+<<<<<<< HEAD
 			"perf buffer not large enough"))
 		return NULL;
 
@@ -297,6 +352,37 @@ void *perf_trace_buf_prepare(int size, unsigned short type,
 }
 EXPORT_SYMBOL_GPL(perf_trace_buf_prepare);
 NOKPROBE_SYMBOL(perf_trace_buf_prepare);
+=======
+		      "perf buffer not large enough"))
+		return NULL;
+
+	*rctxp = rctx = perf_swevent_get_recursion_context();
+	if (rctx < 0)
+		return NULL;
+
+	if (regs)
+		*regs = this_cpu_ptr(&__perf_regs[rctx]);
+	raw_data = this_cpu_ptr(perf_trace_buf[rctx]);
+
+	/* zero the dead bytes from align to not leak stack to user */
+	memset(&raw_data[size - sizeof(u64)], 0, sizeof(u64));
+	return raw_data;
+}
+EXPORT_SYMBOL_GPL(perf_trace_buf_alloc);
+NOKPROBE_SYMBOL(perf_trace_buf_alloc);
+
+void perf_trace_buf_update(void *record, u16 type)
+{
+	struct trace_entry *entry = record;
+	int pc = preempt_count();
+	unsigned long flags;
+
+	local_save_flags(flags);
+	tracing_generic_entry_update(entry, flags, pc);
+	entry->type = type;
+}
+NOKPROBE_SYMBOL(perf_trace_buf_update);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_FUNCTION_TRACER
 static void
@@ -317,15 +403,26 @@ perf_ftrace_function_call(unsigned long ip, unsigned long parent_ip,
 
 	BUILD_BUG_ON(ENTRY_SIZE > PERF_MAX_TRACE_SIZE);
 
+<<<<<<< HEAD
 	perf_fetch_caller_regs(&regs);
 
 	entry = perf_trace_buf_prepare(ENTRY_SIZE, TRACE_FN, NULL, &rctx);
+=======
+	memset(&regs, 0, sizeof(regs));
+	perf_fetch_caller_regs(&regs);
+
+	entry = perf_trace_buf_alloc(ENTRY_SIZE, NULL, &rctx);
+>>>>>>> v4.9.227
 	if (!entry)
 		return;
 
 	entry->ip = ip;
 	entry->parent_ip = parent_ip;
+<<<<<<< HEAD
 	perf_trace_buf_submit(entry, ENTRY_SIZE, rctx, 0,
+=======
+	perf_trace_buf_submit(entry, ENTRY_SIZE, rctx, TRACE_FN,
+>>>>>>> v4.9.227
 			      1, &regs, head, NULL);
 
 #undef ENTRY_SIZE
@@ -335,7 +432,11 @@ static int perf_ftrace_function_register(struct perf_event *event)
 {
 	struct ftrace_ops *ops = &event->ftrace_ops;
 
+<<<<<<< HEAD
 	ops->flags |= FTRACE_OPS_FL_CONTROL;
+=======
+	ops->flags |= FTRACE_OPS_FL_PER_CPU | FTRACE_OPS_FL_RCU;
+>>>>>>> v4.9.227
 	ops->func = perf_ftrace_function_call;
 	return register_ftrace_function(ops);
 }
@@ -358,7 +459,11 @@ static void perf_ftrace_function_disable(struct perf_event *event)
 	ftrace_function_local_disable(&event->ftrace_ops);
 }
 
+<<<<<<< HEAD
 int perf_ftrace_event_register(struct ftrace_event_call *call,
+=======
+int perf_ftrace_event_register(struct trace_event_call *call,
+>>>>>>> v4.9.227
 			       enum trace_reg type, void *data)
 {
 	switch (type) {

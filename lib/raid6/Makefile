@@ -3,10 +3,18 @@ obj-$(CONFIG_RAID6_PQ)	+= raid6_pq.o
 raid6_pq-y	+= algos.o recov.o tables.o int1.o int2.o int4.o \
 		   int8.o int16.o int32.o
 
+<<<<<<< HEAD
 raid6_pq-$(CONFIG_X86) += recov_ssse3.o recov_avx2.o mmx.o sse1.o sse2.o avx2.o
 raid6_pq-$(CONFIG_ALTIVEC) += altivec1.o altivec2.o altivec4.o altivec8.o
 raid6_pq-$(CONFIG_KERNEL_MODE_NEON) += neon.o neon1.o neon2.o neon4.o neon8.o
 raid6_pq-$(CONFIG_TILEGX) += tilegx8.o
+=======
+raid6_pq-$(CONFIG_X86) += recov_ssse3.o recov_avx2.o mmx.o sse1.o sse2.o avx2.o avx512.o recov_avx512.o
+raid6_pq-$(CONFIG_ALTIVEC) += altivec1.o altivec2.o altivec4.o altivec8.o
+raid6_pq-$(CONFIG_KERNEL_MODE_NEON) += neon.o neon1.o neon2.o neon4.o neon8.o
+raid6_pq-$(CONFIG_TILEGX) += tilegx8.o
+raid6_pq-$(CONFIG_S390) += s390vx8.o recov_s390xc.o
+>>>>>>> v4.9.227
 
 hostprogs-y	+= mktables
 
@@ -15,7 +23,11 @@ quiet_cmd_unroll = UNROLL  $@
                    < $< > $@ || ( rm -f $@ && exit 1 )
 
 ifeq ($(CONFIG_ALTIVEC),y)
+<<<<<<< HEAD
 altivec_flags := -maltivec -mabi=altivec
+=======
+altivec_flags := -maltivec $(call cc-option,-mabi=altivec)
+>>>>>>> v4.9.227
 endif
 
 # The GCC option -ffreestanding is required in order to compile code containing
@@ -23,7 +35,11 @@ endif
 ifeq ($(CONFIG_KERNEL_MODE_NEON),y)
 NEON_FLAGS := -ffreestanding
 ifeq ($(ARCH),arm)
+<<<<<<< HEAD
 NEON_FLAGS += -mfloat-abi=softfp -mfpu=neon
+=======
+NEON_FLAGS += -march=armv7-a -mfloat-abi=softfp -mfpu=neon
+>>>>>>> v4.9.227
 endif
 ifeq ($(ARCH),arm64)
 CFLAGS_REMOVE_neon1.o += -mgeneral-regs-only
@@ -116,6 +132,14 @@ $(obj)/tilegx8.c:   UNROLL := 8
 $(obj)/tilegx8.c:   $(src)/tilegx.uc $(src)/unroll.awk FORCE
 	$(call if_changed,unroll)
 
+<<<<<<< HEAD
+=======
+targets += s390vx8.c
+$(obj)/s390vx8.c:   UNROLL := 8
+$(obj)/s390vx8.c:   $(src)/s390vx.uc $(src)/unroll.awk FORCE
+	$(call if_changed,unroll)
+
+>>>>>>> v4.9.227
 quiet_cmd_mktable = TABLE   $@
       cmd_mktable = $(obj)/mktables > $@ || ( rm -f $@ && exit 1 )
 

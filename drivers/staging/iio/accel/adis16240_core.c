@@ -27,32 +27,55 @@
 #include "adis16240.h"
 
 static ssize_t adis16240_spi_read_signed(struct device *dev,
+<<<<<<< HEAD
 		struct device_attribute *attr,
 		char *buf,
 		unsigned bits)
+=======
+					 struct device_attribute *attr,
+					 char *buf,
+					 unsigned int bits)
+>>>>>>> v4.9.227
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 	struct adis *st = iio_priv(indio_dev);
 	int ret;
 	s16 val = 0;
+<<<<<<< HEAD
 	unsigned shift = 16 - bits;
 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
 
 	ret = adis_read_reg_16(st,
 					this_attr->address, (u16 *)&val);
+=======
+	unsigned int shift = 16 - bits;
+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+
+	ret = adis_read_reg_16(st,
+			       this_attr->address, (u16 *)&val);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
 	if (val & ADIS16240_ERROR_ACTIVE)
 		adis_check_status(st);
 
+<<<<<<< HEAD
 	val = ((s16)(val << shift) >> shift);
+=======
+	val = (s16)(val << shift) >> shift;
+>>>>>>> v4.9.227
 	return sprintf(buf, "%d\n", val);
 }
 
 static ssize_t adis16240_read_12bit_signed(struct device *dev,
+<<<<<<< HEAD
 		struct device_attribute *attr,
 		char *buf)
+=======
+					   struct device_attribute *attr,
+					   char *buf)
+>>>>>>> v4.9.227
 {
 	ssize_t ret;
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
@@ -176,11 +199,22 @@ static const struct iio_chan_spec adis16240_channels[] = {
 	ADIS_SUPPLY_CHAN(ADIS16240_SUPPLY_OUT, ADIS16240_SCAN_SUPPLY, 0, 10),
 	ADIS_AUX_ADC_CHAN(ADIS16240_AUX_ADC, ADIS16240_SCAN_AUX_ADC, 0, 10),
 	ADIS_ACCEL_CHAN(X, ADIS16240_XACCL_OUT, ADIS16240_SCAN_ACC_X,
+<<<<<<< HEAD
 		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 0, 10),
 	ADIS_ACCEL_CHAN(Y, ADIS16240_YACCL_OUT, ADIS16240_SCAN_ACC_Y,
 		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 0, 10),
 	ADIS_ACCEL_CHAN(Z, ADIS16240_ZACCL_OUT, ADIS16240_SCAN_ACC_Z,
 		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 0, 10),
+=======
+			BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK),
+			0, 10),
+	ADIS_ACCEL_CHAN(Y, ADIS16240_YACCL_OUT, ADIS16240_SCAN_ACC_Y,
+			BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK),
+			0, 10),
+	ADIS_ACCEL_CHAN(Z, ADIS16240_ZACCL_OUT, ADIS16240_SCAN_ACC_Z,
+			BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK),
+			0, 10),
+>>>>>>> v4.9.227
 	ADIS_TEMP_CHAN(ADIS16240_TEMP_OUT, ADIS16240_SCAN_TEMP, 0, 10),
 	IIO_CHAN_SOFT_TIMESTAMP(6)
 };
@@ -219,6 +253,10 @@ static const struct adis_data adis16240_data = {
 	.diag_stat_reg = ADIS16240_DIAG_STAT,
 
 	.self_test_mask = ADIS16240_MSC_CTRL_SELF_TEST_EN,
+<<<<<<< HEAD
+=======
+	.self_test_no_autoclear = true,
+>>>>>>> v4.9.227
 	.startup_delay = ADIS16240_STARTUP_DELAY,
 
 	.status_error_msgs = adis16240_status_error_msgs,
@@ -285,7 +323,10 @@ static int adis16240_remove(struct spi_device *spi)
 static struct spi_driver adis16240_driver = {
 	.driver = {
 		.name = "adis16240",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = adis16240_probe,
 	.remove = adis16240_remove,

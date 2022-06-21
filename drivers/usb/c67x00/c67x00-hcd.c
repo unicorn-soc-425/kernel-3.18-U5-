@@ -34,7 +34,11 @@
 
 static __u8 c67x00_hub_des[] = {
 	0x09,			/*  __u8  bLength; */
+<<<<<<< HEAD
 	0x29,			/*  __u8  bDescriptorType; Hub-descriptor */
+=======
+	USB_DT_HUB,		/*  __u8  bDescriptorType; Hub-descriptor */
+>>>>>>> v4.9.227
 	0x02,			/*  __u8  bNbrPorts; */
 	0x00,			/* __u16  wHubCharacteristics; */
 	0x00,			/*   (per-port OC, no power switching) */

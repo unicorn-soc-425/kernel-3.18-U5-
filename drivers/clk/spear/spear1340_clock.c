@@ -4,14 +4,21 @@
  * SPEAr1340 machine clock framework source file
  *
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clkdev.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -444,6 +451,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 {
 	struct clk *clk, *clk1;
 
+<<<<<<< HEAD
 	clk = clk_register_fixed_rate(NULL, "osc_32k_clk", NULL, CLK_IS_ROOT,
 			32000);
 	clk_register_clkdev(clk, "osc_32k_clk", NULL);
@@ -462,6 +470,22 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 
 	clk = clk_register_fixed_rate(NULL, "i2s_src_pad_clk", NULL,
 			CLK_IS_ROOT, 12288000);
+=======
+	clk = clk_register_fixed_rate(NULL, "osc_32k_clk", NULL, 0, 32000);
+	clk_register_clkdev(clk, "osc_32k_clk", NULL);
+
+	clk = clk_register_fixed_rate(NULL, "osc_24m_clk", NULL, 0, 24000000);
+	clk_register_clkdev(clk, "osc_24m_clk", NULL);
+
+	clk = clk_register_fixed_rate(NULL, "osc_25m_clk", NULL, 0, 25000000);
+	clk_register_clkdev(clk, "osc_25m_clk", NULL);
+
+	clk = clk_register_fixed_rate(NULL, "gmii_pad_clk", NULL, 0, 125000000);
+	clk_register_clkdev(clk, "gmii_pad_clk", NULL);
+
+	clk = clk_register_fixed_rate(NULL, "i2s_src_pad_clk", NULL, 0,
+				      12288000);
+>>>>>>> v4.9.227
 	clk_register_clkdev(clk, "i2s_src_pad_clk", NULL);
 
 	/* clock derived from 32 KHz osc clk */

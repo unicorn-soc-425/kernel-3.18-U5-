@@ -15,10 +15,17 @@
  */
 
 #include <linux/platform_data/gpio-omap.h>
+<<<<<<< HEAD
 #include <linux/platform_data/spi-omap2-mcspi.h>
 #include "omap_hwmod.h"
 #include "i2c.h"
 #include "mmc.h"
+=======
+#include <linux/platform_data/hsmmc-omap.h>
+#include <linux/platform_data/spi-omap2-mcspi.h>
+#include "omap_hwmod.h"
+#include "i2c.h"
+>>>>>>> v4.9.227
 #include "wd_timer.h"
 #include "cm33xx.h"
 #include "prm33xx.h"
@@ -29,6 +36,10 @@
 #define CLKCTRL(oh, clkctrl) ((oh).prcm.omap4.clkctrl_offs = (clkctrl))
 #define RSTCTRL(oh, rstctrl) ((oh).prcm.omap4.rstctrl_offs = (rstctrl))
 #define RSTST(oh, rstst) ((oh).prcm.omap4.rstst_offs = (rstst))
+<<<<<<< HEAD
+=======
+#define PRCM_FLAGS(oh, flag) ((oh).prcm.omap4.flags = (flag))
+>>>>>>> v4.9.227
 
 /*
  * 'l3' class
@@ -203,6 +214,22 @@ struct omap_hwmod am33xx_prcm_hwmod = {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * 'emif' class
+ * instance(s): emif
+ */
+static struct omap_hwmod_class_sysconfig am33xx_emif_sysc = {
+	.rev_offs	= 0x0000,
+};
+
+struct omap_hwmod_class am33xx_emif_hwmod_class = {
+	.name		= "emif",
+	.sysc		= &am33xx_emif_sysc,
+};
+
+/*
+>>>>>>> v4.9.227
  * 'aes0' class
  */
 static struct omap_hwmod_class_sysconfig am33xx_aes0_sysc = {
@@ -436,6 +463,7 @@ struct omap_hwmod_class am33xx_epwmss_hwmod_class = {
 	.sysc		= &am33xx_epwmss_sysc,
 };
 
+<<<<<<< HEAD
 static struct omap_hwmod_class am33xx_ecap_hwmod_class = {
 	.name		= "ecap",
 };
@@ -448,6 +476,8 @@ struct omap_hwmod_class am33xx_ehrpwm_hwmod_class = {
 	.name		= "ehrpwm",
 };
 
+=======
+>>>>>>> v4.9.227
 /* epwmss0 */
 struct omap_hwmod am33xx_epwmss0_hwmod = {
 	.name		= "epwmss0",
@@ -461,6 +491,7 @@ struct omap_hwmod am33xx_epwmss0_hwmod = {
 	},
 };
 
+<<<<<<< HEAD
 /* ecap0 */
 struct omap_hwmod am33xx_ecap0_hwmod = {
 	.name		= "ecap0",
@@ -485,6 +516,8 @@ struct omap_hwmod am33xx_ehrpwm0_hwmod = {
 	.main_clk	= "l4ls_gclk",
 };
 
+=======
+>>>>>>> v4.9.227
 /* epwmss1 */
 struct omap_hwmod am33xx_epwmss1_hwmod = {
 	.name		= "epwmss1",
@@ -498,6 +531,7 @@ struct omap_hwmod am33xx_epwmss1_hwmod = {
 	},
 };
 
+<<<<<<< HEAD
 /* ecap1 */
 struct omap_hwmod am33xx_ecap1_hwmod = {
 	.name		= "ecap1",
@@ -522,6 +556,8 @@ struct omap_hwmod am33xx_ehrpwm1_hwmod = {
 	.main_clk	= "l4ls_gclk",
 };
 
+=======
+>>>>>>> v4.9.227
 /* epwmss2 */
 struct omap_hwmod am33xx_epwmss2_hwmod = {
 	.name		= "epwmss2",
@@ -535,6 +571,7 @@ struct omap_hwmod am33xx_epwmss2_hwmod = {
 	},
 };
 
+<<<<<<< HEAD
 /* ecap2 */
 struct omap_hwmod am33xx_ecap2_hwmod = {
 	.name		= "ecap2",
@@ -559,6 +596,8 @@ struct omap_hwmod am33xx_ehrpwm2_hwmod = {
 	.main_clk	= "l4ls_gclk",
 };
 
+=======
+>>>>>>> v4.9.227
 /*
  * 'gpio' class: for gpio 0,1,2,3
  */
@@ -668,7 +707,12 @@ struct omap_hwmod am33xx_gpmc_hwmod = {
 	.name		= "gpmc",
 	.class		= &am33xx_gpmc_hwmod_class,
 	.clkdm_name	= "l3s_clkdm",
+<<<<<<< HEAD
 	.flags		= (HWMOD_INIT_NO_IDLE | HWMOD_INIT_NO_RESET),
+=======
+	/* Skip reset for CONFIG_OMAP_GPMC_DEBUG for bootloader timings */
+	.flags		= DEBUG_OMAP_GPMC_HWMOD_FLAGS,
+>>>>>>> v4.9.227
 	.main_clk	= "l3s_gclk",
 	.prcm		= {
 		.omap4	= {
@@ -836,7 +880,11 @@ static struct omap_hwmod_class am33xx_mmc_hwmod_class = {
 };
 
 /* mmc0 */
+<<<<<<< HEAD
 static struct omap_mmc_dev_attr am33xx_mmc0_dev_attr = {
+=======
+static struct omap_hsmmc_dev_attr am33xx_mmc0_dev_attr = {
+>>>>>>> v4.9.227
 	.flags		= OMAP_HSMMC_SUPPORTS_DUAL_VOLT,
 };
 
@@ -854,7 +902,11 @@ struct omap_hwmod am33xx_mmc0_hwmod = {
 };
 
 /* mmc1 */
+<<<<<<< HEAD
 static struct omap_mmc_dev_attr am33xx_mmc1_dev_attr = {
+=======
+static struct omap_hsmmc_dev_attr am33xx_mmc1_dev_attr = {
+>>>>>>> v4.9.227
 	.flags		= OMAP_HSMMC_SUPPORTS_DUAL_VOLT,
 };
 
@@ -872,7 +924,11 @@ struct omap_hwmod am33xx_mmc1_hwmod = {
 };
 
 /* mmc2 */
+<<<<<<< HEAD
 static struct omap_mmc_dev_attr am33xx_mmc2_dev_attr = {
+=======
+static struct omap_hsmmc_dev_attr am33xx_mmc2_dev_attr = {
+>>>>>>> v4.9.227
 	.flags		= OMAP_HSMMC_SUPPORTS_DUAL_VOLT,
 };
 struct omap_hwmod am33xx_mmc2_hwmod = {
@@ -904,6 +960,11 @@ static struct omap_hwmod_class_sysconfig am33xx_rtc_sysc = {
 static struct omap_hwmod_class am33xx_rtc_hwmod_class = {
 	.name		= "rtc",
 	.sysc		= &am33xx_rtc_sysc,
+<<<<<<< HEAD
+=======
+	.unlock		= &omap_hwmod_rtc_unlock,
+	.lock		= &omap_hwmod_rtc_lock,
+>>>>>>> v4.9.227
 };
 
 struct omap_hwmod am33xx_rtc_hwmod = {
@@ -1006,7 +1067,12 @@ static struct omap_hwmod_class_sysconfig am33xx_timer_sysc = {
 	.rev_offs	= 0x0000,
 	.sysc_offs	= 0x0010,
 	.syss_offs	= 0x0014,
+<<<<<<< HEAD
 	.sysc_flags	= (SYSC_HAS_SIDLEMODE | SYSC_HAS_SOFTRESET),
+=======
+	.sysc_flags	= SYSC_HAS_SIDLEMODE | SYSC_HAS_SOFTRESET |
+			  SYSC_HAS_RESET_STATUS,
+>>>>>>> v4.9.227
 	.idlemodes	= (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART |
 			  SIDLE_SMART_WKUP),
 	.sysc_fields	= &omap_hwmod_sysc_type2,
@@ -1364,6 +1430,10 @@ static void omap_hwmod_am33xx_clkctrl(void)
 	CLKCTRL(am33xx_i2c1_hwmod, AM33XX_CM_WKUP_I2C0_CLKCTRL_OFFSET);
 	CLKCTRL(am33xx_wd_timer1_hwmod, AM33XX_CM_WKUP_WDT1_CLKCTRL_OFFSET);
 	CLKCTRL(am33xx_rtc_hwmod, AM33XX_CM_RTC_RTC_CLKCTRL_OFFSET);
+<<<<<<< HEAD
+=======
+	PRCM_FLAGS(am33xx_rtc_hwmod, HWMOD_OMAP4_ZERO_CLKCTRL_OFFSET);
+>>>>>>> v4.9.227
 	CLKCTRL(am33xx_mmc2_hwmod, AM33XX_CM_PER_MMC2_CLKCTRL_OFFSET);
 	CLKCTRL(am33xx_gpmc_hwmod, AM33XX_CM_PER_GPMC_CLKCTRL_OFFSET);
 	CLKCTRL(am33xx_l4_ls_hwmod, AM33XX_CM_PER_L4LS_CLKCTRL_OFFSET);
@@ -1460,6 +1530,10 @@ static void omap_hwmod_am43xx_rst(void)
 {
 	RSTCTRL(am33xx_pruss_hwmod, AM43XX_RM_PER_RSTCTRL_OFFSET);
 	RSTCTRL(am33xx_gfx_hwmod, AM43XX_RM_GFX_RSTCTRL_OFFSET);
+<<<<<<< HEAD
+=======
+	RSTST(am33xx_pruss_hwmod, AM43XX_RM_PER_RSTST_OFFSET);
+>>>>>>> v4.9.227
 	RSTST(am33xx_gfx_hwmod, AM43XX_RM_GFX_RSTST_OFFSET);
 }
 

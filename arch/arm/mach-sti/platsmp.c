@@ -20,6 +20,10 @@
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
+<<<<<<< HEAD
+=======
+#include <linux/memblock.h>
+>>>>>>> v4.9.227
 
 #include <asm/cacheflush.h>
 #include <asm/smp_plat.h>
@@ -38,8 +42,11 @@ static DEFINE_SPINLOCK(boot_lock);
 
 static void sti_secondary_init(unsigned int cpu)
 {
+<<<<<<< HEAD
 	trace_hardirqs_off();
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * let the primary processor know we're out of the
 	 * pen, then head off into the C entry point
@@ -99,17 +106,77 @@ static int sti_boot_secondary(unsigned int cpu, struct task_struct *idle)
 
 static void __init sti_smp_prepare_cpus(unsigned int max_cpus)
 {
+<<<<<<< HEAD
 	void __iomem *scu_base = NULL;
 	struct device_node *np = of_find_compatible_node(
 					NULL, NULL, "arm,cortex-a9-scu");
+=======
+	struct device_node *np;
+	void __iomem *scu_base;
+	u32 __iomem *cpu_strt_ptr;
+	u32 release_phys;
+	int cpu;
+	unsigned long entry_pa = virt_to_phys(sti_secondary_startup);
+
+	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-scu");
+
+>>>>>>> v4.9.227
 	if (np) {
 		scu_base = of_iomap(np, 0);
 		scu_enable(scu_base);
 		of_node_put(np);
 	}
+<<<<<<< HEAD
 }
 
 struct smp_operations __initdata sti_smp_ops = {
+=======
+
+	if (max_cpus <= 1)
+		return;
+
+	for_each_possible_cpu(cpu) {
+
+		np = of_get_cpu_node(cpu, NULL);
+
+		if (!np)
+			continue;
+
+		if (of_property_read_u32(np, "cpu-release-addr",
+						&release_phys)) {
+			pr_err("CPU %d: missing or invalid cpu-release-addr "
+				"property\n", cpu);
+			continue;
+		}
+
+		/*
+		 * holding pen is usually configured in SBC DMEM but can also be
+		 * in RAM.
+		 */
+
+		if (!memblock_is_memory(release_phys))
+			cpu_strt_ptr =
+				ioremap(release_phys, sizeof(release_phys));
+		else
+			cpu_strt_ptr =
+				(u32 __iomem *)phys_to_virt(release_phys);
+
+		__raw_writel(entry_pa, cpu_strt_ptr);
+
+		/*
+		 * wmb so that data is actually written
+		 * before cache flush is done
+		 */
+		smp_wmb();
+		sync_cache_w(cpu_strt_ptr);
+
+		if (!memblock_is_memory(release_phys))
+			iounmap(cpu_strt_ptr);
+	}
+}
+
+const struct smp_operations sti_smp_ops __initconst = {
+>>>>>>> v4.9.227
 	.smp_prepare_cpus	= sti_smp_prepare_cpus,
 	.smp_secondary_init	= sti_secondary_init,
 	.smp_boot_secondary	= sti_boot_secondary,

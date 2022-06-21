@@ -7,7 +7,13 @@
  */
 
 #include "at91sam9x5.dtsi"
+<<<<<<< HEAD
 #include "at91sam9x5_macb0.dtsi"
+=======
+#include "at91sam9x5_lcd.dtsi"
+#include "at91sam9x5_macb0.dtsi"
+#include "at91sam9x5_can.dtsi"
+>>>>>>> v4.9.227
 
 / {
 	model = "Atmel AT91SAM9X35 SoC";

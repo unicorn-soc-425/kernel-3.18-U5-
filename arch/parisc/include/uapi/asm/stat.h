@@ -36,6 +36,7 @@ struct stat {
 
 #define STAT_HAVE_NSEC
 
+<<<<<<< HEAD
 struct hpux_stat64 {
 	unsigned int	st_dev;		/* dev_t is 32 bits on parisc */
 	unsigned int	st_ino;         /* 32 bits */
@@ -67,6 +68,8 @@ struct hpux_stat64 {
 	unsigned int	st_spare4[3];
 };
 
+=======
+>>>>>>> v4.9.227
 /* This is the struct that 32-bit userspace applications are expecting.
  * How 64-bit apps are going to be compiled, I have no idea.  But at least
  * this way, we don't have a wrapper in the kernel.

@@ -231,6 +231,11 @@ failed_read:
 
 const struct file_operations squashfs_dir_ops = {
 	.read = generic_read_dir,
+<<<<<<< HEAD
 	.iterate = squashfs_readdir,
 	.llseek = default_llseek,
+=======
+	.iterate_shared = squashfs_readdir,
+	.llseek = generic_file_llseek,
+>>>>>>> v4.9.227
 };

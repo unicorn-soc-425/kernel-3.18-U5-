@@ -312,8 +312,13 @@ int mthca_QUERY_QP(struct mthca_dev *dev, u32 num, int is_ee,
 		   struct mthca_mailbox *mailbox);
 int mthca_CONF_SPECIAL_QP(struct mthca_dev *dev, int type, u32 qpn);
 int mthca_MAD_IFC(struct mthca_dev *dev, int ignore_mkey, int ignore_bkey,
+<<<<<<< HEAD
 		  int port, struct ib_wc *in_wc, struct ib_grh *in_grh,
 		  void *in_mad, void *response_mad);
+=======
+		  int port, const struct ib_wc *in_wc, const struct ib_grh *in_grh,
+		  const void *in_mad, void *response_mad);
+>>>>>>> v4.9.227
 int mthca_READ_MGM(struct mthca_dev *dev, int index,
 		   struct mthca_mailbox *mailbox);
 int mthca_WRITE_MGM(struct mthca_dev *dev, int index,

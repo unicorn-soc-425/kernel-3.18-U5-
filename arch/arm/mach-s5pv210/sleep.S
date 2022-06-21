@@ -14,7 +14,11 @@
 
 #include <linux/linkage.h>
 
+<<<<<<< HEAD
 	.data
+=======
+	.text
+>>>>>>> v4.9.227
 	.align
 
 	/*

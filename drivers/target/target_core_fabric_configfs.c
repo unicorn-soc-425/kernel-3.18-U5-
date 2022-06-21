@@ -35,9 +35,12 @@
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
+<<<<<<< HEAD
 #include <target/target_core_fabric_configfs.h>
 #include <target/target_core_configfs.h>
 #include <target/configfs_macros.h>
+=======
+>>>>>>> v4.9.227
 
 #include "target_core_internal.h"
 #include "target_core_alua.h"
@@ -46,13 +49,34 @@
 #define TF_CIT_SETUP(_name, _item_ops, _group_ops, _attrs)		\
 static void target_fabric_setup_##_name##_cit(struct target_fabric_configfs *tf) \
 {									\
+<<<<<<< HEAD
 	struct target_fabric_configfs_template *tfc = &tf->tf_cit_tmpl;	\
 	struct config_item_type *cit = &tfc->tfc_##_name##_cit;		\
+=======
+	struct config_item_type *cit = &tf->tf_##_name##_cit;		\
+>>>>>>> v4.9.227
 									\
 	cit->ct_item_ops = _item_ops;					\
 	cit->ct_group_ops = _group_ops;					\
 	cit->ct_attrs = _attrs;						\
+<<<<<<< HEAD
 	cit->ct_owner = tf->tf_module;					\
+=======
+	cit->ct_owner = tf->tf_ops->module;				\
+	pr_debug("Setup generic %s\n", __stringify(_name));		\
+}
+
+#define TF_CIT_SETUP_DRV(_name, _item_ops, _group_ops)		\
+static void target_fabric_setup_##_name##_cit(struct target_fabric_configfs *tf) \
+{									\
+	struct config_item_type *cit = &tf->tf_##_name##_cit;		\
+	struct configfs_attribute **attrs = tf->tf_ops->tfc_##_name##_attrs; \
+									\
+	cit->ct_item_ops = _item_ops;					\
+	cit->ct_group_ops = _group_ops;					\
+	cit->ct_attrs = attrs;						\
+	cit->ct_owner = tf->tf_ops->module;				\
+>>>>>>> v4.9.227
 	pr_debug("Setup generic %s\n", __stringify(_name));		\
 }
 
@@ -69,7 +93,11 @@ static int target_fabric_mappedlun_link(
 			struct se_lun_acl, se_lun_group);
 	struct se_portal_group *se_tpg;
 	struct config_item *nacl_ci, *tpg_ci, *tpg_ci_s, *wwn_ci, *wwn_ci_s;
+<<<<<<< HEAD
 	int ret = 0, lun_access;
+=======
+	bool lun_access_ro;
+>>>>>>> v4.9.227
 
 	if (lun->lun_link_magic != SE_LUN_LINK_MAGIC) {
 		pr_err("Bad lun->lun_link_magic, not a valid lun_ci pointer:"
@@ -79,9 +107,14 @@ static int target_fabric_mappedlun_link(
 	/*
 	 * Ensure that the source port exists
 	 */
+<<<<<<< HEAD
 	if (!lun->lun_sep || !lun->lun_sep->sep_tpg) {
 		pr_err("Source se_lun->lun_sep or lun->lun_sep->sep"
 				"_tpg does not exist\n");
+=======
+	if (!lun->lun_se_dev) {
+		pr_err("Source se_lun->lun_se_dev does not exist\n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 	if (lun->lun_shutdown) {
@@ -89,7 +122,11 @@ static int target_fabric_mappedlun_link(
 			" lun->lun_shutdown=true\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	se_tpg = lun->lun_sep->sep_tpg;
+=======
+	se_tpg = lun->lun_tpg;
+>>>>>>> v4.9.227
 
 	nacl_ci = &lun_acl_ci->ci_parent->ci_group->cg_item;
 	tpg_ci = &nacl_ci->ci_group->cg_item;
@@ -112,6 +149,7 @@ static int target_fabric_mappedlun_link(
 	}
 	/*
 	 * If this struct se_node_acl was dynamically generated with
+<<<<<<< HEAD
 	 * tpg_1/attrib/generate_node_acls=1, use the existing deve->lun_flags,
 	 * which be will write protected (READ-ONLY) when
 	 * tpg_1/attrib/demo_mode_write_protect=1
@@ -126,22 +164,44 @@ static int target_fabric_mappedlun_link(
 				se_tpg)) ? TRANSPORT_LUNFLAGS_READ_ONLY :
 					   TRANSPORT_LUNFLAGS_READ_WRITE;
 	spin_unlock_irq(&lacl->se_lun_nacl->device_list_lock);
+=======
+	 * tpg_1/attrib/generate_node_acls=1, use the existing
+	 * deve->lun_access_ro value, which will be true when
+	 * tpg_1/attrib/demo_mode_write_protect=1
+	 */
+	rcu_read_lock();
+	deve = target_nacl_find_deve(lacl->se_lun_nacl, lacl->mapped_lun);
+	if (deve)
+		lun_access_ro = deve->lun_access_ro;
+	else
+		lun_access_ro =
+			(se_tpg->se_tpg_tfo->tpg_check_prod_mode_write_protect(
+				se_tpg)) ? true : false;
+	rcu_read_unlock();
+>>>>>>> v4.9.227
 	/*
 	 * Determine the actual mapped LUN value user wants..
 	 *
 	 * This value is what the SCSI Initiator actually sees the
+<<<<<<< HEAD
 	 * iscsi/$IQN/$TPGT/lun/lun_* as on their SCSI Initiator Ports.
 	 */
 	ret = core_dev_add_initiator_node_lun_acl(se_tpg, lacl,
 			lun->unpacked_lun, lun_access);
 
 	return (ret < 0) ? -EINVAL : 0;
+=======
+	 * $FABRIC/$WWPN/$TPGT/lun/lun_* as on their SCSI Initiator Ports.
+	 */
+	return core_dev_add_initiator_node_lun_acl(se_tpg, lacl, lun, lun_access_ro);
+>>>>>>> v4.9.227
 }
 
 static int target_fabric_mappedlun_unlink(
 	struct config_item *lun_acl_ci,
 	struct config_item *lun_ci)
 {
+<<<<<<< HEAD
 	struct se_lun *lun;
 	struct se_lun_acl *lacl = container_of(to_config_group(lun_acl_ci),
 			struct se_lun_acl, se_lun_group);
@@ -182,10 +242,41 @@ static ssize_t target_fabric_mappedlun_show_write_protect(
 			(deve->lun_flags & TRANSPORT_LUNFLAGS_READ_ONLY) ?
 			1 : 0);
 	spin_unlock_irq(&se_nacl->device_list_lock);
+=======
+	struct se_lun_acl *lacl = container_of(to_config_group(lun_acl_ci),
+			struct se_lun_acl, se_lun_group);
+	struct se_lun *lun = container_of(to_config_group(lun_ci),
+			struct se_lun, lun_group);
+
+	return core_dev_del_initiator_node_lun_acl(lun, lacl);
+}
+
+static struct se_lun_acl *item_to_lun_acl(struct config_item *item)
+{
+	return container_of(to_config_group(item), struct se_lun_acl,
+			se_lun_group);
+}
+
+static ssize_t target_fabric_mappedlun_write_protect_show(
+		struct config_item *item, char *page)
+{
+	struct se_lun_acl *lacl = item_to_lun_acl(item);
+	struct se_node_acl *se_nacl = lacl->se_lun_nacl;
+	struct se_dev_entry *deve;
+	ssize_t len = 0;
+
+	rcu_read_lock();
+	deve = target_nacl_find_deve(se_nacl, lacl->mapped_lun);
+	if (deve) {
+		len = sprintf(page, "%d\n", deve->lun_access_ro);
+	}
+	rcu_read_unlock();
+>>>>>>> v4.9.227
 
 	return len;
 }
 
+<<<<<<< HEAD
 static ssize_t target_fabric_mappedlun_store_write_protect(
 	struct se_lun_acl *lacl,
 	const char *page,
@@ -212,14 +303,48 @@ static ssize_t target_fabric_mappedlun_store_write_protect(
 		" Mapped LUN: %u Write Protect bit to %s\n",
 		se_tpg->se_tpg_tfo->get_fabric_name(),
 		lacl->initiatorname, lacl->mapped_lun, (op) ? "ON" : "OFF");
+=======
+static ssize_t target_fabric_mappedlun_write_protect_store(
+		struct config_item *item, const char *page, size_t count)
+{
+	struct se_lun_acl *lacl = item_to_lun_acl(item);
+	struct se_node_acl *se_nacl = lacl->se_lun_nacl;
+	struct se_portal_group *se_tpg = se_nacl->se_tpg;
+	unsigned long wp;
+	int ret;
+
+	ret = kstrtoul(page, 0, &wp);
+	if (ret)
+		return ret;
+
+	if ((wp != 1) && (wp != 0))
+		return -EINVAL;
+
+	/* wp=1 means lun_access_ro=true */
+	core_update_device_list_access(lacl->mapped_lun, wp, lacl->se_lun_nacl);
+
+	pr_debug("%s_ConfigFS: Changed Initiator ACL: %s"
+		" Mapped LUN: %llu Write Protect bit to %s\n",
+		se_tpg->se_tpg_tfo->get_fabric_name(),
+		se_nacl->initiatorname, lacl->mapped_lun, (wp) ? "ON" : "OFF");
+>>>>>>> v4.9.227
 
 	return count;
 
 }
 
+<<<<<<< HEAD
 TCM_MAPPEDLUN_ATTR(write_protect, S_IRUGO | S_IWUSR);
 
 CONFIGFS_EATTR_OPS(target_fabric_mappedlun, se_lun_acl, se_lun_group);
+=======
+CONFIGFS_ATTR(target_fabric_mappedlun_, write_protect);
+
+static struct configfs_attribute *target_fabric_mappedlun_attrs[] = {
+	&target_fabric_mappedlun_attr_write_protect,
+	NULL,
+};
+>>>>>>> v4.9.227
 
 static void target_fabric_mappedlun_release(struct config_item *item)
 {
@@ -230,6 +355,7 @@ static void target_fabric_mappedlun_release(struct config_item *item)
 	core_dev_free_initiator_node_lun_acl(se_tpg, lacl);
 }
 
+<<<<<<< HEAD
 static struct configfs_attribute *target_fabric_mappedlun_attrs[] = {
 	&target_fabric_mappedlun_write_protect.attr,
 	NULL,
@@ -239,6 +365,10 @@ static struct configfs_item_operations target_fabric_mappedlun_item_ops = {
 	.release		= target_fabric_mappedlun_release,
 	.show_attribute		= target_fabric_mappedlun_attr_show,
 	.store_attribute	= target_fabric_mappedlun_attr_store,
+=======
+static struct configfs_item_operations target_fabric_mappedlun_item_ops = {
+	.release		= target_fabric_mappedlun_release,
+>>>>>>> v4.9.227
 	.allow_link		= target_fabric_mappedlun_link,
 	.drop_link		= target_fabric_mappedlun_unlink,
 };
@@ -274,6 +404,7 @@ TF_CIT_SETUP(tpg_mappedlun_stat, NULL, &target_fabric_mappedlun_stat_group_ops,
 
 /* End of tfc_tpg_mappedlun_port_cit */
 
+<<<<<<< HEAD
 /* Start of tfc_tpg_nacl_attrib_cit */
 
 CONFIGFS_EATTR_OPS(target_fabric_nacl_attrib, se_node_acl, acl_attrib_group);
@@ -317,6 +448,14 @@ TF_CIT_SETUP(tpg_nacl_param, &target_fabric_nacl_param_item_ops, NULL, NULL);
 
 CONFIGFS_EATTR_OPS(target_fabric_nacl_base, se_node_acl, acl_group);
 
+=======
+TF_CIT_SETUP_DRV(tpg_nacl_attrib, NULL, NULL);
+TF_CIT_SETUP_DRV(tpg_nacl_auth, NULL, NULL);
+TF_CIT_SETUP_DRV(tpg_nacl_param, NULL, NULL);
+
+/* Start of tfc_tpg_nacl_base_cit */
+
+>>>>>>> v4.9.227
 static struct config_group *target_fabric_make_mappedlun(
 	struct config_group *group,
 	const char *name)
@@ -326,6 +465,7 @@ static struct config_group *target_fabric_make_mappedlun(
 	struct se_portal_group *se_tpg = se_nacl->se_tpg;
 	struct target_fabric_configfs *tf = se_tpg->se_tpg_wwn->wwn_tf;
 	struct se_lun_acl *lacl = NULL;
+<<<<<<< HEAD
 	struct config_item *acl_ci;
 	struct config_group *lacl_cg = NULL, *ml_stat_grp = NULL;
 	char *buf;
@@ -338,6 +478,12 @@ static struct config_group *target_fabric_make_mappedlun(
 		return NULL;
 	}
 
+=======
+	char *buf;
+	unsigned long long mapped_lun;
+	int ret = 0;
+
+>>>>>>> v4.9.227
 	buf = kzalloc(strlen(name) + 1, GFP_KERNEL);
 	if (!buf) {
 		pr_err("Unable to allocate memory for name buf\n");
@@ -357,6 +503,7 @@ static struct config_group *target_fabric_make_mappedlun(
 	 * Determine the Mapped LUN value.  This is what the SCSI Initiator
 	 * Port will actually see.
 	 */
+<<<<<<< HEAD
 	ret = kstrtoul(buf + 4, 0, &mapped_lun);
 	if (ret)
 		goto out;
@@ -372,6 +519,11 @@ static struct config_group *target_fabric_make_mappedlun(
 		ret = -EINVAL;
 		goto out;
 	}
+=======
+	ret = kstrtoull(buf + 4, 0, &mapped_lun);
+	if (ret)
+		goto out;
+>>>>>>> v4.9.227
 
 	lacl = core_dev_init_initiator_node_lun_acl(se_tpg, se_nacl,
 			mapped_lun, &ret);
@@ -380,6 +532,7 @@ static struct config_group *target_fabric_make_mappedlun(
 		goto out;
 	}
 
+<<<<<<< HEAD
 	lacl_cg = &lacl->se_lun_group;
 	lacl_cg->default_groups = kmalloc(sizeof(struct config_group *) * 2,
 				GFP_KERNEL);
@@ -404,13 +557,26 @@ static struct config_group *target_fabric_make_mappedlun(
 		ret = -ENOMEM;
 		goto out;
 	}
+=======
+	config_group_init_type_name(&lacl->se_lun_group, name,
+			&tf->tf_tpg_mappedlun_cit);
+
+	config_group_init_type_name(&lacl->ml_stat_grps.stat_group,
+			"statistics", &tf->tf_tpg_mappedlun_stat_cit);
+	configfs_add_default_group(&lacl->ml_stat_grps.stat_group,
+			&lacl->se_lun_group);
+
+>>>>>>> v4.9.227
 	target_stat_setup_mappedlun_default_groups(lacl);
 
 	kfree(buf);
 	return &lacl->se_lun_group;
 out:
+<<<<<<< HEAD
 	if (lacl_cg)
 		kfree(lacl_cg->default_groups);
+=======
+>>>>>>> v4.9.227
 	kfree(lacl);
 	kfree(buf);
 	return ERR_PTR(ret);
@@ -422,6 +588,7 @@ static void target_fabric_drop_mappedlun(
 {
 	struct se_lun_acl *lacl = container_of(to_config_group(item),
 			struct se_lun_acl, se_lun_group);
+<<<<<<< HEAD
 	struct config_item *df_item;
 	struct config_group *lacl_cg = NULL, *ml_stat_grp = NULL;
 	int i;
@@ -441,6 +608,11 @@ static void target_fabric_drop_mappedlun(
 		config_item_put(df_item);
 	}
 	kfree(lacl_cg->default_groups);
+=======
+
+	configfs_remove_default_groups(&lacl->ml_stat_grps.stat_group);
+	configfs_remove_default_groups(&lacl->se_lun_group);
+>>>>>>> v4.9.227
 
 	config_item_put(item);
 }
@@ -449,16 +621,25 @@ static void target_fabric_nacl_base_release(struct config_item *item)
 {
 	struct se_node_acl *se_nacl = container_of(to_config_group(item),
 			struct se_node_acl, acl_group);
+<<<<<<< HEAD
 	struct se_portal_group *se_tpg = se_nacl->se_tpg;
 	struct target_fabric_configfs *tf = se_tpg->se_tpg_wwn->wwn_tf;
 
 	tf->tf_ops.fabric_drop_nodeacl(se_nacl);
+=======
+
+	configfs_remove_default_groups(&se_nacl->acl_fabric_stat_group);
+	core_tpg_del_initiator_node_acl(se_nacl);
+>>>>>>> v4.9.227
 }
 
 static struct configfs_item_operations target_fabric_nacl_base_item_ops = {
 	.release		= target_fabric_nacl_base_release,
+<<<<<<< HEAD
 	.show_attribute		= target_fabric_nacl_base_attr_show,
 	.store_attribute	= target_fabric_nacl_base_attr_store,
+=======
+>>>>>>> v4.9.227
 };
 
 static struct configfs_group_operations target_fabric_nacl_base_group_ops = {
@@ -466,8 +647,13 @@ static struct configfs_group_operations target_fabric_nacl_base_group_ops = {
 	.drop_item		= target_fabric_drop_mappedlun,
 };
 
+<<<<<<< HEAD
 TF_CIT_SETUP(tpg_nacl_base, &target_fabric_nacl_base_item_ops,
 		&target_fabric_nacl_base_group_ops, NULL);
+=======
+TF_CIT_SETUP_DRV(tpg_nacl_base, &target_fabric_nacl_base_item_ops,
+		&target_fabric_nacl_base_group_ops);
+>>>>>>> v4.9.227
 
 /* End of tfc_tpg_nacl_base_cit */
 
@@ -490,6 +676,7 @@ static struct config_group *target_fabric_make_nodeacl(
 			struct se_portal_group, tpg_acl_group);
 	struct target_fabric_configfs *tf = se_tpg->se_tpg_wwn->wwn_tf;
 	struct se_node_acl *se_nacl;
+<<<<<<< HEAD
 	struct config_group *nacl_cg;
 
 	if (!tf->tf_ops.fabric_make_nodeacl) {
@@ -520,6 +707,44 @@ static struct config_group *target_fabric_make_nodeacl(
 	config_group_init_type_name(&se_nacl->acl_fabric_stat_group,
 			"fabric_statistics",
 			&tf->tf_cit_tmpl.tfc_tpg_nacl_stat_cit);
+=======
+
+	se_nacl = core_tpg_add_initiator_node_acl(se_tpg, name);
+	if (IS_ERR(se_nacl))
+		return ERR_CAST(se_nacl);
+
+	config_group_init_type_name(&se_nacl->acl_group, name,
+			&tf->tf_tpg_nacl_base_cit);
+
+	config_group_init_type_name(&se_nacl->acl_attrib_group, "attrib",
+			&tf->tf_tpg_nacl_attrib_cit);
+	configfs_add_default_group(&se_nacl->acl_attrib_group,
+			&se_nacl->acl_group);
+
+	config_group_init_type_name(&se_nacl->acl_auth_group, "auth",
+			&tf->tf_tpg_nacl_auth_cit);
+	configfs_add_default_group(&se_nacl->acl_auth_group,
+			&se_nacl->acl_group);
+
+	config_group_init_type_name(&se_nacl->acl_param_group, "param",
+			&tf->tf_tpg_nacl_param_cit);
+	configfs_add_default_group(&se_nacl->acl_param_group,
+			&se_nacl->acl_group);
+
+	config_group_init_type_name(&se_nacl->acl_fabric_stat_group,
+			"fabric_statistics", &tf->tf_tpg_nacl_stat_cit);
+	configfs_add_default_group(&se_nacl->acl_fabric_stat_group,
+			&se_nacl->acl_group);
+
+	if (tf->tf_ops->fabric_init_nodeacl) {
+		int ret = tf->tf_ops->fabric_init_nodeacl(se_nacl, name);
+		if (ret) {
+			configfs_remove_default_groups(&se_nacl->acl_fabric_stat_group);
+			core_tpg_del_initiator_node_acl(se_nacl);
+			return ERR_PTR(ret);
+		}
+	}
+>>>>>>> v4.9.227
 
 	return &se_nacl->acl_group;
 }
@@ -530,6 +755,7 @@ static void target_fabric_drop_nodeacl(
 {
 	struct se_node_acl *se_nacl = container_of(to_config_group(item),
 			struct se_node_acl, acl_group);
+<<<<<<< HEAD
 	struct config_item *df_item;
 	struct config_group *nacl_cg;
 	int i;
@@ -540,6 +766,11 @@ static void target_fabric_drop_nodeacl(
 		nacl_cg->default_groups[i] = NULL;
 		config_item_put(df_item);
 	}
+=======
+
+	configfs_remove_default_groups(&se_nacl->acl_group);
+
+>>>>>>> v4.9.227
 	/*
 	 * struct se_node_acl free is done in target_fabric_nacl_base_release()
 	 */
@@ -557,8 +788,11 @@ TF_CIT_SETUP(tpg_nacl, NULL, &target_fabric_nacl_group_ops, NULL);
 
 /* Start of tfc_tpg_np_base_cit */
 
+<<<<<<< HEAD
 CONFIGFS_EATTR_OPS(target_fabric_np_base, se_tpg_np, tpg_np_group);
 
+=======
+>>>>>>> v4.9.227
 static void target_fabric_np_base_release(struct config_item *item)
 {
 	struct se_tpg_np *se_tpg_np = container_of(to_config_group(item),
@@ -566,16 +800,26 @@ static void target_fabric_np_base_release(struct config_item *item)
 	struct se_portal_group *se_tpg = se_tpg_np->tpg_np_parent;
 	struct target_fabric_configfs *tf = se_tpg->se_tpg_wwn->wwn_tf;
 
+<<<<<<< HEAD
 	tf->tf_ops.fabric_drop_np(se_tpg_np);
+=======
+	tf->tf_ops->fabric_drop_np(se_tpg_np);
+>>>>>>> v4.9.227
 }
 
 static struct configfs_item_operations target_fabric_np_base_item_ops = {
 	.release		= target_fabric_np_base_release,
+<<<<<<< HEAD
 	.show_attribute		= target_fabric_np_base_attr_show,
 	.store_attribute	= target_fabric_np_base_attr_store,
 };
 
 TF_CIT_SETUP(tpg_np_base, &target_fabric_np_base_item_ops, NULL, NULL);
+=======
+};
+
+TF_CIT_SETUP_DRV(tpg_np_base, &target_fabric_np_base_item_ops, NULL);
+>>>>>>> v4.9.227
 
 /* End of tfc_tpg_np_base_cit */
 
@@ -590,18 +834,30 @@ static struct config_group *target_fabric_make_np(
 	struct target_fabric_configfs *tf = se_tpg->se_tpg_wwn->wwn_tf;
 	struct se_tpg_np *se_tpg_np;
 
+<<<<<<< HEAD
 	if (!tf->tf_ops.fabric_make_np) {
+=======
+	if (!tf->tf_ops->fabric_make_np) {
+>>>>>>> v4.9.227
 		pr_err("tf->tf_ops.fabric_make_np is NULL\n");
 		return ERR_PTR(-ENOSYS);
 	}
 
+<<<<<<< HEAD
 	se_tpg_np = tf->tf_ops.fabric_make_np(se_tpg, group, name);
+=======
+	se_tpg_np = tf->tf_ops->fabric_make_np(se_tpg, group, name);
+>>>>>>> v4.9.227
 	if (!se_tpg_np || IS_ERR(se_tpg_np))
 		return ERR_PTR(-EINVAL);
 
 	se_tpg_np->tpg_np_parent = se_tpg;
 	config_group_init_type_name(&se_tpg_np->tpg_np_group, name,
+<<<<<<< HEAD
 			&tf->tf_cit_tmpl.tfc_tpg_np_base_cit);
+=======
+			&tf->tf_tpg_np_base_cit);
+>>>>>>> v4.9.227
 
 	return &se_tpg_np->tpg_np_group;
 }
@@ -627,6 +883,7 @@ TF_CIT_SETUP(tpg_np, NULL, &target_fabric_np_group_ops, NULL);
 
 /* Start of tfc_tpg_port_cit */
 
+<<<<<<< HEAD
 CONFIGFS_EATTR_STRUCT(target_fabric_port, se_lun);
 #define TCM_PORT_ATTR(_name, _mode)					\
 static struct target_fabric_port_attribute target_fabric_port_##_name =	\
@@ -672,22 +929,68 @@ static ssize_t target_fabric_port_show_attr_alua_tg_pt_offline(
 	char *page)
 {
 	if (!lun || !lun->lun_sep)
+=======
+static struct se_lun *item_to_lun(struct config_item *item)
+{
+	return container_of(to_config_group(item), struct se_lun,
+			lun_group);
+}
+
+static ssize_t target_fabric_port_alua_tg_pt_gp_show(struct config_item *item,
+		char *page)
+{
+	struct se_lun *lun = item_to_lun(item);
+
+	if (!lun || !lun->lun_se_dev)
+		return -ENODEV;
+
+	return core_alua_show_tg_pt_gp_info(lun, page);
+}
+
+static ssize_t target_fabric_port_alua_tg_pt_gp_store(struct config_item *item,
+		const char *page, size_t count)
+{
+	struct se_lun *lun = item_to_lun(item);
+
+	if (!lun || !lun->lun_se_dev)
+		return -ENODEV;
+
+	return core_alua_store_tg_pt_gp_info(lun, page, count);
+}
+
+static ssize_t target_fabric_port_alua_tg_pt_offline_show(
+		struct config_item *item, char *page)
+{
+	struct se_lun *lun = item_to_lun(item);
+
+	if (!lun || !lun->lun_se_dev)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	return core_alua_show_offline_bit(lun, page);
 }
 
+<<<<<<< HEAD
 static ssize_t target_fabric_port_store_attr_alua_tg_pt_offline(
 	struct se_lun *lun,
 	const char *page,
 	size_t count)
 {
 	if (!lun || !lun->lun_sep)
+=======
+static ssize_t target_fabric_port_alua_tg_pt_offline_store(
+		struct config_item *item, const char *page, size_t count)
+{
+	struct se_lun *lun = item_to_lun(item);
+
+	if (!lun || !lun->lun_se_dev)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	return core_alua_store_offline_bit(lun, page, count);
 }
 
+<<<<<<< HEAD
 TCM_PORT_ATTR(alua_tg_pt_offline, S_IRUGO | S_IWUSR);
 
 /*
@@ -698,22 +1001,40 @@ static ssize_t target_fabric_port_show_attr_alua_tg_pt_status(
 	char *page)
 {
 	if (!lun || !lun->lun_sep)
+=======
+static ssize_t target_fabric_port_alua_tg_pt_status_show(
+		struct config_item *item, char *page)
+{
+	struct se_lun *lun = item_to_lun(item);
+
+	if (!lun || !lun->lun_se_dev)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	return core_alua_show_secondary_status(lun, page);
 }
 
+<<<<<<< HEAD
 static ssize_t target_fabric_port_store_attr_alua_tg_pt_status(
 	struct se_lun *lun,
 	const char *page,
 	size_t count)
 {
 	if (!lun || !lun->lun_sep)
+=======
+static ssize_t target_fabric_port_alua_tg_pt_status_store(
+		struct config_item *item, const char *page, size_t count)
+{
+	struct se_lun *lun = item_to_lun(item);
+
+	if (!lun || !lun->lun_se_dev)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	return core_alua_store_secondary_status(lun, page, count);
 }
 
+<<<<<<< HEAD
 TCM_PORT_ATTR(alua_tg_pt_status, S_IRUGO | S_IWUSR);
 
 /*
@@ -724,22 +1045,40 @@ static ssize_t target_fabric_port_show_attr_alua_tg_pt_write_md(
 	char *page)
 {
 	if (!lun || !lun->lun_sep)
+=======
+static ssize_t target_fabric_port_alua_tg_pt_write_md_show(
+		struct config_item *item, char *page)
+{
+	struct se_lun *lun = item_to_lun(item);
+
+	if (!lun || !lun->lun_se_dev)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	return core_alua_show_secondary_write_metadata(lun, page);
 }
 
+<<<<<<< HEAD
 static ssize_t target_fabric_port_store_attr_alua_tg_pt_write_md(
 	struct se_lun *lun,
 	const char *page,
 	size_t count)
 {
 	if (!lun || !lun->lun_sep)
+=======
+static ssize_t target_fabric_port_alua_tg_pt_write_md_store(
+		struct config_item *item, const char *page, size_t count)
+{
+	struct se_lun *lun = item_to_lun(item);
+
+	if (!lun || !lun->lun_se_dev)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	return core_alua_store_secondary_write_metadata(lun, page, count);
 }
 
+<<<<<<< HEAD
 TCM_PORT_ATTR(alua_tg_pt_write_md, S_IRUGO | S_IWUSR);
 
 
@@ -753,6 +1092,21 @@ static struct configfs_attribute *target_fabric_port_attrs[] = {
 
 CONFIGFS_EATTR_OPS(target_fabric_port, se_lun, lun_group);
 
+=======
+CONFIGFS_ATTR(target_fabric_port_, alua_tg_pt_gp);
+CONFIGFS_ATTR(target_fabric_port_, alua_tg_pt_offline);
+CONFIGFS_ATTR(target_fabric_port_, alua_tg_pt_status);
+CONFIGFS_ATTR(target_fabric_port_, alua_tg_pt_write_md);
+
+static struct configfs_attribute *target_fabric_port_attrs[] = {
+	&target_fabric_port_attr_alua_tg_pt_gp,
+	&target_fabric_port_attr_alua_tg_pt_offline,
+	&target_fabric_port_attr_alua_tg_pt_status,
+	&target_fabric_port_attr_alua_tg_pt_write_md,
+	NULL,
+};
+
+>>>>>>> v4.9.227
 static int target_fabric_port_link(
 	struct config_item *lun_ci,
 	struct config_item *se_dev_ci)
@@ -760,7 +1114,10 @@ static int target_fabric_port_link(
 	struct config_item *tpg_ci;
 	struct se_lun *lun = container_of(to_config_group(lun_ci),
 				struct se_lun, lun_group);
+<<<<<<< HEAD
 	struct se_lun *lun_p;
+=======
+>>>>>>> v4.9.227
 	struct se_portal_group *se_tpg;
 	struct se_device *dev =
 		container_of(to_config_group(se_dev_ci), struct se_device, dev_group);
@@ -788,6 +1145,7 @@ static int target_fabric_port_link(
 		return -EEXIST;
 	}
 
+<<<<<<< HEAD
 	lun_p = core_dev_add_lun(se_tpg, dev, lun->unpacked_lun);
 	if (IS_ERR(lun_p)) {
 		pr_err("core_dev_add_lun() failed\n");
@@ -796,12 +1154,25 @@ static int target_fabric_port_link(
 	}
 
 	if (tf->tf_ops.fabric_post_link) {
+=======
+	ret = core_dev_add_lun(se_tpg, dev, lun);
+	if (ret) {
+		pr_err("core_dev_add_lun() failed: %d\n", ret);
+		goto out;
+	}
+
+	if (tf->tf_ops->fabric_post_link) {
+>>>>>>> v4.9.227
 		/*
 		 * Call the optional fabric_post_link() to allow a
 		 * fabric module to setup any additional state once
 		 * core_dev_add_lun() has been called..
 		 */
+<<<<<<< HEAD
 		tf->tf_ops.fabric_post_link(se_tpg, lun);
+=======
+		tf->tf_ops->fabric_post_link(se_tpg, lun);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -815,25 +1186,49 @@ static int target_fabric_port_unlink(
 {
 	struct se_lun *lun = container_of(to_config_group(lun_ci),
 				struct se_lun, lun_group);
+<<<<<<< HEAD
 	struct se_portal_group *se_tpg = lun->lun_sep->sep_tpg;
 	struct target_fabric_configfs *tf = se_tpg->se_tpg_wwn->wwn_tf;
 
 	if (tf->tf_ops.fabric_pre_unlink) {
+=======
+	struct se_portal_group *se_tpg = lun->lun_tpg;
+	struct target_fabric_configfs *tf = se_tpg->se_tpg_wwn->wwn_tf;
+
+	if (tf->tf_ops->fabric_pre_unlink) {
+>>>>>>> v4.9.227
 		/*
 		 * Call the optional fabric_pre_unlink() to allow a
 		 * fabric module to release any additional stat before
 		 * core_dev_del_lun() is called.
 		*/
+<<<<<<< HEAD
 		tf->tf_ops.fabric_pre_unlink(se_tpg, lun);
+=======
+		tf->tf_ops->fabric_pre_unlink(se_tpg, lun);
+>>>>>>> v4.9.227
 	}
 
 	core_dev_del_lun(se_tpg, lun);
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct configfs_item_operations target_fabric_port_item_ops = {
 	.show_attribute		= target_fabric_port_attr_show,
 	.store_attribute	= target_fabric_port_attr_store,
+=======
+static void target_fabric_port_release(struct config_item *item)
+{
+	struct se_lun *lun = container_of(to_config_group(item),
+					  struct se_lun, lun_group);
+
+	kfree_rcu(lun, rcu_head);
+}
+
+static struct configfs_item_operations target_fabric_port_item_ops = {
+	.release		= target_fabric_port_release,
+>>>>>>> v4.9.227
 	.allow_link		= target_fabric_port_link,
 	.drop_link		= target_fabric_port_unlink,
 };
@@ -877,8 +1272,12 @@ static struct config_group *target_fabric_make_lun(
 	struct se_portal_group *se_tpg = container_of(group,
 			struct se_portal_group, tpg_lun_group);
 	struct target_fabric_configfs *tf = se_tpg->se_tpg_wwn->wwn_tf;
+<<<<<<< HEAD
 	struct config_group *lun_cg = NULL, *port_stat_grp = NULL;
 	unsigned long unpacked_lun;
+=======
+	unsigned long long unpacked_lun;
+>>>>>>> v4.9.227
 	int errno;
 
 	if (strstr(name, "lun_") != name) {
@@ -886,6 +1285,7 @@ static struct config_group *target_fabric_make_lun(
 				" \"lun_$LUN_NUMBER\"\n");
 		return ERR_PTR(-EINVAL);
 	}
+<<<<<<< HEAD
 	errno = kstrtoul(name + 4, 0, &unpacked_lun);
 	if (errno)
 		return ERR_PTR(errno);
@@ -919,6 +1319,24 @@ static struct config_group *target_fabric_make_lun(
 		kfree(lun_cg->default_groups);
 		return ERR_PTR(-ENOMEM);
 	}
+=======
+	errno = kstrtoull(name + 4, 0, &unpacked_lun);
+	if (errno)
+		return ERR_PTR(errno);
+
+	lun = core_tpg_alloc_lun(se_tpg, unpacked_lun);
+	if (IS_ERR(lun))
+		return ERR_CAST(lun);
+
+	config_group_init_type_name(&lun->lun_group, name,
+			&tf->tf_tpg_port_cit);
+
+	config_group_init_type_name(&lun->port_stat_grps.stat_group,
+			"statistics", &tf->tf_tpg_port_stat_cit);
+	configfs_add_default_group(&lun->port_stat_grps.stat_group,
+			&lun->lun_group);
+
+>>>>>>> v4.9.227
 	target_stat_setup_port_default_groups(lun);
 
 	return &lun->lun_group;
@@ -930,6 +1348,7 @@ static void target_fabric_drop_lun(
 {
 	struct se_lun *lun = container_of(to_config_group(item),
 				struct se_lun, lun_group);
+<<<<<<< HEAD
 	struct config_item *df_item;
 	struct config_group *lun_cg, *port_stat_grp;
 	int i;
@@ -949,6 +1368,11 @@ static void target_fabric_drop_lun(
 		config_item_put(df_item);
 	}
 	kfree(lun_cg->default_groups);
+=======
+
+	configfs_remove_default_groups(&lun->port_stat_grps.stat_group);
+	configfs_remove_default_groups(&lun->lun_group);
+>>>>>>> v4.9.227
 
 	config_item_put(item);
 }
@@ -962,6 +1386,7 @@ TF_CIT_SETUP(tpg_lun, NULL, &target_fabric_lun_group_ops, NULL);
 
 /* End of tfc_tpg_lun_cit */
 
+<<<<<<< HEAD
 /* Start of tfc_tpg_attrib_cit */
 
 CONFIGFS_EATTR_OPS(target_fabric_tpg_attrib, se_portal_group, tpg_attrib_group);
@@ -1006,6 +1431,13 @@ TF_CIT_SETUP(tpg_param, &target_fabric_tpg_param_item_ops, NULL, NULL);
  * For use with TF_TPG_ATTR() and TF_TPG_ATTR_RO()
  */
 CONFIGFS_EATTR_OPS(target_fabric_tpg, se_portal_group, tpg_group);
+=======
+TF_CIT_SETUP_DRV(tpg_attrib, NULL, NULL);
+TF_CIT_SETUP_DRV(tpg_auth, NULL, NULL);
+TF_CIT_SETUP_DRV(tpg_param, NULL, NULL);
+
+/* Start of tfc_tpg_base_cit */
+>>>>>>> v4.9.227
 
 static void target_fabric_tpg_release(struct config_item *item)
 {
@@ -1014,16 +1446,26 @@ static void target_fabric_tpg_release(struct config_item *item)
 	struct se_wwn *wwn = se_tpg->se_tpg_wwn;
 	struct target_fabric_configfs *tf = wwn->wwn_tf;
 
+<<<<<<< HEAD
 	tf->tf_ops.fabric_drop_tpg(se_tpg);
+=======
+	tf->tf_ops->fabric_drop_tpg(se_tpg);
+>>>>>>> v4.9.227
 }
 
 static struct configfs_item_operations target_fabric_tpg_base_item_ops = {
 	.release		= target_fabric_tpg_release,
+<<<<<<< HEAD
 	.show_attribute		= target_fabric_tpg_attr_show,
 	.store_attribute	= target_fabric_tpg_attr_store,
 };
 
 TF_CIT_SETUP(tpg_base, &target_fabric_tpg_base_item_ops, NULL, NULL);
+=======
+};
+
+TF_CIT_SETUP_DRV(tpg_base, &target_fabric_tpg_base_item_ops, NULL);
+>>>>>>> v4.9.227
 
 /* End of tfc_tpg_base_cit */
 
@@ -1037,6 +1479,7 @@ static struct config_group *target_fabric_make_tpg(
 	struct target_fabric_configfs *tf = wwn->wwn_tf;
 	struct se_portal_group *se_tpg;
 
+<<<<<<< HEAD
 	if (!tf->tf_ops.fabric_make_tpg) {
 		pr_err("tf->tf_ops.fabric_make_tpg is NULL\n");
 		return ERR_PTR(-ENOSYS);
@@ -1071,6 +1514,49 @@ static struct config_group *target_fabric_make_tpg(
 			&tf->tf_cit_tmpl.tfc_tpg_auth_cit);
 	config_group_init_type_name(&se_tpg->tpg_param_group, "param",
 			&tf->tf_cit_tmpl.tfc_tpg_param_cit);
+=======
+	if (!tf->tf_ops->fabric_make_tpg) {
+		pr_err("tf->tf_ops->fabric_make_tpg is NULL\n");
+		return ERR_PTR(-ENOSYS);
+	}
+
+	se_tpg = tf->tf_ops->fabric_make_tpg(wwn, group, name);
+	if (!se_tpg || IS_ERR(se_tpg))
+		return ERR_PTR(-EINVAL);
+
+	config_group_init_type_name(&se_tpg->tpg_group, name,
+			&tf->tf_tpg_base_cit);
+
+	config_group_init_type_name(&se_tpg->tpg_lun_group, "lun",
+			&tf->tf_tpg_lun_cit);
+	configfs_add_default_group(&se_tpg->tpg_lun_group,
+			&se_tpg->tpg_group);
+
+	config_group_init_type_name(&se_tpg->tpg_np_group, "np",
+			&tf->tf_tpg_np_cit);
+	configfs_add_default_group(&se_tpg->tpg_np_group,
+			&se_tpg->tpg_group);
+
+	config_group_init_type_name(&se_tpg->tpg_acl_group, "acls",
+			&tf->tf_tpg_nacl_cit);
+	configfs_add_default_group(&se_tpg->tpg_acl_group,
+			&se_tpg->tpg_group);
+
+	config_group_init_type_name(&se_tpg->tpg_attrib_group, "attrib",
+			&tf->tf_tpg_attrib_cit);
+	configfs_add_default_group(&se_tpg->tpg_attrib_group,
+			&se_tpg->tpg_group);
+
+	config_group_init_type_name(&se_tpg->tpg_auth_group, "auth",
+			&tf->tf_tpg_auth_cit);
+	configfs_add_default_group(&se_tpg->tpg_auth_group,
+			&se_tpg->tpg_group);
+
+	config_group_init_type_name(&se_tpg->tpg_param_group, "param",
+			&tf->tf_tpg_param_cit);
+	configfs_add_default_group(&se_tpg->tpg_param_group,
+			&se_tpg->tpg_group);
+>>>>>>> v4.9.227
 
 	return &se_tpg->tpg_group;
 }
@@ -1081,6 +1567,7 @@ static void target_fabric_drop_tpg(
 {
 	struct se_portal_group *se_tpg = container_of(to_config_group(item),
 				struct se_portal_group, tpg_group);
+<<<<<<< HEAD
 	struct config_group *tpg_cg = &se_tpg->tpg_group;
 	struct config_item *df_item;
 	int i;
@@ -1094,6 +1581,10 @@ static void target_fabric_drop_tpg(
 		config_item_put(df_item);
 	}
 
+=======
+
+	configfs_remove_default_groups(&se_tpg->tpg_group);
+>>>>>>> v4.9.227
 	config_item_put(item);
 }
 
@@ -1103,7 +1594,12 @@ static void target_fabric_release_wwn(struct config_item *item)
 				struct se_wwn, wwn_group);
 	struct target_fabric_configfs *tf = wwn->wwn_tf;
 
+<<<<<<< HEAD
 	tf->tf_ops.fabric_drop_wwn(wwn);
+=======
+	configfs_remove_default_groups(&wwn->fabric_stat_group);
+	tf->tf_ops->fabric_drop_wwn(wwn);
+>>>>>>> v4.9.227
 }
 
 static struct configfs_item_operations target_fabric_tpg_item_ops = {
@@ -1139,16 +1635,25 @@ static struct config_group *target_fabric_make_wwn(
 				struct target_fabric_configfs, tf_group);
 	struct se_wwn *wwn;
 
+<<<<<<< HEAD
 	if (!tf->tf_ops.fabric_make_wwn) {
+=======
+	if (!tf->tf_ops->fabric_make_wwn) {
+>>>>>>> v4.9.227
 		pr_err("tf->tf_ops.fabric_make_wwn is NULL\n");
 		return ERR_PTR(-ENOSYS);
 	}
 
+<<<<<<< HEAD
 	wwn = tf->tf_ops.fabric_make_wwn(tf, group, name);
+=======
+	wwn = tf->tf_ops->fabric_make_wwn(tf, group, name);
+>>>>>>> v4.9.227
 	if (!wwn || IS_ERR(wwn))
 		return ERR_PTR(-EINVAL);
 
 	wwn->wwn_tf = tf;
+<<<<<<< HEAD
 	/*
 	 * Setup default groups from pre-allocated wwn->wwn_default_groups
 	 */
@@ -1161,6 +1666,17 @@ static struct config_group *target_fabric_make_wwn(
 	config_group_init_type_name(&wwn->fabric_stat_group, "fabric_statistics",
 			&tf->tf_cit_tmpl.tfc_wwn_fabric_stats_cit);
 
+=======
+
+	config_group_init_type_name(&wwn->wwn_group, name, &tf->tf_tpg_cit);
+
+	config_group_init_type_name(&wwn->fabric_stat_group, "fabric_statistics",
+			&tf->tf_wwn_fabric_stats_cit);
+	configfs_add_default_group(&wwn->fabric_stat_group, &wwn->wwn_group);
+
+	if (tf->tf_ops->add_wwn_groups)
+		tf->tf_ops->add_wwn_groups(wwn);
+>>>>>>> v4.9.227
 	return &wwn->wwn_group;
 }
 
@@ -1170,6 +1686,7 @@ static void target_fabric_drop_wwn(
 {
 	struct se_wwn *wwn = container_of(to_config_group(item),
 				struct se_wwn, wwn_group);
+<<<<<<< HEAD
 	struct config_item *df_item;
 	struct config_group *cg = &wwn->wwn_group;
 	int i;
@@ -1180,6 +1697,10 @@ static void target_fabric_drop_wwn(
 		config_item_put(df_item);
 	}
 
+=======
+
+	configfs_remove_default_groups(&wwn->wwn_group);
+>>>>>>> v4.9.227
 	config_item_put(item);
 }
 
@@ -1187,6 +1708,7 @@ static struct configfs_group_operations target_fabric_wwn_group_ops = {
 	.make_group	= target_fabric_make_wwn,
 	.drop_item	= target_fabric_drop_wwn,
 };
+<<<<<<< HEAD
 /*
  * For use with TF_WWN_ATTR() and TF_WWN_ATTR_RO()
  */
@@ -1214,6 +1736,11 @@ static struct configfs_item_operations target_fabric_discovery_item_ops = {
 TF_CIT_SETUP(discovery, &target_fabric_discovery_item_ops, NULL, NULL);
 
 /* End of tfc_discovery_cit */
+=======
+
+TF_CIT_SETUP_DRV(wwn, NULL, &target_fabric_wwn_group_ops);
+TF_CIT_SETUP_DRV(discovery, NULL, NULL);
+>>>>>>> v4.9.227
 
 int target_fabric_setup_cits(struct target_fabric_configfs *tf)
 {

@@ -8,6 +8,10 @@
 #include <linux/device.h>
 #include <linux/init.h>
 #include <linux/memory.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 
 #include "base.h"
 
@@ -34,4 +38,8 @@ void __init driver_init(void)
 	cpu_dev_init();
 	memory_dev_init();
 	container_dev_init();
+<<<<<<< HEAD
+=======
+	of_core_init();
+>>>>>>> v4.9.227
 }

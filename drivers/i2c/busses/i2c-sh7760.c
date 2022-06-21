@@ -510,10 +510,15 @@ static int sh7760_i2c_probe(struct platform_device *pdev)
 	}
 
 	ret = i2c_add_numbered_adapter(&id->adap);
+<<<<<<< HEAD
 	if (ret < 0) {
 		dev_err(&pdev->dev, "reg adap failed: %d\n", ret);
 		goto out4;
 	}
+=======
+	if (ret < 0)
+		goto out4;
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, id);
 
@@ -552,7 +557,10 @@ static int sh7760_i2c_remove(struct platform_device *pdev)
 static struct platform_driver sh7760_i2c_drv = {
 	.driver	= {
 		.name	= SH7760_I2C_DEVNAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= sh7760_i2c_probe,
 	.remove		= sh7760_i2c_remove,

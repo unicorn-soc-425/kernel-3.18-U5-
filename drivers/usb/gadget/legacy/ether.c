@@ -151,7 +151,11 @@ static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
+<<<<<<< HEAD
 	.bcdUSB =		cpu_to_le16 (0x0200),
+=======
+	/* .bcdUSB = DYNAMIC */
+>>>>>>> v4.9.227
 
 	.bDeviceClass =		USB_CLASS_COMM,
 	.bDeviceSubClass =	0,
@@ -171,6 +175,7 @@ static struct usb_device_descriptor device_desc = {
 	.bNumConfigurations =	1,
 };
 
+<<<<<<< HEAD
 static struct usb_otg_descriptor otg_descriptor = {
 	.bLength =		sizeof otg_descriptor,
 	.bDescriptorType =	USB_DT_OTG,
@@ -185,6 +190,9 @@ static const struct usb_descriptor_header *otg_desc[] = {
 	(struct usb_descriptor_header *) &otg_descriptor,
 	NULL,
 };
+=======
+static const struct usb_descriptor_header *otg_desc[2];
+>>>>>>> v4.9.227
 
 static struct usb_string strings_dev[] = {
 	[USB_GADGET_MANUFACTURER_IDX].s = "",
@@ -222,7 +230,11 @@ static struct usb_function *f_rndis;
  * the first one present.  That's to make Microsoft's drivers happy,
  * and to follow DOCSIS 1.0 (cable modem standard).
  */
+<<<<<<< HEAD
 static int __init rndis_do_config(struct usb_configuration *c)
+=======
+static int rndis_do_config(struct usb_configuration *c)
+>>>>>>> v4.9.227
 {
 	int status;
 
@@ -264,7 +276,11 @@ MODULE_PARM_DESC(use_eem, "use CDC EEM mode");
 /*
  * We _always_ have an ECM, CDC Subset, or EEM configuration.
  */
+<<<<<<< HEAD
 static int __init eth_do_config(struct usb_configuration *c)
+=======
+static int eth_do_config(struct usb_configuration *c)
+>>>>>>> v4.9.227
 {
 	int status = 0;
 
@@ -318,7 +334,11 @@ static struct usb_configuration eth_config_driver = {
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int __init eth_bind(struct usb_composite_dev *cdev)
+=======
+static int eth_bind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 	struct usb_gadget	*gadget = cdev->gadget;
 	struct f_eem_opts	*eem_opts = NULL;
@@ -416,17 +436,39 @@ static int __init eth_bind(struct usb_composite_dev *cdev)
 	device_desc.iManufacturer = strings_dev[USB_GADGET_MANUFACTURER_IDX].id;
 	device_desc.iProduct = strings_dev[USB_GADGET_PRODUCT_IDX].id;
 
+<<<<<<< HEAD
+=======
+	if (gadget_is_otg(gadget) && !otg_desc[0]) {
+		struct usb_descriptor_header *usb_desc;
+
+		usb_desc = usb_otg_descriptor_alloc(gadget);
+		if (!usb_desc)
+			goto fail1;
+		usb_otg_descriptor_init(gadget, usb_desc);
+		otg_desc[0] = usb_desc;
+		otg_desc[1] = NULL;
+	}
+
+>>>>>>> v4.9.227
 	/* register our configuration(s); RNDIS first, if it's used */
 	if (has_rndis()) {
 		status = usb_add_config(cdev, &rndis_config_driver,
 				rndis_do_config);
 		if (status < 0)
+<<<<<<< HEAD
 			goto fail1;
+=======
+			goto fail2;
+>>>>>>> v4.9.227
 	}
 
 	status = usb_add_config(cdev, &eth_config_driver, eth_do_config);
 	if (status < 0)
+<<<<<<< HEAD
 		goto fail1;
+=======
+		goto fail2;
+>>>>>>> v4.9.227
 
 	usb_composite_overwrite_options(cdev, &coverwrite);
 	dev_info(&gadget->dev, "%s, version: " DRIVER_VERSION "\n",
@@ -434,6 +476,12 @@ static int __init eth_bind(struct usb_composite_dev *cdev)
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+fail2:
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+>>>>>>> v4.9.227
 fail1:
 	if (has_rndis())
 		usb_put_function_instance(fi_rndis);
@@ -447,7 +495,11 @@ fail:
 	return status;
 }
 
+<<<<<<< HEAD
 static int __exit eth_unbind(struct usb_composite_dev *cdev)
+=======
+static int eth_unbind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 	if (has_rndis()) {
 		usb_put_function(f_rndis);
@@ -463,16 +515,30 @@ static int __exit eth_unbind(struct usb_composite_dev *cdev)
 		usb_put_function(f_geth);
 		usb_put_function_instance(fi_geth);
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
 static __refdata struct usb_composite_driver eth_driver = {
+=======
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+
+	return 0;
+}
+
+static struct usb_composite_driver eth_driver = {
+>>>>>>> v4.9.227
 	.name		= "g_ether",
 	.dev		= &device_desc,
 	.strings	= dev_strings,
 	.max_speed	= USB_SPEED_SUPER,
 	.bind		= eth_bind,
+<<<<<<< HEAD
 	.unbind		= __exit_p(eth_unbind),
+=======
+	.unbind		= eth_unbind,
+>>>>>>> v4.9.227
 };
 
 module_usb_composite_driver(eth_driver);

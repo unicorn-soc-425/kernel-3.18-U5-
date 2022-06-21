@@ -76,10 +76,18 @@ int acct_parm[3] = {4, 2, 30};
 /*
  * External references and all of the globals.
  */
+<<<<<<< HEAD
 static void do_acct_process(struct bsd_acct_struct *acct);
 
 struct bsd_acct_struct {
 	struct fs_pin		pin;
+=======
+
+struct bsd_acct_struct {
+	struct fs_pin		pin;
+	atomic_long_t		count;
+	struct rcu_head		rcu;
+>>>>>>> v4.9.227
 	struct mutex		lock;
 	int			active;
 	unsigned long		needcheck;
@@ -89,6 +97,11 @@ struct bsd_acct_struct {
 	struct completion	done;
 };
 
+<<<<<<< HEAD
+=======
+static void do_acct_process(struct bsd_acct_struct *acct);
+
+>>>>>>> v4.9.227
 /*
  * Check the amount of free space and suspend/resume accordingly.
  */
@@ -124,32 +137,76 @@ out:
 	return acct->active;
 }
 
+<<<<<<< HEAD
+=======
+static void acct_put(struct bsd_acct_struct *p)
+{
+	if (atomic_long_dec_and_test(&p->count))
+		kfree_rcu(p, rcu);
+}
+
+static inline struct bsd_acct_struct *to_acct(struct fs_pin *p)
+{
+	return p ? container_of(p, struct bsd_acct_struct, pin) : NULL;
+}
+
+>>>>>>> v4.9.227
 static struct bsd_acct_struct *acct_get(struct pid_namespace *ns)
 {
 	struct bsd_acct_struct *res;
 again:
 	smp_rmb();
 	rcu_read_lock();
+<<<<<<< HEAD
 	res = ACCESS_ONCE(ns->bacct);
+=======
+	res = to_acct(ACCESS_ONCE(ns->bacct));
+>>>>>>> v4.9.227
 	if (!res) {
 		rcu_read_unlock();
 		return NULL;
 	}
+<<<<<<< HEAD
 	if (!atomic_long_inc_not_zero(&res->pin.count)) {
+=======
+	if (!atomic_long_inc_not_zero(&res->count)) {
+>>>>>>> v4.9.227
 		rcu_read_unlock();
 		cpu_relax();
 		goto again;
 	}
 	rcu_read_unlock();
 	mutex_lock(&res->lock);
+<<<<<<< HEAD
 	if (!res->ns) {
 		mutex_unlock(&res->lock);
 		pin_put(&res->pin);
+=======
+	if (res != to_acct(ACCESS_ONCE(ns->bacct))) {
+		mutex_unlock(&res->lock);
+		acct_put(res);
+>>>>>>> v4.9.227
 		goto again;
 	}
 	return res;
 }
 
+<<<<<<< HEAD
+=======
+static void acct_pin_kill(struct fs_pin *pin)
+{
+	struct bsd_acct_struct *acct = to_acct(pin);
+	mutex_lock(&acct->lock);
+	do_acct_process(acct);
+	schedule_work(&acct->work);
+	wait_for_completion(&acct->done);
+	cmpxchg(&acct->ns->bacct, pin, NULL);
+	mutex_unlock(&acct->lock);
+	pin_remove(pin);
+	acct_put(acct);
+}
+
+>>>>>>> v4.9.227
 static void close_work(struct work_struct *work)
 {
 	struct bsd_acct_struct *acct = container_of(work, struct bsd_acct_struct, work);
@@ -160,6 +217,7 @@ static void close_work(struct work_struct *work)
 	complete(&acct->done);
 }
 
+<<<<<<< HEAD
 static void acct_kill(struct bsd_acct_struct *acct,
 		      struct bsd_acct_struct *new)
 {
@@ -192,12 +250,19 @@ static void acct_pin_kill(struct fs_pin *pin)
 	acct_kill(acct, NULL);
 }
 
+=======
+>>>>>>> v4.9.227
 static int acct_on(struct filename *pathname)
 {
 	struct file *file;
 	struct vfsmount *mnt, *internal;
 	struct pid_namespace *ns = task_active_pid_ns(current);
+<<<<<<< HEAD
 	struct bsd_acct_struct *acct, *old;
+=======
+	struct bsd_acct_struct *acct;
+	struct fs_pin *old;
+>>>>>>> v4.9.227
 	int err;
 
 	acct = kzalloc(sizeof(struct bsd_acct_struct), GFP_KERNEL);
@@ -217,7 +282,11 @@ static int acct_on(struct filename *pathname)
 		return -EACCES;
 	}
 
+<<<<<<< HEAD
 	if (!file->f_op->write) {
+=======
+	if (!(file->f_mode & FMODE_CAN_WRITE)) {
+>>>>>>> v4.9.227
 		kfree(acct);
 		filp_close(file, NULL);
 		return -EIO;
@@ -238,12 +307,18 @@ static int acct_on(struct filename *pathname)
 	mnt = file->f_path.mnt;
 	file->f_path.mnt = internal;
 
+<<<<<<< HEAD
 	atomic_long_set(&acct->pin.count, 1);
 	acct->pin.kill = acct_pin_kill;
+=======
+	atomic_long_set(&acct->count, 1);
+	init_fs_pin(&acct->pin, acct_pin_kill);
+>>>>>>> v4.9.227
 	acct->file = file;
 	acct->needcheck = jiffies;
 	acct->ns = ns;
 	mutex_init(&acct->lock);
+<<<<<<< HEAD
 	mutex_lock_nested(&acct->lock, 1);	/* nobody has seen it yet */
 	pin_insert(&acct->pin, mnt);
 
@@ -253,6 +328,17 @@ static int acct_on(struct filename *pathname)
 	else
 		ns->bacct = acct;
 	mutex_unlock(&acct->lock);
+=======
+	INIT_WORK(&acct->work, close_work);
+	init_completion(&acct->done);
+	mutex_lock_nested(&acct->lock, 1);	/* nobody has seen it yet */
+	pin_insert(&acct->pin, mnt);
+
+	rcu_read_lock();
+	old = xchg(&ns->bacct, &acct->pin);
+	mutex_unlock(&acct->lock);
+	pin_kill(old);
+>>>>>>> v4.9.227
 	mnt_drop_write(mnt);
 	mntput(mnt);
 	return 0;
@@ -288,7 +374,12 @@ SYSCALL_DEFINE1(acct, const char __user *, name)
 		mutex_unlock(&acct_on_mutex);
 		putname(tmp);
 	} else {
+<<<<<<< HEAD
 		acct_kill(acct_get(task_active_pid_ns(current)), NULL);
+=======
+		rcu_read_lock();
+		pin_kill(task_active_pid_ns(current)->bacct);
+>>>>>>> v4.9.227
 	}
 
 	return error;
@@ -296,7 +387,12 @@ SYSCALL_DEFINE1(acct, const char __user *, name)
 
 void acct_exit_ns(struct pid_namespace *ns)
 {
+<<<<<<< HEAD
 	acct_kill(acct_get(ns), NULL);
+=======
+	rcu_read_lock();
+	pin_kill(ns->bacct);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -576,7 +672,11 @@ static void slow_acct_process(struct pid_namespace *ns)
 		if (acct) {
 			do_acct_process(acct);
 			mutex_unlock(&acct->lock);
+<<<<<<< HEAD
 			pin_put(&acct->pin);
+=======
+			acct_put(acct);
+>>>>>>> v4.9.227
 		}
 	}
 }

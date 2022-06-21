@@ -7,7 +7,10 @@ static void pci_free_resources(struct pci_dev *dev)
 {
 	int i;
 
+<<<<<<< HEAD
 	pci_cleanup_rom(dev);
+=======
+>>>>>>> v4.9.227
 	for (i = 0; i < PCI_NUM_RESOURCES; i++) {
 		struct resource *res = dev->resource + i;
 		if (res->parent)
@@ -41,6 +44,10 @@ static void pci_destroy_dev(struct pci_dev *dev)
 	list_del(&dev->bus_list);
 	up_write(&pci_bus_sem);
 
+<<<<<<< HEAD
+=======
+	pci_bridge_d3_device_removed(dev);
+>>>>>>> v4.9.227
 	pci_free_resources(dev);
 	put_device(&dev->dev);
 }
@@ -54,6 +61,13 @@ void pci_remove_bus(struct pci_bus *bus)
 	pci_bus_release_busn_res(bus);
 	up_write(&pci_bus_sem);
 	pci_remove_legacy_files(bus);
+<<<<<<< HEAD
+=======
+
+	if (bus->ops->remove_bus)
+		bus->ops->remove_bus(bus);
+
+>>>>>>> v4.9.227
 	pcibios_remove_bus(bus);
 	device_unregister(&bus->dev);
 }
@@ -139,6 +153,10 @@ void pci_stop_root_bus(struct pci_bus *bus)
 	/* stop the host bridge */
 	device_release_driver(&host_bridge->dev);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(pci_stop_root_bus);
+>>>>>>> v4.9.227
 
 void pci_remove_root_bus(struct pci_bus *bus)
 {
@@ -158,3 +176,7 @@ void pci_remove_root_bus(struct pci_bus *bus)
 	/* remove the host bridge */
 	device_unregister(&host_bridge->dev);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(pci_remove_root_bus);
+>>>>>>> v4.9.227

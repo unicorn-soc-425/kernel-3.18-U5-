@@ -1,6 +1,13 @@
 #ifndef _DYNAMIC_DEBUG_H
 #define _DYNAMIC_DEBUG_H
 
+<<<<<<< HEAD
+=======
+#if defined(CC_HAVE_ASM_GOTO) && defined(CONFIG_JUMP_LABEL)
+#include <linux/jump_label.h>
+#endif
+
+>>>>>>> v4.9.227
 /*
  * An instance of this structure is created in a special
  * ELF section at every dynamic debug callsite.  At runtime,
@@ -33,6 +40,15 @@ struct _ddebug {
 #define _DPRINTK_FLAGS_DEFAULT 0
 #endif
 	unsigned int flags:8;
+<<<<<<< HEAD
+=======
+#ifdef HAVE_JUMP_LABEL
+	union {
+		struct static_key_true dd_key_true;
+		struct static_key_false dd_key_false;
+	} key;
+#endif
+>>>>>>> v4.9.227
 } __attribute__((aligned(8)));
 
 
@@ -60,7 +76,11 @@ void __dynamic_netdev_dbg(struct _ddebug *descriptor,
 			  const struct net_device *dev,
 			  const char *fmt, ...);
 
+<<<<<<< HEAD
 #define DEFINE_DYNAMIC_DEBUG_METADATA(name, fmt)		\
+=======
+#define DEFINE_DYNAMIC_DEBUG_METADATA_KEY(name, fmt, key, init)	\
+>>>>>>> v4.9.227
 	static struct _ddebug  __aligned(8)			\
 	__attribute__((section("__verbose"))) name = {		\
 		.modname = KBUILD_MODNAME,			\
@@ -68,6 +88,7 @@ void __dynamic_netdev_dbg(struct _ddebug *descriptor,
 		.filename = __FILE__,				\
 		.format = (fmt),				\
 		.lineno = __LINE__,				\
+<<<<<<< HEAD
 		.flags =  _DPRINTK_FLAGS_DEFAULT,		\
 	}
 
@@ -75,6 +96,53 @@ void __dynamic_netdev_dbg(struct _ddebug *descriptor,
 do {								\
 	DEFINE_DYNAMIC_DEBUG_METADATA(descriptor, fmt);		\
 	if (unlikely(descriptor.flags & _DPRINTK_FLAGS_PRINT))	\
+=======
+		.flags = _DPRINTK_FLAGS_DEFAULT,		\
+		dd_key_init(key, init)				\
+	}
+
+#ifdef HAVE_JUMP_LABEL
+
+#define dd_key_init(key, init) key = (init)
+
+#ifdef DEBUG
+#define DEFINE_DYNAMIC_DEBUG_METADATA(name, fmt) \
+	DEFINE_DYNAMIC_DEBUG_METADATA_KEY(name, fmt, .key.dd_key_true, \
+					  (STATIC_KEY_TRUE_INIT))
+
+#define DYNAMIC_DEBUG_BRANCH(descriptor) \
+	static_branch_likely(&descriptor.key.dd_key_true)
+#else
+#define DEFINE_DYNAMIC_DEBUG_METADATA(name, fmt) \
+	DEFINE_DYNAMIC_DEBUG_METADATA_KEY(name, fmt, .key.dd_key_false, \
+					  (STATIC_KEY_FALSE_INIT))
+
+#define DYNAMIC_DEBUG_BRANCH(descriptor) \
+	static_branch_unlikely(&descriptor.key.dd_key_false)
+#endif
+
+#else
+
+#define dd_key_init(key, init)
+
+#define DEFINE_DYNAMIC_DEBUG_METADATA(name, fmt) \
+	DEFINE_DYNAMIC_DEBUG_METADATA_KEY(name, fmt, 0, 0)
+
+#ifdef DEBUG
+#define DYNAMIC_DEBUG_BRANCH(descriptor) \
+	likely(descriptor.flags & _DPRINTK_FLAGS_PRINT)
+#else
+#define DYNAMIC_DEBUG_BRANCH(descriptor) \
+	unlikely(descriptor.flags & _DPRINTK_FLAGS_PRINT)
+#endif
+
+#endif
+
+#define dynamic_pr_debug(fmt, ...)				\
+do {								\
+	DEFINE_DYNAMIC_DEBUG_METADATA(descriptor, fmt);		\
+	if (DYNAMIC_DEBUG_BRANCH(descriptor))			\
+>>>>>>> v4.9.227
 		__dynamic_pr_debug(&descriptor, pr_fmt(fmt),	\
 				   ##__VA_ARGS__);		\
 } while (0)
@@ -82,7 +150,11 @@ do {								\
 #define dynamic_dev_dbg(dev, fmt, ...)				\
 do {								\
 	DEFINE_DYNAMIC_DEBUG_METADATA(descriptor, fmt);		\
+<<<<<<< HEAD
 	if (unlikely(descriptor.flags & _DPRINTK_FLAGS_PRINT))	\
+=======
+	if (DYNAMIC_DEBUG_BRANCH(descriptor))			\
+>>>>>>> v4.9.227
 		__dynamic_dev_dbg(&descriptor, dev, fmt,	\
 				  ##__VA_ARGS__);		\
 } while (0)
@@ -90,7 +162,11 @@ do {								\
 #define dynamic_netdev_dbg(dev, fmt, ...)			\
 do {								\
 	DEFINE_DYNAMIC_DEBUG_METADATA(descriptor, fmt);		\
+<<<<<<< HEAD
 	if (unlikely(descriptor.flags & _DPRINTK_FLAGS_PRINT))	\
+=======
+	if (DYNAMIC_DEBUG_BRANCH(descriptor))			\
+>>>>>>> v4.9.227
 		__dynamic_netdev_dbg(&descriptor, dev, fmt,	\
 				     ##__VA_ARGS__);		\
 } while (0)
@@ -100,7 +176,11 @@ do {								\
 do {								\
 	DEFINE_DYNAMIC_DEBUG_METADATA(descriptor,		\
 		__builtin_constant_p(prefix_str) ? prefix_str : "hexdump");\
+<<<<<<< HEAD
 	if (unlikely(descriptor.flags & _DPRINTK_FLAGS_PRINT))	\
+=======
+	if (DYNAMIC_DEBUG_BRANCH(descriptor))			\
+>>>>>>> v4.9.227
 		print_hex_dump(KERN_DEBUG, prefix_str,		\
 			       prefix_type, rowsize, groupsize,	\
 			       buf, len, ascii);		\

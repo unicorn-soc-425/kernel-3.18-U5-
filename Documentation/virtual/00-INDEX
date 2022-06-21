@@ -2,6 +2,12 @@ Virtualization support in the Linux kernel.
 
 00-INDEX
 	- this file.
+<<<<<<< HEAD
+=======
+
+paravirt_ops.txt
+	- Describes the Linux kernel pv_ops to support different hypervisors
+>>>>>>> v4.9.227
 kvm/
 	- Kernel Virtual Machine.  See also http://linux-kvm.org
 uml/

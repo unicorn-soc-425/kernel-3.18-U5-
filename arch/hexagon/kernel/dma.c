@@ -44,6 +44,7 @@ int dma_supported(struct device *dev, u64 mask)
 }
 EXPORT_SYMBOL(dma_supported);
 
+<<<<<<< HEAD
 int dma_set_mask(struct device *dev, u64 mask)
 {
 	if (!dev->dma_mask || !dma_supported(dev, mask))
@@ -55,6 +56,8 @@ int dma_set_mask(struct device *dev, u64 mask)
 }
 EXPORT_SYMBOL(dma_set_mask);
 
+=======
+>>>>>>> v4.9.227
 static struct gen_pool *coherent_pool;
 
 
@@ -62,7 +65,11 @@ static struct gen_pool *coherent_pool;
 
 static void *hexagon_dma_alloc_coherent(struct device *dev, size_t size,
 				 dma_addr_t *dma_addr, gfp_t flag,
+<<<<<<< HEAD
 				 struct dma_attrs *attrs)
+=======
+				 unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	void *ret;
 
@@ -95,7 +102,11 @@ static void *hexagon_dma_alloc_coherent(struct device *dev, size_t size,
 }
 
 static void hexagon_free_coherent(struct device *dev, size_t size, void *vaddr,
+<<<<<<< HEAD
 				  dma_addr_t dma_addr, struct dma_attrs *attrs)
+=======
+				  dma_addr_t dma_addr, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	gen_pool_free(coherent_pool, (unsigned long) vaddr, size);
 }
@@ -116,7 +127,11 @@ static int check_addr(const char *name, struct device *hwdev,
 
 static int hexagon_map_sg(struct device *hwdev, struct scatterlist *sg,
 			  int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			  struct dma_attrs *attrs)
+=======
+			  unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	struct scatterlist *s;
 	int i;
@@ -183,7 +198,11 @@ static inline void dma_sync(void *addr, size_t size,
 static dma_addr_t hexagon_map_page(struct device *dev, struct page *page,
 				   unsigned long offset, size_t size,
 				   enum dma_data_direction dir,
+<<<<<<< HEAD
 				   struct dma_attrs *attrs)
+=======
+				   unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	dma_addr_t bus = page_to_phys(page) + offset;
 	WARN_ON(size == 0);

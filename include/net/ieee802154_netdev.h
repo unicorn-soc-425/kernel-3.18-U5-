@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  * Written by:
  * Pavel Smolenskiy <pavel.smolenskiy@gmail.com>
  * Maxim Gorbachyov <maxim.gorbachev@siemens.com>
@@ -27,10 +30,19 @@
 #ifndef IEEE802154_NETDEVICE_H
 #define IEEE802154_NETDEVICE_H
 
+<<<<<<< HEAD
 #include <net/ieee802154.h>
 #include <net/af_ieee802154.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
+=======
+#include <net/af_ieee802154.h>
+#include <linux/netdevice.h>
+#include <linux/skbuff.h>
+#include <linux/ieee802154.h>
+
+#include <net/cfg802154.h>
+>>>>>>> v4.9.227
 
 struct ieee802154_sechdr {
 #if defined(__LITTLE_ENDIAN_BITFIELD)
@@ -52,6 +64,7 @@ struct ieee802154_sechdr {
 	};
 };
 
+<<<<<<< HEAD
 struct ieee802154_addr {
 	u8 mode;
 	__le16 pan_id;
@@ -61,6 +74,8 @@ struct ieee802154_addr {
 	};
 };
 
+=======
+>>>>>>> v4.9.227
 struct ieee802154_hdr_fc {
 #if defined(__LITTLE_ENDIAN_BITFIELD)
 	u16 type:3,
@@ -101,7 +116,11 @@ struct ieee802154_hdr {
  * hdr->fc will be ignored. this includes the INTRA_PAN bit and the frame
  * version, if SECEN is set.
  */
+<<<<<<< HEAD
 int ieee802154_hdr_push(struct sk_buff *skb, const struct ieee802154_hdr *hdr);
+=======
+int ieee802154_hdr_push(struct sk_buff *skb, struct ieee802154_hdr *hdr);
+>>>>>>> v4.9.227
 
 /* pulls the entire 802.15.4 header off of the skb, including the security
  * header, and performs pan id decompression
@@ -245,6 +264,7 @@ static inline struct ieee802154_mac_cb *mac_cb_init(struct sk_buff *skb)
 	return mac_cb(skb);
 }
 
+<<<<<<< HEAD
 #define IEEE802154_LLSEC_KEY_SIZE 16
 
 struct ieee802154_llsec_key_id {
@@ -277,6 +297,8 @@ struct ieee802154_llsec_device_key {
 	u32 frame_counter;
 };
 
+=======
+>>>>>>> v4.9.227
 enum {
 	IEEE802154_LLSEC_DEVKEY_IGNORE,
 	IEEE802154_LLSEC_DEVKEY_RESTRICT,
@@ -285,6 +307,7 @@ enum {
 	__IEEE802154_LLSEC_DEVKEY_MAX,
 };
 
+<<<<<<< HEAD
 struct ieee802154_llsec_device {
 	struct list_head list;
 
@@ -328,6 +351,8 @@ struct ieee802154_llsec_table {
 	struct list_head security_levels;
 };
 
+=======
+>>>>>>> v4.9.227
 #define IEEE802154_MAC_SCAN_ED		0
 #define IEEE802154_MAC_SCAN_ACTIVE	1
 #define IEEE802154_MAC_SCAN_PASSIVE	2
@@ -341,13 +366,18 @@ struct ieee802154_mac_params {
 	s8 frame_retries;
 
 	bool lbt;
+<<<<<<< HEAD
 	u8 cca_mode;
+=======
+	struct wpan_phy_cca cca;
+>>>>>>> v4.9.227
 	s32 cca_ed_level;
 };
 
 struct wpan_phy;
 
 enum {
+<<<<<<< HEAD
 	IEEE802154_LLSEC_PARAM_ENABLED = 1 << 0,
 	IEEE802154_LLSEC_PARAM_FRAME_COUNTER = 1 << 1,
 	IEEE802154_LLSEC_PARAM_OUT_LEVEL = 1 << 2,
@@ -357,6 +387,17 @@ enum {
 	IEEE802154_LLSEC_PARAM_HWADDR = 1 << 6,
 	IEEE802154_LLSEC_PARAM_COORD_HWADDR = 1 << 7,
 	IEEE802154_LLSEC_PARAM_COORD_SHORTADDR = 1 << 8,
+=======
+	IEEE802154_LLSEC_PARAM_ENABLED		= BIT(0),
+	IEEE802154_LLSEC_PARAM_FRAME_COUNTER	= BIT(1),
+	IEEE802154_LLSEC_PARAM_OUT_LEVEL	= BIT(2),
+	IEEE802154_LLSEC_PARAM_OUT_KEY		= BIT(3),
+	IEEE802154_LLSEC_PARAM_KEY_SOURCE	= BIT(4),
+	IEEE802154_LLSEC_PARAM_PAN_ID		= BIT(5),
+	IEEE802154_LLSEC_PARAM_HWADDR		= BIT(6),
+	IEEE802154_LLSEC_PARAM_COORD_HWADDR	= BIT(7),
+	IEEE802154_LLSEC_PARAM_COORD_SHORTADDR	= BIT(8),
+>>>>>>> v4.9.227
 };
 
 struct ieee802154_llsec_ops {
@@ -423,6 +464,7 @@ struct ieee802154_mlme_ops {
 	void (*get_mac_params)(struct net_device *dev,
 			       struct ieee802154_mac_params *params);
 
+<<<<<<< HEAD
 	struct ieee802154_llsec_ops *llsec;
 
 	/* The fields below are required. */
@@ -446,6 +488,9 @@ struct ieee802154_mlme_ops {
  */
 struct ieee802154_reduced_mlme_ops {
 	struct wpan_phy *(*get_phy)(const struct net_device *dev);
+=======
+	const struct ieee802154_llsec_ops *llsec;
+>>>>>>> v4.9.227
 };
 
 static inline struct ieee802154_mlme_ops *
@@ -454,10 +499,13 @@ ieee802154_mlme_ops(const struct net_device *dev)
 	return dev->ml_priv;
 }
 
+<<<<<<< HEAD
 static inline struct ieee802154_reduced_mlme_ops *
 ieee802154_reduced_mlme_ops(const struct net_device *dev)
 {
 	return dev->ml_priv;
 }
 
+=======
+>>>>>>> v4.9.227
 #endif

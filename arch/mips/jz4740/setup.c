@@ -16,9 +16,19 @@
 
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/kernel.h>
 
 #include <asm/bootinfo.h>
+=======
+#include <linux/irqchip.h>
+#include <linux/kernel.h>
+#include <linux/libfdt.h>
+#include <linux/of_fdt.h>
+
+#include <asm/bootinfo.h>
+#include <asm/prom.h>
+>>>>>>> v4.9.227
 
 #include <asm/mach-jz4740/base.h>
 
@@ -32,7 +42,11 @@ static void __init jz4740_detect_mem(void)
 {
 	void __iomem *jz_emc_base;
 	u32 ctrl, bus, bank, rows, cols;
+<<<<<<< HEAD
 	phys_t size;
+=======
+	phys_addr_t size;
+>>>>>>> v4.9.227
 
 	jz_emc_base = ioremap(JZ4740_EMC_BASE_ADDR, 0x100);
 	ctrl = readl(jz_emc_base + JZ4740_EMC_SDRAM_CTRL);
@@ -51,11 +65,43 @@ static void __init jz4740_detect_mem(void)
 
 void __init plat_mem_setup(void)
 {
+<<<<<<< HEAD
 	jz4740_reset_init();
 	jz4740_detect_mem();
+=======
+	int offset;
+
+	jz4740_reset_init();
+	__dt_setup_arch(__dtb_start);
+
+	offset = fdt_path_offset(__dtb_start, "/memory");
+	if (offset < 0)
+		jz4740_detect_mem();
+}
+
+void __init device_tree_init(void)
+{
+	if (!initial_boot_params)
+		return;
+
+	unflatten_and_copy_device_tree();
+>>>>>>> v4.9.227
 }
 
 const char *get_system_type(void)
 {
+<<<<<<< HEAD
 	return "JZ4740";
 }
+=======
+	if (IS_ENABLED(CONFIG_MACH_JZ4780))
+		return "JZ4780";
+
+	return "JZ4740";
+}
+
+void __init arch_init_irq(void)
+{
+	irqchip_init();
+}
+>>>>>>> v4.9.227

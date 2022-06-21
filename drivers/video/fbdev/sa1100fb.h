@@ -68,6 +68,10 @@ struct sa1100fb_info {
 #endif
 
 	const struct sa1100fb_mach_info *inf;
+<<<<<<< HEAD
+=======
+	struct clk *clk;
+>>>>>>> v4.9.227
 };
 
 #define TO_INF(ptr,member)	container_of(ptr,struct sa1100fb_info,member)

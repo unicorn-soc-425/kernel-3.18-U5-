@@ -8,6 +8,10 @@
 
 #include <asm/uaccess.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/sclp.h>
+>>>>>>> v4.9.227
 #include <asm/ipl.h>
 #include "sizes.h"
 
@@ -63,8 +67,11 @@ static unsigned long free_mem_end_ptr;
 #include "../../../../lib/decompress_unxz.c"
 #endif
 
+<<<<<<< HEAD
 extern _sclp_print_early(const char *);
 
+=======
+>>>>>>> v4.9.227
 static int puts(const char *s)
 {
 	_sclp_print_early(s);
@@ -171,7 +178,11 @@ unsigned long decompress_kernel(void)
 	free_mem_end_ptr = free_mem_ptr + HEAP_SIZE;
 
 	puts("Uncompressing Linux... ");
+<<<<<<< HEAD
 	decompress(input_data, input_len, NULL, NULL, output, NULL, error);
+=======
+	__decompress(input_data, input_len, NULL, NULL, output, 0, NULL, error);
+>>>>>>> v4.9.227
 	puts("Ok, booting the kernel.\n");
 	return (unsigned long) output;
 }

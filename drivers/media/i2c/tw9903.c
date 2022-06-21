@@ -266,7 +266,10 @@ MODULE_DEVICE_TABLE(i2c, tw9903_id);
 
 static struct i2c_driver tw9903_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "tw9903",
 	},
 	.probe = tw9903_probe,

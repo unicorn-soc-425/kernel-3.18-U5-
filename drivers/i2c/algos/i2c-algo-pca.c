@@ -521,7 +521,11 @@ static int pca_init(struct i2c_adapter *adap)
 
 		pca_set_con(pca_data, I2C_PCA_CON_ENSIO);
 	}
+<<<<<<< HEAD
 	udelay(500); /* 500 us for oscilator to stabilise */
+=======
+	udelay(500); /* 500 us for oscillator to stabilise */
+>>>>>>> v4.9.227
 
 	return 0;
 }

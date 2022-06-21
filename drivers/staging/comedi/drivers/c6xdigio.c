@@ -22,7 +22,11 @@
  * Description: Mechatronic Systems Inc. C6x_DIGIO DSP daughter card
  * Author: Dan Block
  * Status: unknown
+<<<<<<< HEAD
  * Devices: (Mechatronic Systems Inc.) C6x_DIGIO DSP daughter card [c6xdigio]
+=======
+ * Devices: [Mechatronic Systems Inc.] C6x_DIGIO DSP daughter card (c6xdigio)
+>>>>>>> v4.9.227
  * Updated: Sun Nov 20 20:18:34 EST 2005
  *
  * Configuration Options:
@@ -47,8 +51,13 @@
  */
 #define C6XDIGIO_DATA_REG	0x00
 #define C6XDIGIO_DATA_CHAN(x)	(((x) + 1) << 4)
+<<<<<<< HEAD
 #define C6XDIGIO_DATA_PWM	(1 << 5)
 #define C6XDIGIO_DATA_ENCODER	(1 << 6)
+=======
+#define C6XDIGIO_DATA_PWM	BIT(5)
+#define C6XDIGIO_DATA_ENCODER	BIT(6)
+>>>>>>> v4.9.227
 #define C6XDIGIO_STATUS_REG	0x01
 #define C6XDIGIO_CTRL_REG	0x02
 
@@ -265,7 +274,11 @@ static int c6xdigio_attach(struct comedi_device *dev,
 	s = &dev->subdevices[0];
 	/* pwm output subdevice */
 	s->type		= COMEDI_SUBD_PWM;
+<<<<<<< HEAD
 	s->subdev_flags	= SDF_WRITEABLE;
+=======
+	s->subdev_flags	= SDF_WRITABLE;
+>>>>>>> v4.9.227
 	s->n_chan	= 2;
 	s->maxdata	= 500;
 	s->range_table	= &range_unknown;

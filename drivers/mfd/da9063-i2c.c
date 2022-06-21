@@ -3,7 +3,11 @@
  * Copyright 2012 Dialog Semiconductor Ltd.
  * Copyright 2013 Philipp Zabel, Pengutronix
  *
+<<<<<<< HEAD
  * Author: Krystian Garbaciak <krystian.garbaciak@diasemi.com>
+=======
+ * Author: Krystian Garbaciak, Dialog Semiconductor
+>>>>>>> v4.9.227
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
@@ -25,6 +29,12 @@
 #include <linux/mfd/da9063/pdata.h>
 #include <linux/mfd/da9063/registers.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/regulator/of_regulator.h>
+
+>>>>>>> v4.9.227
 static const struct regmap_range da9063_ad_readable_ranges[] = {
 	{
 		.range_min = DA9063_REG_PAGE_CON,
@@ -71,6 +81,7 @@ static const struct regmap_range da9063_ad_writeable_ranges[] = {
 
 static const struct regmap_range da9063_ad_volatile_ranges[] = {
 	{
+<<<<<<< HEAD
 		.range_min = DA9063_REG_STATUS_A,
 		.range_max = DA9063_REG_EVENT_D,
 	}, {
@@ -78,11 +89,35 @@ static const struct regmap_range da9063_ad_volatile_ranges[] = {
 		.range_max = DA9063_REG_CONTROL_F,
 	}, {
 		.range_min = DA9063_REG_ADC_MAN,
+=======
+		.range_min = DA9063_REG_PAGE_CON,
+		.range_max = DA9063_REG_EVENT_D,
+	}, {
+		.range_min = DA9063_REG_CONTROL_A,
+		.range_max = DA9063_REG_CONTROL_B,
+	}, {
+		.range_min = DA9063_REG_CONTROL_E,
+		.range_max = DA9063_REG_CONTROL_F,
+	}, {
+		.range_min = DA9063_REG_BCORE2_CONT,
+		.range_max = DA9063_REG_LDO11_CONT,
+	}, {
+		.range_min = DA9063_REG_DVC_1,
+>>>>>>> v4.9.227
 		.range_max = DA9063_REG_ADC_MAN,
 	}, {
 		.range_min = DA9063_REG_ADC_RES_L,
 		.range_max = DA9063_AD_REG_SECOND_D,
 	}, {
+<<<<<<< HEAD
+=======
+		.range_min = DA9063_REG_SEQ,
+		.range_max = DA9063_REG_SEQ,
+	}, {
+		.range_min = DA9063_REG_EN_32K,
+		.range_max = DA9063_REG_EN_32K,
+	}, {
+>>>>>>> v4.9.227
 		.range_min = DA9063_AD_REG_MON_REG_5,
 		.range_max = DA9063_AD_REG_MON_REG_6,
 	},
@@ -149,6 +184,7 @@ static const struct regmap_range da9063_bb_writeable_ranges[] = {
 
 static const struct regmap_range da9063_bb_volatile_ranges[] = {
 	{
+<<<<<<< HEAD
 		.range_min = DA9063_REG_STATUS_A,
 		.range_max = DA9063_REG_EVENT_D,
 	}, {
@@ -156,11 +192,35 @@ static const struct regmap_range da9063_bb_volatile_ranges[] = {
 		.range_max = DA9063_REG_CONTROL_F,
 	}, {
 		.range_min = DA9063_REG_ADC_MAN,
+=======
+		.range_min = DA9063_REG_PAGE_CON,
+		.range_max = DA9063_REG_EVENT_D,
+	}, {
+		.range_min = DA9063_REG_CONTROL_A,
+		.range_max = DA9063_REG_CONTROL_B,
+	}, {
+		.range_min = DA9063_REG_CONTROL_E,
+		.range_max = DA9063_REG_CONTROL_F,
+	}, {
+		.range_min = DA9063_REG_BCORE2_CONT,
+		.range_max = DA9063_REG_LDO11_CONT,
+	}, {
+		.range_min = DA9063_REG_DVC_1,
+>>>>>>> v4.9.227
 		.range_max = DA9063_REG_ADC_MAN,
 	}, {
 		.range_min = DA9063_REG_ADC_RES_L,
 		.range_max = DA9063_BB_REG_SECOND_D,
 	}, {
+<<<<<<< HEAD
+=======
+		.range_min = DA9063_REG_SEQ,
+		.range_max = DA9063_REG_SEQ,
+	}, {
+		.range_min = DA9063_REG_EN_32K,
+		.range_max = DA9063_REG_EN_32K,
+	}, {
+>>>>>>> v4.9.227
 		.range_min = DA9063_BB_REG_MON_REG_5,
 		.range_max = DA9063_BB_REG_MON_REG_6,
 	},
@@ -203,6 +263,14 @@ static struct regmap_config da9063_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id da9063_dt_ids[] = {
+	{ .compatible = "dlg,da9063", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, da9063_dt_ids);
+>>>>>>> v4.9.227
 static int da9063_i2c_probe(struct i2c_client *i2c,
 	const struct i2c_device_id *id)
 {
@@ -256,7 +324,11 @@ MODULE_DEVICE_TABLE(i2c, da9063_i2c_id);
 static struct i2c_driver da9063_i2c_driver = {
 	.driver = {
 		.name = "da9063",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(da9063_dt_ids),
+>>>>>>> v4.9.227
 	},
 	.probe    = da9063_i2c_probe,
 	.remove   = da9063_i2c_remove,

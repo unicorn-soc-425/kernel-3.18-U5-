@@ -19,7 +19,11 @@ obj-$(CONFIG_ARCH_TEGRA_3x_SOC)		+= pm-tegra30.o
 ifeq ($(CONFIG_CPU_IDLE),y)
 obj-$(CONFIG_ARCH_TEGRA_3x_SOC)		+= cpuidle-tegra30.o
 endif
+<<<<<<< HEAD
 obj-$(CONFIG_SMP)			+= platsmp.o headsmp.o
+=======
+obj-$(CONFIG_SMP)			+= platsmp.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_HOTPLUG_CPU)               += hotplug.o
 
 obj-$(CONFIG_ARCH_TEGRA_114_SOC)	+= sleep-tegra30.o

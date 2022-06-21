@@ -50,6 +50,14 @@
  * @min_height: minimum height supported by the Display Controller
  * @max_width: maximum width supported by the Display Controller
  * @max_height: maximum height supported by the Display Controller
+<<<<<<< HEAD
+=======
+ * @max_spw: maximum vertical/horizontal pulse width
+ * @max_vpw: maximum vertical back/front porch width
+ * @max_hpw: maximum horizontal back/front porch width
+ * @conflicting_output_formats: true if RGBXXX output formats conflict with
+ *				each other.
+>>>>>>> v4.9.227
  * @layers: a layer description table describing available layers
  * @nlayers: layer description table size
  */
@@ -58,6 +66,13 @@ struct atmel_hlcdc_dc_desc {
 	int min_height;
 	int max_width;
 	int max_height;
+<<<<<<< HEAD
+=======
+	int max_spw;
+	int max_vpw;
+	int max_hpw;
+	bool conflicting_output_formats;
+>>>>>>> v4.9.227
 	const struct atmel_hlcdc_layer_desc *layers;
 	int nlayers;
 };
@@ -128,6 +143,10 @@ struct atmel_hlcdc_planes {
  * @planes: instantiated planes
  * @layers: active HLCDC layer
  * @wq: display controller workqueue
+<<<<<<< HEAD
+=======
+ * @commit: used for async commit handling
+>>>>>>> v4.9.227
  */
 struct atmel_hlcdc_dc {
 	const struct atmel_hlcdc_dc_desc *desc;
@@ -137,6 +156,13 @@ struct atmel_hlcdc_dc {
 	struct atmel_hlcdc_planes *planes;
 	struct atmel_hlcdc_layer *layers[ATMEL_HLCDC_MAX_LAYERS];
 	struct workqueue_struct *wq;
+<<<<<<< HEAD
+=======
+	struct {
+		wait_queue_head_t wait;
+		bool pending;
+	} commit;
+>>>>>>> v4.9.227
 };
 
 extern struct atmel_hlcdc_formats atmel_hlcdc_plane_rgb_formats;
@@ -149,12 +175,19 @@ struct atmel_hlcdc_planes *
 atmel_hlcdc_create_planes(struct drm_device *dev);
 
 int atmel_hlcdc_plane_prepare_disc_area(struct drm_crtc_state *c_state);
+<<<<<<< HEAD
 
 void atmel_hlcdc_crtc_irq(struct drm_crtc *c);
 
 void atmel_hlcdc_crtc_cancel_page_flip(struct drm_crtc *crtc,
 				       struct drm_file *file);
 
+=======
+int atmel_hlcdc_plane_prepare_ahb_routing(struct drm_crtc_state *c_state);
+
+void atmel_hlcdc_crtc_irq(struct drm_crtc *c);
+
+>>>>>>> v4.9.227
 void atmel_hlcdc_crtc_suspend(struct drm_crtc *crtc);
 void atmel_hlcdc_crtc_resume(struct drm_crtc *crtc);
 

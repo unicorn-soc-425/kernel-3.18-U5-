@@ -2,8 +2,15 @@
 #define _LINUX_TIME64_H
 
 #include <uapi/linux/time.h>
+<<<<<<< HEAD
 
 typedef __s64 time64_t;
+=======
+#include <linux/math64.h>
+
+typedef __s64 time64_t;
+typedef __u64 timeu64_t;
+>>>>>>> v4.9.227
 
 /*
  * This wants to go into uapi/linux/time.h once we agreed about the
@@ -11,11 +18,24 @@ typedef __s64 time64_t;
  */
 #if __BITS_PER_LONG == 64
 # define timespec64 timespec
+<<<<<<< HEAD
+=======
+#define itimerspec64 itimerspec
+>>>>>>> v4.9.227
 #else
 struct timespec64 {
 	time64_t	tv_sec;			/* seconds */
 	long		tv_nsec;		/* nanoseconds */
 };
+<<<<<<< HEAD
+=======
+
+struct itimerspec64 {
+	struct timespec64 it_interval;
+	struct timespec64 it_value;
+};
+
+>>>>>>> v4.9.227
 #endif
 
 /* Parameters used to convert the timespec values: */
@@ -28,6 +48,10 @@ struct timespec64 {
 #define FSEC_PER_SEC	1000000000000000LL
 
 /* Located here for timespec[64]_valid_strict */
+<<<<<<< HEAD
+=======
+#define TIME64_MAX			((s64)~((u64)1 << 63))
+>>>>>>> v4.9.227
 #define KTIME_MAX			((s64)~((u64)1 << 63))
 #define KTIME_SEC_MAX			(KTIME_MAX / NSEC_PER_SEC)
 
@@ -43,10 +67,26 @@ static inline struct timespec64 timespec_to_timespec64(const struct timespec ts)
 	return ts;
 }
 
+<<<<<<< HEAD
 # define timespec64_equal		timespec_equal
 # define timespec64_compare		timespec_compare
 # define set_normalized_timespec64	set_normalized_timespec
 # define timespec64_add_safe		timespec_add_safe
+=======
+static inline struct itimerspec itimerspec64_to_itimerspec(struct itimerspec64 *its64)
+{
+	return *its64;
+}
+
+static inline struct itimerspec64 itimerspec_to_itimerspec64(struct itimerspec *its)
+{
+	return *its;
+}
+
+# define timespec64_equal		timespec_equal
+# define timespec64_compare		timespec_compare
+# define set_normalized_timespec64	set_normalized_timespec
+>>>>>>> v4.9.227
 # define timespec64_add			timespec_add
 # define timespec64_sub			timespec_sub
 # define timespec64_valid		timespec_valid
@@ -75,6 +115,27 @@ static inline struct timespec64 timespec_to_timespec64(const struct timespec ts)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static inline struct itimerspec itimerspec64_to_itimerspec(struct itimerspec64 *its64)
+{
+	struct itimerspec ret;
+
+	ret.it_interval = timespec64_to_timespec(its64->it_interval);
+	ret.it_value = timespec64_to_timespec(its64->it_value);
+	return ret;
+}
+
+static inline struct itimerspec64 itimerspec_to_itimerspec64(struct itimerspec *its)
+{
+	struct itimerspec64 ret;
+
+	ret.it_interval = timespec_to_timespec64(its->it_interval);
+	ret.it_value = timespec_to_timespec64(its->it_value);
+	return ret;
+}
+
+>>>>>>> v4.9.227
 static inline int timespec64_equal(const struct timespec64 *a,
 				   const struct timespec64 *b)
 {
@@ -97,6 +158,7 @@ static inline int timespec64_compare(const struct timespec64 *lhs, const struct 
 
 extern void set_normalized_timespec64(struct timespec64 *ts, time64_t sec, s64 nsec);
 
+<<<<<<< HEAD
 /*
  * timespec64_add_safe assumes both values are positive and checks for
  * overflow. It will return TIME_T_MAX if the returned value would be
@@ -106,6 +168,8 @@ extern struct timespec64 timespec64_add_safe(const struct timespec64 lhs,
 					 const struct timespec64 rhs);
 
 
+=======
+>>>>>>> v4.9.227
 static inline struct timespec64 timespec64_add(struct timespec64 lhs,
 						struct timespec64 rhs)
 {
@@ -187,4 +251,14 @@ static __always_inline void timespec64_add_ns(struct timespec64 *a, u64 ns)
 
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * timespec64_add_safe assumes both values are positive and checks for
+ * overflow. It will return TIME64_MAX in case of overflow.
+ */
+extern struct timespec64 timespec64_add_safe(const struct timespec64 lhs,
+					 const struct timespec64 rhs);
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_TIME64_H */

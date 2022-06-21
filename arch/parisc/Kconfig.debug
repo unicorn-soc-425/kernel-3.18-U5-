@@ -2,9 +2,19 @@ menu "Kernel hacking"
 
 source "lib/Kconfig.debug"
 
+<<<<<<< HEAD
 config DEBUG_RODATA
        bool "Write protect kernel read-only data structures"
        depends on DEBUG_KERNEL
+=======
+config TRACE_IRQFLAGS_SUPPORT
+	def_bool y
+
+config DEBUG_RODATA
+       bool "Write protect kernel read-only data structures"
+       depends on DEBUG_KERNEL
+       default y
+>>>>>>> v4.9.227
        help
          Mark the kernel read-only data as write-protected in the pagetables,
          in order to catch accidental (and incorrect) writes to such const

@@ -39,7 +39,11 @@
 
 #include "mlx4_ib.h"
 
+<<<<<<< HEAD
 #define CM_CLEANUP_CACHE_TIMEOUT  (5 * HZ)
+=======
+#define CM_CLEANUP_CACHE_TIMEOUT  (30 * HZ)
+>>>>>>> v4.9.227
 
 struct id_map_entry {
 	struct rb_node node;
@@ -372,7 +376,11 @@ int mlx4_ib_demux_cm_handler(struct ib_device *ibdev, int port, int *slave,
 		*slave = mlx4_ib_find_real_gid(ibdev, port, gid.global.interface_id);
 		if (*slave < 0) {
 			mlx4_ib_warn(ibdev, "failed matching slave_id by gid (0x%llx)\n",
+<<<<<<< HEAD
 					gid.global.interface_id);
+=======
+				     be64_to_cpu(gid.global.interface_id));
+>>>>>>> v4.9.227
 			return -ENOENT;
 		}
 		return 0;

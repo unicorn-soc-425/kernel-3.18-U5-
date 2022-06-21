@@ -42,7 +42,10 @@ MODULE_PARM_DESC(irq, "Which IRQ to use for the clock source MFGPT ticks.");
  *  256         128   .125            512.000
  */
 
+<<<<<<< HEAD
 static unsigned int cs5535_tick_mode = CLOCK_EVT_MODE_SHUTDOWN;
+=======
+>>>>>>> v4.9.227
 static struct cs5535_mfgpt_timer *cs5535_event_clock;
 
 /* Selected from the table above */
@@ -77,6 +80,7 @@ static void start_timer(struct cs5535_mfgpt_timer *timer, uint16_t delta)
 			MFGPT_SETUP_CNTEN | MFGPT_SETUP_CMP2);
 }
 
+<<<<<<< HEAD
 static void mfgpt_set_mode(enum clock_event_mode mode,
 		struct clock_event_device *evt)
 {
@@ -86,6 +90,19 @@ static void mfgpt_set_mode(enum clock_event_mode mode,
 		start_timer(cs5535_event_clock, MFGPT_PERIODIC);
 
 	cs5535_tick_mode = mode;
+=======
+static int mfgpt_shutdown(struct clock_event_device *evt)
+{
+	disable_timer(cs5535_event_clock);
+	return 0;
+}
+
+static int mfgpt_set_periodic(struct clock_event_device *evt)
+{
+	disable_timer(cs5535_event_clock);
+	start_timer(cs5535_event_clock, MFGPT_PERIODIC);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int mfgpt_next_event(unsigned long delta, struct clock_event_device *evt)
@@ -97,7 +114,14 @@ static int mfgpt_next_event(unsigned long delta, struct clock_event_device *evt)
 static struct clock_event_device cs5535_clockevent = {
 	.name = DRV_NAME,
 	.features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
+<<<<<<< HEAD
 	.set_mode = mfgpt_set_mode,
+=======
+	.set_state_shutdown = mfgpt_shutdown,
+	.set_state_periodic = mfgpt_set_periodic,
+	.set_state_oneshot = mfgpt_shutdown,
+	.tick_resume = mfgpt_shutdown,
+>>>>>>> v4.9.227
 	.set_next_event = mfgpt_next_event,
 	.rating = 250,
 };
@@ -113,7 +137,12 @@ static irqreturn_t mfgpt_tick(int irq, void *dev_id)
 	/* Turn off the clock (and clear the event) */
 	disable_timer(cs5535_event_clock);
 
+<<<<<<< HEAD
 	if (cs5535_tick_mode == CLOCK_EVT_MODE_SHUTDOWN)
+=======
+	if (clockevent_state_detached(&cs5535_clockevent) ||
+	    clockevent_state_shutdown(&cs5535_clockevent))
+>>>>>>> v4.9.227
 		return IRQ_HANDLED;
 
 	/* Clear the counter */
@@ -121,7 +150,11 @@ static irqreturn_t mfgpt_tick(int irq, void *dev_id)
 
 	/* Restart the clock in periodic mode */
 
+<<<<<<< HEAD
 	if (cs5535_tick_mode == CLOCK_EVT_MODE_PERIODIC)
+=======
+	if (clockevent_state_periodic(&cs5535_clockevent))
+>>>>>>> v4.9.227
 		cs5535_mfgpt_write(cs5535_event_clock, MFGPT_REG_SETUP,
 				MFGPT_SETUP_CNTEN | MFGPT_SETUP_CMP2);
 

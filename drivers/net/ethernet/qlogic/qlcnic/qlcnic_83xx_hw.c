@@ -5,14 +5,23 @@
  * See LICENSE.qlcnic for copyright and licensing details.
  */
 
+<<<<<<< HEAD
 #include "qlcnic.h"
 #include "qlcnic_sriov.h"
+=======
+>>>>>>> v4.9.227
 #include <linux/if_vlan.h>
 #include <linux/ipv6.h>
 #include <linux/ethtool.h>
 #include <linux/interrupt.h>
 #include <linux/aer.h>
 
+<<<<<<< HEAD
+=======
+#include "qlcnic.h"
+#include "qlcnic_sriov.h"
+
+>>>>>>> v4.9.227
 static void __qlcnic_83xx_process_aen(struct qlcnic_adapter *);
 static int qlcnic_83xx_clear_lb_mode(struct qlcnic_adapter *, u8);
 static void qlcnic_83xx_configure_mac(struct qlcnic_adapter *, u8 *, u8,
@@ -118,6 +127,10 @@ static const struct qlcnic_mailbox_metadata qlcnic_83xx_mbx_tbl[] = {
 	{QLCNIC_CMD_DCB_QUERY_CAP, 1, 2},
 	{QLCNIC_CMD_DCB_QUERY_PARAM, 1, 50},
 	{QLCNIC_CMD_SET_INGRESS_ENCAP, 2, 1},
+<<<<<<< HEAD
+=======
+	{QLCNIC_CMD_83XX_EXTEND_ISCSI_DUMP_CAP, 4, 1},
+>>>>>>> v4.9.227
 };
 
 const u32 qlcnic_83xx_ext_reg_tbl[] = {
@@ -240,6 +253,11 @@ static struct qlcnic_hardware_ops qlcnic_83xx_hw_ops = {
 	.get_cap_size			= qlcnic_83xx_get_cap_size,
 	.set_sys_info			= qlcnic_83xx_set_sys_info,
 	.store_cap_mask			= qlcnic_83xx_store_cap_mask,
+<<<<<<< HEAD
+=======
+	.encap_rx_offload		= qlcnic_83xx_encap_rx_offload,
+	.encap_tx_offload		= qlcnic_83xx_encap_tx_offload,
+>>>>>>> v4.9.227
 };
 
 static struct qlcnic_nic_template qlcnic_83xx_ops = {
@@ -916,8 +934,11 @@ int qlcnic_83xx_alloc_mbx_args(struct qlcnic_cmd_args *mbx,
 				mbx->req.arg = NULL;
 				return -ENOMEM;
 			}
+<<<<<<< HEAD
 			memset(mbx->req.arg, 0, sizeof(u32) * mbx->req.num);
 			memset(mbx->rsp.arg, 0, sizeof(u32) * mbx->rsp.num);
+=======
+>>>>>>> v4.9.227
 			temp = adapter->ahw->fw_hal_version << 29;
 			mbx->req.arg[0] = (type | (mbx->req.num << 16) | temp);
 			mbx->cmd_op = type;
@@ -2132,7 +2153,12 @@ out:
 }
 
 void qlcnic_83xx_change_l2_filter(struct qlcnic_adapter *adapter, u64 *addr,
+<<<<<<< HEAD
 				  u16 vlan_id)
+=======
+				  u16 vlan_id,
+				  struct qlcnic_host_tx_ring *tx_ring)
+>>>>>>> v4.9.227
 {
 	u8 mac[ETH_ALEN];
 	memcpy(&mac, addr, ETH_ALEN);
@@ -2159,7 +2185,10 @@ int qlcnic_83xx_get_mac_address(struct qlcnic_adapter *adapter, u8 *mac,
 	struct qlcnic_cmd_args cmd;
 	u32 mac_low, mac_high;
 
+<<<<<<< HEAD
 	function = 0;
+=======
+>>>>>>> v4.9.227
 	err = qlcnic_alloc_mbx_args(&cmd, adapter, QLCNIC_CMD_MAC_ADDRESS);
 	if (err)
 		return err;
@@ -3517,6 +3546,34 @@ out:
 	qlcnic_free_mbx_args(&cmd);
 }
 
+<<<<<<< HEAD
+=======
+#define QLCNIC_83XX_ADD_PORT0		BIT_0
+#define QLCNIC_83XX_ADD_PORT1		BIT_1
+#define QLCNIC_83XX_EXTENDED_MEM_SIZE	13 /* In MB */
+int qlcnic_83xx_extend_md_capab(struct qlcnic_adapter *adapter)
+{
+	struct qlcnic_cmd_args cmd;
+	int err;
+
+	err = qlcnic_alloc_mbx_args(&cmd, adapter,
+				    QLCNIC_CMD_83XX_EXTEND_ISCSI_DUMP_CAP);
+	if (err)
+		return err;
+
+	cmd.req.arg[1] = (QLCNIC_83XX_ADD_PORT0 | QLCNIC_83XX_ADD_PORT1);
+	cmd.req.arg[2] = QLCNIC_83XX_EXTENDED_MEM_SIZE;
+	cmd.req.arg[3] = QLCNIC_83XX_EXTENDED_MEM_SIZE;
+
+	err = qlcnic_issue_cmd(adapter, &cmd);
+	if (err)
+		dev_err(&adapter->pdev->dev,
+			"failed to issue extend iSCSI minidump capability\n");
+
+	return err;
+}
+
+>>>>>>> v4.9.227
 int qlcnic_83xx_reg_test(struct qlcnic_adapter *adapter)
 {
 	u32 major, minor, sub;
@@ -3583,7 +3640,11 @@ int qlcnic_83xx_interrupt_test(struct net_device *netdev)
 	ahw->diag_cnt = 0;
 	ret = qlcnic_alloc_mbx_args(&cmd, adapter, QLCNIC_CMD_INTRPT_TEST);
 	if (ret)
+<<<<<<< HEAD
 		goto fail_diag_irq;
+=======
+		goto fail_mbx_args;
+>>>>>>> v4.9.227
 
 	if (adapter->flags & QLCNIC_MSIX_ENABLED)
 		intrpt_id = ahw->intr_tbl[0].id;
@@ -3613,6 +3674,11 @@ int qlcnic_83xx_interrupt_test(struct net_device *netdev)
 
 done:
 	qlcnic_free_mbx_args(&cmd);
+<<<<<<< HEAD
+=======
+
+fail_mbx_args:
+>>>>>>> v4.9.227
 	qlcnic_83xx_diag_free_res(netdev, drv_sds_rings);
 
 fail_diag_irq:
@@ -4027,7 +4093,11 @@ static void qlcnic_83xx_mailbox_worker(struct work_struct *work)
 	struct qlcnic_mailbox *mbx = container_of(work, struct qlcnic_mailbox,
 						  work);
 	struct qlcnic_adapter *adapter = mbx->adapter;
+<<<<<<< HEAD
 	struct qlcnic_mbx_ops *mbx_ops = mbx->ops;
+=======
+	const struct qlcnic_mbx_ops *mbx_ops = mbx->ops;
+>>>>>>> v4.9.227
 	struct device *dev = &adapter->pdev->dev;
 	struct list_head *head = &mbx->cmd_q;
 	struct qlcnic_hardware_context *ahw;
@@ -4079,7 +4149,11 @@ static void qlcnic_83xx_mailbox_worker(struct work_struct *work)
 	}
 }
 
+<<<<<<< HEAD
 static struct qlcnic_mbx_ops qlcnic_83xx_mbx_ops = {
+=======
+static const struct qlcnic_mbx_ops qlcnic_83xx_mbx_ops = {
+>>>>>>> v4.9.227
 	.enqueue_cmd    = qlcnic_83xx_enqueue_mbx_cmd,
 	.dequeue_cmd    = qlcnic_83xx_dequeue_mbx_cmd,
 	.decode_resp    = qlcnic_83xx_decode_mbx_rsp,

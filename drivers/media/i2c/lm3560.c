@@ -24,7 +24,11 @@
 #include <linux/mutex.h>
 #include <linux/regmap.h>
 #include <linux/videodev2.h>
+<<<<<<< HEAD
 #include <media/lm3560.h>
+=======
+#include <media/i2c/lm3560.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 
@@ -365,10 +369,17 @@ static int lm3560_subdev_init(struct lm3560_flash *flash,
 	rval = lm3560_init_controls(flash, led_no);
 	if (rval)
 		goto err_out;
+<<<<<<< HEAD
 	rval = media_entity_init(&flash->subdev_led[led_no].entity, 0, NULL, 0);
 	if (rval < 0)
 		goto err_out;
 	flash->subdev_led[led_no].entity.type = MEDIA_ENT_T_V4L2_SUBDEV_FLASH;
+=======
+	rval = media_entity_pads_init(&flash->subdev_led[led_no].entity, 0, NULL);
+	if (rval < 0)
+		goto err_out;
+	flash->subdev_led[led_no].entity.function = MEDIA_ENT_F_FLASH;
+>>>>>>> v4.9.227
 
 	return rval;
 

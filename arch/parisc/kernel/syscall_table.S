@@ -55,8 +55,13 @@
 #define ENTRY_COMP(_name_) .word sys_##_name_
 #endif
 
+<<<<<<< HEAD
 	ENTRY_SAME(restart_syscall)	/* 0 */
 	ENTRY_SAME(exit)
+=======
+90:	ENTRY_SAME(restart_syscall)	/* 0 */
+91:	ENTRY_SAME(exit)
+>>>>>>> v4.9.227
 	ENTRY_SAME(fork_wrapper)
 	ENTRY_SAME(read)
 	ENTRY_SAME(write)
@@ -315,8 +320,13 @@
 	ENTRY_COMP(io_getevents)
 	ENTRY_COMP(io_submit)
 	ENTRY_SAME(io_cancel)
+<<<<<<< HEAD
 	ENTRY_SAME(alloc_hugepages)	/* 220 */
 	ENTRY_SAME(free_hugepages)
+=======
+	ENTRY_SAME(ni_syscall)		/* 220: was alloc_hugepages */
+	ENTRY_SAME(ni_syscall)		/* was free_hugepages */
+>>>>>>> v4.9.227
 	ENTRY_SAME(exit_group)
 	ENTRY_COMP(lookup_dcookie)
 	ENTRY_SAME(epoll_create)
@@ -437,8 +447,23 @@
 	ENTRY_SAME(getrandom)
 	ENTRY_SAME(memfd_create)	/* 340 */
 	ENTRY_SAME(bpf)
+<<<<<<< HEAD
 
 	/* Nothing yet */
+=======
+	ENTRY_COMP(execveat)
+	ENTRY_SAME(membarrier)
+	ENTRY_SAME(userfaultfd)
+	ENTRY_SAME(mlock2)		/* 345 */
+	ENTRY_SAME(copy_file_range)
+	ENTRY_COMP(preadv2)
+	ENTRY_COMP(pwritev2)
+
+
+.ifne (. - 90b) - (__NR_Linux_syscalls * (91b - 90b))
+.error "size of syscall table does not fit value of __NR_Linux_syscalls"
+.endif
+>>>>>>> v4.9.227
 
 #undef ENTRY_SAME
 #undef ENTRY_DIFF

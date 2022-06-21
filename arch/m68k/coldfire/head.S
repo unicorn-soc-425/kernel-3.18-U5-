@@ -280,15 +280,26 @@ _clear_bss:
 	movel	%d0,m68k_cputype		/* Mark us as a ColdFire */
 	movel	#MMU_COLDFIRE,%d0
 	movel	%d0,m68k_mmutype
+<<<<<<< HEAD
 	movel	#FPU_COLDFIRE,%d0
 	movel	%d0,m68k_fputype
 	movel	#MACH_M54XX,%d0
 	movel	%d0,m68k_machtype		/* Mark us as a 54xx machine */
+=======
+	movel	#FPUTYPE,%d0
+	movel	%d0,m68k_fputype		/* Mark FPU type */
+	movel	#MACHINE,%d0
+	movel	%d0,m68k_machtype		/* Mark machine type */
+>>>>>>> v4.9.227
 	lea	init_task,%a2			/* Set "current" init task */
 #endif
 
 	/*
+<<<<<<< HEAD
 	 *	Assember start up done, start code proper.
+=======
+	 *	Assembler start up done, start code proper.
+>>>>>>> v4.9.227
 	 */
 	jsr	start_kernel			/* start Linux kernel */
 

@@ -76,11 +76,14 @@ struct gpio_twl4030_priv {
 
 /*----------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static inline struct gpio_twl4030_priv *to_gpio_twl4030(struct gpio_chip *chip)
 {
 	return container_of(chip, struct gpio_twl4030_priv, gpio_chip);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * To configure TWL4030 GPIO module registers
  */
@@ -205,7 +208,11 @@ static int twl4030_get_gpio_datain(int gpio)
 
 static int twl_request(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct gpio_twl4030_priv *priv = to_gpio_twl4030(chip);
+=======
+	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	int status = 0;
 
 	mutex_lock(&priv->mutex);
@@ -256,7 +263,11 @@ static int twl_request(struct gpio_chip *chip, unsigned offset)
 		/* optionally have the first two GPIOs switch vMMC1
 		 * and vMMC2 power supplies based on card presence.
 		 */
+<<<<<<< HEAD
 		pdata = dev_get_platdata(chip->dev);
+=======
+		pdata = dev_get_platdata(chip->parent);
+>>>>>>> v4.9.227
 		if (pdata)
 			value |= pdata->mmc_cd & 0x03;
 
@@ -273,7 +284,11 @@ done:
 
 static void twl_free(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct gpio_twl4030_priv *priv = to_gpio_twl4030(chip);
+=======
+	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	mutex_lock(&priv->mutex);
 	if (offset >= TWL4030_GPIO_MAX) {
@@ -293,7 +308,11 @@ out:
 
 static int twl_direction_in(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct gpio_twl4030_priv *priv = to_gpio_twl4030(chip);
+=======
+	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	int ret;
 
 	mutex_lock(&priv->mutex);
@@ -312,7 +331,11 @@ static int twl_direction_in(struct gpio_chip *chip, unsigned offset)
 
 static int twl_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct gpio_twl4030_priv *priv = to_gpio_twl4030(chip);
+=======
+	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	int ret;
 	int status = 0;
 
@@ -327,7 +350,11 @@ static int twl_get(struct gpio_chip *chip, unsigned offset)
 	else
 		status = twl4030_get_gpio_datain(offset);
 
+<<<<<<< HEAD
 	ret = (status <= 0) ? 0 : 1;
+=======
+	ret = (status < 0) ? status : !!status;
+>>>>>>> v4.9.227
 out:
 	mutex_unlock(&priv->mutex);
 	return ret;
@@ -335,7 +362,11 @@ out:
 
 static void twl_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct gpio_twl4030_priv *priv = to_gpio_twl4030(chip);
+=======
+	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	mutex_lock(&priv->mutex);
 	if (offset < TWL4030_GPIO_MAX)
@@ -353,7 +384,11 @@ static void twl_set(struct gpio_chip *chip, unsigned offset, int value)
 
 static int twl_direction_out(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct gpio_twl4030_priv *priv = to_gpio_twl4030(chip);
+=======
+	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	int ret = 0;
 
 	mutex_lock(&priv->mutex);
@@ -379,14 +414,22 @@ static int twl_direction_out(struct gpio_chip *chip, unsigned offset, int value)
 
 static int twl_to_irq(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct gpio_twl4030_priv *priv = to_gpio_twl4030(chip);
+=======
+	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	return (priv->irq_base && (offset < TWL4030_GPIO_MAX))
 		? (priv->irq_base + offset)
 		: -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct gpio_chip template_chip = {
+=======
+static const struct gpio_chip template_chip = {
+>>>>>>> v4.9.227
 	.label			= "twl4030",
 	.owner			= THIS_MODULE,
 	.request		= twl_request,
@@ -509,7 +552,11 @@ no_irqs:
 	priv->gpio_chip = template_chip;
 	priv->gpio_chip.base = -1;
 	priv->gpio_chip.ngpio = TWL4030_GPIO_MAX;
+<<<<<<< HEAD
 	priv->gpio_chip.dev = &pdev->dev;
+=======
+	priv->gpio_chip.parent = &pdev->dev;
+>>>>>>> v4.9.227
 
 	mutex_init(&priv->mutex);
 
@@ -544,7 +591,11 @@ no_irqs:
 	if (pdata->use_leds)
 		priv->gpio_chip.ngpio += 2;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&priv->gpio_chip);
+=======
+	ret = gpiochip_add_data(&priv->gpio_chip, priv);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(&pdev->dev, "could not register gpiochip, %d\n", ret);
 		priv->gpio_chip.ngpio = 0;
@@ -605,7 +656,10 @@ MODULE_ALIAS("platform:twl4030_gpio");
 static struct platform_driver gpio_twl4030_driver = {
 	.driver = {
 		.name	= "twl4030_gpio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = twl_gpio_match,
 	},
 	.probe		= gpio_twl4030_probe,

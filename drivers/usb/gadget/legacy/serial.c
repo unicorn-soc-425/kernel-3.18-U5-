@@ -17,7 +17,10 @@
 #include <linux/tty_flip.h>
 
 #include "u_serial.h"
+<<<<<<< HEAD
 #include "gadget_chips.h"
+=======
+>>>>>>> v4.9.227
 
 
 /* Defines */
@@ -66,7 +69,11 @@ static struct usb_gadget_strings *dev_strings[] = {
 static struct usb_device_descriptor device_desc = {
 	.bLength =		USB_DT_DEVICE_SIZE,
 	.bDescriptorType =	USB_DT_DEVICE,
+<<<<<<< HEAD
 	.bcdUSB =		cpu_to_le16(0x0200),
+=======
+	/* .bcdUSB = DYNAMIC */
+>>>>>>> v4.9.227
 	/* .bDeviceClass = f(use_acm) */
 	.bDeviceSubClass =	0,
 	.bDeviceProtocol =	0,
@@ -79,6 +86,7 @@ static struct usb_device_descriptor device_desc = {
 	.bNumConfigurations =	1,
 };
 
+<<<<<<< HEAD
 static struct usb_otg_descriptor otg_descriptor = {
 	.bLength =		sizeof otg_descriptor,
 	.bDescriptorType =	USB_DT_OTG,
@@ -93,6 +101,9 @@ static const struct usb_descriptor_header *otg_desc[] = {
 	(struct usb_descriptor_header *) &otg_descriptor,
 	NULL,
 };
+=======
+static const struct usb_descriptor_header *otg_desc[2];
+>>>>>>> v4.9.227
 
 /*-------------------------------------------------------------------------*/
 
@@ -174,7 +185,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __init gs_bind(struct usb_composite_dev *cdev)
+=======
+static int gs_bind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 	int			status;
 
@@ -191,6 +206,21 @@ static int __init gs_bind(struct usb_composite_dev *cdev)
 	serial_config_driver.iConfiguration = status;
 
 	if (gadget_is_otg(cdev->gadget)) {
+<<<<<<< HEAD
+=======
+		if (!otg_desc[0]) {
+			struct usb_descriptor_header *usb_desc;
+
+			usb_desc = usb_otg_descriptor_alloc(cdev->gadget);
+			if (!usb_desc) {
+				status = -ENOMEM;
+				goto fail;
+			}
+			usb_otg_descriptor_init(cdev->gadget, usb_desc);
+			otg_desc[0] = usb_desc;
+			otg_desc[1] = NULL;
+		}
+>>>>>>> v4.9.227
 		serial_config_driver.descriptors = otg_desc;
 		serial_config_driver.bmAttributes |= USB_CONFIG_ATT_WAKEUP;
 	}
@@ -208,13 +238,23 @@ static int __init gs_bind(struct usb_composite_dev *cdev)
 				"gser");
 	}
 	if (status < 0)
+<<<<<<< HEAD
 		goto fail;
+=======
+		goto fail1;
+>>>>>>> v4.9.227
 
 	usb_composite_overwrite_options(cdev, &coverwrite);
 	INFO(cdev, "%s\n", GS_VERSION_NAME);
 
 	return 0;
+<<<<<<< HEAD
 
+=======
+fail1:
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+>>>>>>> v4.9.227
 fail:
 	return status;
 }
@@ -227,10 +267,21 @@ static int gs_unbind(struct usb_composite_dev *cdev)
 		usb_put_function(f_serial[i]);
 		usb_put_function_instance(fi_serial[i]);
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
 static __refdata struct usb_composite_driver gserial_driver = {
+=======
+
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+
+	return 0;
+}
+
+static struct usb_composite_driver gserial_driver = {
+>>>>>>> v4.9.227
 	.name		= "g_serial",
 	.dev		= &device_desc,
 	.strings	= dev_strings,

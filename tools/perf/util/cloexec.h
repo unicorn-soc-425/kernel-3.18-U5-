@@ -4,8 +4,13 @@
 unsigned long perf_event_open_cloexec_flag(void);
 
 #ifdef __GLIBC_PREREQ
+<<<<<<< HEAD
 #if !__GLIBC_PREREQ(2, 6)
 extern int sched_getcpu(void) __THROW;
+=======
+#if !__GLIBC_PREREQ(2, 6) && !defined(__UCLIBC__)
+int sched_getcpu(void) __THROW;
+>>>>>>> v4.9.227
 #endif
 #endif
 

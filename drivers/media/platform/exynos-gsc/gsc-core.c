@@ -54,7 +54,11 @@ static const struct gsc_fmt gsc_formats[] = {
 		.corder		= GSC_CBCR,
 		.num_planes	= 1,
 		.num_comp	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_YUYV8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_YUYV8_2X8,
+>>>>>>> v4.9.227
 	}, {
 		.name		= "YUV 4:2:2 packed, CbYCrY",
 		.pixelformat	= V4L2_PIX_FMT_UYVY,
@@ -64,7 +68,11 @@ static const struct gsc_fmt gsc_formats[] = {
 		.corder		= GSC_CBCR,
 		.num_planes	= 1,
 		.num_comp	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_UYVY8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_UYVY8_2X8,
+>>>>>>> v4.9.227
 	}, {
 		.name		= "YUV 4:2:2 packed, CrYCbY",
 		.pixelformat	= V4L2_PIX_FMT_VYUY,
@@ -74,7 +82,11 @@ static const struct gsc_fmt gsc_formats[] = {
 		.corder		= GSC_CRCB,
 		.num_planes	= 1,
 		.num_comp	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_VYUY8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_VYUY8_2X8,
+>>>>>>> v4.9.227
 	}, {
 		.name		= "YUV 4:2:2 packed, YCrYCb",
 		.pixelformat	= V4L2_PIX_FMT_YVYU,
@@ -84,7 +96,11 @@ static const struct gsc_fmt gsc_formats[] = {
 		.corder		= GSC_CRCB,
 		.num_planes	= 1,
 		.num_comp	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_YVYU8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_YVYU8_2X8,
+>>>>>>> v4.9.227
 	}, {
 		.name		= "YUV 4:4:4 planar, YCbYCr",
 		.pixelformat	= V4L2_PIX_FMT_YUV32,
@@ -319,6 +335,7 @@ int gsc_enum_fmt_mplane(struct v4l2_fmtdesc *f)
 	return 0;
 }
 
+<<<<<<< HEAD
 static u32 get_plane_info(struct gsc_frame *frm, u32 addr, u32 *index)
 {
 	if (frm->addr.y == addr) {
@@ -330,10 +347,27 @@ static u32 get_plane_info(struct gsc_frame *frm, u32 addr, u32 *index)
 	} else if (frm->addr.cr == addr) {
 		*index = 2;
 		return frm->addr.cr;
+=======
+static int get_plane_info(struct gsc_frame *frm, u32 addr, u32 *index, u32 *ret_addr)
+{
+	if (frm->addr.y == addr) {
+		*index = 0;
+		*ret_addr = frm->addr.y;
+	} else if (frm->addr.cb == addr) {
+		*index = 1;
+		*ret_addr = frm->addr.cb;
+	} else if (frm->addr.cr == addr) {
+		*index = 2;
+		*ret_addr = frm->addr.cr;
+>>>>>>> v4.9.227
 	} else {
 		pr_err("Plane address is wrong");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 void gsc_set_prefbuf(struct gsc_dev *gsc, struct gsc_frame *frm)
@@ -352,9 +386,17 @@ void gsc_set_prefbuf(struct gsc_dev *gsc, struct gsc_frame *frm)
 		u32 t_min, t_max;
 
 		t_min = min3(frm->addr.y, frm->addr.cb, frm->addr.cr);
+<<<<<<< HEAD
 		low_addr = get_plane_info(frm, t_min, &low_plane);
 		t_max = max3(frm->addr.y, frm->addr.cb, frm->addr.cr);
 		high_addr = get_plane_info(frm, t_max, &high_plane);
+=======
+		if (get_plane_info(frm, t_min, &low_plane, &low_addr))
+			return;
+		t_max = max3(frm->addr.y, frm->addr.cb, frm->addr.cr);
+		if (get_plane_info(frm, t_max, &high_plane, &high_addr))
+			return;
+>>>>>>> v4.9.227
 
 		mid_plane = 3 - (low_plane + high_plane);
 		if (mid_plane == 0)
@@ -962,6 +1004,7 @@ static struct gsc_driverdata gsc_v_100_drvdata = {
 	.lclk_frequency = 266000000UL,
 };
 
+<<<<<<< HEAD
 static struct platform_device_id gsc_driver_ids[] = {
 	{
 		.name		= "exynos-gsc",
@@ -971,6 +1014,8 @@ static struct platform_device_id gsc_driver_ids[] = {
 };
 MODULE_DEVICE_TABLE(platform, gsc_driver_ids);
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id exynos_gsc_match[] = {
 	{
 		.compatible = "samsung,exynos5-gsc",
@@ -983,6 +1028,7 @@ MODULE_DEVICE_TABLE(of, exynos_gsc_match);
 static void *gsc_get_drv_data(struct platform_device *pdev)
 {
 	struct gsc_driverdata *driver_data = NULL;
+<<<<<<< HEAD
 
 	if (pdev->dev.of_node) {
 		const struct of_device_id *match;
@@ -994,6 +1040,13 @@ static void *gsc_get_drv_data(struct platform_device *pdev)
 		driver_data = (struct gsc_driverdata *)
 			platform_get_device_id(pdev)->driver_data;
 	}
+=======
+	const struct of_device_id *match;
+
+	match = of_match_node(exynos_gsc_match, pdev->dev.of_node);
+	if (match)
+		driver_data = (struct gsc_driverdata *)match->data;
+>>>>>>> v4.9.227
 
 	return driver_data;
 }
@@ -1073,17 +1126,29 @@ static int gsc_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct gsc_driverdata *drv_data = gsc_get_drv_data(pdev);
 	struct device *dev = &pdev->dev;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	gsc = devm_kzalloc(dev, sizeof(struct gsc_dev), GFP_KERNEL);
 	if (!gsc)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (dev->of_node)
 		gsc->id = of_alias_get_id(pdev->dev.of_node, "gsc");
 	else
 		gsc->id = pdev->id;
 
+=======
+	ret = of_alias_get_id(pdev->dev.of_node, "gsc");
+	if (ret < 0)
+		return ret;
+
+	gsc->id = ret;
+>>>>>>> v4.9.227
 	if (gsc->id >= drv_data->num_entities) {
 		dev_err(dev, "Invalid platform device id: %d\n", gsc->id);
 		return -EINVAL;
@@ -1091,7 +1156,10 @@ static int gsc_probe(struct platform_device *pdev)
 
 	gsc->variant = drv_data->variant[gsc->id];
 	gsc->pdev = pdev;
+<<<<<<< HEAD
 	gsc->pdata = dev->platform_data;
+=======
+>>>>>>> v4.9.227
 
 	init_waitqueue_head(&gsc->irq_queue);
 	spin_lock_init(&gsc->slock);
@@ -1134,19 +1202,27 @@ static int gsc_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_m2m;
 
+<<<<<<< HEAD
 	/* Initialize continious memory allocator */
 	gsc->alloc_ctx = vb2_dma_contig_init_ctx(dev);
 	if (IS_ERR(gsc->alloc_ctx)) {
 		ret = PTR_ERR(gsc->alloc_ctx);
 		goto err_pm;
 	}
+=======
+	vb2_dma_contig_set_max_seg_size(dev, DMA_BIT_MASK(32));
+>>>>>>> v4.9.227
 
 	dev_dbg(dev, "gsc-%d registered successfully\n", gsc->id);
 
 	pm_runtime_put(dev);
 	return 0;
+<<<<<<< HEAD
 err_pm:
 	pm_runtime_put(dev);
+=======
+
+>>>>>>> v4.9.227
 err_m2m:
 	gsc_unregister_m2m_device(gsc);
 err_v4l2:
@@ -1163,7 +1239,11 @@ static int gsc_remove(struct platform_device *pdev)
 	gsc_unregister_m2m_device(gsc);
 	v4l2_device_unregister(&gsc->v4l2_dev);
 
+<<<<<<< HEAD
 	vb2_dma_contig_cleanup_ctx(gsc->alloc_ctx);
+=======
+	vb2_dma_contig_clear_max_seg_size(&pdev->dev);
+>>>>>>> v4.9.227
 	pm_runtime_disable(&pdev->dev);
 	gsc_clk_put(gsc);
 
@@ -1248,10 +1328,15 @@ static const struct dev_pm_ops gsc_pm_ops = {
 static struct platform_driver gsc_driver = {
 	.probe		= gsc_probe,
 	.remove		= gsc_remove,
+<<<<<<< HEAD
 	.id_table	= gsc_driver_ids,
 	.driver = {
 		.name	= GSC_MODULE_NAME,
 		.owner	= THIS_MODULE,
+=======
+	.driver = {
+		.name	= GSC_MODULE_NAME,
+>>>>>>> v4.9.227
 		.pm	= &gsc_pm_ops,
 		.of_match_table = exynos_gsc_match,
 	}

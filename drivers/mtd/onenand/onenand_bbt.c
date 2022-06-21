@@ -179,7 +179,11 @@ static int onenand_isbad_bbt(struct mtd_info *mtd, loff_t offs, int allowbbt)
  * by the onenand_release function.
  *
  */
+<<<<<<< HEAD
 int onenand_scan_bbt(struct mtd_info *mtd, struct nand_bbt_descr *bd)
+=======
+static int onenand_scan_bbt(struct mtd_info *mtd, struct nand_bbt_descr *bd)
+>>>>>>> v4.9.227
 {
 	struct onenand_chip *this = mtd->priv;
 	struct bbm_info *bbm = this->bbm;
@@ -247,6 +251,9 @@ int onenand_default_bbt(struct mtd_info *mtd)
 
 	return onenand_scan_bbt(mtd, bbm->badblock_pattern);
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(onenand_scan_bbt);
 EXPORT_SYMBOL(onenand_default_bbt);
+=======
+>>>>>>> v4.9.227

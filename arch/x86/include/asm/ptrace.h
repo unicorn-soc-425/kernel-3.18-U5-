@@ -31,13 +31,24 @@ struct pt_regs {
 #else /* __i386__ */
 
 struct pt_regs {
+<<<<<<< HEAD
+=======
+/*
+ * C ABI says these regs are callee-preserved. They aren't saved on kernel entry
+ * unless syscall needs a complete, fully filled "struct pt_regs".
+ */
+>>>>>>> v4.9.227
 	unsigned long r15;
 	unsigned long r14;
 	unsigned long r13;
 	unsigned long r12;
 	unsigned long bp;
 	unsigned long bx;
+<<<<<<< HEAD
 /* arguments: non interrupts/non tracing syscalls only save up to here*/
+=======
+/* These regs are callee-clobbered. Always saved on kernel entry. */
+>>>>>>> v4.9.227
 	unsigned long r11;
 	unsigned long r10;
 	unsigned long r9;
@@ -47,9 +58,18 @@ struct pt_regs {
 	unsigned long dx;
 	unsigned long si;
 	unsigned long di;
+<<<<<<< HEAD
 	unsigned long orig_ax;
 /* end of arguments */
 /* cpu exception frame or undefined */
+=======
+/*
+ * On syscall entry, this is syscall#. On CPU exception, this is error code.
+ * On hw interrupt, it's IRQ number:
+ */
+	unsigned long orig_ax;
+/* Return frame for iretq */
+>>>>>>> v4.9.227
 	unsigned long ip;
 	unsigned long cs;
 	unsigned long flags;
@@ -76,6 +96,7 @@ extern void send_sigtrap(struct task_struct *tsk, struct pt_regs *regs,
 			 int error_code, int si_code);
 
 
+<<<<<<< HEAD
 extern unsigned long syscall_trace_enter_phase1(struct pt_regs *, u32 arch);
 extern long syscall_trace_enter_phase2(struct pt_regs *, u32 arch,
 				       unsigned long phase1_result);
@@ -83,27 +104,44 @@ extern long syscall_trace_enter_phase2(struct pt_regs *, u32 arch,
 extern long syscall_trace_enter(struct pt_regs *);
 extern void syscall_trace_leave(struct pt_regs *);
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned long regs_return_value(struct pt_regs *regs)
 {
 	return regs->ax;
 }
 
 /*
+<<<<<<< HEAD
  * user_mode_vm(regs) determines whether a register set came from user mode.
  * This is true if V8086 mode was enabled OR if the register set was from
  * protected mode with RPL-3 CS value.  This tricky test checks that with
  * one comparison.  Many places in the kernel can bypass this full check
  * if they have already ruled out V8086 mode, so user_mode(regs) can be used.
+=======
+ * user_mode(regs) determines whether a register set came from user
+ * mode.  On x86_32, this is true if V8086 mode was enabled OR if the
+ * register set was from protected mode with RPL-3 CS value.  This
+ * tricky test checks that with one comparison.
+ *
+ * On x86_64, vm86 mode is mercifully nonexistent, and we don't need
+ * the extra check.
+>>>>>>> v4.9.227
  */
 static inline int user_mode(struct pt_regs *regs)
 {
 #ifdef CONFIG_X86_32
+<<<<<<< HEAD
 	return (regs->cs & SEGMENT_RPL_MASK) == USER_RPL;
+=======
+	return ((regs->cs & SEGMENT_RPL_MASK) | (regs->flags & X86_VM_MASK)) >= USER_RPL;
+>>>>>>> v4.9.227
 #else
 	return !!(regs->cs & 3);
 #endif
 }
 
+<<<<<<< HEAD
 static inline int user_mode_vm(struct pt_regs *regs)
 {
 #ifdef CONFIG_X86_32
@@ -114,6 +152,8 @@ static inline int user_mode_vm(struct pt_regs *regs)
 #endif
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int v8086_mode(struct pt_regs *regs)
 {
 #ifdef CONFIG_X86_32
@@ -123,9 +163,15 @@ static inline int v8086_mode(struct pt_regs *regs)
 #endif
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_64
 static inline bool user_64bit_mode(struct pt_regs *regs)
 {
+=======
+static inline bool user_64bit_mode(struct pt_regs *regs)
+{
+#ifdef CONFIG_X86_64
+>>>>>>> v4.9.227
 #ifndef CONFIG_PARAVIRT
 	/*
 	 * On non-paravirt systems, this is the only long mode CPL 3
@@ -136,6 +182,7 @@ static inline bool user_64bit_mode(struct pt_regs *regs)
 	/* Headers are too twisted for this to go in paravirt.h. */
 	return regs->cs == __USER_CS || regs->cs == pv_info.extra_user_64bit_cs;
 #endif
+<<<<<<< HEAD
 }
 
 #define current_user_stack_pointer()	this_cpu_read(old_rsp)
@@ -144,6 +191,16 @@ static inline bool user_64bit_mode(struct pt_regs *regs)
 	(test_thread_flag(TIF_IA32) 	\
 	 ? current_pt_regs()->sp 	\
 	 : this_cpu_read(old_rsp))
+=======
+#else /* !CONFIG_X86_64 */
+	return false;
+#endif
+}
+
+#ifdef CONFIG_X86_64
+#define current_user_stack_pointer()	current_pt_regs()->sp
+#define compat_user_stack_pointer()	current_pt_regs()->sp
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_X86_32
@@ -208,23 +265,67 @@ static inline int regs_within_kernel_stack(struct pt_regs *regs,
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * regs_get_kernel_stack_nth_addr() - get the address of the Nth entry on stack
+ * @regs:	pt_regs which contains kernel stack pointer.
+ * @n:		stack entry number.
+ *
+ * regs_get_kernel_stack_nth() returns the address of the @n th entry of the
+ * kernel stack which is specified by @regs. If the @n th entry is NOT in
+ * the kernel stack, this returns NULL.
+ */
+static inline unsigned long *regs_get_kernel_stack_nth_addr(struct pt_regs *regs, unsigned int n)
+{
+	unsigned long *addr = (unsigned long *)kernel_stack_pointer(regs);
+
+	addr += n;
+	if (regs_within_kernel_stack(regs, (unsigned long)addr))
+		return addr;
+	else
+		return NULL;
+}
+
+/* To avoid include hell, we can't include uaccess.h */
+extern long probe_kernel_read(void *dst, const void *src, size_t size);
+
+/**
+>>>>>>> v4.9.227
  * regs_get_kernel_stack_nth() - get Nth entry of the stack
  * @regs:	pt_regs which contains kernel stack pointer.
  * @n:		stack entry number.
  *
  * regs_get_kernel_stack_nth() returns @n th entry of the kernel stack which
+<<<<<<< HEAD
  * is specified by @regs. If the @n th entry is NOT in the kernel stack,
+=======
+ * is specified by @regs. If the @n th entry is NOT in the kernel stack
+>>>>>>> v4.9.227
  * this returns 0.
  */
 static inline unsigned long regs_get_kernel_stack_nth(struct pt_regs *regs,
 						      unsigned int n)
 {
+<<<<<<< HEAD
 	unsigned long *addr = (unsigned long *)kernel_stack_pointer(regs);
 	addr += n;
 	if (regs_within_kernel_stack(regs, (unsigned long)addr))
 		return *addr;
 	else
 		return 0;
+=======
+	unsigned long *addr;
+	unsigned long val;
+	long ret;
+
+	addr = regs_get_kernel_stack_nth_addr(regs, n);
+	if (addr) {
+		ret = probe_kernel_read(&val, addr, sizeof(val));
+		if (!ret)
+			return val;
+	}
+	return 0;
+>>>>>>> v4.9.227
 }
 
 #define arch_has_single_step()	(1)
@@ -248,7 +349,11 @@ static inline unsigned long regs_get_kernel_stack_nth(struct pt_regs *regs,
  */
 #define arch_ptrace_stop_needed(code, info)				\
 ({									\
+<<<<<<< HEAD
 	set_thread_flag(TIF_NOTIFY_RESUME);				\
+=======
+	force_iret();							\
+>>>>>>> v4.9.227
 	false;								\
 })
 

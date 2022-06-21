@@ -17,6 +17,7 @@
 #define MAX_KMEM_PAGES (sizeof(unsigned long) << 3)
 #define SCLP_CONSOLE_PAGES	6
 
+<<<<<<< HEAD
 #define EVTYP_OPCMD		0x01
 #define EVTYP_MSG		0x02
 #define EVTYP_DIAG_TEST		0x07
@@ -44,6 +45,37 @@
 #define EVTYP_SDIAS_MASK	0x00000010
 #define EVTYP_ASYNC_MASK	0x00400000
 #define EVTYP_OCF_MASK		0x00000004
+=======
+#define SCLP_EVTYP_MASK(T)	(1U << (32 - (T)))
+
+#define EVTYP_OPCMD		0x01
+#define EVTYP_MSG		0x02
+#define EVTYP_CONFMGMDATA	0x04
+#define EVTYP_DIAG_TEST		0x07
+#define EVTYP_STATECHANGE	0x08
+#define EVTYP_PMSGCMD		0x09
+#define EVTYP_ASYNC		0x0A
+#define EVTYP_CTLPROGIDENT	0x0B
+#define EVTYP_ERRNOTIFY		0x18
+#define EVTYP_VT220MSG		0x1A
+#define EVTYP_SDIAS		0x1C
+#define EVTYP_SIGQUIESCE	0x1D
+#define EVTYP_OCF		0x1E
+
+#define EVTYP_OPCMD_MASK	SCLP_EVTYP_MASK(EVTYP_OPCMD)
+#define EVTYP_MSG_MASK		SCLP_EVTYP_MASK(EVTYP_MSG)
+#define EVTYP_CONFMGMDATA_MASK	SCLP_EVTYP_MASK(EVTYP_CONFMGMDATA)
+#define EVTYP_DIAG_TEST_MASK	SCLP_EVTYP_MASK(EVTYP_DIAG_TEST)
+#define EVTYP_STATECHANGE_MASK	SCLP_EVTYP_MASK(EVTYP_STATECHANGE)
+#define EVTYP_PMSGCMD_MASK	SCLP_EVTYP_MASK(EVTYP_PMSGCMD)
+#define EVTYP_ASYNC_MASK	SCLP_EVTYP_MASK(EVTYP_ASYNC)
+#define EVTYP_CTLPROGIDENT_MASK	SCLP_EVTYP_MASK(EVTYP_CTLPROGIDENT)
+#define EVTYP_ERRNOTIFY_MASK	SCLP_EVTYP_MASK(EVTYP_ERRNOTIFY)
+#define EVTYP_VT220MSG_MASK	SCLP_EVTYP_MASK(EVTYP_VT220MSG)
+#define EVTYP_SDIAS_MASK	SCLP_EVTYP_MASK(EVTYP_SDIAS)
+#define EVTYP_SIGQUIESCE_MASK	SCLP_EVTYP_MASK(EVTYP_SIGQUIESCE)
+#define EVTYP_OCF_MASK		SCLP_EVTYP_MASK(EVTYP_OCF)
+>>>>>>> v4.9.227
 
 #define GNRLMSGFLGS_DOM		0x8000
 #define GNRLMSGFLGS_SNDALRM	0x4000
@@ -100,6 +132,7 @@ struct init_sccb {
 	sccb_mask_t sclp_send_mask;
 } __attribute__((packed));
 
+<<<<<<< HEAD
 extern u64 sclp_facilities;
 
 #define SCLP_HAS_CHP_INFO	(sclp_facilities & 0x8000000000000000ULL)
@@ -107,6 +140,13 @@ extern u64 sclp_facilities;
 #define SCLP_HAS_CPU_INFO	(sclp_facilities & 0x0800000000000000ULL)
 #define SCLP_HAS_CPU_RECONFIG	(sclp_facilities & 0x0400000000000000ULL)
 #define SCLP_HAS_PCI_RECONFIG	(sclp_facilities & 0x0000000040000000ULL)
+=======
+#define SCLP_HAS_CHP_INFO	(sclp.facilities & 0x8000000000000000ULL)
+#define SCLP_HAS_CHP_RECONFIG	(sclp.facilities & 0x2000000000000000ULL)
+#define SCLP_HAS_CPU_INFO	(sclp.facilities & 0x0800000000000000ULL)
+#define SCLP_HAS_CPU_RECONFIG	(sclp.facilities & 0x0400000000000000ULL)
+#define SCLP_HAS_PCI_RECONFIG	(sclp.facilities & 0x0000000040000000ULL)
+>>>>>>> v4.9.227
 
 
 struct gds_subvector {
@@ -191,9 +231,12 @@ void sclp_sdias_exit(void);
 extern int sclp_console_pages;
 extern int sclp_console_drop;
 extern unsigned long sclp_console_full;
+<<<<<<< HEAD
 extern u8 sclp_fac84;
 extern unsigned long long sclp_rzm;
 extern unsigned long long sclp_rnmax;
+=======
+>>>>>>> v4.9.227
 
 /* useful inlines */
 

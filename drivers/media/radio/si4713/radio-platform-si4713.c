@@ -34,7 +34,11 @@
 #include <media/v4l2-fh.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-event.h>
+<<<<<<< HEAD
 #include <media/radio-si4713.h>
+=======
+#include "si4713.h"
+>>>>>>> v4.9.227
 
 /* module parameters */
 static int radio_nr = -1;	/* radio device minor (-1 ==> auto assign) */
@@ -153,7 +157,10 @@ static int radio_si4713_pdriver_probe(struct platform_device *pdev)
 {
 	struct radio_si4713_platform_data *pdata = pdev->dev.platform_data;
 	struct radio_si4713_device *rsdev;
+<<<<<<< HEAD
 	struct i2c_adapter *adapter;
+=======
+>>>>>>> v4.9.227
 	struct v4l2_subdev *sd;
 	int rval = 0;
 
@@ -177,6 +184,7 @@ static int radio_si4713_pdriver_probe(struct platform_device *pdev)
 		goto exit;
 	}
 
+<<<<<<< HEAD
 	adapter = i2c_get_adapter(pdata->i2c_bus);
 	if (!adapter) {
 		dev_err(&pdev->dev, "Cannot get i2c adapter %d\n",
@@ -191,6 +199,13 @@ static int radio_si4713_pdriver_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Cannot get v4l2 subdevice\n");
 		rval = -ENODEV;
 		goto put_adapter;
+=======
+	sd = i2c_get_clientdata(pdata->subdev);
+	rval = v4l2_device_register_subdev(&rsdev->v4l2_dev, sd);
+	if (rval) {
+		dev_err(&pdev->dev, "Cannot get v4l2 subdevice\n");
+		goto unregister_v4l2_dev;
+>>>>>>> v4.9.227
 	}
 
 	rsdev->radio_dev = radio_si4713_vdev_template;
@@ -202,14 +217,21 @@ static int radio_si4713_pdriver_probe(struct platform_device *pdev)
 	if (video_register_device(&rsdev->radio_dev, VFL_TYPE_RADIO, radio_nr)) {
 		dev_err(&pdev->dev, "Could not register video device.\n");
 		rval = -EIO;
+<<<<<<< HEAD
 		goto put_adapter;
+=======
+		goto unregister_v4l2_dev;
+>>>>>>> v4.9.227
 	}
 	dev_info(&pdev->dev, "New device successfully probed\n");
 
 	goto exit;
 
+<<<<<<< HEAD
 put_adapter:
 	i2c_put_adapter(adapter);
+=======
+>>>>>>> v4.9.227
 unregister_v4l2_dev:
 	v4l2_device_unregister(&rsdev->v4l2_dev);
 exit:
@@ -220,14 +242,20 @@ exit:
 static int radio_si4713_pdriver_remove(struct platform_device *pdev)
 {
 	struct v4l2_device *v4l2_dev = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct v4l2_subdev *sd = list_entry(v4l2_dev->subdevs.next,
 					    struct v4l2_subdev, list);
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
+=======
+>>>>>>> v4.9.227
 	struct radio_si4713_device *rsdev;
 
 	rsdev = container_of(v4l2_dev, struct radio_si4713_device, v4l2_dev);
 	video_unregister_device(&rsdev->radio_dev);
+<<<<<<< HEAD
 	i2c_put_adapter(client->adapter);
+=======
+>>>>>>> v4.9.227
 	v4l2_device_unregister(&rsdev->v4l2_dev);
 
 	return 0;
@@ -236,7 +264,10 @@ static int radio_si4713_pdriver_remove(struct platform_device *pdev)
 static struct platform_driver radio_si4713_pdriver = {
 	.driver		= {
 		.name	= "radio-si4713",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= radio_si4713_pdriver_probe,
 	.remove         = radio_si4713_pdriver_remove,

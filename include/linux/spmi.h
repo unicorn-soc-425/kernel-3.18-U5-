@@ -12,10 +12,13 @@
 #ifndef _LINUX_SPMI_H
 #define _LINUX_SPMI_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_SPMI
 #include <linux/msm_spmi.h>
 #else
 
+=======
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
@@ -138,9 +141,12 @@ void spmi_controller_remove(struct spmi_controller *ctrl);
  *		this structure.
  * @probe:	binds this driver to a SPMI device.
  * @remove:	unbinds this driver from the SPMI device.
+<<<<<<< HEAD
  * @shutdown:	standard shutdown callback used during powerdown/halt.
  * @suspend:	standard suspend callback used during system suspend.
  * @resume:	standard resume callback used during system resume.
+=======
+>>>>>>> v4.9.227
  *
  * If PM runtime support is desired for a slave, a device driver can call
  * pm_runtime_put() from their probe() routine (and a balancing
@@ -160,7 +166,13 @@ static inline struct spmi_driver *to_spmi_driver(struct device_driver *d)
 	return container_of(d, struct spmi_driver, driver);
 }
 
+<<<<<<< HEAD
 int spmi_driver_register(struct spmi_driver *sdrv);
+=======
+#define spmi_driver_register(sdrv) \
+	__spmi_driver_register(sdrv, THIS_MODULE)
+int __spmi_driver_register(struct spmi_driver *sdrv, struct module *owner);
+>>>>>>> v4.9.227
 
 /**
  * spmi_driver_unregister() - unregister an SPMI client driver
@@ -192,5 +204,8 @@ int spmi_command_sleep(struct spmi_device *sdev);
 int spmi_command_wakeup(struct spmi_device *sdev);
 int spmi_command_shutdown(struct spmi_device *sdev);
 
+<<<<<<< HEAD
 #endif /* CONFIG_MSM_SPMI */
+=======
+>>>>>>> v4.9.227
 #endif

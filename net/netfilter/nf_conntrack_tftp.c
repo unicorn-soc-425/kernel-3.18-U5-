@@ -5,6 +5,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/in.h>
@@ -95,7 +100,11 @@ static int tftp_help(struct sk_buff *skb,
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct nf_conntrack_helper tftp[MAX_PORTS][2] __read_mostly;
+=======
+static struct nf_conntrack_helper tftp[MAX_PORTS * 2] __read_mostly;
+>>>>>>> v4.9.227
 
 static const struct nf_conntrack_expect_policy tftp_exp_policy = {
 	.max_expected	= 1,
@@ -104,22 +113,31 @@ static const struct nf_conntrack_expect_policy tftp_exp_policy = {
 
 static void nf_conntrack_tftp_fini(void)
 {
+<<<<<<< HEAD
 	int i, j;
 
 	for (i = 0; i < ports_c; i++) {
 		for (j = 0; j < 2; j++)
 			nf_conntrack_helper_unregister(&tftp[i][j]);
 	}
+=======
+	nf_conntrack_helpers_unregister(tftp, ports_c * 2);
+>>>>>>> v4.9.227
 }
 
 static int __init nf_conntrack_tftp_init(void)
 {
+<<<<<<< HEAD
 	int i, j, ret;
+=======
+	int i, ret;
+>>>>>>> v4.9.227
 
 	if (ports_c == 0)
 		ports[ports_c++] = TFTP_PORT;
 
 	for (i = 0; i < ports_c; i++) {
+<<<<<<< HEAD
 		memset(&tftp[i], 0, sizeof(tftp[i]));
 
 		tftp[i][0].tuple.src.l3num = AF_INET;
@@ -145,6 +163,20 @@ static int __init nf_conntrack_tftp_init(void)
 				return ret;
 			}
 		}
+=======
+		nf_ct_helper_init(&tftp[2 * i], AF_INET, IPPROTO_UDP, "tftp",
+				  TFTP_PORT, ports[i], i, &tftp_exp_policy,
+				  0, 0, tftp_help, NULL, THIS_MODULE);
+		nf_ct_helper_init(&tftp[2 * i + 1], AF_INET6, IPPROTO_UDP, "tftp",
+				  TFTP_PORT, ports[i], i, &tftp_exp_policy,
+				  0, 0, tftp_help, NULL, THIS_MODULE);
+	}
+
+	ret = nf_conntrack_helpers_register(tftp, ports_c * 2);
+	if (ret < 0) {
+		pr_err("failed to register helpers\n");
+		return ret;
+>>>>>>> v4.9.227
 	}
 	return 0;
 }

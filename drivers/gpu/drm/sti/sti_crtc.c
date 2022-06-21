@@ -23,13 +23,17 @@
 static void sti_crtc_enable(struct drm_crtc *crtc)
 {
 	struct sti_mixer *mixer = to_sti_mixer(crtc);
+<<<<<<< HEAD
 	struct device *dev = mixer->dev;
 	struct sti_compositor *compo = dev_get_drvdata(dev);
+=======
+>>>>>>> v4.9.227
 
 	DRM_DEBUG_DRIVER("\n");
 
 	mixer->status = STI_MIXER_READY;
 
+<<<<<<< HEAD
 	/* Prepare and enable the compo IP clock */
 	if (mixer->id == STI_MIXER_MAIN) {
 		if (clk_prepare_enable(compo->clk_compo_main))
@@ -39,6 +43,8 @@ static void sti_crtc_enable(struct drm_crtc *crtc)
 			DRM_INFO("Failed to prepare/enable compo_aux clk\n");
 	}
 
+=======
+>>>>>>> v4.9.227
 	drm_crtc_vblank_on(crtc);
 }
 
@@ -51,6 +57,7 @@ static void sti_crtc_disabling(struct drm_crtc *crtc)
 	mixer->status = STI_MIXER_DISABLING;
 }
 
+<<<<<<< HEAD
 static bool sti_crtc_mode_fixup(struct drm_crtc *crtc,
 				const struct drm_display_mode *mode,
 				struct drm_display_mode *adjusted_mode)
@@ -59,15 +66,22 @@ static bool sti_crtc_mode_fixup(struct drm_crtc *crtc,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 static int
 sti_crtc_mode_set(struct drm_crtc *crtc, struct drm_display_mode *mode)
 {
 	struct sti_mixer *mixer = to_sti_mixer(crtc);
 	struct device *dev = mixer->dev;
 	struct sti_compositor *compo = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	struct clk *clk;
 	int rate = mode->clock * 1000;
 	int res;
+=======
+	struct clk *compo_clk, *pix_clk;
+	int rate = mode->clock * 1000;
+>>>>>>> v4.9.227
 
 	DRM_DEBUG_KMS("CRTC:%d (%s) mode:%d (%s)\n",
 		      crtc->base.id, sti_mixer_to_str(mixer),
@@ -82,6 +96,7 @@ sti_crtc_mode_set(struct drm_crtc *crtc, struct drm_display_mode *mode)
 		      mode->vsync_start, mode->vsync_end,
 		      mode->vtotal, mode->type, mode->flags);
 
+<<<<<<< HEAD
 	/* Set rate and prepare/enable pixel clock */
 	if (mixer->id == STI_MIXER_MAIN)
 		clk = compo->clk_pix_main;
@@ -108,6 +123,47 @@ sti_crtc_mode_set(struct drm_crtc *crtc, struct drm_display_mode *mode)
 	}
 
 	return res;
+=======
+	if (mixer->id == STI_MIXER_MAIN) {
+		compo_clk = compo->clk_compo_main;
+		pix_clk = compo->clk_pix_main;
+	} else {
+		compo_clk = compo->clk_compo_aux;
+		pix_clk = compo->clk_pix_aux;
+	}
+
+	/* Prepare and enable the compo IP clock */
+	if (clk_prepare_enable(compo_clk)) {
+		DRM_INFO("Failed to prepare/enable compositor clk\n");
+		goto compo_error;
+	}
+
+	/* Set rate and prepare/enable pixel clock */
+	if (clk_set_rate(pix_clk, rate) < 0) {
+		DRM_ERROR("Cannot set rate (%dHz) for pix clk\n", rate);
+		goto pix_error;
+	}
+	if (clk_prepare_enable(pix_clk)) {
+		DRM_ERROR("Failed to prepare/enable pix clk\n");
+		goto pix_error;
+	}
+
+	sti_vtg_set_config(compo->vtg[mixer->id], &crtc->mode);
+
+	if (sti_mixer_active_video_area(mixer, &crtc->mode)) {
+		DRM_ERROR("Can't set active video area\n");
+		goto mixer_error;
+	}
+
+	return 0;
+
+mixer_error:
+	clk_disable_unprepare(pix_clk);
+pix_error:
+	clk_disable_unprepare(compo_clk);
+compo_error:
+	return -EINVAL;
+>>>>>>> v4.9.227
 }
 
 static void sti_crtc_disable(struct drm_crtc *crtc)
@@ -138,7 +194,10 @@ static void sti_crtc_disable(struct drm_crtc *crtc)
 static void
 sti_crtc_mode_set_nofb(struct drm_crtc *crtc)
 {
+<<<<<<< HEAD
 	sti_crtc_enable(crtc);
+=======
+>>>>>>> v4.9.227
 	sti_crtc_mode_set(crtc, &crtc->state->adjusted_mode);
 }
 
@@ -173,6 +232,13 @@ static void sti_crtc_atomic_flush(struct drm_crtc *crtc,
 
 		switch (plane->status) {
 		case STI_PLANE_UPDATED:
+<<<<<<< HEAD
+=======
+			/* ignore update for other CRTC */
+			if (p->state->crtc != crtc)
+				continue;
+
+>>>>>>> v4.9.227
 			/* update planes tag as updated */
 			DRM_DEBUG_DRIVER("update plane %s\n",
 					 sti_plane_to_str(plane));
@@ -229,10 +295,14 @@ static void sti_crtc_atomic_flush(struct drm_crtc *crtc,
 static const struct drm_crtc_helper_funcs sti_crtc_helper_funcs = {
 	.enable = sti_crtc_enable,
 	.disable = sti_crtc_disabling,
+<<<<<<< HEAD
 	.mode_fixup = sti_crtc_mode_fixup,
 	.mode_set = drm_helper_crtc_mode_set,
 	.mode_set_nofb = sti_crtc_mode_set_nofb,
 	.mode_set_base = drm_helper_crtc_mode_set_base,
+=======
+	.mode_set_nofb = sti_crtc_mode_set_nofb,
+>>>>>>> v4.9.227
 	.atomic_begin = sti_crtc_atomic_begin,
 	.atomic_flush = sti_crtc_atomic_flush,
 };
@@ -254,8 +324,12 @@ static int sti_crtc_set_property(struct drm_crtc *crtc,
 int sti_crtc_vblank_cb(struct notifier_block *nb,
 		       unsigned long event, void *data)
 {
+<<<<<<< HEAD
 	struct sti_compositor *compo =
 		container_of(nb, struct sti_compositor, vtg_vblank_nb);
+=======
+	struct sti_compositor *compo;
+>>>>>>> v4.9.227
 	struct drm_crtc *crtc = data;
 	struct sti_mixer *mixer;
 	unsigned long flags;
@@ -264,6 +338,10 @@ int sti_crtc_vblank_cb(struct notifier_block *nb,
 
 	priv = crtc->dev->dev_private;
 	pipe = drm_crtc_index(crtc);
+<<<<<<< HEAD
+=======
+	compo = container_of(nb, struct sti_compositor, vtg_vblank_nb[pipe]);
+>>>>>>> v4.9.227
 	mixer = compo->mixer[pipe];
 
 	if ((event != VTG_TOP_FIELD_EVENT) &&
@@ -305,6 +383,7 @@ int sti_crtc_enable_vblank(struct drm_device *dev, unsigned int pipe)
 {
 	struct sti_private *dev_priv = dev->dev_private;
 	struct sti_compositor *compo = dev_priv->compo;
+<<<<<<< HEAD
 	struct notifier_block *vtg_vblank_nb = &compo->vtg_vblank_nb;
 	struct drm_crtc *crtc = &compo->mixer[pipe]->drm_crtc;
 
@@ -313,6 +392,15 @@ int sti_crtc_enable_vblank(struct drm_device *dev, unsigned int pipe)
 	if (sti_vtg_register_client(pipe == STI_MIXER_MAIN ?
 			compo->vtg_main : compo->vtg_aux,
 			vtg_vblank_nb, crtc)) {
+=======
+	struct notifier_block *vtg_vblank_nb = &compo->vtg_vblank_nb[pipe];
+	struct drm_crtc *crtc = &compo->mixer[pipe]->drm_crtc;
+	struct sti_vtg *vtg = compo->vtg[pipe];
+
+	DRM_DEBUG_DRIVER("\n");
+
+	if (sti_vtg_register_client(vtg, vtg_vblank_nb, crtc)) {
+>>>>>>> v4.9.227
 		DRM_ERROR("Cannot register VTG notifier\n");
 		return -EINVAL;
 	}
@@ -324,6 +412,7 @@ void sti_crtc_disable_vblank(struct drm_device *drm_dev, unsigned int pipe)
 {
 	struct sti_private *priv = drm_dev->dev_private;
 	struct sti_compositor *compo = priv->compo;
+<<<<<<< HEAD
 	struct notifier_block *vtg_vblank_nb = &compo->vtg_vblank_nb;
 	struct drm_crtc *crtc = &compo->mixer[pipe]->drm_crtc;
 
@@ -331,6 +420,15 @@ void sti_crtc_disable_vblank(struct drm_device *drm_dev, unsigned int pipe)
 
 	if (sti_vtg_unregister_client(pipe == STI_MIXER_MAIN ?
 			compo->vtg_main : compo->vtg_aux, vtg_vblank_nb))
+=======
+	struct notifier_block *vtg_vblank_nb = &compo->vtg_vblank_nb[pipe];
+	struct drm_crtc *crtc = &compo->mixer[pipe]->drm_crtc;
+	struct sti_vtg *vtg = compo->vtg[pipe];
+
+	DRM_DEBUG_DRIVER("\n");
+
+	if (sti_vtg_unregister_client(vtg, vtg_vblank_nb))
+>>>>>>> v4.9.227
 		DRM_DEBUG_DRIVER("Warning: cannot unregister VTG notifier\n");
 
 	/* free the resources of the pending requests */
@@ -340,6 +438,20 @@ void sti_crtc_disable_vblank(struct drm_device *drm_dev, unsigned int pipe)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int sti_crtc_late_register(struct drm_crtc *crtc)
+{
+	struct sti_mixer *mixer = to_sti_mixer(crtc);
+	struct sti_compositor *compo = dev_get_drvdata(mixer->dev);
+
+	if (drm_crtc_index(crtc) == 0)
+		return sti_compositor_debugfs_init(compo, crtc->dev->primary);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static const struct drm_crtc_funcs sti_crtc_funcs = {
 	.set_config = drm_atomic_helper_set_config,
 	.page_flip = drm_atomic_helper_page_flip,
@@ -348,6 +460,10 @@ static const struct drm_crtc_funcs sti_crtc_funcs = {
 	.reset = drm_atomic_helper_crtc_reset,
 	.atomic_duplicate_state = drm_atomic_helper_crtc_duplicate_state,
 	.atomic_destroy_state = drm_atomic_helper_crtc_destroy_state,
+<<<<<<< HEAD
+=======
+	.late_register = sti_crtc_late_register,
+>>>>>>> v4.9.227
 };
 
 bool sti_crtc_is_main(struct drm_crtc *crtc)
@@ -367,7 +483,11 @@ int sti_crtc_init(struct drm_device *drm_dev, struct sti_mixer *mixer,
 	int res;
 
 	res = drm_crtc_init_with_planes(drm_dev, crtc, primary, cursor,
+<<<<<<< HEAD
 					&sti_crtc_funcs);
+=======
+					&sti_crtc_funcs, NULL);
+>>>>>>> v4.9.227
 	if (res) {
 		DRM_ERROR("Can't initialze CRTC\n");
 		return -EINVAL;

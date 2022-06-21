@@ -1,6 +1,12 @@
 #ifndef __PARISC_IPCBUF_H__
 #define __PARISC_IPCBUF_H__
 
+<<<<<<< HEAD
+=======
+#include <asm/bitsperlong.h>
+#include <linux/posix_types.h>
+
+>>>>>>> v4.9.227
 /*
  * The ipc64_perm structure for PA-RISC is almost identical to
  * kern_ipc_perm as we have always had 32-bit UIDs and GIDs in the kernel.
@@ -10,6 +16,7 @@
 
 struct ipc64_perm
 {
+<<<<<<< HEAD
 	key_t           key;
 	uid_t           uid;
 	gid_t           gid;
@@ -20,6 +27,20 @@ struct ipc64_perm
 	unsigned short int	__pad2;
 	unsigned short int	seq;
 	unsigned int	__pad3;
+=======
+	__kernel_key_t		key;
+	__kernel_uid_t		uid;
+	__kernel_gid_t		gid;
+	__kernel_uid_t		cuid;
+	__kernel_gid_t		cgid;
+#if __BITS_PER_LONG != 64
+	unsigned short int	__pad1;
+#endif
+	__kernel_mode_t		mode;
+	unsigned short int	__pad2;
+	unsigned short int	seq;
+	unsigned int		__pad3;
+>>>>>>> v4.9.227
 	unsigned long long int __unused1;
 	unsigned long long int __unused2;
 };

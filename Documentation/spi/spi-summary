@@ -342,12 +342,19 @@ SPI protocol drivers somewhat resemble platform device drivers:
 		.driver = {
 			.name		= "CHIP",
 			.owner		= THIS_MODULE,
+<<<<<<< HEAD
+=======
+			.pm		= &CHIP_pm_ops,
+>>>>>>> v4.9.227
 		},
 
 		.probe		= CHIP_probe,
 		.remove		= CHIP_remove,
+<<<<<<< HEAD
 		.suspend	= CHIP_suspend,
 		.resume		= CHIP_resume,
+=======
+>>>>>>> v4.9.227
 	};
 
 The driver core will automatically attempt to bind this driver to any SPI

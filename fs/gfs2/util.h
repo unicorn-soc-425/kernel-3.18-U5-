@@ -149,7 +149,11 @@ extern struct kmem_cache *gfs2_inode_cachep;
 extern struct kmem_cache *gfs2_bufdata_cachep;
 extern struct kmem_cache *gfs2_rgrpd_cachep;
 extern struct kmem_cache *gfs2_quotad_cachep;
+<<<<<<< HEAD
 extern struct kmem_cache *gfs2_rsrv_cachep;
+=======
+extern struct kmem_cache *gfs2_qadata_cachep;
+>>>>>>> v4.9.227
 extern mempool_t *gfs2_page_pool;
 
 static inline unsigned int gfs2_tune_get_i(struct gfs2_tune *gt,

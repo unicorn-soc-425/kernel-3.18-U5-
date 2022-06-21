@@ -337,7 +337,10 @@ static struct platform_driver da9052_tsi_driver = {
 	.remove	= da9052_ts_remove,
 	.driver	= {
 		.name	= "da9052-tsi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

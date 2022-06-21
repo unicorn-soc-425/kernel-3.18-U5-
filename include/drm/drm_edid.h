@@ -25,6 +25,12 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
+=======
+struct drm_device;
+struct i2c_adapter;
+
+>>>>>>> v4.9.227
 #define EDID_LENGTH 128
 #define DDC_ADDR 0x50
 #define DDC_ADDR2 0x52 /* E-DDC 1.2 - where DisplayID can hide */
@@ -266,11 +272,14 @@ struct detailed_timing {
 
 #define DRM_ELD_CEA_SAD(mnl, sad)	(20 + (mnl) + 3 * (sad))
 
+<<<<<<< HEAD
 /* HDMI 2.0 */
 #define DRM_EDID_3D_INDEPENDENT_VIEW	(1 << 2)
 #define DRM_EDID_3D_DUAL_VIEW		(1 << 1)
 #define DRM_EDID_3D_OSD_DISPARITY	(1 << 0)
 
+=======
+>>>>>>> v4.9.227
 struct edid {
 	u8 header[8];
 	/* Vendor & product info */
@@ -333,7 +342,19 @@ int drm_edid_to_speaker_allocation(struct edid *edid, u8 **sadb);
 int drm_av_sync_delay(struct drm_connector *connector,
 		      const struct drm_display_mode *mode);
 struct drm_connector *drm_select_eld(struct drm_encoder *encoder);
+<<<<<<< HEAD
 int drm_load_edid_firmware(struct drm_connector *connector);
+=======
+
+#ifdef CONFIG_DRM_LOAD_EDID_FIRMWARE
+int drm_load_edid_firmware(struct drm_connector *connector);
+#else
+static inline int drm_load_edid_firmware(struct drm_connector *connector)
+{
+	return 0;
+}
+#endif
+>>>>>>> v4.9.227
 
 int
 drm_hdmi_avi_infoframe_from_display_mode(struct hdmi_avi_infoframe *frame,
@@ -408,9 +429,54 @@ static inline int drm_eld_size(const uint8_t *eld)
 	return DRM_ELD_HEADER_BLOCK_SIZE + eld[DRM_ELD_BASELINE_ELD_LEN] * 4;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * drm_eld_get_conn_type - Get device type hdmi/dp connected
+ * @eld: pointer to an ELD memory structure
+ *
+ * The caller need to use %DRM_ELD_CONN_TYPE_HDMI or %DRM_ELD_CONN_TYPE_DP to
+ * identify the display type connected.
+ */
+static inline u8 drm_eld_get_conn_type(const uint8_t *eld)
+{
+	return eld[DRM_ELD_SAD_COUNT_CONN_TYPE] & DRM_ELD_CONN_TYPE_MASK;
+}
+
+bool drm_probe_ddc(struct i2c_adapter *adapter);
+>>>>>>> v4.9.227
 struct edid *drm_do_get_edid(struct drm_connector *connector,
 	int (*get_edid_block)(void *data, u8 *buf, unsigned int block,
 			      size_t len),
 	void *data);
+<<<<<<< HEAD
+=======
+struct edid *drm_get_edid(struct drm_connector *connector,
+			  struct i2c_adapter *adapter);
+struct edid *drm_get_edid_switcheroo(struct drm_connector *connector,
+				     struct i2c_adapter *adapter);
+struct edid *drm_edid_duplicate(const struct edid *edid);
+int drm_add_edid_modes(struct drm_connector *connector, struct edid *edid);
+
+u8 drm_match_cea_mode(const struct drm_display_mode *to_match);
+enum hdmi_picture_aspect drm_get_cea_aspect_ratio(const u8 video_code);
+bool drm_detect_hdmi_monitor(struct edid *edid);
+bool drm_detect_monitor_audio(struct edid *edid);
+bool drm_rgb_quant_range_selectable(struct edid *edid);
+int drm_add_modes_noedid(struct drm_connector *connector,
+			 int hdisplay, int vdisplay);
+void drm_set_preferred_mode(struct drm_connector *connector,
+			    int hpref, int vpref);
+
+int drm_edid_header_is_valid(const u8 *raw_edid);
+bool drm_edid_block_valid(u8 *raw_edid, int block, bool print_bad_edid,
+			  bool *edid_corrupt);
+bool drm_edid_is_valid(struct edid *edid);
+void drm_edid_get_monitor_name(struct edid *edid, char *name,
+			       int buflen);
+struct drm_display_mode *drm_mode_find_dmt(struct drm_device *dev,
+					   int hsize, int vsize, int fresh,
+					   bool rb);
+>>>>>>> v4.9.227
 
 #endif /* __DRM_EDID_H__ */

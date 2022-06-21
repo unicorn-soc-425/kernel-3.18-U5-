@@ -367,7 +367,11 @@ static void arp_failure_discard(struct t3cdev *dev, struct sk_buff *skb)
  */
 static void act_open_req_arp_failure(struct t3cdev *dev, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	printk(KERN_ERR MOD "ARP failure duing connect\n");
+=======
+	printk(KERN_ERR MOD "ARP failure during connect\n");
+>>>>>>> v4.9.227
 	kfree_skb(skb);
 }
 
@@ -1396,10 +1400,17 @@ static int pass_accept_req(struct t3cdev *tdev, struct sk_buff *skb, void *ctx)
 	state_set(&child_ep->com, CONNECTING);
 	child_ep->com.tdev = tdev;
 	child_ep->com.cm_id = NULL;
+<<<<<<< HEAD
 	child_ep->com.local_addr.sin_family = PF_INET;
 	child_ep->com.local_addr.sin_port = req->local_port;
 	child_ep->com.local_addr.sin_addr.s_addr = req->local_ip;
 	child_ep->com.remote_addr.sin_family = PF_INET;
+=======
+	child_ep->com.local_addr.sin_family = AF_INET;
+	child_ep->com.local_addr.sin_port = req->local_port;
+	child_ep->com.local_addr.sin_addr.s_addr = req->local_ip;
+	child_ep->com.remote_addr.sin_family = AF_INET;
+>>>>>>> v4.9.227
 	child_ep->com.remote_addr.sin_port = req->peer_port;
 	child_ep->com.remote_addr.sin_addr.s_addr = req->peer_ip;
 	get_ep(&parent_ep->com);
@@ -1877,7 +1888,11 @@ err:
 static int is_loopback_dst(struct iw_cm_id *cm_id)
 {
 	struct net_device *dev;
+<<<<<<< HEAD
 	struct sockaddr_in *raddr = (struct sockaddr_in *)&cm_id->remote_addr;
+=======
+	struct sockaddr_in *raddr = (struct sockaddr_in *)&cm_id->m_remote_addr;
+>>>>>>> v4.9.227
 
 	dev = ip_dev_find(&init_net, raddr->sin_addr.s_addr);
 	if (!dev)
@@ -1892,10 +1907,17 @@ int iwch_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	struct iwch_ep *ep;
 	struct rtable *rt;
 	int err = 0;
+<<<<<<< HEAD
 	struct sockaddr_in *laddr = (struct sockaddr_in *)&cm_id->local_addr;
 	struct sockaddr_in *raddr = (struct sockaddr_in *)&cm_id->remote_addr;
 
 	if (cm_id->remote_addr.ss_family != PF_INET) {
+=======
+	struct sockaddr_in *laddr = (struct sockaddr_in *)&cm_id->m_local_addr;
+	struct sockaddr_in *raddr = (struct sockaddr_in *)&cm_id->m_remote_addr;
+
+	if (cm_id->m_remote_addr.ss_family != PF_INET) {
+>>>>>>> v4.9.227
 		err = -ENOSYS;
 		goto out;
 	}
@@ -1961,9 +1983,15 @@ int iwch_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 
 	state_set(&ep->com, CONNECTING);
 	ep->tos = IPTOS_LOWDELAY;
+<<<<<<< HEAD
 	memcpy(&ep->com.local_addr, &cm_id->local_addr,
 	       sizeof(ep->com.local_addr));
 	memcpy(&ep->com.remote_addr, &cm_id->remote_addr,
+=======
+	memcpy(&ep->com.local_addr, &cm_id->m_local_addr,
+	       sizeof(ep->com.local_addr));
+	memcpy(&ep->com.remote_addr, &cm_id->m_remote_addr,
+>>>>>>> v4.9.227
 	       sizeof(ep->com.remote_addr));
 
 	/* send connect request to rnic */
@@ -1992,7 +2020,11 @@ int iwch_create_listen(struct iw_cm_id *cm_id, int backlog)
 
 	might_sleep();
 
+<<<<<<< HEAD
 	if (cm_id->local_addr.ss_family != PF_INET) {
+=======
+	if (cm_id->m_local_addr.ss_family != PF_INET) {
+>>>>>>> v4.9.227
 		err = -ENOSYS;
 		goto fail1;
 	}
@@ -2008,7 +2040,11 @@ int iwch_create_listen(struct iw_cm_id *cm_id, int backlog)
 	cm_id->add_ref(cm_id);
 	ep->com.cm_id = cm_id;
 	ep->backlog = backlog;
+<<<<<<< HEAD
 	memcpy(&ep->com.local_addr, &cm_id->local_addr,
+=======
+	memcpy(&ep->com.local_addr, &cm_id->m_local_addr,
+>>>>>>> v4.9.227
 	       sizeof(ep->com.local_addr));
 
 	/*
@@ -2258,7 +2294,11 @@ int __init iwch_cm_init(void)
 {
 	skb_queue_head_init(&rxq);
 
+<<<<<<< HEAD
 	workq = create_singlethread_workqueue("iw_cxgb3");
+=======
+	workq = alloc_ordered_workqueue("iw_cxgb3", WQ_MEM_RECLAIM);
+>>>>>>> v4.9.227
 	if (!workq)
 		return -ENOMEM;
 

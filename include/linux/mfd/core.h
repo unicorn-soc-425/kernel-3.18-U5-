@@ -17,6 +17,16 @@
 #include <linux/platform_device.h>
 
 struct irq_domain;
+<<<<<<< HEAD
+=======
+struct property_entry;
+
+/* Matches ACPI PNP id, either _HID or _CID, or ACPI _ADR */
+struct mfd_cell_acpi_match {
+	const char			*pnpid;
+	const unsigned long long	adr;
+};
+>>>>>>> v4.9.227
 
 /*
  * This struct describes the MFD part ("cell").
@@ -38,14 +48,26 @@ struct mfd_cell {
 	/* platform data passed to the sub devices drivers */
 	void			*platform_data;
 	size_t			pdata_size;
+<<<<<<< HEAD
+=======
+
+	/* device properties passed to the sub devices drivers */
+	struct property_entry *properties;
+
+>>>>>>> v4.9.227
 	/*
 	 * Device Tree compatible string
 	 * See: Documentation/devicetree/usage-model.txt Chapter 2.2 for details
 	 */
 	const char		*of_compatible;
 
+<<<<<<< HEAD
 	/* Matches ACPI PNP id, either _HID or _CID */
 	const char		*acpi_pnpid;
+=======
+	/* Matches ACPI */
+	const struct mfd_cell_acpi_match	*acpi_match;
+>>>>>>> v4.9.227
 
 	/*
 	 * These resources can be specified relative to the parent device.
@@ -111,6 +133,22 @@ extern int mfd_add_devices(struct device *parent, int id,
 			   struct resource *mem_base,
 			   int irq_base, struct irq_domain *irq_domain);
 
+<<<<<<< HEAD
 extern void mfd_remove_devices(struct device *parent);
 
+=======
+static inline int mfd_add_hotplug_devices(struct device *parent,
+		const struct mfd_cell *cells, int n_devs)
+{
+	return mfd_add_devices(parent, PLATFORM_DEVID_AUTO, cells, n_devs,
+			NULL, 0, NULL);
+}
+
+extern void mfd_remove_devices(struct device *parent);
+
+extern int devm_mfd_add_devices(struct device *dev, int id,
+				const struct mfd_cell *cells, int n_devs,
+				struct resource *mem_base,
+				int irq_base, struct irq_domain *irq_domain);
+>>>>>>> v4.9.227
 #endif

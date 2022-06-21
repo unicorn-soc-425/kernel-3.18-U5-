@@ -83,6 +83,7 @@ int pvr2_context_global_init(void);
 void pvr2_context_global_done(void);
 
 #endif /* __PVRUSB2_CONTEXT_H */
+<<<<<<< HEAD
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
   *** Local Variables: ***
@@ -92,3 +93,5 @@ void pvr2_context_global_done(void);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

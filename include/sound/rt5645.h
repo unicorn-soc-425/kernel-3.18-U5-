@@ -15,14 +15,23 @@ struct rt5645_platform_data {
 	/* IN2 can optionally be differential */
 	bool in2_diff;
 
+<<<<<<< HEAD
 	bool dmic_en;
+=======
+>>>>>>> v4.9.227
 	unsigned int dmic1_data_pin;
 	/* 0 = IN2N; 1 = GPIO5; 2 = GPIO11 */
 	unsigned int dmic2_data_pin;
 	/* 0 = IN2P; 1 = GPIO6; 2 = GPIO10; 3 = GPIO12 */
 
+<<<<<<< HEAD
 	unsigned int hp_det_gpio;
 	bool gpio_hp_det_active_high;
+=======
+	unsigned int jd_mode;
+	/* Invert JD when jack insert */
+	bool jd_invert;
+>>>>>>> v4.9.227
 };
 
 #endif

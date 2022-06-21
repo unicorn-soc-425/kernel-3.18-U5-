@@ -17,8 +17,13 @@
 static void cirrus_user_framebuffer_destroy(struct drm_framebuffer *fb)
 {
 	struct cirrus_framebuffer *cirrus_fb = to_cirrus_framebuffer(fb);
+<<<<<<< HEAD
 	if (cirrus_fb->obj)
 		drm_gem_object_unreference_unlocked(cirrus_fb->obj);
+=======
+
+	drm_gem_object_unreference_unlocked(cirrus_fb->obj);
+>>>>>>> v4.9.227
 	drm_framebuffer_cleanup(fb);
 	kfree(fb);
 }
@@ -29,7 +34,11 @@ static const struct drm_framebuffer_funcs cirrus_fb_funcs = {
 
 int cirrus_framebuffer_init(struct drm_device *dev,
 			    struct cirrus_framebuffer *gfb,
+<<<<<<< HEAD
 			    struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+			    const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 			    struct drm_gem_object *obj)
 {
 	int ret;
@@ -47,7 +56,11 @@ int cirrus_framebuffer_init(struct drm_device *dev,
 static struct drm_framebuffer *
 cirrus_user_framebuffer_create(struct drm_device *dev,
 			       struct drm_file *filp,
+<<<<<<< HEAD
 			       struct drm_mode_fb_cmd2 *mode_cmd)
+=======
+			       const struct drm_mode_fb_cmd2 *mode_cmd)
+>>>>>>> v4.9.227
 {
 	struct cirrus_device *cdev = dev->dev_private;
 	struct drm_gem_object *obj;
@@ -61,7 +74,11 @@ cirrus_user_framebuffer_create(struct drm_device *dev,
 				      bpp, mode_cmd->pitches[0]))
 		return ERR_PTR(-EINVAL);
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, filp, mode_cmd->handles[0]);
+=======
+	obj = drm_gem_object_lookup(filp, mode_cmd->handles[0]);
+>>>>>>> v4.9.227
 	if (obj == NULL)
 		return ERR_PTR(-ENOENT);
 
@@ -185,14 +202,31 @@ int cirrus_driver_load(struct drm_device *dev, unsigned long flags)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * cirrus_modeset_init() is initializing/registering the emulated fbdev
+	 * and DRM internals can access/test some of the fields in
+	 * mode_config->funcs as part of the fbdev registration process.
+	 * Make sure dev->mode_config.funcs is properly set to avoid
+	 * dereferencing a NULL pointer.
+	 * FIXME: mode_config.funcs assignment should probably be done in
+	 * cirrus_modeset_init() (that's a common pattern seen in other DRM
+	 * drivers).
+	 */
+	dev->mode_config.funcs = &cirrus_mode_funcs;
+>>>>>>> v4.9.227
 	r = cirrus_modeset_init(cdev);
 	if (r) {
 		dev_err(&dev->pdev->dev, "Fatal error during modeset init: %d\n", r);
 		goto out;
 	}
 
+<<<<<<< HEAD
 	dev->mode_config.funcs = (void *)&cirrus_mode_funcs;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 out:
 	cirrus_driver_unload(dev);
@@ -295,7 +329,11 @@ cirrus_dumb_mmap_offset(struct drm_file *file,
 	struct drm_gem_object *obj;
 	struct cirrus_bo *bo;
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file, handle);
+=======
+	obj = drm_gem_object_lookup(file, handle);
+>>>>>>> v4.9.227
 	if (obj == NULL)
 		return -ENOENT;
 

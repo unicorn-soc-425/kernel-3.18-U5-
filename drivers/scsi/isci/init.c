@@ -158,10 +158,15 @@ static struct scsi_host_template isci_sht = {
 	.scan_finished			= isci_host_scan_finished,
 	.scan_start			= isci_host_start,
 	.change_queue_depth		= sas_change_queue_depth,
+<<<<<<< HEAD
 	.change_queue_type		= sas_change_queue_type,
 	.bios_param			= sas_bios_param,
 	.can_queue			= ISCI_CAN_QUEUE_VAL,
 	.cmd_per_lun			= 1,
+=======
+	.bios_param			= sas_bios_param,
+	.can_queue			= ISCI_CAN_QUEUE_VAL,
+>>>>>>> v4.9.227
 	.this_id			= -1,
 	.sg_tablesize			= SG_ALL,
 	.max_sectors			= SCSI_DEFAULT_MAX_SECTORS,
@@ -172,6 +177,10 @@ static struct scsi_host_template isci_sht = {
 	.target_destroy			= sas_target_destroy,
 	.ioctl				= sas_ioctl,
 	.shost_attrs			= isci_host_attrs,
+<<<<<<< HEAD
+=======
+	.track_queue_depth		= 1,
+>>>>>>> v4.9.227
 };
 
 static struct sas_domain_function_template isci_transport_ops  = {
@@ -258,8 +267,11 @@ static int isci_register_sas_ha(struct isci_host *isci_host)
 	sas_ha->sas_port = sas_ports;
 	sas_ha->num_phys = SCI_MAX_PHYS;
 
+<<<<<<< HEAD
 	sas_ha->lldd_queue_size = ISCI_CAN_QUEUE_VAL;
 	sas_ha->lldd_max_execute_num = 1;
+=======
+>>>>>>> v4.9.227
 	sas_ha->strict_wide_ports = 1;
 
 	sas_register_ha(sas_ha);
@@ -274,11 +286,19 @@ static void isci_unregister(struct isci_host *isci_host)
 	if (!isci_host)
 		return;
 
+<<<<<<< HEAD
 	sas_unregister_ha(&isci_host->sas_ha);
 
 	shost = to_shost(isci_host);
 	sas_remove_host(shost);
 	scsi_remove_host(shost);
+=======
+	shost = to_shost(isci_host);
+	scsi_remove_host(shost);
+	sas_unregister_ha(&isci_host->sas_ha);
+
+	sas_remove_host(shost);
+>>>>>>> v4.9.227
 	scsi_host_put(shost);
 }
 
@@ -598,6 +618,16 @@ static struct isci_host *isci_host_alloc(struct pci_dev *pdev, int id)
 	shost->max_lun = ~0;
 	shost->max_cmd_len = MAX_COMMAND_SIZE;
 
+<<<<<<< HEAD
+=======
+	/* turn on DIF support */
+	scsi_host_set_prot(shost,
+			   SHOST_DIF_TYPE1_PROTECTION |
+			   SHOST_DIF_TYPE2_PROTECTION |
+			   SHOST_DIF_TYPE3_PROTECTION);
+	scsi_host_set_guard(shost, SHOST_DIX_GUARD_CRC);
+
+>>>>>>> v4.9.227
 	err = scsi_add_host(shost, &pdev->dev);
 	if (err)
 		goto err_shost;
@@ -685,6 +715,7 @@ static int isci_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 			goto err_host_alloc;
 		}
 		pci_info->hosts[i] = h;
+<<<<<<< HEAD
 
 		/* turn on DIF support */
 		scsi_host_set_prot(to_shost(h),
@@ -692,6 +723,8 @@ static int isci_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 				   SHOST_DIF_TYPE2_PROTECTION |
 				   SHOST_DIF_TYPE3_PROTECTION);
 		scsi_host_set_guard(to_shost(h), SHOST_DIX_GUARD_CRC);
+=======
+>>>>>>> v4.9.227
 	}
 
 	err = isci_setup_interrupts(pdev);

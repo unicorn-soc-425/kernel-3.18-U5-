@@ -109,7 +109,11 @@ struct pch_gpio {
 static void pch_gpio_set(struct gpio_chip *gpio, unsigned nr, int val)
 {
 	u32 reg_val;
+<<<<<<< HEAD
 	struct pch_gpio *chip =	container_of(gpio, struct pch_gpio, gpio);
+=======
+	struct pch_gpio *chip =	gpiochip_get_data(gpio);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	spin_lock_irqsave(&chip->spinlock, flags);
@@ -125,15 +129,25 @@ static void pch_gpio_set(struct gpio_chip *gpio, unsigned nr, int val)
 
 static int pch_gpio_get(struct gpio_chip *gpio, unsigned nr)
 {
+<<<<<<< HEAD
 	struct pch_gpio *chip =	container_of(gpio, struct pch_gpio, gpio);
 
 	return ioread32(&chip->reg->pi) & (1 << nr);
+=======
+	struct pch_gpio *chip =	gpiochip_get_data(gpio);
+
+	return (ioread32(&chip->reg->pi) >> nr) & 1;
+>>>>>>> v4.9.227
 }
 
 static int pch_gpio_direction_output(struct gpio_chip *gpio, unsigned nr,
 				     int val)
 {
+<<<<<<< HEAD
 	struct pch_gpio *chip =	container_of(gpio, struct pch_gpio, gpio);
+=======
+	struct pch_gpio *chip =	gpiochip_get_data(gpio);
+>>>>>>> v4.9.227
 	u32 pm;
 	u32 reg_val;
 	unsigned long flags;
@@ -158,7 +172,11 @@ static int pch_gpio_direction_output(struct gpio_chip *gpio, unsigned nr,
 
 static int pch_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 {
+<<<<<<< HEAD
 	struct pch_gpio *chip =	container_of(gpio, struct pch_gpio, gpio);
+=======
+	struct pch_gpio *chip =	gpiochip_get_data(gpio);
+>>>>>>> v4.9.227
 	u32 pm;
 	unsigned long flags;
 
@@ -211,7 +229,11 @@ static void pch_gpio_restore_reg_conf(struct pch_gpio *chip)
 
 static int pch_gpio_to_irq(struct gpio_chip *gpio, unsigned offset)
 {
+<<<<<<< HEAD
 	struct pch_gpio *chip = container_of(gpio, struct pch_gpio, gpio);
+=======
+	struct pch_gpio *chip = gpiochip_get_data(gpio);
+>>>>>>> v4.9.227
 	return chip->irq_base + offset;
 }
 
@@ -220,7 +242,11 @@ static void pch_gpio_setup(struct pch_gpio *chip)
 	struct gpio_chip *gpio = &chip->gpio;
 
 	gpio->label = dev_name(chip->dev);
+<<<<<<< HEAD
 	gpio->dev = chip->dev;
+=======
+	gpio->parent = chip->dev;
+>>>>>>> v4.9.227
 	gpio->owner = THIS_MODULE;
 	gpio->direction_input = pch_gpio_direction_input;
 	gpio->get = pch_gpio_get;
@@ -281,9 +307,15 @@ static int pch_irq_type(struct irq_data *d, unsigned int type)
 
 	/* And the handler */
 	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
+<<<<<<< HEAD
 		__irq_set_handler_locked(d->irq, handle_level_irq);
 	else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
 		__irq_set_handler_locked(d->irq, handle_edge_irq);
+=======
+		irq_set_handler_locked(d, handle_level_irq);
+	else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
+		irq_set_handler_locked(d, handle_edge_irq);
+>>>>>>> v4.9.227
 
 unlock:
 	spin_unlock_irqrestore(&chip->spinlock, flags);
@@ -394,7 +426,14 @@ static int pch_gpio_probe(struct pci_dev *pdev,
 	pci_set_drvdata(pdev, chip);
 	spin_lock_init(&chip->spinlock);
 	pch_gpio_setup(chip);
+<<<<<<< HEAD
 	ret = gpiochip_add(&chip->gpio);
+=======
+#ifdef CONFIG_OF_GPIO
+	chip->gpio.of_node = pdev->dev.of_node;
+#endif
+	ret = gpiochip_add_data(&chip->gpio, chip);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(&pdev->dev, "PCH gpio: Failed to register GPIO\n");
 		goto err_gpiochip_add;

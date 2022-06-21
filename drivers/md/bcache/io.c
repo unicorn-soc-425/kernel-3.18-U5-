@@ -11,6 +11,7 @@
 
 #include <linux/blkdev.h>
 
+<<<<<<< HEAD
 static unsigned bch_bio_max_sectors(struct bio *bio)
 {
 	struct request_queue *q = bdev_get_queue(bio->bi_bdev);
@@ -109,6 +110,8 @@ submit:
 	generic_make_request(bio);
 }
 
+=======
+>>>>>>> v4.9.227
 /* Bios with headers */
 
 void bch_bbio_free(struct bio *bio, struct cache_set *c)
@@ -123,7 +126,10 @@ struct bio *bch_bbio_alloc(struct cache_set *c)
 	struct bio *bio = &b->bio;
 
 	bio_init(bio);
+<<<<<<< HEAD
 	bio->bi_flags		|= BIO_POOL_NONE << BIO_POOL_OFFSET;
+=======
+>>>>>>> v4.9.227
 	bio->bi_max_vecs	 = bucket_pages(c);
 	bio->bi_io_vec		 = bio->bi_inline_vecs;
 
@@ -138,7 +144,11 @@ void __bch_submit_bbio(struct bio *bio, struct cache_set *c)
 	bio->bi_bdev		= PTR_CACHE(c, &b->key, 0)->bdev;
 
 	b->submit_time_us = local_clock_us();
+<<<<<<< HEAD
 	closure_bio_submit(bio, bio->bi_private, PTR_CACHE(c, &b->key, 0));
+=======
+	closure_bio_submit(bio, bio->bi_private);
+>>>>>>> v4.9.227
 }
 
 void bch_submit_bbio(struct bio *bio, struct cache_set *c,
@@ -209,7 +219,11 @@ void bch_bbio_count_io_errors(struct cache_set *c, struct bio *bio,
 	struct bbio *b = container_of(bio, struct bbio, bio);
 	struct cache *ca = PTR_CACHE(c, &b->key, 0);
 
+<<<<<<< HEAD
 	unsigned threshold = bio->bi_rw & REQ_WRITE
+=======
+	unsigned threshold = op_is_write(bio_op(bio))
+>>>>>>> v4.9.227
 		? c->congested_write_threshold_us
 		: c->congested_read_threshold_us;
 

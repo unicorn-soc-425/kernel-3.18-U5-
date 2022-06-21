@@ -56,7 +56,12 @@ static inline int red_use_harddrop(struct red_sched_data *q)
 	return q->flags & TC_RED_HARDDROP;
 }
 
+<<<<<<< HEAD
 static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch)
+=======
+static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+		       struct sk_buff **to_free)
+>>>>>>> v4.9.227
 {
 	struct red_sched_data *q = qdisc_priv(sch);
 	struct Qdisc *child = q->qdisc;
@@ -95,8 +100,14 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		break;
 	}
 
+<<<<<<< HEAD
 	ret = qdisc_enqueue(skb, child);
 	if (likely(ret == NET_XMIT_SUCCESS)) {
+=======
+	ret = qdisc_enqueue(skb, child, to_free);
+	if (likely(ret == NET_XMIT_SUCCESS)) {
+		qdisc_qstats_backlog_inc(sch, skb);
+>>>>>>> v4.9.227
 		sch->q.qlen++;
 	} else if (net_xmit_drop_count(ret)) {
 		q->stats.pdrop++;
@@ -105,7 +116,11 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	return ret;
 
 congestion_drop:
+<<<<<<< HEAD
 	qdisc_drop(skb, sch);
+=======
+	qdisc_drop(skb, sch, to_free);
+>>>>>>> v4.9.227
 	return NET_XMIT_CN;
 }
 
@@ -118,6 +133,10 @@ static struct sk_buff *red_dequeue(struct Qdisc *sch)
 	skb = child->dequeue(child);
 	if (skb) {
 		qdisc_bstats_update(sch, skb);
+<<<<<<< HEAD
+=======
+		qdisc_qstats_backlog_dec(sch, skb);
+>>>>>>> v4.9.227
 		sch->q.qlen--;
 	} else {
 		if (!red_is_idling(&q->vars))
@@ -134,6 +153,7 @@ static struct sk_buff *red_peek(struct Qdisc *sch)
 	return child->ops->peek(child);
 }
 
+<<<<<<< HEAD
 static unsigned int red_drop(struct Qdisc *sch)
 {
 	struct red_sched_data *q = qdisc_priv(sch);
@@ -153,11 +173,17 @@ static unsigned int red_drop(struct Qdisc *sch)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static void red_reset(struct Qdisc *sch)
 {
 	struct red_sched_data *q = qdisc_priv(sch);
 
 	qdisc_reset(q->qdisc);
+<<<<<<< HEAD
+=======
+	sch->qstats.backlog = 0;
+>>>>>>> v4.9.227
 	sch->q.qlen = 0;
 	red_restart(&q->vars);
 }
@@ -363,7 +389,10 @@ static struct Qdisc_ops red_qdisc_ops __read_mostly = {
 	.enqueue	=	red_enqueue,
 	.dequeue	=	red_dequeue,
 	.peek		=	red_peek,
+<<<<<<< HEAD
 	.drop		=	red_drop,
+=======
+>>>>>>> v4.9.227
 	.init		=	red_init,
 	.reset		=	red_reset,
 	.destroy	=	red_destroy,

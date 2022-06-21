@@ -62,6 +62,10 @@
 #define PMD_SECT_WT		(_AT(pmdval_t, 2) << 2)	/* normal inner write-through */
 #define PMD_SECT_WB		(_AT(pmdval_t, 3) << 2)	/* normal inner write-back */
 #define PMD_SECT_WBWA		(_AT(pmdval_t, 7) << 2)	/* normal inner write-alloc */
+<<<<<<< HEAD
+=======
+#define PMD_SECT_CACHE_MASK	(_AT(pmdval_t, 7) << 2)
+>>>>>>> v4.9.227
 
 /*
  * + Level 3 descriptor (PTE)

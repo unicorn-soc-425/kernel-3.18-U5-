@@ -904,7 +904,11 @@ static void init_registers(struct net_device *dev)
 	}
 #elif defined(__powerpc__) || defined(__i386__) || defined(__alpha__) || defined(__ia64__) || defined(__x86_64__)
 	i |= 0xE000;
+<<<<<<< HEAD
 #elif defined(CONFIG_SPARC) || defined (CONFIG_PARISC)
+=======
+#elif defined(CONFIG_SPARC) || defined (CONFIG_PARISC) || defined(CONFIG_ARM)
+>>>>>>> v4.9.227
 	i |= 0x4800;
 #else
 	dev_warn(&dev->dev, "unknown CPU architecture, using default csr0 setting\n");
@@ -966,7 +970,11 @@ static void tx_timeout(struct net_device *dev)
 	enable_irq(irq);
 
 	netif_wake_queue(dev);
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	np->stats.tx_errors++;
 }
 

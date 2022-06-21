@@ -853,7 +853,11 @@ static int sta350_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			ret = regulator_bulk_enable(
 				ARRAY_SIZE(sta350->supplies),
 				sta350->supplies);
@@ -890,7 +894,10 @@ static int sta350_set_bias_level(struct snd_soc_codec *codec,
 				       sta350->supplies);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -912,6 +919,7 @@ static struct snd_soc_dai_driver sta350_dai = {
 	.ops = &sta350_dai_ops,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int sta350_suspend(struct snd_soc_codec *codec)
 {
@@ -929,6 +937,8 @@ static int sta350_resume(struct snd_soc_codec *codec)
 #define sta350_resume NULL
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int sta350_probe(struct snd_soc_codec *codec)
 {
 	struct sta350_priv *sta350 = snd_soc_codec_get_drvdata(codec);
@@ -1054,7 +1064,11 @@ static int sta350_probe(struct snd_soc_codec *codec)
 	sta350->coef_shadow[60] = 0x400000;
 	sta350->coef_shadow[61] = 0x400000;
 
+<<<<<<< HEAD
 	sta350_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
+=======
+	snd_soc_codec_force_bias_level(codec, SND_SOC_BIAS_STANDBY);
+>>>>>>> v4.9.227
 	/* Bias level configuration will have done an extra enable */
 	regulator_bulk_disable(ARRAY_SIZE(sta350->supplies), sta350->supplies);
 
@@ -1065,7 +1079,10 @@ static int sta350_remove(struct snd_soc_codec *codec)
 {
 	struct sta350_priv *sta350 = snd_soc_codec_get_drvdata(codec);
 
+<<<<<<< HEAD
 	sta350_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+>>>>>>> v4.9.227
 	regulator_bulk_disable(ARRAY_SIZE(sta350->supplies), sta350->supplies);
 
 	return 0;
@@ -1074,6 +1091,7 @@ static int sta350_remove(struct snd_soc_codec *codec)
 static const struct snd_soc_codec_driver sta350_codec = {
 	.probe =		sta350_probe,
 	.remove =		sta350_remove,
+<<<<<<< HEAD
 	.suspend =		sta350_suspend,
 	.resume =		sta350_resume,
 	.set_bias_level =	sta350_set_bias_level,
@@ -1083,6 +1101,18 @@ static const struct snd_soc_codec_driver sta350_codec = {
 	.num_dapm_widgets =	ARRAY_SIZE(sta350_dapm_widgets),
 	.dapm_routes =		sta350_dapm_routes,
 	.num_dapm_routes =	ARRAY_SIZE(sta350_dapm_routes),
+=======
+	.set_bias_level =	sta350_set_bias_level,
+	.suspend_bias_off =	true,
+	.component_driver = {
+		.controls =		sta350_snd_controls,
+		.num_controls =		ARRAY_SIZE(sta350_snd_controls),
+		.dapm_widgets =		sta350_dapm_widgets,
+		.num_dapm_widgets =	ARRAY_SIZE(sta350_dapm_widgets),
+		.dapm_routes =		sta350_dapm_routes,
+		.num_dapm_routes =	ARRAY_SIZE(sta350_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config sta350_regmap = {
@@ -1232,6 +1262,7 @@ static int sta350_i2c_probe(struct i2c_client *i2c,
 #endif
 
 	/* GPIOs */
+<<<<<<< HEAD
 	sta350->gpiod_nreset = devm_gpiod_get(dev, "reset");
 	if (IS_ERR(sta350->gpiod_nreset)) {
 		ret = PTR_ERR(sta350->gpiod_nreset);
@@ -1253,6 +1284,17 @@ static int sta350_i2c_probe(struct i2c_client *i2c,
 	} else {
 		gpiod_direction_output(sta350->gpiod_power_down, 0);
 	}
+=======
+	sta350->gpiod_nreset = devm_gpiod_get_optional(dev, "reset",
+						       GPIOD_OUT_LOW);
+	if (IS_ERR(sta350->gpiod_nreset))
+		return PTR_ERR(sta350->gpiod_nreset);
+
+	sta350->gpiod_power_down = devm_gpiod_get_optional(dev, "power-down",
+							   GPIOD_OUT_LOW);
+	if (IS_ERR(sta350->gpiod_power_down))
+		return PTR_ERR(sta350->gpiod_power_down);
+>>>>>>> v4.9.227
 
 	/* regulators */
 	for (i = 0; i < ARRAY_SIZE(sta350->supplies); i++)
@@ -1296,7 +1338,10 @@ MODULE_DEVICE_TABLE(i2c, sta350_i2c_id);
 static struct i2c_driver sta350_i2c_driver = {
 	.driver = {
 		.name = "sta350",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(st350_dt_ids),
 	},
 	.probe =    sta350_i2c_probe,

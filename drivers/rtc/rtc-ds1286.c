@@ -16,12 +16,19 @@
 #include <linux/rtc.h>
 #include <linux/platform_device.h>
 #include <linux/bcd.h>
+<<<<<<< HEAD
 #include <linux/ds1286.h>
 #include <linux/io.h>
 #include <linux/slab.h>
 
 #define DRV_VERSION		"1.0"
 
+=======
+#include <linux/rtc/ds1286.h>
+#include <linux/io.h>
+#include <linux/slab.h>
+
+>>>>>>> v4.9.227
 struct ds1286_priv {
 	struct rtc_device *rtc;
 	u32 __iomem *rtcregs;
@@ -332,13 +339,20 @@ static int ds1286_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct ds1286_priv *priv;
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -ENODEV;
+=======
+>>>>>>> v4.9.227
 	priv = devm_kzalloc(&pdev->dev, sizeof(struct ds1286_priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> v4.9.227
 	priv->rtcregs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(priv->rtcregs))
 		return PTR_ERR(priv->rtcregs);
@@ -356,7 +370,10 @@ static int ds1286_probe(struct platform_device *pdev)
 static struct platform_driver ds1286_platform_driver = {
 	.driver		= {
 		.name	= "rtc-ds1286",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ds1286_probe,
 };
@@ -366,5 +383,8 @@ module_platform_driver(ds1286_platform_driver);
 MODULE_AUTHOR("Thomas Bogendoerfer <tsbogend@alpha.franken.de>");
 MODULE_DESCRIPTION("DS1286 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227
 MODULE_ALIAS("platform:rtc-ds1286");

@@ -1,4 +1,9 @@
 /*
+<<<<<<< HEAD
+=======
+ * BGRT boot graphic support
+ * Authors: Matthew Garrett, Josh Triplett <josh@joshtriplett.org>
+>>>>>>> v4.9.227
  * Copyright 2012 Red Hat, Inc <mjg@redhat.com>
  * Copyright 2012 Intel Corporation
  *
@@ -8,7 +13,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/device.h>
 #include <linux/sysfs.h>
@@ -103,9 +111,13 @@ out_kobject:
 	kobject_put(bgrt_kobj);
 	return ret;
 }
+<<<<<<< HEAD
 
 module_init(bgrt_init);
 
 MODULE_AUTHOR("Matthew Garrett, Josh Triplett <josh@joshtriplett.org>");
 MODULE_DESCRIPTION("BGRT boot graphic support");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(bgrt_init);
+>>>>>>> v4.9.227

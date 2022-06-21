@@ -92,7 +92,11 @@
 #define ATOM_WS_AND_MASK	0x45
 #define ATOM_WS_FB_WINDOW	0x46
 #define ATOM_WS_ATTRIBUTES	0x47
+<<<<<<< HEAD
 #define ATOM_WS_REGPTR  	0x48
+=======
+#define ATOM_WS_REGPTR		0x48
+>>>>>>> v4.9.227
 
 #define ATOM_IIO_NOP		0
 #define ATOM_IIO_START		1

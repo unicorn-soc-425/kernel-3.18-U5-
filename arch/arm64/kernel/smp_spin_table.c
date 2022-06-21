@@ -28,6 +28,13 @@
 #include <asm/io.h>
 #include <asm/smp_plat.h>
 
+<<<<<<< HEAD
+=======
+extern void secondary_holding_pen(void);
+volatile unsigned long __section(".mmuoff.data.read")
+secondary_holding_pen_release = INVALID_HWID;
+
+>>>>>>> v4.9.227
 static phys_addr_t cpu_release_addr[NR_CPUS];
 
 /*
@@ -46,6 +53,7 @@ static void write_pen_release(u64 val)
 }
 
 
+<<<<<<< HEAD
 static int smp_spin_table_cpu_init(struct device_node *dn, unsigned int cpu)
 {
 	/*
@@ -60,6 +68,29 @@ static int smp_spin_table_cpu_init(struct device_node *dn, unsigned int cpu)
 	}
 
 	return 0;
+=======
+static int smp_spin_table_cpu_init(unsigned int cpu)
+{
+	struct device_node *dn;
+	int ret;
+
+	dn = of_get_cpu_node(cpu, NULL);
+	if (!dn)
+		return -ENODEV;
+
+	/*
+	 * Determine the address from which the CPU is polling.
+	 */
+	ret = of_property_read_u64(dn, "cpu-release-addr",
+				   &cpu_release_addr[cpu]);
+	if (ret)
+		pr_err("CPU %d: missing or invalid cpu-release-addr property\n",
+		       cpu);
+
+	of_node_put(dn);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int smp_spin_table_cpu_prepare(unsigned int cpu)
@@ -116,11 +147,18 @@ static int smp_spin_table_cpu_boot(unsigned int cpu)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct cpu_operations smp_spin_table_ops = {
+=======
+const struct cpu_operations smp_spin_table_ops = {
+>>>>>>> v4.9.227
 	.name		= "spin-table",
 	.cpu_init	= smp_spin_table_cpu_init,
 	.cpu_prepare	= smp_spin_table_cpu_prepare,
 	.cpu_boot	= smp_spin_table_cpu_boot,
 };
+<<<<<<< HEAD
 CPU_METHOD_OF_DECLARE(spin_table,
 		"spin-table", &smp_spin_table_ops);
+=======
+>>>>>>> v4.9.227

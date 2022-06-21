@@ -27,13 +27,19 @@
 #include <linux/spinlock.h>
 #include <linux/list.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
+=======
+>>>>>>> v4.9.227
 
 #include <target/target_core_base.h>
 #include <target/target_core_backend.h>
 #include <target/target_core_fabric.h>
+<<<<<<< HEAD
 #include <target/target_core_configfs.h>
+=======
+>>>>>>> v4.9.227
 
 #include "target_core_internal.h"
 #include "target_core_alua.h"
@@ -131,24 +137,39 @@ static bool __target_check_io_state(struct se_cmd *se_cmd,
 	 */
 	spin_lock(&se_cmd->t_state_lock);
 	if (se_cmd->transport_state & (CMD_T_COMPLETE | CMD_T_FABRIC_STOP)) {
+<<<<<<< HEAD
 		pr_debug("Attempted to abort io tag: %u already complete or"
 			" fabric stop, skipping\n",
 			se_cmd->se_tfo->get_task_tag(se_cmd));
+=======
+		pr_debug("Attempted to abort io tag: %llu already complete or"
+			" fabric stop, skipping\n", se_cmd->tag);
+>>>>>>> v4.9.227
 		spin_unlock(&se_cmd->t_state_lock);
 		return false;
 	}
 	if (se_cmd->transport_state & CMD_T_PRE_EXECUTE) {
 		if (se_cmd->scsi_status) {
+<<<<<<< HEAD
 			pr_debug("Attempted to abort io tag: %u early failure"
 				 " status: 0x%02x\n", se_cmd->se_tfo->get_task_tag(se_cmd),
+=======
+			pr_debug("Attempted to abort io tag: %llu early failure"
+				 " status: 0x%02x\n", se_cmd->tag,
+>>>>>>> v4.9.227
 				 se_cmd->scsi_status);
 			spin_unlock(&se_cmd->t_state_lock);
 			return false;
 		}
 	}
 	if (sess->sess_tearing_down || se_cmd->cmd_wait_set) {
+<<<<<<< HEAD
 		pr_debug("Attempted to abort io tag: %u already shutdown,"
 			" skipping\n", se_cmd->se_tfo->get_task_tag(se_cmd));
+=======
+		pr_debug("Attempted to abort io tag: %llu already shutdown,"
+			" skipping\n", se_cmd->tag);
+>>>>>>> v4.9.227
 		spin_unlock(&se_cmd->t_state_lock);
 		return false;
 	}
@@ -169,7 +190,11 @@ void core_tmr_abort_task(
 {
 	struct se_cmd *se_cmd;
 	unsigned long flags;
+<<<<<<< HEAD
 	int ref_tag;
+=======
+	u64 ref_tag;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&se_sess->sess_cmd_lock, flags);
 	list_for_each_entry(se_cmd, &se_sess->sess_cmd_list, se_cmd_list) {
@@ -177,6 +202,7 @@ void core_tmr_abort_task(
 		if (dev != se_cmd->se_dev)
 			continue;
 
+<<<<<<< HEAD
 		/* skip se_cmd associated with tmr */
 		if (tmr->task_cmd == se_cmd)
 			continue;
@@ -186,13 +212,27 @@ void core_tmr_abort_task(
 			continue;
 
 		printk("ABORT_TASK: Found referenced %s task_tag: %u\n",
+=======
+		/* skip task management functions, including tmr->task_cmd */
+		if (se_cmd->se_cmd_flags & SCF_SCSI_TMR_CDB)
+			continue;
+
+		ref_tag = se_cmd->tag;
+		if (tmr->ref_task_tag != ref_tag)
+			continue;
+
+		printk("ABORT_TASK: Found referenced %s task_tag: %llu\n",
+>>>>>>> v4.9.227
 			se_cmd->se_tfo->get_fabric_name(), ref_tag);
 
 		if (!__target_check_io_state(se_cmd, se_sess, 0)) {
 			spin_unlock_irqrestore(&se_sess->sess_cmd_lock, flags);
 			goto out;
 		}
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 		list_del_init(&se_cmd->se_cmd_list);
 		spin_unlock_irqrestore(&se_sess->sess_cmd_lock, flags);
 
@@ -203,14 +243,22 @@ void core_tmr_abort_task(
 			target_put_sess_cmd(se_cmd);
 
 		printk("ABORT_TASK: Sending TMR_FUNCTION_COMPLETE for"
+<<<<<<< HEAD
 				" ref_tag: %d\n", ref_tag);
+=======
+				" ref_tag: %llu\n", ref_tag);
+>>>>>>> v4.9.227
 		tmr->response = TMR_FUNCTION_COMPLETE;
 		return;
 	}
 	spin_unlock_irqrestore(&se_sess->sess_cmd_lock, flags);
 
 out:
+<<<<<<< HEAD
 	printk("ABORT_TASK: Sending TMR_TASK_DOES_NOT_EXIST for ref_tag: %d\n",
+=======
+	printk("ABORT_TASK: Sending TMR_TASK_DOES_NOT_EXIST for ref_tag: %lld\n",
+>>>>>>> v4.9.227
 			tmr->ref_task_tag);
 	tmr->response = TMR_TASK_DOES_NOT_EXIST;
 }
@@ -246,7 +294,11 @@ static void core_tmr_drain_tmr_list(
 		/*
 		 * If this function was called with a valid pr_res_key
 		 * parameter (eg: for PROUT PREEMPT_AND_ABORT service action
+<<<<<<< HEAD
 		 * skip non regisration key matching TMRs.
+=======
+		 * skip non registration key matching TMRs.
+>>>>>>> v4.9.227
 		 */
 		if (target_check_cdb_and_preempt(preempt_and_abort_list, cmd))
 			continue;
@@ -375,6 +427,7 @@ static void core_tmr_drain_state_list(
 		list_del_init(&cmd->state_list);
 
 		pr_debug("LUN_RESET: %s cmd: %p"
+<<<<<<< HEAD
 			" ITT/CmdSN: 0x%08x/0x%08x, i_state: %d, t_state: %d"
 			"cdb: 0x%02x\n",
 			(preempt_and_abort_list) ? "Preempt" : "", cmd,
@@ -385,6 +438,18 @@ static void core_tmr_drain_state_list(
 			" -- CMD_T_ACTIVE: %d"
 			" CMD_T_STOP: %d CMD_T_SENT: %d\n",
 			cmd->se_tfo->get_task_tag(cmd), cmd->pr_res_key,
+=======
+			" ITT/CmdSN: 0x%08llx/0x%08x, i_state: %d, t_state: %d"
+			"cdb: 0x%02x\n",
+			(preempt_and_abort_list) ? "Preempt" : "", cmd,
+			cmd->tag, 0,
+			cmd->se_tfo->get_cmd_state(cmd), cmd->t_state,
+			cmd->t_task_cdb[0]);
+		pr_debug("LUN_RESET: ITT[0x%08llx] - pr_res_key: 0x%016Lx"
+			" -- CMD_T_ACTIVE: %d"
+			" CMD_T_STOP: %d CMD_T_SENT: %d\n",
+			cmd->tag, cmd->pr_res_key,
+>>>>>>> v4.9.227
 			(cmd->transport_state & CMD_T_ACTIVE) != 0,
 			(cmd->transport_state & CMD_T_STOP) != 0,
 			(cmd->transport_state & CMD_T_SENT) != 0);

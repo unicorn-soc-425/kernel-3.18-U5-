@@ -25,7 +25,11 @@
 #include <drm/drmP.h>
 #include <drm/drm_dp_helper.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_connector.h"
 #include "nouveau_encoder.h"
 #include "nouveau_crtc.h"

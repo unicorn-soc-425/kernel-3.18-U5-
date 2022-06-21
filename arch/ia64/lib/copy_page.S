@@ -16,6 +16,10 @@
  */
 #include <asm/asmmacro.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 #define PIPE_DEPTH	3
 #define EPI		p[PIPE_DEPTH-1]
@@ -96,3 +100,7 @@ GLOBAL_ENTRY(copy_page)
 	mov ar.lc=saved_lc
 	br.ret.sptk.many rp
 END(copy_page)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(copy_page)
+>>>>>>> v4.9.227

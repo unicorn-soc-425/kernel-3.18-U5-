@@ -14,6 +14,7 @@
 #include <linux/pm_clock.h>
 #include <linux/platform_device.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 static int davinci_pm_runtime_suspend(struct device *dev)
 {
@@ -47,6 +48,11 @@ static struct dev_pm_domain davinci_pm_domain = {
 	.ops = {
 		SET_RUNTIME_PM_OPS(davinci_pm_runtime_suspend,
 				   davinci_pm_runtime_resume, NULL)
+=======
+static struct dev_pm_domain davinci_pm_domain = {
+	.ops = {
+		USE_PM_CLK_RUNTIME_OPS
+>>>>>>> v4.9.227
 		USE_PLATFORM_PM_SLEEP_OPS
 	},
 };

@@ -16,6 +16,7 @@
 #include <asm/processor.h>
 #include <asm/errno.h>
 #include <asm/ppc_asm.h>
+<<<<<<< HEAD
 
 /*
  * ip_fast_csum(r3=buf, r4=len) -- Optimized for IP header
@@ -64,14 +65,23 @@ _GLOBAL(csum_tcpudp_magic)
 	not	r3,r3
 	srwi	r3,r3,16
 	blr
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 /*
  * Computes the checksum of a memory block at buff, length len,
  * and adds in "sum" (32-bit).
  *
+<<<<<<< HEAD
  * csum_partial(r3=buff, r4=len, r5=sum)
  */
 _GLOBAL(csum_partial)
+=======
+ * __csum_partial(r3=buff, r4=len, r5=sum)
+ */
+_GLOBAL(__csum_partial)
+>>>>>>> v4.9.227
 	addic	r0,r5,0			/* clear carry */
 
 	srdi.	r6,r4,3			/* less than 8 bytes? */
@@ -122,9 +132,15 @@ _GLOBAL(csum_partial)
 	ld	r11,24(r3)
 
 	/*
+<<<<<<< HEAD
 	 * On POWER6 and POWER7 back to back addes take 2 cycles because of
 	 * the XER dependency. This means the fastest this loop can go is
 	 * 16 cycles per iteration. The scheduling of the loop below has
+=======
+	 * On POWER6 and POWER7 back to back adde instructions take 2 cycles
+	 * because of the XER dependency. This means the fastest this loop can
+	 * go is 16 cycles per iteration. The scheduling of the loop below has
+>>>>>>> v4.9.227
 	 * been shown to hit this on both POWER6 and POWER7.
 	 */
 	.align 5
@@ -224,6 +240,10 @@ _GLOBAL(csum_partial)
 	add	r3,r4,r0
 	srdi	r3,r3,32
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__csum_partial)
+>>>>>>> v4.9.227
 
 
 	.macro srcnr
@@ -323,9 +343,15 @@ source;	ld	r10,16(r3)
 source;	ld	r11,24(r3)
 
 	/*
+<<<<<<< HEAD
 	 * On POWER6 and POWER7 back to back addes take 2 cycles because of
 	 * the XER dependency. This means the fastest this loop can go is
 	 * 16 cycles per iteration. The scheduling of the loop below has
+=======
+	 * On POWER6 and POWER7 back to back adde instructions take 2 cycles
+	 * because of the XER dependency. This means the fastest this loop can
+	 * go is 16 cycles per iteration. The scheduling of the loop below has
+>>>>>>> v4.9.227
 	 * been shown to hit this on both POWER6 and POWER7.
 	 */
 	.align 5
@@ -478,3 +504,7 @@ dstnr;	stb	r6,0(r4)
 	li	r6,-EFAULT
 	stw	r6,0(r8)
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(csum_partial_copy_generic)
+>>>>>>> v4.9.227

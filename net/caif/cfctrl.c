@@ -352,15 +352,25 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 	u8 cmdrsp;
 	u8 cmd;
 	int ret = -1;
+<<<<<<< HEAD
 	u16 tmp16;
 	u8 len;
 	u8 param[255];
 	u8 linkid;
+=======
+	u8 len;
+	u8 param[255];
+	u8 linkid = 0;
+>>>>>>> v4.9.227
 	struct cfctrl *cfctrl = container_obj(layer);
 	struct cfctrl_request_info rsp, *req;
 
 
+<<<<<<< HEAD
 	cfpkt_extr_head(pkt, &cmdrsp, 1);
+=======
+	cmdrsp = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 	cmd = cmdrsp & CFCTRL_CMD_MASK;
 	if (cmd != CFCTRL_CMD_LINK_ERR
 	    && CFCTRL_RSP_BIT != (CFCTRL_RSP_BIT & cmdrsp)
@@ -378,13 +388,20 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 			u8 physlinkid;
 			u8 prio;
 			u8 tmp;
+<<<<<<< HEAD
 			u32 tmp32;
+=======
+>>>>>>> v4.9.227
 			u8 *cp;
 			int i;
 			struct cfctrl_link_param linkparam;
 			memset(&linkparam, 0, sizeof(linkparam));
 
+<<<<<<< HEAD
 			cfpkt_extr_head(pkt, &tmp, 1);
+=======
+			tmp = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 
 			serv = tmp & CFCTRL_SRV_MASK;
 			linkparam.linktype = serv;
@@ -392,13 +409,21 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 			servtype = tmp >> 4;
 			linkparam.chtype = servtype;
 
+<<<<<<< HEAD
 			cfpkt_extr_head(pkt, &tmp, 1);
+=======
+			tmp = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 			physlinkid = tmp & 0x07;
 			prio = tmp >> 3;
 
 			linkparam.priority = prio;
 			linkparam.phyid = physlinkid;
+<<<<<<< HEAD
 			cfpkt_extr_head(pkt, &endpoint, 1);
+=======
+			endpoint = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 			linkparam.endpoint = endpoint & 0x03;
 
 			switch (serv) {
@@ -407,14 +432,22 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 				if (CFCTRL_ERR_BIT & cmdrsp)
 					break;
 				/* Link ID */
+<<<<<<< HEAD
 				cfpkt_extr_head(pkt, &linkid, 1);
 				break;
 			case CFCTRL_SRV_VIDEO:
 				cfpkt_extr_head(pkt, &tmp, 1);
+=======
+				linkid = cfpkt_extr_head_u8(pkt);
+				break;
+			case CFCTRL_SRV_VIDEO:
+				tmp = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 				linkparam.u.video.connid = tmp;
 				if (CFCTRL_ERR_BIT & cmdrsp)
 					break;
 				/* Link ID */
+<<<<<<< HEAD
 				cfpkt_extr_head(pkt, &linkid, 1);
 				break;
 
@@ -426,12 +459,25 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 					break;
 				/* Link ID */
 				cfpkt_extr_head(pkt, &linkid, 1);
+=======
+				linkid = cfpkt_extr_head_u8(pkt);
+				break;
+
+			case CFCTRL_SRV_DATAGRAM:
+				linkparam.u.datagram.connid =
+				    cfpkt_extr_head_u32(pkt);
+				if (CFCTRL_ERR_BIT & cmdrsp)
+					break;
+				/* Link ID */
+				linkid = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 				break;
 			case CFCTRL_SRV_RFM:
 				/* Construct a frame, convert
 				 * DatagramConnectionID
 				 * to network format long and copy it out...
 				 */
+<<<<<<< HEAD
 				cfpkt_extr_head(pkt, &tmp32, 4);
 				linkparam.u.rfm.connid =
 				  le32_to_cpu(tmp32);
@@ -439,13 +485,25 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 				for (cfpkt_extr_head(pkt, &tmp, 1);
 				     cfpkt_more(pkt) && tmp != '\0';
 				     cfpkt_extr_head(pkt, &tmp, 1))
+=======
+				linkparam.u.rfm.connid =
+				    cfpkt_extr_head_u32(pkt);
+				cp = (u8 *) linkparam.u.rfm.volume;
+				for (tmp = cfpkt_extr_head_u8(pkt);
+				     cfpkt_more(pkt) && tmp != '\0';
+				     tmp = cfpkt_extr_head_u8(pkt))
+>>>>>>> v4.9.227
 					*cp++ = tmp;
 				*cp = '\0';
 
 				if (CFCTRL_ERR_BIT & cmdrsp)
 					break;
 				/* Link ID */
+<<<<<<< HEAD
 				cfpkt_extr_head(pkt, &linkid, 1);
+=======
+				linkid = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 
 				break;
 			case CFCTRL_SRV_UTIL:
@@ -454,6 +512,7 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 				 * to network format long and copy it out...
 				 */
 				/* Fifosize KB */
+<<<<<<< HEAD
 				cfpkt_extr_head(pkt, &tmp16, 2);
 				linkparam.u.utility.fifosize_kb =
 				    le16_to_cpu(tmp16);
@@ -461,6 +520,13 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 				cfpkt_extr_head(pkt, &tmp16, 2);
 				linkparam.u.utility.fifosize_bufs =
 				    le16_to_cpu(tmp16);
+=======
+				linkparam.u.utility.fifosize_kb =
+				    cfpkt_extr_head_u16(pkt);
+				/* Fifosize bufs */
+				linkparam.u.utility.fifosize_bufs =
+				    cfpkt_extr_head_u16(pkt);
+>>>>>>> v4.9.227
 				/* name */
 				cp = (u8 *) linkparam.u.utility.name;
 				caif_assert(sizeof(linkparam.u.utility.name)
@@ -468,24 +534,42 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 				for (i = 0;
 				     i < UTILITY_NAME_LENGTH
 				     && cfpkt_more(pkt); i++) {
+<<<<<<< HEAD
 					cfpkt_extr_head(pkt, &tmp, 1);
 					*cp++ = tmp;
 				}
 				/* Length */
 				cfpkt_extr_head(pkt, &len, 1);
+=======
+					tmp = cfpkt_extr_head_u8(pkt);
+					*cp++ = tmp;
+				}
+				/* Length */
+				len = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 				linkparam.u.utility.paramlen = len;
 				/* Param Data */
 				cp = linkparam.u.utility.params;
 				while (cfpkt_more(pkt) && len--) {
+<<<<<<< HEAD
 					cfpkt_extr_head(pkt, &tmp, 1);
+=======
+					tmp = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 					*cp++ = tmp;
 				}
 				if (CFCTRL_ERR_BIT & cmdrsp)
 					break;
 				/* Link ID */
+<<<<<<< HEAD
 				cfpkt_extr_head(pkt, &linkid, 1);
 				/* Length */
 				cfpkt_extr_head(pkt, &len, 1);
+=======
+				linkid = cfpkt_extr_head_u8(pkt);
+				/* Length */
+				len = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 				/* Param Data */
 				cfpkt_extr_head(pkt, &param, len);
 				break;
@@ -522,7 +606,11 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 		}
 		break;
 	case CFCTRL_CMD_LINK_DESTROY:
+<<<<<<< HEAD
 		cfpkt_extr_head(pkt, &linkid, 1);
+=======
+		linkid = cfpkt_extr_head_u8(pkt);
+>>>>>>> v4.9.227
 		cfctrl->res.linkdestroy_rsp(cfctrl->serv.layer.up, linkid);
 		break;
 	case CFCTRL_CMD_LINK_ERR:

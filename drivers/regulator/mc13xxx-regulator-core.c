@@ -194,7 +194,12 @@ struct mc13xxx_regulator_init_data *mc13xxx_parse_regulators_dt(
 					 regulators[i].desc.name)) {
 				p->id = i;
 				p->init_data = of_get_regulator_init_data(
+<<<<<<< HEAD
 							&pdev->dev, child);
+=======
+							&pdev->dev, child,
+							&regulators[i].desc);
+>>>>>>> v4.9.227
 				p->node = child;
 				p++;
 

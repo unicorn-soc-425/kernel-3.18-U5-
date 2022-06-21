@@ -1,7 +1,11 @@
 /*******************************************************************************
 
   Intel 10 Gigabit PCI Express Linux driver
+<<<<<<< HEAD
   Copyright(c) 1999 - 2014 Intel Corporation.
+=======
+  Copyright(c) 1999 - 2016 Intel Corporation.
+>>>>>>> v4.9.227
 
   This program is free software; you can redistribute it and/or modify it
   under the terms and conditions of the GNU General Public License,
@@ -64,7 +68,11 @@ s32 ixgbe_read_eeprom_bit_bang_generic(struct ixgbe_hw *hw, u16 offset,
 				       u16 *data);
 s32 ixgbe_read_eeprom_buffer_bit_bang_generic(struct ixgbe_hw *hw, u16 offset,
 					      u16 words, u16 *data);
+<<<<<<< HEAD
 u16 ixgbe_calc_eeprom_checksum_generic(struct ixgbe_hw *hw);
+=======
+s32 ixgbe_calc_eeprom_checksum_generic(struct ixgbe_hw *hw);
+>>>>>>> v4.9.227
 s32 ixgbe_validate_eeprom_checksum_generic(struct ixgbe_hw *hw,
 					   u16 *checksum_val);
 s32 ixgbe_update_eeprom_checksum_generic(struct ixgbe_hw *hw);
@@ -81,18 +89,31 @@ s32 ixgbe_disable_rx_buff_generic(struct ixgbe_hw *hw);
 s32 ixgbe_enable_rx_buff_generic(struct ixgbe_hw *hw);
 s32 ixgbe_enable_rx_dma_generic(struct ixgbe_hw *hw, u32 regval);
 s32 ixgbe_fc_enable_generic(struct ixgbe_hw *hw);
+<<<<<<< HEAD
 bool ixgbe_device_supports_autoneg_fc(struct ixgbe_hw *hw);
 void ixgbe_fc_autoneg(struct ixgbe_hw *hw);
 
 s32 ixgbe_acquire_swfw_sync(struct ixgbe_hw *hw, u16 mask);
 void ixgbe_release_swfw_sync(struct ixgbe_hw *hw, u16 mask);
+=======
+s32 ixgbe_setup_fc_generic(struct ixgbe_hw *);
+bool ixgbe_device_supports_autoneg_fc(struct ixgbe_hw *hw);
+void ixgbe_fc_autoneg(struct ixgbe_hw *hw);
+
+s32 ixgbe_acquire_swfw_sync(struct ixgbe_hw *hw, u32 mask);
+void ixgbe_release_swfw_sync(struct ixgbe_hw *hw, u32 mask);
+>>>>>>> v4.9.227
 s32 ixgbe_get_san_mac_addr_generic(struct ixgbe_hw *hw, u8 *san_mac_addr);
 s32 ixgbe_set_vmdq_generic(struct ixgbe_hw *hw, u32 rar, u32 vmdq);
 s32 ixgbe_set_vmdq_san_mac_generic(struct ixgbe_hw *hw, u32 vmdq);
 s32 ixgbe_clear_vmdq_generic(struct ixgbe_hw *hw, u32 rar, u32 vmdq);
 s32 ixgbe_init_uta_tables_generic(struct ixgbe_hw *hw);
 s32 ixgbe_set_vfta_generic(struct ixgbe_hw *hw, u32 vlan,
+<<<<<<< HEAD
 			   u32 vind, bool vlan_on);
+=======
+			   u32 vind, bool vlan_on, bool vlvf_bypass);
+>>>>>>> v4.9.227
 s32 ixgbe_clear_vfta_generic(struct ixgbe_hw *hw);
 s32 ixgbe_check_mac_link_generic(struct ixgbe_hw *hw,
 				 ixgbe_link_speed *speed,
@@ -105,17 +126,33 @@ s32 prot_autoc_write_generic(struct ixgbe_hw *hw, u32 reg_val, bool locked);
 
 s32 ixgbe_blink_led_start_generic(struct ixgbe_hw *hw, u32 index);
 s32 ixgbe_blink_led_stop_generic(struct ixgbe_hw *hw, u32 index);
+<<<<<<< HEAD
 void ixgbe_set_mac_anti_spoofing(struct ixgbe_hw *hw, bool enable, int pf);
+=======
+void ixgbe_set_mac_anti_spoofing(struct ixgbe_hw *hw, bool enable, int vf);
+>>>>>>> v4.9.227
 void ixgbe_set_vlan_anti_spoofing(struct ixgbe_hw *hw, bool enable, int vf);
 s32 ixgbe_get_device_caps_generic(struct ixgbe_hw *hw, u16 *device_caps);
 s32 ixgbe_set_fw_drv_ver_generic(struct ixgbe_hw *hw, u8 maj, u8 min,
 				 u8 build, u8 ver);
+<<<<<<< HEAD
 void ixgbe_clear_tx_pending(struct ixgbe_hw *hw);
+=======
+s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *, u32 length,
+				 u32 timeout, bool return_data);
+void ixgbe_clear_tx_pending(struct ixgbe_hw *hw);
+bool ixgbe_mng_present(struct ixgbe_hw *hw);
+>>>>>>> v4.9.227
 bool ixgbe_mng_enabled(struct ixgbe_hw *hw);
 
 void ixgbe_set_rxpba_generic(struct ixgbe_hw *hw, int num_pb,
 			     u32 headroom, int strategy);
 
+<<<<<<< HEAD
+=======
+extern const u32 ixgbe_mvals_8259X[IXGBE_MVALS_IDX_LIMIT];
+
+>>>>>>> v4.9.227
 #define IXGBE_I2C_THERMAL_SENSOR_ADDR	0xF8
 #define IXGBE_EMC_INTERNAL_DATA		0x00
 #define IXGBE_EMC_INTERNAL_THERM_LIMIT	0x20
@@ -128,6 +165,16 @@ void ixgbe_set_rxpba_generic(struct ixgbe_hw *hw, int num_pb,
 
 s32 ixgbe_get_thermal_sensor_data_generic(struct ixgbe_hw *hw);
 s32 ixgbe_init_thermal_sensor_thresh_generic(struct ixgbe_hw *hw);
+<<<<<<< HEAD
+=======
+void ixgbe_disable_rx_generic(struct ixgbe_hw *hw);
+void ixgbe_enable_rx_generic(struct ixgbe_hw *hw);
+s32 ixgbe_setup_mac_link_multispeed_fiber(struct ixgbe_hw *hw,
+					  ixgbe_link_speed speed,
+					  bool autoneg_wait_to_complete);
+void ixgbe_set_soft_rate_select_speed(struct ixgbe_hw *hw,
+				      ixgbe_link_speed speed);
+>>>>>>> v4.9.227
 
 #define IXGBE_FAILED_READ_REG 0xffffffffU
 #define IXGBE_FAILED_READ_CFG_DWORD 0xffffffffU

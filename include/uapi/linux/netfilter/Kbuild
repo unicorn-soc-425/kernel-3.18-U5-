@@ -5,6 +5,10 @@ header-y += nf_conntrack_ftp.h
 header-y += nf_conntrack_sctp.h
 header-y += nf_conntrack_tcp.h
 header-y += nf_conntrack_tuple_common.h
+<<<<<<< HEAD
+=======
+header-y += nf_log.h
+>>>>>>> v4.9.227
 header-y += nf_tables.h
 header-y += nf_tables_compat.h
 header-y += nf_nat.h
@@ -33,6 +37,10 @@ header-y += xt_NFLOG.h
 header-y += xt_NFQUEUE.h
 header-y += xt_RATEEST.h
 header-y += xt_SECMARK.h
+<<<<<<< HEAD
+=======
+header-y += xt_SYNPROXY.h
+>>>>>>> v4.9.227
 header-y += xt_TCPMSS.h
 header-y += xt_TCPOPTSTRIP.h
 header-y += xt_TEE.h

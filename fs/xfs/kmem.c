@@ -37,8 +37,14 @@ kmem_alloc(size_t size, xfs_km_flags_t flags)
 			return ptr;
 		if (!(++retries % 100))
 			xfs_err(NULL,
+<<<<<<< HEAD
 		"possible memory allocation deadlock in %s (mode:0x%x)",
 					__func__, lflags);
+=======
+	"%s(%u) possible memory allocation deadlock size %u in %s (mode:0x%x)",
+				current->comm, current->pid,
+				(unsigned int)size, __func__, lflags);
+>>>>>>> v4.9.227
 		congestion_wait(BLK_RW_ASYNC, HZ/50);
 	} while (1);
 }
@@ -73,6 +79,7 @@ kmem_zalloc_large(size_t size, xfs_km_flags_t flags)
 	return ptr;
 }
 
+<<<<<<< HEAD
 void
 kmem_free(const void *ptr)
 {
@@ -97,6 +104,26 @@ kmem_realloc(const void *ptr, size_t newsize, size_t oldsize,
 		kmem_free(ptr);
 	}
 	return new;
+=======
+void *
+kmem_realloc(const void *old, size_t newsize, xfs_km_flags_t flags)
+{
+	int	retries = 0;
+	gfp_t	lflags = kmem_flags_convert(flags);
+	void	*ptr;
+
+	do {
+		ptr = krealloc(old, newsize, lflags);
+		if (ptr || (flags & (KM_MAYFAIL|KM_NOSLEEP)))
+			return ptr;
+		if (!(++retries % 100))
+			xfs_err(NULL,
+	"%s(%u) possible memory allocation deadlock size %zu in %s (mode:0x%x)",
+				current->comm, current->pid,
+				newsize, __func__, lflags);
+		congestion_wait(BLK_RW_ASYNC, HZ/50);
+	} while (1);
+>>>>>>> v4.9.227
 }
 
 void *
@@ -112,8 +139,14 @@ kmem_zone_alloc(kmem_zone_t *zone, xfs_km_flags_t flags)
 			return ptr;
 		if (!(++retries % 100))
 			xfs_err(NULL,
+<<<<<<< HEAD
 		"possible memory allocation deadlock in %s (mode:0x%x)",
 					__func__, lflags);
+=======
+		"%s(%u) possible memory allocation deadlock in %s (mode:0x%x)",
+				current->comm, current->pid,
+				__func__, lflags);
+>>>>>>> v4.9.227
 		congestion_wait(BLK_RW_ASYNC, HZ/50);
 	} while (1);
 }

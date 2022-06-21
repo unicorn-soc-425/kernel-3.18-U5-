@@ -703,6 +703,13 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
 	unsigned int offset;
 	unsigned char *buf;
 
+<<<<<<< HEAD
+=======
+	if (!qc->cursg) {
+		qc->curbytes = qc->nbytes;
+		return;
+	}
+>>>>>>> v4.9.227
 	if (qc->curbytes == qc->nbytes - qc->sect_size)
 		ap->hsm_task_state = HSM_ST_LAST;
 
@@ -742,6 +749,11 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
 
 	if (qc->cursg_ofs == qc->cursg->length) {
 		qc->cursg = sg_next(qc->cursg);
+<<<<<<< HEAD
+=======
+		if (!qc->cursg)
+			ap->hsm_task_state = HSM_ST_LAST;
+>>>>>>> v4.9.227
 		qc->cursg_ofs = 0;
 	}
 }
@@ -1279,7 +1291,12 @@ fsm_start:
 		break;
 	default:
 		poll_next = 0;
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(true, "ata%d: SFF host state machine in invalid state %d",
+		     ap->print_id, ap->hsm_task_state);
+>>>>>>> v4.9.227
 	}
 
 	return poll_next;
@@ -3209,11 +3226,19 @@ void ata_pci_bmdma_init(struct ata_host *host)
 	 * ->sff_irq_clear method.  Try to initialize bmdma_addr
 	 * regardless of dma masks.
 	 */
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
 	if (rc)
 		ata_bmdma_nodma(host, "failed to set dma mask");
 	if (!rc) {
 		rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
+=======
+	rc = dma_set_mask(&pdev->dev, ATA_DMA_MASK);
+	if (rc)
+		ata_bmdma_nodma(host, "failed to set dma mask");
+	if (!rc) {
+		rc = dma_set_coherent_mask(&pdev->dev, ATA_DMA_MASK);
+>>>>>>> v4.9.227
 		if (rc)
 			ata_bmdma_nodma(host,
 					"failed to set consistent dma mask");

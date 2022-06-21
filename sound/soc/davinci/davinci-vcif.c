@@ -33,8 +33,14 @@
 #include <sound/pcm_params.h>
 #include <sound/initval.h>
 #include <sound/soc.h>
+<<<<<<< HEAD
 
 #include "davinci-pcm.h"
+=======
+#include <sound/dmaengine_pcm.h>
+
+#include "edma-pcm.h"
+>>>>>>> v4.9.227
 #include "davinci-i2s.h"
 
 #define MOD_REG_BIT(val, mask, set) do { \
@@ -47,7 +53,12 @@
 
 struct davinci_vcif_dev {
 	struct davinci_vc *davinci_vc;
+<<<<<<< HEAD
 	struct davinci_pcm_dma_params	dma_params[2];
+=======
+	struct snd_dmaengine_dai_dma_data dma_data[2];
+	int dma_request[2];
+>>>>>>> v4.9.227
 };
 
 static void davinci_vcif_start(struct snd_pcm_substream *substream)
@@ -93,8 +104,11 @@ static int davinci_vcif_hw_params(struct snd_pcm_substream *substream,
 {
 	struct davinci_vcif_dev *davinci_vcif_dev = snd_soc_dai_get_drvdata(dai);
 	struct davinci_vc *davinci_vc = davinci_vcif_dev->davinci_vc;
+<<<<<<< HEAD
 	struct davinci_pcm_dma_params *dma_params =
 			&davinci_vcif_dev->dma_params[substream->stream];
+=======
+>>>>>>> v4.9.227
 	u32 w;
 
 	/* Restart the codec before setup */
@@ -113,16 +127,22 @@ static int davinci_vcif_hw_params(struct snd_pcm_substream *substream,
 	/* Determine xfer data type */
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_U8:
+<<<<<<< HEAD
 		dma_params->data_type = 0;
 
+=======
+>>>>>>> v4.9.227
 		MOD_REG_BIT(w, DAVINCI_VC_CTRL_RD_BITS_8 |
 			    DAVINCI_VC_CTRL_RD_UNSIGNED |
 			    DAVINCI_VC_CTRL_WD_BITS_8 |
 			    DAVINCI_VC_CTRL_WD_UNSIGNED, 1);
 		break;
 	case SNDRV_PCM_FORMAT_S8:
+<<<<<<< HEAD
 		dma_params->data_type = 1;
 
+=======
+>>>>>>> v4.9.227
 		MOD_REG_BIT(w, DAVINCI_VC_CTRL_RD_BITS_8 |
 			    DAVINCI_VC_CTRL_WD_BITS_8, 1);
 
@@ -130,8 +150,11 @@ static int davinci_vcif_hw_params(struct snd_pcm_substream *substream,
 			    DAVINCI_VC_CTRL_WD_UNSIGNED, 0);
 		break;
 	case SNDRV_PCM_FORMAT_S16_LE:
+<<<<<<< HEAD
 		dma_params->data_type = 2;
 
+=======
+>>>>>>> v4.9.227
 		MOD_REG_BIT(w, DAVINCI_VC_CTRL_RD_BITS_8 |
 			    DAVINCI_VC_CTRL_RD_UNSIGNED |
 			    DAVINCI_VC_CTRL_WD_BITS_8 |
@@ -142,8 +165,11 @@ static int davinci_vcif_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	dma_params->acnt  = dma_params->data_type;
 
+=======
+>>>>>>> v4.9.227
 	writel(w, davinci_vc->base + DAVINCI_VC_CTRL);
 
 	return 0;
@@ -172,6 +198,7 @@ static int davinci_vcif_trigger(struct snd_pcm_substream *substream, int cmd,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int davinci_vcif_startup(struct snd_pcm_substream *substream,
 				struct snd_soc_dai *dai)
 {
@@ -185,11 +212,31 @@ static int davinci_vcif_startup(struct snd_pcm_substream *substream,
 
 static const struct snd_soc_dai_ops davinci_vcif_dai_ops = {
 	.startup	= davinci_vcif_startup,
+=======
+#define DAVINCI_VCIF_RATES	SNDRV_PCM_RATE_8000_48000
+
+static const struct snd_soc_dai_ops davinci_vcif_dai_ops = {
+>>>>>>> v4.9.227
 	.trigger	= davinci_vcif_trigger,
 	.hw_params	= davinci_vcif_hw_params,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_driver davinci_vcif_dai = {
+=======
+static int davinci_vcif_dai_probe(struct snd_soc_dai *dai)
+{
+	struct davinci_vcif_dev *dev = snd_soc_dai_get_drvdata(dai);
+
+	dai->playback_dma_data = &dev->dma_data[SNDRV_PCM_STREAM_PLAYBACK];
+	dai->capture_dma_data = &dev->dma_data[SNDRV_PCM_STREAM_CAPTURE];
+
+	return 0;
+}
+
+static struct snd_soc_dai_driver davinci_vcif_dai = {
+	.probe = davinci_vcif_dai_probe,
+>>>>>>> v4.9.227
 	.playback = {
 		.channels_min = 1,
 		.channels_max = 2,
@@ -225,6 +272,7 @@ static int davinci_vcif_probe(struct platform_device *pdev)
 
 	/* DMA tx params */
 	davinci_vcif_dev->davinci_vc = davinci_vc;
+<<<<<<< HEAD
 	davinci_vcif_dev->dma_params[SNDRV_PCM_STREAM_PLAYBACK].channel =
 					davinci_vc->davinci_vcif.dma_tx_channel;
 	davinci_vcif_dev->dma_params[SNDRV_PCM_STREAM_PLAYBACK].dma_addr =
@@ -240,21 +288,46 @@ static int davinci_vcif_probe(struct platform_device *pdev)
 
 	ret = snd_soc_register_component(&pdev->dev, &davinci_vcif_component,
 					 &davinci_vcif_dai, 1);
+=======
+	davinci_vcif_dev->dma_data[SNDRV_PCM_STREAM_PLAYBACK].filter_data =
+				&davinci_vc->davinci_vcif.dma_tx_channel;
+	davinci_vcif_dev->dma_data[SNDRV_PCM_STREAM_PLAYBACK].addr =
+				davinci_vc->davinci_vcif.dma_tx_addr;
+
+	/* DMA rx params */
+	davinci_vcif_dev->dma_data[SNDRV_PCM_STREAM_CAPTURE].filter_data =
+				&davinci_vc->davinci_vcif.dma_rx_channel;
+	davinci_vcif_dev->dma_data[SNDRV_PCM_STREAM_CAPTURE].addr =
+				davinci_vc->davinci_vcif.dma_rx_addr;
+
+	dev_set_drvdata(&pdev->dev, davinci_vcif_dev);
+
+	ret = devm_snd_soc_register_component(&pdev->dev,
+					      &davinci_vcif_component,
+					      &davinci_vcif_dai, 1);
+>>>>>>> v4.9.227
 	if (ret != 0) {
 		dev_err(&pdev->dev, "could not register dai\n");
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = davinci_soc_platform_register(&pdev->dev);
 	if (ret) {
 		dev_err(&pdev->dev, "register PCM failed: %d\n", ret);
 		snd_soc_unregister_component(&pdev->dev);
+=======
+	ret = edma_pcm_platform_register(&pdev->dev);
+	if (ret) {
+		dev_err(&pdev->dev, "register PCM failed: %d\n", ret);
+>>>>>>> v4.9.227
 		return ret;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int davinci_vcif_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_component(&pdev->dev);
@@ -268,6 +341,12 @@ static struct platform_driver davinci_vcif_driver = {
 	.driver		= {
 		.name	= "davinci-vcif",
 		.owner	= THIS_MODULE,
+=======
+static struct platform_driver davinci_vcif_driver = {
+	.probe		= davinci_vcif_probe,
+	.driver		= {
+		.name	= "davinci-vcif",
+>>>>>>> v4.9.227
 	},
 };
 

@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __RTL8188E_CMD_H__
 #define __RTL8188E_CMD_H__
@@ -54,12 +57,15 @@ enum RTL8188E_H2C_CMD_ID {
 	 H2C_RESET_TSF			= 0xc0,
 };
 
+<<<<<<< HEAD
 struct cmd_msg_parm {
 	u8 eid; /* element id */
 	u8 sz; /*  sz */
 	u8 buf[6];
 };
 
+=======
+>>>>>>> v4.9.227
 enum {
 	PWRS
 };
@@ -72,6 +78,7 @@ struct setpwrmode_parm {
 	u8 PwrState;/* AllON(0x0c),RFON(0x04),RFOFF(0x00) */
 };
 
+<<<<<<< HEAD
 struct H2C_SS_RFOFF_PARAM {
 	u8 ROFOn; /*  1: on, 0:off */
 	u16 gpio_period; /*  unit: 1024 us */
@@ -81,6 +88,8 @@ struct joinbssrpt_parm {
 	u8 OpMode;	/*  RT_MEDIA_STATUS */
 };
 
+=======
+>>>>>>> v4.9.227
 struct rsvdpage_loc {
 	u8 LocProbeRsp;
 	u8 LocPsPoll;
@@ -89,6 +98,7 @@ struct rsvdpage_loc {
 	u8 LocBTQosNull;
 };
 
+<<<<<<< HEAD
 struct P2P_PS_Offload_t {
 	u8 Offload_En:1;
 	u8 role:1; /*  1: Owner, 0: Client */
@@ -111,6 +121,11 @@ u8 rtl8188e_set_rssi_cmd(struct adapter *padapter, u8 *param);
 u8 rtl8188e_set_raid_cmd(struct adapter *padapter, u32 mask);
 void rtl8188e_Add_RateATid(struct adapter *padapter, u32 bitmap, u8 arg,
 			   u8 rssi_level);
+=======
+/*  host message to firmware cmd */
+void rtl8188e_set_FwPwrMode_cmd(struct adapter *padapter, u8 Mode);
+void rtl8188e_set_FwJoinBssReport_cmd(struct adapter *padapter, u8 mstatus);
+>>>>>>> v4.9.227
 
 void rtl8188e_set_FwMediaStatus_cmd(struct adapter *adapt, __le16 mstatus_rpt);
 

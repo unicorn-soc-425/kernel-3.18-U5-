@@ -27,11 +27,18 @@
 #include <linux/device.h>
 #include <linux/firmware.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/asoundef.h>
 #include <sound/info.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> v4.9.227
 #include <sound/vx_core.h>
 #include "vx_cmd.h"
 
@@ -416,6 +423,10 @@ int vx_send_rih(struct vx_core *chip, int cmd)
 
 /**
  * snd_vx_boot_xilinx - boot up the xilinx interface
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+>>>>>>> v4.9.227
  * @boot: the boot record to load
  */
 int snd_vx_load_boot_image(struct vx_core *chip, const struct firmware *boot)
@@ -538,6 +549,11 @@ EXPORT_SYMBOL(snd_vx_threaded_irq_handler);
 
 /**
  * snd_vx_irq_handler - interrupt handler
+<<<<<<< HEAD
+=======
+ * @irq: irq number
+ * @dev: VX core instance
+>>>>>>> v4.9.227
  */
 irqreturn_t snd_vx_irq_handler(int irq, void *dev)
 {
@@ -649,6 +665,11 @@ static void vx_proc_init(struct vx_core *chip)
 
 /**
  * snd_vx_dsp_boot - load the DSP boot
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+ * @boot: firmware data
+>>>>>>> v4.9.227
  */
 int snd_vx_dsp_boot(struct vx_core *chip, const struct firmware *boot)
 {
@@ -669,6 +690,11 @@ EXPORT_SYMBOL(snd_vx_dsp_boot);
 
 /**
  * snd_vx_dsp_load - load the DSP image
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+ * @dsp: firmware data
+>>>>>>> v4.9.227
  */
 int snd_vx_dsp_load(struct vx_core *chip, const struct firmware *dsp)
 {
@@ -768,7 +794,14 @@ EXPORT_SYMBOL(snd_vx_resume);
 
 /**
  * snd_vx_create - constructor for struct vx_core
+<<<<<<< HEAD
  * @hw: hardware specific record
+=======
+ * @card: card instance
+ * @hw: hardware specific record
+ * @ops: VX ops pointer
+ * @extra_size: extra byte size to allocate appending to chip
+>>>>>>> v4.9.227
  *
  * this function allocates the instance and prepare for the hardware
  * initialization.

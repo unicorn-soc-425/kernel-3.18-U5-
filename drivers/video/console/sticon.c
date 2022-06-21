@@ -79,11 +79,14 @@ static const char *sticon_startup(void)
     return "STI console";
 }
 
+<<<<<<< HEAD
 static int sticon_set_palette(struct vc_data *c, unsigned char *table)
 {
     return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 static void sticon_putc(struct vc_data *conp, int c, int ypos, int xpos)
 {
     int redraw_cursor = 0;
@@ -182,6 +185,7 @@ static int sticon_scroll(struct vc_data *conp, int t, int b, int dir, int count)
     return 0;
 }
 
+<<<<<<< HEAD
 static void sticon_bmove(struct vc_data *conp, int sy, int sx, 
 	int dy, int dx, int height, int width)
 {
@@ -198,6 +202,8 @@ static void sticon_bmove(struct vc_data *conp, int sy, int sx,
     sti_bmove(sticon_sti, sy, sx, dy, dx, height, width);
 }
 
+=======
+>>>>>>> v4.9.227
 static void sticon_init(struct vc_data *c, int init)
 {
     struct sti_struct *sti = sticon_sti;
@@ -256,11 +262,14 @@ static int sticon_blank(struct vc_data *c, int blank, int mode_switch)
     return 1;
 }
 
+<<<<<<< HEAD
 static int sticon_scrolldelta(struct vc_data *conp, int lines)
 {
     return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static u16 *sticon_screen_pos(struct vc_data *conp, int offset)
 {
     int line;
@@ -355,11 +364,16 @@ static const struct consw sti_con = {
 	.con_putcs		= sticon_putcs,
 	.con_cursor		= sticon_cursor,
 	.con_scroll		= sticon_scroll,
+<<<<<<< HEAD
 	.con_bmove		= sticon_bmove,
 	.con_switch		= sticon_switch,
 	.con_blank		= sticon_blank,
 	.con_set_palette	= sticon_set_palette,
 	.con_scrolldelta	= sticon_scrolldelta,
+=======
+	.con_switch		= sticon_switch,
+	.con_blank		= sticon_blank,
+>>>>>>> v4.9.227
 	.con_set_origin		= sticon_set_origin,
 	.con_save_screen	= sticon_save_screen, 
 	.con_build_attr		= sticon_build_attr,

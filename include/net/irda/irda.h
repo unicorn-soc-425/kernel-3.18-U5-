@@ -55,6 +55,7 @@ typedef __u32 magic_t;
 #endif
 
 #ifdef CONFIG_IRDA_DEBUG
+<<<<<<< HEAD
 
 extern unsigned int irda_debug;
 
@@ -65,6 +66,8 @@ extern unsigned int irda_debug;
 do {	if (irda_debug >= (n)) \
 		printk(KERN_DEBUG args); \
 } while (0)
+=======
+>>>>>>> v4.9.227
 #define IRDA_ASSERT(expr, func) \
 do { if(!(expr)) { \
 	printk( "Assertion failed! %s:%s:%d %s\n", \
@@ -72,15 +75,21 @@ do { if(!(expr)) { \
 	func } } while (0)
 #define IRDA_ASSERT_LABEL(label)	label
 #else
+<<<<<<< HEAD
 #define IRDA_DEBUG(n, args...) do { } while (0)
+=======
+>>>>>>> v4.9.227
 #define IRDA_ASSERT(expr, func) do { (void)(expr); } while (0)
 #define IRDA_ASSERT_LABEL(label)
 #endif /* CONFIG_IRDA_DEBUG */
 
+<<<<<<< HEAD
 #define IRDA_WARNING(args...) do { if (net_ratelimit()) printk(KERN_WARNING args); } while (0)
 #define IRDA_MESSAGE(args...) do { if (net_ratelimit()) printk(KERN_INFO args); } while (0)
 #define IRDA_ERROR(args...)   do { if (net_ratelimit()) printk(KERN_ERR args); } while (0)
 
+=======
+>>>>>>> v4.9.227
 /*
  *  Magic numbers used by Linux-IrDA. Random numbers which must be unique to 
  *  give the best protection

@@ -133,7 +133,10 @@ MODULE_VERSION(DRV_VERSION "-" DRV_BUILD_ID);
 #define SKD_TIMER_MINUTES(minutes) ((minutes) * (60))
 
 #define INQ_STD_NBYTES 36
+<<<<<<< HEAD
 #define SKD_DISCARD_CDB_LENGTH	24
+=======
+>>>>>>> v4.9.227
 
 enum skd_drvr_state {
 	SKD_DRVR_STATE_LOAD,
@@ -212,7 +215,10 @@ struct skd_request_context {
 
 	struct request *req;
 	u8 flush_cmd;
+<<<<<<< HEAD
 	u8 discard_page;
+=======
+>>>>>>> v4.9.227
 
 	u32 timeout_stamp;
 	u8 sg_data_dir;
@@ -230,7 +236,10 @@ struct skd_request_context {
 };
 #define SKD_DATA_DIR_HOST_TO_CARD       1
 #define SKD_DATA_DIR_CARD_TO_HOST       2
+<<<<<<< HEAD
 #define SKD_DATA_DIR_NONE		3	/* especially for DISCARD requests. */
+=======
+>>>>>>> v4.9.227
 
 struct skd_special_context {
 	struct skd_request_context req;
@@ -540,6 +549,7 @@ skd_prep_zerosize_flush_cdb(struct skd_scsi_request *scsi_req,
 	scsi_req->cdb[9] = 0;
 }
 
+<<<<<<< HEAD
 static void
 skd_prep_discard_cdb(struct skd_scsi_request *scsi_req,
 		     struct skd_request_context *skreq,
@@ -565,6 +575,8 @@ skd_prep_discard_cdb(struct skd_scsi_request *scsi_req,
 	blk_add_request_payload(req, page, len);
 }
 
+=======
+>>>>>>> v4.9.227
 static void skd_request_fn_not_online(struct request_queue *q);
 
 static void skd_request_fn(struct request_queue *q)
@@ -575,7 +587,10 @@ static void skd_request_fn(struct request_queue *q)
 	struct skd_request_context *skreq;
 	struct request *req = NULL;
 	struct skd_scsi_request *scsi_req;
+<<<<<<< HEAD
 	struct page *page;
+=======
+>>>>>>> v4.9.227
 	unsigned long io_flags;
 	int error;
 	u32 lba;
@@ -626,7 +641,11 @@ static void skd_request_fn(struct request_queue *q)
 		data_dir = rq_data_dir(req);
 		io_flags = req->cmd_flags;
 
+<<<<<<< HEAD
 		if (io_flags & REQ_FLUSH)
+=======
+		if (req_op(req) == REQ_OP_FLUSH)
+>>>>>>> v4.9.227
 			flush++;
 
 		if (io_flags & REQ_FUA)
@@ -669,7 +688,10 @@ static void skd_request_fn(struct request_queue *q)
 		skreq->flush_cmd = 0;
 		skreq->n_sg = 0;
 		skreq->sg_byte_count = 0;
+<<<<<<< HEAD
 		skreq->discard_page = 0;
+=======
+>>>>>>> v4.9.227
 
 		/*
 		 * OK to now dequeue request from q.
@@ -735,6 +757,7 @@ static void skd_request_fn(struct request_queue *q)
 		else
 			skreq->sg_data_dir = SKD_DATA_DIR_HOST_TO_CARD;
 
+<<<<<<< HEAD
 		if (io_flags & REQ_DISCARD) {
 			page = alloc_page(GFP_ATOMIC | __GFP_ZERO);
 			if (!page) {
@@ -747,6 +770,9 @@ static void skd_request_fn(struct request_queue *q)
 			skd_prep_discard_cdb(scsi_req, skreq, page, lba, count);
 
 		} else if (flush == SKD_FLUSH_ZERO_SIZE_FIRST) {
+=======
+		if (flush == SKD_FLUSH_ZERO_SIZE_FIRST) {
+>>>>>>> v4.9.227
 			skd_prep_zerosize_flush_cdb(scsi_req, skreq);
 			SKD_ASSERT(skreq->flush_cmd == 1);
 
@@ -851,6 +877,7 @@ skip_sg:
 static void skd_end_request(struct skd_device *skdev,
 			    struct skd_request_context *skreq, int error)
 {
+<<<<<<< HEAD
 	struct request *req = skreq->req;
 	unsigned int io_flags = req->cmd_flags;
 
@@ -861,6 +888,8 @@ static void skd_end_request(struct skd_device *skdev,
 		__free_page(req->completion_data);
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (unlikely(error)) {
 		struct request *req = skreq->req;
 		char *cmd = (rq_data_dir(req) == READ) ? "read" : "write";
@@ -4418,19 +4447,26 @@ static int skd_cons_disk(struct skd_device *skdev)
 	disk->queue = q;
 	q->queuedata = skdev;
 
+<<<<<<< HEAD
 	blk_queue_flush(q, REQ_FLUSH | REQ_FUA);
+=======
+	blk_queue_write_cache(q, true, true);
+>>>>>>> v4.9.227
 	blk_queue_max_segments(q, skdev->sgs_per_request);
 	blk_queue_max_hw_sectors(q, SKD_N_MAX_SECTORS);
 
 	/* set sysfs ptimal_io_size to 8K */
 	blk_queue_io_opt(q, 8192);
 
+<<<<<<< HEAD
 	/* DISCARD Flag initialization. */
 	q->limits.discard_granularity = 8192;
 	q->limits.discard_alignment = 0;
 	q->limits.max_discard_sectors = UINT_MAX >> 9;
 	q->limits.discard_zeroes_data = 1;
 	queue_flag_set_unlocked(QUEUE_FLAG_DISCARD, q);
+=======
+>>>>>>> v4.9.227
 	queue_flag_set_unlocked(QUEUE_FLAG_NONROT, q);
 	queue_flag_clear_unlocked(QUEUE_FLAG_ADD_RANDOM, q);
 
@@ -4754,10 +4790,17 @@ static int skd_bdev_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int skd_bdev_attach(struct skd_device *skdev)
 {
 	pr_debug("%s:%s:%d add_disk\n", skdev->name, __func__, __LINE__);
 	add_disk(skdev->disk);
+=======
+static int skd_bdev_attach(struct device *parent, struct skd_device *skdev)
+{
+	pr_debug("%s:%s:%d add_disk\n", skdev->name, __func__, __LINE__);
+	device_add_disk(parent, skdev->disk);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -4876,8 +4919,11 @@ static int skd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_set_drvdata(pdev, skdev);
 
+<<<<<<< HEAD
 	skdev->disk->driverfs_dev = &pdev->dev;
 
+=======
+>>>>>>> v4.9.227
 	for (i = 0; i < SKD_MAX_BARS; i++) {
 		skdev->mem_phys[i] = pci_resource_start(pdev, i);
 		skdev->mem_size[i] = (u32)pci_resource_len(pdev, i);
@@ -4915,7 +4961,11 @@ static int skd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 					      (SKD_START_WAIT_SECONDS * HZ));
 	if (skdev->gendisk_on > 0) {
 		/* device came on-line after reset */
+<<<<<<< HEAD
 		skd_bdev_attach(skdev);
+=======
+		skd_bdev_attach(&pdev->dev, skdev);
+>>>>>>> v4.9.227
 		rc = 0;
 	} else {
 		/* we timed out, something is wrong with the device,

@@ -334,6 +334,7 @@ int au1100fb_fb_pan_display(struct fb_var_screeninfo *var, struct fb_info *fbi)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* fb_rotate
  * Rotate the display of this angle. This doesn't seems to be used by the core,
  * but as our hardware supports it, so why not implementing it...
@@ -355,6 +356,8 @@ void au1100fb_fb_rotate(struct fb_info *fbi, int angle)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 /* fb_mmap
  * Map video memory in user space. We don't use the generic fb_mmap method mainly
  * to allow the use of the TLB streaming flag (CCA=6)
@@ -380,7 +383,10 @@ static struct fb_ops au1100fb_ops =
 	.fb_fillrect		= cfb_fillrect,
 	.fb_copyarea		= cfb_copyarea,
 	.fb_imageblit		= cfb_imageblit,
+<<<<<<< HEAD
 	.fb_rotate		= au1100fb_fb_rotate,
+=======
+>>>>>>> v4.9.227
 	.fb_mmap		= au1100fb_fb_mmap,
 };
 
@@ -638,7 +644,10 @@ int au1100fb_drv_resume(struct platform_device *dev)
 static struct platform_driver au1100fb_driver = {
 	.driver = {
 		.name		= "au1100-lcd",
+<<<<<<< HEAD
 		.owner          = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= au1100fb_drv_probe,
         .remove		= au1100fb_drv_remove,

@@ -17,7 +17,11 @@
  *
  *   \Sum_{j} p_{j} = 1,
  *
+<<<<<<< HEAD
  * This formula can be straightforwardly computed by maintaing denominator
+=======
+ * This formula can be straightforwardly computed by maintaining denominator
+>>>>>>> v4.9.227
  * (let's call it 'd') and for each event type its numerator (let's call it
  * 'n_j'). When an event of type 'j' happens, we simply need to do:
  *   n_j++; d++;

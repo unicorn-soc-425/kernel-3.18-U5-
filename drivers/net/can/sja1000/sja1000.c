@@ -218,6 +218,12 @@ static void sja1000_start(struct net_device *dev)
 	priv->write_reg(priv, SJA1000_RXERR, 0x0);
 	priv->read_reg(priv, SJA1000_ECC);
 
+<<<<<<< HEAD
+=======
+	/* clear interrupt flags */
+	priv->read_reg(priv, SJA1000_IR);
+
+>>>>>>> v4.9.227
 	/* leave reset mode */
 	set_normal_mode(dev);
 }
@@ -377,10 +383,16 @@ static void sja1000_rx(struct net_device *dev)
 	/* release receive buffer */
 	sja1000_write_cmdreg(priv, CMD_RRB);
 
+<<<<<<< HEAD
 	netif_rx(skb);
 
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+	stats->rx_packets++;
+	stats->rx_bytes += cf->can_dlc;
+	netif_rx(skb);
+>>>>>>> v4.9.227
 
 	can_led_event(dev, CAN_LED_EVENT_RX);
 }
@@ -392,12 +404,26 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 	struct can_frame *cf;
 	struct sk_buff *skb;
 	enum can_state state = priv->can.state;
+<<<<<<< HEAD
+=======
+	enum can_state rx_state, tx_state;
+	unsigned int rxerr, txerr;
+>>>>>>> v4.9.227
 	uint8_t ecc, alc;
 
 	skb = alloc_can_err_skb(dev, &cf);
 	if (skb == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	txerr = priv->read_reg(priv, SJA1000_TXERR);
+	rxerr = priv->read_reg(priv, SJA1000_RXERR);
+
+	cf->data[6] = txerr;
+	cf->data[7] = rxerr;
+
+>>>>>>> v4.9.227
 	if (isrc & IRQ_DOI) {
 		/* data overrun interrupt */
 		netdev_dbg(dev, "data overrun interrupt\n");
@@ -412,6 +438,7 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 		/* error warning interrupt */
 		netdev_dbg(dev, "error warning interrupt\n");
 
+<<<<<<< HEAD
 		if (status & SR_BS) {
 			state = CAN_STATE_BUS_OFF;
 			cf->can_id |= CAN_ERR_BUSOFF;
@@ -419,6 +446,13 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 		} else if (status & SR_ES) {
 			state = CAN_STATE_ERROR_WARNING;
 		} else
+=======
+		if (status & SR_BS)
+			state = CAN_STATE_BUS_OFF;
+		else if (status & SR_ES)
+			state = CAN_STATE_ERROR_WARNING;
+		else
+>>>>>>> v4.9.227
 			state = CAN_STATE_ERROR_ACTIVE;
 	}
 	if (isrc & IRQ_BEI) {
@@ -430,6 +464,10 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 
 		cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
 
+<<<<<<< HEAD
+=======
+		/* set error type */
+>>>>>>> v4.9.227
 		switch (ecc & ECC_MASK) {
 		case ECC_BIT:
 			cf->data[2] |= CAN_ERR_PROT_BIT;
@@ -441,10 +479,19 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 			cf->data[2] |= CAN_ERR_PROT_STUFF;
 			break;
 		default:
+<<<<<<< HEAD
 			cf->data[2] |= CAN_ERR_PROT_UNSPEC;
 			cf->data[3] = ecc & ECC_SEG;
 			break;
 		}
+=======
+			break;
+		}
+
+		/* set error location */
+		cf->data[3] = ecc & ECC_SEG;
+
+>>>>>>> v4.9.227
 		/* Error occurred during transmission? */
 		if ((ecc & ECC_DIR) == 0)
 			cf->data[2] |= CAN_ERR_PROT_TX;
@@ -452,10 +499,18 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 	if (isrc & IRQ_EPI) {
 		/* error passive interrupt */
 		netdev_dbg(dev, "error passive interrupt\n");
+<<<<<<< HEAD
 		if (status & SR_ES)
 			state = CAN_STATE_ERROR_PASSIVE;
 		else
 			state = CAN_STATE_ERROR_ACTIVE;
+=======
+
+		if (state == CAN_STATE_ERROR_PASSIVE)
+			state = CAN_STATE_ERROR_WARNING;
+		else
+			state = CAN_STATE_ERROR_PASSIVE;
+>>>>>>> v4.9.227
 	}
 	if (isrc & IRQ_ALI) {
 		/* arbitration lost interrupt */
@@ -467,6 +522,7 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 		cf->data[0] = alc & 0x1f;
 	}
 
+<<<<<<< HEAD
 	if (state != priv->can.state && (state == CAN_STATE_ERROR_WARNING ||
 					 state == CAN_STATE_ERROR_PASSIVE)) {
 		uint8_t rxerr = priv->read_reg(priv, SJA1000_RXERR);
@@ -493,6 +549,21 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+	if (state != priv->can.state) {
+		tx_state = txerr >= rxerr ? state : 0;
+		rx_state = txerr <= rxerr ? state : 0;
+
+		can_change_state(dev, cf, tx_state, rx_state);
+
+		if(state == CAN_STATE_BUS_OFF)
+			can_bus_off(dev);
+	}
+
+	stats->rx_packets++;
+	stats->rx_bytes += cf->can_dlc;
+	netif_rx(skb);
+>>>>>>> v4.9.227
 
 	return 0;
 }

@@ -276,6 +276,7 @@ static struct sh_mtu2_channel *ced_to_sh_mtu2(struct clock_event_device *ced)
 	return container_of(ced, struct sh_mtu2_channel, ced);
 }
 
+<<<<<<< HEAD
 static void sh_mtu2_clock_event_mode(enum clock_event_mode mode,
 				    struct clock_event_device *ced)
 {
@@ -306,6 +307,29 @@ static void sh_mtu2_clock_event_mode(enum clock_event_mode mode,
 	default:
 		break;
 	}
+=======
+static int sh_mtu2_clock_event_shutdown(struct clock_event_device *ced)
+{
+	struct sh_mtu2_channel *ch = ced_to_sh_mtu2(ced);
+
+	if (clockevent_state_periodic(ced))
+		sh_mtu2_disable(ch);
+
+	return 0;
+}
+
+static int sh_mtu2_clock_event_set_periodic(struct clock_event_device *ced)
+{
+	struct sh_mtu2_channel *ch = ced_to_sh_mtu2(ced);
+
+	if (clockevent_state_periodic(ced))
+		sh_mtu2_disable(ch);
+
+	dev_info(&ch->mtu->pdev->dev, "ch%u: used for periodic clock events\n",
+		 ch->index);
+	sh_mtu2_enable(ch);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void sh_mtu2_clock_event_suspend(struct clock_event_device *ced)
@@ -327,7 +351,12 @@ static void sh_mtu2_register_clockevent(struct sh_mtu2_channel *ch,
 	ced->features = CLOCK_EVT_FEAT_PERIODIC;
 	ced->rating = 200;
 	ced->cpumask = cpu_possible_mask;
+<<<<<<< HEAD
 	ced->set_mode = sh_mtu2_clock_event_mode;
+=======
+	ced->set_state_shutdown = sh_mtu2_clock_event_shutdown;
+	ced->set_state_periodic = sh_mtu2_clock_event_set_periodic;
+>>>>>>> v4.9.227
 	ced->suspend = sh_mtu2_clock_event_suspend;
 	ced->resume = sh_mtu2_clock_event_resume;
 

@@ -417,11 +417,19 @@
 #define AC97_RATES_MIC_ADC	4
 #define AC97_RATES_SPDIF	5
 
+<<<<<<< HEAD
+=======
+#define AC97_NUM_GPIOS		16
+>>>>>>> v4.9.227
 /*
  *
  */
 
 struct snd_ac97;
+<<<<<<< HEAD
+=======
+struct snd_ac97_gpio_priv;
+>>>>>>> v4.9.227
 struct snd_pcm_chmap;
 
 struct snd_ac97_build_ops {
@@ -529,6 +537,10 @@ struct snd_ac97 {
 	struct delayed_work power_work;
 #endif
 	struct device dev;
+<<<<<<< HEAD
+=======
+	struct snd_ac97_gpio_priv *gpio_priv;
+>>>>>>> v4.9.227
 
 	struct snd_pcm_chmap *chmaps[2]; /* channel-maps (optional) */
 };
@@ -584,6 +596,11 @@ static inline int snd_ac97_update_power(struct snd_ac97 *ac97, int reg,
 void snd_ac97_suspend(struct snd_ac97 *ac97);
 void snd_ac97_resume(struct snd_ac97 *ac97);
 #endif
+<<<<<<< HEAD
+=======
+int snd_ac97_reset(struct snd_ac97 *ac97, bool try_warm, unsigned int id,
+	unsigned int id_mask);
+>>>>>>> v4.9.227
 
 /* quirk types */
 enum {
@@ -608,7 +625,13 @@ struct ac97_quirk {
 	int type;		/* quirk type above */
 };
 
+<<<<<<< HEAD
 int snd_ac97_tune_hardware(struct snd_ac97 *ac97, struct ac97_quirk *quirk, const char *override);
+=======
+int snd_ac97_tune_hardware(struct snd_ac97 *ac97,
+			   const struct ac97_quirk *quirk,
+			   const char *override);
+>>>>>>> v4.9.227
 int snd_ac97_set_rate(struct snd_ac97 *ac97, int reg, unsigned int rate);
 
 /*

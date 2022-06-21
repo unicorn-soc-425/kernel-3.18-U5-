@@ -66,6 +66,10 @@ struct ad_sigma_delta {
 	bool			irq_dis;
 
 	bool			bus_locked;
+<<<<<<< HEAD
+=======
+	bool			keep_cs_asserted;
+>>>>>>> v4.9.227
 
 	uint8_t			comm;
 

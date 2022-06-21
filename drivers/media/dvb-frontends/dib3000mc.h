@@ -2,7 +2,11 @@
  * Driver for DiBcom DiB3000MC/P-demodulator.
  *
  * Copyright (C) 2004-6 DiBcom (http://www.dibcom.fr/)
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher\@desy.de)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  *
  * This code is partially based on the previous dib3000mc.c .
  *
@@ -13,8 +17,11 @@
 #ifndef DIB3000MC_H
 #define DIB3000MC_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> v4.9.227
 #include "dibx000_common.h"
 
 struct dib3000mc_config {

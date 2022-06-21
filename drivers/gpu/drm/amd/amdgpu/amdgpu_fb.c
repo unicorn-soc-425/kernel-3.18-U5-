@@ -25,7 +25,11 @@
  */
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> v4.9.227
 
 #include <drm/drmP.h>
 #include <drm/drm_crtc.h>
@@ -45,12 +49,47 @@
 struct amdgpu_fbdev {
 	struct drm_fb_helper helper;
 	struct amdgpu_framebuffer rfb;
+<<<<<<< HEAD
 	struct list_head fbdev_list;
 	struct amdgpu_device *adev;
 };
 
 static struct fb_ops amdgpufb_ops = {
 	.owner = THIS_MODULE,
+=======
+	struct amdgpu_device *adev;
+};
+
+static int
+amdgpufb_open(struct fb_info *info, int user)
+{
+	struct amdgpu_fbdev *rfbdev = info->par;
+	struct amdgpu_device *adev = rfbdev->adev;
+	int ret = pm_runtime_get_sync(adev->ddev->dev);
+	if (ret < 0 && ret != -EACCES) {
+		pm_runtime_mark_last_busy(adev->ddev->dev);
+		pm_runtime_put_autosuspend(adev->ddev->dev);
+		return ret;
+	}
+	return 0;
+}
+
+static int
+amdgpufb_release(struct fb_info *info, int user)
+{
+	struct amdgpu_fbdev *rfbdev = info->par;
+	struct amdgpu_device *adev = rfbdev->adev;
+
+	pm_runtime_mark_last_busy(adev->ddev->dev);
+	pm_runtime_put_autosuspend(adev->ddev->dev);
+	return 0;
+}
+
+static struct fb_ops amdgpufb_ops = {
+	.owner = THIS_MODULE,
+	.fb_open = amdgpufb_open,
+	.fb_release = amdgpufb_release,
+>>>>>>> v4.9.227
 	.fb_check_var = drm_fb_helper_check_var,
 	.fb_set_par = drm_fb_helper_set_par,
 	.fb_fillrect = drm_fb_helper_cfb_fillrect,
@@ -89,6 +128,7 @@ int amdgpu_align_pitch(struct amdgpu_device *adev, int width, int bpp, bool tile
 
 static void amdgpufb_destroy_pinned_object(struct drm_gem_object *gobj)
 {
+<<<<<<< HEAD
 	struct amdgpu_bo *rbo = gem_to_amdgpu_bo(gobj);
 	int ret;
 
@@ -97,6 +137,16 @@ static void amdgpufb_destroy_pinned_object(struct drm_gem_object *gobj)
 		amdgpu_bo_kunmap(rbo);
 		amdgpu_bo_unpin(rbo);
 		amdgpu_bo_unreserve(rbo);
+=======
+	struct amdgpu_bo *abo = gem_to_amdgpu_bo(gobj);
+	int ret;
+
+	ret = amdgpu_bo_reserve(abo, false);
+	if (likely(ret == 0)) {
+		amdgpu_bo_kunmap(abo);
+		amdgpu_bo_unpin(abo);
+		amdgpu_bo_unreserve(abo);
+>>>>>>> v4.9.227
 	}
 	drm_gem_object_unreference_unlocked(gobj);
 }
@@ -107,7 +157,11 @@ static int amdgpufb_create_pinned_object(struct amdgpu_fbdev *rfbdev,
 {
 	struct amdgpu_device *adev = rfbdev->adev;
 	struct drm_gem_object *gobj = NULL;
+<<<<<<< HEAD
 	struct amdgpu_bo *rbo = NULL;
+=======
+	struct amdgpu_bo *abo = NULL;
+>>>>>>> v4.9.227
 	bool fb_tiled = false; /* useful for testing */
 	u32 tiling_flags = 0;
 	int ret;
@@ -133,23 +187,36 @@ static int amdgpufb_create_pinned_object(struct amdgpu_fbdev *rfbdev,
 		       aligned_size);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	rbo = gem_to_amdgpu_bo(gobj);
+=======
+	abo = gem_to_amdgpu_bo(gobj);
+>>>>>>> v4.9.227
 
 	if (fb_tiled)
 		tiling_flags = AMDGPU_TILING_SET(ARRAY_MODE, GRPH_ARRAY_2D_TILED_THIN1);
 
+<<<<<<< HEAD
 	ret = amdgpu_bo_reserve(rbo, false);
+=======
+	ret = amdgpu_bo_reserve(abo, false);
+>>>>>>> v4.9.227
 	if (unlikely(ret != 0))
 		goto out_unref;
 
 	if (tiling_flags) {
+<<<<<<< HEAD
 		ret = amdgpu_bo_set_tiling_flags(rbo,
+=======
+		ret = amdgpu_bo_set_tiling_flags(abo,
+>>>>>>> v4.9.227
 						 tiling_flags);
 		if (ret)
 			dev_err(adev->dev, "FB failed to set tiling flags\n");
 	}
 
 
+<<<<<<< HEAD
 	ret = amdgpu_bo_pin_restricted(rbo, AMDGPU_GEM_DOMAIN_VRAM, 0, 0, NULL);
 	if (ret) {
 		amdgpu_bo_unreserve(rbo);
@@ -157,6 +224,15 @@ static int amdgpufb_create_pinned_object(struct amdgpu_fbdev *rfbdev,
 	}
 	ret = amdgpu_bo_kmap(rbo, NULL);
 	amdgpu_bo_unreserve(rbo);
+=======
+	ret = amdgpu_bo_pin_restricted(abo, AMDGPU_GEM_DOMAIN_VRAM, 0, 0, NULL);
+	if (ret) {
+		amdgpu_bo_unreserve(abo);
+		goto out_unref;
+	}
+	ret = amdgpu_bo_kmap(abo, NULL);
+	amdgpu_bo_unreserve(abo);
+>>>>>>> v4.9.227
 	if (ret) {
 		goto out_unref;
 	}
@@ -178,7 +254,11 @@ static int amdgpufb_create(struct drm_fb_helper *helper,
 	struct drm_framebuffer *fb = NULL;
 	struct drm_mode_fb_cmd2 mode_cmd;
 	struct drm_gem_object *gobj = NULL;
+<<<<<<< HEAD
 	struct amdgpu_bo *rbo = NULL;
+=======
+	struct amdgpu_bo *abo = NULL;
+>>>>>>> v4.9.227
 	int ret;
 	unsigned long tmp;
 
@@ -197,7 +277,11 @@ static int amdgpufb_create(struct drm_fb_helper *helper,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	rbo = gem_to_amdgpu_bo(gobj);
+=======
+	abo = gem_to_amdgpu_bo(gobj);
+>>>>>>> v4.9.227
 
 	/* okay we have an object now allocate the framebuffer */
 	info = drm_fb_helper_alloc_fbi(helper);
@@ -220,7 +304,11 @@ static int amdgpufb_create(struct drm_fb_helper *helper,
 	/* setup helper */
 	rfbdev->helper.fb = fb;
 
+<<<<<<< HEAD
 	memset_io(rbo->kptr, 0x0, amdgpu_bo_size(rbo));
+=======
+	memset_io(abo->kptr, 0x0, amdgpu_bo_size(abo));
+>>>>>>> v4.9.227
 
 	strcpy(info->fix.id, "amdgpudrmfb");
 
@@ -229,11 +317,19 @@ static int amdgpufb_create(struct drm_fb_helper *helper,
 	info->flags = FBINFO_DEFAULT | FBINFO_CAN_FORCE_OUTPUT;
 	info->fbops = &amdgpufb_ops;
 
+<<<<<<< HEAD
 	tmp = amdgpu_bo_gpu_offset(rbo) - adev->mc.vram_start;
 	info->fix.smem_start = adev->mc.aper_base + tmp;
 	info->fix.smem_len = amdgpu_bo_size(rbo);
 	info->screen_base = rbo->kptr;
 	info->screen_size = amdgpu_bo_size(rbo);
+=======
+	tmp = amdgpu_bo_gpu_offset(abo) - adev->mc.vram_start;
+	info->fix.smem_start = adev->mc.aper_base + tmp;
+	info->fix.smem_len = amdgpu_bo_size(abo);
+	info->screen_base = abo->kptr;
+	info->screen_size = amdgpu_bo_size(abo);
+>>>>>>> v4.9.227
 
 	drm_fb_helper_fill_var(info, &rfbdev->helper, sizes->fb_width, sizes->fb_height);
 
@@ -250,7 +346,11 @@ static int amdgpufb_create(struct drm_fb_helper *helper,
 
 	DRM_INFO("fb mappable at 0x%lX\n",  info->fix.smem_start);
 	DRM_INFO("vram apper at 0x%lX\n",  (unsigned long)adev->mc.aper_base);
+<<<<<<< HEAD
 	DRM_INFO("size %lu\n", (unsigned long)amdgpu_bo_size(rbo));
+=======
+	DRM_INFO("size %lu\n", (unsigned long)amdgpu_bo_size(abo));
+>>>>>>> v4.9.227
 	DRM_INFO("fb depth is %d\n", fb->depth);
 	DRM_INFO("   pitch is %d\n", fb->pitches[0]);
 
@@ -260,11 +360,19 @@ static int amdgpufb_create(struct drm_fb_helper *helper,
 out_destroy_fbi:
 	drm_fb_helper_release_fbi(helper);
 out_unref:
+<<<<<<< HEAD
 	if (rbo) {
 
 	}
 	if (fb && ret) {
 		drm_gem_object_unreference(gobj);
+=======
+	if (abo) {
+
+	}
+	if (fb && ret) {
+		drm_gem_object_unreference_unlocked(gobj);
+>>>>>>> v4.9.227
 		drm_framebuffer_unregister_private(fb);
 		drm_framebuffer_cleanup(fb);
 		kfree(fb);
@@ -334,6 +442,13 @@ int amdgpu_fbdev_init(struct amdgpu_device *adev)
 	if (!adev->mode_info.mode_config_initialized)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	/* don't init fbdev if there are no connectors */
+	if (list_empty(&adev->ddev->mode_config.connector_list))
+		return 0;
+
+>>>>>>> v4.9.227
 	/* select 8 bpp console on low vram cards */
 	if (adev->mc.real_vram_size <= (32*1024*1024))
 		bpp_sel = 8;

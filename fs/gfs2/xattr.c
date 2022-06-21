@@ -119,7 +119,11 @@ static int ea_foreach(struct gfs2_inode *ip, ea_call_t ea_call, void *data)
 	__be64 *eablk, *end;
 	int error;
 
+<<<<<<< HEAD
 	error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT, &bh);
+=======
+	error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT, 0, &bh);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 
@@ -143,7 +147,11 @@ static int ea_foreach(struct gfs2_inode *ip, ea_call_t ea_call, void *data)
 			break;
 		bn = be64_to_cpu(*eablk);
 
+<<<<<<< HEAD
 		error = gfs2_meta_read(ip->i_gl, bn, DIO_WAIT, &eabh);
+=======
+		error = gfs2_meta_read(ip->i_gl, bn, DIO_WAIT, 0, &eabh);
+>>>>>>> v4.9.227
 		if (error)
 			break;
 		error = ea_foreach_i(ip, eabh, ea_call, data);
@@ -309,7 +317,11 @@ static int ea_dealloc_unstuffed(struct gfs2_inode *ip, struct buffer_head *bh,
 
 	error = gfs2_meta_inode_buffer(ip, &dibh);
 	if (!error) {
+<<<<<<< HEAD
 		ip->i_inode.i_ctime = CURRENT_TIME;
+=======
+		ip->i_inode.i_ctime = current_time(&ip->i_inode);
+>>>>>>> v4.9.227
 		gfs2_trans_add_meta(ip->i_gl, dibh);
 		gfs2_dinode_out(ip, dibh->b_data);
 		brelse(dibh);
@@ -420,7 +432,11 @@ static int ea_list_i(struct gfs2_inode *ip, struct buffer_head *bh,
 
 ssize_t gfs2_listxattr(struct dentry *dentry, char *buffer, size_t size)
 {
+<<<<<<< HEAD
 	struct gfs2_inode *ip = GFS2_I(dentry->d_inode);
+=======
+	struct gfs2_inode *ip = GFS2_I(d_inode(dentry));
+>>>>>>> v4.9.227
 	struct gfs2_ea_request er;
 	struct gfs2_holder i_gh;
 	int error;
@@ -477,7 +493,11 @@ static int gfs2_iter_unstuffed(struct gfs2_inode *ip, struct gfs2_ea_header *ea,
 		return -ENOMEM;
 
 	for (x = 0; x < nptrs; x++) {
+<<<<<<< HEAD
 		error = gfs2_meta_read(ip->i_gl, be64_to_cpu(*dataptrs), 0,
+=======
+		error = gfs2_meta_read(ip->i_gl, be64_to_cpu(*dataptrs), 0, 0,
+>>>>>>> v4.9.227
 				       bh + x);
 		if (error) {
 			while (x--)
@@ -583,10 +603,17 @@ out:
  *
  * Returns: actual size of data on success, -errno on error
  */
+<<<<<<< HEAD
 static int gfs2_xattr_get(struct dentry *dentry, const char *name,
 		void *buffer, size_t size, int type)
 {
 	struct gfs2_inode *ip = GFS2_I(dentry->d_inode);
+=======
+static int __gfs2_xattr_get(struct inode *inode, const char *name,
+			    void *buffer, size_t size, int type)
+{
+	struct gfs2_inode *ip = GFS2_I(inode);
+>>>>>>> v4.9.227
 	struct gfs2_ea_location el;
 	int error;
 
@@ -609,6 +636,32 @@ static int gfs2_xattr_get(struct dentry *dentry, const char *name,
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+static int gfs2_xattr_get(const struct xattr_handler *handler,
+			  struct dentry *unused, struct inode *inode,
+			  const char *name, void *buffer, size_t size)
+{
+	struct gfs2_inode *ip = GFS2_I(inode);
+	struct gfs2_holder gh;
+	bool need_unlock = false;
+	int ret;
+
+	/* During lookup, SELinux calls this function with the glock locked. */
+
+	if (!gfs2_glock_is_locked_by_me(ip->i_gl)) {
+		ret = gfs2_glock_nq_init(ip->i_gl, LM_ST_SHARED, LM_FLAG_ANY, &gh);
+		if (ret)
+			return ret;
+		need_unlock = true;
+	}
+	ret = __gfs2_xattr_get(inode, name, buffer, size, handler->flags);
+	if (need_unlock)
+		gfs2_glock_dq_uninit(&gh);
+	return ret;
+}
+
+>>>>>>> v4.9.227
 /**
  * ea_alloc_blk - allocates a new block for extended attributes.
  * @ip: A pointer to the inode that's getting extended attributes
@@ -732,7 +785,11 @@ static int ea_alloc_skeleton(struct gfs2_inode *ip, struct gfs2_ea_request *er,
 	if (error)
 		return error;
 
+<<<<<<< HEAD
 	error = gfs2_quota_lock_check(ip);
+=======
+	error = gfs2_quota_lock_check(ip, &ap);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 
@@ -752,7 +809,11 @@ static int ea_alloc_skeleton(struct gfs2_inode *ip, struct gfs2_ea_request *er,
 
 	error = gfs2_meta_inode_buffer(ip, &dibh);
 	if (!error) {
+<<<<<<< HEAD
 		ip->i_inode.i_ctime = CURRENT_TIME;
+=======
+		ip->i_inode.i_ctime = current_time(&ip->i_inode);
+>>>>>>> v4.9.227
 		gfs2_trans_add_meta(ip->i_gl, dibh);
 		gfs2_dinode_out(ip, dibh->b_data);
 		brelse(dibh);
@@ -887,7 +948,11 @@ static int ea_set_simple_noalloc(struct gfs2_inode *ip, struct buffer_head *bh,
 	error = gfs2_meta_inode_buffer(ip, &dibh);
 	if (error)
 		goto out;
+<<<<<<< HEAD
 	ip->i_inode.i_ctime = CURRENT_TIME;
+=======
+	ip->i_inode.i_ctime = current_time(&ip->i_inode);
+>>>>>>> v4.9.227
 	gfs2_trans_add_meta(ip->i_gl, dibh);
 	gfs2_dinode_out(ip, dibh->b_data);
 	brelse(dibh);
@@ -977,7 +1042,11 @@ static int ea_set_block(struct gfs2_inode *ip, struct gfs2_ea_request *er,
 	if (ip->i_diskflags & GFS2_DIF_EA_INDIRECT) {
 		__be64 *end;
 
+<<<<<<< HEAD
 		error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT,
+=======
+		error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT, 0,
+>>>>>>> v4.9.227
 				       &indbh);
 		if (error)
 			return error;
@@ -1110,7 +1179,11 @@ static int ea_remove_stuffed(struct gfs2_inode *ip, struct gfs2_ea_location *el)
 
 	error = gfs2_meta_inode_buffer(ip, &dibh);
 	if (!error) {
+<<<<<<< HEAD
 		ip->i_inode.i_ctime = CURRENT_TIME;
+=======
+		ip->i_inode.i_ctime = current_time(&ip->i_inode);
+>>>>>>> v4.9.227
 		gfs2_trans_add_meta(ip->i_gl, dibh);
 		gfs2_dinode_out(ip, dibh->b_data);
 		brelse(dibh);
@@ -1227,6 +1300,7 @@ int __gfs2_xattr_set(struct inode *inode, const char *name,
 	return error;
 }
 
+<<<<<<< HEAD
 static int gfs2_xattr_set(struct dentry *dentry, const char *name,
 		const void *value, size_t size, int flags, int type)
 {
@@ -1284,6 +1358,29 @@ int gfs2_xattr_acl_chmod(struct gfs2_inode *ip, struct iattr *attr, char *data)
 	return error;
 }
 
+=======
+static int gfs2_xattr_set(const struct xattr_handler *handler,
+			  struct dentry *unused, struct inode *inode,
+			  const char *name, const void *value,
+			  size_t size, int flags)
+{
+	struct gfs2_inode *ip = GFS2_I(inode);
+	struct gfs2_holder gh;
+	int ret;
+
+	ret = gfs2_rsqa_alloc(ip);
+	if (ret)
+		return ret;
+
+	ret = gfs2_glock_nq_init(ip->i_gl, LM_ST_EXCLUSIVE, 0, &gh);
+	if (ret)
+		return ret;
+	ret = __gfs2_xattr_set(inode, name, value, size, flags, handler->flags);
+	gfs2_glock_dq_uninit(&gh);
+	return ret;
+}
+
+>>>>>>> v4.9.227
 static int ea_dealloc_indirect(struct gfs2_inode *ip)
 {
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
@@ -1303,7 +1400,11 @@ static int ea_dealloc_indirect(struct gfs2_inode *ip)
 
 	memset(&rlist, 0, sizeof(struct gfs2_rgrp_list));
 
+<<<<<<< HEAD
 	error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT, &indbh);
+=======
+	error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT, 0, &indbh);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 

@@ -172,8 +172,13 @@ struct jffs2_full_dnode *jffs2_write_dnode(struct jffs2_sb_info *c, struct jffs2
 	   beginning of a page and runs to the end of the file, or if
 	   it's a hole node, mark it REF_PRISTINE, else REF_NORMAL.
 	*/
+<<<<<<< HEAD
 	if ((je32_to_cpu(ri->dsize) >= PAGE_CACHE_SIZE) ||
 	    ( ((je32_to_cpu(ri->offset)&(PAGE_CACHE_SIZE-1))==0) &&
+=======
+	if ((je32_to_cpu(ri->dsize) >= PAGE_SIZE) ||
+	    ( ((je32_to_cpu(ri->offset)&(PAGE_SIZE-1))==0) &&
+>>>>>>> v4.9.227
 	      (je32_to_cpu(ri->dsize)+je32_to_cpu(ri->offset) ==  je32_to_cpu(ri->isize)))) {
 		flash_ofs |= REF_PRISTINE;
 	} else {
@@ -245,7 +250,11 @@ struct jffs2_full_dirent *jffs2_write_dirent(struct jffs2_sb_info *c, struct jff
 
 	fd->version = je32_to_cpu(rd->version);
 	fd->ino = je32_to_cpu(rd->ino);
+<<<<<<< HEAD
 	fd->nhash = full_name_hash(name, namelen);
+=======
+	fd->nhash = full_name_hash(NULL, name, namelen);
+>>>>>>> v4.9.227
 	fd->type = rd->type;
 	memcpy(fd->name, name, namelen);
 	fd->name[namelen]=0;
@@ -366,7 +375,12 @@ int jffs2_write_inode_range(struct jffs2_sb_info *c, struct jffs2_inode_info *f,
 			break;
 		}
 		mutex_lock(&f->sem);
+<<<<<<< HEAD
 		datalen = min_t(uint32_t, writelen, PAGE_CACHE_SIZE - (offset & (PAGE_CACHE_SIZE-1)));
+=======
+		datalen = min_t(uint32_t, writelen,
+				PAGE_SIZE - (offset & (PAGE_SIZE-1)));
+>>>>>>> v4.9.227
 		cdatalen = min_t(uint32_t, alloclen - sizeof(*ri), datalen);
 
 		comprtype = jffs2_compress(c, f, buf, &comprbuf, &datalen, &cdatalen);
@@ -597,7 +611,11 @@ int jffs2_do_unlink(struct jffs2_sb_info *c, struct jffs2_inode_info *dir_f,
 		jffs2_add_fd_to_list(c, fd, &dir_f->dents);
 		mutex_unlock(&dir_f->sem);
 	} else {
+<<<<<<< HEAD
 		uint32_t nhash = full_name_hash(name, namelen);
+=======
+		uint32_t nhash = full_name_hash(NULL, name, namelen);
+>>>>>>> v4.9.227
 
 		fd = dir_f->dents;
 		/* We don't actually want to reserve any space, but we do

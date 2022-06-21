@@ -22,8 +22,13 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>
 
+<<<<<<< HEAD
 #include <mach/pxa300.h>
 #include <mach/colibri.h>
+=======
+#include "pxa300.h"
+#include "colibri.h"
+>>>>>>> v4.9.227
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <mach/audio.h>

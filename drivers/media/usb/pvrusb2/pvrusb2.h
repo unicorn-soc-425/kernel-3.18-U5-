@@ -30,6 +30,7 @@
 #define PVR_NUM 20
 
 #endif /* __PVRUSB2_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -40,3 +41,5 @@
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

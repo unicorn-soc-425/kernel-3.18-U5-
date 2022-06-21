@@ -117,16 +117,24 @@ static inline int isci_device_io_ready(struct isci_remote_device *idev,
  *    functions. This function is called by libsas to send a task down to
  *    hardware.
  * @task: This parameter specifies the SAS task to send.
+<<<<<<< HEAD
  * @num: This parameter specifies the number of tasks to queue.
+=======
+>>>>>>> v4.9.227
  * @gfp_flags: This parameter specifies the context of this call.
  *
  * status, zero indicates success.
  */
+<<<<<<< HEAD
 int isci_task_execute_task(struct sas_task *task, int num, gfp_t gfp_flags)
+=======
+int isci_task_execute_task(struct sas_task *task, gfp_t gfp_flags)
+>>>>>>> v4.9.227
 {
 	struct isci_host *ihost = dev_to_ihost(task->dev);
 	struct isci_remote_device *idev;
 	unsigned long flags;
+<<<<<<< HEAD
 	bool io_ready;
 	u16 tag;
 
@@ -215,6 +223,90 @@ int isci_task_execute_task(struct sas_task *task, int num, gfp_t gfp_flags)
 		}
 		isci_put_device(idev);
 	}
+=======
+	enum sci_status status = SCI_FAILURE;
+	bool io_ready;
+	u16 tag;
+
+	spin_lock_irqsave(&ihost->scic_lock, flags);
+	idev = isci_lookup_device(task->dev);
+	io_ready = isci_device_io_ready(idev, task);
+	tag = isci_alloc_tag(ihost);
+	spin_unlock_irqrestore(&ihost->scic_lock, flags);
+
+	dev_dbg(&ihost->pdev->dev,
+		"task: %p, dev: %p idev: %p:%#lx cmd = %p\n",
+		task, task->dev, idev, idev ? idev->flags : 0,
+		task->uldd_task);
+
+	if (!idev) {
+		isci_task_refuse(ihost, task, SAS_TASK_UNDELIVERED,
+				 SAS_DEVICE_UNKNOWN);
+	} else if (!io_ready || tag == SCI_CONTROLLER_INVALID_IO_TAG) {
+		/* Indicate QUEUE_FULL so that the scsi midlayer
+		 * retries.
+		  */
+		isci_task_refuse(ihost, task, SAS_TASK_COMPLETE,
+				 SAS_QUEUE_FULL);
+	} else {
+		/* There is a device and it's ready for I/O. */
+		spin_lock_irqsave(&task->task_state_lock, flags);
+
+		if (task->task_state_flags & SAS_TASK_STATE_ABORTED) {
+			/* The I/O was aborted. */
+			spin_unlock_irqrestore(&task->task_state_lock, flags);
+
+			isci_task_refuse(ihost, task,
+					 SAS_TASK_UNDELIVERED,
+					 SAM_STAT_TASK_ABORTED);
+		} else {
+			task->task_state_flags |= SAS_TASK_AT_INITIATOR;
+			spin_unlock_irqrestore(&task->task_state_lock, flags);
+
+			/* build and send the request. */
+			status = isci_request_execute(ihost, idev, task, tag);
+
+			if (status != SCI_SUCCESS) {
+				spin_lock_irqsave(&task->task_state_lock, flags);
+				/* Did not really start this command. */
+				task->task_state_flags &= ~SAS_TASK_AT_INITIATOR;
+				spin_unlock_irqrestore(&task->task_state_lock, flags);
+
+				if (test_bit(IDEV_GONE, &idev->flags)) {
+					/* Indicate that the device
+					 * is gone.
+					 */
+					isci_task_refuse(ihost, task,
+						SAS_TASK_UNDELIVERED,
+						SAS_DEVICE_UNKNOWN);
+				} else {
+					/* Indicate QUEUE_FULL so that
+					 * the scsi midlayer retries.
+					 * If the request failed for
+					 * remote device reasons, it
+					 * gets returned as
+					 * SAS_TASK_UNDELIVERED next
+					 * time through.
+					 */
+					isci_task_refuse(ihost, task,
+						SAS_TASK_COMPLETE,
+						SAS_QUEUE_FULL);
+				}
+			}
+		}
+	}
+
+	if (status != SCI_SUCCESS && tag != SCI_CONTROLLER_INVALID_IO_TAG) {
+		spin_lock_irqsave(&ihost->scic_lock, flags);
+		/* command never hit the device, so just free
+		 * the tci and skip the sequence increment
+		 */
+		isci_tci_free(ihost, ISCI_TAG_TCI(tag));
+		spin_unlock_irqrestore(&ihost->scic_lock, flags);
+	}
+
+	isci_put_device(idev);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -265,7 +357,11 @@ static int isci_task_execute_tmf(struct isci_host *ihost,
 				 struct isci_tmf *tmf, unsigned long timeout_ms)
 {
 	DECLARE_COMPLETION_ONSTACK(completion);
+<<<<<<< HEAD
 	enum sci_task_status status = SCI_TASK_FAILURE;
+=======
+	enum sci_status status = SCI_FAILURE;
+>>>>>>> v4.9.227
 	struct isci_request *ireq;
 	int ret = TMF_RESP_FUNC_FAILED;
 	unsigned long flags;
@@ -308,7 +404,11 @@ static int isci_task_execute_tmf(struct isci_host *ihost,
 	/* start the TMF io. */
 	status = sci_controller_start_task(ihost, idev, ireq);
 
+<<<<<<< HEAD
 	if (status != SCI_TASK_SUCCESS) {
+=======
+	if (status != SCI_SUCCESS) {
+>>>>>>> v4.9.227
 		dev_dbg(&ihost->pdev->dev,
 			 "%s: start_io failed - status = 0x%x, request = %p\n",
 			 __func__,
@@ -595,7 +695,11 @@ int isci_task_abort_task(struct sas_task *task)
 
 		ret = TMF_RESP_FUNC_COMPLETE;
 	} else {
+<<<<<<< HEAD
 		/* Fill in the tmf stucture */
+=======
+		/* Fill in the tmf structure */
+>>>>>>> v4.9.227
 		isci_task_build_abort_task_tmf(&tmf, isci_tmf_ssp_task_abort,
 					       old_request);
 

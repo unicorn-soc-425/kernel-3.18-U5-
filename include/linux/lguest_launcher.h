@@ -8,6 +8,7 @@
  *
  * The Guest needs devices to do anything useful.  Since we don't let it touch
  * real devices (think of the damage it could do!) we provide virtual devices.
+<<<<<<< HEAD
  * We could emulate a PCI bus with various devices on it, but that is a fairly
  * complex burden for the Host and suboptimal for the Guest, so we have our own
  * simple lguest bus and we use "virtio" drivers.  These drivers need a set of
@@ -15,10 +16,15 @@
  * the net/block/console stuff themselves.  This means that if we want to add
  * a new device, we simply need to write a new virtio driver and create support
  * for it in the Launcher: this code won't need to change.
+=======
+ * We emulate a PCI bus with virtio devices on it; we used to have our own
+ * lguest bus which was far simpler, but this tests the virtio 1.0 standard.
+>>>>>>> v4.9.227
  *
  * Virtio devices are also used by kvm, so we can simply reuse their optimized
  * device drivers.  And one day when everyone uses virtio, my plan will be
  * complete.  Bwahahahah!
+<<<<<<< HEAD
  *
  * Devices are described by a simplified ID, a status byte, and some "config"
  * bytes which describe this device's configuration.  This is placed by the
@@ -54,6 +60,9 @@ struct lguest_vqconfig {
 	__u32 pfn;
 };
 /*:*/
+=======
+ */
+>>>>>>> v4.9.227
 
 /* Write command first word is a request. */
 enum lguest_req
@@ -62,6 +71,7 @@ enum lguest_req
 	LHREQ_GETDMA, /* No longer used */
 	LHREQ_IRQ, /* + irq */
 	LHREQ_BREAK, /* No longer used */
+<<<<<<< HEAD
 	LHREQ_EVENTFD, /* + address, fd. */
 };
 
@@ -70,4 +80,24 @@ enum lguest_req
  * x86 pagesize for historical reasons.
  */
 #define LGUEST_VRING_ALIGN	4096
+=======
+	LHREQ_EVENTFD, /* No longer used. */
+	LHREQ_GETREG, /* + offset within struct pt_regs (then read value). */
+	LHREQ_SETREG, /* + offset within struct pt_regs, value. */
+	LHREQ_TRAP, /* + trap number to deliver to guest. */
+};
+
+/*
+ * This is what read() of the lguest fd populates.  trap ==
+ * LGUEST_TRAP_ENTRY for an LHCALL_NOTIFY (addr is the
+ * argument), 14 for a page fault in the MMIO region (addr is
+ * the trap address, insn is the instruction), or 13 for a GPF
+ * (insn is the instruction).
+ */
+struct lguest_pending {
+	__u8 trap;
+	__u8 insn[7];
+	__u32 addr;
+};
+>>>>>>> v4.9.227
 #endif /* _LINUX_LGUEST_LAUNCHER */

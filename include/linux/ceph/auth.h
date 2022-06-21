@@ -12,7 +12,15 @@
  */
 
 struct ceph_auth_client;
+<<<<<<< HEAD
 struct ceph_authorizer;
+=======
+struct ceph_msg;
+
+struct ceph_authorizer {
+	void (*destroy)(struct ceph_authorizer *);
+};
+>>>>>>> v4.9.227
 
 struct ceph_auth_handshake {
 	struct ceph_authorizer *authorizer;
@@ -20,6 +28,13 @@ struct ceph_auth_handshake {
 	size_t authorizer_buf_len;
 	void *authorizer_reply_buf;
 	size_t authorizer_reply_buf_len;
+<<<<<<< HEAD
+=======
+	int (*sign_message)(struct ceph_auth_handshake *auth,
+			    struct ceph_msg *msg);
+	int (*check_message_signature)(struct ceph_auth_handshake *auth,
+				       struct ceph_msg *msg);
+>>>>>>> v4.9.227
 };
 
 struct ceph_auth_client_ops {
@@ -55,10 +70,19 @@ struct ceph_auth_client_ops {
 	/* ensure that an existing authorizer is up to date */
 	int (*update_authorizer)(struct ceph_auth_client *ac, int peer_type,
 				 struct ceph_auth_handshake *auth);
+<<<<<<< HEAD
 	int (*verify_authorizer_reply)(struct ceph_auth_client *ac,
 				       struct ceph_authorizer *a, size_t len);
 	void (*destroy_authorizer)(struct ceph_auth_client *ac,
 				   struct ceph_authorizer *a);
+=======
+	int (*add_authorizer_challenge)(struct ceph_auth_client *ac,
+					struct ceph_authorizer *a,
+					void *challenge_buf,
+					int challenge_buf_len);
+	int (*verify_authorizer_reply)(struct ceph_auth_client *ac,
+				       struct ceph_authorizer *a);
+>>>>>>> v4.9.227
 	void (*invalidate_authorizer)(struct ceph_auth_client *ac,
 				      int peer_type);
 
@@ -66,6 +90,14 @@ struct ceph_auth_client_ops {
 	void (*reset)(struct ceph_auth_client *ac);
 
 	void (*destroy)(struct ceph_auth_client *ac);
+<<<<<<< HEAD
+=======
+
+	int (*sign_message)(struct ceph_auth_handshake *auth,
+			    struct ceph_msg *msg);
+	int (*check_message_signature)(struct ceph_auth_handshake *auth,
+				       struct ceph_msg *msg);
+>>>>>>> v4.9.227
 };
 
 struct ceph_auth_client {
@@ -93,7 +125,11 @@ extern int ceph_auth_build_hello(struct ceph_auth_client *ac,
 extern int ceph_handle_auth_reply(struct ceph_auth_client *ac,
 				  void *buf, size_t len,
 				  void *reply_buf, size_t reply_len);
+<<<<<<< HEAD
 extern int ceph_entity_name_encode(const char *name, void **p, void *end);
+=======
+int ceph_auth_entity_name_encode(const char *name, void **p, void *end);
+>>>>>>> v4.9.227
 
 extern int ceph_build_auth(struct ceph_auth_client *ac,
 		    void *msg_buf, size_t msg_len);
@@ -102,6 +138,7 @@ extern int ceph_auth_is_authenticated(struct ceph_auth_client *ac);
 extern int ceph_auth_create_authorizer(struct ceph_auth_client *ac,
 				       int peer_type,
 				       struct ceph_auth_handshake *auth);
+<<<<<<< HEAD
 extern void ceph_auth_destroy_authorizer(struct ceph_auth_client *ac,
 					 struct ceph_authorizer *a);
 extern int ceph_auth_update_authorizer(struct ceph_auth_client *ac,
@@ -113,4 +150,35 @@ extern int ceph_auth_verify_authorizer_reply(struct ceph_auth_client *ac,
 extern void ceph_auth_invalidate_authorizer(struct ceph_auth_client *ac,
 					    int peer_type);
 
+=======
+void ceph_auth_destroy_authorizer(struct ceph_authorizer *a);
+extern int ceph_auth_update_authorizer(struct ceph_auth_client *ac,
+				       int peer_type,
+				       struct ceph_auth_handshake *a);
+int ceph_auth_add_authorizer_challenge(struct ceph_auth_client *ac,
+				       struct ceph_authorizer *a,
+				       void *challenge_buf,
+				       int challenge_buf_len);
+extern int ceph_auth_verify_authorizer_reply(struct ceph_auth_client *ac,
+					     struct ceph_authorizer *a);
+extern void ceph_auth_invalidate_authorizer(struct ceph_auth_client *ac,
+					    int peer_type);
+
+static inline int ceph_auth_sign_message(struct ceph_auth_handshake *auth,
+					 struct ceph_msg *msg)
+{
+	if (auth->sign_message)
+		return auth->sign_message(auth, msg);
+	return 0;
+}
+
+static inline
+int ceph_auth_check_message_signature(struct ceph_auth_handshake *auth,
+				      struct ceph_msg *msg)
+{
+	if (auth->check_message_signature)
+		return auth->check_message_signature(auth, msg);
+	return 0;
+}
+>>>>>>> v4.9.227
 #endif

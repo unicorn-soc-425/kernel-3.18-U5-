@@ -461,7 +461,11 @@ static struct clockdomain ipu_7xx_clkdm = {
 	.cm_inst	  = DRA7XX_CM_CORE_AON_IPU_INST,
 	.clkdm_offs	  = DRA7XX_CM_CORE_AON_IPU_IPU_CDOFFS,
 	.dep_bit	  = DRA7XX_IPU_STATDEP_SHIFT,
+<<<<<<< HEAD
 	.flags		  = CLKDM_CAN_HWSUP_SWSUP,
+=======
+	.flags		  = CLKDM_CAN_SWSUP,
+>>>>>>> v4.9.227
 };
 
 static struct clockdomain mpu1_7xx_clkdm = {

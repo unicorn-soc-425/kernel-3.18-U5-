@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,7 +73,11 @@ ACPI_MODULE_NAME("uteval")
 
 acpi_status
 acpi_ut_evaluate_object(struct acpi_namespace_node *prefix_node,
+<<<<<<< HEAD
 			char *path,
+=======
+			const char *path,
+>>>>>>> v4.9.227
 			u32 expected_return_btypes,
 			union acpi_operand_object **return_desc)
 {
@@ -204,7 +212,11 @@ cleanup:
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ut_evaluate_numeric_object(char *object_name,
+=======
+acpi_ut_evaluate_numeric_object(const char *object_name,
+>>>>>>> v4.9.227
 				struct acpi_namespace_node *device_node,
 				u64 *value)
 {

@@ -25,6 +25,12 @@ struct ath_dfs_pool_stats global_dfs_pool_stats = {};
 
 #define DFS_POOL_STAT_INC(c) (global_dfs_pool_stats.c++)
 #define DFS_POOL_STAT_DEC(c) (global_dfs_pool_stats.c--)
+<<<<<<< HEAD
+=======
+#define GET_PRI_TO_USE(MIN, MAX, RUNTIME) \
+	(MIN + PRI_TOLERANCE == MAX - PRI_TOLERANCE ? \
+	MIN + PRI_TOLERANCE : RUNTIME)
+>>>>>>> v4.9.227
 
 /**
  * struct pulse_elem - elements in pulse queue
@@ -243,7 +249,12 @@ static bool pseq_handler_create_sequences(struct pri_detector *pde,
 		ps.count_falses = 0;
 		ps.first_ts = p->ts;
 		ps.last_ts = ts;
+<<<<<<< HEAD
 		ps.pri = ts - p->ts;
+=======
+		ps.pri = GET_PRI_TO_USE(pde->rs->pri_min,
+			pde->rs->pri_max, ts - p->ts);
+>>>>>>> v4.9.227
 		ps.dur = ps.pri * (pde->rs->ppb - 1)
 				+ 2 * pde->rs->max_pri_tolerance;
 
@@ -273,7 +284,11 @@ static bool pseq_handler_create_sequences(struct pri_detector *pde,
 				tmp_false_count++;
 			}
 		}
+<<<<<<< HEAD
 		if (ps.count < min_count)
+=======
+		if (ps.count <= min_count)
+>>>>>>> v4.9.227
 			/* did not reach minimum count, drop sequence */
 			continue;
 
@@ -390,6 +405,13 @@ static struct pri_sequence *pri_detector_add_pulse(struct pri_detector *de,
 	if ((ts - de->last_ts) < rs->max_pri_tolerance)
 		/* if delta to last pulse is too short, don't use this pulse */
 		return NULL;
+<<<<<<< HEAD
+=======
+	/* radar detector spec needs chirp, but not detected */
+	if (rs->chirp && rs->chirp != event->chirp)
+		return NULL;
+
+>>>>>>> v4.9.227
 	de->last_ts = ts;
 
 	max_updated_seq = pseq_handler_add_to_existing_seqs(de, ts);

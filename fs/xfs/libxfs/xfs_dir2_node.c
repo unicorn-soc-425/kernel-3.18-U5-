@@ -21,8 +21,11 @@
 #include "xfs_format.h"
 #include "xfs_log_format.h"
 #include "xfs_trans_resv.h"
+<<<<<<< HEAD
 #include "xfs_sb.h"
 #include "xfs_ag.h"
+=======
+>>>>>>> v4.9.227
 #include "xfs_mount.h"
 #include "xfs_da_format.h"
 #include "xfs_da_btree.h"
@@ -35,6 +38,10 @@
 #include "xfs_trans.h"
 #include "xfs_buf_item.h"
 #include "xfs_cksum.h"
+<<<<<<< HEAD
+=======
+#include "xfs_log.h"
+>>>>>>> v4.9.227
 
 /*
  * Function declarations.
@@ -95,10 +102,19 @@ xfs_dir3_free_verify(
 
 		if (hdr3->magic != cpu_to_be32(XFS_DIR3_FREE_MAGIC))
 			return false;
+<<<<<<< HEAD
 		if (!uuid_equal(&hdr3->uuid, &mp->m_sb.sb_uuid))
 			return false;
 		if (be64_to_cpu(hdr3->blkno) != bp->b_bn)
 			return false;
+=======
+		if (!uuid_equal(&hdr3->uuid, &mp->m_sb.sb_meta_uuid))
+			return false;
+		if (be64_to_cpu(hdr3->blkno) != bp->b_bn)
+			return false;
+		if (!xfs_log_check_lsn(mp, be64_to_cpu(hdr3->lsn)))
+			return false;
+>>>>>>> v4.9.227
 	} else {
 		if (hdr->magic != cpu_to_be32(XFS_DIR2_FREE_MAGIC))
 			return false;
@@ -154,6 +170,45 @@ const struct xfs_buf_ops xfs_dir3_free_buf_ops = {
 	.verify_write = xfs_dir3_free_write_verify,
 };
 
+<<<<<<< HEAD
+=======
+/* Everything ok in the free block header? */
+static bool
+xfs_dir3_free_header_check(
+	struct xfs_inode	*dp,
+	xfs_dablk_t		fbno,
+	struct xfs_buf		*bp)
+{
+	struct xfs_mount	*mp = dp->i_mount;
+	unsigned int		firstdb;
+	int			maxbests;
+
+	maxbests = dp->d_ops->free_max_bests(mp->m_dir_geo);
+	firstdb = (xfs_dir2_da_to_db(mp->m_dir_geo, fbno) -
+		   xfs_dir2_byte_to_db(mp->m_dir_geo, XFS_DIR2_FREE_OFFSET)) *
+			maxbests;
+	if (xfs_sb_version_hascrc(&mp->m_sb)) {
+		struct xfs_dir3_free_hdr *hdr3 = bp->b_addr;
+
+		if (be32_to_cpu(hdr3->firstdb) != firstdb)
+			return false;
+		if (be32_to_cpu(hdr3->nvalid) > maxbests)
+			return false;
+		if (be32_to_cpu(hdr3->nvalid) < be32_to_cpu(hdr3->nused))
+			return false;
+	} else {
+		struct xfs_dir2_free_hdr *hdr = bp->b_addr;
+
+		if (be32_to_cpu(hdr->firstdb) != firstdb)
+			return false;
+		if (be32_to_cpu(hdr->nvalid) > maxbests)
+			return false;
+		if (be32_to_cpu(hdr->nvalid) < be32_to_cpu(hdr->nused))
+			return false;
+	}
+	return true;
+}
+>>>>>>> v4.9.227
 
 static int
 __xfs_dir3_free_read(
@@ -167,11 +222,30 @@ __xfs_dir3_free_read(
 
 	err = xfs_da_read_buf(tp, dp, fbno, mappedbno, bpp,
 				XFS_DATA_FORK, &xfs_dir3_free_buf_ops);
+<<<<<<< HEAD
 
 	/* try read returns without an error or *bpp if it lands in a hole */
 	if (!err && tp && *bpp)
 		xfs_trans_buf_set_type(tp, *bpp, XFS_BLFT_DIR_FREE_BUF);
 	return err;
+=======
+	if (err || !*bpp)
+		return err;
+
+	/* Check things that we can't do in the verifier. */
+	if (!xfs_dir3_free_header_check(dp, fbno, *bpp)) {
+		xfs_buf_ioerror(*bpp, -EFSCORRUPTED);
+		xfs_verifier_error(*bpp);
+		xfs_trans_brelse(tp, *bpp);
+		return -EFSCORRUPTED;
+	}
+
+	/* try read returns without an error or *bpp if it lands in a hole */
+	if (tp)
+		xfs_trans_buf_set_type(tp, *bpp, XFS_BLFT_DIR_FREE_BUF);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 int
@@ -229,7 +303,11 @@ xfs_dir3_free_get_buf(
 
 		hdr3->hdr.blkno = cpu_to_be64(bp->b_bn);
 		hdr3->hdr.owner = cpu_to_be64(dp->i_ino);
+<<<<<<< HEAD
 		uuid_copy(&hdr3->hdr.uuid, &mp->m_sb.sb_uuid);
+=======
+		uuid_copy(&hdr3->hdr.uuid, &mp->m_sb.sb_meta_uuid);
+>>>>>>> v4.9.227
 	} else
 		hdr.magic = XFS_DIR2_FREE_MAGIC;
 	dp->d_ops->free_hdr_to_disk(bp->b_addr, &hdr);
@@ -298,7 +376,10 @@ xfs_dir2_leaf_to_node(
 	int			i;		/* leaf freespace index */
 	xfs_dir2_leaf_t		*leaf;		/* leaf structure */
 	xfs_dir2_leaf_tail_t	*ltp;		/* leaf tail structure */
+<<<<<<< HEAD
 	xfs_mount_t		*mp;		/* filesystem mount point */
+=======
+>>>>>>> v4.9.227
 	int			n;		/* count of live freespc ents */
 	xfs_dir2_data_off_t	off;		/* freespace entry value */
 	__be16			*to;		/* pointer to freespace entry */
@@ -308,7 +389,10 @@ xfs_dir2_leaf_to_node(
 	trace_xfs_dir2_leaf_to_node(args);
 
 	dp = args->dp;
+<<<<<<< HEAD
 	mp = dp->i_mount;
+=======
+>>>>>>> v4.9.227
 	tp = args->trans;
 	/*
 	 * Add a freespace block to the directory.
@@ -388,16 +472,22 @@ xfs_dir2_leafn_add(
 	int			lfloghigh;	/* high leaf entry logging */
 	int			lfloglow;	/* low leaf entry logging */
 	int			lowstale;	/* previous stale entry */
+<<<<<<< HEAD
 	xfs_mount_t		*mp;		/* filesystem mount point */
 	xfs_trans_t		*tp;		/* transaction pointer */
+=======
+>>>>>>> v4.9.227
 	struct xfs_dir3_icleaf_hdr leafhdr;
 	struct xfs_dir2_leaf_entry *ents;
 
 	trace_xfs_dir2_leafn_add(args, index);
 
 	dp = args->dp;
+<<<<<<< HEAD
 	mp = dp->i_mount;
 	tp = args->trans;
+=======
+>>>>>>> v4.9.227
 	leaf = bp->b_addr;
 	dp->d_ops->leaf_hdr_from_disk(&leafhdr, leaf);
 	ents = dp->d_ops->leaf_ents_p(leaf);
@@ -1171,7 +1261,10 @@ xfs_dir2_leafn_remove(
 	xfs_dir2_leaf_entry_t	*lep;		/* leaf entry */
 	int			longest;	/* longest data free entry */
 	int			off;		/* data block entry offset */
+<<<<<<< HEAD
 	xfs_mount_t		*mp;		/* filesystem mount point */
+=======
+>>>>>>> v4.9.227
 	int			needlog;	/* need to log data header */
 	int			needscan;	/* need to rescan data frees */
 	xfs_trans_t		*tp;		/* transaction pointer */
@@ -1183,7 +1276,10 @@ xfs_dir2_leafn_remove(
 
 	dp = args->dp;
 	tp = args->trans;
+<<<<<<< HEAD
 	mp = dp->i_mount;
+=======
+>>>>>>> v4.9.227
 	leaf = bp->b_addr;
 	dp->d_ops->leaf_hdr_from_disk(&leafhdr, leaf);
 	ents = dp->d_ops->leaf_ents_p(leaf);
@@ -1324,7 +1420,10 @@ xfs_dir2_leafn_split(
 	xfs_da_args_t		*args;		/* operation arguments */
 	xfs_dablk_t		blkno;		/* new leaf block number */
 	int			error;		/* error return value */
+<<<<<<< HEAD
 	xfs_mount_t		*mp;		/* filesystem mount point */
+=======
+>>>>>>> v4.9.227
 	struct xfs_inode	*dp;
 
 	/*
@@ -1332,7 +1431,10 @@ xfs_dir2_leafn_split(
 	 */
 	args = state->args;
 	dp = args->dp;
+<<<<<<< HEAD
 	mp = dp->i_mount;
+=======
+>>>>>>> v4.9.227
 	ASSERT(oldblk->magic == XFS_DIR2_LEAFN_MAGIC);
 	error = xfs_da_grow_inode(args, &blkno);
 	if (error) {
@@ -1858,8 +1960,12 @@ xfs_dir2_node_addname_int(
 
 			if (dp->d_ops->db_to_fdb(args->geo, dbno) != fbno) {
 				xfs_alert(mp,
+<<<<<<< HEAD
 			"%s: dir ino %llu needed freesp block %lld for\n"
 			"  data block %lld, got %lld ifbno %llu lastfbno %d",
+=======
+"%s: dir ino %llu needed freesp block %lld for data block %lld, got %lld ifbno %llu lastfbno %d",
+>>>>>>> v4.9.227
 					__func__, (unsigned long long)dp->i_ino,
 					(long long)dp->d_ops->db_to_fdb(
 								args->geo, dbno),
@@ -2145,6 +2251,10 @@ xfs_dir2_node_replace(
 	int			error;		/* error return value */
 	int			i;		/* btree level */
 	xfs_ino_t		inum;		/* new inode number */
+<<<<<<< HEAD
+=======
+	int			ftype;		/* new file type */
+>>>>>>> v4.9.227
 	xfs_dir2_leaf_t		*leaf;		/* leaf structure */
 	xfs_dir2_leaf_entry_t	*lep;		/* leaf entry being changed */
 	int			rval;		/* internal return value */
@@ -2158,7 +2268,18 @@ xfs_dir2_node_replace(
 	state = xfs_da_state_alloc();
 	state->args = args;
 	state->mp = args->dp->i_mount;
+<<<<<<< HEAD
 	inum = args->inumber;
+=======
+
+	/*
+	 * We have to save new inode number and ftype since
+	 * xfs_da3_node_lookup_int() is going to overwrite them
+	 */
+	inum = args->inumber;
+	ftype = args->filetype;
+
+>>>>>>> v4.9.227
 	/*
 	 * Lookup the entry to change in the btree.
 	 */
@@ -2196,7 +2317,11 @@ xfs_dir2_node_replace(
 		 * Fill in the new inode number and log the entry.
 		 */
 		dep->inumber = cpu_to_be64(inum);
+<<<<<<< HEAD
 		args->dp->d_ops->data_put_ftype(dep, args->filetype);
+=======
+		args->dp->d_ops->data_put_ftype(dep, ftype);
+>>>>>>> v4.9.227
 		xfs_dir2_data_log_entry(args, state->extrablk.bp, dep);
 		rval = 0;
 	}
@@ -2232,13 +2357,23 @@ xfs_dir2_node_trim_free(
 	xfs_inode_t		*dp;		/* incore directory inode */
 	int			error;		/* error return code */
 	xfs_dir2_free_t		*free;		/* freespace structure */
+<<<<<<< HEAD
 	xfs_mount_t		*mp;		/* filesystem mount point */
+=======
+>>>>>>> v4.9.227
 	xfs_trans_t		*tp;		/* transaction pointer */
 	struct xfs_dir3_icfree_hdr freehdr;
 
 	dp = args->dp;
+<<<<<<< HEAD
 	mp = dp->i_mount;
 	tp = args->trans;
+=======
+	tp = args->trans;
+
+	*rvalp = 0;
+
+>>>>>>> v4.9.227
 	/*
 	 * Read the freespace block.
 	 */
@@ -2259,7 +2394,10 @@ xfs_dir2_node_trim_free(
 	 */
 	if (freehdr.nused > 0) {
 		xfs_trans_brelse(tp, bp);
+<<<<<<< HEAD
 		*rvalp = 0;
+=======
+>>>>>>> v4.9.227
 		return 0;
 	}
 	/*

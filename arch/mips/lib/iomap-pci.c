@@ -7,9 +7,17 @@
  *     written by Ralf Baechle <ralf@linux-mips.org>
  */
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <asm/io.h>
 
+=======
+#include <linux/export.h>
+#include <asm/io.h>
+
+#ifdef CONFIG_PCI_DRIVERS_LEGACY
+
+>>>>>>> v4.9.227
 void __iomem *__pci_ioport_map(struct pci_dev *dev,
 			       unsigned long port, unsigned int nr)
 {
@@ -40,6 +48,11 @@ void __iomem *__pci_ioport_map(struct pci_dev *dev,
 	return (void __iomem *) (ctrl->io_map_base + port);
 }
 
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_PCI_DRIVERS_LEGACY */
+
+>>>>>>> v4.9.227
 void pci_iounmap(struct pci_dev *dev, void __iomem * addr)
 {
 	iounmap(addr);

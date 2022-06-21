@@ -34,7 +34,11 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
 #include <media/v4l2-mediabus.h>
+<<<<<<< HEAD
 #include <media/s5c73m3.h>
+=======
+#include <media/i2c/s5c73m3.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-of.h>
 
 #include "s5c73m3.h"
@@ -167,7 +171,11 @@ static int s5c73m3_i2c_read(struct i2c_client *client, u16 addr, u16 *data)
 	 */
 	ret = i2c_transfer(client->adapter, msg, 2);
 	if (ret == 2) {
+<<<<<<< HEAD
 		*data = be16_to_cpup((u16 *)rbuf);
+=======
+		*data = be16_to_cpup((__be16 *)rbuf);
+>>>>>>> v4.9.227
 		v4l2_dbg(4, s5c73m3_dbg, client,
 			 "%s: addr: 0x%04x, data: 0x%04x\n",
 			 __func__, addr, *data);
@@ -824,10 +832,18 @@ static const struct s5c73m3_frame_size *s5c73m3_find_frame_size(
 }
 
 static void s5c73m3_oif_try_format(struct s5c73m3 *state,
+<<<<<<< HEAD
 				   struct v4l2_subdev_fh *fh,
 				   struct v4l2_subdev_format *fmt,
 				   const struct s5c73m3_frame_size **fs)
 {
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+				   struct v4l2_subdev_format *fmt,
+				   const struct s5c73m3_frame_size **fs)
+{
+	struct v4l2_subdev *sd = &state->sensor_sd;
+>>>>>>> v4.9.227
 	u32 code;
 
 	switch (fmt->pad) {
@@ -850,7 +866,11 @@ static void s5c73m3_oif_try_format(struct s5c73m3 *state,
 			*fs = state->oif_pix_size[RES_ISP];
 		else
 			*fs = s5c73m3_find_frame_size(
+<<<<<<< HEAD
 						v4l2_subdev_get_try_format(fh,
+=======
+						v4l2_subdev_get_try_format(sd, cfg,
+>>>>>>> v4.9.227
 							OIF_ISP_PAD),
 						RES_ISP);
 		break;
@@ -860,7 +880,11 @@ static void s5c73m3_oif_try_format(struct s5c73m3 *state,
 }
 
 static void s5c73m3_try_format(struct s5c73m3 *state,
+<<<<<<< HEAD
 			      struct v4l2_subdev_fh *fh,
+=======
+			      struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			      struct v4l2_subdev_format *fmt,
 			      const struct s5c73m3_frame_size **fs)
 {
@@ -952,7 +976,11 @@ static int s5c73m3_oif_s_frame_interval(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_oif_enum_frame_interval(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			      struct v4l2_subdev_fh *fh,
+=======
+			      struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			      struct v4l2_subdev_frame_interval_enum *fie)
 {
 	struct s5c73m3 *state = oif_sd_to_s5c73m3(sd);
@@ -990,7 +1018,11 @@ static int s5c73m3_oif_get_pad_code(int pad, int index)
 }
 
 static int s5c73m3_get_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			   struct v4l2_subdev_fh *fh,
+=======
+			   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			   struct v4l2_subdev_format *fmt)
 {
 	struct s5c73m3 *state = sensor_sd_to_s5c73m3(sd);
@@ -998,7 +1030,11 @@ static int s5c73m3_get_fmt(struct v4l2_subdev *sd,
 	u32 code;
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+<<<<<<< HEAD
 		fmt->format = *v4l2_subdev_get_try_format(fh, fmt->pad);
+=======
+		fmt->format = *v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -1024,7 +1060,11 @@ static int s5c73m3_get_fmt(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_oif_get_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			   struct v4l2_subdev_fh *fh,
+=======
+			   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			   struct v4l2_subdev_format *fmt)
 {
 	struct s5c73m3 *state = oif_sd_to_s5c73m3(sd);
@@ -1032,7 +1072,11 @@ static int s5c73m3_oif_get_fmt(struct v4l2_subdev *sd,
 	u32 code;
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+<<<<<<< HEAD
 		fmt->format = *v4l2_subdev_get_try_format(fh, fmt->pad);
+=======
+		fmt->format = *v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -1062,7 +1106,11 @@ static int s5c73m3_oif_get_fmt(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_set_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			   struct v4l2_subdev_fh *fh,
+=======
+			   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			   struct v4l2_subdev_format *fmt)
 {
 	const struct s5c73m3_frame_size *frame_size = NULL;
@@ -1072,10 +1120,17 @@ static int s5c73m3_set_fmt(struct v4l2_subdev *sd,
 
 	mutex_lock(&state->lock);
 
+<<<<<<< HEAD
 	s5c73m3_try_format(state, fh, fmt, &frame_size);
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 		mf = v4l2_subdev_get_try_format(fh, fmt->pad);
+=======
+	s5c73m3_try_format(state, cfg, fmt, &frame_size);
+
+	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+		mf = v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+>>>>>>> v4.9.227
 		*mf = fmt->format;
 	} else {
 		switch (fmt->pad) {
@@ -1101,7 +1156,11 @@ static int s5c73m3_set_fmt(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_oif_set_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			 struct v4l2_subdev_fh *fh,
+=======
+			 struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			 struct v4l2_subdev_format *fmt)
 {
 	const struct s5c73m3_frame_size *frame_size = NULL;
@@ -1111,6 +1170,7 @@ static int s5c73m3_oif_set_fmt(struct v4l2_subdev *sd,
 
 	mutex_lock(&state->lock);
 
+<<<<<<< HEAD
 	s5c73m3_oif_try_format(state, fh, fmt, &frame_size);
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
@@ -1118,6 +1178,15 @@ static int s5c73m3_oif_set_fmt(struct v4l2_subdev *sd,
 		*mf = fmt->format;
 		if (fmt->pad == OIF_ISP_PAD) {
 			mf = v4l2_subdev_get_try_format(fh, OIF_SOURCE_PAD);
+=======
+	s5c73m3_oif_try_format(state, cfg, fmt, &frame_size);
+
+	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+		mf = v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+		*mf = fmt->format;
+		if (fmt->pad == OIF_ISP_PAD) {
+			mf = v4l2_subdev_get_try_format(sd, cfg, OIF_SOURCE_PAD);
+>>>>>>> v4.9.227
 			mf->width = fmt->format.width;
 			mf->height = fmt->format.height;
 		}
@@ -1189,7 +1258,11 @@ static int s5c73m3_oif_set_frame_desc(struct v4l2_subdev *sd, unsigned int pad,
 }
 
 static int s5c73m3_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				  struct v4l2_subdev_fh *fh,
+=======
+				  struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 				  struct v4l2_subdev_mbus_code_enum *code)
 {
 	static const int codes[] = {
@@ -1205,7 +1278,11 @@ static int s5c73m3_enum_mbus_code(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_oif_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				struct v4l2_subdev_fh *fh,
+=======
+				struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 				struct v4l2_subdev_mbus_code_enum *code)
 {
 	int ret;
@@ -1220,7 +1297,11 @@ static int s5c73m3_oif_enum_mbus_code(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_enum_frame_size(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				   struct v4l2_subdev_fh *fh,
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 				   struct v4l2_subdev_frame_size_enum *fse)
 {
 	int idx;
@@ -1247,9 +1328,16 @@ static int s5c73m3_enum_frame_size(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_oif_enum_frame_size(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				   struct v4l2_subdev_fh *fh,
 				   struct v4l2_subdev_frame_size_enum *fse)
 {
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+				   struct v4l2_subdev_frame_size_enum *fse)
+{
+	struct s5c73m3 *state = oif_sd_to_s5c73m3(sd);
+>>>>>>> v4.9.227
 	int idx;
 
 	if (fse->pad == OIF_SOURCE_PAD) {
@@ -1259,11 +1347,33 @@ static int s5c73m3_oif_enum_frame_size(struct v4l2_subdev *sd,
 		switch (fse->code) {
 		case S5C73M3_JPEG_FMT:
 		case S5C73M3_ISP_FMT: {
+<<<<<<< HEAD
 			struct v4l2_mbus_framefmt *mf =
 				v4l2_subdev_get_try_format(fh, OIF_ISP_PAD);
 
 			fse->max_width = fse->min_width = mf->width;
 			fse->max_height = fse->min_height = mf->height;
+=======
+			unsigned w, h;
+
+			if (fse->which == V4L2_SUBDEV_FORMAT_TRY) {
+				struct v4l2_mbus_framefmt *mf;
+
+				mf = v4l2_subdev_get_try_format(sd, cfg,
+								OIF_ISP_PAD);
+
+				w = mf->width;
+				h = mf->height;
+			} else {
+				const struct s5c73m3_frame_size *fs;
+
+				fs = state->oif_pix_size[RES_ISP];
+				w = fs->width;
+				h = fs->height;
+			}
+			fse->max_width = fse->min_width = w;
+			fse->max_height = fse->min_height = h;
+>>>>>>> v4.9.227
 			return 0;
 		}
 		default:
@@ -1306,11 +1416,19 @@ static int s5c73m3_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_mbus_framefmt *mf;
 
+<<<<<<< HEAD
 	mf = v4l2_subdev_get_try_format(fh, S5C73M3_ISP_PAD);
 	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_isp_resolutions[1],
 						S5C73M3_ISP_FMT);
 
 	mf = v4l2_subdev_get_try_format(fh, S5C73M3_JPEG_PAD);
+=======
+	mf = v4l2_subdev_get_try_format(sd, fh->pad, S5C73M3_ISP_PAD);
+	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_isp_resolutions[1],
+						S5C73M3_ISP_FMT);
+
+	mf = v4l2_subdev_get_try_format(sd, fh->pad, S5C73M3_JPEG_PAD);
+>>>>>>> v4.9.227
 	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_jpeg_resolutions[1],
 					S5C73M3_JPEG_FMT);
 
@@ -1321,6 +1439,7 @@ static int s5c73m3_oif_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_mbus_framefmt *mf;
 
+<<<<<<< HEAD
 	mf = v4l2_subdev_get_try_format(fh, OIF_ISP_PAD);
 	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_isp_resolutions[1],
 						S5C73M3_ISP_FMT);
@@ -1330,6 +1449,17 @@ static int s5c73m3_oif_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 					S5C73M3_JPEG_FMT);
 
 	mf = v4l2_subdev_get_try_format(fh, OIF_SOURCE_PAD);
+=======
+	mf = v4l2_subdev_get_try_format(sd, fh->pad, OIF_ISP_PAD);
+	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_isp_resolutions[1],
+						S5C73M3_ISP_FMT);
+
+	mf = v4l2_subdev_get_try_format(sd, fh->pad, OIF_JPEG_PAD);
+	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_jpeg_resolutions[1],
+					S5C73M3_JPEG_FMT);
+
+	mf = v4l2_subdev_get_try_format(sd, fh->pad, OIF_SOURCE_PAD);
+>>>>>>> v4.9.227
 	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_isp_resolutions[1],
 						S5C73M3_ISP_FMT);
 	return 0;
@@ -1437,7 +1567,11 @@ static int s5c73m3_oif_set_power(struct v4l2_subdev *sd, int on)
 			state->apply_fiv = 1;
 			state->apply_fmt = 1;
 		}
+<<<<<<< HEAD
 	} else if (!on == state->power) {
+=======
+	} else if (state->power == !on) {
+>>>>>>> v4.9.227
 		ret = s5c73m3_set_af_softlanding(state);
 		if (!ret)
 			ret = __s5c73m3_power_off(state);
@@ -1466,11 +1600,19 @@ static int s5c73m3_oif_registered(struct v4l2_subdev *sd)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = media_entity_create_link(&state->sensor_sd.entity,
 			S5C73M3_ISP_PAD, &state->oif_sd.entity, OIF_ISP_PAD,
 			MEDIA_LNK_FL_IMMUTABLE | MEDIA_LNK_FL_ENABLED);
 
 	ret = media_entity_create_link(&state->sensor_sd.entity,
+=======
+	ret = media_create_pad_link(&state->sensor_sd.entity,
+			S5C73M3_ISP_PAD, &state->oif_sd.entity, OIF_ISP_PAD,
+			MEDIA_LNK_FL_IMMUTABLE | MEDIA_LNK_FL_ENABLED);
+
+	ret = media_create_pad_link(&state->sensor_sd.entity,
+>>>>>>> v4.9.227
 			S5C73M3_JPEG_PAD, &state->oif_sd.entity, OIF_JPEG_PAD,
 			MEDIA_LNK_FL_IMMUTABLE | MEDIA_LNK_FL_ENABLED);
 
@@ -1623,8 +1765,15 @@ static int s5c73m3_get_platform_data(struct s5c73m3 *state)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	v4l2_of_parse_endpoint(node_ep, &ep);
 	of_node_put(node_ep);
+=======
+	ret = v4l2_of_parse_endpoint(node_ep, &ep);
+	of_node_put(node_ep);
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 
 	if (ep.bus_type != V4L2_MBUS_CSI2) {
 		dev_err(dev, "unsupported bus type\n");
@@ -1672,10 +1821,17 @@ static int s5c73m3_probe(struct i2c_client *client,
 
 	state->sensor_pads[S5C73M3_JPEG_PAD].flags = MEDIA_PAD_FL_SOURCE;
 	state->sensor_pads[S5C73M3_ISP_PAD].flags = MEDIA_PAD_FL_SOURCE;
+<<<<<<< HEAD
 	sd->entity.type = MEDIA_ENT_T_V4L2_SUBDEV;
 
 	ret = media_entity_init(&sd->entity, S5C73M3_NUM_PADS,
 							state->sensor_pads, 0);
+=======
+	sd->entity.function = MEDIA_ENT_F_CAM_SENSOR;
+
+	ret = media_entity_pads_init(&sd->entity, S5C73M3_NUM_PADS,
+							state->sensor_pads);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
@@ -1688,10 +1844,17 @@ static int s5c73m3_probe(struct i2c_client *client,
 	state->oif_pads[OIF_ISP_PAD].flags = MEDIA_PAD_FL_SINK;
 	state->oif_pads[OIF_JPEG_PAD].flags = MEDIA_PAD_FL_SINK;
 	state->oif_pads[OIF_SOURCE_PAD].flags = MEDIA_PAD_FL_SOURCE;
+<<<<<<< HEAD
 	oif_sd->entity.type = MEDIA_ENT_T_V4L2_SUBDEV;
 
 	ret = media_entity_init(&oif_sd->entity, OIF_NUM_PADS,
 							state->oif_pads, 0);
+=======
+	oif_sd->entity.function = MEDIA_ENT_F_PROC_VIDEO_SCALER;
+
+	ret = media_entity_pads_init(&oif_sd->entity, OIF_NUM_PADS,
+							state->oif_pads);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 

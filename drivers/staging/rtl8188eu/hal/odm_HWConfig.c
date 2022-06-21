@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 
 /*  include files */
@@ -118,13 +121,22 @@ static void odm_RxPhyStatus92CSeries_Parsing(struct odm_dm_struct *dm_odm,
 
 		cck_highpwr = dm_odm->bCckHighPower;
 
+<<<<<<< HEAD
 		cck_agc_rpt =  pPhyStaRpt->cck_agc_rpt_ofdm_cfosho_a ;
+=======
+		cck_agc_rpt =  pPhyStaRpt->cck_agc_rpt_ofdm_cfosho_a;
+>>>>>>> v4.9.227
 
 		/* 2011.11.28 LukeLee: 88E use different LNA & VGA gain table */
 		/* The RSSI formula should be modified according to the gain table */
 		/* In 88E, cck_highpwr is always set to 1 */
+<<<<<<< HEAD
 		LNA_idx = ((cck_agc_rpt & 0xE0) >> 5);
 		VGA_idx = (cck_agc_rpt & 0x1F);
+=======
+		LNA_idx = (cck_agc_rpt & 0xE0) >> 5;
+		VGA_idx = cck_agc_rpt & 0x1F;
+>>>>>>> v4.9.227
 		switch (LNA_idx) {
 		case 7:
 			if (VGA_idx <= 27)
@@ -362,7 +374,11 @@ static void odm_Process_RSSIForDM(struct odm_dm_struct *dm_odm,
 				}
 			}
 
+<<<<<<< HEAD
 			pEntry->rssi_stat.PacketMap = (pEntry->rssi_stat.PacketMap<<1) | BIT0;
+=======
+			pEntry->rssi_stat.PacketMap = (pEntry->rssi_stat.PacketMap<<1) | BIT(0);
+>>>>>>> v4.9.227
 
 		} else {
 			RSSI_Ave = pPhyInfo->RxPWDBAll;
@@ -391,10 +407,17 @@ static void odm_Process_RSSIForDM(struct odm_dm_struct *dm_odm,
 			pEntry->rssi_stat.ValidBit++;
 
 		for (i = 0; i < pEntry->rssi_stat.ValidBit; i++)
+<<<<<<< HEAD
 			OFDM_pkt += (u8)(pEntry->rssi_stat.PacketMap>>i)&BIT0;
 
 		if (pEntry->rssi_stat.ValidBit == 64) {
 			Weighting = ((OFDM_pkt<<4) > 64) ? 64 : (OFDM_pkt<<4);
+=======
+			OFDM_pkt += (u8)(pEntry->rssi_stat.PacketMap>>i) & BIT(0);
+
+		if (pEntry->rssi_stat.ValidBit == 64) {
+			Weighting = min_t(u32, OFDM_pkt << 4, 64);
+>>>>>>> v4.9.227
 			UndecoratedSmoothedPWDB = (Weighting*UndecoratedSmoothedOFDM+(64-Weighting)*UndecoratedSmoothedCCK)>>6;
 		} else {
 			if (pEntry->rssi_stat.ValidBit != 0)

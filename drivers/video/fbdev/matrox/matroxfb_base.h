@@ -44,6 +44,7 @@
 
 #include <asm/io.h>
 #include <asm/unaligned.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 #include <asm/mtrr.h>
 #endif
@@ -51,6 +52,11 @@
 #if defined(CONFIG_PPC_PMAC)
 #include <asm/prom.h>
 #include <asm/pci-bridge.h>
+=======
+
+#if defined(CONFIG_PPC_PMAC)
+#include <asm/prom.h>
+>>>>>>> v4.9.227
 #include "../macmodes.h"
 #endif
 
@@ -187,6 +193,7 @@ static inline void __iomem* vaddr_va(vaddr_t va) {
 	return va.vaddr;
 }
 
+<<<<<<< HEAD
 #define MGA_IOREMAP_NORMAL	0
 #define MGA_IOREMAP_NOCACHE	1
 
@@ -204,6 +211,8 @@ static inline void mga_iounmap(vaddr_t va) {
 	iounmap(va.vaddr);
 }
 
+=======
+>>>>>>> v4.9.227
 struct my_timming {
 	unsigned int pixclock;
 	int mnp;
@@ -449,12 +458,16 @@ struct matrox_fb_info {
 		int		plnwt;
 		int		srcorg;
 			      } capable;
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	struct {
 		int		vram;
 		int		vram_valid;
 			      } mtrr;
 #endif
+=======
+	int			wc_cookie;
+>>>>>>> v4.9.227
 	struct {
 		int		precise_width;
 		int		mga_24bpp_fix;

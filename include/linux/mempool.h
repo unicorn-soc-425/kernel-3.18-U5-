@@ -5,6 +5,10 @@
 #define _LINUX_MEMPOOL_H
 
 #include <linux/wait.h>
+<<<<<<< HEAD
+=======
+#include <linux/compiler.h>
+>>>>>>> v4.9.227
 
 struct kmem_cache;
 
@@ -31,7 +35,11 @@ extern mempool_t *mempool_create_node(int min_nr, mempool_alloc_t *alloc_fn,
 
 extern int mempool_resize(mempool_t *pool, int new_min_nr);
 extern void mempool_destroy(mempool_t *pool);
+<<<<<<< HEAD
 extern void * mempool_alloc(mempool_t *pool, gfp_t gfp_mask);
+=======
+extern void *mempool_alloc(mempool_t *pool, gfp_t gfp_mask) __malloc;
+>>>>>>> v4.9.227
 extern void mempool_free(void *element, mempool_t *pool);
 
 /*

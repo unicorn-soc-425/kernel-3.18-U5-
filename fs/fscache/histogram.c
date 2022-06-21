@@ -99,7 +99,10 @@ static int fscache_histogram_open(struct inode *inode, struct file *file)
 }
 
 const struct file_operations fscache_histogram_fops = {
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	.open		= fscache_histogram_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,

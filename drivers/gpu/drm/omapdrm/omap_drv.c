@@ -96,7 +96,11 @@ static void omap_atomic_complete(struct omap_atomic_state_commit *commit)
 	dispc_runtime_get();
 
 	drm_atomic_helper_commit_modeset_disables(dev, old_state);
+<<<<<<< HEAD
 	drm_atomic_helper_commit_planes(dev, old_state, false);
+=======
+	drm_atomic_helper_commit_planes(dev, old_state, 0);
+>>>>>>> v4.9.227
 	drm_atomic_helper_commit_modeset_enables(dev, old_state);
 
 	omap_atomic_wait_for_completion(dev, old_state);
@@ -138,6 +142,7 @@ static bool omap_atomic_is_pending(struct omap_drm_private *priv,
 }
 
 static int omap_atomic_commit(struct drm_device *dev,
+<<<<<<< HEAD
 			      struct drm_atomic_state *state, bool async)
 {
 	struct omap_drm_private *priv = dev->dev_private;
@@ -145,6 +150,15 @@ static int omap_atomic_commit(struct drm_device *dev,
 	unsigned long flags;
 	unsigned int i;
 	int ret;
+=======
+			      struct drm_atomic_state *state, bool nonblock)
+{
+	struct omap_drm_private *priv = dev->dev_private;
+	struct omap_atomic_state_commit *commit;
+	struct drm_crtc *crtc;
+	struct drm_crtc_state *crtc_state;
+	int i, ret;
+>>>>>>> v4.9.227
 
 	ret = drm_atomic_helper_prepare_planes(dev, state);
 	if (ret)
@@ -164,10 +178,15 @@ static int omap_atomic_commit(struct drm_device *dev,
 	/* Wait until all affected CRTCs have completed previous commits and
 	 * mark them as pending.
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < dev->mode_config.num_crtc; ++i) {
 		if (state->crtcs[i])
 			commit->crtcs |= 1 << drm_crtc_index(state->crtcs[i]);
 	}
+=======
+	for_each_crtc_in_state(state, crtc, crtc_state, i)
+		commit->crtcs |= drm_crtc_mask(crtc);
+>>>>>>> v4.9.227
 
 	wait_event(priv->commit.wait, !omap_atomic_is_pending(priv, commit));
 
@@ -175,6 +194,7 @@ static int omap_atomic_commit(struct drm_device *dev,
 	priv->commit.pending |= commit->crtcs;
 	spin_unlock(&priv->commit.lock);
 
+<<<<<<< HEAD
 	/* Keep track of all CRTC events to unlink them in preclose(). */
 	spin_lock_irqsave(&dev->event_lock, flags);
 	for (i = 0; i < dev->mode_config.num_crtc; ++i) {
@@ -190,6 +210,12 @@ static int omap_atomic_commit(struct drm_device *dev,
 	drm_atomic_helper_swap_state(dev, state);
 
 	if (async)
+=======
+	/* Swap the state, this is the point of no return. */
+	drm_atomic_helper_swap_state(state, true);
+
+	if (nonblock)
+>>>>>>> v4.9.227
 		schedule_work(&commit->work);
 	else
 		omap_atomic_complete(commit);
@@ -215,6 +241,11 @@ static int get_connector_type(struct omap_dss_device *dssdev)
 		return DRM_MODE_CONNECTOR_HDMIA;
 	case OMAP_DISPLAY_TYPE_DVI:
 		return DRM_MODE_CONNECTOR_DVID;
+<<<<<<< HEAD
+=======
+	case OMAP_DISPLAY_TYPE_DSI:
+		return DRM_MODE_CONNECTOR_DSI;
+>>>>>>> v4.9.227
 	default:
 		return DRM_MODE_CONNECTOR_Unknown;
 	}
@@ -306,9 +337,15 @@ static int omap_modeset_init_properties(struct drm_device *dev)
 	if (priv->has_dmm) {
 		dev->mode_config.rotation_property =
 			drm_mode_create_rotation_property(dev,
+<<<<<<< HEAD
 				BIT(DRM_ROTATE_0) | BIT(DRM_ROTATE_90) |
 				BIT(DRM_ROTATE_180) | BIT(DRM_ROTATE_270) |
 				BIT(DRM_REFLECT_X) | BIT(DRM_REFLECT_Y));
+=======
+				DRM_ROTATE_0 | DRM_ROTATE_90 |
+				DRM_ROTATE_180 | DRM_ROTATE_270 |
+				DRM_REFLECT_X | DRM_REFLECT_Y);
+>>>>>>> v4.9.227
 		if (!dev->mode_config.rotation_property)
 			return -ENOMEM;
 	}
@@ -352,7 +389,11 @@ static int omap_modeset_init(struct drm_device *dev)
 		struct drm_connector *connector;
 		struct drm_encoder *encoder;
 		enum omap_channel channel;
+<<<<<<< HEAD
 		struct omap_overlay_manager *mgr;
+=======
+		struct omap_dss_device *out;
+>>>>>>> v4.9.227
 
 		if (!omapdss_device_is_connected(dssdev))
 			continue;
@@ -399,8 +440,15 @@ static int omap_modeset_init(struct drm_device *dev)
 		 * not considered.
 		 */
 
+<<<<<<< HEAD
 		mgr = omapdss_find_mgr_from_display(dssdev);
 		channel = mgr->id;
+=======
+		out = omapdss_find_output_from_display(dssdev);
+		channel = out->dispc_channel;
+		omap_dss_put_device(out);
+
+>>>>>>> v4.9.227
 		/*
 		 * if this channel hasn't already been taken by a previously
 		 * allocated crtc, we create a new crtc for it
@@ -547,14 +595,29 @@ static int ioctl_set_param(struct drm_device *dev, void *data,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#define OMAP_BO_USER_MASK	0x00ffffff	/* flags settable by userspace */
+
+>>>>>>> v4.9.227
 static int ioctl_gem_new(struct drm_device *dev, void *data,
 		struct drm_file *file_priv)
 {
 	struct drm_omap_gem_new *args = data;
+<<<<<<< HEAD
 	VERB("%p:%p: size=0x%08x, flags=%08x", dev, file_priv,
 			args->size.bytes, args->flags);
 	return omap_gem_new_handle(dev, file_priv, args->size,
 			args->flags, &args->handle);
+=======
+	u32 flags = args->flags & OMAP_BO_USER_MASK;
+
+	VERB("%p:%p: size=0x%08x, flags=%08x", dev, file_priv,
+	     args->size.bytes, flags);
+
+	return omap_gem_new_handle(dev, file_priv, args->size, flags,
+				   &args->handle);
+>>>>>>> v4.9.227
 }
 
 static int ioctl_gem_cpu_prep(struct drm_device *dev, void *data,
@@ -566,7 +629,11 @@ static int ioctl_gem_cpu_prep(struct drm_device *dev, void *data,
 
 	VERB("%p:%p: handle=%d, op=%x", dev, file_priv, args->handle, args->op);
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file_priv, args->handle);
+=======
+	obj = drm_gem_object_lookup(file_priv, args->handle);
+>>>>>>> v4.9.227
 	if (!obj)
 		return -ENOENT;
 
@@ -589,7 +656,11 @@ static int ioctl_gem_cpu_fini(struct drm_device *dev, void *data,
 
 	VERB("%p:%p: handle=%d", dev, file_priv, args->handle);
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file_priv, args->handle);
+=======
+	obj = drm_gem_object_lookup(file_priv, args->handle);
+>>>>>>> v4.9.227
 	if (!obj)
 		return -ENOENT;
 
@@ -613,7 +684,11 @@ static int ioctl_gem_info(struct drm_device *dev, void *data,
 
 	VERB("%p:%p: handle=%d", dev, file_priv, args->handle);
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file_priv, args->handle);
+=======
+	obj = drm_gem_object_lookup(file_priv, args->handle);
+>>>>>>> v4.9.227
 	if (!obj)
 		return -ENOENT;
 
@@ -668,7 +743,10 @@ static int dev_load(struct drm_device *dev, unsigned long flags)
 	priv->wq = alloc_ordered_workqueue("omapdrm", 0);
 	init_waitqueue_head(&priv->commit.wait);
 	spin_lock_init(&priv->commit.lock);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&priv->commit.events);
+=======
+>>>>>>> v4.9.227
 
 	spin_lock_init(&priv->list_lock);
 	INIT_LIST_HEAD(&priv->obj_list);
@@ -692,10 +770,13 @@ static int dev_load(struct drm_device *dev, unsigned long flags)
 		drm_crtc_vblank_off(priv->crtcs[i]);
 
 	priv->fbdev = omap_fbdev_init(dev);
+<<<<<<< HEAD
 	if (!priv->fbdev) {
 		dev_warn(dev->dev, "omap_fbdev_init failed\n");
 		/* well, limp along without an fbdev.. maybe X11 will work? */
 	}
+=======
+>>>>>>> v4.9.227
 
 	/* store off drm_device for use in pm ops */
 	dev_set_drvdata(dev->dev, dev);
@@ -786,6 +867,7 @@ static void dev_lastclose(struct drm_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 static void dev_preclose(struct drm_device *dev, struct drm_file *file)
 {
 	struct omap_drm_private *priv = dev->dev_private;
@@ -813,6 +895,8 @@ static void dev_postclose(struct drm_device *dev, struct drm_file *file)
 	DBG("postclose: dev=%p, file=%p", dev, file);
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct vm_operations_struct omap_gem_vm_ops = {
 	.fault = omap_gem_fault,
 	.open = drm_gem_vm_open,
@@ -831,14 +915,22 @@ static const struct file_operations omapdriver_fops = {
 };
 
 static struct drm_driver omap_drm_driver = {
+<<<<<<< HEAD
 	.driver_features = DRIVER_MODESET | DRIVER_GEM  | DRIVER_PRIME,
+=======
+	.driver_features = DRIVER_MODESET | DRIVER_GEM  | DRIVER_PRIME |
+		DRIVER_ATOMIC,
+>>>>>>> v4.9.227
 	.load = dev_load,
 	.unload = dev_unload,
 	.open = dev_open,
 	.lastclose = dev_lastclose,
+<<<<<<< HEAD
 	.preclose = dev_preclose,
 	.postclose = dev_postclose,
 	.set_busid = drm_platform_set_busid,
+=======
+>>>>>>> v4.9.227
 	.get_vblank_counter = drm_vblank_no_hw_counter,
 	.enable_vblank = omap_irq_enable_vblank,
 	.disable_vblank = omap_irq_disable_vblank,
@@ -898,12 +990,58 @@ static int pdev_remove(struct platform_device *device)
 }
 
 #ifdef CONFIG_PM_SLEEP
+<<<<<<< HEAD
+=======
+static int omap_drm_suspend_all_displays(void)
+{
+	struct omap_dss_device *dssdev = NULL;
+
+	for_each_dss_dev(dssdev) {
+		if (!dssdev->driver)
+			continue;
+
+		if (dssdev->state == OMAP_DSS_DISPLAY_ACTIVE) {
+			dssdev->driver->disable(dssdev);
+			dssdev->activate_after_resume = true;
+		} else {
+			dssdev->activate_after_resume = false;
+		}
+	}
+
+	return 0;
+}
+
+static int omap_drm_resume_all_displays(void)
+{
+	struct omap_dss_device *dssdev = NULL;
+
+	for_each_dss_dev(dssdev) {
+		if (!dssdev->driver)
+			continue;
+
+		if (dssdev->activate_after_resume) {
+			dssdev->driver->enable(dssdev);
+			dssdev->activate_after_resume = false;
+		}
+	}
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int omap_drm_suspend(struct device *dev)
 {
 	struct drm_device *drm_dev = dev_get_drvdata(dev);
 
 	drm_kms_helper_poll_disable(drm_dev);
 
+<<<<<<< HEAD
+=======
+	drm_modeset_lock_all(drm_dev);
+	omap_drm_suspend_all_displays();
+	drm_modeset_unlock_all(drm_dev);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -911,6 +1049,13 @@ static int omap_drm_resume(struct device *dev)
 {
 	struct drm_device *drm_dev = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
+=======
+	drm_modeset_lock_all(drm_dev);
+	omap_drm_resume_all_displays();
+	drm_modeset_unlock_all(drm_dev);
+
+>>>>>>> v4.9.227
 	drm_kms_helper_poll_enable(drm_dev);
 
 	return omap_gem_resume(dev);
@@ -928,6 +1073,7 @@ static struct platform_driver pdev = {
 	.remove = pdev_remove,
 };
 
+<<<<<<< HEAD
 static int __init omap_drm_init(void)
 {
 	int r;
@@ -948,15 +1094,31 @@ static int __init omap_drm_init(void)
 	}
 
 	return 0;
+=======
+static struct platform_driver * const drivers[] = {
+	&omap_dmm_driver,
+	&pdev,
+};
+
+static int __init omap_drm_init(void)
+{
+	DBG("init");
+
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 
 static void __exit omap_drm_fini(void)
 {
 	DBG("fini");
 
+<<<<<<< HEAD
 	platform_driver_unregister(&pdev);
 
 	platform_driver_unregister(&omap_dmm_driver);
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 
 /* need late_initcall() so we load after dss_driver's are loaded */

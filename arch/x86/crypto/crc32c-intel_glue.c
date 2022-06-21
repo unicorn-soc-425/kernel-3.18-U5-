@@ -30,10 +30,16 @@
 #include <linux/kernel.h>
 #include <crypto/internal/hash.h>
 
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
 #include <asm/cpu_device_id.h>
 #include <asm/i387.h>
 #include <asm/fpu-internal.h>
+=======
+#include <asm/cpufeatures.h>
+#include <asm/cpu_device_id.h>
+#include <asm/fpu/internal.h>
+>>>>>>> v4.9.227
 
 #define CHKSUM_BLOCK_SIZE	1
 #define CHKSUM_DIGEST_SIZE	4
@@ -49,6 +55,7 @@
 #ifdef CONFIG_X86_64
 /*
  * use carryless multiply version of crc32c when buffer
+<<<<<<< HEAD
  * size is >= 512 (when eager fpu is enabled) or
  * >= 1024 (when eager fpu is disabled) to account
  * for fpu state save/restore overhead.
@@ -69,6 +76,15 @@ do {									\
 #define set_pcl_breakeven_point()					\
 	(crc32c_pcl_breakeven = CRC32C_PCL_BREAKEVEN_NOEAGERFPU)
 #endif
+=======
+ * size is >= 512 to account
+ * for fpu state save/restore overhead.
+ */
+#define CRC32C_PCL_BREAKEVEN	512
+
+asmlinkage unsigned int crc_pcl(const u8 *buffer, int len,
+				unsigned int crc_init);
+>>>>>>> v4.9.227
 #endif /* CONFIG_X86_64 */
 
 static u32 crc32c_intel_le_hw_byte(u32 crc, unsigned char const *data, size_t length)
@@ -191,7 +207,11 @@ static int crc32c_pcl_intel_update(struct shash_desc *desc, const u8 *data,
 	 * use faster PCL version if datasize is large enough to
 	 * overcome kernel fpu state save/restore overhead
 	 */
+<<<<<<< HEAD
 	if (len >= crc32c_pcl_breakeven && irq_fpu_usable()) {
+=======
+	if (len >= CRC32C_PCL_BREAKEVEN && irq_fpu_usable()) {
+>>>>>>> v4.9.227
 		kernel_fpu_begin();
 		*crcp = crc_pcl(data, len, *crcp);
 		kernel_fpu_end();
@@ -203,7 +223,11 @@ static int crc32c_pcl_intel_update(struct shash_desc *desc, const u8 *data,
 static int __crc32c_pcl_intel_finup(u32 *crcp, const u8 *data, unsigned int len,
 				u8 *out)
 {
+<<<<<<< HEAD
 	if (len >= crc32c_pcl_breakeven && irq_fpu_usable()) {
+=======
+	if (len >= CRC32C_PCL_BREAKEVEN && irq_fpu_usable()) {
+>>>>>>> v4.9.227
 		kernel_fpu_begin();
 		*(__le32 *)out = ~cpu_to_le32(crc_pcl(data, len, *crcp));
 		kernel_fpu_end();
@@ -240,6 +264,10 @@ static struct shash_alg alg = {
 		.cra_name		=	"crc32c",
 		.cra_driver_name	=	"crc32c-intel",
 		.cra_priority		=	200,
+<<<<<<< HEAD
+=======
+		.cra_flags		=	CRYPTO_ALG_OPTIONAL_KEY,
+>>>>>>> v4.9.227
 		.cra_blocksize		=	CHKSUM_BLOCK_SIZE,
 		.cra_ctxsize		=	sizeof(u32),
 		.cra_module		=	THIS_MODULE,
@@ -258,11 +286,18 @@ static int __init crc32c_intel_mod_init(void)
 	if (!x86_match_cpu(crc32c_cpu_id))
 		return -ENODEV;
 #ifdef CONFIG_X86_64
+<<<<<<< HEAD
 	if (cpu_has_pclmulqdq) {
 		alg.update = crc32c_pcl_intel_update;
 		alg.finup = crc32c_pcl_intel_finup;
 		alg.digest = crc32c_pcl_intel_digest;
 		set_pcl_breakeven_point();
+=======
+	if (boot_cpu_has(X86_FEATURE_PCLMULQDQ)) {
+		alg.update = crc32c_pcl_intel_update;
+		alg.finup = crc32c_pcl_intel_finup;
+		alg.digest = crc32c_pcl_intel_digest;
+>>>>>>> v4.9.227
 	}
 #endif
 	return crypto_register_shash(&alg);

@@ -755,9 +755,12 @@ int mxl111sf_gpio_mode_switch(struct mxl111sf_state *state, unsigned int mode)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

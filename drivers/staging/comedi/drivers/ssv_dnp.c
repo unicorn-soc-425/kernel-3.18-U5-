@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
     comedi/drivers/ssv_dnp.c
     generic comedi driver for SSV Embedded Systems' DIL/Net-PCs
     Copyright (C) 2001 Robert Schwebel <robert@schwebel.de>
@@ -23,6 +24,33 @@ Author: Robert Schwebel <robert@schwebel.de>
 Devices: [SSV Embedded Systems] DIL/Net-PC 1486 (dnp-1486)
 Status: unknown
 */
+=======
+ * ssv_dnp.c
+ * generic comedi driver for SSV Embedded Systems' DIL/Net-PCs
+ * Copyright (C) 2001 Robert Schwebel <robert@schwebel.de>
+ *
+ * COMEDI - Linux Control and Measurement Device Interface
+ * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/*
+ * Driver: ssv_dnp
+ * Description: SSV Embedded Systems DIL/Net-PC
+ * Author: Robert Schwebel <robert@schwebel.de>
+ * Devices: [SSV Embedded Systems] DIL/Net-PC 1486 (dnp-1486)
+ * Status: unknown
+ */
+>>>>>>> v4.9.227
 
 /* include files ----------------------------------------------------------- */
 
@@ -127,7 +155,10 @@ static int dnp_dio_insn_config(struct comedi_device *dev,
 	outb(val, CSCDR);
 
 	return insn->n;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 }
 
 static int dnp_attach(struct comedi_device *dev, struct comedi_devconfig *it)
@@ -135,6 +166,15 @@ static int dnp_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	struct comedi_subdevice *s;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * We use I/O ports 0x22, 0x23 and 0xa3-0xa9, which are always
+	 * allocated for the primary 8259, so we don't need to allocate
+	 * them ourselves.
+	 */
+
+>>>>>>> v4.9.227
 	ret = comedi_alloc_subdevices(dev, 1);
 	if (ret)
 		return ret;
@@ -149,10 +189,13 @@ static int dnp_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->insn_bits = dnp_dio_insn_bits;
 	s->insn_config = dnp_dio_insn_config;
 
+<<<<<<< HEAD
 	/* We use the I/O ports 0x22,0x23 and 0xa3-0xa9, which are always
 	 * allocated for the primary 8259, so we don't need to allocate them
 	 * ourselves. */
 
+=======
+>>>>>>> v4.9.227
 	/* configure all ports as input (default)                            */
 	outb(PAMR, CSCIR);
 	outb(0x00, CSCDR);

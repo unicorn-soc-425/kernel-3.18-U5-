@@ -116,7 +116,11 @@ struct drv2667_data {
 	u32 frequency;
 };
 
+<<<<<<< HEAD
 static struct reg_default drv2667_reg_defs[] = {
+=======
+static const struct reg_default drv2667_reg_defs[] = {
+>>>>>>> v4.9.227
 	{ DRV2667_STATUS, 0x02 },
 	{ DRV2667_CTRL_1, 0x28 },
 	{ DRV2667_CTRL_2, 0x40 },
@@ -262,14 +266,22 @@ static void drv2667_close(struct input_dev *input)
 			"Failed to enter standby mode: %d\n", error);
 }
 
+<<<<<<< HEAD
 static const struct reg_default drv2667_init_regs[] = {
+=======
+static const struct reg_sequence drv2667_init_regs[] = {
+>>>>>>> v4.9.227
 	{ DRV2667_CTRL_2, 0 },
 	{ DRV2667_CTRL_1, DRV2667_25_VPP_GAIN },
 	{ DRV2667_WV_SEQ_0, 1 },
 	{ DRV2667_WV_SEQ_1, 0 }
 };
 
+<<<<<<< HEAD
 static const struct reg_default drv2667_page1_init[] = {
+=======
+static const struct reg_sequence drv2667_page1_init[] = {
+>>>>>>> v4.9.227
 	{ DRV2667_RAM_HDR_SZ, 0x05 },
 	{ DRV2667_RAM_START_HI, 0x80 },
 	{ DRV2667_RAM_START_LO, 0x06 },
@@ -406,8 +418,12 @@ static int drv2667_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int drv2667_suspend(struct device *dev)
+=======
+static int __maybe_unused drv2667_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct drv2667_data *haptics = dev_get_drvdata(dev);
 	int ret = 0;
@@ -436,7 +452,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int drv2667_resume(struct device *dev)
+=======
+static int __maybe_unused drv2667_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct drv2667_data *haptics = dev_get_drvdata(dev);
 	int ret = 0;
@@ -464,7 +484,10 @@ out:
 	mutex_unlock(&haptics->input_dev->mutex);
 	return ret;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(drv2667_pm_ops, drv2667_suspend, drv2667_resume);
 
@@ -486,7 +509,10 @@ static struct i2c_driver drv2667_driver = {
 	.probe		= drv2667_probe,
 	.driver		= {
 		.name	= "drv2667-haptics",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(drv2667_of_match),
 		.pm	= &drv2667_pm_ops,
 	},
@@ -494,7 +520,10 @@ static struct i2c_driver drv2667_driver = {
 };
 module_i2c_driver(drv2667_driver);
 
+<<<<<<< HEAD
 MODULE_ALIAS("platform:drv2667-haptics");
+=======
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("TI DRV2667 haptics driver");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Dan Murphy <dmurphy@ti.com>");

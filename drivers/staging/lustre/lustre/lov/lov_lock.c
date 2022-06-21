@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -46,11 +50,14 @@
  *  @{
  */
 
+<<<<<<< HEAD
 static struct cl_lock_closure *lov_closure_get(const struct lu_env *env,
 					       struct cl_lock *parent);
 
 static int lov_lock_unuse(const struct lu_env *env,
 			  const struct cl_lock_slice *slice);
+=======
+>>>>>>> v4.9.227
 /*****************************************************************************
  *
  * Lov lock operations.
@@ -58,7 +65,11 @@ static int lov_lock_unuse(const struct lu_env *env,
  */
 
 static struct lov_sublock_env *lov_sublock_env_get(const struct lu_env *env,
+<<<<<<< HEAD
 						   struct cl_lock *parent,
+=======
+						   const struct cl_lock *parent,
+>>>>>>> v4.9.227
 						   struct lov_lock_sub *lls)
 {
 	struct lov_sublock_env *subenv;
@@ -100,6 +111,7 @@ static void lov_sublock_env_put(struct lov_sublock_env *subenv)
 		lov_sub_put(subenv->lse_sub);
 }
 
+<<<<<<< HEAD
 static void lov_sublock_adopt(const struct lu_env *env, struct lov_lock *lck,
 			      struct cl_lock *sublock, int idx,
 			      struct lov_lock_link *link)
@@ -236,11 +248,29 @@ static int lov_sublock_lock(const struct lu_env *env,
 				*lsep = subenv;
 			}
 		}
+=======
+static int lov_sublock_init(const struct lu_env *env,
+			    const struct cl_lock *parent,
+			    struct lov_lock_sub *lls)
+{
+	struct lov_sublock_env *subenv;
+	int result;
+
+	subenv = lov_sublock_env_get(env, parent, lls);
+	if (!IS_ERR(subenv)) {
+		result = cl_lock_init(subenv->lse_env, &lls->sub_lock,
+				      subenv->lse_io);
+		lov_sublock_env_put(subenv);
+	} else {
+		/* error occurs. */
+		result = PTR_ERR(subenv);
+>>>>>>> v4.9.227
 	}
 	return result;
 }
 
 /**
+<<<<<<< HEAD
  * Updates the result of a top-lock operation from a result of sub-lock
  * sub-operations. Top-operations like lov_lock_{enqueue,use,unuse}() iterate
  * over sub-locks and lov_subresult() is used to calculate return value of a
@@ -277,6 +307,8 @@ static int lov_subresult(int result, int rc)
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * Creates sub-locks for a given lov_lock for the first time.
  *
  * Goes through all sub-objects of top-object, and creates sub-locks on every
@@ -284,8 +316,14 @@ static int lov_subresult(int result, int rc)
  * fact that top-lock (that is being created) can be accessed concurrently
  * through already created sub-locks (possibly shared with other top-locks).
  */
+<<<<<<< HEAD
 static int lov_lock_sub_init(const struct lu_env *env,
 			     struct lov_lock *lck, const struct cl_io *io)
+=======
+static struct lov_lock *lov_lock_sub_init(const struct lu_env *env,
+					  const struct cl_object *obj,
+					  struct cl_lock *lock)
+>>>>>>> v4.9.227
 {
 	int result = 0;
 	int i;
@@ -295,6 +333,7 @@ static int lov_lock_sub_init(const struct lu_env *env,
 	u64 file_start;
 	u64 file_end;
 
+<<<<<<< HEAD
 	struct lov_object       *loo    = cl2lov(lck->lls_cl.cls_obj);
 	struct lov_layout_raid0 *r0     = lov_r0(loo);
 	struct cl_lock	  *parent = lck->lls_cl.cls_lock;
@@ -302,17 +341,31 @@ static int lov_lock_sub_init(const struct lu_env *env,
 	lck->lls_orig = parent->cll_descr;
 	file_start = cl_offset(lov2cl(loo), parent->cll_descr.cld_start);
 	file_end   = cl_offset(lov2cl(loo), parent->cll_descr.cld_end + 1) - 1;
+=======
+	struct lov_object       *loo    = cl2lov(obj);
+	struct lov_layout_raid0 *r0     = lov_r0(loo);
+	struct lov_lock		*lovlck;
+
+	file_start = cl_offset(lov2cl(loo), lock->cll_descr.cld_start);
+	file_end   = cl_offset(lov2cl(loo), lock->cll_descr.cld_end + 1) - 1;
+>>>>>>> v4.9.227
 
 	for (i = 0, nr = 0; i < r0->lo_nr; i++) {
 		/*
 		 * XXX for wide striping smarter algorithm is desirable,
 		 * breaking out of the loop, early.
 		 */
+<<<<<<< HEAD
 		if (lov_stripe_intersects(loo->lo_lsm, i,
+=======
+		if (likely(r0->lo_sub[i]) && /* spare layout */
+		    lov_stripe_intersects(loo->lo_lsm, i,
+>>>>>>> v4.9.227
 					  file_start, file_end, &start, &end))
 			nr++;
 	}
 	LASSERT(nr > 0);
+<<<<<<< HEAD
 	OBD_ALLOC_LARGE(lck->lls_sub, nr * sizeof(lck->lls_sub[0]));
 	if (lck->lls_sub == NULL)
 		return -ENOMEM;
@@ -422,11 +475,61 @@ static void lov_sublock_hold(const struct lu_env *env, struct lov_lock *lck,
 		cl_lock_user_add(env, sublock);
 		cl_lock_put(env, sublock);
 	}
+=======
+	lovlck = libcfs_kvzalloc(offsetof(struct lov_lock, lls_sub[nr]),
+				 GFP_NOFS);
+	if (!lovlck)
+		return ERR_PTR(-ENOMEM);
+
+	lovlck->lls_nr = nr;
+	for (i = 0, nr = 0; i < r0->lo_nr; ++i) {
+		if (likely(r0->lo_sub[i]) &&
+		    lov_stripe_intersects(loo->lo_lsm, i,
+					  file_start, file_end, &start, &end)) {
+			struct lov_lock_sub *lls = &lovlck->lls_sub[nr];
+			struct cl_lock_descr *descr;
+
+			descr = &lls->sub_lock.cll_descr;
+
+			LASSERT(!descr->cld_obj);
+			descr->cld_obj   = lovsub2cl(r0->lo_sub[i]);
+			descr->cld_start = cl_index(descr->cld_obj, start);
+			descr->cld_end   = cl_index(descr->cld_obj, end);
+			descr->cld_mode  = lock->cll_descr.cld_mode;
+			descr->cld_gid   = lock->cll_descr.cld_gid;
+			descr->cld_enq_flags = lock->cll_descr.cld_enq_flags;
+			lls->sub_stripe = i;
+
+			/* initialize sub lock */
+			result = lov_sublock_init(env, lock, lls);
+			if (result < 0)
+				break;
+
+			lls->sub_initialized = 1;
+			nr++;
+		}
+	}
+	LASSERT(ergo(result == 0, nr == lovlck->lls_nr));
+
+	if (result != 0) {
+		for (i = 0; i < nr; ++i) {
+			if (!lovlck->lls_sub[i].sub_initialized)
+				break;
+
+			cl_lock_fini(env, &lovlck->lls_sub[i].sub_lock);
+		}
+		kvfree(lovlck);
+		lovlck = ERR_PTR(result);
+	}
+
+	return lovlck;
+>>>>>>> v4.9.227
 }
 
 static void lov_lock_fini(const struct lu_env *env,
 			  struct cl_lock_slice *slice)
 {
+<<<<<<< HEAD
 	struct lov_lock *lck;
 	int i;
 
@@ -529,6 +632,18 @@ static int lov_sublock_fill(const struct lu_env *env, struct cl_lock *parent,
 	} else
 		result = PTR_ERR(sublock);
 	return result;
+=======
+	struct lov_lock *lovlck;
+	int i;
+
+	lovlck = cl2lov_lock(slice);
+	for (i = 0; i < lovlck->lls_nr; ++i) {
+		LASSERT(!lovlck->lls_sub[i].sub_is_enqueued);
+		if (lovlck->lls_sub[i].sub_initialized)
+			cl_lock_fini(env, &lovlck->lls_sub[i].sub_lock);
+	}
+	kvfree(lovlck);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -540,6 +655,7 @@ static int lov_sublock_fill(const struct lu_env *env, struct cl_lock *parent,
  */
 static int lov_lock_enqueue(const struct lu_env *env,
 			    const struct cl_lock_slice *slice,
+<<<<<<< HEAD
 			    struct cl_io *io, __u32 enqflags)
 {
 	struct cl_lock	 *lock    = slice->cls_lock;
@@ -1084,6 +1200,61 @@ static void lov_lock_delete(const struct lu_env *env,
 	}
 
 	cl_lock_closure_fini(closure);
+=======
+			    struct cl_io *io, struct cl_sync_io *anchor)
+{
+	struct cl_lock *lock = slice->cls_lock;
+	struct lov_lock *lovlck = cl2lov_lock(slice);
+	int i;
+	int rc = 0;
+
+	for (i = 0; i < lovlck->lls_nr; ++i) {
+		struct lov_lock_sub  *lls = &lovlck->lls_sub[i];
+		struct lov_sublock_env *subenv;
+
+		subenv = lov_sublock_env_get(env, lock, lls);
+		if (IS_ERR(subenv)) {
+			rc = PTR_ERR(subenv);
+			break;
+		}
+		rc = cl_lock_enqueue(subenv->lse_env, subenv->lse_io,
+				     &lls->sub_lock, anchor);
+		lov_sublock_env_put(subenv);
+		if (rc != 0)
+			break;
+
+		lls->sub_is_enqueued = 1;
+	}
+	return rc;
+}
+
+static void lov_lock_cancel(const struct lu_env *env,
+			    const struct cl_lock_slice *slice)
+{
+	struct cl_lock *lock = slice->cls_lock;
+	struct lov_lock *lovlck = cl2lov_lock(slice);
+	int i;
+
+	for (i = 0; i < lovlck->lls_nr; ++i) {
+		struct lov_lock_sub *lls = &lovlck->lls_sub[i];
+		struct cl_lock *sublock = &lls->sub_lock;
+		struct lov_sublock_env *subenv;
+
+		if (!lls->sub_is_enqueued)
+			continue;
+
+		lls->sub_is_enqueued = 0;
+		subenv = lov_sublock_env_get(env, lock, lls);
+		if (!IS_ERR(subenv)) {
+			cl_lock_cancel(subenv->lse_env, sublock);
+			lov_sublock_env_put(subenv);
+		} else {
+			CL_LOCK_DEBUG(D_ERROR, env, slice->cls_lock,
+				      "lov_lock_cancel fails with %ld.\n",
+				      PTR_ERR(subenv));
+		}
+	}
+>>>>>>> v4.9.227
 }
 
 static int lov_lock_print(const struct lu_env *env, void *cookie,
@@ -1097,12 +1268,17 @@ static int lov_lock_print(const struct lu_env *env, void *cookie,
 		struct lov_lock_sub *sub;
 
 		sub = &lck->lls_sub[i];
+<<<<<<< HEAD
 		(*p)(env, cookie, "    %d %x: ", i, sub->sub_flags);
 		if (sub->sub_lock != NULL)
 			cl_lock_print(env, cookie, p,
 				      sub->sub_lock->lss_cl.cls_lock);
 		else
 			(*p)(env, cookie, "---\n");
+=======
+		(*p)(env, cookie, "    %d %x: ", i, sub->sub_is_enqueued);
+		cl_lock_print(env, cookie, p, &sub->sub_lock);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -1110,12 +1286,16 @@ static int lov_lock_print(const struct lu_env *env, void *cookie,
 static const struct cl_lock_operations lov_lock_ops = {
 	.clo_fini      = lov_lock_fini,
 	.clo_enqueue   = lov_lock_enqueue,
+<<<<<<< HEAD
 	.clo_wait      = lov_lock_wait,
 	.clo_use       = lov_lock_use,
 	.clo_unuse     = lov_lock_unuse,
 	.clo_cancel    = lov_lock_cancel,
 	.clo_fits_into = lov_lock_fits_into,
 	.clo_delete    = lov_lock_delete,
+=======
+	.clo_cancel    = lov_lock_cancel,
+>>>>>>> v4.9.227
 	.clo_print     = lov_lock_print
 };
 
@@ -1123,6 +1303,7 @@ int lov_lock_init_raid0(const struct lu_env *env, struct cl_object *obj,
 			struct cl_lock *lock, const struct cl_io *io)
 {
 	struct lov_lock *lck;
+<<<<<<< HEAD
 	int result;
 
 	OBD_SLAB_ALLOC_PTR_GFP(lck, lov_lock_kmem, GFP_NOFS);
@@ -1131,6 +1312,15 @@ int lov_lock_init_raid0(const struct lu_env *env, struct cl_object *obj,
 		result = lov_lock_sub_init(env, lck, io);
 	} else
 		result = -ENOMEM;
+=======
+	int result = 0;
+
+	lck = lov_lock_sub_init(env, obj, lock);
+	if (!IS_ERR(lck))
+		cl_lock_slice_add(lock, &lck->lls_cl, obj, &lov_lock_ops);
+	else
+		result = PTR_ERR(lck);
+>>>>>>> v4.9.227
 	return result;
 }
 
@@ -1138,11 +1328,21 @@ static void lov_empty_lock_fini(const struct lu_env *env,
 				struct cl_lock_slice *slice)
 {
 	struct lov_lock *lck = cl2lov_lock(slice);
+<<<<<<< HEAD
 	OBD_SLAB_FREE_PTR(lck, lov_lock_kmem);
 }
 
 static int lov_empty_lock_print(const struct lu_env *env, void *cookie,
 			lu_printer_t p, const struct cl_lock_slice *slice)
+=======
+
+	kmem_cache_free(lov_lock_kmem, lck);
+}
+
+static int lov_empty_lock_print(const struct lu_env *env, void *cookie,
+				lu_printer_t p,
+				const struct cl_lock_slice *slice)
+>>>>>>> v4.9.227
 {
 	(*p)(env, cookie, "empty\n");
 	return 0;
@@ -1155,20 +1355,31 @@ static const struct cl_lock_operations lov_empty_lock_ops = {
 };
 
 int lov_lock_init_empty(const struct lu_env *env, struct cl_object *obj,
+<<<<<<< HEAD
 		struct cl_lock *lock, const struct cl_io *io)
+=======
+			struct cl_lock *lock, const struct cl_io *io)
+>>>>>>> v4.9.227
 {
 	struct lov_lock *lck;
 	int result = -ENOMEM;
 
+<<<<<<< HEAD
 	OBD_SLAB_ALLOC_PTR_GFP(lck, lov_lock_kmem, GFP_NOFS);
 	if (lck != NULL) {
 		cl_lock_slice_add(lock, &lck->lls_cl, obj, &lov_empty_lock_ops);
 		lck->lls_orig = lock->cll_descr;
+=======
+	lck = kmem_cache_zalloc(lov_lock_kmem, GFP_NOFS);
+	if (lck) {
+		cl_lock_slice_add(lock, &lck->lls_cl, obj, &lov_empty_lock_ops);
+>>>>>>> v4.9.227
 		result = 0;
 	}
 	return result;
 }
 
+<<<<<<< HEAD
 static struct cl_lock_closure *lov_closure_get(const struct lu_env *env,
 					       struct cl_lock *parent)
 {
@@ -1181,4 +1392,6 @@ static struct cl_lock_closure *lov_closure_get(const struct lu_env *env,
 }
 
 
+=======
+>>>>>>> v4.9.227
 /** @} lov */

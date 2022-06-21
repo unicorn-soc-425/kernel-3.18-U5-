@@ -18,17 +18,26 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 
 #define DRIVER_NAME "zynq-gpio"
 
 /* Maximum banks */
 #define ZYNQ_GPIO_MAX_BANK	4
+<<<<<<< HEAD
+=======
+#define ZYNQMP_GPIO_MAX_BANK	6
+>>>>>>> v4.9.227
 
 #define ZYNQ_GPIO_BANK0_NGPIO	32
 #define ZYNQ_GPIO_BANK1_NGPIO	22
 #define ZYNQ_GPIO_BANK2_NGPIO	32
 #define ZYNQ_GPIO_BANK3_NGPIO	32
 
+<<<<<<< HEAD
 #define ZYNQ_GPIO_NR_GPIOS	(ZYNQ_GPIO_BANK0_NGPIO + \
 				 ZYNQ_GPIO_BANK1_NGPIO + \
 				 ZYNQ_GPIO_BANK2_NGPIO + \
@@ -46,6 +55,36 @@
 #define ZYNQ_GPIO_BANK3_PIN_MIN	(ZYNQ_GPIO_BANK2_PIN_MAX + 1)
 #define ZYNQ_GPIO_BANK3_PIN_MAX	(ZYNQ_GPIO_BANK3_PIN_MIN + \
 					ZYNQ_GPIO_BANK3_NGPIO - 1)
+=======
+#define ZYNQMP_GPIO_BANK0_NGPIO 26
+#define ZYNQMP_GPIO_BANK1_NGPIO 26
+#define ZYNQMP_GPIO_BANK2_NGPIO 26
+#define ZYNQMP_GPIO_BANK3_NGPIO 32
+#define ZYNQMP_GPIO_BANK4_NGPIO 32
+#define ZYNQMP_GPIO_BANK5_NGPIO 32
+
+#define	ZYNQ_GPIO_NR_GPIOS	118
+#define	ZYNQMP_GPIO_NR_GPIOS	174
+
+#define ZYNQ_GPIO_BANK0_PIN_MIN(str)	0
+#define ZYNQ_GPIO_BANK0_PIN_MAX(str)	(ZYNQ_GPIO_BANK0_PIN_MIN(str) + \
+					ZYNQ##str##_GPIO_BANK0_NGPIO - 1)
+#define ZYNQ_GPIO_BANK1_PIN_MIN(str)	(ZYNQ_GPIO_BANK0_PIN_MAX(str) + 1)
+#define ZYNQ_GPIO_BANK1_PIN_MAX(str)	(ZYNQ_GPIO_BANK1_PIN_MIN(str) + \
+					ZYNQ##str##_GPIO_BANK1_NGPIO - 1)
+#define ZYNQ_GPIO_BANK2_PIN_MIN(str)	(ZYNQ_GPIO_BANK1_PIN_MAX(str) + 1)
+#define ZYNQ_GPIO_BANK2_PIN_MAX(str)	(ZYNQ_GPIO_BANK2_PIN_MIN(str) + \
+					ZYNQ##str##_GPIO_BANK2_NGPIO - 1)
+#define ZYNQ_GPIO_BANK3_PIN_MIN(str)	(ZYNQ_GPIO_BANK2_PIN_MAX(str) + 1)
+#define ZYNQ_GPIO_BANK3_PIN_MAX(str)	(ZYNQ_GPIO_BANK3_PIN_MIN(str) + \
+					ZYNQ##str##_GPIO_BANK3_NGPIO - 1)
+#define ZYNQ_GPIO_BANK4_PIN_MIN(str)	(ZYNQ_GPIO_BANK3_PIN_MAX(str) + 1)
+#define ZYNQ_GPIO_BANK4_PIN_MAX(str)	(ZYNQ_GPIO_BANK4_PIN_MIN(str) + \
+					ZYNQ##str##_GPIO_BANK4_NGPIO - 1)
+#define ZYNQ_GPIO_BANK5_PIN_MIN(str)	(ZYNQ_GPIO_BANK4_PIN_MAX(str) + 1)
+#define ZYNQ_GPIO_BANK5_PIN_MAX(str)	(ZYNQ_GPIO_BANK5_PIN_MIN(str) + \
+					ZYNQ##str##_GPIO_BANK5_NGPIO - 1)
+>>>>>>> v4.9.227
 
 
 /* Register offsets for the GPIO device */
@@ -83,22 +122,57 @@
 /* GPIO upper 16 bit mask */
 #define ZYNQ_GPIO_UPPER_MASK 0xFFFF0000
 
+<<<<<<< HEAD
+=======
+/* For GPIO quirks */
+#define ZYNQ_GPIO_QUIRK_FOO	BIT(0)
+
+>>>>>>> v4.9.227
 /**
  * struct zynq_gpio - gpio device private data structure
  * @chip:	instance of the gpio_chip
  * @base_addr:	base address of the GPIO device
  * @clk:	clock resource for this controller
  * @irq:	interrupt for the GPIO device
+<<<<<<< HEAD
+=======
+ * @p_data:	pointer to platform data
+>>>>>>> v4.9.227
  */
 struct zynq_gpio {
 	struct gpio_chip chip;
 	void __iomem *base_addr;
 	struct clk *clk;
 	int irq;
+<<<<<<< HEAD
+=======
+	const struct zynq_platform_data *p_data;
+};
+
+/**
+ * struct zynq_platform_data -  zynq gpio platform data structure
+ * @label:	string to store in gpio->label
+ * @ngpio:	max number of gpio pins
+ * @max_bank:	maximum number of gpio banks
+ * @bank_min:	this array represents bank's min pin
+ * @bank_max:	this array represents bank's max pin
+*/
+struct zynq_platform_data {
+	const char *label;
+	u32 quirks;
+	u16 ngpio;
+	int max_bank;
+	int bank_min[ZYNQMP_GPIO_MAX_BANK];
+	int bank_max[ZYNQMP_GPIO_MAX_BANK];
+>>>>>>> v4.9.227
 };
 
 static struct irq_chip zynq_gpio_level_irqchip;
 static struct irq_chip zynq_gpio_edge_irqchip;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 /**
  * zynq_gpio_get_bank_pin - Get the bank number and pin number within that bank
  * for a given pin in the GPIO device
@@ -112,6 +186,7 @@ static struct irq_chip zynq_gpio_edge_irqchip;
  */
 static inline void zynq_gpio_get_bank_pin(unsigned int pin_num,
 					  unsigned int *bank_num,
+<<<<<<< HEAD
 					  unsigned int *bank_pin_num)
 {
 	switch (pin_num) {
@@ -145,6 +220,28 @@ static const unsigned int zynq_gpio_bank_offset[] = {
 	ZYNQ_GPIO_BANK2_PIN_MIN,
 	ZYNQ_GPIO_BANK3_PIN_MIN,
 };
+=======
+					  unsigned int *bank_pin_num,
+					  struct zynq_gpio *gpio)
+{
+	int bank;
+
+	for (bank = 0; bank < gpio->p_data->max_bank; bank++) {
+		if ((pin_num >= gpio->p_data->bank_min[bank]) &&
+			(pin_num <= gpio->p_data->bank_max[bank])) {
+				*bank_num = bank;
+				*bank_pin_num = pin_num -
+						gpio->p_data->bank_min[bank];
+				return;
+		}
+	}
+
+	/* default */
+	WARN(true, "invalid GPIO pin number: %u", pin_num);
+	*bank_num = 0;
+	*bank_pin_num = 0;
+}
+>>>>>>> v4.9.227
 
 /**
  * zynq_gpio_get_value - Get the state of the specified pin of GPIO device
@@ -159,9 +256,15 @@ static int zynq_gpio_get_value(struct gpio_chip *chip, unsigned int pin)
 {
 	u32 data;
 	unsigned int bank_num, bank_pin_num;
+<<<<<<< HEAD
 	struct zynq_gpio *gpio = container_of(chip, struct zynq_gpio, chip);
 
 	zynq_gpio_get_bank_pin(pin, &bank_num, &bank_pin_num);
+=======
+	struct zynq_gpio *gpio = gpiochip_get_data(chip);
+
+	zynq_gpio_get_bank_pin(pin, &bank_num, &bank_pin_num, gpio);
+>>>>>>> v4.9.227
 
 	data = readl_relaxed(gpio->base_addr +
 			     ZYNQ_GPIO_DATA_RO_OFFSET(bank_num));
@@ -183,9 +286,15 @@ static void zynq_gpio_set_value(struct gpio_chip *chip, unsigned int pin,
 				int state)
 {
 	unsigned int reg_offset, bank_num, bank_pin_num;
+<<<<<<< HEAD
 	struct zynq_gpio *gpio = container_of(chip, struct zynq_gpio, chip);
 
 	zynq_gpio_get_bank_pin(pin, &bank_num, &bank_pin_num);
+=======
+	struct zynq_gpio *gpio = gpiochip_get_data(chip);
+
+	zynq_gpio_get_bank_pin(pin, &bank_num, &bank_pin_num, gpio);
+>>>>>>> v4.9.227
 
 	if (bank_pin_num >= ZYNQ_GPIO_MID_PIN_NUM) {
 		/* only 16 data bits in bit maskable reg */
@@ -219,6 +328,7 @@ static void zynq_gpio_set_value(struct gpio_chip *chip, unsigned int pin,
 static int zynq_gpio_dir_in(struct gpio_chip *chip, unsigned int pin)
 {
 	u32 reg;
+<<<<<<< HEAD
 	unsigned int bank_num, bank_pin_num;
 	struct zynq_gpio *gpio = container_of(chip, struct zynq_gpio, chip);
 
@@ -226,6 +336,21 @@ static int zynq_gpio_dir_in(struct gpio_chip *chip, unsigned int pin)
 
 	/* bank 0 pins 7 and 8 are special and cannot be used as inputs */
 	if (bank_num == 0 && (bank_pin_num == 7 || bank_pin_num == 8))
+=======
+	bool is_zynq_gpio;
+	unsigned int bank_num, bank_pin_num;
+	struct zynq_gpio *gpio = gpiochip_get_data(chip);
+
+	is_zynq_gpio = gpio->p_data->quirks & ZYNQ_GPIO_QUIRK_FOO;
+	zynq_gpio_get_bank_pin(pin, &bank_num, &bank_pin_num, gpio);
+
+	/*
+	 * On zynq bank 0 pins 7 and 8 are special and cannot be used
+	 * as inputs.
+	 */
+	if (is_zynq_gpio && bank_num == 0 &&
+		(bank_pin_num == 7 || bank_pin_num == 8))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	/* clear the bit in direction mode reg to set the pin as input */
@@ -253,9 +378,15 @@ static int zynq_gpio_dir_out(struct gpio_chip *chip, unsigned int pin,
 {
 	u32 reg;
 	unsigned int bank_num, bank_pin_num;
+<<<<<<< HEAD
 	struct zynq_gpio *gpio = container_of(chip, struct zynq_gpio, chip);
 
 	zynq_gpio_get_bank_pin(pin, &bank_num, &bank_pin_num);
+=======
+	struct zynq_gpio *gpio = gpiochip_get_data(chip);
+
+	zynq_gpio_get_bank_pin(pin, &bank_num, &bank_pin_num, gpio);
+>>>>>>> v4.9.227
 
 	/* set the GPIO pin as output */
 	reg = readl_relaxed(gpio->base_addr + ZYNQ_GPIO_DIRM_OFFSET(bank_num));
@@ -283,10 +414,18 @@ static int zynq_gpio_dir_out(struct gpio_chip *chip, unsigned int pin,
 static void zynq_gpio_irq_mask(struct irq_data *irq_data)
 {
 	unsigned int device_pin_num, bank_num, bank_pin_num;
+<<<<<<< HEAD
 	struct zynq_gpio *gpio = irq_data_get_irq_chip_data(irq_data);
 
 	device_pin_num = irq_data->hwirq;
 	zynq_gpio_get_bank_pin(device_pin_num, &bank_num, &bank_pin_num);
+=======
+	struct zynq_gpio *gpio =
+		gpiochip_get_data(irq_data_get_irq_chip_data(irq_data));
+
+	device_pin_num = irq_data->hwirq;
+	zynq_gpio_get_bank_pin(device_pin_num, &bank_num, &bank_pin_num, gpio);
+>>>>>>> v4.9.227
 	writel_relaxed(BIT(bank_pin_num),
 		       gpio->base_addr + ZYNQ_GPIO_INTDIS_OFFSET(bank_num));
 }
@@ -303,10 +442,18 @@ static void zynq_gpio_irq_mask(struct irq_data *irq_data)
 static void zynq_gpio_irq_unmask(struct irq_data *irq_data)
 {
 	unsigned int device_pin_num, bank_num, bank_pin_num;
+<<<<<<< HEAD
 	struct zynq_gpio *gpio = irq_data_get_irq_chip_data(irq_data);
 
 	device_pin_num = irq_data->hwirq;
 	zynq_gpio_get_bank_pin(device_pin_num, &bank_num, &bank_pin_num);
+=======
+	struct zynq_gpio *gpio =
+		gpiochip_get_data(irq_data_get_irq_chip_data(irq_data));
+
+	device_pin_num = irq_data->hwirq;
+	zynq_gpio_get_bank_pin(device_pin_num, &bank_num, &bank_pin_num, gpio);
+>>>>>>> v4.9.227
 	writel_relaxed(BIT(bank_pin_num),
 		       gpio->base_addr + ZYNQ_GPIO_INTEN_OFFSET(bank_num));
 }
@@ -322,10 +469,18 @@ static void zynq_gpio_irq_unmask(struct irq_data *irq_data)
 static void zynq_gpio_irq_ack(struct irq_data *irq_data)
 {
 	unsigned int device_pin_num, bank_num, bank_pin_num;
+<<<<<<< HEAD
 	struct zynq_gpio *gpio = irq_data_get_irq_chip_data(irq_data);
 
 	device_pin_num = irq_data->hwirq;
 	zynq_gpio_get_bank_pin(device_pin_num, &bank_num, &bank_pin_num);
+=======
+	struct zynq_gpio *gpio =
+		gpiochip_get_data(irq_data_get_irq_chip_data(irq_data));
+
+	device_pin_num = irq_data->hwirq;
+	zynq_gpio_get_bank_pin(device_pin_num, &bank_num, &bank_pin_num, gpio);
+>>>>>>> v4.9.227
 	writel_relaxed(BIT(bank_pin_num),
 		       gpio->base_addr + ZYNQ_GPIO_INTSTS_OFFSET(bank_num));
 }
@@ -335,7 +490,11 @@ static void zynq_gpio_irq_ack(struct irq_data *irq_data)
  * @irq_data:	irq data containing irq number of gpio pin for the interrupt
  *		to enable
  *
+<<<<<<< HEAD
  * Clears the INTSTS bit and unmasks the given interrrupt.
+=======
+ * Clears the INTSTS bit and unmasks the given interrupt.
+>>>>>>> v4.9.227
  */
 static void zynq_gpio_irq_enable(struct irq_data *irq_data)
 {
@@ -372,10 +531,18 @@ static int zynq_gpio_set_irq_type(struct irq_data *irq_data, unsigned int type)
 {
 	u32 int_type, int_pol, int_any;
 	unsigned int device_pin_num, bank_num, bank_pin_num;
+<<<<<<< HEAD
 	struct zynq_gpio *gpio = irq_data_get_irq_chip_data(irq_data);
 
 	device_pin_num = irq_data->hwirq;
 	zynq_gpio_get_bank_pin(device_pin_num, &bank_num, &bank_pin_num);
+=======
+	struct zynq_gpio *gpio =
+		gpiochip_get_data(irq_data_get_irq_chip_data(irq_data));
+
+	device_pin_num = irq_data->hwirq;
+	zynq_gpio_get_bank_pin(device_pin_num, &bank_num, &bank_pin_num, gpio);
+>>>>>>> v4.9.227
 
 	int_type = readl_relaxed(gpio->base_addr +
 				 ZYNQ_GPIO_INTTYPE_OFFSET(bank_num));
@@ -423,10 +590,17 @@ static int zynq_gpio_set_irq_type(struct irq_data *irq_data, unsigned int type)
 		       gpio->base_addr + ZYNQ_GPIO_INTANY_OFFSET(bank_num));
 
 	if (type & IRQ_TYPE_LEVEL_MASK) {
+<<<<<<< HEAD
 		__irq_set_chip_handler_name_locked(irq_data->irq,
 			&zynq_gpio_level_irqchip, handle_fasteoi_irq, NULL);
 	} else {
 		__irq_set_chip_handler_name_locked(irq_data->irq,
+=======
+		irq_set_chip_handler_name_locked(irq_data,
+			&zynq_gpio_level_irqchip, handle_fasteoi_irq, NULL);
+	} else {
+		irq_set_chip_handler_name_locked(irq_data,
+>>>>>>> v4.9.227
 			&zynq_gpio_edge_irqchip, handle_level_irq, NULL);
 	}
 
@@ -435,7 +609,12 @@ static int zynq_gpio_set_irq_type(struct irq_data *irq_data, unsigned int type)
 
 static int zynq_gpio_set_wake(struct irq_data *data, unsigned int on)
 {
+<<<<<<< HEAD
 	struct zynq_gpio *gpio = irq_data_get_irq_chip_data(data);
+=======
+	struct zynq_gpio *gpio =
+		gpiochip_get_data(irq_data_get_irq_chip_data(data));
+>>>>>>> v4.9.227
 
 	irq_set_irq_wake(gpio->irq, on);
 
@@ -470,7 +649,11 @@ static void zynq_gpio_handle_bank_irq(struct zynq_gpio *gpio,
 				      unsigned int bank_num,
 				      unsigned long pending)
 {
+<<<<<<< HEAD
 	unsigned int bank_offset = zynq_gpio_bank_offset[bank_num];
+=======
+	unsigned int bank_offset = gpio->p_data->bank_min[bank_num];
+>>>>>>> v4.9.227
 	struct irq_domain *irqdomain = gpio->chip.irqdomain;
 	int offset;
 
@@ -496,16 +679,29 @@ static void zynq_gpio_handle_bank_irq(struct zynq_gpio *gpio,
  * application for that pin.
  * Note: A bug is reported if no handler is set for the gpio pin.
  */
+<<<<<<< HEAD
 static void zynq_gpio_irqhandler(unsigned int irq, struct irq_desc *desc)
 {
 	u32 int_sts, int_enb;
 	unsigned int bank_num;
 	struct zynq_gpio *gpio = irq_get_handler_data(irq);
+=======
+static void zynq_gpio_irqhandler(struct irq_desc *desc)
+{
+	u32 int_sts, int_enb;
+	unsigned int bank_num;
+	struct zynq_gpio *gpio =
+		gpiochip_get_data(irq_desc_get_handler_data(desc));
+>>>>>>> v4.9.227
 	struct irq_chip *irqchip = irq_desc_get_chip(desc);
 
 	chained_irq_enter(irqchip, desc);
 
+<<<<<<< HEAD
 	for (bank_num = 0; bank_num < ZYNQ_GPIO_MAX_BANK; bank_num++) {
+=======
+	for (bank_num = 0; bank_num < gpio->p_data->max_bank; bank_num++) {
+>>>>>>> v4.9.227
 		int_sts = readl_relaxed(gpio->base_addr +
 					ZYNQ_GPIO_INTSTS_OFFSET(bank_num));
 		int_enb = readl_relaxed(gpio->base_addr +
@@ -562,7 +758,11 @@ static int zynq_gpio_request(struct gpio_chip *chip, unsigned offset)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = pm_runtime_get_sync(chip->dev);
+=======
+	ret = pm_runtime_get_sync(chip->parent);
+>>>>>>> v4.9.227
 
 	/*
 	 * If the device is already active pm_runtime_get() will return 1 on
@@ -573,15 +773,67 @@ static int zynq_gpio_request(struct gpio_chip *chip, unsigned offset)
 
 static void zynq_gpio_free(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	pm_runtime_put(chip->dev);
+=======
+	pm_runtime_put(chip->parent);
+>>>>>>> v4.9.227
 }
 
 static const struct dev_pm_ops zynq_gpio_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(zynq_gpio_suspend, zynq_gpio_resume)
+<<<<<<< HEAD
 	SET_PM_RUNTIME_PM_OPS(zynq_gpio_runtime_suspend,
 			zynq_gpio_runtime_resume, NULL)
 };
 
+=======
+	SET_RUNTIME_PM_OPS(zynq_gpio_runtime_suspend,
+			zynq_gpio_runtime_resume, NULL)
+};
+
+static const struct zynq_platform_data zynqmp_gpio_def = {
+	.label = "zynqmp_gpio",
+	.ngpio = ZYNQMP_GPIO_NR_GPIOS,
+	.max_bank = ZYNQMP_GPIO_MAX_BANK,
+	.bank_min[0] = ZYNQ_GPIO_BANK0_PIN_MIN(MP),
+	.bank_max[0] = ZYNQ_GPIO_BANK0_PIN_MAX(MP),
+	.bank_min[1] = ZYNQ_GPIO_BANK1_PIN_MIN(MP),
+	.bank_max[1] = ZYNQ_GPIO_BANK1_PIN_MAX(MP),
+	.bank_min[2] = ZYNQ_GPIO_BANK2_PIN_MIN(MP),
+	.bank_max[2] = ZYNQ_GPIO_BANK2_PIN_MAX(MP),
+	.bank_min[3] = ZYNQ_GPIO_BANK3_PIN_MIN(MP),
+	.bank_max[3] = ZYNQ_GPIO_BANK3_PIN_MAX(MP),
+	.bank_min[4] = ZYNQ_GPIO_BANK4_PIN_MIN(MP),
+	.bank_max[4] = ZYNQ_GPIO_BANK4_PIN_MAX(MP),
+	.bank_min[5] = ZYNQ_GPIO_BANK5_PIN_MIN(MP),
+	.bank_max[5] = ZYNQ_GPIO_BANK5_PIN_MAX(MP),
+};
+
+static const struct zynq_platform_data zynq_gpio_def = {
+	.label = "zynq_gpio",
+	.quirks = ZYNQ_GPIO_QUIRK_FOO,
+	.ngpio = ZYNQ_GPIO_NR_GPIOS,
+	.max_bank = ZYNQ_GPIO_MAX_BANK,
+	.bank_min[0] = ZYNQ_GPIO_BANK0_PIN_MIN(),
+	.bank_max[0] = ZYNQ_GPIO_BANK0_PIN_MAX(),
+	.bank_min[1] = ZYNQ_GPIO_BANK1_PIN_MIN(),
+	.bank_max[1] = ZYNQ_GPIO_BANK1_PIN_MAX(),
+	.bank_min[2] = ZYNQ_GPIO_BANK2_PIN_MIN(),
+	.bank_max[2] = ZYNQ_GPIO_BANK2_PIN_MAX(),
+	.bank_min[3] = ZYNQ_GPIO_BANK3_PIN_MIN(),
+	.bank_max[3] = ZYNQ_GPIO_BANK3_PIN_MAX(),
+};
+
+static const struct of_device_id zynq_gpio_of_match[] = {
+	{ .compatible = "xlnx,zynq-gpio-1.0", .data = (void *)&zynq_gpio_def },
+	{ .compatible = "xlnx,zynqmp-gpio-1.0",
+					.data = (void *)&zynqmp_gpio_def },
+	{ /* end of table */ }
+};
+MODULE_DEVICE_TABLE(of, zynq_gpio_of_match);
+
+>>>>>>> v4.9.227
 /**
  * zynq_gpio_probe - Initialization method for a zynq_gpio device
  * @pdev:	platform device instance
@@ -599,11 +851,24 @@ static int zynq_gpio_probe(struct platform_device *pdev)
 	struct zynq_gpio *gpio;
 	struct gpio_chip *chip;
 	struct resource *res;
+<<<<<<< HEAD
+=======
+	const struct of_device_id *match;
+>>>>>>> v4.9.227
 
 	gpio = devm_kzalloc(&pdev->dev, sizeof(*gpio), GFP_KERNEL);
 	if (!gpio)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	match = of_match_node(zynq_gpio_of_match, pdev->dev.of_node);
+	if (!match) {
+		dev_err(&pdev->dev, "of_match_node() failed\n");
+		return -EINVAL;
+	}
+	gpio->p_data = match->data;
+>>>>>>> v4.9.227
 	platform_set_drvdata(pdev, gpio);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -619,9 +884,15 @@ static int zynq_gpio_probe(struct platform_device *pdev)
 
 	/* configure the gpio chip */
 	chip = &gpio->chip;
+<<<<<<< HEAD
 	chip->label = "zynq_gpio";
 	chip->owner = THIS_MODULE;
 	chip->dev = &pdev->dev;
+=======
+	chip->label = gpio->p_data->label;
+	chip->owner = THIS_MODULE;
+	chip->parent = &pdev->dev;
+>>>>>>> v4.9.227
 	chip->get = zynq_gpio_get_value;
 	chip->set = zynq_gpio_set_value;
 	chip->request = zynq_gpio_request;
@@ -629,9 +900,15 @@ static int zynq_gpio_probe(struct platform_device *pdev)
 	chip->direction_input = zynq_gpio_dir_in;
 	chip->direction_output = zynq_gpio_dir_out;
 	chip->base = -1;
+<<<<<<< HEAD
 	chip->ngpio = ZYNQ_GPIO_NR_GPIOS;
 
 	/* Enable GPIO clock */
+=======
+	chip->ngpio = gpio->p_data->ngpio;
+
+	/* Retrieve GPIO clock */
+>>>>>>> v4.9.227
 	gpio->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(gpio->clk)) {
 		dev_err(&pdev->dev, "input clock not found.\n");
@@ -643,6 +920,7 @@ static int zynq_gpio_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	/* report a bug if gpio chip registration fails */
 	ret = gpiochip_add(chip);
 	if (ret) {
@@ -652,6 +930,23 @@ static int zynq_gpio_probe(struct platform_device *pdev)
 
 	/* disable interrupts for all banks */
 	for (bank_num = 0; bank_num < ZYNQ_GPIO_MAX_BANK; bank_num++)
+=======
+	pm_runtime_set_active(&pdev->dev);
+	pm_runtime_enable(&pdev->dev);
+	ret = pm_runtime_get_sync(&pdev->dev);
+	if (ret < 0)
+		goto err_pm_dis;
+
+	/* report a bug if gpio chip registration fails */
+	ret = gpiochip_add_data(chip, gpio);
+	if (ret) {
+		dev_err(&pdev->dev, "Failed to add gpio chip\n");
+		goto err_pm_put;
+	}
+
+	/* disable interrupts for all banks */
+	for (bank_num = 0; bank_num < gpio->p_data->max_bank; bank_num++)
+>>>>>>> v4.9.227
 		writel_relaxed(ZYNQ_GPIO_IXR_DISABLE_ALL, gpio->base_addr +
 			       ZYNQ_GPIO_INTDIS_OFFSET(bank_num));
 
@@ -665,14 +960,25 @@ static int zynq_gpio_probe(struct platform_device *pdev)
 	gpiochip_set_chained_irqchip(chip, &zynq_gpio_edge_irqchip, gpio->irq,
 				     zynq_gpio_irqhandler);
 
+<<<<<<< HEAD
 	pm_runtime_set_active(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
+=======
+	pm_runtime_put(&pdev->dev);
+>>>>>>> v4.9.227
 
 	return 0;
 
 err_rm_gpiochip:
 	gpiochip_remove(chip);
+<<<<<<< HEAD
 err_disable_clk:
+=======
+err_pm_put:
+	pm_runtime_put(&pdev->dev);
+err_pm_dis:
+	pm_runtime_disable(&pdev->dev);
+>>>>>>> v4.9.227
 	clk_disable_unprepare(gpio->clk);
 
 	return ret;
@@ -692,6 +998,7 @@ static int zynq_gpio_remove(struct platform_device *pdev)
 	gpiochip_remove(&gpio->chip);
 	clk_disable_unprepare(gpio->clk);
 	device_set_wakeup_capable(&pdev->dev, 0);
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -701,6 +1008,12 @@ static struct of_device_id zynq_gpio_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, zynq_gpio_of_match);
 
+=======
+	pm_runtime_disable(&pdev->dev);
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static struct platform_driver zynq_gpio_driver = {
 	.driver	= {
 		.name = DRIVER_NAME,
@@ -722,6 +1035,15 @@ static int __init zynq_gpio_init(void)
 }
 postcore_initcall(zynq_gpio_init);
 
+<<<<<<< HEAD
+=======
+static void __exit zynq_gpio_exit(void)
+{
+	platform_driver_unregister(&zynq_gpio_driver);
+}
+module_exit(zynq_gpio_exit);
+
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Xilinx Inc.");
 MODULE_DESCRIPTION("Zynq GPIO driver");
 MODULE_LICENSE("GPL");

@@ -523,7 +523,10 @@ exit_free:
 static struct i2c_driver fm3130_driver = {
 	.driver = {
 		.name	= "rtc-fm3130",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= fm3130_probe,
 	.id_table	= fm3130_id,

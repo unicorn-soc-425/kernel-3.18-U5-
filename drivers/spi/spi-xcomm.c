@@ -237,11 +237,18 @@ static const struct i2c_device_id spi_xcomm_ids[] = {
 	{ "spi-xcomm" },
 	{ },
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, spi_xcomm_ids);
+>>>>>>> v4.9.227
 
 static struct i2c_driver spi_xcomm_driver = {
 	.driver = {
 		.name	= "spi-xcomm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.id_table	= spi_xcomm_ids,
 	.probe		= spi_xcomm_probe,

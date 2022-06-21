@@ -16,7 +16,10 @@
 #include <asm/mach-types.h>
 
 #include "../codecs/wm8580.h"
+<<<<<<< HEAD
 #include "dma.h"
+=======
+>>>>>>> v4.9.227
 #include "pcm.h"
 
 /*
@@ -62,6 +65,7 @@ static int smdk_wm8580_pcm_hw_params(struct snd_pcm_substream *substream,
 
 	rfs = mclk_freq / params_rate(params) / 2;
 
+<<<<<<< HEAD
 	/* Set the codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_DSP_B
 				| SND_SOC_DAIFMT_IB_NF
@@ -76,6 +80,8 @@ static int smdk_wm8580_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	if (mclk_freq == xtal_freq) {
 		ret = snd_soc_dai_set_sysclk(codec_dai, WM8580_CLKSRC_MCLK,
 						mclk_freq, SND_SOC_CLOCK_IN);
@@ -121,6 +127,12 @@ static struct snd_soc_ops smdk_wm8580_pcm_ops = {
 	.hw_params = smdk_wm8580_pcm_hw_params,
 };
 
+<<<<<<< HEAD
+=======
+#define SMDK_DAI_FMT (SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_IB_NF | \
+	SND_SOC_DAIFMT_CBS_CFS)
+
+>>>>>>> v4.9.227
 static struct snd_soc_dai_link smdk_dai[] = {
 	{
 		.name = "WM8580 PAIF PCM RX",
@@ -129,6 +141,10 @@ static struct snd_soc_dai_link smdk_dai[] = {
 		.codec_dai_name = "wm8580-hifi-playback",
 		.platform_name = "samsung-audio",
 		.codec_name = "wm8580.0-001b",
+<<<<<<< HEAD
+=======
+		.dai_fmt = SMDK_DAI_FMT,
+>>>>>>> v4.9.227
 		.ops = &smdk_wm8580_pcm_ops,
 	}, {
 		.name = "WM8580 PAIF PCM TX",
@@ -137,6 +153,10 @@ static struct snd_soc_dai_link smdk_dai[] = {
 		.codec_dai_name = "wm8580-hifi-capture",
 		.platform_name = "samsung-pcm.0",
 		.codec_name = "wm8580.0-001b",
+<<<<<<< HEAD
+=======
+		.dai_fmt = SMDK_DAI_FMT,
+>>>>>>> v4.9.227
 		.ops = &smdk_wm8580_pcm_ops,
 	},
 };
@@ -173,7 +193,10 @@ static int snd_smdk_probe(struct platform_device *pdev)
 
 static struct platform_driver snd_smdk_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "samsung-smdk-pcm",
 	},
 	.probe = snd_smdk_probe,

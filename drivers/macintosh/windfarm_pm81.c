@@ -770,7 +770,10 @@ static struct platform_driver wf_smu_driver = {
         .remove = wf_smu_remove,
 	.driver = {
 		.name = "windfarm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

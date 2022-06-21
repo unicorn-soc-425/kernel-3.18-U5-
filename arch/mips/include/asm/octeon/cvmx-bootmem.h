@@ -95,6 +95,10 @@ struct cvmx_bootmem_named_block_desc {
  * positions for backwards compatibility.
  */
 struct cvmx_bootmem_desc {
+<<<<<<< HEAD
+=======
+#if defined(__BIG_ENDIAN_BITFIELD) || defined(CVMX_BUILD_FOR_LINUX_HOST)
+>>>>>>> v4.9.227
 	/* spinlock to control access to list */
 	uint32_t lock;
 	/* flags for indicating various conditions */
@@ -120,7 +124,24 @@ struct cvmx_bootmem_desc {
 	uint32_t named_block_name_len;
 	/* address of named memory block descriptors */
 	uint64_t named_block_array_addr;
+<<<<<<< HEAD
 
+=======
+#else                           /* __LITTLE_ENDIAN */
+	uint32_t flags;
+	uint32_t lock;
+	uint64_t head_addr;
+
+	uint32_t minor_version;
+	uint32_t major_version;
+	uint64_t app_data_addr;
+	uint64_t app_data_size;
+
+	uint32_t named_block_name_len;
+	uint32_t named_block_num_blocks;
+	uint64_t named_block_array_addr;
+#endif
+>>>>>>> v4.9.227
 };
 
 /**

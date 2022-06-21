@@ -27,7 +27,11 @@ void speakup_start_ttys(void)
 	for (i = 0; i < MAX_NR_CONSOLES; i++) {
 		if (speakup_console[i] && speakup_console[i]->tty_stopped)
 			continue;
+<<<<<<< HEAD
 		if ((vc_cons[i].d != NULL) && (vc_cons[i].d->port.tty != NULL))
+=======
+		if ((vc_cons[i].d) && (vc_cons[i].d->port.tty))
+>>>>>>> v4.9.227
 			start_tty(vc_cons[i].d->port.tty);
 	}
 }
@@ -38,7 +42,11 @@ static void speakup_stop_ttys(void)
 	int i;
 
 	for (i = 0; i < MAX_NR_CONSOLES; i++)
+<<<<<<< HEAD
 		if ((vc_cons[i].d != NULL) && (vc_cons[i].d->port.tty != NULL))
+=======
+		if ((vc_cons[i].d && (vc_cons[i].d->port.tty)))
+>>>>>>> v4.9.227
 			stop_tty(vc_cons[i].d->port.tty);
 }
 
@@ -63,7 +71,12 @@ void synth_buffer_add(char ch)
 {
 	if (!synth->alive) {
 		/* This makes sure that we won't stop TTYs if there is no synth
+<<<<<<< HEAD
 		 * to restart them */
+=======
+		 * to restart them
+		 */
+>>>>>>> v4.9.227
 		return;
 	}
 	if (synth_buffer_free() <= 100) {
@@ -100,6 +113,11 @@ EXPORT_SYMBOL_GPL(synth_buffer_peek);
 
 void synth_buffer_clear(void)
 {
+<<<<<<< HEAD
 	buff_in = buff_out = synth_buffer;
+=======
+	buff_in = synth_buffer;
+	buff_out = synth_buffer;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(synth_buffer_clear);

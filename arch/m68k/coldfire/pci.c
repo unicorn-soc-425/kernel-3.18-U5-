@@ -42,7 +42,11 @@ static unsigned long iospace;
 
 /*
  * We need to be carefull probing on bus 0 (directly connected to host
+<<<<<<< HEAD
  * bridge). We should only acccess the well defined possible devices in
+=======
+ * bridge). We should only access the well defined possible devices in
+>>>>>>> v4.9.227
  * use, ignore aliases and the like.
  */
 static unsigned char mcf_host_slot2sid[32] = {

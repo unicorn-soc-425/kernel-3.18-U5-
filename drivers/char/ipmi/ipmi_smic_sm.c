@@ -589,7 +589,11 @@ static int smic_size(void)
 	return sizeof(struct si_sm_data);
 }
 
+<<<<<<< HEAD
 struct si_sm_handlers smic_smi_handlers = {
+=======
+const struct si_sm_handlers smic_smi_handlers = {
+>>>>>>> v4.9.227
 	.init_data         = init_smic_data,
 	.start_transaction = start_smic_transaction,
 	.get_result        = smic_get_result,

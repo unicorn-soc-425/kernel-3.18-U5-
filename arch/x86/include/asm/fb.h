@@ -8,8 +8,17 @@
 static inline void fb_pgprotect(struct file *file, struct vm_area_struct *vma,
 				unsigned long off)
 {
+<<<<<<< HEAD
 	if (boot_cpu_data.x86 > 3)
 		pgprot_val(vma->vm_page_prot) |= _PAGE_PCD;
+=======
+	unsigned long prot;
+
+	prot = pgprot_val(vma->vm_page_prot) & ~_PAGE_CACHE_MASK;
+	if (boot_cpu_data.x86 > 3)
+		pgprot_val(vma->vm_page_prot) =
+			prot | cachemode2protval(_PAGE_CACHE_MODE_UC_MINUS);
+>>>>>>> v4.9.227
 }
 
 extern int fb_is_primary_device(struct fb_info *info);

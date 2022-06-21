@@ -4,11 +4,20 @@
  *	uclinux.c -- generic memory mapped MTD driver for uclinux
  *
  *	(C) Copyright 2002, Greg Ungerer (gerg@snapgear.com)
+<<<<<<< HEAD
+=======
+ *
+ *      License: GPL
+>>>>>>> v4.9.227
  */
 
 /****************************************************************************/
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -117,6 +126,7 @@ static int __init uclinux_mtd_init(void)
 
 	return(0);
 }
+<<<<<<< HEAD
 
 /****************************************************************************/
 
@@ -139,5 +149,8 @@ module_exit(uclinux_mtd_cleanup);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Greg Ungerer <gerg@snapgear.com>");
 MODULE_DESCRIPTION("Generic MTD for uClinux");
+=======
+device_initcall(uclinux_mtd_init);
+>>>>>>> v4.9.227
 
 /****************************************************************************/

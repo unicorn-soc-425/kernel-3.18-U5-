@@ -18,7 +18,10 @@ header-y += intrinsics.h
 header-y += ioctl.h
 header-y += ioctls.h
 header-y += ipcbuf.h
+<<<<<<< HEAD
 header-y += kvm.h
+=======
+>>>>>>> v4.9.227
 header-y += kvm_para.h
 header-y += mman.h
 header-y += msgbuf.h

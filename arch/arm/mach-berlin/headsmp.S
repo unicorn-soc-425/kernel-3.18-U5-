@@ -12,12 +12,15 @@
 #include <linux/init.h>
 #include <asm/assembler.h>
 
+<<<<<<< HEAD
 ENTRY(berlin_secondary_startup)
  ARM_BE8(setend be)
 	bl	v7_invalidate_l1
 	b       secondary_startup
 ENDPROC(berlin_secondary_startup)
 
+=======
+>>>>>>> v4.9.227
 /*
  * If the following instruction is set in the reset exception vector, CPUs
  * will fetch the value of the software reset address vector when being

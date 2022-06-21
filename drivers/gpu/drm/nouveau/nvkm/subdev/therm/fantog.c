@@ -53,7 +53,11 @@ nvkm_fantog_update(struct nvkm_fantog *fan, int percent)
 	duty = !nvkm_gpio_get(gpio, 0, DCB_GPIO_FAN, 0xff);
 	nvkm_gpio_set(gpio, 0, DCB_GPIO_FAN, 0xff, duty);
 
+<<<<<<< HEAD
 	if (list_empty(&fan->alarm.head) && percent != (duty * 100)) {
+=======
+	if (percent != (duty * 100)) {
+>>>>>>> v4.9.227
 		u64 next_change = (percent * fan->period_us) / 100;
 		if (!duty)
 			next_change = fan->period_us - next_change;

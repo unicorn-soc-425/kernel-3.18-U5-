@@ -1103,6 +1103,10 @@ static void nfs3_xdr_enc_symlink3args(struct rpc_rqst *req,
 {
 	encode_diropargs3(xdr, args->fromfh, args->fromname, args->fromlen);
 	encode_symlinkdata3(xdr, args);
+<<<<<<< HEAD
+=======
+	xdr->buf->flags |= XDRBUF_WRITE;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1636,6 +1640,10 @@ static int nfs3_xdr_dec_read3res(struct rpc_rqst *req, struct xdr_stream *xdr,
 	error = decode_post_op_attr(xdr, result->fattr);
 	if (unlikely(error))
 		goto out;
+<<<<<<< HEAD
+=======
+	result->op_status = status;
+>>>>>>> v4.9.227
 	if (status != NFS3_OK)
 		goto out_status;
 	error = decode_read3resok(xdr, result);
@@ -1708,6 +1716,10 @@ static int nfs3_xdr_dec_write3res(struct rpc_rqst *req, struct xdr_stream *xdr,
 	error = decode_wcc_data(xdr, result->fattr);
 	if (unlikely(error))
 		goto out;
+<<<<<<< HEAD
+=======
+	result->op_status = status;
+>>>>>>> v4.9.227
 	if (status != NFS3_OK)
 		goto out_status;
 	error = decode_write3resok(xdr, result);
@@ -1985,6 +1997,14 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
 		if (entry->fattr->valid & NFS_ATTR_FATTR_V3)
 			entry->d_type = nfs_umode_to_dtype(entry->fattr->mode);
 
+<<<<<<< HEAD
+=======
+		if (entry->fattr->fileid != entry->ino) {
+			entry->fattr->mounted_on_fileid = entry->ino;
+			entry->fattr->valid |= NFS_ATTR_FATTR_MOUNTED_ON_FILEID;
+		}
+
+>>>>>>> v4.9.227
 		/* In fact, a post_op_fh3: */
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(p == NULL))
@@ -2323,6 +2343,10 @@ static int nfs3_xdr_dec_commit3res(struct rpc_rqst *req,
 	error = decode_wcc_data(xdr, result->fattr);
 	if (unlikely(error))
 		goto out;
+<<<<<<< HEAD
+=======
+	result->op_status = status;
+>>>>>>> v4.9.227
 	if (status != NFS3_OK)
 		goto out_status;
 	error = decode_writeverf3(xdr, &result->verf->verifier);

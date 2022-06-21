@@ -363,6 +363,15 @@ static struct clk ethclk = {
 	.ops	    = &dummy_clk_ops,
 };
 
+<<<<<<< HEAD
+=======
+static struct clk ethpclk = {
+	.name       = "pclk",
+	.parent     = &sclk0,
+	.ops	    = &dummy_clk_ops,
+};
+
+>>>>>>> v4.9.227
 static struct clk spiclk = {
 	.name       = "spi",
 	.parent     = &sclk1,
@@ -381,6 +390,10 @@ static struct clk_lookup bf609_clks[] = {
 	CLK(dclk, NULL, "DCLK"),
 	CLK(oclk, NULL, "OCLK"),
 	CLK(ethclk, NULL, "stmmaceth"),
+<<<<<<< HEAD
+=======
+	CLK(ethpclk, NULL, "pclk"),
+>>>>>>> v4.9.227
 	CLK(spiclk, NULL, "spi"),
 };
 

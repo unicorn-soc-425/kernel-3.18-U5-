@@ -156,6 +156,10 @@ struct sfi_device_table_entry {
 #define SFI_DEV_TYPE_UART	2
 #define SFI_DEV_TYPE_HSI	3
 #define SFI_DEV_TYPE_IPC	4
+<<<<<<< HEAD
+=======
+#define SFI_DEV_TYPE_SD		5
+>>>>>>> v4.9.227
 
 	u8	host_num;	/* attached to host 0, 1...*/
 	u16	addr;

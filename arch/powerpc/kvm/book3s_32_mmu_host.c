@@ -22,10 +22,18 @@
 
 #include <asm/kvm_ppc.h>
 #include <asm/kvm_book3s.h>
+<<<<<<< HEAD
 #include <asm/mmu-hash32.h>
 #include <asm/machdep.h>
 #include <asm/mmu_context.h>
 #include <asm/hw_irq.h>
+=======
+#include <asm/book3s/32/mmu-hash.h>
+#include <asm/machdep.h>
+#include <asm/mmu_context.h>
+#include <asm/hw_irq.h>
+#include "book3s.h"
+>>>>>>> v4.9.227
 
 /* #define DEBUG_MMU */
 /* #define DEBUG_SR */
@@ -141,7 +149,11 @@ extern char etext[];
 int kvmppc_mmu_map_page(struct kvm_vcpu *vcpu, struct kvmppc_pte *orig_pte,
 			bool iswrite)
 {
+<<<<<<< HEAD
 	pfn_t hpaddr;
+=======
+	kvm_pfn_t hpaddr;
+>>>>>>> v4.9.227
 	u64 vpn;
 	u64 vsid;
 	struct kvmppc_sid_map *map;

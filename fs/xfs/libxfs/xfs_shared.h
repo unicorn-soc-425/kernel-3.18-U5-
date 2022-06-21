@@ -38,6 +38,11 @@ extern const struct xfs_buf_ops xfs_agi_buf_ops;
 extern const struct xfs_buf_ops xfs_agf_buf_ops;
 extern const struct xfs_buf_ops xfs_agfl_buf_ops;
 extern const struct xfs_buf_ops xfs_allocbt_buf_ops;
+<<<<<<< HEAD
+=======
+extern const struct xfs_buf_ops xfs_rmapbt_buf_ops;
+extern const struct xfs_buf_ops xfs_refcountbt_buf_ops;
+>>>>>>> v4.9.227
 extern const struct xfs_buf_ops xfs_attr3_leaf_buf_ops;
 extern const struct xfs_buf_ops xfs_attr3_rmt_buf_ops;
 extern const struct xfs_buf_ops xfs_bmbt_buf_ops;
@@ -53,6 +58,7 @@ extern const struct xfs_buf_ops xfs_dquot_buf_ra_ops;
 extern const struct xfs_buf_ops xfs_sb_buf_ops;
 extern const struct xfs_buf_ops xfs_sb_quiet_buf_ops;
 extern const struct xfs_buf_ops xfs_symlink_buf_ops;
+<<<<<<< HEAD
 
 /*
  * Transaction types.  Used to distinguish types of buffers. These never reach
@@ -153,6 +159,9 @@ extern const struct xfs_buf_ops xfs_symlink_buf_ops;
 	{ XFS_TRANS_DUMMY1,		"DUMMY1" }, \
 	{ XFS_TRANS_DUMMY2,		"DUMMY2" }, \
 	{ XLOG_UNMOUNT_REC_TYPE,	"UNMOUNT" }
+=======
+extern const struct xfs_buf_ops xfs_rtbuf_ops;
+>>>>>>> v4.9.227
 
 /*
  * This structure is used to track log items associated with
@@ -183,6 +192,7 @@ int	xfs_log_calc_minimum_size(struct xfs_mount *);
 #define	XFS_TRANS_SYNC		0x08	/* make commit synchronous */
 #define XFS_TRANS_DQ_DIRTY	0x10	/* at least one dquot in trx dirty */
 #define XFS_TRANS_RESERVE	0x20    /* OK to use reserved data blocks */
+<<<<<<< HEAD
 #define XFS_TRANS_FREEZE_PROT	0x40	/* Transaction has elevated writer
 					   count in superblock */
 /*
@@ -190,6 +200,10 @@ int	xfs_log_calc_minimum_size(struct xfs_mount *);
  */
 #define	XFS_TRANS_RELEASE_LOG_RES	0x4
 #define	XFS_TRANS_ABORT			0x8
+=======
+#define XFS_TRANS_NO_WRITECOUNT 0x40	/* do not elevate SB writecount */
+#define XFS_TRANS_NOFS		0x80	/* pass KM_NOFS to kmem_alloc */
+>>>>>>> v4.9.227
 
 /*
  * Field values for xfs_trans_mod_sb.
@@ -220,10 +234,18 @@ int	xfs_log_calc_minimum_size(struct xfs_mount *);
 #define	XFS_INO_BTREE_REF	3
 #define	XFS_ALLOC_BTREE_REF	2
 #define	XFS_BMAP_BTREE_REF	2
+<<<<<<< HEAD
+=======
+#define	XFS_RMAP_BTREE_REF	2
+>>>>>>> v4.9.227
 #define	XFS_DIR_BTREE_REF	2
 #define	XFS_INO_REF		2
 #define	XFS_ATTR_BTREE_REF	1
 #define	XFS_DQUOT_REF		1
+<<<<<<< HEAD
+=======
+#define	XFS_REFC_BTREE_REF	1
+>>>>>>> v4.9.227
 
 /*
  * Flags for xfs_trans_ichgtime().

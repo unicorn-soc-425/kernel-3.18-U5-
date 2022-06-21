@@ -221,7 +221,10 @@ MODULE_DEVICE_TABLE(i2c, lp8788_ids);
 static struct i2c_driver lp8788_driver = {
 	.driver = {
 		.name = "lp8788",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = lp8788_probe,
 	.remove = lp8788_remove,

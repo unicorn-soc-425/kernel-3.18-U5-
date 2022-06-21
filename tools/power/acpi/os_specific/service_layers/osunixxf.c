@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,10 +67,14 @@
 #define _COMPONENT          ACPI_OS_SERVICES
 ACPI_MODULE_NAME("osunixxf")
 
+<<<<<<< HEAD
 u8 acpi_gbl_debug_timeout = FALSE;
 
 /* Upcalls to acpi_exec */
 
+=======
+/* Upcalls to acpi_exec */
+>>>>>>> v4.9.227
 void
 ae_table_override(struct acpi_table_header *existing_table,
 		  struct acpi_table_header **new_table);
@@ -246,8 +254,13 @@ acpi_physical_address acpi_os_get_root_pointer(void)
  *****************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_os_predefined_override(const struct acpi_predefined_names * init_val,
 			    acpi_string * new_val)
+=======
+acpi_os_predefined_override(const struct acpi_predefined_names *init_val,
+			    acpi_string *new_val)
+>>>>>>> v4.9.227
 {
 
 	if (!init_val || !new_val) {
@@ -274,8 +287,13 @@ acpi_os_predefined_override(const struct acpi_predefined_names * init_val,
  *****************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_os_table_override(struct acpi_table_header * existing_table,
 		       struct acpi_table_header ** new_table)
+=======
+acpi_os_table_override(struct acpi_table_header *existing_table,
+		       struct acpi_table_header **new_table)
+>>>>>>> v4.9.227
 {
 
 	if (!existing_table || !new_table) {
@@ -311,8 +329,13 @@ acpi_os_table_override(struct acpi_table_header * existing_table,
  *****************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_os_physical_table_override(struct acpi_table_header * existing_table,
 				acpi_physical_address * new_address,
+=======
+acpi_os_physical_table_override(struct acpi_table_header *existing_table,
+				acpi_physical_address *new_address,
+>>>>>>> v4.9.227
 				u32 *new_table_length)
 {
 
@@ -506,7 +529,11 @@ acpi_status acpi_os_get_line(char *buffer, u32 buffer_length, u32 *bytes_read)
 void *acpi_os_map_memory(acpi_physical_address where, acpi_size length)
 {
 
+<<<<<<< HEAD
 	return (ACPI_TO_POINTER((acpi_size) where));
+=======
+	return (ACPI_TO_POINTER((acpi_size)where));
+>>>>>>> v4.9.227
 }
 
 /******************************************************************************
@@ -603,9 +630,15 @@ void acpi_os_free(void *mem)
 
 acpi_status
 acpi_os_create_semaphore(u32 max_units,
+<<<<<<< HEAD
 			 u32 initial_units, acpi_handle * out_handle)
 {
 	*out_handle = (acpi_handle) 1;
+=======
+			 u32 initial_units, acpi_handle *out_handle)
+{
+	*out_handle = (acpi_handle)1;
+>>>>>>> v4.9.227
 	return (AE_OK);
 }
 
@@ -640,7 +673,11 @@ acpi_status acpi_os_signal_semaphore(acpi_handle handle, u32 units)
 
 acpi_status
 acpi_os_create_semaphore(u32 max_units,
+<<<<<<< HEAD
 			 u32 initial_units, acpi_handle * out_handle)
+=======
+			 u32 initial_units, acpi_handle *out_handle)
+>>>>>>> v4.9.227
 {
 	sem_t *sem;
 
@@ -672,7 +709,11 @@ acpi_os_create_semaphore(u32 max_units,
 	}
 #endif
 
+<<<<<<< HEAD
 	*out_handle = (acpi_handle) sem;
+=======
+	*out_handle = (acpi_handle)sem;
+>>>>>>> v4.9.227
 	return (AE_OK);
 }
 
@@ -1035,7 +1076,11 @@ acpi_os_read_pci_configuration(struct acpi_pci_id *pci_id,
  *****************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_os_write_pci_configuration(struct acpi_pci_id * pci_id,
+=======
+acpi_os_write_pci_configuration(struct acpi_pci_id *pci_id,
+>>>>>>> v4.9.227
 				u32 pci_register, u64 value, u32 width)
 {
 

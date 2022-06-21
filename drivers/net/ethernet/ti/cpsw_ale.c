@@ -13,6 +13,10 @@
  * GNU General Public License for more details.
  */
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/seq_file.h>
 #include <linux/slab.h>
@@ -146,7 +150,11 @@ static int cpsw_ale_write(struct cpsw_ale *ale, int idx, u32 *ale_entry)
 	return idx;
 }
 
+<<<<<<< HEAD
 int cpsw_ale_match_addr(struct cpsw_ale *ale, u8 *addr, u16 vid)
+=======
+static int cpsw_ale_match_addr(struct cpsw_ale *ale, u8 *addr, u16 vid)
+>>>>>>> v4.9.227
 {
 	u32 ale_entry[ALE_ENTRY_WORDS];
 	int type, idx;
@@ -167,7 +175,11 @@ int cpsw_ale_match_addr(struct cpsw_ale *ale, u8 *addr, u16 vid)
 	return -ENOENT;
 }
 
+<<<<<<< HEAD
 int cpsw_ale_match_vlan(struct cpsw_ale *ale, u16 vid)
+=======
+static int cpsw_ale_match_vlan(struct cpsw_ale *ale, u16 vid)
+>>>>>>> v4.9.227
 {
 	u32 ale_entry[ALE_ENTRY_WORDS];
 	int type, idx;
@@ -265,6 +277,7 @@ int cpsw_ale_flush_multicast(struct cpsw_ale *ale, int port_mask, int vid)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 
 static void cpsw_ale_flush_ucast(struct cpsw_ale *ale, u32 *ale_entry,
 				 int port_mask)
@@ -297,6 +310,9 @@ int cpsw_ale_flush(struct cpsw_ale *ale, int port_mask)
 	}
 	return 0;
 }
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_flush_multicast);
+>>>>>>> v4.9.227
 
 static inline void cpsw_ale_set_vlan_entry_type(u32 *ale_entry,
 						int flags, u16 vid)
@@ -334,6 +350,10 @@ int cpsw_ale_add_ucast(struct cpsw_ale *ale, u8 *addr, int port,
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_add_ucast);
+>>>>>>> v4.9.227
 
 int cpsw_ale_del_ucast(struct cpsw_ale *ale, u8 *addr, int port,
 		       int flags, u16 vid)
@@ -349,6 +369,10 @@ int cpsw_ale_del_ucast(struct cpsw_ale *ale, u8 *addr, int port,
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_del_ucast);
+>>>>>>> v4.9.227
 
 int cpsw_ale_add_mcast(struct cpsw_ale *ale, u8 *addr, int port_mask,
 		       int flags, u16 vid, int mcast_state)
@@ -380,6 +404,10 @@ int cpsw_ale_add_mcast(struct cpsw_ale *ale, u8 *addr, int port_mask,
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_add_mcast);
+>>>>>>> v4.9.227
 
 int cpsw_ale_del_mcast(struct cpsw_ale *ale, u8 *addr, int port_mask,
 		       int flags, u16 vid)
@@ -401,6 +429,10 @@ int cpsw_ale_del_mcast(struct cpsw_ale *ale, u8 *addr, int port_mask,
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_del_mcast);
+>>>>>>> v4.9.227
 
 int cpsw_ale_add_vlan(struct cpsw_ale *ale, u16 vid, int port, int untag,
 		      int reg_mcast, int unreg_mcast)
@@ -430,6 +462,10 @@ int cpsw_ale_add_vlan(struct cpsw_ale *ale, u16 vid, int port, int untag,
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_add_vlan);
+>>>>>>> v4.9.227
 
 int cpsw_ale_del_vlan(struct cpsw_ale *ale, u16 vid, int port_mask)
 {
@@ -450,6 +486,10 @@ int cpsw_ale_del_vlan(struct cpsw_ale *ale, u16 vid, int port_mask)
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_del_vlan);
+>>>>>>> v4.9.227
 
 void cpsw_ale_set_allmulti(struct cpsw_ale *ale, int allmulti)
 {
@@ -479,6 +519,10 @@ void cpsw_ale_set_allmulti(struct cpsw_ale *ale, int allmulti)
 		cpsw_ale_write(ale, idx, ale_entry);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_set_allmulti);
+>>>>>>> v4.9.227
 
 struct ale_control_info {
 	const char	*name;
@@ -704,6 +748,10 @@ int cpsw_ale_control_set(struct cpsw_ale *ale, int port, int control,
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_control_set);
+>>>>>>> v4.9.227
 
 int cpsw_ale_control_get(struct cpsw_ale *ale, int port, int control)
 {
@@ -727,6 +775,10 @@ int cpsw_ale_control_get(struct cpsw_ale *ale, int port, int control)
 	tmp = __raw_readl(ale->params.ale_regs + offset) >> shift;
 	return tmp & BITMASK(info->bits);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_control_get);
+>>>>>>> v4.9.227
 
 static void cpsw_ale_timer(unsigned long arg)
 {
@@ -740,6 +792,7 @@ static void cpsw_ale_timer(unsigned long arg)
 	}
 }
 
+<<<<<<< HEAD
 int cpsw_ale_set_ageout(struct cpsw_ale *ale, int ageout)
 {
 	del_timer_sync(&ale->timer);
@@ -751,6 +804,8 @@ int cpsw_ale_set_ageout(struct cpsw_ale *ale, int ageout)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 void cpsw_ale_start(struct cpsw_ale *ale)
 {
 	u32 rev;
@@ -769,11 +824,19 @@ void cpsw_ale_start(struct cpsw_ale *ale)
 		add_timer(&ale->timer);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_start);
+>>>>>>> v4.9.227
 
 void cpsw_ale_stop(struct cpsw_ale *ale)
 {
 	del_timer_sync(&ale->timer);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_stop);
+>>>>>>> v4.9.227
 
 struct cpsw_ale *cpsw_ale_create(struct cpsw_ale_params *params)
 {
@@ -788,6 +851,10 @@ struct cpsw_ale *cpsw_ale_create(struct cpsw_ale_params *params)
 
 	return ale;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_create);
+>>>>>>> v4.9.227
 
 int cpsw_ale_destroy(struct cpsw_ale *ale)
 {
@@ -797,6 +864,10 @@ int cpsw_ale_destroy(struct cpsw_ale *ale)
 	kfree(ale);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_destroy);
+>>>>>>> v4.9.227
 
 void cpsw_ale_dump(struct cpsw_ale *ale, u32 *data)
 {
@@ -807,3 +878,11 @@ void cpsw_ale_dump(struct cpsw_ale *ale, u32 *data)
 		data += ALE_ENTRY_WORDS;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_dump);
+
+MODULE_LICENSE("GPL v2");
+MODULE_DESCRIPTION("TI CPSW ALE driver");
+MODULE_AUTHOR("Texas Instruments");
+>>>>>>> v4.9.227

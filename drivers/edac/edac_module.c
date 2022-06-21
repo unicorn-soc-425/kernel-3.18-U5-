@@ -43,9 +43,12 @@ module_param_call(edac_debug_level, edac_set_debug_level, param_get_int,
 MODULE_PARM_DESC(edac_debug_level, "EDAC debug level: [0-4], default: 2");
 #endif
 
+<<<<<<< HEAD
 /* scope is to module level only */
 struct workqueue_struct *edac_workqueue;
 
+=======
+>>>>>>> v4.9.227
 /*
  * edac_op_state_to_string()
  */
@@ -66,6 +69,7 @@ char *edac_op_state_to_string(int opstate)
 }
 
 /*
+<<<<<<< HEAD
  * edac_workqueue_setup
  *	initialize the edac work queue for polling operations
  */
@@ -91,6 +95,39 @@ static void edac_workqueue_teardown(void)
 	}
 }
 
+=======
+ * sysfs object: /sys/devices/system/edac
+ *	need to export to other files
+ */
+static struct bus_type edac_subsys = {
+	.name = "edac",
+	.dev_name = "edac",
+};
+
+static int edac_subsys_init(void)
+{
+	int err;
+
+	/* create the /sys/devices/system/edac directory */
+	err = subsys_system_register(&edac_subsys, NULL);
+	if (err)
+		printk(KERN_ERR "Error registering toplevel EDAC sysfs dir\n");
+
+	return err;
+}
+
+static void edac_subsys_exit(void)
+{
+	bus_unregister(&edac_subsys);
+}
+
+/* return pointer to the 'edac' node in sysfs */
+struct bus_type *edac_get_sysfs_subsys(void)
+{
+	return &edac_subsys;
+}
+EXPORT_SYMBOL_GPL(edac_get_sysfs_subsys);
+>>>>>>> v4.9.227
 /*
  * edac_init
  *      module initialization entry point
@@ -101,6 +138,13 @@ static int __init edac_init(void)
 
 	edac_printk(KERN_INFO, EDAC_MC, EDAC_VERSION "\n");
 
+<<<<<<< HEAD
+=======
+	err = edac_subsys_init();
+	if (err)
+		return err;
+
+>>>>>>> v4.9.227
 	/*
 	 * Harvest and clear any boot/initialization PCI parity errors
 	 *
@@ -112,6 +156,7 @@ static int __init edac_init(void)
 
 	err = edac_mc_sysfs_init();
 	if (err)
+<<<<<<< HEAD
 		goto error;
 
 	edac_debugfs_init();
@@ -121,11 +166,31 @@ static int __init edac_init(void)
 	if (err) {
 		edac_printk(KERN_ERR, EDAC_MC, "init WorkQueue failure\n");
 		goto error;
+=======
+		goto err_sysfs;
+
+	edac_debugfs_init();
+
+	err = edac_workqueue_setup();
+	if (err) {
+		edac_printk(KERN_ERR, EDAC_MC, "Failure initializing workqueue\n");
+		goto err_wq;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 
+<<<<<<< HEAD
 error:
+=======
+err_wq:
+	edac_debugfs_exit();
+	edac_mc_sysfs_exit();
+
+err_sysfs:
+	edac_subsys_exit();
+
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -141,6 +206,10 @@ static void __exit edac_exit(void)
 	edac_workqueue_teardown();
 	edac_mc_sysfs_exit();
 	edac_debugfs_exit();
+<<<<<<< HEAD
+=======
+	edac_subsys_exit();
+>>>>>>> v4.9.227
 }
 
 /*

@@ -23,6 +23,13 @@ typedef struct {
 	unsigned long sig[_NSIG_WORDS];
 } sigset_t;
 
+<<<<<<< HEAD
+=======
+/* non-uapi in-kernel SA_FLAGS for those indicates ABI for a signal frame */
+#define SA_IA32_ABI	0x02000000u
+#define SA_X32_ABI	0x01000000u
+
+>>>>>>> v4.9.227
 #ifndef CONFIG_COMPAT
 typedef sigset_t compat_sigset_t;
 #endif
@@ -30,11 +37,19 @@ typedef sigset_t compat_sigset_t;
 #endif /* __ASSEMBLY__ */
 #include <uapi/asm/signal.h>
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
 extern void do_notify_resume(struct pt_regs *, void *, __u32);
 
 #define __ARCH_HAS_SA_RESTORER
 
 #include <asm/sigcontext.h>
+=======
+extern void do_signal(struct pt_regs *regs);
+
+#define __ARCH_HAS_SA_RESTORER
+
+#include <uapi/asm/sigcontext.h>
+>>>>>>> v4.9.227
 
 #ifdef __i386__
 
@@ -81,9 +96,15 @@ static inline int __const_sigismember(sigset_t *set, int _sig)
 
 static inline int __gen_sigismember(sigset_t *set, int _sig)
 {
+<<<<<<< HEAD
 	int ret;
 	asm("btl %2,%1\n\tsbbl %0,%0"
 	    : "=r"(ret) : "m"(*set), "Ir"(_sig-1) : "cc");
+=======
+	unsigned char ret;
+	asm("btl %2,%1\n\tsetc %0"
+	    : "=qm"(ret) : "m"(*set), "Ir"(_sig-1) : "cc");
+>>>>>>> v4.9.227
 	return ret;
 }
 

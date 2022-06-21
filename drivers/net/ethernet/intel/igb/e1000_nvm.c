@@ -72,7 +72,11 @@ static void igb_shift_out_eec_bits(struct e1000_hw *hw, u16 data, u16 count)
 	u32 eecd = rd32(E1000_EECD);
 	u32 mask;
 
+<<<<<<< HEAD
 	mask = 0x01 << (count - 1);
+=======
+	mask = 1u << (count - 1);
+>>>>>>> v4.9.227
 	if (nvm->type == e1000_nvm_eeprom_spi)
 		eecd |= E1000_EECD_DO;
 

@@ -153,9 +153,12 @@
 #define _ECHOAUDIO_H_
 
 
+<<<<<<< HEAD
 #define TRUE 1
 #define FALSE 0
 
+=======
+>>>>>>> v4.9.227
 #include "echoaudio_dsp.h"
 
 
@@ -295,6 +298,7 @@
 #define PIPE_STATE_PENDING	3	/* Pipe has pending start */
 
 
+<<<<<<< HEAD
 /* Debug initialization */
 #ifdef CONFIG_SND_DEBUG
 #define DE_INIT(x) snd_printk x
@@ -323,6 +327,8 @@
 #define DE_MID(x)
 #endif
 
+=======
+>>>>>>> v4.9.227
 
 struct audiopipe {
 	volatile u32 *dma_counter;	/* Commpage register that contains
@@ -406,8 +412,13 @@ struct echoaudio {
 					 */
 	u8 output_clock;		/* Layla20 only */
 	char meters_enabled;		/* VU-meters status */
+<<<<<<< HEAD
 	char asic_loaded;		/* Set TRUE when ASIC loaded */
 	char bad_board;			/* Set TRUE if DSP won't load */
+=======
+	char asic_loaded;		/* Set true when ASIC loaded */
+	char bad_board;			/* Set true if DSP won't load */
+>>>>>>> v4.9.227
 	char professional_spdif;	/* 0 = consumer; 1 = professional */
 	char non_audio_spdif;		/* 3G - only */
 	char digital_in_automute;	/* Gina24, Layla24, Mona - only */
@@ -468,7 +479,12 @@ static int wait_handshake(struct echoaudio *chip);
 static int send_vector(struct echoaudio *chip, u32 command);
 static int get_firmware(const struct firmware **fw_entry,
 			struct echoaudio *chip, const short fw_index);
+<<<<<<< HEAD
 static void free_firmware(const struct firmware *fw_entry);
+=======
+static void free_firmware(const struct firmware *fw_entry,
+			  struct echoaudio *chip);
+>>>>>>> v4.9.227
 
 #ifdef ECHOCARD_HAS_MIDI
 static int enable_midi_input(struct echoaudio *chip, char enable);

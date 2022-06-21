@@ -29,9 +29,15 @@
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
+<<<<<<< HEAD
 #include <mach/pxa320.h>
 
 #include <mach/mxm8x10.h>
+=======
+#include "pxa320.h"
+
+#include "mxm8x10.h"
+>>>>>>> v4.9.227
 
 #include "devices.h"
 #include "generic.h"

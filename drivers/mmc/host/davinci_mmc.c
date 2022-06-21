@@ -32,12 +32,18 @@
 #include <linux/delay.h>
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/edma.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/mmc/mmc.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
 
+<<<<<<< HEAD
 #include <linux/platform_data/edma.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/platform_data/mmc-davinci.h>
 
 /*
@@ -202,7 +208,10 @@ struct mmc_davinci_host {
 	u32 buffer_bytes_left;
 	u32 bytes_left;
 
+<<<<<<< HEAD
 	u32 rxdma, txdma;
+=======
+>>>>>>> v4.9.227
 	struct dma_chan *dma_tx;
 	struct dma_chan *dma_rx;
 	bool use_dma;
@@ -346,10 +355,13 @@ static void mmc_davinci_start_command(struct mmc_davinci_host *host,
 	if (cmd->data)
 		cmd_reg |= MMCCMD_WDATX;
 
+<<<<<<< HEAD
 	/* Setting whether stream or block transfer */
 	if (cmd->flags & MMC_DATA_STREAM)
 		cmd_reg |= MMCCMD_STRMTP;
 
+=======
+>>>>>>> v4.9.227
 	/* Setting whether data read or write */
 	if (host->data_dir == DAVINCI_MMC_DATADIR_WRITE)
 		cmd_reg |= MMCCMD_DTRW;
@@ -517,6 +529,7 @@ davinci_release_dma_channels(struct mmc_davinci_host *host)
 
 static int __init davinci_acquire_dma_channels(struct mmc_davinci_host *host)
 {
+<<<<<<< HEAD
 	int r;
 	dma_cap_mask_t mask;
 
@@ -546,6 +559,22 @@ free_master_write:
 	dma_release_channel(host->dma_tx);
 
 	return r;
+=======
+	host->dma_tx = dma_request_chan(mmc_dev(host->mmc), "tx");
+	if (IS_ERR(host->dma_tx)) {
+		dev_err(mmc_dev(host->mmc), "Can't get dma_tx channel\n");
+		return PTR_ERR(host->dma_tx);
+	}
+
+	host->dma_rx = dma_request_chan(mmc_dev(host->mmc), "rx");
+	if (IS_ERR(host->dma_rx)) {
+		dev_err(mmc_dev(host->mmc), "Can't get dma_rx channel\n");
+		dma_release_channel(host->dma_tx);
+		return PTR_ERR(host->dma_rx);
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /*----------------------------------------------------------------------*/
@@ -568,8 +597,12 @@ mmc_davinci_prepare_data(struct mmc_davinci_host *host, struct mmc_request *req)
 		return;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(mmc_dev(host->mmc), "%s %s, %d blocks of %d bytes\n",
 		(data->flags & MMC_DATA_STREAM) ? "stream" : "block",
+=======
+	dev_dbg(mmc_dev(host->mmc), "%s, %d blocks of %d bytes\n",
+>>>>>>> v4.9.227
 		(data->flags & MMC_DATA_WRITE) ? "write" : "read",
 		data->blocks, data->blksz);
 	dev_dbg(mmc_dev(host->mmc), "  DTO %d cycles + %d ns\n",
@@ -584,22 +617,33 @@ mmc_davinci_prepare_data(struct mmc_davinci_host *host, struct mmc_request *req)
 	writel(data->blksz, host->base + DAVINCI_MMCBLEN);
 
 	/* Configure the FIFO */
+<<<<<<< HEAD
 	switch (data->flags & MMC_DATA_WRITE) {
 	case MMC_DATA_WRITE:
+=======
+	if (data->flags & MMC_DATA_WRITE) {
+>>>>>>> v4.9.227
 		host->data_dir = DAVINCI_MMC_DATADIR_WRITE;
 		writel(fifo_lev | MMCFIFOCTL_FIFODIR_WR | MMCFIFOCTL_FIFORST,
 			host->base + DAVINCI_MMCFIFOCTL);
 		writel(fifo_lev | MMCFIFOCTL_FIFODIR_WR,
 			host->base + DAVINCI_MMCFIFOCTL);
+<<<<<<< HEAD
 		break;
 
 	default:
+=======
+	} else {
+>>>>>>> v4.9.227
 		host->data_dir = DAVINCI_MMC_DATADIR_READ;
 		writel(fifo_lev | MMCFIFOCTL_FIFODIR_RD | MMCFIFOCTL_FIFORST,
 			host->base + DAVINCI_MMCFIFOCTL);
 		writel(fifo_lev | MMCFIFOCTL_FIFODIR_RD,
 			host->base + DAVINCI_MMCFIFOCTL);
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> v4.9.227
 	}
 
 	host->buffer = NULL;
@@ -1147,7 +1191,11 @@ static inline void mmc_davinci_cpufreq_deregister(struct mmc_davinci_host *host)
 {
 }
 #endif
+<<<<<<< HEAD
 static void __init init_mmcsd_host(struct mmc_davinci_host *host)
+=======
+static void init_mmcsd_host(struct mmc_davinci_host *host)
+>>>>>>> v4.9.227
 {
 
 	mmc_davinci_reset_ctrl(host, 1);
@@ -1161,7 +1209,11 @@ static void __init init_mmcsd_host(struct mmc_davinci_host *host)
 	mmc_davinci_reset_ctrl(host, 0);
 }
 
+<<<<<<< HEAD
 static struct platform_device_id davinci_mmc_devtype[] = {
+=======
+static const struct platform_device_id davinci_mmc_devtype[] = {
+>>>>>>> v4.9.227
 	{
 		.name	= "dm6441-mmc",
 		.driver_data = MMC_CTLR_VERSION_1,
@@ -1232,7 +1284,11 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 	struct mmc_davinci_host *host = NULL;
 	struct mmc_host *mmc = NULL;
 	struct resource *r, *mem = NULL;
+<<<<<<< HEAD
 	int ret = 0, irq = 0;
+=======
+	int ret, irq;
+>>>>>>> v4.9.227
 	size_t mem_size;
 	const struct platform_device_id *id_entry;
 
@@ -1242,6 +1298,7 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	ret = -ENODEV;
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	irq = platform_get_irq(pdev, 0);
@@ -1258,10 +1315,29 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 	mmc = mmc_alloc_host(sizeof(struct mmc_davinci_host), &pdev->dev);
 	if (!mmc)
 		goto out;
+=======
+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (!r)
+		return -ENODEV;
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return irq;
+
+	mem_size = resource_size(r);
+	mem = devm_request_mem_region(&pdev->dev, r->start, mem_size,
+				      pdev->name);
+	if (!mem)
+		return -EBUSY;
+
+	mmc = mmc_alloc_host(sizeof(struct mmc_davinci_host), &pdev->dev);
+	if (!mmc)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	host = mmc_priv(mmc);
 	host->mmc = mmc;	/* Important */
 
+<<<<<<< HEAD
 	r = platform_get_resource(pdev, IORESOURCE_DMA, 0);
 	if (!r)
 		dev_warn(&pdev->dev, "RX DMA resource not specified\n");
@@ -1286,6 +1362,24 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 		goto out;
 	}
 	clk_enable(host->clk);
+=======
+	host->mem_res = mem;
+	host->base = devm_ioremap(&pdev->dev, mem->start, mem_size);
+	if (!host->base) {
+		ret = -ENOMEM;
+		goto ioremap_fail;
+	}
+
+	host->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(host->clk)) {
+		ret = PTR_ERR(host->clk);
+		goto clk_get_fail;
+	}
+	ret = clk_prepare_enable(host->clk);
+	if (ret)
+		goto clk_prepare_enable_fail;
+
+>>>>>>> v4.9.227
 	host->mmc_input_clk = clk_get_rate(host->clk);
 
 	init_mmcsd_host(host);
@@ -1300,8 +1394,18 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 	host->mmc_irq = irq;
 	host->sdio_irq = platform_get_irq(pdev, 1);
 
+<<<<<<< HEAD
 	if (host->use_dma && davinci_acquire_dma_channels(host) != 0)
 		host->use_dma = 0;
+=======
+	if (host->use_dma) {
+		ret = davinci_acquire_dma_channels(host);
+		if (ret == -EPROBE_DEFER)
+			goto dma_probe_defer;
+		else if (ret)
+			host->use_dma = 0;
+	}
+>>>>>>> v4.9.227
 
 	/* REVISIT:  someday, support IRQ-driven card detection.  */
 	mmc->caps |= MMC_CAP_NEEDS_POLL;
@@ -1355,6 +1459,7 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 
 	ret = mmc_add_host(mmc);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto out;
 
 	ret = request_irq(irq, mmc_davinci_irq, 0, mmc_hostname(mmc), host);
@@ -1364,6 +1469,19 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 	if (host->sdio_irq >= 0) {
 		ret = request_irq(host->sdio_irq, mmc_davinci_sdio_irq, 0,
 				  mmc_hostname(mmc), host);
+=======
+		goto mmc_add_host_fail;
+
+	ret = devm_request_irq(&pdev->dev, irq, mmc_davinci_irq, 0,
+			       mmc_hostname(mmc), host);
+	if (ret)
+		goto request_irq_fail;
+
+	if (host->sdio_irq >= 0) {
+		ret = devm_request_irq(&pdev->dev, host->sdio_irq,
+				       mmc_davinci_sdio_irq, 0,
+				       mmc_hostname(mmc), host);
+>>>>>>> v4.9.227
 		if (!ret)
 			mmc->caps |= MMC_CAP_SDIO_IRQ;
 	}
@@ -1376,6 +1494,7 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 
 	return 0;
 
+<<<<<<< HEAD
 out:
 	mmc_davinci_cpufreq_deregister(host);
 cpu_freq_fail:
@@ -1398,6 +1517,20 @@ cpu_freq_fail:
 		release_resource(mem);
 
 	dev_dbg(&pdev->dev, "probe err %d\n", ret);
+=======
+request_irq_fail:
+	mmc_remove_host(mmc);
+mmc_add_host_fail:
+	mmc_davinci_cpufreq_deregister(host);
+cpu_freq_fail:
+	davinci_release_dma_channels(host);
+dma_probe_defer:
+	clk_disable_unprepare(host->clk);
+clk_prepare_enable_fail:
+clk_get_fail:
+ioremap_fail:
+	mmc_free_host(mmc);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -1406,6 +1539,7 @@ static int __exit davinci_mmcsd_remove(struct platform_device *pdev)
 {
 	struct mmc_davinci_host *host = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	if (host) {
 		mmc_davinci_cpufreq_deregister(host);
 
@@ -1425,6 +1559,13 @@ static int __exit davinci_mmcsd_remove(struct platform_device *pdev)
 
 		mmc_free_host(host->mmc);
 	}
+=======
+	mmc_remove_host(host->mmc);
+	mmc_davinci_cpufreq_deregister(host);
+	davinci_release_dma_channels(host);
+	clk_disable_unprepare(host->clk);
+	mmc_free_host(host->mmc);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1466,7 +1607,10 @@ static const struct dev_pm_ops davinci_mmcsd_pm = {
 static struct platform_driver davinci_mmcsd_driver = {
 	.driver		= {
 		.name	= "davinci_mmc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= davinci_mmcsd_pm_ops,
 		.of_match_table = davinci_mmc_dt_ids,
 	},

@@ -44,9 +44,12 @@ static inline const struct cpumask *cpumask_of_node(int node)
 /* For now, use numa node -1 for global allocation. */
 #define pcibus_to_node(bus)		((void)(bus), -1)
 
+<<<<<<< HEAD
 /* By definition, we create nodes based on online memory. */
 #define node_has_online_mem(nid) 1
 
+=======
+>>>>>>> v4.9.227
 #endif /* CONFIG_NUMA */
 
 #include <asm-generic/topology.h>
@@ -55,7 +58,11 @@ static inline const struct cpumask *cpumask_of_node(int node)
 #define topology_physical_package_id(cpu)       ((void)(cpu), 0)
 #define topology_core_id(cpu)                   (cpu)
 #define topology_core_cpumask(cpu)              ((void)(cpu), cpu_online_mask)
+<<<<<<< HEAD
 #define topology_thread_cpumask(cpu)            cpumask_of(cpu)
+=======
+#define topology_sibling_cpumask(cpu)           cpumask_of(cpu)
+>>>>>>> v4.9.227
 #endif
 
 #endif /* _ASM_TILE_TOPOLOGY_H */

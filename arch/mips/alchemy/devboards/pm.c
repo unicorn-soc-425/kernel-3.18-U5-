@@ -9,7 +9,11 @@
 #include <linux/suspend.h>
 #include <linux/sysfs.h>
 #include <asm/mach-au1x00/au1000.h>
+<<<<<<< HEAD
 #include <asm/mach-au1x00/gpio.h>
+=======
+#include <asm/mach-au1x00/gpio-au1000.h>
+>>>>>>> v4.9.227
 #include <asm/mach-db1x00/bcsr.h>
 
 /*

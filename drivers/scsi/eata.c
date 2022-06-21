@@ -946,6 +946,7 @@ static int eata2x_slave_configure(struct scsi_device *dev)
 
 	if (TLDEV(dev->type) && dev->tagged_supported) {
 		if (tag_mode == TAG_SIMPLE) {
+<<<<<<< HEAD
 			scsi_adjust_queue_depth(dev, MSG_SIMPLE_TAG, tqd);
 			tag_suffix = ", simple tags";
 		} else if (tag_mode == TAG_ORDERED) {
@@ -960,6 +961,20 @@ static int eata2x_slave_configure(struct scsi_device *dev)
 		tag_suffix = ", untagged";
 	} else {
 		scsi_adjust_queue_depth(dev, 0, utqd);
+=======
+			tag_suffix = ", simple tags";
+		} else if (tag_mode == TAG_ORDERED) {
+			tag_suffix = ", ordered tags";
+		} else {
+			tag_suffix = ", no tags";
+		}
+		scsi_change_queue_depth(dev, tqd);
+	} else if (TLDEV(dev->type) && linked_comm) {
+		scsi_change_queue_depth(dev, tqd);
+		tag_suffix = ", untagged";
+	} else {
+		scsi_change_queue_depth(dev, utqd);
+>>>>>>> v4.9.227
 		tag_suffix = "";
 	}
 

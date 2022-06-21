@@ -23,7 +23,11 @@
 #define __pgd_alloc()	kmalloc(PTRS_PER_PGD * sizeof(pgd_t), GFP_KERNEL)
 #define __pgd_free(pgd)	kfree(pgd)
 #else
+<<<<<<< HEAD
 #define __pgd_alloc()	(pgd_t *)__get_free_pages(GFP_KERNEL | __GFP_REPEAT, 2)
+=======
+#define __pgd_alloc()	(pgd_t *)__get_free_pages(GFP_KERNEL, 2)
+>>>>>>> v4.9.227
 #define __pgd_free(pgd)	free_pages((unsigned long)pgd, 2)
 #endif
 
@@ -80,7 +84,11 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 		if (!new_pmd)
 			goto no_pmd;
 
+<<<<<<< HEAD
 		new_pte = pte_alloc_map(mm, NULL, new_pmd, 0);
+=======
+		new_pte = pte_alloc_map(mm, new_pmd, 0);
+>>>>>>> v4.9.227
 		if (!new_pte)
 			goto no_pte;
 
@@ -107,6 +115,10 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 
 no_pte:
 	pmd_free(mm, new_pmd);
+<<<<<<< HEAD
+=======
+	mm_dec_nr_pmds(mm);
+>>>>>>> v4.9.227
 no_pmd:
 	pud_free(mm, new_pud);
 no_pud:
@@ -140,9 +152,17 @@ void pgd_free(struct mm_struct *mm, pgd_t *pgd_base)
 	pte = pmd_pgtable(*pmd);
 	pmd_clear(pmd);
 	pte_free(mm, pte);
+<<<<<<< HEAD
 no_pmd:
 	pud_clear(pud);
 	pmd_free(mm, pmd);
+=======
+	atomic_long_dec(&mm->nr_ptes);
+no_pmd:
+	pud_clear(pud);
+	pmd_free(mm, pmd);
+	mm_dec_nr_pmds(mm);
+>>>>>>> v4.9.227
 no_pud:
 	pgd_clear(pgd);
 	pud_free(mm, pud);
@@ -162,6 +182,10 @@ no_pgd:
 		pmd = pmd_offset(pud, 0);
 		pud_clear(pud);
 		pmd_free(mm, pmd);
+<<<<<<< HEAD
+=======
+		mm_dec_nr_pmds(mm);
+>>>>>>> v4.9.227
 		pgd_clear(pgd);
 		pud_free(mm, pud);
 	}

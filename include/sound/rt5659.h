@@ -27,11 +27,20 @@ enum rt5659_dmic2_data_pin {
 	RT5659_DMIC2_DATA_GPIO12,
 };
 
+<<<<<<< HEAD
+=======
+enum rt5659_jd_src {
+	RT5659_JD_NULL,
+	RT5659_JD3,
+};
+
+>>>>>>> v4.9.227
 struct rt5659_platform_data {
 	bool in1_diff;
 	bool in3_diff;
 	bool in4_diff;
 
+<<<<<<< HEAD
 	enum rt5659_dmic1_data_pin dmic1_data_pin;
 	enum rt5659_dmic2_data_pin dmic2_data_pin;
 
@@ -46,6 +55,14 @@ struct rt5659_platform_data {
 
 	int gpio_1p8_en;
 	int gpio_3p3_en;	
+=======
+	int ldo1_en; /* GPIO for LDO1_EN */
+	int reset; /* GPIO for RESET */
+
+	enum rt5659_dmic1_data_pin dmic1_data_pin;
+	enum rt5659_dmic2_data_pin dmic2_data_pin;
+	enum rt5659_jd_src jd_src;
+>>>>>>> v4.9.227
 };
 
 #endif

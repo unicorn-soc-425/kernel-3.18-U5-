@@ -17,4 +17,8 @@ skfp-objs :=  skfddi.o    hwmtm.o    fplustm.o  smt.o      cfm.o     \
 #   projects. To keep the source common for all those drivers (and
 #   thus simplify fixes to it), please do not clean it up!
 
+<<<<<<< HEAD
 ccflags-y := -Idrivers/net/skfp -DPCI -DMEM_MAPPED_IO -Wno-strict-prototypes
+=======
+ccflags-y := -DPCI -DMEM_MAPPED_IO -Wno-strict-prototypes
+>>>>>>> v4.9.227

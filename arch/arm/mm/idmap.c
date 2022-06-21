@@ -15,7 +15,11 @@
  * page tables.
  */
 pgd_t *idmap_pgd;
+<<<<<<< HEAD
 phys_addr_t (*arch_virt_to_idmap) (unsigned long x);
+=======
+long long arch_phys_to_idmap_offset;
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_ARM_LPAE
 static void idmap_add_pmd(pud_t *pud, unsigned long addr, unsigned long end,
@@ -86,7 +90,11 @@ static void identity_mapping_add(pgd_t *pgd, const char *text_start,
 
 	prot |= PMD_TYPE_SECT | PMD_SECT_AP_WRITE | PMD_SECT_AF;
 
+<<<<<<< HEAD
 	if (cpu_architecture() <= CPU_ARCH_ARMv5TEJ && !cpu_is_xscale())
+=======
+	if (cpu_architecture() <= CPU_ARCH_ARMv5TEJ && !cpu_is_xscale_family())
+>>>>>>> v4.9.227
 		prot |= PMD_BIT4;
 
 	pgd += pgd_index(addr);

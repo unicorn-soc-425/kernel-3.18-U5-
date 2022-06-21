@@ -5,8 +5,16 @@
  * An MCS like lock especially tailored for optimistic spinning for sleeping
  * lock implementations (mutex, rwsem, etc).
  */
+<<<<<<< HEAD
 
 #define OSQ_UNLOCKED_VAL (0)
+=======
+struct optimistic_spin_node {
+	struct optimistic_spin_node *next, *prev;
+	int locked; /* 1 if lock acquired */
+	int cpu; /* encoded CPU # + 1 value */
+};
+>>>>>>> v4.9.227
 
 struct optimistic_spin_queue {
 	/*
@@ -16,6 +24,11 @@ struct optimistic_spin_queue {
 	atomic_t tail;
 };
 
+<<<<<<< HEAD
+=======
+#define OSQ_UNLOCKED_VAL (0)
+
+>>>>>>> v4.9.227
 /* Init macro and function. */
 #define OSQ_LOCK_UNLOCKED { ATOMIC_INIT(OSQ_UNLOCKED_VAL) }
 
@@ -24,4 +37,15 @@ static inline void osq_lock_init(struct optimistic_spin_queue *lock)
 	atomic_set(&lock->tail, OSQ_UNLOCKED_VAL);
 }
 
+<<<<<<< HEAD
+=======
+extern bool osq_lock(struct optimistic_spin_queue *lock);
+extern void osq_unlock(struct optimistic_spin_queue *lock);
+
+static inline bool osq_is_locked(struct optimistic_spin_queue *lock)
+{
+	return atomic_read(&lock->tail) != OSQ_UNLOCKED_VAL;
+}
+
+>>>>>>> v4.9.227
 #endif

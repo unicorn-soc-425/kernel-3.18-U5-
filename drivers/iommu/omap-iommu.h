@@ -10,30 +10,54 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_OMAP1)
 #error "iommu for this processor not implemented yet"
 #endif
+=======
+#ifndef _OMAP_IOMMU_H
+#define _OMAP_IOMMU_H
+
+#include <linux/bitops.h>
+
+#define for_each_iotlb_cr(obj, n, __i, cr)				\
+	for (__i = 0;							\
+	     (__i < (n)) && (cr = __iotlb_read_cr((obj), __i), true);	\
+	     __i++)
+>>>>>>> v4.9.227
 
 struct iotlb_entry {
 	u32 da;
 	u32 pa;
 	u32 pgsz, prsvd, valid;
+<<<<<<< HEAD
 	union {
 		u16 ap;
 		struct {
 			u32 endian, elsz, mixed;
 		};
 	};
+=======
+	u32 endian, elsz, mixed;
+>>>>>>> v4.9.227
 };
 
 struct omap_iommu {
 	const char	*name;
 	void __iomem	*regbase;
+<<<<<<< HEAD
 	struct device	*dev;
 	void		*isr_priv;
 	struct iommu_domain *domain;
 
 	unsigned int	refcount;
+=======
+	struct regmap	*syscfg;
+	struct device	*dev;
+	struct iommu_domain *domain;
+	struct dentry	*debug_dir;
+
+>>>>>>> v4.9.227
 	spinlock_t	iommu_lock;	/* global for this whole object */
 
 	/*
@@ -48,6 +72,7 @@ struct omap_iommu {
 	void *ctx; /* iommu context: registres saved area */
 
 	int has_bus_err_back;
+<<<<<<< HEAD
 };
 
 struct cr_regs {
@@ -95,6 +120,21 @@ struct iommu_functions {
 };
 
 #ifdef CONFIG_IOMMU_API
+=======
+	u32 id;
+};
+
+struct cr_regs {
+	u32 cam;
+	u32 ram;
+};
+
+struct iotlb_lock {
+	short base;
+	short vict;
+};
+
+>>>>>>> v4.9.227
 /**
  * dev_to_omap_iommu() - retrieves an omap iommu object from a user device
  * @dev: iommu client device
@@ -105,7 +145,10 @@ static inline struct omap_iommu *dev_to_omap_iommu(struct device *dev)
 
 	return arch_data->iommu_dev;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 /*
  * MMU Register offsets
@@ -133,25 +176,65 @@ static inline struct omap_iommu *dev_to_omap_iommu(struct device *dev)
 /*
  * MMU Register bit definitions
  */
+<<<<<<< HEAD
 #define MMU_CAM_VATAG_SHIFT	12
 #define MMU_CAM_VATAG_MASK \
 	((~0UL >> MMU_CAM_VATAG_SHIFT) << MMU_CAM_VATAG_SHIFT)
 #define MMU_CAM_P		(1 << 3)
 #define MMU_CAM_V		(1 << 2)
+=======
+/* IRQSTATUS & IRQENABLE */
+#define MMU_IRQ_MULTIHITFAULT	BIT(4)
+#define MMU_IRQ_TABLEWALKFAULT	BIT(3)
+#define MMU_IRQ_EMUMISS		BIT(2)
+#define MMU_IRQ_TRANSLATIONFAULT	BIT(1)
+#define MMU_IRQ_TLBMISS		BIT(0)
+
+#define __MMU_IRQ_FAULT		\
+	(MMU_IRQ_MULTIHITFAULT | MMU_IRQ_EMUMISS | MMU_IRQ_TRANSLATIONFAULT)
+#define MMU_IRQ_MASK		\
+	(__MMU_IRQ_FAULT | MMU_IRQ_TABLEWALKFAULT | MMU_IRQ_TLBMISS)
+#define MMU_IRQ_TWL_MASK	(__MMU_IRQ_FAULT | MMU_IRQ_TABLEWALKFAULT)
+#define MMU_IRQ_TLB_MISS_MASK	(__MMU_IRQ_FAULT | MMU_IRQ_TLBMISS)
+
+/* MMU_CNTL */
+#define MMU_CNTL_SHIFT		1
+#define MMU_CNTL_MASK		(7 << MMU_CNTL_SHIFT)
+#define MMU_CNTL_EML_TLB	BIT(3)
+#define MMU_CNTL_TWL_EN		BIT(2)
+#define MMU_CNTL_MMU_EN		BIT(1)
+
+/* CAM */
+#define MMU_CAM_VATAG_SHIFT	12
+#define MMU_CAM_VATAG_MASK \
+	((~0UL >> MMU_CAM_VATAG_SHIFT) << MMU_CAM_VATAG_SHIFT)
+#define MMU_CAM_P		BIT(3)
+#define MMU_CAM_V		BIT(2)
+>>>>>>> v4.9.227
 #define MMU_CAM_PGSZ_MASK	3
 #define MMU_CAM_PGSZ_1M		(0 << 0)
 #define MMU_CAM_PGSZ_64K	(1 << 0)
 #define MMU_CAM_PGSZ_4K		(2 << 0)
 #define MMU_CAM_PGSZ_16M	(3 << 0)
 
+<<<<<<< HEAD
+=======
+/* RAM */
+>>>>>>> v4.9.227
 #define MMU_RAM_PADDR_SHIFT	12
 #define MMU_RAM_PADDR_MASK \
 	((~0UL >> MMU_RAM_PADDR_SHIFT) << MMU_RAM_PADDR_SHIFT)
 
 #define MMU_RAM_ENDIAN_SHIFT	9
+<<<<<<< HEAD
 #define MMU_RAM_ENDIAN_MASK	(1 << MMU_RAM_ENDIAN_SHIFT)
 #define MMU_RAM_ENDIAN_LITTLE	(0 << MMU_RAM_ENDIAN_SHIFT)
 #define MMU_RAM_ENDIAN_BIG	(1 << MMU_RAM_ENDIAN_SHIFT)
+=======
+#define MMU_RAM_ENDIAN_MASK	BIT(MMU_RAM_ENDIAN_SHIFT)
+#define MMU_RAM_ENDIAN_LITTLE	(0 << MMU_RAM_ENDIAN_SHIFT)
+#define MMU_RAM_ENDIAN_BIG	BIT(MMU_RAM_ENDIAN_SHIFT)
+>>>>>>> v4.9.227
 
 #define MMU_RAM_ELSZ_SHIFT	7
 #define MMU_RAM_ELSZ_MASK	(3 << MMU_RAM_ELSZ_SHIFT)
@@ -160,11 +243,31 @@ static inline struct omap_iommu *dev_to_omap_iommu(struct device *dev)
 #define MMU_RAM_ELSZ_32		(2 << MMU_RAM_ELSZ_SHIFT)
 #define MMU_RAM_ELSZ_NONE	(3 << MMU_RAM_ELSZ_SHIFT)
 #define MMU_RAM_MIXED_SHIFT	6
+<<<<<<< HEAD
 #define MMU_RAM_MIXED_MASK	(1 << MMU_RAM_MIXED_SHIFT)
+=======
+#define MMU_RAM_MIXED_MASK	BIT(MMU_RAM_MIXED_SHIFT)
+>>>>>>> v4.9.227
 #define MMU_RAM_MIXED		MMU_RAM_MIXED_MASK
 
 #define MMU_GP_REG_BUS_ERR_BACK_EN	0x1
 
+<<<<<<< HEAD
+=======
+#define get_cam_va_mask(pgsz)				\
+	(((pgsz) == MMU_CAM_PGSZ_16M) ? 0xff000000 :	\
+	 ((pgsz) == MMU_CAM_PGSZ_1M)  ? 0xfff00000 :	\
+	 ((pgsz) == MMU_CAM_PGSZ_64K) ? 0xffff0000 :	\
+	 ((pgsz) == MMU_CAM_PGSZ_4K)  ? 0xfffff000 : 0)
+
+/*
+ * DSP_SYSTEM registers and bit definitions (applicable only for DRA7xx DSP)
+ */
+#define DSP_SYS_REVISION		0x00
+#define DSP_SYS_MMU_CONFIG		0x18
+#define DSP_SYS_MMU_CONFIG_EN_SHIFT	4
+
+>>>>>>> v4.9.227
 /*
  * utilities for super page(16MB, 1MB, 64KB and 4KB)
  */
@@ -192,6 +295,7 @@ static inline struct omap_iommu *dev_to_omap_iommu(struct device *dev)
 /*
  * global functions
  */
+<<<<<<< HEAD
 extern u32 omap_iommu_arch_version(void);
 
 extern void omap_iotlb_cr_to_e(struct cr_regs *cr, struct iotlb_entry *e);
@@ -212,6 +316,26 @@ extern ssize_t
 omap_iommu_dump_ctx(struct omap_iommu *obj, char *buf, ssize_t len);
 extern size_t
 omap_dump_tlb_entries(struct omap_iommu *obj, char *buf, ssize_t len);
+=======
+
+struct cr_regs __iotlb_read_cr(struct omap_iommu *obj, int n);
+void iotlb_lock_get(struct omap_iommu *obj, struct iotlb_lock *l);
+void iotlb_lock_set(struct omap_iommu *obj, struct iotlb_lock *l);
+
+#ifdef CONFIG_OMAP_IOMMU_DEBUG
+void omap_iommu_debugfs_init(void);
+void omap_iommu_debugfs_exit(void);
+
+void omap_iommu_debugfs_add(struct omap_iommu *obj);
+void omap_iommu_debugfs_remove(struct omap_iommu *obj);
+#else
+static inline void omap_iommu_debugfs_init(void) { }
+static inline void omap_iommu_debugfs_exit(void) { }
+
+static inline void omap_iommu_debugfs_add(struct omap_iommu *obj) { }
+static inline void omap_iommu_debugfs_remove(struct omap_iommu *obj) { }
+#endif
+>>>>>>> v4.9.227
 
 /*
  * register accessors
@@ -225,3 +349,16 @@ static inline void iommu_write_reg(struct omap_iommu *obj, u32 val, size_t offs)
 {
 	__raw_writel(val, obj->regbase + offs);
 }
+<<<<<<< HEAD
+=======
+
+static inline int iotlb_cr_valid(struct cr_regs *cr)
+{
+	if (!cr)
+		return -EINVAL;
+
+	return cr->cam & MMU_CAM_V;
+}
+
+#endif /* _OMAP_IOMMU_H */
+>>>>>>> v4.9.227

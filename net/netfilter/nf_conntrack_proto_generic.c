@@ -45,7 +45,11 @@ static inline struct nf_generic_net *generic_pernet(struct net *net)
 
 static bool generic_pkt_to_tuple(const struct sk_buff *skb,
 				 unsigned int dataoff,
+<<<<<<< HEAD
 				 struct nf_conntrack_tuple *tuple)
+=======
+				 struct net *net, struct nf_conntrack_tuple *tuple)
+>>>>>>> v4.9.227
 {
 	tuple->src.u.all = 0;
 	tuple->dst.u.all = 0;
@@ -63,10 +67,16 @@ static bool generic_invert_tuple(struct nf_conntrack_tuple *tuple,
 }
 
 /* Print out the per-protocol part of the tuple. */
+<<<<<<< HEAD
 static int generic_print_tuple(struct seq_file *s,
 			       const struct nf_conntrack_tuple *tuple)
 {
 	return 0;
+=======
+static void generic_print_tuple(struct seq_file *s,
+				const struct nf_conntrack_tuple *tuple)
+{
+>>>>>>> v4.9.227
 }
 
 static unsigned int *generic_get_timeouts(struct net *net)
@@ -91,7 +101,17 @@ static int generic_packet(struct nf_conn *ct,
 static bool generic_new(struct nf_conn *ct, const struct sk_buff *skb,
 			unsigned int dataoff, unsigned int *timeouts)
 {
+<<<<<<< HEAD
 	return nf_generic_should_process(nf_ct_protonum(ct));
+=======
+	bool ret;
+
+	ret = nf_generic_should_process(nf_ct_protonum(ct));
+	if (!ret)
+		pr_warn_once("conntrack: generic helper won't handle protocol %d. Please consider loading the specific helper module.\n",
+			     nf_ct_protonum(ct));
+	return ret;
+>>>>>>> v4.9.227
 }
 
 #if IS_ENABLED(CONFIG_NF_CT_NETLINK_TIMEOUT)
@@ -146,6 +166,7 @@ static struct ctl_table generic_sysctl_table[] = {
 	},
 	{ }
 };
+<<<<<<< HEAD
 #ifdef CONFIG_NF_CONNTRACK_PROC_COMPAT
 static struct ctl_table generic_compat_sysctl_table[] = {
 	{
@@ -157,6 +178,8 @@ static struct ctl_table generic_compat_sysctl_table[] = {
 	{ }
 };
 #endif /* CONFIG_NF_CONNTRACK_PROC_COMPAT */
+=======
+>>>>>>> v4.9.227
 #endif /* CONFIG_SYSCTL */
 
 static int generic_kmemdup_sysctl_table(struct nf_proto_net *pn,
@@ -174,6 +197,7 @@ static int generic_kmemdup_sysctl_table(struct nf_proto_net *pn,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int generic_kmemdup_compat_sysctl_table(struct nf_proto_net *pn,
 					       struct nf_generic_net *gn)
 {
@@ -194,11 +218,16 @@ static int generic_kmemdup_compat_sysctl_table(struct nf_proto_net *pn,
 static int generic_init_net(struct net *net, u_int16_t proto)
 {
 	int ret;
+=======
+static int generic_init_net(struct net *net, u_int16_t proto)
+{
+>>>>>>> v4.9.227
 	struct nf_generic_net *gn = generic_pernet(net);
 	struct nf_proto_net *pn = &gn->pn;
 
 	gn->timeout = nf_ct_generic_timeout;
 
+<<<<<<< HEAD
 	ret = generic_kmemdup_compat_sysctl_table(pn, gn);
 	if (ret < 0)
 		return ret;
@@ -208,6 +237,9 @@ static int generic_init_net(struct net *net, u_int16_t proto)
 		nf_ct_kfree_compat_sysctl_table(pn);
 
 	return ret;
+=======
+	return generic_kmemdup_sysctl_table(pn, gn);
+>>>>>>> v4.9.227
 }
 
 static struct nf_proto_net *generic_get_net_proto(struct net *net)

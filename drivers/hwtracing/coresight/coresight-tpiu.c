@@ -1,5 +1,10 @@
 /* Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
  *
+<<<<<<< HEAD
+=======
+ * Description: CoreSight Trace Port Interface Unit driver
+ *
+>>>>>>> v4.9.227
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
  * only version 2 as published by the Free Software Foundation.
@@ -11,7 +16,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/device.h>
 #include <linux/io.h>
@@ -45,8 +53,17 @@
 #define TPIU_ITATBCTR0		0xef8
 
 /** register definition **/
+<<<<<<< HEAD
 /* FFCR - 0x304 */
 #define FFCR_FON_MAN		BIT(6)
+=======
+/* FFSR - 0x300 */
+#define FFSR_FT_STOPPED_BIT	1
+/* FFCR - 0x304 */
+#define FFCR_FON_MAN_BIT	6
+#define FFCR_FON_MAN		BIT(6)
+#define FFCR_STOP_FI		BIT(12)
+>>>>>>> v4.9.227
 
 /**
  * @base:	memory mapped base address for this component.
@@ -70,11 +87,18 @@ static void tpiu_enable_hw(struct tpiu_drvdata *drvdata)
 	CS_LOCK(drvdata->base);
 }
 
+<<<<<<< HEAD
 static int tpiu_enable(struct coresight_device *csdev)
 {
 	struct tpiu_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
 
 	pm_runtime_get_sync(csdev->dev.parent);
+=======
+static int tpiu_enable(struct coresight_device *csdev, u32 mode)
+{
+	struct tpiu_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
+
+>>>>>>> v4.9.227
 	tpiu_enable_hw(drvdata);
 
 	dev_info(drvdata->dev, "TPIU enabled\n");
@@ -85,10 +109,21 @@ static void tpiu_disable_hw(struct tpiu_drvdata *drvdata)
 {
 	CS_UNLOCK(drvdata->base);
 
+<<<<<<< HEAD
 	/* Clear formatter controle reg. */
 	writel_relaxed(0x0, drvdata->base + TPIU_FFCR);
 	/* Generate manual flush */
 	writel_relaxed(FFCR_FON_MAN, drvdata->base + TPIU_FFCR);
+=======
+	/* Clear formatter and stop on flush */
+	writel_relaxed(FFCR_STOP_FI, drvdata->base + TPIU_FFCR);
+	/* Generate manual flush */
+	writel_relaxed(FFCR_STOP_FI | FFCR_FON_MAN, drvdata->base + TPIU_FFCR);
+	/* Wait for flush to complete */
+	coresight_timeout(drvdata->base, TPIU_FFCR, FFCR_FON_MAN_BIT, 0);
+	/* Wait for formatter to stop */
+	coresight_timeout(drvdata->base, TPIU_FFSR, FFSR_FT_STOPPED_BIT, 1);
+>>>>>>> v4.9.227
 
 	CS_LOCK(drvdata->base);
 }
@@ -98,7 +133,10 @@ static void tpiu_disable(struct coresight_device *csdev)
 	struct tpiu_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
 
 	tpiu_disable_hw(drvdata);
+<<<<<<< HEAD
 	pm_runtime_put(csdev->dev.parent);
+=======
+>>>>>>> v4.9.227
 
 	dev_info(drvdata->dev, "TPIU disabled\n");
 }
@@ -120,7 +158,11 @@ static int tpiu_probe(struct amba_device *adev, const struct amba_id *id)
 	struct coresight_platform_data *pdata = NULL;
 	struct tpiu_drvdata *drvdata;
 	struct resource *res = &adev->res;
+<<<<<<< HEAD
 	struct coresight_desc *desc;
+=======
+	struct coresight_desc desc = { 0 };
+>>>>>>> v4.9.227
 	struct device_node *np = adev->dev.of_node;
 
 	if (np) {
@@ -155,6 +197,7 @@ static int tpiu_probe(struct amba_device *adev, const struct amba_id *id)
 
 	pm_runtime_put(&adev->dev);
 
+<<<<<<< HEAD
 	desc = devm_kzalloc(dev, sizeof(*desc), GFP_KERNEL);
 	if (!desc)
 		return -ENOMEM;
@@ -177,6 +220,17 @@ static int tpiu_remove(struct amba_device *adev)
 	struct tpiu_drvdata *drvdata = amba_get_drvdata(adev);
 
 	coresight_unregister(drvdata->csdev);
+=======
+	desc.type = CORESIGHT_DEV_TYPE_SINK;
+	desc.subtype.sink_subtype = CORESIGHT_DEV_SUBTYPE_SINK_PORT;
+	desc.ops = &tpiu_cs_ops;
+	desc.pdata = pdata;
+	desc.dev = dev;
+	drvdata->csdev = coresight_register(&desc);
+	if (IS_ERR(drvdata->csdev))
+		return PTR_ERR(drvdata->csdev);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -223,6 +277,7 @@ static struct amba_driver tpiu_driver = {
 		.name	= "coresight-tpiu",
 		.owner	= THIS_MODULE,
 		.pm	= &tpiu_dev_pm_ops,
+<<<<<<< HEAD
 	},
 	.probe		= tpiu_probe,
 	.remove		= tpiu_remove,
@@ -233,3 +288,11 @@ module_amba_driver(tpiu_driver);
 
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("CoreSight Trace Port Interface Unit driver");
+=======
+		.suppress_bind_attrs = true,
+	},
+	.probe		= tpiu_probe,
+	.id_table	= tpiu_ids,
+};
+builtin_amba_driver(tpiu_driver);
+>>>>>>> v4.9.227

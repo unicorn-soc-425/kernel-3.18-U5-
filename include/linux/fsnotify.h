@@ -16,6 +16,7 @@
 #include <linux/slab.h>
 #include <linux/bug.h>
 
+<<<<<<< HEAD
 /*
  * fsnotify_d_instantiate - instantiate a dentry for inode
  */
@@ -25,6 +26,8 @@ static inline void fsnotify_d_instantiate(struct dentry *dentry,
 	__fsnotify_d_instantiate(dentry, inode);
 }
 
+=======
+>>>>>>> v4.9.227
 /* Notify this dentry's parent about a child's events. */
 static inline int fsnotify_parent(struct path *path, struct dentry *dentry, __u32 mask)
 {
@@ -38,7 +41,15 @@ static inline int fsnotify_parent(struct path *path, struct dentry *dentry, __u3
 static inline int fsnotify_perm(struct file *file, int mask)
 {
 	struct path *path = &file->f_path;
+<<<<<<< HEAD
 	struct inode *inode = file_inode(file);
+=======
+	/*
+	 * Do not use file_inode() here or anywhere in this file to get the
+	 * inode.  That would break *notity on overlayfs.
+	 */
+	struct inode *inode = path->dentry->d_inode;
+>>>>>>> v4.9.227
 	__u32 fsnotify_mask = 0;
 	int ret;
 
@@ -61,6 +72,7 @@ static inline int fsnotify_perm(struct file *file, int mask)
 }
 
 /*
+<<<<<<< HEAD
  * fsnotify_d_move - dentry has been moved
  */
 static inline void fsnotify_d_move(struct dentry *dentry)
@@ -73,6 +85,8 @@ static inline void fsnotify_d_move(struct dentry *dentry)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * fsnotify_link_count - inode's link count changed
  */
 static inline void fsnotify_link_count(struct inode *inode)
@@ -194,7 +208,11 @@ static inline void fsnotify_mkdir(struct inode *inode, struct dentry *dentry)
 static inline void fsnotify_access(struct file *file)
 {
 	struct path *path = &file->f_path;
+<<<<<<< HEAD
 	struct inode *inode = file_inode(file);
+=======
+	struct inode *inode = path->dentry->d_inode;
+>>>>>>> v4.9.227
 	__u32 mask = FS_ACCESS;
 
 	if (S_ISDIR(inode->i_mode))
@@ -212,7 +230,11 @@ static inline void fsnotify_access(struct file *file)
 static inline void fsnotify_modify(struct file *file)
 {
 	struct path *path = &file->f_path;
+<<<<<<< HEAD
 	struct inode *inode = file_inode(file);
+=======
+	struct inode *inode = path->dentry->d_inode;
+>>>>>>> v4.9.227
 	__u32 mask = FS_MODIFY;
 
 	if (S_ISDIR(inode->i_mode))
@@ -230,19 +252,26 @@ static inline void fsnotify_modify(struct file *file)
 static inline void fsnotify_open(struct file *file)
 {
 	struct path *path = &file->f_path;
+<<<<<<< HEAD
 	struct path lower_path;
 	struct inode *inode = file_inode(file);
+=======
+	struct inode *inode = path->dentry->d_inode;
+>>>>>>> v4.9.227
 	__u32 mask = FS_OPEN;
 
 	if (S_ISDIR(inode->i_mode))
 		mask |= FS_ISDIR;
 
+<<<<<<< HEAD
 	if (path->dentry->d_op && path->dentry->d_op->d_canonical_path) {
 		path->dentry->d_op->d_canonical_path(path, &lower_path);
 		fsnotify_parent(&lower_path, NULL, mask);
 		fsnotify(lower_path.dentry->d_inode, mask, &lower_path, FSNOTIFY_EVENT_PATH, NULL, 0);
 		path_put(&lower_path);
 	}
+=======
+>>>>>>> v4.9.227
 	fsnotify_parent(path, NULL, mask);
 	fsnotify(inode, mask, path, FSNOTIFY_EVENT_PATH, NULL, 0);
 }
@@ -253,7 +282,11 @@ static inline void fsnotify_open(struct file *file)
 static inline void fsnotify_close(struct file *file)
 {
 	struct path *path = &file->f_path;
+<<<<<<< HEAD
 	struct inode *inode = file_inode(file);
+=======
+	struct inode *inode = path->dentry->d_inode;
+>>>>>>> v4.9.227
 	fmode_t mode = file->f_mode;
 	__u32 mask = (mode & FMODE_WRITE) ? FS_CLOSE_WRITE : FS_CLOSE_NOWRITE;
 

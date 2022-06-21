@@ -12,9 +12,15 @@
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 
 #include <asm/sun3x.h>
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+
+#include <asm/sun3x.h>
+>>>>>>> v4.9.227
 #include <asm/dma.h>
 #include <asm/dvma.h>
 
@@ -295,7 +301,10 @@ static struct platform_driver esp_sun3x_driver = {
 	.remove         = esp_sun3x_remove,
 	.driver = {
 		.name   = "sun3x_esp",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

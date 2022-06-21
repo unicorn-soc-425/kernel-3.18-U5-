@@ -246,12 +246,21 @@ int qlcnic_83xx_check_vnic_state(struct qlcnic_adapter *adapter)
 	u32 state;
 
 	state = QLCRDX(ahw, QLC_83XX_VNIC_STATE);
+<<<<<<< HEAD
 	while (state != QLCNIC_DEV_NPAR_OPER && idc->vnic_wait_limit--) {
+=======
+	while (state != QLCNIC_DEV_NPAR_OPER && idc->vnic_wait_limit) {
+		idc->vnic_wait_limit--;
+>>>>>>> v4.9.227
 		msleep(1000);
 		state = QLCRDX(ahw, QLC_83XX_VNIC_STATE);
 	}
 
+<<<<<<< HEAD
 	if (!idc->vnic_wait_limit) {
+=======
+	if (state != QLCNIC_DEV_NPAR_OPER) {
+>>>>>>> v4.9.227
 		dev_err(&adapter->pdev->dev,
 			"vNIC mode not operational, state check timed out.\n");
 		return -EIO;

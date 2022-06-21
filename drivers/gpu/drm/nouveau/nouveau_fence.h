@@ -57,7 +57,12 @@ struct nouveau_fence_priv {
 	int  (*context_new)(struct nouveau_channel *);
 	void (*context_del)(struct nouveau_channel *);
 
+<<<<<<< HEAD
 	u32 contexts, context_base;
+=======
+	u32 contexts;
+	u64 context_base;
+>>>>>>> v4.9.227
 	bool uevent;
 };
 
@@ -99,6 +104,10 @@ struct nv84_fence_priv {
 	struct nouveau_bo *bo;
 	struct nouveau_bo *bo_gart;
 	u32 *suspend;
+<<<<<<< HEAD
+=======
+	struct mutex mutex;
+>>>>>>> v4.9.227
 };
 
 u64  nv84_fence_crtc(struct nouveau_channel *, int);

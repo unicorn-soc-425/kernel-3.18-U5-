@@ -13,6 +13,10 @@
 #include <linux/tty.h>
 #include <linux/sched.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
+=======
+#include <linux/mutex.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/types.h>
 
@@ -40,6 +44,10 @@ static volatile int sel_start = -1; 	/* cleared by clear_selection */
 static int sel_end;
 static int sel_buffer_lth;
 static char *sel_buffer;
+<<<<<<< HEAD
+=======
+static DEFINE_MUTEX(sel_lock);
+>>>>>>> v4.9.227
 
 /* clear_selection, highlight and highlight_pointer can be called
    from interrupt (via scrollback/front) */
@@ -78,6 +86,14 @@ void clear_selection(void)
 	}
 }
 
+<<<<<<< HEAD
+=======
+bool vc_is_sel(struct vc_data *vc)
+{
+	return vc == sel_cons;
+}
+
+>>>>>>> v4.9.227
 /*
  * User settable table: what characters are to be considered alphabetic?
  * 256 bits. Locked by the console lock.
@@ -156,14 +172,22 @@ static int store_utf8(u16 c, char *p)
  *	The entire selection process is managed under the console_lock. It's
  *	 a lot under the lock but its hardly a performance path
  */
+<<<<<<< HEAD
 int set_selection(const struct tiocl_selection __user *sel, struct tty_struct *tty)
+=======
+static int __set_selection(const struct tiocl_selection __user *sel, struct tty_struct *tty)
+>>>>>>> v4.9.227
 {
 	struct vc_data *vc = vc_cons[fg_console].d;
 	int sel_mode, new_sel_start, new_sel_end, spc;
 	char *bp, *obp;
 	int i, ps, pe, multiplier;
 	u16 c;
+<<<<<<< HEAD
 	int mode;
+=======
+	int mode, ret = 0;
+>>>>>>> v4.9.227
 
 	poke_blanked_console();
 
@@ -324,7 +348,25 @@ int set_selection(const struct tiocl_selection __user *sel, struct tty_struct *t
 		}
 	}
 	sel_buffer_lth = bp - sel_buffer;
+<<<<<<< HEAD
 	return 0;
+=======
+
+	return ret;
+}
+
+int set_selection(const struct tiocl_selection __user *v, struct tty_struct *tty)
+{
+	int ret;
+
+	mutex_lock(&sel_lock);
+	console_lock();
+	ret = __set_selection(v, tty);
+	console_unlock();
+	mutex_unlock(&sel_lock);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /* Insert the contents of the selection buffer into the
@@ -341,12 +383,17 @@ int paste_selection(struct tty_struct *tty)
 	unsigned int count;
 	struct  tty_ldisc *ld;
 	DECLARE_WAITQUEUE(wait, current);
+<<<<<<< HEAD
+=======
+	int ret = 0;
+>>>>>>> v4.9.227
 
 	console_lock();
 	poke_blanked_console();
 	console_unlock();
 
 	ld = tty_ldisc_ref_wait(tty);
+<<<<<<< HEAD
 	tty_buffer_lock_exclusive(&vc->port);
 
 	add_wait_queue(&vc->paste_wait, &wait);
@@ -356,15 +403,44 @@ int paste_selection(struct tty_struct *tty)
 			schedule();
 			continue;
 		}
+=======
+	if (!ld)
+		return -EIO;	/* ldisc was hung up */
+	tty_buffer_lock_exclusive(&vc->port);
+
+	add_wait_queue(&vc->paste_wait, &wait);
+	mutex_lock(&sel_lock);
+	while (sel_buffer && sel_buffer_lth > pasted) {
+		set_current_state(TASK_INTERRUPTIBLE);
+		if (signal_pending(current)) {
+			ret = -EINTR;
+			break;
+		}
+		if (tty_throttled(tty)) {
+			mutex_unlock(&sel_lock);
+			schedule();
+			mutex_lock(&sel_lock);
+			continue;
+		}
+		__set_current_state(TASK_RUNNING);
+>>>>>>> v4.9.227
 		count = sel_buffer_lth - pasted;
 		count = tty_ldisc_receive_buf(ld, sel_buffer + pasted, NULL,
 					      count);
 		pasted += count;
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&sel_lock);
+>>>>>>> v4.9.227
 	remove_wait_queue(&vc->paste_wait, &wait);
 	__set_current_state(TASK_RUNNING);
 
 	tty_buffer_unlock_exclusive(&vc->port);
 	tty_ldisc_deref(ld);
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> v4.9.227
 }

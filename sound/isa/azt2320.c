@@ -29,7 +29,11 @@
     activation method (full-duplex audio!).
 */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/time.h>
@@ -215,7 +219,11 @@ static int snd_card_azt2320_probe(int dev,
 	sprintf(card->longname, "%s, WSS at 0x%lx, irq %i, dma %i&%i",
 		card->shortname, chip->port, irq[dev], dma1[dev], dma2[dev]);
 
+<<<<<<< HEAD
 	error = snd_wss_pcm(chip, 0, NULL);
+=======
+	error = snd_wss_pcm(chip, 0);
+>>>>>>> v4.9.227
 	if (error < 0) {
 		snd_card_free(card);
 		return error;
@@ -225,7 +233,11 @@ static int snd_card_azt2320_probe(int dev,
 		snd_card_free(card);
 		return error;
 	}
+<<<<<<< HEAD
 	error = snd_wss_timer(chip, 0, NULL);
+=======
+	error = snd_wss_timer(chip, 0);
+>>>>>>> v4.9.227
 	if (error < 0) {
 		snd_card_free(card);
 		return error;

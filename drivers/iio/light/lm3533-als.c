@@ -267,7 +267,11 @@ static irqreturn_t lm3533_als_isr(int irq, void *dev_id)
 					    0,
 					    IIO_EV_TYPE_THRESH,
 					    IIO_EV_DIR_EITHER),
+<<<<<<< HEAD
 		       iio_get_time_ns());
+=======
+		       iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 out:
 	return IRQ_HANDLED;
 }
@@ -657,7 +661,11 @@ static ALS_HYSTERESIS_ATTR_RO(3);
 #define ILLUMINANCE_ATTR_RO(_name) \
 	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO, show_##_name, NULL)
 #define ILLUMINANCE_ATTR_RW(_name) \
+<<<<<<< HEAD
 	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO | S_IWUSR , \
+=======
+	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO | S_IWUSR, \
+>>>>>>> v4.9.227
 						show_##_name, store_##_name)
 /*
  * ALS Zone threshold-event enable
@@ -743,8 +751,15 @@ static int lm3533_als_set_resistor(struct lm3533_als *als, u8 val)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MAX)
 		return -EINVAL;
+=======
+	if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MAX) {
+		dev_err(&als->pdev->dev, "invalid resistor value\n");
+		return -EINVAL;
+	};
+>>>>>>> v4.9.227
 
 	ret = lm3533_write(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
 	if (ret) {

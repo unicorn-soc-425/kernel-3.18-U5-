@@ -181,6 +181,10 @@ enum s2mps11_regulators {
 #define S2MPS11_BUCK9_N_VOLTAGES (S2MPS11_BUCK9_VSEL_MASK + 1)
 #define S2MPS11_RAMP_DELAY	25000		/* uV/us */
 
+<<<<<<< HEAD
+=======
+#define S2MPS11_CTRL1_PWRHOLD_MASK	BIT(4)
+>>>>>>> v4.9.227
 
 #define S2MPS11_BUCK2_RAMP_SHIFT	6
 #define S2MPS11_BUCK34_RAMP_SHIFT	4

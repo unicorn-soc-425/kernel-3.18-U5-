@@ -88,10 +88,17 @@ SHUF_DC00 = %xmm11      # shuffle xDxC -> DC00
 BYTE_FLIP_MASK = %xmm12
 
 NUM_BLKS = %rdx   # 3rd arg
+<<<<<<< HEAD
 CTX = %rsi        # 2nd arg
 INP = %rdi        # 1st arg
 
 SRND = %rdi       # clobbers INP
+=======
+INP = %rsi        # 2nd arg
+CTX = %rdi        # 1st arg
+
+SRND = %rsi       # clobbers INP
+>>>>>>> v4.9.227
 c = %ecx
 d = %r8d
 e = %edx
@@ -348,8 +355,13 @@ a = TMP_
 
 ########################################################################
 ## void sha256_transform_ssse3(void *input_data, UINT32 digest[8], UINT64 num_blks)
+<<<<<<< HEAD
 ## arg 1 : pointer to input data
 ## arg 2 : pointer to digest
+=======
+## arg 1 : pointer to digest
+## arg 2 : pointer to input data
+>>>>>>> v4.9.227
 ## arg 3 : Num blocks
 ########################################################################
 .text

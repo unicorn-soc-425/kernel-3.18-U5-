@@ -19,8 +19,15 @@
 #define _UAPI_LINUX_IN_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/socket.h>
 
+=======
+#include <linux/libc-compat.h>
+#include <linux/socket.h>
+
+#if __UAPI_DEF_IN_IPPROTO
+>>>>>>> v4.9.227
 /* Standard well-defined IP protocols.  */
 enum {
   IPPROTO_IP = 0,		/* Dummy protocol for TCP		*/
@@ -69,16 +76,31 @@ enum {
 #define IPPROTO_SCTP		IPPROTO_SCTP
   IPPROTO_UDPLITE = 136,	/* UDP-Lite (RFC 3828)			*/
 #define IPPROTO_UDPLITE		IPPROTO_UDPLITE
+<<<<<<< HEAD
+=======
+  IPPROTO_MPLS = 137,		/* MPLS in IP (RFC 4023)		*/
+#define IPPROTO_MPLS		IPPROTO_MPLS
+>>>>>>> v4.9.227
   IPPROTO_RAW = 255,		/* Raw IP packets			*/
 #define IPPROTO_RAW		IPPROTO_RAW
   IPPROTO_MAX
 };
+<<<<<<< HEAD
 
 
+=======
+#endif
+
+#if __UAPI_DEF_IN_ADDR
+>>>>>>> v4.9.227
 /* Internet address. */
 struct in_addr {
 	__be32	s_addr;
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 #define IP_TOS		1
 #define IP_TTL		2
@@ -109,6 +131,11 @@ struct in_addr {
 
 #define IP_MINTTL       21
 #define IP_NODEFRAG     22
+<<<<<<< HEAD
+=======
+#define IP_CHECKSUM	23
+#define IP_BIND_ADDRESS_NO_PORT	24
+>>>>>>> v4.9.227
 
 /* IP_MTU_DISCOVER values */
 #define IP_PMTUDISC_DONT		0	/* Never send DF frames */
@@ -154,6 +181,10 @@ struct in_addr {
 
 /* Request struct for multicast socket ops */
 
+<<<<<<< HEAD
+=======
+#if __UAPI_DEF_IP_MREQ
+>>>>>>> v4.9.227
 struct ip_mreq  {
 	struct in_addr imr_multiaddr;	/* IP multicast address of group */
 	struct in_addr imr_interface;	/* local IP address of interface */
@@ -205,14 +236,27 @@ struct group_filter {
 #define GROUP_FILTER_SIZE(numsrc) \
 	(sizeof(struct group_filter) - sizeof(struct __kernel_sockaddr_storage) \
 	+ (numsrc) * sizeof(struct __kernel_sockaddr_storage))
+<<<<<<< HEAD
 
+=======
+#endif
+
+#if __UAPI_DEF_IN_PKTINFO
+>>>>>>> v4.9.227
 struct in_pktinfo {
 	int		ipi_ifindex;
 	struct in_addr	ipi_spec_dst;
 	struct in_addr	ipi_addr;
 };
+<<<<<<< HEAD
 
 /* Structure describing an Internet (IP) socket address. */
+=======
+#endif
+
+/* Structure describing an Internet (IP) socket address. */
+#if  __UAPI_DEF_SOCKADDR_IN
+>>>>>>> v4.9.227
 #define __SOCK_SIZE__	16		/* sizeof(struct sockaddr)	*/
 struct sockaddr_in {
   __kernel_sa_family_t	sin_family;	/* Address family		*/
@@ -224,8 +268,14 @@ struct sockaddr_in {
 			sizeof(unsigned short int) - sizeof(struct in_addr)];
 };
 #define sin_zero	__pad		/* for BSD UNIX comp. -FvK	*/
+<<<<<<< HEAD
 
 
+=======
+#endif
+
+#if __UAPI_DEF_IN_CLASS
+>>>>>>> v4.9.227
 /*
  * Definitions of the bits in an Internet address integer.
  * On subnets, host and network parts are found according
@@ -276,7 +326,11 @@ struct sockaddr_in {
 #define INADDR_ALLHOSTS_GROUP 	0xe0000001U	/* 224.0.0.1   */
 #define INADDR_ALLRTRS_GROUP    0xe0000002U	/* 224.0.0.2 */
 #define INADDR_MAX_LOCAL_GROUP  0xe00000ffU	/* 224.0.0.255 */
+<<<<<<< HEAD
 
+=======
+#endif
+>>>>>>> v4.9.227
 
 /* <asm/byteorder.h> contains the htonl type stuff.. */
 #include <asm/byteorder.h> 

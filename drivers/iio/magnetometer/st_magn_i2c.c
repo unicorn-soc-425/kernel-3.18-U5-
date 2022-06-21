@@ -21,6 +21,13 @@
 #ifdef CONFIG_OF
 static const struct of_device_id st_magn_of_match[] = {
 	{
+<<<<<<< HEAD
+=======
+		.compatible = "st,lsm303dlh-magn",
+		.data = LSM303DLH_MAGN_DEV_NAME,
+	},
+	{
+>>>>>>> v4.9.227
 		.compatible = "st,lsm303dlhc-magn",
 		.data = LSM303DLHC_MAGN_DEV_NAME,
 	},
@@ -32,6 +39,13 @@ static const struct of_device_id st_magn_of_match[] = {
 		.compatible = "st,lis3mdl-magn",
 		.data = LIS3MDL_MAGN_DEV_NAME,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.compatible = "st,lsm303agr-magn",
+		.data = LSM303AGR_MAGN_DEV_NAME,
+	},
+>>>>>>> v4.9.227
 	{},
 };
 MODULE_DEVICE_TABLE(of, st_magn_of_match);
@@ -51,12 +65,19 @@ static int st_magn_i2c_probe(struct i2c_client *client,
 		return -ENOMEM;
 
 	mdata = iio_priv(indio_dev);
+<<<<<<< HEAD
 	mdata->dev = &client->dev;
+=======
+>>>>>>> v4.9.227
 	st_sensors_of_i2c_probe(client, st_magn_of_match);
 
 	st_sensors_i2c_configure(indio_dev, client, mdata);
 
+<<<<<<< HEAD
 	err = st_magn_common_probe(indio_dev, NULL);
+=======
+	err = st_magn_common_probe(indio_dev);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return err;
 
@@ -72,16 +93,27 @@ static int st_magn_i2c_remove(struct i2c_client *client)
 }
 
 static const struct i2c_device_id st_magn_id_table[] = {
+<<<<<<< HEAD
 	{ LSM303DLHC_MAGN_DEV_NAME },
 	{ LSM303DLM_MAGN_DEV_NAME },
 	{ LIS3MDL_MAGN_DEV_NAME },
+=======
+	{ LSM303DLH_MAGN_DEV_NAME },
+	{ LSM303DLHC_MAGN_DEV_NAME },
+	{ LSM303DLM_MAGN_DEV_NAME },
+	{ LIS3MDL_MAGN_DEV_NAME },
+	{ LSM303AGR_MAGN_DEV_NAME },
+>>>>>>> v4.9.227
 	{},
 };
 MODULE_DEVICE_TABLE(i2c, st_magn_id_table);
 
 static struct i2c_driver st_magn_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "st-magn-i2c",
 		.of_match_table = of_match_ptr(st_magn_of_match),
 	},

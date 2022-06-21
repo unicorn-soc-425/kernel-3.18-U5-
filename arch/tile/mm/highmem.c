@@ -201,7 +201,11 @@ void *kmap_atomic_prot(struct page *page, pgprot_t prot)
 	int idx, type;
 	pte_t *pte;
 
+<<<<<<< HEAD
 	/* even !CONFIG_PREEMPT needs this, for in_atomic in do_page_fault */
+=======
+	preempt_disable();
+>>>>>>> v4.9.227
 	pagefault_disable();
 
 	/* Avoid icache flushes by disallowing atomic executable mappings. */
@@ -259,6 +263,10 @@ void __kunmap_atomic(void *kvaddr)
 	}
 
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(__kunmap_atomic);
 
@@ -274,6 +282,7 @@ void *kmap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot)
 {
 	return kmap_atomic_prot(pfn_to_page(pfn), prot);
 }
+<<<<<<< HEAD
 
 struct page *kmap_atomic_to_page(void *ptr)
 {
@@ -286,3 +295,5 @@ struct page *kmap_atomic_to_page(void *ptr)
 	pte = kmap_get_pte(vaddr);
 	return pte_page(*pte);
 }
+=======
+>>>>>>> v4.9.227

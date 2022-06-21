@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * at91sama5d3_tcb1.dtsi - Device Tree Include file for AT91SAM9x5 SoC with
+=======
+ * sama5d3_tcb1.dtsi - Device Tree Include file for SAMA5D3 SoC with
+>>>>>>> v4.9.227
  * 2 TC blocks.
  *
  * Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>
@@ -23,6 +27,10 @@
 					tcb1_clk: tcb1_clk {
 						#clock-cells = <0>;
 						reg = <27>;
+<<<<<<< HEAD
+=======
+						atmel,clk-output-range = <0 166000000>;
+>>>>>>> v4.9.227
 					};
 				};
 			};
@@ -31,8 +39,13 @@
 				compatible = "atmel,at91sam9x5-tcb";
 				reg = <0xf8014000 0x100>;
 				interrupts = <27 IRQ_TYPE_LEVEL_HIGH 0>;
+<<<<<<< HEAD
 				clocks = <&tcb1_clk>;
 				clock-names = "t0_clk";
+=======
+				clocks = <&tcb1_clk>, <&clk32k>;
+				clock-names = "t0_clk", "slow_clk";
+>>>>>>> v4.9.227
 			};
 		};
 	};

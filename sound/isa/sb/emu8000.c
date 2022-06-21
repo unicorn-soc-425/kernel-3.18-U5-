@@ -26,11 +26,19 @@
 #include <linux/ioport.h>
 #include <linux/export.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <sound/core.h>
 #include <sound/emu8000.h>
 #include <sound/emu8000_reg.h>
 #include <asm/io.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/io.h>
+#include <sound/core.h>
+#include <sound/emu8000.h>
+#include <sound/emu8000_reg.h>
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <sound/control.h>
 #include <sound/initval.h>
@@ -378,13 +386,20 @@ init_arrays(struct snd_emu8000 *emu)
 static void
 size_dram(struct snd_emu8000 *emu)
 {
+<<<<<<< HEAD
 	int i, size, detected_size;
+=======
+	int i, size;
+>>>>>>> v4.9.227
 
 	if (emu->dram_checked)
 		return;
 
 	size = 0;
+<<<<<<< HEAD
 	detected_size = 0;
+=======
+>>>>>>> v4.9.227
 
 	/* write out a magic number */
 	snd_emu8000_dma_chan(emu, 0, EMU8000_RAM_WRITE);
@@ -392,10 +407,26 @@ size_dram(struct snd_emu8000 *emu)
 	EMU8000_SMALW_WRITE(emu, EMU8000_DRAM_OFFSET);
 	EMU8000_SMLD_WRITE(emu, UNIQUE_ID1);
 	snd_emu8000_init_fm(emu); /* This must really be here and not 2 lines back even */
+<<<<<<< HEAD
 
 	while (size < EMU8000_MAX_DRAM) {
 
 		size += 512 * 1024;  /* increment 512kbytes */
+=======
+	snd_emu8000_write_wait(emu);
+
+	/*
+	 * Detect first 512 KiB.  If a write succeeds at the beginning of a
+	 * 512 KiB page we assume that the whole page is there.
+	 */
+	EMU8000_SMALR_WRITE(emu, EMU8000_DRAM_OFFSET);
+	EMU8000_SMLD_READ(emu); /* discard stale data  */
+	if (EMU8000_SMLD_READ(emu) != UNIQUE_ID1)
+		goto skip_detect;   /* No RAM */
+	snd_emu8000_read_wait(emu);
+
+	for (size = 512 * 1024; size < EMU8000_MAX_DRAM; size += 512 * 1024) {
+>>>>>>> v4.9.227
 
 		/* Write a unique data on the test address.
 		 * if the address is out of range, the data is written on
@@ -431,6 +462,7 @@ size_dram(struct snd_emu8000 *emu)
 		snd_emu8000_read_wait(emu);
 
 		/* Otherwise, it's valid memory. */
+<<<<<<< HEAD
 		detected_size = size + 512 * 1024;
 	}
 
@@ -443,6 +475,11 @@ size_dram(struct snd_emu8000 *emu)
 			detected_size = 512 * 1024;
 	}
 
+=======
+	}
+
+skip_detect:
+>>>>>>> v4.9.227
 	/* wait until FULL bit in SMAxW register is false */
 	for (i = 0; i < 10000; i++) {
 		if ((EMU8000_SMALW_READ(emu) & 0x80000000) == 0)
@@ -454,10 +491,17 @@ size_dram(struct snd_emu8000 *emu)
 	snd_emu8000_dma_chan(emu, 0, EMU8000_RAM_CLOSE);
 	snd_emu8000_dma_chan(emu, 1, EMU8000_RAM_CLOSE);
 
+<<<<<<< HEAD
 	snd_printdd("EMU8000 [0x%lx]: %d Kb on-board memory detected\n",
 		    emu->port1, detected_size/1024);
 
 	emu->mem_size = detected_size;
+=======
+	pr_info("EMU8000 [0x%lx]: %d KiB on-board DRAM detected\n",
+		    emu->port1, size/1024);
+
+	emu->mem_size = size;
+>>>>>>> v4.9.227
 	emu->dram_checked = 1;
 }
 

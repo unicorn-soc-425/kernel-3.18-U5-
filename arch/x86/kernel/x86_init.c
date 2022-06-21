@@ -5,13 +5,20 @@
  */
 #include <linux/init.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/pci.h>
 
 #include <asm/bios_ebda.h>
 #include <asm/paravirt.h>
 #include <asm/pci_x86.h>
+<<<<<<< HEAD
 #include <asm/pci.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/mpspec.h>
 #include <asm/setup.h>
 #include <asm/apic.h>
@@ -69,7 +76,10 @@ struct x86_init_ops x86_init __initdata = {
 
 	.timers = {
 		.setup_percpu_clockev	= setup_boot_APIC_clock,
+<<<<<<< HEAD
 		.tsc_pre_init		= x86_init_noop,
+=======
+>>>>>>> v4.9.227
 		.timer_init		= hpet_time_init,
 		.wallclock_init		= x86_init_noop,
 	},
@@ -93,7 +103,12 @@ struct x86_cpuinit_ops x86_cpuinit = {
 static void default_nmi_init(void) { };
 static int default_i8042_detect(void) { return 1; };
 
+<<<<<<< HEAD
 struct x86_platform_ops x86_platform = {
+=======
+struct x86_platform_ops x86_platform __ro_after_init = {
+	.calibrate_cpu			= native_calibrate_cpu,
+>>>>>>> v4.9.227
 	.calibrate_tsc			= native_calibrate_tsc,
 	.get_wallclock			= mach_get_cmos_time,
 	.set_wallclock			= mach_set_rtc_mmss,
@@ -109,6 +124,7 @@ struct x86_platform_ops x86_platform = {
 EXPORT_SYMBOL_GPL(x86_platform);
 
 #if defined(CONFIG_PCI_MSI)
+<<<<<<< HEAD
 struct x86_msi_ops x86_msi = {
 	.setup_msi_irqs		= native_setup_msi_irqs,
 	.compose_msi_msg	= native_compose_msi_msg,
@@ -116,6 +132,13 @@ struct x86_msi_ops x86_msi = {
 	.teardown_msi_irqs	= default_teardown_msi_irqs,
 	.restore_msi_irqs	= default_restore_msi_irqs,
 	.setup_hpet_msi		= default_setup_hpet_msi,
+=======
+struct x86_msi_ops x86_msi __ro_after_init = {
+	.setup_msi_irqs		= native_setup_msi_irqs,
+	.teardown_msi_irq	= native_teardown_msi_irq,
+	.teardown_msi_irqs	= default_teardown_msi_irqs,
+	.restore_msi_irqs	= default_restore_msi_irqs,
+>>>>>>> v4.9.227
 };
 
 /* MSI arch specific hooks */
@@ -140,6 +163,7 @@ void arch_restore_msi_irqs(struct pci_dev *dev)
 }
 #endif
 
+<<<<<<< HEAD
 struct x86_io_apic_ops x86_io_apic_ops = {
 	.init			= native_io_apic_init_mappings,
 	.read			= native_io_apic_read,
@@ -150,4 +174,9 @@ struct x86_io_apic_ops x86_io_apic_ops = {
 	.set_affinity		= native_ioapic_set_affinity,
 	.setup_entry		= native_setup_ioapic_entry,
 	.eoi_ioapic_pin		= native_eoi_ioapic_pin,
+=======
+struct x86_io_apic_ops x86_io_apic_ops __ro_after_init = {
+	.read			= native_io_apic_read,
+	.disable		= native_disable_io_apic,
+>>>>>>> v4.9.227
 };

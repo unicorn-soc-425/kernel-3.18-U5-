@@ -10,13 +10,23 @@
  * 2 as published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt)	"dlpar: " fmt
+
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/notifier.h>
 #include <linux/spinlock.h>
 #include <linux/cpu.h>
 #include <linux/slab.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include "offline_states.h"
+=======
+
+#include "of_helpers.h"
+>>>>>>> v4.9.227
 #include "pseries.h"
 
 #include <asm/prom.h>
@@ -24,6 +34,18 @@
 #include <asm/uaccess.h>
 #include <asm/rtas.h>
 
+<<<<<<< HEAD
+=======
+static struct workqueue_struct *pseries_hp_wq;
+
+struct pseries_hp_work {
+	struct work_struct work;
+	struct pseries_hp_errorlog *errlog;
+	struct completion *hp_completion;
+	int *rc;
+};
+
+>>>>>>> v4.9.227
 struct cc_workarea {
 	__be32	drc_index;
 	__be32	zero;
@@ -51,6 +73,13 @@ static struct property *dlpar_parse_cc_property(struct cc_workarea *ccwa)
 
 	name = (char *)ccwa + be32_to_cpu(ccwa->name_offset);
 	prop->name = kstrdup(name, GFP_KERNEL);
+<<<<<<< HEAD
+=======
+	if (!prop->name) {
+		dlpar_free_cc_property(prop);
+		return NULL;
+	}
+>>>>>>> v4.9.227
 
 	prop->length = be32_to_cpu(ccwa->prop_length);
 	value = (char *)ccwa + be32_to_cpu(ccwa->prop_offset);
@@ -242,6 +271,7 @@ cc_error:
 	return first_dn;
 }
 
+<<<<<<< HEAD
 static struct device_node *derive_parent(const char *path)
 {
 	struct device_node *parent;
@@ -265,13 +295,21 @@ static struct device_node *derive_parent(const char *path)
 	return parent;
 }
 
+=======
+>>>>>>> v4.9.227
 int dlpar_attach_node(struct device_node *dn)
 {
 	int rc;
 
+<<<<<<< HEAD
 	dn->parent = derive_parent(dn->full_name);
 	if (!dn->parent)
 		return -ENOMEM;
+=======
+	dn->parent = pseries_of_derive_parent(dn->full_name);
+	if (IS_ERR(dn->parent))
+		return PTR_ERR(dn->parent);
+>>>>>>> v4.9.227
 
 	rc = of_attach_node(dn);
 	if (rc) {
@@ -299,6 +337,11 @@ int dlpar_detach_node(struct device_node *dn)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
+=======
+	of_node_put(dn);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -356,6 +399,7 @@ int dlpar_release_drc(u32 drc_index)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_CPU_PROBE_RELEASE
 
 static int dlpar_online_cpu(struct device_node *dn)
@@ -544,3 +588,168 @@ static int __init pseries_dlpar_init(void)
 machine_device_initcall(pseries, pseries_dlpar_init);
 
 #endif /* CONFIG_ARCH_CPU_PROBE_RELEASE */
+=======
+static int handle_dlpar_errorlog(struct pseries_hp_errorlog *hp_elog)
+{
+	int rc;
+
+	/* pseries error logs are in BE format, convert to cpu type */
+	switch (hp_elog->id_type) {
+	case PSERIES_HP_ELOG_ID_DRC_COUNT:
+		hp_elog->_drc_u.drc_count =
+					be32_to_cpu(hp_elog->_drc_u.drc_count);
+		break;
+	case PSERIES_HP_ELOG_ID_DRC_INDEX:
+		hp_elog->_drc_u.drc_index =
+					be32_to_cpu(hp_elog->_drc_u.drc_index);
+	}
+
+	switch (hp_elog->resource) {
+	case PSERIES_HP_ELOG_RESOURCE_MEM:
+		rc = dlpar_memory(hp_elog);
+		break;
+	case PSERIES_HP_ELOG_RESOURCE_CPU:
+		rc = dlpar_cpu(hp_elog);
+		break;
+	default:
+		pr_warn_ratelimited("Invalid resource (%d) specified\n",
+				    hp_elog->resource);
+		rc = -EINVAL;
+	}
+
+	return rc;
+}
+
+static void pseries_hp_work_fn(struct work_struct *work)
+{
+	struct pseries_hp_work *hp_work =
+			container_of(work, struct pseries_hp_work, work);
+
+	if (hp_work->rc)
+		*(hp_work->rc) = handle_dlpar_errorlog(hp_work->errlog);
+	else
+		handle_dlpar_errorlog(hp_work->errlog);
+
+	if (hp_work->hp_completion)
+		complete(hp_work->hp_completion);
+
+	kfree(hp_work->errlog);
+	kfree((void *)work);
+}
+
+void queue_hotplug_event(struct pseries_hp_errorlog *hp_errlog,
+			 struct completion *hotplug_done, int *rc)
+{
+	struct pseries_hp_work *work;
+	struct pseries_hp_errorlog *hp_errlog_copy;
+
+	hp_errlog_copy = kmalloc(sizeof(struct pseries_hp_errorlog),
+				 GFP_KERNEL);
+	memcpy(hp_errlog_copy, hp_errlog, sizeof(struct pseries_hp_errorlog));
+
+	work = kmalloc(sizeof(struct pseries_hp_work), GFP_KERNEL);
+	if (work) {
+		INIT_WORK((struct work_struct *)work, pseries_hp_work_fn);
+		work->errlog = hp_errlog_copy;
+		work->hp_completion = hotplug_done;
+		work->rc = rc;
+		queue_work(pseries_hp_wq, (struct work_struct *)work);
+	} else {
+		*rc = -ENOMEM;
+		kfree(hp_errlog_copy);
+		complete(hotplug_done);
+	}
+}
+
+static ssize_t dlpar_store(struct class *class, struct class_attribute *attr,
+			   const char *buf, size_t count)
+{
+	struct pseries_hp_errorlog *hp_elog;
+	struct completion hotplug_done;
+	const char *arg;
+	int rc;
+
+	hp_elog = kzalloc(sizeof(*hp_elog), GFP_KERNEL);
+	if (!hp_elog) {
+		rc = -ENOMEM;
+		goto dlpar_store_out;
+	}
+
+	/* Parse out the request from the user, this will be in the form
+	 * <resource> <action> <id_type> <id>
+	 */
+	arg = buf;
+	if (!strncmp(arg, "memory", 6)) {
+		hp_elog->resource = PSERIES_HP_ELOG_RESOURCE_MEM;
+		arg += strlen("memory ");
+	} else if (!strncmp(arg, "cpu", 3)) {
+		hp_elog->resource = PSERIES_HP_ELOG_RESOURCE_CPU;
+		arg += strlen("cpu ");
+	} else {
+		pr_err("Invalid resource specified: \"%s\"\n", buf);
+		rc = -EINVAL;
+		goto dlpar_store_out;
+	}
+
+	if (!strncmp(arg, "add", 3)) {
+		hp_elog->action = PSERIES_HP_ELOG_ACTION_ADD;
+		arg += strlen("add ");
+	} else if (!strncmp(arg, "remove", 6)) {
+		hp_elog->action = PSERIES_HP_ELOG_ACTION_REMOVE;
+		arg += strlen("remove ");
+	} else {
+		pr_err("Invalid action specified: \"%s\"\n", buf);
+		rc = -EINVAL;
+		goto dlpar_store_out;
+	}
+
+	if (!strncmp(arg, "index", 5)) {
+		u32 index;
+
+		hp_elog->id_type = PSERIES_HP_ELOG_ID_DRC_INDEX;
+		arg += strlen("index ");
+		if (kstrtou32(arg, 0, &index)) {
+			rc = -EINVAL;
+			pr_err("Invalid drc_index specified: \"%s\"\n", buf);
+			goto dlpar_store_out;
+		}
+
+		hp_elog->_drc_u.drc_index = cpu_to_be32(index);
+	} else if (!strncmp(arg, "count", 5)) {
+		u32 count;
+
+		hp_elog->id_type = PSERIES_HP_ELOG_ID_DRC_COUNT;
+		arg += strlen("count ");
+		if (kstrtou32(arg, 0, &count)) {
+			rc = -EINVAL;
+			pr_err("Invalid count specified: \"%s\"\n", buf);
+			goto dlpar_store_out;
+		}
+
+		hp_elog->_drc_u.drc_count = cpu_to_be32(count);
+	} else {
+		pr_err("Invalid id_type specified: \"%s\"\n", buf);
+		rc = -EINVAL;
+		goto dlpar_store_out;
+	}
+
+	init_completion(&hotplug_done);
+	queue_hotplug_event(hp_elog, &hotplug_done, &rc);
+	wait_for_completion(&hotplug_done);
+
+dlpar_store_out:
+	kfree(hp_elog);
+	return rc ? rc : count;
+}
+
+static CLASS_ATTR(dlpar, S_IWUSR, NULL, dlpar_store);
+
+static int __init pseries_dlpar_init(void)
+{
+	pseries_hp_wq = alloc_workqueue("pseries hotplug workqueue",
+					WQ_UNBOUND, 1);
+	return sysfs_create_file(kernel_kobj, &class_attr_dlpar.attr);
+}
+machine_device_initcall(pseries, pseries_dlpar_init);
+
+>>>>>>> v4.9.227

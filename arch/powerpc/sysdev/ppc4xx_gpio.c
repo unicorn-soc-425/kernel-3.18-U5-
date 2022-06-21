@@ -27,7 +27,11 @@
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/of_gpio.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/slab.h>
 
@@ -67,18 +71,25 @@ struct ppc4xx_gpio_chip {
  * There are a maximum of 32 gpios in each gpio controller.
  */
 
+<<<<<<< HEAD
 static inline struct ppc4xx_gpio_chip *
 to_ppc4xx_gpiochip(struct of_mm_gpio_chip *mm_gc)
 {
 	return container_of(mm_gc, struct ppc4xx_gpio_chip, mm_gc);
 }
 
+=======
+>>>>>>> v4.9.227
 static int ppc4xx_gpio_get(struct gpio_chip *gc, unsigned int gpio)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
 	struct ppc4xx_gpio __iomem *regs = mm_gc->regs;
 
+<<<<<<< HEAD
 	return in_be32(&regs->ir) & GPIO_MASK(gpio);
+=======
+	return !!(in_be32(&regs->ir) & GPIO_MASK(gpio));
+>>>>>>> v4.9.227
 }
 
 static inline void
@@ -96,8 +107,12 @@ __ppc4xx_gpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 static void
 ppc4xx_gpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 {
+<<<<<<< HEAD
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
 	struct ppc4xx_gpio_chip *chip = to_ppc4xx_gpiochip(mm_gc);
+=======
+	struct ppc4xx_gpio_chip *chip = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	spin_lock_irqsave(&chip->lock, flags);
@@ -112,7 +127,11 @@ ppc4xx_gpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 static int ppc4xx_gpio_dir_in(struct gpio_chip *gc, unsigned int gpio)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
+<<<<<<< HEAD
 	struct ppc4xx_gpio_chip *chip = to_ppc4xx_gpiochip(mm_gc);
+=======
+	struct ppc4xx_gpio_chip *chip = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	struct ppc4xx_gpio __iomem *regs = mm_gc->regs;
 	unsigned long flags;
 
@@ -142,7 +161,11 @@ static int
 ppc4xx_gpio_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
+<<<<<<< HEAD
 	struct ppc4xx_gpio_chip *chip = to_ppc4xx_gpiochip(mm_gc);
+=======
+	struct ppc4xx_gpio_chip *chip = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	struct ppc4xx_gpio __iomem *regs = mm_gc->regs;
 	unsigned long flags;
 
@@ -200,7 +223,11 @@ static int __init ppc4xx_add_gpiochips(void)
 		gc->get = ppc4xx_gpio_get;
 		gc->set = ppc4xx_gpio_set;
 
+<<<<<<< HEAD
 		ret = of_mm_gpiochip_add(np, mm_gc);
+=======
+		ret = of_mm_gpiochip_add_data(np, mm_gc, ppc4xx_gc);
+>>>>>>> v4.9.227
 		if (ret)
 			goto err;
 		continue;

@@ -113,6 +113,7 @@ struct clariion_dh_data {
 	int current_sp;
 };
 
+<<<<<<< HEAD
 static inline struct clariion_dh_data
 			*get_clariion_data(struct scsi_device *sdev)
 {
@@ -121,6 +122,8 @@ static inline struct clariion_dh_data
 	return ((struct clariion_dh_data *) scsi_dh_data->buf);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Parse MODE_SELECT cmd reply.
  */
@@ -207,7 +210,16 @@ static int parse_sp_info_reply(struct scsi_device *sdev,
 	csdev->lun_state = csdev->buffer[4];
 	csdev->current_sp = csdev->buffer[8];
 	csdev->port = csdev->buffer[7];
+<<<<<<< HEAD
 
+=======
+	if (csdev->lun_state == CLARIION_LUN_OWNED)
+		sdev->access_state = SCSI_ACCESS_STATE_OPTIMAL;
+	else
+		sdev->access_state = SCSI_ACCESS_STATE_STANDBY;
+	if (csdev->default_sp == csdev->current_sp)
+		sdev->access_state |= SCSI_ACCESS_STATE_PREFERRED;
+>>>>>>> v4.9.227
 out:
 	return err;
 }
@@ -450,7 +462,11 @@ static int clariion_check_sense(struct scsi_device *sdev,
 
 static int clariion_prep_fn(struct scsi_device *sdev, struct request *req)
 {
+<<<<<<< HEAD
 	struct clariion_dh_data *h = get_clariion_data(sdev);
+=======
+	struct clariion_dh_data *h = sdev->handler_data;
+>>>>>>> v4.9.227
 	int ret = BLKPREP_OK;
 
 	if (h->lun_state != CLARIION_LUN_OWNED) {
@@ -533,7 +549,11 @@ retry:
 static int clariion_activate(struct scsi_device *sdev,
 				activate_complete fn, void *data)
 {
+<<<<<<< HEAD
 	struct clariion_dh_data *csdev = get_clariion_data(sdev);
+=======
+	struct clariion_dh_data *csdev = sdev->handler_data;
+>>>>>>> v4.9.227
 	int result;
 
 	result = clariion_send_inquiry(sdev, csdev);
@@ -574,7 +594,11 @@ done:
  */
 static int clariion_set_params(struct scsi_device *sdev, const char *params)
 {
+<<<<<<< HEAD
 	struct clariion_dh_data *csdev = get_clariion_data(sdev);
+=======
+	struct clariion_dh_data *csdev = sdev->handler_data;
+>>>>>>> v4.9.227
 	unsigned int hr = 0, st = 0, argc;
 	const char *p = params;
 	int result = SCSI_DH_OK;
@@ -622,6 +646,7 @@ done:
 	return result;
 }
 
+<<<<<<< HEAD
 static const struct scsi_dh_devlist clariion_dev_list[] = {
 	{"DGC", "RAID"},
 	{"DGC", "DISK"},
@@ -680,6 +705,16 @@ static int clariion_bus_attach(struct scsi_device *sdev)
 
 	scsi_dh_data->scsi_dh = &clariion_dh;
 	h = (struct clariion_dh_data *) scsi_dh_data->buf;
+=======
+static int clariion_bus_attach(struct scsi_device *sdev)
+{
+	struct clariion_dh_data *h;
+	int err;
+
+	h = kzalloc(sizeof(*h) , GFP_KERNEL);
+	if (!h)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	h->lun_state = CLARIION_LUN_UNINITIALIZED;
 	h->default_sp = CLARIION_UNBOUND_LU;
 	h->current_sp = CLARIION_UNBOUND_LU;
@@ -692,6 +727,7 @@ static int clariion_bus_attach(struct scsi_device *sdev)
 	if (err != SCSI_DH_OK)
 		goto failed;
 
+<<<<<<< HEAD
 	if (!try_module_get(THIS_MODULE))
 		goto failed;
 
@@ -699,23 +735,34 @@ static int clariion_bus_attach(struct scsi_device *sdev)
 	sdev->scsi_dh_data = scsi_dh_data;
 	spin_unlock_irqrestore(sdev->request_queue->queue_lock, flags);
 
+=======
+>>>>>>> v4.9.227
 	sdev_printk(KERN_INFO, sdev,
 		    "%s: connected to SP %c Port %d (%s, default SP %c)\n",
 		    CLARIION_NAME, h->current_sp + 'A',
 		    h->port, lun_state[h->lun_state],
 		    h->default_sp + 'A');
 
+<<<<<<< HEAD
 	return 0;
 
 failed:
 	kfree(scsi_dh_data);
 	sdev_printk(KERN_ERR, sdev, "%s: not attached\n",
 		    CLARIION_NAME);
+=======
+	sdev->handler_data = h;
+	return 0;
+
+failed:
+	kfree(h);
+>>>>>>> v4.9.227
 	return -EINVAL;
 }
 
 static void clariion_bus_detach(struct scsi_device *sdev)
 {
+<<<<<<< HEAD
 	struct scsi_dh_data *scsi_dh_data;
 	unsigned long flags;
 
@@ -731,6 +778,23 @@ static void clariion_bus_detach(struct scsi_device *sdev)
 	module_put(THIS_MODULE);
 }
 
+=======
+	kfree(sdev->handler_data);
+	sdev->handler_data = NULL;
+}
+
+static struct scsi_device_handler clariion_dh = {
+	.name		= CLARIION_NAME,
+	.module		= THIS_MODULE,
+	.attach		= clariion_bus_attach,
+	.detach		= clariion_bus_detach,
+	.check_sense	= clariion_check_sense,
+	.activate	= clariion_activate,
+	.prep_fn	= clariion_prep_fn,
+	.set_params	= clariion_set_params,
+};
+
+>>>>>>> v4.9.227
 static int __init clariion_init(void)
 {
 	int r;

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  *  dell-smo8800.c - Dell Latitude ACPI SMO8800/SMO8810 freefall sensor driver
+=======
+ *  dell-smo8800.c - Dell Latitude ACPI SMO88XX freefall sensor driver
+>>>>>>> v4.9.227
  *
  *  Copyright (C) 2012 Sonal Santan <sonal.santan@gmail.com>
  *  Copyright (C) 2014 Pali Rohár <pali.rohar@gmail.com>
@@ -24,6 +28,10 @@
 #include <linux/acpi.h>
 #include <linux/interrupt.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 
 struct smo8800_device {
 	u32 irq;                     /* acpi device irq */
@@ -209,7 +217,17 @@ static int smo8800_remove(struct acpi_device *device)
 
 static const struct acpi_device_id smo8800_ids[] = {
 	{ "SMO8800", 0 },
+<<<<<<< HEAD
 	{ "SMO8810", 0 },
+=======
+	{ "SMO8801", 0 },
+	{ "SMO8810", 0 },
+	{ "SMO8811", 0 },
+	{ "SMO8820", 0 },
+	{ "SMO8821", 0 },
+	{ "SMO8830", 0 },
+	{ "SMO8831", 0 },
+>>>>>>> v4.9.227
 	{ "", 0 },
 };
 
@@ -228,6 +246,10 @@ static struct acpi_driver smo8800_driver = {
 
 module_acpi_driver(smo8800_driver);
 
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Dell Latitude freefall driver (ACPI SMO8800/SMO8810)");
+=======
+MODULE_DESCRIPTION("Dell Latitude freefall driver (ACPI SMO88XX)");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Sonal Santan, Pali Rohár");

@@ -12,9 +12,15 @@
 #define _LOGIPS2PP_H
 
 #ifdef CONFIG_MOUSE_PS2_LOGIPS2PP
+<<<<<<< HEAD
 int ps2pp_init(struct psmouse *psmouse, bool set_properties);
 #else
 inline int ps2pp_init(struct psmouse *psmouse, bool set_properties)
+=======
+int ps2pp_detect(struct psmouse *psmouse, bool set_properties);
+#else
+static inline int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
+>>>>>>> v4.9.227
 {
 	return -ENOSYS;
 }

@@ -7,11 +7,17 @@
 
 #define DMA_ERROR_CODE	(~(dma_addr_t)0x0)
 
+<<<<<<< HEAD
 int dma_supported(struct device *dev, u64 mask);
 
 #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
 #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
 
+=======
+#define HAVE_ARCH_DMA_SUPPORTED 1
+int dma_supported(struct device *dev, u64 mask);
+
+>>>>>>> v4.9.227
 static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 				  enum dma_data_direction dir)
 {
@@ -39,6 +45,7 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 	return dma_ops;
 }
 
+<<<<<<< HEAD
 #include <asm-generic/dma-mapping-common.h>
 
 #define dma_alloc_coherent(d,s,h,f)	dma_alloc_attrs(d,s,h,f,NULL)
@@ -86,4 +93,6 @@ static inline int dma_set_mask(struct device *dev, u64 mask)
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 #endif

@@ -50,6 +50,7 @@ int drm_name_info(struct seq_file *m, void *data)
 	struct drm_info_node *node = (struct drm_info_node *) m->private;
 	struct drm_minor *minor = node->minor;
 	struct drm_device *dev = minor->dev;
+<<<<<<< HEAD
 	struct drm_master *master = minor->master;
 	if (!master)
 		return 0;
@@ -150,6 +151,22 @@ int drm_bufs_info(struct seq_file *m, void *data)
 	}
 	seq_printf(m, "\n");
 	mutex_unlock(&dev->struct_mutex);
+=======
+	struct drm_master *master;
+
+	mutex_lock(&dev->master_mutex);
+	master = dev->master;
+	seq_printf(m, "%s", dev->driver->name);
+	if (dev->dev)
+		seq_printf(m, " dev=%s", dev_name(dev->dev));
+	if (master && master->unique)
+		seq_printf(m, " master=%s", master->unique);
+	if (dev->unique)
+		seq_printf(m, " unique=%s", dev->unique);
+	seq_printf(m, "\n");
+	mutex_unlock(&dev->master_mutex);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -162,6 +179,10 @@ int drm_clients_info(struct seq_file *m, void *data)
 	struct drm_info_node *node = (struct drm_info_node *) m->private;
 	struct drm_device *dev = node->minor->dev;
 	struct drm_file *priv;
+<<<<<<< HEAD
+=======
+	kuid_t uid;
+>>>>>>> v4.9.227
 
 	seq_printf(m,
 		   "%20s %5s %3s master a %5s %10s\n",
@@ -174,16 +195,25 @@ int drm_clients_info(struct seq_file *m, void *data)
 	/* dev->filelist is sorted youngest first, but we want to present
 	 * oldest first (i.e. kernel, servers, clients), so walk backwardss.
 	 */
+<<<<<<< HEAD
 	mutex_lock(&dev->struct_mutex);
+=======
+	mutex_lock(&dev->filelist_mutex);
+>>>>>>> v4.9.227
 	list_for_each_entry_reverse(priv, &dev->filelist, lhead) {
 		struct task_struct *task;
 
 		rcu_read_lock(); /* locks pid_task()->comm */
 		task = pid_task(priv->pid, PIDTYPE_PID);
+<<<<<<< HEAD
+=======
+		uid = task ? __task_cred(task)->euid : GLOBAL_ROOT_UID;
+>>>>>>> v4.9.227
 		seq_printf(m, "%20s %5d %3d   %c    %c %5d %10u\n",
 			   task ? task->comm : "<unknown>",
 			   pid_vnr(priv->pid),
 			   priv->minor->index,
+<<<<<<< HEAD
 			   priv->is_master ? 'y' : 'n',
 			   priv->authenticated ? 'y' : 'n',
 			   from_kuid_munged(seq_user_ns(m), priv->uid),
@@ -195,6 +225,18 @@ int drm_clients_info(struct seq_file *m, void *data)
 }
 
 
+=======
+			   drm_is_current_master(priv) ? 'y' : 'n',
+			   priv->authenticated ? 'y' : 'n',
+			   from_kuid_munged(seq_user_ns(m), uid),
+			   priv->magic);
+		rcu_read_unlock();
+	}
+	mutex_unlock(&dev->filelist_mutex);
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int drm_gem_one_name_info(int id, void *ptr, void *data)
 {
 	struct drm_gem_object *obj = ptr;

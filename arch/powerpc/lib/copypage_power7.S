@@ -45,6 +45,7 @@ _GLOBAL(copypage_power7)
 .machine push
 .machine "power4"
 	/* setup read stream 0  */
+<<<<<<< HEAD
 	dcbt	r0,r4,0b01000  	/* addr from */
 	dcbt	r0,r7,0b01010   /* length and depth from */
 	/* setup write stream 1 */
@@ -52,6 +53,15 @@ _GLOBAL(copypage_power7)
 	dcbtst	r0,r10,0b01010  /* length and depth to */
 	eieio
 	dcbt	r0,r8,0b01010	/* all streams GO */
+=======
+	dcbt	0,r4,0b01000  	/* addr from */
+	dcbt	0,r7,0b01010   /* length and depth from */
+	/* setup write stream 1 */
+	dcbtst	0,r9,0b01000   /* addr to */
+	dcbtst	0,r10,0b01010  /* length and depth to */
+	eieio
+	dcbt	0,r8,0b01010	/* all streams GO */
+>>>>>>> v4.9.227
 .machine pop
 
 #ifdef CONFIG_ALTIVEC
@@ -83,6 +93,7 @@ _GLOBAL(copypage_power7)
 	li	r12,112
 
 	.align	5
+<<<<<<< HEAD
 1:	lvx	vr7,r0,r4
 	lvx	vr6,r4,r6
 	lvx	vr5,r4,r7
@@ -100,6 +111,25 @@ _GLOBAL(copypage_power7)
 	stvx	vr2,r3,r10
 	stvx	vr1,r3,r11
 	stvx	vr0,r3,r12
+=======
+1:	lvx	v7,0,r4
+	lvx	v6,r4,r6
+	lvx	v5,r4,r7
+	lvx	v4,r4,r8
+	lvx	v3,r4,r9
+	lvx	v2,r4,r10
+	lvx	v1,r4,r11
+	lvx	v0,r4,r12
+	addi	r4,r4,128
+	stvx	v7,0,r3
+	stvx	v6,r3,r6
+	stvx	v5,r3,r7
+	stvx	v4,r3,r8
+	stvx	v3,r3,r9
+	stvx	v2,r3,r10
+	stvx	v1,r3,r11
+	stvx	v0,r3,r12
+>>>>>>> v4.9.227
 	addi	r3,r3,128
 	bdnz	1b
 

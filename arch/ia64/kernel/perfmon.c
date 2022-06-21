@@ -2145,6 +2145,7 @@ doit:
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 pfm_no_open(struct inode *irrelevant, struct file *dontcare)
 {
@@ -2154,13 +2155,18 @@ pfm_no_open(struct inode *irrelevant, struct file *dontcare)
 
 
 
+=======
+>>>>>>> v4.9.227
 static const struct file_operations pfm_file_ops = {
 	.llseek		= no_llseek,
 	.read		= pfm_read,
 	.write		= pfm_write,
 	.poll		= pfm_poll,
 	.unlocked_ioctl = pfm_ioctl,
+<<<<<<< HEAD
 	.open		= pfm_no_open,	/* special open code to disallow open via /proc */
+=======
+>>>>>>> v4.9.227
 	.fasync		= pfm_fasync,
 	.release	= pfm_close,
 	.flush		= pfm_flush
@@ -2169,7 +2175,11 @@ static const struct file_operations pfm_file_ops = {
 static char *pfmfs_dname(struct dentry *dentry, char *buffer, int buflen)
 {
 	return dynamic_dname(dentry, buffer, buflen, "pfm:[%lu]",
+<<<<<<< HEAD
 			     dentry->d_inode->i_ino);
+=======
+			     d_inode(dentry)->i_ino);
+>>>>>>> v4.9.227
 }
 
 static const struct dentry_operations pfmfs_dentry_operations = {
@@ -2342,8 +2352,12 @@ pfm_smpl_buffer_alloc(struct task_struct *task, struct file *filp, pfm_context_t
 	 */
 	insert_vm_struct(mm, vma);
 
+<<<<<<< HEAD
 	vm_stat_account(vma->vm_mm, vma->vm_flags, vma->vm_file,
 							vma_pages(vma));
+=======
+	vm_stat_account(vma->vm_mm, vma->vm_flags, vma_pages(vma));
+>>>>>>> v4.9.227
 	up_write(&task->mm->mmap_sem);
 
 	/*
@@ -2662,7 +2676,11 @@ pfm_context_create(pfm_context_t *ctx, void *arg, int count, struct pt_regs *reg
 
 	ret = -ENOMEM;
 
+<<<<<<< HEAD
 	fd = get_unused_fd();
+=======
+	fd = get_unused_fd_flags(0);
+>>>>>>> v4.9.227
 	if (fd < 0)
 		return fd;
 
@@ -4553,8 +4571,13 @@ pfm_context_unload(pfm_context_t *ctx, void *arg, int count, struct pt_regs *reg
 
 
 /*
+<<<<<<< HEAD
  * called only from exit_thread(): task == current
  * we come here only if current has a context attached (loaded or masked)
+=======
+ * called only from exit_thread()
+ * we come here only if the task has a context attached (loaded or masked)
+>>>>>>> v4.9.227
  */
 void
 pfm_exit_thread(struct task_struct *task)

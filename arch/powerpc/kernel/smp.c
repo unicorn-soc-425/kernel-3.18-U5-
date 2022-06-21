@@ -31,6 +31,10 @@
 #include <linux/cpu.h>
 #include <linux/notifier.h>
 #include <linux/topology.h>
+<<<<<<< HEAD
+=======
+#include <linux/profile.h>
+>>>>>>> v4.9.227
 
 #include <asm/ptrace.h>
 #include <linux/atomic.h>
@@ -53,6 +57,11 @@
 #include <asm/vdso.h>
 #include <asm/debug.h>
 #include <asm/kexec.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm-prototypes.h>
+#include <asm/cpu_has_feature.h>
+>>>>>>> v4.9.227
 
 #ifdef DEBUG
 #include <asm/udbg.h>
@@ -206,7 +215,11 @@ int smp_request_message_ipi(int virq, int msg)
 
 #ifdef CONFIG_PPC_SMP_MUXED_IPI
 struct cpu_messages {
+<<<<<<< HEAD
 	int messages;			/* current messages */
+=======
+	long messages;			/* current messages */
+>>>>>>> v4.9.227
 	unsigned long data;		/* data for cause ipi */
 };
 static DEFINE_PER_CPU_SHARED_ALIGNED(struct cpu_messages, ipi_message);
@@ -218,7 +231,11 @@ void smp_muxed_ipi_set_data(int cpu, unsigned long data)
 	info->data = data;
 }
 
+<<<<<<< HEAD
 void smp_muxed_ipi_message_pass(int cpu, int msg)
+=======
+void smp_muxed_ipi_set_message(int cpu, int msg)
+>>>>>>> v4.9.227
 {
 	struct cpu_messages *info = &per_cpu(ipi_message, cpu);
 	char *message = (char *)&info->messages;
@@ -228,6 +245,16 @@ void smp_muxed_ipi_message_pass(int cpu, int msg)
 	 */
 	smp_mb();
 	message[msg] = 1;
+<<<<<<< HEAD
+=======
+}
+
+void smp_muxed_ipi_message_pass(int cpu, int msg)
+{
+	struct cpu_messages *info = &per_cpu(ipi_message, cpu);
+
+	smp_muxed_ipi_set_message(cpu, msg);
+>>>>>>> v4.9.227
 	/*
 	 * cause_ipi functions are required to include a full barrier
 	 * before doing whatever causes the IPI.
@@ -236,20 +263,45 @@ void smp_muxed_ipi_message_pass(int cpu, int msg)
 }
 
 #ifdef __BIG_ENDIAN__
+<<<<<<< HEAD
 #define IPI_MESSAGE(A) (1 << (24 - 8 * (A)))
 #else
 #define IPI_MESSAGE(A) (1 << (8 * (A)))
+=======
+#define IPI_MESSAGE(A) (1uL << ((BITS_PER_LONG - 8) - 8 * (A)))
+#else
+#define IPI_MESSAGE(A) (1uL << (8 * (A)))
+>>>>>>> v4.9.227
 #endif
 
 irqreturn_t smp_ipi_demux(void)
 {
+<<<<<<< HEAD
 	struct cpu_messages *info = &__get_cpu_var(ipi_message);
 	unsigned int all;
+=======
+	struct cpu_messages *info = this_cpu_ptr(&ipi_message);
+	unsigned long all;
+>>>>>>> v4.9.227
 
 	mb();	/* order any irq clear */
 
 	do {
 		all = xchg(&info->messages, 0);
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_KVM_XICS) && defined(CONFIG_KVM_BOOK3S_HV_POSSIBLE)
+		/*
+		 * Must check for PPC_MSG_RM_HOST_ACTION messages
+		 * before PPC_MSG_CALL_FUNCTION messages because when
+		 * a VM is destroyed, we call kick_all_cpus_sync()
+		 * to ensure that any pending PPC_MSG_RM_HOST_ACTION
+		 * messages have completed before we free any VCPUs.
+		 */
+		if (all & IPI_MESSAGE(PPC_MSG_RM_HOST_ACTION))
+			kvmppc_xics_ipi_action();
+#endif
+>>>>>>> v4.9.227
 		if (all & IPI_MESSAGE(PPC_MSG_CALL_FUNCTION))
 			generic_smp_call_function_interrupt();
 		if (all & IPI_MESSAGE(PPC_MSG_RESCHEDULE))
@@ -427,13 +479,18 @@ void generic_cpu_die(unsigned int cpu)
 
 	for (i = 0; i < 100; i++) {
 		smp_rmb();
+<<<<<<< HEAD
 		if (per_cpu(cpu_state, cpu) == CPU_DEAD)
+=======
+		if (is_cpu_dead(cpu))
+>>>>>>> v4.9.227
 			return;
 		msleep(100);
 	}
 	printk(KERN_ERR "CPU%d didn't die...\n", cpu);
 }
 
+<<<<<<< HEAD
 void generic_mach_cpu_die(void)
 {
 	unsigned int cpu;
@@ -448,6 +505,8 @@ void generic_mach_cpu_die(void)
 		cpu_relax();
 }
 
+=======
+>>>>>>> v4.9.227
 void generic_set_cpu_dead(unsigned int cpu)
 {
 	per_cpu(cpu_state, cpu) = CPU_DEAD;
@@ -468,6 +527,14 @@ int generic_check_cpu_restart(unsigned int cpu)
 	return per_cpu(cpu_state, cpu) == CPU_UP_PREPARE;
 }
 
+<<<<<<< HEAD
+=======
+int is_cpu_dead(unsigned int cpu)
+{
+	return per_cpu(cpu_state, cpu) == CPU_DEAD;
+}
+
+>>>>>>> v4.9.227
 static bool secondaries_inhibited(void)
 {
 	return kvm_hv_mode_active();
@@ -555,7 +622,11 @@ int __cpu_up(unsigned int cpu, struct task_struct *tidle)
 	if (smp_ops->give_timebase)
 		smp_ops->give_timebase();
 
+<<<<<<< HEAD
 	/* Wait until cpu puts itself in the online map */
+=======
+	/* Wait until cpu puts itself in the online & active maps */
+>>>>>>> v4.9.227
 	while (!cpu_online(cpu))
 		cpu_relax();
 
@@ -584,6 +655,10 @@ out:
 	of_node_put(np);
 	return id;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpu_to_core_id);
+>>>>>>> v4.9.227
 
 /* Helper routines for cpu to core mapping */
 int cpu_core_index_of_thread(int cpu)
@@ -741,7 +816,11 @@ void start_secondary(void *unused)
 
 	local_irq_enable();
 
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> v4.9.227
 
 	BUG();
 }
@@ -817,7 +896,11 @@ int __cpu_disable(void)
 
 	/* Update sibling maps */
 	base = cpu_first_thread_sibling(cpu);
+<<<<<<< HEAD
 	for (i = 0; i < threads_per_core; i++) {
+=======
+	for (i = 0; i < threads_per_core && base + i < nr_cpu_ids; i++) {
+>>>>>>> v4.9.227
 		cpumask_clear_cpu(cpu, cpu_sibling_mask(base + i));
 		cpumask_clear_cpu(base + i, cpu_sibling_mask(cpu));
 		cpumask_clear_cpu(cpu, cpu_core_mask(base + i));

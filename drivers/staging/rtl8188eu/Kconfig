@@ -1,6 +1,10 @@
 config R8188EU
 	tristate "Realtek RTL8188EU Wireless LAN NIC driver"
+<<<<<<< HEAD
 	depends on WLAN && USB
+=======
+	depends on WLAN && USB && CFG80211
+>>>>>>> v4.9.227
 	select WIRELESS_EXT
 	select WEXT_PRIV
 	---help---

@@ -31,6 +31,10 @@
 #include <linux/errno.h>
 #include <linux/skbuff.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/mmc/host.h>
+>>>>>>> v4.9.227
 #include <linux/mmc/sdio_ids.h>
 #include <linux/mmc/sdio_func.h>
 
@@ -86,7 +90,11 @@ static int btsdio_tx_packet(struct btsdio_data *data, struct sk_buff *skb)
 	skb->data[0] = (skb->len & 0x0000ff);
 	skb->data[1] = (skb->len & 0x00ff00) >> 8;
 	skb->data[2] = (skb->len & 0xff0000) >> 16;
+<<<<<<< HEAD
 	skb->data[3] = bt_cb(skb)->pkt_type;
+=======
+	skb->data[3] = hci_skb_pkt_type(skb);
+>>>>>>> v4.9.227
 
 	err = sdio_writesb(data->func, REG_TDAT, skb->data, skb->len);
 	if (err < 0) {
@@ -158,7 +166,11 @@ static int btsdio_rx_packet(struct btsdio_data *data)
 
 	data->hdev->stat.byte_rx += len;
 
+<<<<<<< HEAD
 	bt_cb(skb)->pkt_type = hdr[3];
+=======
+	hci_skb_pkt_type(skb) = hdr[3];
+>>>>>>> v4.9.227
 
 	err = hci_recv_frame(data->hdev, skb);
 	if (err < 0)
@@ -194,6 +206,7 @@ static int btsdio_open(struct hci_dev *hdev)
 
 	BT_DBG("%s", hdev->name);
 
+<<<<<<< HEAD
 	if (test_and_set_bit(HCI_RUNNING, &hdev->flags))
 		return 0;
 
@@ -204,11 +217,21 @@ static int btsdio_open(struct hci_dev *hdev)
 		clear_bit(HCI_RUNNING, &hdev->flags);
 		goto release;
 	}
+=======
+	sdio_claim_host(data->func);
+
+	err = sdio_enable_func(data->func);
+	if (err < 0)
+		goto release;
+>>>>>>> v4.9.227
 
 	err = sdio_claim_irq(data->func, btsdio_interrupt);
 	if (err < 0) {
 		sdio_disable_func(data->func);
+<<<<<<< HEAD
 		clear_bit(HCI_RUNNING, &hdev->flags);
+=======
+>>>>>>> v4.9.227
 		goto release;
 	}
 
@@ -229,9 +252,12 @@ static int btsdio_close(struct hci_dev *hdev)
 
 	BT_DBG("%s", hdev->name);
 
+<<<<<<< HEAD
 	if (!test_and_clear_bit(HCI_RUNNING, &hdev->flags))
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	sdio_claim_host(data->func);
 
 	sdio_writeb(data->func, 0x00, REG_EN_INTRD, NULL);
@@ -261,10 +287,14 @@ static int btsdio_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 
 	BT_DBG("%s", hdev->name);
 
+<<<<<<< HEAD
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		return -EBUSY;
 
 	switch (bt_cb(skb)->pkt_type) {
+=======
+	switch (hci_skb_pkt_type(skb)) {
+>>>>>>> v4.9.227
 	case HCI_COMMAND_PKT:
 		hdev->stat.cmd_tx++;
 		break;
@@ -303,6 +333,17 @@ static int btsdio_probe(struct sdio_func *func,
 		tuple = tuple->next;
 	}
 
+<<<<<<< HEAD
+=======
+	/* BCM43341 devices soldered onto the PCB (non-removable) use an
+	 * uart connection for bluetooth, ignore the BT SDIO interface.
+	 */
+	if (func->vendor == SDIO_VENDOR_ID_BROADCOM &&
+	    func->device == SDIO_DEVICE_ID_BROADCOM_43341 &&
+	    !mmc_card_is_removable(func->card->host))
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	data = devm_kzalloc(&func->dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
@@ -323,7 +364,11 @@ static int btsdio_probe(struct sdio_func *func,
 	if (id->class == SDIO_CLASS_BT_AMP)
 		hdev->dev_type = HCI_AMP;
 	else
+<<<<<<< HEAD
 		hdev->dev_type = HCI_BREDR;
+=======
+		hdev->dev_type = HCI_PRIMARY;
+>>>>>>> v4.9.227
 
 	data->hdev = hdev;
 

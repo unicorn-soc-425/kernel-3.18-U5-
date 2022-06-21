@@ -9,6 +9,10 @@
  * warranty of any kind, whether express or implied.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
@@ -16,8 +20,11 @@
 #include <linux/delay.h>
 #include <linux/err.h>
 
+<<<<<<< HEAD
 #include <mach/addr-map.h>
 
+=======
+>>>>>>> v4.9.227
 #include "clk.h"
 
 #define APBC_RTC	0x28
@@ -45,7 +52,11 @@
 
 static DEFINE_SPINLOCK(clk_lock);
 
+<<<<<<< HEAD
 static struct clk_factor_masks uart_factor_masks = {
+=======
+static struct mmp_clk_factor_masks uart_factor_masks = {
+>>>>>>> v4.9.227
 	.factor = 2,
 	.num_mask = 0x1fff,
 	.den_mask = 0x1fff,
@@ -53,7 +64,11 @@ static struct clk_factor_masks uart_factor_masks = {
 	.den_shift = 0,
 };
 
+<<<<<<< HEAD
 static struct clk_factor_tbl uart_factor_tbl[] = {
+=======
+static struct mmp_clk_factor_tbl uart_factor_tbl[] = {
+>>>>>>> v4.9.227
 	{.num = 8125, .den = 1536},	/*14.745MHZ */
 };
 
@@ -64,7 +79,12 @@ static const char *disp_parent[] = {"pll1_2", "pll1_12"};
 static const char *ccic_parent[] = {"pll1_2", "pll1_12"};
 static const char *ccic_phy_parent[] = {"pll1_6", "pll1_12"};
 
+<<<<<<< HEAD
 void __init pxa910_clk_init(void)
+=======
+void __init pxa910_clk_init(phys_addr_t mpmu_phys, phys_addr_t apmu_phys,
+			    phys_addr_t apbc_phys, phys_addr_t apbcp_phys)
+>>>>>>> v4.9.227
 {
 	struct clk *clk;
 	struct clk *uart_pll;
@@ -73,30 +93,47 @@ void __init pxa910_clk_init(void)
 	void __iomem *apbcp_base;
 	void __iomem *apbc_base;
 
+<<<<<<< HEAD
 	mpmu_base = ioremap(APB_PHYS_BASE + 0x50000, SZ_4K);
+=======
+	mpmu_base = ioremap(mpmu_phys, SZ_4K);
+>>>>>>> v4.9.227
 	if (mpmu_base == NULL) {
 		pr_err("error to ioremap MPMU base\n");
 		return;
 	}
 
+<<<<<<< HEAD
 	apmu_base = ioremap(AXI_PHYS_BASE + 0x82800, SZ_4K);
+=======
+	apmu_base = ioremap(apmu_phys, SZ_4K);
+>>>>>>> v4.9.227
 	if (apmu_base == NULL) {
 		pr_err("error to ioremap APMU base\n");
 		return;
 	}
 
+<<<<<<< HEAD
 	apbcp_base = ioremap(APB_PHYS_BASE + 0x3b000, SZ_4K);
+=======
+	apbcp_base = ioremap(apbcp_phys, SZ_4K);
+>>>>>>> v4.9.227
 	if (apbcp_base == NULL) {
 		pr_err("error to ioremap APBC extension base\n");
 		return;
 	}
 
+<<<<<<< HEAD
 	apbc_base = ioremap(APB_PHYS_BASE + 0x15000, SZ_4K);
+=======
+	apbc_base = ioremap(apbc_phys, SZ_4K);
+>>>>>>> v4.9.227
 	if (apbc_base == NULL) {
 		pr_err("error to ioremap APBC base\n");
 		return;
 	}
 
+<<<<<<< HEAD
 	clk = clk_register_fixed_rate(NULL, "clk32", NULL, CLK_IS_ROOT, 3200);
 	clk_register_clkdev(clk, "clk32", NULL);
 
@@ -106,6 +143,15 @@ void __init pxa910_clk_init(void)
 
 	clk = clk_register_fixed_rate(NULL, "pll1", NULL, CLK_IS_ROOT,
 				624000000);
+=======
+	clk = clk_register_fixed_rate(NULL, "clk32", NULL, 0, 3200);
+	clk_register_clkdev(clk, "clk32", NULL);
+
+	clk = clk_register_fixed_rate(NULL, "vctcxo", NULL, 0, 26000000);
+	clk_register_clkdev(clk, "vctcxo", NULL);
+
+	clk = clk_register_fixed_rate(NULL, "pll1", NULL, 0, 624000000);
+>>>>>>> v4.9.227
 	clk_register_clkdev(clk, "pll1", NULL);
 
 	clk = clk_register_fixed_factor(NULL, "pll1_2", "pll1",
@@ -163,7 +209,11 @@ void __init pxa910_clk_init(void)
 	uart_pll =  mmp_clk_register_factor("uart_pll", "pll1_4", 0,
 				mpmu_base + MPMU_UART_PLL,
 				&uart_factor_masks, uart_factor_tbl,
+<<<<<<< HEAD
 				ARRAY_SIZE(uart_factor_tbl));
+=======
+				ARRAY_SIZE(uart_factor_tbl), &clk_lock);
+>>>>>>> v4.9.227
 	clk_set_rate(uart_pll, 14745600);
 	clk_register_clkdev(uart_pll, "uart_pll", NULL);
 

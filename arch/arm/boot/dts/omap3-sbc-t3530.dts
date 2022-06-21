@@ -8,6 +8,14 @@
 / {
 	model = "CompuLab SBC-T3530 with CM-T3530";
 	compatible = "compulab,omap3-sbc-t3530", "compulab,omap3-cm-t3530", "ti,omap34xx", "ti,omap3";
+<<<<<<< HEAD
+=======
+
+	aliases {
+		display0 = &dvi0;
+		display1 = &tv0;
+	};
+>>>>>>> v4.9.227
 };
 
 &omap3_pmx_core {
@@ -21,6 +29,7 @@
 	};
 };
 
+<<<<<<< HEAD
 /*
  * The following ranges correspond to SMSC9x eth chips on CM-T3530 CoM and
  * SB-T35 baseboard respectively.
@@ -29,8 +38,27 @@
 &gpmc {
 	ranges = <5 0 0x2c000000 0x01000000>,
 		 <4 0 0x2d000000 0x01000000>;
+=======
+&gpmc {
+	ranges = <5 0 0x2c000000 0x01000000>,	/* CM-T3x30 SMSC9x Eth */
+		 <4 0 0x2d000000 0x01000000>,	/* SB-T35 SMSC9x Eth */
+		 <0 0 0x00000000 0x01000000>;	/* CM-T3x NAND */
+>>>>>>> v4.9.227
 };
 
 &mmc1 {
 	cd-gpios =  <&twl_gpio 0 GPIO_ACTIVE_HIGH>;
 };
+<<<<<<< HEAD
+=======
+
+&dss {
+	port {
+		dpi_out: endpoint {
+			remote-endpoint = <&tfp410_in>;
+			data-lines = <24>;
+		};
+	};
+};
+
+>>>>>>> v4.9.227

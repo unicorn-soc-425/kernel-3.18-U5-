@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -32,7 +36,12 @@ static struct mdp5_kms *get_kms(struct drm_encoder *encoder)
 	return to_mdp5_kms(to_mdp_kms(priv->kms));
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_BUS_SCALING
+=======
+#ifdef DOWNSTREAM_CONFIG_MSM_BUS_SCALING
+#include <mach/board.h>
+>>>>>>> v4.9.227
 #include <linux/msm-bus.h>
 #include <linux/msm-bus-board.h>
 #define MDP_BUS_VECTOR_ENTRY(ab_val, ib_val)		\
@@ -187,6 +196,7 @@ static const struct drm_encoder_funcs mdp5_cmd_encoder_funcs = {
 	.destroy = mdp5_cmd_encoder_destroy,
 };
 
+<<<<<<< HEAD
 static bool mdp5_cmd_encoder_mode_fixup(struct drm_encoder *encoder,
 		const struct drm_display_mode *mode,
 		struct drm_display_mode *adjusted_mode)
@@ -194,6 +204,8 @@ static bool mdp5_cmd_encoder_mode_fixup(struct drm_encoder *encoder,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 static void mdp5_cmd_encoder_mode_set(struct drm_encoder *encoder,
 		struct drm_display_mode *mode,
 		struct drm_display_mode *adjusted_mode)
@@ -255,7 +267,10 @@ static void mdp5_cmd_encoder_enable(struct drm_encoder *encoder)
 }
 
 static const struct drm_encoder_helper_funcs mdp5_cmd_encoder_helper_funcs = {
+<<<<<<< HEAD
 	.mode_fixup = mdp5_cmd_encoder_mode_fixup,
+=======
+>>>>>>> v4.9.227
 	.mode_set = mdp5_cmd_encoder_mode_set,
 	.disable = mdp5_cmd_encoder_disable,
 	.enable = mdp5_cmd_encoder_enable,
@@ -279,13 +294,20 @@ int mdp5_cmd_encoder_set_split_display(struct drm_encoder *encoder,
 	 * start signal for the slave encoder
 	 */
 	if (intf_num == 1)
+<<<<<<< HEAD
 		data |= MDP5_MDP_SPLIT_DPL_UPPER_INTF2_SW_TRG_MUX;
 	else if (intf_num == 2)
 		data |= MDP5_MDP_SPLIT_DPL_UPPER_INTF1_SW_TRG_MUX;
+=======
+		data |= MDP5_SPLIT_DPL_UPPER_INTF2_SW_TRG_MUX;
+	else if (intf_num == 2)
+		data |= MDP5_SPLIT_DPL_UPPER_INTF1_SW_TRG_MUX;
+>>>>>>> v4.9.227
 	else
 		return -EINVAL;
 
 	/* Smart Panel, Sync mode */
+<<<<<<< HEAD
 	data |= MDP5_MDP_SPLIT_DPL_UPPER_SMART_PANEL;
 
 	/* Make sure clocks are on when connectors calling this function. */
@@ -295,6 +317,17 @@ int mdp5_cmd_encoder_set_split_display(struct drm_encoder *encoder,
 	mdp5_write(mdp5_kms, REG_MDP5_MDP_SPLIT_DPL_LOWER(0),
 			MDP5_MDP_SPLIT_DPL_LOWER_SMART_PANEL);
 	mdp5_write(mdp5_kms, REG_MDP5_MDP_SPLIT_DPL_EN(0), 1);
+=======
+	data |= MDP5_SPLIT_DPL_UPPER_SMART_PANEL;
+
+	/* Make sure clocks are on when connectors calling this function. */
+	mdp5_enable(mdp5_kms);
+	mdp5_write(mdp5_kms, REG_MDP5_SPLIT_DPL_UPPER, data);
+
+	mdp5_write(mdp5_kms, REG_MDP5_SPLIT_DPL_LOWER,
+		   MDP5_SPLIT_DPL_LOWER_SMART_PANEL);
+	mdp5_write(mdp5_kms, REG_MDP5_SPLIT_DPL_EN, 1);
+>>>>>>> v4.9.227
 	mdp5_disable(mdp5_kms);
 
 	return 0;
@@ -325,7 +358,11 @@ struct drm_encoder *mdp5_cmd_encoder_init(struct drm_device *dev,
 	mdp5_cmd_enc->ctl = ctl;
 
 	drm_encoder_init(dev, encoder, &mdp5_cmd_encoder_funcs,
+<<<<<<< HEAD
 			DRM_MODE_ENCODER_DSI);
+=======
+			DRM_MODE_ENCODER_DSI, NULL);
+>>>>>>> v4.9.227
 
 	drm_encoder_helper_add(encoder, &mdp5_cmd_encoder_helper_funcs);
 
@@ -339,4 +376,7 @@ fail:
 
 	return ERR_PTR(ret);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227

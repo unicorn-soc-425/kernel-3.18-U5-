@@ -19,7 +19,11 @@
 #include <linux/sched.h>
 #include <linux/device.h>
 #include <linux/poll.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/mutex.h>
 #include <asm/sn/io.h>
@@ -198,7 +202,11 @@ scdrv_read(struct file *file, char __user *buf, size_t count, loff_t *f_pos)
 		add_wait_queue(&sd->sd_rq, &wait);
 		spin_unlock_irqrestore(&sd->sd_rlock, flags);
 
+<<<<<<< HEAD
 		schedule_timeout(SCDRV_TIMEOUT);
+=======
+		schedule_timeout(msecs_to_jiffies(SCDRV_TIMEOUT));
+>>>>>>> v4.9.227
 
 		remove_wait_queue(&sd->sd_rq, &wait);
 		if (signal_pending(current)) {
@@ -294,7 +302,11 @@ scdrv_write(struct file *file, const char __user *buf,
 		add_wait_queue(&sd->sd_wq, &wait);
 		spin_unlock_irqrestore(&sd->sd_wlock, flags);
 
+<<<<<<< HEAD
 		schedule_timeout(SCDRV_TIMEOUT);
+=======
+		schedule_timeout(msecs_to_jiffies(SCDRV_TIMEOUT));
+>>>>>>> v4.9.227
 
 		remove_wait_queue(&sd->sd_wq, &wait);
 		if (signal_pending(current)) {
@@ -385,13 +397,25 @@ scdrv_init(void)
 
 	event_nasid = ia64_sn_get_console_nasid();
 
+<<<<<<< HEAD
+=======
+	snsc_class = class_create(THIS_MODULE, SYSCTL_BASENAME);
+	if (IS_ERR(snsc_class)) {
+		printk("%s: failed to allocate class\n", __func__);
+		return PTR_ERR(snsc_class);
+	}
+
+>>>>>>> v4.9.227
 	if (alloc_chrdev_region(&first_dev, 0, num_cnodes,
 				SYSCTL_BASENAME) < 0) {
 		printk("%s: failed to register SN system controller device\n",
 		       __func__);
 		return -ENODEV;
 	}
+<<<<<<< HEAD
 	snsc_class = class_create(THIS_MODULE, SYSCTL_BASENAME);
+=======
+>>>>>>> v4.9.227
 
 	for (cnode = 0; cnode < num_cnodes; cnode++) {
 			geoid = cnodeid_get_geoid(cnode);
@@ -461,5 +485,9 @@ scdrv_init(void)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(scdrv_init);
+=======
+device_initcall(scdrv_init);
+>>>>>>> v4.9.227

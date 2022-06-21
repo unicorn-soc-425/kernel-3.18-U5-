@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -143,8 +147,13 @@ acpi_ds_result_pop(union acpi_operand_object **object,
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ds_result_push(union acpi_operand_object * object,
 		    struct acpi_walk_state * walk_state)
+=======
+acpi_ds_result_push(union acpi_operand_object *object,
+		    struct acpi_walk_state *walk_state)
+>>>>>>> v4.9.227
 {
 	union acpi_generic_state *state;
 	acpi_status status;
@@ -307,7 +316,11 @@ static acpi_status acpi_ds_result_stack_pop(struct acpi_walk_state *walk_state)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ds_obj_stack_push(void *object, struct acpi_walk_state * walk_state)
+=======
+acpi_ds_obj_stack_push(void *object, struct acpi_walk_state *walk_state)
+>>>>>>> v4.9.227
 {
 	ACPI_FUNCTION_NAME(ds_obj_stack_push);
 
@@ -354,7 +367,11 @@ acpi_ds_obj_stack_push(void *object, struct acpi_walk_state * walk_state)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ds_obj_stack_pop(u32 pop_count, struct acpi_walk_state * walk_state)
+=======
+acpi_ds_obj_stack_pop(u32 pop_count, struct acpi_walk_state *walk_state)
+>>>>>>> v4.9.227
 {
 	u32 i;
 
@@ -411,7 +428,11 @@ acpi_ds_obj_stack_pop_and_delete(u32 pop_count,
 		return;
 	}
 
+<<<<<<< HEAD
 	for (i = (s32) pop_count - 1; i >= 0; i--) {
+=======
+	for (i = (s32)pop_count - 1; i >= 0; i--) {
+>>>>>>> v4.9.227
 		if (walk_state->num_operands == 0) {
 			return;
 		}

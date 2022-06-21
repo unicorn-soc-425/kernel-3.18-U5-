@@ -22,14 +22,21 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> v4.9.227
  */
 
 #ifndef _LNBP22_H
 #define _LNBP22_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> v4.9.227
 /* Enable */
 #define LNBP22_EN	  0x10
 /* Voltage selection */

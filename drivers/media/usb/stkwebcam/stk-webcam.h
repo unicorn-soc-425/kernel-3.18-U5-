@@ -129,7 +129,11 @@ struct stk_camera {
 #define vdev_to_camera(d) container_of(d, struct stk_camera, vdev)
 
 int stk_camera_write_reg(struct stk_camera *, u16, u8);
+<<<<<<< HEAD
 int stk_camera_read_reg(struct stk_camera *, u16, int *);
+=======
+int stk_camera_read_reg(struct stk_camera *, u16, u8 *);
+>>>>>>> v4.9.227
 
 int stk_sensor_init(struct stk_camera *);
 int stk_sensor_configure(struct stk_camera *);

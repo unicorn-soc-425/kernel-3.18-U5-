@@ -49,6 +49,10 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/compiler.h>
+>>>>>>> v4.9.227
 #include <asm/war.h>
 
 #ifndef R10000_LLSC_WAR
@@ -84,8 +88,13 @@ static inline void set_value_reg32(volatile u32 *const addr,
 	"	"__beqz"%0, 1b				\n"
 	"	nop					\n"
 	"	.set	pop				\n"
+<<<<<<< HEAD
 	: "=&r" (temp), "=m" (*addr)
 	: "ir" (~mask), "ir" (value), "m" (*addr));
+=======
+	: "=&r" (temp), "=" GCC_OFF_SMALL_ASM() (*addr)
+	: "ir" (~mask), "ir" (value), GCC_OFF_SMALL_ASM() (*addr));
+>>>>>>> v4.9.227
 }
 
 /*
@@ -105,8 +114,13 @@ static inline void set_reg32(volatile u32 *const addr,
 	"	"__beqz"%0, 1b				\n"
 	"	nop					\n"
 	"	.set	pop				\n"
+<<<<<<< HEAD
 	: "=&r" (temp), "=m" (*addr)
 	: "ir" (mask), "m" (*addr));
+=======
+	: "=&r" (temp), "=" GCC_OFF_SMALL_ASM() (*addr)
+	: "ir" (mask), GCC_OFF_SMALL_ASM() (*addr));
+>>>>>>> v4.9.227
 }
 
 /*
@@ -126,8 +140,13 @@ static inline void clear_reg32(volatile u32 *const addr,
 	"	"__beqz"%0, 1b				\n"
 	"	nop					\n"
 	"	.set	pop				\n"
+<<<<<<< HEAD
 	: "=&r" (temp), "=m" (*addr)
 	: "ir" (~mask), "m" (*addr));
+=======
+	: "=&r" (temp), "=" GCC_OFF_SMALL_ASM() (*addr)
+	: "ir" (~mask), GCC_OFF_SMALL_ASM() (*addr));
+>>>>>>> v4.9.227
 }
 
 /*
@@ -147,8 +166,13 @@ static inline void toggle_reg32(volatile u32 *const addr,
 	"	"__beqz"%0, 1b				\n"
 	"	nop					\n"
 	"	.set	pop				\n"
+<<<<<<< HEAD
 	: "=&r" (temp), "=m" (*addr)
 	: "ir" (mask), "m" (*addr));
+=======
+	: "=&r" (temp), "=" GCC_OFF_SMALL_ASM() (*addr)
+	: "ir" (mask), GCC_OFF_SMALL_ASM() (*addr));
+>>>>>>> v4.9.227
 }
 
 /*
@@ -219,8 +243,13 @@ static inline u32 blocking_read_reg32(volatile u32 *const addr)
 	"	.set	arch=r4000			\n"	\
 	"1:	ll	%0, %1	#custom_read_reg32	\n"	\
 	"	.set	pop				\n"	\
+<<<<<<< HEAD
 	: "=r" (tmp), "=m" (*address)				\
 	: "m" (*address))
+=======
+	: "=r" (tmp), "=" GCC_OFF_SMALL_ASM() (*address)		\
+	: GCC_OFF_SMALL_ASM() (*address))
+>>>>>>> v4.9.227
 
 #define custom_write_reg32(address, tmp)			\
 	__asm__ __volatile__(					\
@@ -230,7 +259,12 @@ static inline u32 blocking_read_reg32(volatile u32 *const addr)
 	"	"__beqz"%0, 1b				\n"	\
 	"	nop					\n"	\
 	"	.set	pop				\n"	\
+<<<<<<< HEAD
 	: "=&r" (tmp), "=m" (*address)				\
 	: "0" (tmp), "m" (*address))
+=======
+	: "=&r" (tmp), "=" GCC_OFF_SMALL_ASM() (*address)		\
+	: "0" (tmp), GCC_OFF_SMALL_ASM() (*address))
+>>>>>>> v4.9.227
 
 #endif	/* __ASM_REGOPS_H__ */

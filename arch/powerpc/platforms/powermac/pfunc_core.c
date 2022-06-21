@@ -804,7 +804,11 @@ void pmf_unregister_driver(struct device_node *np)
 }
 EXPORT_SYMBOL_GPL(pmf_unregister_driver);
 
+<<<<<<< HEAD
 struct pmf_function *__pmf_find_function(struct device_node *target,
+=======
+static struct pmf_function *__pmf_find_function(struct device_node *target,
+>>>>>>> v4.9.227
 					 const char *name, u32 flags)
 {
 	struct device_node *actor = of_node_get(target);

@@ -287,6 +287,10 @@ struct ak4113 {
 	ak4113_read_t *read;
 	void *private_data;
 	atomic_t wq_processing;
+<<<<<<< HEAD
+=======
+	struct mutex reinit_mutex;
+>>>>>>> v4.9.227
 	spinlock_t lock;
 	unsigned char regmap[AK4113_WRITABLE_REGS];
 	struct snd_kcontrol *kctls[AK4113_CONTROLS];
@@ -317,5 +321,16 @@ int snd_ak4113_build(struct ak4113 *ak4113,
 int snd_ak4113_external_rate(struct ak4113 *ak4113);
 int snd_ak4113_check_rate_and_errors(struct ak4113 *ak4113, unsigned int flags);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM
+void snd_ak4113_suspend(struct ak4113 *chip);
+void snd_ak4113_resume(struct ak4113 *chip);
+#else
+static inline void snd_ak4113_suspend(struct ak4113 *chip) {}
+static inline void snd_ak4113_resume(struct ak4113 *chip) {}
+#endif
+
+>>>>>>> v4.9.227
 #endif /* __SOUND_AK4113_H */
 

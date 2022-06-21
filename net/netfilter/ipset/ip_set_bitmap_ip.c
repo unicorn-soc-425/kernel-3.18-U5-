@@ -36,11 +36,19 @@ IP_SET_MODULE_DESC("bitmap:ip", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
 MODULE_ALIAS("ip_set_bitmap:ip");
 
 #define MTYPE		bitmap_ip
+<<<<<<< HEAD
 
 /* Type structure */
 struct bitmap_ip {
 	void *members;		/* the set members */
 	void *extensions;	/* data extensions */
+=======
+#define HOST_MASK	32
+
+/* Type structure */
+struct bitmap_ip {
+	unsigned long *members;	/* the set members */
+>>>>>>> v4.9.227
 	u32 first_ip;		/* host byte order, included in range */
 	u32 last_ip;		/* host byte order, included in range */
 	u32 elements;		/* number of max elements in the set */
@@ -48,6 +56,11 @@ struct bitmap_ip {
 	size_t memsize;		/* members size */
 	u8 netmask;		/* subnet netmask */
 	struct timer_list gc;	/* garbage collection */
+<<<<<<< HEAD
+=======
+	unsigned char extensions[0]	/* data extensions */
+		__aligned(__alignof__(u64));
+>>>>>>> v4.9.227
 };
 
 /* ADT structure for generic function args */
@@ -58,7 +71,11 @@ struct bitmap_ip_adt_elem {
 static inline u32
 ip_to_id(const struct bitmap_ip *m, u32 ip)
 {
+<<<<<<< HEAD
 	return ((ip & ip_set_hostmask(m->netmask)) - m->first_ip)/m->hosts;
+=======
+	return ((ip & ip_set_hostmask(m->netmask)) - m->first_ip) / m->hosts;
+>>>>>>> v4.9.227
 }
 
 /* Common functions */
@@ -80,7 +97,11 @@ static inline int
 bitmap_ip_do_add(const struct bitmap_ip_adt_elem *e, struct bitmap_ip *map,
 		 u32 flags, size_t dsize)
 {
+<<<<<<< HEAD
 	return !!test_and_set_bit(e->id, map->members);
+=======
+	return !!test_bit(e->id, map->members);
+>>>>>>> v4.9.227
 }
 
 static inline int
@@ -137,6 +158,7 @@ bitmap_ip_uadt(struct ip_set *set, struct nlattr *tb[],
 	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (unlikely(!tb[IPSET_ATTR_IP] ||
 		     !ip_set_optattr_netorder(tb, IPSET_ATTR_TIMEOUT) ||
 		     !ip_set_optattr_netorder(tb, IPSET_ATTR_PACKETS) ||
@@ -151,6 +173,19 @@ bitmap_ip_uadt(struct ip_set *set, struct nlattr *tb[],
 
 	ret = ip_set_get_hostipaddr4(tb[IPSET_ATTR_IP], &ip) ||
 	      ip_set_get_extensions(set, tb, &ext);
+=======
+	if (tb[IPSET_ATTR_LINENO])
+		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
+
+	if (unlikely(!tb[IPSET_ATTR_IP]))
+		return -IPSET_ERR_PROTOCOL;
+
+	ret = ip_set_get_hostipaddr4(tb[IPSET_ATTR_IP], &ip);
+	if (ret)
+		return ret;
+
+	ret = ip_set_get_extensions(set, tb, &ext);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -174,11 +209,20 @@ bitmap_ip_uadt(struct ip_set *set, struct nlattr *tb[],
 	} else if (tb[IPSET_ATTR_CIDR]) {
 		u8 cidr = nla_get_u8(tb[IPSET_ATTR_CIDR]);
 
+<<<<<<< HEAD
 		if (!cidr || cidr > 32)
 			return -IPSET_ERR_INVALID_CIDR;
 		ip_set_mask_from_to(ip, ip_to, cidr);
 	} else
 		ip_to = ip;
+=======
+		if (!cidr || cidr > HOST_MASK)
+			return -IPSET_ERR_INVALID_CIDR;
+		ip_set_mask_from_to(ip, ip_to, cidr);
+	} else {
+		ip_to = ip;
+	}
+>>>>>>> v4.9.227
 
 	if (ip_to > map->last_ip)
 		return -IPSET_ERR_BITMAP_RANGE;
@@ -189,8 +233,13 @@ bitmap_ip_uadt(struct ip_set *set, struct nlattr *tb[],
 
 		if (ret && !ip_set_eexist(ret, flags))
 			return ret;
+<<<<<<< HEAD
 		else
 			ret = 0;
+=======
+
+		ret = 0;
+>>>>>>> v4.9.227
 	}
 	return ret;
 }
@@ -222,6 +271,7 @@ init_map_ip(struct ip_set *set, struct bitmap_ip *map,
 	    u32 first_ip, u32 last_ip,
 	    u32 elements, u32 hosts, u8 netmask)
 {
+<<<<<<< HEAD
 	map->members = ip_set_alloc(map->memsize);
 	if (!map->members)
 		return false;
@@ -232,6 +282,11 @@ init_map_ip(struct ip_set *set, struct bitmap_ip *map,
 			return false;
 		}
 	}
+=======
+	map->members = bitmap_zalloc(elements, GFP_KERNEL | __GFP_NOWARN);
+	if (!map->members)
+		return false;
+>>>>>>> v4.9.227
 	map->first_ip = first_ip;
 	map->last_ip = last_ip;
 	map->elements = elements;
@@ -277,16 +332,29 @@ bitmap_ip_create(struct net *net, struct ip_set *set, struct nlattr *tb[],
 	} else if (tb[IPSET_ATTR_CIDR]) {
 		u8 cidr = nla_get_u8(tb[IPSET_ATTR_CIDR]);
 
+<<<<<<< HEAD
 		if (cidr >= 32)
 			return -IPSET_ERR_INVALID_CIDR;
 		ip_set_mask_from_to(first_ip, last_ip, cidr);
 	} else
 		return -IPSET_ERR_PROTOCOL;
+=======
+		if (cidr >= HOST_MASK)
+			return -IPSET_ERR_INVALID_CIDR;
+		ip_set_mask_from_to(first_ip, last_ip, cidr);
+	} else {
+		return -IPSET_ERR_PROTOCOL;
+	}
+>>>>>>> v4.9.227
 
 	if (tb[IPSET_ATTR_NETMASK]) {
 		netmask = nla_get_u8(tb[IPSET_ATTR_NETMASK]);
 
+<<<<<<< HEAD
 		if (netmask > 32)
+=======
+		if (netmask > HOST_MASK)
+>>>>>>> v4.9.227
 			return -IPSET_ERR_INVALID_NETMASK;
 
 		first_ip &= ip_set_hostmask(netmask);
@@ -316,6 +384,7 @@ bitmap_ip_create(struct net *net, struct ip_set *set, struct nlattr *tb[],
 	pr_debug("hosts %u, elements %llu\n",
 		 hosts, (unsigned long long)elements);
 
+<<<<<<< HEAD
 	map = kzalloc(sizeof(*map), GFP_KERNEL);
 	if (!map)
 		return -ENOMEM;
@@ -323,6 +392,15 @@ bitmap_ip_create(struct net *net, struct ip_set *set, struct nlattr *tb[],
 	map->memsize = bitmap_bytes(0, elements - 1);
 	set->variant = &bitmap_ip;
 	set->dsize = ip_set_elem_len(set, tb, 0);
+=======
+	set->dsize = ip_set_elem_len(set, tb, 0, 0);
+	map = ip_set_alloc(sizeof(*map) + elements * set->dsize);
+	if (!map)
+		return -ENOMEM;
+
+	map->memsize = BITS_TO_LONGS(elements) * sizeof(unsigned long);
+	set->variant = &bitmap_ip;
+>>>>>>> v4.9.227
 	if (!init_map_ip(set, map, first_ip, last_ip,
 			 elements, hosts, netmask)) {
 		kfree(map);
@@ -360,7 +438,12 @@ static struct ip_set_type bitmap_ip_type __read_mostly = {
 		[IPSET_ATTR_LINENO]	= { .type = NLA_U32 },
 		[IPSET_ATTR_BYTES]	= { .type = NLA_U64 },
 		[IPSET_ATTR_PACKETS]	= { .type = NLA_U64 },
+<<<<<<< HEAD
 		[IPSET_ATTR_COMMENT]	= { .type = NLA_NUL_STRING },
+=======
+		[IPSET_ATTR_COMMENT]	= { .type = NLA_NUL_STRING,
+					    .len  = IPSET_MAX_COMMENT_SIZE },
+>>>>>>> v4.9.227
 		[IPSET_ATTR_SKBMARK]	= { .type = NLA_U64 },
 		[IPSET_ATTR_SKBPRIO]	= { .type = NLA_U32 },
 		[IPSET_ATTR_SKBQUEUE]	= { .type = NLA_U16 },
@@ -377,6 +460,10 @@ bitmap_ip_init(void)
 static void __exit
 bitmap_ip_fini(void)
 {
+<<<<<<< HEAD
+=======
+	rcu_barrier();
+>>>>>>> v4.9.227
 	ip_set_type_unregister(&bitmap_ip_type);
 }
 

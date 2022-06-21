@@ -1052,7 +1052,11 @@ static void set_feature(struct m66592 *m66592, struct usb_ctrlrequest *ctrl)
 				tmp = m66592_read(m66592, M66592_INTSTS0) &
 								M66592_CTSQ;
 				udelay(1);
+<<<<<<< HEAD
 			} while (tmp != M66592_CS_IDST || timeout-- > 0);
+=======
+			} while (tmp != M66592_CS_IDST && timeout-- > 0);
+>>>>>>> v4.9.227
 
 			if (tmp == M66592_CS_IDST)
 				m66592_bset(m66592,
@@ -1142,7 +1146,11 @@ static void irq_device_state(struct m66592 *m66592)
 	m66592_write(m66592, ~M66592_DVST, M66592_INTSTS0);
 
 	if (dvsq == M66592_DS_DFLT) {	/* bus reset */
+<<<<<<< HEAD
 		m66592->driver->disconnect(&m66592->gadget);
+=======
+		usb_gadget_udc_reset(&m66592->gadget, m66592->driver);
+>>>>>>> v4.9.227
 		m66592_update_usb_speed(m66592);
 	}
 	if (m66592->old_dvsq == M66592_DS_CNFG && dvsq != M66592_DS_CNFG)
@@ -1199,8 +1207,11 @@ static irqreturn_t m66592_irq(int irq, void *_m66592)
 	struct m66592 *m66592 = _m66592;
 	u16 intsts0;
 	u16 intenb0;
+<<<<<<< HEAD
 	u16 brdysts, nrdysts, bempsts;
 	u16 brdyenb, nrdyenb, bempenb;
+=======
+>>>>>>> v4.9.227
 	u16 savepipe;
 	u16 mask0;
 
@@ -1224,12 +1235,19 @@ static irqreturn_t m66592_irq(int irq, void *_m66592)
 
 	mask0 = intsts0 & intenb0;
 	if (mask0) {
+<<<<<<< HEAD
 		brdysts = m66592_read(m66592, M66592_BRDYSTS);
 		nrdysts = m66592_read(m66592, M66592_NRDYSTS);
 		bempsts = m66592_read(m66592, M66592_BEMPSTS);
 		brdyenb = m66592_read(m66592, M66592_BRDYENB);
 		nrdyenb = m66592_read(m66592, M66592_NRDYENB);
 		bempenb = m66592_read(m66592, M66592_BEMPENB);
+=======
+		u16 brdysts = m66592_read(m66592, M66592_BRDYSTS);
+		u16 bempsts = m66592_read(m66592, M66592_BEMPSTS);
+		u16 brdyenb = m66592_read(m66592, M66592_BRDYENB);
+		u16 bempenb = m66592_read(m66592, M66592_BEMPENB);
+>>>>>>> v4.9.227
 
 		if (mask0 & M66592_VBINT) {
 			m66592_write(m66592,  0xffff & ~M66592_VBINT,
@@ -1408,6 +1426,7 @@ static int m66592_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 
 static int m66592_set_halt(struct usb_ep *_ep, int value)
 {
+<<<<<<< HEAD
 	struct m66592_ep *ep;
 	struct m66592_request *req;
 	unsigned long flags;
@@ -1422,14 +1441,27 @@ static int m66592_set_halt(struct usb_ep *_ep, int value)
 		goto out;
 	}
 	if (value) {
+=======
+	struct m66592_ep *ep = container_of(_ep, struct m66592_ep, ep);
+	unsigned long flags;
+	int ret = 0;
+
+	spin_lock_irqsave(&ep->m66592->lock, flags);
+	if (!list_empty(&ep->queue)) {
+		ret = -EAGAIN;
+	} else if (value) {
+>>>>>>> v4.9.227
 		ep->busy = 1;
 		pipe_stall(ep->m66592, ep->pipenum);
 	} else {
 		ep->busy = 0;
 		pipe_stop(ep->m66592, ep->pipenum);
 	}
+<<<<<<< HEAD
 
 out:
+=======
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&ep->m66592->lock, flags);
 	return ret;
 }
@@ -1485,8 +1517,12 @@ static int m66592_udc_start(struct usb_gadget *g,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int m66592_udc_stop(struct usb_gadget *g,
 		struct usb_gadget_driver *driver)
+=======
+static int m66592_udc_stop(struct usb_gadget *g)
+>>>>>>> v4.9.227
 {
 	struct m66592 *m66592 = to_m66592(g);
 
@@ -1529,7 +1565,11 @@ static const struct usb_gadget_ops m66592_gadget_ops = {
 	.pullup			= m66592_pullup,
 };
 
+<<<<<<< HEAD
 static int __exit m66592_remove(struct platform_device *pdev)
+=======
+static int m66592_remove(struct platform_device *pdev)
+>>>>>>> v4.9.227
 {
 	struct m66592		*m66592 = platform_get_drvdata(pdev);
 
@@ -1645,6 +1685,20 @@ static int m66592_probe(struct platform_device *pdev)
 		ep->ep.name = m66592_ep_name[i];
 		ep->ep.ops = &m66592_ep_ops;
 		usb_ep_set_maxpacket_limit(&ep->ep, 512);
+<<<<<<< HEAD
+=======
+
+		if (i == 0) {
+			ep->ep.caps.type_control = true;
+		} else {
+			ep->ep.caps.type_iso = true;
+			ep->ep.caps.type_bulk = true;
+			ep->ep.caps.type_int = true;
+		}
+
+		ep->ep.caps.dir_in = true;
+		ep->ep.caps.dir_out = true;
+>>>>>>> v4.9.227
 	}
 	usb_ep_set_maxpacket_limit(&m66592->ep[0].ep, 64);
 	m66592->ep[0].pipenum = 0;
@@ -1696,10 +1750,16 @@ clean_up:
 
 /*-------------------------------------------------------------------------*/
 static struct platform_driver m66592_driver = {
+<<<<<<< HEAD
 	.remove =	__exit_p(m66592_remove),
 	.driver		= {
 		.name =	(char *) udc_name,
 		.owner	= THIS_MODULE,
+=======
+	.remove =	m66592_remove,
+	.driver		= {
+		.name =	(char *) udc_name,
+>>>>>>> v4.9.227
 	},
 };
 

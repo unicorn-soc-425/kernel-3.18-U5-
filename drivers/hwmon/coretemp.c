@@ -52,7 +52,11 @@ module_param_named(tjmax, force_tjmax, int, 0444);
 MODULE_PARM_DESC(tjmax, "TjMax value in degrees Celsius");
 
 #define BASE_SYSFS_ATTR_NO	2	/* Sysfs Base attr no for coretemp */
+<<<<<<< HEAD
 #define NUM_REAL_CORES		32	/* Number of Real cores per cpu */
+=======
+#define NUM_REAL_CORES		128	/* Number of Real cores per cpu */
+>>>>>>> v4.9.227
 #define CORETEMP_NAME_LENGTH	19	/* String Length of attrs */
 #define MAX_CORE_ATTRS		4	/* Maximum no of basic attrs */
 #define TOTAL_ATTRS		(MAX_CORE_ATTRS + 1)
@@ -63,7 +67,12 @@ MODULE_PARM_DESC(tjmax, "TjMax value in degrees Celsius");
 #define TO_ATTR_NO(cpu)		(TO_CORE_ID(cpu) + BASE_SYSFS_ATTR_NO)
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 #define for_each_sibling(i, cpu)	for_each_cpu(i, cpu_sibling_mask(cpu))
+=======
+#define for_each_sibling(i, cpu) \
+	for_each_cpu(i, topology_sibling_cpumask(cpu))
+>>>>>>> v4.9.227
 #else
 #define for_each_sibling(i, cpu)	for (i = 0; false; )
 #endif
@@ -268,13 +277,21 @@ static int adjust_tjmax(struct cpuinfo_x86 *c, u32 id, struct device *dev)
 	for (i = 0; i < ARRAY_SIZE(tjmax_model_table); i++) {
 		const struct tjmax_model *tm = &tjmax_model_table[i];
 		if (c->x86_model == tm->model &&
+<<<<<<< HEAD
 		    (tm->mask == ANY || c->x86_mask == tm->mask))
+=======
+		    (tm->mask == ANY || c->x86_stepping == tm->mask))
+>>>>>>> v4.9.227
 			return tm->tjmax;
 	}
 
 	/* Early chips have no MSR for TjMax */
 
+<<<<<<< HEAD
 	if (c->x86_model == 0xf && c->x86_mask < 4)
+=======
+	if (c->x86_model == 0xf && c->x86_stepping < 4)
+>>>>>>> v4.9.227
 		usemsr_ee = 0;
 
 	if (c->x86_model > 0xe && usemsr_ee) {
@@ -397,6 +414,7 @@ static int create_core_attrs(struct temp_data *tdata, struct device *dev,
 			struct device_attribute *devattr, char *buf) = {
 			show_label, show_crit_alarm, show_temp, show_tjmax,
 			show_ttarget };
+<<<<<<< HEAD
 	static const char *const names[TOTAL_ATTRS] = {
 					"temp%d_label", "temp%d_crit_alarm",
 					"temp%d_input", "temp%d_crit",
@@ -405,6 +423,15 @@ static int create_core_attrs(struct temp_data *tdata, struct device *dev,
 	for (i = 0; i < tdata->attr_size; i++) {
 		snprintf(tdata->attr_name[i], CORETEMP_NAME_LENGTH, names[i],
 			attr_no);
+=======
+	static const char *const suffixes[TOTAL_ATTRS] = {
+		"label", "crit_alarm", "input", "crit", "max"
+	};
+
+	for (i = 0; i < tdata->attr_size; i++) {
+		snprintf(tdata->attr_name[i], CORETEMP_NAME_LENGTH,
+			 "temp%d_%s", attr_no, suffixes[i]);
+>>>>>>> v4.9.227
 		sysfs_attr_init(&tdata->sd_attrs[i].dev_attr.attr);
 		tdata->sd_attrs[i].dev_attr.attr.name = tdata->attr_name[i];
 		tdata->sd_attrs[i].dev_attr.attr.mode = S_IRUGO;
@@ -426,7 +453,11 @@ static int chk_ucode_version(unsigned int cpu)
 	 * Readings might stop update when processor visited too deep sleep,
 	 * fixed for stepping D0 (6EC).
 	 */
+<<<<<<< HEAD
 	if (c->x86_model == 0xe && c->x86_mask < 0xc && c->microcode < 0x39) {
+=======
+	if (c->x86_model == 0xe && c->x86_stepping < 0xc && c->microcode < 0x39) {
+>>>>>>> v4.9.227
 		pr_err("Errata AE18 not fixed, update BIOS or microcode of the CPU!\n");
 		return -ENODEV;
 	}
@@ -596,7 +627,10 @@ static int coretemp_remove(struct platform_device *pdev)
 
 static struct platform_driver coretemp_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = DRVNAME,
 	},
 	.probe = coretemp_probe,

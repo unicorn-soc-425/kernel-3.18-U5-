@@ -224,10 +224,17 @@ struct mmp_path *mmp_register_path(struct mmp_path_info *info)
 EXPORT_SYMBOL_GPL(mmp_register_path);
 
 /*
+<<<<<<< HEAD
  * mmp_unregister_path - unregister and destory path
  * @p: path to be destoried.
  *
  * this function registers path and destorys it.
+=======
+ * mmp_unregister_path - unregister and destroy path
+ * @p: path to be destroyed.
+ *
+ * this function registers path and destroys it.
+>>>>>>> v4.9.227
  */
 void mmp_unregister_path(struct mmp_path *path)
 {

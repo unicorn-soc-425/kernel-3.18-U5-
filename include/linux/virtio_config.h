@@ -4,6 +4,10 @@
 #include <linux/err.h>
 #include <linux/bug.h>
 #include <linux/virtio.h>
+<<<<<<< HEAD
+=======
+#include <linux/virtio_byteorder.h>
+>>>>>>> v4.9.227
 #include <uapi/linux/virtio_config.h>
 
 /**
@@ -18,6 +22,12 @@
  *	offset: the offset of the configuration field
  *	buf: the buffer to read the field value from.
  *	len: the length of the buffer
+<<<<<<< HEAD
+=======
+ * @generation: config generation counter
+ *	vdev: the virtio_device
+ *	Returns the config generation counter
+>>>>>>> v4.9.227
  * @get_status: read the status byte
  *	vdev: the virtio_device
  *	Returns the status byte
@@ -46,6 +56,10 @@
  *	vdev: the virtio_device
  *	This gives the final feature bits for the device: it can change
  *	the dev->feature bits if it wants.
+<<<<<<< HEAD
+=======
+ *	Returns 0 on success or error status
+>>>>>>> v4.9.227
  * @bus_name: return the bus name associated with the device
  *	vdev: the virtio_device
  *      This returns a pointer to the bus name a la pci_name from which
@@ -58,16 +72,27 @@ struct virtio_config_ops {
 		    void *buf, unsigned len);
 	void (*set)(struct virtio_device *vdev, unsigned offset,
 		    const void *buf, unsigned len);
+<<<<<<< HEAD
+=======
+	u32 (*generation)(struct virtio_device *vdev);
+>>>>>>> v4.9.227
 	u8 (*get_status)(struct virtio_device *vdev);
 	void (*set_status)(struct virtio_device *vdev, u8 status);
 	void (*reset)(struct virtio_device *vdev);
 	int (*find_vqs)(struct virtio_device *, unsigned nvqs,
 			struct virtqueue *vqs[],
 			vq_callback_t *callbacks[],
+<<<<<<< HEAD
 			const char *names[]);
 	void (*del_vqs)(struct virtio_device *);
 	u32 (*get_features)(struct virtio_device *vdev);
 	void (*finalize_features)(struct virtio_device *vdev);
+=======
+			const char * const names[]);
+	void (*del_vqs)(struct virtio_device *);
+	u64 (*get_features)(struct virtio_device *vdev);
+	int (*finalize_features)(struct virtio_device *vdev);
+>>>>>>> v4.9.227
 	const char *(*bus_name)(struct virtio_device *vdev);
 	int (*set_vq_affinity)(struct virtqueue *vq, int cpu);
 };
@@ -77,6 +102,62 @@ void virtio_check_driver_offered_feature(const struct virtio_device *vdev,
 					 unsigned int fbit);
 
 /**
+<<<<<<< HEAD
+=======
+ * __virtio_test_bit - helper to test feature bits. For use by transports.
+ *                     Devices should normally use virtio_has_feature,
+ *                     which includes more checks.
+ * @vdev: the device
+ * @fbit: the feature bit
+ */
+static inline bool __virtio_test_bit(const struct virtio_device *vdev,
+				     unsigned int fbit)
+{
+	/* Did you forget to fix assumptions on max features? */
+	if (__builtin_constant_p(fbit))
+		BUILD_BUG_ON(fbit >= 64);
+	else
+		BUG_ON(fbit >= 64);
+
+	return vdev->features & BIT_ULL(fbit);
+}
+
+/**
+ * __virtio_set_bit - helper to set feature bits. For use by transports.
+ * @vdev: the device
+ * @fbit: the feature bit
+ */
+static inline void __virtio_set_bit(struct virtio_device *vdev,
+				    unsigned int fbit)
+{
+	/* Did you forget to fix assumptions on max features? */
+	if (__builtin_constant_p(fbit))
+		BUILD_BUG_ON(fbit >= 64);
+	else
+		BUG_ON(fbit >= 64);
+
+	vdev->features |= BIT_ULL(fbit);
+}
+
+/**
+ * __virtio_clear_bit - helper to clear feature bits. For use by transports.
+ * @vdev: the device
+ * @fbit: the feature bit
+ */
+static inline void __virtio_clear_bit(struct virtio_device *vdev,
+				      unsigned int fbit)
+{
+	/* Did you forget to fix assumptions on max features? */
+	if (__builtin_constant_p(fbit))
+		BUILD_BUG_ON(fbit >= 64);
+	else
+		BUG_ON(fbit >= 64);
+
+	vdev->features &= ~BIT_ULL(fbit);
+}
+
+/**
+>>>>>>> v4.9.227
  * virtio_has_feature - helper to determine if this device has this feature.
  * @vdev: the device
  * @fbit: the feature bit
@@ -84,6 +165,7 @@ void virtio_check_driver_offered_feature(const struct virtio_device *vdev,
 static inline bool virtio_has_feature(const struct virtio_device *vdev,
 				      unsigned int fbit)
 {
+<<<<<<< HEAD
 	/* Did you forget to fix assumptions on max features? */
 	if (__builtin_constant_p(fbit))
 		BUILD_BUG_ON(fbit >= 32);
@@ -94,6 +176,25 @@ static inline bool virtio_has_feature(const struct virtio_device *vdev,
 		virtio_check_driver_offered_feature(vdev, fbit);
 
 	return test_bit(fbit, vdev->features);
+=======
+	if (fbit < VIRTIO_TRANSPORT_F_START)
+		virtio_check_driver_offered_feature(vdev, fbit);
+
+	return __virtio_test_bit(vdev, fbit);
+}
+
+/**
+ * virtio_has_iommu_quirk - determine whether this device has the iommu quirk
+ * @vdev: the device
+ */
+static inline bool virtio_has_iommu_quirk(const struct virtio_device *vdev)
+{
+	/*
+	 * Note the reverse polarity of the quirk feature (compared to most
+	 * other features), this is for compatibility with legacy systems.
+	 */
+	return !virtio_has_feature(vdev, VIRTIO_F_IOMMU_PLATFORM);
+>>>>>>> v4.9.227
 }
 
 static inline
@@ -152,6 +253,46 @@ int virtqueue_set_affinity(struct virtqueue *vq, int cpu)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool virtio_is_little_endian(struct virtio_device *vdev)
+{
+	return virtio_has_feature(vdev, VIRTIO_F_VERSION_1) ||
+		virtio_legacy_is_little_endian();
+}
+
+/* Memory accessors */
+static inline u16 virtio16_to_cpu(struct virtio_device *vdev, __virtio16 val)
+{
+	return __virtio16_to_cpu(virtio_is_little_endian(vdev), val);
+}
+
+static inline __virtio16 cpu_to_virtio16(struct virtio_device *vdev, u16 val)
+{
+	return __cpu_to_virtio16(virtio_is_little_endian(vdev), val);
+}
+
+static inline u32 virtio32_to_cpu(struct virtio_device *vdev, __virtio32 val)
+{
+	return __virtio32_to_cpu(virtio_is_little_endian(vdev), val);
+}
+
+static inline __virtio32 cpu_to_virtio32(struct virtio_device *vdev, u32 val)
+{
+	return __cpu_to_virtio32(virtio_is_little_endian(vdev), val);
+}
+
+static inline u64 virtio64_to_cpu(struct virtio_device *vdev, __virtio64 val)
+{
+	return __virtio64_to_cpu(virtio_is_little_endian(vdev), val);
+}
+
+static inline __virtio64 cpu_to_virtio64(struct virtio_device *vdev, u64 val)
+{
+	return __cpu_to_virtio64(virtio_is_little_endian(vdev), val);
+}
+
+>>>>>>> v4.9.227
 /* Config space accessors. */
 #define virtio_cread(vdev, structname, member, ptr)			\
 	do {								\
@@ -214,18 +355,51 @@ int virtqueue_set_affinity(struct virtqueue *vq, int cpu)
 		}							\
 	} while(0)
 
+<<<<<<< HEAD
 static inline u8 virtio_cread8(struct virtio_device *vdev, unsigned int offset)
 {
 	u8 ret;
 	vdev->config->get(vdev, offset, &ret, sizeof(ret));
 	return ret;
+=======
+/* Read @count fields, @bytes each. */
+static inline void __virtio_cread_many(struct virtio_device *vdev,
+				       unsigned int offset,
+				       void *buf, size_t count, size_t bytes)
+{
+	u32 old, gen = vdev->config->generation ?
+		vdev->config->generation(vdev) : 0;
+	int i;
+
+	do {
+		old = gen;
+
+		for (i = 0; i < count; i++)
+			vdev->config->get(vdev, offset + bytes * i,
+					  buf + i * bytes, bytes);
+
+		gen = vdev->config->generation ?
+			vdev->config->generation(vdev) : 0;
+	} while (gen != old);
+>>>>>>> v4.9.227
 }
 
 static inline void virtio_cread_bytes(struct virtio_device *vdev,
 				      unsigned int offset,
 				      void *buf, size_t len)
 {
+<<<<<<< HEAD
 	vdev->config->get(vdev, offset, buf, len);
+=======
+	__virtio_cread_many(vdev, offset, buf, len, 1);
+}
+
+static inline u8 virtio_cread8(struct virtio_device *vdev, unsigned int offset)
+{
+	u8 ret;
+	vdev->config->get(vdev, offset, &ret, sizeof(ret));
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static inline void virtio_cwrite8(struct virtio_device *vdev,
@@ -239,12 +413,20 @@ static inline u16 virtio_cread16(struct virtio_device *vdev,
 {
 	u16 ret;
 	vdev->config->get(vdev, offset, &ret, sizeof(ret));
+<<<<<<< HEAD
 	return ret;
+=======
+	return virtio16_to_cpu(vdev, (__force __virtio16)ret);
+>>>>>>> v4.9.227
 }
 
 static inline void virtio_cwrite16(struct virtio_device *vdev,
 				   unsigned int offset, u16 val)
 {
+<<<<<<< HEAD
+=======
+	val = (__force u16)cpu_to_virtio16(vdev, val);
+>>>>>>> v4.9.227
 	vdev->config->set(vdev, offset, &val, sizeof(val));
 }
 
@@ -253,12 +435,20 @@ static inline u32 virtio_cread32(struct virtio_device *vdev,
 {
 	u32 ret;
 	vdev->config->get(vdev, offset, &ret, sizeof(ret));
+<<<<<<< HEAD
 	return ret;
+=======
+	return virtio32_to_cpu(vdev, (__force __virtio32)ret);
+>>>>>>> v4.9.227
 }
 
 static inline void virtio_cwrite32(struct virtio_device *vdev,
 				   unsigned int offset, u32 val)
 {
+<<<<<<< HEAD
+=======
+	val = (__force u32)cpu_to_virtio32(vdev, val);
+>>>>>>> v4.9.227
 	vdev->config->set(vdev, offset, &val, sizeof(val));
 }
 
@@ -266,13 +456,22 @@ static inline u64 virtio_cread64(struct virtio_device *vdev,
 				 unsigned int offset)
 {
 	u64 ret;
+<<<<<<< HEAD
 	vdev->config->get(vdev, offset, &ret, sizeof(ret));
 	return ret;
+=======
+	__virtio_cread_many(vdev, offset, &ret, 1, sizeof(ret));
+	return virtio64_to_cpu(vdev, (__force __virtio64)ret);
+>>>>>>> v4.9.227
 }
 
 static inline void virtio_cwrite64(struct virtio_device *vdev,
 				   unsigned int offset, u64 val)
 {
+<<<<<<< HEAD
+=======
+	val = (__force u64)cpu_to_virtio64(vdev, val);
+>>>>>>> v4.9.227
 	vdev->config->set(vdev, offset, &val, sizeof(val));
 }
 

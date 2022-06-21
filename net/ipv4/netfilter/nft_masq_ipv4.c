@@ -17,11 +17,16 @@
 #include <net/netfilter/ipv4/nf_nat_masquerade.h>
 
 static void nft_masq_ipv4_eval(const struct nft_expr *expr,
+<<<<<<< HEAD
 			       struct nft_data data[NFT_REG_MAX + 1],
+=======
+			       struct nft_regs *regs,
+>>>>>>> v4.9.227
 			       const struct nft_pktinfo *pkt)
 {
 	struct nft_masq *priv = nft_expr_priv(expr);
 	struct nf_nat_range range;
+<<<<<<< HEAD
 	unsigned int verdict;
 
 	memset(&range, 0, sizeof(range));
@@ -31,6 +36,19 @@ static void nft_masq_ipv4_eval(const struct nft_expr *expr,
 					 &range, pkt->out);
 
 	data[NFT_REG_VERDICT].verdict = verdict;
+=======
+
+	memset(&range, 0, sizeof(range));
+	range.flags = priv->flags;
+	if (priv->sreg_proto_min) {
+		range.min_proto.all = (__force __be16)nft_reg_load16(
+			&regs->data[priv->sreg_proto_min]);
+		range.max_proto.all = (__force __be16)nft_reg_load16(
+			&regs->data[priv->sreg_proto_max]);
+	}
+	regs->verdict.code = nf_nat_masquerade_ipv4(pkt->skb, pkt->hook,
+						    &range, pkt->out);
+>>>>>>> v4.9.227
 }
 
 static struct nft_expr_type nft_masq_ipv4_type;

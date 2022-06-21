@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2008, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -36,6 +44,10 @@
  * Client Lustre Object.
  *
  *   Author: Nikita Danilov <nikita.danilov@sun.com>
+<<<<<<< HEAD
+=======
+ *   Author: Jinshan Xiong <jinshan.xiong@intel.com>
+>>>>>>> v4.9.227
  */
 
 /*
@@ -43,8 +55,11 @@
  *
  *  i_mutex
  *      PG_locked
+<<<<<<< HEAD
  *	  ->coh_page_guard
  *	  ->coh_lock_guard
+=======
+>>>>>>> v4.9.227
  *	  ->coh_attr_guard
  *	  ->ls_guard
  */
@@ -63,10 +78,13 @@
 
 static struct kmem_cache *cl_env_kmem;
 
+<<<<<<< HEAD
 /** Lock class of cl_object_header::coh_page_guard */
 static struct lock_class_key cl_page_guard_class;
 /** Lock class of cl_object_header::coh_lock_guard */
 static struct lock_class_key cl_lock_guard_class;
+=======
+>>>>>>> v4.9.227
 /** Lock class of cl_object_header::coh_attr_guard */
 static struct lock_class_key cl_attr_guard_class;
 
@@ -81,6 +99,7 @@ int cl_object_header_init(struct cl_object_header *h)
 
 	result = lu_object_header_init(&h->coh_lu);
 	if (result == 0) {
+<<<<<<< HEAD
 		spin_lock_init(&h->coh_page_guard);
 		spin_lock_init(&h->coh_lock_guard);
 		spin_lock_init(&h->coh_attr_guard);
@@ -92,12 +111,18 @@ int cl_object_header_init(struct cl_object_header *h)
 		INIT_RADIX_TREE(&h->coh_tree, GFP_ATOMIC);
 		INIT_LIST_HEAD(&h->coh_locks);
 		h->coh_page_bufsize = ALIGN(sizeof(struct cl_page), 8);
+=======
+		spin_lock_init(&h->coh_attr_guard);
+		lockdep_set_class(&h->coh_attr_guard, &cl_attr_guard_class);
+		h->coh_page_bufsize = 0;
+>>>>>>> v4.9.227
 	}
 	return result;
 }
 EXPORT_SYMBOL(cl_object_header_init);
 
 /**
+<<<<<<< HEAD
  * Finalize cl_object_header.
  */
 void cl_object_header_fini(struct cl_object_header *h)
@@ -108,6 +133,8 @@ void cl_object_header_fini(struct cl_object_header *h)
 EXPORT_SYMBOL(cl_object_header_fini);
 
 /**
+=======
+>>>>>>> v4.9.227
  * Returns a cl_object with a given \a fid.
  *
  * Returns either cached or newly created object. Additional reference on the
@@ -155,14 +182,22 @@ EXPORT_SYMBOL(cl_object_get);
 /**
  * Returns the top-object for a given \a o.
  *
+<<<<<<< HEAD
  * \see cl_page_top(), cl_io_top()
+=======
+ * \see cl_io_top()
+>>>>>>> v4.9.227
  */
 struct cl_object *cl_object_top(struct cl_object *o)
 {
 	struct cl_object_header *hdr = cl_object_header(o);
 	struct cl_object *top;
 
+<<<<<<< HEAD
 	while (hdr->coh_parent != NULL)
+=======
+	while (hdr->coh_parent)
+>>>>>>> v4.9.227
 		hdr = hdr->coh_parent;
 
 	top = lu2cl(lu_object_top(&hdr->coh_lu));
@@ -190,9 +225,16 @@ static spinlock_t *cl_object_attr_guard(struct cl_object *o)
  *
  * Prevents data-attributes from changing, until lock is released by
  * cl_object_attr_unlock(). This has to be called before calls to
+<<<<<<< HEAD
  * cl_object_attr_get(), cl_object_attr_set().
  */
 void cl_object_attr_lock(struct cl_object *o)
+=======
+ * cl_object_attr_get(), cl_object_attr_update().
+ */
+void cl_object_attr_lock(struct cl_object *o)
+	__acquires(cl_object_attr_guard(o))
+>>>>>>> v4.9.227
 {
 	spin_lock(cl_object_attr_guard(o));
 }
@@ -202,6 +244,10 @@ EXPORT_SYMBOL(cl_object_attr_lock);
  * Releases data-attributes lock, acquired by cl_object_attr_lock().
  */
 void cl_object_attr_unlock(struct cl_object *o)
+<<<<<<< HEAD
+=======
+	__releases(cl_object_attr_guard(o))
+>>>>>>> v4.9.227
 {
 	spin_unlock(cl_object_attr_guard(o));
 }
@@ -225,7 +271,11 @@ int cl_object_attr_get(const struct lu_env *env, struct cl_object *obj,
 	top = obj->co_lu.lo_header;
 	result = 0;
 	list_for_each_entry(obj, &top->loh_layers, co_lu.lo_linkage) {
+<<<<<<< HEAD
 		if (obj->co_ops->coo_attr_get != NULL) {
+=======
+		if (obj->co_ops->coo_attr_get) {
+>>>>>>> v4.9.227
 			result = obj->co_ops->coo_attr_get(env, obj, attr);
 			if (result != 0) {
 				if (result > 0)
@@ -242,11 +292,19 @@ EXPORT_SYMBOL(cl_object_attr_get);
  * Updates data-attributes of an object \a obj.
  *
  * Only attributes, mentioned in a validness bit-mask \a v are
+<<<<<<< HEAD
  * updated. Calls cl_object_operations::coo_attr_set() on every layer, bottom
  * to top.
  */
 int cl_object_attr_set(const struct lu_env *env, struct cl_object *obj,
 		       const struct cl_attr *attr, unsigned v)
+=======
+ * updated. Calls cl_object_operations::coo_attr_update() on every layer,
+ * bottom to top.
+ */
+int cl_object_attr_update(const struct lu_env *env, struct cl_object *obj,
+			  const struct cl_attr *attr, unsigned int v)
+>>>>>>> v4.9.227
 {
 	struct lu_object_header *top;
 	int result;
@@ -255,10 +313,17 @@ int cl_object_attr_set(const struct lu_env *env, struct cl_object *obj,
 
 	top = obj->co_lu.lo_header;
 	result = 0;
+<<<<<<< HEAD
 	list_for_each_entry_reverse(obj, &top->loh_layers,
 					co_lu.lo_linkage) {
 		if (obj->co_ops->coo_attr_set != NULL) {
 			result = obj->co_ops->coo_attr_set(env, obj, attr, v);
+=======
+	list_for_each_entry_reverse(obj, &top->loh_layers, co_lu.lo_linkage) {
+		if (obj->co_ops->coo_attr_update) {
+			result = obj->co_ops->coo_attr_update(env, obj, attr,
+							      v);
+>>>>>>> v4.9.227
 			if (result != 0) {
 				if (result > 0)
 					result = 0;
@@ -268,7 +333,11 @@ int cl_object_attr_set(const struct lu_env *env, struct cl_object *obj,
 	}
 	return result;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(cl_object_attr_set);
+=======
+EXPORT_SYMBOL(cl_object_attr_update);
+>>>>>>> v4.9.227
 
 /**
  * Notifies layers (bottom-to-top) that glimpse AST was received.
@@ -286,9 +355,14 @@ int cl_object_glimpse(const struct lu_env *env, struct cl_object *obj,
 
 	top = obj->co_lu.lo_header;
 	result = 0;
+<<<<<<< HEAD
 	list_for_each_entry_reverse(obj, &top->loh_layers,
 					co_lu.lo_linkage) {
 		if (obj->co_ops->coo_glimpse != NULL) {
+=======
+	list_for_each_entry_reverse(obj, &top->loh_layers, co_lu.lo_linkage) {
+		if (obj->co_ops->coo_glimpse) {
+>>>>>>> v4.9.227
 			result = obj->co_ops->coo_glimpse(env, obj, lvb);
 			if (result != 0)
 				break;
@@ -314,7 +388,11 @@ int cl_conf_set(const struct lu_env *env, struct cl_object *obj,
 	top = obj->co_lu.lo_header;
 	result = 0;
 	list_for_each_entry(obj, &top->loh_layers, co_lu.lo_linkage) {
+<<<<<<< HEAD
 		if (obj->co_ops->coo_conf_set != NULL) {
+=======
+		if (obj->co_ops->coo_conf_set) {
+>>>>>>> v4.9.227
 			result = obj->co_ops->coo_conf_set(env, obj, conf);
 			if (result != 0)
 				break;
@@ -325,6 +403,53 @@ int cl_conf_set(const struct lu_env *env, struct cl_object *obj,
 EXPORT_SYMBOL(cl_conf_set);
 
 /**
+<<<<<<< HEAD
+=======
+ * Prunes caches of pages and locks for this object.
+ */
+int cl_object_prune(const struct lu_env *env, struct cl_object *obj)
+{
+	struct lu_object_header *top;
+	struct cl_object *o;
+	int result;
+
+	top = obj->co_lu.lo_header;
+	result = 0;
+	list_for_each_entry(o, &top->loh_layers, co_lu.lo_linkage) {
+		if (o->co_ops->coo_prune) {
+			result = o->co_ops->coo_prune(env, o);
+			if (result != 0)
+				break;
+		}
+	}
+
+	return result;
+}
+EXPORT_SYMBOL(cl_object_prune);
+
+/**
+ * Get stripe information of this object.
+ */
+int cl_object_getstripe(const struct lu_env *env, struct cl_object *obj,
+			struct lov_user_md __user *uarg)
+{
+	struct lu_object_header *top;
+	int result = 0;
+
+	top = obj->co_lu.lo_header;
+	list_for_each_entry(obj, &top->loh_layers, co_lu.lo_linkage) {
+		if (obj->co_ops->coo_getstripe) {
+			result = obj->co_ops->coo_getstripe(env, obj, uarg);
+			if (result)
+			break;
+		}
+	}
+	return result;
+}
+EXPORT_SYMBOL(cl_object_getstripe);
+
+/**
+>>>>>>> v4.9.227
  * Helper function removing all object locks, and marking object for
  * deletion. All object pages must have been deleted at this point.
  *
@@ -333,6 +458,7 @@ EXPORT_SYMBOL(cl_conf_set);
  */
 void cl_object_kill(const struct lu_env *env, struct cl_object *obj)
 {
+<<<<<<< HEAD
 	struct cl_object_header *hdr;
 
 	hdr = cl_object_header(obj);
@@ -377,6 +503,14 @@ int cl_object_has_locks(struct cl_object *obj)
 }
 EXPORT_SYMBOL(cl_object_has_locks);
 
+=======
+	struct cl_object_header *hdr = cl_object_header(obj);
+
+	set_bit(LU_OBJECT_HEARD_BANSHEE, &hdr->coh_lu.loh_flags);
+}
+EXPORT_SYMBOL(cl_object_kill);
+
+>>>>>>> v4.9.227
 void cache_stats_init(struct cache_stats *cs, const char *name)
 {
 	int i;
@@ -386,7 +520,12 @@ void cache_stats_init(struct cache_stats *cs, const char *name)
 		atomic_set(&cs->cs_stats[i], 0);
 }
 
+<<<<<<< HEAD
 int cache_stats_print(const struct cache_stats *cs, struct seq_file *m, int h)
+=======
+static int cache_stats_print(const struct cache_stats *cs,
+			     struct seq_file *m, int h)
+>>>>>>> v4.9.227
 {
 	int i;
 	/*
@@ -408,6 +547,11 @@ int cache_stats_print(const struct cache_stats *cs, struct seq_file *m, int h)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void cl_env_percpu_refill(void);
+
+>>>>>>> v4.9.227
 /**
  * Initialize client site.
  *
@@ -416,17 +560,27 @@ int cache_stats_print(const struct cache_stats *cs, struct seq_file *m, int h)
  */
 int cl_site_init(struct cl_site *s, struct cl_device *d)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	size_t i;
+>>>>>>> v4.9.227
 	int result;
 
 	result = lu_site_init(&s->cs_lu, &d->cd_lu_dev);
 	if (result == 0) {
 		cache_stats_init(&s->cs_pages, "pages");
+<<<<<<< HEAD
 		cache_stats_init(&s->cs_locks, "locks");
 		for (i = 0; i < ARRAY_SIZE(s->cs_pages_state); ++i)
 			atomic_set(&s->cs_pages_state[0], 0);
 		for (i = 0; i < ARRAY_SIZE(s->cs_locks_state); ++i)
 			atomic_set(&s->cs_locks_state[i], 0);
+=======
+		for (i = 0; i < ARRAY_SIZE(s->cs_pages_state); ++i)
+			atomic_set(&s->cs_pages_state[0], 0);
+		cl_env_percpu_refill();
+>>>>>>> v4.9.227
 	}
 	return result;
 }
@@ -452,7 +606,11 @@ static struct cache_stats cl_env_stats = {
  */
 int cl_site_stats_print(const struct cl_site *site, struct seq_file *m)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	size_t i;
+>>>>>>> v4.9.227
 	static const char *pstate[] = {
 		[CPS_CACHED]  = "c",
 		[CPS_OWNED]   = "o",
@@ -460,6 +618,7 @@ int cl_site_stats_print(const struct cl_site *site, struct seq_file *m)
 		[CPS_PAGEIN]  = "r",
 		[CPS_FREEING] = "f"
 	};
+<<<<<<< HEAD
 	static const char *lstate[] = {
 		[CLS_NEW]       = "n",
 		[CLS_QUEUING]   = "q",
@@ -469,6 +628,8 @@ int cl_site_stats_print(const struct cl_site *site, struct seq_file *m)
 		[CLS_CACHED]    = "c",
 		[CLS_FREEING]   = "f"
 	};
+=======
+>>>>>>> v4.9.227
 /*
        lookup    hit  total   busy create
 pages: ...... ...... ...... ...... ...... [...... ...... ...... ......]
@@ -480,6 +641,7 @@ locks: ...... ...... ...... ...... ...... [...... ...... ...... ...... ......]
 	seq_printf(m, " [");
 	for (i = 0; i < ARRAY_SIZE(site->cs_pages_state); ++i)
 		seq_printf(m, "%s: %u ", pstate[i],
+<<<<<<< HEAD
 				atomic_read(&site->cs_pages_state[i]));
 	seq_printf(m, "]\n");
 	cache_stats_print(&site->cs_locks, m, 0);
@@ -487,6 +649,9 @@ locks: ...... ...... ...... ...... ...... [...... ...... ...... ...... ......]
 	for (i = 0; i < ARRAY_SIZE(site->cs_locks_state); ++i)
 		seq_printf(m, "%s: %u ", lstate[i],
 				atomic_read(&site->cs_locks_state[i]));
+=======
+			   atomic_read(&site->cs_pages_state[i]));
+>>>>>>> v4.9.227
 	seq_printf(m, "]\n");
 	cache_stats_print(&cl_env_stats, m, 0);
 	seq_printf(m, "\n");
@@ -506,7 +671,10 @@ EXPORT_SYMBOL(cl_site_stats_print);
  * because Lustre code may call into other fs which has certain assumptions
  * about journal_info. Currently following fields in task_struct are identified
  * can be used for this purpose:
+<<<<<<< HEAD
  *  - cl_env: for liblustre.
+=======
+>>>>>>> v4.9.227
  *  - tux_info: only on RedHat kernel.
  *  - ...
  * \note As long as we use task_struct to store cl_env, we assume that once
@@ -518,6 +686,16 @@ EXPORT_SYMBOL(cl_site_stats_print);
  * bz20044, bz22683.
  */
 
+<<<<<<< HEAD
+=======
+static LIST_HEAD(cl_envs);
+static unsigned int cl_envs_cached_nr;
+static unsigned int cl_envs_cached_max = 128; /* XXX: prototype: arbitrary limit
+					       * for now.
+					       */
+static DEFINE_SPINLOCK(cl_envs_guard);
+
+>>>>>>> v4.9.227
 struct cl_env {
 	void	     *ce_magic;
 	struct lu_env     ce_lu;
@@ -564,14 +742,21 @@ static void cl_env_init0(struct cl_env *cle, void *debug)
 {
 	LASSERT(cle->ce_ref == 0);
 	LASSERT(cle->ce_magic == &cl_env_init0);
+<<<<<<< HEAD
 	LASSERT(cle->ce_debug == NULL && cle->ce_owner == NULL);
+=======
+	LASSERT(!cle->ce_debug && !cle->ce_owner);
+>>>>>>> v4.9.227
 
 	cle->ce_ref = 1;
 	cle->ce_debug = debug;
 	CL_ENV_INC(busy);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  * The implementation of using hash table to connect cl_env and thread
  */
@@ -591,6 +776,10 @@ static unsigned cl_env_hops_hash(struct cfs_hash *lh,
 static void *cl_env_hops_obj(struct hlist_node *hn)
 {
 	struct cl_env *cle = hlist_entry(hn, struct cl_env, ce_node);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	LASSERT(cle->ce_magic == &cl_env_init0);
 	return (void *)cle;
 }
@@ -599,13 +788,18 @@ static int cl_env_hops_keycmp(const void *key, struct hlist_node *hn)
 {
 	struct cl_env *cle = cl_env_hops_obj(hn);
 
+<<<<<<< HEAD
 	LASSERT(cle->ce_owner != NULL);
+=======
+	LASSERT(cle->ce_owner);
+>>>>>>> v4.9.227
 	return (key == cle->ce_owner);
 }
 
 static void cl_env_hops_noop(struct cfs_hash *hs, struct hlist_node *hn)
 {
 	struct cl_env *cle = hlist_entry(hn, struct cl_env, ce_node);
+<<<<<<< HEAD
 	LASSERT(cle->ce_magic == &cl_env_init0);
 }
 
@@ -615,6 +809,18 @@ static cfs_hash_ops_t cl_env_hops = {
 	.hs_keycmp      = cl_env_hops_keycmp,
 	.hs_object      = cl_env_hops_obj,
 	.hs_get	 = cl_env_hops_noop,
+=======
+
+	LASSERT(cle->ce_magic == &cl_env_init0);
+}
+
+static struct cfs_hash_ops cl_env_hops = {
+	.hs_hash	= cl_env_hops_hash,
+	.hs_key		= cl_env_hops_obj,
+	.hs_keycmp      = cl_env_hops_keycmp,
+	.hs_object      = cl_env_hops_obj,
+	.hs_get		= cl_env_hops_noop,
+>>>>>>> v4.9.227
 	.hs_put_locked  = cl_env_hops_noop,
 };
 
@@ -622,7 +828,11 @@ static inline struct cl_env *cl_env_fetch(void)
 {
 	struct cl_env *cle;
 
+<<<<<<< HEAD
 	cle = cfs_hash_lookup(cl_env_hash, (void *) (long) current->pid);
+=======
+	cle = cfs_hash_lookup(cl_env_hash, (void *)(long)current->pid);
+>>>>>>> v4.9.227
 	LASSERT(ergo(cle, cle->ce_magic == &cl_env_init0));
 	return cle;
 }
@@ -632,8 +842,13 @@ static inline void cl_env_attach(struct cl_env *cle)
 	if (cle) {
 		int rc;
 
+<<<<<<< HEAD
 		LASSERT(cle->ce_owner == NULL);
 		cle->ce_owner = (void *) (long) current->pid;
+=======
+		LASSERT(!cle->ce_owner);
+		cle->ce_owner = (void *)(long)current->pid;
+>>>>>>> v4.9.227
 		rc = cfs_hash_add_unique(cl_env_hash, cle->ce_owner,
 					 &cle->ce_node);
 		LASSERT(rc == 0);
@@ -644,14 +859,23 @@ static inline void cl_env_do_detach(struct cl_env *cle)
 {
 	void *cookie;
 
+<<<<<<< HEAD
 	LASSERT(cle->ce_owner == (void *) (long) current->pid);
+=======
+	LASSERT(cle->ce_owner == (void *)(long)current->pid);
+>>>>>>> v4.9.227
 	cookie = cfs_hash_del(cl_env_hash, cle->ce_owner,
 			      &cle->ce_node);
 	LASSERT(cookie == cle);
 	cle->ce_owner = NULL;
 }
 
+<<<<<<< HEAD
 static int cl_env_store_init(void) {
+=======
+static int cl_env_store_init(void)
+{
+>>>>>>> v4.9.227
 	cl_env_hash = cfs_hash_create("cl_env",
 				      HASH_CL_ENV_BITS, HASH_CL_ENV_BITS,
 				      HASH_CL_ENV_BKT_BITS, 0,
@@ -659,6 +883,7 @@ static int cl_env_store_init(void) {
 				      CFS_HASH_MAX_THETA,
 				      &cl_env_hops,
 				      CFS_HASH_RW_BKTLOCK);
+<<<<<<< HEAD
 	return cl_env_hash != NULL ? 0 :-ENOMEM;
 }
 
@@ -670,6 +895,19 @@ static void cl_env_store_fini(void) {
 static inline struct cl_env *cl_env_detach(struct cl_env *cle)
 {
 	if (cle == NULL)
+=======
+	return cl_env_hash ? 0 : -ENOMEM;
+}
+
+static void cl_env_store_fini(void)
+{
+	cfs_hash_putref(cl_env_hash);
+}
+
+static inline struct cl_env *cl_env_detach(struct cl_env *cle)
+{
+	if (!cle)
+>>>>>>> v4.9.227
 		cle = cl_env_fetch();
 
 	if (cle && cle->ce_owner)
@@ -683,33 +921,60 @@ static struct lu_env *cl_env_new(__u32 ctx_tags, __u32 ses_tags, void *debug)
 	struct lu_env *env;
 	struct cl_env *cle;
 
+<<<<<<< HEAD
 	OBD_SLAB_ALLOC_PTR_GFP(cle, cl_env_kmem, GFP_NOFS);
 	if (cle != NULL) {
+=======
+	cle = kmem_cache_zalloc(cl_env_kmem, GFP_NOFS);
+	if (cle) {
+>>>>>>> v4.9.227
 		int rc;
 
 		INIT_LIST_HEAD(&cle->ce_linkage);
 		cle->ce_magic = &cl_env_init0;
 		env = &cle->ce_lu;
+<<<<<<< HEAD
 		rc = lu_env_init(env, LCT_CL_THREAD|ctx_tags);
 		if (rc == 0) {
 			rc = lu_context_init(&cle->ce_ses,
 					     LCT_SESSION | ses_tags);
+=======
+		rc = lu_env_init(env, ctx_tags | LCT_CL_THREAD);
+		if (rc == 0) {
+			rc = lu_context_init(&cle->ce_ses,
+					     ses_tags | LCT_SESSION);
+>>>>>>> v4.9.227
 			if (rc == 0) {
 				lu_context_enter(&cle->ce_ses);
 				env->le_ses = &cle->ce_ses;
 				cl_env_init0(cle, debug);
+<<<<<<< HEAD
 			} else
 				lu_env_fini(env);
 		}
 		if (rc != 0) {
 			OBD_SLAB_FREE_PTR(cle, cl_env_kmem);
+=======
+			} else {
+				lu_env_fini(env);
+			}
+		}
+		if (rc != 0) {
+			kmem_cache_free(cl_env_kmem, cle);
+>>>>>>> v4.9.227
 			env = ERR_PTR(rc);
 		} else {
 			CL_ENV_INC(create);
 			CL_ENV_INC(total);
 		}
+<<<<<<< HEAD
 	} else
 		env = ERR_PTR(-ENOMEM);
+=======
+	} else {
+		env = ERR_PTR(-ENOMEM);
+	}
+>>>>>>> v4.9.227
 	return env;
 }
 
@@ -718,7 +983,44 @@ static void cl_env_fini(struct cl_env *cle)
 	CL_ENV_DEC(total);
 	lu_context_fini(&cle->ce_lu.le_ctx);
 	lu_context_fini(&cle->ce_ses);
+<<<<<<< HEAD
 	OBD_SLAB_FREE_PTR(cle, cl_env_kmem);
+=======
+	kmem_cache_free(cl_env_kmem, cle);
+}
+
+static struct lu_env *cl_env_obtain(void *debug)
+{
+	struct cl_env *cle;
+	struct lu_env *env;
+
+	spin_lock(&cl_envs_guard);
+	LASSERT(equi(cl_envs_cached_nr == 0, list_empty(&cl_envs)));
+	if (cl_envs_cached_nr > 0) {
+		int rc;
+
+		cle = container_of(cl_envs.next, struct cl_env, ce_linkage);
+		list_del_init(&cle->ce_linkage);
+		cl_envs_cached_nr--;
+		spin_unlock(&cl_envs_guard);
+
+		env = &cle->ce_lu;
+		rc = lu_env_refill(env);
+		if (rc == 0) {
+			cl_env_init0(cle, debug);
+			lu_context_enter(&env->le_ctx);
+			lu_context_enter(&cle->ce_ses);
+		} else {
+			cl_env_fini(cle);
+			env = ERR_PTR(rc);
+		}
+	} else {
+		spin_unlock(&cl_envs_guard);
+		env = cl_env_new(lu_context_tags_default,
+				 lu_session_tags_default, debug);
+	}
+	return env;
+>>>>>>> v4.9.227
 }
 
 static inline struct cl_env *cl_env_container(struct lu_env *env)
@@ -726,7 +1028,11 @@ static inline struct cl_env *cl_env_container(struct lu_env *env)
 	return container_of(env, struct cl_env, ce_lu);
 }
 
+<<<<<<< HEAD
 struct lu_env *cl_env_peek(int *refcheck)
+=======
+static struct lu_env *cl_env_peek(int *refcheck)
+>>>>>>> v4.9.227
 {
 	struct lu_env *env;
 	struct cl_env *cle;
@@ -738,7 +1044,11 @@ struct lu_env *cl_env_peek(int *refcheck)
 
 	env = NULL;
 	cle = cl_env_fetch();
+<<<<<<< HEAD
 	if (cle != NULL) {
+=======
+	if (cle) {
+>>>>>>> v4.9.227
 		CL_ENV_INC(hit);
 		env = &cle->ce_lu;
 		*refcheck = ++cle->ce_ref;
@@ -746,12 +1056,20 @@ struct lu_env *cl_env_peek(int *refcheck)
 	CDEBUG(D_OTHER, "%d@%p\n", cle ? cle->ce_ref : 0, cle);
 	return env;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(cl_env_peek);
+=======
+>>>>>>> v4.9.227
 
 /**
  * Returns lu_env: if there already is an environment associated with the
  * current thread, it is returned, otherwise, new environment is allocated.
  *
+<<<<<<< HEAD
+=======
+ * Allocations are amortized through the global cache of environments.
+ *
+>>>>>>> v4.9.227
  * \param refcheck pointer to a counter used to detect environment leaks. In
  * the usual case cl_env_get() and cl_env_put() are called in the same lexical
  * scope and pointer to the same integer is passed as \a refcheck. This is
@@ -764,11 +1082,16 @@ struct lu_env *cl_env_get(int *refcheck)
 	struct lu_env *env;
 
 	env = cl_env_peek(refcheck);
+<<<<<<< HEAD
 	if (env == NULL) {
 		env = cl_env_new(lu_context_tags_default,
 				 lu_session_tags_default,
 				 __builtin_return_address(0));
 
+=======
+	if (!env) {
+		env = cl_env_obtain(__builtin_return_address(0));
+>>>>>>> v4.9.227
 		if (!IS_ERR(env)) {
 			struct cl_env *cle;
 
@@ -791,7 +1114,11 @@ struct lu_env *cl_env_alloc(int *refcheck, __u32 tags)
 {
 	struct lu_env *env;
 
+<<<<<<< HEAD
 	LASSERT(cl_env_peek(refcheck) == NULL);
+=======
+	LASSERT(!cl_env_peek(refcheck));
+>>>>>>> v4.9.227
 	env = cl_env_new(tags, tags, __builtin_return_address(0));
 	if (!IS_ERR(env)) {
 		struct cl_env *cle;
@@ -806,12 +1133,45 @@ EXPORT_SYMBOL(cl_env_alloc);
 
 static void cl_env_exit(struct cl_env *cle)
 {
+<<<<<<< HEAD
 	LASSERT(cle->ce_owner == NULL);
+=======
+	LASSERT(!cle->ce_owner);
+>>>>>>> v4.9.227
 	lu_context_exit(&cle->ce_lu.le_ctx);
 	lu_context_exit(&cle->ce_ses);
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * Finalizes and frees a given number of cached environments. This is done to
+ * (1) free some memory (not currently hooked into VM), or (2) release
+ * references to modules.
+ */
+unsigned int cl_env_cache_purge(unsigned int nr)
+{
+	struct cl_env *cle;
+
+	spin_lock(&cl_envs_guard);
+	for (; !list_empty(&cl_envs) && nr > 0; --nr) {
+		cle = container_of(cl_envs.next, struct cl_env, ce_linkage);
+		list_del_init(&cle->ce_linkage);
+		LASSERT(cl_envs_cached_nr > 0);
+		cl_envs_cached_nr--;
+		spin_unlock(&cl_envs_guard);
+
+		cl_env_fini(cle);
+		spin_lock(&cl_envs_guard);
+	}
+	LASSERT(equi(cl_envs_cached_nr == 0, list_empty(&cl_envs)));
+	spin_unlock(&cl_envs_guard);
+	return nr;
+}
+EXPORT_SYMBOL(cl_env_cache_purge);
+
+/**
+>>>>>>> v4.9.227
  * Release an environment.
  *
  * Decrement \a env reference counter. When counter drops to 0, nothing in
@@ -825,7 +1185,11 @@ void cl_env_put(struct lu_env *env, int *refcheck)
 	cle = cl_env_container(env);
 
 	LASSERT(cle->ce_ref > 0);
+<<<<<<< HEAD
 	LASSERT(ergo(refcheck != NULL, cle->ce_ref == *refcheck));
+=======
+	LASSERT(ergo(refcheck, cle->ce_ref == *refcheck));
+>>>>>>> v4.9.227
 
 	CDEBUG(D_OTHER, "%d@%p\n", cle->ce_ref, cle);
 	if (--cle->ce_ref == 0) {
@@ -833,7 +1197,26 @@ void cl_env_put(struct lu_env *env, int *refcheck)
 		cl_env_detach(cle);
 		cle->ce_debug = NULL;
 		cl_env_exit(cle);
+<<<<<<< HEAD
 		cl_env_fini(cle);
+=======
+		/*
+		 * Don't bother to take a lock here.
+		 *
+		 * Return environment to the cache only when it was allocated
+		 * with the standard tags.
+		 */
+		if (cl_envs_cached_nr < cl_envs_cached_max &&
+		    (env->le_ctx.lc_tags & ~LCT_HAS_EXIT) == LCT_CL_THREAD &&
+		    (env->le_ses->lc_tags & ~LCT_HAS_EXIT) == LCT_SESSION) {
+			spin_lock(&cl_envs_guard);
+			list_add(&cle->ce_linkage, &cl_envs);
+			cl_envs_cached_nr++;
+			spin_unlock(&cl_envs_guard);
+		} else {
+			cl_env_fini(cle);
+		}
+>>>>>>> v4.9.227
 	}
 }
 EXPORT_SYMBOL(cl_env_put);
@@ -900,6 +1283,7 @@ struct lu_env *cl_env_nested_get(struct cl_env_nest *nest)
 
 	nest->cen_cookie = NULL;
 	env = cl_env_peek(&nest->cen_refcheck);
+<<<<<<< HEAD
 	if (env != NULL) {
 		if (!cl_io_is_going(env))
 			return env;
@@ -907,6 +1291,13 @@ struct lu_env *cl_env_nested_get(struct cl_env_nest *nest)
 			cl_env_put(env, &nest->cen_refcheck);
 			nest->cen_cookie = cl_env_reenter();
 		}
+=======
+	if (env) {
+		if (!cl_io_is_going(env))
+			return env;
+		cl_env_put(env, &nest->cen_refcheck);
+		nest->cen_cookie = cl_env_reenter();
+>>>>>>> v4.9.227
 	}
 	env = cl_env_get(&nest->cen_refcheck);
 	if (IS_ERR(env)) {
@@ -927,6 +1318,7 @@ void cl_env_nested_put(struct cl_env_nest *nest, struct lu_env *env)
 EXPORT_SYMBOL(cl_env_nested_put);
 
 /**
+<<<<<<< HEAD
  * Converts struct cl_attr to struct ost_lvb.
  *
  * \see cl_lvb2attr
@@ -942,6 +1334,8 @@ void cl_attr2lvb(struct ost_lvb *lvb, const struct cl_attr *attr)
 EXPORT_SYMBOL(cl_attr2lvb);
 
 /**
+=======
+>>>>>>> v4.9.227
  * Converts struct ost_lvb to struct cl_attr.
  *
  * \see cl_attr2lvb
@@ -956,6 +1350,107 @@ void cl_lvb2attr(struct cl_attr *attr, const struct ost_lvb *lvb)
 }
 EXPORT_SYMBOL(cl_lvb2attr);
 
+<<<<<<< HEAD
+=======
+static struct cl_env cl_env_percpu[NR_CPUS];
+
+static int cl_env_percpu_init(void)
+{
+	struct cl_env *cle;
+	int tags = LCT_REMEMBER | LCT_NOREF;
+	int i, j;
+	int rc = 0;
+
+	for_each_possible_cpu(i) {
+		struct lu_env *env;
+
+		cle = &cl_env_percpu[i];
+		env = &cle->ce_lu;
+
+		INIT_LIST_HEAD(&cle->ce_linkage);
+		cle->ce_magic = &cl_env_init0;
+		rc = lu_env_init(env, LCT_CL_THREAD | tags);
+		if (rc == 0) {
+			rc = lu_context_init(&cle->ce_ses, LCT_SESSION | tags);
+			if (rc == 0) {
+				lu_context_enter(&cle->ce_ses);
+				env->le_ses = &cle->ce_ses;
+			} else {
+				lu_env_fini(env);
+			}
+		}
+		if (rc != 0)
+			break;
+	}
+	if (rc != 0) {
+		/* Indices 0 to i (excluding i) were correctly initialized,
+		 * thus we must uninitialize up to i, the rest are undefined.
+		 */
+		for (j = 0; j < i; j++) {
+			cle = &cl_env_percpu[j];
+			lu_context_exit(&cle->ce_ses);
+			lu_context_fini(&cle->ce_ses);
+			lu_env_fini(&cle->ce_lu);
+		}
+	}
+
+	return rc;
+}
+
+static void cl_env_percpu_fini(void)
+{
+	int i;
+
+	for_each_possible_cpu(i) {
+		struct cl_env *cle = &cl_env_percpu[i];
+
+		lu_context_exit(&cle->ce_ses);
+		lu_context_fini(&cle->ce_ses);
+		lu_env_fini(&cle->ce_lu);
+	}
+}
+
+static void cl_env_percpu_refill(void)
+{
+	int i;
+
+	for_each_possible_cpu(i)
+		lu_env_refill(&cl_env_percpu[i].ce_lu);
+}
+
+void cl_env_percpu_put(struct lu_env *env)
+{
+	struct cl_env *cle;
+	int cpu;
+
+	cpu = smp_processor_id();
+	cle = cl_env_container(env);
+	LASSERT(cle == &cl_env_percpu[cpu]);
+
+	cle->ce_ref--;
+	LASSERT(cle->ce_ref == 0);
+
+	CL_ENV_DEC(busy);
+	cl_env_detach(cle);
+	cle->ce_debug = NULL;
+
+	put_cpu();
+}
+EXPORT_SYMBOL(cl_env_percpu_put);
+
+struct lu_env *cl_env_percpu_get(void)
+{
+	struct cl_env *cle;
+
+	cle = &cl_env_percpu[get_cpu()];
+	cl_env_init0(cle, __builtin_return_address(0));
+
+	cl_env_attach(cle);
+	return &cle->ce_lu;
+}
+EXPORT_SYMBOL(cl_env_percpu_get);
+
+>>>>>>> v4.9.227
 /*****************************************************************************
  *
  * Temporary prototype thing: mirror obd-devices into cl devices.
@@ -969,14 +1464,21 @@ struct cl_device *cl_type_setup(const struct lu_env *env, struct lu_site *site,
 	const char       *typename;
 	struct lu_device *d;
 
+<<<<<<< HEAD
 	LASSERT(ldt != NULL);
 
+=======
+>>>>>>> v4.9.227
 	typename = ldt->ldt_name;
 	d = ldt->ldt_ops->ldto_device_alloc(env, ldt, NULL);
 	if (!IS_ERR(d)) {
 		int rc;
 
+<<<<<<< HEAD
 		if (site != NULL)
+=======
+		if (site)
+>>>>>>> v4.9.227
 			d->ld_site = site;
 		rc = ldt->ldt_ops->ldto_device_init(env, d, typename, next);
 		if (rc == 0) {
@@ -988,8 +1490,14 @@ struct cl_device *cl_type_setup(const struct lu_env *env, struct lu_site *site,
 			CERROR("can't init device '%s', %d\n", typename, rc);
 			d = ERR_PTR(rc);
 		}
+<<<<<<< HEAD
 	} else
 		CERROR("Cannot allocate device: '%s'\n", typename);
+=======
+	} else {
+		CERROR("Cannot allocate device: '%s'\n", typename);
+	}
+>>>>>>> v4.9.227
 	return lu2cl_dev(d);
 }
 EXPORT_SYMBOL(cl_type_setup);
@@ -1003,12 +1511,15 @@ void cl_stack_fini(const struct lu_env *env, struct cl_device *cl)
 }
 EXPORT_SYMBOL(cl_stack_fini);
 
+<<<<<<< HEAD
 int  cl_lock_init(void);
 void cl_lock_fini(void);
 
 int  cl_page_init(void);
 void cl_page_fini(void);
 
+=======
+>>>>>>> v4.9.227
 static struct lu_context_key cl_key;
 
 struct cl_thread_info *cl_env_info(const struct lu_env *env)
@@ -1026,7 +1537,11 @@ static void *cl_key_init(const struct lu_context *ctx,
 
 	info = cl0_key_init(ctx, key);
 	if (!IS_ERR(info)) {
+<<<<<<< HEAD
 		int i;
+=======
+		size_t i;
+>>>>>>> v4.9.227
 
 		for (i = 0; i < ARRAY_SIZE(info->clt_counters); ++i)
 			lu_ref_init(&info->clt_counters[i].ctc_locks_locked);
@@ -1038,7 +1553,11 @@ static void cl_key_fini(const struct lu_context *ctx,
 			struct lu_context_key *key, void *data)
 {
 	struct cl_thread_info *info;
+<<<<<<< HEAD
 	int i;
+=======
+	size_t i;
+>>>>>>> v4.9.227
 
 	info = data;
 	for (i = 0; i < ARRAY_SIZE(info->clt_counters); ++i)
@@ -1050,7 +1569,11 @@ static void cl_key_exit(const struct lu_context *ctx,
 			struct lu_context_key *key, void *data)
 {
 	struct cl_thread_info *info = data;
+<<<<<<< HEAD
 	int i;
+=======
+	size_t i;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < ARRAY_SIZE(info->clt_counters); ++i) {
 		LASSERT(info->clt_counters[i].ctc_nr_held == 0);
@@ -1073,7 +1596,11 @@ static struct lu_kmem_descr cl_object_caches[] = {
 	{
 		.ckd_cache = &cl_env_kmem,
 		.ckd_name  = "cl_env_kmem",
+<<<<<<< HEAD
 		.ckd_size  = sizeof (struct cl_env)
+=======
+		.ckd_size  = sizeof(struct cl_env)
+>>>>>>> v4.9.227
 	},
 	{
 		.ckd_cache = NULL
@@ -1103,6 +1630,7 @@ int cl_global_init(void)
 	if (result)
 		goto out_kmem;
 
+<<<<<<< HEAD
 	result = cl_lock_init();
 	if (result)
 		goto out_context;
@@ -1114,6 +1642,15 @@ int cl_global_init(void)
 	return 0;
 out_lock:
 	cl_lock_fini();
+=======
+	result = cl_env_percpu_init();
+	if (result)
+		/* no cl_env_percpu_fini on error */
+		goto out_context;
+
+	return 0;
+
+>>>>>>> v4.9.227
 out_context:
 	lu_context_key_degister(&cl_key);
 out_kmem:
@@ -1128,8 +1665,12 @@ out_store:
  */
 void cl_global_fini(void)
 {
+<<<<<<< HEAD
 	cl_lock_fini();
 	cl_page_fini();
+=======
+	cl_env_percpu_fini();
+>>>>>>> v4.9.227
 	lu_context_key_degister(&cl_key);
 	lu_kmem_fini(cl_object_caches);
 	cl_env_store_fini();

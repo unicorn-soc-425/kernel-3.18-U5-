@@ -33,9 +33,15 @@
 #include <linux/swap.h>
 #include <linux/stddef.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/memblock.h>
 #include <linux/slab.h>
+=======
+#include <linux/memblock.h>
+#include <linux/slab.h>
+#include <linux/hugetlb.h>
+>>>>>>> v4.9.227
 
 #include <asm/pgalloc.h>
 #include <asm/page.h>
@@ -51,6 +57,7 @@
 #include <asm/cputable.h>
 #include <asm/sections.h>
 #include <asm/firmware.h>
+<<<<<<< HEAD
 
 #include "mmu_decl.h"
 
@@ -62,12 +69,19 @@
 #error TASK_SIZE_USER64 exceeds pagetable range
 #endif
 
+=======
+#include <asm/dma.h>
+
+#include "mmu_decl.h"
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC_STD_MMU_64
 #if TASK_SIZE_USER64 > (1UL << (ESID_BITS + SID_SHIFT))
 #error TASK_SIZE_USER64 exceeds user VSID range
 #endif
 #endif
 
+<<<<<<< HEAD
 unsigned long ioremap_bot = IOREMAP_BASE;
 
 #ifdef CONFIG_PPC_MMU_NOHASH
@@ -170,6 +184,59 @@ int map_kernel_page(unsigned long ea, unsigned long pa, int flags)
 	return 0;
 }
 
+=======
+#ifdef CONFIG_PPC_BOOK3S_64
+/*
+ * partition table and process table for ISA 3.0
+ */
+struct prtb_entry *process_tb;
+struct patb_entry *partition_tb;
+/*
+ * page table size
+ */
+unsigned long __pte_index_size;
+EXPORT_SYMBOL(__pte_index_size);
+unsigned long __pmd_index_size;
+EXPORT_SYMBOL(__pmd_index_size);
+unsigned long __pud_index_size;
+EXPORT_SYMBOL(__pud_index_size);
+unsigned long __pgd_index_size;
+EXPORT_SYMBOL(__pgd_index_size);
+unsigned long __pmd_cache_index;
+EXPORT_SYMBOL(__pmd_cache_index);
+unsigned long __pte_table_size;
+EXPORT_SYMBOL(__pte_table_size);
+unsigned long __pmd_table_size;
+EXPORT_SYMBOL(__pmd_table_size);
+unsigned long __pud_table_size;
+EXPORT_SYMBOL(__pud_table_size);
+unsigned long __pgd_table_size;
+EXPORT_SYMBOL(__pgd_table_size);
+unsigned long __pmd_val_bits;
+EXPORT_SYMBOL(__pmd_val_bits);
+unsigned long __pud_val_bits;
+EXPORT_SYMBOL(__pud_val_bits);
+unsigned long __pgd_val_bits;
+EXPORT_SYMBOL(__pgd_val_bits);
+unsigned long __kernel_virt_start;
+EXPORT_SYMBOL(__kernel_virt_start);
+unsigned long __kernel_virt_size;
+EXPORT_SYMBOL(__kernel_virt_size);
+unsigned long __vmalloc_start;
+EXPORT_SYMBOL(__vmalloc_start);
+unsigned long __vmalloc_end;
+EXPORT_SYMBOL(__vmalloc_end);
+struct page *vmemmap;
+EXPORT_SYMBOL(vmemmap);
+unsigned long __pte_frag_nr;
+EXPORT_SYMBOL(__pte_frag_nr);
+unsigned long __pte_frag_size_shift;
+EXPORT_SYMBOL(__pte_frag_size_shift);
+unsigned long ioremap_bot;
+#else /* !CONFIG_PPC_BOOK3S_64 */
+unsigned long ioremap_bot = IOREMAP_BASE;
+#endif
+>>>>>>> v4.9.227
 
 /**
  * __ioremap_at - Low level function to establish the page tables
@@ -184,12 +251,17 @@ void __iomem * __ioremap_at(phys_addr_t pa, void *ea, unsigned long size,
 	if ((flags & _PAGE_PRESENT) == 0)
 		flags |= pgprot_val(PAGE_KERNEL);
 
+<<<<<<< HEAD
 	/* Non-cacheable page cannot be coherent */
 	if (flags & _PAGE_NO_CACHE)
 		flags &= ~_PAGE_COHERENT;
 
 	/* We don't support the 4K PFN hack with ioremap */
 	if (flags & _PAGE_4K_PFN)
+=======
+	/* We don't support the 4K PFN hack with ioremap */
+	if (flags & H_PAGE_4K_PFN)
+>>>>>>> v4.9.227
 		return NULL;
 
 	WARN_ON(pa & ~PAGE_MASK);
@@ -238,7 +310,11 @@ void __iomem * __ioremap_caller(phys_addr_t addr, unsigned long size,
 	if ((size == 0) || (paligned == 0))
 		return NULL;
 
+<<<<<<< HEAD
 	if (mem_init_done) {
+=======
+	if (slab_is_available()) {
+>>>>>>> v4.9.227
 		struct vm_struct *area;
 
 		area = __get_vm_area_caller(size, VM_IOREMAP,
@@ -270,7 +346,11 @@ void __iomem * __ioremap(phys_addr_t addr, unsigned long size,
 
 void __iomem * ioremap(phys_addr_t addr, unsigned long size)
 {
+<<<<<<< HEAD
 	unsigned long flags = _PAGE_NO_CACHE | _PAGE_GUARDED;
+=======
+	unsigned long flags = pgprot_val(pgprot_noncached(__pgprot(0)));
+>>>>>>> v4.9.227
 	void *caller = __builtin_return_address(0);
 
 	if (ppc_md.ioremap)
@@ -280,7 +360,11 @@ void __iomem * ioremap(phys_addr_t addr, unsigned long size)
 
 void __iomem * ioremap_wc(phys_addr_t addr, unsigned long size)
 {
+<<<<<<< HEAD
 	unsigned long flags = _PAGE_NO_CACHE;
+=======
+	unsigned long flags = pgprot_val(pgprot_noncached_wc(__pgprot(0)));
+>>>>>>> v4.9.227
 	void *caller = __builtin_return_address(0);
 
 	if (ppc_md.ioremap)
@@ -294,11 +378,28 @@ void __iomem * ioremap_prot(phys_addr_t addr, unsigned long size,
 	void *caller = __builtin_return_address(0);
 
 	/* writeable implies dirty for kernel addresses */
+<<<<<<< HEAD
 	if (flags & _PAGE_RW)
 		flags |= _PAGE_DIRTY;
 
 	/* we don't want to let _PAGE_USER and _PAGE_EXEC leak out */
 	flags &= ~(_PAGE_USER | _PAGE_EXEC);
+=======
+	if (flags & _PAGE_WRITE)
+		flags |= _PAGE_DIRTY;
+
+	/* we don't want to let _PAGE_EXEC leak out */
+	flags &= ~_PAGE_EXEC;
+	/*
+	 * Force kernel mapping.
+	 */
+#if defined(CONFIG_PPC_BOOK3S_64)
+	flags |= _PAGE_PRIVILEGED;
+#else
+	flags &= ~_PAGE_USER;
+#endif
+
+>>>>>>> v4.9.227
 
 #ifdef _PAGE_BAP_SR
 	/* _PAGE_USER contains _PAGE_BAP_SR on BookE using the new PTE format
@@ -322,7 +423,11 @@ void __iounmap(volatile void __iomem *token)
 {
 	void *addr;
 
+<<<<<<< HEAD
 	if (!mem_init_done)
+=======
+	if (!slab_is_available())
+>>>>>>> v4.9.227
 		return;
 	
 	addr = (void *) ((unsigned long __force)
@@ -352,16 +457,41 @@ EXPORT_SYMBOL(iounmap);
 EXPORT_SYMBOL(__iounmap);
 EXPORT_SYMBOL(__iounmap_at);
 
+<<<<<<< HEAD
+=======
+#ifndef __PAGETABLE_PUD_FOLDED
+/* 4 level page table */
+struct page *pgd_page(pgd_t pgd)
+{
+	if (pgd_huge(pgd))
+		return pte_page(pgd_pte(pgd));
+	return virt_to_page(pgd_page_vaddr(pgd));
+}
+#endif
+
+struct page *pud_page(pud_t pud)
+{
+	if (pud_huge(pud))
+		return pte_page(pud_pte(pud));
+	return virt_to_page(pud_page_vaddr(pud));
+}
+
+>>>>>>> v4.9.227
 /*
  * For hugepage we have pfn in the pmd, we use PTE_RPN_SHIFT bits for flags
  * For PTE page, we have a PTE_FRAG_SIZE (4K) aligned virtual address.
  */
 struct page *pmd_page(pmd_t pmd)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 	if (pmd_trans_huge(pmd))
 		return pfn_to_page(pmd_pfn(pmd));
 #endif
+=======
+	if (pmd_trans_huge(pmd) || pmd_huge(pmd))
+		return pte_page(pmd_pte(pmd));
+>>>>>>> v4.9.227
 	return virt_to_page(pmd_page_vaddr(pmd));
 }
 
@@ -388,8 +518,12 @@ static pte_t *get_from_cache(struct mm_struct *mm)
 static pte_t *__alloc_for_cache(struct mm_struct *mm, int kernel)
 {
 	void *ret = NULL;
+<<<<<<< HEAD
 	struct page *page = alloc_page(GFP_KERNEL | __GFP_NOTRACK |
 				       __GFP_REPEAT | __GFP_ZERO);
+=======
+	struct page *page = alloc_page(GFP_KERNEL | __GFP_NOTRACK | __GFP_ZERO);
+>>>>>>> v4.9.227
 	if (!page)
 		return NULL;
 	if (!kernel && !pgtable_page_ctor(page)) {
@@ -405,7 +539,11 @@ static pte_t *__alloc_for_cache(struct mm_struct *mm, int kernel)
 	 * count.
 	 */
 	if (likely(!mm->context.pte_frag)) {
+<<<<<<< HEAD
 		atomic_set(&page->_count, PTE_FRAG_NR);
+=======
+		set_page_count(page, PTE_FRAG_NR);
+>>>>>>> v4.9.227
 		mm->context.pte_frag = ret + PTE_FRAG_SIZE;
 	}
 	spin_unlock(&mm->page_table_lock);
@@ -413,7 +551,11 @@ static pte_t *__alloc_for_cache(struct mm_struct *mm, int kernel)
 	return (pte_t *)ret;
 }
 
+<<<<<<< HEAD
 pte_t *page_table_alloc(struct mm_struct *mm, unsigned long vmaddr, int kernel)
+=======
+pte_t *pte_fragment_alloc(struct mm_struct *mm, unsigned long vmaddr, int kernel)
+>>>>>>> v4.9.227
 {
 	pte_t *pte;
 
@@ -423,8 +565,14 @@ pte_t *page_table_alloc(struct mm_struct *mm, unsigned long vmaddr, int kernel)
 
 	return __alloc_for_cache(mm, kernel);
 }
+<<<<<<< HEAD
 
 void page_table_free(struct mm_struct *mm, unsigned long *table, int kernel)
+=======
+#endif /* CONFIG_PPC_64K_PAGES */
+
+void pte_fragment_free(unsigned long *table, int kernel)
+>>>>>>> v4.9.227
 {
 	struct page *page = virt_to_page(table);
 	if (put_page_testzero(page)) {
@@ -435,6 +583,7 @@ void page_table_free(struct mm_struct *mm, unsigned long *table, int kernel)
 }
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 static void page_table_free_rcu(void *table)
 {
 	struct page *page = virt_to_page(table);
@@ -444,6 +593,8 @@ static void page_table_free_rcu(void *table)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 void pgtable_free_tlb(struct mmu_gather *tlb, void *table, int shift)
 {
 	unsigned long pgf = (unsigned long)table;
@@ -460,7 +611,11 @@ void __tlb_remove_table(void *_table)
 
 	if (!shift)
 		/* PTE page needs special handling */
+<<<<<<< HEAD
 		page_table_free_rcu(table);
+=======
+		pte_fragment_free(table, 0);
+>>>>>>> v4.9.227
 	else {
 		BUG_ON(shift > MAX_PGTABLE_INDEX_SIZE);
 		kmem_cache_free(PGT_CACHE(shift), table);
@@ -471,17 +626,22 @@ void pgtable_free_tlb(struct mmu_gather *tlb, void *table, int shift)
 {
 	if (!shift) {
 		/* PTE page needs special handling */
+<<<<<<< HEAD
 		struct page *page = virt_to_page(table);
 		if (put_page_testzero(page)) {
 			pgtable_page_dtor(page);
 			free_hot_cold_page(page, 0);
 		}
+=======
+		pte_fragment_free(table, 0);
+>>>>>>> v4.9.227
 	} else {
 		BUG_ON(shift > MAX_PGTABLE_INDEX_SIZE);
 		kmem_cache_free(PGT_CACHE(shift), table);
 	}
 }
 #endif
+<<<<<<< HEAD
 #endif /* CONFIG_PPC_64K_PAGES */
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
@@ -902,3 +1062,5 @@ int has_transparent_hugepage(void)
 	return 1;
 }
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+=======
+>>>>>>> v4.9.227

@@ -252,9 +252,16 @@ static int tps65910_irq_init(struct tps65910 *tps65910, int irq,
 	}
 
 	tps65910->chip_irq = irq;
+<<<<<<< HEAD
 	ret = regmap_add_irq_chip(tps65910->regmap, tps65910->chip_irq,
 		IRQF_ONESHOT, pdata->irq_base,
 		tps6591x_irqs_chip, &tps65910->irq_data);
+=======
+	ret = devm_regmap_add_irq_chip(tps65910->dev, tps65910->regmap,
+				       tps65910->chip_irq,
+				       IRQF_ONESHOT, pdata->irq_base,
+				       tps6591x_irqs_chip, &tps65910->irq_data);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_warn(tps65910->dev, "Failed to add irq_chip %d\n", ret);
 		tps65910->chip_irq = 0;
@@ -262,6 +269,7 @@ static int tps65910_irq_init(struct tps65910 *tps65910, int irq,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int tps65910_irq_exit(struct tps65910 *tps65910)
 {
 	if (tps65910->chip_irq > 0)
@@ -269,6 +277,8 @@ static int tps65910_irq_exit(struct tps65910 *tps65910)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static bool is_volatile_reg(struct device *dev, unsigned int reg)
 {
 	struct tps65910 *tps65910 = dev_get_drvdata(dev);
@@ -510,6 +520,7 @@ static int tps65910_i2c_probe(struct i2c_client *i2c,
 		pm_power_off = tps65910_power_off;
 	}
 
+<<<<<<< HEAD
 	ret = mfd_add_devices(tps65910->dev, -1,
 			      tps65910s, ARRAY_SIZE(tps65910s),
 			      NULL, 0,
@@ -517,12 +528,21 @@ static int tps65910_i2c_probe(struct i2c_client *i2c,
 	if (ret < 0) {
 		dev_err(&i2c->dev, "mfd_add_devices failed: %d\n", ret);
 		tps65910_irq_exit(tps65910);
+=======
+	ret = devm_mfd_add_devices(tps65910->dev, -1,
+				   tps65910s, ARRAY_SIZE(tps65910s),
+				   NULL, 0,
+				   regmap_irq_get_domain(tps65910->irq_data));
+	if (ret < 0) {
+		dev_err(&i2c->dev, "mfd_add_devices failed: %d\n", ret);
+>>>>>>> v4.9.227
 		return ret;
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int tps65910_i2c_remove(struct i2c_client *i2c)
 {
 	struct tps65910 *tps65910 = i2c_get_clientdata(i2c);
@@ -533,6 +553,8 @@ static int tps65910_i2c_remove(struct i2c_client *i2c)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct i2c_device_id tps65910_i2c_id[] = {
        { "tps65910", TPS65910 },
        { "tps65911", TPS65911 },
@@ -544,11 +566,17 @@ MODULE_DEVICE_TABLE(i2c, tps65910_i2c_id);
 static struct i2c_driver tps65910_i2c_driver = {
 	.driver = {
 		   .name = "tps65910",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
 		   .of_match_table = of_match_ptr(tps65910_of_match),
 	},
 	.probe = tps65910_i2c_probe,
 	.remove = tps65910_i2c_remove,
+=======
+		   .of_match_table = of_match_ptr(tps65910_of_match),
+	},
+	.probe = tps65910_i2c_probe,
+>>>>>>> v4.9.227
 	.id_table = tps65910_i2c_id,
 };
 

@@ -4,7 +4,12 @@
  *
  * This code is based on drivers/scsi/mpt3sas/mpt3sas_ctl.h
  * Copyright (C) 2012-2014  LSI Corporation
+<<<<<<< HEAD
  *  (mailto:DL-MPTFusionLinux@lsi.com)
+=======
+ * Copyright (C) 2013-2014 Avago Technologies
+ *  (mailto: MPT-FusionLinux.pdl@avagotech.com)
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,10 +54,20 @@
 #include <linux/miscdevice.h>
 #endif
 
+<<<<<<< HEAD
 
 #ifndef MPT3SAS_MINOR
 #define MPT3SAS_MINOR		(MPT_MINOR + 2)
 #endif
+=======
+#ifndef MPT2SAS_MINOR
+#define MPT2SAS_MINOR		(MPT_MINOR + 1)
+#endif
+#ifndef MPT3SAS_MINOR
+#define MPT3SAS_MINOR		(MPT_MINOR + 2)
+#endif
+#define MPT2SAS_DEV_NAME	"mpt2ctl"
+>>>>>>> v4.9.227
 #define MPT3SAS_DEV_NAME	"mpt3ctl"
 #define MPT3_MAGIC_NUMBER	'L'
 #define MPT3_IOCTL_DEFAULT_TIMEOUT (10) /* in seconds */
@@ -137,6 +152,10 @@ struct mpt3_ioctl_pci_info {
 #define MPT2_IOCTL_INTERFACE_FC_IP	(0x02)
 #define MPT2_IOCTL_INTERFACE_SAS	(0x03)
 #define MPT2_IOCTL_INTERFACE_SAS2	(0x04)
+<<<<<<< HEAD
+=======
+#define MPT2_IOCTL_INTERFACE_SAS2_SSS6200	(0x05)
+>>>>>>> v4.9.227
 #define MPT3_IOCTL_INTERFACE_SAS3	(0x06)
 #define MPT2_IOCTL_VERSION_LENGTH	(32)
 

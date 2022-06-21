@@ -15,7 +15,10 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 struct in6_addr;
+=======
+>>>>>>> v4.9.227
 struct inet_bind_bucket;
 struct request_sock;
 struct sk_buff;
@@ -25,6 +28,7 @@ struct sockaddr;
 int inet6_csk_bind_conflict(const struct sock *sk,
 			    const struct inet_bind_bucket *tb, bool relax);
 
+<<<<<<< HEAD
 struct dst_entry *inet6_csk_route_req(struct sock *sk, struct flowi6 *fl6,
 				      const struct request_sock *req);
 
@@ -37,6 +41,10 @@ struct request_sock *inet6_csk_search_req(const struct sock *sk,
 
 void inet6_csk_reqsk_queue_hash_add(struct sock *sk, struct request_sock *req,
 				    const unsigned long timeout);
+=======
+struct dst_entry *inet6_csk_route_req(const struct sock *sk, struct flowi6 *fl6,
+				      const struct request_sock *req, u8 proto);
+>>>>>>> v4.9.227
 
 void inet6_csk_addr2sockaddr(struct sock *sk, struct sockaddr *uaddr);
 

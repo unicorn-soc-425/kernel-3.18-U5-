@@ -240,7 +240,11 @@ static int tsl2563_read_id(struct tsl2563_chip *chip, u8 *id)
  * convert between normalized values and HW values obtained using given
  * timing and gain settings.
  */
+<<<<<<< HEAD
 static int adc_shiftbits(u8 timing)
+=======
+static int tsl2563_adc_shiftbits(u8 timing)
+>>>>>>> v4.9.227
 {
 	int shift = 0;
 
@@ -263,9 +267,15 @@ static int adc_shiftbits(u8 timing)
 }
 
 /* Convert a HW ADC value to normalized scale. */
+<<<<<<< HEAD
 static u32 normalize_adc(u16 adc, u8 timing)
 {
 	return adc << adc_shiftbits(timing);
+=======
+static u32 tsl2563_normalize_adc(u16 adc, u8 timing)
+{
+	return adc << tsl2563_adc_shiftbits(timing);
+>>>>>>> v4.9.227
 }
 
 static void tsl2563_wait_adc(struct tsl2563_chip *chip)
@@ -350,8 +360,13 @@ static int tsl2563_get_adc(struct tsl2563_chip *chip)
 		retry = tsl2563_adjust_gainlevel(chip, adc0);
 	}
 
+<<<<<<< HEAD
 	chip->data0 = normalize_adc(adc0, chip->gainlevel->gaintime);
 	chip->data1 = normalize_adc(adc1, chip->gainlevel->gaintime);
+=======
+	chip->data0 = tsl2563_normalize_adc(adc0, chip->gainlevel->gaintime);
+	chip->data1 = tsl2563_normalize_adc(adc1, chip->gainlevel->gaintime);
+>>>>>>> v4.9.227
 
 	if (!chip->int_enabled)
 		schedule_delayed_work(&chip->poweroff_work, 5 * HZ);
@@ -361,13 +376,21 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline int calib_to_sysfs(u32 calib)
+=======
+static inline int tsl2563_calib_to_sysfs(u32 calib)
+>>>>>>> v4.9.227
 {
 	return (int) (((calib * CALIB_BASE_SYSFS) +
 		       CALIB_FRAC_HALF) >> CALIB_FRAC_BITS);
 }
 
+<<<<<<< HEAD
 static inline u32 calib_from_sysfs(int value)
+=======
+static inline u32 tsl2563_calib_from_sysfs(int value)
+>>>>>>> v4.9.227
 {
 	return (((u32) value) << CALIB_FRAC_BITS) / CALIB_BASE_SYSFS;
 }
@@ -426,7 +449,11 @@ static const struct tsl2563_lux_coeff lux_table[] = {
 };
 
 /* Convert normalized, scaled ADC values to lux. */
+<<<<<<< HEAD
 static unsigned int adc_to_lux(u32 adc0, u32 adc1)
+=======
+static unsigned int tsl2563_adc_to_lux(u32 adc0, u32 adc1)
+>>>>>>> v4.9.227
 {
 	const struct tsl2563_lux_coeff *lp = lux_table;
 	unsigned long ratio, lux, ch0 = adc0, ch1 = adc1;
@@ -442,7 +469,11 @@ static unsigned int adc_to_lux(u32 adc0, u32 adc1)
 }
 
 /* Apply calibration coefficient to ADC count. */
+<<<<<<< HEAD
 static u32 calib_adc(u32 adc, u32 calib)
+=======
+static u32 tsl2563_calib_adc(u32 adc, u32 calib)
+>>>>>>> v4.9.227
 {
 	unsigned long scaled = adc;
 
@@ -463,9 +494,15 @@ static int tsl2563_write_raw(struct iio_dev *indio_dev,
 	if (mask != IIO_CHAN_INFO_CALIBSCALE)
 		return -EINVAL;
 	if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
+<<<<<<< HEAD
 		chip->calib0 = calib_from_sysfs(val);
 	else if (chan->channel2 == IIO_MOD_LIGHT_IR)
 		chip->calib1 = calib_from_sysfs(val);
+=======
+		chip->calib0 = tsl2563_calib_from_sysfs(val);
+	else if (chan->channel2 == IIO_MOD_LIGHT_IR)
+		chip->calib1 = tsl2563_calib_from_sysfs(val);
+>>>>>>> v4.9.227
 	else
 		return -EINVAL;
 
@@ -491,11 +528,19 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
 			ret = tsl2563_get_adc(chip);
 			if (ret)
 				goto error_ret;
+<<<<<<< HEAD
 			calib0 = calib_adc(chip->data0, chip->calib0) *
 				chip->cover_comp_gain;
 			calib1 = calib_adc(chip->data1, chip->calib1) *
 				chip->cover_comp_gain;
 			*val = adc_to_lux(calib0, calib1);
+=======
+			calib0 = tsl2563_calib_adc(chip->data0, chip->calib0) *
+				chip->cover_comp_gain;
+			calib1 = tsl2563_calib_adc(chip->data1, chip->calib1) *
+				chip->cover_comp_gain;
+			*val = tsl2563_adc_to_lux(calib0, calib1);
+>>>>>>> v4.9.227
 			ret = IIO_VAL_INT;
 			break;
 		case IIO_INTENSITY:
@@ -515,9 +560,15 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
 
 	case IIO_CHAN_INFO_CALIBSCALE:
 		if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
+<<<<<<< HEAD
 			*val = calib_to_sysfs(chip->calib0);
 		else
 			*val = calib_to_sysfs(chip->calib1);
+=======
+			*val = tsl2563_calib_to_sysfs(chip->calib0);
+		else
+			*val = tsl2563_calib_to_sysfs(chip->calib1);
+>>>>>>> v4.9.227
 		ret = IIO_VAL_INT;
 		break;
 	default:
@@ -630,7 +681,11 @@ static irqreturn_t tsl2563_event_handler(int irq, void *private)
 					    0,
 					    IIO_EV_TYPE_THRESH,
 					    IIO_EV_DIR_EITHER),
+<<<<<<< HEAD
 		       iio_get_time_ns());
+=======
+		       iio_get_time_ns(dev_info));
+>>>>>>> v4.9.227
 
 	/* clear the interrupt and push the event */
 	i2c_smbus_write_byte(chip->client, TSL2563_CMD | TSL2563_CLEARINT);
@@ -750,8 +805,13 @@ static int tsl2563_probe(struct i2c_client *client,
 	chip->high_thres = 0xffff;
 	chip->gainlevel = tsl2563_gainlevel_table;
 	chip->intr = TSL2563_INT_PERSIST(4);
+<<<<<<< HEAD
 	chip->calib0 = calib_from_sysfs(CALIB_BASE_SYSFS);
 	chip->calib1 = calib_from_sysfs(CALIB_BASE_SYSFS);
+=======
+	chip->calib0 = tsl2563_calib_from_sysfs(CALIB_BASE_SYSFS);
+	chip->calib1 = tsl2563_calib_from_sysfs(CALIB_BASE_SYSFS);
+>>>>>>> v4.9.227
 
 	if (pdata)
 		chip->cover_comp_gain = pdata->cover_comp_gain;
@@ -806,8 +866,12 @@ static int tsl2563_probe(struct i2c_client *client,
 	return 0;
 
 fail:
+<<<<<<< HEAD
 	cancel_delayed_work(&chip->poweroff_work);
 	flush_scheduled_work();
+=======
+	cancel_delayed_work_sync(&chip->poweroff_work);
+>>>>>>> v4.9.227
 	return err;
 }
 

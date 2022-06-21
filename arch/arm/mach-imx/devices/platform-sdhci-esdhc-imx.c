@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2010 Pengutronix, Wolfram Sang <w.sang@pengutronix.de>
+=======
+ * Copyright (C) 2010 Pengutronix, Wolfram Sang <kernel@pengutronix.de>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2 as published by the
@@ -71,6 +75,12 @@ struct platform_device *__init imx_add_sdhci_esdhc_imx(
 	if (!pdata)
 		pdata = &default_esdhc_pdata;
 
+<<<<<<< HEAD
 	return imx_add_platform_device(data->devid, data->id, res,
 			ARRAY_SIZE(res), pdata, sizeof(*pdata));
+=======
+	return imx_add_platform_device_dmamask(data->devid, data->id, res,
+			ARRAY_SIZE(res), pdata, sizeof(*pdata),
+			DMA_BIT_MASK(32));
+>>>>>>> v4.9.227
 }

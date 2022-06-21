@@ -37,6 +37,10 @@
 #include <linux/slab.h>
 #include <asm/uaccess.h>
 
+<<<<<<< HEAD
+=======
+#include <net/addrconf.h>
+>>>>>>> v4.9.227
 #include <net/ndisc.h>
 #include <net/protocol.h>
 #include <net/transp_v6.h>
@@ -47,6 +51,10 @@
 #include <net/xfrm.h>
 #include <net/inet6_hashtables.h>
 #include <net/busy_poll.h>
+<<<<<<< HEAD
+=======
+#include <net/sock_reuseport.h>
+>>>>>>> v4.9.227
 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -76,6 +84,7 @@ static u32 udp6_ehashfn(const struct net *net,
 			       udp_ipv6_hash_secret + net_hash_mix(net));
 }
 
+<<<<<<< HEAD
 int ipv6_rcv_saddr_equal(const struct sock *sk, const struct sock *sk2)
 {
 	const struct in6_addr *sk2_rcv_saddr6 = inet6_rcv_saddr(sk2);
@@ -104,6 +113,8 @@ int ipv6_rcv_saddr_equal(const struct sock *sk, const struct sock *sk2)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static u32 udp6_portaddr_hash(const struct net *net,
 			      const struct in6_addr *addr6,
 			      unsigned int port)
@@ -120,7 +131,10 @@ static u32 udp6_portaddr_hash(const struct net *net,
 	return hash ^ port;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 int udp_v6_get_port(struct sock *sk, unsigned short snum)
 {
 	unsigned int hash2_nulladdr =
@@ -142,6 +156,7 @@ static void udp_v6_rehash(struct sock *sk)
 	udp_lib_rehash(sk, new_hash);
 }
 
+<<<<<<< HEAD
 static inline int compute_score(struct sock *sk, struct net *net,
 				unsigned short hnum,
 				const struct in6_addr *saddr, __be16 sport,
@@ -234,13 +249,90 @@ begin:
 		if (score > badness) {
 			result = sk;
 			badness = score;
+=======
+static int compute_score(struct sock *sk, struct net *net,
+			 const struct in6_addr *saddr, __be16 sport,
+			 const struct in6_addr *daddr, unsigned short hnum,
+			 int dif)
+{
+	int score;
+	struct inet_sock *inet;
+
+	if (!net_eq(sock_net(sk), net) ||
+	    udp_sk(sk)->udp_port_hash != hnum ||
+	    sk->sk_family != PF_INET6)
+		return -1;
+
+	score = 0;
+	inet = inet_sk(sk);
+
+	if (inet->inet_dport) {
+		if (inet->inet_dport != sport)
+			return -1;
+		score++;
+	}
+
+	if (!ipv6_addr_any(&sk->sk_v6_rcv_saddr)) {
+		if (!ipv6_addr_equal(&sk->sk_v6_rcv_saddr, daddr))
+			return -1;
+		score++;
+	}
+
+	if (!ipv6_addr_any(&sk->sk_v6_daddr)) {
+		if (!ipv6_addr_equal(&sk->sk_v6_daddr, saddr))
+			return -1;
+		score++;
+	}
+
+	if (sk->sk_bound_dev_if) {
+		if (sk->sk_bound_dev_if != dif)
+			return -1;
+		score++;
+	}
+
+	if (sk->sk_incoming_cpu == raw_smp_processor_id())
+		score++;
+
+	return score;
+}
+
+/* called with rcu_read_lock() */
+static struct sock *udp6_lib_lookup2(struct net *net,
+		const struct in6_addr *saddr, __be16 sport,
+		const struct in6_addr *daddr, unsigned int hnum, int dif,
+		struct udp_hslot *hslot2,
+		struct sk_buff *skb)
+{
+	struct sock *sk, *result;
+	int score, badness, matches = 0, reuseport = 0;
+	u32 hash = 0;
+
+	result = NULL;
+	badness = -1;
+	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
+		score = compute_score(sk, net, saddr, sport,
+				      daddr, hnum, dif);
+		if (score > badness) {
+>>>>>>> v4.9.227
 			reuseport = sk->sk_reuseport;
 			if (reuseport) {
 				hash = udp6_ehashfn(net, daddr, hnum,
 						    saddr, sport);
+<<<<<<< HEAD
 				matches = 1;
 			} else if (score == SCORE2_MAX)
 				goto exact_match;
+=======
+
+				result = reuseport_select_sock(sk, hash, skb,
+							sizeof(struct udphdr));
+				if (result)
+					return result;
+				matches = 1;
+			}
+			result = sk;
+			badness = score;
+>>>>>>> v4.9.227
 		} else if (score == badness && reuseport) {
 			matches++;
 			if (reciprocal_scale(hash, matches) == 0)
@@ -248,6 +340,7 @@ begin:
 			hash = next_pseudo_random32(hash);
 		}
 	}
+<<<<<<< HEAD
 	/*
 	 * if the nulls value we got at the end of this lookup is
 	 * not the expected one, we must restart lookup.
@@ -276,13 +369,29 @@ struct sock *__udp6_lib_lookup(struct net *net,
 {
 	struct sock *sk, *result;
 	struct hlist_nulls_node *node;
+=======
+	return result;
+}
+
+/* rcu_read_lock() must be held */
+struct sock *__udp6_lib_lookup(struct net *net,
+				      const struct in6_addr *saddr, __be16 sport,
+				      const struct in6_addr *daddr, __be16 dport,
+				      int dif, struct udp_table *udptable,
+				      struct sk_buff *skb)
+{
+	struct sock *sk, *result;
+>>>>>>> v4.9.227
 	unsigned short hnum = ntohs(dport);
 	unsigned int hash2, slot2, slot = udp_hashfn(net, hnum, udptable->mask);
 	struct udp_hslot *hslot2, *hslot = &udptable->hash[slot];
 	int score, badness, matches = 0, reuseport = 0;
 	u32 hash = 0;
 
+<<<<<<< HEAD
 	rcu_read_lock();
+=======
+>>>>>>> v4.9.227
 	if (hslot->count > 10) {
 		hash2 = udp6_portaddr_hash(net, daddr, hnum);
 		slot2 = hash2 & udptable->mask;
@@ -292,35 +401,70 @@ struct sock *__udp6_lib_lookup(struct net *net,
 
 		result = udp6_lib_lookup2(net, saddr, sport,
 					  daddr, hnum, dif,
+<<<<<<< HEAD
 					  hslot2, slot2);
 		if (!result) {
 			hash2 = udp6_portaddr_hash(net, &in6addr_any, hnum);
 			slot2 = hash2 & udptable->mask;
+=======
+					  hslot2, skb);
+		if (!result) {
+			unsigned int old_slot2 = slot2;
+			hash2 = udp6_portaddr_hash(net, &in6addr_any, hnum);
+			slot2 = hash2 & udptable->mask;
+			/* avoid searching the same slot again. */
+			if (unlikely(slot2 == old_slot2))
+				return result;
+
+>>>>>>> v4.9.227
 			hslot2 = &udptable->hash2[slot2];
 			if (hslot->count < hslot2->count)
 				goto begin;
 
 			result = udp6_lib_lookup2(net, saddr, sport,
+<<<<<<< HEAD
 						  &in6addr_any, hnum, dif,
 						  hslot2, slot2);
 		}
 		rcu_read_unlock();
+=======
+						  daddr, hnum, dif,
+						  hslot2, skb);
+		}
+>>>>>>> v4.9.227
 		return result;
 	}
 begin:
 	result = NULL;
 	badness = -1;
+<<<<<<< HEAD
 	sk_nulls_for_each_rcu(sk, node, &hslot->head) {
 		score = compute_score(sk, net, hnum, saddr, sport, daddr, dport, dif);
 		if (score > badness) {
 			result = sk;
 			badness = score;
+=======
+	sk_for_each_rcu(sk, &hslot->head) {
+		score = compute_score(sk, net, saddr, sport, daddr, hnum, dif);
+		if (score > badness) {
+>>>>>>> v4.9.227
 			reuseport = sk->sk_reuseport;
 			if (reuseport) {
 				hash = udp6_ehashfn(net, daddr, hnum,
 						    saddr, sport);
+<<<<<<< HEAD
 				matches = 1;
 			}
+=======
+				result = reuseport_select_sock(sk, hash, skb,
+							sizeof(struct udphdr));
+				if (result)
+					return result;
+				matches = 1;
+			}
+			result = sk;
+			badness = score;
+>>>>>>> v4.9.227
 		} else if (score == badness && reuseport) {
 			matches++;
 			if (reciprocal_scale(hash, matches) == 0)
@@ -328,6 +472,7 @@ begin:
 			hash = next_pseudo_random32(hash);
 		}
 	}
+<<<<<<< HEAD
 	/*
 	 * if the nulls value we got at the end of this lookup is
 	 * not the expected one, we must restart lookup.
@@ -346,6 +491,8 @@ begin:
 		}
 	}
 	rcu_read_unlock();
+=======
+>>>>>>> v4.9.227
 	return result;
 }
 EXPORT_SYMBOL_GPL(__udp6_lib_lookup);
@@ -354,6 +501,7 @@ static struct sock *__udp6_lib_lookup_skb(struct sk_buff *skb,
 					  __be16 sport, __be16 dport,
 					  struct udp_table *udptable)
 {
+<<<<<<< HEAD
 	struct sock *sk;
 	const struct ipv6hdr *iph = ipv6_hdr(skb);
 
@@ -371,21 +519,71 @@ struct sock *udp6_lib_lookup(struct net *net, const struct in6_addr *saddr, __be
 }
 EXPORT_SYMBOL_GPL(udp6_lib_lookup);
 
+=======
+	const struct ipv6hdr *iph = ipv6_hdr(skb);
+	struct sock *sk;
+
+	sk = skb_steal_sock(skb);
+	if (unlikely(sk))
+		return sk;
+	return __udp6_lib_lookup(dev_net(skb->dev), &iph->saddr, sport,
+				 &iph->daddr, dport, inet6_iif(skb),
+				 udptable, skb);
+}
+
+struct sock *udp6_lib_lookup_skb(struct sk_buff *skb,
+				 __be16 sport, __be16 dport)
+{
+	const struct ipv6hdr *iph = ipv6_hdr(skb);
+
+	return __udp6_lib_lookup(dev_net(skb->dev), &iph->saddr, sport,
+				 &iph->daddr, dport, inet6_iif(skb),
+				 &udp_table, NULL);
+}
+EXPORT_SYMBOL_GPL(udp6_lib_lookup_skb);
+
+/* Must be called under rcu_read_lock().
+ * Does increment socket refcount.
+ */
+#if IS_ENABLED(CONFIG_NETFILTER_XT_MATCH_SOCKET) || \
+    IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TPROXY)
+struct sock *udp6_lib_lookup(struct net *net, const struct in6_addr *saddr, __be16 sport,
+			     const struct in6_addr *daddr, __be16 dport, int dif)
+{
+	struct sock *sk;
+
+	sk =  __udp6_lib_lookup(net, saddr, sport, daddr, dport,
+				dif, &udp_table, NULL);
+	if (sk && !atomic_inc_not_zero(&sk->sk_refcnt))
+		sk = NULL;
+	return sk;
+}
+EXPORT_SYMBOL_GPL(udp6_lib_lookup);
+#endif
+>>>>>>> v4.9.227
 
 /*
  *	This should be easy, if there is something there we
  *	return it, otherwise we block.
  */
 
+<<<<<<< HEAD
 int udpv6_recvmsg(struct kiocb *iocb, struct sock *sk,
 		  struct msghdr *msg, size_t len,
+=======
+int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>>>>>>> v4.9.227
 		  int noblock, int flags, int *addr_len)
 {
 	struct ipv6_pinfo *np = inet6_sk(sk);
 	struct inet_sock *inet = inet_sk(sk);
 	struct sk_buff *skb;
 	unsigned int ulen, copied;
+<<<<<<< HEAD
 	int peeked, off = 0;
+=======
+	int peeked, peeking, off;
+>>>>>>> v4.9.227
 	int err;
 	int is_udplite = IS_UDPLITE(sk);
 	bool checksum_valid = false;
@@ -399,6 +597,7 @@ int udpv6_recvmsg(struct kiocb *iocb, struct sock *sk,
 		return ipv6_recv_rxpmtu(sk, msg, len, addr_len);
 
 try_again:
+<<<<<<< HEAD
 	skb = __skb_recv_datagram(sk, flags | (noblock ? MSG_DONTWAIT : 0),
 				  &peeked, &off, &err);
 	if (!skb)
@@ -408,6 +607,18 @@ try_again:
 	copied = len;
 	if (copied > ulen)
 		copied = ulen;
+=======
+	peeking = off = sk_peek_offset(sk, flags);
+	skb = __skb_recv_datagram(sk, flags | (noblock ? MSG_DONTWAIT : 0),
+				  &peeked, &off, &err);
+	if (!skb)
+		return err;
+
+	ulen = skb->len;
+	copied = len;
+	if (copied > ulen - off)
+		copied = ulen - off;
+>>>>>>> v4.9.227
 	else if (copied < ulen)
 		msg->msg_flags |= MSG_TRUNC;
 
@@ -419,18 +630,28 @@ try_again:
 	 * coverage checksum (UDP-Lite), do it before the copy.
 	 */
 
+<<<<<<< HEAD
 	if (copied < ulen || UDP_SKB_CB(skb)->partial_cov) {
+=======
+	if (copied < ulen || UDP_SKB_CB(skb)->partial_cov || peeking) {
+>>>>>>> v4.9.227
 		checksum_valid = !udp_lib_checksum_complete(skb);
 		if (!checksum_valid)
 			goto csum_copy_err;
 	}
 
 	if (checksum_valid || skb_csum_unnecessary(skb))
+<<<<<<< HEAD
 		err = skb_copy_datagram_iovec(skb, sizeof(struct udphdr),
 					      msg->msg_iov, copied);
 	else {
 		err = skb_copy_and_csum_datagram_iovec(skb, sizeof(struct udphdr),
 						       msg->msg_iov, copied);
+=======
+		err = skb_copy_datagram_msg(skb, off, msg, copied);
+	else {
+		err = skb_copy_and_csum_datagram_msg(skb, off, msg);
+>>>>>>> v4.9.227
 		if (err == -EINVAL)
 			goto csum_copy_err;
 	}
@@ -439,6 +660,7 @@ try_again:
 		if (!peeked) {
 			atomic_inc(&sk->sk_drops);
 			if (is_udp4)
+<<<<<<< HEAD
 				UDP_INC_STATS_USER(sock_net(sk),
 						   UDP_MIB_INERRORS,
 						   is_udplite);
@@ -456,6 +678,24 @@ try_again:
 		else
 			UDP6_INC_STATS_USER(sock_net(sk),
 					UDP_MIB_INDATAGRAMS, is_udplite);
+=======
+				UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS,
+					      is_udplite);
+			else
+				UDP6_INC_STATS(sock_net(sk), UDP_MIB_INERRORS,
+					       is_udplite);
+		}
+		skb_free_datagram_locked(sk, skb);
+		return err;
+	}
+	if (!peeked) {
+		if (is_udp4)
+			UDP_INC_STATS(sock_net(sk), UDP_MIB_INDATAGRAMS,
+				      is_udplite);
+		else
+			UDP6_INC_STATS(sock_net(sk), UDP_MIB_INDATAGRAMS,
+				       is_udplite);
+>>>>>>> v4.9.227
 	}
 
 	sock_recv_ts_and_drops(msg, sk, skb);
@@ -485,7 +725,12 @@ try_again:
 
 	if (is_udp4) {
 		if (inet->cmsg_flags)
+<<<<<<< HEAD
 			ip_cmsg_recv(msg, skb);
+=======
+			ip_cmsg_recv_offset(msg, skb,
+					    sizeof(struct udphdr), off);
+>>>>>>> v4.9.227
 	} else {
 		if (np->rxopt.all)
 			ip6_datagram_recv_specific_ctl(sk, msg, skb);
@@ -495,15 +740,20 @@ try_again:
 	if (flags & MSG_TRUNC)
 		err = ulen;
 
+<<<<<<< HEAD
 out_free:
 	skb_free_datagram_locked(sk, skb);
 out:
+=======
+	__skb_free_datagram_locked(sk, skb, peeking ? -err : err);
+>>>>>>> v4.9.227
 	return err;
 
 csum_copy_err:
 	slow = lock_sock_fast(sk);
 	if (!skb_kill_datagram(sk, skb, flags)) {
 		if (is_udp4) {
+<<<<<<< HEAD
 			UDP_INC_STATS_USER(sock_net(sk),
 					UDP_MIB_CSUMERRORS, is_udplite);
 			UDP_INC_STATS_USER(sock_net(sk),
@@ -513,6 +763,17 @@ csum_copy_err:
 					UDP_MIB_CSUMERRORS, is_udplite);
 			UDP6_INC_STATS_USER(sock_net(sk),
 					UDP_MIB_INERRORS, is_udplite);
+=======
+			UDP_INC_STATS(sock_net(sk),
+				      UDP_MIB_CSUMERRORS, is_udplite);
+			UDP_INC_STATS(sock_net(sk),
+				      UDP_MIB_INERRORS, is_udplite);
+		} else {
+			UDP6_INC_STATS(sock_net(sk),
+				       UDP_MIB_CSUMERRORS, is_udplite);
+			UDP6_INC_STATS(sock_net(sk),
+				       UDP_MIB_INERRORS, is_udplite);
+>>>>>>> v4.9.227
 		}
 	}
 	unlock_sock_fast(sk, slow);
@@ -533,6 +794,7 @@ void __udp6_lib_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	const struct in6_addr *daddr = &hdr->daddr;
 	struct udphdr *uh = (struct udphdr *)(skb->data+offset);
 	struct sock *sk;
+<<<<<<< HEAD
 	int err;
 	struct net *net = dev_net(skb->dev);
 
@@ -544,16 +806,39 @@ void __udp6_lib_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 		return;
 	}
 
+=======
+	int harderr;
+	int err;
+	struct net *net = dev_net(skb->dev);
+
+	sk = __udp6_lib_lookup(net, daddr, uh->dest, saddr, uh->source,
+			       inet6_iif(skb), udptable, NULL);
+	if (!sk) {
+		__ICMP6_INC_STATS(net, __in6_dev_get(skb->dev),
+				  ICMP6_MIB_INERRORS);
+		return;
+	}
+
+	harderr = icmpv6_err_convert(type, code, &err);
+	np = inet6_sk(sk);
+
+>>>>>>> v4.9.227
 	if (type == ICMPV6_PKT_TOOBIG) {
 		if (!ip6_sk_accept_pmtu(sk))
 			goto out;
 		ip6_sk_update_pmtu(skb, sk, info);
+<<<<<<< HEAD
+=======
+		if (np->pmtudisc != IPV6_PMTUDISC_DONT)
+			harderr = 1;
+>>>>>>> v4.9.227
 	}
 	if (type == NDISC_REDIRECT) {
 		ip6_sk_redirect(skb, sk);
 		goto out;
 	}
 
+<<<<<<< HEAD
 	np = inet6_sk(sk);
 
 	if (!icmpv6_err_convert(type, code, &err) && !np->recverr)
@@ -564,31 +849,59 @@ void __udp6_lib_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 
 	if (np->recverr)
 		ipv6_icmp_error(sk, skb, err, uh->dest, ntohl(info), (u8 *)(uh+1));
+=======
+	if (!np->recverr) {
+		if (!harderr || sk->sk_state != TCP_ESTABLISHED)
+			goto out;
+	} else {
+		ipv6_icmp_error(sk, skb, err, uh->dest, ntohl(info), (u8 *)(uh+1));
+	}
+>>>>>>> v4.9.227
 
 	sk->sk_err = err;
 	sk->sk_error_report(sk);
 out:
+<<<<<<< HEAD
 	sock_put(sk);
 }
 
 static int __udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+=======
+	return;
+}
+
+int __udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	int rc;
 
 	if (!ipv6_addr_any(&sk->sk_v6_daddr)) {
 		sock_rps_save_rxhash(sk, skb);
 		sk_mark_napi_id(sk, skb);
+<<<<<<< HEAD
 	}
 
 	rc = sock_queue_rcv_skb(sk, skb);
+=======
+		sk_incoming_cpu_update(sk);
+	}
+
+	rc = __sock_queue_rcv_skb(sk, skb);
+>>>>>>> v4.9.227
 	if (rc < 0) {
 		int is_udplite = IS_UDPLITE(sk);
 
 		/* Note that an ENOMEM error is charged twice */
 		if (rc == -ENOMEM)
+<<<<<<< HEAD
 			UDP6_INC_STATS_BH(sock_net(sk),
 					UDP_MIB_RCVBUFERRORS, is_udplite);
 		UDP6_INC_STATS_BH(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
+=======
+			UDP6_INC_STATS(sock_net(sk),
+					 UDP_MIB_RCVBUFERRORS, is_udplite);
+		UDP6_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
+>>>>>>> v4.9.227
 		kfree_skb(skb);
 		return -1;
 	}
@@ -635,7 +948,11 @@ int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 
 		/* if we're overly short, let UDP handle it */
 		encap_rcv = ACCESS_ONCE(up->encap_rcv);
+<<<<<<< HEAD
 		if (skb->len > sizeof(struct udphdr) && encap_rcv != NULL) {
+=======
+		if (encap_rcv) {
+>>>>>>> v4.9.227
 			int ret;
 
 			/* Verify checksum before giving to encap */
@@ -644,9 +961,15 @@ int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 
 			ret = encap_rcv(sk, skb);
 			if (ret <= 0) {
+<<<<<<< HEAD
 				UDP_INC_STATS_BH(sock_net(sk),
 						 UDP_MIB_INDATAGRAMS,
 						 is_udplite);
+=======
+				__UDP_INC_STATS(sock_net(sk),
+						UDP_MIB_INDATAGRAMS,
+						is_udplite);
+>>>>>>> v4.9.227
 				return -ret;
 			}
 		}
@@ -660,6 +983,7 @@ int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 	if ((is_udplite & UDPLITE_RECV_CC)  &&  UDP_SKB_CB(skb)->partial_cov) {
 
 		if (up->pcrlen == 0) {          /* full coverage was set  */
+<<<<<<< HEAD
 			LIMIT_NETDEBUG(KERN_WARNING "UDPLITE6: partial coverage"
 				" %d while full coverage %d requested\n",
 				UDP_SKB_CB(skb)->cscov, skb->len);
@@ -669,10 +993,20 @@ int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 			LIMIT_NETDEBUG(KERN_WARNING "UDPLITE6: coverage %d "
 						    "too small, need min %d\n",
 				       UDP_SKB_CB(skb)->cscov, up->pcrlen);
+=======
+			net_dbg_ratelimited("UDPLITE6: partial coverage %d while full coverage %d requested\n",
+					    UDP_SKB_CB(skb)->cscov, skb->len);
+			goto drop;
+		}
+		if (UDP_SKB_CB(skb)->cscov  <  up->pcrlen) {
+			net_dbg_ratelimited("UDPLITE6: coverage %d too small, need min %d\n",
+					    UDP_SKB_CB(skb)->cscov, up->pcrlen);
+>>>>>>> v4.9.227
 			goto drop;
 		}
 	}
 
+<<<<<<< HEAD
 	if (rcu_access_pointer(sk->sk_filter)) {
 		if (udp_lib_checksum_complete(skb))
 			goto csum_error;
@@ -681,6 +1015,19 @@ int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 	if (sk_rcvqueues_full(sk, sk->sk_rcvbuf)) {
 		UDP6_INC_STATS_BH(sock_net(sk),
 				  UDP_MIB_RCVBUFERRORS, is_udplite);
+=======
+	if (rcu_access_pointer(sk->sk_filter) &&
+	    udp_lib_checksum_complete(skb))
+		goto csum_error;
+
+	if (sk_filter_trim_cap(sk, skb, sizeof(struct udphdr)))
+		goto drop;
+
+	udp_csum_pull_header(skb);
+	if (sk_rcvqueues_full(sk, sk->sk_rcvbuf)) {
+		__UDP6_INC_STATS(sock_net(sk),
+				 UDP_MIB_RCVBUFERRORS, is_udplite);
+>>>>>>> v4.9.227
 		goto drop;
 	}
 
@@ -699,9 +1046,15 @@ int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 	return rc;
 
 csum_error:
+<<<<<<< HEAD
 	UDP6_INC_STATS_BH(sock_net(sk), UDP_MIB_CSUMERRORS, is_udplite);
 drop:
 	UDP6_INC_STATS_BH(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
+=======
+	__UDP6_INC_STATS(sock_net(sk), UDP_MIB_CSUMERRORS, is_udplite);
+drop:
+	__UDP6_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
+>>>>>>> v4.9.227
 	atomic_inc(&sk->sk_drops);
 	kfree_skb(skb);
 	return -1;
@@ -731,6 +1084,7 @@ static bool __udp_v6_is_mcast_sock(struct net *net, struct sock *sk,
 	return true;
 }
 
+<<<<<<< HEAD
 static void flush_stack(struct sock **stack, unsigned int count,
 			struct sk_buff *skb, unsigned int final)
 {
@@ -758,14 +1112,22 @@ static void flush_stack(struct sock **stack, unsigned int count,
 		kfree_skb(skb1);
 }
 
+=======
+>>>>>>> v4.9.227
 static void udp6_csum_zero_error(struct sk_buff *skb)
 {
 	/* RFC 2460 section 8.1 says that we SHOULD log
 	 * this error. Well, it is reasonable.
 	 */
+<<<<<<< HEAD
 	LIMIT_NETDEBUG(KERN_INFO "IPv6: udp checksum is 0 for [%pI6c]:%u->[%pI6c]:%u\n",
 		       &ipv6_hdr(skb)->saddr, ntohs(udp_hdr(skb)->source),
 		       &ipv6_hdr(skb)->daddr, ntohs(udp_hdr(skb)->dest));
+=======
+	net_dbg_ratelimited("IPv6: udp checksum is 0 for [%pI6c]:%u->[%pI6c]:%u\n",
+			    &ipv6_hdr(skb)->saddr, ntohs(udp_hdr(skb)->source),
+			    &ipv6_hdr(skb)->daddr, ntohs(udp_hdr(skb)->dest));
+>>>>>>> v4.9.227
 }
 
 /*
@@ -774,6 +1136,7 @@ static void udp6_csum_zero_error(struct sk_buff *skb)
  */
 static int __udp6_lib_mcast_deliver(struct net *net, struct sk_buff *skb,
 		const struct in6_addr *saddr, const struct in6_addr *daddr,
+<<<<<<< HEAD
 		struct udp_table *udptable)
 {
 	struct sock *sk, *stack[256 / sizeof(struct sock *)];
@@ -814,6 +1177,55 @@ start_lookup:
 	}
 
 	spin_unlock(&hslot->lock);
+=======
+		struct udp_table *udptable, int proto)
+{
+	struct sock *sk, *first = NULL;
+	const struct udphdr *uh = udp_hdr(skb);
+	unsigned short hnum = ntohs(uh->dest);
+	struct udp_hslot *hslot = udp_hashslot(udptable, net, hnum);
+	unsigned int offset = offsetof(typeof(*sk), sk_node);
+	unsigned int hash2 = 0, hash2_any = 0, use_hash2 = (hslot->count > 10);
+	int dif = inet6_iif(skb);
+	struct hlist_node *node;
+	struct sk_buff *nskb;
+
+	if (use_hash2) {
+		hash2_any = udp6_portaddr_hash(net, &in6addr_any, hnum) &
+			    udptable->mask;
+		hash2 = udp6_portaddr_hash(net, daddr, hnum) & udptable->mask;
+start_lookup:
+		hslot = &udptable->hash2[hash2];
+		offset = offsetof(typeof(*sk), __sk_common.skc_portaddr_node);
+	}
+
+	sk_for_each_entry_offset_rcu(sk, node, &hslot->head, offset) {
+		if (!__udp_v6_is_mcast_sock(net, sk, uh->dest, daddr,
+					    uh->source, saddr, dif, hnum))
+			continue;
+		/* If zero checksum and no_check is not on for
+		 * the socket then skip it.
+		 */
+		if (!uh->check && !udp_sk(sk)->no_check6_rx)
+			continue;
+		if (!first) {
+			first = sk;
+			continue;
+		}
+		nskb = skb_clone(skb, GFP_ATOMIC);
+		if (unlikely(!nskb)) {
+			atomic_inc(&sk->sk_drops);
+			__UDP6_INC_STATS(net, UDP_MIB_RCVBUFERRORS,
+					 IS_UDPLITE(sk));
+			__UDP6_INC_STATS(net, UDP_MIB_INERRORS,
+					 IS_UDPLITE(sk));
+			continue;
+		}
+
+		if (udpv6_queue_rcv_skb(sk, nskb) > 0)
+			consume_skb(nskb);
+	}
+>>>>>>> v4.9.227
 
 	/* Also lookup *:port if we are using hash2 and haven't done so yet. */
 	if (use_hash2 && hash2 != hash2_any) {
@@ -821,10 +1233,20 @@ start_lookup:
 		goto start_lookup;
 	}
 
+<<<<<<< HEAD
 	if (count) {
 		flush_stack(stack, count, skb, count - 1);
 	} else {
 		kfree_skb(skb);
+=======
+	if (first) {
+		if (udpv6_queue_rcv_skb(first, skb) > 0)
+			consume_skb(skb);
+	} else {
+		kfree_skb(skb);
+		__UDP6_INC_STATS(net, UDP_MIB_IGNOREDMULTI,
+				 proto == IPPROTO_UDPLITE);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -832,10 +1254,17 @@ start_lookup:
 int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 		   int proto)
 {
+<<<<<<< HEAD
 	struct net *net = dev_net(skb->dev);
 	struct sock *sk;
 	struct udphdr *uh;
 	const struct in6_addr *saddr, *daddr;
+=======
+	const struct in6_addr *saddr, *daddr;
+	struct net *net = dev_net(skb->dev);
+	struct udphdr *uh;
+	struct sock *sk;
+>>>>>>> v4.9.227
 	u32 ulen = 0;
 
 	if (!pskb_may_pull(skb, sizeof(struct udphdr)))
@@ -876,7 +1305,11 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 	 */
 	if (ipv6_addr_is_multicast(daddr))
 		return __udp6_lib_mcast_deliver(net, skb,
+<<<<<<< HEAD
 				saddr, daddr, udptable);
+=======
+				saddr, daddr, udptable, proto);
+>>>>>>> v4.9.227
 
 	/* Unicast */
 
@@ -885,21 +1318,35 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 	 * for sock caches... i'll skip this for now.
 	 */
 	sk = __udp6_lib_lookup_skb(skb, uh->source, uh->dest, udptable);
+<<<<<<< HEAD
 	if (sk != NULL) {
 		int ret;
 
 		if (!uh->check && !udp_sk(sk)->no_check6_rx) {
 			sock_put(sk);
+=======
+	if (sk) {
+		int ret;
+
+		if (!uh->check && !udp_sk(sk)->no_check6_rx) {
+>>>>>>> v4.9.227
 			udp6_csum_zero_error(skb);
 			goto csum_error;
 		}
 
+<<<<<<< HEAD
 		if (udp_sk(sk)->convert_csum && uh->check && !IS_UDPLITE(sk))
+=======
+		if (inet_get_convert_csum(sk) && uh->check && !IS_UDPLITE(sk))
+>>>>>>> v4.9.227
 			skb_checksum_try_convert(skb, IPPROTO_UDP, uh->check,
 						 ip6_compute_pseudo);
 
 		ret = udpv6_queue_rcv_skb(sk, skb);
+<<<<<<< HEAD
 		sock_put(sk);
+=======
+>>>>>>> v4.9.227
 
 		/* a return value > 0 means to resubmit the input */
 		if (ret > 0)
@@ -919,13 +1366,18 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 	if (udp_lib_checksum_complete(skb))
 		goto csum_error;
 
+<<<<<<< HEAD
 	UDP6_INC_STATS_BH(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
+=======
+	__UDP6_INC_STATS(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
+>>>>>>> v4.9.227
 	icmpv6_send(skb, ICMPV6_DEST_UNREACH, ICMPV6_PORT_UNREACH, 0);
 
 	kfree_skb(skb);
 	return 0;
 
 short_packet:
+<<<<<<< HEAD
 	LIMIT_NETDEBUG(KERN_DEBUG "UDP%sv6: short packet: From [%pI6c]:%u %d/%d to [%pI6c]:%u\n",
 		       proto == IPPROTO_UDPLITE ? "-Lite" : "",
 		       saddr,
@@ -939,6 +1391,18 @@ csum_error:
 	UDP6_INC_STATS_BH(net, UDP_MIB_CSUMERRORS, proto == IPPROTO_UDPLITE);
 discard:
 	UDP6_INC_STATS_BH(net, UDP_MIB_INERRORS, proto == IPPROTO_UDPLITE);
+=======
+	net_dbg_ratelimited("UDP%sv6: short packet: From [%pI6c]:%u %d/%d to [%pI6c]:%u\n",
+			    proto == IPPROTO_UDPLITE ? "-Lite" : "",
+			    saddr, ntohs(uh->source),
+			    ulen, skb->len,
+			    daddr, ntohs(uh->dest));
+	goto discard;
+csum_error:
+	__UDP6_INC_STATS(net, UDP_MIB_CSUMERRORS, proto == IPPROTO_UDPLITE);
+discard:
+	__UDP6_INC_STATS(net, UDP_MIB_INERRORS, proto == IPPROTO_UDPLITE);
+>>>>>>> v4.9.227
 	kfree_skb(skb);
 	return 0;
 }
@@ -976,9 +1440,16 @@ static void udp6_hwcsum_outgoing(struct sock *sk, struct sk_buff *skb,
 {
 	unsigned int offset;
 	struct udphdr *uh = udp_hdr(skb);
+<<<<<<< HEAD
 	__wsum csum = 0;
 
 	if (skb_queue_len(&sk->sk_write_queue) == 1) {
+=======
+	struct sk_buff *frags = skb_shinfo(skb)->frag_list;
+	__wsum csum = 0;
+
+	if (!frags) {
+>>>>>>> v4.9.227
 		/* Only one fragment on the socket.  */
 		skb->csum_start = skb_transport_header(skb) - skb->head;
 		skb->csum_offset = offsetof(struct udphdr, check);
@@ -991,12 +1462,22 @@ static void udp6_hwcsum_outgoing(struct sock *sk, struct sk_buff *skb,
 		 */
 		offset = skb_transport_offset(skb);
 		skb->csum = skb_checksum(skb, offset, skb->len - offset, 0);
+<<<<<<< HEAD
 
 		skb->ip_summed = CHECKSUM_NONE;
 
 		skb_queue_walk(&sk->sk_write_queue, skb) {
 			csum = csum_add(csum, skb->csum);
 		}
+=======
+		csum = skb->csum;
+
+		skb->ip_summed = CHECKSUM_NONE;
+
+		do {
+			csum = csum_add(csum, frags->csum);
+		} while ((frags = frags->next));
+>>>>>>> v4.9.227
 
 		uh->check = csum_ipv6_magic(saddr, daddr, len, IPPROTO_UDP,
 					    csum);
@@ -1009,6 +1490,7 @@ static void udp6_hwcsum_outgoing(struct sock *sk, struct sk_buff *skb,
  *	Sending
  */
 
+<<<<<<< HEAD
 static int udp_v6_push_pending_frames(struct sock *sk)
 {
 	struct sk_buff *skb;
@@ -1028,6 +1510,17 @@ static int udp_v6_push_pending_frames(struct sock *sk)
 	/* Grab the skbuff where UDP header space exists. */
 	if ((skb = skb_peek(&sk->sk_write_queue)) == NULL)
 		goto out;
+=======
+static int udp_v6_send_skb(struct sk_buff *skb, struct flowi6 *fl6)
+{
+	struct sock *sk = skb->sk;
+	struct udphdr *uh;
+	int err = 0;
+	int is_udplite = IS_UDPLITE(sk);
+	__wsum csum = 0;
+	int offset = skb_transport_offset(skb);
+	int len = skb->len - offset;
+>>>>>>> v4.9.227
 
 	/*
 	 * Create a UDP header
@@ -1035,6 +1528,7 @@ static int udp_v6_push_pending_frames(struct sock *sk)
 	uh = udp_hdr(skb);
 	uh->source = fl6->fl6_sport;
 	uh->dest = fl6->fl6_dport;
+<<<<<<< HEAD
 	uh->len = htons(up->len);
 	uh->check = 0;
 
@@ -1053,10 +1547,30 @@ static int udp_v6_push_pending_frames(struct sock *sk)
 	/* add protocol-dependent pseudo-header */
 	uh->check = csum_ipv6_magic(&fl6->saddr, &fl6->daddr,
 				    up->len, fl6->flowi6_proto, csum);
+=======
+	uh->len = htons(len);
+	uh->check = 0;
+
+	if (is_udplite)
+		csum = udplite_csum(skb);
+	else if (udp_sk(sk)->no_check6_tx) {   /* UDP csum disabled */
+		skb->ip_summed = CHECKSUM_NONE;
+		goto send;
+	} else if (skb->ip_summed == CHECKSUM_PARTIAL) { /* UDP hardware csum */
+		udp6_hwcsum_outgoing(sk, skb, &fl6->saddr, &fl6->daddr, len);
+		goto send;
+	} else
+		csum = udp_csum(skb);
+
+	/* add protocol-dependent pseudo-header */
+	uh->check = csum_ipv6_magic(&fl6->saddr, &fl6->daddr,
+				    len, fl6->flowi6_proto, csum);
+>>>>>>> v4.9.227
 	if (uh->check == 0)
 		uh->check = CSUM_MANGLED_0;
 
 send:
+<<<<<<< HEAD
 	err = ip6_push_pending_frames(sk);
 	if (err) {
 		if (err == -ENOBUFS && !inet6_sk(sk)->recverr) {
@@ -1067,14 +1581,55 @@ send:
 	} else
 		UDP6_INC_STATS_USER(sock_net(sk),
 				    UDP_MIB_OUTDATAGRAMS, is_udplite);
+=======
+	err = ip6_send_skb(skb);
+	if (err) {
+		if (err == -ENOBUFS && !inet6_sk(sk)->recverr) {
+			UDP6_INC_STATS(sock_net(sk),
+				       UDP_MIB_SNDBUFERRORS, is_udplite);
+			err = 0;
+		}
+	} else {
+		UDP6_INC_STATS(sock_net(sk),
+			       UDP_MIB_OUTDATAGRAMS, is_udplite);
+	}
+	return err;
+}
+
+static int udp_v6_push_pending_frames(struct sock *sk)
+{
+	struct sk_buff *skb;
+	struct udp_sock  *up = udp_sk(sk);
+	struct flowi6 fl6;
+	int err = 0;
+
+	if (up->pending == AF_INET)
+		return udp_push_pending_frames(sk);
+
+	/* ip6_finish_skb will release the cork, so make a copy of
+	 * fl6 here.
+	 */
+	fl6 = inet_sk(sk)->cork.fl.u.ip6;
+
+	skb = ip6_finish_skb(sk);
+	if (!skb)
+		goto out;
+
+	err = udp_v6_send_skb(skb, &fl6);
+
+>>>>>>> v4.9.227
 out:
 	up->len = 0;
 	up->pending = 0;
 	return err;
 }
 
+<<<<<<< HEAD
 int udpv6_sendmsg(struct kiocb *iocb, struct sock *sk,
 		  struct msghdr *msg, size_t len)
+=======
+int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>>>>>>> v4.9.227
 {
 	struct ipv6_txoptions opt_space;
 	struct udp_sock *up = udp_sk(sk);
@@ -1087,16 +1642,31 @@ int udpv6_sendmsg(struct kiocb *iocb, struct sock *sk,
 	struct ip6_flowlabel *flowlabel = NULL;
 	struct flowi6 fl6;
 	struct dst_entry *dst;
+<<<<<<< HEAD
 	int addr_len = msg->msg_namelen;
 	int ulen = len;
 	int hlimit = -1;
 	int tclass = -1;
 	int dontfrag = -1;
+=======
+	struct ipcm6_cookie ipc6;
+	int addr_len = msg->msg_namelen;
+	int ulen = len;
+>>>>>>> v4.9.227
 	int corkreq = up->corkflag || msg->msg_flags&MSG_MORE;
 	int err;
 	int connected = 0;
 	int is_udplite = IS_UDPLITE(sk);
 	int (*getfrag)(void *, char *, int, int, int, struct sk_buff *);
+<<<<<<< HEAD
+=======
+	struct sockcm_cookie sockc;
+
+	ipc6.hlimit = -1;
+	ipc6.tclass = -1;
+	ipc6.dontfrag = -1;
+	sockc.tsflags = sk->sk_tsflags;
+>>>>>>> v4.9.227
 
 	/* destination address check */
 	if (sin6) {
@@ -1141,12 +1711,20 @@ int udpv6_sendmsg(struct kiocb *iocb, struct sock *sk,
 do_udp_sendmsg:
 			if (__ipv6_only_sock(sk))
 				return -ENETUNREACH;
+<<<<<<< HEAD
 			return udp_sendmsg(iocb, sk, msg, len);
+=======
+			return udp_sendmsg(sk, msg, len);
+>>>>>>> v4.9.227
 		}
 	}
 
 	if (up->pending == AF_INET)
+<<<<<<< HEAD
 		return udp_sendmsg(iocb, sk, msg, len);
+=======
+		return udp_sendmsg(sk, msg, len);
+>>>>>>> v4.9.227
 
 	/* Rough check on arithmetic overflow,
 	   better check is made in ip6_append_data().
@@ -1154,6 +1732,10 @@ do_udp_sendmsg:
 	if (len > INT_MAX - sizeof(struct udphdr))
 		return -EMSGSIZE;
 
+<<<<<<< HEAD
+=======
+	getfrag  =  is_udplite ?  udplite_getfrag : ip_generic_getfrag;
+>>>>>>> v4.9.227
 	if (up->pending) {
 		/*
 		 * There are pending frames.
@@ -1185,7 +1767,11 @@ do_udp_sendmsg:
 			fl6.flowlabel = sin6->sin6_flowinfo&IPV6_FLOWINFO_MASK;
 			if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
 				flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+<<<<<<< HEAD
 				if (flowlabel == NULL)
+=======
+				if (!flowlabel)
+>>>>>>> v4.9.227
 					return -EINVAL;
 			}
 		}
@@ -1219,22 +1805,35 @@ do_udp_sendmsg:
 		fl6.flowi6_oif = np->sticky_pktinfo.ipi6_ifindex;
 
 	fl6.flowi6_mark = sk->sk_mark;
+<<<<<<< HEAD
 	fl6.flowi6_uid = sk->sk_uid;
+=======
+>>>>>>> v4.9.227
 
 	if (msg->msg_controllen) {
 		opt = &opt_space;
 		memset(opt, 0, sizeof(struct ipv6_txoptions));
 		opt->tot_len = sizeof(*opt);
+<<<<<<< HEAD
 
 		err = ip6_datagram_send_ctl(sock_net(sk), sk, msg, &fl6, opt,
 					    &hlimit, &tclass, &dontfrag);
+=======
+		ipc6.opt = opt;
+
+		err = ip6_datagram_send_ctl(sock_net(sk), sk, msg, &fl6, &ipc6, &sockc);
+>>>>>>> v4.9.227
 		if (err < 0) {
 			fl6_sock_release(flowlabel);
 			return err;
 		}
 		if ((fl6.flowlabel&IPV6_FLOWLABEL_MASK) && !flowlabel) {
 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+<<<<<<< HEAD
 			if (flowlabel == NULL)
+=======
+			if (!flowlabel)
+>>>>>>> v4.9.227
 				return -EINVAL;
 		}
 		if (!(opt->opt_nflen|opt->opt_flen))
@@ -1248,6 +1847,10 @@ do_udp_sendmsg:
 	if (flowlabel)
 		opt = fl6_merge_options(&opt_space, flowlabel, opt);
 	opt = ipv6_fixup_options(&opt_space, opt);
+<<<<<<< HEAD
+=======
+	ipc6.opt = opt;
+>>>>>>> v4.9.227
 
 	fl6.flowi6_proto = sk->sk_protocol;
 	if (!ipv6_addr_any(daddr))
@@ -1270,6 +1873,14 @@ do_udp_sendmsg:
 
 	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
 
+<<<<<<< HEAD
+=======
+	if (ipc6.tclass < 0)
+		ipc6.tclass = np->tclass;
+
+	fl6.flowlabel = ip6_make_flowinfo(ipc6.tclass, fl6.flowlabel);
+
+>>>>>>> v4.9.227
 	dst = ip6_sk_dst_lookup_flow(sk, &fl6, final_p);
 	if (IS_ERR(dst)) {
 		err = PTR_ERR(dst);
@@ -1277,23 +1888,49 @@ do_udp_sendmsg:
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (hlimit < 0)
 		hlimit = ip6_sk_dst_hoplimit(np, &fl6, dst);
 
 	if (tclass < 0)
 		tclass = np->tclass;
+=======
+	if (ipc6.hlimit < 0)
+		ipc6.hlimit = ip6_sk_dst_hoplimit(np, &fl6, dst);
+>>>>>>> v4.9.227
 
 	if (msg->msg_flags&MSG_CONFIRM)
 		goto do_confirm;
 back_from_confirm:
 
+<<<<<<< HEAD
+=======
+	/* Lockless fast path for the non-corking case */
+	if (!corkreq) {
+		struct sk_buff *skb;
+
+		skb = ip6_make_skb(sk, getfrag, msg, ulen,
+				   sizeof(struct udphdr), &ipc6,
+				   &fl6, (struct rt6_info *)dst,
+				   msg->msg_flags, &sockc);
+		err = PTR_ERR(skb);
+		if (!IS_ERR_OR_NULL(skb))
+			err = udp_v6_send_skb(skb, &fl6);
+		goto release_dst;
+	}
+
+>>>>>>> v4.9.227
 	lock_sock(sk);
 	if (unlikely(up->pending)) {
 		/* The socket is already corked while preparing it. */
 		/* ... which is an evident application bug. --ANK */
 		release_sock(sk);
 
+<<<<<<< HEAD
 		LIMIT_NETDEBUG(KERN_DEBUG "udp cork app bug 2\n");
+=======
+		net_dbg_ratelimited("udp cork app bug 2\n");
+>>>>>>> v4.9.227
 		err = -EINVAL;
 		goto out;
 	}
@@ -1301,6 +1938,7 @@ back_from_confirm:
 	up->pending = AF_INET6;
 
 do_append_data:
+<<<<<<< HEAD
 	if (dontfrag < 0)
 		dontfrag = np->dontfrag;
 	up->len += ulen;
@@ -1309,6 +1947,14 @@ do_append_data:
 		sizeof(struct udphdr), hlimit, tclass, opt, &fl6,
 		(struct rt6_info *)dst,
 		corkreq ? msg->msg_flags|MSG_MORE : msg->msg_flags, dontfrag);
+=======
+	if (ipc6.dontfrag < 0)
+		ipc6.dontfrag = np->dontfrag;
+	up->len += ulen;
+	err = ip6_append_data(sk, getfrag, msg, ulen, sizeof(struct udphdr),
+			      &ipc6, &fl6, (struct rt6_info *)dst,
+			      corkreq ? msg->msg_flags|MSG_MORE : msg->msg_flags, &sockc);
+>>>>>>> v4.9.227
 	if (err)
 		udp_v6_flush_pending_frames(sk);
 	else if (!corkreq)
@@ -1316,6 +1962,14 @@ do_append_data:
 	else if (unlikely(skb_queue_empty(&sk->sk_write_queue)))
 		up->pending = 0;
 
+<<<<<<< HEAD
+=======
+	if (err > 0)
+		err = np->recverr ? net_xmit_errno(err) : 0;
+	release_sock(sk);
+
+release_dst:
+>>>>>>> v4.9.227
 	if (dst) {
 		if (connected) {
 			ip6_dst_store(sk, dst,
@@ -1332,9 +1986,12 @@ do_append_data:
 		dst = NULL;
 	}
 
+<<<<<<< HEAD
 	if (err > 0)
 		err = np->recverr ? net_xmit_errno(err) : 0;
 	release_sock(sk);
+=======
+>>>>>>> v4.9.227
 out:
 	dst_release(dst);
 	fl6_sock_release(flowlabel);
@@ -1349,8 +2006,13 @@ out:
 	 * seems like overkill.
 	 */
 	if (err == -ENOBUFS || test_bit(SOCK_NOSPACE, &sk->sk_socket->flags)) {
+<<<<<<< HEAD
 		UDP6_INC_STATS_USER(sock_net(sk),
 				UDP_MIB_SNDBUFERRORS, is_udplite);
+=======
+		UDP6_INC_STATS(sock_net(sk),
+			       UDP_MIB_SNDBUFERRORS, is_udplite);
+>>>>>>> v4.9.227
 	}
 	return err;
 
@@ -1465,11 +2127,17 @@ int __net_init udp6_proc_init(struct net *net)
 	return udp_proc_register(net, &udp6_seq_afinfo);
 }
 
+<<<<<<< HEAD
 void udp6_proc_exit(struct net *net) {
+=======
+void udp6_proc_exit(struct net *net)
+{
+>>>>>>> v4.9.227
 	udp_proc_unregister(net, &udp6_seq_afinfo);
 }
 #endif /* CONFIG_PROC_FS */
 
+<<<<<<< HEAD
 void udp_v6_clear_sk(struct sock *sk, int size)
 {
 	struct inet_sock *inet = inet_sk(sk);
@@ -1481,6 +2149,8 @@ void udp_v6_clear_sk(struct sock *sk, int size)
 	memset(&inet->pinet6 + 1, 0, size);
 }
 
+=======
+>>>>>>> v4.9.227
 /* ------------------------------------------------------------------------ */
 
 struct proto udpv6_prot = {
@@ -1496,6 +2166,10 @@ struct proto udpv6_prot = {
 	.sendmsg	   = udpv6_sendmsg,
 	.recvmsg	   = udpv6_recvmsg,
 	.backlog_rcv	   = __udpv6_queue_rcv_skb,
+<<<<<<< HEAD
+=======
+	.release_cb	   = ip6_datagram_release_cb,
+>>>>>>> v4.9.227
 	.hash		   = udp_lib_hash,
 	.unhash		   = udp_lib_unhash,
 	.rehash		   = udp_v6_rehash,
@@ -1505,13 +2179,19 @@ struct proto udpv6_prot = {
 	.sysctl_wmem	   = &sysctl_udp_wmem_min,
 	.sysctl_rmem	   = &sysctl_udp_rmem_min,
 	.obj_size	   = sizeof(struct udp6_sock),
+<<<<<<< HEAD
 	.slab_flags	   = SLAB_DESTROY_BY_RCU,
+=======
+>>>>>>> v4.9.227
 	.h.udp_table	   = &udp_table,
 #ifdef CONFIG_COMPAT
 	.compat_setsockopt = compat_udpv6_setsockopt,
 	.compat_getsockopt = compat_udpv6_getsockopt,
 #endif
+<<<<<<< HEAD
 	.clear_sk	   = udp_v6_clear_sk,
+=======
+>>>>>>> v4.9.227
 	.diag_destroy      = udp_abort,
 };
 
@@ -1523,7 +2203,10 @@ static struct inet_protosw udpv6_protosw = {
 	.flags =     INET_PROTOSW_PERMANENT,
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 int __init udpv6_init(void)
 {
 	int ret;

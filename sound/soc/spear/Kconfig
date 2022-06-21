@@ -1,6 +1,10 @@
 config SND_SPEAR_SOC
 	tristate
+<<<<<<< HEAD
 	select SND_DMAENGINE_PCM
+=======
+	select SND_SOC_GENERIC_DMAENGINE_PCM
+>>>>>>> v4.9.227
 
 config SND_SPEAR_SPDIF_OUT
 	tristate

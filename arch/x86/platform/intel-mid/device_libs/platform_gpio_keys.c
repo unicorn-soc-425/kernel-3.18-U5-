@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * platform_gpio_keys.c: gpio_keys platform data initilization file
+=======
+ * platform_gpio_keys.c: gpio_keys platform data initialization file
+>>>>>>> v4.9.227
  *
  * (C) Copyright 2013 Intel Corporation
  * Author: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@intel.com>

@@ -209,7 +209,11 @@ struct dma_buf *udl_gem_prime_export(struct drm_device *dev,
 	exp_info.flags = flags;
 	exp_info.priv = obj;
 
+<<<<<<< HEAD
 	return dma_buf_export(&exp_info);
+=======
+	return drm_gem_dmabuf_export(dev, &exp_info);
+>>>>>>> v4.9.227
 }
 
 static int udl_prime_create(struct drm_device *dev,

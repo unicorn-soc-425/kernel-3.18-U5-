@@ -22,6 +22,10 @@
 #include <linux/regset.h>
 #include <linux/elf.h>
 #include <linux/tracehook.h>
+<<<<<<< HEAD
+=======
+#include <linux/context_tracking.h>
+>>>>>>> v4.9.227
 #include <asm/traps.h>
 #include <arch/chip.h>
 
@@ -110,7 +114,11 @@ static int tile_gpr_set(struct task_struct *target,
 			  const void *kbuf, const void __user *ubuf)
 {
 	int ret;
+<<<<<<< HEAD
 	struct pt_regs regs;
+=======
+	struct pt_regs regs = *task_pt_regs(target);
+>>>>>>> v4.9.227
 
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf, &regs, 0,
 				 sizeof(regs));
@@ -252,12 +260,27 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 
 int do_syscall_trace_enter(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	if (test_thread_flag(TIF_SYSCALL_TRACE)) {
 		if (tracehook_report_syscall_entry(regs))
 			regs->regs[TREG_SYSCALL_NR] = -1;
 	}
 
 	if (test_thread_flag(TIF_SYSCALL_TRACEPOINT))
+=======
+	u32 work = ACCESS_ONCE(current_thread_info()->flags);
+
+	if ((work & _TIF_SYSCALL_TRACE) &&
+	    tracehook_report_syscall_entry(regs)) {
+		regs->regs[TREG_SYSCALL_NR] = -1;
+		return -1;
+	}
+
+	if (secure_computing(NULL) == -1)
+		return -1;
+
+	if (work & _TIF_SYSCALL_TRACEPOINT)
+>>>>>>> v4.9.227
 		trace_sys_enter(regs, regs->regs[TREG_SYSCALL_NR]);
 
 	return regs->regs[TREG_SYSCALL_NR];

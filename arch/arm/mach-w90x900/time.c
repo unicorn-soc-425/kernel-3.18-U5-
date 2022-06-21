@@ -31,7 +31,11 @@
 #include <asm/mach/time.h>
 
 #include <mach/map.h>
+<<<<<<< HEAD
 #include <mach/regs-timer.h>
+=======
+#include "regs-timer.h"
+>>>>>>> v4.9.227
 
 #include "nuc9xx.h"
 
@@ -48,6 +52,7 @@
 
 static unsigned int timer0_load;
 
+<<<<<<< HEAD
 static void nuc900_clockevent_setmode(enum clock_event_mode mode,
 		struct clock_event_device *clk)
 {
@@ -73,6 +78,34 @@ static void nuc900_clockevent_setmode(enum clock_event_mode mode,
 	}
 
 	__raw_writel(val, REG_TCSR0);
+=======
+static int nuc900_clockevent_shutdown(struct clock_event_device *evt)
+{
+	unsigned int val = __raw_readl(REG_TCSR0) & ~(0x03 << 27);
+
+	__raw_writel(val, REG_TCSR0);
+	return 0;
+}
+
+static int nuc900_clockevent_set_oneshot(struct clock_event_device *evt)
+{
+	unsigned int val = __raw_readl(REG_TCSR0) & ~(0x03 << 27);
+
+	val |= (ONESHOT | COUNTEN | INTEN | PRESCALE);
+
+	__raw_writel(val, REG_TCSR0);
+	return 0;
+}
+
+static int nuc900_clockevent_set_periodic(struct clock_event_device *evt)
+{
+	unsigned int val = __raw_readl(REG_TCSR0) & ~(0x03 << 27);
+
+	__raw_writel(timer0_load, REG_TICR0);
+	val |= (PERIOD | COUNTEN | INTEN | PRESCALE);
+	__raw_writel(val, REG_TCSR0);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int nuc900_clockevent_setnextevent(unsigned long evt,
@@ -90,11 +123,23 @@ static int nuc900_clockevent_setnextevent(unsigned long evt,
 }
 
 static struct clock_event_device nuc900_clockevent_device = {
+<<<<<<< HEAD
 	.name		= "nuc900-timer0",
 	.features	= CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
 	.set_mode	= nuc900_clockevent_setmode,
 	.set_next_event	= nuc900_clockevent_setnextevent,
 	.rating		= 300,
+=======
+	.name			= "nuc900-timer0",
+	.features		= CLOCK_EVT_FEAT_PERIODIC |
+				  CLOCK_EVT_FEAT_ONESHOT,
+	.set_state_shutdown	= nuc900_clockevent_shutdown,
+	.set_state_periodic	= nuc900_clockevent_set_periodic,
+	.set_state_oneshot	= nuc900_clockevent_set_oneshot,
+	.tick_resume		= nuc900_clockevent_shutdown,
+	.set_next_event		= nuc900_clockevent_setnextevent,
+	.rating			= 300,
+>>>>>>> v4.9.227
 };
 
 /*IRQ handler for the timer*/

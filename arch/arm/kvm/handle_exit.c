@@ -21,13 +21,18 @@
 #include <asm/kvm_emulate.h>
 #include <asm/kvm_coproc.h>
 #include <asm/kvm_mmu.h>
+<<<<<<< HEAD
 #include <asm/kvm_psci.h>
+=======
+#include <kvm/arm_psci.h>
+>>>>>>> v4.9.227
 #include <trace/events/kvm.h>
 
 #include "trace.h"
 
 typedef int (*exit_handle_fn)(struct kvm_vcpu *, struct kvm_run *);
 
+<<<<<<< HEAD
 static int handle_svc_hyp(struct kvm_vcpu *vcpu, struct kvm_run *run)
 {
 	/* SVC called from Hyp mode should never get here */
@@ -36,16 +41,26 @@ static int handle_svc_hyp(struct kvm_vcpu *vcpu, struct kvm_run *run)
 	return -EINVAL; /* Squash warning */
 }
 
+=======
+>>>>>>> v4.9.227
 static int handle_hvc(struct kvm_vcpu *vcpu, struct kvm_run *run)
 {
 	int ret;
 
 	trace_kvm_hvc(*vcpu_pc(vcpu), *vcpu_reg(vcpu, 0),
 		      kvm_vcpu_hvc_get_imm(vcpu));
+<<<<<<< HEAD
 
 	ret = kvm_psci_call(vcpu);
 	if (ret < 0) {
 		kvm_inject_undefined(vcpu);
+=======
+	vcpu->stat.hvc_exit_stat++;
+
+	ret = kvm_hvc_call_handler(vcpu);
+	if (ret < 0) {
+		vcpu_set_reg(vcpu, 0, ~0UL);
+>>>>>>> v4.9.227
 		return 1;
 	}
 
@@ -54,6 +69,7 @@ static int handle_hvc(struct kvm_vcpu *vcpu, struct kvm_run *run)
 
 static int handle_smc(struct kvm_vcpu *vcpu, struct kvm_run *run)
 {
+<<<<<<< HEAD
 	kvm_inject_undefined(vcpu);
 	return 1;
 }
@@ -74,6 +90,21 @@ static int handle_dabt_hyp(struct kvm_vcpu *vcpu, struct kvm_run *run)
 	return -EFAULT;
 }
 
+=======
+	/*
+	 * "If an SMC instruction executed at Non-secure EL1 is
+	 * trapped to EL2 because HCR_EL2.TSC is 1, the exception is a
+	 * Trap exception, not a Secure Monitor Call exception [...]"
+	 *
+	 * We need to advance the PC after the trap, as it would
+	 * otherwise return to the same address...
+	 */
+	vcpu_set_reg(vcpu, 0, ~0UL);
+	kvm_skip_instr(vcpu, kvm_vcpu_trap_il_is32bit(vcpu));
+	return 1;
+}
+
+>>>>>>> v4.9.227
 /**
  * kvm_handle_wfx - handle a WFI or WFE instructions trapped in guests
  * @vcpu:	the vcpu pointer
@@ -87,11 +118,23 @@ static int handle_dabt_hyp(struct kvm_vcpu *vcpu, struct kvm_run *run)
  */
 static int kvm_handle_wfx(struct kvm_vcpu *vcpu, struct kvm_run *run)
 {
+<<<<<<< HEAD
 	trace_kvm_wfi(*vcpu_pc(vcpu));
 	if (kvm_vcpu_get_hsr(vcpu) & HSR_WFI_IS_WFE)
 		kvm_vcpu_on_spin(vcpu);
 	else
 		kvm_vcpu_block(vcpu);
+=======
+	if (kvm_vcpu_get_hsr(vcpu) & HSR_WFI_IS_WFE) {
+		trace_kvm_wfx(*vcpu_pc(vcpu), true);
+		vcpu->stat.wfe_exit_stat++;
+		kvm_vcpu_on_spin(vcpu);
+	} else {
+		trace_kvm_wfx(*vcpu_pc(vcpu), false);
+		vcpu->stat.wfi_exit_stat++;
+		kvm_vcpu_block(vcpu);
+	}
+>>>>>>> v4.9.227
 
 	kvm_skip_instr(vcpu, kvm_vcpu_trap_il_is32bit(vcpu));
 
@@ -114,6 +157,7 @@ static exit_handle_fn arm_exit_handlers[] = {
 	[HSR_EC_WFI]		= kvm_handle_wfx,
 	[HSR_EC_CP15_32]	= kvm_handle_cp15_32,
 	[HSR_EC_CP15_64]	= kvm_handle_cp15_64,
+<<<<<<< HEAD
 	[HSR_EC_CP14_MR]	= kvm_handle_cp14_access,
 	[HSR_EC_CP14_LS]	= kvm_handle_cp14_load_store,
 	[HSR_EC_CP14_64]	= kvm_handle_cp14_access,
@@ -126,6 +170,17 @@ static exit_handle_fn arm_exit_handlers[] = {
 	[HSR_EC_IABT_HYP]	= handle_pabt_hyp,
 	[HSR_EC_DABT]		= kvm_handle_guest_abort,
 	[HSR_EC_DABT_HYP]	= handle_dabt_hyp,
+=======
+	[HSR_EC_CP14_MR]	= kvm_handle_cp14_32,
+	[HSR_EC_CP14_LS]	= kvm_handle_cp14_load_store,
+	[HSR_EC_CP14_64]	= kvm_handle_cp14_64,
+	[HSR_EC_CP_0_13]	= kvm_handle_cp_0_13_access,
+	[HSR_EC_CP10_ID]	= kvm_handle_cp10_id,
+	[HSR_EC_HVC]		= handle_hvc,
+	[HSR_EC_SMC]		= handle_smc,
+	[HSR_EC_IABT]		= kvm_handle_guest_abort,
+	[HSR_EC_DABT]		= kvm_handle_guest_abort,
+>>>>>>> v4.9.227
 };
 
 static exit_handle_fn kvm_get_exit_handler(struct kvm_vcpu *vcpu)
@@ -144,6 +199,7 @@ int handle_exit(struct kvm_vcpu *vcpu, struct kvm_run *run,
 {
 	exit_handle_fn exit_handler;
 
+<<<<<<< HEAD
 	switch (exception_index) {
 	case ARM_EXCEPTION_IRQ:
 		return 1;
@@ -154,6 +210,30 @@ int handle_exit(struct kvm_vcpu *vcpu, struct kvm_run *run,
 		panic("KVM: Hypervisor undefined exception!\n");
 	case ARM_EXCEPTION_DATA_ABORT:
 	case ARM_EXCEPTION_PREF_ABORT:
+=======
+	if (ARM_ABORT_PENDING(exception_index)) {
+		u8 hsr_ec = kvm_vcpu_trap_get_class(vcpu);
+
+		/*
+		 * HVC/SMC already have an adjusted PC, which we need
+		 * to correct in order to return to after having
+		 * injected the abort.
+		 */
+		if (hsr_ec == HSR_EC_HVC || hsr_ec == HSR_EC_SMC) {
+			u32 adj =  kvm_vcpu_trap_il_is32bit(vcpu) ? 4 : 2;
+			*vcpu_pc(vcpu) -= adj;
+		}
+
+		kvm_inject_vabt(vcpu);
+		return 1;
+	}
+
+	exception_index = ARM_EXCEPTION_CODE(exception_index);
+
+	switch (exception_index) {
+	case ARM_EXCEPTION_IRQ:
+		return 1;
+>>>>>>> v4.9.227
 	case ARM_EXCEPTION_HVC:
 		/*
 		 * See ARM ARM B1.14.1: "Hyp traps on instructions
@@ -167,6 +247,12 @@ int handle_exit(struct kvm_vcpu *vcpu, struct kvm_run *run,
 		exit_handler = kvm_get_exit_handler(vcpu);
 
 		return exit_handler(vcpu, run);
+<<<<<<< HEAD
+=======
+	case ARM_EXCEPTION_DATA_ABORT:
+		kvm_inject_vabt(vcpu);
+		return 1;
+>>>>>>> v4.9.227
 	default:
 		kvm_pr_unimpl("Unsupported exception type: %d",
 			      exception_index);

@@ -25,8 +25,11 @@
 #ifndef __ARCH_ARM_MACH_OMAP2_CM2_44XX_H
 #define __ARCH_ARM_MACH_OMAP2_CM2_44XX_H
 
+<<<<<<< HEAD
 #include "cm_44xx_54xx.h"
 
+=======
+>>>>>>> v4.9.227
 /* CM2 base address */
 #define OMAP4430_CM2_BASE		0x4a008000
 

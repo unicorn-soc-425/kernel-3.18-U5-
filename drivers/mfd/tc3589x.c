@@ -215,25 +215,36 @@ static int tc3589x_irq_map(struct irq_domain *d, unsigned int virq,
 	irq_set_chip_and_handler(virq, &dummy_irq_chip,
 				handle_edge_irq);
 	irq_set_nested_thread(virq, 1);
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 	set_irq_flags(virq, IRQF_VALID);
 #else
 	irq_set_noprobe(virq);
 #endif
+=======
+	irq_set_noprobe(virq);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static void tc3589x_irq_unmap(struct irq_domain *d, unsigned int virq)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 	set_irq_flags(virq, 0);
 #endif
+=======
+>>>>>>> v4.9.227
 	irq_set_chip_and_handler(virq, NULL, NULL);
 	irq_set_chip_data(virq, NULL);
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops tc3589x_irq_ops = {
+=======
+static const struct irq_domain_ops tc3589x_irq_ops = {
+>>>>>>> v4.9.227
 	.map    = tc3589x_irq_map,
 	.unmap  = tc3589x_irq_unmap,
 	.xlate  = irq_domain_xlate_onecell,
@@ -241,10 +252,15 @@ static struct irq_domain_ops tc3589x_irq_ops = {
 
 static int tc3589x_irq_init(struct tc3589x *tc3589x, struct device_node *np)
 {
+<<<<<<< HEAD
 	int base = tc3589x->irq_base;
 
 	tc3589x->domain = irq_domain_add_simple(
 		np, TC3589x_NR_INTERNAL_IRQS, base,
+=======
+	tc3589x->domain = irq_domain_add_simple(
+		np, TC3589x_NR_INTERNAL_IRQS, 0,
+>>>>>>> v4.9.227
 		&tc3589x_irq_ops, tc3589x);
 
 	if (!tc3589x->domain) {
@@ -298,7 +314,11 @@ static int tc3589x_device_init(struct tc3589x *tc3589x)
 	if (blocks & TC3589x_BLOCK_GPIO) {
 		ret = mfd_add_devices(tc3589x->dev, -1, tc3589x_dev_gpio,
 				      ARRAY_SIZE(tc3589x_dev_gpio), NULL,
+<<<<<<< HEAD
 				      tc3589x->irq_base, tc3589x->domain);
+=======
+				      0, tc3589x->domain);
+>>>>>>> v4.9.227
 		if (ret) {
 			dev_err(tc3589x->dev, "failed to add gpio child\n");
 			return ret;
@@ -309,7 +329,11 @@ static int tc3589x_device_init(struct tc3589x *tc3589x)
 	if (blocks & TC3589x_BLOCK_KEYPAD) {
 		ret = mfd_add_devices(tc3589x->dev, -1, tc3589x_dev_keypad,
 				      ARRAY_SIZE(tc3589x_dev_keypad), NULL,
+<<<<<<< HEAD
 				      tc3589x->irq_base, tc3589x->domain);
+=======
+				      0, tc3589x->domain);
+>>>>>>> v4.9.227
 		if (ret) {
 			dev_err(tc3589x->dev, "failed to keypad child\n");
 			return ret;
@@ -320,7 +344,10 @@ static int tc3589x_device_init(struct tc3589x *tc3589x)
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id tc3589x_match[] = {
 	/* Legacy compatible string */
 	{ .compatible = "tc3589x", .data = (void *) TC3589X_UNKNOWN },
@@ -361,6 +388,7 @@ tc3589x_of_probe(struct device *dev, enum tc3589x_version *version)
 
 	return pdata;
 }
+<<<<<<< HEAD
 #else
 static inline struct tc3589x_platform_data *
 tc3589x_of_probe(struct device *dev, enum tc3589x_version *version)
@@ -369,6 +397,8 @@ tc3589x_of_probe(struct device *dev, enum tc3589x_version *version)
 	return ERR_PTR(-ENODEV);
 }
 #endif
+=======
+>>>>>>> v4.9.227
 
 static int tc3589x_probe(struct i2c_client *i2c,
 				   const struct i2c_device_id *id)
@@ -404,7 +434,10 @@ static int tc3589x_probe(struct i2c_client *i2c,
 	tc3589x->dev = &i2c->dev;
 	tc3589x->i2c = i2c;
 	tc3589x->pdata = pdata;
+<<<<<<< HEAD
 	tc3589x->irq_base = pdata->irq_base;
+=======
+>>>>>>> v4.9.227
 
 	switch (version) {
 	case TC3589X_TC35893:
@@ -504,7 +537,10 @@ MODULE_DEVICE_TABLE(i2c, tc3589x_id);
 static struct i2c_driver tc3589x_driver = {
 	.driver = {
 		.name	= "tc3589x",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &tc3589x_dev_pm_ops,
 		.of_match_table = of_match_ptr(tc3589x_match),
 	},

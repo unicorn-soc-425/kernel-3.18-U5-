@@ -2,7 +2,11 @@
  * Driver for the ST Microelectronics SPEAr pinmux
  *
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> v4.9.227
  *
  * Inspired from:
  * - U300 Pinctl drivers
@@ -395,14 +399,22 @@ int spear_pinctrl_probe(struct platform_device *pdev,
 	spear_pinctrl_desc.pins = machdata->pins;
 	spear_pinctrl_desc.npins = machdata->npins;
 
+<<<<<<< HEAD
 	pmx->pctl = pinctrl_register(&spear_pinctrl_desc, &pdev->dev, pmx);
 	if (!pmx->pctl) {
 		dev_err(&pdev->dev, "Couldn't register pinctrl driver\n");
 		return -ENODEV;
+=======
+	pmx->pctl = devm_pinctrl_register(&pdev->dev, &spear_pinctrl_desc, pmx);
+	if (IS_ERR(pmx->pctl)) {
+		dev_err(&pdev->dev, "Couldn't register pinctrl driver\n");
+		return PTR_ERR(pmx->pctl);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 }
+<<<<<<< HEAD
 
 int spear_pinctrl_remove(struct platform_device *pdev)
 {
@@ -412,3 +424,5 @@ int spear_pinctrl_remove(struct platform_device *pdev)
 
 	return 0;
 }
+=======
+>>>>>>> v4.9.227

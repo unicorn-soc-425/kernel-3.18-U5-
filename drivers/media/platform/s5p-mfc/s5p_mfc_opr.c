@@ -37,10 +37,16 @@ void s5p_mfc_init_regs(struct s5p_mfc_dev *dev)
 		dev->mfc_regs = s5p_mfc_init_regs_v6_plus(dev);
 }
 
+<<<<<<< HEAD
 int s5p_mfc_alloc_priv_buf(struct device *dev,
 					struct s5p_mfc_priv_buf *b)
 {
 
+=======
+int s5p_mfc_alloc_priv_buf(struct device *dev, dma_addr_t base,
+					struct s5p_mfc_priv_buf *b)
+{
+>>>>>>> v4.9.227
 	mfc_debug(3, "Allocating priv: %zu\n", b->size);
 
 	b->virt = dma_alloc_coherent(dev, b->size, &b->dma, GFP_KERNEL);
@@ -50,6 +56,17 @@ int s5p_mfc_alloc_priv_buf(struct device *dev,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
+=======
+	if (b->dma < base) {
+		mfc_err("Invaling memory configuration!\n");
+		mfc_err("Allocated buffer (%pad) is lower than memory base address (%pad)\n",
+			&b->dma, &base);
+		dma_free_coherent(dev, b->size, b->virt, b->dma);
+		return -ENOMEM;
+	}
+
+>>>>>>> v4.9.227
 	mfc_debug(3, "Allocated addr %p %pad\n", b->virt, &b->dma);
 	return 0;
 }

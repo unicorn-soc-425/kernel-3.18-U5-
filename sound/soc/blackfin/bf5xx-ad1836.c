@@ -87,12 +87,17 @@ static int bf5xx_ad1836_driver_probe(struct platform_device *pdev)
 	card->dev = &pdev->dev;
 	platform_set_drvdata(pdev, card);
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> v4.9.227
 	if (ret)
 		dev_err(&pdev->dev, "Failed to register card\n");
 	return ret;
 }
 
+<<<<<<< HEAD
 static int bf5xx_ad1836_driver_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
@@ -109,6 +114,14 @@ static struct platform_driver bf5xx_ad1836_driver = {
 	},
 	.probe = bf5xx_ad1836_driver_probe,
 	.remove = bf5xx_ad1836_driver_remove,
+=======
+static struct platform_driver bf5xx_ad1836_driver = {
+	.driver = {
+		.name = "bfin-snd-ad1836",
+		.pm = &snd_soc_pm_ops,
+	},
+	.probe = bf5xx_ad1836_driver_probe,
+>>>>>>> v4.9.227
 };
 module_platform_driver(bf5xx_ad1836_driver);
 

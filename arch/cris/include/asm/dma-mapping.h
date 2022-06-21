@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* DMA mapping. Nothing tricky here, just virt_to_phys */
 
 #ifndef _ASM_CRIS_DMA_MAPPING_H
@@ -151,6 +152,25 @@ dma_set_mask(struct device *dev, u64 mask)
 
 	return 0;
 }
+=======
+#ifndef _ASM_CRIS_DMA_MAPPING_H
+#define _ASM_CRIS_DMA_MAPPING_H
+
+#ifdef CONFIG_PCI
+extern struct dma_map_ops v32_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	return &v32_dma_ops;
+}
+#else
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	BUG();
+	return NULL;
+}
+#endif
+>>>>>>> v4.9.227
 
 static inline void
 dma_cache_sync(struct device *dev, void *vaddr, size_t size,
@@ -158,6 +178,7 @@ dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 {
 }
 
+<<<<<<< HEAD
 /* drivers/base/dma-mapping.c */
 extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
 			   void *cpu_addr, dma_addr_t dma_addr, size_t size);
@@ -169,4 +190,6 @@ extern int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
 #define dma_get_sgtable(d, t, v, h, s) dma_common_get_sgtable(d, t, v, h, s)
 
 
+=======
+>>>>>>> v4.9.227
 #endif

@@ -25,6 +25,10 @@
 #include <linux/ioport.h>
 #include <linux/device.h>
 #include <linux/irqdomain.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/irqchip/chained_irq.h>
 #include <linux/of.h>
 #include <linux/of_irq.h>
@@ -40,8 +44,11 @@
 #include <plat/regs-irqtype.h>
 #include <plat/pm.h>
 
+<<<<<<< HEAD
 #include "irqchip.h"
 
+=======
+>>>>>>> v4.9.227
 #define S3C_IRQTYPE_NONE	0
 #define S3C_IRQTYPE_EINT	1
 #define S3C_IRQTYPE_EDGE	2
@@ -93,9 +100,15 @@ static void s3c_irq_mask(struct irq_data *data)
 	unsigned long mask;
 	unsigned int irqno;
 
+<<<<<<< HEAD
 	mask = __raw_readl(intc->reg_mask);
 	mask |= (1UL << irq_data->offset);
 	__raw_writel(mask, intc->reg_mask);
+=======
+	mask = readl_relaxed(intc->reg_mask);
+	mask |= (1UL << irq_data->offset);
+	writel_relaxed(mask, intc->reg_mask);
+>>>>>>> v4.9.227
 
 	if (parent_intc) {
 		parent_data = &parent_intc->irqs[irq_data->parent_irq];
@@ -120,9 +133,15 @@ static void s3c_irq_unmask(struct irq_data *data)
 	unsigned long mask;
 	unsigned int irqno;
 
+<<<<<<< HEAD
 	mask = __raw_readl(intc->reg_mask);
 	mask &= ~(1UL << irq_data->offset);
 	__raw_writel(mask, intc->reg_mask);
+=======
+	mask = readl_relaxed(intc->reg_mask);
+	mask &= ~(1UL << irq_data->offset);
+	writel_relaxed(mask, intc->reg_mask);
+>>>>>>> v4.9.227
 
 	if (parent_intc) {
 		irqno = irq_find_mapping(parent_intc->domain,
@@ -137,9 +156,15 @@ static inline void s3c_irq_ack(struct irq_data *data)
 	struct s3c_irq_intc *intc = irq_data->intc;
 	unsigned long bitval = 1UL << irq_data->offset;
 
+<<<<<<< HEAD
 	__raw_writel(bitval, intc->reg_pending);
 	if (intc->reg_intpnd)
 		__raw_writel(bitval, intc->reg_intpnd);
+=======
+	writel_relaxed(bitval, intc->reg_pending);
+	if (intc->reg_intpnd)
+		writel_relaxed(bitval, intc->reg_intpnd);
+>>>>>>> v4.9.227
 }
 
 static int s3c_irq_type(struct irq_data *data, unsigned int type)
@@ -173,9 +198,15 @@ static int s3c_irqext_type_set(void __iomem *gpcon_reg,
 	unsigned long newvalue = 0, value;
 
 	/* Set the GPIO to external interrupt mode */
+<<<<<<< HEAD
 	value = __raw_readl(gpcon_reg);
 	value = (value & ~(3 << gpcon_offset)) | (0x02 << gpcon_offset);
 	__raw_writel(value, gpcon_reg);
+=======
+	value = readl_relaxed(gpcon_reg);
+	value = (value & ~(3 << gpcon_offset)) | (0x02 << gpcon_offset);
+	writel_relaxed(value, gpcon_reg);
+>>>>>>> v4.9.227
 
 	/* Set the external interrupt to pointed trigger type */
 	switch (type)
@@ -209,9 +240,15 @@ static int s3c_irqext_type_set(void __iomem *gpcon_reg,
 			return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	value = __raw_readl(extint_reg);
 	value = (value & ~(7 << extint_offset)) | (newvalue << extint_offset);
 	__raw_writel(value, extint_reg);
+=======
+	value = readl_relaxed(extint_reg);
+	value = (value & ~(7 << extint_offset)) | (newvalue << extint_offset);
+	writel_relaxed(value, extint_reg);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -299,27 +336,45 @@ static struct irq_chip s3c_irq_eint0t4 = {
 	.irq_set_type	= s3c_irqext0_type,
 };
 
+<<<<<<< HEAD
 static void s3c_irq_demux(unsigned int irq, struct irq_desc *desc)
+=======
+static void s3c_irq_demux(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	struct s3c_irq_data *irq_data = irq_desc_get_chip_data(desc);
 	struct s3c_irq_intc *intc = irq_data->intc;
 	struct s3c_irq_intc *sub_intc = irq_data->sub_intc;
+<<<<<<< HEAD
 	unsigned long src;
 	unsigned long msk;
 	unsigned int n;
 	unsigned int offset;
+=======
+	unsigned int n, offset, irq;
+	unsigned long src, msk;
+>>>>>>> v4.9.227
 
 	/* we're using individual domains for the non-dt case
 	 * and one big domain for the dt case where the subintc
 	 * starts at hwirq number 32.
 	 */
+<<<<<<< HEAD
 	offset = (intc->domain->of_node) ? 32 : 0;
 
 	chained_irq_enter(chip, desc);
 
 	src = __raw_readl(sub_intc->reg_pending);
 	msk = __raw_readl(sub_intc->reg_mask);
+=======
+	offset = irq_domain_get_of_node(intc->domain) ? 32 : 0;
+
+	chained_irq_enter(chip, desc);
+
+	src = readl_relaxed(sub_intc->reg_pending);
+	msk = readl_relaxed(sub_intc->reg_mask);
+>>>>>>> v4.9.227
 
 	src &= ~msk;
 	src &= irq_data->sub_bits;
@@ -340,12 +395,20 @@ static inline int s3c24xx_handle_intc(struct s3c_irq_intc *intc,
 	int pnd;
 	int offset;
 
+<<<<<<< HEAD
 	pnd = __raw_readl(intc->reg_intpnd);
+=======
+	pnd = readl_relaxed(intc->reg_intpnd);
+>>>>>>> v4.9.227
 	if (!pnd)
 		return false;
 
 	/* non-dt machines use individual domains */
+<<<<<<< HEAD
 	if (!intc->domain->of_node)
+=======
+	if (!irq_domain_get_of_node(intc->domain))
+>>>>>>> v4.9.227
 		intc_offset = 0;
 
 	/* We have a problem that the INTOFFSET register does not always
@@ -355,7 +418,11 @@ static inline int s3c24xx_handle_intc(struct s3c_irq_intc *intc,
 	 *
 	 * Thanks to Klaus, Shannon, et al for helping to debug this problem
 	 */
+<<<<<<< HEAD
 	offset = __raw_readl(intc->reg_intpnd + 4);
+=======
+	offset = readl_relaxed(intc->reg_intpnd + 4);
+>>>>>>> v4.9.227
 
 	/* Find the bit manually, when the offset is wrong.
 	 * The pending register only ever contains the one bit of the next
@@ -409,7 +476,11 @@ int s3c24xx_set_fiq(unsigned int irq, bool on)
 		intmod = 0;
 	}
 
+<<<<<<< HEAD
 	__raw_writel(intmod, S3C2410_INTMOD);
+=======
+	writel_relaxed(intmod, S3C2410_INTMOD);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -469,13 +540,20 @@ static int s3c24xx_irq_map(struct irq_domain *h, unsigned int virq,
 
 	irq_set_chip_data(virq, irq_data);
 
+<<<<<<< HEAD
 	set_irq_flags(virq, IRQF_VALID);
 
+=======
+>>>>>>> v4.9.227
 	if (parent_intc && irq_data->type != S3C_IRQTYPE_NONE) {
 		if (irq_data->parent_irq > 31) {
 			pr_err("irq-s3c24xx: parent irq %lu is out of range\n",
 			       irq_data->parent_irq);
+<<<<<<< HEAD
 			goto err;
+=======
+			return -EINVAL;
+>>>>>>> v4.9.227
 		}
 
 		parent_irq_data = &parent_intc->irqs[irq_data->parent_irq];
@@ -488,12 +566,17 @@ static int s3c24xx_irq_map(struct irq_domain *h, unsigned int virq,
 		if (!irqno) {
 			pr_err("irq-s3c24xx: could not find mapping for parent irq %lu\n",
 			       irq_data->parent_irq);
+<<<<<<< HEAD
 			goto err;
+=======
+			return -EINVAL;
+>>>>>>> v4.9.227
 		}
 		irq_set_chained_handler(irqno, s3c_irq_demux);
 	}
 
 	return 0;
+<<<<<<< HEAD
 
 err:
 	set_irq_flags(virq, 0);
@@ -503,6 +586,11 @@ err:
 }
 
 static struct irq_domain_ops s3c24xx_irq_ops = {
+=======
+}
+
+static const struct irq_domain_ops s3c24xx_irq_ops = {
+>>>>>>> v4.9.227
 	.map = s3c24xx_irq_map,
 	.xlate = irq_domain_xlate_twocell,
 };
@@ -519,14 +607,24 @@ static void s3c24xx_clear_intc(struct s3c_irq_intc *intc)
 
 	last = 0;
 	for (i = 0; i < 4; i++) {
+<<<<<<< HEAD
 		pend = __raw_readl(reg_source);
+=======
+		pend = readl_relaxed(reg_source);
+>>>>>>> v4.9.227
 
 		if (pend == 0 || pend == last)
 			break;
 
+<<<<<<< HEAD
 		__raw_writel(pend, intc->reg_pending);
 		if (intc->reg_intpnd)
 			__raw_writel(pend, intc->reg_intpnd);
+=======
+		writel_relaxed(pend, intc->reg_pending);
+		if (intc->reg_intpnd)
+			writel_relaxed(pend, intc->reg_intpnd);
+>>>>>>> v4.9.227
 
 		pr_info("irq: clearing pending status %08x\n", (int)pend);
 		last = pend;
@@ -616,7 +714,11 @@ err:
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 static struct s3c_irq_data init_eint[32] = {
+=======
+static struct s3c_irq_data __maybe_unused init_eint[32] = {
+>>>>>>> v4.9.227
 	{ .type = S3C_IRQTYPE_NONE, }, /* reserved */
 	{ .type = S3C_IRQTYPE_NONE, }, /* reserved */
 	{ .type = S3C_IRQTYPE_NONE, }, /* reserved */
@@ -1177,8 +1279,11 @@ static int s3c24xx_irq_map_of(struct irq_domain *h, unsigned int virq,
 
 	irq_set_chip_data(virq, irq_data);
 
+<<<<<<< HEAD
 	set_irq_flags(virq, IRQF_VALID);
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1228,7 +1333,11 @@ static int s3c24xx_irq_xlate_of(struct irq_domain *d, struct device_node *n,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops s3c24xx_irq_ops_of = {
+=======
+static const struct irq_domain_ops s3c24xx_irq_ops_of = {
+>>>>>>> v4.9.227
 	.map = s3c24xx_irq_map_of,
 	.xlate = s3c24xx_irq_xlate_of,
 };

@@ -44,6 +44,7 @@ struct mm_struct;
 void set_pte_vaddr_pud(pud_t *pud_page, unsigned long vaddr, pte_t new_pte);
 
 
+<<<<<<< HEAD
 static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
 				    pte_t *ptep)
 {
@@ -53,6 +54,17 @@ static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
 static inline void native_set_pte(pte_t *ptep, pte_t pte)
 {
 	*ptep = pte;
+=======
+static inline void native_set_pte(pte_t *ptep, pte_t pte)
+{
+	WRITE_ONCE(*ptep, pte);
+}
+
+static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
+				    pte_t *ptep)
+{
+	native_set_pte(ptep, native_make_pte(0));
+>>>>>>> v4.9.227
 }
 
 static inline void native_set_pte_atomic(pte_t *ptep, pte_t pte)
@@ -62,7 +74,11 @@ static inline void native_set_pte_atomic(pte_t *ptep, pte_t pte)
 
 static inline void native_set_pmd(pmd_t *pmdp, pmd_t pmd)
 {
+<<<<<<< HEAD
 	*pmdp = pmd;
+=======
+	WRITE_ONCE(*pmdp, pmd);
+>>>>>>> v4.9.227
 }
 
 static inline void native_pmd_clear(pmd_t *pmd)
@@ -98,7 +114,11 @@ static inline pmd_t native_pmdp_get_and_clear(pmd_t *xp)
 
 static inline void native_set_pud(pud_t *pudp, pud_t pud)
 {
+<<<<<<< HEAD
 	*pudp = pud;
+=======
+	WRITE_ONCE(*pudp, pud);
+>>>>>>> v4.9.227
 }
 
 static inline void native_pud_clear(pud_t *pud)
@@ -106,9 +126,38 @@ static inline void native_pud_clear(pud_t *pud)
 	native_set_pud(pud, native_make_pud(0));
 }
 
+<<<<<<< HEAD
 static inline void native_set_pgd(pgd_t *pgdp, pgd_t pgd)
 {
 	*pgdp = pgd;
+=======
+#ifdef CONFIG_PAGE_TABLE_ISOLATION
+extern pgd_t kaiser_set_shadow_pgd(pgd_t *pgdp, pgd_t pgd);
+
+static inline pgd_t *native_get_shadow_pgd(pgd_t *pgdp)
+{
+#ifdef CONFIG_DEBUG_VM
+	/* linux/mmdebug.h may not have been included at this point */
+	BUG_ON(!kaiser_enabled);
+#endif
+	return (pgd_t *)((unsigned long)pgdp | (unsigned long)PAGE_SIZE);
+}
+#else
+static inline pgd_t kaiser_set_shadow_pgd(pgd_t *pgdp, pgd_t pgd)
+{
+	return pgd;
+}
+static inline pgd_t *native_get_shadow_pgd(pgd_t *pgdp)
+{
+	BUILD_BUG_ON(1);
+	return NULL;
+}
+#endif /* CONFIG_PAGE_TABLE_ISOLATION */
+
+static inline void native_set_pgd(pgd_t *pgdp, pgd_t pgd)
+{
+	WRITE_ONCE(*pgdp, kaiser_set_shadow_pgd(pgdp, pgd));
+>>>>>>> v4.9.227
 }
 
 static inline void native_pgd_clear(pgd_t *pgd)
@@ -133,10 +182,13 @@ static inline int pgd_large(pgd_t pgd) { return 0; }
 /* PUD - Level3 access */
 
 /* PMD  - Level 2 access */
+<<<<<<< HEAD
 #define pte_to_pgoff(pte) ((pte_val((pte)) & PHYSICAL_PAGE_MASK) >> PAGE_SHIFT)
 #define pgoff_to_pte(off) ((pte_t) { .pte = ((off) << PAGE_SHIFT) |	\
 					    _PAGE_FILE })
 #define PTE_FILE_MAX_BITS __PHYSICAL_MASK_SHIFT
+=======
+>>>>>>> v4.9.227
 
 /* PTE - Level 1 access. */
 
@@ -144,6 +196,7 @@ static inline int pgd_large(pgd_t pgd) { return 0; }
 #define pte_offset_map(dir, address) pte_offset_kernel((dir), (address))
 #define pte_unmap(pte) ((void)(pte))/* NOP */
 
+<<<<<<< HEAD
 /* Encode and de-code a swap entry */
 #define SWP_TYPE_BITS (_PAGE_BIT_FILE - _PAGE_BIT_PRESENT - 1)
 #ifdef CONFIG_NUMA_BALANCING
@@ -161,6 +214,54 @@ static inline int pgd_large(pgd_t pgd) { return 0; }
 #define __swp_entry(type, offset)	((swp_entry_t) { \
 					 ((type) << (_PAGE_BIT_PRESENT + 1)) \
 					 | ((offset) << SWP_OFFSET_SHIFT) })
+=======
+/*
+ * Encode and de-code a swap entry
+ *
+ * |     ...            | 11| 10|  9|8|7|6|5| 4| 3|2| 1|0| <- bit number
+ * |     ...            |SW3|SW2|SW1|G|L|D|A|CD|WT|U| W|P| <- bit names
+ * | TYPE (59-63) | ~OFFSET (9-58)  |0|0|X|X| X| X|X|SD|0| <- swp entry
+ *
+ * G (8) is aliased and used as a PROT_NONE indicator for
+ * !present ptes.  We need to start storing swap entries above
+ * there.  We also need to avoid using A and D because of an
+ * erratum where they can be incorrectly set by hardware on
+ * non-present PTEs.
+ *
+ * SD (1) in swp entry is used to store soft dirty bit, which helps us
+ * remember soft dirty over page migration
+ *
+ * Bit 7 in swp entry should be 0 because pmd_present checks not only P,
+ * but also L and G.
+ *
+ * The offset is inverted by a binary not operation to make the high
+ * physical bits set.
+ */
+#define SWP_TYPE_BITS		5
+
+#define SWP_OFFSET_FIRST_BIT	(_PAGE_BIT_PROTNONE + 1)
+
+/* We always extract/encode the offset by shifting it all the way up, and then down again */
+#define SWP_OFFSET_SHIFT	(SWP_OFFSET_FIRST_BIT+SWP_TYPE_BITS)
+
+#define MAX_SWAPFILES_CHECK() BUILD_BUG_ON(MAX_SWAPFILES_SHIFT > SWP_TYPE_BITS)
+
+/* Extract the high bits for type */
+#define __swp_type(x) ((x).val >> (64 - SWP_TYPE_BITS))
+
+/* Shift up (to get rid of type), then down to get value */
+#define __swp_offset(x) (~(x).val << SWP_TYPE_BITS >> SWP_OFFSET_SHIFT)
+
+/*
+ * Shift the offset up "too far" by TYPE bits, then down again
+ * The offset is inverted by a binary not operation to make the high
+ * physical bits set.
+ */
+#define __swp_entry(type, offset) ((swp_entry_t) { \
+	(~(unsigned long)(offset) << SWP_OFFSET_SHIFT >> SWP_TYPE_BITS) \
+	| ((unsigned long)(type) << (64-SWP_TYPE_BITS)) })
+
+>>>>>>> v4.9.227
 #define __pte_to_swp_entry(pte)		((swp_entry_t) { pte_val((pte)) })
 #define __swp_entry_to_pte(x)		((pte_t) { .pte = (x).val })
 
@@ -187,6 +288,11 @@ extern void cleanup_highmap(void);
 extern void init_extra_mapping_uc(unsigned long phys, unsigned long size);
 extern void init_extra_mapping_wb(unsigned long phys, unsigned long size);
 
+<<<<<<< HEAD
+=======
+#include <asm/pgtable-invert.h>
+
+>>>>>>> v4.9.227
 #endif /* !__ASSEMBLY__ */
 
 #endif /* _ASM_X86_PGTABLE_64_H */

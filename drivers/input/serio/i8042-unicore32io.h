@@ -61,7 +61,11 @@ static inline int i8042_platform_init(void)
 	if (!request_mem_region(I8042_REGION_START, I8042_REGION_SIZE, "i8042"))
 		return -EBUSY;
 
+<<<<<<< HEAD
 	i8042_reset = 1;
+=======
+	i8042_reset = I8042_RESET_ALWAYS;
+>>>>>>> v4.9.227
 	return 0;
 }
 

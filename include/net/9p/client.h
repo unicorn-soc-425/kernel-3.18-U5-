@@ -211,6 +211,11 @@ struct p9_dirent {
 	char d_name[256];
 };
 
+<<<<<<< HEAD
+=======
+struct iov_iter;
+
+>>>>>>> v4.9.227
 int p9_client_statfs(struct p9_fid *fid, struct p9_rstatfs *sb);
 int p9_client_rename(struct p9_fid *fid, struct p9_fid *newdirfid,
 		     const char *name);
@@ -236,10 +241,15 @@ int p9_client_clunk(struct p9_fid *fid);
 int p9_client_fsync(struct p9_fid *fid, int datasync);
 int p9_client_remove(struct p9_fid *fid);
 int p9_client_unlinkat(struct p9_fid *dfid, const char *name, int flags);
+<<<<<<< HEAD
 int p9_client_read(struct p9_fid *fid, char *data, char __user *udata,
 							u64 offset, u32 count);
 int p9_client_write(struct p9_fid *fid, char *data, const char __user *udata,
 							u64 offset, u32 count);
+=======
+int p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err);
+int p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err);
+>>>>>>> v4.9.227
 int p9_client_readdir(struct p9_fid *fid, char *data, u32 count, u64 offset);
 int p9dirent_read(struct p9_client *clnt, char *buf, int len,
 		  struct p9_dirent *dirent);

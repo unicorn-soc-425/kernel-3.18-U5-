@@ -15,15 +15,22 @@
 
 #include <linux/slab.h>
 #include <linux/of_address.h>
+<<<<<<< HEAD
 #include <linux/clk-provider.h>
 
 static DEFINE_SPINLOCK(clkgena_divmux_lock);
 static DEFINE_SPINLOCK(clkgenf_lock);
+=======
+#include <linux/clk.h>
+#include <linux/clk-provider.h>
+#include "clkgen.h"
+>>>>>>> v4.9.227
 
 static const char ** __init clkgen_mux_get_parents(struct device_node *np,
 						       int *num_parents)
 {
 	const char **parents;
+<<<<<<< HEAD
 	int nparents, i;
 
 	nparents = of_count_phandle_with_args(np, "clocks", "#clock-cells");
@@ -529,6 +536,22 @@ void __init st_of_clkgena_prediv_setup(struct device_node *np)
 }
 CLK_OF_DECLARE(clkgenaprediv, "st,clkgena-prediv", st_of_clkgena_prediv_setup);
 
+=======
+	unsigned int nparents;
+
+	nparents = of_clk_get_parent_count(np);
+	if (WARN_ON(!nparents))
+		return ERR_PTR(-EINVAL);
+
+	parents = kcalloc(nparents, sizeof(const char *), GFP_KERNEL);
+	if (!parents)
+		return ERR_PTR(-ENOMEM);
+
+	*num_parents = of_clk_parent_fill(np, parents, nparents);
+	return parents;
+}
+
+>>>>>>> v4.9.227
 struct clkgen_mux_data {
 	u32 offset;
 	u8 shift;
@@ -538,6 +561,7 @@ struct clkgen_mux_data {
 	u8 mux_flags;
 };
 
+<<<<<<< HEAD
 static struct clkgen_mux_data clkgen_mux_c_vcc_hd_416 = {
 	.offset = 0,
 	.shift = 0,
@@ -638,6 +662,22 @@ void __init st_of_clkgen_mux_setup(struct device_node *np)
 	}
 
 	data = (struct clkgen_mux_data *)match->data;
+=======
+static struct clkgen_mux_data stih407_a9_mux_data = {
+	.offset = 0x1a4,
+	.shift = 0,
+	.width = 2,
+	.lock = &clkgen_a9_lock,
+};
+
+static void __init st_of_clkgen_mux_setup(struct device_node *np,
+		struct clkgen_mux_data *data)
+{
+	struct clk *clk;
+	void __iomem *reg;
+	const char **parents;
+	int num_parents = 0;
+>>>>>>> v4.9.227
 
 	reg = of_iomap(np, 0);
 	if (!reg) {
@@ -649,7 +689,11 @@ void __init st_of_clkgen_mux_setup(struct device_node *np)
 	if (IS_ERR(parents)) {
 		pr_err("%s: Failed to get parents (%ld)\n",
 				__func__, PTR_ERR(parents));
+<<<<<<< HEAD
 		return;
+=======
+		goto err_parents;
+>>>>>>> v4.9.227
 	}
 
 	clk = clk_register_mux(NULL, np->name, parents, num_parents,
@@ -665,6 +709,7 @@ void __init st_of_clkgen_mux_setup(struct device_node *np)
 			__clk_get_name(clk_get_parent(clk)),
 			(unsigned int)clk_get_rate(clk));
 
+<<<<<<< HEAD
 	of_clk_add_provider(np, of_clk_src_simple_get, clk);
 
 err:
@@ -828,3 +873,21 @@ err:
 	kfree(parents);
 }
 CLK_OF_DECLARE(clkgen_vcc, "st,clkgen-vcc", st_of_clkgen_vcc_setup);
+=======
+	kfree(parents);
+	of_clk_add_provider(np, of_clk_src_simple_get, clk);
+	return;
+
+err:
+	kfree(parents);
+err_parents:
+	iounmap(reg);
+}
+
+static void __init st_of_clkgen_a9_mux_setup(struct device_node *np)
+{
+	st_of_clkgen_mux_setup(np, &stih407_a9_mux_data);
+}
+CLK_OF_DECLARE(clkgen_a9mux, "st,stih407-clkgen-a9-mux",
+		st_of_clkgen_a9_mux_setup);
+>>>>>>> v4.9.227

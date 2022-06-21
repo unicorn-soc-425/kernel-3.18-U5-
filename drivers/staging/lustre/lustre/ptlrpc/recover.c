@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2002, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -107,14 +115,23 @@ int ptlrpc_replay_next(struct obd_import *imp, int *inflight)
 	/* Replay all the committed open requests on committed_list first */
 	if (!list_empty(&imp->imp_committed_list)) {
 		tmp = imp->imp_committed_list.prev;
+<<<<<<< HEAD
 		req = list_entry(tmp, struct ptlrpc_request,
 				     rq_replay_list);
+=======
+		req = list_entry(tmp, struct ptlrpc_request, rq_replay_list);
+>>>>>>> v4.9.227
 
 		/* The last request on committed_list hasn't been replayed */
 		if (req->rq_transno > last_transno) {
 			/* Since the imp_committed_list is immutable before
 			 * all of it's requests being replayed, it's safe to
+<<<<<<< HEAD
 			 * use a cursor to accelerate the search */
+=======
+			 * use a cursor to accelerate the search
+			 */
+>>>>>>> v4.9.227
 			imp->imp_replay_cursor = imp->imp_replay_cursor->next;
 
 			while (imp->imp_replay_cursor !=
@@ -137,8 +154,14 @@ int ptlrpc_replay_next(struct obd_import *imp, int *inflight)
 	}
 
 	/* All the requests in committed list have been replayed, let's replay
+<<<<<<< HEAD
 	 * the imp_replay_list */
 	if (req == NULL) {
+=======
+	 * the imp_replay_list
+	 */
+	if (!req) {
+>>>>>>> v4.9.227
 		list_for_each_safe(tmp, pos, &imp->imp_replay_list) {
 			req = list_entry(tmp, struct ptlrpc_request,
 					 rq_replay_list);
@@ -152,15 +175,25 @@ int ptlrpc_replay_next(struct obd_import *imp, int *inflight)
 	/* If need to resend the last sent transno (because a reconnect
 	 * has occurred), then stop on the matching req and send it again.
 	 * If, however, the last sent transno has been committed then we
+<<<<<<< HEAD
 	 * continue replay from the next request. */
 	if (req != NULL && imp->imp_resend_replay)
+=======
+	 * continue replay from the next request.
+	 */
+	if (req && imp->imp_resend_replay)
+>>>>>>> v4.9.227
 		lustre_msg_add_flags(req->rq_reqmsg, MSG_RESENT);
 
 	spin_lock(&imp->imp_lock);
 	imp->imp_resend_replay = 0;
 	spin_unlock(&imp->imp_lock);
 
+<<<<<<< HEAD
 	if (req != NULL) {
+=======
+	if (req) {
+>>>>>>> v4.9.227
 		rc = ptlrpc_replay_req(req);
 		if (rc) {
 			CERROR("recovery replay error %d for req %llu\n",
@@ -192,9 +225,14 @@ int ptlrpc_resend(struct obd_import *imp)
 		return -1;
 	}
 
+<<<<<<< HEAD
 	list_for_each_entry_safe(req, next, &imp->imp_sending_list,
 				     rq_list) {
 		LASSERTF((long)req > PAGE_CACHE_SIZE && req != LP_POISON,
+=======
+	list_for_each_entry_safe(req, next, &imp->imp_sending_list, rq_list) {
+		LASSERTF((long)req > PAGE_SIZE && req != LP_POISON,
+>>>>>>> v4.9.227
 			 "req %p bad\n", req);
 		LASSERTF(req->rq_type != LI_POISON, "req %p freed\n", req);
 		if (!ptlrpc_no_resend(req))
@@ -204,7 +242,10 @@ int ptlrpc_resend(struct obd_import *imp)
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ptlrpc_resend);
+=======
+>>>>>>> v4.9.227
 
 /**
  * Go through all requests in delayed list and wake their threads
@@ -224,7 +265,10 @@ void ptlrpc_wake_delayed(struct obd_import *imp)
 	}
 	spin_unlock(&imp->imp_lock);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ptlrpc_wake_delayed);
+=======
+>>>>>>> v4.9.227
 
 void ptlrpc_request_handle_notconn(struct ptlrpc_request *failed_req)
 {
@@ -237,8 +281,12 @@ void ptlrpc_request_handle_notconn(struct ptlrpc_request *failed_req)
 	if (ptlrpc_set_import_discon(imp,
 			      lustre_msg_get_conn_cnt(failed_req->rq_reqmsg))) {
 		if (!imp->imp_replayable) {
+<<<<<<< HEAD
 			CDEBUG(D_HA, "import %s@%s for %s not replayable, "
 			       "auto-deactivating\n",
+=======
+			CDEBUG(D_HA, "import %s@%s for %s not replayable, auto-deactivating\n",
+>>>>>>> v4.9.227
 			       obd2cli_tgt(imp->imp_obd),
 			       imp->imp_connection->c_remote_uuid.uuid,
 			       imp->imp_obd->obd_name);
@@ -250,7 +298,12 @@ void ptlrpc_request_handle_notconn(struct ptlrpc_request *failed_req)
 	}
 
 	/* Wait for recovery to complete and resend. If evicted, then
+<<<<<<< HEAD
 	   this request will be errored out later.*/
+=======
+	 * this request will be errored out later.
+	 */
+>>>>>>> v4.9.227
 	spin_lock(&failed_req->rq_lock);
 	if (!failed_req->rq_no_resend)
 		failed_req->rq_resend = 1;
@@ -261,7 +314,11 @@ void ptlrpc_request_handle_notconn(struct ptlrpc_request *failed_req)
  * Administratively active/deactive a client.
  * This should only be called by the ioctl interface, currently
  *  - the lctl deactivate and activate commands
+<<<<<<< HEAD
  *  - echo 0/1 >> /proc/osc/XXX/active
+=======
+ *  - echo 0/1 >> /sys/fs/lustre/osc/XXX/active
+>>>>>>> v4.9.227
  *  - client umount -f (ll_umount_begin)
  */
 int ptlrpc_set_import_active(struct obd_import *imp, int active)
@@ -272,6 +329,7 @@ int ptlrpc_set_import_active(struct obd_import *imp, int active)
 	LASSERT(obd);
 
 	/* When deactivating, mark import invalid, and abort in-flight
+<<<<<<< HEAD
 	 * requests. */
 	if (!active) {
 		LCONSOLE_WARN("setting import %s INACTIVE by administrator "
@@ -279,6 +337,17 @@ int ptlrpc_set_import_active(struct obd_import *imp, int active)
 
 		/* set before invalidate to avoid messages about imp_inval
 		 * set without imp_deactive in ptlrpc_import_delay_req */
+=======
+	 * requests.
+	 */
+	if (!active) {
+		LCONSOLE_WARN("setting import %s INACTIVE by administrator request\n",
+			      obd2cli_tgt(imp->imp_obd));
+
+		/* set before invalidate to avoid messages about imp_inval
+		 * set without imp_deactive in ptlrpc_import_delay_req
+		 */
+>>>>>>> v4.9.227
 		spin_lock(&imp->imp_lock);
 		imp->imp_deactive = 1;
 		spin_unlock(&imp->imp_lock);

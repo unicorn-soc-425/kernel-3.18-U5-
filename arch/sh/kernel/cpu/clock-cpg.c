@@ -63,7 +63,10 @@ int __init __deprecated cpg_clk_init(void)
 	clk_add_alias("fck", "sh-mtu2", "peripheral_clk", NULL);
 	clk_add_alias("fck", "sh-cmt-16.0", "peripheral_clk", NULL);
 	clk_add_alias("fck", "sh-cmt-32.0", "peripheral_clk", NULL);
+<<<<<<< HEAD
 	clk_add_alias("sci_ick", NULL, "peripheral_clk", NULL);
+=======
+>>>>>>> v4.9.227
 
 	return ret;
 }

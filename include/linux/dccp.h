@@ -43,6 +43,10 @@ enum dccp_state {
 	DCCP_CLOSING	     = TCP_CLOSING,
 	DCCP_TIME_WAIT	     = TCP_TIME_WAIT,
 	DCCP_CLOSED	     = TCP_CLOSE,
+<<<<<<< HEAD
+=======
+	DCCP_NEW_SYN_RECV    = TCP_NEW_SYN_RECV,
+>>>>>>> v4.9.227
 	DCCP_PARTOPEN	     = TCP_MAX_STATES,
 	DCCP_PASSIVE_CLOSEREQ,			/* clients receiving CloseReq */
 	DCCP_MAX_STATES
@@ -57,6 +61,10 @@ enum {
 	DCCPF_CLOSING	      = TCPF_CLOSING,
 	DCCPF_TIME_WAIT	      = TCPF_TIME_WAIT,
 	DCCPF_CLOSED	      = TCPF_CLOSE,
+<<<<<<< HEAD
+=======
+	DCCPF_NEW_SYN_RECV    = TCPF_NEW_SYN_RECV,
+>>>>>>> v4.9.227
 	DCCPF_PARTOPEN	      = (1 << DCCP_PARTOPEN),
 };
 
@@ -161,6 +169,10 @@ struct dccp_request_sock {
 	__u64			 dreq_isr;
 	__u64			 dreq_gsr;
 	__be32			 dreq_service;
+<<<<<<< HEAD
+=======
+	spinlock_t		 dreq_lock;
+>>>>>>> v4.9.227
 	struct list_head	 dreq_featneg;
 	__u32			 dreq_timestamp_echo;
 	__u32			 dreq_timestamp_time;
@@ -200,16 +212,26 @@ struct dccp_service_list {
 #define DCCP_SERVICE_INVALID_VALUE htonl((__u32)-1)
 #define DCCP_SERVICE_CODE_IS_ABSENT		0
 
+<<<<<<< HEAD
 static inline int dccp_list_has_service(const struct dccp_service_list *sl,
+=======
+static inline bool dccp_list_has_service(const struct dccp_service_list *sl,
+>>>>>>> v4.9.227
 					const __be32 service)
 {
 	if (likely(sl != NULL)) {
 		u32 i = sl->dccpsl_nr;
 		while (i--)
 			if (sl->dccpsl_list[i] == service)
+<<<<<<< HEAD
 				return 1;
 	}
 	return 0;
+=======
+				return true;
+	}
+	return false;
+>>>>>>> v4.9.227
 }
 
 struct dccp_ackvec;
@@ -317,6 +339,10 @@ static inline const char *dccp_role(const struct sock *sk)
 	return NULL;
 }
 
+<<<<<<< HEAD
 extern void dccp_syn_ack_timeout(struct sock *sk, struct request_sock *req);
+=======
+extern void dccp_syn_ack_timeout(const struct request_sock *req);
+>>>>>>> v4.9.227
 
 #endif /* _LINUX_DCCP_H */

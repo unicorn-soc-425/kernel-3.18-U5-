@@ -9,13 +9,21 @@
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/signal.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <asm/branch.h>
 #include <asm/cpu.h>
 #include <asm/cpu-features.h>
 #include <asm/fpu.h>
 #include <asm/fpu_emulator.h>
 #include <asm/inst.h>
+<<<<<<< HEAD
+=======
+#include <asm/mips-r2-to-r6-emul.h>
+>>>>>>> v4.9.227
 #include <asm/ptrace.h>
 #include <asm/uaccess.h>
 
@@ -35,8 +43,15 @@ int __isa_exception_epc(struct pt_regs *regs)
 		return epc;
 	}
 	if (cpu_has_mips16) {
+<<<<<<< HEAD
 		if (((union mips16e_instruction)inst).ri.opcode
 				== MIPS16e_jal_op)
+=======
+		union mips16e_instruction inst_mips16e;
+
+		inst_mips16e.full = inst;
+		if (inst_mips16e.ri.opcode == MIPS16e_jal_op)
+>>>>>>> v4.9.227
 			epc += 4;
 		else
 			epc += 2;
@@ -399,11 +414,28 @@ int __MIPS16e_compute_return_epc(struct pt_regs *regs)
  * @returns:	-EFAULT on error and forces SIGILL, and on success
  *		returns 0 or BRANCH_LIKELY_TAKEN as appropriate after
  *		evaluating the branch.
+<<<<<<< HEAD
+=======
+ *
+ * MIPS R6 Compact branches and forbidden slots:
+ *	Compact branches do not throw exceptions because they do
+ *	not have delay slots. The forbidden slot instruction ($PC+4)
+ *	is only executed if the branch was not taken. Otherwise the
+ *	forbidden slot is skipped entirely. This means that the
+ *	only possible reason to be here because of a MIPS R6 compact
+ *	branch instruction is that the forbidden slot has thrown one.
+ *	In that case the branch was not taken, so the EPC can be safely
+ *	set to EPC + 8.
+>>>>>>> v4.9.227
  */
 int __compute_return_epc_for_insn(struct pt_regs *regs,
 				   union mips_instruction insn)
 {
+<<<<<<< HEAD
 	unsigned int bit, fcr31, dspcontrol;
+=======
+	unsigned int bit, fcr31, dspcontrol, reg;
+>>>>>>> v4.9.227
 	long epc = regs->cp0_epc;
 	int ret = 0;
 
@@ -417,6 +449,11 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 			regs->regs[insn.r_format.rd] = epc + 8;
 			/* Fall through */
 		case jr_op:
+<<<<<<< HEAD
+=======
+			if (NO_R6EMU && insn.r_format.func == jr_op)
+				goto sigill_r2r6;
+>>>>>>> v4.9.227
 			regs->cp0_epc = regs->regs[insn.r_format.rs];
 			break;
 		}
@@ -429,8 +466,15 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 	 */
 	case bcond_op:
 		switch (insn.i_format.rt) {
+<<<<<<< HEAD
 		case bltz_op:
 		case bltzl_op:
+=======
+		case bltzl_op:
+			if (NO_R6EMU)
+				goto sigill_r2r6;
+		case bltz_op:
+>>>>>>> v4.9.227
 			if ((long)regs->regs[insn.i_format.rs] < 0) {
 				epc = epc + 4 + (insn.i_format.simmediate << 2);
 				if (insn.i_format.rt == bltzl_op)
@@ -440,8 +484,15 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 			regs->cp0_epc = epc;
 			break;
 
+<<<<<<< HEAD
 		case bgez_op:
 		case bgezl_op:
+=======
+		case bgezl_op:
+			if (NO_R6EMU)
+				goto sigill_r2r6;
+		case bgez_op:
+>>>>>>> v4.9.227
 			if ((long)regs->regs[insn.i_format.rs] >= 0) {
 				epc = epc + 4 + (insn.i_format.simmediate << 2);
 				if (insn.i_format.rt == bgezl_op)
@@ -453,7 +504,31 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 
 		case bltzal_op:
 		case bltzall_op:
+<<<<<<< HEAD
 			regs->regs[31] = epc + 8;
+=======
+			if (NO_R6EMU && (insn.i_format.rs ||
+			    insn.i_format.rt == bltzall_op))
+				goto sigill_r2r6;
+			regs->regs[31] = epc + 8;
+			/*
+			 * OK we are here either because we hit a NAL
+			 * instruction or because we are emulating an
+			 * old bltzal{,l} one. Let's figure out what the
+			 * case really is.
+			 */
+			if (!insn.i_format.rs) {
+				/*
+				 * NAL or BLTZAL with rs == 0
+				 * Doesn't matter if we are R6 or not. The
+				 * result is the same
+				 */
+				regs->cp0_epc += 4 +
+					(insn.i_format.simmediate << 2);
+				break;
+			}
+			/* Now do the real thing for non-R6 BLTZAL{,L} */
+>>>>>>> v4.9.227
 			if ((long)regs->regs[insn.i_format.rs] < 0) {
 				epc = epc + 4 + (insn.i_format.simmediate << 2);
 				if (insn.i_format.rt == bltzall_op)
@@ -465,7 +540,31 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 
 		case bgezal_op:
 		case bgezall_op:
+<<<<<<< HEAD
 			regs->regs[31] = epc + 8;
+=======
+			if (NO_R6EMU && (insn.i_format.rs ||
+			    insn.i_format.rt == bgezall_op))
+				goto sigill_r2r6;
+			regs->regs[31] = epc + 8;
+			/*
+			 * OK we are here either because we hit a BAL
+			 * instruction or because we are emulating an
+			 * old bgezal{,l} one. Let's figure out what the
+			 * case really is.
+			 */
+			if (!insn.i_format.rs) {
+				/*
+				 * BAL or BGEZAL with rs == 0
+				 * Doesn't matter if we are R6 or not. The
+				 * result is the same
+				 */
+				regs->cp0_epc += 4 +
+					(insn.i_format.simmediate << 2);
+				break;
+			}
+			/* Now do the real thing for non-R6 BGEZAL{,L} */
+>>>>>>> v4.9.227
 			if ((long)regs->regs[insn.i_format.rs] >= 0) {
 				epc = epc + 4 + (insn.i_format.simmediate << 2);
 				if (insn.i_format.rt == bgezall_op)
@@ -477,7 +576,11 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 
 		case bposge32_op:
 			if (!cpu_has_dsp)
+<<<<<<< HEAD
 				goto sigill;
+=======
+				goto sigill_dsp;
+>>>>>>> v4.9.227
 
 			dspcontrol = rddsp(0x01);
 
@@ -509,8 +612,15 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 	/*
 	 * These are conditional and in i_format.
 	 */
+<<<<<<< HEAD
 	case beq_op:
 	case beql_op:
+=======
+	case beql_op:
+		if (NO_R6EMU)
+			goto sigill_r2r6;
+	case beq_op:
+>>>>>>> v4.9.227
 		if (regs->regs[insn.i_format.rs] ==
 		    regs->regs[insn.i_format.rt]) {
 			epc = epc + 4 + (insn.i_format.simmediate << 2);
@@ -521,8 +631,15 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 		regs->cp0_epc = epc;
 		break;
 
+<<<<<<< HEAD
 	case bne_op:
 	case bnel_op:
+=======
+	case bnel_op:
+		if (NO_R6EMU)
+			goto sigill_r2r6;
+	case bne_op:
+>>>>>>> v4.9.227
 		if (regs->regs[insn.i_format.rs] !=
 		    regs->regs[insn.i_format.rt]) {
 			epc = epc + 4 + (insn.i_format.simmediate << 2);
@@ -533,8 +650,36 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 		regs->cp0_epc = epc;
 		break;
 
+<<<<<<< HEAD
 	case blez_op: /* not really i_format */
 	case blezl_op:
+=======
+	case blezl_op: /* not really i_format */
+		if (!insn.i_format.rt && NO_R6EMU)
+			goto sigill_r2r6;
+	case blez_op:
+		/*
+		 * Compact branches for R6 for the
+		 * blez and blezl opcodes.
+		 * BLEZ  | rs = 0 | rt != 0  == BLEZALC
+		 * BLEZ  | rs = rt != 0      == BGEZALC
+		 * BLEZ  | rs != 0 | rt != 0 == BGEUC
+		 * BLEZL | rs = 0 | rt != 0  == BLEZC
+		 * BLEZL | rs = rt != 0      == BGEZC
+		 * BLEZL | rs != 0 | rt != 0 == BGEC
+		 *
+		 * For real BLEZ{,L}, rt is always 0.
+		 */
+
+		if (cpu_has_mips_r6 && insn.i_format.rt) {
+			if ((insn.i_format.opcode == blez_op) &&
+			    ((!insn.i_format.rs && insn.i_format.rt) ||
+			     (insn.i_format.rs == insn.i_format.rt)))
+				regs->regs[31] = epc + 4;
+			regs->cp0_epc += 8;
+			break;
+		}
+>>>>>>> v4.9.227
 		/* rt field assumed to be zero */
 		if ((long)regs->regs[insn.i_format.rs] <= 0) {
 			epc = epc + 4 + (insn.i_format.simmediate << 2);
@@ -545,8 +690,37 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 		regs->cp0_epc = epc;
 		break;
 
+<<<<<<< HEAD
 	case bgtz_op:
 	case bgtzl_op:
+=======
+	case bgtzl_op:
+		if (!insn.i_format.rt && NO_R6EMU)
+			goto sigill_r2r6;
+	case bgtz_op:
+		/*
+		 * Compact branches for R6 for the
+		 * bgtz and bgtzl opcodes.
+		 * BGTZ  | rs = 0 | rt != 0  == BGTZALC
+		 * BGTZ  | rs = rt != 0      == BLTZALC
+		 * BGTZ  | rs != 0 | rt != 0 == BLTUC
+		 * BGTZL | rs = 0 | rt != 0  == BGTZC
+		 * BGTZL | rs = rt != 0      == BLTZC
+		 * BGTZL | rs != 0 | rt != 0 == BLTC
+		 *
+		 * *ZALC varint for BGTZ &&& rt != 0
+		 * For real GTZ{,L}, rt is always 0.
+		 */
+		if (cpu_has_mips_r6 && insn.i_format.rt) {
+			if ((insn.i_format.opcode == blez_op) &&
+			    ((!insn.i_format.rs && insn.i_format.rt) ||
+			    (insn.i_format.rs == insn.i_format.rt)))
+				regs->regs[31] = epc + 4;
+			regs->cp0_epc += 8;
+			break;
+		}
+
+>>>>>>> v4.9.227
 		/* rt field assumed to be zero */
 		if ((long)regs->regs[insn.i_format.rs] > 0) {
 			epc = epc + 4 + (insn.i_format.simmediate << 2);
@@ -561,6 +735,7 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 	 * And now the FPA/cp1 branch instructions.
 	 */
 	case cop1_op:
+<<<<<<< HEAD
 		preempt_disable();
 		if (is_fpu_owner())
 		        fcr31 = read_32bit_cp1_register(CP1_STATUS);
@@ -595,6 +770,73 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 			break;
 		}
 		break;
+=======
+		if (cpu_has_mips_r6 &&
+		    ((insn.i_format.rs == bc1eqz_op) ||
+		     (insn.i_format.rs == bc1nez_op))) {
+			if (!used_math()) { /* First time FPU user */
+				ret = init_fpu();
+				if (ret && NO_R6EMU) {
+					ret = -ret;
+					break;
+				}
+				ret = 0;
+				set_used_math();
+			}
+			lose_fpu(1);    /* Save FPU state for the emulator. */
+			reg = insn.i_format.rt;
+			bit = get_fpr32(&current->thread.fpu.fpr[reg], 0) & 0x1;
+			if (insn.i_format.rs == bc1eqz_op)
+				bit = !bit;
+			own_fpu(1);
+			if (bit)
+				epc = epc + 4 +
+					(insn.i_format.simmediate << 2);
+			else
+				epc += 8;
+			regs->cp0_epc = epc;
+
+			break;
+		} else {
+
+			preempt_disable();
+			if (is_fpu_owner())
+			        fcr31 = read_32bit_cp1_register(CP1_STATUS);
+			else
+				fcr31 = current->thread.fpu.fcr31;
+			preempt_enable();
+
+			bit = (insn.i_format.rt >> 2);
+			bit += (bit != 0);
+			bit += 23;
+			switch (insn.i_format.rt & 3) {
+			case 0: /* bc1f */
+			case 2: /* bc1fl */
+				if (~fcr31 & (1 << bit)) {
+					epc = epc + 4 +
+						(insn.i_format.simmediate << 2);
+					if (insn.i_format.rt == 2)
+						ret = BRANCH_LIKELY_TAKEN;
+				} else
+					epc += 8;
+				regs->cp0_epc = epc;
+				break;
+
+			case 1: /* bc1t */
+			case 3: /* bc1tl */
+				if (fcr31 & (1 << bit)) {
+					epc = epc + 4 +
+						(insn.i_format.simmediate << 2);
+					if (insn.i_format.rt == 3)
+						ret = BRANCH_LIKELY_TAKEN;
+				} else
+					epc += 8;
+				regs->cp0_epc = epc;
+				break;
+			}
+			break;
+		}
+>>>>>>> v4.9.227
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
 	case lwc2_op: /* This is bbit0 on Octeon */
 		if ((regs->regs[insn.i_format.rs] & (1ull<<insn.i_format.rt))
@@ -627,16 +869,81 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 			epc += 8;
 		regs->cp0_epc = epc;
 		break;
+<<<<<<< HEAD
 #endif
+=======
+#else
+	case bc6_op:
+		/* Only valid for MIPS R6 */
+		if (!cpu_has_mips_r6)
+			goto sigill_r6;
+		regs->cp0_epc += 8;
+		break;
+	case balc6_op:
+		if (!cpu_has_mips_r6)
+			goto sigill_r6;
+		/* Compact branch: BALC */
+		regs->regs[31] = epc + 4;
+		epc += 4 + (insn.i_format.simmediate << 2);
+		regs->cp0_epc = epc;
+		break;
+	case pop66_op:
+		if (!cpu_has_mips_r6)
+			goto sigill_r6;
+		/* Compact branch: BEQZC || JIC */
+		regs->cp0_epc += 8;
+		break;
+	case pop76_op:
+		if (!cpu_has_mips_r6)
+			goto sigill_r6;
+		/* Compact branch: BNEZC || JIALC */
+		if (!insn.i_format.rs) {
+			/* JIALC: set $31/ra */
+			regs->regs[31] = epc + 4;
+		}
+		regs->cp0_epc += 8;
+		break;
+#endif
+	case pop10_op:
+	case pop30_op:
+		/* Only valid for MIPS R6 */
+		if (!cpu_has_mips_r6)
+			goto sigill_r6;
+		/*
+		 * Compact branches:
+		 * bovc, beqc, beqzalc, bnvc, bnec, bnezlac
+		 */
+		if (insn.i_format.rt && !insn.i_format.rs)
+			regs->regs[31] = epc + 4;
+		regs->cp0_epc += 8;
+		break;
+>>>>>>> v4.9.227
 	}
 
 	return ret;
 
+<<<<<<< HEAD
 sigill:
+=======
+sigill_dsp:
+>>>>>>> v4.9.227
 	pr_info("%s: DSP branch but not DSP ASE - sending SIGILL.\n",
 		current->comm);
 	force_sig(SIGILL, current);
 	return -EFAULT;
+<<<<<<< HEAD
+=======
+sigill_r2r6:
+	pr_info("%s: R2 branch but r2-to-r6 emulator is not present - sending SIGILL.\n",
+		current->comm);
+	force_sig(SIGILL, current);
+	return -EFAULT;
+sigill_r6:
+	pr_info("%s: R6 branch but no MIPSr6 ISA support - sending SIGILL.\n",
+		current->comm);
+	force_sig(SIGILL, current);
+	return -EFAULT;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(__compute_return_epc_for_insn);
 
@@ -666,3 +973,40 @@ unaligned:
 	force_sig(SIGBUS, current);
 	return -EFAULT;
 }
+<<<<<<< HEAD
+=======
+
+#if (defined CONFIG_KPROBES) || (defined CONFIG_UPROBES)
+
+int __insn_is_compact_branch(union mips_instruction insn)
+{
+	if (!cpu_has_mips_r6)
+		return 0;
+
+	switch (insn.i_format.opcode) {
+	case blezl_op:
+	case bgtzl_op:
+	case blez_op:
+	case bgtz_op:
+		/*
+		 * blez[l] and bgtz[l] opcodes with non-zero rt
+		 * are MIPS R6 compact branches
+		 */
+		if (insn.i_format.rt)
+			return 1;
+		break;
+	case bc6_op:
+	case balc6_op:
+	case pop10_op:
+	case pop30_op:
+	case pop66_op:
+	case pop76_op:
+		return 1;
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(__insn_is_compact_branch);
+
+#endif  /* CONFIG_KPROBES || CONFIG_UPROBES */
+>>>>>>> v4.9.227

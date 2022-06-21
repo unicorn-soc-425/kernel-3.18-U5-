@@ -33,7 +33,11 @@ void cx18_stream_rotate_idx_mdls(struct cx18 *cx);
 
 static inline bool cx18_stream_enabled(struct cx18_stream *s)
 {
+<<<<<<< HEAD
 	return s->video_dev ||
+=======
+	return s->video_dev.v4l2_dev ||
+>>>>>>> v4.9.227
 	       (s->dvb && s->dvb->enabled) ||
 	       (s->type == CX18_ENC_STREAM_TYPE_IDX &&
 		s->cx->stream_buffers[CX18_ENC_STREAM_TYPE_IDX] != 0);

@@ -220,7 +220,11 @@ static struct isi_port  isi_ports[PORT_COUNT];
  *	it wants to talk.
  */
 
+<<<<<<< HEAD
 static inline int WaitTillCardIsFree(unsigned long base)
+=======
+static int WaitTillCardIsFree(unsigned long base)
+>>>>>>> v4.9.227
 {
 	unsigned int count = 0;
 	unsigned int a = in_atomic(); /* do we run under spinlock? */
@@ -249,7 +253,11 @@ static int lock_card(struct isi_board *card)
 		spin_unlock_irqrestore(&card->card_lock, card->flags);
 		msleep(10);
 	}
+<<<<<<< HEAD
 	pr_warning("Failed to lock Card (0x%lx)\n", card->base);
+=======
+	pr_warn("Failed to lock Card (0x%lx)\n", card->base);
+>>>>>>> v4.9.227
 
 	return 0;	/* Failed to acquire the card! */
 }
@@ -280,7 +288,11 @@ static void raise_dtr(struct isi_port *port)
 }
 
 /* card->lock HAS to be held */
+<<<<<<< HEAD
 static inline void drop_dtr(struct isi_port *port)
+=======
+static void drop_dtr(struct isi_port *port)
+>>>>>>> v4.9.227
 {
 	struct isi_board *card = port->card;
 	unsigned long base = card->base;
@@ -378,6 +390,7 @@ static inline int __isicom_paranoia_check(struct isi_port const *port,
 	char *name, const char *routine)
 {
 	if (!port) {
+<<<<<<< HEAD
 		pr_warning("Warning: bad isicom magic for dev %s in %s.\n",
 			   name, routine);
 		return 1;
@@ -385,6 +398,15 @@ static inline int __isicom_paranoia_check(struct isi_port const *port,
 	if (port->magic != ISICOM_MAGIC) {
 		pr_warning("Warning: NULL isicom port for dev %s in %s.\n",
 			   name, routine);
+=======
+		pr_warn("Warning: bad isicom magic for dev %s in %s\n",
+			name, routine);
+		return 1;
+	}
+	if (port->magic != ISICOM_MAGIC) {
+		pr_warn("Warning: NULL isicom port for dev %s in %s\n",
+			name, routine);
+>>>>>>> v4.9.227
 		return 1;
 	}
 
@@ -438,8 +460,13 @@ static void isicom_tx(unsigned long _data)
 
 	for (; count > 0; count--, port++) {
 		/* port not active or tx disabled to force flow control */
+<<<<<<< HEAD
 		if (!(port->port.flags & ASYNC_INITIALIZED) ||
 				!(port->status & ISI_TXOK))
+=======
+		if (!tty_port_initialized(&port->port) ||
+			!(port->status & ISI_TXOK))
+>>>>>>> v4.9.227
 			continue;
 
 		txcount = min_t(short, TX_SIZE, port->xmit_cnt);
@@ -546,14 +573,23 @@ static irqreturn_t isicom_interrupt(int irq, void *dev_id)
 	byte_count = header & 0xff;
 
 	if (channel + 1 > card->port_count) {
+<<<<<<< HEAD
 		pr_warning("%s(0x%lx): %d(channel) > port_count.\n",
 			   __func__, base, channel+1);
+=======
+		pr_warn("%s(0x%lx): %d(channel) > port_count\n",
+			__func__, base, channel + 1);
+>>>>>>> v4.9.227
 		outw(0x0000, base+0x04); /* enable interrupts */
 		spin_unlock(&card->card_lock);
 		return IRQ_HANDLED;
 	}
 	port = card->ports + channel;
+<<<<<<< HEAD
 	if (!(port->port.flags & ASYNC_INITIALIZED)) {
+=======
+	if (!tty_port_initialized(&port->port)) {
+>>>>>>> v4.9.227
 		outw(0x0000, base+0x04); /* enable interrupts */
 		spin_unlock(&card->card_lock);
 		return IRQ_HANDLED;
@@ -577,7 +613,11 @@ static irqreturn_t isicom_interrupt(int irq, void *dev_id)
 		header = inw(base);
 		switch (header & 0xff) {
 		case 0:	/* Change in EIA signals */
+<<<<<<< HEAD
 			if (port->port.flags & ASYNC_CHECK_CD) {
+=======
+			if (tty_port_check_carrier(&port->port)) {
+>>>>>>> v4.9.227
 				if (port->status & ISI_DCD) {
 					if (!(header & ISI_DCD)) {
 					/* Carrier has been lost  */
@@ -758,6 +798,7 @@ static void isicom_config_port(struct tty_struct *tty)
 		outw(channel_setup, base);
 		InterruptTheCard(base);
 	}
+<<<<<<< HEAD
 	if (C_CLOCAL(tty))
 		port->port.flags &= ~ASYNC_CHECK_CD;
 	else
@@ -770,6 +811,15 @@ static void isicom_config_port(struct tty_struct *tty)
 		port->port.flags |= ASYNC_CTS_FLOW;
 		flow_ctrl |= ISICOM_CTSRTS;
 	}
+=======
+	tty_port_set_check_carrier(&port->port, !C_CLOCAL(tty));
+
+	/* flow control settings ...*/
+	flow_ctrl = 0;
+	tty_port_set_cts_flow(&port->port, C_CRTSCTS(tty));
+	if (C_CRTSCTS(tty))
+		flow_ctrl |= ISICOM_CTSRTS;
+>>>>>>> v4.9.227
 	if (I_IXON(tty))
 		flow_ctrl |= ISICOM_RESPOND_XONXOFF;
 	if (I_IXOFF(tty))
@@ -1204,8 +1254,12 @@ static void isicom_set_termios(struct tty_struct *tty,
 	isicom_config_port(tty);
 	spin_unlock_irqrestore(&port->card->card_lock, flags);
 
+<<<<<<< HEAD
 	if ((old_termios->c_cflag & CRTSCTS) &&
 			!(tty->termios.c_cflag & CRTSCTS)) {
+=======
+	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty)) {
+>>>>>>> v4.9.227
 		tty->hw_stopped = 0;
 		isicom_start(tty);
 	}

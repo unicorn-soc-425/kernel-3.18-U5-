@@ -1,6 +1,12 @@
 #ifndef __ASM_TLB_H
 #define __ASM_TLB_H
 
+<<<<<<< HEAD
+=======
+#include <asm/cpu-features.h>
+#include <asm/mipsregs.h>
+
+>>>>>>> v4.9.227
 /*
  * MIPS doesn't need any special per-pte or per-vma handling, except
  * we need to flush cache for area to be unmapped.
@@ -22,6 +28,19 @@
 		((CKSEG0 + ((idx) << (PAGE_SHIFT + 1))) |		\
 		 (cpu_has_tlbinv ? MIPS_ENTRYHI_EHINV : 0))
 
+<<<<<<< HEAD
+=======
+static inline unsigned int num_wired_entries(void)
+{
+	unsigned int wired = read_c0_wired();
+
+	if (cpu_has_mips_r6)
+		wired &= MIPSR6_WIRED_WIRED;
+
+	return wired;
+}
+
+>>>>>>> v4.9.227
 #include <asm-generic/tlb.h>
 
 #endif /* __ASM_TLB_H */

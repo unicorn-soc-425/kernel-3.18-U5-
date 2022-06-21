@@ -22,7 +22,11 @@
  * Authors: Ben Skeggs <bskeggs@redhat.com>
  */
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 #include "nv10_fence.h"
 

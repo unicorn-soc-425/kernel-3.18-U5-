@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,6 +54,16 @@
 ACPI_MODULE_NAME("hwxfsleep")
 
 /* Local prototypes */
+<<<<<<< HEAD
+=======
+#if (!ACPI_REDUCED_HARDWARE)
+static acpi_status
+acpi_hw_set_firmware_waking_vector(struct acpi_table_facs *facs,
+				   acpi_physical_address physical_address,
+				   acpi_physical_address physical_address64);
+#endif
+
+>>>>>>> v4.9.227
 static acpi_status acpi_hw_sleep_dispatch(u8 sleep_state, u32 function_id);
 
 /*
@@ -73,13 +87,17 @@ static struct acpi_sleep_functions acpi_sleep_dispatch[] = {
 /*
  * These functions are removed for the ACPI_REDUCED_HARDWARE case:
  *      acpi_set_firmware_waking_vector
+<<<<<<< HEAD
  *      acpi_set_firmware_waking_vector64
+=======
+>>>>>>> v4.9.227
  *      acpi_enter_sleep_state_s4bios
  */
 
 #if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_set_firmware_waking_vector
  *
  * PARAMETERS:  physical_address    - 32-bit physical address of ACPI real mode
@@ -94,6 +112,28 @@ static struct acpi_sleep_functions acpi_sleep_dispatch[] = {
 acpi_status acpi_set_firmware_waking_vector(u32 physical_address)
 {
 	ACPI_FUNCTION_TRACE(acpi_set_firmware_waking_vector);
+=======
+ * FUNCTION:    acpi_hw_set_firmware_waking_vector
+ *
+ * PARAMETERS:  facs                - Pointer to FACS table
+ *              physical_address    - 32-bit physical address of ACPI real mode
+ *                                    entry point
+ *              physical_address64  - 64-bit physical address of ACPI protected
+ *                                    mode entry point
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Sets the firmware_waking_vector fields of the FACS
+ *
+ ******************************************************************************/
+
+static acpi_status
+acpi_hw_set_firmware_waking_vector(struct acpi_table_facs *facs,
+				   acpi_physical_address physical_address,
+				   acpi_physical_address physical_address64)
+{
+	ACPI_FUNCTION_TRACE(acpi_hw_set_firmware_waking_vector);
+>>>>>>> v4.9.227
 
 
 	/*
@@ -106,12 +146,59 @@ acpi_status acpi_set_firmware_waking_vector(u32 physical_address)
 
 	/* Set the 32-bit vector */
 
+<<<<<<< HEAD
 	acpi_gbl_FACS->firmware_waking_vector = physical_address;
 
 	/* Clear the 64-bit vector if it exists */
 
 	if ((acpi_gbl_FACS->length > 32) && (acpi_gbl_FACS->version >= 1)) {
 		acpi_gbl_FACS->xfirmware_waking_vector = 0;
+=======
+	facs->firmware_waking_vector = (u32)physical_address;
+
+	if (facs->length > 32) {
+		if (facs->version >= 1) {
+
+			/* Set the 64-bit vector */
+
+			facs->xfirmware_waking_vector = physical_address64;
+		} else {
+			/* Clear the 64-bit vector if it exists */
+
+			facs->xfirmware_waking_vector = 0;
+		}
+	}
+
+	return_ACPI_STATUS(AE_OK);
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_set_firmware_waking_vector
+ *
+ * PARAMETERS:  physical_address    - 32-bit physical address of ACPI real mode
+ *                                    entry point
+ *              physical_address64  - 64-bit physical address of ACPI protected
+ *                                    mode entry point
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Sets the firmware_waking_vector fields of the FACS
+ *
+ ******************************************************************************/
+
+acpi_status
+acpi_set_firmware_waking_vector(acpi_physical_address physical_address,
+				acpi_physical_address physical_address64)
+{
+
+	ACPI_FUNCTION_TRACE(acpi_set_firmware_waking_vector);
+
+	if (acpi_gbl_FACS) {
+		(void)acpi_hw_set_firmware_waking_vector(acpi_gbl_FACS,
+							 physical_address,
+							 physical_address64);
+>>>>>>> v4.9.227
 	}
 
 	return_ACPI_STATUS(AE_OK);
@@ -119,6 +206,7 @@ acpi_status acpi_set_firmware_waking_vector(u32 physical_address)
 
 ACPI_EXPORT_SYMBOL(acpi_set_firmware_waking_vector)
 
+<<<<<<< HEAD
 #if ACPI_MACHINE_WIDTH == 64
 /*******************************************************************************
  *
@@ -155,6 +243,8 @@ acpi_status acpi_set_firmware_waking_vector64(u64 physical_address)
 ACPI_EXPORT_SYMBOL(acpi_set_firmware_waking_vector64)
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*******************************************************************************
  *
  * FUNCTION:    acpi_enter_sleep_state_s4bios
@@ -214,6 +304,10 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	} while (!in_value);
 
 	return_ACPI_STATUS(AE_OK);

@@ -32,7 +32,11 @@ struct as102_state {
 	uint32_t ber;
 };
 
+<<<<<<< HEAD
 static uint8_t as102_fe_get_code_rate(fe_code_rate_t arg)
+=======
+static uint8_t as102_fe_get_code_rate(enum fe_code_rate arg)
+>>>>>>> v4.9.227
 {
 	uint8_t c;
 
@@ -190,10 +194,17 @@ static int as102_fe_set_frontend(struct dvb_frontend *fe)
 	return state->ops->set_tune(state->priv, &tune_args);
 }
 
+<<<<<<< HEAD
 static int as102_fe_get_frontend(struct dvb_frontend *fe)
 {
 	struct as102_state *state = fe->demodulator_priv;
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
+=======
+static int as102_fe_get_frontend(struct dvb_frontend *fe,
+				 struct dtv_frontend_properties *c)
+{
+	struct as102_state *state = fe->demodulator_priv;
+>>>>>>> v4.9.227
 	int ret = 0;
 	struct as10x_tps tps = { 0 };
 
@@ -306,7 +317,11 @@ static int as102_fe_get_tune_settings(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int as102_fe_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int as102_fe_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	int ret = 0;
 	struct as102_state *state = fe->demodulator_priv;

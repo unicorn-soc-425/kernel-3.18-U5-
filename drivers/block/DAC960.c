@@ -2954,7 +2954,11 @@ DAC960_DetectController(struct pci_dev *PCI_Device,
 	case DAC960_PD_Controller:
 	  if (!request_region(Controller->IO_Address, 0x80,
 			      Controller->FullModelName)) {
+<<<<<<< HEAD
 		DAC960_Error("IO port 0x%d busy for Controller at\n",
+=======
+		DAC960_Error("IO port 0x%lx busy for Controller at\n",
+>>>>>>> v4.9.227
 			     Controller, Controller->IO_Address);
 		goto Failure;
 	  }
@@ -2990,7 +2994,11 @@ DAC960_DetectController(struct pci_dev *PCI_Device,
 	case DAC960_P_Controller:
 	  if (!request_region(Controller->IO_Address, 0x80,
 			      Controller->FullModelName)){
+<<<<<<< HEAD
 		DAC960_Error("IO port 0x%d busy for Controller at\n",
+=======
+		DAC960_Error("IO port 0x%lx busy for Controller at\n",
+>>>>>>> v4.9.227
 		   	     Controller, Controller->IO_Address);
 		goto Failure;
 	  }

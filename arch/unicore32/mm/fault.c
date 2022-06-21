@@ -194,7 +194,11 @@ good_area:
 	 * If for any reason at all we couldn't handle the fault, make
 	 * sure we exit gracefully rather than endlessly redo the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, addr & PAGE_MASK, flags);
+=======
+	fault = handle_mm_fault(vma, addr & PAGE_MASK, flags);
+>>>>>>> v4.9.227
 	return fault;
 
 check_stack:
@@ -218,7 +222,11 @@ static int do_pf(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (faulthandler_disabled() || !mm)
+>>>>>>> v4.9.227
 		goto no_context;
 
 	if (user_mode(regs))
@@ -276,7 +284,11 @@ retry:
 	up_read(&mm->mmap_sem);
 
 	/*
+<<<<<<< HEAD
 	 * Handle the "normal" case first - VM_FAULT_MAJOR / VM_FAULT_MINOR
+=======
+	 * Handle the "normal" case first - VM_FAULT_MAJOR
+>>>>>>> v4.9.227
 	 */
 	if (likely(!(fault &
 	       (VM_FAULT_ERROR | VM_FAULT_BADMAP | VM_FAULT_BADACCESS))))

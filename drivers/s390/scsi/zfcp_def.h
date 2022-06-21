@@ -186,12 +186,20 @@ struct zfcp_adapter {
 	struct fc_host_statistics *fc_stats;
 	struct fsf_qtcb_bottom_port *stats_reset_data;
 	unsigned long		stats_reset;
+<<<<<<< HEAD
 	struct work_struct	scan_work;
+=======
+	struct delayed_work	scan_work;
+>>>>>>> v4.9.227
 	struct work_struct	ns_up_work;
 	struct service_level	service_level;
 	struct workqueue_struct	*work_queue;
 	struct device_dma_parameters dma_parms;
 	struct zfcp_fc_events events;
+<<<<<<< HEAD
+=======
+	unsigned long		next_port_scan;
+>>>>>>> v4.9.227
 };
 
 struct zfcp_port {

@@ -268,14 +268,22 @@ static void __init psurge_quad_init(void)
 	mdelay(33);
 }
 
+<<<<<<< HEAD
 static int __init smp_psurge_probe(void)
+=======
+static void __init smp_psurge_probe(void)
+>>>>>>> v4.9.227
 {
 	int i, ncpus;
 	struct device_node *dn;
 
 	/* We don't do SMP on the PPC601 -- paulus */
 	if (PVR_VER(mfspr(SPRN_PVR)) == 1)
+<<<<<<< HEAD
 		return 1;
+=======
+		return;
+>>>>>>> v4.9.227
 
 	/*
 	 * The powersurge cpu board can be used in the generation
@@ -289,7 +297,11 @@ static int __init smp_psurge_probe(void)
 	 */
 	dn = of_find_node_by_name(NULL, "hammerhead");
 	if (dn == NULL)
+<<<<<<< HEAD
 		return 1;
+=======
+		return;
+>>>>>>> v4.9.227
 	of_node_put(dn);
 
 	hhead_base = ioremap(HAMMERHEAD_BASE, 0x800);
@@ -310,13 +322,21 @@ static int __init smp_psurge_probe(void)
 			/* not a dual-cpu card */
 			iounmap(hhead_base);
 			psurge_type = PSURGE_NONE;
+<<<<<<< HEAD
 			return 1;
+=======
+			return;
+>>>>>>> v4.9.227
 		}
 		ncpus = 2;
 	}
 
 	if (psurge_secondary_ipi_init())
+<<<<<<< HEAD
 		return 1;
+=======
+		return;
+>>>>>>> v4.9.227
 
 	psurge_start = ioremap(PSURGE_START, 4);
 	psurge_pri_intr = ioremap(PSURGE_PRI_INTR, 4);
@@ -332,8 +352,11 @@ static int __init smp_psurge_probe(void)
 		set_cpu_present(i, true);
 
 	if (ppc_md.progress) ppc_md.progress("smp_psurge_probe - done", 0x352);
+<<<<<<< HEAD
 
 	return ncpus;
+=======
+>>>>>>> v4.9.227
 }
 
 static int __init smp_psurge_kick_cpu(int nr)
@@ -766,7 +789,11 @@ static void __init smp_core99_setup(int ncpus)
 		powersave_nap = 0;
 }
 
+<<<<<<< HEAD
 static int __init smp_core99_probe(void)
+=======
+static void __init smp_core99_probe(void)
+>>>>>>> v4.9.227
 {
 	struct device_node *cpus;
 	int ncpus = 0;
@@ -781,7 +808,11 @@ static int __init smp_core99_probe(void)
 
 	/* Nothing more to do if less than 2 of them */
 	if (ncpus <= 1)
+<<<<<<< HEAD
 		return 1;
+=======
+		return;
+>>>>>>> v4.9.227
 
 	/* We need to perform some early initialisations before we can start
 	 * setting up SMP as we are running before initcalls
@@ -797,8 +828,11 @@ static int __init smp_core99_probe(void)
 
 	/* Collect l2cr and l3cr values from CPU 0 */
 	core99_init_caches(0);
+<<<<<<< HEAD
 
 	return ncpus;
+=======
+>>>>>>> v4.9.227
 }
 
 static int smp_core99_kick_cpu(int nr)
@@ -856,6 +890,7 @@ static void smp_core99_setup_cpu(int cpu_nr)
 
 #ifdef CONFIG_PPC64
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 static int smp_core99_cpu_notify(struct notifier_block *self,
 				 unsigned long action, void *hcpu)
 {
@@ -888,6 +923,35 @@ static int smp_core99_cpu_notify(struct notifier_block *self,
 static struct notifier_block smp_core99_cpu_nb = {
 	.notifier_call	= smp_core99_cpu_notify,
 };
+=======
+static unsigned int smp_core99_host_open;
+
+static int smp_core99_cpu_prepare(unsigned int cpu)
+{
+	int rc;
+
+	/* Open i2c bus if it was used for tb sync */
+	if (pmac_tb_clock_chip_host && !smp_core99_host_open) {
+		rc = pmac_i2c_open(pmac_tb_clock_chip_host, 1);
+		if (rc) {
+			pr_err("Failed to open i2c bus for time sync\n");
+			return notifier_from_errno(rc);
+		}
+		smp_core99_host_open = 1;
+	}
+	return 0;
+}
+
+static int smp_core99_cpu_online(unsigned int cpu)
+{
+	/* Close i2c bus if it was used for tb sync */
+	if (pmac_tb_clock_chip_host && smp_core99_host_open) {
+		pmac_i2c_close(pmac_tb_clock_chip_host);
+		smp_core99_host_open = 0;
+	}
+	return 0;
+}
+>>>>>>> v4.9.227
 #endif /* CONFIG_HOTPLUG_CPU */
 
 static void __init smp_core99_bringup_done(void)
@@ -907,7 +971,15 @@ static void __init smp_core99_bringup_done(void)
 		g5_phy_disable_cpu1();
 	}
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 	register_cpu_notifier(&smp_core99_cpu_nb);
+=======
+	cpuhp_setup_state_nocalls(CPUHP_POWERPC_PMAC_PREPARE,
+				  "powerpc/pmac:prepare", smp_core99_cpu_prepare,
+				  NULL);
+	cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN, "powerpc/pmac:online",
+				  smp_core99_cpu_online, NULL);
+>>>>>>> v4.9.227
 #endif
 
 	if (ppc_md.progress)
@@ -984,7 +1056,11 @@ static void pmac_cpu_die(void)
 #endif /* CONFIG_HOTPLUG_CPU */
 
 /* Core99 Macs (dual G4s and G5s) */
+<<<<<<< HEAD
 struct smp_ops_t core99_smp_ops = {
+=======
+static struct smp_ops_t core99_smp_ops = {
+>>>>>>> v4.9.227
 	.message_pass	= smp_mpic_message_pass,
 	.probe		= smp_core99_probe,
 #ifdef CONFIG_PPC64

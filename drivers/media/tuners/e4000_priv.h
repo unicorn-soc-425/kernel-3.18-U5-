@@ -22,10 +22,15 @@
 #define E4000_PRIV_H
 
 #include "e4000.h"
+<<<<<<< HEAD
+=======
+#include <linux/math64.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-subdev.h>
 #include <linux/regmap.h>
 
+<<<<<<< HEAD
 struct e4000 {
 	struct i2c_client *client;
 	struct regmap *regmap;
@@ -33,6 +38,17 @@ struct e4000 {
 	struct dvb_frontend *fe;
 	struct v4l2_subdev sd;
 	bool active;
+=======
+struct e4000_dev {
+	struct i2c_client *client;
+	struct regmap *regmap;
+	u32 clk;
+	struct dvb_frontend *fe;
+	struct v4l2_subdev sd;
+	bool active;
+	unsigned int f_frequency;
+	unsigned int f_bandwidth;
+>>>>>>> v4.9.227
 
 	/* Controls */
 	struct v4l2_ctrl_handler hdl;
@@ -49,8 +65,13 @@ struct e4000 {
 
 struct e4000_pll {
 	u32 freq;
+<<<<<<< HEAD
 	u8 div;
 	u8 mul;
+=======
+	u8 div_out_reg;
+	u8 div_out;
+>>>>>>> v4.9.227
 };
 
 static const struct e4000_pll e4000_pll_lut[] = {

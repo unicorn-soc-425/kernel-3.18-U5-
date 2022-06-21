@@ -156,7 +156,11 @@ static int bnep_net_proto_filter(struct sk_buff *skb, struct bnep_session *s)
 			return 0;
 	}
 
+<<<<<<< HEAD
 	BT_DBG("BNEP: filtered skb %pK, proto 0x%.4x", skb, proto);
+=======
+	BT_DBG("BNEP: filtered skb %p, proto 0x%.4x", skb, proto);
+>>>>>>> v4.9.227
 	return 1;
 }
 #endif
@@ -167,7 +171,11 @@ static netdev_tx_t bnep_net_xmit(struct sk_buff *skb,
 	struct bnep_session *s = netdev_priv(dev);
 	struct sock *sk = s->sock->sk;
 
+<<<<<<< HEAD
 	BT_DBG("skb %pK, dev %pK", skb, dev);
+=======
+	BT_DBG("skb %p, dev %p", skb, dev);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_BT_BNEP_MC_FILTER
 	if (bnep_net_mc_filter(skb, s)) {
@@ -188,7 +196,11 @@ static netdev_tx_t bnep_net_xmit(struct sk_buff *skb,
 	 * So we have to queue them and wake up session thread which is sleeping
 	 * on the sk_sleep(sk).
 	 */
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> v4.9.227
 	skb_queue_tail(&sk->sk_write_queue, skb);
 	wake_up_interruptible(sk_sleep(sk));
 
@@ -218,7 +230,11 @@ static const struct net_device_ops bnep_netdev_ops = {
 void bnep_net_setup(struct net_device *dev)
 {
 
+<<<<<<< HEAD
 	memset(dev->broadcast, 0xff, ETH_ALEN);
+=======
+	eth_broadcast_addr(dev->broadcast);
+>>>>>>> v4.9.227
 	dev->addr_len = ETH_ALEN;
 
 	ether_setup(dev);

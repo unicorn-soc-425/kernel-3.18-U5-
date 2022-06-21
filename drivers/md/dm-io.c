@@ -5,7 +5,11 @@
  * This file is released under the GPL.
  */
 
+<<<<<<< HEAD
 #include "dm.h"
+=======
+#include "dm-core.h"
+>>>>>>> v4.9.227
 
 #include <linux/device-mapper.h>
 
@@ -50,7 +54,11 @@ struct dm_io_client *dm_io_client_create(void)
 	struct dm_io_client *client;
 	unsigned min_ios = dm_get_reserved_bio_based_ios();
 
+<<<<<<< HEAD
 	client = kmalloc(sizeof(*client), GFP_KERNEL);
+=======
+	client = kzalloc(sizeof(*client), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!client)
 		return ERR_PTR(-ENOMEM);
 
@@ -65,8 +73,12 @@ struct dm_io_client *dm_io_client_create(void)
 	return client;
 
    bad:
+<<<<<<< HEAD
 	if (client->pool)
 		mempool_destroy(client->pool);
+=======
+	mempool_destroy(client->pool);
+>>>>>>> v4.9.227
 	kfree(client);
 	return ERR_PTR(-ENOMEM);
 }
@@ -134,12 +146,22 @@ static void dec_count(struct io *io, unsigned int region, int error)
 		complete_io(io);
 }
 
+<<<<<<< HEAD
 static void endio(struct bio *bio, int error)
 {
 	struct io *io;
 	unsigned region;
 
 	if (error && bio_data_dir(bio) == READ)
+=======
+static void endio(struct bio *bio)
+{
+	struct io *io;
+	unsigned region;
+	int error;
+
+	if (bio->bi_error && bio_data_dir(bio) == READ)
+>>>>>>> v4.9.227
 		zero_fill_bio(bio);
 
 	/*
@@ -147,6 +169,10 @@ static void endio(struct bio *bio, int error)
 	 */
 	retrieve_io_and_region_from_bio(bio, &io, &region);
 
+<<<<<<< HEAD
+=======
+	error = bio->bi_error;
+>>>>>>> v4.9.227
 	bio_put(bio);
 
 	dec_count(io, region, error);
@@ -245,7 +271,11 @@ static void vm_dp_init(struct dpages *dp, void *data)
 {
 	dp->get_page = vm_get_page;
 	dp->next_page = vm_next_page;
+<<<<<<< HEAD
 	dp->context_u = ((unsigned long) data) & (PAGE_SIZE - 1);
+=======
+	dp->context_u = offset_in_page(data);
+>>>>>>> v4.9.227
 	dp->context_ptr = data;
 }
 
@@ -270,15 +300,25 @@ static void km_dp_init(struct dpages *dp, void *data)
 {
 	dp->get_page = km_get_page;
 	dp->next_page = km_next_page;
+<<<<<<< HEAD
 	dp->context_u = ((unsigned long) data) & (PAGE_SIZE - 1);
+=======
+	dp->context_u = offset_in_page(data);
+>>>>>>> v4.9.227
 	dp->context_ptr = data;
 }
 
 /*-----------------------------------------------------------------
  * IO routines that accept a list of pages.
  *---------------------------------------------------------------*/
+<<<<<<< HEAD
 static void do_region(int rw, unsigned region, struct dm_io_region *where,
 		      struct dpages *dp, struct io *io)
+=======
+static void do_region(int op, int op_flags, unsigned region,
+		      struct dm_io_region *where, struct dpages *dp,
+		      struct io *io)
+>>>>>>> v4.9.227
 {
 	struct bio *bio;
 	struct page *page;
@@ -294,34 +334,55 @@ static void do_region(int rw, unsigned region, struct dm_io_region *where,
 	/*
 	 * Reject unsupported discard and write same requests.
 	 */
+<<<<<<< HEAD
 	if (rw & REQ_DISCARD)
 		special_cmd_max_sectors = q->limits.max_discard_sectors;
 	else if (rw & REQ_WRITE_SAME)
 		special_cmd_max_sectors = q->limits.max_write_same_sectors;
 	if ((rw & (REQ_DISCARD | REQ_WRITE_SAME)) && special_cmd_max_sectors == 0) {
+=======
+	if (op == REQ_OP_DISCARD)
+		special_cmd_max_sectors = q->limits.max_discard_sectors;
+	else if (op == REQ_OP_WRITE_SAME)
+		special_cmd_max_sectors = q->limits.max_write_same_sectors;
+	if ((op == REQ_OP_DISCARD || op == REQ_OP_WRITE_SAME) &&
+	    special_cmd_max_sectors == 0) {
+>>>>>>> v4.9.227
 		atomic_inc(&io->count);
 		dec_count(io, region, -EOPNOTSUPP);
 		return;
 	}
 
 	/*
+<<<<<<< HEAD
 	 * where->count may be zero if rw holds a flush and we need to
+=======
+	 * where->count may be zero if op holds a flush and we need to
+>>>>>>> v4.9.227
 	 * send a zero-sized flush.
 	 */
 	do {
 		/*
 		 * Allocate a suitably sized-bio.
 		 */
+<<<<<<< HEAD
 		if ((rw & REQ_DISCARD) || (rw & REQ_WRITE_SAME))
 			num_bvecs = 1;
 		else
 			num_bvecs = min_t(int, bio_get_nr_vecs(where->bdev),
+=======
+		if ((op == REQ_OP_DISCARD) || (op == REQ_OP_WRITE_SAME))
+			num_bvecs = 1;
+		else
+			num_bvecs = min_t(int, BIO_MAX_PAGES,
+>>>>>>> v4.9.227
 					  dm_sector_div_up(remaining, (PAGE_SIZE >> SECTOR_SHIFT)));
 
 		bio = bio_alloc_bioset(GFP_NOIO, num_bvecs, io->client->bios);
 		bio->bi_iter.bi_sector = where->sector + (where->count - remaining);
 		bio->bi_bdev = where->bdev;
 		bio->bi_end_io = endio;
+<<<<<<< HEAD
 		store_io_and_region_in_bio(bio, io, region);
 
 		if (rw & REQ_DISCARD) {
@@ -329,6 +390,16 @@ static void do_region(int rw, unsigned region, struct dm_io_region *where,
 			bio->bi_iter.bi_size = num_sectors << SECTOR_SHIFT;
 			remaining -= num_sectors;
 		} else if (rw & REQ_WRITE_SAME) {
+=======
+		bio_set_op_attrs(bio, op, op_flags);
+		store_io_and_region_in_bio(bio, io, region);
+
+		if (op == REQ_OP_DISCARD) {
+			num_sectors = min_t(sector_t, special_cmd_max_sectors, remaining);
+			bio->bi_iter.bi_size = num_sectors << SECTOR_SHIFT;
+			remaining -= num_sectors;
+		} else if (op == REQ_OP_WRITE_SAME) {
+>>>>>>> v4.9.227
 			/*
 			 * WRITE SAME only uses a single page.
 			 */
@@ -355,11 +426,19 @@ static void do_region(int rw, unsigned region, struct dm_io_region *where,
 		}
 
 		atomic_inc(&io->count);
+<<<<<<< HEAD
 		submit_bio(rw, bio);
 	} while (remaining);
 }
 
 static void dispatch_io(int rw, unsigned int num_regions,
+=======
+		submit_bio(bio);
+	} while (remaining);
+}
+
+static void dispatch_io(int op, int op_flags, unsigned int num_regions,
+>>>>>>> v4.9.227
 			struct dm_io_region *where, struct dpages *dp,
 			struct io *io, int sync)
 {
@@ -369,7 +448,11 @@ static void dispatch_io(int rw, unsigned int num_regions,
 	BUG_ON(num_regions > DM_IO_MAX_REGIONS);
 
 	if (sync)
+<<<<<<< HEAD
 		rw |= REQ_SYNC;
+=======
+		op_flags |= REQ_SYNC;
+>>>>>>> v4.9.227
 
 	/*
 	 * For multiple regions we need to be careful to rewind
@@ -377,8 +460,13 @@ static void dispatch_io(int rw, unsigned int num_regions,
 	 */
 	for (i = 0; i < num_regions; i++) {
 		*dp = old_pages;
+<<<<<<< HEAD
 		if (where[i].count || (rw & REQ_FLUSH))
 			do_region(rw, i, where + i, dp, io);
+=======
+		if (where[i].count || (op_flags & REQ_PREFLUSH))
+			do_region(op, op_flags, i, where + i, dp, io);
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -402,13 +490,22 @@ static void sync_io_complete(unsigned long error, void *context)
 }
 
 static int sync_io(struct dm_io_client *client, unsigned int num_regions,
+<<<<<<< HEAD
 		   struct dm_io_region *where, int rw, struct dpages *dp,
 		   unsigned long *error_bits)
+=======
+		   struct dm_io_region *where, int op, int op_flags,
+		   struct dpages *dp, unsigned long *error_bits)
+>>>>>>> v4.9.227
 {
 	struct io *io;
 	struct sync_io sio;
 
+<<<<<<< HEAD
 	if (num_regions > 1 && (rw & RW_MASK) != WRITE) {
+=======
+	if (num_regions > 1 && !op_is_write(op)) {
+>>>>>>> v4.9.227
 		WARN_ON(1);
 		return -EIO;
 	}
@@ -425,7 +522,11 @@ static int sync_io(struct dm_io_client *client, unsigned int num_regions,
 	io->vma_invalidate_address = dp->vma_invalidate_address;
 	io->vma_invalidate_size = dp->vma_invalidate_size;
 
+<<<<<<< HEAD
 	dispatch_io(rw, num_regions, where, dp, io, 1);
+=======
+	dispatch_io(op, op_flags, num_regions, where, dp, io, 1);
+>>>>>>> v4.9.227
 
 	wait_for_completion_io(&sio.wait);
 
@@ -436,12 +537,21 @@ static int sync_io(struct dm_io_client *client, unsigned int num_regions,
 }
 
 static int async_io(struct dm_io_client *client, unsigned int num_regions,
+<<<<<<< HEAD
 		    struct dm_io_region *where, int rw, struct dpages *dp,
 		    io_notify_fn fn, void *context)
 {
 	struct io *io;
 
 	if (num_regions > 1 && (rw & RW_MASK) != WRITE) {
+=======
+		    struct dm_io_region *where, int op, int op_flags,
+		    struct dpages *dp, io_notify_fn fn, void *context)
+{
+	struct io *io;
+
+	if (num_regions > 1 && !op_is_write(op)) {
+>>>>>>> v4.9.227
 		WARN_ON(1);
 		fn(1, context);
 		return -EIO;
@@ -457,7 +567,11 @@ static int async_io(struct dm_io_client *client, unsigned int num_regions,
 	io->vma_invalidate_address = dp->vma_invalidate_address;
 	io->vma_invalidate_size = dp->vma_invalidate_size;
 
+<<<<<<< HEAD
 	dispatch_io(rw, num_regions, where, dp, io, 0);
+=======
+	dispatch_io(op, op_flags, num_regions, where, dp, io, 0);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -480,7 +594,11 @@ static int dp_init(struct dm_io_request *io_req, struct dpages *dp,
 
 	case DM_IO_VMA:
 		flush_kernel_vmap_range(io_req->mem.ptr.vma, size);
+<<<<<<< HEAD
 		if ((io_req->bi_rw & RW_MASK) == READ) {
+=======
+		if (io_req->bi_op == REQ_OP_READ) {
+>>>>>>> v4.9.227
 			dp->vma_invalidate_address = io_req->mem.ptr.vma;
 			dp->vma_invalidate_size = size;
 		}
@@ -502,9 +620,15 @@ static int dp_init(struct dm_io_request *io_req, struct dpages *dp,
  * New collapsed (a)synchronous interface.
  *
  * If the IO is asynchronous (i.e. it has notify.fn), you must either unplug
+<<<<<<< HEAD
  * the queue with blk_unplug() some time later or set REQ_SYNC in io_req->bi_rw.
  * If you fail to do one of these, the IO will be submitted to the disk after
  * q->unplug_delay, which defaults to 3ms in blk-settings.c.
+=======
+ * the queue with blk_unplug() some time later or set REQ_SYNC in
+ * io_req->bi_opf. If you fail to do one of these, the IO will be submitted to
+ * the disk after q->unplug_delay, which defaults to 3ms in blk-settings.c.
+>>>>>>> v4.9.227
  */
 int dm_io(struct dm_io_request *io_req, unsigned num_regions,
 	  struct dm_io_region *where, unsigned long *sync_error_bits)
@@ -518,10 +642,19 @@ int dm_io(struct dm_io_request *io_req, unsigned num_regions,
 
 	if (!io_req->notify.fn)
 		return sync_io(io_req->client, num_regions, where,
+<<<<<<< HEAD
 			       io_req->bi_rw, &dp, sync_error_bits);
 
 	return async_io(io_req->client, num_regions, where, io_req->bi_rw,
 			&dp, io_req->notify.fn, io_req->notify.context);
+=======
+			       io_req->bi_op, io_req->bi_op_flags, &dp,
+			       sync_error_bits);
+
+	return async_io(io_req->client, num_regions, where, io_req->bi_op,
+			io_req->bi_op_flags, &dp, io_req->notify.fn,
+			io_req->notify.context);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(dm_io);
 

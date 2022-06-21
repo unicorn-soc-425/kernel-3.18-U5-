@@ -37,7 +37,11 @@ struct s5h1411_state {
 
 	struct dvb_frontend frontend;
 
+<<<<<<< HEAD
 	fe_modulation_t current_modulation;
+=======
+	enum fe_modulation current_modulation;
+>>>>>>> v4.9.227
 	unsigned int first_tune:1;
 
 	u32 current_frequency;
@@ -484,7 +488,11 @@ static int s5h1411_set_serialmode(struct dvb_frontend *fe, int serial)
 }
 
 static int s5h1411_enable_modulation(struct dvb_frontend *fe,
+<<<<<<< HEAD
 				     fe_modulation_t m)
+=======
+				     enum fe_modulation m)
+>>>>>>> v4.9.227
 {
 	struct s5h1411_state *state = fe->demodulator_priv;
 
@@ -659,7 +667,11 @@ static int s5h1411_init(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s5h1411_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int s5h1411_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct s5h1411_state *state = fe->demodulator_priv;
 	u16 reg;
@@ -840,9 +852,15 @@ static int s5h1411_read_ber(struct dvb_frontend *fe, u32 *ber)
 	return s5h1411_read_ucblocks(fe, ber);
 }
 
+<<<<<<< HEAD
 static int s5h1411_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+=======
+static int s5h1411_get_frontend(struct dvb_frontend *fe,
+				struct dtv_frontend_properties *p)
+{
+>>>>>>> v4.9.227
 	struct s5h1411_state *state = fe->demodulator_priv;
 
 	p->frequency = state->current_frequency;
@@ -944,8 +962,11 @@ MODULE_PARM_DESC(debug, "Enable verbose debug messages");
 MODULE_DESCRIPTION("Samsung S5H1411 QAM-B/ATSC Demodulator driver");
 MODULE_AUTHOR("Steven Toth");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  */
+=======
+>>>>>>> v4.9.227

@@ -786,7 +786,10 @@ port address 0x1400.
         irqm:1     same as initial settings (assumed BIOS settings)
         irqm:2     always totem pole
         irqm:0x10  driver will not use IRQF_SHARED flag when requesting irq
+<<<<<<< HEAD
         irqm:0x20  driver will not use IRQF_DISABLED flag when requesting irq
+=======
+>>>>>>> v4.9.227
 
     (Bits 0x10 and 0x20 can be combined with hardware irq mode option)
 
@@ -1231,6 +1234,7 @@ they only refer to system buffers that are well aligned. So, a work around
 may only be needed under Linux when a scatter/gather list is not used and 
 when the SCSI DATA IN phase is reentered after a phase mismatch.
 
+<<<<<<< HEAD
 14.5 IRQ sharing problems
 
 When an IRQ is shared by devices that are handled by different drivers, it 
@@ -1255,6 +1259,8 @@ drivers are requesting the IRQ and report the problem. Note that if at least
 a single driver does not request the IRQ with the IRQF_SHARED flag (share IRQ),
 then the request of the IRQ obviously will not succeed for all the drivers.
 
+=======
+>>>>>>> v4.9.227
 15. SCSI problem troubleshooting
 
 15.1 Problem tracking

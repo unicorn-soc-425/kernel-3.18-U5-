@@ -20,7 +20,11 @@
 #include "prm-regbits-24xx.h"
 #include "wd_timer.h"
 
+<<<<<<< HEAD
 struct omap_hwmod_dma_info omap2xxx_dss_sdma_chs[] = {
+=======
+static struct omap_hwmod_dma_info omap2xxx_dss_sdma_chs[] = {
+>>>>>>> v4.9.227
 	{ .name = "dispc", .dma_req = 5 },
 	{ .dma_req = -1, },
 };
@@ -762,6 +766,7 @@ struct omap_hwmod omap2xxx_gpmc_hwmod = {
 	.name		= "gpmc",
 	.class		= &omap2xxx_gpmc_hwmod_class,
 	.main_clk	= "gpmc_fck",
+<<<<<<< HEAD
 	/*
 	 * XXX HWMOD_INIT_NO_RESET should not be needed for this IP
 	 * block.  It is not being added due to any known bugs with
@@ -772,6 +777,10 @@ struct omap_hwmod omap2xxx_gpmc_hwmod = {
 	 */
 	.flags		= (HWMOD_INIT_NO_IDLE | HWMOD_INIT_NO_RESET |
 			   HWMOD_NO_IDLEST),
+=======
+	/* Skip reset for CONFIG_OMAP_GPMC_DEBUG for bootloader timings */
+	.flags		= HWMOD_NO_IDLEST | DEBUG_OMAP_GPMC_HWMOD_FLAGS,
+>>>>>>> v4.9.227
 	.prcm		= {
 		.omap2	= {
 			.prcm_reg_id = 3,

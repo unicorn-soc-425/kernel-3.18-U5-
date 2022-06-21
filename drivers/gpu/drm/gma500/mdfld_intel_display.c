@@ -99,7 +99,11 @@ void mdfldWaitForPipeEnable(struct drm_device *dev, int pipe)
 	/* Wait for for the pipe enable to take effect. */
 	for (count = 0; count < COUNT_MAX; count++) {
 		temp = REG_READ(map->conf);
+<<<<<<< HEAD
 		if ((temp & PIPEACONF_PIPE_STATE) == 1)
+=======
+		if (temp & PIPEACONF_PIPE_STATE)
+>>>>>>> v4.9.227
 			break;
 	}
 }
@@ -1026,10 +1030,16 @@ mrst_crtc_mode_set_exit:
 
 const struct drm_crtc_helper_funcs mdfld_helper_funcs = {
 	.dpms = mdfld_crtc_dpms,
+<<<<<<< HEAD
 	.mode_fixup = gma_crtc_mode_fixup,
+=======
+>>>>>>> v4.9.227
 	.mode_set = mdfld_crtc_mode_set,
 	.mode_set_base = mdfld__intel_pipe_set_base,
 	.prepare = gma_crtc_prepare,
 	.commit = gma_crtc_commit,
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227

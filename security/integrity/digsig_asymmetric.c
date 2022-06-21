@@ -16,7 +16,13 @@
 #include <linux/ratelimit.h>
 #include <linux/key-type.h>
 #include <crypto/public_key.h>
+<<<<<<< HEAD
 #include <keys/asymmetric-type.h>
+=======
+#include <crypto/hash_info.h>
+#include <keys/asymmetric-type.h>
+#include <keys/system_keyring.h>
+>>>>>>> v4.9.227
 
 #include "integrity.h"
 
@@ -32,9 +38,28 @@ static struct key *request_asymmetric_key(struct key *keyring, uint32_t keyid)
 
 	pr_debug("key search: \"%s\"\n", name);
 
+<<<<<<< HEAD
 	if (keyring) {
 		/* search in specific keyring */
 		key_ref_t kref;
+=======
+	key = get_ima_blacklist_keyring();
+	if (key) {
+		key_ref_t kref;
+
+		kref = keyring_search(make_key_ref(key, 1),
+				     &key_type_asymmetric, name);
+		if (!IS_ERR(kref)) {
+			pr_err("Key '%s' is in ima_blacklist_keyring\n", name);
+			return ERR_PTR(-EKEYREJECTED);
+		}
+	}
+
+	if (keyring) {
+		/* search in specific keyring */
+		key_ref_t kref;
+
+>>>>>>> v4.9.227
 		kref = keyring_search(make_key_ref(keyring, 1),
 				      &key_type_asymmetric, name);
 		if (IS_ERR(kref))
@@ -80,7 +105,11 @@ int asymmetric_verify(struct key *keyring, const char *sig,
 	if (siglen != __be16_to_cpu(hdr->sig_size))
 		return -EBADMSG;
 
+<<<<<<< HEAD
 	if (hdr->hash_algo >= PKEY_HASH__LAST)
+=======
+	if (hdr->hash_algo >= HASH_ALGO__LAST)
+>>>>>>> v4.9.227
 		return -ENOPKG;
 
 	key = request_asymmetric_key(keyring, __be32_to_cpu(hdr->keyid));
@@ -89,6 +118,7 @@ int asymmetric_verify(struct key *keyring, const char *sig,
 
 	memset(&pks, 0, sizeof(pks));
 
+<<<<<<< HEAD
 	pks.pkey_hash_algo = hdr->hash_algo;
 	pks.digest = (u8 *)data;
 	pks.digest_size = datalen;
@@ -99,6 +129,15 @@ int asymmetric_verify(struct key *keyring, const char *sig,
 		ret = verify_signature(key, &pks);
 
 	mpi_free(pks.rsa.s);
+=======
+	pks.pkey_algo = "rsa";
+	pks.hash_algo = hash_algo_name[hdr->hash_algo];
+	pks.digest = (u8 *)data;
+	pks.digest_size = datalen;
+	pks.s = hdr->sig;
+	pks.s_size = siglen;
+	ret = verify_signature(key, &pks);
+>>>>>>> v4.9.227
 	key_put(key);
 	pr_debug("%s() = %d\n", __func__, ret);
 	return ret;

@@ -50,7 +50,11 @@ static const struct file_operations savage_driver_fops = {
 
 static struct drm_driver driver = {
 	.driver_features =
+<<<<<<< HEAD
 	    DRIVER_USE_AGP | DRIVER_HAVE_DMA | DRIVER_PCI_DMA,
+=======
+	    DRIVER_USE_AGP | DRIVER_HAVE_DMA | DRIVER_PCI_DMA | DRIVER_LEGACY,
+>>>>>>> v4.9.227
 	.dev_priv_size = sizeof(drm_savage_buf_priv_t),
 	.load = savage_driver_load,
 	.firstopen = savage_driver_firstopen,

@@ -28,7 +28,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -176,8 +180,12 @@ static void snd_mpu401_uart_timer(unsigned long data)
 
 	spin_lock_irqsave(&mpu->timer_lock, flags);
 	/*mpu->mode |= MPU401_MODE_TIMER;*/
+<<<<<<< HEAD
 	mpu->timer.expires = 1 + jiffies;
 	add_timer(&mpu->timer);
+=======
+	mod_timer(&mpu->timer,  1 + jiffies);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&mpu->timer_lock, flags);
 	if (mpu->rmidi)
 		_snd_mpu401_uart_interrupt(mpu);
@@ -192,11 +200,17 @@ static void snd_mpu401_uart_add_timer (struct snd_mpu401 *mpu, int input)
 
 	spin_lock_irqsave (&mpu->timer_lock, flags);
 	if (mpu->timer_invoked == 0) {
+<<<<<<< HEAD
 		init_timer(&mpu->timer);
 		mpu->timer.data = (unsigned long)mpu;
 		mpu->timer.function = snd_mpu401_uart_timer;
 		mpu->timer.expires = 1 + jiffies;
 		add_timer(&mpu->timer);
+=======
+		setup_timer(&mpu->timer, snd_mpu401_uart_timer,
+			    (unsigned long)mpu);
+		mod_timer(&mpu->timer, 1 + jiffies);
+>>>>>>> v4.9.227
 	} 
 	mpu->timer_invoked |= input ? MPU401_MODE_INPUT_TIMER :
 		MPU401_MODE_OUTPUT_TIMER;

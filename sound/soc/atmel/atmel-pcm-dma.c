@@ -54,7 +54,11 @@ static const struct snd_pcm_hardware atmel_pcm_dma_hardware = {
 	.period_bytes_max	= 2 * 0xffff,	/* if 2 bytes format */
 	.periods_min		= 8,
 	.periods_max		= 1024,		/* no limit */
+<<<<<<< HEAD
 	.buffer_bytes_max	= ATMEL_SSC_DMABUF_SIZE,
+=======
+	.buffer_bytes_max	= 512 * 1024,
+>>>>>>> v4.9.227
 };
 
 /**
@@ -80,9 +84,13 @@ static void atmel_pcm_dma_irq(u32 ssc_sr,
 
 		/* stop RX and capture: will be enabled again at restart */
 		ssc_writex(prtd->ssc->regs, SSC_CR, prtd->mask->ssc_disable);
+<<<<<<< HEAD
 		snd_pcm_stream_lock(substream);
 		snd_pcm_stop(substream, SNDRV_PCM_STATE_XRUN);
 		snd_pcm_stream_unlock(substream);
+=======
+		snd_pcm_stop_xrun(substream);
+>>>>>>> v4.9.227
 
 		/* now drain RHR and read status to remove xrun condition */
 		ssc_readx(prtd->ssc->regs, SSC_RHR);
@@ -107,6 +115,7 @@ static int atmel_pcm_configure_dma(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		slave_config->dst_addr = ssc->phybase + SSC_THR;
 		slave_config->dst_maxburst = 1;
@@ -114,6 +123,13 @@ static int atmel_pcm_configure_dma(struct snd_pcm_substream *substream,
 		slave_config->src_addr = ssc->phybase + SSC_RHR;
 		slave_config->src_maxburst = 1;
 	}
+=======
+	slave_config->dst_addr = ssc->phybase + SSC_THR;
+	slave_config->dst_maxburst = 1;
+
+	slave_config->src_addr = ssc->phybase + SSC_RHR;
+	slave_config->src_maxburst = 1;
+>>>>>>> v4.9.227
 
 	prtd->dma_intr_handler = atmel_pcm_dma_irq;
 
@@ -123,13 +139,21 @@ static int atmel_pcm_configure_dma(struct snd_pcm_substream *substream,
 static const struct snd_dmaengine_pcm_config atmel_dmaengine_pcm_config = {
 	.prepare_slave_config = atmel_pcm_configure_dma,
 	.pcm_hardware = &atmel_pcm_dma_hardware,
+<<<<<<< HEAD
 	.prealloc_buffer_size = ATMEL_SSC_DMABUF_SIZE,
+=======
+	.prealloc_buffer_size = 64 * 1024,
+>>>>>>> v4.9.227
 };
 
 int atmel_pcm_dma_platform_register(struct device *dev)
 {
+<<<<<<< HEAD
 	return snd_dmaengine_pcm_register(dev, &atmel_dmaengine_pcm_config,
 			SND_DMAENGINE_PCM_FLAG_NO_RESIDUE);
+=======
+	return snd_dmaengine_pcm_register(dev, &atmel_dmaengine_pcm_config, 0);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(atmel_pcm_dma_platform_register);
 

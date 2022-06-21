@@ -22,7 +22,11 @@
 
 #define ATH6KL_MAX_IE			256
 
+<<<<<<< HEAD
 __printf(2, 3) int ath6kl_printk(const char *level, const char *fmt, ...);
+=======
+__printf(2, 3) void ath6kl_printk(const char *level, const char *fmt, ...);
+>>>>>>> v4.9.227
 
 /*
  * Reflects the version of binary interface exposed by ATH6KL target

@@ -23,19 +23,33 @@
 
 #include <asm/kvm_ppc.h>
 #include <asm/kvm_book3s.h>
+<<<<<<< HEAD
 #include <asm/mmu-hash64.h>
+=======
+#include <asm/book3s/64/mmu-hash.h>
+>>>>>>> v4.9.227
 #include <asm/machdep.h>
 #include <asm/mmu_context.h>
 #include <asm/hw_irq.h>
 #include "trace_pr.h"
+<<<<<<< HEAD
+=======
+#include "book3s.h"
+>>>>>>> v4.9.227
 
 #define PTE_SIZE 12
 
 void kvmppc_mmu_invalidate_pte(struct kvm_vcpu *vcpu, struct hpte_cache *pte)
 {
+<<<<<<< HEAD
 	ppc_md.hpte_invalidate(pte->slot, pte->host_vpn,
 			       pte->pagesize, pte->pagesize, MMU_SEGSIZE_256M,
 			       false);
+=======
+	mmu_hash_ops.hpte_invalidate(pte->slot, pte->host_vpn,
+				     pte->pagesize, pte->pagesize,
+				     MMU_SEGSIZE_256M, false);
+>>>>>>> v4.9.227
 }
 
 /* We keep 512 gvsid->hvsid entries, mapping the guest ones to the array using
@@ -82,7 +96,11 @@ int kvmppc_mmu_map_page(struct kvm_vcpu *vcpu, struct kvmppc_pte *orig_pte,
 			bool iswrite)
 {
 	unsigned long vpn;
+<<<<<<< HEAD
 	pfn_t hpaddr;
+=======
+	kvm_pfn_t hpaddr;
+>>>>>>> v4.9.227
 	ulong hash, hpteg;
 	u64 vsid;
 	int ret;
@@ -168,13 +186,22 @@ map_again:
 
 	/* In case we tried normal mapping already, let's nuke old entries */
 	if (attempt > 1)
+<<<<<<< HEAD
 		if (ppc_md.hpte_remove(hpteg) < 0) {
+=======
+		if (mmu_hash_ops.hpte_remove(hpteg) < 0) {
+>>>>>>> v4.9.227
 			r = -1;
 			goto out_unlock;
 		}
 
+<<<<<<< HEAD
 	ret = ppc_md.hpte_insert(hpteg, vpn, hpaddr, rflags, vflags,
 				 hpsize, hpsize, MMU_SEGSIZE_256M);
+=======
+	ret = mmu_hash_ops.hpte_insert(hpteg, vpn, hpaddr, rflags, vflags,
+				       hpsize, hpsize, MMU_SEGSIZE_256M);
+>>>>>>> v4.9.227
 
 	if (ret == -1) {
 		/* If we couldn't map a primary PTE, try a secondary */
@@ -189,8 +216,15 @@ map_again:
 		trace_kvm_book3s_64_mmu_map(rflags, hpteg,
 					    vpn, hpaddr, orig_pte);
 
+<<<<<<< HEAD
 		/* The ppc_md code may give us a secondary entry even though we
 		   asked for a primary. Fix up. */
+=======
+		/*
+		 * The mmu_hash_ops code may give us a secondary entry even
+		 * though we asked for a primary. Fix up.
+		 */
+>>>>>>> v4.9.227
 		if ((ret & _PTEIDX_SECONDARY) && !(vflags & HPTE_V_SECONDARY)) {
 			hash = ~hash;
 			hpteg = ((hash & htab_hash_mask) * HPTES_PER_GROUP);

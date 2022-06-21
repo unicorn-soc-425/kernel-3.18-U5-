@@ -16,7 +16,11 @@
 	.endm
 
 /*
+<<<<<<< HEAD
  * Do SMP slave processor setup necessary before we can savely execute C code.
+=======
+ * Do SMP slave processor setup necessary before we can safely execute C code.
+>>>>>>> v4.9.227
  */
 	.macro	smp_slave_setup
 	.endm

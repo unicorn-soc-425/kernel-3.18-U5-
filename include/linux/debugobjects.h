@@ -38,8 +38,15 @@ struct debug_obj {
  * @name:		name of the object typee
  * @debug_hint:		function returning address, which have associated
  *			kernel symbol, to allow identify the object
+<<<<<<< HEAD
  * @fixup_init:		fixup function, which is called when the init check
  *			fails
+=======
+ * @is_static_object:	return true if the obj is static, otherwise return false
+ * @fixup_init:		fixup function, which is called when the init check
+ *			fails. All fixup functions must return true if fixup
+ *			was successful, otherwise return false
+>>>>>>> v4.9.227
  * @fixup_activate:	fixup function, which is called when the activate check
  *			fails
  * @fixup_destroy:	fixup function, which is called when the destroy check
@@ -51,12 +58,22 @@ struct debug_obj {
  */
 struct debug_obj_descr {
 	const char		*name;
+<<<<<<< HEAD
 	void *(*debug_hint)	(void *addr);
 	int (*fixup_init)	(void *addr, enum debug_obj_state state);
 	int (*fixup_activate)	(void *addr, enum debug_obj_state state);
 	int (*fixup_destroy)	(void *addr, enum debug_obj_state state);
 	int (*fixup_free)	(void *addr, enum debug_obj_state state);
 	int (*fixup_assert_init)(void *addr, enum debug_obj_state state);
+=======
+	void *(*debug_hint)(void *addr);
+	bool (*is_static_object)(void *addr);
+	bool (*fixup_init)(void *addr, enum debug_obj_state state);
+	bool (*fixup_activate)(void *addr, enum debug_obj_state state);
+	bool (*fixup_destroy)(void *addr, enum debug_obj_state state);
+	bool (*fixup_free)(void *addr, enum debug_obj_state state);
+	bool (*fixup_assert_init)(void *addr, enum debug_obj_state state);
+>>>>>>> v4.9.227
 };
 
 #ifdef CONFIG_DEBUG_OBJECTS

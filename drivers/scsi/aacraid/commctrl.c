@@ -644,15 +644,24 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 			}
 		} else {
 			struct user_sgmap* usg;
+<<<<<<< HEAD
 			usg = kmalloc(actual_fibsize - sizeof(struct aac_srb)
 			  + sizeof(struct sgmap), GFP_KERNEL);
+=======
+			usg = kmemdup(upsg,
+				      actual_fibsize - sizeof(struct aac_srb)
+				      + sizeof(struct sgmap), GFP_KERNEL);
+>>>>>>> v4.9.227
 			if (!usg) {
 				dprintk((KERN_DEBUG"aacraid: Allocation error in Raw SRB command\n"));
 				rcode = -ENOMEM;
 				goto cleanup;
 			}
+<<<<<<< HEAD
 			memcpy (usg, upsg, actual_fibsize - sizeof(struct aac_srb)
 			  + sizeof(struct sgmap));
+=======
+>>>>>>> v4.9.227
 			actual_fibsize = actual_fibsize64;
 
 			for (i = 0; i < usg->count; i++) {
@@ -698,7 +707,14 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 			kfree (usg);
 		}
 		srbcmd->count = cpu_to_le32(byte_count);
+<<<<<<< HEAD
 		psg->count = cpu_to_le32(sg_indx+1);
+=======
+		if (user_srbcmd->sg.count)
+			psg->count = cpu_to_le32(sg_indx+1);
+		else
+			psg->count = 0;
+>>>>>>> v4.9.227
 		status = aac_fib_send(ScsiPortCommand64, srbfib, actual_fibsize, FsaNormal, 1, 1,NULL,NULL);
 	} else {
 		struct user_sgmap* upsg = &user_srbcmd->sg;
@@ -784,7 +800,14 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 			}
 		}
 		srbcmd->count = cpu_to_le32(byte_count);
+<<<<<<< HEAD
 		psg->count = cpu_to_le32(sg_indx+1);
+=======
+		if (user_srbcmd->sg.count)
+			psg->count = cpu_to_le32(sg_indx+1);
+		else
+			psg->count = 0;
+>>>>>>> v4.9.227
 		status = aac_fib_send(ScsiPortCommand, srbfib, actual_fibsize, FsaNormal, 1, 1, NULL, NULL);
 	}
 	if (status == -ERESTARTSYS) {
@@ -858,13 +881,27 @@ int aac_do_ioctl(struct aac_dev * dev, int cmd, void __user *arg)
 {
 	int status;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&dev->ioctl_mutex);
+
+	if (dev->adapter_shutdown) {
+		status = -EACCES;
+		goto cleanup;
+	}
+
+>>>>>>> v4.9.227
 	/*
 	 *	HBA gets first crack
 	 */
 
 	status = aac_dev_ioctl(dev, cmd, arg);
 	if (status != -ENOTTY)
+<<<<<<< HEAD
 		return status;
+=======
+		goto cleanup;
+>>>>>>> v4.9.227
 
 	switch (cmd) {
 	case FSACTL_MINIPORT_REV_CHECK:
@@ -893,6 +930,13 @@ int aac_do_ioctl(struct aac_dev * dev, int cmd, void __user *arg)
 		status = -ENOTTY;
 		break;
 	}
+<<<<<<< HEAD
+=======
+
+cleanup:
+	mutex_unlock(&dev->ioctl_mutex);
+
+>>>>>>> v4.9.227
 	return status;
 }
 

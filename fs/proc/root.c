@@ -23,6 +23,7 @@
 
 #include "internal.h"
 
+<<<<<<< HEAD
 static int proc_test_super(struct super_block *sb, void *data)
 {
 	return sb->s_fs_info == data;
@@ -38,6 +39,8 @@ static int proc_set_super(struct super_block *sb, void *data)
 	return err;
 }
 
+=======
+>>>>>>> v4.9.227
 enum {
 	Opt_gid, Opt_hidepid, Opt_err,
 };
@@ -48,7 +51,11 @@ static const match_table_t tokens = {
 	{Opt_err, NULL},
 };
 
+<<<<<<< HEAD
 static int proc_parse_options(char *options, struct pid_namespace *pid)
+=======
+int proc_parse_options(char *options, struct pid_namespace *pid)
+>>>>>>> v4.9.227
 {
 	char *p;
 	substring_t args[MAX_OPT_ARGS];
@@ -100,6 +107,7 @@ int proc_remount(struct super_block *sb, int *flags, char *data)
 static struct dentry *proc_mount(struct file_system_type *fs_type,
 	int flags, const char *dev_name, void *data)
 {
+<<<<<<< HEAD
 	int err;
 	struct super_block *sb;
 	struct pid_namespace *ns;
@@ -146,6 +154,18 @@ static struct dentry *proc_mount(struct file_system_type *fs_type,
 	}
 
 	return dget(sb->s_root);
+=======
+	struct pid_namespace *ns;
+
+	if (flags & MS_KERNMOUNT) {
+		ns = data;
+		data = NULL;
+	} else {
+		ns = task_active_pid_ns(current);
+	}
+
+	return mount_ns(fs_type, flags, data, ns, ns->user_ns, proc_fill_super);
+>>>>>>> v4.9.227
 }
 
 static void proc_kill_sb(struct super_block *sb)
@@ -165,7 +185,11 @@ static struct file_system_type proc_fs_type = {
 	.name		= "proc",
 	.mount		= proc_mount,
 	.kill_sb	= proc_kill_sb,
+<<<<<<< HEAD
 	.fs_flags	= FS_USERNS_VISIBLE | FS_USERNS_MOUNT,
+=======
+	.fs_flags	= FS_USERNS_MOUNT,
+>>>>>>> v4.9.227
 };
 
 void __init proc_root_init(void)
@@ -188,10 +212,17 @@ void __init proc_root_init(void)
 #endif
 	proc_mkdir("fs", NULL);
 	proc_mkdir("driver", NULL);
+<<<<<<< HEAD
 	proc_mkdir("fs/nfsd", NULL); /* somewhere for the nfsd filesystem to be mounted */
 #if defined(CONFIG_SUN_OPENPROMFS) || defined(CONFIG_SUN_OPENPROMFS_MODULE)
 	/* just give it a mountpoint */
 	proc_mkdir("openprom", NULL);
+=======
+	proc_create_mount_point("fs/nfsd"); /* somewhere for the nfsd filesystem to be mounted */
+#if defined(CONFIG_SUN_OPENPROMFS) || defined(CONFIG_SUN_OPENPROMFS_MODULE)
+	/* just give it a mountpoint */
+	proc_create_mount_point("openprom");
+>>>>>>> v4.9.227
 #endif
 	proc_tty_init();
 	proc_mkdir("bus", NULL);
@@ -201,7 +232,11 @@ void __init proc_root_init(void)
 static int proc_root_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat
 )
 {
+<<<<<<< HEAD
 	generic_fillattr(dentry->d_inode, stat);
+=======
+	generic_fillattr(d_inode(dentry), stat);
+>>>>>>> v4.9.227
 	stat->nlink = proc_root.nlink + nr_processes();
 	return 0;
 }
@@ -233,8 +268,13 @@ static int proc_root_readdir(struct file *file, struct dir_context *ctx)
  */
 static const struct file_operations proc_root_operations = {
 	.read		 = generic_read_dir,
+<<<<<<< HEAD
 	.iterate	 = proc_root_readdir,
 	.llseek		= default_llseek,
+=======
+	.iterate_shared	 = proc_root_readdir,
+	.llseek		= generic_file_llseek,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -257,6 +297,10 @@ struct proc_dir_entry proc_root = {
 	.proc_iops	= &proc_root_inode_operations, 
 	.proc_fops	= &proc_root_operations,
 	.parent		= &proc_root,
+<<<<<<< HEAD
+=======
+	.subdir		= RB_ROOT,
+>>>>>>> v4.9.227
 	.name		= "/proc",
 };
 

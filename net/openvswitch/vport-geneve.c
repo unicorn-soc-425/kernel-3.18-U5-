@@ -9,14 +9,21 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/version.h>
 
+=======
+>>>>>>> v4.9.227
 #include <linux/in.h>
 #include <linux/ip.h>
 #include <linux/net.h>
 #include <linux/rculist.h>
 #include <linux/udp.h>
 #include <linux/if_vlan.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> v4.9.227
 
 #include <net/geneve.h>
 #include <net/icmp.h>
@@ -27,6 +34,7 @@
 
 #include "datapath.h"
 #include "vport.h"
+<<<<<<< HEAD
 
 /**
  * struct geneve_port - Keeps track of open UDP ports
@@ -40,11 +48,25 @@ struct geneve_port {
 
 static LIST_HEAD(geneve_ports);
 
+=======
+#include "vport-netdev.h"
+
+static struct vport_ops ovs_geneve_vport_ops;
+/**
+ * struct geneve_port - Keeps track of open UDP ports
+ * @dst_port: destination port.
+ */
+struct geneve_port {
+	u16 dst_port;
+};
+
+>>>>>>> v4.9.227
 static inline struct geneve_port *geneve_vport(const struct vport *vport)
 {
 	return vport_priv(vport);
 }
 
+<<<<<<< HEAD
 static inline struct genevehdr *geneve_hdr(const struct sk_buff *skb)
 {
 	return (struct genevehdr *)(udp_hdr(skb) + 1);
@@ -100,17 +122,25 @@ static void geneve_rcv(struct geneve_sock *gs, struct sk_buff *skb)
 	ovs_vport_receive(vport, skb, &tun_info);
 }
 
+=======
+>>>>>>> v4.9.227
 static int geneve_get_options(const struct vport *vport,
 			      struct sk_buff *skb)
 {
 	struct geneve_port *geneve_port = geneve_vport(vport);
+<<<<<<< HEAD
 	struct inet_sock *sk = inet_sk(geneve_port->gs->sock->sk);
 
 	if (nla_put_u16(skb, OVS_TUNNEL_ATTR_DST_PORT, ntohs(sk->inet_sport)))
+=======
+
+	if (nla_put_u16(skb, OVS_TUNNEL_ATTR_DST_PORT, geneve_port->dst_port))
+>>>>>>> v4.9.227
 		return -EMSGSIZE;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void geneve_tnl_destroy(struct vport *vport)
 {
 	struct geneve_port *geneve_port = geneve_vport(vport);
@@ -120,16 +150,26 @@ static void geneve_tnl_destroy(struct vport *vport)
 	ovs_vport_deferred_free(vport);
 }
 
+=======
+>>>>>>> v4.9.227
 static struct vport *geneve_tnl_create(const struct vport_parms *parms)
 {
 	struct net *net = ovs_dp_get_net(parms->dp);
 	struct nlattr *options = parms->options;
 	struct geneve_port *geneve_port;
+<<<<<<< HEAD
 	struct geneve_sock *gs;
 	struct vport *vport;
 	struct nlattr *a;
 	int err;
 	u16 dst_port;
+=======
+	struct net_device *dev;
+	struct vport *vport;
+	struct nlattr *a;
+	u16 dst_port;
+	int err;
+>>>>>>> v4.9.227
 
 	if (!options) {
 		err = -EINVAL;
@@ -151,6 +191,7 @@ static struct vport *geneve_tnl_create(const struct vport_parms *parms)
 		return vport;
 
 	geneve_port = geneve_vport(vport);
+<<<<<<< HEAD
 	strncpy(geneve_port->name, parms->name, IFNAMSIZ);
 
 	gs = geneve_sock_add(net, htons(dst_port), geneve_rcv, vport, true, 0);
@@ -160,11 +201,33 @@ static struct vport *geneve_tnl_create(const struct vport_parms *parms)
 	}
 	geneve_port->gs = gs;
 
+=======
+	geneve_port->dst_port = dst_port;
+
+	rtnl_lock();
+	dev = geneve_dev_create_fb(net, parms->name, NET_NAME_USER, dst_port);
+	if (IS_ERR(dev)) {
+		rtnl_unlock();
+		ovs_vport_free(vport);
+		return ERR_CAST(dev);
+	}
+
+	err = dev_change_flags(dev, dev->flags | IFF_UP);
+	if (err < 0) {
+		rtnl_delete_link(dev);
+		rtnl_unlock();
+		ovs_vport_free(vport);
+		goto error;
+	}
+
+	rtnl_unlock();
+>>>>>>> v4.9.227
 	return vport;
 error:
 	return ERR_PTR(err);
 }
 
+<<<<<<< HEAD
 static int geneve_tnl_send(struct vport *vport, struct sk_buff *skb)
 {
 	struct ovs_key_ipv4_tunnel *tun_key;
@@ -233,3 +296,40 @@ const struct vport_ops ovs_geneve_vport_ops = {
 	.get_options	= geneve_get_options,
 	.send		= geneve_tnl_send,
 };
+=======
+static struct vport *geneve_create(const struct vport_parms *parms)
+{
+	struct vport *vport;
+
+	vport = geneve_tnl_create(parms);
+	if (IS_ERR(vport))
+		return vport;
+
+	return ovs_netdev_link(vport, parms->name);
+}
+
+static struct vport_ops ovs_geneve_vport_ops = {
+	.type		= OVS_VPORT_TYPE_GENEVE,
+	.create		= geneve_create,
+	.destroy	= ovs_netdev_tunnel_destroy,
+	.get_options	= geneve_get_options,
+	.send		= dev_queue_xmit,
+};
+
+static int __init ovs_geneve_tnl_init(void)
+{
+	return ovs_vport_ops_register(&ovs_geneve_vport_ops);
+}
+
+static void __exit ovs_geneve_tnl_exit(void)
+{
+	ovs_vport_ops_unregister(&ovs_geneve_vport_ops);
+}
+
+module_init(ovs_geneve_tnl_init);
+module_exit(ovs_geneve_tnl_exit);
+
+MODULE_DESCRIPTION("OVS: Geneve switching port");
+MODULE_LICENSE("GPL");
+MODULE_ALIAS("vport-type-5");
+>>>>>>> v4.9.227

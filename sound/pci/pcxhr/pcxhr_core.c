@@ -24,7 +24,11 @@
 #include <linux/firmware.h>
 #include <linux/interrupt.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include "pcxhr.h"
 #include "pcxhr_mixer.h"
@@ -910,8 +914,14 @@ int pcxhr_set_pipe_state(struct pcxhr_mgr *mgr, int playback_mask,
 	int audio_mask;
 
 #ifdef CONFIG_SND_DEBUG_VERBOSE
+<<<<<<< HEAD
 	struct timeval my_tv1, my_tv2;
 	do_gettimeofday(&my_tv1);
+=======
+	ktime_t start_time, stop_time, diff_time;
+
+	start_time = ktime_get();
+>>>>>>> v4.9.227
 #endif
 	audio_mask = (playback_mask |
 		      (capture_mask << PCXHR_PIPE_STATE_CAPTURE_OFFSET));
@@ -960,9 +970,16 @@ int pcxhr_set_pipe_state(struct pcxhr_mgr *mgr, int playback_mask,
 			return err;
 	}
 #ifdef CONFIG_SND_DEBUG_VERBOSE
+<<<<<<< HEAD
 	do_gettimeofday(&my_tv2);
 	dev_dbg(&mgr->pci->dev, "***SET PIPE STATE*** TIME = %ld (err = %x)\n",
 		    (long)(my_tv2.tv_usec - my_tv1.tv_usec), err);
+=======
+	stop_time = ktime_get();
+	diff_time = ktime_sub(stop_time, start_time);
+	dev_dbg(&mgr->pci->dev, "***SET PIPE STATE*** TIME = %ld (err = %x)\n",
+			(long)(ktime_to_ns(diff_time)), err);
+>>>>>>> v4.9.227
 #endif
 	return 0;
 }

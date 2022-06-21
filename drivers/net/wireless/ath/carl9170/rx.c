@@ -417,7 +417,11 @@ static int carl9170_rx_mac_status(struct ar9170 *ar,
 
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		if (status->band == IEEE80211_BAND_2GHZ)
+=======
+		if (status->band == NL80211_BAND_2GHZ)
+>>>>>>> v4.9.227
 			status->rate_idx += 4;
 		break;
 
@@ -453,7 +457,11 @@ static void carl9170_rx_phy_status(struct ar9170 *ar,
 	/* post-process RSSI */
 	for (i = 0; i < 7; i++)
 		if (phy->rssi[i] & 0x80)
+<<<<<<< HEAD
 			phy->rssi[i] = ((phy->rssi[i] & 0x7f) + 1) & 0x7f;
+=======
+			phy->rssi[i] = ((~phy->rssi[i] & 0x7f) + 1) & 0x7f;
+>>>>>>> v4.9.227
 
 	/* TODO: we could do something with phy_errors */
 	status->signal = ar->noise[0] + phy->rssi_combined;

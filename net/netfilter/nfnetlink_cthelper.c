@@ -51,7 +51,11 @@ nfnl_userspace_cthelper(struct sk_buff *skb, unsigned int protoff,
 	if (help == NULL)
 		return NF_DROP;
 
+<<<<<<< HEAD
 	/* rcu_read_lock()ed by nf_hook_slow */
+=======
+	/* rcu_read_lock()ed by nf_hook_thresh */
+>>>>>>> v4.9.227
 	helper = rcu_dereference(help->helper);
 	if (helper == NULL)
 		return NF_DROP;
@@ -383,9 +387,15 @@ nfnl_cthelper_update(const struct nlattr * const tb[],
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 nfnl_cthelper_new(struct sock *nfnl, struct sk_buff *skb,
 		  const struct nlmsghdr *nlh, const struct nlattr * const tb[])
+=======
+static int nfnl_cthelper_new(struct net *net, struct sock *nfnl,
+			     struct sk_buff *skb, const struct nlmsghdr *nlh,
+			     const struct nlattr * const tb[])
+>>>>>>> v4.9.227
 {
 	const char *helper_name;
 	struct nf_conntrack_helper *cur, *helper = NULL;
@@ -587,9 +597,15 @@ out:
 	return skb->len;
 }
 
+<<<<<<< HEAD
 static int
 nfnl_cthelper_get(struct sock *nfnl, struct sk_buff *skb,
 		  const struct nlmsghdr *nlh, const struct nlattr * const tb[])
+=======
+static int nfnl_cthelper_get(struct net *net, struct sock *nfnl,
+			     struct sk_buff *skb, const struct nlmsghdr *nlh,
+			     const struct nlattr * const tb[])
+>>>>>>> v4.9.227
 {
 	int ret = -ENOENT;
 	struct nf_conntrack_helper *cur;
@@ -657,9 +673,15 @@ nfnl_cthelper_get(struct sock *nfnl, struct sk_buff *skb,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int
 nfnl_cthelper_del(struct sock *nfnl, struct sk_buff *skb,
 	     const struct nlmsghdr *nlh, const struct nlattr * const tb[])
+=======
+static int nfnl_cthelper_del(struct net *net, struct sock *nfnl,
+			     struct sk_buff *skb, const struct nlmsghdr *nlh,
+			     const struct nlattr * const tb[])
+>>>>>>> v4.9.227
 {
 	char *helper_name = NULL;
 	struct nf_conntrack_helper *cur;
@@ -711,6 +733,11 @@ static const struct nla_policy nfnl_cthelper_policy[NFCTH_MAX+1] = {
 	[NFCTH_NAME] = { .type = NLA_NUL_STRING,
 			 .len = NF_CT_HELPER_NAME_LEN-1 },
 	[NFCTH_QUEUE_NUM] = { .type = NLA_U32, },
+<<<<<<< HEAD
+=======
+	[NFCTH_PRIV_DATA_LEN] = { .type = NLA_U32, },
+	[NFCTH_STATUS] = { .type = NLA_U32, },
+>>>>>>> v4.9.227
 };
 
 static const struct nfnl_callback nfnl_cthelper_cb[NFNL_MSG_CTHELPER_MAX] = {

@@ -528,10 +528,17 @@ uint32_t gk104_grhub_code[] = {
 	0x0001d001,
 	0x17f104bd,
 	0xf7f00100,
+<<<<<<< HEAD
 	0xd721f502,
 	0xe921f507,
 	0x10f7f007,
 	0x083621f5,
+=======
+	0xdb21f502,
+	0xed21f507,
+	0x10f7f007,
+	0x083a21f5,
+>>>>>>> v4.9.227
 	0x98000e98,
 	0x21f5010f,
 	0x14950150,
@@ -574,9 +581,15 @@ uint32_t gk104_grhub_code[] = {
 	0xb6800040,
 	0x1bf40132,
 	0x00f7f0be,
+<<<<<<< HEAD
 	0x083621f5,
 	0xf500f7f0,
 	0xf107d721,
+=======
+	0x083a21f5,
+	0xf500f7f0,
+	0xf107db21,
+>>>>>>> v4.9.227
 	0xf0010007,
 	0x01d00203,
 	0xbd04bd00,
@@ -584,9 +597,16 @@ uint32_t gk104_grhub_code[] = {
 	0x080007f1,
 	0xd00203f0,
 	0x04bd0001,
+<<<<<<< HEAD
 /* 0x0564: main */
 	0xf40031f4,
 	0xd7f00028,
+=======
+/* 0x0564: wait */
+	0xf40028f4,
+/* 0x056a: main */
+	0xd7f00031,
+>>>>>>> v4.9.227
 	0x3921f410,
 	0xb1f401f4,
 	0xf54001e4,
@@ -610,7 +630,11 @@ uint32_t gk104_grhub_code[] = {
 	0x09d00203,
 	0xf404bd00,
 	0x31f40132,
+<<<<<<< HEAD
 	0x0221f502,
+=======
+	0x0621f502,
+>>>>>>> v4.9.227
 	0xf094bd0a,
 	0x07f10799,
 	0x03f01700,
@@ -621,7 +645,11 @@ uint32_t gk104_grhub_code[] = {
 	0x0203f00f,
 	0xbd0009d0,
 	0x0131f404,
+<<<<<<< HEAD
 	0x0a0221f5,
+=======
+	0x0a0621f5,
+>>>>>>> v4.9.227
 	0x99f094bd,
 	0x0007f106,
 	0x0203f017,
@@ -631,7 +659,11 @@ uint32_t gk104_grhub_code[] = {
 	0x12b920f9,
 	0x0132f402,
 	0xf50232f4,
+<<<<<<< HEAD
 	0xfc0a0221,
+=======
+	0xfc0a0621,
+>>>>>>> v4.9.227
 	0x0007f120,
 	0x0203f0c0,
 	0xbd0002d0,
@@ -640,7 +672,11 @@ uint32_t gk104_grhub_code[] = {
 	0xf41f23c8,
 	0x31f40d0b,
 	0x0232f401,
+<<<<<<< HEAD
 	0x0a0221f5,
+=======
+	0x0a0621f5,
+>>>>>>> v4.9.227
 /* 0x063c: chsw_done */
 	0xf10127f0,
 	0xf0c30007,
@@ -650,11 +686,19 @@ uint32_t gk104_grhub_code[] = {
 	0x170007f1,
 	0xd00203f0,
 	0x04bd0009,
+<<<<<<< HEAD
 	0xff080ef5,
 /* 0x0660: main_not_ctx_switch */
 	0xf401e4b0,
 	0xf2b90d1b,
 	0x9a21f502,
+=======
+	0xff0e0ef5,
+/* 0x0660: main_not_ctx_switch */
+	0xf401e4b0,
+	0xf2b90d1b,
+	0x9e21f502,
+>>>>>>> v4.9.227
 	0x460ef409,
 /* 0x0670: main_not_ctx_chan */
 	0xf402e4b0,
@@ -664,7 +708,11 @@ uint32_t gk104_grhub_code[] = {
 	0x09d00203,
 	0xf404bd00,
 	0x32f40132,
+<<<<<<< HEAD
 	0x0221f502,
+=======
+	0x0621f502,
+>>>>>>> v4.9.227
 	0xf094bd0a,
 	0x07f10799,
 	0x03f01700,
@@ -675,11 +723,16 @@ uint32_t gk104_grhub_code[] = {
 	0xf501f5f0,
 	0xf5037e21,
 /* 0x06b3: main_done */
+<<<<<<< HEAD
 	0xbdfeb50e,
+=======
+	0xbdfebb0e,
+>>>>>>> v4.9.227
 	0x1f29f024,
 	0x080007f1,
 	0xd00203f0,
 	0x04bd0002,
+<<<<<<< HEAD
 	0xfea00ef5,
 /* 0x06c8: ih */
 	0x88fe80f9,
@@ -754,18 +807,103 @@ uint32_t gk104_grhub_code[] = {
 	0x0088fe80,
 	0x32f480fc,
 /* 0x07d7: ctx_4170s */
+=======
+	0xfea60ef5,
+/* 0x06c8: ih */
+	0x80f900f9,
+	0xf90188fe,
+	0xf990f980,
+	0xf9b0f9a0,
+	0xf9e0f9d0,
+	0xf104bdf0,
+	0xf00200a7,
+	0xaacf00a3,
+	0x04abc400,
+	0xf0300bf4,
+	0xe7f110d7,
+	0xe3f01a00,
+	0x00eecf00,
+	0x1900f7f1,
+	0xcf00f3f0,
+	0x21f400ff,
+	0x00b0b704,
+	0x01e7f004,
+	0x1d0007f1,
+	0xd00003f0,
+	0x04bd000e,
+/* 0x071c: ih_no_fifo */
+	0x0100abe4,
+	0xf00d0bf4,
+	0xe7f110d7,
+	0x21f44001,
+/* 0x072d: ih_no_ctxsw */
+	0x00abe404,
+	0x6c0bf404,
+	0x0708e7f1,
+	0xf440e3f0,
+	0xffb96821,
+	0x0007f102,
+	0x0203f004,
+	0xbd000fd0,
+	0x04e7f104,
+	0x40e3f007,
+	0xb96821f4,
+	0x07f102ff,
+	0x03f00300,
+	0x000fd002,
+	0xfec704bd,
+	0x02ee9450,
+	0x0700f7f1,
+	0xbb40f3f0,
+	0x21f400ef,
+	0x0007f168,
+	0x0203f002,
+	0xbd000fd0,
+	0x03f7f004,
+	0x037e21f5,
+	0x0100b7f1,
+	0xf102bfb9,
+	0xf00144e7,
+	0x21f440e3,
+/* 0x079d: ih_no_fwmthd */
+	0x04b7f19d,
+	0xffb0bd05,
+	0x0bf4b4ab,
+	0x0007f10f,
+	0x0303f007,
+	0xbd000bd0,
+/* 0x07b5: ih_no_other */
+	0x0007f104,
+	0x0003f001,
+	0xbd000ad0,
+	0xfcf0fc04,
+	0xfcd0fce0,
+	0xfca0fcb0,
+	0xfe80fc90,
+	0x80fc0088,
+	0x32f400fc,
+/* 0x07db: ctx_4170s */
+>>>>>>> v4.9.227
 	0xf001f800,
 	0xffb910f5,
 	0x70e7f102,
 	0x40e3f041,
 	0xf89d21f4,
+<<<<<<< HEAD
 /* 0x07e9: ctx_4170w */
+=======
+/* 0x07ed: ctx_4170w */
+>>>>>>> v4.9.227
 	0x70e7f100,
 	0x40e3f041,
 	0xb96821f4,
 	0xf4f002ff,
 	0xf01bf410,
+<<<<<<< HEAD
 /* 0x07fe: ctx_redswitch */
+=======
+/* 0x0802: ctx_redswitch */
+>>>>>>> v4.9.227
 	0xe7f100f8,
 	0xe5f00200,
 	0x20e5f040,
@@ -773,7 +911,11 @@ uint32_t gk104_grhub_code[] = {
 	0xf0850007,
 	0x0ed00103,
 	0xf004bd00,
+<<<<<<< HEAD
 /* 0x081a: ctx_redswitch_delay */
+=======
+/* 0x081e: ctx_redswitch_delay */
+>>>>>>> v4.9.227
 	0xf2b608f7,
 	0xfd1bf401,
 	0x0400e5f1,
@@ -781,7 +923,11 @@ uint32_t gk104_grhub_code[] = {
 	0x850007f1,
 	0xd00103f0,
 	0x04bd000e,
+<<<<<<< HEAD
 /* 0x0836: ctx_86c */
+=======
+/* 0x083a: ctx_86c */
+>>>>>>> v4.9.227
 	0x07f100f8,
 	0x03f01b00,
 	0x000fd002,
@@ -792,17 +938,29 @@ uint32_t gk104_grhub_code[] = {
 	0xe7f102ff,
 	0xe3f0a86c,
 	0x9d21f441,
+<<<<<<< HEAD
 /* 0x085e: ctx_mem */
 	0x07f100f8,
 	0x03f08400,
 	0x000fd002,
 /* 0x086a: ctx_mem_wait */
+=======
+/* 0x0862: ctx_mem */
+	0x07f100f8,
+	0x03f08400,
+	0x000fd002,
+/* 0x086e: ctx_mem_wait */
+>>>>>>> v4.9.227
 	0xf7f104bd,
 	0xf3f08400,
 	0x00ffcf02,
 	0xf405fffd,
 	0x00f8f31b,
+<<<<<<< HEAD
 /* 0x087c: ctx_load */
+=======
+/* 0x0880: ctx_load */
+>>>>>>> v4.9.227
 	0x99f094bd,
 	0x0007f105,
 	0x0203f00f,
@@ -819,7 +977,11 @@ uint32_t gk104_grhub_code[] = {
 	0x0203f083,
 	0xbd0002d0,
 	0x07f7f004,
+<<<<<<< HEAD
 	0x085e21f5,
+=======
+	0x086221f5,
+>>>>>>> v4.9.227
 	0xc00007f1,
 	0xd00203f0,
 	0x04bd0002,
@@ -874,6 +1036,7 @@ uint32_t gk104_grhub_code[] = {
 	0x170007f1,
 	0xd00203f0,
 	0x04bd0009,
+<<<<<<< HEAD
 /* 0x099a: ctx_chan */
 	0x21f500f8,
 	0xa7f0087c,
@@ -881,22 +1044,43 @@ uint32_t gk104_grhub_code[] = {
 	0xf505f7f0,
 	0xf8085e21,
 /* 0x09ad: ctx_mmio_exec */
+=======
+/* 0x099e: ctx_chan */
+	0x21f500f8,
+	0xa7f00880,
+	0xd021f40c,
+	0xf505f7f0,
+	0xf8086221,
+/* 0x09b1: ctx_mmio_exec */
+>>>>>>> v4.9.227
 	0x41039800,
 	0x810007f1,
 	0xd00203f0,
 	0x04bd0003,
+<<<<<<< HEAD
 /* 0x09be: ctx_mmio_loop */
+=======
+/* 0x09c2: ctx_mmio_loop */
+>>>>>>> v4.9.227
 	0x34c434bd,
 	0x0f1bf4ff,
 	0x020057f1,
 	0xfa0653f0,
 	0x03f80535,
+<<<<<<< HEAD
 /* 0x09d0: ctx_mmio_pull */
+=======
+/* 0x09d4: ctx_mmio_pull */
+>>>>>>> v4.9.227
 	0x98804e98,
 	0x21f4814f,
 	0x0830b69d,
 	0xf40112b6,
+<<<<<<< HEAD
 /* 0x09e2: ctx_mmio_done */
+=======
+/* 0x09e6: ctx_mmio_done */
+>>>>>>> v4.9.227
 	0x0398df1b,
 	0x0007f116,
 	0x0203f081,
@@ -905,18 +1089,27 @@ uint32_t gk104_grhub_code[] = {
 	0x010017f1,
 	0xfa0613f0,
 	0x03f80601,
+<<<<<<< HEAD
 /* 0x0a02: ctx_xfer */
+=======
+/* 0x0a06: ctx_xfer */
+>>>>>>> v4.9.227
 	0xe7f000f8,
 	0x0007f104,
 	0x0303f002,
 	0xbd000ed0,
+<<<<<<< HEAD
 /* 0x0a11: ctx_xfer_idle */
+=======
+/* 0x0a15: ctx_xfer_idle */
+>>>>>>> v4.9.227
 	0x00e7f104,
 	0x03e3f000,
 	0xf100eecf,
 	0xf42000e4,
 	0x11f4f21b,
 	0x0d02f406,
+<<<<<<< HEAD
 /* 0x0a28: ctx_xfer_pre */
 	0xf510f7f0,
 	0xf4083621,
@@ -929,6 +1122,20 @@ uint32_t gk104_grhub_code[] = {
 	0xf507d721,
 /* 0x0a4b: ctx_xfer_exec */
 	0x98087c21,
+=======
+/* 0x0a2c: ctx_xfer_pre */
+	0xf510f7f0,
+	0xf4083a21,
+/* 0x0a36: ctx_xfer_pre_load */
+	0xf7f01c11,
+	0xdb21f502,
+	0xed21f507,
+	0x0221f507,
+	0xf5f4bd08,
+	0xf507db21,
+/* 0x0a4f: ctx_xfer_exec */
+	0x98088021,
+>>>>>>> v4.9.227
 	0x24bd1601,
 	0x050007f1,
 	0xd00103f0,
@@ -963,6 +1170,7 @@ uint32_t gk104_grhub_code[] = {
 	0xa7f01301,
 	0xd021f40c,
 	0xf505f7f0,
+<<<<<<< HEAD
 	0xf4085e21,
 /* 0x0ada: ctx_xfer_post */
 	0xf7f02e02,
@@ -978,6 +1186,23 @@ uint32_t gk104_grhub_code[] = {
 	0xad21f507,
 /* 0x0b05: ctx_xfer_no_post_mmio */
 /* 0x0b05: ctx_xfer_done */
+=======
+	0xf4086221,
+/* 0x0ade: ctx_xfer_post */
+	0xf7f02e02,
+	0xdb21f502,
+	0xf5f4bd07,
+	0xf5083a21,
+	0xf5027f21,
+	0xbd07ed21,
+	0xdb21f5f4,
+	0x1011f407,
+	0xfd400198,
+	0x0bf40511,
+	0xb121f507,
+/* 0x0b09: ctx_xfer_no_post_mmio */
+/* 0x0b09: ctx_xfer_done */
+>>>>>>> v4.9.227
 	0x0000f809,
 	0x00000000,
 	0x00000000,
@@ -1040,5 +1265,8 @@ uint32_t gk104_grhub_code[] = {
 	0x00000000,
 	0x00000000,
 	0x00000000,
+<<<<<<< HEAD
 	0x00000000,
+=======
+>>>>>>> v4.9.227
 };

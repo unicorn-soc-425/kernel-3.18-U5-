@@ -32,7 +32,10 @@
 #include <media/lirc.h>
 #include <media/lirc_dev.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #define MOD_AUTHOR	"Venky Raju <dev@venky.ws>"
 #define MOD_DESC	"Driver for SoundGraph iMON MultiMedia IR/Display"
 #define MOD_NAME	"lirc_imon"
@@ -208,12 +211,19 @@ static void deregister_from_lirc(struct imon_context *context)
 	retval = lirc_unregister_driver(minor);
 	if (retval)
 		dev_err(&context->usbdev->dev,
+<<<<<<< HEAD
 			": %s: unable to deregister from lirc(%d)",
 			__func__, retval);
 	else
 		dev_info(&context->usbdev->dev,
 			 "Deregistered iMON driver (minor:%d)\n", minor);
 
+=======
+			"unable to deregister from lirc(%d)", retval);
+	else
+		dev_info(&context->usbdev->dev,
+			 "Deregistered iMON driver (minor:%d)\n", minor);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -241,9 +251,14 @@ static int display_open(struct inode *inode, struct file *file)
 	context = usb_get_intfdata(interface);
 
 	if (!context) {
+<<<<<<< HEAD
 		dev_err(&interface->dev,
 			"%s: no context found for minor %d\n",
 			__func__, subminor);
+=======
+		dev_err(&interface->dev, "no context found for minor %d\n",
+			subminor);
+>>>>>>> v4.9.227
 		retval = -ENODEV;
 		goto exit;
 	}
@@ -339,6 +354,7 @@ static int send_packet(struct imon_context *context)
 	context->tx_urb->actual_length = 0;
 
 	init_completion(&context->tx.finished);
+<<<<<<< HEAD
 	atomic_set(&(context->tx.busy), 1);
 
 	retval = usb_submit_urb(context->tx_urb, GFP_KERNEL);
@@ -346,6 +362,15 @@ static int send_packet(struct imon_context *context)
 		atomic_set(&(context->tx.busy), 0);
 		dev_err(&context->usbdev->dev,
 			"%s: error submitting urb(%d)\n", __func__, retval);
+=======
+	atomic_set(&context->tx.busy, 1);
+
+	retval = usb_submit_urb(context->tx_urb, GFP_KERNEL);
+	if (retval) {
+		atomic_set(&context->tx.busy, 0);
+		dev_err(&context->usbdev->dev, "error submitting urb(%d)\n",
+			retval);
+>>>>>>> v4.9.227
 	} else {
 		/* Wait for transmission to complete (or abort) */
 		mutex_unlock(&context->ctx_lock);
@@ -359,8 +384,12 @@ static int send_packet(struct imon_context *context)
 		retval = context->tx.status;
 		if (retval)
 			dev_err(&context->usbdev->dev,
+<<<<<<< HEAD
 				"%s: packet tx failed (%d)\n",
 				__func__, retval);
+=======
+				"packet tx failed (%d)\n", retval);
+>>>>>>> v4.9.227
 	}
 
 	return retval;
@@ -432,13 +461,22 @@ static ssize_t vfd_write(struct file *file, const char __user *buf,
 
 	do {
 		memcpy(context->usb_tx_buf, context->tx.data_buf + offset, 7);
+<<<<<<< HEAD
 		context->usb_tx_buf[7] = (unsigned char) seq;
+=======
+		context->usb_tx_buf[7] = (unsigned char)seq;
+>>>>>>> v4.9.227
 
 		retval = send_packet(context);
 		if (retval) {
 			dev_err(&context->usbdev->dev,
+<<<<<<< HEAD
 				"%s: send packet failed for packet #%d\n",
 				__func__, seq/2);
+=======
+				"send packet failed for packet #%d\n",
+				seq / 2);
+>>>>>>> v4.9.227
 			goto exit;
 		} else {
 			seq += 2;
@@ -450,12 +488,21 @@ static ssize_t vfd_write(struct file *file, const char __user *buf,
 	if (context->vfd_proto_6p) {
 		/* Send packet #6 */
 		memcpy(context->usb_tx_buf, &vfd_packet6, sizeof(vfd_packet6));
+<<<<<<< HEAD
 		context->usb_tx_buf[7] = (unsigned char) seq;
 		retval = send_packet(context);
 		if (retval)
 			dev_err(&context->usbdev->dev,
 				"%s: send packet failed for packet #%d\n",
 					__func__, seq/2);
+=======
+		context->usb_tx_buf[7] = (unsigned char)seq;
+		retval = send_packet(context);
+		if (retval)
+			dev_err(&context->usbdev->dev,
+				"send packet failed for packet #%d\n",
+				seq / 2);
+>>>>>>> v4.9.227
 	}
 
 exit:
@@ -495,7 +542,11 @@ static int ir_open(void *data)
 	/* prevent races with disconnect */
 	mutex_lock(&driver_lock);
 
+<<<<<<< HEAD
 	context = (struct imon_context *)data;
+=======
+	context = data;
+>>>>>>> v4.9.227
 
 	/* initial IR protocol decode variables */
 	context->rx.count = 0;
@@ -516,7 +567,11 @@ static void ir_close(void *data)
 {
 	struct imon_context *context;
 
+<<<<<<< HEAD
 	context = (struct imon_context *)data;
+=======
+	context = data;
+>>>>>>> v4.9.227
 	if (!context) {
 		pr_err("%s: no context for device\n", __func__);
 		return;
@@ -566,12 +621,17 @@ static void submit_data(struct imon_context *context)
 		value |= PULSE_BIT;
 
 	for (i = 0; i < 4; ++i)
+<<<<<<< HEAD
 		buf[i] = value>>(i*8);
+=======
+		buf[i] = value >> (i * 8);
+>>>>>>> v4.9.227
 
 	lirc_buffer_write(context->driver->rbuf, buf);
 	wake_up(&context->driver->rbuf->wait_poll);
 }
 
+<<<<<<< HEAD
 static inline int tv2int(const struct timeval *a, const struct timeval *b)
 {
 	int usecs = 0;
@@ -595,6 +655,8 @@ static inline int tv2int(const struct timeval *a, const struct timeval *b)
 	return sec;
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * Process the incoming packet
  */
@@ -606,7 +668,10 @@ static void imon_incoming_packet(struct imon_context *context,
 	struct device *dev = context->driver->dev;
 	int octet, bit;
 	unsigned char mask;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * just bail out if no listening IR client
@@ -616,6 +681,7 @@ static void imon_incoming_packet(struct imon_context *context,
 
 	if (len != 8) {
 		dev_warn(dev, "imon %s: invalid incoming packet size (len = %d, intf%d)\n",
+<<<<<<< HEAD
 			__func__, len, intf);
 		return;
 	}
@@ -627,6 +693,14 @@ static void imon_incoming_packet(struct imon_context *context,
 		printk("\n");
 	}
 
+=======
+			 __func__, len, intf);
+		return;
+	}
+
+	if (debug)
+		dev_info(dev, "raw packet: %*ph\n", len, buf);
+>>>>>>> v4.9.227
 	/*
 	 * Translate received data to pulse and space lengths.
 	 * Received data is active low, i.e. pulses are 0 and
@@ -725,10 +799,16 @@ static int imon_probe(struct usb_interface *interface,
 	int ifnum;
 	int lirc_minor = 0;
 	int num_endpts;
+<<<<<<< HEAD
 	int retval = 0;
 	int display_ep_found = 0;
 	int ir_ep_found = 0;
 	int alloc_status = 0;
+=======
+	int retval = -ENOMEM;
+	int display_ep_found = 0;
+	int ir_ep_found = 0;
+>>>>>>> v4.9.227
 	int vfd_proto_6p = 0;
 	struct imon_context *context = NULL;
 	int i;
@@ -737,11 +817,17 @@ static int imon_probe(struct usb_interface *interface,
 	/* prevent races probing devices w/multiple interfaces */
 	mutex_lock(&driver_lock);
 
+<<<<<<< HEAD
 	context = kzalloc(sizeof(struct imon_context), GFP_KERNEL);
 	if (!context) {
 		alloc_status = 1;
 		goto alloc_status_switch;
 	}
+=======
+	context = kzalloc(sizeof(*context), GFP_KERNEL);
+	if (!context)
+		goto driver_unlock;
+>>>>>>> v4.9.227
 
 	/*
 	 * Try to auto-detect the type of display if the user hasn't set
@@ -774,7 +860,11 @@ static int imon_probe(struct usb_interface *interface,
 
 		ep = &iface_desc->endpoint[i].desc;
 		ep_dir = ep->bEndpointAddress & USB_ENDPOINT_DIR_MASK;
+<<<<<<< HEAD
 		ep_type = ep->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK;
+=======
+		ep_type = usb_endpoint_type(ep);
+>>>>>>> v4.9.227
 
 		if (!ir_ep_found &&
 			ep_dir == USB_DIR_IN &&
@@ -807,8 +897,12 @@ static int imon_probe(struct usb_interface *interface,
 		dev_err(dev, "%s: no valid input (IR) endpoint found.\n",
 			__func__);
 		retval = -ENODEV;
+<<<<<<< HEAD
 		alloc_status = 2;
 		goto alloc_status_switch;
+=======
+		goto free_context;
+>>>>>>> v4.9.227
 	}
 
 	/* Determine if display requires 6 packets */
@@ -820,6 +914,7 @@ static int imon_probe(struct usb_interface *interface,
 			__func__, vfd_proto_6p);
 	}
 
+<<<<<<< HEAD
 	driver = kzalloc(sizeof(struct lirc_driver), GFP_KERNEL);
 	if (!driver) {
 		alloc_status = 2;
@@ -848,6 +943,26 @@ static int imon_probe(struct usb_interface *interface,
 		alloc_status = 6;
 		goto alloc_status_switch;
 	}
+=======
+	driver = kzalloc(sizeof(*driver), GFP_KERNEL);
+	if (!driver)
+		goto free_context;
+
+	rbuf = kmalloc(sizeof(*rbuf), GFP_KERNEL);
+	if (!rbuf)
+		goto free_driver;
+
+	if (lirc_buffer_init(rbuf, BUF_CHUNK_SIZE, BUF_SIZE)) {
+		dev_err(dev, "%s: lirc_buffer_init failed\n", __func__);
+		goto free_rbuf;
+	}
+	rx_urb = usb_alloc_urb(0, GFP_KERNEL);
+	if (!rx_urb)
+		goto free_lirc_buf;
+	tx_urb = usb_alloc_urb(0, GFP_KERNEL);
+	if (!tx_urb)
+		goto free_rx_urb;
+>>>>>>> v4.9.227
 
 	mutex_init(&context->ctx_lock);
 	context->vfd_proto_6p = vfd_proto_6p;
@@ -872,11 +987,19 @@ static int imon_probe(struct usb_interface *interface,
 	lirc_minor = lirc_register_driver(driver);
 	if (lirc_minor < 0) {
 		dev_err(dev, "%s: lirc_register_driver failed\n", __func__);
+<<<<<<< HEAD
 		alloc_status = 7;
 		goto unlock;
 	} else
 		dev_info(dev, "Registered iMON driver (lirc minor: %d)\n",
 			 lirc_minor);
+=======
+		goto free_tx_urb;
+	}
+
+	dev_info(dev, "Registered iMON driver (lirc minor: %d)\n",
+		 lirc_minor);
+>>>>>>> v4.9.227
 
 	/* Needed while unregistering! */
 	driver->minor = lirc_minor;
@@ -897,19 +1020,30 @@ static int imon_probe(struct usb_interface *interface,
 		context->display = 1;
 
 	usb_fill_int_urb(context->rx_urb, context->usbdev,
+<<<<<<< HEAD
 		usb_rcvintpipe(context->usbdev,
 			context->rx_endpoint->bEndpointAddress),
+=======
+			 usb_rcvintpipe(context->usbdev,
+			 context->rx_endpoint->bEndpointAddress),
+>>>>>>> v4.9.227
 		context->usb_rx_buf, sizeof(context->usb_rx_buf),
 		usb_rx_callback, context,
 		context->rx_endpoint->bInterval);
 
 	retval = usb_submit_urb(context->rx_urb, GFP_KERNEL);
+<<<<<<< HEAD
 
 	if (retval) {
 		dev_err(dev, "%s: usb_submit_urb failed for intf0 (%d)\n",
 			__func__, retval);
 		alloc_status = 8;
 		goto unlock;
+=======
+	if (retval) {
+		dev_err(dev, "usb_submit_urb failed for intf0 (%d)\n", retval);
+		goto unregister_lirc;
+>>>>>>> v4.9.227
 	}
 
 	usb_set_intfdata(interface, context);
@@ -926,6 +1060,7 @@ static int imon_probe(struct usb_interface *interface,
 	}
 
 	dev_info(dev, "iMON device (%04x:%04x, intf%d) on usb<%d:%d> initialized\n",
+<<<<<<< HEAD
 		vendor, product, ifnum, usbdev->bus->busnum, usbdev->devnum);
 
 unlock:
@@ -961,6 +1096,37 @@ alloc_status_switch:
 		retval = 0;
 	}
 
+=======
+		 vendor, product, ifnum, usbdev->bus->busnum, usbdev->devnum);
+
+	/* Everything went fine. Just unlock and return retval (with is 0) */
+	mutex_unlock(&context->ctx_lock);
+	goto driver_unlock;
+
+unregister_lirc:
+	lirc_unregister_driver(driver->minor);
+
+free_tx_urb:
+	mutex_unlock(&context->ctx_lock);
+	usb_free_urb(tx_urb);
+
+free_rx_urb:
+	usb_free_urb(rx_urb);
+
+free_lirc_buf:
+	lirc_buffer_free(rbuf);
+
+free_rbuf:
+	kfree(rbuf);
+
+free_driver:
+	kfree(driver);
+free_context:
+	kfree(context);
+	context = NULL;
+
+driver_unlock:
+>>>>>>> v4.9.227
 	mutex_unlock(&driver_lock);
 
 	return retval;
@@ -1023,8 +1189,13 @@ static int imon_resume(struct usb_interface *intf)
 	struct imon_context *context = usb_get_intfdata(intf);
 
 	usb_fill_int_urb(context->rx_urb, context->usbdev,
+<<<<<<< HEAD
 		usb_rcvintpipe(context->usbdev,
 			context->rx_endpoint->bEndpointAddress),
+=======
+			 usb_rcvintpipe(context->usbdev,
+			 context->rx_endpoint->bEndpointAddress),
+>>>>>>> v4.9.227
 		context->usb_rx_buf, sizeof(context->usb_rx_buf),
 		usb_rx_callback, context,
 		context->rx_endpoint->bInterval);

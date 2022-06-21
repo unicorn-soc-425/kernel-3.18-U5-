@@ -45,6 +45,7 @@ struct ttm_bo_device;
 
 struct drm_mm_node;
 
+<<<<<<< HEAD
 /**
  * struct ttm_place
  *
@@ -76,6 +77,9 @@ struct ttm_placement {
 	unsigned		num_busy_placement;
 	const struct ttm_place	*busy_placement;
 };
+=======
+struct ttm_placement;
+>>>>>>> v4.9.227
 
 /**
  * struct ttm_bus_placement
@@ -92,7 +96,11 @@ struct ttm_placement {
  */
 struct ttm_bus_placement {
 	void		*addr;
+<<<<<<< HEAD
 	unsigned long	base;
+=======
+	phys_addr_t	base;
+>>>>>>> v4.9.227
 	unsigned long	size;
 	unsigned long	offset;
 	bool		is_iomem;
@@ -173,7 +181,11 @@ struct ttm_tt;
  * @lru: List head for the lru list.
  * @ddestroy: List head for the delayed destroy list.
  * @swap: List head for swap LRU list.
+<<<<<<< HEAD
  * @priv_flags: Flags describing buffer object internal state.
+=======
+ * @moving: Fence set when BO is moving
+>>>>>>> v4.9.227
  * @vma_node: Address space manager node.
  * @offset: The current GPU offset, which can have different meanings
  * depending on the memory type. For SYSTEM type memory, it should be 0.
@@ -239,7 +251,11 @@ struct ttm_buffer_object {
 	 * Members protected by a bo reservation.
 	 */
 
+<<<<<<< HEAD
 	unsigned long priv_flags;
+=======
+	struct fence *moving;
+>>>>>>> v4.9.227
 
 	struct drm_vma_offset_node vma_node;
 
@@ -314,7 +330,11 @@ ttm_bo_reference(struct ttm_buffer_object *bo)
  * Returns -EBUSY if no_wait is true and the buffer is busy.
  * Returns -ERESTARTSYS if interrupted by a signal.
  */
+<<<<<<< HEAD
 extern int ttm_bo_wait(struct ttm_buffer_object *bo, bool lazy,
+=======
+extern int ttm_bo_wait(struct ttm_buffer_object *bo,
+>>>>>>> v4.9.227
 		       bool interruptible, bool no_wait);
 
 /**
@@ -397,6 +417,19 @@ extern void ttm_bo_add_to_lru(struct ttm_buffer_object *bo);
  */
 extern int ttm_bo_del_from_lru(struct ttm_buffer_object *bo);
 
+<<<<<<< HEAD
+=======
+/**
+ * ttm_bo_move_to_lru_tail
+ *
+ * @bo: The buffer object.
+ *
+ * Move this BO to the tail of all lru lists used to lookup and reserve an
+ * object. This function must be called with struct ttm_bo_global::lru_lock
+ * held, and is used to make a BO less likely to be considered for eviction.
+ */
+extern void ttm_bo_move_to_lru_tail(struct ttm_buffer_object *bo);
+>>>>>>> v4.9.227
 
 /**
  * ttm_bo_lock_delayed_workqueue

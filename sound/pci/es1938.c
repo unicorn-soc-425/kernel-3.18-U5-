@@ -55,6 +55,10 @@
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/pcm.h>
@@ -63,8 +67,11 @@
 #include <sound/initval.h>
 #include <sound/tlv.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
+=======
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Jaromir Koutek <miri@punknet.cz>");
 MODULE_DESCRIPTION("ESS Solo-1");
 MODULE_LICENSE("GPL");
@@ -993,7 +1000,11 @@ static int snd_es1938_playback_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_es1938_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_es1938_playback_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_es1938_playback_open,
 	.close =	snd_es1938_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1004,7 +1015,11 @@ static struct snd_pcm_ops snd_es1938_playback_ops = {
 	.pointer =	snd_es1938_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_es1938_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_es1938_capture_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_es1938_capture_open,
 	.close =	snd_es1938_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1045,11 +1060,16 @@ static int snd_es1938_new_pcm(struct es1938 *chip, int device)
 static int snd_es1938_info_mux(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[8] = {
+=======
+	static const char * const texts[8] = {
+>>>>>>> v4.9.227
 		"Mic", "Mic Master", "CD", "AOUT",
 		"Mic1", "Mix", "Line", "Master"
 	};
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 8;
@@ -1057,6 +1077,9 @@ static int snd_es1938_info_mux(struct snd_kcontrol *kcontrol,
 		uinfo->value.enumerated.item = 7;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 8, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_es1938_get_mux(struct snd_kcontrol *kcontrol,
@@ -1460,7 +1483,10 @@ static unsigned char saved_regs[SAVED_REG_SIZE+1] = {
 
 static int es1938_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct es1938 *chip = card->private_data;
 	unsigned char *s, *d;
@@ -1477,9 +1503,12 @@ static int es1938_suspend(struct device *dev)
 		free_irq(chip->irq, chip);
 		chip->irq = -1;
 	}
+<<<<<<< HEAD
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1490,6 +1519,7 @@ static int es1938_resume(struct device *dev)
 	struct es1938 *chip = card->private_data;
 	unsigned char *s, *d;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -1498,6 +1528,8 @@ static int es1938_resume(struct device *dev)
 		return -EIO;
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (request_irq(pci->irq, snd_es1938_interrupt,
 			IRQF_SHARED, KBUILD_MODNAME, chip)) {
 		dev_err(dev, "unable to grab IRQ %d, disabling device\n",
@@ -1599,8 +1631,13 @@ static int snd_es1938_create(struct snd_card *card,
 	if ((err = pci_enable_device(pci)) < 0)
 		return err;
         /* check, if we can restrict PCI DMA transfers to 24 bits */
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(24)) < 0 ||
 	    pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(24)) < 0) {
+=======
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(24)) < 0 ||
+	    dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(24)) < 0) {
+>>>>>>> v4.9.227
 		dev_err(card->dev,
 			"architecture does not support 24bit PCI busmaster DMA\n");
 		pci_disable_device(pci);

@@ -132,7 +132,11 @@ static const struct nvkm_enum vm_engine[] = {
 	{ 0x0000000b, "PCOUNTER" },
 	{ 0x0000000c, "SEMAPHORE_BG" },
 	{ 0x0000000d, "PCE0" },
+<<<<<<< HEAD
 	{ 0x0000000e, "PDAEMON" },
+=======
+	{ 0x0000000e, "PMU" },
+>>>>>>> v4.9.227
 	{}
 };
 

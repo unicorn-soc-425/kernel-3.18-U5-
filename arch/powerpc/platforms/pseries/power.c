@@ -27,6 +27,11 @@
 #include <linux/init.h>
 #include <asm/machdep.h>
 
+<<<<<<< HEAD
+=======
+#include "pseries.h"
+
+>>>>>>> v4.9.227
 unsigned long rtas_poweron_auto; /* default and normal state is 0 */
 
 static ssize_t auto_poweron_show(struct kobject *kobj,

@@ -209,7 +209,10 @@
 #ifndef __ASSEMBLY__
 
 extern volatile __u8 *psc;
+<<<<<<< HEAD
 extern int psc_present;
+=======
+>>>>>>> v4.9.227
 
 extern void psc_register_interrupts(void);
 extern void psc_irq_enable(int);

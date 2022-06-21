@@ -14,7 +14,10 @@
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/pinctrl/pinctrl.h>
@@ -402,11 +405,17 @@ static int imx27_pinctrl_probe(struct platform_device *pdev)
 static struct platform_driver imx27_pinctrl_driver = {
 	.driver = {
 		.name = "imx27-pinctrl",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = of_match_ptr(imx27_pinctrl_of_match),
 	},
 	.probe = imx27_pinctrl_probe,
 	.remove = imx1_pinctrl_core_remove,
+=======
+		.of_match_table = of_match_ptr(imx27_pinctrl_of_match),
+	},
+	.probe = imx27_pinctrl_probe,
+>>>>>>> v4.9.227
 };
 
 static int __init imx27_pinctrl_init(void)
@@ -414,6 +423,7 @@ static int __init imx27_pinctrl_init(void)
 	return platform_driver_register(&imx27_pinctrl_driver);
 }
 arch_initcall(imx27_pinctrl_init);
+<<<<<<< HEAD
 
 static void __exit imx27_pinctrl_exit(void)
 {
@@ -423,3 +433,5 @@ module_exit(imx27_pinctrl_exit);
 MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
 MODULE_DESCRIPTION("Freescale IMX27 pinctrl driver");
 MODULE_LICENSE("GPL v2");
+=======
+>>>>>>> v4.9.227

@@ -22,6 +22,10 @@
 #include <linux/slab.h>
 #include <linux/irq.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/acpi.h>
+>>>>>>> v4.9.227
 
 enum {
 	REG_READ        = 0x00,
@@ -178,11 +182,34 @@ static int events_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_driver events_driver = {
 	.probe	= events_probe,
 	.driver	= {
 		.owner	= THIS_MODULE,
 		.name	= "goldfish_events",
+=======
+static const struct of_device_id goldfish_events_of_match[] = {
+	{ .compatible = "google,goldfish-events-keypad", },
+	{},
+};
+MODULE_DEVICE_TABLE(of, goldfish_events_of_match);
+
+#ifdef CONFIG_ACPI
+static const struct acpi_device_id goldfish_events_acpi_match[] = {
+	{ "GFSH0002", 0 },
+	{ },
+};
+MODULE_DEVICE_TABLE(acpi, goldfish_events_acpi_match);
+#endif
+
+static struct platform_driver events_driver = {
+	.probe	= events_probe,
+	.driver	= {
+		.name	= "goldfish_events",
+		.of_match_table = goldfish_events_of_match,
+		.acpi_match_table = ACPI_PTR(goldfish_events_acpi_match),
+>>>>>>> v4.9.227
 	},
 };
 

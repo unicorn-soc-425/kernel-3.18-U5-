@@ -167,7 +167,11 @@ static int snd_ivtv_pcm_capture_open(struct snd_pcm_substream *substream)
 
 	s = &itv->streams[IVTV_ENC_STREAM_TYPE_PCM];
 
+<<<<<<< HEAD
 	v4l2_fh_init(&item.fh, s->vdev);
+=======
+	v4l2_fh_init(&item.fh, &s->vdev);
+>>>>>>> v4.9.227
 	item.itv = itv;
 	item.type = s->type;
 
@@ -318,7 +322,11 @@ static struct page *snd_pcm_get_vmalloc_page(struct snd_pcm_substream *subs,
 	return vmalloc_to_page(pageptr);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ivtv_pcm_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_ivtv_pcm_capture_ops = {
+>>>>>>> v4.9.227
 	.open		= snd_ivtv_pcm_capture_open,
 	.close		= snd_ivtv_pcm_capture_close,
 	.ioctl		= snd_ivtv_pcm_ioctl,

@@ -13,7 +13,10 @@
 #include <linux/mbus.h>
 #include <linux/io.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
+=======
+>>>>>>> v4.9.227
 #include <plat/orion-gpio.h>
 #include <plat/mpp.h>
 

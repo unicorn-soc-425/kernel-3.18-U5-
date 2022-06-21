@@ -28,6 +28,7 @@
 
 #include <linux/compiler.h>
 
+<<<<<<< HEAD
 #ifdef BIT
 #undef BIT
 #endif
@@ -37,6 +38,9 @@
 #define WLAN_ETHADDR_LEN	6
 #define WLAN_IEEE_OUI_LEN	3
 #define WLAN_ADDR_LEN		6
+=======
+#define WLAN_IEEE_OUI_LEN	3
+>>>>>>> v4.9.227
 #define WLAN_CRC_LEN		4
 #define WLAN_BSSID_LEN		6
 #define WLAN_BSS_TS_LEN		8
@@ -52,7 +56,10 @@
 
 #define WLAN_MIN_ETHFRM_LEN	60
 #define WLAN_MAX_ETHFRM_LEN	1514
+<<<<<<< HEAD
 #define WLAN_ETHHDR_LEN		14
+=======
+>>>>>>> v4.9.227
 
 #define P80211CAPTURE_VERSION	0x80211001
 
@@ -235,11 +242,14 @@ enum WIFI_REG_DOMAIN {
 #define GetPrivacy(pbuf)	(((*(unsigned short *)(pbuf)) & \
 				le16_to_cpu(_PRIVACY_)) != 0)
 
+<<<<<<< HEAD
 #define ClearPrivacy(pbuf) ({ \
 	*(unsigned short *)(pbuf) &= (~cpu_to_le16(_PRIVACY_)); \
 })
 
 
+=======
+>>>>>>> v4.9.227
 #define GetOrder(pbuf)	(((*(unsigned short *)(pbuf)) & \
 			le16_to_cpu(_ORDER_)) != 0)
 
@@ -248,9 +258,15 @@ enum WIFI_REG_DOMAIN {
 
 #define SetFrameType(pbuf, type)	\
 	do {	\
+<<<<<<< HEAD
 		*(unsigned short *)(pbuf) &= __constant_cpu_to_le16(~(BIT(3) | \
 		BIT(2))); \
 		*(unsigned short *)(pbuf) |= __constant_cpu_to_le16(type); \
+=======
+		*(unsigned short *)(pbuf) &= cpu_to_le16(~(BIT(3) | \
+		BIT(2))); \
+		*(unsigned short *)(pbuf) |= cpu_to_le16(type); \
+>>>>>>> v4.9.227
 	} while (0)
 
 #define GetFrameSubType(pbuf)	(cpu_to_le16(*(unsigned short *)(pbuf)) & \
@@ -270,6 +286,7 @@ enum WIFI_REG_DOMAIN {
 #define GetFragNum(pbuf)	(cpu_to_le16(*(unsigned short *)((addr_t)\
 				(pbuf) + 22)) & 0x0f)
 
+<<<<<<< HEAD
 #define GetTupleCache(pbuf)	(cpu_to_le16(*(unsigned short *)\
 				((addr_t)(pbuf) + 22)))
 
@@ -280,6 +297,8 @@ enum WIFI_REG_DOMAIN {
 	cpu_to_le16(0x0f & (num));     \
 })
 
+=======
+>>>>>>> v4.9.227
 #define SetSeqNum(pbuf, num) ({ \
 	*(unsigned short *)((addr_t)(pbuf) + 22) = \
 	((*(unsigned short *)((addr_t)(pbuf) + 22)) & \
@@ -306,6 +325,7 @@ enum WIFI_REG_DOMAIN {
 
 #define GetAMsdu(pbuf) (((le16_to_cpu(*(unsigned short *)pbuf)) >> 7) & 0x1)
 
+<<<<<<< HEAD
 #define SetAMsdu(pbuf, amsdu) ({ \
 	*(unsigned short *)(pbuf) |= cpu_to_le16((amsdu & 1) << 7); \
 })
@@ -317,6 +337,11 @@ enum WIFI_REG_DOMAIN {
 			(((GetToDs(pbuf) << 1)|GetFrDs(pbuf)) == 3 ? \
 			30 : 24))) & 0x000f)
 
+=======
+#define GetAid(pbuf)	(cpu_to_le16(*(unsigned short *)((addr_t)(pbuf) + 2)) \
+			& 0x3fff)
+
+>>>>>>> v4.9.227
 #define GetAddr1Ptr(pbuf)	((unsigned char *)((addr_t)(pbuf) + 4))
 
 #define GetAddr2Ptr(pbuf)	((unsigned char *)((addr_t)(pbuf) + 10))
@@ -408,7 +433,12 @@ static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 
 /*-----------------------------------------------------------------------------
 			Below is for the security related definition
+<<<<<<< HEAD
 ------------------------------------------------------------------------------*/
+=======
+ *-----------------------------------------------------------------------------
+ */
+>>>>>>> v4.9.227
 #define _RESERVED_FRAME_TYPE_	0
 #define _SKB_FRAME_TYPE_	2
 #define _PRE_ALLOCMEM_		1
@@ -452,7 +482,12 @@ static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 
 /* ---------------------------------------------------------------------------
 					Below is the fixed elements...
+<<<<<<< HEAD
 -----------------------------------------------------------------------------*/
+=======
+ * ---------------------------------------------------------------------------
+ */
+>>>>>>> v4.9.227
 #define _AUTH_ALGM_NUM_			2
 #define _AUTH_SEQ_NUM_			2
 #define _BEACON_ITERVAL_		2
@@ -480,25 +515,44 @@ static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 
 /*-----------------------------------------------------------------------------
 				Below is the definition for 802.11i / 802.1x
+<<<<<<< HEAD
 ------------------------------------------------------------------------------*/
+=======
+ *------------------------------------------------------------------------------
+ */
+>>>>>>> v4.9.227
 #define _IEEE8021X_MGT_			1	/*WPA */
 #define _IEEE8021X_PSK_			2	/* WPA with pre-shared key */
 
 /*-----------------------------------------------------------------------------
 				Below is the definition for WMM
+<<<<<<< HEAD
 ------------------------------------------------------------------------------*/
+=======
+ *------------------------------------------------------------------------------
+ */
+>>>>>>> v4.9.227
 #define _WMM_IE_Length_				7  /* for WMM STA */
 #define _WMM_Para_Element_Length_		24
 
 
 /*-----------------------------------------------------------------------------
 				Below is the definition for 802.11n
+<<<<<<< HEAD
 ------------------------------------------------------------------------------*/
+=======
+ *------------------------------------------------------------------------------
+ */
+>>>>>>> v4.9.227
 
 /* block-ack parameters */
 #define IEEE80211_ADDBA_PARAM_POLICY_MASK 0x0002
 #define IEEE80211_ADDBA_PARAM_TID_MASK 0x003C
+<<<<<<< HEAD
 #define IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK 0xFFA0
+=======
+#define IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK 0xFFC0
+>>>>>>> v4.9.227
 #define IEEE80211_DELBA_PARAM_TID_MASK 0xF000
 #define IEEE80211_DELBA_PARAM_INITIATOR_MASK 0x0800
 
@@ -592,6 +646,7 @@ struct ieee80211_ht_addt_info {
 #define IEEE80211_HT_IE_NON_GF_STA_PRSNT	0x0004
 #define IEEE80211_HT_IE_NON_HT_STA_PRSNT	0x0010
 
+<<<<<<< HEAD
 /* block-ack parameters */
 #define IEEE80211_ADDBA_PARAM_POLICY_MASK 0x0002
 #define IEEE80211_ADDBA_PARAM_TID_MASK 0x003C
@@ -599,6 +654,8 @@ struct ieee80211_ht_addt_info {
 #define IEEE80211_DELBA_PARAM_TID_MASK 0xF000
 #define IEEE80211_DELBA_PARAM_INITIATOR_MASK 0x0800
 
+=======
+>>>>>>> v4.9.227
 /*
  * A-PMDU buffer sizes
  * According to IEEE802.11n spec size varies from 8K to 64K (in powers of 2)

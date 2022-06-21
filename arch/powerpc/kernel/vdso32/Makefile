@@ -15,10 +15,18 @@ targets := $(obj-vdso32) vdso32.so vdso32.so.dbg
 obj-vdso32 := $(addprefix $(obj)/, $(obj-vdso32))
 
 GCOV_PROFILE := n
+<<<<<<< HEAD
 
 ccflags-y := -shared -fno-common -fno-builtin
 ccflags-y += -nostdlib -Wl,-soname=linux-vdso32.so.1 \
 		$(call cc-ldoption, -Wl$(comma)--hash-style=sysv)
+=======
+UBSAN_SANITIZE := n
+
+ccflags-y := -shared -fno-common -fno-builtin
+ccflags-y += -nostdlib -Wl,-soname=linux-vdso32.so.1 \
+		$(call cc-ldoption, -Wl$(comma)--hash-style=both)
+>>>>>>> v4.9.227
 asflags-y := -D__VDSO32__ -s
 
 obj-y += vdso32_wrapper.o
@@ -29,7 +37,11 @@ CPPFLAGS_vdso32.lds += -P -C -Upowerpc
 $(obj)/vdso32_wrapper.o : $(obj)/vdso32.so
 
 # link rule for the .so file, .lds has to be first
+<<<<<<< HEAD
 $(obj)/vdso32.so.dbg: $(src)/vdso32.lds $(obj-vdso32)
+=======
+$(obj)/vdso32.so.dbg: $(src)/vdso32.lds $(obj-vdso32) FORCE
+>>>>>>> v4.9.227
 	$(call if_changed,vdso32ld)
 
 # strip rule for the .so file
@@ -38,12 +50,20 @@ $(obj)/%.so: $(obj)/%.so.dbg FORCE
 	$(call if_changed,objcopy)
 
 # assembly rules for the .S files
+<<<<<<< HEAD
 $(obj-vdso32): %.o: %.S
+=======
+$(obj-vdso32): %.o: %.S FORCE
+>>>>>>> v4.9.227
 	$(call if_changed_dep,vdso32as)
 
 # actual build commands
 quiet_cmd_vdso32ld = VDSO32L $@
+<<<<<<< HEAD
       cmd_vdso32ld = $(CROSS32CC) $(c_flags) -Wl,-T $^ -o $@
+=======
+      cmd_vdso32ld = $(CROSS32CC) $(c_flags) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^)
+>>>>>>> v4.9.227
 quiet_cmd_vdso32as = VDSO32A $@
       cmd_vdso32as = $(CROSS32CC) $(a_flags) -c -o $@ $<
 

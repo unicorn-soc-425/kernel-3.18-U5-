@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -48,11 +56,14 @@
 
 #include "lov_internal.h"
 
+<<<<<<< HEAD
 struct lovea_unpack_args {
 	struct lov_stripe_md *lsm;
 	int		   cursor;
 };
 
+=======
+>>>>>>> v4.9.227
 static int lsm_lmm_verify_common(struct lov_mds_md *lmm, int lmm_bytes,
 				 __u16 stripe_count)
 {
@@ -75,7 +86,12 @@ static int lsm_lmm_verify_common(struct lov_mds_md *lmm, int lmm_bytes,
 	}
 
 	if (lmm->lmm_stripe_size == 0 ||
+<<<<<<< HEAD
 	    (le32_to_cpu(lmm->lmm_stripe_size)&(LOV_MIN_STRIPE_SIZE-1)) != 0) {
+=======
+	    (le32_to_cpu(lmm->lmm_stripe_size) &
+	     (LOV_MIN_STRIPE_SIZE - 1)) != 0) {
+>>>>>>> v4.9.227
 		CERROR("bad stripe size %u\n",
 		       le32_to_cpu(lmm->lmm_stripe_size));
 		lov_dump_lmm_common(D_WARNING, lmm);
@@ -95,13 +111,22 @@ struct lov_stripe_md *lsm_alloc_plain(__u16 stripe_count, int *size)
 	oinfo_ptrs_size = sizeof(struct lov_oinfo *) * stripe_count;
 	*size = sizeof(struct lov_stripe_md) + oinfo_ptrs_size;
 
+<<<<<<< HEAD
 	OBD_ALLOC_LARGE(lsm, *size);
+=======
+	lsm = libcfs_kvzalloc(*size, GFP_NOFS);
+>>>>>>> v4.9.227
 	if (!lsm)
 		return NULL;
 
 	for (i = 0; i < stripe_count; i++) {
+<<<<<<< HEAD
 		OBD_SLAB_ALLOC_PTR_GFP(loi, lov_oinfo_slab, GFP_NOFS);
 		if (loi == NULL)
+=======
+		loi = kmem_cache_zalloc(lov_oinfo_slab, GFP_NOFS);
+		if (!loi)
+>>>>>>> v4.9.227
 			goto err;
 		lsm->lsm_oinfo[i] = loi;
 	}
@@ -110,8 +135,13 @@ struct lov_stripe_md *lsm_alloc_plain(__u16 stripe_count, int *size)
 
 err:
 	while (--i >= 0)
+<<<<<<< HEAD
 		OBD_SLAB_FREE(lsm->lsm_oinfo[i], lov_oinfo_slab, sizeof(*loi));
 	OBD_FREE_LARGE(lsm, *size);
+=======
+		kmem_cache_free(lov_oinfo_slab, lsm->lsm_oinfo[i]);
+	kvfree(lsm);
+>>>>>>> v4.9.227
 	return NULL;
 }
 
@@ -121,10 +151,15 @@ void lsm_free_plain(struct lov_stripe_md *lsm)
 	int i;
 
 	for (i = 0; i < stripe_count; i++)
+<<<<<<< HEAD
 		OBD_SLAB_FREE(lsm->lsm_oinfo[i], lov_oinfo_slab,
 			      sizeof(struct lov_oinfo));
 	OBD_FREE_LARGE(lsm, sizeof(struct lov_stripe_md) +
 		       stripe_count * sizeof(struct lov_oinfo *));
+=======
+		kmem_cache_free(lov_oinfo_slab, lsm->lsm_oinfo[i]);
+	kvfree(lsm);
+>>>>>>> v4.9.227
 }
 
 static void lsm_unpackmd_common(struct lov_stripe_md *lsm,
@@ -143,7 +178,11 @@ static void lsm_unpackmd_common(struct lov_stripe_md *lsm,
 
 static void
 lsm_stripe_by_index_plain(struct lov_stripe_md *lsm, int *stripeno,
+<<<<<<< HEAD
 			   u64 *lov_off, u64 *swidth)
+=======
+			  u64 *lov_off, u64 *swidth)
+>>>>>>> v4.9.227
 {
 	if (swidth)
 		*swidth = (u64)lsm->lsm_stripe_size * lsm->lsm_stripe_count;
@@ -157,6 +196,7 @@ lsm_stripe_by_offset_plain(struct lov_stripe_md *lsm, int *stripeno,
 		*swidth = (u64)lsm->lsm_stripe_size * lsm->lsm_stripe_count;
 }
 
+<<<<<<< HEAD
 static int lsm_destroy_plain(struct lov_stripe_md *lsm, struct obdo *oa,
 			     struct obd_export *md_exp)
 {
@@ -165,12 +205,22 @@ static int lsm_destroy_plain(struct lov_stripe_md *lsm, struct obdo *oa,
 
 /* Find minimum stripe maxbytes value.  For inactive or
  * reconnecting targets use LUSTRE_STRIPE_MAXBYTES. */
+=======
+/* Find minimum stripe maxbytes value.  For inactive or
+ * reconnecting targets use LUSTRE_EXT3_STRIPE_MAXBYTES.
+ */
+>>>>>>> v4.9.227
 static void lov_tgt_maxbytes(struct lov_tgt_desc *tgt, __u64 *stripe_maxbytes)
 {
 	struct obd_import *imp = tgt->ltd_obd->u.cli.cl_import;
 
+<<<<<<< HEAD
 	if (imp == NULL || !tgt->ltd_active) {
 		*stripe_maxbytes = LUSTRE_STRIPE_MAXBYTES;
+=======
+	if (!imp || !tgt->ltd_active) {
+		*stripe_maxbytes = LUSTRE_EXT3_STRIPE_MAXBYTES;
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -181,7 +231,11 @@ static void lov_tgt_maxbytes(struct lov_tgt_desc *tgt, __u64 *stripe_maxbytes)
 		if (*stripe_maxbytes > imp->imp_connect_data.ocd_maxbytes)
 			*stripe_maxbytes = imp->imp_connect_data.ocd_maxbytes;
 	} else {
+<<<<<<< HEAD
 		*stripe_maxbytes = LUSTRE_STRIPE_MAXBYTES;
+=======
+		*stripe_maxbytes = LUSTRE_EXT3_STRIPE_MAXBYTES;
+>>>>>>> v4.9.227
 	}
 	spin_unlock(&imp->imp_lock);
 }
@@ -209,8 +263,13 @@ static int lsm_lmm_verify_v1(struct lov_mds_md_v1 *lmm, int lmm_bytes,
 	return lsm_lmm_verify_common(lmm, lmm_bytes, *stripe_count);
 }
 
+<<<<<<< HEAD
 int lsm_unpackmd_v1(struct lov_obd *lov, struct lov_stripe_md *lsm,
 		    struct lov_mds_md_v1 *lmm)
+=======
+static int lsm_unpackmd_v1(struct lov_obd *lov, struct lov_stripe_md *lsm,
+			   struct lov_mds_md_v1 *lmm)
+>>>>>>> v4.9.227
 {
 	struct lov_oinfo *loi;
 	int i;
@@ -227,6 +286,12 @@ int lsm_unpackmd_v1(struct lov_obd *lov, struct lov_stripe_md *lsm,
 		ostid_le_to_cpu(&lmm->lmm_objects[i].l_ost_oi, &loi->loi_oi);
 		loi->loi_ost_idx = le32_to_cpu(lmm->lmm_objects[i].l_ost_idx);
 		loi->loi_ost_gen = le32_to_cpu(lmm->lmm_objects[i].l_ost_gen);
+<<<<<<< HEAD
+=======
+		if (lov_oinfo_is_dummy(loi))
+			continue;
+
+>>>>>>> v4.9.227
 		if (loi->loi_ost_idx >= lov->desc.ld_tgt_count) {
 			CERROR("OST index %d more than OST count %d\n",
 			       loi->loi_ost_idx, lov->desc.ld_tgt_count);
@@ -252,7 +317,10 @@ int lsm_unpackmd_v1(struct lov_obd *lov, struct lov_stripe_md *lsm,
 
 const struct lsm_operations lsm_v1_ops = {
 	.lsm_free	    = lsm_free_plain,
+<<<<<<< HEAD
 	.lsm_destroy	 = lsm_destroy_plain,
+=======
+>>>>>>> v4.9.227
 	.lsm_stripe_by_index    = lsm_stripe_by_index_plain,
 	.lsm_stripe_by_offset   = lsm_stripe_by_offset_plain,
 	.lsm_lmm_verify	 = lsm_lmm_verify_v1,
@@ -287,8 +355,13 @@ static int lsm_lmm_verify_v3(struct lov_mds_md *lmmv1, int lmm_bytes,
 				     *stripe_count);
 }
 
+<<<<<<< HEAD
 int lsm_unpackmd_v3(struct lov_obd *lov, struct lov_stripe_md *lsm,
 		    struct lov_mds_md *lmmv1)
+=======
+static int lsm_unpackmd_v3(struct lov_obd *lov, struct lov_stripe_md *lsm,
+			   struct lov_mds_md *lmmv1)
+>>>>>>> v4.9.227
 {
 	struct lov_mds_md_v3 *lmm;
 	struct lov_oinfo *loi;
@@ -314,6 +387,12 @@ int lsm_unpackmd_v3(struct lov_obd *lov, struct lov_stripe_md *lsm,
 		ostid_le_to_cpu(&lmm->lmm_objects[i].l_ost_oi, &loi->loi_oi);
 		loi->loi_ost_idx = le32_to_cpu(lmm->lmm_objects[i].l_ost_idx);
 		loi->loi_ost_gen = le32_to_cpu(lmm->lmm_objects[i].l_ost_gen);
+<<<<<<< HEAD
+=======
+		if (lov_oinfo_is_dummy(loi))
+			continue;
+
+>>>>>>> v4.9.227
 		if (loi->loi_ost_idx >= lov->desc.ld_tgt_count) {
 			CERROR("OST index %d more than OST count %d\n",
 			       loi->loi_ost_idx, lov->desc.ld_tgt_count);
@@ -339,7 +418,10 @@ int lsm_unpackmd_v3(struct lov_obd *lov, struct lov_stripe_md *lsm,
 
 const struct lsm_operations lsm_v3_ops = {
 	.lsm_free	    = lsm_free_plain,
+<<<<<<< HEAD
 	.lsm_destroy	 = lsm_destroy_plain,
+=======
+>>>>>>> v4.9.227
 	.lsm_stripe_by_index    = lsm_stripe_by_index_plain,
 	.lsm_stripe_by_offset   = lsm_stripe_by_offset_plain,
 	.lsm_lmm_verify	 = lsm_lmm_verify_v3,
@@ -348,9 +430,14 @@ const struct lsm_operations lsm_v3_ops = {
 
 void dump_lsm(unsigned int level, const struct lov_stripe_md *lsm)
 {
+<<<<<<< HEAD
 	CDEBUG(level, "lsm %p, objid "DOSTID", maxbytes %#llx, magic 0x%08X,"
 	       " stripe_size %u, stripe_count %u, refc: %d,"
 	       " layout_gen %u, pool ["LOV_POOLNAMEF"]\n", lsm,
+=======
+	CDEBUG(level, "lsm %p, objid " DOSTID ", maxbytes %#llx, magic 0x%08X, stripe_size %u, stripe_count %u, refc: %d, layout_gen %u, pool [" LOV_POOLNAMEF "]\n",
+	       lsm,
+>>>>>>> v4.9.227
 	       POSTID(&lsm->lsm_oi), lsm->lsm_maxbytes, lsm->lsm_magic,
 	       lsm->lsm_stripe_size, lsm->lsm_stripe_count,
 	       atomic_read(&lsm->lsm_refc), lsm->lsm_layout_gen,

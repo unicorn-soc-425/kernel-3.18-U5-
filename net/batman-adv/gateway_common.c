@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2009-2014 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2009-2016  B.A.T.M.A.N. contributors:
+>>>>>>> v4.9.227
  *
  * Marek Lindner
  *
@@ -15,6 +19,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 #include "main.h"
 #include "gateway_common.h"
 #include "gateway_client.h"
@@ -41,6 +46,43 @@ static bool batadv_parse_gw_bandwidth(struct net_device *net_dev, char *buff,
 	if (slash_ptr)
 		*slash_ptr = 0;
 
+=======
+#include "gateway_common.h"
+#include "main.h"
+
+#include <linux/atomic.h>
+#include <linux/byteorder/generic.h>
+#include <linux/errno.h>
+#include <linux/kernel.h>
+#include <linux/math64.h>
+#include <linux/netdevice.h>
+#include <linux/stddef.h>
+#include <linux/string.h>
+
+#include "gateway_client.h"
+#include "log.h"
+#include "packet.h"
+#include "tvlv.h"
+
+/**
+ * batadv_parse_throughput - parse supplied string buffer to extract throughput
+ *  information
+ * @net_dev: the soft interface net device
+ * @buff: string buffer to parse
+ * @description: text shown when throughput string cannot be parsed
+ * @throughput: pointer holding the returned throughput information
+ *
+ * Return: false on parse error and true otherwise.
+ */
+bool batadv_parse_throughput(struct net_device *net_dev, char *buff,
+			     const char *description, u32 *throughput)
+{
+	enum batadv_bandwidth_units bw_unit_type = BATADV_BW_UNIT_KBIT;
+	u64 lthroughput;
+	char *tmp_ptr;
+	int ret;
+
+>>>>>>> v4.9.227
 	if (strlen(buff) > 4) {
 		tmp_ptr = buff + strlen(buff) - 4;
 
@@ -52,16 +94,25 @@ static bool batadv_parse_gw_bandwidth(struct net_device *net_dev, char *buff,
 			*tmp_ptr = '\0';
 	}
 
+<<<<<<< HEAD
 	ret = kstrtol(buff, 10, &ldown);
 	if (ret) {
 		batadv_err(net_dev,
 			   "Download speed of gateway mode invalid: %s\n",
 			   buff);
+=======
+	ret = kstrtou64(buff, 10, &lthroughput);
+	if (ret) {
+		batadv_err(net_dev,
+			   "Invalid throughput speed for %s: %s\n",
+			   description, buff);
+>>>>>>> v4.9.227
 		return false;
 	}
 
 	switch (bw_unit_type) {
 	case BATADV_BW_UNIT_MBIT:
+<<<<<<< HEAD
 		*down = ldown * 10;
 		break;
 	case BATADV_BW_UNIT_KBIT:
@@ -102,6 +153,67 @@ static bool batadv_parse_gw_bandwidth(struct net_device *net_dev, char *buff,
 			*up = lup / 100;
 			break;
 		}
+=======
+		/* prevent overflow */
+		if (U64_MAX / 10 < lthroughput) {
+			batadv_err(net_dev,
+				   "Throughput speed for %s too large: %s\n",
+				   description, buff);
+			return false;
+		}
+
+		lthroughput *= 10;
+		break;
+	case BATADV_BW_UNIT_KBIT:
+	default:
+		lthroughput = div_u64(lthroughput, 100);
+		break;
+	}
+
+	if (lthroughput > U32_MAX) {
+		batadv_err(net_dev,
+			   "Throughput speed for %s too large: %s\n",
+			   description, buff);
+		return false;
+	}
+
+	*throughput = lthroughput;
+
+	return true;
+}
+
+/**
+ * batadv_parse_gw_bandwidth - parse supplied string buffer to extract download
+ *  and upload bandwidth information
+ * @net_dev: the soft interface net device
+ * @buff: string buffer to parse
+ * @down: pointer holding the returned download bandwidth information
+ * @up: pointer holding the returned upload bandwidth information
+ *
+ * Return: false on parse error and true otherwise.
+ */
+static bool batadv_parse_gw_bandwidth(struct net_device *net_dev, char *buff,
+				      u32 *down, u32 *up)
+{
+	char *slash_ptr;
+	bool ret;
+
+	slash_ptr = strchr(buff, '/');
+	if (slash_ptr)
+		*slash_ptr = 0;
+
+	ret = batadv_parse_throughput(net_dev, buff, "download gateway speed",
+				      down);
+	if (!ret)
+		return false;
+
+	/* we also got some upload info */
+	if (slash_ptr) {
+		ret = batadv_parse_throughput(net_dev, slash_ptr + 1,
+					      "upload gateway speed", up);
+		if (!ret)
+			return false;
+>>>>>>> v4.9.227
 	}
 
 	return true;
@@ -115,10 +227,17 @@ static bool batadv_parse_gw_bandwidth(struct net_device *net_dev, char *buff,
 void batadv_gw_tvlv_container_update(struct batadv_priv *bat_priv)
 {
 	struct batadv_tvlv_gateway_data gw;
+<<<<<<< HEAD
 	uint32_t down, up;
 	char gw_mode;
 
 	gw_mode = atomic_read(&bat_priv->gw_mode);
+=======
+	u32 down, up;
+	char gw_mode;
+
+	gw_mode = atomic_read(&bat_priv->gw.mode);
+>>>>>>> v4.9.227
 
 	switch (gw_mode) {
 	case BATADV_GW_MODE_OFF:
@@ -140,7 +259,14 @@ ssize_t batadv_gw_bandwidth_set(struct net_device *net_dev, char *buff,
 				size_t count)
 {
 	struct batadv_priv *bat_priv = netdev_priv(net_dev);
+<<<<<<< HEAD
 	uint32_t down_curr, up_curr, down_new = 0, up_new = 0;
+=======
+	u32 down_curr;
+	u32 up_curr;
+	u32 down_new = 0;
+	u32 up_new = 0;
+>>>>>>> v4.9.227
 	bool ret;
 
 	down_curr = (unsigned int)atomic_read(&bat_priv->gw.bandwidth_down);
@@ -148,7 +274,11 @@ ssize_t batadv_gw_bandwidth_set(struct net_device *net_dev, char *buff,
 
 	ret = batadv_parse_gw_bandwidth(net_dev, buff, &down_new, &up_new);
 	if (!ret)
+<<<<<<< HEAD
 		goto end;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 
 	if (!down_new)
 		down_new = 1;
@@ -172,7 +302,10 @@ ssize_t batadv_gw_bandwidth_set(struct net_device *net_dev, char *buff,
 	atomic_set(&bat_priv->gw.bandwidth_up, up_new);
 	batadv_gw_tvlv_container_update(bat_priv);
 
+<<<<<<< HEAD
 end:
+=======
+>>>>>>> v4.9.227
 	return count;
 }
 
@@ -186,9 +319,14 @@ end:
  */
 static void batadv_gw_tvlv_ogm_handler_v1(struct batadv_priv *bat_priv,
 					  struct batadv_orig_node *orig,
+<<<<<<< HEAD
 					  uint8_t flags,
 					  void *tvlv_value,
 					  uint16_t tvlv_value_len)
+=======
+					  u8 flags,
+					  void *tvlv_value, u16 tvlv_value_len)
+>>>>>>> v4.9.227
 {
 	struct batadv_tvlv_gateway_data gateway, *gateway_ptr;
 
@@ -212,10 +350,16 @@ static void batadv_gw_tvlv_ogm_handler_v1(struct batadv_priv *bat_priv,
 
 	batadv_gw_node_update(bat_priv, orig, &gateway);
 
+<<<<<<< HEAD
 	/* restart gateway selection if fast or late switching was enabled */
 	if ((gateway.bandwidth_down != 0) &&
 	    (atomic_read(&bat_priv->gw_mode) == BATADV_GW_MODE_CLIENT) &&
 	    (atomic_read(&bat_priv->gw_sel_class) > 2))
+=======
+	/* restart gateway selection */
+	if ((gateway.bandwidth_down != 0) &&
+	    (atomic_read(&bat_priv->gw.mode) == BATADV_GW_MODE_CLIENT))
+>>>>>>> v4.9.227
 		batadv_gw_check_election(bat_priv, orig);
 }
 
@@ -225,6 +369,14 @@ static void batadv_gw_tvlv_ogm_handler_v1(struct batadv_priv *bat_priv,
  */
 void batadv_gw_init(struct batadv_priv *bat_priv)
 {
+<<<<<<< HEAD
+=======
+	if (bat_priv->algo_ops->gw.init_sel_class)
+		bat_priv->algo_ops->gw.init_sel_class(bat_priv);
+	else
+		atomic_set(&bat_priv->gw.sel_class, 1);
+
+>>>>>>> v4.9.227
 	batadv_tvlv_handler_register(bat_priv, batadv_gw_tvlv_ogm_handler_v1,
 				     NULL, BATADV_TVLV_GW, 1,
 				     BATADV_TVLV_HANDLER_OGM_CIFNOTFND);

@@ -24,7 +24,11 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
   
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -902,7 +906,11 @@ snd_nm256_capture_close(struct snd_pcm_substream *substream)
 /*
  * create a pcm instance
  */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_nm256_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_nm256_playback_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_nm256_playback_open,
 	.close =	snd_nm256_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -917,7 +925,11 @@ static struct snd_pcm_ops snd_nm256_playback_ops = {
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_nm256_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_nm256_capture_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_nm256_capture_open,
 	.close =	snd_nm256_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1392,7 +1404,10 @@ snd_nm256_peek_for_sig(struct nm256 *chip)
  */
 static int nm256_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct nm256 *chip = card->private_data;
 
@@ -1400,15 +1415,21 @@ static int nm256_suspend(struct device *dev)
 	snd_pcm_suspend_all(chip->pcm);
 	snd_ac97_suspend(chip->ac97);
 	chip->coeffs_current = 0;
+<<<<<<< HEAD
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int nm256_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct nm256 *chip = card->private_data;
 	int i;
@@ -1416,6 +1437,7 @@ static int nm256_resume(struct device *dev)
 	/* Perform a full reset on the hardware */
 	chip->in_resume = 1;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -1425,6 +1447,8 @@ static int nm256_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> v4.9.227
 	snd_nm256_init_chip(chip);
 
 	/* restore ac97 */
@@ -1460,10 +1484,15 @@ static int snd_nm256_free(struct nm256 *chip)
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
 
+<<<<<<< HEAD
 	if (chip->cport)
 		iounmap(chip->cport);
 	if (chip->buffer)
 		iounmap(chip->buffer);
+=======
+	iounmap(chip->cport);
+	iounmap(chip->buffer);
+>>>>>>> v4.9.227
 	release_and_free_resource(chip->res_cport);
 	release_and_free_resource(chip->res_buffer);
 

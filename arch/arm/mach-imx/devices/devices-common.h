@@ -154,6 +154,7 @@ struct platform_device *__init imx_add_imx_ssi(
 		const struct imx_ssi_platform_data *pdata);
 
 #include <linux/platform_data/serial-imx.h>
+<<<<<<< HEAD
 struct imx_imx_uart_3irq_data {
 	int id;
 	resource_size_t iobase;
@@ -166,6 +167,8 @@ struct platform_device *__init imx_add_imx_uart_3irq(
 		const struct imx_imx_uart_3irq_data *data,
 		const struct imxuart_platform_data *pdata);
 
+=======
+>>>>>>> v4.9.227
 struct imx_imx_uart_1irq_data {
 	int id;
 	resource_size_t iobase;
@@ -177,7 +180,11 @@ struct platform_device *__init imx_add_imx_uart_1irq(
 		const struct imxuart_platform_data *pdata);
 
 #include <linux/platform_data/video-mx3fb.h>
+<<<<<<< HEAD
 #include <linux/platform_data/camera-mx3.h>
+=======
+#include <linux/platform_data/media/camera-mx3.h>
+>>>>>>> v4.9.227
 struct imx_ipu_core_data {
 	resource_size_t iobase;
 	resource_size_t synirq;
@@ -192,7 +199,11 @@ struct platform_device *__init imx_add_mx3_sdc_fb(
 		const struct imx_ipu_core_data *data,
 		struct mx3fb_platform_data *pdata);
 
+<<<<<<< HEAD
 #include <linux/platform_data/camera-mx2.h>
+=======
+#include <linux/platform_data/media/camera-mx2.h>
+>>>>>>> v4.9.227
 struct imx_mx2_camera_data {
 	const char *devid;
 	resource_size_t iobasecsi;

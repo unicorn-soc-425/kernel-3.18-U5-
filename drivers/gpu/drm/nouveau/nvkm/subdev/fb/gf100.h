@@ -14,4 +14,9 @@ int gf100_fb_new_(const struct nvkm_fb_func *, struct nvkm_device *,
 void *gf100_fb_dtor(struct nvkm_fb *);
 void gf100_fb_init(struct nvkm_fb *);
 void gf100_fb_intr(struct nvkm_fb *);
+<<<<<<< HEAD
+=======
+
+void gp100_fb_init(struct nvkm_fb *);
+>>>>>>> v4.9.227
 #endif

@@ -107,7 +107,11 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr,
 		return;
 
 	if (ftrace_push_return_trace(*parent, self_addr, &trace.depth,
+<<<<<<< HEAD
 	                             frame_pointer) == -EBUSY)
+=======
+				     frame_pointer, NULL) == -EBUSY)
+>>>>>>> v4.9.227
 		return;
 
 	trace.func = self_addr;

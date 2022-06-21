@@ -1,8 +1,14 @@
 config MICROBLAZE
 	def_bool y
+<<<<<<< HEAD
 	select ARCH_MIGHT_HAVE_PC_PARPORT
 	select ARCH_WANT_IPC_PARSE_VERSION
 	select ARCH_WANT_OPTIONAL_GPIOLIB
+=======
+	select ARCH_HAS_GCOV_PROFILE_ALL
+	select ARCH_MIGHT_HAVE_PC_PARPORT
+	select ARCH_WANT_IPC_PARSE_VERSION
+>>>>>>> v4.9.227
 	select BUILDTIME_EXTABLE_SORT
 	select CLKSRC_OF
 	select CLONE_BACKWARDS3
@@ -15,10 +21,17 @@ config MICROBLAZE
 	select GENERIC_IRQ_SHOW
 	select GENERIC_PCI_IOMAP
 	select GENERIC_SCHED_CLOCK
+<<<<<<< HEAD
 	select HAVE_ARCH_KGDB
 	select HAVE_DEBUG_KMEMLEAK
 	select HAVE_DMA_API_DEBUG
 	select HAVE_DMA_ATTRS
+=======
+	select HAVE_ARCH_HASH
+	select HAVE_ARCH_KGDB
+	select HAVE_DEBUG_KMEMLEAK
+	select HAVE_DMA_API_DEBUG
+>>>>>>> v4.9.227
 	select HAVE_DYNAMIC_FTRACE
 	select HAVE_FTRACE_MCOUNT_RECORD
 	select HAVE_FUNCTION_GRAPH_TRACER
@@ -32,6 +45,10 @@ config MICROBLAZE
 	select OF_EARLY_FLATTREE
 	select TRACING_SUPPORT
 	select VIRT_TO_BUS
+<<<<<<< HEAD
+=======
+	select CPU_NO_EFFICIENT_FFS
+>>>>>>> v4.9.227
 
 config SWAP
 	def_bool n
@@ -66,9 +83,12 @@ config STACKTRACE_SUPPORT
 config LOCKDEP_SUPPORT
 	def_bool y
 
+<<<<<<< HEAD
 config HAVE_LATENCYTOP_SUPPORT
 	def_bool y
 
+=======
+>>>>>>> v4.9.227
 source "init/Kconfig"
 
 source "kernel/Kconfig.freezer"
@@ -270,6 +290,12 @@ config PCI
 config PCI_DOMAINS
 	def_bool PCI
 
+<<<<<<< HEAD
+=======
+config PCI_DOMAINS_GENERIC
+	def_bool PCI_DOMAINS
+
+>>>>>>> v4.9.227
 config PCI_SYSCALL
 	def_bool PCI
 

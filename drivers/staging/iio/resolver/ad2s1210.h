@@ -8,6 +8,7 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 
 struct ad2s1210_platform_data {
 	unsigned sample;
@@ -15,3 +16,15 @@ struct ad2s1210_platform_data {
 	unsigned res[2];
 	bool gpioin;
 };
+=======
+#ifndef _AD2S1210_H
+#define _AD2S1210_H
+
+struct ad2s1210_platform_data {
+	unsigned int		sample;
+	unsigned int		a[2];
+	unsigned int		res[2];
+	bool			gpioin;
+};
+#endif /* _AD2S1210_H */
+>>>>>>> v4.9.227

@@ -17,10 +17,17 @@
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/addr-map.h>
 #include <mach/mfp-pxa168.h>
 #include <mach/pxa168.h>
 #include <mach/irqs.h>
+=======
+#include "addr-map.h"
+#include "mfp-pxa168.h"
+#include "pxa168.h"
+#include "irqs.h"
+>>>>>>> v4.9.227
 
 
 #include "common.h"

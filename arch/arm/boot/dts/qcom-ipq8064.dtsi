@@ -2,6 +2,10 @@
 
 #include "skeleton.dtsi"
 #include <dt-bindings/clock/qcom,gcc-ipq806x.h>
+<<<<<<< HEAD
+=======
+#include <dt-bindings/clock/qcom,lcc-ipq806x.h>
+>>>>>>> v4.9.227
 #include <dt-bindings/soc/qcom,gsbi.h>
 
 / {
@@ -60,12 +64,53 @@
 		};
 	};
 
+<<<<<<< HEAD
+=======
+	clocks {
+		cxo_board {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <25000000>;
+		};
+
+		pxo_board {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <25000000>;
+		};
+
+		sleep_clk: sleep_clk {
+			compatible = "fixed-clock";
+			clock-frequency = <32768>;
+			#clock-cells = <0>;
+		};
+	};
+
+>>>>>>> v4.9.227
 	soc: soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
 		compatible = "simple-bus";
 
+<<<<<<< HEAD
+=======
+		lpass@28100000 {
+			compatible = "qcom,lpass-cpu";
+			status = "disabled";
+			clocks = <&lcc AHBIX_CLK>,
+					<&lcc MI2S_OSR_CLK>,
+					<&lcc MI2S_BIT_CLK>;
+			clock-names = "ahbix-clk",
+					"mi2s-osr-clk",
+					"mi2s-bit-clk";
+			interrupts = <0 85 1>;
+			interrupt-names = "lpass-irq-lpaif";
+			reg = <0x28100000 0x10000>;
+			reg-names = "lpass-lpaif";
+		};
+
+>>>>>>> v4.9.227
 		qcom_pinmux: pinmux@800000 {
 			compatible = "qcom,ipq8064-pinctrl";
 			reg = <0x800000 0x4000>;
@@ -74,7 +119,11 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			interrupts = <0 32 0x4>;
+=======
+			interrupts = <0 16 0x4>;
+>>>>>>> v4.9.227
 		};
 
 		intc: interrupt-controller@2000000 {
@@ -86,6 +135,7 @@
 		};
 
 		timer@200a000 {
+<<<<<<< HEAD
 			compatible = "qcom,kpss-timer", "qcom,msm-timer";
 			interrupts = <1 1 0x301>,
 				     <1 2 0x301>,
@@ -93,6 +143,20 @@
 			reg = <0x0200a000 0x100>;
 			clock-frequency = <25000000>,
 					  <32768>;
+=======
+			compatible = "qcom,kpss-timer",
+				     "qcom,kpss-wdt-ipq8064", "qcom,msm-timer";
+			interrupts = <1 1 0x301>,
+				     <1 2 0x301>,
+				     <1 3 0x301>,
+				     <1 4 0x301>,
+				     <1 5 0x301>;
+			reg = <0x0200a000 0x100>;
+			clock-frequency = <25000000>,
+					  <32768>;
+			clocks = <&sleep_clk>;
+			clock-names = "sleep";
+>>>>>>> v4.9.227
 			cpu-offset = <0x80000>;
 		};
 
@@ -120,6 +184,10 @@
 
 		gsbi2: gsbi@12480000 {
 			compatible = "qcom,gsbi-v1.0.0";
+<<<<<<< HEAD
+=======
+			cell-index = <2>;
+>>>>>>> v4.9.227
 			reg = <0x12480000 0x100>;
 			clocks = <&gcc GSBI2_H_CLK>;
 			clock-names = "iface";
@@ -128,6 +196,11 @@
 			ranges;
 			status = "disabled";
 
+<<<<<<< HEAD
+=======
+			syscon-tcsr = <&tcsr>;
+
+>>>>>>> v4.9.227
 			serial@12490000 {
 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
 				reg = <0x12490000 0x1000>,
@@ -155,6 +228,10 @@
 
 		gsbi4: gsbi@16300000 {
 			compatible = "qcom,gsbi-v1.0.0";
+<<<<<<< HEAD
+=======
+			cell-index = <4>;
+>>>>>>> v4.9.227
 			reg = <0x16300000 0x100>;
 			clocks = <&gcc GSBI4_H_CLK>;
 			clock-names = "iface";
@@ -163,7 +240,13 @@
 			ranges;
 			status = "disabled";
 
+<<<<<<< HEAD
 			serial@16340000 {
+=======
+			syscon-tcsr = <&tcsr>;
+
+			gsbi4_serial: serial@16340000 {
+>>>>>>> v4.9.227
 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
 				reg = <0x16340000 0x1000>,
 				      <0x16300000 0x1000>;
@@ -189,6 +272,10 @@
 
 		gsbi5: gsbi@1a200000 {
 			compatible = "qcom,gsbi-v1.0.0";
+<<<<<<< HEAD
+=======
+			cell-index = <5>;
+>>>>>>> v4.9.227
 			reg = <0x1a200000 0x100>;
 			clocks = <&gcc GSBI5_H_CLK>;
 			clock-names = "iface";
@@ -197,6 +284,11 @@
 			ranges;
 			status = "disabled";
 
+<<<<<<< HEAD
+=======
+			syscon-tcsr = <&tcsr>;
+
+>>>>>>> v4.9.227
 			serial@1a240000 {
 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
 				reg = <0x1a240000 0x1000>,
@@ -279,5 +371,21 @@
 			#clock-cells = <1>;
 			#reset-cells = <1>;
 		};
+<<<<<<< HEAD
+=======
+
+		tcsr: syscon@1a400000 {
+			compatible = "qcom,tcsr-ipq8064", "syscon";
+			reg = <0x1a400000 0x100>;
+		};
+
+		lcc: clock-controller@28000000 {
+			compatible = "qcom,lcc-ipq8064";
+			reg = <0x28000000 0x1000>;
+			#clock-cells = <1>;
+			#reset-cells = <1>;
+		};
+
+>>>>>>> v4.9.227
 	};
 };

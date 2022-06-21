@@ -153,7 +153,11 @@ out_fail:
 void
 slhc_free(struct slcompress *comp)
 {
+<<<<<<< HEAD
 	if ( comp == NULLSLCOMPR )
+=======
+	if ( IS_ERR_OR_NULL(comp) )
+>>>>>>> v4.9.227
 		return;
 
 	if ( comp->tstate != NULLSLSTATE )
@@ -232,7 +236,11 @@ slhc_compress(struct slcompress *comp, unsigned char *icp, int isize,
 	register struct cstate *cs = lcs->next;
 	register unsigned long deltaS, deltaA;
 	register short changes = 0;
+<<<<<<< HEAD
 	int hlen;
+=======
+	int nlen, hlen;
+>>>>>>> v4.9.227
 	unsigned char new_seq[16];
 	register unsigned char *cp = new_seq;
 	struct iphdr *ip;
@@ -248,6 +256,11 @@ slhc_compress(struct slcompress *comp, unsigned char *icp, int isize,
 		return isize;
 
 	ip = (struct iphdr *) icp;
+<<<<<<< HEAD
+=======
+	if (ip->version != 4 || ip->ihl < 5)
+		return isize;
+>>>>>>> v4.9.227
 
 	/* Bail if this packet isn't TCP, or is an IP fragment */
 	if (ip->protocol != IPPROTO_TCP || (ntohs(ip->frag_off) & 0x3fff)) {
@@ -258,10 +271,21 @@ slhc_compress(struct slcompress *comp, unsigned char *icp, int isize,
 			comp->sls_o_tcp++;
 		return isize;
 	}
+<<<<<<< HEAD
 	/* Extract TCP header */
 
 	th = (struct tcphdr *)(((unsigned char *)ip) + ip->ihl*4);
 	hlen = ip->ihl*4 + th->doff*4;
+=======
+	nlen = ip->ihl * 4;
+	if (isize < nlen + sizeof(*th))
+		return isize;
+
+	th = (struct tcphdr *)(icp + nlen);
+	if (th->doff < sizeof(struct tcphdr) / 4)
+		return isize;
+	hlen = nlen + th->doff * 4;
+>>>>>>> v4.9.227
 
 	/*  Bail if the TCP packet isn't `compressible' (i.e., ACK isn't set or
 	 *  some other control bit is set). Also uncompressible if

@@ -12,13 +12,21 @@
 #include <string.h>
 #include <getopt.h>
 
+<<<<<<< HEAD
 #include <cpufreq.h>
+=======
+>>>>>>> v4.9.227
 #include "helpers/helpers.h"
 #include "helpers/sysfs.h"
 
 static struct option set_opts[] = {
+<<<<<<< HEAD
 	{ .name = "perf-bias",	.has_arg = optional_argument,	.flag = NULL,	.val = 'b'},
 	{ },
+=======
+     {"perf-bias", optional_argument, NULL, 'b'},
+     { },
+>>>>>>> v4.9.227
 };
 
 static void print_wrong_arg_exit(void)
@@ -83,12 +91,24 @@ int cmd_info(int argc, char **argv)
 	for (cpu = bitmask_first(cpus_chosen);
 	     cpu <= bitmask_last(cpus_chosen); cpu++) {
 
+<<<<<<< HEAD
 		if (!bitmask_isbitset(cpus_chosen, cpu) ||
 		    cpufreq_cpu_exists(cpu))
+=======
+		if (!bitmask_isbitset(cpus_chosen, cpu))
+>>>>>>> v4.9.227
 			continue;
 
 		printf(_("analyzing CPU %d:\n"), cpu);
 
+<<<<<<< HEAD
+=======
+		if (sysfs_is_cpu_online(cpu) != 1){
+			printf(_(" *is offline\n"));
+			continue;
+		}
+
+>>>>>>> v4.9.227
 		if (params.perf_bias) {
 			ret = msr_intel_get_perf_bias(cpu);
 			if (ret < 0) {

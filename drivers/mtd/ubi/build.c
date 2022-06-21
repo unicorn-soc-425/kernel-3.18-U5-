@@ -125,9 +125,12 @@ struct class ubi_class = {
 
 static ssize_t dev_attribute_show(struct device *dev,
 				  struct device_attribute *attr, char *buf);
+<<<<<<< HEAD
 static ssize_t dev_attribute_store(struct device *dev,
 				   struct device_attribute *attr,
 				   const char *buf, size_t count);
+=======
+>>>>>>> v4.9.227
 
 /* UBI device attributes (correspond to files in '/<sysfs>/class/ubi/ubiX') */
 static struct device_attribute dev_eraseblock_size =
@@ -152,6 +155,7 @@ static struct device_attribute dev_bgt_enabled =
 	__ATTR(bgt_enabled, S_IRUGO, dev_attribute_show, NULL);
 static struct device_attribute dev_mtd_num =
 	__ATTR(mtd_num, S_IRUGO, dev_attribute_show, NULL);
+<<<<<<< HEAD
 static struct device_attribute dev_mtd_trigger_scrub =
 	__ATTR(scrub_all, S_IRUGO | S_IWUSR,
 		dev_attribute_show, dev_attribute_store);
@@ -159,6 +163,10 @@ static struct device_attribute dev_mtd_max_scrub_sqnum =
 	__ATTR(scrub_max_sqnum, S_IRUGO, dev_attribute_show, NULL);
 static struct device_attribute dev_mtd_min_scrub_sqnum =
 	__ATTR(scrub_min_sqnum, S_IRUGO, dev_attribute_show, NULL);
+=======
+static struct device_attribute dev_ro_mode =
+	__ATTR(ro_mode, S_IRUGO, dev_attribute_show, NULL);
+>>>>>>> v4.9.227
 
 /**
  * ubi_volume_notify - send a volume change notification.
@@ -351,6 +359,7 @@ int ubi_major2num(int major)
 	return ubi_num;
 }
 
+<<<<<<< HEAD
 static unsigned long long get_max_sqnum(struct ubi_device *ubi)
 {
 	unsigned long long max_sqnum;
@@ -362,6 +371,8 @@ static unsigned long long get_max_sqnum(struct ubi_device *ubi)
 	return max_sqnum;
 }
 
+=======
+>>>>>>> v4.9.227
 /* "Show" method for files in '/<sysfs>/class/ubi/ubiX/' */
 static ssize_t dev_attribute_show(struct device *dev,
 				  struct device_attribute *attr, char *buf)
@@ -406,12 +417,17 @@ static ssize_t dev_attribute_show(struct device *dev,
 		ret = sprintf(buf, "%d\n", ubi->thread_enabled);
 	else if (attr == &dev_mtd_num)
 		ret = sprintf(buf, "%d\n", ubi->mtd->index);
+<<<<<<< HEAD
 	else if (attr == &dev_mtd_trigger_scrub)
 		ret = sprintf(buf, "%d\n", atomic_read(&ubi->scrub_work_count));
 	else if (attr == &dev_mtd_max_scrub_sqnum)
 		ret = sprintf(buf, "%llu\n", get_max_sqnum(ubi));
 	else if (attr == &dev_mtd_min_scrub_sqnum)
 		ret = sprintf(buf, "%llu\n", ubi_wl_scrub_get_min_sqnum(ubi));
+=======
+	else if (attr == &dev_ro_mode)
+		ret = sprintf(buf, "%d\n", ubi->ro_mode);
+>>>>>>> v4.9.227
 	else
 		ret = -EINVAL;
 
@@ -431,13 +447,18 @@ static struct attribute *ubi_dev_attrs[] = {
 	&dev_min_io_size.attr,
 	&dev_bgt_enabled.attr,
 	&dev_mtd_num.attr,
+<<<<<<< HEAD
 	&dev_mtd_trigger_scrub.attr,
 	&dev_mtd_max_scrub_sqnum.attr,
 	&dev_mtd_min_scrub_sqnum.attr,
+=======
+	&dev_ro_mode.attr,
+>>>>>>> v4.9.227
 	NULL
 };
 ATTRIBUTE_GROUPS(ubi_dev);
 
+<<<<<<< HEAD
 static ssize_t dev_attribute_store(struct device *dev,
 			   struct device_attribute *attr,
 			   const char *buf, size_t count)
@@ -470,6 +491,8 @@ out:
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static void dev_release(struct device *dev)
 {
 	struct ubi_device *ubi = container_of(dev, struct ubi_device, dev);
@@ -631,7 +654,11 @@ void ubi_free_internal_volumes(struct ubi_device *ubi)
 
 	for (i = ubi->vtbl_slots;
 	     i < ubi->vtbl_slots + UBI_INT_VOL_COUNT; i++) {
+<<<<<<< HEAD
 		kfree(ubi->volumes[i]->eba_tbl);
+=======
+		ubi_eba_replace_table(ubi->volumes[i], NULL);
+>>>>>>> v4.9.227
 		kfree(ubi->volumes[i]);
 	}
 }
@@ -931,7 +958,11 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 	for (i = 0; i < UBI_MAX_DEVICES; i++) {
 		ubi = ubi_devices[i];
 		if (ubi && mtd->index == ubi->mtd->index) {
+<<<<<<< HEAD
 			ubi_err(ubi, "mtd%d is already attached to ubi%d",
+=======
+			pr_err("ubi: mtd%d is already attached to ubi%d",
+>>>>>>> v4.9.227
 				mtd->index, i);
 			return -EEXIST;
 		}
@@ -946,7 +977,11 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 	 * no sense to attach emulated MTD devices, so we prohibit this.
 	 */
 	if (mtd->type == MTD_UBIVOLUME) {
+<<<<<<< HEAD
 		ubi_err(ubi, "refuse attaching mtd%d - it is already emulated on top of UBI",
+=======
+		pr_err("ubi: refuse attaching mtd%d - it is already emulated on top of UBI",
+>>>>>>> v4.9.227
 			mtd->index);
 		return -EINVAL;
 	}
@@ -968,7 +1003,11 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 			if (!ubi_devices[ubi_num])
 				break;
 		if (ubi_num == UBI_MAX_DEVICES) {
+<<<<<<< HEAD
 			ubi_err(ubi, "only %d UBI devices may be created",
+=======
+			pr_err("ubi: only %d UBI devices may be created",
+>>>>>>> v4.9.227
 				UBI_MAX_DEVICES);
 			return -ENFILE;
 		}
@@ -978,7 +1017,11 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 
 		/* Make sure ubi_num is not busy */
 		if (ubi_devices[ubi_num]) {
+<<<<<<< HEAD
 			ubi_err(ubi, "already exists");
+=======
+			pr_err("ubi: ubi%i already exists", ubi_num);
+>>>>>>> v4.9.227
 			return -EEXIST;
 		}
 	}
@@ -1194,16 +1237,29 @@ int ubi_detach_mtd_dev(int ubi_num, int anyway)
 	 */
 	get_device(&ubi->dev);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MTD_UBI_FASTMAP
+	cancel_work_sync(&ubi->fm_work);
+#endif
+>>>>>>> v4.9.227
 	ubi_debugfs_exit_dev(ubi);
 	uif_close(ubi);
 
 	ubi_wl_close(ubi);
 	ubi_free_internal_volumes(ubi);
 	vfree(ubi->vtbl);
+<<<<<<< HEAD
 	put_mtd_device(ubi->mtd);
 	vfree(ubi->peb_buf);
 	vfree(ubi->fm_buf);
 	ubi_msg(ubi, "mtd%d is detached", ubi->mtd->index);
+=======
+	vfree(ubi->peb_buf);
+	vfree(ubi->fm_buf);
+	ubi_msg(ubi, "mtd%d is detached", ubi->mtd->index);
+	put_mtd_device(ubi->mtd);
+>>>>>>> v4.9.227
 	put_device(&ubi->dev);
 	return 0;
 }
@@ -1218,14 +1274,21 @@ int ubi_detach_mtd_dev(int ubi_num, int anyway)
  */
 static struct mtd_info * __init open_mtd_by_chdev(const char *mtd_dev)
 {
+<<<<<<< HEAD
 	int err, major, minor, mode;
 	struct path path;
+=======
+	int err, minor;
+	struct path path;
+	struct kstat stat;
+>>>>>>> v4.9.227
 
 	/* Probably this is an MTD character device node path */
 	err = kern_path(mtd_dev, LOOKUP_FOLLOW, &path);
 	if (err)
 		return ERR_PTR(err);
 
+<<<<<<< HEAD
 	/* MTD device number is defined by the major / minor numbers */
 	major = imajor(path.dentry->d_inode);
 	minor = iminor(path.dentry->d_inode);
@@ -1234,6 +1297,19 @@ static struct mtd_info * __init open_mtd_by_chdev(const char *mtd_dev)
 	if (major != MTD_CHAR_MAJOR || !S_ISCHR(mode))
 		return ERR_PTR(-EINVAL);
 
+=======
+	err = vfs_getattr(&path, &stat);
+	path_put(&path);
+	if (err)
+		return ERR_PTR(err);
+
+	/* MTD device number is defined by the major / minor numbers */
+	if (MAJOR(stat.rdev) != MTD_CHAR_MAJOR || !S_ISCHR(stat.mode))
+		return ERR_PTR(-EINVAL);
+
+	minor = MINOR(stat.rdev);
+
+>>>>>>> v4.9.227
 	if (minor & 1)
 		/*
 		 * Just do not think the "/dev/mtdrX" devices support is need,

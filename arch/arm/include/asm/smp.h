@@ -69,11 +69,18 @@ struct secondary_data {
 extern struct secondary_data secondary_data;
 extern volatile int pen_release;
 extern void secondary_startup(void);
+<<<<<<< HEAD
+=======
+extern void secondary_startup_arm(void);
+>>>>>>> v4.9.227
 
 extern int __cpu_disable(void);
 
 extern void __cpu_die(unsigned int cpu);
+<<<<<<< HEAD
 extern void cpu_die(void);
+=======
+>>>>>>> v4.9.227
 
 extern void arch_send_call_function_single_ipi(int cpu);
 extern void arch_send_call_function_ipi_mask(const struct cpumask *mask);
@@ -81,8 +88,11 @@ extern void arch_send_wakeup_ipi_mask(const struct cpumask *mask);
 
 extern int register_ipi_completion(struct completion *completion, int cpu);
 
+<<<<<<< HEAD
 extern void smp_send_all_cpu_backtrace(void);
 
+=======
+>>>>>>> v4.9.227
 struct smp_operations {
 #ifdef CONFIG_SMP
 	/*
@@ -106,6 +116,10 @@ struct smp_operations {
 #ifdef CONFIG_HOTPLUG_CPU
 	int  (*cpu_kill)(unsigned int cpu);
 	void (*cpu_die)(unsigned int cpu);
+<<<<<<< HEAD
+=======
+	bool  (*cpu_can_disable)(unsigned int cpu);
+>>>>>>> v4.9.227
 	int  (*cpu_disable)(unsigned int cpu);
 #endif
 #endif
@@ -113,7 +127,11 @@ struct smp_operations {
 
 struct of_cpu_method {
 	const char *method;
+<<<<<<< HEAD
 	struct smp_operations *ops;
+=======
+	const struct smp_operations *ops;
+>>>>>>> v4.9.227
 };
 
 #define CPU_METHOD_OF_DECLARE(name, _method, _ops)			\
@@ -123,6 +141,10 @@ struct of_cpu_method {
 /*
  * set platform specific SMP operations
  */
+<<<<<<< HEAD
 extern void smp_set_ops(struct smp_operations *);
+=======
+extern void smp_set_ops(const struct smp_operations *);
+>>>>>>> v4.9.227
 
 #endif /* ifndef __ASM_ARM_SMP_H */

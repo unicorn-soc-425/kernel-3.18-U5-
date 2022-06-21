@@ -5,9 +5,16 @@
  * See LICENSE.qlcnic for copyright and licensing details.
  */
 
+<<<<<<< HEAD
 #include "qlcnic_sriov.h"
 #include "qlcnic.h"
 #include <linux/types.h>
+=======
+#include <linux/types.h>
+
+#include "qlcnic_sriov.h"
+#include "qlcnic.h"
+>>>>>>> v4.9.227
 
 #define QLCNIC_SRIOV_VF_MAX_MAC 7
 #define QLC_VF_MIN_TX_RATE	100
@@ -1914,7 +1921,11 @@ int qlcnic_sriov_set_vf_tx_rate(struct net_device *netdev, int vf,
 }
 
 int qlcnic_sriov_set_vf_vlan(struct net_device *netdev, int vf,
+<<<<<<< HEAD
 			     u16 vlan, u8 qos)
+=======
+			     u16 vlan, u8 qos, __be16 vlan_proto)
+>>>>>>> v4.9.227
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 	struct qlcnic_sriov *sriov = adapter->ahw->sriov;
@@ -1927,6 +1938,12 @@ int qlcnic_sriov_set_vf_vlan(struct net_device *netdev, int vf,
 	if (vf >= sriov->num_vfs || qos > 7)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (vlan_proto != htons(ETH_P_8021Q))
+		return -EPROTONOSUPPORT;
+
+>>>>>>> v4.9.227
 	if (vlan > MAX_VLAN_ID) {
 		netdev_err(netdev,
 			   "Invalid VLAN ID, allowed range is [0 - %d]\n",

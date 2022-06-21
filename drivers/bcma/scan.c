@@ -98,6 +98,12 @@ static const struct bcma_device_id_name bcma_bcm_device_names[] = {
 	{ BCMA_CORE_SHIM, "SHIM" },
 	{ BCMA_CORE_PCIE2, "PCIe Gen2" },
 	{ BCMA_CORE_ARM_CR4, "ARM CR4" },
+<<<<<<< HEAD
+=======
+	{ BCMA_CORE_GCI, "GCI" },
+	{ BCMA_CORE_CMEM, "CNDS DDR2/3 memory controller" },
+	{ BCMA_CORE_ARM_CA7, "ARM CA7" },
+>>>>>>> v4.9.227
 	{ BCMA_CORE_DEFAULT, "Default" },
 };
 
@@ -315,6 +321,11 @@ static int bcma_get_next_core(struct bcma_bus *bus, u32 __iomem **eromptr,
 		switch (core->id.id) {
 		case BCMA_CORE_4706_MAC_GBIT_COMMON:
 		case BCMA_CORE_NS_CHIPCOMMON_B:
+<<<<<<< HEAD
+=======
+		case BCMA_CORE_PMU:
+		case BCMA_CORE_GCI:
+>>>>>>> v4.9.227
 		/* Not used yet: case BCMA_CORE_OOB_ROUTER: */
 			break;
 		default:
@@ -435,15 +446,22 @@ static int bcma_get_next_core(struct bcma_bus *bus, u32 __iomem **eromptr,
 	return 0;
 }
 
+<<<<<<< HEAD
 void bcma_init_bus(struct bcma_bus *bus)
+=======
+void bcma_detect_chip(struct bcma_bus *bus)
+>>>>>>> v4.9.227
 {
 	s32 tmp;
 	struct bcma_chipinfo *chipinfo = &(bus->chipinfo);
 	char chip_id[8];
 
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&bus->cores);
 	bus->nr_cores = 0;
 
+=======
+>>>>>>> v4.9.227
 	bcma_scan_switch_core(bus, BCMA_ADDR_BASE);
 
 	tmp = bcma_scan_read32(bus, 0, BCMA_CC_ID);
@@ -464,6 +482,13 @@ int bcma_bus_scan(struct bcma_bus *bus)
 
 	int err, core_num = 0;
 
+<<<<<<< HEAD
+=======
+	/* Skip if bus was already scanned (e.g. during early register) */
+	if (bus->nr_cores)
+		return 0;
+
+>>>>>>> v4.9.227
 	erombase = bcma_scan_read32(bus, 0, BCMA_CC_EROM);
 	if (bus->hosttype == BCMA_HOSTTYPE_SOC) {
 		eromptr = ioremap_nocache(erombase, BCMA_CORE_SIZE);
@@ -505,6 +530,10 @@ int bcma_bus_scan(struct bcma_bus *bus)
 		bus->nr_cores++;
 		other_core = bcma_find_core_reverse(bus, core->id.id);
 		core->core_unit = (other_core == NULL) ? 0 : other_core->core_unit + 1;
+<<<<<<< HEAD
+=======
+		bcma_prepare_core(bus, core);
+>>>>>>> v4.9.227
 
 		bcma_info(bus, "Core %d found: %s (manuf 0x%03X, id 0x%03X, rev 0x%02X, class 0x%X)\n",
 			  core->core_index, bcma_device_name(&core->id),
@@ -521,6 +550,7 @@ out:
 
 	return err;
 }
+<<<<<<< HEAD
 
 int __init bcma_bus_scan_early(struct bcma_bus *bus,
 			       struct bcma_device_id *match,
@@ -579,3 +609,5 @@ out:
 
 	return err;
 }
+=======
+>>>>>>> v4.9.227

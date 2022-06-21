@@ -16,6 +16,7 @@
 #include <linux/regmap.h>
 #include <media/rc-core.h>
 
+<<<<<<< HEAD
 /* Allow the driver to compile on all architectures */
 #ifndef writel_relaxed
 # define writel_relaxed writel
@@ -24,6 +25,8 @@
 # define readl_relaxed readl
 #endif
 
+=======
+>>>>>>> v4.9.227
 #define IR_ENABLE		0x00
 #define IR_CONFIG		0x04
 #define CNT_LEADS		0x08
@@ -71,7 +74,11 @@
 
 struct hix5hd2_ir_priv {
 	int			irq;
+<<<<<<< HEAD
 	void volatile __iomem	*base;
+=======
+	void __iomem		*base;
+>>>>>>> v4.9.227
 	struct device		*dev;
 	struct rc_dev		*rdev;
 	struct regmap		*regmap;
@@ -221,8 +228,13 @@ static int hix5hd2_ir_probe(struct platform_device *pdev)
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	priv->base = devm_ioremap_resource(dev, res);
+<<<<<<< HEAD
 	if (IS_ERR((__force void *)priv->base))
 		return PTR_ERR((__force void *)priv->base);
+=======
+	if (IS_ERR(priv->base))
+		return PTR_ERR(priv->base);
+>>>>>>> v4.9.227
 
 	priv->irq = platform_get_irq(pdev, 0);
 	if (priv->irq < 0) {
@@ -265,7 +277,11 @@ static int hix5hd2_ir_probe(struct platform_device *pdev)
 		goto clkerr;
 
 	if (devm_request_irq(dev, priv->irq, hix5hd2_ir_rx_interrupt,
+<<<<<<< HEAD
 			     IRQF_NO_SUSPEND, pdev->name, priv) < 0) {
+=======
+			     0, pdev->name, priv) < 0) {
+>>>>>>> v4.9.227
 		dev_err(dev, "IRQ %d register failed\n", priv->irq);
 		ret = -EINVAL;
 		goto regerr;
@@ -327,7 +343,11 @@ static int hix5hd2_ir_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(hix5hd2_ir_pm_ops, hix5hd2_ir_suspend,
 			 hix5hd2_ir_resume);
 
+<<<<<<< HEAD
 static struct of_device_id hix5hd2_ir_table[] = {
+=======
+static const struct of_device_id hix5hd2_ir_table[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "hisilicon,hix5hd2-ir", },
 	{},
 };

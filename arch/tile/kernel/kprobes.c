@@ -90,8 +90,12 @@ int __kprobes arch_prepare_kprobe(struct kprobe *p)
 		return -EINVAL;
 
 	if (insn_has_control(*p->addr)) {
+<<<<<<< HEAD
 		pr_notice("Kprobes for control instructions are not "
 			  "supported\n");
+=======
+		pr_notice("Kprobes for control instructions are not supported\n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -117,7 +121,11 @@ void __kprobes arch_arm_kprobe(struct kprobe *p)
 	unsigned long addr_wr;
 
 	/* Operate on writable kernel text mapping. */
+<<<<<<< HEAD
 	addr_wr = (unsigned long)p->addr - MEM_SV_START + PAGE_OFFSET;
+=======
+	addr_wr = ktext_writable_addr(p->addr);
+>>>>>>> v4.9.227
 
 	if (probe_kernel_write((void *)addr_wr, &breakpoint_insn,
 		sizeof(breakpoint_insn)))
@@ -132,7 +140,11 @@ void __kprobes arch_disarm_kprobe(struct kprobe *kp)
 	unsigned long addr_wr;
 
 	/* Operate on writable kernel text mapping. */
+<<<<<<< HEAD
 	addr_wr = (unsigned long)kp->addr - MEM_SV_START + PAGE_OFFSET;
+=======
+	addr_wr = ktext_writable_addr(kp->addr);
+>>>>>>> v4.9.227
 
 	if (probe_kernel_write((void *)addr_wr, &kp->opcode,
 		sizeof(kp->opcode)))

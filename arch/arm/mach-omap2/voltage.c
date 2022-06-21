@@ -87,6 +87,15 @@ int voltdm_scale(struct voltagedomain *voltdm,
 		return -ENODATA;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!voltdm->volt_data) {
+		pr_err("%s: No voltage data defined for vdd_%s\n",
+			__func__, voltdm->name);
+		return -ENODATA;
+	}
+
+>>>>>>> v4.9.227
 	/* Adjust voltage to the exact voltage from the OPP table */
 	for (i = 0; voltdm->volt_data[i].volt_nominal != 0; i++) {
 		if (voltdm->volt_data[i].volt_nominal >= target_volt) {
@@ -224,6 +233,7 @@ int omap_voltage_register_pmic(struct voltagedomain *voltdm,
 }
 
 /**
+<<<<<<< HEAD
  * omap_change_voltscale_method() - API to change the voltage scaling method.
  * @voltdm:	pointer to the VDD whose voltage scaling method
  *		has to be changed.
@@ -255,6 +265,8 @@ void omap_change_voltscale_method(struct voltagedomain *voltdm,
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * omap_voltage_late_init() - Init the various voltage parameters
  *
  * This API is to be called in the later stages of the
@@ -316,6 +328,7 @@ static struct voltagedomain *_voltdm_lookup(const char *name)
 	return voltdm;
 }
 
+<<<<<<< HEAD
 /**
  * voltdm_add_pwrdm - add a powerdomain to a voltagedomain
  * @voltdm: struct voltagedomain * to add the powerdomain to
@@ -394,12 +407,17 @@ int voltdm_for_each(int (*fn)(struct voltagedomain *voltdm, void *user),
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static int _voltdm_register(struct voltagedomain *voltdm)
 {
 	if (!voltdm || !voltdm->name)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&voltdm->pwrdm_list);
+=======
+>>>>>>> v4.9.227
 	list_add(&voltdm->node, &voltdm_list);
 
 	pr_debug("voltagedomain: registered %s\n", voltdm->name);

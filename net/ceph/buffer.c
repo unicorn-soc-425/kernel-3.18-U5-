@@ -6,7 +6,11 @@
 
 #include <linux/ceph/buffer.h>
 #include <linux/ceph/decode.h>
+<<<<<<< HEAD
 #include <linux/ceph/libceph.h> /* for ceph_kv{malloc,free} */
+=======
+#include <linux/ceph/libceph.h> /* for ceph_kvmalloc */
+>>>>>>> v4.9.227
 
 struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
 {
@@ -35,7 +39,11 @@ void ceph_buffer_release(struct kref *kref)
 	struct ceph_buffer *b = container_of(kref, struct ceph_buffer, kref);
 
 	dout("buffer_release %p\n", b);
+<<<<<<< HEAD
 	ceph_kvfree(b->vec.iov_base);
+=======
+	kvfree(b->vec.iov_base);
+>>>>>>> v4.9.227
 	kfree(b);
 }
 EXPORT_SYMBOL(ceph_buffer_release);

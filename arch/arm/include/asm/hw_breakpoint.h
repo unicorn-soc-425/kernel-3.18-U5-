@@ -114,7 +114,10 @@ struct notifier_block;
 struct perf_event;
 struct pmu;
 
+<<<<<<< HEAD
 extern struct pmu perf_ops_bp;
+=======
+>>>>>>> v4.9.227
 extern int arch_bp_generic_fields(struct arch_hw_breakpoint_ctrl ctrl,
 				  int *gen_len, int *gen_type);
 extern int arch_check_bp_in_kernelspace(struct perf_event *bp);

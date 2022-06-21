@@ -14,6 +14,10 @@
  */
 
 #include <asm/errno.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 #define CSUM_BIGCHUNK(buf, offset, sum, t0, t1, t2, t3, t4, t5)	\
 	ldd	[buf + offset + 0x00], t0;			\
@@ -104,6 +108,10 @@ csum_partial_fix_alignment:
 	 * buffer of size 0x20.  Follow the code path for that case.
 	 */
 	.globl	csum_partial
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(csum_partial)
+>>>>>>> v4.9.227
 csum_partial:			/* %o0=buf, %o1=len, %o2=sum */
 	andcc	%o0, 0x7, %g0				! alignment problems?
 	bne	csum_partial_fix_alignment		! yep, handle it
@@ -335,6 +343,10 @@ cc_dword_align:
 	 */
 	.align	8
 	.globl	__csum_partial_copy_sparc_generic
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(__csum_partial_copy_sparc_generic)
+>>>>>>> v4.9.227
 __csum_partial_copy_sparc_generic:
 					/* %o0=src, %o1=dest, %g1=len, %g7=sum */
 	xor	%o0, %o1, %o4		! get changing bits

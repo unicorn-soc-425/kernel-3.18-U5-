@@ -35,6 +35,7 @@ static int zero_ctr(struct dm_target *ti, unsigned int argc, char **argv)
  */
 static int zero_map(struct dm_target *ti, struct bio *bio)
 {
+<<<<<<< HEAD
 	switch(bio_rw(bio)) {
 	case READ:
 		zero_fill_bio(bio);
@@ -48,6 +49,24 @@ static int zero_map(struct dm_target *ti, struct bio *bio)
 	}
 
 	bio_endio(bio, 0);
+=======
+	switch (bio_op(bio)) {
+	case REQ_OP_READ:
+		if (bio->bi_opf & REQ_RAHEAD) {
+			/* readahead of null bytes only wastes buffer cache */
+			return -EIO;
+		}
+		zero_fill_bio(bio);
+		break;
+	case REQ_OP_WRITE:
+		/* writes get silently dropped */
+		break;
+	default:
+		return -EIO;
+	}
+
+	bio_endio(bio);
+>>>>>>> v4.9.227
 
 	/* accepted bio, don't make new request */
 	return DM_MAPIO_SUBMITTED;

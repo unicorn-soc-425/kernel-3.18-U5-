@@ -25,7 +25,7 @@
 #define INPUT_PROP_SEMI_MT		0x03	/* touch rectangle only */
 #define INPUT_PROP_TOPBUTTONPAD		0x04	/* softbuttons at top of pad */
 #define INPUT_PROP_POINTING_STICK	0x05	/* is a pointing stick */
-#define INPUT_PROP_NO_DUMMY_RELEASE	0x06	/* no dummy event */
+#define INPUT_PROP_ACCELEROMETER	0x06	/* has accelerometer */
 
 #define INPUT_PROP_MAX			0x1f
 #define INPUT_PROP_CNT			(INPUT_PROP_MAX + 1)
@@ -57,8 +57,6 @@
 #define SYN_CONFIG		1
 #define SYN_MT_REPORT		2
 #define SYN_DROPPED		3
-#define SYN_TIME_SEC		4
-#define SYN_TIME_NSEC		5
 #define SYN_MAX			0xf
 #define SYN_CNT			(SYN_MAX+1)
 
@@ -230,7 +228,8 @@
 #define KEY_MSDOS		151
 #define KEY_COFFEE		152	/* AL Terminal Lock/Screensaver */
 #define KEY_SCREENLOCK		KEY_COFFEE
-#define KEY_DIRECTION		153
+#define KEY_ROTATE_DISPLAY	153	/* Display orientation for e.g. tablets */
+#define KEY_DIRECTION		KEY_ROTATE_DISPLAY
 #define KEY_CYCLEWINDOWS	154
 #define KEY_MAIL		155
 #define KEY_BOOKMARKS		156	/* AC Bookmarks */
@@ -563,6 +562,10 @@
 #define KEY_NUMERIC_9		0x209
 #define KEY_NUMERIC_STAR	0x20a
 #define KEY_NUMERIC_POUND	0x20b
+#define KEY_NUMERIC_A		0x20c	/* Phone key A - HUT Telephony 0xb9 */
+#define KEY_NUMERIC_B		0x20d
+#define KEY_NUMERIC_C		0x20e
+#define KEY_NUMERIC_D		0x20f
 
 #define KEY_CAMERA_FOCUS	0x210
 #define KEY_WPS_BUTTON		0x211	/* WiFi Protected Setup key */
@@ -607,6 +610,37 @@
 #define KEY_KBDINPUTASSIST_NEXTGROUP		0x263
 #define KEY_KBDINPUTASSIST_ACCEPT		0x264
 #define KEY_KBDINPUTASSIST_CANCEL		0x265
+
+/* Diagonal movement keys */
+#define KEY_RIGHT_UP			0x266
+#define KEY_RIGHT_DOWN			0x267
+#define KEY_LEFT_UP			0x268
+#define KEY_LEFT_DOWN			0x269
+
+#define KEY_ROOT_MENU			0x26a /* Show Device's Root Menu */
+/* Show Top Menu of the Media (e.g. DVD) */
+#define KEY_MEDIA_TOP_MENU		0x26b
+#define KEY_NUMERIC_11			0x26c
+#define KEY_NUMERIC_12			0x26d
+/*
+ * Toggle Audio Description: refers to an audio service that helps blind and
+ * visually impaired consumers understand the action in a program. Note: in
+ * some countries this is referred to as "Video Description".
+ */
+#define KEY_AUDIO_DESC			0x26e
+#define KEY_3D_MODE			0x26f
+#define KEY_NEXT_FAVORITE		0x270
+#define KEY_STOP_RECORD			0x271
+#define KEY_PAUSE_RECORD		0x272
+#define KEY_VOD				0x273 /* Video on Demand */
+#define KEY_UNMUTE			0x274
+#define KEY_FASTREVERSE			0x275
+#define KEY_SLOWREVERSE			0x276
+/*
+ * Control a data application associated with the currently viewed channel,
+ * e.g. teletext or data broadcast application (MHEG, MHP, HbbTV, etc.)
+ */
+#define KEY_DATA			0x277
 
 #define BTN_TRIGGER_HAPPY		0x2c0
 #define BTN_TRIGGER_HAPPY1		0x2c0
@@ -705,6 +739,15 @@
 
 #define ABS_MISC		0x28
 
+/*
+ * 0x2e is reserved and should not be used in input drivers.
+ * It was used by HID as ABS_MISC+6 and userspace needs to detect if
+ * the next ABS_* event is correct or is just ABS_MISC + n.
+ * We define here ABS_RESERVED so userspace can rely on it and detect
+ * the situation described above.
+ */
+#define ABS_RESERVED		0x2e
+
 #define ABS_MT_SLOT		0x2f	/* MT slot being modified */
 #define ABS_MT_TOUCH_MAJOR	0x30	/* Major axis of touching ellipse */
 #define ABS_MT_TOUCH_MINOR	0x31	/* Minor axis (omit if circular) */
@@ -745,12 +788,9 @@
 #define SW_FRONT_PROXIMITY	0x0b  /* set = front proximity sensor active */
 #define SW_ROTATE_LOCK		0x0c  /* set = rotate locked/disabled */
 #define SW_LINEIN_INSERT	0x0d  /* set = inserted */
-#define SW_HPHL_OVERCURRENT	0x0e  /* set = over current on left hph */
-#define SW_HPHR_OVERCURRENT	0x0f  /* set = over current on right hph */
-#define SW_UNSUPPORT_INSERT	0x10  /* set = unsupported device inserted */
-#define SW_MICROPHONE2_INSERT   0x11  /* set = inserted */
-#define SW_MUTE_DEVICE		0x12  /* set = device disabled */
-#define SW_MAX			0x20
+#define SW_MUTE_DEVICE		0x0e  /* set = device disabled */
+#define SW_PEN_INSERTED		0x0f  /* set = pen inserted */
+#define SW_MAX			0x0f
 #define SW_CNT			(SW_MAX+1)
 
 /*

@@ -46,6 +46,7 @@ puv3_osmr0_set_next_event(unsigned long delta, struct clock_event_device *c)
 	return (signed)(next - oscr) <= MIN_OSCR_DELTA ? -ETIME : 0;
 }
 
+<<<<<<< HEAD
 static void
 puv3_osmr0_set_mode(enum clock_event_mode mode, struct clock_event_device *c)
 {
@@ -69,6 +70,22 @@ static struct clock_event_device ckevt_puv3_osmr0 = {
 	.rating		= 200,
 	.set_next_event	= puv3_osmr0_set_next_event,
 	.set_mode	= puv3_osmr0_set_mode,
+=======
+static int puv3_osmr0_shutdown(struct clock_event_device *evt)
+{
+	writel(readl(OST_OIER) & ~OST_OIER_E0, OST_OIER);
+	writel(readl(OST_OSSR) & ~OST_OSSR_M0, OST_OSSR);
+	return 0;
+}
+
+static struct clock_event_device ckevt_puv3_osmr0 = {
+	.name			= "osmr0",
+	.features		= CLOCK_EVT_FEAT_ONESHOT,
+	.rating			= 200,
+	.set_next_event		= puv3_osmr0_set_next_event,
+	.set_state_shutdown	= puv3_osmr0_shutdown,
+	.set_state_oneshot	= puv3_osmr0_shutdown,
+>>>>>>> v4.9.227
 };
 
 static cycle_t puv3_read_oscr(struct clocksource *cs)

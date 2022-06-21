@@ -56,7 +56,11 @@ static int init_mp_priv(struct mp_priv *pmp_priv)
 	pmp_priv->pallocated_mp_xmitframe_buf = kmalloc(NR_MP_XMITFRAME *
 				sizeof(struct mp_xmit_frame) + 4,
 				GFP_ATOMIC);
+<<<<<<< HEAD
 	if (pmp_priv->pallocated_mp_xmitframe_buf == NULL) {
+=======
+	if (!pmp_priv->pallocated_mp_xmitframe_buf) {
+>>>>>>> v4.9.227
 		res = _FAIL;
 		goto _exit_init_mp_priv;
 	}
@@ -173,7 +177,11 @@ u8 r8712_bb_reg_write(struct _adapter *pAdapter, u16 offset, u32 value)
 		oldValue = r8712_bb_reg_read(pAdapter, iocmd.value);
 		oldValue &= (0xFFFFFFFF >> ((4 - shift) * 8));
 		value = oldValue | (newValue << (shift * 8));
+<<<<<<< HEAD
 		if (fw_iocmd_write(pAdapter, iocmd, value) == false)
+=======
+		if (!fw_iocmd_write(pAdapter, iocmd, value))
+>>>>>>> v4.9.227
 			return false;
 		iocmd.value += 4;
 		oldValue = r8712_bb_reg_read(pAdapter, iocmd.value);
@@ -211,19 +219,31 @@ static u32 bitshift(u32 bitmask)
 	u32 i;
 
 	for (i = 0; i <= 31; i++)
+<<<<<<< HEAD
 		if (((bitmask>>i) &  0x1) == 1)
+=======
+		if (((bitmask >> i) &  0x1) == 1)
+>>>>>>> v4.9.227
 			break;
 	return i;
 }
 
 static u32 get_bb_reg(struct _adapter *pAdapter, u16 offset, u32 bitmask)
 {
+<<<<<<< HEAD
 	u32 org_value, bit_shift, new_value;
 
 	org_value = r8712_bb_reg_read(pAdapter, offset);
 	bit_shift = bitshift(bitmask);
 	new_value = (org_value & bitmask) >> bit_shift;
 	return new_value;
+=======
+	u32 org_value, bit_shift;
+
+	org_value = r8712_bb_reg_read(pAdapter, offset);
+	bit_shift = bitshift(bitmask);
+	return (org_value & bitmask) >> bit_shift;
+>>>>>>> v4.9.227
 }
 
 static u8 set_bb_reg(struct _adapter *pAdapter,
@@ -236,21 +256,36 @@ static u8 set_bb_reg(struct _adapter *pAdapter,
 	if (bitmask != bMaskDWord) {
 		org_value = r8712_bb_reg_read(pAdapter, offset);
 		bit_shift = bitshift(bitmask);
+<<<<<<< HEAD
 		new_value = ((org_value & (~bitmask)) | (value << bit_shift));
 	} else
 		new_value = value;
+=======
+		new_value = (org_value & (~bitmask)) | (value << bit_shift);
+	} else {
+		new_value = value;
+	}
+>>>>>>> v4.9.227
 	return r8712_bb_reg_write(pAdapter, offset, new_value);
 }
 
 static u32 get_rf_reg(struct _adapter *pAdapter, u8 path, u8 offset,
 		      u32 bitmask)
 {
+<<<<<<< HEAD
 	u32 org_value, bit_shift, new_value;
 
 	org_value = r8712_rf_reg_read(pAdapter, path, offset);
 	bit_shift = bitshift(bitmask);
 	new_value = (org_value & bitmask) >> bit_shift;
 	return new_value;
+=======
+	u32 org_value, bit_shift;
+
+	org_value = r8712_rf_reg_read(pAdapter, path, offset);
+	bit_shift = bitshift(bitmask);
+	return (org_value & bitmask) >> bit_shift;
+>>>>>>> v4.9.227
 }
 
 static u8 set_rf_reg(struct _adapter *pAdapter, u8 path, u8 offset, u32 bitmask,
@@ -261,9 +296,16 @@ static u8 set_rf_reg(struct _adapter *pAdapter, u8 path, u8 offset, u32 bitmask,
 	if (bitmask != bMaskDWord) {
 		org_value = r8712_rf_reg_read(pAdapter, path, offset);
 		bit_shift = bitshift(bitmask);
+<<<<<<< HEAD
 		new_value = ((org_value & (~bitmask)) | (value << bit_shift));
 	} else
 		new_value = value;
+=======
+		new_value = (org_value & (~bitmask)) | (value << bit_shift);
+	} else {
+		new_value = value;
+	}
+>>>>>>> v4.9.227
 	return r8712_rf_reg_write(pAdapter, path, offset, new_value);
 }
 
@@ -281,10 +323,17 @@ void r8712_SetChannel(struct _adapter *pAdapter)
 	u16 code = GEN_CMD_CODE(_SetChannel);
 
 	pcmd = kmalloc(sizeof(*pcmd), GFP_ATOMIC);
+<<<<<<< HEAD
 	if (pcmd == NULL)
 		return;
 	pparm = kmalloc(sizeof(*pparm), GFP_ATOMIC);
 	if (pparm == NULL) {
+=======
+	if (!pcmd)
+		return;
+	pparm = kmalloc(sizeof(*pparm), GFP_ATOMIC);
+	if (!pparm) {
+>>>>>>> v4.9.227
 		kfree(pcmd);
 		return;
 	}
@@ -305,7 +354,12 @@ static void SetOFDMTxPower(struct _adapter *pAdapter, u8 TxPower)
 {
 	u32 TxAGC = 0;
 
+<<<<<<< HEAD
 	TxAGC |= ((TxPower<<24)|(TxPower<<16)|(TxPower<<8)|TxPower);
+=======
+	TxAGC |= ((TxPower << 24) | (TxPower << 16) | (TxPower << 8) |
+		  TxPower);
+>>>>>>> v4.9.227
 	set_bb_reg(pAdapter, rTxAGC_Rate18_06, bTxAGCRate18_06, TxAGC);
 	set_bb_reg(pAdapter, rTxAGC_Rate54_24, bTxAGCRate54_24, TxAGC);
 	set_bb_reg(pAdapter, rTxAGC_Mcs03_Mcs00, bTxAGCRateMCS3_MCS0, TxAGC);
@@ -326,12 +380,21 @@ void r8712_SetTxAGCOffset(struct _adapter *pAdapter, u32 ulTxAGCOffset)
 {
 	u32 TxAGCOffset_B, TxAGCOffset_C, TxAGCOffset_D, tmpAGC;
 
+<<<<<<< HEAD
 	TxAGCOffset_B = (ulTxAGCOffset&0x000000ff);
 	TxAGCOffset_C = ((ulTxAGCOffset&0x0000ff00)>>8);
 	TxAGCOffset_D = ((ulTxAGCOffset&0x00ff0000)>>16);
 	tmpAGC = (TxAGCOffset_D<<8 | TxAGCOffset_C<<4 | TxAGCOffset_B);
 	set_bb_reg(pAdapter, rFPGA0_TxGainStage,
 			(bXBTxAGC|bXCTxAGC|bXDTxAGC), tmpAGC);
+=======
+	TxAGCOffset_B = ulTxAGCOffset & 0x000000ff;
+	TxAGCOffset_C = (ulTxAGCOffset & 0x0000ff00) >> 8;
+	TxAGCOffset_D = (ulTxAGCOffset & 0x00ff0000) >> 16;
+	tmpAGC = TxAGCOffset_D << 8 | TxAGCOffset_C << 4 | TxAGCOffset_B;
+	set_bb_reg(pAdapter, rFPGA0_TxGainStage,
+			(bXBTxAGC | bXCTxAGC | bXDTxAGC), tmpAGC);
+>>>>>>> v4.9.227
 }
 
 void r8712_SetDataRate(struct _adapter *pAdapter)
@@ -375,9 +438,16 @@ void r8712_SwitchBandwidth(struct _adapter *pAdapter)
 		/* Use PHY_REG.txt default value. Do not need to change.
 		 * Correct the tx power for CCK rate in 40M.
 		 * Set Control channel to upper or lower. These settings are
+<<<<<<< HEAD
 		 * required only for 40MHz */
 		set_bb_reg(pAdapter, rCCK0_System, bCCKSideBand,
 			   (HAL_PRIME_CHNL_OFFSET_DONT_CARE>>1));
+=======
+		 * required only for 40MHz
+		 */
+		set_bb_reg(pAdapter, rCCK0_System, bCCKSideBand,
+			   (HAL_PRIME_CHNL_OFFSET_DONT_CARE >> 1));
+>>>>>>> v4.9.227
 		set_bb_reg(pAdapter, rOFDM1_LSTF, 0xC00,
 			   HAL_PRIME_CHNL_OFFSET_DONT_CARE);
 		set_bb_reg(pAdapter, rFPGA0_AnalogParameter2, bMaskDWord, 0x18);
@@ -490,12 +560,15 @@ void r8712_SwitchAntenna(struct _adapter *pAdapter)
 	set_bb_reg(pAdapter, rCCK0_AFESetting, bMaskByte3, cck_ant_sel_val);
 }
 
+<<<<<<< HEAD
 void r8712_SetCrystalCap(struct _adapter *pAdapter)
 {
 	set_bb_reg(pAdapter, rFPGA0_AnalogParameter1, bXtalCap,
 		   pAdapter->mppriv.curr_crystalcap);
 }
 
+=======
+>>>>>>> v4.9.227
 static void TriggerRFThermalMeter(struct _adapter *pAdapter)
 {
 	/* 0x24: RF Reg[6:5] */

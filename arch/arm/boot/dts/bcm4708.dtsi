@@ -15,6 +15,10 @@
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
+<<<<<<< HEAD
+=======
+		enable-method = "brcm,bcm-nsp-smp";
+>>>>>>> v4.9.227
 
 		cpu@0 {
 			device_type = "cpu";
@@ -27,6 +31,10 @@
 			device_type = "cpu";
 			compatible = "arm,cortex-a9";
 			next-level-cache = <&L2>;
+<<<<<<< HEAD
+=======
+			secondary-boot-reg = <0xffff0400>;
+>>>>>>> v4.9.227
 			reg = <0x1>;
 		};
 	};

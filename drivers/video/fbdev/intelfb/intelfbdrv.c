@@ -124,10 +124,13 @@
 
 #include <asm/io.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 #include <asm/mtrr.h>
 #endif
 
+=======
+>>>>>>> v4.9.227
 #include "intelfb.h"
 #include "intelfbhw.h"
 #include "../edid.h"
@@ -306,7 +309,11 @@ static __inline__ int get_opt_int(const char *this_opt, const char *name,
 }
 
 static __inline__ int get_opt_bool(const char *this_opt, const char *name,
+<<<<<<< HEAD
 				   int *ret)
+=======
+				   bool *ret)
+>>>>>>> v4.9.227
 {
 	if (!ret)
 		return 0;
@@ -411,6 +418,7 @@ module_init(intelfb_init);
 module_exit(intelfb_exit);
 
 /***************************************************************
+<<<<<<< HEAD
  *                     mtrr support functions                  *
  ***************************************************************/
 
@@ -438,6 +446,8 @@ static inline void unset_mtrr(struct intelfb_info *dinfo)
 #endif /* CONFIG_MTRR */
 
 /***************************************************************
+=======
+>>>>>>> v4.9.227
  *                        driver init / cleanup                *
  ***************************************************************/
 
@@ -456,7 +466,11 @@ static void cleanup(struct intelfb_info *dinfo)
 	if (dinfo->registered)
 		unregister_framebuffer(dinfo->info);
 
+<<<<<<< HEAD
 	unset_mtrr(dinfo);
+=======
+	arch_phys_wc_del(dinfo->wc_cookie);
+>>>>>>> v4.9.227
 
 	if (dinfo->fbmem_gart && dinfo->gtt_fb_mem) {
 		agp_unbind_memory(dinfo->gtt_fb_mem);
@@ -675,7 +689,11 @@ static int intelfb_pci_register(struct pci_dev *pdev,
 	/* Allocate memories (which aren't stolen) */
 	/* Map the fb and MMIO regions */
 	/* ioremap only up to the end of used aperture */
+<<<<<<< HEAD
 	dinfo->aperture.virtual = (u8 __iomem *)ioremap_nocache
+=======
+	dinfo->aperture.virtual = (u8 __iomem *)ioremap_wc
+>>>>>>> v4.9.227
 		(dinfo->aperture.physical, ((offset + dinfo->fb.offset) << 12)
 		 + dinfo->fb.size);
 	if (!dinfo->aperture.virtual) {
@@ -772,7 +790,12 @@ static int intelfb_pci_register(struct pci_dev *pdev,
 	agp_backend_release(bridge);
 
 	if (mtrr)
+<<<<<<< HEAD
 		set_mtrr(dinfo);
+=======
+		dinfo->wc_cookie = arch_phys_wc_add(dinfo->aperture.physical,
+						    dinfo->aperture.size);
+>>>>>>> v4.9.227
 
 	DBG_MSG("fb: 0x%x(+ 0x%x)/0x%x (0x%p)\n",
 		dinfo->fb.physical, dinfo->fb.offset, dinfo->fb.size,
@@ -1331,11 +1354,14 @@ static int intelfb_check_var(struct fb_var_screeninfo *var,
 		break;
 	}
 
+<<<<<<< HEAD
 	if (v.xoffset < 0)
 		v.xoffset = 0;
 	if (v.yoffset < 0)
 		v.yoffset = 0;
 
+=======
+>>>>>>> v4.9.227
 	if (v.xoffset > v.xres_virtual - v.xres)
 		v.xoffset = v.xres_virtual - v.xres;
 	if (v.yoffset > v.yres_virtual - v.yres)

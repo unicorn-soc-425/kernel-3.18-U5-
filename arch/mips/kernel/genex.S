@@ -125,12 +125,20 @@ LEAF(__r4k_wait)
 	nop
 	nop
 #endif
+<<<<<<< HEAD
 	.set	arch=r4000
+=======
+	.set	MIPS_ISA_ARCH_LEVEL_RAW
+>>>>>>> v4.9.227
 	wait
 	/* end of rollback region (the region size must be power of two) */
 1:
 	jr	ra
+<<<<<<< HEAD
 	nop
+=======
+	 nop
+>>>>>>> v4.9.227
 	.set	pop
 	END(__r4k_wait)
 
@@ -142,9 +150,14 @@ LEAF(__r4k_wait)
 	PTR_LA	k1, __r4k_wait
 	ori	k0, 0x1f	/* 32 byte rollback region */
 	xori	k0, 0x1f
+<<<<<<< HEAD
 	bne	k0, k1, 9f
 	MTC0	k0, CP0_EPC
 9:
+=======
+	bne	k0, k1, \handler
+	MTC0	k0, CP0_EPC
+>>>>>>> v4.9.227
 	.set pop
 	.endm
 
@@ -172,7 +185,11 @@ NESTED(handle_int, PT_SIZE, sp)
 	mfc0	k0, CP0_EPC
 	.set	noreorder
 	j	k0
+<<<<<<< HEAD
 	rfe
+=======
+	 rfe
+>>>>>>> v4.9.227
 #else
 	and	k0, ST0_IE
 	bnez	k0, 1f
@@ -188,9 +205,52 @@ NESTED(handle_int, PT_SIZE, sp)
 
 	LONG_L	s0, TI_REGS($28)
 	LONG_S	sp, TI_REGS($28)
+<<<<<<< HEAD
 	PTR_LA	ra, ret_from_irq
 	PTR_LA  v0, plat_irq_dispatch
 	jr	v0
+=======
+
+	/*
+	 * SAVE_ALL ensures we are using a valid kernel stack for the thread.
+	 * Check if we are already using the IRQ stack.
+	 */
+	move	s1, sp # Preserve the sp
+
+	/* Get IRQ stack for this CPU */
+	ASM_CPUID_MFC0	k0, ASM_SMP_CPUID_REG
+#if defined(CONFIG_32BIT) || defined(KBUILD_64BIT_SYM32)
+	lui	k1, %hi(irq_stack)
+#else
+	lui	k1, %highest(irq_stack)
+	daddiu	k1, %higher(irq_stack)
+	dsll	k1, 16
+	daddiu	k1, %hi(irq_stack)
+	dsll	k1, 16
+#endif
+	LONG_SRL	k0, SMP_CPUID_PTRSHIFT
+	LONG_ADDU	k1, k0
+	LONG_L	t0, %lo(irq_stack)(k1)
+
+	# Check if already on IRQ stack
+	PTR_LI	t1, ~(_THREAD_SIZE-1)
+	and	t1, t1, sp
+	beq	t0, t1, 2f
+
+	/* Switch to IRQ stack */
+	li	t1, _IRQ_STACK_START
+	PTR_ADD sp, t0, t1
+
+	/* Save task's sp on IRQ stack so that unwinding can follow it */
+	LONG_S	s1, 0(sp)
+2:
+	jal	plat_irq_dispatch
+
+	/* Restore sp */
+	move	sp, s1
+
+	j	ret_from_irq
+>>>>>>> v4.9.227
 #ifdef CONFIG_CPU_MICROMIPS
 	nop
 #endif
@@ -263,8 +323,51 @@ NESTED(except_vec_vi_handler, 0, sp)
 
 	LONG_L	s0, TI_REGS($28)
 	LONG_S	sp, TI_REGS($28)
+<<<<<<< HEAD
 	PTR_LA	ra, ret_from_irq
 	jr	v0
+=======
+
+	/*
+	 * SAVE_ALL ensures we are using a valid kernel stack for the thread.
+	 * Check if we are already using the IRQ stack.
+	 */
+	move	s1, sp # Preserve the sp
+
+	/* Get IRQ stack for this CPU */
+	ASM_CPUID_MFC0	k0, ASM_SMP_CPUID_REG
+#if defined(CONFIG_32BIT) || defined(KBUILD_64BIT_SYM32)
+	lui	k1, %hi(irq_stack)
+#else
+	lui	k1, %highest(irq_stack)
+	daddiu	k1, %higher(irq_stack)
+	dsll	k1, 16
+	daddiu	k1, %hi(irq_stack)
+	dsll	k1, 16
+#endif
+	LONG_SRL	k0, SMP_CPUID_PTRSHIFT
+	LONG_ADDU	k1, k0
+	LONG_L	t0, %lo(irq_stack)(k1)
+
+	# Check if already on IRQ stack
+	PTR_LI	t1, ~(_THREAD_SIZE-1)
+	and	t1, t1, sp
+	beq	t0, t1, 2f
+
+	/* Switch to IRQ stack */
+	li	t1, _IRQ_STACK_START
+	PTR_ADD sp, t0, t1
+
+	/* Save task's sp on IRQ stack so that unwinding can follow it */
+	LONG_S	s1, 0(sp)
+2:
+	jalr	v0
+
+	/* Restore sp */
+	move	sp, s1
+
+	j	ret_from_irq
+>>>>>>> v4.9.227
 	END(except_vec_vi_handler)
 
 /*
@@ -292,7 +395,11 @@ ejtag_return:
 	MFC0	k0, CP0_DESAVE
 	.set	mips32
 	deret
+<<<<<<< HEAD
 	.set pop
+=======
+	.set	pop
+>>>>>>> v4.9.227
 	END(ejtag_debug_handler)
 
 /*
@@ -329,10 +436,17 @@ NESTED(nmi_handler, PT_SIZE, sp)
 	 * Clear BEV - required for page fault exception handler to work
 	 */
 	mfc0	k0, CP0_STATUS
+<<<<<<< HEAD
 	ori     k0, k0, ST0_EXL
 	li	k1, ~(ST0_BEV | ST0_ERL)
 	and     k0, k0, k1
 	mtc0    k0, CP0_STATUS
+=======
+	ori	k0, k0, ST0_EXL
+	li	k1, ~(ST0_BEV | ST0_ERL)
+	and	k0, k0, k1
+	mtc0	k0, CP0_STATUS
+>>>>>>> v4.9.227
 	_ehb
 	SAVE_ALL
 	move	a0, sp
@@ -360,12 +474,24 @@ NESTED(nmi_handler, PT_SIZE, sp)
 	.set	mips1
 	SET_HARDFLOAT
 	cfc1	a1, fcr31
+<<<<<<< HEAD
 	li	a2, ~(0x3f << 12)
 	and	a2, a1
 	ctc1	a2, fcr31
 	.set	pop
 	TRACE_IRQS_ON
 	STI
+=======
+	.set	pop
+	CLI
+	TRACE_IRQS_OFF
+	.endm
+
+	.macro	__build_clear_msa_fpe
+	_cfcmsa	a1, MSA_CSR
+	CLI
+	TRACE_IRQS_OFF
+>>>>>>> v4.9.227
 	.endm
 
 	.macro	__build_clear_ade
@@ -393,7 +519,11 @@ NESTED(nmi_handler, PT_SIZE, sp)
 
 	.macro	__BUILD_count exception
 	LONG_L	t0,exception_count_\exception
+<<<<<<< HEAD
 	LONG_ADDIU t0, 1
+=======
+	LONG_ADDIU	t0, 1
+>>>>>>> v4.9.227
 	LONG_S	t0,exception_count_\exception
 	.comm	exception_count\exception, 8, 8
 	.endm
@@ -404,7 +534,11 @@ NESTED(nmi_handler, PT_SIZE, sp)
 	.set	noat
 	SAVE_ALL
 	FEXPORT(handle_\exception\ext)
+<<<<<<< HEAD
 	__BUILD_clear_\clear
+=======
+	__build_clear_\clear
+>>>>>>> v4.9.227
 	.set	at
 	__BUILD_\verbose \exception
 	move	a0, sp
@@ -426,7 +560,11 @@ NESTED(nmi_handler, PT_SIZE, sp)
 	BUILD_HANDLER cpu cpu sti silent		/* #11 */
 	BUILD_HANDLER ov ov sti silent			/* #12 */
 	BUILD_HANDLER tr tr sti silent			/* #13 */
+<<<<<<< HEAD
 	BUILD_HANDLER msa_fpe msa_fpe sti silent	/* #14 */
+=======
+	BUILD_HANDLER msa_fpe msa_fpe msa_fpe silent	/* #14 */
+>>>>>>> v4.9.227
 	BUILD_HANDLER fpe fpe fpe silent		/* #15 */
 	BUILD_HANDLER ftlb ftlb none silent		/* #16 */
 	BUILD_HANDLER msa msa sti silent		/* #21 */
@@ -446,16 +584,27 @@ NESTED(nmi_handler, PT_SIZE, sp)
 	BUILD_HANDLER reserved reserved sti verbose	/* others */
 
 	.align	5
+<<<<<<< HEAD
 	LEAF(handle_ri_rdhwr_vivt)
+=======
+	LEAF(handle_ri_rdhwr_tlbp)
+>>>>>>> v4.9.227
 	.set	push
 	.set	noat
 	.set	noreorder
 	/* check if TLB contains a entry for EPC */
 	MFC0	k1, CP0_ENTRYHI
+<<<<<<< HEAD
 	andi	k1, 0xff	/* ASID_MASK */
 	MFC0	k0, CP0_EPC
 	PTR_SRL k0, _PAGE_SHIFT + 1
 	PTR_SLL k0, _PAGE_SHIFT + 1
+=======
+	andi	k1, MIPS_ENTRYHI_ASID | MIPS_ENTRYHI_ASIDX
+	MFC0	k0, CP0_EPC
+	PTR_SRL	k0, _PAGE_SHIFT + 1
+	PTR_SLL	k0, _PAGE_SHIFT + 1
+>>>>>>> v4.9.227
 	or	k1, k0
 	MTC0	k1, CP0_ENTRYHI
 	mtc0_tlbw_hazard
@@ -465,7 +614,11 @@ NESTED(nmi_handler, PT_SIZE, sp)
 	.set	pop
 	bltz	k1, handle_ri	/* slow path */
 	/* fall thru */
+<<<<<<< HEAD
 	END(handle_ri_rdhwr_vivt)
+=======
+	END(handle_ri_rdhwr_tlbp)
+>>>>>>> v4.9.227
 
 	LEAF(handle_ri_rdhwr)
 	.set	push
@@ -475,6 +628,7 @@ NESTED(nmi_handler, PT_SIZE, sp)
 	/* microMIPS: 0x007d6b3c: rdhwr v1,$29 */
 	MFC0	k1, CP0_EPC
 #if defined(CONFIG_CPU_MICROMIPS) || defined(CONFIG_CPU_MIPS32_R2) || defined(CONFIG_CPU_MIPS64_R2)
+<<<<<<< HEAD
 	and     k0, k1, 1
 	beqz    k0, 1f
 	xor     k1, k0
@@ -496,6 +650,29 @@ NESTED(nmi_handler, PT_SIZE, sp)
 	ori     k0, 0xe83b
 #endif
 	.set    reorder
+=======
+	and	k0, k1, 1
+	beqz	k0, 1f
+	 xor	k1, k0
+	lhu	k0, (k1)
+	lhu	k1, 2(k1)
+	ins	k1, k0, 16, 16
+	lui	k0, 0x007d
+	b	docheck
+	 ori	k0, 0x6b3c
+1:
+	lui	k0, 0x7c03
+	lw	k1, (k1)
+	ori	k0, 0xe83b
+#else
+	andi	k0, k1, 1
+	bnez	k0, handle_ri
+	 lui	k0, 0x7c03
+	lw	k1, (k1)
+	ori	k0, 0xe83b
+#endif
+	.set	reorder
+>>>>>>> v4.9.227
 docheck:
 	bne	k0, k1, handle_ri	/* if not ours */
 

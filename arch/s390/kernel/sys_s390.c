@@ -76,7 +76,10 @@ SYSCALL_DEFINE5(s390_ipc, uint, call, int, first, unsigned long, second,
 	return sys_ipc(call, first, second, third, ptr, third);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 SYSCALL_DEFINE1(s390_personality, unsigned int, personality)
 {
 	unsigned int ret;
@@ -90,6 +93,7 @@ SYSCALL_DEFINE1(s390_personality, unsigned int, personality)
 
 	return ret;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
 
 /*
@@ -138,3 +142,5 @@ SYSCALL_DEFINE5(s390_fallocate, int, fd, int, mode, loff_t, offset,
 	return sys_fallocate(fd, mode, offset, ((u64)len_high << 32) | len_low);
 }
 #endif
+=======
+>>>>>>> v4.9.227

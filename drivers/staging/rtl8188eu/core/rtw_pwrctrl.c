@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #define _RTW_PWRCTRL_C_
 
@@ -43,7 +46,11 @@ static int rtw_hw_suspend(struct adapter *padapter)
 	LeaveAllPowerSaveMode(padapter);
 
 	DBG_88E("==> rtw_hw_suspend\n");
+<<<<<<< HEAD
 	_enter_pwrlock(&pwrpriv->lock);
+=======
+	mutex_lock(&pwrpriv->mutex_lock);
+>>>>>>> v4.9.227
 	pwrpriv->bips_processing = true;
 	/* s1. */
 	if (pnetdev) {
@@ -70,7 +77,11 @@ static int rtw_hw_suspend(struct adapter *padapter)
 		}
 	}
 	/* s2-3. */
+<<<<<<< HEAD
 	rtw_free_assoc_resources(padapter, 1);
+=======
+	rtw_free_assoc_resources(padapter);
+>>>>>>> v4.9.227
 
 	/* s2-4. */
 	rtw_free_network_queue(padapter, true);
@@ -78,7 +89,11 @@ static int rtw_hw_suspend(struct adapter *padapter)
 	pwrpriv->rf_pwrstate = rf_off;
 	pwrpriv->bips_processing = false;
 
+<<<<<<< HEAD
 	_exit_pwrlock(&pwrpriv->lock);
+=======
+	mutex_unlock(&pwrpriv->mutex_lock);
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -95,12 +110,20 @@ static int rtw_hw_resume(struct adapter *padapter)
 
 	/* system resume */
 	DBG_88E("==> rtw_hw_resume\n");
+<<<<<<< HEAD
 	_enter_pwrlock(&pwrpriv->lock);
+=======
+	mutex_lock(&pwrpriv->mutex_lock);
+>>>>>>> v4.9.227
 	pwrpriv->bips_processing = true;
 	rtw_reset_drv_sw(padapter);
 
 	if (pm_netdev_open(pnetdev, false) != 0) {
+<<<<<<< HEAD
 		_exit_pwrlock(&pwrpriv->lock);
+=======
+		mutex_unlock(&pwrpriv->mutex_lock);
+>>>>>>> v4.9.227
 		goto error_exit;
 	}
 
@@ -118,7 +141,11 @@ static int rtw_hw_resume(struct adapter *padapter)
 	pwrpriv->rf_pwrstate = rf_on;
 	pwrpriv->bips_processing = false;
 
+<<<<<<< HEAD
 	_exit_pwrlock(&pwrpriv->lock);
+=======
+	mutex_unlock(&pwrpriv->mutex_lock);
+>>>>>>> v4.9.227
 
 
 	return 0;
@@ -143,7 +170,11 @@ void ips_enter(struct adapter *padapter)
 		return;
 	}
 
+<<<<<<< HEAD
 	_enter_pwrlock(&pwrpriv->lock);
+=======
+	mutex_lock(&pwrpriv->mutex_lock);
+>>>>>>> v4.9.227
 
 	pwrpriv->bips_processing = true;
 
@@ -164,7 +195,11 @@ void ips_enter(struct adapter *padapter)
 	}
 	pwrpriv->bips_processing = false;
 
+<<<<<<< HEAD
 	_exit_pwrlock(&pwrpriv->lock);
+=======
+	mutex_unlock(&pwrpriv->mutex_lock);
+>>>>>>> v4.9.227
 }
 
 int ips_leave(struct adapter *padapter)
@@ -176,7 +211,11 @@ int ips_leave(struct adapter *padapter)
 	int keyid;
 
 
+<<<<<<< HEAD
 	_enter_pwrlock(&pwrpriv->lock);
+=======
+	mutex_lock(&pwrpriv->mutex_lock);
+>>>>>>> v4.9.227
 
 	if ((pwrpriv->rf_pwrstate == rf_off) && (!pwrpriv->bips_processing)) {
 		pwrpriv->bips_processing = true;
@@ -210,7 +249,11 @@ int ips_leave(struct adapter *padapter)
 		pwrpriv->bpower_saving = false;
 	}
 
+<<<<<<< HEAD
 	_exit_pwrlock(&pwrpriv->lock);
+=======
+	mutex_unlock(&pwrpriv->mutex_lock);
+>>>>>>> v4.9.227
 
 	return result;
 }
@@ -279,12 +322,20 @@ void rtw_ps_processor(struct adapter *padapter)
 exit:
 	rtw_set_pwr_state_check_timer(&padapter->pwrctrlpriv);
 	pwrpriv->ps_processing = false;
+<<<<<<< HEAD
 	return;
 }
 
 static void pwr_state_check_handler(void *FunctionContext)
 {
 	struct adapter *padapter = (struct adapter *)FunctionContext;
+=======
+}
+
+static void pwr_state_check_handler(unsigned long data)
+{
+	struct adapter *padapter = (struct adapter *)data;
+>>>>>>> v4.9.227
 	rtw_ps_cmd(padapter);
 }
 
@@ -349,7 +400,11 @@ void rtw_set_rpwm(struct adapter *padapter, u8 pslv)
 
 static u8 PS_RDY_CHECK(struct adapter *padapter)
 {
+<<<<<<< HEAD
 	u32 curr_time, delta_time;
+=======
+	unsigned long curr_time, delta_time;
+>>>>>>> v4.9.227
 	struct pwrctrl_priv	*pwrpriv = &padapter->pwrctrlpriv;
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 
@@ -419,7 +474,11 @@ void rtw_set_ps_mode(struct adapter *padapter, u8 ps_mode, u8 smart_ps, u8 bcn_a
  */
 s32 LPS_RF_ON_check(struct adapter *padapter, u32 delay_ms)
 {
+<<<<<<< HEAD
 	u32 start_time;
+=======
+	unsigned long start_time;
+>>>>>>> v4.9.227
 	u8 bAwake = false;
 	s32 err = 0;
 
@@ -436,7 +495,11 @@ s32 LPS_RF_ON_check(struct adapter *padapter, u32 delay_ms)
 			break;
 		}
 
+<<<<<<< HEAD
 		if (rtw_get_passing_time_ms(start_time) > delay_ms) {
+=======
+		if (jiffies_to_msecs(jiffies - start_time) > delay_ms) {
+>>>>>>> v4.9.227
 			err = -1;
 			DBG_88E("%s: Wait for FW LPS leave more than %u ms!!!\n", __func__, delay_ms);
 			break;
@@ -510,7 +573,11 @@ void rtw_init_pwrctrl_priv(struct adapter *padapter)
 {
 	struct pwrctrl_priv *pwrctrlpriv = &padapter->pwrctrlpriv;
 
+<<<<<<< HEAD
 	_init_pwrlock(&pwrctrlpriv->lock);
+=======
+	mutex_init(&pwrctrlpriv->mutex_lock);
+>>>>>>> v4.9.227
 	pwrctrlpriv->rf_pwrstate = rf_on;
 	pwrctrlpriv->ips_enter_cnts = 0;
 	pwrctrlpriv->ips_leave_cnts = 0;
@@ -527,7 +594,11 @@ void rtw_init_pwrctrl_priv(struct adapter *padapter)
 
 	pwrctrlpriv->LpsIdleCount = 0;
 	if (padapter->registrypriv.mp_mode == 1)
+<<<<<<< HEAD
 		pwrctrlpriv->power_mgnt = PS_MODE_ACTIVE ;
+=======
+		pwrctrlpriv->power_mgnt = PS_MODE_ACTIVE;
+>>>>>>> v4.9.227
 	else
 		pwrctrlpriv->power_mgnt = padapter->registrypriv.power_mgnt;/*  PS_MODE_MIN; */
 	pwrctrlpriv->bLeisurePs = (PS_MODE_ACTIVE != pwrctrlpriv->power_mgnt) ? true : false;
@@ -545,6 +616,7 @@ void rtw_init_pwrctrl_priv(struct adapter *padapter)
 
 	pwrctrlpriv->btcoex_rfon = false;
 
+<<<<<<< HEAD
 	_init_timer(&(pwrctrlpriv->pwr_state_check_timer), padapter->pnetdev, pwr_state_check_handler, (u8 *)padapter);
 }
 
@@ -552,6 +624,11 @@ inline void rtw_set_ips_deny(struct adapter *padapter, u32 ms)
 {
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	pwrpriv->ips_deny_time = jiffies + msecs_to_jiffies(ms);
+=======
+	setup_timer(&pwrctrlpriv->pwr_state_check_timer,
+		    pwr_state_check_handler,
+		    (unsigned long)padapter);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -566,24 +643,40 @@ int _rtw_pwr_wakeup(struct adapter *padapter, u32 ips_deffer_ms, const char *cal
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	unsigned long expires;
+<<<<<<< HEAD
+=======
+	unsigned long start;
+>>>>>>> v4.9.227
 	int ret = _SUCCESS;
 
 	expires = jiffies + msecs_to_jiffies(ips_deffer_ms);
 	if (time_before(pwrpriv->ips_deny_time, expires))
 		pwrpriv->ips_deny_time = jiffies + msecs_to_jiffies(ips_deffer_ms);
 
+<<<<<<< HEAD
 {
 	u32 start = jiffies;
 	if (pwrpriv->ps_processing) {
 		DBG_88E("%s wait ps_processing...\n", __func__);
 		while (pwrpriv->ps_processing && rtw_get_passing_time_ms(start) <= 3000)
 			msleep(10);
+=======
+	start = jiffies;
+	if (pwrpriv->ps_processing) {
+		DBG_88E("%s wait ps_processing...\n", __func__);
+		while (pwrpriv->ps_processing &&
+		       jiffies_to_msecs(jiffies - start) <= 3000)
+			usleep_range(1000, 3000);
+>>>>>>> v4.9.227
 		if (pwrpriv->ps_processing)
 			DBG_88E("%s wait ps_processing timeout\n", __func__);
 		else
 			DBG_88E("%s wait ps_processing done\n", __func__);
 	}
+<<<<<<< HEAD
 }
+=======
+>>>>>>> v4.9.227
 
 	/* System suspend is not allowed to wakeup */
 	if ((!pwrpriv->bInternalAutoSuspend) && (pwrpriv->bInSuspend)) {

@@ -40,14 +40,21 @@
 #include <linux/compiler.h>
 #include <linux/delay.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/initval.h>
 #include <sound/ac97_codec.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
+=======
+>>>>>>> v4.9.227
 #include "ad1889.h"
 #include "ac97/ac97_id.h"
 
@@ -572,7 +579,11 @@ snd_ad1889_capture_pointer(struct snd_pcm_substream *ss)
 	return bytes_to_frames(ss->runtime, ptr);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ad1889_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_ad1889_playback_ops = {
+>>>>>>> v4.9.227
 	.open = snd_ad1889_playback_open,
 	.close = snd_ad1889_playback_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -583,7 +594,11 @@ static struct snd_pcm_ops snd_ad1889_playback_ops = {
 	.pointer = snd_ad1889_playback_pointer, 
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ad1889_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_ad1889_capture_ops = {
+>>>>>>> v4.9.227
 	.open = snd_ad1889_capture_open,
 	.close = snd_ad1889_capture_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -623,14 +638,21 @@ snd_ad1889_interrupt(int irq, void *dev_id)
 }
 
 static int
+<<<<<<< HEAD
 snd_ad1889_pcm_init(struct snd_ad1889 *chip, int device, struct snd_pcm **rpcm)
+=======
+snd_ad1889_pcm_init(struct snd_ad1889 *chip, int device)
+>>>>>>> v4.9.227
 {
 	int err;
 	struct snd_pcm *pcm;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
+=======
+>>>>>>> v4.9.227
 	err = snd_pcm_new(chip->card, chip->card->driver, device, 1, 1, &pcm);
 	if (err < 0)
 		return err;
@@ -658,9 +680,12 @@ snd_ad1889_pcm_init(struct snd_ad1889 *chip, int device, struct snd_pcm **rpcm)
 		return err;
 	}
 	
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
 	
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -754,7 +779,11 @@ snd_ad1889_proc_init(struct snd_ad1889 *chip)
 		snd_info_set_text_ops(entry, chip, snd_ad1889_proc_read);
 }
 
+<<<<<<< HEAD
 static struct ac97_quirk ac97_quirks[] = {
+=======
+static const struct ac97_quirk ac97_quirks[] = {
+>>>>>>> v4.9.227
 	{
 		.subvendor = 0x11d4,	/* AD */
 		.subdevice = 0x1889,	/* AD1889 */
@@ -859,12 +888,18 @@ snd_ad1889_free(struct snd_ad1889 *chip)
 		free_irq(chip->irq, chip);
 
 skip_hw:
+<<<<<<< HEAD
 	if (chip->iobase)
 		iounmap(chip->iobase);
 
 	pci_release_regions(chip->pci);
 	pci_disable_device(chip->pci);
 
+=======
+	iounmap(chip->iobase);
+	pci_release_regions(chip->pci);
+	pci_disable_device(chip->pci);
+>>>>>>> v4.9.227
 	kfree(chip);
 	return 0;
 }
@@ -908,8 +943,13 @@ snd_ad1889_create(struct snd_card *card,
 		return err;
 
 	/* check PCI availability (32bit DMA) */
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(32)) < 0 ||
 	    pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(32)) < 0) {
+=======
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(32)) < 0 ||
+	    dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(32)) < 0) {
+>>>>>>> v4.9.227
 		dev_err(card->dev, "error setting 32-bit DMA mask.\n");
 		pci_disable_device(pci);
 		return -ENXIO;
@@ -1016,7 +1056,11 @@ snd_ad1889_probe(struct pci_dev *pci,
 	if (err < 0)
 		goto free_and_ret;
 	
+<<<<<<< HEAD
 	err = snd_ad1889_pcm_init(chip, 0, NULL);
+=======
+	err = snd_ad1889_pcm_init(chip, 0);
+>>>>>>> v4.9.227
 	if (err < 0)
 		goto free_and_ret;
 

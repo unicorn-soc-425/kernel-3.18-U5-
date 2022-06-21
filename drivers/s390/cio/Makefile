@@ -2,8 +2,16 @@
 # Makefile for the S/390 common i/o drivers
 #
 
+<<<<<<< HEAD
 obj-y += airq.o blacklist.o chsc.o cio.o css.o chp.o idset.o isc.o \
 	fcx.o itcw.o crw.o ccwreq.o
+=======
+# The following is required for define_trace.h to find ./trace.h
+CFLAGS_trace.o := -I$(src)
+
+obj-y += airq.o blacklist.o chsc.o cio.o css.o chp.o idset.o isc.o \
+	fcx.o itcw.o crw.o ccwreq.o trace.o ioasm.o
+>>>>>>> v4.9.227
 ccw_device-objs += device.o device_fsm.o device_ops.o
 ccw_device-objs += device_id.o device_pgid.o device_status.o
 obj-y += ccw_device.o cmf.o

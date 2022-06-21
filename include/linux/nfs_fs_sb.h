@@ -74,10 +74,16 @@ struct nfs_client {
 	/* idmapper */
 	struct idmap *		cl_idmap;
 
+<<<<<<< HEAD
 	/* Our own IP address, as a null-terminated string.
 	 * This is used to generate the mv0 callback address.
 	 */
 	char			cl_ipaddr[48];
+=======
+	/* Client owner identifier */
+	const char *		cl_owner_id;
+
+>>>>>>> v4.9.227
 	u32			cl_cb_ident;	/* v4.0 callback identifier */
 	const struct nfs4_minor_version_ops *cl_mvops;
 	unsigned long		cl_mig_gen;
@@ -103,8 +109,22 @@ struct nfs_client {
 #define NFS_SP4_MACH_CRED_STATEID  4	/* TEST_STATEID and FREE_STATEID */
 #define NFS_SP4_MACH_CRED_WRITE    5	/* WRITE */
 #define NFS_SP4_MACH_CRED_COMMIT   6	/* COMMIT */
+<<<<<<< HEAD
 #endif /* CONFIG_NFS_V4 */
 
+=======
+#define NFS_SP4_MACH_CRED_PNFS_CLEANUP  7 /* LAYOUTRETURN */
+#if IS_ENABLED(CONFIG_NFS_V4_1)
+	wait_queue_head_t	cl_lock_waitq;
+#endif /* CONFIG_NFS_V4_1 */
+#endif /* CONFIG_NFS_V4 */
+
+	/* Our own IP address, as a null-terminated string.
+	 * This is used to generate the mv0 callback address.
+	 */
+	char			cl_ipaddr[48];
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_NFS_FSCACHE
 	struct fscache_cookie	*fscache;	/* client index cache cookie */
 #endif
@@ -143,6 +163,10 @@ struct nfs_server {
 	unsigned int		acdirmax;
 	unsigned int		namelen;
 	unsigned int		options;	/* extra options enabled by mount */
+<<<<<<< HEAD
+=======
+	unsigned int		clone_blksize;	/* granularity of a CLONE operation */
+>>>>>>> v4.9.227
 #define NFS_OPTION_FSCACHE	0x00000001	/* - local caching enabled */
 #define NFS_OPTION_MIGRATION	0x00000002	/* - NFSv4 migration enabled */
 
@@ -169,6 +193,14 @@ struct nfs_server {
 						   set of attributes supported
 						   on this filesystem excluding
 						   the label support bit. */
+<<<<<<< HEAD
+=======
+	u32			exclcreat_bitmask[3];
+						/* V4 bitmask representing the
+						   set of attributes supported
+						   on this filesystem for the
+						   exclusive create. */
+>>>>>>> v4.9.227
 	u32			cache_consistency_bitmask[3];
 						/* V4 bitmask representing the subset
 						   of change attribute, size, ctime
@@ -231,5 +263,13 @@ struct nfs_server {
 #define NFS_CAP_ATOMIC_OPEN_V1	(1U << 17)
 #define NFS_CAP_SECURITY_LABEL	(1U << 18)
 #define NFS_CAP_SEEK		(1U << 19)
+<<<<<<< HEAD
+=======
+#define NFS_CAP_ALLOCATE	(1U << 20)
+#define NFS_CAP_DEALLOCATE	(1U << 21)
+#define NFS_CAP_LAYOUTSTATS	(1U << 22)
+#define NFS_CAP_CLONE		(1U << 23)
+#define NFS_CAP_COPY		(1U << 24)
+>>>>>>> v4.9.227
 
 #endif

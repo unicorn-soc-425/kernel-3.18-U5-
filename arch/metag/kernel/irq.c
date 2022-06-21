@@ -94,13 +94,20 @@ void do_IRQ(int irq, struct pt_regs *regs)
 			"MOV   D0.5,%0\n"
 			"MOV   D1Ar1,%1\n"
 			"MOV   D1RtP,%2\n"
+<<<<<<< HEAD
 			"MOV   D0Ar2,%3\n"
+=======
+>>>>>>> v4.9.227
 			"SWAP  A0StP,D0.5\n"
 			"SWAP  PC,D1RtP\n"
 			"MOV   A0StP,D0.5\n"
 			:
+<<<<<<< HEAD
 			: "r" (isp), "r" (irq), "r" (desc->handle_irq),
 			  "r" (desc)
+=======
+			: "r" (isp), "r" (desc), "r" (desc->handle_irq)
+>>>>>>> v4.9.227
 			: "memory", "cc", "D1Ar1", "D0Ar2", "D1Ar3", "D0Ar4",
 			  "D1Ar5", "D0Ar6", "D0Re0", "D1Re0", "D0.4", "D1RtP",
 			  "D0.5"
@@ -132,7 +139,10 @@ void irq_ctx_init(int cpu)
 
 	irqctx = (union irq_ctx *) &hardirq_stack[cpu * THREAD_SIZE];
 	irqctx->tinfo.task              = NULL;
+<<<<<<< HEAD
 	irqctx->tinfo.exec_domain       = NULL;
+=======
+>>>>>>> v4.9.227
 	irqctx->tinfo.cpu               = cpu;
 	irqctx->tinfo.preempt_count     = HARDIRQ_OFFSET;
 	irqctx->tinfo.addr_limit        = MAKE_MM_SEG(0);
@@ -141,7 +151,10 @@ void irq_ctx_init(int cpu)
 
 	irqctx = (union irq_ctx *) &softirq_stack[cpu * THREAD_SIZE];
 	irqctx->tinfo.task              = NULL;
+<<<<<<< HEAD
 	irqctx->tinfo.exec_domain       = NULL;
+=======
+>>>>>>> v4.9.227
 	irqctx->tinfo.cpu               = cpu;
 	irqctx->tinfo.preempt_count     = 0;
 	irqctx->tinfo.addr_limit        = MAKE_MM_SEG(0);
@@ -272,23 +285,41 @@ void migrate_irqs(void)
 
 	for_each_active_irq(i) {
 		struct irq_data *data = irq_get_irq_data(i);
+<<<<<<< HEAD
+=======
+		struct cpumask *mask;
+>>>>>>> v4.9.227
 		unsigned int newcpu;
 
 		if (irqd_is_per_cpu(data))
 			continue;
 
+<<<<<<< HEAD
 		if (!cpumask_test_cpu(cpu, data->affinity))
 			continue;
 
 		newcpu = cpumask_any_and(data->affinity, cpu_online_mask);
+=======
+		mask = irq_data_get_affinity_mask(data);
+		if (!cpumask_test_cpu(cpu, mask))
+			continue;
+
+		newcpu = cpumask_any_and(mask, cpu_online_mask);
+>>>>>>> v4.9.227
 
 		if (newcpu >= nr_cpu_ids) {
 			pr_info_ratelimited("IRQ%u no longer affine to CPU%u\n",
 					    i, cpu);
 
+<<<<<<< HEAD
 			cpumask_setall(data->affinity);
 		}
 		irq_set_affinity(i, data->affinity);
+=======
+			cpumask_setall(mask);
+		}
+		irq_set_affinity(i, mask);
+>>>>>>> v4.9.227
 	}
 }
 #endif /* CONFIG_HOTPLUG_CPU */

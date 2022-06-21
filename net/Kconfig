@@ -45,6 +45,7 @@ config COMPAT_NETLINK_MESSAGES
 	  Newly written code should NEVER need this option but do
 	  compat-independent messages instead!
 
+<<<<<<< HEAD
 config DISABLE_NET_SKB_FRAG_CACHE
 	bool "Disable skb fragment cache"
 	help
@@ -54,6 +55,13 @@ config DISABLE_NET_SKB_FRAG_CACHE
 	  targets because it reduces memory pressure.
 
 	  If you are unsure how to answer this question, answer N.
+=======
+config NET_INGRESS
+	bool
+
+config NET_EGRESS
+	bool
+>>>>>>> v4.9.227
 
 menu "Networking options"
 
@@ -93,6 +101,7 @@ source "net/netlabel/Kconfig"
 
 endif # if INET
 
+<<<<<<< HEAD
 config ANDROID_PARANOID_NETWORK
 	bool "Only allow certain groups to create sockets"
 	default ANDROID
@@ -107,6 +116,8 @@ config NET_ACTIVITY_STATS
 	 modem activity on 2G, 3G, 4G wireless networks. Counts number of
 	 transmissions and groups them in specified time buckets.
 
+=======
+>>>>>>> v4.9.227
 config NETWORK_SECMARK
 	bool "Security Marking"
 	help
@@ -252,21 +263,36 @@ source "net/vmw_vsock/Kconfig"
 source "net/netlink/Kconfig"
 source "net/mpls/Kconfig"
 source "net/hsr/Kconfig"
+<<<<<<< HEAD
 source "net/rmnet_data/Kconfig"
 source "net/ncm/Kconfig"
 
 config RPS
 	boolean "RPS"
+=======
+source "net/switchdev/Kconfig"
+source "net/l3mdev/Kconfig"
+source "net/qrtr/Kconfig"
+source "net/ncsi/Kconfig"
+
+config RPS
+	bool
+>>>>>>> v4.9.227
 	depends on SMP && SYSFS
 	default y
 
 config RFS_ACCEL
+<<<<<<< HEAD
 	boolean
+=======
+	bool
+>>>>>>> v4.9.227
 	depends on RPS
 	select CPU_RMAP
 	default y
 
 config XPS
+<<<<<<< HEAD
 	boolean
 	depends on SMP
 	default y
@@ -274,40 +300,86 @@ config XPS
 config CGROUP_NET_PRIO
 	bool "Network priority cgroup"
 	depends on CGROUPS
+=======
+	bool
+	depends on SMP
+	default y
+
+config HWBM
+       bool
+
+config SOCK_CGROUP_DATA
+	bool
+	default n
+
+config CGROUP_NET_PRIO
+	bool "Network priority cgroup"
+	depends on CGROUPS
+	select SOCK_CGROUP_DATA
+>>>>>>> v4.9.227
 	---help---
 	  Cgroup subsystem for use in assigning processes to network priorities on
 	  a per-interface basis.
 
 config CGROUP_NET_CLASSID
+<<<<<<< HEAD
 	boolean "Network classid cgroup"
 	depends on CGROUPS
+=======
+	bool "Network classid cgroup"
+	depends on CGROUPS
+	select SOCK_CGROUP_DATA
+>>>>>>> v4.9.227
 	---help---
 	  Cgroup subsystem for use as general purpose socket classid marker that is
 	  being used in cls_cgroup and for netfilter matching.
 
 config NET_RX_BUSY_POLL
+<<<<<<< HEAD
 	boolean
 	default y
 
 config BQL
 	boolean
+=======
+	bool
+	default y
+
+config BQL
+	bool
+>>>>>>> v4.9.227
 	depends on SYSFS
 	select DQL
 	default y
 
 config BPF_JIT
 	bool "enable BPF Just In Time compiler"
+<<<<<<< HEAD
 	depends on HAVE_BPF_JIT
+=======
+	depends on HAVE_CBPF_JIT || HAVE_EBPF_JIT
+>>>>>>> v4.9.227
 	depends on MODULES
 	---help---
 	  Berkeley Packet Filter filtering capabilities are normally handled
 	  by an interpreter. This option allows kernel to generate a native
 	  code when filter is loaded in memory. This should speedup
+<<<<<<< HEAD
 	  packet sniffing (libpcap/tcpdump). Note : Admin should enable
 	  this feature changing /proc/sys/net/core/bpf_jit_enable
 
 config NET_FLOW_LIMIT
 	boolean
+=======
+	  packet sniffing (libpcap/tcpdump).
+
+	  Note, admin should enable this feature changing:
+	  /proc/sys/net/core/bpf_jit_enable
+	  /proc/sys/net/core/bpf_jit_harden (optional)
+
+config NET_FLOW_LIMIT
+	bool
+>>>>>>> v4.9.227
 	depends on RPS
 	default y
 	---help---
@@ -318,6 +390,7 @@ config NET_FLOW_LIMIT
 	  with many clients some protection against DoS by a single (spoofed)
 	  flow that greatly exceeds average workload.
 
+<<<<<<< HEAD
 config SOCKEV_NLMCAST
 	bool "Enable SOCKEV Netlink Multicast"
 	default n
@@ -327,6 +400,8 @@ config SOCKEV_NLMCAST
 	  user space entities need to be notified of socket events without
 	  having to poll /proc
 
+=======
+>>>>>>> v4.9.227
 menu "Network testing"
 
 config NET_PKTGEN
@@ -381,6 +456,11 @@ source "net/can/Kconfig"
 source "net/irda/Kconfig"
 source "net/bluetooth/Kconfig"
 source "net/rxrpc/Kconfig"
+<<<<<<< HEAD
+=======
+source "net/kcm/Kconfig"
+source "net/strparser/Kconfig"
+>>>>>>> v4.9.227
 
 config FIB_RULES
 	bool
@@ -404,6 +484,7 @@ source "net/9p/Kconfig"
 source "net/caif/Kconfig"
 source "net/ceph/Kconfig"
 source "net/nfc/Kconfig"
+<<<<<<< HEAD
 source "net/ipc_router/Kconfig"
 
 endif   # if NET
@@ -417,3 +498,47 @@ config NETPM
 	bool "Network Pacemaker"
 	---help---
 	This feature implements Network Pacemaker (NETPM)
+=======
+
+config LWTUNNEL
+	bool "Network light weight tunnels"
+	---help---
+	  This feature provides an infrastructure to support light weight
+	  tunnels like mpls. There is no netdevice associated with a light
+	  weight tunnel endpoint. Tunnel encapsulation parameters are stored
+	  with light weight tunnel state associated with fib routes.
+
+config DST_CACHE
+	bool
+	default n
+
+config NET_DEVLINK
+	tristate "Network physical/parent device Netlink interface"
+	help
+	  Network physical/parent device Netlink interface provides
+	  infrastructure to support access to physical chip-wide config and
+	  monitoring.
+
+config MAY_USE_DEVLINK
+	tristate
+	default m if NET_DEVLINK=m
+	default y if NET_DEVLINK=y || NET_DEVLINK=n
+	help
+	  Drivers using the devlink infrastructure should have a dependency
+	  on MAY_USE_DEVLINK to ensure they do not cause link errors when
+	  devlink is a loadable module and the driver using it is built-in.
+
+endif   # if NET
+
+# Used by archs to tell that they support BPF JIT compiler plus which flavour.
+# Only one of the two can be selected for a specific arch since eBPF JIT supersedes
+# the cBPF JIT.
+
+# Classic BPF JIT (cBPF)
+config HAVE_CBPF_JIT
+	bool
+
+# Extended BPF JIT (eBPF)
+config HAVE_EBPF_JIT
+	bool
+>>>>>>> v4.9.227

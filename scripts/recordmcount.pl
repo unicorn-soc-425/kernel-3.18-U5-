@@ -134,7 +134,13 @@ my %text_sections = (
      ".sched.text" => 1,
      ".spinlock.text" => 1,
      ".irqentry.text" => 1,
+<<<<<<< HEAD
      ".kprobes.text" => 1,
+=======
+     ".softirqentry.text" => 1,
+     ".kprobes.text" => 1,
+     ".cpuidle.text" => 1,
+>>>>>>> v4.9.227
      ".text.unlikely" => 1,
 );
 
@@ -242,8 +248,18 @@ if ($arch eq "x86_64") {
     $cc .= " -m32";
 
 } elsif ($arch eq "s390" && $bits == 64) {
+<<<<<<< HEAD
     $mcount_regex = "^\\s*([0-9a-fA-F]+):\\s*R_390_(PC|PLT)32DBL\\s+_mcount\\+0x2\$";
     $mcount_adjust = -8;
+=======
+    if ($cc =~ /-DCC_USING_HOTPATCH/) {
+	$mcount_regex = "^\\s*([0-9a-fA-F]+):\\s*c0 04 00 00 00 00\\s*brcl\\s*0,[0-9a-f]+ <([^\+]*)>\$";
+	$mcount_adjust = 0;
+    } else {
+	$mcount_regex = "^\\s*([0-9a-fA-F]+):\\s*R_390_(PC|PLT)32DBL\\s+_mcount\\+0x2\$";
+	$mcount_adjust = -14;
+    }
+>>>>>>> v4.9.227
     $alignment = 8;
     $type = ".quad";
     $ld .= " -m elf64_s390";
@@ -258,7 +274,12 @@ if ($arch eq "x86_64") {
 
 } elsif ($arch eq "powerpc") {
     $local_regex = "^[0-9a-fA-F]+\\s+t\\s+(\\.?\\S+)";
+<<<<<<< HEAD
     $function_regex = "^([0-9a-fA-F]+)\\s+<(\\.?.*?)>:";
+=======
+    # See comment in the sparc64 section for why we use '\w'.
+    $function_regex = "^([0-9a-fA-F]+)\\s+<(\\.?\\w*?)>:";
+>>>>>>> v4.9.227
     $mcount_regex = "^\\s*([0-9a-fA-F]+):.*\\s\\.?_mcount\$";
 
     if ($bits == 64) {

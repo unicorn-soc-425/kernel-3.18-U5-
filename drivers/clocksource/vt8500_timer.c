@@ -30,7 +30,10 @@
 #include <linux/clocksource.h>
 #include <linux/clockchips.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <asm/mach/time.h>
+=======
+>>>>>>> v4.9.227
 
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -50,6 +53,11 @@
 
 #define msecs_to_loops(t) (loops_per_jiffy / 1000 * HZ * t)
 
+<<<<<<< HEAD
+=======
+#define MIN_OSCR_DELTA		16
+
+>>>>>>> v4.9.227
 static void __iomem *regbase;
 
 static cycle_t vt8500_timer_read(struct clocksource *cs)
@@ -80,7 +88,11 @@ static int vt8500_timer_set_next_event(unsigned long cycles,
 		cpu_relax();
 	writel((unsigned long)alarm, regbase + TIMER_MATCH_VAL);
 
+<<<<<<< HEAD
 	if ((signed)(alarm - clocksource.read(&clocksource)) <= 16)
+=======
+	if ((signed)(alarm - clocksource.read(&clocksource)) <= MIN_OSCR_DELTA)
+>>>>>>> v4.9.227
 		return -ETIME;
 
 	writel(1, regbase + TIMER_IER_VAL);
@@ -88,6 +100,7 @@ static int vt8500_timer_set_next_event(unsigned long cycles,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void vt8500_timer_set_mode(enum clock_event_mode mode,
 			      struct clock_event_device *evt)
 {
@@ -111,6 +124,22 @@ static struct clock_event_device clockevent = {
 	.rating         = 200,
 	.set_next_event = vt8500_timer_set_next_event,
 	.set_mode       = vt8500_timer_set_mode,
+=======
+static int vt8500_shutdown(struct clock_event_device *evt)
+{
+	writel(readl(regbase + TIMER_CTRL_VAL) | 1, regbase + TIMER_CTRL_VAL);
+	writel(0, regbase + TIMER_IER_VAL);
+	return 0;
+}
+
+static struct clock_event_device clockevent = {
+	.name			= "vt8500_timer",
+	.features		= CLOCK_EVT_FEAT_ONESHOT,
+	.rating			= 200,
+	.set_next_event		= vt8500_timer_set_next_event,
+	.set_state_shutdown	= vt8500_shutdown,
+	.set_state_oneshot	= vt8500_shutdown,
+>>>>>>> v4.9.227
 };
 
 static irqreturn_t vt8500_timer_interrupt(int irq, void *dev_id)
@@ -129,27 +158,44 @@ static struct irqaction irq = {
 	.dev_id  = &clockevent,
 };
 
+<<<<<<< HEAD
 static void __init vt8500_timer_init(struct device_node *np)
 {
 	int timer_irq;
+=======
+static int __init vt8500_timer_init(struct device_node *np)
+{
+	int timer_irq, ret;
+>>>>>>> v4.9.227
 
 	regbase = of_iomap(np, 0);
 	if (!regbase) {
 		pr_err("%s: Missing iobase description in Device Tree\n",
 								__func__);
+<<<<<<< HEAD
 		return;
 	}
+=======
+		return -ENXIO;
+	}
+
+>>>>>>> v4.9.227
 	timer_irq = irq_of_parse_and_map(np, 0);
 	if (!timer_irq) {
 		pr_err("%s: Missing irq description in Device Tree\n",
 								__func__);
+<<<<<<< HEAD
 		return;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	writel(1, regbase + TIMER_CTRL_VAL);
 	writel(0xf, regbase + TIMER_STATUS_VAL);
 	writel(~0, regbase + TIMER_MATCH_VAL);
 
+<<<<<<< HEAD
 	if (clocksource_register_hz(&clocksource, VT8500_TIMER_HZ))
 		pr_err("%s: vt8500_timer_init: clocksource_register failed for %s\n",
 					__func__, clocksource.name);
@@ -161,6 +207,28 @@ static void __init vt8500_timer_init(struct device_node *np)
 							clockevent.name);
 	clockevents_config_and_register(&clockevent, VT8500_TIMER_HZ,
 					4, 0xf0000000);
+=======
+	ret = clocksource_register_hz(&clocksource, VT8500_TIMER_HZ);
+	if (ret) {
+		pr_err("%s: vt8500_timer_init: clocksource_register failed for %s\n",
+		       __func__, clocksource.name);
+		return ret;
+	}
+
+	clockevent.cpumask = cpumask_of(0);
+
+	ret = setup_irq(timer_irq, &irq);
+	if (ret) {
+		pr_err("%s: setup_irq failed for %s\n", __func__,
+							clockevent.name);
+		return ret;
+	}
+
+	clockevents_config_and_register(&clockevent, VT8500_TIMER_HZ,
+					MIN_OSCR_DELTA * 2, 0xf0000000);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 CLOCKSOURCE_OF_DECLARE(vt8500, "via,vt8500-timer", vt8500_timer_init);

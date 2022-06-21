@@ -28,9 +28,13 @@ IMPLEMENTATION OVERVIEW
 A cleancache "backend" that provides transcendent memory registers itself
 to the kernel's cleancache "frontend" by calling cleancache_register_ops,
 passing a pointer to a cleancache_ops structure with funcs set appropriately.
+<<<<<<< HEAD
 Note that cleancache_register_ops returns the previous settings so that
 chaining can be performed if desired. The functions provided must conform to
 certain semantics as follows:
+=======
+The functions provided must conform to certain semantics as follows:
+>>>>>>> v4.9.227
 
 Most important, cleancache is "ephemeral".  Pages which are copied into
 cleancache have an indefinite lifetime which is completely unknowable
@@ -85,7 +89,11 @@ lock the page to ensure serial behavior.
 CLEANCACHE PERFORMANCE METRICS
 
 If properly configured, monitoring of cleancache is done via debugfs in
+<<<<<<< HEAD
 the /sys/kernel/debug/mm/cleancache directory.  The effectiveness of cleancache
+=======
+the /sys/kernel/debug/cleancache directory.  The effectiveness of cleancache
+>>>>>>> v4.9.227
 can be measured (across all filesystems) with:
 
 succ_gets	- number of gets that were successful

@@ -22,8 +22,11 @@
 #include "xfs_format.h"
 #include "xfs_log_format.h"
 #include "xfs_trans_resv.h"
+<<<<<<< HEAD
 #include "xfs_sb.h"
 #include "xfs_ag.h"
+=======
+>>>>>>> v4.9.227
 #include "xfs_mount.h"
 #include "xfs_da_format.h"
 #include "xfs_da_btree.h"
@@ -42,8 +45,12 @@ xfs_dir2_sf_entsize(
 	int count = sizeof(struct xfs_dir2_sf_entry);	/* namelen + offset */
 
 	count += len;					/* name */
+<<<<<<< HEAD
 	count += hdr->i8count ? sizeof(xfs_dir2_ino8_t) :
 				sizeof(xfs_dir2_ino4_t); /* ino # */
+=======
+	count += hdr->i8count ? XFS_INO64_SIZE : XFS_INO32_SIZE; /* ino # */
+>>>>>>> v4.9.227
 	return count;
 }
 
@@ -127,33 +134,56 @@ xfs_dir3_sfe_put_ftype(
 static xfs_ino_t
 xfs_dir2_sf_get_ino(
 	struct xfs_dir2_sf_hdr	*hdr,
+<<<<<<< HEAD
 	xfs_dir2_inou_t		*from)
 {
 	if (hdr->i8count)
 		return get_unaligned_be64(&from->i8.i) & 0x00ffffffffffffffULL;
 	else
 		return get_unaligned_be32(&from->i4.i);
+=======
+	__uint8_t		*from)
+{
+	if (hdr->i8count)
+		return get_unaligned_be64(from) & 0x00ffffffffffffffULL;
+	else
+		return get_unaligned_be32(from);
+>>>>>>> v4.9.227
 }
 
 static void
 xfs_dir2_sf_put_ino(
 	struct xfs_dir2_sf_hdr	*hdr,
+<<<<<<< HEAD
 	xfs_dir2_inou_t		*to,
+=======
+	__uint8_t		*to,
+>>>>>>> v4.9.227
 	xfs_ino_t		ino)
 {
 	ASSERT((ino & 0xff00000000000000ULL) == 0);
 
 	if (hdr->i8count)
+<<<<<<< HEAD
 		put_unaligned_be64(ino, &to->i8.i);
 	else
 		put_unaligned_be32(ino, &to->i4.i);
+=======
+		put_unaligned_be64(ino, to);
+	else
+		put_unaligned_be32(ino, to);
+>>>>>>> v4.9.227
 }
 
 static xfs_ino_t
 xfs_dir2_sf_get_parent_ino(
 	struct xfs_dir2_sf_hdr	*hdr)
 {
+<<<<<<< HEAD
 	return xfs_dir2_sf_get_ino(hdr, &hdr->parent);
+=======
+	return xfs_dir2_sf_get_ino(hdr, hdr->parent);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -161,7 +191,11 @@ xfs_dir2_sf_put_parent_ino(
 	struct xfs_dir2_sf_hdr	*hdr,
 	xfs_ino_t		ino)
 {
+<<<<<<< HEAD
 	xfs_dir2_sf_put_ino(hdr, &hdr->parent, ino);
+=======
+	xfs_dir2_sf_put_ino(hdr, hdr->parent, ino);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -175,8 +209,12 @@ xfs_dir2_sfe_get_ino(
 	struct xfs_dir2_sf_hdr	*hdr,
 	struct xfs_dir2_sf_entry *sfep)
 {
+<<<<<<< HEAD
 	return xfs_dir2_sf_get_ino(hdr,
 				(xfs_dir2_inou_t *)&sfep->name[sfep->namelen]);
+=======
+	return xfs_dir2_sf_get_ino(hdr, &sfep->name[sfep->namelen]);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -185,8 +223,12 @@ xfs_dir2_sfe_put_ino(
 	struct xfs_dir2_sf_entry *sfep,
 	xfs_ino_t		ino)
 {
+<<<<<<< HEAD
 	xfs_dir2_sf_put_ino(hdr,
 			    (xfs_dir2_inou_t *)&sfep->name[sfep->namelen], ino);
+=======
+	xfs_dir2_sf_put_ino(hdr, &sfep->name[sfep->namelen], ino);
+>>>>>>> v4.9.227
 }
 
 static xfs_ino_t
@@ -194,8 +236,12 @@ xfs_dir3_sfe_get_ino(
 	struct xfs_dir2_sf_hdr	*hdr,
 	struct xfs_dir2_sf_entry *sfep)
 {
+<<<<<<< HEAD
 	return xfs_dir2_sf_get_ino(hdr,
 			(xfs_dir2_inou_t *)&sfep->name[sfep->namelen + 1]);
+=======
+	return xfs_dir2_sf_get_ino(hdr, &sfep->name[sfep->namelen + 1]);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -204,8 +250,12 @@ xfs_dir3_sfe_put_ino(
 	struct xfs_dir2_sf_entry *sfep,
 	xfs_ino_t		ino)
 {
+<<<<<<< HEAD
 	xfs_dir2_sf_put_ino(hdr,
 			(xfs_dir2_inou_t *)&sfep->name[sfep->namelen + 1], ino);
+=======
+	xfs_dir2_sf_put_ino(hdr, &sfep->name[sfep->namelen + 1], ino);
+>>>>>>> v4.9.227
 }
 
 

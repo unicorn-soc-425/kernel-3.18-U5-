@@ -37,8 +37,11 @@ extern void cifs_buf_release(void *);
 extern struct smb_hdr *cifs_small_buf_get(void);
 extern void cifs_small_buf_release(void *);
 extern void free_rsp_buf(int, void *);
+<<<<<<< HEAD
 extern void cifs_rqst_page_to_kvec(struct smb_rqst *rqst, unsigned int idx,
 					struct kvec *iov);
+=======
+>>>>>>> v4.9.227
 extern int smb_send(struct TCP_Server_Info *, struct smb_hdr *,
 			unsigned int /* length */);
 extern unsigned int _get_xid(void);
@@ -104,7 +107,11 @@ extern int SendReceiveBlockingLock(const unsigned int xid,
 			struct smb_hdr *out_buf,
 			int *bytes_returned);
 extern int cifs_reconnect(struct TCP_Server_Info *server);
+<<<<<<< HEAD
 extern int checkSMB(char *buf, unsigned int length);
+=======
+extern int checkSMB(char *buf, unsigned int len, struct TCP_Server_Info *srvr);
+>>>>>>> v4.9.227
 extern bool is_valid_oplock_break(char *, struct TCP_Server_Info *);
 extern bool backup_cred(struct cifs_sb_info *);
 extern bool is_size_safe_to_change(struct cifsInodeInfo *, __u64 eof);
@@ -140,6 +147,10 @@ extern int cifs_unlock_range(struct cifsFileInfo *cfile,
 			     struct file_lock *flock, const unsigned int xid);
 extern int cifs_push_mandatory_locks(struct cifsFileInfo *cfile);
 
+<<<<<<< HEAD
+=======
+extern void cifs_down_write(struct rw_semaphore *sem);
+>>>>>>> v4.9.227
 extern struct cifsFileInfo *cifs_new_fileinfo(struct cifs_fid *fid,
 					      struct file *file,
 					      struct tcon_link *tlink,
@@ -183,11 +194,18 @@ extern int set_cifs_acl(struct cifs_ntsd *, __u32, struct inode *,
 
 extern void dequeue_mid(struct mid_q_entry *mid, bool malformed);
 extern int cifs_read_from_socket(struct TCP_Server_Info *server, char *buf,
+<<<<<<< HEAD
 		     unsigned int to_read);
 extern int cifs_readv_from_socket(struct TCP_Server_Info *server,
 		struct kvec *iov_orig, unsigned int nr_segs,
 		unsigned int to_read);
 extern void cifs_setup_cifs_sb(struct smb_vol *pvolume_info,
+=======
+			         unsigned int to_read);
+extern int cifs_read_page_from_socket(struct TCP_Server_Info *server,
+				      struct page *page, unsigned int to_read);
+extern int cifs_setup_cifs_sb(struct smb_vol *pvolume_info,
+>>>>>>> v4.9.227
 			       struct cifs_sb_info *cifs_sb);
 extern int cifs_match_super(struct super_block *, void *);
 extern void cifs_cleanup_volume_info(struct smb_vol *pvolume_info);
@@ -196,6 +214,11 @@ extern struct smb_vol *cifs_get_volume_info(char *mount_data,
 extern int cifs_mount(struct cifs_sb_info *, struct smb_vol *);
 extern void cifs_umount(struct cifs_sb_info *);
 extern void cifs_mark_open_files_invalid(struct cifs_tcon *tcon);
+<<<<<<< HEAD
+=======
+extern void cifs_reopen_persistent_handles(struct cifs_tcon *tcon);
+
+>>>>>>> v4.9.227
 extern bool cifs_find_lock_conflict(struct cifsFileInfo *cfile, __u64 offset,
 				    __u64 length, __u8 type,
 				    struct cifsLockInfo **conf_lock,
@@ -366,11 +389,19 @@ extern int CIFSUnixCreateHardLink(const unsigned int xid,
 extern int CIFSUnixCreateSymLink(const unsigned int xid,
 			struct cifs_tcon *tcon,
 			const char *fromName, const char *toName,
+<<<<<<< HEAD
 			const struct nls_table *nls_codepage);
 extern int CIFSSMBUnixQuerySymLink(const unsigned int xid,
 			struct cifs_tcon *tcon,
 			const unsigned char *searchName, char **syminfo,
 			const struct nls_table *nls_codepage);
+=======
+			const struct nls_table *nls_codepage, int remap);
+extern int CIFSSMBUnixQuerySymLink(const unsigned int xid,
+			struct cifs_tcon *tcon,
+			const unsigned char *searchName, char **syminfo,
+			const struct nls_table *nls_codepage, int remap);
+>>>>>>> v4.9.227
 extern int CIFSSMBQuerySymLink(const unsigned int xid, struct cifs_tcon *tcon,
 			       __u16 fid, char **symlinkinfo,
 			       const struct nls_table *nls_codepage);
@@ -398,8 +429,12 @@ extern int CIFSSMBRead(const unsigned int xid, struct cifs_io_parms *io_parms,
 			unsigned int *nbytes, char **buf,
 			int *return_buf_type);
 extern int CIFSSMBWrite(const unsigned int xid, struct cifs_io_parms *io_parms,
+<<<<<<< HEAD
 			unsigned int *nbytes, const char *buf,
 			const char __user *ubuf, const int long_op);
+=======
+			unsigned int *nbytes, const char *buf);
+>>>>>>> v4.9.227
 extern int CIFSSMBWrite2(const unsigned int xid, struct cifs_io_parms *io_parms,
 			unsigned int *nbytes, struct kvec *iov, const int nvec);
 extern int CIFSGetSrvInodeNumber(const unsigned int xid, struct cifs_tcon *tcon,
@@ -444,7 +479,12 @@ extern int setup_ntlm_response(struct cifs_ses *, const struct nls_table *);
 extern int setup_ntlmv2_rsp(struct cifs_ses *, const struct nls_table *);
 extern void cifs_crypto_shash_release(struct TCP_Server_Info *);
 extern int calc_seckey(struct cifs_ses *);
+<<<<<<< HEAD
 extern int generate_smb3signingkey(struct cifs_ses *);
+=======
+extern int generate_smb30signingkey(struct cifs_ses *);
+extern int generate_smb311signingkey(struct cifs_ses *);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_CIFS_WEAK_PW_HASH
 extern int calc_lanman_hash(const char *password, const char *cryptkey,
@@ -516,4 +556,10 @@ int cifs_create_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 			   struct cifs_sb_info *cifs_sb,
 			   const unsigned char *path, char *pbuf,
 			   unsigned int *pbytes_written);
+<<<<<<< HEAD
+=======
+int __cifs_calc_signature(struct smb_rqst *rqst,
+			struct TCP_Server_Info *server, char *signature,
+			struct shash_desc *shash);
+>>>>>>> v4.9.227
 #endif			/* _CIFSPROTO_H */

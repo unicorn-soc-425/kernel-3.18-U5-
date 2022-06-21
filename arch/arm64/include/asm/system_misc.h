@@ -23,6 +23,11 @@
 #include <linux/compiler.h>
 #include <linux/linkage.h>
 #include <linux/irqflags.h>
+<<<<<<< HEAD
+=======
+#include <linux/signal.h>
+#include <linux/ratelimit.h>
+>>>>>>> v4.9.227
 #include <linux/reboot.h>
 
 struct pt_regs;
@@ -38,6 +43,7 @@ void hook_debug_fault_code(int nr, int (*fn)(unsigned long, unsigned int,
 			   int sig, int code, const char *name);
 
 struct mm_struct;
+<<<<<<< HEAD
 extern void show_pte(struct mm_struct *mm, unsigned long addr);
 extern void __show_regs(struct pt_regs *);
 
@@ -50,6 +56,23 @@ extern const char *machine_name;
 #define UDBG_BADABORT	(1 << 2)
 #define UDBG_SEGV	(1 << 3)
 #define UDBG_BUS	(1 << 4)
+=======
+extern void show_pte(unsigned long addr);
+extern void __show_regs(struct pt_regs *);
+
+extern void (*arm_pm_restart)(enum reboot_mode reboot_mode, const char *cmd);
+
+#define show_unhandled_signals_ratelimited()				\
+({									\
+	static DEFINE_RATELIMIT_STATE(_rs,				\
+				      DEFAULT_RATELIMIT_INTERVAL,	\
+				      DEFAULT_RATELIMIT_BURST);		\
+	bool __show_ratelimited = false;				\
+	if (show_unhandled_signals && __ratelimit(&_rs))		\
+		__show_ratelimited = true;				\
+	__show_ratelimited;						\
+})
+>>>>>>> v4.9.227
 
 #endif	/* __ASSEMBLY__ */
 

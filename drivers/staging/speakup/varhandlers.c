@@ -90,7 +90,11 @@ void speakup_register_var(struct var_t *var)
 	struct st_var_header *p_header;
 
 	BUG_ON(!var || var->var_id < 0 || var->var_id >= MAXVARS);
+<<<<<<< HEAD
 	if (var_ptrs[0] == NULL) {
+=======
+	if (!var_ptrs[0]) {
+>>>>>>> v4.9.227
 		for (i = 0; i < MAXVARS; i++) {
 			p_header = &var_headers[i];
 			var_ptrs[p_header->var_id] = p_header;
@@ -130,7 +134,11 @@ struct st_var_header *spk_get_var_header(enum var_id_t var_id)
 	if (var_id < 0 || var_id >= MAXVARS)
 		return NULL;
 	p_header = var_ptrs[var_id];
+<<<<<<< HEAD
 	if (p_header->data == NULL)
+=======
+	if (!p_header->data)
+>>>>>>> v4.9.227
 		return NULL;
 	return p_header;
 }
@@ -163,7 +171,11 @@ struct punc_var_t *spk_get_punc_var(enum var_id_t var_id)
 	struct punc_var_t *where;
 
 	where = punc_vars;
+<<<<<<< HEAD
 	while ((where->var_id != -1) && (rv == NULL)) {
+=======
+	while ((where->var_id != -1) && (!rv)) {
+>>>>>>> v4.9.227
 		if (where->var_id == var_id)
 			rv = where;
 		else
@@ -176,21 +188,34 @@ struct punc_var_t *spk_get_punc_var(enum var_id_t var_id)
 int spk_set_num_var(int input, struct st_var_header *var, int how)
 {
 	int val;
+<<<<<<< HEAD
 	short ret = 0;
+=======
+>>>>>>> v4.9.227
 	int *p_val = var->p_val;
 	int l;
 	char buf[32];
 	char *cp;
 	struct var_t *var_data = var->data;
 
+<<<<<<< HEAD
 	if (var_data == NULL)
 		return -ENODATA;
 
 	if (how == E_NEW_DEFAULT) {
+=======
+	if (!var_data)
+		return -ENODATA;
+
+	val = var_data->u.n.value;
+	switch (how) {
+	case E_NEW_DEFAULT:
+>>>>>>> v4.9.227
 		if (input < var_data->u.n.low || input > var_data->u.n.high)
 			return -ERANGE;
 		var_data->u.n.default_val = input;
 		return 0;
+<<<<<<< HEAD
 	}
 	if (how == E_DEFAULT) {
 		val = var_data->u.n.default_val;
@@ -211,16 +236,44 @@ int spk_set_num_var(int input, struct st_var_header *var, int how)
 	if (var->var_type == VAR_TIME && p_val != NULL) {
 		*p_val = msecs_to_jiffies(val);
 		return ret;
+=======
+	case E_DEFAULT:
+		val = var_data->u.n.default_val;
+		break;
+	case E_SET:
+		val = input;
+		break;
+	case E_INC:
+		val += input;
+		break;
+	case E_DEC:
+		val -= input;
+		break;
+	}
+
+	if (val < var_data->u.n.low || val > var_data->u.n.high)
+		return -ERANGE;
+
+	var_data->u.n.value = val;
+	if (var->var_type == VAR_TIME && p_val != NULL) {
+		*p_val = msecs_to_jiffies(val);
+		return 0;
+>>>>>>> v4.9.227
 	}
 	if (p_val != NULL)
 		*p_val = val;
 	if (var->var_id == PUNC_LEVEL) {
 		spk_punc_mask = spk_punc_masks[val];
+<<<<<<< HEAD
 		return ret;
+=======
+		return 0;
+>>>>>>> v4.9.227
 	}
 	if (var_data->u.n.multiplier != 0)
 		val *= var_data->u.n.multiplier;
 	val += var_data->u.n.offset;
+<<<<<<< HEAD
 	if (var->var_id < FIRST_SYNTH_VAR || synth == NULL)
 		return ret;
 	if (synth->synth_adjust != NULL) {
@@ -230,6 +283,15 @@ int spk_set_num_var(int input, struct st_var_header *var, int how)
 	}
 	if (!var_data->u.n.synth_fmt)
 		return ret;
+=======
+	if (var->var_id < FIRST_SYNTH_VAR || !synth)
+		return 0;
+	if (synth->synth_adjust)
+		return synth->synth_adjust(var);
+
+	if (!var_data->u.n.synth_fmt)
+		return 0;
+>>>>>>> v4.9.227
 	if (var->var_id == PITCH)
 		cp = spk_pitch_buff;
 	else
@@ -240,14 +302,22 @@ int spk_set_num_var(int input, struct st_var_header *var, int how)
 		l = sprintf(cp,
 			var_data->u.n.synth_fmt, var_data->u.n.out_str[val]);
 	synth_printf("%s", cp);
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 int spk_set_string_var(const char *page, struct st_var_header *var, int len)
 {
 	struct var_t *var_data = var->data;
 
+<<<<<<< HEAD
 	if (var_data == NULL)
+=======
+	if (!var_data)
+>>>>>>> v4.9.227
 		return -ENODATA;
 	if (len > MAXVARLEN)
 		return -E2BIG;
@@ -269,13 +339,22 @@ int spk_set_string_var(const char *page, struct st_var_header *var, int len)
 /* spk_set_mask_bits sets or clears the punc/delim/repeat bits,
  * if input is null uses the defaults.
  * values for how: 0 clears bits of chars supplied,
+<<<<<<< HEAD
  * 1 clears allk, 2 sets bits for chars */
+=======
+ * 1 clears allk, 2 sets bits for chars
+ */
+>>>>>>> v4.9.227
 int spk_set_mask_bits(const char *input, const int which, const int how)
 {
 	u_char *cp;
 	short mask = spk_punc_info[which].mask;
 
+<<<<<<< HEAD
 	if (how&1) {
+=======
+	if (how & 1) {
+>>>>>>> v4.9.227
 		for (cp = (u_char *)spk_punc_info[3].value; *cp; cp++)
 			spk_chartab[*cp] &= ~mask;
 	}
@@ -287,16 +366,26 @@ int spk_set_mask_bits(const char *input, const int which, const int how)
 			if (*cp < SPACE)
 				break;
 			if (mask < PUNC) {
+<<<<<<< HEAD
 				if (!(spk_chartab[*cp]&PUNC))
 					break;
 			} else if (spk_chartab[*cp]&B_NUM)
+=======
+				if (!(spk_chartab[*cp] & PUNC))
+					break;
+			} else if (spk_chartab[*cp] & B_NUM)
+>>>>>>> v4.9.227
 				break;
 		}
 		if (*cp)
 			return -EINVAL;
 		cp = (u_char *)input;
 	}
+<<<<<<< HEAD
 	if (how&2) {
+=======
+	if (how & 2) {
+>>>>>>> v4.9.227
 		for (; *cp; cp++)
 			if (*cp > SPACE)
 				spk_chartab[*cp] |= mask;
@@ -312,7 +401,11 @@ char *spk_strlwr(char *s)
 {
 	char *p;
 
+<<<<<<< HEAD
 	if (s == NULL)
+=======
+	if (!s)
+>>>>>>> v4.9.227
 		return NULL;
 
 	for (p = s; *p; p++)
@@ -322,7 +415,11 @@ char *spk_strlwr(char *s)
 
 char *spk_s2uchar(char *start, char *dest)
 {
+<<<<<<< HEAD
 	int val = 0;
+=======
+	int val;
+>>>>>>> v4.9.227
 
 	val = simple_strtoul(skip_spaces(start), &start, 10);
 	if (*start == ',')

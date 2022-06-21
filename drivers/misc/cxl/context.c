@@ -42,7 +42,11 @@ int cxl_context_init(struct cxl_context *ctx, struct cxl_afu *afu, bool master,
 	spin_lock_init(&ctx->sste_lock);
 	ctx->afu = afu;
 	ctx->master = master;
+<<<<<<< HEAD
 	ctx->pid = NULL; /* Set in start work ioctl */
+=======
+	ctx->pid = ctx->glpid = NULL; /* Set in start work ioctl */
+>>>>>>> v4.9.227
 	mutex_init(&ctx->mapping_lock);
 	ctx->mapping = mapping;
 
@@ -67,6 +71,12 @@ int cxl_context_init(struct cxl_context *ctx, struct cxl_afu *afu, bool master,
 	ctx->pending_fault = false;
 	ctx->pending_afu_err = false;
 
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&ctx->irq_names);
+	INIT_LIST_HEAD(&ctx->extra_irq_contexts);
+
+>>>>>>> v4.9.227
 	/*
 	 * When we have to destroy all contexts in cxl_context_detach_all() we
 	 * end up with afu_release_irqs() called from inside a
@@ -87,7 +97,11 @@ int cxl_context_init(struct cxl_context *ctx, struct cxl_afu *afu, bool master,
 	 */
 	mutex_lock(&afu->contexts_lock);
 	idr_preload(GFP_KERNEL);
+<<<<<<< HEAD
 	i = idr_alloc(&ctx->afu->contexts_idr, ctx, 0,
+=======
+	i = idr_alloc(&ctx->afu->contexts_idr, ctx, ctx->afu->adapter->min_pe,
+>>>>>>> v4.9.227
 		      ctx->afu->num_procs, GFP_NOWAIT);
 	idr_preload_end();
 	mutex_unlock(&afu->contexts_lock);
@@ -95,16 +109,88 @@ int cxl_context_init(struct cxl_context *ctx, struct cxl_afu *afu, bool master,
 		return i;
 
 	ctx->pe = i;
+<<<<<<< HEAD
 	ctx->elem = &ctx->afu->spa[i];
 	ctx->pe_inserted = false;
 	return 0;
 }
 
+=======
+	if (cpu_has_feature(CPU_FTR_HVMODE)) {
+		ctx->elem = &ctx->afu->native->spa[i];
+		ctx->external_pe = ctx->pe;
+	} else {
+		ctx->external_pe = -1; /* assigned when attaching */
+	}
+	ctx->pe_inserted = false;
+
+	/*
+	 * take a ref on the afu so that it stays alive at-least till
+	 * this context is reclaimed inside reclaim_ctx.
+	 */
+	cxl_afu_get(afu);
+	return 0;
+}
+
+static int cxl_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
+{
+	struct cxl_context *ctx = vma->vm_file->private_data;
+	unsigned long address = (unsigned long)vmf->virtual_address;
+	u64 area, offset;
+
+	offset = vmf->pgoff << PAGE_SHIFT;
+
+	pr_devel("%s: pe: %i address: 0x%lx offset: 0x%llx\n",
+			__func__, ctx->pe, address, offset);
+
+	if (ctx->afu->current_mode == CXL_MODE_DEDICATED) {
+		area = ctx->afu->psn_phys;
+		if (offset >= ctx->afu->adapter->ps_size)
+			return VM_FAULT_SIGBUS;
+	} else {
+		area = ctx->psn_phys;
+		if (offset >= ctx->psn_size)
+			return VM_FAULT_SIGBUS;
+	}
+
+	mutex_lock(&ctx->status_mutex);
+
+	if (ctx->status != STARTED) {
+		mutex_unlock(&ctx->status_mutex);
+		pr_devel("%s: Context not started, failing problem state access\n", __func__);
+		if (ctx->mmio_err_ff) {
+			if (!ctx->ff_page) {
+				ctx->ff_page = alloc_page(GFP_USER);
+				if (!ctx->ff_page)
+					return VM_FAULT_OOM;
+				memset(page_address(ctx->ff_page), 0xff, PAGE_SIZE);
+			}
+			get_page(ctx->ff_page);
+			vmf->page = ctx->ff_page;
+			vma->vm_page_prot = pgprot_cached(vma->vm_page_prot);
+			return 0;
+		}
+		return VM_FAULT_SIGBUS;
+	}
+
+	vm_insert_pfn(vma, address, (area + offset) >> PAGE_SHIFT);
+
+	mutex_unlock(&ctx->status_mutex);
+
+	return VM_FAULT_NOPAGE;
+}
+
+static const struct vm_operations_struct cxl_mmap_vmops = {
+	.fault = cxl_mmap_fault,
+};
+
+>>>>>>> v4.9.227
 /*
  * Map a per-context mmio space into the given vma.
  */
 int cxl_context_iomap(struct cxl_context *ctx, struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	u64 len = vma->vm_end - vma->vm_start;
 	len = min(len, ctx->psn_size);
 
@@ -122,12 +208,43 @@ int cxl_context_iomap(struct cxl_context *ctx, struct vm_area_struct *vma)
 	/* Can't mmap until the AFU is enabled */
 	if (!ctx->afu->enabled)
 		return -EBUSY;
+=======
+	u64 start = vma->vm_pgoff << PAGE_SHIFT;
+	u64 len = vma->vm_end - vma->vm_start;
+
+	if (ctx->afu->current_mode == CXL_MODE_DEDICATED) {
+		if (start + len > ctx->afu->adapter->ps_size)
+			return -EINVAL;
+	} else {
+		if (start + len > ctx->psn_size)
+			return -EINVAL;
+	}
+
+	if (ctx->afu->current_mode != CXL_MODE_DEDICATED) {
+		/* make sure there is a valid per process space for this AFU */
+		if ((ctx->master && !ctx->afu->psa) || (!ctx->afu->pp_psa)) {
+			pr_devel("AFU doesn't support mmio space\n");
+			return -EINVAL;
+		}
+
+		/* Can't mmap until the AFU is enabled */
+		if (!ctx->afu->enabled)
+			return -EBUSY;
+	}
+>>>>>>> v4.9.227
 
 	pr_devel("%s: mmio physical: %llx pe: %i master:%i\n", __func__,
 		 ctx->psn_phys, ctx->pe , ctx->master);
 
+<<<<<<< HEAD
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 	return vm_iomap_memory(vma, ctx->psn_phys, len);
+=======
+	vma->vm_flags |= VM_IO | VM_PFNMAP;
+	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+	vma->vm_ops = &cxl_mmap_vmops;
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -135,7 +252,11 @@ int cxl_context_iomap(struct cxl_context *ctx, struct vm_area_struct *vma)
  * return until all outstanding interrupts for this context have completed. The
  * hardware should no longer access *ctx after this has returned.
  */
+<<<<<<< HEAD
 static void __detach_context(struct cxl_context *ctx)
+=======
+int __detach_context(struct cxl_context *ctx)
+>>>>>>> v4.9.227
 {
 	enum cxl_context_status status;
 
@@ -144,6 +265,7 @@ static void __detach_context(struct cxl_context *ctx)
 	ctx->status = CLOSED;
 	mutex_unlock(&ctx->status_mutex);
 	if (status != STARTED)
+<<<<<<< HEAD
 		return;
 
 	WARN_ON(cxl_detach_process(ctx));
@@ -156,6 +278,33 @@ static void __detach_context(struct cxl_context *ctx)
 	if (ctx->mapping)
 		unmap_mapping_range(ctx->mapping, 0, 0, 1);
 	mutex_unlock(&ctx->mapping_lock);
+=======
+		return -EBUSY;
+
+	/* Only warn if we detached while the link was OK.
+	 * If detach fails when hw is down, we don't care.
+	 */
+	WARN_ON(cxl_ops->detach_process(ctx) &&
+		cxl_ops->link_ok(ctx->afu->adapter, ctx->afu));
+	flush_work(&ctx->fault_work); /* Only needed for dedicated process */
+
+	/*
+	 * Wait until no further interrupts are presented by the PSL
+	 * for this context.
+	 */
+	if (cxl_ops->irq_wait)
+		cxl_ops->irq_wait(ctx);
+
+	/* release the reference to the group leader and mm handling pid */
+	put_pid(ctx->pid);
+	put_pid(ctx->glpid);
+
+	cxl_ctx_put();
+
+	/* Decrease the attached context count on the adapter */
+	cxl_adapter_context_put(ctx->afu->adapter);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -166,7 +315,18 @@ static void __detach_context(struct cxl_context *ctx)
  */
 void cxl_context_detach(struct cxl_context *ctx)
 {
+<<<<<<< HEAD
 	__detach_context(ctx);
+=======
+	int rc;
+
+	rc = __detach_context(ctx);
+	if (rc)
+		return;
+
+	afu_release_irqs(ctx, ctx);
+	wake_up_all(&ctx->wq);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -183,16 +343,54 @@ void cxl_context_detach_all(struct cxl_afu *afu)
 		 * Anything done in here needs to be setup before the IDR is
 		 * created and torn down after the IDR removed
 		 */
+<<<<<<< HEAD
 		__detach_context(ctx);
+=======
+		cxl_context_detach(ctx);
+
+		/*
+		 * We are force detaching - remove any active PSA mappings so
+		 * userspace cannot interfere with the card if it comes back.
+		 * Easiest way to exercise this is to unbind and rebind the
+		 * driver via sysfs while it is in use.
+		 */
+		mutex_lock(&ctx->mapping_lock);
+		if (ctx->mapping)
+			unmap_mapping_range(ctx->mapping, 0, 0, 1);
+		mutex_unlock(&ctx->mapping_lock);
+>>>>>>> v4.9.227
 	}
 	mutex_unlock(&afu->contexts_lock);
 }
 
+<<<<<<< HEAD
+=======
+static void reclaim_ctx(struct rcu_head *rcu)
+{
+	struct cxl_context *ctx = container_of(rcu, struct cxl_context, rcu);
+
+	free_page((u64)ctx->sstp);
+	if (ctx->ff_page)
+		__free_page(ctx->ff_page);
+	ctx->sstp = NULL;
+	if (ctx->kernelapi)
+		kfree(ctx->mapping);
+
+	kfree(ctx->irq_bitmap);
+
+	/* Drop ref to the afu device taken during cxl_context_init */
+	cxl_afu_put(ctx->afu);
+
+	kfree(ctx);
+}
+
+>>>>>>> v4.9.227
 void cxl_context_free(struct cxl_context *ctx)
 {
 	mutex_lock(&ctx->afu->contexts_lock);
 	idr_remove(&ctx->afu->contexts_idr, ctx->pe);
 	mutex_unlock(&ctx->afu->contexts_lock);
+<<<<<<< HEAD
 	synchronize_rcu();
 
 	free_page((u64)ctx->sstp);
@@ -200,4 +398,7 @@ void cxl_context_free(struct cxl_context *ctx)
 
 	put_pid(ctx->pid);
 	kfree(ctx);
+=======
+	call_rcu(&ctx->rcu, reclaim_ctx);
+>>>>>>> v4.9.227
 }

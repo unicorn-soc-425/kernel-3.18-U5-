@@ -576,9 +576,13 @@ fail1:
 	pci_unregister_driver(&i82875p_driver);
 
 fail0:
+<<<<<<< HEAD
 	if (mci_pdev != NULL)
 		pci_dev_put(mci_pdev);
 
+=======
+	pci_dev_put(mci_pdev);
+>>>>>>> v4.9.227
 	return pci_rc;
 }
 

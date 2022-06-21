@@ -311,7 +311,11 @@ static void pppoe_flush_dev(struct net_device *dev)
 			lock_sock(sk);
 
 			if (po->pppoe_dev == dev &&
+<<<<<<< HEAD
 			    sk->sk_state & (PPPOX_CONNECTED | PPPOX_BOUND | PPPOX_ZOMBIE)) {
+=======
+			    sk->sk_state & (PPPOX_CONNECTED | PPPOX_BOUND)) {
+>>>>>>> v4.9.227
 				pppox_unbind_sock(sk);
 				sk->sk_state_change(sk);
 				po->pppoe_dev = NULL;
@@ -379,6 +383,12 @@ static int pppoe_rcv_core(struct sock *sk, struct sk_buff *skb)
 	 * can't change.
 	 */
 
+<<<<<<< HEAD
+=======
+	if (skb->pkt_type == PACKET_OTHERHOST)
+		goto abort_kfree;
+
+>>>>>>> v4.9.227
 	if (sk->sk_state & PPPOX_BOUND) {
 		ppp_input(&po->chan, skb);
 	} else if (sk->sk_state & PPPOX_RELAY) {
@@ -392,6 +402,11 @@ static int pppoe_rcv_core(struct sock *sk, struct sk_buff *skb)
 
 		if (!__pppoe_xmit(sk_pppox(relay_po), skb))
 			goto abort_put;
+<<<<<<< HEAD
+=======
+
+		sock_put(sk_pppox(relay_po));
+>>>>>>> v4.9.227
 	} else {
 		if (sock_queue_rcv_skb(sk, skb))
 			goto abort_kfree;
@@ -437,6 +452,10 @@ static int pppoe_rcv(struct sk_buff *skb, struct net_device *dev,
 	if (pskb_trim_rcsum(skb, len))
 		goto drop;
 
+<<<<<<< HEAD
+=======
+	ph = pppoe_hdr(skb);
+>>>>>>> v4.9.227
 	pn = pppoe_pernet(dev_net(dev));
 
 	/* Note that get_item does a sock_hold(), so sk_pppox(po)
@@ -454,6 +473,25 @@ out:
 	return NET_RX_DROP;
 }
 
+<<<<<<< HEAD
+=======
+static void pppoe_unbind_sock_work(struct work_struct *work)
+{
+	struct pppox_sock *po = container_of(work, struct pppox_sock,
+					     proto.pppoe.padt_work);
+	struct sock *sk = sk_pppox(po);
+
+	lock_sock(sk);
+	if (po->pppoe_dev) {
+		dev_put(po->pppoe_dev);
+		po->pppoe_dev = NULL;
+	}
+	pppox_unbind_sock(sk);
+	release_sock(sk);
+	sock_put(sk);
+}
+
+>>>>>>> v4.9.227
 /************************************************************************
  *
  * Receive a PPPoE Discovery frame.
@@ -472,6 +510,12 @@ static int pppoe_disc_rcv(struct sk_buff *skb, struct net_device *dev,
 	if (!skb)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	if (skb->pkt_type != PACKET_HOST)
+		goto abort;
+
+>>>>>>> v4.9.227
 	if (!pskb_may_pull(skb, sizeof(struct pppoe_hdr)))
 		goto abort;
 
@@ -481,6 +525,7 @@ static int pppoe_disc_rcv(struct sk_buff *skb, struct net_device *dev,
 
 	pn = pppoe_pernet(dev_net(dev));
 	po = get_item(pn, ph->sid, eth_hdr(skb)->h_source, dev->ifindex);
+<<<<<<< HEAD
 	if (po) {
 		struct sock *sk = sk_pppox(po);
 
@@ -501,6 +546,11 @@ static int pppoe_disc_rcv(struct sk_buff *skb, struct net_device *dev,
 		bh_unlock_sock(sk);
 		sock_put(sk);
 	}
+=======
+	if (po)
+		if (!schedule_work(&po->proto.pppoe.padt_work))
+			sock_put(sk_pppox(po));
+>>>>>>> v4.9.227
 
 abort:
 	kfree_skb(skb);
@@ -529,11 +579,19 @@ static struct proto pppoe_sk_proto __read_mostly = {
  * Initialize a new struct sock.
  *
  **********************************************************************/
+<<<<<<< HEAD
 static int pppoe_create(struct net *net, struct socket *sock)
 {
 	struct sock *sk;
 
 	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pppoe_sk_proto);
+=======
+static int pppoe_create(struct net *net, struct socket *sock, int kern)
+{
+	struct sock *sk;
+
+	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pppoe_sk_proto, kern);
+>>>>>>> v4.9.227
 	if (!sk)
 		return -ENOMEM;
 
@@ -548,6 +606,12 @@ static int pppoe_create(struct net *net, struct socket *sock)
 	sk->sk_family		= PF_PPPOX;
 	sk->sk_protocol		= PX_PROTO_OE;
 
+<<<<<<< HEAD
+=======
+	INIT_WORK(&pppox_sk(sk)->proto.pppoe.padt_work,
+		  pppoe_unbind_sock_work);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -645,8 +709,18 @@ static int pppoe_connect(struct socket *sock, struct sockaddr *uservaddr,
 			po->pppoe_dev = NULL;
 		}
 
+<<<<<<< HEAD
 		memset(sk_pppox(po) + 1, 0,
 		       sizeof(struct pppox_sock) - sizeof(struct sock));
+=======
+		po->pppoe_ifindex = 0;
+		memset(&po->pppoe_pa, 0, sizeof(po->pppoe_pa));
+		memset(&po->pppoe_relay, 0, sizeof(po->pppoe_relay));
+		memset(&po->chan, 0, sizeof(po->chan));
+		po->next = NULL;
+		po->num = 0;
+
+>>>>>>> v4.9.227
 		sk->sk_state = PPPOX_NONE;
 	}
 
@@ -775,7 +849,11 @@ static int pppoe_ioctl(struct socket *sock, unsigned int cmd,
 		struct pppox_sock *relay_po;
 
 		err = -EBUSY;
+<<<<<<< HEAD
 		if (sk->sk_state & (PPPOX_BOUND | PPPOX_ZOMBIE | PPPOX_DEAD))
+=======
+		if (sk->sk_state & (PPPOX_BOUND | PPPOX_DEAD))
+>>>>>>> v4.9.227
 			break;
 
 		err = -ENOTCONN;
@@ -823,8 +901,13 @@ static int pppoe_ioctl(struct socket *sock, unsigned int cmd,
 	return err;
 }
 
+<<<<<<< HEAD
 static int pppoe_sendmsg(struct kiocb *iocb, struct socket *sock,
 		  struct msghdr *m, size_t total_len)
+=======
+static int pppoe_sendmsg(struct socket *sock, struct msghdr *m,
+			 size_t total_len)
+>>>>>>> v4.9.227
 {
 	struct sk_buff *skb;
 	struct sock *sk = sock->sk;
@@ -873,7 +956,11 @@ static int pppoe_sendmsg(struct kiocb *iocb, struct socket *sock,
 	ph = (struct pppoe_hdr *)skb_put(skb, total_len + sizeof(struct pppoe_hdr));
 	start = (char *)&ph->tag[0];
 
+<<<<<<< HEAD
 	error = memcpy_fromiovec(start, m->msg_iov, total_len);
+=======
+	error = memcpy_from_msg(start, m, total_len);
+>>>>>>> v4.9.227
 	if (error < 0) {
 		kfree_skb(skb);
 		goto end;
@@ -966,8 +1053,13 @@ static const struct ppp_channel_ops pppoe_chan_ops = {
 	.start_xmit = pppoe_xmit,
 };
 
+<<<<<<< HEAD
 static int pppoe_recvmsg(struct kiocb *iocb, struct socket *sock,
 		  struct msghdr *m, size_t total_len, int flags)
+=======
+static int pppoe_recvmsg(struct socket *sock, struct msghdr *m,
+			 size_t total_len, int flags)
+>>>>>>> v4.9.227
 {
 	struct sock *sk = sock->sk;
 	struct sk_buff *skb;
@@ -985,7 +1077,11 @@ static int pppoe_recvmsg(struct kiocb *iocb, struct socket *sock,
 
 	if (skb) {
 		total_len = min_t(size_t, total_len, skb->len);
+<<<<<<< HEAD
 		error = skb_copy_datagram_iovec(skb, 0, m->msg_iov, total_len);
+=======
+		error = skb_copy_datagram_msg(skb, 0, m, total_len);
+>>>>>>> v4.9.227
 		if (error == 0) {
 			consume_skb(skb);
 			return total_len;
@@ -1121,6 +1217,12 @@ static const struct proto_ops pppoe_ops = {
 	.recvmsg	= pppoe_recvmsg,
 	.mmap		= sock_no_mmap,
 	.ioctl		= pppox_ioctl,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+	.compat_ioctl	= pppox_compat_ioctl,
+#endif
+>>>>>>> v4.9.227
 };
 
 static const struct pppox_proto pppoe_proto = {
@@ -1203,4 +1305,8 @@ module_exit(pppoe_exit);
 MODULE_AUTHOR("Michal Ostrowski <mostrows@speakeasy.net>");
 MODULE_DESCRIPTION("PPP over Ethernet driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_NETPROTO(PF_PPPOX);
+=======
+MODULE_ALIAS_NET_PF_PROTO(PF_PPPOX, PX_PROTO_OE);
+>>>>>>> v4.9.227

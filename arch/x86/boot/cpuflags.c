@@ -102,6 +102,10 @@ void get_cpuflags(void)
 			cpuid(0x1, &tfms, &ignored, &cpu.flags[4],
 			      &cpu.flags[0]);
 			cpu.level = (tfms >> 8) & 15;
+<<<<<<< HEAD
+=======
+			cpu.family = cpu.level;
+>>>>>>> v4.9.227
 			cpu.model = (tfms >> 4) & 15;
 			if (cpu.level >= 6)
 				cpu.model += ((tfms >> 16) & 0xf) << 4;

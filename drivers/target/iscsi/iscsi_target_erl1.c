@@ -22,7 +22,11 @@
 #include <target/target_core_fabric.h>
 #include <target/iscsi/iscsi_transport.h>
 
+<<<<<<< HEAD
 #include "iscsi_target_core.h"
+=======
+#include <target/iscsi/iscsi_target_core.h>
+>>>>>>> v4.9.227
 #include "iscsi_target_seq_pdu_list.h"
 #include "iscsi_target_datain_values.h"
 #include "iscsi_target_device.h"
@@ -160,8 +164,12 @@ static int iscsit_handle_r2t_snack(
 			" protocol error.\n", cmd->init_task_tag, begrun,
 			(begrun + runlength), cmd->acked_data_sn);
 
+<<<<<<< HEAD
 			return iscsit_reject_cmd(cmd,
 					ISCSI_REASON_PROTOCOL_ERROR, buf);
+=======
+		return iscsit_reject_cmd(cmd, ISCSI_REASON_PROTOCOL_ERROR, buf);
+>>>>>>> v4.9.227
 	}
 
 	if (runlength) {
@@ -628,8 +636,13 @@ int iscsit_dataout_datapduinorder_no_fbit(
 			if (cmd->pdu_list[i].seq_no == pdu->seq_no) {
 				if (!first_pdu)
 					first_pdu = &cmd->pdu_list[i];
+<<<<<<< HEAD
 				 xfer_len += cmd->pdu_list[i].length;
 				 pdu_count++;
+=======
+				xfer_len += cmd->pdu_list[i].length;
+				pdu_count++;
+>>>>>>> v4.9.227
 			} else if (pdu_count)
 				break;
 		}

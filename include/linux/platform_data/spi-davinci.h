@@ -49,6 +49,10 @@ struct davinci_spi_platform_data {
 	u8			num_chipselect;
 	u8			intr_line;
 	u8			*chip_sel;
+<<<<<<< HEAD
+=======
+	u8			prescaler_limit;
+>>>>>>> v4.9.227
 	bool			cshold_bug;
 	enum dma_event_q	dma_event_q;
 };

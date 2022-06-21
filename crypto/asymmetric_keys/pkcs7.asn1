@@ -1,14 +1,24 @@
 PKCS7ContentInfo ::= SEQUENCE {
+<<<<<<< HEAD
 	contentType	ContentType,
+=======
+	contentType	ContentType ({ pkcs7_check_content_type }),
+>>>>>>> v4.9.227
 	content		[0] EXPLICIT SignedData OPTIONAL
 }
 
 ContentType ::= OBJECT IDENTIFIER ({ pkcs7_note_OID })
 
 SignedData ::= SEQUENCE {
+<<<<<<< HEAD
 	version			INTEGER,
 	digestAlgorithms	DigestAlgorithmIdentifiers,
 	contentInfo		ContentInfo,
+=======
+	version			INTEGER ({ pkcs7_note_signeddata_version }),
+	digestAlgorithms	DigestAlgorithmIdentifiers,
+	contentInfo		ContentInfo ({ pkcs7_note_content }),
+>>>>>>> v4.9.227
 	certificates		CHOICE {
 		certSet		[0] IMPLICIT ExtendedCertificatesAndCertificates,
 		certSequence	[2] IMPLICIT Certificates
@@ -21,7 +31,11 @@ SignedData ::= SEQUENCE {
 }
 
 ContentInfo ::= SEQUENCE {
+<<<<<<< HEAD
 	contentType	ContentType,
+=======
+	contentType	ContentType ({ pkcs7_note_OID }),
+>>>>>>> v4.9.227
 	content		[0] EXPLICIT Data OPTIONAL
 }
 
@@ -68,8 +82,13 @@ SignerInfos ::= CHOICE {
 }
 
 SignerInfo ::= SEQUENCE {
+<<<<<<< HEAD
 	version			INTEGER,
 	issuerAndSerialNumber	IssuerAndSerialNumber,
+=======
+	version			INTEGER ({ pkcs7_note_signerinfo_version }),
+	sid			SignerIdentifier, -- CMS variant, not PKCS#7
+>>>>>>> v4.9.227
 	digestAlgorithm		DigestAlgorithmIdentifier ({ pkcs7_sig_note_digest_algo }),
 	authenticatedAttributes	CHOICE {
 		aaSet		[0] IMPLICIT SetOfAuthenticatedAttribute
@@ -88,6 +107,15 @@ SignerInfo ::= SEQUENCE {
 	} OPTIONAL
 } ({ pkcs7_note_signed_info })
 
+<<<<<<< HEAD
+=======
+SignerIdentifier ::= CHOICE {
+	-- RFC5652 sec 5.3
+	issuerAndSerialNumber IssuerAndSerialNumber,
+        subjectKeyIdentifier [0] IMPLICIT SubjectKeyIdentifier
+}
+
+>>>>>>> v4.9.227
 IssuerAndSerialNumber ::= SEQUENCE {
 	issuer			Name ({ pkcs7_sig_note_issuer }),
 	serialNumber		CertificateSerialNumber ({ pkcs7_sig_note_serial })
@@ -95,6 +123,11 @@ IssuerAndSerialNumber ::= SEQUENCE {
 
 CertificateSerialNumber ::= INTEGER
 
+<<<<<<< HEAD
+=======
+SubjectKeyIdentifier ::= OCTET STRING ({ pkcs7_sig_note_skid })
+
+>>>>>>> v4.9.227
 SetOfAuthenticatedAttribute ::= SET OF AuthenticatedAttribute
 
 AuthenticatedAttribute ::= SEQUENCE {
@@ -103,7 +136,11 @@ AuthenticatedAttribute ::= SEQUENCE {
 }
 
 UnauthenticatedAttribute ::= SEQUENCE {
+<<<<<<< HEAD
 	type			OBJECT IDENTIFIER ({ pkcs7_note_OID }),
+=======
+	type			OBJECT IDENTIFIER,
+>>>>>>> v4.9.227
 	values			SET OF ANY
 }
 

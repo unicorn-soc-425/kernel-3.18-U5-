@@ -551,7 +551,11 @@ static int dscc4_wait_ack_cec(struct dscc4_dev_priv *dpriv,
 			       msg, i);
 			goto done;
 		}
+<<<<<<< HEAD
 		schedule_timeout_uninterruptible(10);
+=======
+		schedule_timeout_uninterruptible(msecs_to_jiffies(100));
+>>>>>>> v4.9.227
 		rmb();
 	} while (++i > 0);
 	netdev_err(dev, "%s timeout\n", msg);
@@ -596,7 +600,11 @@ static inline int dscc4_xpr_ack(struct dscc4_dev_priv *dpriv)
 		    (dpriv->iqtx[cur] & cpu_to_le32(Xpr)))
 			break;
 		smp_rmb();
+<<<<<<< HEAD
 		schedule_timeout_uninterruptible(10);
+=======
+		schedule_timeout_uninterruptible(msecs_to_jiffies(100));
+>>>>>>> v4.9.227
 	} while (++i > 0);
 
 	return (i >= 0 ) ? i : -EAGAIN;
@@ -1033,7 +1041,11 @@ static void dscc4_pci_reset(struct pci_dev *pdev, void __iomem *ioaddr)
 	/* Flush posted writes */
 	readl(ioaddr + GSTAR);
 
+<<<<<<< HEAD
 	schedule_timeout_uninterruptible(10);
+=======
+	schedule_timeout_uninterruptible(msecs_to_jiffies(100));
+>>>>>>> v4.9.227
 
 	for (i = 0; i < 16; i++)
 		pci_write_config_dword(pdev, i << 2, dscc4_pci_config_store[i]);
@@ -1046,7 +1058,10 @@ static void dscc4_pci_reset(struct pci_dev *pdev, void __iomem *ioaddr)
 static int dscc4_open(struct net_device *dev)
 {
 	struct dscc4_dev_priv *dpriv = dscc4_priv(dev);
+<<<<<<< HEAD
 	struct dscc4_pci_priv *ppriv;
+=======
+>>>>>>> v4.9.227
 	int ret = -EAGAIN;
 
 	if ((dscc4_loopback_check(dpriv) < 0))
@@ -1055,8 +1070,11 @@ static int dscc4_open(struct net_device *dev)
 	if ((ret = hdlc_open(dev)))
 		goto err;
 
+<<<<<<< HEAD
 	ppriv = dpriv->pci_priv;
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * Due to various bugs, there is no way to reliably reset a
 	 * specific port (manufacturer's dependent special PCI #RST wiring
@@ -1629,7 +1647,11 @@ try:
 		if (state & Xpr) {
 			void __iomem *scc_addr;
 			unsigned long ring;
+<<<<<<< HEAD
 			int i;
+=======
+			unsigned int i;
+>>>>>>> v4.9.227
 
 			/*
 			 * - the busy condition happens (sometimes);

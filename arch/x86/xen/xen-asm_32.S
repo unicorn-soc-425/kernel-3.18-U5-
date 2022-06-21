@@ -35,6 +35,7 @@ check_events:
 	ret
 
 /*
+<<<<<<< HEAD
  * We can't use sysexit directly, because we're not running in ring0.
  * But we can easily fake it up using iret.  Assuming xen_sysexit is
  * jumped to with a standard stack frame, we can just strip it back to
@@ -49,6 +50,8 @@ ENTRY(xen_sysexit)
 ENDPROC(xen_sysexit)
 
 /*
+=======
+>>>>>>> v4.9.227
  * This is run where a normal iret would be run, with the same stack setup:
  *	8: eflags
  *	4: cs

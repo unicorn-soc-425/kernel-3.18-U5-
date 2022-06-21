@@ -14,6 +14,10 @@
 #include <asm/asm-offsets.h>
 #include <asm/percpu.h>
 #include <asm/processor-flags.h>
+<<<<<<< HEAD
+=======
+#include <asm/frame.h>
+>>>>>>> v4.9.227
 
 #include "xen-asm.h"
 
@@ -23,6 +27,10 @@
  * then enter the hypervisor to get them handled.
  */
 ENTRY(xen_irq_enable_direct)
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 	/* Unmask events */
 	movb $0, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
 
@@ -39,6 +47,10 @@ ENTRY(xen_irq_enable_direct)
 2:	call check_events
 1:
 ENDPATCH(xen_irq_enable_direct)
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret
 	ENDPROC(xen_irq_enable_direct)
 	RELOC(xen_irq_enable_direct, 2b+1)
@@ -82,6 +94,10 @@ ENDPATCH(xen_save_fl_direct)
  * enters the hypervisor to get them delivered if so.
  */
 ENTRY(xen_restore_fl_direct)
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 #ifdef CONFIG_X86_64
 	testw $X86_EFLAGS_IF, %di
 #else
@@ -100,6 +116,10 @@ ENTRY(xen_restore_fl_direct)
 2:	call check_events
 1:
 ENDPATCH(xen_restore_fl_direct)
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret
 	ENDPROC(xen_restore_fl_direct)
 	RELOC(xen_restore_fl_direct, 2b+1)
@@ -109,7 +129,12 @@ ENDPATCH(xen_restore_fl_direct)
  * Force an event check by making a hypercall, but preserve regs
  * before making the call.
  */
+<<<<<<< HEAD
 check_events:
+=======
+ENTRY(check_events)
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 #ifdef CONFIG_X86_32
 	push %eax
 	push %ecx
@@ -139,4 +164,10 @@ check_events:
 	pop %rcx
 	pop %rax
 #endif
+<<<<<<< HEAD
 	ret
+=======
+	FRAME_END
+	ret
+ENDPROC(check_events)
+>>>>>>> v4.9.227

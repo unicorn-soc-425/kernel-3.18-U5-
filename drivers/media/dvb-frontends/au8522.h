@@ -22,7 +22,10 @@
 #ifndef __AU8522_H__
 #define __AU8522_H__
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/dvb/frontend.h>
 
 enum au8522_if_freq {
@@ -89,6 +92,7 @@ enum au8522_audio_input {
 	AU8522_AUDIO_NONE,
 	AU8522_AUDIO_SIF,
 };
+<<<<<<< HEAD
 
 #endif /* __AU8522_H__ */
 
@@ -96,3 +100,6 @@ enum au8522_audio_input {
  * Local variables:
  * c-basic-offset: 8
  */
+=======
+#endif /* __AU8522_H__ */
+>>>>>>> v4.9.227

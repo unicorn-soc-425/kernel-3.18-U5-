@@ -11,7 +11,13 @@
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/clkdev.h>
+#include <linux/gpio.h>
+#include <linux/gpio/machine.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -45,6 +51,7 @@
 
 #include <asm/hardware/sa1111.h>
 
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
 #include <mach/audio.h>
 #include <mach/lubbock.h>
@@ -57,6 +64,19 @@
 
 #include "generic.h"
 #include "clock.h"
+=======
+#include "pxa25x.h"
+#include <mach/audio.h>
+#include <mach/lubbock.h>
+#include "udc.h"
+#include <linux/platform_data/irda-pxaficp.h>
+#include <linux/platform_data/video-pxafb.h>
+#include <linux/platform_data/mmc-pxamci.h>
+#include "pm.h"
+#include <mach/smemc.h>
+
+#include "generic.h"
+>>>>>>> v4.9.227
 #include "devices.h"
 
 static unsigned long lubbock_pin_config[] __initdata = {
@@ -101,6 +121,12 @@ static unsigned long lubbock_pin_config[] __initdata = {
 	GPIO6_MMC_CLK,
 	GPIO8_MMC_CS0,
 
+<<<<<<< HEAD
+=======
+	/* SA1111 chip */
+	GPIO11_3_6MHz,
+
+>>>>>>> v4.9.227
 	/* wakeup */
 	GPIO1_GPIO | WAKEUP_ON_EDGE_RISE,
 };
@@ -123,6 +149,7 @@ void lubbock_set_misc_wr(unsigned int mask, unsigned int set)
 }
 EXPORT_SYMBOL(lubbock_set_misc_wr);
 
+<<<<<<< HEAD
 static unsigned long lubbock_irq_enabled;
 
 static void lubbock_mask_irq(struct irq_data *d)
@@ -201,6 +228,8 @@ device_initcall(lubbock_irq_device_init);
 
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int lubbock_udc_is_connected(void)
 {
 	return (LUB_MISC_RD & (1 << 9)) == 0;
@@ -211,6 +240,21 @@ static struct pxa2xx_udc_mach_info udc_info __initdata = {
 	// no D+ pullup; lubbock can't connect/disconnect in software
 };
 
+<<<<<<< HEAD
+=======
+static void lubbock_init_pcmcia(void)
+{
+	struct clk *clk;
+
+	/* Add an alias for the SA1111 PCMCIA clock */
+	clk = clk_get_sys("pxa2xx-pcmcia", NULL);
+	if (!IS_ERR(clk)) {
+		clkdev_create(clk, NULL, "1800");
+		clk_put(clk);
+	}
+}
+
+>>>>>>> v4.9.227
 static struct resource sa1111_resources[] = {
 	[0] = {
 		.start	= 0x10000000,
@@ -383,11 +427,44 @@ static struct platform_device lubbock_flash_device[2] = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+static struct resource lubbock_cplds_resources[] = {
+	[0] = {
+		.start	= LUBBOCK_FPGA_PHYS + 0xc0,
+		.end	= LUBBOCK_FPGA_PHYS + 0xe0 - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	[1] = {
+		.start	= PXA_GPIO_TO_IRQ(0),
+		.end	= PXA_GPIO_TO_IRQ(0),
+		.flags	= IORESOURCE_IRQ | IORESOURCE_IRQ_LOWEDGE,
+	},
+	[2] = {
+		.start	= LUBBOCK_IRQ(0),
+		.end	= LUBBOCK_IRQ(6),
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+static struct platform_device lubbock_cplds_device = {
+	.name		= "pxa_cplds_irqs",
+	.id		= -1,
+	.resource	= &lubbock_cplds_resources[0],
+	.num_resources	= 3,
+};
+
+
+>>>>>>> v4.9.227
 static struct platform_device *devices[] __initdata = {
 	&sa1111_device,
 	&smc91x_device,
 	&lubbock_flash_device[0],
 	&lubbock_flash_device[1],
+<<<<<<< HEAD
+=======
+	&lubbock_cplds_device,
+>>>>>>> v4.9.227
 };
 
 static struct pxafb_mode_info sharp_lm8v31_mode = {
@@ -514,6 +591,11 @@ static void __init lubbock_init(void)
 	pxa_set_btuart_info(NULL);
 	pxa_set_stuart_info(NULL);
 
+<<<<<<< HEAD
+=======
+	lubbock_init_pcmcia();
+
+>>>>>>> v4.9.227
 	clk_add_alias("SA1111_CLK", NULL, "GPIO11_CLK", NULL);
 	pxa_set_udc_info(&udc_info);
 	pxa_set_fb_info(NULL, &sharp_lm8v31);
@@ -648,7 +730,11 @@ MACHINE_START(LUBBOCK, "Intel DBPXA250 Development Platform (aka Lubbock)")
 	/* Maintainer: MontaVista Software Inc. */
 	.map_io		= lubbock_map_io,
 	.nr_irqs	= LUBBOCK_NR_IRQS,
+<<<<<<< HEAD
 	.init_irq	= lubbock_init_irq,
+=======
+	.init_irq	= pxa25x_init_irq,
+>>>>>>> v4.9.227
 	.handle_irq	= pxa25x_handle_irq,
 	.init_time	= pxa_timer_init,
 	.init_machine	= lubbock_init,

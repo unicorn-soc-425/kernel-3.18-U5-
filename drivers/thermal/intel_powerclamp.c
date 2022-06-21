@@ -119,7 +119,11 @@ exit:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops duration_ops = {
+=======
+static const struct kernel_param_ops duration_ops = {
+>>>>>>> v4.9.227
 	.set = duration_set,
 	.get = param_get_int,
 };
@@ -167,7 +171,11 @@ exit_win:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops window_size_ops = {
+=======
+static const struct kernel_param_ops window_size_ops = {
+>>>>>>> v4.9.227
 	.set = window_size_set,
 	.get = param_get_int,
 };
@@ -206,6 +214,7 @@ static void find_target_mwait(void)
 
 }
 
+<<<<<<< HEAD
 static bool has_pkg_state_counter(void)
 {
 	u64 tmp;
@@ -213,12 +222,50 @@ static bool has_pkg_state_counter(void)
 	       !rdmsrl_safe(MSR_PKG_C3_RESIDENCY, &tmp) ||
 	       !rdmsrl_safe(MSR_PKG_C6_RESIDENCY, &tmp) ||
 	       !rdmsrl_safe(MSR_PKG_C7_RESIDENCY, &tmp);
+=======
+struct pkg_cstate_info {
+	bool skip;
+	int msr_index;
+	int cstate_id;
+};
+
+#define PKG_CSTATE_INIT(id) {				\
+		.msr_index = MSR_PKG_C##id##_RESIDENCY, \
+		.cstate_id = id				\
+			}
+
+static struct pkg_cstate_info pkg_cstates[] = {
+	PKG_CSTATE_INIT(2),
+	PKG_CSTATE_INIT(3),
+	PKG_CSTATE_INIT(6),
+	PKG_CSTATE_INIT(7),
+	PKG_CSTATE_INIT(8),
+	PKG_CSTATE_INIT(9),
+	PKG_CSTATE_INIT(10),
+	{NULL},
+};
+
+static bool has_pkg_state_counter(void)
+{
+	u64 val;
+	struct pkg_cstate_info *info = pkg_cstates;
+
+	/* check if any one of the counter msrs exists */
+	while (info->msr_index) {
+		if (!rdmsrl_safe(info->msr_index, &val))
+			return true;
+		info++;
+	}
+
+	return false;
+>>>>>>> v4.9.227
 }
 
 static u64 pkg_state_counter(void)
 {
 	u64 val;
 	u64 count = 0;
+<<<<<<< HEAD
 
 	static bool skip_c2;
 	static bool skip_c3;
@@ -251,6 +298,18 @@ static u64 pkg_state_counter(void)
 			count += val;
 		else
 			skip_c7 = true;
+=======
+	struct pkg_cstate_info *info = pkg_cstates;
+
+	while (info->msr_index) {
+		if (!info->skip) {
+			if (!rdmsrl_safe(info->msr_index, &val))
+				count += val;
+			else
+				info->skip = true;
+		}
+		info++;
+>>>>>>> v4.9.227
 	}
 
 	return count;
@@ -334,7 +393,11 @@ static bool powerclamp_adjust_controls(unsigned int target_ratio,
 
 	/* check result for the last window */
 	msr_now = pkg_state_counter();
+<<<<<<< HEAD
 	rdtscll(tsc_now);
+=======
+	tsc_now = rdtsc();
+>>>>>>> v4.9.227
 
 	/* calculate pkg cstate vs tsc ratio */
 	if (!msr_last || !tsc_last)
@@ -382,7 +445,11 @@ static int clamp_thread(void *arg)
 		int sleeptime;
 		unsigned long target_jiffies;
 		unsigned int guard;
+<<<<<<< HEAD
 		unsigned int compensation = 0;
+=======
+		unsigned int compensated_ratio;
+>>>>>>> v4.9.227
 		int interval; /* jiffies to sleep for each attempt */
 		unsigned int duration_jiffies = msecs_to_jiffies(duration);
 		unsigned int window_size_now;
@@ -403,8 +470,16 @@ static int clamp_thread(void *arg)
 		 * c-states, thus we need to compensate the injected idle ratio
 		 * to achieve the actual target reported by the HW.
 		 */
+<<<<<<< HEAD
 		compensation = get_compensation(target_ratio);
 		interval = duration_jiffies*100/(target_ratio+compensation);
+=======
+		compensated_ratio = target_ratio +
+			get_compensation(target_ratio);
+		if (compensated_ratio <= 0)
+			compensated_ratio = 1;
+		interval = duration_jiffies * 100 / compensated_ratio;
+>>>>>>> v4.9.227
 
 		/* align idle time */
 		target_jiffies = roundup(jiffies, interval);
@@ -476,7 +551,11 @@ static void poll_pkg_cstate(struct work_struct *dummy)
 	u64 val64;
 
 	msr_now = pkg_state_counter();
+<<<<<<< HEAD
 	rdtscll(tsc_now);
+=======
+	tsc_now = rdtsc();
+>>>>>>> v4.9.227
 	jiffies_now = jiffies;
 
 	/* calculate pkg cstate vs tsc ratio */
@@ -504,12 +583,15 @@ static int start_power_clamp(void)
 	unsigned long cpu;
 	struct task_struct *thread;
 
+<<<<<<< HEAD
 	/* check if pkg cstate counter is completely 0, abort in this case */
 	if (!has_pkg_state_counter()) {
 		pr_err("pkg cstate counter not functional, abort\n");
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> v4.9.227
 	set_target_ratio = clamp(set_target_ratio, 0U, MAX_TARGET_RATIO - 1);
 	/* prevent cpu hotplug */
 	get_online_cpus();
@@ -647,8 +729,13 @@ static int powerclamp_set_cur_state(struct thermal_cooling_device *cdev,
 		goto exit_set;
 	} else	if (set_target_ratio > 0 && new_target_ratio == 0) {
 		pr_info("Stop forced idle injection\n");
+<<<<<<< HEAD
 		set_target_ratio = 0;
 		end_power_clamp();
+=======
+		end_power_clamp();
+		set_target_ratio = 0;
+>>>>>>> v4.9.227
 	} else	/* adjust currently running */ {
 		set_target_ratio = new_target_ratio;
 		/* make new set_target_ratio visible to other cpus */
@@ -666,6 +753,7 @@ static struct thermal_cooling_device_ops powerclamp_cooling_ops = {
 	.set_cur_state = powerclamp_set_cur_state,
 };
 
+<<<<<<< HEAD
 /* runs on Nehalem and later */
 static const struct x86_cpu_id intel_powerclamp_ids[] = {
 	{ X86_VENDOR_INTEL, 6, 0x1a},
@@ -687,10 +775,15 @@ static const struct x86_cpu_id intel_powerclamp_ids[] = {
 	{ X86_VENDOR_INTEL, 6, 0x3f},
 	{ X86_VENDOR_INTEL, 6, 0x45},
 	{ X86_VENDOR_INTEL, 6, 0x46},
+=======
+static const struct x86_cpu_id __initconst intel_powerclamp_ids[] = {
+	{ X86_VENDOR_INTEL, X86_FAMILY_ANY, X86_MODEL_ANY, X86_FEATURE_MWAIT },
+>>>>>>> v4.9.227
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, intel_powerclamp_ids);
 
+<<<<<<< HEAD
 static int powerclamp_probe(void)
 {
 	if (!x86_match_cpu(intel_powerclamp_ids)) {
@@ -703,6 +796,21 @@ static int powerclamp_probe(void)
 		!boot_cpu_has(X86_FEATURE_MWAIT) ||
 		!boot_cpu_has(X86_FEATURE_ARAT))
 		return -ENODEV;
+=======
+static int __init powerclamp_probe(void)
+{
+
+	if (!x86_match_cpu(intel_powerclamp_ids)) {
+		pr_err("CPU does not support MWAIT");
+		return -ENODEV;
+	}
+
+	/* The goal for idle time alignment is to achieve package cstate. */
+	if (!has_pkg_state_counter()) {
+		pr_info("No package C-state available");
+		return -ENODEV;
+	}
+>>>>>>> v4.9.227
 
 	/* find the deepest mwait value */
 	find_target_mwait();
@@ -757,7 +865,11 @@ file_error:
 	debugfs_remove_recursive(debug_dir);
 }
 
+<<<<<<< HEAD
 static int powerclamp_init(void)
+=======
+static int __init powerclamp_init(void)
+>>>>>>> v4.9.227
 {
 	int retval;
 	int bitmap_size;
@@ -806,7 +918,11 @@ exit_free:
 }
 module_init(powerclamp_init);
 
+<<<<<<< HEAD
 static void powerclamp_exit(void)
+=======
+static void __exit powerclamp_exit(void)
+>>>>>>> v4.9.227
 {
 	unregister_hotcpu_notifier(&powerclamp_cpu_notifier);
 	end_power_clamp();

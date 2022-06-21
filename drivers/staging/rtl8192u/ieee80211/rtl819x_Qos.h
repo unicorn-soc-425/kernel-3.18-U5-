@@ -1,6 +1,7 @@
 #ifndef __INC_QOS_TYPE_H
 #define __INC_QOS_TYPE_H
 
+<<<<<<< HEAD
 #define BIT0                    0x00000001
 #define BIT1                    0x00000002
 #define BIT2                    0x00000004
@@ -34,6 +35,8 @@
 #define BIT30                   0x40000000
 #define BIT31                   0x80000000
 
+=======
+>>>>>>> v4.9.227
 #define	MAX_WMMELE_LENGTH	64
 
 //
@@ -375,6 +378,7 @@ typedef struct _ACM{
 
 typedef	u8		AC_UAPSD, *PAC_UAPSD;
 
+<<<<<<< HEAD
 #define	GET_VO_UAPSD(_apsd) ((_apsd) & BIT0)
 #define	SET_VO_UAPSD(_apsd) ((_apsd) |= BIT0)
 
@@ -386,6 +390,19 @@ typedef	u8		AC_UAPSD, *PAC_UAPSD;
 
 #define	GET_BE_UAPSD(_apsd) ((_apsd) & BIT3)
 #define	SET_BE_UAPSD(_apsd) ((_apsd) |= BIT3)
+=======
+#define	GET_VO_UAPSD(_apsd) ((_apsd) & BIT(0))
+#define	SET_VO_UAPSD(_apsd) ((_apsd) |= BIT(0))
+
+#define	GET_VI_UAPSD(_apsd) ((_apsd) & BIT(1))
+#define	SET_VI_UAPSD(_apsd) ((_apsd) |= BIT(1))
+
+#define	GET_BK_UAPSD(_apsd) ((_apsd) & BIT(2))
+#define	SET_BK_UAPSD(_apsd) ((_apsd) |= BIT(2))
+
+#define	GET_BE_UAPSD(_apsd) ((_apsd) & BIT(3))
+#define	SET_BE_UAPSD(_apsd) ((_apsd) |= BIT(3))
+>>>>>>> v4.9.227
 
 
 //typedef struct _TCLASS{

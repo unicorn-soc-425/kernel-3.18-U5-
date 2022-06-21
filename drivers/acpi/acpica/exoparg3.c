@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -95,10 +99,18 @@ acpi_status acpi_ex_opcode_3A_0T_0R(struct acpi_walk_state *walk_state)
 	case AML_FATAL_OP:	/* Fatal (fatal_type fatal_code fatal_arg) */
 
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+<<<<<<< HEAD
 				  "FatalOp: Type %X Code %X Arg %X <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
 				  (u32) operand[0]->integer.value,
 				  (u32) operand[1]->integer.value,
 				  (u32) operand[2]->integer.value));
+=======
+				  "FatalOp: Type %X Code %X Arg %X "
+				  "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+				  (u32)operand[0]->integer.value,
+				  (u32)operand[1]->integer.value,
+				  (u32)operand[2]->integer.value));
+>>>>>>> v4.9.227
 
 		fatal = ACPI_ALLOCATE(sizeof(struct acpi_signal_fatal_info));
 		if (fatal) {
@@ -114,12 +126,33 @@ acpi_status acpi_ex_opcode_3A_0T_0R(struct acpi_walk_state *walk_state)
 		/* Might return while OS is shutting down, just continue */
 
 		ACPI_FREE(fatal);
+<<<<<<< HEAD
 		break;
+=======
+		goto cleanup;
+
+	case AML_EXTERNAL_OP:
+		/*
+		 * If the interpreter sees this opcode, just ignore it. The External
+		 * op is intended for use by disassemblers in order to properly
+		 * disassemble control method invocations. The opcode or group of
+		 * opcodes should be surrounded by an "if (0)" clause to ensure that
+		 * AML interpreters never see the opcode. Thus, something is
+		 * wrong if an external opcode ever gets here.
+		 */
+		ACPI_ERROR((AE_INFO, "Executed External Op"));
+		status = AE_OK;
+		goto cleanup;
+>>>>>>> v4.9.227
 
 	default:
 
 		ACPI_ERROR((AE_INFO, "Unknown AML opcode 0x%X",
 			    walk_state->opcode));
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		status = AE_AML_BAD_OPCODE;
 		goto cleanup;
 	}
@@ -169,7 +202,11 @@ acpi_status acpi_ex_opcode_3A_1T_1R(struct acpi_walk_state *walk_state)
 		/* Get the Integer values from the objects */
 
 		index = operand[1]->integer.value;
+<<<<<<< HEAD
 		length = (acpi_size) operand[2]->integer.value;
+=======
+		length = (acpi_size)operand[2]->integer.value;
+>>>>>>> v4.9.227
 
 		/*
 		 * If the index is beyond the length of the String/Buffer, or if the
@@ -182,8 +219,14 @@ acpi_status acpi_ex_opcode_3A_1T_1R(struct acpi_walk_state *walk_state)
 		/* Truncate request if larger than the actual String/Buffer */
 
 		else if ((index + length) > operand[0]->string.length) {
+<<<<<<< HEAD
 			length = (acpi_size) operand[0]->string.length -
 			    (acpi_size) index;
+=======
+			length =
+			    (acpi_size)operand[0]->string.length -
+			    (acpi_size)index;
+>>>>>>> v4.9.227
 		}
 
 		/* Strings always have a sub-pointer, not so for buffers */
@@ -193,7 +236,11 @@ acpi_status acpi_ex_opcode_3A_1T_1R(struct acpi_walk_state *walk_state)
 
 			/* Always allocate a new buffer for the String */
 
+<<<<<<< HEAD
 			buffer = ACPI_ALLOCATE_ZEROED((acpi_size) length + 1);
+=======
+			buffer = ACPI_ALLOCATE_ZEROED((acpi_size)length + 1);
+>>>>>>> v4.9.227
 			if (!buffer) {
 				status = AE_NO_MEMORY;
 				goto cleanup;
@@ -226,8 +273,13 @@ acpi_status acpi_ex_opcode_3A_1T_1R(struct acpi_walk_state *walk_state)
 
 			/* We have a buffer, copy the portion requested */
 
+<<<<<<< HEAD
 			ACPI_MEMCPY(buffer, operand[0]->string.pointer + index,
 				    length);
+=======
+			memcpy(buffer,
+			       operand[0]->string.pointer + index, length);
+>>>>>>> v4.9.227
 		}
 
 		/* Set the length of the new String/Buffer */
@@ -244,6 +296,10 @@ acpi_status acpi_ex_opcode_3A_1T_1R(struct acpi_walk_state *walk_state)
 
 		ACPI_ERROR((AE_INFO, "Unknown AML opcode 0x%X",
 			    walk_state->opcode));
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		status = AE_AML_BAD_OPCODE;
 		goto cleanup;
 	}
@@ -259,6 +315,7 @@ cleanup:
 	if (ACPI_FAILURE(status) || walk_state->result_obj) {
 		acpi_ut_remove_reference(return_desc);
 		walk_state->result_obj = NULL;
+<<<<<<< HEAD
 	}
 
 	/* Set the return object and exit */
@@ -266,5 +323,13 @@ cleanup:
 	else {
 		walk_state->result_obj = return_desc;
 	}
+=======
+	} else {
+		/* Set the return object and exit */
+
+		walk_state->result_obj = return_desc;
+	}
+
+>>>>>>> v4.9.227
 	return_ACPI_STATUS(status);
 }

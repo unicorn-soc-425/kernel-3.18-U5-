@@ -35,10 +35,17 @@
 #include <linux/io.h>
 #include <linux/slab.h>
 #include <linux/regulator/consumer.h>
+<<<<<<< HEAD
 
 #include <asm/mach/flash.h>
 #include <linux/platform_data/mtd-onenand-omap2.h>
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+
+#include <asm/mach/flash.h>
+#include <linux/platform_data/mtd-onenand-omap2.h>
+>>>>>>> v4.9.227
 
 #include <linux/omap-dma.h>
 
@@ -614,7 +621,10 @@ static int omap2_onenand_probe(struct platform_device *pdev)
 	struct onenand_chip *this;
 	int r;
 	struct resource *res;
+<<<<<<< HEAD
 	struct mtd_part_parser_data ppdata = {};
+=======
+>>>>>>> v4.9.227
 
 	pdata = dev_get_platdata(&pdev->dev);
 	if (pdata == NULL) {
@@ -710,11 +720,18 @@ static int omap2_onenand_probe(struct platform_device *pdev)
 		 c->onenand.base, c->freq);
 
 	c->pdev = pdev;
+<<<<<<< HEAD
 	c->mtd.name = dev_name(&pdev->dev);
 	c->mtd.priv = &c->onenand;
 	c->mtd.owner = THIS_MODULE;
 
 	c->mtd.dev.parent = &pdev->dev;
+=======
+	c->mtd.priv = &c->onenand;
+
+	c->mtd.dev.parent = &pdev->dev;
+	mtd_set_of_node(&c->mtd, pdata->of_node);
+>>>>>>> v4.9.227
 
 	this = &c->onenand;
 	if (c->dma_channel >= 0) {
@@ -745,10 +762,15 @@ static int omap2_onenand_probe(struct platform_device *pdev)
 	if ((r = onenand_scan(&c->mtd, 1)) < 0)
 		goto err_release_regulator;
 
+<<<<<<< HEAD
 	ppdata.of_node = pdata->of_node;
 	r = mtd_device_parse_register(&c->mtd, NULL, &ppdata,
 				      pdata ? pdata->parts : NULL,
 				      pdata ? pdata->nr_parts : 0);
+=======
+	r = mtd_device_register(&c->mtd, pdata ? pdata->parts : NULL,
+				pdata ? pdata->nr_parts : 0);
+>>>>>>> v4.9.227
 	if (r)
 		goto err_release_onenand;
 
@@ -804,7 +826,10 @@ static struct platform_driver omap2_onenand_driver = {
 	.shutdown	= omap2_onenand_shutdown,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

@@ -25,7 +25,10 @@
 #include "kirkwood.h"
 #include "kirkwood-pm.h"
 #include "common.h"
+<<<<<<< HEAD
 #include "board.h"
+=======
+>>>>>>> v4.9.227
 
 static struct resource kirkwood_cpufreq_resources[] = {
 	[0] = {
@@ -151,7 +154,11 @@ eth_fixup_skip:
  * causes mbus errors (which can occur for example for PCI aborts) to
  * throw CPU aborts, which we're not set up to deal with.
  */
+<<<<<<< HEAD
 void kirkwood_disable_mbus_error_propagation(void)
+=======
+static void kirkwood_disable_mbus_error_propagation(void)
+>>>>>>> v4.9.227
 {
 	void __iomem *cpu_config;
 
@@ -180,6 +187,7 @@ static void __init kirkwood_dt_init(void)
 	kirkwood_pm_init();
 	kirkwood_dt_eth_fixup();
 
+<<<<<<< HEAD
 	if (of_machine_is_compatible("lacie,netxbig"))
 		netxbig_init();
 
@@ -187,6 +195,12 @@ static void __init kirkwood_dt_init(void)
 }
 
 static const char * const kirkwood_dt_board_compat[] = {
+=======
+	of_platform_default_populate(NULL, auxdata, NULL);
+}
+
+static const char * const kirkwood_dt_board_compat[] __initconst = {
+>>>>>>> v4.9.227
 	"marvell,kirkwood",
 	NULL
 };

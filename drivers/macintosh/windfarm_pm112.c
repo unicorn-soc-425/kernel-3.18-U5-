@@ -668,7 +668,10 @@ static struct platform_driver wf_pm112_driver = {
 	.remove = wf_pm112_remove,
 	.driver = {
 		.name = "windfarm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

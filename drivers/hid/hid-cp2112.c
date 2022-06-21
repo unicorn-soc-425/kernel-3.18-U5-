@@ -24,7 +24,11 @@
  *   http://www.silabs.com/Support%20Documents/TechnicalDocs/AN495.pdf
  */
 
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/hid.h>
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -32,6 +36,14 @@
 #include <linux/usb/ch9.h>
 #include "hid-ids.h"
 
+<<<<<<< HEAD
+=======
+#define CP2112_REPORT_MAX_LENGTH		64
+#define CP2112_GPIO_CONFIG_LENGTH		5
+#define CP2112_GPIO_GET_LENGTH			2
+#define CP2112_GPIO_SET_LENGTH			3
+
+>>>>>>> v4.9.227
 enum {
 	CP2112_GPIO_CONFIG		= 0x02,
 	CP2112_GPIO_GET			= 0x03,
@@ -156,10 +168,19 @@ struct cp2112_device {
 	wait_queue_head_t wait;
 	u8 read_data[61];
 	u8 read_length;
+<<<<<<< HEAD
+=======
+	u8 hwversion;
+>>>>>>> v4.9.227
 	int xfer_status;
 	atomic_t read_avail;
 	atomic_t xfer_avail;
 	struct gpio_chip gc;
+<<<<<<< HEAD
+=======
+	u8 *in_out_buffer;
+	struct mutex lock;
+>>>>>>> v4.9.227
 };
 
 static int gpio_push_pull = 0xFF;
@@ -168,6 +189,7 @@ MODULE_PARM_DESC(gpio_push_pull, "GPIO push-pull configuration bitmask");
 
 static int cp2112_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct cp2112_device *dev = container_of(chip, struct cp2112_device,
 						 gc);
 	struct hid_device *hdev = dev->hdev;
@@ -180,11 +202,29 @@ static int cp2112_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 	if (ret != sizeof(buf)) {
 		hid_err(hdev, "error requesting GPIO config: %d\n", ret);
 		return ret;
+=======
+	struct cp2112_device *dev = gpiochip_get_data(chip);
+	struct hid_device *hdev = dev->hdev;
+	u8 *buf = dev->in_out_buffer;
+	int ret;
+
+	mutex_lock(&dev->lock);
+
+	ret = hid_hw_raw_request(hdev, CP2112_GPIO_CONFIG, buf,
+				 CP2112_GPIO_CONFIG_LENGTH, HID_FEATURE_REPORT,
+				 HID_REQ_GET_REPORT);
+	if (ret != CP2112_GPIO_CONFIG_LENGTH) {
+		hid_err(hdev, "error requesting GPIO config: %d\n", ret);
+		if (ret >= 0)
+			ret = -EIO;
+		goto exit;
+>>>>>>> v4.9.227
 	}
 
 	buf[1] &= ~(1 << offset);
 	buf[2] = gpio_push_pull;
 
+<<<<<<< HEAD
 	ret = hid_hw_raw_request(hdev, CP2112_GPIO_CONFIG, buf, sizeof(buf),
 				 HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
 	if (ret < 0) {
@@ -193,28 +233,66 @@ static int cp2112_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 	}
 
 	return 0;
+=======
+	ret = hid_hw_raw_request(hdev, CP2112_GPIO_CONFIG, buf,
+				 CP2112_GPIO_CONFIG_LENGTH, HID_FEATURE_REPORT,
+				 HID_REQ_SET_REPORT);
+	if (ret != CP2112_GPIO_CONFIG_LENGTH) {
+		hid_err(hdev, "error setting GPIO config: %d\n", ret);
+		if (ret >= 0)
+			ret = -EIO;
+		goto exit;
+	}
+
+	ret = 0;
+
+exit:
+	mutex_unlock(&dev->lock);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static void cp2112_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct cp2112_device *dev = container_of(chip, struct cp2112_device,
 						 gc);
 	struct hid_device *hdev = dev->hdev;
 	u8 buf[3];
 	int ret;
 
+=======
+	struct cp2112_device *dev = gpiochip_get_data(chip);
+	struct hid_device *hdev = dev->hdev;
+	u8 *buf = dev->in_out_buffer;
+	int ret;
+
+	mutex_lock(&dev->lock);
+
+>>>>>>> v4.9.227
 	buf[0] = CP2112_GPIO_SET;
 	buf[1] = value ? 0xff : 0;
 	buf[2] = 1 << offset;
 
+<<<<<<< HEAD
 	ret = hid_hw_raw_request(hdev, CP2112_GPIO_SET, buf, sizeof(buf),
 				 HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
 	if (ret < 0)
 		hid_err(hdev, "error setting GPIO values: %d\n", ret);
+=======
+	ret = hid_hw_raw_request(hdev, CP2112_GPIO_SET, buf,
+				 CP2112_GPIO_SET_LENGTH, HID_FEATURE_REPORT,
+				 HID_REQ_SET_REPORT);
+	if (ret < 0)
+		hid_err(hdev, "error setting GPIO values: %d\n", ret);
+
+	mutex_unlock(&dev->lock);
+>>>>>>> v4.9.227
 }
 
 static int cp2112_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct cp2112_device *dev = container_of(chip, struct cp2112_device,
 						 gc);
 	struct hid_device *hdev = dev->hdev;
@@ -229,11 +307,36 @@ static int cp2112_gpio_get(struct gpio_chip *chip, unsigned offset)
 	}
 
 	return (buf[1] >> offset) & 1;
+=======
+	struct cp2112_device *dev = gpiochip_get_data(chip);
+	struct hid_device *hdev = dev->hdev;
+	u8 *buf = dev->in_out_buffer;
+	int ret;
+
+	mutex_lock(&dev->lock);
+
+	ret = hid_hw_raw_request(hdev, CP2112_GPIO_GET, buf,
+				 CP2112_GPIO_GET_LENGTH, HID_FEATURE_REPORT,
+				 HID_REQ_GET_REPORT);
+	if (ret != CP2112_GPIO_GET_LENGTH) {
+		hid_err(hdev, "error requesting GPIO values: %d\n", ret);
+		ret = ret < 0 ? ret : -EIO;
+		goto exit;
+	}
+
+	ret = (buf[1] >> offset) & 1;
+
+exit:
+	mutex_unlock(&dev->lock);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int cp2112_gpio_direction_output(struct gpio_chip *chip,
 					unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct cp2112_device *dev = container_of(chip, struct cp2112_device,
 						 gc);
 	struct hid_device *hdev = dev->hdev;
@@ -246,11 +349,27 @@ static int cp2112_gpio_direction_output(struct gpio_chip *chip,
 	if (ret != sizeof(buf)) {
 		hid_err(hdev, "error requesting GPIO config: %d\n", ret);
 		return ret;
+=======
+	struct cp2112_device *dev = gpiochip_get_data(chip);
+	struct hid_device *hdev = dev->hdev;
+	u8 *buf = dev->in_out_buffer;
+	int ret;
+
+	mutex_lock(&dev->lock);
+
+	ret = hid_hw_raw_request(hdev, CP2112_GPIO_CONFIG, buf,
+				 CP2112_GPIO_CONFIG_LENGTH, HID_FEATURE_REPORT,
+				 HID_REQ_GET_REPORT);
+	if (ret != CP2112_GPIO_CONFIG_LENGTH) {
+		hid_err(hdev, "error requesting GPIO config: %d\n", ret);
+		goto fail;
+>>>>>>> v4.9.227
 	}
 
 	buf[1] |= 1 << offset;
 	buf[2] = gpio_push_pull;
 
+<<<<<<< HEAD
 	ret = hid_hw_raw_request(hdev, CP2112_GPIO_CONFIG, buf, sizeof(buf),
 				 HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
 	if (ret < 0) {
@@ -258,6 +377,18 @@ static int cp2112_gpio_direction_output(struct gpio_chip *chip,
 		return ret;
 	}
 
+=======
+	ret = hid_hw_raw_request(hdev, CP2112_GPIO_CONFIG, buf,
+				 CP2112_GPIO_CONFIG_LENGTH, HID_FEATURE_REPORT,
+				 HID_REQ_SET_REPORT);
+	if (ret < 0) {
+		hid_err(hdev, "error setting GPIO config: %d\n", ret);
+		goto fail;
+	}
+
+	mutex_unlock(&dev->lock);
+
+>>>>>>> v4.9.227
 	/*
 	 * Set gpio value when output direction is already set,
 	 * as specified in AN495, Rev. 0.2, cpt. 4.4
@@ -265,6 +396,13 @@ static int cp2112_gpio_direction_output(struct gpio_chip *chip,
 	cp2112_gpio_set(chip, offset, value);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+fail:
+	mutex_unlock(&dev->lock);
+	return ret < 0 ? ret : -EIO;
+>>>>>>> v4.9.227
 }
 
 static int cp2112_hid_get(struct hid_device *hdev, unsigned char report_number,
@@ -356,6 +494,11 @@ static int cp2112_read(struct cp2112_device *dev, u8 *data, size_t size)
 	struct cp2112_force_read_report report;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (size > sizeof(dev->read_data))
+		size = sizeof(dev->read_data);
+>>>>>>> v4.9.227
 	report.report = CP2112_DATA_READ_FORCE_SEND;
 	report.length = cpu_to_be16(size);
 
@@ -444,6 +587,27 @@ static int cp2112_i2c_write_req(void *buf, u8 slave_address, u8 *data,
 	return data_length + 3;
 }
 
+<<<<<<< HEAD
+=======
+static int cp2112_i2c_write_read_req(void *buf, u8 slave_address,
+				     u8 *addr, int addr_length,
+				     int read_length)
+{
+	struct cp2112_write_read_req_report *report = buf;
+
+	if (read_length < 1 || read_length > 512 ||
+	    addr_length > sizeof(report->target_address))
+		return -EINVAL;
+
+	report->report = CP2112_DATA_WRITE_READ_REQUEST;
+	report->slave_address = slave_address << 1;
+	report->length = cpu_to_be16(read_length);
+	report->target_address_length = addr_length;
+	memcpy(report->target_address, addr, addr_length);
+	return addr_length + 5;
+}
+
+>>>>>>> v4.9.227
 static int cp2112_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 			   int num)
 {
@@ -451,17 +615,54 @@ static int cp2112_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	struct hid_device *hdev = dev->hdev;
 	u8 buf[64];
 	ssize_t count;
+<<<<<<< HEAD
+=======
+	ssize_t read_length = 0;
+	u8 *read_buf = NULL;
+>>>>>>> v4.9.227
 	unsigned int retries;
 	int ret;
 
 	hid_dbg(hdev, "I2C %d messages\n", num);
 
+<<<<<<< HEAD
 	if (num != 1) {
+=======
+	if (num == 1) {
+		if (msgs->flags & I2C_M_RD) {
+			hid_dbg(hdev, "I2C read %#04x len %d\n",
+				msgs->addr, msgs->len);
+			read_length = msgs->len;
+			read_buf = msgs->buf;
+			count = cp2112_read_req(buf, msgs->addr, msgs->len);
+		} else {
+			hid_dbg(hdev, "I2C write %#04x len %d\n",
+				msgs->addr, msgs->len);
+			count = cp2112_i2c_write_req(buf, msgs->addr,
+						     msgs->buf, msgs->len);
+		}
+		if (count < 0)
+			return count;
+	} else if (dev->hwversion > 1 &&  /* no repeated start in rev 1 */
+		   num == 2 &&
+		   msgs[0].addr == msgs[1].addr &&
+		   !(msgs[0].flags & I2C_M_RD) && (msgs[1].flags & I2C_M_RD)) {
+		hid_dbg(hdev, "I2C write-read %#04x wlen %d rlen %d\n",
+			msgs[0].addr, msgs[0].len, msgs[1].len);
+		read_length = msgs[1].len;
+		read_buf = msgs[1].buf;
+		count = cp2112_i2c_write_read_req(buf, msgs[0].addr,
+				msgs[0].buf, msgs[0].len, msgs[1].len);
+		if (count < 0)
+			return count;
+	} else {
+>>>>>>> v4.9.227
 		hid_err(hdev,
 			"Multi-message I2C transactions not supported\n");
 		return -EOPNOTSUPP;
 	}
 
+<<<<<<< HEAD
 	if (msgs->flags & I2C_M_RD)
 		count = cp2112_read_req(buf, msgs->addr, msgs->len);
 	else
@@ -471,6 +672,8 @@ static int cp2112_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	if (count < 0)
 		return count;
 
+=======
+>>>>>>> v4.9.227
 	ret = hid_hw_power(hdev, PM_HINT_FULLON);
 	if (ret < 0) {
 		hid_err(hdev, "power management error: %d\n", ret);
@@ -506,6 +709,7 @@ static int cp2112_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 		goto power_normal;
 	}
 
+<<<<<<< HEAD
 	if (!(msgs->flags & I2C_M_RD))
 		goto finish;
 
@@ -521,6 +725,36 @@ static int cp2112_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 finish:
 	/* return the number of transferred messages */
 	ret = 1;
+=======
+	for (count = 0; count < read_length;) {
+		ret = cp2112_read(dev, read_buf + count, read_length - count);
+		if (ret < 0)
+			goto power_normal;
+		if (ret == 0) {
+			hid_err(hdev, "read returned 0\n");
+			ret = -EIO;
+			goto power_normal;
+		}
+		count += ret;
+		if (count > read_length) {
+			/*
+			 * The hardware returned too much data.
+			 * This is mostly harmless because cp2112_read()
+			 * has a limit check so didn't overrun our
+			 * buffer.  Nevertheless, we return an error
+			 * because something is seriously wrong and
+			 * it shouldn't go unnoticed.
+			 */
+			hid_err(hdev, "long read: %d > %zd\n",
+				ret, read_length - count + ret);
+			ret = -EIO;
+			goto power_normal;
+		}
+	}
+
+	/* return the number of transferred messages */
+	ret = num;
+>>>>>>> v4.9.227
 
 power_normal:
 	hid_hw_power(hdev, PM_HINT_NORMAL);
@@ -535,7 +769,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
 	struct cp2112_device *dev = (struct cp2112_device *)adap->algo_data;
 	struct hid_device *hdev = dev->hdev;
 	u8 buf[64];
+<<<<<<< HEAD
 	__be16 word;
+=======
+	__le16 word;
+>>>>>>> v4.9.227
 	ssize_t count;
 	size_t read_length = 0;
 	unsigned int retries;
@@ -552,7 +790,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
 		if (I2C_SMBUS_READ == read_write)
 			count = cp2112_read_req(buf, addr, read_length);
 		else
+<<<<<<< HEAD
 			count = cp2112_write_req(buf, addr, data->byte, NULL,
+=======
+			count = cp2112_write_req(buf, addr, command, NULL,
+>>>>>>> v4.9.227
 						 0);
 		break;
 	case I2C_SMBUS_BYTE_DATA:
@@ -567,7 +809,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
 		break;
 	case I2C_SMBUS_WORD_DATA:
 		read_length = 2;
+<<<<<<< HEAD
 		word = cpu_to_be16(data->word);
+=======
+		word = cpu_to_le16(data->word);
+>>>>>>> v4.9.227
 
 		if (I2C_SMBUS_READ == read_write)
 			count = cp2112_write_read_req(buf, addr, read_length,
@@ -580,7 +826,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
 		size = I2C_SMBUS_WORD_DATA;
 		read_write = I2C_SMBUS_READ;
 		read_length = 2;
+<<<<<<< HEAD
 		word = cpu_to_be16(data->word);
+=======
+		word = cpu_to_le16(data->word);
+>>>>>>> v4.9.227
 
 		count = cp2112_write_read_req(buf, addr, read_length, command,
 					      (u8 *)&word, 2);
@@ -673,7 +923,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
 		data->byte = buf[0];
 		break;
 	case I2C_SMBUS_WORD_DATA:
+<<<<<<< HEAD
 		data->word = be16_to_cpup((__be16 *)buf);
+=======
+		data->word = le16_to_cpup((__le16 *)buf);
+>>>>>>> v4.9.227
 		break;
 	case I2C_SMBUS_BLOCK_DATA:
 		if (read_length > I2C_SMBUS_BLOCK_MAX) {
@@ -753,7 +1007,11 @@ static ssize_t name##_store(struct device *kdev, \
 			    struct device_attribute *attr, const char *buf, \
 			    size_t count) \
 { \
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(kdev, struct hid_device, dev); \
+=======
+	struct hid_device *hdev = to_hid_device(kdev); \
+>>>>>>> v4.9.227
 	struct cp2112_usb_config_report cfg; \
 	int ret = cp2112_get_usb_config(hdev, &cfg); \
 	if (ret) \
@@ -768,7 +1026,11 @@ static ssize_t name##_store(struct device *kdev, \
 static ssize_t name##_show(struct device *kdev, \
 			   struct device_attribute *attr, char *buf) \
 { \
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(kdev, struct hid_device, dev); \
+=======
+	struct hid_device *hdev = to_hid_device(kdev); \
+>>>>>>> v4.9.227
 	struct cp2112_usb_config_report cfg; \
 	int ret = cp2112_get_usb_config(hdev, &cfg); \
 	if (ret) \
@@ -833,7 +1095,11 @@ static ssize_t pstr_store(struct device *kdev,
 			  struct device_attribute *kattr, const char *buf,
 			  size_t count)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(kdev, struct hid_device, dev);
+=======
+	struct hid_device *hdev = to_hid_device(kdev);
+>>>>>>> v4.9.227
 	struct cp2112_pstring_attribute *attr =
 		container_of(kattr, struct cp2112_pstring_attribute, attr);
 	struct cp2112_string_report report;
@@ -864,7 +1130,11 @@ static ssize_t pstr_store(struct device *kdev,
 static ssize_t pstr_show(struct device *kdev,
 			 struct device_attribute *kattr, char *buf)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(kdev, struct hid_device, dev);
+=======
+	struct hid_device *hdev = to_hid_device(kdev);
+>>>>>>> v4.9.227
 	struct cp2112_pstring_attribute *attr =
 		container_of(kattr, struct cp2112_pstring_attribute, attr);
 	struct cp2112_string_report report;
@@ -957,6 +1227,20 @@ static int cp2112_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	struct cp2112_smbus_config_report config;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	dev = devm_kzalloc(&hdev->dev, sizeof(*dev), GFP_KERNEL);
+	if (!dev)
+		return -ENOMEM;
+
+	dev->in_out_buffer = devm_kzalloc(&hdev->dev, CP2112_REPORT_MAX_LENGTH,
+					  GFP_KERNEL);
+	if (!dev->in_out_buffer)
+		return -ENOMEM;
+
+	mutex_init(&dev->lock);
+
+>>>>>>> v4.9.227
 	ret = hid_parse(hdev);
 	if (ret) {
 		hid_err(hdev, "parse failed\n");
@@ -1013,12 +1297,15 @@ static int cp2112_probe(struct hid_device *hdev, const struct hid_device_id *id)
 		goto err_power_normal;
 	}
 
+<<<<<<< HEAD
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (!dev) {
 		ret = -ENOMEM;
 		goto err_power_normal;
 	}
 
+=======
+>>>>>>> v4.9.227
 	hid_set_drvdata(hdev, (void *)dev);
 	dev->hdev		= hdev;
 	dev->adap.owner		= THIS_MODULE;
@@ -1028,6 +1315,10 @@ static int cp2112_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	dev->adap.dev.parent	= &hdev->dev;
 	snprintf(dev->adap.name, sizeof(dev->adap.name),
 		 "CP2112 SMBus Bridge on hiddev%d", hdev->minor);
+<<<<<<< HEAD
+=======
+	dev->hwversion = buf[2];
+>>>>>>> v4.9.227
 	init_waitqueue_head(&dev->wait);
 
 	hid_device_io_start(hdev);
@@ -1036,7 +1327,11 @@ static int cp2112_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
 	if (ret) {
 		hid_err(hdev, "error registering i2c adapter\n");
+<<<<<<< HEAD
 		goto err_free_dev;
+=======
+		goto err_power_normal;
+>>>>>>> v4.9.227
 	}
 
 	hid_dbg(hdev, "adapter registered\n");
@@ -1049,9 +1344,15 @@ static int cp2112_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	dev->gc.base			= -1;
 	dev->gc.ngpio			= 8;
 	dev->gc.can_sleep		= 1;
+<<<<<<< HEAD
 	dev->gc.dev			= &hdev->dev;
 
 	ret = gpiochip_add(&dev->gc);
+=======
+	dev->gc.parent			= &hdev->dev;
+
+	ret = gpiochip_add_data(&dev->gc, dev);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		hid_err(hdev, "error registering gpio chip\n");
 		goto err_free_i2c;
@@ -1072,8 +1373,11 @@ err_gpiochip_remove:
 	gpiochip_remove(&dev->gc);
 err_free_i2c:
 	i2c_del_adapter(&dev->adap);
+<<<<<<< HEAD
 err_free_dev:
 	kfree(dev);
+=======
+>>>>>>> v4.9.227
 err_power_normal:
 	hid_hw_power(hdev, PM_HINT_NORMAL);
 err_hid_close:
@@ -1098,7 +1402,10 @@ static void cp2112_remove(struct hid_device *hdev)
 	 */
 	hid_hw_close(hdev);
 	hid_hw_stop(hdev);
+<<<<<<< HEAD
 	kfree(dev);
+=======
+>>>>>>> v4.9.227
 }
 
 static int cp2112_raw_event(struct hid_device *hdev, struct hid_report *report,

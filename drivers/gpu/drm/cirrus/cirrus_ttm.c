@@ -150,7 +150,12 @@ static int cirrus_bo_verify_access(struct ttm_buffer_object *bo, struct file *fi
 {
 	struct cirrus_bo *cirrusbo = cirrus_bo(bo);
 
+<<<<<<< HEAD
 	return drm_vma_node_verify_access(&cirrusbo->gem.vma_node, filp);
+=======
+	return drm_vma_node_verify_access(&cirrusbo->gem.vma_node,
+					  filp->private_data);
+>>>>>>> v4.9.227
 }
 
 static int cirrus_ttm_io_mem_reserve(struct ttm_bo_device *bdev,
@@ -186,6 +191,7 @@ static void cirrus_ttm_io_mem_free(struct ttm_bo_device *bdev, struct ttm_mem_re
 {
 }
 
+<<<<<<< HEAD
 static int cirrus_bo_move(struct ttm_buffer_object *bo,
 		       bool evict, bool interruptible,
 		       bool no_wait_gpu,
@@ -197,6 +203,8 @@ static int cirrus_bo_move(struct ttm_buffer_object *bo,
 }
 
 
+=======
+>>>>>>> v4.9.227
 static void cirrus_ttm_backend_destroy(struct ttm_tt *tt)
 {
 	ttm_tt_fini(tt);
@@ -241,10 +249,19 @@ struct ttm_bo_driver cirrus_bo_driver = {
 	.ttm_tt_unpopulate = cirrus_ttm_tt_unpopulate,
 	.init_mem_type = cirrus_bo_init_mem_type,
 	.evict_flags = cirrus_bo_evict_flags,
+<<<<<<< HEAD
 	.move = cirrus_bo_move,
 	.verify_access = cirrus_bo_verify_access,
 	.io_mem_reserve = &cirrus_ttm_io_mem_reserve,
 	.io_mem_free = &cirrus_ttm_io_mem_free,
+=======
+	.move = NULL,
+	.verify_access = cirrus_bo_verify_access,
+	.io_mem_reserve = &cirrus_ttm_io_mem_reserve,
+	.io_mem_free = &cirrus_ttm_io_mem_free,
+	.lru_tail = &ttm_bo_default_lru_tail,
+	.swap_lru_tail = &ttm_bo_default_swap_lru_tail,
+>>>>>>> v4.9.227
 };
 
 int cirrus_mm_init(struct cirrus_device *cirrus)
@@ -275,6 +292,12 @@ int cirrus_mm_init(struct cirrus_device *cirrus)
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	arch_io_reserve_memtype_wc(pci_resource_start(dev->pdev, 0),
+				   pci_resource_len(dev->pdev, 0));
+
+>>>>>>> v4.9.227
 	cirrus->fb_mtrr = arch_phys_wc_add(pci_resource_start(dev->pdev, 0),
 					   pci_resource_len(dev->pdev, 0));
 
@@ -284,6 +307,11 @@ int cirrus_mm_init(struct cirrus_device *cirrus)
 
 void cirrus_mm_fini(struct cirrus_device *cirrus)
 {
+<<<<<<< HEAD
+=======
+	struct drm_device *dev = cirrus->dev;
+
+>>>>>>> v4.9.227
 	if (!cirrus->mm_inited)
 		return;
 
@@ -293,6 +321,11 @@ void cirrus_mm_fini(struct cirrus_device *cirrus)
 
 	arch_phys_wc_del(cirrus->fb_mtrr);
 	cirrus->fb_mtrr = 0;
+<<<<<<< HEAD
+=======
+	arch_io_free_memtype_wc(pci_resource_start(dev->pdev, 0),
+				pci_resource_len(dev->pdev, 0));
+>>>>>>> v4.9.227
 }
 
 void cirrus_ttm_placement(struct cirrus_bo *bo, int domain)

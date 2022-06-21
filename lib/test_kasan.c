@@ -12,11 +12,27 @@
 #define pr_fmt(fmt) "kasan test: %s " fmt, __func__
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/printk.h>
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/module.h>
 
+=======
+#include <linux/mman.h>
+#include <linux/mm.h>
+#include <linux/printk.h>
+#include <linux/slab.h>
+#include <linux/string.h>
+#include <linux/uaccess.h>
+#include <linux/module.h>
+
+/*
+ * Note: test functions are marked noinline so that their names appear in
+ * reports.
+ */
+
+>>>>>>> v4.9.227
 static noinline void __init kmalloc_oob_right(void)
 {
 	char *ptr;
@@ -65,11 +81,41 @@ static noinline void __init kmalloc_node_oob_right(void)
 	kfree(ptr);
 }
 
+<<<<<<< HEAD
 static noinline void __init kmalloc_large_oob_rigth(void)
+=======
+#ifdef CONFIG_SLUB
+static noinline void __init kmalloc_pagealloc_oob_right(void)
+>>>>>>> v4.9.227
 {
 	char *ptr;
 	size_t size = KMALLOC_MAX_CACHE_SIZE + 10;
 
+<<<<<<< HEAD
+=======
+	/* Allocate a chunk that does not fit into a SLUB cache to trigger
+	 * the page allocator fallback.
+	 */
+	pr_info("kmalloc pagealloc allocation: out-of-bounds to right\n");
+	ptr = kmalloc(size, GFP_KERNEL);
+	if (!ptr) {
+		pr_err("Allocation failed\n");
+		return;
+	}
+
+	ptr[size] = 0;
+	kfree(ptr);
+}
+#endif
+
+static noinline void __init kmalloc_large_oob_right(void)
+{
+	char *ptr;
+	size_t size = KMALLOC_MAX_CACHE_SIZE - 256;
+	/* Allocate a chunk that is large enough, but still fits into a slab
+	 * and does not trigger the page allocator fallback in SLUB.
+	 */
+>>>>>>> v4.9.227
 	pr_info("kmalloc large allocation: out-of-bounds to right\n");
 	ptr = kmalloc(size, GFP_KERNEL);
 	if (!ptr) {
@@ -93,6 +139,10 @@ static noinline void __init kmalloc_oob_krealloc_more(void)
 	if (!ptr1 || !ptr2) {
 		pr_err("Allocation failed\n");
 		kfree(ptr1);
+<<<<<<< HEAD
+=======
+		kfree(ptr2);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -114,7 +164,11 @@ static noinline void __init kmalloc_oob_krealloc_less(void)
 		kfree(ptr1);
 		return;
 	}
+<<<<<<< HEAD
 	ptr2[size1] = 'x';
+=======
+	ptr2[size2] = 'x';
+>>>>>>> v4.9.227
 	kfree(ptr2);
 }
 
@@ -271,6 +325,11 @@ static noinline void __init kmalloc_uaf2(void)
 	}
 
 	ptr1[40] = 'x';
+<<<<<<< HEAD
+=======
+	if (ptr1 == ptr2)
+		pr_err("Could not detect use-after-free: ptr1 == ptr2\n");
+>>>>>>> v4.9.227
 	kfree(ptr2);
 }
 
@@ -319,12 +378,109 @@ static noinline void __init kasan_stack_oob(void)
 	*(volatile char *)p;
 }
 
+<<<<<<< HEAD
+=======
+static noinline void __init ksize_unpoisons_memory(void)
+{
+	char *ptr;
+	size_t size = 123, real_size;
+
+	pr_info("ksize() unpoisons the whole allocated chunk\n");
+	ptr = kmalloc(size, GFP_KERNEL);
+	if (!ptr) {
+		pr_err("Allocation failed\n");
+		return;
+	}
+	real_size = ksize(ptr);
+	/* This access doesn't trigger an error. */
+	ptr[size] = 'x';
+	/* This one does. */
+	ptr[real_size] = 'y';
+	kfree(ptr);
+}
+
+static noinline void __init copy_user_test(void)
+{
+	char *kmem;
+	char __user *usermem;
+	size_t size = 10;
+	int unused;
+
+	kmem = kmalloc(size, GFP_KERNEL);
+	if (!kmem)
+		return;
+
+	usermem = (char __user *)vm_mmap(NULL, 0, PAGE_SIZE,
+			    PROT_READ | PROT_WRITE | PROT_EXEC,
+			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
+	if (IS_ERR(usermem)) {
+		pr_err("Failed to allocate user memory\n");
+		kfree(kmem);
+		return;
+	}
+
+	pr_info("out-of-bounds in copy_from_user()\n");
+	unused = copy_from_user(kmem, usermem, size + 1);
+
+	pr_info("out-of-bounds in copy_to_user()\n");
+	unused = copy_to_user(usermem, kmem, size + 1);
+
+	pr_info("out-of-bounds in __copy_from_user()\n");
+	unused = __copy_from_user(kmem, usermem, size + 1);
+
+	pr_info("out-of-bounds in __copy_to_user()\n");
+	unused = __copy_to_user(usermem, kmem, size + 1);
+
+	pr_info("out-of-bounds in __copy_from_user_inatomic()\n");
+	unused = __copy_from_user_inatomic(kmem, usermem, size + 1);
+
+	pr_info("out-of-bounds in __copy_to_user_inatomic()\n");
+	unused = __copy_to_user_inatomic(usermem, kmem, size + 1);
+
+	pr_info("out-of-bounds in strncpy_from_user()\n");
+	unused = strncpy_from_user(kmem, usermem, size + 1);
+
+	vm_munmap((unsigned long)usermem, PAGE_SIZE);
+	kfree(kmem);
+}
+
+static noinline void __init use_after_scope_test(void)
+{
+	volatile char *volatile p;
+
+	pr_info("use-after-scope on int\n");
+	{
+		int local = 0;
+
+		p = (char *)&local;
+	}
+	p[0] = 1;
+	p[3] = 1;
+
+	pr_info("use-after-scope on array\n");
+	{
+		char local[1024] = {0};
+
+		p = local;
+	}
+	p[0] = 1;
+	p[1023] = 1;
+}
+
+>>>>>>> v4.9.227
 static int __init kmalloc_tests_init(void)
 {
 	kmalloc_oob_right();
 	kmalloc_oob_left();
 	kmalloc_node_oob_right();
+<<<<<<< HEAD
 	kmalloc_large_oob_rigth();
+=======
+#ifdef CONFIG_SLUB
+	kmalloc_pagealloc_oob_right();
+#endif
+	kmalloc_large_oob_right();
+>>>>>>> v4.9.227
 	kmalloc_oob_krealloc_more();
 	kmalloc_oob_krealloc_less();
 	kmalloc_oob_16();
@@ -339,6 +495,12 @@ static int __init kmalloc_tests_init(void)
 	kmem_cache_oob();
 	kasan_stack_oob();
 	kasan_global_oob();
+<<<<<<< HEAD
+=======
+	ksize_unpoisons_memory();
+	copy_user_test();
+	use_after_scope_test();
+>>>>>>> v4.9.227
 	return -EAGAIN;
 }
 

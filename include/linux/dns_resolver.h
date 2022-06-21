@@ -27,7 +27,11 @@
 #ifdef __KERNEL__
 
 extern int dns_query(const char *type, const char *name, size_t namelen,
+<<<<<<< HEAD
 		     const char *options, char **_result, time_t *_expiry);
+=======
+		     const char *options, char **_result, time64_t *_expiry);
+>>>>>>> v4.9.227
 
 #endif /* KERNEL */
 

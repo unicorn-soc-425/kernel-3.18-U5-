@@ -42,7 +42,11 @@ Optional feature parameters:
     <direction>: Either 'r' to corrupt reads or 'w' to corrupt writes.
 		 'w' is incompatible with drop_writes.
     <value>: The value (from 0-255) to write.
+<<<<<<< HEAD
     <flags>: Perform the replacement only if bio->bi_rw has all the
+=======
+    <flags>: Perform the replacement only if bio->bi_opf has all the
+>>>>>>> v4.9.227
 	     selected flags set.
 
 Examples:

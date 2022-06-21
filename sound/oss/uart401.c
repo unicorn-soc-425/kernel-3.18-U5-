@@ -412,6 +412,7 @@ void unload_uart401(struct address_info *hw_config)
 
 	if (!devc->share_irq)
 		free_irq(devc->irq, devc);
+<<<<<<< HEAD
 	if (devc)
 	{
 		kfree(midi_devs[devc->my_dev]->converter);
@@ -419,6 +420,12 @@ void unload_uart401(struct address_info *hw_config)
 		kfree(devc);
 		devc = NULL;
 	}
+=======
+	kfree(midi_devs[devc->my_dev]->converter);
+	kfree(midi_devs[devc->my_dev]);
+	kfree(devc);
+
+>>>>>>> v4.9.227
 	/* This kills midi_devs[x] */
 	sound_unload_mididev(hw_config->slots[4]);
 }

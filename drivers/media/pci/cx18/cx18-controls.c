@@ -93,6 +93,7 @@ static int cx18_s_video_encoding(struct cx2341x_handler *cxhdl, u32 val)
 {
 	struct cx18 *cx = container_of(cxhdl, struct cx18, cxhdl);
 	int is_mpeg1 = val == V4L2_MPEG_VIDEO_ENCODING_MPEG_1;
+<<<<<<< HEAD
 	struct v4l2_mbus_framefmt fmt;
 
 	/* fix videodecoder resolution */
@@ -100,6 +101,18 @@ static int cx18_s_video_encoding(struct cx2341x_handler *cxhdl, u32 val)
 	fmt.height = cxhdl->height;
 	fmt.code = V4L2_MBUS_FMT_FIXED;
 	v4l2_subdev_call(cx->sd_av, video, s_mbus_fmt, &fmt);
+=======
+	struct v4l2_subdev_format format = {
+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+	};
+	struct v4l2_mbus_framefmt *fmt = &format.format;
+
+	/* fix videodecoder resolution */
+	fmt->width = cxhdl->width / (is_mpeg1 ? 2 : 1);
+	fmt->height = cxhdl->height;
+	fmt->code = MEDIA_BUS_FMT_FIXED;
+	v4l2_subdev_call(cx->sd_av, pad, set_fmt, NULL, &format);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -123,7 +136,11 @@ static int cx18_s_audio_mode(struct cx2341x_handler *cxhdl, u32 val)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct cx2341x_handler_ops cx18_cxhdl_ops = {
+=======
+const struct cx2341x_handler_ops cx18_cxhdl_ops = {
+>>>>>>> v4.9.227
 	.s_audio_mode = cx18_s_audio_mode,
 	.s_audio_sampling_freq = cx18_s_audio_sampling_freq,
 	.s_video_encoding = cx18_s_video_encoding,

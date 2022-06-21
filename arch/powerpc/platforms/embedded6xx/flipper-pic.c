@@ -181,7 +181,11 @@ unsigned int flipper_pic_get_irq(void)
 	irq_status = in_be32(io_base + FLIPPER_ICR) &
 		     in_be32(io_base + FLIPPER_IMR);
 	if (irq_status == 0)
+<<<<<<< HEAD
 		return NO_IRQ;	/* no more IRQs pending */
+=======
+		return 0;	/* no more IRQs pending */
+>>>>>>> v4.9.227
 
 	irq = __ffs(irq_status);
 	return irq_linear_revmap(flipper_irq_host, irq);

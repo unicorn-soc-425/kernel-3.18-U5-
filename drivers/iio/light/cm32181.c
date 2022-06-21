@@ -169,7 +169,11 @@ static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val)
  * @cm32181:	pointer of struct cm32181.
  *
  * Convert sensor raw data to lux.  It depends on integration
+<<<<<<< HEAD
  * time and claibscale variable.
+=======
+ * time and calibscale variable.
+>>>>>>> v4.9.227
  *
  * Return: Positive value is lux, otherwise is error code.
  */
@@ -353,12 +357,19 @@ static const struct of_device_id cm32181_of_match[] = {
 	{ .compatible = "capella,cm32181" },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, cm32181_of_match);
+>>>>>>> v4.9.227
 
 static struct i2c_driver cm32181_driver = {
 	.driver = {
 		.name	= "cm32181",
 		.of_match_table = of_match_ptr(cm32181_of_match),
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.id_table       = cm32181_id,
 	.probe		= cm32181_probe,

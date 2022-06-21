@@ -76,10 +76,17 @@
 	LOAD	_t1, (offset + UNIT(1))(src);			\
 	LOAD	_t2, (offset + UNIT(2))(src);			\
 	LOAD	_t3, (offset + UNIT(3))(src);			\
+<<<<<<< HEAD
 	ADDC(sum, _t0);						\
 	ADDC(sum, _t1);						\
 	ADDC(sum, _t2);						\
 	ADDC(sum, _t3)
+=======
+	ADDC(_t0, _t1);						\
+	ADDC(_t2, _t3);						\
+	ADDC(sum, _t0);						\
+	ADDC(sum, _t2)
+>>>>>>> v4.9.227
 
 #ifdef USE_DOUBLE
 #define CSUM_BIGCHUNK(src, offset, sum, _t0, _t1, _t2, _t3)	\
@@ -504,6 +511,7 @@ LEAF(csum_partial)
 	SUB	len, len, 8*NBYTES
 	ADD	src, src, 8*NBYTES
 	STORE(t0, UNIT(0)(dst),	.Ls_exc\@)
+<<<<<<< HEAD
 	ADDC(sum, t0)
 	STORE(t1, UNIT(1)(dst),	.Ls_exc\@)
 	ADDC(sum, t1)
@@ -519,6 +527,23 @@ LEAF(csum_partial)
 	ADDC(sum, t6)
 	STORE(t7, UNIT(7)(dst),	.Ls_exc\@)
 	ADDC(sum, t7)
+=======
+	ADDC(t0, t1)
+	STORE(t1, UNIT(1)(dst),	.Ls_exc\@)
+	ADDC(sum, t0)
+	STORE(t2, UNIT(2)(dst),	.Ls_exc\@)
+	ADDC(t2, t3)
+	STORE(t3, UNIT(3)(dst),	.Ls_exc\@)
+	ADDC(sum, t2)
+	STORE(t4, UNIT(4)(dst),	.Ls_exc\@)
+	ADDC(t4, t5)
+	STORE(t5, UNIT(5)(dst),	.Ls_exc\@)
+	ADDC(sum, t4)
+	STORE(t6, UNIT(6)(dst),	.Ls_exc\@)
+	ADDC(t6, t7)
+	STORE(t7, UNIT(7)(dst),	.Ls_exc\@)
+	ADDC(sum, t6)
+>>>>>>> v4.9.227
 	.set	reorder				/* DADDI_WAR */
 	ADD	dst, dst, 8*NBYTES
 	bgez	len, 1b
@@ -544,6 +569,7 @@ LEAF(csum_partial)
 	SUB	len, len, 4*NBYTES
 	ADD	src, src, 4*NBYTES
 	STORE(t0, UNIT(0)(dst),	.Ls_exc\@)
+<<<<<<< HEAD
 	ADDC(sum, t0)
 	STORE(t1, UNIT(1)(dst),	.Ls_exc\@)
 	ADDC(sum, t1)
@@ -551,6 +577,15 @@ LEAF(csum_partial)
 	ADDC(sum, t2)
 	STORE(t3, UNIT(3)(dst),	.Ls_exc\@)
 	ADDC(sum, t3)
+=======
+	ADDC(t0, t1)
+	STORE(t1, UNIT(1)(dst),	.Ls_exc\@)
+	ADDC(sum, t0)
+	STORE(t2, UNIT(2)(dst),	.Ls_exc\@)
+	ADDC(t2, t3)
+	STORE(t3, UNIT(3)(dst),	.Ls_exc\@)
+	ADDC(sum, t2)
+>>>>>>> v4.9.227
 	.set	reorder				/* DADDI_WAR */
 	ADD	dst, dst, 4*NBYTES
 	beqz	len, .Ldone\@
@@ -649,6 +684,7 @@ LEAF(csum_partial)
 	nop				# improves slotting
 #endif
 	STORE(t0, UNIT(0)(dst),	.Ls_exc\@)
+<<<<<<< HEAD
 	ADDC(sum, t0)
 	STORE(t1, UNIT(1)(dst),	.Ls_exc\@)
 	ADDC(sum, t1)
@@ -656,6 +692,15 @@ LEAF(csum_partial)
 	ADDC(sum, t2)
 	STORE(t3, UNIT(3)(dst),	.Ls_exc\@)
 	ADDC(sum, t3)
+=======
+	ADDC(t0, t1)
+	STORE(t1, UNIT(1)(dst),	.Ls_exc\@)
+	ADDC(sum, t0)
+	STORE(t2, UNIT(2)(dst),	.Ls_exc\@)
+	ADDC(t2, t3)
+	STORE(t3, UNIT(3)(dst),	.Ls_exc\@)
+	ADDC(sum, t2)
+>>>>>>> v4.9.227
 	.set	reorder				/* DADDI_WAR */
 	ADD	dst, dst, 4*NBYTES
 	bne	len, rem, 1b

@@ -18,7 +18,10 @@
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/reboot.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/watchdog.h>
 
 #define CDNS_WDT_DEFAULT_TIMEOUT	10
@@ -72,7 +75,10 @@ MODULE_PARM_DESC(nowayout,
  * @ctrl_clksel: counter clock prescaler selection
  * @io_lock: spinlock for IO register access
  * @cdns_wdt_device: watchdog device structure
+<<<<<<< HEAD
  * @cdns_wdt_notifier: notifier structure
+=======
+>>>>>>> v4.9.227
  *
  * Structure containing parameters specific to cadence watchdog.
  */
@@ -84,7 +90,10 @@ struct cdns_wdt {
 	u32			ctrl_clksel;
 	spinlock_t		io_lock;
 	struct watchdog_device	cdns_wdt_device;
+<<<<<<< HEAD
 	struct notifier_block	cdns_wdt_notifier;
+=======
+>>>>>>> v4.9.227
 };
 
 /* Write access to Registers */
@@ -272,7 +281,11 @@ static struct watchdog_info cdns_wdt_info = {
 };
 
 /* Watchdog Core Ops */
+<<<<<<< HEAD
 static struct watchdog_ops cdns_wdt_ops = {
+=======
+static const struct watchdog_ops cdns_wdt_ops = {
+>>>>>>> v4.9.227
 	.owner = THIS_MODULE,
 	.start = cdns_wdt_start,
 	.stop = cdns_wdt_stop,
@@ -280,6 +293,7 @@ static struct watchdog_ops cdns_wdt_ops = {
 	.set_timeout = cdns_wdt_settimeout,
 };
 
+<<<<<<< HEAD
 /**
  * cdns_wdt_notify_sys - Notifier for reboot or shutdown.
  *
@@ -303,6 +317,8 @@ static int cdns_wdt_notify_sys(struct notifier_block *this, unsigned long code,
 	return NOTIFY_DONE;
 }
 
+=======
+>>>>>>> v4.9.227
 /************************Platform Operations*****************************/
 /**
  * cdns_wdt_probe - Probe call for the device.
@@ -360,6 +376,10 @@ static int cdns_wdt_probe(struct platform_device *pdev)
 	}
 
 	watchdog_set_nowayout(cdns_wdt_device, nowayout);
+<<<<<<< HEAD
+=======
+	watchdog_stop_on_reboot(cdns_wdt_device);
+>>>>>>> v4.9.227
 	watchdog_set_drvdata(cdns_wdt_device, wdt);
 
 	wdt->clk = devm_clk_get(&pdev->dev, NULL);
@@ -386,6 +406,7 @@ static int cdns_wdt_probe(struct platform_device *pdev)
 
 	spin_lock_init(&wdt->io_lock);
 
+<<<<<<< HEAD
 	wdt->cdns_wdt_notifier.notifier_call = &cdns_wdt_notify_sys;
 	ret = register_reboot_notifier(&wdt->cdns_wdt_notifier);
 	if (ret != 0) {
@@ -394,6 +415,8 @@ static int cdns_wdt_probe(struct platform_device *pdev)
 		goto err_clk_disable;
 	}
 
+=======
+>>>>>>> v4.9.227
 	ret = watchdog_register_device(cdns_wdt_device);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to register wdt device\n");
@@ -427,7 +450,10 @@ static int cdns_wdt_remove(struct platform_device *pdev)
 
 	cdns_wdt_stop(&wdt->cdns_wdt_device);
 	watchdog_unregister_device(&wdt->cdns_wdt_device);
+<<<<<<< HEAD
 	unregister_reboot_notifier(&wdt->cdns_wdt_notifier);
+=======
+>>>>>>> v4.9.227
 	clk_disable_unprepare(wdt->clk);
 
 	return 0;
@@ -455,12 +481,22 @@ static void cdns_wdt_shutdown(struct platform_device *pdev)
  */
 static int __maybe_unused cdns_wdt_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = container_of(dev,
 			struct platform_device, dev);
 	struct cdns_wdt *wdt = platform_get_drvdata(pdev);
 
 	cdns_wdt_stop(&wdt->cdns_wdt_device);
 	clk_disable_unprepare(wdt->clk);
+=======
+	struct platform_device *pdev = to_platform_device(dev);
+	struct cdns_wdt *wdt = platform_get_drvdata(pdev);
+
+	if (watchdog_active(&wdt->cdns_wdt_device)) {
+		cdns_wdt_stop(&wdt->cdns_wdt_device);
+		clk_disable_unprepare(wdt->clk);
+	}
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -474,6 +510,7 @@ static int __maybe_unused cdns_wdt_suspend(struct device *dev)
 static int __maybe_unused cdns_wdt_resume(struct device *dev)
 {
 	int ret;
+<<<<<<< HEAD
 	struct platform_device *pdev = container_of(dev,
 			struct platform_device, dev);
 	struct cdns_wdt *wdt = platform_get_drvdata(pdev);
@@ -484,6 +521,19 @@ static int __maybe_unused cdns_wdt_resume(struct device *dev)
 		return ret;
 	}
 	cdns_wdt_start(&wdt->cdns_wdt_device);
+=======
+	struct platform_device *pdev = to_platform_device(dev);
+	struct cdns_wdt *wdt = platform_get_drvdata(pdev);
+
+	if (watchdog_active(&wdt->cdns_wdt_device)) {
+		ret = clk_prepare_enable(wdt->clk);
+		if (ret) {
+			dev_err(dev, "unable to enable clock\n");
+			return ret;
+		}
+		cdns_wdt_start(&wdt->cdns_wdt_device);
+	}
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -503,7 +553,10 @@ static struct platform_driver cdns_wdt_driver = {
 	.shutdown	= cdns_wdt_shutdown,
 	.driver		= {
 		.name	= "cdns-wdt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = cdns_wdt_of_match,
 		.pm	= &cdns_wdt_pm_ops,
 	},

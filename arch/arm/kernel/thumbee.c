@@ -72,7 +72,11 @@ static int __init thumbee_init(void)
 	if ((pfr0 & 0x0000f000) != 0x00001000)
 		return 0;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "ThumbEE CPU extension supported.\n");
+=======
+	pr_info("ThumbEE CPU extension supported.\n");
+>>>>>>> v4.9.227
 	elf_hwcap |= HWCAP_THUMBEE;
 	thread_register_notifier(&thumbee_notifier_block);
 

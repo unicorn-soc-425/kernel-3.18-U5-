@@ -1,5 +1,9 @@
 /* Intel PRO/1000 Linux driver
+<<<<<<< HEAD
  * Copyright(c) 1999 - 2014 Intel Corporation.
+=======
+ * Copyright(c) 1999 - 2015 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -104,9 +108,15 @@ s32 e1000_get_cable_length_82577(struct e1000_hw *hw);
 #define BM_WUC_DATA_OPCODE		0x12
 #define BM_WUC_ENABLE_PAGE		BM_PORT_CTRL_PAGE
 #define BM_WUC_ENABLE_REG		17
+<<<<<<< HEAD
 #define BM_WUC_ENABLE_BIT		(1 << 2)
 #define BM_WUC_HOST_WU_BIT		(1 << 4)
 #define BM_WUC_ME_WU_BIT		(1 << 5)
+=======
+#define BM_WUC_ENABLE_BIT		BIT(2)
+#define BM_WUC_HOST_WU_BIT		BIT(4)
+#define BM_WUC_ME_WU_BIT		BIT(5)
+>>>>>>> v4.9.227
 
 #define PHY_UPPER_SHIFT			21
 #define BM_PHY_REG(page, reg) \
@@ -124,8 +134,13 @@ s32 e1000_get_cable_length_82577(struct e1000_hw *hw);
 #define I82578_ADDR_REG			29
 #define I82577_ADDR_REG			16
 #define I82577_CFG_REG			22
+<<<<<<< HEAD
 #define I82577_CFG_ASSERT_CRS_ON_TX	(1 << 15)
 #define I82577_CFG_ENABLE_DOWNSHIFT	(3 << 10)	/* auto downshift */
+=======
+#define I82577_CFG_ASSERT_CRS_ON_TX	BIT(15)
+#define I82577_CFG_ENABLE_DOWNSHIFT	(3u << 10)	/* auto downshift */
+>>>>>>> v4.9.227
 #define I82577_CTRL_REG			23
 
 /* 82577 specific PHY registers */

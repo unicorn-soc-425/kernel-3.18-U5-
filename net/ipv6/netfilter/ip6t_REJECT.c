@@ -35,14 +35,22 @@ MODULE_AUTHOR("Yasuyuki KOZAKAI <yasuyuki.kozakai@toshiba.co.jp>");
 MODULE_DESCRIPTION("Xtables: packet \"rejection\" target for IPv6");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static unsigned int
 reject_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ip6t_reject_info *reject = par->targinfo;
+<<<<<<< HEAD
 	struct net *net = dev_net((par->in != NULL) ? par->in : par->out);
 
 	pr_debug("%s: medium point\n", __func__);
+=======
+	struct net *net = par->net;
+
+>>>>>>> v4.9.227
 	switch (reject->with) {
 	case IP6T_ICMP6_NO_ROUTE:
 		nf_send_unreach6(net, skb, ICMPV6_NOROUTE, par->hooknum);
@@ -65,8 +73,16 @@ reject_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 	case IP6T_TCP_RESET:
 		nf_send_reset6(net, skb, par->hooknum);
 		break;
+<<<<<<< HEAD
 	default:
 		net_info_ratelimited("case %u not handled yet\n", reject->with);
+=======
+	case IP6T_ICMP6_POLICY_FAIL:
+		nf_send_unreach6(net, skb, ICMPV6_POLICY_FAIL, par->hooknum);
+		break;
+	case IP6T_ICMP6_REJECT_ROUTE:
+		nf_send_unreach6(net, skb, ICMPV6_REJECT_ROUTE, par->hooknum);
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -83,7 +99,12 @@ static int reject_tg6_check(const struct xt_tgchk_param *par)
 		return -EINVAL;
 	} else if (rejinfo->with == IP6T_TCP_RESET) {
 		/* Must specify that it's a TCP packet */
+<<<<<<< HEAD
 		if (e->ipv6.proto != IPPROTO_TCP ||
+=======
+		if (!(e->ipv6.flags & IP6T_F_PROTO) ||
+		    e->ipv6.proto != IPPROTO_TCP ||
+>>>>>>> v4.9.227
 		    (e->ipv6.invflags & XT_INV_PROTO)) {
 			pr_info("TCP_RESET illegal for non-tcp\n");
 			return -EINVAL;

@@ -39,7 +39,11 @@ struct af9013_state {
 	u32 ucblocks;
 	u16 snr;
 	u32 bandwidth_hz;
+<<<<<<< HEAD
 	fe_status_t fe_status;
+=======
+	enum fe_status fe_status;
+>>>>>>> v4.9.227
 	unsigned long set_frontend_jiffies;
 	unsigned long read_status_jiffies;
 	bool first_tune;
@@ -866,9 +870,15 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int af9013_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
+=======
+static int af9013_get_frontend(struct dvb_frontend *fe,
+			       struct dtv_frontend_properties *c)
+{
+>>>>>>> v4.9.227
 	struct af9013_state *state = fe->demodulator_priv;
 	int ret;
 	u8 buf[3];
@@ -983,7 +993,11 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int af9013_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct af9013_state *state = fe->demodulator_priv;
 	int ret;
@@ -1344,6 +1358,13 @@ err:
 static void af9013_release(struct dvb_frontend *fe)
 {
 	struct af9013_state *state = fe->demodulator_priv;
+<<<<<<< HEAD
+=======
+
+	/* stop statistics polling */
+	cancel_delayed_work_sync(&state->statistics_work);
+
+>>>>>>> v4.9.227
 	kfree(state);
 }
 

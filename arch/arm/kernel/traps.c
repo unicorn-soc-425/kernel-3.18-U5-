@@ -27,10 +27,15 @@
 #include <linux/init.h>
 #include <linux/sched.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/bug.h>
 
 #include <linux/atomic.h>
 #include <asm/arch_timer.h>
+=======
+
+#include <linux/atomic.h>
+>>>>>>> v4.9.227
 #include <asm/cacheflush.h>
 #include <asm/exception.h>
 #include <asm/unistd.h>
@@ -39,6 +44,7 @@
 #include <asm/unwind.h>
 #include <asm/tls.h>
 #include <asm/system_misc.h>
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 #include <linux/sec_debug.h>
 #include <linux/sec_debug_summary.h>
@@ -46,6 +52,10 @@
 #include <asm/opcodes.h>
 
 #include <trace/events/exception.h>
+=======
+#include <asm/opcodes.h>
+
+>>>>>>> v4.9.227
 
 static const char *handler[]= {
 	"prefetch abort",
@@ -82,6 +92,29 @@ void dump_backtrace_entry(unsigned long where, unsigned long from, unsigned long
 		dump_mem("", "Exception stack", frame + 4, frame + 4 + sizeof(struct pt_regs));
 }
 
+<<<<<<< HEAD
+=======
+void dump_backtrace_stm(u32 *stack, u32 instruction)
+{
+	char str[80], *p;
+	unsigned int x;
+	int reg;
+
+	for (reg = 10, x = 0, p = str; reg >= 0; reg--) {
+		if (instruction & BIT(reg)) {
+			p += sprintf(p, " r%d:%08x", reg, *stack--);
+			if (++x == 6) {
+				x = 0;
+				p = str;
+				printk("%s\n", str);
+			}
+		}
+	}
+	if (p != str)
+		printk("%s\n", str);
+}
+
+>>>>>>> v4.9.227
 #ifndef CONFIG_ARM_UNWIND
 /*
  * Stack pointers should always be within the kernels view of
@@ -214,6 +247,7 @@ static void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk)
 	}
 
 	if (!fp) {
+<<<<<<< HEAD
 		printk("no frame pointer");
 		ok = 0;
 	} else if (verify_stack(fp)) {
@@ -222,6 +256,16 @@ static void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk)
 	} else if (fp < (unsigned long)end_of_stack(tsk))
 		printk("frame pointer underflow");
 	printk("\n");
+=======
+		pr_cont("no frame pointer");
+		ok = 0;
+	} else if (verify_stack(fp)) {
+		pr_cont("invalid frame pointer 0x%08x", fp);
+		ok = 0;
+	} else if (fp < (unsigned long)end_of_stack(tsk))
+		pr_cont("frame pointer underflow");
+	pr_cont("\n");
+>>>>>>> v4.9.227
 
 	if (ok)
 		c_backtrace(fp, mode);
@@ -256,8 +300,13 @@ static int __die(const char *str, int err, struct pt_regs *regs)
 	static int die_counter;
 	int ret;
 
+<<<<<<< HEAD
 	printk(KERN_EMERG "Internal error: %s: %x [#%d]" S_PREEMPT S_SMP
 	       S_ISA "\n", str, err, ++die_counter);
+=======
+	pr_emerg("Internal error: %s: %x [#%d]" S_PREEMPT S_SMP S_ISA "\n",
+	         str, err, ++die_counter);
+>>>>>>> v4.9.227
 
 	/* trap and error numbers are mostly meaningless on ARM */
 	ret = notify_die(DIE_OOPS, str, regs, err, tsk->thread.trap_no, SIGSEGV);
@@ -266,6 +315,7 @@ static int __die(const char *str, int err, struct pt_regs *regs)
 
 	print_modules();
 	__show_regs(regs);
+<<<<<<< HEAD
 	printk(KERN_EMERG "Process %.*s (pid: %d, stack limit = 0x%p)\n",
 		TASK_COMM_LEN, tsk->comm, task_pid_nr(tsk), end_of_stack(tsk));
 
@@ -283,6 +333,14 @@ static int __die(const char *str, int err, struct pt_regs *regs)
 		dump_mem(KERN_EMERG, "Stack: ", regs->ARM_sp,
 			 THREAD_SIZE + (unsigned long)task_stack_page(tsk));
 #endif
+=======
+	pr_emerg("Process %.*s (pid: %d, stack limit = 0x%p)\n",
+		 TASK_COMM_LEN, tsk->comm, task_pid_nr(tsk), end_of_stack(tsk));
+
+	if (!user_mode(regs) || in_interrupt()) {
+		dump_mem(KERN_EMERG, "Stack: ", regs->ARM_sp,
+			 THREAD_SIZE + (unsigned long)task_stack_page(tsk));
+>>>>>>> v4.9.227
 		dump_backtrace(regs, tsk);
 		dump_instr(KERN_EMERG, regs);
 	}
@@ -348,17 +406,23 @@ void die(const char *str, struct pt_regs *regs, int err)
 	enum bug_trap_type bug_type = BUG_TRAP_TYPE_NONE;
 	unsigned long flags = oops_begin();
 	int sig = SIGSEGV;
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 	secdbg_sched_msg("!!die!!");
 #endif
+=======
+>>>>>>> v4.9.227
 
 	if (!user_mode(regs))
 		bug_type = report_bug(regs->ARM_pc, regs);
 	if (bug_type != BUG_TRAP_TYPE_NONE)
 		str = "Oops - BUG";
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG_SUMMARY
 	sec_debug_save_die_info(str, regs);
 #endif
+=======
+>>>>>>> v4.9.227
 
 	if (__die(str, err, regs))
 		sig = 0;
@@ -478,11 +542,17 @@ asmlinkage void __exception do_undefinstr(struct pt_regs *regs)
 		return;
 
 die_sig:
+<<<<<<< HEAD
 	trace_undef_instr(regs, (void *)pc);
 
 #ifdef CONFIG_DEBUG_USER
 	if (user_debug & UDBG_UNDEFINED) {
 		printk(KERN_INFO "%s (%d): undefined instruction: pc=%p\n",
+=======
+#ifdef CONFIG_DEBUG_USER
+	if (user_debug & UDBG_UNDEFINED) {
+		pr_info("%s (%d): undefined instruction: pc=%p\n",
+>>>>>>> v4.9.227
 			current->comm, task_pid_nr(current), pc);
 		__show_regs(regs);
 		dump_instr(KERN_INFO, regs);
@@ -533,7 +603,11 @@ asmlinkage void bad_mode(struct pt_regs *regs, int reason)
 {
 	console_verbose();
 
+<<<<<<< HEAD
 	printk(KERN_CRIT "Bad mode in %s handler detected\n", handler[reason]);
+=======
+	pr_crit("Bad mode in %s handler detected\n", handler[reason]);
+>>>>>>> v4.9.227
 
 	die("Oops - bad mode", regs, 0);
 	local_irq_disable();
@@ -542,18 +616,29 @@ asmlinkage void bad_mode(struct pt_regs *regs, int reason)
 
 static int bad_syscall(int n, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	struct thread_info *thread = current_thread_info();
 	siginfo_t info;
 
 	if ((current->personality & PER_MASK) != PER_LINUX &&
 	    thread->exec_domain->handler) {
 		thread->exec_domain->handler(n, regs);
+=======
+	siginfo_t info;
+
+	if ((current->personality & PER_MASK) != PER_LINUX) {
+		send_sig(SIGSEGV, current, 1);
+>>>>>>> v4.9.227
 		return regs->ARM_r0;
 	}
 
 #ifdef CONFIG_DEBUG_USER
 	if (user_debug & UDBG_SYSCALL) {
+<<<<<<< HEAD
 		printk(KERN_ERR "[%d] %s: obsolete system call %08x.\n",
+=======
+		pr_err("[%d] %s: obsolete system call %08x.\n",
+>>>>>>> v4.9.227
 			task_pid_nr(current), current->comm, n);
 		dump_instr(KERN_ERR, regs);
 	}
@@ -664,6 +749,7 @@ asmlinkage int arm_syscall(int no, struct pt_regs *regs)
 		set_tls(regs->ARM_r0);
 		return 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG
 	/*
 	 * Atomically store r1 in *r2 if *r2 is equal to r0 for user space.
@@ -716,6 +802,8 @@ asmlinkage int arm_syscall(int no, struct pt_regs *regs)
 	}
 #endif
 
+=======
+>>>>>>> v4.9.227
 	default:
 		/* Calls 9f00xx..9f07ff are defined to return -ENOSYS
 		   if not implemented, rather than raising SIGILL.  This
@@ -731,7 +819,11 @@ asmlinkage int arm_syscall(int no, struct pt_regs *regs)
 	 * something catastrophic has happened
 	 */
 	if (user_debug & UDBG_SYSCALL) {
+<<<<<<< HEAD
 		printk("[%d] %s: arm syscall %d\n",
+=======
+		pr_err("[%d] %s: arm syscall %d\n",
+>>>>>>> v4.9.227
 		       task_pid_nr(current), current->comm, no);
 		dump_instr("", regs);
 		if (user_mode(regs)) {
@@ -788,6 +880,7 @@ late_initcall(arm_mrc_hook_init);
 
 #endif
 
+<<<<<<< HEAD
 static int get_pct_trap(struct pt_regs *regs, unsigned int instr)
 {
 	u64 cntpct;
@@ -832,6 +925,8 @@ void __bad_xchg(volatile void *ptr, int size)
 }
 EXPORT_SYMBOL(__bad_xchg);
 
+=======
+>>>>>>> v4.9.227
 /*
  * A data abort trap was taken, but we did not handle the instruction.
  * Try to abort the user program, or panic if it was the kernel.
@@ -844,8 +939,13 @@ baddataabort(int code, unsigned long instr, struct pt_regs *regs)
 
 #ifdef CONFIG_DEBUG_USER
 	if (user_debug & UDBG_BADABORT) {
+<<<<<<< HEAD
 		printk(KERN_ERR "[%d] %s: bad data abort: code %d instr 0x%08lx\n",
 			task_pid_nr(current), current->comm, code, instr);
+=======
+		pr_err("[%d] %s: bad data abort: code %d instr 0x%08lx\n",
+		       task_pid_nr(current), current->comm, code, instr);
+>>>>>>> v4.9.227
 		dump_instr(KERN_ERR, regs);
 		show_pte(current->mm, addr);
 	}
@@ -861,30 +961,50 @@ baddataabort(int code, unsigned long instr, struct pt_regs *regs)
 
 void __readwrite_bug(const char *fn)
 {
+<<<<<<< HEAD
 	printk("%s called, but not implemented\n", fn);
+=======
+	pr_err("%s called, but not implemented\n", fn);
+>>>>>>> v4.9.227
 	BUG();
 }
 EXPORT_SYMBOL(__readwrite_bug);
 
 void __pte_error(const char *file, int line, pte_t pte)
 {
+<<<<<<< HEAD
 	printk("%s:%d: bad pte %08llx.\n", file, line, (long long)pte_val(pte));
+=======
+	pr_err("%s:%d: bad pte %08llx.\n", file, line, (long long)pte_val(pte));
+>>>>>>> v4.9.227
 }
 
 void __pmd_error(const char *file, int line, pmd_t pmd)
 {
+<<<<<<< HEAD
 	printk("%s:%d: bad pmd %08llx.\n", file, line, (long long)pmd_val(pmd));
+=======
+	pr_err("%s:%d: bad pmd %08llx.\n", file, line, (long long)pmd_val(pmd));
+>>>>>>> v4.9.227
 }
 
 void __pgd_error(const char *file, int line, pgd_t pgd)
 {
+<<<<<<< HEAD
 	printk("%s:%d: bad pgd %08llx.\n", file, line, (long long)pgd_val(pgd));
+=======
+	pr_err("%s:%d: bad pgd %08llx.\n", file, line, (long long)pgd_val(pgd));
+>>>>>>> v4.9.227
 }
 
 asmlinkage void __div0(void)
 {
+<<<<<<< HEAD
 	printk("Division by zero in kernel.\n");
 	BUG_ON(PANIC_CORRUPTION);
+=======
+	pr_err("Division by zero in kernel.\n");
+>>>>>>> v4.9.227
 	dump_stack();
 }
 EXPORT_SYMBOL(__div0);

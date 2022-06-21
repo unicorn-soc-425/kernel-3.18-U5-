@@ -264,7 +264,12 @@ static inline void __stop_tx(struct uart_sunsu_port *p)
 
 static void sunsu_stop_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 
 	__stop_tx(up);
 
@@ -279,7 +284,12 @@ static void sunsu_stop_tx(struct uart_port *port)
 
 static void sunsu_start_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 
 	if (!(up->ier & UART_IER_THRI)) {
 		up->ier |= UART_IER_THRI;
@@ -297,7 +307,12 @@ static void sunsu_start_tx(struct uart_port *port)
 
 static void sunsu_stop_rx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 
 	up->ier &= ~UART_IER_RLSI;
 	up->port.read_status_mask &= ~UART_LSR_DR;
@@ -306,7 +321,12 @@ static void sunsu_stop_rx(struct uart_port *port)
 
 static void sunsu_enable_ms(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	spin_lock_irqsave(&up->port.lock, flags);
@@ -543,7 +563,12 @@ static irqreturn_t sunsu_kbd_ms_interrupt(int irq, void *dev_id)
 
 static unsigned int sunsu_tx_empty(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	unsigned int ret;
 
@@ -556,7 +581,12 @@ static unsigned int sunsu_tx_empty(struct uart_port *port)
 
 static unsigned int sunsu_get_mctrl(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 	unsigned char status;
 	unsigned int ret;
 
@@ -576,7 +606,12 @@ static unsigned int sunsu_get_mctrl(struct uart_port *port)
 
 static void sunsu_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 	unsigned char mcr = 0;
 
 	if (mctrl & TIOCM_RTS)
@@ -595,7 +630,12 @@ static void sunsu_set_mctrl(struct uart_port *port, unsigned int mctrl)
 
 static void sunsu_break_ctl(struct uart_port *port, int break_state)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	spin_lock_irqsave(&up->port.lock, flags);
@@ -609,7 +649,12 @@ static void sunsu_break_ctl(struct uart_port *port, int break_state)
 
 static int sunsu_startup(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	int retval;
 
@@ -719,7 +764,12 @@ static int sunsu_startup(struct uart_port *port)
 
 static void sunsu_shutdown(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	/*
@@ -767,7 +817,12 @@ static void
 sunsu_change_speed(struct uart_port *port, unsigned int cflag,
 		   unsigned int iflag, unsigned int quot)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 	unsigned char cval, fcr = 0;
 	unsigned long flags;
 
@@ -918,7 +973,12 @@ static int sunsu_request_port(struct uart_port *port)
 
 static void sunsu_config_port(struct uart_port *port, int flags)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 
 	if (flags & UART_CONFIG_TYPE) {
 		/*
@@ -1250,7 +1310,11 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
 /*
  *	Wait for transmitter & holding register to empty
  */
+<<<<<<< HEAD
 static __inline__ void wait_for_xmitr(struct uart_sunsu_port *up)
+=======
+static void wait_for_xmitr(struct uart_sunsu_port *up)
+>>>>>>> v4.9.227
 {
 	unsigned int status, tmout = 10000;
 
@@ -1277,7 +1341,12 @@ static __inline__ void wait_for_xmitr(struct uart_sunsu_port *up)
 
 static void sunsu_console_putchar(struct uart_port *port, int ch)
 {
+<<<<<<< HEAD
 	struct uart_sunsu_port *up = (struct uart_sunsu_port *)port;
+=======
+	struct uart_sunsu_port *up =
+		container_of(port, struct uart_sunsu_port, port);
+>>>>>>> v4.9.227
 
 	wait_for_xmitr(up);
 	serial_out(up, UART_TX, ch);
@@ -1380,10 +1449,15 @@ static inline struct console *SUNSU_CONSOLE(void)
 static enum su_type su_get_type(struct device_node *dp)
 {
 	struct device_node *ap = of_find_node_by_path("/aliases");
+<<<<<<< HEAD
+=======
+	enum su_type rc = SU_PORT_PORT;
+>>>>>>> v4.9.227
 
 	if (ap) {
 		const char *keyb = of_get_property(ap, "keyboard", NULL);
 		const char *ms = of_get_property(ap, "mouse", NULL);
+<<<<<<< HEAD
 
 		if (keyb) {
 			if (dp == of_find_node_by_path(keyb))
@@ -1396,6 +1470,40 @@ static enum su_type su_get_type(struct device_node *dp)
 	}
 
 	return SU_PORT_PORT;
+=======
+		struct device_node *match;
+
+		if (keyb) {
+			match = of_find_node_by_path(keyb);
+
+			/*
+			 * The pointer is used as an identifier not
+			 * as a pointer, we can drop the refcount on
+			 * the of__node immediately after getting it.
+			 */
+			of_node_put(match);
+
+			if (dp == match) {
+				rc = SU_PORT_KBD;
+				goto out;
+			}
+		}
+		if (ms) {
+			match = of_find_node_by_path(ms);
+
+			of_node_put(match);
+
+			if (dp == match) {
+				rc = SU_PORT_MS;
+				goto out;
+			}
+		}
+	}
+
+out:
+	of_node_put(ap);
+	return rc;
+>>>>>>> v4.9.227
 }
 
 static int su_probe(struct platform_device *op)
@@ -1537,7 +1645,10 @@ MODULE_DEVICE_TABLE(of, su_match);
 static struct platform_driver su_driver = {
 	.driver = {
 		.name = "su",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = su_match,
 	},
 	.probe		= su_probe,

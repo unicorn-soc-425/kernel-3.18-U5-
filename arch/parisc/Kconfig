@@ -1,20 +1,38 @@
 config PARISC
 	def_bool y
+<<<<<<< HEAD
 	select ARCH_HAS_DEBUG_STRICT_USER_COPY_CHECKS
 	select ARCH_MIGHT_HAVE_PC_PARPORT
 	select HAVE_IDE
 	select HAVE_OPROFILE
 	select HAVE_FUNCTION_TRACER if 64BIT
 	select HAVE_FUNCTION_GRAPH_TRACER if 64BIT
+=======
+	select ARCH_MIGHT_HAVE_PC_PARPORT
+	select HAVE_IDE
+	select HAVE_OPROFILE
+	select HAVE_FUNCTION_TRACER
+	select HAVE_FUNCTION_GRAPH_TRACER
+	select HAVE_SYSCALL_TRACEPOINTS
+>>>>>>> v4.9.227
 	select ARCH_WANT_FRAME_POINTERS
 	select RTC_CLASS
 	select RTC_DRV_GENERIC
 	select INIT_ALL_POSSIBLE
+<<<<<<< HEAD
 	select BUG
 	select HAVE_PERF_EVENTS
 	select GENERIC_ATOMIC64 if !64BIT
 	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
 	select BROKEN_RODATA
+=======
+	select HAVE_MEMBLOCK
+	select NO_BOOTMEM
+	select BUG
+	select BUILDTIME_EXTABLE_SORT
+	select HAVE_PERF_EVENTS
+	select GENERIC_ATOMIC64 if !64BIT
+>>>>>>> v4.9.227
 	select GENERIC_IRQ_PROBE
 	select GENERIC_PCI_IOMAP
 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
@@ -23,12 +41,27 @@ config PARISC
 	select SYSCTL_ARCH_UNALIGN_ALLOW
 	select SYSCTL_EXCEPTION_TRACE
 	select HAVE_MOD_ARCH_SPECIFIC
+<<<<<<< HEAD
+=======
+	select HAVE_ARCH_HARDENED_USERCOPY
+>>>>>>> v4.9.227
 	select VIRT_TO_BUS
 	select MODULES_USE_ELF_RELA
 	select CLONE_BACKWARDS
 	select TTY # Needed for pdc_cons.c
 	select HAVE_DEBUG_STACKOVERFLOW
 	select HAVE_ARCH_AUDITSYSCALL
+<<<<<<< HEAD
+=======
+	select HAVE_ARCH_HASH
+	select HAVE_ARCH_SECCOMP_FILTER
+	select HAVE_ARCH_TRACEHOOK
+	select GENERIC_SCHED_CLOCK
+	select HAVE_UNSTABLE_SCHED_CLOCK if SMP
+	select GENERIC_CLOCKEVENTS
+	select ARCH_NO_COHERENT_DMA_MMAP
+	select CPU_NO_EFFICIENT_FFS
+>>>>>>> v4.9.227
 
 	help
 	  The PA-RISC microprocessor is designed by Hewlett-Packard and used
@@ -79,9 +112,12 @@ config TIME_LOW_RES
 	depends on SMP
 	default y
 
+<<<<<<< HEAD
 config HAVE_LATENCYTOP_SUPPORT
         def_bool y
 
+=======
+>>>>>>> v4.9.227
 # unless you want to implement ACPI on PA-RISC ... ;-)
 config PM
 	bool
@@ -103,6 +139,17 @@ config ARCH_MAY_HAVE_PC_FDC
 	depends on BROKEN
 	default y
 
+<<<<<<< HEAD
+=======
+config PGTABLE_LEVELS
+	int
+	default 3 if 64BIT && PARISC_PAGE_SIZE_4KB
+	default 2
+
+config SYS_SUPPORTS_HUGETLBFS
+	def_bool y if PA20
+
+>>>>>>> v4.9.227
 source "init/Kconfig"
 
 source "kernel/Kconfig.freezer"
@@ -169,7 +216,11 @@ config PREFETCH
 
 config MLONGCALLS
 	bool "Enable the -mlong-calls compiler option for big kernels"
+<<<<<<< HEAD
 	def_bool y if (!MODULES)
+=======
+	default y
+>>>>>>> v4.9.227
 	depends on PA8X00
 	help
 	  If you configure the kernel to include many drivers built-in instead
@@ -291,10 +342,13 @@ config SYSVIPC_COMPAT
 config AUDIT_ARCH
 	def_bool y
 
+<<<<<<< HEAD
 config HPUX
 	bool "Support for HP-UX binaries"
 	depends on !64BIT
 
+=======
+>>>>>>> v4.9.227
 config NR_CPUS
 	int "Maximum number of CPUs (2-32)"
 	range 2 32

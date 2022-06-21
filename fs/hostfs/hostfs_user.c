@@ -97,21 +97,39 @@ void *open_dir(char *path, int *err_out)
 	return dir;
 }
 
+<<<<<<< HEAD
 char *read_dir(void *stream, unsigned long long *pos,
+=======
+void seek_dir(void *stream, unsigned long long pos)
+{
+	DIR *dir = stream;
+
+	seekdir(dir, pos);
+}
+
+char *read_dir(void *stream, unsigned long long *pos_out,
+>>>>>>> v4.9.227
 	       unsigned long long *ino_out, int *len_out,
 	       unsigned int *type_out)
 {
 	DIR *dir = stream;
 	struct dirent *ent;
 
+<<<<<<< HEAD
 	seekdir(dir, *pos);
+=======
+>>>>>>> v4.9.227
 	ent = readdir(dir);
 	if (ent == NULL)
 		return NULL;
 	*len_out = strlen(ent->d_name);
 	*ino_out = ent->d_ino;
 	*type_out = ent->d_type;
+<<<<<<< HEAD
 	*pos = telldir(dir);
+=======
+	*pos_out = ent->d_off;
+>>>>>>> v4.9.227
 	return ent->d_name;
 }
 
@@ -175,6 +193,7 @@ void close_dir(void *stream)
 	closedir(stream);
 }
 
+<<<<<<< HEAD
 int file_create(char *name, int ur, int uw, int ux, int gr,
 		int gw, int gx, int or, int ow, int ox)
 {
@@ -190,6 +209,12 @@ int file_create(char *name, int ur, int uw, int ux, int gr,
 	mode |= or ? S_IROTH : 0;
 	mode |= ow ? S_IWOTH : 0;
 	mode |= ox ? S_IXOTH : 0;
+=======
+int file_create(char *name, int mode)
+{
+	int fd;
+
+>>>>>>> v4.9.227
 	fd = open64(name, O_CREAT | O_RDWR, mode);
 	if (fd < 0)
 		return -errno;

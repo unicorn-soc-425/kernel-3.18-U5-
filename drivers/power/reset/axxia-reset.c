@@ -19,14 +19,21 @@
 #include <linux/kernel.h>
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/notifier.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/reboot.h>
 #include <linux/regmap.h>
 
+<<<<<<< HEAD
 #include <asm/system_misc.h>
 
 
+=======
+>>>>>>> v4.9.227
 #define SC_CRIT_WRITE_KEY	0x1000
 #define SC_LATCH_ON_RESET	0x1004
 #define SC_RESET_CONTROL	0x1008
@@ -39,7 +46,12 @@
 
 static struct regmap *syscon;
 
+<<<<<<< HEAD
 static void do_axxia_restart(enum reboot_mode reboot_mode, const char *cmd)
+=======
+static int axxia_restart_handler(struct notifier_block *this,
+				 unsigned long mode, void *cmd)
+>>>>>>> v4.9.227
 {
 	/* Access Key (0xab) */
 	regmap_write(syscon, SC_CRIT_WRITE_KEY, 0xab);
@@ -50,11 +62,27 @@ static void do_axxia_restart(enum reboot_mode reboot_mode, const char *cmd)
 	/* Assert chip reset */
 	regmap_update_bits(syscon, SC_RESET_CONTROL,
 			   RSTCTL_RST_CHIP, RSTCTL_RST_CHIP);
+<<<<<<< HEAD
 }
 
 static int axxia_reset_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
+=======
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block axxia_restart_nb = {
+	.notifier_call = axxia_restart_handler,
+	.priority = 128,
+};
+
+static int axxia_reset_probe(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	int err;
+>>>>>>> v4.9.227
 
 	syscon = syscon_regmap_lookup_by_phandle(dev->of_node, "syscon");
 	if (IS_ERR(syscon)) {
@@ -62,9 +90,17 @@ static int axxia_reset_probe(struct platform_device *pdev)
 		return PTR_ERR(syscon);
 	}
 
+<<<<<<< HEAD
 	arm_pm_restart = do_axxia_restart;
 
 	return 0;
+=======
+	err = register_restart_handler(&axxia_restart_nb);
+	if (err)
+		dev_err(dev, "cannot register restart handler (err=%d)\n", err);
+
+	return err;
+>>>>>>> v4.9.227
 }
 
 static const struct of_device_id of_axxia_reset_match[] = {

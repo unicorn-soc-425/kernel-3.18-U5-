@@ -38,6 +38,13 @@
 
 #include <linux/omap-dma.h>
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARCH_OMAP1
+#include <mach/soc.h>
+#endif
+
+>>>>>>> v4.9.227
 /*
  * MAX_LOGICAL_DMA_CH_COUNT: the maximum number of logical DMA
  * channels that an instance of the SDMA IP block can support.  Used
@@ -151,6 +158,7 @@ static int omap_dma_in_1510_mode(void)
 #endif
 
 #ifdef CONFIG_ARCH_OMAP1
+<<<<<<< HEAD
 static inline int get_gdma_dev(int req)
 {
 	u32 reg = OMAP_FUNC_MUX_ARM_BASE + ((req - 1) / 5) * 4;
@@ -159,6 +167,8 @@ static inline int get_gdma_dev(int req)
 	return ((omap_readl(reg) >> shift) & 0x3f) + 1;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void set_gdma_dev(int req, int dev)
 {
 	u32 reg = OMAP_FUNC_MUX_ARM_BASE + ((req - 1) / 5) * 4;

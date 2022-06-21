@@ -214,9 +214,14 @@ pxa2xx_pcmcia_frequency_change(struct soc_pcmcia_socket *skt,
 }
 #endif
 
+<<<<<<< HEAD
 void pxa2xx_configure_sockets(struct device *dev)
 {
 	struct pcmcia_low_level *ops = dev->platform_data;
+=======
+void pxa2xx_configure_sockets(struct device *dev, struct pcmcia_low_level *ops)
+{
+>>>>>>> v4.9.227
 	/*
 	 * We have at least one socket, so set MECR:CIT
 	 * (Card Is There)
@@ -296,12 +301,17 @@ static int pxa2xx_drv_pcmcia_probe(struct platform_device *dev)
 		goto err0;
 	}
 
+<<<<<<< HEAD
 	clk = clk_get(&dev->dev, NULL);
+=======
+	clk = devm_clk_get(&dev->dev, NULL);
+>>>>>>> v4.9.227
 	if (IS_ERR(clk))
 		return -ENODEV;
 
 	pxa2xx_drv_pcmcia_ops(ops);
 
+<<<<<<< HEAD
 	sinfo = kzalloc(SKT_DEV_INFO_SIZE(ops->nr), GFP_KERNEL);
 	if (!sinfo) {
 		clk_put(clk);
@@ -310,6 +320,14 @@ static int pxa2xx_drv_pcmcia_probe(struct platform_device *dev)
 
 	sinfo->nskt = ops->nr;
 	sinfo->clk = clk;
+=======
+	sinfo = devm_kzalloc(&dev->dev, SKT_DEV_INFO_SIZE(ops->nr),
+			     GFP_KERNEL);
+	if (!sinfo)
+		return -ENOMEM;
+
+	sinfo->nskt = ops->nr;
+>>>>>>> v4.9.227
 
 	/* Initialize processor specific parameters */
 	for (i = 0; i < ops->nr; i++) {
@@ -324,7 +342,11 @@ static int pxa2xx_drv_pcmcia_probe(struct platform_device *dev)
 			goto err1;
 	}
 
+<<<<<<< HEAD
 	pxa2xx_configure_sockets(&dev->dev);
+=======
+	pxa2xx_configure_sockets(&dev->dev, ops);
+>>>>>>> v4.9.227
 	dev_set_drvdata(&dev->dev, sinfo);
 
 	return 0;
@@ -332,8 +354,12 @@ static int pxa2xx_drv_pcmcia_probe(struct platform_device *dev)
 err1:
 	while (--i >= 0)
 		soc_pcmcia_remove_one(&sinfo->skt[i]);
+<<<<<<< HEAD
 	clk_put(clk);
 	kfree(sinfo);
+=======
+
+>>>>>>> v4.9.227
 err0:
 	return ret;
 }
@@ -343,6 +369,7 @@ static int pxa2xx_drv_pcmcia_remove(struct platform_device *dev)
 	struct skt_dev_info *sinfo = platform_get_drvdata(dev);
 	int i;
 
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
 
 	for (i = 0; i < sinfo->nskt; i++)
@@ -350,12 +377,23 @@ static int pxa2xx_drv_pcmcia_remove(struct platform_device *dev)
 
 	clk_put(sinfo->clk);
 	kfree(sinfo);
+=======
+	for (i = 0; i < sinfo->nskt; i++)
+		soc_pcmcia_remove_one(&sinfo->skt[i]);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int pxa2xx_drv_pcmcia_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	pxa2xx_configure_sockets(dev);
+=======
+	struct pcmcia_low_level *ops = (struct pcmcia_low_level *)dev->platform_data;
+
+	pxa2xx_configure_sockets(dev, ops);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -368,7 +406,10 @@ static struct platform_driver pxa2xx_pcmcia_driver = {
 	.remove		= pxa2xx_drv_pcmcia_remove,
 	.driver		= {
 		.name	= "pxa2xx-pcmcia",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &pxa2xx_drv_pcmcia_pm_ops,
 	},
 };

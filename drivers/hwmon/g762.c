@@ -193,6 +193,7 @@ static inline unsigned int rpm_from_cnt(u8 cnt, u32 clk_freq, u16 p,
  * Convert fan RPM value from sysfs into count value for fan controller
  * register (FAN_SET_CNT).
  */
+<<<<<<< HEAD
 static inline unsigned char cnt_from_rpm(u32 rpm, u32 clk_freq, u16 p,
 					 u8 clk_div, u8 gear_mult)
 {
@@ -201,6 +202,19 @@ static inline unsigned char cnt_from_rpm(u32 rpm, u32 clk_freq, u16 p,
 
 	return clamp_val(((clk_freq * 30 * gear_mult) / (rpm * p * clk_div)),
 			 0, 255);
+=======
+static inline unsigned char cnt_from_rpm(unsigned long rpm, u32 clk_freq, u16 p,
+					 u8 clk_div, u8 gear_mult)
+{
+	unsigned long f1 = clk_freq * 30 * gear_mult;
+	unsigned long f2 = p * clk_div;
+
+	if (!rpm)	/* to stop the fan, set cnt to 255 */
+		return 0xff;
+
+	rpm = clamp_val(rpm, f1 / (255 * f2), ULONG_MAX / f2);
+	return DIV_ROUND_CLOSEST(f1, rpm * f2);
+>>>>>>> v4.9.227
 }
 
 /* helper to grab and cache data, at most one time per second */
@@ -582,6 +596,10 @@ static const struct of_device_id g762_dt_match[] = {
 	{ .compatible = "gmt,g763" },
 	{ },
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, g762_dt_match);
+>>>>>>> v4.9.227
 
 /*
  * Grab clock (a required property), enable it, get (fixed) clock frequency
@@ -1112,7 +1130,10 @@ static int g762_remove(struct i2c_client *client)
 static struct i2c_driver g762_driver = {
 	.driver = {
 		.name = DRVNAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(g762_dt_match),
 	},
 	.probe	  = g762_probe,

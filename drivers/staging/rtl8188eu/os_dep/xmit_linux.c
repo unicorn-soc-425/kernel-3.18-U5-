@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #define _XMIT_OSDEP_C_
 
@@ -46,13 +49,21 @@ void _rtw_open_pktfile(struct sk_buff *pktptr, struct pkt_file *pfile)
 
 }
 
+<<<<<<< HEAD
 uint _rtw_pktfile_read (struct pkt_file *pfile, u8 *rmem, uint rlen)
+=======
+uint _rtw_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen)
+>>>>>>> v4.9.227
 {
 	uint	len = 0;
 
 
 	len =  rtw_remainder_len(pfile);
+<<<<<<< HEAD
 	len = (rlen > len) ? len : rlen;
+=======
+	len = min(rlen, len);
+>>>>>>> v4.9.227
 
 	if (rmem)
 		skb_copy_bits(pfile->pkt, pfile->buf_len-pfile->pkt_len, rmem, len);
@@ -66,6 +77,7 @@ uint _rtw_pktfile_read (struct pkt_file *pfile, u8 *rmem, uint rlen)
 
 int rtw_endofpktfile(struct pkt_file *pfile)
 {
+<<<<<<< HEAD
 
 	if (pfile->pkt_len == 0) {
 		return true;
@@ -73,6 +85,9 @@ int rtw_endofpktfile(struct pkt_file *pfile)
 
 
 	return false;
+=======
+	return pfile->pkt_len == 0;
+>>>>>>> v4.9.227
 }
 
 int rtw_os_xmit_resource_alloc(struct adapter *padapter, struct xmit_buf *pxmitbuf, u32 alloc_sz)
@@ -83,7 +98,11 @@ int rtw_os_xmit_resource_alloc(struct adapter *padapter, struct xmit_buf *pxmitb
 	if (pxmitbuf->pallocated_buf == NULL)
 		return _FAIL;
 
+<<<<<<< HEAD
 	pxmitbuf->pbuf = (u8 *)N_BYTE_ALIGMENT((size_t)(pxmitbuf->pallocated_buf), XMITBUF_ALIGN_SZ);
+=======
+	pxmitbuf->pbuf = PTR_ALIGN(pxmitbuf->pallocated_buf, XMITBUF_ALIGN_SZ);
+>>>>>>> v4.9.227
 	pxmitbuf->dma_transfer_addr = 0;
 
 	for (i = 0; i < 8; i++) {

@@ -30,7 +30,10 @@
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+>>>>>>> v4.9.227
 
 #define LEGACY_GPIO_BASE	0xD8110000
 #define LEGACY_PMC_BASE		0xD8130000
@@ -158,8 +161,11 @@ static void __init vt8500_init(void)
 		pm_power_off = &vt8500_power_off;
 	else
 		pr_err("%s: PMC Hibernation register could not be remapped, not enabling power off!\n", __func__);
+<<<<<<< HEAD
 
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+=======
+>>>>>>> v4.9.227
 }
 
 static const char * const vt8500_dt_compat[] = {

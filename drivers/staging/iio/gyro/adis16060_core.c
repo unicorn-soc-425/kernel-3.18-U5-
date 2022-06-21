@@ -67,7 +67,11 @@ static int adis16060_spi_read(struct iio_dev *indio_dev, u16 *val)
 	 * starts to place data MSB first on the DOUT line at
 	 * the 6th falling edge of SCLK
 	 */
+<<<<<<< HEAD
 	if (ret == 0)
+=======
+	if (!ret)
+>>>>>>> v4.9.227
 		*val = ((st->buf[0] & 0x3) << 12) |
 			(st->buf[1] << 4) |
 			((st->buf[2] >> 4) & 0xF);
@@ -89,11 +93,21 @@ static int adis16060_read_raw(struct iio_dev *indio_dev,
 		/* Take the iio_dev status lock */
 		mutex_lock(&indio_dev->mlock);
 		ret = adis16060_spi_write(indio_dev, chan->address);
+<<<<<<< HEAD
 		if (ret < 0) {
 			mutex_unlock(&indio_dev->mlock);
 			return ret;
 		}
 		ret = adis16060_spi_read(indio_dev, &tval);
+=======
+		if (ret < 0)
+			goto out_unlock;
+
+		ret = adis16060_spi_read(indio_dev, &tval);
+		if (ret < 0)
+			goto out_unlock;
+
+>>>>>>> v4.9.227
 		mutex_unlock(&indio_dev->mlock);
 		*val = tval;
 		return IIO_VAL_INT;
@@ -108,6 +122,13 @@ static int adis16060_read_raw(struct iio_dev *indio_dev,
 	}
 
 	return -EINVAL;
+<<<<<<< HEAD
+=======
+
+out_unlock:
+	mutex_unlock(&indio_dev->mlock);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static const struct iio_info adis16060_info = {
@@ -202,7 +223,10 @@ static int adis16060_w_remove(struct spi_device *spi)
 static struct spi_driver adis16060_r_driver = {
 	.driver = {
 		.name = "adis16060_r",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = adis16060_r_probe,
 };
@@ -210,7 +234,10 @@ static struct spi_driver adis16060_r_driver = {
 static struct spi_driver adis16060_w_driver = {
 	.driver = {
 		.name = "adis16060_w",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = adis16060_w_probe,
 	.remove = adis16060_w_remove,

@@ -31,6 +31,12 @@
 #include <linux/kernel.h>
 #include <linux/moduleloader.h>
 #include <linux/bug.h>
+<<<<<<< HEAD
+=======
+#include <asm/alternative.h>
+#include <asm/nospec-branch.h>
+#include <asm/facility.h>
+>>>>>>> v4.9.227
 
 #if 0
 #define DEBUGP printk
@@ -38,6 +44,7 @@
 #define DEBUGP(fmt , ...)
 #endif
 
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 #define PLT_ENTRY_SIZE 12
 #else /* CONFIG_64BIT */
@@ -45,6 +52,10 @@
 #endif /* CONFIG_64BIT */
 
 #ifdef CONFIG_64BIT
+=======
+#define PLT_ENTRY_SIZE 20
+
+>>>>>>> v4.9.227
 void *module_alloc(unsigned long size)
 {
 	if (PAGE_ALIGN(size) > MODULES_LEN)
@@ -53,6 +64,7 @@ void *module_alloc(unsigned long size)
 				    GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
 				    __builtin_return_address(0));
 }
+<<<<<<< HEAD
 #endif
 
 /* Free memory returned from module_alloc */
@@ -63,6 +75,17 @@ void module_free(struct module *mod, void *module_region)
 		mod->arch.syminfo = NULL;
 	}
 	vfree(module_region);
+=======
+
+void module_arch_freeing_init(struct module *mod)
+{
+	if (is_livepatch_module(mod) &&
+	    mod->state == MODULE_STATE_LIVE)
+		return;
+
+	vfree(mod->arch.syminfo);
+	mod->arch.syminfo = NULL;
+>>>>>>> v4.9.227
 }
 
 static void check_rela(Elf_Rela *rela, struct module *me)
@@ -169,11 +192,23 @@ int module_frob_arch_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
 
 	/* Increase core size by size of got & plt and set start
 	   offsets for got and plt. */
+<<<<<<< HEAD
 	me->core_size = ALIGN(me->core_size, 4);
 	me->arch.got_offset = me->core_size;
 	me->core_size += me->arch.got_size;
 	me->arch.plt_offset = me->core_size;
 	me->core_size += me->arch.plt_size;
+=======
+	me->core_layout.size = ALIGN(me->core_layout.size, 4);
+	me->arch.got_offset = me->core_layout.size;
+	me->core_layout.size += me->arch.got_size;
+	me->arch.plt_offset = me->core_layout.size;
+	if (me->arch.plt_size) {
+		if (IS_ENABLED(CONFIG_EXPOLINE) && !nospec_disable)
+			me->arch.plt_size += PLT_ENTRY_SIZE;
+		me->core_layout.size += me->arch.plt_size;
+	}
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -289,7 +324,11 @@ static int apply_rela(Elf_Rela *rela, Elf_Addr base, Elf_Sym *symtab,
 		if (info->got_initialized == 0) {
 			Elf_Addr *gotent;
 
+<<<<<<< HEAD
 			gotent = me->module_core + me->arch.got_offset +
+=======
+			gotent = me->core_layout.base + me->arch.got_offset +
+>>>>>>> v4.9.227
 				info->got_offset;
 			*gotent = val;
 			info->got_initialized = 1;
@@ -312,7 +351,11 @@ static int apply_rela(Elf_Rela *rela, Elf_Addr base, Elf_Sym *symtab,
 			rc = apply_rela_bits(loc, val, 0, 64, 0);
 		else if (r_type == R_390_GOTENT ||
 			 r_type == R_390_GOTPLTENT) {
+<<<<<<< HEAD
 			val += (Elf_Addr) me->module_core - loc;
+=======
+			val += (Elf_Addr) me->core_layout.base - loc;
+>>>>>>> v4.9.227
 			rc = apply_rela_bits(loc, val, 1, 32, 1);
 		}
 		break;
@@ -325,6 +368,7 @@ static int apply_rela(Elf_Rela *rela, Elf_Addr base, Elf_Sym *symtab,
 	case R_390_PLTOFF64:	/* 16 bit offset from GOT to PLT. */
 		if (info->plt_initialized == 0) {
 			unsigned int *ip;
+<<<<<<< HEAD
 			ip = me->module_core + me->arch.plt_offset +
 				info->plt_offset;
 #ifndef CONFIG_64BIT
@@ -338,6 +382,26 @@ static int apply_rela(Elf_Rela *rela, Elf_Addr base, Elf_Sym *symtab,
 			ip[3] = (unsigned int) (val >> 32);
 			ip[4] = (unsigned int) val;
 #endif /* CONFIG_64BIT */
+=======
+			ip = me->core_layout.base + me->arch.plt_offset +
+				info->plt_offset;
+			ip[0] = 0x0d10e310;	/* basr 1,0  */
+			ip[1] = 0x100a0004;	/* lg	1,10(1) */
+			if (IS_ENABLED(CONFIG_EXPOLINE) && !nospec_disable) {
+				unsigned int *ij;
+				ij = me->core_layout.base +
+					me->arch.plt_offset +
+					me->arch.plt_size - PLT_ENTRY_SIZE;
+				ip[2] = 0xa7f40000 +	/* j __jump_r1 */
+					(unsigned int)(u16)
+					(((unsigned long) ij - 8 -
+					  (unsigned long) ip) / 2);
+			} else {
+				ip[2] = 0x07f10000;	/* br %r1 */
+			}
+			ip[3] = (unsigned int) (val >> 32);
+			ip[4] = (unsigned int) val;
+>>>>>>> v4.9.227
 			info->plt_initialized = 1;
 		}
 		if (r_type == R_390_PLTOFF16 ||
@@ -350,7 +414,11 @@ static int apply_rela(Elf_Rela *rela, Elf_Addr base, Elf_Sym *symtab,
 			       val - loc + 0xffffUL < 0x1ffffeUL) ||
 			      (r_type == R_390_PLT32DBL &&
 			       val - loc + 0xffffffffULL < 0x1fffffffeULL)))
+<<<<<<< HEAD
 				val = (Elf_Addr) me->module_core +
+=======
+				val = (Elf_Addr) me->core_layout.base +
+>>>>>>> v4.9.227
 					me->arch.plt_offset +
 					info->plt_offset;
 			val += rela->r_addend - loc;
@@ -372,7 +440,11 @@ static int apply_rela(Elf_Rela *rela, Elf_Addr base, Elf_Sym *symtab,
 	case R_390_GOTOFF32:	/* 32 bit offset to GOT.  */
 	case R_390_GOTOFF64:	/* 64 bit offset to GOT. */
 		val = val + rela->r_addend -
+<<<<<<< HEAD
 			((Elf_Addr) me->module_core + me->arch.got_offset);
+=======
+			((Elf_Addr) me->core_layout.base + me->arch.got_offset);
+>>>>>>> v4.9.227
 		if (r_type == R_390_GOTOFF16)
 			rc = apply_rela_bits(loc, val, 0, 16, 0);
 		else if (r_type == R_390_GOTOFF32)
@@ -382,7 +454,11 @@ static int apply_rela(Elf_Rela *rela, Elf_Addr base, Elf_Sym *symtab,
 		break;
 	case R_390_GOTPC:	/* 32 bit PC relative offset to GOT. */
 	case R_390_GOTPCDBL:	/* 32 bit PC rel. off. to GOT shifted by 1. */
+<<<<<<< HEAD
 		val = (Elf_Addr) me->module_core + me->arch.got_offset +
+=======
+		val = (Elf_Addr) me->core_layout.base + me->arch.got_offset +
+>>>>>>> v4.9.227
 			rela->r_addend - loc;
 		if (r_type == R_390_GOTPC)
 			rc = apply_rela_bits(loc, val, 1, 32, 0);
@@ -440,7 +516,50 @@ int module_finalize(const Elf_Ehdr *hdr,
 		    const Elf_Shdr *sechdrs,
 		    struct module *me)
 {
+<<<<<<< HEAD
 	vfree(me->arch.syminfo);
 	me->arch.syminfo = NULL;
+=======
+	const Elf_Shdr *s;
+	char *secstrings, *secname;
+	void *aseg;
+
+	if (IS_ENABLED(CONFIG_EXPOLINE) &&
+	    !nospec_disable && me->arch.plt_size) {
+		unsigned int *ij;
+
+		ij = me->core_layout.base + me->arch.plt_offset +
+			me->arch.plt_size - PLT_ENTRY_SIZE;
+		if (test_facility(35)) {
+			ij[0] = 0xc6000000;	/* exrl	%r0,.+10	*/
+			ij[1] = 0x0005a7f4;	/* j	.		*/
+			ij[2] = 0x000007f1;	/* br	%r1		*/
+		} else {
+			ij[0] = 0x44000000 | (unsigned int)
+				offsetof(struct lowcore, br_r1_trampoline);
+			ij[1] = 0xa7f40000;	/* j	.		*/
+		}
+	}
+
+	secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
+	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
+		aseg = (void *) s->sh_addr;
+		secname = secstrings + s->sh_name;
+
+		if (!strcmp(".altinstructions", secname))
+			/* patch .altinstructions */
+			apply_alternatives(aseg, aseg + s->sh_size);
+
+		if (IS_ENABLED(CONFIG_EXPOLINE) &&
+		    (!strncmp(".s390_indirect", secname, 14)))
+			nospec_revert(aseg, aseg + s->sh_size);
+
+		if (IS_ENABLED(CONFIG_EXPOLINE) &&
+		    (!strncmp(".s390_return", secname, 12)))
+			nospec_revert(aseg, aseg + s->sh_size);
+	}
+
+	jump_label_apply_nops(me);
+>>>>>>> v4.9.227
 	return 0;
 }

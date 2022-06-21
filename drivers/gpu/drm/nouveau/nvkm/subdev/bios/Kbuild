@@ -10,6 +10,10 @@ nvkm-y += nvkm/subdev/bios/extdev.o
 nvkm-y += nvkm/subdev/bios/fan.o
 nvkm-y += nvkm/subdev/bios/gpio.o
 nvkm-y += nvkm/subdev/bios/i2c.o
+<<<<<<< HEAD
+=======
+nvkm-y += nvkm/subdev/bios/iccsense.o
+>>>>>>> v4.9.227
 nvkm-y += nvkm/subdev/bios/image.o
 nvkm-y += nvkm/subdev/bios/init.o
 nvkm-y += nvkm/subdev/bios/mxm.o

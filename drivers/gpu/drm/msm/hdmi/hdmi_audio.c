@@ -89,7 +89,11 @@ static const struct hdmi_msm_audio_arcs *get_arcs(unsigned long int pixclock)
 	return NULL;
 }
 
+<<<<<<< HEAD
 int hdmi_audio_update(struct hdmi *hdmi)
+=======
+int msm_hdmi_audio_update(struct hdmi *hdmi)
+>>>>>>> v4.9.227
 {
 	struct hdmi_audio *audio = &hdmi->audio;
 	struct hdmi_audio_infoframe *info = &audio->infoframe;
@@ -232,7 +236,11 @@ int hdmi_audio_update(struct hdmi *hdmi)
 	return 0;
 }
 
+<<<<<<< HEAD
 int hdmi_audio_info_setup(struct hdmi *hdmi, bool enabled,
+=======
+int msm_hdmi_audio_info_setup(struct hdmi *hdmi, bool enabled,
+>>>>>>> v4.9.227
 	uint32_t num_of_channels, uint32_t channel_allocation,
 	uint32_t level_shift, bool down_mix)
 {
@@ -252,10 +260,17 @@ int hdmi_audio_info_setup(struct hdmi *hdmi, bool enabled,
 	audio->infoframe.level_shift_value = level_shift;
 	audio->infoframe.downmix_inhibit = down_mix;
 
+<<<<<<< HEAD
 	return hdmi_audio_update(hdmi);
 }
 
 void hdmi_audio_set_sample_rate(struct hdmi *hdmi, int rate)
+=======
+	return msm_hdmi_audio_update(hdmi);
+}
+
+void msm_hdmi_audio_set_sample_rate(struct hdmi *hdmi, int rate)
+>>>>>>> v4.9.227
 {
 	struct hdmi_audio *audio;
 
@@ -268,5 +283,9 @@ void hdmi_audio_set_sample_rate(struct hdmi *hdmi, int rate)
 		return;
 
 	audio->rate = rate;
+<<<<<<< HEAD
 	hdmi_audio_update(hdmi);
+=======
+	msm_hdmi_audio_update(hdmi);
+>>>>>>> v4.9.227
 }

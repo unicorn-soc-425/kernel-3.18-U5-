@@ -290,7 +290,11 @@ static int ad7152_write_raw(struct iio_dev *indio_dev,
 		ret = 0;
 		break;
 	case IIO_CHAN_INFO_SCALE:
+<<<<<<< HEAD
 		if (val != 0) {
+=======
+		if (val) {
+>>>>>>> v4.9.227
 			ret = -EINVAL;
 			goto out;
 		}
@@ -502,7 +506,11 @@ static int ad7152_probe(struct i2c_client *client,
 	indio_dev->num_channels = ARRAY_SIZE(ad7152_channels);
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
+<<<<<<< HEAD
 	ret = iio_device_register(indio_dev);
+=======
+	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -511,6 +519,7 @@ static int ad7152_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ad7152_remove(struct i2c_client *client)
 {
 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
@@ -520,6 +529,8 @@ static int ad7152_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct i2c_device_id ad7152_id[] = {
 	{ "ad7152", 0 },
 	{ "ad7153", 1 },
@@ -533,7 +544,10 @@ static struct i2c_driver ad7152_driver = {
 		.name = KBUILD_MODNAME,
 	},
 	.probe = ad7152_probe,
+<<<<<<< HEAD
 	.remove = ad7152_remove,
+=======
+>>>>>>> v4.9.227
 	.id_table = ad7152_id,
 };
 module_i2c_driver(ad7152_driver);

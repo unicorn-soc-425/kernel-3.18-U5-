@@ -24,12 +24,22 @@
 #ifndef _INTEL_RENDERSTATE_H
 #define _INTEL_RENDERSTATE_H
 
+<<<<<<< HEAD
 #include "i915_drv.h"
 
 extern const struct intel_renderstate_rodata gen6_null_state;
 extern const struct intel_renderstate_rodata gen7_null_state;
 extern const struct intel_renderstate_rodata gen8_null_state;
 extern const struct intel_renderstate_rodata gen9_null_state;
+=======
+#include <linux/types.h>
+
+struct intel_renderstate_rodata {
+	const u32 *reloc;
+	const u32 *batch;
+	const u32 batch_items;
+};
+>>>>>>> v4.9.227
 
 #define RO_RENDERSTATE(_g)						\
 	const struct intel_renderstate_rodata gen ## _g ## _null_state = { \
@@ -38,4 +48,12 @@ extern const struct intel_renderstate_rodata gen9_null_state;
 		.batch_items = sizeof(gen ## _g ## _null_state_batch)/4, \
 	}
 
+<<<<<<< HEAD
+=======
+extern const struct intel_renderstate_rodata gen6_null_state;
+extern const struct intel_renderstate_rodata gen7_null_state;
+extern const struct intel_renderstate_rodata gen8_null_state;
+extern const struct intel_renderstate_rodata gen9_null_state;
+
+>>>>>>> v4.9.227
 #endif /* INTEL_RENDERSTATE_H */

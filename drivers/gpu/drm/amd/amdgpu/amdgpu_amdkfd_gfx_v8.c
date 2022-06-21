@@ -62,10 +62,17 @@ static bool kgd_hqd_is_occupied(struct kgd_dev *kgd, uint64_t queue_address,
 		uint32_t pipe_id, uint32_t queue_id);
 static bool kgd_hqd_sdma_is_occupied(struct kgd_dev *kgd, void *mqd);
 static int kgd_hqd_destroy(struct kgd_dev *kgd, uint32_t reset_type,
+<<<<<<< HEAD
 				unsigned int timeout, uint32_t pipe_id,
 				uint32_t queue_id);
 static int kgd_hqd_sdma_destroy(struct kgd_dev *kgd, void *mqd,
 				unsigned int timeout);
+=======
+				unsigned int utimeout, uint32_t pipe_id,
+				uint32_t queue_id);
+static int kgd_hqd_sdma_destroy(struct kgd_dev *kgd, void *mqd,
+				unsigned int utimeout);
+>>>>>>> v4.9.227
 static void write_vmid_invalidate_request(struct kgd_dev *kgd, uint8_t vmid);
 static int kgd_address_watch_disable(struct kgd_dev *kgd);
 static int kgd_address_watch_execute(struct kgd_dev *kgd,
@@ -115,7 +122,11 @@ static const struct kfd2kgd_calls kfd2kgd = {
 	.get_fw_version = get_fw_version
 };
 
+<<<<<<< HEAD
 struct kfd2kgd_calls *amdgpu_amdkfd_gfx_8_0_get_functions()
+=======
+struct kfd2kgd_calls *amdgpu_amdkfd_gfx_8_0_get_functions(void)
+>>>>>>> v4.9.227
 {
 	return (struct kfd2kgd_calls *)&kfd2kgd;
 }
@@ -349,11 +360,19 @@ static bool kgd_hqd_sdma_is_occupied(struct kgd_dev *kgd, void *mqd)
 }
 
 static int kgd_hqd_destroy(struct kgd_dev *kgd, uint32_t reset_type,
+<<<<<<< HEAD
 				unsigned int timeout, uint32_t pipe_id,
+=======
+				unsigned int utimeout, uint32_t pipe_id,
+>>>>>>> v4.9.227
 				uint32_t queue_id)
 {
 	struct amdgpu_device *adev = get_amdgpu_device(kgd);
 	uint32_t temp;
+<<<<<<< HEAD
+=======
+	int timeout = utimeout;
+>>>>>>> v4.9.227
 
 	acquire_queue(kgd, pipe_id, queue_id);
 
@@ -363,9 +382,14 @@ static int kgd_hqd_destroy(struct kgd_dev *kgd, uint32_t reset_type,
 		temp = RREG32(mmCP_HQD_ACTIVE);
 		if (temp & CP_HQD_ACTIVE__ACTIVE_MASK)
 			break;
+<<<<<<< HEAD
 		if (timeout == 0) {
 			pr_err("kfd: cp queue preemption time out (%dms)\n",
 				temp);
+=======
+		if (timeout <= 0) {
+			pr_err("kfd: cp queue preemption time out.\n");
+>>>>>>> v4.9.227
 			release_queue(kgd);
 			return -ETIME;
 		}
@@ -378,12 +402,20 @@ static int kgd_hqd_destroy(struct kgd_dev *kgd, uint32_t reset_type,
 }
 
 static int kgd_hqd_sdma_destroy(struct kgd_dev *kgd, void *mqd,
+<<<<<<< HEAD
 				unsigned int timeout)
+=======
+				unsigned int utimeout)
+>>>>>>> v4.9.227
 {
 	struct amdgpu_device *adev = get_amdgpu_device(kgd);
 	struct cik_sdma_rlc_registers *m;
 	uint32_t sdma_base_addr;
 	uint32_t temp;
+<<<<<<< HEAD
+=======
+	int timeout = utimeout;
+>>>>>>> v4.9.227
 
 	m = get_sdma_mqd(mqd);
 	sdma_base_addr = get_sdma_base_addr(m);
@@ -396,7 +428,11 @@ static int kgd_hqd_sdma_destroy(struct kgd_dev *kgd, void *mqd,
 		temp = RREG32(sdma_base_addr + mmSDMA0_RLC0_CONTEXT_STATUS);
 		if (temp & SDMA0_STATUS_REG__RB_CMD_IDLE__SHIFT)
 			break;
+<<<<<<< HEAD
 		if (timeout == 0)
+=======
+		if (timeout <= 0)
+>>>>>>> v4.9.227
 			return -ETIME;
 		msleep(20);
 		timeout -= 20;

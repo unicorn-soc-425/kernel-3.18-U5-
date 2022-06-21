@@ -44,8 +44,13 @@
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
 #include <sysdev/simple_gpio.h>
+<<<<<<< HEAD
 #include <asm/qe.h>
 #include <asm/qe_ic.h>
+=======
+#include <soc/fsl/qe/qe.h>
+#include <soc/fsl/qe/qe_ic.h>
+>>>>>>> v4.9.227
 
 #include "mpc83xx.h"
 
@@ -66,8 +71,12 @@ static void __init mpc836x_mds_setup_arch(void)
 	struct device_node *np;
 	u8 __iomem *bcsr_regs = NULL;
 
+<<<<<<< HEAD
 	if (ppc_md.progress)
 		ppc_md.progress("mpc836x_mds_setup_arch()", 0);
+=======
+	mpc83xx_setup_arch();
+>>>>>>> v4.9.227
 
 	/* Map BCSR area */
 	np = of_find_node_by_name(NULL, "bcsr");
@@ -79,11 +88,15 @@ static void __init mpc836x_mds_setup_arch(void)
 		of_node_put(np);
 	}
 
+<<<<<<< HEAD
 	mpc83xx_setup_pci();
 
 #ifdef CONFIG_QUICC_ENGINE
 	qe_reset();
 
+=======
+#ifdef CONFIG_QUICC_ENGINE
+>>>>>>> v4.9.227
 	if ((np = of_find_node_by_name(NULL, "par_io")) != NULL) {
 		par_io_init(np);
 		of_node_put(np);
@@ -211,9 +224,13 @@ machine_arch_initcall(mpc836x_mds, mpc836x_usb_cfg);
  */
 static int __init mpc836x_mds_probe(void)
 {
+<<<<<<< HEAD
         unsigned long root = of_get_flat_dt_root();
 
         return of_flat_dt_is_compatible(root, "MPC836xMDS");
+=======
+	return of_machine_is_compatible("MPC836xMDS");
+>>>>>>> v4.9.227
 }
 
 define_machine(mpc836x_mds) {

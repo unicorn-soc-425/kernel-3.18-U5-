@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Unusual Devices File for the Freecom USB/IDE adaptor
+=======
+/*
+ * Unusual Devices File for the Freecom USB/IDE adaptor
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the

@@ -7,7 +7,11 @@
 #include "nfs3_fs.h"
 #include "nfs.h"
 
+<<<<<<< HEAD
 static struct nfs_subversion nfs_v3 = {
+=======
+struct nfs_subversion nfs_v3 = {
+>>>>>>> v4.9.227
 	.owner = THIS_MODULE,
 	.nfs_fs   = &nfs_fs_type,
 	.rpc_vers = &nfs_version3,

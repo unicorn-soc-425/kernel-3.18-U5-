@@ -16,4 +16,9 @@ void zone_sizes_init(void);
 
 extern int after_bootmem;
 
+<<<<<<< HEAD
+=======
+void update_cache_mode_entry(unsigned entry, enum page_cache_mode cache);
+
+>>>>>>> v4.9.227
 #endif	/* __X86_MM_INTERNAL_H */

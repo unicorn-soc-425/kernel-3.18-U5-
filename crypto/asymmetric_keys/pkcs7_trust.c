@@ -17,7 +17,11 @@
 #include <linux/asn1.h>
 #include <linux/key.h>
 #include <keys/asymmetric-type.h>
+<<<<<<< HEAD
 #include "public_key.h"
+=======
+#include <crypto/public_key.h>
+>>>>>>> v4.9.227
 #include "pkcs7_parser.h"
 
 /**
@@ -27,10 +31,16 @@ static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 				    struct pkcs7_signed_info *sinfo,
 				    struct key *trust_keyring)
 {
+<<<<<<< HEAD
 	struct public_key_signature *sig = &sinfo->sig;
 	struct x509_certificate *x509, *last = NULL, *p;
 	struct key *key;
 	bool trusted;
+=======
+	struct public_key_signature *sig = sinfo->sig;
+	struct x509_certificate *x509, *last = NULL, *p;
+	struct key *key;
+>>>>>>> v4.9.227
 	int ret;
 
 	kenter(",%u,", sinfo->index);
@@ -42,10 +52,15 @@ static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 
 	for (x509 = sinfo->signer; x509; x509 = x509->signer) {
 		if (x509->seen) {
+<<<<<<< HEAD
 			if (x509->verified) {
 				trusted = x509->trusted;
 				goto verified;
 			}
+=======
+			if (x509->verified)
+				goto verified;
+>>>>>>> v4.9.227
 			kleave(" = -ENOKEY [cached]");
 			return -ENOKEY;
 		}
@@ -54,8 +69,13 @@ static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 		/* Look to see if this certificate is present in the trusted
 		 * keys.
 		 */
+<<<<<<< HEAD
 		key = x509_request_asymmetric_key(trust_keyring, x509->id,
 						  false);
+=======
+		key = find_asymmetric_key(trust_keyring,
+					  x509->id, x509->skid, false);
+>>>>>>> v4.9.227
 		if (!IS_ERR(key)) {
 			/* One of the X.509 certificates in the PKCS#7 message
 			 * is apparently the same as one we already trust.
@@ -79,15 +99,27 @@ static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 
 		might_sleep();
 		last = x509;
+<<<<<<< HEAD
 		sig = &last->sig;
+=======
+		sig = last->sig;
+>>>>>>> v4.9.227
 	}
 
 	/* No match - see if the root certificate has a signer amongst the
 	 * trusted keys.
 	 */
+<<<<<<< HEAD
 	if (last && last->authority) {
 		key = x509_request_asymmetric_key(trust_keyring, last->authority,
 						  false);
+=======
+	if (last && (last->sig->auth_ids[0] || last->sig->auth_ids[1])) {
+		key = find_asymmetric_key(trust_keyring,
+					  last->sig->auth_ids[0],
+					  last->sig->auth_ids[1],
+					  false);
+>>>>>>> v4.9.227
 		if (!IS_ERR(key)) {
 			x509 = last;
 			pr_devel("sinfo %u: Root cert %u signer is key %x\n",
@@ -101,13 +133,22 @@ static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 	/* As a last resort, see if we have a trusted public key that matches
 	 * the signed info directly.
 	 */
+<<<<<<< HEAD
 	key = x509_request_asymmetric_key(trust_keyring,
 					  sinfo->signing_cert_id,
 					  false);
+=======
+	key = find_asymmetric_key(trust_keyring,
+				  sinfo->sig->auth_ids[0], NULL, false);
+>>>>>>> v4.9.227
 	if (!IS_ERR(key)) {
 		pr_devel("sinfo %u: Direct signer is key %x\n",
 			 sinfo->index, key_serial(key));
 		x509 = NULL;
+<<<<<<< HEAD
+=======
+		sig = sinfo->sig;
+>>>>>>> v4.9.227
 		goto matched;
 	}
 	if (PTR_ERR(key) != -ENOKEY)
@@ -118,7 +159,10 @@ static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 
 matched:
 	ret = verify_signature(key, sig);
+<<<<<<< HEAD
 	trusted = test_bit(KEY_FLAG_TRUSTED, &key->flags);
+=======
+>>>>>>> v4.9.227
 	key_put(key);
 	if (ret < 0) {
 		if (ret == -ENOMEM)
@@ -130,12 +174,18 @@ matched:
 verified:
 	if (x509) {
 		x509->verified = true;
+<<<<<<< HEAD
 		for (p = sinfo->signer; p != x509; p = p->signer) {
 			p->verified = true;
 			p->trusted = trusted;
 		}
 	}
 	sinfo->trusted = trusted;
+=======
+		for (p = sinfo->signer; p != x509; p = p->signer)
+			p->verified = true;
+	}
+>>>>>>> v4.9.227
 	kleave(" = 0");
 	return 0;
 }
@@ -144,7 +194,10 @@ verified:
  * pkcs7_validate_trust - Validate PKCS#7 trust chain
  * @pkcs7: The PKCS#7 certificate to validate
  * @trust_keyring: Signing certificates to use as starting points
+<<<<<<< HEAD
  * @_trusted: Set to true if trustworth, false otherwise
+=======
+>>>>>>> v4.9.227
  *
  * Validate that the certificate chain inside the PKCS#7 message intersects
  * keys we already know and trust.
@@ -166,16 +219,23 @@ verified:
  * May also return -ENOMEM.
  */
 int pkcs7_validate_trust(struct pkcs7_message *pkcs7,
+<<<<<<< HEAD
 			 struct key *trust_keyring,
 			 bool *_trusted)
+=======
+			 struct key *trust_keyring)
+>>>>>>> v4.9.227
 {
 	struct pkcs7_signed_info *sinfo;
 	struct x509_certificate *p;
 	int cached_ret = -ENOKEY;
 	int ret;
 
+<<<<<<< HEAD
 	*_trusted = false;
 
+=======
+>>>>>>> v4.9.227
 	for (p = pkcs7->certs; p; p = p->next)
 		p->seen = false;
 
@@ -189,7 +249,10 @@ int pkcs7_validate_trust(struct pkcs7_message *pkcs7,
 				cached_ret = -ENOPKG;
 			continue;
 		case 0:
+<<<<<<< HEAD
 			*_trusted |= sinfo->trusted;
+=======
+>>>>>>> v4.9.227
 			cached_ret = 0;
 			continue;
 		default:

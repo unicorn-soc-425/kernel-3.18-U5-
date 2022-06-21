@@ -42,8 +42,13 @@ int netx_clcd_setup(struct clcd_fb *fb)
 
 	fb->panel = netx_panel;
 
+<<<<<<< HEAD
 	fb->fb.screen_base = dma_alloc_writecombine(&fb->dev->dev, 1024*1024,
 						    &dma, GFP_KERNEL);
+=======
+	fb->fb.screen_base = dma_alloc_wc(&fb->dev->dev, 1024 * 1024, &dma,
+					  GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!fb->fb.screen_base) {
 		printk(KERN_ERR "CLCD: unable to map framebuffer\n");
 		return -ENOMEM;
@@ -57,16 +62,26 @@ int netx_clcd_setup(struct clcd_fb *fb)
 
 int netx_clcd_mmap(struct clcd_fb *fb, struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	return dma_mmap_writecombine(&fb->dev->dev, vma,
 				     fb->fb.screen_base,
 				     fb->fb.fix.smem_start,
 				     fb->fb.fix.smem_len);
+=======
+	return dma_mmap_wc(&fb->dev->dev, vma, fb->fb.screen_base,
+			   fb->fb.fix.smem_start, fb->fb.fix.smem_len);
+>>>>>>> v4.9.227
 }
 
 void netx_clcd_remove(struct clcd_fb *fb)
 {
+<<<<<<< HEAD
 	dma_free_writecombine(&fb->dev->dev, fb->fb.fix.smem_len,
 			      fb->fb.screen_base, fb->fb.fix.smem_start);
+=======
+	dma_free_wc(&fb->dev->dev, fb->fb.fix.smem_len, fb->fb.screen_base,
+		    fb->fb.fix.smem_start);
+>>>>>>> v4.9.227
 }
 
 static AMBA_AHB_DEVICE(fb, "fb", 0, 0x00104000, { NETX_IRQ_LCD }, NULL);

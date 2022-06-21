@@ -68,6 +68,10 @@ struct nlm_host {
 	struct nsm_handle	*h_nsmhandle;	/* NSM status handle */
 	char			*h_addrbuf;	/* address eyecatcher */
 	struct net		*net;		/* host net */
+<<<<<<< HEAD
+=======
+	char			nodename[UNX_MAXNODENAME + 1];
+>>>>>>> v4.9.227
 };
 
 /*
@@ -235,7 +239,12 @@ void		  nlm_rebind_host(struct nlm_host *);
 struct nlm_host * nlm_get_host(struct nlm_host *);
 void		  nlm_shutdown_hosts(void);
 void		  nlm_shutdown_hosts_net(struct net *net);
+<<<<<<< HEAD
 void		  nlm_host_rebooted(const struct nlm_reboot *);
+=======
+void		  nlm_host_rebooted(const struct net *net,
+					const struct nlm_reboot *);
+>>>>>>> v4.9.227
 
 /*
  * Host monitoring
@@ -243,11 +252,21 @@ void		  nlm_host_rebooted(const struct nlm_reboot *);
 int		  nsm_monitor(const struct nlm_host *host);
 void		  nsm_unmonitor(const struct nlm_host *host);
 
+<<<<<<< HEAD
 struct nsm_handle *nsm_get_handle(const struct sockaddr *sap,
 					const size_t salen,
 					const char *hostname,
 					const size_t hostname_len);
 struct nsm_handle *nsm_reboot_lookup(const struct nlm_reboot *info);
+=======
+struct nsm_handle *nsm_get_handle(const struct net *net,
+					const struct sockaddr *sap,
+					const size_t salen,
+					const char *hostname,
+					const size_t hostname_len);
+struct nsm_handle *nsm_reboot_lookup(const struct net *net,
+					const struct nlm_reboot *info);
+>>>>>>> v4.9.227
 void		  nsm_release(struct nsm_handle *nsm);
 
 /*

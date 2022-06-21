@@ -45,7 +45,15 @@
 asmlinkage void do_IRQ(int irq, struct pt_regs * regs)
 {
 	unsigned long sp;
+<<<<<<< HEAD
 	struct pt_regs *old_regs = set_irq_regs(regs);
+=======
+	struct pt_regs *old_regs;
+
+	trace_hardirqs_off();
+
+	old_regs = set_irq_regs(regs);
+>>>>>>> v4.9.227
 	irq_enter();
 	sp = rdsp();
 	if (unlikely((sp & (PAGE_SIZE - 1)) < (PAGE_SIZE/8))) {

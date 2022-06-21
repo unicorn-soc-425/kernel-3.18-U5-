@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2007-2014 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2007-2016  B.A.T.M.A.N. contributors:
+>>>>>>> v4.9.227
  *
  * Marek Lindner, Simon Wunderlich
  *
@@ -18,6 +22,15 @@
 #ifndef _NET_BATMAN_ADV_ROUTING_H_
 #define _NET_BATMAN_ADV_ROUTING_H_
 
+<<<<<<< HEAD
+=======
+#include "main.h"
+
+#include <linux/types.h>
+
+struct sk_buff;
+
+>>>>>>> v4.9.227
 bool batadv_check_management_packet(struct sk_buff *skb,
 				    struct batadv_hard_iface *hard_iface,
 				    int header_len);
@@ -45,7 +58,13 @@ struct batadv_neigh_node *
 batadv_find_router(struct batadv_priv *bat_priv,
 		   struct batadv_orig_node *orig_node,
 		   struct batadv_hard_iface *recv_if);
+<<<<<<< HEAD
 int batadv_window_protected(struct batadv_priv *bat_priv, int32_t seq_num_diff,
 			    unsigned long *last_reset);
+=======
+bool batadv_window_protected(struct batadv_priv *bat_priv, s32 seq_num_diff,
+			     s32 seq_old_max_diff, unsigned long *last_reset,
+			     bool *protection_started);
+>>>>>>> v4.9.227
 
 #endif /* _NET_BATMAN_ADV_ROUTING_H_ */

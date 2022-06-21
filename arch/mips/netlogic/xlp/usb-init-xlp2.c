@@ -128,6 +128,12 @@ static void xlp9xx_usb_ack(struct irq_data *data)
 	case PIC_9XX_XHCI_1_IRQ:
 		port_addr = nlm_xlpii_get_usb_regbase(node, 2);
 		break;
+<<<<<<< HEAD
+=======
+	case PIC_9XX_XHCI_2_IRQ:
+		port_addr = nlm_xlpii_get_usb_regbase(node, 3);
+		break;
+>>>>>>> v4.9.227
 	default:
 		pr_err("No matching USB irq %d node  %d!\n", irq, node);
 		return;
@@ -222,14 +228,25 @@ static int __init nlm_platform_xlpii_usb_init(void)
 	}
 
 	/* XLP 9XX, multi-node */
+<<<<<<< HEAD
 	pr_info("Initializing 9XX USB Interface\n");
+=======
+	pr_info("Initializing 9XX/5XX USB Interface\n");
+>>>>>>> v4.9.227
 	for (node = 0; node < NLM_NR_NODES; node++) {
 		if (!nlm_node_present(node))
 			continue;
 		nlm_xlpii_usb_hw_reset(node, 1);
 		nlm_xlpii_usb_hw_reset(node, 2);
+<<<<<<< HEAD
 		nlm_set_pic_extra_ack(node, PIC_9XX_XHCI_0_IRQ, xlp9xx_usb_ack);
 		nlm_set_pic_extra_ack(node, PIC_9XX_XHCI_1_IRQ, xlp9xx_usb_ack);
+=======
+		nlm_xlpii_usb_hw_reset(node, 3);
+		nlm_set_pic_extra_ack(node, PIC_9XX_XHCI_0_IRQ, xlp9xx_usb_ack);
+		nlm_set_pic_extra_ack(node, PIC_9XX_XHCI_1_IRQ, xlp9xx_usb_ack);
+		nlm_set_pic_extra_ack(node, PIC_9XX_XHCI_2_IRQ, xlp9xx_usb_ack);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -253,6 +270,12 @@ static void nlm_xlp9xx_usb_fixup_final(struct pci_dev *dev)
 	case 0x22:
 		dev->irq = nlm_irq_to_xirq(node, PIC_9XX_XHCI_1_IRQ);
 		break;
+<<<<<<< HEAD
+=======
+	case 0x23:
+		dev->irq = nlm_irq_to_xirq(node, PIC_9XX_XHCI_2_IRQ);
+		break;
+>>>>>>> v4.9.227
 	}
 }
 

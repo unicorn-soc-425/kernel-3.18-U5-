@@ -14,6 +14,10 @@
 #include <linux/uaccess.h>
 #include <asm/asm-eva.h>
 #include <asm/barrier.h>
+<<<<<<< HEAD
+=======
+#include <asm/compiler.h>
+>>>>>>> v4.9.227
 #include <asm/errno.h>
 #include <asm/war.h>
 
@@ -32,6 +36,10 @@
 		"	beqzl	$1, 1b				\n"	\
 		__WEAK_LLSC_MB						\
 		"3:						\n"	\
+<<<<<<< HEAD
+=======
+		"	.insn					\n"	\
+>>>>>>> v4.9.227
 		"	.set	pop				\n"	\
 		"	.set	mips0				\n"	\
 		"	.section .fixup,\"ax\"			\n"	\
@@ -42,22 +50,41 @@
 		"	"__UA_ADDR "\t1b, 4b			\n"	\
 		"	"__UA_ADDR "\t2b, 4b			\n"	\
 		"	.previous				\n"	\
+<<<<<<< HEAD
 		: "=r" (ret), "=&r" (oldval), "=R" (*uaddr)		\
 		: "0" (0), "R" (*uaddr), "Jr" (oparg), "i" (-EFAULT)	\
+=======
+		: "=r" (ret), "=&r" (oldval),				\
+		  "=" GCC_OFF_SMALL_ASM() (*uaddr)				\
+		: "0" (0), GCC_OFF_SMALL_ASM() (*uaddr), "Jr" (oparg),	\
+		  "i" (-EFAULT)						\
+>>>>>>> v4.9.227
 		: "memory");						\
 	} else if (cpu_has_llsc) {					\
 		__asm__ __volatile__(					\
 		"	.set	push				\n"	\
 		"	.set	noat				\n"	\
+<<<<<<< HEAD
 		"	.set	arch=r4000			\n"	\
 		"1:	"user_ll("%1", "%4")" # __futex_atomic_op\n"	\
 		"	.set	mips0				\n"	\
 		"	" insn	"				\n"	\
 		"	.set	arch=r4000			\n"	\
+=======
+		"	.set	"MIPS_ISA_ARCH_LEVEL"		\n"	\
+		"1:	"user_ll("%1", "%4")" # __futex_atomic_op\n"	\
+		"	.set	mips0				\n"	\
+		"	" insn	"				\n"	\
+		"	.set	"MIPS_ISA_ARCH_LEVEL"		\n"	\
+>>>>>>> v4.9.227
 		"2:	"user_sc("$1", "%2")"			\n"	\
 		"	beqz	$1, 1b				\n"	\
 		__WEAK_LLSC_MB						\
 		"3:						\n"	\
+<<<<<<< HEAD
+=======
+		"	.insn					\n"	\
+>>>>>>> v4.9.227
 		"	.set	pop				\n"	\
 		"	.set	mips0				\n"	\
 		"	.section .fixup,\"ax\"			\n"	\
@@ -68,14 +95,22 @@
 		"	"__UA_ADDR "\t1b, 4b			\n"	\
 		"	"__UA_ADDR "\t2b, 4b			\n"	\
 		"	.previous				\n"	\
+<<<<<<< HEAD
 		: "=r" (ret), "=&r" (oldval), "=R" (*uaddr)		\
 		: "0" (0), "R" (*uaddr), "Jr" (oparg), "i" (-EFAULT)	\
+=======
+		: "=r" (ret), "=&r" (oldval),				\
+		  "=" GCC_OFF_SMALL_ASM() (*uaddr)				\
+		: "0" (0), GCC_OFF_SMALL_ASM() (*uaddr), "Jr" (oparg),	\
+		  "i" (-EFAULT)						\
+>>>>>>> v4.9.227
 		: "memory");						\
 	} else								\
 		ret = -ENOSYS;						\
 }
 
 static inline int
+<<<<<<< HEAD
 futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 {
 	int op = (encoded_op >> 28) & 7;
@@ -88,6 +123,11 @@ futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 
 	if (! access_ok (VERIFY_WRITE, uaddr, sizeof(u32)))
 		return -EFAULT;
+=======
+arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
+{
+	int oldval = 0, ret;
+>>>>>>> v4.9.227
 
 	pagefault_disable();
 
@@ -118,6 +158,7 @@ futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 
 	pagefault_enable();
 
+<<<<<<< HEAD
 	if (!ret) {
 		switch (cmp) {
 		case FUTEX_OP_CMP_EQ: ret = (oldval == cmparg); break;
@@ -129,6 +170,11 @@ futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 		default: ret = -ENOSYS;
 		}
 	}
+=======
+	if (!ret)
+		*oval = oldval;
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -157,6 +203,10 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 		"	beqzl	$1, 1b					\n"
 		__WEAK_LLSC_MB
 		"3:							\n"
+<<<<<<< HEAD
+=======
+		"	.insn						\n"
+>>>>>>> v4.9.227
 		"	.set	pop					\n"
 		"	.section .fixup,\"ax\"				\n"
 		"4:	li	%0, %6					\n"
@@ -166,24 +216,42 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 		"	"__UA_ADDR "\t1b, 4b				\n"
 		"	"__UA_ADDR "\t2b, 4b				\n"
 		"	.previous					\n"
+<<<<<<< HEAD
 		: "+r" (ret), "=&r" (val), "=R" (*uaddr)
 		: "R" (*uaddr), "Jr" (oldval), "Jr" (newval), "i" (-EFAULT)
+=======
+		: "+r" (ret), "=&r" (val), "=" GCC_OFF_SMALL_ASM() (*uaddr)
+		: GCC_OFF_SMALL_ASM() (*uaddr), "Jr" (oldval), "Jr" (newval),
+		  "i" (-EFAULT)
+>>>>>>> v4.9.227
 		: "memory");
 	} else if (cpu_has_llsc) {
 		__asm__ __volatile__(
 		"# futex_atomic_cmpxchg_inatomic			\n"
 		"	.set	push					\n"
 		"	.set	noat					\n"
+<<<<<<< HEAD
 		"	.set	arch=r4000				\n"
+=======
+		"	.set	"MIPS_ISA_ARCH_LEVEL"			\n"
+>>>>>>> v4.9.227
 		"1:	"user_ll("%1", "%3")"				\n"
 		"	bne	%1, %z4, 3f				\n"
 		"	.set	mips0					\n"
 		"	move	$1, %z5					\n"
+<<<<<<< HEAD
 		"	.set	arch=r4000				\n"
+=======
+		"	.set	"MIPS_ISA_ARCH_LEVEL"			\n"
+>>>>>>> v4.9.227
 		"2:	"user_sc("$1", "%2")"				\n"
 		"	beqz	$1, 1b					\n"
 		__WEAK_LLSC_MB
 		"3:							\n"
+<<<<<<< HEAD
+=======
+		"	.insn						\n"
+>>>>>>> v4.9.227
 		"	.set	pop					\n"
 		"	.section .fixup,\"ax\"				\n"
 		"4:	li	%0, %6					\n"
@@ -193,8 +261,14 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 		"	"__UA_ADDR "\t1b, 4b				\n"
 		"	"__UA_ADDR "\t2b, 4b				\n"
 		"	.previous					\n"
+<<<<<<< HEAD
 		: "+r" (ret), "=&r" (val), "=R" (*uaddr)
 		: "R" (*uaddr), "Jr" (oldval), "Jr" (newval), "i" (-EFAULT)
+=======
+		: "+r" (ret), "=&r" (val), "=" GCC_OFF_SMALL_ASM() (*uaddr)
+		: GCC_OFF_SMALL_ASM() (*uaddr), "Jr" (oldval), "Jr" (newval),
+		  "i" (-EFAULT)
+>>>>>>> v4.9.227
 		: "memory");
 	} else
 		return -ENOSYS;

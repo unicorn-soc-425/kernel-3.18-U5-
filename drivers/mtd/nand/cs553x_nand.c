@@ -97,7 +97,11 @@
 
 static void cs553x_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 
 	while (unlikely(len > 0x800)) {
 		memcpy_fromio(buf, this->IO_ADDR_R, 0x800);
@@ -109,7 +113,11 @@ static void cs553x_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 
 static void cs553x_write_buf(struct mtd_info *mtd, const u_char *buf, int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 
 	while (unlikely(len > 0x800)) {
 		memcpy_toio(this->IO_ADDR_R, buf, 0x800);
@@ -121,13 +129,21 @@ static void cs553x_write_buf(struct mtd_info *mtd, const u_char *buf, int len)
 
 static unsigned char cs553x_read_byte(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	return readb(this->IO_ADDR_R);
 }
 
 static void cs553x_write_byte(struct mtd_info *mtd, u_char byte)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	int i = 100000;
 
 	while (i && readb(this->IO_ADDR_R + MM_NAND_STS) & CS_NAND_CTLR_BUSY) {
@@ -140,7 +156,11 @@ static void cs553x_write_byte(struct mtd_info *mtd, u_char byte)
 static void cs553x_hwcontrol(struct mtd_info *mtd, int cmd,
 			     unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	void __iomem *mmio_base = this->IO_ADDR_R;
 	if (ctrl & NAND_CTRL_CHANGE) {
 		unsigned char ctl = (ctrl & ~NAND_CTRL_CHANGE ) ^ 0x01;
@@ -152,7 +172,11 @@ static void cs553x_hwcontrol(struct mtd_info *mtd, int cmd,
 
 static int cs553x_device_ready(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	void __iomem *mmio_base = this->IO_ADDR_R;
 	unsigned char foo = readb(mmio_base + MM_NAND_STS);
 
@@ -161,7 +185,11 @@ static int cs553x_device_ready(struct mtd_info *mtd)
 
 static void cs_enable_hwecc(struct mtd_info *mtd, int mode)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	void __iomem *mmio_base = this->IO_ADDR_R;
 
 	writeb(0x07, mmio_base + MM_NAND_ECC_CTL);
@@ -170,7 +198,11 @@ static void cs_enable_hwecc(struct mtd_info *mtd, int mode)
 static int cs_calculate_ecc(struct mtd_info *mtd, const u_char *dat, u_char *ecc_code)
 {
 	uint32_t ecc;
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	void __iomem *mmio_base = this->IO_ADDR_R;
 
 	ecc = readl(mmio_base + MM_NAND_STS);
@@ -197,17 +229,28 @@ static int __init cs553x_init_one(int cs, int mmio, unsigned long adr)
 	}
 
 	/* Allocate memory for MTD device structure and private data */
+<<<<<<< HEAD
 	new_mtd = kzalloc(sizeof(struct mtd_info) + sizeof(struct nand_chip), GFP_KERNEL);
 	if (!new_mtd) {
+=======
+	this = kzalloc(sizeof(struct nand_chip), GFP_KERNEL);
+	if (!this) {
+>>>>>>> v4.9.227
 		err = -ENOMEM;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/* Get pointer to private data */
 	this = (struct nand_chip *)(&new_mtd[1]);
 
 	/* Link the private data with the MTD structure */
 	new_mtd->priv = this;
+=======
+	new_mtd = nand_to_mtd(this);
+
+	/* Link the private data with the MTD structure */
+>>>>>>> v4.9.227
 	new_mtd->owner = THIS_MODULE;
 
 	/* map physical address */
@@ -237,6 +280,7 @@ static int __init cs553x_init_one(int cs, int mmio, unsigned long adr)
 	/* Enable the following for a flash based bad block table */
 	this->bbt_options = NAND_BBT_USE_FLASH;
 
+<<<<<<< HEAD
 	/* Scan to find existence of the device */
 	if (nand_scan(new_mtd, 1)) {
 		err = -ENXIO;
@@ -244,14 +288,36 @@ static int __init cs553x_init_one(int cs, int mmio, unsigned long adr)
 	}
 
 	new_mtd->name = kasprintf(GFP_KERNEL, "cs553x_nand_cs%d", cs);
+=======
+	new_mtd->name = kasprintf(GFP_KERNEL, "cs553x_nand_cs%d", cs);
+	if (!new_mtd->name) {
+		err = -ENOMEM;
+		goto out_ior;
+	}
+
+	/* Scan to find existence of the device */
+	if (nand_scan(new_mtd, 1)) {
+		err = -ENXIO;
+		goto out_free;
+	}
+>>>>>>> v4.9.227
 
 	cs553x_mtd[cs] = new_mtd;
 	goto out;
 
+<<<<<<< HEAD
 out_ior:
 	iounmap(this->IO_ADDR_R);
 out_mtd:
 	kfree(new_mtd);
+=======
+out_free:
+	kfree(new_mtd->name);
+out_ior:
+	iounmap(this->IO_ADDR_R);
+out_mtd:
+	kfree(this);
+>>>>>>> v4.9.227
 out:
 	return err;
 }
@@ -331,19 +397,32 @@ static void __exit cs553x_cleanup(void)
 		if (!mtd)
 			continue;
 
+<<<<<<< HEAD
 		this = cs553x_mtd[i]->priv;
 		mmio_base = this->IO_ADDR_R;
 
 		/* Release resources, unregister device */
 		nand_release(cs553x_mtd[i]);
 		kfree(cs553x_mtd[i]->name);
+=======
+		this = mtd_to_nand(mtd);
+		mmio_base = this->IO_ADDR_R;
+
+		/* Release resources, unregister device */
+		nand_release(mtd);
+		kfree(mtd->name);
+>>>>>>> v4.9.227
 		cs553x_mtd[i] = NULL;
 
 		/* unmap physical address */
 		iounmap(mmio_base);
 
 		/* Free the MTD device structure */
+<<<<<<< HEAD
 		kfree(mtd);
+=======
+		kfree(this);
+>>>>>>> v4.9.227
 	}
 }
 

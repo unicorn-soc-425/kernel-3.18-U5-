@@ -21,7 +21,10 @@
 #ifndef _FC0012_H_
 #define _FC0012_H_
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include "dvb_frontend.h"
 #include "fc001x-common.h"
 

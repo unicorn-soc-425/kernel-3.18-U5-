@@ -16,10 +16,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in the
  * file called COPYING.
  */
@@ -1486,6 +1489,7 @@ static dma_cookie_t ppc440spe_adma_run_tx_complete_actions(
 		cookie = desc->async_tx.cookie;
 		desc->async_tx.cookie = 0;
 
+<<<<<<< HEAD
 		/* call the callback (must not sleep or submit new
 		 * operations to this channel)
 		 */
@@ -1494,6 +1498,13 @@ static dma_cookie_t ppc440spe_adma_run_tx_complete_actions(
 				desc->async_tx.callback_param);
 
 		dma_descriptor_unmap(&desc->async_tx);
+=======
+		dma_descriptor_unmap(&desc->async_tx);
+		/* call the callback (must not sleep or submit new
+		 * operations to this channel)
+		 */
+		dmaengine_desc_get_callback_invoke(&desc->async_tx, NULL);
+>>>>>>> v4.9.227
 	}
 
 	/* run dependent operations */
@@ -3895,7 +3906,11 @@ static int ppc440spe_adma_setup_irqs(struct ppc440spe_adma_device *adev,
 	np = ofdev->dev.of_node;
 	if (adev->id != PPC440SPE_XOR_ID) {
 		adev->err_irq = irq_of_parse_and_map(np, 1);
+<<<<<<< HEAD
 		if (adev->err_irq == NO_IRQ) {
+=======
+		if (!adev->err_irq) {
+>>>>>>> v4.9.227
 			dev_warn(adev->dev, "no err irq resource?\n");
 			*initcode = PPC_ADMA_INIT_IRQ2;
 			adev->err_irq = -ENXIO;
@@ -3906,7 +3921,11 @@ static int ppc440spe_adma_setup_irqs(struct ppc440spe_adma_device *adev,
 	}
 
 	adev->irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (adev->irq == NO_IRQ) {
+=======
+	if (!adev->irq) {
+>>>>>>> v4.9.227
 		dev_err(adev->dev, "no irq resource\n");
 		*initcode = PPC_ADMA_INIT_IRQ1;
 		ret = -ENXIO;
@@ -4088,7 +4107,10 @@ static int ppc440spe_adma_probe(struct platform_device *ofdev)
 	/* create a device */
 	adev = kzalloc(sizeof(*adev), GFP_KERNEL);
 	if (!adev) {
+<<<<<<< HEAD
 		dev_err(&ofdev->dev, "failed to allocate device\n");
+=======
+>>>>>>> v4.9.227
 		initcode = PPC_ADMA_INIT_ALLOC;
 		ret = -ENOMEM;
 		goto err_adev_alloc;
@@ -4149,7 +4171,10 @@ static int ppc440spe_adma_probe(struct platform_device *ofdev)
 	/* create a channel */
 	chan = kzalloc(sizeof(*chan), GFP_KERNEL);
 	if (!chan) {
+<<<<<<< HEAD
 		dev_err(&ofdev->dev, "can't allocate channel structure\n");
+=======
+>>>>>>> v4.9.227
 		initcode = PPC_ADMA_INIT_CHANNEL;
 		ret = -ENOMEM;
 		goto err_chan_alloc;
@@ -4579,7 +4604,10 @@ static struct platform_driver ppc440spe_adma_driver = {
 	.remove = ppc440spe_adma_remove,
 	.driver = {
 		.name = "PPC440SP(E)-ADMA",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ppc440spe_adma_of_match,
 	},
 };

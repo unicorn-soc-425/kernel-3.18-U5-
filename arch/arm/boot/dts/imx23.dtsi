@@ -111,6 +111,10 @@
 
 				gpio0: gpio@0 {
 					compatible = "fsl,imx23-gpio", "fsl,mxs-gpio";
+<<<<<<< HEAD
+=======
+					reg = <0>;
+>>>>>>> v4.9.227
 					interrupts = <16>;
 					gpio-controller;
 					#gpio-cells = <2>;
@@ -120,6 +124,10 @@
 
 				gpio1: gpio@1 {
 					compatible = "fsl,imx23-gpio", "fsl,mxs-gpio";
+<<<<<<< HEAD
+=======
+					reg = <1>;
+>>>>>>> v4.9.227
 					interrupts = <17>;
 					gpio-controller;
 					#gpio-cells = <2>;
@@ -129,6 +137,10 @@
 
 				gpio2: gpio@2 {
 					compatible = "fsl,imx23-gpio", "fsl,mxs-gpio";
+<<<<<<< HEAD
+=======
+					reg = <2>;
+>>>>>>> v4.9.227
 					interrupts = <18>;
 					gpio-controller;
 					#gpio-cells = <2>;
@@ -171,6 +183,20 @@
 					fsl,pull-up = <MXS_PULL_DISABLE>;
 				};
 
+<<<<<<< HEAD
+=======
+				auart1_2pins_a: auart1-2pins@0 {
+					reg = <0>;
+					fsl,pinmux-ids = <
+						MX23_PAD_GPMI_D14__AUART2_RX
+						MX23_PAD_GPMI_D15__AUART2_TX
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+				};
+
+>>>>>>> v4.9.227
 				gpmi_pins_a: gpmi-nand@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
@@ -249,6 +275,43 @@
 					fsl,pull-up = <MXS_PULL_DISABLE>;
 				};
 
+<<<<<<< HEAD
+=======
+				mmc1_4bit_pins_a: mmc1-4bit@0 {
+					reg = <0>;
+					fsl,pinmux-ids = <
+						MX23_PAD_GPMI_D00__SSP2_DATA0
+						MX23_PAD_GPMI_D01__SSP2_DATA1
+						MX23_PAD_GPMI_D02__SSP2_DATA2
+						MX23_PAD_GPMI_D03__SSP2_DATA3
+						MX23_PAD_GPMI_RDY1__SSP2_CMD
+						MX23_PAD_GPMI_WRN__SSP2_SCK
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+				};
+
+				mmc1_8bit_pins_a: mmc1-8bit@0 {
+					reg = <0>;
+					fsl,pinmux-ids = <
+						MX23_PAD_GPMI_D00__SSP2_DATA0
+						MX23_PAD_GPMI_D01__SSP2_DATA1
+						MX23_PAD_GPMI_D02__SSP2_DATA2
+						MX23_PAD_GPMI_D03__SSP2_DATA3
+						MX23_PAD_GPMI_D04__SSP2_DATA4
+						MX23_PAD_GPMI_D05__SSP2_DATA5
+						MX23_PAD_GPMI_D06__SSP2_DATA6
+						MX23_PAD_GPMI_D07__SSP2_DATA7
+						MX23_PAD_GPMI_RDY1__SSP2_CMD
+						MX23_PAD_GPMI_WRN__SSP2_SCK
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+				};
+
+>>>>>>> v4.9.227
 				pwm2_pins_a: pwm2@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
@@ -308,6 +371,42 @@
 					fsl,voltage = <MXS_VOLTAGE_HIGH>;
 					fsl,pull-up = <MXS_PULL_ENABLE>;
 				};
+<<<<<<< HEAD
+=======
+
+				i2c_pins_a: i2c@0 {
+					reg = <0>;
+					fsl,pinmux-ids = <
+						MX23_PAD_I2C_SCL__I2C_SCL
+						MX23_PAD_I2C_SDA__I2C_SDA
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+				};
+
+				i2c_pins_b: i2c@1 {
+					reg = <1>;
+					fsl,pinmux-ids = <
+						MX23_PAD_LCD_ENABLE__I2C_SCL
+						MX23_PAD_LCD_HSYNC__I2C_SDA
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+				};
+
+				i2c_pins_c: i2c@2 {
+					reg = <2>;
+					fsl,pinmux-ids = <
+						MX23_PAD_SSP1_DATA1__I2C_SCL
+						MX23_PAD_SSP1_DATA2__I2C_SDA
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+				};
+>>>>>>> v4.9.227
 			};
 
 			digctl@8001c000 {
@@ -350,9 +449,17 @@
 			};
 
 			ocotp@8002c000 {
+<<<<<<< HEAD
 				compatible = "fsl,ocotp";
 				reg = <0x8002c000 0x2000>;
 				status = "disabled";
+=======
+				compatible = "fsl,imx23-ocotp", "fsl,ocotp";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				reg = <0x8002c000 0x2000>;
+				clocks = <&clks 15>;
+>>>>>>> v4.9.227
 			};
 
 			axi-ahb@8002e000 {
@@ -435,6 +542,10 @@
 				interrupts = <36 37 38 39 40 41 42 43 44>;
 				status = "disabled";
 				clocks = <&clks 26>;
+<<<<<<< HEAD
+=======
+				#io-channel-cells = <1>;
+>>>>>>> v4.9.227
 			};
 
 			spdif@80054000 {
@@ -444,8 +555,18 @@
 				status = "disabled";
 			};
 
+<<<<<<< HEAD
 			i2c@80058000 {
 				reg = <0x80058000 0x2000>;
+=======
+			i2c: i2c@80058000 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				compatible = "fsl,imx23-i2c";
+				reg = <0x80058000 0x2000>;
+				interrupts = <27>;
+				clock-frequency = <100000>;
+>>>>>>> v4.9.227
 				dmas = <&dma_apbx 3>;
 				dma-names = "rx-tx";
 				status = "disabled";
@@ -528,7 +649,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	iio_hwmon {
+=======
+	iio-hwmon {
+>>>>>>> v4.9.227
 		compatible = "iio-hwmon";
 		io-channels = <&lradc 8>;
 	};

@@ -196,6 +196,10 @@
 #define AS3722_LDO3_VSEL_MIN				0x01
 #define AS3722_LDO3_VSEL_MAX				0x2D
 #define AS3722_LDO3_NUM_VOLT				0x2D
+<<<<<<< HEAD
+=======
+#define AS3722_LDO6_VSEL_BYPASS 			0x3F
+>>>>>>> v4.9.227
 #define AS3722_LDO_VSEL_MASK				0x7F
 #define AS3722_LDO_VSEL_MIN				0x01
 #define AS3722_LDO_VSEL_MAX				0x7F

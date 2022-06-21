@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -44,20 +52,26 @@
 #include "../include/obd_class.h"
 #include "ptlrpc_internal.h"
 
+<<<<<<< HEAD
 static int suppress_pings;
 module_param(suppress_pings, int, 0644);
 MODULE_PARM_DESC(suppress_pings, "Suppress pings");
 
+=======
+>>>>>>> v4.9.227
 struct mutex pinger_mutex;
 static LIST_HEAD(pinger_imports);
 static struct list_head timeout_list = LIST_HEAD_INIT(timeout_list);
 
+<<<<<<< HEAD
 int ptlrpc_pinger_suppress_pings(void)
 {
 	return suppress_pings;
 }
 EXPORT_SYMBOL(ptlrpc_pinger_suppress_pings);
 
+=======
+>>>>>>> v4.9.227
 struct ptlrpc_request *
 ptlrpc_prep_ping(struct obd_import *imp)
 {
@@ -67,7 +81,12 @@ ptlrpc_prep_ping(struct obd_import *imp)
 					LUSTRE_OBD_VERSION, OBD_PING);
 	if (req) {
 		ptlrpc_request_set_replen(req);
+<<<<<<< HEAD
 		req->rq_no_resend = req->rq_no_delay = 1;
+=======
+		req->rq_no_resend = 1;
+		req->rq_no_delay = 1;
+>>>>>>> v4.9.227
 	}
 	return req;
 }
@@ -78,7 +97,11 @@ int ptlrpc_obd_ping(struct obd_device *obd)
 	struct ptlrpc_request *req;
 
 	req = ptlrpc_prep_ping(obd->u.cli.cl_import);
+<<<<<<< HEAD
 	if (req == NULL)
+=======
+	if (!req)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	req->rq_send_state = LUSTRE_IMP_FULL;
@@ -91,12 +114,20 @@ int ptlrpc_obd_ping(struct obd_device *obd)
 }
 EXPORT_SYMBOL(ptlrpc_obd_ping);
 
+<<<<<<< HEAD
 int ptlrpc_ping(struct obd_import *imp)
+=======
+static int ptlrpc_ping(struct obd_import *imp)
+>>>>>>> v4.9.227
 {
 	struct ptlrpc_request *req;
 
 	req = ptlrpc_prep_ping(imp);
+<<<<<<< HEAD
 	if (req == NULL) {
+=======
+	if (!req) {
+>>>>>>> v4.9.227
 		CERROR("OOM trying to ping %s->%s\n",
 		       imp->imp_obd->obd_uuid.uuid,
 		       obd2cli_tgt(imp->imp_obd));
@@ -105,14 +136,25 @@ int ptlrpc_ping(struct obd_import *imp)
 
 	DEBUG_REQ(D_INFO, req, "pinging %s->%s",
 		  imp->imp_obd->obd_uuid.uuid, obd2cli_tgt(imp->imp_obd));
+<<<<<<< HEAD
 	ptlrpcd_add_req(req, PDL_POLICY_ROUND, -1);
+=======
+	ptlrpcd_add_req(req);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 void ptlrpc_update_next_ping(struct obd_import *imp, int soon)
 {
 	int time = soon ? PING_INTERVAL_SHORT : PING_INTERVAL;
+=======
+static void ptlrpc_update_next_ping(struct obd_import *imp, int soon)
+{
+	int time = soon ? PING_INTERVAL_SHORT : PING_INTERVAL;
+
+>>>>>>> v4.9.227
 	if (imp->imp_state == LUSTRE_IMP_DISCON) {
 		int dtime = max_t(int, CONNECTION_SWITCH_MIN,
 				  AT_OFF ? 0 :
@@ -122,11 +164,14 @@ void ptlrpc_update_next_ping(struct obd_import *imp, int soon)
 	imp->imp_next_ping = cfs_time_shift(time);
 }
 
+<<<<<<< HEAD
 void ptlrpc_ping_import_soon(struct obd_import *imp)
 {
 	imp->imp_next_ping = cfs_time_current();
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int imp_is_deactive(struct obd_import *imp)
 {
 	return (imp->imp_deactive ||
@@ -141,7 +186,11 @@ static inline int ptlrpc_next_reconnect(struct obd_import *imp)
 		return cfs_time_shift(obd_timeout);
 }
 
+<<<<<<< HEAD
 long pinger_check_timeout(unsigned long time)
+=======
+static long pinger_check_timeout(unsigned long time)
+>>>>>>> v4.9.227
 {
 	struct timeout_item *item;
 	unsigned long timeout = PING_INTERVAL;
@@ -150,6 +199,10 @@ long pinger_check_timeout(unsigned long time)
 	mutex_lock(&pinger_mutex);
 	list_for_each_entry(item, &timeout_list, ti_chain) {
 		int ti_timeout = item->ti_timeout;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		if (timeout > ti_timeout)
 			timeout = ti_timeout;
 		break;
@@ -206,8 +259,12 @@ static void ptlrpc_pinger_process_import(struct obd_import *imp,
 
 	spin_unlock(&imp->imp_lock);
 
+<<<<<<< HEAD
 	CDEBUG(level == LUSTRE_IMP_FULL ? D_INFO : D_HA, "%s->%s: level %s/%u "
 	       "force %u force_next %u deactive %u pingable %u suppress %u\n",
+=======
+	CDEBUG(level == LUSTRE_IMP_FULL ? D_INFO : D_HA, "%s->%s: level %s/%u force %u force_next %u deactive %u pingable %u suppress %u\n",
+>>>>>>> v4.9.227
 	       imp->imp_obd->obd_uuid.uuid, obd2cli_tgt(imp->imp_obd),
 	       ptlrpc_import_state_name(level), level, force, force_next,
 	       imp->imp_deactive, imp->imp_pingable, suppress);
@@ -220,8 +277,12 @@ static void ptlrpc_pinger_process_import(struct obd_import *imp,
 	} else if (level != LUSTRE_IMP_FULL ||
 		   imp->imp_obd->obd_no_recov ||
 		   imp_is_deactive(imp)) {
+<<<<<<< HEAD
 		CDEBUG(D_HA, "%s->%s: not pinging (in recovery "
 		       "or recovery disabled: %s)\n",
+=======
+		CDEBUG(D_HA, "%s->%s: not pinging (in recovery or recovery disabled: %s)\n",
+>>>>>>> v4.9.227
 		       imp->imp_obd->obd_uuid.uuid, obd2cli_tgt(imp->imp_obd),
 		       ptlrpc_import_state_name(level));
 		if (force) {
@@ -236,7 +297,11 @@ static void ptlrpc_pinger_process_import(struct obd_import *imp,
 
 static int ptlrpc_pinger_main(void *arg)
 {
+<<<<<<< HEAD
 	struct ptlrpc_thread *thread = (struct ptlrpc_thread *)arg;
+=======
+	struct ptlrpc_thread *thread = arg;
+>>>>>>> v4.9.227
 
 	/* Record that the thread is running */
 	thread_set_flags(thread, SVC_RUNNING);
@@ -257,7 +322,11 @@ static int ptlrpc_pinger_main(void *arg)
 		list_for_each(iter, &pinger_imports) {
 			struct obd_import *imp =
 				list_entry(iter, struct obd_import,
+<<<<<<< HEAD
 					       imp_pinger_chain);
+=======
+					   imp_pinger_chain);
+>>>>>>> v4.9.227
 
 			ptlrpc_pinger_process_import(imp, this_ping);
 			/* obd_timeout might have changed */
@@ -268,12 +337,16 @@ static int ptlrpc_pinger_main(void *arg)
 				ptlrpc_update_next_ping(imp, 0);
 		}
 		mutex_unlock(&pinger_mutex);
+<<<<<<< HEAD
 		/* update memory usage info */
 		obd_update_maxusage();
+=======
+>>>>>>> v4.9.227
 
 		/* Wait until the next ping time, or until we're stopped. */
 		time_to_next_wake = pinger_check_timeout(this_ping);
 		/* The ping sent by ptlrpc_send_rpc may get sent out
+<<<<<<< HEAD
 		   say .01 second after this.
 		   ptlrpc_pinger_sending_on_import will then set the
 		   next ping time to next_ping + .01 sec, which means
@@ -281,6 +354,16 @@ static int ptlrpc_pinger_main(void *arg)
 		   ping will get sent 2 timeouts from now!  Beware. */
 		CDEBUG(D_INFO, "next wakeup in "CFS_DURATION_T" ("
 		       CFS_TIME_T")\n", time_to_next_wake,
+=======
+		 * say .01 second after this.
+		 * ptlrpc_pinger_sending_on_import will then set the
+		 * next ping time to next_ping + .01 sec, which means
+		 * we will SKIP the next ping at next_ping, and the
+		 * ping will get sent 2 timeouts from now!  Beware.
+		 */
+		CDEBUG(D_INFO, "next wakeup in " CFS_DURATION_T " (%ld)\n",
+		       time_to_next_wake,
+>>>>>>> v4.9.227
 		       cfs_time_add(this_ping,
 				    cfs_time_seconds(PING_INTERVAL)));
 		if (time_to_next_wake > 0) {
@@ -291,12 +374,19 @@ static int ptlrpc_pinger_main(void *arg)
 				     thread_is_stopping(thread) ||
 				     thread_is_event(thread),
 				     &lwi);
+<<<<<<< HEAD
 			if (thread_test_and_clear_flags(thread, SVC_STOPPING)) {
 				break;
 			} else {
 				/* woken after adding import to reset timer */
 				thread_test_and_clear_flags(thread, SVC_EVENT);
 			}
+=======
+			if (thread_test_and_clear_flags(thread, SVC_STOPPING))
+				break;
+			/* woken after adding import to reset timer */
+			thread_test_and_clear_flags(thread, SVC_EVENT);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -312,6 +402,10 @@ static struct ptlrpc_thread pinger_thread;
 int ptlrpc_start_pinger(void)
 {
 	struct l_wait_info lwi = { 0 };
+<<<<<<< HEAD
+=======
+	struct task_struct *task;
+>>>>>>> v4.9.227
 	int rc;
 
 	if (!thread_is_init(&pinger_thread) &&
@@ -322,17 +416,26 @@ int ptlrpc_start_pinger(void)
 
 	strcpy(pinger_thread.t_name, "ll_ping");
 
+<<<<<<< HEAD
 	/* CLONE_VM and CLONE_FILES just avoid a needless copy, because we
 	 * just drop the VM and FILES in cfs_daemonize_ctxt() right away. */
 	rc = PTR_ERR(kthread_run(ptlrpc_pinger_main, &pinger_thread,
 				 "%s", pinger_thread.t_name));
 	if (IS_ERR_VALUE(rc)) {
 		CERROR("cannot start thread: %d\n", rc);
+=======
+	task = kthread_run(ptlrpc_pinger_main, &pinger_thread,
+			   pinger_thread.t_name);
+	if (IS_ERR(task)) {
+		rc = PTR_ERR(task);
+		CERROR("cannot start pinger thread: rc = %d\n", rc);
+>>>>>>> v4.9.227
 		return rc;
 	}
 	l_wait_event(pinger_thread.t_ctl_waitq,
 		     thread_is_running(&pinger_thread), &lwi);
 
+<<<<<<< HEAD
 	if (suppress_pings)
 		CWARN("Pings will be suppressed at the request of the "
 		      "administrator.  The configuration shall meet the "
@@ -344,6 +447,12 @@ int ptlrpc_start_pinger(void)
 }
 
 int ptlrpc_pinger_remove_timeouts(void);
+=======
+	return 0;
+}
+
+static int ptlrpc_pinger_remove_timeouts(void);
+>>>>>>> v4.9.227
 
 int ptlrpc_stop_pinger(void)
 {
@@ -368,7 +477,10 @@ void ptlrpc_pinger_sending_on_import(struct obd_import *imp)
 {
 	ptlrpc_update_next_ping(imp, 0);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ptlrpc_pinger_sending_on_import);
+=======
+>>>>>>> v4.9.227
 
 void ptlrpc_pinger_commit_expected(struct obd_import *imp)
 {
@@ -428,12 +540,22 @@ EXPORT_SYMBOL(ptlrpc_pinger_del_import);
  * Register a timeout callback to the pinger list, and the callback will
  * be called when timeout happens.
  */
+<<<<<<< HEAD
 struct timeout_item* ptlrpc_new_timeout(int time, enum timeout_event event,
 					timeout_cb_t cb, void *data)
 {
 	struct timeout_item *ti;
 
 	OBD_ALLOC_PTR(ti);
+=======
+static struct timeout_item *ptlrpc_new_timeout(int time,
+					       enum timeout_event event,
+					       timeout_cb_t cb, void *data)
+{
+	struct timeout_item *ti;
+
+	ti = kzalloc(sizeof(*ti), GFP_NOFS);
+>>>>>>> v4.9.227
 	if (!ti)
 		return NULL;
 
@@ -448,7 +570,11 @@ struct timeout_item* ptlrpc_new_timeout(int time, enum timeout_event event,
 }
 
 /**
+<<<<<<< HEAD
  * Register timeout event on the the pinger thread.
+=======
+ * Register timeout event on the pinger thread.
+>>>>>>> v4.9.227
  * Note: the timeout list is an sorted list with increased timeout value.
  */
 static struct timeout_item*
@@ -517,17 +643,27 @@ int ptlrpc_del_timeout_client(struct list_head *obd_list,
 			break;
 		}
 	}
+<<<<<<< HEAD
 	LASSERTF(ti != NULL, "ti is NULL !\n");
 	if (list_empty(&ti->ti_obd_list)) {
 		list_del(&ti->ti_chain);
 		OBD_FREE_PTR(ti);
+=======
+	if (list_empty(&ti->ti_obd_list)) {
+		list_del(&ti->ti_chain);
+		kfree(ti);
+>>>>>>> v4.9.227
 	}
 	mutex_unlock(&pinger_mutex);
 	return 0;
 }
 EXPORT_SYMBOL(ptlrpc_del_timeout_client);
 
+<<<<<<< HEAD
 int ptlrpc_pinger_remove_timeouts(void)
+=======
+static int ptlrpc_pinger_remove_timeouts(void)
+>>>>>>> v4.9.227
 {
 	struct timeout_item *item, *tmp;
 
@@ -535,7 +671,11 @@ int ptlrpc_pinger_remove_timeouts(void)
 	list_for_each_entry_safe(item, tmp, &timeout_list, ti_chain) {
 		LASSERT(list_empty(&item->ti_obd_list));
 		list_del(&item->ti_chain);
+<<<<<<< HEAD
 		OBD_FREE_PTR(item);
+=======
+		kfree(item);
+>>>>>>> v4.9.227
 	}
 	mutex_unlock(&pinger_mutex);
 	return 0;
@@ -546,6 +686,7 @@ void ptlrpc_pinger_wake_up(void)
 	thread_add_flags(&pinger_thread, SVC_EVENT);
 	wake_up(&pinger_thread.t_ctl_waitq);
 }
+<<<<<<< HEAD
 
 /* Ping evictor thread */
 #define PET_READY     1
@@ -686,3 +827,5 @@ void ping_evictor_stop(void)
 	wake_up(&pet_waitq);
 }
 EXPORT_SYMBOL(ping_evictor_stop);
+=======
+>>>>>>> v4.9.227

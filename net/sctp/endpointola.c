@@ -42,7 +42,10 @@
 #include <linux/slab.h>
 #include <linux/in.h>
 #include <linux/random.h>	/* get_random_bytes() */
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+>>>>>>> v4.9.227
 #include <net/sock.h>
 #include <net/ipv6.h>
 #include <net/sctp/sctp.h>
@@ -126,10 +129,13 @@ static struct sctp_endpoint *sctp_endpoint_init(struct sctp_endpoint *ep,
 	/* Initialize the bind addr area */
 	sctp_bind_addr_init(&ep->base.bind_addr, 0);
 
+<<<<<<< HEAD
 	/* Remember who we are attached to.  */
 	ep->base.sk = sk;
 	sock_hold(ep->base.sk);
 
+=======
+>>>>>>> v4.9.227
 	/* Create the lists of associations.  */
 	INIT_LIST_HEAD(&ep->asocs);
 
@@ -164,6 +170,15 @@ static struct sctp_endpoint *sctp_endpoint_init(struct sctp_endpoint *ep,
 	 */
 	ep->auth_hmacs_list = auth_hmacs;
 	ep->auth_chunk_list = auth_chunks;
+<<<<<<< HEAD
+=======
+	ep->prsctp_enable = net->sctp.prsctp_enable;
+
+	/* Remember who we are attached to.  */
+	ep->base.sk = sk;
+	ep->base.net = sock_net(sk);
+	sock_hold(ep->base.sk);
+>>>>>>> v4.9.227
 
 	return ep;
 
@@ -314,21 +329,32 @@ struct sctp_endpoint *sctp_endpoint_is_match(struct sctp_endpoint *ep,
 }
 
 /* Find the association that goes with this chunk.
+<<<<<<< HEAD
  * We do a linear search of the associations for this endpoint.
  * We return the matching transport address too.
  */
 static struct sctp_association *__sctp_endpoint_lookup_assoc(
+=======
+ * We lookup the transport from hashtable at first, then get association
+ * through t->assoc.
+ */
+struct sctp_association *sctp_endpoint_lookup_assoc(
+>>>>>>> v4.9.227
 	const struct sctp_endpoint *ep,
 	const union sctp_addr *paddr,
 	struct sctp_transport **transport)
 {
 	struct sctp_association *asoc = NULL;
+<<<<<<< HEAD
 	struct sctp_association *tmp;
 	struct sctp_transport *t = NULL;
 	struct sctp_hashbucket *head;
 	struct sctp_ep_common *epb;
 	int hash;
 	int rport;
+=======
+	struct sctp_transport *t;
+>>>>>>> v4.9.227
 
 	*transport = NULL;
 
@@ -337,6 +363,7 @@ static struct sctp_association *__sctp_endpoint_lookup_assoc(
 	 */
 	if (!ep->base.bind_addr.port)
 		goto out;
+<<<<<<< HEAD
 
 	rport = ntohs(paddr->v4.sin_port);
 
@@ -357,10 +384,19 @@ static struct sctp_association *__sctp_endpoint_lookup_assoc(
 		}
 	}
 	read_unlock(&head->lock);
+=======
+	t = sctp_epaddr_lookup_transport(ep, paddr);
+	if (!t)
+		goto out;
+
+	*transport = t;
+	asoc = t->asoc;
+>>>>>>> v4.9.227
 out:
 	return asoc;
 }
 
+<<<<<<< HEAD
 /* Lookup association on an endpoint based on a peer address.  BH-safe.  */
 struct sctp_association *sctp_endpoint_lookup_assoc(
 	const struct sctp_endpoint *ep,
@@ -376,6 +412,8 @@ struct sctp_association *sctp_endpoint_lookup_assoc(
 	return asoc;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Look for any peeled off association from the endpoint that matches the
  * given peer address.
  */

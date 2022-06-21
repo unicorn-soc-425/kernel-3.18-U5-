@@ -7,6 +7,7 @@
 #include <linux/security.h>
 #include <linux/syscalls.h>
 #include <linux/user_namespace.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 /* init to 2 - one for init_task, one to ensure it is never freed */
@@ -47,18 +48,42 @@ out_undo_partial_alloc:
 	}
 	kfree(group_info);
 	return NULL;
+=======
+#include <linux/vmalloc.h>
+#include <asm/uaccess.h>
+
+struct group_info *groups_alloc(int gidsetsize)
+{
+	struct group_info *gi;
+	unsigned int len;
+
+	len = sizeof(struct group_info) + sizeof(kgid_t) * gidsetsize;
+	gi = kmalloc(len, GFP_KERNEL_ACCOUNT|__GFP_NOWARN|__GFP_NORETRY);
+	if (!gi)
+		gi = __vmalloc(len, GFP_KERNEL_ACCOUNT|__GFP_HIGHMEM, PAGE_KERNEL);
+	if (!gi)
+		return NULL;
+
+	atomic_set(&gi->usage, 1);
+	gi->ngroups = gidsetsize;
+	return gi;
+>>>>>>> v4.9.227
 }
 
 EXPORT_SYMBOL(groups_alloc);
 
 void groups_free(struct group_info *group_info)
 {
+<<<<<<< HEAD
 	if (group_info->blocks[0] != group_info->small_block) {
 		int i;
 		for (i = 0; i < group_info->nblocks; i++)
 			free_page((unsigned long)group_info->blocks[i]);
 	}
 	kfree(group_info);
+=======
+	kvfree(group_info);
+>>>>>>> v4.9.227
 }
 
 EXPORT_SYMBOL(groups_free);
@@ -73,7 +98,11 @@ static int groups_to_user(gid_t __user *grouplist,
 
 	for (i = 0; i < count; i++) {
 		gid_t gid;
+<<<<<<< HEAD
 		gid = from_kgid_munged(user_ns, GROUP_AT(group_info, i));
+=======
+		gid = from_kgid_munged(user_ns, group_info->gid[i]);
+>>>>>>> v4.9.227
 		if (put_user(gid, grouplist+i))
 			return -EFAULT;
 	}
@@ -98,13 +127,21 @@ static int groups_from_user(struct group_info *group_info,
 		if (!gid_valid(kgid))
 			return -EINVAL;
 
+<<<<<<< HEAD
 		GROUP_AT(group_info, i) = kgid;
+=======
+		group_info->gid[i] = kgid;
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
 
 /* a simple Shell sort */
+<<<<<<< HEAD
 static void groups_sort(struct group_info *group_info)
+=======
+void groups_sort(struct group_info *group_info)
+>>>>>>> v4.9.227
 {
 	int base, max, stride;
 	int gidsetsize = group_info->ngroups;
@@ -118,6 +155,7 @@ static void groups_sort(struct group_info *group_info)
 		for (base = 0; base < max; base++) {
 			int left = base;
 			int right = left + stride;
+<<<<<<< HEAD
 			kgid_t tmp = GROUP_AT(group_info, right);
 
 			while (left >= 0 && gid_gt(GROUP_AT(group_info, left), tmp)) {
@@ -127,10 +165,24 @@ static void groups_sort(struct group_info *group_info)
 				left -= stride;
 			}
 			GROUP_AT(group_info, right) = tmp;
+=======
+			kgid_t tmp = group_info->gid[right];
+
+			while (left >= 0 && gid_gt(group_info->gid[left], tmp)) {
+				group_info->gid[right] = group_info->gid[left];
+				right = left;
+				left -= stride;
+			}
+			group_info->gid[right] = tmp;
+>>>>>>> v4.9.227
 		}
 		stride /= 3;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(groups_sort);
+>>>>>>> v4.9.227
 
 /* a simple bsearch */
 int groups_search(const struct group_info *group_info, kgid_t grp)
@@ -144,9 +196,15 @@ int groups_search(const struct group_info *group_info, kgid_t grp)
 	right = group_info->ngroups;
 	while (left < right) {
 		unsigned int mid = (left+right)/2;
+<<<<<<< HEAD
 		if (gid_gt(grp, GROUP_AT(group_info, mid)))
 			left = mid + 1;
 		else if (gid_lt(grp, GROUP_AT(group_info, mid)))
+=======
+		if (gid_gt(grp, group_info->gid[mid]))
+			left = mid + 1;
+		else if (gid_lt(grp, group_info->gid[mid]))
+>>>>>>> v4.9.227
 			right = mid;
 		else
 			return 1;
@@ -162,7 +220,10 @@ int groups_search(const struct group_info *group_info, kgid_t grp)
 void set_groups(struct cred *new, struct group_info *group_info)
 {
 	put_group_info(new->group_info);
+<<<<<<< HEAD
 	groups_sort(group_info);
+=======
+>>>>>>> v4.9.227
 	get_group_info(group_info);
 	new->group_info = group_info;
 }
@@ -246,6 +307,10 @@ SYSCALL_DEFINE2(setgroups, int, gidsetsize, gid_t __user *, grouplist)
 		return retval;
 	}
 
+<<<<<<< HEAD
+=======
+	groups_sort(group_info);
+>>>>>>> v4.9.227
 	retval = set_current_groups(group_info);
 	put_group_info(group_info);
 

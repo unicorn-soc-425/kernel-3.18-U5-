@@ -32,13 +32,19 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+#include <linux/moduleparam.h>
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/oom.h>
 #include <linux/sched.h>
 #include <linux/swap.h>
 #include <linux/rcupdate.h>
+<<<<<<< HEAD
 #include <linux/notifier.h>
 #include <linux/mutex.h>
 #include <linux/delay.h>
@@ -86,12 +92,22 @@ module_param_named(enable_lmk, enable_lmk, int,
 #endif
 
 static uint32_t lowmem_debug_level = 1;
+=======
+#include <linux/profile.h>
+#include <linux/notifier.h>
+
+static u32 lowmem_debug_level = 1;
+>>>>>>> v4.9.227
 static short lowmem_adj[6] = {
 	0,
 	1,
 	6,
 	12,
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 static int lowmem_adj_size = 4;
 static int lowmem_minfree[6] = {
 	3 * 512,	/* 6MB */
@@ -99,6 +115,10 @@ static int lowmem_minfree[6] = {
 	4 * 1024,	/* 16MB */
 	16 * 1024,	/* 64MB */
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 static int lowmem_minfree_size = 4;
 
 static unsigned long lowmem_deathpending_timeout;
@@ -109,6 +129,7 @@ static unsigned long lowmem_deathpending_timeout;
 			pr_info(x);			\
 	} while (0)
 
+<<<<<<< HEAD
 #if defined(CONFIG_ZSWAP)
 extern u64 zswap_pool_pages;
 extern atomic_t zswap_stored_pages;
@@ -321,6 +342,15 @@ static int test_task_flag(struct task_struct *p, int flag)
 	}
 
 	return 0;
+=======
+static unsigned long lowmem_count(struct shrinker *s,
+				  struct shrink_control *sc)
+{
+	return global_node_page_state(NR_ACTIVE_ANON) +
+		global_node_page_state(NR_ACTIVE_FILE) +
+		global_node_page_state(NR_INACTIVE_ANON) +
+		global_node_page_state(NR_INACTIVE_FILE);
+>>>>>>> v4.9.227
 }
 
 static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
@@ -330,12 +360,16 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 	unsigned long rem = 0;
 	int tasksize;
 	int i;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> v4.9.227
 	short min_score_adj = OOM_SCORE_ADJ_MAX + 1;
 	int minfree = 0;
 	int selected_tasksize = 0;
 	short selected_oom_score_adj;
 	int array_size = ARRAY_SIZE(lowmem_adj);
+<<<<<<< HEAD
 	int other_free;
 	int other_file;
 #ifdef CONFIG_SEC_DEBUG_LMK_MEMINFO
@@ -356,6 +390,12 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 						total_swapcache_pages();
 	else
 		other_file = 0;
+=======
+	int other_free = global_page_state(NR_FREE_PAGES) - totalreserve_pages;
+	int other_file = global_node_page_state(NR_FILE_PAGES) -
+				global_node_page_state(NR_SHMEM) -
+				total_swapcache_pages();
+>>>>>>> v4.9.227
 
 	if (lowmem_adj_size < array_size)
 		array_size = lowmem_adj_size;
@@ -369,6 +409,7 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 		}
 	}
 
+<<<<<<< HEAD
 	ret = adjust_minadj(&min_score_adj);
 
 	lowmem_print(3, "lowmem_scan %lu, %x, ofree %d %d, ma %hd\n",
@@ -380,6 +421,16 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 		lowmem_print(5, "lowmem_scan %lu, %x, return 0\n",
 			     sc->nr_to_scan, sc->gfp_mask);
 		return SHRINK_STOP;
+=======
+	lowmem_print(3, "lowmem_scan %lu, %x, ofree %d %d, ma %hd\n",
+		     sc->nr_to_scan, sc->gfp_mask, other_free,
+		     other_file, min_score_adj);
+
+	if (min_score_adj == OOM_SCORE_ADJ_MAX + 1) {
+		lowmem_print(5, "lowmem_scan %lu, %x, return 0\n",
+			     sc->nr_to_scan, sc->gfp_mask);
+		return 0;
+>>>>>>> v4.9.227
 	}
 
 	selected_oom_score_adj = min_score_adj;
@@ -389,6 +440,7 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 		struct task_struct *p;
 		short oom_score_adj;
 
+<<<<<<< HEAD
 		if (tsk->flags & PF_KTHREAD ||
 			tsk->state & TASK_UNINTERRUPTIBLE)
 			continue;
@@ -404,13 +456,26 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 			}
 		}
 
+=======
+		if (tsk->flags & PF_KTHREAD)
+			continue;
+
+>>>>>>> v4.9.227
 		p = find_lock_task_mm(tsk);
 		if (!p)
 			continue;
 
+<<<<<<< HEAD
 		if (test_tsk_thread_flag(p, TIF_MEMDIE)) {
 			task_unlock(p);
 			continue;
+=======
+		if (task_lmk_waiting(p) &&
+		    time_before_eq(jiffies, lowmem_deathpending_timeout)) {
+			task_unlock(p);
+			rcu_read_unlock();
+			return 0;
+>>>>>>> v4.9.227
 		}
 		oom_score_adj = p->signal->oom_score_adj;
 		if (oom_score_adj < min_score_adj) {
@@ -418,6 +483,7 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 			continue;
 		}
 		tasksize = get_mm_rss(p->mm);
+<<<<<<< HEAD
 #if defined(CONFIG_ZSWAP)
 		if (atomic_read(&zswap_stored_pages)) {
 			lowmem_print(3, "shown tasksize : %d\n", tasksize);
@@ -426,6 +492,8 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 			lowmem_print(3, "real tasksize : %d\n", tasksize);
 		}
 #endif
+=======
+>>>>>>> v4.9.227
 		task_unlock(p);
 		if (tasksize <= 0)
 			continue;
@@ -439,6 +507,7 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 		selected = p;
 		selected_tasksize = tasksize;
 		selected_oom_score_adj = oom_score_adj;
+<<<<<<< HEAD
 		lowmem_print(3, "select '%s' (%d), adj %hd, size %d, to kill\n",
 			     p->comm, p->pid, oom_score_adj, tasksize);
 	}
@@ -458,10 +527,26 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 				"   Total file cache is %ldkB\n" \
 				"   Total zcache is %ldkB\n" \
 				"   GFP mask is 0x%x\n",
+=======
+		lowmem_print(2, "select '%s' (%d), adj %hd, size %d, to kill\n",
+			     p->comm, p->pid, oom_score_adj, tasksize);
+	}
+	if (selected) {
+		task_lock(selected);
+		send_sig(SIGKILL, selected, 0);
+		if (selected->mm)
+			task_set_lmk_waiting(selected);
+		task_unlock(selected);
+		lowmem_print(1, "Killing '%s' (%d), adj %hd,\n"
+				 "   to free %ldkB on behalf of '%s' (%d) because\n"
+				 "   cache %ldkB is below limit %ldkB for oom_score_adj %hd\n"
+				 "   Free memory is %ldkB above reserved\n",
+>>>>>>> v4.9.227
 			     selected->comm, selected->pid,
 			     selected_oom_score_adj,
 			     selected_tasksize * (long)(PAGE_SIZE / 1024),
 			     current->comm, current->pid,
+<<<<<<< HEAD
 			     cache_size, cache_limit,
 			     min_score_adj,
 			     other_free * (long)(PAGE_SIZE / 1024),
@@ -505,10 +590,19 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 	} else {
 		trace_almk_shrink(1, ret, other_free, other_file, 0);
 		rcu_read_unlock();
+=======
+			     other_file * (long)(PAGE_SIZE / 1024),
+			     minfree * (long)(PAGE_SIZE / 1024),
+			     min_score_adj,
+			     other_free * (long)(PAGE_SIZE / 1024));
+		lowmem_deathpending_timeout = jiffies + HZ;
+		rem += selected_tasksize;
+>>>>>>> v4.9.227
 	}
 
 	lowmem_print(4, "lowmem_scan %lu, %x, return %lu\n",
 		     sc->nr_to_scan, sc->gfp_mask, rem);
+<<<<<<< HEAD
 
 	if (!rem)
 		rem = SHRINK_STOP;
@@ -696,6 +790,12 @@ static struct notifier_block android_oom_notifier = {
 };
 #endif /* CONFIG_SEC_OOM_KILLER */
 
+=======
+	rcu_read_unlock();
+	return rem;
+}
+
+>>>>>>> v4.9.227
 static struct shrinker lowmem_shrinker = {
 	.scan_objects = lowmem_scan,
 	.count_objects = lowmem_count,
@@ -705,6 +805,7 @@ static struct shrinker lowmem_shrinker = {
 static int __init lowmem_init(void)
 {
 	register_shrinker(&lowmem_shrinker);
+<<<<<<< HEAD
 	vmpressure_notifier_register(&lmk_vmpr_nb);
 #ifdef CONFIG_SEC_OOM_KILLER
 	register_oom_notifier(&android_oom_notifier);
@@ -819,4 +920,19 @@ module_init(lowmem_init);
 module_exit(lowmem_exit);
 
 MODULE_LICENSE("GPL");
+=======
+	return 0;
+}
+device_initcall(lowmem_init);
+
+/*
+ * not really modular, but the easiest way to keep compat with existing
+ * bootargs behaviour is to continue using module_param here.
+ */
+module_param_named(cost, lowmem_shrinker.seeks, int, 0644);
+module_param_array_named(adj, lowmem_adj, short, &lowmem_adj_size, 0644);
+module_param_array_named(minfree, lowmem_minfree, uint, &lowmem_minfree_size,
+			 0644);
+module_param_named(debug_level, lowmem_debug_level, uint, 0644);
+>>>>>>> v4.9.227
 

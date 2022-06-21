@@ -17,6 +17,10 @@
 #include <linux/seq_file.h>
 #include <linux/interrupt.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
+=======
+#include <linux/fsl/guts.h>
+>>>>>>> v4.9.227
 
 #include <asm/time.h>
 #include <asm/machdep.h>
@@ -25,9 +29,14 @@
 #include <asm/prom.h>
 #include <asm/udbg.h>
 #include <asm/mpic.h>
+<<<<<<< HEAD
 #include <asm/qe.h>
 #include <asm/qe_ic.h>
 #include <asm/fsl_guts.h>
+=======
+#include <soc/fsl/qe/qe.h>
+#include <soc/fsl/qe/qe_ic.h>
+>>>>>>> v4.9.227
 
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
@@ -47,13 +56,20 @@
 void __init mpc85xx_rdb_pic_init(void)
 {
 	struct mpic *mpic;
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
+=======
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_QUICC_ENGINE
 	struct device_node *np;
 #endif
 
+<<<<<<< HEAD
 	if (of_flat_dt_is_compatible(root, "fsl,MPC85XXRDB-CAMP")) {
+=======
+	if (of_machine_is_compatible("fsl,MPC85XXRDB-CAMP")) {
+>>>>>>> v4.9.227
 		mpic = mpic_alloc(NULL, 0, MPIC_NO_RESET |
 			MPIC_BIG_ENDIAN |
 			MPIC_SINGLE_DEST_CPU,
@@ -148,80 +164,120 @@ machine_arch_initcall(p1024_rdb, mpc85xx_common_publish_devices);
  */
 static int __init p2020_rdb_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (of_flat_dt_is_compatible(root, "fsl,P2020RDB"))
+=======
+	if (of_machine_is_compatible("fsl,P2020RDB"))
+>>>>>>> v4.9.227
 		return 1;
 	return 0;
 }
 
 static int __init p1020_rdb_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (of_flat_dt_is_compatible(root, "fsl,P1020RDB"))
+=======
+	if (of_machine_is_compatible("fsl,P1020RDB"))
+>>>>>>> v4.9.227
 		return 1;
 	return 0;
 }
 
 static int __init p1020_rdb_pc_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,P1020RDB-PC");
+=======
+	return of_machine_is_compatible("fsl,P1020RDB-PC");
+>>>>>>> v4.9.227
 }
 
 static int __init p1020_rdb_pd_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,P1020RDB-PD");
+=======
+	return of_machine_is_compatible("fsl,P1020RDB-PD");
+>>>>>>> v4.9.227
 }
 
 static int __init p1021_rdb_pc_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (of_flat_dt_is_compatible(root, "fsl,P1021RDB-PC"))
+=======
+	if (of_machine_is_compatible("fsl,P1021RDB-PC"))
+>>>>>>> v4.9.227
 		return 1;
 	return 0;
 }
 
 static int __init p2020_rdb_pc_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (of_flat_dt_is_compatible(root, "fsl,P2020RDB-PC"))
+=======
+	if (of_machine_is_compatible("fsl,P2020RDB-PC"))
+>>>>>>> v4.9.227
 		return 1;
 	return 0;
 }
 
 static int __init p1025_rdb_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,P1025RDB");
+=======
+	return of_machine_is_compatible("fsl,P1025RDB");
+>>>>>>> v4.9.227
 }
 
 static int __init p1020_mbg_pc_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,P1020MBG-PC");
+=======
+	return of_machine_is_compatible("fsl,P1020MBG-PC");
+>>>>>>> v4.9.227
 }
 
 static int __init p1020_utm_pc_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,P1020UTM-PC");
+=======
+	return of_machine_is_compatible("fsl,P1020UTM-PC");
+>>>>>>> v4.9.227
 }
 
 static int __init p1024_rdb_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,P1024RDB");
+=======
+	return of_machine_is_compatible("fsl,P1024RDB");
+>>>>>>> v4.9.227
 }
 
 define_machine(p2020_rdb) {
@@ -234,7 +290,10 @@ define_machine(p2020_rdb) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -249,7 +308,10 @@ define_machine(p1020_rdb) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -264,7 +326,10 @@ define_machine(p1021_rdb_pc) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -279,7 +344,10 @@ define_machine(p2020_rdb_pc) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -294,7 +362,10 @@ define_machine(p1025_rdb) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -309,7 +380,10 @@ define_machine(p1020_mbg_pc) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -324,7 +398,10 @@ define_machine(p1020_utm_pc) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -339,7 +416,10 @@ define_machine(p1020_rdb_pc) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -354,7 +434,10 @@ define_machine(p1020_rdb_pd) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -369,7 +452,10 @@ define_machine(p1024_rdb) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };

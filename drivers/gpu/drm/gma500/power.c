@@ -187,7 +187,11 @@ static bool gma_resume_pci(struct pci_dev *pdev)
  */
 int gma_power_suspend(struct device *_dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = container_of(_dev, struct pci_dev, dev);
+=======
+	struct pci_dev *pdev = to_pci_dev(_dev);
+>>>>>>> v4.9.227
 	struct drm_device *dev = pci_get_drvdata(pdev);
 	struct drm_psb_private *dev_priv = dev->dev_private;
 
@@ -214,7 +218,11 @@ int gma_power_suspend(struct device *_dev)
  */
 int gma_power_resume(struct device *_dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = container_of(_dev, struct pci_dev, dev);
+=======
+	struct pci_dev *pdev = to_pci_dev(_dev);
+>>>>>>> v4.9.227
 	struct drm_device *dev = pci_get_drvdata(pdev);
 
 	mutex_lock(&power_mutex);

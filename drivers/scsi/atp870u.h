@@ -10,7 +10,10 @@
 #define MAX_SENSE 	14
 #define qcnt	       	32
 #define ATP870U_SCATTER 	128
+<<<<<<< HEAD
 #define ATP870U_CMDLUN  	1
+=======
+>>>>>>> v4.9.227
 
 #define MAX_ADAPTER	8
 #define MAX_SCSI_ID	16
@@ -27,22 +30,31 @@ struct atp_unit
 	unsigned long baseport;
 	unsigned long ioport[2];
 	unsigned long pciport[2];
+<<<<<<< HEAD
 	unsigned long irq;
+=======
+>>>>>>> v4.9.227
 	unsigned char last_cmd[2];
 	unsigned char in_snd[2];
 	unsigned char in_int[2];
 	unsigned char quhd[2];
 	unsigned char quend[2];
 	unsigned char global_map[2];
+<<<<<<< HEAD
 	unsigned char chip_ver;
 	unsigned char scam_on;
+=======
+>>>>>>> v4.9.227
 	unsigned char host_id[2];
 	unsigned int working[2];
 	unsigned short wide_id[2];
 	unsigned short active_id[2];
 	unsigned short ultra_map[2];
 	unsigned short async[2];
+<<<<<<< HEAD
 	unsigned short dev_id;
+=======
+>>>>>>> v4.9.227
 	unsigned char sp[2][16];
 	unsigned char r1f[2][16];		
 	struct scsi_cmnd *quereq[2][qcnt];

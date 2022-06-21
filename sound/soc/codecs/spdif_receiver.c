@@ -38,10 +38,19 @@ static const struct snd_soc_dapm_route dir_routes[] = {
 			SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_LE)
 
 static struct snd_soc_codec_driver soc_codec_spdif_dir = {
+<<<<<<< HEAD
 	.dapm_widgets = dir_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(dir_widgets),
 	.dapm_routes = dir_routes,
 	.num_dapm_routes = ARRAY_SIZE(dir_routes),
+=======
+	.component_driver = {
+		.dapm_widgets		= dir_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(dir_widgets),
+		.dapm_routes		= dir_routes,
+		.num_dapm_routes	= ARRAY_SIZE(dir_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static struct snd_soc_dai_driver dir_stub_dai = {
@@ -80,7 +89,10 @@ static struct platform_driver spdif_dir_driver = {
 	.remove		= spdif_dir_remove,
 	.driver		= {
 		.name	= "spdif-dir",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(spdif_dir_dt_ids),
 	},
 };

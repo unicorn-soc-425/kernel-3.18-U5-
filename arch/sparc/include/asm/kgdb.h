@@ -28,10 +28,17 @@ enum regnames {
 #define NUMREGBYTES		((GDB_CSR + 1) * 4)
 #else
 #define NUMREGBYTES		((GDB_Y + 1) * 8)
+<<<<<<< HEAD
 
 struct pt_regs;
 asmlinkage void kgdb_trap(unsigned long trap_level, struct pt_regs *regs);
 #endif
+=======
+#endif
+
+struct pt_regs;
+asmlinkage void kgdb_trap(unsigned long trap_level, struct pt_regs *regs);
+>>>>>>> v4.9.227
 
 void arch_kgdb_breakpoint(void);
 

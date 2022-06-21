@@ -20,7 +20,11 @@ static struct rc_map_list lirc_map = {
 	.map = {
 		.scan    = lirc,
 		.size    = ARRAY_SIZE(lirc),
+<<<<<<< HEAD
 		.rc_type = RC_TYPE_LIRC,
+=======
+		.rc_type = RC_TYPE_OTHER,
+>>>>>>> v4.9.227
 		.name    = RC_MAP_LIRC,
 	}
 };

@@ -412,6 +412,7 @@ static int hv_kbd_remove(struct hv_device *hv_dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Keyboard GUID
  * {f912ad6d-2b17-48ea-bd65-f927a61c7684}
@@ -422,6 +423,8 @@ static int hv_kbd_remove(struct hv_device *hv_dev)
 			0xbd, 0x65, 0xf9, 0x27, 0xa6, 0x1c, 0x76, 0x84 \
 	}
 
+=======
+>>>>>>> v4.9.227
 static const struct hv_vmbus_device_id id_table[] = {
 	/* Keyboard guid */
 	{ HV_KBD_GUID, },

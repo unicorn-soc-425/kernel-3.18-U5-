@@ -19,28 +19,58 @@
 
 #include "internal.h"
 
+<<<<<<< HEAD
 static void of_get_regulation_constraints(struct device_node *np,
 					struct regulator_init_data **init_data)
 {
 	const __be32 *min_uV, *max_uV;
 	struct regulation_constraints *constraints = &(*init_data)->constraints;
 	int ret;
+=======
+static const char *const regulator_states[PM_SUSPEND_MAX + 1] = {
+	[PM_SUSPEND_MEM]	= "regulator-state-mem",
+	[PM_SUSPEND_MAX]	= "regulator-state-disk",
+};
+
+static void of_get_regulation_constraints(struct device_node *np,
+					struct regulator_init_data **init_data,
+					const struct regulator_desc *desc)
+{
+	struct regulation_constraints *constraints = &(*init_data)->constraints;
+	struct regulator_state *suspend_state;
+	struct device_node *suspend_np;
+	int ret, i;
+>>>>>>> v4.9.227
 	u32 pval;
 
 	constraints->name = of_get_property(np, "regulator-name", NULL);
 
+<<<<<<< HEAD
 	min_uV = of_get_property(np, "regulator-min-microvolt", NULL);
 	if (min_uV)
 		constraints->min_uV = be32_to_cpu(*min_uV);
 	max_uV = of_get_property(np, "regulator-max-microvolt", NULL);
 	if (max_uV)
 		constraints->max_uV = be32_to_cpu(*max_uV);
+=======
+	if (!of_property_read_u32(np, "regulator-min-microvolt", &pval))
+		constraints->min_uV = pval;
+
+	if (!of_property_read_u32(np, "regulator-max-microvolt", &pval))
+		constraints->max_uV = pval;
+>>>>>>> v4.9.227
 
 	/* Voltage change possible? */
 	if (constraints->min_uV != constraints->max_uV)
 		constraints->valid_ops_mask |= REGULATOR_CHANGE_VOLTAGE;
+<<<<<<< HEAD
 	/* Only one voltage?  Then make sure it's set. */
 	if (min_uV && max_uV && constraints->min_uV == constraints->max_uV)
+=======
+
+	/* Do we have a voltage range, if so try to apply it? */
+	if (constraints->min_uV && constraints->max_uV)
+>>>>>>> v4.9.227
 		constraints->apply_uV = true;
 
 	if (!of_property_read_u32(np, "regulator-microvolt-offset", &pval))
@@ -50,6 +80,13 @@ static void of_get_regulation_constraints(struct device_node *np,
 	if (!of_property_read_u32(np, "regulator-max-microamp", &pval))
 		constraints->max_uA = pval;
 
+<<<<<<< HEAD
+=======
+	if (!of_property_read_u32(np, "regulator-input-current-limit-microamp",
+				  &pval))
+		constraints->ilim_uA = pval;
+
+>>>>>>> v4.9.227
 	/* Current change possible? */
 	if (constraints->min_uA != constraints->max_uA)
 		constraints->valid_ops_mask |= REGULATOR_CHANGE_CURRENT;
@@ -59,9 +96,20 @@ static void of_get_regulation_constraints(struct device_node *np,
 	if (!constraints->always_on) /* status change should be possible. */
 		constraints->valid_ops_mask |= REGULATOR_CHANGE_STATUS;
 
+<<<<<<< HEAD
 	if (of_property_read_bool(np, "regulator-allow-bypass"))
 		constraints->valid_ops_mask |= REGULATOR_CHANGE_BYPASS;
 
+=======
+	constraints->pull_down = of_property_read_bool(np, "regulator-pull-down");
+
+	if (of_property_read_bool(np, "regulator-allow-bypass"))
+		constraints->valid_ops_mask |= REGULATOR_CHANGE_BYPASS;
+
+	if (of_property_read_bool(np, "regulator-allow-set-load"))
+		constraints->valid_ops_mask |= REGULATOR_CHANGE_DRMS;
+
+>>>>>>> v4.9.227
 	ret = of_property_read_u32(np, "regulator-ramp-delay", &pval);
 	if (!ret) {
 		if (pval)
@@ -73,18 +121,112 @@ static void of_get_regulation_constraints(struct device_node *np,
 	ret = of_property_read_u32(np, "regulator-enable-ramp-delay", &pval);
 	if (!ret)
 		constraints->enable_time = pval;
+<<<<<<< HEAD
+=======
+
+	constraints->soft_start = of_property_read_bool(np,
+					"regulator-soft-start");
+	ret = of_property_read_u32(np, "regulator-active-discharge", &pval);
+	if (!ret) {
+		constraints->active_discharge =
+				(pval) ? REGULATOR_ACTIVE_DISCHARGE_ENABLE :
+					REGULATOR_ACTIVE_DISCHARGE_DISABLE;
+	}
+
+	if (!of_property_read_u32(np, "regulator-initial-mode", &pval)) {
+		if (desc && desc->of_map_mode) {
+			ret = desc->of_map_mode(pval);
+			if (ret == -EINVAL)
+				pr_err("%s: invalid mode %u\n", np->name, pval);
+			else
+				constraints->initial_mode = ret;
+		} else {
+			pr_warn("%s: mapping for mode %d not defined\n",
+				np->name, pval);
+		}
+	}
+
+	if (!of_property_read_u32(np, "regulator-system-load", &pval))
+		constraints->system_load = pval;
+
+	constraints->over_current_protection = of_property_read_bool(np,
+					"regulator-over-current-protection");
+
+	for (i = 0; i < ARRAY_SIZE(regulator_states); i++) {
+		switch (i) {
+		case PM_SUSPEND_MEM:
+			suspend_state = &constraints->state_mem;
+			break;
+		case PM_SUSPEND_MAX:
+			suspend_state = &constraints->state_disk;
+			break;
+		case PM_SUSPEND_ON:
+		case PM_SUSPEND_FREEZE:
+		case PM_SUSPEND_STANDBY:
+		default:
+			continue;
+		}
+
+		suspend_np = of_get_child_by_name(np, regulator_states[i]);
+		if (!suspend_np || !suspend_state)
+			continue;
+
+		if (!of_property_read_u32(suspend_np, "regulator-mode",
+					  &pval)) {
+			if (desc && desc->of_map_mode) {
+				ret = desc->of_map_mode(pval);
+				if (ret == -EINVAL)
+					pr_err("%s: invalid mode %u\n",
+					       np->name, pval);
+				else
+					suspend_state->mode = ret;
+			} else {
+				pr_warn("%s: mapping for mode %d not defined\n",
+					np->name, pval);
+			}
+		}
+
+		if (of_property_read_bool(suspend_np,
+					"regulator-on-in-suspend"))
+			suspend_state->enabled = true;
+		else if (of_property_read_bool(suspend_np,
+					"regulator-off-in-suspend"))
+			suspend_state->disabled = true;
+
+		if (!of_property_read_u32(suspend_np,
+					"regulator-suspend-microvolt", &pval))
+			suspend_state->uV = pval;
+
+		if (i == PM_SUSPEND_MEM)
+			constraints->initial_state = PM_SUSPEND_MEM;
+
+		of_node_put(suspend_np);
+		suspend_state = NULL;
+		suspend_np = NULL;
+	}
+>>>>>>> v4.9.227
 }
 
 /**
  * of_get_regulator_init_data - extract regulator_init_data structure info
  * @dev: device requesting for regulator_init_data
+<<<<<<< HEAD
+=======
+ * @node: regulator device node
+ * @desc: regulator description
+>>>>>>> v4.9.227
  *
  * Populates regulator_init_data structure by extracting data from device
  * tree node, returns a pointer to the populated struture or NULL if memory
  * alloc fails.
  */
 struct regulator_init_data *of_get_regulator_init_data(struct device *dev,
+<<<<<<< HEAD
 						struct device_node *node)
+=======
+					  struct device_node *node,
+					  const struct regulator_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct regulator_init_data *init_data;
 
@@ -95,7 +237,11 @@ struct regulator_init_data *of_get_regulator_init_data(struct device *dev,
 	if (!init_data)
 		return NULL; /* Out of memory? */
 
+<<<<<<< HEAD
 	of_get_regulation_constraints(node, &init_data);
+=======
+	of_get_regulation_constraints(node, &init_data, desc);
+>>>>>>> v4.9.227
 	return init_data;
 }
 EXPORT_SYMBOL_GPL(of_get_regulator_init_data);
@@ -176,7 +322,12 @@ int of_regulator_match(struct device *dev, struct device_node *node,
 				continue;
 
 			match->init_data =
+<<<<<<< HEAD
 				of_get_regulator_init_data(dev, child);
+=======
+				of_get_regulator_init_data(dev, child,
+							   match->desc);
+>>>>>>> v4.9.227
 			if (!match->init_data) {
 				dev_err(dev,
 					"failed to parse DT for regulator %s\n",
@@ -196,6 +347,10 @@ EXPORT_SYMBOL_GPL(of_regulator_match);
 
 struct regulator_init_data *regulator_of_get_init_data(struct device *dev,
 					    const struct regulator_desc *desc,
+<<<<<<< HEAD
+=======
+					    struct regulator_config *config,
+>>>>>>> v4.9.227
 					    struct device_node **node)
 {
 	struct device_node *search, *child;
@@ -217,7 +372,11 @@ struct regulator_init_data *regulator_of_get_init_data(struct device *dev,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	for_each_child_of_node(search, child) {
+=======
+	for_each_available_child_of_node(search, child) {
+>>>>>>> v4.9.227
 		name = of_get_property(child, "regulator-compatible", NULL);
 		if (!name)
 			name = child->name;
@@ -225,7 +384,11 @@ struct regulator_init_data *regulator_of_get_init_data(struct device *dev,
 		if (strcmp(desc->of_match, name))
 			continue;
 
+<<<<<<< HEAD
 		init_data = of_get_regulator_init_data(dev, child);
+=======
+		init_data = of_get_regulator_init_data(dev, child, desc);
+>>>>>>> v4.9.227
 		if (!init_data) {
 			dev_err(dev,
 				"failed to parse DT for regulator %s\n",
@@ -233,6 +396,19 @@ struct regulator_init_data *regulator_of_get_init_data(struct device *dev,
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		if (desc->of_parse_cb) {
+			if (desc->of_parse_cb(child, desc, config)) {
+				dev_err(dev,
+					"driver callback failed to parse DT for regulator %s\n",
+					child->name);
+				init_data = NULL;
+				break;
+			}
+		}
+
+>>>>>>> v4.9.227
 		of_node_get(child);
 		*node = child;
 		break;

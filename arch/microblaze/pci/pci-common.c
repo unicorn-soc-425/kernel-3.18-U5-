@@ -48,6 +48,11 @@ static int global_phb_number;		/* Global phb counter */
 resource_size_t isa_mem_base;
 
 unsigned long isa_io_base;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(isa_io_base);
+
+>>>>>>> v4.9.227
 static int pci_bus_count;
 
 struct pci_controller *pcibios_alloc_controller(struct device_node *dev)
@@ -123,6 +128,7 @@ unsigned long pci_address_to_pio(phys_addr_t address)
 }
 EXPORT_SYMBOL_GPL(pci_address_to_pio);
 
+<<<<<<< HEAD
 /*
  * Return the domain number for this bus.
  */
@@ -134,6 +140,8 @@ int pci_domain_nr(struct pci_bus *bus)
 }
 EXPORT_SYMBOL(pci_domain_nr);
 
+=======
+>>>>>>> v4.9.227
 /* This routine is meant to be used early during boot, when the
  * PCI bus numbers have not yet been assigned, and you need to
  * issue PCI config cycles to an OF device.
@@ -228,6 +236,7 @@ static struct resource *__pci_mmap_make_offset(struct pci_dev *dev,
 }
 
 /*
+<<<<<<< HEAD
  * Set vm_page_prot of VMA, as appropriate for this architecture, for a pci
  * device mapping.
  */
@@ -255,6 +264,8 @@ static pgprot_t __pci_mmap_set_pgprot(struct pci_dev *dev, struct resource *rp,
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * This one is used by /dev/mem and fbdev who have no clue about the
  * PCI device, it tries to find the PCI device first and calls the
  * above routine
@@ -326,9 +337,13 @@ int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 		return -EINVAL;
 
 	vma->vm_pgoff = offset >> PAGE_SHIFT;
+<<<<<<< HEAD
 	vma->vm_page_prot = __pci_mmap_set_pgprot(dev, rp,
 						  vma->vm_page_prot,
 						  mmap_state, write_combine);
+=======
+	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+>>>>>>> v4.9.227
 
 	ret = remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
 			       vma->vm_end - vma->vm_start, vma->vm_page_prot);
@@ -482,6 +497,7 @@ void pci_resource_to_user(const struct pci_dev *dev, int bar,
 			  const struct resource *rsrc,
 			  resource_size_t *start, resource_size_t *end)
 {
+<<<<<<< HEAD
 	struct pci_controller *hose = pci_bus_to_host(dev->bus);
 	resource_size_t offset = 0;
 
@@ -515,6 +531,27 @@ void pci_resource_to_user(const struct pci_dev *dev, int bar,
 
 	*start = rsrc->start - offset;
 	*end = rsrc->end - offset;
+=======
+	struct pci_bus_region region;
+
+	if (rsrc->flags & IORESOURCE_IO) {
+		pcibios_resource_to_bus(dev->bus, &region,
+					(struct resource *) rsrc);
+		*start = region.start;
+		*end = region.end;
+		return;
+	}
+
+	/* We pass a CPU physical address to userland for MMIO instead of a
+	 * BAR value because X is lame and expects to be able to use that
+	 * to pass to /dev/mem!
+	 *
+	 * That means we may have 64-bit values where some apps only expect
+	 * 32 (like X itself since it thinks only Sparc has 64-bit MMIO).
+	 */
+	*start = rsrc->start;
+	*end = rsrc->end;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -684,10 +721,17 @@ void pci_process_bridge_OF_ranges(struct pci_controller *hose,
 	}
 }
 
+<<<<<<< HEAD
 /* Decide whether to display the domain number in /proc */
 int pci_proc_domain(struct pci_bus *bus)
 {
 	return 0;
+=======
+/* Display the domain number in /proc */
+int pci_proc_domain(struct pci_bus *bus)
+{
+	return pci_domain_nr(bus);
+>>>>>>> v4.9.227
 }
 
 /* This header fixup will do the resource fixup for all devices as they are
@@ -863,6 +907,7 @@ void pcibios_setup_bus_devices(struct pci_bus *bus)
 
 void pcibios_fixup_bus(struct pci_bus *bus)
 {
+<<<<<<< HEAD
 	/* When called from the generic PCI probe, read PCI<->PCI bridge
 	 * bases. This is -not- called when generating the PCI tree from
 	 * the OF device-tree.
@@ -883,6 +928,12 @@ static int skip_isa_ioresource_align(struct pci_dev *dev)
 	return 0;
 }
 
+=======
+	/* nothing to do */
+}
+EXPORT_SYMBOL(pcibios_fixup_bus);
+
+>>>>>>> v4.9.227
 /*
  * We need to avoid collisions with `mirrored' VGA ports
  * and other strange ISA hardware, so we always want the
@@ -899,6 +950,7 @@ static int skip_isa_ioresource_align(struct pci_dev *dev)
 resource_size_t pcibios_align_resource(void *data, const struct resource *res,
 				resource_size_t size, resource_size_t align)
 {
+<<<<<<< HEAD
 	struct pci_dev *dev = data;
 	resource_size_t start = res->start;
 
@@ -913,6 +965,20 @@ resource_size_t pcibios_align_resource(void *data, const struct resource *res,
 }
 EXPORT_SYMBOL(pcibios_align_resource);
 
+=======
+	return res->start;
+}
+EXPORT_SYMBOL(pcibios_align_resource);
+
+int pcibios_add_device(struct pci_dev *dev)
+{
+	dev->irq = of_irq_parse_and_map_pci(dev, 0, 0);
+
+	return 0;
+}
+EXPORT_SYMBOL(pcibios_add_device);
+
+>>>>>>> v4.9.227
 /*
  * Reparent resource children of pr that conflict with res
  * under res, and make res replace those children.
@@ -1026,6 +1092,11 @@ static void pcibios_allocate_bus_resources(struct pci_bus *bus)
 			 pr, (pr && pr->name) ? pr->name : "nil");
 
 		if (pr && !(pr->flags & IORESOURCE_UNSET)) {
+<<<<<<< HEAD
+=======
+			struct pci_dev *dev = bus->self;
+
+>>>>>>> v4.9.227
 			if (request_resource(pr, res) == 0)
 				continue;
 			/*
@@ -1035,6 +1106,15 @@ static void pcibios_allocate_bus_resources(struct pci_bus *bus)
 			 */
 			if (reparent_resources(pr, res) == 0)
 				continue;
+<<<<<<< HEAD
+=======
+
+			if (dev && i < PCI_BRIDGE_RESOURCE_NUM &&
+			    pci_claim_bridge_resource(dev,
+						 i + PCI_BRIDGE_RESOURCES) == 0)
+				continue;
+
+>>>>>>> v4.9.227
 		}
 		pr_warn("PCI: Cannot allocate resource region ");
 		pr_cont("%d of PCI bridge %d, will remap\n", i, bus->number);
@@ -1227,7 +1307,14 @@ void pcibios_claim_one_bus(struct pci_bus *bus)
 				 (unsigned long long)r->end,
 				 (unsigned int)r->flags);
 
+<<<<<<< HEAD
 			pci_claim_resource(dev, i);
+=======
+			if (pci_claim_resource(dev, i) == 0)
+				continue;
+
+			pci_claim_bridge_resource(dev, i);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -1322,6 +1409,7 @@ static void pcibios_setup_phb_resources(struct pci_controller *hose,
 		 (unsigned long)hose->io_base_virt - _IO_BASE);
 }
 
+<<<<<<< HEAD
 struct device_node *pcibios_get_phb_of_node(struct pci_bus *bus)
 {
 	struct pci_controller *hose = bus->sysdata;
@@ -1329,6 +1417,8 @@ struct device_node *pcibios_get_phb_of_node(struct pci_bus *bus)
 	return of_node_get(hose->dn);
 }
 
+=======
+>>>>>>> v4.9.227
 static void pcibios_scan_phb(struct pci_controller *hose)
 {
 	LIST_HEAD(resources);

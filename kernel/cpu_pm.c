@@ -22,6 +22,7 @@
 #include <linux/spinlock.h>
 #include <linux/syscore_ops.h>
 
+<<<<<<< HEAD
 bool from_suspend = false;
 
 static DEFINE_RWLOCK(cpu_pm_notifier_lock);
@@ -33,6 +34,16 @@ static int cpu_pm_notify(enum cpu_pm_event event, int nr_to_call, int *nr_calls,
 	int ret;
 
 	ret = __raw_notifier_call_chain(&cpu_pm_notifier_chain, event, data,
+=======
+static DEFINE_RWLOCK(cpu_pm_notifier_lock);
+static RAW_NOTIFIER_HEAD(cpu_pm_notifier_chain);
+
+static int cpu_pm_notify(enum cpu_pm_event event, int nr_to_call, int *nr_calls)
+{
+	int ret;
+
+	ret = __raw_notifier_call_chain(&cpu_pm_notifier_chain, event, NULL,
+>>>>>>> v4.9.227
 		nr_to_call, nr_calls);
 
 	return notifier_to_errno(ret);
@@ -104,13 +115,21 @@ int cpu_pm_enter(void)
 	int ret = 0;
 
 	read_lock(&cpu_pm_notifier_lock);
+<<<<<<< HEAD
 	ret = cpu_pm_notify(CPU_PM_ENTER, -1, &nr_calls, NULL);
+=======
+	ret = cpu_pm_notify(CPU_PM_ENTER, -1, &nr_calls);
+>>>>>>> v4.9.227
 	if (ret)
 		/*
 		 * Inform listeners (nr_calls - 1) about failure of CPU PM
 		 * PM entry who are notified earlier to prepare for it.
 		 */
+<<<<<<< HEAD
 		cpu_pm_notify(CPU_PM_ENTER_FAILED, nr_calls - 1, NULL, NULL);
+=======
+		cpu_pm_notify(CPU_PM_ENTER_FAILED, nr_calls - 1, NULL);
+>>>>>>> v4.9.227
 	read_unlock(&cpu_pm_notifier_lock);
 
 	return ret;
@@ -134,7 +153,11 @@ int cpu_pm_exit(void)
 	int ret;
 
 	read_lock(&cpu_pm_notifier_lock);
+<<<<<<< HEAD
 	ret = cpu_pm_notify(CPU_PM_EXIT, -1, NULL, NULL);
+=======
+	ret = cpu_pm_notify(CPU_PM_EXIT, -1, NULL);
+>>>>>>> v4.9.227
 	read_unlock(&cpu_pm_notifier_lock);
 
 	return ret;
@@ -157,21 +180,33 @@ EXPORT_SYMBOL_GPL(cpu_pm_exit);
  *
  * Return conditions are same as __raw_notifier_call_chain.
  */
+<<<<<<< HEAD
 int cpu_cluster_pm_enter(unsigned long aff_level)
+=======
+int cpu_cluster_pm_enter(void)
+>>>>>>> v4.9.227
 {
 	int nr_calls;
 	int ret = 0;
 
 	read_lock(&cpu_pm_notifier_lock);
+<<<<<<< HEAD
 	ret = cpu_pm_notify(CPU_CLUSTER_PM_ENTER, -1, &nr_calls,
 			(void *) aff_level);
+=======
+	ret = cpu_pm_notify(CPU_CLUSTER_PM_ENTER, -1, &nr_calls);
+>>>>>>> v4.9.227
 	if (ret)
 		/*
 		 * Inform listeners (nr_calls - 1) about failure of CPU cluster
 		 * PM entry who are notified earlier to prepare for it.
 		 */
+<<<<<<< HEAD
 		cpu_pm_notify(CPU_CLUSTER_PM_ENTER_FAILED, nr_calls - 1, NULL,
 				(void *) aff_level);
+=======
+		cpu_pm_notify(CPU_CLUSTER_PM_ENTER_FAILED, nr_calls - 1, NULL);
+>>>>>>> v4.9.227
 	read_unlock(&cpu_pm_notifier_lock);
 
 	return ret;
@@ -185,7 +220,11 @@ EXPORT_SYMBOL_GPL(cpu_cluster_pm_enter);
  * low power state that may have caused some blocks in the same power domain
  * to reset.
  *
+<<<<<<< HEAD
  * Must be called after cpu_pm_exit has been called on all cpus in the power
+=======
+ * Must be called after cpu_cluster_pm_enter has been called for the power
+>>>>>>> v4.9.227
  * domain, and before cpu_pm_exit has been called on any cpu in the power
  * domain. Notified drivers can include VFP co-processor, interrupt controller
  * and its PM extensions, local CPU timers context save/restore which
@@ -193,12 +232,20 @@ EXPORT_SYMBOL_GPL(cpu_cluster_pm_enter);
  *
  * Return conditions are same as __raw_notifier_call_chain.
  */
+<<<<<<< HEAD
 int cpu_cluster_pm_exit(unsigned long aff_level)
+=======
+int cpu_cluster_pm_exit(void)
+>>>>>>> v4.9.227
 {
 	int ret;
 
 	read_lock(&cpu_pm_notifier_lock);
+<<<<<<< HEAD
 	ret = cpu_pm_notify(CPU_CLUSTER_PM_EXIT, -1, NULL, (void *) aff_level);
+=======
+	ret = cpu_pm_notify(CPU_CLUSTER_PM_EXIT, -1, NULL);
+>>>>>>> v4.9.227
 	read_unlock(&cpu_pm_notifier_lock);
 
 	return ret;
@@ -210,19 +257,30 @@ static int cpu_pm_suspend(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	from_suspend = true;
+=======
+>>>>>>> v4.9.227
 	ret = cpu_pm_enter();
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = cpu_cluster_pm_enter(0);
+=======
+	ret = cpu_cluster_pm_enter();
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static void cpu_pm_resume(void)
 {
+<<<<<<< HEAD
 	from_suspend = false;
 	cpu_cluster_pm_exit(0);
+=======
+	cpu_cluster_pm_exit();
+>>>>>>> v4.9.227
 	cpu_pm_exit();
 }
 

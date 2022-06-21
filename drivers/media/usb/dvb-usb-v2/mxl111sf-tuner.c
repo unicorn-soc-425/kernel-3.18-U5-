@@ -36,7 +36,11 @@ MODULE_PARM_DESC(debug, "set debugging level (1=info (or-able)).");
 struct mxl111sf_tuner_state {
 	struct mxl111sf_state *mxl_state;
 
+<<<<<<< HEAD
 	struct mxl111sf_tuner_config *cfg;
+=======
+	const struct mxl111sf_tuner_config *cfg;
+>>>>>>> v4.9.227
 
 	enum mxl_if_freq if_freq;
 
@@ -466,7 +470,11 @@ static int mxl111sf_tuner_release(struct dvb_frontend *fe)
 
 /* ------------------------------------------------------------------------- */
 
+<<<<<<< HEAD
 static struct dvb_tuner_ops mxl111sf_tuner_tuner_ops = {
+=======
+static const struct dvb_tuner_ops mxl111sf_tuner_tuner_ops = {
+>>>>>>> v4.9.227
 	.info = {
 		.name = "MaxLinear MxL111SF",
 #if 0
@@ -489,8 +497,13 @@ static struct dvb_tuner_ops mxl111sf_tuner_tuner_ops = {
 };
 
 struct dvb_frontend *mxl111sf_tuner_attach(struct dvb_frontend *fe,
+<<<<<<< HEAD
 					   struct mxl111sf_state *mxl_state,
 					   struct mxl111sf_tuner_config *cfg)
+=======
+				struct mxl111sf_state *mxl_state,
+				const struct mxl111sf_tuner_config *cfg)
+>>>>>>> v4.9.227
 {
 	struct mxl111sf_tuner_state *state = NULL;
 
@@ -515,6 +528,7 @@ MODULE_DESCRIPTION("MaxLinear MxL111SF CMOS tuner driver");
 MODULE_AUTHOR("Michael Krufky <mkrufky@linuxtv.org>");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("0.1");
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -523,3 +537,5 @@ MODULE_VERSION("0.1");
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

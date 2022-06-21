@@ -101,6 +101,7 @@ struct pt1_adapter {
 	struct dmxdev dmxdev;
 	struct dvb_frontend *fe;
 	int (*orig_set_voltage)(struct dvb_frontend *fe,
+<<<<<<< HEAD
 				fe_sec_voltage_t voltage);
 	int (*orig_sleep)(struct dvb_frontend *fe);
 	int (*orig_init)(struct dvb_frontend *fe);
@@ -112,6 +113,16 @@ struct pt1_adapter {
 #define pt1_printk(level, pt1, format, arg...)	\
 	dev_printk(level, &(pt1)->pdev->dev, format, ##arg)
 
+=======
+				enum fe_sec_voltage voltage);
+	int (*orig_sleep)(struct dvb_frontend *fe);
+	int (*orig_init)(struct dvb_frontend *fe);
+
+	enum fe_sec_voltage voltage;
+	int sleep;
+};
+
+>>>>>>> v4.9.227
 static void pt1_write_reg(struct pt1 *pt1, int reg, u32 data)
 {
 	writel(data, pt1->regs + reg * 4);
@@ -154,7 +165,11 @@ static int pt1_sync(struct pt1 *pt1)
 			return 0;
 		pt1_write_reg(pt1, 0, 0x00000008);
 	}
+<<<<<<< HEAD
 	pt1_printk(KERN_ERR, pt1, "could not sync\n");
+=======
+	dev_err(&pt1->pdev->dev, "could not sync\n");
+>>>>>>> v4.9.227
 	return -EIO;
 }
 
@@ -179,7 +194,11 @@ static int pt1_unlock(struct pt1 *pt1)
 			return 0;
 		schedule_timeout_uninterruptible((HZ + 999) / 1000);
 	}
+<<<<<<< HEAD
 	pt1_printk(KERN_ERR, pt1, "could not unlock\n");
+=======
+	dev_err(&pt1->pdev->dev, "could not unlock\n");
+>>>>>>> v4.9.227
 	return -EIO;
 }
 
@@ -193,7 +212,11 @@ static int pt1_reset_pci(struct pt1 *pt1)
 			return 0;
 		schedule_timeout_uninterruptible((HZ + 999) / 1000);
 	}
+<<<<<<< HEAD
 	pt1_printk(KERN_ERR, pt1, "could not reset PCI\n");
+=======
+	dev_err(&pt1->pdev->dev, "could not reset PCI\n");
+>>>>>>> v4.9.227
 	return -EIO;
 }
 
@@ -207,7 +230,11 @@ static int pt1_reset_ram(struct pt1 *pt1)
 			return 0;
 		schedule_timeout_uninterruptible((HZ + 999) / 1000);
 	}
+<<<<<<< HEAD
 	pt1_printk(KERN_ERR, pt1, "could not reset RAM\n");
+=======
+	dev_err(&pt1->pdev->dev, "could not reset RAM\n");
+>>>>>>> v4.9.227
 	return -EIO;
 }
 
@@ -224,7 +251,11 @@ static int pt1_do_enable_ram(struct pt1 *pt1)
 		}
 		schedule_timeout_uninterruptible((HZ + 999) / 1000);
 	}
+<<<<<<< HEAD
 	pt1_printk(KERN_ERR, pt1, "could not enable RAM\n");
+=======
+	dev_err(&pt1->pdev->dev, "could not enable RAM\n");
+>>>>>>> v4.9.227
 	return -EIO;
 }
 
@@ -578,7 +609,11 @@ pt1_update_power(struct pt1 *pt1)
 	mutex_unlock(&pt1->lock);
 }
 
+<<<<<<< HEAD
 static int pt1_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage)
+=======
+static int pt1_set_voltage(struct dvb_frontend *fe, enum fe_sec_voltage voltage)
+>>>>>>> v4.9.227
 {
 	struct pt1_adapter *adap;
 

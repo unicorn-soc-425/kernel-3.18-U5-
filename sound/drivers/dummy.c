@@ -158,13 +158,21 @@ static int emu10k1_playback_constraints(struct snd_pcm_runtime *runtime)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct dummy_model model_emu10k1 = {
+=======
+static struct dummy_model model_emu10k1 = {
+>>>>>>> v4.9.227
 	.name = "emu10k1",
 	.playback_constraints = emu10k1_playback_constraints,
 	.buffer_bytes_max = 128 * 1024,
 };
 
+<<<<<<< HEAD
 struct dummy_model model_rme9652 = {
+=======
+static struct dummy_model model_rme9652 = {
+>>>>>>> v4.9.227
 	.name = "rme9652",
 	.buffer_bytes_max = 26 * 64 * 1024,
 	.formats = SNDRV_PCM_FMTBIT_S32_LE,
@@ -174,7 +182,11 @@ struct dummy_model model_rme9652 = {
 	.periods_max = 2,
 };
 
+<<<<<<< HEAD
 struct dummy_model model_ice1712 = {
+=======
+static struct dummy_model model_ice1712 = {
+>>>>>>> v4.9.227
 	.name = "ice1712",
 	.buffer_bytes_max = 256 * 1024,
 	.formats = SNDRV_PCM_FMTBIT_S32_LE,
@@ -184,7 +196,11 @@ struct dummy_model model_ice1712 = {
 	.periods_max = 1024,
 };
 
+<<<<<<< HEAD
 struct dummy_model model_uda1341 = {
+=======
+static struct dummy_model model_uda1341 = {
+>>>>>>> v4.9.227
 	.name = "uda1341",
 	.buffer_bytes_max = 16380,
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
@@ -194,7 +210,11 @@ struct dummy_model model_uda1341 = {
 	.periods_max = 255,
 };
 
+<<<<<<< HEAD
 struct dummy_model model_ac97 = {
+=======
+static struct dummy_model model_ac97 = {
+>>>>>>> v4.9.227
 	.name = "ac97",
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
 	.channels_min = 2,
@@ -204,7 +224,11 @@ struct dummy_model model_ac97 = {
 	.rate_max = 48000,
 };
 
+<<<<<<< HEAD
 struct dummy_model model_ca0106 = {
+=======
+static struct dummy_model model_ca0106 = {
+>>>>>>> v4.9.227
 	.name = "ca0106",
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
 	.buffer_bytes_max = ((65536-64)*8),
@@ -218,7 +242,11 @@ struct dummy_model model_ca0106 = {
 	.rate_max = 192000,
 };
 
+<<<<<<< HEAD
 struct dummy_model *dummy_models[] = {
+=======
+static struct dummy_model *dummy_models[] = {
+>>>>>>> v4.9.227
 	&model_emu10k1,
 	&model_rme9652,
 	&model_ice1712,
@@ -249,9 +277,14 @@ struct dummy_systimer_pcm {
 
 static void dummy_systimer_rearm(struct dummy_systimer_pcm *dpcm)
 {
+<<<<<<< HEAD
 	dpcm->timer.expires = jiffies +
 		(dpcm->frac_period_rest + dpcm->rate - 1) / dpcm->rate;
 	add_timer(&dpcm->timer);
+=======
+	mod_timer(&dpcm->timer, jiffies +
+		(dpcm->frac_period_rest + dpcm->rate - 1) / dpcm->rate);
+>>>>>>> v4.9.227
 }
 
 static void dummy_systimer_update(struct dummy_systimer_pcm *dpcm)
@@ -344,9 +377,14 @@ static int dummy_systimer_create(struct snd_pcm_substream *substream)
 	if (!dpcm)
 		return -ENOMEM;
 	substream->runtime->private_data = dpcm;
+<<<<<<< HEAD
 	init_timer(&dpcm->timer);
 	dpcm->timer.data = (unsigned long) dpcm;
 	dpcm->timer.function = dummy_systimer_callback;
+=======
+	setup_timer(&dpcm->timer, dummy_systimer_callback,
+			(unsigned long) dpcm);
+>>>>>>> v4.9.227
 	spin_lock_init(&dpcm->lock);
 	dpcm->substream = substream;
 	return 0;
@@ -357,7 +395,11 @@ static void dummy_systimer_free(struct snd_pcm_substream *substream)
 	kfree(substream->runtime->private_data);
 }
 
+<<<<<<< HEAD
 static struct dummy_timer_ops dummy_systimer_ops = {
+=======
+static const struct dummy_timer_ops dummy_systimer_ops = {
+>>>>>>> v4.9.227
 	.create =	dummy_systimer_create,
 	.free =		dummy_systimer_free,
 	.prepare =	dummy_systimer_prepare,
@@ -484,7 +526,11 @@ static void dummy_hrtimer_free(struct snd_pcm_substream *substream)
 	kfree(dpcm);
 }
 
+<<<<<<< HEAD
 static struct dummy_timer_ops dummy_hrtimer_ops = {
+=======
+static const struct dummy_timer_ops dummy_hrtimer_ops = {
+>>>>>>> v4.9.227
 	.create =	dummy_hrtimer_create,
 	.free =		dummy_hrtimer_free,
 	.prepare =	dummy_hrtimer_prepare,
@@ -918,7 +964,11 @@ static int snd_card_dummy_new_mixer(struct snd_dummy *dummy)
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_SND_DEBUG) && defined(CONFIG_PROC_FS)
+=======
+#if defined(CONFIG_SND_DEBUG) && defined(CONFIG_SND_PROC_FS)
+>>>>>>> v4.9.227
 /*
  * proc interface
  */
@@ -927,7 +977,11 @@ static void print_formats(struct snd_dummy *dummy,
 {
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < SNDRV_PCM_FORMAT_LAST; i++) {
+=======
+	for (i = 0; i <= SNDRV_PCM_FORMAT_LAST; i++) {
+>>>>>>> v4.9.227
 		if (dummy->pcm_hw.formats & (1ULL << i))
 			snd_iprintf(buffer, " %s", snd_pcm_format_name(i));
 	}
@@ -1046,7 +1100,11 @@ static void dummy_proc_init(struct snd_dummy *chip)
 }
 #else
 #define dummy_proc_init(x)
+<<<<<<< HEAD
 #endif /* CONFIG_SND_DEBUG && CONFIG_PROC_FS */
+=======
+#endif /* CONFIG_SND_DEBUG && CONFIG_SND_PROC_FS */
+>>>>>>> v4.9.227
 
 static int snd_dummy_probe(struct platform_device *devptr)
 {
@@ -1164,7 +1222,10 @@ static struct platform_driver snd_dummy_driver = {
 	.remove		= snd_dummy_remove,
 	.driver		= {
 		.name	= SND_DUMMY_DRIVER,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= SND_DUMMY_PM_OPS,
 	},
 };

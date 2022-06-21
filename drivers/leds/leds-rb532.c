@@ -53,7 +53,10 @@ static struct platform_driver rb532_led_driver = {
 	.remove = rb532_led_remove,
 	.driver = {
 		.name = "rb532-led",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

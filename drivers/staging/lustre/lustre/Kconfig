@@ -1,7 +1,12 @@
 config LUSTRE_FS
 	tristate "Lustre file system client support"
+<<<<<<< HEAD
 	depends on INET && m && !MIPS && !XTENSA && !SUPERH
 	select LNET
+=======
+	depends on m && !MIPS && !XTENSA && !SUPERH
+	depends on LNET
+>>>>>>> v4.9.227
 	select CRYPTO
 	select CRYPTO_CRC32
 	select CRYPTO_CRC32_PCLMUL if X86
@@ -10,6 +15,10 @@ config LUSTRE_FS
 	select CRYPTO_SHA1
 	select CRYPTO_SHA256
 	select CRYPTO_SHA512
+<<<<<<< HEAD
+=======
+	depends on MULTIUSER
+>>>>>>> v4.9.227
 	help
 	  This option enables Lustre file system client support. Choose Y
 	  here if you want to access a Lustre file system cluster. To compile
@@ -53,9 +62,12 @@ config LUSTRE_TRANSLATE_ERRNOS
 	bool
 	depends on LUSTRE_FS && !X86
 	default y
+<<<<<<< HEAD
 
 config LUSTRE_LLITE_LLOOP
 	tristate "Lustre virtual block device"
 	depends on LUSTRE_FS && BLOCK
 	depends on !PPC_64K_PAGES && !ARM64_64K_PAGES
 	default m
+=======
+>>>>>>> v4.9.227

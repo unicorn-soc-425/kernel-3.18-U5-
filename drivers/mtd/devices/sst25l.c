@@ -374,9 +374,14 @@ static int sst25l_probe(struct spi_device *spi)
 	data = dev_get_platdata(&spi->dev);
 	if (data && data->name)
 		flash->mtd.name = data->name;
+<<<<<<< HEAD
 	else
 		flash->mtd.name = dev_name(&spi->dev);
 
+=======
+
+	flash->mtd.dev.parent   = &spi->dev;
+>>>>>>> v4.9.227
 	flash->mtd.type		= MTD_NORFLASH;
 	flash->mtd.flags	= MTD_CAP_NORFLASH;
 	flash->mtd.erasesize	= flash_info->erase_size;
@@ -417,7 +422,10 @@ static int sst25l_remove(struct spi_device *spi)
 static struct spi_driver sst25l_driver = {
 	.driver = {
 		.name	= "sst25l",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= sst25l_probe,
 	.remove		= sst25l_remove,

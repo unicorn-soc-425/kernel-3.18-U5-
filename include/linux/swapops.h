@@ -54,7 +54,11 @@ static inline pgoff_t swp_offset(swp_entry_t entry)
 /* check whether a pte points to a swap entry */
 static inline int is_swap_pte(pte_t pte)
 {
+<<<<<<< HEAD
 	return !pte_none(pte) && !pte_present_nonuma(pte) && !pte_file(pte);
+=======
+	return !pte_none(pte) && !pte_present(pte);
+>>>>>>> v4.9.227
 }
 #endif
 
@@ -66,7 +70,10 @@ static inline swp_entry_t pte_to_swp_entry(pte_t pte)
 {
 	swp_entry_t arch_entry;
 
+<<<<<<< HEAD
 	BUG_ON(pte_file(pte));
+=======
+>>>>>>> v4.9.227
 	if (pte_swp_soft_dirty(pte))
 		pte = pte_swp_clear_soft_dirty(pte);
 	arch_entry = __pte_to_swp_entry(pte);
@@ -82,7 +89,10 @@ static inline pte_t swp_entry_to_pte(swp_entry_t entry)
 	swp_entry_t arch_entry;
 
 	arch_entry = __swp_entry(swp_type(entry), swp_offset(entry));
+<<<<<<< HEAD
 	BUG_ON(pte_file(__swp_entry_to_pte(arch_entry)));
+=======
+>>>>>>> v4.9.227
 	return __swp_entry_to_pte(arch_entry);
 }
 
@@ -166,6 +176,12 @@ static inline int is_write_migration_entry(swp_entry_t entry)
 #endif
 
 #ifdef CONFIG_MEMORY_FAILURE
+<<<<<<< HEAD
+=======
+
+extern atomic_long_t num_poisoned_pages __read_mostly;
+
+>>>>>>> v4.9.227
 /*
  * Support for hardware poisoned pages
  */
@@ -179,6 +195,34 @@ static inline int is_hwpoison_entry(swp_entry_t entry)
 {
 	return swp_type(entry) == SWP_HWPOISON;
 }
+<<<<<<< HEAD
+=======
+
+static inline bool test_set_page_hwpoison(struct page *page)
+{
+	return TestSetPageHWPoison(page);
+}
+
+static inline void num_poisoned_pages_inc(void)
+{
+	atomic_long_inc(&num_poisoned_pages);
+}
+
+static inline void num_poisoned_pages_dec(void)
+{
+	atomic_long_dec(&num_poisoned_pages);
+}
+
+static inline void num_poisoned_pages_add(long num)
+{
+	atomic_long_add(num, &num_poisoned_pages);
+}
+
+static inline void num_poisoned_pages_sub(long num)
+{
+	atomic_long_sub(num, &num_poisoned_pages);
+}
+>>>>>>> v4.9.227
 #else
 
 static inline swp_entry_t make_hwpoison_entry(struct page *page)
@@ -190,6 +234,18 @@ static inline int is_hwpoison_entry(swp_entry_t swp)
 {
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+static inline bool test_set_page_hwpoison(struct page *page)
+{
+	return false;
+}
+
+static inline void num_poisoned_pages_inc(void)
+{
+}
+>>>>>>> v4.9.227
 #endif
 
 #if defined(CONFIG_MEMORY_FAILURE) || defined(CONFIG_MIGRATION)

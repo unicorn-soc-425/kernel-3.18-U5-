@@ -10,7 +10,11 @@
  * for more details.
  */
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+#include <linux/module.h>
+>>>>>>> v4.9.227
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <mach/highlander.h>

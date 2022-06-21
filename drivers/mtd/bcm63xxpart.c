@@ -24,6 +24,11 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
+=======
+#include <linux/bcm963xx_nvram.h>
+#include <linux/bcm963xx_tag.h>
+>>>>>>> v4.9.227
 #include <linux/crc32.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -33,6 +38,7 @@
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 
+<<<<<<< HEAD
 #include <asm/mach-bcm63xx/bcm63xx_nvram.h>
 #include <asm/mach-bcm63xx/bcm963xx_tag.h>
 #include <asm/mach-bcm63xx/board_bcm963xx.h>
@@ -42,6 +48,17 @@
 #define BCM63XX_CFE_BLOCK_SIZE	SZ_64K		/* always at least 64KiB */
 
 #define BCM63XX_CFE_MAGIC_OFFSET 0x4e0
+=======
+#define BCM963XX_CFE_BLOCK_SIZE		SZ_64K	/* always at least 64KiB */
+
+#define BCM963XX_CFE_MAGIC_OFFSET	0x4e0
+#define BCM963XX_CFE_VERSION_OFFSET	0x570
+#define BCM963XX_NVRAM_OFFSET		0x580
+
+/* Ensure strings read from flash structs are null terminated */
+#define STR_NULL_TERMINATE(x) \
+	do { char *_str = (x); _str[sizeof(x) - 1] = 0; } while (0)
+>>>>>>> v4.9.227
 
 static int bcm63xx_detect_cfe(struct mtd_info *master)
 {
@@ -60,13 +77,18 @@ static int bcm63xx_detect_cfe(struct mtd_info *master)
 		return 0;
 
 	/* very old CFE's do not have the cfe-v string, so check for magic */
+<<<<<<< HEAD
 	ret = mtd_read(master, BCM63XX_CFE_MAGIC_OFFSET, 8, &retlen,
+=======
+	ret = mtd_read(master, BCM963XX_CFE_MAGIC_OFFSET, 8, &retlen,
+>>>>>>> v4.9.227
 		       (void *)buf);
 	buf[retlen] = 0;
 
 	return strncmp("CFE1CFE1", buf, 8);
 }
 
+<<<<<<< HEAD
 static int bcm63xx_parse_cfe_partitions(struct mtd_info *master,
 					struct mtd_partition **pparts,
 					struct mtd_part_parser_data *data)
@@ -77,11 +99,77 @@ static int bcm63xx_parse_cfe_partitions(struct mtd_info *master,
 	struct mtd_partition *parts;
 	int ret;
 	size_t retlen;
+=======
+static int bcm63xx_read_nvram(struct mtd_info *master,
+	struct bcm963xx_nvram *nvram)
+{
+	u32 actual_crc, expected_crc;
+	size_t retlen;
+	int ret;
+
+	/* extract nvram data */
+	ret = mtd_read(master, BCM963XX_NVRAM_OFFSET, BCM963XX_NVRAM_V5_SIZE,
+			&retlen, (void *)nvram);
+	if (ret)
+		return ret;
+
+	ret = bcm963xx_nvram_checksum(nvram, &expected_crc, &actual_crc);
+	if (ret)
+		pr_warn("nvram checksum failed, contents may be invalid (expected %08x, got %08x)\n",
+			expected_crc, actual_crc);
+
+	if (!nvram->psi_size)
+		nvram->psi_size = BCM963XX_DEFAULT_PSI_SIZE;
+
+	return 0;
+}
+
+static int bcm63xx_read_image_tag(struct mtd_info *master, const char *name,
+	loff_t tag_offset, struct bcm_tag *buf)
+{
+	int ret;
+	size_t retlen;
+	u32 computed_crc;
+
+	ret = mtd_read(master, tag_offset, sizeof(*buf), &retlen, (void *)buf);
+	if (ret)
+		return ret;
+
+	if (retlen != sizeof(*buf))
+		return -EIO;
+
+	computed_crc = crc32_le(IMAGETAG_CRC_START, (u8 *)buf,
+				offsetof(struct bcm_tag, header_crc));
+	if (computed_crc == buf->header_crc) {
+		STR_NULL_TERMINATE(buf->board_id);
+		STR_NULL_TERMINATE(buf->tag_version);
+
+		pr_info("%s: CFE image tag found at 0x%llx with version %s, board type %s\n",
+			name, tag_offset, buf->tag_version, buf->board_id);
+
+		return 0;
+	}
+
+	pr_warn("%s: CFE image tag at 0x%llx CRC invalid (expected %08x, actual %08x)\n",
+		name, tag_offset, buf->header_crc, computed_crc);
+	return 1;
+}
+
+static int bcm63xx_parse_cfe_nor_partitions(struct mtd_info *master,
+	const struct mtd_partition **pparts, struct bcm963xx_nvram *nvram)
+{
+	/* CFE, NVRAM and global Linux are always present */
+	int nrparts = 3, curpart = 0;
+	struct bcm_tag *buf = NULL;
+	struct mtd_partition *parts;
+	int ret;
+>>>>>>> v4.9.227
 	unsigned int rootfsaddr, kerneladdr, spareaddr;
 	unsigned int rootfslen, kernellen, sparelen, totallen;
 	unsigned int cfelen, nvramlen;
 	unsigned int cfe_erasesize;
 	int i;
+<<<<<<< HEAD
 	u32 computed_crc;
 	bool rootfs_first = false;
 
@@ -96,11 +184,23 @@ static int bcm63xx_parse_cfe_partitions(struct mtd_info *master,
 	nvramlen = roundup(nvramlen, cfe_erasesize);
 
 	/* Allocate memory for buffer */
+=======
+	bool rootfs_first = false;
+
+	cfe_erasesize = max_t(uint32_t, master->erasesize,
+			      BCM963XX_CFE_BLOCK_SIZE);
+
+	cfelen = cfe_erasesize;
+	nvramlen = nvram->psi_size * SZ_1K;
+	nvramlen = roundup(nvramlen, cfe_erasesize);
+
+>>>>>>> v4.9.227
 	buf = vmalloc(sizeof(struct bcm_tag));
 	if (!buf)
 		return -ENOMEM;
 
 	/* Get the tag */
+<<<<<<< HEAD
 	ret = mtd_read(master, cfelen, sizeof(struct bcm_tag), &retlen,
 		       (void *)buf);
 
@@ -125,6 +225,46 @@ static int bcm63xx_parse_cfe_partitions(struct mtd_info *master,
 
 		kerneladdr = kerneladdr - BCM63XX_EXTENDED_SIZE;
 		rootfsaddr = rootfsaddr - BCM63XX_EXTENDED_SIZE;
+=======
+	ret = bcm63xx_read_image_tag(master, "rootfs", cfelen, buf);
+	if (!ret) {
+		STR_NULL_TERMINATE(buf->flash_image_start);
+		if (kstrtouint(buf->flash_image_start, 10, &rootfsaddr) ||
+				rootfsaddr < BCM963XX_EXTENDED_SIZE) {
+			pr_err("invalid rootfs address: %*ph\n",
+				(int)sizeof(buf->flash_image_start),
+				buf->flash_image_start);
+			goto invalid_tag;
+		}
+
+		STR_NULL_TERMINATE(buf->kernel_address);
+		if (kstrtouint(buf->kernel_address, 10, &kerneladdr) ||
+				kerneladdr < BCM963XX_EXTENDED_SIZE) {
+			pr_err("invalid kernel address: %*ph\n",
+				(int)sizeof(buf->kernel_address),
+				buf->kernel_address);
+			goto invalid_tag;
+		}
+
+		STR_NULL_TERMINATE(buf->kernel_length);
+		if (kstrtouint(buf->kernel_length, 10, &kernellen)) {
+			pr_err("invalid kernel length: %*ph\n",
+				(int)sizeof(buf->kernel_length),
+				buf->kernel_length);
+			goto invalid_tag;
+		}
+
+		STR_NULL_TERMINATE(buf->total_length);
+		if (kstrtouint(buf->total_length, 10, &totallen)) {
+			pr_err("invalid total length: %*ph\n",
+				(int)sizeof(buf->total_length),
+				buf->total_length);
+			goto invalid_tag;
+		}
+
+		kerneladdr = kerneladdr - BCM963XX_EXTENDED_SIZE;
+		rootfsaddr = rootfsaddr - BCM963XX_EXTENDED_SIZE;
+>>>>>>> v4.9.227
 		spareaddr = roundup(totallen, master->erasesize) + cfelen;
 
 		if (rootfsaddr < kerneladdr) {
@@ -136,13 +276,23 @@ static int bcm63xx_parse_cfe_partitions(struct mtd_info *master,
 			rootfsaddr = kerneladdr + kernellen;
 			rootfslen = spareaddr - rootfsaddr;
 		}
+<<<<<<< HEAD
 	} else {
 		pr_warn("CFE boot tag CRC invalid (expected %08x, actual %08x)\n",
 			buf->header_crc, computed_crc);
+=======
+	} else if (ret > 0) {
+invalid_tag:
+>>>>>>> v4.9.227
 		kernellen = 0;
 		rootfslen = 0;
 		rootfsaddr = 0;
 		spareaddr = cfelen;
+<<<<<<< HEAD
+=======
+	} else {
+		goto out;
+>>>>>>> v4.9.227
 	}
 	sparelen = master->size - spareaddr - nvramlen;
 
@@ -153,11 +303,18 @@ static int bcm63xx_parse_cfe_partitions(struct mtd_info *master,
 	if (kernellen > 0)
 		nrparts++;
 
+<<<<<<< HEAD
 	/* Ask kernel for more memory */
 	parts = kzalloc(sizeof(*parts) * nrparts + 10 * nrparts, GFP_KERNEL);
 	if (!parts) {
 		vfree(buf);
 		return -ENOMEM;
+=======
+	parts = kzalloc(sizeof(*parts) * nrparts + 10 * nrparts, GFP_KERNEL);
+	if (!parts) {
+		ret = -ENOMEM;
+		goto out;
+>>>>>>> v4.9.227
 	}
 
 	/* Start building partition list */
@@ -208,6 +365,7 @@ static int bcm63xx_parse_cfe_partitions(struct mtd_info *master,
 		sparelen);
 
 	*pparts = parts;
+<<<<<<< HEAD
 	vfree(buf);
 
 	return nrparts;
@@ -232,6 +390,52 @@ static void __exit bcm63xx_cfe_parser_exit(void)
 
 module_init(bcm63xx_cfe_parser_init);
 module_exit(bcm63xx_cfe_parser_exit);
+=======
+	ret = 0;
+
+out:
+	vfree(buf);
+
+	if (ret)
+		return ret;
+
+	return nrparts;
+}
+
+static int bcm63xx_parse_cfe_partitions(struct mtd_info *master,
+					const struct mtd_partition **pparts,
+					struct mtd_part_parser_data *data)
+{
+	struct bcm963xx_nvram *nvram = NULL;
+	int ret;
+
+	if (bcm63xx_detect_cfe(master))
+		return -EINVAL;
+
+	nvram = vzalloc(sizeof(*nvram));
+	if (!nvram)
+		return -ENOMEM;
+
+	ret = bcm63xx_read_nvram(master, nvram);
+	if (ret)
+		goto out;
+
+	if (!mtd_type_is_nand(master))
+		ret = bcm63xx_parse_cfe_nor_partitions(master, pparts, nvram);
+	else
+		ret = -EINVAL;
+
+out:
+	vfree(nvram);
+	return ret;
+};
+
+static struct mtd_part_parser bcm63xx_cfe_parser = {
+	.parse_fn = bcm63xx_parse_cfe_partitions,
+	.name = "bcm63xxpart",
+};
+module_mtd_part_parser(bcm63xx_cfe_parser);
+>>>>>>> v4.9.227
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Daniel Dickinson <openwrt@cshore.neomailbox.net>");

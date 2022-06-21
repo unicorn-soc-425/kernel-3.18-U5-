@@ -1,11 +1,21 @@
 *Device-Tree bindings for ST SW reset functionality
 
 Required properties:
+<<<<<<< HEAD
 - compatible: should be "st,<chip>-restart".
+=======
+- compatible: should be "stih407-restart".
+>>>>>>> v4.9.227
 - st,syscfg: should be a phandle of the syscfg node.
 
 Example node:
 	restart {
+<<<<<<< HEAD
 		compatible = "st,stih416-restart";
 		st,syscfg = <&syscfg_sbc>;
+=======
+		compatible = "st,stih407-restart";
+		st,syscfg = <&syscfg_sbc_reg>;
+		status = "okay";
+>>>>>>> v4.9.227
 	};

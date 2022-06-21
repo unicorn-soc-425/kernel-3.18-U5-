@@ -59,7 +59,10 @@ struct mutex {
 	struct optimistic_spin_queue osq; /* Spinner MCS lock */
 #endif
 #ifdef CONFIG_DEBUG_MUTEXES
+<<<<<<< HEAD
 	const char 		*name;
+=======
+>>>>>>> v4.9.227
 	void			*magic;
 #endif
 #ifdef CONFIG_DEBUG_LOCK_ALLOC

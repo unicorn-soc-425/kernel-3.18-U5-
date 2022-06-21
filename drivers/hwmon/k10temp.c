@@ -60,7 +60,10 @@ static DEFINE_MUTEX(nb_smu_ind_mutex);
  * Control]
  */
 #define F15H_M60H_REPORTED_TEMP_CTRL_OFFSET	0xd8200ca4
+<<<<<<< HEAD
 #define PCI_DEVICE_ID_AMD_15H_M60H_NB_F3	0x1573
+=======
+>>>>>>> v4.9.227
 
 static void amd_nb_smu_index_read(struct pci_dev *pdev, unsigned int devfn,
 				  int offset, u32 *val)
@@ -180,7 +183,11 @@ static bool has_erratum_319(struct pci_dev *pdev)
 	 * and AM3 formats, but that's the best we can do.
 	 */
 	return boot_cpu_data.x86_model < 4 ||
+<<<<<<< HEAD
 	       (boot_cpu_data.x86_model == 4 && boot_cpu_data.x86_mask <= 2);
+=======
+	       (boot_cpu_data.x86_model == 4 && boot_cpu_data.x86_stepping <= 2);
+>>>>>>> v4.9.227
 }
 
 static int k10temp_probe(struct pci_dev *pdev,

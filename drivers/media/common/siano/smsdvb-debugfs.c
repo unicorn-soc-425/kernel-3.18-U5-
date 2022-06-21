@@ -17,7 +17,11 @@
  *
  ***********************************************************************/
 
+<<<<<<< HEAD
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+=======
+#include "smscoreapi.h"
+>>>>>>> v4.9.227
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -31,8 +35,11 @@
 #include "dvb_demux.h"
 #include "dvb_frontend.h"
 
+<<<<<<< HEAD
 #include "smscoreapi.h"
 
+=======
+>>>>>>> v4.9.227
 #include "smsdvb.h"
 
 static struct dentry *smsdvb_debugfs_usb_root;
@@ -536,7 +543,11 @@ int smsdvb_debugfs_register(void)
 	 */
 	d = debugfs_create_dir("smsdvb", usb_debug_root);
 	if (IS_ERR_OR_NULL(d)) {
+<<<<<<< HEAD
 		sms_err("Couldn't create sysfs node for smsdvb");
+=======
+		pr_err("Couldn't create sysfs node for smsdvb\n");
+>>>>>>> v4.9.227
 		return PTR_ERR(d);
 	} else {
 		smsdvb_debugfs_usb_root = d;

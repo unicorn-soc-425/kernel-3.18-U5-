@@ -535,11 +535,15 @@ static int read_cow_bitmap(int fd, void *buf, int offset, int len)
 {
 	int err;
 
+<<<<<<< HEAD
 	err = os_seek_file(fd, offset);
 	if (err < 0)
 		return err;
 
 	err = os_read_file(fd, buf, len);
+=======
+	err = os_pread_file(fd, buf, len, offset);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return err;
 
@@ -805,6 +809,10 @@ static void ubd_device_release(struct device *dev)
 static int ubd_disk_register(int major, u64 size, int unit,
 			     struct gendisk **disk_out)
 {
+<<<<<<< HEAD
+=======
+	struct device *parent = NULL;
+>>>>>>> v4.9.227
 	struct gendisk *disk;
 
 	disk = alloc_disk(1 << UBD_SHIFT);
@@ -827,12 +835,20 @@ static int ubd_disk_register(int major, u64 size, int unit,
 		ubd_devs[unit].pdev.dev.release = ubd_device_release;
 		dev_set_drvdata(&ubd_devs[unit].pdev.dev, &ubd_devs[unit]);
 		platform_device_register(&ubd_devs[unit].pdev);
+<<<<<<< HEAD
 		disk->driverfs_dev = &ubd_devs[unit].pdev.dev;
+=======
+		parent = &ubd_devs[unit].pdev.dev;
+>>>>>>> v4.9.227
 	}
 
 	disk->private_data = &ubd_devs[unit];
 	disk->queue = ubd_devs[unit].queue;
+<<<<<<< HEAD
 	add_disk(disk);
+=======
+	device_add_disk(parent, disk);
+>>>>>>> v4.9.227
 
 	*disk_out = disk;
 	return 0;
@@ -866,7 +882,11 @@ static int ubd_add(int n, char **error_out)
 		goto out;
 	}
 	ubd_dev->queue->queuedata = ubd_dev;
+<<<<<<< HEAD
 	blk_queue_flush(ubd_dev->queue, REQ_FLUSH);
+=======
+	blk_queue_write_cache(ubd_dev->queue, true, false);
+>>>>>>> v4.9.227
 
 	blk_queue_max_segments(ubd_dev->queue, MAX_SG);
 	err = ubd_disk_register(UBD_MAJOR, ubd_dev->size, n, &ubd_gendisk[n]);
@@ -1290,7 +1310,11 @@ static void do_ubd_request(struct request_queue *q)
 
 		req = dev->request;
 
+<<<<<<< HEAD
 		if (req->cmd_flags & REQ_FLUSH) {
+=======
+		if (req_op(req) == REQ_OP_FLUSH) {
+>>>>>>> v4.9.227
 			io_req = kmalloc(sizeof(struct io_thread_req),
 					 GFP_ATOMIC);
 			if (io_req == NULL) {
@@ -1377,6 +1401,7 @@ static int update_bitmap(struct io_thread_req *req)
 	if(req->cow_offset == -1)
 		return 0;
 
+<<<<<<< HEAD
 	n = os_seek_file(req->fds[1], req->cow_offset);
 	if(n < 0){
 		printk("do_io - bitmap lseek failed : err = %d\n", -n);
@@ -1385,6 +1410,10 @@ static int update_bitmap(struct io_thread_req *req)
 
 	n = os_write_file(req->fds[1], &req->bitmap_words,
 			  sizeof(req->bitmap_words));
+=======
+	n = os_pwrite_file(req->fds[1], &req->bitmap_words,
+			  sizeof(req->bitmap_words), req->cow_offset);
+>>>>>>> v4.9.227
 	if(n != sizeof(req->bitmap_words)){
 		printk("do_io - bitmap update failed, err = %d fd = %d\n", -n,
 		       req->fds[1]);
@@ -1399,7 +1428,10 @@ static void do_io(struct io_thread_req *req)
 	char *buf;
 	unsigned long len;
 	int n, nsectors, start, end, bit;
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> v4.9.227
 	__u64 off;
 
 	if (req->op == UBD_FLUSH) {
@@ -1428,18 +1460,25 @@ static void do_io(struct io_thread_req *req)
 		len = (end - start) * req->sectorsize;
 		buf = &req->buffer[start * req->sectorsize];
 
+<<<<<<< HEAD
 		err = os_seek_file(req->fds[bit], off);
 		if(err < 0){
 			printk("do_io - lseek failed : err = %d\n", -err);
 			req->error = 1;
 			return;
 		}
+=======
+>>>>>>> v4.9.227
 		if(req->op == UBD_READ){
 			n = 0;
 			do {
 				buf = &buf[n];
 				len -= n;
+<<<<<<< HEAD
 				n = os_read_file(req->fds[bit], buf, len);
+=======
+				n = os_pread_file(req->fds[bit], buf, len, off);
+>>>>>>> v4.9.227
 				if (n < 0) {
 					printk("do_io - read failed, err = %d "
 					       "fd = %d\n", -n, req->fds[bit]);
@@ -1449,7 +1488,11 @@ static void do_io(struct io_thread_req *req)
 			} while((n < len) && (n != 0));
 			if (n < len) memset(&buf[n], 0, len - n);
 		} else {
+<<<<<<< HEAD
 			n = os_write_file(req->fds[bit], buf, len);
+=======
+			n = os_pwrite_file(req->fds[bit], buf, len, off);
+>>>>>>> v4.9.227
 			if(n != len){
 				printk("do_io - write failed err = %d "
 				       "fd = %d\n", -n, req->fds[bit]);

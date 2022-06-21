@@ -23,6 +23,10 @@ enum iscsi_boot_eth_properties_enum {
 	ISCSI_BOOT_ETH_INDEX,
 	ISCSI_BOOT_ETH_FLAGS,
 	ISCSI_BOOT_ETH_IP_ADDR,
+<<<<<<< HEAD
+=======
+	ISCSI_BOOT_ETH_PREFIX_LEN,
+>>>>>>> v4.9.227
 	ISCSI_BOOT_ETH_SUBNET_MASK,
 	ISCSI_BOOT_ETH_ORIGIN,
 	ISCSI_BOOT_ETH_GATEWAY,
@@ -63,6 +67,15 @@ enum iscsi_boot_initiator_properties_enum {
 	ISCSI_BOOT_INI_END_MARKER,
 };
 
+<<<<<<< HEAD
+=======
+enum iscsi_boot_acpitbl_properties_enum {
+	ISCSI_BOOT_ACPITBL_SIGNATURE,
+	ISCSI_BOOT_ACPITBL_OEM_ID,
+	ISCSI_BOOT_ACPITBL_OEM_TABLE_ID,
+};
+
+>>>>>>> v4.9.227
 struct attribute_group;
 
 struct iscsi_boot_kobj {
@@ -126,6 +139,16 @@ iscsi_boot_create_target(struct iscsi_boot_kset *boot_kset, int index,
 			 umode_t (*is_visible) (void *data, int type),
 			 void (*release) (void *data));
 
+<<<<<<< HEAD
+=======
+struct iscsi_boot_kobj *
+iscsi_boot_create_acpitbl(struct iscsi_boot_kset *boot_kset, int index,
+			  void *data,
+			  ssize_t (*show)(void *data, int type, char *buf),
+			  umode_t (*is_visible)(void *data, int type),
+			  void (*release)(void *data));
+
+>>>>>>> v4.9.227
 struct iscsi_boot_kset *iscsi_boot_create_kset(const char *set_name);
 struct iscsi_boot_kset *iscsi_boot_create_host_kset(unsigned int hostno);
 void iscsi_boot_destroy_kset(struct iscsi_boot_kset *boot_kset);

@@ -47,6 +47,12 @@ static bool initialize(struct kernel_queue *kq, struct kfd_dev *dev,
 	pr_debug("amdkfd: In func %s initializing queue type %d size %d\n",
 			__func__, KFD_QUEUE_TYPE_HIQ, queue_size);
 
+<<<<<<< HEAD
+=======
+	memset(&prop, 0, sizeof(prop));
+	memset(&nop, 0, sizeof(nop));
+
+>>>>>>> v4.9.227
 	nop.opcode = IT_NOP;
 	nop.type = PM4_TYPE_3;
 	nop.u32all |= PM4_COUNT_ZERO;
@@ -121,7 +127,11 @@ static bool initialize(struct kernel_queue *kq, struct kfd_dev *dev,
 	prop.eop_ring_buffer_address = kq->eop_gpu_addr;
 	prop.eop_ring_buffer_size = PAGE_SIZE;
 
+<<<<<<< HEAD
 	if (init_queue(&kq->queue, prop) != 0)
+=======
+	if (init_queue(&kq->queue, &prop) != 0)
+>>>>>>> v4.9.227
 		goto err_init_queue;
 
 	kq->queue->device = dev;
@@ -300,7 +310,11 @@ struct kernel_queue *kernel_queue_init(struct kfd_dev *dev,
 		break;
 	}
 
+<<<<<<< HEAD
 	if (kq->ops.initialize(kq, dev, type, KFD_KERNEL_QUEUE_SIZE) == false) {
+=======
+	if (!kq->ops.initialize(kq, dev, type, KFD_KERNEL_QUEUE_SIZE)) {
+>>>>>>> v4.9.227
 		pr_err("amdkfd: failed to init kernel queue\n");
 		kfree(kq);
 		return NULL;

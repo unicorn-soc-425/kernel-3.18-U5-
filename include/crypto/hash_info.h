@@ -34,6 +34,12 @@
 #define TGR160_DIGEST_SIZE 20
 #define TGR192_DIGEST_SIZE 24
 
+<<<<<<< HEAD
+=======
+/* not defined in include/crypto/ */
+#define SM3256_DIGEST_SIZE 32
+
+>>>>>>> v4.9.227
 extern const char *const hash_algo_name[HASH_ALGO__LAST];
 extern const int hash_digest_size[HASH_ALGO__LAST];
 

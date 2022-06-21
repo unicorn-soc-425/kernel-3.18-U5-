@@ -19,7 +19,11 @@
 /*
  * Driver: pcmda12
  * Description: A driver for the Winsystems PCM-D/A-12
+<<<<<<< HEAD
  * Devices: (Winsystems) PCM-D/A-12 [pcmda12]
+=======
+ * Devices: [Winsystems] PCM-D/A-12 (pcmda12)
+>>>>>>> v4.9.227
  * Author: Calin Culianu <calin@ajvar.org>
  * Updated: Fri, 13 Jan 2006 12:01:01 -0500
  * Status: works

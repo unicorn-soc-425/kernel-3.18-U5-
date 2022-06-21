@@ -21,8 +21,13 @@
  */
 
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <asm/io.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/io.h>
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 
 /**

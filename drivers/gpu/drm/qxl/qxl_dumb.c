@@ -76,7 +76,11 @@ int qxl_mode_dumb_mmap(struct drm_file *file_priv,
 	struct qxl_bo *qobj;
 
 	BUG_ON(!offset_p);
+<<<<<<< HEAD
 	gobj = drm_gem_object_lookup(dev, file_priv, handle);
+=======
+	gobj = drm_gem_object_lookup(file_priv, handle);
+>>>>>>> v4.9.227
 	if (gobj == NULL)
 		return -ENOENT;
 	qobj = gem_to_qxl_bo(gobj);

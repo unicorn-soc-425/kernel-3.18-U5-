@@ -20,7 +20,11 @@
 #include <linux/stddef.h>
 
 #include <asm/uaccess.h>
+<<<<<<< HEAD
 #include <asm/desc.h>
+=======
+#include <asm/vm86.h>
+>>>>>>> v4.9.227
 
 #include "fpu_system.h"
 #include "exception.h"
@@ -158,7 +162,11 @@ static long pm_address(u_char FPU_modrm, u_char segment,
 		addr->selector = PM_REG_(segment);
 	}
 
+<<<<<<< HEAD
 	descriptor = LDT_DESCRIPTOR(PM_REG_(segment));
+=======
+	descriptor = FPU_get_ldt_descriptor(addr->selector);
+>>>>>>> v4.9.227
 	base_address = SEG_BASE_ADDR(descriptor);
 	address = base_address + offset;
 	limit = base_address

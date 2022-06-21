@@ -8,7 +8,12 @@
 
 #include <linux/serial_core.h>
 /* WARNING:  Do not change this to <linux/serial.h> without testing that
+<<<<<<< HEAD
  * SERIAL_PORT_DFNS does get defined to the appropriate value. */
+=======
+ * SERIAL_PORT_DFNS does get defined to the appropriate value.
+ */
+>>>>>>> v4.9.227
 #include <asm/serial.h>
 
 #ifndef SERIAL_PORT_DFNS
@@ -62,7 +67,12 @@ const struct old_serial_port *spk_serial_init(int index)
 	}
 
 	/*	Disable UART interrupts, set DTR and RTS high
+<<<<<<< HEAD
 	 *	and set speed. */
+=======
+	 *	and set speed.
+	 */
+>>>>>>> v4.9.227
 	outb(cval | UART_LCR_DLAB, ser->port + UART_LCR);	/* set DLAB */
 	outb(quot & 0xff, ser->port + UART_DLL);	/* LS of divisor */
 	outb(quot >> 8, ser->port + UART_DLM);		/* MS of divisor */
@@ -91,8 +101,11 @@ const struct old_serial_port *spk_serial_init(int index)
 static irqreturn_t synth_readbuf_handler(int irq, void *dev_id)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 /*printk(KERN_ERR "in irq\n"); */
 /*pr_warn("in IRQ\n"); */
+=======
+>>>>>>> v4.9.227
 	int c;
 
 	spin_lock_irqsave(&speakup_info.spinlock, flags);
@@ -100,8 +113,11 @@ static irqreturn_t synth_readbuf_handler(int irq, void *dev_id)
 
 		c = inb_p(speakup_info.port_tts+UART_RX);
 		synth->read_buff_add((u_char) c);
+<<<<<<< HEAD
 /*printk(KERN_ERR "c = %d\n", c); */
 /*pr_warn("C = %d\n", c); */
+=======
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&speakup_info.spinlock, flags);
 	return IRQ_HANDLED;
@@ -111,7 +127,11 @@ static void start_serial_interrupt(int irq)
 {
 	int rv;
 
+<<<<<<< HEAD
 	if (synth->read_buff_add == NULL)
+=======
+	if (!synth->read_buff_add)
+>>>>>>> v4.9.227
 		return;
 
 	rv = request_irq(irq, synth_readbuf_handler, IRQF_SHARED,
@@ -137,7 +157,11 @@ void spk_stop_serial_interrupt(void)
 	if (speakup_info.port_tts == 0)
 		return;
 
+<<<<<<< HEAD
 	if (synth->read_buff_add == NULL)
+=======
+	if (!synth->read_buff_add)
+>>>>>>> v4.9.227
 		return;
 
 	/* Turn off interrupts */
@@ -156,7 +180,12 @@ int spk_wait_for_xmitr(void)
 		synth->alive = 0;
 		/* No synth any more, so nobody will restart TTYs, and we thus
 		 * need to do it ourselves.  Now that there is no synth we can
+<<<<<<< HEAD
 		 * let application flood anyway */
+=======
+		 * let application flood anyway
+		 */
+>>>>>>> v4.9.227
 		speakup_start_ttys();
 		timeouts = 0;
 		return 0;
@@ -173,8 +202,11 @@ int spk_wait_for_xmitr(void)
 	while (!((inb_p(speakup_info.port_tts + UART_MSR)) & UART_MSR_CTS)) {
 		/* CTS */
 		if (--tmout == 0) {
+<<<<<<< HEAD
 			/* pr_warn("%s: timed out (cts)\n",
 			 * synth->long_name); */
+=======
+>>>>>>> v4.9.227
 			timeouts++;
 			return 0;
 		}
@@ -228,4 +260,7 @@ void spk_serial_release(void)
 	speakup_info.port_tts = 0;
 }
 EXPORT_SYMBOL_GPL(spk_serial_release);
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227

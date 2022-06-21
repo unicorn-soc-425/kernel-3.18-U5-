@@ -25,7 +25,11 @@
  * Function to allocate regfields which are common
  * between syscfg and memory mapped based sensors
  */
+<<<<<<< HEAD
 int st_thermal_alloc_regfields(struct st_thermal_sensor *sensor)
+=======
+static int st_thermal_alloc_regfields(struct st_thermal_sensor *sensor)
+>>>>>>> v4.9.227
 {
 	struct device *dev = sensor->dev;
 	struct regmap *regmap = sensor->regmap;
@@ -111,8 +115,12 @@ static int st_thermal_calibration(struct st_thermal_sensor *sensor)
 }
 
 /* Callback to get temperature from HW*/
+<<<<<<< HEAD
 static int st_thermal_get_temp(struct thermal_zone_device *th,
 		unsigned long *temperature)
+=======
+static int st_thermal_get_temp(struct thermal_zone_device *th, int *temperature)
+>>>>>>> v4.9.227
 {
 	struct st_thermal_sensor *sensor = th->devdata;
 	struct device *dev = sensor->dev;
@@ -159,7 +167,11 @@ static int st_thermal_get_trip_type(struct thermal_zone_device *th,
 }
 
 static int st_thermal_get_trip_temp(struct thermal_zone_device *th,
+<<<<<<< HEAD
 				    int trip, unsigned long *temp)
+=======
+				    int trip, int *temp)
+>>>>>>> v4.9.227
 {
 	struct st_thermal_sensor *sensor = th->devdata;
 	struct device *dev = sensor->dev;
@@ -214,7 +226,11 @@ int st_thermal_register(struct platform_device *pdev,
 
 	sensor->ops = sensor->cdata->ops;
 
+<<<<<<< HEAD
 	ret = sensor->ops->regmap_init(sensor);
+=======
+	ret = (sensor->ops->regmap_init)(sensor);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 

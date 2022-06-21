@@ -9,6 +9,7 @@
 #include <linux/uaccess.h>
 
 static int
+<<<<<<< HEAD
 security_get(struct dentry *dentry, const char *name, void *buffer, size_t size,
 		int handler_flags)
 {
@@ -48,6 +49,34 @@ static size_t security_list(struct dentry *dentry, char *list, size_t list_len,
 	}
 
 	return len;
+=======
+security_get(const struct xattr_handler *handler, struct dentry *unused,
+	     struct inode *inode, const char *name, void *buffer, size_t size)
+{
+	if (IS_PRIVATE(inode))
+		return -EPERM;
+
+	return reiserfs_xattr_get(inode, xattr_full_name(handler, name),
+				  buffer, size);
+}
+
+static int
+security_set(const struct xattr_handler *handler, struct dentry *unused,
+	     struct inode *inode, const char *name, const void *buffer,
+	     size_t size, int flags)
+{
+	if (IS_PRIVATE(inode))
+		return -EPERM;
+
+	return reiserfs_xattr_set(inode,
+				  xattr_full_name(handler, name),
+				  buffer, size, flags);
+}
+
+static bool security_list(struct dentry *dentry)
+{
+	return !IS_PRIVATE(d_inode(dentry));
+>>>>>>> v4.9.227
 }
 
 /* Initializes the security context for a new inode and returns the number

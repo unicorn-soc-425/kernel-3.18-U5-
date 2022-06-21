@@ -40,6 +40,13 @@ else
 MACH :=
 endif
 
+<<<<<<< HEAD
+=======
+ifneq ($(CONFIG_BUILTIN_DTB),"")
+core-$(CONFIG_OF) += arch/cris/boot/dts/
+endif
+
+>>>>>>> v4.9.227
 LD = $(CROSS_COMPILE)ld -mcrislinux
 
 OBJCOPYFLAGS := -O binary -R .note -R .comment -S

@@ -110,8 +110,11 @@ static inline int arch_irqs_disabled_flags(unsigned long flags)
 		: : "r" (flags) : "memory");				\
 	} while (0)
 
+<<<<<<< HEAD
 #define local_dbg_enable()	asm("msr	daifclr, #8" : : : "memory")
 #define local_dbg_disable()	asm("msr	daifset, #8" : : : "memory")
 
+=======
+>>>>>>> v4.9.227
 #endif
 #endif

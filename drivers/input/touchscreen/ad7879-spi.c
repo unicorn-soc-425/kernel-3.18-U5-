@@ -10,6 +10,10 @@
 #include <linux/pm.h>
 #include <linux/spi/spi.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 
 #include "ad7879.h"
 
@@ -146,11 +150,27 @@ static int ad7879_spi_remove(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct spi_driver ad7879_spi_driver = {
 	.driver = {
 		.name	= "ad7879",
 		.owner	= THIS_MODULE,
 		.pm	= &ad7879_pm_ops,
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id ad7879_spi_dt_ids[] = {
+	{ .compatible = "adi,ad7879", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, ad7879_spi_dt_ids);
+#endif
+
+static struct spi_driver ad7879_spi_driver = {
+	.driver = {
+		.name	= "ad7879",
+		.pm	= &ad7879_pm_ops,
+		.of_match_table = of_match_ptr(ad7879_spi_dt_ids),
+>>>>>>> v4.9.227
 	},
 	.probe		= ad7879_spi_probe,
 	.remove		= ad7879_spi_remove,

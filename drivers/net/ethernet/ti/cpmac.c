@@ -41,6 +41,11 @@
 #include <linux/gpio.h>
 #include <linux/atomic.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/mach-ar7/ar7.h>
+
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Eugene Konev <ejka@imfi.kspu.ru>");
 MODULE_DESCRIPTION("TI AR7 ethernet driver (CPMAC)");
 MODULE_LICENSE("GPL");
@@ -203,7 +208,10 @@ struct cpmac_priv {
 	dma_addr_t dma_ring;
 	void __iomem *regs;
 	struct mii_bus *mii_bus;
+<<<<<<< HEAD
 	struct phy_device *phy;
+=======
+>>>>>>> v4.9.227
 	char phy_name[MII_BUS_ID_SIZE + 3];
 	int oldlink, oldspeed, oldduplex;
 	u32 msg_enable;
@@ -314,8 +322,11 @@ static int cpmac_mdio_reset(struct mii_bus *bus)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mii_irqs[PHY_MAX_ADDR] = { PHY_POLL, };
 
+=======
+>>>>>>> v4.9.227
 static struct mii_bus *cpmac_mii;
 
 static void cpmac_set_multicast_list(struct net_device *dev)
@@ -831,6 +842,7 @@ static void cpmac_tx_timeout(struct net_device *dev)
 
 static int cpmac_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
+<<<<<<< HEAD
 	struct cpmac_priv *priv = netdev_priv(dev);
 
 	if (!(netif_running(dev)))
@@ -862,6 +874,14 @@ static int cpmac_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 		return phy_ethtool_sset(priv->phy, cmd);
 
 	return -EINVAL;
+=======
+	if (!(netif_running(dev)))
+		return -EINVAL;
+	if (!dev->phydev)
+		return -EINVAL;
+
+	return phy_mii_ioctl(dev->phydev, ifr, cmd);
+>>>>>>> v4.9.227
 }
 
 static void cpmac_get_ringparam(struct net_device *dev,
@@ -898,16 +918,27 @@ static void cpmac_get_drvinfo(struct net_device *dev,
 	strlcpy(info->driver, "cpmac", sizeof(info->driver));
 	strlcpy(info->version, CPMAC_VERSION, sizeof(info->version));
 	snprintf(info->bus_info, sizeof(info->bus_info), "%s", "cpmac");
+<<<<<<< HEAD
 	info->regdump_len = 0;
 }
 
 static const struct ethtool_ops cpmac_ethtool_ops = {
 	.get_settings = cpmac_get_settings,
 	.set_settings = cpmac_set_settings,
+=======
+}
+
+static const struct ethtool_ops cpmac_ethtool_ops = {
+>>>>>>> v4.9.227
 	.get_drvinfo = cpmac_get_drvinfo,
 	.get_link = ethtool_op_get_link,
 	.get_ringparam = cpmac_get_ringparam,
 	.set_ringparam = cpmac_set_ringparam,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 static void cpmac_adjust_link(struct net_device *dev)
@@ -916,6 +947,7 @@ static void cpmac_adjust_link(struct net_device *dev)
 	int new_state = 0;
 
 	spin_lock(&priv->lock);
+<<<<<<< HEAD
 	if (priv->phy->link) {
 		netif_tx_start_all_queues(dev);
 		if (priv->phy->duplex != priv->oldduplex) {
@@ -926,6 +958,18 @@ static void cpmac_adjust_link(struct net_device *dev)
 		if (priv->phy->speed != priv->oldspeed) {
 			new_state = 1;
 			priv->oldspeed = priv->phy->speed;
+=======
+	if (dev->phydev->link) {
+		netif_tx_start_all_queues(dev);
+		if (dev->phydev->duplex != priv->oldduplex) {
+			new_state = 1;
+			priv->oldduplex = dev->phydev->duplex;
+		}
+
+		if (dev->phydev->speed != priv->oldspeed) {
+			new_state = 1;
+			priv->oldspeed = dev->phydev->speed;
+>>>>>>> v4.9.227
 		}
 
 		if (!priv->oldlink) {
@@ -940,7 +984,11 @@ static void cpmac_adjust_link(struct net_device *dev)
 	}
 
 	if (new_state && netif_msg_link(priv) && net_ratelimit())
+<<<<<<< HEAD
 		phy_print_status(priv->phy);
+=======
+		phy_print_status(dev->phydev);
+>>>>>>> v4.9.227
 
 	spin_unlock(&priv->lock);
 }
@@ -1018,8 +1066,13 @@ static int cpmac_open(struct net_device *dev)
 	cpmac_hw_start(dev);
 
 	napi_enable(&priv->napi);
+<<<<<<< HEAD
 	priv->phy->state = PHY_CHANGELINK;
 	phy_start(priv->phy);
+=======
+	dev->phydev->state = PHY_CHANGELINK;
+	phy_start(dev->phydev);
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -1034,8 +1087,15 @@ fail_desc:
 			kfree_skb(priv->rx_head[i].skb);
 		}
 	}
+<<<<<<< HEAD
 fail_alloc:
 	kfree(priv->desc_ring);
+=======
+	dma_free_coherent(&dev->dev, sizeof(struct cpmac_desc) * size,
+			  priv->desc_ring, priv->dma_ring);
+
+fail_alloc:
+>>>>>>> v4.9.227
 	iounmap(priv->regs);
 
 fail_remap:
@@ -1055,7 +1115,11 @@ static int cpmac_stop(struct net_device *dev)
 
 	cancel_work_sync(&priv->reset_work);
 	napi_disable(&priv->napi);
+<<<<<<< HEAD
 	phy_stop(priv->phy);
+=======
+	phy_stop(dev->phydev);
+>>>>>>> v4.9.227
 
 	cpmac_hw_stop(dev);
 
@@ -1108,6 +1172,10 @@ static int cpmac_probe(struct platform_device *pdev)
 	struct cpmac_priv *priv;
 	struct net_device *dev;
 	struct plat_cpmac_data *pdata;
+<<<<<<< HEAD
+=======
+	struct phy_device *phydev = NULL;
+>>>>>>> v4.9.227
 
 	pdata = dev_get_platdata(&pdev->dev);
 
@@ -1118,7 +1186,11 @@ static int cpmac_probe(struct platform_device *pdev)
 		for (phy_id = 0; phy_id < PHY_MAX_ADDR; phy_id++) {
 			if (!(pdata->phy_mask & (1 << phy_id)))
 				continue;
+<<<<<<< HEAD
 			if (!cpmac_mii->phy_map[phy_id])
+=======
+			if (!mdiobus_get_phy(cpmac_mii, phy_id))
+>>>>>>> v4.9.227
 				continue;
 			strncpy(mdio_bus_id, cpmac_mii->id, MII_BUS_ID_SIZE);
 			break;
@@ -1137,6 +1209,10 @@ static int cpmac_probe(struct platform_device *pdev)
 	if (!dev)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	SET_NETDEV_DEV(dev, &pdev->dev);
+>>>>>>> v4.9.227
 	platform_set_drvdata(pdev, dev);
 	priv = netdev_priv(dev);
 
@@ -1144,7 +1220,11 @@ static int cpmac_probe(struct platform_device *pdev)
 	mem = platform_get_resource_byname(pdev, IORESOURCE_MEM, "regs");
 	if (!mem) {
 		rc = -ENODEV;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto fail;
+>>>>>>> v4.9.227
 	}
 
 	dev->irq = platform_get_irq_byname(pdev, "irq");
@@ -1164,6 +1244,7 @@ static int cpmac_probe(struct platform_device *pdev)
 	snprintf(priv->phy_name, MII_BUS_ID_SIZE, PHY_ID_FMT,
 						mdio_bus_id, phy_id);
 
+<<<<<<< HEAD
 	priv->phy = phy_connect(dev, priv->phy_name, cpmac_adjust_link,
 				PHY_INTERFACE_MODE_MII);
 
@@ -1173,6 +1254,17 @@ static int cpmac_probe(struct platform_device *pdev)
 
 		rc = PTR_ERR(priv->phy);
 		goto out;
+=======
+	phydev = phy_connect(dev, priv->phy_name, cpmac_adjust_link,
+			     PHY_INTERFACE_MODE_MII);
+
+	if (IS_ERR(phydev)) {
+		if (netif_msg_drv(priv))
+			dev_err(&pdev->dev, "Could not attach to PHY\n");
+
+		rc = PTR_ERR(phydev);
+		goto fail;
+>>>>>>> v4.9.227
 	}
 
 	rc = register_netdev(dev);
@@ -1191,7 +1283,10 @@ static int cpmac_probe(struct platform_device *pdev)
 
 fail:
 	free_netdev(dev);
+<<<<<<< HEAD
 out:
+=======
+>>>>>>> v4.9.227
 	return rc;
 }
 
@@ -1226,7 +1321,10 @@ int cpmac_init(void)
 	cpmac_mii->read = cpmac_mdio_read;
 	cpmac_mii->write = cpmac_mdio_write;
 	cpmac_mii->reset = cpmac_mdio_reset;
+<<<<<<< HEAD
 	cpmac_mii->irq = mii_irqs;
+=======
+>>>>>>> v4.9.227
 
 	cpmac_mii->priv = ioremap(AR7_REGS_MDIO, 256);
 

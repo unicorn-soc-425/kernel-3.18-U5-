@@ -63,7 +63,11 @@
 		palmas: pmic@58 {
 			compatible = "ti,palmas";
 			reg = <0x58>;
+<<<<<<< HEAD
 			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_LOW>;
+=======
+			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>> v4.9.227
 
 			#interrupt-cells = <2>;
 			interrupt-controller;
@@ -277,7 +281,11 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
+<<<<<<< HEAD
 		clk32k_in: clock {
+=======
+		clk32k_in: clock@0 {
+>>>>>>> v4.9.227
 			compatible = "fixed-clock";
 			reg = <0>;
 			#clock-cells = <0>;
@@ -292,7 +300,11 @@
 			label = "Power";
 			gpios = <&gpio TEGRA_GPIO(Q, 0) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 
 		volume_down {

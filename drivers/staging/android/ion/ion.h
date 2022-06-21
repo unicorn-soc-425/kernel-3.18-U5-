@@ -2,7 +2,10 @@
  * drivers/staging/android/ion/ion.h
  *
  * Copyright (C) 2011 Google, Inc.
+<<<<<<< HEAD
  * Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
+=======
+>>>>>>> v4.9.227
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -18,7 +21,12 @@
 #ifndef _LINUX_ION_H
 #define _LINUX_ION_H
 
+<<<<<<< HEAD
 #include <linux/err.h>
+=======
+#include <linux/types.h>
+
+>>>>>>> v4.9.227
 #include "../uapi/ion.h"
 
 struct ion_handle;
@@ -28,11 +36,21 @@ struct ion_mapper;
 struct ion_client;
 struct ion_buffer;
 
+<<<<<<< HEAD
 /* This should be removed some day when phys_addr_t's are fully
    plumbed in the kernel, and all instances of ion_phys_addr_t should
    be converted to phys_addr_t.  For the time being many kernel interfaces
    do not accept phys_addr_t's that would have to */
 #define ion_phys_addr_t dma_addr_t
+=======
+/*
+ * This should be removed some day when phys_addr_t's are fully
+ * plumbed in the kernel, and all instances of ion_phys_addr_t should
+ * be converted to phys_addr_t.  For the time being many kernel interfaces
+ * do not accept phys_addr_t's that would have to
+ */
+#define ion_phys_addr_t unsigned long
+>>>>>>> v4.9.227
 
 /**
  * struct ion_platform_heap - defines a heap in the given platform
@@ -43,9 +61,12 @@ struct ion_buffer;
  * @name:	used for debug purposes
  * @base:	base address of heap in physical memory if applicable
  * @size:	size of the heap in bytes if applicable
+<<<<<<< HEAD
  * @has_outer_cache:    set to 1 if outer cache is used, 0 otherwise.
  * @extra_data:	Extra data specific to each heap type
  * @priv:	heap private data
+=======
+>>>>>>> v4.9.227
  * @align:	required alignment in physical memory if applicable
  * @priv:	private info passed from the board file
  *
@@ -57,26 +78,38 @@ struct ion_platform_heap {
 	const char *name;
 	ion_phys_addr_t base;
 	size_t size;
+<<<<<<< HEAD
 	unsigned int has_outer_cache;
 	void *extra_data;
+=======
+>>>>>>> v4.9.227
 	ion_phys_addr_t align;
 	void *priv;
 };
 
 /**
  * struct ion_platform_data - array of platform heaps passed from board file
+<<<<<<< HEAD
  * @has_outer_cache:    set to 1 if outer cache is used, 0 otherwise.
  * @nr:    number of structures in the array
  * @heaps: array of platform_heap structions
+=======
+ * @nr:		number of structures in the array
+ * @heaps:	array of platform_heap structions
+>>>>>>> v4.9.227
  *
  * Provided by the board file in the form of platform data to a platform device.
  */
 struct ion_platform_data {
+<<<<<<< HEAD
 	unsigned int has_outer_cache;
+=======
+>>>>>>> v4.9.227
 	int nr;
 	struct ion_platform_heap *heaps;
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_ION
 
 /**
@@ -90,6 +123,8 @@ struct ion_platform_data {
  */
 void ion_reserve(struct ion_platform_data *data);
 
+=======
+>>>>>>> v4.9.227
 /**
  * ion_client_create() -  allocate a client and returns it
  * @dev:		the global ion device
@@ -137,6 +172,7 @@ struct ion_handle *ion_alloc(struct ion_client *client, size_t len,
 void ion_free(struct ion_client *client, struct ion_handle *handle);
 
 /**
+<<<<<<< HEAD
  * ion_phys - returns the physical address and len of a handle
  * @client:	the client
  * @handle:	the handle
@@ -167,6 +203,8 @@ struct sg_table *ion_sg_table(struct ion_client *client,
 			      struct ion_handle *handle);
 
 /**
+=======
+>>>>>>> v4.9.227
  * ion_map_kernel - create mapping for the given handle
  * @client:	the client
  * @handle:	handle to map
@@ -199,6 +237,7 @@ struct dma_buf *ion_share_dma_buf(struct ion_client *client,
 int ion_share_dma_buf_fd(struct ion_client *client, struct ion_handle *handle);
 
 /**
+<<<<<<< HEAD
  * ion_import_dma_buf() - given an dma-buf fd from the ion exporter get handle
  * @client:	the client
  * @fd:		the dma-buf fd
@@ -273,4 +312,28 @@ static inline int ion_handle_get_flags(struct ion_client *client,
 }
 
 #endif /* CONFIG_ION */
+=======
+ * ion_import_dma_buf() - get ion_handle from dma-buf
+ * @client:	the client
+ * @dmabuf:	the dma-buf
+ *
+ * Get the ion_buffer associated with the dma-buf and return the ion_handle.
+ * If no ion_handle exists for this buffer, return newly created ion_handle.
+ * If dma-buf from another exporter is passed, return ERR_PTR(-EINVAL)
+ */
+struct ion_handle *ion_import_dma_buf(struct ion_client *client,
+				      struct dma_buf *dmabuf);
+
+/**
+ * ion_import_dma_buf_fd() - given a dma-buf fd from the ion exporter get handle
+ * @client:	the client
+ * @fd:		the dma-buf fd
+ *
+ * Given an dma-buf fd that was allocated through ion via ion_share_dma_buf_fd,
+ * import that fd and return a handle representing it. If a dma-buf from
+ * another exporter is passed in this function will return ERR_PTR(-EINVAL)
+ */
+struct ion_handle *ion_import_dma_buf_fd(struct ion_client *client, int fd);
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_ION_H */

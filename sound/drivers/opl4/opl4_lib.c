@@ -23,7 +23,11 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Clemens Ladisch <clemens@ladisch.de>");
 MODULE_DESCRIPTION("OPL4 driver");
@@ -176,9 +180,13 @@ static int snd_opl4_create_seq_dev(struct snd_opl4 *opl4, int seq_device)
 
 static void snd_opl4_free(struct snd_opl4 *opl4)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 	snd_opl4_free_proc(opl4);
 #endif
+=======
+	snd_opl4_free_proc(opl4);
+>>>>>>> v4.9.227
 	release_and_free_resource(opl4->res_fm_port);
 	release_and_free_resource(opl4->res_pcm_port);
 	kfree(opl4);
@@ -249,9 +257,13 @@ int snd_opl4_create(struct snd_card *card,
 	snd_opl4_enable_opl4(opl4);
 
 	snd_opl4_create_mixer(opl4);
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 	snd_opl4_create_proc(opl4);
 #endif
+=======
+	snd_opl4_create_proc(opl4);
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && defined(CONFIG_SND_SEQUENCER_MODULE))
 	opl4->seq_client = -1;

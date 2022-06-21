@@ -23,9 +23,32 @@
 #include <linux/mm.h>
 #include <linux/types.h>
 #include <crypto/sha.h>
+<<<<<<< HEAD
 #include <asm/byteorder.h>
 #include <asm/unaligned.h>
 
+=======
+#include <crypto/sha256_base.h>
+#include <asm/byteorder.h>
+#include <asm/unaligned.h>
+
+const u8 sha224_zero_message_hash[SHA224_DIGEST_SIZE] = {
+	0xd1, 0x4a, 0x02, 0x8c, 0x2a, 0x3a, 0x2b, 0xc9, 0x47,
+	0x61, 0x02, 0xbb, 0x28, 0x82, 0x34, 0xc4, 0x15, 0xa2,
+	0xb0, 0x1f, 0x82, 0x8e, 0xa6, 0x2a, 0xc5, 0xb3, 0xe4,
+	0x2f
+};
+EXPORT_SYMBOL_GPL(sha224_zero_message_hash);
+
+const u8 sha256_zero_message_hash[SHA256_DIGEST_SIZE] = {
+	0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14,
+	0x9a, 0xfb, 0xf4, 0xc8, 0x99, 0x6f, 0xb9, 0x24,
+	0x27, 0xae, 0x41, 0xe4, 0x64, 0x9b, 0x93, 0x4c,
+	0xa4, 0x95, 0x99, 0x1b, 0x78, 0x52, 0xb8, 0x55
+};
+EXPORT_SYMBOL_GPL(sha256_zero_message_hash);
+
+>>>>>>> v4.9.227
 static inline u32 Ch(u32 x, u32 y, u32 z)
 {
 	return z ^ (x & (y ^ z));
@@ -214,6 +237,7 @@ static void sha256_transform(u32 *state, const u8 *input)
 	memzero_explicit(W, 64 * sizeof(u32));
 }
 
+<<<<<<< HEAD
 static int sha224_init(struct shash_desc *desc)
 {
 	struct sha256_state *sctx = shash_desc_ctx(desc);
@@ -244,11 +268,21 @@ static int sha256_init(struct shash_desc *desc)
 	sctx->count = 0;
 
 	return 0;
+=======
+static void sha256_generic_block_fn(struct sha256_state *sst, u8 const *src,
+				    int blocks)
+{
+	while (blocks--) {
+		sha256_transform(sst->state, src);
+		src += SHA256_BLOCK_SIZE;
+	}
+>>>>>>> v4.9.227
 }
 
 int crypto_sha256_update(struct shash_desc *desc, const u8 *data,
 			  unsigned int len)
 {
+<<<<<<< HEAD
 	struct sha256_state *sctx = shash_desc_ctx(desc);
 	unsigned int partial, done;
 	const u8 *src;
@@ -276,11 +310,15 @@ int crypto_sha256_update(struct shash_desc *desc, const u8 *data,
 	memcpy(sctx->buf + partial, src, len - done);
 
 	return 0;
+=======
+	return sha256_base_do_update(desc, data, len, sha256_generic_block_fn);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(crypto_sha256_update);
 
 static int sha256_final(struct shash_desc *desc, u8 *out)
 {
+<<<<<<< HEAD
 	struct sha256_state *sctx = shash_desc_ctx(desc);
 	__be32 *dst = (__be32 *)out;
 	__be64 bits;
@@ -346,6 +384,27 @@ static struct shash_alg sha256_algs[2] = { {
 	.import		=	sha256_import,
 	.descsize	=	sizeof(struct sha256_state),
 	.statesize	=	sizeof(struct sha256_state),
+=======
+	sha256_base_do_finalize(desc, sha256_generic_block_fn);
+	return sha256_base_finish(desc, out);
+}
+
+int crypto_sha256_finup(struct shash_desc *desc, const u8 *data,
+			unsigned int len, u8 *hash)
+{
+	sha256_base_do_update(desc, data, len, sha256_generic_block_fn);
+	return sha256_final(desc, hash);
+}
+EXPORT_SYMBOL(crypto_sha256_finup);
+
+static struct shash_alg sha256_algs[2] = { {
+	.digestsize	=	SHA256_DIGEST_SIZE,
+	.init		=	sha256_base_init,
+	.update		=	crypto_sha256_update,
+	.final		=	sha256_final,
+	.finup		=	crypto_sha256_finup,
+	.descsize	=	sizeof(struct sha256_state),
+>>>>>>> v4.9.227
 	.base		=	{
 		.cra_name	=	"sha256",
 		.cra_driver_name=	"sha256-generic",
@@ -355,9 +414,16 @@ static struct shash_alg sha256_algs[2] = { {
 	}
 }, {
 	.digestsize	=	SHA224_DIGEST_SIZE,
+<<<<<<< HEAD
 	.init		=	sha224_init,
 	.update		=	crypto_sha256_update,
 	.final		=	sha224_final,
+=======
+	.init		=	sha224_base_init,
+	.update		=	crypto_sha256_update,
+	.final		=	sha256_final,
+	.finup		=	crypto_sha256_finup,
+>>>>>>> v4.9.227
 	.descsize	=	sizeof(struct sha256_state),
 	.base		=	{
 		.cra_name	=	"sha224",

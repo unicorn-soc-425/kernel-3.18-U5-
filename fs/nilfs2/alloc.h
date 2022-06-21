@@ -13,6 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -20,6 +21,10 @@
  * Original code was written by Koji Sato <koji@osrg.net>.
  * Two allocators were unified by Ryusuke Konishi <ryusuke@osrg.net>,
  *                                Amagai Yoshiji <amagai@osrg.net>.
+=======
+ * Originally written by Koji Sato.
+ * Two allocators were unified by Ryusuke Konishi and Amagai Yoshiji.
+>>>>>>> v4.9.227
  */
 
 #ifndef _NILFS_ALLOC_H
@@ -42,7 +47,11 @@ nilfs_palloc_entries_per_group(const struct inode *inode)
 	return 1UL << (inode->i_blkbits + 3 /* log2(8 = CHAR_BITS) */);
 }
 
+<<<<<<< HEAD
 int nilfs_palloc_init_blockgroup(struct inode *, unsigned);
+=======
+int nilfs_palloc_init_blockgroup(struct inode *, unsigned int);
+>>>>>>> v4.9.227
 int nilfs_palloc_get_entry_block(struct inode *, __u64, int,
 				 struct buffer_head **);
 void *nilfs_palloc_block_get_entry(const struct inode *, __u64,
@@ -77,6 +86,10 @@ int nilfs_palloc_freev(struct inode *, __u64 *, size_t);
 #define nilfs_set_bit_atomic		ext2_set_bit_atomic
 #define nilfs_clear_bit_atomic		ext2_clear_bit_atomic
 #define nilfs_find_next_zero_bit	find_next_zero_bit_le
+<<<<<<< HEAD
+=======
+#define nilfs_find_next_bit		find_next_bit_le
+>>>>>>> v4.9.227
 
 /**
  * struct nilfs_bh_assoc - block offset and buffer head association

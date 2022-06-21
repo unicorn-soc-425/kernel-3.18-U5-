@@ -22,9 +22,12 @@ acpidump options are as follow:
 .B \-b
 Dump tables to binary files
 .TP
+<<<<<<< HEAD
 .B \-c
 Dump customized tables
 .TP
+=======
+>>>>>>> v4.9.227
 .B \-h \-?
 This help message
 .TP
@@ -48,15 +51,34 @@ Verbose mode
 .B \-a <Address>
 Get table via a physical address
 .TP
+<<<<<<< HEAD
+=======
+.B \-c <on|off>
+Turning on/off customized table dumping
+.TP
+>>>>>>> v4.9.227
 .B \-f <BinaryFile>
 Get table via a binary file
 .TP
 .B \-n <Signature>
 Get table via a name/signature
 .TP
+<<<<<<< HEAD
 Invocation without parameters dumps all available tables
 .TP
 Multiple mixed instances of -a, -f, and -n are supported
+=======
+.B \-x
+Do not use but dump XSDT
+.TP
+.B \-x \-x
+Do not use or dump XSDT
+.TP
+.fi
+Invocation without parameters dumps all available tables.
+.TP
+Multiple mixed instances of -a, -f, and -n are supported.
+>>>>>>> v4.9.227
 
 .SH EXAMPLES
 

@@ -303,7 +303,11 @@ pn_rx_submit(struct f_phonet *fp, struct usb_request *req, gfp_t gfp_flags)
 	struct page *page;
 	int err;
 
+<<<<<<< HEAD
 	page = __skb_alloc_page(gfp_flags | __GFP_NOMEMALLOC, NULL);
+=======
+	page = __dev_alloc_page(gfp_flags | __GFP_NOMEMALLOC);
+>>>>>>> v4.9.227
 	if (!page)
 		return -ENOMEM;
 
@@ -377,7 +381,11 @@ static void pn_rx_complete(struct usb_ep *ep, struct usb_request *req)
 	if (page)
 		put_page(page);
 	if (req)
+<<<<<<< HEAD
 		pn_rx_submit(fp, req, GFP_ATOMIC | __GFP_COLD);
+=======
+		pn_rx_submit(fp, req, GFP_ATOMIC);
+>>>>>>> v4.9.227
 }
 
 /*-------------------------------------------------------------------------*/
@@ -417,7 +425,14 @@ static int pn_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 			return -EINVAL;
 
 		spin_lock(&port->lock);
+<<<<<<< HEAD
 		__pn_reset(f);
+=======
+
+		if (fp->in_ep->enabled)
+			__pn_reset(f);
+
+>>>>>>> v4.9.227
 		if (alt == 1) {
 			int i;
 
@@ -437,7 +452,11 @@ static int pn_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 
 			netif_carrier_on(dev);
 			for (i = 0; i < phonet_rxq_size; i++)
+<<<<<<< HEAD
 				pn_rx_submit(fp, fp->out_reqv[i], GFP_ATOMIC | __GFP_COLD);
+=======
+				pn_rx_submit(fp, fp->out_reqv[i], GFP_ATOMIC);
+>>>>>>> v4.9.227
 		}
 		spin_unlock(&port->lock);
 		return 0;
@@ -527,20 +546,30 @@ static int pn_bind(struct usb_configuration *c, struct usb_function *f)
 	if (!ep)
 		goto err;
 	fp->out_ep = ep;
+<<<<<<< HEAD
 	ep->driver_data = fp; /* Claim */
+=======
+>>>>>>> v4.9.227
 
 	ep = usb_ep_autoconfig(gadget, &pn_fs_source_desc);
 	if (!ep)
 		goto err;
 	fp->in_ep = ep;
+<<<<<<< HEAD
 	ep->driver_data = fp; /* Claim */
+=======
+>>>>>>> v4.9.227
 
 	pn_hs_sink_desc.bEndpointAddress = pn_fs_sink_desc.bEndpointAddress;
 	pn_hs_source_desc.bEndpointAddress = pn_fs_source_desc.bEndpointAddress;
 
 	/* Do not try to bind Phonet twice... */
 	status = usb_assign_descriptors(f, fs_pn_function, hs_pn_function,
+<<<<<<< HEAD
 			NULL);
+=======
+			NULL, NULL);
+>>>>>>> v4.9.227
 	if (status)
 		goto err;
 
@@ -572,10 +601,13 @@ err_req:
 		usb_ep_free_request(fp->out_ep, fp->out_reqv[i]);
 	usb_free_all_descriptors(f);
 err:
+<<<<<<< HEAD
 	if (fp->out_ep)
 		fp->out_ep->driver_data = NULL;
 	if (fp->in_ep)
 		fp->in_ep->driver_data = NULL;
+=======
+>>>>>>> v4.9.227
 	ERROR(cdev, "USB CDC Phonet: cannot autoconfigure\n");
 	return status;
 }
@@ -586,6 +618,7 @@ static inline struct f_phonet_opts *to_f_phonet_opts(struct config_item *item)
 			func_inst.group);
 }
 
+<<<<<<< HEAD
 CONFIGFS_ATTR_STRUCT(f_phonet_opts);
 static ssize_t f_phonet_attr_show(struct config_item *item,
 				struct configfs_attribute *attr,
@@ -601,6 +634,8 @@ static ssize_t f_phonet_attr_show(struct config_item *item,
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static void phonet_attr_release(struct config_item *item)
 {
 	struct f_phonet_opts *opts = to_f_phonet_opts(item);
@@ -610,6 +645,7 @@ static void phonet_attr_release(struct config_item *item)
 
 static struct configfs_item_operations phonet_item_ops = {
 	.release		= phonet_attr_release,
+<<<<<<< HEAD
 	.show_attribute		= f_phonet_attr_show,
 };
 
@@ -623,6 +659,19 @@ static struct f_phonet_opts_attribute f_phonet_ifname =
 
 static struct configfs_attribute *phonet_attrs[] = {
 	&f_phonet_ifname.attr,
+=======
+};
+
+static ssize_t f_phonet_ifname_show(struct config_item *item, char *page)
+{
+	return gether_get_ifname(to_f_phonet_opts(item)->net, page, PAGE_SIZE);
+}
+
+CONFIGFS_ATTR_RO(f_phonet_, ifname);
+
+static struct configfs_attribute *phonet_attrs[] = {
+	&f_phonet_attr_ifname,
+>>>>>>> v4.9.227
 	NULL,
 };
 

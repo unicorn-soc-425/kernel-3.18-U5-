@@ -124,7 +124,11 @@ ath5k_led_brightness_set(struct led_classdev *led_dev,
 
 static int
 ath5k_register_led(struct ath5k_hw *ah, struct ath5k_led *led,
+<<<<<<< HEAD
 		   const char *name, char *trigger)
+=======
+		   const char *name, const char *trigger)
+>>>>>>> v4.9.227
 {
 	int err;
 
@@ -163,14 +167,28 @@ int ath5k_init_leds(struct ath5k_hw *ah)
 {
 	int ret = 0;
 	struct ieee80211_hw *hw = ah->hw;
+<<<<<<< HEAD
 	struct pci_dev *pdev = ah->pdev;
+=======
+#ifndef CONFIG_ATH5K_AHB
+	struct pci_dev *pdev = ah->pdev;
+#endif
+>>>>>>> v4.9.227
 	char name[ATH5K_LED_MAX_NAME_LEN + 1];
 	const struct pci_device_id *match;
 
 	if (!ah->pdev)
 		return 0;
 
+<<<<<<< HEAD
 	match = pci_match_id(&ath5k_led_devices[0], pdev);
+=======
+#ifdef CONFIG_ATH5K_AHB
+	match = NULL;
+#else
+	match = pci_match_id(&ath5k_led_devices[0], pdev);
+#endif
+>>>>>>> v4.9.227
 	if (match) {
 		__set_bit(ATH_STAT_LEDSOFT, ah->status);
 		ah->led_pin = ATH_PIN(match->driver_data);

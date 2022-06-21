@@ -8,10 +8,18 @@ targets := $(obj-vdso64) vdso64.so vdso64.so.dbg
 obj-vdso64 := $(addprefix $(obj)/, $(obj-vdso64))
 
 GCOV_PROFILE := n
+<<<<<<< HEAD
 
 ccflags-y := -shared -fno-common -fno-builtin
 ccflags-y += -nostdlib -Wl,-soname=linux-vdso64.so.1 \
 		$(call cc-ldoption, -Wl$(comma)--hash-style=sysv)
+=======
+UBSAN_SANITIZE := n
+
+ccflags-y := -shared -fno-common -fno-builtin
+ccflags-y += -nostdlib -Wl,-soname=linux-vdso64.so.1 \
+		$(call cc-ldoption, -Wl$(comma)--hash-style=both)
+>>>>>>> v4.9.227
 asflags-y := -D__VDSO64__ -s
 
 obj-y += vdso64_wrapper.o
@@ -22,7 +30,11 @@ CPPFLAGS_vdso64.lds += -P -C -U$(ARCH)
 $(obj)/vdso64_wrapper.o : $(obj)/vdso64.so
 
 # link rule for the .so file, .lds has to be first
+<<<<<<< HEAD
 $(obj)/vdso64.so.dbg: $(src)/vdso64.lds $(obj-vdso64)
+=======
+$(obj)/vdso64.so.dbg: $(src)/vdso64.lds $(obj-vdso64) FORCE
+>>>>>>> v4.9.227
 	$(call if_changed,vdso64ld)
 
 # strip rule for the .so file
@@ -30,6 +42,7 @@ $(obj)/%.so: OBJCOPYFLAGS := -S
 $(obj)/%.so: $(obj)/%.so.dbg FORCE
 	$(call if_changed,objcopy)
 
+<<<<<<< HEAD
 # assembly rules for the .S files
 $(obj-vdso64): %.o: %.S
 	$(call if_changed_dep,vdso64as)
@@ -39,6 +52,11 @@ quiet_cmd_vdso64ld = VDSO64L $@
       cmd_vdso64ld = $(CC) $(c_flags) -Wl,-T $^ -o $@
 quiet_cmd_vdso64as = VDSO64A $@
       cmd_vdso64as = $(CC) $(a_flags) -c -o $@ $<
+=======
+# actual build commands
+quiet_cmd_vdso64ld = VDSO64L $@
+      cmd_vdso64ld = $(CC) $(c_flags) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^)
+>>>>>>> v4.9.227
 
 # install commands for the unstripped file
 quiet_cmd_vdso_install = INSTALL $@

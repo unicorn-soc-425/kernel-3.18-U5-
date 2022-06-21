@@ -1,5 +1,9 @@
 /*
  * Copyright (c) 2000-2001 Christoph Hellwig.
+<<<<<<< HEAD
+=======
+ * Copyright (c) 2016 Krzysztof Blaszkowski
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +46,7 @@
  * Fileset header 
  */
 struct vxfs_fsh {
+<<<<<<< HEAD
 	u_int32_t	fsh_version;		/* fileset header version */
 	u_int32_t	fsh_fsindex;		/* fileset index */
 	u_int32_t	fsh_time;		/* modification time - sec */
@@ -56,6 +61,22 @@ struct vxfs_fsh {
 	vx_ino_t	fsh_iauino;		/* IAU inode */
 	vx_ino_t	fsh_ilistino[2];	/* ilist inodes */
 	vx_ino_t	fsh_lctino;		/* link count table inode */
+=======
+	__fs32		fsh_version;		/* fileset header version */
+	__fs32		fsh_fsindex;		/* fileset index */
+	__fs32		fsh_time;		/* modification time - sec */
+	__fs32		fsh_utime;		/* modification time - usec */
+	__fs32		fsh_extop;		/* extop flags */
+	__fs32		fsh_ninodes;		/* allocated inodes */
+	__fs32		fsh_nau;		/* number of IAUs */
+	__fs32		fsh_old_ilesize;	/* old size of ilist */
+	__fs32		fsh_dflags;		/* flags */
+	__fs32		fsh_quota;		/* quota limit */
+	__fs32		fsh_maxinode;		/* maximum inode number */
+	__fs32		fsh_iauino;		/* IAU inode */
+	__fs32		fsh_ilistino[2];	/* ilist inodes */
+	__fs32		fsh_lctino;		/* link count table inode */
+>>>>>>> v4.9.227
 
 	/*
 	 * Slightly more fields follow, but they

@@ -21,7 +21,10 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/clk-provider.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
 #include <linux/serial_core.h>
@@ -40,6 +43,10 @@
 #include <asm/system_misc.h>
 
 #include <mach/map.h>
+<<<<<<< HEAD
+=======
+#include <mach/irqs.h>
+>>>>>>> v4.9.227
 #include <mach/hardware.h>
 #include <mach/regs-gpio.h>
 #include <mach/gpio-samsung.h>
@@ -48,12 +55,21 @@
 #include <plat/devs.h>
 #include <plat/pm.h>
 #include <plat/gpio-cfg.h>
+<<<<<<< HEAD
 #include <plat/irq-uart.h>
 #include <plat/pwm-core.h>
 #include <plat/regs-irqtype.h>
 #include <plat/watchdog-reset.h>
 
 #include "common.h"
+=======
+#include <plat/pwm-core.h>
+#include <plat/regs-irqtype.h>
+
+#include "common.h"
+#include "irq-uart.h"
+#include "watchdog-reset.h"
+>>>>>>> v4.9.227
 
 /* External clock frequency */
 static unsigned long xtal_f = 12000000, xusbxti_f = 48000000;
@@ -209,7 +225,11 @@ void __init s3c64xx_init_io(struct map_desc *mach_desc, int size)
 static __init int s3c64xx_dev_init(void)
 {
 	/* Not applicable when using DT. */
+<<<<<<< HEAD
 	if (of_have_populated_dt())
+=======
+	if (of_have_populated_dt() || !soc_is_s3c64xx())
+>>>>>>> v4.9.227
 		return 0;
 
 	subsys_system_register(&s3c64xx_subsys, NULL);
@@ -389,22 +409,38 @@ static inline void s3c_irq_demux_eint(unsigned int start, unsigned int end)
 	}
 }
 
+<<<<<<< HEAD
 static void s3c_irq_demux_eint0_3(unsigned int irq, struct irq_desc *desc)
+=======
+static void s3c_irq_demux_eint0_3(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	s3c_irq_demux_eint(0, 3);
 }
 
+<<<<<<< HEAD
 static void s3c_irq_demux_eint4_11(unsigned int irq, struct irq_desc *desc)
+=======
+static void s3c_irq_demux_eint4_11(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	s3c_irq_demux_eint(4, 11);
 }
 
+<<<<<<< HEAD
 static void s3c_irq_demux_eint12_19(unsigned int irq, struct irq_desc *desc)
+=======
+static void s3c_irq_demux_eint12_19(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	s3c_irq_demux_eint(12, 19);
 }
 
+<<<<<<< HEAD
 static void s3c_irq_demux_eint20_27(unsigned int irq, struct irq_desc *desc)
+=======
+static void s3c_irq_demux_eint20_27(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	s3c_irq_demux_eint(20, 27);
 }
@@ -414,13 +450,21 @@ static int __init s3c64xx_init_irq_eint(void)
 	int irq;
 
 	/* On DT-enabled systems EINTs are handled by pinctrl-s3c64xx driver. */
+<<<<<<< HEAD
 	if (of_have_populated_dt())
+=======
+	if (of_have_populated_dt() || !soc_is_s3c64xx())
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	for (irq = IRQ_EINT(0); irq <= IRQ_EINT(27); irq++) {
 		irq_set_chip_and_handler(irq, &s3c_irq_eint, handle_level_irq);
 		irq_set_chip_data(irq, (void *)eint_irq_to_bit(irq));
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID);
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST);
+>>>>>>> v4.9.227
 	}
 
 	irq_set_chained_handler(IRQ_EINT0_3, s3c_irq_demux_eint0_3);

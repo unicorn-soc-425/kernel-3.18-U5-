@@ -327,7 +327,10 @@ static struct platform_driver ssbi_driver = {
 	.probe		= ssbi_probe,
 	.driver		= {
 		.name	= "ssbi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ssbi_match_table,
 	},
 };

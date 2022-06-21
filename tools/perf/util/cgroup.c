@@ -1,6 +1,10 @@
 #include "util.h"
 #include "../perf.h"
+<<<<<<< HEAD
 #include "parse-options.h"
+=======
+#include <subcmd/parse-options.h>
+>>>>>>> v4.9.227
 #include "evsel.h"
 #include "cgroup.h"
 #include "evlist.h"
@@ -81,7 +85,11 @@ static int add_cgroup(struct perf_evlist *evlist, char *str)
 	/*
 	 * check if cgrp is already defined, if so we reuse it
 	 */
+<<<<<<< HEAD
 	evlist__for_each(evlist, counter) {
+=======
+	evlist__for_each_entry(evlist, counter) {
+>>>>>>> v4.9.227
 		cgrp = counter->cgrp;
 		if (!cgrp)
 			continue;
@@ -110,28 +118,44 @@ static int add_cgroup(struct perf_evlist *evlist, char *str)
 	 * if add cgroup N, then need to find event N
 	 */
 	n = 0;
+<<<<<<< HEAD
 	evlist__for_each(evlist, counter) {
+=======
+	evlist__for_each_entry(evlist, counter) {
+>>>>>>> v4.9.227
 		if (n == nr_cgroups)
 			goto found;
 		n++;
 	}
+<<<<<<< HEAD
 	if (cgrp->refcnt == 0)
+=======
+	if (atomic_read(&cgrp->refcnt) == 0)
+>>>>>>> v4.9.227
 		free(cgrp);
 
 	return -1;
 found:
+<<<<<<< HEAD
 	cgrp->refcnt++;
+=======
+	atomic_inc(&cgrp->refcnt);
+>>>>>>> v4.9.227
 	counter->cgrp = cgrp;
 	return 0;
 }
 
 void close_cgroup(struct cgroup_sel *cgrp)
 {
+<<<<<<< HEAD
 	if (!cgrp)
 		return;
 
 	/* XXX: not reentrant */
 	if (--cgrp->refcnt == 0) {
+=======
+	if (cgrp && atomic_dec_and_test(&cgrp->refcnt)) {
+>>>>>>> v4.9.227
 		close(cgrp->fd);
 		zfree(&cgrp->name);
 		free(cgrp);

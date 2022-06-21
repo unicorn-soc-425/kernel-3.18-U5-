@@ -27,10 +27,25 @@
  * Magic number "tsta" to indicate a static timer initializer
  * for the object debugging code.
  */
+<<<<<<< HEAD
 #define TIMER_ENTRY_STATIC	((void *) 0x74737461)
 
 /********** mm/debug-pagealloc.c **********/
 #define PAGE_POISON 0xaa
+=======
+#define TIMER_ENTRY_STATIC	((void *) 0x300 + POISON_POINTER_DELTA)
+
+/********** mm/debug-pagealloc.c **********/
+#ifdef CONFIG_PAGE_POISONING_ZERO
+#define PAGE_POISON 0x00
+#else
+#define PAGE_POISON 0xaa
+#endif
+
+/********** mm/page_alloc.c ************/
+
+#define TAIL_MAPPING	((void *) 0x400 + POISON_POINTER_DELTA)
+>>>>>>> v4.9.227
 
 /********** mm/slab.c **********/
 /*
@@ -69,10 +84,13 @@
 #define ATM_POISON_FREE		0x12
 #define ATM_POISON		0xdeadbeef
 
+<<<<<<< HEAD
 /********** net/ **********/
 #define NEIGHBOR_DEAD		0xdeadbeef
 #define NETFILTER_LINK_POISON	0xdead57ac
 
+=======
+>>>>>>> v4.9.227
 /********** kernel/mutexes **********/
 #define MUTEX_DEBUG_INIT	0x11
 #define MUTEX_DEBUG_FREE	0x22
@@ -83,7 +101,10 @@
 /********** security/ **********/
 #define KEY_DESTROY		0xbd
 
+<<<<<<< HEAD
 /********** sound/oss/ **********/
 #define OSS_POISON_FREE		0xAB
 
+=======
+>>>>>>> v4.9.227
 #endif

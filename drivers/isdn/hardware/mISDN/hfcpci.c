@@ -1755,7 +1755,11 @@ init_card(struct hfc_pci *hc)
 		enable_hwirq(hc);
 		spin_unlock_irqrestore(&hc->lock, flags);
 		/* Timeout 80ms */
+<<<<<<< HEAD
 		current->state = TASK_UNINTERRUPTIBLE;
+=======
+		set_current_state(TASK_UNINTERRUPTIBLE);
+>>>>>>> v4.9.227
 		schedule_timeout((80 * HZ) / 1000);
 		printk(KERN_INFO "HFC PCI: IRQ %d count %d\n",
 		       hc->irq, hc->irqcnt);

@@ -46,7 +46,11 @@ struct xenfb_info {
 	int			nr_pages;
 	int			irq;
 	struct xenfb_page	*page;
+<<<<<<< HEAD
 	unsigned long 		*mfns;
+=======
+	unsigned long 		*gfns;
+>>>>>>> v4.9.227
 	int			update_wanted; /* XENFB_TYPE_UPDATE wanted */
 	int			feature_resize; /* XENFB_TYPE_RESIZE ok */
 	struct xenfb_resize	resize;		/* protected by resize_lock */
@@ -402,8 +406,13 @@ static int xenfb_probe(struct xenbus_device *dev,
 
 	info->nr_pages = (fb_size + PAGE_SIZE - 1) >> PAGE_SHIFT;
 
+<<<<<<< HEAD
 	info->mfns = vmalloc(sizeof(unsigned long) * info->nr_pages);
 	if (!info->mfns)
+=======
+	info->gfns = vmalloc(sizeof(unsigned long) * info->nr_pages);
+	if (!info->gfns)
+>>>>>>> v4.9.227
 		goto error_nomem;
 
 	/* set up shared page */
@@ -530,22 +539,33 @@ static int xenfb_remove(struct xenbus_device *dev)
 		framebuffer_release(info->fb_info);
 	}
 	free_page((unsigned long)info->page);
+<<<<<<< HEAD
 	vfree(info->mfns);
+=======
+	vfree(info->gfns);
+>>>>>>> v4.9.227
 	vfree(info->fb);
 	kfree(info);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned long vmalloc_to_mfn(void *address)
 {
 	return pfn_to_mfn(vmalloc_to_pfn(address));
+=======
+static unsigned long vmalloc_to_gfn(void *address)
+{
+	return xen_page_to_gfn(vmalloc_to_page(address));
+>>>>>>> v4.9.227
 }
 
 static void xenfb_init_shared_page(struct xenfb_info *info,
 				   struct fb_info *fb_info)
 {
 	int i;
+<<<<<<< HEAD
 	int epd = PAGE_SIZE / sizeof(info->mfns[0]);
 
 	for (i = 0; i < info->nr_pages; i++)
@@ -553,6 +573,15 @@ static void xenfb_init_shared_page(struct xenfb_info *info,
 
 	for (i = 0; i * epd < info->nr_pages; i++)
 		info->page->pd[i] = vmalloc_to_mfn(&info->mfns[i * epd]);
+=======
+	int epd = PAGE_SIZE / sizeof(info->gfns[0]);
+
+	for (i = 0; i < info->nr_pages; i++)
+		info->gfns[i] = vmalloc_to_gfn(info->fb + i * PAGE_SIZE);
+
+	for (i = 0; i * epd < info->nr_pages; i++)
+		info->page->pd[i] = vmalloc_to_gfn(&info->gfns[i * epd]);
+>>>>>>> v4.9.227
 
 	info->page->width = fb_info->var.xres;
 	info->page->height = fb_info->var.yres;
@@ -586,7 +615,11 @@ static int xenfb_connect_backend(struct xenbus_device *dev,
 		goto unbind_irq;
 	}
 	ret = xenbus_printf(xbt, dev->nodename, "page-ref", "%lu",
+<<<<<<< HEAD
 			    virt_to_mfn(info->page));
+=======
+			    virt_to_gfn(info->page));
+>>>>>>> v4.9.227
 	if (ret)
 		goto error_xenbus;
 	ret = xenbus_printf(xbt, dev->nodename, "event-channel", "%u",

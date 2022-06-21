@@ -211,8 +211,12 @@ static void rawsock_tx_work(struct work_struct *work)
 	}
 }
 
+<<<<<<< HEAD
 static int rawsock_sendmsg(struct kiocb *iocb, struct socket *sock,
 			   struct msghdr *msg, size_t len)
+=======
+static int rawsock_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+>>>>>>> v4.9.227
 {
 	struct sock *sk = sock->sk;
 	struct nfc_dev *dev = nfc_rawsock(sk)->dev;
@@ -231,7 +235,11 @@ static int rawsock_sendmsg(struct kiocb *iocb, struct socket *sock,
 	if (skb == NULL)
 		return rc;
 
+<<<<<<< HEAD
 	rc = memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len);
+=======
+	rc = memcpy_from_msg(skb_put(skb, len), msg, len);
+>>>>>>> v4.9.227
 	if (rc < 0) {
 		kfree_skb(skb);
 		return rc;
@@ -248,8 +256,13 @@ static int rawsock_sendmsg(struct kiocb *iocb, struct socket *sock,
 	return len;
 }
 
+<<<<<<< HEAD
 static int rawsock_recvmsg(struct kiocb *iocb, struct socket *sock,
 			   struct msghdr *msg, size_t len, int flags)
+=======
+static int rawsock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+			   int flags)
+>>>>>>> v4.9.227
 {
 	int noblock = flags & MSG_DONTWAIT;
 	struct sock *sk = sock->sk;
@@ -269,7 +282,11 @@ static int rawsock_recvmsg(struct kiocb *iocb, struct socket *sock,
 		copied = len;
 	}
 
+<<<<<<< HEAD
 	rc = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
+=======
+	rc = skb_copy_datagram_msg(skb, 0, msg, copied);
+>>>>>>> v4.9.227
 
 	skb_free_datagram(sk, skb);
 
@@ -322,7 +339,12 @@ static void rawsock_destruct(struct sock *sk)
 
 	if (sk->sk_state == TCP_ESTABLISHED) {
 		nfc_deactivate_target(nfc_rawsock(sk)->dev,
+<<<<<<< HEAD
 				      nfc_rawsock(sk)->target_idx);
+=======
+				      nfc_rawsock(sk)->target_idx,
+				      NFC_TARGET_MODE_IDLE);
+>>>>>>> v4.9.227
 		nfc_put_device(nfc_rawsock(sk)->dev);
 	}
 
@@ -335,7 +357,11 @@ static void rawsock_destruct(struct sock *sk)
 }
 
 static int rawsock_create(struct net *net, struct socket *sock,
+<<<<<<< HEAD
 			  const struct nfc_protocol *nfc_proto)
+=======
+			  const struct nfc_protocol *nfc_proto, int kern)
+>>>>>>> v4.9.227
 {
 	struct sock *sk;
 
@@ -349,7 +375,11 @@ static int rawsock_create(struct net *net, struct socket *sock,
 	else
 		sock->ops = &rawsock_ops;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_NFC, GFP_ATOMIC, nfc_proto->proto);
+=======
+	sk = sk_alloc(net, PF_NFC, GFP_ATOMIC, nfc_proto->proto, kern);
+>>>>>>> v4.9.227
 	if (!sk)
 		return -ENOMEM;
 

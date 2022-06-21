@@ -39,6 +39,13 @@
  */
 
 #include <assert.h>
+<<<<<<< HEAD
+=======
+#include <stdarg.h>
+#include <stddef.h>
+#include <string.h>
+#include <sys/types.h>
+>>>>>>> v4.9.227
 
 extern char strbuf_slopbuf[];
 struct strbuf {
@@ -50,15 +57,22 @@ struct strbuf {
 #define STRBUF_INIT  { 0, 0, strbuf_slopbuf }
 
 /*----- strbuf life cycle -----*/
+<<<<<<< HEAD
 extern void strbuf_init(struct strbuf *buf, ssize_t hint);
 extern void strbuf_release(struct strbuf *);
 extern char *strbuf_detach(struct strbuf *, size_t *);
+=======
+int strbuf_init(struct strbuf *buf, ssize_t hint);
+void strbuf_release(struct strbuf *buf);
+char *strbuf_detach(struct strbuf *buf, size_t *);
+>>>>>>> v4.9.227
 
 /*----- strbuf size related -----*/
 static inline ssize_t strbuf_avail(const struct strbuf *sb) {
 	return sb->alloc ? sb->alloc - sb->len - 1 : 0;
 }
 
+<<<<<<< HEAD
 extern void strbuf_grow(struct strbuf *, size_t);
 
 static inline void strbuf_setlen(struct strbuf *sb, size_t len) {
@@ -88,5 +102,34 @@ extern void strbuf_addf(struct strbuf *sb, const char *fmt, ...);
 
 /* XXX: if read fails, any partial read is undone */
 extern ssize_t strbuf_read(struct strbuf *, int fd, ssize_t hint);
+=======
+int strbuf_grow(struct strbuf *buf, size_t);
+
+static inline int strbuf_setlen(struct strbuf *sb, size_t len) {
+	if (!sb->alloc) {
+		int ret = strbuf_grow(sb, 0);
+		if (ret)
+			return ret;
+	}
+	assert(len < sb->alloc);
+	sb->len = len;
+	sb->buf[len] = '\0';
+	return 0;
+}
+
+/*----- add data in your buffer -----*/
+int strbuf_addch(struct strbuf *sb, int c);
+
+int strbuf_add(struct strbuf *buf, const void *, size_t);
+static inline int strbuf_addstr(struct strbuf *sb, const char *s) {
+	return strbuf_add(sb, s, strlen(s));
+}
+
+__attribute__((format(printf,2,3)))
+int strbuf_addf(struct strbuf *sb, const char *fmt, ...);
+
+/* XXX: if read fails, any partial read is undone */
+ssize_t strbuf_read(struct strbuf *, int fd, ssize_t hint);
+>>>>>>> v4.9.227
 
 #endif /* __PERF_STRBUF_H */

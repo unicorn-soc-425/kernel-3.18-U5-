@@ -156,6 +156,7 @@
 
 #define IRQ_EINT_GROUP(group, no)	(IRQ_EINT_GROUP##group##_BASE + (no))
 
+<<<<<<< HEAD
 /* Define a group of interrupts for board-specific use (eg, for MFD
  * interrupt controllers). */
 #define IRQ_BOARD_START (IRQ_EINT_GROUP9_BASE + IRQ_EINT_GROUP9_NR + 1)
@@ -175,6 +176,13 @@
 /* Set the default NR_IRQS */
 
 #define NR_IRQS	(IRQ_BOARD_END + 1)
+=======
+/* Some boards have their own IRQs behind this */
+#define IRQ_BOARD_START (IRQ_EINT_GROUP9_BASE + IRQ_EINT_GROUP9_NR + 1)
+
+/* Set the default nr_irqs, boards can override if necessary */
+#define S3C64XX_NR_IRQS	IRQ_BOARD_START
+>>>>>>> v4.9.227
 
 /* Compatibility */
 

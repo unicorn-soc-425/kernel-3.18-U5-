@@ -15,8 +15,14 @@ config ARCH_OMAP3
 	select ARM_CPU_SUSPEND if PM
 	select OMAP_INTERCONNECT
 	select PM_OPP if PM
+<<<<<<< HEAD
 	select PM_RUNTIME if CPU_IDLE
 	select SOC_HAS_OMAP2_SDRC
+=======
+	select PM if CPU_IDLE
+	select SOC_HAS_OMAP2_SDRC
+	select ARM_ERRATA_430973
+>>>>>>> v4.9.227
 
 config ARCH_OMAP4
 	bool "TI OMAP4"
@@ -29,12 +35,23 @@ config ARCH_OMAP4
 	select HAVE_ARM_SCU if SMP
 	select HAVE_ARM_TWD if SMP
 	select OMAP_INTERCONNECT
+<<<<<<< HEAD
 	select PL310_ERRATA_588369 if CACHE_L2X0
 	select PL310_ERRATA_727915 if CACHE_L2X0
 	select PM_OPP if PM
 	select PM_RUNTIME if CPU_IDLE
 	select ARM_ERRATA_754322
 	select ARM_ERRATA_775420
+=======
+	select OMAP_INTERCONNECT_BARRIER
+	select PL310_ERRATA_588369 if CACHE_L2X0
+	select PL310_ERRATA_727915 if CACHE_L2X0
+	select PM_OPP if PM
+	select PM if CPU_IDLE
+	select ARM_ERRATA_754322
+	select ARM_ERRATA_775420
+	select OMAP_INTERCONNECT
+>>>>>>> v4.9.227
 
 config SOC_OMAP5
 	bool "TI OMAP5"
@@ -43,9 +60,18 @@ config SOC_OMAP5
 	select ARM_CPU_SUSPEND if PM
 	select ARM_GIC
 	select HAVE_ARM_SCU if SMP
+<<<<<<< HEAD
 	select HAVE_ARM_TWD if SMP
 	select HAVE_ARM_ARCH_TIMER
 	select ARM_ERRATA_798181 if SMP
+=======
+	select HAVE_ARM_ARCH_TIMER
+	select ARM_ERRATA_798181 if SMP
+	select OMAP_INTERCONNECT
+	select OMAP_INTERCONNECT_BARRIER
+	select PM_OPP if PM
+	select ZONE_DMA if ARM_LPAE
+>>>>>>> v4.9.227
 
 config SOC_AM33XX
 	bool "TI AM33XX"
@@ -60,6 +86,15 @@ config SOC_AM43XX
 	select ARM_GIC
 	select MACH_OMAP_GENERIC
 	select MIGHT_HAVE_CACHE_L2X0
+<<<<<<< HEAD
+=======
+	select HAVE_ARM_SCU
+	select GENERIC_CLOCKEVENTS_BROADCAST
+	select HAVE_ARM_TWD
+	select ARM_ERRATA_754322
+	select ARM_ERRATA_775420
+	select OMAP_INTERCONNECT
+>>>>>>> v4.9.227
 
 config SOC_DRA7XX
 	bool "TI DRA7XX"
@@ -67,14 +102,26 @@ config SOC_DRA7XX
 	select ARCH_OMAP2PLUS
 	select ARM_CPU_SUSPEND if PM
 	select ARM_GIC
+<<<<<<< HEAD
 	select HAVE_ARM_ARCH_TIMER
 	select IRQ_CROSSBAR
+=======
+	select HAVE_ARM_SCU if SMP
+	select HAVE_ARM_ARCH_TIMER
+	select IRQ_CROSSBAR
+	select ARM_ERRATA_798181 if SMP
+	select OMAP_INTERCONNECT
+	select OMAP_INTERCONNECT_BARRIER
+	select PM_OPP if PM
+	select ZONE_DMA if ARM_LPAE
+>>>>>>> v4.9.227
 
 config ARCH_OMAP2PLUS
 	bool
 	select ARCH_HAS_BANDGAP
 	select ARCH_HAS_HOLES_MEMORYMODEL
 	select ARCH_OMAP
+<<<<<<< HEAD
 	select ARCH_REQUIRE_GPIOLIB
 	select CLKSRC_MMIO
 	select GENERIC_IRQ_CHIP
@@ -87,6 +134,27 @@ config ARCH_OMAP2PLUS
 	help
 	  Systems based on OMAP2, OMAP3, OMAP4 or OMAP5
 
+=======
+	select CLKSRC_MMIO
+	select GENERIC_IRQ_CHIP
+	select GPIOLIB
+	select MACH_OMAP_GENERIC
+	select MEMORY
+	select MFD_SYSCON
+	select OMAP_DM_TIMER
+	select OMAP_GPMC
+	select PINCTRL
+	select SOC_BUS
+	select OMAP_IRQCHIP
+	select CLKSRC_TI_32K
+	help
+	  Systems based on OMAP2, OMAP3, OMAP4 or OMAP5
+
+config OMAP_INTERCONNECT_BARRIER
+	bool
+	select ARM_HEAVY_MB
+	
+>>>>>>> v4.9.227
 
 if ARCH_OMAP2PLUS
 
@@ -101,8 +169,14 @@ config ARCH_OMAP2PLUS_TYPICAL
 	select I2C_OMAP
 	select MENELAUS if ARCH_OMAP2
 	select NEON if CPU_V7
+<<<<<<< HEAD
 	select PM_RUNTIME
 	select REGULATOR
+=======
+	select PM
+	select REGULATOR
+	select REGULATOR_FIXED_VOLTAGE
+>>>>>>> v4.9.227
 	select TWL4030_CORE if ARCH_OMAP3 || ARCH_OMAP4
 	select TWL4030_POWER if ARCH_OMAP3 || ARCH_OMAP4
 	select VFP
@@ -167,6 +241,7 @@ config MACH_OMAP2_TUSB6010
 	depends on ARCH_OMAP2 && SOC_OMAP2420
 	default y if MACH_NOKIA_N8X0
 
+<<<<<<< HEAD
 config MACH_OMAP3_BEAGLE
 	bool "OMAP3 BEAGLE board"
 	depends on ARCH_OMAP3
@@ -211,22 +286,28 @@ config MACH_OVERO
 	default y
 	select OMAP_PACKAGE_CBB
 
+=======
+>>>>>>> v4.9.227
 config MACH_OMAP3517EVM
 	bool "OMAP3517/ AM3517 EVM board"
 	depends on ARCH_OMAP3
 	default y
+<<<<<<< HEAD
 	select OMAP_PACKAGE_CBB
 
 config MACH_CRANEBOARD
 	bool "AM3517/05 CRANE board"
 	depends on ARCH_OMAP3
 	select OMAP_PACKAGE_CBB
+=======
+>>>>>>> v4.9.227
 
 config MACH_OMAP3_PANDORA
 	bool "OMAP3 Pandora"
 	depends on ARCH_OMAP3
 	default y
 	select OMAP_PACKAGE_CBB
+<<<<<<< HEAD
 	select REGULATOR_FIXED_VOLTAGE if REGULATOR
 
 config MACH_TOUCHBOOK
@@ -240,6 +321,8 @@ config MACH_OMAP_3430SDP
 	depends on ARCH_OMAP3
 	default y
 	select OMAP_PACKAGE_CBB
+=======
+>>>>>>> v4.9.227
 
 config MACH_NOKIA_N810
        bool
@@ -254,6 +337,7 @@ config MACH_NOKIA_N8X0
 	select MACH_NOKIA_N810
 	select MACH_NOKIA_N810_WIMAX
 
+<<<<<<< HEAD
 config MACH_NOKIA_RX51
 	bool "Nokia N900 (RX-51) phone"
 	depends on ARCH_OMAP3
@@ -300,6 +384,8 @@ config OMAP3_EMU
 	help
 	  Say Y here to enable debugging hardware of omap3
 
+=======
+>>>>>>> v4.9.227
 config OMAP3_SDRC_AC_TIMING
 	bool "Enable SDRC AC timing register changes"
 	depends on ARCH_OMAP3
@@ -312,6 +398,7 @@ config OMAP3_SDRC_AC_TIMING
 	  wish to say no.  Selecting yes without understanding what is
 	  going on could result in system crashes;
 
+<<<<<<< HEAD
 config OMAP4_ERRATA_I688
 	bool "OMAP4 errata: Async Bridge Corruption"
 	depends on (ARCH_OMAP4 || SOC_OMAP5) && !ARCH_MULTIPLATFORM
@@ -333,8 +420,21 @@ config OMAP4_ERRATA_I688
 	  In MPU case, L3 T2ASYNC FIFO and DDR T2ASYNC FIFO needs to be drained.
 	  IO barrier ensure that there is no synchronisation loss on initiators
 	  operating on both interconnect port simultaneously.
+=======
+>>>>>>> v4.9.227
 endmenu
 
 endif
 
+<<<<<<< HEAD
+=======
+config OMAP5_ERRATA_801819
+	bool "Errata 801819: An eviction from L1 data cache might stall indefinitely"
+	depends on SOC_OMAP5 || SOC_DRA7XX
+	help
+	  A livelock can occur in the L2 cache arbitration that might prevent
+	  a snoop from completing. Under certain conditions this can cause the
+	  system to deadlock.
+
+>>>>>>> v4.9.227
 endmenu

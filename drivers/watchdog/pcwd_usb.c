@@ -608,7 +608,11 @@ static int usb_pcwd_probe(struct usb_interface *interface,
 	struct usb_host_interface *iface_desc;
 	struct usb_endpoint_descriptor *endpoint;
 	struct usb_pcwd_private *usb_pcwd = NULL;
+<<<<<<< HEAD
 	int pipe, maxp;
+=======
+	int pipe;
+>>>>>>> v4.9.227
 	int retval = -ENOMEM;
 	int got_fw_rev;
 	unsigned char fw_rev_major, fw_rev_minor;
@@ -644,7 +648,10 @@ static int usb_pcwd_probe(struct usb_interface *interface,
 
 	/* get a handle to the interrupt data pipe */
 	pipe = usb_rcvintpipe(udev, endpoint->bEndpointAddress);
+<<<<<<< HEAD
 	maxp = usb_maxpacket(udev, pipe, usb_pipeout(pipe));
+=======
+>>>>>>> v4.9.227
 
 	/* allocate memory for our device and initialize it */
 	usb_pcwd = kzalloc(sizeof(struct usb_pcwd_private), GFP_KERNEL);
@@ -670,10 +677,15 @@ static int usb_pcwd_probe(struct usb_interface *interface,
 
 	/* allocate the urb's */
 	usb_pcwd->intr_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!usb_pcwd->intr_urb) {
 		pr_err("Out of memory\n");
 		goto error;
 	}
+=======
+	if (!usb_pcwd->intr_urb)
+		goto error;
+>>>>>>> v4.9.227
 
 	/* initialise the intr urb's */
 	usb_fill_int_urb(usb_pcwd->intr_urb, udev, pipe,

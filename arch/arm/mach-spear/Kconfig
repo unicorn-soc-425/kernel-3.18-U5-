@@ -3,10 +3,18 @@
 #
 
 menuconfig PLAT_SPEAR
+<<<<<<< HEAD
 	bool "ST SPEAr Family" if ARCH_MULTI_V7 || ARCH_MULTI_V5
 	select ARCH_REQUIRE_GPIOLIB
 	select ARM_AMBA
 	select CLKSRC_MMIO
+=======
+	bool "ST SPEAr Family"
+	depends on ARCH_MULTI_V7 || ARCH_MULTI_V5
+	select ARM_AMBA
+	select CLKSRC_MMIO
+	select GPIOLIB
+>>>>>>> v4.9.227
 
 if PLAT_SPEAR
 
@@ -19,7 +27,10 @@ config ARCH_SPEAR13XX
 	select HAVE_ARM_TWD if SMP
 	select PINCTRL
 	select MFD_SYSCON
+<<<<<<< HEAD
 	select MIGHT_HAVE_PCI
+=======
+>>>>>>> v4.9.227
 	help
 	  Supports for ARM's SPEAR13XX family
 

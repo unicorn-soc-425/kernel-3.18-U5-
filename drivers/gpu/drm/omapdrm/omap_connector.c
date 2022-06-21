@@ -32,7 +32,10 @@
 struct omap_connector {
 	struct drm_connector base;
 	struct omap_dss_device *dssdev;
+<<<<<<< HEAD
 	struct drm_encoder *encoder;
+=======
+>>>>>>> v4.9.227
 	bool hdmi_mode;
 };
 
@@ -63,6 +66,12 @@ void copy_timings_omap_to_drm(struct drm_display_mode *mode,
 	if (timings->interlace)
 		mode->flags |= DRM_MODE_FLAG_INTERLACE;
 
+<<<<<<< HEAD
+=======
+	if (timings->double_pixel)
+		mode->flags |= DRM_MODE_FLAG_DBLCLK;
+
+>>>>>>> v4.9.227
 	if (timings->hsync_level == OMAPDSS_SIG_ACTIVE_HIGH)
 		mode->flags |= DRM_MODE_FLAG_PHSYNC;
 	else
@@ -90,6 +99,10 @@ void copy_timings_drm_to_omap(struct omap_video_timings *timings,
 	timings->vbp = mode->vtotal - mode->vsync_end;
 
 	timings->interlace = !!(mode->flags & DRM_MODE_FLAG_INTERLACE);
+<<<<<<< HEAD
+=======
+	timings->double_pixel = !!(mode->flags & DRM_MODE_FLAG_DBLCLK);
+>>>>>>> v4.9.227
 
 	if (mode->flags & DRM_MODE_FLAG_PHSYNC)
 		timings->hsync_level = OMAPDSS_SIG_ACTIVE_HIGH;
@@ -252,6 +265,7 @@ static int omap_connector_mode_valid(struct drm_connector *connector,
 	return ret;
 }
 
+<<<<<<< HEAD
 struct drm_encoder *omap_connector_attached_encoder(
 		struct drm_connector *connector)
 {
@@ -259,6 +273,8 @@ struct drm_encoder *omap_connector_attached_encoder(
 	return omap_connector->encoder;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct drm_connector_funcs omap_connector_funcs = {
 	.dpms = drm_atomic_helper_connector_dpms,
 	.reset = drm_atomic_helper_connector_reset,
@@ -272,7 +288,10 @@ static const struct drm_connector_funcs omap_connector_funcs = {
 static const struct drm_connector_helper_funcs omap_connector_helper_funcs = {
 	.get_modes = omap_connector_get_modes,
 	.mode_valid = omap_connector_mode_valid,
+<<<<<<< HEAD
 	.best_encoder = omap_connector_attached_encoder,
+=======
+>>>>>>> v4.9.227
 };
 
 /* initialize connector */
@@ -292,7 +311,10 @@ struct drm_connector *omap_connector_init(struct drm_device *dev,
 		goto fail;
 
 	omap_connector->dssdev = dssdev;
+<<<<<<< HEAD
 	omap_connector->encoder = encoder;
+=======
+>>>>>>> v4.9.227
 
 	connector = &omap_connector->base;
 

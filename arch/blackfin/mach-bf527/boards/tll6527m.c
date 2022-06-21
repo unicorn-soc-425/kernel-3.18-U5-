@@ -29,7 +29,11 @@
 #include <asm/dpmc.h>
 
 #if IS_ENABLED(CONFIG_TOUCHSCREEN_AD7879)
+<<<<<<< HEAD
 #include <linux/spi/ad7879.h>
+=======
+#include <linux/platform_data/ad7879.h>
+>>>>>>> v4.9.227
 #define LCD_BACKLIGHT_GPIO 0x40
 /* TLL6527M uses TLL7UIQ35 / ADI LCD EZ Extender. AD7879 AUX GPIO is used for
  * LCD Backlight Enable

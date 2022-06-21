@@ -144,7 +144,11 @@ struct linux_tinfo {
 struct linux_vdirent {
 	ULONG namelen;
 	unsigned char attr;
+<<<<<<< HEAD
 	char fname[32]; /* XXX imperical, should be a define */
+=======
+	char fname[32]; /* XXX empirical, should be a define */
+>>>>>>> v4.9.227
 };
 
 /* Other stuff for files. */
@@ -179,7 +183,11 @@ struct linux_finfo {
 	enum linux_devtypes   dtype;
 	unsigned long	      namelen;
 	unsigned char	      attr;
+<<<<<<< HEAD
 	char		      name[32]; /* XXX imperical, should be define */
+=======
+	char		      name[32]; /* XXX empirical, should be define */
+>>>>>>> v4.9.227
 };
 
 /* This describes the vector containing function pointers to the ARC

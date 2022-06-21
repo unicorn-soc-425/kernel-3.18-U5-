@@ -56,7 +56,11 @@
 #include <linux/pipe_fs_i.h>
 #include <linux/oom.h>
 #include <linux/compat.h>
+<<<<<<< HEAD
 #include <linux/task_integrity.h>
+=======
+#include <linux/vmalloc.h>
+>>>>>>> v4.9.227
 
 #include <asm/uaccess.h>
 #include <asm/mmu_context.h>
@@ -67,10 +71,13 @@
 
 #include <trace/events/sched.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_SECURITY_DEFEX
 #include <linux/defex.h>
 #endif
 
+=======
+>>>>>>> v4.9.227
 int suid_dumpable = 0;
 
 static LIST_HEAD(formats);
@@ -124,7 +131,11 @@ SYSCALL_DEFINE1(uselib, const char __user *, library)
 	int error = PTR_ERR(tmp);
 	static const struct open_flags uselib_flags = {
 		.open_flag = O_LARGEFILE | O_RDONLY | __FMODE_EXEC,
+<<<<<<< HEAD
 		.acc_mode = MAY_READ | MAY_EXEC | MAY_OPEN,
+=======
+		.acc_mode = MAY_READ | MAY_EXEC,
+>>>>>>> v4.9.227
 		.intent = LOOKUP_OPEN,
 		.lookup_flags = LOOKUP_FOLLOW,
 	};
@@ -195,6 +206,10 @@ static struct page *get_arg_page(struct linux_binprm *bprm, unsigned long pos,
 {
 	struct page *page;
 	int ret;
+<<<<<<< HEAD
+=======
+	unsigned int gup_flags = FOLL_FORCE;
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_STACK_GROWSUP
 	if (write) {
@@ -203,8 +218,21 @@ static struct page *get_arg_page(struct linux_binprm *bprm, unsigned long pos,
 			return NULL;
 	}
 #endif
+<<<<<<< HEAD
 	ret = get_user_pages(current, bprm->mm, pos,
 			1, write, 1, &page, NULL);
+=======
+
+	if (write)
+		gup_flags |= FOLL_WRITE;
+
+	/*
+	 * We are doing an exec().  'current' is the process
+	 * doing the exec and bprm->mm is the new process's mm.
+	 */
+	ret = get_user_pages_remote(current, bprm->mm, pos, 1, gup_flags,
+			&page, NULL);
+>>>>>>> v4.9.227
 	if (ret <= 0)
 		return NULL;
 
@@ -264,10 +292,13 @@ static void put_arg_page(struct page *page)
 	put_page(page);
 }
 
+<<<<<<< HEAD
 static void free_arg_page(struct linux_binprm *bprm, int i)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 static void free_arg_pages(struct linux_binprm *bprm)
 {
 }
@@ -288,7 +319,14 @@ static int __bprm_mm_init(struct linux_binprm *bprm)
 	if (!vma)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	down_write(&mm->mmap_sem);
+=======
+	if (down_write_killable(&mm->mmap_sem)) {
+		err = -EINTR;
+		goto err_free;
+	}
+>>>>>>> v4.9.227
 	vma->vm_mm = mm;
 
 	/*
@@ -309,11 +347,19 @@ static int __bprm_mm_init(struct linux_binprm *bprm)
 		goto err;
 
 	mm->stack_vm = mm->total_vm = 1;
+<<<<<<< HEAD
+=======
+	arch_bprm_mm_init(mm, vma);
+>>>>>>> v4.9.227
 	up_write(&mm->mmap_sem);
 	bprm->p = vma->vm_end - sizeof(void *);
 	return 0;
 err:
 	up_write(&mm->mmap_sem);
+<<<<<<< HEAD
+=======
+err_free:
+>>>>>>> v4.9.227
 	bprm->vma = NULL;
 	kmem_cache_free(vm_area_cachep, vma);
 	return err;
@@ -720,7 +766,13 @@ int setup_arg_pages(struct linux_binprm *bprm,
 		bprm->loader -= stack_shift;
 	bprm->exec -= stack_shift;
 
+<<<<<<< HEAD
 	down_write(&mm->mmap_sem);
+=======
+	if (down_write_killable(&mm->mmap_sem))
+		return -EINTR;
+
+>>>>>>> v4.9.227
 	vm_flags = VM_STACK_FLAGS;
 
 	/*
@@ -780,6 +832,7 @@ out_unlock:
 }
 EXPORT_SYMBOL(setup_arg_pages);
 
+<<<<<<< HEAD
 #endif /* CONFIG_MMU */
 
 static struct file *do_open_exec(struct filename *name)
@@ -789,11 +842,66 @@ static struct file *do_open_exec(struct filename *name)
 	static const struct open_flags open_exec_flags = {
 		.open_flag = O_LARGEFILE | O_RDONLY | __FMODE_EXEC,
 		.acc_mode = MAY_EXEC | MAY_OPEN,
+=======
+#else
+
+/*
+ * Transfer the program arguments and environment from the holding pages
+ * onto the stack. The provided stack pointer is adjusted accordingly.
+ */
+int transfer_args_to_stack(struct linux_binprm *bprm,
+			   unsigned long *sp_location)
+{
+	unsigned long index, stop, sp;
+	int ret = 0;
+
+	stop = bprm->p >> PAGE_SHIFT;
+	sp = *sp_location;
+
+	for (index = MAX_ARG_PAGES - 1; index >= stop; index--) {
+		unsigned int offset = index == stop ? bprm->p & ~PAGE_MASK : 0;
+		char *src = kmap(bprm->page[index]) + offset;
+		sp -= PAGE_SIZE - offset;
+		if (copy_to_user((void *) sp, src, PAGE_SIZE - offset) != 0)
+			ret = -EFAULT;
+		kunmap(bprm->page[index]);
+		if (ret)
+			goto out;
+	}
+
+	*sp_location = sp;
+
+out:
+	return ret;
+}
+EXPORT_SYMBOL(transfer_args_to_stack);
+
+#endif /* CONFIG_MMU */
+
+static struct file *do_open_execat(int fd, struct filename *name, int flags)
+{
+	struct file *file;
+	int err;
+	struct open_flags open_exec_flags = {
+		.open_flag = O_LARGEFILE | O_RDONLY | __FMODE_EXEC,
+		.acc_mode = MAY_EXEC,
+>>>>>>> v4.9.227
 		.intent = LOOKUP_OPEN,
 		.lookup_flags = LOOKUP_FOLLOW,
 	};
 
+<<<<<<< HEAD
 	file = do_filp_open(AT_FDCWD, name, &open_exec_flags);
+=======
+	if ((flags & ~(AT_SYMLINK_NOFOLLOW | AT_EMPTY_PATH)) != 0)
+		return ERR_PTR(-EINVAL);
+	if (flags & AT_SYMLINK_NOFOLLOW)
+		open_exec_flags.lookup_flags &= ~LOOKUP_FOLLOW;
+	if (flags & AT_EMPTY_PATH)
+		open_exec_flags.lookup_flags |= LOOKUP_EMPTY;
+
+	file = do_filp_open(fd, name, &open_exec_flags);
+>>>>>>> v4.9.227
 	if (IS_ERR(file))
 		goto out;
 
@@ -804,12 +912,21 @@ static struct file *do_open_exec(struct filename *name)
 	if (path_noexec(&file->f_path))
 		goto exit;
 
+<<<<<<< HEAD
 	fsnotify_open(file);
 
+=======
+>>>>>>> v4.9.227
 	err = deny_write_access(file);
 	if (err)
 		goto exit;
 
+<<<<<<< HEAD
+=======
+	if (name->name[0] != '\0')
+		fsnotify_open(file);
+
+>>>>>>> v4.9.227
 out:
 	return file;
 
@@ -820,8 +937,19 @@ exit:
 
 struct file *open_exec(const char *name)
 {
+<<<<<<< HEAD
 	struct filename tmp = { .name = name };
 	return do_open_exec(&tmp);
+=======
+	struct filename *filename = getname_kernel(name);
+	struct file *f = ERR_CAST(filename);
+
+	if (!IS_ERR(filename)) {
+		f = do_open_execat(AT_FDCWD, filename, 0);
+		putname(filename);
+	}
+	return f;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(open_exec);
 
@@ -842,6 +970,116 @@ int kernel_read(struct file *file, loff_t offset,
 
 EXPORT_SYMBOL(kernel_read);
 
+<<<<<<< HEAD
+=======
+int kernel_read_file(struct file *file, void **buf, loff_t *size,
+		     loff_t max_size, enum kernel_read_file_id id)
+{
+	loff_t i_size, pos;
+	ssize_t bytes = 0;
+	int ret;
+
+	if (!S_ISREG(file_inode(file)->i_mode) || max_size < 0)
+		return -EINVAL;
+
+	ret = security_kernel_read_file(file, id);
+	if (ret)
+		return ret;
+
+	ret = deny_write_access(file);
+	if (ret)
+		return ret;
+
+	i_size = i_size_read(file_inode(file));
+	if (max_size > 0 && i_size > max_size) {
+		ret = -EFBIG;
+		goto out;
+	}
+	if (i_size <= 0) {
+		ret = -EINVAL;
+		goto out;
+	}
+
+	if (id != READING_FIRMWARE_PREALLOC_BUFFER)
+		*buf = vmalloc(i_size);
+	if (!*buf) {
+		ret = -ENOMEM;
+		goto out;
+	}
+
+	pos = 0;
+	while (pos < i_size) {
+		bytes = kernel_read(file, pos, (char *)(*buf) + pos,
+				    i_size - pos);
+		if (bytes < 0) {
+			ret = bytes;
+			goto out_free;
+		}
+
+		if (bytes == 0)
+			break;
+		pos += bytes;
+	}
+
+	if (pos != i_size) {
+		ret = -EIO;
+		goto out_free;
+	}
+
+	ret = security_kernel_post_read_file(file, *buf, i_size, id);
+	if (!ret)
+		*size = pos;
+
+out_free:
+	if (ret < 0) {
+		if (id != READING_FIRMWARE_PREALLOC_BUFFER) {
+			vfree(*buf);
+			*buf = NULL;
+		}
+	}
+
+out:
+	allow_write_access(file);
+	return ret;
+}
+EXPORT_SYMBOL_GPL(kernel_read_file);
+
+int kernel_read_file_from_path(char *path, void **buf, loff_t *size,
+			       loff_t max_size, enum kernel_read_file_id id)
+{
+	struct file *file;
+	int ret;
+
+	if (!path || !*path)
+		return -EINVAL;
+
+	file = filp_open(path, O_RDONLY, 0);
+	if (IS_ERR(file))
+		return PTR_ERR(file);
+
+	ret = kernel_read_file(file, buf, size, max_size, id);
+	fput(file);
+	return ret;
+}
+EXPORT_SYMBOL_GPL(kernel_read_file_from_path);
+
+int kernel_read_file_from_fd(int fd, void **buf, loff_t *size, loff_t max_size,
+			     enum kernel_read_file_id id)
+{
+	struct fd f = fdget(fd);
+	int ret = -EBADF;
+
+	if (!f.file)
+		goto out;
+
+	ret = kernel_read_file(f.file, buf, size, max_size, id);
+out:
+	fdput(f);
+	return ret;
+}
+EXPORT_SYMBOL_GPL(kernel_read_file_from_fd);
+
+>>>>>>> v4.9.227
 ssize_t read_code(struct file *file, unsigned long addr, loff_t pos, size_t len)
 {
 	ssize_t res = vfs_read(file, (void __user *)addr, len, &pos);
@@ -946,10 +1184,21 @@ static int de_thread(struct task_struct *tsk)
 	if (!thread_group_leader(tsk)) {
 		struct task_struct *leader = tsk->group_leader;
 
+<<<<<<< HEAD
 		sig->notify_count = -1;	/* for exit_notify() */
 		for (;;) {
 			threadgroup_change_begin(tsk);
 			write_lock_irq(&tasklist_lock);
+=======
+		for (;;) {
+			threadgroup_change_begin(tsk);
+			write_lock_irq(&tasklist_lock);
+			/*
+			 * Do this under tasklist_lock to ensure that
+			 * exit_notify() can't miss ->group_exit_task
+			 */
+			sig->notify_count = -1;
+>>>>>>> v4.9.227
 			if (likely(leader->exit_state))
 				break;
 			__set_current_state(TASK_KILLABLE);
@@ -1062,6 +1311,7 @@ killed:
 	return -EAGAIN;
 }
 
+<<<<<<< HEAD
 char *get_task_comm(char *buf, struct task_struct *tsk)
 {
 	/* buf must be at least sizeof(tsk->comm) in size */
@@ -1071,6 +1321,16 @@ char *get_task_comm(char *buf, struct task_struct *tsk)
 	return buf;
 }
 EXPORT_SYMBOL_GPL(get_task_comm);
+=======
+char *__get_task_comm(char *buf, size_t buf_size, struct task_struct *tsk)
+{
+	task_lock(tsk);
+	strncpy(buf, tsk->comm, buf_size);
+	task_unlock(tsk);
+	return buf;
+}
+EXPORT_SYMBOL_GPL(__get_task_comm);
+>>>>>>> v4.9.227
 
 /*
  * These functions flushes out all traces of the currently running executable
@@ -1098,7 +1358,19 @@ int flush_old_exec(struct linux_binprm * bprm)
 	if (retval)
 		goto out;
 
+<<<<<<< HEAD
 	set_mm_exe_file(bprm->mm, bprm->file);
+=======
+	/*
+	 * Must be called _before_ exec_mmap() as bprm->mm is
+	 * not visibile until then. This also enables the update
+	 * to be lockless.
+	 */
+	set_mm_exe_file(bprm->mm, bprm->file);
+
+	would_dump(bprm, bprm->file);
+
+>>>>>>> v4.9.227
 	/*
 	 * Release all of the old mmap stuff
 	 */
@@ -1131,8 +1403,27 @@ EXPORT_SYMBOL(flush_old_exec);
 
 void would_dump(struct linux_binprm *bprm, struct file *file)
 {
+<<<<<<< HEAD
 	if (inode_permission2(file->f_path.mnt, file_inode(file), MAY_READ) < 0)
 		bprm->interp_flags |= BINPRM_FLAGS_ENFORCE_NONDUMP;
+=======
+	struct inode *inode = file_inode(file);
+	if (inode_permission(inode, MAY_READ) < 0) {
+		struct user_namespace *old, *user_ns;
+		bprm->interp_flags |= BINPRM_FLAGS_ENFORCE_NONDUMP;
+
+		/* Ensure mm->user_ns contains the executable */
+		user_ns = old = bprm->mm->user_ns;
+		while ((user_ns != &init_user_ns) &&
+		       !privileged_wrt_inode_uidgid(user_ns, inode))
+			user_ns = user_ns->parent;
+
+		if (old != user_ns) {
+			bprm->mm->user_ns = get_user_ns(user_ns);
+			put_user_ns(old);
+		}
+	}
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(would_dump);
 
@@ -1162,14 +1453,21 @@ void setup_new_exec(struct linux_binprm * bprm)
 	    !gid_eq(bprm->cred->gid, current_egid())) {
 		current->pdeath_signal = 0;
 	} else {
+<<<<<<< HEAD
 		would_dump(bprm, bprm->file);
+=======
+>>>>>>> v4.9.227
 		if (bprm->interp_flags & BINPRM_FLAGS_ENFORCE_NONDUMP)
 			set_dumpable(current->mm, suid_dumpable);
 	}
 
 	/* An exec changes our domain. We are no longer part of the thread
 	   group */
+<<<<<<< HEAD
 	current->self_exec_id++;
+=======
+	WRITE_ONCE(current->self_exec_id, current->self_exec_id + 1);
+>>>>>>> v4.9.227
 	flush_signal_handlers(current, 0);
 }
 EXPORT_SYMBOL(setup_new_exec);
@@ -1261,7 +1559,11 @@ static void check_unsafe_exec(struct linux_binprm *bprm)
 	unsigned n_fs;
 
 	if (p->ptrace) {
+<<<<<<< HEAD
 		if (p->ptrace & PT_PTRACE_CAP)
+=======
+		if (ptracer_capable(p, current_user_ns()))
+>>>>>>> v4.9.227
 			bprm->unsafe |= LSM_UNSAFE_PTRACE_CAP;
 		else
 			bprm->unsafe |= LSM_UNSAFE_PTRACE;
@@ -1298,11 +1600,24 @@ static void bprm_fill_uid(struct linux_binprm *bprm)
 	kuid_t uid;
 	kgid_t gid;
 
+<<<<<<< HEAD
 	/* clear any previous set[ug]id data from a previous binary */
 	bprm->cred->euid = current_euid();
 	bprm->cred->egid = current_egid();
 
 	if (bprm->file->f_path.mnt->mnt_flags & MNT_NOSUID)
+=======
+	/*
+	 * Since this can be called multiple times (via prepare_binprm),
+	 * we must clear any previous work done when setting set[ug]id
+	 * bits from any earlier bprm->file uses (for example when run
+	 * first for a setuid script then again for its interpreter).
+	 */
+	bprm->cred->euid = current_euid();
+	bprm->cred->egid = current_egid();
+
+	if (!mnt_may_suid(bprm->file->f_path.mnt))
+>>>>>>> v4.9.227
 		return;
 
 	if (task_no_new_privs(current))
@@ -1314,13 +1629,21 @@ static void bprm_fill_uid(struct linux_binprm *bprm)
 		return;
 
 	/* Be careful if suid/sgid is set */
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+>>>>>>> v4.9.227
 
 	/* reload atomically mode/uid/gid now that lock held */
 	mode = inode->i_mode;
 	uid = inode->i_uid;
 	gid = inode->i_gid;
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_unlock(inode);
+>>>>>>> v4.9.227
 
 	/* We ignore suid/sgid if there are no mappings for them in the ns */
 	if (!kuid_has_mapping(bprm->cred->user_ns, uid) ||
@@ -1392,9 +1715,12 @@ int remove_arg_zero(struct linux_binprm *bprm)
 
 		kunmap_atomic(kaddr);
 		put_arg_page(page);
+<<<<<<< HEAD
 
 		if (offset == PAGE_SIZE)
 			free_arg_page(bprm, (bprm->p >> PAGE_SHIFT) - 1);
+=======
+>>>>>>> v4.9.227
 	} while (offset == PAGE_SIZE);
 
 	bprm->p++;
@@ -1453,8 +1779,12 @@ int search_binary_handler(struct linux_binprm *bprm)
 		if (printable(bprm->buf[0]) && printable(bprm->buf[1]) &&
 		    printable(bprm->buf[2]) && printable(bprm->buf[3]))
 			return retval;
+<<<<<<< HEAD
 		if (request_module("binfmt-%04x",
 					*(ushort *)(bprm->buf + 2)) < 0)
+=======
+		if (request_module("binfmt-%04x", *(ushort *)(bprm->buf + 2)) < 0)
+>>>>>>> v4.9.227
 			return retval;
 		need_retry = false;
 		goto retry;
@@ -1481,8 +1811,11 @@ static int exec_binprm(struct linux_binprm *bprm)
 		trace_sched_process_exec(current, old_pid, bprm);
 		ptrace_event(PTRACE_EVENT_EXEC, old_vpid);
 		proc_exec_connector(current);
+<<<<<<< HEAD
 	} else {
 		task_integrity_delayed_reset(current, CAUSE_EXEC, bprm->file);
+=======
+>>>>>>> v4.9.227
 	}
 
 	return ret;
@@ -1491,10 +1824,19 @@ static int exec_binprm(struct linux_binprm *bprm)
 /*
  * sys_execve() executes a new program.
  */
+<<<<<<< HEAD
 static int do_execve_common(struct filename *filename,
 				struct user_arg_ptr argv,
 				struct user_arg_ptr envp)
 {
+=======
+static int do_execveat_common(int fd, struct filename *filename,
+			      struct user_arg_ptr argv,
+			      struct user_arg_ptr envp,
+			      int flags)
+{
+	char *pathbuf = NULL;
+>>>>>>> v4.9.227
 	struct linux_binprm *bprm;
 	struct file *file;
 	struct files_struct *displaced;
@@ -1535,11 +1877,16 @@ static int do_execve_common(struct filename *filename,
 	check_unsafe_exec(bprm);
 	current->in_execve = 1;
 
+<<<<<<< HEAD
 	file = do_open_exec(filename);
+=======
+	file = do_open_execat(fd, filename, flags);
+>>>>>>> v4.9.227
 	retval = PTR_ERR(file);
 	if (IS_ERR(file))
 		goto out_unmark;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SECURITY_DEFEX
 	retval = task_defex_enforce(current, file, -__NR_execve);
 	if (retval < 0) {
@@ -1553,6 +1900,33 @@ static int do_execve_common(struct filename *filename,
 
 	bprm->file = file;
 	bprm->filename = bprm->interp = filename->name;
+=======
+	sched_exec();
+
+	bprm->file = file;
+	if (fd == AT_FDCWD || filename->name[0] == '/') {
+		bprm->filename = filename->name;
+	} else {
+		if (filename->name[0] == '\0')
+			pathbuf = kasprintf(GFP_TEMPORARY, "/dev/fd/%d", fd);
+		else
+			pathbuf = kasprintf(GFP_TEMPORARY, "/dev/fd/%d/%s",
+					    fd, filename->name);
+		if (!pathbuf) {
+			retval = -ENOMEM;
+			goto out_unmark;
+		}
+		/*
+		 * Record that a name derived from an O_CLOEXEC fd will be
+		 * inaccessible after exec. Relies on having exclusive access to
+		 * current->files (due to unshare_files above).
+		 */
+		if (close_on_exec(fd, rcu_dereference_raw(current->files->fdt)))
+			bprm->interp_flags |= BINPRM_FLAGS_PATH_INACCESSIBLE;
+		bprm->filename = pathbuf;
+	}
+	bprm->interp = bprm->filename;
+>>>>>>> v4.9.227
 
 	retval = bprm_mm_init(bprm);
 	if (retval)
@@ -1591,8 +1965,14 @@ static int do_execve_common(struct filename *filename,
 	current->fs->in_exec = 0;
 	current->in_execve = 0;
 	acct_update_integrals(current);
+<<<<<<< HEAD
 	task_numa_free(current);
 	free_bprm(bprm);
+=======
+	task_numa_free(current, false);
+	free_bprm(bprm);
+	kfree(pathbuf);
+>>>>>>> v4.9.227
 	putname(filename);
 	if (displaced)
 		put_files_struct(displaced);
@@ -1610,6 +1990,10 @@ out_unmark:
 
 out_free:
 	free_bprm(bprm);
+<<<<<<< HEAD
+=======
+	kfree(pathbuf);
+>>>>>>> v4.9.227
 
 out_files:
 	if (displaced)
@@ -1625,7 +2009,22 @@ int do_execve(struct filename *filename,
 {
 	struct user_arg_ptr argv = { .ptr.native = __argv };
 	struct user_arg_ptr envp = { .ptr.native = __envp };
+<<<<<<< HEAD
 	return do_execve_common(filename, argv, envp);
+=======
+	return do_execveat_common(AT_FDCWD, filename, argv, envp, 0);
+}
+
+int do_execveat(int fd, struct filename *filename,
+		const char __user *const __user *__argv,
+		const char __user *const __user *__envp,
+		int flags)
+{
+	struct user_arg_ptr argv = { .ptr.native = __argv };
+	struct user_arg_ptr envp = { .ptr.native = __envp };
+
+	return do_execveat_common(fd, filename, argv, envp, flags);
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_COMPAT
@@ -1641,7 +2040,27 @@ static int compat_do_execve(struct filename *filename,
 		.is_compat = true,
 		.ptr.compat = __envp,
 	};
+<<<<<<< HEAD
 	return do_execve_common(filename, argv, envp);
+=======
+	return do_execveat_common(AT_FDCWD, filename, argv, envp, 0);
+}
+
+static int compat_do_execveat(int fd, struct filename *filename,
+			      const compat_uptr_t __user *__argv,
+			      const compat_uptr_t __user *__envp,
+			      int flags)
+{
+	struct user_arg_ptr argv = {
+		.is_compat = true,
+		.ptr.compat = __argv,
+	};
+	struct user_arg_ptr envp = {
+		.is_compat = true,
+		.ptr.compat = __envp,
+	};
+	return do_execveat_common(fd, filename, argv, envp, flags);
+>>>>>>> v4.9.227
 }
 #endif
 
@@ -1681,6 +2100,23 @@ SYSCALL_DEFINE3(execve,
 {
 	return do_execve(getname(filename), argv, envp);
 }
+<<<<<<< HEAD
+=======
+
+SYSCALL_DEFINE5(execveat,
+		int, fd, const char __user *, filename,
+		const char __user *const __user *, argv,
+		const char __user *const __user *, envp,
+		int, flags)
+{
+	int lookup_flags = (flags & AT_EMPTY_PATH) ? LOOKUP_EMPTY : 0;
+
+	return do_execveat(fd,
+			   getname_flags(filename, lookup_flags, NULL),
+			   argv, envp, flags);
+}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_COMPAT
 COMPAT_SYSCALL_DEFINE3(execve, const char __user *, filename,
 	const compat_uptr_t __user *, argv,
@@ -1688,4 +2124,20 @@ COMPAT_SYSCALL_DEFINE3(execve, const char __user *, filename,
 {
 	return compat_do_execve(getname(filename), argv, envp);
 }
+<<<<<<< HEAD
+=======
+
+COMPAT_SYSCALL_DEFINE5(execveat, int, fd,
+		       const char __user *, filename,
+		       const compat_uptr_t __user *, argv,
+		       const compat_uptr_t __user *, envp,
+		       int,  flags)
+{
+	int lookup_flags = (flags & AT_EMPTY_PATH) ? LOOKUP_EMPTY : 0;
+
+	return compat_do_execveat(fd,
+				  getname_flags(filename, lookup_flags, NULL),
+				  argv, envp, flags);
+}
+>>>>>>> v4.9.227
 #endif

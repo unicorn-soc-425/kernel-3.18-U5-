@@ -76,6 +76,7 @@ void start_thread(struct pt_regs *regs, unsigned long new_pc,
 }
 EXPORT_SYMBOL(start_thread);
 
+<<<<<<< HEAD
 /*
  * Free current thread data structures etc..
  */
@@ -83,6 +84,8 @@ void exit_thread(void)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 void flush_thread(void)
 {
 	struct task_struct *tsk = current;

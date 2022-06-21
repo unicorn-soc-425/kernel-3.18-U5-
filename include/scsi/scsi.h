@@ -1,9 +1,13 @@
 /*
  * This header file contains public constants and structures used by
+<<<<<<< HEAD
  * the scsi code for linux.
  *
  * For documentation on the OPCODES, MESSAGES, and SENSE values,
  * please consult the SCSI standard.
+=======
+ * the SCSI initiator code.
+>>>>>>> v4.9.227
  */
 #ifndef _SCSI_SCSI_H
 #define _SCSI_SCSI_H
@@ -11,7 +15,12 @@
 #include <linux/types.h>
 #include <linux/scatterlist.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/device.h>
+=======
+#include <scsi/scsi_common.h>
+#include <scsi/scsi_proto.h>
+>>>>>>> v4.9.227
 
 struct scsi_cmnd;
 
@@ -20,6 +29,7 @@ enum scsi_timeouts {
 };
 
 /*
+<<<<<<< HEAD
  * The maximum number of SG segments that we will put inside a
  * scatterlist (unless chaining is used). Should ideally fit inside a
  * single page, to avoid a higher order allocation.  We could define this
@@ -39,6 +49,8 @@ enum scsi_timeouts {
 #endif
 
 /*
+=======
+>>>>>>> v4.9.227
  * DIX-capable adapters effectively support infinite chaining for the
  * protection information scatterlist
  */
@@ -50,6 +62,7 @@ enum scsi_timeouts {
  */
 #define SCAN_WILD_CARD	~0
 
+<<<<<<< HEAD
 /*
  *      SCSI opcodes
  */
@@ -224,6 +237,8 @@ scsi_command_size(const unsigned char *cmnd)
 		scsi_varlen_cdb_length(cmnd) : COMMAND_SIZE(cmnd[0]);
 }
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_ACPI
 struct acpi_bus_type;
 
@@ -234,6 +249,7 @@ extern void
 scsi_unregister_acpi_bus_type(struct acpi_bus_type *bus);
 #endif
 
+<<<<<<< HEAD
 /*
  *  SCSI Architecture Model (SAM) Status codes. Taken from SAM-3 draft
  *  T10/1561-D Revision 4 Draft dated 7th November 2002.
@@ -250,6 +266,8 @@ scsi_unregister_acpi_bus_type(struct acpi_bus_type *bus);
 #define SAM_STAT_ACA_ACTIVE      0x30
 #define SAM_STAT_TASK_ABORTED    0x40
 
+=======
+>>>>>>> v4.9.227
 /** scsi_status_is_good - check the status return.
  *
  * @status: the status passed up from the driver (including host and
@@ -273,6 +291,7 @@ static inline int scsi_status_is_good(int status)
 		(status == SAM_STAT_COMMAND_TERMINATED));
 }
 
+<<<<<<< HEAD
 /*
  *  Status codes. These are deprecated as they are shifted 1 bit right
  *  from those found in the SCSI standards. This causes confusion for
@@ -353,6 +372,8 @@ enum scsi_protocol {
 
 /* Returns a human-readable name for the device */
 extern const char * scsi_device_type(unsigned type);
+=======
+>>>>>>> v4.9.227
 
 /*
  * standard mode-select header prepended to all mode-select commands
@@ -374,6 +395,7 @@ struct ccs_modesel_head {
 };
 
 /*
+<<<<<<< HEAD
  * ScsiLun: 8 byte LUN.
  */
 struct scsi_lun {
@@ -381,6 +403,8 @@ struct scsi_lun {
 };
 
 /*
+=======
+>>>>>>> v4.9.227
  * The Well Known LUNS (SAM-3) in our int representation of a LUN
  */
 #define SCSI_W_LUN_BASE 0xc100
@@ -558,15 +582,42 @@ static inline int scsi_is_wlun(u64 lun)
 #define SCSI_INQ_PQ_NOT_CON     0x01
 #define SCSI_INQ_PQ_NOT_CAP     0x03
 
+<<<<<<< HEAD
+=======
+
+/*
+ * Here are some scsi specific ioctl commands which are sometimes useful.
+ *
+ * Note that include/linux/cdrom.h also defines IOCTL 0x5300 - 0x5395
+ */
+
+/* Used to obtain PUN and LUN info.  Conflicts with CDROMAUDIOBUFSIZ */
+#define SCSI_IOCTL_GET_IDLUN		0x5382
+
+/* 0x5383 and 0x5384 were used for SCSI_IOCTL_TAGGED_{ENABLE,DISABLE} */
+
+/* Used to obtain the host number of a device. */
+#define SCSI_IOCTL_PROBE_HOST		0x5385
+
+/* Used to obtain the bus number for a device */
+#define SCSI_IOCTL_GET_BUS_NUMBER	0x5386
+
+/* Used to obtain the PCI location of a device */
+#define SCSI_IOCTL_GET_PCI		0x5387
+
+>>>>>>> v4.9.227
 /* Pull a u32 out of a SCSI message (using BE SCSI conventions) */
 static inline __u32 scsi_to_u32(__u8 *ptr)
 {
 	return (ptr[0]<<24) + (ptr[1]<<16) + (ptr[2]<<8) + ptr[3];
 }
 
+<<<<<<< HEAD
 struct scsi_disk *scsi_disk_get_from_dev(struct device *dev);
 
 struct gendisk *scsi_gendisk_get_from_dev(struct device *dev);
 void scsi_gendisk_put(struct device *dev);
 
+=======
+>>>>>>> v4.9.227
 #endif /* _SCSI_SCSI_H */

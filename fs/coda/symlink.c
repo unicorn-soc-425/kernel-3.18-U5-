@@ -26,7 +26,11 @@ static int coda_symlink_filler(struct file *file, struct page *page)
 	int error;
 	struct coda_inode_info *cii;
 	unsigned int len = PAGE_SIZE;
+<<<<<<< HEAD
 	char *p = kmap(page);
+=======
+	char *p = page_address(page);
+>>>>>>> v4.9.227
 
 	cii = ITOC(inode);
 
@@ -34,13 +38,19 @@ static int coda_symlink_filler(struct file *file, struct page *page)
 	if (error)
 		goto fail;
 	SetPageUptodate(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> v4.9.227
 	unlock_page(page);
 	return 0;
 
 fail:
 	SetPageError(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> v4.9.227
 	unlock_page(page);
 	return error;
 }

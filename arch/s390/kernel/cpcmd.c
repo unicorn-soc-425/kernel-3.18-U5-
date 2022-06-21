@@ -14,6 +14,10 @@
 #include <linux/spinlock.h>
 #include <linux/stddef.h>
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <asm/diag.h>
+>>>>>>> v4.9.227
 #include <asm/ebcdic.h>
 #include <asm/cpcmd.h>
 #include <asm/io.h>
@@ -27,6 +31,7 @@ static int diag8_noresponse(int cmdlen)
 	register unsigned long reg3 asm ("3") = cmdlen;
 
 	asm volatile(
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 		"	diag	%1,%0,0x8\n"
 #else /* CONFIG_64BIT */
@@ -34,6 +39,11 @@ static int diag8_noresponse(int cmdlen)
 		"	diag	%1,%0,0x8\n"
 		"	sam64\n"
 #endif /* CONFIG_64BIT */
+=======
+		"	sam31\n"
+		"	diag	%1,%0,0x8\n"
+		"	sam64\n"
+>>>>>>> v4.9.227
 		: "+d" (reg3) : "d" (reg2) : "cc");
 	return reg3;
 }
@@ -46,17 +56,23 @@ static int diag8_response(int cmdlen, char *response, int *rlen)
 	register unsigned long reg5 asm ("5") = *rlen;
 
 	asm volatile(
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 		"	diag	%2,%0,0x8\n"
 		"	brc	8,1f\n"
 		"	ar	%1,%4\n"
 #else /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		"	sam31\n"
 		"	diag	%2,%0,0x8\n"
 		"	sam64\n"
 		"	brc	8,1f\n"
 		"	agr	%1,%4\n"
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		"1:\n"
 		: "+d" (reg4), "+d" (reg5)
 		: "d" (reg2), "d" (reg3), "d" (*rlen) : "cc");
@@ -80,6 +96,10 @@ int  __cpcmd(const char *cmd, char *response, int rlen, int *response_code)
 	memcpy(cpcmd_buf, cmd, cmdlen);
 	ASCEBC(cpcmd_buf, cmdlen);
 
+<<<<<<< HEAD
+=======
+	diag_stat_inc(DIAG_STAT_X008);
+>>>>>>> v4.9.227
 	if (response) {
 		memset(response, 0, rlen);
 		response_len = rlen;
@@ -104,8 +124,12 @@ int cpcmd(const char *cmd, char *response, int rlen, int *response_code)
 			(((unsigned long)response + rlen) >> 31)) {
 		lowbuf = kmalloc(rlen, GFP_KERNEL | GFP_DMA);
 		if (!lowbuf) {
+<<<<<<< HEAD
 			pr_warning("The cpcmd kernel function failed to "
 				   "allocate a response buffer\n");
+=======
+			pr_warn("The cpcmd kernel function failed to allocate a response buffer\n");
+>>>>>>> v4.9.227
 			return -ENOMEM;
 		}
 		spin_lock_irqsave(&cpcmd_lock, flags);

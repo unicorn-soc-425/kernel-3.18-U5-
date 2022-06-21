@@ -7,7 +7,11 @@
 #include <linux/ktime.h>
 #include <linux/pm_qos.h>
 #include <linux/tracepoint.h>
+<<<<<<< HEAD
 #include <linux/ftrace_event.h>
+=======
+#include <linux/trace_events.h>
+>>>>>>> v4.9.227
 
 #define TPS(x)  tracepoint_string(x)
 
@@ -38,37 +42,94 @@ DEFINE_EVENT(cpu, cpu_idle,
 	TP_ARGS(state, cpu_id)
 );
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(powernv_throttle,
+
+	TP_PROTO(int chip_id, const char *reason, int pmax),
+
+	TP_ARGS(chip_id, reason, pmax),
+
+	TP_STRUCT__entry(
+		__field(int, chip_id)
+		__string(reason, reason)
+		__field(int, pmax)
+	),
+
+	TP_fast_assign(
+		__entry->chip_id = chip_id;
+		__assign_str(reason, reason);
+		__entry->pmax = pmax;
+	),
+
+	TP_printk("Chip %d Pmax %d %s", __entry->chip_id,
+		  __entry->pmax, __get_str(reason))
+);
+
+>>>>>>> v4.9.227
 TRACE_EVENT(pstate_sample,
 
 	TP_PROTO(u32 core_busy,
 		u32 scaled_busy,
+<<<<<<< HEAD
 		u32 state,
 		u64 mperf,
 		u64 aperf,
 		u32 freq
+=======
+		u32 from,
+		u32 to,
+		u64 mperf,
+		u64 aperf,
+		u64 tsc,
+		u32 freq,
+		u32 io_boost
+>>>>>>> v4.9.227
 		),
 
 	TP_ARGS(core_busy,
 		scaled_busy,
+<<<<<<< HEAD
 		state,
 		mperf,
 		aperf,
 		freq
+=======
+		from,
+		to,
+		mperf,
+		aperf,
+		tsc,
+		freq,
+		io_boost
+>>>>>>> v4.9.227
 		),
 
 	TP_STRUCT__entry(
 		__field(u32, core_busy)
 		__field(u32, scaled_busy)
+<<<<<<< HEAD
 		__field(u32, state)
 		__field(u64, mperf)
 		__field(u64, aperf)
 		__field(u32, freq)
 
 	),
+=======
+		__field(u32, from)
+		__field(u32, to)
+		__field(u64, mperf)
+		__field(u64, aperf)
+		__field(u64, tsc)
+		__field(u32, freq)
+		__field(u32, io_boost)
+		),
+>>>>>>> v4.9.227
 
 	TP_fast_assign(
 		__entry->core_busy = core_busy;
 		__entry->scaled_busy = scaled_busy;
+<<<<<<< HEAD
 		__entry->state = state;
 		__entry->mperf = mperf;
 		__entry->aperf = aperf;
@@ -82,6 +143,27 @@ TRACE_EVENT(pstate_sample,
 		(unsigned long long)__entry->mperf,
 		(unsigned long long)__entry->aperf,
 		(unsigned long)__entry->freq
+=======
+		__entry->from = from;
+		__entry->to = to;
+		__entry->mperf = mperf;
+		__entry->aperf = aperf;
+		__entry->tsc = tsc;
+		__entry->freq = freq;
+		__entry->io_boost = io_boost;
+		),
+
+	TP_printk("core_busy=%lu scaled=%lu from=%lu to=%lu mperf=%llu aperf=%llu tsc=%llu freq=%lu io_boost=%lu",
+		(unsigned long)__entry->core_busy,
+		(unsigned long)__entry->scaled_busy,
+		(unsigned long)__entry->from,
+		(unsigned long)__entry->to,
+		(unsigned long long)__entry->mperf,
+		(unsigned long long)__entry->aperf,
+		(unsigned long long)__entry->tsc,
+		(unsigned long)__entry->freq,
+		(unsigned long)__entry->io_boost
+>>>>>>> v4.9.227
 		)
 
 );
@@ -111,6 +193,7 @@ DEFINE_EVENT(cpu, cpu_frequency,
 	TP_ARGS(frequency, cpu_id)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(cpu_frequency_switch_start,
 
 	TP_PROTO(unsigned int start_freq, unsigned int end_freq,
@@ -219,6 +302,8 @@ DEFINE_EVENT(cpu, cpu_capacity,
 	TP_ARGS(capacity, cpu_id)
 );
 
+=======
+>>>>>>> v4.9.227
 TRACE_EVENT(device_pm_callback_start,
 
 	TP_PROTO(struct device *dev, const char *pm_ops, int event),
@@ -372,6 +457,7 @@ DEFINE_EVENT(clock, clock_set_rate,
 	TP_ARGS(name, state, cpu_id)
 );
 
+<<<<<<< HEAD
 DEFINE_EVENT(clock, clock_set_rate_complete,
 
 	TP_PROTO(const char *name, unsigned int state, unsigned int cpu_id),
@@ -423,6 +509,8 @@ TRACE_EVENT(clock_state,
 					__entry->count, __entry->rate)
 );
 
+=======
+>>>>>>> v4.9.227
 /*
  * The power domain events are used for power domains transitions
  */
@@ -626,6 +714,7 @@ DEFINE_EVENT(dev_pm_qos_request, dev_pm_qos_remove_request,
 
 	TP_ARGS(name, type, new_value)
 );
+<<<<<<< HEAD
 
 DECLARE_EVENT_CLASS(kpm_module,
 
@@ -1137,6 +1226,8 @@ TRACE_EVENT(msmpower_max_ddr,
 		__entry->curr_max_ddr)
 );
 
+=======
+>>>>>>> v4.9.227
 #endif /* _TRACE_POWER_H */
 
 /* This part must be outside protection */

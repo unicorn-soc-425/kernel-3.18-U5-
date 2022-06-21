@@ -51,6 +51,7 @@
 #define  CLOCK_GATING_GIGA_PHY_MASK	(1 << CLOCK_GATING_BIT_GIGA_PHY)
 
 #define PMU_INTERRUPT_CAUSE	(DOVE_PMU_VIRT_BASE + 0x50)
+<<<<<<< HEAD
 #define PMU_INTERRUPT_MASK	(DOVE_PMU_VIRT_BASE + 0x54)
 
 static inline int pmu_to_irq(int pin)
@@ -68,5 +69,16 @@ static inline int irq_to_pmu(int irq)
 
 	return -EINVAL;
 }
+=======
+
+#define  PMU_SW_RST_VIDEO_MASK		BIT(16)
+#define  PMU_SW_RST_GPU_MASK		BIT(18)
+
+#define  PMU_PWR_GPU_PWR_DWN_MASK	BIT(2)
+#define  PMU_PWR_VPU_PWR_DWN_MASK	BIT(3)
+
+#define  PMU_ISO_VIDEO_MASK		BIT(0)
+#define  PMU_ISO_GPU_MASK		BIT(1)
+>>>>>>> v4.9.227
 
 #endif

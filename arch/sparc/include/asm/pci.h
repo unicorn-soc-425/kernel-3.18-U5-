@@ -5,7 +5,10 @@
 #else
 #include <asm/pci_32.h>
 #endif
+<<<<<<< HEAD
 
 #include <asm-generic/pci-dma-compat.h>
 
+=======
+>>>>>>> v4.9.227
 #endif

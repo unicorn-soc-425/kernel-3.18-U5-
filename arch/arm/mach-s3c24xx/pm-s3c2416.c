@@ -23,6 +23,10 @@
 
 #include "s3c2412-power.h"
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 extern void s3c2412_sleep_enter(void);
 
 static int s3c2416_cpu_suspend(unsigned long arg)
@@ -70,7 +74,11 @@ static __init int s3c2416_pm_init(void)
 }
 
 arch_initcall(s3c2416_pm_init);
+<<<<<<< HEAD
 
+=======
+#endif
+>>>>>>> v4.9.227
 
 static void s3c2416_pm_resume(void)
 {

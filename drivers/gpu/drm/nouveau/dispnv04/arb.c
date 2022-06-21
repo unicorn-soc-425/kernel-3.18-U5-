@@ -23,7 +23,11 @@
 
 #include <drm/drmP.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_reg.h"
 #include "hw.h"
 

@@ -288,6 +288,11 @@ static int set_sample_rate_v1(struct snd_usb_audio *chip, int iface,
 	unsigned char data[3];
 	int err, crate;
 
+<<<<<<< HEAD
+=======
+	if (get_iface_desc(alts)->bNumEndpoints < 1)
+		return -EINVAL;
+>>>>>>> v4.9.227
 	ep = get_endpoint(alts, 0)->bEndpointAddress;
 
 	/* if endpoint doesn't have sampling rate control, bail out */
@@ -310,6 +315,12 @@ static int set_sample_rate_v1(struct snd_usb_audio *chip, int iface,
 	 * support reading */
 	if (snd_usb_get_sample_rate_quirk(chip))
 		return 0;
+<<<<<<< HEAD
+=======
+	/* the firmware is likely buggy, don't repeat to fail too many times */
+	if (chip->sample_rate_read_error > 2)
+		return 0;
+>>>>>>> v4.9.227
 
 	if ((err = snd_usb_ctl_msg(dev, usb_rcvctrlpipe(dev, 0), UAC_GET_CUR,
 				   USB_TYPE_CLASS | USB_RECIP_ENDPOINT | USB_DIR_IN,
@@ -317,6 +328,10 @@ static int set_sample_rate_v1(struct snd_usb_audio *chip, int iface,
 				   data, sizeof(data))) < 0) {
 		dev_err(&dev->dev, "%d:%d: cannot get freq at ep %#x\n",
 			iface, fmt->altsetting, ep);
+<<<<<<< HEAD
+=======
+		chip->sample_rate_read_error++;
+>>>>>>> v4.9.227
 		return 0; /* some devices don't support reading */
 	}
 

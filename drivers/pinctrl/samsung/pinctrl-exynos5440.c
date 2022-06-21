@@ -15,7 +15,11 @@
 #include <linux/io.h>
 #include <linux/slab.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/device.h>
 #include <linux/pinctrl/pinctrl.h>
 #include <linux/pinctrl/pinmux.h>
@@ -44,9 +48,13 @@
 #define PIN_NAME_LENGTH		10
 
 #define GROUP_SUFFIX		"-grp"
+<<<<<<< HEAD
 #define GSUFFIX_LEN		sizeof(GROUP_SUFFIX)
 #define FUNCTION_SUFFIX		"-mux"
 #define FSUFFIX_LEN		sizeof(FUNCTION_SUFFIX)
+=======
+#define FUNCTION_SUFFIX		"-mux"
+>>>>>>> v4.9.227
 
 /*
  * pin configuration type and its value are packed together into a 16-bits.
@@ -207,22 +215,33 @@ static int exynos5440_dt_node_to_map(struct pinctrl_dev *pctldev,
 
 	/* Allocate memory for pin-map entries */
 	map = kzalloc(sizeof(*map) * map_cnt, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!map) {
 		dev_err(dev, "could not alloc memory for pin-maps\n");
 		return -ENOMEM;
 	}
+=======
+	if (!map)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	*nmaps = 0;
 
 	/*
 	 * Allocate memory for pin group name. The pin group name is derived
 	 * from the node name from which these map entries are be created.
 	 */
+<<<<<<< HEAD
 	gname = kzalloc(strlen(np->name) + GSUFFIX_LEN, GFP_KERNEL);
 	if (!gname) {
 		dev_err(dev, "failed to alloc memory for group name\n");
 		goto free_map;
 	}
 	snprintf(gname, strlen(np->name) + 4, "%s%s", np->name, GROUP_SUFFIX);
+=======
+	gname = kasprintf(GFP_KERNEL, "%s%s", np->name, GROUP_SUFFIX);
+	if (!gname)
+		goto free_map;
+>>>>>>> v4.9.227
 
 	/*
 	 * don't have config options? then skip over to creating function
@@ -233,10 +252,15 @@ static int exynos5440_dt_node_to_map(struct pinctrl_dev *pctldev,
 
 	/* Allocate memory for config entries */
 	cfg = kzalloc(sizeof(*cfg) * cfg_cnt, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!cfg) {
 		dev_err(dev, "failed to alloc memory for configs\n");
 		goto free_gname;
 	}
+=======
+	if (!cfg)
+		goto free_gname;
+>>>>>>> v4.9.227
 
 	/* Prepare a list of config settings */
 	for (idx = 0, cfg_cnt = 0; idx < ARRAY_SIZE(pcfgs); idx++) {
@@ -256,6 +280,7 @@ static int exynos5440_dt_node_to_map(struct pinctrl_dev *pctldev,
 skip_cfgs:
 	/* create the function map entry */
 	if (of_find_property(np, "samsung,exynos5440-pin-function", NULL)) {
+<<<<<<< HEAD
 		fname = kzalloc(strlen(np->name) + FSUFFIX_LEN,	GFP_KERNEL);
 		if (!fname) {
 			dev_err(dev, "failed to alloc memory for func name\n");
@@ -263,6 +288,12 @@ skip_cfgs:
 		}
 		snprintf(fname, strlen(np->name) + 4, "%s%s", np->name,
 			 FUNCTION_SUFFIX);
+=======
+		fname = kasprintf(GFP_KERNEL,
+				  "%s%s", np->name, FUNCTION_SUFFIX);
+		if (!fname)
+			goto free_cfg;
+>>>>>>> v4.9.227
 
 		map[*nmaps].data.mux.group = gname;
 		map[*nmaps].data.mux.function = fname;
@@ -298,7 +329,11 @@ static void exynos5440_dt_free_map(struct pinctrl_dev *pctldev,
 			if (!idx)
 				kfree(map[idx].data.configs.group_or_pin);
 		}
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> v4.9.227
 
 	kfree(map);
 }
@@ -553,7 +588,11 @@ static const struct pinconf_ops exynos5440_pinconf_ops = {
 /* gpiolib gpio_set callback function */
 static void exynos5440_gpio_set(struct gpio_chip *gc, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct exynos5440_pinctrl_priv_data *priv = dev_get_drvdata(gc->dev);
+=======
+	struct exynos5440_pinctrl_priv_data *priv = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	void __iomem *base = priv->reg_base;
 	u32 data;
 
@@ -567,7 +606,11 @@ static void exynos5440_gpio_set(struct gpio_chip *gc, unsigned offset, int value
 /* gpiolib gpio_get callback function */
 static int exynos5440_gpio_get(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	struct exynos5440_pinctrl_priv_data *priv = dev_get_drvdata(gc->dev);
+=======
+	struct exynos5440_pinctrl_priv_data *priv = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	void __iomem *base = priv->reg_base;
 	u32 data;
 
@@ -580,7 +623,11 @@ static int exynos5440_gpio_get(struct gpio_chip *gc, unsigned offset)
 /* gpiolib gpio_direction_input callback function */
 static int exynos5440_gpio_direction_input(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	struct exynos5440_pinctrl_priv_data *priv = dev_get_drvdata(gc->dev);
+=======
+	struct exynos5440_pinctrl_priv_data *priv = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	void __iomem *base = priv->reg_base;
 	u32 data;
 
@@ -600,7 +647,11 @@ static int exynos5440_gpio_direction_input(struct gpio_chip *gc, unsigned offset
 static int exynos5440_gpio_direction_output(struct gpio_chip *gc, unsigned offset,
 							int value)
 {
+<<<<<<< HEAD
 	struct exynos5440_pinctrl_priv_data *priv = dev_get_drvdata(gc->dev);
+=======
+	struct exynos5440_pinctrl_priv_data *priv = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	void __iomem *base = priv->reg_base;
 	u32 data;
 
@@ -621,7 +672,11 @@ static int exynos5440_gpio_direction_output(struct gpio_chip *gc, unsigned offse
 /* gpiolib gpio_to_irq callback function */
 static int exynos5440_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	struct exynos5440_pinctrl_priv_data *priv = dev_get_drvdata(gc->dev);
+=======
+	struct exynos5440_pinctrl_priv_data *priv = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	unsigned int virq;
 
 	if (offset < 16 || offset > 23)
@@ -653,10 +708,15 @@ static int exynos5440_pinctrl_parse_dt_pins(struct platform_device *pdev,
 	}
 
 	*pin_list = devm_kzalloc(dev, *npins * sizeof(**pin_list), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!*pin_list) {
 		dev_err(dev, "failed to allocate memory for pin list\n");
 		return -ENOMEM;
 	}
+=======
+	if (!*pin_list)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	return of_property_read_u32_array(cfg_np, "samsung,exynos5440-pins",
 			*pin_list, *npins);
@@ -684,6 +744,7 @@ static int exynos5440_pinctrl_parse_dt(struct platform_device *pdev,
 		return -EINVAL;
 
 	groups = devm_kzalloc(dev, grp_cnt * sizeof(*groups), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!groups) {
 		dev_err(dev, "failed allocate memory for ping group list\n");
 		return -EINVAL;
@@ -695,6 +756,17 @@ static int exynos5440_pinctrl_parse_dt(struct platform_device *pdev,
 		dev_err(dev, "failed to allocate memory for function list\n");
 		return -EINVAL;
 	}
+=======
+	if (!groups)
+		return -EINVAL;
+
+	grp = groups;
+
+	functions = devm_kzalloc(dev, grp_cnt * sizeof(*functions), GFP_KERNEL);
+	if (!functions)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	func = functions;
 
 	/*
@@ -712,6 +784,7 @@ static int exynos5440_pinctrl_parse_dt(struct platform_device *pdev,
 		}
 
 		/* derive pin group name from the node name */
+<<<<<<< HEAD
 		gname = devm_kzalloc(dev, strlen(cfg_np->name) + GSUFFIX_LEN,
 					GFP_KERNEL);
 		if (!gname) {
@@ -720,6 +793,12 @@ static int exynos5440_pinctrl_parse_dt(struct platform_device *pdev,
 		}
 		snprintf(gname, strlen(cfg_np->name) + 4, "%s%s", cfg_np->name,
 			 GROUP_SUFFIX);
+=======
+		gname = devm_kasprintf(dev, GFP_KERNEL,
+				       "%s%s", cfg_np->name, GROUP_SUFFIX);
+		if (!gname)
+			return -ENOMEM;
+>>>>>>> v4.9.227
 
 		grp->name = gname;
 		grp->pins = pin_list;
@@ -733,6 +812,7 @@ skip_to_pin_function:
 			continue;
 
 		/* derive function name from the node name */
+<<<<<<< HEAD
 		fname = devm_kzalloc(dev, strlen(cfg_np->name) + FSUFFIX_LEN,
 					GFP_KERNEL);
 		if (!fname) {
@@ -749,6 +829,17 @@ skip_to_pin_function:
 					"in pin function");
 			return -ENOMEM;
 		}
+=======
+		fname = devm_kasprintf(dev, GFP_KERNEL,
+				       "%s%s", cfg_np->name, FUNCTION_SUFFIX);
+		if (!fname)
+			return -ENOMEM;
+
+		func->name = fname;
+		func->groups = devm_kzalloc(dev, sizeof(char *), GFP_KERNEL);
+		if (!func->groups)
+			return -ENOMEM;
+>>>>>>> v4.9.227
 		func->groups[0] = gname;
 		func->num_groups = gname ? 1 : 0;
 		func->function = function;
@@ -775,10 +866,15 @@ static int exynos5440_pinctrl_register(struct platform_device *pdev,
 	int pin, ret;
 
 	ctrldesc = devm_kzalloc(dev, sizeof(*ctrldesc), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!ctrldesc) {
 		dev_err(dev, "could not allocate memory for pinctrl desc\n");
 		return -ENOMEM;
 	}
+=======
+	if (!ctrldesc)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	ctrldesc->name = "exynos5440-pinctrl";
 	ctrldesc->owner = THIS_MODULE;
@@ -788,10 +884,15 @@ static int exynos5440_pinctrl_register(struct platform_device *pdev,
 
 	pindesc = devm_kzalloc(&pdev->dev, sizeof(*pindesc) *
 				EXYNOS5440_MAX_PINS, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pindesc) {
 		dev_err(&pdev->dev, "mem alloc for pin descriptors failed\n");
 		return -ENOMEM;
 	}
+=======
+	if (!pindesc)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	ctrldesc->pins = pindesc;
 	ctrldesc->npins = EXYNOS5440_MAX_PINS;
 
@@ -805,10 +906,15 @@ static int exynos5440_pinctrl_register(struct platform_device *pdev,
 	 */
 	pin_names = devm_kzalloc(&pdev->dev, sizeof(char) * PIN_NAME_LENGTH *
 					ctrldesc->npins, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pin_names) {
 		dev_err(&pdev->dev, "mem alloc for pin names failed\n");
 		return -ENOMEM;
 	}
+=======
+	if (!pin_names)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	/* for each pin, set the name of the pin */
 	for (pin = 0; pin < ctrldesc->npins; pin++) {
@@ -822,10 +928,17 @@ static int exynos5440_pinctrl_register(struct platform_device *pdev,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	pctl_dev = pinctrl_register(ctrldesc, &pdev->dev, priv);
 	if (!pctl_dev) {
 		dev_err(&pdev->dev, "could not register pinctrl driver\n");
 		return -EINVAL;
+=======
+	pctl_dev = devm_pinctrl_register(&pdev->dev, ctrldesc, priv);
+	if (IS_ERR(pctl_dev)) {
+		dev_err(&pdev->dev, "could not register pinctrl driver\n");
+		return PTR_ERR(pctl_dev);
+>>>>>>> v4.9.227
 	}
 
 	priv->range.name = "exynos5440-pctrl-gpio-range";
@@ -845,15 +958,24 @@ static int exynos5440_gpiolib_register(struct platform_device *pdev,
 	int ret;
 
 	gc = devm_kzalloc(&pdev->dev, sizeof(*gc), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!gc) {
 		dev_err(&pdev->dev, "mem alloc for gpio_chip failed\n");
 		return -ENOMEM;
 	}
+=======
+	if (!gc)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	priv->gc = gc;
 	gc->base = 0;
 	gc->ngpio = EXYNOS5440_MAX_PINS;
+<<<<<<< HEAD
 	gc->dev = &pdev->dev;
+=======
+	gc->parent = &pdev->dev;
+>>>>>>> v4.9.227
 	gc->set = exynos5440_gpio_set;
 	gc->get = exynos5440_gpio_get;
 	gc->direction_input = exynos5440_gpio_direction_input;
@@ -861,7 +983,11 @@ static int exynos5440_gpiolib_register(struct platform_device *pdev,
 	gc->to_irq = exynos5440_gpio_to_irq;
 	gc->label = "gpiolib-exynos5440";
 	gc->owner = THIS_MODULE;
+<<<<<<< HEAD
 	ret = gpiochip_add(gc);
+=======
+	ret = gpiochip_add_data(gc, priv);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(&pdev->dev, "failed to register gpio_chip %s, error "
 					"code: %d\n", gc->label, ret);
@@ -930,7 +1056,10 @@ static int exynos5440_gpio_irq_map(struct irq_domain *h, unsigned int virq,
 	irq_set_chip_data(virq, d);
 	irq_set_chip_and_handler(virq, &exynos5440_gpio_irq_chip,
 					handle_level_irq);
+<<<<<<< HEAD
 	set_irq_flags(virq, IRQF_VALID);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -950,10 +1079,15 @@ static int exynos5440_gpio_irq_init(struct platform_device *pdev,
 
 	intd = devm_kzalloc(dev, sizeof(*intd) * EXYNOS5440_MAX_GPIO_INT,
 					GFP_KERNEL);
+<<<<<<< HEAD
 	if (!intd) {
 		dev_err(dev, "failed to allocate memory for gpio intr data\n");
 		return -ENOMEM;
 	}
+=======
+	if (!intd)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < EXYNOS5440_MAX_GPIO_INT; i++) {
 		irq = irq_of_parse_and_map(dev->of_node, i);
@@ -996,10 +1130,15 @@ static int exynos5440_pinctrl_probe(struct platform_device *pdev)
 	}
 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!priv) {
 		dev_err(dev, "could not allocate memory for private data\n");
 		return -ENOMEM;
 	}
+=======
+	if (!priv)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	priv->reg_base = devm_ioremap_resource(&pdev->dev, res);
@@ -1037,8 +1176,13 @@ static struct platform_driver exynos5440_pinctrl_driver = {
 	.probe		= exynos5440_pinctrl_probe,
 	.driver = {
 		.name	= "exynos5440-pinctrl",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.of_match_table = exynos5440_pinctrl_dt_match,
+=======
+		.of_match_table = exynos5440_pinctrl_dt_match,
+		.suppress_bind_attrs = true,
+>>>>>>> v4.9.227
 	},
 };
 

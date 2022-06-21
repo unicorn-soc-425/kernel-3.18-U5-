@@ -9,7 +9,11 @@ bool vlan_do_receive(struct sk_buff **skbp)
 {
 	struct sk_buff *skb = *skbp;
 	__be16 vlan_proto = skb->vlan_proto;
+<<<<<<< HEAD
 	u16 vlan_id = vlan_tx_tag_get_id(skb);
+=======
+	u16 vlan_id = skb_vlan_tag_get_id(skb);
+>>>>>>> v4.9.227
 	struct net_device *vlan_dev;
 	struct vlan_pcpu_stats *rx_stats;
 
@@ -30,7 +34,13 @@ bool vlan_do_receive(struct sk_buff **skbp)
 			skb->pkt_type = PACKET_HOST;
 	}
 
+<<<<<<< HEAD
 	if (!(vlan_dev_priv(vlan_dev)->flags & VLAN_FLAG_REORDER_HDR)) {
+=======
+	if (!(vlan_dev_priv(vlan_dev)->flags & VLAN_FLAG_REORDER_HDR) &&
+	    !netif_is_macvlan_port(vlan_dev) &&
+	    !netif_is_bridge_port(vlan_dev)) {
+>>>>>>> v4.9.227
 		unsigned int offset = skb->data - skb_mac_header(skb);
 
 		/*
@@ -206,7 +216,14 @@ static int __vlan_vid_add(struct vlan_info *vlan_info, __be16 proto, u16 vid,
 		return -ENOMEM;
 
 	if (vlan_hw_filter_capable(dev, vid_info)) {
+<<<<<<< HEAD
 		err =  ops->ndo_vlan_rx_add_vid(dev, proto, vid);
+=======
+		if (netif_device_present(dev))
+			err = ops->ndo_vlan_rx_add_vid(dev, proto, vid);
+		else
+			err = -ENODEV;
+>>>>>>> v4.9.227
 		if (err) {
 			kfree(vid_info);
 			return err;
@@ -264,7 +281,14 @@ static void __vlan_vid_del(struct vlan_info *vlan_info,
 	int err;
 
 	if (vlan_hw_filter_capable(dev, vid_info)) {
+<<<<<<< HEAD
 		err = ops->ndo_vlan_rx_kill_vid(dev, proto, vid);
+=======
+		if (netif_device_present(dev))
+			err = ops->ndo_vlan_rx_kill_vid(dev, proto, vid);
+		else
+			err = -ENODEV;
+>>>>>>> v4.9.227
 		if (err) {
 			pr_warn("failed to kill vid %04x/%d for device %s\n",
 				proto, vid, dev->name);

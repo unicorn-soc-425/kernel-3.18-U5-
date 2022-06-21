@@ -11,6 +11,12 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/kernel.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/spinlock.h>
 #include <linux/skbuff.h>
@@ -26,8 +32,13 @@ static struct nf_loginfo default_loginfo = {
 	.type	= NF_LOG_TYPE_LOG,
 	.u = {
 		.log = {
+<<<<<<< HEAD
 			.level	  = 5,
 			.logflags = NF_LOG_MASK,
+=======
+			.level	  = LOGLEVEL_NOTICE,
+			.logflags = NF_LOG_DEFAULT_MASK,
+>>>>>>> v4.9.227
 		},
 	},
 };
@@ -59,7 +70,11 @@ static void dump_arp_packet(struct nf_log_buf *m,
 	/* If it's for Ethernet and the lengths are OK, then log the ARP
 	 * payload.
 	 */
+<<<<<<< HEAD
 	if (ah->ar_hrd != htons(1) ||
+=======
+	if (ah->ar_hrd != htons(ARPHRD_ETHER) ||
+>>>>>>> v4.9.227
 	    ah->ar_hln != ETH_ALEN ||
 	    ah->ar_pln != sizeof(__be32))
 		return;
@@ -74,12 +89,21 @@ static void dump_arp_packet(struct nf_log_buf *m,
 		       ap->mac_src, ap->ip_src, ap->mac_dst, ap->ip_dst);
 }
 
+<<<<<<< HEAD
 void nf_log_arp_packet(struct net *net, u_int8_t pf,
 		      unsigned int hooknum, const struct sk_buff *skb,
 		      const struct net_device *in,
 		      const struct net_device *out,
 		      const struct nf_loginfo *loginfo,
 		      const char *prefix)
+=======
+static void nf_log_arp_packet(struct net *net, u_int8_t pf,
+			      unsigned int hooknum, const struct sk_buff *skb,
+			      const struct net_device *in,
+			      const struct net_device *out,
+			      const struct nf_loginfo *loginfo,
+			      const char *prefix)
+>>>>>>> v4.9.227
 {
 	struct nf_log_buf *m;
 
@@ -108,8 +132,12 @@ static struct nf_logger nf_arp_logger __read_mostly = {
 
 static int __net_init nf_log_arp_net_init(struct net *net)
 {
+<<<<<<< HEAD
 	nf_log_set(net, NFPROTO_ARP, &nf_arp_logger);
 	return 0;
+=======
+	return nf_log_set(net, NFPROTO_ARP, &nf_arp_logger);
+>>>>>>> v4.9.227
 }
 
 static void __net_exit nf_log_arp_net_exit(struct net *net)
@@ -130,8 +158,22 @@ static int __init nf_log_arp_init(void)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	nf_log_register(NFPROTO_ARP, &nf_arp_logger);
 	return 0;
+=======
+	ret = nf_log_register(NFPROTO_ARP, &nf_arp_logger);
+	if (ret < 0) {
+		pr_err("failed to register logger\n");
+		goto err1;
+	}
+
+	return 0;
+
+err1:
+	unregister_pernet_subsys(&nf_log_arp_net_ops);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static void __exit nf_log_arp_exit(void)

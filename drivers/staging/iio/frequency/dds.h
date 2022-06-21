@@ -5,6 +5,11 @@
  *
  * Licensed under the GPL-2 or later.
  */
+<<<<<<< HEAD
+=======
+#ifndef IIO_DDS_H_
+#define IIO_DDS_H_
+>>>>>>> v4.9.227
 
 /**
  * /sys/bus/iio/devices/.../out_altvoltageX_frequencyY
@@ -108,3 +113,8 @@
 #define IIO_CONST_ATTR_OUT_WAVETYPES_AVAILABLE(_channel, _output, _modes)\
 	IIO_CONST_ATTR(							\
 	out_altvoltage##_channel##_out##_output##_wavetype_available, _modes)
+<<<<<<< HEAD
+=======
+
+#endif /* IIO_DDS_H_ */
+>>>>>>> v4.9.227

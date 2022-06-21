@@ -156,6 +156,7 @@ static const struct m5602_sensor ov9650 = {
 	.disconnect = ov9650_disconnect,
 };
 
+<<<<<<< HEAD
 static const unsigned char preinit_ov9650[][3] = {
 	/* [INITCAM] */
 	{BRIDGE, M5602_XB_MCU_CLK_DIV, 0x02},
@@ -306,4 +307,6 @@ static const unsigned char res_init_ov9650[][3] = {
 	{BRIDGE, M5602_XB_PIX_OF_LINE_L, 0x00},
 	{BRIDGE, M5602_XB_SIG_INI, 0x01}
 };
+=======
+>>>>>>> v4.9.227
 #endif

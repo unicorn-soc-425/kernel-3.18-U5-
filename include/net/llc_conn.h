@@ -96,7 +96,11 @@ static __inline__ char llc_backlog_type(struct sk_buff *skb)
 }
 
 struct sock *llc_sk_alloc(struct net *net, int family, gfp_t priority,
+<<<<<<< HEAD
 			  struct proto *prot);
+=======
+			  struct proto *prot, int kern);
+>>>>>>> v4.9.227
 void llc_sk_stop_all_timers(struct sock *sk, bool sync);
 void llc_sk_free(struct sock *sk);
 
@@ -104,7 +108,11 @@ void llc_sk_reset(struct sock *sk);
 
 /* Access to a connection */
 int llc_conn_state_process(struct sock *sk, struct sk_buff *skb);
+<<<<<<< HEAD
 int llc_conn_send_pdu(struct sock *sk, struct sk_buff *skb);
+=======
+void llc_conn_send_pdu(struct sock *sk, struct sk_buff *skb);
+>>>>>>> v4.9.227
 void llc_conn_rtn_pdu(struct sock *sk, struct sk_buff *skb);
 void llc_conn_resend_i_pdu_as_cmd(struct sock *sk, u8 nr, u8 first_p_bit);
 void llc_conn_resend_i_pdu_as_rsp(struct sock *sk, u8 nr, u8 first_f_bit);

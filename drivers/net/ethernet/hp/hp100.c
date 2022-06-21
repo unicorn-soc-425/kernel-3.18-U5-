@@ -194,7 +194,10 @@ static const char *hp100_isa_tbl[] = {
 };
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_EISA
+=======
+>>>>>>> v4.9.227
 static struct eisa_device_id hp100_eisa_tbl[] = {
 	{ "HWPF180" }, /* HP J2577 rev A */
 	{ "HWP1920" }, /* HP 27248B */
@@ -205,9 +208,13 @@ static struct eisa_device_id hp100_eisa_tbl[] = {
 	{ "" }	       /* Mandatory final entry ! */
 };
 MODULE_DEVICE_TABLE(eisa, hp100_eisa_tbl);
+<<<<<<< HEAD
 #endif
 
 #ifdef CONFIG_PCI
+=======
+
+>>>>>>> v4.9.227
 static const struct pci_device_id hp100_pci_tbl[] = {
 	{PCI_VENDOR_ID_HP, PCI_DEVICE_ID_HP_J2585A, PCI_ANY_ID, PCI_ANY_ID,},
 	{PCI_VENDOR_ID_HP, PCI_DEVICE_ID_HP_J2585B, PCI_ANY_ID, PCI_ANY_ID,},
@@ -219,7 +226,10 @@ static const struct pci_device_id hp100_pci_tbl[] = {
 	{}			/* Terminating entry */
 };
 MODULE_DEVICE_TABLE(pci, hp100_pci_tbl);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static int hp100_rx_ratio = HP100_DEFAULT_RX_RATIO;
 static int hp100_priority_tx = HP100_DEFAULT_PRIORITY_TX;
@@ -490,7 +500,12 @@ static int hp100_probe1(struct net_device *dev, int ioaddr, u_char bus,
 
 	eid = hp100_read_id(ioaddr);
 	if (eid == NULL) {	/* bad checksum? */
+<<<<<<< HEAD
 		printk(KERN_WARNING "hp100_probe: bad ID checksum at base port 0x%x\n", ioaddr);
+=======
+		printk(KERN_WARNING "%s: bad ID checksum at base port 0x%x\n",
+		       __func__, ioaddr);
+>>>>>>> v4.9.227
 		goto out2;
 	}
 
@@ -498,7 +513,13 @@ static int hp100_probe1(struct net_device *dev, int ioaddr, u_char bus,
 	for (i = uc = 0; i < 7; i++)
 		uc += hp100_inb(LAN_ADDR + i);
 	if (uc != 0xff) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "hp100_probe: bad lan address checksum at port 0x%x)\n", ioaddr);
+=======
+		printk(KERN_WARNING
+		       "%s: bad lan address checksum at port 0x%x)\n",
+		       __func__, ioaddr);
+>>>>>>> v4.9.227
 		err = -EIO;
 		goto out2;
 	}
@@ -1103,7 +1124,11 @@ static int hp100_open(struct net_device *dev)
 		return -EAGAIN;
 	}
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	netif_start_queue(dev);
 
 	lp->lan_type = hp100_sense_lan(dev);
@@ -2839,8 +2864,12 @@ static void cleanup_dev(struct net_device *d)
 	free_netdev(d);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_EISA
 static int __init hp100_eisa_probe (struct device *gendev)
+=======
+static int hp100_eisa_probe(struct device *gendev)
+>>>>>>> v4.9.227
 {
 	struct net_device *dev = alloc_etherdev(sizeof(struct hp100_private));
 	struct eisa_device *edev = to_eisa_device(gendev);
@@ -2881,9 +2910,13 @@ static struct eisa_driver hp100_eisa_driver = {
 		.remove  = hp100_eisa_remove,
         }
 };
+<<<<<<< HEAD
 #endif
 
 #ifdef CONFIG_PCI
+=======
+
+>>>>>>> v4.9.227
 static int hp100_pci_probe(struct pci_dev *pdev,
 			   const struct pci_device_id *ent)
 {
@@ -2952,7 +2985,10 @@ static struct pci_driver hp100_pci_driver = {
 	.probe		= hp100_pci_probe,
 	.remove		= hp100_pci_remove,
 };
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 /*
  *  module section
@@ -3029,6 +3065,7 @@ static int __init hp100_module_init(void)
 	err = hp100_isa_init();
 	if (err && err != -ENODEV)
 		goto out;
+<<<<<<< HEAD
 #ifdef CONFIG_EISA
 	err = eisa_driver_register(&hp100_eisa_driver);
 	if (err && err != -ENODEV)
@@ -3046,6 +3083,19 @@ static int __init hp100_module_init(void)
 	eisa_driver_unregister (&hp100_eisa_driver);
  out2:
 #endif
+=======
+	err = eisa_driver_register(&hp100_eisa_driver);
+	if (err && err != -ENODEV)
+		goto out2;
+	err = pci_register_driver(&hp100_pci_driver);
+	if (err && err != -ENODEV)
+		goto out3;
+ out:
+	return err;
+ out3:
+	eisa_driver_unregister (&hp100_eisa_driver);
+ out2:
+>>>>>>> v4.9.227
 	hp100_isa_cleanup();
 	goto out;
 }
@@ -3054,12 +3104,17 @@ static int __init hp100_module_init(void)
 static void __exit hp100_module_exit(void)
 {
 	hp100_isa_cleanup();
+<<<<<<< HEAD
 #ifdef CONFIG_EISA
 	eisa_driver_unregister (&hp100_eisa_driver);
 #endif
 #ifdef CONFIG_PCI
 	pci_unregister_driver (&hp100_pci_driver);
 #endif
+=======
+	eisa_driver_unregister (&hp100_eisa_driver);
+	pci_unregister_driver (&hp100_pci_driver);
+>>>>>>> v4.9.227
 }
 
 module_init(hp100_module_init)

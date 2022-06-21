@@ -100,6 +100,10 @@ static struct inode *get_cramfs_inode(struct super_block *sb,
 		break;
 	case S_IFLNK:
 		inode->i_op = &page_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> v4.9.227
 		inode->i_data.a_ops = &cramfs_aops;
 		break;
 	default:
@@ -136,7 +140,11 @@ static struct inode *get_cramfs_inode(struct super_block *sb,
  * page cache and dentry tree anyway..
  *
  * This also acts as a way to guarantee contiguous areas of up to
+<<<<<<< HEAD
  * BLKS_PER_BUF*PAGE_CACHE_SIZE, so that the caller doesn't need to
+=======
+ * BLKS_PER_BUF*PAGE_SIZE, so that the caller doesn't need to
+>>>>>>> v4.9.227
  * worry about end-of-buffer issues even when decompressing a full
  * page cache.
  */
@@ -151,7 +159,11 @@ static struct inode *get_cramfs_inode(struct super_block *sb,
  */
 #define BLKS_PER_BUF_SHIFT	(2)
 #define BLKS_PER_BUF		(1 << BLKS_PER_BUF_SHIFT)
+<<<<<<< HEAD
 #define BUFFER_SIZE		(BLKS_PER_BUF*PAGE_CACHE_SIZE)
+=======
+#define BUFFER_SIZE		(BLKS_PER_BUF*PAGE_SIZE)
+>>>>>>> v4.9.227
 
 static unsigned char read_buffers[READ_BUFFERS][BUFFER_SIZE];
 static unsigned buffer_blocknr[READ_BUFFERS];
@@ -172,8 +184,13 @@ static void *cramfs_read(struct super_block *sb, unsigned int offset, unsigned i
 
 	if (!len)
 		return NULL;
+<<<<<<< HEAD
 	blocknr = offset >> PAGE_CACHE_SHIFT;
 	offset &= PAGE_CACHE_SIZE - 1;
+=======
+	blocknr = offset >> PAGE_SHIFT;
+	offset &= PAGE_SIZE - 1;
+>>>>>>> v4.9.227
 
 	/* Check if an existing buffer already has the data.. */
 	for (i = 0; i < READ_BUFFERS; i++) {
@@ -183,14 +200,25 @@ static void *cramfs_read(struct super_block *sb, unsigned int offset, unsigned i
 			continue;
 		if (blocknr < buffer_blocknr[i])
 			continue;
+<<<<<<< HEAD
 		blk_offset = (blocknr - buffer_blocknr[i]) << PAGE_CACHE_SHIFT;
 		blk_offset += offset;
 		if (blk_offset + len > BUFFER_SIZE)
+=======
+		blk_offset = (blocknr - buffer_blocknr[i]) << PAGE_SHIFT;
+		blk_offset += offset;
+		if (blk_offset > BUFFER_SIZE ||
+		    blk_offset + len > BUFFER_SIZE)
+>>>>>>> v4.9.227
 			continue;
 		return read_buffers[i] + blk_offset;
 	}
 
+<<<<<<< HEAD
 	devsize = mapping->host->i_size >> PAGE_CACHE_SHIFT;
+=======
+	devsize = mapping->host->i_size >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 
 	/* Ok, read in BLKS_PER_BUF pages completely first. */
 	for (i = 0; i < BLKS_PER_BUF; i++) {
@@ -212,7 +240,11 @@ static void *cramfs_read(struct super_block *sb, unsigned int offset, unsigned i
 			wait_on_page_locked(page);
 			if (!PageUptodate(page)) {
 				/* asynchronous error */
+<<<<<<< HEAD
 				page_cache_release(page);
+=======
+				put_page(page);
+>>>>>>> v4.9.227
 				pages[i] = NULL;
 			}
 		}
@@ -228,12 +260,21 @@ static void *cramfs_read(struct super_block *sb, unsigned int offset, unsigned i
 		struct page *page = pages[i];
 
 		if (page) {
+<<<<<<< HEAD
 			memcpy(data, kmap(page), PAGE_CACHE_SIZE);
 			kunmap(page);
 			page_cache_release(page);
 		} else
 			memset(data, 0, PAGE_CACHE_SIZE);
 		data += PAGE_CACHE_SIZE;
+=======
+			memcpy(data, kmap(page), PAGE_SIZE);
+			kunmap(page);
+			put_page(page);
+		} else
+			memset(data, 0, PAGE_SIZE);
+		data += PAGE_SIZE;
+>>>>>>> v4.9.227
 	}
 	return read_buffers[buffer] + offset;
 }
@@ -352,7 +393,11 @@ static int cramfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	u64 id = huge_encode_dev(sb->s_bdev->bd_dev);
 
 	buf->f_type = CRAMFS_MAGIC;
+<<<<<<< HEAD
 	buf->f_bsize = PAGE_CACHE_SIZE;
+=======
+	buf->f_bsize = PAGE_SIZE;
+>>>>>>> v4.9.227
 	buf->f_blocks = CRAMFS_SB(sb)->blocks;
 	buf->f_bfree = 0;
 	buf->f_bavail = 0;
@@ -495,7 +540,11 @@ static int cramfs_readpage(struct file *file, struct page *page)
 	int bytes_filled;
 	void *pgdata;
 
+<<<<<<< HEAD
 	maxblock = (inode->i_size + PAGE_CACHE_SIZE - 1) >> PAGE_CACHE_SHIFT;
+=======
+	maxblock = (inode->i_size + PAGE_SIZE - 1) >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 	bytes_filled = 0;
 	pgdata = kmap(page);
 
@@ -515,14 +564,22 @@ static int cramfs_readpage(struct file *file, struct page *page)
 
 		if (compr_len == 0)
 			; /* hole */
+<<<<<<< HEAD
 		else if (unlikely(compr_len > (PAGE_CACHE_SIZE << 1))) {
+=======
+		else if (unlikely(compr_len > (PAGE_SIZE << 1))) {
+>>>>>>> v4.9.227
 			pr_err("bad compressed blocksize %u\n",
 				compr_len);
 			goto err;
 		} else {
 			mutex_lock(&read_mutex);
 			bytes_filled = cramfs_uncompress_block(pgdata,
+<<<<<<< HEAD
 				 PAGE_CACHE_SIZE,
+=======
+				 PAGE_SIZE,
+>>>>>>> v4.9.227
 				 cramfs_read(sb, start_offset, compr_len),
 				 compr_len);
 			mutex_unlock(&read_mutex);
@@ -531,7 +588,11 @@ static int cramfs_readpage(struct file *file, struct page *page)
 		}
 	}
 
+<<<<<<< HEAD
 	memset(pgdata + bytes_filled, 0, PAGE_CACHE_SIZE - bytes_filled);
+=======
+	memset(pgdata + bytes_filled, 0, PAGE_SIZE - bytes_filled);
+>>>>>>> v4.9.227
 	flush_dcache_page(page);
 	kunmap(page);
 	SetPageUptodate(page);
@@ -560,7 +621,11 @@ static const struct address_space_operations cramfs_aops = {
 static const struct file_operations cramfs_directory_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.iterate	= cramfs_readdir,
+=======
+	.iterate_shared	= cramfs_readdir,
+>>>>>>> v4.9.227
 };
 
 static const struct inode_operations cramfs_dir_inode_operations = {

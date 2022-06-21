@@ -17,6 +17,10 @@ struct dev_archdata {
 #ifdef CONFIG_ARM_DMA_USE_IOMMU
 	struct dma_iommu_mapping	*mapping;
 #endif
+<<<<<<< HEAD
+=======
+	bool dma_coherent;
+>>>>>>> v4.9.227
 };
 
 struct omap_device;
@@ -25,7 +29,10 @@ struct pdev_archdata {
 #ifdef CONFIG_ARCH_OMAP
 	struct omap_device *od;
 #endif
+<<<<<<< HEAD
 	u64 dma_mask;
+=======
+>>>>>>> v4.9.227
 };
 
 #ifdef CONFIG_ARM_DMA_USE_IOMMU

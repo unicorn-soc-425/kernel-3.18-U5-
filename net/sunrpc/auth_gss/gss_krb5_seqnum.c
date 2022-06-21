@@ -31,11 +31,19 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/sunrpc/gss_krb5.h>
 #include <linux/crypto.h>
 
 #ifdef RPC_DEBUG
+=======
+#include <crypto/skcipher.h>
+#include <linux/types.h>
+#include <linux/sunrpc/gss_krb5.h>
+
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> v4.9.227
 # define RPCDBG_FACILITY        RPCDBG_AUTH
 #endif
 
@@ -43,13 +51,22 @@ static s32
 krb5_make_rc4_seq_num(struct krb5_ctx *kctx, int direction, s32 seqnum,
 		      unsigned char *cksum, unsigned char *buf)
 {
+<<<<<<< HEAD
 	struct crypto_blkcipher *cipher;
+=======
+	struct crypto_skcipher *cipher;
+>>>>>>> v4.9.227
 	unsigned char plain[8];
 	s32 code;
 
 	dprintk("RPC:       %s:\n", __func__);
+<<<<<<< HEAD
 	cipher = crypto_alloc_blkcipher(kctx->gk5e->encrypt_name, 0,
 					CRYPTO_ALG_ASYNC);
+=======
+	cipher = crypto_alloc_skcipher(kctx->gk5e->encrypt_name, 0,
+				       CRYPTO_ALG_ASYNC);
+>>>>>>> v4.9.227
 	if (IS_ERR(cipher))
 		return PTR_ERR(cipher);
 
@@ -68,12 +85,20 @@ krb5_make_rc4_seq_num(struct krb5_ctx *kctx, int direction, s32 seqnum,
 
 	code = krb5_encrypt(cipher, cksum, plain, buf, 8);
 out:
+<<<<<<< HEAD
 	crypto_free_blkcipher(cipher);
+=======
+	crypto_free_skcipher(cipher);
+>>>>>>> v4.9.227
 	return code;
 }
 s32
 krb5_make_seq_num(struct krb5_ctx *kctx,
+<<<<<<< HEAD
 		struct crypto_blkcipher *key,
+=======
+		struct crypto_skcipher *key,
+>>>>>>> v4.9.227
 		int direction,
 		u32 seqnum,
 		unsigned char *cksum, unsigned char *buf)
@@ -101,13 +126,22 @@ static s32
 krb5_get_rc4_seq_num(struct krb5_ctx *kctx, unsigned char *cksum,
 		     unsigned char *buf, int *direction, s32 *seqnum)
 {
+<<<<<<< HEAD
 	struct crypto_blkcipher *cipher;
+=======
+	struct crypto_skcipher *cipher;
+>>>>>>> v4.9.227
 	unsigned char plain[8];
 	s32 code;
 
 	dprintk("RPC:       %s:\n", __func__);
+<<<<<<< HEAD
 	cipher = crypto_alloc_blkcipher(kctx->gk5e->encrypt_name, 0,
 					CRYPTO_ALG_ASYNC);
+=======
+	cipher = crypto_alloc_skcipher(kctx->gk5e->encrypt_name, 0,
+				       CRYPTO_ALG_ASYNC);
+>>>>>>> v4.9.227
 	if (IS_ERR(cipher))
 		return PTR_ERR(cipher);
 
@@ -130,7 +164,11 @@ krb5_get_rc4_seq_num(struct krb5_ctx *kctx, unsigned char *cksum,
 	*seqnum = ((plain[0] << 24) | (plain[1] << 16) |
 					(plain[2] << 8) | (plain[3]));
 out:
+<<<<<<< HEAD
 	crypto_free_blkcipher(cipher);
+=======
+	crypto_free_skcipher(cipher);
+>>>>>>> v4.9.227
 	return code;
 }
 
@@ -142,7 +180,11 @@ krb5_get_seq_num(struct krb5_ctx *kctx,
 {
 	s32 code;
 	unsigned char plain[8];
+<<<<<<< HEAD
 	struct crypto_blkcipher *key = kctx->seq;
+=======
+	struct crypto_skcipher *key = kctx->seq;
+>>>>>>> v4.9.227
 
 	dprintk("RPC:       krb5_get_seq_num:\n");
 

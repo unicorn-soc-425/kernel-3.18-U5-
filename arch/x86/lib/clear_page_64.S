@@ -1,4 +1,5 @@
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/dwarf2.h>
 #include <asm/alternative-asm.h>
 
@@ -8,10 +9,33 @@
  */			
 ENTRY(clear_page_c)
 	CFI_STARTPROC
+=======
+#include <asm/cpufeatures.h>
+#include <asm/alternative-asm.h>
+#include <asm/export.h>
+
+/*
+ * Most CPUs support enhanced REP MOVSB/STOSB instructions. It is
+ * recommended to use this when possible and we do use them by default.
+ * If enhanced REP MOVSB/STOSB is not available, try to use fast string.
+ * Otherwise, use original.
+ */
+
+/*
+ * Zero a page.
+ * %rdi	- page
+ */
+ENTRY(clear_page)
+
+	ALTERNATIVE_2 "jmp clear_page_orig", "", X86_FEATURE_REP_GOOD, \
+		      "jmp clear_page_c_e", X86_FEATURE_ERMS
+
+>>>>>>> v4.9.227
 	movl $4096/8,%ecx
 	xorl %eax,%eax
 	rep stosq
 	ret
+<<<<<<< HEAD
 	CFI_ENDPROC
 ENDPROC(clear_page_c)
 
@@ -26,6 +50,13 @@ ENDPROC(clear_page_c_e)
 
 ENTRY(clear_page)
 	CFI_STARTPROC
+=======
+ENDPROC(clear_page)
+EXPORT_SYMBOL(clear_page)
+
+ENTRY(clear_page_orig)
+
+>>>>>>> v4.9.227
 	xorl   %eax,%eax
 	movl   $4096/64,%ecx
 	.p2align 4
@@ -44,6 +75,7 @@ ENTRY(clear_page)
 	jnz	.Lloop
 	nop
 	ret
+<<<<<<< HEAD
 	CFI_ENDPROC
 .Lclear_page_end:
 ENDPROC(clear_page)
@@ -71,3 +103,13 @@ ENDPROC(clear_page)
 	altinstruction_entry clear_page,2b,X86_FEATURE_ERMS,   \
 			     .Lclear_page_end-clear_page,3b-2b
 	.previous
+=======
+ENDPROC(clear_page_orig)
+
+ENTRY(clear_page_c_e)
+	movl $4096,%ecx
+	xorl %eax,%eax
+	rep stosb
+	ret
+ENDPROC(clear_page_c_e)
+>>>>>>> v4.9.227

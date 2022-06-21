@@ -1,7 +1,11 @@
 /*******************************************************************************
  *
  * Intel Ethernet Controller XL710 Family Linux Driver
+<<<<<<< HEAD
  * Copyright(c) 2013 - 2014 Intel Corporation.
+=======
+ * Copyright(c) 2013 - 2016 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -24,7 +28,10 @@
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #include <linux/if_ether.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
@@ -39,6 +46,7 @@
 #include "i40e_fcoe.h"
 
 /**
+<<<<<<< HEAD
  * i40e_rx_is_fip - returns true if the rx packet type is FIP
  * @ptype: the packet type field from rx descriptor write-back
  **/
@@ -58,6 +66,8 @@ static inline bool i40e_rx_is_fcoe(u16 ptype)
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * i40e_fcoe_sof_is_class2 - returns true if this is a FC Class 2 SOF
  * @sof: the FCoE start of frame delimiter
  **/
@@ -128,7 +138,11 @@ static inline int i40e_fcoe_fc_eof(struct sk_buff *skb, u8 *eof)
  *
  * The FC EOF is converted to the value understood by HW for descriptor
  * programming. Never call this w/o calling i40e_fcoe_eof_is_supported()
+<<<<<<< HEAD
  * first.
+=======
+ * first and that already checks for all supported valid eof values.
+>>>>>>> v4.9.227
  **/
 static inline u32 i40e_fcoe_ctxt_eof(u8 eof)
 {
@@ -142,9 +156,18 @@ static inline u32 i40e_fcoe_ctxt_eof(u8 eof)
 	case FC_EOF_A:
 		return I40E_TX_DESC_CMD_L4T_EOFT_EOF_A;
 	default:
+<<<<<<< HEAD
 		/* FIXME: still returns 0 */
 		pr_err("Unrecognized EOF %x\n", eof);
 		return 0;
+=======
+		/* Supported valid eof shall be already checked by
+		 * calling i40e_fcoe_eof_is_supported() first,
+		 * therefore this default case shall never hit.
+		 */
+		WARN_ON(1);
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -159,7 +182,11 @@ static inline bool i40e_fcoe_xid_is_valid(u16 xid)
 
 /**
  * i40e_fcoe_ddp_unmap - unmap the mapped sglist associated
+<<<<<<< HEAD
  * @pf: pointer to pf
+=======
+ * @pf: pointer to PF
+>>>>>>> v4.9.227
  * @ddp: sw DDP context
  *
  * Unmap the scatter-gather list associated with the given SW DDP context
@@ -278,11 +305,17 @@ out:
 
 /**
  * i40e_fcoe_sw_init - sets up the HW for FCoE
+<<<<<<< HEAD
  * @pf: pointer to pf
  *
  * Returns 0 if FCoE is supported otherwise the error code
  **/
 int i40e_init_pf_fcoe(struct i40e_pf *pf)
+=======
+ * @pf: pointer to PF
+ **/
+void i40e_init_pf_fcoe(struct i40e_pf *pf)
+>>>>>>> v4.9.227
 {
 	struct i40e_hw *hw = &pf->hw;
 	u32 val;
@@ -293,13 +326,19 @@ int i40e_init_pf_fcoe(struct i40e_pf *pf)
 	pf->fcoe_hmc_filt_num = 0;
 
 	if (!pf->hw.func_caps.fcoe) {
+<<<<<<< HEAD
 		dev_info(&pf->pdev->dev, "FCoE capability is disabled\n");
 		return 0;
+=======
+		dev_dbg(&pf->pdev->dev, "FCoE capability is disabled\n");
+		return;
+>>>>>>> v4.9.227
 	}
 
 	if (!pf->hw.func_caps.dcb) {
 		dev_warn(&pf->pdev->dev,
 			 "Hardware is not DCB capable not enabling FCoE.\n");
+<<<<<<< HEAD
 		return 0;
 	}
 
@@ -309,16 +348,34 @@ int i40e_init_pf_fcoe(struct i40e_pf *pf)
 	val |= 1 << (I40E_FILTER_PCTYPE_FCOE_RX - 32);
 	val &= I40E_PFQF_HENA_PTYPE_ENA_MASK;
 	wr32(hw, I40E_PFQF_HENA(1), val);
+=======
+		return;
+	}
+
+	/* enable FCoE hash filter */
+	val = i40e_read_rx_ctl(hw, I40E_PFQF_HENA(1));
+	val |= BIT(I40E_FILTER_PCTYPE_FCOE_OX - 32);
+	val |= BIT(I40E_FILTER_PCTYPE_FCOE_RX - 32);
+	val &= I40E_PFQF_HENA_PTYPE_ENA_MASK;
+	i40e_write_rx_ctl(hw, I40E_PFQF_HENA(1), val);
+>>>>>>> v4.9.227
 
 	/* enable flag */
 	pf->flags |= I40E_FLAG_FCOE_ENABLED;
 	pf->num_fcoe_qps = I40E_DEFAULT_FCOE;
 
 	/* Reserve 4K DDP contexts and 20K filter size for FCoE */
+<<<<<<< HEAD
 	pf->fcoe_hmc_cntx_num = (1 << I40E_DMA_CNTX_SIZE_4K) *
 				 I40E_DMA_CNTX_BASE_SIZE;
 	pf->fcoe_hmc_filt_num = pf->fcoe_hmc_cntx_num +
 				(1 << I40E_HASH_FILTER_SIZE_16K) *
+=======
+	pf->fcoe_hmc_cntx_num = BIT(I40E_DMA_CNTX_SIZE_4K) *
+				I40E_DMA_CNTX_BASE_SIZE;
+	pf->fcoe_hmc_filt_num = pf->fcoe_hmc_cntx_num +
+				BIT(I40E_HASH_FILTER_SIZE_16K) *
+>>>>>>> v4.9.227
 				I40E_HASH_FILTER_BASE_SIZE;
 
 	/* FCoE object: max 16K filter buckets and 4K DMA contexts */
@@ -326,6 +383,7 @@ int i40e_init_pf_fcoe(struct i40e_pf *pf)
 	pf->filter_settings.fcoe_cntx_num = I40E_DMA_CNTX_SIZE_4K;
 
 	/* Setup max frame with FCoE_MTU plus L2 overheads */
+<<<<<<< HEAD
 	val = rd32(hw, I40E_GLFCOE_RCTL);
 	val &= ~I40E_GLFCOE_RCTL_MAX_SIZE_MASK;
 	val |= ((FCOE_MTU + ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN)
@@ -334,16 +392,33 @@ int i40e_init_pf_fcoe(struct i40e_pf *pf)
 
 	dev_info(&pf->pdev->dev, "FCoE is supported.\n");
 	return 0;
+=======
+	val = i40e_read_rx_ctl(hw, I40E_GLFCOE_RCTL);
+	val &= ~I40E_GLFCOE_RCTL_MAX_SIZE_MASK;
+	val |= ((FCOE_MTU + ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN)
+		 << I40E_GLFCOE_RCTL_MAX_SIZE_SHIFT);
+	i40e_write_rx_ctl(hw, I40E_GLFCOE_RCTL, val);
+
+	dev_info(&pf->pdev->dev, "FCoE is supported.\n");
+>>>>>>> v4.9.227
 }
 
 /**
  * i40e_get_fcoe_tc_map - Return TC map for FCoE APP
+<<<<<<< HEAD
  * @pf: pointer to pf
+=======
+ * @pf: pointer to PF
+>>>>>>> v4.9.227
  *
  **/
 u8 i40e_get_fcoe_tc_map(struct i40e_pf *pf)
 {
+<<<<<<< HEAD
 	struct i40e_ieee_app_priority_table app;
+=======
+	struct i40e_dcb_app_priority_table app;
+>>>>>>> v4.9.227
 	struct i40e_hw *hw = &pf->hw;
 	u8 enabled_tc = 0;
 	u8 tc, i;
@@ -355,7 +430,11 @@ u8 i40e_get_fcoe_tc_map(struct i40e_pf *pf)
 		if (app.selector == IEEE_8021QAZ_APP_SEL_ETHERTYPE &&
 		    app.protocolid == ETH_P_FCOE) {
 			tc = dcbcfg->etscfg.prioritytable[app.priority];
+<<<<<<< HEAD
 			enabled_tc |= (1 << tc);
+=======
+			enabled_tc |= BIT(tc);
+>>>>>>> v4.9.227
 			break;
 		}
 	}
@@ -390,12 +469,20 @@ int i40e_fcoe_vsi_init(struct i40e_vsi *vsi, struct i40e_vsi_context *ctxt)
 	ctxt->pf_num = hw->pf_id;
 	ctxt->vf_num = 0;
 	ctxt->uplink_seid = vsi->uplink_seid;
+<<<<<<< HEAD
 	ctxt->connection_type = 0x1;
 	ctxt->flags = I40E_AQ_VSI_TYPE_PF;
 
 	/* FCoE VSI would need the following sections */
 	info->valid_sections |= cpu_to_le16(I40E_AQ_VSI_PROP_SWITCH_VALID |
 					    I40E_AQ_VSI_PROP_QUEUE_OPT_VALID);
+=======
+	ctxt->connection_type = I40E_AQ_VSI_CONN_TYPE_NORMAL;
+	ctxt->flags = I40E_AQ_VSI_TYPE_PF;
+
+	/* FCoE VSI would need the following sections */
+	info->valid_sections |= cpu_to_le16(I40E_AQ_VSI_PROP_QUEUE_OPT_VALID);
+>>>>>>> v4.9.227
 
 	/* FCoE VSI does not need these sections */
 	info->valid_sections &= cpu_to_le16(~(I40E_AQ_VSI_PROP_SECURITY_VALID |
@@ -404,6 +491,15 @@ int i40e_fcoe_vsi_init(struct i40e_vsi *vsi, struct i40e_vsi_context *ctxt)
 					    I40E_AQ_VSI_PROP_INGRESS_UP_VALID |
 					    I40E_AQ_VSI_PROP_EGRESS_UP_VALID));
 
+<<<<<<< HEAD
+=======
+	if (i40e_is_vsi_uplink_mode_veb(vsi)) {
+		info->valid_sections |=
+				cpu_to_le16(I40E_AQ_VSI_PROP_SWITCH_VALID);
+		info->switch_id =
+				cpu_to_le16(I40E_AQ_VSI_SW_ID_FLAG_ALLOW_LB);
+	}
+>>>>>>> v4.9.227
 	enabled_tc = i40e_get_fcoe_tc_map(pf);
 	i40e_vsi_setup_queue_map(vsi, ctxt, enabled_tc, true);
 
@@ -1311,8 +1407,12 @@ static void i40e_fcoe_tx_map(struct i40e_ring *tx_ring,
 	/* MACLEN is ether header length in words not bytes */
 	td_offset |= (maclen >> 1) << I40E_TX_DESC_LENGTH_MACLEN_SHIFT;
 
+<<<<<<< HEAD
 	return i40e_tx_map(tx_ring, skb, first, tx_flags, hdr_len,
 			   td_cmd, td_offset);
+=======
+	i40e_tx_map(tx_ring, skb, first, tx_flags, hdr_len, td_cmd, td_offset);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -1365,16 +1465,44 @@ static netdev_tx_t i40e_fcoe_xmit_frame(struct sk_buff *skb,
 	struct i40e_ring *tx_ring = vsi->tx_rings[skb->queue_mapping];
 	struct i40e_tx_buffer *first;
 	u32 tx_flags = 0;
+<<<<<<< HEAD
 	u8 hdr_len = 0;
 	u8 sof = 0;
 	u8 eof = 0;
 	int fso;
+=======
+	int fso, count;
+	u8 hdr_len = 0;
+	u8 sof = 0;
+	u8 eof = 0;
+>>>>>>> v4.9.227
 
 	if (i40e_fcoe_set_skb_header(skb))
 		goto out_drop;
 
+<<<<<<< HEAD
 	if (!i40e_xmit_descriptor_count(skb, tx_ring))
 		return NETDEV_TX_BUSY;
+=======
+	count = i40e_xmit_descriptor_count(skb);
+	if (i40e_chk_linearize(skb, count)) {
+		if (__skb_linearize(skb))
+			goto out_drop;
+		count = i40e_txd_use_count(skb->len);
+		tx_ring->tx_stats.tx_linearize++;
+	}
+
+	/* need: 1 descriptor per page * PAGE_SIZE/I40E_MAX_DATA_PER_TXD,
+	 *       + 1 desc for skb_head_len/I40E_MAX_DATA_PER_TXD,
+	 *       + 4 desc gap to avoid the cache line where head is,
+	 *       + 1 desc for context descriptor,
+	 * otherwise try next time
+	 */
+	if (i40e_maybe_stop_tx(tx_ring, count + 4 + 1)) {
+		tx_ring->tx_stats.tx_busy++;
+		return NETDEV_TX_BUSY;
+	}
+>>>>>>> v4.9.227
 
 	/* prepare the xmit flags */
 	if (i40e_tx_prepare_vlan_flags(skb, tx_ring, &tx_flags))
@@ -1451,7 +1579,10 @@ static int i40e_fcoe_set_features(struct net_device *netdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static const struct net_device_ops i40e_fcoe_netdev_ops = {
 	.ndo_open		= i40e_open,
 	.ndo_stop		= i40e_close,
@@ -1464,7 +1595,11 @@ static const struct net_device_ops i40e_fcoe_netdev_ops = {
 	.ndo_tx_timeout		= i40e_tx_timeout,
 	.ndo_vlan_rx_add_vid	= i40e_vlan_rx_add_vid,
 	.ndo_vlan_rx_kill_vid	= i40e_vlan_rx_kill_vid,
+<<<<<<< HEAD
 	.ndo_setup_tc		= i40e_setup_tc,
+=======
+	.ndo_setup_tc		= __i40e_setup_tc,
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= i40e_netpoll,
@@ -1478,6 +1613,14 @@ static const struct net_device_ops i40e_fcoe_netdev_ops = {
 	.ndo_set_features	= i40e_fcoe_set_features,
 };
 
+<<<<<<< HEAD
+=======
+/* fcoe network device type */
+static struct device_type fcoe_netdev_type = {
+	.name = "fcoe",
+};
+
+>>>>>>> v4.9.227
 /**
  * i40e_fcoe_config_netdev - prepares the VSI context for creating a FCoE VSI
  * @vsi: pointer to the associated VSI struct
@@ -1511,12 +1654,27 @@ void i40e_fcoe_config_netdev(struct net_device *netdev, struct i40e_vsi *vsi)
 	strlcpy(netdev->name, "fcoe%d", IFNAMSIZ-1);
 	netdev->mtu = FCOE_MTU;
 	SET_NETDEV_DEV(netdev, &pf->pdev->dev);
+<<<<<<< HEAD
+=======
+	SET_NETDEV_DEVTYPE(netdev, &fcoe_netdev_type);
+	/* set different dev_port value 1 for FCoE netdev than the default
+	 * zero dev_port value for PF netdev, this helps biosdevname user
+	 * tool to differentiate them correctly while both attached to the
+	 * same PCI function.
+	 */
+	netdev->dev_port = 1;
+	spin_lock_bh(&vsi->mac_filter_list_lock);
+>>>>>>> v4.9.227
 	i40e_add_filter(vsi, hw->mac.san_addr, 0, false, false);
 	i40e_add_filter(vsi, (u8[6]) FC_FCOE_FLOGI_MAC, 0, false, false);
 	i40e_add_filter(vsi, FIP_ALL_FCOE_MACS, 0, false, false);
 	i40e_add_filter(vsi, FIP_ALL_ENODE_MACS, 0, false, false);
+<<<<<<< HEAD
 	i40e_add_filter(vsi, FIP_ALL_VN2VN_MACS, 0, false, false);
 	i40e_add_filter(vsi, FIP_ALL_P2P_MACS, 0, false, false);
+=======
+	spin_unlock_bh(&vsi->mac_filter_list_lock);
+>>>>>>> v4.9.227
 
 	/* use san mac */
 	ether_addr_copy(netdev->dev_addr, hw->mac.san_addr);
@@ -1527,7 +1685,11 @@ void i40e_fcoe_config_netdev(struct net_device *netdev, struct i40e_vsi *vsi)
 
 /**
  * i40e_fcoe_vsi_setup - allocate and set up FCoE VSI
+<<<<<<< HEAD
  * @pf: the pf that VSI is associated with
+=======
+ * @pf: the PF that VSI is associated with
+>>>>>>> v4.9.227
  *
  **/
 void i40e_fcoe_vsi_setup(struct i40e_pf *pf)
@@ -1539,8 +1701,11 @@ void i40e_fcoe_vsi_setup(struct i40e_pf *pf)
 	if (!(pf->flags & I40E_FLAG_FCOE_ENABLED))
 		return;
 
+<<<<<<< HEAD
 	BUG_ON(!pf->vsi[pf->lan_vsi]);
 
+=======
+>>>>>>> v4.9.227
 	for (i = 0; i < pf->num_alloc_vsi; i++) {
 		vsi = pf->vsi[i];
 		if (vsi && vsi->type == I40E_VSI_FCOE) {
@@ -1554,7 +1719,11 @@ void i40e_fcoe_vsi_setup(struct i40e_pf *pf)
 	vsi = i40e_vsi_setup(pf, I40E_VSI_FCOE, seid, 0);
 	if (vsi) {
 		dev_dbg(&pf->pdev->dev,
+<<<<<<< HEAD
 			"Successfully created FCoE VSI seid %d id %d uplink_seid %d pf seid %d\n",
+=======
+			"Successfully created FCoE VSI seid %d id %d uplink_seid %d PF seid %d\n",
+>>>>>>> v4.9.227
 			vsi->seid, vsi->id, vsi->uplink_seid, seid);
 	} else {
 		dev_info(&pf->pdev->dev, "Failed to create FCoE VSI\n");

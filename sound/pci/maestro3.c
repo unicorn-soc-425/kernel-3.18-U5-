@@ -31,7 +31,11 @@
 #define CARD_NAME "ESS Maestro3/Allegro/Canyon3D-2"
 #define DRIVER_NAME "Maestro3"
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -1834,7 +1838,11 @@ snd_m3_capture_close(struct snd_pcm_substream *subs)
  * create pcm instance
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_m3_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_m3_playback_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_m3_playback_open,
 	.close =	snd_m3_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1845,7 +1853,11 @@ static struct snd_pcm_ops snd_m3_playback_ops = {
 	.pointer =	snd_m3_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_m3_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_m3_capture_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_m3_capture_open,
 	.close =	snd_m3_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1929,6 +1941,7 @@ snd_m3_ac97_write(struct snd_ac97 *ac97, unsigned short reg, unsigned short val)
 		return;
 	snd_m3_outw(chip, val, CODEC_DATA);
 	snd_m3_outb(chip, reg & 0x7f, CODEC_COMMAND);
+<<<<<<< HEAD
 }
 
 
@@ -1938,6 +1951,34 @@ static void snd_m3_remote_codec_config(int io, int isremote)
 
 	outw((inw(io + RING_BUS_CTRL_B) & ~SECOND_CODEC_ID_MASK) | isremote,
 	     io + RING_BUS_CTRL_B);
+=======
+	/*
+	 * Workaround for buggy ES1988 integrated AC'97 codec. It remains silent
+	 * until the MASTER volume or mute is touched (alsactl restore does not
+	 * work).
+	 */
+	if (ac97->id == 0x45838308 && reg == AC97_MASTER) {
+		snd_m3_ac97_wait(chip);
+		snd_m3_outw(chip, val, CODEC_DATA);
+		snd_m3_outb(chip, reg & 0x7f, CODEC_COMMAND);
+	}
+}
+
+
+static void snd_m3_remote_codec_config(struct snd_m3 *chip, int isremote)
+{
+	int io = chip->iobase;
+	u16 tmp;
+
+	isremote = isremote ? 1 : 0;
+
+	tmp = inw(io + RING_BUS_CTRL_B) & ~SECOND_CODEC_ID_MASK;
+	/* enable dock on Dell Latitude C810 */
+	if (chip->pci->subsystem_vendor == 0x1028 &&
+	    chip->pci->subsystem_device == 0x00e5)
+		tmp |= M3I_DOCK_ENABLE;
+	outw(tmp | isremote, io + RING_BUS_CTRL_B);
+>>>>>>> v4.9.227
 	outw((inw(io + SDO_OUT_DEST_CTRL) & ~COMMAND_ADDR_OUT) | isremote,
 	     io + SDO_OUT_DEST_CTRL);
 	outw((inw(io + SDO_IN_DEST_CTRL) & ~STATUS_ADDR_IN) | isremote,
@@ -1989,7 +2030,11 @@ static void snd_m3_ac97_reset(struct snd_m3 *chip)
 		if (!chip->irda_workaround)
 			dir |= 0x10; /* assuming pci bus master? */
 
+<<<<<<< HEAD
 		snd_m3_remote_codec_config(io, 0);
+=======
+		snd_m3_remote_codec_config(chip, 0);
+>>>>>>> v4.9.227
 
 		outw(IO_SRAM_ENABLE, io + RING_BUS_CTRL_A);
 		udelay(20);
@@ -2395,7 +2440,10 @@ static int snd_m3_free(struct snd_m3 *chip)
 #ifdef CONFIG_PM_SLEEP
 static int m3_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_m3 *chip = card->private_data;
 	int i, dsp_index;
@@ -2421,16 +2469,22 @@ static int m3_suspend(struct device *dev)
 	for (i = REV_B_DATA_MEMORY_BEGIN ; i <= REV_B_DATA_MEMORY_END; i++)
 		chip->suspend_mem[dsp_index++] =
 			snd_m3_assp_read(chip, MEMTYPE_INTERNAL_DATA, i);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int m3_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_m3 *chip = card->private_data;
 	int i, dsp_index;
@@ -2438,6 +2492,7 @@ static int m3_resume(struct device *dev)
 	if (chip->suspend_mem == NULL)
 		return 0;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -2447,6 +2502,8 @@ static int m3_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> v4.9.227
 	/* first lets just bring everything back. .*/
 	snd_m3_outw(chip, 0, 0x54);
 	snd_m3_outw(chip, 0, 0x56);
@@ -2552,8 +2609,13 @@ snd_m3_create(struct snd_card *card, struct pci_dev *pci,
 		return -EIO;
 
 	/* check, if we can restrict PCI DMA transfers to 28 bits */
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(28)) < 0 ||
 	    pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(28)) < 0) {
+=======
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(28)) < 0 ||
+	    dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(28)) < 0) {
+>>>>>>> v4.9.227
 		dev_err(card->dev,
 			"architecture does not support 28bit PCI busmaster DMA\n");
 		pci_disable_device(pci);

@@ -36,8 +36,11 @@
 
 #include <asm/octeon/cvmx-config.h>
 
+<<<<<<< HEAD
 #include <asm/octeon/cvmx-mdio.h>
 
+=======
+>>>>>>> v4.9.227
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-util.h>
 #include <asm/octeon/cvmx-helper-board.h>
@@ -46,6 +49,7 @@
 #include <asm/octeon/cvmx-asxx-defs.h>
 
 /**
+<<<<<<< HEAD
  * cvmx_override_board_link_get(int ipd_port) is a function
  * pointer. It is meant to allow customization of the process of
  * talking to a PHY to determine link speed. It is called every
@@ -57,6 +61,8 @@ cvmx_helper_link_info_t(*cvmx_override_board_link_get) (int ipd_port) =
     NULL;
 
 /**
+=======
+>>>>>>> v4.9.227
  * Return the MII PHY address associated with the given IPD
  * port. A result of -1 means there isn't a MII capable PHY
  * connected to this port. On chips supporting multiple MII
@@ -186,6 +192,7 @@ int cvmx_helper_board_get_mii_address(int ipd_port)
 			return 7 - ipd_port;
 		else
 			return -1;
+<<<<<<< HEAD
 	case CVMX_BOARD_TYPE_CUST_DSR1000N:
 		/*
 		 * Port 2 connects to Broadcom PHY (B5081). Other ports (0-1)
@@ -195,6 +202,14 @@ int cvmx_helper_board_get_mii_address(int ipd_port)
 			return 8;
 		else
 			return -1;
+=======
+	case CVMX_BOARD_TYPE_KONTRON_S1901:
+		if (ipd_port == CVMX_HELPER_BOARD_MGMT_IPD_PORT)
+			return 1;
+		else
+			return -1;
+
+>>>>>>> v4.9.227
 	}
 
 	/* Some unknown board. Somebody forgot to update this function... */
@@ -225,12 +240,15 @@ int cvmx_helper_board_get_mii_address(int ipd_port)
 cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 {
 	cvmx_helper_link_info_t result;
+<<<<<<< HEAD
 	int phy_addr;
 	int is_broadcom_phy = 0;
 
 	/* Give the user a chance to override the processing of this function */
 	if (cvmx_override_board_link_get)
 		return cvmx_override_board_link_get(ipd_port);
+=======
+>>>>>>> v4.9.227
 
 	/* Unless we fix it later, all links are defaulted to down */
 	result.u64 = 0;
@@ -266,8 +284,12 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 			result.s.full_duplex = 1;
 			result.s.speed = 1000;
 			return result;
+<<<<<<< HEAD
 		} else		/* The other port uses a broadcom PHY */
 			is_broadcom_phy = 1;
+=======
+		}
+>>>>>>> v4.9.227
 		break;
 	case CVMX_BOARD_TYPE_BBGW_REF:
 		/* Port 1 on these boards is always Gigabit */
@@ -283,6 +305,7 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 			return result;
 		}
 		break;
+<<<<<<< HEAD
 	case CVMX_BOARD_TYPE_CUST_DSR1000N:
 		if (ipd_port == 0 || ipd_port == 1) {
 			/* Ports 0 and 1 connect to a switch (BCM53115). */
@@ -399,6 +422,11 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 			}
 		}
 	} else if (OCTEON_IS_MODEL(OCTEON_CN3XXX)
+=======
+	}
+
+	if (OCTEON_IS_MODEL(OCTEON_CN3XXX)
+>>>>>>> v4.9.227
 		   || OCTEON_IS_MODEL(OCTEON_CN58XX)
 		   || OCTEON_IS_MODEL(OCTEON_CN50XX)) {
 		/*
@@ -448,6 +476,7 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 }
 
 /**
+<<<<<<< HEAD
  * This function as a board specific method of changing the PHY
  * speed, duplex, and auto-negotiation. This programs the PHY and
  * not Octeon. This can be used to force Octeon's links to
@@ -618,6 +647,8 @@ int cvmx_helper_board_link_set_phy(int phy_addr,
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * This function is called by cvmx_helper_interface_probe() after it
  * determines the number of ports Octeon can support on a specific
  * interface. This function is the per board location to override
@@ -691,6 +722,7 @@ int __cvmx_helper_board_hardware_enable(int interface)
 				       0xc);
 		}
 	} else if (cvmx_sysinfo_get()->board_type ==
+<<<<<<< HEAD
 		   CVMX_BOARD_TYPE_CN3010_EVB_HS5) {
 		/*
 		 * Broadcom PHYs require differnet ASX
@@ -733,6 +765,8 @@ int __cvmx_helper_board_hardware_enable(int interface)
 			}
 		}
 	} else if (cvmx_sysinfo_get()->board_type ==
+=======
+>>>>>>> v4.9.227
 			CVMX_BOARD_TYPE_UBNT_E100) {
 		cvmx_write_csr(CVMX_ASXX_RX_CLK_SETX(0, interface), 0);
 		cvmx_write_csr(CVMX_ASXX_TX_CLK_SETX(0, interface), 0x10);
@@ -759,7 +793,10 @@ enum cvmx_helper_board_usb_clock_types __cvmx_helper_board_usb_get_clock_type(vo
 	case CVMX_BOARD_TYPE_LANAI2_G:
 	case CVMX_BOARD_TYPE_NIC10E_66:
 	case CVMX_BOARD_TYPE_UBNT_E100:
+<<<<<<< HEAD
 	case CVMX_BOARD_TYPE_CUST_DSR1000N:
+=======
+>>>>>>> v4.9.227
 		return USB_CLOCK_TYPE_CRYSTAL_12;
 	case CVMX_BOARD_TYPE_NIC10E:
 		return USB_CLOCK_TYPE_REF_12;
@@ -767,7 +804,11 @@ enum cvmx_helper_board_usb_clock_types __cvmx_helper_board_usb_get_clock_type(vo
 		break;
 	}
 	/* Most boards except NIC10e use a 12MHz crystal */
+<<<<<<< HEAD
 	if (OCTEON_IS_MODEL(OCTEON_FAM_2))
+=======
+	if (OCTEON_IS_OCTEON2())
+>>>>>>> v4.9.227
 		return USB_CLOCK_TYPE_CRYSTAL_12;
 	return USB_CLOCK_TYPE_REF_48;
 }

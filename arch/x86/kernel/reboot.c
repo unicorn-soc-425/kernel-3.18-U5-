@@ -1,6 +1,10 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/reboot.h>
 #include <linux/init.h>
 #include <linux/pm.h>
@@ -9,9 +13,17 @@
 #include <linux/sched.h>
 #include <linux/tboot.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <acpi/reboot.h>
 #include <asm/io.h>
 #include <asm/apic.h>
+=======
+#include <linux/frame.h>
+#include <acpi/reboot.h>
+#include <asm/io.h>
+#include <asm/apic.h>
+#include <asm/io_apic.h>
+>>>>>>> v4.9.227
 #include <asm/desc.h>
 #include <asm/hpet.h>
 #include <asm/pgtable.h>
@@ -54,6 +66,22 @@ bool port_cf9_safe = false;
  */
 
 /*
+<<<<<<< HEAD
+=======
+ * Some machines require the "reboot=a" commandline options
+ */
+static int __init set_acpi_reboot(const struct dmi_system_id *d)
+{
+	if (reboot_type != BOOT_ACPI) {
+		reboot_type = BOOT_ACPI;
+		pr_info("%s series board detected. Selecting %s-method for reboots.\n",
+			d->ident, "ACPI");
+	}
+	return 0;
+}
+
+/*
+>>>>>>> v4.9.227
  * Some machines require the "reboot=b" or "reboot=k"  commandline options,
  * this quirk makes that automatic.
  */
@@ -67,6 +95,22 @@ static int __init set_bios_reboot(const struct dmi_system_id *d)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Some machines don't handle the default ACPI reboot method and
+ * require the EFI reboot method:
+ */
+static int __init set_efi_reboot(const struct dmi_system_id *d)
+{
+	if (reboot_type != BOOT_EFI && !efi_runtime_disabled()) {
+		reboot_type = BOOT_EFI;
+		pr_info("%s series board detected. Selecting EFI-method for reboot.\n", d->ident);
+	}
+	return 0;
+}
+
+>>>>>>> v4.9.227
 void __noreturn machine_real_restart(unsigned int type)
 {
 	local_irq_disable();
@@ -92,6 +136,13 @@ void __noreturn machine_real_restart(unsigned int type)
 	load_cr3(initial_page_table);
 #else
 	write_cr3(real_mode_header->trampoline_pgd);
+<<<<<<< HEAD
+=======
+
+	/* Exiting long mode will fail if CR4.PCIDE is set. */
+	if (static_cpu_has(X86_FEATURE_PCID))
+		cr4_clear_bits(X86_CR4_PCIDE);
+>>>>>>> v4.9.227
 #endif
 
 	/* Jump to the identity-mapped low memory code */
@@ -109,6 +160,10 @@ void __noreturn machine_real_restart(unsigned int type)
 #ifdef CONFIG_APM_MODULE
 EXPORT_SYMBOL(machine_real_restart);
 #endif
+<<<<<<< HEAD
+=======
+STACK_FRAME_NON_STANDARD(machine_real_restart);
+>>>>>>> v4.9.227
 
 /*
  * Some Apple MacBook and MacBookPro's needs reboot=p to be able to reboot
@@ -147,6 +202,17 @@ static struct dmi_system_id __initdata reboot_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "AOA110"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{	/* Handle reboot issue on Acer TravelMate X514-51T */
+		.callback = set_efi_reboot,
+		.ident = "Acer TravelMate X514-51T",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate X514-51T"),
+		},
+	},
+>>>>>>> v4.9.227
 
 	/* Apple */
 	{	/* Handle problems with rebooting on Apple MacBook5 */
@@ -181,6 +247,17 @@ static struct dmi_system_id __initdata reboot_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "iMac9,1"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{	/* Handle problems with rebooting on the iMac10,1. */
+		.callback = set_pci_reboot,
+		.ident = "Apple iMac10,1",
+		.matches = {
+		    DMI_MATCH(DMI_SYS_VENDOR, "Apple Inc."),
+		    DMI_MATCH(DMI_PRODUCT_NAME, "iMac10,1"),
+		},
+	},
+>>>>>>> v4.9.227
 
 	/* ASRock */
 	{	/* Handle problems with rebooting on ASRock Q1900DC-ITX */
@@ -201,6 +278,25 @@ static struct dmi_system_id __initdata reboot_dmi_table[] = {
 			DMI_MATCH(DMI_BOARD_NAME, "P4S800"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{	/* Handle problems with rebooting on ASUS EeeBook X205TA */
+		.callback = set_acpi_reboot,
+		.ident = "ASUS EeeBook X205TA",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X205TA"),
+		},
+	},
+	{	/* Handle problems with rebooting on ASUS EeeBook X205TAW */
+		.callback = set_acpi_reboot,
+		.ident = "ASUS EeeBook X205TAW",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X205TAW"),
+		},
+	},
+>>>>>>> v4.9.227
 
 	/* Certec */
 	{       /* Handle problems with rebooting on Certec BPC600 */
@@ -386,6 +482,17 @@ static struct dmi_system_id __initdata reboot_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Dell XPS710"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{	/* Handle problems with rebooting on Dell Optiplex 7450 AIO */
+		.callback = set_acpi_reboot,
+		.ident = "Dell OptiPlex 7450 AIO",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "OptiPlex 7450 AIO"),
+		},
+	},
+>>>>>>> v4.9.227
 
 	/* Hewlett-Packard */
 	{	/* Handle problems with rebooting on HP laptops */
@@ -526,6 +633,18 @@ static void native_machine_emergency_restart(void)
 	mode = reboot_mode == REBOOT_WARM ? 0x1234 : 0;
 	*((unsigned short *)__va(0x472)) = mode;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If an EFI capsule has been registered with the firmware then
+	 * override the reboot= parameter.
+	 */
+	if (efi_capsule_pending(NULL)) {
+		pr_info("EFI capsule is pending, forcing EFI reboot.\n");
+		reboot_type = BOOT_EFI;
+	}
+
+>>>>>>> v4.9.227
 	for (;;) {
 		/* Could also try the reset bit in the Hammer NB */
 		switch (reboot_type) {
@@ -666,13 +785,21 @@ static void native_machine_power_off(void)
 	tboot_shutdown(TB_SHUTDOWN_HALT);
 }
 
+<<<<<<< HEAD
 struct machine_ops machine_ops = {
+=======
+struct machine_ops machine_ops __ro_after_init = {
+>>>>>>> v4.9.227
 	.power_off = native_machine_power_off,
 	.shutdown = native_machine_shutdown,
 	.emergency_restart = native_machine_emergency_restart,
 	.restart = native_machine_restart,
 	.halt = native_machine_halt,
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> v4.9.227
 	.crash_shutdown = native_machine_crash_shutdown,
 #endif
 };
@@ -702,7 +829,11 @@ void machine_halt(void)
 	machine_ops.halt();
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> v4.9.227
 void machine_crash_shutdown(struct pt_regs *regs)
 {
 	machine_ops.crash_shutdown(regs);
@@ -710,6 +841,7 @@ void machine_crash_shutdown(struct pt_regs *regs)
 #endif
 
 
+<<<<<<< HEAD
 #if defined(CONFIG_SMP)
 
 /* This keeps a track of which one is crashing cpu. */
@@ -717,6 +849,17 @@ static int crashing_cpu;
 static nmi_shootdown_cb shootdown_callback;
 
 static atomic_t waiting_for_crash_ipi;
+=======
+/* This is the CPU performing the emergency shutdown work. */
+int crashing_cpu = -1;
+
+#if defined(CONFIG_SMP)
+
+static nmi_shootdown_cb shootdown_callback;
+
+static atomic_t waiting_for_crash_ipi;
+static int crash_ipi_issued;
+>>>>>>> v4.9.227
 
 static int crash_nmi_callback(unsigned int val, struct pt_regs *regs)
 {
@@ -779,6 +922,12 @@ void nmi_shootdown_cpus(nmi_shootdown_cb callback)
 
 	smp_send_nmi_allbutself();
 
+<<<<<<< HEAD
+=======
+	/* Kick CPUs looping in NMI context. */
+	WRITE_ONCE(crash_ipi_issued, 1);
+
+>>>>>>> v4.9.227
 	msecs = 1000; /* Wait at most a second for the other cpus to stop */
 	while ((atomic_read(&waiting_for_crash_ipi) > 0) && msecs) {
 		mdelay(1);
@@ -787,9 +936,41 @@ void nmi_shootdown_cpus(nmi_shootdown_cb callback)
 
 	/* Leave the nmi callback set */
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * Check if the crash dumping IPI got issued and if so, call its callback
+ * directly. This function is used when we have already been in NMI handler.
+ * It doesn't return.
+ */
+void run_crash_ipi_callback(struct pt_regs *regs)
+{
+	if (crash_ipi_issued)
+		crash_nmi_callback(0, regs);
+}
+
+/* Override the weak function in kernel/panic.c */
+void nmi_panic_self_stop(struct pt_regs *regs)
+{
+	while (1) {
+		/* If no CPU is preparing crash dump, we simply loop here. */
+		run_crash_ipi_callback(regs);
+		cpu_relax();
+	}
+}
+
+>>>>>>> v4.9.227
 #else /* !CONFIG_SMP */
 void nmi_shootdown_cpus(nmi_shootdown_cb callback)
 {
 	/* No other CPUs to shoot down */
 }
+<<<<<<< HEAD
+=======
+
+void run_crash_ipi_callback(struct pt_regs *regs)
+{
+}
+>>>>>>> v4.9.227
 #endif

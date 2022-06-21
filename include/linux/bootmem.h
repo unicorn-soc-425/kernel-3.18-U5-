@@ -7,6 +7,10 @@
 #include <linux/mmzone.h>
 #include <linux/mm_types.h>
 #include <asm/dma.h>
+<<<<<<< HEAD
+=======
+#include <asm/processor.h>
+>>>>>>> v4.9.227
 
 /*
  *  simple boot-time physical memory area allocator.
@@ -19,6 +23,13 @@ extern unsigned long min_low_pfn;
  * highest page
  */
 extern unsigned long max_pfn;
+<<<<<<< HEAD
+=======
+/*
+ * highest possible page
+ */
+extern unsigned long long max_possible_pfn;
+>>>>>>> v4.9.227
 
 #ifndef CONFIG_NO_BOOTMEM
 /*
@@ -79,6 +90,7 @@ extern void *__alloc_bootmem(unsigned long size,
 			     unsigned long goal);
 extern void *__alloc_bootmem_nopanic(unsigned long size,
 				     unsigned long align,
+<<<<<<< HEAD
 				     unsigned long goal);
 extern void *__alloc_bootmem_node(pg_data_t *pgdat,
 				  unsigned long size,
@@ -92,10 +104,26 @@ extern void *__alloc_bootmem_node_nopanic(pg_data_t *pgdat,
 				  unsigned long size,
 				  unsigned long align,
 				  unsigned long goal);
+=======
+				     unsigned long goal) __malloc;
+extern void *__alloc_bootmem_node(pg_data_t *pgdat,
+				  unsigned long size,
+				  unsigned long align,
+				  unsigned long goal) __malloc;
+void *__alloc_bootmem_node_high(pg_data_t *pgdat,
+				  unsigned long size,
+				  unsigned long align,
+				  unsigned long goal) __malloc;
+extern void *__alloc_bootmem_node_nopanic(pg_data_t *pgdat,
+				  unsigned long size,
+				  unsigned long align,
+				  unsigned long goal) __malloc;
+>>>>>>> v4.9.227
 void *___alloc_bootmem_node_nopanic(pg_data_t *pgdat,
 				  unsigned long size,
 				  unsigned long align,
 				  unsigned long goal,
+<<<<<<< HEAD
 				  unsigned long limit);
 extern void *__alloc_bootmem_low(unsigned long size,
 				 unsigned long align,
@@ -107,6 +135,19 @@ extern void *__alloc_bootmem_low_node(pg_data_t *pgdat,
 				      unsigned long size,
 				      unsigned long align,
 				      unsigned long goal);
+=======
+				  unsigned long limit) __malloc;
+extern void *__alloc_bootmem_low(unsigned long size,
+				 unsigned long align,
+				 unsigned long goal) __malloc;
+void *__alloc_bootmem_low_nopanic(unsigned long size,
+				 unsigned long align,
+				 unsigned long goal) __malloc;
+extern void *__alloc_bootmem_low_node(pg_data_t *pgdat,
+				      unsigned long size,
+				      unsigned long align,
+				      unsigned long goal) __malloc;
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_NO_BOOTMEM
 /* We are using top down, so it is safe to use 0 here */
@@ -115,6 +156,13 @@ extern void *__alloc_bootmem_low_node(pg_data_t *pgdat,
 #define BOOTMEM_LOW_LIMIT __pa(MAX_DMA_ADDRESS)
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef ARCH_LOW_ADDRESS_LIMIT
+#define ARCH_LOW_ADDRESS_LIMIT  0xffffffffUL
+#endif
+
+>>>>>>> v4.9.227
 #define alloc_bootmem(x) \
 	__alloc_bootmem(x, SMP_CACHE_BYTES, BOOTMEM_LOW_LIMIT)
 #define alloc_bootmem_align(x, align) \
@@ -176,10 +224,13 @@ static inline void * __init memblock_virt_alloc_nopanic(
 						    NUMA_NO_NODE);
 }
 
+<<<<<<< HEAD
 #ifndef ARCH_LOW_ADDRESS_LIMIT
 #define ARCH_LOW_ADDRESS_LIMIT  0xffffffffUL
 #endif
 
+=======
+>>>>>>> v4.9.227
 static inline void * __init memblock_virt_alloc_low(
 					phys_addr_t size, phys_addr_t align)
 {
@@ -357,12 +408,21 @@ extern void *alloc_large_system_hash(const char *tablename,
 /* Only NUMA needs hash distribution. 64bit NUMA architectures have
  * sufficient vmalloc space.
  */
+<<<<<<< HEAD
 #if defined(CONFIG_NUMA) && defined(CONFIG_64BIT)
 #define HASHDIST_DEFAULT 1
 #else
 #define HASHDIST_DEFAULT 0
 #endif
 extern int hashdist;		/* Distribute hashes across NUMA nodes? */
+=======
+#ifdef CONFIG_NUMA
+#define HASHDIST_DEFAULT IS_ENABLED(CONFIG_64BIT)
+extern int hashdist;		/* Distribute hashes across NUMA nodes? */
+#else
+#define hashdist (0)
+#endif
+>>>>>>> v4.9.227
 
 
 #endif /* _LINUX_BOOTMEM_H */

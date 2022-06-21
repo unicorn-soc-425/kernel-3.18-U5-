@@ -6,6 +6,10 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 /*
  * This is the main variant and is called by C code.  GCC's -pg option
@@ -16,6 +20,10 @@
 	.align		32
 	.globl		_mcount
 	.type		_mcount,#function
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(_mcount)
+>>>>>>> v4.9.227
 	.globl		mcount
 	.type		mcount,#function
 _mcount:

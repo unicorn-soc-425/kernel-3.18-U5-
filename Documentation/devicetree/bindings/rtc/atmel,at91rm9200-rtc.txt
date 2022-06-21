@@ -5,6 +5,10 @@ Required properties:
 - reg: physical base address of the controller and length of memory mapped
   region.
 - interrupts: rtc alarm/event interrupt
+<<<<<<< HEAD
+=======
+- clocks: phandle to input clock.
+>>>>>>> v4.9.227
 
 Example:
 
@@ -12,4 +16,8 @@ rtc@fffffe00 {
 	compatible = "atmel,at91rm9200-rtc";
 	reg = <0xfffffe00 0x100>;
 	interrupts = <1 4 7>;
+<<<<<<< HEAD
+=======
+	clocks = <&clk32k>;
+>>>>>>> v4.9.227
 };

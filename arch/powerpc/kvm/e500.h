@@ -41,7 +41,11 @@ enum vcpu_ftr {
 #define E500_TLB_MAS2_ATTR	(0x7f)
 
 struct tlbe_ref {
+<<<<<<< HEAD
 	pfn_t pfn;		/* valid only for TLB0, except briefly */
+=======
+	kvm_pfn_t pfn;		/* valid only for TLB0, except briefly */
+>>>>>>> v4.9.227
 	unsigned int flags;	/* E500_TLB_* */
 };
 

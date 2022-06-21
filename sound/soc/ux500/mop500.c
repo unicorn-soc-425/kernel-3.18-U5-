@@ -63,12 +63,17 @@ static void mop500_of_node_put(void)
 	int i;
 
 	for (i = 0; i < 2; i++) {
+<<<<<<< HEAD
 		if (mop500_dai_links[i].cpu_of_node)
 			of_node_put((struct device_node *)
 				mop500_dai_links[i].cpu_of_node);
 		if (mop500_dai_links[i].codec_of_node)
 			of_node_put((struct device_node *)
 				mop500_dai_links[i].codec_of_node);
+=======
+		of_node_put(mop500_dai_links[i].cpu_of_node);
+		of_node_put(mop500_dai_links[i].codec_of_node);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -156,10 +161,17 @@ static const struct of_device_id snd_soc_mop500_match[] = {
 	{ .compatible = "stericsson,snd-soc-mop500", },
 	{},
 };
+<<<<<<< HEAD
 
 static struct platform_driver snd_soc_mop500_driver = {
 	.driver = {
 		.owner = THIS_MODULE,
+=======
+MODULE_DEVICE_TABLE(of, snd_soc_mop500_match);
+
+static struct platform_driver snd_soc_mop500_driver = {
+	.driver = {
+>>>>>>> v4.9.227
 		.name = "snd-soc-mop500",
 		.of_match_table = snd_soc_mop500_match,
 	},

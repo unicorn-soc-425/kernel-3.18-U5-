@@ -62,6 +62,10 @@
 			OMAP3_CORE1_IOPAD(0x21ca, PIN_INPUT | MUX_MODE0)	/* mcspi1_simo.mcspi1_simo */
 			OMAP3_CORE1_IOPAD(0x21cc, PIN_INPUT | MUX_MODE0)	/* mcspi1_somi.mcspi1_somi */
 			OMAP3_CORE1_IOPAD(0x21ce, PIN_INPUT | MUX_MODE0)	/* mcspi1_cs0.mcspi1_cs0 */
+<<<<<<< HEAD
+=======
+			OMAP3_CORE1_IOPAD(0x21d0, PIN_INPUT | MUX_MODE0)	/* mcspi1_cs1.mcspi1_cs1 */
+>>>>>>> v4.9.227
 		>;
 	};
 
@@ -118,12 +122,21 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&mcspi1_pins>;
 
+<<<<<<< HEAD
 	lcd0: display@0 {
 		compatible = "lgphilips,lb035q02";
 		label = "lcd";
 
 		reg = <1>;					/* CS1 */
 		spi-max-frequency = <10000000>;
+=======
+	lcd0: display@1 {
+		compatible = "lgphilips,lb035q02";
+		label = "lcd35";
+
+		reg = <1>;					/* CS1 */
+		spi-max-frequency = <500000>;
+>>>>>>> v4.9.227
 		spi-cpol;
 		spi-cpha;
 
@@ -151,7 +164,11 @@
 
 		interrupt-parent = <&gpio4>;
 		interrupts = <18 0>;			/* gpio_114 */
+<<<<<<< HEAD
 		pendown-gpio = <&gpio4 18 0>;
+=======
+		pendown-gpio = <&gpio4 18 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 
 		ti,x-min = /bits/ 16 <0x0>;
 		ti,x-max = /bits/ 16 <0x0fff>;
@@ -160,6 +177,10 @@
 		ti,x-plate-ohms = /bits/ 16 <180>;
 		ti,pressure-max = /bits/ 16 <255>;
 
+<<<<<<< HEAD
 		linux,wakeup;
+=======
+		wakeup-source;
+>>>>>>> v4.9.227
 	};
 };

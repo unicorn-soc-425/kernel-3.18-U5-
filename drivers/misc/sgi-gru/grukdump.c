@@ -27,6 +27,12 @@
 #include <linux/delay.h>
 #include <linux/bitops.h>
 #include <asm/uv/uv_hub.h>
+<<<<<<< HEAD
+=======
+
+#include <linux/nospec.h>
+
+>>>>>>> v4.9.227
 #include "gru.h"
 #include "grutables.h"
 #include "gruhandles.h"
@@ -78,11 +84,18 @@ static int gru_dump_tfm(struct gru_state *gru,
 		void __user *ubuf, void __user *ubufend)
 {
 	struct gru_tlb_fault_map *tfm;
+<<<<<<< HEAD
 	int i, ret, bytes;
 
 	bytes = GRU_NUM_TFM * GRU_CACHE_LINE_BYTES;
 	if (bytes > ubufend - ubuf)
 		ret = -EFBIG;
+=======
+	int i;
+
+	if (GRU_NUM_TFM * GRU_CACHE_LINE_BYTES > ubufend - ubuf)
+		return -EFBIG;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < GRU_NUM_TFM; i++) {
 		tfm = get_tfm(gru->gs_gru_base_vaddr, i);
@@ -99,11 +112,18 @@ static int gru_dump_tgh(struct gru_state *gru,
 		void __user *ubuf, void __user *ubufend)
 {
 	struct gru_tlb_global_handle *tgh;
+<<<<<<< HEAD
 	int i, ret, bytes;
 
 	bytes = GRU_NUM_TGH * GRU_CACHE_LINE_BYTES;
 	if (bytes > ubufend - ubuf)
 		ret = -EFBIG;
+=======
+	int i;
+
+	if (GRU_NUM_TGH * GRU_CACHE_LINE_BYTES > ubufend - ubuf)
+		return -EFBIG;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < GRU_NUM_TGH; i++) {
 		tgh = get_tgh(gru->gs_gru_base_vaddr, i);
@@ -196,8 +216,14 @@ int gru_dump_chiplet_request(unsigned long arg)
 		return -EFAULT;
 
 	/* Currently, only dump by gid is implemented */
+<<<<<<< HEAD
 	if (req.gid >= gru_max_gids || req.gid < 0)
 		return -EINVAL;
+=======
+	if (req.gid >= gru_max_gids)
+		return -EINVAL;
+	req.gid = array_index_nospec(req.gid, gru_max_gids);
+>>>>>>> v4.9.227
 
 	gru = GID_TO_GRU(req.gid);
 	ubuf = req.buf;

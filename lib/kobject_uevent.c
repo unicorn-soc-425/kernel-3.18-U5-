@@ -20,7 +20,10 @@
 #include <linux/export.h>
 #include <linux/kmod.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/user_namespace.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/socket.h>
 #include <linux/skbuff.h>
 #include <linux/netlink.h>

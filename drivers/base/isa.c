@@ -180,4 +180,8 @@ static int __init isa_bus_init(void)
 	return error;
 }
 
+<<<<<<< HEAD
 device_initcall(isa_bus_init);
+=======
+postcore_initcall(isa_bus_init);
+>>>>>>> v4.9.227

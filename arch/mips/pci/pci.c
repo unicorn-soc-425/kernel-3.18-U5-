@@ -20,6 +20,7 @@
 
 #include <asm/cpu-info.h>
 
+<<<<<<< HEAD
 /*
  * If PCI_PROBE_ONLY in pci_flags is set, we don't change any PCI resource
  * assignments.
@@ -214,6 +215,15 @@ out:
 }
 
 static void __init pcibios_set_cache_line_size(void)
+=======
+unsigned long PCIBIOS_MIN_IO;
+EXPORT_SYMBOL(PCIBIOS_MIN_IO);
+
+unsigned long PCIBIOS_MIN_MEM;
+EXPORT_SYMBOL(PCIBIOS_MIN_MEM);
+
+static int __init pcibios_set_cache_line_size(void)
+>>>>>>> v4.9.227
 {
 	struct cpuinfo_mips *c = &current_cpu_data;
 	unsigned int lsize;
@@ -231,6 +241,7 @@ static void __init pcibios_set_cache_line_size(void)
 	pci_dfl_cache_line_size = lsize >> 2;
 
 	pr_debug("PCI: pci_cache_line_size set to %d bytes\n", lsize);
+<<<<<<< HEAD
 }
 
 static int __init pcibios_init(void)
@@ -318,6 +329,22 @@ void pcibios_fixup_bus(struct pci_bus *bus)
 EXPORT_SYMBOL(PCIBIOS_MIN_IO);
 EXPORT_SYMBOL(PCIBIOS_MIN_MEM);
 
+=======
+	return 0;
+}
+arch_initcall(pcibios_set_cache_line_size);
+
+void pci_resource_to_user(const struct pci_dev *dev, int bar,
+			  const struct resource *rsrc, resource_size_t *start,
+			  resource_size_t *end)
+{
+	phys_addr_t size = resource_size(rsrc);
+
+	*start = fixup_bigphys_addr(rsrc->start, size);
+	*end = rsrc->start + size - 1;
+}
+
+>>>>>>> v4.9.227
 int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 			enum pci_mmap_state mmap_state, int write_combine)
 {
@@ -341,6 +368,7 @@ int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 	return remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
 		vma->vm_end - vma->vm_start, vma->vm_page_prot);
 }
+<<<<<<< HEAD
 
 char * (*pcibios_plat_setup)(char *str) __initdata;
 
@@ -350,3 +378,5 @@ char *__init pcibios_setup(char *str)
 		return pcibios_plat_setup(str);
 	return str;
 }
+=======
+>>>>>>> v4.9.227

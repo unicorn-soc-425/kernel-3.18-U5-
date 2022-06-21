@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -106,6 +110,10 @@ acpi_ds_create_external_region(acpi_status lookup_status,
 	 * insert the name into the namespace.
 	 */
 	acpi_dm_add_op_to_external_list(op, path, ACPI_TYPE_REGION, 0, 0);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	status = acpi_ns_lookup(walk_state->scope_info, path, ACPI_TYPE_REGION,
 				ACPI_IMODE_LOAD_PASS1, ACPI_NS_SEARCH_PARENT,
 				walk_state, node);
@@ -202,11 +210,18 @@ acpi_ds_create_buffer_field(union acpi_parse_object *op,
 
 		/* Enter the name_string into the namespace */
 
+<<<<<<< HEAD
 		status =
 		    acpi_ns_lookup(walk_state->scope_info,
 				   arg->common.value.string, ACPI_TYPE_ANY,
 				   ACPI_IMODE_LOAD_PASS1, flags, walk_state,
 				   &node);
+=======
+		status = acpi_ns_lookup(walk_state->scope_info,
+					arg->common.value.string, ACPI_TYPE_ANY,
+					ACPI_IMODE_LOAD_PASS1, flags,
+					walk_state, &node);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			ACPI_ERROR_NAMESPACE(arg->common.value.string, status);
 			return_ACPI_STATUS(status);
@@ -244,8 +259,13 @@ acpi_ds_create_buffer_field(union acpi_parse_object *op,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Remember location in AML stream of the field unit opcode and operands --
 	 * since the buffer and index operands must be evaluated.
+=======
+	 * Remember location in AML stream of the field unit opcode and operands
+	 * -- since the buffer and index operands must be evaluated.
+>>>>>>> v4.9.227
 	 */
 	second_desc = obj_desc->common.next_object;
 	second_desc->extra.aml_start = op->named.data;
@@ -272,7 +292,11 @@ cleanup:
  * FUNCTION:    acpi_ds_get_field_names
  *
  * PARAMETERS:  info            - create_field info structure
+<<<<<<< HEAD
  *  `           walk_state      - Current method state
+=======
+ *              walk_state      - Current method state
+>>>>>>> v4.9.227
  *              arg             - First parser arg for the field name list
  *
  * RETURN:      Status
@@ -310,8 +334,13 @@ acpi_ds_get_field_names(struct acpi_create_field_info *info,
 		switch (arg->common.aml_opcode) {
 		case AML_INT_RESERVEDFIELD_OP:
 
+<<<<<<< HEAD
 			position = (u64) info->field_bit_position
 			    + (u64) arg->common.value.size;
+=======
+			position = (u64)info->field_bit_position +
+			    (u64)arg->common.value.size;
+>>>>>>> v4.9.227
 
 			if (position > ACPI_UINT32_MAX) {
 				ACPI_ERROR((AE_INFO,
@@ -344,6 +373,7 @@ acpi_ds_get_field_names(struct acpi_create_field_info *info,
 
 			/* access_attribute (attrib_quick, attrib_byte, etc.) */
 
+<<<<<<< HEAD
 			info->attribute =
 			    (u8)((arg->common.value.integer >> 8) & 0xFF);
 
@@ -351,6 +381,15 @@ acpi_ds_get_field_names(struct acpi_create_field_info *info,
 
 			info->access_length =
 			    (u8)((arg->common.value.integer >> 16) & 0xFF);
+=======
+			info->attribute = (u8)
+			    ((arg->common.value.integer >> 8) & 0xFF);
+
+			/* access_length (for serial/buffer protocols) */
+
+			info->access_length = (u8)
+			    ((arg->common.value.integer >> 16) & 0xFF);
+>>>>>>> v4.9.227
 			break;
 
 		case AML_INT_CONNECTION_OP:
@@ -425,8 +464,13 @@ acpi_ds_get_field_names(struct acpi_create_field_info *info,
 
 			/* Keep track of bit position for the next field */
 
+<<<<<<< HEAD
 			position = (u64) info->field_bit_position
 			    + (u64) arg->common.value.size;
+=======
+			position = (u64)info->field_bit_position +
+			    (u64)arg->common.value.size;
+>>>>>>> v4.9.227
 
 			if (position > ACPI_UINT32_MAX) {
 				ACPI_ERROR((AE_INFO,
@@ -502,7 +546,11 @@ acpi_ds_create_field(union acpi_parse_object *op,
 		}
 	}
 
+<<<<<<< HEAD
 	ACPI_MEMSET(&info, 0, sizeof(struct acpi_create_field_info));
+=======
+	memset(&info, 0, sizeof(struct acpi_create_field_info));
+>>>>>>> v4.9.227
 
 	/* Second arg is the field flags */
 
@@ -716,11 +764,20 @@ acpi_ds_create_bank_field(union acpi_parse_object *op,
 
 	/*
 	 * Use Info.data_register_node to store bank_field Op
+<<<<<<< HEAD
 	 * It's safe because data_register_node will never be used when create bank field
 	 * We store aml_start and aml_length in the bank_field Op for late evaluation
 	 * Used in acpi_ex_prep_field_value(Info)
 	 *
 	 * TBD: Or, should we add a field in struct acpi_create_field_info, like "void *ParentOp"?
+=======
+	 * It's safe because data_register_node will never be used when create
+	 * bank field \we store aml_start and aml_length in the bank_field Op for
+	 * late evaluation. Used in acpi_ex_prep_field_value(Info)
+	 *
+	 * TBD: Or, should we add a field in struct acpi_create_field_info, like
+	 * "void *ParentOp"?
+>>>>>>> v4.9.227
 	 */
 	info.data_register_node = (struct acpi_namespace_node *)op;
 

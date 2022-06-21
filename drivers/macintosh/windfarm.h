@@ -53,11 +53,17 @@ struct wf_control {
  * the kref and wf_unregister_control will decrement it, thus the
  * object creating/disposing a given control shouldn't assume it
  * still exists after wf_unregister_control has been called.
+<<<<<<< HEAD
  * wf_find_control will inc the refcount for you
  */
 extern int wf_register_control(struct wf_control *ct);
 extern void wf_unregister_control(struct wf_control *ct);
 extern struct wf_control * wf_find_control(const char *name);
+=======
+ */
+extern int wf_register_control(struct wf_control *ct);
+extern void wf_unregister_control(struct wf_control *ct);
+>>>>>>> v4.9.227
 extern int wf_get_control(struct wf_control *ct);
 extern void wf_put_control(struct wf_control *ct);
 
@@ -117,7 +123,10 @@ struct wf_sensor {
 /* Same lifetime rules as controls */
 extern int wf_register_sensor(struct wf_sensor *sr);
 extern void wf_unregister_sensor(struct wf_sensor *sr);
+<<<<<<< HEAD
 extern struct wf_sensor * wf_find_sensor(const char *name);
+=======
+>>>>>>> v4.9.227
 extern int wf_get_sensor(struct wf_sensor *sr);
 extern void wf_put_sensor(struct wf_sensor *sr);
 
@@ -144,7 +153,10 @@ extern int wf_unregister_client(struct notifier_block *nb);
 /* Overtemp conditions. Those are refcounted */
 extern void wf_set_overtemp(void);
 extern void wf_clear_overtemp(void);
+<<<<<<< HEAD
 extern int wf_is_overtemp(void);
+=======
+>>>>>>> v4.9.227
 
 #define WF_EVENT_NEW_CONTROL	0 /* param is wf_control * */
 #define WF_EVENT_NEW_SENSOR	1 /* param is wf_sensor * */

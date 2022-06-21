@@ -19,8 +19,12 @@
 /*
  * Driver: pcmuio
  * Description: Winsystems PC-104 based 48/96-channel DIO boards.
+<<<<<<< HEAD
  * Devices: (Winsystems) PCM-UIO48A [pcmuio48]
  *	    (Winsystems) PCM-UIO96A [pcmuio96]
+=======
+ * Devices: [Winsystems] PCM-UIO48A (pcmuio48), PCM-UIO96A (pcmuio96)
+>>>>>>> v4.9.227
  * Author: Calin Culianu <calin@ajvar.org>
  * Updated: Fri, 13 Jan 2006 12:01:01 -0500
  * Status: works
@@ -78,8 +82,11 @@
 
 #include "../comedidev.h"
 
+<<<<<<< HEAD
 #include "comedi_fc.h"
 
+=======
+>>>>>>> v4.9.227
 /*
  * Register I/O map
  *
@@ -130,7 +137,10 @@ struct pcmuio_asic {
 	spinlock_t pagelock;	/* protects the page registers */
 	spinlock_t spinlock;	/* protects member variables */
 	unsigned int enabled_mask;
+<<<<<<< HEAD
 	unsigned int stop_count;
+=======
+>>>>>>> v4.9.227
 	unsigned int active:1;
 };
 
@@ -311,13 +321,20 @@ static void pcmuio_stop_intr(struct comedi_device *dev,
 
 static void pcmuio_handle_intr_subdev(struct comedi_device *dev,
 				      struct comedi_subdevice *s,
+<<<<<<< HEAD
 				      unsigned triggered)
+=======
+				      unsigned int triggered)
+>>>>>>> v4.9.227
 {
 	struct pcmuio_private *devpriv = dev->private;
 	int asic = pcmuio_subdevice_to_asic(s);
 	struct pcmuio_asic *chip = &devpriv->asics[asic];
 	struct comedi_cmd *cmd = &s->async->cmd;
+<<<<<<< HEAD
 	unsigned oldevents = s->async->events;
+=======
+>>>>>>> v4.9.227
 	unsigned int val = 0;
 	unsigned long flags;
 	unsigned int i;
@@ -337,6 +354,7 @@ static void pcmuio_handle_intr_subdev(struct comedi_device *dev,
 			val |= (1 << i);
 	}
 
+<<<<<<< HEAD
 	/* Write the scan to the buffer. */
 	if (comedi_buf_put(s, val) &&
 	    comedi_buf_put(s, val >> 16)) {
@@ -358,12 +376,23 @@ static void pcmuio_handle_intr_subdev(struct comedi_device *dev,
 			}
 		}
 	}
+=======
+	comedi_buf_write_samples(s, &val, 1);
+
+	if (cmd->stop_src == TRIG_COUNT &&
+	    s->async->scans_done >= cmd->stop_arg)
+		s->async->events |= COMEDI_CB_EOA;
+>>>>>>> v4.9.227
 
 done:
 	spin_unlock_irqrestore(&chip->spinlock, flags);
 
+<<<<<<< HEAD
 	if (oldevents != s->async->events)
 		comedi_event(dev, s);
+=======
+	comedi_handle_events(dev, s);
+>>>>>>> v4.9.227
 }
 
 static int pcmuio_handle_asic_interrupt(struct comedi_device *dev, int asic)
@@ -487,8 +516,11 @@ static int pcmuio_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 	spin_lock_irqsave(&chip->spinlock, flags);
 	chip->active = 1;
 
+<<<<<<< HEAD
 	chip->stop_count = cmd->stop_arg;
 
+=======
+>>>>>>> v4.9.227
 	/* Set up start of acquisition. */
 	if (cmd->start_src == TRIG_INT)
 		s->async->inttrig = pcmuio_inttrig_start_intr;
@@ -508,19 +540,32 @@ static int pcmuio_cmdtest(struct comedi_device *dev,
 
 	/* Step 1 : check if triggers are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_src(&cmd->start_src, TRIG_NOW | TRIG_INT);
 	err |= cfc_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
 	err |= cfc_check_trigger_src(&cmd->convert_src, TRIG_NOW);
 	err |= cfc_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
 	err |= cfc_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+=======
+	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW | TRIG_INT);
+	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
+	err |= comedi_check_trigger_src(&cmd->convert_src, TRIG_NOW);
+	err |= comedi_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
+	err |= comedi_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 1;
 
 	/* Step 2a : make sure trigger sources are unique */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_is_unique(cmd->start_src);
 	err |= cfc_check_trigger_is_unique(cmd->stop_src);
+=======
+	err |= comedi_check_trigger_is_unique(cmd->start_src);
+	err |= comedi_check_trigger_is_unique(cmd->stop_src);
+>>>>>>> v4.9.227
 
 	/* Step 2b : and mutually compatible */
 
@@ -529,6 +574,7 @@ static int pcmuio_cmdtest(struct comedi_device *dev,
 
 	/* Step 3: check if arguments are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= cfc_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
 	err |= cfc_check_trigger_arg_is(&cmd->convert_arg, 0);
@@ -538,6 +584,18 @@ static int pcmuio_cmdtest(struct comedi_device *dev,
 		err |= cfc_check_trigger_arg_min(&cmd->stop_arg, 1);
 	else	/* TRIG_NONE */
 		err |= cfc_check_trigger_arg_is(&cmd->stop_arg, 0);
+=======
+	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->convert_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_end_arg,
+					   cmd->chanlist_len);
+
+	if (cmd->stop_src == TRIG_COUNT)
+		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
+	else	/* TRIG_NONE */
+		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 3;
@@ -590,7 +648,11 @@ static int pcmuio_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		} else if (it->options[2]) {
 			/* request the irq for the 2nd asic */
 			ret = request_irq(it->options[2], pcmuio_interrupt, 0,
+<<<<<<< HEAD
 					dev->board_name, dev);
+=======
+					  dev->board_name, dev);
+>>>>>>> v4.9.227
 			if (ret == 0)
 				devpriv->irq2 = it->options[2];
 		}
@@ -610,11 +672,20 @@ static int pcmuio_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		s->insn_bits	= pcmuio_dio_insn_bits;
 		s->insn_config	= pcmuio_dio_insn_config;
 
+<<<<<<< HEAD
 		/* subdevices 0 and 2 can suppport interrupts */
 		if ((i == 0 && dev->irq) || (i == 2 && devpriv->irq2)) {
 			/* setup the interrupt subdevice */
 			dev->read_subdev = s;
 			s->subdev_flags	|= SDF_CMD_READ;
+=======
+		/* subdevices 0 and 2 can support interrupts */
+		if ((i == 0 && dev->irq) || (i == 2 && devpriv->irq2)) {
+			/* setup the interrupt subdevice */
+			dev->read_subdev = s;
+			s->subdev_flags	|= SDF_CMD_READ | SDF_LSAMPL |
+					   SDF_PACKED;
+>>>>>>> v4.9.227
 			s->len_chanlist	= s->n_chan;
 			s->cancel	= pcmuio_cancel;
 			s->do_cmd	= pcmuio_cmd;

@@ -26,7 +26,10 @@
  *  Bjorn Steinbrink (B.Steinbrink@gmx.de), 2007
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/ptrace.h> /* struct pt_regs */
 #include "pf_in.h"
 

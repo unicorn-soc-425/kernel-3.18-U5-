@@ -197,7 +197,11 @@ static void highbank_set_em_messages(struct device *dev,
 
 	for (i = 0; i < SGPIO_PINS; i++) {
 		err = of_get_named_gpio(np, "calxeda,sgpio-gpio", i);
+<<<<<<< HEAD
 		if (IS_ERR_VALUE(err))
+=======
+		if (err < 0)
+>>>>>>> v4.9.227
 			return;
 
 		pdata->sgpio_gpio[i] = err;
@@ -499,6 +503,10 @@ static int ahci_highbank_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
+=======
+	hpriv->irq = irq;
+>>>>>>> v4.9.227
 	hpriv->flags |= (unsigned long)pi.private_data;
 
 	hpriv->mmio = devm_ioremap(dev, mem->start, resource_size(mem));
@@ -568,7 +576,11 @@ static int ahci_highbank_probe(struct platform_device *pdev)
 	ahci_init_controller(host);
 	ahci_print_info(host, "platform");
 
+<<<<<<< HEAD
 	rc = ahci_host_activate(host, irq, &ahci_highbank_platform_sht);
+=======
+	rc = ahci_host_activate(host, &ahci_highbank_platform_sht);
+>>>>>>> v4.9.227
 	if (rc)
 		goto err0;
 
@@ -634,7 +646,10 @@ static struct platform_driver ahci_highbank_driver = {
 	.remove = ata_platform_remove_one,
         .driver = {
                 .name = "highbank-ahci",
+<<<<<<< HEAD
                 .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
                 .of_match_table = ahci_of_match,
                 .pm = &ahci_highbank_pm_ops,
         },

@@ -109,7 +109,11 @@ unsigned long os_get_top_address(void)
 		exit(1);
 	}
 
+<<<<<<< HEAD
 	printf("0x%x\n", bottom << UM_KERN_PAGE_SHIFT);
+=======
+	printf("0x%lx\n", bottom << UM_KERN_PAGE_SHIFT);
+>>>>>>> v4.9.227
 	printf("Locating the top of the address space ... ");
 	fflush(stdout);
 
@@ -134,7 +138,11 @@ out:
 		exit(1);
 	}
 	top <<= UM_KERN_PAGE_SHIFT;
+<<<<<<< HEAD
 	printf("0x%x\n", top);
+=======
+	printf("0x%lx\n", top);
+>>>>>>> v4.9.227
 
 	return top;
 }

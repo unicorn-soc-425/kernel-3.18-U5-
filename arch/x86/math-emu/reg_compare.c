@@ -168,7 +168,11 @@ static int compare(FPU_REG const *b, int tagb)
 /* This function requires that st(0) is not empty */
 int FPU_compare_st_data(FPU_REG const *loaded_data, u_char loaded_tag)
 {
+<<<<<<< HEAD
 	int f = 0, c;
+=======
+	int f, c;
+>>>>>>> v4.9.227
 
 	c = compare(loaded_data, loaded_tag);
 
@@ -189,12 +193,21 @@ int FPU_compare_st_data(FPU_REG const *loaded_data, u_char loaded_tag)
 		case COMP_No_Comp:
 			f = SW_C3 | SW_C2 | SW_C0;
 			break;
+<<<<<<< HEAD
 #ifdef PARANOID
 		default:
 			EXCEPTION(EX_INTERNAL | 0x121);
 			f = SW_C3 | SW_C2 | SW_C0;
 			break;
 #endif /* PARANOID */
+=======
+		default:
+#ifdef PARANOID
+			EXCEPTION(EX_INTERNAL | 0x121);
+#endif /* PARANOID */
+			f = SW_C3 | SW_C2 | SW_C0;
+			break;
+>>>>>>> v4.9.227
 		}
 	setcc(f);
 	if (c & COMP_Denormal) {
@@ -205,7 +218,11 @@ int FPU_compare_st_data(FPU_REG const *loaded_data, u_char loaded_tag)
 
 static int compare_st_st(int nr)
 {
+<<<<<<< HEAD
 	int f = 0, c;
+=======
+	int f, c;
+>>>>>>> v4.9.227
 	FPU_REG *st_ptr;
 
 	if (!NOT_EMPTY(0) || !NOT_EMPTY(nr)) {
@@ -235,12 +252,21 @@ static int compare_st_st(int nr)
 		case COMP_No_Comp:
 			f = SW_C3 | SW_C2 | SW_C0;
 			break;
+<<<<<<< HEAD
 #ifdef PARANOID
 		default:
 			EXCEPTION(EX_INTERNAL | 0x122);
 			f = SW_C3 | SW_C2 | SW_C0;
 			break;
 #endif /* PARANOID */
+=======
+		default:
+#ifdef PARANOID
+			EXCEPTION(EX_INTERNAL | 0x122);
+#endif /* PARANOID */
+			f = SW_C3 | SW_C2 | SW_C0;
+			break;
+>>>>>>> v4.9.227
 		}
 	setcc(f);
 	if (c & COMP_Denormal) {
@@ -249,6 +275,57 @@ static int compare_st_st(int nr)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int compare_i_st_st(int nr)
+{
+	int f, c;
+	FPU_REG *st_ptr;
+
+	if (!NOT_EMPTY(0) || !NOT_EMPTY(nr)) {
+		FPU_EFLAGS |= (X86_EFLAGS_ZF | X86_EFLAGS_PF | X86_EFLAGS_CF);
+		/* Stack fault */
+		EXCEPTION(EX_StackUnder);
+		return !(control_word & CW_Invalid);
+	}
+
+	partial_status &= ~SW_C0;
+	st_ptr = &st(nr);
+	c = compare(st_ptr, FPU_gettagi(nr));
+	if (c & COMP_NaN) {
+		FPU_EFLAGS |= (X86_EFLAGS_ZF | X86_EFLAGS_PF | X86_EFLAGS_CF);
+		EXCEPTION(EX_Invalid);
+		return !(control_word & CW_Invalid);
+	}
+
+	switch (c & 7) {
+	case COMP_A_lt_B:
+		f = X86_EFLAGS_CF;
+		break;
+	case COMP_A_eq_B:
+		f = X86_EFLAGS_ZF;
+		break;
+	case COMP_A_gt_B:
+		f = 0;
+		break;
+	case COMP_No_Comp:
+		f = X86_EFLAGS_ZF | X86_EFLAGS_PF | X86_EFLAGS_CF;
+		break;
+	default:
+#ifdef PARANOID
+		EXCEPTION(EX_INTERNAL | 0x122);
+#endif /* PARANOID */
+		f = 0;
+		break;
+	}
+	FPU_EFLAGS = (FPU_EFLAGS & ~(X86_EFLAGS_ZF | X86_EFLAGS_PF | X86_EFLAGS_CF)) | f;
+	if (c & COMP_Denormal) {
+		return denormal_operand() < 0;
+	}
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int compare_u_st_st(int nr)
 {
 	int f = 0, c;
@@ -299,6 +376,61 @@ static int compare_u_st_st(int nr)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int compare_ui_st_st(int nr)
+{
+	int f = 0, c;
+	FPU_REG *st_ptr;
+
+	if (!NOT_EMPTY(0) || !NOT_EMPTY(nr)) {
+		FPU_EFLAGS |= (X86_EFLAGS_ZF | X86_EFLAGS_PF | X86_EFLAGS_CF);
+		/* Stack fault */
+		EXCEPTION(EX_StackUnder);
+		return !(control_word & CW_Invalid);
+	}
+
+	partial_status &= ~SW_C0;
+	st_ptr = &st(nr);
+	c = compare(st_ptr, FPU_gettagi(nr));
+	if (c & COMP_NaN) {
+		FPU_EFLAGS |= (X86_EFLAGS_ZF | X86_EFLAGS_PF | X86_EFLAGS_CF);
+		if (c & COMP_SNaN) {	/* This is the only difference between
+					   un-ordered and ordinary comparisons */
+			EXCEPTION(EX_Invalid);
+			return !(control_word & CW_Invalid);
+		}
+		return 0;
+	}
+
+	switch (c & 7) {
+	case COMP_A_lt_B:
+		f = X86_EFLAGS_CF;
+		break;
+	case COMP_A_eq_B:
+		f = X86_EFLAGS_ZF;
+		break;
+	case COMP_A_gt_B:
+		f = 0;
+		break;
+	case COMP_No_Comp:
+		f = X86_EFLAGS_ZF | X86_EFLAGS_PF | X86_EFLAGS_CF;
+		break;
+#ifdef PARANOID
+	default:
+		EXCEPTION(EX_INTERNAL | 0x123);
+		f = 0;
+		break;
+#endif /* PARANOID */
+	}
+	FPU_EFLAGS = (FPU_EFLAGS & ~(X86_EFLAGS_ZF | X86_EFLAGS_PF | X86_EFLAGS_CF)) | f;
+	if (c & COMP_Denormal) {
+		return denormal_operand() < 0;
+	}
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /*---------------------------------------------------------------------------*/
 
 void fcom_st(void)
@@ -348,3 +480,34 @@ void fucompp(void)
 	} else
 		FPU_illegal();
 }
+<<<<<<< HEAD
+=======
+
+/* P6+ compare-to-EFLAGS ops */
+
+void fcomi_(void)
+{
+	/* fcomi st(i) */
+	compare_i_st_st(FPU_rm);
+}
+
+void fcomip(void)
+{
+	/* fcomip st(i) */
+	if (!compare_i_st_st(FPU_rm))
+		FPU_pop();
+}
+
+void fucomi_(void)
+{
+	/* fucomi st(i) */
+	compare_ui_st_st(FPU_rm);
+}
+
+void fucomip(void)
+{
+	/* fucomip st(i) */
+	if (!compare_ui_st_st(FPU_rm))
+		FPU_pop();
+}
+>>>>>>> v4.9.227

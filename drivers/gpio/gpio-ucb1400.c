@@ -15,7 +15,11 @@
 static int ucb1400_gpio_dir_in(struct gpio_chip *gc, unsigned off)
 {
 	struct ucb1400_gpio *gpio;
+<<<<<<< HEAD
 	gpio = container_of(gc, struct ucb1400_gpio, gc);
+=======
+	gpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	ucb1400_gpio_set_direction(gpio->ac97, off, 0);
 	return 0;
 }
@@ -23,7 +27,11 @@ static int ucb1400_gpio_dir_in(struct gpio_chip *gc, unsigned off)
 static int ucb1400_gpio_dir_out(struct gpio_chip *gc, unsigned off, int val)
 {
 	struct ucb1400_gpio *gpio;
+<<<<<<< HEAD
 	gpio = container_of(gc, struct ucb1400_gpio, gc);
+=======
+	gpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	ucb1400_gpio_set_direction(gpio->ac97, off, 1);
 	ucb1400_gpio_set_value(gpio->ac97, off, val);
 	return 0;
@@ -32,14 +40,24 @@ static int ucb1400_gpio_dir_out(struct gpio_chip *gc, unsigned off, int val)
 static int ucb1400_gpio_get(struct gpio_chip *gc, unsigned off)
 {
 	struct ucb1400_gpio *gpio;
+<<<<<<< HEAD
 	gpio = container_of(gc, struct ucb1400_gpio, gc);
 	return ucb1400_gpio_get_value(gpio->ac97, off);
+=======
+
+	gpio = gpiochip_get_data(gc);
+	return !!ucb1400_gpio_get_value(gpio->ac97, off);
+>>>>>>> v4.9.227
 }
 
 static void ucb1400_gpio_set(struct gpio_chip *gc, unsigned off, int val)
 {
 	struct ucb1400_gpio *gpio;
+<<<<<<< HEAD
 	gpio = container_of(gc, struct ucb1400_gpio, gc);
+=======
+	gpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	ucb1400_gpio_set_value(gpio->ac97, off, val);
 }
 
@@ -66,7 +84,11 @@ static int ucb1400_gpio_probe(struct platform_device *dev)
 	ucb->gc.set = ucb1400_gpio_set;
 	ucb->gc.can_sleep = true;
 
+<<<<<<< HEAD
 	err = gpiochip_add(&ucb->gc);
+=======
+	err = devm_gpiochip_add_data(&dev->dev, &ucb->gc, ucb);
+>>>>>>> v4.9.227
 	if (err)
 		goto err;
 
@@ -89,7 +111,10 @@ static int ucb1400_gpio_remove(struct platform_device *dev)
 			return err;
 	}
 
+<<<<<<< HEAD
 	gpiochip_remove(&ucb->gc);
+=======
+>>>>>>> v4.9.227
 	return err;
 }
 

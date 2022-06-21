@@ -29,7 +29,11 @@ extern struct core_boot_config *mips_cps_core_bootcfg;
 extern void mips_cps_core_entry(void);
 extern void mips_cps_core_init(void);
 
+<<<<<<< HEAD
 extern struct vpe_boot_config *mips_cps_boot_vpes(void);
+=======
+extern void mips_cps_boot_vpes(struct core_boot_config *cfg, unsigned vpe);
+>>>>>>> v4.9.227
 
 extern void mips_cps_pm_save(void);
 extern void mips_cps_pm_restore(void);

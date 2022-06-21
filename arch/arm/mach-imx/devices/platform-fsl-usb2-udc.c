@@ -18,11 +18,14 @@
 		.irq = soc ## _INT_USB_OTG,				\
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX25
 const struct imx_fsl_usb2_udc_data imx25_fsl_usb2_udc_data __initconst =
 	imx_fsl_usb2_udc_data_entry_single(MX25, "imx-udc-mx27");
 #endif /* ifdef CONFIG_SOC_IMX25 */
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_SOC_IMX27
 const struct imx_fsl_usb2_udc_data imx27_fsl_usb2_udc_data __initconst =
 	imx_fsl_usb2_udc_data_entry_single(MX27, "imx-udc-mx27");

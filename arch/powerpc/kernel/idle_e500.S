@@ -58,6 +58,7 @@ BEGIN_FTR_SECTION
 	mtlr	r0
 	lis	r3,HID0_NAP@h
 END_FTR_SECTION_IFSET(CPU_FTR_CAN_NAP)
+<<<<<<< HEAD
 BEGIN_FTR_SECTION
 	msync
 	li	r7,L2CSR0_L2FL@l
@@ -67,6 +68,8 @@ BEGIN_FTR_SECTION
 	andi.	r4,r7,L2CSR0_L2FL@l
 	bne	2b
 END_FTR_SECTION_IFSET(CPU_FTR_L2CSR|CPU_FTR_CAN_NAP)
+=======
+>>>>>>> v4.9.227
 1:
 	/* Go to NAP or DOZE now */
 	mfspr	r4,SPRN_HID0

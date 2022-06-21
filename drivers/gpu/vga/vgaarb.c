@@ -29,6 +29,11 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "vgaarb: " fmt
+
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/pci.h>
@@ -129,12 +134,36 @@ static struct vga_device *vgadev_find(struct pci_dev *pdev)
 	return NULL;
 }
 
+<<<<<<< HEAD
 /* Returns the default VGA device (vgacon's babe) */
+=======
+/**
+ * vga_default_device - return the default VGA device, for vgacon
+ *
+ * This can be defined by the platform. The default implementation
+ * is rather dumb and will probably only work properly on single
+ * vga card setups and/or x86 platforms.
+ *
+ * If your VGA default device is not PCI, you'll have to return
+ * NULL here. In this case, I assume it will not conflict with
+ * any PCI card. If this is not true, I'll have to define two archs
+ * hooks for enabling/disabling the VGA default device if that is
+ * possible. This may be a problem with real _ISA_ VGA cards, in
+ * addition to a PCI one. I don't know at this point how to deal
+ * with that card. Can theirs IOs be disabled at all ? If not, then
+ * I suppose it's a matter of having the proper arch hook telling
+ * us about it, so we basically never allow anybody to succeed a
+ * vga_get()...
+ */
+>>>>>>> v4.9.227
 struct pci_dev *vga_default_device(void)
 {
 	return vga_default;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 EXPORT_SYMBOL_GPL(vga_default_device);
 
 void vga_set_default_device(struct pci_dev *pdev)
@@ -298,9 +327,15 @@ enable_them:
 
 	pci_set_vga_state(vgadev->pdev, true, pci_bits, flags);
 
+<<<<<<< HEAD
 	if (!vgadev->bridge_has_one_vga) {
 		vga_irq_set_state(vgadev, true);
 	}
+=======
+	if (!vgadev->bridge_has_one_vga)
+		vga_irq_set_state(vgadev, true);
+
+>>>>>>> v4.9.227
 	vgadev->owns |= wants;
 lock_them:
 	vgadev->locks |= (rsrc & VGA_RSRC_LEGACY_MASK);
@@ -355,6 +390,43 @@ static void __vga_put(struct vga_device *vgadev, unsigned int rsrc)
 		wake_up_all(&vga_wait_queue);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * vga_get - acquire & locks VGA resources
+ * @pdev: pci device of the VGA card or NULL for the system default
+ * @rsrc: bit mask of resources to acquire and lock
+ * @interruptible: blocking should be interruptible by signals ?
+ *
+ * This function acquires VGA resources for the given card and mark those
+ * resources locked. If the resource requested are "normal" (and not legacy)
+ * resources, the arbiter will first check whether the card is doing legacy
+ * decoding for that type of resource. If yes, the lock is "converted" into a
+ * legacy resource lock.
+ *
+ * The arbiter will first look for all VGA cards that might conflict and disable
+ * their IOs and/or Memory access, including VGA forwarding on P2P bridges if
+ * necessary, so that the requested resources can be used. Then, the card is
+ * marked as locking these resources and the IO and/or Memory accesses are
+ * enabled on the card (including VGA forwarding on parent P2P bridges if any).
+ *
+ * This function will block if some conflicting card is already locking one of
+ * the required resources (or any resource on a different bus segment, since P2P
+ * bridges don't differentiate VGA memory and IO afaik). You can indicate
+ * whether this blocking should be interruptible by a signal (for userland
+ * interface) or not.
+ *
+ * Must not be called at interrupt time or in atomic context.  If the card
+ * already owns the resources, the function succeeds.  Nested calls are
+ * supported (a per-resource counter is maintained)
+ *
+ * On success, release the VGA resource again with vga_put().
+ *
+ * Returns:
+ *
+ * 0 on success, negative error code on failure.
+ */
+>>>>>>> v4.9.227
 int vga_get(struct pci_dev *pdev, unsigned int rsrc, int interruptible)
 {
 	struct vga_device *vgadev, *conflict;
@@ -394,8 +466,15 @@ int vga_get(struct pci_dev *pdev, unsigned int rsrc, int interruptible)
 		set_current_state(interruptible ?
 				  TASK_INTERRUPTIBLE :
 				  TASK_UNINTERRUPTIBLE);
+<<<<<<< HEAD
 		if (signal_pending(current)) {
 			rc = -EINTR;
+=======
+		if (interruptible && signal_pending(current)) {
+			__set_current_state(TASK_RUNNING);
+			remove_wait_queue(&vga_wait_queue, &wait);
+			rc = -ERESTARTSYS;
+>>>>>>> v4.9.227
 			break;
 		}
 		schedule();
@@ -405,6 +484,24 @@ int vga_get(struct pci_dev *pdev, unsigned int rsrc, int interruptible)
 }
 EXPORT_SYMBOL(vga_get);
 
+<<<<<<< HEAD
+=======
+/**
+ * vga_tryget - try to acquire & lock legacy VGA resources
+ * @pdev: pci devivce of VGA card or NULL for system default
+ * @rsrc: bit mask of resources to acquire and lock
+ *
+ * This function performs the same operation as vga_get(), but will return an
+ * error (-EBUSY) instead of blocking if the resources are already locked by
+ * another card. It can be called in any context
+ *
+ * On success, release the VGA resource again with vga_put().
+ *
+ * Returns:
+ *
+ * 0 on success, negative error code on failure.
+ */
+>>>>>>> v4.9.227
 int vga_tryget(struct pci_dev *pdev, unsigned int rsrc)
 {
 	struct vga_device *vgadev;
@@ -432,6 +529,19 @@ bail:
 }
 EXPORT_SYMBOL(vga_tryget);
 
+<<<<<<< HEAD
+=======
+/**
+ * vga_put - release lock on legacy VGA resources
+ * @pdev: pci device of VGA card or NULL for system default
+ * @rsrc: but mask of resource to release
+ *
+ * This fuction releases resources previously locked by vga_get() or
+ * vga_tryget(). The resources aren't disabled right away, so that a subsequence
+ * vga_get() on the same card will succeed immediately. Resources have a
+ * counter, so locks are only released if the counter reaches 0.
+ */
+>>>>>>> v4.9.227
 void vga_put(struct pci_dev *pdev, unsigned int rsrc)
 {
 	struct vga_device *vgadev;
@@ -452,6 +562,7 @@ bail:
 }
 EXPORT_SYMBOL(vga_put);
 
+<<<<<<< HEAD
 /* Rules for using a bridge to control a VGA descendant decoding:
    if a bridge has only one VGA descendant then it can be used
    to control the VGA routing for that device.
@@ -461,6 +572,17 @@ EXPORT_SYMBOL(vga_put);
    So for every device we register, we need to iterate all its parent bridges
    so we can invalidate any devices using them properly.
 */
+=======
+/*
+ * Rules for using a bridge to control a VGA descendant decoding: if a bridge
+ * has only one VGA descendant then it can be used to control the VGA routing
+ * for that device. It should always use the bridge closest to the device to
+ * control it. If a bridge has a direct VGA descendant, but also have a sub-
+ * bridge VGA descendant then we cannot use that bridge to control the direct
+ * VGA descendant. So for every device we register, we need to iterate all
+ * its parent bridges so we can invalidate any devices using them properly.
+ */
+>>>>>>> v4.9.227
 static void vga_arbiter_check_bridge_sharing(struct vga_device *vgadev)
 {
 	struct vga_device *same_bridge_vgadev;
@@ -484,6 +606,7 @@ static void vga_arbiter_check_bridge_sharing(struct vga_device *vgadev)
 
 			/* see if the share a bridge with this device */
 			if (new_bridge == bridge) {
+<<<<<<< HEAD
 				/* if their direct parent bridge is the same
 				   as any bridge of this device then it can't be used
 				   for that device */
@@ -499,6 +622,28 @@ static void vga_arbiter_check_bridge_sharing(struct vga_device *vgadev)
 					if (bridge == vgadev->pdev->bus->self)
 						vgadev->bridge_has_one_vga = false;
 				}
+=======
+				/*
+				 * If their direct parent bridge is the same
+				 * as any bridge of this device then it can't
+				 * be used for that device.
+				 */
+				same_bridge_vgadev->bridge_has_one_vga = false;
+			}
+
+			/*
+			 * Now iterate the previous devices bridge hierarchy.
+			 * If the new devices parent bridge is in the other
+			 * devices hierarchy then we can't use it to control
+			 * this device
+			 */
+			while (bus) {
+				bridge = bus->self;
+
+				if (bridge && bridge == vgadev->pdev->bus->self)
+					vgadev->bridge_has_one_vga = false;
+
+>>>>>>> v4.9.227
 				bus = bus->parent;
 			}
 		}
@@ -525,18 +670,30 @@ static bool vga_arbiter_add_pci_device(struct pci_dev *pdev)
 		return false;
 
 	/* Allocate structure */
+<<<<<<< HEAD
 	vgadev = kmalloc(sizeof(struct vga_device), GFP_KERNEL);
 	if (vgadev == NULL) {
 		pr_err("vgaarb: failed to allocate pci device\n");
 		/* What to do on allocation failure ? For now, let's
 		 * just do nothing, I'm not sure there is anything saner
 		 * to be done
+=======
+	vgadev = kzalloc(sizeof(struct vga_device), GFP_KERNEL);
+	if (vgadev == NULL) {
+		pr_err("failed to allocate pci device\n");
+		/*
+		 * What to do on allocation failure ? For now, let's just do
+		 * nothing, I'm not sure there is anything saner to be done.
+>>>>>>> v4.9.227
 		 */
 		return false;
 	}
 
+<<<<<<< HEAD
 	memset(vgadev, 0, sizeof(*vgadev));
 
+=======
+>>>>>>> v4.9.227
 	/* Take lock & check for duplicates */
 	spin_lock_irqsave(&vga_lock, flags);
 	if (vgadev_find(pdev) != NULL) {
@@ -566,8 +723,13 @@ static bool vga_arbiter_add_pci_device(struct pci_dev *pdev)
 		bridge = bus->self;
 		if (bridge) {
 			u16 l;
+<<<<<<< HEAD
 			pci_read_config_word(bridge, PCI_BRIDGE_CONTROL,
 					     &l);
+=======
+
+			pci_read_config_word(bridge, PCI_BRIDGE_CONTROL, &l);
+>>>>>>> v4.9.227
 			if (!(l & PCI_BRIDGE_CTL_VGA)) {
 				vgadev->owns = 0;
 				break;
@@ -581,8 +743,12 @@ static bool vga_arbiter_add_pci_device(struct pci_dev *pdev)
 	 */
 	if (vga_default == NULL &&
 	    ((vgadev->owns & VGA_RSRC_LEGACY_MASK) == VGA_RSRC_LEGACY_MASK)) {
+<<<<<<< HEAD
 		pr_info("vgaarb: setting as boot device: PCI:%s\n",
 			pci_name(pdev));
+=======
+		pr_info("setting as boot device: PCI:%s\n", pci_name(pdev));
+>>>>>>> v4.9.227
 		vga_set_default_device(pdev);
 	}
 
@@ -591,7 +757,11 @@ static bool vga_arbiter_add_pci_device(struct pci_dev *pdev)
 	/* Add to the list */
 	list_add(&vgadev->list, &vga_list);
 	vga_count++;
+<<<<<<< HEAD
 	pr_info("vgaarb: device added: PCI:%s,decodes=%s,owns=%s,locks=%s\n",
+=======
+	pr_info("device added: PCI:%s,decodes=%s,owns=%s,locks=%s\n",
+>>>>>>> v4.9.227
 		pci_name(pdev),
 		vga_iostate_to_str(vgadev->decodes),
 		vga_iostate_to_str(vgadev->owns),
@@ -651,7 +821,11 @@ static inline void vga_update_device_decodes(struct vga_device *vgadev,
 	decodes_unlocked = vgadev->locks & decodes_removed;
 	vgadev->decodes = new_decodes;
 
+<<<<<<< HEAD
 	pr_info("vgaarb: device changed decodes: PCI:%s,olddecodes=%s,decodes=%s:owns=%s\n",
+=======
+	pr_info("device changed decodes: PCI:%s,olddecodes=%s,decodes=%s:owns=%s\n",
+>>>>>>> v4.9.227
 		pci_name(vgadev->pdev),
 		vga_iostate_to_str(old_decodes),
 		vga_iostate_to_str(vgadev->decodes),
@@ -673,10 +847,19 @@ static inline void vga_update_device_decodes(struct vga_device *vgadev,
 	if (!(old_decodes & VGA_RSRC_LEGACY_MASK) &&
 	    new_decodes & VGA_RSRC_LEGACY_MASK)
 		vga_decode_count++;
+<<<<<<< HEAD
 	pr_debug("vgaarb: decoding count now is: %d\n", vga_decode_count);
 }
 
 static void __vga_set_legacy_decoding(struct pci_dev *pdev, unsigned int decodes, bool userspace)
+=======
+	pr_debug("decoding count now is: %d\n", vga_decode_count);
+}
+
+static void __vga_set_legacy_decoding(struct pci_dev *pdev,
+				      unsigned int decodes,
+				      bool userspace)
+>>>>>>> v4.9.227
 {
 	struct vga_device *vgadev;
 	unsigned long flags;
@@ -709,10 +892,48 @@ void vga_set_legacy_decoding(struct pci_dev *pdev, unsigned int decodes)
 }
 EXPORT_SYMBOL(vga_set_legacy_decoding);
 
+<<<<<<< HEAD
 /* call with NULL to unregister */
 int vga_client_register(struct pci_dev *pdev, void *cookie,
 			void (*irq_set_state)(void *cookie, bool state),
 			unsigned int (*set_vga_decode)(void *cookie, bool decode))
+=======
+/**
+ * vga_client_register - register or unregister a VGA arbitration client
+ * @pdev: pci device of the VGA client
+ * @cookie: client cookie to be used in callbacks
+ * @irq_set_state: irq state change callback
+ * @set_vga_decode: vga decode change callback
+ *
+ * Clients have two callback mechanisms they can use.
+ *
+ * @irq_set_state callback: If a client can't disable its GPUs VGA
+ * resources, then we need to be able to ask it to turn off its irqs when we
+ * turn off its mem and io decoding.
+ *
+ * @set_vga_decode callback: If a client can disable its GPU VGA resource, it
+ * will get a callback from this to set the encode/decode state.
+ *
+ * Rationale: we cannot disable VGA decode resources unconditionally some single
+ * GPU laptops seem to require ACPI or BIOS access to the VGA registers to
+ * control things like backlights etc.  Hopefully newer multi-GPU laptops do
+ * something saner, and desktops won't have any special ACPI for this. The
+ * driver will get a callback when VGA arbitration is first used by userspace
+ * since some older X servers have issues.
+ *
+ * This function does not check whether a client for @pdev has been registered
+ * already.
+ *
+ * To unregister just call this function with @irq_set_state and @set_vga_decode
+ * both set to NULL for the same @pdev as originally used to register them.
+ *
+ * Returns: 0 on success, -1 on failure
+ */
+int vga_client_register(struct pci_dev *pdev, void *cookie,
+			void (*irq_set_state)(void *cookie, bool state),
+			unsigned int (*set_vga_decode)(void *cookie,
+						       bool decode))
+>>>>>>> v4.9.227
 {
 	int ret = -ENODEV;
 	struct vga_device *vgadev;
@@ -832,7 +1053,11 @@ static int vga_pci_str_to_vars(char *buf, int count, unsigned int *domain,
 	return 1;
 }
 
+<<<<<<< HEAD
 static ssize_t vga_arb_read(struct file *file, char __user * buf,
+=======
+static ssize_t vga_arb_read(struct file *file, char __user *buf,
+>>>>>>> v4.9.227
 			    size_t count, loff_t *ppos)
 {
 	struct vga_arb_private *priv = file->private_data;
@@ -899,7 +1124,11 @@ done:
  * TODO: To avoid parsing inside kernel and to improve the speed we may
  * consider use ioctl here
  */
+<<<<<<< HEAD
 static ssize_t vga_arb_write(struct file *file, const char __user * buf,
+=======
+static ssize_t vga_arb_write(struct file *file, const char __user *buf,
+>>>>>>> v4.9.227
 			     size_t count, loff_t *ppos)
 {
 	struct vga_arb_private *priv = file->private_data;
@@ -1075,6 +1304,7 @@ static ssize_t vga_arb_write(struct file *file, const char __user * buf,
 				ret_val = -EPROTO;
 				goto done;
 			}
+<<<<<<< HEAD
 			pr_debug("vgaarb: %s ==> %x:%x:%x.%x\n", curr_pos,
 				domain, bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
 
@@ -1082,6 +1312,15 @@ static ssize_t vga_arb_write(struct file *file, const char __user * buf,
 			pr_debug("vgaarb: pdev %p\n", pdev);
 			if (!pdev) {
 				pr_err("vgaarb: invalid PCI address %x:%x:%x\n",
+=======
+			pr_debug("%s ==> %x:%x:%x.%x\n", curr_pos,
+				domain, bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
+
+			pdev = pci_get_domain_bus_and_slot(domain, bus, devfn);
+			pr_debug("pdev %p\n", pdev);
+			if (!pdev) {
+				pr_err("invalid PCI address %x:%x:%x\n",
+>>>>>>> v4.9.227
 					domain, bus, devfn);
 				ret_val = -ENODEV;
 				goto done;
@@ -1089,10 +1328,20 @@ static ssize_t vga_arb_write(struct file *file, const char __user * buf,
 		}
 
 		vgadev = vgadev_find(pdev);
+<<<<<<< HEAD
 		pr_debug("vgaarb: vgadev %p\n", vgadev);
 		if (vgadev == NULL) {
 			pr_err("vgaarb: this pci device is not a vga device\n");
 			pci_dev_put(pdev);
+=======
+		pr_debug("vgadev %p\n", vgadev);
+		if (vgadev == NULL) {
+			if (pdev) {
+				pr_err("this pci device is not a vga device\n");
+				pci_dev_put(pdev);
+			}
+
+>>>>>>> v4.9.227
 			ret_val = -ENODEV;
 			goto done;
 		}
@@ -1109,7 +1358,11 @@ static ssize_t vga_arb_write(struct file *file, const char __user * buf,
 			}
 		}
 		if (i == MAX_USER_CARDS) {
+<<<<<<< HEAD
 			pr_err("vgaarb: maximum user cards (%d) number reached!\n",
+=======
+			pr_err("maximum user cards (%d) number reached!\n",
+>>>>>>> v4.9.227
 				MAX_USER_CARDS);
 			pci_dev_put(pdev);
 			/* XXX: which value to return? */
@@ -1125,7 +1378,11 @@ static ssize_t vga_arb_write(struct file *file, const char __user * buf,
 	} else if (strncmp(curr_pos, "decodes ", 8) == 0) {
 		curr_pos += 8;
 		remaining -= 8;
+<<<<<<< HEAD
 		pr_debug("vgaarb: client 0x%p called 'decodes'\n", priv);
+=======
+		pr_debug("client 0x%p called 'decodes'\n", priv);
+>>>>>>> v4.9.227
 
 		if (!vga_str_to_iostate(curr_pos, remaining, &io_state)) {
 			ret_val = -EPROTO;
@@ -1150,6 +1407,7 @@ done:
 	return ret_val;
 }
 
+<<<<<<< HEAD
 static unsigned int vga_arb_fpoll(struct file *file, poll_table * wait)
 {
 	struct vga_arb_private *priv = file->private_data;
@@ -1158,6 +1416,12 @@ static unsigned int vga_arb_fpoll(struct file *file, poll_table * wait)
 
 	if (priv == NULL)
 		return -ENODEV;
+=======
+static unsigned int vga_arb_fpoll(struct file *file, poll_table *wait)
+{
+	pr_debug("%s\n", __func__);
+
+>>>>>>> v4.9.227
 	poll_wait(file, &vga_wait_queue, wait);
 	return POLLIN;
 }
@@ -1198,9 +1462,12 @@ static int vga_arb_release(struct inode *inode, struct file *file)
 
 	pr_debug("%s\n", __func__);
 
+<<<<<<< HEAD
 	if (priv == NULL)
 		return -ENODEV;
 
+=======
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&vga_user_lock, flags);
 	list_del(&priv->list);
 	for (i = 0; i < MAX_USER_CARDS; i++) {
@@ -1246,7 +1513,12 @@ static void vga_arbiter_notify_clients(void)
 		else
 			new_state = true;
 		if (vgadev->set_vga_decode) {
+<<<<<<< HEAD
 			new_decodes = vgadev->set_vga_decode(vgadev->cookie, new_state);
+=======
+			new_decodes = vgadev->set_vga_decode(vgadev->cookie,
+							     new_state);
+>>>>>>> v4.9.227
 			vga_update_device_decodes(vgadev, new_decodes);
 		}
 	}
@@ -1300,7 +1572,11 @@ static int __init vga_arb_device_init(void)
 
 	rc = misc_register(&vga_arb_device);
 	if (rc < 0)
+<<<<<<< HEAD
 		pr_err("vgaarb: error %d registering device\n", rc);
+=======
+		pr_err("error %d registering device\n", rc);
+>>>>>>> v4.9.227
 
 	bus_register_notifier(&pci_bus_type, &pci_notifier);
 
@@ -1312,6 +1588,7 @@ static int __init vga_arb_device_init(void)
 			       PCI_ANY_ID, pdev)) != NULL)
 		vga_arbiter_add_pci_device(pdev);
 
+<<<<<<< HEAD
 	pr_info("vgaarb: loaded\n");
 
 	list_for_each_entry(vgadev, &vga_list, list) {
@@ -1327,6 +1604,31 @@ static int __init vga_arb_device_init(void)
 		/* Does firmware framebuffer belong to us? */
 		for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
 			if (!(pci_resource_flags(vgadev->pdev, i) & IORESOURCE_MEM))
+=======
+	pr_info("loaded\n");
+
+	list_for_each_entry(vgadev, &vga_list, list) {
+#if defined(CONFIG_X86) || defined(CONFIG_IA64)
+		/*
+		 * Override vga_arbiter_add_pci_device()'s I/O based detection
+		 * as it may take the wrong device (e.g. on Apple system under
+		 * EFI).
+		 *
+		 * Select the device owning the boot framebuffer if there is
+		 * one.
+		 */
+		resource_size_t start, end, limit;
+		unsigned long flags;
+		int i;
+
+		limit = screen_info.lfb_base + screen_info.lfb_size;
+
+		/* Does firmware framebuffer belong to us? */
+		for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
+			flags = pci_resource_flags(vgadev->pdev, i);
+
+			if ((flags & IORESOURCE_MEM) == 0)
+>>>>>>> v4.9.227
 				continue;
 
 			start = pci_resource_start(vgadev->pdev, i);
@@ -1335,6 +1637,7 @@ static int __init vga_arb_device_init(void)
 			if (!start || !end)
 				continue;
 
+<<<<<<< HEAD
 			if (screen_info.lfb_base < start ||
 			    (screen_info.lfb_base + screen_info.lfb_size) >= end)
 				continue;
@@ -1343,14 +1646,32 @@ static int __init vga_arb_device_init(void)
 					pci_name(vgadev->pdev));
 			else if (vgadev->pdev != vga_default_device())
 				pr_info("vgaarb: overriding boot device: PCI:%s\n",
+=======
+			if (screen_info.lfb_base < start || limit >= end)
+				continue;
+
+			if (!vga_default_device())
+				pr_info("setting as boot device: PCI:%s\n",
+					pci_name(vgadev->pdev));
+			else if (vgadev->pdev != vga_default_device())
+				pr_info("overriding boot device: PCI:%s\n",
+>>>>>>> v4.9.227
 					pci_name(vgadev->pdev));
 			vga_set_default_device(vgadev->pdev);
 		}
 #endif
 		if (vgadev->bridge_has_one_vga)
+<<<<<<< HEAD
 			pr_info("vgaarb: bridge control possible %s\n", pci_name(vgadev->pdev));
 		else
 			pr_info("vgaarb: no bridge control possible %s\n", pci_name(vgadev->pdev));
+=======
+			pr_info("bridge control possible %s\n",
+				pci_name(vgadev->pdev));
+		else
+			pr_info("no bridge control possible %s\n",
+				pci_name(vgadev->pdev));
+>>>>>>> v4.9.227
 	}
 	return rc;
 }

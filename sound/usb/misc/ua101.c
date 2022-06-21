@@ -613,6 +613,7 @@ static int start_usb_playback(struct ua101 *ua)
 
 static void abort_alsa_capture(struct ua101 *ua)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (test_bit(ALSA_CAPTURE_RUNNING, &ua->states)) {
@@ -620,10 +621,15 @@ static void abort_alsa_capture(struct ua101 *ua)
 		snd_pcm_stop(ua->capture.substream, SNDRV_PCM_STATE_XRUN);
 		snd_pcm_stream_unlock_irqrestore(ua->capture.substream, flags);
 	}
+=======
+	if (test_bit(ALSA_CAPTURE_RUNNING, &ua->states))
+		snd_pcm_stop_xrun(ua->capture.substream);
+>>>>>>> v4.9.227
 }
 
 static void abort_alsa_playback(struct ua101 *ua)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (test_bit(ALSA_PLAYBACK_RUNNING, &ua->states)) {
@@ -631,6 +637,10 @@ static void abort_alsa_playback(struct ua101 *ua)
 		snd_pcm_stop(ua->playback.substream, SNDRV_PCM_STATE_XRUN);
 		snd_pcm_stream_unlock_irqrestore(ua->playback.substream, flags);
 	}
+=======
+	if (test_bit(ALSA_PLAYBACK_RUNNING, &ua->states))
+		snd_pcm_stop_xrun(ua->playback.substream);
+>>>>>>> v4.9.227
 }
 
 static int set_stream_hw(struct ua101 *ua, struct snd_pcm_substream *substream,
@@ -1047,7 +1057,11 @@ static int detect_usb_format(struct ua101 *ua)
 		return -ENXIO;
 	}
 	ua->capture.usb_pipe = usb_rcvisocpipe(ua->dev, usb_endpoint_num(epd));
+<<<<<<< HEAD
 	ua->capture.max_packet_bytes = le16_to_cpu(epd->wMaxPacketSize);
+=======
+	ua->capture.max_packet_bytes = usb_endpoint_maxp(epd);
+>>>>>>> v4.9.227
 
 	epd = &ua->intf[INTF_PLAYBACK]->altsetting[1].endpoint[0].desc;
 	if (!usb_endpoint_is_isoc_out(epd)) {
@@ -1055,7 +1069,11 @@ static int detect_usb_format(struct ua101 *ua)
 		return -ENXIO;
 	}
 	ua->playback.usb_pipe = usb_sndisocpipe(ua->dev, usb_endpoint_num(epd));
+<<<<<<< HEAD
 	ua->playback.max_packet_bytes = le16_to_cpu(epd->wMaxPacketSize);
+=======
+	ua->playback.max_packet_bytes = usb_endpoint_maxp(epd);
+>>>>>>> v4.9.227
 	return 0;
 }
 

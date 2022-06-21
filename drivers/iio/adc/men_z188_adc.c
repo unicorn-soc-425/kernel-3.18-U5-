@@ -78,7 +78,11 @@ static int z188_iio_read_raw(struct iio_dev *iio_dev,
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct iio_info z188_adc_info = {
+=======
+static const struct iio_info z188_adc_info = {
+>>>>>>> v4.9.227
 	.read_raw = &z188_iio_read_raw,
 	.driver_module = THIS_MODULE,
 };

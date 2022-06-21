@@ -330,7 +330,12 @@ static int pm8607_regulator_dt_init(struct platform_device *pdev,
 	for_each_child_of_node(nproot, np) {
 		if (!of_node_cmp(np->name, info->desc.name)) {
 			config->init_data =
+<<<<<<< HEAD
 				of_get_regulator_init_data(&pdev->dev, np);
+=======
+				of_get_regulator_init_data(&pdev->dev, np,
+							   &info->desc);
+>>>>>>> v4.9.227
 			config->of_node = np;
 			break;
 		}
@@ -403,7 +408,11 @@ static int pm8607_regulator_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_device_id pm8607_regulator_driver_ids[] = {
+=======
+static const struct platform_device_id pm8607_regulator_driver_ids[] = {
+>>>>>>> v4.9.227
 	{
 		.name	= "88pm860x-regulator",
 		.driver_data	= 0,
@@ -418,7 +427,10 @@ MODULE_DEVICE_TABLE(platform, pm8607_regulator_driver_ids);
 static struct platform_driver pm8607_regulator_driver = {
 	.driver		= {
 		.name	= "88pm860x-regulator",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= pm8607_regulator_probe,
 	.id_table	= pm8607_regulator_driver_ids,

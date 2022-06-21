@@ -10,6 +10,16 @@
 			cpu0-supply = <&vcc>;
 		};
 	};
+<<<<<<< HEAD
+=======
+
+	sound {
+		compatible = "ti,omap-twl4030";
+		ti,model = "cm-t35";
+
+		ti,mcbsp = <&mcbsp2>;
+	};
+>>>>>>> v4.9.227
 };
 
 &omap3_pmx_core {
@@ -42,7 +52,12 @@
 #include "omap-gpmc-smsc911x.dtsi"
 
 &gpmc {
+<<<<<<< HEAD
 	ranges = <5 0 0x2c000000 0x01000000>;
+=======
+	ranges = <5 0 0x2c000000 0x01000000>, /* CM-T3x30 SMSC9x Eth */
+		 <0 0 0x00000000 0x01000000>; /* CM-T3x NAND */
+>>>>>>> v4.9.227
 
 	smsc1: ethernet@gpmc {
 		compatible = "smsc,lan9221", "smsc,lan9115";
@@ -59,11 +74,28 @@
 		reg = <0x48>;
 		interrupts = <7>; /* SYS_NIRQ cascaded to intc */
 		interrupt-parent = <&intc>;
+<<<<<<< HEAD
+=======
+
+		twl_audio: audio {
+			compatible = "ti,twl4030-audio";
+			codec {
+			};
+		};
+>>>>>>> v4.9.227
 	};
 };
 
 #include "twl4030.dtsi"
 #include "twl4030_omap3.dtsi"
+<<<<<<< HEAD
+=======
+#include <dt-bindings/input/input.h>
+
+&venc {
+	vdda-supply = <&vdac>;
+};
+>>>>>>> v4.9.227
 
 &mmc1 {
 	vmmc-supply = <&vmmc1>;
@@ -75,6 +107,25 @@
 	ti,pullups = <0x000001>;
 };
 
+<<<<<<< HEAD
+=======
+&twl_keypad {
+	linux,keymap = <
+				MATRIX_KEY(0x00, 0x01, KEY_A)
+				MATRIX_KEY(0x00, 0x02, KEY_B)
+				MATRIX_KEY(0x00, 0x03, KEY_LEFT)
+
+				MATRIX_KEY(0x01, 0x01, KEY_UP)
+				MATRIX_KEY(0x01, 0x02, KEY_ENTER)
+				MATRIX_KEY(0x01, 0x03, KEY_DOWN)
+
+				MATRIX_KEY(0x02, 0x01, KEY_RIGHT)
+				MATRIX_KEY(0x02, 0x02, KEY_C)
+				MATRIX_KEY(0x02, 0x03, KEY_D)
+			>;
+};
+
+>>>>>>> v4.9.227
 &hsusb1_phy {
 	reset-gpios = <&twl_gpio 6 GPIO_ACTIVE_LOW>;
 };

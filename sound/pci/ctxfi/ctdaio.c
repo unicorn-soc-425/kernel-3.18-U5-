@@ -83,21 +83,33 @@ static int daio_in_next_conj_20k2(struct rsc *rsc)
 	return rsc->conj += 0x100;
 }
 
+<<<<<<< HEAD
 static struct rsc_ops daio_out_rsc_ops = {
+=======
+static const struct rsc_ops daio_out_rsc_ops = {
+>>>>>>> v4.9.227
 	.master		= daio_master,
 	.next_conj	= daio_out_next_conj,
 	.index		= daio_index,
 	.output_slot	= NULL,
 };
 
+<<<<<<< HEAD
 static struct rsc_ops daio_in_rsc_ops_20k1 = {
+=======
+static const struct rsc_ops daio_in_rsc_ops_20k1 = {
+>>>>>>> v4.9.227
 	.master		= daio_master,
 	.next_conj	= daio_in_next_conj_20k1,
 	.index		= NULL,
 	.output_slot	= daio_index,
 };
 
+<<<<<<< HEAD
 static struct rsc_ops daio_in_rsc_ops_20k2 = {
+=======
+static const struct rsc_ops daio_in_rsc_ops_20k2 = {
+>>>>>>> v4.9.227
 	.master		= daio_master,
 	.next_conj	= daio_in_next_conj_20k2,
 	.index		= NULL,
@@ -263,7 +275,11 @@ static int dao_clear_right_input(struct dao *dao)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dao_rsc_ops dao_ops = {
+=======
+static const struct dao_rsc_ops dao_ops = {
+>>>>>>> v4.9.227
 	.set_spos		= dao_spdif_set_spos,
 	.commit_write		= dao_commit_write,
 	.get_spos		= dao_spdif_get_spos,
@@ -318,7 +334,11 @@ static int dai_commit_write(struct dai *dai)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dai_rsc_ops dai_ops = {
+=======
+static const struct dai_rsc_ops dai_ops = {
+>>>>>>> v4.9.227
 	.set_srt_srcl		= dai_set_srt_srcl,
 	.set_srt_srcr		= dai_set_srt_srcr,
 	.set_srt_msr		= dai_set_srt_msr,
@@ -528,8 +548,11 @@ static int get_daio_rsc(struct daio_mgr *mgr,
 			struct daio **rdaio)
 {
 	int err;
+<<<<<<< HEAD
 	struct dai *dai = NULL;
 	struct dao *dao = NULL;
+=======
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	*rdaio = NULL;
@@ -544,6 +567,7 @@ static int get_daio_rsc(struct daio_mgr *mgr,
 		return err;
 	}
 
+<<<<<<< HEAD
 	/* Allocate mem for daio resource */
 	if (desc->type <= DAIO_OUT_MAX) {
 		dao = kzalloc(sizeof(*dao), GFP_KERNEL);
@@ -565,6 +589,32 @@ static int get_daio_rsc(struct daio_mgr *mgr,
 		err = dai_rsc_init(dai, desc, mgr);
 		if (err)
 			goto error;
+=======
+	err = -ENOMEM;
+	/* Allocate mem for daio resource */
+	if (desc->type <= DAIO_OUT_MAX) {
+		struct dao *dao = kzalloc(sizeof(*dao), GFP_KERNEL);
+		if (!dao)
+			goto error;
+
+		err = dao_rsc_init(dao, desc, mgr);
+		if (err) {
+			kfree(dao);
+			goto error;
+		}
+
+		*rdaio = &dao->daio;
+	} else {
+		struct dai *dai = kzalloc(sizeof(*dai), GFP_KERNEL);
+		if (!dai)
+			goto error;
+
+		err = dai_rsc_init(dai, desc, mgr);
+		if (err) {
+			kfree(dai);
+			goto error;
+		}
+>>>>>>> v4.9.227
 
 		*rdaio = &dai->daio;
 	}
@@ -575,11 +625,14 @@ static int get_daio_rsc(struct daio_mgr *mgr,
 	return 0;
 
 error:
+<<<<<<< HEAD
 	if (dao)
 		kfree(dao);
 	else if (dai)
 		kfree(dai);
 
+=======
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&mgr->mgr_lock, flags);
 	daio_mgr_put_rsc(&mgr->mgr, desc->type);
 	spin_unlock_irqrestore(&mgr->mgr_lock, flags);

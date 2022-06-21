@@ -15,10 +15,18 @@
 #include <linux/timer.h>
 #include <linux/wait.h>
 #include <linux/list.h>
+<<<<<<< HEAD
+=======
+#include <linux/irq_work.h>
+>>>>>>> v4.9.227
 #include <linux/bug.h>
 #include <linux/fs.h>
 #include <linux/poll.h>
 #include <linux/kref.h>
+<<<<<<< HEAD
+=======
+#include <linux/percpu.h>
+>>>>>>> v4.9.227
 
 /*
  * Tracks changes to rchan/rchan_buf structs
@@ -37,7 +45,11 @@ struct rchan_buf
 	size_t subbufs_consumed;	/* count of sub-buffers consumed */
 	struct rchan *chan;		/* associated channel */
 	wait_queue_head_t read_wait;	/* reader wait queue */
+<<<<<<< HEAD
 	struct timer_list timer; 	/* reader wake-up timer */
+=======
+	struct irq_work wakeup_work;	/* reader wakeup */
+>>>>>>> v4.9.227
 	struct dentry *dentry;		/* channel file dentry */
 	struct kref kref;		/* channel buffer refcount */
 	struct page **page_array;	/* array of current buffer pages */
@@ -63,7 +75,11 @@ struct rchan
 	struct kref kref;		/* channel refcount */
 	void *private_data;		/* for user-defined data */
 	size_t last_toobig;		/* tried to log event > subbuf size */
+<<<<<<< HEAD
 	struct rchan_buf *buf[NR_CPUS]; /* per-cpu channel buffers */
+=======
+	struct rchan_buf * __percpu *buf; /* per-cpu channel buffers */
+>>>>>>> v4.9.227
 	int is_global;			/* One global buffer ? */
 	struct list_head list;		/* for channel list */
 	struct dentry *parent;		/* parent dentry passed to open */
@@ -204,7 +220,11 @@ static inline void relay_write(struct rchan *chan,
 	struct rchan_buf *buf;
 
 	local_irq_save(flags);
+<<<<<<< HEAD
 	buf = chan->buf[smp_processor_id()];
+=======
+	buf = *this_cpu_ptr(chan->buf);
+>>>>>>> v4.9.227
 	if (unlikely(buf->offset + length > chan->subbuf_size))
 		length = relay_switch_subbuf(buf, length);
 	memcpy(buf->data + buf->offset, data, length);
@@ -230,12 +250,20 @@ static inline void __relay_write(struct rchan *chan,
 {
 	struct rchan_buf *buf;
 
+<<<<<<< HEAD
 	buf = chan->buf[get_cpu()];
+=======
+	buf = *get_cpu_ptr(chan->buf);
+>>>>>>> v4.9.227
 	if (unlikely(buf->offset + length > buf->chan->subbuf_size))
 		length = relay_switch_subbuf(buf, length);
 	memcpy(buf->data + buf->offset, data, length);
 	buf->offset += length;
+<<<<<<< HEAD
 	put_cpu();
+=======
+	put_cpu_ptr(chan->buf);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -251,17 +279,31 @@ static inline void __relay_write(struct rchan *chan,
  */
 static inline void *relay_reserve(struct rchan *chan, size_t length)
 {
+<<<<<<< HEAD
 	void *reserved;
 	struct rchan_buf *buf = chan->buf[smp_processor_id()];
+=======
+	void *reserved = NULL;
+	struct rchan_buf *buf = *get_cpu_ptr(chan->buf);
+>>>>>>> v4.9.227
 
 	if (unlikely(buf->offset + length > buf->chan->subbuf_size)) {
 		length = relay_switch_subbuf(buf, length);
 		if (!length)
+<<<<<<< HEAD
 			return NULL;
+=======
+			goto end;
+>>>>>>> v4.9.227
 	}
 	reserved = buf->data + buf->offset;
 	buf->offset += length;
 
+<<<<<<< HEAD
+=======
+end:
+	put_cpu_ptr(chan->buf);
+>>>>>>> v4.9.227
 	return reserved;
 }
 
@@ -285,5 +327,14 @@ static inline void subbuf_start_reserve(struct rchan_buf *buf,
  */
 extern const struct file_operations relay_file_operations;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_RELAY
+int relay_prepare_cpu(unsigned int cpu);
+#else
+#define relay_prepare_cpu     NULL
+#endif
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_RELAY_H */
 

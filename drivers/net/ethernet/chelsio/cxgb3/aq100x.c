@@ -247,7 +247,11 @@ static int aq100x_get_link_status(struct cphy *phy, int *link_ok,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct cphy_ops aq100x_ops = {
+=======
+static const struct cphy_ops aq100x_ops = {
+>>>>>>> v4.9.227
 	.reset             = aq100x_reset,
 	.intr_enable       = aq100x_intr_enable,
 	.intr_disable      = aq100x_intr_disable,

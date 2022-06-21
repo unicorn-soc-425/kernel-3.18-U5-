@@ -3,6 +3,7 @@
 
 #include <linux/pci.h>
 
+<<<<<<< HEAD
 /* Address Translation Service */
 struct pci_ats {
 	int pos;        /* capability position */
@@ -52,6 +53,8 @@ static inline int pci_ats_enabled(struct pci_dev *dev)
 
 #endif /* CONFIG_PCI_ATS */
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PCI_PRI
 
 int pci_enable_pri(struct pci_dev *pdev, u32 reqs);

@@ -16,7 +16,12 @@ config CAN_ESD_USB2
 config CAN_GS_USB
 	tristate "Geschwister Schneider UG interfaces"
 	---help---
+<<<<<<< HEAD
 	  This driver supports the Geschwister Schneider USB/CAN devices.
+=======
+	  This driver supports the Geschwister Schneider and bytewerk.org
+	  candleLight USB CAN interfaces USB/CAN devices
+>>>>>>> v4.9.227
 	  If unsure choose N,
 	  choose Y for built in support,
 	  M to compile as module (module will be named: gs_usb).
@@ -25,7 +30,11 @@ config CAN_KVASER_USB
 	tristate "Kvaser CAN/USB interface"
 	---help---
 	  This driver adds support for Kvaser CAN/USB devices like Kvaser
+<<<<<<< HEAD
 	  Leaf Light.
+=======
+	  Leaf Light and Kvaser USBcan II.
+>>>>>>> v4.9.227
 
 	  The driver provides support for the following devices:
 	    - Kvaser Leaf Light
@@ -46,6 +55,17 @@ config CAN_KVASER_USB
 	    - Kvaser USBcan R
 	    - Kvaser Leaf Light v2
 	    - Kvaser Mini PCI Express HS
+<<<<<<< HEAD
+=======
+	    - Kvaser Mini PCI Express 2xHS
+	    - Kvaser USBcan Light 2xHS
+	    - Kvaser USBcan II HS/HS
+	    - Kvaser USBcan II HS/LS
+	    - Kvaser USBcan Rugged ("USBcan Rev B")
+	    - Kvaser Memorator HS/HS
+	    - Kvaser Memorator HS/LS
+	    - Scania VCI2 (if you have the Kvaser logo on top)
+>>>>>>> v4.9.227
 
 	  If unsure, say N.
 
@@ -53,10 +73,25 @@ config CAN_KVASER_USB
 	  module will be called kvaser_usb.
 
 config CAN_PEAK_USB
+<<<<<<< HEAD
 	tristate "PEAK PCAN-USB/USB Pro interfaces"
 	---help---
 	  This driver supports the PCAN-USB and PCAN-USB Pro adapters
 	  from PEAK-System Technik (http://www.peak-system.com).
+=======
+	tristate "PEAK PCAN-USB/USB Pro interfaces for CAN 2.0b/CAN-FD"
+	---help---
+	  This driver supports the PEAK-System Technik USB adapters that enable
+	  access to the CAN bus, with repect to the CAN 2.0b and/or CAN-FD
+	  standards, that is:
+
+	  PCAN-USB             single CAN 2.0b channel USB adapter
+	  PCAN-USB Pro         dual CAN 2.0b channels USB adapter
+	  PCAN-USB FD          single CAN-FD channel USB adapter
+	  PCAN-USB Pro FD      dual CAN-FD channels USB adapter
+
+	  (see also http://www.peak-system.com).
+>>>>>>> v4.9.227
 
 config CAN_8DEV_USB
 	tristate "8 devices USB2CAN interface"

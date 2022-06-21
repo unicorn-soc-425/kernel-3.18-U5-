@@ -9,7 +9,11 @@ config DVB_USB
 	  <file:Documentation/dvb/README.dvb-usb>.
 
 	  For a complete list of supported USB devices see the LinuxTV DVB Wiki:
+<<<<<<< HEAD
 	  <http://www.linuxtv.org/wiki/index.php/DVB_USB>
+=======
+	  <https://linuxtv.org/wiki/index.php/DVB_USB>
+>>>>>>> v4.9.227
 
 	  Say Y if you own a USB DVB device.
 
@@ -20,10 +24,27 @@ config DVB_USB_DEBUG
 	  Say Y if you want to enable debugging. See modinfo dvb-usb (and the
 	  appropriate drivers) for debug levels.
 
+<<<<<<< HEAD
 config DVB_USB_A800
 	tristate "AVerMedia AverTV DVB-T USB 2.0 (A800)"
 	depends on DVB_USB
 	select DVB_DIB3000MC
+=======
+config DVB_USB_DIB3000MC
+	tristate
+	depends on DVB_USB
+	select DVB_DIB3000MC
+	help
+	  This is a module with helper functions for accessing the
+	  DIB3000MC from USB DVB devices. It must be a separate module
+	  in case DVB_USB is built-in and DVB_DIB3000MC is a module,
+	  and gets selected automatically when needed.
+
+config DVB_USB_A800
+	tristate "AVerMedia AverTV DVB-T USB 2.0 (A800)"
+	depends on DVB_USB
+	select DVB_USB_DIB3000MC
+>>>>>>> v4.9.227
 	select DVB_PLL if MEDIA_SUBDRV_AUTOSELECT
 	select MEDIA_TUNER_MT2060 if MEDIA_SUBDRV_AUTOSELECT
 	help
@@ -34,6 +55,10 @@ config DVB_USB_DIBUSB_MB
 	depends on DVB_USB
 	select DVB_PLL if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_DIB3000MB
+<<<<<<< HEAD
+=======
+	depends on DVB_DIB3000MC || !DVB_DIB3000MC
+>>>>>>> v4.9.227
 	select MEDIA_TUNER_MT2060 if MEDIA_SUBDRV_AUTOSELECT
 	help
 	  Support for USB 1.1 and 2.0 DVB-T receivers based on reference designs made by
@@ -54,7 +79,11 @@ config DVB_USB_DIBUSB_MB_FAULTY
 config DVB_USB_DIBUSB_MC
 	tristate "DiBcom USB DVB-T devices (based on the DiB3000M-C/P) (see help for device list)"
 	depends on DVB_USB
+<<<<<<< HEAD
 	select DVB_DIB3000MC
+=======
+	select DVB_USB_DIB3000MC
+>>>>>>> v4.9.227
 	select MEDIA_TUNER_MT2060 if MEDIA_SUBDRV_AUTOSELECT
 	help
 	  Support for USB2.0 DVB-T receivers based on reference designs made by
@@ -72,7 +101,11 @@ config DVB_USB_DIB0700
 	select DVB_DIB7000P if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_DIB7000M if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_DIB8000 if MEDIA_SUBDRV_AUTOSELECT
+<<<<<<< HEAD
 	select DVB_DIB3000MC if MEDIA_SUBDRV_AUTOSELECT
+=======
+	select DVB_USB_DIB3000MC if MEDIA_SUBDRV_AUTOSELECT
+>>>>>>> v4.9.227
 	select DVB_S5H1411 if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_LGDT3305 if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_TUNER_DIB0070 if MEDIA_SUBDRV_AUTOSELECT
@@ -99,7 +132,11 @@ config DVB_USB_UMT_010
 	tristate "HanfTek UMT-010 DVB-T USB2.0 support"
 	depends on DVB_USB
 	select DVB_PLL if MEDIA_SUBDRV_AUTOSELECT
+<<<<<<< HEAD
 	select DVB_DIB3000MC
+=======
+	select DVB_USB_DIB3000MC
+>>>>>>> v4.9.227
 	select MEDIA_TUNER_MT2060 if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_MT352 if MEDIA_SUBDRV_AUTOSELECT
 	help
@@ -130,7 +167,10 @@ config DVB_USB_CXUSB
 
 	  Medion MD95700 hybrid USB2.0 device.
 	  DViCO FusionHDTV (Bluebird) USB2.0 devices
+<<<<<<< HEAD
 	  TechnoTrend TVStick CT2-4400 and CT2-4650 CI devices
+=======
+>>>>>>> v4.9.227
 
 config DVB_USB_M920X
 	tristate "Uli m920x DVB-T USB2.0 support"
@@ -193,7 +233,11 @@ config DVB_USB_GP8PSK
 config DVB_USB_NOVA_T_USB2
 	tristate "Hauppauge WinTV-NOVA-T usb2 DVB-T USB2.0 support"
 	depends on DVB_USB
+<<<<<<< HEAD
 	select DVB_DIB3000MC
+=======
+	select DVB_USB_DIB3000MC
+>>>>>>> v4.9.227
 	select DVB_PLL if MEDIA_SUBDRV_AUTOSELECT
 	select MEDIA_TUNER_MT2060 if MEDIA_SUBDRV_AUTOSELECT
 	help
@@ -279,9 +323,16 @@ config DVB_USB_DW2102
 	select DVB_STV6110 if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_STV0900 if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_M88RS2000 if MEDIA_SUBDRV_AUTOSELECT
+<<<<<<< HEAD
 	help
 	  Say Y here to support the DvbWorld, TeVii, Prof DVB-S/S2 USB2.0
 	  receivers.
+=======
+	select DVB_M88DS3103 if MEDIA_SUBDRV_AUTOSELECT
+	help
+	  Say Y here to support the DvbWorld, TeVii, Prof, TechnoTrend
+	  DVB-S/S2 USB2.0 receivers.
+>>>>>>> v4.9.227
 
 config DVB_USB_CINERGY_T2
 	tristate "Terratec CinergyT2/qanu USB 2.0 DVB-T receiver"

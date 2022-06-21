@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2005 - 2014 Emulex
+=======
+ * Copyright (C) 2005-2016 Broadcom.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
@@ -32,18 +36,33 @@
 #define MPU_EP_CONTROL 		0
 
 /********** MPU semphore: used for SH & BE  *************/
+<<<<<<< HEAD
+=======
+#define SLIPORT_SOFTRESET_OFFSET		0x5c	/* CSR BAR offset */
+>>>>>>> v4.9.227
 #define SLIPORT_SEMAPHORE_OFFSET_BEx		0xac  /* CSR BAR offset */
 #define SLIPORT_SEMAPHORE_OFFSET_SH		0x94  /* PCI-CFG offset */
 #define POST_STAGE_MASK				0x0000FFFF
 #define POST_ERR_MASK				0x1
 #define POST_ERR_SHIFT				31
+<<<<<<< HEAD
+=======
+#define POST_ERR_RECOVERY_CODE_MASK		0xFFF
+
+/* Soft Reset register masks */
+#define SLIPORT_SOFTRESET_SR_MASK		0x00000080	/* SR bit */
+>>>>>>> v4.9.227
 
 /* MPU semphore POST stage values */
 #define POST_STAGE_AWAITING_HOST_RDY 	0x1 /* FW awaiting goahead from host */
 #define POST_STAGE_HOST_RDY 		0x2 /* Host has given go-ahed to FW */
 #define POST_STAGE_BE_RESET		0x3 /* Host wants to reset chip */
 #define POST_STAGE_ARMFW_RDY		0xc000	/* FW is done with POST */
+<<<<<<< HEAD
 
+=======
+#define POST_STAGE_RECOVERABLE_ERR	0xE000	/* Recoverable err detected */
+>>>>>>> v4.9.227
 
 /* Lancer SLIPORT registers */
 #define SLIPORT_STATUS_OFFSET		0x404
@@ -75,7 +94,11 @@
  * atomically without having to arbitrate for the PCI Interrupt Disable bit
  * with the OS.
  */
+<<<<<<< HEAD
 #define MEMBAR_CTRL_INT_CTRL_HOSTINTR_MASK	(1 << 29) /* bit 29 */
+=======
+#define MEMBAR_CTRL_INT_CTRL_HOSTINTR_MASK	BIT(29) /* bit 29 */
+>>>>>>> v4.9.227
 
 /********* PCI Function Capability *********/
 #define BE_FUNCTION_CAPS_RSS			0x2
@@ -132,6 +155,21 @@
 #define DB_EQ_NUM_POPPED_SHIFT		(16)	/* bits 16 - 28 */
 /* Rearm bit */
 #define DB_EQ_REARM_SHIFT		(29)	/* bit 29 */
+<<<<<<< HEAD
+=======
+/* Rearm to interrupt delay encoding */
+#define DB_EQ_R2I_DLY_SHIFT		(30)    /* bits 30 - 31 */
+
+/* Rearm to interrupt (R2I) delay multiplier encoding represents 3 different
+ * values configured in CEV_REARM2IRPT_DLY_MULT_CSR register. This value is
+ * programmed by host driver while ringing an EQ doorbell(EQ_DB) if a delay
+ * between rearming the EQ and next interrupt on this EQ is desired.
+ */
+#define	R2I_DLY_ENC_0			0	/* No delay */
+#define	R2I_DLY_ENC_1			1	/* maps to 160us EQ delay */
+#define	R2I_DLY_ENC_2			2	/* maps to 96us EQ delay */
+#define	R2I_DLY_ENC_3			3	/* maps to 48us EQ delay */
+>>>>>>> v4.9.227
 
 /********* Compl Q door bell *************/
 #define DB_CQ_OFFSET 			0x120
@@ -171,6 +209,7 @@
 #define RETRIEVE_FAT	0
 #define QUERY_FAT	1
 
+<<<<<<< HEAD
 /* Flashrom related descriptors */
 #define MAX_FLASH_COMP			32
 #define IMAGE_TYPE_FIRMWARE		160
@@ -259,6 +298,8 @@
 #define IMAGE_UFI_DIR			210
 #define IMAGE_BOOT_CODE			224
 
+=======
+>>>>>>> v4.9.227
 /************* Rx Packet Type Encoding **************/
 #define BE_UNICAST_PACKET		0
 #define BE_MULTICAST_PACKET		1
@@ -281,10 +322,17 @@ struct be_eq_entry {
 /* TX Queue Descriptor */
 #define ETH_WRB_FRAG_LEN_MASK		0xFFFF
 struct be_eth_wrb {
+<<<<<<< HEAD
 	u32 frag_pa_hi;		/* dword 0 */
 	u32 frag_pa_lo;		/* dword 1 */
 	u32 rsvd0;		/* dword 2 */
 	u32 frag_len;		/* dword 3: bits 0 - 15 */
+=======
+	__le32 frag_pa_hi;		/* dword 0 */
+	__le32 frag_pa_lo;		/* dword 1 */
+	u32 rsvd0;			/* dword 2 */
+	__le32 frag_len;		/* dword 3: bits 0 - 15 */
+>>>>>>> v4.9.227
 } __packed;
 
 /* Pseudo amap definition for eth_hdr_wrb in which each bit of the
@@ -311,8 +359,18 @@ struct amap_eth_hdr_wrb {
 	u8 vlan_tag[16];
 } __packed;
 
+<<<<<<< HEAD
 struct be_eth_hdr_wrb {
 	u32 dw[4];
+=======
+#define TX_HDR_WRB_COMPL		1		/* word 2 */
+#define TX_HDR_WRB_EVT			BIT(1)		/* word 2 */
+#define TX_HDR_WRB_NUM_SHIFT		13		/* word 2: bits 13:17 */
+#define TX_HDR_WRB_NUM_MASK		0x1F		/* word 2: bits 13:17 */
+
+struct be_eth_hdr_wrb {
+	__le32 dw[4];
+>>>>>>> v4.9.227
 };
 
 /********* Tx Compl Status Encoding *********/
@@ -435,6 +493,7 @@ struct amap_eth_rx_compl_v1 {
 struct be_eth_rx_compl {
 	u32 dw[4];
 };
+<<<<<<< HEAD
 
 struct mgmt_hba_attribs {
 	u8 flashrom_version_string[32];
@@ -570,3 +629,5 @@ struct flash_section_info_g2 {
 	struct flash_section_hdr_g2 fsec_hdr;
 	struct flash_section_entry fsec_entry[32];
 } __packed;
+=======
+>>>>>>> v4.9.227

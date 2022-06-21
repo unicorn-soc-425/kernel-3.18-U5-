@@ -13,14 +13,21 @@
  *
  */
 
+<<<<<<< HEAD
 #include <crypto/internal/aead.h>
 #include <crypto/internal/skcipher.h>
 #include <crypto/rng.h>
+=======
+#include <crypto/internal/geniv.h>
+#include <crypto/scatterwalk.h>
+#include <crypto/skcipher.h>
+>>>>>>> v4.9.227
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <linux/string.h>
 
@@ -58,6 +65,15 @@ static void seqiv_complete(struct crypto_async_request *base, int err)
 static void seqiv_aead_complete2(struct aead_givcrypt_request *req, int err)
 {
 	struct aead_request *subreq = aead_givcrypt_reqctx(req);
+=======
+#include <linux/string.h>
+
+static void seqiv_free(struct crypto_instance *inst);
+
+static void seqiv_aead_encrypt_complete2(struct aead_request *req, int err)
+{
+	struct aead_request *subreq = aead_request_ctx(req);
+>>>>>>> v4.9.227
 	struct crypto_aead *geniv;
 
 	if (err == -EINPROGRESS)
@@ -66,6 +82,7 @@ static void seqiv_aead_complete2(struct aead_givcrypt_request *req, int err)
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	geniv = aead_givcrypt_reqtfm(req);
 	memcpy(req->areq.iv, subreq->iv, crypto_aead_ivsize(geniv));
 
@@ -163,11 +180,68 @@ static int seqiv_aead_givencrypt(struct aead_givcrypt_request *req)
 	if (unlikely(!IS_ALIGNED((unsigned long)info,
 				 crypto_aead_alignmask(geniv) + 1))) {
 		info = kmalloc(ivsize, areq->base.flags &
+=======
+	geniv = crypto_aead_reqtfm(req);
+	memcpy(req->iv, subreq->iv, crypto_aead_ivsize(geniv));
+
+out:
+	kzfree(subreq->iv);
+}
+
+static void seqiv_aead_encrypt_complete(struct crypto_async_request *base,
+					int err)
+{
+	struct aead_request *req = base->data;
+
+	seqiv_aead_encrypt_complete2(req, err);
+	aead_request_complete(req, err);
+}
+
+static int seqiv_aead_encrypt(struct aead_request *req)
+{
+	struct crypto_aead *geniv = crypto_aead_reqtfm(req);
+	struct aead_geniv_ctx *ctx = crypto_aead_ctx(geniv);
+	struct aead_request *subreq = aead_request_ctx(req);
+	crypto_completion_t compl;
+	void *data;
+	u8 *info;
+	unsigned int ivsize = 8;
+	int err;
+
+	if (req->cryptlen < ivsize)
+		return -EINVAL;
+
+	aead_request_set_tfm(subreq, ctx->child);
+
+	compl = req->base.complete;
+	data = req->base.data;
+	info = req->iv;
+
+	if (req->src != req->dst) {
+		SKCIPHER_REQUEST_ON_STACK(nreq, ctx->sknull);
+
+		skcipher_request_set_tfm(nreq, ctx->sknull);
+		skcipher_request_set_callback(nreq, req->base.flags,
+					      NULL, NULL);
+		skcipher_request_set_crypt(nreq, req->src, req->dst,
+					   req->assoclen + req->cryptlen,
+					   NULL);
+
+		err = crypto_skcipher_encrypt(nreq);
+		if (err)
+			return err;
+	}
+
+	if (unlikely(!IS_ALIGNED((unsigned long)info,
+				 crypto_aead_alignmask(geniv) + 1))) {
+		info = kmalloc(ivsize, req->base.flags &
+>>>>>>> v4.9.227
 				       CRYPTO_TFM_REQ_MAY_SLEEP ? GFP_KERNEL:
 								  GFP_ATOMIC);
 		if (!info)
 			return -ENOMEM;
 
+<<<<<<< HEAD
 		compl = seqiv_aead_complete;
 		data = req;
 	}
@@ -329,20 +403,130 @@ out:
 put_rng:
 	crypto_put_default_rng();
 	goto out;
+=======
+		memcpy(info, req->iv, ivsize);
+		compl = seqiv_aead_encrypt_complete;
+		data = req;
+	}
+
+	aead_request_set_callback(subreq, req->base.flags, compl, data);
+	aead_request_set_crypt(subreq, req->dst, req->dst,
+			       req->cryptlen - ivsize, info);
+	aead_request_set_ad(subreq, req->assoclen + ivsize);
+
+	crypto_xor(info, ctx->salt, ivsize);
+	scatterwalk_map_and_copy(info, req->dst, req->assoclen, ivsize, 1);
+
+	err = crypto_aead_encrypt(subreq);
+	if (unlikely(info != req->iv))
+		seqiv_aead_encrypt_complete2(req, err);
+	return err;
+}
+
+static int seqiv_aead_decrypt(struct aead_request *req)
+{
+	struct crypto_aead *geniv = crypto_aead_reqtfm(req);
+	struct aead_geniv_ctx *ctx = crypto_aead_ctx(geniv);
+	struct aead_request *subreq = aead_request_ctx(req);
+	crypto_completion_t compl;
+	void *data;
+	unsigned int ivsize = 8;
+
+	if (req->cryptlen < ivsize + crypto_aead_authsize(geniv))
+		return -EINVAL;
+
+	aead_request_set_tfm(subreq, ctx->child);
+
+	compl = req->base.complete;
+	data = req->base.data;
+
+	aead_request_set_callback(subreq, req->base.flags, compl, data);
+	aead_request_set_crypt(subreq, req->src, req->dst,
+			       req->cryptlen - ivsize, req->iv);
+	aead_request_set_ad(subreq, req->assoclen + ivsize);
+
+	scatterwalk_map_and_copy(req->iv, req->src, req->assoclen, ivsize, 0);
+
+	return crypto_aead_decrypt(subreq);
+}
+
+static int seqiv_aead_create(struct crypto_template *tmpl, struct rtattr **tb)
+{
+	struct aead_instance *inst;
+	struct crypto_aead_spawn *spawn;
+	struct aead_alg *alg;
+	int err;
+
+	inst = aead_geniv_alloc(tmpl, tb, 0, 0);
+
+	if (IS_ERR(inst))
+		return PTR_ERR(inst);
+
+	inst->alg.base.cra_alignmask |= __alignof__(u32) - 1;
+
+	spawn = aead_instance_ctx(inst);
+	alg = crypto_spawn_aead_alg(spawn);
+
+	err = -EINVAL;
+	if (inst->alg.ivsize != sizeof(u64))
+		goto free_inst;
+
+	inst->alg.encrypt = seqiv_aead_encrypt;
+	inst->alg.decrypt = seqiv_aead_decrypt;
+
+	inst->alg.init = aead_init_geniv;
+	inst->alg.exit = aead_exit_geniv;
+
+	inst->alg.base.cra_ctxsize = sizeof(struct aead_geniv_ctx);
+	inst->alg.base.cra_ctxsize += inst->alg.ivsize;
+
+	err = aead_register_instance(tmpl, inst);
+	if (err)
+		goto free_inst;
+
+out:
+	return err;
+
+free_inst:
+	aead_geniv_free(inst);
+	goto out;
+}
+
+static int seqiv_create(struct crypto_template *tmpl, struct rtattr **tb)
+{
+	struct crypto_attr_type *algt;
+
+	algt = crypto_get_attr_type(tb);
+	if (IS_ERR(algt))
+		return PTR_ERR(algt);
+
+	if ((algt->type ^ CRYPTO_ALG_TYPE_AEAD) & CRYPTO_ALG_TYPE_MASK)
+		return -EINVAL;
+
+	return seqiv_aead_create(tmpl, tb);
+>>>>>>> v4.9.227
 }
 
 static void seqiv_free(struct crypto_instance *inst)
 {
+<<<<<<< HEAD
 	if ((inst->alg.cra_flags ^ CRYPTO_ALG_TYPE_AEAD) & CRYPTO_ALG_TYPE_MASK)
 		skcipher_geniv_free(inst);
 	else
 		aead_geniv_free(inst);
 	crypto_put_default_rng();
+=======
+	aead_geniv_free(aead_instance(inst));
+>>>>>>> v4.9.227
 }
 
 static struct crypto_template seqiv_tmpl = {
 	.name = "seqiv",
+<<<<<<< HEAD
 	.alloc = seqiv_alloc,
+=======
+	.create = seqiv_create,
+>>>>>>> v4.9.227
 	.free = seqiv_free,
 	.module = THIS_MODULE,
 };

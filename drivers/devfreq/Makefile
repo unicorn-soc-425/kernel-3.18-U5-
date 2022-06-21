@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 CFLAGS_devfreq_trace.o		:= -I$(src)
 
 obj-$(CONFIG_PM_DEVFREQ)	+= devfreq.o
 obj-$(CONFIG_PM_DEVFREQ)       += devfreq_trace.o
+=======
+obj-$(CONFIG_PM_DEVFREQ)	+= devfreq.o
+obj-$(CONFIG_PM_DEVFREQ_EVENT)	+= devfreq-event.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_DEVFREQ_GOV_SIMPLE_ONDEMAND)	+= governor_simpleondemand.o
 obj-$(CONFIG_DEVFREQ_GOV_PERFORMANCE)	+= governor_performance.o
 obj-$(CONFIG_DEVFREQ_GOV_POWERSAVE)	+= governor_powersave.o
 obj-$(CONFIG_DEVFREQ_GOV_USERSPACE)	+= governor_userspace.o
+<<<<<<< HEAD
 obj-$(CONFIG_DEVFREQ_GOV_CPUFREQ)	+= governor_cpufreq.o
 obj-$(CONFIG_DEVFREQ_GOV_MSM_ADRENO_TZ)	+= governor_msm_adreno_tz.o
 obj-$(CONFIG_MSM_BIMC_BWMON)		+= bimc-bwmon.o
@@ -26,3 +32,14 @@ obj-$(CONFIG_ARM_EXYNOS5_BUS_DEVFREQ)	+= exynos/
 obj-$(CONFIG_MSM_DEVFREQ_DEVBW)		+= devfreq_devbw.o
 obj-$(CONFIG_DEVFREQ_SIMPLE_DEV)	+= devfreq_simple_dev.o
 obj-$(CONFIG_DEVFREQ_SPDM) 		+= devfreq_spdm.o devfreq_spdm_debugfs.o
+=======
+obj-$(CONFIG_DEVFREQ_GOV_PASSIVE)	+= governor_passive.o
+
+# DEVFREQ Drivers
+obj-$(CONFIG_ARM_EXYNOS_BUS_DEVFREQ)	+= exynos-bus.o
+obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)	+= rk3399_dmc.o
+obj-$(CONFIG_ARM_TEGRA_DEVFREQ)		+= tegra-devfreq.o
+
+# DEVFREQ Event Drivers
+obj-$(CONFIG_PM_DEVFREQ_EVENT)		+= event/
+>>>>>>> v4.9.227

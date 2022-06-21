@@ -28,6 +28,10 @@
 
 #include "bcm47xx_private.h"
 
+<<<<<<< HEAD
+=======
+#include <linux/bcm47xx_sprom.h>
+>>>>>>> v4.9.227
 #include <linux/export.h>
 #include <linux/types.h>
 #include <linux/ethtool.h>
@@ -42,7 +46,10 @@
 #include <asm/reboot.h>
 #include <asm/time.h>
 #include <bcm47xx.h>
+<<<<<<< HEAD
 #include <bcm47xx_nvram.h>
+=======
+>>>>>>> v4.9.227
 #include <bcm47xx_board.h>
 
 union bcm47xx_bus bcm47xx_bus;
@@ -53,7 +60,11 @@ EXPORT_SYMBOL(bcm47xx_bus_type);
 
 static void bcm47xx_machine_restart(char *command)
 {
+<<<<<<< HEAD
 	printk(KERN_ALERT "Please stand by while rebooting the system...\n");
+=======
+	pr_alert("Please stand by while rebooting the system...\n");
+>>>>>>> v4.9.227
 	local_irq_disable();
 	/* Set the watchdog timer to reset immediately */
 	switch (bcm47xx_bus_type) {
@@ -102,6 +113,7 @@ static void bcm47xx_machine_halt(void)
 }
 
 #ifdef CONFIG_BCM47XX_SSB
+<<<<<<< HEAD
 static int bcm47xx_get_sprom_ssb(struct ssb_bus *bus, struct ssb_sprom *out)
 {
 	char prefix[10];
@@ -138,12 +150,15 @@ static int bcm47xx_get_invariants(struct ssb_bus *bus,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static void __init bcm47xx_register_ssb(void)
 {
 	int err;
 	char buf[100];
 	struct ssb_mipscore *mcore;
 
+<<<<<<< HEAD
 	err = ssb_arch_register_fallback_sprom(&bcm47xx_get_sprom_ssb);
 	if (err)
 		printk(KERN_WARNING "bcm47xx: someone else already registered"
@@ -151,6 +166,9 @@ static void __init bcm47xx_register_ssb(void)
 
 	err = ssb_bus_ssbbus_register(&(bcm47xx_bus.ssb), SSB_ENUM_BASE,
 				      bcm47xx_get_invariants);
+=======
+	err = ssb_bus_host_soc_register(&bcm47xx_bus.ssb, SSB_ENUM_BASE);
+>>>>>>> v4.9.227
 	if (err)
 		panic("Failed to initialize SSB bus (err %d)", err);
 
@@ -159,7 +177,11 @@ static void __init bcm47xx_register_ssb(void)
 		if (strstr(buf, "console=ttyS1")) {
 			struct ssb_serial_port port;
 
+<<<<<<< HEAD
 			printk(KERN_DEBUG "Swapping serial ports!\n");
+=======
+			pr_debug("Swapping serial ports!\n");
+>>>>>>> v4.9.227
 			/* swap serial ports */
 			memcpy(&port, &mcore->serial_ports[0], sizeof(port));
 			memcpy(&mcore->serial_ports[0], &mcore->serial_ports[1],
@@ -171,6 +193,7 @@ static void __init bcm47xx_register_ssb(void)
 #endif
 
 #ifdef CONFIG_BCM47XX_BCMA
+<<<<<<< HEAD
 static int bcm47xx_get_sprom_bcma(struct bcma_bus *bus, struct ssb_sprom *out)
 {
 	char prefix[10];
@@ -201,10 +224,13 @@ static int bcm47xx_get_sprom_bcma(struct bcma_bus *bus, struct ssb_sprom *out)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static void __init bcm47xx_register_bcma(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	err = bcma_arch_register_fallback_sprom(&bcm47xx_get_sprom_bcma);
 	if (err)
 		pr_warn("bcm47xx: someone else already registered a bcma SPROM callback handler (err %d)\n", err);
@@ -221,12 +247,29 @@ static void __init bcm47xx_register_bcma(void)
 }
 #endif
 
+=======
+	err = bcma_host_soc_register(&bcm47xx_bus.bcma);
+	if (err)
+		panic("Failed to register BCMA bus (err %d)", err);
+}
+#endif
+
+/*
+ * Memory setup is done in the early part of MIPS's arch_mem_init. It's supposed
+ * to detect memory and record it with add_memory_region.
+ * Any extra initializaion performed here must not use kmalloc or bootmem.
+ */
+>>>>>>> v4.9.227
 void __init plat_mem_setup(void)
 {
 	struct cpuinfo_mips *c = &current_cpu_data;
 
 	if ((c->cputype == CPU_74K) || (c->cputype == CPU_1074K)) {
+<<<<<<< HEAD
 		printk(KERN_INFO "bcm47xx: using bcma bus\n");
+=======
+		pr_info("Using bcma bus\n");
+>>>>>>> v4.9.227
 #ifdef CONFIG_BCM47XX_BCMA
 		bcm47xx_bus_type = BCM47XX_BUS_TYPE_BCMA;
 		bcm47xx_register_bcma();
@@ -236,9 +279,16 @@ void __init plat_mem_setup(void)
 #endif
 #endif
 	} else {
+<<<<<<< HEAD
 		printk(KERN_INFO "bcm47xx: using ssb bus\n");
 #ifdef CONFIG_BCM47XX_SSB
 		bcm47xx_bus_type = BCM47XX_BUS_TYPE_SSB;
+=======
+		pr_info("Using ssb bus\n");
+#ifdef CONFIG_BCM47XX_SSB
+		bcm47xx_bus_type = BCM47XX_BUS_TYPE_SSB;
+		bcm47xx_sprom_register_fallbacks();
+>>>>>>> v4.9.227
 		bcm47xx_register_ssb();
 		bcm47xx_set_system_type(bcm47xx_bus.ssb.chip_id);
 #endif
@@ -247,6 +297,28 @@ void __init plat_mem_setup(void)
 	_machine_restart = bcm47xx_machine_restart;
 	_machine_halt = bcm47xx_machine_halt;
 	pm_power_off = bcm47xx_machine_halt;
+<<<<<<< HEAD
+=======
+}
+
+/*
+ * This finishes bus initialization doing things that were not possible without
+ * kmalloc. Make sure to call it late enough (after mm_init).
+ */
+void __init bcm47xx_bus_setup(void)
+{
+#ifdef CONFIG_BCM47XX_BCMA
+	if (bcm47xx_bus_type == BCM47XX_BUS_TYPE_BCMA) {
+		int err;
+
+		err = bcma_host_soc_init(&bcm47xx_bus.bcma);
+		if (err)
+			panic("Failed to initialize BCMA bus (err %d)", err);
+	}
+#endif
+
+	/* With bus initialized we can access NVRAM and detect the board */
+>>>>>>> v4.9.227
 	bcm47xx_board_detect();
 	mips_set_machine_name(bcm47xx_board_get_name());
 }
@@ -300,7 +372,11 @@ static int __init bcm47xx_register_bus_complete(void)
 	bcm47xx_leds_register();
 	bcm47xx_workarounds();
 
+<<<<<<< HEAD
 	fixed_phy_add(PHY_POLL, 0, &bcm47xx_fixed_phy_status);
+=======
+	fixed_phy_add(PHY_POLL, 0, &bcm47xx_fixed_phy_status, -1);
+>>>>>>> v4.9.227
 	return 0;
 }
 device_initcall(bcm47xx_register_bus_complete);

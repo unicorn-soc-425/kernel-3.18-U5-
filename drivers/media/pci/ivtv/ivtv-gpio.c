@@ -313,6 +313,7 @@ static const struct v4l2_ctrl_ops gpio_ctrl_ops = {
 
 static const struct v4l2_subdev_core_ops subdev_core_ops = {
 	.log_status = subdev_log_status,
+<<<<<<< HEAD
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
 	.s_ext_ctrls = v4l2_subdev_s_ext_ctrls,
@@ -320,6 +321,8 @@ static const struct v4l2_subdev_core_ops subdev_core_ops = {
 	.s_ctrl = v4l2_subdev_s_ctrl,
 	.queryctrl = v4l2_subdev_queryctrl,
 	.querymenu = v4l2_subdev_querymenu,
+=======
+>>>>>>> v4.9.227
 };
 
 static const struct v4l2_subdev_tuner_ops subdev_tuner_ops = {

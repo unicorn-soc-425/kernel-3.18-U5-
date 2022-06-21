@@ -34,6 +34,10 @@ struct ssc_device *ssc_request(unsigned int ssc_num)
 		if (ssc->pdev->dev.of_node) {
 			if (of_alias_get_id(ssc->pdev->dev.of_node, "ssc")
 				== ssc_num) {
+<<<<<<< HEAD
+=======
+				ssc->pdev->id = ssc_num;
+>>>>>>> v4.9.227
 				ssc_valid = 1;
 				break;
 			}
@@ -57,7 +61,11 @@ struct ssc_device *ssc_request(unsigned int ssc_num)
 	ssc->user++;
 	spin_unlock(&user_lock);
 
+<<<<<<< HEAD
 	clk_prepare_enable(ssc->clk);
+=======
+	clk_prepare(ssc->clk);
+>>>>>>> v4.9.227
 
 	return ssc;
 }
@@ -77,7 +85,11 @@ void ssc_free(struct ssc_device *ssc)
 	spin_unlock(&user_lock);
 
 	if (disable_clk)
+<<<<<<< HEAD
 		clk_disable_unprepare(ssc->clk);
+=======
+		clk_unprepare(ssc->clk);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(ssc_free);
 
@@ -129,7 +141,11 @@ static const struct of_device_id atmel_ssc_dt_ids[] = {
 MODULE_DEVICE_TABLE(of, atmel_ssc_dt_ids);
 #endif
 
+<<<<<<< HEAD
 static inline const struct atmel_ssc_platform_data * __init
+=======
+static inline const struct atmel_ssc_platform_data *
+>>>>>>> v4.9.227
 	atmel_ssc_get_driver_data(struct platform_device *pdev)
 {
 	if (pdev->dev.of_node) {
@@ -220,7 +236,10 @@ static int ssc_remove(struct platform_device *pdev)
 static struct platform_driver ssc_driver = {
 	.driver		= {
 		.name		= "ssc",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= of_match_ptr(atmel_ssc_dt_ids),
 	},
 	.id_table	= atmel_ssc_devtypes,

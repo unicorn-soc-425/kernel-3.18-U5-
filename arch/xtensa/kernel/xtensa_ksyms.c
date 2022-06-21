@@ -94,13 +94,19 @@ unsigned long __sync_fetch_and_or_4(unsigned long *p, unsigned long v)
 }
 EXPORT_SYMBOL(__sync_fetch_and_or_4);
 
+<<<<<<< HEAD
 #ifdef CONFIG_NET
+=======
+>>>>>>> v4.9.227
 /*
  * Networking support
  */
 EXPORT_SYMBOL(csum_partial);
 EXPORT_SYMBOL(csum_partial_copy_generic);
+<<<<<<< HEAD
 #endif /* CONFIG_NET */
+=======
+>>>>>>> v4.9.227
 
 /*
  * Architecture-specific symbols
@@ -116,6 +122,7 @@ EXPORT_SYMBOL(__invalidate_icache_range);
 // FIXME EXPORT_SYMBOL(screen_info);
 #endif
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(outsb);
 EXPORT_SYMBOL(outsw);
 EXPORT_SYMBOL(outsl);
@@ -123,6 +130,8 @@ EXPORT_SYMBOL(insb);
 EXPORT_SYMBOL(insw);
 EXPORT_SYMBOL(insl);
 
+=======
+>>>>>>> v4.9.227
 extern long common_exception_return;
 EXPORT_SYMBOL(common_exception_return);
 

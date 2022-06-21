@@ -56,15 +56,26 @@ static void tcp_yeah_init(struct sock *sk)
 	tp->snd_cwnd_clamp = min_t(u32, tp->snd_cwnd_clamp, 0xffffffff/128);
 }
 
+<<<<<<< HEAD
 static void tcp_yeah_pkts_acked(struct sock *sk, u32 pkts_acked, s32 rtt_us)
+=======
+static void tcp_yeah_pkts_acked(struct sock *sk,
+				const struct ack_sample *sample)
+>>>>>>> v4.9.227
 {
 	const struct inet_connection_sock *icsk = inet_csk(sk);
 	struct yeah *yeah = inet_csk_ca(sk);
 
 	if (icsk->icsk_ca_state == TCP_CA_Open)
+<<<<<<< HEAD
 		yeah->pkts_acked = pkts_acked;
 
 	tcp_vegas_pkts_acked(sk, pkts_acked, rtt_us);
+=======
+		yeah->pkts_acked = sample->pkts_acked;
+
+	tcp_vegas_pkts_acked(sk, sample);
+>>>>>>> v4.9.227
 }
 
 static void tcp_yeah_cong_avoid(struct sock *sk, u32 ack, u32 acked)
@@ -75,7 +86,11 @@ static void tcp_yeah_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 	if (!tcp_is_cwnd_limited(sk))
 		return;
 
+<<<<<<< HEAD
 	if (tp->snd_cwnd <= tp->snd_ssthresh)
+=======
+	if (tcp_in_slow_start(tp))
+>>>>>>> v4.9.227
 		tcp_slow_start(tp, acked);
 
 	else if (!yeah->doing_reno_now) {
@@ -92,7 +107,11 @@ static void tcp_yeah_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 
 	} else {
 		/* Reno */
+<<<<<<< HEAD
 		tcp_cong_avoid_ai(tp, tp->snd_cwnd);
+=======
+		tcp_cong_avoid_ai(tp, tp->snd_cwnd, 1);
+>>>>>>> v4.9.227
 	}
 
 	/* The key players are v_vegas.beg_snd_una and v_beg_snd_nxt.

@@ -54,6 +54,10 @@
 #include <linux/slab.h>
 #include <linux/dmi.h>
 #include <linux/acpi.h>
+<<<<<<< HEAD
+=======
+#include <acpi/video.h>
+>>>>>>> v4.9.227
 
 #define ASUS_LAPTOP_VERSION	"0.42"
 
@@ -331,6 +335,10 @@ static const struct key_entry asus_keymap[] = {
 	{KE_KEY, 0x65, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + TV */
 	{KE_KEY, 0x66, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + TV */
 	{KE_KEY, 0x67, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV */
+<<<<<<< HEAD
+=======
+	{KE_KEY, 0x6A, { KEY_TOUCHPAD_TOGGLE } }, /* Lock Touchpad Fn + F9 */
+>>>>>>> v4.9.227
 	{KE_KEY, 0x6B, { KEY_TOUCHPAD_TOGGLE } }, /* Lock Touchpad */
 	{KE_KEY, 0x6C, { KEY_SLEEP } }, /* Suspend */
 	{KE_KEY, 0x6D, { KEY_SLEEP } }, /* Hibernate */
@@ -769,12 +777,23 @@ static int asus_read_brightness(struct backlight_device *bd)
 {
 	struct asus_laptop *asus = bl_get_data(bd);
 	unsigned long long value;
+<<<<<<< HEAD
 	acpi_status rv = AE_OK;
 
 	rv = acpi_evaluate_integer(asus->handle, METHOD_BRIGHTNESS_GET,
 				   NULL, &value);
 	if (ACPI_FAILURE(rv))
 		pr_warn("Error reading brightness\n");
+=======
+	acpi_status rv;
+
+	rv = acpi_evaluate_integer(asus->handle, METHOD_BRIGHTNESS_GET,
+				   NULL, &value);
+	if (ACPI_FAILURE(rv)) {
+		pr_warn("Error reading brightness\n");
+		return 0;
+	}
+>>>>>>> v4.9.227
 
 	return value;
 }
@@ -843,8 +862,12 @@ static int asus_backlight_init(struct asus_laptop *asus)
 
 static void asus_backlight_exit(struct asus_laptop *asus)
 {
+<<<<<<< HEAD
 	if (asus->backlight_device)
 		backlight_device_unregister(asus->backlight_device);
+=======
+	backlight_device_unregister(asus->backlight_device);
+>>>>>>> v4.9.227
 	asus->backlight_device = NULL;
 }
 
@@ -857,14 +880,23 @@ static void asus_backlight_exit(struct asus_laptop *asus)
  * than count bytes. We set eof to 1 if we handle those 2 values. We return the
  * number of bytes written in page
  */
+<<<<<<< HEAD
 static ssize_t show_infos(struct device *dev,
 			  struct device_attribute *attr, char *page)
+=======
+static ssize_t infos_show(struct device *dev, struct device_attribute *attr,
+			  char *page)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int len = 0;
 	unsigned long long temp;
 	char buf[16];		/* enough for all info */
+<<<<<<< HEAD
 	acpi_status rv = AE_OK;
+=======
+	acpi_status rv;
+>>>>>>> v4.9.227
 
 	/*
 	 * We use the easy way, we don't care of off and count,
@@ -927,6 +959,7 @@ static ssize_t show_infos(struct device *dev,
 
 	return len;
 }
+<<<<<<< HEAD
 
 static int parse_arg(const char *buf, unsigned long count, int *val)
 {
@@ -938,12 +971,16 @@ static int parse_arg(const char *buf, unsigned long count, int *val)
 		return -EINVAL;
 	return count;
 }
+=======
+static DEVICE_ATTR_RO(infos);
+>>>>>>> v4.9.227
 
 static ssize_t sysfs_acpi_set(struct asus_laptop *asus,
 			      const char *buf, size_t count,
 			      const char *method)
 {
 	int rv, value;
+<<<<<<< HEAD
 	int out = 0;
 
 	rv = parse_arg(buf, count, &value);
@@ -953,25 +990,45 @@ static ssize_t sysfs_acpi_set(struct asus_laptop *asus,
 	if (write_acpi_int(asus->handle, method, value))
 		return -ENODEV;
 	return rv;
+=======
+
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+
+	if (write_acpi_int(asus->handle, method, value))
+		return -ENODEV;
+	return count;
+>>>>>>> v4.9.227
 }
 
 /*
  * LEDD display
  */
+<<<<<<< HEAD
 static ssize_t show_ledd(struct device *dev,
 			 struct device_attribute *attr, char *buf)
+=======
+static ssize_t ledd_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "0x%08x\n", asus->ledd_status);
 }
 
+<<<<<<< HEAD
 static ssize_t store_ledd(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t ledd_store(struct device *dev, struct device_attribute *attr,
+>>>>>>> v4.9.227
 			  const char *buf, size_t count)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int rv, value;
 
+<<<<<<< HEAD
 	rv = parse_arg(buf, count, &value);
 	if (rv > 0) {
 		if (write_acpi_int(asus->handle, METHOD_LEDD, value)) {
@@ -982,6 +1039,21 @@ static ssize_t store_ledd(struct device *dev, struct device_attribute *attr,
 	}
 	return rv;
 }
+=======
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+
+	if (write_acpi_int(asus->handle, METHOD_LEDD, value)) {
+		pr_warn("LED display write failed\n");
+		return -ENODEV;
+	}
+
+	asus->ledd_status = (u32) value;
+	return count;
+}
+static DEVICE_ATTR_RW(ledd);
+>>>>>>> v4.9.227
 
 /*
  * Wireless
@@ -1015,21 +1087,34 @@ static int asus_wlan_set(struct asus_laptop *asus, int status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_wlan(struct device *dev,
 			 struct device_attribute *attr, char *buf)
+=======
+static ssize_t wlan_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus_wireless_status(asus, WL_RSTS));
 }
 
+<<<<<<< HEAD
 static ssize_t store_wlan(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t wlan_store(struct device *dev, struct device_attribute *attr,
+>>>>>>> v4.9.227
 			  const char *buf, size_t count)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sysfs_acpi_set(asus, buf, count, METHOD_WLAN);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RW(wlan);
+>>>>>>> v4.9.227
 
 /*e
  * Bluetooth
@@ -1043,15 +1128,24 @@ static int asus_bluetooth_set(struct asus_laptop *asus, int status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_bluetooth(struct device *dev,
 			      struct device_attribute *attr, char *buf)
+=======
+static ssize_t bluetooth_show(struct device *dev, struct device_attribute *attr,
+			      char *buf)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus_wireless_status(asus, BT_RSTS));
 }
 
+<<<<<<< HEAD
 static ssize_t store_bluetooth(struct device *dev,
+=======
+static ssize_t bluetooth_store(struct device *dev,
+>>>>>>> v4.9.227
 			       struct device_attribute *attr, const char *buf,
 			       size_t count)
 {
@@ -1059,6 +1153,10 @@ static ssize_t store_bluetooth(struct device *dev,
 
 	return sysfs_acpi_set(asus, buf, count, METHOD_BLUETOOTH);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RW(bluetooth);
+>>>>>>> v4.9.227
 
 /*
  * Wimax
@@ -1072,22 +1170,36 @@ static int asus_wimax_set(struct asus_laptop *asus, int status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_wimax(struct device *dev,
 			      struct device_attribute *attr, char *buf)
+=======
+static ssize_t wimax_show(struct device *dev, struct device_attribute *attr,
+			  char *buf)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus_wireless_status(asus, WM_RSTS));
 }
 
+<<<<<<< HEAD
 static ssize_t store_wimax(struct device *dev,
 			       struct device_attribute *attr, const char *buf,
 			       size_t count)
+=======
+static ssize_t wimax_store(struct device *dev, struct device_attribute *attr,
+			   const char *buf, size_t count)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sysfs_acpi_set(asus, buf, count, METHOD_WIMAX);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RW(wimax);
+>>>>>>> v4.9.227
 
 /*
  * Wwan
@@ -1101,22 +1213,36 @@ static int asus_wwan_set(struct asus_laptop *asus, int status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_wwan(struct device *dev,
 			      struct device_attribute *attr, char *buf)
+=======
+static ssize_t wwan_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus_wireless_status(asus, WW_RSTS));
 }
 
+<<<<<<< HEAD
 static ssize_t store_wwan(struct device *dev,
 			       struct device_attribute *attr, const char *buf,
 			       size_t count)
+=======
+static ssize_t wwan_store(struct device *dev, struct device_attribute *attr,
+			  const char *buf, size_t count)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sysfs_acpi_set(asus, buf, count, METHOD_WWAN);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RW(wwan);
+>>>>>>> v4.9.227
 
 /*
  * Display
@@ -1136,17 +1262,33 @@ static void asus_set_display(struct asus_laptop *asus, int value)
  * displays hooked up simultaneously, so be warned. See the acpi4asus README
  * for more info.
  */
+<<<<<<< HEAD
 static ssize_t store_disp(struct device *dev, struct device_attribute *attr,
 			  const char *buf, size_t count)
+=======
+static ssize_t display_store(struct device *dev, struct device_attribute *attr,
+			     const char *buf, size_t count)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int rv, value;
 
+<<<<<<< HEAD
 	rv = parse_arg(buf, count, &value);
 	if (rv > 0)
 		asus_set_display(asus, value);
 	return rv;
 }
+=======
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+
+	asus_set_display(asus, value);
+	return count;
+}
+static DEVICE_ATTR_WO(display);
+>>>>>>> v4.9.227
 
 /*
  * Light Sens
@@ -1168,26 +1310,48 @@ static void asus_als_switch(struct asus_laptop *asus, int value)
 	asus->light_switch = value;
 }
 
+<<<<<<< HEAD
 static ssize_t show_lssw(struct device *dev,
 			 struct device_attribute *attr, char *buf)
+=======
+static ssize_t ls_switch_show(struct device *dev, struct device_attribute *attr,
+			      char *buf)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus->light_switch);
 }
 
+<<<<<<< HEAD
 static ssize_t store_lssw(struct device *dev, struct device_attribute *attr,
 			  const char *buf, size_t count)
+=======
+static ssize_t ls_switch_store(struct device *dev,
+			       struct device_attribute *attr, const char *buf,
+			       size_t count)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int rv, value;
 
+<<<<<<< HEAD
 	rv = parse_arg(buf, count, &value);
 	if (rv > 0)
 		asus_als_switch(asus, value ? 1 : 0);
 
 	return rv;
 }
+=======
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+
+	asus_als_switch(asus, value ? 1 : 0);
+	return count;
+}
+static DEVICE_ATTR_RW(ls_switch);
+>>>>>>> v4.9.227
 
 static void asus_als_level(struct asus_laptop *asus, int value)
 {
@@ -1196,20 +1360,31 @@ static void asus_als_level(struct asus_laptop *asus, int value)
 	asus->light_level = value;
 }
 
+<<<<<<< HEAD
 static ssize_t show_lslvl(struct device *dev,
 			  struct device_attribute *attr, char *buf)
+=======
+static ssize_t ls_level_show(struct device *dev, struct device_attribute *attr,
+			     char *buf)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus->light_level);
 }
 
+<<<<<<< HEAD
 static ssize_t store_lslvl(struct device *dev, struct device_attribute *attr,
 			   const char *buf, size_t count)
+=======
+static ssize_t ls_level_store(struct device *dev, struct device_attribute *attr,
+			      const char *buf, size_t count)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int rv, value;
 
+<<<<<<< HEAD
 	rv = parse_arg(buf, count, &value);
 	if (rv > 0) {
 		value = (0 < value) ? ((15 < value) ? 15 : value) : 0;
@@ -1219,6 +1394,19 @@ static ssize_t store_lslvl(struct device *dev, struct device_attribute *attr,
 
 	return rv;
 }
+=======
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+
+	value = (0 < value) ? ((15 < value) ? 15 : value) : 0;
+	/* 0 <= value <= 15 */
+	asus_als_level(asus, value);
+
+	return count;
+}
+static DEVICE_ATTR_RW(ls_level);
+>>>>>>> v4.9.227
 
 static int pega_int_read(struct asus_laptop *asus, int arg, int *result)
 {
@@ -1235,8 +1423,13 @@ static int pega_int_read(struct asus_laptop *asus, int arg, int *result)
 	return err;
 }
 
+<<<<<<< HEAD
 static ssize_t show_lsvalue(struct device *dev,
 			    struct device_attribute *attr, char *buf)
+=======
+static ssize_t ls_value_show(struct device *dev, struct device_attribute *attr,
+			     char *buf)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int err, hi, lo;
@@ -1248,6 +1441,10 @@ static ssize_t show_lsvalue(struct device *dev,
 		return sprintf(buf, "%d\n", 10 * hi + lo);
 	return err;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(ls_value);
+>>>>>>> v4.9.227
 
 /*
  * GPS
@@ -1255,7 +1452,11 @@ static ssize_t show_lsvalue(struct device *dev,
 static int asus_gps_status(struct asus_laptop *asus)
 {
 	unsigned long long status;
+<<<<<<< HEAD
 	acpi_status rv = AE_OK;
+=======
+	acpi_status rv;
+>>>>>>> v4.9.227
 
 	rv = acpi_evaluate_integer(asus->handle, METHOD_GPS_STATUS,
 				   NULL, &status);
@@ -1275,30 +1476,51 @@ static int asus_gps_switch(struct asus_laptop *asus, int status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_gps(struct device *dev,
 			struct device_attribute *attr, char *buf)
+=======
+static ssize_t gps_show(struct device *dev, struct device_attribute *attr,
+			char *buf)
+>>>>>>> v4.9.227
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus_gps_status(asus));
 }
 
+<<<<<<< HEAD
 static ssize_t store_gps(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t gps_store(struct device *dev, struct device_attribute *attr,
+>>>>>>> v4.9.227
 			 const char *buf, size_t count)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int rv, value;
 	int ret;
 
+<<<<<<< HEAD
 	rv = parse_arg(buf, count, &value);
 	if (rv <= 0)
 		return -EINVAL;
+=======
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+>>>>>>> v4.9.227
 	ret = asus_gps_switch(asus, !!value);
 	if (ret)
 		return ret;
 	rfkill_set_sw_state(asus->gps.rfkill, !value);
+<<<<<<< HEAD
 	return rv;
 }
+=======
+	return count;
+}
+static DEVICE_ATTR_RW(gps);
+>>>>>>> v4.9.227
 
 /*
  * rfkill
@@ -1570,6 +1792,7 @@ static void asus_acpi_notify(struct acpi_device *device, u32 event)
 	asus_input_notify(asus, event);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(infos, S_IRUGO, show_infos, NULL);
 static DEVICE_ATTR(wlan, S_IRUGO | S_IWUSR, show_wlan, store_wlan);
 static DEVICE_ATTR(bluetooth, S_IRUGO | S_IWUSR,
@@ -1583,6 +1806,8 @@ static DEVICE_ATTR(ls_level, S_IRUGO | S_IWUSR, show_lslvl, store_lslvl);
 static DEVICE_ATTR(ls_switch, S_IRUGO | S_IWUSR, show_lssw, store_lssw);
 static DEVICE_ATTR(gps, S_IRUGO | S_IWUSR, show_gps, store_gps);
 
+=======
+>>>>>>> v4.9.227
 static struct attribute *asus_attributes[] = {
 	&dev_attr_infos.attr,
 	&dev_attr_wlan.attr,
@@ -1617,7 +1842,11 @@ static umode_t asus_sysfs_is_visible(struct kobject *kobj,
 		else
 			goto normal;
 
+<<<<<<< HEAD
 		return supported;
+=======
+		return supported ? attr->mode : 0;
+>>>>>>> v4.9.227
 	}
 
 normal:
@@ -1699,7 +1928,10 @@ static void asus_platform_exit(struct asus_laptop *asus)
 static struct platform_driver platform_driver = {
 	.driver = {
 		.name = ASUS_LAPTOP_FILE,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -1889,12 +2121,20 @@ static int asus_acpi_add(struct acpi_device *device)
 	if (result)
 		goto fail_platform;
 
+<<<<<<< HEAD
 	if (!acpi_video_backlight_support()) {
 		result = asus_backlight_init(asus);
 		if (result)
 			goto fail_backlight;
 	} else
 		pr_info("Backlight controlled by ACPI video driver\n");
+=======
+	if (acpi_video_get_backlight_type() == acpi_backlight_vendor) {
+		result = asus_backlight_init(asus);
+		if (result)
+			goto fail_backlight;
+	}
+>>>>>>> v4.9.227
 
 	result = asus_input_init(asus);
 	if (result)

@@ -27,7 +27,11 @@
  * platform-specific code to shutdown a CPU
  * Called with IRQs disabled
  */
+<<<<<<< HEAD
 void __ref omap4_cpu_die(unsigned int cpu)
+=======
+void omap4_cpu_die(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 	unsigned int boot_cpu = 0;
 	void __iomem *base = omap_get_wakeupgen_base();
@@ -64,3 +68,12 @@ void __ref omap4_cpu_die(unsigned int cpu)
 		pr_debug("CPU%u: spurious wakeup call\n", cpu);
 	}
 }
+<<<<<<< HEAD
+=======
+
+/* Needed by kexec and platform_can_cpu_hotplug() */
+int omap4_cpu_kill(unsigned int cpu)
+{
+	return 1;
+}
+>>>>>>> v4.9.227

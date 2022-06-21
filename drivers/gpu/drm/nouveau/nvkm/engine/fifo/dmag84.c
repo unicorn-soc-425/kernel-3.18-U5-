@@ -27,6 +27,10 @@
 #include <core/ramht.h>
 
 #include <nvif/class.h>
+<<<<<<< HEAD
+=======
+#include <nvif/cl826e.h>
+>>>>>>> v4.9.227
 #include <nvif/unpack.h>
 
 static int
@@ -35,6 +39,7 @@ g84_fifo_dma_new(struct nvkm_fifo *base, const struct nvkm_oclass *oclass,
 {
 	struct nvkm_object *parent = oclass->parent;
 	union {
+<<<<<<< HEAD
 		struct nv50_channel_dma_v0 v0;
 	} *args = data;
 	struct nv50_fifo *fifo = nv50_fifo(base);
@@ -43,6 +48,16 @@ g84_fifo_dma_new(struct nvkm_fifo *base, const struct nvkm_oclass *oclass,
 
 	nvif_ioctl(parent, "create channel dma size %d\n", size);
 	if (nvif_unpack(args->v0, 0, 0, false)) {
+=======
+		struct g82_channel_dma_v0 v0;
+	} *args = data;
+	struct nv50_fifo *fifo = nv50_fifo(base);
+	struct nv50_fifo_chan *chan;
+	int ret = -ENOSYS;
+
+	nvif_ioctl(parent, "create channel dma size %d\n", size);
+	if (!(ret = nvif_unpack(ret, &data, &size, args->v0, 0, 0, false))) {
+>>>>>>> v4.9.227
 		nvif_ioctl(parent, "create channel dma vers %d vm %llx "
 				   "pushbuf %llx offset %016llx\n",
 			   args->v0.version, args->v0.vm, args->v0.pushbuf,

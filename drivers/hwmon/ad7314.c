@@ -16,6 +16,10 @@
 #include <linux/err.h>
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> v4.9.227
 
 /*
  * AD7314 temperature masks
@@ -36,7 +40,10 @@ enum ad7314_variant {
 
 struct ad7314_data {
 	struct spi_device	*spi_dev;
+<<<<<<< HEAD
 	struct device		*hwmon_dev;
+=======
+>>>>>>> v4.9.227
 	u16 rx ____cacheline_aligned;
 };
 
@@ -67,7 +74,11 @@ static ssize_t ad7314_show_temperature(struct device *dev,
 	switch (spi_get_device_id(chip->spi_dev)->driver_data) {
 	case ad7314:
 		data = (ret & AD7314_TEMP_MASK) >> AD7314_TEMP_SHIFT;
+<<<<<<< HEAD
 		data = (data << 6) >> 6;
+=======
+		data = sign_extend32(data, 9);
+>>>>>>> v4.9.227
 
 		return sprintf(buf, "%d\n", 250 * data);
 	case adt7301:
@@ -78,7 +89,11 @@ static ssize_t ad7314_show_temperature(struct device *dev,
 		 * register.  1lsb - 31.25 milli degrees centigrade
 		 */
 		data = ret & ADT7301_TEMP_MASK;
+<<<<<<< HEAD
 		data = (data << 2) >> 2;
+=======
+		data = sign_extend32(data, 13);
+>>>>>>> v4.9.227
 
 		return sprintf(buf, "%d\n",
 			       DIV_ROUND_CLOSEST(data * 3125, 100));
@@ -87,6 +102,7 @@ static ssize_t ad7314_show_temperature(struct device *dev,
 	}
 }
 
+<<<<<<< HEAD
 static ssize_t ad7314_show_name(struct device *dev,
 				struct device_attribute *devattr, char *buf)
 {
@@ -99,10 +115,17 @@ static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO,
 
 static struct attribute *ad7314_attributes[] = {
 	&dev_attr_name.attr,
+=======
+static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO,
+			  ad7314_show_temperature, NULL, 0);
+
+static struct attribute *ad7314_attrs[] = {
+>>>>>>> v4.9.227
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	NULL,
 };
 
+<<<<<<< HEAD
 static const struct attribute_group ad7314_group = {
 	.attrs = ad7314_attributes,
 };
@@ -111,11 +134,20 @@ static int ad7314_probe(struct spi_device *spi_dev)
 {
 	int ret;
 	struct ad7314_data *chip;
+=======
+ATTRIBUTE_GROUPS(ad7314);
+
+static int ad7314_probe(struct spi_device *spi_dev)
+{
+	struct ad7314_data *chip;
+	struct device *hwmon_dev;
+>>>>>>> v4.9.227
 
 	chip = devm_kzalloc(&spi_dev->dev, sizeof(*chip), GFP_KERNEL);
 	if (chip == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spi_set_drvdata(spi_dev, chip);
 
 	ret = sysfs_create_group(&spi_dev->dev.kobj, &ad7314_group);
@@ -143,6 +175,13 @@ static int ad7314_remove(struct spi_device *spi_dev)
 	sysfs_remove_group(&spi_dev->dev.kobj, &ad7314_group);
 
 	return 0;
+=======
+	chip->spi_dev = spi_dev;
+	hwmon_dev = devm_hwmon_device_register_with_groups(&spi_dev->dev,
+							   spi_dev->modalias,
+							   chip, ad7314_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> v4.9.227
 }
 
 static const struct spi_device_id ad7314_id[] = {
@@ -156,10 +195,15 @@ MODULE_DEVICE_TABLE(spi, ad7314_id);
 static struct spi_driver ad7314_driver = {
 	.driver = {
 		.name = "ad7314",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = ad7314_probe,
 	.remove = ad7314_remove,
+=======
+	},
+	.probe = ad7314_probe,
+>>>>>>> v4.9.227
 	.id_table = ad7314_id,
 };
 

@@ -1620,6 +1620,7 @@ static int cypress_init_smc_table(struct radeon_device *rdev,
 	cypress_populate_smc_voltage_tables(rdev, table);
 
 	switch (rdev->pm.int_thermal_type) {
+<<<<<<< HEAD
         case THERMAL_TYPE_EVERGREEN:
         case THERMAL_TYPE_EMC2103_WITH_INTERNAL:
 		table->thermalProtectType = PPSMC_THERMAL_PROTECT_TYPE_INTERNAL;
@@ -1628,6 +1629,16 @@ static int cypress_init_smc_table(struct radeon_device *rdev,
 		table->thermalProtectType = PPSMC_THERMAL_PROTECT_TYPE_NONE;
 		break;
         default:
+=======
+	case THERMAL_TYPE_EVERGREEN:
+	case THERMAL_TYPE_EMC2103_WITH_INTERNAL:
+		table->thermalProtectType = PPSMC_THERMAL_PROTECT_TYPE_INTERNAL;
+		break;
+	case THERMAL_TYPE_NONE:
+		table->thermalProtectType = PPSMC_THERMAL_PROTECT_TYPE_NONE;
+		break;
+	default:
+>>>>>>> v4.9.227
 		table->thermalProtectType = PPSMC_THERMAL_PROTECT_TYPE_EXTERNAL;
 		break;
 	}

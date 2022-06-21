@@ -12,6 +12,7 @@
 
 #include <linux/kernel.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/clk-private.h>
 #include <linux/clkdev.h>
 #include <linux/clk/ti.h>
@@ -21,6 +22,17 @@
 #define DRA7_DPLL_USB_DEFFREQ				960000000
 
 
+=======
+#include <linux/clk.h>
+#include <linux/clkdev.h>
+#include <linux/clk/ti.h>
+
+#include "clock.h"
+
+#define DRA7_DPLL_GMAC_DEFFREQ				1000000000
+#define DRA7_DPLL_USB_DEFFREQ				960000000
+
+>>>>>>> v4.9.227
 static struct ti_dt_clk dra7xx_clks[] = {
 	DT_CLK(NULL, "atl_clkin0_ck", "atl_clkin0_ck"),
 	DT_CLK(NULL, "atl_clkin1_ck", "atl_clkin1_ck"),
@@ -201,7 +213,10 @@ static struct ti_dt_clk dra7xx_clks[] = {
 	DT_CLK(NULL, "atl_dpll_clk_mux", "atl_dpll_clk_mux"),
 	DT_CLK(NULL, "atl_gfclk_mux", "atl_gfclk_mux"),
 	DT_CLK(NULL, "dcan1_sys_clk_mux", "dcan1_sys_clk_mux"),
+<<<<<<< HEAD
 	DT_CLK(NULL, "gmac_gmii_ref_clk_div", "gmac_gmii_ref_clk_div"),
+=======
+>>>>>>> v4.9.227
 	DT_CLK(NULL, "gmac_rft_clk_mux", "gmac_rft_clk_mux"),
 	DT_CLK(NULL, "gpu_core_gclk_mux", "gpu_core_gclk_mux"),
 	DT_CLK(NULL, "gpu_hyd_gclk_mux", "gpu_hyd_gclk_mux"),
@@ -223,7 +238,11 @@ static struct ti_dt_clk dra7xx_clks[] = {
 	DT_CLK(NULL, "mcasp6_aux_gfclk_mux", "mcasp6_aux_gfclk_mux"),
 	DT_CLK(NULL, "mcasp7_ahclkx_mux", "mcasp7_ahclkx_mux"),
 	DT_CLK(NULL, "mcasp7_aux_gfclk_mux", "mcasp7_aux_gfclk_mux"),
+<<<<<<< HEAD
 	DT_CLK(NULL, "mcasp8_ahclk_mux", "mcasp8_ahclk_mux"),
+=======
+	DT_CLK(NULL, "mcasp8_ahclkx_mux", "mcasp8_ahclkx_mux"),
+>>>>>>> v4.9.227
 	DT_CLK(NULL, "mcasp8_aux_gfclk_mux", "mcasp8_aux_gfclk_mux"),
 	DT_CLK(NULL, "mmc1_fclk_mux", "mmc1_fclk_mux"),
 	DT_CLK(NULL, "mmc1_fclk_div", "mmc1_fclk_div"),
@@ -289,6 +308,7 @@ static struct ti_dt_clk dra7xx_clks[] = {
 	DT_CLK("usbhs_omap", "usbtll_fck", "dummy_ck"),
 	DT_CLK("omap_wdt", "ick", "dummy_ck"),
 	DT_CLK(NULL, "timer_32k_ck", "sys_32k_ck"),
+<<<<<<< HEAD
 	DT_CLK("4ae18000.timer", "timer_sys_ck", "sys_clkin2"),
 	DT_CLK("48032000.timer", "timer_sys_ck", "sys_clkin2"),
 	DT_CLK("48034000.timer", "timer_sys_ck", "sys_clkin2"),
@@ -296,23 +316,47 @@ static struct ti_dt_clk dra7xx_clks[] = {
 	DT_CLK("4803e000.timer", "timer_sys_ck", "sys_clkin2"),
 	DT_CLK("48086000.timer", "timer_sys_ck", "sys_clkin2"),
 	DT_CLK("48088000.timer", "timer_sys_ck", "sys_clkin2"),
+=======
+	DT_CLK(NULL, "sys_clkin_ck", "timer_sys_clk_div"),
+	DT_CLK("4ae18000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+	DT_CLK("48032000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+	DT_CLK("48034000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+	DT_CLK("48036000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+	DT_CLK("4803e000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+	DT_CLK("48086000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+	DT_CLK("48088000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+>>>>>>> v4.9.227
 	DT_CLK("48820000.timer", "timer_sys_ck", "timer_sys_clk_div"),
 	DT_CLK("48822000.timer", "timer_sys_ck", "timer_sys_clk_div"),
 	DT_CLK("48824000.timer", "timer_sys_ck", "timer_sys_clk_div"),
 	DT_CLK("48826000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+<<<<<<< HEAD
 	DT_CLK(NULL, "sys_clkin", "sys_clkin1"),
+=======
+	DT_CLK("48828000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+	DT_CLK("4882a000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+	DT_CLK("4882c000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+	DT_CLK("4882e000.timer", "timer_sys_ck", "timer_sys_clk_div"),
+	DT_CLK(NULL, "sys_clkin", "sys_clkin1"),
+	DT_CLK(NULL, "dss_deshdcp_clk", "dss_deshdcp_clk"),
+>>>>>>> v4.9.227
 	{ .node_name = NULL },
 };
 
 int __init dra7xx_dt_clk_init(void)
 {
 	int rc;
+<<<<<<< HEAD
 	struct clk *abe_dpll_mux, *sys_clkin2, *dpll_ck;
+=======
+	struct clk *dpll_ck, *hdcp_ck;
+>>>>>>> v4.9.227
 
 	ti_dt_clocks_register(dra7xx_clks);
 
 	omap2_clk_disable_autoidle_all();
 
+<<<<<<< HEAD
 	abe_dpll_mux = clk_get_sys(NULL, "abe_dpll_sys_clk_mux");
 	sys_clkin2 = clk_get_sys(NULL, "sys_clkin2");
 	dpll_ck = clk_get_sys(NULL, "dpll_abe_ck");
@@ -328,6 +372,8 @@ int __init dra7xx_dt_clk_init(void)
 	if (rc)
 		pr_err("%s: failed to configure ABE DPLL m2x2!\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	dpll_ck = clk_get_sys(NULL, "dpll_gmac_ck");
 	rc = clk_set_rate(dpll_ck, DRA7_DPLL_GMAC_DEFFREQ);
 	if (rc)
@@ -343,5 +389,13 @@ int __init dra7xx_dt_clk_init(void)
 	if (rc)
 		pr_err("%s: failed to set USB_DPLL M2 OUT\n", __func__);
 
+<<<<<<< HEAD
+=======
+	hdcp_ck = clk_get_sys(NULL, "dss_deshdcp_clk");
+	rc = clk_prepare_enable(hdcp_ck);
+	if (rc)
+		pr_err("%s: failed to set dss_deshdcp_clk\n", __func__);
+
+>>>>>>> v4.9.227
 	return rc;
 }

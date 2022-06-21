@@ -18,8 +18,11 @@
 #include <linux/rtc.h>
 #include <linux/log2.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.1"
 
+=======
+>>>>>>> v4.9.227
 #define RX8581_REG_SC		0x00 /* Second in BCD */
 #define RX8581_REG_MN		0x01 /* Minute in BCD */
 #define RX8581_REG_HR		0x02 /* Hour in BCD */
@@ -292,8 +295,11 @@ static int rx8581_probe(struct i2c_client *client,
 		rx8581->write_block_data = rx8581_write_block_data;
 	}
 
+<<<<<<< HEAD
 	dev_info(&client->dev, "chip found, driver version " DRV_VERSION "\n");
 
+=======
+>>>>>>> v4.9.227
 	rx8581->rtc = devm_rtc_device_register(&client->dev,
 		rx8581_driver.driver.name, &rx8581_rtc_ops, THIS_MODULE);
 
@@ -315,7 +321,10 @@ MODULE_DEVICE_TABLE(i2c, rx8581_id);
 static struct i2c_driver rx8581_driver = {
 	.driver		= {
 		.name	= "rtc-rx8581",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= rx8581_probe,
 	.id_table	= rx8581_id,
@@ -326,4 +335,7 @@ module_i2c_driver(rx8581_driver);
 MODULE_AUTHOR("Martyn Welch <martyn.welch@ge.com>");
 MODULE_DESCRIPTION("Epson RX-8581 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227

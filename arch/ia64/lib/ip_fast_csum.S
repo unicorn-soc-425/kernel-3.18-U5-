@@ -13,6 +13,10 @@
  */
 
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 /*
  * Since we know that most likely this function is called with buf aligned
@@ -92,6 +96,10 @@ GLOBAL_ENTRY(ip_fast_csum)
 	mov	b0=r34
 	br.ret.sptk.many b0
 END(ip_fast_csum)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ip_fast_csum)
+>>>>>>> v4.9.227
 
 GLOBAL_ENTRY(csum_ipv6_magic)
 	ld4	r20=[in0],4
@@ -142,3 +150,7 @@ GLOBAL_ENTRY(csum_ipv6_magic)
 	andcm	r8=r9,r8
 	br.ret.sptk.many b0
 END(csum_ipv6_magic)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(csum_ipv6_magic)
+>>>>>>> v4.9.227

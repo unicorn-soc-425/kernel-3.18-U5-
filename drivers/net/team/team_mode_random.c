@@ -46,6 +46,10 @@ static const struct team_mode rnd_mode = {
 	.kind		= "random",
 	.owner		= THIS_MODULE,
 	.ops		= &rnd_mode_ops,
+<<<<<<< HEAD
+=======
+	.lag_tx_type	= NETDEV_LAG_TX_TYPE_RANDOM,
+>>>>>>> v4.9.227
 };
 
 static int __init rnd_init_module(void)

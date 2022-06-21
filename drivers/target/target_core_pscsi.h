@@ -16,6 +16,7 @@
 #define PS_TIMEOUT_OTHER	(500*HZ)
 
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <scsi/scsi_driver.h>
 #include <scsi/scsi_device.h>
 #include <linux/kref.h>
@@ -23,6 +24,15 @@
 
 struct pscsi_plugin_task {
 	unsigned char pscsi_sense[SCSI_SENSE_BUFFERSIZE];
+=======
+#include <linux/kref.h>
+#include <linux/kobject.h>
+
+struct scsi_device;
+
+struct pscsi_plugin_task {
+	unsigned char pscsi_sense[TRANSPORT_SENSE_BUFFER];
+>>>>>>> v4.9.227
 	int	pscsi_direction;
 	int	pscsi_result;
 	u32	pscsi_resid;

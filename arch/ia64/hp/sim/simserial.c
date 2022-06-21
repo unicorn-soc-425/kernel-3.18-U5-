@@ -300,7 +300,11 @@ static int rs_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
 	    (cmd != TIOCSERCONFIG) && (cmd != TIOCSERGSTRUCT) &&
 	    (cmd != TIOCMIWAIT)) {
+<<<<<<< HEAD
 		if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+		if (tty_io_error(tty))
+>>>>>>> v4.9.227
 		    return -EIO;
 	}
 

@@ -29,6 +29,7 @@
 
 #define SKBEDIT_TAB_MASK     15
 
+<<<<<<< HEAD
 static int tcf_skbedit(struct sk_buff *skb, const struct tc_action *a,
 		       struct tcf_result *res)
 {
@@ -36,6 +37,18 @@ static int tcf_skbedit(struct sk_buff *skb, const struct tc_action *a,
 
 	spin_lock(&d->tcf_lock);
 	d->tcf_tm.lastuse = jiffies;
+=======
+static int skbedit_net_id;
+static struct tc_action_ops act_skbedit_ops;
+
+static int tcf_skbedit(struct sk_buff *skb, const struct tc_action *a,
+		       struct tcf_result *res)
+{
+	struct tcf_skbedit *d = to_skbedit(a);
+
+	spin_lock(&d->tcf_lock);
+	tcf_lastuse_update(&d->tcf_tm);
+>>>>>>> v4.9.227
 	bstats_update(&d->tcf_bstats, skb);
 
 	if (d->flags & SKBEDIT_F_PRIORITY)
@@ -45,6 +58,11 @@ static int tcf_skbedit(struct sk_buff *skb, const struct tc_action *a,
 		skb_set_queue_mapping(skb, d->queue_mapping);
 	if (d->flags & SKBEDIT_F_MARK)
 		skb->mark = d->mark;
+<<<<<<< HEAD
+=======
+	if (d->flags & SKBEDIT_F_PTYPE)
+		skb->pkt_type = d->ptype;
+>>>>>>> v4.9.227
 
 	spin_unlock(&d->tcf_lock);
 	return d->tcf_action;
@@ -55,17 +73,33 @@ static const struct nla_policy skbedit_policy[TCA_SKBEDIT_MAX + 1] = {
 	[TCA_SKBEDIT_PRIORITY]		= { .len = sizeof(u32) },
 	[TCA_SKBEDIT_QUEUE_MAPPING]	= { .len = sizeof(u16) },
 	[TCA_SKBEDIT_MARK]		= { .len = sizeof(u32) },
+<<<<<<< HEAD
 };
 
 static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
 			    struct nlattr *est, struct tc_action *a,
 			    int ovr, int bind)
 {
+=======
+	[TCA_SKBEDIT_PTYPE]		= { .len = sizeof(u16) },
+};
+
+static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
+			    struct nlattr *est, struct tc_action **a,
+			    int ovr, int bind)
+{
+	struct tc_action_net *tn = net_generic(net, skbedit_net_id);
+>>>>>>> v4.9.227
 	struct nlattr *tb[TCA_SKBEDIT_MAX + 1];
 	struct tc_skbedit *parm;
 	struct tcf_skbedit *d;
 	u32 flags = 0, *priority = NULL, *mark = NULL;
+<<<<<<< HEAD
 	u16 *queue_mapping = NULL;
+=======
+	u16 *queue_mapping = NULL, *ptype = NULL;
+	bool exists = false;
+>>>>>>> v4.9.227
 	int ret = 0, err;
 
 	if (nla == NULL)
@@ -88,11 +122,22 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
 		queue_mapping = nla_data(tb[TCA_SKBEDIT_QUEUE_MAPPING]);
 	}
 
+<<<<<<< HEAD
+=======
+	if (tb[TCA_SKBEDIT_PTYPE] != NULL) {
+		ptype = nla_data(tb[TCA_SKBEDIT_PTYPE]);
+		if (!skb_pkt_type_ok(*ptype))
+			return -EINVAL;
+		flags |= SKBEDIT_F_PTYPE;
+	}
+
+>>>>>>> v4.9.227
 	if (tb[TCA_SKBEDIT_MARK] != NULL) {
 		flags |= SKBEDIT_F_MARK;
 		mark = nla_data(tb[TCA_SKBEDIT_MARK]);
 	}
 
+<<<<<<< HEAD
 	if (!flags)
 		return -EINVAL;
 
@@ -110,6 +155,30 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
 		if (bind)
 			return 0;
 		tcf_hash_release(a, bind);
+=======
+	parm = nla_data(tb[TCA_SKBEDIT_PARMS]);
+
+	exists = tcf_hash_check(tn, parm->index, a, bind);
+	if (exists && bind)
+		return 0;
+
+	if (!flags) {
+		tcf_hash_release(*a, bind);
+		return -EINVAL;
+	}
+
+	if (!exists) {
+		ret = tcf_hash_create(tn, parm->index, est, a,
+				      &act_skbedit_ops, bind, false);
+		if (ret)
+			return ret;
+
+		d = to_skbedit(*a);
+		ret = ACT_P_CREATED;
+	} else {
+		d = to_skbedit(*a);
+		tcf_hash_release(*a, bind);
+>>>>>>> v4.9.227
 		if (!ovr)
 			return -EEXIST;
 	}
@@ -123,13 +192,22 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
 		d->queue_mapping = *queue_mapping;
 	if (flags & SKBEDIT_F_MARK)
 		d->mark = *mark;
+<<<<<<< HEAD
+=======
+	if (flags & SKBEDIT_F_PTYPE)
+		d->ptype = *ptype;
+>>>>>>> v4.9.227
 
 	d->tcf_action = parm->action;
 
 	spin_unlock_bh(&d->tcf_lock);
 
 	if (ret == ACT_P_CREATED)
+<<<<<<< HEAD
 		tcf_hash_insert(a);
+=======
+		tcf_hash_insert(tn, *a);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -137,7 +215,11 @@ static int tcf_skbedit_dump(struct sk_buff *skb, struct tc_action *a,
 			    int bind, int ref)
 {
 	unsigned char *b = skb_tail_pointer(skb);
+<<<<<<< HEAD
 	struct tcf_skbedit *d = a->priv;
+=======
+	struct tcf_skbedit *d = to_skbedit(a);
+>>>>>>> v4.9.227
 	struct tc_skbedit opt = {
 		.index   = d->tcf_index,
 		.refcnt  = d->tcf_refcnt - ref,
@@ -149,6 +231,7 @@ static int tcf_skbedit_dump(struct sk_buff *skb, struct tc_action *a,
 	if (nla_put(skb, TCA_SKBEDIT_PARMS, sizeof(opt), &opt))
 		goto nla_put_failure;
 	if ((d->flags & SKBEDIT_F_PRIORITY) &&
+<<<<<<< HEAD
 	    nla_put(skb, TCA_SKBEDIT_PRIORITY, sizeof(d->priority),
 		    &d->priority))
 		goto nla_put_failure;
@@ -164,6 +247,22 @@ static int tcf_skbedit_dump(struct sk_buff *skb, struct tc_action *a,
 	t.lastuse = jiffies_to_clock_t(jiffies - d->tcf_tm.lastuse);
 	t.expires = jiffies_to_clock_t(d->tcf_tm.expires);
 	if (nla_put(skb, TCA_SKBEDIT_TM, sizeof(t), &t))
+=======
+	    nla_put_u32(skb, TCA_SKBEDIT_PRIORITY, d->priority))
+		goto nla_put_failure;
+	if ((d->flags & SKBEDIT_F_QUEUE_MAPPING) &&
+	    nla_put_u16(skb, TCA_SKBEDIT_QUEUE_MAPPING, d->queue_mapping))
+		goto nla_put_failure;
+	if ((d->flags & SKBEDIT_F_MARK) &&
+	    nla_put_u32(skb, TCA_SKBEDIT_MARK, d->mark))
+		goto nla_put_failure;
+	if ((d->flags & SKBEDIT_F_PTYPE) &&
+	    nla_put_u16(skb, TCA_SKBEDIT_PTYPE, d->ptype))
+		goto nla_put_failure;
+
+	tcf_tm_dump(&t, &d->tcf_tm);
+	if (nla_put_64bit(skb, TCA_SKBEDIT_TM, sizeof(t), &t, TCA_SKBEDIT_PAD))
+>>>>>>> v4.9.227
 		goto nla_put_failure;
 	return skb->len;
 
@@ -172,6 +271,25 @@ nla_put_failure:
 	return -1;
 }
 
+<<<<<<< HEAD
+=======
+static int tcf_skbedit_walker(struct net *net, struct sk_buff *skb,
+			      struct netlink_callback *cb, int type,
+			      const struct tc_action_ops *ops)
+{
+	struct tc_action_net *tn = net_generic(net, skbedit_net_id);
+
+	return tcf_generic_walker(tn, skb, cb, type, ops);
+}
+
+static int tcf_skbedit_search(struct net *net, struct tc_action **a, u32 index)
+{
+	struct tc_action_net *tn = net_generic(net, skbedit_net_id);
+
+	return tcf_hash_search(tn, a, index);
+}
+
+>>>>>>> v4.9.227
 static struct tc_action_ops act_skbedit_ops = {
 	.kind		=	"skbedit",
 	.type		=	TCA_ACT_SKBEDIT,
@@ -179,6 +297,33 @@ static struct tc_action_ops act_skbedit_ops = {
 	.act		=	tcf_skbedit,
 	.dump		=	tcf_skbedit_dump,
 	.init		=	tcf_skbedit_init,
+<<<<<<< HEAD
+=======
+	.walk		=	tcf_skbedit_walker,
+	.lookup		=	tcf_skbedit_search,
+	.size		=	sizeof(struct tcf_skbedit),
+};
+
+static __net_init int skbedit_init_net(struct net *net)
+{
+	struct tc_action_net *tn = net_generic(net, skbedit_net_id);
+
+	return tc_action_net_init(tn, &act_skbedit_ops, SKBEDIT_TAB_MASK);
+}
+
+static void __net_exit skbedit_exit_net(struct net *net)
+{
+	struct tc_action_net *tn = net_generic(net, skbedit_net_id);
+
+	tc_action_net_exit(tn);
+}
+
+static struct pernet_operations skbedit_net_ops = {
+	.init = skbedit_init_net,
+	.exit = skbedit_exit_net,
+	.id   = &skbedit_net_id,
+	.size = sizeof(struct tc_action_net),
+>>>>>>> v4.9.227
 };
 
 MODULE_AUTHOR("Alexander Duyck, <alexander.h.duyck@intel.com>");
@@ -187,12 +332,20 @@ MODULE_LICENSE("GPL");
 
 static int __init skbedit_init_module(void)
 {
+<<<<<<< HEAD
 	return tcf_register_action(&act_skbedit_ops, SKBEDIT_TAB_MASK);
+=======
+	return tcf_register_action(&act_skbedit_ops, &skbedit_net_ops);
+>>>>>>> v4.9.227
 }
 
 static void __exit skbedit_cleanup_module(void)
 {
+<<<<<<< HEAD
 	tcf_unregister_action(&act_skbedit_ops);
+=======
+	tcf_unregister_action(&act_skbedit_ops, &skbedit_net_ops);
+>>>>>>> v4.9.227
 }
 
 module_init(skbedit_init_module);

@@ -39,17 +39,23 @@
 #include <linux/hash.h>
 #include <linux/ratelimit.h>
 #include <asm/unaligned.h>
+<<<<<<< HEAD
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_cmnd.h>
+=======
+>>>>>>> v4.9.227
 #include <scsi/libfc.h>
 #include <scsi/fc_encode.h>
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
+<<<<<<< HEAD
 #include <target/target_core_configfs.h>
 #include <target/configfs_macros.h>
+=======
+>>>>>>> v4.9.227
 
 #include "tcm_fc.h"
 
@@ -160,9 +166,15 @@ int ft_queue_data_in(struct se_cmd *se_cmd)
 			BUG_ON(!page);
 			from = kmap_atomic(page + (mem_off >> PAGE_SHIFT));
 			page_addr = from;
+<<<<<<< HEAD
 			from += mem_off & ~PAGE_MASK;
 			tlen = min(tlen, (size_t)(PAGE_SIZE -
 						(mem_off & ~PAGE_MASK)));
+=======
+			from += offset_in_page(mem_off);
+			tlen = min(tlen, (size_t)(PAGE_SIZE -
+						offset_in_page(mem_off)));
+>>>>>>> v4.9.227
 			memcpy(to, from, tlen);
 			kunmap_atomic(page_addr);
 			to += tlen;
@@ -320,9 +332,15 @@ void ft_recv_write_data(struct ft_cmd *cmd, struct fc_frame *fp)
 
 		to = kmap_atomic(page + (mem_off >> PAGE_SHIFT));
 		page_addr = to;
+<<<<<<< HEAD
 		to += mem_off & ~PAGE_MASK;
 		tlen = min(tlen, (size_t)(PAGE_SIZE -
 					  (mem_off & ~PAGE_MASK)));
+=======
+		to += offset_in_page(mem_off);
+		tlen = min(tlen, (size_t)(PAGE_SIZE -
+					  offset_in_page(mem_off)));
+>>>>>>> v4.9.227
 		memcpy(to, from, tlen);
 		kunmap_atomic(page_addr);
 

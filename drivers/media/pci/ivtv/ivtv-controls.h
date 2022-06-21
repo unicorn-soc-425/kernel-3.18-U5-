@@ -21,7 +21,11 @@
 #ifndef IVTV_CONTROLS_H
 #define IVTV_CONTROLS_H
 
+<<<<<<< HEAD
 extern struct cx2341x_handler_ops ivtv_cxhdl_ops;
+=======
+extern const struct cx2341x_handler_ops ivtv_cxhdl_ops;
+>>>>>>> v4.9.227
 extern const struct v4l2_ctrl_ops ivtv_hdl_out_ops;
 int ivtv_g_pts_frame(struct ivtv *itv, s64 *pts, s64 *frame);
 

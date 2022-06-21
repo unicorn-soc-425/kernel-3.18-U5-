@@ -19,7 +19,11 @@
 #include <net/dst.h>
 #include <net/xfrm.h>
 
+<<<<<<< HEAD
 static int xfrm_output2(struct sk_buff *skb);
+=======
+static int xfrm_output2(struct net *net, struct sock *sk, struct sk_buff *skb);
+>>>>>>> v4.9.227
 
 static int xfrm_skb_check_space(struct sk_buff *skb)
 {
@@ -38,6 +42,21 @@ static int xfrm_skb_check_space(struct sk_buff *skb)
 	return pskb_expand_head(skb, nhead, ntail, GFP_ATOMIC);
 }
 
+<<<<<<< HEAD
+=======
+/* Children define the path of the packet through the
+ * Linux networking.  Thus, destinations are stackable.
+ */
+
+static struct dst_entry *skb_dst_pop(struct sk_buff *skb)
+{
+	struct dst_entry *child = dst_clone(skb_dst(skb)->child);
+
+	skb_dst_drop(skb);
+	return child;
+}
+
+>>>>>>> v4.9.227
 static int xfrm_output_one(struct sk_buff *skb, int err)
 {
 	struct dst_entry *dst = skb_dst(skb);
@@ -54,9 +73,12 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
 			goto error_nolock;
 		}
 
+<<<<<<< HEAD
 		if (x->props.output_mark)
 			skb->mark = x->props.output_mark;
 
+=======
+>>>>>>> v4.9.227
 		err = x->outer_mode->output(x, skb);
 		if (err) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATEMODEERROR);
@@ -90,6 +112,12 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
 
 		skb_dst_force(skb);
 
+<<<<<<< HEAD
+=======
+		/* Inner headers are invalid now. */
+		skb->encapsulation = 0;
+
+>>>>>>> v4.9.227
 		err = x->type->output(x, skb);
 		if (err == -EINPROGRESS)
 			goto out;
@@ -122,18 +150,34 @@ out:
 
 int xfrm_output_resume(struct sk_buff *skb, int err)
 {
+<<<<<<< HEAD
 	while (likely((err = xfrm_output_one(skb, err)) == 0)) {
 		nf_reset(skb);
 
 		err = skb_dst(skb)->ops->local_out(skb);
+=======
+	struct net *net = xs_net(skb_dst(skb)->xfrm);
+
+	while (likely((err = xfrm_output_one(skb, err)) == 0)) {
+		nf_reset(skb);
+
+		err = skb_dst(skb)->ops->local_out(net, skb->sk, skb);
+>>>>>>> v4.9.227
 		if (unlikely(err != 1))
 			goto out;
 
 		if (!skb_dst(skb)->xfrm)
+<<<<<<< HEAD
 			return dst_output(skb);
 
 		err = nf_hook(skb_dst(skb)->ops->family,
 			      NF_INET_POST_ROUTING, skb,
+=======
+			return dst_output(net, skb->sk, skb);
+
+		err = nf_hook(skb_dst(skb)->ops->family,
+			      NF_INET_POST_ROUTING, net, skb->sk, skb,
+>>>>>>> v4.9.227
 			      NULL, skb_dst(skb)->dev, xfrm_output2);
 		if (unlikely(err != 1))
 			goto out;
@@ -147,15 +191,28 @@ out:
 }
 EXPORT_SYMBOL_GPL(xfrm_output_resume);
 
+<<<<<<< HEAD
 static int xfrm_output2(struct sk_buff *skb)
+=======
+static int xfrm_output2(struct net *net, struct sock *sk, struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	return xfrm_output_resume(skb, 1);
 }
 
+<<<<<<< HEAD
 static int xfrm_output_gso(struct sk_buff *skb)
 {
 	struct sk_buff *segs;
 
+=======
+static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	struct sk_buff *segs;
+
+	BUILD_BUG_ON(sizeof(*IPCB(skb)) > SKB_SGO_CB_OFFSET);
+	BUILD_BUG_ON(sizeof(*IP6CB(skb)) > SKB_SGO_CB_OFFSET);
+>>>>>>> v4.9.227
 	segs = skb_gso_segment(skb, 0);
 	kfree_skb(skb);
 	if (IS_ERR(segs))
@@ -168,7 +225,11 @@ static int xfrm_output_gso(struct sk_buff *skb)
 		int err;
 
 		segs->next = NULL;
+<<<<<<< HEAD
 		err = xfrm_output2(segs);
+=======
+		err = xfrm_output2(net, sk, segs);
+>>>>>>> v4.9.227
 
 		if (unlikely(err)) {
 			kfree_skb_list(nskb);
@@ -181,13 +242,21 @@ static int xfrm_output_gso(struct sk_buff *skb)
 	return 0;
 }
 
+<<<<<<< HEAD
 int xfrm_output(struct sk_buff *skb)
+=======
+int xfrm_output(struct sock *sk, struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	struct net *net = dev_net(skb_dst(skb)->dev);
 	int err;
 
 	if (skb_is_gso(skb))
+<<<<<<< HEAD
 		return xfrm_output_gso(skb);
+=======
+		return xfrm_output_gso(net, sk, skb);
+>>>>>>> v4.9.227
 
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		err = skb_checksum_help(skb);
@@ -198,7 +267,11 @@ int xfrm_output(struct sk_buff *skb)
 		}
 	}
 
+<<<<<<< HEAD
 	return xfrm_output2(skb);
+=======
+	return xfrm_output2(net, sk, skb);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(xfrm_output);
 
@@ -224,7 +297,12 @@ void xfrm_local_error(struct sk_buff *skb, int mtu)
 
 	if (skb->protocol == htons(ETH_P_IP))
 		proto = AF_INET;
+<<<<<<< HEAD
 	else if (skb->protocol == htons(ETH_P_IPV6))
+=======
+	else if (skb->protocol == htons(ETH_P_IPV6) &&
+		 skb->sk->sk_family == AF_INET6)
+>>>>>>> v4.9.227
 		proto = AF_INET6;
 	else
 		return;

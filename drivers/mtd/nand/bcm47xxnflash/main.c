@@ -27,15 +27,25 @@ static int bcm47xxnflash_probe(struct platform_device *pdev)
 {
 	struct bcma_nflash *nflash = dev_get_platdata(&pdev->dev);
 	struct bcm47xxnflash *b47n;
+<<<<<<< HEAD
+=======
+	struct mtd_info *mtd;
+>>>>>>> v4.9.227
 	int err = 0;
 
 	b47n = devm_kzalloc(&pdev->dev, sizeof(*b47n), GFP_KERNEL);
 	if (!b47n)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	b47n->nand_chip.priv = b47n;
 	b47n->mtd.owner = THIS_MODULE;
 	b47n->mtd.priv = &b47n->nand_chip; /* Required */
+=======
+	nand_set_controller_data(&b47n->nand_chip, b47n);
+	mtd = nand_to_mtd(&b47n->nand_chip);
+	mtd->dev.parent = &pdev->dev;
+>>>>>>> v4.9.227
 	b47n->cc = container_of(nflash, struct bcma_drv_cc, nflash);
 
 	if (b47n->cc->core->bus->chipinfo.id == BCMA_CHIP_ID_BCM4706) {
@@ -49,7 +59,13 @@ static int bcm47xxnflash_probe(struct platform_device *pdev)
 		return err;
 	}
 
+<<<<<<< HEAD
 	err = mtd_device_parse_register(&b47n->mtd, probes, NULL, NULL, 0);
+=======
+	platform_set_drvdata(pdev, b47n);
+
+	err = mtd_device_parse_register(mtd, probes, NULL, NULL, 0);
+>>>>>>> v4.9.227
 	if (err) {
 		pr_err("Failed to register MTD device: %d\n", err);
 		return err;
@@ -60,10 +76,16 @@ static int bcm47xxnflash_probe(struct platform_device *pdev)
 
 static int bcm47xxnflash_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct bcma_nflash *nflash = dev_get_platdata(&pdev->dev);
 
 	if (nflash->mtd)
 		mtd_device_unregister(nflash->mtd);
+=======
+	struct bcm47xxnflash *nflash = platform_get_drvdata(pdev);
+
+	nand_release(nand_to_mtd(&nflash->nand_chip));
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -73,7 +95,10 @@ static struct platform_driver bcm47xxnflash_driver = {
 	.remove = bcm47xxnflash_remove,
 	.driver = {
 		.name = "bcma_nflash",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

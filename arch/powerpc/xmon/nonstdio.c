@@ -11,10 +11,32 @@
 #include <asm/time.h>
 #include "nonstdio.h"
 
+<<<<<<< HEAD
 
 static int xmon_write(const void *ptr, int nb)
 {
 	return udbg_write(ptr, nb);
+=======
+static bool paginating, paginate_skipping;
+static unsigned long paginate_lpp; /* Lines Per Page */
+static unsigned long paginate_pos;
+
+void xmon_start_pagination(void)
+{
+	paginating = true;
+	paginate_skipping = false;
+	paginate_pos = 0;
+}
+
+void xmon_end_pagination(void)
+{
+	paginating = false;
+}
+
+void xmon_set_pagination_lpp(unsigned long lpp)
+{
+	paginate_lpp = lpp;
+>>>>>>> v4.9.227
 }
 
 static int xmon_readchar(void)
@@ -24,6 +46,54 @@ static int xmon_readchar(void)
 	return -1;
 }
 
+<<<<<<< HEAD
+=======
+static int xmon_write(const char *ptr, int nb)
+{
+	int rv = 0;
+	const char *p = ptr, *q;
+	const char msg[] = "[Hit a key (a:all, q:truncate, any:next page)]";
+
+	if (nb <= 0)
+		return rv;
+
+	if (paginating && paginate_skipping)
+		return nb;
+
+	if (paginate_lpp) {
+		while (paginating && (q = strchr(p, '\n'))) {
+			rv += udbg_write(p, q - p + 1);
+			p = q + 1;
+			paginate_pos++;
+
+			if (paginate_pos >= paginate_lpp) {
+				udbg_write(msg, strlen(msg));
+
+				switch (xmon_readchar()) {
+				case 'a':
+					paginating = false;
+					break;
+				case 'q':
+					paginate_skipping = true;
+					break;
+				default:
+					/* nothing */
+					break;
+				}
+
+				paginate_pos = 0;
+				udbg_write("\r\n", 2);
+
+				if (paginate_skipping)
+					return nb;
+			}
+		}
+	}
+
+	return rv + udbg_write(p, nb - (p - ptr));
+}
+
+>>>>>>> v4.9.227
 int xmon_putchar(int c)
 {
 	char ch = c;

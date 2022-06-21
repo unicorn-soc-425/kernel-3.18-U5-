@@ -17,13 +17,20 @@
 #include <linux/irq.h>
 #include <linux/sched.h>
 #include <linux/syscore_ops.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+>>>>>>> v4.9.227
 #include <asm/delay.h>
 #ifdef CONFIG_IPIPE
 #include <linux/ipipe.h>
 #endif
 #include <asm/traps.h>
 #include <asm/blackfin.h>
+<<<<<<< HEAD
 #include <asm/gpio.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/irq_handler.h>
 #include <asm/dpmc.h>
 #include <asm/traps.h>
@@ -194,7 +201,12 @@ void bfin_internal_unmask_irq(unsigned int irq)
 #ifdef CONFIG_SMP
 static void bfin_internal_unmask_irq_chip(struct irq_data *d)
 {
+<<<<<<< HEAD
 	bfin_internal_unmask_irq_affinity(d->irq, d->affinity);
+=======
+	bfin_internal_unmask_irq_affinity(d->irq,
+					  irq_data_get_affinity_mask(d));
+>>>>>>> v4.9.227
 }
 
 static int bfin_internal_set_affinity(struct irq_data *d,
@@ -429,6 +441,7 @@ static void init_software_driven_irq(void)
 	bfin_sec_enable_ssi(37);
 }
 
+<<<<<<< HEAD
 void bfin_sec_resume(void)
 {
 	bfin_write_SEC_SCI(0, SEC_CCTL, SEC_CCTL_RESET);
@@ -437,6 +450,8 @@ void bfin_sec_resume(void)
 	bfin_write_SEC_SCI(0, SEC_CCTL, SEC_CCTL_EN | SEC_CCTL_NMI_EN);
 }
 
+=======
+>>>>>>> v4.9.227
 void handle_sec_sfi_fault(uint32_t gstat)
 {
 
@@ -663,8 +678,12 @@ static struct irq_chip bfin_mac_status_irqchip = {
 	.irq_set_wake = bfin_mac_status_set_wake,
 };
 
+<<<<<<< HEAD
 void bfin_demux_mac_status_irq(unsigned int int_err_irq,
 			       struct irq_desc *inta_desc)
+=======
+void bfin_demux_mac_status_irq(struct irq_desc *inta_desc)
+>>>>>>> v4.9.227
 {
 	int i, irq = 0;
 	u32 status = bfin_read_EMAC_SYSTAT();
@@ -693,12 +712,20 @@ void bfin_demux_mac_status_irq(unsigned int int_err_irq,
 }
 #endif
 
+<<<<<<< HEAD
 static inline void bfin_set_irq_handler(unsigned irq, irq_flow_handler_t handle)
+=======
+static inline void bfin_set_irq_handler(struct irq_data *d, irq_flow_handler_t handle)
+>>>>>>> v4.9.227
 {
 #ifdef CONFIG_IPIPE
 	handle = handle_level_irq;
 #endif
+<<<<<<< HEAD
 	__irq_set_handler_locked(irq, handle);
+=======
+	irq_set_handler_locked(d, handle);
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_GPIO_ADI
@@ -810,9 +837,15 @@ static int bfin_gpio_irq_type(struct irq_data *d, unsigned int type)
 	}
 
 	if (type & (IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING))
+<<<<<<< HEAD
 		bfin_set_irq_handler(irq, handle_edge_irq);
 	else
 		bfin_set_irq_handler(irq, handle_level_irq);
+=======
+		bfin_set_irq_handler(d, handle_edge_irq);
+	else
+		bfin_set_irq_handler(d, handle_level_irq);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -832,9 +865,15 @@ static void bfin_demux_gpio_block(unsigned int irq)
 	}
 }
 
+<<<<<<< HEAD
 void bfin_demux_gpio_irq(unsigned int inta_irq,
 			struct irq_desc *desc)
 {
+=======
+void bfin_demux_gpio_irq(struct irq_desc *desc)
+{
+	unsigned int inta_irq = irq_desc_get_irq(desc);
+>>>>>>> v4.9.227
 	unsigned int irq;
 
 	switch (inta_irq) {

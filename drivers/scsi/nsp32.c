@@ -274,7 +274,10 @@ static struct scsi_host_template nsp32_template = {
 	.can_queue			= 1,
 	.sg_tablesize			= NSP32_SG_SIZE,
 	.max_sectors			= 128,
+<<<<<<< HEAD
 	.cmd_per_lun			= 1,
+=======
+>>>>>>> v4.9.227
 	.this_id			= NSP32_HOST_SCSIID,
 	.use_clustering			= DISABLE_CLUSTERING,
 	.eh_abort_handler       	= nsp32_eh_abort,
@@ -1441,8 +1444,11 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 	return IRQ_RETVAL(handled);
 }
 
+<<<<<<< HEAD
 #undef SPRINTF
 #define SPRINTF(args...) seq_printf(m, ##args)
+=======
+>>>>>>> v4.9.227
 
 static int nsp32_show_info(struct seq_file *m, struct Scsi_Host *host)
 {
@@ -1458,6 +1464,7 @@ static int nsp32_show_info(struct seq_file *m, struct Scsi_Host *host)
 	data = (nsp32_hw_data *)host->hostdata;
 	base = host->io_port;
 
+<<<<<<< HEAD
 	SPRINTF("NinjaSCSI-32 status\n\n");
 	SPRINTF("Driver version:        %s, $Revision: 1.33 $\n", nsp32_release_version);
 	SPRINTF("SCSI host No.:         %d\n",		hostno);
@@ -1466,11 +1473,22 @@ static int nsp32_show_info(struct seq_file *m, struct Scsi_Host *host)
 	SPRINTF("MMIO(virtual address): 0x%lx-0x%lx\n",	host->base, host->base + data->MmioLength - 1);
 	SPRINTF("sg_tablesize:          %d\n",		host->sg_tablesize);
 	SPRINTF("Chip revision:         0x%x\n",       	(nsp32_read2(base, INDEX_REG) >> 8) & 0xff);
+=======
+	seq_puts(m, "NinjaSCSI-32 status\n\n");
+	seq_printf(m, "Driver version:        %s, $Revision: 1.33 $\n", nsp32_release_version);
+	seq_printf(m, "SCSI host No.:         %d\n",		hostno);
+	seq_printf(m, "IRQ:                   %d\n",		host->irq);
+	seq_printf(m, "IO:                    0x%lx-0x%lx\n", host->io_port, host->io_port + host->n_io_port - 1);
+	seq_printf(m, "MMIO(virtual address): 0x%lx-0x%lx\n",	host->base, host->base + data->MmioLength - 1);
+	seq_printf(m, "sg_tablesize:          %d\n",		host->sg_tablesize);
+	seq_printf(m, "Chip revision:         0x%x\n",		(nsp32_read2(base, INDEX_REG) >> 8) & 0xff);
+>>>>>>> v4.9.227
 
 	mode_reg = nsp32_index_read1(base, CHIP_MODE);
 	model    = data->pci_devid->driver_data;
 
 #ifdef CONFIG_PM
+<<<<<<< HEAD
 	SPRINTF("Power Management:      %s\n",          (mode_reg & OPTF) ? "yes" : "no");
 #endif
 	SPRINTF("OEM:                   %ld, %s\n",     (mode_reg & (OEM0|OEM1)), nsp32_model[model]);
@@ -1487,35 +1505,73 @@ static int nsp32_show_info(struct seq_file *m, struct Scsi_Host *host)
 
 		if (id == host->this_id) {
 			SPRINTF("----- NinjaSCSI-32 host adapter\n");
+=======
+	seq_printf(m, "Power Management:      %s\n",          (mode_reg & OPTF) ? "yes" : "no");
+#endif
+	seq_printf(m, "OEM:                   %ld, %s\n",     (mode_reg & (OEM0|OEM1)), nsp32_model[model]);
+
+	spin_lock_irqsave(&(data->Lock), flags);
+	seq_printf(m, "CurrentSC:             0x%p\n\n",      data->CurrentSC);
+	spin_unlock_irqrestore(&(data->Lock), flags);
+
+
+	seq_puts(m, "SDTR status\n");
+	for (id = 0; id < ARRAY_SIZE(data->target); id++) {
+
+		seq_printf(m, "id %d: ", id);
+
+		if (id == host->this_id) {
+			seq_puts(m, "----- NinjaSCSI-32 host adapter\n");
+>>>>>>> v4.9.227
 			continue;
 		}
 
 		if (data->target[id].sync_flag == SDTR_DONE) {
 			if (data->target[id].period == 0            &&
 			    data->target[id].offset == ASYNC_OFFSET ) {
+<<<<<<< HEAD
 				SPRINTF("async");
 			} else {
 				SPRINTF(" sync");
 			}
 		} else {
 			SPRINTF(" none");
+=======
+				seq_puts(m, "async");
+			} else {
+				seq_puts(m, " sync");
+			}
+		} else {
+			seq_puts(m, " none");
+>>>>>>> v4.9.227
 		}
 
 		if (data->target[id].period != 0) {
 
 			speed = 1000000 / (data->target[id].period * 4);
 
+<<<<<<< HEAD
 			SPRINTF(" transfer %d.%dMB/s, offset %d",
+=======
+			seq_printf(m, " transfer %d.%dMB/s, offset %d",
+>>>>>>> v4.9.227
 				speed / 1000,
 				speed % 1000,
 				data->target[id].offset
 				);
 		}
+<<<<<<< HEAD
 		SPRINTF("\n");
 	}
 	return 0;
 }
 #undef SPRINTF
+=======
+		seq_putc(m, '\n');
+	}
+	return 0;
+}
+>>>>>>> v4.9.227
 
 
 

@@ -35,10 +35,17 @@ qla2x00_prep_ms_iocb(scsi_qla_host_t *vha, uint32_t req_size, uint32_t rsp_size)
 	ms_pkt->entry_type = MS_IOCB_TYPE;
 	ms_pkt->entry_count = 1;
 	SET_TARGET_ID(ha, ms_pkt->loop_id, SIMPLE_NAME_SERVER);
+<<<<<<< HEAD
 	ms_pkt->control_flags = __constant_cpu_to_le16(CF_READ | CF_HEAD_TAG);
 	ms_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
 	ms_pkt->cmd_dsd_count = __constant_cpu_to_le16(1);
 	ms_pkt->total_dsd_count = __constant_cpu_to_le16(2);
+=======
+	ms_pkt->control_flags = cpu_to_le16(CF_READ | CF_HEAD_TAG);
+	ms_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
+	ms_pkt->cmd_dsd_count = cpu_to_le16(1);
+	ms_pkt->total_dsd_count = cpu_to_le16(2);
+>>>>>>> v4.9.227
 	ms_pkt->rsp_bytecount = cpu_to_le32(rsp_size);
 	ms_pkt->req_bytecount = cpu_to_le32(req_size);
 
@@ -74,10 +81,17 @@ qla24xx_prep_ms_iocb(scsi_qla_host_t *vha, uint32_t req_size, uint32_t rsp_size)
 
 	ct_pkt->entry_type = CT_IOCB_TYPE;
 	ct_pkt->entry_count = 1;
+<<<<<<< HEAD
 	ct_pkt->nport_handle = __constant_cpu_to_le16(NPH_SNS);
 	ct_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
 	ct_pkt->cmd_dsd_count = __constant_cpu_to_le16(1);
 	ct_pkt->rsp_dsd_count = __constant_cpu_to_le16(1);
+=======
+	ct_pkt->nport_handle = cpu_to_le16(NPH_SNS);
+	ct_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
+	ct_pkt->cmd_dsd_count = cpu_to_le16(1);
+	ct_pkt->rsp_dsd_count = cpu_to_le16(1);
+>>>>>>> v4.9.227
 	ct_pkt->rsp_byte_count = cpu_to_le32(rsp_size);
 	ct_pkt->cmd_byte_count = cpu_to_le32(req_size);
 
@@ -142,7 +156,11 @@ qla2x00_chk_ms_status(scsi_qla_host_t *vha, ms_iocb_entry_t *ms_pkt,
 		case CS_DATA_UNDERRUN:
 		case CS_DATA_OVERRUN:		/* Overrun? */
 			if (ct_rsp->header.response !=
+<<<<<<< HEAD
 			    __constant_cpu_to_be16(CT_ACCEPT_RESPONSE)) {
+=======
+			    cpu_to_be16(CT_ACCEPT_RESPONSE)) {
+>>>>>>> v4.9.227
 				ql_dbg(ql_dbg_disc + ql_dbg_buffer, vha, 0x2077,
 				    "%s failed rejected request on port_id: %02x%02x%02x Compeltion status 0x%x, response 0x%x\n",
 				    routine, vha->d_id.b.domain,
@@ -1153,10 +1171,17 @@ qla2x00_prep_ms_fdmi_iocb(scsi_qla_host_t *vha, uint32_t req_size,
 	ms_pkt->entry_type = MS_IOCB_TYPE;
 	ms_pkt->entry_count = 1;
 	SET_TARGET_ID(ha, ms_pkt->loop_id, vha->mgmt_svr_loop_id);
+<<<<<<< HEAD
 	ms_pkt->control_flags = __constant_cpu_to_le16(CF_READ | CF_HEAD_TAG);
 	ms_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
 	ms_pkt->cmd_dsd_count = __constant_cpu_to_le16(1);
 	ms_pkt->total_dsd_count = __constant_cpu_to_le16(2);
+=======
+	ms_pkt->control_flags = cpu_to_le16(CF_READ | CF_HEAD_TAG);
+	ms_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
+	ms_pkt->cmd_dsd_count = cpu_to_le16(1);
+	ms_pkt->total_dsd_count = cpu_to_le16(2);
+>>>>>>> v4.9.227
 	ms_pkt->rsp_bytecount = cpu_to_le32(rsp_size);
 	ms_pkt->req_bytecount = cpu_to_le32(req_size);
 
@@ -1193,8 +1218,13 @@ qla24xx_prep_ms_fdmi_iocb(scsi_qla_host_t *vha, uint32_t req_size,
 	ct_pkt->entry_count = 1;
 	ct_pkt->nport_handle = cpu_to_le16(vha->mgmt_svr_loop_id);
 	ct_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
+<<<<<<< HEAD
 	ct_pkt->cmd_dsd_count = __constant_cpu_to_le16(1);
 	ct_pkt->rsp_dsd_count = __constant_cpu_to_le16(1);
+=======
+	ct_pkt->cmd_dsd_count = cpu_to_le16(1);
+	ct_pkt->rsp_dsd_count = cpu_to_le16(1);
+>>>>>>> v4.9.227
 	ct_pkt->rsp_byte_count = cpu_to_le32(rsp_size);
 	ct_pkt->cmd_byte_count = cpu_to_le32(req_size);
 
@@ -1281,19 +1311,32 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha)
 
 	/* Prepare FDMI command arguments -- attribute block, attributes. */
 	memcpy(ct_req->req.rhba.hba_identifier, vha->port_name, WWN_SIZE);
+<<<<<<< HEAD
 	ct_req->req.rhba.entry_count = __constant_cpu_to_be32(1);
+=======
+	ct_req->req.rhba.entry_count = cpu_to_be32(1);
+>>>>>>> v4.9.227
 	memcpy(ct_req->req.rhba.port_name, vha->port_name, WWN_SIZE);
 	size = 2 * WWN_SIZE + 4 + 4;
 
 	/* Attributes */
 	ct_req->req.rhba.attrs.count =
+<<<<<<< HEAD
 	    __constant_cpu_to_be32(FDMI_HBA_ATTR_COUNT);
+=======
+	    cpu_to_be32(FDMI_HBA_ATTR_COUNT);
+>>>>>>> v4.9.227
 	entries = ct_req->req.rhba.hba_identifier;
 
 	/* Nodename. */
 	eiter = entries + size;
+<<<<<<< HEAD
 	eiter->type = __constant_cpu_to_be16(FDMI_HBA_NODE_NAME);
 	eiter->len = __constant_cpu_to_be16(4 + WWN_SIZE);
+=======
+	eiter->type = cpu_to_be16(FDMI_HBA_NODE_NAME);
+	eiter->len = cpu_to_be16(4 + WWN_SIZE);
+>>>>>>> v4.9.227
 	memcpy(eiter->a.node_name, vha->node_name, WWN_SIZE);
 	size += 4 + WWN_SIZE;
 
@@ -1302,7 +1345,11 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha)
 
 	/* Manufacturer. */
 	eiter = entries + size;
+<<<<<<< HEAD
 	eiter->type = __constant_cpu_to_be16(FDMI_HBA_MANUFACTURER);
+=======
+	eiter->type = cpu_to_be16(FDMI_HBA_MANUFACTURER);
+>>>>>>> v4.9.227
 	alen = strlen(QLA2XXX_MANUFACTURER);
 	snprintf(eiter->a.manufacturer, sizeof(eiter->a.manufacturer),
 	    "%s", "QLogic Corporation");
@@ -1315,7 +1362,11 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha)
 
 	/* Serial number. */
 	eiter = entries + size;
+<<<<<<< HEAD
 	eiter->type = __constant_cpu_to_be16(FDMI_HBA_SERIAL_NUMBER);
+=======
+	eiter->type = cpu_to_be16(FDMI_HBA_SERIAL_NUMBER);
+>>>>>>> v4.9.227
 	if (IS_FWI2_CAPABLE(ha))
 		qla2xxx_get_vpd_field(vha, "SN", eiter->a.serial_num,
 		    sizeof(eiter->a.serial_num));
@@ -1335,7 +1386,11 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha)
 
 	/* Model name. */
 	eiter = entries + size;
+<<<<<<< HEAD
 	eiter->type = __constant_cpu_to_be16(FDMI_HBA_MODEL);
+=======
+	eiter->type = cpu_to_be16(FDMI_HBA_MODEL);
+>>>>>>> v4.9.227
 	snprintf(eiter->a.model, sizeof(eiter->a.model),
 	    "%s", ha->model_number);
 	alen = strlen(eiter->a.model);
@@ -1348,7 +1403,11 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha)
 
 	/* Model description. */
 	eiter = entries + size;
+<<<<<<< HEAD
 	eiter->type = __constant_cpu_to_be16(FDMI_HBA_MODEL_DESCRIPTION);
+=======
+	eiter->type = cpu_to_be16(FDMI_HBA_MODEL_DESCRIPTION);
+>>>>>>> v4.9.227
 	snprintf(eiter->a.model_desc, sizeof(eiter->a.model_desc),
 	    "%s", ha->model_desc);
 	alen = strlen(eiter->a.model_desc);
@@ -1361,7 +1420,11 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha)
 
 	/* Hardware version. */
 	eiter = entries + size;
+<<<<<<< HEAD
 	eiter->type = __constant_cpu_to_be16(FDMI_HBA_HARDWARE_VERSION);
+=======
+	eiter->type = cpu_to_be16(FDMI_HBA_HARDWARE_VERSION);
+>>>>>>> v4.9.227
 	if (!IS_FWI2_CAPABLE(ha)) {
 		snprintf(eiter->a.hw_version, sizeof(eiter->a.hw_version),
 		    "HW:%s", ha->adapter_id);
@@ -1385,7 +1448,11 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha)
 
 	/* Driver version. */
 	eiter = entries + size;
+<<<<<<< HEAD
 	eiter->type = __constant_cpu_to_be16(FDMI_HBA_DRIVER_VERSION);
+=======
+	eiter->type = cpu_to_be16(FDMI_HBA_DRIVER_VERSION);
+>>>>>>> v4.9.227
 	snprintf(eiter->a.driver_version, sizeof(eiter->a.driver_version),
 	    "%s", qla2x00_version_str);
 	alen = strlen(eiter->a.driver_version);
@@ -1398,7 +1465,11 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha)
 
 	/* Option ROM version. */
 	eiter = entries + size;
+<<<<<<< HEAD
 	eiter->type = __constant_cpu_to_be16(FDMI_HBA_OPTION_ROM_VERSION);
+=======
+	eiter->type = cpu_to_be16(FDMI_HBA_OPTION_ROM_VERSION);
+>>>>>>> v4.9.227
 	snprintf(eiter->a.orom_version, sizeof(eiter->a.orom_version),
 	    "%d.%02d", ha->bios_revision[1], ha->bios_revision[0]);
 	alen = strlen(eiter->a.orom_version);
@@ -1411,7 +1482,11 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha)
 
 	/* Firmware version */
 	eiter = entries + size;
+<<<<<<< HEAD
 	eiter->type = __constant_cpu_to_be16(FDMI_HBA_FIRMWARE_VERSION);
+=======
+	eiter->type = cpu_to_be16(FDMI_HBA_FIRMWARE_VERSION);
+>>>>>>> v4.9.227
 	ha->isp_ops->fw_version_str(vha, eiter->a.fw_version,
 	    sizeof(eiter->a.fw_version));
 	alen = strlen(eiter->a.fw_version);
@@ -2484,8 +2559,13 @@ qla24xx_prep_ms_fm_iocb(scsi_qla_host_t *vha, uint32_t req_size,
 	ct_pkt->entry_count = 1;
 	ct_pkt->nport_handle = cpu_to_le16(vha->mgmt_svr_loop_id);
 	ct_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
+<<<<<<< HEAD
 	ct_pkt->cmd_dsd_count = __constant_cpu_to_le16(1);
 	ct_pkt->rsp_dsd_count = __constant_cpu_to_le16(1);
+=======
+	ct_pkt->cmd_dsd_count = cpu_to_le16(1);
+	ct_pkt->rsp_dsd_count = cpu_to_le16(1);
+>>>>>>> v4.9.227
 	ct_pkt->rsp_byte_count = cpu_to_le32(rsp_size);
 	ct_pkt->cmd_byte_count = cpu_to_le32(req_size);
 

@@ -139,7 +139,11 @@ struct tx_msg {
 	u8 cmd;
 	u8 net;
 	u8 dlc;
+<<<<<<< HEAD
 	__le32 hnd;
+=======
+	u32 hnd;	/* opaque handle, not used by device */
+>>>>>>> v4.9.227
 	__le32 id; /* upper 3 bits contain flags */
 	u8 data[8];
 };
@@ -149,7 +153,11 @@ struct tx_done_msg {
 	u8 cmd;
 	u8 net;
 	u8 status;
+<<<<<<< HEAD
 	__le32 hnd;
+=======
+	u32 hnd;	/* opaque handle, not used by device */
+>>>>>>> v4.9.227
 	__le32 ts;
 };
 
@@ -250,6 +258,10 @@ static void esd_usb2_rx_event(struct esd_usb2_net_priv *priv,
 			case ESD_BUSSTATE_BUSOFF:
 				priv->can.state = CAN_STATE_BUS_OFF;
 				cf->can_id |= CAN_ERR_BUSOFF;
+<<<<<<< HEAD
+=======
+				priv->can.can_stats.bus_off++;
+>>>>>>> v4.9.227
 				can_bus_off(priv->netdev);
 				break;
 			case ESD_BUSSTATE_WARN:
@@ -281,7 +293,10 @@ static void esd_usb2_rx_event(struct esd_usb2_net_priv *priv,
 				cf->data[2] |= CAN_ERR_PROT_STUFF;
 				break;
 			default:
+<<<<<<< HEAD
 				cf->data[2] |= CAN_ERR_PROT_UNSPEC;
+=======
+>>>>>>> v4.9.227
 				cf->data[3] = ecc & SJA1000_ECC_SEG;
 				break;
 			}
@@ -300,13 +315,20 @@ static void esd_usb2_rx_event(struct esd_usb2_net_priv *priv,
 			cf->data[7] = rxerr;
 		}
 
+<<<<<<< HEAD
 		netif_rx(skb);
 
+=======
+>>>>>>> v4.9.227
 		priv->bec.txerr = txerr;
 		priv->bec.rxerr = rxerr;
 
 		stats->rx_packets++;
 		stats->rx_bytes += cf->can_dlc;
+<<<<<<< HEAD
+=======
+		netif_rx(skb);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -346,10 +368,16 @@ static void esd_usb2_rx_can_msg(struct esd_usb2_net_priv *priv,
 				cf->data[i] = msg->msg.rx.data[i];
 		}
 
+<<<<<<< HEAD
 		netif_rx(skb);
 
 		stats->rx_packets++;
 		stats->rx_bytes += cf->can_dlc;
+=======
+		stats->rx_packets++;
+		stats->rx_bytes += cf->can_dlc;
+		netif_rx(skb);
+>>>>>>> v4.9.227
 	}
 
 	return;
@@ -484,7 +512,11 @@ static void esd_usb2_write_bulk_callback(struct urb *urb)
 	if (urb->status)
 		netdev_info(netdev, "Tx URB aborted (%d)\n", urb->status);
 
+<<<<<<< HEAD
 	netdev->trans_start = jiffies;
+=======
+	netif_trans_update(netdev);
+>>>>>>> v4.9.227
 }
 
 static ssize_t show_firmware(struct device *d,
@@ -562,8 +594,11 @@ static int esd_usb2_setup_rx_urbs(struct esd_usb2 *dev)
 		/* create a URB, and a buffer for it */
 		urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!urb) {
+<<<<<<< HEAD
 			dev_warn(dev->udev->dev.parent,
 				 "No memory left for URBs\n");
+=======
+>>>>>>> v4.9.227
 			err = -ENOMEM;
 			break;
 		}
@@ -734,7 +769,10 @@ static netdev_tx_t esd_usb2_start_xmit(struct sk_buff *skb,
 	/* create a URB, and a buffer for it, and copy the data to the URB */
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (!urb) {
+<<<<<<< HEAD
 		netdev_err(netdev, "No memory left for URBs\n");
+=======
+>>>>>>> v4.9.227
 		stats->tx_dropped++;
 		dev_kfree_skb(skb);
 		goto nourbmem;
@@ -824,7 +862,11 @@ static netdev_tx_t esd_usb2_start_xmit(struct sk_buff *skb,
 		goto releasebuf;
 	}
 
+<<<<<<< HEAD
 	netdev->trans_start = jiffies;
+=======
+	netif_trans_update(netdev);
+>>>>>>> v4.9.227
 
 	/*
 	 * Release our reference to this URB, the USB core will eventually free

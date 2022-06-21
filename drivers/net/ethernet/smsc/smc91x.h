@@ -33,6 +33,7 @@
 #ifndef _SMC91X_H_
 #define _SMC91X_H_
 
+<<<<<<< HEAD
 #include <linux/smc91x.h>
 
 /*
@@ -47,6 +48,37 @@
     defined(CONFIG_ARCH_VIPER) ||\
     defined(CONFIG_MACH_STARGATE2) ||\
     defined(CONFIG_ARCH_VERSATILE)
+=======
+#include <linux/dmaengine.h>
+#include <linux/smc91x.h>
+
+/*
+ * Any 16-bit access is performed with two 8-bit accesses if the hardware
+ * can't do it directly. Most registers are 16-bit so those are mandatory.
+ */
+#define SMC_outw_b(x, a, r)						\
+	do {								\
+		unsigned int __val16 = (x);				\
+		unsigned int __reg = (r);				\
+		SMC_outb(__val16, a, __reg);				\
+		SMC_outb(__val16 >> 8, a, __reg + (1 << SMC_IO_SHIFT));	\
+	} while (0)
+
+#define SMC_inw_b(a, r)							\
+	({								\
+		unsigned int __val16;					\
+		unsigned int __reg = r;					\
+		__val16  = SMC_inb(a, __reg);				\
+		__val16 |= SMC_inb(a, __reg + (1 << SMC_IO_SHIFT)) << 8; \
+		__val16;						\
+	})
+
+/*
+ * Define your architecture specific bus configuration parameters here.
+ */
+
+#if defined(CONFIG_ARM)
+>>>>>>> v4.9.227
 
 #include <asm/mach-types.h>
 
@@ -61,10 +93,37 @@
 #define SMC_IO_SHIFT		(lp->io_shift)
 
 #define SMC_inb(a, r)		readb((a) + (r))
+<<<<<<< HEAD
 #define SMC_inw(a, r)		readw((a) + (r))
 #define SMC_inl(a, r)		readl((a) + (r))
 #define SMC_outb(v, a, r)	writeb(v, (a) + (r))
 #define SMC_outl(v, a, r)	writel(v, (a) + (r))
+=======
+#define SMC_inw(a, r)							\
+	({								\
+		unsigned int __smc_r = r;				\
+		SMC_16BIT(lp) ? readw((a) + __smc_r) :			\
+		SMC_8BIT(lp) ? SMC_inw_b(a, __smc_r) :			\
+		({ BUG(); 0; });					\
+	})
+
+#define SMC_inl(a, r)		readl((a) + (r))
+#define SMC_outb(v, a, r)	writeb(v, (a) + (r))
+#define SMC_outw(v, a, r)						\
+	do {								\
+		unsigned int __v = v, __smc_r = r;			\
+		if (SMC_16BIT(lp))					\
+			__SMC_outw(__v, a, __smc_r);			\
+		else if (SMC_8BIT(lp))					\
+			SMC_outw_b(__v, a, __smc_r);			\
+		else							\
+			BUG();						\
+	} while (0)
+
+#define SMC_outl(v, a, r)	writel(v, (a) + (r))
+#define SMC_insb(a, r, p, l)	readsb((a) + (r), p, l)
+#define SMC_outsb(a, r, p, l)	writesb((a) + (r), p, l)
+>>>>>>> v4.9.227
 #define SMC_insw(a, r, p, l)	readsw((a) + (r), p, l)
 #define SMC_outsw(a, r, p, l)	writesw((a) + (r), p, l)
 #define SMC_insl(a, r, p, l)	readsl((a) + (r), p, l)
@@ -72,6 +131,7 @@
 #define SMC_IRQ_FLAGS		(-1)	/* from resource */
 
 /* We actually can't write halfwords properly if not word aligned */
+<<<<<<< HEAD
 static inline void SMC_outw(u16 val, void __iomem *ioaddr, int reg)
 {
 	if ((machine_is_mainstone() || machine_is_stargate2()) && reg & 2) {
@@ -163,6 +223,12 @@ static inline void
 SMC_outw(u16 val, void __iomem *ioaddr, int reg)
 {
 	if (reg & 2) {
+=======
+static inline void __SMC_outw(u16 val, void __iomem *ioaddr, int reg)
+{
+	if ((machine_is_mainstone() || machine_is_stargate2() ||
+	     machine_is_pxa_idp()) && reg & 2) {
+>>>>>>> v4.9.227
 		unsigned int v = val << 16;
 		v |= readl(ioaddr + (reg & ~2)) & 0xffff;
 		writel(v, ioaddr + (reg & ~2));
@@ -216,6 +282,7 @@ SMC_outw(u16 val, void __iomem *ioaddr, int reg)
 
 #include <unit/smc91111.h>
 
+<<<<<<< HEAD
 #elif defined(CONFIG_ARCH_MSM)
 
 #define SMC_CAN_USE_8BIT	0
@@ -229,6 +296,28 @@ SMC_outw(u16 val, void __iomem *ioaddr, int reg)
 #define SMC_outsw(a, r, p, l)	writesw((a) + (r), p, l)
 
 #define SMC_IRQ_FLAGS		IRQF_TRIGGER_HIGH
+=======
+#elif defined(CONFIG_ATARI)
+
+#define SMC_CAN_USE_8BIT        1
+#define SMC_CAN_USE_16BIT       1
+#define SMC_CAN_USE_32BIT       1
+#define SMC_NOWAIT              1
+
+#define SMC_inb(a, r)           readb((a) + (r))
+#define SMC_inw(a, r)           readw((a) + (r))
+#define SMC_inl(a, r)           readl((a) + (r))
+#define SMC_outb(v, a, r)       writeb(v, (a) + (r))
+#define SMC_outw(v, a, r)       writew(v, (a) + (r))
+#define SMC_outl(v, a, r)       writel(v, (a) + (r))
+#define SMC_insw(a, r, p, l)    readsw((a) + (r), p, l)
+#define SMC_outsw(a, r, p, l)   writesw((a) + (r), p, l)
+#define SMC_insl(a, r, p, l)    readsl((a) + (r), p, l)
+#define SMC_outsl(a, r, p, l)   writesl((a) + (r), p, l)
+
+#define RPC_LSA_DEFAULT         RPC_LED_100_10
+#define RPC_LSB_DEFAULT         RPC_LED_TX_RX
+>>>>>>> v4.9.227
 
 #elif defined(CONFIG_COLDFIRE)
 
@@ -258,6 +347,20 @@ static inline void mcf_outsw(void *a, unsigned char *p, int l)
 
 #define SMC_IRQ_FLAGS		0
 
+<<<<<<< HEAD
+=======
+#elif defined(CONFIG_H8300)
+#define SMC_CAN_USE_8BIT	1
+#define SMC_CAN_USE_16BIT	0
+#define SMC_CAN_USE_32BIT	0
+#define SMC_NOWAIT		0
+
+#define SMC_inb(a, r)		ioread8((a) + (r))
+#define SMC_outb(v, a, r)	iowrite8(v, (a) + (r))
+#define SMC_insb(a, r, p, l)	ioread8_rep((a) + (r), p, l)
+#define SMC_outsb(a, r, p, l)	iowrite8_rep((a) + (r), p, l)
+
+>>>>>>> v4.9.227
 #else
 
 /*
@@ -331,6 +434,10 @@ struct smc_local {
 	u_long physaddr;
 	struct device *device;
 #endif
+<<<<<<< HEAD
+=======
+	struct dma_chan *dma_chan;
+>>>>>>> v4.9.227
 	void __iomem *base;
 	void __iomem *datacs;
 
@@ -352,13 +459,18 @@ struct smc_local {
  * as RX which can overrun memory and lose packets.
  */
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <mach/dma.h>
+=======
+#include <linux/dma/pxa-dma.h>
+>>>>>>> v4.9.227
 
 #ifdef SMC_insl
 #undef SMC_insl
 #define SMC_insl(a, r, p, l) \
 	smc_pxa_dma_insl(a, lp, r, dev->dma, p, l)
 static inline void
+<<<<<<< HEAD
 smc_pxa_dma_insl(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 		 u_char *buf, int len)
 {
@@ -367,6 +479,42 @@ smc_pxa_dma_insl(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 
 	/* fallback if no DMA available */
 	if (dma == (unsigned char)-1) {
+=======
+smc_pxa_dma_inpump(struct smc_local *lp, u_char *buf, int len)
+{
+	dma_addr_t dmabuf;
+	struct dma_async_tx_descriptor *tx;
+	dma_cookie_t cookie;
+	enum dma_status status;
+	struct dma_tx_state state;
+
+	dmabuf = dma_map_single(lp->device, buf, len, DMA_FROM_DEVICE);
+	tx = dmaengine_prep_slave_single(lp->dma_chan, dmabuf, len,
+					 DMA_DEV_TO_MEM, 0);
+	if (tx) {
+		cookie = dmaengine_submit(tx);
+		dma_async_issue_pending(lp->dma_chan);
+		do {
+			status = dmaengine_tx_status(lp->dma_chan, cookie,
+						     &state);
+			cpu_relax();
+		} while (status != DMA_COMPLETE && status != DMA_ERROR &&
+			 state.residue);
+		dmaengine_terminate_all(lp->dma_chan);
+	}
+	dma_unmap_single(lp->device, dmabuf, len, DMA_FROM_DEVICE);
+}
+
+static inline void
+smc_pxa_dma_insl(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
+		 u_char *buf, int len)
+{
+	struct dma_slave_config	config;
+	int ret;
+
+	/* fallback if no DMA available */
+	if (!lp->dma_chan) {
+>>>>>>> v4.9.227
 		readsl(ioaddr + reg, buf, len);
 		return;
 	}
@@ -378,6 +526,7 @@ smc_pxa_dma_insl(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 		len--;
 	}
 
+<<<<<<< HEAD
 	len *= 4;
 	dmabuf = dma_map_single(lp->device, buf, len, DMA_FROM_DEVICE);
 	DCSR(dma) = DCSR_NODESC;
@@ -390,6 +539,24 @@ smc_pxa_dma_insl(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 		cpu_relax();
 	DCSR(dma) = 0;
 	dma_unmap_single(lp->device, dmabuf, len, DMA_FROM_DEVICE);
+=======
+	memset(&config, 0, sizeof(config));
+	config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+	config.src_addr = lp->physaddr + reg;
+	config.dst_addr = lp->physaddr + reg;
+	config.src_maxburst = 32;
+	config.dst_maxburst = 32;
+	ret = dmaengine_slave_config(lp->dma_chan, &config);
+	if (ret) {
+		dev_err(lp->device, "dma channel configuration failed: %d\n",
+			ret);
+		return;
+	}
+
+	len *= 4;
+	smc_pxa_dma_inpump(lp, buf, len);
+>>>>>>> v4.9.227
 }
 #endif
 
@@ -401,11 +568,19 @@ static inline void
 smc_pxa_dma_insw(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 		 u_char *buf, int len)
 {
+<<<<<<< HEAD
 	u_long physaddr = lp->physaddr;
 	dma_addr_t dmabuf;
 
 	/* fallback if no DMA available */
 	if (dma == (unsigned char)-1) {
+=======
+	struct dma_slave_config	config;
+	int ret;
+
+	/* fallback if no DMA available */
+	if (!lp->dma_chan) {
+>>>>>>> v4.9.227
 		readsw(ioaddr + reg, buf, len);
 		return;
 	}
@@ -417,6 +592,7 @@ smc_pxa_dma_insw(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 		len--;
 	}
 
+<<<<<<< HEAD
 	len *= 2;
 	dmabuf = dma_map_single(lp->device, buf, len, DMA_FROM_DEVICE);
 	DCSR(dma) = DCSR_NODESC;
@@ -437,6 +613,27 @@ smc_pxa_dma_irq(int dma, void *dummy)
 {
 	DCSR(dma) = 0;
 }
+=======
+	memset(&config, 0, sizeof(config));
+	config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+	config.src_addr = lp->physaddr + reg;
+	config.dst_addr = lp->physaddr + reg;
+	config.src_maxburst = 32;
+	config.dst_maxburst = 32;
+	ret = dmaengine_slave_config(lp->dma_chan, &config);
+	if (ret) {
+		dev_err(lp->device, "dma channel configuration failed: %d\n",
+			ret);
+		return;
+	}
+
+	len *= 2;
+	smc_pxa_dma_inpump(lp, buf, len);
+}
+#endif
+
+>>>>>>> v4.9.227
 #endif  /* CONFIG_ARCH_PXA */
 
 
@@ -461,6 +658,7 @@ smc_pxa_dma_irq(int dma, void *dummy)
 
 #if ! SMC_CAN_USE_16BIT
 
+<<<<<<< HEAD
 /*
  * Any 16-bit access is performed with two 8-bit accesses if the hardware
  * can't do it directly. Most registers are 16-bit so those are mandatory.
@@ -479,6 +677,10 @@ smc_pxa_dma_irq(int dma, void *dummy)
 		__val16;						\
 	})
 
+=======
+#define SMC_outw(x, ioaddr, reg)	SMC_outw_b(x, ioaddr, reg)
+#define SMC_inw(ioaddr, reg)		SMC_inw_b(ioaddr, reg)
+>>>>>>> v4.9.227
 #define SMC_insw(a, r, p, l)		BUG()
 #define SMC_outsw(a, r, p, l)		BUG()
 
@@ -490,7 +692,13 @@ smc_pxa_dma_irq(int dma, void *dummy)
 #endif
 
 #if ! SMC_CAN_USE_8BIT
+<<<<<<< HEAD
 #define SMC_inb(ioaddr, reg)		({ BUG(); 0; })
+=======
+#undef SMC_inb
+#define SMC_inb(ioaddr, reg)		({ BUG(); 0; })
+#undef SMC_outb
+>>>>>>> v4.9.227
 #define SMC_outb(x, ioaddr, reg)	BUG()
 #define SMC_insb(a, r, p, l)		BUG()
 #define SMC_outsb(a, r, p, l)		BUG()

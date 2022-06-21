@@ -63,8 +63,11 @@ static int mcp2120_open(struct sir_dev *dev)
 {
 	struct qos_info *qos = &dev->qos;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	/* seems no explicit power-on required here and reset switching it on anyway */
 
 	qos->baud_rate.bits &= IR_9600|IR_19200|IR_38400|IR_57600|IR_115200;
@@ -76,8 +79,11 @@ static int mcp2120_open(struct sir_dev *dev)
 
 static int mcp2120_close(struct sir_dev *dev)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	/* Power off dongle */
         /* reset and inhibit mcp2120 */
 	sirdev_set_dtr_rts(dev, TRUE, TRUE);
@@ -102,8 +108,11 @@ static int mcp2120_change_speed(struct sir_dev *dev, unsigned speed)
 	u8 control[2];
 	static int ret = 0;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	switch (state) {
 	case SIRDEV_STATE_DONGLE_SPEED:
 		/* Set DTR to enter command mode */
@@ -155,7 +164,12 @@ static int mcp2120_change_speed(struct sir_dev *dev, unsigned speed)
 		break;
 
 	default:
+<<<<<<< HEAD
 		IRDA_ERROR("%s(), undefine state %d\n", __func__, state);
+=======
+		net_err_ratelimited("%s(), undefine state %d\n",
+				    __func__, state);
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 		break;
 	}
@@ -187,8 +201,11 @@ static int mcp2120_reset(struct sir_dev *dev)
 	unsigned delay = 0;
 	int ret = 0;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	switch (state) {
 	case SIRDEV_STATE_DONGLE_RESET:
                 //printk("mcp2120_reset: dongle_reset\n");
@@ -213,7 +230,12 @@ static int mcp2120_reset(struct sir_dev *dev)
 		break;
 
 	default:
+<<<<<<< HEAD
 		IRDA_ERROR("%s(), undefined state %d\n", __func__, state);
+=======
+		net_err_ratelimited("%s(), undefined state %d\n",
+				    __func__, state);
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 		break;
 	}

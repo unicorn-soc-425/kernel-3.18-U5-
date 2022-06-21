@@ -15,12 +15,18 @@
 #include <linux/device.h>
 #include <linux/irqreturn.h>
 
+<<<<<<< HEAD
+=======
+#define CHAMELEON_FILENAME_LEN 12
+
+>>>>>>> v4.9.227
 struct mcb_driver;
 struct mcb_device;
 
 /**
  * struct mcb_bus - MEN Chameleon Bus
  *
+<<<<<<< HEAD
  * @dev: pointer to carrier device
  * @children: the child busses
  * @bus_nr: mcb bus number
@@ -34,14 +40,44 @@ struct mcb_bus {
 	int (*get_irq)(struct mcb_device *dev);
 };
 #define to_mcb_bus(b) container_of((b), struct mcb_bus, dev)
+=======
+ * @dev: bus device
+ * @carrier: pointer to carrier device
+ * @bus_nr: mcb bus number
+ * @get_irq: callback to get IRQ number
+ * @revision: the FPGA's revision number
+ * @model: the FPGA's model number
+ * @filename: the FPGA's name
+ */
+struct mcb_bus {
+	struct device dev;
+	struct device *carrier;
+	int bus_nr;
+	u8 revision;
+	char model;
+	u8 minor;
+	char name[CHAMELEON_FILENAME_LEN + 1];
+	int (*get_irq)(struct mcb_device *dev);
+};
+
+static inline struct mcb_bus *to_mcb_bus(struct device *dev)
+{
+	return container_of(dev, struct mcb_bus, dev);
+}
+>>>>>>> v4.9.227
 
 /**
  * struct mcb_device - MEN Chameleon Bus device
  *
+<<<<<<< HEAD
  * @bus_list: internal list handling for bus code
  * @dev: device in kernel representation
  * @bus: mcb bus the device is plugged to
  * @subordinate: subordinate MCBus in case of bridge
+=======
+ * @dev: device in kernel representation
+ * @bus: mcb bus the device is plugged to
+>>>>>>> v4.9.227
  * @is_added: flag to check if device is added to bus
  * @driver: associated mcb_driver
  * @id: mcb device id
@@ -54,10 +90,15 @@ struct mcb_bus {
  * @memory: memory resource
  */
 struct mcb_device {
+<<<<<<< HEAD
 	struct list_head bus_list;
 	struct device dev;
 	struct mcb_bus *bus;
 	struct mcb_bus *subordinate;
+=======
+	struct device dev;
+	struct mcb_bus *bus;
+>>>>>>> v4.9.227
 	bool is_added;
 	struct mcb_driver *driver;
 	u16 id;
@@ -68,8 +109,18 @@ struct mcb_device {
 	int rev;
 	struct resource irq;
 	struct resource mem;
+<<<<<<< HEAD
 };
 #define to_mcb_device(x) container_of((x), struct mcb_device, dev)
+=======
+	struct device *dma_dev;
+};
+
+static inline struct mcb_device *to_mcb_device(struct device *dev)
+{
+	return container_of(dev, struct mcb_device, dev);
+}
+>>>>>>> v4.9.227
 
 /**
  * struct mcb_driver - MEN Chameleon Bus device driver
@@ -87,7 +138,15 @@ struct mcb_driver {
 	void (*remove)(struct mcb_device *mdev);
 	void (*shutdown)(struct mcb_device *mdev);
 };
+<<<<<<< HEAD
 #define to_mcb_driver(x) container_of((x), struct mcb_driver, driver)
+=======
+
+static inline struct mcb_driver *to_mcb_driver(struct device_driver *drv)
+{
+	return container_of(drv, struct mcb_driver, driver);
+}
+>>>>>>> v4.9.227
 
 static inline void *mcb_get_drvdata(struct mcb_device *dev)
 {

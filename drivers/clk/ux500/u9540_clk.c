@@ -7,6 +7,7 @@
  * License terms: GNU General Public License (GPL) version 2
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/clkdev.h>
 #include <linux/clk-provider.h>
@@ -19,3 +20,14 @@ void u9540_clk_init(u32 clkrst1_base, u32 clkrst2_base, u32 clkrst3_base,
 {
 	/* register clocks here */
 }
+=======
+#include <linux/clk-provider.h>
+#include <linux/mfd/dbx500-prcmu.h>
+#include "clk.h"
+
+static void u9540_clk_init(struct device_node *np)
+{
+	/* register clocks here */
+}
+CLK_OF_DECLARE(u9540_clks, "stericsson,u9540-clks", u9540_clk_init);
+>>>>>>> v4.9.227

@@ -23,6 +23,7 @@
  */
 static DEFINE_SPINLOCK(ht_irq_lock);
 
+<<<<<<< HEAD
 struct ht_irq_cfg {
 	struct pci_dev *dev;
 	 /* Update callback used to cope with buggy hardware */
@@ -33,10 +34,16 @@ struct ht_irq_cfg {
 };
 
 
+=======
+>>>>>>> v4.9.227
 void write_ht_irq_msg(unsigned int irq, struct ht_irq_msg *msg)
 {
 	struct ht_irq_cfg *cfg = irq_get_handler_data(irq);
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&ht_irq_lock, flags);
 	if (cfg->msg.address_lo != msg->address_lo) {
 		pci_write_config_byte(cfg->dev, cfg->pos + 2, cfg->idx);
@@ -55,6 +62,10 @@ void write_ht_irq_msg(unsigned int irq, struct ht_irq_msg *msg)
 void fetch_ht_irq_msg(unsigned int irq, struct ht_irq_msg *msg)
 {
 	struct ht_irq_cfg *cfg = irq_get_handler_data(irq);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	*msg = cfg->msg;
 }
 
@@ -86,7 +97,10 @@ void unmask_ht_irq(struct irq_data *data)
  */
 int __ht_create_irq(struct pci_dev *dev, int idx, ht_irq_update_t *update)
 {
+<<<<<<< HEAD
 	struct ht_irq_cfg *cfg;
+=======
+>>>>>>> v4.9.227
 	int max_irq, pos, irq;
 	unsigned long flags;
 	u32 data;
@@ -105,6 +119,7 @@ int __ht_create_irq(struct pci_dev *dev, int idx, ht_irq_update_t *update)
 	if (idx > max_irq)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	cfg = kmalloc(sizeof(*cfg), GFP_KERNEL);
 	if (!cfg)
 		return -ENOMEM;
@@ -128,6 +143,11 @@ int __ht_create_irq(struct pci_dev *dev, int idx, ht_irq_update_t *update)
 		ht_destroy_irq(irq);
 		return -EBUSY;
 	}
+=======
+	irq = arch_setup_ht_irq(idx, pos, dev, update);
+	if (irq > 0)
+		dev_dbg(&dev->dev, "irq %d for HT\n", irq);
+>>>>>>> v4.9.227
 
 	return irq;
 }
@@ -158,6 +178,7 @@ EXPORT_SYMBOL(ht_create_irq);
  */
 void ht_destroy_irq(unsigned int irq)
 {
+<<<<<<< HEAD
 	struct ht_irq_cfg *cfg;
 
 	cfg = irq_get_handler_data(irq);
@@ -166,5 +187,8 @@ void ht_destroy_irq(unsigned int irq)
 	irq_free_hwirq(irq);
 
 	kfree(cfg);
+=======
+	arch_teardown_ht_irq(irq);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(ht_destroy_irq);

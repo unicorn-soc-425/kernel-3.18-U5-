@@ -139,7 +139,11 @@ static void __init tilcdc_node_disable(struct device_node *node)
 	of_update_property(node, prop);
 }
 
+<<<<<<< HEAD
 struct device_node * __init tilcdc_get_overlay(struct kfree_table *kft)
+=======
+static struct device_node * __init tilcdc_get_overlay(struct kfree_table *kft)
+>>>>>>> v4.9.227
 {
 	const int size = __dtb_tilcdc_slave_compat_end -
 		__dtb_tilcdc_slave_compat_begin;
@@ -157,7 +161,11 @@ struct device_node * __init tilcdc_get_overlay(struct kfree_table *kft)
 	if (!overlay_data || kfree_table_add(kft, overlay_data))
 		return NULL;
 
+<<<<<<< HEAD
 	of_fdt_unflatten_tree(overlay_data, &overlay);
+=======
+	of_fdt_unflatten_tree(overlay_data, NULL, &overlay);
+>>>>>>> v4.9.227
 	if (!overlay) {
 		pr_warn("%s: Unfattening overlay tree failed\n", __func__);
 		return NULL;
@@ -195,7 +203,11 @@ static const char * const tilcdc_slave_props[] __initconst = {
 	NULL
 };
 
+<<<<<<< HEAD
 void __init tilcdc_convert_slave_node(void)
+=======
+static void __init tilcdc_convert_slave_node(void)
+>>>>>>> v4.9.227
 {
 	struct device_node *slave = NULL, *lcdc = NULL;
 	struct device_node *i2c = NULL, *fragment = NULL;
@@ -207,7 +219,11 @@ void __init tilcdc_convert_slave_node(void)
 	int ret;
 
 	if (kfree_table_init(&kft))
+<<<<<<< HEAD
 		goto out;
+=======
+		return;
+>>>>>>> v4.9.227
 
 	lcdc = of_find_matching_node(NULL, tilcdc_of_match);
 	slave = of_find_matching_node(NULL, tilcdc_slave_of_match);
@@ -261,7 +277,11 @@ out:
 	of_node_put(fragment);
 }
 
+<<<<<<< HEAD
 int __init tilcdc_slave_compat_init(void)
+=======
+static int __init tilcdc_slave_compat_init(void)
+>>>>>>> v4.9.227
 {
 	tilcdc_convert_slave_node();
 	return 0;

@@ -20,7 +20,11 @@
 /* Does not work. Warning may block system in capture mode */
 /* #define USE_VAR48KRATE */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -1838,7 +1842,11 @@ static int snd_cmipci_capture_spdif_close(struct snd_pcm_substream *substream)
 /*
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_cmipci_playback_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_cmipci_playback_open,
 	.close =	snd_cmipci_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1849,7 +1857,11 @@ static struct snd_pcm_ops snd_cmipci_playback_ops = {
 	.pointer =	snd_cmipci_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_cmipci_capture_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_cmipci_capture_open,
 	.close =	snd_cmipci_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1860,7 +1872,11 @@ static struct snd_pcm_ops snd_cmipci_capture_ops = {
 	.pointer =	snd_cmipci_capture_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_playback2_ops = {
+=======
+static const struct snd_pcm_ops snd_cmipci_playback2_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_cmipci_playback2_open,
 	.close =	snd_cmipci_playback2_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1871,7 +1887,11 @@ static struct snd_pcm_ops snd_cmipci_playback2_ops = {
 	.pointer =	snd_cmipci_capture_pointer,	/* channel B */
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_playback_spdif_ops = {
+=======
+static const struct snd_pcm_ops snd_cmipci_playback_spdif_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_cmipci_playback_spdif_open,
 	.close =	snd_cmipci_playback_spdif_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1882,7 +1902,11 @@ static struct snd_pcm_ops snd_cmipci_playback_spdif_ops = {
 	.pointer =	snd_cmipci_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_capture_spdif_ops = {
+=======
+static const struct snd_pcm_ops snd_cmipci_capture_spdif_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_cmipci_capture_spdif_open,
 	.close =	snd_cmipci_capture_spdif_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -2062,7 +2086,11 @@ static int snd_cmipci_get_volume(struct snd_kcontrol *kcontrol,
 		val = (snd_cmipci_mixer_read(cm, reg.right_reg) >> reg.right_shift) & reg.mask;
 		if (reg.invert)
 			val = reg.mask - val;
+<<<<<<< HEAD
 		 ucontrol->value.integer.value[1] = val;
+=======
+		ucontrol->value.integer.value[1] = val;
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irq(&cm->reg_lock);
 	return 0;
@@ -2772,7 +2800,10 @@ static int snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_device)
  * proc interface
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+>>>>>>> v4.9.227
 static void snd_cmipci_proc_read(struct snd_info_entry *entry, 
 				 struct snd_info_buffer *buffer)
 {
@@ -2798,10 +2829,13 @@ static void snd_cmipci_proc_init(struct cmipci *cm)
 	if (! snd_card_proc_new(cm->card, "cmipci", &entry))
 		snd_info_set_text_ops(entry, cm, snd_cmipci_proc_read);
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PROC_FS */
 static inline void snd_cmipci_proc_init(struct cmipci *cm) {}
 #endif
 
+=======
+>>>>>>> v4.9.227
 
 static const struct pci_device_id snd_cmipci_ids[] = {
 	{PCI_VDEVICE(CMEDIA, PCI_DEVICE_ID_CMEDIA_CM8338A), 0},
@@ -3347,7 +3381,10 @@ static unsigned char saved_mixers[] = {
 
 static int snd_cmipci_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct cmipci *cm = card->private_data;
 	int i;
@@ -3366,20 +3403,27 @@ static int snd_cmipci_suspend(struct device *dev)
 
 	/* disable ints */
 	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int snd_cmipci_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct cmipci *cm = card->private_data;
 	int i;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -3389,6 +3433,8 @@ static int snd_cmipci_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> v4.9.227
 	/* reset / initialize to a sane state */
 	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);
 	snd_cmipci_ch_reset(cm, CM_CH_PLAY);

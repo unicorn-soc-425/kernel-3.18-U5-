@@ -464,7 +464,10 @@ static struct platform_driver hitfb_driver = {
 	.remove		= hitfb_remove,
 	.driver		= {
 		.name	= "hitfb",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &hitfb_dev_pm_ops,
 	},
 };

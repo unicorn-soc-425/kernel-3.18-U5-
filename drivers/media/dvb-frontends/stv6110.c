@@ -158,7 +158,11 @@ static int stv6110_sleep(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static u32 carrier_width(u32 symbol_rate, fe_rolloff_t rolloff)
+=======
+static u32 carrier_width(u32 symbol_rate, enum fe_rolloff rolloff)
+>>>>>>> v4.9.227
 {
 	u32 rlf;
 
@@ -382,7 +386,11 @@ static int stv6110_get_bandwidth(struct dvb_frontend *fe, u32 *bandwidth)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dvb_tuner_ops stv6110_tuner_ops = {
+=======
+static const struct dvb_tuner_ops stv6110_tuner_ops = {
+>>>>>>> v4.9.227
 	.info = {
 		.name = "ST STV6110",
 		.frequency_min = 950000,

@@ -139,14 +139,22 @@ static void lpc32xx_stop_tsc(struct lpc32xx_tsc *tsc)
 		   tsc_readl(tsc, LPC32XX_TSC_CON) &
 			     ~LPC32XX_TSC_ADCCON_AUTO_EN);
 
+<<<<<<< HEAD
 	clk_disable(tsc->clk);
+=======
+	clk_disable_unprepare(tsc->clk);
+>>>>>>> v4.9.227
 }
 
 static void lpc32xx_setup_tsc(struct lpc32xx_tsc *tsc)
 {
 	u32 tmp;
 
+<<<<<<< HEAD
 	clk_enable(tsc->clk);
+=======
+	clk_prepare_enable(tsc->clk);
+>>>>>>> v4.9.227
 
 	tmp = tsc_readl(tsc, LPC32XX_TSC_CON) & ~LPC32XX_TSC_ADCCON_POWER_UP;
 
@@ -396,7 +404,10 @@ static struct platform_driver lpc32xx_ts_driver = {
 	.remove		= lpc32xx_ts_remove,
 	.driver		= {
 		.name	= MOD_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= LPC32XX_TS_PM_OPS,
 		.of_match_table = of_match_ptr(lpc32xx_tsc_of_match),
 	},

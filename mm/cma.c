@@ -34,10 +34,15 @@
 #include <linux/log2.h>
 #include <linux/cma.h>
 #include <linux/highmem.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
 #include <linux/kmemleak.h>
 #include <trace/events/cma.h>
 #include <linux/io.h>
+=======
+#include <linux/io.h>
+#include <trace/events/cma.h>
+>>>>>>> v4.9.227
 
 #include "cma.h"
 
@@ -102,8 +107,15 @@ static int __init cma_activate_area(struct cma *cma)
 
 	cma->bitmap = kzalloc(bitmap_size, GFP_KERNEL);
 
+<<<<<<< HEAD
 	if (!cma->bitmap)
 		return -ENOMEM;
+=======
+	if (!cma->bitmap) {
+		cma->count = 0;
+		return -ENOMEM;
+	}
+>>>>>>> v4.9.227
 
 	WARN_ON_ONCE(!pfn_valid(pfn));
 	zone = page_zone(pfn_to_page(pfn));
@@ -133,10 +145,13 @@ static int __init cma_activate_area(struct cma *cma)
 	spin_lock_init(&cma->mem_head_lock);
 #endif
 
+<<<<<<< HEAD
 	if (!PageHighMem(pfn_to_page(cma->base_pfn)))
 		kmemleak_free_part(__va(cma->base_pfn << PAGE_SHIFT),
 				cma->count << PAGE_SHIFT);
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 
 err:
@@ -185,7 +200,11 @@ int __init cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
 	if (!size || !memblock_is_region_reserved(base, size))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* ensure minimal alignment requied by mm core */
+=======
+	/* ensure minimal alignment required by mm core */
+>>>>>>> v4.9.227
 	alignment = PAGE_SIZE <<
 			max_t(unsigned long, MAX_ORDER - 1, pageblock_order);
 
@@ -242,7 +261,11 @@ int __init cma_declare_contiguous(phys_addr_t base,
 	/*
 	 * high_memory isn't direct mapped memory so retrieving its physical
 	 * address isn't appropriate.  But it would be useful to check the
+<<<<<<< HEAD
 	 * physical address of the highmem boundary so it's justfiable to get
+=======
+	 * physical address of the highmem boundary so it's justifiable to get
+>>>>>>> v4.9.227
 	 * the physical address from it.  On x86 there is a validation check for
 	 * this case, so the following workaround is needed to avoid it.
 	 */
@@ -272,6 +295,15 @@ int __init cma_declare_contiguous(phys_addr_t base,
 	 */
 	alignment = max(alignment,  (phys_addr_t)PAGE_SIZE <<
 			  max_t(unsigned long, MAX_ORDER - 1, pageblock_order));
+<<<<<<< HEAD
+=======
+	if (fixed && base & (alignment - 1)) {
+		ret = -EINVAL;
+		pr_err("Region at %pa must be aligned to %pa bytes\n",
+			&base, &alignment);
+		goto err;
+	}
+>>>>>>> v4.9.227
 	base = ALIGN(base, alignment);
 	size = ALIGN(size, alignment);
 	limit &= ~(alignment - 1);
@@ -302,6 +334,16 @@ int __init cma_declare_contiguous(phys_addr_t base,
 	if (limit == 0 || limit > memblock_end)
 		limit = memblock_end;
 
+<<<<<<< HEAD
+=======
+	if (base + size > limit) {
+		ret = -EINVAL;
+		pr_err("Size (%pa) of region at %pa exceeds limit (%pa)\n",
+			&size, &base, &limit);
+		goto err;
+	}
+
+>>>>>>> v4.9.227
 	/* Reserve memory */
 	if (fixed) {
 		if (memblock_is_region_reserved(base, size) ||
@@ -320,13 +362,23 @@ int __init cma_declare_contiguous(phys_addr_t base,
 		 */
 		if (base < highmem_start && limit > highmem_start) {
 			addr = memblock_alloc_range(size, alignment,
+<<<<<<< HEAD
 						    highmem_start, limit);
+=======
+						    highmem_start, limit,
+						    MEMBLOCK_NONE);
+>>>>>>> v4.9.227
 			limit = highmem_start;
 		}
 
 		if (!addr) {
 			addr = memblock_alloc_range(size, alignment, base,
+<<<<<<< HEAD
 						    limit);
+=======
+						    limit,
+						    MEMBLOCK_NONE);
+>>>>>>> v4.9.227
 			if (!addr) {
 				ret = -ENOMEM;
 				goto err;
@@ -337,23 +389,37 @@ int __init cma_declare_contiguous(phys_addr_t base,
 		 * kmemleak scans/reads tracked objects for pointers to other
 		 * objects but this address isn't mapped and accessible
 		 */
+<<<<<<< HEAD
 		kmemleak_ignore(phys_to_virt(addr));
+=======
+		kmemleak_ignore_phys(addr);
+>>>>>>> v4.9.227
 		base = addr;
 	}
 
 	ret = cma_init_reserved_mem(base, size, order_per_bit, res_cma);
 	if (ret)
+<<<<<<< HEAD
 		goto err;
+=======
+		goto free_mem;
+>>>>>>> v4.9.227
 
 	pr_info("Reserved %ld MiB at %pa\n", (unsigned long)size / SZ_1M,
 		&base);
 	return 0;
 
+<<<<<<< HEAD
+=======
+free_mem:
+	memblock_free(base, size);
+>>>>>>> v4.9.227
 err:
 	pr_err("Failed to reserve %ld MiB\n", (unsigned long)size / SZ_1M);
 	return ret;
 }
 
+<<<<<<< HEAD
 static void cma_debug_show_areas(struct cma *cma)
 {
 	unsigned long next_zero_bit, next_set_bit;
@@ -376,6 +442,8 @@ static void cma_debug_show_areas(struct cma *cma)
 	mutex_unlock(&cma->lock);
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * cma_alloc() - allocate pages from contiguous area
  * @cma:   Contiguous memory region for which the allocation is performed.
@@ -387,11 +455,20 @@ static void cma_debug_show_areas(struct cma *cma)
  */
 struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
 {
+<<<<<<< HEAD
 	unsigned long mask, offset, pfn, start = 0;
 	unsigned long bitmap_maxno, bitmap_no, bitmap_count;
 	struct page *page = NULL;
 	int retry_after_sleep = 0;
 	int ret = -ENOMEM;
+=======
+	unsigned long mask, offset;
+	unsigned long pfn = -1;
+	unsigned long start = 0;
+	unsigned long bitmap_maxno, bitmap_no, bitmap_count;
+	struct page *page = NULL;
+	int ret;
+>>>>>>> v4.9.227
 
 	if (!cma || !cma->count)
 		return NULL;
@@ -402,8 +479,11 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
 	if (!count)
 		return NULL;
 
+<<<<<<< HEAD
 	trace_cma_alloc_start(count, align);
 
+=======
+>>>>>>> v4.9.227
 	mask = cma_bitmap_aligned_mask(cma, align);
 	offset = cma_bitmap_aligned_offset(cma, align);
 	bitmap_maxno = cma_bitmap_maxno(cma);
@@ -418,6 +498,7 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
 				bitmap_maxno, start, bitmap_count, mask,
 				offset);
 		if (bitmap_no >= bitmap_maxno) {
+<<<<<<< HEAD
 			if (retry_after_sleep < 2) {
 				start = 0;
 				/*
@@ -436,6 +517,10 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
 				mutex_unlock(&cma->lock);
 				break;
 			}
+=======
+			mutex_unlock(&cma->lock);
+			break;
+>>>>>>> v4.9.227
 		}
 		bitmap_set(cma->bitmap, bitmap_no, bitmap_count);
 		/*
@@ -460,12 +545,16 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
 
 		pr_debug("%s(): memory range at %p is busy, retrying\n",
 			 __func__, pfn_to_page(pfn));
+<<<<<<< HEAD
 
 		trace_cma_alloc_busy_retry(pfn, pfn_to_page(pfn), count, align);
+=======
+>>>>>>> v4.9.227
 		/* try again with a bit different memory target */
 		start = bitmap_no + mask + 1;
 	}
 
+<<<<<<< HEAD
 	trace_cma_alloc(page ? pfn : -1UL, page, count, align);
 
 	if (ret) {
@@ -473,6 +562,9 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
 			__func__, count, ret);
 		cma_debug_show_areas(cma);
 	}
+=======
+	trace_cma_alloc(pfn, page, count, align);
+>>>>>>> v4.9.227
 
 	pr_debug("%s(): returned %p\n", __func__, page);
 	return page;

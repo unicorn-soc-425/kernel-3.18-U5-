@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -84,7 +88,11 @@ acpi_os_create_cache(char *cache_name,
 
 	/* Populate the cache object and return it */
 
+<<<<<<< HEAD
 	ACPI_MEMSET(cache, 0, sizeof(struct acpi_memory_list));
+=======
+	memset(cache, 0, sizeof(struct acpi_memory_list));
+>>>>>>> v4.9.227
 	cache->list_name = cache_name;
 	cache->object_size = object_size;
 	cache->max_depth = max_depth;
@@ -105,7 +113,11 @@ acpi_os_create_cache(char *cache_name,
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_os_purge_cache(struct acpi_memory_list * cache)
+=======
+acpi_status acpi_os_purge_cache(struct acpi_memory_list *cache)
+>>>>>>> v4.9.227
 {
 	void *next;
 	acpi_status status;
@@ -151,7 +163,11 @@ acpi_status acpi_os_purge_cache(struct acpi_memory_list * cache)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_os_delete_cache(struct acpi_memory_list * cache)
+=======
+acpi_status acpi_os_delete_cache(struct acpi_memory_list *cache)
+>>>>>>> v4.9.227
 {
 	acpi_status status;
 
@@ -184,8 +200,12 @@ acpi_status acpi_os_delete_cache(struct acpi_memory_list * cache)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status
 acpi_os_release_object(struct acpi_memory_list * cache, void *object)
+=======
+acpi_status acpi_os_release_object(struct acpi_memory_list *cache, void *object)
+>>>>>>> v4.9.227
 {
 	acpi_status status;
 
@@ -212,7 +232,11 @@ acpi_os_release_object(struct acpi_memory_list * cache, void *object)
 
 		/* Mark the object as cached */
 
+<<<<<<< HEAD
 		ACPI_MEMSET(object, 0xCA, cache->object_size);
+=======
+		memset(object, 0xCA, cache->object_size);
+>>>>>>> v4.9.227
 		ACPI_SET_DESCRIPTOR_TYPE(object, ACPI_DESC_TYPE_CACHED);
 
 		/* Put the object at the head of the cache list */
@@ -245,7 +269,11 @@ void *acpi_os_acquire_object(struct acpi_memory_list *cache)
 	acpi_status status;
 	void *object;
 
+<<<<<<< HEAD
 	ACPI_FUNCTION_NAME(os_acquire_object);
+=======
+	ACPI_FUNCTION_TRACE(os_acquire_object);
+>>>>>>> v4.9.227
 
 	if (!cache) {
 		return_PTR(NULL);
@@ -281,7 +309,11 @@ void *acpi_os_acquire_object(struct acpi_memory_list *cache)
 
 		/* Clear (zero) the previously used Object */
 
+<<<<<<< HEAD
 		ACPI_MEMSET(object, 0, cache->object_size);
+=======
+		memset(object, 0, cache->object_size);
+>>>>>>> v4.9.227
 	} else {
 		/* The cache is empty, create a new object */
 

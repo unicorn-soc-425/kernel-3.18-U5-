@@ -86,8 +86,13 @@ struct kmem_cache {
 #ifdef CONFIG_SYSFS
 	struct kobject kobj;	/* For sysfs */
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_MEMCG_KMEM
 	struct memcg_cache_params *memcg_params;
+=======
+#ifdef CONFIG_MEMCG
+	struct memcg_cache_params memcg_params;
+>>>>>>> v4.9.227
 	int max_attr_size; /* for propagation, maximum size of a stored attr */
 #ifdef CONFIG_SYSFS
 	struct kset *memcg_kset;
@@ -100,6 +105,18 @@ struct kmem_cache {
 	 */
 	int remote_node_defrag_ratio;
 #endif
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_SLAB_FREELIST_RANDOM
+	unsigned int *random_seq;
+#endif
+
+#ifdef CONFIG_KASAN
+	struct kasan_cache kasan_info;
+#endif
+
+>>>>>>> v4.9.227
 	struct kmem_cache_node *node[MAX_NUMNODES];
 };
 
@@ -112,6 +129,7 @@ static inline void sysfs_slab_remove(struct kmem_cache *s)
 }
 #endif
 
+<<<<<<< HEAD
 
 /**
  * virt_to_obj - returns address of the beginning of object.
@@ -131,4 +149,22 @@ static inline void *virt_to_obj(struct kmem_cache *s,
 void object_err(struct kmem_cache *s, struct page *page,
 		u8 *object, char *reason);
 
+=======
+void object_err(struct kmem_cache *s, struct page *page,
+		u8 *object, char *reason);
+
+void *fixup_red_left(struct kmem_cache *s, void *p);
+
+static inline void *nearest_obj(struct kmem_cache *cache, struct page *page,
+				void *x) {
+	void *object = x - (x - page_address(page)) % cache->size;
+	void *last_object = page_address(page) +
+		(page->objects - 1) * cache->size;
+	void *result = (unlikely(object > last_object)) ? last_object : object;
+
+	result = fixup_red_left(cache, result);
+	return result;
+}
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_SLUB_DEF_H */

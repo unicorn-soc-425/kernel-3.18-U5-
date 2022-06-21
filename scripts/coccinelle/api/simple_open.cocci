@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /// This removes an open coded simple_open() function
 /// and replaces file operations references to the function
+=======
+/// Remove an open coded simple_open() function
+/// and replace file operations references to the function
+>>>>>>> v4.9.227
 /// with simple_open() instead.
 ///
 // Confidence: High

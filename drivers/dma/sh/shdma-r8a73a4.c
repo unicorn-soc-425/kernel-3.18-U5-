@@ -11,7 +11,11 @@
 
 #include "shdma-arm.h"
 
+<<<<<<< HEAD
 const unsigned int dma_ts_shift[] = SH_DMAE_TS_SHIFT;
+=======
+static const unsigned int dma_ts_shift[] = SH_DMAE_TS_SHIFT;
+>>>>>>> v4.9.227
 
 static const struct sh_dmae_slave_config dma_slaves[] = {
 	{

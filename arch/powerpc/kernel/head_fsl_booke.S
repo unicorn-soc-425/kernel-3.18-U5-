@@ -42,6 +42,10 @@
 #include <asm/asm-offsets.h>
 #include <asm/cache.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 #include "head_booke.h"
 
 /* As with the other PowerPC ports, it is expected that when code
@@ -451,6 +455,16 @@ END_FTR_SECTION_IFSET(CPU_FTR_EMB_HV)
 	mfcr	r13
 	stw	r13, THREAD_NORMSAVE(3)(r10)
 	DO_KVM	BOOKE_INTERRUPT_DTLB_MISS SPRN_SRR1
+<<<<<<< HEAD
+=======
+START_BTB_FLUSH_SECTION
+	mfspr r11, SPRN_SRR1
+	andi. r10,r11,MSR_PR
+	beq 1f
+	BTB_FLUSH(r10)
+1:
+END_BTB_FLUSH_SECTION
+>>>>>>> v4.9.227
 	mfspr	r10, SPRN_DEAR		/* Get faulting address */
 
 	/* If we are faulting a kernel address, we have to use the
@@ -545,6 +559,17 @@ END_FTR_SECTION_IFSET(CPU_FTR_EMB_HV)
 	mfcr	r13
 	stw	r13, THREAD_NORMSAVE(3)(r10)
 	DO_KVM	BOOKE_INTERRUPT_ITLB_MISS SPRN_SRR1
+<<<<<<< HEAD
+=======
+START_BTB_FLUSH_SECTION
+	mfspr r11, SPRN_SRR1
+	andi. r10,r11,MSR_PR
+	beq 1f
+	BTB_FLUSH(r10)
+1:
+END_BTB_FLUSH_SECTION
+
+>>>>>>> v4.9.227
 	mfspr	r10, SPRN_SRR0		/* Get faulting address */
 
 	/* If we are faulting a kernel address, we have to use the
@@ -857,6 +882,7 @@ _GLOBAL(load_up_spe)
 	oris	r5,r5,MSR_SPE@h
 	mtmsr	r5			/* enable use of SPE now */
 	isync
+<<<<<<< HEAD
 /*
  * For SMP, we don't do lazy SPE switching because it just gets too
  * horrendously complex, especially when a task switches from one CPU
@@ -880,6 +906,8 @@ _GLOBAL(load_up_spe)
 	stw	r4,_MSR-STACK_FRAME_OVERHEAD(r5)
 1:
 #endif /* !CONFIG_SMP */
+=======
+>>>>>>> v4.9.227
 	/* enable use of SPE after return */
 	oris	r9,r9,MSR_SPE@h
 	mfspr	r5,SPRN_SPRG_THREAD	/* current task's THREAD (phys) */
@@ -889,10 +917,13 @@ _GLOBAL(load_up_spe)
 	evlddx	evr4,r10,r5
 	evmra	evr4,evr4
 	REST_32EVRS(0,r10,r5,THREAD_EVR0)
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 	subi	r4,r5,THREAD
 	stw	r4,last_task_used_spe@l(r3)
 #endif /* !CONFIG_SMP */
+=======
+>>>>>>> v4.9.227
 	blr
 
 /*
@@ -1011,6 +1042,7 @@ _GLOBAL(__setup_ehv_ivors)
 
 #ifdef CONFIG_SPE
 /*
+<<<<<<< HEAD
  * extern void giveup_spe(struct task_struct *prev)
  *
  */
@@ -1021,6 +1053,12 @@ _GLOBAL(giveup_spe)
 	isync
 	cmpi	0,r3,0
 	beqlr-				/* if no previous owner, done */
+=======
+ * extern void __giveup_spe(struct task_struct *prev)
+ *
+ */
+_GLOBAL(__giveup_spe)
+>>>>>>> v4.9.227
 	addi	r3,r3,THREAD		/* want THREAD of task */
 	lwz	r5,PT_REGS(r3)
 	cmpi	0,r5,0
@@ -1035,11 +1073,14 @@ _GLOBAL(giveup_spe)
 	andc	r4,r4,r3		/* disable SPE for previous task */
 	stw	r4,_MSR-STACK_FRAME_OVERHEAD(r5)
 1:
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 	li	r5,0
 	lis	r4,last_task_used_spe@ha
 	stw	r5,last_task_used_spe@l(r4)
 #endif /* !CONFIG_SMP */
+=======
+>>>>>>> v4.9.227
 	blr
 #endif /* CONFIG_SPE */
 
@@ -1075,6 +1116,7 @@ _GLOBAL(set_context)
 	isync			/* Force context change */
 	blr
 
+<<<<<<< HEAD
 _GLOBAL(flush_dcache_L1)
 	mfspr	r3,SPRN_L1CFG0
 
@@ -1149,6 +1191,8 @@ _GLOBAL(__flush_disable_L1)
 
 	blr
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_SMP
 /* When we get here, r24 needs to hold the CPU # */
 	.globl __secondary_start
@@ -1335,6 +1379,10 @@ sdata:
 	.globl	empty_zero_page
 empty_zero_page:
 	.space	4096
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(empty_zero_page)
+>>>>>>> v4.9.227
 	.globl	swapper_pg_dir
 swapper_pg_dir:
 	.space	PGD_TABLE_SIZE

@@ -111,7 +111,10 @@ struct thread_struct {
  */
 #define start_thread(regs, pc, usp) do {				   \
 	unsigned int *argc = (unsigned int *) bprm->exec;		   \
+<<<<<<< HEAD
 	set_fs(USER_DS);						   \
+=======
+>>>>>>> v4.9.227
 	current->thread.int_depth = 1;					   \
 	/* Force this process down to user land */			   \
 	regs->ctx.SaveMask = TBICTX_PRIV_BIT;				   \
@@ -135,8 +138,11 @@ static inline void release_thread(struct task_struct *dead_task)
 #define copy_segments(tsk, mm)		do { } while (0)
 #define release_segments(mm)		do { } while (0)
 
+<<<<<<< HEAD
 extern void exit_thread(void);
 
+=======
+>>>>>>> v4.9.227
 /*
  * Return saved PC of a blocked thread.
  */

@@ -45,14 +45,22 @@ int rtc_hctosys_ret = -ENODEV;
  * system's wall clock; restore it on resume().
  */
 
+<<<<<<< HEAD
 static struct timespec old_rtc, old_system, old_delta;
+=======
+static struct timespec64 old_rtc, old_system, old_delta;
+>>>>>>> v4.9.227
 
 
 static int rtc_suspend(struct device *dev)
 {
 	struct rtc_device	*rtc = to_rtc_device(dev);
 	struct rtc_time		tm;
+<<<<<<< HEAD
 	struct timespec		delta, delta_delta;
+=======
+	struct timespec64	delta, delta_delta;
+>>>>>>> v4.9.227
 	int err;
 
 	if (timekeeping_rtc_skipsuspend())
@@ -68,8 +76,13 @@ static int rtc_suspend(struct device *dev)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	getnstimeofday(&old_system);
 	rtc_tm_to_time(&tm, &old_rtc.tv_sec);
+=======
+	getnstimeofday64(&old_system);
+	old_rtc.tv_sec = rtc_tm_to_time64(&tm);
+>>>>>>> v4.9.227
 
 
 	/*
@@ -78,8 +91,13 @@ static int rtc_suspend(struct device *dev)
 	 * try to compensate so the difference in system time
 	 * and rtc time stays close to constant.
 	 */
+<<<<<<< HEAD
 	delta = timespec_sub(old_system, old_rtc);
 	delta_delta = timespec_sub(delta, old_delta);
+=======
+	delta = timespec64_sub(old_system, old_rtc);
+	delta_delta = timespec64_sub(delta, old_delta);
+>>>>>>> v4.9.227
 	if (delta_delta.tv_sec < -2 || delta_delta.tv_sec >= 2) {
 		/*
 		 * if delta_delta is too large, assume time correction
@@ -88,7 +106,11 @@ static int rtc_suspend(struct device *dev)
 		old_delta = delta;
 	} else {
 		/* Otherwise try to adjust old_system to compensate */
+<<<<<<< HEAD
 		old_system = timespec_sub(old_system, delta_delta);
+=======
+		old_system = timespec64_sub(old_system, delta_delta);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -98,8 +120,13 @@ static int rtc_resume(struct device *dev)
 {
 	struct rtc_device	*rtc = to_rtc_device(dev);
 	struct rtc_time		tm;
+<<<<<<< HEAD
 	struct timespec		new_system, new_rtc;
 	struct timespec		sleep_time;
+=======
+	struct timespec64	new_system, new_rtc;
+	struct timespec64	sleep_time;
+>>>>>>> v4.9.227
 	int err;
 
 	if (timekeeping_rtc_skipresume())
@@ -110,18 +137,26 @@ static int rtc_resume(struct device *dev)
 		return 0;
 
 	/* snapshot the current rtc and system time at resume */
+<<<<<<< HEAD
 	getnstimeofday(&new_system);
+=======
+	getnstimeofday64(&new_system);
+>>>>>>> v4.9.227
 	err = rtc_read_time(rtc, &tm);
 	if (err < 0) {
 		pr_debug("%s:  fail to read rtc time\n", dev_name(&rtc->dev));
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (rtc_valid_tm(&tm) != 0) {
 		pr_debug("%s:  bogus resume time\n", dev_name(&rtc->dev));
 		return 0;
 	}
 	rtc_tm_to_time(&tm, &new_rtc.tv_sec);
+=======
+	new_rtc.tv_sec = rtc_tm_to_time64(&tm);
+>>>>>>> v4.9.227
 	new_rtc.tv_nsec = 0;
 
 	if (new_rtc.tv_sec < old_rtc.tv_sec) {
@@ -130,7 +165,11 @@ static int rtc_resume(struct device *dev)
 	}
 
 	/* calculate the RTC time delta (sleep time)*/
+<<<<<<< HEAD
 	sleep_time = timespec_sub(new_rtc, old_rtc);
+=======
+	sleep_time = timespec64_sub(new_rtc, old_rtc);
+>>>>>>> v4.9.227
 
 	/*
 	 * Since these RTC suspend/resume handlers are not called
@@ -139,11 +178,19 @@ static int rtc_resume(struct device *dev)
 	 * so subtract kernel run-time between rtc_suspend to rtc_resume
 	 * to keep things accurate.
 	 */
+<<<<<<< HEAD
 	sleep_time = timespec_sub(sleep_time,
 			timespec_sub(new_system, old_system));
 
 	if (sleep_time.tv_sec >= 0)
 		timekeeping_inject_sleeptime(&sleep_time);
+=======
+	sleep_time = timespec64_sub(sleep_time,
+			timespec64_sub(new_system, old_system));
+
+	if (sleep_time.tv_sec >= 0)
+		timekeeping_inject_sleeptime64(&sleep_time);
+>>>>>>> v4.9.227
 	rtc_hctosys_ret = 0;
 	return 0;
 }
@@ -206,6 +253,10 @@ struct rtc_device *rtc_device_register(const char *name, struct device *dev,
 	rtc->max_user_freq = 64;
 	rtc->dev.parent = dev;
 	rtc->dev.class = rtc_class;
+<<<<<<< HEAD
+=======
+	rtc->dev.groups = rtc_get_dev_attribute_groups();
+>>>>>>> v4.9.227
 	rtc->dev.release = rtc_device_release;
 
 	mutex_init(&rtc->ops_lock);
@@ -225,25 +276,43 @@ struct rtc_device *rtc_device_register(const char *name, struct device *dev,
 	rtc->pie_timer.function = rtc_pie_update_irq;
 	rtc->pie_enabled = 0;
 
+<<<<<<< HEAD
+=======
+	strlcpy(rtc->name, name, RTC_DEVICE_NAME_SIZE);
+	dev_set_name(&rtc->dev, "rtc%d", id);
+
+>>>>>>> v4.9.227
 	/* Check to see if there is an ALARM already set in hw */
 	err = __rtc_read_alarm(rtc, &alrm);
 
 	if (!err && !rtc_valid_tm(&alrm.time))
 		rtc_initialize_alarm(rtc, &alrm);
 
+<<<<<<< HEAD
 	strlcpy(rtc->name, name, RTC_DEVICE_NAME_SIZE);
 	dev_set_name(&rtc->dev, "rtc%d", id);
 
+=======
+>>>>>>> v4.9.227
 	rtc_dev_prepare(rtc);
 
 	err = device_register(&rtc->dev);
 	if (err) {
+<<<<<<< HEAD
 		put_device(&rtc->dev);
 		goto exit_kfree;
 	}
 
 	rtc_dev_add_device(rtc);
 	rtc_sysfs_add_device(rtc);
+=======
+		/* This will free both memory and the ID */
+		put_device(&rtc->dev);
+		goto exit;
+	}
+
+	rtc_dev_add_device(rtc);
+>>>>>>> v4.9.227
 	rtc_proc_add_device(rtc);
 
 	dev_info(dev, "rtc core: registered %s as %s\n",
@@ -251,9 +320,12 @@ struct rtc_device *rtc_device_register(const char *name, struct device *dev,
 
 	return rtc;
 
+<<<<<<< HEAD
 exit_kfree:
 	kfree(rtc);
 
+=======
+>>>>>>> v4.9.227
 exit_ida:
 	ida_simple_remove(&rtc_ida, id);
 
@@ -272,6 +344,7 @@ EXPORT_SYMBOL_GPL(rtc_device_register);
  */
 void rtc_device_unregister(struct rtc_device *rtc)
 {
+<<<<<<< HEAD
 	if (get_device(&rtc->dev) != NULL) {
 		mutex_lock(&rtc->ops_lock);
 		/* remove innards of this RTC, then disable it, before
@@ -285,6 +358,19 @@ void rtc_device_unregister(struct rtc_device *rtc)
 		mutex_unlock(&rtc->ops_lock);
 		put_device(&rtc->dev);
 	}
+=======
+	mutex_lock(&rtc->ops_lock);
+	/*
+	 * Remove innards of this RTC, then disable it, before
+	 * letting any rtc_class_open() users access it again
+	 */
+	rtc_dev_del_device(rtc);
+	rtc_proc_del_device(rtc);
+	device_del(&rtc->dev);
+	rtc->ops = NULL;
+	mutex_unlock(&rtc->ops_lock);
+	put_device(&rtc->dev);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(rtc_device_unregister);
 
@@ -367,6 +453,7 @@ static int __init rtc_init(void)
 	}
 	rtc_class->pm = RTC_CLASS_DEV_PM_OPS;
 	rtc_dev_init();
+<<<<<<< HEAD
 	rtc_sysfs_init(rtc_class);
 	return 0;
 }
@@ -384,3 +471,8 @@ module_exit(rtc_exit);
 MODULE_AUTHOR("Alessandro Zummo <a.zummo@towertech.it>");
 MODULE_DESCRIPTION("RTC class support");
 MODULE_LICENSE("GPL");
+=======
+	return 0;
+}
+subsys_initcall(rtc_init);
+>>>>>>> v4.9.227

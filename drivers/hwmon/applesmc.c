@@ -537,7 +537,11 @@ static int applesmc_init_index(struct applesmc_registers *s)
 static int applesmc_init_smcreg_try(void)
 {
 	struct applesmc_registers *s = &smcreg;
+<<<<<<< HEAD
 	bool left_light_sensor, right_light_sensor;
+=======
+	bool left_light_sensor = 0, right_light_sensor = 0;
+>>>>>>> v4.9.227
 	unsigned int count;
 	u8 tmp[1];
 	int ret;
@@ -676,7 +680,10 @@ static struct platform_driver applesmc_driver = {
 	.probe = applesmc_probe,
 	.driver	= {
 		.name = "applesmc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &applesmc_pm_ops,
 	},
 };
@@ -1139,7 +1146,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 /* Create accelerometer ressources */
+=======
+/* Create accelerometer resources */
+>>>>>>> v4.9.227
 static int applesmc_create_accelerometer(void)
 {
 	struct input_dev *idev;
@@ -1192,7 +1203,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 /* Release all ressources used by the accelerometer */
+=======
+/* Release all resources used by the accelerometer */
+>>>>>>> v4.9.227
 static void applesmc_release_accelerometer(void)
 {
 	if (!smcreg.has_accelerometer)

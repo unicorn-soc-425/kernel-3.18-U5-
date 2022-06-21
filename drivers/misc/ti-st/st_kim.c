@@ -37,7 +37,10 @@
 #include <linux/ti_wilink_st.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #define MAX_ST_DEVICES	3	/* Imagine 1 on each UART for now */
 static struct platform_device *st_kim_devices[MAX_ST_DEVICES];
 
@@ -79,7 +82,10 @@ static void validate_firmware_response(struct kim_data_s *kim_gdata)
 		memcpy(kim_gdata->resp_buffer,
 				kim_gdata->rx_skb->data,
 				kim_gdata->rx_skb->len);
+<<<<<<< HEAD
 		complete_all(&kim_gdata->kim_rcvd);
+=======
+>>>>>>> v4.9.227
 		kim_gdata->rx_state = ST_W4_PACKET_TYPE;
 		kim_gdata->rx_skb = NULL;
 		kim_gdata->rx_count = 0;
@@ -215,6 +221,10 @@ static long read_local_version(struct kim_data_s *kim_gdata, char *bts_scr_name)
 {
 	unsigned short version = 0, chip = 0, min_ver = 0, maj_ver = 0;
 	const char read_ver_cmd[] = { 0x01, 0x01, 0x10, 0x00 };
+<<<<<<< HEAD
+=======
+	long timeout;
+>>>>>>> v4.9.227
 
 	pr_debug("%s", __func__);
 
@@ -224,10 +234,18 @@ static long read_local_version(struct kim_data_s *kim_gdata, char *bts_scr_name)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	if (!wait_for_completion_interruptible_timeout(
 		&kim_gdata->kim_rcvd, msecs_to_jiffies(CMD_RESP_TIME))) {
 		pr_err(" waiting for ver info- timed out ");
 		return -ETIMEDOUT;
+=======
+	timeout = wait_for_completion_interruptible_timeout(
+		&kim_gdata->kim_rcvd, msecs_to_jiffies(CMD_RESP_TIME));
+	if (timeout <= 0) {
+		pr_err(" waiting for ver info- timed out or received signal");
+		return timeout ? -ERESTARTSYS : -ETIMEDOUT;
+>>>>>>> v4.9.227
 	}
 	reinit_completion(&kim_gdata->kim_rcvd);
 	/* the positions 12 & 13 in the response buffer provide with the
@@ -391,6 +409,7 @@ static long download_firmware(struct kim_data_s *kim_gdata)
 			break;
 		case ACTION_WAIT_EVENT:  /* wait */
 			pr_debug("W");
+<<<<<<< HEAD
 			if (!wait_for_completion_interruptible_timeout(
 					&kim_gdata->kim_rcvd,
 					msecs_to_jiffies(CMD_RESP_TIME))) {
@@ -398,6 +417,16 @@ static long download_firmware(struct kim_data_s *kim_gdata)
 				/* timed out */
 				release_firmware(kim_gdata->fw_entry);
 				return -ETIMEDOUT;
+=======
+			err = wait_for_completion_interruptible_timeout(
+					&kim_gdata->kim_rcvd,
+					msecs_to_jiffies(CMD_RESP_TIME));
+			if (err <= 0) {
+				pr_err("response timeout/signaled during fw download ");
+				/* timed out */
+				release_firmware(kim_gdata->fw_entry);
+				return err ? -ERESTARTSYS : -ETIMEDOUT;
+>>>>>>> v4.9.227
 			}
 			reinit_completion(&kim_gdata->kim_rcvd);
 			break;
@@ -470,9 +499,15 @@ long st_kim_start(void *kim_data)
 			pdata->chip_enable(kim_gdata);
 
 		/* Configure BT nShutdown to HIGH state */
+<<<<<<< HEAD
 		gpio_set_value(kim_gdata->nshutdown, GPIO_LOW);
 		mdelay(5);	/* FIXME: a proper toggle */
 		gpio_set_value(kim_gdata->nshutdown, GPIO_HIGH);
+=======
+		gpio_set_value_cansleep(kim_gdata->nshutdown, GPIO_LOW);
+		mdelay(5);	/* FIXME: a proper toggle */
+		gpio_set_value_cansleep(kim_gdata->nshutdown, GPIO_HIGH);
+>>>>>>> v4.9.227
 		mdelay(100);
 		/* re-initialize the completion */
 		reinit_completion(&kim_gdata->ldisc_installed);
@@ -548,11 +583,19 @@ long st_kim_stop(void *kim_data)
 	}
 
 	/* By default configure BT nShutdown to LOW state */
+<<<<<<< HEAD
 	gpio_set_value(kim_gdata->nshutdown, GPIO_LOW);
 	mdelay(1);
 	gpio_set_value(kim_gdata->nshutdown, GPIO_HIGH);
 	mdelay(1);
 	gpio_set_value(kim_gdata->nshutdown, GPIO_LOW);
+=======
+	gpio_set_value_cansleep(kim_gdata->nshutdown, GPIO_LOW);
+	mdelay(1);
+	gpio_set_value_cansleep(kim_gdata->nshutdown, GPIO_HIGH);
+	mdelay(1);
+	gpio_set_value_cansleep(kim_gdata->nshutdown, GPIO_LOW);
+>>>>>>> v4.9.227
 
 	/* platform specific disable */
 	if (pdata->chip_disable)
@@ -620,7 +663,11 @@ static ssize_t show_baud_rate(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct kim_data_s *kim_data = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	return sprintf(buf, "%ld\n", kim_data->baud_rate);
+=======
+	return sprintf(buf, "%d\n", kim_data->baud_rate);
+>>>>>>> v4.9.227
 }
 
 static ssize_t show_flow_cntrl(struct device *dev,
@@ -676,12 +723,25 @@ void st_kim_ref(struct st_data_s **core_data, int id)
 	struct kim_data_s	*kim_gdata;
 	/* get kim_gdata reference from platform device */
 	pdev = st_get_plat_device(id);
+<<<<<<< HEAD
 	if (!pdev) {
 		*core_data = NULL;
 		return;
 	}
 	kim_gdata = platform_get_drvdata(pdev);
 	*core_data = kim_gdata->core_data;
+=======
+	if (!pdev)
+		goto err;
+	kim_gdata = platform_get_drvdata(pdev);
+	if (!kim_gdata)
+		goto err;
+
+	*core_data = kim_gdata->core_data;
+	return;
+err:
+	*core_data = NULL;
+>>>>>>> v4.9.227
 }
 
 static int kim_version_open(struct inode *i, struct file *f)
@@ -750,15 +810,25 @@ static int kim_probe(struct platform_device *pdev)
 	kim_gdata->nshutdown = pdata->nshutdown_gpio;
 	err = gpio_request(kim_gdata->nshutdown, "kim");
 	if (unlikely(err)) {
+<<<<<<< HEAD
 		pr_err(" gpio %ld request failed ", kim_gdata->nshutdown);
 		return err;
+=======
+		pr_err(" gpio %d request failed ", kim_gdata->nshutdown);
+		goto err_sysfs_group;
+>>>>>>> v4.9.227
 	}
 
 	/* Configure nShutdown GPIO as output=0 */
 	err = gpio_direction_output(kim_gdata->nshutdown, 0);
 	if (unlikely(err)) {
+<<<<<<< HEAD
 		pr_err(" unable to configure gpio %ld", kim_gdata->nshutdown);
 		return err;
+=======
+		pr_err(" unable to configure gpio %d", kim_gdata->nshutdown);
+		goto err_sysfs_group;
+>>>>>>> v4.9.227
 	}
 	/* get reference of pdev for request_firmware
 	 */
@@ -781,8 +851,12 @@ static int kim_probe(struct platform_device *pdev)
 	kim_debugfs_dir = debugfs_create_dir("ti-st", NULL);
 	if (!kim_debugfs_dir) {
 		pr_err(" debugfs entries creation failed ");
+<<<<<<< HEAD
 		err = -EIO;
 		goto err_debugfs_dir;
+=======
+		return 0;
+>>>>>>> v4.9.227
 	}
 
 	debugfs_create_file("version", S_IRUGO, kim_debugfs_dir,
@@ -791,9 +865,12 @@ static int kim_probe(struct platform_device *pdev)
 				kim_gdata, &list_debugfs_fops);
 	return 0;
 
+<<<<<<< HEAD
 err_debugfs_dir:
 	sysfs_remove_group(&pdev->dev.kobj, &uim_attr_grp);
 
+=======
+>>>>>>> v4.9.227
 err_sysfs_group:
 	st_core_exit(kim_gdata->core_data);
 
@@ -836,7 +913,11 @@ static int kim_suspend(struct platform_device *pdev, pm_message_t state)
 	if (pdata->suspend)
 		return pdata->suspend(pdev, state);
 
+<<<<<<< HEAD
 	return -EOPNOTSUPP;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int kim_resume(struct platform_device *pdev)
@@ -846,7 +927,11 @@ static int kim_resume(struct platform_device *pdev)
 	if (pdata->resume)
 		return pdata->resume(pdev);
 
+<<<<<<< HEAD
 	return -EOPNOTSUPP;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /**********************************************************************/
@@ -858,7 +943,10 @@ static struct platform_driver kim_platform_driver = {
 	.resume = kim_resume,
 	.driver = {
 		.name = "kim",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

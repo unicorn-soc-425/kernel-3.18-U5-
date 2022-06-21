@@ -19,7 +19,11 @@
 #include <asm/mach/arch.h>
 
 #include <mach/common.h>
+<<<<<<< HEAD
 #include <mach/cp_intc.h>
+=======
+#include "cp_intc.h"
+>>>>>>> v4.9.227
 #include <mach/da8xx.h>
 #include <mach/mux.h>
 

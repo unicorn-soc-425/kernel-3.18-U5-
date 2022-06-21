@@ -11,10 +11,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/kernel.h>
@@ -36,6 +39,7 @@
 #include <crypto/algapi.h>
 #include <crypto/des.h>
 
+<<<<<<< HEAD
 #include <asm/kmap_types.h>
 
 //#define HIFN_DEBUG
@@ -46,6 +50,8 @@
 #define dprintk(f, a...)	do {} while (0)
 #endif
 
+=======
+>>>>>>> v4.9.227
 static char hifn_pll_ref[sizeof("extNNN")] = "ext";
 module_param_string(hifn_pll_ref, hifn_pll_ref, sizeof(hifn_pll_ref), 0444);
 MODULE_PARM_DESC(hifn_pll_ref,
@@ -81,12 +87,21 @@ static atomic_t hifn_dev_number;
 
 /* DMA registres */
 
+<<<<<<< HEAD
 #define HIFN_DMA_CRA 			0x0C	/* DMA Command Ring Address */
 #define HIFN_DMA_SDRA 			0x1C	/* DMA Source Data Ring Address */
 #define HIFN_DMA_RRA			0x2C	/* DMA Result Ring Address */
 #define HIFN_DMA_DDRA			0x3C	/* DMA Destination Data Ring Address */
 #define HIFN_DMA_STCTL			0x40	/* DMA Status and Control */
 #define HIFN_DMA_INTREN 		0x44	/* DMA Interrupt Enable */
+=======
+#define HIFN_DMA_CRA			0x0C	/* DMA Command Ring Address */
+#define HIFN_DMA_SDRA			0x1C	/* DMA Source Data Ring Address */
+#define HIFN_DMA_RRA			0x2C	/* DMA Result Ring Address */
+#define HIFN_DMA_DDRA			0x3C	/* DMA Destination Data Ring Address */
+#define HIFN_DMA_STCTL			0x40	/* DMA Status and Control */
+#define HIFN_DMA_INTREN			0x44	/* DMA Interrupt Enable */
+>>>>>>> v4.9.227
 #define HIFN_DMA_CFG1			0x48	/* DMA Configuration #1 */
 #define HIFN_DMA_CFG2			0x6C	/* DMA Configuration #2 */
 #define HIFN_CHIP_ID			0x98	/* Chip ID */
@@ -360,10 +375,17 @@ static atomic_t hifn_dev_number;
 #define HIFN_NAMESIZE			32
 #define HIFN_MAX_RESULT_ORDER		5
 
+<<<<<<< HEAD
 #define	HIFN_D_CMD_RSIZE		24*1
 #define	HIFN_D_SRC_RSIZE		80*1
 #define	HIFN_D_DST_RSIZE		80*1
 #define	HIFN_D_RES_RSIZE		24*1
+=======
+#define	HIFN_D_CMD_RSIZE		(24 * 1)
+#define	HIFN_D_SRC_RSIZE		(80 * 1)
+#define	HIFN_D_DST_RSIZE		(80 * 1)
+#define	HIFN_D_RES_RSIZE		(24 * 1)
+>>>>>>> v4.9.227
 
 #define HIFN_D_DST_DALIGN		4
 
@@ -388,17 +410,28 @@ static atomic_t hifn_dev_number;
 #define	HIFN_MAX_RESULT			(8 + 4 + 4 + 20 + 4)
 #define HIFN_USED_RESULT		12
 
+<<<<<<< HEAD
 struct hifn_desc
 {
+=======
+struct hifn_desc {
+>>>>>>> v4.9.227
 	volatile __le32		l;
 	volatile __le32		p;
 };
 
 struct hifn_dma {
+<<<<<<< HEAD
 	struct hifn_desc	cmdr[HIFN_D_CMD_RSIZE+1];
 	struct hifn_desc	srcr[HIFN_D_SRC_RSIZE+1];
 	struct hifn_desc	dstr[HIFN_D_DST_RSIZE+1];
 	struct hifn_desc	resr[HIFN_D_RES_RSIZE+1];
+=======
+	struct hifn_desc	cmdr[HIFN_D_CMD_RSIZE + 1];
+	struct hifn_desc	srcr[HIFN_D_SRC_RSIZE + 1];
+	struct hifn_desc	dstr[HIFN_D_DST_RSIZE + 1];
+	struct hifn_desc	resr[HIFN_D_RES_RSIZE + 1];
+>>>>>>> v4.9.227
 
 	u8			command_bufs[HIFN_D_CMD_RSIZE][HIFN_MAX_COMMAND];
 	u8			result_bufs[HIFN_D_CMD_RSIZE][HIFN_MAX_RESULT];
@@ -412,6 +445,7 @@ struct hifn_dma {
 	int			cmdk, srck, dstk, resk;
 };
 
+<<<<<<< HEAD
 #define HIFN_FLAG_CMD_BUSY	(1<<0)
 #define HIFN_FLAG_SRC_BUSY	(1<<1)
 #define HIFN_FLAG_DST_BUSY	(1<<2)
@@ -422,6 +456,17 @@ struct hifn_dma {
 
 struct hifn_device
 {
+=======
+#define HIFN_FLAG_CMD_BUSY	(1 << 0)
+#define HIFN_FLAG_SRC_BUSY	(1 << 1)
+#define HIFN_FLAG_DST_BUSY	(1 << 2)
+#define HIFN_FLAG_RES_BUSY	(1 << 3)
+#define HIFN_FLAG_OLD_KEY	(1 << 4)
+
+#define HIFN_DEFAULT_ACTIVE_NUM	5
+
+struct hifn_device {
+>>>>>>> v4.9.227
 	char			name[HIFN_NAMESIZE];
 
 	int			irq;
@@ -434,7 +479,11 @@ struct hifn_device
 
 	u32			dmareg;
 
+<<<<<<< HEAD
 	void 			*sa[HIFN_D_RES_RSIZE];
+=======
+	void			*sa[HIFN_D_RES_RSIZE];
+>>>>>>> v4.9.227
 
 	spinlock_t		lock;
 
@@ -449,7 +498,11 @@ struct hifn_device
 
 	struct tasklet_struct	tasklet;
 
+<<<<<<< HEAD
 	struct crypto_queue 	queue;
+=======
+	struct crypto_queue	queue;
+>>>>>>> v4.9.227
 	struct list_head	alg_list;
 
 	unsigned int		pk_clk_freq;
@@ -470,8 +523,12 @@ struct hifn_device
 #define	HIFN_D_JUMP			0x40000000
 #define	HIFN_D_VALID			0x80000000
 
+<<<<<<< HEAD
 struct hifn_base_command
 {
+=======
+struct hifn_base_command {
+>>>>>>> v4.9.227
 	volatile __le16		masks;
 	volatile __le16		session_num;
 	volatile __le16		total_source_count;
@@ -493,12 +550,20 @@ struct hifn_base_command
 /*
  * Structure to help build up the command data structure.
  */
+<<<<<<< HEAD
 struct hifn_crypt_command
 {
 	volatile __le16 		masks;
 	volatile __le16 		header_skip;
 	volatile __le16 		source_count;
 	volatile __le16 		reserved;
+=======
+struct hifn_crypt_command {
+	volatile __le16		masks;
+	volatile __le16		header_skip;
+	volatile __le16		source_count;
+	volatile __le16		reserved;
+>>>>>>> v4.9.227
 };
 
 #define	HIFN_CRYPT_CMD_ALG_MASK		0x0003		/* algorithm: */
@@ -524,12 +589,20 @@ struct hifn_crypt_command
 /*
  * Structure to help build up the command data structure.
  */
+<<<<<<< HEAD
 struct hifn_mac_command
 {
 	volatile __le16 	masks;
 	volatile __le16 	header_skip;
 	volatile __le16 	source_count;
 	volatile __le16 	reserved;
+=======
+struct hifn_mac_command {
+	volatile __le16	masks;
+	volatile __le16	header_skip;
+	volatile __le16	source_count;
+	volatile __le16	reserved;
+>>>>>>> v4.9.227
 };
 
 #define	HIFN_MAC_CMD_ALG_MASK		0x0001
@@ -553,12 +626,20 @@ struct hifn_mac_command
 #define	HIFN_MAC_CMD_POS_IPSEC		0x0200
 #define	HIFN_MAC_CMD_NEW_KEY		0x0800
 
+<<<<<<< HEAD
 struct hifn_comp_command
 {
 	volatile __le16 	masks;
 	volatile __le16 	header_skip;
 	volatile __le16 	source_count;
 	volatile __le16 	reserved;
+=======
+struct hifn_comp_command {
+	volatile __le16		masks;
+	volatile __le16		header_skip;
+	volatile __le16		source_count;
+	volatile __le16		reserved;
+>>>>>>> v4.9.227
 };
 
 #define	HIFN_COMP_CMD_SRCLEN_M		0xc000
@@ -572,12 +653,20 @@ struct hifn_comp_command
 #define	HIFN_COMP_CMD_ALG_MPPC		0x0001	/*   MPPC */
 #define	HIFN_COMP_CMD_ALG_LZS		0x0000	/*   LZS */
 
+<<<<<<< HEAD
 struct hifn_base_result
 {
 	volatile __le16 	flags;
 	volatile __le16 	session;
 	volatile __le16 	src_cnt;		/* 15:0 of source count */
 	volatile __le16 	dst_cnt;		/* 15:0 of dest count */
+=======
+struct hifn_base_result {
+	volatile __le16		flags;
+	volatile __le16		session;
+	volatile __le16		src_cnt;		/* 15:0 of source count */
+	volatile __le16		dst_cnt;		/* 15:0 of dest count */
+>>>>>>> v4.9.227
 };
 
 #define	HIFN_BASE_RES_DSTOVERRUN	0x0200	/* destination overrun */
@@ -586,8 +675,12 @@ struct hifn_base_result
 #define	HIFN_BASE_RES_DSTLEN_M		0x3000	/* 17:16 of dest count */
 #define	HIFN_BASE_RES_DSTLEN_S		12
 
+<<<<<<< HEAD
 struct hifn_comp_result
 {
+=======
+struct hifn_comp_result {
+>>>>>>> v4.9.227
 	volatile __le16		flags;
 	volatile __le16		crc;
 };
@@ -598,18 +691,28 @@ struct hifn_comp_result
 #define	HIFN_COMP_RES_ENDMARKER		0x0002	/* LZS: end marker seen */
 #define	HIFN_COMP_RES_SRC_NOTZERO	0x0001	/* source expired */
 
+<<<<<<< HEAD
 struct hifn_mac_result
 {
 	volatile __le16 	flags;
 	volatile __le16 	reserved;
+=======
+struct hifn_mac_result {
+	volatile __le16		flags;
+	volatile __le16		reserved;
+>>>>>>> v4.9.227
 	/* followed by 0, 6, 8, or 10 u16's of the MAC, then crypt */
 };
 
 #define	HIFN_MAC_RES_MISCOMPARE		0x0002	/* compare failed */
 #define	HIFN_MAC_RES_SRC_NOTZERO	0x0001	/* source expired */
 
+<<<<<<< HEAD
 struct hifn_crypt_result
 {
+=======
+struct hifn_crypt_result {
+>>>>>>> v4.9.227
 	volatile __le16		flags;
 	volatile __le16		reserved;
 };
@@ -624,11 +727,18 @@ struct hifn_crypt_result
 #define	HIFN_POLL_SCALAR	0x0
 #endif
 
+<<<<<<< HEAD
 #define	HIFN_MAX_SEGLEN 	0xffff		/* maximum dma segment len */
 #define	HIFN_MAX_DMALEN		0x3ffff		/* maximum dma length */
 
 struct hifn_crypto_alg
 {
+=======
+#define	HIFN_MAX_SEGLEN		0xffff		/* maximum dma segment len */
+#define	HIFN_MAX_DMALEN		0x3ffff		/* maximum dma length */
+
+struct hifn_crypto_alg {
+>>>>>>> v4.9.227
 	struct list_head	entry;
 	struct crypto_alg	alg;
 	struct hifn_device	*dev;
@@ -636,24 +746,38 @@ struct hifn_crypto_alg
 
 #define ASYNC_SCATTERLIST_CACHE	16
 
+<<<<<<< HEAD
 #define ASYNC_FLAGS_MISALIGNED	(1<<0)
 
 struct hifn_cipher_walk
 {
+=======
+#define ASYNC_FLAGS_MISALIGNED	(1 << 0)
+
+struct hifn_cipher_walk {
+>>>>>>> v4.9.227
 	struct scatterlist	cache[ASYNC_SCATTERLIST_CACHE];
 	u32			flags;
 	int			num;
 };
 
+<<<<<<< HEAD
 struct hifn_context
 {
+=======
+struct hifn_context {
+>>>>>>> v4.9.227
 	u8			key[HIFN_MAX_CRYPT_KEY_LENGTH];
 	struct hifn_device	*dev;
 	unsigned int		keysize;
 };
 
+<<<<<<< HEAD
 struct hifn_request_context
 {
+=======
+struct hifn_request_context {
+>>>>>>> v4.9.227
 	u8			*iv;
 	unsigned int		ivsize;
 	u8			op, type, mode, unused;
@@ -664,20 +788,28 @@ struct hifn_request_context
 
 static inline u32 hifn_read_0(struct hifn_device *dev, u32 reg)
 {
+<<<<<<< HEAD
 	u32 ret;
 
 	ret = readl(dev->bar[0] + reg);
 
 	return ret;
+=======
+	return readl(dev->bar[0] + reg);
+>>>>>>> v4.9.227
 }
 
 static inline u32 hifn_read_1(struct hifn_device *dev, u32 reg)
 {
+<<<<<<< HEAD
 	u32 ret;
 
 	ret = readl(dev->bar[1] + reg);
 
 	return ret;
+=======
+	return readl(dev->bar[1] + reg);
+>>>>>>> v4.9.227
 }
 
 static inline void hifn_write_0(struct hifn_device *dev, u32 reg, u32 val)
@@ -695,7 +827,11 @@ static void hifn_wait_puc(struct hifn_device *dev)
 	int i;
 	u32 ret;
 
+<<<<<<< HEAD
 	for (i=10000; i > 0; --i) {
+=======
+	for (i = 10000; i > 0; --i) {
+>>>>>>> v4.9.227
 		ret = hifn_read_0(dev, HIFN_0_PUCTRL);
 		if (!(ret & HIFN_PUCTRL_RESET))
 			break;
@@ -704,7 +840,11 @@ static void hifn_wait_puc(struct hifn_device *dev)
 	}
 
 	if (!i)
+<<<<<<< HEAD
 		dprintk("%s: Failed to reset PUC unit.\n", dev->name);
+=======
+		dev_err(&dev->pdev->dev, "Failed to reset PUC unit.\n");
+>>>>>>> v4.9.227
 }
 
 static void hifn_reset_puc(struct hifn_device *dev)
@@ -751,13 +891,20 @@ static void hifn_reset_dma(struct hifn_device *dev, int full)
 	hifn_reset_puc(dev);
 }
 
+<<<<<<< HEAD
 static u32 hifn_next_signature(u_int32_t a, u_int cnt)
+=======
+static u32 hifn_next_signature(u32 a, u_int cnt)
+>>>>>>> v4.9.227
 {
 	int i;
 	u32 v;
 
 	for (i = 0; i < cnt; i++) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 		/* get the parity */
 		v = a & 0x80080125;
 		v ^= v >> 16;
@@ -848,21 +995,32 @@ static int hifn_init_pubrng(struct hifn_device *dev)
 	hifn_write_1(dev, HIFN_1_PUB_RESET, hifn_read_1(dev, HIFN_1_PUB_RESET) |
 			HIFN_PUBRST_RESET);
 
+<<<<<<< HEAD
 	for (i=100; i > 0; --i) {
+=======
+	for (i = 100; i > 0; --i) {
+>>>>>>> v4.9.227
 		mdelay(1);
 
 		if ((hifn_read_1(dev, HIFN_1_PUB_RESET) & HIFN_PUBRST_RESET) == 0)
 			break;
 	}
 
+<<<<<<< HEAD
 	if (!i)
 		dprintk("Chip %s: Failed to initialise public key engine.\n",
 				dev->name);
 	else {
+=======
+	if (!i) {
+		dev_err(&dev->pdev->dev, "Failed to initialise public key engine.\n");
+	} else {
+>>>>>>> v4.9.227
 		hifn_write_1(dev, HIFN_1_PUB_IEN, HIFN_PUBIEN_DONE);
 		dev->dmareg |= HIFN_DMAIER_PUBDONE;
 		hifn_write_1(dev, HIFN_1_DMA_IER, dev->dmareg);
 
+<<<<<<< HEAD
 		dprintk("Chip %s: Public key engine has been successfully "
 				"initialised.\n", dev->name);
 	}
@@ -875,6 +1033,16 @@ static int hifn_init_pubrng(struct hifn_device *dev)
 			hifn_read_1(dev, HIFN_1_RNG_CONFIG) | HIFN_RNGCFG_ENA);
 	dprintk("Chip %s: RNG engine has been successfully initialised.\n",
 			dev->name);
+=======
+		dev_dbg(&dev->pdev->dev, "Public key engine has been successfully initialised.\n");
+	}
+
+	/* Enable RNG engine. */
+
+	hifn_write_1(dev, HIFN_1_RNG_CONFIG,
+			hifn_read_1(dev, HIFN_1_RNG_CONFIG) | HIFN_RNGCFG_ENA);
+	dev_dbg(&dev->pdev->dev, "RNG engine has been successfully initialised.\n");
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_CRYPTO_DEV_HIFN_795X_RNG
 	/* First value must be discarded */
@@ -898,8 +1066,13 @@ static int hifn_enable_crypto(struct hifn_device *dev)
 		}
 	}
 
+<<<<<<< HEAD
 	if (offtbl == NULL) {
 		dprintk("Chip %s: Unknown card!\n", dev->name);
+=======
+	if (!offtbl) {
+		dev_err(&dev->pdev->dev, "Unknown card!\n");
+>>>>>>> v4.9.227
 		return -ENODEV;
 	}
 
@@ -914,7 +1087,11 @@ static int hifn_enable_crypto(struct hifn_device *dev)
 	hifn_write_1(dev, HIFN_1_UNLOCK_SECRET2, 0);
 	mdelay(1);
 
+<<<<<<< HEAD
 	for (i=0; i<12; ++i) {
+=======
+	for (i = 0; i < 12; ++i) {
+>>>>>>> v4.9.227
 		addr = hifn_next_signature(addr, offtbl[i] + 0x101);
 		hifn_write_1(dev, HIFN_1_UNLOCK_SECRET2, addr);
 
@@ -922,7 +1099,11 @@ static int hifn_enable_crypto(struct hifn_device *dev)
 	}
 	hifn_write_1(dev, HIFN_1_DMA_CNFG, dmacfg);
 
+<<<<<<< HEAD
 	dprintk("Chip %s: %s.\n", dev->name, pci_name(dev->pdev));
+=======
+	dev_dbg(&dev->pdev->dev, "%s %s.\n", dev->name, pci_name(dev->pdev));
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -933,6 +1114,7 @@ static void hifn_init_dma(struct hifn_device *dev)
 	u32 dptr = dev->desc_dma;
 	int i;
 
+<<<<<<< HEAD
 	for (i=0; i<HIFN_D_CMD_RSIZE; ++i)
 		dma->cmdr[i].p = __cpu_to_le32(dptr +
 				offsetof(struct hifn_dma, command_bufs[i][0]));
@@ -943,6 +1125,16 @@ static void hifn_init_dma(struct hifn_device *dev)
 	/*
 	 * Setup LAST descriptors.
 	 */
+=======
+	for (i = 0; i < HIFN_D_CMD_RSIZE; ++i)
+		dma->cmdr[i].p = __cpu_to_le32(dptr +
+				offsetof(struct hifn_dma, command_bufs[i][0]));
+	for (i = 0; i < HIFN_D_RES_RSIZE; ++i)
+		dma->resr[i].p = __cpu_to_le32(dptr +
+				offsetof(struct hifn_dma, result_bufs[i][0]));
+
+	/* Setup LAST descriptors. */
+>>>>>>> v4.9.227
 	dma->cmdr[HIFN_D_CMD_RSIZE].p = __cpu_to_le32(dptr +
 			offsetof(struct hifn_dma, cmdr[0]));
 	dma->srcr[HIFN_D_SRC_RSIZE].p = __cpu_to_le32(dptr +
@@ -962,7 +1154,11 @@ static void hifn_init_dma(struct hifn_device *dev)
  * to calculate the optimal multiplier. For PCI we assume 66MHz, since that
  * allows us to operate without the risk of overclocking the chip. If it
  * actually uses 33MHz, the chip will operate at half the speed, this can be
+<<<<<<< HEAD
  * overriden by specifying the frequency as module parameter (pci33).
+=======
+ * overridden by specifying the frequency as module parameter (pci33).
+>>>>>>> v4.9.227
  *
  * Unfortunately the PCI clock is not very suitable since the HIFN needs a
  * stable clock and the PCI clock frequency may vary, so the default is the
@@ -986,9 +1182,14 @@ static void hifn_init_pll(struct hifn_device *dev)
 		freq = simple_strtoul(hifn_pll_ref + 3, NULL, 10);
 	else {
 		freq = 66;
+<<<<<<< HEAD
 		printk(KERN_INFO "hifn795x: assuming %uMHz clock speed, "
 				 "override with hifn_pll_ref=%.3s<frequency>\n",
 		       freq, hifn_pll_ref);
+=======
+		dev_info(&dev->pdev->dev, "assuming %uMHz clock speed, override with hifn_pll_ref=%.3s<frequency>\n",
+			 freq, hifn_pll_ref);
+>>>>>>> v4.9.227
 	}
 
 	m = HIFN_PLL_FCK_MAX / freq;
@@ -1176,6 +1377,7 @@ static int hifn_setup_cmd_desc(struct hifn_device *dev,
 
 	mask = 0;
 	switch (rctx->op) {
+<<<<<<< HEAD
 		case ACRYPTO_OP_DECRYPT:
 			mask = HIFN_BASE_CMD_CRYPT | HIFN_BASE_CMD_DECODE;
 			break;
@@ -1187,6 +1389,19 @@ static int hifn_setup_cmd_desc(struct hifn_device *dev,
 			break;
 		default:
 			goto err_out;
+=======
+	case ACRYPTO_OP_DECRYPT:
+		mask = HIFN_BASE_CMD_CRYPT | HIFN_BASE_CMD_DECODE;
+		break;
+	case ACRYPTO_OP_ENCRYPT:
+		mask = HIFN_BASE_CMD_CRYPT;
+		break;
+	case ACRYPTO_OP_HMAC:
+		mask = HIFN_BASE_CMD_MAC;
+		break;
+	default:
+		goto err_out;
+>>>>>>> v4.9.227
 	}
 
 	buf_pos += hifn_setup_base_command(dev, buf_pos, nbytes,
@@ -1201,6 +1416,7 @@ static int hifn_setup_cmd_desc(struct hifn_device *dev,
 			md |= HIFN_CRYPT_CMD_NEW_IV;
 
 		switch (rctx->mode) {
+<<<<<<< HEAD
 			case ACRYPTO_MODE_ECB:
 				md |= HIFN_CRYPT_CMD_MODE_ECB;
 				break;
@@ -1248,6 +1464,55 @@ static int hifn_setup_cmd_desc(struct hifn_device *dev,
 				break;
 			default:
 				goto err_out;
+=======
+		case ACRYPTO_MODE_ECB:
+			md |= HIFN_CRYPT_CMD_MODE_ECB;
+			break;
+		case ACRYPTO_MODE_CBC:
+			md |= HIFN_CRYPT_CMD_MODE_CBC;
+			break;
+		case ACRYPTO_MODE_CFB:
+			md |= HIFN_CRYPT_CMD_MODE_CFB;
+			break;
+		case ACRYPTO_MODE_OFB:
+			md |= HIFN_CRYPT_CMD_MODE_OFB;
+			break;
+		default:
+			goto err_out;
+		}
+
+		switch (rctx->type) {
+		case ACRYPTO_TYPE_AES_128:
+			if (ctx->keysize != 16)
+				goto err_out;
+			md |= HIFN_CRYPT_CMD_KSZ_128 |
+				HIFN_CRYPT_CMD_ALG_AES;
+			break;
+		case ACRYPTO_TYPE_AES_192:
+			if (ctx->keysize != 24)
+				goto err_out;
+			md |= HIFN_CRYPT_CMD_KSZ_192 |
+				HIFN_CRYPT_CMD_ALG_AES;
+			break;
+		case ACRYPTO_TYPE_AES_256:
+			if (ctx->keysize != 32)
+				goto err_out;
+			md |= HIFN_CRYPT_CMD_KSZ_256 |
+				HIFN_CRYPT_CMD_ALG_AES;
+			break;
+		case ACRYPTO_TYPE_3DES:
+			if (ctx->keysize != 24)
+				goto err_out;
+			md |= HIFN_CRYPT_CMD_ALG_3DES;
+			break;
+		case ACRYPTO_TYPE_DES:
+			if (ctx->keysize != 8)
+				goto err_out;
+			md |= HIFN_CRYPT_CMD_ALG_DES;
+			break;
+		default:
+			goto err_out;
+>>>>>>> v4.9.227
 		}
 
 		buf_pos += hifn_setup_crypto_command(dev, buf_pos,
@@ -1267,8 +1532,14 @@ static int hifn_setup_cmd_desc(struct hifn_device *dev,
 			HIFN_D_VALID | HIFN_D_LAST |
 			HIFN_D_MASKDONEIRQ | HIFN_D_JUMP);
 		dma->cmdi = 0;
+<<<<<<< HEAD
 	} else
 		dma->cmdr[dma->cmdi-1].l |= __cpu_to_le32(HIFN_D_VALID);
+=======
+	} else {
+		dma->cmdr[dma->cmdi - 1].l |= __cpu_to_le32(HIFN_D_VALID);
+	}
+>>>>>>> v4.9.227
 
 	if (!(dev->flags & HIFN_FLAG_CMD_BUSY)) {
 		hifn_write_1(dev, HIFN_1_DMA_CSR, HIFN_DMACSR_C_CTRL_ENA);
@@ -1426,7 +1697,11 @@ static int hifn_cipher_walk_init(struct hifn_cipher_walk *w,
 	sg_init_table(w->cache, num);
 
 	w->num = 0;
+<<<<<<< HEAD
 	for (i=0; i<num; ++i) {
+=======
+	for (i = 0; i < num; ++i) {
+>>>>>>> v4.9.227
 		struct page *page = alloc_page(gfp_flags);
 		struct scatterlist *s;
 
@@ -1446,7 +1721,11 @@ static void hifn_cipher_walk_exit(struct hifn_cipher_walk *w)
 {
 	int i;
 
+<<<<<<< HEAD
 	for (i=0; i<w->num; ++i) {
+=======
+	for (i = 0; i < w->num; ++i) {
+>>>>>>> v4.9.227
 		struct scatterlist *s = &w->cache[i];
 
 		__free_page(sg_page(s));
@@ -1473,8 +1752,13 @@ static int ablkcipher_add(unsigned int *drestp, struct scatterlist *dst,
 		drest -= copy;
 		nbytes -= copy;
 
+<<<<<<< HEAD
 		dprintk("%s: copy: %u, size: %u, drest: %u, nbytes: %u.\n",
 				__func__, copy, size, drest, nbytes);
+=======
+		pr_debug("%s: copy: %u, size: %u, drest: %u, nbytes: %u.\n",
+			 __func__, copy, size, drest, nbytes);
+>>>>>>> v4.9.227
 
 		dst++;
 		idx++;
@@ -1501,8 +1785,13 @@ static int hifn_cipher_walk(struct ablkcipher_request *req,
 
 		dst = &req->dst[idx];
 
+<<<<<<< HEAD
 		dprintk("\n%s: dlen: %u, doff: %u, offset: %u, nbytes: %u.\n",
 			__func__, dst->length, dst->offset, offset, nbytes);
+=======
+		pr_debug("\n%s: dlen: %u, doff: %u, offset: %u, nbytes: %u.\n",
+			 __func__, dst->length, dst->offset, offset, nbytes);
+>>>>>>> v4.9.227
 
 		if (!IS_ALIGNED(dst->offset, HIFN_D_DST_DALIGN) ||
 		    !IS_ALIGNED(dst->length, HIFN_D_DST_DALIGN) ||
@@ -1527,10 +1816,17 @@ static int hifn_cipher_walk(struct ablkcipher_request *req,
 				 * to put there additional blocksized chunk,
 				 * so we mark that page as containing only
 				 * blocksize aligned chunks:
+<<<<<<< HEAD
 				 * 	t->length = (slen & ~(HIFN_D_DST_DALIGN - 1));
 				 * and increase number of bytes to be processed
 				 * in next chunk:
 				 * 	nbytes += diff;
+=======
+				 *	t->length = (slen & ~(HIFN_D_DST_DALIGN - 1));
+				 * and increase number of bytes to be processed
+				 * in next chunk:
+				 *	nbytes += diff;
+>>>>>>> v4.9.227
 				 */
 				nbytes += diff;
 
@@ -1538,6 +1834,7 @@ static int hifn_cipher_walk(struct ablkcipher_request *req,
 				 * Temporary of course...
 				 * Kick author if you will catch this one.
 				 */
+<<<<<<< HEAD
 				printk(KERN_ERR "%s: dlen: %u, nbytes: %u,"
 					"slen: %u, offset: %u.\n",
 					__func__, dlen, nbytes, slen, offset);
@@ -1546,6 +1843,15 @@ static int hifn_cipher_walk(struct ablkcipher_request *req,
 					"this path under any condition but who "
 					"knows how did you use crypto code.\n"
 					"Thank you.\n",	__func__);
+=======
+				pr_err("%s: dlen: %u, nbytes: %u, slen: %u, offset: %u.\n",
+				       __func__, dlen, nbytes, slen, offset);
+				pr_err("%s: please contact author to fix this "
+				       "issue, generally you should not catch "
+				       "this path under any condition but who "
+				       "knows how did you use crypto code.\n"
+				       "Thank you.\n",	__func__);
+>>>>>>> v4.9.227
 				BUG();
 			} else {
 				copy += diff + nbytes;
@@ -1632,16 +1938,25 @@ err_out:
 	spin_unlock_irqrestore(&dev->lock, flags);
 err_out_exit:
 	if (err) {
+<<<<<<< HEAD
 		printk("%s: iv: %p [%d], key: %p [%d], mode: %u, op: %u, "
 				"type: %u, err: %d.\n",
 			dev->name, rctx->iv, rctx->ivsize,
 			ctx->key, ctx->keysize,
 			rctx->mode, rctx->op, rctx->type, err);
+=======
+		dev_info(&dev->pdev->dev, "iv: %p [%d], key: %p [%d], mode: %u, op: %u, "
+			 "type: %u, err: %d.\n",
+			 rctx->iv, rctx->ivsize,
+			 ctx->key, ctx->keysize,
+			 rctx->mode, rctx->op, rctx->type, err);
+>>>>>>> v4.9.227
 	}
 
 	return err;
 }
 
+<<<<<<< HEAD
 static int hifn_test(struct hifn_device *dev, int encdec, u8 snum)
 {
 	int n, err;
@@ -1696,6 +2011,8 @@ err_out:
 	return -1;
 }
 
+=======
+>>>>>>> v4.9.227
 static int hifn_start_device(struct hifn_device *dev)
 {
 	int err;
@@ -1741,8 +2058,13 @@ static int ablkcipher_get(void *saddr, unsigned int *srestp, unsigned int offset
 		saddr += copy;
 		offset = 0;
 
+<<<<<<< HEAD
 		dprintk("%s: copy: %u, size: %u, srest: %u, nbytes: %u.\n",
 				__func__, copy, size, srest, nbytes);
+=======
+		pr_debug("%s: copy: %u, size: %u, srest: %u, nbytes: %u.\n",
+			 __func__, copy, size, srest, nbytes);
+>>>>>>> v4.9.227
 
 		dst++;
 		idx++;
@@ -1762,7 +2084,12 @@ static inline void hifn_complete_sa(struct hifn_device *dev, int i)
 	dev->sa[i] = NULL;
 	dev->started--;
 	if (dev->started < 0)
+<<<<<<< HEAD
 		printk("%s: started: %d.\n", __func__, dev->started);
+=======
+		dev_info(&dev->pdev->dev, "%s: started: %d.\n", __func__,
+			 dev->started);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&dev->lock, flags);
 	BUG_ON(dev->started < 0);
 }
@@ -1781,7 +2108,11 @@ static void hifn_process_ready(struct ablkcipher_request *req, int error)
 			t = &rctx->walk.cache[idx];
 			dst = &req->dst[idx];
 
+<<<<<<< HEAD
 			dprintk("\n%s: sg_page(t): %p, t->length: %u, "
+=======
+			pr_debug("\n%s: sg_page(t): %p, t->length: %u, "
+>>>>>>> v4.9.227
 				"sg_page(dst): %p, dst->length: %u, "
 				"nbytes: %u.\n",
 				__func__, sg_page(t), t->length,
@@ -1817,9 +2148,14 @@ static void hifn_clear_rings(struct hifn_device *dev, int error)
 	struct hifn_dma *dma = (struct hifn_dma *)dev->desc_virt;
 	int i, u;
 
+<<<<<<< HEAD
 	dprintk("%s: ring cleanup 1: i: %d.%d.%d.%d, u: %d.%d.%d.%d, "
 			"k: %d.%d.%d.%d.\n",
 			dev->name,
+=======
+	dev_dbg(&dev->pdev->dev, "ring cleanup 1: i: %d.%d.%d.%d, u: %d.%d.%d.%d, "
+			"k: %d.%d.%d.%d.\n",
+>>>>>>> v4.9.227
 			dma->cmdi, dma->srci, dma->dsti, dma->resi,
 			dma->cmdu, dma->srcu, dma->dstu, dma->resu,
 			dma->cmdk, dma->srck, dma->dstk, dma->resk);
@@ -1872,9 +2208,14 @@ static void hifn_clear_rings(struct hifn_device *dev, int error)
 	}
 	dma->dstk = i; dma->dstu = u;
 
+<<<<<<< HEAD
 	dprintk("%s: ring cleanup 2: i: %d.%d.%d.%d, u: %d.%d.%d.%d, "
 			"k: %d.%d.%d.%d.\n",
 			dev->name,
+=======
+	dev_dbg(&dev->pdev->dev, "ring cleanup 2: i: %d.%d.%d.%d, u: %d.%d.%d.%d, "
+			"k: %d.%d.%d.%d.\n",
+>>>>>>> v4.9.227
 			dma->cmdi, dma->srci, dma->dsti, dma->resi,
 			dma->cmdu, dma->srcu, dma->dstu, dma->resu,
 			dma->cmdk, dma->srck, dma->dstk, dma->resk);
@@ -1923,6 +2264,7 @@ static void hifn_work(struct work_struct *work)
 			int i;
 			struct hifn_dma *dma = (struct hifn_dma *)dev->desc_virt;
 
+<<<<<<< HEAD
 			printk("%s: r: %08x, active: %d, started: %d, "
 				"success: %lu: qlen: %u/%u, reset: %d.\n",
 				dev->name, r, dev->active, dev->started,
@@ -1932,12 +2274,28 @@ static void hifn_work(struct work_struct *work)
 			printk("%s: res: ", __func__);
 			for (i=0; i<HIFN_D_RES_RSIZE; ++i) {
 				printk("%x.%p ", dma->resr[i].l, dev->sa[i]);
+=======
+			dev_info(&dev->pdev->dev,
+				 "r: %08x, active: %d, started: %d, "
+				 "success: %lu: qlen: %u/%u, reset: %d.\n",
+				 r, dev->active, dev->started,
+				 dev->success, dev->queue.qlen, dev->queue.max_qlen,
+				 reset);
+
+			dev_info(&dev->pdev->dev, "%s: res: ", __func__);
+			for (i = 0; i < HIFN_D_RES_RSIZE; ++i) {
+				pr_info("%x.%p ", dma->resr[i].l, dev->sa[i]);
+>>>>>>> v4.9.227
 				if (dev->sa[i]) {
 					hifn_process_ready(dev->sa[i], -ENODEV);
 					hifn_complete_sa(dev, i);
 				}
 			}
+<<<<<<< HEAD
 			printk("\n");
+=======
+			pr_info("\n");
+>>>>>>> v4.9.227
 
 			hifn_reset_dma(dev, 1);
 			hifn_stop_device(dev);
@@ -1959,9 +2317,15 @@ static irqreturn_t hifn_interrupt(int irq, void *data)
 
 	dmacsr = hifn_read_1(dev, HIFN_1_DMA_CSR);
 
+<<<<<<< HEAD
 	dprintk("%s: 1 dmacsr: %08x, dmareg: %08x, res: %08x [%d], "
 			"i: %d.%d.%d.%d, u: %d.%d.%d.%d.\n",
 		dev->name, dmacsr, dev->dmareg, dmacsr & dev->dmareg, dma->cmdi,
+=======
+	dev_dbg(&dev->pdev->dev, "1 dmacsr: %08x, dmareg: %08x, res: %08x [%d], "
+			"i: %d.%d.%d.%d, u: %d.%d.%d.%d.\n",
+		dmacsr, dev->dmareg, dmacsr & dev->dmareg, dma->cmdi,
+>>>>>>> v4.9.227
 		dma->cmdi, dma->srci, dma->dsti, dma->resi,
 		dma->cmdu, dma->srcu, dma->dstu, dma->resu);
 
@@ -1980,9 +2344,15 @@ static irqreturn_t hifn_interrupt(int irq, void *data)
 	if (restart) {
 		u32 puisr = hifn_read_0(dev, HIFN_0_PUISR);
 
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: overflow: r: %d, d: %d, puisr: %08x, d: %u.\n",
 			dev->name, !!(dmacsr & HIFN_DMACSR_R_OVER),
 			!!(dmacsr & HIFN_DMACSR_D_OVER),
+=======
+		dev_warn(&dev->pdev->dev, "overflow: r: %d, d: %d, puisr: %08x, d: %u.\n",
+			 !!(dmacsr & HIFN_DMACSR_R_OVER),
+			 !!(dmacsr & HIFN_DMACSR_D_OVER),
+>>>>>>> v4.9.227
 			puisr, !!(puisr & HIFN_PUISR_DSTOVER));
 		if (!!(puisr & HIFN_PUISR_DSTOVER))
 			hifn_write_0(dev, HIFN_0_PUISR, HIFN_PUISR_DSTOVER);
@@ -1993,18 +2363,30 @@ static irqreturn_t hifn_interrupt(int irq, void *data)
 	restart = dmacsr & (HIFN_DMACSR_C_ABORT | HIFN_DMACSR_S_ABORT |
 			HIFN_DMACSR_D_ABORT | HIFN_DMACSR_R_ABORT);
 	if (restart) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: abort: c: %d, s: %d, d: %d, r: %d.\n",
 			dev->name, !!(dmacsr & HIFN_DMACSR_C_ABORT),
 			!!(dmacsr & HIFN_DMACSR_S_ABORT),
 			!!(dmacsr & HIFN_DMACSR_D_ABORT),
 			!!(dmacsr & HIFN_DMACSR_R_ABORT));
+=======
+		dev_warn(&dev->pdev->dev, "abort: c: %d, s: %d, d: %d, r: %d.\n",
+			 !!(dmacsr & HIFN_DMACSR_C_ABORT),
+			 !!(dmacsr & HIFN_DMACSR_S_ABORT),
+			 !!(dmacsr & HIFN_DMACSR_D_ABORT),
+			 !!(dmacsr & HIFN_DMACSR_R_ABORT));
+>>>>>>> v4.9.227
 		hifn_reset_dma(dev, 1);
 		hifn_init_dma(dev);
 		hifn_init_registers(dev);
 	}
 
 	if ((dmacsr & HIFN_DMACSR_C_WAIT) && (dma->cmdu == 0)) {
+<<<<<<< HEAD
 		dprintk("%s: wait on command.\n", dev->name);
+=======
+		dev_dbg(&dev->pdev->dev, "wait on command.\n");
+>>>>>>> v4.9.227
 		dev->dmareg &= ~(HIFN_DMAIER_C_WAIT);
 		hifn_write_1(dev, HIFN_1_DMA_IER, dev->dmareg);
 	}
@@ -2022,19 +2404,31 @@ static void hifn_flush(struct hifn_device *dev)
 	struct hifn_dma *dma = (struct hifn_dma *)dev->desc_virt;
 	int i;
 
+<<<<<<< HEAD
 	for (i=0; i<HIFN_D_RES_RSIZE; ++i) {
+=======
+	for (i = 0; i < HIFN_D_RES_RSIZE; ++i) {
+>>>>>>> v4.9.227
 		struct hifn_desc *d = &dma->resr[i];
 
 		if (dev->sa[i]) {
 			hifn_process_ready(dev->sa[i],
+<<<<<<< HEAD
 				(d->l & __cpu_to_le32(HIFN_D_VALID))?-ENODEV:0);
+=======
+				(d->l & __cpu_to_le32(HIFN_D_VALID)) ? -ENODEV : 0);
+>>>>>>> v4.9.227
 			hifn_complete_sa(dev, i);
 		}
 	}
 
 	spin_lock_irqsave(&dev->lock, flags);
 	while ((async_req = crypto_dequeue_request(&dev->queue))) {
+<<<<<<< HEAD
 		req = container_of(async_req, struct ablkcipher_request, base);
+=======
+		req = ablkcipher_request_cast(async_req);
+>>>>>>> v4.9.227
 		spin_unlock_irqrestore(&dev->lock, flags);
 
 		hifn_process_ready(req, -ENODEV);
@@ -2059,7 +2453,11 @@ static int hifn_setkey(struct crypto_ablkcipher *cipher, const u8 *key,
 	if (len == HIFN_DES_KEY_LENGTH) {
 		u32 tmp[DES_EXPKEY_WORDS];
 		int ret = des_ekey(tmp, key);
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> v4.9.227
 		if (unlikely(ret == 0) && (tfm->crt_flags & CRYPTO_TFM_REQ_WEAK_KEY)) {
 			tfm->crt_flags |= CRYPTO_TFM_RES_WEAK_KEY;
 			return -EINVAL;
@@ -2153,7 +2551,11 @@ static int hifn_process_queue(struct hifn_device *dev)
 		if (backlog)
 			backlog->complete(backlog, -EINPROGRESS);
 
+<<<<<<< HEAD
 		req = container_of(async_req, struct ablkcipher_request, base);
+=======
+		req = ablkcipher_request_cast(async_req);
+>>>>>>> v4.9.227
 
 		err = hifn_handle_req(req);
 		if (err)
@@ -2300,9 +2702,13 @@ static inline int hifn_encrypt_3des_ofb(struct ablkcipher_request *req)
 			ACRYPTO_TYPE_3DES, ACRYPTO_MODE_OFB);
 }
 
+<<<<<<< HEAD
 /*
  * 3DES decryption functions.
  */
+=======
+/* 3DES decryption functions. */
+>>>>>>> v4.9.227
 static inline int hifn_decrypt_3des_ecb(struct ablkcipher_request *req)
 {
 	return hifn_setup_crypto(req, ACRYPTO_OP_DECRYPT,
@@ -2324,8 +2730,12 @@ static inline int hifn_decrypt_3des_ofb(struct ablkcipher_request *req)
 			ACRYPTO_TYPE_3DES, ACRYPTO_MODE_OFB);
 }
 
+<<<<<<< HEAD
 struct hifn_alg_template
 {
+=======
+struct hifn_alg_template {
+>>>>>>> v4.9.227
 	char name[CRYPTO_MAX_ALG_NAME];
 	char drv_name[CRYPTO_MAX_ALG_NAME];
 	unsigned int bsize;
@@ -2485,7 +2895,11 @@ static int hifn_alg_alloc(struct hifn_device *dev, struct hifn_alg_template *t)
 	struct hifn_crypto_alg *alg;
 	int err;
 
+<<<<<<< HEAD
 	alg = kzalloc(sizeof(struct hifn_crypto_alg), GFP_KERNEL);
+=======
+	alg = kzalloc(sizeof(*alg), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!alg)
 		return -ENOMEM;
 
@@ -2532,7 +2946,11 @@ static int hifn_register_alg(struct hifn_device *dev)
 {
 	int i, err;
 
+<<<<<<< HEAD
 	for (i=0; i<ARRAY_SIZE(hifn_alg_templates); ++i) {
+=======
+	for (i = 0; i < ARRAY_SIZE(hifn_alg_templates); ++i) {
+>>>>>>> v4.9.227
 		err = hifn_alg_alloc(dev, &hifn_alg_templates[i]);
 		if (err)
 			goto err_out_exit;
@@ -2577,7 +2995,11 @@ static int hifn_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto err_out_disable_pci_device;
 
 	snprintf(name, sizeof(name), "hifn%d",
+<<<<<<< HEAD
 			atomic_inc_return(&hifn_dev_number)-1);
+=======
+			atomic_inc_return(&hifn_dev_number) - 1);
+>>>>>>> v4.9.227
 
 	err = pci_request_regions(pdev, name);
 	if (err)
@@ -2586,8 +3008,12 @@ static int hifn_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (pci_resource_len(pdev, 0) < HIFN_BAR0_SIZE ||
 	    pci_resource_len(pdev, 1) < HIFN_BAR1_SIZE ||
 	    pci_resource_len(pdev, 2) < HIFN_BAR2_SIZE) {
+<<<<<<< HEAD
 		dprintk("%s: Broken hardware - I/O regions are too small.\n",
 				pci_name(pdev));
+=======
+		dev_err(&pdev->dev, "Broken hardware - I/O regions are too small.\n");
+>>>>>>> v4.9.227
 		err = -ENODEV;
 		goto err_out_free_regions;
 	}
@@ -2604,7 +3030,11 @@ static int hifn_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	snprintf(dev->name, sizeof(dev->name), "%s", name);
 	spin_lock_init(&dev->lock);
 
+<<<<<<< HEAD
 	for (i=0; i<3; ++i) {
+=======
+	for (i = 0; i < 3; ++i) {
+>>>>>>> v4.9.227
 		unsigned long addr, size;
 
 		addr = pci_resource_start(pdev, i);
@@ -2620,7 +3050,11 @@ static int hifn_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	dev->desc_virt = pci_zalloc_consistent(pdev, sizeof(struct hifn_dma),
 					       &dev->desc_dma);
 	if (!dev->desc_virt) {
+<<<<<<< HEAD
 		dprintk("Failed to allocate descriptor rings.\n");
+=======
+		dev_err(&pdev->dev, "Failed to allocate descriptor rings.\n");
+>>>>>>> v4.9.227
 		err = -ENOMEM;
 		goto err_out_unmap_bars;
 	}
@@ -2628,7 +3062,11 @@ static int hifn_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	dev->pdev = pdev;
 	dev->irq = pdev->irq;
 
+<<<<<<< HEAD
 	for (i=0; i<HIFN_D_RES_RSIZE; ++i)
+=======
+	for (i = 0; i < HIFN_D_RES_RSIZE; ++i)
+>>>>>>> v4.9.227
 		dev->sa[i] = NULL;
 
 	pci_set_drvdata(pdev, dev);
@@ -2639,7 +3077,12 @@ static int hifn_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	err = request_irq(dev->irq, hifn_interrupt, IRQF_SHARED, dev->name, dev);
 	if (err) {
+<<<<<<< HEAD
 		dprintk("Failed to request IRQ%d: err: %d.\n", dev->irq, err);
+=======
+		dev_err(&pdev->dev, "Failed to request IRQ%d: err: %d.\n",
+			dev->irq, err);
+>>>>>>> v4.9.227
 		dev->irq = 0;
 		goto err_out_free_desc;
 	}
@@ -2648,10 +3091,13 @@ static int hifn_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (err)
 		goto err_out_free_irq;
 
+<<<<<<< HEAD
 	err = hifn_test(dev, 1, 0);
 	if (err)
 		goto err_out_stop_device;
 
+=======
+>>>>>>> v4.9.227
 	err = hifn_register_rng(dev);
 	if (err)
 		goto err_out_stop_device;
@@ -2663,9 +3109,15 @@ static int hifn_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	INIT_DELAYED_WORK(&dev->work, hifn_work);
 	schedule_delayed_work(&dev->work, HZ);
 
+<<<<<<< HEAD
 	dprintk("HIFN crypto accelerator card at %s has been "
 			"successfully registered as %s.\n",
 			pci_name(pdev), dev->name);
+=======
+	dev_dbg(&pdev->dev, "HIFN crypto accelerator card at %s has been "
+		"successfully registered as %s.\n",
+		pci_name(pdev), dev->name);
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -2682,7 +3134,11 @@ err_out_free_desc:
 			dev->desc_virt, dev->desc_dma);
 
 err_out_unmap_bars:
+<<<<<<< HEAD
 	for (i=0; i<3; ++i)
+=======
+	for (i = 0; i < 3; ++i)
+>>>>>>> v4.9.227
 		if (dev->bar[i])
 			iounmap(dev->bar[i]);
 
@@ -2717,7 +3173,11 @@ static void hifn_remove(struct pci_dev *pdev)
 
 		pci_free_consistent(pdev, sizeof(struct hifn_dma),
 				dev->desc_virt, dev->desc_dma);
+<<<<<<< HEAD
 		for (i=0; i<3; ++i)
+=======
+		for (i = 0; i < 3; ++i)
+>>>>>>> v4.9.227
 			if (dev->bar[i])
 				iounmap(dev->bar[i]);
 
@@ -2752,8 +3212,12 @@ static int __init hifn_init(void)
 
 	if (strncmp(hifn_pll_ref, "ext", 3) &&
 	    strncmp(hifn_pll_ref, "pci", 3)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "hifn795x: invalid hifn_pll_ref clock, "
 				"must be pci or ext");
+=======
+		pr_err("hifn795x: invalid hifn_pll_ref clock, must be pci or ext");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -2765,15 +3229,21 @@ static int __init hifn_init(void)
 	if (hifn_pll_ref[3] != '\0') {
 		freq = simple_strtoul(hifn_pll_ref + 3, NULL, 10);
 		if (freq < 20 || freq > 100) {
+<<<<<<< HEAD
 			printk(KERN_ERR "hifn795x: invalid hifn_pll_ref "
 					"frequency, must be in the range "
 					"of 20-100");
+=======
+			pr_err("hifn795x: invalid hifn_pll_ref frequency, must"
+			       "be in the range of 20-100");
+>>>>>>> v4.9.227
 			return -EINVAL;
 		}
 	}
 
 	err = pci_register_driver(&hifn_pci_driver);
 	if (err < 0) {
+<<<<<<< HEAD
 		dprintk("Failed to register PCI driver for %s device.\n",
 				hifn_pci_driver.name);
 		return -ENODEV;
@@ -2781,6 +3251,15 @@ static int __init hifn_init(void)
 
 	printk(KERN_INFO "Driver for HIFN 795x crypto accelerator chip "
 			"has been successfully registered.\n");
+=======
+		pr_err("Failed to register PCI driver for %s device.\n",
+		       hifn_pci_driver.name);
+		return -ENODEV;
+	}
+
+	pr_info("Driver for HIFN 795x crypto accelerator chip "
+		"has been successfully registered.\n");
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -2789,8 +3268,13 @@ static void __exit hifn_fini(void)
 {
 	pci_unregister_driver(&hifn_pci_driver);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "Driver for HIFN 795x crypto accelerator chip "
 			"has been successfully unregistered.\n");
+=======
+	pr_info("Driver for HIFN 795x crypto accelerator chip "
+		"has been successfully unregistered.\n");
+>>>>>>> v4.9.227
 }
 
 module_init(hifn_init);

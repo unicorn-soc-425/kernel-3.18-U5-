@@ -2,6 +2,11 @@
 # S/390 character devices
 #
 
+<<<<<<< HEAD
+=======
+CFLAGS_REMOVE_sclp_early_core.o	+= $(CC_FLAGS_EXPOLINE)
+
+>>>>>>> v4.9.227
 obj-y += ctrlchar.o keyboard.o defkeymap.o sclp.o sclp_rw.o sclp_quiesce.o \
 	 sclp_cmd.o sclp_config.o sclp_cpi_sys.o sclp_ocf.o sclp_ctl.o \
 	 sclp_early.o
@@ -16,9 +21,16 @@ obj-$(CONFIG_TN3215) += con3215.o
 obj-$(CONFIG_SCLP_TTY) += sclp_tty.o
 obj-$(CONFIG_SCLP_CONSOLE) += sclp_con.o
 obj-$(CONFIG_SCLP_VT220_TTY) += sclp_vt220.o
+<<<<<<< HEAD
 obj-$(CONFIG_SCLP_CPI) += sclp_cpi.o
 obj-$(CONFIG_SCLP_ASYNC) += sclp_async.o
 
+=======
+obj-$(CONFIG_SCLP_ASYNC) += sclp_async.o
+
+obj-$(CONFIG_PCI) += sclp_pci.o
+
+>>>>>>> v4.9.227
 obj-$(CONFIG_VMLOGRDR) += vmlogrdr.o
 obj-$(CONFIG_VMCP) += vmcp.o
 
@@ -30,9 +42,13 @@ obj-$(CONFIG_S390_TAPE_3590) += tape_3590.o
 obj-$(CONFIG_MONREADER) += monreader.o
 obj-$(CONFIG_MONWRITER) += monwriter.o
 obj-$(CONFIG_S390_VMUR) += vmur.o
+<<<<<<< HEAD
 
 zcore_mod-objs := sclp_sdias.o zcore.o
 obj-$(CONFIG_CRASH_DUMP) += zcore_mod.o
+=======
+obj-$(CONFIG_CRASH_DUMP) += sclp_sdias.o zcore.o
+>>>>>>> v4.9.227
 
 hmcdrv-objs := hmcdrv_mod.o hmcdrv_dev.o hmcdrv_ftp.o hmcdrv_cache.o diag_ftp.o sclp_ftp.o
 obj-$(CONFIG_HMC_DRV) += hmcdrv.o

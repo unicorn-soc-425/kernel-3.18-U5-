@@ -15,7 +15,11 @@
 #include <linux/io.h>
 #include "edac_core.h"
 
+<<<<<<< HEAD
 #include <asm-generic/io-64-nonatomic-lo-hi.h>
+=======
+#include <linux/io-64-nonatomic-lo-hi.h>
+>>>>>>> v4.9.227
 
 #define I3200_REVISION        "1.1"
 
@@ -523,8 +527,12 @@ fail1:
 	pci_unregister_driver(&i3200_driver);
 
 fail0:
+<<<<<<< HEAD
 	if (mci_pdev)
 		pci_dev_put(mci_pdev);
+=======
+	pci_dev_put(mci_pdev);
+>>>>>>> v4.9.227
 
 	return pci_rc;
 }

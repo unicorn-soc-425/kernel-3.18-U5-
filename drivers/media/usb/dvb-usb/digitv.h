@@ -5,7 +5,14 @@
 #include "dvb-usb.h"
 
 struct digitv_state {
+<<<<<<< HEAD
     int is_nxt6000;
+=======
+	int is_nxt6000;
+
+	unsigned char sndbuf[7];
+	unsigned char rcvbuf[7];
+>>>>>>> v4.9.227
 };
 
 /* protocol (from usblogging and the SDK:

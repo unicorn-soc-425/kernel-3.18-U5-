@@ -149,6 +149,10 @@
  */
 #define TRF7970A_QUIRK_IRQ_STATUS_READ		BIT(0)
 #define TRF7970A_QUIRK_EN2_MUST_STAY_LOW	BIT(1)
+<<<<<<< HEAD
+=======
+#define TRF7970A_QUIRK_T5T_RMB_EXTRA_BYTE	BIT(2)
+>>>>>>> v4.9.227
 
 /* Direct commands */
 #define TRF7970A_CMD_IDLE			0x00
@@ -335,7 +339,11 @@
 
 #define TRF7970A_NFC_TARGET_LEVEL_RFDET(v)	((v) & 0x07)
 #define TRF7970A_NFC_TARGET_LEVEL_HI_RF		BIT(3)
+<<<<<<< HEAD
 #define TRF7970A_NFC_TARGET_LEVEL_SDD_EN	BIT(3)
+=======
+#define TRF7970A_NFC_TARGET_LEVEL_SDD_EN	BIT(5)
+>>>>>>> v4.9.227
 #define TRF7970A_NFC_TARGET_LEVEL_LD_S_4BYTES	(0x0 << 6)
 #define TRF7970A_NFC_TARGET_LEVEL_LD_S_7BYTES	(0x1 << 6)
 #define TRF7970A_NFC_TARGET_LEVEL_LD_S_10BYTES	(0x2 << 6)
@@ -446,6 +454,10 @@ struct trf7970a {
 	u8				md_rf_tech;
 	u8				tx_cmd;
 	bool				issue_eof;
+<<<<<<< HEAD
+=======
+	bool				adjust_resp_len;
+>>>>>>> v4.9.227
 	int				en2_gpio;
 	int				en_gpio;
 	struct mutex			lock;
@@ -626,6 +638,16 @@ static void trf7970a_send_upstream(struct trf7970a *trf)
 		trf->aborting = false;
 	}
 
+<<<<<<< HEAD
+=======
+	if (trf->adjust_resp_len) {
+		if (trf->rx_skb)
+			skb_trim(trf->rx_skb, trf->rx_skb->len - 1);
+
+		trf->adjust_resp_len = false;
+	}
+
+>>>>>>> v4.9.227
 	trf->cb(trf->ddev, trf->cb_arg, trf->rx_skb);
 
 	trf->rx_skb = NULL;
@@ -1039,6 +1061,13 @@ static int trf7970a_init(struct trf7970a *trf)
 	if (ret)
 		goto err_out;
 
+<<<<<<< HEAD
+=======
+	ret = trf7970a_write(trf, TRF7970A_NFC_TARGET_LEVEL, 0);
+	if (ret)
+		goto err_out;
+
+>>>>>>> v4.9.227
 	usleep_range(1000, 2000);
 
 	trf->chip_status_ctrl &= ~TRF7970A_CHIP_STATUS_RF_ON;
@@ -1429,10 +1458,22 @@ static int trf7970a_per_cmd_config(struct trf7970a *trf, struct sk_buff *skb)
 			trf->iso_ctrl = iso_ctrl;
 		}
 
+<<<<<<< HEAD
 		if ((trf->framing == NFC_DIGITAL_FRAMING_ISO15693_T5T) &&
 				trf7970a_is_iso15693_write_or_lock(req[1]) &&
 				(req[0] & ISO15693_REQ_FLAG_OPTION))
 			trf->issue_eof = true;
+=======
+		if (trf->framing == NFC_DIGITAL_FRAMING_ISO15693_T5T) {
+			if (trf7970a_is_iso15693_write_or_lock(req[1]) &&
+					(req[0] & ISO15693_REQ_FLAG_OPTION))
+				trf->issue_eof = true;
+			else if ((trf->quirks &
+					TRF7970A_QUIRK_T5T_RMB_EXTRA_BYTE) &&
+				 (req[1] == ISO15693_CMD_READ_MULTIPLE_BLOCK))
+				trf->adjust_resp_len = true;
+		}
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -1992,6 +2033,12 @@ static int trf7970a_probe(struct spi_device *spi)
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	if (of_property_read_bool(np, "t5t-rmb-extra-byte-quirk"))
+		trf->quirks |= TRF7970A_QUIRK_T5T_RMB_EXTRA_BYTE;
+
+>>>>>>> v4.9.227
 	if (of_property_read_bool(np, "irq-status-read-quirk"))
 		trf->quirks |= TRF7970A_QUIRK_IRQ_STATUS_READ;
 
@@ -2122,7 +2169,11 @@ static int trf7970a_remove(struct spi_device *spi)
 #ifdef CONFIG_PM_SLEEP
 static int trf7970a_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct spi_device *spi = container_of(dev, struct spi_device, dev);
+=======
+	struct spi_device *spi = to_spi_device(dev);
+>>>>>>> v4.9.227
 	struct trf7970a *trf = spi_get_drvdata(spi);
 
 	dev_dbg(dev, "Suspend\n");
@@ -2138,7 +2189,11 @@ static int trf7970a_suspend(struct device *dev)
 
 static int trf7970a_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct spi_device *spi = container_of(dev, struct spi_device, dev);
+=======
+	struct spi_device *spi = to_spi_device(dev);
+>>>>>>> v4.9.227
 	struct trf7970a *trf = spi_get_drvdata(spi);
 	int ret;
 
@@ -2154,10 +2209,17 @@ static int trf7970a_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 static int trf7970a_pm_runtime_suspend(struct device *dev)
 {
 	struct spi_device *spi = container_of(dev, struct spi_device, dev);
+=======
+#ifdef CONFIG_PM
+static int trf7970a_pm_runtime_suspend(struct device *dev)
+{
+	struct spi_device *spi = to_spi_device(dev);
+>>>>>>> v4.9.227
 	struct trf7970a *trf = spi_get_drvdata(spi);
 	int ret;
 
@@ -2174,7 +2236,11 @@ static int trf7970a_pm_runtime_suspend(struct device *dev)
 
 static int trf7970a_pm_runtime_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct spi_device *spi = container_of(dev, struct spi_device, dev);
+=======
+	struct spi_device *spi = to_spi_device(dev);
+>>>>>>> v4.9.227
 	struct trf7970a *trf = spi_get_drvdata(spi);
 	int ret;
 
@@ -2194,6 +2260,15 @@ static const struct dev_pm_ops trf7970a_pm_ops = {
 			trf7970a_pm_runtime_resume, NULL)
 };
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id trf7970a_of_match[] = {
+	{ .compatible = "ti,trf7970a", },
+	{ /* sentinel */ },
+};
+MODULE_DEVICE_TABLE(of, trf7970a_of_match);
+
+>>>>>>> v4.9.227
 static const struct spi_device_id trf7970a_id_table[] = {
 	{ "trf7970a", 0 },
 	{ }
@@ -2206,7 +2281,11 @@ static struct spi_driver trf7970a_spi_driver = {
 	.id_table	= trf7970a_id_table,
 	.driver		= {
 		.name	= "trf7970a",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(trf7970a_of_match),
+>>>>>>> v4.9.227
 		.pm	= &trf7970a_pm_ops,
 	},
 };

@@ -22,12 +22,28 @@
 #include "ieee754sp.h"
 #include "ieee754dp.h"
 
+<<<<<<< HEAD
 union ieee754sp ieee754sp_fdp(union ieee754dp x)
 {
 	u32 rm;
 
 	COMPXDP;
 	union ieee754sp nan;
+=======
+static inline union ieee754sp ieee754sp_nan_fdp(int xs, u64 xm)
+{
+	return buildsp(xs, SP_EMAX + 1 + SP_EBIAS,
+		       xm >> (DP_FBITS - SP_FBITS));
+}
+
+union ieee754sp ieee754sp_fdp(union ieee754dp x)
+{
+	union ieee754sp y;
+	u32 rm;
+
+	COMPXDP;
+	COMPYSP;
+>>>>>>> v4.9.227
 
 	EXPLODEXDP;
 
@@ -37,6 +53,7 @@ union ieee754sp ieee754sp_fdp(union ieee754dp x)
 
 	switch (xc) {
 	case IEEE754_CLASS_SNAN:
+<<<<<<< HEAD
 		ieee754_setcx(IEEE754_INVALID_OPERATION);
 		return ieee754sp_nanxcpt(ieee754sp_indef());
 
@@ -46,6 +63,19 @@ union ieee754sp ieee754sp_fdp(union ieee754dp x)
 		if (!ieee754sp_isnan(nan))
 			nan = ieee754sp_indef();
 		return ieee754sp_nanxcpt(nan);
+=======
+		x = ieee754dp_nanxcpt(x);
+		EXPLODEXDP;
+		/* Fall through.  */
+	case IEEE754_CLASS_QNAN:
+		y = ieee754sp_nan_fdp(xs, xm);
+		if (!ieee754_csr.nan2008) {
+			EXPLODEYSP;
+			if (!ieee754_class_nan(yc))
+				y = ieee754sp_indef();
+		}
+		return y;
+>>>>>>> v4.9.227
 
 	case IEEE754_CLASS_INF:
 		return ieee754sp_inf(xs);

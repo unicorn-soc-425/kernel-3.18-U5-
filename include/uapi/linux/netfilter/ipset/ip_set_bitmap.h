@@ -1,6 +1,11 @@
 #ifndef _UAPI__IP_SET_BITMAP_H
 #define _UAPI__IP_SET_BITMAP_H
 
+<<<<<<< HEAD
+=======
+#include <linux/netfilter/ipset/ip_set.h>
+
+>>>>>>> v4.9.227
 /* Bitmap type specific error codes */
 enum {
 	/* The element is out of the range of the set */

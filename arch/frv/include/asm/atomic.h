@@ -15,7 +15,10 @@
 #define _ASM_ATOMIC_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <asm/spr-regs.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/cmpxchg.h>
 #include <asm/barrier.h>
 
@@ -23,6 +26,11 @@
 #error not SMP safe
 #endif
 
+<<<<<<< HEAD
+=======
+#include <asm/atomic_defs.h>
+
+>>>>>>> v4.9.227
 /*
  * Atomic operations that C can't guarantee us.  Useful for
  * resource counting etc..
@@ -31,6 +39,7 @@
  */
 
 #define ATOMIC_INIT(i)		{ (i) }
+<<<<<<< HEAD
 #define atomic_read(v)		ACCESS_ONCE((v)->counter)
 #define atomic_set(v, i)	(((v)->counter) = (i))
 
@@ -54,10 +63,29 @@ static inline int atomic_add_return(int i, atomic_t *v)
 	    );
 
 	return val;
+=======
+#define atomic_read(v)		READ_ONCE((v)->counter)
+#define atomic_set(v, i)	WRITE_ONCE(((v)->counter), (i))
+
+static inline int atomic_inc_return(atomic_t *v)
+{
+	return __atomic_add_return(1, &v->counter);
+}
+
+static inline int atomic_dec_return(atomic_t *v)
+{
+	return __atomic_sub_return(1, &v->counter);
+}
+
+static inline int atomic_add_return(int i, atomic_t *v)
+{
+	return __atomic_add_return(i, &v->counter);
+>>>>>>> v4.9.227
 }
 
 static inline int atomic_sub_return(int i, atomic_t *v)
 {
+<<<<<<< HEAD
 	unsigned long val;
 
 	asm("0:						\n"
@@ -84,11 +112,17 @@ extern int atomic_sub_return(int i, atomic_t *v);
 
 #endif
 
+=======
+	return __atomic_sub_return(i, &v->counter);
+}
+
+>>>>>>> v4.9.227
 static inline int atomic_add_negative(int i, atomic_t *v)
 {
 	return atomic_add_return(i, v) < 0;
 }
 
+<<<<<<< HEAD
 static inline void atomic_add(int i, atomic_t *v)
 {
 	atomic_add_return(i, v);
@@ -102,16 +136,27 @@ static inline void atomic_sub(int i, atomic_t *v)
 static inline void atomic_inc(atomic_t *v)
 {
 	atomic_add_return(1, v);
+=======
+static inline void atomic_inc(atomic_t *v)
+{
+	atomic_inc_return(v);
+>>>>>>> v4.9.227
 }
 
 static inline void atomic_dec(atomic_t *v)
 {
+<<<<<<< HEAD
 	atomic_sub_return(1, v);
 }
 
 #define atomic_dec_return(v)		atomic_sub_return(1, (v))
 #define atomic_inc_return(v)		atomic_add_return(1, (v))
 
+=======
+	atomic_dec_return(v);
+}
+
+>>>>>>> v4.9.227
 #define atomic_sub_and_test(i,v)	(atomic_sub_return((i), (v)) == 0)
 #define atomic_dec_and_test(v)		(atomic_sub_return(1, (v)) == 0)
 #define atomic_inc_and_test(v)		(atomic_add_return(1, (v)) == 0)
@@ -120,18 +165,30 @@ static inline void atomic_dec(atomic_t *v)
  * 64-bit atomic ops
  */
 typedef struct {
+<<<<<<< HEAD
 	volatile long long counter;
+=======
+	long long counter;
+>>>>>>> v4.9.227
 } atomic64_t;
 
 #define ATOMIC64_INIT(i)	{ (i) }
 
+<<<<<<< HEAD
 static inline long long atomic64_read(atomic64_t *v)
+=======
+static inline long long atomic64_read(const atomic64_t *v)
+>>>>>>> v4.9.227
 {
 	long long counter;
 
 	asm("ldd%I1 %M1,%0"
 	    : "=e"(counter)
 	    : "m"(v->counter));
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return counter;
 }
 
@@ -142,16 +199,39 @@ static inline void atomic64_set(atomic64_t *v, long long i)
 		     : "e"(i));
 }
 
+<<<<<<< HEAD
 extern long long atomic64_inc_return(atomic64_t *v);
 extern long long atomic64_dec_return(atomic64_t *v);
 extern long long atomic64_add_return(long long i, atomic64_t *v);
 extern long long atomic64_sub_return(long long i, atomic64_t *v);
+=======
+static inline long long atomic64_inc_return(atomic64_t *v)
+{
+	return __atomic64_add_return(1, &v->counter);
+}
+
+static inline long long atomic64_dec_return(atomic64_t *v)
+{
+	return __atomic64_sub_return(1, &v->counter);
+}
+
+static inline long long atomic64_add_return(long long i, atomic64_t *v)
+{
+	return __atomic64_add_return(i, &v->counter);
+}
+
+static inline long long atomic64_sub_return(long long i, atomic64_t *v)
+{
+	return __atomic64_sub_return(i, &v->counter);
+}
+>>>>>>> v4.9.227
 
 static inline long long atomic64_add_negative(long long i, atomic64_t *v)
 {
 	return atomic64_add_return(i, v) < 0;
 }
 
+<<<<<<< HEAD
 static inline void atomic64_add(long long i, atomic64_t *v)
 {
 	atomic64_add_return(i, v);
@@ -162,6 +242,8 @@ static inline void atomic64_sub(long long i, atomic64_t *v)
 	atomic64_sub_return(i, v);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void atomic64_inc(atomic64_t *v)
 {
 	atomic64_inc_return(v);
@@ -175,6 +257,10 @@ static inline void atomic64_dec(atomic64_t *v)
 #define atomic64_sub_and_test(i,v)	(atomic64_sub_return((i), (v)) == 0)
 #define atomic64_dec_and_test(v)	(atomic64_dec_return((v)) == 0)
 #define atomic64_inc_and_test(v)	(atomic64_inc_return((v)) == 0)
+<<<<<<< HEAD
+=======
+#define atomic64_inc_not_zero(v)	atomic64_add_unless((v), 1, 0)
+>>>>>>> v4.9.227
 
 #define atomic_cmpxchg(v, old, new)	(cmpxchg(&(v)->counter, old, new))
 #define atomic_xchg(v, new)		(xchg(&(v)->counter, new))
@@ -196,5 +282,67 @@ static __inline__ int __atomic_add_unless(atomic_t *v, int a, int u)
 	return c;
 }
 
+<<<<<<< HEAD
+=======
+static inline int atomic64_add_unless(atomic64_t *v, long long i, long long u)
+{
+	long long c, old;
+
+	c = atomic64_read(v);
+	for (;;) {
+		if (unlikely(c == u))
+			break;
+		old = atomic64_cmpxchg(v, c, c + i);
+		if (likely(old == c))
+			break;
+		c = old;
+	}
+	return c != u;
+}
+
+static inline long long atomic64_dec_if_positive(atomic64_t *v)
+{
+	long long c, old, dec;
+
+	c = atomic64_read(v);
+	for (;;) {
+		dec = c - 1;
+		if (unlikely(dec < 0))
+			break;
+		old = atomic64_cmpxchg((v), c, dec);
+		if (likely(old == c))
+			break;
+		c = old;
+	}
+		return dec;
+}
+
+#define ATOMIC_OP(op)							\
+static inline int atomic_fetch_##op(int i, atomic_t *v)			\
+{									\
+	return __atomic32_fetch_##op(i, &v->counter);			\
+}									\
+static inline void atomic_##op(int i, atomic_t *v)			\
+{									\
+	(void)__atomic32_fetch_##op(i, &v->counter);			\
+}									\
+									\
+static inline long long atomic64_fetch_##op(long long i, atomic64_t *v)	\
+{									\
+	return __atomic64_fetch_##op(i, &v->counter);			\
+}									\
+static inline void atomic64_##op(long long i, atomic64_t *v)		\
+{									\
+	(void)__atomic64_fetch_##op(i, &v->counter);			\
+}
+
+ATOMIC_OP(or)
+ATOMIC_OP(and)
+ATOMIC_OP(xor)
+ATOMIC_OP(add)
+ATOMIC_OP(sub)
+
+#undef ATOMIC_OP
+>>>>>>> v4.9.227
 
 #endif /* _ASM_ATOMIC_H */

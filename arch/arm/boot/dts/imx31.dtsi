@@ -25,16 +25,28 @@
 		#size-cells = <0>;
 
 		cpu {
+<<<<<<< HEAD
 			compatible = "arm,arm1136";
+=======
+			compatible = "arm,arm1136jf-s";
+>>>>>>> v4.9.227
 			device_type = "cpu";
 		};
 	};
 
+<<<<<<< HEAD
 	avic: avic-interrupt-controller@60000000 {
 		compatible = "fsl,imx31-avic", "fsl,avic";
 		interrupt-controller;
 		#interrupt-cells = <1>;
 		reg = <0x60000000 0x100000>;
+=======
+	avic: interrupt-controller@68000000 {
+		compatible = "fsl,imx31-avic", "fsl,avic";
+		interrupt-controller;
+		#interrupt-cells = <1>;
+		reg = <0x68000000 0x100000>;
+>>>>>>> v4.9.227
 	};
 
 	soc {
@@ -69,6 +81,17 @@
 				status = "disabled";
 			};
 
+<<<<<<< HEAD
+=======
+			kpp: kpp@43fa8000 {
+				compatible = "fsl,imx31-kpp", "fsl,imx21-kpp";
+				reg = <0x43fa8000 0x4000>;
+				interrupts = <24>;
+				clocks = <&clks 46>;
+				status = "disabled";
+			};
+
+>>>>>>> v4.9.227
 			uart4: serial@43fb0000 {
 				compatible = "fsl,imx31-uart", "fsl,imx21-uart";
 				reg = <0x43fb0000 0x4000>;
@@ -110,6 +133,7 @@
 				interrupts = <19>;
 				clocks = <&clks 25>;
 			};
+<<<<<<< HEAD
 
 			clks: ccm@53f80000{
 				compatible = "fsl,imx31-ccm";
@@ -117,6 +141,8 @@
 				interrupts = <0 31 0x04 0 53 0x04>;
 				#clock-cells = <1>;
 			};
+=======
+>>>>>>> v4.9.227
 		};
 
 		aips@53f00000 { /* AIPS2 */
@@ -126,6 +152,16 @@
 			reg = <0x53f00000 0x100000>;
 			ranges;
 
+<<<<<<< HEAD
+=======
+			clks: ccm@53f80000{
+				compatible = "fsl,imx31-ccm";
+				reg = <0x53f80000 0x4000>;
+				interrupts = <31>, <53>;
+				#clock-cells = <1>;
+			};
+
+>>>>>>> v4.9.227
 			gpt: timer@53f90000 {
 				compatible = "fsl,imx31-gpt";
 				reg = <0x53f90000 0x4000>;

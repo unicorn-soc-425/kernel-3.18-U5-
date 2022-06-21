@@ -24,6 +24,7 @@
 #ifndef __REALTEK_RTSX_TRACE_H
 #define __REALTEK_RTSX_TRACE_H
 
+<<<<<<< HEAD
 #define _MSG_TRACE
 
 #ifdef _MSG_TRACE
@@ -82,6 +83,19 @@ static inline char *filename(char *path)
 #else
 #define TRACE_RET(chip, ret)	return ret
 #define TRACE_GOTO(chip, label)	goto label
+=======
+struct rtsx_chip;
+
+#ifdef _MSG_TRACE
+void _rtsx_trace(struct rtsx_chip *chip, const char *file, const char *func,
+		 int line);
+#define rtsx_trace(chip)						\
+	_rtsx_trace(chip, __FILE__, __func__, __LINE__)
+#else
+static inline void rtsx_trace(struct rtsx_chip *chip)
+{
+}
+>>>>>>> v4.9.227
 #endif
 
 #endif  /* __REALTEK_RTSX_TRACE_H */

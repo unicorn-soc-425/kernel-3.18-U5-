@@ -179,7 +179,10 @@ skip_ext_pwr_config:
 static struct platform_driver rc5t583_regulator_driver = {
 	.driver	= {
 		.name	= "rc5t583-regulator",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= rc5t583_regulator_probe,
 };

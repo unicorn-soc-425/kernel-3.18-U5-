@@ -7,7 +7,13 @@ perf-archive			mainporcelain common
 perf-bench			mainporcelain common
 perf-buildid-cache		mainporcelain common
 perf-buildid-list		mainporcelain common
+<<<<<<< HEAD
 perf-diff			mainporcelain common
+=======
+perf-data			mainporcelain common
+perf-diff			mainporcelain common
+perf-config			mainporcelain common
+>>>>>>> v4.9.227
 perf-evlist			mainporcelain common
 perf-inject			mainporcelain common
 perf-kmem			mainporcelain common
@@ -24,4 +30,8 @@ perf-stat			mainporcelain common
 perf-test			mainporcelain common
 perf-timechart			mainporcelain common
 perf-top			mainporcelain common
+<<<<<<< HEAD
 perf-trace			mainporcelain common
+=======
+perf-trace			mainporcelain audit
+>>>>>>> v4.9.227

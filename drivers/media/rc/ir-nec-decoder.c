@@ -49,12 +49,19 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct nec_dec *data = &dev->raw->nec;
 	u32 scancode;
+<<<<<<< HEAD
 	u8 address, not_address, command, not_command;
 	bool send_32bits = false;
 
 	if (!(dev->enabled_protocols & RC_BIT_NEC))
 		return 0;
 
+=======
+	enum rc_type rc_type;
+	u8 address, not_address, command, not_command;
+	bool send_32bits = false;
+
+>>>>>>> v4.9.227
 	if (!is_timing_event(ev)) {
 		if (ev.reset)
 			data->state = STATE_INACTIVE;
@@ -174,22 +181,38 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 			 * least Apple and TiVo remotes */
 			scancode = data->bits;
 			IR_dprintk(1, "NEC (modified) scancode 0x%08x\n", scancode);
+<<<<<<< HEAD
+=======
+			rc_type = RC_TYPE_NEC32;
+>>>>>>> v4.9.227
 		} else if ((address ^ not_address) != 0xff) {
 			/* Extended NEC */
 			scancode = address     << 16 |
 				   not_address <<  8 |
 				   command;
 			IR_dprintk(1, "NEC (Ext) scancode 0x%06x\n", scancode);
+<<<<<<< HEAD
+=======
+			rc_type = RC_TYPE_NECX;
+>>>>>>> v4.9.227
 		} else {
 			/* Normal NEC */
 			scancode = address << 8 | command;
 			IR_dprintk(1, "NEC scancode 0x%04x\n", scancode);
+<<<<<<< HEAD
+=======
+			rc_type = RC_TYPE_NEC;
+>>>>>>> v4.9.227
 		}
 
 		if (data->is_nec_x)
 			data->necx_repeat = true;
 
+<<<<<<< HEAD
 		rc_keydown(dev, RC_TYPE_NEC, scancode, 0);
+=======
+		rc_keydown(dev, rc_type, scancode, 0);
+>>>>>>> v4.9.227
 		data->state = STATE_INACTIVE;
 		return 0;
 	}
@@ -201,7 +224,11 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 }
 
 static struct ir_raw_handler nec_handler = {
+<<<<<<< HEAD
 	.protocols	= RC_BIT_NEC,
+=======
+	.protocols	= RC_BIT_NEC | RC_BIT_NECX | RC_BIT_NEC32,
+>>>>>>> v4.9.227
 	.decode		= ir_nec_decode,
 };
 

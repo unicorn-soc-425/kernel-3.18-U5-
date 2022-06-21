@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 /*
  * AMD Cryptographic Coprocessor (CCP) AES crypto API support
  *
  * Copyright (C) 2013 Advanced Micro Devices, Inc.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * AMD Cryptographic Coprocessor (CCP) AES crypto API support
+ *
+ * Copyright (C) 2013-2019 Advanced Micro Devices, Inc.
+>>>>>>> v4.9.227
  *
  * Author: Tom Lendacky <thomas.lendacky@amd.com>
  *
@@ -22,7 +30,10 @@
 
 #include "ccp-crypto.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static int ccp_aes_complete(struct crypto_async_request *async_req, int ret)
 {
 	struct ablkcipher_request *req = ablkcipher_request_cast(async_req);
@@ -80,8 +91,12 @@ static int ccp_aes_crypt(struct ablkcipher_request *req, bool encrypt)
 		return -EINVAL;
 
 	if (((ctx->u.aes.mode == CCP_AES_MODE_ECB) ||
+<<<<<<< HEAD
 	     (ctx->u.aes.mode == CCP_AES_MODE_CBC) ||
 	     (ctx->u.aes.mode == CCP_AES_MODE_CFB)) &&
+=======
+	     (ctx->u.aes.mode == CCP_AES_MODE_CBC)) &&
+>>>>>>> v4.9.227
 	    (req->nbytes & (AES_BLOCK_SIZE - 1)))
 		return -EINVAL;
 
@@ -260,6 +275,10 @@ static struct crypto_alg ccp_aes_rfc3686_defaults = {
 
 struct ccp_aes_def {
 	enum ccp_aes_mode mode;
+<<<<<<< HEAD
+=======
+	unsigned int version;
+>>>>>>> v4.9.227
 	const char *name;
 	const char *driver_name;
 	unsigned int blocksize;
@@ -270,6 +289,10 @@ struct ccp_aes_def {
 static struct ccp_aes_def aes_algs[] = {
 	{
 		.mode		= CCP_AES_MODE_ECB,
+<<<<<<< HEAD
+=======
+		.version	= CCP_VERSION(3, 0),
+>>>>>>> v4.9.227
 		.name		= "ecb(aes)",
 		.driver_name	= "ecb-aes-ccp",
 		.blocksize	= AES_BLOCK_SIZE,
@@ -278,6 +301,10 @@ static struct ccp_aes_def aes_algs[] = {
 	},
 	{
 		.mode		= CCP_AES_MODE_CBC,
+<<<<<<< HEAD
+=======
+		.version	= CCP_VERSION(3, 0),
+>>>>>>> v4.9.227
 		.name		= "cbc(aes)",
 		.driver_name	= "cbc-aes-ccp",
 		.blocksize	= AES_BLOCK_SIZE,
@@ -286,14 +313,25 @@ static struct ccp_aes_def aes_algs[] = {
 	},
 	{
 		.mode		= CCP_AES_MODE_CFB,
+<<<<<<< HEAD
 		.name		= "cfb(aes)",
 		.driver_name	= "cfb-aes-ccp",
 		.blocksize	= AES_BLOCK_SIZE,
+=======
+		.version	= CCP_VERSION(3, 0),
+		.name		= "cfb(aes)",
+		.driver_name	= "cfb-aes-ccp",
+		.blocksize	= 1,
+>>>>>>> v4.9.227
 		.ivsize		= AES_BLOCK_SIZE,
 		.alg_defaults	= &ccp_aes_defaults,
 	},
 	{
 		.mode		= CCP_AES_MODE_OFB,
+<<<<<<< HEAD
+=======
+		.version	= CCP_VERSION(3, 0),
+>>>>>>> v4.9.227
 		.name		= "ofb(aes)",
 		.driver_name	= "ofb-aes-ccp",
 		.blocksize	= 1,
@@ -302,6 +340,10 @@ static struct ccp_aes_def aes_algs[] = {
 	},
 	{
 		.mode		= CCP_AES_MODE_CTR,
+<<<<<<< HEAD
+=======
+		.version	= CCP_VERSION(3, 0),
+>>>>>>> v4.9.227
 		.name		= "ctr(aes)",
 		.driver_name	= "ctr-aes-ccp",
 		.blocksize	= 1,
@@ -310,6 +352,10 @@ static struct ccp_aes_def aes_algs[] = {
 	},
 	{
 		.mode		= CCP_AES_MODE_CTR,
+<<<<<<< HEAD
+=======
+		.version	= CCP_VERSION(3, 0),
+>>>>>>> v4.9.227
 		.name		= "rfc3686(ctr(aes))",
 		.driver_name	= "rfc3686-ctr-aes-ccp",
 		.blocksize	= 1,
@@ -345,7 +391,11 @@ static int ccp_register_aes_alg(struct list_head *head,
 	ret = crypto_register_alg(alg);
 	if (ret) {
 		pr_err("%s ablkcipher algorithm registration error (%d)\n",
+<<<<<<< HEAD
 			alg->cra_name, ret);
+=======
+		       alg->cra_name, ret);
+>>>>>>> v4.9.227
 		kfree(ccp_alg);
 		return ret;
 	}
@@ -358,8 +408,16 @@ static int ccp_register_aes_alg(struct list_head *head,
 int ccp_register_aes_algs(struct list_head *head)
 {
 	int i, ret;
+<<<<<<< HEAD
 
 	for (i = 0; i < ARRAY_SIZE(aes_algs); i++) {
+=======
+	unsigned int ccpversion = ccp_version();
+
+	for (i = 0; i < ARRAY_SIZE(aes_algs); i++) {
+		if (aes_algs[i].version > ccpversion)
+			continue;
+>>>>>>> v4.9.227
 		ret = ccp_register_aes_alg(head, &aes_algs[i]);
 		if (ret)
 			return ret;

@@ -27,6 +27,7 @@ void pvr2_i2c_core_done(struct pvr2_hdw *);
 
 
 #endif /* __PVRUSB2_I2C_ADAPTER_H */
+<<<<<<< HEAD
 
 
 /*
@@ -38,3 +39,5 @@ void pvr2_i2c_core_done(struct pvr2_hdw *);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

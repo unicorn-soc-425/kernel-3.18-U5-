@@ -12,9 +12,19 @@ Required properties:
 
 Optional properties:
 
+<<<<<<< HEAD
 - realtek,in1-differential
 - realtek,in2-differential
   Boolean. Indicate MIC1/2 input are differential, rather than single-ended.
+=======
+- clocks: The phandle of the master clock to the CODEC
+- clock-names: Should be "mclk"
+
+- realtek,in1-differential
+- realtek,in2-differential
+- realtek,in3-differential
+  Boolean. Indicate MIC1/2/3 input are differential, rather than single-ended.
+>>>>>>> v4.9.227
 
 - realtek,ldo1-en-gpios : The GPIO that controls the CODEC's LDO1_EN pin.
 
@@ -24,9 +34,17 @@ Pins on the device (for linking into audio routes) for RT5639/RT5640:
   * DMIC2
   * MICBIAS1
   * IN1P
+<<<<<<< HEAD
   * IN1R
   * IN2P
   * IN2R
+=======
+  * IN1N
+  * IN2P
+  * IN2N
+  * IN3P
+  * IN3N
+>>>>>>> v4.9.227
   * HPOL
   * HPOR
   * LOUTL

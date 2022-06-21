@@ -26,13 +26,20 @@
  *	Zhenyu Wang
  */
 
+<<<<<<< HEAD
+=======
+#include <crypto/hash.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/list.h>
 #include <linux/inet.h>
 #include <linux/slab.h>
 #include <linux/file.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/kfifo.h>
 #include <linux/scatterlist.h>
@@ -214,7 +221,12 @@ int iscsi_tcp_segment_done(struct iscsi_tcp_conn *tcp_conn,
 		} else
 			sg_init_one(&sg, segment->data + segment->copied,
 				    copied);
+<<<<<<< HEAD
 		crypto_hash_update(segment->hash, &sg, copied);
+=======
+		ahash_request_set_crypt(segment->hash, &sg, NULL, copied);
+		crypto_ahash_update(segment->hash);
+>>>>>>> v4.9.227
 	}
 
 	segment->copied += copied;
@@ -260,7 +272,13 @@ int iscsi_tcp_segment_done(struct iscsi_tcp_conn *tcp_conn,
 	 * is completely handled in hdr done function.
 	 */
 	if (segment->hash) {
+<<<<<<< HEAD
 		crypto_hash_final(segment->hash, segment->digest);
+=======
+		ahash_request_set_crypt(segment->hash, NULL,
+					segment->digest, 0);
+		crypto_ahash_final(segment->hash);
+>>>>>>> v4.9.227
 		iscsi_tcp_segment_splice_digest(segment,
 				 recv ? segment->recv_digest : segment->digest);
 		return 0;
@@ -310,13 +328,23 @@ iscsi_tcp_segment_recv(struct iscsi_tcp_conn *tcp_conn,
 }
 
 inline void
+<<<<<<< HEAD
 iscsi_tcp_dgst_header(struct hash_desc *hash, const void *hdr, size_t hdrlen,
 		      unsigned char digest[ISCSI_DIGEST_SIZE])
+=======
+iscsi_tcp_dgst_header(struct ahash_request *hash, const void *hdr,
+		      size_t hdrlen, unsigned char digest[ISCSI_DIGEST_SIZE])
+>>>>>>> v4.9.227
 {
 	struct scatterlist sg;
 
 	sg_init_one(&sg, hdr, hdrlen);
+<<<<<<< HEAD
 	crypto_hash_digest(hash, &sg, hdrlen, digest);
+=======
+	ahash_request_set_crypt(hash, &sg, digest, hdrlen);
+	crypto_ahash_digest(hash);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(iscsi_tcp_dgst_header);
 
@@ -341,7 +369,11 @@ iscsi_tcp_dgst_verify(struct iscsi_tcp_conn *tcp_conn,
  */
 static inline void
 __iscsi_segment_init(struct iscsi_segment *segment, size_t size,
+<<<<<<< HEAD
 		     iscsi_segment_done_fn_t *done, struct hash_desc *hash)
+=======
+		     iscsi_segment_done_fn_t *done, struct ahash_request *hash)
+>>>>>>> v4.9.227
 {
 	memset(segment, 0, sizeof(*segment));
 	segment->total_size = size;
@@ -349,14 +381,22 @@ __iscsi_segment_init(struct iscsi_segment *segment, size_t size,
 
 	if (hash) {
 		segment->hash = hash;
+<<<<<<< HEAD
 		crypto_hash_init(hash);
+=======
+		crypto_ahash_init(hash);
+>>>>>>> v4.9.227
 	}
 }
 
 inline void
 iscsi_segment_init_linear(struct iscsi_segment *segment, void *data,
 			  size_t size, iscsi_segment_done_fn_t *done,
+<<<<<<< HEAD
 			  struct hash_desc *hash)
+=======
+			  struct ahash_request *hash)
+>>>>>>> v4.9.227
 {
 	__iscsi_segment_init(segment, size, done, hash);
 	segment->data = data;
@@ -368,7 +408,12 @@ inline int
 iscsi_segment_seek_sg(struct iscsi_segment *segment,
 		      struct scatterlist *sg_list, unsigned int sg_count,
 		      unsigned int offset, size_t size,
+<<<<<<< HEAD
 		      iscsi_segment_done_fn_t *done, struct hash_desc *hash)
+=======
+		      iscsi_segment_done_fn_t *done,
+		      struct ahash_request *hash)
+>>>>>>> v4.9.227
 {
 	struct scatterlist *sg;
 	unsigned int i;
@@ -431,7 +476,11 @@ static void
 iscsi_tcp_data_recv_prep(struct iscsi_tcp_conn *tcp_conn)
 {
 	struct iscsi_conn *conn = tcp_conn->iscsi_conn;
+<<<<<<< HEAD
 	struct hash_desc *rx_hash = NULL;
+=======
+	struct ahash_request *rx_hash = NULL;
+>>>>>>> v4.9.227
 
 	if (conn->datadgst_en &&
 	    !(conn->session->tt->caps & CAP_DIGEST_OFFLOAD))
@@ -686,7 +735,11 @@ iscsi_tcp_hdr_dissect(struct iscsi_conn *conn, struct iscsi_hdr *hdr)
 
 		if (tcp_conn->in.datalen) {
 			struct iscsi_tcp_task *tcp_task = task->dd_data;
+<<<<<<< HEAD
 			struct hash_desc *rx_hash = NULL;
+=======
+			struct ahash_request *rx_hash = NULL;
+>>>>>>> v4.9.227
 			struct scsi_data_buffer *sdb = scsi_in(task->sc);
 
 			/*

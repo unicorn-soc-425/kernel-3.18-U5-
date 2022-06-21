@@ -42,6 +42,7 @@ int nvidia_probe_i2c_connector(struct fb_info *info, int conn,
 #define nvidia_probe_i2c_connector(p, c, edid) (-1)
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
 int nvidia_probe_of_connector(struct fb_info *info, int conn,
 			      u8 ** out_edid);
@@ -52,6 +53,10 @@ static inline int nvidia_probe_of_connector(struct fb_info *info, int conn,
 	return -1;
 }
 #endif
+=======
+int nvidia_probe_of_connector(struct fb_info *info, int conn,
+			      u8 ** out_edid);
+>>>>>>> v4.9.227
 
 /* in nv_accel.c */
 extern void NVResetGraphics(struct fb_info *info);

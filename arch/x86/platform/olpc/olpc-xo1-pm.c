@@ -170,7 +170,10 @@ static int xo1_pm_remove(struct platform_device *pdev)
 static struct platform_driver cs5535_pms_driver = {
 	.driver = {
 		.name = "cs5535-pms",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = xo1_pm_probe,
 	.remove = xo1_pm_remove,
@@ -179,7 +182,10 @@ static struct platform_driver cs5535_pms_driver = {
 static struct platform_driver cs5535_acpi_driver = {
 	.driver = {
 		.name = "olpc-xo1-pm-acpi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = xo1_pm_probe,
 	.remove = xo1_pm_remove,

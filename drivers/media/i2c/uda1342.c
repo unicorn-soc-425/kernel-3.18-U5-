@@ -20,7 +20,11 @@
 #include <linux/i2c.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/uda1342.h>
+=======
+#include <media/i2c/uda1342.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 
 static int write_reg(struct i2c_client *client, int reg, int value)

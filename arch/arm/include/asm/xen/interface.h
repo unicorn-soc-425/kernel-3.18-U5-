@@ -27,6 +27,11 @@
 		(hnd).p = val;				\
 	} while (0)
 
+<<<<<<< HEAD
+=======
+#define __HYPERVISOR_platform_op_raw __HYPERVISOR_platform_op
+
+>>>>>>> v4.9.227
 #ifndef __ASSEMBLY__
 /* Explicitly size integers that represent pfns in the interface with
  * Xen so that we can have one ABI that works for 32 and 64 bit guests.
@@ -76,6 +81,10 @@ struct pvclock_wall_clock {
 	u32   version;
 	u32   sec;
 	u32   nsec;
+<<<<<<< HEAD
+=======
+	u32   sec_hi;
+>>>>>>> v4.9.227
 } __attribute__((__packed__));
 #endif
 

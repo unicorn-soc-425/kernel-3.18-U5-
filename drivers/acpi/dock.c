@@ -17,15 +17,22 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+>>>>>>> v4.9.227
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/types.h>
@@ -37,12 +44,16 @@
 
 #include "internal.h"
 
+<<<<<<< HEAD
 #define ACPI_DOCK_DRIVER_DESCRIPTION "ACPI Dock Station Driver"
 
 ACPI_MODULE_NAME("dock");
 MODULE_AUTHOR("Kristen Carlson Accardi");
 MODULE_DESCRIPTION(ACPI_DOCK_DRIVER_DESCRIPTION);
 MODULE_LICENSE("GPL");
+=======
+ACPI_MODULE_NAME("dock");
+>>>>>>> v4.9.227
 
 static bool immediate_undock = 1;
 module_param(immediate_undock, bool, 0644);
@@ -615,7 +626,11 @@ void acpi_dock_add(struct acpi_device *adev)
 	memset(&pdevinfo, 0, sizeof(pdevinfo));
 	pdevinfo.name = "dock";
 	pdevinfo.id = dock_station_count;
+<<<<<<< HEAD
 	pdevinfo.acpi_node.companion = adev;
+=======
+	pdevinfo.fwnode = acpi_fwnode_handle(adev);
+>>>>>>> v4.9.227
 	pdevinfo.data = &ds;
 	pdevinfo.size_data = sizeof(ds);
 	dd = platform_device_register_full(&pdevinfo);

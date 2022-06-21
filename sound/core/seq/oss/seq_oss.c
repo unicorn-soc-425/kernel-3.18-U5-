@@ -23,6 +23,10 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/minors.h>
 #include <sound/initval.h>
@@ -45,7 +49,11 @@ MODULE_ALIAS_SNDRV_MINOR(SNDRV_MINOR_OSS_MUSIC);
  */
 static int register_device(void);
 static void unregister_device(void);
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> v4.9.227
 static int register_proc(void);
 static void unregister_proc(void);
 #else
@@ -65,6 +73,7 @@ static unsigned int odev_poll(struct file *file, poll_table * wait);
  * module interface
  */
 
+<<<<<<< HEAD
 static int __init alsa_seq_oss_init(void)
 {
 	int rc;
@@ -74,6 +83,22 @@ static int __init alsa_seq_oss_init(void)
 	};
 
 	snd_seq_autoload_lock();
+=======
+static struct snd_seq_driver seq_oss_synth_driver = {
+	.driver = {
+		.name = KBUILD_MODNAME,
+		.probe = snd_seq_oss_synth_probe,
+		.remove = snd_seq_oss_synth_remove,
+	},
+	.id = SNDRV_SEQ_DEV_ID_OSS,
+	.argsize = sizeof(struct snd_seq_oss_reg),
+};
+
+static int __init alsa_seq_oss_init(void)
+{
+	int rc;
+
+>>>>>>> v4.9.227
 	if ((rc = register_device()) < 0)
 		goto error;
 	if ((rc = register_proc()) < 0) {
@@ -86,8 +111,13 @@ static int __init alsa_seq_oss_init(void)
 		goto error;
 	}
 
+<<<<<<< HEAD
 	if ((rc = snd_seq_device_register_driver(SNDRV_SEQ_DEV_ID_OSS, &ops,
 						 sizeof(struct snd_seq_oss_reg))) < 0) {
+=======
+	rc = snd_seq_driver_register(&seq_oss_synth_driver);
+	if (rc < 0) {
+>>>>>>> v4.9.227
 		snd_seq_oss_delete_client();
 		unregister_proc();
 		unregister_device();
@@ -98,13 +128,20 @@ static int __init alsa_seq_oss_init(void)
 	snd_seq_oss_synth_init();
 
  error:
+<<<<<<< HEAD
 	snd_seq_autoload_unlock();
+=======
+>>>>>>> v4.9.227
 	return rc;
 }
 
 static void __exit alsa_seq_oss_exit(void)
 {
+<<<<<<< HEAD
 	snd_seq_device_unregister_driver(SNDRV_SEQ_DEV_ID_OSS);
+=======
+	snd_seq_driver_unregister(&seq_oss_synth_driver);
+>>>>>>> v4.9.227
 	snd_seq_oss_delete_client();
 	unregister_proc();
 	unregister_device();
@@ -183,7 +220,15 @@ odev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 }
 
 #ifdef CONFIG_COMPAT
+<<<<<<< HEAD
 #define odev_ioctl_compat	odev_ioctl
+=======
+static long odev_ioctl_compat(struct file *file, unsigned int cmd,
+			      unsigned long arg)
+{
+	return odev_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
+}
+>>>>>>> v4.9.227
 #else
 #define odev_ioctl_compat	NULL
 #endif
@@ -255,7 +300,11 @@ unregister_device(void)
  * /proc interface
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> v4.9.227
 
 static struct snd_info_entry *info_entry;
 
@@ -297,4 +346,8 @@ unregister_proc(void)
 	snd_info_free_entry(info_entry);
 	info_entry = NULL;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PROC_FS */
+=======
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> v4.9.227

@@ -18,6 +18,10 @@
 #include <linux/suspend.h>
 #include <linux/io.h>
 #include "kirkwood.h"
+<<<<<<< HEAD
+=======
+#include "kirkwood-pm.h"
+>>>>>>> v4.9.227
 
 static void __iomem *ddr_operation_base;
 static void __iomem *memory_pm_ctrl;
@@ -66,11 +70,18 @@ static const struct platform_suspend_ops kirkwood_suspend_ops = {
 	.valid = kirkwood_pm_valid_standby,
 };
 
+<<<<<<< HEAD
 int __init kirkwood_pm_init(void)
+=======
+void __init kirkwood_pm_init(void)
+>>>>>>> v4.9.227
 {
 	ddr_operation_base = ioremap(DDR_OPERATION_BASE, 4);
 	memory_pm_ctrl = ioremap(MEMORY_PM_CTRL_PHYS, 4);
 
 	suspend_set_ops(&kirkwood_suspend_ops);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> v4.9.227
 }

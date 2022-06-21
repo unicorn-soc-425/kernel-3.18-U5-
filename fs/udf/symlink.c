@@ -27,7 +27,10 @@
 #include <linux/mm.h>
 #include <linux/stat.h>
 #include <linux/pagemap.h>
+<<<<<<< HEAD
 #include <linux/buffer_head.h>
+=======
+>>>>>>> v4.9.227
 #include "udf_i.h"
 
 static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
@@ -83,6 +86,12 @@ static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
 			comp_len = udf_get_filename(sb, pc->componentIdent,
 						    pc->lengthComponentIdent,
 						    p, tolen);
+<<<<<<< HEAD
+=======
+			if (comp_len < 0)
+				return comp_len;
+
+>>>>>>> v4.9.227
 			p += comp_len;
 			tolen -= comp_len;
 			if (tolen == 0)
@@ -105,7 +114,11 @@ static int udf_symlink_filler(struct file *file, struct page *page)
 	struct buffer_head *bh = NULL;
 	unsigned char *symlink;
 	int err;
+<<<<<<< HEAD
 	unsigned char *p = kmap(page);
+=======
+	unsigned char *p = page_address(page);
+>>>>>>> v4.9.227
 	struct udf_inode_info *iinfo;
 	uint32_t pos;
 
@@ -139,7 +152,10 @@ static int udf_symlink_filler(struct file *file, struct page *page)
 
 	up_read(&iinfo->i_data_sem);
 	SetPageUptodate(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> v4.9.227
 	unlock_page(page);
 	return 0;
 
@@ -147,7 +163,10 @@ out_unlock_inode:
 	up_read(&iinfo->i_data_sem);
 	SetPageError(page);
 out_unmap:
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> v4.9.227
 	unlock_page(page);
 	return err;
 }

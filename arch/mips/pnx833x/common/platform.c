@@ -180,7 +180,11 @@ static struct platform_device pnx833x_sata_device = {
 static void
 pnx833x_flash_nand_cmd_ctrl(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	unsigned long nandaddr = (unsigned long)this->IO_ADDR_W;
 
 	if (cmd == NAND_CMD_NONE)
@@ -232,12 +236,17 @@ static struct platform_device *pnx833x_platform_devices[] __initdata = {
 
 static int __init pnx833x_platform_init(void)
 {
+<<<<<<< HEAD
 	int res;
 
 	res = platform_add_devices(pnx833x_platform_devices,
 				   ARRAY_SIZE(pnx833x_platform_devices));
 
 	return res;
+=======
+	return platform_add_devices(pnx833x_platform_devices,
+				    ARRAY_SIZE(pnx833x_platform_devices));
+>>>>>>> v4.9.227
 }
 
 arch_initcall(pnx833x_platform_init);

@@ -94,6 +94,11 @@ int fb_alloc_cmap_gfp(struct fb_cmap *cmap, int len, int transp, gfp_t flags)
 	int size = len * sizeof(u16);
 	int ret = -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	flags |= __GFP_NOWARN;
+
+>>>>>>> v4.9.227
 	if (cmap->len != len) {
 		fb_dealloc_cmap(cmap);
 		if (!len)
@@ -202,8 +207,11 @@ int fb_cmap_to_user(const struct fb_cmap *from, struct fb_cmap_user *to)
 	if (size == 0)
 		return -EINVAL;
 	size *= sizeof(u16);
+<<<<<<< HEAD
 	if (size == 0)
 		return -EINVAL;
+=======
+>>>>>>> v4.9.227
 
 	if (copy_to_user(to->red+tooff, from->red+fromoff, size))
 		return -EFAULT;

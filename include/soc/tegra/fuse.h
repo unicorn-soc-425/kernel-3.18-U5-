@@ -21,9 +21,18 @@
 #define TEGRA30		0x30
 #define TEGRA114	0x35
 #define TEGRA124	0x40
+<<<<<<< HEAD
 
 #define TEGRA_FUSE_SKU_CALIB_0	0xf0
 #define TEGRA30_FUSE_SATA_CALIB	0x124
+=======
+#define TEGRA132	0x13
+#define TEGRA210	0x21
+
+#define TEGRA_FUSE_SKU_CALIB_0	0xf0
+#define TEGRA30_FUSE_SATA_CALIB	0x124
+#define TEGRA_FUSE_USB_CALIB_EXT_0 0x250
+>>>>>>> v4.9.227
 
 #ifndef __ASSEMBLY__
 
@@ -46,15 +55,27 @@ struct tegra_sku_info {
 	int cpu_speedo_id;
 	int cpu_speedo_value;
 	int cpu_iddq_value;
+<<<<<<< HEAD
 	int core_process_id;
 	int soc_speedo_id;
 	int gpu_speedo_id;
 	int gpu_process_id;
+=======
+	int soc_process_id;
+	int soc_speedo_id;
+	int soc_speedo_value;
+	int gpu_process_id;
+	int gpu_speedo_id;
+>>>>>>> v4.9.227
 	int gpu_speedo_value;
 	enum tegra_revision revision;
 };
 
 u32 tegra_read_straps(void);
+<<<<<<< HEAD
+=======
+u32 tegra_read_ram_code(void);
+>>>>>>> v4.9.227
 u32 tegra_read_chipid(void);
 int tegra_fuse_readl(unsigned long offset, u32 *value);
 

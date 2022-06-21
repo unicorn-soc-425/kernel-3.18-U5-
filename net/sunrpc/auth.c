@@ -16,7 +16,11 @@
 #include <linux/sunrpc/gss_api.h>
 #include <linux/spinlock.h>
 
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> v4.9.227
 # define RPCDBG_FACILITY	RPCDBG_AUTH
 #endif
 
@@ -51,9 +55,13 @@ static int param_set_hashtbl_sz(const char *val, const struct kernel_param *kp)
 	ret = kstrtoul(val, 0, &num);
 	if (ret == -EINVAL)
 		goto out_inval;
+<<<<<<< HEAD
 	nbits = fls(num);
 	if (num > (1U << nbits))
 		nbits++;
+=======
+	nbits = fls(num - 1);
+>>>>>>> v4.9.227
 	if (nbits > MAX_HASHTABLE_BITS || nbits < 2)
 		goto out_inval;
 	*(unsigned int *)kp->arg = nbits;
@@ -72,7 +80,11 @@ static int param_get_hashtbl_sz(char *buffer, const struct kernel_param *kp)
 
 #define param_check_hashtbl_sz(name, p) __param_check(name, p, unsigned int);
 
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_hashtbl_sz = {
+=======
+static const struct kernel_param_ops param_ops_hashtbl_sz = {
+>>>>>>> v4.9.227
 	.set = param_set_hashtbl_sz,
 	.get = param_get_hashtbl_sz,
 };
@@ -359,8 +371,15 @@ rpcauth_key_timeout_notify(struct rpc_auth *auth, struct rpc_cred *cred)
 EXPORT_SYMBOL_GPL(rpcauth_key_timeout_notify);
 
 bool
+<<<<<<< HEAD
 rpcauth_cred_key_to_expire(struct rpc_cred *cred)
 {
+=======
+rpcauth_cred_key_to_expire(struct rpc_auth *auth, struct rpc_cred *cred)
+{
+	if (auth->au_flags & RPCAUTH_AUTH_NO_CRKEY_TIMEOUT)
+		return false;
+>>>>>>> v4.9.227
 	if (!cred->cr_ops->crkey_to_expire)
 		return false;
 	return cred->cr_ops->crkey_to_expire(cred);
@@ -543,7 +562,11 @@ rpcauth_cache_enforce_limit(void)
  */
 struct rpc_cred *
 rpcauth_lookup_credcache(struct rpc_auth *auth, struct auth_cred * acred,
+<<<<<<< HEAD
 		int flags)
+=======
+		int flags, gfp_t gfp)
+>>>>>>> v4.9.227
 {
 	LIST_HEAD(free);
 	struct rpc_cred_cache *cache = auth->au_credcache;
@@ -551,7 +574,11 @@ rpcauth_lookup_credcache(struct rpc_auth *auth, struct auth_cred * acred,
 			*entry, *new;
 	unsigned int nr;
 
+<<<<<<< HEAD
 	nr = hash_long(from_kuid(&init_user_ns, acred->uid), cache->hashbits);
+=======
+	nr = auth->au_ops->hash_cred(acred, cache->hashbits);
+>>>>>>> v4.9.227
 
 	rcu_read_lock();
 	hlist_for_each_entry_rcu(entry, &cache->hashtable[nr], cr_hash) {
@@ -580,7 +607,11 @@ rpcauth_lookup_credcache(struct rpc_auth *auth, struct auth_cred * acred,
 	if (flags & RPCAUTH_LOOKUP_RCU)
 		return ERR_PTR(-ECHILD);
 
+<<<<<<< HEAD
 	new = auth->au_ops->crcreate(auth, acred, flags);
+=======
+	new = auth->au_ops->crcreate(auth, acred, flags, gfp);
+>>>>>>> v4.9.227
 	if (IS_ERR(new)) {
 		cred = new;
 		goto out;
@@ -646,7 +677,11 @@ rpcauth_init_cred(struct rpc_cred *cred, const struct auth_cred *acred,
 	cred->cr_auth = auth;
 	cred->cr_ops = ops;
 	cred->cr_expire = jiffies;
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> v4.9.227
 	cred->cr_magic = RPCAUTH_CRED_MAGIC;
 #endif
 	cred->cr_uid = acred->uid;
@@ -703,8 +738,12 @@ rpcauth_bindcred(struct rpc_task *task, struct rpc_cred *cred, int flags)
 		new = rpcauth_bind_new_cred(task, lookupflags);
 	if (IS_ERR(new))
 		return PTR_ERR(new);
+<<<<<<< HEAD
 	if (req->rq_cred != NULL)
 		put_rpccred(req->rq_cred);
+=======
+	put_rpccred(req->rq_cred);
+>>>>>>> v4.9.227
 	req->rq_cred = new;
 	return 0;
 }
@@ -712,6 +751,11 @@ rpcauth_bindcred(struct rpc_task *task, struct rpc_cred *cred, int flags)
 void
 put_rpccred(struct rpc_cred *cred)
 {
+<<<<<<< HEAD
+=======
+	if (cred == NULL)
+		return;
+>>>>>>> v4.9.227
 	/* Fast path for unhashed credentials */
 	if (test_bit(RPCAUTH_CRED_HASHED, &cred->cr_flags) == 0) {
 		if (atomic_dec_and_test(&cred->cr_count))

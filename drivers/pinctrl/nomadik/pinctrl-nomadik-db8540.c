@@ -341,6 +341,7 @@ static const struct pinctrl_pin_desc nmk_db8540_pins[] = {
 	PINCTRL_PIN(DB8540_PIN_D17, "GPIO267_D17"),
 };
 
+<<<<<<< HEAD
 #define DB8540_GPIO_RANGE(a, b, c) { .name = "db8540", .id = a, .base = b, \
 			.pin_base = b, .npins = c }
 
@@ -363,6 +364,8 @@ static struct pinctrl_gpio_range nmk_db8540_ranges[] = {
 	DB8540_GPIO_RANGE(8, 256, 12),
 };
 
+=======
+>>>>>>> v4.9.227
 /*
  * Read the pin group names like this:
  * u0_a_1    = first groups of pins for uart0 on alt function a
@@ -1247,8 +1250,11 @@ static const u16 db8540_prcm_gpiocr_regs[] = {
 };
 
 static const struct nmk_pinctrl_soc_data nmk_db8540_soc = {
+<<<<<<< HEAD
 	.gpio_ranges = nmk_db8540_ranges,
 	.gpio_num_ranges = ARRAY_SIZE(nmk_db8540_ranges),
+=======
+>>>>>>> v4.9.227
 	.pins = nmk_db8540_pins,
 	.npins = ARRAY_SIZE(nmk_db8540_pins),
 	.functions = nmk_db8540_functions,

@@ -92,6 +92,30 @@ struct st_partstat {
 	int drv_file;
 };
 
+<<<<<<< HEAD
+=======
+/* Tape statistics */
+struct scsi_tape_stats {
+	atomic64_t read_byte_cnt;  /* bytes read */
+	atomic64_t write_byte_cnt; /* bytes written */
+	atomic64_t in_flight;      /* Number of I/Os in flight */
+	atomic64_t read_cnt;       /* Count of read requests */
+	atomic64_t write_cnt;      /* Count of write requests */
+	atomic64_t other_cnt;      /* Count of other requests either
+				    * implicit or from user space
+				    * ioctl. */
+	atomic64_t resid_cnt;      /* Count of resid_len > 0 */
+	atomic64_t tot_read_time;  /* ktime spent completing reads */
+	atomic64_t tot_write_time; /* ktime spent completing writes */
+	atomic64_t tot_io_time;    /* ktime spent doing any I/O */
+	ktime_t read_time;         /* holds ktime request was queued */
+	ktime_t write_time;        /* holds ktime request was queued */
+	ktime_t other_time;        /* holds ktime request was queued */
+	atomic_t last_read_size;   /* Number of bytes issued for last read */
+	atomic_t last_write_size;  /* Number of bytes issued for last write */
+};
+
+>>>>>>> v4.9.227
 #define ST_NBR_PARTITIONS 4
 
 /* The tape drive descriptor */
@@ -127,8 +151,11 @@ struct scsi_tape {
 	int tape_type;
 	int long_timeout;	/* timeout for commands known to take long time */
 
+<<<<<<< HEAD
 	unsigned long max_pfn;	/* the maximum page number reachable by the HBA */
 
+=======
+>>>>>>> v4.9.227
 	/* Mode characteristics */
 	struct st_modedef modes[ST_NBR_MODES];
 	int current_mode;
@@ -171,6 +198,10 @@ struct scsi_tape {
 #endif
 	struct gendisk *disk;
 	struct kref     kref;
+<<<<<<< HEAD
+=======
+	struct scsi_tape_stats *stats;
+>>>>>>> v4.9.227
 };
 
 /* Bit masks for use_pf */

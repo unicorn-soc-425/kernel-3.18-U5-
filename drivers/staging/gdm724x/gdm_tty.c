@@ -64,7 +64,11 @@ static void gdm_port_destruct(struct tty_port *port)
 	kfree(gdm);
 }
 
+<<<<<<< HEAD
 static struct tty_port_operations gdm_port_ops = {
+=======
+static const struct tty_port_operations gdm_port_ops = {
+>>>>>>> v4.9.227
 	.destruct = gdm_port_destruct,
 };
 
@@ -88,7 +92,11 @@ static int gdm_tty_install(struct tty_driver *driver, struct tty_struct *tty)
 
 	mutex_lock(&gdm_table_lock);
 	gdm = gdm_table[i][j];
+<<<<<<< HEAD
 	if (gdm == NULL) {
+=======
+	if (!gdm) {
+>>>>>>> v4.9.227
 		mutex_unlock(&gdm_table_lock);
 		return -ENODEV;
 	}
@@ -167,7 +175,11 @@ static int gdm_tty_recv_complete(void *data,
 
 static void gdm_tty_send_complete(void *arg)
 {
+<<<<<<< HEAD
 	struct gdm *gdm = (struct gdm *)arg;
+=======
+	struct gdm *gdm = arg;
+>>>>>>> v4.9.227
 
 	if (!GDM_TTY_READY(gdm))
 		return;
@@ -193,7 +205,11 @@ static int gdm_tty_write(struct tty_struct *tty, const unsigned char *buf,
 		sending_len = remain > MUX_TX_MAX_SIZE ? MUX_TX_MAX_SIZE :
 							 remain;
 		gdm_tty_send(gdm,
+<<<<<<< HEAD
 			     (void *)(buf+sent_len),
+=======
+			     (void *)(buf + sent_len),
+>>>>>>> v4.9.227
 			     sending_len,
 			     gdm->index,
 			     gdm_tty_send_complete,
@@ -225,8 +241,12 @@ int register_lte_tty_device(struct tty_dev *tty_dev, struct device *device)
 	int j;
 
 	for (i = 0; i < TTY_MAX_COUNT; i++) {
+<<<<<<< HEAD
 
 		gdm = kmalloc(sizeof(struct gdm), GFP_KERNEL);
+=======
+		gdm = kmalloc(sizeof(*gdm), GFP_KERNEL);
+>>>>>>> v4.9.227
 		if (!gdm)
 			return -ENOMEM;
 

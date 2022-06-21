@@ -139,7 +139,11 @@ static void ftrace_mod_code(void)
 		clear_mod_flag();
 }
 
+<<<<<<< HEAD
 void ftrace_nmi_enter(void)
+=======
+void arch_ftrace_nmi_enter(void)
+>>>>>>> v4.9.227
 {
 	if (atomic_inc_return(&nmi_running) & MOD_CODE_WRITE_FLAG) {
 		smp_rmb();
@@ -150,7 +154,11 @@ void ftrace_nmi_enter(void)
 	smp_mb();
 }
 
+<<<<<<< HEAD
 void ftrace_nmi_exit(void)
+=======
+void arch_ftrace_nmi_exit(void)
+>>>>>>> v4.9.227
 {
 	/* Finish all executions before clearing nmi_running */
 	smp_mb();
@@ -212,6 +220,7 @@ static int ftrace_modify_code(unsigned long ip, unsigned char *old_code,
 	unsigned char replaced[MCOUNT_INSN_SIZE];
 
 	/*
+<<<<<<< HEAD
 	 * Note: Due to modules and __init, code can
 	 *  disappear and change, we need to protect against faulting
 	 *  as well as code changing. We do this by using the
@@ -219,6 +228,13 @@ static int ftrace_modify_code(unsigned long ip, unsigned char *old_code,
 	 *
 	 * No real locking needed, this code is run through
 	 * kstop_machine, or before SMP starts.
+=======
+	 * Note:
+	 * We are paranoid about modifying text, as if a bug was to happen, it
+	 * could cause us to read or write to someplace that could cause harm.
+	 * Carefully read and modify the code with probe_kernel_*(), and make
+	 * sure what we read is what we expected it to be before modifying it.
+>>>>>>> v4.9.227
 	 */
 
 	/* read the text we want to modify */
@@ -384,7 +400,11 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr)
 		return;
 	}
 
+<<<<<<< HEAD
 	err = ftrace_push_return_trace(old, self_addr, &trace.depth, 0);
+=======
+	err = ftrace_push_return_trace(old, self_addr, &trace.depth, 0, NULL);
+>>>>>>> v4.9.227
 	if (err == -EBUSY) {
 		__raw_writel(old, parent);
 		return;

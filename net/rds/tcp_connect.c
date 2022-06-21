@@ -40,6 +40,7 @@
 void rds_tcp_state_change(struct sock *sk)
 {
 	void (*state_change)(struct sock *sk);
+<<<<<<< HEAD
 	struct rds_connection *conn;
 	struct rds_tcp_connection *tc;
 
@@ -50,10 +51,23 @@ void rds_tcp_state_change(struct sock *sk)
 		goto out;
 	}
 	tc = conn->c_transport_data;
+=======
+	struct rds_conn_path *cp;
+	struct rds_tcp_connection *tc;
+
+	read_lock_bh(&sk->sk_callback_lock);
+	cp = sk->sk_user_data;
+	if (!cp) {
+		state_change = sk->sk_state_change;
+		goto out;
+	}
+	tc = cp->cp_transport_data;
+>>>>>>> v4.9.227
 	state_change = tc->t_orig_state_change;
 
 	rdsdebug("sock %p state_change to %d\n", tc->t_sock, sk->sk_state);
 
+<<<<<<< HEAD
 	switch(sk->sk_state) {
 		/* ignore connecting sockets as they make progress */
 		case TCP_SYN_SENT:
@@ -73,12 +87,54 @@ out:
 }
 
 int rds_tcp_conn_connect(struct rds_connection *conn)
+=======
+	switch (sk->sk_state) {
+	/* ignore connecting sockets as they make progress */
+	case TCP_SYN_SENT:
+	case TCP_SYN_RECV:
+		break;
+	case TCP_ESTABLISHED:
+		rds_connect_path_complete(cp, RDS_CONN_CONNECTING);
+		break;
+	case TCP_CLOSE_WAIT:
+	case TCP_CLOSE:
+		rds_conn_path_drop(cp);
+	default:
+		break;
+	}
+out:
+	read_unlock_bh(&sk->sk_callback_lock);
+	state_change(sk);
+}
+
+int rds_tcp_conn_path_connect(struct rds_conn_path *cp)
+>>>>>>> v4.9.227
 {
 	struct socket *sock = NULL;
 	struct sockaddr_in src, dest;
 	int ret;
+<<<<<<< HEAD
 
 	ret = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &sock);
+=======
+	struct rds_connection *conn = cp->cp_conn;
+	struct rds_tcp_connection *tc = cp->cp_transport_data;
+
+	/* for multipath rds,we only trigger the connection after
+	 * the handshake probe has determined the number of paths.
+	 */
+	if (cp->cp_index > 0 && cp->cp_conn->c_npaths < 2)
+		return -EAGAIN;
+
+	mutex_lock(&tc->t_conn_path_lock);
+
+	if (rds_conn_path_up(cp)) {
+		mutex_unlock(&tc->t_conn_path_lock);
+		return 0;
+	}
+	ret = sock_create_kern(rds_conn_net(conn), PF_INET,
+			       SOCK_STREAM, IPPROTO_TCP, &sock);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto out;
 
@@ -103,6 +159,7 @@ int rds_tcp_conn_connect(struct rds_connection *conn)
 	 * once we call connect() we can start getting callbacks and they
 	 * own the socket
 	 */
+<<<<<<< HEAD
 	rds_tcp_set_callbacks(sock, conn);
 	ret = sock->ops->connect(sock, (struct sockaddr *)&dest, sizeof(dest),
 				 O_NONBLOCK);
@@ -116,6 +173,25 @@ int rds_tcp_conn_connect(struct rds_connection *conn)
 		rds_tcp_restore_callbacks(sock, conn->c_transport_data);
 
 out:
+=======
+	rds_tcp_set_callbacks(sock, cp);
+	ret = sock->ops->connect(sock, (struct sockaddr *)&dest, sizeof(dest),
+				 O_NONBLOCK);
+
+	cp->cp_outgoing = 1;
+	rdsdebug("connect to address %pI4 returned %d\n", &conn->c_faddr, ret);
+	if (ret == -EINPROGRESS)
+		ret = 0;
+	if (ret == 0) {
+		rds_tcp_keepalive(sock);
+		sock = NULL;
+	} else {
+		rds_tcp_restore_callbacks(sock, cp->cp_transport_data);
+	}
+
+out:
+	mutex_unlock(&tc->t_conn_path_lock);
+>>>>>>> v4.9.227
 	if (sock)
 		sock_release(sock);
 	return ret;
@@ -130,12 +206,22 @@ out:
  * callbacks to those set by TCP.  Our callbacks won't execute again once we
  * hold the sock lock.
  */
+<<<<<<< HEAD
 void rds_tcp_conn_shutdown(struct rds_connection *conn)
 {
 	struct rds_tcp_connection *tc = conn->c_transport_data;
 	struct socket *sock = tc->t_sock;
 
 	rdsdebug("shutting down conn %p tc %p sock %p\n", conn, tc, sock);
+=======
+void rds_tcp_conn_path_shutdown(struct rds_conn_path *cp)
+{
+	struct rds_tcp_connection *tc = cp->cp_transport_data;
+	struct socket *sock = tc->t_sock;
+
+	rdsdebug("shutting down conn %p tc %p sock %p\n",
+		 cp->cp_conn, tc, sock);
+>>>>>>> v4.9.227
 
 	if (sock) {
 		sock->ops->shutdown(sock, RCV_SHUTDOWN | SEND_SHUTDOWN);

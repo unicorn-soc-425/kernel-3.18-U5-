@@ -456,7 +456,10 @@ static int highlander_i2c_remove(struct platform_device *pdev)
 static struct platform_driver highlander_i2c_driver = {
 	.driver		= {
 		.name	= "i2c-highlander",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 
 	.probe		= highlander_i2c_probe,

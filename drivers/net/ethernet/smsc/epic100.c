@@ -889,7 +889,11 @@ static void epic_tx_timeout(struct net_device *dev)
 		ew32(COMMAND, TxQueued);
 	}
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	dev->stats.tx_errors++;
 	if (!ep->tx_full)
 		netif_wake_queue(dev);

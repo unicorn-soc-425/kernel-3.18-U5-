@@ -20,7 +20,11 @@
 #include <media/media-entity.h>
 #include <media/v4l2-dev.h>
 #include <media/v4l2-fh.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 
 #define ISP_VIDEO_DRIVER_NAME		"ispvideo"
 #define ISP_VIDEO_DRIVER_VERSION	"0.0.2"
@@ -44,10 +48,17 @@ struct v4l2_pix_format;
  * @bpp: Bytes per pixel (when stored in memory)
  */
 struct isp_format_info {
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode code;
 	enum v4l2_mbus_pixelcode truncated;
 	enum v4l2_mbus_pixelcode uncompressed;
 	enum v4l2_mbus_pixelcode flavor;
+=======
+	u32 code;
+	u32 truncated;
+	u32 uncompressed;
+	u32 flavor;
+>>>>>>> v4.9.227
 	u32 pixelformat;
 	unsigned int width;
 	unsigned int bpp;
@@ -80,7 +91,11 @@ enum isp_pipeline_state {
  * struct isp_pipeline - An ISP hardware pipeline
  * @field: The field being processed by the pipeline
  * @error: A hardware error occurred during capture
+<<<<<<< HEAD
  * @entities: Bitmask of entities in the pipeline (indexed by entity ID)
+=======
+ * @ent_enum: Entities in the pipeline
+>>>>>>> v4.9.227
  */
 struct isp_pipeline {
 	struct media_pipeline pipe;
@@ -89,7 +104,11 @@ struct isp_pipeline {
 	enum isp_pipeline_stream_state stream_state;
 	struct isp_video *input;
 	struct isp_video *output;
+<<<<<<< HEAD
 	u32 entities;
+=======
+	struct media_entity_enum ent_enum;
+>>>>>>> v4.9.227
 	unsigned long l3_ick;
 	unsigned int max_rate;
 	enum v4l2_field field;
@@ -122,7 +141,11 @@ static inline int isp_pipeline_ready(struct isp_pipeline *pipe)
  * @dma: DMA address
  */
 struct isp_buffer {
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head irqlist;
 	dma_addr_t dma;
 };
@@ -171,7 +194,10 @@ struct isp_video {
 	bool error;
 
 	/* Video buffers queue */
+<<<<<<< HEAD
 	void *alloc_ctx;
+=======
+>>>>>>> v4.9.227
 	struct vb2_queue *queue;
 	struct mutex queue_lock;	/* protects the queue */
 	spinlock_t irqlock;		/* protects dmaqueue */
@@ -206,6 +232,10 @@ void omap3isp_video_resume(struct isp_video *video, int continuous);
 struct media_pad *omap3isp_video_remote_pad(struct isp_video *video);
 
 const struct isp_format_info *
+<<<<<<< HEAD
 omap3isp_video_format_info(enum v4l2_mbus_pixelcode code);
+=======
+omap3isp_video_format_info(u32 code);
+>>>>>>> v4.9.227
 
 #endif /* OMAP3_ISP_VIDEO_H */

@@ -1120,7 +1120,11 @@ static void cfhsi_setup(struct net_device *dev)
 	dev->type = ARPHRD_CAIF;
 	dev->flags = IFF_POINTOPOINT | IFF_NOARP;
 	dev->mtu = CFHSI_MAX_CAIF_FRAME_SZ;
+<<<<<<< HEAD
 	dev->tx_queue_len = 0;
+=======
+	dev->priv_flags |= IFF_NO_QUEUE;
+>>>>>>> v4.9.227
 	dev->destructor = free_netdev;
 	dev->netdev_ops = &cfhsi_netdevops;
 	for (i = 0; i < CFHSI_PRIO_LAST; ++i)
@@ -1201,7 +1205,11 @@ static int cfhsi_open(struct net_device *ndev)
 	clear_bit(CFHSI_AWAKE, &cfhsi->bits);
 
 	/* Create work thread. */
+<<<<<<< HEAD
 	cfhsi->wq = create_singlethread_workqueue(cfhsi->ndev->name);
+=======
+	cfhsi->wq = alloc_ordered_workqueue(cfhsi->ndev->name, WQ_MEM_RECLAIM);
+>>>>>>> v4.9.227
 	if (!cfhsi->wq) {
 		netdev_err(cfhsi->ndev, "%s: Failed to create work queue.\n",
 			__func__);
@@ -1267,9 +1275,12 @@ static int cfhsi_close(struct net_device *ndev)
 	/* going to shutdown driver */
 	set_bit(CFHSI_SHUTDOWN, &cfhsi->bits);
 
+<<<<<<< HEAD
 	/* Flush workqueue */
 	flush_workqueue(cfhsi->wq);
 
+=======
+>>>>>>> v4.9.227
 	/* Delete timers if pending */
 	del_timer_sync(&cfhsi->inactivity_timer);
 	del_timer_sync(&cfhsi->rx_slowpath_timer);
@@ -1415,7 +1426,10 @@ static int caif_hsi_newlink(struct net *src_net, struct net_device *dev,
 
 	cfhsi = netdev_priv(dev);
 	cfhsi_netlink_parms(data, cfhsi);
+<<<<<<< HEAD
 	dev_net_set(cfhsi->ndev, src_net);
+=======
+>>>>>>> v4.9.227
 
 	get_ops = symbol_get(cfhsi_get_ops);
 	if (!get_ops) {
@@ -1468,7 +1482,11 @@ static void __exit cfhsi_exit_module(void)
 	rtnl_lock();
 	list_for_each_safe(list_node, n, &cfhsi_list) {
 		cfhsi = list_entry(list_node, struct cfhsi, list);
+<<<<<<< HEAD
 		unregister_netdev(cfhsi->ndev);
+=======
+		unregister_netdevice(cfhsi->ndev);
+>>>>>>> v4.9.227
 	}
 	rtnl_unlock();
 }

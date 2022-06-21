@@ -25,9 +25,12 @@
 #include <linux/idr.h>
 #include <linux/mic_bus.h>
 
+<<<<<<< HEAD
 /* Unique numbering for mbus devices. */
 static DEFINE_IDA(mbus_index_ida);
 
+=======
+>>>>>>> v4.9.227
 static ssize_t device_show(struct device *d,
 			   struct device_attribute *attr, char *buf)
 {
@@ -147,7 +150,12 @@ static void mbus_release_dev(struct device *d)
 
 struct mbus_device *
 mbus_register_device(struct device *pdev, int id, struct dma_map_ops *dma_ops,
+<<<<<<< HEAD
 		     struct mbus_hw_ops *hw_ops, void __iomem *mmio_va)
+=======
+		     struct mbus_hw_ops *hw_ops, int index,
+		     void __iomem *mmio_va)
+>>>>>>> v4.9.227
 {
 	int ret;
 	struct mbus_device *mbdev;
@@ -166,6 +174,7 @@ mbus_register_device(struct device *pdev, int id, struct dma_map_ops *dma_ops,
 	mbdev->dev.release = mbus_release_dev;
 	mbdev->hw_ops = hw_ops;
 	mbdev->dev.bus = &mic_bus;
+<<<<<<< HEAD
 
 	/* Assign a unique device index and hence name. */
 	ret = ida_simple_get(&mbus_index_ida, 0, 0, GFP_KERNEL);
@@ -173,6 +182,9 @@ mbus_register_device(struct device *pdev, int id, struct dma_map_ops *dma_ops,
 		goto free_mbdev;
 
 	mbdev->index = ret;
+=======
+	mbdev->index = index;
+>>>>>>> v4.9.227
 	dev_set_name(&mbdev->dev, "mbus-dev%u", mbdev->index);
 	/*
 	 * device_register() causes the bus infrastructure to look for a
@@ -180,22 +192,33 @@ mbus_register_device(struct device *pdev, int id, struct dma_map_ops *dma_ops,
 	 */
 	ret = device_register(&mbdev->dev);
 	if (ret)
+<<<<<<< HEAD
 		goto ida_remove;
 	return mbdev;
 ida_remove:
 	ida_simple_remove(&mbus_index_ida, mbdev->index);
 free_mbdev:
 	kfree(mbdev);
+=======
+		goto free_mbdev;
+	return mbdev;
+free_mbdev:
+	put_device(&mbdev->dev);
+>>>>>>> v4.9.227
 	return ERR_PTR(ret);
 }
 EXPORT_SYMBOL_GPL(mbus_register_device);
 
 void mbus_unregister_device(struct mbus_device *mbdev)
 {
+<<<<<<< HEAD
 	int index = mbdev->index; /* save for after device release */
 
 	device_unregister(&mbdev->dev);
 	ida_simple_remove(&mbus_index_ida, index);
+=======
+	device_unregister(&mbdev->dev);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(mbus_unregister_device);
 
@@ -207,7 +230,10 @@ static int __init mbus_init(void)
 static void __exit mbus_exit(void)
 {
 	bus_unregister(&mic_bus);
+<<<<<<< HEAD
 	ida_destroy(&mbus_index_ida);
+=======
+>>>>>>> v4.9.227
 }
 
 core_initcall(mbus_init);

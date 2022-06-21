@@ -15,6 +15,10 @@
 #include <linux/rtc.h>
 #include <linux/bcd.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 
 /* Registers */
 #define EM3027_REG_ON_OFF_CTRL	0x00
@@ -135,10 +139,26 @@ static struct i2c_device_id em3027_id[] = {
 	{ "em3027", 0 },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, em3027_id);
+
+#ifdef CONFIG_OF
+static const struct of_device_id em3027_of_match[] = {
+	{ .compatible = "emmicro,em3027", },
+	{}
+};
+MODULE_DEVICE_TABLE(of, em3027_of_match);
+#endif
+>>>>>>> v4.9.227
 
 static struct i2c_driver em3027_driver = {
 	.driver = {
 		   .name = "rtc-em3027",
+<<<<<<< HEAD
+=======
+		   .of_match_table = of_match_ptr(em3027_of_match),
+>>>>>>> v4.9.227
 	},
 	.probe = &em3027_probe,
 	.id_table = em3027_id,

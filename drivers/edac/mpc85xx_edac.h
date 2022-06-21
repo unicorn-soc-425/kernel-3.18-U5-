@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Freescale MPC85xx Memory Controller kenel module
+=======
+ * Freescale MPC85xx Memory Controller kernel module
+>>>>>>> v4.9.227
  * Author: Dave Jiang <djiang@mvista.com>
  *
  * 2006-2007 (c) MontaVista Software, Inc. This file is licensed under
@@ -17,6 +21,7 @@
 #define mpc85xx_printk(level, fmt, arg...) \
 	edac_printk(level, "MPC85xx", fmt, ##arg)
 
+<<<<<<< HEAD
 #define mpc85xx_mc_printk(mci, level, fmt, arg...) \
 	edac_mc_chipset_printk(mci, level, "MPC85xx", fmt, ##arg)
 
@@ -75,6 +80,8 @@
 #define	DDR_EDI_SBED	0x4	/* single-bit ECC error disable */
 #define	DDR_EDI_MBED	0x8	/* multi-bit ECC error disable */
 
+=======
+>>>>>>> v4.9.227
 /*
  * L2 Err defines
  */
@@ -148,6 +155,7 @@
 #define MPC85XX_PCIE_ERR_CAP_R2		0x0030
 #define MPC85XX_PCIE_ERR_CAP_R3		0x0034
 
+<<<<<<< HEAD
 struct mpc85xx_mc_pdata {
 	char *name;
 	int edac_idx;
@@ -155,6 +163,8 @@ struct mpc85xx_mc_pdata {
 	int irq;
 };
 
+=======
+>>>>>>> v4.9.227
 struct mpc85xx_l2_pdata {
 	char *name;
 	int edac_idx;

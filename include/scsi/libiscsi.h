@@ -379,8 +379,11 @@ struct iscsi_host {
 /*
  * scsi host template
  */
+<<<<<<< HEAD
 extern int iscsi_change_queue_depth(struct scsi_device *sdev, int depth,
 				    int reason);
+=======
+>>>>>>> v4.9.227
 extern int iscsi_eh_abort(struct scsi_cmnd *sc);
 extern int iscsi_eh_recover_target(struct scsi_cmnd *sc);
 extern int iscsi_eh_session_reset(struct scsi_cmnd *sc);

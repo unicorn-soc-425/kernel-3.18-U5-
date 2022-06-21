@@ -15,8 +15,11 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 struct task_struct;
 
+=======
+>>>>>>> v4.9.227
 /* User-level do most of the mapping between kernel and user
    capabilities based on the version tag given by the kernel. The
    kernel might be somewhat backwards compatible, but don't bet on

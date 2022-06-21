@@ -242,8 +242,12 @@ void cx25821_stop_upstream_audio(struct cx25821_dev *dev)
 	dev->_audioframe_count = 0;
 	dev->_audiofile_status = END_OF_FILE;
 
+<<<<<<< HEAD
 	kfree(dev->_irq_audio_queues);
 	dev->_irq_audio_queues = NULL;
+=======
+	flush_work(&dev->_audio_work_entry);
+>>>>>>> v4.9.227
 
 	kfree(dev->_audiofilename);
 }
@@ -446,8 +450,12 @@ static int cx25821_audio_upstream_irq(struct cx25821_dev *dev, int chan_num,
 
 			dev->_audioframe_index = dev->_last_index_irq;
 
+<<<<<<< HEAD
 			queue_work(dev->_irq_audio_queues,
 				   &dev->_audio_work_entry);
+=======
+			schedule_work(&dev->_audio_work_entry);
+>>>>>>> v4.9.227
 		}
 
 		if (dev->_is_first_audio_frame) {
@@ -639,6 +647,7 @@ int cx25821_audio_upstream_init(struct cx25821_dev *dev, int channel_select)
 
 	/* Work queue */
 	INIT_WORK(&dev->_audio_work_entry, cx25821_audioups_handler);
+<<<<<<< HEAD
 	dev->_irq_audio_queues =
 	    create_singlethread_workqueue("cx25821_audioworkqueue");
 
@@ -647,6 +656,8 @@ int cx25821_audio_upstream_init(struct cx25821_dev *dev, int channel_select)
 			pr_fmt("ERROR: create_singlethread_workqueue() for Audio FAILED!\n"));
 		return -ENOMEM;
 	}
+=======
+>>>>>>> v4.9.227
 
 	dev->_last_index_irq = 0;
 	dev->_audio_is_running = 0;

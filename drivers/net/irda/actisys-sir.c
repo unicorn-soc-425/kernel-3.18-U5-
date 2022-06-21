@@ -165,8 +165,12 @@ static int actisys_change_speed(struct sir_dev *dev, unsigned speed)
 	int ret = 0;
 	int i = 0;
 
+<<<<<<< HEAD
         IRDA_DEBUG(4, "%s(), speed=%d (was %d)\n", __func__,
         	speed, dev->speed);
+=======
+	pr_debug("%s(), speed=%d (was %d)\n", __func__, speed, dev->speed);
+>>>>>>> v4.9.227
 
 	/* dongle was already resetted from irda_request state machine,
 	 * we are in known state (dongle default)

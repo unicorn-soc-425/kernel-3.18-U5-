@@ -9,7 +9,10 @@
  * (at your option) any later version.
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
 #include <linux/io.h>
@@ -41,9 +44,14 @@ static const struct clk_div_table timer_div_table[] = {
 };
 
 struct clps711x_clk {
+<<<<<<< HEAD
 	struct clk_onecell_data	clk_data;
 	spinlock_t		lock;
 	struct clk		*clks[CLPS711X_CLK_MAX];
+=======
+	spinlock_t			lock;
+	struct clk_hw_onecell_data	clk_data;
+>>>>>>> v4.9.227
 };
 
 static struct clps711x_clk * __init _clps711x_clk_init(void __iomem *base,
@@ -56,7 +64,13 @@ static struct clps711x_clk * __init _clps711x_clk_init(void __iomem *base,
 	if (!base)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
 	clps711x_clk = kzalloc(sizeof(*clps711x_clk), GFP_KERNEL);
+=======
+	clps711x_clk = kzalloc(sizeof(*clps711x_clk) +
+			sizeof(*clps711x_clk->clk_data.hws) * CLPS711X_CLK_MAX,
+			GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!clps711x_clk)
 		return ERR_PTR(-ENOMEM);
 
@@ -107,6 +121,7 @@ static struct clps711x_clk * __init _clps711x_clk_init(void __iomem *base,
 	tmp |= SYSCON1_TC2M | SYSCON1_TC2S;
 	writel(tmp, base + CLPS711X_SYSCON1);
 
+<<<<<<< HEAD
 	clps711x_clk->clks[CLPS711X_CLK_DUMMY] =
 		clk_register_fixed_rate(NULL, "dummy", NULL, CLK_IS_ROOT, 0);
 	clps711x_clk->clks[CLPS711X_CLK_CPU] =
@@ -144,6 +159,42 @@ static struct clps711x_clk * __init _clps711x_clk_init(void __iomem *base,
 		if (IS_ERR(clps711x_clk->clks[i]))
 			pr_err("clk %i: register failed with %ld\n",
 			       i, PTR_ERR(clps711x_clk->clks[i]));
+=======
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_DUMMY] =
+		clk_hw_register_fixed_rate(NULL, "dummy", NULL, 0, 0);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_CPU] =
+		clk_hw_register_fixed_rate(NULL, "cpu", NULL, 0, f_cpu);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_BUS] =
+		clk_hw_register_fixed_rate(NULL, "bus", NULL, 0, f_bus);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_PLL] =
+		clk_hw_register_fixed_rate(NULL, "pll", NULL, 0, f_pll);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_TIMERREF] =
+		clk_hw_register_fixed_rate(NULL, "timer_ref", NULL, 0, f_tim);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_TIMER1] =
+		clk_hw_register_divider_table(NULL, "timer1", "timer_ref", 0,
+					   base + CLPS711X_SYSCON1, 5, 1, 0,
+					   timer_div_table, &clps711x_clk->lock);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_TIMER2] =
+		clk_hw_register_divider_table(NULL, "timer2", "timer_ref", 0,
+					   base + CLPS711X_SYSCON1, 7, 1, 0,
+					   timer_div_table, &clps711x_clk->lock);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_PWM] =
+		clk_hw_register_fixed_rate(NULL, "pwm", NULL, 0, f_pwm);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_SPIREF] =
+		clk_hw_register_fixed_rate(NULL, "spi_ref", NULL, 0, f_spi);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_SPI] =
+		clk_hw_register_divider_table(NULL, "spi", "spi_ref", 0,
+					   base + CLPS711X_SYSCON1, 16, 2, 0,
+					   spi_div_table, &clps711x_clk->lock);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_UART] =
+		clk_hw_register_fixed_factor(NULL, "uart", "bus", 0, 1, 10);
+	clps711x_clk->clk_data.hws[CLPS711X_CLK_TICK] =
+		clk_hw_register_fixed_rate(NULL, "tick", NULL, 0, 64);
+	for (i = 0; i < CLPS711X_CLK_MAX; i++)
+		if (IS_ERR(clps711x_clk->clk_data.hws[i]))
+			pr_err("clk %i: register failed with %ld\n",
+			       i, PTR_ERR(clps711x_clk->clk_data.hws[i]));
+>>>>>>> v4.9.227
 
 	return clps711x_clk;
 }
@@ -157,6 +208,7 @@ void __init clps711x_clk_init(void __iomem *base)
 	BUG_ON(IS_ERR(clps711x_clk));
 
 	/* Clocksource */
+<<<<<<< HEAD
 	clk_register_clkdev(clps711x_clk->clks[CLPS711X_CLK_TIMER1],
 			    NULL, "clps711x-timer.0");
 	clk_register_clkdev(clps711x_clk->clks[CLPS711X_CLK_TIMER2],
@@ -168,6 +220,19 @@ void __init clps711x_clk_init(void __iomem *base)
 	clk_register_clkdev(clps711x_clk->clks[CLPS711X_CLK_UART],
 			    NULL, "clps711x-uart.0");
 	clk_register_clkdev(clps711x_clk->clks[CLPS711X_CLK_UART],
+=======
+	clk_hw_register_clkdev(clps711x_clk->clk_data.hws[CLPS711X_CLK_TIMER1],
+			    NULL, "clps711x-timer.0");
+	clk_hw_register_clkdev(clps711x_clk->clk_data.hws[CLPS711X_CLK_TIMER2],
+			    NULL, "clps711x-timer.1");
+
+	/* Drivers */
+	clk_hw_register_clkdev(clps711x_clk->clk_data.hws[CLPS711X_CLK_PWM],
+			    NULL, "clps711x-pwm");
+	clk_hw_register_clkdev(clps711x_clk->clk_data.hws[CLPS711X_CLK_UART],
+			    NULL, "clps711x-uart.0");
+	clk_hw_register_clkdev(clps711x_clk->clk_data.hws[CLPS711X_CLK_UART],
+>>>>>>> v4.9.227
 			    NULL, "clps711x-uart.1");
 }
 
@@ -183,10 +248,18 @@ static void __init clps711x_clk_init_dt(struct device_node *np)
 	clps711x_clk = _clps711x_clk_init(base, fref);
 	BUG_ON(IS_ERR(clps711x_clk));
 
+<<<<<<< HEAD
 	clps711x_clk->clk_data.clks = clps711x_clk->clks;
 	clps711x_clk->clk_data.clk_num = CLPS711X_CLK_MAX;
 	of_clk_add_provider(np, of_clk_src_onecell_get,
 			    &clps711x_clk->clk_data);
 }
 CLK_OF_DECLARE(clps711x, "cirrus,clps711x-clk", clps711x_clk_init_dt);
+=======
+	clps711x_clk->clk_data.num = CLPS711X_CLK_MAX;
+	of_clk_add_hw_provider(np, of_clk_hw_onecell_get,
+			       &clps711x_clk->clk_data);
+}
+CLK_OF_DECLARE(clps711x, "cirrus,ep7209-clk", clps711x_clk_init_dt);
+>>>>>>> v4.9.227
 #endif

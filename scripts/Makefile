@@ -7,6 +7,10 @@
 # conmakehash:   Create chartable
 # conmakehash:	 Create arrays for initializing the kernel console tables
 # docproc:       Used in Documentation/DocBook
+<<<<<<< HEAD
+=======
+# check-lc_ctype: Used in Documentation/DocBook
+>>>>>>> v4.9.227
 
 HOST_EXTRACFLAGS += -I$(srctree)/tools/include
 
@@ -16,26 +20,56 @@ hostprogs-$(CONFIG_VT)           += conmakehash
 hostprogs-$(BUILD_C_RECORDMCOUNT) += recordmcount
 hostprogs-$(CONFIG_BUILDTIME_EXTABLE_SORT) += sortextable
 hostprogs-$(CONFIG_ASN1)	 += asn1_compiler
+<<<<<<< HEAD
 
 HOSTCFLAGS_sortextable.o = -I$(srctree)/tools/include
 HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
+=======
+hostprogs-$(CONFIG_MODULE_SIG)	 += sign-file
+hostprogs-$(CONFIG_SYSTEM_TRUSTED_KEYRING) += extract-cert
+hostprogs-$(CONFIG_SYSTEM_EXTRA_CERTIFICATE) += insert-sys-cert
+
+HOSTCFLAGS_sortextable.o = -I$(srctree)/tools/include
+HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
+HOSTLOADLIBES_sign-file = -lcrypto
+HOSTLOADLIBES_extract-cert = -lcrypto
+>>>>>>> v4.9.227
 
 always		:= $(hostprogs-y) $(hostprogs-m)
 
 # The following hostprogs-y programs are only build on demand
+<<<<<<< HEAD
 hostprogs-y += unifdef docproc
 
 # These targets are used internally to avoid "is up to date" messages
 PHONY += build_unifdef build_docproc
+=======
+hostprogs-y += unifdef docproc check-lc_ctype
+
+# These targets are used internally to avoid "is up to date" messages
+PHONY += build_unifdef build_docproc build_check-lc_ctype
+>>>>>>> v4.9.227
 build_unifdef: $(obj)/unifdef
 	@:
 build_docproc: $(obj)/docproc
 	@:
+<<<<<<< HEAD
+=======
+build_check-lc_ctype: $(obj)/check-lc_ctype
+	@:
+>>>>>>> v4.9.227
 
 subdir-$(CONFIG_MODVERSIONS) += genksyms
 subdir-y                     += mod
 subdir-$(CONFIG_SECURITY_SELINUX) += selinux
 subdir-$(CONFIG_DTC)         += dtc
+<<<<<<< HEAD
 
 # Let clean descend into subdirs
 subdir-	+= basic kconfig package
+=======
+subdir-$(CONFIG_GDB_SCRIPTS) += gdb
+
+# Let clean descend into subdirs
+subdir-	+= basic kconfig package gcc-plugins
+>>>>>>> v4.9.227

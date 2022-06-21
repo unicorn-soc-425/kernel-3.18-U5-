@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2006 Atmark Techno, Inc.
  *
@@ -13,3 +14,6 @@
 #define __ALIGN_STR	".align 4"
 
 #endif /* _ASM_MICROBLAZE_LINKAGE_H */
+=======
+#include <asm-generic/linkage.h>
+>>>>>>> v4.9.227

@@ -1,7 +1,10 @@
 #ifndef LINUX_FC0011_H_
 #define LINUX_FC0011_H_
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include "dvb_frontend.h"
 
 

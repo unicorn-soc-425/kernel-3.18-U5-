@@ -32,6 +32,7 @@
 #include <linux/module.h>
 
 #include <asm/octeon/cvmx.h>
+<<<<<<< HEAD
 #include <asm/octeon/cvmx-spinlock.h>
 #include <asm/octeon/cvmx-sysinfo.h>
 
@@ -115,3 +116,24 @@ int cvmx_sysinfo_minimal_initialize(void *phy_mem_desc_ptr,
 
 	return 1;
 }
+=======
+#include <asm/octeon/cvmx-sysinfo.h>
+
+/*
+ * This structure defines the private state maintained by sysinfo module.
+ */
+static struct cvmx_sysinfo sysinfo;	   /* system information */
+
+/*
+ * Returns the application information as obtained
+ * by the bootloader.  This provides the core mask of the cores
+ * running the same application image, as well as the physical
+ * memory regions available to the core.
+ */
+struct cvmx_sysinfo *cvmx_sysinfo_get(void)
+{
+	return &sysinfo;
+}
+EXPORT_SYMBOL(cvmx_sysinfo_get);
+
+>>>>>>> v4.9.227

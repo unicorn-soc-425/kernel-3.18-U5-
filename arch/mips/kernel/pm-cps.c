@@ -8,6 +8,10 @@
  * option) any later version.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/cpuhotplug.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/percpu.h>
 #include <linux/slab.h>
@@ -69,6 +73,7 @@ static DEFINE_PER_CPU_ALIGNED(atomic_t, pm_barrier);
 DEFINE_PER_CPU_ALIGNED(struct mips_static_suspend_state, cps_cpu_state);
 
 /* A somewhat arbitrary number of labels & relocs for uasm */
+<<<<<<< HEAD
 static struct uasm_label labels[32] __initdata;
 static struct uasm_reloc relocs[32] __initdata;
 
@@ -76,6 +81,10 @@ static struct uasm_reloc relocs[32] __initdata;
 static unsigned stype_intervention;
 static unsigned stype_memory;
 static unsigned stype_ordering;
+=======
+static struct uasm_label labels[32];
+static struct uasm_reloc relocs[32];
+>>>>>>> v4.9.227
 
 enum mips_reg {
 	zero, at, v0, v1, a0, a1, a2, a3,
@@ -133,7 +142,11 @@ int cps_pm_enter_state(enum cps_pm_state state)
 		return -EINVAL;
 
 	/* Calculate which coupled CPUs (VPEs) are online */
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT
+=======
+#if defined(CONFIG_MIPS_MT) || defined(CONFIG_CPU_MIPSR6)
+>>>>>>> v4.9.227
 	if (cpu_online(cpu)) {
 		cpumask_and(coupled_mask, cpu_online_mask,
 			    &cpu_sibling_map[cpu]);
@@ -147,7 +160,11 @@ int cps_pm_enter_state(enum cps_pm_state state)
 	}
 
 	/* Setup the VPE to run mips_cps_pm_restore when started again */
+<<<<<<< HEAD
 	if (config_enabled(CONFIG_CPU_PM) && state == CPS_PM_POWER_GATED) {
+=======
+	if (IS_ENABLED(CONFIG_CPU_PM) && state == CPS_PM_POWER_GATED) {
+>>>>>>> v4.9.227
 		/* Power gating relies upon CPS SMP */
 		if (!mips_cps_smp_in_use())
 			return -EINVAL;
@@ -197,10 +214,17 @@ int cps_pm_enter_state(enum cps_pm_state state)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __init cps_gen_cache_routine(u32 **pp, struct uasm_label **pl,
 					 struct uasm_reloc **pr,
 					 const struct cache_desc *cache,
 					 unsigned op, int lbl)
+=======
+static void cps_gen_cache_routine(u32 **pp, struct uasm_label **pl,
+				  struct uasm_reloc **pr,
+				  const struct cache_desc *cache,
+				  unsigned op, int lbl)
+>>>>>>> v4.9.227
 {
 	unsigned cache_size = cache->ways << cache->waybit;
 	unsigned i;
@@ -223,21 +247,43 @@ static void __init cps_gen_cache_routine(u32 **pp, struct uasm_label **pl,
 	uasm_build_label(pl, *pp, lbl);
 
 	/* Generate the cache ops */
+<<<<<<< HEAD
 	for (i = 0; i < unroll_lines; i++)
 		uasm_i_cache(pp, op, i * cache->linesz, t0);
 
 	/* Update the base address */
 	uasm_i_addiu(pp, t0, t0, unroll_lines * cache->linesz);
+=======
+	for (i = 0; i < unroll_lines; i++) {
+		if (cpu_has_mips_r6) {
+			uasm_i_cache(pp, op, 0, t0);
+			uasm_i_addiu(pp, t0, t0, cache->linesz);
+		} else {
+			uasm_i_cache(pp, op, i * cache->linesz, t0);
+		}
+	}
+
+	if (!cpu_has_mips_r6)
+		/* Update the base address */
+		uasm_i_addiu(pp, t0, t0, unroll_lines * cache->linesz);
+>>>>>>> v4.9.227
 
 	/* Loop if we haven't reached the end address yet */
 	uasm_il_bne(pp, pr, t0, t1, lbl);
 	uasm_i_nop(pp);
 }
 
+<<<<<<< HEAD
 static int __init cps_gen_flush_fsb(u32 **pp, struct uasm_label **pl,
 				    struct uasm_reloc **pr,
 				    const struct cpuinfo_mips *cpu_info,
 				    int lbl)
+=======
+static int cps_gen_flush_fsb(u32 **pp, struct uasm_label **pl,
+			     struct uasm_reloc **pr,
+			     const struct cpuinfo_mips *cpu_info,
+			     int lbl)
+>>>>>>> v4.9.227
 {
 	unsigned i, fsb_size = 8;
 	unsigned num_loads = (fsb_size * 3) / 2;
@@ -264,6 +310,7 @@ static int __init cps_gen_flush_fsb(u32 **pp, struct uasm_label **pl,
 		/* On older ones it's unavailable */
 		return -1;
 
+<<<<<<< HEAD
 	/* CPUs which do not require the workaround */
 	case CPU_P5600:
 		return 0;
@@ -271,6 +318,11 @@ static int __init cps_gen_flush_fsb(u32 **pp, struct uasm_label **pl,
 	default:
 		WARN_ONCE(1, "pm-cps: FSB flush unsupported for this CPU\n");
 		return -1;
+=======
+	default:
+		/* Assume that the CPU does not need this workaround */
+		return 0;
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -311,8 +363,13 @@ static int __init cps_gen_flush_fsb(u32 **pp, struct uasm_label **pl,
 			     i * line_size * line_stride, t0);
 	}
 
+<<<<<<< HEAD
 	/* Completion barrier */
 	uasm_i_sync(pp, stype_memory);
+=======
+	/* Barrier ensuring previous cache invalidates are complete */
+	uasm_i_sync(pp, STYPE_SYNC);
+>>>>>>> v4.9.227
 	uasm_i_ehb(pp);
 
 	/* Check whether the pipeline stalled due to the FSB being full */
@@ -331,9 +388,15 @@ static int __init cps_gen_flush_fsb(u32 **pp, struct uasm_label **pl,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __init cps_gen_set_top_bit(u32 **pp, struct uasm_label **pl,
 				       struct uasm_reloc **pr,
 				       unsigned r_addr, int lbl)
+=======
+static void cps_gen_set_top_bit(u32 **pp, struct uasm_label **pl,
+				struct uasm_reloc **pr,
+				unsigned r_addr, int lbl)
+>>>>>>> v4.9.227
 {
 	uasm_i_lui(pp, t0, uasm_rel_hi(0x80000000));
 	uasm_build_label(pl, *pp, lbl);
@@ -344,7 +407,11 @@ static void __init cps_gen_set_top_bit(u32 **pp, struct uasm_label **pl,
 	uasm_i_nop(pp);
 }
 
+<<<<<<< HEAD
 static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
+=======
+static void *cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
+>>>>>>> v4.9.227
 {
 	struct uasm_label *l = labels;
 	struct uasm_reloc *r = relocs;
@@ -378,7 +445,11 @@ static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
 	memset(labels, 0, sizeof(labels));
 	memset(relocs, 0, sizeof(relocs));
 
+<<<<<<< HEAD
 	if (config_enabled(CONFIG_CPU_PM) && state == CPS_PM_POWER_GATED) {
+=======
+	if (IS_ENABLED(CONFIG_CPU_PM) && state == CPS_PM_POWER_GATED) {
+>>>>>>> v4.9.227
 		/* Power gating relies upon CPS SMP */
 		if (!mips_cps_smp_in_use())
 			goto out_err;
@@ -402,7 +473,11 @@ static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
 
 	if (coupled_coherence) {
 		/* Increment ready_count */
+<<<<<<< HEAD
 		uasm_i_sync(&p, stype_ordering);
+=======
+		uasm_i_sync(&p, STYPE_SYNC_MB);
+>>>>>>> v4.9.227
 		uasm_build_label(&l, p, lbl_incready);
 		uasm_i_ll(&p, t1, 0, r_nc_count);
 		uasm_i_addiu(&p, t2, t1, 1);
@@ -410,8 +485,13 @@ static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
 		uasm_il_beqz(&p, &r, t2, lbl_incready);
 		uasm_i_addiu(&p, t1, t1, 1);
 
+<<<<<<< HEAD
 		/* Ordering barrier */
 		uasm_i_sync(&p, stype_ordering);
+=======
+		/* Barrier ensuring all CPUs see the updated r_nc_count value */
+		uasm_i_sync(&p, STYPE_SYNC_MB);
+>>>>>>> v4.9.227
 
 		/*
 		 * If this is the last VPE to become ready for non-coherence
@@ -432,7 +512,12 @@ static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
 			uasm_i_lw(&p, t0, 0, r_nc_count);
 			uasm_il_bltz(&p, &r, t0, lbl_secondary_cont);
 			uasm_i_ehb(&p);
+<<<<<<< HEAD
 			uasm_i_yield(&p, zero, t1);
+=======
+			if (cpu_has_mipsmt)
+				uasm_i_yield(&p, zero, t1);
+>>>>>>> v4.9.227
 			uasm_il_b(&p, &r, lbl_poll_cont);
 			uasm_i_nop(&p);
 		} else {
@@ -440,8 +525,26 @@ static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
 			 * The core will lose power & this VPE will not continue
 			 * so it can simply halt here.
 			 */
+<<<<<<< HEAD
 			uasm_i_addiu(&p, t0, zero, TCHALT_H);
 			uasm_i_mtc0(&p, t0, 2, 4);
+=======
+			if (cpu_has_mipsmt) {
+				/* Halt the VPE via C0 tchalt register */
+				uasm_i_addiu(&p, t0, zero, TCHALT_H);
+				uasm_i_mtc0(&p, t0, 2, 4);
+			} else if (cpu_has_vp) {
+				/* Halt the VP via the CPC VP_STOP register */
+				unsigned int vpe_id;
+
+				vpe_id = cpu_vpe_id(&cpu_data[cpu]);
+				uasm_i_addiu(&p, t0, zero, 1 << vpe_id);
+				UASM_i_LA(&p, t1, (long)addr_cpc_cl_vp_stop());
+				uasm_i_sw(&p, t0, 0, t1);
+			} else {
+				BUG();
+			}
+>>>>>>> v4.9.227
 			uasm_build_label(&l, p, lbl_secondary_hang);
 			uasm_il_b(&p, &r, lbl_secondary_hang);
 			uasm_i_nop(&p);
@@ -463,6 +566,7 @@ static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
 	cps_gen_cache_routine(&p, &l, &r, &cpu_data[cpu].dcache,
 			      Index_Writeback_Inv_D, lbl_flushdcache);
 
+<<<<<<< HEAD
 	/* Completion barrier */
 	uasm_i_sync(&p, stype_memory);
 	uasm_i_ehb(&p);
@@ -479,6 +583,26 @@ static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
 	/* Sync to ensure previous interventions are complete */
 	uasm_i_sync(&p, stype_intervention);
 	uasm_i_ehb(&p);
+=======
+	/* Barrier ensuring previous cache invalidates are complete */
+	uasm_i_sync(&p, STYPE_SYNC);
+	uasm_i_ehb(&p);
+
+	if (mips_cm_revision() < CM_REV_CM3) {
+		/*
+		* Disable all but self interventions. The load from COHCTL is
+		* defined by the interAptiv & proAptiv SUMs as ensuring that the
+		*  operation resulting from the preceding store is complete.
+		*/
+		uasm_i_addiu(&p, t0, zero, 1 << cpu_data[cpu].core);
+		uasm_i_sw(&p, t0, 0, r_pcohctl);
+		uasm_i_lw(&p, t0, 0, r_pcohctl);
+
+		/* Barrier to ensure write to coherence control is complete */
+		uasm_i_sync(&p, STYPE_SYNC);
+		uasm_i_ehb(&p);
+	}
+>>>>>>> v4.9.227
 
 	/* Disable coherence */
 	uasm_i_sw(&p, zero, 0, r_pcohctl);
@@ -522,8 +646,13 @@ static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
 			goto gen_done;
 		}
 
+<<<<<<< HEAD
 		/* Completion barrier */
 		uasm_i_sync(&p, stype_memory);
+=======
+		/* Barrier to ensure write to CPC command is complete */
+		uasm_i_sync(&p, STYPE_SYNC);
+>>>>>>> v4.9.227
 		uasm_i_ehb(&p);
 	}
 
@@ -553,26 +682,47 @@ static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
 	 * will run this. The first will actually re-enable coherence & the
 	 * rest will just be performing a rather unusual nop.
 	 */
+<<<<<<< HEAD
 	uasm_i_addiu(&p, t0, zero, CM_GCR_Cx_COHERENCE_COHDOMAINEN_MSK);
 	uasm_i_sw(&p, t0, 0, r_pcohctl);
 	uasm_i_lw(&p, t0, 0, r_pcohctl);
 
 	/* Completion barrier */
 	uasm_i_sync(&p, stype_memory);
+=======
+	uasm_i_addiu(&p, t0, zero, mips_cm_revision() < CM_REV_CM3
+				? CM_GCR_Cx_COHERENCE_COHDOMAINEN_MSK
+				: CM3_GCR_Cx_COHERENCE_COHEN_MSK);
+
+	uasm_i_sw(&p, t0, 0, r_pcohctl);
+	uasm_i_lw(&p, t0, 0, r_pcohctl);
+
+	/* Barrier to ensure write to coherence control is complete */
+	uasm_i_sync(&p, STYPE_SYNC);
+>>>>>>> v4.9.227
 	uasm_i_ehb(&p);
 
 	if (coupled_coherence && (state == CPS_PM_NC_WAIT)) {
 		/* Decrement ready_count */
 		uasm_build_label(&l, p, lbl_decready);
+<<<<<<< HEAD
 		uasm_i_sync(&p, stype_ordering);
+=======
+		uasm_i_sync(&p, STYPE_SYNC_MB);
+>>>>>>> v4.9.227
 		uasm_i_ll(&p, t1, 0, r_nc_count);
 		uasm_i_addiu(&p, t2, t1, -1);
 		uasm_i_sc(&p, t2, 0, r_nc_count);
 		uasm_il_beqz(&p, &r, t2, lbl_decready);
 		uasm_i_andi(&p, v0, t1, (1 << fls(smp_num_siblings)) - 1);
 
+<<<<<<< HEAD
 		/* Ordering barrier */
 		uasm_i_sync(&p, stype_ordering);
+=======
+		/* Barrier ensuring all CPUs see the updated r_nc_count value */
+		uasm_i_sync(&p, STYPE_SYNC_MB);
+>>>>>>> v4.9.227
 	}
 
 	if (coupled_coherence && (state == CPS_PM_CLOCK_GATED)) {
@@ -593,8 +743,13 @@ static void * __init cps_gen_entry_code(unsigned cpu, enum cps_pm_state state)
 		 */
 		uasm_build_label(&l, p, lbl_secondary_cont);
 
+<<<<<<< HEAD
 		/* Ordering barrier */
 		uasm_i_sync(&p, stype_ordering);
+=======
+		/* Barrier ensuring all CPUs see the updated r_nc_count value */
+		uasm_i_sync(&p, STYPE_SYNC_MB);
+>>>>>>> v4.9.227
 	}
 
 	/* The core is coherent, time to return to C code */
@@ -619,7 +774,11 @@ out_err:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int __init cps_gen_core_entries(unsigned cpu)
+=======
+static int cps_pm_online_cpu(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 	enum cps_pm_state state;
 	unsigned core = cpu_data[cpu].core;
@@ -655,6 +814,7 @@ static int __init cps_gen_core_entries(unsigned cpu)
 
 static int __init cps_pm_init(void)
 {
+<<<<<<< HEAD
 	unsigned cpu;
 	int err;
 
@@ -677,6 +837,12 @@ static int __init cps_pm_init(void)
 	if (!mips_cm_present()) {
 		pr_warn("pm-cps: no CM, non-coherent states unavailable\n");
 		goto out;
+=======
+	/* A CM is required for all non-coherent states */
+	if (!mips_cm_present()) {
+		pr_warn("pm-cps: no CM, non-coherent states unavailable\n");
+		return 0;
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -706,6 +872,7 @@ static int __init cps_pm_init(void)
 		pr_warn("pm-cps: no CPC, clock & power gating unavailable\n");
 	}
 
+<<<<<<< HEAD
 	for_each_present_cpu(cpu) {
 		err = cps_gen_core_entries(cpu);
 		if (err)
@@ -713,5 +880,9 @@ static int __init cps_pm_init(void)
 	}
 out:
 	return 0;
+=======
+	return cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "AP_PM_CPS_CPU_ONLINE",
+				 cps_pm_online_cpu, NULL);
+>>>>>>> v4.9.227
 }
 arch_initcall(cps_pm_init);

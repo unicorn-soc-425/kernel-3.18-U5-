@@ -44,7 +44,11 @@ static void hvr950q_cs5340_audio(void *priv, int enable)
 struct au0828_board au0828_boards[] = {
 	[AU0828_BOARD_UNKNOWN] = {
 		.name	= "Unknown board",
+<<<<<<< HEAD
 		.tuner_type = UNSET,
+=======
+		.tuner_type = -1U,
+>>>>>>> v4.9.227
 		.tuner_addr = ADDR_UNSET,
 	},
 	[AU0828_BOARD_HAUPPAUGE_HVR850] = {
@@ -195,8 +199,11 @@ void au0828_card_setup(struct au0828_dev *dev)
 
 	dprintk(1, "%s()\n", __func__);
 
+<<<<<<< HEAD
 	dev->board = au0828_boards[dev->boardnr];
 
+=======
+>>>>>>> v4.9.227
 	if (dev->i2c_rc == 0) {
 		dev->i2c_client.addr = 0xa0 >> 1;
 		tveeprom_read(&dev->i2c_client, eeprom, sizeof(eeprom));

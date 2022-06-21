@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
  *
@@ -11,15 +12,25 @@
  * GNU General Public License for more details.
  */
 
+=======
+>>>>>>> v4.9.227
 #ifndef ASMARM_DMA_CONTIGUOUS_H
 #define ASMARM_DMA_CONTIGUOUS_H
 
 #ifdef __KERNEL__
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DMA_CMA
+>>>>>>> v4.9.227
 
 #include <linux/types.h>
 
 void dma_contiguous_early_fixup(phys_addr_t base, unsigned long size);
 
 #endif
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 #endif

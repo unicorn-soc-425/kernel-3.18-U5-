@@ -10,6 +10,7 @@
  */
 
 #include <linux/oprofile.h>
+<<<<<<< HEAD
 #include <linux/perf_event.h>
 #include <linux/init.h>
 #include <linux/errno.h>
@@ -514,11 +515,41 @@ int __init oprofile_arch_init(struct oprofile_operations *ops)
 #else
 	return -ENODEV;
 #endif
+=======
+#include <linux/init.h>
+#include <asm/processor.h>
+
+static int __s390_backtrace(void *data, unsigned long address, int reliable)
+{
+	unsigned int *depth = data;
+
+	if (*depth == 0)
+		return 1;
+	(*depth)--;
+	oprofile_add_trace(address);
+	return 0;
+}
+
+static void s390_backtrace(struct pt_regs *regs, unsigned int depth)
+{
+	if (user_mode(regs))
+		return;
+	dump_trace(__s390_backtrace, &depth, NULL, regs->gprs[15]);
+}
+
+int __init oprofile_arch_init(struct oprofile_operations *ops)
+{
+	ops->backtrace = s390_backtrace;
+	return 0;
+>>>>>>> v4.9.227
 }
 
 void oprofile_arch_exit(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 	oprofile_hwsampler_exit();
 #endif
+=======
+>>>>>>> v4.9.227
 }

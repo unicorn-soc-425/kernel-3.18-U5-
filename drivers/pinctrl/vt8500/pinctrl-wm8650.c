@@ -347,7 +347,11 @@ static int wm8650_pinctrl_remove(struct platform_device *pdev)
 	return wmt_pinctrl_remove(pdev);
 }
 
+<<<<<<< HEAD
 static struct of_device_id wmt_pinctrl_of_match[] = {
+=======
+static const struct of_device_id wmt_pinctrl_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "wm,wm8650-pinctrl" },
 	{ /* sentinel */ },
 };
@@ -357,7 +361,10 @@ static struct platform_driver wmt_pinctrl_driver = {
 	.remove	= wm8650_pinctrl_remove,
 	.driver = {
 		.name	= "pinctrl-wm8650",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= wmt_pinctrl_of_match,
 	},
 };

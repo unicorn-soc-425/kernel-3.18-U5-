@@ -150,7 +150,12 @@ void
 sn_io_slot_fixup(struct pci_dev *dev)
 {
 	int idx;
+<<<<<<< HEAD
 	unsigned long addr, end, size, start;
+=======
+	struct resource *res;
+	unsigned long size;
+>>>>>>> v4.9.227
 	struct pcidev_info *pcidev_info;
 	struct sn_irq_info *sn_irq_info;
 	int status;
@@ -175,6 +180,7 @@ sn_io_slot_fixup(struct pci_dev *dev)
 
 	/* Copy over PIO Mapped Addresses */
 	for (idx = 0; idx <= PCI_ROM_RESOURCE; idx++) {
+<<<<<<< HEAD
 
 		if (!pcidev_info->pdi_pio_mapped_addr[idx]) {
 			continue;
@@ -190,11 +196,25 @@ sn_io_slot_fixup(struct pci_dev *dev)
 		addr = ((addr << 4) >> 4) | __IA64_UNCACHED_OFFSET;
 		dev->resource[idx].start = addr;
 		dev->resource[idx].end = addr + size;
+=======
+		if (!pcidev_info->pdi_pio_mapped_addr[idx])
+			continue;
+
+		res = &dev->resource[idx];
+
+		size = res->end - res->start;
+		if (size == 0)
+			continue;
+
+		res->start = pcidev_info->pdi_pio_mapped_addr[idx];
+		res->end = res->start + size;
+>>>>>>> v4.9.227
 
 		/*
 		 * if it's already in the device structure, remove it before
 		 * inserting
 		 */
+<<<<<<< HEAD
 		if (dev->resource[idx].parent && dev->resource[idx].parent->child)
 			release_resource(&dev->resource[idx]);
 
@@ -218,12 +238,31 @@ sn_io_slot_fixup(struct pci_dev *dev)
 				image_size - 1;
 			dev->resource[PCI_ROM_RESOURCE].flags |=
 						 IORESOURCE_ROM_BIOS_COPY;
+=======
+		if (res->parent && res->parent->child)
+			release_resource(res);
+
+		if (res->flags & IORESOURCE_IO)
+			insert_resource(&ioport_resource, res);
+		else
+			insert_resource(&iomem_resource, res);
+		/*
+		 * If ROM, mark as shadowed in PROM.
+		 */
+		if (idx == PCI_ROM_RESOURCE) {
+			pci_disable_rom(dev);
+			res->flags = IORESOURCE_MEM | IORESOURCE_ROM_SHADOW |
+				     IORESOURCE_PCI_FIXED;
+>>>>>>> v4.9.227
 		}
 	}
 
 	sn_pci_fixup_slot(dev, pcidev_info, sn_irq_info);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 EXPORT_SYMBOL(sn_io_slot_fixup);
 
 /*

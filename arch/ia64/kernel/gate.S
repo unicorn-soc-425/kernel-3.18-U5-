@@ -14,7 +14,11 @@
 #include <asm/unistd.h>
 #include <asm/kregs.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include "paravirt_inst.h"
+=======
+#include <asm/native/inst.h>
+>>>>>>> v4.9.227
 
 /*
  * We can't easily refer to symbols inside the kernel.  To avoid full runtime relocation,
@@ -376,6 +380,7 @@ GLOBAL_ENTRY(__kernel_syscall_via_epc)
 (p9)	mov r8=ENOSYS
 	FSYS_RETURN
 
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT
 	/*
 	 * padd to make the size of this symbol constant
@@ -383,4 +388,6 @@ GLOBAL_ENTRY(__kernel_syscall_via_epc)
 	 */
 	.align PAGE_SIZE / 8
 #endif
+=======
+>>>>>>> v4.9.227
 END(__kernel_syscall_via_epc)

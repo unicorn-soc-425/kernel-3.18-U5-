@@ -40,6 +40,7 @@
 /* Active distance in pixels for a gesture to be reported */
 #define CY_ACT_DIST_DFLT 0xF8 /* pixels */
 
+<<<<<<< HEAD
 struct cyttsp_platform_data {
 	u32 maxx;
 	u32 maxy;
@@ -55,4 +56,6 @@ struct cyttsp_platform_data {
 	u8 *bl_keys;
 };
 
+=======
+>>>>>>> v4.9.227
 #endif /* _CYTTSP_H_ */

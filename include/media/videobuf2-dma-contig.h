@@ -13,7 +13,11 @@
 #ifndef _MEDIA_VIDEOBUF2_DMA_CONTIG_H
 #define _MEDIA_VIDEOBUF2_DMA_CONTIG_H
 
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <linux/dma-mapping.h>
 
 static inline dma_addr_t
@@ -24,8 +28,13 @@ vb2_dma_contig_plane_dma_addr(struct vb2_buffer *vb, unsigned int plane_no)
 	return *addr;
 }
 
+<<<<<<< HEAD
 void *vb2_dma_contig_init_ctx(struct device *dev);
 void vb2_dma_contig_cleanup_ctx(void *alloc_ctx);
+=======
+int vb2_dma_contig_set_max_seg_size(struct device *dev, unsigned int size);
+void vb2_dma_contig_clear_max_seg_size(struct device *dev);
+>>>>>>> v4.9.227
 
 extern const struct vb2_mem_ops vb2_dma_contig_memops;
 

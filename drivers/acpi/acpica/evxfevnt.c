@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,7 +75,11 @@ acpi_status acpi_enable(void)
 
 	/* ACPI tables must be present */
 
+<<<<<<< HEAD
 	if (!acpi_tb_tables_loaded()) {
+=======
+	if (acpi_gbl_fadt_index == ACPI_INVALID_TABLE_INDEX) {
+>>>>>>> v4.9.227
 		return_ACPI_STATUS(AE_NO_ACPI_TABLES);
 	}
 
@@ -374,7 +382,12 @@ acpi_status acpi_get_event_status(u32 event, acpi_event_status * event_status)
 	}
 
 	if (in_byte) {
+<<<<<<< HEAD
 		local_event_status |= ACPI_EVENT_FLAG_ENABLED;
+=======
+		local_event_status |=
+		    (ACPI_EVENT_FLAG_ENABLED | ACPI_EVENT_FLAG_ENABLE_SET);
+>>>>>>> v4.9.227
 	}
 
 	/* Fixed event currently active? */
@@ -387,7 +400,11 @@ acpi_status acpi_get_event_status(u32 event, acpi_event_status * event_status)
 	}
 
 	if (in_byte) {
+<<<<<<< HEAD
 		local_event_status |= ACPI_EVENT_FLAG_SET;
+=======
+		local_event_status |= ACPI_EVENT_FLAG_STATUS_SET;
+>>>>>>> v4.9.227
 	}
 
 	(*event_status) = local_event_status;

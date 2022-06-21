@@ -357,6 +357,7 @@ static const struct v4l2_ctrl_ops saa7110_ctrl_ops = {
 	.s_ctrl = saa7110_s_ctrl,
 };
 
+<<<<<<< HEAD
 static const struct v4l2_subdev_core_ops saa7110_core_ops = {
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
@@ -367,6 +368,8 @@ static const struct v4l2_subdev_core_ops saa7110_core_ops = {
 	.querymenu = v4l2_subdev_querymenu,
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct v4l2_subdev_video_ops saa7110_video_ops = {
 	.s_std = saa7110_s_std,
 	.s_routing = saa7110_s_routing,
@@ -376,7 +379,10 @@ static const struct v4l2_subdev_video_ops saa7110_video_ops = {
 };
 
 static const struct v4l2_subdev_ops saa7110_ops = {
+<<<<<<< HEAD
 	.core = &saa7110_core_ops,
+=======
+>>>>>>> v4.9.227
 	.video = &saa7110_video_ops,
 };
 
@@ -472,7 +478,10 @@ MODULE_DEVICE_TABLE(i2c, saa7110_id);
 
 static struct i2c_driver saa7110_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "saa7110",
 	},
 	.probe		= saa7110_probe,

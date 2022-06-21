@@ -94,6 +94,10 @@ clocks and IDs.
 	csi_sel			79
 	iim_gate		80
 	gpu2d_gate		81
+<<<<<<< HEAD
+=======
+	ckli_gate		82
+>>>>>>> v4.9.227
 
 Examples:
 

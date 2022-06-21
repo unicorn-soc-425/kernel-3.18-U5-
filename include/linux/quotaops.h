@@ -21,7 +21,11 @@ static inline struct quota_info *sb_dqopt(struct super_block *sb)
 /* i_mutex must being held */
 static inline bool is_quota_modification(struct inode *inode, struct iattr *ia)
 {
+<<<<<<< HEAD
 	return (ia->ia_valid & ATTR_SIZE && ia->ia_size != inode->i_size) ||
+=======
+	return (ia->ia_valid & ATTR_SIZE) ||
+>>>>>>> v4.9.227
 		(ia->ia_valid & ATTR_UID && !uid_eq(ia->ia_uid, inode->i_uid)) ||
 		(ia->ia_valid & ATTR_GID && !gid_eq(ia->ia_gid, inode->i_gid));
 }
@@ -43,7 +47,11 @@ void inode_claim_rsv_space(struct inode *inode, qsize_t number);
 void inode_sub_rsv_space(struct inode *inode, qsize_t number);
 void inode_reclaim_rsv_space(struct inode *inode, qsize_t number);
 
+<<<<<<< HEAD
 void dquot_initialize(struct inode *inode);
+=======
+int dquot_initialize(struct inode *inode);
+>>>>>>> v4.9.227
 void dquot_drop(struct inode *inode);
 struct dquot *dqget(struct super_block *sb, struct kqid qid);
 static inline struct dquot *dqgrab(struct dquot *dquot)
@@ -54,6 +62,19 @@ static inline struct dquot *dqgrab(struct dquot *dquot)
 	atomic_inc(&dquot->dq_count);
 	return dquot;
 }
+<<<<<<< HEAD
+=======
+
+static inline bool dquot_is_busy(struct dquot *dquot)
+{
+	if (test_bit(DQ_MOD_B, &dquot->dq_flags))
+		return true;
+	if (atomic_read(&dquot->dq_count) > 1)
+		return true;
+	return false;
+}
+
+>>>>>>> v4.9.227
 void dqput(struct dquot *dquot);
 int dquot_scan_active(struct super_block *sb,
 		      int (*fn)(struct dquot *dquot, unsigned long priv),
@@ -64,10 +85,17 @@ void dquot_destroy(struct dquot *dquot);
 int __dquot_alloc_space(struct inode *inode, qsize_t number, int flags);
 void __dquot_free_space(struct inode *inode, qsize_t number, int flags);
 
+<<<<<<< HEAD
 int dquot_alloc_inode(const struct inode *inode);
 
 int dquot_claim_space_nodirty(struct inode *inode, qsize_t number);
 void dquot_free_inode(const struct inode *inode);
+=======
+int dquot_alloc_inode(struct inode *inode);
+
+int dquot_claim_space_nodirty(struct inode *inode, qsize_t number);
+void dquot_free_inode(struct inode *inode);
+>>>>>>> v4.9.227
 void dquot_reclaim_space_nodirty(struct inode *inode, qsize_t number);
 
 int dquot_disable(struct super_block *sb, int type, unsigned int flags);
@@ -96,8 +124,13 @@ int dquot_quota_on_mount(struct super_block *sb, char *qf_name,
 int dquot_quota_off(struct super_block *sb, int type);
 int dquot_writeback_dquots(struct super_block *sb, int type);
 int dquot_quota_sync(struct super_block *sb, int type);
+<<<<<<< HEAD
 int dquot_get_dqinfo(struct super_block *sb, int type, struct if_dqinfo *ii);
 int dquot_set_dqinfo(struct super_block *sb, int type, struct if_dqinfo *ii);
+=======
+int dquot_get_state(struct super_block *sb, struct qc_state *state);
+int dquot_set_dqinfo(struct super_block *sb, int type, struct qc_info *ii);
+>>>>>>> v4.9.227
 int dquot_get_dqblk(struct super_block *sb, struct kqid id,
 		struct qc_dqblk *di);
 int dquot_get_next_dqblk(struct super_block *sb, struct kqid *id,
@@ -137,10 +170,14 @@ static inline bool sb_has_quota_suspended(struct super_block *sb, int type)
 
 static inline unsigned sb_any_quota_suspended(struct super_block *sb)
 {
+<<<<<<< HEAD
 	unsigned type, tmsk = 0;
 	for (type = 0; type < MAXQUOTAS; type++)
 		tmsk |= sb_has_quota_suspended(sb, type) << type;
 	return tmsk;
+=======
+	return dquot_state_types(sb_dqopt(sb)->flags, DQUOT_SUSPENDED);
+>>>>>>> v4.9.227
 }
 
 /* Does kernel know about any quota information for given sb + type? */
@@ -152,10 +189,14 @@ static inline bool sb_has_quota_loaded(struct super_block *sb, int type)
 
 static inline unsigned sb_any_quota_loaded(struct super_block *sb)
 {
+<<<<<<< HEAD
 	unsigned type, tmsk = 0;
 	for (type = 0; type < MAXQUOTAS; type++)
 		tmsk |= sb_has_quota_loaded(sb, type) << type;
 	return	tmsk;
+=======
+	return dquot_state_types(sb_dqopt(sb)->flags, DQUOT_USAGE_ENABLED);
+>>>>>>> v4.9.227
 }
 
 static inline bool sb_has_quota_active(struct super_block *sb, int type)
@@ -169,6 +210,10 @@ static inline bool sb_has_quota_active(struct super_block *sb, int type)
  */
 extern const struct dquot_operations dquot_operations;
 extern const struct quotactl_ops dquot_quotactl_ops;
+<<<<<<< HEAD
+=======
+extern const struct quotactl_ops dquot_quotactl_sysfile_ops;
+>>>>>>> v4.9.227
 
 #else
 
@@ -208,20 +253,34 @@ static inline int sb_has_quota_active(struct super_block *sb, int type)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void dquot_initialize(struct inode *inode)
 {
+=======
+static inline int dquot_initialize(struct inode *inode)
+{
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static inline void dquot_drop(struct inode *inode)
 {
 }
 
+<<<<<<< HEAD
 static inline int dquot_alloc_inode(const struct inode *inode)
+=======
+static inline int dquot_alloc_inode(struct inode *inode)
+>>>>>>> v4.9.227
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void dquot_free_inode(const struct inode *inode)
+=======
+static inline void dquot_free_inode(struct inode *inode)
+>>>>>>> v4.9.227
 {
 }
 
@@ -389,4 +448,9 @@ static inline void dquot_release_reservation_block(struct inode *inode,
 	__dquot_free_space(inode, nr << inode->i_blkbits, DQUOT_SPACE_RESERVE);
 }
 
+<<<<<<< HEAD
+=======
+unsigned int qtype_enforce_flag(int type);
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_QUOTAOPS_ */

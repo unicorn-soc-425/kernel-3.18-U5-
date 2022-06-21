@@ -60,7 +60,11 @@ bool irq_wait_for_poll(struct irq_desc *desc)
 /*
  * Recovery handler for misrouted interrupts.
  */
+<<<<<<< HEAD
 static int try_one_irq(int irq, struct irq_desc *desc, bool force)
+=======
+static int try_one_irq(struct irq_desc *desc, bool force)
+>>>>>>> v4.9.227
 {
 	irqreturn_t ret = IRQ_NONE;
 	struct irqaction *action;
@@ -133,7 +137,11 @@ static int misrouted_irq(int irq)
 		if (i == irq)	/* Already tried */
 			continue;
 
+<<<<<<< HEAD
 		if (try_one_irq(i, desc, false))
+=======
+		if (try_one_irq(desc, false))
+>>>>>>> v4.9.227
 			ok = 1;
 	}
 out:
@@ -164,7 +172,11 @@ static void poll_spurious_irqs(unsigned long dummy)
 			continue;
 
 		local_irq_disable();
+<<<<<<< HEAD
 		try_one_irq(i, desc, true);
+=======
+		try_one_irq(desc, true);
+>>>>>>> v4.9.227
 		local_irq_enable();
 	}
 out:
@@ -188,10 +200,16 @@ static inline int bad_action_ret(irqreturn_t action_ret)
  * (The other 100-of-100,000 interrupts may have been a correctly
  *  functioning device sharing an IRQ with the failing one)
  */
+<<<<<<< HEAD
 static void
 __report_bad_irq(unsigned int irq, struct irq_desc *desc,
 		 irqreturn_t action_ret)
 {
+=======
+static void __report_bad_irq(struct irq_desc *desc, irqreturn_t action_ret)
+{
+	unsigned int irq = irq_desc_get_irq(desc);
+>>>>>>> v4.9.227
 	struct irqaction *action;
 	unsigned long flags;
 
@@ -212,26 +230,41 @@ __report_bad_irq(unsigned int irq, struct irq_desc *desc,
 	 * desc->lock here. See synchronize_irq().
 	 */
 	raw_spin_lock_irqsave(&desc->lock, flags);
+<<<<<<< HEAD
 	action = desc->action;
 	while (action) {
+=======
+	for_each_action_of_desc(desc, action) {
+>>>>>>> v4.9.227
 		printk(KERN_ERR "[<%p>] %pf", action->handler, action->handler);
 		if (action->thread_fn)
 			printk(KERN_CONT " threaded [<%p>] %pf",
 					action->thread_fn, action->thread_fn);
 		printk(KERN_CONT "\n");
+<<<<<<< HEAD
 		action = action->next;
+=======
+>>>>>>> v4.9.227
 	}
 	raw_spin_unlock_irqrestore(&desc->lock, flags);
 }
 
+<<<<<<< HEAD
 static void
 report_bad_irq(unsigned int irq, struct irq_desc *desc, irqreturn_t action_ret)
+=======
+static void report_bad_irq(struct irq_desc *desc, irqreturn_t action_ret)
+>>>>>>> v4.9.227
 {
 	static int count = 100;
 
 	if (count > 0) {
 		count--;
+<<<<<<< HEAD
 		__report_bad_irq(irq, desc, action_ret);
+=======
+		__report_bad_irq(desc, action_ret);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -272,15 +305,26 @@ try_misrouted_irq(unsigned int irq, struct irq_desc *desc,
 
 #define SPURIOUS_DEFERRED	0x80000000
 
+<<<<<<< HEAD
 void note_interrupt(unsigned int irq, struct irq_desc *desc,
 		    irqreturn_t action_ret)
 {
+=======
+void note_interrupt(struct irq_desc *desc, irqreturn_t action_ret)
+{
+	unsigned int irq;
+
+>>>>>>> v4.9.227
 	if (desc->istate & IRQS_POLL_INPROGRESS ||
 	    irq_settings_is_polled(desc))
 		return;
 
 	if (bad_action_ret(action_ret)) {
+<<<<<<< HEAD
 		report_bad_irq(irq, desc, action_ret);
+=======
+		report_bad_irq(desc, action_ret);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -398,6 +442,10 @@ void note_interrupt(unsigned int irq, struct irq_desc *desc,
 		desc->last_unhandled = jiffies;
 	}
 
+<<<<<<< HEAD
+=======
+	irq = irq_desc_get_irq(desc);
+>>>>>>> v4.9.227
 	if (unlikely(try_misrouted_irq(irq, desc, action_ret))) {
 		int ok = misrouted_irq(irq);
 		if (action_ret == IRQ_NONE)
@@ -413,7 +461,11 @@ void note_interrupt(unsigned int irq, struct irq_desc *desc,
 		/*
 		 * The interrupt is stuck
 		 */
+<<<<<<< HEAD
 		__report_bad_irq(irq, desc, action_ret);
+=======
+		__report_bad_irq(desc, action_ret);
+>>>>>>> v4.9.227
 		/*
 		 * Now kill the IRQ
 		 */

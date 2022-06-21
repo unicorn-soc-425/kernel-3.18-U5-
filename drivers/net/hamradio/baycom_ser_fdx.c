@@ -80,6 +80,10 @@
 #include <linux/hdlcdrv.h>
 #include <linux/baycom.h>
 #include <linux/jiffies.h>
+<<<<<<< HEAD
+=======
+#include <linux/time64.h>
+>>>>>>> v4.9.227
 
 #include <asm/uaccess.h>
 #include <asm/io.h>
@@ -228,14 +232,23 @@ static inline unsigned int hweight8(unsigned int w)
 
 /* --------------------------------------------------------------------- */
 
+<<<<<<< HEAD
 static __inline__ void ser12_rx(struct net_device *dev, struct baycom_state *bc, struct timeval *tv, unsigned char curs)
+=======
+static __inline__ void ser12_rx(struct net_device *dev, struct baycom_state *bc, struct timespec64 *ts, unsigned char curs)
+>>>>>>> v4.9.227
 {
 	int timediff;
 	int bdus8 = bc->baud_us >> 3;
 	int bdus4 = bc->baud_us >> 2;
 	int bdus2 = bc->baud_us >> 1;
 
+<<<<<<< HEAD
 	timediff = 1000000 + tv->tv_usec - bc->modem.ser12.pll_time;
+=======
+	timediff = 1000000 + ts->tv_nsec / NSEC_PER_USEC -
+					bc->modem.ser12.pll_time;
+>>>>>>> v4.9.227
 	while (timediff >= 500000)
 		timediff -= 1000000;
 	while (timediff >= bdus2) {
@@ -287,7 +300,11 @@ static irqreturn_t ser12_interrupt(int irq, void *dev_id)
 {
 	struct net_device *dev = (struct net_device *)dev_id;
 	struct baycom_state *bc = netdev_priv(dev);
+<<<<<<< HEAD
 	struct timeval tv;
+=======
+	struct timespec64 ts;
+>>>>>>> v4.9.227
 	unsigned char iir, msr;
 	unsigned int txcount = 0;
 
@@ -297,7 +314,11 @@ static irqreturn_t ser12_interrupt(int irq, void *dev_id)
 	if ((iir = inb(IIR(dev->base_addr))) & 1) 	
 		return IRQ_NONE;
 	/* get current time */
+<<<<<<< HEAD
 	do_gettimeofday(&tv);
+=======
+	ktime_get_ts64(&ts);
+>>>>>>> v4.9.227
 	msr = inb(MSR(dev->base_addr));
 	/* delta DCD */
 	if ((msr & 8) && bc->opt_dcd)
@@ -340,7 +361,11 @@ static irqreturn_t ser12_interrupt(int irq, void *dev_id)
 		}
 		iir = inb(IIR(dev->base_addr));
 	} while (!(iir & 1));
+<<<<<<< HEAD
 	ser12_rx(dev, bc, &tv, msr & 0x10); /* CTS */
+=======
+	ser12_rx(dev, bc, &ts, msr & 0x10); /* CTS */
+>>>>>>> v4.9.227
 	if (bc->modem.ptt && txcount) {
 		if (bc->modem.ser12.txshreg <= 1) {
 			bc->modem.ser12.txshreg = 0x10000 | hdlcdrv_getbits(&bc->hdrv);

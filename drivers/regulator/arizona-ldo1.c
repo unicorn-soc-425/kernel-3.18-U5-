@@ -17,6 +17,10 @@
 #include <linux/bitops.h>
 #include <linux/err.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_gpio.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
@@ -78,11 +82,14 @@ static int arizona_ldo1_hc_set_voltage_sel(struct regulator_dev *rdev,
 	if (ret != 0)
 		return ret;
 
+<<<<<<< HEAD
 	ret = regmap_update_bits(regmap, ARIZONA_DYNAMIC_FREQUENCY_SCALING_1,
 				 ARIZONA_SUBSYS_MAX_FREQ, val);
 	if (ret != 0)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	if (val)
 		return 0;
 
@@ -178,6 +185,7 @@ static const struct regulator_init_data arizona_ldo1_default = {
 	.num_consumer_supplies = 1,
 };
 
+<<<<<<< HEAD
 static int arizona_ldo1_of_get_pdata(struct arizona *arizona,
 				     struct regulator_config *config)
 {
@@ -190,11 +198,50 @@ static int arizona_ldo1_of_get_pdata(struct arizona *arizona,
 
 	init_node = of_get_child_by_name(arizona->dev->of_node, "ldo1");
 	dcvdd_node = of_parse_phandle(arizona->dev->of_node, "DCVDD-supply", 0);
+=======
+static const struct regulator_init_data arizona_ldo1_wm5110 = {
+	.constraints = {
+		.min_uV = 1175000,
+		.max_uV = 1200000,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS |
+				  REGULATOR_CHANGE_VOLTAGE,
+	},
+	.num_consumer_supplies = 1,
+};
+
+static int arizona_ldo1_of_get_pdata(struct arizona *arizona,
+				     struct regulator_config *config,
+				     const struct regulator_desc *desc)
+{
+	struct arizona_pdata *pdata = &arizona->pdata;
+	struct arizona_ldo1 *ldo1 = config->driver_data;
+	struct device_node *np = arizona->dev->of_node;
+	struct device_node *init_node, *dcvdd_node;
+	struct regulator_init_data *init_data;
+
+	pdata->ldoena = of_get_named_gpio(np, "wlf,ldoena", 0);
+	if (pdata->ldoena < 0) {
+		dev_warn(arizona->dev,
+			 "LDOENA GPIO property missing/malformed: %d\n",
+			 pdata->ldoena);
+		pdata->ldoena = 0;
+	} else {
+		config->ena_gpio_initialized = true;
+	}
+
+	init_node = of_get_child_by_name(np, "ldo1");
+	dcvdd_node = of_parse_phandle(np, "DCVDD-supply", 0);
+>>>>>>> v4.9.227
 
 	if (init_node) {
 		config->of_node = init_node;
 
+<<<<<<< HEAD
 		init_data = of_get_regulator_init_data(arizona->dev, init_node);
+=======
+		init_data = of_get_regulator_init_data(arizona->dev, init_node,
+						       desc);
+>>>>>>> v4.9.227
 
 		if (init_data) {
 			init_data->consumer_supplies = &ldo1->supply;
@@ -238,9 +285,22 @@ static int arizona_ldo1_probe(struct platform_device *pdev)
 	switch (arizona->type) {
 	case WM5102:
 	case WM8997:
+<<<<<<< HEAD
 		desc = &arizona_ldo1_hc;
 		ldo1->init_data = arizona_ldo1_dvfs;
 		break;
+=======
+	case WM8998:
+	case WM1814:
+		desc = &arizona_ldo1_hc;
+		ldo1->init_data = arizona_ldo1_dvfs;
+		break;
+	case WM5110:
+	case WM8280:
+		desc = &arizona_ldo1;
+		ldo1->init_data = arizona_ldo1_wm5110;
+		break;
+>>>>>>> v4.9.227
 	default:
 		desc = &arizona_ldo1;
 		ldo1->init_data = arizona_ldo1_default;
@@ -257,7 +317,11 @@ static int arizona_ldo1_probe(struct platform_device *pdev)
 
 	if (IS_ENABLED(CONFIG_OF)) {
 		if (!dev_get_platdata(arizona->dev)) {
+<<<<<<< HEAD
 			ret = arizona_ldo1_of_get_pdata(arizona, &config);
+=======
+			ret = arizona_ldo1_of_get_pdata(arizona, &config, desc);
+>>>>>>> v4.9.227
 			if (ret < 0)
 				return ret;
 		}
@@ -278,6 +342,12 @@ static int arizona_ldo1_probe(struct platform_device *pdev)
 		arizona->external_dcvdd = true;
 
 	ldo1->regulator = devm_regulator_register(&pdev->dev, desc, &config);
+<<<<<<< HEAD
+=======
+
+	of_node_put(config.of_node);
+
+>>>>>>> v4.9.227
 	if (IS_ERR(ldo1->regulator)) {
 		ret = PTR_ERR(ldo1->regulator);
 		dev_err(arizona->dev, "Failed to register LDO1 supply: %d\n",
@@ -285,8 +355,11 @@ static int arizona_ldo1_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	of_node_put(config.of_node);
 
+=======
+>>>>>>> v4.9.227
 	platform_set_drvdata(pdev, ldo1);
 
 	return 0;
@@ -296,7 +369,10 @@ static struct platform_driver arizona_ldo1_driver = {
 	.probe = arizona_ldo1_probe,
 	.driver		= {
 		.name	= "arizona-ldo1",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

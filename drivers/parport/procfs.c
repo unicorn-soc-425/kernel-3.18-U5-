@@ -21,6 +21,10 @@
 #include <linux/parport.h>
 #include <linux/ctype.h>
 #include <linux/sysctl.h>
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> v4.9.227
 
 #include <asm/uaccess.h>
 
@@ -558,8 +562,23 @@ int parport_device_proc_unregister(struct pardevice *device)
 
 static int __init parport_default_proc_register(void)
 {
+<<<<<<< HEAD
 	parport_default_sysctl_table.sysctl_header =
 		register_sysctl_table(parport_default_sysctl_table.dev_dir);
+=======
+	int ret;
+
+	parport_default_sysctl_table.sysctl_header =
+		register_sysctl_table(parport_default_sysctl_table.dev_dir);
+	if (!parport_default_sysctl_table.sysctl_header)
+		return -ENOMEM;
+	ret = parport_bus_init();
+	if (ret) {
+		unregister_sysctl_table(parport_default_sysctl_table.
+					sysctl_header);
+		return ret;
+	}
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -570,6 +589,10 @@ static void __exit parport_default_proc_unregister(void)
 					sysctl_header);
 		parport_default_sysctl_table.sysctl_header = NULL;
 	}
+<<<<<<< HEAD
+=======
+	parport_bus_exit();
+>>>>>>> v4.9.227
 }
 
 #else /* no sysctl or no procfs*/
@@ -596,13 +619,25 @@ int parport_device_proc_unregister(struct pardevice *device)
 
 static int __init parport_default_proc_register (void)
 {
+<<<<<<< HEAD
 	return 0;
+=======
+	return parport_bus_init();
+>>>>>>> v4.9.227
 }
 
 static void __exit parport_default_proc_unregister (void)
 {
+<<<<<<< HEAD
 }
 #endif
 
 module_init(parport_default_proc_register)
+=======
+	parport_bus_exit();
+}
+#endif
+
+subsys_initcall(parport_default_proc_register)
+>>>>>>> v4.9.227
 module_exit(parport_default_proc_unregister)

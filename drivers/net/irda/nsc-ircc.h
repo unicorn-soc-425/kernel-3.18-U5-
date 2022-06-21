@@ -28,7 +28,11 @@
 #ifndef NSC_IRCC_H
 #define NSC_IRCC_H
 
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 
 #include <linux/spinlock.h>
 #include <linux/pm.h>
@@ -263,8 +267,12 @@ struct nsc_ircc_cb {
 
 	__u8 ier;                  /* Interrupt enable register */
 
+<<<<<<< HEAD
 	struct timeval stamp;
 	struct timeval now;
+=======
+	ktime_t stamp;
+>>>>>>> v4.9.227
 
 	spinlock_t lock;           /* For serializing operations */
 	

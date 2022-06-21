@@ -15,7 +15,11 @@
 #include <linux/console.h>
 #include <linux/efi.h>
 #include <linux/serial.h>
+<<<<<<< HEAD
 #include <linux/serial_8250.h>
+=======
+#include <linux/serial_core.h>
+>>>>>>> v4.9.227
 #include <asm/vga.h>
 #include "pcdp.h"
 
@@ -43,7 +47,11 @@ setup_serial_console(struct pcdp_uart *uart)
 	}
 
 	add_preferred_console("uart", 8250, &options[9]);
+<<<<<<< HEAD
 	return setup_early_serial8250_console(options);
+=======
+	return setup_earlycon(options);
+>>>>>>> v4.9.227
 #else
 	return -ENODEV;
 #endif

@@ -11,10 +11,18 @@
  *
  * For more details on the theory behind these algorithms, see "IA-64
  * and Elementary Functions" by Peter Markstein; HP Professional Books
+<<<<<<< HEAD
  * (http://www.hp.com/go/retailbooks/)
  */
 
 #include <asm/asmmacro.h>
+=======
+ * (http://www.goodreads.com/book/show/2019887.Ia_64_and_Elementary_Functions)
+ */
+
+#include <asm/asmmacro.h>
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 #ifdef MODULO
 # define OP	mod
@@ -81,3 +89,7 @@ GLOBAL_ENTRY(NAME)
 	getf.sig r8 = f6		// transfer result to result register
 	br.ret.sptk.many rp
 END(NAME)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(NAME)
+>>>>>>> v4.9.227

@@ -93,7 +93,11 @@ static int snd_ivtv_mixer_tv_vol_get(struct snd_kcontrol *kctl,
 	vctrl.value = dB_to_cx25840_vol(uctl->value.integer.value[0]);
 
 	snd_ivtv_lock(itvsc);
+<<<<<<< HEAD
 	ret = v4l2_subdev_call(itv->sd_audio, core, g_ctrl, &vctrl);
+=======
+	ret = v4l2_g_ctrl(itv->sd_audio->ctrl_handler, &vctrl);
+>>>>>>> v4.9.227
 	snd_ivtv_unlock(itvsc);
 
 	if (!ret)
@@ -115,14 +119,22 @@ static int snd_ivtv_mixer_tv_vol_put(struct snd_kcontrol *kctl,
 	snd_ivtv_lock(itvsc);
 
 	/* Fetch current state */
+<<<<<<< HEAD
 	ret = v4l2_subdev_call(itv->sd_audio, core, g_ctrl, &vctrl);
+=======
+	ret = v4l2_g_ctrl(itv->sd_audio->ctrl_handler, &vctrl);
+>>>>>>> v4.9.227
 
 	if (ret ||
 	    (cx25840_vol_to_dB(vctrl.value) != uctl->value.integer.value[0])) {
 
 		/* Set, if needed */
 		vctrl.value = dB_to_cx25840_vol(uctl->value.integer.value[0]);
+<<<<<<< HEAD
 		ret = v4l2_subdev_call(itv->sd_audio, core, s_ctrl, &vctrl);
+=======
+		ret = v4l2_s_ctrl(itv->sd_audio->ctrl_handler, &vctrl);
+>>>>>>> v4.9.227
 		if (!ret)
 			ret = 1; /* Indicate control was changed w/o error */
 	}

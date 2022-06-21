@@ -14,12 +14,21 @@
 
 #include <linux/bcma/bcma.h>
 
+<<<<<<< HEAD
 #include <linux/mtd/physmap.h>
 #include <linux/platform_device.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/serial.h>
 #include <linux/serial_core.h>
 #include <linux/serial_reg.h>
 #include <linux/time.h>
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_BCM47XX
+#include <linux/bcm47xx_nvram.h>
+#endif
+>>>>>>> v4.9.227
 
 enum bcma_boot_dev {
 	BCMA_BOOT_DEV_UNK = 0,
@@ -29,6 +38,7 @@ enum bcma_boot_dev {
 	BCMA_BOOT_DEV_NAND,
 };
 
+<<<<<<< HEAD
 static const char * const part_probes[] = { "bcm47xxpart", NULL };
 
 static struct physmap_flash_data bcma_pflash_data = {
@@ -49,6 +59,8 @@ struct platform_device bcma_pflash_dev = {
 	.num_resources	= 1,
 };
 
+=======
+>>>>>>> v4.9.227
 /* The 47162a0 hangs when reading MIPS DMP registers registers */
 static inline bool bcma_core_mips_bcm47162a0_quirk(struct bcma_device *dev)
 {
@@ -115,7 +127,11 @@ static u32 bcma_core_mips_irqflag(struct bcma_device *dev)
  * If disabled, 5 is returned.
  * If not supported, 6 is returned.
  */
+<<<<<<< HEAD
 static unsigned int bcma_core_mips_irq(struct bcma_device *dev)
+=======
+unsigned int bcma_core_mips_irq(struct bcma_device *dev)
+>>>>>>> v4.9.227
 {
 	struct bcma_device *mdev = dev->bus->drv_mips.core;
 	u32 irqflag;
@@ -133,6 +149,7 @@ static unsigned int bcma_core_mips_irq(struct bcma_device *dev)
 	return 5;
 }
 
+<<<<<<< HEAD
 unsigned int bcma_core_irq(struct bcma_device *dev)
 {
 	unsigned int mips_irq = bcma_core_mips_irq(dev);
@@ -140,6 +157,8 @@ unsigned int bcma_core_irq(struct bcma_device *dev)
 }
 EXPORT_SYMBOL(bcma_core_irq);
 
+=======
+>>>>>>> v4.9.227
 static void bcma_core_mips_set_irq(struct bcma_device *dev, unsigned int irq)
 {
 	unsigned int oldirq = bcma_core_mips_irq(dev);
@@ -276,6 +295,7 @@ static enum bcma_boot_dev bcma_boot_dev(struct bcma_bus *bus)
 	return BCMA_BOOT_DEV_SERIAL;
 }
 
+<<<<<<< HEAD
 static void bcma_core_mips_flash_detect(struct bcma_drv_mips *mcore)
 {
 	struct bcma_bus *bus = mcore->core->bus;
@@ -318,15 +338,35 @@ static void bcma_core_mips_flash_detect(struct bcma_drv_mips *mcore)
 		}
 	}
 
+=======
+static void bcma_core_mips_nvram_init(struct bcma_drv_mips *mcore)
+{
+	struct bcma_bus *bus = mcore->core->bus;
+	enum bcma_boot_dev boot_dev;
+
+>>>>>>> v4.9.227
 	/* Determine flash type this SoC boots from */
 	boot_dev = bcma_boot_dev(bus);
 	switch (boot_dev) {
 	case BCMA_BOOT_DEV_PARALLEL:
 	case BCMA_BOOT_DEV_SERIAL:
+<<<<<<< HEAD
 		/* TODO: Init NVRAM using BCMA_SOC_FLASH2 window */
 		break;
 	case BCMA_BOOT_DEV_NAND:
 		/* TODO: Init NVRAM using BCMA_SOC_FLASH1 window */
+=======
+#ifdef CONFIG_BCM47XX
+		bcm47xx_nvram_init_from_mem(BCMA_SOC_FLASH2,
+					    BCMA_SOC_FLASH2_SZ);
+#endif
+		break;
+	case BCMA_BOOT_DEV_NAND:
+#ifdef CONFIG_BCM47XX
+		bcm47xx_nvram_init_from_mem(BCMA_SOC_FLASH1,
+					    BCMA_SOC_FLASH1_SZ);
+#endif
+>>>>>>> v4.9.227
 		break;
 	default:
 		break;
@@ -341,7 +381,11 @@ void bcma_core_mips_early_init(struct bcma_drv_mips *mcore)
 		return;
 
 	bcma_chipco_serial_init(&bus->drv_cc);
+<<<<<<< HEAD
 	bcma_core_mips_flash_detect(mcore);
+=======
+	bcma_core_mips_nvram_init(mcore);
+>>>>>>> v4.9.227
 
 	mcore->early_setup_done = true;
 }
@@ -423,7 +467,11 @@ void bcma_core_mips_init(struct bcma_drv_mips *mcore)
 		break;
 	default:
 		list_for_each_entry(core, &bus->cores, list) {
+<<<<<<< HEAD
 			core->irq = bcma_core_irq(core);
+=======
+			core->irq = bcma_core_irq(core, 0);
+>>>>>>> v4.9.227
 		}
 		bcma_err(bus,
 			 "Unknown device (0x%x) found, can not configure IRQs\n",

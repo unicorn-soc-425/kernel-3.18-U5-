@@ -25,7 +25,10 @@
 */
 #ifndef DRBD_H
 #define DRBD_H
+<<<<<<< HEAD
 #include <linux/connector.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/types.h>
 
 #ifdef __KERNEL__
@@ -52,7 +55,11 @@
 #endif
 
 extern const char *drbd_buildtag(void);
+<<<<<<< HEAD
 #define REL_VERSION "8.4.5"
+=======
+#define REL_VERSION "8.4.7"
+>>>>>>> v4.9.227
 #define API_VERSION 1
 #define PRO_VERSION_MIN 86
 #define PRO_VERSION_MAX 101
@@ -172,7 +179,11 @@ enum drbd_ret_code {
 	ERR_RES_NOT_KNOWN	= 158,
 	ERR_RES_IN_USE		= 159,
 	ERR_MINOR_CONFIGURED    = 160,
+<<<<<<< HEAD
 	ERR_MINOR_EXISTS	= 161,
+=======
+	ERR_MINOR_OR_VOLUME_EXISTS = 161,
+>>>>>>> v4.9.227
 	ERR_INVALID_REQUEST	= 162,
 	ERR_NEED_APV_100	= 163,
 	ERR_NEED_ALLOW_TWO_PRI  = 164,
@@ -339,6 +350,11 @@ enum drbd_state_rv {
 #define MDF_AL_CLEAN		(1 << 7)
 #define MDF_AL_DISABLED		(1 << 8)
 
+<<<<<<< HEAD
+=======
+#define MAX_PEERS 32
+
+>>>>>>> v4.9.227
 enum drbd_uuid_index {
 	UI_CURRENT,
 	UI_BITMAP,
@@ -349,14 +365,51 @@ enum drbd_uuid_index {
 	UI_EXTENDED_SIZE   /* Everything. */
 };
 
+<<<<<<< HEAD
+=======
+#define HISTORY_UUIDS MAX_PEERS
+
+>>>>>>> v4.9.227
 enum drbd_timeout_flag {
 	UT_DEFAULT      = 0,
 	UT_DEGRADED     = 1,
 	UT_PEER_OUTDATED = 2,
 };
 
+<<<<<<< HEAD
 #define UUID_JUST_CREATED ((__u64)4)
 
+=======
+enum drbd_notification_type {
+	NOTIFY_EXISTS,
+	NOTIFY_CREATE,
+	NOTIFY_CHANGE,
+	NOTIFY_DESTROY,
+	NOTIFY_CALL,
+	NOTIFY_RESPONSE,
+
+	NOTIFY_CONTINUES = 0x8000,
+	NOTIFY_FLAGS = NOTIFY_CONTINUES,
+};
+
+enum drbd_peer_state {
+	P_INCONSISTENT = 3,
+	P_OUTDATED = 4,
+	P_DOWN = 5,
+	P_PRIMARY = 6,
+	P_FENCING = 7,
+};
+
+#define UUID_JUST_CREATED ((__u64)4)
+
+enum write_ordering_e {
+	WO_NONE,
+	WO_DRAIN_IO,
+	WO_BDEV_FLUSH,
+	WO_BIO_BARRIER
+};
+
+>>>>>>> v4.9.227
 /* magic numbers used in meta data and network packets */
 #define DRBD_MAGIC 0x83740267
 #define DRBD_MAGIC_BIG 0x835a

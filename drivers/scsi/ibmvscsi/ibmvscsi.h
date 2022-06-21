@@ -33,7 +33,11 @@
 #include <linux/list.h>
 #include <linux/completion.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include "viosrp.h"
+=======
+#include <scsi/viosrp.h>
+>>>>>>> v4.9.227
 
 struct scsi_cmnd;
 struct Scsi_Host;
@@ -48,6 +52,10 @@ struct Scsi_Host;
 #define IBMVSCSI_CMDS_PER_LUN_DEFAULT 16
 #define IBMVSCSI_MAX_SECTORS_DEFAULT 256 /* 32 * 8 = default max I/O 32 pages */
 #define IBMVSCSI_MAX_CMDS_PER_LUN 64
+<<<<<<< HEAD
+=======
+#define IBMVSCSI_MAX_LUN 32
+>>>>>>> v4.9.227
 
 /* ------------------------------------------------------------
  * Data Structures

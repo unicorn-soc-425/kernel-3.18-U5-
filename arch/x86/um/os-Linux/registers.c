@@ -5,27 +5,79 @@
  */
 
 #include <errno.h>
+<<<<<<< HEAD
+=======
+#include <stdlib.h>
+>>>>>>> v4.9.227
 #include <sys/ptrace.h>
 #ifdef __i386__
 #include <sys/user.h>
 #endif
 #include <longjmp.h>
 #include <sysdep/ptrace_user.h>
+<<<<<<< HEAD
 
 int save_fp_registers(int pid, unsigned long *fp_regs)
+=======
+#include <sys/uio.h>
+#include <asm/sigcontext.h>
+#include <linux/elf.h>
+
+int have_xstate_support;
+
+int save_i387_registers(int pid, unsigned long *fp_regs)
+>>>>>>> v4.9.227
 {
 	if (ptrace(PTRACE_GETFPREGS, pid, 0, fp_regs) < 0)
 		return -errno;
 	return 0;
 }
 
+<<<<<<< HEAD
 int restore_fp_registers(int pid, unsigned long *fp_regs)
+=======
+int save_fp_registers(int pid, unsigned long *fp_regs)
+{
+#ifdef PTRACE_GETREGSET
+	struct iovec iov;
+
+	if (have_xstate_support) {
+		iov.iov_base = fp_regs;
+		iov.iov_len = FP_SIZE * sizeof(unsigned long);
+		if (ptrace(PTRACE_GETREGSET, pid, NT_X86_XSTATE, &iov) < 0)
+			return -errno;
+		return 0;
+	} else
+#endif
+		return save_i387_registers(pid, fp_regs);
+}
+
+int restore_i387_registers(int pid, unsigned long *fp_regs)
+>>>>>>> v4.9.227
 {
 	if (ptrace(PTRACE_SETFPREGS, pid, 0, fp_regs) < 0)
 		return -errno;
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int restore_fp_registers(int pid, unsigned long *fp_regs)
+{
+#ifdef PTRACE_SETREGSET
+	struct iovec iov;
+	if (have_xstate_support) {
+		iov.iov_base = fp_regs;
+		iov.iov_len = FP_SIZE * sizeof(unsigned long);
+		if (ptrace(PTRACE_SETREGSET, pid, NT_X86_XSTATE, &iov) < 0)
+			return -errno;
+		return 0;
+	} else
+#endif
+		return restore_i387_registers(pid, fp_regs);
+}
+
+>>>>>>> v4.9.227
 #ifdef __i386__
 int have_fpx_regs = 1;
 int save_fpx_registers(int pid, unsigned long *fp_regs)
@@ -85,6 +137,27 @@ int put_fp_registers(int pid, unsigned long *regs)
 	return restore_fp_registers(pid, regs);
 }
 
+<<<<<<< HEAD
+=======
+void arch_init_registers(int pid)
+{
+#ifdef PTRACE_GETREGSET
+	void * fp_regs;
+	struct iovec iov;
+
+	fp_regs = malloc(FP_SIZE * sizeof(unsigned long));
+	if(fp_regs == NULL)
+		return;
+
+	iov.iov_base = fp_regs;
+	iov.iov_len = FP_SIZE * sizeof(unsigned long);
+	if (ptrace(PTRACE_GETREGSET, pid, NT_X86_XSTATE, &iov) == 0)
+		have_xstate_support = 1;
+
+	free(fp_regs);
+#endif
+}
+>>>>>>> v4.9.227
 #endif
 
 unsigned long get_thread_reg(int reg, jmp_buf *buf)

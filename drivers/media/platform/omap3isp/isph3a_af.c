@@ -360,7 +360,10 @@ int omap3isp_h3a_af_init(struct isp_device *isp)
 
 	af->ops = &h3a_af_ops;
 	af->priv = af_cfg;
+<<<<<<< HEAD
 	af->dma_ch = -1;
+=======
+>>>>>>> v4.9.227
 	af->event_type = V4L2_EVENT_OMAP3ISP_AF;
 	af->isp = isp;
 

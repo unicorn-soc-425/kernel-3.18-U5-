@@ -17,6 +17,11 @@
 #define ZONES_SHIFT 1
 #elif MAX_NR_ZONES <= 4
 #define ZONES_SHIFT 2
+<<<<<<< HEAD
+=======
+#elif MAX_NR_ZONES <= 8
+#define ZONES_SHIFT 3
+>>>>>>> v4.9.227
 #else
 #error ZONES_SHIFT -- too many zones configured adjust calculation
 #endif

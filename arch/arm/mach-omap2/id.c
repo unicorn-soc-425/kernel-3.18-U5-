@@ -52,6 +52,7 @@ EXPORT_SYMBOL(omap_rev);
 
 int omap_type(void)
 {
+<<<<<<< HEAD
 	u32 val = 0;
 
 	if (cpu_is_omap24xx()) {
@@ -61,6 +62,22 @@ int omap_type(void)
 	} else if (cpu_is_omap34xx()) {
 		val = omap_ctrl_readl(OMAP343X_CONTROL_STATUS);
 	} else if (cpu_is_omap44xx()) {
+=======
+	static u32 val = OMAP2_DEVICETYPE_MASK;
+
+	if (val < OMAP2_DEVICETYPE_MASK)
+		return val;
+
+	if (soc_is_omap24xx()) {
+		val = omap_ctrl_readl(OMAP24XX_CONTROL_STATUS);
+	} else if (soc_is_ti81xx()) {
+		val = omap_ctrl_readl(TI81XX_CONTROL_STATUS);
+	} else if (soc_is_am33xx() || soc_is_am43xx()) {
+		val = omap_ctrl_readl(AM33XX_CONTROL_STATUS);
+	} else if (soc_is_omap34xx()) {
+		val = omap_ctrl_readl(OMAP343X_CONTROL_STATUS);
+	} else if (soc_is_omap44xx()) {
+>>>>>>> v4.9.227
 		val = omap_ctrl_readl(OMAP4_CTRL_MODULE_CORE_STATUS);
 	} else if (soc_is_omap54xx() || soc_is_dra7xx()) {
 		val = omap_ctrl_readl(OMAP5XXX_CONTROL_STATUS);
@@ -117,7 +134,11 @@ static u16 tap_prod_id;
 
 void omap_get_die_id(struct omap_die_id *odi)
 {
+<<<<<<< HEAD
 	if (cpu_is_omap44xx() || soc_is_omap54xx() || soc_is_dra7xx()) {
+=======
+	if (soc_is_omap44xx() || soc_is_omap54xx() || soc_is_dra7xx()) {
+>>>>>>> v4.9.227
 		odi->id_0 = read_tap_reg(OMAP_TAP_DIE_ID_44XX_0);
 		odi->id_1 = read_tap_reg(OMAP_TAP_DIE_ID_44XX_1);
 		odi->id_2 = read_tap_reg(OMAP_TAP_DIE_ID_44XX_2);
@@ -194,17 +215,33 @@ void __init omap2xxx_check_revision(void)
 
 	pr_info("%s", soc_name);
 	if ((omap_rev() >> 8) & 0x0f)
+<<<<<<< HEAD
 		pr_info("%s", soc_rev);
 	pr_info("\n");
+=======
+		pr_cont("%s", soc_rev);
+	pr_cont("\n");
+>>>>>>> v4.9.227
 }
 
 #define OMAP3_SHOW_FEATURE(feat)		\
 	if (omap3_has_ ##feat())		\
+<<<<<<< HEAD
 		printk(#feat" ");
+=======
+		n += scnprintf(buf + n, sizeof(buf) - n, #feat " ");
+>>>>>>> v4.9.227
 
 static void __init omap3_cpuinfo(void)
 {
 	const char *cpu_name;
+<<<<<<< HEAD
+=======
+	char buf[64];
+	int n = 0;
+
+	memset(buf, 0, sizeof(buf));
+>>>>>>> v4.9.227
 
 	/*
 	 * OMAP3430 and OMAP3530 are assumed to be same.
@@ -213,17 +250,29 @@ static void __init omap3_cpuinfo(void)
 	 * on available features. Upon detection, update the CPU id
 	 * and CPU class bits.
 	 */
+<<<<<<< HEAD
 	if (cpu_is_omap3630()) {
 		cpu_name = "OMAP3630";
 	} else if (soc_is_am35xx()) {
 		cpu_name = (omap3_has_sgx()) ? "AM3517" : "AM3505";
 	} else if (cpu_is_ti816x()) {
+=======
+	if (soc_is_omap3630()) {
+		cpu_name = "OMAP3630";
+	} else if (soc_is_am35xx()) {
+		cpu_name = (omap3_has_sgx()) ? "AM3517" : "AM3505";
+	} else if (soc_is_ti816x()) {
+>>>>>>> v4.9.227
 		cpu_name = "TI816X";
 	} else if (soc_is_am335x()) {
 		cpu_name =  "AM335X";
 	} else if (soc_is_am437x()) {
 		cpu_name =  "AM437x";
+<<<<<<< HEAD
 	} else if (cpu_is_ti814x()) {
+=======
+	} else if (soc_is_ti814x()) {
+>>>>>>> v4.9.227
 		cpu_name = "TI814X";
 	} else if (omap3_has_iva() && omap3_has_sgx()) {
 		/* OMAP3430, OMAP3525, OMAP3515, OMAP3503 devices */
@@ -236,10 +285,17 @@ static void __init omap3_cpuinfo(void)
 		cpu_name = "OMAP3503";
 	}
 
+<<<<<<< HEAD
 	sprintf(soc_name, "%s", cpu_name);
 
 	/* Print verbose information */
 	pr_info("%s %s (", soc_name, soc_rev);
+=======
+	scnprintf(soc_name, sizeof(soc_name), "%s", cpu_name);
+
+	/* Print verbose information */
+	n += scnprintf(buf, sizeof(buf) - n, "%s %s (", soc_name, soc_rev);
+>>>>>>> v4.9.227
 
 	OMAP3_SHOW_FEATURE(l2cache);
 	OMAP3_SHOW_FEATURE(iva);
@@ -247,8 +303,15 @@ static void __init omap3_cpuinfo(void)
 	OMAP3_SHOW_FEATURE(neon);
 	OMAP3_SHOW_FEATURE(isp);
 	OMAP3_SHOW_FEATURE(192mhz_clk);
+<<<<<<< HEAD
 
 	printk(")\n");
+=======
+	if (*(buf + n - 1) == ' ')
+		n--;
+	n += scnprintf(buf + n, sizeof(buf) - n, ")\n");
+	pr_info("%s", buf);
+>>>>>>> v4.9.227
 }
 
 #define OMAP3_CHECK_FEATURE(status,feat)				\
@@ -270,11 +333,19 @@ void __init omap3xxx_check_features(void)
 	OMAP3_CHECK_FEATURE(status, SGX);
 	OMAP3_CHECK_FEATURE(status, NEON);
 	OMAP3_CHECK_FEATURE(status, ISP);
+<<<<<<< HEAD
 	if (cpu_is_omap3630())
 		omap_features |= OMAP3_HAS_192MHZ_CLK;
 	if (cpu_is_omap3430() || cpu_is_omap3630())
 		omap_features |= OMAP3_HAS_IO_WAKEUP;
 	if (cpu_is_omap3630() || omap_rev() == OMAP3430_REV_ES3_1 ||
+=======
+	if (soc_is_omap3630())
+		omap_features |= OMAP3_HAS_192MHZ_CLK;
+	if (soc_is_omap3430() || soc_is_omap3630())
+		omap_features |= OMAP3_HAS_IO_WAKEUP;
+	if (soc_is_omap3630() || omap_rev() == OMAP3430_REV_ES3_1 ||
+>>>>>>> v4.9.227
 	    omap_rev() == OMAP3430_REV_ES3_1_2)
 		omap_features |= OMAP3_HAS_IO_CHAIN_CTRL;
 
@@ -471,6 +542,7 @@ void __init omap3xxx_check_revision(void)
 			cpu_rev = "1.0";
 			break;
 		case 1:
+<<<<<<< HEAD
 		/* FALLTHROUGH */
 		default:
 			omap_revision = AM437X_REV_ES1_1;
@@ -479,6 +551,21 @@ void __init omap3xxx_check_revision(void)
 		}
 		break;
 	case 0xb8f2:
+=======
+			omap_revision = AM437X_REV_ES1_1;
+			cpu_rev = "1.1";
+			break;
+		case 2:
+		/* FALLTHROUGH */
+		default:
+			omap_revision = AM437X_REV_ES1_2;
+			cpu_rev = "1.2";
+			break;
+		}
+		break;
+	case 0xb8f2:
+	case 0xb968:
+>>>>>>> v4.9.227
 		switch (rev) {
 		case 0:
 		/* FALLTHROUGH */
@@ -502,7 +589,12 @@ void __init omap3xxx_check_revision(void)
 		/* Unknown default to latest silicon rev as default */
 		omap_revision = OMAP3630_REV_ES1_2;
 		cpu_rev = "1.2";
+<<<<<<< HEAD
 		pr_warn("Warning: unknown chip type; assuming OMAP3630ES1.2\n");
+=======
+		pr_warn("Warning: unknown chip type: hawkeye %04x, assuming OMAP3630ES1.2\n",
+			hawkeye);
+>>>>>>> v4.9.227
 	}
 	sprintf(soc_rev, "ES%s", cpu_rev);
 }
@@ -644,8 +736,17 @@ void __init dra7xxx_check_revision(void)
 			omap_revision = DRA752_REV_ES1_0;
 			break;
 		case 1:
+<<<<<<< HEAD
 		default:
 			omap_revision = DRA752_REV_ES1_1;
+=======
+			omap_revision = DRA752_REV_ES1_1;
+			break;
+		case 2:
+		default:
+			omap_revision = DRA752_REV_ES2_0;
+			break;
+>>>>>>> v4.9.227
 		}
 		break;
 
@@ -654,9 +755,15 @@ void __init dra7xxx_check_revision(void)
 		case 0:
 			omap_revision = DRA722_REV_ES1_0;
 			break;
+<<<<<<< HEAD
 		default:
 			/* If we have no new revisions */
 			omap_revision = DRA722_REV_ES1_0;
+=======
+		case 1:
+		default:
+			omap_revision = DRA722_REV_ES2_0;
+>>>>>>> v4.9.227
 			break;
 		}
 		break;
@@ -665,7 +772,11 @@ void __init dra7xxx_check_revision(void)
 		/* Unknown default to latest silicon rev as default*/
 		pr_warn("%s: unknown idcode=0x%08x (hawkeye=0x%08x,rev=0x%x)\n",
 			__func__, idcode, hawkeye, rev);
+<<<<<<< HEAD
 		omap_revision = DRA752_REV_ES1_1;
+=======
+		omap_revision = DRA752_REV_ES2_0;
+>>>>>>> v4.9.227
 	}
 
 	sprintf(soc_name, "DRA%03x", omap_rev() >> 16);
@@ -688,7 +799,11 @@ void __init omap2_set_globals_tap(u32 class, void __iomem *tap)
 	tap_base = tap;
 
 	/* XXX What is this intended to do? */
+<<<<<<< HEAD
 	if (cpu_is_omap34xx())
+=======
+	if (soc_is_omap34xx())
+>>>>>>> v4.9.227
 		tap_prod_id = 0x0210;
 	else
 		tap_prod_id = 0x0208;
@@ -706,6 +821,7 @@ static const char * const omap_types[] = {
 
 static const char * __init omap_get_family(void)
 {
+<<<<<<< HEAD
 	if (cpu_is_omap24xx())
 		return kasprintf(GFP_KERNEL, "OMAP2");
 	else if (cpu_is_omap34xx())
@@ -714,6 +830,18 @@ static const char * __init omap_get_family(void)
 		return kasprintf(GFP_KERNEL, "OMAP4");
 	else if (soc_is_omap54xx())
 		return kasprintf(GFP_KERNEL, "OMAP5");
+=======
+	if (soc_is_omap24xx())
+		return kasprintf(GFP_KERNEL, "OMAP2");
+	else if (soc_is_omap34xx())
+		return kasprintf(GFP_KERNEL, "OMAP3");
+	else if (soc_is_omap44xx())
+		return kasprintf(GFP_KERNEL, "OMAP4");
+	else if (soc_is_omap54xx())
+		return kasprintf(GFP_KERNEL, "OMAP5");
+	else if (soc_is_am33xx() || soc_is_am335x())
+		return kasprintf(GFP_KERNEL, "AM33xx");
+>>>>>>> v4.9.227
 	else if (soc_is_am43xx())
 		return kasprintf(GFP_KERNEL, "AM43xx");
 	else if (soc_is_dra7xx())

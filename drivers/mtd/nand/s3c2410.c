@@ -84,11 +84,41 @@
 
 /* new oob placement block for use with hardware ecc generation
  */
+<<<<<<< HEAD
 
 static struct nand_ecclayout nand_hw_eccoob = {
 	.eccbytes = 3,
 	.eccpos = {0, 1, 2},
 	.oobfree = {{8, 8}}
+=======
+static int s3c2410_ooblayout_ecc(struct mtd_info *mtd, int section,
+				 struct mtd_oob_region *oobregion)
+{
+	if (section)
+		return -ERANGE;
+
+	oobregion->offset = 0;
+	oobregion->length = 3;
+
+	return 0;
+}
+
+static int s3c2410_ooblayout_free(struct mtd_info *mtd, int section,
+				  struct mtd_oob_region *oobregion)
+{
+	if (section)
+		return -ERANGE;
+
+	oobregion->offset = 8;
+	oobregion->length = 8;
+
+	return 0;
+}
+
+static const struct mtd_ooblayout_ops s3c2410_ooblayout_ops = {
+	.ecc = s3c2410_ooblayout_ecc,
+	.free = s3c2410_ooblayout_free,
+>>>>>>> v4.9.227
 };
 
 /* controller and mtd information */
@@ -104,7 +134,10 @@ struct s3c2410_nand_info;
  * @scan_res: The result from calling nand_scan_ident().
 */
 struct s3c2410_nand_mtd {
+<<<<<<< HEAD
 	struct mtd_info			mtd;
+=======
+>>>>>>> v4.9.227
 	struct nand_chip		chip;
 	struct s3c2410_nand_set		*set;
 	struct s3c2410_nand_info	*info;
@@ -159,7 +192,11 @@ struct s3c2410_nand_info {
 
 	enum s3c_cpu_type		cpu_type;
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ
+=======
+#ifdef CONFIG_ARM_S3C24XX_CPUFREQ
+>>>>>>> v4.9.227
 	struct notifier_block	freq_transition;
 #endif
 };
@@ -168,7 +205,12 @@ struct s3c2410_nand_info {
 
 static struct s3c2410_nand_mtd *s3c2410_nand_mtd_toours(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	return container_of(mtd, struct s3c2410_nand_mtd, mtd);
+=======
+	return container_of(mtd_to_nand(mtd), struct s3c2410_nand_mtd,
+			    chip);
+>>>>>>> v4.9.227
 }
 
 static struct s3c2410_nand_info *s3c2410_nand_mtd_toinfo(struct mtd_info *mtd)
@@ -382,10 +424,17 @@ static void s3c2410_nand_select_chip(struct mtd_info *mtd, int chip)
 {
 	struct s3c2410_nand_info *info;
 	struct s3c2410_nand_mtd *nmtd;
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
 	unsigned long cur;
 
 	nmtd = this->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+	unsigned long cur;
+
+	nmtd = nand_get_controller_data(this);
+>>>>>>> v4.9.227
 	info = nmtd->info;
 
 	if (chip != -1)
@@ -542,7 +591,12 @@ static int s3c2410_nand_correct_data(struct mtd_info *mtd, u_char *dat,
 	diff0 |= (diff1 << 8);
 	diff0 |= (diff2 << 16);
 
+<<<<<<< HEAD
 	if ((diff0 & ~(1<<fls(diff0))) == 0)
+=======
+	/* equal to "(diff0 & ~(1 << __ffs(diff0)))" */
+	if ((diff0 & (diff0 - 1)) == 0)
+>>>>>>> v4.9.227
 		return 1;
 
 	return -1;
@@ -634,7 +688,11 @@ static int s3c2440_nand_calculate_ecc(struct mtd_info *mtd, const u_char *dat,
 
 static void s3c2410_nand_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	readsb(this->IO_ADDR_R, buf, len);
 }
 
@@ -656,7 +714,11 @@ static void s3c2440_nand_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 static void s3c2410_nand_write_buf(struct mtd_info *mtd, const u_char *buf,
 				   int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	writesb(this->IO_ADDR_W, buf, len);
 }
 
@@ -678,7 +740,11 @@ static void s3c2440_nand_write_buf(struct mtd_info *mtd, const u_char *buf,
 
 /* cpufreq driver support */
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ
+=======
+#ifdef CONFIG_ARM_S3C24XX_CPUFREQ
+>>>>>>> v4.9.227
 
 static int s3c2410_nand_cpufreq_transition(struct notifier_block *nb,
 					  unsigned long val, void *data)
@@ -745,7 +811,11 @@ static int s3c24xx_nand_remove(struct platform_device *pdev)
 
 		for (mtdno = 0; mtdno < info->mtd_count; mtdno++, ptr++) {
 			pr_debug("releasing mtd %d (%p)\n", mtdno, ptr);
+<<<<<<< HEAD
 			nand_release(&ptr->mtd);
+=======
+			nand_release(nand_to_mtd(&ptr->chip));
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -762,9 +832,17 @@ static int s3c2410_nand_add_partition(struct s3c2410_nand_info *info,
 				      struct s3c2410_nand_set *set)
 {
 	if (set) {
+<<<<<<< HEAD
 		mtd->mtd.name = set->name;
 
 		return mtd_device_parse_register(&mtd->mtd, NULL, NULL,
+=======
+		struct mtd_info *mtdinfo = nand_to_mtd(&mtd->chip);
+
+		mtdinfo->name = set->name;
+
+		return mtd_device_parse_register(mtdinfo, NULL, NULL,
+>>>>>>> v4.9.227
 					 set->partitions, set->nr_partitions);
 	}
 
@@ -792,7 +870,11 @@ static void s3c2410_nand_init_chip(struct s3c2410_nand_info *info,
 	chip->read_buf     = s3c2410_nand_read_buf;
 	chip->select_chip  = s3c2410_nand_select_chip;
 	chip->chip_delay   = 50;
+<<<<<<< HEAD
 	chip->priv	   = nmtd;
+=======
+	nand_set_controller_data(chip, nmtd);
+>>>>>>> v4.9.227
 	chip->options	   = set->options;
 	chip->controller   = &info->controller;
 
@@ -831,8 +913,11 @@ static void s3c2410_nand_init_chip(struct s3c2410_nand_info *info,
 	chip->IO_ADDR_R = chip->IO_ADDR_W;
 
 	nmtd->info	   = info;
+<<<<<<< HEAD
 	nmtd->mtd.priv	   = chip;
 	nmtd->mtd.owner    = THIS_MODULE;
+=======
+>>>>>>> v4.9.227
 	nmtd->set	   = set;
 
 #ifdef CONFIG_MTD_NAND_S3C2410_HWECC
@@ -859,11 +944,17 @@ static void s3c2410_nand_init_chip(struct s3c2410_nand_info *info,
 	}
 #else
 	chip->ecc.mode	    = NAND_ECC_SOFT;
+<<<<<<< HEAD
 #endif
 
 	if (set->ecc_layout != NULL)
 		chip->ecc.layout = set->ecc_layout;
 
+=======
+	chip->ecc.algo	= NAND_ECC_HAMMING;
+#endif
+
+>>>>>>> v4.9.227
 	if (set->disable_ecc)
 		chip->ecc.mode	= NAND_ECC_NONE;
 
@@ -922,7 +1013,11 @@ static void s3c2410_nand_update_chip(struct s3c2410_nand_info *info,
 	} else {
 		chip->ecc.size	    = 512;
 		chip->ecc.bytes	    = 3;
+<<<<<<< HEAD
 		chip->ecc.layout    = &nand_hw_eccoob;
+=======
+		mtd_set_ooblayout(nand_to_mtd(chip), &s3c2410_ooblayout_ops);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -948,8 +1043,11 @@ static int s3c24xx_nand_probe(struct platform_device *pdev)
 
 	cpu_type = platform_get_device_id(pdev)->driver_data;
 
+<<<<<<< HEAD
 	pr_debug("s3c2410_nand_probe(%p)\n", pdev);
 
+=======
+>>>>>>> v4.9.227
 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
 	if (info == NULL) {
 		err = -ENOMEM;
@@ -958,8 +1056,12 @@ static int s3c24xx_nand_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, info);
 
+<<<<<<< HEAD
 	spin_lock_init(&info->controller.lock);
 	init_waitqueue_head(&info->controller.wq);
+=======
+	nand_hw_control_init(&info->controller);
+>>>>>>> v4.9.227
 
 	/* get the clock source and enable it */
 
@@ -1015,18 +1117,34 @@ static int s3c24xx_nand_probe(struct platform_device *pdev)
 	nmtd = info->mtds;
 
 	for (setno = 0; setno < nr_sets; setno++, nmtd++) {
+<<<<<<< HEAD
 		pr_debug("initialising set %d (%p, info %p)\n",
 			 setno, nmtd, info);
 
 		s3c2410_nand_init_chip(info, nmtd, sets);
 
 		nmtd->scan_res = nand_scan_ident(&nmtd->mtd,
+=======
+		struct mtd_info *mtd = nand_to_mtd(&nmtd->chip);
+
+		pr_debug("initialising set %d (%p, info %p)\n",
+			 setno, nmtd, info);
+
+		mtd->dev.parent = &pdev->dev;
+		s3c2410_nand_init_chip(info, nmtd, sets);
+
+		nmtd->scan_res = nand_scan_ident(mtd,
+>>>>>>> v4.9.227
 						 (sets) ? sets->nr_chips : 1,
 						 NULL);
 
 		if (nmtd->scan_res == 0) {
 			s3c2410_nand_update_chip(info, nmtd);
+<<<<<<< HEAD
 			nand_scan_tail(&nmtd->mtd);
+=======
+			nand_scan_tail(mtd);
+>>>>>>> v4.9.227
 			s3c2410_nand_add_partition(info, nmtd, sets);
 		}
 
@@ -1045,7 +1163,10 @@ static int s3c24xx_nand_probe(struct platform_device *pdev)
 		s3c2410_nand_clk_set_state(info, CLOCK_SUSPEND);
 	}
 
+<<<<<<< HEAD
 	pr_debug("initialised ok\n");
+=======
+>>>>>>> v4.9.227
 	return 0;
 
  exit_error:
@@ -1108,7 +1229,11 @@ static int s3c24xx_nand_resume(struct platform_device *dev)
 
 /* driver device registration */
 
+<<<<<<< HEAD
 static struct platform_device_id s3c24xx_driver_ids[] = {
+=======
+static const struct platform_device_id s3c24xx_driver_ids[] = {
+>>>>>>> v4.9.227
 	{
 		.name		= "s3c2410-nand",
 		.driver_data	= TYPE_S3C2410,
@@ -1135,7 +1260,10 @@ static struct platform_driver s3c24xx_nand_driver = {
 	.id_table	= s3c24xx_driver_ids,
 	.driver		= {
 		.name	= "s3c24xx-nand",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

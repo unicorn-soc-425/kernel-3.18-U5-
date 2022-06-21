@@ -35,7 +35,15 @@
 #ifndef __MGA_DRM_H__
 #define __MGA_DRM_H__
 
+<<<<<<< HEAD
 #include <drm/drm.h>
+=======
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+>>>>>>> v4.9.227
 
 /* WARNING: If you change any of these defines, make sure to change the
  * defines in the Xserver file (mga_sarea.h)
@@ -416,4 +424,11 @@ typedef struct drm_mga_getparam {
 	void __user *value;
 } drm_mga_getparam_t;
 
+<<<<<<< HEAD
+=======
+#if defined(__cplusplus)
+}
+#endif
+
+>>>>>>> v4.9.227
 #endif

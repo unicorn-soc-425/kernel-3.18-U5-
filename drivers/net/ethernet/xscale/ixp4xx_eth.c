@@ -171,7 +171,10 @@ struct port {
 	struct npe *npe;
 	struct net_device *netdev;
 	struct napi_struct napi;
+<<<<<<< HEAD
 	struct phy_device *phydev;
+=======
+>>>>>>> v4.9.227
 	struct eth_plat_info *plat;
 	buffer_t *rx_buff_tab[RX_DESCS], *tx_buff_tab[TX_DESCS];
 	struct desc *desc_tab;	/* coherent */
@@ -562,7 +565,11 @@ static void ixp4xx_mdio_remove(void)
 static void ixp4xx_adjust_link(struct net_device *dev)
 {
 	struct port *port = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = port->phydev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> v4.9.227
 
 	if (!phydev->link) {
 		if (port->speed) {
@@ -709,8 +716,12 @@ static int eth_poll(struct napi_struct *napi, int budget)
 			if (!qmgr_stat_below_low_watermark(rxq) &&
 			    napi_reschedule(napi)) { /* not empty again */
 #if DEBUG_RX
+<<<<<<< HEAD
 				printk(KERN_DEBUG "%s: eth_poll"
 				       " napi_reschedule successed\n",
+=======
+				printk(KERN_DEBUG "%s: eth_poll napi_reschedule succeeded\n",
+>>>>>>> v4.9.227
 				       dev->name);
 #endif
 				qmgr_disable_irq(rxq);
@@ -938,7 +949,11 @@ static void eth_set_mcast_list(struct net_device *dev)
 	int i;
 	static const u8 allmulti[] = { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
+<<<<<<< HEAD
 	if (dev->flags & IFF_ALLMULTI) {
+=======
+	if ((dev->flags & IFF_ALLMULTI) && !(dev->flags & IFF_PROMISC)) {
+>>>>>>> v4.9.227
 		for (i = 0; i < ETH_ALEN; i++) {
 			__raw_writel(allmulti[i], &port->regs->mcast_addr[i]);
 			__raw_writel(allmulti[i], &port->regs->mcast_mask[i]);
@@ -954,7 +969,11 @@ static void eth_set_mcast_list(struct net_device *dev)
 		return;
 	}
 
+<<<<<<< HEAD
 	memset(diffs, 0, ETH_ALEN);
+=======
+	eth_zero_addr(diffs);
+>>>>>>> v4.9.227
 
 	addr = NULL;
 	netdev_for_each_mc_addr(ha, dev) {
@@ -976,8 +995,11 @@ static void eth_set_mcast_list(struct net_device *dev)
 
 static int eth_ioctl(struct net_device *dev, struct ifreq *req, int cmd)
 {
+<<<<<<< HEAD
 	struct port *port = netdev_priv(dev);
 
+=======
+>>>>>>> v4.9.227
 	if (!netif_running(dev))
 		return -EINVAL;
 
@@ -988,7 +1010,11 @@ static int eth_ioctl(struct net_device *dev, struct ifreq *req, int cmd)
 			return hwtstamp_get(dev, req);
 	}
 
+<<<<<<< HEAD
 	return phy_mii_ioctl(port->phydev, req, cmd);
+=======
+	return phy_mii_ioctl(dev->phydev, req, cmd);
+>>>>>>> v4.9.227
 }
 
 /* ethtool support */
@@ -1005,6 +1031,7 @@ static void ixp4xx_get_drvinfo(struct net_device *dev,
 	strlcpy(info->bus_info, "internal", sizeof(info->bus_info));
 }
 
+<<<<<<< HEAD
 static int ixp4xx_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct port *port = netdev_priv(dev);
@@ -1021,6 +1048,11 @@ static int ixp4xx_nway_reset(struct net_device *dev)
 {
 	struct port *port = netdev_priv(dev);
 	return phy_start_aneg(port->phydev);
+=======
+static int ixp4xx_nway_reset(struct net_device *dev)
+{
+	return phy_start_aneg(dev->phydev);
+>>>>>>> v4.9.227
 }
 
 int ixp46x_phc_index = -1;
@@ -1054,11 +1086,19 @@ static int ixp4xx_get_ts_info(struct net_device *dev,
 
 static const struct ethtool_ops ixp4xx_ethtool_ops = {
 	.get_drvinfo = ixp4xx_get_drvinfo,
+<<<<<<< HEAD
 	.get_settings = ixp4xx_get_settings,
 	.set_settings = ixp4xx_set_settings,
 	.nway_reset = ixp4xx_nway_reset,
 	.get_link = ethtool_op_get_link,
 	.get_ts_info = ixp4xx_get_ts_info,
+=======
+	.nway_reset = ixp4xx_nway_reset,
+	.get_link = ethtool_op_get_link,
+	.get_ts_info = ixp4xx_get_ts_info,
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 
@@ -1259,7 +1299,11 @@ static int eth_open(struct net_device *dev)
 	}
 
 	port->speed = 0;	/* force "link up" message */
+<<<<<<< HEAD
 	phy_start(port->phydev);
+=======
+	phy_start(dev->phydev);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < ETH_ALEN; i++)
 		__raw_writel(dev->dev_addr[i], &port->regs->hw_addr[i]);
@@ -1380,7 +1424,11 @@ static int eth_close(struct net_device *dev)
 		printk(KERN_CRIT "%s: unable to disable loopback\n",
 		       dev->name);
 
+<<<<<<< HEAD
 	phy_stop(port->phydev);
+=======
+	phy_stop(dev->phydev);
+>>>>>>> v4.9.227
 
 	if (!ports_open)
 		qmgr_disable_irq(TXDONE_QUEUE);
@@ -1405,6 +1453,10 @@ static int eth_init_one(struct platform_device *pdev)
 	struct port *port;
 	struct net_device *dev;
 	struct eth_plat_info *plat = dev_get_platdata(&pdev->dev);
+<<<<<<< HEAD
+=======
+	struct phy_device *phydev = NULL;
+>>>>>>> v4.9.227
 	u32 regs_phys;
 	char phy_id[MII_BUS_ID_SIZE + 3];
 	int err;
@@ -1466,6 +1518,7 @@ static int eth_init_one(struct platform_device *pdev)
 
 	snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
 		mdio_bus->id, plat->phy);
+<<<<<<< HEAD
 	port->phydev = phy_connect(dev, phy_id, &ixp4xx_adjust_link,
 				   PHY_INTERFACE_MODE_MII);
 	if (IS_ERR(port->phydev)) {
@@ -1474,6 +1527,16 @@ static int eth_init_one(struct platform_device *pdev)
 	}
 
 	port->phydev->irq = PHY_POLL;
+=======
+	phydev = phy_connect(dev, phy_id, &ixp4xx_adjust_link,
+			     PHY_INTERFACE_MODE_MII);
+	if (IS_ERR(phydev)) {
+		err = PTR_ERR(phydev);
+		goto err_free_mem;
+	}
+
+	phydev->irq = PHY_POLL;
+>>>>>>> v4.9.227
 
 	if ((err = register_netdev(dev)))
 		goto err_phy_dis;
@@ -1484,7 +1547,11 @@ static int eth_init_one(struct platform_device *pdev)
 	return 0;
 
 err_phy_dis:
+<<<<<<< HEAD
 	phy_disconnect(port->phydev);
+=======
+	phy_disconnect(phydev);
+>>>>>>> v4.9.227
 err_free_mem:
 	npe_port_tab[NPE_ID(port->id)] = NULL;
 	release_resource(port->mem_res);
@@ -1498,10 +1565,18 @@ err_free:
 static int eth_remove_one(struct platform_device *pdev)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct port *port = netdev_priv(dev);
 
 	unregister_netdev(dev);
 	phy_disconnect(port->phydev);
+=======
+	struct phy_device *phydev = dev->phydev;
+	struct port *port = netdev_priv(dev);
+
+	unregister_netdev(dev);
+	phy_disconnect(phydev);
+>>>>>>> v4.9.227
 	npe_port_tab[NPE_ID(port->id)] = NULL;
 	npe_release(port->npe);
 	release_resource(port->mem_res);

@@ -41,9 +41,15 @@
 #include <plat/devs.h>
 #include <plat/cpu.h>
 #include <plat/pm.h>
+<<<<<<< HEAD
 #include <plat/nand-core.h>
 
 #include "common.h"
+=======
+
+#include "common.h"
+#include "nand-core.h"
+>>>>>>> v4.9.227
 #include "regs-dsc.h"
 
 static struct map_desc s3c244x_iodesc[] __initdata = {
@@ -108,7 +114,11 @@ static int __init s3c2442_core_init(void)
 core_initcall(s3c2442_core_init);
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 static struct sleep_save s3c244x_sleep[] = {
 	SAVE_ITEM(S3C2440_DSC0),
 	SAVE_ITEM(S3C2440_DSC1),
@@ -127,12 +137,19 @@ static void s3c244x_resume(void)
 {
 	s3c_pm_do_restore(s3c244x_sleep, ARRAY_SIZE(s3c244x_sleep));
 }
+<<<<<<< HEAD
 #else
 #define s3c244x_suspend NULL
 #define s3c244x_resume  NULL
 #endif
+=======
+>>>>>>> v4.9.227
 
 struct syscore_ops s3c244x_pm_syscore_ops = {
 	.suspend	= s3c244x_suspend,
 	.resume		= s3c244x_resume,
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227

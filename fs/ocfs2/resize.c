@@ -54,11 +54,19 @@
 static u16 ocfs2_calc_new_backup_super(struct inode *inode,
 				       struct ocfs2_group_desc *gd,
 				       u16 cl_cpg,
+<<<<<<< HEAD
+=======
+				       u16 old_bg_clusters,
+>>>>>>> v4.9.227
 				       int set)
 {
 	int i;
 	u16 backups = 0;
+<<<<<<< HEAD
 	u32 cluster;
+=======
+	u32 cluster, lgd_cluster;
+>>>>>>> v4.9.227
 	u64 blkno, gd_blkno, lgd_blkno = le64_to_cpu(gd->bg_blkno);
 
 	for (i = 0; i < OCFS2_MAX_BACKUP_SUPERBLOCKS; i++) {
@@ -71,6 +79,15 @@ static u16 ocfs2_calc_new_backup_super(struct inode *inode,
 		else if (gd_blkno > lgd_blkno)
 			break;
 
+<<<<<<< HEAD
+=======
+		/* check if already done backup super */
+		lgd_cluster = ocfs2_blocks_to_clusters(inode->i_sb, lgd_blkno);
+		lgd_cluster += old_bg_clusters;
+		if (lgd_cluster >= cluster)
+			continue;
+
+>>>>>>> v4.9.227
 		if (set)
 			ocfs2_set_bit(cluster % cl_cpg,
 				      (unsigned long *)gd->bg_bitmap);
@@ -99,6 +116,10 @@ static int ocfs2_update_last_group_and_inode(handle_t *handle,
 	u16 chain, num_bits, backups = 0;
 	u16 cl_bpc = le16_to_cpu(cl->cl_bpc);
 	u16 cl_cpg = le16_to_cpu(cl->cl_cpg);
+<<<<<<< HEAD
+=======
+	u16 old_bg_clusters;
+>>>>>>> v4.9.227
 
 	trace_ocfs2_update_last_group_and_inode(new_clusters,
 						first_new_cluster);
@@ -112,6 +133,10 @@ static int ocfs2_update_last_group_and_inode(handle_t *handle,
 
 	group = (struct ocfs2_group_desc *)group_bh->b_data;
 
+<<<<<<< HEAD
+=======
+	old_bg_clusters = le16_to_cpu(group->bg_bits) / cl_bpc;
+>>>>>>> v4.9.227
 	/* update the group first. */
 	num_bits = new_clusters * cl_bpc;
 	le16_add_cpu(&group->bg_bits, num_bits);
@@ -125,7 +150,11 @@ static int ocfs2_update_last_group_and_inode(handle_t *handle,
 				     OCFS2_FEATURE_COMPAT_BACKUP_SB)) {
 		backups = ocfs2_calc_new_backup_super(bm_inode,
 						     group,
+<<<<<<< HEAD
 						     cl_cpg, 1);
+=======
+						     cl_cpg, old_bg_clusters, 1);
+>>>>>>> v4.9.227
 		le16_add_cpu(&group->bg_free_bits_count, -1 * backups);
 	}
 
@@ -163,7 +192,11 @@ out_rollback:
 	if (ret < 0) {
 		ocfs2_calc_new_backup_super(bm_inode,
 					    group,
+<<<<<<< HEAD
 					    cl_cpg, 0);
+=======
+					    cl_cpg, old_bg_clusters, 0);
+>>>>>>> v4.9.227
 		le16_add_cpu(&group->bg_free_bits_count, backups);
 		le16_add_cpu(&group->bg_bits, -1 * num_bits);
 		le16_add_cpu(&group->bg_free_bits_count, -1 * num_bits);
@@ -187,7 +220,11 @@ static int update_backups(struct inode * inode, u32 clusters, char *data)
 	for (i = 0; i < OCFS2_MAX_BACKUP_SUPERBLOCKS; i++) {
 		blkno = ocfs2_backup_super_blkno(inode->i_sb, i);
 		cluster = ocfs2_blocks_to_clusters(inode->i_sb, blkno);
+<<<<<<< HEAD
 		if (cluster > clusters)
+=======
+		if (cluster >= clusters)
+>>>>>>> v4.9.227
 			break;
 
 		ret = ocfs2_read_blocks_sync(osb, blkno, 1, &backup);
@@ -292,7 +329,11 @@ int ocfs2_group_extend(struct inode * inode, int new_clusters)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&main_bm_inode->i_mutex);
+=======
+	inode_lock(main_bm_inode);
+>>>>>>> v4.9.227
 
 	ret = ocfs2_inode_lock(main_bm_inode, &main_bm_bh, 1);
 	if (ret < 0) {
@@ -366,7 +407,11 @@ out_unlock:
 	ocfs2_inode_unlock(main_bm_inode, 1);
 
 out_mutex:
+<<<<<<< HEAD
 	mutex_unlock(&main_bm_inode->i_mutex);
+=======
+	inode_unlock(main_bm_inode);
+>>>>>>> v4.9.227
 	iput(main_bm_inode);
 
 out:
@@ -477,7 +522,11 @@ int ocfs2_group_add(struct inode *inode, struct ocfs2_new_group_input *input)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&main_bm_inode->i_mutex);
+=======
+	inode_lock(main_bm_inode);
+>>>>>>> v4.9.227
 
 	ret = ocfs2_inode_lock(main_bm_inode, &main_bm_bh, 1);
 	if (ret < 0) {
@@ -581,7 +630,11 @@ out_unlock:
 	ocfs2_inode_unlock(main_bm_inode, 1);
 
 out_mutex:
+<<<<<<< HEAD
 	mutex_unlock(&main_bm_inode->i_mutex);
+=======
+	inode_unlock(main_bm_inode);
+>>>>>>> v4.9.227
 	iput(main_bm_inode);
 
 out:

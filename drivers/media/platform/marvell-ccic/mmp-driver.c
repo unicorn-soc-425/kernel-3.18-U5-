@@ -18,7 +18,11 @@
 #include <linux/slab.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/mmp-camera.h>
+=======
+#include <linux/platform_data/media/mmp-camera.h>
+>>>>>>> v4.9.227
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
@@ -371,6 +375,10 @@ static int mmpcam_probe(struct platform_device *pdev)
 	mcam->lane = pdata->lane;
 	mcam->chip_id = MCAM_ARMADA610;
 	mcam->buffer_mode = B_DMA_sg;
+<<<<<<< HEAD
+=======
+	strlcpy(mcam->bus_info, "platform:mmp-camera", sizeof(mcam->bus_info));
+>>>>>>> v4.9.227
 	spin_lock_init(&mcam->dev_lock);
 	/*
 	 * Get our I/O memory.
@@ -512,7 +520,10 @@ static struct platform_driver mmpcam_driver = {
 #endif
 	.driver = {
 		.name	= "mmp-camera",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE
+=======
+>>>>>>> v4.9.227
 	}
 };
 

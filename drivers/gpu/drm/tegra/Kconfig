@@ -16,6 +16,7 @@ config DRM_TEGRA
 
 if DRM_TEGRA
 
+<<<<<<< HEAD
 config DRM_TEGRA_FBDEV
 	bool "Enable legacy fbdev support"
 	select DRM_KMS_FB_HELPER
@@ -28,6 +29,8 @@ config DRM_TEGRA_FBDEV
 	  Note that this support also provides the Linux console on top of
 	  the Tegra modesetting driver.
 
+=======
+>>>>>>> v4.9.227
 config DRM_TEGRA_DEBUG
 	bool "NVIDIA Tegra DRM debug support"
 	help

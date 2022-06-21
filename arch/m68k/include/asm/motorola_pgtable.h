@@ -28,7 +28,10 @@
 #define _PAGE_CHG_MASK  (PAGE_MASK | _PAGE_ACCESSED | _PAGE_DIRTY | _PAGE_NOCACHE)
 
 #define _PAGE_PROTNONE	0x004
+<<<<<<< HEAD
 #define _PAGE_FILE	0x008	/* pagecache or swap? */
+=======
+>>>>>>> v4.9.227
 
 #ifndef __ASSEMBLY__
 
@@ -168,7 +171,10 @@ static inline void pgd_set(pgd_t *pgdp, pmd_t *pmdp)
 static inline int pte_write(pte_t pte)		{ return !(pte_val(pte) & _PAGE_RONLY); }
 static inline int pte_dirty(pte_t pte)		{ return pte_val(pte) & _PAGE_DIRTY; }
 static inline int pte_young(pte_t pte)		{ return pte_val(pte) & _PAGE_ACCESSED; }
+<<<<<<< HEAD
 static inline int pte_file(pte_t pte)		{ return pte_val(pte) & _PAGE_FILE; }
+=======
+>>>>>>> v4.9.227
 static inline int pte_special(pte_t pte)	{ return 0; }
 
 static inline pte_t pte_wrprotect(pte_t pte)	{ pte_val(pte) |= _PAGE_RONLY; return pte; }
@@ -266,6 +272,7 @@ static inline void cache_page(void *vaddr)
 	}
 }
 
+<<<<<<< HEAD
 #define PTE_FILE_MAX_BITS	28
 
 static inline unsigned long pte_to_pgoff(pte_t pte)
@@ -279,6 +286,8 @@ static inline pte_t pgoff_to_pte(unsigned off)
 	return pte;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Encode and de-code a swap entry (must be !pte_none(e) && !pte_present(e)) */
 #define __swp_type(x)		(((x).val >> 4) & 0xff)
 #define __swp_offset(x)		((x).val >> 12)

@@ -5,7 +5,11 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/acpi.h>
 #include <linux/cpu.h>
@@ -152,7 +156,11 @@ int acpi_processor_ffh_cstate_probe(unsigned int cpu,
 }
 EXPORT_SYMBOL_GPL(acpi_processor_ffh_cstate_probe);
 
+<<<<<<< HEAD
 void acpi_processor_ffh_cstate_enter(struct acpi_processor_cx *cx)
+=======
+void __cpuidle acpi_processor_ffh_cstate_enter(struct acpi_processor_cx *cx)
+>>>>>>> v4.9.227
 {
 	unsigned int cpu = smp_processor_id();
 	struct cstate_entry *percpu_entry;

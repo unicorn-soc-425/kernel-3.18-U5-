@@ -16,6 +16,10 @@
 
 #include <net/protocol.h>
 #include <net/ipv6.h>
+<<<<<<< HEAD
+=======
+#include <net/inet_common.h>
+>>>>>>> v4.9.227
 
 #include "ip6_offload.h"
 
@@ -62,10 +66,15 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
 	const struct net_offload *ops;
 	int proto;
 	struct frag_hdr *fptr;
+<<<<<<< HEAD
+=======
+	unsigned int payload_len;
+>>>>>>> v4.9.227
 	u8 *prevhdr;
 	int offset = 0;
 	bool encap, udpfrag;
 	int nhoff;
+<<<<<<< HEAD
 
 	if (unlikely(skb_shinfo(skb)->gso_type &
 		     ~(SKB_GSO_TCPV4 |
@@ -82,6 +91,9 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
 		       SKB_GSO_TCPV6 |
 		       0)))
 		goto out;
+=======
+	bool gso_partial;
+>>>>>>> v4.9.227
 
 	skb_reset_network_header(skb);
 	nhoff = skb_network_header(skb) - skb_mac_header(skb);
@@ -100,7 +112,11 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
 	proto = ipv6_gso_pull_exthdrs(skb, ipv6h->nexthdr);
 
 	if (skb->encapsulation &&
+<<<<<<< HEAD
 	    skb_shinfo(skb)->gso_type & (SKB_GSO_SIT|SKB_GSO_IPIP))
+=======
+	    skb_shinfo(skb)->gso_type & (SKB_GSO_IPXIP4 | SKB_GSO_IPXIP6))
+>>>>>>> v4.9.227
 		udpfrag = proto == IPPROTO_UDP && encap;
 	else
 		udpfrag = proto == IPPROTO_UDP && !skb->encapsulation;
@@ -111,12 +127,29 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
 		segs = ops->callbacks.gso_segment(skb, features);
 	}
 
+<<<<<<< HEAD
 	if (IS_ERR(segs))
 		goto out;
 
 	for (skb = segs; skb; skb = skb->next) {
 		ipv6h = (struct ipv6hdr *)(skb_mac_header(skb) + nhoff);
 		ipv6h->payload_len = htons(skb->len - nhoff - sizeof(*ipv6h));
+=======
+	if (IS_ERR_OR_NULL(segs))
+		goto out;
+
+	gso_partial = !!(skb_shinfo(segs)->gso_type & SKB_GSO_PARTIAL);
+
+	for (skb = segs; skb; skb = skb->next) {
+		ipv6h = (struct ipv6hdr *)(skb_mac_header(skb) + nhoff);
+		if (gso_partial && skb_is_gso(skb))
+			payload_len = skb_shinfo(skb)->gso_size +
+				      SKB_GSO_CB(skb)->data_offset +
+				      skb->head - (unsigned char *)(ipv6h + 1);
+		else
+			payload_len = skb->len - nhoff - sizeof(*ipv6h);
+		ipv6h->payload_len = htons(payload_len);
+>>>>>>> v4.9.227
 		skb->network_header = (u8 *)ipv6h - skb->head;
 		skb_reset_mac_len(skb);
 
@@ -128,7 +161,11 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
 			}
 			fptr = (struct frag_hdr *)((u8 *)ipv6h + err);
 			fptr->frag_off = htons(offset);
+<<<<<<< HEAD
 			if (skb->next != NULL)
+=======
+			if (skb->next)
+>>>>>>> v4.9.227
 				fptr->frag_off |= htons(IP6_MF);
 			offset += (ntohs(ipv6h->payload_len) -
 				   sizeof(struct frag_hdr));
@@ -200,6 +237,10 @@ static struct sk_buff **ipv6_gro_receive(struct sk_buff **head,
 	ops = rcu_dereference(inet6_offloads[proto]);
 	if (!ops || !ops->callbacks.gro_receive) {
 		__pskb_pull(skb, skb_gro_offset(skb));
+<<<<<<< HEAD
+=======
+		skb_gro_frag0_invalidate(skb);
+>>>>>>> v4.9.227
 		proto = ipv6_gso_pull_exthdrs(skb, proto);
 		skb_gro_pull(skb, -skb_transport_offset(skb));
 		skb_reset_transport_header(skb);
@@ -242,8 +283,20 @@ static struct sk_buff **ipv6_gro_receive(struct sk_buff **head,
 		/* flush if Traffic Class fields are different */
 		NAPI_GRO_CB(p)->flush |= !!(first_word & htonl(0x0FF00000));
 		NAPI_GRO_CB(p)->flush |= flush;
+<<<<<<< HEAD
 	}
 
+=======
+
+		/* If the previous IP ID value was based on an atomic
+		 * datagram we can overwrite the value and ignore it.
+		 */
+		if (NAPI_GRO_CB(skb)->is_atomic)
+			NAPI_GRO_CB(p)->flush_id = 0;
+	}
+
+	NAPI_GRO_CB(skb)->is_atomic = true;
+>>>>>>> v4.9.227
 	NAPI_GRO_CB(skb)->flush |= flush;
 
 	skb_gro_postpull_rcsum(skb, iph, nlen);
@@ -259,9 +312,17 @@ out:
 	return pp;
 }
 
+<<<<<<< HEAD
 static struct sk_buff **sit_gro_receive(struct sk_buff **head,
 					struct sk_buff *skb)
 {
+=======
+static struct sk_buff **sit_ip6ip6_gro_receive(struct sk_buff **head,
+					       struct sk_buff *skb)
+{
+	/* Common GRO receive for SIT and IP6IP6 */
+
+>>>>>>> v4.9.227
 	if (NAPI_GRO_CB(skb)->encap_mark) {
 		NAPI_GRO_CB(skb)->flush = 1;
 		return NULL;
@@ -272,12 +333,38 @@ static struct sk_buff **sit_gro_receive(struct sk_buff **head,
 	return ipv6_gro_receive(head, skb);
 }
 
+<<<<<<< HEAD
+=======
+static struct sk_buff **ip4ip6_gro_receive(struct sk_buff **head,
+					   struct sk_buff *skb)
+{
+	/* Common GRO receive for SIT and IP6IP6 */
+
+	if (NAPI_GRO_CB(skb)->encap_mark) {
+		NAPI_GRO_CB(skb)->flush = 1;
+		return NULL;
+	}
+
+	NAPI_GRO_CB(skb)->encap_mark = 1;
+
+	return inet_gro_receive(head, skb);
+}
+
+>>>>>>> v4.9.227
 static int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
 {
 	const struct net_offload *ops;
 	struct ipv6hdr *iph = (struct ipv6hdr *)(skb->data + nhoff);
 	int err = -ENOSYS;
 
+<<<<<<< HEAD
+=======
+	if (skb->encapsulation) {
+		skb_set_inner_protocol(skb, cpu_to_be16(ETH_P_IPV6));
+		skb_set_inner_network_header(skb, nhoff);
+	}
+
+>>>>>>> v4.9.227
 	iph->payload_len = htons(skb->len - nhoff - sizeof(*iph));
 
 	rcu_read_lock();
@@ -294,6 +381,30 @@ out_unlock:
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static int sit_gro_complete(struct sk_buff *skb, int nhoff)
+{
+	skb->encapsulation = 1;
+	skb_shinfo(skb)->gso_type |= SKB_GSO_IPXIP4;
+	return ipv6_gro_complete(skb, nhoff);
+}
+
+static int ip6ip6_gro_complete(struct sk_buff *skb, int nhoff)
+{
+	skb->encapsulation = 1;
+	skb_shinfo(skb)->gso_type |= SKB_GSO_IPXIP6;
+	return ipv6_gro_complete(skb, nhoff);
+}
+
+static int ip4ip6_gro_complete(struct sk_buff *skb, int nhoff)
+{
+	skb->encapsulation = 1;
+	skb_shinfo(skb)->gso_type |= SKB_GSO_IPXIP6;
+	return inet_gro_complete(skb, nhoff);
+}
+
+>>>>>>> v4.9.227
 static struct packet_offload ipv6_packet_offload __read_mostly = {
 	.type = cpu_to_be16(ETH_P_IPV6),
 	.callbacks = {
@@ -306,24 +417,55 @@ static struct packet_offload ipv6_packet_offload __read_mostly = {
 static const struct net_offload sit_offload = {
 	.callbacks = {
 		.gso_segment	= ipv6_gso_segment,
+<<<<<<< HEAD
 		.gro_receive	= sit_gro_receive,
 		.gro_complete	= ipv6_gro_complete,
 	},
 };
 
+=======
+		.gro_receive    = sit_ip6ip6_gro_receive,
+		.gro_complete   = sit_gro_complete,
+	},
+};
+
+static const struct net_offload ip4ip6_offload = {
+	.callbacks = {
+		.gso_segment	= inet_gso_segment,
+		.gro_receive    = ip4ip6_gro_receive,
+		.gro_complete   = ip4ip6_gro_complete,
+	},
+};
+
+static const struct net_offload ip6ip6_offload = {
+	.callbacks = {
+		.gso_segment	= ipv6_gso_segment,
+		.gro_receive    = sit_ip6ip6_gro_receive,
+		.gro_complete   = ip6ip6_gro_complete,
+	},
+};
+>>>>>>> v4.9.227
 static int __init ipv6_offload_init(void)
 {
 
 	if (tcpv6_offload_init() < 0)
 		pr_crit("%s: Cannot add TCP protocol offload\n", __func__);
+<<<<<<< HEAD
 	if (udp_offload_init() < 0)
 		pr_crit("%s: Cannot add UDP protocol offload\n", __func__);
+=======
+>>>>>>> v4.9.227
 	if (ipv6_exthdrs_offload_init() < 0)
 		pr_crit("%s: Cannot add EXTHDRS protocol offload\n", __func__);
 
 	dev_add_offload(&ipv6_packet_offload);
 
 	inet_add_offload(&sit_offload, IPPROTO_IPV6);
+<<<<<<< HEAD
+=======
+	inet6_add_offload(&ip6ip6_offload, IPPROTO_IPV6);
+	inet6_add_offload(&ip4ip6_offload, IPPROTO_IPIP);
+>>>>>>> v4.9.227
 
 	return 0;
 }

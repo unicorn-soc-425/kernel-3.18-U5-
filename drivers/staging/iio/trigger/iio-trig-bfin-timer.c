@@ -55,12 +55,21 @@ static struct bfin_timer iio_bfin_timer_code[MAX_BLACKFIN_GPTIMERS] = {
 };
 
 struct bfin_tmr_state {
+<<<<<<< HEAD
 	struct iio_trigger *trig;
 	struct bfin_timer *t;
 	unsigned timer_num;
 	bool output_enable;
 	unsigned int duty;
 	int irq;
+=======
+	struct iio_trigger	*trig;
+	struct bfin_timer	*t;
+	unsigned int		timer_num;
+	bool			output_enable;
+	unsigned int		duty;
+	int			irq;
+>>>>>>> v4.9.227
 };
 
 static int iio_bfin_tmr_set_state(struct iio_trigger *trig, bool state)
@@ -79,7 +88,12 @@ static int iio_bfin_tmr_set_state(struct iio_trigger *trig, bool state)
 }
 
 static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
+<<<<<<< HEAD
 		struct device_attribute *attr, const char *buf, size_t count)
+=======
+					    struct device_attribute *attr,
+					    const char *buf, size_t count)
+>>>>>>> v4.9.227
 {
 	struct iio_trigger *trig = to_iio_trigger(dev);
 	struct bfin_tmr_state *st = iio_trigger_get_drvdata(trig);
@@ -99,7 +113,11 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
 	if (enabled)
 		disable_gptimers(st->t->bit);
 
+<<<<<<< HEAD
 	if (val == 0)
+=======
+	if (!val)
+>>>>>>> v4.9.227
 		return count;
 
 	val = get_sclk() / val;
@@ -116,15 +134,24 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
 }
 
 static ssize_t iio_bfin_tmr_frequency_show(struct device *dev,
+<<<<<<< HEAD
 				 struct device_attribute *attr,
 				 char *buf)
+=======
+					   struct device_attribute *attr,
+					   char *buf)
+>>>>>>> v4.9.227
 {
 	struct iio_trigger *trig = to_iio_trigger(dev);
 	struct bfin_tmr_state *st = iio_trigger_get_drvdata(trig);
 	unsigned int period = get_gptimer_period(st->t->id);
 	unsigned long val;
 
+<<<<<<< HEAD
 	if (period == 0)
+=======
+	if (!period)
+>>>>>>> v4.9.227
 		val = 0;
 	else
 		val = get_sclk() / get_gptimer_period(st->t->id);
@@ -177,13 +204,21 @@ static const struct iio_trigger_ops iio_bfin_tmr_trigger_ops = {
 
 static int iio_bfin_tmr_trigger_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct iio_bfin_timer_trigger_pdata *pdata = pdev->dev.platform_data;
+=======
+	struct iio_bfin_timer_trigger_pdata *pdata;
+>>>>>>> v4.9.227
 	struct bfin_tmr_state *st;
 	unsigned int config;
 	int ret;
 
 	st = devm_kzalloc(&pdev->dev, sizeof(*st), GFP_KERNEL);
+<<<<<<< HEAD
 	if (st == NULL)
+=======
+	if (!st)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	st->irq = platform_get_irq(pdev, 0);
@@ -220,6 +255,10 @@ static int iio_bfin_tmr_trigger_probe(struct platform_device *pdev)
 
 	config = PWM_OUT | PERIOD_CNT | IRQ_ENA;
 
+<<<<<<< HEAD
+=======
+	pdata =	dev_get_platdata(&pdev->dev);
+>>>>>>> v4.9.227
 	if (pdata && pdata->output_enable) {
 		unsigned long long val;
 
@@ -279,7 +318,10 @@ static int iio_bfin_tmr_trigger_remove(struct platform_device *pdev)
 static struct platform_driver iio_bfin_tmr_trigger_driver = {
 	.driver = {
 		.name = "iio_bfin_tmr_trigger",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = iio_bfin_tmr_trigger_probe,
 	.remove = iio_bfin_tmr_trigger_remove,

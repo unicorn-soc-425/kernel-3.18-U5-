@@ -59,16 +59,27 @@ static int temac_mdio_write(struct mii_bus *bus, int phy_id, int reg, u16 val)
 int temac_mdio_setup(struct temac_local *lp, struct device_node *np)
 {
 	struct mii_bus *bus;
+<<<<<<< HEAD
 	const u32 *bus_hz;
 	int clk_div;
 	int rc, size;
+=======
+	u32 bus_hz;
+	int clk_div;
+	int rc;
+>>>>>>> v4.9.227
 	struct resource res;
 
 	/* Calculate a reasonable divisor for the clock rate */
 	clk_div = 0x3f; /* worst-case default setting */
+<<<<<<< HEAD
 	bus_hz = of_get_property(np, "clock-frequency", &size);
 	if (bus_hz && size >= sizeof(*bus_hz)) {
 		clk_div = (*bus_hz) / (2500 * 1000 * 2) - 1;
+=======
+	if (of_property_read_u32(np, "clock-frequency", &bus_hz) == 0) {
+		clk_div = bus_hz / (2500 * 1000 * 2) - 1;
+>>>>>>> v4.9.227
 		if (clk_div < 1)
 			clk_div = 1;
 		if (clk_div > 0x3f)
@@ -93,7 +104,10 @@ int temac_mdio_setup(struct temac_local *lp, struct device_node *np)
 	bus->read = temac_mdio_read;
 	bus->write = temac_mdio_write;
 	bus->parent = lp->dev;
+<<<<<<< HEAD
 	bus->irq = lp->mdio_irqs; /* preallocated IRQ table */
+=======
+>>>>>>> v4.9.227
 
 	lp->mii_bus = bus;
 
@@ -115,7 +129,10 @@ int temac_mdio_setup(struct temac_local *lp, struct device_node *np)
 void temac_mdio_teardown(struct temac_local *lp)
 {
 	mdiobus_unregister(lp->mii_bus);
+<<<<<<< HEAD
 	kfree(lp->mii_bus->irq);
+=======
+>>>>>>> v4.9.227
 	mdiobus_free(lp->mii_bus);
 	lp->mii_bus = NULL;
 }

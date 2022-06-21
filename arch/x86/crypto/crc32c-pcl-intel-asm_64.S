@@ -45,6 +45,10 @@
 
 #include <asm/inst.h>
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/nospec-branch.h>
+>>>>>>> v4.9.227
 
 ## ISCSI CRC 32 Implementation with crc32 and pclmulqdq Instruction
 
@@ -170,15 +174,25 @@ continue_block:
 	## branch into array
 	lea	jump_table(%rip), bufp
 	movzxw  (bufp, %rax, 2), len
+<<<<<<< HEAD
 	offset=crc_array-jump_table
 	lea     offset(bufp, len, 1), bufp
 	jmp     *bufp
+=======
+	lea	crc_array(%rip), bufp
+	lea     (bufp, len, 1), bufp
+	JMP_NOSPEC bufp
+>>>>>>> v4.9.227
 
 	################################################################
 	## 2a) PROCESS FULL BLOCKS:
 	################################################################
 full_block:
+<<<<<<< HEAD
 	movq    $128,%rax
+=======
+	movl    $128,%eax
+>>>>>>> v4.9.227
 	lea     128*8*2(block_0), block_1
 	lea     128*8*3(block_0), block_2
 	add     $128*8*1, block_0
@@ -310,7 +324,13 @@ do_return:
 	popq    %rdi
 	popq    %rbx
         ret
+<<<<<<< HEAD
 
+=======
+ENDPROC(crc_pcl)
+
+.section	.rodata, "a", %progbits
+>>>>>>> v4.9.227
         ################################################################
         ## jump table        Table is 129 entries x 2 bytes each
         ################################################################
@@ -324,13 +344,19 @@ JMPTBL_ENTRY %i
 	i=i+1
 .endr
 
+<<<<<<< HEAD
 ENDPROC(crc_pcl)
+=======
+>>>>>>> v4.9.227
 
 	################################################################
 	## PCLMULQDQ tables
 	## Table is 128 entries x 2 words (8 bytes) each
 	################################################################
+<<<<<<< HEAD
 .section	.rotata, "a", %progbits
+=======
+>>>>>>> v4.9.227
 .align 8
 K_table:
 	.long 0x493c7d27, 0x00000001

@@ -21,6 +21,10 @@
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> v4.9.227
 #include <linux/of_platform.h>
 #include <linux/spi/spi.h>
 #ifdef CONFIG_FSL_SOC
@@ -35,7 +39,12 @@ void mpc8xxx_spi_rx_buf_##type(u32 data, struct mpc8xxx_spi *mpc8xxx_spi) \
 	type *rx = mpc8xxx_spi->rx;					  \
 	*rx++ = (type)(data >> mpc8xxx_spi->rx_shift);			  \
 	mpc8xxx_spi->rx = rx;						  \
+<<<<<<< HEAD
 }
+=======
+}									  \
+EXPORT_SYMBOL_GPL(mpc8xxx_spi_rx_buf_##type);
+>>>>>>> v4.9.227
 
 #define MPC8XXX_SPI_TX_BUF(type)				\
 u32 mpc8xxx_spi_tx_buf_##type(struct mpc8xxx_spi *mpc8xxx_spi)	\
@@ -47,7 +56,12 @@ u32 mpc8xxx_spi_tx_buf_##type(struct mpc8xxx_spi *mpc8xxx_spi)	\
 	data = *tx++ << mpc8xxx_spi->tx_shift;			\
 	mpc8xxx_spi->tx = tx;					\
 	return data;						\
+<<<<<<< HEAD
 }
+=======
+}								\
+EXPORT_SYMBOL_GPL(mpc8xxx_spi_tx_buf_##type);
+>>>>>>> v4.9.227
 
 MPC8XXX_SPI_RX_BUF(u8)
 MPC8XXX_SPI_RX_BUF(u16)
@@ -60,6 +74,7 @@ struct mpc8xxx_spi_probe_info *to_of_pinfo(struct fsl_spi_platform_data *pdata)
 {
 	return container_of(pdata, struct mpc8xxx_spi_probe_info, pdata);
 }
+<<<<<<< HEAD
 
 static void mpc8xxx_spi_work(struct work_struct *work)
 {
@@ -98,6 +113,9 @@ int mpc8xxx_spi_transfer(struct spi_device *spi,
 
 	return 0;
 }
+=======
+EXPORT_SYMBOL_GPL(to_of_pinfo);
+>>>>>>> v4.9.227
 
 const char *mpc8xxx_spi_strmode(unsigned int flags)
 {
@@ -113,14 +131,23 @@ const char *mpc8xxx_spi_strmode(unsigned int flags)
 	}
 	return "CPU";
 }
+<<<<<<< HEAD
 
 int mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
+=======
+EXPORT_SYMBOL_GPL(mpc8xxx_spi_strmode);
+
+void mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
+>>>>>>> v4.9.227
 			unsigned int irq)
 {
 	struct fsl_spi_platform_data *pdata = dev_get_platdata(dev);
 	struct spi_master *master;
 	struct mpc8xxx_spi *mpc8xxx_spi;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> v4.9.227
 
 	master = dev_get_drvdata(dev);
 
@@ -128,7 +155,10 @@ int mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH
 			| SPI_LSB_FIRST | SPI_LOOP;
 
+<<<<<<< HEAD
 	master->transfer = mpc8xxx_spi_transfer;
+=======
+>>>>>>> v4.9.227
 	master->dev.of_node = dev->of_node;
 
 	mpc8xxx_spi = spi_master_get_devdata(master);
@@ -142,6 +172,7 @@ int mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
 	mpc8xxx_spi->rx_shift = 0;
 	mpc8xxx_spi->tx_shift = 0;
 
+<<<<<<< HEAD
 	init_completion(&mpc8xxx_spi->done);
 
 	master->bus_num = pdata->bus_num;
@@ -184,6 +215,14 @@ int mpc8xxx_spi_remove(struct device *dev)
 
 	return 0;
 }
+=======
+	master->bus_num = pdata->bus_num;
+	master->num_chipselect = pdata->max_chipselect;
+
+	init_completion(&mpc8xxx_spi->done);
+}
+EXPORT_SYMBOL_GPL(mpc8xxx_spi_probe);
+>>>>>>> v4.9.227
 
 int of_mpc8xxx_spi_probe(struct platform_device *ofdev)
 {
@@ -230,3 +269,9 @@ int of_mpc8xxx_spi_probe(struct platform_device *ofdev)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(of_mpc8xxx_spi_probe);
+
+MODULE_LICENSE("GPL");
+>>>>>>> v4.9.227

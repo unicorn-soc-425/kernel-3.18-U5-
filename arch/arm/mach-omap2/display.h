@@ -33,4 +33,12 @@ int omap_init_vout(void);
 
 struct device_node * __init omapdss_find_dss_of_node(void);
 
+<<<<<<< HEAD
+=======
+struct omap_dss_board_info;
+
+/* Init with the board info */
+int omap_display_init(struct omap_dss_board_info *board_data);
+
+>>>>>>> v4.9.227
 #endif

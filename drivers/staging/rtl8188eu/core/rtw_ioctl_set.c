@@ -11,6 +11,7 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
@@ -20,6 +21,11 @@
 #define _RTW_IOCTL_SET_C_
 
 
+=======
+ ******************************************************************************/
+#define _RTW_IOCTL_SET_C_
+
+>>>>>>> v4.9.227
 #include <osdep_service.h>
 #include <drv_types.h>
 #include <rtw_ioctl_set.h>
@@ -27,6 +33,7 @@
 
 extern void indicate_wx_scan_complete_event(struct adapter *padapter);
 
+<<<<<<< HEAD
 #define IS_MAC_ADDRESS_BROADCAST(addr) \
 (\
 	((addr[0] == 0xff) && (addr[1] == 0xff) && \
@@ -34,6 +41,8 @@ extern void indicate_wx_scan_complete_event(struct adapter *padapter);
 		(addr[4] == 0xff) && (addr[5] == 0xff))  ? true : false \
 )
 
+=======
+>>>>>>> v4.9.227
 u8 rtw_do_join(struct adapter *padapter)
 {
 	struct list_head *plist, *phead;
@@ -86,7 +95,12 @@ u8 rtw_do_join(struct adapter *padapter)
 		select_ret = rtw_select_and_join_from_scanned_queue(pmlmepriv);
 		if (select_ret == _SUCCESS) {
 			pmlmepriv->to_join = false;
+<<<<<<< HEAD
 			_set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
+=======
+			mod_timer(&pmlmepriv->assoc_timer,
+				  jiffies + msecs_to_jiffies(MAX_JOIN_TIMEOUT));
+>>>>>>> v4.9.227
 		} else {
 			if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true) {
 				/*  submit createbss_cmd to change to a ADHOC_MASTER */
@@ -98,7 +112,10 @@ u8 rtw_do_join(struct adapter *padapter)
 
 				pibss = padapter->registrypriv.dev_network.MacAddress;
 
+<<<<<<< HEAD
 				memset(&pdev_network->Ssid, 0, sizeof(struct ndis_802_11_ssid));
+=======
+>>>>>>> v4.9.227
 				memcpy(&pdev_network->Ssid, &pmlmepriv->assoc_ssid, sizeof(struct ndis_802_11_ssid));
 
 				rtw_update_registrypriv_dev_network(padapter);
@@ -183,7 +200,11 @@ u8 rtw_set_802_11_bssid(struct adapter *padapter, u8 *bssid)
 			if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
 				rtw_indicate_disconnect(padapter);
 
+<<<<<<< HEAD
 			rtw_free_assoc_resources(padapter, 1);
+=======
+			rtw_free_assoc_resources(padapter);
+>>>>>>> v4.9.227
 
 			if ((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true)) {
 				_clr_fwstate_(pmlmepriv, WIFI_ADHOC_MASTER_STATE);
@@ -271,7 +292,11 @@ u8 rtw_set_802_11_ssid(struct adapter *padapter, struct ndis_802_11_ssid *ssid)
 					if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
 						rtw_indicate_disconnect(padapter);
 
+<<<<<<< HEAD
 					rtw_free_assoc_resources(padapter, 1);
+=======
+					rtw_free_assoc_resources(padapter);
+>>>>>>> v4.9.227
 
 					if (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true) {
 						_clr_fwstate_(pmlmepriv, WIFI_ADHOC_MASTER_STATE);
@@ -293,7 +318,11 @@ u8 rtw_set_802_11_ssid(struct adapter *padapter, struct ndis_802_11_ssid *ssid)
 			if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
 				rtw_indicate_disconnect(padapter);
 
+<<<<<<< HEAD
 			rtw_free_assoc_resources(padapter, 1);
+=======
+			rtw_free_assoc_resources(padapter);
+>>>>>>> v4.9.227
 
 			if (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true) {
 				_clr_fwstate_(pmlmepriv, WIFI_ADHOC_MASTER_STATE);
@@ -366,7 +395,11 @@ u8 rtw_set_802_11_infrastructure_mode(struct adapter *padapter,
 
 		if ((check_fwstate(pmlmepriv, _FW_LINKED)) ||
 		    (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)))
+<<<<<<< HEAD
 			rtw_free_assoc_resources(padapter, 1);
+=======
+			rtw_free_assoc_resources(padapter);
+>>>>>>> v4.9.227
 
 		if ((*pold_state == Ndis802_11Infrastructure) || (*pold_state == Ndis802_11IBSS)) {
 			if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
@@ -415,7 +448,11 @@ u8 rtw_set_802_11_disassociate(struct adapter *padapter)
 
 		rtw_disassoc_cmd(padapter, 0, true);
 		rtw_indicate_disconnect(padapter);
+<<<<<<< HEAD
 		rtw_free_assoc_resources(padapter, 1);
+=======
+		rtw_free_assoc_resources(padapter);
+>>>>>>> v4.9.227
 		rtw_pwr_wakeup(padapter);
 	}
 
@@ -582,10 +619,15 @@ u16 rtw_get_cur_max_rate(struct adapter *adapter)
 	struct registry_priv *pregistrypriv = &adapter->registrypriv;
 	struct mlme_priv	*pmlmepriv = &adapter->mlmepriv;
 	struct wlan_bssid_ex  *pcur_bss = &pmlmepriv->cur_network.network;
+<<<<<<< HEAD
 	struct rtw_ieee80211_ht_cap *pht_capie;
 	u8	rf_type = 0;
 	u8	bw_40MHz = 0, short_GI_20 = 0, short_GI_40 = 0;
 	u16	mcs_rate = 0;
+=======
+	u8	rf_type = 0;
+	u8	bw_40MHz = 0, short_GI_20 = 0, short_GI_40 = 0;
+>>>>>>> v4.9.227
 	u32	ht_ielen = 0;
 
 	if (adapter->registrypriv.mp_mode == 1) {
@@ -600,6 +642,7 @@ u16 rtw_get_cur_max_rate(struct adapter *adapter)
 	if (pmlmeext->cur_wireless_mode & (WIRELESS_11_24N|WIRELESS_11_5N)) {
 		p = rtw_get_ie(&pcur_bss->IEs[12], _HT_CAPABILITY_IE_, &ht_ielen, pcur_bss->IELength-12);
 		if (p && ht_ielen > 0) {
+<<<<<<< HEAD
 			pht_capie = (struct rtw_ieee80211_ht_cap *)(p+2);
 
 			memcpy(&mcs_rate, pht_capie->supp_mcs_set, 2);
@@ -609,6 +652,13 @@ u16 rtw_get_cur_max_rate(struct adapter *adapter)
 
 			short_GI_20 = (le16_to_cpu(pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info) & IEEE80211_HT_CAP_SGI_20) ? 1 : 0;
 			short_GI_40 = (le16_to_cpu(pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info) & IEEE80211_HT_CAP_SGI_40) ? 1 : 0;
+=======
+			/* cur_bwmod is updated by beacon, pmlmeinfo is updated by association response */
+			bw_40MHz = (pmlmeext->cur_bwmode && (HT_INFO_HT_PARAM_REC_TRANS_CHNL_WIDTH & pmlmeinfo->HT_info.infos[0])) ? 1 : 0;
+
+			short_GI_20 = (le16_to_cpu(pmlmeinfo->HT_caps.cap_info) & IEEE80211_HT_CAP_SGI_20) ? 1 : 0;
+			short_GI_40 = (le16_to_cpu(pmlmeinfo->HT_caps.cap_info) & IEEE80211_HT_CAP_SGI_40) ? 1 : 0;
+>>>>>>> v4.9.227
 
 			rtw_hal_get_hwreg(adapter, HW_VAR_RF_TYPE, (u8 *)(&rf_type));
 			max_rate = rtw_mcs_rate(
@@ -616,7 +666,11 @@ u16 rtw_get_cur_max_rate(struct adapter *adapter)
 				bw_40MHz & (pregistrypriv->cbw40_enable),
 				short_GI_20,
 				short_GI_40,
+<<<<<<< HEAD
 				pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate
+=======
+				pmlmeinfo->HT_caps.mcs.rx_mask
+>>>>>>> v4.9.227
 			);
 		}
 	} else {
@@ -642,6 +696,7 @@ u16 rtw_get_cur_max_rate(struct adapter *adapter)
 */
 int rtw_set_country(struct adapter *adapter, const char *country_code)
 {
+<<<<<<< HEAD
 	int channel_plan = RT_CHANNEL_DOMAIN_WORLD_WIDE_5G;
 
 	DBG_88E("%s country_code:%s\n", __func__, country_code);
@@ -657,6 +712,20 @@ int rtw_set_country(struct adapter *adapter, const char *country_code)
 	else if (0 == strcmp(country_code, "CN"))
 		channel_plan = RT_CHANNEL_DOMAIN_CHINA;
 	else
+=======
+	int i;
+	int channel_plan = RT_CHANNEL_DOMAIN_WORLD_WIDE_5G;
+
+	DBG_88E("%s country_code:%s\n", __func__, country_code);
+	for (i = 0; i < ARRAY_SIZE(channel_table); i++) {
+		if (0 == strcmp(channel_table[i].name, country_code)) {
+			channel_plan = channel_table[i].channel_plan;
+			break;
+		}
+	}
+
+	if (i == ARRAY_SIZE(channel_table))
+>>>>>>> v4.9.227
 		DBG_88E("%s unknown country_code:%s\n", __func__, country_code);
 
 	return rtw_set_chplan_cmd(adapter, channel_plan, 1);

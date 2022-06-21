@@ -20,7 +20,11 @@
 	})
 
 /* acceptable for old filesystems */
+<<<<<<< HEAD
 static inline int old_valid_dev(dev_t dev)
+=======
+static inline bool old_valid_dev(dev_t dev)
+>>>>>>> v4.9.227
 {
 	return MAJOR(dev) < 256 && MINOR(dev) < 256;
 }
@@ -35,11 +39,14 @@ static inline dev_t old_decode_dev(u16 val)
 	return MKDEV((val >> 8) & 255, val & 255);
 }
 
+<<<<<<< HEAD
 static inline int new_valid_dev(dev_t dev)
 {
 	return 1;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline u32 new_encode_dev(dev_t dev)
 {
 	unsigned major = MAJOR(dev);
@@ -54,11 +61,14 @@ static inline dev_t new_decode_dev(u32 dev)
 	return MKDEV(major, minor);
 }
 
+<<<<<<< HEAD
 static inline int huge_valid_dev(dev_t dev)
 {
 	return 1;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline u64 huge_encode_dev(dev_t dev)
 {
 	return new_encode_dev(dev);

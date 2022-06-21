@@ -18,7 +18,11 @@
 #include "serialio.h"
 
 #define MAXSYNTHS       16      /* Max number of synths in array. */
+<<<<<<< HEAD
 static struct spk_synth *synths[MAXSYNTHS];
+=======
+static struct spk_synth *synths[MAXSYNTHS + 1];
+>>>>>>> v4.9.227
 struct spk_synth *synth;
 char spk_pitch_buff[32] = "";
 static int module_status;
@@ -30,9 +34,15 @@ struct speakup_info_t speakup_info = {
 	 * must be taken at each kernel->speakup transition and released at
 	 * each corresponding speakup->kernel transition.
 	 *
+<<<<<<< HEAD
 	 * The progression thread only interferes with the speakup machinery through
 	 * the synth buffer, so only needs to take the lock while tinkering with
 	 * the buffer.
+=======
+	 * The progression thread only interferes with the speakup machinery
+	 * through the synth buffer, so only needs to take the lock
+	 * while tinkering with the buffer.
+>>>>>>> v4.9.227
 	 *
 	 * We use spin_lock/trylock_irqsave and spin_unlock_irqrestore with this
 	 * spinlock because speakup needs to disable the keyboard IRQ.
@@ -179,7 +189,11 @@ int spk_synth_is_alive_restart(struct spk_synth *synth)
 {
 	if (synth->alive)
 		return 1;
+<<<<<<< HEAD
 	if (!synth->alive && spk_wait_for_xmitr() > 0) {
+=======
+	if (spk_wait_for_xmitr() > 0) {
+>>>>>>> v4.9.227
 		/* restart */
 		synth->alive = 1;
 		synth_printf("%s", synth->init);
@@ -407,7 +421,11 @@ static int do_synth_init(struct spk_synth *in_synth)
 	if (!spk_quiet_boot)
 		synth_printf("%s found\n", synth->long_name);
 	if (synth->attributes.name
+<<<<<<< HEAD
 	&& sysfs_create_group(speakup_kobj, &(synth->attributes)) < 0)
+=======
+	&& sysfs_create_group(speakup_kobj, &synth->attributes) < 0)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	synth_flags = synth->flags;
 	wake_up_interruptible_all(&speakup_event);
@@ -429,7 +447,11 @@ void synth_release(void)
 	del_timer(&thread_timer);
 	spin_unlock_irqrestore(&speakup_info.spinlock, flags);
 	if (synth->attributes.name)
+<<<<<<< HEAD
 		sysfs_remove_group(speakup_kobj, &(synth->attributes));
+=======
+		sysfs_remove_group(speakup_kobj, &synth->attributes);
+>>>>>>> v4.9.227
 	for (var = synth->vars; var->var_id != MAXVARS; var++)
 		speakup_unregister_var(var->var_id);
 	spk_stop_serial_interrupt();

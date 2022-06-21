@@ -29,15 +29,21 @@
 #include <linux/utsname.h>
 #include <linux/mutex.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_SND_OSSEMUL) && defined(CONFIG_PROC_FS)
 
+=======
+>>>>>>> v4.9.227
 /*
  *  OSS compatible part
  */
 
 static DEFINE_MUTEX(strings);
 static char *snd_sndstat_strings[SNDRV_CARDS][SNDRV_OSS_INFO_DEV_COUNT];
+<<<<<<< HEAD
 static struct snd_info_entry *snd_sndstat_proc_entry;
+=======
+>>>>>>> v4.9.227
 
 int snd_oss_info_register(int dev, int num, char *string)
 {
@@ -112,11 +118,16 @@ static void snd_sndstat_proc_read(struct snd_info_entry *entry,
 	snd_sndstat_show_strings(buffer, "Mixers", SNDRV_OSS_INFO_DEV_MIXERS);
 }
 
+<<<<<<< HEAD
 int snd_info_minor_register(void)
+=======
+int __init snd_info_minor_register(void)
+>>>>>>> v4.9.227
 {
 	struct snd_info_entry *entry;
 
 	memset(snd_sndstat_strings, 0, sizeof(snd_sndstat_strings));
+<<<<<<< HEAD
 	if ((entry = snd_info_create_module_entry(THIS_MODULE, "sndstat", snd_oss_root)) != NULL) {
 		entry->c.text.read = snd_sndstat_proc_read;
 		if (snd_info_register(entry) < 0) {
@@ -136,3 +147,12 @@ int snd_info_minor_unregister(void)
 }
 
 #endif /* CONFIG_SND_OSSEMUL */
+=======
+	entry = snd_info_create_module_entry(THIS_MODULE, "sndstat",
+					     snd_oss_root);
+	if (!entry)
+		return -ENOMEM;
+	entry->c.text.read = snd_sndstat_proc_read;
+	return snd_info_register(entry); /* freed in error path */
+}
+>>>>>>> v4.9.227

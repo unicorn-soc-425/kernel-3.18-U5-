@@ -33,6 +33,11 @@
 
 #ifdef	CONFIG_PM
 
+<<<<<<< HEAD
+=======
+static void unlink_empty_async_suspended(struct ehci_hcd *ehci);
+
+>>>>>>> v4.9.227
 static int persist_enabled_on_companion(struct usb_device *udev, void *unused)
 {
 	return !udev->maxchild && udev->persist_enabled &&
@@ -69,10 +74,15 @@ static void ehci_handover_companion_ports(struct ehci_hcd *ehci)
 		if (test_bit(port, &ehci->owned_ports)) {
 			reg = &ehci->regs->port_status[port];
 			status = ehci_readl(ehci, reg) & ~PORT_RWC_BITS;
+<<<<<<< HEAD
 			if (!(status & PORT_POWER)) {
 				status |= PORT_POWER;
 				ehci_writel(ehci, status, reg);
 			}
+=======
+			if (!(status & PORT_POWER))
+				ehci_port_power(ehci, port, true);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -157,7 +167,11 @@ static int ehci_port_change(struct ehci_hcd *ehci)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void ehci_adjust_port_wakeup_flags(struct ehci_hcd *ehci,
+=======
+void ehci_adjust_port_wakeup_flags(struct ehci_hcd *ehci,
+>>>>>>> v4.9.227
 		bool suspending, bool do_wakeup)
 {
 	int		port;
@@ -222,8 +236,14 @@ static void ehci_adjust_port_wakeup_flags(struct ehci_hcd *ehci,
 
 	spin_unlock_irq(&ehci->lock);
 }
+<<<<<<< HEAD
 
 int ehci_bus_suspend (struct usb_hcd *hcd)
+=======
+EXPORT_SYMBOL_GPL(ehci_adjust_port_wakeup_flags);
+
+static int ehci_bus_suspend (struct usb_hcd *hcd)
+>>>>>>> v4.9.227
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci (hcd);
 	int			port;
@@ -275,6 +295,7 @@ int ehci_bus_suspend (struct usb_hcd *hcd)
 		if (t1 & PORT_OWNER)
 			set_bit(port, &ehci->owned_ports);
 		else if ((t1 & PORT_PE) && !(t1 & PORT_SUSPEND)) {
+<<<<<<< HEAD
 			/* clear RS bit before setting SUSP bit
 			 * and wait for HCH to get set. */
 			if (ehci->susp_sof_bug) {
@@ -283,6 +304,8 @@ int ehci_bus_suspend (struct usb_hcd *hcd)
 				spin_lock_irq(&ehci->lock);
 			}
 
+=======
+>>>>>>> v4.9.227
 			t2 |= PORT_SUSPEND;
 			set_bit(port, &ehci->bus_suspended);
 		}
@@ -346,9 +369,14 @@ int ehci_bus_suspend (struct usb_hcd *hcd)
 	if (ehci->bus_suspended)
 		udelay(150);
 
+<<<<<<< HEAD
 	/* if this bit is set, controller is already haled */
 	if (!ehci->susp_sof_bug)
 		ehci_halt(ehci); /* turn off now-idle HC */
+=======
+	/* turn off now-idle HC */
+	ehci_halt (ehci);
+>>>>>>> v4.9.227
 
 	spin_lock_irq(&ehci->lock);
 	if (ehci->enabled_hrtimer_events & BIT(EHCI_HRTIMER_POLL_DEAD))
@@ -357,8 +385,15 @@ int ehci_bus_suspend (struct usb_hcd *hcd)
 		goto done;
 	ehci->rh_state = EHCI_RH_SUSPENDED;
 
+<<<<<<< HEAD
 	end_unlink_async(ehci);
 	unlink_empty_async_suspended(ehci);
+=======
+	unlink_empty_async_suspended(ehci);
+
+	/* Any IAA cycle that started before the suspend is now invalid */
+	end_iaa_cycle(ehci);
+>>>>>>> v4.9.227
 	ehci_handle_start_intr_unlinks(ehci);
 	ehci_handle_intr_unlinks(ehci);
 	end_free_itds(ehci);
@@ -379,10 +414,17 @@ int ehci_bus_suspend (struct usb_hcd *hcd)
 	hrtimer_cancel(&ehci->hrtimer);
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ehci_bus_suspend);
 
 /* caller has locked the root hub, and should reset/reinit on error */
 int ehci_bus_resume (struct usb_hcd *hcd)
+=======
+
+
+/* caller has locked the root hub, and should reset/reinit on error */
+static int ehci_bus_resume (struct usb_hcd *hcd)
+>>>>>>> v4.9.227
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci (hcd);
 	u32			temp;
@@ -522,7 +564,10 @@ int ehci_bus_resume (struct usb_hcd *hcd)
 	spin_unlock_irq(&ehci->lock);
 	return -ESHUTDOWN;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ehci_bus_resume);
+=======
+>>>>>>> v4.9.227
 
 #else
 
@@ -626,10 +671,13 @@ ehci_hub_status_data (struct usb_hcd *hcd, char *buf)
 	unsigned long	flags;
 	u32		ppcd = ~0;
 
+<<<<<<< HEAD
 	/* hcd core tries to get status even during suspend, if so bail out. */
 	if (ehci->rh_state != EHCI_RH_RUNNING)
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	/* init status to no-changes */
 	buf [0] = 0;
 	ports = HCS_N_PORTS (ehci->hcs_params);
@@ -707,7 +755,11 @@ ehci_hub_descriptor (
 	int		ports = HCS_N_PORTS (ehci->hcs_params);
 	u16		temp;
 
+<<<<<<< HEAD
 	desc->bDescriptorType = 0x29;
+=======
+	desc->bDescriptorType = USB_DT_HUB;
+>>>>>>> v4.9.227
 	desc->bPwrOn2PwrGood = 10;	/* ehci 1.0, 2.3.9 says 20ms max */
 	desc->bHubContrCurrent = 0;
 
@@ -719,6 +771,7 @@ ehci_hub_descriptor (
 	memset(&desc->u.hs.DeviceRemovable[0], 0, temp);
 	memset(&desc->u.hs.DeviceRemovable[temp], 0xff, temp);
 
+<<<<<<< HEAD
 	temp = 0x0008;			/* per-port overcurrent reporting */
 	if (HCS_PPC (ehci->hcs_params))
 		temp |= 0x0001;		/* per-port power control */
@@ -728,6 +781,17 @@ ehci_hub_descriptor (
 // re-enable when we support USB_PORT_FEAT_INDICATOR below.
 	if (HCS_INDICATOR (ehci->hcs_params))
 		temp |= 0x0080;		/* per-port indicators (LEDs) */
+=======
+	temp = HUB_CHAR_INDV_PORT_OCPM;	/* per-port overcurrent reporting */
+	if (HCS_PPC (ehci->hcs_params))
+		temp |= HUB_CHAR_INDV_PORT_LPSM; /* per-port power control */
+	else
+		temp |= HUB_CHAR_NO_LPSM; /* no power switching */
+#if 0
+// re-enable when we support USB_PORT_FEAT_INDICATOR below.
+	if (HCS_INDICATOR (ehci->hcs_params))
+		temp |= HUB_CHAR_PORTIND; /* per-port indicators (LEDs) */
+>>>>>>> v4.9.227
 #endif
 	desc->wHubCharacteristics = cpu_to_le16(temp);
 }
@@ -883,15 +947,32 @@ int ehci_hub_control(
 ) {
 	struct ehci_hcd	*ehci = hcd_to_ehci (hcd);
 	int		ports = HCS_N_PORTS (ehci->hcs_params);
+<<<<<<< HEAD
 	u32 __iomem	*status_reg = &ehci->regs->port_status[
 				(wIndex & 0xff) - 1];
 	u32 __iomem	*hostpc_reg = &ehci->regs->hostpc[(wIndex & 0xff) - 1];
+=======
+	u32 __iomem	*status_reg, *hostpc_reg;
+>>>>>>> v4.9.227
 	u32		temp, temp1, status;
 	unsigned long	flags;
 	int		retval = 0;
 	unsigned	selector;
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Avoid underflow while calculating (wIndex & 0xff) - 1.
+	 * The compiler might deduce that wIndex can never be 0 and then
+	 * optimize away the tests for !wIndex below.
+	 */
+	temp = wIndex & 0xff;
+	temp -= (temp > 0);
+	status_reg = &ehci->regs->port_status[temp];
+	hostpc_reg = &ehci->regs->hostpc[temp];
+
+	/*
+>>>>>>> v4.9.227
 	 * FIXME:  support SetPortFeatures USB_PORT_FEAT_INDICATOR.
 	 * HCS_INDICATOR may say we can change LEDs to off/amber/green.
 	 * (track current state ourselves) ... blink for diagnostics,
@@ -969,9 +1050,17 @@ int ehci_hub_control(
 			clear_bit(wIndex, &ehci->port_c_suspend);
 			break;
 		case USB_PORT_FEAT_POWER:
+<<<<<<< HEAD
 			if (HCS_PPC (ehci->hcs_params))
 				ehci_writel(ehci, temp & ~PORT_POWER,
 						status_reg);
+=======
+			if (HCS_PPC(ehci->hcs_params)) {
+				spin_unlock_irqrestore(&ehci->lock, flags);
+				ehci_port_power(ehci, wIndex, false);
+				spin_lock_irqsave(&ehci->lock, flags);
+			}
+>>>>>>> v4.9.227
 			break;
 		case USB_PORT_FEAT_C_CONNECTION:
 			ehci_writel(ehci, temp | PORT_CSC, status_reg);
@@ -1021,9 +1110,15 @@ int ehci_hub_control(
 			 */
 			if (((temp & PORT_OC) || (ehci->need_oc_pp_cycle))
 					&& HCS_PPC(ehci->hcs_params)) {
+<<<<<<< HEAD
 				ehci_writel(ehci,
 					temp & ~(PORT_RWC_BITS | PORT_POWER),
 					status_reg);
+=======
+				spin_unlock_irqrestore(&ehci->lock, flags);
+				ehci_port_power(ehci, wIndex, false);
+				spin_lock_irqsave(&ehci->lock, flags);
+>>>>>>> v4.9.227
 				temp = ehci_readl(ehci, status_reg);
 			}
 		}
@@ -1188,11 +1283,15 @@ int ehci_hub_control(
 			 */
 			temp &= ~PORT_WKCONN_E;
 			temp |= PORT_WKDISC_E | PORT_WKOC_E;
+<<<<<<< HEAD
 			if (ehci->susp_sof_bug)
 				ehci_writel(ehci, temp, status_reg);
 			else
 				ehci_writel(ehci, temp | PORT_SUSPEND,
 						status_reg);
+=======
+			ehci_writel(ehci, temp | PORT_SUSPEND, status_reg);
+>>>>>>> v4.9.227
 			if (ehci->has_tdi_phy_lpm) {
 				spin_unlock_irqrestore(&ehci->lock, flags);
 				msleep(5);/* 5ms for HCD enter low pwr mode */
@@ -1208,9 +1307,17 @@ int ehci_hub_control(
 			set_bit(wIndex, &ehci->suspended_ports);
 			break;
 		case USB_PORT_FEAT_POWER:
+<<<<<<< HEAD
 			if (HCS_PPC (ehci->hcs_params))
 				ehci_writel(ehci, temp | PORT_POWER,
 						status_reg);
+=======
+			if (HCS_PPC(ehci->hcs_params)) {
+				spin_unlock_irqrestore(&ehci->lock, flags);
+				ehci_port_power(ehci, wIndex, true);
+				spin_lock_irqsave(&ehci->lock, flags);
+			}
+>>>>>>> v4.9.227
 			break;
 		case USB_PORT_FEAT_RESET:
 			if (temp & (PORT_SUSPEND|PORT_RESUME))
@@ -1236,6 +1343,7 @@ int ehci_hub_control(
 				 */
 				ehci->reset_done [wIndex] = jiffies
 						+ msecs_to_jiffies (50);
+<<<<<<< HEAD
 			}
 			ehci_writel(ehci, temp, status_reg);
 
@@ -1244,6 +1352,17 @@ int ehci_hub_control(
 				msleep(ehci->reset_delay);
 				spin_lock_irqsave(&ehci->lock, flags);
 			}
+=======
+
+				/*
+				 * Force full-speed connect for FSL high-speed
+				 * erratum; disable HS Chirp by setting PFSC bit
+				 */
+				if (ehci_has_fsl_hs_errata(ehci))
+					temp |= (1 << PORTSC_FSL_PFSC);
+			}
+			ehci_writel(ehci, temp, status_reg);
+>>>>>>> v4.9.227
 			break;
 
 		/* For downstream facing ports (these):  one hub port is put
@@ -1269,7 +1388,11 @@ int ehci_hub_control(
 			spin_lock_irqsave(&ehci->lock, flags);
 
 			/* Put all enabled ports into suspend */
+<<<<<<< HEAD
 			while (!ehci->no_testmode_suspend && ports--) {
+=======
+			while (ports--) {
+>>>>>>> v4.9.227
 				u32 __iomem *sreg =
 						&ehci->regs->port_status[ports];
 
@@ -1324,3 +1447,23 @@ static int ehci_port_handed_over(struct usb_hcd *hcd, int portnum)
 	reg = &ehci->regs->port_status[portnum - 1];
 	return ehci_readl(ehci, reg) & PORT_OWNER;
 }
+<<<<<<< HEAD
+=======
+
+static int ehci_port_power(struct ehci_hcd *ehci, int portnum, bool enable)
+{
+	struct usb_hcd *hcd = ehci_to_hcd(ehci);
+	u32 __iomem *status_reg = &ehci->regs->port_status[portnum];
+	u32 temp = ehci_readl(ehci, status_reg) & ~PORT_RWC_BITS;
+
+	if (enable)
+		ehci_writel(ehci, temp | PORT_POWER, status_reg);
+	else
+		ehci_writel(ehci, temp & ~PORT_POWER, status_reg);
+
+	if (hcd->driver->port_power)
+		hcd->driver->port_power(hcd, portnum, enable);
+
+	return 0;
+}
+>>>>>>> v4.9.227

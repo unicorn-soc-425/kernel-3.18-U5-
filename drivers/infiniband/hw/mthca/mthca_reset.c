@@ -98,7 +98,11 @@ int mthca_reset(struct mthca_dev *mdev)
 		err = -ENOMEM;
 		mthca_err(mdev, "Couldn't allocate memory to save HCA "
 			  "PCI header, aborting.\n");
+<<<<<<< HEAD
 		goto out;
+=======
+		goto put_dev;
+>>>>>>> v4.9.227
 	}
 
 	for (i = 0; i < 64; ++i) {
@@ -108,7 +112,11 @@ int mthca_reset(struct mthca_dev *mdev)
 			err = -ENODEV;
 			mthca_err(mdev, "Couldn't save HCA "
 				  "PCI header, aborting.\n");
+<<<<<<< HEAD
 			goto out;
+=======
+			goto free_hca;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -121,7 +129,11 @@ int mthca_reset(struct mthca_dev *mdev)
 			err = -ENOMEM;
 			mthca_err(mdev, "Couldn't allocate memory to save HCA "
 				  "bridge PCI header, aborting.\n");
+<<<<<<< HEAD
 			goto out;
+=======
+			goto free_hca;
+>>>>>>> v4.9.227
 		}
 
 		for (i = 0; i < 64; ++i) {
@@ -131,7 +143,11 @@ int mthca_reset(struct mthca_dev *mdev)
 				err = -ENODEV;
 				mthca_err(mdev, "Couldn't save HCA bridge "
 					  "PCI header, aborting.\n");
+<<<<<<< HEAD
 				goto out;
+=======
+				goto free_bh;
+>>>>>>> v4.9.227
 			}
 		}
 		bridge_pcix_cap = pci_find_capability(bridge, PCI_CAP_ID_PCIX);
@@ -139,7 +155,11 @@ int mthca_reset(struct mthca_dev *mdev)
 				err = -ENODEV;
 				mthca_err(mdev, "Couldn't locate HCA bridge "
 					  "PCI-X capability, aborting.\n");
+<<<<<<< HEAD
 				goto out;
+=======
+				goto free_bh;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -152,7 +172,11 @@ int mthca_reset(struct mthca_dev *mdev)
 			err = -ENOMEM;
 			mthca_err(mdev, "Couldn't map HCA reset register, "
 				  "aborting.\n");
+<<<<<<< HEAD
 			goto out;
+=======
+			goto free_bh;
+>>>>>>> v4.9.227
 		}
 
 		writel(MTHCA_RESET_VALUE, reset);
@@ -172,7 +196,11 @@ int mthca_reset(struct mthca_dev *mdev)
 				err = -ENODEV;
 				mthca_err(mdev, "Couldn't access HCA after reset, "
 					  "aborting.\n");
+<<<<<<< HEAD
 				goto out;
+=======
+				goto free_bh;
+>>>>>>> v4.9.227
 			}
 
 			if (v != 0xffffffff)
@@ -184,7 +212,11 @@ int mthca_reset(struct mthca_dev *mdev)
 		err = -ENODEV;
 		mthca_err(mdev, "PCI device did not come back after reset, "
 			  "aborting.\n");
+<<<<<<< HEAD
 		goto out;
+=======
+		goto free_bh;
+>>>>>>> v4.9.227
 	}
 
 good:
@@ -195,14 +227,22 @@ good:
 			err = -ENODEV;
 			mthca_err(mdev, "Couldn't restore HCA bridge Upstream "
 				  "split transaction control, aborting.\n");
+<<<<<<< HEAD
 			goto out;
+=======
+			goto free_bh;
+>>>>>>> v4.9.227
 		}
 		if (pci_write_config_dword(bridge, bridge_pcix_cap + 0xc,
 				 bridge_header[(bridge_pcix_cap + 0xc) / 4])) {
 			err = -ENODEV;
 			mthca_err(mdev, "Couldn't restore HCA bridge Downstream "
 				  "split transaction control, aborting.\n");
+<<<<<<< HEAD
 			goto out;
+=======
+			goto free_bh;
+>>>>>>> v4.9.227
 		}
 		/*
 		 * Bridge control register is at 0x3e, so we'll
@@ -216,7 +256,11 @@ good:
 				err = -ENODEV;
 				mthca_err(mdev, "Couldn't restore HCA bridge reg %x, "
 					  "aborting.\n", i);
+<<<<<<< HEAD
 				goto out;
+=======
+				goto free_bh;
+>>>>>>> v4.9.227
 			}
 		}
 
@@ -225,7 +269,11 @@ good:
 			err = -ENODEV;
 			mthca_err(mdev, "Couldn't restore HCA bridge COMMAND, "
 				  "aborting.\n");
+<<<<<<< HEAD
 			goto out;
+=======
+			goto free_bh;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -235,7 +283,11 @@ good:
 			err = -ENODEV;
 			mthca_err(mdev, "Couldn't restore HCA PCI-X "
 				  "command register, aborting.\n");
+<<<<<<< HEAD
 			goto out;
+=======
+			goto free_bh;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -246,7 +298,11 @@ good:
 			err = -ENODEV;
 			mthca_err(mdev, "Couldn't restore HCA PCI Express "
 				  "Device Control register, aborting.\n");
+<<<<<<< HEAD
 			goto out;
+=======
+			goto free_bh;
+>>>>>>> v4.9.227
 		}
 		linkctl = hca_header[(hca_pcie_cap + PCI_EXP_LNKCTL) / 4];
 		if (pcie_capability_write_word(mdev->pdev, PCI_EXP_LNKCTL,
@@ -254,7 +310,11 @@ good:
 			err = -ENODEV;
 			mthca_err(mdev, "Couldn't restore HCA PCI Express "
 				  "Link control register, aborting.\n");
+<<<<<<< HEAD
 			goto out;
+=======
+			goto free_bh;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -266,7 +326,11 @@ good:
 			err = -ENODEV;
 			mthca_err(mdev, "Couldn't restore HCA reg %x, "
 				  "aborting.\n", i);
+<<<<<<< HEAD
 			goto out;
+=======
+			goto free_bh;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -275,6 +339,7 @@ good:
 		err = -ENODEV;
 		mthca_err(mdev, "Couldn't restore HCA COMMAND, "
 			  "aborting.\n");
+<<<<<<< HEAD
 		goto out;
 	}
 
@@ -284,5 +349,14 @@ out:
 	kfree(bridge_header);
 	kfree(hca_header);
 
+=======
+	}
+free_bh:
+	kfree(bridge_header);
+free_hca:
+	kfree(hca_header);
+put_dev:
+	pci_dev_put(bridge);
+>>>>>>> v4.9.227
 	return err;
 }

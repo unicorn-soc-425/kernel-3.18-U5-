@@ -162,6 +162,7 @@ extern struct mlog_bits mlog_and_bits, mlog_not_bits;
 
 #endif
 
+<<<<<<< HEAD
 /*
  * smp_processor_id() "helpfully" screams when called outside preemptible
  * regions in current kernels.  sles doesn't have the variants that don't
@@ -197,12 +198,36 @@ extern struct mlog_bits mlog_and_bits, mlog_not_bits;
 } while (0)
 
 #define mlog_errno(st) do {						\
+=======
+__printf(4, 5)
+void __mlog_printk(const u64 *m, const char *func, int line,
+		   const char *fmt, ...);
+
+/*
+ * Testing before the __mlog_printk call lets the compiler eliminate the
+ * call completely when (m & ML_ALLOWED_BITS) is 0.
+ */
+#define mlog(mask, fmt, ...)						\
+do {									\
+	u64 _m = MLOG_MASK_PREFIX | (mask);				\
+	if (_m & ML_ALLOWED_BITS)					\
+		__mlog_printk(&_m, __func__, __LINE__, fmt,		\
+			      ##__VA_ARGS__);				\
+} while (0)
+
+#define mlog_errno(st) ({						\
+>>>>>>> v4.9.227
 	int _st = (st);							\
 	if (_st != -ERESTARTSYS && _st != -EINTR &&			\
 	    _st != AOP_TRUNCATED_PAGE && _st != -ENOSPC &&		\
 	    _st != -EDQUOT)						\
 		mlog(ML_ERROR, "status = %lld\n", (long long)_st);	\
+<<<<<<< HEAD
 } while (0)
+=======
+	_st;								\
+})
+>>>>>>> v4.9.227
 
 #define mlog_bug_on_msg(cond, fmt, args...) do {			\
 	if (cond) {							\

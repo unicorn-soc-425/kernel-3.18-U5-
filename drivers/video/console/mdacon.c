@@ -444,6 +444,7 @@ static void mdacon_clear(struct vc_data *c, int y, int x,
 	}
 }
                         
+<<<<<<< HEAD
 static void mdacon_bmove(struct vc_data *c, int sy, int sx, 
 			 int dy, int dx, int height, int width)
 {
@@ -476,16 +477,21 @@ static void mdacon_bmove(struct vc_data *c, int sy, int sx,
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static int mdacon_switch(struct vc_data *c)
 {
 	return 1;	/* redrawing needed */
 }
 
+<<<<<<< HEAD
 static int mdacon_set_palette(struct vc_data *c, unsigned char *table)
 {
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 static int mdacon_blank(struct vc_data *c, int blank, int mode_switch)
 {
 	if (mda_type == TYPE_MDA) {
@@ -505,11 +511,14 @@ static int mdacon_blank(struct vc_data *c, int blank, int mode_switch)
 	}
 }
 
+<<<<<<< HEAD
 static int mdacon_scrolldelta(struct vc_data *c, int lines)
 {
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static void mdacon_cursor(struct vc_data *c, int mode)
 {
 	if (mode == CM_ERASE) {
@@ -574,11 +583,16 @@ static const struct consw mda_con = {
 	.con_putcs =		mdacon_putcs,
 	.con_cursor =		mdacon_cursor,
 	.con_scroll =		mdacon_scroll,
+<<<<<<< HEAD
 	.con_bmove =		mdacon_bmove,
 	.con_switch =		mdacon_switch,
 	.con_blank =		mdacon_blank,
 	.con_set_palette =	mdacon_set_palette,
 	.con_scrolldelta =	mdacon_scrolldelta,
+=======
+	.con_switch =		mdacon_switch,
+	.con_blank =		mdacon_blank,
+>>>>>>> v4.9.227
 	.con_build_attr =	mdacon_build_attr,
 	.con_invert_region =	mdacon_invert_region,
 };

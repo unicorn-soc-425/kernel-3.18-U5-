@@ -179,7 +179,11 @@ void radeon_agp_disable(struct radeon_device *rdev)
  * ASIC
  */
 
+<<<<<<< HEAD
 static struct radeon_asic_ring r100_gfx_ring = {
+=======
+static const struct radeon_asic_ring r100_gfx_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &r100_ring_ib_execute,
 	.emit_fence = &r100_fence_ring_emit,
 	.emit_semaphore = &r100_semaphore_ring_emit,
@@ -329,7 +333,11 @@ static struct radeon_asic r200_asic = {
 	},
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring r300_gfx_ring = {
+=======
+static const struct radeon_asic_ring r300_gfx_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &r100_ring_ib_execute,
 	.emit_fence = &r300_fence_ring_emit,
 	.emit_semaphore = &r100_semaphore_ring_emit,
@@ -343,7 +351,11 @@ static struct radeon_asic_ring r300_gfx_ring = {
 	.set_wptr = &r100_gfx_set_wptr,
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring rv515_gfx_ring = {
+=======
+static const struct radeon_asic_ring rv515_gfx_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &r100_ring_ib_execute,
 	.emit_fence = &r300_fence_ring_emit,
 	.emit_semaphore = &r100_semaphore_ring_emit,
@@ -901,7 +913,11 @@ static struct radeon_asic r520_asic = {
 	},
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring r600_gfx_ring = {
+=======
+static const struct radeon_asic_ring r600_gfx_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &r600_ring_ib_execute,
 	.emit_fence = &r600_fence_ring_emit,
 	.emit_semaphore = &r600_semaphore_ring_emit,
@@ -914,7 +930,11 @@ static struct radeon_asic_ring r600_gfx_ring = {
 	.set_wptr = &r600_gfx_set_wptr,
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring r600_dma_ring = {
+=======
+static const struct radeon_asic_ring r600_dma_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &r600_dma_ring_ib_execute,
 	.emit_fence = &r600_dma_fence_ring_emit,
 	.emit_semaphore = &r600_dma_semaphore_ring_emit,
@@ -999,7 +1019,11 @@ static struct radeon_asic r600_asic = {
 	},
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring rv6xx_uvd_ring = {
+=======
+static const struct radeon_asic_ring rv6xx_uvd_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &uvd_v1_0_ib_execute,
 	.emit_fence = &uvd_v1_0_fence_emit,
 	.emit_semaphore = &uvd_v1_0_semaphore_emit,
@@ -1198,7 +1222,11 @@ static struct radeon_asic rs780_asic = {
 	},
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring rv770_uvd_ring = {
+=======
+static const struct radeon_asic_ring rv770_uvd_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &uvd_v1_0_ib_execute,
 	.emit_fence = &uvd_v2_2_fence_emit,
 	.emit_semaphore = &uvd_v2_2_semaphore_emit,
@@ -1305,7 +1333,11 @@ static struct radeon_asic rv770_asic = {
 	},
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring evergreen_gfx_ring = {
+=======
+static const struct radeon_asic_ring evergreen_gfx_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &evergreen_ring_ib_execute,
 	.emit_fence = &r600_fence_ring_emit,
 	.emit_semaphore = &r600_semaphore_ring_emit,
@@ -1318,7 +1350,11 @@ static struct radeon_asic_ring evergreen_gfx_ring = {
 	.set_wptr = &r600_gfx_set_wptr,
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring evergreen_dma_ring = {
+=======
+static const struct radeon_asic_ring evergreen_dma_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &evergreen_dma_ring_ib_execute,
 	.emit_fence = &evergreen_dma_fence_ring_emit,
 	.emit_semaphore = &r600_dma_semaphore_ring_emit,
@@ -1612,7 +1648,11 @@ static struct radeon_asic btc_asic = {
 	},
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring cayman_gfx_ring = {
+=======
+static const struct radeon_asic_ring cayman_gfx_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &cayman_ring_ib_execute,
 	.ib_parse = &evergreen_ib_parse,
 	.emit_fence = &cayman_fence_ring_emit,
@@ -1627,7 +1667,11 @@ static struct radeon_asic_ring cayman_gfx_ring = {
 	.set_wptr = &cayman_gfx_set_wptr,
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring cayman_dma_ring = {
+=======
+static const struct radeon_asic_ring cayman_dma_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &cayman_dma_ring_ib_execute,
 	.ib_parse = &evergreen_dma_ib_parse,
 	.emit_fence = &evergreen_dma_fence_ring_emit,
@@ -1642,7 +1686,11 @@ static struct radeon_asic_ring cayman_dma_ring = {
 	.set_wptr = &cayman_dma_set_wptr
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring cayman_uvd_ring = {
+=======
+static const struct radeon_asic_ring cayman_uvd_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &uvd_v1_0_ib_execute,
 	.emit_fence = &uvd_v2_2_fence_emit,
 	.emit_semaphore = &uvd_v3_1_semaphore_emit,
@@ -1760,7 +1808,11 @@ static struct radeon_asic cayman_asic = {
 	},
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring trinity_vce_ring = {
+=======
+static const struct radeon_asic_ring trinity_vce_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &radeon_vce_ib_execute,
 	.emit_fence = &radeon_vce_fence_emit,
 	.emit_semaphore = &radeon_vce_semaphore_emit,
@@ -1881,7 +1933,11 @@ static struct radeon_asic trinity_asic = {
 	},
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring si_gfx_ring = {
+=======
+static const struct radeon_asic_ring si_gfx_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &si_ring_ib_execute,
 	.ib_parse = &si_ib_parse,
 	.emit_fence = &si_fence_ring_emit,
@@ -1896,7 +1952,11 @@ static struct radeon_asic_ring si_gfx_ring = {
 	.set_wptr = &cayman_gfx_set_wptr,
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring si_dma_ring = {
+=======
+static const struct radeon_asic_ring si_dma_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &cayman_dma_ring_ib_execute,
 	.ib_parse = &evergreen_dma_ib_parse,
 	.emit_fence = &evergreen_dma_fence_ring_emit,
@@ -2023,7 +2083,11 @@ static struct radeon_asic si_asic = {
 	},
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring ci_gfx_ring = {
+=======
+static const struct radeon_asic_ring ci_gfx_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &cik_ring_ib_execute,
 	.ib_parse = &cik_ib_parse,
 	.emit_fence = &cik_fence_gfx_ring_emit,
@@ -2038,7 +2102,11 @@ static struct radeon_asic_ring ci_gfx_ring = {
 	.set_wptr = &cik_gfx_set_wptr,
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring ci_cp_ring = {
+=======
+static const struct radeon_asic_ring ci_cp_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &cik_ring_ib_execute,
 	.ib_parse = &cik_ib_parse,
 	.emit_fence = &cik_fence_compute_ring_emit,
@@ -2053,7 +2121,11 @@ static struct radeon_asic_ring ci_cp_ring = {
 	.set_wptr = &cik_compute_set_wptr,
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring ci_dma_ring = {
+=======
+static const struct radeon_asic_ring ci_dma_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &cik_sdma_ring_ib_execute,
 	.ib_parse = &cik_ib_parse,
 	.emit_fence = &cik_sdma_fence_ring_emit,
@@ -2068,7 +2140,11 @@ static struct radeon_asic_ring ci_dma_ring = {
 	.set_wptr = &cik_sdma_set_wptr,
 };
 
+<<<<<<< HEAD
 static struct radeon_asic_ring ci_vce_ring = {
+=======
+static const struct radeon_asic_ring ci_vce_ring = {
+>>>>>>> v4.9.227
 	.ib_execute = &radeon_vce_ib_execute,
 	.emit_fence = &radeon_vce_fence_emit,
 	.emit_semaphore = &radeon_vce_semaphore_emit,
@@ -2324,6 +2400,10 @@ int radeon_asic_init(struct radeon_device *rdev)
 		rdev->num_crtc = 2;
 
 	rdev->has_uvd = false;
+<<<<<<< HEAD
+=======
+	rdev->has_vce = false;
+>>>>>>> v4.9.227
 
 	switch (rdev->family) {
 	case CHIP_R100:
@@ -2454,6 +2534,10 @@ int radeon_asic_init(struct radeon_device *rdev)
 		/* set num crtcs */
 		rdev->num_crtc = 4;
 		rdev->has_uvd = true;
+<<<<<<< HEAD
+=======
+		rdev->has_vce = true;
+>>>>>>> v4.9.227
 		rdev->cg_flags =
 			RADEON_CG_SUPPORT_VCE_MGCG;
 		break;
@@ -2470,10 +2554,20 @@ int radeon_asic_init(struct radeon_device *rdev)
 			rdev->num_crtc = 2;
 		else
 			rdev->num_crtc = 6;
+<<<<<<< HEAD
 		if (rdev->family == CHIP_HAINAN)
 			rdev->has_uvd = false;
 		else
 			rdev->has_uvd = true;
+=======
+		if (rdev->family == CHIP_HAINAN) {
+			rdev->has_uvd = false;
+			rdev->has_vce = false;
+		} else {
+			rdev->has_uvd = true;
+			rdev->has_vce = true;
+		}
+>>>>>>> v4.9.227
 		switch (rdev->family) {
 		case CHIP_TAHITI:
 			rdev->cg_flags =
@@ -2578,6 +2672,10 @@ int radeon_asic_init(struct radeon_device *rdev)
 		rdev->asic = &ci_asic;
 		rdev->num_crtc = 6;
 		rdev->has_uvd = true;
+<<<<<<< HEAD
+=======
+		rdev->has_vce = true;
+>>>>>>> v4.9.227
 		if (rdev->family == CHIP_BONAIRE) {
 			rdev->cg_flags =
 				RADEON_CG_SUPPORT_GFX_MGCG |
@@ -2678,6 +2776,10 @@ int radeon_asic_init(struct radeon_device *rdev)
 				RADEON_PG_SUPPORT_SAMU;*/
 		}
 		rdev->has_uvd = true;
+<<<<<<< HEAD
+=======
+		rdev->has_vce = true;
+>>>>>>> v4.9.227
 		break;
 	default:
 		/* FIXME: not supported yet */
@@ -2689,6 +2791,14 @@ int radeon_asic_init(struct radeon_device *rdev)
 		rdev->asic->pm.set_memory_clock = NULL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!radeon_uvd)
+		rdev->has_uvd = false;
+	if (!radeon_vce)
+		rdev->has_vce = false;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 

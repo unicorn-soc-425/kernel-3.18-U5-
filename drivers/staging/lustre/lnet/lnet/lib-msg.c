@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -60,8 +64,13 @@ lnet_build_unlink_event(lnet_libmd_t *md, lnet_event_t *ev)
 void
 lnet_build_msg_event(lnet_msg_t *msg, lnet_event_kind_t ev_type)
 {
+<<<<<<< HEAD
 	lnet_hdr_t	*hdr = &msg->msg_hdr;
 	lnet_event_t	*ev  = &msg->msg_ev;
+=======
+	lnet_hdr_t *hdr = &msg->msg_hdr;
+	lnet_event_t *ev  = &msg->msg_ev;
+>>>>>>> v4.9.227
 
 	LASSERT(!msg->msg_routing);
 
@@ -73,8 +82,12 @@ lnet_build_msg_event(lnet_msg_t *msg, lnet_event_kind_t ev_type)
 		ev->target.pid    = le32_to_cpu(hdr->dest_pid);
 		ev->initiator.nid = LNET_NID_ANY;
 		ev->initiator.pid = the_lnet.ln_pid;
+<<<<<<< HEAD
 		ev->sender	  = LNET_NID_ANY;
 
+=======
+		ev->sender        = LNET_NID_ANY;
+>>>>>>> v4.9.227
 	} else {
 		/* event for passive message */
 		ev->target.pid    = hdr->dest_pid;
@@ -82,9 +95,15 @@ lnet_build_msg_event(lnet_msg_t *msg, lnet_event_kind_t ev_type)
 		ev->initiator.pid = hdr->src_pid;
 		ev->initiator.nid = hdr->src_nid;
 		ev->rlength       = hdr->payload_length;
+<<<<<<< HEAD
 		ev->sender	  = msg->msg_from;
 		ev->mlength	  = msg->msg_wanted;
 		ev->offset	  = msg->msg_offset;
+=======
+		ev->sender        = msg->msg_from;
+		ev->mlength       = msg->msg_wanted;
+		ev->offset        = msg->msg_offset;
+>>>>>>> v4.9.227
 	}
 
 	switch (ev_type) {
@@ -137,7 +156,11 @@ void
 lnet_msg_commit(lnet_msg_t *msg, int cpt)
 {
 	struct lnet_msg_container *container = the_lnet.ln_msg_containers[cpt];
+<<<<<<< HEAD
 	lnet_counters_t		  *counters  = the_lnet.ln_counters[cpt];
+=======
+	lnet_counters_t *counters  = the_lnet.ln_counters[cpt];
+>>>>>>> v4.9.227
 
 	/* routed message can be committed for both receiving and sending */
 	LASSERT(!msg->msg_tx_committed);
@@ -170,10 +193,17 @@ static void
 lnet_msg_decommit_tx(lnet_msg_t *msg, int status)
 {
 	lnet_counters_t	*counters;
+<<<<<<< HEAD
 	lnet_event_t	*ev = &msg->msg_ev;
 
 	LASSERT(msg->msg_tx_committed);
 	if (status != 0)
+=======
+	lnet_event_t *ev = &msg->msg_ev;
+
+	LASSERT(msg->msg_tx_committed);
+	if (status)
+>>>>>>> v4.9.227
 		goto out;
 
 	counters = the_lnet.ln_counters[msg->msg_tx_cpt];
@@ -181,7 +211,11 @@ lnet_msg_decommit_tx(lnet_msg_t *msg, int status)
 	default: /* routed message */
 		LASSERT(msg->msg_routing);
 		LASSERT(msg->msg_rx_committed);
+<<<<<<< HEAD
 		LASSERT(ev->type == 0);
+=======
+		LASSERT(!ev->type);
+>>>>>>> v4.9.227
 
 		counters->route_length += msg->msg_len;
 		counters->route_count++;
@@ -203,8 +237,15 @@ lnet_msg_decommit_tx(lnet_msg_t *msg, int status)
 
 	case LNET_EVENT_GET:
 		LASSERT(msg->msg_rx_committed);
+<<<<<<< HEAD
 		/* overwritten while sending reply, we should never be
 		 * here for optimized GET */
+=======
+		/*
+		 * overwritten while sending reply, we should never be
+		 * here for optimized GET
+		 */
+>>>>>>> v4.9.227
 		LASSERT(msg->msg_type == LNET_MSG_REPLY);
 		msg->msg_type = LNET_MSG_GET; /* fix type */
 		break;
@@ -219,19 +260,32 @@ lnet_msg_decommit_tx(lnet_msg_t *msg, int status)
 static void
 lnet_msg_decommit_rx(lnet_msg_t *msg, int status)
 {
+<<<<<<< HEAD
 	lnet_counters_t	*counters;
 	lnet_event_t	*ev = &msg->msg_ev;
+=======
+	lnet_counters_t *counters;
+	lnet_event_t *ev = &msg->msg_ev;
+>>>>>>> v4.9.227
 
 	LASSERT(!msg->msg_tx_committed); /* decommitted or never committed */
 	LASSERT(msg->msg_rx_committed);
 
+<<<<<<< HEAD
 	if (status != 0)
+=======
+	if (status)
+>>>>>>> v4.9.227
 		goto out;
 
 	counters = the_lnet.ln_counters[msg->msg_rx_cpt];
 	switch (ev->type) {
 	default:
+<<<<<<< HEAD
 		LASSERT(ev->type == 0);
+=======
+		LASSERT(!ev->type);
+>>>>>>> v4.9.227
 		LASSERT(msg->msg_routing);
 		goto out;
 
@@ -240,10 +294,19 @@ lnet_msg_decommit_rx(lnet_msg_t *msg, int status)
 		break;
 
 	case LNET_EVENT_GET:
+<<<<<<< HEAD
 		/* type is "REPLY" if it's an optimized GET on passive side,
 		 * because optimized GET will never be committed for sending,
 		 * so message type wouldn't be changed back to "GET" by
 		 * lnet_msg_decommit_tx(), see details in lnet_parse_get() */
+=======
+		/*
+		 * type is "REPLY" if it's an optimized GET on passive side,
+		 * because optimized GET will never be committed for sending,
+		 * so message type wouldn't be changed back to "GET" by
+		 * lnet_msg_decommit_tx(), see details in lnet_parse_get()
+		 */
+>>>>>>> v4.9.227
 		LASSERT(msg->msg_type == LNET_MSG_REPLY ||
 			msg->msg_type == LNET_MSG_GET);
 		counters->send_length += msg->msg_wanted;
@@ -254,8 +317,15 @@ lnet_msg_decommit_rx(lnet_msg_t *msg, int status)
 		break;
 
 	case LNET_EVENT_REPLY:
+<<<<<<< HEAD
 		/* type is "GET" if it's an optimized GET on active side,
 		 * see details in lnet_create_reply_msg() */
+=======
+		/*
+		 * type is "GET" if it's an optimized GET on active side,
+		 * see details in lnet_create_reply_msg()
+		 */
+>>>>>>> v4.9.227
 		LASSERT(msg->msg_type == LNET_MSG_GET ||
 			msg->msg_type == LNET_MSG_REPLY);
 		break;
@@ -273,7 +343,11 @@ lnet_msg_decommit_rx(lnet_msg_t *msg, int status)
 void
 lnet_msg_decommit(lnet_msg_t *msg, int cpt, int status)
 {
+<<<<<<< HEAD
 	int	cpt2 = cpt;
+=======
+	int cpt2 = cpt;
+>>>>>>> v4.9.227
 
 	LASSERT(msg->msg_tx_committed || msg->msg_rx_committed);
 	LASSERT(msg->msg_onactivelist);
@@ -309,10 +383,19 @@ lnet_msg_attach_md(lnet_msg_t *msg, lnet_libmd_t *md,
 		   unsigned int offset, unsigned int mlen)
 {
 	/* NB: @offset and @len are only useful for receiving */
+<<<<<<< HEAD
 	/* Here, we attach the MD on lnet_msg and mark it busy and
 	 * decrementing its threshold. Come what may, the lnet_msg "owns"
 	 * the MD until a call to lnet_msg_detach_md or lnet_finalize()
 	 * signals completion. */
+=======
+	/*
+	 * Here, we attach the MD on lnet_msg and mark it busy and
+	 * decrementing its threshold. Come what may, the lnet_msg "owns"
+	 * the MD until a call to lnet_msg_detach_md or lnet_finalize()
+	 * signals completion.
+	 */
+>>>>>>> v4.9.227
 	LASSERT(!msg->msg_routing);
 
 	msg->msg_md = md;
@@ -335,15 +418,24 @@ lnet_msg_attach_md(lnet_msg_t *msg, lnet_libmd_t *md,
 void
 lnet_msg_detach_md(lnet_msg_t *msg, int status)
 {
+<<<<<<< HEAD
 	lnet_libmd_t	*md = msg->msg_md;
 	int		unlink;
+=======
+	lnet_libmd_t *md = msg->msg_md;
+	int unlink;
+>>>>>>> v4.9.227
 
 	/* Now it's safe to drop my caller's ref */
 	md->md_refcount--;
 	LASSERT(md->md_refcount >= 0);
 
 	unlink = lnet_md_unlinkable(md);
+<<<<<<< HEAD
 	if (md->md_eq != NULL) {
+=======
+	if (md->md_eq) {
+>>>>>>> v4.9.227
 		msg->msg_ev.status   = status;
 		msg->msg_ev.unlinked = unlink;
 		lnet_eq_enqueue_event(md->md_eq, &msg->msg_ev);
@@ -359,12 +451,21 @@ static int
 lnet_complete_msg_locked(lnet_msg_t *msg, int cpt)
 {
 	lnet_handle_wire_t ack_wmd;
+<<<<<<< HEAD
 	int		rc;
 	int		status = msg->msg_ev.status;
 
 	LASSERT(msg->msg_onactivelist);
 
 	if (status == 0 && msg->msg_ack) {
+=======
+	int rc;
+	int status = msg->msg_ev.status;
+
+	LASSERT(msg->msg_onactivelist);
+
+	if (!status && msg->msg_ack) {
+>>>>>>> v4.9.227
 		/* Only send an ACK if the PUT completed successfully */
 
 		lnet_msg_decommit(msg, cpt, 0);
@@ -383,8 +484,15 @@ lnet_complete_msg_locked(lnet_msg_t *msg, int cpt)
 		msg->msg_hdr.msg.ack.match_bits = msg->msg_ev.match_bits;
 		msg->msg_hdr.msg.ack.mlength = cpu_to_le32(msg->msg_ev.mlength);
 
+<<<<<<< HEAD
 		/* NB: we probably want to use NID of msg::msg_from as 3rd
 		 * parameter (router NID) if it's routed message */
+=======
+		/*
+		 * NB: we probably want to use NID of msg::msg_from as 3rd
+		 * parameter (router NID) if it's routed message
+		 */
+>>>>>>> v4.9.227
 		rc = lnet_send(msg->msg_ev.target.nid, msg, LNET_NID_ANY);
 
 		lnet_net_lock(cpt);
@@ -401,7 +509,11 @@ lnet_complete_msg_locked(lnet_msg_t *msg, int cpt)
 		 */
 		return rc;
 
+<<<<<<< HEAD
 	} else if (status == 0 &&	/* OK so far */
+=======
+	} else if (!status &&	/* OK so far */
+>>>>>>> v4.9.227
 		   (msg->msg_routing && !msg->msg_sending)) {
 		/* not forwarded */
 		LASSERT(!msg->msg_receiving);	/* called back recv already */
@@ -427,13 +539,18 @@ lnet_complete_msg_locked(lnet_msg_t *msg, int cpt)
 	}
 
 	lnet_msg_decommit(msg, cpt, status);
+<<<<<<< HEAD
 	lnet_msg_free_locked(msg);
+=======
+	lnet_msg_free(msg);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 void
 lnet_finalize(lnet_ni_t *ni, lnet_msg_t *msg, int status)
 {
+<<<<<<< HEAD
 	struct lnet_msg_container	*container;
 	int				my_slot;
 	int				cpt;
@@ -464,6 +581,22 @@ lnet_finalize(lnet_ni_t *ni, lnet_msg_t *msg, int status)
 	msg->msg_ev.status = status;
 
 	if (msg->msg_md != NULL) {
+=======
+	struct lnet_msg_container *container;
+	int my_slot;
+	int cpt;
+	int rc;
+	int i;
+
+	LASSERT(!in_interrupt());
+
+	if (!msg)
+		return;
+
+	msg->msg_ev.status = status;
+
+	if (msg->msg_md) {
+>>>>>>> v4.9.227
 		cpt = lnet_cpt_of_cookie(msg->msg_md->md_lh.lh_cookie);
 
 		lnet_res_lock(cpt);
@@ -491,15 +624,26 @@ lnet_finalize(lnet_ni_t *ni, lnet_msg_t *msg, int status)
 	container = the_lnet.ln_msg_containers[cpt];
 	list_add_tail(&msg->msg_list, &container->msc_finalizing);
 
+<<<<<<< HEAD
 	/* Recursion breaker.  Don't complete the message here if I am (or
 	 * enough other threads are) already completing messages */
 
+=======
+	/*
+	 * Recursion breaker.  Don't complete the message here if I am (or
+	 * enough other threads are) already completing messages
+	 */
+>>>>>>> v4.9.227
 	my_slot = -1;
 	for (i = 0; i < container->msc_nfinalizers; i++) {
 		if (container->msc_finalizers[i] == current)
 			break;
 
+<<<<<<< HEAD
 		if (my_slot < 0 && container->msc_finalizers[i] == NULL)
+=======
+		if (my_slot < 0 && !container->msc_finalizers[i])
+>>>>>>> v4.9.227
 			my_slot = i;
 	}
 
@@ -512,6 +656,7 @@ lnet_finalize(lnet_ni_t *ni, lnet_msg_t *msg, int status)
 
 	while (!list_empty(&container->msc_finalizing)) {
 		msg = list_entry(container->msc_finalizing.next,
+<<<<<<< HEAD
 				     lnet_msg_t, msg_list);
 
 		list_del(&msg->msg_list);
@@ -527,6 +672,31 @@ lnet_finalize(lnet_ni_t *ni, lnet_msg_t *msg, int status)
 	lnet_net_unlock(cpt);
 
 	if (rc != 0)
+=======
+				 lnet_msg_t, msg_list);
+
+		list_del(&msg->msg_list);
+
+		/*
+		 * NB drops and regains the lnet lock if it actually does
+		 * anything, so my finalizing friends can chomp along too
+		 */
+		rc = lnet_complete_msg_locked(msg, cpt);
+		if (rc)
+			break;
+	}
+
+	if (unlikely(!list_empty(&the_lnet.ln_delay_rules))) {
+		lnet_net_unlock(cpt);
+		lnet_delay_rule_check();
+		lnet_net_lock(cpt);
+	}
+
+	container->msc_finalizers[my_slot] = NULL;
+	lnet_net_unlock(cpt);
+
+	if (rc)
+>>>>>>> v4.9.227
 		goto again;
 }
 EXPORT_SYMBOL(lnet_finalize);
@@ -534,14 +704,24 @@ EXPORT_SYMBOL(lnet_finalize);
 void
 lnet_msg_container_cleanup(struct lnet_msg_container *container)
 {
+<<<<<<< HEAD
 	int     count = 0;
 
 	if (container->msc_init == 0)
+=======
+	int count = 0;
+
+	if (!container->msc_init)
+>>>>>>> v4.9.227
 		return;
 
 	while (!list_empty(&container->msc_active)) {
 		lnet_msg_t *msg = list_entry(container->msc_active.next,
+<<<<<<< HEAD
 						 lnet_msg_t, msg_activelist);
+=======
+					     lnet_msg_t, msg_activelist);
+>>>>>>> v4.9.227
 
 		LASSERT(msg->msg_onactivelist);
 		msg->msg_onactivelist = 0;
@@ -553,28 +733,39 @@ lnet_msg_container_cleanup(struct lnet_msg_container *container)
 	if (count > 0)
 		CERROR("%d active msg on exit\n", count);
 
+<<<<<<< HEAD
 	if (container->msc_finalizers != NULL) {
+=======
+	if (container->msc_finalizers) {
+>>>>>>> v4.9.227
 		LIBCFS_FREE(container->msc_finalizers,
 			    container->msc_nfinalizers *
 			    sizeof(*container->msc_finalizers));
 		container->msc_finalizers = NULL;
 	}
+<<<<<<< HEAD
 #ifdef LNET_USE_LIB_FREELIST
 	lnet_freelist_fini(&container->msc_freelist);
 #endif
+=======
+>>>>>>> v4.9.227
 	container->msc_init = 0;
 }
 
 int
 lnet_msg_container_setup(struct lnet_msg_container *container, int cpt)
 {
+<<<<<<< HEAD
 	int	rc;
 
+=======
+>>>>>>> v4.9.227
 	container->msc_init = 1;
 
 	INIT_LIST_HEAD(&container->msc_active);
 	INIT_LIST_HEAD(&container->msc_finalizing);
 
+<<<<<<< HEAD
 #ifdef LNET_USE_LIB_FREELIST
 	memset(&container->msc_freelist, 0, sizeof(lnet_freelist_t));
 
@@ -588,6 +779,8 @@ lnet_msg_container_setup(struct lnet_msg_container *container, int cpt)
 #else
 	rc = 0;
 #endif
+=======
+>>>>>>> v4.9.227
 	/* number of CPUs */
 	container->msc_nfinalizers = cfs_cpt_weight(lnet_cpt_table(), cpt);
 
@@ -595,22 +788,36 @@ lnet_msg_container_setup(struct lnet_msg_container *container, int cpt)
 			 container->msc_nfinalizers *
 			 sizeof(*container->msc_finalizers));
 
+<<<<<<< HEAD
 	if (container->msc_finalizers == NULL) {
+=======
+	if (!container->msc_finalizers) {
+>>>>>>> v4.9.227
 		CERROR("Failed to allocate message finalizers\n");
 		lnet_msg_container_cleanup(container);
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	return rc;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 void
 lnet_msg_containers_destroy(void)
 {
 	struct lnet_msg_container *container;
+<<<<<<< HEAD
 	int     i;
 
 	if (the_lnet.ln_msg_containers == NULL)
+=======
+	int i;
+
+	if (!the_lnet.ln_msg_containers)
+>>>>>>> v4.9.227
 		return;
 
 	cfs_percpt_for_each(container, i, the_lnet.ln_msg_containers)
@@ -624,20 +831,33 @@ int
 lnet_msg_containers_create(void)
 {
 	struct lnet_msg_container *container;
+<<<<<<< HEAD
 	int	rc;
 	int	i;
+=======
+	int rc;
+	int i;
+>>>>>>> v4.9.227
 
 	the_lnet.ln_msg_containers = cfs_percpt_alloc(lnet_cpt_table(),
 						      sizeof(*container));
 
+<<<<<<< HEAD
 	if (the_lnet.ln_msg_containers == NULL) {
+=======
+	if (!the_lnet.ln_msg_containers) {
+>>>>>>> v4.9.227
 		CERROR("Failed to allocate cpu-partition data for network\n");
 		return -ENOMEM;
 	}
 
 	cfs_percpt_for_each(container, i, the_lnet.ln_msg_containers) {
 		rc = lnet_msg_container_setup(container, i);
+<<<<<<< HEAD
 		if (rc != 0) {
+=======
+		if (rc) {
+>>>>>>> v4.9.227
 			lnet_msg_containers_destroy();
 			return rc;
 		}

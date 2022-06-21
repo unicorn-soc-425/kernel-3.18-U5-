@@ -15,6 +15,10 @@
 #include <linux/vmalloc.h>
 #include <linux/pagemap.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/interrupt.h>
+>>>>>>> v4.9.227
 
 #include <asm/opal.h>
 
@@ -60,7 +64,11 @@ static ssize_t dump_type_show(struct dump_obj *dump_obj,
 			      struct dump_attribute *attr,
 			      char *buf)
 {
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> v4.9.227
 	return sprintf(buf, "0x%x %s\n", dump_obj->type,
 		       dump_type_to_string(dump_obj->type));
 }
@@ -363,12 +371,20 @@ static struct dump_obj *create_dump_obj(uint32_t id, size_t size,
 	return dump;
 }
 
+<<<<<<< HEAD
 static int process_dump(void)
+=======
+static irqreturn_t process_dump(int irq, void *data)
+>>>>>>> v4.9.227
 {
 	int rc;
 	uint32_t dump_id, dump_size, dump_type;
 	struct dump_obj *dump;
 	char name[22];
+<<<<<<< HEAD
+=======
+	struct kobject *kobj;
+>>>>>>> v4.9.227
 
 	rc = dump_read_info(&dump_id, &dump_size, &dump_type);
 	if (rc != OPAL_SUCCESS)
@@ -380,13 +396,23 @@ static int process_dump(void)
 	 * that gracefully and not create two conflicting
 	 * entries.
 	 */
+<<<<<<< HEAD
 	if (kset_find_obj(dump_kset, name))
 		return 0;
+=======
+	kobj = kset_find_obj(dump_kset, name);
+	if (kobj) {
+		/* Drop reference added by kset_find_obj() */
+		kobject_put(kobj);
+		return 0;
+	}
+>>>>>>> v4.9.227
 
 	dump = create_dump_obj(dump_id, dump_size, dump_type);
 	if (!dump)
 		return -1;
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -426,6 +452,15 @@ static struct notifier_block dump_nb = {
 void __init opal_platform_dump_init(void)
 {
 	int rc;
+=======
+	return IRQ_HANDLED;
+}
+
+void __init opal_platform_dump_init(void)
+{
+	int rc;
+	int dump_irq;
+>>>>>>> v4.9.227
 
 	/* ELOG not supported by firmware */
 	if (!opal_check_token(OPAL_DUMP_READ))
@@ -445,6 +480,7 @@ void __init opal_platform_dump_init(void)
 		return;
 	}
 
+<<<<<<< HEAD
 	rc = opal_notifier_register(&dump_nb);
 	if (rc) {
 		pr_warn("%s: Can't register OPAL event notifier (%d)\n",
@@ -453,4 +489,24 @@ void __init opal_platform_dump_init(void)
 	}
 
 	opal_dump_resend_notification();
+=======
+	dump_irq = opal_event_request(ilog2(OPAL_EVENT_DUMP_AVAIL));
+	if (!dump_irq) {
+		pr_err("%s: Can't register OPAL event irq (%d)\n",
+		       __func__, dump_irq);
+		return;
+	}
+
+	rc = request_threaded_irq(dump_irq, NULL, process_dump,
+				IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
+				"opal-dump", NULL);
+	if (rc) {
+		pr_err("%s: Can't request OPAL event irq (%d)\n",
+		       __func__, rc);
+		return;
+	}
+
+	if (opal_check_token(OPAL_DUMP_RESEND))
+		opal_dump_resend_notification();
+>>>>>>> v4.9.227
 }

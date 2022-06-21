@@ -1,6 +1,11 @@
 /*
  * Atmel (Multi-port DDR-)SDRAM Controller driver
  *
+<<<<<<< HEAD
+=======
+ * Author: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+ *
+>>>>>>> v4.9.227
  * Copyright (C) 2014 Atmel
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +25,11 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 
@@ -48,6 +57,7 @@ static const struct of_device_id atmel_ramc_of_match[] = {
 	{ .compatible = "atmel,sama5d3-ddramc", .data = &sama5d3_caps, },
 	{},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, atmel_ramc_of_match);
 
 static int atmel_ramc_probe(struct platform_device *pdev)
@@ -58,6 +68,15 @@ static int atmel_ramc_probe(struct platform_device *pdev)
 
 	match = of_match_device(atmel_ramc_of_match, &pdev->dev);
 	caps = match->data;
+=======
+
+static int atmel_ramc_probe(struct platform_device *pdev)
+{
+	const struct at91_ramc_caps *caps;
+	struct clk *clk;
+
+	caps = of_device_get_match_data(&pdev->dev);
+>>>>>>> v4.9.227
 
 	if (caps->has_ddrck) {
 		clk = devm_clk_get(&pdev->dev, "ddrck");
@@ -82,7 +101,10 @@ static struct platform_driver atmel_ramc_driver = {
 	.probe		= atmel_ramc_probe,
 	.driver		= {
 		.name	= "atmel-ramc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = atmel_ramc_of_match,
 	},
 };
@@ -91,8 +113,12 @@ static int __init atmel_ramc_init(void)
 {
 	return platform_driver_register(&atmel_ramc_driver);
 }
+<<<<<<< HEAD
 module_init(atmel_ramc_init);
 
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Alexandre Belloni <alexandre.belloni@free-electrons.com>");
 MODULE_DESCRIPTION("Atmel (Multi-port DDR-)SDRAM Controller");
+=======
+device_initcall(atmel_ramc_init);
+>>>>>>> v4.9.227

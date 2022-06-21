@@ -88,10 +88,15 @@ static debug_info_t *lcs_dbf_trace;
 static void
 lcs_unregister_debug_facility(void)
 {
+<<<<<<< HEAD
 	if (lcs_dbf_setup)
 		debug_unregister(lcs_dbf_setup);
 	if (lcs_dbf_trace)
 		debug_unregister(lcs_dbf_trace);
+=======
+	debug_unregister(lcs_dbf_setup);
+	debug_unregister(lcs_dbf_trace);
+>>>>>>> v4.9.227
 }
 
 static int
@@ -1763,8 +1768,13 @@ lcs_get_control(struct lcs_card *card, struct lcs_cmd *cmd)
 			lcs_schedule_recovery(card);
 			break;
 		case LCS_CMD_STOPLAN:
+<<<<<<< HEAD
 			pr_warning("Stoplan for %s initiated by LGW.\n",
 				   card->dev->name);
+=======
+			pr_warn("Stoplan for %s initiated by LGW\n",
+				card->dev->name);
+>>>>>>> v4.9.227
 			if (card->dev)
 				netif_carrier_off(card->dev);
 			break;
@@ -1943,15 +1953,25 @@ static ssize_t
 lcs_portno_store (struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
 {
         struct lcs_card *card;
+<<<<<<< HEAD
 	int value, rc;
+=======
+	int rc;
+	s16 value;
+>>>>>>> v4.9.227
 
 	card = dev_get_drvdata(dev);
 
         if (!card)
                 return 0;
 
+<<<<<<< HEAD
 	rc = sscanf(buf, "%d", &value);
 	if (rc != 1)
+=======
+	rc = kstrtos16(buf, 0, &value);
+	if (rc)
+>>>>>>> v4.9.227
 		return -EINVAL;
         /* TODO: sanity checks */
         card->portno = value;
@@ -2007,8 +2027,13 @@ lcs_timeout_store (struct device *dev, struct device_attribute *attr, const char
         if (!card)
                 return 0;
 
+<<<<<<< HEAD
 	rc = sscanf(buf, "%u", &value);
 	if (rc != 1)
+=======
+	rc = kstrtouint(buf, 0, &value);
+	if (rc)
+>>>>>>> v4.9.227
 		return -EINVAL;
         /* TODO: sanity checks */
         card->lancmd_timeout = value;
@@ -2151,7 +2176,11 @@ lcs_new_device(struct ccwgroup_device *ccwgdev)
 	rc = lcs_detect(card);
 	if (rc) {
 		LCS_DBF_TEXT(2, setup, "dtctfail");
+<<<<<<< HEAD
 		dev_err(&card->dev->dev,
+=======
+		dev_err(&ccwgdev->dev,
+>>>>>>> v4.9.227
 			"Detecting a network adapter for LCS devices"
 			" failed with rc=%d (0x%x)\n", rc, rc);
 		lcs_stopcard(card);

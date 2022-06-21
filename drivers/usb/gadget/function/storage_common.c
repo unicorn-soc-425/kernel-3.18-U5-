@@ -83,9 +83,13 @@ EXPORT_SYMBOL_GPL(fsg_fs_function);
  * USB 2.0 devices need to expose both high speed and full speed
  * descriptors, unless they only run at full speed.
  *
+<<<<<<< HEAD
  * That means alternate endpoint descriptors (bigger packets)
  * and a "device qualifier" ... plus more construction options
  * for the configuration descriptor.
+=======
+ * That means alternate endpoint descriptors (bigger packets).
+>>>>>>> v4.9.227
  */
 struct usb_endpoint_descriptor fsg_hs_bulk_in_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
@@ -333,6 +337,7 @@ ssize_t fsg_show_nofua(struct fsg_lun *curlun, char *buf)
 }
 EXPORT_SYMBOL_GPL(fsg_show_nofua);
 
+<<<<<<< HEAD
 ssize_t fsg_show_perf(struct device *dev, struct device_attribute *attr,
 				char *buf)
 {
@@ -363,6 +368,8 @@ ssize_t fsg_store_perf(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+=======
+>>>>>>> v4.9.227
 ssize_t fsg_show_file(struct fsg_lun *curlun, struct rw_semaphore *filesem,
 		      char *buf)
 {
@@ -371,14 +378,21 @@ ssize_t fsg_show_file(struct fsg_lun *curlun, struct rw_semaphore *filesem,
 
 	down_read(filesem);
 	if (fsg_lun_is_open(curlun)) {	/* Get the complete pathname */
+<<<<<<< HEAD
 		p = d_path(&curlun->filp->f_path, buf, PAGE_SIZE - 1);
+=======
+		p = file_path(curlun->filp, buf, PAGE_SIZE - 1);
+>>>>>>> v4.9.227
 		if (IS_ERR(p))
 			rc = PTR_ERR(p);
 		else {
 			rc = strlen(p);
+<<<<<<< HEAD
 			if (rc > PAGE_SIZE - 2)
 				rc = PAGE_SIZE - 2;
 
+=======
+>>>>>>> v4.9.227
 			memmove(buf, p, rc);
 			buf[rc] = '\n';		/* Add a newline */
 			buf[++rc] = 0;
@@ -404,6 +418,15 @@ ssize_t fsg_show_removable(struct fsg_lun *curlun, char *buf)
 }
 EXPORT_SYMBOL_GPL(fsg_show_removable);
 
+<<<<<<< HEAD
+=======
+ssize_t fsg_show_inquiry_string(struct fsg_lun *curlun, char *buf)
+{
+	return sprintf(buf, "%s\n", curlun->inquiry_string);
+}
+EXPORT_SYMBOL_GPL(fsg_show_inquiry_string);
+
+>>>>>>> v4.9.227
 /*
  * The caller must hold fsg->filesem for reading when calling this function.
  */
@@ -534,4 +557,25 @@ ssize_t fsg_store_removable(struct fsg_lun *curlun, const char *buf,
 }
 EXPORT_SYMBOL_GPL(fsg_store_removable);
 
+<<<<<<< HEAD
+=======
+ssize_t fsg_store_inquiry_string(struct fsg_lun *curlun, const char *buf,
+				 size_t count)
+{
+	const size_t len = min(count, sizeof(curlun->inquiry_string));
+
+	if (len == 0 || buf[0] == '\n') {
+		curlun->inquiry_string[0] = 0;
+	} else {
+		snprintf(curlun->inquiry_string,
+			 sizeof(curlun->inquiry_string), "%-28s", buf);
+		if (curlun->inquiry_string[len-1] == '\n')
+			curlun->inquiry_string[len-1] = ' ';
+	}
+
+	return count;
+}
+EXPORT_SYMBOL_GPL(fsg_store_inquiry_string);
+
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");

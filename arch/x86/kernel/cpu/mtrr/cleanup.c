@@ -17,7 +17,10 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/smp.h>
@@ -57,9 +60,15 @@ static int __initdata				nr_range;
 static struct var_mtrr_range_state __initdata	range_state[RANGE_NUM];
 
 static int __initdata debug_print;
+<<<<<<< HEAD
 #define Dprintk(x...) do { if (debug_print) printk(KERN_DEBUG x); } while (0)
 
 #define BIOS_BUG_MSG KERN_WARNING \
+=======
+#define Dprintk(x...) do { if (debug_print) pr_debug(x); } while (0)
+
+#define BIOS_BUG_MSG \
+>>>>>>> v4.9.227
 	"WARNING: BIOS bug: VAR MTRR %d contains strange UC entry under 1M, check with your system vendor!\n"
 
 static int __init
@@ -81,9 +90,15 @@ x86_get_mtrr_mem_range(struct range *range, int nr_range,
 						base, base + size);
 	}
 	if (debug_print) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "After WB checking\n");
 		for (i = 0; i < nr_range; i++)
 			printk(KERN_DEBUG "MTRR MAP PFN: %016llx - %016llx\n",
+=======
+		pr_debug("After WB checking\n");
+		for (i = 0; i < nr_range; i++)
+			pr_debug("MTRR MAP PFN: %016llx - %016llx\n",
+>>>>>>> v4.9.227
 				 range[i].start, range[i].end);
 	}
 
@@ -98,9 +113,16 @@ x86_get_mtrr_mem_range(struct range *range, int nr_range,
 			continue;
 		base = range_state[i].base_pfn;
 		if (base < (1<<(20-PAGE_SHIFT)) && mtrr_state.have_fixed &&
+<<<<<<< HEAD
 		    (mtrr_state.enabled & 1)) {
 			/* Var MTRR contains UC entry below 1M? Skip it: */
 			printk(BIOS_BUG_MSG, i);
+=======
+		    (mtrr_state.enabled & MTRR_STATE_MTRR_ENABLED) &&
+		    (mtrr_state.enabled & MTRR_STATE_MTRR_FIXED_ENABLED)) {
+			/* Var MTRR contains UC entry below 1M? Skip it: */
+			pr_warn(BIOS_BUG_MSG, i);
+>>>>>>> v4.9.227
 			if (base + size <= (1<<(20-PAGE_SHIFT)))
 				continue;
 			size -= (1<<(20-PAGE_SHIFT)) - base;
@@ -113,11 +135,19 @@ x86_get_mtrr_mem_range(struct range *range, int nr_range,
 				 extra_remove_base + extra_remove_size);
 
 	if  (debug_print) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "After UC checking\n");
 		for (i = 0; i < RANGE_NUM; i++) {
 			if (!range[i].end)
 				continue;
 			printk(KERN_DEBUG "MTRR MAP PFN: %016llx - %016llx\n",
+=======
+		pr_debug("After UC checking\n");
+		for (i = 0; i < RANGE_NUM; i++) {
+			if (!range[i].end)
+				continue;
+			pr_debug("MTRR MAP PFN: %016llx - %016llx\n",
+>>>>>>> v4.9.227
 				 range[i].start, range[i].end);
 		}
 	}
@@ -125,9 +155,15 @@ x86_get_mtrr_mem_range(struct range *range, int nr_range,
 	/* sort the ranges */
 	nr_range = clean_sort_range(range, RANGE_NUM);
 	if  (debug_print) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "After sorting\n");
 		for (i = 0; i < nr_range; i++)
 			printk(KERN_DEBUG "MTRR MAP PFN: %016llx - %016llx\n",
+=======
+		pr_debug("After sorting\n");
+		for (i = 0; i < nr_range; i++)
+			pr_debug("MTRR MAP PFN: %016llx - %016llx\n",
+>>>>>>> v4.9.227
 				 range[i].start, range[i].end);
 	}
 
@@ -543,7 +579,11 @@ static void __init print_out_mtrr_range_state(void)
 		start_base = to_size_factor(start_base, &start_factor),
 		type = range_state[i].type;
 
+<<<<<<< HEAD
 		printk(KERN_DEBUG "reg %d, base: %ld%cB, range: %ld%cB, type %s\n",
+=======
+		pr_debug("reg %d, base: %ld%cB, range: %ld%cB, type %s\n",
+>>>>>>> v4.9.227
 			i, start_base, start_factor,
 			size_base, size_factor,
 			(type == MTRR_TYPE_UNCACHABLE) ? "UC" :
@@ -592,9 +632,22 @@ mtrr_calc_range_state(u64 chunk_size, u64 gran_size,
 		      unsigned long x_remove_base,
 		      unsigned long x_remove_size, int i)
 {
+<<<<<<< HEAD
 	static struct range range_new[RANGE_NUM];
 	unsigned long range_sums_new;
 	static int nr_range_new;
+=======
+	/*
+	 * range_new should really be an automatic variable, but
+	 * putting 4096 bytes on the stack is frowned upon, to put it
+	 * mildly. It is safe to make it a static __initdata variable,
+	 * since mtrr_calc_range_state is only called during init and
+	 * there's no way it will call itself recursively.
+	 */
+	static struct range range_new[RANGE_NUM] __initdata;
+	unsigned long range_sums_new;
+	int nr_range_new;
+>>>>>>> v4.9.227
 	int num_reg;
 
 	/* Convert ranges to var ranges state: */
@@ -705,7 +758,11 @@ int __init mtrr_cleanup(unsigned address_bits)
 		return 0;
 
 	/* Print original var MTRRs at first, for debugging: */
+<<<<<<< HEAD
 	printk(KERN_DEBUG "original variable MTRRs\n");
+=======
+	pr_debug("original variable MTRRs\n");
+>>>>>>> v4.9.227
 	print_out_mtrr_range_state();
 
 	memset(range, 0, sizeof(range));
@@ -725,7 +782,11 @@ int __init mtrr_cleanup(unsigned address_bits)
 					  x_remove_base, x_remove_size);
 
 	range_sums = sum_ranges(range, nr_range);
+<<<<<<< HEAD
 	printk(KERN_INFO "total RAM covered: %ldM\n",
+=======
+	pr_info("total RAM covered: %ldM\n",
+>>>>>>> v4.9.227
 	       range_sums >> (20 - PAGE_SHIFT));
 
 	if (mtrr_chunk_size && mtrr_gran_size) {
@@ -737,12 +798,20 @@ int __init mtrr_cleanup(unsigned address_bits)
 
 		if (!result[i].bad) {
 			set_var_mtrr_all(address_bits);
+<<<<<<< HEAD
 			printk(KERN_DEBUG "New variable MTRRs\n");
 			print_out_mtrr_range_state();
 			return 1;
 		}
 		printk(KERN_INFO "invalid mtrr_gran_size or mtrr_chunk_size, "
 		       "will find optimal one\n");
+=======
+			pr_debug("New variable MTRRs\n");
+			print_out_mtrr_range_state();
+			return 1;
+		}
+		pr_info("invalid mtrr_gran_size or mtrr_chunk_size, will find optimal one\n");
+>>>>>>> v4.9.227
 	}
 
 	i = 0;
@@ -760,7 +829,11 @@ int __init mtrr_cleanup(unsigned address_bits)
 				      x_remove_base, x_remove_size, i);
 			if (debug_print) {
 				mtrr_print_out_one_result(i);
+<<<<<<< HEAD
 				printk(KERN_INFO "\n");
+=======
+				pr_info("\n");
+>>>>>>> v4.9.227
 			}
 
 			i++;
@@ -771,7 +844,11 @@ int __init mtrr_cleanup(unsigned address_bits)
 	index_good = mtrr_search_optimal_index();
 
 	if (index_good != -1) {
+<<<<<<< HEAD
 		printk(KERN_INFO "Found optimal setting for mtrr clean up\n");
+=======
+		pr_info("Found optimal setting for mtrr clean up\n");
+>>>>>>> v4.9.227
 		i = index_good;
 		mtrr_print_out_one_result(i);
 
@@ -782,7 +859,11 @@ int __init mtrr_cleanup(unsigned address_bits)
 		gran_size <<= 10;
 		x86_setup_var_mtrrs(range, nr_range, chunk_size, gran_size);
 		set_var_mtrr_all(address_bits);
+<<<<<<< HEAD
 		printk(KERN_DEBUG "New variable MTRRs\n");
+=======
+		pr_debug("New variable MTRRs\n");
+>>>>>>> v4.9.227
 		print_out_mtrr_range_state();
 		return 1;
 	} else {
@@ -791,8 +872,13 @@ int __init mtrr_cleanup(unsigned address_bits)
 			mtrr_print_out_one_result(i);
 	}
 
+<<<<<<< HEAD
 	printk(KERN_INFO "mtrr_cleanup: can not find optimal value\n");
 	printk(KERN_INFO "please specify mtrr_gran_size/mtrr_chunk_size\n");
+=======
+	pr_info("mtrr_cleanup: can not find optimal value\n");
+	pr_info("please specify mtrr_gran_size/mtrr_chunk_size\n");
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -910,7 +996,11 @@ int __init mtrr_trim_uncached_memory(unsigned long end_pfn)
 
 	/* kvm/qemu doesn't have mtrr set right, don't trim them all: */
 	if (!highest_pfn) {
+<<<<<<< HEAD
 		printk(KERN_INFO "CPU MTRRs all blank - virtualized system.\n");
+=======
+		pr_info("CPU MTRRs all blank - virtualized system.\n");
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -965,7 +1055,12 @@ int __init mtrr_trim_uncached_memory(unsigned long end_pfn)
 							 end_pfn);
 
 	if (total_trim_size) {
+<<<<<<< HEAD
 		pr_warning("WARNING: BIOS bug: CPU MTRRs don't cover all of memory, losing %lluMB of RAM.\n", total_trim_size >> 20);
+=======
+		pr_warn("WARNING: BIOS bug: CPU MTRRs don't cover all of memory, losing %lluMB of RAM.\n",
+			total_trim_size >> 20);
+>>>>>>> v4.9.227
 
 		if (!changed_by_mtrr_cleanup)
 			WARN_ON(1);

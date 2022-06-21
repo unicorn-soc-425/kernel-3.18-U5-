@@ -266,6 +266,11 @@ static int rangetr_cmp(struct hashtab *h, const void *k1, const void *k2)
 	return v;
 }
 
+<<<<<<< HEAD
+=======
+static int (*destroy_f[SYM_NUM]) (void *key, void *datum, void *datap);
+
+>>>>>>> v4.9.227
 /*
  * Initialize a policy database structure.
  */
@@ -294,12 +299,25 @@ static int policydb_init(struct policydb *p)
 		goto out;
 
 	p->filename_trans = hashtab_create(filenametr_hash, filenametr_cmp, (1 << 10));
+<<<<<<< HEAD
 	if (!p->filename_trans)
 		goto out;
 
 	p->range_tr = hashtab_create(rangetr_hash, rangetr_cmp, 256);
 	if (!p->range_tr)
 		goto out;
+=======
+	if (!p->filename_trans) {
+		rc = -ENOMEM;
+		goto out;
+	}
+
+	p->range_tr = hashtab_create(rangetr_hash, rangetr_cmp, 256);
+	if (!p->range_tr) {
+		rc = -ENOMEM;
+		goto out;
+	}
+>>>>>>> v4.9.227
 
 	ebitmap_init(&p->filename_trans_ttypes);
 	ebitmap_init(&p->policycaps);
@@ -309,8 +327,15 @@ static int policydb_init(struct policydb *p)
 out:
 	hashtab_destroy(p->filename_trans);
 	hashtab_destroy(p->range_tr);
+<<<<<<< HEAD
 	for (i = 0; i < SYM_NUM; i++)
 		hashtab_destroy(p->symtab[i].table);
+=======
+	for (i = 0; i < SYM_NUM; i++) {
+		hashtab_map(p->symtab[i].table, destroy_f[i], NULL);
+		hashtab_destroy(p->symtab[i].table);
+	}
+>>>>>>> v4.9.227
 	return rc;
 }
 
@@ -523,9 +548,15 @@ static int policydb_index(struct policydb *p)
 	printk(KERN_DEBUG "SELinux:  %d users, %d roles, %d types, %d bools",
 	       p->p_users.nprim, p->p_roles.nprim, p->p_types.nprim, p->p_bools.nprim);
 	if (p->mls_enabled)
+<<<<<<< HEAD
 		printk(", %d sens, %d cats", p->p_levels.nprim,
 		       p->p_cats.nprim);
 	printk("\n");
+=======
+		printk(KERN_CONT ", %d sens, %d cats", p->p_levels.nprim,
+		       p->p_cats.nprim);
+	printk(KERN_CONT "\n");
+>>>>>>> v4.9.227
 
 	printk(KERN_DEBUG "SELinux:  %d classes, %d rules\n",
 	       p->p_classes.nprim, p->te_avtab.nel);
@@ -537,21 +568,33 @@ static int policydb_index(struct policydb *p)
 
 	rc = -ENOMEM;
 	p->class_val_to_struct =
+<<<<<<< HEAD
 		kmalloc(p->p_classes.nprim * sizeof(*(p->class_val_to_struct)),
+=======
+		kzalloc(p->p_classes.nprim * sizeof(*(p->class_val_to_struct)),
+>>>>>>> v4.9.227
 			GFP_KERNEL);
 	if (!p->class_val_to_struct)
 		goto out;
 
 	rc = -ENOMEM;
 	p->role_val_to_struct =
+<<<<<<< HEAD
 		kmalloc(p->p_roles.nprim * sizeof(*(p->role_val_to_struct)),
+=======
+		kzalloc(p->p_roles.nprim * sizeof(*(p->role_val_to_struct)),
+>>>>>>> v4.9.227
 			GFP_KERNEL);
 	if (!p->role_val_to_struct)
 		goto out;
 
 	rc = -ENOMEM;
 	p->user_val_to_struct =
+<<<<<<< HEAD
 		kmalloc(p->p_users.nprim * sizeof(*(p->user_val_to_struct)),
+=======
+		kzalloc(p->p_users.nprim * sizeof(*(p->user_val_to_struct)),
+>>>>>>> v4.9.227
 			GFP_KERNEL);
 	if (!p->user_val_to_struct)
 		goto out;
@@ -722,7 +765,12 @@ static int sens_destroy(void *key, void *datum, void *p)
 	kfree(key);
 	if (datum) {
 		levdatum = datum;
+<<<<<<< HEAD
 		ebitmap_destroy(&levdatum->level->cat);
+=======
+		if (levdatum->level)
+			ebitmap_destroy(&levdatum->level->cat);
+>>>>>>> v4.9.227
 		kfree(levdatum->level);
 	}
 	kfree(datum);
@@ -960,7 +1008,11 @@ int policydb_context_isvalid(struct policydb *p, struct context *c)
 		 * Role must be authorized for the type.
 		 */
 		role = p->role_val_to_struct[c->role - 1];
+<<<<<<< HEAD
 		if (!ebitmap_get_bit(&role->types, c->type - 1))
+=======
+		if (!role || !ebitmap_get_bit(&role->types, c->type - 1))
+>>>>>>> v4.9.227
 			/* role may not be associated with type */
 			return 0;
 
@@ -1090,7 +1142,14 @@ static int str_read(char **strp, gfp_t flags, void *fp, u32 len)
 	int rc;
 	char *str;
 
+<<<<<<< HEAD
 	str = kmalloc(len + 1, flags);
+=======
+	if ((len == 0) || (len == (u32)-1))
+		return -EINVAL;
+
+	str = kmalloc(len + 1, flags | __GFP_NOWARN);
+>>>>>>> v4.9.227
 	if (!str)
 		return -ENOMEM;
 
@@ -1500,11 +1559,14 @@ static int type_read(struct policydb *p, struct hashtab *h, void *fp)
 		goto bad;
 	return 0;
 bad:
+<<<<<<< HEAD
 // [ SEC_SELINUX_PORTING_COMMON
 #ifndef CONFIG_ALWAYS_ENFORCE
 	panic("SELinux:Failed to type read");
 #endif /*CONFIG_ALWAYS_ENFORCE*/
 // ] SEC_SELINUX_PORTING_COMMON
+=======
+>>>>>>> v4.9.227
 	type_destroy(key, typdatum, NULL);
 	return rc;
 }
@@ -2415,6 +2477,10 @@ int policydb_read(struct policydb *p, void *fp)
 		} else
 			tr->tclass = p->process_class;
 
+<<<<<<< HEAD
+=======
+		rc = -EINVAL;
+>>>>>>> v4.9.227
 		if (!policydb_role_isvalid(p, tr->role) ||
 		    !policydb_type_isvalid(p, tr->type) ||
 		    !policydb_class_isvalid(p, tr->tclass) ||
@@ -2513,11 +2579,14 @@ int policydb_read(struct policydb *p, void *fp)
 out:
 	return rc;
 bad:
+<<<<<<< HEAD
 // [ SEC_SELINUX_PORTING_COMMON
 #ifndef CONFIG_ALWAYS_ENFORCE
 	panic("SELinux:Failed to load policy");
 #endif /*CONFIG_ALWAYS_ENFORCE*/
 // ] SEC_SELINUX_PORTING_COMMON
+=======
+>>>>>>> v4.9.227
 	policydb_destroy(p);
 	goto out;
 }

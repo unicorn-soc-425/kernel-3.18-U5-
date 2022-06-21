@@ -881,6 +881,7 @@ EXPORT_SYMBOL_GPL(tda829x_probe);
 MODULE_DESCRIPTION("Philips/NXP TDA8290/TDA8295 analog IF demodulator driver");
 MODULE_AUTHOR("Gerd Knorr, Hartmut Hackmann, Michael Krufky");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -889,3 +890,5 @@ MODULE_LICENSE("GPL");
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

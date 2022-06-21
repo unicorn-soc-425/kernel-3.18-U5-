@@ -97,7 +97,14 @@ print_mtime() {
 }
 
 list_parse() {
+<<<<<<< HEAD
 	[ ! -L "$1" ] && echo "$1 \\" || :
+=======
+	if [ -L "$1" ]; then
+		return
+	fi
+	echo "$1" | sed 's/:/\\:/g; s/$/ \\/'
+>>>>>>> v4.9.227
 }
 
 # for each file print a line in following format

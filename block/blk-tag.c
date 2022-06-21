@@ -119,7 +119,11 @@ fail:
 }
 
 static struct blk_queue_tag *__blk_queue_init_tags(struct request_queue *q,
+<<<<<<< HEAD
 						   int depth)
+=======
+						int depth, int alloc_policy)
+>>>>>>> v4.9.227
 {
 	struct blk_queue_tag *tags;
 
@@ -131,6 +135,11 @@ static struct blk_queue_tag *__blk_queue_init_tags(struct request_queue *q,
 		goto fail;
 
 	atomic_set(&tags->refcnt, 1);
+<<<<<<< HEAD
+=======
+	tags->alloc_policy = alloc_policy;
+	tags->next_tag = 0;
+>>>>>>> v4.9.227
 	return tags;
 fail:
 	kfree(tags);
@@ -140,10 +149,18 @@ fail:
 /**
  * blk_init_tags - initialize the tag info for an external tag map
  * @depth:	the maximum queue depth supported
+<<<<<<< HEAD
  **/
 struct blk_queue_tag *blk_init_tags(int depth)
 {
 	return __blk_queue_init_tags(NULL, depth);
+=======
+ * @alloc_policy: tag allocation policy
+ **/
+struct blk_queue_tag *blk_init_tags(int depth, int alloc_policy)
+{
+	return __blk_queue_init_tags(NULL, depth, alloc_policy);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(blk_init_tags);
 
@@ -152,19 +169,31 @@ EXPORT_SYMBOL(blk_init_tags);
  * @q:  the request queue for the device
  * @depth:  the maximum queue depth supported
  * @tags: the tag to use
+<<<<<<< HEAD
+=======
+ * @alloc_policy: tag allocation policy
+>>>>>>> v4.9.227
  *
  * Queue lock must be held here if the function is called to resize an
  * existing map.
  **/
 int blk_queue_init_tags(struct request_queue *q, int depth,
+<<<<<<< HEAD
 			struct blk_queue_tag *tags)
+=======
+			struct blk_queue_tag *tags, int alloc_policy)
+>>>>>>> v4.9.227
 {
 	int rc;
 
 	BUG_ON(tags && q->queue_tags && tags != q->queue_tags);
 
 	if (!tags && !q->queue_tags) {
+<<<<<<< HEAD
 		tags = __blk_queue_init_tags(q, depth);
+=======
+		tags = __blk_queue_init_tags(q, depth, alloc_policy);
+>>>>>>> v4.9.227
 
 		if (!tags)
 			return -ENOMEM;
@@ -344,9 +373,27 @@ int blk_queue_start_tag(struct request_queue *q, struct request *rq)
 	}
 
 	do {
+<<<<<<< HEAD
 		tag = find_first_zero_bit(bqt->tag_map, max_depth);
 		if (tag >= max_depth)
 			return 1;
+=======
+		if (bqt->alloc_policy == BLK_TAG_ALLOC_FIFO) {
+			tag = find_first_zero_bit(bqt->tag_map, max_depth);
+			if (tag >= max_depth)
+				return 1;
+		} else {
+			int start = bqt->next_tag;
+			int size = min_t(int, bqt->max_depth, max_depth + start);
+			tag = find_next_zero_bit(bqt->tag_map, size, start);
+			if (tag >= size && start + size > bqt->max_depth) {
+				size = start + size - bqt->max_depth;
+				tag = find_first_zero_bit(bqt->tag_map, size);
+			}
+			if (tag >= size)
+				return 1;
+		}
+>>>>>>> v4.9.227
 
 	} while (test_and_set_bit_lock(tag, bqt->tag_map));
 	/*
@@ -354,6 +401,10 @@ int blk_queue_start_tag(struct request_queue *q, struct request *rq)
 	 * See blk_queue_end_tag for details.
 	 */
 
+<<<<<<< HEAD
+=======
+	bqt->next_tag = (tag + 1) % bqt->max_depth;
+>>>>>>> v4.9.227
 	rq->cmd_flags |= REQ_QUEUED;
 	rq->tag = tag;
 	bqt->tag_index[tag] = rq;

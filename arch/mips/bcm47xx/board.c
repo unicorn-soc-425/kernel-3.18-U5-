@@ -1,8 +1,13 @@
 #include <linux/errno.h>
 #include <linux/export.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <bcm47xx_board.h>
 #include <bcm47xx_nvram.h>
+=======
+#include <bcm47xx.h>
+#include <bcm47xx_board.h>
+>>>>>>> v4.9.227
 
 struct bcm47xx_board_type {
 	const enum bcm47xx_board board;
@@ -40,6 +45,7 @@ struct bcm47xx_board_type_list1 bcm47xx_board_list_model_name[] __initconst = {
 	{ {0}, NULL},
 };
 
+<<<<<<< HEAD
 /* model_no */
 static const
 struct bcm47xx_board_type_list1 bcm47xx_board_list_model_no[] __initconst = {
@@ -54,6 +60,8 @@ struct bcm47xx_board_type_list1 bcm47xx_board_list_machine_name[] __initconst = 
 	{ {0}, NULL},
 };
 
+=======
+>>>>>>> v4.9.227
 /* hardware_version */
 static const
 struct bcm47xx_board_type_list1 bcm47xx_board_list_hardware_version[] __initconst = {
@@ -163,11 +171,22 @@ struct bcm47xx_board_type_list2 bcm47xx_board_list_boot_hw[] __initconst = {
 /* board_id */
 static const
 struct bcm47xx_board_type_list1 bcm47xx_board_list_board_id[] __initconst = {
+<<<<<<< HEAD
 	{{BCM47XX_BOARD_NETGEAR_WGR614V8, "Netgear WGR614 V8"}, "U12H072T00_NETGEAR"},
 	{{BCM47XX_BOARD_NETGEAR_WGR614V9, "Netgear WGR614 V9"}, "U12H094T00_NETGEAR"},
 	{{BCM47XX_BOARD_NETGEAR_WNDR3300, "Netgear WNDR3300"}, "U12H093T00_NETGEAR"},
 	{{BCM47XX_BOARD_NETGEAR_WNDR3400V1, "Netgear WNDR3400 V1"}, "U12H155T00_NETGEAR"},
 	{{BCM47XX_BOARD_NETGEAR_WNDR3400V2, "Netgear WNDR3400 V2"}, "U12H187T00_NETGEAR"},
+=======
+	{{BCM47XX_BOARD_LUXUL_XWR_1750_V1, "Luxul XWR-1750 V1"}, "luxul_xwr1750_v1"},
+	{{BCM47XX_BOARD_NETGEAR_WGR614V8, "Netgear WGR614 V8"}, "U12H072T00_NETGEAR"},
+	{{BCM47XX_BOARD_NETGEAR_WGR614V9, "Netgear WGR614 V9"}, "U12H094T00_NETGEAR"},
+	{{BCM47XX_BOARD_NETGEAR_WGR614_V10, "Netgear WGR614 V10"}, "U12H139T01_NETGEAR"},
+	{{BCM47XX_BOARD_NETGEAR_WNDR3300, "Netgear WNDR3300"}, "U12H093T00_NETGEAR"},
+	{{BCM47XX_BOARD_NETGEAR_WNDR3400V1, "Netgear WNDR3400 V1"}, "U12H155T00_NETGEAR"},
+	{{BCM47XX_BOARD_NETGEAR_WNDR3400V2, "Netgear WNDR3400 V2"}, "U12H187T00_NETGEAR"},
+	{{BCM47XX_BOARD_NETGEAR_WNDR3400_V3, "Netgear WNDR3400 V3"}, "U12H208T00_NETGEAR"},
+>>>>>>> v4.9.227
 	{{BCM47XX_BOARD_NETGEAR_WNDR3400VCNA, "Netgear WNDR3400 Vcna"}, "U12H155T01_NETGEAR"},
 	{{BCM47XX_BOARD_NETGEAR_WNDR3700V3, "Netgear WNDR3700 V3"}, "U12H194T00_NETGEAR"},
 	{{BCM47XX_BOARD_NETGEAR_WNDR4000, "Netgear WNDR4000"}, "U12H181T00_NETGEAR"},
@@ -202,6 +221,23 @@ struct bcm47xx_board_type_list2 bcm47xx_board_list_board_type_rev[] __initconst 
 	{ {0}, NULL},
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * Some devices don't use any common NVRAM entry for identification and they
+ * have only one model specific variable.
+ * They don't deserve own arrays, let's group them there using key-value array.
+ */
+static const
+struct bcm47xx_board_type_list2 bcm47xx_board_list_key_value[] __initconst = {
+	{{BCM47XX_BOARD_ASUS_WL700GE, "Asus WL700"}, "model_no", "WL700"},
+	{{BCM47XX_BOARD_LINKSYS_WRT300N_V1, "Linksys WRT300N V1"}, "router_name", "WRT300N"},
+	{{BCM47XX_BOARD_LINKSYS_WRT600N_V11, "Linksys WRT600N V1.1"}, "Model_Name", "WRT600N"},
+	{{BCM47XX_BOARD_LINKSYS_WRTSL54GS, "Linksys WRTSL54GS"}, "machine_name", "WRTSL54GS"},
+	{ {0}, NULL},
+};
+
+>>>>>>> v4.9.227
 static const
 struct bcm47xx_board_type bcm47xx_board_unknown[] __initconst = {
 	{BCM47XX_BOARD_UNKNOWN, "Unknown Board"},
@@ -225,6 +261,7 @@ static __init const struct bcm47xx_board_type *bcm47xx_board_get_nvram(void)
 		}
 	}
 
+<<<<<<< HEAD
 	if (bcm47xx_nvram_getenv("model_no", buf1, sizeof(buf1)) >= 0) {
 		for (e1 = bcm47xx_board_list_model_no; e1->value1; e1++) {
 			if (strstarts(buf1, e1->value1))
@@ -239,6 +276,8 @@ static __init const struct bcm47xx_board_type *bcm47xx_board_get_nvram(void)
 		}
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (bcm47xx_nvram_getenv("hardware_version", buf1, sizeof(buf1)) >= 0) {
 		for (e1 = bcm47xx_board_list_hardware_version; e1->value1; e1++) {
 			if (strstarts(buf1, e1->value1))
@@ -314,6 +353,17 @@ static __init const struct bcm47xx_board_type *bcm47xx_board_get_nvram(void)
 				return &e2->board;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	for (e2 = bcm47xx_board_list_key_value; e2->value1; e2++) {
+		if (bcm47xx_nvram_getenv(e2->value1, buf1, sizeof(buf1)) >= 0) {
+			if (!strcmp(buf1, e2->value2))
+				return &e2->board;
+		}
+	}
+
+>>>>>>> v4.9.227
 	return bcm47xx_board_unknown;
 }
 
@@ -330,9 +380,14 @@ void __init bcm47xx_board_detect(void)
 	err = bcm47xx_nvram_getenv("boardtype", buf, sizeof(buf));
 
 	/* init of nvram failed, probably too early now */
+<<<<<<< HEAD
 	if (err == -ENXIO) {
 		return;
 	}
+=======
+	if (err == -ENXIO)
+		return;
+>>>>>>> v4.9.227
 
 	board_detected = bcm47xx_board_get_nvram();
 	bcm47xx_board.board = board_detected->board;

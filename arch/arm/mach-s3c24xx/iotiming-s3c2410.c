@@ -423,7 +423,11 @@ void s3c2410_iotiming_set(struct s3c_cpufreq_config *cfg,
  * @timings: The IO timing information to fill out.
  *
  * Calculate the @timings timing information from the current frequency
+<<<<<<< HEAD
  * information in @cfg, and the new frequency configur
+=======
+ * information in @cfg, and the new frequency configuration
+>>>>>>> v4.9.227
  * through all the IO banks, reading the state and then updating @iot
  * as necessary.
  *

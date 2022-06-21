@@ -75,6 +75,7 @@ static int fc_header(struct sk_buff *skb, struct net_device *dev,
 	return -hdr_len;
 }
 
+<<<<<<< HEAD
 /*
  *	A neighbour discovery of some species (eg arp) has completed. We
  *	can now send the packet.
@@ -98,6 +99,10 @@ static int fc_rebuild_header(struct sk_buff *skb)
 static const struct header_ops fc_header_ops = {
 	.create	 = fc_header,
 	.rebuild = fc_rebuild_header,
+=======
+static const struct header_ops fc_header_ops = {
+	.create	 = fc_header,
+>>>>>>> v4.9.227
 };
 
 static void fc_setup(struct net_device *dev)

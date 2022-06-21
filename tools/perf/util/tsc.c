@@ -19,7 +19,11 @@ u64 tsc_to_perf_time(u64 cyc, struct perf_tsc_conversion *tc)
 	u64 quot, rem;
 
 	quot = cyc >> tc->time_shift;
+<<<<<<< HEAD
 	rem  = cyc & ((1 << tc->time_shift) - 1);
+=======
+	rem  = cyc & (((u64)1 << tc->time_shift) - 1);
+>>>>>>> v4.9.227
 	return tc->time_zero + quot * tc->time_mult +
 	       ((rem * tc->time_mult) >> tc->time_shift);
 }

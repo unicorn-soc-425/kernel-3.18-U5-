@@ -21,6 +21,10 @@
 #define HPAGE_SIZE	(1UL << HPAGE_SHIFT)
 #define HPAGE_MASK	(~(HPAGE_SIZE - 1))
 #define HUGETLB_PAGE_ORDER	(HPAGE_SHIFT - PAGE_SHIFT)
+<<<<<<< HEAD
+=======
+#define HUGE_MAX_HSTATE		2
+>>>>>>> v4.9.227
 
 #define ARCH_HAS_SETCLEAR_HUGE_PTE
 #define ARCH_HAS_HUGE_PTE_TYPE
@@ -30,6 +34,7 @@
 #include <asm/setup.h>
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 static inline void storage_key_init_range(unsigned long start, unsigned long end)
 {
 #if PAGE_DEFAULT_KEY
@@ -47,6 +52,17 @@ static inline void clear_page(void *page)
 		: "+d" (reg2), "+d" (reg3) : "d" (reg1)
 		: "memory", "cc");
 }
+=======
+void __storage_key_init_range(unsigned long start, unsigned long end);
+
+static inline void storage_key_init_range(unsigned long start, unsigned long end)
+{
+	if (PAGE_DEFAULT_KEY != 0)
+		__storage_key_init_range(start, end);
+}
+
+#define clear_page(page)	memset((page), 0, PAGE_SIZE)
+>>>>>>> v4.9.227
 
 /*
  * copy_page uses the mvcl instruction with 0xb0 padding byte in order to
@@ -118,13 +134,23 @@ static inline unsigned char page_get_storage_key(unsigned long addr)
 
 static inline int page_reset_referenced(unsigned long addr)
 {
+<<<<<<< HEAD
 	unsigned int ipm;
+=======
+	int cc;
+>>>>>>> v4.9.227
 
 	asm volatile(
 		"	rrbe	0,%1\n"
 		"	ipm	%0\n"
+<<<<<<< HEAD
 		: "=d" (ipm) : "a" (addr) : "cc");
 	return !!(ipm & 0x20000000);
+=======
+		"	srl	%0,28\n"
+		: "=d" (cc) : "a" (addr) : "cc");
+	return cc;
+>>>>>>> v4.9.227
 }
 
 /* Bits int the storage key */
@@ -155,6 +181,11 @@ static inline int devmem_is_allowed(unsigned long pfn)
 #define virt_to_page(kaddr)	pfn_to_page(__pa(kaddr) >> PAGE_SHIFT)
 #define page_to_phys(page)	(page_to_pfn(page) << PAGE_SHIFT)
 #define virt_addr_valid(kaddr)	pfn_valid(__pa(kaddr) >> PAGE_SHIFT)
+<<<<<<< HEAD
+=======
+#define pfn_to_virt(pfn)	__va((pfn) << PAGE_SHIFT)
+#define page_to_virt(page)	pfn_to_virt(page_to_pfn(page))
+>>>>>>> v4.9.227
 
 #define VM_DATA_DEFAULT_FLAGS	(VM_READ | VM_WRITE | \
 				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)

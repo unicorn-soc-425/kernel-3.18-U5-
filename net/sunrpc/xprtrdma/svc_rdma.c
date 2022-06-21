@@ -38,8 +38,12 @@
  *
  * Author: Tom Tucker <tom@opengridcomputing.com>
  */
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/fs.h>
 #include <linux/sysctl.h>
@@ -56,6 +60,10 @@ unsigned int svcrdma_ord = RPCRDMA_ORD;
 static unsigned int min_ord = 1;
 static unsigned int max_ord = 4096;
 unsigned int svcrdma_max_requests = RPCRDMA_MAX_REQUESTS;
+<<<<<<< HEAD
+=======
+unsigned int svcrdma_max_bc_requests = RPCRDMA_MAX_BC_REQUESTS;
+>>>>>>> v4.9.227
 static unsigned int min_max_requests = 4;
 static unsigned int max_max_requests = 16384;
 unsigned int svcrdma_max_req_size = RPCRDMA_MAX_REQ_SIZE;
@@ -72,10 +80,13 @@ atomic_t rdma_stat_rq_prod;
 atomic_t rdma_stat_sq_poll;
 atomic_t rdma_stat_sq_prod;
 
+<<<<<<< HEAD
 /* Temporary NFS request map and context caches */
 struct kmem_cache *svc_rdma_map_cachep;
 struct kmem_cache *svc_rdma_ctxt_cachep;
 
+=======
+>>>>>>> v4.9.227
 struct workqueue_struct *svc_rdma_wq;
 
 /*
@@ -240,18 +251,32 @@ void svc_rdma_cleanup(void)
 		unregister_sysctl_table(svcrdma_table_header);
 		svcrdma_table_header = NULL;
 	}
+<<<<<<< HEAD
 	svc_unreg_xprt_class(&svc_rdma_class);
 	kmem_cache_destroy(svc_rdma_map_cachep);
 	kmem_cache_destroy(svc_rdma_ctxt_cachep);
+=======
+#if defined(CONFIG_SUNRPC_BACKCHANNEL)
+	svc_unreg_xprt_class(&svc_rdma_bc_class);
+#endif
+	svc_unreg_xprt_class(&svc_rdma_class);
+>>>>>>> v4.9.227
 }
 
 int svc_rdma_init(void)
 {
 	dprintk("SVCRDMA Module Init, register RPC RDMA transport\n");
 	dprintk("\tsvcrdma_ord      : %d\n", svcrdma_ord);
+<<<<<<< HEAD
 	dprintk("\tmax_requests     : %d\n", svcrdma_max_requests);
 	dprintk("\tsq_depth         : %d\n",
 		svcrdma_max_requests * RPCRDMA_SQ_DEPTH_MULT);
+=======
+	dprintk("\tmax_requests     : %u\n", svcrdma_max_requests);
+	dprintk("\tsq_depth         : %u\n",
+		svcrdma_max_requests * RPCRDMA_SQ_DEPTH_MULT);
+	dprintk("\tmax_bc_requests  : %u\n", svcrdma_max_bc_requests);
+>>>>>>> v4.9.227
 	dprintk("\tmax_inline       : %d\n", svcrdma_max_req_size);
 
 	svc_rdma_wq = alloc_workqueue("svc_rdma", 0, 0);
@@ -262,6 +287,7 @@ int svc_rdma_init(void)
 		svcrdma_table_header =
 			register_sysctl_table(svcrdma_root_table);
 
+<<<<<<< HEAD
 	/* Create the temporary map cache */
 	svc_rdma_map_cachep = kmem_cache_create("svc_rdma_map_cache",
 						sizeof(struct svc_rdma_req_map),
@@ -300,3 +326,12 @@ MODULE_DESCRIPTION("SVC RDMA Transport");
 MODULE_LICENSE("Dual BSD/GPL");
 module_init(svc_rdma_init);
 module_exit(svc_rdma_cleanup);
+=======
+	/* Register RDMA with the SVC transport switch */
+	svc_reg_xprt_class(&svc_rdma_class);
+#if defined(CONFIG_SUNRPC_BACKCHANNEL)
+	svc_reg_xprt_class(&svc_rdma_bc_class);
+#endif
+	return 0;
+}
+>>>>>>> v4.9.227

@@ -47,9 +47,12 @@ static inline struct dvb_frontend* or51132_attach(const struct or51132_config* c
 #endif // CONFIG_DVB_OR51132
 
 #endif // OR51132_H
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

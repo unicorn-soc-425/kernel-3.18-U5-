@@ -15,6 +15,10 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/dmaengine.h>
+<<<<<<< HEAD
+=======
+#include <linux/dma/pxa-dma.h>
+>>>>>>> v4.9.227
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -43,7 +47,15 @@ static struct snd_ac97_bus_ops pxa2xx_ac97_ops = {
 	.reset	= pxa2xx_ac97_reset,
 };
 
+<<<<<<< HEAD
 static unsigned long pxa2xx_ac97_pcm_out_req = 12;
+=======
+static struct pxad_param pxa2xx_ac97_pcm_out_req = {
+	.prio = PXAD_PRIO_LOWEST,
+	.drcmr = 12,
+};
+
+>>>>>>> v4.9.227
 static struct snd_dmaengine_dai_dma_data pxa2xx_ac97_pcm_out = {
 	.addr		= __PREG(PCDR),
 	.addr_width	= DMA_SLAVE_BUSWIDTH_4_BYTES,
@@ -51,7 +63,15 @@ static struct snd_dmaengine_dai_dma_data pxa2xx_ac97_pcm_out = {
 	.filter_data	= &pxa2xx_ac97_pcm_out_req,
 };
 
+<<<<<<< HEAD
 static unsigned long pxa2xx_ac97_pcm_in_req = 11;
+=======
+static struct pxad_param pxa2xx_ac97_pcm_in_req = {
+	.prio = PXAD_PRIO_LOWEST,
+	.drcmr = 11,
+};
+
+>>>>>>> v4.9.227
 static struct snd_dmaengine_dai_dma_data pxa2xx_ac97_pcm_in = {
 	.addr		= __PREG(PCDR),
 	.addr_width	= DMA_SLAVE_BUSWIDTH_4_BYTES,
@@ -241,7 +261,10 @@ static struct platform_driver pxa2xx_ac97_driver = {
 	.remove		= pxa2xx_ac97_remove,
 	.driver		= {
 		.name	= "pxa2xx-ac97",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM_SLEEP
 		.pm	= &pxa2xx_ac97_pm_ops,
 #endif

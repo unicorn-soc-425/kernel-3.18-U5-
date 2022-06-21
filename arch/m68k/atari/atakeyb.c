@@ -170,7 +170,10 @@ repeat:
 	if (acia_stat & ACIA_RDRF) {
 		/* received a character */
 		scancode = acia.key_data;	/* get it or reset the ACIA, I'll get it! */
+<<<<<<< HEAD
 		tasklet_schedule(&keyboard_tasklet);
+=======
+>>>>>>> v4.9.227
 	interpret_scancode:
 		switch (kb_state.state) {
 		case KEYBOARD:
@@ -430,6 +433,7 @@ void ikbd_mouse_y0_top(void)
 }
 EXPORT_SYMBOL(ikbd_mouse_y0_top);
 
+<<<<<<< HEAD
 /* Resume */
 void ikbd_resume(void)
 {
@@ -438,6 +442,8 @@ void ikbd_resume(void)
 	ikbd_write(cmd, 1);
 }
 
+=======
+>>>>>>> v4.9.227
 /* Disable mouse */
 void ikbd_mouse_disable(void)
 {
@@ -447,6 +453,7 @@ void ikbd_mouse_disable(void)
 }
 EXPORT_SYMBOL(ikbd_mouse_disable);
 
+<<<<<<< HEAD
 /* Pause output */
 void ikbd_pause(void)
 {
@@ -455,6 +462,8 @@ void ikbd_pause(void)
 	ikbd_write(cmd, 1);
 }
 
+=======
+>>>>>>> v4.9.227
 /* Set joystick event reporting */
 void ikbd_joystick_event_on(void)
 {
@@ -502,6 +511,7 @@ void ikbd_joystick_disable(void)
 	ikbd_write(cmd, 1);
 }
 
+<<<<<<< HEAD
 /* Time-of-day clock set */
 void ikbd_clock_set(int year, int month, int day, int hour, int minute, int second)
 {
@@ -552,6 +562,8 @@ void atari_kbd_leds(unsigned int leds)
 	ikbd_write(cmd, 6);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * The original code sometimes left the interrupt line of
  * the ACIAs low forever. I hope, it is fixed now.
@@ -571,9 +583,14 @@ int atari_keyb_init(void)
 	kb_state.state = KEYBOARD;
 	kb_state.len = 0;
 
+<<<<<<< HEAD
 	error = request_irq(IRQ_MFP_ACIA, atari_keyboard_interrupt,
 			    IRQ_TYPE_SLOW, "keyboard,mouse,MIDI",
 			    atari_keyboard_interrupt);
+=======
+	error = request_irq(IRQ_MFP_ACIA, atari_keyboard_interrupt, 0,
+			    "keyboard,mouse,MIDI", atari_keyboard_interrupt);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 

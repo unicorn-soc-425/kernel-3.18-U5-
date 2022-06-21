@@ -237,6 +237,10 @@ static struct ipa_cmd_names qeth_ipa_cmd_names[] = {
 	{IPA_CMD_DELGMAC,	"delgmac"},
 	{IPA_CMD_SETVLAN,	"setvlan"},
 	{IPA_CMD_DELVLAN,	"delvlan"},
+<<<<<<< HEAD
+=======
+	{IPA_CMD_SETBRIDGEPORT_OSA,	"set_bridge_port(osa)"},
+>>>>>>> v4.9.227
 	{IPA_CMD_SETCCID,	"setccid"},
 	{IPA_CMD_DELCCID,	"delccid"},
 	{IPA_CMD_MODCCID,	"modccid"},
@@ -249,7 +253,11 @@ static struct ipa_cmd_names qeth_ipa_cmd_names[] = {
 	{IPA_CMD_DELIP,		"delip"},
 	{IPA_CMD_SETADAPTERPARMS, "setadapterparms"},
 	{IPA_CMD_SET_DIAG_ASS,	"set_diag_ass"},
+<<<<<<< HEAD
 	{IPA_CMD_SETBRIDGEPORT,	"set_bridge_port"},
+=======
+	{IPA_CMD_SETBRIDGEPORT_IQD,	"set_bridge_port(hs)"},
+>>>>>>> v4.9.227
 	{IPA_CMD_CREATE_ADDR,	"create_addr"},
 	{IPA_CMD_DESTROY_ADDR,	"destroy_addr"},
 	{IPA_CMD_REGISTER_LOCAL_ADDR,	"register_local_addr"},

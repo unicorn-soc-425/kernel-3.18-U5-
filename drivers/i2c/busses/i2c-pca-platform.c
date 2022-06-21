@@ -280,12 +280,19 @@ static struct platform_driver i2c_pca_pf_driver = {
 	.remove = i2c_pca_pf_remove,
 	.driver = {
 		.name = "i2c-pca-platform",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
 module_platform_driver(i2c_pca_pf_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Wolfram Sang <w.sang@pengutronix.de>");
+=======
+MODULE_AUTHOR("Wolfram Sang <kernel@pengutronix.de>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("I2C-PCA9564/PCA9665 platform driver");
 MODULE_LICENSE("GPL");

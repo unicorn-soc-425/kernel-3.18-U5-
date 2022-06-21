@@ -124,6 +124,7 @@ out_skb_err:
 	return err;
 }
 
+<<<<<<< HEAD
 u8 nfc_hci_pipe2gate(struct nfc_hci_dev *hdev, u8 pipe)
 {
 	int gate;
@@ -135,6 +136,8 @@ u8 nfc_hci_pipe2gate(struct nfc_hci_dev *hdev, u8 pipe)
 	return 0xff;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Receive hcp message for pipe, with type and cmd.
  * skb contains optional message data only.

@@ -1099,6 +1099,7 @@ static struct ab8500_regulator_info
 		.update_val_idle	= 0x82,
 		.update_val_normal	= 0x02,
 	},
+<<<<<<< HEAD
 	[AB8505_LDO_USB] = {
 		.desc = {
 			.name           = "LDO-USB",
@@ -1116,6 +1117,8 @@ static struct ab8500_regulator_info
 		.update_val_idle	= 0x03,
 		.update_val_normal	= 0x01,
 	},
+=======
+>>>>>>> v4.9.227
 	[AB8505_LDO_AUDIO] = {
 		.desc = {
 			.name		= "LDO-AUDIO",
@@ -3075,7 +3078,10 @@ static struct platform_driver ab8500_regulator_driver = {
 	.probe = ab8500_regulator_probe,
 	.driver         = {
 		.name   = "ab8500-regulator",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

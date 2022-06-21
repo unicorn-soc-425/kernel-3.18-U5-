@@ -78,7 +78,11 @@ int install_user_keyrings(void)
 						    cred, user_keyring_perm,
 						    KEY_ALLOC_UID_KEYRING |
 							KEY_ALLOC_IN_QUOTA,
+<<<<<<< HEAD
 						    NULL);
+=======
+						    NULL, NULL);
+>>>>>>> v4.9.227
 			if (IS_ERR(uid_keyring)) {
 				ret = PTR_ERR(uid_keyring);
 				goto error;
@@ -96,7 +100,11 @@ int install_user_keyrings(void)
 					      cred, user_keyring_perm,
 					      KEY_ALLOC_UID_KEYRING |
 						  KEY_ALLOC_IN_QUOTA,
+<<<<<<< HEAD
 					      NULL);
+=======
+					      NULL, NULL);
+>>>>>>> v4.9.227
 			if (IS_ERR(session_keyring)) {
 				ret = PTR_ERR(session_keyring);
 				goto error_release;
@@ -143,7 +151,12 @@ int install_thread_keyring_to_cred(struct cred *new)
 
 	keyring = keyring_alloc("_tid", new->uid, new->gid, new,
 				KEY_POS_ALL | KEY_USR_VIEW,
+<<<<<<< HEAD
 				KEY_ALLOC_QUOTA_OVERRUN, NULL);
+=======
+				KEY_ALLOC_QUOTA_OVERRUN,
+				NULL, NULL);
+>>>>>>> v4.9.227
 	if (IS_ERR(keyring))
 		return PTR_ERR(keyring);
 
@@ -189,7 +202,12 @@ int install_process_keyring_to_cred(struct cred *new)
 
 	keyring = keyring_alloc("_pid", new->uid, new->gid, new,
 				KEY_POS_ALL | KEY_USR_VIEW,
+<<<<<<< HEAD
 				KEY_ALLOC_QUOTA_OVERRUN, NULL);
+=======
+				KEY_ALLOC_QUOTA_OVERRUN,
+				NULL, NULL);
+>>>>>>> v4.9.227
 	if (IS_ERR(keyring))
 		return PTR_ERR(keyring);
 
@@ -242,7 +260,11 @@ int install_session_keyring_to_cred(struct cred *cred, struct key *keyring)
 
 		keyring = keyring_alloc("_ses", cred->uid, cred->gid, cred,
 					KEY_POS_ALL | KEY_USR_VIEW | KEY_USR_READ,
+<<<<<<< HEAD
 					flags, NULL);
+=======
+					flags, NULL, NULL);
+>>>>>>> v4.9.227
 		if (IS_ERR(keyring))
 			return PTR_ERR(keyring);
 	} else {
@@ -471,7 +493,11 @@ key_ref_t search_process_keyrings(struct keyring_search_context *ctx)
 		down_read(&cred->request_key_auth->sem);
 
 		if (key_validate(ctx->cred->request_key_auth) == 0) {
+<<<<<<< HEAD
 			rka = ctx->cred->request_key_auth->payload.data;
+=======
+			rka = ctx->cred->request_key_auth->payload.data[0];
+>>>>>>> v4.9.227
 
 			ctx->cred = rka->cred;
 			key_ref = search_process_keyrings(ctx);
@@ -661,7 +687,11 @@ try_again:
 			key_ref = ERR_PTR(-EKEYREVOKED);
 			key = NULL;
 		} else {
+<<<<<<< HEAD
 			rka = ctx.cred->request_key_auth->payload.data;
+=======
+			rka = ctx.cred->request_key_auth->payload.data[0];
+>>>>>>> v4.9.227
 			key = rka->dest_keyring;
 			__key_get(key);
 		}
@@ -727,7 +757,11 @@ try_again:
 
 	ret = -EIO;
 	if (!(lflags & KEY_LOOKUP_PARTIAL) &&
+<<<<<<< HEAD
 	    !test_bit(KEY_FLAG_INSTANTIATED, &key->flags))
+=======
+	    key_read_state(key) == KEY_IS_UNINSTANTIATED)
+>>>>>>> v4.9.227
 		goto invalid_key;
 
 	/* check the permissions */
@@ -799,7 +833,11 @@ long join_session_keyring(const char *name)
 		keyring = keyring_alloc(
 			name, old->uid, old->gid, old,
 			KEY_POS_ALL | KEY_USR_VIEW | KEY_USR_READ | KEY_USR_LINK,
+<<<<<<< HEAD
 			KEY_ALLOC_IN_QUOTA, NULL);
+=======
+			KEY_ALLOC_IN_QUOTA, NULL, NULL);
+>>>>>>> v4.9.227
 		if (IS_ERR(keyring)) {
 			ret = PTR_ERR(keyring);
 			goto error2;

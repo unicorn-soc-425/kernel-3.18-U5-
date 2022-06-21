@@ -22,6 +22,10 @@
 #include <linux/interrupt.h>
 #include <linux/sched.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/clockchips.h>
+>>>>>>> v4.9.227
 #include <asm/processor.h>
 #include <asm/mmu_context.h>
 #include <asm/smp.h>
@@ -141,16 +145,25 @@ int __cpu_disable(void)
 	migrate_irqs();
 
 	/*
+<<<<<<< HEAD
 	 * Stop the local timer for this CPU.
 	 */
 	local_timer_stop(cpu);
 
 	/*
+=======
+>>>>>>> v4.9.227
 	 * Flush user cache and TLB mappings, and then remove this CPU
 	 * from the vm mask set of all processes.
 	 */
 	flush_cache_all();
+<<<<<<< HEAD
 	local_flush_tlb_all();
+=======
+#ifdef CONFIG_MMU
+	local_flush_tlb_all();
+#endif
+>>>>>>> v4.9.227
 
 	clear_tasks_mm_cpumask(cpu);
 
@@ -183,8 +196,15 @@ asmlinkage void start_secondary(void)
 	atomic_inc(&mm->mm_count);
 	atomic_inc(&mm->mm_users);
 	current->active_mm = mm;
+<<<<<<< HEAD
 	enter_lazy_tlb(mm, current);
 	local_flush_tlb_all();
+=======
+#ifdef CONFIG_MMU
+	enter_lazy_tlb(mm, current);
+	local_flush_tlb_all();
+#endif
+>>>>>>> v4.9.227
 
 	per_cpu_trap_init();
 
@@ -194,8 +214,11 @@ asmlinkage void start_secondary(void)
 
 	local_irq_enable();
 
+<<<<<<< HEAD
 	/* Enable local timers */
 	local_timer_setup(cpu);
+=======
+>>>>>>> v4.9.227
 	calibrate_delay();
 
 	smp_store_cpu_info(cpu);
@@ -203,7 +226,11 @@ asmlinkage void start_secondary(void)
 	set_cpu_online(cpu, true);
 	per_cpu(cpu_state, cpu) = CPU_ONLINE;
 
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> v4.9.227
 }
 
 extern struct {
@@ -285,7 +312,12 @@ void arch_send_call_function_single_ipi(int cpu)
 	mp_ops->send_ipi(cpu, SMP_MSG_FUNCTION_SINGLE);
 }
 
+<<<<<<< HEAD
 void smp_timer_broadcast(const struct cpumask *mask)
+=======
+#ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
+void tick_broadcast(const struct cpumask *mask)
+>>>>>>> v4.9.227
 {
 	int cpu;
 
@@ -296,9 +328,16 @@ void smp_timer_broadcast(const struct cpumask *mask)
 static void ipi_timer(void)
 {
 	irq_enter();
+<<<<<<< HEAD
 	local_timer_interrupt();
 	irq_exit();
 }
+=======
+	tick_receive_broadcast();
+	irq_exit();
+}
+#endif
+>>>>>>> v4.9.227
 
 void smp_message_recv(unsigned int msg)
 {
@@ -312,9 +351,17 @@ void smp_message_recv(unsigned int msg)
 	case SMP_MSG_FUNCTION_SINGLE:
 		generic_smp_call_function_single_interrupt();
 		break;
+<<<<<<< HEAD
 	case SMP_MSG_TIMER:
 		ipi_timer();
 		break;
+=======
+#ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
+	case SMP_MSG_TIMER:
+		ipi_timer();
+		break;
+#endif
+>>>>>>> v4.9.227
 	default:
 		printk(KERN_WARNING "SMP %d: %s(): unknown IPI %d\n",
 		       smp_processor_id(), __func__, msg);
@@ -328,6 +375,11 @@ int setup_profiling_timer(unsigned int multiplier)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+
+>>>>>>> v4.9.227
 static void flush_tlb_all_ipi(void *info)
 {
 	local_flush_tlb_all();
@@ -363,7 +415,11 @@ void flush_tlb_mm(struct mm_struct *mm)
 		smp_call_function(flush_tlb_mm_ipi, (void *)mm, 1);
 	} else {
 		int i;
+<<<<<<< HEAD
 		for (i = 0; i < num_online_cpus(); i++)
+=======
+		for_each_online_cpu(i)
+>>>>>>> v4.9.227
 			if (smp_processor_id() != i)
 				cpu_context(i, mm) = 0;
 	}
@@ -400,7 +456,11 @@ void flush_tlb_range(struct vm_area_struct *vma,
 		smp_call_function(flush_tlb_range_ipi, (void *)&fd, 1);
 	} else {
 		int i;
+<<<<<<< HEAD
 		for (i = 0; i < num_online_cpus(); i++)
+=======
+		for_each_online_cpu(i)
+>>>>>>> v4.9.227
 			if (smp_processor_id() != i)
 				cpu_context(i, mm) = 0;
 	}
@@ -443,7 +503,11 @@ void flush_tlb_page(struct vm_area_struct *vma, unsigned long page)
 		smp_call_function(flush_tlb_page_ipi, (void *)&fd, 1);
 	} else {
 		int i;
+<<<<<<< HEAD
 		for (i = 0; i < num_online_cpus(); i++)
+=======
+		for_each_online_cpu(i)
+>>>>>>> v4.9.227
 			if (smp_processor_id() != i)
 				cpu_context(i, vma->vm_mm) = 0;
 	}
@@ -467,3 +531,8 @@ void flush_tlb_one(unsigned long asid, unsigned long vaddr)
 	smp_call_function(flush_tlb_one_ipi, (void *)&fd, 1);
 	local_flush_tlb_one(asid, vaddr);
 }
+<<<<<<< HEAD
+=======
+
+#endif
+>>>>>>> v4.9.227

@@ -52,7 +52,11 @@ struct as10x_bus_adapter_t {
 	struct as10x_cmd_t *cmd, *rsp;
 
 	/* bus adapter private ops callback */
+<<<<<<< HEAD
 	struct as102_priv_ops_t *ops;
+=======
+	const struct as102_priv_ops_t *ops;
+>>>>>>> v4.9.227
 };
 
 struct as102_dev_t {

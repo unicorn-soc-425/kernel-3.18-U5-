@@ -477,7 +477,12 @@ static int hi6421_regulator_buck_set_mode(struct regulator_dev *rdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 unsigned int hi6421_regulator_ldo_get_optimum_mode(struct regulator_dev *rdev,
+=======
+static unsigned int
+hi6421_regulator_ldo_get_optimum_mode(struct regulator_dev *rdev,
+>>>>>>> v4.9.227
 			int input_uV, int output_uV, int load_uA)
 {
 	struct hi6421_regulator_info *info = rdev_get_drvdata(rdev);
@@ -623,7 +628,10 @@ static int hi6421_regulator_probe(struct platform_device *pdev)
 static struct platform_driver hi6421_regulator_driver = {
 	.driver = {
 		.name	= "hi6421-regulator",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe	= hi6421_regulator_probe,
 };

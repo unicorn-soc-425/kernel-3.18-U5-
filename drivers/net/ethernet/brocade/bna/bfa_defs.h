@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Linux network driver for Brocade Converged Network Adapter.
+=======
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -11,9 +15,16 @@
  * General Public License for more details.
  */
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> v4.9.227
  */
 
 #ifndef __BFA_DEFS_H__
@@ -23,7 +34,10 @@
 #include "bfa_defs_status.h"
 #include "bfa_defs_mfg_comm.h"
 
+<<<<<<< HEAD
 #define BFA_STRING_32	32
+=======
+>>>>>>> v4.9.227
 #define BFA_VERSION_LEN 64
 
 /* ---------------------- adapter definitions ------------ */
@@ -54,7 +68,11 @@ struct bfa_adapter_attr {
 	char		optrom_ver[BFA_VERSION_LEN];
 	char		os_type[BFA_ADAPTER_OS_TYPE_LEN];
 	struct bfa_mfg_vpd vpd;
+<<<<<<< HEAD
 	struct mac mac;
+=======
+	u8		mac[ETH_ALEN];
+>>>>>>> v4.9.227
 
 	u8		nports;
 	u8		max_speed;
@@ -186,8 +204,11 @@ enum {
 #define BFA_MFG_SUPPLIER_SERIALNUM_SIZE		20
 #define BFA_MFG_SUPPLIER_REVISION_SIZE		4
 
+<<<<<<< HEAD
 #pragma pack(1)
 
+=======
+>>>>>>> v4.9.227
 /* BFA adapter manufacturing block definition.
  *
  * All numerical fields are in big-endian format.
@@ -210,7 +231,11 @@ struct bfa_mfg_block {
 	char	supplier_partnum[STRSZ(BFA_MFG_SUPPLIER_PARTNUM_SIZE)];
 	char	supplier_serialnum[STRSZ(BFA_MFG_SUPPLIER_SERIALNUM_SIZE)];
 	char	supplier_revision[STRSZ(BFA_MFG_SUPPLIER_REVISION_SIZE)];
+<<<<<<< HEAD
 	mac_t	mfg_mac;	/* base mac address */
+=======
+	u8	mfg_mac[ETH_ALEN]; /* base mac address */
+>>>>>>> v4.9.227
 	u8	num_mac;	/* number of mac addresses */
 	u8	rsv2;
 	u32	card_type;	/* card type          */
@@ -226,9 +251,13 @@ struct bfa_mfg_block {
 	char	initial_mode[8]; /* initial mode: hba/cna/nic */
 	u8	rsv4[84];
 	u8	md5_chksum[BFA_MFG_CHKSUM_SIZE]; /* md5 checksum */
+<<<<<<< HEAD
 };
 
 #pragma pack()
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* ---------------------- pci definitions ------------ */
 

@@ -5,12 +5,43 @@
 #include <linux/list.h>
 #include <linux/rbtree.h>
 #include "event.h"
+<<<<<<< HEAD
 #include "symbol.h"
 
+=======
+#include "map.h"
+#include "symbol.h"
+
+#define HELP_PAD "\t\t\t\t"
+
+#define CALLCHAIN_HELP "setup and enables call-graph (stack chain/backtrace):\n\n"
+
+# define RECORD_MODE_HELP  HELP_PAD "record_mode:\tcall graph recording mode (fp|dwarf|lbr)\n"
+
+#define RECORD_SIZE_HELP						\
+	HELP_PAD "record_size:\tif record_mode is 'dwarf', max size of stack recording (<bytes>)\n" \
+	HELP_PAD "\t\tdefault: 8192 (bytes)\n"
+
+#define CALLCHAIN_RECORD_HELP  CALLCHAIN_HELP RECORD_MODE_HELP RECORD_SIZE_HELP
+
+#define CALLCHAIN_REPORT_HELP						\
+	HELP_PAD "print_type:\tcall graph printing style (graph|flat|fractal|folded|none)\n" \
+	HELP_PAD "threshold:\tminimum call graph inclusion threshold (<percent>)\n" \
+	HELP_PAD "print_limit:\tmaximum number of call graph entry (<number>)\n" \
+	HELP_PAD "order:\t\tcall graph order (caller|callee)\n" \
+	HELP_PAD "sort_key:\tcall graph sort key (function|address)\n"	\
+	HELP_PAD "branch:\t\tinclude last branch info to call graph (branch)\n" \
+	HELP_PAD "value:\t\tcall graph value (percent|period|count)\n"
+
+>>>>>>> v4.9.227
 enum perf_call_graph_mode {
 	CALLCHAIN_NONE,
 	CALLCHAIN_FP,
 	CALLCHAIN_DWARF,
+<<<<<<< HEAD
+=======
+	CALLCHAIN_LBR,
+>>>>>>> v4.9.227
 	CALLCHAIN_MAX
 };
 
@@ -18,7 +49,12 @@ enum chain_mode {
 	CHAIN_NONE,
 	CHAIN_FLAT,
 	CHAIN_GRAPH_ABS,
+<<<<<<< HEAD
 	CHAIN_GRAPH_REL
+=======
+	CHAIN_GRAPH_REL,
+	CHAIN_FOLDED,
+>>>>>>> v4.9.227
 };
 
 enum chain_order {
@@ -29,11 +65,20 @@ enum chain_order {
 struct callchain_node {
 	struct callchain_node	*parent;
 	struct list_head	val;
+<<<<<<< HEAD
+=======
+	struct list_head	parent_val;
+>>>>>>> v4.9.227
 	struct rb_node		rb_node_in; /* to insert nodes in an rbtree */
 	struct rb_node		rb_node;    /* to sort nodes in an output tree */
 	struct rb_root		rb_root_in; /* input tree of children */
 	struct rb_root		rb_root;    /* sorted output tree of children */
 	unsigned int		val_nr;
+<<<<<<< HEAD
+=======
+	unsigned int		count;
+	unsigned int		children_count;
+>>>>>>> v4.9.227
 	u64			hit;
 	u64			children_hit;
 };
@@ -53,23 +98,55 @@ enum chain_key {
 	CCKEY_ADDRESS
 };
 
+<<<<<<< HEAD
+=======
+enum chain_value {
+	CCVAL_PERCENT,
+	CCVAL_PERIOD,
+	CCVAL_COUNT,
+};
+
+>>>>>>> v4.9.227
 struct callchain_param {
 	bool			enabled;
 	enum perf_call_graph_mode record_mode;
 	u32			dump_size;
 	enum chain_mode 	mode;
+<<<<<<< HEAD
+=======
+	u16			max_stack;
+>>>>>>> v4.9.227
 	u32			print_limit;
 	double			min_percent;
 	sort_chain_func_t	sort;
 	enum chain_order	order;
+<<<<<<< HEAD
 	enum chain_key		key;
 };
 
 extern struct callchain_param callchain_param;
+=======
+	bool			order_set;
+	enum chain_key		key;
+	bool			branch_callstack;
+	enum chain_value	value;
+};
+
+extern struct callchain_param callchain_param;
+extern struct callchain_param callchain_param_default;
+>>>>>>> v4.9.227
 
 struct callchain_list {
 	u64			ip;
 	struct map_symbol	ms;
+<<<<<<< HEAD
+=======
+	struct /* for TUI */ {
+		bool		unfolded;
+		bool		has_children;
+	};
+	char		       *srcline;
+>>>>>>> v4.9.227
 	struct list_head	list;
 };
 
@@ -99,6 +176,10 @@ extern __thread struct callchain_cursor callchain_cursor;
 static inline void callchain_init(struct callchain_root *root)
 {
 	INIT_LIST_HEAD(&root->node.val);
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&root->node.parent_val);
+>>>>>>> v4.9.227
 
 	root->node.parent = NULL;
 	root->node.hit = 0;
@@ -112,6 +193,14 @@ static inline u64 callchain_cumul_hits(struct callchain_node *node)
 	return node->hit + node->children_hit;
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned callchain_cumul_counts(struct callchain_node *node)
+{
+	return node->count + node->children_count;
+}
+
+>>>>>>> v4.9.227
 int callchain_register_param(struct callchain_param *param);
 int callchain_append(struct callchain_root *root,
 		     struct callchain_cursor *cursor,
@@ -126,8 +215,18 @@ int callchain_merge(struct callchain_cursor *cursor,
  */
 static inline void callchain_cursor_reset(struct callchain_cursor *cursor)
 {
+<<<<<<< HEAD
 	cursor->nr = 0;
 	cursor->last = &cursor->first;
+=======
+	struct callchain_cursor_node *node;
+
+	cursor->nr = 0;
+	cursor->last = &cursor->first;
+
+	for (node = cursor->first; node != NULL; node = node->next)
+		map__zput(node->map);
+>>>>>>> v4.9.227
 }
 
 int callchain_cursor_append(struct callchain_cursor *cursor, u64 ip,
@@ -162,7 +261,18 @@ struct hist_entry;
 int record_parse_callchain_opt(const struct option *opt, const char *arg, int unset);
 int record_callchain_opt(const struct option *opt, const char *arg, int unset);
 
+<<<<<<< HEAD
 int sample__resolve_callchain(struct perf_sample *sample, struct symbol **parent,
+=======
+struct record_opts;
+
+int record_opts__parse_callchain(struct record_opts *record,
+				 struct callchain_param *callchain,
+				 const char *arg, bool unset);
+
+int sample__resolve_callchain(struct perf_sample *sample,
+			      struct callchain_cursor *cursor, struct symbol **parent,
+>>>>>>> v4.9.227
 			      struct perf_evsel *evsel, struct addr_location *al,
 			      int max_stack);
 int hist_entry__append_callchain(struct hist_entry *he, struct perf_sample *sample);
@@ -170,8 +280,15 @@ int fill_callchain_info(struct addr_location *al, struct callchain_cursor_node *
 			bool hide_unresolved);
 
 extern const char record_callchain_help[];
+<<<<<<< HEAD
 int parse_callchain_record_opt(const char *arg);
 int parse_callchain_report_opt(const char *arg);
+=======
+int parse_callchain_record(const char *arg, struct callchain_param *param);
+int parse_callchain_record_opt(const char *arg, struct callchain_param *param);
+int parse_callchain_report_opt(const char *arg);
+int parse_callchain_top_opt(const char *arg);
+>>>>>>> v4.9.227
 int perf_callchain_config(const char *var, const char *value);
 
 static inline void callchain_cursor_snapshot(struct callchain_cursor *dest,
@@ -184,15 +301,35 @@ static inline void callchain_cursor_snapshot(struct callchain_cursor *dest,
 }
 
 #ifdef HAVE_SKIP_CALLCHAIN_IDX
+<<<<<<< HEAD
 extern int arch_skip_callchain_idx(struct machine *machine,
 			struct thread *thread, struct ip_callchain *chain);
 #else
 static inline int arch_skip_callchain_idx(struct machine *machine __maybe_unused,
 			struct thread *thread __maybe_unused,
+=======
+int arch_skip_callchain_idx(struct thread *thread, struct ip_callchain *chain);
+#else
+static inline int arch_skip_callchain_idx(struct thread *thread __maybe_unused,
+>>>>>>> v4.9.227
 			struct ip_callchain *chain __maybe_unused)
 {
 	return -1;
 }
 #endif
 
+<<<<<<< HEAD
+=======
+char *callchain_list__sym_name(struct callchain_list *cl,
+			       char *bf, size_t bfsize, bool show_dso);
+char *callchain_node__scnprintf_value(struct callchain_node *node,
+				      char *bf, size_t bfsize, u64 total);
+int callchain_node__fprintf_value(struct callchain_node *node,
+				  FILE *fp, u64 total);
+
+void free_callchain(struct callchain_root *root);
+void decay_callchain(struct callchain_root *root);
+int callchain_node__make_parent_list(struct callchain_node *node);
+
+>>>>>>> v4.9.227
 #endif	/* __PERF_CALLCHAIN_H */

@@ -203,7 +203,11 @@ qxl_push_cursor_ring_release(struct qxl_device *qdev, struct qxl_release *releas
 bool qxl_queue_garbage_collect(struct qxl_device *qdev, bool flush)
 {
 	if (!qxl_check_idle(qdev->release_ring)) {
+<<<<<<< HEAD
 		queue_work(qdev->gc_queue, &qdev->gc_work);
+=======
+		schedule_work(&qdev->gc_work);
+>>>>>>> v4.9.227
 		if (flush)
 			flush_work(&qdev->gc_work);
 		return true;
@@ -500,9 +504,16 @@ int qxl_hw_surface_alloc(struct qxl_device *qdev,
 		return ret;
 
 	ret = qxl_release_reserve_list(release, true);
+<<<<<<< HEAD
 	if (ret)
 		return ret;
 
+=======
+	if (ret) {
+		qxl_release_free(qdev, release);
+		return ret;
+	}
+>>>>>>> v4.9.227
 	cmd = (struct qxl_surface_cmd *)qxl_release_map(qdev, release);
 	cmd->type = QXL_SURFACE_CMD_CREATE;
 	cmd->flags = QXL_SURF_FLAG_KEEP_DATA;
@@ -528,8 +539,13 @@ int qxl_hw_surface_alloc(struct qxl_device *qdev,
 	/* no need to add a release to the fence for this surface bo,
 	   since it is only released when we ask to destroy the surface
 	   and it would never signal otherwise */
+<<<<<<< HEAD
 	qxl_push_command_ring_release(qdev, release, QXL_CMD_SURFACE, false);
 	qxl_release_fence_buffer_objects(release);
+=======
+	qxl_release_fence_buffer_objects(release);
+	qxl_push_command_ring_release(qdev, release, QXL_CMD_SURFACE, false);
+>>>>>>> v4.9.227
 
 	surf->hw_surf_alloc = true;
 	spin_lock(&qdev->surf_id_idr_lock);
@@ -571,9 +587,14 @@ int qxl_hw_surface_dealloc(struct qxl_device *qdev,
 	cmd->surface_id = id;
 	qxl_release_unmap(qdev, release, &cmd->release_info);
 
+<<<<<<< HEAD
 	qxl_push_command_ring_release(qdev, release, QXL_CMD_SURFACE, false);
 
 	qxl_release_fence_buffer_objects(release);
+=======
+	qxl_release_fence_buffer_objects(release);
+	qxl_push_command_ring_release(qdev, release, QXL_CMD_SURFACE, false);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -624,7 +645,11 @@ static int qxl_reap_surf(struct qxl_device *qdev, struct qxl_bo *surf, bool stal
 	if (stall)
 		mutex_unlock(&qdev->surf_evict_mutex);
 
+<<<<<<< HEAD
 	ret = ttm_bo_wait(&surf->tbo, true, true, !stall);
+=======
+	ret = ttm_bo_wait(&surf->tbo, true, !stall);
+>>>>>>> v4.9.227
 
 	if (stall)
 		mutex_lock(&qdev->surf_evict_mutex);

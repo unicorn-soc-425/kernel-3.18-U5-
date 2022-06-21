@@ -125,8 +125,12 @@ rio_read_config(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *bin_attr,
 		char *buf, loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	struct rio_dev *dev =
 	    to_rio_dev(container_of(kobj, struct device, kobj));
+=======
+	struct rio_dev *dev = to_rio_dev(kobj_to_dev(kobj));
+>>>>>>> v4.9.227
 	unsigned int size = 0x100;
 	loff_t init_off = off;
 	u8 *data = (u8 *) buf;
@@ -197,8 +201,12 @@ rio_write_config(struct file *filp, struct kobject *kobj,
 		 struct bin_attribute *bin_attr,
 		 char *buf, loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	struct rio_dev *dev =
 	    to_rio_dev(container_of(kobj, struct device, kobj));
+=======
+	struct rio_dev *dev = to_rio_dev(kobj_to_dev(kobj));
+>>>>>>> v4.9.227
 	unsigned int size = count;
 	loff_t init_off = off;
 	u8 *data = (u8 *) buf;

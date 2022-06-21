@@ -50,6 +50,10 @@
 
 #define PFX "s3c24xx-pm: "
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 static struct sleep_save core_save[] = {
 	/* we restore the timings here, with the proviso that the board
 	 * brings the system up in an slower, or equal frequency setting
@@ -67,6 +71,10 @@ static struct sleep_save core_save[] = {
 	SAVE_ITEM(S3C2410_BANKCON4),
 	SAVE_ITEM(S3C2410_BANKCON5),
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 /* s3c_pm_check_resume_pin
  *
@@ -121,7 +129,11 @@ void s3c_pm_configure_extint(void)
 	}
 }
 
+<<<<<<< HEAD
 
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 void s3c_pm_restore_core(void)
 {
 	s3c_pm_do_restore_core(core_save, ARRAY_SIZE(core_save));
@@ -131,4 +143,8 @@ void s3c_pm_save_core(void)
 {
 	s3c_pm_do_save(core_save, ARRAY_SIZE(core_save));
 }
+<<<<<<< HEAD
 
+=======
+#endif
+>>>>>>> v4.9.227

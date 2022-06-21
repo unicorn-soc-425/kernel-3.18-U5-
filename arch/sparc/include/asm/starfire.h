@@ -12,7 +12,10 @@
 extern int this_is_starfire;
 
 void check_if_starfire(void);
+<<<<<<< HEAD
 int starfire_hard_smp_processor_id(void);
+=======
+>>>>>>> v4.9.227
 void starfire_hookup(int);
 unsigned int starfire_translate(unsigned long imap, unsigned int upaid);
 

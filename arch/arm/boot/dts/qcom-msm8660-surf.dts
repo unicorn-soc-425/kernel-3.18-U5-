@@ -6,6 +6,17 @@
 	model = "Qualcomm MSM8660 SURF";
 	compatible = "qcom,msm8660-surf", "qcom,msm8660";
 
+<<<<<<< HEAD
+=======
+	aliases {
+		serial0 = &gsbi12_serial;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+>>>>>>> v4.9.227
 	soc {
 		gsbi@19c00000 {
 			status = "ok";
@@ -15,15 +26,35 @@
 			};
 		};
 
+<<<<<<< HEAD
+=======
+		/* Temporary fixed regulator */
+		vsdcc_fixed: vsdcc-regulator {
+			compatible = "regulator-fixed";
+			regulator-name = "SDCC Power";
+			regulator-min-microvolt = <2700000>;
+			regulator-max-microvolt = <2700000>;
+			regulator-always-on;
+		};
+
+>>>>>>> v4.9.227
 		amba {
 			/* eMMC */
 			sdcc1: sdcc@12400000 {
 				status = "okay";
+<<<<<<< HEAD
+=======
+				vmmc-supply = <&vsdcc_fixed>;
+>>>>>>> v4.9.227
 			};
 
 			/* External micro SD card */
 			sdcc3: sdcc@12180000 {
 				status = "okay";
+<<<<<<< HEAD
+=======
+				vmmc-supply = <&vsdcc_fixed>;
+>>>>>>> v4.9.227
 			};
 		};
 	};

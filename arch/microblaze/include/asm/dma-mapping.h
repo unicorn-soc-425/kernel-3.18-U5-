@@ -25,9 +25,13 @@
 #include <linux/mm.h>
 #include <linux/scatterlist.h>
 #include <linux/dma-debug.h>
+<<<<<<< HEAD
 #include <linux/dma-attrs.h>
 #include <asm/io.h>
 #include <asm-generic/dma-coherent.h>
+=======
+#include <asm/io.h>
+>>>>>>> v4.9.227
 #include <asm/cacheflush.h>
 
 #define DMA_ERROR_CODE		(~(dma_addr_t)0x0)
@@ -45,6 +49,7 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 	return &dma_direct_ops;
 }
 
+<<<<<<< HEAD
 static inline int dma_supported(struct device *dev, u64 mask)
 {
 	struct dma_map_ops *ops = get_dma_ops(dev);
@@ -72,6 +77,8 @@ static inline int dma_set_mask(struct device *dev, u64 dma_mask)
 
 #include <asm-generic/dma-mapping-common.h>
 
+=======
+>>>>>>> v4.9.227
 static inline void __dma_sync(unsigned long paddr,
 			      size_t size, enum dma_data_direction direction)
 {
@@ -88,6 +95,7 @@ static inline void __dma_sync(unsigned long paddr,
 	}
 }
 
+<<<<<<< HEAD
 static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 {
 	struct dma_map_ops *ops = get_dma_ops(dev);
@@ -132,6 +140,8 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
 	ops->free(dev, size, cpu_addr, dma_handle, attrs);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 		enum dma_data_direction direction)
 {

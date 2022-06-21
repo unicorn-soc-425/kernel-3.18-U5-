@@ -15,7 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+<<<<<<< HEAD
 #include <crypto/aead.h>
+=======
+#include <crypto/internal/aead.h>
+>>>>>>> v4.9.227
 #include <crypto/aes.h>
 #include <crypto/algapi.h>
 #include <crypto/authenc.h>
@@ -40,6 +44,10 @@
 #include <linux/rtnetlink.h>
 #include <linux/scatterlist.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sizes.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/timer.h>
 
@@ -98,11 +106,24 @@ struct spacc_req {
 	dma_addr_t			src_addr, dst_addr;
 	struct spacc_ddt		*src_ddt, *dst_ddt;
 	void				(*complete)(struct spacc_req *req);
+<<<<<<< HEAD
 
 	/* AEAD specific bits. */
 	u8				*giv;
 	size_t				giv_len;
 	dma_addr_t			giv_pa;
+=======
+};
+
+struct spacc_aead {
+	unsigned long			ctrl_default;
+	unsigned long			type;
+	struct aead_alg			alg;
+	struct spacc_engine		*engine;
+	struct list_head		entry;
+	int				key_offs;
+	int				iv_offs;
+>>>>>>> v4.9.227
 };
 
 struct spacc_engine {
@@ -120,6 +141,12 @@ struct spacc_engine {
 	struct spacc_alg		*algs;
 	unsigned			num_algs;
 	struct list_head		registered_algs;
+<<<<<<< HEAD
+=======
+	struct spacc_aead		*aeads;
+	unsigned			num_aeads;
+	struct list_head		registered_aeads;
+>>>>>>> v4.9.227
 	size_t				cipher_pg_sz;
 	size_t				hash_pg_sz;
 	const char			*name;
@@ -162,7 +189,11 @@ struct spacc_ablk_ctx {
 	 * The fallback cipher. If the operation can't be done in hardware,
 	 * fallback to a software version.
 	 */
+<<<<<<< HEAD
 	struct crypto_ablkcipher	*sw_cipher;
+=======
+	struct crypto_skcipher		*sw_cipher;
+>>>>>>> v4.9.227
 };
 
 /* AEAD cipher context. */
@@ -173,8 +204,11 @@ struct spacc_aead_ctx {
 	u8				cipher_key_len;
 	u8				hash_key_len;
 	struct crypto_aead		*sw_cipher;
+<<<<<<< HEAD
 	size_t				auth_size;
 	u8				salt[AES_BLOCK_SIZE];
+=======
+>>>>>>> v4.9.227
 };
 
 static int spacc_ablk_submit(struct spacc_req *req);
@@ -184,6 +218,14 @@ static inline struct spacc_alg *to_spacc_alg(struct crypto_alg *alg)
 	return alg ? container_of(alg, struct spacc_alg, alg) : NULL;
 }
 
+<<<<<<< HEAD
+=======
+static inline struct spacc_aead *to_spacc_aead(struct aead_alg *alg)
+{
+	return container_of(alg, struct spacc_aead, alg);
+}
+
+>>>>>>> v4.9.227
 static inline int spacc_fifo_cmd_full(struct spacc_engine *engine)
 {
 	u32 fifo_stat = readl(engine->regs + SPA_FIFO_STAT_REG_OFFSET);
@@ -260,6 +302,7 @@ static unsigned spacc_load_ctx(struct spacc_generic_ctx *ctx,
 	return indx;
 }
 
+<<<<<<< HEAD
 /* Count the number of scatterlist entries in a scatterlist. */
 static int sg_count(struct scatterlist *sg_list, int nbytes)
 {
@@ -275,6 +318,8 @@ static int sg_count(struct scatterlist *sg_list, int nbytes)
 	return sg_nents;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void ddt_set(struct spacc_ddt *ddt, dma_addr_t phys, size_t len)
 {
 	ddt->p = phys;
@@ -292,12 +337,26 @@ static struct spacc_ddt *spacc_sg_to_ddt(struct spacc_engine *engine,
 					 enum dma_data_direction dir,
 					 dma_addr_t *ddt_phys)
 {
+<<<<<<< HEAD
 	unsigned nents, mapped_ents;
 	struct scatterlist *cur;
 	struct spacc_ddt *ddt;
 	int i;
 
 	nents = sg_count(payload, nbytes);
+=======
+	unsigned mapped_ents;
+	struct scatterlist *cur;
+	struct spacc_ddt *ddt;
+	int i;
+	int nents;
+
+	nents = sg_nents_for_len(payload, nbytes);
+	if (nents < 0) {
+		dev_err(engine->dev, "Invalid numbers of SG.\n");
+		return NULL;
+	}
+>>>>>>> v4.9.227
 	mapped_ents = dma_map_sg(engine->dev, payload, nents, dir);
 
 	if (mapped_ents + 1 > MAX_DDT_LEN)
@@ -318,6 +377,7 @@ out:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int spacc_aead_make_ddts(struct spacc_req *req, u8 *giv)
 {
 	struct aead_request *areq = container_of(req->req, struct aead_request,
@@ -340,10 +400,54 @@ static int spacc_aead_make_ddts(struct spacc_req *req, u8 *giv)
 		dma_pool_free(engine->req_pool, src_ddt, req->src_addr);
 		return -ENOMEM;
 	}
+=======
+static int spacc_aead_make_ddts(struct aead_request *areq)
+{
+	struct crypto_aead *aead = crypto_aead_reqtfm(areq);
+	struct spacc_req *req = aead_request_ctx(areq);
+	struct spacc_engine *engine = req->engine;
+	struct spacc_ddt *src_ddt, *dst_ddt;
+	unsigned total;
+	int src_nents, dst_nents;
+	struct scatterlist *cur;
+	int i, dst_ents, src_ents;
+
+	total = areq->assoclen + areq->cryptlen;
+	if (req->is_encrypt)
+		total += crypto_aead_authsize(aead);
+
+	src_nents = sg_nents_for_len(areq->src, total);
+	if (src_nents < 0) {
+		dev_err(engine->dev, "Invalid numbers of src SG.\n");
+		return src_nents;
+	}
+	if (src_nents + 1 > MAX_DDT_LEN)
+		return -E2BIG;
+
+	dst_nents = 0;
+	if (areq->src != areq->dst) {
+		dst_nents = sg_nents_for_len(areq->dst, total);
+		if (dst_nents < 0) {
+			dev_err(engine->dev, "Invalid numbers of dst SG.\n");
+			return dst_nents;
+		}
+		if (src_nents + 1 > MAX_DDT_LEN)
+			return -E2BIG;
+	}
+
+	src_ddt = dma_pool_alloc(engine->req_pool, GFP_ATOMIC, &req->src_addr);
+	if (!src_ddt)
+		goto err;
+
+	dst_ddt = dma_pool_alloc(engine->req_pool, GFP_ATOMIC, &req->dst_addr);
+	if (!dst_ddt)
+		goto err_free_src;
+>>>>>>> v4.9.227
 
 	req->src_ddt = src_ddt;
 	req->dst_ddt = dst_ddt;
 
+<<<<<<< HEAD
 	assoc_ents = dma_map_sg(engine->dev, areq->assoc,
 		sg_count(areq->assoc, areq->assoclen), DMA_TO_DEVICE);
 	if (areq->src != areq->dst) {
@@ -394,17 +498,71 @@ static int spacc_aead_make_ddts(struct spacc_req *req, u8 *giv)
 	for_each_sg(areq->dst, cur, dst_ents, i)
 		ddt_set(dst_ddt++, sg_dma_address(cur),
 			sg_dma_len(cur));
+=======
+	if (dst_nents) {
+		src_ents = dma_map_sg(engine->dev, areq->src, src_nents,
+				      DMA_TO_DEVICE);
+		if (!src_ents)
+			goto err_free_dst;
+
+		dst_ents = dma_map_sg(engine->dev, areq->dst, dst_nents,
+				      DMA_FROM_DEVICE);
+
+		if (!dst_ents) {
+			dma_unmap_sg(engine->dev, areq->src, src_nents,
+				     DMA_TO_DEVICE);
+			goto err_free_dst;
+		}
+	} else {
+		src_ents = dma_map_sg(engine->dev, areq->src, src_nents,
+				      DMA_BIDIRECTIONAL);
+		if (!src_ents)
+			goto err_free_dst;
+		dst_ents = src_ents;
+	}
+
+	/*
+	 * Now map in the payload for the source and destination and terminate
+	 * with the NULL pointers.
+	 */
+	for_each_sg(areq->src, cur, src_ents, i)
+		ddt_set(src_ddt++, sg_dma_address(cur), sg_dma_len(cur));
+
+	/* For decryption we need to skip the associated data. */
+	total = req->is_encrypt ? 0 : areq->assoclen;
+	for_each_sg(areq->dst, cur, dst_ents, i) {
+		unsigned len = sg_dma_len(cur);
+
+		if (len <= total) {
+			total -= len;
+			continue;
+		}
+
+		ddt_set(dst_ddt++, sg_dma_address(cur) + total, len - total);
+	}
+>>>>>>> v4.9.227
 
 	ddt_set(src_ddt, 0, 0);
 	ddt_set(dst_ddt, 0, 0);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_free_dst:
+	dma_pool_free(engine->req_pool, dst_ddt, req->dst_addr);
+err_free_src:
+	dma_pool_free(engine->req_pool, src_ddt, req->src_addr);
+err:
+	return -ENOMEM;
+>>>>>>> v4.9.227
 }
 
 static void spacc_aead_free_ddts(struct spacc_req *req)
 {
 	struct aead_request *areq = container_of(req->req, struct aead_request,
 						 base);
+<<<<<<< HEAD
 	struct spacc_alg *alg = to_spacc_alg(req->req->tfm->__crt_alg);
 	struct spacc_ablk_ctx *aead_ctx = crypto_tfm_ctx(req->req->tfm);
 	struct spacc_engine *engine = aead_ctx->generic.engine;
@@ -424,6 +582,32 @@ static void spacc_aead_free_ddts(struct spacc_req *req)
 
 	dma_unmap_single(engine->dev, req->giv_pa, ivsize, DMA_BIDIRECTIONAL);
 
+=======
+	struct crypto_aead *aead = crypto_aead_reqtfm(areq);
+	unsigned total = areq->assoclen + areq->cryptlen +
+			 (req->is_encrypt ? crypto_aead_authsize(aead) : 0);
+	struct spacc_aead_ctx *aead_ctx = crypto_aead_ctx(aead);
+	struct spacc_engine *engine = aead_ctx->generic.engine;
+	int nents = sg_nents_for_len(areq->src, total);
+
+	/* sg_nents_for_len should not fail since it works when mapping sg */
+	if (unlikely(nents < 0)) {
+		dev_err(engine->dev, "Invalid numbers of src SG.\n");
+		return;
+	}
+
+	if (areq->src != areq->dst) {
+		dma_unmap_sg(engine->dev, areq->src, nents, DMA_TO_DEVICE);
+		nents = sg_nents_for_len(areq->dst, total);
+		if (unlikely(nents < 0)) {
+			dev_err(engine->dev, "Invalid numbers of dst SG.\n");
+			return;
+		}
+		dma_unmap_sg(engine->dev, areq->dst, nents, DMA_FROM_DEVICE);
+	} else
+		dma_unmap_sg(engine->dev, areq->src, nents, DMA_BIDIRECTIONAL);
+
+>>>>>>> v4.9.227
 	dma_pool_free(engine->req_pool, req->src_ddt, req->src_addr);
 	dma_pool_free(engine->req_pool, req->dst_ddt, req->dst_addr);
 }
@@ -432,12 +616,22 @@ static void spacc_free_ddt(struct spacc_req *req, struct spacc_ddt *ddt,
 			   dma_addr_t ddt_addr, struct scatterlist *payload,
 			   unsigned nbytes, enum dma_data_direction dir)
 {
+<<<<<<< HEAD
 	unsigned nents = sg_count(payload, nbytes);
+=======
+	int nents = sg_nents_for_len(payload, nbytes);
+
+	if (nents < 0) {
+		dev_err(req->engine->dev, "Invalid numbers of SG.\n");
+		return;
+	}
+>>>>>>> v4.9.227
 
 	dma_unmap_sg(req->engine->dev, payload, nents, dir);
 	dma_pool_free(req->engine->req_pool, ddt, ddt_addr);
 }
 
+<<<<<<< HEAD
 /*
  * Set key for a DES operation in an AEAD cipher. This also performs weak key
  * checking if required.
@@ -490,13 +684,30 @@ static int spacc_aead_aes_setkey(struct crypto_aead *aead, const u8 *key,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int spacc_aead_setkey(struct crypto_aead *tfm, const u8 *key,
 			     unsigned int keylen)
 {
 	struct spacc_aead_ctx *ctx = crypto_aead_ctx(tfm);
+<<<<<<< HEAD
 	struct spacc_alg *alg = to_spacc_alg(tfm->base.__crt_alg);
 	struct crypto_authenc_keys keys;
 	int err = -EINVAL;
+=======
+	struct crypto_authenc_keys keys;
+	int err;
+
+	crypto_aead_clear_flags(ctx->sw_cipher, CRYPTO_TFM_REQ_MASK);
+	crypto_aead_set_flags(ctx->sw_cipher, crypto_aead_get_flags(tfm) &
+					      CRYPTO_TFM_REQ_MASK);
+	err = crypto_aead_setkey(ctx->sw_cipher, key, keylen);
+	crypto_aead_clear_flags(tfm, CRYPTO_TFM_RES_MASK);
+	crypto_aead_set_flags(tfm, crypto_aead_get_flags(ctx->sw_cipher) &
+				   CRYPTO_TFM_RES_MASK);
+	if (err)
+		return err;
+>>>>>>> v4.9.227
 
 	if (crypto_authenc_extractkeys(&keys, key, keylen) != 0)
 		goto badkey;
@@ -507,6 +718,7 @@ static int spacc_aead_setkey(struct crypto_aead *tfm, const u8 *key,
 	if (keys.authkeylen > sizeof(ctx->hash_ctx))
 		goto badkey;
 
+<<<<<<< HEAD
 	if ((alg->ctrl_default & SPACC_CRYPTO_ALG_MASK) ==
 	    SPA_CTRL_CIPH_ALG_AES)
 		err = spacc_aead_aes_setkey(tfm, keys.enckey, keys.enckeylen);
@@ -515,6 +727,10 @@ static int spacc_aead_setkey(struct crypto_aead *tfm, const u8 *key,
 
 	if (err)
 		goto badkey;
+=======
+	memcpy(ctx->cipher_key, keys.enckey, keys.enckeylen);
+	ctx->cipher_key_len = keys.enckeylen;
+>>>>>>> v4.9.227
 
 	memcpy(ctx->hash_ctx, keys.authkey, keys.authkeylen);
 	ctx->hash_key_len = keys.authkeylen;
@@ -531,9 +747,13 @@ static int spacc_aead_setauthsize(struct crypto_aead *tfm,
 {
 	struct spacc_aead_ctx *ctx = crypto_tfm_ctx(crypto_aead_tfm(tfm));
 
+<<<<<<< HEAD
 	ctx->auth_size = authsize;
 
 	return 0;
+=======
+	return crypto_aead_setauthsize(ctx->sw_cipher, authsize);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -541,6 +761,7 @@ static int spacc_aead_setauthsize(struct crypto_aead *tfm,
  * be completed in hardware because the hardware may not support certain key
  * sizes. In these cases we need to complete the request in software.
  */
+<<<<<<< HEAD
 static int spacc_aead_need_fallback(struct spacc_req *req)
 {
 	struct aead_request *aead_req;
@@ -550,6 +771,15 @@ static int spacc_aead_need_fallback(struct spacc_req *req)
 	struct spacc_aead_ctx *ctx = crypto_tfm_ctx(tfm);
 
 	aead_req = container_of(req->req, struct aead_request, base);
+=======
+static int spacc_aead_need_fallback(struct aead_request *aead_req)
+{
+	struct crypto_aead *aead = crypto_aead_reqtfm(aead_req);
+	struct aead_alg *alg = crypto_aead_alg(aead);
+	struct spacc_aead *spacc_alg = to_spacc_aead(alg);
+	struct spacc_aead_ctx *ctx = crypto_aead_ctx(aead);
+
+>>>>>>> v4.9.227
 	/*
 	 * If we have a non-supported key-length, then we need to do a
 	 * software fallback.
@@ -568,6 +798,7 @@ static int spacc_aead_do_fallback(struct aead_request *req, unsigned alg_type,
 {
 	struct crypto_tfm *old_tfm = crypto_aead_tfm(crypto_aead_reqtfm(req));
 	struct spacc_aead_ctx *ctx = crypto_tfm_ctx(old_tfm);
+<<<<<<< HEAD
 	int err;
 
 	if (ctx->sw_cipher) {
@@ -584,6 +815,19 @@ static int spacc_aead_do_fallback(struct aead_request *req, unsigned alg_type,
 		err = -EINVAL;
 
 	return err;
+=======
+	struct aead_request *subreq = aead_request_ctx(req);
+
+	aead_request_set_tfm(subreq, ctx->sw_cipher);
+	aead_request_set_callback(subreq, req->base.flags,
+				  req->base.complete, req->base.data);
+	aead_request_set_crypt(subreq, req->src, req->dst, req->cryptlen,
+			       req->iv);
+	aead_request_set_ad(subreq, req->assoclen);
+
+	return is_encrypt ? crypto_aead_encrypt(subreq) :
+			    crypto_aead_decrypt(subreq);
+>>>>>>> v4.9.227
 }
 
 static void spacc_aead_complete(struct spacc_req *req)
@@ -594,6 +838,7 @@ static void spacc_aead_complete(struct spacc_req *req)
 
 static int spacc_aead_submit(struct spacc_req *req)
 {
+<<<<<<< HEAD
 	struct crypto_tfm *tfm = req->req->tfm;
 	struct spacc_aead_ctx *ctx = crypto_tfm_ctx(tfm);
 	struct crypto_alg *alg = req->req->tfm->__crt_alg;
@@ -606,6 +851,21 @@ static int spacc_aead_submit(struct spacc_req *req)
 	req->result = -EINPROGRESS;
 	req->ctx_id = spacc_load_ctx(&ctx->generic, ctx->cipher_key,
 		ctx->cipher_key_len, aead_req->iv, alg->cra_aead.ivsize,
+=======
+	struct aead_request *aead_req =
+		container_of(req->req, struct aead_request, base);
+	struct crypto_aead *aead = crypto_aead_reqtfm(aead_req);
+	unsigned int authsize = crypto_aead_authsize(aead);
+	struct spacc_aead_ctx *ctx = crypto_aead_ctx(aead);
+	struct aead_alg *alg = crypto_aead_alg(aead);
+	struct spacc_aead *spacc_alg = to_spacc_aead(alg);
+	struct spacc_engine *engine = ctx->generic.engine;
+	u32 ctrl, proc_len, assoc_len;
+
+	req->result = -EINPROGRESS;
+	req->ctx_id = spacc_load_ctx(&ctx->generic, ctx->cipher_key,
+		ctx->cipher_key_len, aead_req->iv, crypto_aead_ivsize(aead),
+>>>>>>> v4.9.227
 		ctx->hash_ctx, ctx->hash_key_len);
 
 	/* Set the source and destination DDT pointers. */
@@ -617,6 +877,7 @@ static int spacc_aead_submit(struct spacc_req *req)
 	proc_len = aead_req->cryptlen + assoc_len;
 
 	/*
+<<<<<<< HEAD
 	 * If we aren't generating an IV, then we need to include the IV in the
 	 * associated data so that it is included in the hash.
 	 */
@@ -627,15 +888,25 @@ static int spacc_aead_submit(struct spacc_req *req)
 		proc_len += req->giv_len;
 
 	/*
+=======
+>>>>>>> v4.9.227
 	 * If we are decrypting, we need to take the length of the ICV out of
 	 * the processing length.
 	 */
 	if (!req->is_encrypt)
+<<<<<<< HEAD
 		proc_len -= ctx->auth_size;
 
 	writel(proc_len, engine->regs + SPA_PROC_LEN_REG_OFFSET);
 	writel(assoc_len, engine->regs + SPA_AAD_LEN_REG_OFFSET);
 	writel(ctx->auth_size, engine->regs + SPA_ICV_LEN_REG_OFFSET);
+=======
+		proc_len -= authsize;
+
+	writel(proc_len, engine->regs + SPA_PROC_LEN_REG_OFFSET);
+	writel(assoc_len, engine->regs + SPA_AAD_LEN_REG_OFFSET);
+	writel(authsize, engine->regs + SPA_ICV_LEN_REG_OFFSET);
+>>>>>>> v4.9.227
 	writel(0, engine->regs + SPA_ICV_OFFSET_REG_OFFSET);
 	writel(0, engine->regs + SPA_AUX_INFO_REG_OFFSET);
 
@@ -674,6 +945,7 @@ static void spacc_push(struct spacc_engine *engine)
 /*
  * Setup an AEAD request for processing. This will configure the engine, load
  * the context and then start the packet processing.
+<<<<<<< HEAD
  *
  * @giv Pointer to destination address for a generated IV. If the
  *	request does not need to generate an IV then this should be set to NULL.
@@ -690,16 +962,38 @@ static int spacc_aead_setup(struct aead_request *req, u8 *giv,
 
 	dev_req->giv		= giv;
 	dev_req->giv_len	= ivsize;
+=======
+ */
+static int spacc_aead_setup(struct aead_request *req,
+			    unsigned alg_type, bool is_encrypt)
+{
+	struct crypto_aead *aead = crypto_aead_reqtfm(req);
+	struct aead_alg *alg = crypto_aead_alg(aead);
+	struct spacc_engine *engine = to_spacc_aead(alg)->engine;
+	struct spacc_req *dev_req = aead_request_ctx(req);
+	int err;
+	unsigned long flags;
+
+>>>>>>> v4.9.227
 	dev_req->req		= &req->base;
 	dev_req->is_encrypt	= is_encrypt;
 	dev_req->result		= -EBUSY;
 	dev_req->engine		= engine;
 	dev_req->complete	= spacc_aead_complete;
 
+<<<<<<< HEAD
 	if (unlikely(spacc_aead_need_fallback(dev_req)))
 		return spacc_aead_do_fallback(req, alg_type, is_encrypt);
 
 	spacc_aead_make_ddts(dev_req, dev_req->giv);
+=======
+	if (unlikely(spacc_aead_need_fallback(req) ||
+		     ((err = spacc_aead_make_ddts(req)) == -E2BIG)))
+		return spacc_aead_do_fallback(req, alg_type, is_encrypt);
+
+	if (err)
+		goto out;
+>>>>>>> v4.9.227
 
 	err = -EINPROGRESS;
 	spin_lock_irqsave(&engine->hw_lock, flags);
@@ -728,6 +1022,7 @@ out:
 static int spacc_aead_encrypt(struct aead_request *req)
 {
 	struct crypto_aead *aead = crypto_aead_reqtfm(req);
+<<<<<<< HEAD
 	struct crypto_tfm *tfm = crypto_aead_tfm(aead);
 	struct spacc_alg *alg = to_spacc_alg(tfm->__crt_alg);
 
@@ -753,30 +1048,50 @@ static int spacc_aead_givencrypt(struct aead_givcrypt_request *req)
 	memcpy(req->giv + ivsize - len, &seq, len);
 
 	return spacc_aead_setup(&req->areq, req->giv, alg->type, 1);
+=======
+	struct spacc_aead *alg = to_spacc_aead(crypto_aead_alg(aead));
+
+	return spacc_aead_setup(req, alg->type, 1);
+>>>>>>> v4.9.227
 }
 
 static int spacc_aead_decrypt(struct aead_request *req)
 {
 	struct crypto_aead *aead = crypto_aead_reqtfm(req);
+<<<<<<< HEAD
 	struct crypto_tfm *tfm = crypto_aead_tfm(aead);
 	struct spacc_alg *alg = to_spacc_alg(tfm->__crt_alg);
 
 	return spacc_aead_setup(req, NULL, alg->type, 0);
+=======
+	struct spacc_aead  *alg = to_spacc_aead(crypto_aead_alg(aead));
+
+	return spacc_aead_setup(req, alg->type, 0);
+>>>>>>> v4.9.227
 }
 
 /*
  * Initialise a new AEAD context. This is responsible for allocating the
  * fallback cipher and initialising the context.
  */
+<<<<<<< HEAD
 static int spacc_aead_cra_init(struct crypto_tfm *tfm)
 {
 	struct spacc_aead_ctx *ctx = crypto_tfm_ctx(tfm);
 	struct crypto_alg *alg = tfm->__crt_alg;
 	struct spacc_alg *spacc_alg = to_spacc_alg(alg);
+=======
+static int spacc_aead_cra_init(struct crypto_aead *tfm)
+{
+	struct spacc_aead_ctx *ctx = crypto_aead_ctx(tfm);
+	struct aead_alg *alg = crypto_aead_alg(tfm);
+	struct spacc_aead *spacc_alg = to_spacc_aead(alg);
+>>>>>>> v4.9.227
 	struct spacc_engine *engine = spacc_alg->engine;
 
 	ctx->generic.flags = spacc_alg->type;
 	ctx->generic.engine = engine;
+<<<<<<< HEAD
 	ctx->sw_cipher = crypto_alloc_aead(alg->cra_name, 0,
 					   CRYPTO_ALG_ASYNC |
 					   CRYPTO_ALG_NEED_FALLBACK);
@@ -791,6 +1106,20 @@ static int spacc_aead_cra_init(struct crypto_tfm *tfm)
 	get_random_bytes(ctx->salt, sizeof(ctx->salt));
 
 	tfm->crt_aead.reqsize = sizeof(struct spacc_req);
+=======
+	ctx->sw_cipher = crypto_alloc_aead(alg->base.cra_name, 0,
+					   CRYPTO_ALG_NEED_FALLBACK);
+	if (IS_ERR(ctx->sw_cipher))
+		return PTR_ERR(ctx->sw_cipher);
+	ctx->generic.key_offs = spacc_alg->key_offs;
+	ctx->generic.iv_offs = spacc_alg->iv_offs;
+
+	crypto_aead_set_reqsize(
+		tfm,
+		max(sizeof(struct spacc_req),
+		    sizeof(struct aead_request) +
+		    crypto_aead_reqsize(ctx->sw_cipher)));
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -799,6 +1128,7 @@ static int spacc_aead_cra_init(struct crypto_tfm *tfm)
  * Destructor for an AEAD context. This is called when the transform is freed
  * and must free the fallback cipher.
  */
+<<<<<<< HEAD
 static void spacc_aead_cra_exit(struct crypto_tfm *tfm)
 {
 	struct spacc_aead_ctx *ctx = crypto_tfm_ctx(tfm);
@@ -806,6 +1136,13 @@ static void spacc_aead_cra_exit(struct crypto_tfm *tfm)
 	if (ctx->sw_cipher)
 		crypto_free_aead(ctx->sw_cipher);
 	ctx->sw_cipher = NULL;
+=======
+static void spacc_aead_cra_exit(struct crypto_aead *tfm)
+{
+	struct spacc_aead_ctx *ctx = crypto_aead_ctx(tfm);
+
+	crypto_free_aead(ctx->sw_cipher);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -857,12 +1194,20 @@ static int spacc_aes_setkey(struct crypto_ablkcipher *cipher, const u8 *key,
 	 * request for any other size (192 bits) then we need to do a software
 	 * fallback.
 	 */
+<<<<<<< HEAD
 	if (len != AES_KEYSIZE_128 && len != AES_KEYSIZE_256 &&
 	    ctx->sw_cipher) {
+=======
+	if (len != AES_KEYSIZE_128 && len != AES_KEYSIZE_256) {
+		if (!ctx->sw_cipher)
+			return -EINVAL;
+
+>>>>>>> v4.9.227
 		/*
 		 * Set the fallback transform to use the same request flags as
 		 * the hardware transform.
 		 */
+<<<<<<< HEAD
 		ctx->sw_cipher->base.crt_flags &= ~CRYPTO_TFM_REQ_MASK;
 		ctx->sw_cipher->base.crt_flags |=
 			cipher->base.crt_flags & CRYPTO_TFM_REQ_MASK;
@@ -873,17 +1218,38 @@ static int spacc_aes_setkey(struct crypto_ablkcipher *cipher, const u8 *key,
 	} else if (len != AES_KEYSIZE_128 && len != AES_KEYSIZE_256 &&
 		   !ctx->sw_cipher)
 		err = -EINVAL;
+=======
+		crypto_skcipher_clear_flags(ctx->sw_cipher,
+					    CRYPTO_TFM_REQ_MASK);
+		crypto_skcipher_set_flags(ctx->sw_cipher,
+					  cipher->base.crt_flags &
+					  CRYPTO_TFM_REQ_MASK);
+
+		err = crypto_skcipher_setkey(ctx->sw_cipher, key, len);
+
+		tfm->crt_flags &= ~CRYPTO_TFM_RES_MASK;
+		tfm->crt_flags |=
+			crypto_skcipher_get_flags(ctx->sw_cipher) &
+			CRYPTO_TFM_RES_MASK;
+
+		if (err)
+			goto sw_setkey_failed;
+	}
+>>>>>>> v4.9.227
 
 	memcpy(ctx->key, key, len);
 	ctx->key_len = len;
 
 sw_setkey_failed:
+<<<<<<< HEAD
 	if (err && ctx->sw_cipher) {
 		tfm->crt_flags &= ~CRYPTO_TFM_RES_MASK;
 		tfm->crt_flags |=
 			ctx->sw_cipher->base.crt_flags & CRYPTO_TFM_RES_MASK;
 	}
 
+=======
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -924,8 +1290,12 @@ static int spacc_ablk_need_fallback(struct spacc_req *req)
 
 static void spacc_ablk_complete(struct spacc_req *req)
 {
+<<<<<<< HEAD
 	struct ablkcipher_request *ablk_req =
 		container_of(req->req, struct ablkcipher_request, base);
+=======
+	struct ablkcipher_request *ablk_req = ablkcipher_request_cast(req->req);
+>>>>>>> v4.9.227
 
 	if (ablk_req->src != ablk_req->dst) {
 		spacc_free_ddt(req, req->src_ddt, req->src_addr, ablk_req->src,
@@ -979,20 +1349,36 @@ static int spacc_ablk_do_fallback(struct ablkcipher_request *req,
 	struct crypto_tfm *old_tfm =
 	    crypto_ablkcipher_tfm(crypto_ablkcipher_reqtfm(req));
 	struct spacc_ablk_ctx *ctx = crypto_tfm_ctx(old_tfm);
+<<<<<<< HEAD
 	int err;
 
 	if (!ctx->sw_cipher)
 		return -EINVAL;
 
+=======
+	SKCIPHER_REQUEST_ON_STACK(subreq, ctx->sw_cipher);
+	int err;
+
+>>>>>>> v4.9.227
 	/*
 	 * Change the request to use the software fallback transform, and once
 	 * the ciphering has completed, put the old transform back into the
 	 * request.
 	 */
+<<<<<<< HEAD
 	ablkcipher_request_set_tfm(req, ctx->sw_cipher);
 	err = is_encrypt ? crypto_ablkcipher_encrypt(req) :
 		crypto_ablkcipher_decrypt(req);
 	ablkcipher_request_set_tfm(req, __crypto_ablkcipher_cast(old_tfm));
+=======
+	skcipher_request_set_tfm(subreq, ctx->sw_cipher);
+	skcipher_request_set_callback(subreq, req->base.flags, NULL, NULL);
+	skcipher_request_set_crypt(subreq, req->src, req->dst,
+				   req->nbytes, req->info);
+	err = is_encrypt ? crypto_skcipher_encrypt(subreq) :
+			   crypto_skcipher_decrypt(subreq);
+	skcipher_request_zero(subreq);
+>>>>>>> v4.9.227
 
 	return err;
 }
@@ -1084,12 +1470,22 @@ static int spacc_ablk_cra_init(struct crypto_tfm *tfm)
 	ctx->generic.flags = spacc_alg->type;
 	ctx->generic.engine = engine;
 	if (alg->cra_flags & CRYPTO_ALG_NEED_FALLBACK) {
+<<<<<<< HEAD
 		ctx->sw_cipher = crypto_alloc_ablkcipher(alg->cra_name, 0,
 				CRYPTO_ALG_ASYNC | CRYPTO_ALG_NEED_FALLBACK);
 		if (IS_ERR(ctx->sw_cipher)) {
 			dev_warn(engine->dev, "failed to allocate fallback for %s\n",
 				 alg->cra_name);
 			ctx->sw_cipher = NULL;
+=======
+		ctx->sw_cipher = crypto_alloc_skcipher(
+			alg->cra_name, 0, CRYPTO_ALG_ASYNC |
+					  CRYPTO_ALG_NEED_FALLBACK);
+		if (IS_ERR(ctx->sw_cipher)) {
+			dev_warn(engine->dev, "failed to allocate fallback for %s\n",
+				 alg->cra_name);
+			return PTR_ERR(ctx->sw_cipher);
+>>>>>>> v4.9.227
 		}
 	}
 	ctx->generic.key_offs = spacc_alg->key_offs;
@@ -1104,9 +1500,13 @@ static void spacc_ablk_cra_exit(struct crypto_tfm *tfm)
 {
 	struct spacc_ablk_ctx *ctx = crypto_tfm_ctx(tfm);
 
+<<<<<<< HEAD
 	if (ctx->sw_cipher)
 		crypto_free_ablkcipher(ctx->sw_cipher);
 	ctx->sw_cipher = NULL;
+=======
+	crypto_free_skcipher(ctx->sw_cipher);
+>>>>>>> v4.9.227
 }
 
 static int spacc_ablk_encrypt(struct ablkcipher_request *req)
@@ -1457,6 +1857,7 @@ static struct spacc_alg ipsec_engine_algs[] = {
 			.cra_exit = spacc_ablk_cra_exit,
 		},
 	},
+<<<<<<< HEAD
 	{
 		.ctrl_default = SPA_CTRL_CIPH_ALG_AES | SPA_CTRL_CIPH_MODE_CBC |
 				SPA_CTRL_HASH_ALG_SHA | SPA_CTRL_HASH_MODE_HMAC,
@@ -1488,11 +1889,50 @@ static struct spacc_alg ipsec_engine_algs[] = {
 	},
 	{
 		.ctrl_default = SPA_CTRL_CIPH_ALG_AES | SPA_CTRL_CIPH_MODE_CBC |
+=======
+};
+
+static struct spacc_aead ipsec_engine_aeads[] = {
+	{
+		.ctrl_default = SPA_CTRL_CIPH_ALG_AES |
+				SPA_CTRL_CIPH_MODE_CBC |
+				SPA_CTRL_HASH_ALG_SHA |
+				SPA_CTRL_HASH_MODE_HMAC,
+		.key_offs = 0,
+		.iv_offs = AES_MAX_KEY_SIZE,
+		.alg = {
+			.base = {
+				.cra_name = "authenc(hmac(sha1),cbc(aes))",
+				.cra_driver_name = "authenc-hmac-sha1-"
+						   "cbc-aes-picoxcell",
+				.cra_priority = SPACC_CRYPTO_ALG_PRIORITY,
+				.cra_flags = CRYPTO_ALG_ASYNC |
+					     CRYPTO_ALG_NEED_FALLBACK |
+					     CRYPTO_ALG_KERN_DRIVER_ONLY,
+				.cra_blocksize = AES_BLOCK_SIZE,
+				.cra_ctxsize = sizeof(struct spacc_aead_ctx),
+				.cra_module = THIS_MODULE,
+			},
+			.setkey = spacc_aead_setkey,
+			.setauthsize = spacc_aead_setauthsize,
+			.encrypt = spacc_aead_encrypt,
+			.decrypt = spacc_aead_decrypt,
+			.ivsize = AES_BLOCK_SIZE,
+			.maxauthsize = SHA1_DIGEST_SIZE,
+			.init = spacc_aead_cra_init,
+			.exit = spacc_aead_cra_exit,
+		},
+	},
+	{
+		.ctrl_default = SPA_CTRL_CIPH_ALG_AES |
+				SPA_CTRL_CIPH_MODE_CBC |
+>>>>>>> v4.9.227
 				SPA_CTRL_HASH_ALG_SHA256 |
 				SPA_CTRL_HASH_MODE_HMAC,
 		.key_offs = 0,
 		.iv_offs = AES_MAX_KEY_SIZE,
 		.alg = {
+<<<<<<< HEAD
 			.cra_name = "authenc(hmac(sha256),cbc(aes))",
 			.cra_driver_name = "authenc-hmac-sha256-cbc-aes-picoxcell",
 			.cra_priority = SPACC_CRYPTO_ALG_PRIORITY,
@@ -1514,11 +1954,34 @@ static struct spacc_alg ipsec_engine_algs[] = {
 			},
 			.cra_init = spacc_aead_cra_init,
 			.cra_exit = spacc_aead_cra_exit,
+=======
+			.base = {
+				.cra_name = "authenc(hmac(sha256),cbc(aes))",
+				.cra_driver_name = "authenc-hmac-sha256-"
+						   "cbc-aes-picoxcell",
+				.cra_priority = SPACC_CRYPTO_ALG_PRIORITY,
+				.cra_flags = CRYPTO_ALG_ASYNC |
+					     CRYPTO_ALG_NEED_FALLBACK |
+					     CRYPTO_ALG_KERN_DRIVER_ONLY,
+				.cra_blocksize = AES_BLOCK_SIZE,
+				.cra_ctxsize = sizeof(struct spacc_aead_ctx),
+				.cra_module = THIS_MODULE,
+			},
+			.setkey = spacc_aead_setkey,
+			.setauthsize = spacc_aead_setauthsize,
+			.encrypt = spacc_aead_encrypt,
+			.decrypt = spacc_aead_decrypt,
+			.ivsize = AES_BLOCK_SIZE,
+			.maxauthsize = SHA256_DIGEST_SIZE,
+			.init = spacc_aead_cra_init,
+			.exit = spacc_aead_cra_exit,
+>>>>>>> v4.9.227
 		},
 	},
 	{
 		.key_offs = 0,
 		.iv_offs = AES_MAX_KEY_SIZE,
+<<<<<<< HEAD
 		.ctrl_default = SPA_CTRL_CIPH_ALG_AES | SPA_CTRL_CIPH_MODE_CBC |
 				SPA_CTRL_HASH_ALG_MD5 | SPA_CTRL_HASH_MODE_HMAC,
 		.alg = {
@@ -1543,11 +2006,39 @@ static struct spacc_alg ipsec_engine_algs[] = {
 			},
 			.cra_init = spacc_aead_cra_init,
 			.cra_exit = spacc_aead_cra_exit,
+=======
+		.ctrl_default = SPA_CTRL_CIPH_ALG_AES |
+				SPA_CTRL_CIPH_MODE_CBC |
+				SPA_CTRL_HASH_ALG_MD5 |
+				SPA_CTRL_HASH_MODE_HMAC,
+		.alg = {
+			.base = {
+				.cra_name = "authenc(hmac(md5),cbc(aes))",
+				.cra_driver_name = "authenc-hmac-md5-"
+						   "cbc-aes-picoxcell",
+				.cra_priority = SPACC_CRYPTO_ALG_PRIORITY,
+				.cra_flags = CRYPTO_ALG_ASYNC |
+					     CRYPTO_ALG_NEED_FALLBACK |
+					     CRYPTO_ALG_KERN_DRIVER_ONLY,
+				.cra_blocksize = AES_BLOCK_SIZE,
+				.cra_ctxsize = sizeof(struct spacc_aead_ctx),
+				.cra_module = THIS_MODULE,
+			},
+			.setkey = spacc_aead_setkey,
+			.setauthsize = spacc_aead_setauthsize,
+			.encrypt = spacc_aead_encrypt,
+			.decrypt = spacc_aead_decrypt,
+			.ivsize = AES_BLOCK_SIZE,
+			.maxauthsize = MD5_DIGEST_SIZE,
+			.init = spacc_aead_cra_init,
+			.exit = spacc_aead_cra_exit,
+>>>>>>> v4.9.227
 		},
 	},
 	{
 		.key_offs = DES_BLOCK_SIZE,
 		.iv_offs = 0,
+<<<<<<< HEAD
 		.ctrl_default = SPA_CTRL_CIPH_ALG_DES | SPA_CTRL_CIPH_MODE_CBC |
 				SPA_CTRL_HASH_ALG_SHA | SPA_CTRL_HASH_MODE_HMAC,
 		.alg = {
@@ -1572,11 +2063,39 @@ static struct spacc_alg ipsec_engine_algs[] = {
 			},
 			.cra_init = spacc_aead_cra_init,
 			.cra_exit = spacc_aead_cra_exit,
+=======
+		.ctrl_default = SPA_CTRL_CIPH_ALG_DES |
+				SPA_CTRL_CIPH_MODE_CBC |
+				SPA_CTRL_HASH_ALG_SHA |
+				SPA_CTRL_HASH_MODE_HMAC,
+		.alg = {
+			.base = {
+				.cra_name = "authenc(hmac(sha1),cbc(des3_ede))",
+				.cra_driver_name = "authenc-hmac-sha1-"
+						   "cbc-3des-picoxcell",
+				.cra_priority = SPACC_CRYPTO_ALG_PRIORITY,
+				.cra_flags = CRYPTO_ALG_ASYNC |
+					     CRYPTO_ALG_NEED_FALLBACK |
+					     CRYPTO_ALG_KERN_DRIVER_ONLY,
+				.cra_blocksize = DES3_EDE_BLOCK_SIZE,
+				.cra_ctxsize = sizeof(struct spacc_aead_ctx),
+				.cra_module = THIS_MODULE,
+			},
+			.setkey = spacc_aead_setkey,
+			.setauthsize = spacc_aead_setauthsize,
+			.encrypt = spacc_aead_encrypt,
+			.decrypt = spacc_aead_decrypt,
+			.ivsize = DES3_EDE_BLOCK_SIZE,
+			.maxauthsize = SHA1_DIGEST_SIZE,
+			.init = spacc_aead_cra_init,
+			.exit = spacc_aead_cra_exit,
+>>>>>>> v4.9.227
 		},
 	},
 	{
 		.key_offs = DES_BLOCK_SIZE,
 		.iv_offs = 0,
+<<<<<<< HEAD
 		.ctrl_default = SPA_CTRL_CIPH_ALG_AES | SPA_CTRL_CIPH_MODE_CBC |
 				SPA_CTRL_HASH_ALG_SHA256 |
 				SPA_CTRL_HASH_MODE_HMAC,
@@ -1602,11 +2121,40 @@ static struct spacc_alg ipsec_engine_algs[] = {
 			},
 			.cra_init = spacc_aead_cra_init,
 			.cra_exit = spacc_aead_cra_exit,
+=======
+		.ctrl_default = SPA_CTRL_CIPH_ALG_AES |
+				SPA_CTRL_CIPH_MODE_CBC |
+				SPA_CTRL_HASH_ALG_SHA256 |
+				SPA_CTRL_HASH_MODE_HMAC,
+		.alg = {
+			.base = {
+				.cra_name = "authenc(hmac(sha256),"
+					    "cbc(des3_ede))",
+				.cra_driver_name = "authenc-hmac-sha256-"
+						   "cbc-3des-picoxcell",
+				.cra_priority = SPACC_CRYPTO_ALG_PRIORITY,
+				.cra_flags = CRYPTO_ALG_ASYNC |
+					     CRYPTO_ALG_NEED_FALLBACK |
+					     CRYPTO_ALG_KERN_DRIVER_ONLY,
+				.cra_blocksize = DES3_EDE_BLOCK_SIZE,
+				.cra_ctxsize = sizeof(struct spacc_aead_ctx),
+				.cra_module = THIS_MODULE,
+			},
+			.setkey = spacc_aead_setkey,
+			.setauthsize = spacc_aead_setauthsize,
+			.encrypt = spacc_aead_encrypt,
+			.decrypt = spacc_aead_decrypt,
+			.ivsize = DES3_EDE_BLOCK_SIZE,
+			.maxauthsize = SHA256_DIGEST_SIZE,
+			.init = spacc_aead_cra_init,
+			.exit = spacc_aead_cra_exit,
+>>>>>>> v4.9.227
 		},
 	},
 	{
 		.key_offs = DES_BLOCK_SIZE,
 		.iv_offs = 0,
+<<<<<<< HEAD
 		.ctrl_default = SPA_CTRL_CIPH_ALG_DES | SPA_CTRL_CIPH_MODE_CBC |
 				SPA_CTRL_HASH_ALG_MD5 | SPA_CTRL_HASH_MODE_HMAC,
 		.alg = {
@@ -1631,6 +2179,33 @@ static struct spacc_alg ipsec_engine_algs[] = {
 			},
 			.cra_init = spacc_aead_cra_init,
 			.cra_exit = spacc_aead_cra_exit,
+=======
+		.ctrl_default = SPA_CTRL_CIPH_ALG_DES |
+				SPA_CTRL_CIPH_MODE_CBC |
+				SPA_CTRL_HASH_ALG_MD5 |
+				SPA_CTRL_HASH_MODE_HMAC,
+		.alg = {
+			.base = {
+				.cra_name = "authenc(hmac(md5),cbc(des3_ede))",
+				.cra_driver_name = "authenc-hmac-md5-"
+						   "cbc-3des-picoxcell",
+				.cra_priority = SPACC_CRYPTO_ALG_PRIORITY,
+				.cra_flags = CRYPTO_ALG_ASYNC |
+					     CRYPTO_ALG_NEED_FALLBACK |
+					     CRYPTO_ALG_KERN_DRIVER_ONLY,
+				.cra_blocksize = DES3_EDE_BLOCK_SIZE,
+				.cra_ctxsize = sizeof(struct spacc_aead_ctx),
+				.cra_module = THIS_MODULE,
+			},
+			.setkey = spacc_aead_setkey,
+			.setauthsize = spacc_aead_setauthsize,
+			.encrypt = spacc_aead_encrypt,
+			.decrypt = spacc_aead_decrypt,
+			.ivsize = DES3_EDE_BLOCK_SIZE,
+			.maxauthsize = MD5_DIGEST_SIZE,
+			.init = spacc_aead_cra_init,
+			.exit = spacc_aead_cra_exit,
+>>>>>>> v4.9.227
 		},
 	},
 };
@@ -1672,6 +2247,10 @@ static const struct of_device_id spacc_of_id_table[] = {
 	{ .compatible = "picochip,spacc-l2" },
 	{}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, spacc_of_id_table);
+>>>>>>> v4.9.227
 #endif /* CONFIG_OF */
 
 static bool spacc_is_compatible(struct platform_device *pdev,
@@ -1690,6 +2269,14 @@ static bool spacc_is_compatible(struct platform_device *pdev,
 	return false;
 }
 
+<<<<<<< HEAD
+=======
+static void spacc_tasklet_kill(void *data)
+{
+	tasklet_kill(data);
+}
+
+>>>>>>> v4.9.227
 static int spacc_probe(struct platform_device *pdev)
 {
 	int i, err, ret = -EINVAL;
@@ -1706,6 +2293,11 @@ static int spacc_probe(struct platform_device *pdev)
 		engine->fifo_sz		= SPACC_CRYPTO_IPSEC_FIFO_SZ;
 		engine->algs		= ipsec_engine_algs;
 		engine->num_algs	= ARRAY_SIZE(ipsec_engine_algs);
+<<<<<<< HEAD
+=======
+		engine->aeads		= ipsec_engine_aeads;
+		engine->num_aeads	= ARRAY_SIZE(ipsec_engine_aeads);
+>>>>>>> v4.9.227
 	} else if (spacc_is_compatible(pdev, "picochip,spacc-l2")) {
 		engine->max_ctxs	= SPACC_CRYPTO_L2_MAX_CTXS;
 		engine->cipher_pg_sz	= SPACC_CRYPTO_L2_CIPHER_PG_SZ;
@@ -1730,6 +2322,17 @@ static int spacc_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
+<<<<<<< HEAD
+=======
+	tasklet_init(&engine->complete, spacc_spacc_complete,
+		     (unsigned long)engine);
+
+	ret = devm_add_action(&pdev->dev, spacc_tasklet_kill,
+			      &engine->complete);
+	if (ret)
+		return ret;
+
+>>>>>>> v4.9.227
 	if (devm_request_irq(&pdev->dev, irq->start, spacc_spacc_irq, 0,
 			     engine->name, engine)) {
 		dev_err(engine->dev, "failed to request IRQ\n");
@@ -1754,15 +2357,24 @@ static int spacc_probe(struct platform_device *pdev)
 		return PTR_ERR(engine->clk);
 	}
 
+<<<<<<< HEAD
 	if (clk_enable(engine->clk)) {
 		dev_info(&pdev->dev, "unable to enable clk\n");
+=======
+	if (clk_prepare_enable(engine->clk)) {
+		dev_info(&pdev->dev, "unable to prepare/enable clk\n");
+>>>>>>> v4.9.227
 		clk_put(engine->clk);
 		return -EIO;
 	}
 
 	err = device_create_file(&pdev->dev, &dev_attr_stat_irq_thresh);
 	if (err) {
+<<<<<<< HEAD
 		clk_disable(engine->clk);
+=======
+		clk_disable_unprepare(engine->clk);
+>>>>>>> v4.9.227
 		clk_put(engine->clk);
 		return err;
 	}
@@ -1792,8 +2404,11 @@ static int spacc_probe(struct platform_device *pdev)
 	INIT_LIST_HEAD(&engine->completed);
 	INIT_LIST_HEAD(&engine->in_progress);
 	engine->in_flight = 0;
+<<<<<<< HEAD
 	tasklet_init(&engine->complete, spacc_spacc_complete,
 		     (unsigned long)engine);
+=======
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, engine);
 
@@ -1814,23 +2429,59 @@ static int spacc_probe(struct platform_device *pdev)
 				engine->algs[i].alg.cra_name);
 	}
 
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&engine->registered_aeads);
+	for (i = 0; i < engine->num_aeads; ++i) {
+		engine->aeads[i].engine = engine;
+		err = crypto_register_aead(&engine->aeads[i].alg);
+		if (!err) {
+			list_add_tail(&engine->aeads[i].entry,
+				      &engine->registered_aeads);
+			ret = 0;
+		}
+		if (err)
+			dev_err(engine->dev, "failed to register alg \"%s\"\n",
+				engine->aeads[i].alg.base.cra_name);
+		else
+			dev_dbg(engine->dev, "registered alg \"%s\"\n",
+				engine->aeads[i].alg.base.cra_name);
+	}
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static int spacc_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
+=======
+	struct spacc_aead *aead, *an;
+>>>>>>> v4.9.227
 	struct spacc_alg *alg, *next;
 	struct spacc_engine *engine = platform_get_drvdata(pdev);
 
 	del_timer_sync(&engine->packet_timeout);
 	device_remove_file(&pdev->dev, &dev_attr_stat_irq_thresh);
 
+<<<<<<< HEAD
+=======
+	list_for_each_entry_safe(aead, an, &engine->registered_aeads, entry) {
+		list_del(&aead->entry);
+		crypto_unregister_aead(&aead->alg);
+	}
+
+>>>>>>> v4.9.227
 	list_for_each_entry_safe(alg, next, &engine->registered_algs, entry) {
 		list_del(&alg->entry);
 		crypto_unregister_alg(&alg->alg);
 	}
 
+<<<<<<< HEAD
 	clk_disable(engine->clk);
+=======
+	clk_disable_unprepare(engine->clk);
+>>>>>>> v4.9.227
 	clk_put(engine->clk);
 
 	return 0;

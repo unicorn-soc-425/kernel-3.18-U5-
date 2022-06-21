@@ -1,5 +1,9 @@
 config FSNOTIFY
 	def_bool n
+<<<<<<< HEAD
+=======
+	select SRCU
+>>>>>>> v4.9.227
 
 source "fs/notify/dnotify/Kconfig"
 source "fs/notify/inotify/Kconfig"

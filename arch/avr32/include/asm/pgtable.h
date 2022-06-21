@@ -30,7 +30,11 @@
 #define PGDIR_MASK	(~(PGDIR_SIZE-1))
 
 #define USER_PTRS_PER_PGD	(TASK_SIZE / PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> v4.9.227
 
 #ifndef __ASSEMBLY__
 extern pgd_t swapper_pg_dir[PTRS_PER_PGD];
@@ -86,9 +90,12 @@ extern struct page *empty_zero_page;
 #define _PAGE_BIT_PRESENT	10
 #define _PAGE_BIT_ACCESSED	11 /* software: page was accessed */
 
+<<<<<<< HEAD
 /* The following flags are only valid when !PRESENT */
 #define _PAGE_BIT_FILE		0 /* software: pagecache or swap? */
 
+=======
+>>>>>>> v4.9.227
 #define _PAGE_WT		(1 << _PAGE_BIT_WT)
 #define _PAGE_DIRTY		(1 << _PAGE_BIT_DIRTY)
 #define _PAGE_EXECUTE		(1 << _PAGE_BIT_EXECUTE)
@@ -101,7 +108,10 @@ extern struct page *empty_zero_page;
 /* Software flags */
 #define _PAGE_ACCESSED		(1 << _PAGE_BIT_ACCESSED)
 #define _PAGE_PRESENT		(1 << _PAGE_BIT_PRESENT)
+<<<<<<< HEAD
 #define _PAGE_FILE		(1 << _PAGE_BIT_FILE)
+=======
+>>>>>>> v4.9.227
 
 /*
  * Page types, i.e. sizes. _PAGE_TYPE_NONE corresponds to what is
@@ -210,6 +220,7 @@ static inline int pte_special(pte_t pte)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * The following only work if pte_present() is not true.
  */
@@ -218,6 +229,8 @@ static inline int pte_file(pte_t pte)
 	return pte_val(pte) & _PAGE_FILE;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Mutator functions for PTE bits */
 static inline pte_t pte_wrprotect(pte_t pte)
 {
@@ -329,7 +342,10 @@ extern void update_mmu_cache(struct vm_area_struct * vma,
  * Encode and decode a swap entry
  *
  * Constraints:
+<<<<<<< HEAD
  *   _PAGE_FILE at bit 0
+=======
+>>>>>>> v4.9.227
  *   _PAGE_TYPE_* at bits 2-3 (for emulating _PAGE_PROTNONE)
  *   _PAGE_PRESENT at bit 10
  *
@@ -346,6 +362,7 @@ extern void update_mmu_cache(struct vm_area_struct * vma,
 #define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)	((pte_t) { (x).val })
 
+<<<<<<< HEAD
 /*
  * Encode and decode a nonlinear file mapping entry. We have to
  * preserve _PAGE_FILE and _PAGE_PRESENT here. _PAGE_TYPE_* isn't
@@ -358,6 +375,8 @@ extern void update_mmu_cache(struct vm_area_struct * vma,
 					    | (((off) >> 9) << 11)	\
 					    | _PAGE_FILE) })
 
+=======
+>>>>>>> v4.9.227
 typedef pte_t *pte_addr_t;
 
 #define kern_addr_valid(addr)	(1)

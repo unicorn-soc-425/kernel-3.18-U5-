@@ -44,6 +44,16 @@
  */
 
 /*
+<<<<<<< HEAD
+=======
+ * DFI Bus for NAND, PXA3xx only
+ */
+#define NAND_PHYS		0x43100000
+#define NAND_VIRT		IOMEM(0xf6300000)
+#define NAND_SIZE		0x00100000
+
+/*
+>>>>>>> v4.9.227
  * Internal Memory Controller (PXA27x and later)
  */
 #define IMEMC_PHYS		0x58000000

@@ -73,7 +73,11 @@ static inline void software_reset(void)
 	default:
 		set_c0_status(ST0_BEV | ST0_ERL);
 		change_c0_config(CONF_CM_CMASK, CONF_CM_UNCACHED);
+<<<<<<< HEAD
 		flush_cache_all();
+=======
+		__flush_cache_all();
+>>>>>>> v4.9.227
 		write_c0_wired(0);
 		__asm__("jr	%0"::"r"(0xbfc00000));
 		break;

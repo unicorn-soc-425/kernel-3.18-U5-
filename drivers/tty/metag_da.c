@@ -323,12 +323,20 @@ static void dashtty_timer(unsigned long ignored)
 	if (channel >= 0)
 		fetch_data(channel);
 
+<<<<<<< HEAD
 	mod_timer_pinned(&poll_timer, jiffies + DA_TTY_POLL);
+=======
+	mod_timer(&poll_timer, jiffies + DA_TTY_POLL);
+>>>>>>> v4.9.227
 }
 
 static void add_poll_timer(struct timer_list *poll_timer)
 {
+<<<<<<< HEAD
 	setup_timer(poll_timer, dashtty_timer, 0);
+=======
+	setup_pinned_timer(poll_timer, dashtty_timer, 0);
+>>>>>>> v4.9.227
 	poll_timer->expires = jiffies + DA_TTY_POLL;
 
 	/*
@@ -640,6 +648,7 @@ err_destroy_ports:
 	put_tty_driver(channel_driver);
 	return ret;
 }
+<<<<<<< HEAD
 
 static void dashtty_exit(void)
 {
@@ -659,6 +668,9 @@ static void dashtty_exit(void)
 
 module_init(dashtty_init);
 module_exit(dashtty_exit);
+=======
+device_initcall(dashtty_init);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_DA_CONSOLE
 

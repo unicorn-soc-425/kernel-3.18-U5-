@@ -90,12 +90,17 @@ static int mpc85xx_l2ctlr_of_probe(struct platform_device *dev)
 	}
 	l2cache_size = *prop;
 
+<<<<<<< HEAD
 	if (get_cache_sram_params(&sram_params)) {
 		dev_err(&dev->dev,
 			"Entire L2 as cache, provide valid sram offset and size\n");
 		return -EINVAL;
 	}
 
+=======
+	if (get_cache_sram_params(&sram_params))
+		return 0; /* fall back to L2 cache only */
+>>>>>>> v4.9.227
 
 	rem = l2cache_size % sram_params.sram_size;
 	ways = LOCK_WAYS_FULL * sram_params.sram_size / l2cache_size;
@@ -210,7 +215,10 @@ static const struct of_device_id mpc85xx_l2ctlr_of_match[] = {
 static struct platform_driver mpc85xx_l2ctlr_of_platform_driver = {
 	.driver	= {
 		.name		= "fsl-l2ctlr",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= mpc85xx_l2ctlr_of_match,
 	},
 	.probe		= mpc85xx_l2ctlr_of_probe,

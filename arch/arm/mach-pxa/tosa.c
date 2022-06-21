@@ -12,6 +12,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clkdev.h>
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -30,7 +34,11 @@
 #include <linux/gpio_keys.h>
 #include <linux/input.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
 #include <linux/pda_power.h>
+=======
+#include <linux/power/gpio-charger.h>
+>>>>>>> v4.9.227
 #include <linux/spi/spi.h>
 #include <linux/spi/pxa2xx_spi.h>
 #include <linux/input/matrix_keypad.h>
@@ -42,12 +50,21 @@
 #include <asm/setup.h>
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
 #include <mach/reset.h>
 #include <linux/platform_data/irda-pxaficp.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <mach/udc.h>
 #include <mach/tosa_bt.h>
+=======
+#include "pxa25x.h"
+#include <mach/reset.h>
+#include <linux/platform_data/irda-pxaficp.h>
+#include <linux/platform_data/mmc-pxamci.h>
+#include "udc.h"
+#include "tosa_bt.h"
+>>>>>>> v4.9.227
 #include <mach/audio.h>
 #include <mach/smemc.h>
 
@@ -58,7 +75,10 @@
 #include <asm/mach/sharpsl_param.h>
 
 #include "generic.h"
+<<<<<<< HEAD
 #include "clock.h"
+=======
+>>>>>>> v4.9.227
 #include "devices.h"
 
 static unsigned long tosa_pin_config[] = {
@@ -361,6 +381,7 @@ static struct pxaficp_platform_data tosa_ficp_platform_data = {
 /*
  * Tosa AC IN
  */
+<<<<<<< HEAD
 static int tosa_power_init(struct device *dev)
 {
 	int ret = gpio_request(TOSA_GPIO_AC_IN, "ac in");
@@ -389,16 +410,26 @@ static int tosa_power_ac_online(void)
 	return gpio_get_value(TOSA_GPIO_AC_IN) == 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static char *tosa_ac_supplied_to[] = {
 	"main-battery",
 	"backup-battery",
 	"jacket-battery",
 };
 
+<<<<<<< HEAD
 static struct pda_power_pdata tosa_power_data = {
 	.init			= tosa_power_init,
 	.is_ac_online		= tosa_power_ac_online,
 	.exit			= tosa_power_exit,
+=======
+static struct gpio_charger_platform_data tosa_power_data = {
+	.name			= "charger",
+	.type			= POWER_SUPPLY_TYPE_MAINS,
+	.gpio			= TOSA_GPIO_AC_IN,
+	.gpio_active_low	= 1,
+>>>>>>> v4.9.227
 	.supplied_to		= tosa_ac_supplied_to,
 	.num_supplicants	= ARRAY_SIZE(tosa_ac_supplied_to),
 };
@@ -415,7 +446,11 @@ static struct resource tosa_power_resource[] = {
 };
 
 static struct platform_device tosa_power_device = {
+<<<<<<< HEAD
 	.name			= "pda-power",
+=======
+	.name			= "gpio-charger",
+>>>>>>> v4.9.227
 	.id			= -1,
 	.dev.platform_data	= &tosa_power_data,
 	.resource		= tosa_power_resource,

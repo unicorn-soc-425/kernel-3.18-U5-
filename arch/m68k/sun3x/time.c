@@ -15,10 +15,17 @@
 
 #include <asm/irq.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/traps.h>
 #include <asm/sun3x.h>
 #include <asm/sun3ints.h>
 #include <asm/rtc.h>
+=======
+#include <asm/machdep.h>
+#include <asm/traps.h>
+#include <asm/sun3x.h>
+#include <asm/sun3ints.h>
+>>>>>>> v4.9.227
 
 #include "time.h"
 
@@ -77,6 +84,7 @@ u32 sun3x_gettimeoffset(void)
 }
 
 #if 0
+<<<<<<< HEAD
 static void sun3x_timer_tick(int irq, void *dev_id, struct pt_regs *regs)
 {
     void (*vector)(int, void *, struct pt_regs *) = dev_id;
@@ -86,6 +94,21 @@ static void sun3x_timer_tick(int irq, void *dev_id, struct pt_regs *regs)
     enable_irq(5);
 
     vector(irq, NULL, regs);
+=======
+static irqreturn_t sun3x_timer_tick(int irq, void *dev_id)
+{
+	irq_handler_t timer_routine = dev_id;
+	unsigned long flags;
+
+	local_irq_save(flags);
+	/* Clear the pending interrupt - pulse the enable line low */
+	disable_irq(5);
+	enable_irq(5);
+	timer_routine(0, NULL);
+	local_irq_restore(flags);
+
+	return IRQ_HANDLED;
+>>>>>>> v4.9.227
 }
 #endif
 

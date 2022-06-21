@@ -56,7 +56,11 @@ struct udf_inode_info {
 
 static inline struct udf_inode_info *UDF_I(struct inode *inode)
 {
+<<<<<<< HEAD
 	return list_entry(inode, struct udf_inode_info, vfs_inode);
+=======
+	return container_of(inode, struct udf_inode_info, vfs_inode);
+>>>>>>> v4.9.227
 }
 
 #endif /* _UDF_I_H) */

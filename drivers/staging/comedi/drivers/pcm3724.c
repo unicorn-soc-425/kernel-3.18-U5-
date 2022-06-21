@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
     comedi/drivers/pcm724.c
 
     Drew Csillag <drew_csillag@yahoo.com>
@@ -26,6 +27,29 @@ Copy/pasted/hacked from pcm724.c
 /*
  * check_driver overrides:
  *   struct comedi_insn
+=======
+ * pcm3724.c
+ * Comedi driver for Advantech PCM-3724 Digital I/O board
+ *
+ * Drew Csillag <drew_csillag@yahoo.com>
+ */
+
+/*
+ * Driver: pcm3724
+ * Description: Advantech PCM-3724
+ * Devices: [Advantech] PCM-3724 (pcm3724)
+ * Author: Drew Csillag <drew_csillag@yahoo.com>
+ * Status: tested
+ *
+ * This is driver for digital I/O boards PCM-3724 with 48 DIO.
+ * It needs 8255.o for operations and only immediate mode is supported.
+ * See the source for configuration details.
+ *
+ * Copy/pasted/hacked from pcm724.c
+ *
+ * Configuration Options:
+ *   [0] - I/O port base address
+>>>>>>> v4.9.227
  */
 
 #include <linux/module.h>
@@ -33,6 +57,7 @@ Copy/pasted/hacked from pcm724.c
 
 #include "8255.h"
 
+<<<<<<< HEAD
 #define BUF_C0 0x1
 #define BUF_B0 0x2
 #define BUF_A0 0x4
@@ -46,6 +71,33 @@ Copy/pasted/hacked from pcm724.c
 #define GATE_A1	0x20
 #define GATE_B1	0x10
 #define GATE_C1 0x8
+=======
+/*
+ * Register I/O Map
+ *
+ * This board has two standard 8255 devices that provide six 8-bit DIO ports
+ * (48 channels total). Six 74HCT245 chips (one for each port) buffer the
+ * I/O lines to increase driving capability. Because the 74HCT245 is a
+ * bidirectional, tri-state line buffer, two additional I/O ports are used
+ * to control the direction of data and the enable of each port.
+ */
+#define PCM3724_8255_0_BASE		0x00
+#define PCM3724_8255_1_BASE		0x04
+#define PCM3724_DIO_DIR_REG		0x08
+#define PCM3724_DIO_DIR_C0_OUT		BIT(0)
+#define PCM3724_DIO_DIR_B0_OUT		BIT(1)
+#define PCM3724_DIO_DIR_A0_OUT		BIT(2)
+#define PCM3724_DIO_DIR_C1_OUT		BIT(3)
+#define PCM3724_DIO_DIR_B1_OUT		BIT(4)
+#define PCM3724_DIO_DIR_A1_OUT		BIT(5)
+#define PCM3724_GATE_CTRL_REG		0x09
+#define PCM3724_GATE_CTRL_C0_ENA	BIT(0)
+#define PCM3724_GATE_CTRL_B0_ENA	BIT(1)
+#define PCM3724_GATE_CTRL_A0_ENA	BIT(2)
+#define PCM3724_GATE_CTRL_C1_ENA	BIT(3)
+#define PCM3724_GATE_CTRL_B1_ENA	BIT(4)
+#define PCM3724_GATE_CTRL_A1_ENA	BIT(5)
+>>>>>>> v4.9.227
 
 /* used to track configured dios */
 struct priv_pcm3724 {
@@ -58,6 +110,7 @@ static int compute_buffer(int config, int devno, struct comedi_subdevice *s)
 	/* 1 in io_bits indicates output */
 	if (s->io_bits & 0x0000ff) {
 		if (devno == 0)
+<<<<<<< HEAD
 			config |= BUF_A0;
 		else
 			config |= BUF_A1;
@@ -73,6 +126,23 @@ static int compute_buffer(int config, int devno, struct comedi_subdevice *s)
 			config |= BUF_C0;
 		else
 			config |= BUF_C1;
+=======
+			config |= PCM3724_DIO_DIR_A0_OUT;
+		else
+			config |= PCM3724_DIO_DIR_A1_OUT;
+	}
+	if (s->io_bits & 0x00ff00) {
+		if (devno == 0)
+			config |= PCM3724_DIO_DIR_B0_OUT;
+		else
+			config |= PCM3724_DIO_DIR_B1_OUT;
+	}
+	if (s->io_bits & 0xff0000) {
+		if (devno == 0)
+			config |= PCM3724_DIO_DIR_C0_OUT;
+		else
+			config |= PCM3724_DIO_DIR_C1_OUT;
+>>>>>>> v4.9.227
 	}
 	return config;
 }
@@ -107,7 +177,11 @@ static void do_3724_config(struct comedi_device *dev,
 	else
 		port_8255_cfg = dev->iobase + I8255_SIZE + I8255_CTRL_REG;
 
+<<<<<<< HEAD
 	outb(buffer_config, dev->iobase + 8);	/* update buffer register */
+=======
+	outb(buffer_config, dev->iobase + PCM3724_DIO_DIR_REG);
+>>>>>>> v4.9.227
 
 	outb(config, port_8255_cfg);
 }
@@ -129,6 +203,7 @@ static void enable_chan(struct comedi_device *dev, struct comedi_subdevice *s,
 		priv->dio_2 |= mask;
 
 	if (priv->dio_1 & 0xff0000)
+<<<<<<< HEAD
 		gatecfg |= GATE_C0;
 
 	if (priv->dio_1 & 0xff00)
@@ -147,6 +222,26 @@ static void enable_chan(struct comedi_device *dev, struct comedi_subdevice *s,
 		gatecfg |= GATE_A1;
 
 	outb(gatecfg, dev->iobase + 9);
+=======
+		gatecfg |= PCM3724_GATE_CTRL_C0_ENA;
+
+	if (priv->dio_1 & 0xff00)
+		gatecfg |= PCM3724_GATE_CTRL_B0_ENA;
+
+	if (priv->dio_1 & 0xff)
+		gatecfg |= PCM3724_GATE_CTRL_A0_ENA;
+
+	if (priv->dio_2 & 0xff0000)
+		gatecfg |= PCM3724_GATE_CTRL_C1_ENA;
+
+	if (priv->dio_2 & 0xff00)
+		gatecfg |= PCM3724_GATE_CTRL_B1_ENA;
+
+	if (priv->dio_2 & 0xff)
+		gatecfg |= PCM3724_GATE_CTRL_A1_ENA;
+
+	outb(gatecfg, dev->iobase + PCM3724_GATE_CTRL_REG);
+>>>>>>> v4.9.227
 }
 
 /* overriding the 8255 insn config */
@@ -216,5 +311,9 @@ static struct comedi_driver pcm3724_driver = {
 module_comedi_driver(pcm3724_driver);
 
 MODULE_AUTHOR("Comedi http://www.comedi.org");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Comedi low-level driver");
+=======
+MODULE_DESCRIPTION("Comedi driver for Advantech PCM-3724 Digital I/O board");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");

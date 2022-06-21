@@ -35,7 +35,11 @@ static inline void vm_unacct_memory(long pages)
  */
 
 #ifndef arch_calc_vm_prot_bits
+<<<<<<< HEAD
 #define arch_calc_vm_prot_bits(prot) 0
+=======
+#define arch_calc_vm_prot_bits(prot, pkey) 0
+>>>>>>> v4.9.227
 #endif
 
 #ifndef arch_vm_get_page_prot
@@ -49,7 +53,11 @@ static inline void vm_unacct_memory(long pages)
  *
  * Returns true if the prot flags are valid
  */
+<<<<<<< HEAD
 static inline int arch_validate_prot(unsigned long prot)
+=======
+static inline bool arch_validate_prot(unsigned long prot)
+>>>>>>> v4.9.227
 {
 	return (prot & ~(PROT_READ | PROT_WRITE | PROT_EXEC | PROT_SEM)) == 0;
 }
@@ -71,12 +79,20 @@ static inline int arch_validate_prot(unsigned long prot)
  * Combine the mmap "prot" argument into "vm_flags" used internally.
  */
 static inline unsigned long
+<<<<<<< HEAD
 calc_vm_prot_bits(unsigned long prot)
+=======
+calc_vm_prot_bits(unsigned long prot, unsigned long pkey)
+>>>>>>> v4.9.227
 {
 	return _calc_vm_trans(prot, PROT_READ,  VM_READ ) |
 	       _calc_vm_trans(prot, PROT_WRITE, VM_WRITE) |
 	       _calc_vm_trans(prot, PROT_EXEC,  VM_EXEC) |
+<<<<<<< HEAD
 	       arch_calc_vm_prot_bits(prot);
+=======
+	       arch_calc_vm_prot_bits(prot, pkey);
+>>>>>>> v4.9.227
 }
 
 /*

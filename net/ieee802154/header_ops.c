@@ -14,8 +14,14 @@
  * Phoebe Buckheister <phoebe.buckheister@itwm.fraunhofer.de>
  */
 
+<<<<<<< HEAD
 #include <net/mac802154.h>
 #include <net/ieee802154.h>
+=======
+#include <linux/ieee802154.h>
+
+#include <net/mac802154.h>
+>>>>>>> v4.9.227
 #include <net/ieee802154_netdev.h>
 
 static int
@@ -82,6 +88,7 @@ ieee802154_hdr_push_sechdr(u8 *buf, const struct ieee802154_sechdr *hdr)
 }
 
 int
+<<<<<<< HEAD
 ieee802154_hdr_push(struct sk_buff *skb, const struct ieee802154_hdr *hdr)
 {
 	u8 buf[MAC802154_FRAME_HARD_HEADER_LEN];
@@ -92,12 +99,25 @@ ieee802154_hdr_push(struct sk_buff *skb, const struct ieee802154_hdr *hdr)
 	buf[pos++] = hdr->seq;
 
 	fc.dest_addr_mode = hdr->dest.mode;
+=======
+ieee802154_hdr_push(struct sk_buff *skb, struct ieee802154_hdr *hdr)
+{
+	u8 buf[IEEE802154_MAX_HEADER_LEN];
+	int pos = 2;
+	int rc;
+	struct ieee802154_hdr_fc *fc = &hdr->fc;
+
+	buf[pos++] = hdr->seq;
+
+	fc->dest_addr_mode = hdr->dest.mode;
+>>>>>>> v4.9.227
 
 	rc = ieee802154_hdr_push_addr(buf + pos, &hdr->dest, false);
 	if (rc < 0)
 		return -EINVAL;
 	pos += rc;
 
+<<<<<<< HEAD
 	fc.source_addr_mode = hdr->source.mode;
 
 	if (hdr->source.pan_id == hdr->dest.pan_id &&
@@ -105,12 +125,26 @@ ieee802154_hdr_push(struct sk_buff *skb, const struct ieee802154_hdr *hdr)
 		fc.intra_pan = true;
 
 	rc = ieee802154_hdr_push_addr(buf + pos, &hdr->source, fc.intra_pan);
+=======
+	fc->source_addr_mode = hdr->source.mode;
+
+	if (hdr->source.pan_id == hdr->dest.pan_id &&
+	    hdr->dest.mode != IEEE802154_ADDR_NONE)
+		fc->intra_pan = true;
+
+	rc = ieee802154_hdr_push_addr(buf + pos, &hdr->source, fc->intra_pan);
+>>>>>>> v4.9.227
 	if (rc < 0)
 		return -EINVAL;
 	pos += rc;
 
+<<<<<<< HEAD
 	if (fc.security_enabled) {
 		fc.version = 1;
+=======
+	if (fc->security_enabled) {
+		fc->version = 1;
+>>>>>>> v4.9.227
 
 		rc = ieee802154_hdr_push_sechdr(buf + pos, &hdr->sec);
 		if (rc < 0)
@@ -119,7 +153,11 @@ ieee802154_hdr_push(struct sk_buff *skb, const struct ieee802154_hdr *hdr)
 		pos += rc;
 	}
 
+<<<<<<< HEAD
 	memcpy(buf, &fc, 2);
+=======
+	memcpy(buf, fc, 2);
+>>>>>>> v4.9.227
 
 	memcpy(skb_push(skb, pos), buf, pos);
 

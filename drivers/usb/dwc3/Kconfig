@@ -1,7 +1,11 @@
 config USB_DWC3
 	tristate "DesignWare USB3 DRD Core Support"
 	depends on (USB || USB_GADGET) && HAS_DMA
+<<<<<<< HEAD
 	select USB_XHCI_PLATFORM if USB_SUPPORT && USB_XHCI_HCD
+=======
+	select USB_XHCI_PLATFORM if USB_XHCI_HCD
+>>>>>>> v4.9.227
 	help
 	  Say Y or M here if your system has a Dual Role SuperSpeed
 	  USB controller based on the DesignWare USB3 IP Core.
@@ -11,6 +15,16 @@ config USB_DWC3
 
 if USB_DWC3
 
+<<<<<<< HEAD
+=======
+config USB_DWC3_ULPI
+	bool "Register ULPI PHY Interface"
+	depends on USB_ULPI_BUS=y || USB_ULPI_BUS=USB_DWC3
+	help
+	  Select this if you have ULPI type PHY attached to your DWC3
+	  controller.
+
+>>>>>>> v4.9.227
 choice
 	bool "DWC3 Mode Selection"
 	default USB_DWC3_DUAL_ROLE if (USB && USB_GADGET)
@@ -55,7 +69,11 @@ config USB_DWC3_OMAP
 
 config USB_DWC3_EXYNOS
 	tristate "Samsung Exynos Platform"
+<<<<<<< HEAD
 	depends on ARCH_EXYNOS || COMPILE_TEST
+=======
+	depends on ARCH_EXYNOS && OF || COMPILE_TEST
+>>>>>>> v4.9.227
 	default USB_DWC3
 	help
 	  Recent Exynos5 SoCs ship with one DesignWare Core USB3 IP inside,
@@ -80,6 +98,18 @@ config USB_DWC3_KEYSTONE
 	  Support of USB2/3 functionality in TI Keystone2 platforms.
 	  Say 'Y' or 'M' here if you have one such device
 
+<<<<<<< HEAD
+=======
+config USB_DWC3_OF_SIMPLE
+       tristate "Generic OF Simple Glue Layer"
+       depends on OF && COMMON_CLK
+       default USB_DWC3
+       help
+         Support USB2/3 functionality in simple SoC integrations.
+	 Currently supports Xilinx and Qualcomm DWC USB3 IP.
+	 Say 'Y' or 'M' if you have one such device.
+
+>>>>>>> v4.9.227
 config USB_DWC3_ST
 	tristate "STMicroelectronics Platforms"
 	depends on ARCH_STI && OF
@@ -89,6 +119,7 @@ config USB_DWC3_ST
 	  inside (i.e. STiH407).
 	  Say 'Y' or 'M' if you have one such device.
 
+<<<<<<< HEAD
 config USB_DWC3_QCOM
 	tristate "Qualcomm Platforms"
 	depends on ARCH_QCOM || COMPILE_TEST
@@ -132,4 +163,6 @@ config USB_CHARGING_EVENT
 	help
 	  For satisfy BC1.2 specification
 	  In unconfigured state or suspend state, Set vbus current to 100mA
+=======
+>>>>>>> v4.9.227
 endif

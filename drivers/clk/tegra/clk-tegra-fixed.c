@@ -15,7 +15,10 @@
  */
 
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -30,6 +33,7 @@
 #define OSC_CTRL_OSC_FREQ_SHIFT		28
 #define OSC_CTRL_PLL_REF_DIV_SHIFT	26
 
+<<<<<<< HEAD
 int __init tegra_osc_clk_init(void __iomem *clk_base,
 				struct tegra_clk *tegra_clks,
 				unsigned long *input_freqs, int num,
@@ -37,6 +41,14 @@ int __init tegra_osc_clk_init(void __iomem *clk_base,
 				unsigned long *pll_ref_freq)
 {
 	struct clk *clk;
+=======
+int __init tegra_osc_clk_init(void __iomem *clk_base, struct tegra_clk *clks,
+			      unsigned long *input_freqs, unsigned int num,
+			      unsigned int clk_m_div, unsigned long *osc_freq,
+			      unsigned long *pll_ref_freq)
+{
+	struct clk *clk, *osc;
+>>>>>>> v4.9.227
 	struct clk **dt_clk;
 	u32 val, pll_ref_div;
 	unsigned osc_idx;
@@ -54,22 +66,41 @@ int __init tegra_osc_clk_init(void __iomem *clk_base,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	dt_clk = tegra_lookup_dt_id(tegra_clk_clk_m, tegra_clks);
 	if (!dt_clk)
 		return 0;
 
 	clk = clk_register_fixed_rate(NULL, "clk_m", NULL, CLK_IS_ROOT,
 				      *osc_freq);
+=======
+	osc = clk_register_fixed_rate(NULL, "osc", NULL, 0, *osc_freq);
+
+	dt_clk = tegra_lookup_dt_id(tegra_clk_clk_m, clks);
+	if (!dt_clk)
+		return 0;
+
+	clk = clk_register_fixed_factor(NULL, "clk_m", "osc",
+					0, 1, clk_m_div);
+>>>>>>> v4.9.227
 	*dt_clk = clk;
 
 	/* pll_ref */
 	val = (val >> OSC_CTRL_PLL_REF_DIV_SHIFT) & 3;
 	pll_ref_div = 1 << val;
+<<<<<<< HEAD
 	dt_clk = tegra_lookup_dt_id(tegra_clk_pll_ref, tegra_clks);
 	if (!dt_clk)
 		return 0;
 
 	clk = clk_register_fixed_factor(NULL, "pll_ref", "clk_m",
+=======
+	dt_clk = tegra_lookup_dt_id(tegra_clk_pll_ref, clks);
+	if (!dt_clk)
+		return 0;
+
+	clk = clk_register_fixed_factor(NULL, "pll_ref", "osc",
+>>>>>>> v4.9.227
 					0, 1, pll_ref_div);
 	*dt_clk = clk;
 
@@ -87,8 +118,12 @@ void __init tegra_fixed_clk_init(struct tegra_clk *tegra_clks)
 	/* clk_32k */
 	dt_clk = tegra_lookup_dt_id(tegra_clk_clk_32k, tegra_clks);
 	if (dt_clk) {
+<<<<<<< HEAD
 		clk = clk_register_fixed_rate(NULL, "clk_32k", NULL,
 					CLK_IS_ROOT, 32768);
+=======
+		clk = clk_register_fixed_rate(NULL, "clk_32k", NULL, 0, 32768);
+>>>>>>> v4.9.227
 		*dt_clk = clk;
 	}
 
@@ -108,4 +143,7 @@ void __init tegra_fixed_clk_init(struct tegra_clk *tegra_clks)
 		*dt_clk = clk;
 	}
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227

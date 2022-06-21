@@ -181,7 +181,11 @@ static unsigned long xpram_highest_page_index(void)
 /*
  * Block device make request function.
  */
+<<<<<<< HEAD
 static void xpram_make_request(struct request_queue *q, struct bio *bio)
+=======
+static blk_qc_t xpram_make_request(struct request_queue *q, struct bio *bio)
+>>>>>>> v4.9.227
 {
 	xpram_device_t *xdev = bio->bi_bdev->bd_disk->private_data;
 	struct bio_vec bvec;
@@ -190,6 +194,11 @@ static void xpram_make_request(struct request_queue *q, struct bio *bio)
 	unsigned long page_addr;
 	unsigned long bytes;
 
+<<<<<<< HEAD
+=======
+	blk_queue_split(q, &bio, q->bio_split);
+
+>>>>>>> v4.9.227
 	if ((bio->bi_iter.bi_sector & 7) != 0 ||
 	    (bio->bi_iter.bi_size & 4095) != 0)
 		/* Request is not page-aligned. */
@@ -220,11 +229,19 @@ static void xpram_make_request(struct request_queue *q, struct bio *bio)
 			index++;
 		}
 	}
+<<<<<<< HEAD
 	set_bit(BIO_UPTODATE, &bio->bi_flags);
 	bio_endio(bio, 0);
 	return;
 fail:
 	bio_io_error(bio);
+=======
+	bio_endio(bio);
+	return BLK_QC_T_NONE;
+fail:
+	bio_io_error(bio);
+	return BLK_QC_T_NONE;
+>>>>>>> v4.9.227
 }
 
 static int xpram_getgeo(struct block_device *bdev, struct hd_geometry *geo)
@@ -417,7 +434,10 @@ static const struct dev_pm_ops xpram_pm_ops = {
 static struct platform_driver xpram_pdrv = {
 	.driver = {
 		.name	= XPRAM_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &xpram_pm_ops,
 	},
 };

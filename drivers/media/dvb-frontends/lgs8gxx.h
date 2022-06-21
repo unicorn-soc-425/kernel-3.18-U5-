@@ -26,7 +26,10 @@
 #ifndef __LGS8GXX_H__
 #define __LGS8GXX_H__
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/dvb/frontend.h>
 #include <linux/i2c.h>
 

@@ -30,7 +30,11 @@
 #include <linux/dma-mapping.h>
 #include <linux/swiotlb.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 #include "nouveau_fence.h"
 
@@ -312,7 +316,11 @@ nouveau_bo_pin(struct nouveau_bo *nvbo, uint32_t memtype, bool contig)
 	bool force = false, evict = false;
 	int ret;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(bo, false, false, false, NULL);
+=======
+	ret = ttm_bo_reserve(bo, false, false, NULL);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -385,7 +393,11 @@ nouveau_bo_unpin(struct nouveau_bo *nvbo)
 	struct ttm_buffer_object *bo = &nvbo->bo;
 	int ret, ref;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(bo, false, false, false, NULL);
+=======
+	ret = ttm_bo_reserve(bo, false, false, NULL);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -420,6 +432,7 @@ nouveau_bo_map(struct nouveau_bo *nvbo)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(&nvbo->bo, false, false, false, NULL);
 	if (ret)
 		return ret;
@@ -431,6 +444,13 @@ nouveau_bo_map(struct nouveau_bo *nvbo)
 	if (!nvbo->force_coherent)
 		ret = ttm_bo_kmap(&nvbo->bo, 0, nvbo->bo.mem.num_pages,
 				  &nvbo->kmap);
+=======
+	ret = ttm_bo_reserve(&nvbo->bo, false, false, NULL);
+	if (ret)
+		return ret;
+
+	ret = ttm_bo_kmap(&nvbo->bo, 0, nvbo->bo.mem.num_pages, &nvbo->kmap);
+>>>>>>> v4.9.227
 
 	ttm_bo_unreserve(&nvbo->bo);
 	return ret;
@@ -442,12 +462,16 @@ nouveau_bo_unmap(struct nouveau_bo *nvbo)
 	if (!nvbo)
 		return;
 
+<<<<<<< HEAD
 	/*
 	 * TTM buffers allocated using the DMA API already had a coherent
 	 * mapping which we used, no need to unmap.
 	 */
 	if (!nvbo->force_coherent)
 		ttm_bo_kunmap(&nvbo->kmap);
+=======
+	ttm_bo_kunmap(&nvbo->kmap);
+>>>>>>> v4.9.227
 }
 
 void
@@ -506,6 +530,7 @@ nouveau_bo_validate(struct nouveau_bo *nvbo, bool interruptible,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void *
 _nouveau_bo_mem_index(struct nouveau_bo *nvbo, unsigned index, void *mem, u8 sz)
 {
@@ -528,13 +553,19 @@ _nouveau_bo_mem_index(struct nouveau_bo *nvbo, unsigned index, void *mem, u8 sz)
 }
 #define nouveau_bo_mem_index(o, i, m) _nouveau_bo_mem_index(o, i, m, sizeof(*m))
 
+=======
+>>>>>>> v4.9.227
 void
 nouveau_bo_wr16(struct nouveau_bo *nvbo, unsigned index, u16 val)
 {
 	bool is_iomem;
 	u16 *mem = ttm_kmap_obj_virtual(&nvbo->kmap, &is_iomem);
 
+<<<<<<< HEAD
 	mem = nouveau_bo_mem_index(nvbo, index, mem);
+=======
+	mem += index;
+>>>>>>> v4.9.227
 
 	if (is_iomem)
 		iowrite16_native(val, (void __force __iomem *)mem);
@@ -548,7 +579,11 @@ nouveau_bo_rd32(struct nouveau_bo *nvbo, unsigned index)
 	bool is_iomem;
 	u32 *mem = ttm_kmap_obj_virtual(&nvbo->kmap, &is_iomem);
 
+<<<<<<< HEAD
 	mem = nouveau_bo_mem_index(nvbo, index, mem);
+=======
+	mem += index;
+>>>>>>> v4.9.227
 
 	if (is_iomem)
 		return ioread32_native((void __force __iomem *)mem);
@@ -562,7 +597,11 @@ nouveau_bo_wr32(struct nouveau_bo *nvbo, unsigned index, u32 val)
 	bool is_iomem;
 	u32 *mem = ttm_kmap_obj_virtual(&nvbo->kmap, &is_iomem);
 
+<<<<<<< HEAD
 	mem = nouveau_bo_mem_index(nvbo, index, mem);
+=======
+	mem += index;
+>>>>>>> v4.9.227
 
 	if (is_iomem)
 		iowrite32_native(val, (void __force __iomem *)mem);
@@ -1082,7 +1121,10 @@ nouveau_bo_move_m2mf(struct ttm_buffer_object *bo, int evict, bool intr,
 				ret = ttm_bo_move_accel_cleanup(bo,
 								&fence->base,
 								evict,
+<<<<<<< HEAD
 								no_wait_gpu,
+=======
+>>>>>>> v4.9.227
 								new_mem);
 				nouveau_fence_unref(&fence);
 			}
@@ -1104,6 +1146,13 @@ nouveau_bo_move_init(struct nouveau_drm *drm)
 			    struct ttm_mem_reg *, struct ttm_mem_reg *);
 		int (*init)(struct nouveau_channel *, u32 handle);
 	} _methods[] = {
+<<<<<<< HEAD
+=======
+		{  "COPY", 4, 0xc1b5, nve0_bo_move_copy, nve0_bo_move_init },
+		{  "GRCE", 0, 0xc1b5, nve0_bo_move_copy, nvc0_bo_move_init },
+		{  "COPY", 4, 0xc0b5, nve0_bo_move_copy, nve0_bo_move_init },
+		{  "GRCE", 0, 0xc0b5, nve0_bo_move_copy, nvc0_bo_move_init },
+>>>>>>> v4.9.227
 		{  "COPY", 4, 0xb0b5, nve0_bo_move_copy, nve0_bo_move_init },
 		{  "GRCE", 0, 0xb0b5, nve0_bo_move_copy, nvc0_bo_move_init },
 		{  "COPY", 4, 0xa0b5, nve0_bo_move_copy, nve0_bo_move_init },
@@ -1182,7 +1231,11 @@ nouveau_bo_move_flipd(struct ttm_buffer_object *bo, bool evict, bool intr,
 	if (ret)
 		goto out;
 
+<<<<<<< HEAD
 	ret = ttm_bo_move_ttm(bo, true, no_wait_gpu, new_mem);
+=======
+	ret = ttm_bo_move_ttm(bo, intr, no_wait_gpu, new_mem);
+>>>>>>> v4.9.227
 out:
 	ttm_bo_mem_put(bo, &tmp_mem);
 	return ret;
@@ -1210,7 +1263,11 @@ nouveau_bo_move_flips(struct ttm_buffer_object *bo, bool evict, bool intr,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = ttm_bo_move_ttm(bo, true, no_wait_gpu, &tmp_mem);
+=======
+	ret = ttm_bo_move_ttm(bo, intr, no_wait_gpu, &tmp_mem);
+>>>>>>> v4.9.227
 	if (ret)
 		goto out;
 
@@ -1239,6 +1296,10 @@ nouveau_bo_move_ntfy(struct ttm_buffer_object *bo, struct ttm_mem_reg *new_mem)
 			       nvbo->page_shift != vma->vm->mmu->lpg_shift)) {
 			nvkm_vm_map(vma, new_mem->mm_node);
 		} else {
+<<<<<<< HEAD
+=======
+			WARN_ON(ttm_bo_wait(bo, false, false));
+>>>>>>> v4.9.227
 			nvkm_vm_unmap(vma);
 		}
 	}
@@ -1289,6 +1350,13 @@ nouveau_bo_move(struct ttm_buffer_object *bo, bool evict, bool intr,
 	struct nouveau_drm_tile *new_tile = NULL;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	ret = ttm_bo_wait(bo, intr, no_wait_gpu);
+	if (ret)
+		return ret;
+
+>>>>>>> v4.9.227
 	if (nvbo->pin_refcnt)
 		NV_WARN(drm, "Moving pinned object %p!\n", nvbo);
 
@@ -1322,9 +1390,15 @@ nouveau_bo_move(struct ttm_buffer_object *bo, bool evict, bool intr,
 	}
 
 	/* Fallback to software copy. */
+<<<<<<< HEAD
 	ret = ttm_bo_wait(bo, true, intr, no_wait_gpu);
 	if (ret == 0)
 		ret = ttm_bo_move_memcpy(bo, evict, no_wait_gpu, new_mem);
+=======
+	ret = ttm_bo_wait(bo, intr, no_wait_gpu);
+	if (ret == 0)
+		ret = ttm_bo_move_memcpy(bo, intr, no_wait_gpu, new_mem);
+>>>>>>> v4.9.227
 
 out:
 	if (drm->device.info.family < NV_DEVICE_INFO_V0_TESLA) {
@@ -1342,7 +1416,12 @@ nouveau_bo_verify_access(struct ttm_buffer_object *bo, struct file *filp)
 {
 	struct nouveau_bo *nvbo = nouveau_bo(bo);
 
+<<<<<<< HEAD
 	return drm_vma_node_verify_access(&nvbo->gem.vma_node, filp);
+=======
+	return drm_vma_node_verify_access(&nvbo->gem.vma_node,
+					  filp->private_data);
+>>>>>>> v4.9.227
 }
 
 static int
@@ -1488,6 +1567,7 @@ nouveau_ttm_tt_populate(struct ttm_tt *ttm)
 	dev = drm->dev;
 	pdev = device->dev;
 
+<<<<<<< HEAD
 	/*
 	 * Objects matching this condition have been marked as force_coherent,
 	 * so use the DMA API for them.
@@ -1496,13 +1576,19 @@ nouveau_ttm_tt_populate(struct ttm_tt *ttm)
 	    ttm->caching_state == tt_uncached)
 		return ttm_dma_populate(ttm_dma, dev->dev);
 
+=======
+>>>>>>> v4.9.227
 #if IS_ENABLED(CONFIG_AGP)
 	if (drm->agp.bridge) {
 		return ttm_agp_tt_populate(ttm);
 	}
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SWIOTLB
+=======
+#if IS_ENABLED(CONFIG_SWIOTLB) && IS_ENABLED(CONFIG_X86)
+>>>>>>> v4.9.227
 	if (swiotlb_nr_tbl()) {
 		return ttm_dma_populate((void *)ttm, dev->dev);
 	}
@@ -1520,7 +1606,11 @@ nouveau_ttm_tt_populate(struct ttm_tt *ttm)
 				    DMA_BIDIRECTIONAL);
 
 		if (dma_mapping_error(pdev, addr)) {
+<<<<<<< HEAD
 			while (--i) {
+=======
+			while (i--) {
+>>>>>>> v4.9.227
 				dma_unmap_page(pdev, ttm_dma->dma_address[i],
 					       PAGE_SIZE, DMA_BIDIRECTIONAL);
 				ttm_dma->dma_address[i] = 0;
@@ -1553,6 +1643,7 @@ nouveau_ttm_tt_unpopulate(struct ttm_tt *ttm)
 	dev = drm->dev;
 	pdev = device->dev;
 
+<<<<<<< HEAD
 	/*
 	 * Objects matching this condition have been marked as force_coherent,
 	 * so use the DMA API for them.
@@ -1563,6 +1654,8 @@ nouveau_ttm_tt_unpopulate(struct ttm_tt *ttm)
 		return;
 	}
 
+=======
+>>>>>>> v4.9.227
 #if IS_ENABLED(CONFIG_AGP)
 	if (drm->agp.bridge) {
 		ttm_agp_tt_unpopulate(ttm);
@@ -1570,7 +1663,11 @@ nouveau_ttm_tt_unpopulate(struct ttm_tt *ttm)
 	}
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SWIOTLB
+=======
+#if IS_ENABLED(CONFIG_SWIOTLB) && IS_ENABLED(CONFIG_X86)
+>>>>>>> v4.9.227
 	if (swiotlb_nr_tbl()) {
 		ttm_dma_unpopulate((void *)ttm, dev->dev);
 		return;
@@ -1611,6 +1708,11 @@ struct ttm_bo_driver nouveau_bo_driver = {
 	.fault_reserve_notify = &nouveau_ttm_fault_reserve_notify,
 	.io_mem_reserve = &nouveau_ttm_io_mem_reserve,
 	.io_mem_free = &nouveau_ttm_io_mem_free,
+<<<<<<< HEAD
+=======
+	.lru_tail = &ttm_bo_default_lru_tail,
+	.swap_lru_tail = &ttm_bo_default_swap_lru_tail,
+>>>>>>> v4.9.227
 };
 
 struct nvkm_vma *

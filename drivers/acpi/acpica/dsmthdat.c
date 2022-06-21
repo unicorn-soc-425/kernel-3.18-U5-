@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -99,6 +103,10 @@ void acpi_ds_method_data_init(struct acpi_walk_state *walk_state)
 	for (i = 0; i < ACPI_METHOD_NUM_ARGS; i++) {
 		ACPI_MOVE_32_TO_32(&walk_state->arguments[i].name,
 				   NAMEOF_ARG_NTE);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		walk_state->arguments[i].name.integer |= (i << 24);
 		walk_state->arguments[i].descriptor_type = ACPI_DESC_TYPE_NAMED;
 		walk_state->arguments[i].type = ACPI_TYPE_ANY;
@@ -201,7 +209,11 @@ acpi_ds_method_data_init_args(union acpi_operand_object **params,
 
 	if (!params) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
+<<<<<<< HEAD
 				  "No param list passed to method\n"));
+=======
+				  "No parameter list passed to method\n"));
+>>>>>>> v4.9.227
 		return_ACPI_STATUS(AE_OK);
 	}
 
@@ -214,9 +226,15 @@ acpi_ds_method_data_init_args(union acpi_operand_object **params,
 		 * Store the argument in the method/walk descriptor.
 		 * Do not copy the arg in order to implement call by reference
 		 */
+<<<<<<< HEAD
 		status = acpi_ds_method_data_set_value(ACPI_REFCLASS_ARG, index,
 						       params[index],
 						       walk_state);
+=======
+		status =
+		    acpi_ds_method_data_set_value(ACPI_REFCLASS_ARG, index,
+						  params[index], walk_state);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
@@ -610,11 +628,19 @@ acpi_ds_store_object_to_local(u8 type,
 			 * do the indirect store
 			 */
 			if ((ACPI_GET_DESCRIPTOR_TYPE(current_obj_desc) ==
+<<<<<<< HEAD
 			     ACPI_DESC_TYPE_OPERAND)
 			    && (current_obj_desc->common.type ==
 				ACPI_TYPE_LOCAL_REFERENCE)
 			    && (current_obj_desc->reference.class ==
 				ACPI_REFCLASS_REFOF)) {
+=======
+			     ACPI_DESC_TYPE_OPERAND) &&
+			    (current_obj_desc->common.type ==
+			     ACPI_TYPE_LOCAL_REFERENCE) &&
+			    (current_obj_desc->reference.class ==
+			     ACPI_REFCLASS_REFOF)) {
+>>>>>>> v4.9.227
 				ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 						  "Arg (%p) is an ObjRef(Node), storing in node %p\n",
 						  new_obj_desc,
@@ -638,6 +664,10 @@ acpi_ds_store_object_to_local(u8 type,
 				if (new_obj_desc != obj_desc) {
 					acpi_ut_remove_reference(new_obj_desc);
 				}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 				return_ACPI_STATUS(status);
 			}
 		}

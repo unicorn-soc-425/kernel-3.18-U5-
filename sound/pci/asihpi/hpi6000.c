@@ -47,7 +47,11 @@
 
 /* operational/messaging errors */
 #define HPI6000_ERROR_MSG_RESP_IDLE_TIMEOUT             901
+<<<<<<< HEAD
 
+=======
+#define HPI6000_ERROR_RESP_GET_LEN                      902
+>>>>>>> v4.9.227
 #define HPI6000_ERROR_MSG_RESP_GET_RESP_ACK             903
 #define HPI6000_ERROR_MSG_GET_ADR                       904
 #define HPI6000_ERROR_RESP_GET_ADR                      905
@@ -1365,7 +1369,14 @@ static short hpi6000_message_response_sequence(struct hpi_adapter_obj *pao,
 		length = hpi_read_word(pdo, HPI_HIF_ADDR(length));
 	} while (hpi6000_check_PCI2040_error_flag(pao, H6READ) && --timeout);
 	if (!timeout)
+<<<<<<< HEAD
 		length = sizeof(struct hpi_response);
+=======
+		return HPI6000_ERROR_RESP_GET_LEN;
+
+	if (length > phr->size)
+		return HPI_ERROR_RESPONSE_BUFFER_TOO_SMALL;
+>>>>>>> v4.9.227
 
 	/* get the response */
 	p_data = (u32 *)phr;

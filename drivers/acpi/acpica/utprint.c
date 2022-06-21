@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,11 +71,14 @@ static char *acpi_ut_format_number(char *string,
 
 static char *acpi_ut_put_number(char *string, u64 number, u8 base, u8 upper);
 
+<<<<<<< HEAD
 /* Module globals */
 
 static const char acpi_gbl_lower_hex_digits[] = "0123456789abcdef";
 static const char acpi_gbl_upper_hex_digits[] = "0123456789ABCDEF";
 
+=======
+>>>>>>> v4.9.227
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_bound_string_length
@@ -180,7 +187,11 @@ const char *acpi_ut_scan_number(const char *string, u64 *number_ptr)
 {
 	u64 number = 0;
 
+<<<<<<< HEAD
 	while (ACPI_IS_DIGIT(*string)) {
+=======
+	while (isdigit((int)*string)) {
+>>>>>>> v4.9.227
 		number *= 10;
 		number += *(string++) - '0';
 	}
@@ -269,9 +280,15 @@ static char *acpi_ut_format_number(char *string,
 
 	sign = '\0';
 	if (type & ACPI_FORMAT_SIGN) {
+<<<<<<< HEAD
 		if ((s64) number < 0) {
 			sign = '-';
 			number = -(s64) number;
+=======
+		if ((s64)number < 0) {
+			sign = '-';
+			number = -(s64)number;
+>>>>>>> v4.9.227
 			width--;
 		} else if (type & ACPI_FORMAT_SIGN_PLUS) {
 			sign = '+';
@@ -314,8 +331,14 @@ static char *acpi_ut_format_number(char *string,
 	if (need_prefix) {
 		string = acpi_ut_bound_string_output(string, end, '0');
 		if (base == 16) {
+<<<<<<< HEAD
 			string = acpi_ut_bound_string_output(string, end,
 							     upper ? 'X' : 'x');
+=======
+			string =
+			    acpi_ut_bound_string_output(string, end,
+							upper ? 'X' : 'x');
+>>>>>>> v4.9.227
 		}
 	}
 	if (!(type & ACPI_FORMAT_LEFT)) {
@@ -340,7 +363,11 @@ static char *acpi_ut_format_number(char *string,
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_vsnprintf
+=======
+ * FUNCTION:    vsnprintf
+>>>>>>> v4.9.227
  *
  * PARAMETERS:  string              - String with boundary
  *              size                - Boundary of the string
@@ -353,6 +380,7 @@ static char *acpi_ut_format_number(char *string,
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 int
 acpi_ut_vsnprintf(char *string,
 		  acpi_size size, const char *format, va_list args)
@@ -362,6 +390,15 @@ acpi_ut_vsnprintf(char *string,
 	s32 width = -1;
 	s32 precision = -1;
 	char qualifier = 0;
+=======
+int vsnprintf(char *string, acpi_size size, const char *format, va_list args)
+{
+	u8 base;
+	u8 type;
+	s32 width;
+	s32 precision;
+	char qualifier;
+>>>>>>> v4.9.227
 	u64 number;
 	char *pos;
 	char *end;
@@ -380,6 +417,12 @@ acpi_ut_vsnprintf(char *string,
 			continue;
 		}
 
+<<<<<<< HEAD
+=======
+		type = 0;
+		base = 10;
+
+>>>>>>> v4.9.227
 		/* Process sign */
 
 		do {
@@ -397,14 +440,24 @@ acpi_ut_vsnprintf(char *string,
 			} else {
 				break;
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		} while (1);
 
 		/* Process width */
 
 		width = -1;
+<<<<<<< HEAD
 		if (ACPI_IS_DIGIT(*format)) {
 			format = acpi_ut_scan_number(format, &number);
 			width = (s32) number;
+=======
+		if (isdigit((int)*format)) {
+			format = acpi_ut_scan_number(format, &number);
+			width = (s32)number;
+>>>>>>> v4.9.227
 		} else if (*format == '*') {
 			++format;
 			width = va_arg(args, int);
@@ -419,13 +472,23 @@ acpi_ut_vsnprintf(char *string,
 		precision = -1;
 		if (*format == '.') {
 			++format;
+<<<<<<< HEAD
 			if (ACPI_IS_DIGIT(*format)) {
 				format = acpi_ut_scan_number(format, &number);
 				precision = (s32) number;
+=======
+			if (isdigit((int)*format)) {
+				format = acpi_ut_scan_number(format, &number);
+				precision = (s32)number;
+>>>>>>> v4.9.227
 			} else if (*format == '*') {
 				++format;
 				precision = va_arg(args, int);
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			if (precision < 0) {
 				precision = 0;
 			}
@@ -485,10 +548,18 @@ acpi_ut_vsnprintf(char *string,
 									' ');
 				}
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			for (i = 0; i < length; ++i) {
 				pos = acpi_ut_bound_string_output(pos, end, *s);
 				++s;
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			while (length < width--) {
 				pos =
 				    acpi_ut_bound_string_output(pos, end, ' ');
@@ -526,9 +597,15 @@ acpi_ut_vsnprintf(char *string,
 			}
 
 			p = va_arg(args, void *);
+<<<<<<< HEAD
 			pos = acpi_ut_format_number(pos, end,
 						    ACPI_TO_INTEGER(p), 16,
 						    width, precision, type);
+=======
+			pos =
+			    acpi_ut_format_number(pos, end, ACPI_TO_INTEGER(p),
+						  16, width, precision, type);
+>>>>>>> v4.9.227
 			continue;
 
 		default:
@@ -547,17 +624,29 @@ acpi_ut_vsnprintf(char *string,
 		if (qualifier == 'L') {
 			number = va_arg(args, u64);
 			if (type & ACPI_FORMAT_SIGN) {
+<<<<<<< HEAD
 				number = (s64) number;
+=======
+				number = (s64)number;
+>>>>>>> v4.9.227
 			}
 		} else if (qualifier == 'l') {
 			number = va_arg(args, unsigned long);
 			if (type & ACPI_FORMAT_SIGN) {
+<<<<<<< HEAD
 				number = (s32) number;
+=======
+				number = (s32)number;
+>>>>>>> v4.9.227
 			}
 		} else if (qualifier == 'h') {
 			number = (u16)va_arg(args, int);
 			if (type & ACPI_FORMAT_SIGN) {
+<<<<<<< HEAD
 				number = (s16) number;
+=======
+				number = (s16)number;
+>>>>>>> v4.9.227
 			}
 		} else {
 			number = va_arg(args, unsigned int);
@@ -583,7 +672,11 @@ acpi_ut_vsnprintf(char *string,
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_snprintf
+=======
+ * FUNCTION:    snprintf
+>>>>>>> v4.9.227
  *
  * PARAMETERS:  string              - String with boundary
  *              size                - Boundary of the string
@@ -595,13 +688,46 @@ acpi_ut_vsnprintf(char *string,
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 int acpi_ut_snprintf(char *string, acpi_size size, const char *format, ...)
+=======
+int snprintf(char *string, acpi_size size, const char *format, ...)
+>>>>>>> v4.9.227
 {
 	va_list args;
 	int length;
 
 	va_start(args, format);
+<<<<<<< HEAD
 	length = acpi_ut_vsnprintf(string, size, format, args);
+=======
+	length = vsnprintf(string, size, format, args);
+	va_end(args);
+
+	return (length);
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    sprintf
+ *
+ * PARAMETERS:  string              - String with boundary
+ *              Format, ...         - Standard printf format
+ *
+ * RETURN:      Number of bytes actually written.
+ *
+ * DESCRIPTION: Formatted output to a string.
+ *
+ ******************************************************************************/
+
+int sprintf(char *string, const char *format, ...)
+{
+	va_list args;
+	int length;
+
+	va_start(args, format);
+	length = vsnprintf(string, ACPI_UINT32_MAX, format, args);
+>>>>>>> v4.9.227
 	va_end(args);
 
 	return (length);
@@ -610,7 +736,63 @@ int acpi_ut_snprintf(char *string, acpi_size size, const char *format, ...)
 #ifdef ACPI_APPLICATION
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_file_vprintf
+=======
+ * FUNCTION:    vprintf
+ *
+ * PARAMETERS:  format              - Standard printf format
+ *              args                - Argument list
+ *
+ * RETURN:      Number of bytes actually written.
+ *
+ * DESCRIPTION: Formatted output to stdout using argument list pointer.
+ *
+ ******************************************************************************/
+
+int vprintf(const char *format, va_list args)
+{
+	acpi_cpu_flags flags;
+	int length;
+
+	flags = acpi_os_acquire_lock(acpi_gbl_print_lock);
+	length = vsnprintf(acpi_gbl_print_buffer,
+			   sizeof(acpi_gbl_print_buffer), format, args);
+
+	(void)fwrite(acpi_gbl_print_buffer, length, 1, ACPI_FILE_OUT);
+	acpi_os_release_lock(acpi_gbl_print_lock, flags);
+
+	return (length);
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    printf
+ *
+ * PARAMETERS:  Format, ...         - Standard printf format
+ *
+ * RETURN:      Number of bytes actually written.
+ *
+ * DESCRIPTION: Formatted output to stdout.
+ *
+ ******************************************************************************/
+
+int printf(const char *format, ...)
+{
+	va_list args;
+	int length;
+
+	va_start(args, format);
+	length = vprintf(format, args);
+	va_end(args);
+
+	return (length);
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    vfprintf
+>>>>>>> v4.9.227
  *
  * PARAMETERS:  file                - File descriptor
  *              format              - Standard printf format
@@ -622,16 +804,27 @@ int acpi_ut_snprintf(char *string, acpi_size size, const char *format, ...)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 int acpi_ut_file_vprintf(ACPI_FILE file, const char *format, va_list args)
+=======
+int vfprintf(FILE * file, const char *format, va_list args)
+>>>>>>> v4.9.227
 {
 	acpi_cpu_flags flags;
 	int length;
 
 	flags = acpi_os_acquire_lock(acpi_gbl_print_lock);
+<<<<<<< HEAD
 	length = acpi_ut_vsnprintf(acpi_gbl_print_buffer,
 				   sizeof(acpi_gbl_print_buffer), format, args);
 
 	(void)acpi_os_write_file(file, acpi_gbl_print_buffer, length, 1);
+=======
+	length = vsnprintf(acpi_gbl_print_buffer,
+			   sizeof(acpi_gbl_print_buffer), format, args);
+
+	(void)fwrite(acpi_gbl_print_buffer, length, 1, file);
+>>>>>>> v4.9.227
 	acpi_os_release_lock(acpi_gbl_print_lock, flags);
 
 	return (length);
@@ -639,7 +832,11 @@ int acpi_ut_file_vprintf(ACPI_FILE file, const char *format, va_list args)
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_file_printf
+=======
+ * FUNCTION:    fprintf
+>>>>>>> v4.9.227
  *
  * PARAMETERS:  file                - File descriptor
  *              Format, ...         - Standard printf format
@@ -650,13 +847,21 @@ int acpi_ut_file_vprintf(ACPI_FILE file, const char *format, va_list args)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 int acpi_ut_file_printf(ACPI_FILE file, const char *format, ...)
+=======
+int fprintf(FILE * file, const char *format, ...)
+>>>>>>> v4.9.227
 {
 	va_list args;
 	int length;
 
 	va_start(args, format);
+<<<<<<< HEAD
 	length = acpi_ut_file_vprintf(file, format, args);
+=======
+	length = vfprintf(file, format, args);
+>>>>>>> v4.9.227
 	va_end(args);
 
 	return (length);

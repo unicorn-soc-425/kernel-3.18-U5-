@@ -33,7 +33,10 @@
 #include <linux/tty.h>
 #include <linux/sysrq.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 
 
@@ -163,6 +166,7 @@ static struct fb_ops astfb_ops = {
 };
 
 static int astfb_create_object(struct ast_fbdev *afbdev,
+<<<<<<< HEAD
 			       struct drm_mode_fb_cmd2 *mode_cmd,
 			       struct drm_gem_object **gobj_p)
 {
@@ -173,6 +177,15 @@ static int astfb_create_object(struct ast_fbdev *afbdev,
 
 	int ret = 0;
 	drm_fb_get_bpp_depth(mode_cmd->pixel_format, &depth, &bpp);
+=======
+			       const struct drm_mode_fb_cmd2 *mode_cmd,
+			       struct drm_gem_object **gobj_p)
+{
+	struct drm_device *dev = afbdev->helper.dev;
+	u32 size;
+	struct drm_gem_object *gobj;
+	int ret = 0;
+>>>>>>> v4.9.227
 
 	size = mode_cmd->pitches[0] * mode_cmd->height;
 	ret = ast_gem_create(dev, size, true, &gobj);
@@ -290,6 +303,10 @@ static void ast_fbdev_destroy(struct drm_device *dev,
 {
 	struct ast_framebuffer *afb = &afbdev->afb;
 
+<<<<<<< HEAD
+=======
+	drm_crtc_force_disable_all(dev);
+>>>>>>> v4.9.227
 	drm_fb_helper_unregister_fbi(&afbdev->helper);
 	drm_fb_helper_release_fbi(&afbdev->helper);
 

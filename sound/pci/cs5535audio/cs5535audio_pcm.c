@@ -380,7 +380,11 @@ static int snd_cs5535audio_capture_prepare(struct snd_pcm_substream *substream)
 				 substream->runtime->rate);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs5535audio_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_cs5535audio_playback_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_cs5535audio_playback_open,
 	.close =	snd_cs5535audio_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -391,7 +395,11 @@ static struct snd_pcm_ops snd_cs5535audio_playback_ops = {
 	.pointer =	snd_cs5535audio_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs5535audio_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_cs5535audio_capture_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_cs5535audio_capture_open,
 	.close =	snd_cs5535audio_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -402,7 +410,11 @@ static struct snd_pcm_ops snd_cs5535audio_capture_ops = {
 	.pointer =	snd_cs5535audio_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static struct cs5535audio_dma_ops snd_cs5535audio_playback_dma_ops = {
+=======
+static const struct cs5535audio_dma_ops snd_cs5535audio_playback_dma_ops = {
+>>>>>>> v4.9.227
         .type = CS5535AUDIO_DMA_PLAYBACK,
         .enable_dma = cs5535audio_playback_enable_dma,
         .disable_dma = cs5535audio_playback_disable_dma,
@@ -412,7 +424,11 @@ static struct cs5535audio_dma_ops snd_cs5535audio_playback_dma_ops = {
         .read_dma_pntr = cs5535audio_playback_read_dma_pntr,
 };
 
+<<<<<<< HEAD
 static struct cs5535audio_dma_ops snd_cs5535audio_capture_dma_ops = {
+=======
+static const struct cs5535audio_dma_ops snd_cs5535audio_capture_dma_ops = {
+>>>>>>> v4.9.227
         .type = CS5535AUDIO_DMA_CAPTURE,
         .enable_dma = cs5535audio_capture_enable_dma,
         .disable_dma = cs5535audio_capture_disable_dma,

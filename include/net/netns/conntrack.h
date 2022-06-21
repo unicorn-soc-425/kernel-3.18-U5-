@@ -15,10 +15,13 @@ struct nf_proto_net {
 #ifdef CONFIG_SYSCTL
 	struct ctl_table_header *ctl_table_header;
 	struct ctl_table        *ctl_table;
+<<<<<<< HEAD
 #ifdef CONFIG_NF_CONNTRACK_PROC_COMPAT
 	struct ctl_table_header *ctl_compat_header;
 	struct ctl_table        *ctl_compat_table;
 #endif
+=======
+>>>>>>> v4.9.227
 #endif
 	unsigned int		users;
 };
@@ -58,17 +61,23 @@ struct nf_ip_net {
 	struct nf_udp_net	udp;
 	struct nf_icmp_net	icmp;
 	struct nf_icmp_net	icmpv6;
+<<<<<<< HEAD
 #if defined(CONFIG_SYSCTL) && defined(CONFIG_NF_CONNTRACK_PROC_COMPAT)
 	struct ctl_table_header *ctl_table_header;
 	struct ctl_table	*ctl_table;
 #endif
+=======
+>>>>>>> v4.9.227
 };
 
 struct ct_pcpu {
 	spinlock_t		lock;
 	struct hlist_nulls_head unconfirmed;
 	struct hlist_nulls_head dying;
+<<<<<<< HEAD
 	struct hlist_nulls_head tmpl;
+=======
+>>>>>>> v4.9.227
 };
 
 struct netns_ct {
@@ -85,7 +94,10 @@ struct netns_ct {
 	struct ctl_table_header	*event_sysctl_header;
 	struct ctl_table_header	*helper_sysctl_header;
 #endif
+<<<<<<< HEAD
 	char			*slabname;
+=======
+>>>>>>> v4.9.227
 	unsigned int		sysctl_log_invalid; /* Log invalid packets */
 	int			sysctl_events;
 	int			sysctl_acct;
@@ -94,11 +106,14 @@ struct netns_ct {
 	int			sysctl_tstamp;
 	int			sysctl_checksum;
 
+<<<<<<< HEAD
 	unsigned int		htable_size;
 	seqcount_t		generation;
 	struct kmem_cache	*nf_conntrack_cachep;
 	struct hlist_nulls_head	*hash;
 	struct hlist_head	*expect_hash;
+=======
+>>>>>>> v4.9.227
 	struct ct_pcpu __percpu *pcpu_lists;
 	struct ip_conntrack_stat __percpu *stat;
 	struct nf_ct_event_notifier __rcu *nf_conntrack_event_cb;
@@ -108,9 +123,12 @@ struct netns_ct {
 	unsigned int		labels_used;
 	u8			label_words;
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_NF_NAT_NEEDED
 	struct hlist_head	*nat_bysource;
 	unsigned int		nat_htable_size;
 #endif
+=======
+>>>>>>> v4.9.227
 };
 #endif

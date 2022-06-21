@@ -336,6 +336,14 @@ int __init fadump_reserve_mem(void)
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+unsigned long __init arch_reserved_kernel_pages(void)
+{
+	return memblock_reserved_size() / PAGE_SIZE;
+}
+
+>>>>>>> v4.9.227
 /* Look for fadump= cmdline option. */
 static int __init early_fadump_param(char *p)
 {
@@ -360,9 +368,15 @@ static int __init early_fadump_reserve_mem(char *p)
 }
 early_param("fadump_reserve_mem", early_fadump_reserve_mem);
 
+<<<<<<< HEAD
 static void register_fw_dump(struct fadump_mem_struct *fdm)
 {
 	int rc;
+=======
+static int register_fw_dump(struct fadump_mem_struct *fdm)
+{
+	int rc, err;
+>>>>>>> v4.9.227
 	unsigned int wait_time;
 
 	pr_debug("Registering for firmware-assisted kernel dump...\n");
@@ -379,7 +393,15 @@ static void register_fw_dump(struct fadump_mem_struct *fdm)
 
 	} while (wait_time);
 
+<<<<<<< HEAD
 	switch (rc) {
+=======
+	err = -EIO;
+	switch (rc) {
+	default:
+		pr_err("Failed to register. Unknown Error(%d).\n", rc);
+		break;
+>>>>>>> v4.9.227
 	case -1:
 		printk(KERN_ERR "Failed to register firmware-assisted kernel"
 			" dump. Hardware Error(%d).\n", rc);
@@ -387,18 +409,33 @@ static void register_fw_dump(struct fadump_mem_struct *fdm)
 	case -3:
 		printk(KERN_ERR "Failed to register firmware-assisted kernel"
 			" dump. Parameter Error(%d).\n", rc);
+<<<<<<< HEAD
+=======
+		err = -EINVAL;
+>>>>>>> v4.9.227
 		break;
 	case -9:
 		printk(KERN_ERR "firmware-assisted kernel dump is already "
 			" registered.");
 		fw_dump.dump_registered = 1;
+<<<<<<< HEAD
+=======
+		err = -EEXIST;
+>>>>>>> v4.9.227
 		break;
 	case 0:
 		printk(KERN_INFO "firmware-assisted kernel dump registration"
 			" is successful\n");
 		fw_dump.dump_registered = 1;
+<<<<<<< HEAD
 		break;
 	}
+=======
+		err = 0;
+		break;
+	}
+	return err;
+>>>>>>> v4.9.227
 }
 
 void crash_fadump(struct pt_regs *regs, const char *str)
@@ -418,7 +455,11 @@ void crash_fadump(struct pt_regs *regs, const char *str)
 	else
 		ppc_save_regs(&fdh->regs);
 
+<<<<<<< HEAD
 	fdh->cpu_online_mask = *cpu_online_mask;
+=======
+	fdh->online_mask = *cpu_online_mask;
+>>>>>>> v4.9.227
 
 	/* Call ibm,os-term rtas call to trigger firmware assisted dump */
 	rtas_os_term((char *)str);
@@ -649,7 +690,11 @@ static int __init fadump_build_cpu_notes(const struct fadump_mem_struct *fdm)
 		}
 		/* Lower 4 bytes of reg_value contains logical cpu id */
 		cpu = be64_to_cpu(reg_entry->reg_value) & FADUMP_CPU_ID_MASK;
+<<<<<<< HEAD
 		if (fdh && !cpumask_test_cpu(cpu, &fdh->cpu_online_mask)) {
+=======
+		if (fdh && !cpumask_test_cpu(cpu, &fdh->online_mask)) {
+>>>>>>> v4.9.227
 			SKIP_TO_NEXT_CPU(reg_entry);
 			continue;
 		}
@@ -831,7 +876,15 @@ static int fadump_init_elfcore_header(char *bufp)
 	elf->e_entry = 0;
 	elf->e_phoff = sizeof(struct elfhdr);
 	elf->e_shoff = 0;
+<<<<<<< HEAD
 	elf->e_flags = ELF_CORE_EFLAGS;
+=======
+#if defined(_CALL_ELF)
+	elf->e_flags = _CALL_ELF;
+#else
+	elf->e_flags = 0;
+#endif
+>>>>>>> v4.9.227
 	elf->e_ehsize = sizeof(struct elfhdr);
 	elf->e_phentsize = sizeof(struct elf_phdr);
 	elf->e_phnum = 0;
@@ -997,7 +1050,11 @@ static unsigned long init_fadump_header(unsigned long addr)
 	return addr;
 }
 
+<<<<<<< HEAD
 static void register_fadump(void)
+=======
+static int register_fadump(void)
+>>>>>>> v4.9.227
 {
 	unsigned long addr;
 	void *vaddr;
@@ -1008,7 +1065,11 @@ static void register_fadump(void)
 	 * assisted dump.
 	 */
 	if (!fw_dump.reserve_dump_area_size)
+<<<<<<< HEAD
 		return;
+=======
+		return -ENODEV;
+>>>>>>> v4.9.227
 
 	ret = fadump_setup_crash_memory_ranges();
 	if (ret)
@@ -1023,7 +1084,11 @@ static void register_fadump(void)
 	fadump_create_elfcore_headers(vaddr);
 
 	/* register the future kernel dump with firmware. */
+<<<<<<< HEAD
 	register_fw_dump(&fdm);
+=======
+	return register_fw_dump(&fdm);
+>>>>>>> v4.9.227
 }
 
 static int fadump_unregister_dump(struct fadump_mem_struct *fdm)
@@ -1072,8 +1137,12 @@ static int fadump_invalidate_dump(struct fadump_mem_struct *fdm)
 	} while (wait_time);
 
 	if (rc) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to invalidate firmware-assisted dump "
 			"rgistration. unexpected error(%d).\n", rc);
+=======
+		pr_err("Failed to invalidate firmware-assisted dump registration. Unexpected error (%d).\n", rc);
+>>>>>>> v4.9.227
 		return rc;
 	}
 	fw_dump.dump_active = 0;
@@ -1172,7 +1241,13 @@ static ssize_t fadump_release_memory_store(struct kobject *kobj,
 		 * Take away the '/proc/vmcore'. We are releasing the dump
 		 * memory, hence it will not be valid anymore.
 		 */
+<<<<<<< HEAD
 		vmcore_cleanup();
+=======
+#ifdef CONFIG_PROC_VMCORE
+		vmcore_cleanup();
+#endif
+>>>>>>> v4.9.227
 		fadump_invalidate_release_mem();
 
 	} else
@@ -1208,7 +1283,10 @@ static ssize_t fadump_register_store(struct kobject *kobj,
 	switch (buf[0]) {
 	case '0':
 		if (fw_dump.dump_registered == 0) {
+<<<<<<< HEAD
 			ret = -EINVAL;
+=======
+>>>>>>> v4.9.227
 			goto unlock_out;
 		}
 		/* Un-register Firmware-assisted dump */
@@ -1216,11 +1294,19 @@ static ssize_t fadump_register_store(struct kobject *kobj,
 		break;
 	case '1':
 		if (fw_dump.dump_registered == 1) {
+<<<<<<< HEAD
 			ret = -EINVAL;
 			goto unlock_out;
 		}
 		/* Register Firmware-assisted dump */
 		register_fadump();
+=======
+			ret = -EEXIST;
+			goto unlock_out;
+		}
+		/* Register Firmware-assisted dump */
+		ret = register_fadump();
+>>>>>>> v4.9.227
 		break;
 	default:
 		ret = -EINVAL;

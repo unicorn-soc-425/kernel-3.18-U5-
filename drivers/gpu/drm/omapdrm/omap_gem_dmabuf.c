@@ -21,6 +21,13 @@
 
 #include "omap_drv.h"
 
+<<<<<<< HEAD
+=======
+/* -----------------------------------------------------------------------------
+ * DMABUF Export
+ */
+
+>>>>>>> v4.9.227
 static struct sg_table *omap_gem_map_dma_buf(
 		struct dma_buf_attachment *attachment,
 		enum dma_data_direction dir)
@@ -79,7 +86,11 @@ static void omap_gem_dmabuf_release(struct dma_buf *buffer)
 
 
 static int omap_gem_dmabuf_begin_cpu_access(struct dma_buf *buffer,
+<<<<<<< HEAD
 		size_t start, size_t len, enum dma_data_direction dir)
+=======
+		enum dma_data_direction dir)
+>>>>>>> v4.9.227
 {
 	struct drm_gem_object *obj = buffer->priv;
 	struct page **pages;
@@ -93,11 +104,20 @@ static int omap_gem_dmabuf_begin_cpu_access(struct dma_buf *buffer,
 	return omap_gem_get_pages(obj, &pages, true);
 }
 
+<<<<<<< HEAD
 static void omap_gem_dmabuf_end_cpu_access(struct dma_buf *buffer,
 		size_t start, size_t len, enum dma_data_direction dir)
 {
 	struct drm_gem_object *obj = buffer->priv;
 	omap_gem_put_pages(obj);
+=======
+static int omap_gem_dmabuf_end_cpu_access(struct dma_buf *buffer,
+					  enum dma_data_direction dir)
+{
+	struct drm_gem_object *obj = buffer->priv;
+	omap_gem_put_pages(obj);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 
@@ -142,9 +162,12 @@ static int omap_gem_dmabuf_mmap(struct dma_buf *buffer,
 	struct drm_gem_object *obj = buffer->priv;
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (WARN_ON(!obj->filp))
 		return -EINVAL;
 
+=======
+>>>>>>> v4.9.227
 	ret = drm_gem_mmap_obj(obj, omap_gem_mmap_size(obj), vma);
 	if (ret < 0)
 		return ret;
@@ -178,6 +201,7 @@ struct dma_buf *omap_gem_prime_export(struct drm_device *dev,
 	return dma_buf_export(&exp_info);
 }
 
+<<<<<<< HEAD
 struct drm_gem_object *omap_gem_prime_import(struct drm_device *dev,
 		struct dma_buf *buffer)
 {
@@ -187,6 +211,22 @@ struct drm_gem_object *omap_gem_prime_import(struct drm_device *dev,
 	if (buffer->ops == &omap_dmabuf_ops) {
 		obj = buffer->priv;
 		/* is it from our device? */
+=======
+/* -----------------------------------------------------------------------------
+ * DMABUF Import
+ */
+
+struct drm_gem_object *omap_gem_prime_import(struct drm_device *dev,
+					     struct dma_buf *dma_buf)
+{
+	struct dma_buf_attachment *attach;
+	struct drm_gem_object *obj;
+	struct sg_table *sgt;
+	int ret;
+
+	if (dma_buf->ops == &omap_dmabuf_ops) {
+		obj = dma_buf->priv;
+>>>>>>> v4.9.227
 		if (obj->dev == dev) {
 			/*
 			 * Importing dmabuf exported from out own gem increases
@@ -197,9 +237,41 @@ struct drm_gem_object *omap_gem_prime_import(struct drm_device *dev,
 		}
 	}
 
+<<<<<<< HEAD
 	/*
 	 * TODO add support for importing buffers from other devices..
 	 * for now we don't need this but would be nice to add eventually
 	 */
 	return ERR_PTR(-EINVAL);
+=======
+	attach = dma_buf_attach(dma_buf, dev->dev);
+	if (IS_ERR(attach))
+		return ERR_CAST(attach);
+
+	get_dma_buf(dma_buf);
+
+	sgt = dma_buf_map_attachment(attach, DMA_BIDIRECTIONAL);
+	if (IS_ERR(sgt)) {
+		ret = PTR_ERR(sgt);
+		goto fail_detach;
+	}
+
+	obj = omap_gem_new_dmabuf(dev, dma_buf->size, sgt);
+	if (IS_ERR(obj)) {
+		ret = PTR_ERR(obj);
+		goto fail_unmap;
+	}
+
+	obj->import_attach = attach;
+
+	return obj;
+
+fail_unmap:
+	dma_buf_unmap_attachment(attach, sgt, DMA_BIDIRECTIONAL);
+fail_detach:
+	dma_buf_detach(dma_buf, attach);
+	dma_buf_put(dma_buf);
+
+	return ERR_PTR(ret);
+>>>>>>> v4.9.227
 }

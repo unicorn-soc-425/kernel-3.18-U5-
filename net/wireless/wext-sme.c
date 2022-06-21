@@ -35,7 +35,10 @@ int cfg80211_mgd_wext_connect(struct cfg80211_registered_device *rdev,
 
 	if (wdev->wext.keys) {
 		wdev->wext.keys->def = wdev->wext.default_key;
+<<<<<<< HEAD
 		wdev->wext.keys->defmgmt = wdev->wext.default_mgmt_key;
+=======
+>>>>>>> v4.9.227
 		if (wdev->wext.default_key != -1)
 			wdev->wext.connect.privacy = true;
 	}
@@ -43,11 +46,19 @@ int cfg80211_mgd_wext_connect(struct cfg80211_registered_device *rdev,
 	if (!wdev->wext.connect.ssid_len)
 		return 0;
 
+<<<<<<< HEAD
 	if (wdev->wext.keys) {
 		ck = kmemdup(wdev->wext.keys, sizeof(*ck), GFP_KERNEL);
 		if (!ck)
 			return -ENOMEM;
 		for (i = 0; i < 6; i++)
+=======
+	if (wdev->wext.keys && wdev->wext.keys->def != -1) {
+		ck = kmemdup(wdev->wext.keys, sizeof(*ck), GFP_KERNEL);
+		if (!ck)
+			return -ENOMEM;
+		for (i = 0; i < CFG80211_MAX_WEP_KEYS; i++)
+>>>>>>> v4.9.227
 			ck->params[i].key = ck->data[i];
 	}
 
@@ -225,6 +236,10 @@ int cfg80211_mgd_wext_giwessid(struct net_device *dev,
 			       struct iw_point *data, char *ssid)
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
+<<<<<<< HEAD
+=======
+	int ret = 0;
+>>>>>>> v4.9.227
 
 	/* call only for station! */
 	if (WARN_ON(wdev->iftype != NL80211_IFTYPE_STATION))
@@ -242,7 +257,14 @@ int cfg80211_mgd_wext_giwessid(struct net_device *dev,
 		if (ie) {
 			data->flags = 1;
 			data->length = ie[1];
+<<<<<<< HEAD
 			memcpy(ssid, ie + 2, data->length);
+=======
+			if (data->length > IW_ESSID_MAX_SIZE)
+				ret = -EINVAL;
+			else
+				memcpy(ssid, ie + 2, data->length);
+>>>>>>> v4.9.227
 		}
 		rcu_read_unlock();
 	} else if (wdev->wext.connect.ssid && wdev->wext.connect.ssid_len) {
@@ -252,7 +274,11 @@ int cfg80211_mgd_wext_giwessid(struct net_device *dev,
 	}
 	wdev_unlock(wdev);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> v4.9.227
 }
 
 int cfg80211_mgd_wext_siwap(struct net_device *dev,
@@ -322,7 +348,11 @@ int cfg80211_mgd_wext_giwap(struct net_device *dev,
 	if (wdev->current_bss)
 		memcpy(ap_addr->sa_data, wdev->current_bss->pub.bssid, ETH_ALEN);
 	else
+<<<<<<< HEAD
 		memset(ap_addr->sa_data, 0, ETH_ALEN);
+=======
+		eth_zero_addr(ap_addr->sa_data);
+>>>>>>> v4.9.227
 	wdev_unlock(wdev);
 
 	return 0;

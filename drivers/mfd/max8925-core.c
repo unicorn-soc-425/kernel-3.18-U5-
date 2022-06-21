@@ -650,6 +650,7 @@ static int max8925_irq_domain_map(struct irq_domain *d, unsigned int virq,
 	irq_set_chip_data(virq, d->host_data);
 	irq_set_chip_and_handler(virq, &max8925_irq_chip, handle_edge_irq);
 	irq_set_nested_thread(virq, 1);
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 	set_irq_flags(virq, IRQF_VALID);
 #else
@@ -659,6 +660,14 @@ static int max8925_irq_domain_map(struct irq_domain *d, unsigned int virq,
 }
 
 static struct irq_domain_ops max8925_irq_domain_ops = {
+=======
+	irq_set_noprobe(virq);
+
+	return 0;
+}
+
+static const struct irq_domain_ops max8925_irq_domain_ops = {
+>>>>>>> v4.9.227
 	.map	= max8925_irq_domain_map,
 	.xlate	= irq_domain_xlate_onetwocell,
 };

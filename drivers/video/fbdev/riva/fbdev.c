@@ -41,6 +41,7 @@
 #include <linux/pci.h>
 #include <linux/backlight.h>
 #include <linux/bitrev.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 #include <asm/mtrr.h>
 #endif
@@ -48,6 +49,8 @@
 #include <asm/prom.h>
 #include <asm/pci-bridge.h>
 #endif
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PMAC_BACKLIGHT
 #include <asm/machdep.h>
 #include <asm/backlight.h>
@@ -208,9 +211,13 @@ MODULE_DEVICE_TABLE(pci, rivafb_pci_tbl);
 static int flatpanel = -1; /* Autodetect later */
 static int forceCRTC = -1;
 static bool noaccel  = 0;
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 static bool nomtrr = 0;
 #endif
+=======
+static bool nomtrr = 0;
+>>>>>>> v4.9.227
 #ifdef CONFIG_PMAC_BACKLIGHT
 static int backlight = 1;
 #else
@@ -1735,7 +1742,10 @@ static int riva_set_fbinfo(struct fb_info *info)
 	return (rivafb_check_var(&info->var, info));
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
+=======
+>>>>>>> v4.9.227
 static int riva_get_EDID_OF(struct fb_info *info, struct pci_dev *pd)
 {
 	struct riva_par *par = info->par;
@@ -1766,9 +1776,14 @@ static int riva_get_EDID_OF(struct fb_info *info, struct pci_dev *pd)
 	NVTRACE_LEAVE();
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PPC_OF */
 
 #if defined(CONFIG_FB_RIVA_I2C) && !defined(CONFIG_PPC_OF)
+=======
+
+#if defined(CONFIG_FB_RIVA_I2C)
+>>>>>>> v4.9.227
 static int riva_get_EDID_i2c(struct fb_info *info)
 {
 	struct riva_par *par = info->par;
@@ -1776,6 +1791,10 @@ static int riva_get_EDID_i2c(struct fb_info *info)
 	int i;
 
 	NVTRACE_ENTER();
+<<<<<<< HEAD
+=======
+	par->riva.LockUnlock(&par->riva, 0);
+>>>>>>> v4.9.227
 	riva_create_i2c_busses(par);
 	for (i = 0; i < 3; i++) {
 		if (!par->chan[i].par)
@@ -1828,10 +1847,20 @@ static void riva_update_default_var(struct fb_var_screeninfo *var,
 static void riva_get_EDID(struct fb_info *info, struct pci_dev *pdev)
 {
 	NVTRACE_ENTER();
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
 	if (!riva_get_EDID_OF(info, pdev))
 		printk(PFX "could not retrieve EDID from OF\n");
 #elif defined(CONFIG_FB_RIVA_I2C)
+=======
+	if (riva_get_EDID_OF(info, pdev)) {
+		NVTRACE_LEAVE();
+		return;
+	}
+	if (IS_ENABLED(CONFIG_OF))
+		printk(PFX "could not retrieve EDID from OF\n");
+#if defined(CONFIG_FB_RIVA_I2C)
+>>>>>>> v4.9.227
 	if (!riva_get_EDID_i2c(info))
 		printk(PFX "could not retrieve EDID from DDC/I2C\n");
 #endif
@@ -2013,14 +2042,20 @@ static int rivafb_probe(struct pci_dev *pd, const struct pci_device_id *ent)
 
 	rivafb_fix.smem_len = riva_get_memlen(default_par) * 1024;
 	default_par->dclk_max = riva_get_maxdclk(default_par) * 1000;
+<<<<<<< HEAD
 	info->screen_base = ioremap(rivafb_fix.smem_start,
 				    rivafb_fix.smem_len);
+=======
+	info->screen_base = ioremap_wc(rivafb_fix.smem_start,
+				       rivafb_fix.smem_len);
+>>>>>>> v4.9.227
 	if (!info->screen_base) {
 		printk(KERN_ERR PFX "cannot ioremap FB base\n");
 		ret = -EIO;
 		goto err_iounmap_pramin;
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	if (!nomtrr) {
 		default_par->mtrr.vram = mtrr_add(rivafb_fix.smem_start,
@@ -2035,6 +2070,12 @@ static int rivafb_probe(struct pci_dev *pd, const struct pci_device_id *ent)
 		}
 	}
 #endif /* CONFIG_MTRR */
+=======
+	if (!nomtrr)
+		default_par->wc_cookie =
+			arch_phys_wc_add(rivafb_fix.smem_start,
+					 rivafb_fix.smem_len);
+>>>>>>> v4.9.227
 
 	info->fbops = &riva_fb_ops;
 	info->fix = rivafb_fix;
@@ -2108,6 +2149,7 @@ static void rivafb_remove(struct pci_dev *pd)
 	unregister_framebuffer(info);
 
 	riva_bl_exit(info);
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTRR
 	if (par->mtrr.vram_valid)
@@ -2115,6 +2157,9 @@ static void rivafb_remove(struct pci_dev *pd)
 			 info->fix.smem_len);
 #endif /* CONFIG_MTRR */
 
+=======
+	arch_phys_wc_del(par->wc_cookie);
+>>>>>>> v4.9.227
 	iounmap(par->ctrl_base);
 	iounmap(info->screen_base);
 	if (par->riva.Architecture == NV_ARCH_03)
@@ -2153,10 +2198,15 @@ static int rivafb_setup(char *options)
 			flatpanel = 1;
 		} else if (!strncmp(this_opt, "backlight:", 10)) {
 			backlight = simple_strtoul(this_opt+10, NULL, 0);
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 		} else if (!strncmp(this_opt, "nomtrr", 6)) {
 			nomtrr = 1;
 #endif
+=======
+		} else if (!strncmp(this_opt, "nomtrr", 6)) {
+			nomtrr = 1;
+>>>>>>> v4.9.227
 		} else if (!strncmp(this_opt, "strictmode", 10)) {
 			strictmode = 1;
 		} else if (!strncmp(this_opt, "noaccel", 7)) {
@@ -2212,10 +2262,15 @@ module_param(flatpanel, int, 0);
 MODULE_PARM_DESC(flatpanel, "Enables experimental flat panel support for some chipsets. (0 or 1=enabled) (default=0)");
 module_param(forceCRTC, int, 0);
 MODULE_PARM_DESC(forceCRTC, "Forces usage of a particular CRTC in case autodetection fails. (0 or 1) (default=autodetect)");
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 module_param(nomtrr, bool, 0);
 MODULE_PARM_DESC(nomtrr, "Disables MTRR support (0 or 1=disabled) (default=0)");
 #endif
+=======
+module_param(nomtrr, bool, 0);
+MODULE_PARM_DESC(nomtrr, "Disables MTRR support (0 or 1=disabled) (default=0)");
+>>>>>>> v4.9.227
 module_param(strictmode, bool, 0);
 MODULE_PARM_DESC(strictmode, "Only use video modes from EDID");
 

@@ -113,5 +113,9 @@ module_exit(vmci_drv_exit);
 
 MODULE_AUTHOR("VMware, Inc.");
 MODULE_DESCRIPTION("VMware Virtual Machine Communication Interface.");
+<<<<<<< HEAD
 MODULE_VERSION("1.1.0.0-k");
+=======
+MODULE_VERSION("1.1.6.0-k");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL v2");

@@ -839,7 +839,11 @@ static void vmw_move_notify(struct ttm_buffer_object *bo,
  */
 static void vmw_swap_notify(struct ttm_buffer_object *bo)
 {
+<<<<<<< HEAD
 	ttm_bo_wait(bo, false, false, false);
+=======
+	ttm_bo_wait(bo, false, false);
+>>>>>>> v4.9.227
 }
 
 
@@ -857,4 +861,9 @@ struct ttm_bo_driver vmw_bo_driver = {
 	.fault_reserve_notify = &vmw_ttm_fault_reserve_notify,
 	.io_mem_reserve = &vmw_ttm_io_mem_reserve,
 	.io_mem_free = &vmw_ttm_io_mem_free,
+<<<<<<< HEAD
+=======
+	.lru_tail = &ttm_bo_default_lru_tail,
+	.swap_lru_tail = &ttm_bo_default_swap_lru_tail,
+>>>>>>> v4.9.227
 };

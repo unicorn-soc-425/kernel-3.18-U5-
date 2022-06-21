@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+This file describes sysfs entries beneath /devices/platform/visorchipset.
+
+>>>>>>> v4.9.227
 What:		install/error
 Date:		7/18/2014
 KernelVersion: 	TBD
@@ -48,6 +53,7 @@ Description:	This field is used to tell s-Par which type of recovery tool
 		commission the guest.
 Users:		sparmaintainer@unisys.com
 
+<<<<<<< HEAD
 What:		guest/chipsetready
 Date:		7/18/2014
 KernelVersion: 	TBD
@@ -62,6 +68,8 @@ Description:	This entry is used by Unisys application software on the guest
 		has been successfully mounted.
 Users:		sparmaintainer@unisys.com
 
+=======
+>>>>>>> v4.9.227
 What:		parahotplug/deviceenabled
 Date:		7/18/2014
 KernelVersion: 	TBD

@@ -500,7 +500,11 @@ void pch_gbe_check_options(struct pch_gbe_adapter *adapter)
 		val = XsumTX;
 		pch_gbe_validate_option(&val, &opt, adapter);
 		if (!val)
+<<<<<<< HEAD
 			dev->features &= ~NETIF_F_ALL_CSUM;
+=======
+			dev->features &= ~NETIF_F_CSUM_MASK;
+>>>>>>> v4.9.227
 	}
 	{ /* Flow Control */
 		static const struct pch_gbe_option opt = {

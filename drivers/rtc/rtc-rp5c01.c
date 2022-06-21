@@ -170,7 +170,11 @@ static ssize_t rp5c01_nvram_read(struct file *filp, struct kobject *kobj,
 
 	spin_lock_irq(&priv->lock);
 
+<<<<<<< HEAD
 	for (count = 0; size > 0 && pos < RP5C01_MODE; count++, size--) {
+=======
+	for (count = 0; count < size; count++) {
+>>>>>>> v4.9.227
 		u8 data;
 
 		rp5c01_write(priv,
@@ -200,7 +204,11 @@ static ssize_t rp5c01_nvram_write(struct file *filp, struct kobject *kobj,
 
 	spin_lock_irq(&priv->lock);
 
+<<<<<<< HEAD
 	for (count = 0; size > 0 && pos < RP5C01_MODE; count++, size--) {
+=======
+	for (count = 0; count < size; count++) {
+>>>>>>> v4.9.227
 		u8 data = *buf++;
 
 		rp5c01_write(priv,
@@ -273,7 +281,10 @@ static int __exit rp5c01_rtc_remove(struct platform_device *dev)
 static struct platform_driver rp5c01_rtc_driver = {
 	.driver	= {
 		.name	= "rtc-rp5c01",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.remove	= __exit_p(rp5c01_rtc_remove),
 };

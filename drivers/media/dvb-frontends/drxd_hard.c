@@ -2805,7 +2805,11 @@ static int drxd_read_signal_strength(struct dvb_frontend *fe, u16 * strength)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int drxd_read_status(struct dvb_frontend *fe, fe_status_t * status)
+=======
+static int drxd_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct drxd_state *state = fe->demodulator_priv;
 	u32 lock;
@@ -2950,10 +2954,16 @@ struct dvb_frontend *drxd_attach(const struct drxd_config *config,
 {
 	struct drxd_state *state = NULL;
 
+<<<<<<< HEAD
 	state = kmalloc(sizeof(struct drxd_state), GFP_KERNEL);
 	if (!state)
 		return NULL;
 	memset(state, 0, sizeof(*state));
+=======
+	state = kzalloc(sizeof(*state), GFP_KERNEL);
+	if (!state)
+		return NULL;
+>>>>>>> v4.9.227
 
 	state->ops = drxd_ops;
 	state->dev = dev;

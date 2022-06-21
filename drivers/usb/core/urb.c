@@ -40,6 +40,10 @@ void usb_init_urb(struct urb *urb)
 	if (urb) {
 		memset(urb, 0, sizeof(*urb));
 		kref_init(&urb->kref);
+<<<<<<< HEAD
+=======
+		INIT_LIST_HEAD(&urb->urb_list);
+>>>>>>> v4.9.227
 		INIT_LIST_HEAD(&urb->anchor_list);
 	}
 }
@@ -68,10 +72,15 @@ struct urb *usb_alloc_urb(int iso_packets, gfp_t mem_flags)
 	urb = kmalloc(sizeof(struct urb) +
 		iso_packets * sizeof(struct usb_iso_packet_descriptor),
 		mem_flags);
+<<<<<<< HEAD
 	if (!urb) {
 		printk(KERN_ERR "alloc_urb: kmalloc failed\n");
 		return NULL;
 	}
+=======
+	if (!urb)
+		return NULL;
+>>>>>>> v4.9.227
 	usb_init_urb(urb);
 	return urb;
 }
@@ -129,9 +138,14 @@ void usb_anchor_urb(struct urb *urb, struct usb_anchor *anchor)
 	list_add_tail(&urb->anchor_list, &anchor->urb_list);
 	urb->anchor = anchor;
 
+<<<<<<< HEAD
 	if (unlikely(anchor->poisoned)) {
 		atomic_inc(&urb->reject);
 	}
+=======
+	if (unlikely(anchor->poisoned))
+		atomic_inc(&urb->reject);
+>>>>>>> v4.9.227
 
 	spin_unlock_irqrestore(&anchor->lock, flags);
 }
@@ -402,7 +416,11 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 		/* SuperSpeed isoc endpoints have up to 16 bursts of up to
 		 * 3 packets each
 		 */
+<<<<<<< HEAD
 		if (dev->speed == USB_SPEED_SUPER) {
+=======
+		if (dev->speed >= USB_SPEED_SUPER) {
+>>>>>>> v4.9.227
 			int     burst = 1 + ep->ss_ep_comp.bMaxBurst;
 			int     mult = USB_SS_MULT(ep->ss_ep_comp.bmAttributes);
 			max *= burst;
@@ -500,6 +518,10 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 		}
 		/* too big? */
 		switch (dev->speed) {
+<<<<<<< HEAD
+=======
+		case USB_SPEED_SUPER_PLUS:
+>>>>>>> v4.9.227
 		case USB_SPEED_SUPER:	/* units are 125us */
 			/* Handle up to 2^(16-1) microframes */
 			if (urb->interval > (1 << 15))

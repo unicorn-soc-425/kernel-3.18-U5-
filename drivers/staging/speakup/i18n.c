@@ -1,5 +1,10 @@
 /* Internationalization implementation.  Includes definitions of English
+<<<<<<< HEAD
  * string arrays, and the i18n pointer. */
+=======
+ * string arrays, and the i18n pointer.
+ */
+>>>>>>> v4.9.227
 
 #include <linux/slab.h>		/* For kmalloc. */
 #include <linux/ctype.h>
@@ -388,6 +393,7 @@ static struct msg_group_t all_groups[] = {
 	},
 };
 
+<<<<<<< HEAD
 static const  int num_groups = sizeof(all_groups) / sizeof(struct msg_group_t);
 
 char *spk_msg_get(enum msg_index_t index)
@@ -396,6 +402,13 @@ char *spk_msg_get(enum msg_index_t index)
 
 	ch = speakup_msgs[index];
 	return ch;
+=======
+static const  int num_groups = ARRAY_SIZE(all_groups);
+
+char *spk_msg_get(enum msg_index_t index)
+{
+	return speakup_msgs[index];
+>>>>>>> v4.9.227
 }
 
 /*

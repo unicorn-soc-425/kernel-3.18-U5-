@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -80,10 +88,15 @@ void req_capsule_init(struct req_capsule *pill, struct ptlrpc_request *req,
 void req_capsule_fini(struct req_capsule *pill);
 
 void req_capsule_set(struct req_capsule *pill, const struct req_format *fmt);
+<<<<<<< HEAD
 void req_capsule_client_dump(struct req_capsule *pill);
 void req_capsule_server_dump(struct req_capsule *pill);
 void req_capsule_init_area(struct req_capsule *pill);
 int req_capsule_filled_sizes(struct req_capsule *pill, enum req_location loc);
+=======
+size_t req_capsule_filled_sizes(struct req_capsule *pill,
+				enum req_location loc);
+>>>>>>> v4.9.227
 int  req_capsule_server_pack(struct req_capsule *pill);
 
 void *req_capsule_client_get(struct req_capsule *pill,
@@ -93,17 +106,26 @@ void *req_capsule_client_swab_get(struct req_capsule *pill,
 				  void *swabber);
 void *req_capsule_client_sized_get(struct req_capsule *pill,
 				   const struct req_msg_field *field,
+<<<<<<< HEAD
 				   int len);
+=======
+				   u32 len);
+>>>>>>> v4.9.227
 void *req_capsule_server_get(struct req_capsule *pill,
 			     const struct req_msg_field *field);
 void *req_capsule_server_sized_get(struct req_capsule *pill,
 				   const struct req_msg_field *field,
+<<<<<<< HEAD
 				   int len);
+=======
+				   u32 len);
+>>>>>>> v4.9.227
 void *req_capsule_server_swab_get(struct req_capsule *pill,
 				  const struct req_msg_field *field,
 				  void *swabber);
 void *req_capsule_server_sized_swab_get(struct req_capsule *pill,
 					const struct req_msg_field *field,
+<<<<<<< HEAD
 					int len, void *swabber);
 const void *req_capsule_other_get(struct req_capsule *pill,
 				  const struct req_msg_field *field);
@@ -116,12 +138,25 @@ int req_capsule_get_size(const struct req_capsule *pill,
 			  enum req_location loc);
 int req_capsule_msg_size(struct req_capsule *pill, enum req_location loc);
 int req_capsule_fmt_size(__u32 magic, const struct req_format *fmt,
+=======
+					u32 len, void *swabber);
+
+void req_capsule_set_size(struct req_capsule *pill,
+			  const struct req_msg_field *field,
+			  enum req_location loc, u32 size);
+u32 req_capsule_get_size(const struct req_capsule *pill,
+			 const struct req_msg_field *field,
+			 enum req_location loc);
+u32 req_capsule_msg_size(struct req_capsule *pill, enum req_location loc);
+u32 req_capsule_fmt_size(__u32 magic, const struct req_format *fmt,
+>>>>>>> v4.9.227
 			 enum req_location loc);
 void req_capsule_extend(struct req_capsule *pill, const struct req_format *fmt);
 
 int req_capsule_has_field(const struct req_capsule *pill,
 			  const struct req_msg_field *field,
 			  enum req_location loc);
+<<<<<<< HEAD
 int req_capsule_field_present(const struct req_capsule *pill,
 			      const struct req_msg_field *field,
 			      enum req_location loc);
@@ -132,6 +167,11 @@ void req_capsule_shrink(struct req_capsule *pill,
 int req_capsule_server_grow(struct req_capsule *pill,
 			    const struct req_msg_field *field,
 			    unsigned int newlen);
+=======
+void req_capsule_shrink(struct req_capsule *pill,
+			const struct req_msg_field *field,
+			u32 newlen, enum req_location loc);
+>>>>>>> v4.9.227
 int  req_layout_init(void);
 void req_layout_fini(void);
 
@@ -141,7 +181,10 @@ void req_layout_fini(void);
 extern struct req_format RQF_OBD_PING;
 extern struct req_format RQF_OBD_SET_INFO;
 extern struct req_format RQF_SEC_CTX;
+<<<<<<< HEAD
 extern struct req_format RQF_OBD_IDX_READ;
+=======
+>>>>>>> v4.9.227
 /* MGS req_format */
 extern struct req_format RQF_MGS_TARGET_REG;
 extern struct req_format RQF_MGS_SET_INFO;
@@ -149,6 +192,10 @@ extern struct req_format RQF_MGS_CONFIG_READ;
 /* fid/fld req_format */
 extern struct req_format RQF_SEQ_QUERY;
 extern struct req_format RQF_FLD_QUERY;
+<<<<<<< HEAD
+=======
+extern struct req_format RQF_FLD_READ;
+>>>>>>> v4.9.227
 /* MDS req_format */
 extern struct req_format RQF_MDS_CONNECT;
 extern struct req_format RQF_MDS_DISCONNECT;
@@ -157,7 +204,10 @@ extern struct req_format RQF_MDS_GETSTATUS;
 extern struct req_format RQF_MDS_SYNC;
 extern struct req_format RQF_MDS_GETXATTR;
 extern struct req_format RQF_MDS_GETATTR;
+<<<<<<< HEAD
 extern struct req_format RQF_UPDATE_OBJ;
+=======
+>>>>>>> v4.9.227
 
 /*
  * This is format of direct (non-intent) MDS_GETATTR_NAME request.
@@ -165,18 +215,28 @@ extern struct req_format RQF_UPDATE_OBJ;
 extern struct req_format RQF_MDS_GETATTR_NAME;
 extern struct req_format RQF_MDS_CLOSE;
 extern struct req_format RQF_MDS_RELEASE_CLOSE;
+<<<<<<< HEAD
 extern struct req_format RQF_MDS_PIN;
 extern struct req_format RQF_MDS_UNPIN;
+=======
+>>>>>>> v4.9.227
 extern struct req_format RQF_MDS_CONNECT;
 extern struct req_format RQF_MDS_DISCONNECT;
 extern struct req_format RQF_MDS_GET_INFO;
 extern struct req_format RQF_MDS_READPAGE;
 extern struct req_format RQF_MDS_WRITEPAGE;
+<<<<<<< HEAD
 extern struct req_format RQF_MDS_IS_SUBDIR;
 extern struct req_format RQF_MDS_DONE_WRITING;
 extern struct req_format RQF_MDS_REINT;
 extern struct req_format RQF_MDS_REINT_CREATE;
 extern struct req_format RQF_MDS_REINT_CREATE_RMT_ACL;
+=======
+extern struct req_format RQF_MDS_DONE_WRITING;
+extern struct req_format RQF_MDS_REINT;
+extern struct req_format RQF_MDS_REINT_CREATE;
+extern struct req_format RQF_MDS_REINT_CREATE_ACL;
+>>>>>>> v4.9.227
 extern struct req_format RQF_MDS_REINT_CREATE_SLAVE;
 extern struct req_format RQF_MDS_REINT_CREATE_SYM;
 extern struct req_format RQF_MDS_REINT_OPEN;
@@ -188,7 +248,10 @@ extern struct req_format RQF_MDS_REINT_SETXATTR;
 extern struct req_format RQF_MDS_QUOTACHECK;
 extern struct req_format RQF_MDS_QUOTACTL;
 extern struct req_format RQF_QC_CALLBACK;
+<<<<<<< HEAD
 extern struct req_format RQF_QUOTA_DQACQ;
+=======
+>>>>>>> v4.9.227
 extern struct req_format RQF_MDS_SWAP_LAYOUTS;
 /* MDS hsm formats */
 extern struct req_format RQF_MDS_HSM_STATE_GET;
@@ -213,7 +276,11 @@ extern struct req_format RQF_OST_BRW_READ;
 extern struct req_format RQF_OST_BRW_WRITE;
 extern struct req_format RQF_OST_STATFS;
 extern struct req_format RQF_OST_SET_GRANT_INFO;
+<<<<<<< HEAD
 extern struct req_format RQF_OST_GET_INFO_GENERIC;
+=======
+extern struct req_format RQF_OST_GET_INFO;
+>>>>>>> v4.9.227
 extern struct req_format RQF_OST_GET_INFO_LAST_ID;
 extern struct req_format RQF_OST_GET_INFO_LAST_FID;
 extern struct req_format RQF_OST_SET_INFO_LAST_FID;
@@ -231,7 +298,10 @@ extern struct req_format RQF_LDLM_INTENT_OPEN;
 extern struct req_format RQF_LDLM_INTENT_CREATE;
 extern struct req_format RQF_LDLM_INTENT_UNLINK;
 extern struct req_format RQF_LDLM_INTENT_GETXATTR;
+<<<<<<< HEAD
 extern struct req_format RQF_LDLM_INTENT_QUOTA;
+=======
+>>>>>>> v4.9.227
 extern struct req_format RQF_LDLM_CANCEL;
 extern struct req_format RQF_LDLM_CALLBACK;
 extern struct req_format RQF_LDLM_CP_CALLBACK;
@@ -263,7 +333,10 @@ extern struct req_msg_field RMF_SETINFO_KEY;
 extern struct req_msg_field RMF_GETINFO_VAL;
 extern struct req_msg_field RMF_GETINFO_VALLEN;
 extern struct req_msg_field RMF_GETINFO_KEY;
+<<<<<<< HEAD
 extern struct req_msg_field RMF_IDX_INFO;
+=======
+>>>>>>> v4.9.227
 extern struct req_msg_field RMF_CLOSE_DATA;
 
 /*
@@ -288,7 +361,10 @@ extern struct req_msg_field RMF_CAPA1;
 extern struct req_msg_field RMF_CAPA2;
 extern struct req_msg_field RMF_OBD_QUOTACHECK;
 extern struct req_msg_field RMF_OBD_QUOTACTL;
+<<<<<<< HEAD
 extern struct req_msg_field RMF_QUOTA_BODY;
+=======
+>>>>>>> v4.9.227
 extern struct req_msg_field RMF_STRING;
 extern struct req_msg_field RMF_SWAP_LAYOUTS;
 extern struct req_msg_field RMF_MDS_HSM_PROGRESS;
@@ -333,9 +409,12 @@ extern struct req_msg_field RMF_MGS_CONFIG_RES;
 /* generic uint32 */
 extern struct req_msg_field RMF_U32;
 
+<<<<<<< HEAD
 /* OBJ update format */
 extern struct req_msg_field RMF_UPDATE;
 extern struct req_msg_field RMF_UPDATE_REPLY;
+=======
+>>>>>>> v4.9.227
 /** @} req_layout */
 
 #endif /* _LUSTRE_REQ_LAYOUT_H__ */

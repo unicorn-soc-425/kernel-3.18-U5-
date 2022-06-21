@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,6 +93,10 @@ acpi_rs_convert_aml_to_resources(u8 * aml,
 	/* Get the appropriate conversion info table */
 
 	aml_resource = ACPI_CAST_PTR(union aml_resource, aml);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	if (acpi_ut_get_resource_type(aml) == ACPI_RESOURCE_NAME_SERIAL_BUS) {
 		if (aml_resource->common_serial_bus.type >
 		    AML_RESOURCE_MAX_SERIALBUSTYPE) {
@@ -225,10 +233,17 @@ acpi_rs_convert_resources_to_aml(struct acpi_resource *resource,
 
 		/* Perform final sanity check on the new AML resource descriptor */
 
+<<<<<<< HEAD
 		status = acpi_ut_validate_resource(NULL,
 						   ACPI_CAST_PTR(union
 								 aml_resource,
 								 aml), NULL);
+=======
+		status =
+		    acpi_ut_validate_resource(NULL,
+					      ACPI_CAST_PTR(union aml_resource,
+							    aml), NULL);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}

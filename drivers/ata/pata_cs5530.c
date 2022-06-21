@@ -276,10 +276,15 @@ static int cs5530_init_chip(void)
 	pci_dev_put(cs5530_0);
 	return 0;
 fail_put:
+<<<<<<< HEAD
 	if (master_0)
 		pci_dev_put(master_0);
 	if (cs5530_0)
 		pci_dev_put(cs5530_0);
+=======
+	pci_dev_put(master_0);
+	pci_dev_put(cs5530_0);
+>>>>>>> v4.9.227
 	return -ENODEV;
 }
 

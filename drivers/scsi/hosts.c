@@ -33,7 +33,11 @@
 #include <linux/transport_class.h>
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/idr.h>
+>>>>>>> v4.9.227
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_transport.h>
@@ -42,7 +46,11 @@
 #include "scsi_logging.h"
 
 
+<<<<<<< HEAD
 static atomic_t scsi_host_next_hn = ATOMIC_INIT(0);	/* host_no for next new host */
+=======
+static DEFINE_IDA(host_index_ida);
+>>>>>>> v4.9.227
 
 
 static void scsi_host_cls_release(struct device *dev)
@@ -217,6 +225,16 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
 		error = scsi_mq_setup_tags(shost);
 		if (error)
 			goto fail;
+<<<<<<< HEAD
+=======
+	} else {
+		shost->bqt = blk_init_tags(shost->can_queue,
+				shost->hostt->tag_alloc_policy);
+		if (!shost->bqt) {
+			error = -ENOMEM;
+			goto fail;
+		}
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -239,14 +257,30 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
 
 	shost->dma_dev = dma_dev;
 
+<<<<<<< HEAD
 	error = device_add(&shost->shost_gendev);
 	if (error)
 		goto out_destroy_freelist;
 
+=======
+	/*
+	 * Increase usage count temporarily here so that calling
+	 * scsi_autopm_put_host() will trigger runtime idle if there is
+	 * nothing else preventing suspending the device.
+	 */
+	pm_runtime_get_noresume(&shost->shost_gendev);
+>>>>>>> v4.9.227
 	pm_runtime_set_active(&shost->shost_gendev);
 	pm_runtime_enable(&shost->shost_gendev);
 	device_enable_async_suspend(&shost->shost_gendev);
 
+<<<<<<< HEAD
+=======
+	error = device_add(&shost->shost_gendev);
+	if (error)
+		goto out_destroy_freelist;
+
+>>>>>>> v4.9.227
 	scsi_host_set_state(shost, SHOST_RUNNING);
 	get_device(shost->shost_gendev.parent);
 
@@ -283,6 +317,10 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
 		goto out_destroy_host;
 
 	scsi_proc_host_add(shost);
+<<<<<<< HEAD
+=======
+	scsi_autopm_put_host(shost);
+>>>>>>> v4.9.227
 	return error;
 
  out_destroy_host:
@@ -295,6 +333,13 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
  out_del_gendev:
 	device_del(&shost->shost_gendev);
  out_destroy_freelist:
+<<<<<<< HEAD
+=======
+	device_disable_async_suspend(&shost->shost_gendev);
+	pm_runtime_disable(&shost->shost_gendev);
+	pm_runtime_set_suspended(&shost->shost_gendev);
+	pm_runtime_put_noidle(&shost->shost_gendev);
+>>>>>>> v4.9.227
 	scsi_destroy_command_freelist(shost);
  out_destroy_tags:
 	if (shost_use_blk_mq(shost))
@@ -326,6 +371,20 @@ static void scsi_host_dev_release(struct device *dev)
 		kfree(queuedata);
 	}
 
+<<<<<<< HEAD
+=======
+	if (shost->shost_state == SHOST_CREATED) {
+		/*
+		 * Free the shost_dev device name here if scsi_host_alloc()
+		 * and scsi_host_put() have been called but neither
+		 * scsi_host_add() nor scsi_host_remove() has been called.
+		 * This avoids that the memory allocated for the shost_dev
+		 * name is leaked.
+		 */
+		kfree(dev_name(&shost->shost_dev));
+	}
+
+>>>>>>> v4.9.227
 	scsi_destroy_command_freelist(shost);
 	if (shost_use_blk_mq(shost)) {
 		if (shost->tag_set.tags)
@@ -337,6 +396,11 @@ static void scsi_host_dev_release(struct device *dev)
 
 	kfree(shost->shost_data);
 
+<<<<<<< HEAD
+=======
+	ida_simple_remove(&host_index_ida, shost->host_no);
+
+>>>>>>> v4.9.227
 	if (parent)
 		put_device(parent);
 	kfree(shost);
@@ -370,6 +434,10 @@ struct Scsi_Host *scsi_host_alloc(struct scsi_host_template *sht, int privsize)
 {
 	struct Scsi_Host *shost;
 	gfp_t gfp_mask = GFP_KERNEL;
+<<<<<<< HEAD
+=======
+	int index;
+>>>>>>> v4.9.227
 
 	if (sht->unchecked_isa_dma && privsize)
 		gfp_mask |= __GFP_DMA;
@@ -388,11 +456,19 @@ struct Scsi_Host *scsi_host_alloc(struct scsi_host_template *sht, int privsize)
 	init_waitqueue_head(&shost->host_wait);
 	mutex_init(&shost->scan_mutex);
 
+<<<<<<< HEAD
 	/*
 	 * subtract one because we increment first then return, but we need to
 	 * know what the next host number was before increment
 	 */
 	shost->host_no = atomic_inc_return(&scsi_host_next_hn) - 1;
+=======
+	index = ida_simple_get(&host_index_ida, 0, 0, GFP_KERNEL);
+	if (index < 0)
+		goto fail_kfree;
+	shost->host_no = index;
+
+>>>>>>> v4.9.227
 	shost->dma_channel = 0xff;
 
 	/* These three are default values which can be overridden */
@@ -418,7 +494,10 @@ struct Scsi_Host *scsi_host_alloc(struct scsi_host_template *sht, int privsize)
 	shost->cmd_per_lun = sht->cmd_per_lun;
 	shost->unchecked_isa_dma = sht->unchecked_isa_dma;
 	shost->use_clustering = sht->use_clustering;
+<<<<<<< HEAD
 	shost->ordered_tag = sht->ordered_tag;
+=======
+>>>>>>> v4.9.227
 	shost->no_write_same = sht->no_write_same;
 
 	if (shost_eh_deadline == -1 || !sht->eh_host_reset_handler)
@@ -459,7 +538,11 @@ struct Scsi_Host *scsi_host_alloc(struct scsi_host_template *sht, int privsize)
 	else
 		shost->dma_boundary = 0xffffffff;
 
+<<<<<<< HEAD
 	shost->use_blk_mq = scsi_use_blk_mq && !shost->hostt->disable_blk_mq;
+=======
+	shost->use_blk_mq = scsi_use_blk_mq;
+>>>>>>> v4.9.227
 
 	device_initialize(&shost->shost_gendev);
 	dev_set_name(&shost->shost_gendev, "host%d", shost->host_no);
@@ -478,15 +561,24 @@ struct Scsi_Host *scsi_host_alloc(struct scsi_host_template *sht, int privsize)
 		shost_printk(KERN_WARNING, shost,
 			"error handler thread failed to spawn, error = %ld\n",
 			PTR_ERR(shost->ehandler));
+<<<<<<< HEAD
 		goto fail_kfree;
+=======
+		goto fail_index_remove;
+>>>>>>> v4.9.227
 	}
 
 	shost->tmf_work_q = alloc_workqueue("scsi_tmf_%d",
 					    WQ_UNBOUND | WQ_MEM_RECLAIM,
 					   1, shost->host_no);
 	if (!shost->tmf_work_q) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "scsi%d: failed to create tmf workq\n",
 		       shost->host_no);
+=======
+		shost_printk(KERN_WARNING, shost,
+			     "failed to create tmf workq\n");
+>>>>>>> v4.9.227
 		goto fail_kthread;
 	}
 	scsi_proc_hostdir_add(shost->hostt);
@@ -494,6 +586,11 @@ struct Scsi_Host *scsi_host_alloc(struct scsi_host_template *sht, int privsize)
 
  fail_kthread:
 	kthread_stop(shost->ehandler);
+<<<<<<< HEAD
+=======
+ fail_index_remove:
+	ida_simple_remove(&host_index_ida, shost->host_no);
+>>>>>>> v4.9.227
  fail_kfree:
 	kfree(shost);
 	return NULL;
@@ -589,6 +686,10 @@ int scsi_init_hosts(void)
 void scsi_exit_hosts(void)
 {
 	class_unregister(&shost_class);
+<<<<<<< HEAD
+=======
+	ida_destroy(&host_index_ida);
+>>>>>>> v4.9.227
 }
 
 int scsi_is_host_device(const struct device *dev)

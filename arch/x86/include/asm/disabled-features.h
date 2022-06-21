@@ -10,18 +10,45 @@
  * cpu_feature_enabled().
  */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_INTEL_MPX
+# define DISABLE_MPX	0
+#else
+# define DISABLE_MPX	(1<<(X86_FEATURE_MPX & 31))
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_X86_64
 # define DISABLE_VME		(1<<(X86_FEATURE_VME & 31))
 # define DISABLE_K6_MTRR	(1<<(X86_FEATURE_K6_MTRR & 31))
 # define DISABLE_CYRIX_ARR	(1<<(X86_FEATURE_CYRIX_ARR & 31))
 # define DISABLE_CENTAUR_MCR	(1<<(X86_FEATURE_CENTAUR_MCR & 31))
+<<<<<<< HEAD
+=======
+# define DISABLE_PCID		0
+>>>>>>> v4.9.227
 #else
 # define DISABLE_VME		0
 # define DISABLE_K6_MTRR	0
 # define DISABLE_CYRIX_ARR	0
 # define DISABLE_CENTAUR_MCR	0
+<<<<<<< HEAD
 #endif /* CONFIG_X86_64 */
 
+=======
+# define DISABLE_PCID		(1<<(X86_FEATURE_PCID & 31))
+#endif /* CONFIG_X86_64 */
+
+#ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
+# define DISABLE_PKU		0
+# define DISABLE_OSPKE		0
+#else
+# define DISABLE_PKU		(1<<(X86_FEATURE_PKU & 31))
+# define DISABLE_OSPKE		(1<<(X86_FEATURE_OSPKE & 31))
+#endif /* CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS */
+
+>>>>>>> v4.9.227
 /*
  * Make sure to add features to the correct mask
  */
@@ -29,11 +56,29 @@
 #define DISABLED_MASK1	0
 #define DISABLED_MASK2	0
 #define DISABLED_MASK3	(DISABLE_CYRIX_ARR|DISABLE_CENTAUR_MCR|DISABLE_K6_MTRR)
+<<<<<<< HEAD
 #define DISABLED_MASK4	0
+=======
+#define DISABLED_MASK4	(DISABLE_PCID)
+>>>>>>> v4.9.227
 #define DISABLED_MASK5	0
 #define DISABLED_MASK6	0
 #define DISABLED_MASK7	0
 #define DISABLED_MASK8	0
+<<<<<<< HEAD
 #define DISABLED_MASK9	0
+=======
+#define DISABLED_MASK9	(DISABLE_MPX)
+#define DISABLED_MASK10	0
+#define DISABLED_MASK11	0
+#define DISABLED_MASK12	0
+#define DISABLED_MASK13	0
+#define DISABLED_MASK14	0
+#define DISABLED_MASK15	0
+#define DISABLED_MASK16	(DISABLE_PKU|DISABLE_OSPKE)
+#define DISABLED_MASK17	0
+#define DISABLED_MASK18	0
+#define DISABLED_MASK_CHECK BUILD_BUG_ON_ZERO(NCAPINTS != 19)
+>>>>>>> v4.9.227
 
 #endif /* _ASM_X86_DISABLED_FEATURES_H */

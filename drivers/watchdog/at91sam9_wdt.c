@@ -17,6 +17,10 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -40,9 +44,15 @@
 #define DRV_NAME "AT91SAM9 Watchdog"
 
 #define wdt_read(wdt, field) \
+<<<<<<< HEAD
 	__raw_readl((wdt)->base + (field))
 #define wdt_write(wtd, field, val) \
 	__raw_writel((val), (wdt)->base + (field))
+=======
+	readl_relaxed((wdt)->base + (field))
+#define wdt_write(wtd, field, val) \
+	writel_relaxed((val), (wdt)->base + (field))
+>>>>>>> v4.9.227
 
 /* AT91SAM9 watchdog runs a 12bit counter @ 256Hz,
  * use this to convert a watchdog
@@ -90,6 +100,10 @@ struct at91wdt {
 	unsigned long heartbeat;	/* WDT heartbeat in jiffies */
 	bool nowayout;
 	unsigned int irq;
+<<<<<<< HEAD
+=======
+	struct clk *sclk;
+>>>>>>> v4.9.227
 };
 
 /* ......................................................................... */
@@ -208,7 +222,12 @@ static int at91_wdt_init(struct platform_device *pdev, struct at91wdt *wdt)
 
 	if ((tmp & AT91_WDT_WDFIEN) && wdt->irq) {
 		err = request_irq(wdt->irq, wdt_interrupt,
+<<<<<<< HEAD
 				  IRQF_SHARED | IRQF_IRQPOLL,
+=======
+				  IRQF_SHARED | IRQF_IRQPOLL |
+				  IRQF_NO_SUSPEND,
+>>>>>>> v4.9.227
 				  pdev->name, wdt);
 		if (err)
 			return err;
@@ -351,15 +370,36 @@ static int __init at91wdt_probe(struct platform_device *pdev)
 	if (IS_ERR(wdt->base))
 		return PTR_ERR(wdt->base);
 
+<<<<<<< HEAD
 	if (pdev->dev.of_node) {
 		err = of_at91wdt_init(pdev->dev.of_node, wdt);
 		if (err)
 			return err;
+=======
+	wdt->sclk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(wdt->sclk))
+		return PTR_ERR(wdt->sclk);
+
+	err = clk_prepare_enable(wdt->sclk);
+	if (err) {
+		dev_err(&pdev->dev, "Could not enable slow clock\n");
+		return err;
+	}
+
+	if (pdev->dev.of_node) {
+		err = of_at91wdt_init(pdev->dev.of_node, wdt);
+		if (err)
+			goto err_clk;
+>>>>>>> v4.9.227
 	}
 
 	err = at91_wdt_init(pdev, wdt);
 	if (err)
+<<<<<<< HEAD
 		return err;
+=======
+		goto err_clk;
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, wdt);
 
@@ -367,6 +407,14 @@ static int __init at91wdt_probe(struct platform_device *pdev)
 		wdt->wdd.timeout, wdt->nowayout);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_clk:
+	clk_disable_unprepare(wdt->sclk);
+
+	return err;
+>>>>>>> v4.9.227
 }
 
 static int __exit at91wdt_remove(struct platform_device *pdev)
@@ -376,6 +424,10 @@ static int __exit at91wdt_remove(struct platform_device *pdev)
 
 	pr_warn("I quit now, hardware will probably reboot!\n");
 	del_timer(&wdt->timer);
+<<<<<<< HEAD
+=======
+	clk_disable_unprepare(wdt->sclk);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -393,7 +445,10 @@ static struct platform_driver at91wdt_driver = {
 	.remove		= __exit_p(at91wdt_remove),
 	.driver		= {
 		.name	= "at91_wdt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(at91_wdt_dt_ids),
 	},
 };

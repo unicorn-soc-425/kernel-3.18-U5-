@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __RTL8188E_HAL_H__
 #define __RTL8188E_HAL_H__
@@ -159,7 +162,11 @@ struct txpowerinfo24g {
 /*  | 1byte|----8bytes----|1byte|--5bytes--| */
 /*  |         |            Reserved(14bytes)	      | */
 
+<<<<<<< HEAD
 /*  PG data exclude header, dummy 6 bytes frome CP test and reserved 1byte. */
+=======
+/*  PG data exclude header, dummy 6 bytes from CP test and reserved 1byte. */
+>>>>>>> v4.9.227
 #define EFUSE_OOB_PROTECT_BYTES			15
 
 #define		HWSET_MAX_SIZE_88E		512
@@ -177,7 +184,11 @@ struct txpowerinfo24g {
 /*  9bytes + 1byt + 5bytes and pre 1byte. */
 /*  For worst case: */
 /*  | 2byte|----8bytes----|1byte|--7bytes--| 92D */
+<<<<<<< HEAD
 /*  PG data exclude header, dummy 7 bytes frome CP test and reserved 1byte. */
+=======
+/*  PG data exclude header, dummy 7 bytes from CP test and reserved 1byte. */
+>>>>>>> v4.9.227
 #define		EFUSE_OOB_PROTECT_BYTES_88E	18
 #define		EFUSE_PROTECT_BYTES_BANK_88E	16
 
@@ -188,6 +199,7 @@ struct txpowerinfo24g {
 
 #define EFUSE_PROTECT_BYTES_BANK	16
 
+<<<<<<< HEAD
 /*  For RTL8723 WiFi/BT/GPS multi-function configuration. */
 enum rt_multi_func {
 	RT_MULTI_FUNC_NONE = 0x00,
@@ -208,6 +220,11 @@ struct hal_data_8188e {
 	u16	CustomerID;
 	u8 *pfirmware;
 	u32 fwsize;
+=======
+struct hal_data_8188e {
+	struct HAL_VERSION	VersionID;
+	u16	CustomerID;
+>>>>>>> v4.9.227
 	u16	FirmwareVersion;
 	u16	FirmwareVersionRev;
 	u16	FirmwareSubVersion;
@@ -224,7 +241,10 @@ struct hal_data_8188e {
 
 	/* rf_ctrl */
 	u8	rf_chip;
+<<<<<<< HEAD
 	u8	rf_type;
+=======
+>>>>>>> v4.9.227
 	u8	NumTotalRFPath;
 
 	u8	BoardType;
@@ -309,7 +329,10 @@ struct hal_data_8188e {
 	/* for host message to fw */
 	u8	LastHMEBoxNum;
 
+<<<<<<< HEAD
 	u8	fw_ractrl;
+=======
+>>>>>>> v4.9.227
 	u8	RegTxPause;
 	/*  Beacon function related global variable. */
 	u32	RegBcnCtrlVal;
@@ -374,6 +397,7 @@ struct hal_data_8188e {
 	u8	UsbRxAggPageTimeout;
 };
 
+<<<<<<< HEAD
 #define GET_HAL_DATA(__pAdapter)				\
 	((struct hal_data_8188e *)((__pAdapter)->HalData))
 #define GET_RF_TYPE(priv)		(GET_HAL_DATA(priv)->rf_type)
@@ -383,6 +407,8 @@ struct hal_data_8188e {
 #define INCLUDE_MULTI_FUNC_GPS(_Adapter)			\
 	(GET_HAL_DATA(_Adapter)->MultiFunc & RT_MULTI_FUNC_GPS)
 
+=======
+>>>>>>> v4.9.227
 /*  rtl8188e_hal_init.c */
 void _8051Reset88E(struct adapter *padapter);
 void rtl8188e_InitializeFirmwareVars(struct adapter *padapter);
@@ -391,7 +417,10 @@ void rtl8188e_InitializeFirmwareVars(struct adapter *padapter);
 s32 InitLLTTable(struct adapter *padapter, u8 txpktbuf_bndy);
 
 /*  EFuse */
+<<<<<<< HEAD
 u8 GetEEPROMSize8188E(struct adapter *padapter);
+=======
+>>>>>>> v4.9.227
 void Hal_InitPGData88E(struct adapter *padapter);
 void Hal_EfuseParseIDCode88E(struct adapter *padapter, u8 *hwinfo);
 void Hal_ReadTxPowerInfo88E(struct adapter *padapter, u8 *hwinfo,
@@ -414,8 +443,11 @@ void Hal_EfuseParseBoardType88E(struct adapter *pAdapter, u8 *hwinfo,
 void Hal_ReadPowerSavingMode88E(struct adapter *pAdapter, u8 *hwinfo,
 				bool AutoLoadFail);
 
+<<<<<<< HEAD
 void rtl8188e_set_hal_ops(struct hal_ops *pHalFunc);
 
+=======
+>>>>>>> v4.9.227
 /*  register */
 
 void rtl8188e_start_thread(struct adapter *padapter);

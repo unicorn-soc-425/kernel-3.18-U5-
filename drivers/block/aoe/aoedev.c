@@ -170,7 +170,11 @@ aoe_failip(struct aoedev *d)
 	if (rq == NULL)
 		return;
 	while ((bio = d->ip.nxbio)) {
+<<<<<<< HEAD
 		clear_bit(BIO_UPTODATE, &bio->bi_flags);
+=======
+		bio->bi_error = -EIO;
+>>>>>>> v4.9.227
 		d->ip.nxbio = bio->bi_next;
 		n = (unsigned long) rq->special;
 		rq->special = (void *) --n;

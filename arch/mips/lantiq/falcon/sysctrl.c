@@ -4,7 +4,11 @@
  * by the Free Software Foundation.
  *
  * Copyright (C) 2011 Thomas Langer <thomas.langer@lantiq.com>
+<<<<<<< HEAD
  * Copyright (C) 2011 John Crispin <blogic@openwrt.org>
+=======
+ * Copyright (C) 2011 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  */
 
 #include <linux/ioport.h>
@@ -24,7 +28,11 @@
 
 /* GPE frequency selection */
 #define GPPC_OFFSET		24
+<<<<<<< HEAD
 #define GPEFREQ_MASK		0x00000C0
+=======
+#define GPEFREQ_MASK		0x0000C00
+>>>>>>> v4.9.227
 #define GPEFREQ_OFFSET		10
 /* Clock status register */
 #define SYSCTL_CLKS		0x0000
@@ -49,6 +57,10 @@
 
 /* Activation Status Register */
 #define ACTS_ASC0_ACT	0x00001000
+<<<<<<< HEAD
+=======
+#define ACTS_SSC0	0x00002000
+>>>>>>> v4.9.227
 #define ACTS_ASC1_ACT	0x00000800
 #define ACTS_I2C_ACT	0x00004000
 #define ACTS_P0		0x00010000
@@ -147,12 +159,20 @@ static void falcon_gpe_enable(void)
 	if (status & (1 << (GPPC_OFFSET + 1)))
 		return;
 
+<<<<<<< HEAD
 	if (status_r32(STATUS_CONFIG) == 0)
 		freq = 1; /* use 625MHz on unfused chip */
 	else
 		freq = (status_r32(STATUS_CONFIG) &
 			GPEFREQ_MASK) >>
 			GPEFREQ_OFFSET;
+=======
+	freq = (status_r32(STATUS_CONFIG) &
+		GPEFREQ_MASK) >>
+		GPEFREQ_OFFSET;
+	if (freq == 0)
+		freq = 1; /* use 625MHz on unfused chip */
+>>>>>>> v4.9.227
 
 	/* apply new frequency */
 	sysctl_w32_mask(SYSCTL_SYS1, 7 << (GPPC_OFFSET + 1),
@@ -260,5 +280,9 @@ void __init ltq_soc_init(void)
 	clkdev_add_sys("1e800600.pad", SYSCTL_SYS1, ACTS_PADCTRL4);
 	clkdev_add_sys("1e100b00.serial", SYSCTL_SYS1, ACTS_ASC1_ACT);
 	clkdev_add_sys("1e100c00.serial", SYSCTL_SYS1, ACTS_ASC0_ACT);
+<<<<<<< HEAD
+=======
+	clkdev_add_sys("1e100d00.spi", SYSCTL_SYS1, ACTS_SSC0);
+>>>>>>> v4.9.227
 	clkdev_add_sys("1e200000.i2c", SYSCTL_SYS1, ACTS_I2C_ACT);
 }

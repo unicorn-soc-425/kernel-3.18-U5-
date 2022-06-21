@@ -7,6 +7,7 @@
 
 int __init bcm63xx_spi_register(void);
 
+<<<<<<< HEAD
 struct bcm63xx_spi_pdata {
 	unsigned int	fifo_size;
 	unsigned int	msg_type_shift;
@@ -51,4 +52,6 @@ static inline unsigned long bcm63xx_spireg(enum bcm63xx_regs_spi reg)
 	return bcm63xx_regs_spi[reg];
 }
 
+=======
+>>>>>>> v4.9.227
 #endif /* BCM63XX_DEV_SPI_H */

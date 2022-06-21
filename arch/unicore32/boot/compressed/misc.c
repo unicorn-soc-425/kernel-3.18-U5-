@@ -119,8 +119,13 @@ unsigned long decompress_kernel(unsigned long output_start,
 	output_ptr = get_unaligned_le32(tmp);
 
 	arch_decomp_puts("Uncompressing Linux...");
+<<<<<<< HEAD
 	decompress(input_data, input_data_end - input_data, NULL, NULL,
 			output_data, NULL, error);
+=======
+	__decompress(input_data, input_data_end - input_data, NULL, NULL,
+			output_data, 0, NULL, error);
+>>>>>>> v4.9.227
 	arch_decomp_puts(" done, booting the kernel.\n");
 	return output_ptr;
 }

@@ -19,6 +19,10 @@
 #include <linux/usb/composite.h>
 #include <linux/list.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/workqueue.h>
+>>>>>>> v4.9.227
 
 #ifdef VERBOSE_DEBUG
 #ifndef pr_vdebug
@@ -93,6 +97,29 @@ enum ffs_state {
 	FFS_ACTIVE,
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Function is visible to host, but it's not functional. All
+	 * setup requests are stalled and transfers on another endpoints
+	 * are refused. All epfiles, except ep0, are deleted so there
+	 * is no way to perform any operations on them.
+	 *
+	 * This state is set after closing all functionfs files, when
+	 * mount parameter "no_disconnect=1" has been set. Function will
+	 * remain in deactivated state until filesystem is umounted or
+	 * ep0 is opened again. In the second case functionfs state will
+	 * be reset, and it will be ready for descriptors and strings
+	 * writing.
+	 *
+	 * This is useful only when functionfs is composed to gadget
+	 * with another function which can perform some critical
+	 * operations, and it's strongly desired to have this operations
+	 * completed, even after functionfs files closure.
+	 */
+	FFS_DEACTIVATED,
+
+	/*
+>>>>>>> v4.9.227
 	 * All endpoints have been closed.  This state is also set if
 	 * we encounter an unrecoverable error.  The only
 	 * unrecoverable error is situation when after reading strings
@@ -154,8 +181,11 @@ struct ffs_data {
 	 */
 	struct usb_request		*ep0req;		/* P: mutex */
 	struct completion		ep0req_completion;	/* P: mutex */
+<<<<<<< HEAD
 	struct completion               epin_completion;
 	struct completion               epout_completion;
+=======
+>>>>>>> v4.9.227
 
 	/* reference counter */
 	atomic_t			ref;
@@ -235,9 +265,12 @@ struct ffs_data {
 	unsigned short			eps_count;
 	unsigned short			_pad1;
 
+<<<<<<< HEAD
 	int                             first_id;
 	int                             old_strings_count;
 
+=======
+>>>>>>> v4.9.227
 	/* filled by __ffs_data_got_strings() */
 	/* ids in stringtabs are set in functionfs_bind() */
 	const void			*raw_strings;
@@ -256,6 +289,13 @@ struct ffs_data {
 		kgid_t				gid;
 	}				file_perms;
 
+<<<<<<< HEAD
+=======
+	struct eventfd_ctx *ffs_eventfd;
+	bool no_disconnect;
+	struct work_struct reset_work;
+
+>>>>>>> v4.9.227
 	/*
 	 * The endpoint files, filled by ffs_epfiles_create(),
 	 * destroyed by ffs_epfiles_destroy().

@@ -157,6 +157,15 @@ static const struct file_operations fops_vring = {
 	.llseek		= seq_lseek,
 };
 
+<<<<<<< HEAD
+=======
+static void wil_seq_hexdump(struct seq_file *s, void *p, int len,
+			    const char *prefix)
+{
+	seq_hex_dump(s, prefix, DUMP_PREFIX_NONE, 16, 1, p, len, false);
+}
+
+>>>>>>> v4.9.227
 static void wil_print_ring(struct seq_file *s, const char *prefix,
 			   void __iomem *off)
 {
@@ -215,8 +224,11 @@ static void wil_print_ring(struct seq_file *s, const char *prefix,
 				   le16_to_cpu(hdr.seq), len,
 				   le16_to_cpu(hdr.type), hdr.flags);
 			if (len <= MAX_MBOXITEM_SIZE) {
+<<<<<<< HEAD
 				int n = 0;
 				char printbuf[16 * 3 + 2];
+=======
+>>>>>>> v4.9.227
 				unsigned char databuf[MAX_MBOXITEM_SIZE];
 				void __iomem *src = wmi_buffer(wil, d.addr) +
 					sizeof(struct wil6210_mbox_hdr);
@@ -226,6 +238,7 @@ static void wil_print_ring(struct seq_file *s, const char *prefix,
 				 * reading header
 				 */
 				wil_memcpy_fromio_32(databuf, src, len);
+<<<<<<< HEAD
 				while (n < len) {
 					int l = min(len - n, 16);
 
@@ -236,6 +249,9 @@ static void wil_print_ring(struct seq_file *s, const char *prefix,
 					seq_printf(s, "      : %s\n", printbuf);
 					n += l;
 				}
+=======
+				wil_seq_hexdump(s, databuf, len, "      : ");
+>>>>>>> v4.9.227
 			}
 		} else {
 			seq_puts(s, "\n");
@@ -594,6 +610,7 @@ static ssize_t wil_write_file_rxon(struct file *file, const char __user *buf,
 	long channel;
 	bool on;
 
+<<<<<<< HEAD
 	char *kbuf = kmalloc(len + 1, GFP_KERNEL);
 
 	if (!kbuf)
@@ -604,6 +621,12 @@ static ssize_t wil_write_file_rxon(struct file *file, const char __user *buf,
 	}
 
 	kbuf[len] = '\0';
+=======
+	char *kbuf = memdup_user_nul(buf, len);
+
+	if (IS_ERR(kbuf))
+		return PTR_ERR(kbuf);
+>>>>>>> v4.9.227
 	rc = kstrtol(kbuf, 0, &channel);
 	kfree(kbuf);
 	if (rc)
@@ -807,12 +830,17 @@ static ssize_t wil_write_file_txmgmt(struct file *file, const char __user *buf,
 	struct wireless_dev *wdev = wil_to_wdev(wil);
 	struct cfg80211_mgmt_tx_params params;
 	int rc;
+<<<<<<< HEAD
 	void *frame;
 
 	if (!len)
 		return -EINVAL;
 
 	frame = kmalloc(len, GFP_KERNEL);
+=======
+	void *frame = kmalloc(len, GFP_KERNEL);
+
+>>>>>>> v4.9.227
 	if (!frame)
 		return -ENOMEM;
 
@@ -880,6 +908,7 @@ static const struct file_operations fops_wmi = {
 	.open  = simple_open,
 };
 
+<<<<<<< HEAD
 static void wil_seq_hexdump(struct seq_file *s, void *p, int len,
 			    const char *prefix)
 {
@@ -896,6 +925,8 @@ static void wil_seq_hexdump(struct seq_file *s, void *p, int len,
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static void wil_seq_print_skb(struct seq_file *s, struct sk_buff *skb)
 {
 	int i = 0;
@@ -1122,7 +1153,11 @@ static const struct file_operations fops_ssid = {
 };
 
 /*---------temp------------*/
+<<<<<<< HEAD
 static void print_temp(struct seq_file *s, const char *prefix, u32 t)
+=======
+static void print_temp(struct seq_file *s, const char *prefix, s32 t)
+>>>>>>> v4.9.227
 {
 	switch (t) {
 	case 0:
@@ -1130,7 +1165,12 @@ static void print_temp(struct seq_file *s, const char *prefix, u32 t)
 		seq_printf(s, "%s N/A\n", prefix);
 	break;
 	default:
+<<<<<<< HEAD
 		seq_printf(s, "%s %d.%03d\n", prefix, t / 1000, t % 1000);
+=======
+		seq_printf(s, "%s %s%d.%03d\n", prefix, (t < 0 ? "-" : ""),
+			   abs(t / 1000), abs(t % 1000));
+>>>>>>> v4.9.227
 		break;
 	}
 }
@@ -1138,7 +1178,11 @@ static void print_temp(struct seq_file *s, const char *prefix, u32 t)
 static int wil_temp_debugfs_show(struct seq_file *s, void *data)
 {
 	struct wil6210_priv *wil = s->private;
+<<<<<<< HEAD
 	u32 t_m, t_r;
+=======
+	s32 t_m, t_r;
+>>>>>>> v4.9.227
 	int rc = wmi_get_temperature(wil, &t_m, &t_r);
 
 	if (rc) {

@@ -10,7 +10,11 @@
 #ifndef _SKEIN_BLOCK_H_
 #define _SKEIN_BLOCK_H_
 
+<<<<<<< HEAD
 #include "skein.h" /* get the Skein API definitions   */
+=======
+#include "skein_base.h" /* get the Skein API definitions   */
+>>>>>>> v4.9.227
 
 void skein_256_process_block(struct skein_256_ctx *ctx, const u8 *blk_ptr,
 			     size_t blk_cnt, size_t byte_cnt_add);

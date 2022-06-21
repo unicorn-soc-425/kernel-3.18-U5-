@@ -34,6 +34,7 @@ struct pvr2_sysfs *pvr2_sysfs_create(struct pvr2_context *,
 				     struct pvr2_sysfs_class *);
 
 #endif /* __PVRUSB2_SYSFS_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -44,3 +45,5 @@ struct pvr2_sysfs *pvr2_sysfs_create(struct pvr2_context *,
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

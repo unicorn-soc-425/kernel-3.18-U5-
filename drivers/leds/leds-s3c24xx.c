@@ -29,11 +29,14 @@ struct s3c24xx_gpio_led {
 	struct s3c24xx_led_platdata	*pdata;
 };
 
+<<<<<<< HEAD
 static inline struct s3c24xx_gpio_led *pdev_to_gpio(struct platform_device *dev)
 {
 	return platform_get_drvdata(dev);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline struct s3c24xx_gpio_led *to_gpio(struct led_classdev *led_cdev)
 {
 	return container_of(led_cdev, struct s3c24xx_gpio_led, cdev);
@@ -59,6 +62,7 @@ static void s3c24xx_led_set(struct led_classdev *led_cdev,
 	}
 }
 
+<<<<<<< HEAD
 static int s3c24xx_led_remove(struct platform_device *dev)
 {
 	struct s3c24xx_gpio_led *led = pdev_to_gpio(dev);
@@ -68,6 +72,8 @@ static int s3c24xx_led_remove(struct platform_device *dev)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int s3c24xx_led_probe(struct platform_device *dev)
 {
 	struct s3c24xx_led_platdata *pdata = dev_get_platdata(&dev->dev);
@@ -79,8 +85,11 @@ static int s3c24xx_led_probe(struct platform_device *dev)
 	if (!led)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	platform_set_drvdata(dev, led);
 
+=======
+>>>>>>> v4.9.227
 	led->cdev.brightness_set = s3c24xx_led_set;
 	led->cdev.default_trigger = pdata->def_trigger;
 	led->cdev.name = pdata->name;
@@ -104,7 +113,11 @@ static int s3c24xx_led_probe(struct platform_device *dev)
 
 	/* register our new led device */
 
+<<<<<<< HEAD
 	ret = led_classdev_register(&dev->dev, &led->cdev);
+=======
+	ret = devm_led_classdev_register(&dev->dev, &led->cdev);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		dev_err(&dev->dev, "led_classdev_register failed\n");
 
@@ -113,10 +126,15 @@ static int s3c24xx_led_probe(struct platform_device *dev)
 
 static struct platform_driver s3c24xx_led_driver = {
 	.probe		= s3c24xx_led_probe,
+<<<<<<< HEAD
 	.remove		= s3c24xx_led_remove,
 	.driver		= {
 		.name		= "s3c24xx_led",
 		.owner		= THIS_MODULE,
+=======
+	.driver		= {
+		.name		= "s3c24xx_led",
+>>>>>>> v4.9.227
 	},
 };
 

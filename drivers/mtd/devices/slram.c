@@ -41,7 +41,11 @@
 #include <linux/fs.h>
 #include <linux/ioctl.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #include <linux/mtd/mtd.h>
 

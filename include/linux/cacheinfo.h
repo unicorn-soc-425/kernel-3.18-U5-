@@ -71,6 +71,10 @@ struct cpu_cacheinfo {
 	struct cacheinfo *info_list;
 	unsigned int num_levels;
 	unsigned int num_leaves;
+<<<<<<< HEAD
+=======
+	bool cpu_map_populated;
+>>>>>>> v4.9.227
 };
 
 /*

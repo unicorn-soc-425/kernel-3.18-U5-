@@ -2,6 +2,11 @@
 	- This file
 biodoc.txt
 	- Notes on the Generic Block Layer Rewrite in Linux 2.5
+<<<<<<< HEAD
+=======
+biovecs.txt
+	- Immutable biovecs and biovec iterators
+>>>>>>> v4.9.227
 capability.txt
 	- Generic Block Device Capability (/sys/block/<device>/capability)
 cfq-iosched.txt
@@ -14,6 +19,11 @@ deadline-iosched.txt
 	- Deadline IO scheduler tunables
 ioprio.txt
 	- Block io priorities (in CFQ scheduler)
+<<<<<<< HEAD
+=======
+pr.txt
+	- Block layer support for Persistent Reservations
+>>>>>>> v4.9.227
 null_blk.txt
 	- Null block for block-layer benchmarking.
 queue-sysfs.txt
@@ -26,9 +36,12 @@ switching-sched.txt
 	- Switching I/O schedulers at runtime
 writeback_cache_control.txt
 	- Control of volatile write back caches
+<<<<<<< HEAD
 mmc-max-speed.txt
 	- eMMC layer speed simulation, related to /sys/block/mmcblk*/
           attributes:
             max_read_speed
             max_write_speed
             cache_size
+=======
+>>>>>>> v4.9.227

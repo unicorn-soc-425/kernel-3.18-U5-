@@ -196,12 +196,21 @@ exit_0:
 }
 
 #ifdef PREBOOT
+<<<<<<< HEAD
 STATIC int INIT decompress(unsigned char *buf, long in_len,
 			      long (*fill)(void*, unsigned long),
 			      long (*flush)(void*, unsigned long),
 			      unsigned char *output,
 			      long *posp,
 			      void(*error)(char *x)
+=======
+STATIC int INIT __decompress(unsigned char *buf, long in_len,
+			      long (*fill)(void*, unsigned long),
+			      long (*flush)(void*, unsigned long),
+			      unsigned char *output, long out_len,
+			      long *posp,
+			      void (*error)(char *x)
+>>>>>>> v4.9.227
 	)
 {
 	return unlz4(buf, in_len - 4, fill, flush, output, posp, error);

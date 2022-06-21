@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013, Mellanox Technologies inc.  All rights reserved.
+=======
+ * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
+>>>>>>> v4.9.227
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -277,6 +281,7 @@ void mlx5_cq_debugfs_cleanup(struct mlx5_core_dev *dev)
 static u64 qp_read_field(struct mlx5_core_dev *dev, struct mlx5_core_qp *qp,
 			 int index, int *is_str)
 {
+<<<<<<< HEAD
 	struct mlx5_query_qp_mbox_out *out;
 	struct mlx5_qp_context *ctx;
 	u64 param = 0;
@@ -290,11 +295,34 @@ static u64 qp_read_field(struct mlx5_core_dev *dev, struct mlx5_core_qp *qp,
 	err = mlx5_core_qp_query(dev, qp, out, sizeof(*out));
 	if (err) {
 		mlx5_core_warn(dev, "failed to query qp\n");
+=======
+	int outlen = MLX5_ST_SZ_BYTES(query_qp_out);
+	struct mlx5_qp_context *ctx;
+	u64 param = 0;
+	u32 *out;
+	int err;
+	int no_sq;
+
+	out = kzalloc(outlen, GFP_KERNEL);
+	if (!out)
+		return param;
+
+	err = mlx5_core_qp_query(dev, qp, out, outlen);
+	if (err) {
+		mlx5_core_warn(dev, "failed to query qp err=%d\n", err);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
 	*is_str = 0;
+<<<<<<< HEAD
 	ctx = &out->ctx;
+=======
+
+	/* FIXME: use MLX5_GET rather than mlx5_qp_context manual struct */
+	ctx = (struct mlx5_qp_context *)MLX5_ADDR_OF(query_qp_out, out, qpc);
+
+>>>>>>> v4.9.227
 	switch (index) {
 	case QP_PID:
 		param = qp->pid;
@@ -358,6 +386,7 @@ out:
 static u64 eq_read_field(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
 			 int index)
 {
+<<<<<<< HEAD
 	struct mlx5_query_eq_mbox_out *out;
 	struct mlx5_eq_context *ctx;
 	u64 param = 0;
@@ -370,10 +399,24 @@ static u64 eq_read_field(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
 	ctx = &out->ctx;
 
 	err = mlx5_core_eq_query(dev, eq, out, sizeof(*out));
+=======
+	int outlen = MLX5_ST_SZ_BYTES(query_eq_out);
+	u64 param = 0;
+	void *ctx;
+	u32 *out;
+	int err;
+
+	out = kzalloc(outlen, GFP_KERNEL);
+	if (!out)
+		return param;
+
+	err = mlx5_core_eq_query(dev, eq, out, outlen);
+>>>>>>> v4.9.227
 	if (err) {
 		mlx5_core_warn(dev, "failed to query eq\n");
 		goto out;
 	}
+<<<<<<< HEAD
 
 	switch (index) {
 	case EQ_NUM_EQES:
@@ -384,6 +427,19 @@ static u64 eq_read_field(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
 		break;
 	case EQ_LOG_PG_SZ:
 		param = (ctx->log_page_size & 0x1f) + 12;
+=======
+	ctx = MLX5_ADDR_OF(query_eq_out, out, eq_context_entry);
+
+	switch (index) {
+	case EQ_NUM_EQES:
+		param = 1 << MLX5_GET(eqc, ctx, log_eq_size);
+		break;
+	case EQ_INTR:
+		param = MLX5_GET(eqc, ctx, intr);
+		break;
+	case EQ_LOG_PG_SZ:
+		param = MLX5_GET(eqc, ctx, log_page_size) + 12;
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -395,6 +451,7 @@ out:
 static u64 cq_read_field(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
 			 int index)
 {
+<<<<<<< HEAD
 	struct mlx5_query_cq_mbox_out *out;
 	struct mlx5_cq_context *ctx;
 	u64 param = 0;
@@ -407,25 +464,53 @@ static u64 cq_read_field(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
 	ctx = &out->ctx;
 
 	err = mlx5_core_query_cq(dev, cq, out);
+=======
+	int outlen = MLX5_ST_SZ_BYTES(query_cq_out);
+	u64 param = 0;
+	void *ctx;
+	u32 *out;
+	int err;
+
+	out = mlx5_vzalloc(outlen);
+	if (!out)
+		return param;
+
+	err = mlx5_core_query_cq(dev, cq, out, outlen);
+>>>>>>> v4.9.227
 	if (err) {
 		mlx5_core_warn(dev, "failed to query cq\n");
 		goto out;
 	}
+<<<<<<< HEAD
+=======
+	ctx = MLX5_ADDR_OF(query_cq_out, out, cq_context);
+>>>>>>> v4.9.227
 
 	switch (index) {
 	case CQ_PID:
 		param = cq->pid;
 		break;
 	case CQ_NUM_CQES:
+<<<<<<< HEAD
 		param = 1 << ((be32_to_cpu(ctx->log_sz_usr_page) >> 24) & 0x1f);
 		break;
 	case CQ_LOG_PG_SZ:
 		param = (ctx->log_pg_sz & 0x1f) + 12;
+=======
+		param = 1 << MLX5_GET(cqc, ctx, log_cq_size);
+		break;
+	case CQ_LOG_PG_SZ:
+		param = MLX5_GET(cqc, ctx, log_page_size);
+>>>>>>> v4.9.227
 		break;
 	}
 
 out:
+<<<<<<< HEAD
 	kfree(out);
+=======
+	kvfree(out);
+>>>>>>> v4.9.227
 	return param;
 }
 

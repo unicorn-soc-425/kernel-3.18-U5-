@@ -19,7 +19,10 @@
 #include <linux/cpuidle.h>
 #include <linux/io.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <asm/proc-fns.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/cpuidle.h>
 
 #define AT91_MAX_STATES	2
@@ -43,7 +46,10 @@ static struct cpuidle_driver at91_idle_driver = {
 		.enter			= at91_enter_idle,
 		.exit_latency		= 10,
 		.target_residency	= 10000,
+<<<<<<< HEAD
 		.flags			= CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 		.name			= "RAM_SR",
 		.desc			= "WFI and DDR Self Refresh",
 	},
@@ -61,9 +67,16 @@ static int at91_cpuidle_probe(struct platform_device *dev)
 static struct platform_driver at91_cpuidle_driver = {
 	.driver = {
 		.name = "cpuidle-at91",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = at91_cpuidle_probe,
 };
 
 module_platform_driver(at91_cpuidle_driver);
+=======
+	},
+	.probe = at91_cpuidle_probe,
+};
+builtin_platform_driver(at91_cpuidle_driver);
+>>>>>>> v4.9.227

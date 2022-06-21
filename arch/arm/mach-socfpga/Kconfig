@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 config ARCH_SOCFPGA
 	bool "Altera SOCFPGA family" if ARCH_MULTI_V7
+=======
+menuconfig ARCH_SOCFPGA
+	bool "Altera SOCFPGA family"
+	depends on ARCH_MULTI_V7
+	select ARCH_SUPPORTS_BIG_ENDIAN
+>>>>>>> v4.9.227
 	select ARM_AMBA
 	select ARM_GIC
 	select CACHE_L2X0
@@ -8,3 +15,14 @@ config ARCH_SOCFPGA
 	select HAVE_ARM_SCU
 	select HAVE_ARM_TWD if SMP
 	select MFD_SYSCON
+<<<<<<< HEAD
+=======
+
+if ARCH_SOCFPGA
+config SOCFPGA_SUSPEND
+	bool "Suspend to RAM on SOCFPGA"
+	help
+	  Select this if you want to enable Suspend-to-RAM on SOCFPGA
+	  platforms.
+endif
+>>>>>>> v4.9.227

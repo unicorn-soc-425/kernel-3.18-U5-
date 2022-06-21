@@ -24,11 +24,18 @@
 #include <linux/device.h>
 #include <linux/firmware.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/tlv.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> v4.9.227
 #include "vx222.h"
 
 
@@ -92,6 +99,10 @@ static inline unsigned long vx2_reg_addr(struct vx_core *_chip, int reg)
 
 /**
  * snd_vx_inb - read a byte from the register
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+>>>>>>> v4.9.227
  * @offset: register enum
  */
 static unsigned char vx2_inb(struct vx_core *chip, int offset)
@@ -101,6 +112,10 @@ static unsigned char vx2_inb(struct vx_core *chip, int offset)
 
 /**
  * snd_vx_outb - write a byte on the register
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+>>>>>>> v4.9.227
  * @offset: the register offset
  * @val: the value to write
  */
@@ -114,6 +129,10 @@ static void vx2_outb(struct vx_core *chip, int offset, unsigned char val)
 
 /**
  * snd_vx_inl - read a 32bit word from the register
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+>>>>>>> v4.9.227
  * @offset: register enum
  */
 static unsigned int vx2_inl(struct vx_core *chip, int offset)
@@ -123,6 +142,10 @@ static unsigned int vx2_inl(struct vx_core *chip, int offset)
 
 /**
  * snd_vx_outl - write a 32bit word on the register
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+>>>>>>> v4.9.227
  * @offset: the register enum
  * @val: the value to write
  */
@@ -223,6 +246,10 @@ static int vx2_test_xilinx(struct vx_core *_chip)
 
 /**
  * vx_setup_pseudo_dma - set up the pseudo dma read/write mode.
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+>>>>>>> v4.9.227
  * @do_write: 0 = read, 1 = set up for DMA write
  */
 static void vx2_setup_pseudo_dma(struct vx_core *chip, int do_write)

@@ -30,6 +30,7 @@ struct cns3xxx_pcie {
 	unsigned int irqs[2];
 	struct resource res_io;
 	struct resource res_mem;
+<<<<<<< HEAD
 	struct hw_pci hw_pci;
 
 	bool linked;
@@ -37,11 +38,21 @@ struct cns3xxx_pcie {
 
 static struct cns3xxx_pcie cns3xxx_pcie[]; /* forward decl. */
 
+=======
+	int port;
+	bool linked;
+};
+
+>>>>>>> v4.9.227
 static struct cns3xxx_pcie *sysdata_to_cnspci(void *sysdata)
 {
 	struct pci_sys_data *root = sysdata;
 
+<<<<<<< HEAD
 	return &cns3xxx_pcie[root->domain];
+=======
+	return root->private_data;
+>>>>>>> v4.9.227
 }
 
 static struct cns3xxx_pcie *pdev_to_cnspci(const struct pci_dev *dev)
@@ -54,8 +65,13 @@ static struct cns3xxx_pcie *pbus_to_cnspci(struct pci_bus *bus)
 	return sysdata_to_cnspci(bus->sysdata);
 }
 
+<<<<<<< HEAD
 static void __iomem *cns3xxx_pci_cfg_base(struct pci_bus *bus,
 				  unsigned int devfn, int where)
+=======
+static void __iomem *cns3xxx_pci_map_bus(struct pci_bus *bus,
+					 unsigned int devfn, int where)
+>>>>>>> v4.9.227
 {
 	struct cns3xxx_pcie *cnspci = pbus_to_cnspci(bus);
 	int busno = bus->number;
@@ -68,8 +84,14 @@ static void __iomem *cns3xxx_pci_cfg_base(struct pci_bus *bus,
 
 	/*
 	 * The CNS PCI bridge doesn't fit into the PCI hierarchy, though
+<<<<<<< HEAD
 	 * we still want to access it. For this to work, we must place
 	 * the first device on the same bus as the CNS PCI bridge.
+=======
+	 * we still want to access it.
+	 * We place the host bridge on bus 0, and the directly connected
+	 * device on bus 1, slot 0.
+>>>>>>> v4.9.227
 	 */
 	if (busno == 0) { /* internal PCIe bus, host bridge device */
 		if (devfn == 0) /* device# and function# are ignored by hw */
@@ -85,12 +107,17 @@ static void __iomem *cns3xxx_pci_cfg_base(struct pci_bus *bus,
 	} else /* remote PCI bus */
 		base = cnspci->cfg1_regs + ((busno & 0xf) << 20);
 
+<<<<<<< HEAD
 	return base + (where & 0xffc) + (devfn << 12);
+=======
+	return base + where + (devfn << 12);
+>>>>>>> v4.9.227
 }
 
 static int cns3xxx_pci_read_config(struct pci_bus *bus, unsigned int devfn,
 				   int where, int size, u32 *val)
 {
+<<<<<<< HEAD
 	u32 v;
 	void __iomem *base;
 	u32 mask = (0x1ull << (size * 8)) - 1;
@@ -106,11 +133,22 @@ static int cns3xxx_pci_read_config(struct pci_bus *bus, unsigned int devfn,
 
 	if (bus->number == 0 && devfn == 0 &&
 			(where & 0xffc) == PCI_CLASS_REVISION) {
+=======
+	int ret;
+	u32 mask = (0x1ull << (size * 8)) - 1;
+	int shift = (where % 4) * 8;
+
+	ret = pci_generic_config_read32(bus, devfn, where, size, val);
+
+	if (ret == PCIBIOS_SUCCESSFUL && !bus->number && !devfn &&
+	    (where & 0xffc) == PCI_CLASS_REVISION)
+>>>>>>> v4.9.227
 		/*
 		 * RC's class is 0xb, but Linux PCI driver needs 0x604
 		 * for a PCIe bridge. So we must fixup the class code
 		 * to 0x604 here.
 		 */
+<<<<<<< HEAD
 		v &= 0xff;
 		v |= 0x604 << 16;
 	}
@@ -140,6 +178,11 @@ static int cns3xxx_pci_write_config(struct pci_bus *bus, unsigned int devfn,
 	__raw_writel(v, base);
 
 	return PCIBIOS_SUCCESSFUL;
+=======
+		*val = ((((*val << shift) & 0xff) | (0x604 << 16)) >> shift) & mask;
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int cns3xxx_pci_setup(int nr, struct pci_sys_data *sys)
@@ -158,8 +201,14 @@ static int cns3xxx_pci_setup(int nr, struct pci_sys_data *sys)
 }
 
 static struct pci_ops cns3xxx_pcie_ops = {
+<<<<<<< HEAD
 	.read = cns3xxx_pci_read_config,
 	.write = cns3xxx_pci_write_config,
+=======
+	.map_bus = cns3xxx_pci_map_bus,
+	.read = cns3xxx_pci_read_config,
+	.write = pci_generic_config_write,
+>>>>>>> v4.9.227
 };
 
 static int cns3xxx_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
@@ -192,6 +241,7 @@ static struct cns3xxx_pcie cns3xxx_pcie[] = {
 			.flags = IORESOURCE_MEM,
 		},
 		.irqs = { IRQ_CNS3XXX_PCIE0_RC, IRQ_CNS3XXX_PCIE0_DEVICE, },
+<<<<<<< HEAD
 		.hw_pci = {
 			.domain = 0,
 			.nr_controllers = 1,
@@ -199,6 +249,9 @@ static struct cns3xxx_pcie cns3xxx_pcie[] = {
 			.setup = cns3xxx_pci_setup,
 			.map_irq = cns3xxx_pcie_map_irq,
 		},
+=======
+		.port = 0,
+>>>>>>> v4.9.227
 	},
 	[1] = {
 		.host_regs = (void __iomem *)CNS3XXX_PCIE1_HOST_BASE_VIRT,
@@ -217,6 +270,7 @@ static struct cns3xxx_pcie cns3xxx_pcie[] = {
 			.flags = IORESOURCE_MEM,
 		},
 		.irqs = { IRQ_CNS3XXX_PCIE1_RC, IRQ_CNS3XXX_PCIE1_DEVICE, },
+<<<<<<< HEAD
 		.hw_pci = {
 			.domain = 1,
 			.nr_controllers = 1,
@@ -224,12 +278,19 @@ static struct cns3xxx_pcie cns3xxx_pcie[] = {
 			.setup = cns3xxx_pci_setup,
 			.map_irq = cns3xxx_pcie_map_irq,
 		},
+=======
+		.port = 1,
+>>>>>>> v4.9.227
 	},
 };
 
 static void __init cns3xxx_pcie_check_link(struct cns3xxx_pcie *cnspci)
 {
+<<<<<<< HEAD
 	int port = cnspci->hw_pci.domain;
+=======
+	int port = cnspci->port;
+>>>>>>> v4.9.227
 	u32 reg;
 	unsigned long time;
 
@@ -258,6 +319,7 @@ static void __init cns3xxx_pcie_check_link(struct cns3xxx_pcie *cnspci)
 	}
 }
 
+<<<<<<< HEAD
 static void __init cns3xxx_pcie_hw_init(struct cns3xxx_pcie *cnspci)
 {
 	int port = cnspci->hw_pci.domain;
@@ -269,10 +331,32 @@ static void __init cns3xxx_pcie_hw_init(struct cns3xxx_pcie *cnspci)
 		.ops = &cns3xxx_pcie_ops,
 		.sysdata = &sd,
 	};
+=======
+static void cns3xxx_write_config(struct cns3xxx_pcie *cnspci,
+					 int where, int size, u32 val)
+{
+	void __iomem *base = cnspci->host_regs + (where & 0xffc);
+	u32 v;
+	u32 mask = (0x1ull << (size * 8)) - 1;
+	int shift = (where % 4) * 8;
+
+	v = readl_relaxed(base);
+
+	v &= ~(mask << shift);
+	v |= (val & mask) << shift;
+
+	writel_relaxed(v, base);
+	readl_relaxed(base);
+}
+
+static void __init cns3xxx_pcie_hw_init(struct cns3xxx_pcie *cnspci)
+{
+>>>>>>> v4.9.227
 	u16 mem_base  = cnspci->res_mem.start >> 16;
 	u16 mem_limit = cnspci->res_mem.end   >> 16;
 	u16 io_base   = cnspci->res_io.start  >> 16;
 	u16 io_limit  = cnspci->res_io.end    >> 16;
+<<<<<<< HEAD
 	u32 devfn = 0;
 	u8 tmp8;
 	u16 pos;
@@ -290,11 +374,22 @@ static void __init cns3xxx_pcie_hw_init(struct cns3xxx_pcie *cnspci)
 	pci_bus_write_config_word(&bus, devfn, PCI_MEMORY_LIMIT, mem_limit);
 	pci_bus_write_config_word(&bus, devfn, PCI_IO_BASE_UPPER16, io_base);
 	pci_bus_write_config_word(&bus, devfn, PCI_IO_LIMIT_UPPER16, io_limit);
+=======
+
+	cns3xxx_write_config(cnspci, PCI_PRIMARY_BUS, 1, 0);
+	cns3xxx_write_config(cnspci, PCI_SECONDARY_BUS, 1, 1);
+	cns3xxx_write_config(cnspci, PCI_SUBORDINATE_BUS, 1, 1);
+	cns3xxx_write_config(cnspci, PCI_MEMORY_BASE, 2, mem_base);
+	cns3xxx_write_config(cnspci, PCI_MEMORY_LIMIT, 2, mem_limit);
+	cns3xxx_write_config(cnspci, PCI_IO_BASE_UPPER16, 2, io_base);
+	cns3xxx_write_config(cnspci, PCI_IO_LIMIT_UPPER16, 2, io_limit);
+>>>>>>> v4.9.227
 
 	if (!cnspci->linked)
 		return;
 
 	/* Set Device Max_Read_Request_Size to 128 byte */
+<<<<<<< HEAD
 	bus.number = 1; /* directly connected PCIe device */
 	devfn = PCI_DEVFN(0, 0);
 	pos = pci_bus_find_capability(&bus, devfn, PCI_CAP_ID_EXP);
@@ -310,6 +405,12 @@ static void __init cns3xxx_pcie_hw_init(struct cns3xxx_pcie *cnspci)
 	}
 	/* Disable PCIe0 Interrupt Mask INTA to INTD */
 	__raw_writel(~0x3FFF, MISC_PCIE_INT_MASK(port));
+=======
+	pcie_bus_config = PCIE_BUS_PEER2PEER;
+
+	/* Disable PCIe0 Interrupt Mask INTA to INTD */
+	__raw_writel(~0x3FFF, MISC_PCIE_INT_MASK(cnspci->port));
+>>>>>>> v4.9.227
 }
 
 static int cns3xxx_pcie_abort_handler(unsigned long addr, unsigned int fsr,
@@ -323,6 +424,17 @@ static int cns3xxx_pcie_abort_handler(unsigned long addr, unsigned int fsr,
 void __init cns3xxx_pcie_init_late(void)
 {
 	int i;
+<<<<<<< HEAD
+=======
+	void *private_data;
+	struct hw_pci hw_pci = {
+	       .nr_controllers = 1,
+	       .ops = &cns3xxx_pcie_ops,
+	       .setup = cns3xxx_pci_setup,
+	       .map_irq = cns3xxx_pcie_map_irq,
+	       .private_data = &private_data,
+	};
+>>>>>>> v4.9.227
 
 	pcibios_min_io = 0;
 	pcibios_min_mem = 0;
@@ -335,7 +447,12 @@ void __init cns3xxx_pcie_init_late(void)
 		cns3xxx_pwr_soft_rst(0x1 << PM_SOFT_RST_REG_OFFST_PCIE(i));
 		cns3xxx_pcie_check_link(&cns3xxx_pcie[i]);
 		cns3xxx_pcie_hw_init(&cns3xxx_pcie[i]);
+<<<<<<< HEAD
 		pci_common_init(&cns3xxx_pcie[i].hw_pci);
+=======
+		private_data = &cns3xxx_pcie[i];
+		pci_common_init(&hw_pci);
+>>>>>>> v4.9.227
 	}
 
 	pci_assign_unassigned_resources();

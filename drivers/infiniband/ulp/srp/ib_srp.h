@@ -54,7 +54,10 @@ enum {
 	SRP_DLID_REDIRECT	= 2,
 	SRP_STALE_CONN		= 3,
 
+<<<<<<< HEAD
 	SRP_MAX_LUN		= 512,
+=======
+>>>>>>> v4.9.227
 	SRP_DEF_SG_TABLESIZE	= 12,
 
 	SRP_DEFAULT_QUEUE_SIZE	= 1 << 6,
@@ -67,12 +70,19 @@ enum {
 	SRP_TAG_TSK_MGMT	= 1U << 31,
 
 	SRP_MAX_PAGES_PER_MR	= 512,
+<<<<<<< HEAD
 
 	LOCAL_INV_WR_ID_MASK	= 1,
 	FAST_REG_WR_ID_MASK	= 2,
 };
 
 enum srp_target_state {
+=======
+};
+
+enum srp_target_state {
+	SRP_TARGET_SCANNING,
+>>>>>>> v4.9.227
 	SRP_TARGET_LIVE,
 	SRP_TARGET_REMOVED,
 };
@@ -93,13 +103,20 @@ struct srp_device {
 	struct list_head	dev_list;
 	struct ib_device       *dev;
 	struct ib_pd	       *pd;
+<<<<<<< HEAD
 	struct ib_mr	       *mr;
+=======
+>>>>>>> v4.9.227
 	u64			mr_page_mask;
 	int			mr_page_size;
 	int			mr_max_size;
 	int			max_pages_per_mr;
 	bool			has_fmr;
 	bool			has_fr;
+<<<<<<< HEAD
+=======
+	bool			use_fmr;
+>>>>>>> v4.9.227
 	bool			use_fast_reg;
 };
 
@@ -115,7 +132,10 @@ struct srp_host {
 };
 
 struct srp_request {
+<<<<<<< HEAD
 	struct list_head	list;
+=======
+>>>>>>> v4.9.227
 	struct scsi_cmnd       *scmnd;
 	struct srp_iu	       *cmd;
 	union {
@@ -126,6 +146,7 @@ struct srp_request {
 	struct srp_direct_buf  *indirect_desc;
 	dma_addr_t		indirect_dma_addr;
 	short			nmdesc;
+<<<<<<< HEAD
 	short			index;
 };
 
@@ -133,29 +154,93 @@ struct srp_target_port {
 	/* These are RW in the hot path, and commonly used together */
 	struct list_head	free_tx;
 	struct list_head	free_reqs;
+=======
+	struct ib_cqe		reg_cqe;
+};
+
+/**
+ * struct srp_rdma_ch
+ * @comp_vector: Completion vector used by this RDMA channel.
+ */
+struct srp_rdma_ch {
+	/* These are RW in the hot path, and commonly used together */
+	struct list_head	free_tx;
+>>>>>>> v4.9.227
 	spinlock_t		lock;
 	s32			req_lim;
 
 	/* These are read-only in the hot path */
+<<<<<<< HEAD
 	struct ib_cq	       *send_cq ____cacheline_aligned_in_smp;
+=======
+	struct srp_target_port *target ____cacheline_aligned_in_smp;
+	struct ib_cq	       *send_cq;
+>>>>>>> v4.9.227
 	struct ib_cq	       *recv_cq;
 	struct ib_qp	       *qp;
 	union {
 		struct ib_fmr_pool     *fmr_pool;
 		struct srp_fr_pool     *fr_pool;
 	};
+<<<<<<< HEAD
 	u32			lkey;
 	u32			rkey;
+=======
+
+	/* Everything above this point is used in the hot path of
+	 * command processing. Try to keep them packed into cachelines.
+	 */
+
+	struct completion	done;
+	int			status;
+
+	struct ib_sa_path_rec	path;
+	struct ib_sa_query     *path_query;
+	int			path_query_id;
+
+	struct ib_cm_id	       *cm_id;
+	struct srp_iu	      **tx_ring;
+	struct srp_iu	      **rx_ring;
+	struct srp_request     *req_ring;
+	int			max_ti_iu_len;
+	int			comp_vector;
+
+	u64			tsk_mgmt_tag;
+	struct completion	tsk_mgmt_done;
+	u8			tsk_mgmt_status;
+	bool			connected;
+};
+
+/**
+ * struct srp_target_port
+ * @comp_vector: Completion vector used by the first RDMA channel created for
+ *   this target port.
+ */
+struct srp_target_port {
+	/* read and written in the hot path */
+	spinlock_t		lock;
+
+	/* read only in the hot path */
+	struct ib_pd		*pd;
+	struct srp_rdma_ch	*ch;
+	u32			ch_count;
+	u32			lkey;
+>>>>>>> v4.9.227
 	enum srp_target_state	state;
 	unsigned int		max_iu_len;
 	unsigned int		cmd_sg_cnt;
 	unsigned int		indirect_size;
 	bool			allow_ext_sg;
 
+<<<<<<< HEAD
 	/* Everything above this point is used in the hot path of
 	 * command processing. Try to keep them packed into cachelines.
 	 */
 
+=======
+	/* other member variables */
+	union ib_gid		sgid;
+>>>>>>> v4.9.227
 	__be64			id_ext;
 	__be64			ioc_guid;
 	__be64			service_id;
@@ -167,11 +252,17 @@ struct srp_target_port {
 	char			target_name[32];
 	unsigned int		scsi_id;
 	unsigned int		sg_tablesize;
+<<<<<<< HEAD
+=======
+	int			mr_pool_size;
+	int			mr_per_cmd;
+>>>>>>> v4.9.227
 	int			queue_size;
 	int			req_ring_size;
 	int			comp_vector;
 	int			tl_retry_count;
 
+<<<<<<< HEAD
 	struct ib_sa_path_rec	path;
 	__be16			orig_dgid[8];
 	struct ib_sa_query     *path_query;
@@ -190,16 +281,29 @@ struct srp_target_port {
 	struct srp_iu	       **rx_ring;
 	struct srp_request	*req_ring;
 
+=======
+	union ib_gid		orig_dgid;
+	__be16			pkey;
+
+	u32			rq_tmo_jiffies;
+
+	int			zero_req_lim;
+
+>>>>>>> v4.9.227
 	struct work_struct	tl_err_work;
 	struct work_struct	remove_work;
 
 	struct list_head	list;
+<<<<<<< HEAD
 	struct completion	done;
 	int			status;
 	bool			qp_in_error;
 
 	struct completion	tsk_mgmt_done;
 	u8			tsk_mgmt_status;
+=======
+	bool			qp_in_error;
+>>>>>>> v4.9.227
 };
 
 struct srp_iu {
@@ -208,6 +312,10 @@ struct srp_iu {
 	void		       *buf;
 	size_t			size;
 	enum dma_data_direction	direction;
+<<<<<<< HEAD
+=======
+	struct ib_cqe		cqe;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -219,7 +327,10 @@ struct srp_iu {
 struct srp_fr_desc {
 	struct list_head		entry;
 	struct ib_mr			*mr;
+<<<<<<< HEAD
 	struct ib_fast_reg_page_list	*frpl;
+=======
+>>>>>>> v4.9.227
 };
 
 /**
@@ -254,6 +365,7 @@ struct srp_fr_pool {
  * @npages:	    Number of page addresses in the pages[] array.
  * @nmdesc:	    Number of FMR or FR memory descriptors used for mapping.
  * @ndesc:	    Number of SRP buffer descriptors that have been filled in.
+<<<<<<< HEAD
  * @unmapped_sg:    First element of the sg-list that is mapped via FMR or FR.
  * @unmapped_index: Index of the first element mapped via FMR or FR.
  * @unmapped_addr:  DMA address of the first element mapped via FMR or FR.
@@ -265,15 +377,41 @@ struct srp_map_state {
 	};
 	struct srp_direct_buf  *desc;
 	u64		       *pages;
+=======
+ */
+struct srp_map_state {
+	union {
+		struct {
+			struct ib_pool_fmr **next;
+			struct ib_pool_fmr **end;
+		} fmr;
+		struct {
+			struct srp_fr_desc **next;
+			struct srp_fr_desc **end;
+		} fr;
+		struct {
+			void		   **next;
+			void		   **end;
+		} gen;
+	};
+	struct srp_direct_buf  *desc;
+	union {
+		u64			*pages;
+		struct scatterlist	*sg;
+	};
+>>>>>>> v4.9.227
 	dma_addr_t		base_dma_addr;
 	u32			dma_len;
 	u32			total_len;
 	unsigned int		npages;
 	unsigned int		nmdesc;
 	unsigned int		ndesc;
+<<<<<<< HEAD
 	struct scatterlist     *unmapped_sg;
 	int			unmapped_index;
 	dma_addr_t		unmapped_addr;
+=======
+>>>>>>> v4.9.227
 };
 
 #endif /* IB_SRP_H */

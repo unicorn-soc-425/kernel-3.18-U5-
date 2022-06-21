@@ -174,12 +174,22 @@ static int mma8450_probe(struct i2c_client *c,
 	struct mma8450 *m;
 	int err;
 
+<<<<<<< HEAD
 	m = kzalloc(sizeof(struct mma8450), GFP_KERNEL);
 	idev = input_allocate_polled_device();
 	if (!m || !idev) {
 		err = -ENOMEM;
 		goto err_free_mem;
 	}
+=======
+	m = devm_kzalloc(&c->dev, sizeof(*m), GFP_KERNEL);
+	if (!m)
+		return -ENOMEM;
+
+	idev = devm_input_allocate_polled_device(&c->dev);
+	if (!idev)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	m->client = c;
 	m->idev = idev;
@@ -201,12 +211,17 @@ static int mma8450_probe(struct i2c_client *c,
 	err = input_register_polled_device(idev);
 	if (err) {
 		dev_err(&c->dev, "failed to register polled input device\n");
+<<<<<<< HEAD
 		goto err_free_mem;
+=======
+		return err;
+>>>>>>> v4.9.227
 	}
 
 	i2c_set_clientdata(c, m);
 
 	return 0;
+<<<<<<< HEAD
 
 err_free_mem:
 	input_free_polled_device(idev);
@@ -224,6 +239,8 @@ static int mma8450_remove(struct i2c_client *c)
 	kfree(m);
 
 	return 0;
+=======
+>>>>>>> v4.9.227
 }
 
 static const struct i2c_device_id mma8450_id[] = {
@@ -241,11 +258,17 @@ MODULE_DEVICE_TABLE(of, mma8450_dt_ids);
 static struct i2c_driver mma8450_driver = {
 	.driver = {
 		.name	= MMA8450_DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.of_match_table = mma8450_dt_ids,
 	},
 	.probe		= mma8450_probe,
 	.remove		= mma8450_remove,
+=======
+		.of_match_table = mma8450_dt_ids,
+	},
+	.probe		= mma8450_probe,
+>>>>>>> v4.9.227
 	.id_table	= mma8450_id,
 };
 

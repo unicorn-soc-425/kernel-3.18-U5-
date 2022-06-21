@@ -26,13 +26,20 @@ static bool
 string_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_string_info *conf = par->matchinfo;
+<<<<<<< HEAD
 	struct ts_state state;
+=======
+>>>>>>> v4.9.227
 	bool invert;
 
 	invert = conf->u.v1.flags & XT_STRING_FLAG_INVERT;
 
 	return (skb_find_text((struct sk_buff *)skb, conf->from_offset,
+<<<<<<< HEAD
 			     conf->to_offset, conf->config, &state)
+=======
+			     conf->to_offset, conf->config)
+>>>>>>> v4.9.227
 			     != UINT_MAX) ^ invert;
 }
 

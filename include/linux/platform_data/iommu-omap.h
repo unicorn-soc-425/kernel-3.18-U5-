@@ -29,6 +29,7 @@ struct omap_iommu_arch_data {
 	struct omap_iommu *iommu_dev;
 };
 
+<<<<<<< HEAD
 /**
  * struct omap_mmu_dev_attr - OMAP mmu device attributes for omap_hwmod
  * @nr_tlb_entries:	number of entries supported by the translation
@@ -38,6 +39,8 @@ struct omap_mmu_dev_attr {
 	int nr_tlb_entries;
 };
 
+=======
+>>>>>>> v4.9.227
 struct iommu_platform_data {
 	const char *name;
 	const char *reset_name;

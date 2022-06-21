@@ -16,9 +16,17 @@
  * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
  *	Available only for accelerometer and pressure sensors.
  *	Accelerometer DRDY on LSM330 available only on pin 1 (see datasheet).
+<<<<<<< HEAD
  */
 struct st_sensors_platform_data {
 	u8 drdy_int_pin;
+=======
+ * @open_drain: set the interrupt line to be open drain if possible.
+ */
+struct st_sensors_platform_data {
+	u8 drdy_int_pin;
+	bool open_drain;
+>>>>>>> v4.9.227
 };
 
 #endif /* ST_SENSORS_PDATA_H */

@@ -42,8 +42,13 @@ const char *get_system_type(void)
 
 /*
  * Cobalt doesn't have PS/2 keyboard/mouse interfaces,
+<<<<<<< HEAD
  * keyboard conntroller is never used.
  * Also PCI-ISA bridge DMA contoroller is never used.
+=======
+ * keyboard controller is never used.
+ * Also PCI-ISA bridge DMA controller is never used.
+>>>>>>> v4.9.227
  */
 static struct resource cobalt_reserved_resources[] = {
 	{	/* dma1 */

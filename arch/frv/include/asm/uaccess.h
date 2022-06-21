@@ -20,8 +20,11 @@
 #include <asm/segment.h>
 #include <asm/sections.h>
 
+<<<<<<< HEAD
 #define HAVE_ARCH_UNMAPPED_AREA	/* we decide where to put mmaps */
 
+=======
+>>>>>>> v4.9.227
 #define __ptr(x) ((unsigned long __force *)(x))
 
 #define VERIFY_READ	0

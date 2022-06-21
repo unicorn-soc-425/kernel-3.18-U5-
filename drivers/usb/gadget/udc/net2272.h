@@ -458,7 +458,10 @@ struct net2272 {
 	struct usb_gadget_driver *driver;
 	unsigned protocol_stall:1,
 	         softconnect:1,
+<<<<<<< HEAD
 	         is_selfpowered:1,
+=======
+>>>>>>> v4.9.227
 	         wakeup:1,
 	         dma_eot_polarity:1,
 	         dma_dack_polarity:1,

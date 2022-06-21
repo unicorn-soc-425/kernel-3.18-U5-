@@ -15,6 +15,12 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <asm/thread_notify.h>
+<<<<<<< HEAD
+=======
+#include <asm/cputype.h>
+
+asm("	.arch armv5te\n");
+>>>>>>> v4.9.227
 
 static inline void dsp_save_state(u32 *state)
 {
@@ -152,20 +158,37 @@ static int __init xscale_cp0_init(void)
 {
 	u32 cp_access;
 
+<<<<<<< HEAD
+=======
+	/* do not attempt to probe iwmmxt on non-xscale family CPUs */
+	if (!cpu_is_xscale_family())
+		return 0;
+
+>>>>>>> v4.9.227
 	cp_access = xscale_cp_access_read() & ~3;
 	xscale_cp_access_write(cp_access | 1);
 
 	if (cpu_has_iwmmxt()) {
 #ifndef CONFIG_IWMMXT
+<<<<<<< HEAD
 		printk(KERN_WARNING "CAUTION: XScale iWMMXt coprocessor "
 			"detected, but kernel support is missing.\n");
 #else
 		printk(KERN_INFO "XScale iWMMXt coprocessor detected.\n");
+=======
+		pr_warn("CAUTION: XScale iWMMXt coprocessor detected, but kernel support is missing.\n");
+#else
+		pr_info("XScale iWMMXt coprocessor detected.\n");
+>>>>>>> v4.9.227
 		elf_hwcap |= HWCAP_IWMMXT;
 		thread_register_notifier(&iwmmxt_notifier_block);
 #endif
 	} else {
+<<<<<<< HEAD
 		printk(KERN_INFO "XScale DSP coprocessor detected.\n");
+=======
+		pr_info("XScale DSP coprocessor detected.\n");
+>>>>>>> v4.9.227
 		thread_register_notifier(&dsp_notifier_block);
 		cp_access |= 1;
 	}

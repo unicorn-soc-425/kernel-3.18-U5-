@@ -40,6 +40,12 @@
  */
 #define P9_LOCK_TIMEOUT (30*HZ)
 
+<<<<<<< HEAD
+=======
+/* flags for v9fs_stat2inode() & v9fs_stat2inode_dotl() */
+#define V9FS_STAT2INODE_KEEP_ISIZE 1
+
+>>>>>>> v4.9.227
 extern struct file_system_type v9fs_fs_type;
 extern const struct address_space_operations v9fs_addr_operations;
 extern const struct file_operations v9fs_file_operations;
@@ -61,21 +67,34 @@ int v9fs_init_inode(struct v9fs_session_info *v9ses,
 		    struct inode *inode, umode_t mode, dev_t);
 void v9fs_evict_inode(struct inode *inode);
 ino_t v9fs_qid2ino(struct p9_qid *qid);
+<<<<<<< HEAD
 void v9fs_stat2inode(struct p9_wstat *, struct inode *, struct super_block *);
 void v9fs_stat2inode_dotl(struct p9_stat_dotl *, struct inode *);
+=======
+void v9fs_stat2inode(struct p9_wstat *stat, struct inode *inode,
+		      struct super_block *sb, unsigned int flags);
+void v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode,
+			   unsigned int flags);
+>>>>>>> v4.9.227
 int v9fs_dir_release(struct inode *inode, struct file *filp);
 int v9fs_file_open(struct inode *inode, struct file *file);
 void v9fs_inode2stat(struct inode *inode, struct p9_wstat *stat);
 int v9fs_uflags2omode(int uflags, int extended);
 
+<<<<<<< HEAD
 ssize_t v9fs_file_readn(struct file *, char *, char __user *, u32, u64);
 ssize_t v9fs_fid_readn(struct p9_fid *, char *, char __user *, u32, u64);
+=======
+>>>>>>> v4.9.227
 void v9fs_blank_wstat(struct p9_wstat *wstat);
 int v9fs_vfs_setattr_dotl(struct dentry *, struct iattr *);
 int v9fs_file_fsync_dotl(struct file *filp, loff_t start, loff_t end,
 			 int datasync);
+<<<<<<< HEAD
 ssize_t v9fs_file_write_internal(struct inode *, struct p9_fid *,
 				 const char __user *, size_t, loff_t *, int);
+=======
+>>>>>>> v4.9.227
 int v9fs_refresh_inode(struct p9_fid *fid, struct inode *inode);
 int v9fs_refresh_inode_dotl(struct p9_fid *fid, struct inode *inode);
 static inline void v9fs_invalidate_inode_attr(struct inode *inode)
@@ -87,4 +106,21 @@ static inline void v9fs_invalidate_inode_attr(struct inode *inode)
 }
 
 int v9fs_open_to_dotl_flags(int flags);
+<<<<<<< HEAD
+=======
+
+static inline void v9fs_i_size_write(struct inode *inode, loff_t i_size)
+{
+	/*
+	 * 32-bit need the lock, concurrent updates could break the
+	 * sequences and make i_size_read() loop forever.
+	 * 64-bit updates are atomic and can skip the locking.
+	 */
+	if (sizeof(i_size) > sizeof(long))
+		spin_lock(&inode->i_lock);
+	i_size_write(inode, i_size);
+	if (sizeof(i_size) > sizeof(long))
+		spin_unlock(&inode->i_lock);
+}
+>>>>>>> v4.9.227
 #endif

@@ -42,6 +42,7 @@ struct rpc_wait {
  */
 struct rpc_task {
 	atomic_t		tk_count;	/* Reference count */
+<<<<<<< HEAD
 	struct list_head	tk_task;	/* global list of tasks */
 	struct rpc_clnt *	tk_client;	/* RPC client */
 	struct rpc_rqst *	tk_rqstp;	/* RPC request */
@@ -50,10 +51,15 @@ struct rpc_task {
 	 * RPC call state
 	 */
 	struct rpc_message	tk_msg;		/* RPC call info */
+=======
+	int			tk_status;	/* result of last operation */
+	struct list_head	tk_task;	/* global list of tasks */
+>>>>>>> v4.9.227
 
 	/*
 	 * callback	to be executed after waking up
 	 * action	next procedure for async tasks
+<<<<<<< HEAD
 	 * tk_ops	caller callbacks
 	 */
 	void			(*tk_callback)(struct rpc_task *);
@@ -66,12 +72,22 @@ struct rpc_task {
 	struct workqueue_struct	*tk_workqueue;	/* Normally rpciod, but could
 						 * be any workqueue
 						 */
+=======
+	 */
+	void			(*tk_callback)(struct rpc_task *);
+	void			(*tk_action)(struct rpc_task *);
+
+	unsigned long		tk_timeout;	/* timeout for rpc_sleep() */
+	unsigned long		tk_runstate;	/* Task run status */
+
+>>>>>>> v4.9.227
 	struct rpc_wait_queue 	*tk_waitqueue;	/* RPC wait queue we're on */
 	union {
 		struct work_struct	tk_work;	/* Async task work queue */
 		struct rpc_wait		tk_wait;	/* RPC wait */
 	} u;
 
+<<<<<<< HEAD
 	ktime_t			tk_start;	/* RPC task init timestamp */
 
 	pid_t			tk_owner;	/* Process id for batching tasks */
@@ -80,6 +96,30 @@ struct rpc_task {
 	unsigned short		tk_timeouts;	/* maj timeouts */
 
 #if defined(RPC_DEBUG) || defined(RPC_TRACEPOINTS)
+=======
+	/*
+	 * RPC call state
+	 */
+	struct rpc_message	tk_msg;		/* RPC call info */
+	void *			tk_calldata;	/* Caller private data */
+	const struct rpc_call_ops *tk_ops;	/* Caller callbacks */
+
+	struct rpc_clnt *	tk_client;	/* RPC client */
+	struct rpc_xprt *	tk_xprt;	/* Transport */
+
+	struct rpc_rqst *	tk_rqstp;	/* RPC request */
+
+	struct workqueue_struct	*tk_workqueue;	/* Normally rpciod, but could
+						 * be any workqueue
+						 */
+	ktime_t			tk_start;	/* RPC task init timestamp */
+
+	pid_t			tk_owner;	/* Process id for batching tasks */
+	unsigned short		tk_flags;	/* misc flags */
+	unsigned short		tk_timeouts;	/* maj timeouts */
+
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG) || IS_ENABLED(CONFIG_TRACEPOINTS)
+>>>>>>> v4.9.227
 	unsigned short		tk_pid;		/* debugging aid */
 #endif
 	unsigned char		tk_priority : 2,/* Task priority */
@@ -100,6 +140,10 @@ struct rpc_call_ops {
 struct rpc_task_setup {
 	struct rpc_task *task;
 	struct rpc_clnt *rpc_client;
+<<<<<<< HEAD
+=======
+	struct rpc_xprt *rpc_xprt;
+>>>>>>> v4.9.227
 	const struct rpc_message *rpc_message;
 	const struct rpc_call_ops *callback_ops;
 	void *callback_data;
@@ -181,13 +225,20 @@ struct rpc_timer {
 struct rpc_wait_queue {
 	spinlock_t		lock;
 	struct list_head	tasks[RPC_NR_PRIORITY];	/* task queue for each priority level */
+<<<<<<< HEAD
 	pid_t			owner;			/* process id of last task serviced */
+=======
+>>>>>>> v4.9.227
 	unsigned char		maxpriority;		/* maximum priority (0 if queue is not a priority queue) */
 	unsigned char		priority;		/* current priority */
 	unsigned char		nr;			/* # tasks remaining for cookie */
 	unsigned short		qlen;			/* total # tasks waiting in queue */
 	struct rpc_timer	timer_list;
+<<<<<<< HEAD
 #if defined(RPC_DEBUG) || defined(RPC_TRACEPOINTS)
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG) || IS_ENABLED(CONFIG_TRACEPOINTS)
+>>>>>>> v4.9.227
 	const char *		name;
 #endif
 };
@@ -197,7 +248,10 @@ struct rpc_wait_queue {
  * from a single cookie.  The aim is to improve
  * performance of NFS operations such as read/write.
  */
+<<<<<<< HEAD
 #define RPC_BATCH_COUNT			16
+=======
+>>>>>>> v4.9.227
 #define RPC_IS_PRIORITY(q)		((q)->maxpriority > 0)
 
 /*
@@ -205,8 +259,12 @@ struct rpc_wait_queue {
  */
 struct rpc_task *rpc_new_task(const struct rpc_task_setup *);
 struct rpc_task *rpc_run_task(const struct rpc_task_setup *);
+<<<<<<< HEAD
 struct rpc_task *rpc_run_bc_task(struct rpc_rqst *req,
 				const struct rpc_call_ops *ops);
+=======
+struct rpc_task *rpc_run_bc_task(struct rpc_rqst *req);
+>>>>>>> v4.9.227
 void		rpc_put_task(struct rpc_task *);
 void		rpc_put_task_async(struct rpc_task *);
 void		rpc_exit_task(struct rpc_task *);
@@ -227,23 +285,43 @@ void		rpc_wake_up_queued_task(struct rpc_wait_queue *,
 					struct rpc_task *);
 void		rpc_wake_up(struct rpc_wait_queue *);
 struct rpc_task *rpc_wake_up_next(struct rpc_wait_queue *);
+<<<<<<< HEAD
+=======
+struct rpc_task *rpc_wake_up_first_on_wq(struct workqueue_struct *wq,
+					struct rpc_wait_queue *,
+					bool (*)(struct rpc_task *, void *),
+					void *);
+>>>>>>> v4.9.227
 struct rpc_task *rpc_wake_up_first(struct rpc_wait_queue *,
 					bool (*)(struct rpc_task *, void *),
 					void *);
 void		rpc_wake_up_status(struct rpc_wait_queue *, int);
 void		rpc_delay(struct rpc_task *, unsigned long);
+<<<<<<< HEAD
 void *		rpc_malloc(struct rpc_task *, size_t);
 void		rpc_free(void *);
 int		rpciod_up(void);
 void		rpciod_down(void);
 int		__rpc_wait_for_completion_task(struct rpc_task *task, wait_bit_action_f *);
 #ifdef RPC_DEBUG
+=======
+int		rpc_malloc(struct rpc_task *);
+void		rpc_free(struct rpc_task *);
+int		rpciod_up(void);
+void		rpciod_down(void);
+int		__rpc_wait_for_completion_task(struct rpc_task *task, wait_bit_action_f *);
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> v4.9.227
 struct net;
 void		rpc_show_tasks(struct net *);
 #endif
 int		rpc_init_mempool(void);
 void		rpc_destroy_mempool(void);
 extern struct workqueue_struct *rpciod_workqueue;
+<<<<<<< HEAD
+=======
+extern struct workqueue_struct *xprtiod_workqueue;
+>>>>>>> v4.9.227
 void		rpc_prepare_task(struct rpc_task *task);
 
 static inline int rpc_wait_for_completion_task(struct rpc_task *task)
@@ -251,7 +329,11 @@ static inline int rpc_wait_for_completion_task(struct rpc_task *task)
 	return __rpc_wait_for_completion_task(task, NULL);
 }
 
+<<<<<<< HEAD
 #if defined(RPC_DEBUG) || defined (RPC_TRACEPOINTS)
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG) || IS_ENABLED(CONFIG_TRACEPOINTS)
+>>>>>>> v4.9.227
 static inline const char * rpc_qname(const struct rpc_wait_queue *q)
 {
 	return ((q && q->name) ? q->name : "unknown");
@@ -269,4 +351,23 @@ static inline void rpc_assign_waitqueue_name(struct rpc_wait_queue *q,
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_SWAP)
+int rpc_clnt_swap_activate(struct rpc_clnt *clnt);
+void rpc_clnt_swap_deactivate(struct rpc_clnt *clnt);
+#else
+static inline int
+rpc_clnt_swap_activate(struct rpc_clnt *clnt)
+{
+	return -EINVAL;
+}
+
+static inline void
+rpc_clnt_swap_deactivate(struct rpc_clnt *clnt)
+{
+}
+#endif /* CONFIG_SUNRPC_SWAP */
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_SUNRPC_SCHED_H_ */

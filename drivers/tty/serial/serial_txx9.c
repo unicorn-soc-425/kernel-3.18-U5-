@@ -1165,7 +1165,10 @@ static struct platform_driver serial_txx9_plat_driver = {
 #endif
 	.driver		= {
 		.name	= "serial_txx9",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

@@ -11,6 +11,12 @@
  *  2 of the License, or (at your option) any later version.
  *
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt)	"OF: " fmt
+
+>>>>>>> v4.9.227
 #include <linux/errno.h>
 #include <linux/module.h>
 #include <linux/amba/bus.h>
@@ -21,12 +27,19 @@
 #include <linux/of_device.h>
 #include <linux/of_irq.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
 #include <linux/of_reserved_mem.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 
 const struct of_device_id of_default_bus_match_table[] = {
 	{ .compatible = "simple-bus", },
 	{ .compatible = "simple-mfd", },
+<<<<<<< HEAD
+=======
+	{ .compatible = "isa", },
+>>>>>>> v4.9.227
 #ifdef CONFIG_ARM_AMBA
 	{ .compatible = "arm,amba-bus", },
 #endif /* CONFIG_ARM_AMBA */
@@ -140,7 +153,12 @@ struct platform_device *of_device_alloc(struct device_node *np,
 	}
 
 	dev->dev.of_node = of_node_get(np);
+<<<<<<< HEAD
 	dev->dev.parent = parent;
+=======
+	dev->dev.fwnode = &np->fwnode;
+	dev->dev.parent = parent ? : &platform_bus;
+>>>>>>> v4.9.227
 
 	if (bus_id)
 		dev_set_name(&dev->dev, "%s", bus_id);
@@ -186,10 +204,15 @@ static struct platform_device *of_platform_device_create_pdata(
 	dev->dev.platform_data = platform_data;
 	of_dma_configure(&dev->dev, dev->dev.of_node);
 	of_msi_configure(&dev->dev, dev->dev.of_node);
+<<<<<<< HEAD
 	of_reserved_mem_device_init(&dev->dev);
 
 	if (of_device_add(dev) != 0) {
 		of_reserved_mem_device_release(&dev->dev);
+=======
+
+	if (of_device_add(dev) != 0) {
+>>>>>>> v4.9.227
 		of_dma_deconfigure(&dev->dev);
 		platform_device_put(dev);
 		goto err_clear_flag;
@@ -236,6 +259,7 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 		return NULL;
 
 	dev = amba_device_alloc(NULL, 0, 0);
+<<<<<<< HEAD
 	if (!dev) {
 		pr_err("%s(): amba_device_alloc() failed for %s\n",
 		       __func__, node->full_name);
@@ -245,6 +269,15 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 	/* setup generic device info */
 	dev->dev.of_node = of_node_get(node);
 	dev->dev.parent = parent;
+=======
+	if (!dev)
+		goto err_clear_flag;
+
+	/* setup generic device info */
+	dev->dev.of_node = of_node_get(node);
+	dev->dev.fwnode = &node->fwnode;
+	dev->dev.parent = parent ? : &platform_bus;
+>>>>>>> v4.9.227
 	dev->dev.platform_data = platform_data;
 	if (bus_id)
 		dev_set_name(&dev->dev, "%s", bus_id);
@@ -252,8 +285,11 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 		of_device_make_bus_id(&dev->dev);
 	of_dma_configure(&dev->dev, dev->dev.of_node);
 
+<<<<<<< HEAD
 	of_reserved_mem_device_init(&dev->dev);
 
+=======
+>>>>>>> v4.9.227
 	/* Allow the HW Peripheral ID to be overridden */
 	prop = of_get_property(node, "arm,primecell-periphid", NULL);
 	if (prop)
@@ -265,22 +301,35 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 
 	ret = of_address_to_resource(node, 0, &dev->res);
 	if (ret) {
+<<<<<<< HEAD
 		pr_err("%s(): of_address_to_resource() failed (%d) for %s\n",
 		       __func__, ret, node->full_name);
+=======
+		pr_err("amba: of_address_to_resource() failed (%d) for %s\n",
+		       ret, node->full_name);
+>>>>>>> v4.9.227
 		goto err_free;
 	}
 
 	ret = amba_device_add(dev, &iomem_resource);
 	if (ret) {
+<<<<<<< HEAD
 		pr_err("%s(): amba_device_add() failed (%d) for %s\n",
 		       __func__, ret, node->full_name);
+=======
+		pr_err("amba_device_add() failed (%d) for %s\n",
+		       ret, node->full_name);
+>>>>>>> v4.9.227
 		goto err_free;
 	}
 
 	return dev;
 
 err_free:
+<<<<<<< HEAD
 	of_reserved_mem_device_release(&dev->dev);
+=======
+>>>>>>> v4.9.227
 	amba_device_put(dev);
 err_clear_flag:
 	of_node_clear_flag(node, OF_POPULATED);
@@ -302,11 +351,18 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *lookup,
 				 struct device_node *np)
 {
+<<<<<<< HEAD
 	struct resource res;
+=======
+	const struct of_dev_auxdata *auxdata;
+	struct resource res;
+	int compatible = 0;
+>>>>>>> v4.9.227
 
 	if (!lookup)
 		return NULL;
 
+<<<<<<< HEAD
 	for(; lookup->compatible != NULL; lookup++) {
 		if (!of_device_is_compatible(np, lookup->compatible))
 			continue;
@@ -315,6 +371,32 @@ static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *l
 				continue;
 		pr_debug("%s: devname=%s\n", np->full_name, lookup->name);
 		return lookup;
+=======
+	auxdata = lookup;
+	for (; auxdata->compatible; auxdata++) {
+		if (!of_device_is_compatible(np, auxdata->compatible))
+			continue;
+		compatible++;
+		if (!of_address_to_resource(np, 0, &res))
+			if (res.start != auxdata->phys_addr)
+				continue;
+		pr_debug("%s: devname=%s\n", np->full_name, auxdata->name);
+		return auxdata;
+	}
+
+	if (!compatible)
+		return NULL;
+
+	/* Try compatible match if no phys_addr and name are specified */
+	auxdata = lookup;
+	for (; auxdata->compatible; auxdata++) {
+		if (!of_device_is_compatible(np, auxdata->compatible))
+			continue;
+		if (!auxdata->phys_addr && !auxdata->name) {
+			pr_debug("%s: compatible match\n", np->full_name);
+			return auxdata;
+		}
+>>>>>>> v4.9.227
 	}
 
 	return NULL;
@@ -417,8 +499,15 @@ int of_platform_bus_probe(struct device_node *root,
 		if (!of_match_node(matches, child))
 			continue;
 		rc = of_platform_bus_create(child, matches, NULL, parent, false);
+<<<<<<< HEAD
 		if (rc)
 			break;
+=======
+		if (rc) {
+			of_node_put(child);
+			break;
+		}
+>>>>>>> v4.9.227
 	}
 
 	of_node_put(root);
@@ -462,8 +551,15 @@ int of_platform_populate(struct device_node *root,
 
 	for_each_child_of_node(root, child) {
 		rc = of_platform_bus_create(child, matches, lookup, parent, true);
+<<<<<<< HEAD
 		if (rc)
 			break;
+=======
+		if (rc) {
+			of_node_put(child);
+			break;
+		}
+>>>>>>> v4.9.227
 	}
 	of_node_set_flag(root, OF_POPULATED_BUS);
 
@@ -481,6 +577,10 @@ int of_platform_default_populate(struct device_node *root,
 }
 EXPORT_SYMBOL_GPL(of_platform_default_populate);
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_PPC
+>>>>>>> v4.9.227
 static int __init of_platform_default_populate_init(void)
 {
 	struct device_node *node;
@@ -499,6 +599,7 @@ static int __init of_platform_default_populate_init(void)
 			of_platform_device_create(node, NULL, NULL);
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 	node = of_find_node_by_path("/reserved-memory");
 	if (node) {
@@ -508,12 +609,18 @@ static int __init of_platform_default_populate_init(void)
 	}
 #endif
 
+=======
+>>>>>>> v4.9.227
 	/* Populate everything else. */
 	of_platform_default_populate(NULL, NULL, NULL);
 
 	return 0;
 }
 arch_initcall_sync(of_platform_default_populate_init);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 static int of_platform_device_destroy(struct device *dev, void *data)
 {

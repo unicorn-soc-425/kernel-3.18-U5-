@@ -59,7 +59,11 @@
 #define PDC_MODEL_GET_BOOT__OP	8	/* returns boot test options	*/
 #define PDC_MODEL_SET_BOOT__OP	9	/* set boot test options	*/
 
+<<<<<<< HEAD
 #define PA89_INSTRUCTION_SET	0x4	/* capatibilies returned	*/
+=======
+#define PA89_INSTRUCTION_SET	0x4	/* capabilities returned	*/
+>>>>>>> v4.9.227
 #define PA90_INSTRUCTION_SET	0x8
 
 #define PDC_CACHE	5		/* return/set cache (& TLB) info*/

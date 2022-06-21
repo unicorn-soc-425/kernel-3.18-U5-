@@ -32,7 +32,10 @@
 #include "cs4265.h"
 
 struct cs4265_private {
+<<<<<<< HEAD
 	struct device *dev;
+=======
+>>>>>>> v4.9.227
 	struct regmap *regmap;
 	struct gpio_desc *reset_gpio;
 	u8 format;
@@ -61,6 +64,7 @@ static const struct reg_default cs4265_reg_defaults[] = {
 static bool cs4265_readable_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
+<<<<<<< HEAD
 	case CS4265_PWRCTL:
 	case CS4265_DAC_CTL:
 	case CS4265_ADC_CTL:
@@ -78,6 +82,9 @@ static bool cs4265_readable_register(struct device *dev, unsigned int reg)
 	case CS4265_STATUS_MODE_MSB:
 	case CS4265_STATUS_MODE_LSB:
 	case CS4265_CHIP_ID:
+=======
+	case CS4265_CHIP_ID ... CS4265_MAX_REGISTER:
+>>>>>>> v4.9.227
 		return true;
 	default:
 		return false;
@@ -458,6 +465,7 @@ static int cs4265_pcm_hw_params(struct snd_pcm_substream *substream,
 	case SND_SOC_DAIFMT_RIGHT_J:
 		if (params_width(params) == 16) {
 			snd_soc_update_bits(codec, CS4265_DAC_CTL,
+<<<<<<< HEAD
 				CS4265_DAC_CTL_DIF, (1 << 5));
 			snd_soc_update_bits(codec, CS4265_SPDIF_CTL2,
 				CS4265_SPDIF_CTL2_DIF, (1 << 7));
@@ -466,6 +474,16 @@ static int cs4265_pcm_hw_params(struct snd_pcm_substream *substream,
 				CS4265_DAC_CTL_DIF, (3 << 5));
 			snd_soc_update_bits(codec, CS4265_SPDIF_CTL2,
 				CS4265_SPDIF_CTL2_DIF, (1 << 7));
+=======
+				CS4265_DAC_CTL_DIF, (2 << 4));
+			snd_soc_update_bits(codec, CS4265_SPDIF_CTL2,
+				CS4265_SPDIF_CTL2_DIF, (2 << 6));
+		} else {
+			snd_soc_update_bits(codec, CS4265_DAC_CTL,
+				CS4265_DAC_CTL_DIF, (3 << 4));
+			snd_soc_update_bits(codec, CS4265_SPDIF_CTL2,
+				CS4265_SPDIF_CTL2_DIF, (3 << 6));
+>>>>>>> v4.9.227
 		}
 		break;
 	case SND_SOC_DAIFMT_LEFT_J:
@@ -474,7 +492,11 @@ static int cs4265_pcm_hw_params(struct snd_pcm_substream *substream,
 		snd_soc_update_bits(codec, CS4265_ADC_CTL,
 			CS4265_ADC_DIF, 0);
 		snd_soc_update_bits(codec, CS4265_SPDIF_CTL2,
+<<<<<<< HEAD
 			CS4265_SPDIF_CTL2_DIF, (1 << 6));
+=======
+			CS4265_SPDIF_CTL2_DIF, 0);
+>>>>>>> v4.9.227
 
 		break;
 	default:
@@ -504,7 +526,10 @@ static int cs4265_set_bias_level(struct snd_soc_codec *codec,
 			CS4265_PWRCTL_PDN);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -565,6 +590,7 @@ static struct snd_soc_dai_driver cs4265_dai[] = {
 static const struct snd_soc_codec_driver soc_codec_cs4265 = {
 	.set_bias_level = cs4265_set_bias_level,
 
+<<<<<<< HEAD
 	.dapm_widgets = cs4265_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(cs4265_dapm_widgets),
 	.dapm_routes = cs4265_audio_map,
@@ -572,6 +598,16 @@ static const struct snd_soc_codec_driver soc_codec_cs4265 = {
 
 	.controls = cs4265_snd_controls,
 	.num_controls = ARRAY_SIZE(cs4265_snd_controls),
+=======
+	.component_driver = {
+		.controls		= cs4265_snd_controls,
+		.num_controls		= ARRAY_SIZE(cs4265_snd_controls),
+		.dapm_widgets		= cs4265_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(cs4265_dapm_widgets),
+		.dapm_routes		= cs4265_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(cs4265_audio_map),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config cs4265_regmap = {
@@ -598,7 +634,10 @@ static int cs4265_i2c_probe(struct i2c_client *i2c_client,
 			       GFP_KERNEL);
 	if (cs4265 == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
 	cs4265->dev = &i2c_client->dev;
+=======
+>>>>>>> v4.9.227
 
 	cs4265->regmap = devm_regmap_init_i2c(i2c_client, &cs4265_regmap);
 	if (IS_ERR(cs4265->regmap)) {
@@ -607,6 +646,7 @@ static int cs4265_i2c_probe(struct i2c_client *i2c_client,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	cs4265->reset_gpio = devm_gpiod_get(&i2c_client->dev,
 		"reset-gpios");
 	if (IS_ERR(cs4265->reset_gpio)) {
@@ -622,6 +662,16 @@ static int cs4265_i2c_probe(struct i2c_client *i2c_client,
 		mdelay(1);
 		gpiod_set_value_cansleep(cs4265->reset_gpio, 1);
 
+=======
+	cs4265->reset_gpio = devm_gpiod_get_optional(&i2c_client->dev,
+		"reset", GPIOD_OUT_LOW);
+	if (IS_ERR(cs4265->reset_gpio))
+		return PTR_ERR(cs4265->reset_gpio);
+
+	if (cs4265->reset_gpio) {
+		mdelay(1);
+		gpiod_set_value_cansleep(cs4265->reset_gpio, 1);
+>>>>>>> v4.9.227
 	}
 
 	i2c_set_clientdata(i2c_client, cs4265);
@@ -668,7 +718,10 @@ MODULE_DEVICE_TABLE(i2c, cs4265_id);
 static struct i2c_driver cs4265_i2c_driver = {
 	.driver = {
 		.name = "cs4265",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = cs4265_of_match,
 	},
 	.id_table = cs4265_id,

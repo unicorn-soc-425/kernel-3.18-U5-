@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_ARM64_XEN_PAGE_COHERENT_H
 #define _ASM_ARM64_XEN_PAGE_COHERENT_H
 
@@ -41,3 +42,6 @@ static inline void xen_dma_sync_single_for_device(struct device *hwdev,
 {
 }
 #endif /* _ASM_ARM64_XEN_PAGE_COHERENT_H */
+=======
+#include <../../arm/include/asm/xen/page-coherent.h>
+>>>>>>> v4.9.227

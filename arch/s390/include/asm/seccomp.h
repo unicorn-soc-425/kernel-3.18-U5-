@@ -13,4 +13,9 @@
 #define __NR_seccomp_exit_32	__NR_exit
 #define __NR_seccomp_sigreturn_32 __NR_sigreturn
 
+<<<<<<< HEAD
+=======
+#include <asm-generic/seccomp.h>
+
+>>>>>>> v4.9.227
 #endif	/* _ASM_S390_SECCOMP_H */

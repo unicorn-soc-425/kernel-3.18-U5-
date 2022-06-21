@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -165,8 +169,13 @@ acpi_ex_system_memory_space_handler(u32 function,
 		 * one page, which is similar to the original code that used a 4k
 		 * maximum window.
 		 */
+<<<<<<< HEAD
 		page_boundary_map_length =
 		    ACPI_ROUND_UP(address, ACPI_DEFAULT_PAGE_SIZE) - address;
+=======
+		page_boundary_map_length = (acpi_size)
+		    (ACPI_ROUND_UP(address, ACPI_DEFAULT_PAGE_SIZE) - address);
+>>>>>>> v4.9.227
 		if (page_boundary_map_length == 0) {
 			page_boundary_map_length = ACPI_DEFAULT_PAGE_SIZE;
 		}
@@ -177,12 +186,21 @@ acpi_ex_system_memory_space_handler(u32 function,
 
 		/* Create a new mapping starting at the address given */
 
+<<<<<<< HEAD
 		mem_info->mapped_logical_address = acpi_os_map_memory((acpi_physical_address) address, map_length);
+=======
+		mem_info->mapped_logical_address =
+		    acpi_os_map_memory(address, map_length);
+>>>>>>> v4.9.227
 		if (!mem_info->mapped_logical_address) {
 			ACPI_ERROR((AE_INFO,
 				    "Could not map memory at 0x%8.8X%8.8X, size %u",
 				    ACPI_FORMAT_UINT64(address),
+<<<<<<< HEAD
 				    (u32) map_length));
+=======
+				    (u32)map_length));
+>>>>>>> v4.9.227
 			mem_info->mapped_length = 0;
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -324,15 +342,24 @@ acpi_ex_system_io_space_handler(u32 function,
 	switch (function) {
 	case ACPI_READ:
 
+<<<<<<< HEAD
 		status = acpi_hw_read_port((acpi_io_address) address,
+=======
+		status = acpi_hw_read_port((acpi_io_address)address,
+>>>>>>> v4.9.227
 					   &value32, bit_width);
 		*value = value32;
 		break;
 
 	case ACPI_WRITE:
 
+<<<<<<< HEAD
 		status = acpi_hw_write_port((acpi_io_address) address,
 					    (u32) * value, bit_width);
+=======
+		status = acpi_hw_write_port((acpi_io_address)address,
+					    (u32)*value, bit_width);
+>>>>>>> v4.9.227
 		break;
 
 	default:
@@ -391,7 +418,12 @@ acpi_ex_pci_config_space_handler(u32 function,
 	pci_register = (u16) (u32) address;
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+<<<<<<< HEAD
 			  "Pci-Config %u (%u) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n",
+=======
+			  "Pci-Config %u (%u) Seg(%04x) Bus(%04x) "
+			  "Dev(%04x) Func(%04x) Reg(%04x)\n",
+>>>>>>> v4.9.227
 			  function, bit_width, pci_id->segment, pci_id->bus,
 			  pci_id->device, pci_id->function, pci_register));
 
@@ -399,14 +431,26 @@ acpi_ex_pci_config_space_handler(u32 function,
 	case ACPI_READ:
 
 		*value = 0;
+<<<<<<< HEAD
 		status = acpi_os_read_pci_configuration(pci_id, pci_register,
 							value, bit_width);
+=======
+		status =
+		    acpi_os_read_pci_configuration(pci_id, pci_register, value,
+						   bit_width);
+>>>>>>> v4.9.227
 		break;
 
 	case ACPI_WRITE:
 
+<<<<<<< HEAD
 		status = acpi_os_write_pci_configuration(pci_id, pci_register,
 							 *value, bit_width);
+=======
+		status =
+		    acpi_os_write_pci_configuration(pci_id, pci_register,
+						    *value, bit_width);
+>>>>>>> v4.9.227
 		break;
 
 	default:
@@ -516,15 +560,25 @@ acpi_ex_data_table_space_handler(u32 function,
 	switch (function) {
 	case ACPI_READ:
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(ACPI_CAST_PTR(char, value),
 			    ACPI_PHYSADDR_TO_PTR(address),
 			    ACPI_DIV_8(bit_width));
+=======
+		memcpy(ACPI_CAST_PTR(char, value),
+		       ACPI_PHYSADDR_TO_PTR(address), ACPI_DIV_8(bit_width));
+>>>>>>> v4.9.227
 		break;
 
 	case ACPI_WRITE:
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(ACPI_PHYSADDR_TO_PTR(address),
 			    ACPI_CAST_PTR(char, value), ACPI_DIV_8(bit_width));
+=======
+		memcpy(ACPI_PHYSADDR_TO_PTR(address),
+		       ACPI_CAST_PTR(char, value), ACPI_DIV_8(bit_width));
+>>>>>>> v4.9.227
 		break;
 
 	default:

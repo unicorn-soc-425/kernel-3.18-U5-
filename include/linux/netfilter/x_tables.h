@@ -3,8 +3,18 @@
 
 
 #include <linux/netdevice.h>
+<<<<<<< HEAD
 #include <uapi/linux/netfilter/x_tables.h>
 
+=======
+#include <linux/static_key.h>
+#include <uapi/linux/netfilter/x_tables.h>
+
+/* Test a struct->invflags and a boolean for inequality */
+#define NF_INVF(ptr, flag, boolean)					\
+	((boolean) ^ !!((ptr)->invflags & (flag)))
+
+>>>>>>> v4.9.227
 /**
  * struct xt_action_param - parameters for matches/targets
  *
@@ -12,6 +22,10 @@
  * @target:	the target extension
  * @matchinfo:	per-match data
  * @targetinfo:	per-target data
+<<<<<<< HEAD
+=======
+ * @net		network namespace through which the action was invoked
+>>>>>>> v4.9.227
  * @in:		input netdevice
  * @out:	output netdevice
  * @fragoff:	packet is a fragment, this is the data offset
@@ -23,7 +37,10 @@
  * Fields written to by extensions:
  *
  * @hotdrop:	drop packet if we had inspection problems
+<<<<<<< HEAD
  * Network namespace obtainable using dev_net(in/out)
+=======
+>>>>>>> v4.9.227
  */
 struct xt_action_param {
 	union {
@@ -33,6 +50,10 @@ struct xt_action_param {
 	union {
 		const void *matchinfo, *targinfo;
 	};
+<<<<<<< HEAD
+=======
+	struct net *net;
+>>>>>>> v4.9.227
 	const struct net_device *in, *out;
 	int fragoff;
 	unsigned int thoff;
@@ -62,6 +83,10 @@ struct xt_mtchk_param {
 	void *matchinfo;
 	unsigned int hook_mask;
 	u_int8_t family;
+<<<<<<< HEAD
+=======
+	bool nft_compat;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -92,6 +117,10 @@ struct xt_tgchk_param {
 	void *targinfo;
 	unsigned int hook_mask;
 	u_int8_t family;
+<<<<<<< HEAD
+=======
+	bool nft_compat;
+>>>>>>> v4.9.227
 };
 
 /* Target destructor parameters */
@@ -196,6 +225,12 @@ struct xt_table {
 	u_int8_t af;		/* address/protocol family */
 	int priority;		/* hook order */
 
+<<<<<<< HEAD
+=======
+	/* called when table is needed in the given netns */
+	int (*table_init)(struct net *net);
+
+>>>>>>> v4.9.227
 	/* A unique name... */
 	const char name[XT_TABLE_MAXNAMELEN];
 };
@@ -220,6 +255,7 @@ struct xt_table_info {
 	 * @stacksize jumps (number of user chains) can possibly be made.
 	 */
 	unsigned int stacksize;
+<<<<<<< HEAD
 	unsigned int __percpu *stackptr;
 	void ***jumpstack;
 	/* ipt_entry tables: one per CPU */
@@ -229,6 +265,13 @@ struct xt_table_info {
 
 #define XT_TABLE_INFO_SZ (offsetof(struct xt_table_info, entries) \
 			  + nr_cpu_ids * sizeof(char *))
+=======
+	void ***jumpstack;
+
+	unsigned char entries[0] __aligned(8);
+};
+
+>>>>>>> v4.9.227
 int xt_register_target(struct xt_target *target);
 void xt_unregister_target(struct xt_target *target);
 int xt_register_targets(struct xt_target *target, unsigned int n);
@@ -295,6 +338,15 @@ void xt_free_table_info(struct xt_table_info *info);
  */
 DECLARE_PER_CPU(seqcount_t, xt_recseq);
 
+<<<<<<< HEAD
+=======
+/* xt_tee_enabled - true if x_tables needs to handle reentrancy
+ *
+ * Enabled if current ip(6)tables ruleset has at least one -j TEE rule.
+ */
+extern struct static_key xt_tee_enabled;
+
+>>>>>>> v4.9.227
 /**
  * xt_write_recseq_begin - start of a write section
  *
@@ -364,8 +416,39 @@ static inline unsigned long ifname_compare_aligned(const char *_a,
 	return ret;
 }
 
+<<<<<<< HEAD
 struct nf_hook_ops *xt_hook_link(const struct xt_table *, nf_hookfn *);
 void xt_hook_unlink(const struct xt_table *, struct nf_hook_ops *);
+=======
+struct xt_percpu_counter_alloc_state {
+	unsigned int off;
+	const char __percpu *mem;
+};
+
+bool xt_percpu_counter_alloc(struct xt_percpu_counter_alloc_state *state,
+			     struct xt_counters *counter);
+void xt_percpu_counter_free(struct xt_counters *cnt);
+
+static inline struct xt_counters *
+xt_get_this_cpu_counter(struct xt_counters *cnt)
+{
+	if (nr_cpu_ids > 1)
+		return this_cpu_ptr((void __percpu *) (unsigned long) cnt->pcnt);
+
+	return cnt;
+}
+
+static inline struct xt_counters *
+xt_get_per_cpu_counter(struct xt_counters *cnt, unsigned int cpu)
+{
+	if (nr_cpu_ids > 1)
+		return per_cpu_ptr((void __percpu *) (unsigned long) cnt->pcnt, cpu);
+
+	return cnt;
+}
+
+struct nf_hook_ops *xt_hook_ops_alloc(const struct xt_table *, nf_hookfn *);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_COMPAT
 #include <net/compat.h>

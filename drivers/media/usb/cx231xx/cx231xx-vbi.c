@@ -19,12 +19,19 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
+=======
+#include "cx231xx.h"
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/list.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/bitmap.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/i2c.h>
 #include <linux/mm.h>
 #include <linux/mutex.h>
@@ -32,10 +39,16 @@
 
 #include <media/v4l2-common.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
 #include <media/msp3400.h>
 #include <media/tuner.h>
 
 #include "cx231xx.h"
+=======
+#include <media/drv-intf/msp3400.h>
+#include <media/tuner.h>
+
+>>>>>>> v4.9.227
 #include "cx231xx-vbi.h"
 
 static inline void print_err_status(struct cx231xx *dev, int packet, int status)
@@ -69,11 +82,20 @@ static inline void print_err_status(struct cx231xx *dev, int packet, int status)
 		break;
 	}
 	if (packet < 0) {
+<<<<<<< HEAD
 		cx231xx_err("URB status %d [%s].\n", status,
 			    errmsg);
 	} else {
 		cx231xx_err("URB packet %d, status %d [%s].\n",
 			    packet, status, errmsg);
+=======
+		dev_err(dev->dev,
+			"URB status %d [%s].\n", status, errmsg);
+	} else {
+		dev_err(dev->dev,
+			"URB packet %d, status %d [%s].\n",
+			packet, status, errmsg);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -192,8 +214,12 @@ static void free_buffer(struct videobuf_queue *vq, struct cx231xx_buffer *buf)
 	struct cx231xx_fh *fh = vq->priv_data;
 	struct cx231xx *dev = fh->dev;
 	unsigned long flags = 0;
+<<<<<<< HEAD
 	if (in_interrupt())
 		BUG();
+=======
+	BUG_ON(in_interrupt());
+>>>>>>> v4.9.227
 
 	/* We used to wait for the buffer to finish here, but this didn't work
 	   because, as we were keeping the state as VIDEOBUF_QUEUED,
@@ -316,8 +342,13 @@ static void cx231xx_irq_vbi_callback(struct urb *urb)
 	case -ESHUTDOWN:
 		return;
 	default:		/* error */
+<<<<<<< HEAD
 		cx231xx_err("urb completition error %d.\n",
 			    urb->status);
+=======
+		dev_err(dev->dev,
+			"urb completition error %d.\n",	urb->status);
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -331,8 +362,13 @@ static void cx231xx_irq_vbi_callback(struct urb *urb)
 
 	urb->status = usb_submit_urb(urb, GFP_ATOMIC);
 	if (urb->status) {
+<<<<<<< HEAD
 		cx231xx_err("urb resubmit failed (error=%i)\n",
 			    urb->status);
+=======
+		dev_err(dev->dev, "urb resubmit failed (error=%i)\n",
+			urb->status);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -344,7 +380,11 @@ void cx231xx_uninit_vbi_isoc(struct cx231xx *dev)
 	struct urb *urb;
 	int i;
 
+<<<<<<< HEAD
 	cx231xx_info("called cx231xx_uninit_vbi_isoc\n");
+=======
+	dev_dbg(dev->dev, "called cx231xx_uninit_vbi_isoc\n");
+>>>>>>> v4.9.227
 
 	dev->vbi_mode.bulk_ctl.nfields = -1;
 	for (i = 0; i < dev->vbi_mode.bulk_ctl.num_bufs; i++) {
@@ -393,7 +433,11 @@ int cx231xx_init_vbi_isoc(struct cx231xx *dev, int max_packets,
 	struct urb *urb;
 	int rc;
 
+<<<<<<< HEAD
 	cx231xx_info("called cx231xx_vbi_isoc\n");
+=======
+	dev_dbg(dev->dev, "called cx231xx_vbi_isoc\n");
+>>>>>>> v4.9.227
 
 	/* De-allocates all pending stuff */
 	cx231xx_uninit_vbi_isoc(dev);
@@ -419,14 +463,24 @@ int cx231xx_init_vbi_isoc(struct cx231xx *dev, int max_packets,
 	dev->vbi_mode.bulk_ctl.urb = kzalloc(sizeof(void *) * num_bufs,
 					     GFP_KERNEL);
 	if (!dev->vbi_mode.bulk_ctl.urb) {
+<<<<<<< HEAD
 		cx231xx_errdev("cannot alloc memory for usb buffers\n");
+=======
+		dev_err(dev->dev,
+			"cannot alloc memory for usb buffers\n");
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	}
 
 	dev->vbi_mode.bulk_ctl.transfer_buffer =
 	    kzalloc(sizeof(void *) * num_bufs, GFP_KERNEL);
 	if (!dev->vbi_mode.bulk_ctl.transfer_buffer) {
+<<<<<<< HEAD
 		cx231xx_errdev("cannot allocate memory for usbtransfer\n");
+=======
+		dev_err(dev->dev,
+			"cannot allocate memory for usbtransfer\n");
+>>>>>>> v4.9.227
 		kfree(dev->vbi_mode.bulk_ctl.urb);
 		return -ENOMEM;
 	}
@@ -441,7 +495,10 @@ int cx231xx_init_vbi_isoc(struct cx231xx *dev, int max_packets,
 
 		urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!urb) {
+<<<<<<< HEAD
 			cx231xx_err("cannot alloc bulk_ctl.urb %i\n", i);
+=======
+>>>>>>> v4.9.227
 			cx231xx_uninit_vbi_isoc(dev);
 			return -ENOMEM;
 		}
@@ -451,9 +508,16 @@ int cx231xx_init_vbi_isoc(struct cx231xx *dev, int max_packets,
 		dev->vbi_mode.bulk_ctl.transfer_buffer[i] =
 		    kzalloc(sb_size, GFP_KERNEL);
 		if (!dev->vbi_mode.bulk_ctl.transfer_buffer[i]) {
+<<<<<<< HEAD
 			cx231xx_err("unable to allocate %i bytes for transfer"
 				    " buffer %i%s\n", sb_size, i,
 				    in_interrupt() ? " while in int" : "");
+=======
+			dev_err(dev->dev,
+				"unable to allocate %i bytes for transfer buffer %i%s\n",
+				sb_size, i,
+				in_interrupt() ? " while in int" : "");
+>>>>>>> v4.9.227
 			cx231xx_uninit_vbi_isoc(dev);
 			return -ENOMEM;
 		}
@@ -470,8 +534,13 @@ int cx231xx_init_vbi_isoc(struct cx231xx *dev, int max_packets,
 	for (i = 0; i < dev->vbi_mode.bulk_ctl.num_bufs; i++) {
 		rc = usb_submit_urb(dev->vbi_mode.bulk_ctl.urb[i], GFP_ATOMIC);
 		if (rc) {
+<<<<<<< HEAD
 			cx231xx_err("submit of urb %i failed (error=%i)\n", i,
 				    rc);
+=======
+			dev_err(dev->dev,
+				"submit of urb %i failed (error=%i)\n", i, rc);
+>>>>>>> v4.9.227
 			cx231xx_uninit_vbi_isoc(dev);
 			return rc;
 		}
@@ -522,7 +591,11 @@ static inline void vbi_buffer_filled(struct cx231xx *dev,
 				     struct cx231xx_buffer *buf)
 {
 	/* Advice that buffer was filled */
+<<<<<<< HEAD
 	/* cx231xx_info("[%p/%d] wakeup\n", buf, buf->vb.i); */
+=======
+	/* dev_dbg(dev->dev, "[%p/%d] wakeup\n", buf, buf->vb.i); */
+>>>>>>> v4.9.227
 
 	buf->vb.state = VIDEOBUF_DONE;
 	buf->vb.field_count++;
@@ -614,7 +687,11 @@ static inline void get_next_vbi_buf(struct cx231xx_dmaqueue *dma_q,
 	char *outp;
 
 	if (list_empty(&dma_q->active)) {
+<<<<<<< HEAD
 		cx231xx_err("No active queue to serve\n");
+=======
+		dev_err(dev->dev, "No active queue to serve\n");
+>>>>>>> v4.9.227
 		dev->vbi_mode.bulk_ctl.buf = NULL;
 		*buf = NULL;
 		return;

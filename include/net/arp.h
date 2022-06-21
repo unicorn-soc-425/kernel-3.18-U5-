@@ -9,6 +9,7 @@
 
 extern struct neigh_table arp_tbl;
 
+<<<<<<< HEAD
 static inline u32 arp_hashfn(u32 key, const struct net_device *dev, u32 hash_rnd)
 {
 	u32 val = key ^ hash32_ptr(dev);
@@ -35,6 +36,31 @@ static inline struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev
 
 	return NULL;
 }
+=======
+static inline u32 arp_hashfn(const void *pkey, const struct net_device *dev, u32 *hash_rnd)
+{
+	u32 key = *(const u32 *)pkey;
+	u32 val = key ^ hash32_ptr(dev);
+
+	return val * hash_rnd[0];
+}
+
+#ifdef CONFIG_INET
+static inline struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev, u32 key)
+{
+	if (dev->flags & (IFF_LOOPBACK | IFF_POINTOPOINT))
+		key = INADDR_ANY;
+
+	return ___neigh_lookup_noref(&arp_tbl, neigh_key_eq32, arp_hashfn, &key, dev);
+}
+#else
+static inline
+struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev, u32 key)
+{
+	return NULL;
+}
+#endif
+>>>>>>> v4.9.227
 
 static inline struct neighbour *__ipv4_neigh_lookup(struct net_device *dev, u32 key)
 {
@@ -50,7 +76,10 @@ static inline struct neighbour *__ipv4_neigh_lookup(struct net_device *dev, u32 
 }
 
 void arp_init(void);
+<<<<<<< HEAD
 int arp_find(unsigned char *haddr, struct sk_buff *skb);
+=======
+>>>>>>> v4.9.227
 int arp_ioctl(struct net *net, unsigned int cmd, void __user *arg);
 void arp_send(int type, int ptype, __be32 dest_ip,
 	      struct net_device *dev, __be32 src_ip,

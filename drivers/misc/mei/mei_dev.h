@@ -18,7 +18,11 @@
 #define _MEI_DEV_H_
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/watchdog.h>
+=======
+#include <linux/cdev.h>
+>>>>>>> v4.9.227
 #include <linux/poll.h>
 #include <linux/mei.h>
 #include <linux/mei_cl_bus.h>
@@ -26,6 +30,7 @@
 #include "hw.h"
 #include "hbm.h"
 
+<<<<<<< HEAD
 /*
  * watch dog definition
  */
@@ -43,16 +48,22 @@
 
 #define MEI_RD_MSG_BUF_SIZE           (128 * sizeof(u32))
 
+=======
+>>>>>>> v4.9.227
 
 /*
  * AMTHI Client UUID
  */
 extern const uuid_le mei_amthif_guid;
 
+<<<<<<< HEAD
 /*
  * Watchdog Client UUID
  */
 extern const uuid_le mei_wd_guid;
+=======
+#define MEI_RD_MSG_BUF_SIZE           (128 * sizeof(u32))
+>>>>>>> v4.9.227
 
 /*
  * Number of Maximum MEI Clients
@@ -73,6 +84,7 @@ extern const uuid_le mei_wd_guid;
  */
 #define  MEI_MAX_OPEN_HANDLE_COUNT (MEI_CLIENTS_MAX - 1)
 
+<<<<<<< HEAD
 /*
  * Internal Clients Number
  */
@@ -82,13 +94,21 @@ extern const uuid_le mei_wd_guid;
 #define MEI_IAMTHIF_HOST_CLIENT_ID     2
 
 
+=======
+>>>>>>> v4.9.227
 /* File state */
 enum file_state {
 	MEI_FILE_INITIALIZING = 0,
 	MEI_FILE_CONNECTING,
 	MEI_FILE_CONNECTED,
 	MEI_FILE_DISCONNECTING,
+<<<<<<< HEAD
 	MEI_FILE_DISCONNECTED
+=======
+	MEI_FILE_DISCONNECT_REPLY,
+	MEI_FILE_DISCONNECT_REQUIRED,
+	MEI_FILE_DISCONNECTED,
+>>>>>>> v4.9.227
 };
 
 /* MEI device states */
@@ -107,15 +127,20 @@ const char *mei_dev_state_str(int state);
 enum iamthif_states {
 	MEI_IAMTHIF_IDLE,
 	MEI_IAMTHIF_WRITING,
+<<<<<<< HEAD
 	MEI_IAMTHIF_FLOW_CONTROL,
 	MEI_IAMTHIF_READING,
 	MEI_IAMTHIF_READ_COMPLETE
+=======
+	MEI_IAMTHIF_READING,
+>>>>>>> v4.9.227
 };
 
 enum mei_file_transaction_states {
 	MEI_IDLE,
 	MEI_WRITING,
 	MEI_WRITE_COMPLETE,
+<<<<<<< HEAD
 	MEI_FLOW_CONTROL,
 	MEI_READING,
 	MEI_READ_COMPLETE
@@ -125,6 +150,8 @@ enum mei_wd_states {
 	MEI_WD_IDLE,
 	MEI_WD_RUNNING,
 	MEI_WD_STOPPING,
+=======
+>>>>>>> v4.9.227
 };
 
 /**
@@ -134,6 +161,11 @@ enum mei_wd_states {
  * @MEI_FOP_CONNECT:    connect
  * @MEI_FOP_DISCONNECT: disconnect
  * @MEI_FOP_DISCONNECT_RSP: disconnect response
+<<<<<<< HEAD
+=======
+ * @MEI_FOP_NOTIFY_START:   start notification
+ * @MEI_FOP_NOTIFY_STOP:    stop notification
+>>>>>>> v4.9.227
  */
 enum mei_cb_file_ops {
 	MEI_FOP_READ = 0,
@@ -141,18 +173,34 @@ enum mei_cb_file_ops {
 	MEI_FOP_CONNECT,
 	MEI_FOP_DISCONNECT,
 	MEI_FOP_DISCONNECT_RSP,
+<<<<<<< HEAD
+=======
+	MEI_FOP_NOTIFY_START,
+	MEI_FOP_NOTIFY_STOP,
+>>>>>>> v4.9.227
 };
 
 /*
  * Intel MEI message data struct
  */
 struct mei_msg_data {
+<<<<<<< HEAD
 	u32 size;
+=======
+	size_t size;
+>>>>>>> v4.9.227
 	unsigned char *data;
 };
 
 /* Maximum number of processed FW status registers */
+<<<<<<< HEAD
 #define MEI_FW_STATUS_MAX 2
+=======
+#define MEI_FW_STATUS_MAX 6
+/* Minimal  buffer for FW status string (8 bytes in dw + space or '\0') */
+#define MEI_FW_STATUS_STR_SZ (MEI_FW_STATUS_MAX * (8 + 1))
+
+>>>>>>> v4.9.227
 
 /*
  * struct mei_fw_status - storage of FW status data
@@ -169,6 +217,7 @@ struct mei_fw_status {
  * struct mei_me_client - representation of me (fw) client
  *
  * @list: link in me client list
+<<<<<<< HEAD
  * @props: client properties
  * @client_id: me client id
  * @mei_flow_ctrl_creds: flow control credits
@@ -178,6 +227,23 @@ struct mei_me_client {
 	struct mei_client_properties props;
 	u8 client_id;
 	u8 mei_flow_ctrl_creds;
+=======
+ * @refcnt: struct reference count
+ * @props: client properties
+ * @client_id: me client id
+ * @tx_flow_ctrl_creds: flow control credits
+ * @connect_count: number connections to this client
+ * @bus_added: added to bus
+ */
+struct mei_me_client {
+	struct list_head list;
+	struct kref refcnt;
+	struct mei_client_properties props;
+	u8 client_id;
+	u8 tx_flow_ctrl_creds;
+	u8 connect_count;
+	u8 bus_added;
+>>>>>>> v4.9.227
 };
 
 
@@ -189,23 +255,41 @@ struct mei_cl;
  * @list: link in callback queue
  * @cl: file client who is running this operation
  * @fop_type: file operation type
+<<<<<<< HEAD
  * @request_buffer: buffer to store request data
  * @response_buffer: buffer to store response data
  * @buf_idx: last read index
  * @read_time: last read operation time stamp (iamthif)
  * @file_object: pointer to file structure
  * @internal: communication between driver and FW flag
+=======
+ * @buf: buffer for data associated with the callback
+ * @buf_idx: last read index
+ * @fp: pointer to file structure
+ * @status: io status of the cb
+ * @internal: communication between driver and FW flag
+ * @completed: the transfer or reception has completed
+>>>>>>> v4.9.227
  */
 struct mei_cl_cb {
 	struct list_head list;
 	struct mei_cl *cl;
 	enum mei_cb_file_ops fop_type;
+<<<<<<< HEAD
 	struct mei_msg_data request_buffer;
 	struct mei_msg_data response_buffer;
 	unsigned long buf_idx;
 	unsigned long read_time;
 	struct file *file_object;
 	u32 internal:1;
+=======
+	struct mei_msg_data buf;
+	size_t buf_idx;
+	const struct file *fp;
+	int status;
+	u32 internal:1;
+	u32 completed:1;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -218,6 +302,7 @@ struct mei_cl_cb {
  * @tx_wait: wait queue for tx completion
  * @rx_wait: wait queue for rx completion
  * @wait:  wait queue for management operation
+<<<<<<< HEAD
  * @status: connection status
  * @cl_uuid: client uuid name
  * @host_client_id: host id
@@ -230,6 +315,24 @@ struct mei_cl_cb {
  *
  * @device: device on the mei client bus
  * @device_link:  link to bus clients
+=======
+ * @ev_wait: notification wait queue
+ * @ev_async: event async notification
+ * @status: connection status
+ * @me_cl: fw client connected
+ * @fp: file associated with client
+ * @host_client_id: host id
+ * @tx_flow_ctrl_creds: transmit flow credentials
+ * @rx_flow_ctrl_creds: receive flow credentials
+ * @timer_count:  watchdog timer for operation completion
+ * @notify_en: notification - enabled/disabled
+ * @notify_ev: pending notification event
+ * @writing_state: state of the tx
+ * @rd_pending: pending read credits
+ * @rd_completed: completed read
+ *
+ * @cldev: device on the mei client bus
+>>>>>>> v4.9.227
  */
 struct mei_cl {
 	struct list_head link;
@@ -238,6 +341,7 @@ struct mei_cl {
 	wait_queue_head_t tx_wait;
 	wait_queue_head_t rx_wait;
 	wait_queue_head_t wait;
+<<<<<<< HEAD
 	int status;
 	uuid_le cl_uuid;
 	u8 host_client_id;
@@ -257,15 +361,45 @@ struct mei_cl {
  *
  * @host_is_ready    : query for host readiness
 
+=======
+	wait_queue_head_t ev_wait;
+	struct fasync_struct *ev_async;
+	int status;
+	struct mei_me_client *me_cl;
+	const struct file *fp;
+	u8 host_client_id;
+	u8 tx_flow_ctrl_creds;
+	u8 rx_flow_ctrl_creds;
+	u8 timer_count;
+	u8 notify_en;
+	u8 notify_ev;
+	enum mei_file_transaction_states writing_state;
+	struct list_head rd_pending;
+	struct list_head rd_completed;
+
+	struct mei_cl_device *cldev;
+};
+
+/**
+ * struct mei_hw_ops - hw specific ops
+ *
+ * @host_is_ready    : query for host readiness
+ *
+>>>>>>> v4.9.227
  * @hw_is_ready      : query if hw is ready
  * @hw_reset         : reset hw
  * @hw_start         : start hw after reset
  * @hw_config        : configure hw
+<<<<<<< HEAD
 
+=======
+ *
+>>>>>>> v4.9.227
  * @fw_status        : get fw status registers
  * @pg_state         : power gating state of the device
  * @pg_in_transition : is device now in pg transition
  * @pg_is_enabled    : is power gating enabled
+<<<<<<< HEAD
 
  * @intr_clear       : clear pending interrupts
  * @intr_enable      : enable interrupts
@@ -279,6 +413,21 @@ struct mei_cl {
 
  * @rdbuf_full_slots : query how many slots are filled
 
+=======
+ *
+ * @intr_clear       : clear pending interrupts
+ * @intr_enable      : enable interrupts
+ * @intr_disable     : disable interrupts
+ *
+ * @hbuf_free_slots  : query for write buffer empty slots
+ * @hbuf_is_ready    : query if write buffer is empty
+ * @hbuf_max_len     : query for write buffer max len
+ *
+ * @write            : write a message to FW
+ *
+ * @rdbuf_full_slots : query how many slots are filled
+ *
+>>>>>>> v4.9.227
  * @read_hdr         : get first 4 bytes (header)
  * @read             : read a buffer from the FW
  */
@@ -317,6 +466,7 @@ struct mei_hw_ops {
 };
 
 /* MEI bus API*/
+<<<<<<< HEAD
 
 /**
  * struct mei_cl_ops - MEI CL device ops
@@ -386,6 +536,20 @@ struct mei_cl_device {
 };
 
 
+=======
+void mei_cl_bus_rescan(struct mei_device *bus);
+void mei_cl_bus_rescan_work(struct work_struct *work);
+void mei_cl_bus_dev_fixup(struct mei_cl_device *dev);
+ssize_t __mei_cl_send(struct mei_cl *cl, u8 *buf, size_t length,
+			bool blocking);
+ssize_t __mei_cl_recv(struct mei_cl *cl, u8 *buf, size_t length);
+bool mei_cl_bus_rx_event(struct mei_cl *cl);
+bool mei_cl_bus_notify_event(struct mei_cl *cl);
+void mei_cl_bus_remove_devices(struct mei_device *bus);
+int mei_cl_bus_init(void);
+void mei_cl_bus_exit(void);
+
+>>>>>>> v4.9.227
 /**
  * enum mei_pg_event - power gating transition events
  *
@@ -423,7 +587,10 @@ const char *mei_pg_state_str(enum mei_pg_state state);
  * @cdev        : character device
  * @minor       : minor number allocated for device
  *
+<<<<<<< HEAD
  * @read_list   : read completion list
+=======
+>>>>>>> v4.9.227
  * @write_list  : write pending list
  * @write_waiting_list : write completion list
  * @ctrl_wr_list : pending control write list
@@ -440,7 +607,10 @@ const char *mei_pg_state_str(enum mei_pg_state state);
  * @wait_hw_ready : wait queue for receive HW ready message form FW
  * @wait_pg     : wait queue for receive PG message from FW
  * @wait_hbm_start : wait queue for receive HBM start message from FW
+<<<<<<< HEAD
  * @wait_stop_wd : wait queue for receive WD stop message from FW
+=======
+>>>>>>> v4.9.227
  *
  * @reset_count : number of consecutive resets
  * @dev_state   : device state
@@ -455,6 +625,7 @@ const char *mei_pg_state_str(enum mei_pg_state state);
  *
  * @hbuf_depth  : depth of hardware host/write buffer is slots
  * @hbuf_is_ready : query if the host host/write buffer is ready
+<<<<<<< HEAD
  * @wr_msg      : the buffer for hbm control messages
  *
  * @version     : HBM protocol version in use
@@ -492,6 +663,37 @@ const char *mei_pg_state_str(enum mei_pg_state state);
  * @reset_work  : work item for the device reset
  *
  * @device_list : mei client bus list
+=======
+ *
+ * @version     : HBM protocol version in use
+ * @hbm_f_pg_supported  : hbm feature pgi protocol
+ * @hbm_f_dc_supported  : hbm feature dynamic clients
+ * @hbm_f_dot_supported : hbm feature disconnect on timeout
+ * @hbm_f_ev_supported  : hbm feature event notification
+ * @hbm_f_fa_supported  : hbm feature fixed address client
+ * @hbm_f_ie_supported  : hbm feature immediate reply to enum request
+ *
+ * @me_clients_rwsem: rw lock over me_clients list
+ * @me_clients  : list of FW clients
+ * @me_clients_map : FW clients bit map
+ * @host_clients_map : host clients id pool
+ *
+ * @allow_fixed_address: allow user space to connect a fixed client
+ * @override_fixed_address: force allow fixed address behavior
+ *
+ * @amthif_cmd_list : amthif list for cmd waiting
+ * @iamthif_cl  : amthif host client
+ * @iamthif_open_count : number of opened amthif connections
+ * @iamthif_stall_timer : timer to detect amthif hang
+ * @iamthif_state : amthif processor state
+ * @iamthif_canceled : current amthif command is canceled
+ *
+ * @reset_work  : work item for the device reset
+ * @bus_rescan_work : work item for the bus rescan
+ *
+ * @device_list : mei client bus list
+ * @cl_bus_lock : client bus list lock
+>>>>>>> v4.9.227
  *
  * @dbgfs_dir   : debugfs mei root directory
  *
@@ -503,7 +705,10 @@ struct mei_device {
 	struct cdev cdev;
 	int minor;
 
+<<<<<<< HEAD
 	struct mei_cl_cb read_list;
+=======
+>>>>>>> v4.9.227
 	struct mei_cl_cb write_list;
 	struct mei_cl_cb write_waiting_list;
 	struct mei_cl_cb ctrl_wr_list;
@@ -522,7 +727,10 @@ struct mei_device {
 	wait_queue_head_t wait_hw_ready;
 	wait_queue_head_t wait_pg;
 	wait_queue_head_t wait_hbm_start;
+<<<<<<< HEAD
 	wait_queue_head_t wait_stop_wd;
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * mei device  states
@@ -536,9 +744,15 @@ struct mei_device {
 	 * Power Gating support
 	 */
 	enum mei_pg_event pg_event;
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 	struct dev_pm_domain pg_domain;
 #endif /* CONFIG_PM_RUNTIME */
+=======
+#ifdef CONFIG_PM
+	struct dev_pm_domain pg_domain;
+#endif /* CONFIG_PM */
+>>>>>>> v4.9.227
 
 	unsigned char rd_msg_buf[MEI_RD_MSG_BUF_SIZE];
 	u32 rd_msg_hdr;
@@ -547,6 +761,7 @@ struct mei_device {
 	u8 hbuf_depth;
 	bool hbuf_is_ready;
 
+<<<<<<< HEAD
 	/* used for control messages */
 	struct {
 		struct mei_msg_hdr hdr;
@@ -592,6 +807,38 @@ struct mei_device {
 
 	/* List of bus devices */
 	struct list_head device_list;
+=======
+	struct hbm_version version;
+	unsigned int hbm_f_pg_supported:1;
+	unsigned int hbm_f_dc_supported:1;
+	unsigned int hbm_f_dot_supported:1;
+	unsigned int hbm_f_ev_supported:1;
+	unsigned int hbm_f_fa_supported:1;
+	unsigned int hbm_f_ie_supported:1;
+
+	struct rw_semaphore me_clients_rwsem;
+	struct list_head me_clients;
+	DECLARE_BITMAP(me_clients_map, MEI_CLIENTS_MAX);
+	DECLARE_BITMAP(host_clients_map, MEI_CLIENTS_MAX);
+
+	bool allow_fixed_address;
+	bool override_fixed_address;
+
+	/* amthif list for cmd waiting */
+	struct mei_cl_cb amthif_cmd_list;
+	struct mei_cl iamthif_cl;
+	long iamthif_open_count;
+	u32 iamthif_stall_timer;
+	enum iamthif_states iamthif_state;
+	bool iamthif_canceled;
+
+	struct work_struct reset_work;
+	struct work_struct bus_rescan_work;
+
+	/* List of bus devices */
+	struct list_head device_list;
+	struct mutex cl_bus_lock;
+>>>>>>> v4.9.227
 
 #if IS_ENABLED(CONFIG_DEBUG_FS)
 	struct dentry *dbgfs_dir;
@@ -649,6 +896,10 @@ void mei_cancel_work(struct mei_device *dev);
  */
 
 void mei_timer(struct work_struct *work);
+<<<<<<< HEAD
+=======
+void mei_schedule_stall_timer(struct mei_device *dev);
+>>>>>>> v4.9.227
 int mei_irq_read_handler(struct mei_device *dev,
 		struct mei_cl_cb *cmpl_list, s32 *slots);
 
@@ -660,6 +911,7 @@ void mei_irq_compl_handler(struct mei_device *dev, struct mei_cl_cb *cmpl_list);
  */
 void mei_amthif_reset_params(struct mei_device *dev);
 
+<<<<<<< HEAD
 int mei_amthif_host_init(struct mei_device *dev);
 
 int mei_amthif_write(struct mei_device *dev, struct mei_cl_cb *priv_cb);
@@ -682,11 +934,27 @@ int mei_amthif_irq_write(struct mei_cl *cl, struct mei_cl_cb *cb,
 
 void mei_amthif_complete(struct mei_device *dev, struct mei_cl_cb *cb);
 int mei_amthif_irq_read_msg(struct mei_device *dev,
+=======
+int mei_amthif_host_init(struct mei_device *dev, struct mei_me_client *me_cl);
+
+unsigned int mei_amthif_poll(struct file *file, poll_table *wait);
+
+int mei_amthif_release(struct mei_device *dev, struct file *file);
+
+int mei_amthif_write(struct mei_cl *cl, struct mei_cl_cb *cb);
+int mei_amthif_run_next_cmd(struct mei_device *dev);
+int mei_amthif_irq_write(struct mei_cl *cl, struct mei_cl_cb *cb,
+			struct mei_cl_cb *cmpl_list);
+
+void mei_amthif_complete(struct mei_cl *cl, struct mei_cl_cb *cb);
+int mei_amthif_irq_read_msg(struct mei_cl *cl,
+>>>>>>> v4.9.227
 			    struct mei_msg_hdr *mei_hdr,
 			    struct mei_cl_cb *complete_list);
 int mei_amthif_irq_read(struct mei_device *dev, s32 *slots);
 
 /*
+<<<<<<< HEAD
  * NFC functions
  */
 int mei_nfc_host_init(struct mei_device *dev);
@@ -713,6 +981,8 @@ int mei_watchdog_register(struct mei_device *dev);
 void mei_watchdog_unregister(struct mei_device *dev);
 
 /*
+=======
+>>>>>>> v4.9.227
  * Register Access Function
  */
 
@@ -787,8 +1057,12 @@ static inline size_t mei_hbuf_max_len(const struct mei_device *dev)
 }
 
 static inline int mei_write_message(struct mei_device *dev,
+<<<<<<< HEAD
 			struct mei_msg_hdr *hdr,
 			unsigned char *buf)
+=======
+			struct mei_msg_hdr *hdr, void *buf)
+>>>>>>> v4.9.227
 {
 	return dev->ops->write(dev, hdr, buf);
 }
@@ -815,15 +1089,23 @@ static inline int mei_fw_status(struct mei_device *dev,
 	return dev->ops->fw_status(dev, fw_status);
 }
 
+<<<<<<< HEAD
 #define FW_STS_FMT "%08X %08X"
 #define FW_STS_PRM(fw_status) \
 	(fw_status).count > 0 ? (fw_status).status[0] : 0xDEADBEEF, \
 	(fw_status).count > 1 ? (fw_status).status[1] : 0xDEADBEEF
 
+=======
+>>>>>>> v4.9.227
 bool mei_hbuf_acquire(struct mei_device *dev);
 
 bool mei_write_is_idle(struct mei_device *dev);
 
+<<<<<<< HEAD
+=======
+void mei_irq_discard_msg(struct mei_device *dev, struct mei_msg_hdr *hdr);
+
+>>>>>>> v4.9.227
 #if IS_ENABLED(CONFIG_DEBUG_FS)
 int mei_dbgfs_register(struct mei_device *dev, const char *name);
 void mei_dbgfs_deregister(struct mei_device *dev);
@@ -843,4 +1125,35 @@ void mei_deregister(struct mei_device *dev);
 	(hdr)->host_addr, (hdr)->me_addr, \
 	(hdr)->length, (hdr)->internal, (hdr)->msg_complete
 
+<<<<<<< HEAD
+=======
+ssize_t mei_fw_status2str(struct mei_fw_status *fw_sts, char *buf, size_t len);
+/**
+ * mei_fw_status_str - fetch and convert fw status registers to printable string
+ *
+ * @dev: the device structure
+ * @buf: string buffer at minimal size MEI_FW_STATUS_STR_SZ
+ * @len: buffer len must be >= MEI_FW_STATUS_STR_SZ
+ *
+ * Return: number of bytes written or < 0 on failure
+ */
+static inline ssize_t mei_fw_status_str(struct mei_device *dev,
+					char *buf, size_t len)
+{
+	struct mei_fw_status fw_status;
+	int ret;
+
+	buf[0] = '\0';
+
+	ret = mei_fw_status(dev, &fw_status);
+	if (ret)
+		return ret;
+
+	ret = mei_fw_status2str(&fw_status, buf, MEI_FW_STATUS_STR_SZ);
+
+	return ret;
+}
+
+
+>>>>>>> v4.9.227
 #endif

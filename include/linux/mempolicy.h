@@ -122,7 +122,11 @@ struct sp_node {
 
 struct shared_policy {
 	struct rb_root root;
+<<<<<<< HEAD
 	spinlock_t lock;
+=======
+	rwlock_t lock;
+>>>>>>> v4.9.227
 };
 
 int vma_dup_policy(struct vm_area_struct *src, struct vm_area_struct *dst);
@@ -172,6 +176,7 @@ extern int mpol_parse_str(char *str, struct mempolicy **mpol);
 extern void mpol_to_str(char *buffer, int maxlen, struct mempolicy *pol);
 
 /* Check if a vma is migratable */
+<<<<<<< HEAD
 static inline int vma_migratable(struct vm_area_struct *vma)
 {
 	if (vma->vm_flags & (VM_IO | VM_PFNMAP))
@@ -180,6 +185,16 @@ static inline int vma_migratable(struct vm_area_struct *vma)
 #ifndef CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION
 	if (vma->vm_flags & VM_HUGETLB)
 		return 0;
+=======
+static inline bool vma_migratable(struct vm_area_struct *vma)
+{
+	if (vma->vm_flags & (VM_IO | VM_PFNMAP))
+		return false;
+
+#ifndef CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION
+	if (vma->vm_flags & VM_HUGETLB)
+		return false;
+>>>>>>> v4.9.227
 #endif
 
 	/*
@@ -190,11 +205,20 @@ static inline int vma_migratable(struct vm_area_struct *vma)
 	if (vma->vm_file &&
 		gfp_zone(mapping_gfp_mask(vma->vm_file->f_mapping))
 								< policy_zone)
+<<<<<<< HEAD
 			return 0;
 	return 1;
 }
 
 extern int mpol_misplaced(struct page *, struct vm_area_struct *, unsigned long);
+=======
+			return false;
+	return true;
+}
+
+extern int mpol_misplaced(struct page *, struct vm_area_struct *, unsigned long);
+extern void mpol_put_task_policy(struct task_struct *);
+>>>>>>> v4.9.227
 
 #else
 
@@ -228,6 +252,15 @@ static inline void mpol_free_shared_policy(struct shared_policy *p)
 {
 }
 
+<<<<<<< HEAD
+=======
+static inline struct mempolicy *
+mpol_shared_policy_lookup(struct shared_policy *sp, unsigned long idx)
+{
+	return NULL;
+}
+
+>>>>>>> v4.9.227
 #define vma_policy(vma) NULL
 
 static inline int
@@ -291,5 +324,11 @@ static inline int mpol_misplaced(struct page *page, struct vm_area_struct *vma,
 	return -1; /* no node preference */
 }
 
+<<<<<<< HEAD
+=======
+static inline void mpol_put_task_policy(struct task_struct *task)
+{
+}
+>>>>>>> v4.9.227
 #endif /* CONFIG_NUMA */
 #endif

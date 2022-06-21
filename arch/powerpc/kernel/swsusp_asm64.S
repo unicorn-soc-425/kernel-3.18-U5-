@@ -179,7 +179,11 @@ nothing_to_copy:
 	sld	r3, r3, r0
 	li	r0, 0
 1:
+<<<<<<< HEAD
 	dcbf	r0,r3
+=======
+	dcbf	0,r3
+>>>>>>> v4.9.227
 	addi	r3,r3,0x20
 	bdnz	1b
 

@@ -279,7 +279,11 @@ static int dlfb_set_video_mode(struct dlfb_data *dev,
 {
 	char *buf;
 	char *wrptr;
+<<<<<<< HEAD
 	int retval = 0;
+=======
+	int retval;
+>>>>>>> v4.9.227
 	int writesize;
 	struct urb *urb;
 
@@ -922,8 +926,12 @@ static void dlfb_free(struct kref *kref)
 {
 	struct dlfb_data *dev = container_of(kref, struct dlfb_data, kref);
 
+<<<<<<< HEAD
 	if (dev->backing_buffer)
 		vfree(dev->backing_buffer);
+=======
+	vfree(dev->backing_buffer);
+>>>>>>> v4.9.227
 
 	kfree(dev->edid);
 
@@ -953,8 +961,12 @@ static void dlfb_free_framebuffer(struct dlfb_data *dev)
 			fb_dealloc_cmap(&info->cmap);
 		if (info->monspecs.modedb)
 			fb_destroy_modedb(info->monspecs.modedb);
+<<<<<<< HEAD
 		if (info->screen_base)
 			vfree(info->screen_base);
+=======
+		vfree(info->screen_base);
+>>>>>>> v4.9.227
 
 		fb_destroy_modelist(&info->modelist);
 
@@ -1203,8 +1215,12 @@ static int dlfb_realloc_framebuffer(struct dlfb_data *dev, struct fb_info *info)
 		if (!new_back)
 			pr_info("No shadow/backing buffer allocated\n");
 		else {
+<<<<<<< HEAD
 			if (dev->backing_buffer)
 				vfree(dev->backing_buffer);
+=======
+			vfree(dev->backing_buffer);
+>>>>>>> v4.9.227
 			dev->backing_buffer = new_back;
 		}
 	}
@@ -1518,8 +1534,12 @@ static int dlfb_parse_vendor_descriptor(struct dlfb_data *dev,
 	char *desc;
 	char *buf;
 	char *desc_end;
+<<<<<<< HEAD
 
 	int total_len = 0;
+=======
+	int total_len;
+>>>>>>> v4.9.227
 
 	buf = kzalloc(MAX_VENDOR_DESCRIPTOR_SIZE, GFP_KERNEL);
 	if (!buf)
@@ -1595,7 +1615,11 @@ static int dlfb_usb_probe(struct usb_interface *interface,
 			const struct usb_device_id *id)
 {
 	struct usb_device *usbdev;
+<<<<<<< HEAD
 	struct dlfb_data *dev = NULL;
+=======
+	struct dlfb_data *dev;
+>>>>>>> v4.9.227
 	int retval = -ENOMEM;
 
 	/* usb initialization */
@@ -1678,7 +1702,10 @@ static void dlfb_init_framebuffer_work(struct work_struct *work)
 	/* allocates framebuffer driver structure, not framebuffer memory */
 	info = framebuffer_alloc(0, dev->gdev);
 	if (!info) {
+<<<<<<< HEAD
 		retval = -ENOMEM;
+=======
+>>>>>>> v4.9.227
 		pr_err("framebuffer_alloc failed\n");
 		goto error;
 	}
@@ -1925,7 +1952,11 @@ static int dlfb_alloc_urb_list(struct dlfb_data *dev, int count, size_t size)
 
 static struct urb *dlfb_get_urb(struct dlfb_data *dev)
 {
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret;
+>>>>>>> v4.9.227
 	struct list_head *entry;
 	struct urb_node *unode;
 	struct urb *urb = NULL;

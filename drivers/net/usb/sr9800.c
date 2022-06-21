@@ -336,7 +336,11 @@ static void sr_set_multicast(struct net_device *net)
 static int sr_mdio_read(struct net_device *net, int phy_id, int loc)
 {
 	struct usbnet *dev = netdev_priv(net);
+<<<<<<< HEAD
 	__le16 res;
+=======
+	__le16 res = 0;
+>>>>>>> v4.9.227
 
 	mutex_lock(&dev->phy_mutex);
 	sr_set_sw_mii(dev);
@@ -421,6 +425,12 @@ sr_set_wol(struct net_device *net, struct ethtool_wolinfo *wolinfo)
 	struct usbnet *dev = netdev_priv(net);
 	u8 opt = 0;
 
+<<<<<<< HEAD
+=======
+	if (wolinfo->wolopts & ~(WAKE_PHY | WAKE_MAGIC))
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	if (wolinfo->wolopts & WAKE_PHY)
 		opt |= SR_MONITOR_LINK;
 	if (wolinfo->wolopts & WAKE_MAGIC)
@@ -470,14 +480,20 @@ static int sr_get_eeprom(struct net_device *net,
 static void sr_get_drvinfo(struct net_device *net,
 				 struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	struct usbnet *dev = netdev_priv(net);
 	struct sr_data *data = (struct sr_data *)&dev->data;
 
+=======
+>>>>>>> v4.9.227
 	/* Inherit standard device info */
 	usbnet_get_drvinfo(net, info);
 	strncpy(info->driver, DRIVER_NAME, sizeof(info->driver));
 	strncpy(info->version, DRIVER_VERSION, sizeof(info->version));
+<<<<<<< HEAD
 	info->eedump_len = data->eeprom_len;
+=======
+>>>>>>> v4.9.227
 }
 
 static u32 sr_get_link(struct net_device *net)
@@ -761,7 +777,11 @@ static int sr9800_bind(struct usbnet *dev, struct usb_interface *intf)
 		netdev_dbg(dev->net, "Failed to read MAC address: %d\n", ret);
 		return ret;
 	}
+<<<<<<< HEAD
 	netdev_dbg(dev->net, "mac addr : %pKM\n", dev->net->dev_addr);
+=======
+	netdev_dbg(dev->net, "mac addr : %pM\n", dev->net->dev_addr);
+>>>>>>> v4.9.227
 
 	/* Initialize MII structure */
 	dev->mii.dev = dev->net;

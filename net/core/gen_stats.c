@@ -25,17 +25,31 @@
 
 
 static inline int
+<<<<<<< HEAD
 gnet_stats_copy(struct gnet_dump *d, int type, void *buf, int size)
 {
 	if (nla_put(d->skb, type, size, buf))
+=======
+gnet_stats_copy(struct gnet_dump *d, int type, void *buf, int size, int padattr)
+{
+	if (nla_put_64bit(d->skb, type, size, buf, padattr))
+>>>>>>> v4.9.227
 		goto nla_put_failure;
 	return 0;
 
 nla_put_failure:
+<<<<<<< HEAD
 	kfree(d->xstats);
 	d->xstats = NULL;
 	d->xstats_len = 0;
 	spin_unlock_bh(d->lock);
+=======
+	if (d->lock)
+		spin_unlock_bh(d->lock);
+	kfree(d->xstats);
+	d->xstats = NULL;
+	d->xstats_len = 0;
+>>>>>>> v4.9.227
 	return -1;
 }
 
@@ -47,6 +61,10 @@ nla_put_failure:
  * @xstats_type: TLV type for backward compatibility xstats TLV
  * @lock: statistics lock
  * @d: dumping handle
+<<<<<<< HEAD
+=======
+ * @padattr: padding attribute
+>>>>>>> v4.9.227
  *
  * Initializes the dumping handle, grabs the statistic lock and appends
  * an empty TLV header to the socket buffer for use a container for all
@@ -59,32 +77,70 @@ nla_put_failure:
  */
 int
 gnet_stats_start_copy_compat(struct sk_buff *skb, int type, int tc_stats_type,
+<<<<<<< HEAD
 	int xstats_type, spinlock_t *lock, struct gnet_dump *d)
+=======
+			     int xstats_type, spinlock_t *lock,
+			     struct gnet_dump *d, int padattr)
+>>>>>>> v4.9.227
 	__acquires(lock)
 {
 	memset(d, 0, sizeof(*d));
 
+<<<<<<< HEAD
 	spin_lock_bh(lock);
 	d->lock = lock;
+=======
+>>>>>>> v4.9.227
 	if (type)
 		d->tail = (struct nlattr *)skb_tail_pointer(skb);
 	d->skb = skb;
 	d->compat_tc_stats = tc_stats_type;
 	d->compat_xstats = xstats_type;
+<<<<<<< HEAD
 
 	if (d->tail)
 		return gnet_stats_copy(d, type, NULL, 0);
+=======
+	d->padattr = padattr;
+	if (lock) {
+		d->lock = lock;
+		spin_lock_bh(lock);
+	}
+	if (d->tail) {
+		int ret = gnet_stats_copy(d, type, NULL, 0, padattr);
+
+		/* The initial attribute added in gnet_stats_copy() may be
+		 * preceded by a padding attribute, in which case d->tail will
+		 * end up pointing at the padding instead of the real attribute.
+		 * Fix this so gnet_stats_finish_copy() adjusts the length of
+		 * the right attribute.
+		 */
+		if (ret == 0 && d->tail->nla_type == padattr)
+			d->tail = (struct nlattr *)((char *)d->tail +
+						    NLA_ALIGN(d->tail->nla_len));
+		return ret;
+	}
+>>>>>>> v4.9.227
 
 	return 0;
 }
 EXPORT_SYMBOL(gnet_stats_start_copy_compat);
 
 /**
+<<<<<<< HEAD
  * gnet_stats_start_copy_compat - start dumping procedure in compatibility mode
+=======
+ * gnet_stats_start_copy - start dumping procedure in compatibility mode
+>>>>>>> v4.9.227
  * @skb: socket buffer to put statistics TLVs into
  * @type: TLV type for top level statistic TLV
  * @lock: statistics lock
  * @d: dumping handle
+<<<<<<< HEAD
+=======
+ * @padattr: padding attribute
+>>>>>>> v4.9.227
  *
  * Initializes the dumping handle, grabs the statistic lock and appends
  * an empty TLV header to the socket buffer for use a container for all
@@ -94,9 +150,15 @@ EXPORT_SYMBOL(gnet_stats_start_copy_compat);
  */
 int
 gnet_stats_start_copy(struct sk_buff *skb, int type, spinlock_t *lock,
+<<<<<<< HEAD
 	struct gnet_dump *d)
 {
 	return gnet_stats_start_copy_compat(skb, type, 0, 0, lock, d);
+=======
+		      struct gnet_dump *d, int padattr)
+{
+	return gnet_stats_start_copy_compat(skb, type, 0, 0, lock, d, padattr);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(gnet_stats_start_copy);
 
@@ -124,6 +186,7 @@ __gnet_stats_copy_basic_cpu(struct gnet_stats_basic_packed *bstats,
 }
 
 void
+<<<<<<< HEAD
 __gnet_stats_copy_basic(struct gnet_stats_basic_packed *bstats,
 			struct gnet_stats_basic_cpu __percpu *cpu,
 			struct gnet_stats_basic_packed *b)
@@ -134,12 +197,37 @@ __gnet_stats_copy_basic(struct gnet_stats_basic_packed *bstats,
 		bstats->bytes = b->bytes;
 		bstats->packets = b->packets;
 	}
+=======
+__gnet_stats_copy_basic(const seqcount_t *running,
+			struct gnet_stats_basic_packed *bstats,
+			struct gnet_stats_basic_cpu __percpu *cpu,
+			struct gnet_stats_basic_packed *b)
+{
+	unsigned int seq;
+
+	if (cpu) {
+		__gnet_stats_copy_basic_cpu(bstats, cpu);
+		return;
+	}
+	do {
+		if (running)
+			seq = read_seqcount_begin(running);
+		bstats->bytes = b->bytes;
+		bstats->packets = b->packets;
+	} while (running && read_seqcount_retry(running, seq));
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(__gnet_stats_copy_basic);
 
 /**
  * gnet_stats_copy_basic - copy basic statistics into statistic TLV
+<<<<<<< HEAD
  * @d: dumping handle
+=======
+ * @running: seqcount_t pointer
+ * @d: dumping handle
+ * @cpu: copy statistic per cpu
+>>>>>>> v4.9.227
  * @b: basic statistics
  *
  * Appends the basic statistics to the top level TLV created by
@@ -149,13 +237,22 @@ EXPORT_SYMBOL(__gnet_stats_copy_basic);
  * if the room in the socket buffer was not sufficient.
  */
 int
+<<<<<<< HEAD
 gnet_stats_copy_basic(struct gnet_dump *d,
+=======
+gnet_stats_copy_basic(const seqcount_t *running,
+		      struct gnet_dump *d,
+>>>>>>> v4.9.227
 		      struct gnet_stats_basic_cpu __percpu *cpu,
 		      struct gnet_stats_basic_packed *b)
 {
 	struct gnet_stats_basic_packed bstats = {0};
 
+<<<<<<< HEAD
 	__gnet_stats_copy_basic(&bstats, cpu, b);
+=======
+	__gnet_stats_copy_basic(running, &bstats, cpu, b);
+>>>>>>> v4.9.227
 
 	if (d->compat_tc_stats) {
 		d->tc_stats.bytes = bstats.bytes;
@@ -168,7 +265,12 @@ gnet_stats_copy_basic(struct gnet_dump *d,
 		memset(&sb, 0, sizeof(sb));
 		sb.bytes = bstats.bytes;
 		sb.packets = bstats.packets;
+<<<<<<< HEAD
 		return gnet_stats_copy(d, TCA_STATS_BASIC, &sb, sizeof(sb));
+=======
+		return gnet_stats_copy(d, TCA_STATS_BASIC, &sb, sizeof(sb),
+				       TCA_STATS_PAD);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -207,11 +309,21 @@ gnet_stats_copy_rate_est(struct gnet_dump *d,
 	}
 
 	if (d->tail) {
+<<<<<<< HEAD
 		res = gnet_stats_copy(d, TCA_STATS_RATE_EST, &est, sizeof(est));
 		if (res < 0 || est.bps == r->bps)
 			return res;
 		/* emit 64bit stats only if needed */
 		return gnet_stats_copy(d, TCA_STATS_RATE_EST64, r, sizeof(*r));
+=======
+		res = gnet_stats_copy(d, TCA_STATS_RATE_EST, &est, sizeof(est),
+				      TCA_STATS_PAD);
+		if (res < 0 || est.bps == r->bps)
+			return res;
+		/* emit 64bit stats only if needed */
+		return gnet_stats_copy(d, TCA_STATS_RATE_EST64, r, sizeof(*r),
+				       TCA_STATS_PAD);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -285,7 +397,12 @@ gnet_stats_copy_queue(struct gnet_dump *d,
 
 	if (d->tail)
 		return gnet_stats_copy(d, TCA_STATS_QUEUE,
+<<<<<<< HEAD
 				       &qstats, sizeof(qstats));
+=======
+				       &qstats, sizeof(qstats),
+				       TCA_STATS_PAD);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -315,13 +432,24 @@ gnet_stats_copy_app(struct gnet_dump *d, void *st, int len)
 	}
 
 	if (d->tail)
+<<<<<<< HEAD
 		return gnet_stats_copy(d, TCA_STATS_APP, st, len);
+=======
+		return gnet_stats_copy(d, TCA_STATS_APP, st, len,
+				       TCA_STATS_PAD);
+>>>>>>> v4.9.227
 
 	return 0;
 
 err_out:
+<<<<<<< HEAD
 	d->xstats_len = 0;
 	spin_unlock_bh(d->lock);
+=======
+	if (d->lock)
+		spin_unlock_bh(d->lock);
+	d->xstats_len = 0;
+>>>>>>> v4.9.227
 	return -1;
 }
 EXPORT_SYMBOL(gnet_stats_copy_app);
@@ -346,11 +474,16 @@ gnet_stats_finish_copy(struct gnet_dump *d)
 
 	if (d->compat_tc_stats)
 		if (gnet_stats_copy(d, d->compat_tc_stats, &d->tc_stats,
+<<<<<<< HEAD
 			sizeof(d->tc_stats)) < 0)
+=======
+				    sizeof(d->tc_stats), d->padattr) < 0)
+>>>>>>> v4.9.227
 			return -1;
 
 	if (d->compat_xstats && d->xstats) {
 		if (gnet_stats_copy(d, d->compat_xstats, d->xstats,
+<<<<<<< HEAD
 			d->xstats_len) < 0)
 			return -1;
 	}
@@ -359,6 +492,17 @@ gnet_stats_finish_copy(struct gnet_dump *d)
 	d->xstats = NULL;
 	d->xstats_len = 0;
 	spin_unlock_bh(d->lock);
+=======
+				    d->xstats_len, d->padattr) < 0)
+			return -1;
+	}
+
+	if (d->lock)
+		spin_unlock_bh(d->lock);
+	kfree(d->xstats);
+	d->xstats = NULL;
+	d->xstats_len = 0;
+>>>>>>> v4.9.227
 	return 0;
 }
 EXPORT_SYMBOL(gnet_stats_finish_copy);

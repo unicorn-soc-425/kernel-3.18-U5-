@@ -29,6 +29,7 @@ struct arch_uprobe {
 struct arch_uprobe_task {
 };
 
+<<<<<<< HEAD
 int arch_uprobe_analyze_insn(struct arch_uprobe *aup, struct mm_struct *mm,
 			     unsigned long addr);
 int arch_uprobe_pre_xol(struct arch_uprobe *aup, struct pt_regs *regs);
@@ -39,4 +40,6 @@ int arch_uprobe_exception_notify(struct notifier_block *self, unsigned long val,
 void arch_uprobe_abort_xol(struct arch_uprobe *ap, struct pt_regs *regs);
 unsigned long arch_uretprobe_hijack_return_addr(unsigned long trampoline,
 						struct pt_regs *regs);
+=======
+>>>>>>> v4.9.227
 #endif	/* _ASM_UPROBES_H */

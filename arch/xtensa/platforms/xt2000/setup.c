@@ -64,6 +64,7 @@ void platform_restart(void)
 {
 	/* Flush and reset the mmu, simulate a processor reset, and
 	 * jump to the reset vector. */
+<<<<<<< HEAD
 
 	__asm__ __volatile__ ("movi	a2, 15\n\t"
 			      "wsr	a2, icountlevel\n\t"
@@ -82,6 +83,9 @@ void platform_restart(void)
 			      : "a2"
 			      );
 
+=======
+	cpu_reset();
+>>>>>>> v4.9.227
 	/* control never gets here */
 }
 
@@ -111,7 +115,10 @@ void platform_heartbeat(void)
 }
 
 //#define RS_TABLE_SIZE 2
+<<<<<<< HEAD
 //#define STD_COM_FLAGS (ASYNC_BOOT_AUTOCONF|ASYNC_SKIP_TEST)
+=======
+>>>>>>> v4.9.227
 
 #define _SERIAL_PORT(_base,_irq)					\
 {									\

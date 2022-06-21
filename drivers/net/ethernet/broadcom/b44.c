@@ -121,7 +121,11 @@ static struct pci_driver b44_pci_driver = {
 
 static const struct ssb_device_id b44_ssb_tbl[] = {
 	SSB_DEVICE(SSB_VENDOR_BROADCOM, SSB_DEV_ETHERNET, SSB_ANY_REV),
+<<<<<<< HEAD
 	SSB_DEVTABLE_END
+=======
+	{},
+>>>>>>> v4.9.227
 };
 MODULE_DEVICE_TABLE(ssb, b44_ssb_tbl);
 
@@ -400,7 +404,11 @@ static void b44_set_flow_ctrl(struct b44 *bp, u32 local, u32 remote)
 }
 
 #ifdef CONFIG_BCM47XX
+<<<<<<< HEAD
 #include <bcm47xx_nvram.h>
+=======
+#include <linux/bcm47xx_nvram.h>
+>>>>>>> v4.9.227
 static void b44_wap54g10_workaround(struct b44 *bp)
 {
 	char buf[20];
@@ -836,7 +844,11 @@ static int b44_rx(struct b44 *bp, int budget)
 			struct sk_buff *copy_skb;
 
 			b44_recycle_rx(bp, cons, bp->rx_prod);
+<<<<<<< HEAD
 			copy_skb = netdev_alloc_skb_ip_align(bp->dev, len);
+=======
+			copy_skb = napi_alloc_skb(&bp->napi, len);
+>>>>>>> v4.9.227
 			if (copy_skb == NULL)
 				goto drop_it_no_recycle;
 
@@ -1486,7 +1498,11 @@ static int b44_open(struct net_device *dev)
 	b44_enable_ints(bp);
 
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY)
+<<<<<<< HEAD
 		phy_start(bp->phydev);
+=======
+		phy_start(dev->phydev);
+>>>>>>> v4.9.227
 
 	netif_start_queue(dev);
 out:
@@ -1524,8 +1540,15 @@ static int b44_magic_pattern(u8 *macaddr, u8 *ppattern, u8 *pmask, int offset)
 	int ethaddr_bytes = ETH_ALEN;
 
 	memset(ppattern + offset, 0xff, magicsync);
+<<<<<<< HEAD
 	for (j = 0; j < magicsync; j++)
 		set_bit(len++, (unsigned long *) pmask);
+=======
+	for (j = 0; j < magicsync; j++) {
+		pmask[len >> 3] |= BIT(len & 7);
+		len++;
+	}
+>>>>>>> v4.9.227
 
 	for (j = 0; j < B44_MAX_PATTERNS; j++) {
 		if ((B44_PATTERN_SIZE - len) >= ETH_ALEN)
@@ -1537,7 +1560,12 @@ static int b44_magic_pattern(u8 *macaddr, u8 *ppattern, u8 *pmask, int offset)
 		for (k = 0; k< ethaddr_bytes; k++) {
 			ppattern[offset + magicsync +
 				(j * ETH_ALEN) + k] = macaddr[k];
+<<<<<<< HEAD
 			set_bit(len++, (unsigned long *) pmask);
+=======
+			pmask[len >> 3] |= BIT(len & 7);
+			len++;
+>>>>>>> v4.9.227
 		}
 	}
 	return len - 1;
@@ -1651,7 +1679,11 @@ static int b44_close(struct net_device *dev)
 	netif_stop_queue(dev);
 
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY)
+<<<<<<< HEAD
 		phy_stop(bp->phydev);
+=======
+		phy_stop(dev->phydev);
+>>>>>>> v4.9.227
 
 	napi_disable(&bp->napi);
 
@@ -1832,6 +1864,7 @@ static int b44_nway_reset(struct net_device *dev)
 	return r;
 }
 
+<<<<<<< HEAD
 static int b44_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct b44 *bp = netdev_priv(dev);
@@ -1880,42 +1913,129 @@ static int b44_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 }
 
 static int b44_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
+=======
+static int b44_get_link_ksettings(struct net_device *dev,
+				  struct ethtool_link_ksettings *cmd)
+{
+	struct b44 *bp = netdev_priv(dev);
+	u32 supported, advertising;
+
+	if (bp->flags & B44_FLAG_EXTERNAL_PHY) {
+		BUG_ON(!dev->phydev);
+		return phy_ethtool_ksettings_get(dev->phydev, cmd);
+	}
+
+	supported = (SUPPORTED_Autoneg);
+	supported |= (SUPPORTED_100baseT_Half |
+		      SUPPORTED_100baseT_Full |
+		      SUPPORTED_10baseT_Half |
+		      SUPPORTED_10baseT_Full |
+		      SUPPORTED_MII);
+
+	advertising = 0;
+	if (bp->flags & B44_FLAG_ADV_10HALF)
+		advertising |= ADVERTISED_10baseT_Half;
+	if (bp->flags & B44_FLAG_ADV_10FULL)
+		advertising |= ADVERTISED_10baseT_Full;
+	if (bp->flags & B44_FLAG_ADV_100HALF)
+		advertising |= ADVERTISED_100baseT_Half;
+	if (bp->flags & B44_FLAG_ADV_100FULL)
+		advertising |= ADVERTISED_100baseT_Full;
+	advertising |= ADVERTISED_Pause | ADVERTISED_Asym_Pause;
+	cmd->base.speed = (bp->flags & B44_FLAG_100_BASE_T) ?
+		SPEED_100 : SPEED_10;
+	cmd->base.duplex = (bp->flags & B44_FLAG_FULL_DUPLEX) ?
+		DUPLEX_FULL : DUPLEX_HALF;
+	cmd->base.port = 0;
+	cmd->base.phy_address = bp->phy_addr;
+	cmd->base.autoneg = (bp->flags & B44_FLAG_FORCE_LINK) ?
+		AUTONEG_DISABLE : AUTONEG_ENABLE;
+	if (cmd->base.autoneg == AUTONEG_ENABLE)
+		advertising |= ADVERTISED_Autoneg;
+
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+						supported);
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
+						advertising);
+
+	if (!netif_running(dev)){
+		cmd->base.speed = 0;
+		cmd->base.duplex = 0xff;
+	}
+
+	return 0;
+}
+
+static int b44_set_link_ksettings(struct net_device *dev,
+				  const struct ethtool_link_ksettings *cmd)
+>>>>>>> v4.9.227
 {
 	struct b44 *bp = netdev_priv(dev);
 	u32 speed;
 	int ret;
+<<<<<<< HEAD
 
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY) {
 		BUG_ON(!bp->phydev);
+=======
+	u32 advertising;
+
+	if (bp->flags & B44_FLAG_EXTERNAL_PHY) {
+		BUG_ON(!dev->phydev);
+>>>>>>> v4.9.227
 		spin_lock_irq(&bp->lock);
 		if (netif_running(dev))
 			b44_setup_phy(bp);
 
+<<<<<<< HEAD
 		ret = phy_ethtool_sset(bp->phydev, cmd);
+=======
+		ret = phy_ethtool_ksettings_set(dev->phydev, cmd);
+>>>>>>> v4.9.227
 
 		spin_unlock_irq(&bp->lock);
 
 		return ret;
 	}
 
+<<<<<<< HEAD
 	speed = ethtool_cmd_speed(cmd);
 
 	/* We do not support gigabit. */
 	if (cmd->autoneg == AUTONEG_ENABLE) {
 		if (cmd->advertising &
+=======
+	speed = cmd->base.speed;
+
+	ethtool_convert_link_mode_to_legacy_u32(&advertising,
+						cmd->link_modes.advertising);
+
+	/* We do not support gigabit. */
+	if (cmd->base.autoneg == AUTONEG_ENABLE) {
+		if (advertising &
+>>>>>>> v4.9.227
 		    (ADVERTISED_1000baseT_Half |
 		     ADVERTISED_1000baseT_Full))
 			return -EINVAL;
 	} else if ((speed != SPEED_100 &&
 		    speed != SPEED_10) ||
+<<<<<<< HEAD
 		   (cmd->duplex != DUPLEX_HALF &&
 		    cmd->duplex != DUPLEX_FULL)) {
+=======
+		   (cmd->base.duplex != DUPLEX_HALF &&
+		    cmd->base.duplex != DUPLEX_FULL)) {
+>>>>>>> v4.9.227
 			return -EINVAL;
 	}
 
 	spin_lock_irq(&bp->lock);
 
+<<<<<<< HEAD
 	if (cmd->autoneg == AUTONEG_ENABLE) {
+=======
+	if (cmd->base.autoneg == AUTONEG_ENABLE) {
+>>>>>>> v4.9.227
 		bp->flags &= ~(B44_FLAG_FORCE_LINK |
 			       B44_FLAG_100_BASE_T |
 			       B44_FLAG_FULL_DUPLEX |
@@ -1923,12 +2043,17 @@ static int b44_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 			       B44_FLAG_ADV_10FULL |
 			       B44_FLAG_ADV_100HALF |
 			       B44_FLAG_ADV_100FULL);
+<<<<<<< HEAD
 		if (cmd->advertising == 0) {
+=======
+		if (advertising == 0) {
+>>>>>>> v4.9.227
 			bp->flags |= (B44_FLAG_ADV_10HALF |
 				      B44_FLAG_ADV_10FULL |
 				      B44_FLAG_ADV_100HALF |
 				      B44_FLAG_ADV_100FULL);
 		} else {
+<<<<<<< HEAD
 			if (cmd->advertising & ADVERTISED_10baseT_Half)
 				bp->flags |= B44_FLAG_ADV_10HALF;
 			if (cmd->advertising & ADVERTISED_10baseT_Full)
@@ -1936,6 +2061,15 @@ static int b44_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 			if (cmd->advertising & ADVERTISED_100baseT_Half)
 				bp->flags |= B44_FLAG_ADV_100HALF;
 			if (cmd->advertising & ADVERTISED_100baseT_Full)
+=======
+			if (advertising & ADVERTISED_10baseT_Half)
+				bp->flags |= B44_FLAG_ADV_10HALF;
+			if (advertising & ADVERTISED_10baseT_Full)
+				bp->flags |= B44_FLAG_ADV_10FULL;
+			if (advertising & ADVERTISED_100baseT_Half)
+				bp->flags |= B44_FLAG_ADV_100HALF;
+			if (advertising & ADVERTISED_100baseT_Full)
+>>>>>>> v4.9.227
 				bp->flags |= B44_FLAG_ADV_100FULL;
 		}
 	} else {
@@ -1943,7 +2077,11 @@ static int b44_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 		bp->flags &= ~(B44_FLAG_100_BASE_T | B44_FLAG_FULL_DUPLEX);
 		if (speed == SPEED_100)
 			bp->flags |= B44_FLAG_100_BASE_T;
+<<<<<<< HEAD
 		if (cmd->duplex == DUPLEX_FULL)
+=======
+		if (cmd->base.duplex == DUPLEX_FULL)
+>>>>>>> v4.9.227
 			bp->flags |= B44_FLAG_FULL_DUPLEX;
 	}
 
@@ -2104,13 +2242,20 @@ static int b44_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 		bp->flags &= ~B44_FLAG_WOL_ENABLE;
 	spin_unlock_irq(&bp->lock);
 
+<<<<<<< HEAD
+=======
+	device_set_wakeup_enable(bp->sdev->dev, wol->wolopts & WAKE_MAGIC);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static const struct ethtool_ops b44_ethtool_ops = {
 	.get_drvinfo		= b44_get_drvinfo,
+<<<<<<< HEAD
 	.get_settings		= b44_get_settings,
 	.set_settings		= b44_set_settings,
+=======
+>>>>>>> v4.9.227
 	.nway_reset		= b44_nway_reset,
 	.get_link		= ethtool_op_get_link,
 	.get_wol		= b44_get_wol,
@@ -2124,6 +2269,11 @@ static const struct ethtool_ops b44_ethtool_ops = {
 	.get_strings		= b44_get_strings,
 	.get_sset_count		= b44_get_sset_count,
 	.get_ethtool_stats	= b44_get_ethtool_stats,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings	= b44_get_link_ksettings,
+	.set_link_ksettings	= b44_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 static int b44_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
@@ -2136,8 +2286,13 @@ static int b44_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 
 	spin_lock_irq(&bp->lock);
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY) {
+<<<<<<< HEAD
 		BUG_ON(!bp->phydev);
 		err = phy_mii_ioctl(bp->phydev, ifr, cmd);
+=======
+		BUG_ON(!dev->phydev);
+		err = phy_mii_ioctl(dev->phydev, ifr, cmd);
+>>>>>>> v4.9.227
 	} else {
 		err = generic_mii_ioctl(&bp->mii_if, if_mii(ifr), cmd, NULL);
 	}
@@ -2205,7 +2360,11 @@ static const struct net_device_ops b44_netdev_ops = {
 static void b44_adjust_link(struct net_device *dev)
 {
 	struct b44 *bp = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = bp->phydev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> v4.9.227
 	bool status_changed = 0;
 
 	BUG_ON(!phydev);
@@ -2262,6 +2421,7 @@ static int b44_register_phy_one(struct b44 *bp)
 	mii_bus->parent = sdev->dev;
 	mii_bus->phy_mask = ~(1 << bp->phy_addr);
 	snprintf(mii_bus->id, MII_BUS_ID_SIZE, "%x", instance);
+<<<<<<< HEAD
 	mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (!mii_bus->irq) {
 		dev_err(sdev->dev, "mii_bus irq allocation failed\n");
@@ -2270,16 +2430,25 @@ static int b44_register_phy_one(struct b44 *bp)
 	}
 
 	memset(mii_bus->irq, PHY_POLL, sizeof(int) * PHY_MAX_ADDR);
+=======
+>>>>>>> v4.9.227
 
 	bp->mii_bus = mii_bus;
 
 	err = mdiobus_register(mii_bus);
 	if (err) {
 		dev_err(sdev->dev, "failed to register MII bus\n");
+<<<<<<< HEAD
 		goto err_out_mdiobus_irq;
 	}
 
 	if (!bp->mii_bus->phy_map[bp->phy_addr] &&
+=======
+		goto err_out_mdiobus;
+	}
+
+	if (!mdiobus_is_registered_device(bp->mii_bus, bp->phy_addr) &&
+>>>>>>> v4.9.227
 	    (sprom->boardflags_lo & (B44_BOARDFLAG_ROBO | B44_BOARDFLAG_ADM))) {
 
 		dev_info(sdev->dev,
@@ -2310,21 +2479,31 @@ static int b44_register_phy_one(struct b44 *bp)
 			      SUPPORTED_MII);
 	phydev->advertising = phydev->supported;
 
+<<<<<<< HEAD
 	bp->phydev = phydev;
 	bp->old_link = 0;
 	bp->phy_addr = phydev->addr;
 
 	dev_info(sdev->dev, "attached PHY driver [%s] (mii_bus:phy_addr=%s)\n",
 		 phydev->drv->name, dev_name(&phydev->dev));
+=======
+	bp->old_link = 0;
+	bp->phy_addr = phydev->mdio.addr;
+
+	phy_attached_info(phydev);
+>>>>>>> v4.9.227
 
 	return 0;
 
 err_out_mdiobus_unregister:
 	mdiobus_unregister(mii_bus);
 
+<<<<<<< HEAD
 err_out_mdiobus_irq:
 	kfree(mii_bus->irq);
 
+=======
+>>>>>>> v4.9.227
 err_out_mdiobus:
 	mdiobus_free(mii_bus);
 
@@ -2334,11 +2513,19 @@ err_out:
 
 static void b44_unregister_phy_one(struct b44 *bp)
 {
+<<<<<<< HEAD
 	struct mii_bus *mii_bus = bp->mii_bus;
 
 	phy_disconnect(bp->phydev);
 	mdiobus_unregister(mii_bus);
 	kfree(mii_bus->irq);
+=======
+	struct net_device *dev = bp->dev;
+	struct mii_bus *mii_bus = bp->mii_bus;
+
+	phy_disconnect(dev->phydev);
+	mdiobus_unregister(mii_bus);
+>>>>>>> v4.9.227
 	mdiobus_free(mii_bus);
 }
 
@@ -2452,6 +2639,10 @@ static int b44_init_one(struct ssb_device *sdev,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	device_set_wakeup_capable(sdev->dev, true);
+>>>>>>> v4.9.227
 	netdev_info(dev, "%s %pM\n", DRV_DESCRIPTION, dev->dev_addr);
 
 	return 0;
@@ -2462,6 +2653,10 @@ err_out_powerdown:
 	ssb_bus_may_powerdown(sdev->bus);
 
 err_out_free_dev:
+<<<<<<< HEAD
+=======
+	netif_napi_del(&bp->napi);
+>>>>>>> v4.9.227
 	free_netdev(dev);
 
 out:
@@ -2478,6 +2673,10 @@ static void b44_remove_one(struct ssb_device *sdev)
 		b44_unregister_phy_one(bp);
 	ssb_device_disable(sdev, 0);
 	ssb_bus_may_powerdown(sdev->bus);
+<<<<<<< HEAD
+=======
+	netif_napi_del(&bp->napi);
+>>>>>>> v4.9.227
 	free_netdev(dev);
 	ssb_pcihost_set_power_state(sdev, PCI_D3hot);
 	ssb_set_drvdata(sdev, NULL);

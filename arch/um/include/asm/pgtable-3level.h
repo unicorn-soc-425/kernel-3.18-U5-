@@ -41,7 +41,11 @@
 #endif
 
 #define USER_PTRS_PER_PGD ((TASK_SIZE + (PGDIR_SIZE - 1)) / PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> v4.9.227
 
 #define pte_ERROR(e) \
         printk("%s:%d: bad pte %p(%016lx).\n", __FILE__, __LINE__, &(e), \
@@ -98,7 +102,11 @@ static inline unsigned long pte_pfn(pte_t pte)
 	return phys_to_pfn(pte_val(pte));
 }
 
+<<<<<<< HEAD
 static inline pte_t pfn_pte(pfn_t page_nr, pgprot_t pgprot)
+=======
+static inline pte_t pfn_pte(unsigned long page_nr, pgprot_t pgprot)
+>>>>>>> v4.9.227
 {
 	pte_t pte;
 	phys_t phys = pfn_to_phys(page_nr);
@@ -107,11 +115,16 @@ static inline pte_t pfn_pte(pfn_t page_nr, pgprot_t pgprot)
 	return pte;
 }
 
+<<<<<<< HEAD
 static inline pmd_t pfn_pmd(pfn_t page_nr, pgprot_t pgprot)
+=======
+static inline pmd_t pfn_pmd(unsigned long page_nr, pgprot_t pgprot)
+>>>>>>> v4.9.227
 {
 	return __pmd((page_nr << PAGE_SHIFT) | pgprot_val(pgprot));
 }
 
+<<<<<<< HEAD
 /*
  * Bits 0 through 3 are taken in the low part of the pte,
  * put the 32 bits of offset into the high part.
@@ -132,5 +145,7 @@ static inline pmd_t pfn_pmd(pfn_t page_nr, pgprot_t pgprot)
 
 #endif
 
+=======
+>>>>>>> v4.9.227
 #endif
 

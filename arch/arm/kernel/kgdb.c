@@ -14,10 +14,16 @@
 #include <linux/kgdb.h>
 #include <linux/uaccess.h>
 
+<<<<<<< HEAD
 #include <asm/traps.h>
 
 #include "patch.h"
 
+=======
+#include <asm/patch.h>
+#include <asm/traps.h>
+
+>>>>>>> v4.9.227
 struct dbg_reg_def_t dbg_reg_def[DBG_MAX_REG_NUM] =
 {
 	{ "r0", 4, offsetof(struct pt_regs, ARM_r0)},
@@ -75,7 +81,11 @@ int dbg_set_reg(int regno, void *mem, struct pt_regs *regs)
 void
 sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 {
+<<<<<<< HEAD
 	struct pt_regs *thread_regs;
+=======
+	struct thread_info *ti;
+>>>>>>> v4.9.227
 	int regno;
 
 	/* Just making sure... */
@@ -87,6 +97,7 @@ sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 		gdb_regs[regno] = 0;
 
 	/* Otherwise, we have only some registers from switch_to() */
+<<<<<<< HEAD
 	thread_regs		= task_pt_regs(task);
 	gdb_regs[_R0]		= thread_regs->ARM_r0;
 	gdb_regs[_R1]		= thread_regs->ARM_r1;
@@ -105,6 +116,19 @@ sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 	gdb_regs[_LR]		= thread_regs->ARM_lr;
 	gdb_regs[_PC]		= thread_regs->ARM_pc;
 	gdb_regs[_CPSR]		= thread_regs->ARM_cpsr;
+=======
+	ti			= task_thread_info(task);
+	gdb_regs[_R4]		= ti->cpu_context.r4;
+	gdb_regs[_R5]		= ti->cpu_context.r5;
+	gdb_regs[_R6]		= ti->cpu_context.r6;
+	gdb_regs[_R7]		= ti->cpu_context.r7;
+	gdb_regs[_R8]		= ti->cpu_context.r8;
+	gdb_regs[_R9]		= ti->cpu_context.r9;
+	gdb_regs[_R10]		= ti->cpu_context.sl;
+	gdb_regs[_FP]		= ti->cpu_context.fp;
+	gdb_regs[_SPT]		= ti->cpu_context.sp;
+	gdb_regs[_PC]		= ti->cpu_context.pc;
+>>>>>>> v4.9.227
 }
 
 void kgdb_arch_set_pc(struct pt_regs *regs, unsigned long pc)
@@ -148,8 +172,11 @@ int kgdb_arch_handle_exception(int exception_vector, int signo,
 
 static int kgdb_brk_fn(struct pt_regs *regs, unsigned int instr)
 {
+<<<<<<< HEAD
 	if (user_mode(regs))
 		return -1;
+=======
+>>>>>>> v4.9.227
 	kgdb_handle_exception(1, SIGTRAP, 0, regs);
 
 	return 0;
@@ -157,8 +184,11 @@ static int kgdb_brk_fn(struct pt_regs *regs, unsigned int instr)
 
 static int kgdb_compiled_brk_fn(struct pt_regs *regs, unsigned int instr)
 {
+<<<<<<< HEAD
 	if (user_mode(regs))
 		return -1;
+=======
+>>>>>>> v4.9.227
 	compiled_break = 1;
 	kgdb_handle_exception(1, SIGTRAP, 0, regs);
 

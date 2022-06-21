@@ -5,8 +5,11 @@
 #include <linux/types.h>
 #include <asm/opcodes.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_BUG
 
+=======
+>>>>>>> v4.9.227
 /*
  * Use a suitable undefined instruction to use for ARM/Thumb2 bug handling.
  * We need to be careful not to conflict with those used by other modules and
@@ -47,7 +50,11 @@ do {								\
 	unreachable();						\
 } while (0)
 
+<<<<<<< HEAD
 #else  /* not CONFIG_DEBUG_BUGVERBOSE */
+=======
+#else
+>>>>>>> v4.9.227
 
 #define __BUG(__file, __line, __value)				\
 do {								\
@@ -57,7 +64,10 @@ do {								\
 #endif  /* CONFIG_DEBUG_BUGVERBOSE */
 
 #define HAVE_ARCH_BUG
+<<<<<<< HEAD
 #endif  /* CONFIG_BUG */
+=======
+>>>>>>> v4.9.227
 
 #include <asm-generic/bug.h>
 

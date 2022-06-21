@@ -50,6 +50,7 @@ extern daddr_t			vxfs_bmap1(struct inode *, long);
 /* vxfs_fshead.c */
 extern int			vxfs_read_fshead(struct super_block *);
 
+<<<<<<< HEAD
 /* vxfs_immed.c */
 extern const struct inode_operations vxfs_immed_symlink_iops;
 
@@ -63,6 +64,14 @@ extern void			vxfs_put_fake_inode(struct inode *);
 extern struct vxfs_inode_info *	vxfs_blkiget(struct super_block *, u_long, ino_t);
 extern struct vxfs_inode_info *	vxfs_stiget(struct super_block *, ino_t);
 extern struct inode *		vxfs_iget(struct super_block *, ino_t);
+=======
+/* vxfs_inode.c */
+extern const struct address_space_operations vxfs_immed_aops;
+extern void			vxfs_dumpi(struct vxfs_inode_info *, ino_t);
+extern struct inode		*vxfs_blkiget(struct super_block *, u_long, ino_t);
+extern struct inode		*vxfs_stiget(struct super_block *, ino_t);
+extern struct inode		*vxfs_iget(struct super_block *, ino_t);
+>>>>>>> v4.9.227
 extern void			vxfs_evict_inode(struct inode *);
 
 /* vxfs_lookup.c */

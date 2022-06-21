@@ -26,7 +26,13 @@
 
 #include <xen/interface/xen.h>
 #include <xen/interface/vcpu.h>
+<<<<<<< HEAD
 
+=======
+#include <xen/interface/xenpmu.h>
+
+#include <asm/spec-ctrl.h>
+>>>>>>> v4.9.227
 #include <asm/xen/interface.h>
 #include <asm/xen/hypercall.h>
 
@@ -38,6 +44,10 @@
 #include "xen-ops.h"
 #include "mmu.h"
 #include "smp.h"
+<<<<<<< HEAD
+=======
+#include "pmu.h"
+>>>>>>> v4.9.227
 
 cpumask_var_t xen_cpu_initialized_map;
 
@@ -50,6 +60,10 @@ static DEFINE_PER_CPU(struct xen_common_irq, xen_callfunc_irq) = { .irq = -1 };
 static DEFINE_PER_CPU(struct xen_common_irq, xen_callfuncsingle_irq) = { .irq = -1 };
 static DEFINE_PER_CPU(struct xen_common_irq, xen_irq_work) = { .irq = -1 };
 static DEFINE_PER_CPU(struct xen_common_irq, xen_debug_irq) = { .irq = -1 };
+<<<<<<< HEAD
+=======
+static DEFINE_PER_CPU(struct xen_common_irq, xen_pmu_irq) = { .irq = -1 };
+>>>>>>> v4.9.227
 
 static irqreturn_t xen_call_function_interrupt(int irq, void *dev_id);
 static irqreturn_t xen_call_function_single_interrupt(int irq, void *dev_id);
@@ -84,12 +98,18 @@ static void cpu_bringup(void)
 	cpu_data(cpu).x86_max_cores = 1;
 	set_cpu_sibling_map(cpu);
 
+<<<<<<< HEAD
+=======
+	speculative_store_bypass_ht_init();
+
+>>>>>>> v4.9.227
 	xen_setup_cpu_clockevents();
 
 	notify_cpu_starting(cpu);
 
 	set_cpu_online(cpu, true);
 
+<<<<<<< HEAD
 	this_cpu_write(cpu_state, CPU_ONLINE);
 
 	wmb();
@@ -98,6 +118,12 @@ static void cpu_bringup(void)
 	local_irq_enable();
 
 	wmb();			/* make sure everything is out */
+=======
+	cpu_set_state_online(cpu);  /* Implies full memory barrier. */
+
+	/* We can take interrupts now: we're officially "up". */
+	local_irq_enable();
+>>>>>>> v4.9.227
 }
 
 /*
@@ -113,10 +139,18 @@ asmlinkage __visible void cpu_bringup_and_idle(int cpu)
 		xen_pvh_secondary_vcpu_init(cpu);
 #endif
 	cpu_bringup();
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
 }
 
 static void xen_smp_intr_free(unsigned int cpu)
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+	prevent_tail_call_optimization();
+}
+
+void xen_smp_intr_free(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 	if (per_cpu(xen_resched_irq, cpu).irq >= 0) {
 		unbind_from_irqhandler(per_cpu(xen_resched_irq, cpu).irq, NULL);
@@ -152,11 +186,26 @@ static void xen_smp_intr_free(unsigned int cpu)
 		kfree(per_cpu(xen_irq_work, cpu).name);
 		per_cpu(xen_irq_work, cpu).name = NULL;
 	}
+<<<<<<< HEAD
 };
 static int xen_smp_intr_init(unsigned int cpu)
 {
 	int rc;
 	char *resched_name, *callfunc_name, *debug_name;
+=======
+
+	if (per_cpu(xen_pmu_irq, cpu).irq >= 0) {
+		unbind_from_irqhandler(per_cpu(xen_pmu_irq, cpu).irq, NULL);
+		per_cpu(xen_pmu_irq, cpu).irq = -1;
+		kfree(per_cpu(xen_pmu_irq, cpu).name);
+		per_cpu(xen_pmu_irq, cpu).name = NULL;
+	}
+};
+int xen_smp_intr_init(unsigned int cpu)
+{
+	int rc;
+	char *resched_name, *callfunc_name, *debug_name, *pmu_name;
+>>>>>>> v4.9.227
 
 	resched_name = kasprintf(GFP_KERNEL, "resched%d", cpu);
 	rc = bind_ipi_to_irqhandler(XEN_RESCHEDULE_VECTOR,
@@ -222,6 +271,21 @@ static int xen_smp_intr_init(unsigned int cpu)
 	per_cpu(xen_irq_work, cpu).irq = rc;
 	per_cpu(xen_irq_work, cpu).name = callfunc_name;
 
+<<<<<<< HEAD
+=======
+	if (is_xen_pmu(cpu)) {
+		pmu_name = kasprintf(GFP_KERNEL, "pmu%d", cpu);
+		rc = bind_virq_to_irqhandler(VIRQ_XENPMU, cpu,
+					     xen_pmu_irq_handler,
+					     IRQF_PERCPU|IRQF_NOBALANCING,
+					     pmu_name, NULL);
+		if (rc < 0)
+			goto fail;
+		per_cpu(xen_pmu_irq, cpu).irq = rc;
+		per_cpu(xen_pmu_irq, cpu).name = pmu_name;
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 
  fail:
@@ -281,11 +345,16 @@ static void __init xen_filter_cpu_maps(void)
 
 }
 
+<<<<<<< HEAD
 static void __init xen_smp_prepare_boot_cpu(void)
+=======
+static void __init xen_pv_smp_prepare_boot_cpu(void)
+>>>>>>> v4.9.227
 {
 	BUG_ON(smp_processor_id() != 0);
 	native_smp_prepare_boot_cpu();
 
+<<<<<<< HEAD
 	if (xen_pv_domain()) {
 		if (!xen_feature(XENFEAT_writable_page_tables))
 			/* We've switched to the "real" per-cpu gdt, so make
@@ -304,6 +373,44 @@ static void __init xen_smp_prepare_boot_cpu(void)
 		xen_filter_cpu_maps();
 		xen_setup_vcpu_info_placement();
 	}
+=======
+	if (!xen_feature(XENFEAT_writable_page_tables))
+		/* We've switched to the "real" per-cpu gdt, so make
+		 * sure the old memory can be recycled. */
+		make_lowmem_page_readwrite(xen_initial_gdt);
+
+#ifdef CONFIG_X86_32
+	/*
+	 * Xen starts us with XEN_FLAT_RING1_DS, but linux code
+	 * expects __USER_DS
+	 */
+	loadsegment(ds, __USER_DS);
+	loadsegment(es, __USER_DS);
+#endif
+
+	xen_filter_cpu_maps();
+	xen_setup_vcpu_info_placement();
+
+	/*
+	 * The alternative logic (which patches the unlock/lock) runs before
+	 * the smp bootup up code is activated. Hence we need to set this up
+	 * the core kernel is being patched. Otherwise we will have only
+	 * modules patched but not core code.
+	 */
+	xen_init_spinlocks();
+}
+
+static void __init xen_hvm_smp_prepare_boot_cpu(void)
+{
+	BUG_ON(smp_processor_id() != 0);
+	native_smp_prepare_boot_cpu();
+
+	/*
+	 * Setup vcpu_info for boot CPU.
+	 */
+	xen_vcpu_setup(0);
+
+>>>>>>> v4.9.227
 	/*
 	 * The alternative logic (which patches the unlock/lock) runs before
 	 * the smp bootup up code is activated. Hence we need to set this up
@@ -339,6 +446,13 @@ static void __init xen_smp_prepare_cpus(unsigned int max_cpus)
 	}
 	set_cpu_sibling_map(0);
 
+<<<<<<< HEAD
+=======
+	speculative_store_bypass_ht_init();
+
+	xen_pmu_init(0);
+
+>>>>>>> v4.9.227
 	if (xen_smp_intr_init(0))
 		BUG();
 
@@ -433,8 +547,13 @@ cpu_initialize_context(unsigned int cpu, struct task_struct *idle)
 	}
 #endif
 	ctxt->user_regs.esp = idle->thread.sp0 - sizeof(struct pt_regs);
+<<<<<<< HEAD
 	ctxt->ctrlreg[3] = xen_pfn_to_cr3(virt_to_mfn(swapper_pg_dir));
 	if (HYPERVISOR_vcpu_op(VCPUOP_initialise, cpu, ctxt))
+=======
+	ctxt->ctrlreg[3] = xen_pfn_to_cr3(virt_to_gfn(swapper_pg_dir));
+	if (HYPERVISOR_vcpu_op(VCPUOP_initialise, xen_vcpu_nr(cpu), ctxt))
+>>>>>>> v4.9.227
 		BUG();
 
 	kfree(ctxt);
@@ -445,6 +564,7 @@ static int xen_cpu_up(unsigned int cpu, struct task_struct *idle)
 {
 	int rc;
 
+<<<<<<< HEAD
 	per_cpu(current_task, cpu) = idle;
 #ifdef CONFIG_X86_32
 	irq_ctx_init(cpu);
@@ -460,6 +580,19 @@ static int xen_cpu_up(unsigned int cpu, struct task_struct *idle)
 	xen_init_lock_cpu(cpu);
 
 	per_cpu(cpu_state, cpu) = CPU_UP_PREPARE;
+=======
+	common_cpu_up(cpu, idle);
+
+	xen_setup_runstate_info(cpu);
+
+	/*
+	 * PV VCPUs are always successfully taken down (see 'while' loop
+	 * in xen_cpu_die()), so -EBUSY is an error.
+	 */
+	rc = cpu_check_up_prepare(cpu);
+	if (rc)
+		return rc;
+>>>>>>> v4.9.227
 
 	/* make sure interrupts start blocked */
 	per_cpu(xen_vcpu, cpu)->evtchn_upcall_mask = 1;
@@ -468,6 +601,7 @@ static int xen_cpu_up(unsigned int cpu, struct task_struct *idle)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	if (num_online_cpus() == 1)
 		/* Just in case we booted with a single CPU. */
 		alternatives_enable_smp();
@@ -483,6 +617,15 @@ static int xen_cpu_up(unsigned int cpu, struct task_struct *idle)
 		HYPERVISOR_sched_op(SCHEDOP_yield, NULL);
 		barrier();
 	}
+=======
+	xen_pmu_init(cpu);
+
+	rc = HYPERVISOR_vcpu_op(VCPUOP_up, xen_vcpu_nr(cpu), NULL);
+	BUG_ON(rc);
+
+	while (cpu_report_state(cpu) != CPU_ONLINE)
+		HYPERVISOR_sched_op(SCHEDOP_yield, NULL);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -506,6 +649,7 @@ static int xen_cpu_disable(void)
 
 static void xen_cpu_die(unsigned int cpu)
 {
+<<<<<<< HEAD
 	while (xen_pv_domain() && HYPERVISOR_vcpu_op(VCPUOP_is_up, cpu, NULL)) {
 		current->state = TASK_UNINTERRUPTIBLE;
 		schedule_timeout(HZ/10);
@@ -516,12 +660,30 @@ static void xen_cpu_die(unsigned int cpu)
 	xen_smp_intr_free(cpu);
 	xen_uninit_lock_cpu(cpu);
 	xen_teardown_timer(cpu);
+=======
+	while (xen_pv_domain() && HYPERVISOR_vcpu_op(VCPUOP_is_up,
+						     xen_vcpu_nr(cpu), NULL)) {
+		__set_current_state(TASK_UNINTERRUPTIBLE);
+		schedule_timeout(HZ/10);
+	}
+
+	if (common_cpu_die(cpu) == 0) {
+		xen_smp_intr_free(cpu);
+		xen_uninit_lock_cpu(cpu);
+		xen_teardown_timer(cpu);
+		xen_pmu_finish(cpu);
+	}
+>>>>>>> v4.9.227
 }
 
 static void xen_play_dead(void) /* used only with HOTPLUG_CPU */
 {
 	play_dead_common();
+<<<<<<< HEAD
 	HYPERVISOR_vcpu_op(VCPUOP_down, smp_processor_id(), NULL);
+=======
+	HYPERVISOR_vcpu_op(VCPUOP_down, xen_vcpu_nr(smp_processor_id()), NULL);
+>>>>>>> v4.9.227
 	cpu_bringup();
 	/*
 	 * commit 4b0c0f294 (tick: Cleanup NOHZ per cpu data on cpu down)
@@ -530,6 +692,11 @@ static void xen_play_dead(void) /* used only with HOTPLUG_CPU */
 	 * data back is to call:
 	 */
 	tick_nohz_idle_enter();
+<<<<<<< HEAD
+=======
+
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> v4.9.227
 }
 
 #else /* !CONFIG_HOTPLUG_CPU */
@@ -559,7 +726,11 @@ static void stop_self(void *v)
 
 	set_cpu_online(cpu, false);
 
+<<<<<<< HEAD
 	HYPERVISOR_vcpu_op(VCPUOP_down, cpu, NULL);
+=======
+	HYPERVISOR_vcpu_op(VCPUOP_down, xen_vcpu_nr(cpu), NULL);
+>>>>>>> v4.9.227
 	BUG();
 }
 
@@ -714,7 +885,11 @@ static irqreturn_t xen_irq_work_interrupt(int irq, void *dev_id)
 }
 
 static const struct smp_ops xen_smp_ops __initconst = {
+<<<<<<< HEAD
 	.smp_prepare_boot_cpu = xen_smp_prepare_boot_cpu,
+=======
+	.smp_prepare_boot_cpu = xen_pv_smp_prepare_boot_cpu,
+>>>>>>> v4.9.227
 	.smp_prepare_cpus = xen_smp_prepare_cpus,
 	.smp_cpus_done = xen_smp_cpus_done,
 
@@ -744,6 +919,7 @@ static void __init xen_hvm_smp_prepare_cpus(unsigned int max_cpus)
 	xen_init_lock_cpu(0);
 }
 
+<<<<<<< HEAD
 static int xen_hvm_cpu_up(unsigned int cpu, struct task_struct *tidle)
 {
 	int rc;
@@ -774,15 +950,24 @@ static void xen_hvm_cpu_die(unsigned int cpu)
 	native_cpu_die(cpu);
 }
 
+=======
+>>>>>>> v4.9.227
 void __init xen_hvm_smp_init(void)
 {
 	if (!xen_have_vector_callback)
 		return;
 	smp_ops.smp_prepare_cpus = xen_hvm_smp_prepare_cpus;
 	smp_ops.smp_send_reschedule = xen_smp_send_reschedule;
+<<<<<<< HEAD
 	smp_ops.cpu_up = xen_hvm_cpu_up;
 	smp_ops.cpu_die = xen_hvm_cpu_die;
 	smp_ops.send_call_func_ipi = xen_smp_send_call_function_ipi;
 	smp_ops.send_call_func_single_ipi = xen_smp_send_call_function_single_ipi;
 	smp_ops.smp_prepare_boot_cpu = xen_smp_prepare_boot_cpu;
+=======
+	smp_ops.cpu_die = xen_cpu_die;
+	smp_ops.send_call_func_ipi = xen_smp_send_call_function_ipi;
+	smp_ops.send_call_func_single_ipi = xen_smp_send_call_function_single_ipi;
+	smp_ops.smp_prepare_boot_cpu = xen_hvm_smp_prepare_boot_cpu;
+>>>>>>> v4.9.227
 }

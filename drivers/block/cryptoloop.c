@@ -21,9 +21,15 @@
 
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/string.h>
 #include <linux/crypto.h>
+=======
+#include <crypto/skcipher.h>
+#include <linux/init.h>
+#include <linux/string.h>
+>>>>>>> v4.9.227
 #include <linux/blkdev.h>
 #include <linux/scatterlist.h>
 #include <asm/uaccess.h>
@@ -46,7 +52,11 @@ cryptoloop_init(struct loop_device *lo, const struct loop_info64 *info)
 	char *cipher;
 	char *mode;
 	char *cmsp = cms;			/* c-m string pointer */
+<<<<<<< HEAD
 	struct crypto_blkcipher *tfm;
+=======
+	struct crypto_skcipher *tfm;
+>>>>>>> v4.9.227
 
 	/* encryption breaks for non sector aligned offsets */
 
@@ -82,12 +92,21 @@ cryptoloop_init(struct loop_device *lo, const struct loop_info64 *info)
 	*cmsp++ = ')';
 	*cmsp = 0;
 
+<<<<<<< HEAD
 	tfm = crypto_alloc_blkcipher(cms, 0, CRYPTO_ALG_ASYNC);
 	if (IS_ERR(tfm))
 		return PTR_ERR(tfm);
 
 	err = crypto_blkcipher_setkey(tfm, info->lo_encrypt_key,
 				      info->lo_encrypt_key_size);
+=======
+	tfm = crypto_alloc_skcipher(cms, 0, CRYPTO_ALG_ASYNC);
+	if (IS_ERR(tfm))
+		return PTR_ERR(tfm);
+
+	err = crypto_skcipher_setkey(tfm, info->lo_encrypt_key,
+				     info->lo_encrypt_key_size);
+>>>>>>> v4.9.227
 	
 	if (err != 0)
 		goto out_free_tfm;
@@ -96,17 +115,25 @@ cryptoloop_init(struct loop_device *lo, const struct loop_info64 *info)
 	return 0;
 
  out_free_tfm:
+<<<<<<< HEAD
 	crypto_free_blkcipher(tfm);
+=======
+	crypto_free_skcipher(tfm);
+>>>>>>> v4.9.227
 
  out:
 	return err;
 }
 
 
+<<<<<<< HEAD
 typedef int (*encdec_cbc_t)(struct blkcipher_desc *desc,
 			struct scatterlist *sg_out,
 			struct scatterlist *sg_in,
 			unsigned int nsg);
+=======
+typedef int (*encdec_cbc_t)(struct skcipher_request *req);
+>>>>>>> v4.9.227
 
 static int
 cryptoloop_transfer(struct loop_device *lo, int cmd,
@@ -114,11 +141,16 @@ cryptoloop_transfer(struct loop_device *lo, int cmd,
 		    struct page *loop_page, unsigned loop_off,
 		    int size, sector_t IV)
 {
+<<<<<<< HEAD
 	struct crypto_blkcipher *tfm = lo->key_data;
 	struct blkcipher_desc desc = {
 		.tfm = tfm,
 		.flags = CRYPTO_TFM_REQ_MAY_SLEEP,
 	};
+=======
+	struct crypto_skcipher *tfm = lo->key_data;
+	SKCIPHER_REQUEST_ON_STACK(req, tfm);
+>>>>>>> v4.9.227
 	struct scatterlist sg_out;
 	struct scatterlist sg_in;
 
@@ -127,6 +159,13 @@ cryptoloop_transfer(struct loop_device *lo, int cmd,
 	unsigned in_offs, out_offs;
 	int err;
 
+<<<<<<< HEAD
+=======
+	skcipher_request_set_tfm(req, tfm);
+	skcipher_request_set_callback(req, CRYPTO_TFM_REQ_MAY_SLEEP,
+				      NULL, NULL);
+
+>>>>>>> v4.9.227
 	sg_init_table(&sg_out, 1);
 	sg_init_table(&sg_in, 1);
 
@@ -135,13 +174,21 @@ cryptoloop_transfer(struct loop_device *lo, int cmd,
 		in_offs = raw_off;
 		out_page = loop_page;
 		out_offs = loop_off;
+<<<<<<< HEAD
 		encdecfunc = crypto_blkcipher_crt(tfm)->decrypt;
+=======
+		encdecfunc = crypto_skcipher_decrypt;
+>>>>>>> v4.9.227
 	} else {
 		in_page = loop_page;
 		in_offs = loop_off;
 		out_page = raw_page;
 		out_offs = raw_off;
+<<<<<<< HEAD
 		encdecfunc = crypto_blkcipher_crt(tfm)->encrypt;
+=======
+		encdecfunc = crypto_skcipher_encrypt;
+>>>>>>> v4.9.227
 	}
 
 	while (size > 0) {
@@ -152,10 +199,17 @@ cryptoloop_transfer(struct loop_device *lo, int cmd,
 		sg_set_page(&sg_in, in_page, sz, in_offs);
 		sg_set_page(&sg_out, out_page, sz, out_offs);
 
+<<<<<<< HEAD
 		desc.info = iv;
 		err = encdecfunc(&desc, &sg_out, &sg_in, sz);
 		if (err)
 			return err;
+=======
+		skcipher_request_set_crypt(req, &sg_in, &sg_out, sz, iv);
+		err = encdecfunc(req);
+		if (err)
+			goto out;
+>>>>>>> v4.9.227
 
 		IV++;
 		size -= sz;
@@ -163,7 +217,15 @@ cryptoloop_transfer(struct loop_device *lo, int cmd,
 		out_offs += sz;
 	}
 
+<<<<<<< HEAD
 	return 0;
+=======
+	err = 0;
+
+out:
+	skcipher_request_zero(req);
+	return err;
+>>>>>>> v4.9.227
 }
 
 static int
@@ -175,9 +237,15 @@ cryptoloop_ioctl(struct loop_device *lo, int cmd, unsigned long arg)
 static int
 cryptoloop_release(struct loop_device *lo)
 {
+<<<<<<< HEAD
 	struct crypto_blkcipher *tfm = lo->key_data;
 	if (tfm != NULL) {
 		crypto_free_blkcipher(tfm);
+=======
+	struct crypto_skcipher *tfm = lo->key_data;
+	if (tfm != NULL) {
+		crypto_free_skcipher(tfm);
+>>>>>>> v4.9.227
 		lo->key_data = NULL;
 		return 0;
 	}

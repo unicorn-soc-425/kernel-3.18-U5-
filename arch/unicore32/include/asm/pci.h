@@ -13,6 +13,7 @@
 #define __UNICORE_PCI_H__
 
 #ifdef __KERNEL__
+<<<<<<< HEAD
 #include <asm-generic/pci-dma-compat.h>
 #include <asm-generic/pci-bridge.h>
 #include <asm-generic/pci.h>
@@ -28,10 +29,18 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+#include <asm-generic/pci.h>
+#include <mach/hardware.h> /* for PCIBIOS_MIN_* */
+
+>>>>>>> v4.9.227
 #define HAVE_PCI_MMAP
 extern int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 	enum pci_mmap_state mmap_state, int write_combine);
 
 #endif /* __KERNEL__ */
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #endif

@@ -23,7 +23,10 @@
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
 
+<<<<<<< HEAD
 #include <asm/smp_plat.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/smp_twd.h>
 
 /* set up by the platform code */
@@ -34,6 +37,7 @@ static unsigned long twd_timer_rate;
 static DEFINE_PER_CPU(bool, percpu_setup_called);
 
 static struct clock_event_device __percpu *twd_evt;
+<<<<<<< HEAD
 static int twd_ppi;
 
 static void twd_set_mode(enum clock_event_mode mode,
@@ -59,6 +63,36 @@ static void twd_set_mode(enum clock_event_mode mode,
 	}
 
 	writel_relaxed(ctrl, twd_base + TWD_TIMER_CONTROL);
+=======
+static unsigned int twd_features =
+		CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT;
+static int twd_ppi;
+
+static int twd_shutdown(struct clock_event_device *clk)
+{
+	writel_relaxed(0, twd_base + TWD_TIMER_CONTROL);
+	return 0;
+}
+
+static int twd_set_oneshot(struct clock_event_device *clk)
+{
+	/* period set, and timer enabled in 'next_event' hook */
+	writel_relaxed(TWD_TIMER_CONTROL_IT_ENABLE | TWD_TIMER_CONTROL_ONESHOT,
+		       twd_base + TWD_TIMER_CONTROL);
+	return 0;
+}
+
+static int twd_set_periodic(struct clock_event_device *clk)
+{
+	unsigned long ctrl = TWD_TIMER_CONTROL_ENABLE |
+			     TWD_TIMER_CONTROL_IT_ENABLE |
+			     TWD_TIMER_CONTROL_PERIODIC;
+
+	writel_relaxed(DIV_ROUND_CLOSEST(twd_timer_rate, HZ),
+		       twd_base + TWD_TIMER_LOAD);
+	writel_relaxed(ctrl, twd_base + TWD_TIMER_CONTROL);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int twd_set_next_event(unsigned long evt,
@@ -94,7 +128,11 @@ static void twd_timer_stop(void)
 {
 	struct clock_event_device *clk = raw_cpu_ptr(twd_evt);
 
+<<<<<<< HEAD
 	twd_set_mode(CLOCK_EVT_MODE_UNUSED, clk);
+=======
+	twd_shutdown(clk);
+>>>>>>> v4.9.227
 	disable_percpu_irq(clk->irq);
 }
 
@@ -199,7 +237,11 @@ static void twd_calibrate_rate(void)
 	 * the timer ticks
 	 */
 	if (twd_timer_rate == 0) {
+<<<<<<< HEAD
 		printk(KERN_INFO "Calibrating local timer... ");
+=======
+		pr_info("Calibrating local timer... ");
+>>>>>>> v4.9.227
 
 		/* Wait for a tick to start */
 		waitjiffies = get_jiffies_64() + 1;
@@ -223,7 +265,11 @@ static void twd_calibrate_rate(void)
 
 		twd_timer_rate = (0xFFFFFFFFU - count) * (HZ / 5);
 
+<<<<<<< HEAD
 		printk("%lu.%02luMHz.\n", twd_timer_rate / 1000000,
+=======
+		pr_cont("%lu.%02luMHz.\n", twd_timer_rate / 1000000,
+>>>>>>> v4.9.227
 			(twd_timer_rate / 10000) % 100);
 	}
 }
@@ -293,10 +339,19 @@ static void twd_timer_setup(void)
 	writel_relaxed(0, twd_base + TWD_TIMER_CONTROL);
 
 	clk->name = "local_timer";
+<<<<<<< HEAD
 	clk->features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT |
 			CLOCK_EVT_FEAT_C3STOP;
 	clk->rating = 350;
 	clk->set_mode = twd_set_mode;
+=======
+	clk->features = twd_features;
+	clk->rating = 350;
+	clk->set_state_shutdown = twd_shutdown;
+	clk->set_state_periodic = twd_set_periodic;
+	clk->set_state_oneshot = twd_set_oneshot;
+	clk->tick_resume = twd_shutdown;
+>>>>>>> v4.9.227
 	clk->set_next_event = twd_set_next_event;
 	clk->irq = twd_ppi;
 	clk->cpumask = cpumask_of(cpu);
@@ -306,6 +361,7 @@ static void twd_timer_setup(void)
 	enable_percpu_irq(clk->irq, 0);
 }
 
+<<<<<<< HEAD
 static int twd_timer_cpu_notify(struct notifier_block *self,
 				unsigned long action, void *hcpu)
 {
@@ -324,6 +380,19 @@ static int twd_timer_cpu_notify(struct notifier_block *self,
 static struct notifier_block twd_timer_cpu_nb = {
 	.notifier_call = twd_timer_cpu_notify,
 };
+=======
+static int twd_timer_starting_cpu(unsigned int cpu)
+{
+	twd_timer_setup();
+	return 0;
+}
+
+static int twd_timer_dying_cpu(unsigned int cpu)
+{
+	twd_timer_stop();
+	return 0;
+}
+>>>>>>> v4.9.227
 
 static int __init twd_local_timer_common_register(struct device_node *np)
 {
@@ -341,11 +410,21 @@ static int __init twd_local_timer_common_register(struct device_node *np)
 		goto out_free;
 	}
 
+<<<<<<< HEAD
 	err = register_cpu_notifier(&twd_timer_cpu_nb);
 	if (err)
 		goto out_irq;
 
 	twd_get_clock(np);
+=======
+	cpuhp_setup_state_nocalls(CPUHP_AP_ARM_TWD_STARTING,
+				  "AP_ARM_TWD_STARTING",
+				  twd_timer_starting_cpu, twd_timer_dying_cpu);
+
+	twd_get_clock(np);
+	if (!of_property_read_bool(np, "always-on"))
+		twd_features |= CLOCK_EVT_FEAT_C3STOP;
+>>>>>>> v4.9.227
 
 	/*
 	 * Immediately configure the timer on the boot CPU, unless we need
@@ -359,8 +438,11 @@ static int __init twd_local_timer_common_register(struct device_node *np)
 
 	return 0;
 
+<<<<<<< HEAD
 out_irq:
 	free_percpu_irq(twd_ppi, twd_evt);
+=======
+>>>>>>> v4.9.227
 out_free:
 	iounmap(twd_base);
 	twd_base = NULL;
@@ -384,6 +466,7 @@ int __init twd_local_timer_register(struct twd_local_timer *tlt)
 }
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static void __init twd_local_timer_of_register(struct device_node *np)
 {
 	int err;
@@ -391,6 +474,12 @@ static void __init twd_local_timer_of_register(struct device_node *np)
 	if (!is_smp() || !setup_max_cpus)
 		return;
 
+=======
+static int __init twd_local_timer_of_register(struct device_node *np)
+{
+	int err;
+
+>>>>>>> v4.9.227
 	twd_ppi = irq_of_parse_and_map(np, 0);
 	if (!twd_ppi) {
 		err = -EINVAL;
@@ -407,6 +496,10 @@ static void __init twd_local_timer_of_register(struct device_node *np)
 
 out:
 	WARN(err, "twd_local_timer_of_register failed (%d)\n", err);
+<<<<<<< HEAD
+=======
+	return err;
+>>>>>>> v4.9.227
 }
 CLOCKSOURCE_OF_DECLARE(arm_twd_a9, "arm,cortex-a9-twd-timer", twd_local_timer_of_register);
 CLOCKSOURCE_OF_DECLARE(arm_twd_a5, "arm,cortex-a5-twd-timer", twd_local_timer_of_register);

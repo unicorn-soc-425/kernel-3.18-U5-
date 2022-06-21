@@ -29,7 +29,11 @@ dma_cookie_t vchan_tx_submit(struct dma_async_tx_descriptor *tx)
 	spin_lock_irqsave(&vc->lock, flags);
 	cookie = dma_cookie_assign(tx);
 
+<<<<<<< HEAD
 	list_add_tail(&vd->node, &vc->desc_submitted);
+=======
+	list_move_tail(&vd->node, &vc->desc_submitted);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&vc->lock, flags);
 
 	dev_dbg(vc->chan.device->dev, "vchan %p: txd %p[%x]: submitted\n",
@@ -39,6 +43,36 @@ dma_cookie_t vchan_tx_submit(struct dma_async_tx_descriptor *tx)
 }
 EXPORT_SYMBOL_GPL(vchan_tx_submit);
 
+<<<<<<< HEAD
+=======
+/**
+ * vchan_tx_desc_free - free a reusable descriptor
+ * @tx: the transfer
+ *
+ * This function frees a previously allocated reusable descriptor. The only
+ * other way is to clear the DMA_CTRL_REUSE flag and submit one last time the
+ * transfer.
+ *
+ * Returns 0 upon success
+ */
+int vchan_tx_desc_free(struct dma_async_tx_descriptor *tx)
+{
+	struct virt_dma_chan *vc = to_virt_chan(tx->chan);
+	struct virt_dma_desc *vd = to_virt_desc(tx);
+	unsigned long flags;
+
+	spin_lock_irqsave(&vc->lock, flags);
+	list_del(&vd->node);
+	spin_unlock_irqrestore(&vc->lock, flags);
+
+	dev_dbg(vc->chan.device->dev, "vchan %p: txd %p[%x]: freeing\n",
+		vc, vd, vd->tx.cookie);
+	vc->desc_free(vd);
+	return 0;
+}
+EXPORT_SYMBOL_GPL(vchan_tx_desc_free);
+
+>>>>>>> v4.9.227
 struct virt_dma_desc *vchan_find_desc(struct virt_dma_chan *vc,
 	dma_cookie_t cookie)
 {
@@ -60,8 +94,12 @@ static void vchan_complete(unsigned long arg)
 {
 	struct virt_dma_chan *vc = (struct virt_dma_chan *)arg;
 	struct virt_dma_desc *vd;
+<<<<<<< HEAD
 	dma_async_tx_callback cb = NULL;
 	void *cb_data = NULL;
+=======
+	struct dmaengine_desc_callback cb;
+>>>>>>> v4.9.227
 	LIST_HEAD(head);
 
 	spin_lock_irq(&vc->lock);
@@ -69,6 +107,7 @@ static void vchan_complete(unsigned long arg)
 	vd = vc->cyclic;
 	if (vd) {
 		vc->cyclic = NULL;
+<<<<<<< HEAD
 		cb = vd->tx.callback;
 		cb_data = vd->tx.callback_param;
 	}
@@ -88,6 +127,27 @@ static void vchan_complete(unsigned long arg)
 
 		if (cb)
 			cb(cb_data);
+=======
+		dmaengine_desc_get_callback(&vd->tx, &cb);
+	} else {
+		memset(&cb, 0, sizeof(cb));
+	}
+	spin_unlock_irq(&vc->lock);
+
+	dmaengine_desc_callback_invoke(&cb, NULL);
+
+	while (!list_empty(&head)) {
+		vd = list_first_entry(&head, struct virt_dma_desc, node);
+		dmaengine_desc_get_callback(&vd->tx, &cb);
+
+		list_del(&vd->node);
+		if (dmaengine_desc_test_reuse(&vd->tx))
+			list_add(&vd->node, &vc->desc_allocated);
+		else
+			vc->desc_free(vd);
+
+		dmaengine_desc_callback_invoke(&cb, NULL);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -96,9 +156,19 @@ void vchan_dma_desc_free_list(struct virt_dma_chan *vc, struct list_head *head)
 	while (!list_empty(head)) {
 		struct virt_dma_desc *vd = list_first_entry(head,
 			struct virt_dma_desc, node);
+<<<<<<< HEAD
 		list_del(&vd->node);
 		dev_dbg(vc->chan.device->dev, "txd %p: freeing\n", vd);
 		vc->desc_free(vd);
+=======
+		if (dmaengine_desc_test_reuse(&vd->tx)) {
+			list_move_tail(&vd->node, &vc->desc_allocated);
+		} else {
+			dev_dbg(vc->chan.device->dev, "txd %p: freeing\n", vd);
+			list_del(&vd->node);
+			vc->desc_free(vd);
+		}
+>>>>>>> v4.9.227
 	}
 }
 EXPORT_SYMBOL_GPL(vchan_dma_desc_free_list);
@@ -108,6 +178,10 @@ void vchan_init(struct virt_dma_chan *vc, struct dma_device *dmadev)
 	dma_cookie_init(&vc->chan);
 
 	spin_lock_init(&vc->lock);
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&vc->desc_allocated);
+>>>>>>> v4.9.227
 	INIT_LIST_HEAD(&vc->desc_submitted);
 	INIT_LIST_HEAD(&vc->desc_issued);
 	INIT_LIST_HEAD(&vc->desc_completed);

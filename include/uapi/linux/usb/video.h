@@ -28,6 +28,10 @@
 
 /* A.3. Video Interface Protocol Codes */
 #define UVC_PC_PROTOCOL_UNDEFINED			0x00
+<<<<<<< HEAD
+=======
+#define UVC_PC_PROTOCOL_15				0x01
+>>>>>>> v4.9.227
 
 /* A.5. Video Class-Specific VC Interface Descriptor Subtypes */
 #define UVC_VC_DESCRIPTOR_UNDEFINED			0x00
@@ -53,8 +57,11 @@
 #define UVC_VS_FORMAT_FRAME_BASED			0x10
 #define UVC_VS_FRAME_FRAME_BASED			0x11
 #define UVC_VS_FORMAT_STREAM_BASED			0x12
+<<<<<<< HEAD
 #define UVC_VS_FORMAT_H264				0x13
 #define UVC_VS_FRAME_H264				0x14
+=======
+>>>>>>> v4.9.227
 
 /* A.7. Video Class-Specific Endpoint Descriptor Subtypes */
 #define UVC_EP_UNDEFINED				0x00
@@ -300,12 +307,20 @@ struct uvc_processing_unit_descriptor {
 	__u8  bSourceID;
 	__u16 wMaxMultiplier;
 	__u8  bControlSize;
+<<<<<<< HEAD
 	__u8  bmControls[3];
 	__u8  iProcessing;
 	__u8  bmVideoStandards;
 } __attribute__((__packed__));
 
 #define UVC_DT_PROCESSING_UNIT_SIZE(n)			(10+(n))
+=======
+	__u8  bmControls[2];
+	__u8  iProcessing;
+} __attribute__((__packed__));
+
+#define UVC_DT_PROCESSING_UNIT_SIZE(n)			(9+(n))
+>>>>>>> v4.9.227
 
 /* 3.7.2.6. Extension Unit Descriptor */
 struct uvc_extension_unit_descriptor {
@@ -567,6 +582,7 @@ struct UVC_FRAME_MJPEG(n) {				\
 	__u32 dwFrameInterval[n];			\
 } __attribute__ ((packed))
 
+<<<<<<< HEAD
 /* H264 Payload - 3.1.1. H264 Video Format Descriptor */
 struct uvc_format_h264 {
 	__u8  bLength;
@@ -658,5 +674,7 @@ struct UVC_FRAME_H264(n) {				\
 	__u32 dwFrameInterval[n];			\
 } __attribute__ ((packed))
 
+=======
+>>>>>>> v4.9.227
 #endif /* __LINUX_USB_VIDEO_H */
 

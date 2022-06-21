@@ -34,6 +34,7 @@
 #include "crypto4xx_sa.h"
 #include "crypto4xx_core.h"
 
+<<<<<<< HEAD
 u32 get_dynamic_sa_offset_iv_field(struct crypto4xx_ctx *ctx)
 {
 	u32 offset;
@@ -57,6 +58,8 @@ u32 get_dynamic_sa_offset_iv_field(struct crypto4xx_ctx *ctx)
 	return sizeof(struct dynamic_sa_ctl) + offset * 4;
 }
 
+=======
+>>>>>>> v4.9.227
 u32 get_dynamic_sa_offset_state_ptr_field(struct crypto4xx_ctx *ctx)
 {
 	u32 offset;

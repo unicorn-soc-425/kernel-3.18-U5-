@@ -1,7 +1,11 @@
  /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
+<<<<<<< HEAD
  * Copyright (C) 2004-2013 Emulex.  All rights reserved.           *
+=======
+ * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
+>>>>>>> v4.9.227
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.emulex.com                                                  *
  * Portions Copyright (C) 2004-2005 Christoph Hellwig              *
@@ -276,14 +280,23 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 	struct Scsi_Host   *shost = lpfc_shost_from_vport(vport);
 	struct lpfc_hba    *phba = vport->phba;
 	struct lpfc_dmabuf *pcmd;
+<<<<<<< HEAD
 	uint32_t *lp;
 	IOCB_t *icmd;
 	struct serv_parm *sp;
+=======
+	uint64_t nlp_portwwn = 0;
+	uint32_t *lp;
+	IOCB_t *icmd;
+	struct serv_parm *sp;
+	uint32_t ed_tov;
+>>>>>>> v4.9.227
 	LPFC_MBOXQ_t *mbox;
 	struct ls_rjt stat;
 	int rc;
 
 	memset(&stat, 0, sizeof (struct ls_rjt));
+<<<<<<< HEAD
 	if (vport->port_state <= LPFC_FDISC) {
 		/* Before responding to PLOGI, check for pt2pt mode.
 		 * If we are pt2pt, with an outstanding FLOGI, abort
@@ -311,6 +324,8 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 			return 0;
 		}
 	}
+=======
+>>>>>>> v4.9.227
 	pcmd = (struct lpfc_dmabuf *) cmdiocb->context2;
 	lp = (uint32_t *) pcmd->virt;
 	sp = (struct serv_parm *) ((uint8_t *) lp + sizeof (uint32_t));
@@ -332,6 +347,11 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 			NULL);
 		return 0;
 	}
+<<<<<<< HEAD
+=======
+
+	nlp_portwwn = wwn_to_u64(ndlp->nlp_portname.u.wwn);
+>>>>>>> v4.9.227
 	if ((lpfc_check_sparm(vport, ndlp, sp, CLASS3, 0) == 0)) {
 		/* Reject this request because invalid parameters */
 		stat.un.b.lsRjtRsnCode = LSRJT_UNABLE_TPC;
@@ -367,7 +387,11 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 	ndlp->nlp_maxframe =
 		((sp->cmn.bbRcvSizeMsb & 0x0F) << 8) | sp->cmn.bbRcvSizeLsb;
 
+<<<<<<< HEAD
 	/* no need to reg_login if we are already in one of these states */
+=======
+	/* if already logged in, do implicit logout */
+>>>>>>> v4.9.227
 	switch (ndlp->nlp_state) {
 	case  NLP_STE_NPR_NODE:
 		if (!(ndlp->nlp_flag & NLP_NPR_ADISC))
@@ -376,13 +400,37 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 	case  NLP_STE_PRLI_ISSUE:
 	case  NLP_STE_UNMAPPED_NODE:
 	case  NLP_STE_MAPPED_NODE:
+<<<<<<< HEAD
 		lpfc_els_rsp_acc(vport, ELS_CMD_PLOGI, cmdiocb, ndlp, NULL);
 		return 1;
+=======
+		/* lpfc_plogi_confirm_nport skips fabric did, handle it here */
+		if (!(ndlp->nlp_type & NLP_FABRIC)) {
+			lpfc_els_rsp_acc(vport, ELS_CMD_PLOGI, cmdiocb,
+					 ndlp, NULL);
+			return 1;
+		}
+		if (nlp_portwwn != 0 &&
+		    nlp_portwwn != wwn_to_u64(sp->portName.u.wwn))
+			lpfc_printf_vlog(vport, KERN_ERR, LOG_ELS,
+					 "0143 PLOGI recv'd from DID: x%x "
+					 "WWPN changed: old %llx new %llx\n",
+					 ndlp->nlp_DID,
+					 (unsigned long long)nlp_portwwn,
+					 (unsigned long long)
+					 wwn_to_u64(sp->portName.u.wwn));
+
+		ndlp->nlp_prev_state = ndlp->nlp_state;
+		/* rport needs to be unregistered first */
+		lpfc_nlp_set_state(vport, ndlp, NLP_STE_NPR_NODE);
+		break;
+>>>>>>> v4.9.227
 	}
 
 	/* Check for Nport to NPort pt2pt protocol */
 	if ((vport->fc_flag & FC_PT2PT) &&
 	    !(vport->fc_flag & FC_PT2PT_PLOGI)) {
+<<<<<<< HEAD
 
 		/* rcv'ed PLOGI decides what our NPortId will be */
 		vport->fc_myDID = icmd->un.rcvels.parmRo;
@@ -407,6 +455,48 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 
 		lpfc_can_disctmo(vport);
 	}
+=======
+		/* rcv'ed PLOGI decides what our NPortId will be */
+		vport->fc_myDID = icmd->un.rcvels.parmRo;
+
+		ed_tov = be32_to_cpu(sp->cmn.e_d_tov);
+		if (sp->cmn.edtovResolution) {
+			/* E_D_TOV ticks are in nanoseconds */
+			ed_tov = (phba->fc_edtov + 999999) / 1000000;
+		}
+
+		/*
+		 * For pt-to-pt, use the larger EDTOV
+		 * RATOV = 2 * EDTOV
+		 */
+		if (ed_tov > phba->fc_edtov)
+			phba->fc_edtov = ed_tov;
+		phba->fc_ratov = (2 * phba->fc_edtov) / 1000;
+
+		memcpy(&phba->fc_fabparam, sp, sizeof(struct serv_parm));
+
+		/* Issue config_link / reg_vfi to account for updated TOV's */
+
+		if (phba->sli_rev == LPFC_SLI_REV4)
+			lpfc_issue_reg_vfi(vport);
+		else {
+			mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
+			if (mbox == NULL)
+				goto out;
+			lpfc_config_link(phba, mbox);
+			mbox->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
+			mbox->vport = vport;
+			rc = lpfc_sli_issue_mbox(phba, mbox, MBX_NOWAIT);
+			if (rc == MBX_NOT_FINISHED) {
+				mempool_free(mbox, phba->mbox_mem_pool);
+				goto out;
+			}
+		}
+
+		lpfc_can_disctmo(vport);
+	}
+
+>>>>>>> v4.9.227
 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox)
 		goto out;
@@ -443,8 +533,15 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 	 * single discovery thread, this will cause a huge delay in
 	 * discovery. Also this will cause multiple state machines
 	 * running in parallel for this node.
+<<<<<<< HEAD
 	 */
 	if (ndlp->nlp_state == NLP_STE_PLOGI_ISSUE) {
+=======
+	 * This only applies to a fabric environment.
+	 */
+	if ((ndlp->nlp_state == NLP_STE_PLOGI_ISSUE) &&
+	    (vport->fc_flag & FC_FABRIC)) {
+>>>>>>> v4.9.227
 		/* software abort outstanding PLOGI */
 		lpfc_els_abort(phba, ndlp);
 	}
@@ -640,7 +737,17 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 			lpfc_destroy_vport_work_array(phba, vports);
 		}
 
+<<<<<<< HEAD
 		if (active_vlink_present) {
+=======
+		/*
+		 * Don't re-instantiate if vport is marked for deletion.
+		 * If we are here first then vport_delete is going to wait
+		 * for discovery to complete.
+		 */
+		if (!(vport->load_flag & FC_UNLOADING) &&
+					active_vlink_present) {
+>>>>>>> v4.9.227
 			/*
 			 * If there are other active VLinks present,
 			 * re-instantiate the Vlink using FDISC.
@@ -742,9 +849,15 @@ lpfc_disc_set_adisc(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 
 	if (!(vport->fc_flag & FC_PT2PT)) {
 		/* Check config parameter use-adisc or FCP-2 */
+<<<<<<< HEAD
 		if ((vport->cfg_use_adisc && (vport->fc_flag & FC_RSCN_MODE)) ||
 		    ((ndlp->nlp_fcp_info & NLP_FCP_2_DEVICE) &&
 		     (ndlp->nlp_type & NLP_FCP_TARGET))) {
+=======
+		if (vport->cfg_use_adisc && ((vport->fc_flag & FC_RSCN_MODE) ||
+		    ((ndlp->nlp_fcp_info & NLP_FCP_2_DEVICE) &&
+		     (ndlp->nlp_type & NLP_FCP_TARGET)))) {
+>>>>>>> v4.9.227
 			spin_lock_irq(shost->host_lock);
 			ndlp->nlp_flag |= NLP_NPR_ADISC;
 			spin_unlock_irq(shost->host_lock);
@@ -793,7 +906,10 @@ lpfc_disc_illegal(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 {
 	struct lpfc_hba *phba;
 	LPFC_MBOXQ_t *pmb = (LPFC_MBOXQ_t *) arg;
+<<<<<<< HEAD
 	MAILBOX_t *mb;
+=======
+>>>>>>> v4.9.227
 	uint16_t rpi;
 
 	phba = vport->phba;
@@ -801,7 +917,10 @@ lpfc_disc_illegal(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 	if (!(phba->pport->load_flag & FC_UNLOADING) &&
 		(evt == NLP_EVT_CMPL_REG_LOGIN) &&
 		(!pmb->u.mb.mbxStatus)) {
+<<<<<<< HEAD
 		mb = &pmb->u.mb;
+=======
+>>>>>>> v4.9.227
 		rpi = pmb->u.mb.un.varWords[0];
 		lpfc_release_rpi(phba, vport, rpi);
 	}
@@ -1013,7 +1132,13 @@ lpfc_cmpl_plogi_plogi_issue(struct lpfc_vport *vport,
 	uint32_t *lp;
 	IOCB_t *irsp;
 	struct serv_parm *sp;
+<<<<<<< HEAD
 	LPFC_MBOXQ_t *mbox;
+=======
+	uint32_t ed_tov;
+	LPFC_MBOXQ_t *mbox;
+	int rc;
+>>>>>>> v4.9.227
 
 	cmdiocb = (struct lpfc_iocbq *) arg;
 	rspiocb = cmdiocb->context_un.rsp_iocb;
@@ -1069,6 +1194,7 @@ lpfc_cmpl_plogi_plogi_issue(struct lpfc_vport *vport,
 	ndlp->nlp_maxframe =
 		((sp->cmn.bbRcvSizeMsb & 0x0F) << 8) | sp->cmn.bbRcvSizeLsb;
 
+<<<<<<< HEAD
 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox) {
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_ELS,
@@ -1077,10 +1203,68 @@ lpfc_cmpl_plogi_plogi_issue(struct lpfc_vport *vport,
 			ndlp->nlp_DID, ndlp->nlp_state,
 			ndlp->nlp_flag, ndlp->nlp_rpi);
 		goto out;
+=======
+	if ((vport->fc_flag & FC_PT2PT) &&
+	    (vport->fc_flag & FC_PT2PT_PLOGI)) {
+		ed_tov = be32_to_cpu(sp->cmn.e_d_tov);
+		if (sp->cmn.edtovResolution) {
+			/* E_D_TOV ticks are in nanoseconds */
+			ed_tov = (phba->fc_edtov + 999999) / 1000000;
+		}
+
+		/*
+		 * Use the larger EDTOV
+		 * RATOV = 2 * EDTOV for pt-to-pt
+		 */
+		if (ed_tov > phba->fc_edtov)
+			phba->fc_edtov = ed_tov;
+		phba->fc_ratov = (2 * phba->fc_edtov) / 1000;
+
+		memcpy(&phba->fc_fabparam, sp, sizeof(struct serv_parm));
+
+		/* Issue config_link / reg_vfi to account for updated TOV's */
+		if (phba->sli_rev == LPFC_SLI_REV4) {
+			lpfc_issue_reg_vfi(vport);
+		} else {
+			mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
+			if (!mbox) {
+				lpfc_printf_vlog(vport, KERN_ERR, LOG_ELS,
+						 "0133 PLOGI: no memory "
+						 "for config_link "
+						 "Data: x%x x%x x%x x%x\n",
+						 ndlp->nlp_DID, ndlp->nlp_state,
+						 ndlp->nlp_flag, ndlp->nlp_rpi);
+				goto out;
+			}
+
+			lpfc_config_link(phba, mbox);
+
+			mbox->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
+			mbox->vport = vport;
+			rc = lpfc_sli_issue_mbox(phba, mbox, MBX_NOWAIT);
+			if (rc == MBX_NOT_FINISHED) {
+				mempool_free(mbox, phba->mbox_mem_pool);
+				goto out;
+			}
+		}
+>>>>>>> v4.9.227
 	}
 
 	lpfc_unreg_rpi(vport, ndlp);
 
+<<<<<<< HEAD
+=======
+	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
+	if (!mbox) {
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_ELS,
+				 "0018 PLOGI: no memory for reg_login "
+				 "Data: x%x x%x x%x x%x\n",
+				 ndlp->nlp_DID, ndlp->nlp_state,
+				 ndlp->nlp_flag, ndlp->nlp_rpi);
+		goto out;
+	}
+
+>>>>>>> v4.9.227
 	if (lpfc_reg_rpi(phba, vport->vpi, irsp->un.elsreq64.remoteID,
 			 (uint8_t *) sp, mbox, ndlp->nlp_rpi) == 0) {
 		switch (ndlp->nlp_DID) {
@@ -1450,6 +1634,10 @@ lpfc_rcv_logo_reglogin_issue(struct lpfc_vport *vport,
 	if ((mb = phba->sli.mbox_active)) {
 		if ((mb->u.mb.mbxCommand == MBX_REG_LOGIN64) &&
 		   (ndlp == (struct lpfc_nodelist *) mb->context2)) {
+<<<<<<< HEAD
+=======
+			ndlp->nlp_flag &= ~NLP_REG_LOGIN_SEND;
+>>>>>>> v4.9.227
 			lpfc_nlp_put(ndlp);
 			mb->context2 = NULL;
 			mb->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
@@ -1465,6 +1653,10 @@ lpfc_rcv_logo_reglogin_issue(struct lpfc_vport *vport,
 				__lpfc_mbuf_free(phba, mp->virt, mp->phys);
 				kfree(mp);
 			}
+<<<<<<< HEAD
+=======
+			ndlp->nlp_flag &= ~NLP_REG_LOGIN_SEND;
+>>>>>>> v4.9.227
 			lpfc_nlp_put(ndlp);
 			list_del(&mb->list);
 			phba->sli.mboxq_cnt--;
@@ -1847,7 +2039,11 @@ lpfc_rcv_logo_logo_issue(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 	struct lpfc_iocbq *cmdiocb = (struct lpfc_iocbq *)arg;
 
 	spin_lock_irq(shost->host_lock);
+<<<<<<< HEAD
 	ndlp->nlp_flag &= NLP_LOGO_ACC;
+=======
+	ndlp->nlp_flag |= NLP_LOGO_ACC;
+>>>>>>> v4.9.227
 	spin_unlock_irq(shost->host_lock);
 	lpfc_els_rsp_acc(vport, ELS_CMD_ACC, cmdiocb, ndlp, NULL);
 	return ndlp->nlp_state;
@@ -2274,6 +2470,12 @@ lpfc_cmpl_reglogin_npr_node(struct lpfc_vport *vport,
 		if (vport->phba->sli_rev < LPFC_SLI_REV4)
 			ndlp->nlp_rpi = mb->un.varWords[0];
 		ndlp->nlp_flag |= NLP_RPI_REGISTERED;
+<<<<<<< HEAD
+=======
+		if (ndlp->nlp_flag & NLP_LOGO_ACC) {
+			lpfc_unreg_rpi(vport, ndlp);
+		}
+>>>>>>> v4.9.227
 	} else {
 		if (ndlp->nlp_flag & NLP_NODEV_REMOVE) {
 			lpfc_drop_node(vport, ndlp);

@@ -30,10 +30,19 @@
 #include "pmsu.h"
 #include "coherency.h"
 
+<<<<<<< HEAD
 #define AXP_BOOTROM_BASE 0xfff00000
 #define AXP_BOOTROM_SIZE 0x100000
 
 static struct clk *__init get_cpu_clk(int cpu)
+=======
+#define ARMADA_XP_MAX_CPUS 4
+
+#define AXP_BOOTROM_BASE 0xfff00000
+#define AXP_BOOTROM_SIZE 0x100000
+
+static struct clk *get_cpu_clk(int cpu)
+>>>>>>> v4.9.227
 {
 	struct clk *cpu_clk;
 	struct device_node *np = of_get_cpu_node(cpu, NULL);
@@ -46,6 +55,7 @@ static struct clk *__init get_cpu_clk(int cpu)
 	return cpu_clk;
 }
 
+<<<<<<< HEAD
 static void __init set_secondary_cpus_clock(void)
 {
 	int thiscpu, cpu;
@@ -69,6 +79,30 @@ static void __init set_secondary_cpus_clock(void)
 		clk_set_rate(cpu_clk, rate);
 		clk_prepare_enable(cpu_clk);
 	}
+=======
+static void set_secondary_cpu_clock(unsigned int cpu)
+{
+	int thiscpu;
+	unsigned long rate;
+	struct clk *cpu_clk;
+
+	thiscpu = get_cpu();
+
+	cpu_clk = get_cpu_clk(thiscpu);
+	if (!cpu_clk)
+		goto out;
+	clk_prepare_enable(cpu_clk);
+	rate = clk_get_rate(cpu_clk);
+
+	cpu_clk = get_cpu_clk(cpu);
+	if (!cpu_clk)
+		goto out;
+	clk_set_rate(cpu_clk, rate);
+	clk_prepare_enable(cpu_clk);
+
+out:
+	put_cpu();
+>>>>>>> v4.9.227
 }
 
 static int armada_xp_boot_secondary(unsigned int cpu, struct task_struct *idle)
@@ -78,6 +112,10 @@ static int armada_xp_boot_secondary(unsigned int cpu, struct task_struct *idle)
 	pr_info("Booting CPU %d\n", cpu);
 
 	hw_cpu = cpu_logical_map(cpu);
+<<<<<<< HEAD
+=======
+	set_secondary_cpu_clock(hw_cpu);
+>>>>>>> v4.9.227
 	mvebu_pmsu_set_cpu_boot_addr(hw_cpu, armada_xp_secondary_startup);
 
 	/*
@@ -126,7 +164,10 @@ static void __init armada_xp_smp_prepare_cpus(unsigned int max_cpus)
 	struct resource res;
 	int err;
 
+<<<<<<< HEAD
 	set_secondary_cpus_clock();
+=======
+>>>>>>> v4.9.227
 	flush_cache_all();
 	set_cpu_coherent();
 
@@ -139,6 +180,10 @@ static void __init armada_xp_smp_prepare_cpus(unsigned int max_cpus)
 		panic("Cannot find 'marvell,bootrom' compatible node");
 
 	err = of_address_to_resource(node, 0, &res);
+<<<<<<< HEAD
+=======
+	of_node_put(node);
+>>>>>>> v4.9.227
 	if (err < 0)
 		panic("Cannot get 'bootrom' node address");
 
@@ -169,7 +214,11 @@ static int armada_xp_cpu_kill(unsigned int cpu)
 }
 #endif
 
+<<<<<<< HEAD
 struct smp_operations armada_xp_smp_ops __initdata = {
+=======
+const struct smp_operations armada_xp_smp_ops __initconst = {
+>>>>>>> v4.9.227
 	.smp_init_cpus		= armada_xp_smp_init_cpus,
 	.smp_prepare_cpus	= armada_xp_smp_prepare_cpus,
 	.smp_boot_secondary	= armada_xp_boot_secondary,

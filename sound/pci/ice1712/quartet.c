@@ -46,7 +46,11 @@ struct qtet_kcontrol_private {
 	unsigned int bit;
 	void (*set_register)(struct snd_ice1712 *ice, unsigned int val);
 	unsigned int (*get_register)(struct snd_ice1712 *ice);
+<<<<<<< HEAD
 	unsigned char * const texts[2];
+=======
+	const char * const texts[2];
+>>>>>>> v4.9.227
 };
 
 enum {
@@ -203,7 +207,10 @@ static const char * const ext_clock_names[3] = {"IEC958 In", "Word Clock 1xFS",
 #define AK4620_DEEMVOL_REG	0x03
 #define AK4620_SMUTE		(1<<7)
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+>>>>>>> v4.9.227
 /*
  * Conversion from int value to its binary form. Used for debugging.
  * The output buffer must be allocated prior to calling the function.
@@ -228,7 +235,10 @@ static char *get_binary(char *buffer, int value)
 	buffer[pos] = '\0';
 	return buffer;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PROC_FS */
+=======
+>>>>>>> v4.9.227
 
 /*
  * Initial setup of the conversion array GPIO <-> rate
@@ -486,7 +496,11 @@ static void set_cpld(struct snd_ice1712 *ice, unsigned int val)
 	reg_write(ice, GPIO_CPLD_CSN, val);
 	spec->cpld = val;
 }
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+
+>>>>>>> v4.9.227
 static void proc_regs_read(struct snd_info_entry *entry,
 		struct snd_info_buffer *buffer)
 {
@@ -507,9 +521,12 @@ static void proc_init(struct snd_ice1712 *ice)
 	if (!snd_card_proc_new(ice->card, "quartet", &entry))
 		snd_info_set_text_ops(entry, ice, proc_regs_read);
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PROC_FS */
 static void proc_init(struct snd_ice1712 *ice) {}
 #endif
+=======
+>>>>>>> v4.9.227
 
 static int qtet_mute_get(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
@@ -554,6 +571,7 @@ static int qtet_ain12_enum_info(struct snd_kcontrol *kcontrol,
 {
 	static const char * const texts[3] =
 		{"Line In 1/2", "Mic", "Mic + Low-cut"};
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = ARRAY_SIZE(texts);
@@ -565,6 +583,9 @@ static int qtet_ain12_enum_info(struct snd_kcontrol *kcontrol,
 			texts[uinfo->value.enumerated.item]);
 
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, ARRAY_SIZE(texts), texts);
+>>>>>>> v4.9.227
 }
 
 static int qtet_ain12_sw_get(struct snd_kcontrol *kcontrol,
@@ -706,6 +727,7 @@ static int qtet_enum_info(struct snd_kcontrol *kcontrol,
 {
 	struct qtet_kcontrol_private private =
 		qtet_privates[kcontrol->private_value];
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = ARRAY_SIZE(private.texts);
@@ -717,6 +739,10 @@ static int qtet_enum_info(struct snd_kcontrol *kcontrol,
 			private.texts[uinfo->value.enumerated.item]);
 
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, ARRAY_SIZE(private.texts),
+				 private.texts);
+>>>>>>> v4.9.227
 }
 
 static int qtet_sw_get(struct snd_kcontrol *kcontrol,
@@ -852,11 +878,16 @@ static int qtet_add_controls(struct snd_ice1712 *ice)
 	if (err < 0)
 		return err;
 	/* only capture SPDIF over AK4113 */
+<<<<<<< HEAD
 	err = snd_ak4113_build(spec->ak4113,
 			ice->pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream);
 	if (err < 0)
 		return err;
 	return 0;
+=======
+	return snd_ak4113_build(spec->ak4113,
+			ice->pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream);
+>>>>>>> v4.9.227
 }
 
 static inline int qtet_is_spdif_master(struct snd_ice1712 *ice)

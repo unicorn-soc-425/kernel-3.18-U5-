@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2013, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -53,6 +61,11 @@
 #include "../include/lustre_mdc.h"
 #include "fid_internal.h"
 
+<<<<<<< HEAD
+=======
+static struct dentry *seq_debugfs_dir;
+
+>>>>>>> v4.9.227
 static int seq_client_rpc(struct lu_client_seq *seq,
 			  struct lu_seq_range *output, __u32 opc,
 			  const char *opcname)
@@ -64,9 +77,16 @@ static int seq_client_rpc(struct lu_client_seq *seq,
 	unsigned int           debug_mask;
 	int                    rc;
 
+<<<<<<< HEAD
 	req = ptlrpc_request_alloc_pack(class_exp2cliimp(exp), &RQF_SEQ_QUERY,
 					LUSTRE_MDS_VERSION, SEQ_QUERY);
 	if (req == NULL)
+=======
+	LASSERT(exp && !IS_ERR(exp));
+	req = ptlrpc_request_alloc_pack(class_exp2cliimp(exp), &RQF_SEQ_QUERY,
+					LUSTRE_MDS_VERSION, SEQ_QUERY);
+	if (!req)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	/* Init operation code */
@@ -93,6 +113,7 @@ static int seq_client_rpc(struct lu_client_seq *seq,
 		 * precreating objects on this OST), and it will send the
 		 * request to MDT0 here, so we can not keep resending the
 		 * request here, otherwise if MDT0 is failed(umounted),
+<<<<<<< HEAD
 		 * it can not release the export of MDT0 */
 		if (seq->lcs_type == LUSTRE_SEQ_DATA)
 			req->rq_no_delay = req->rq_no_resend = 1;
@@ -102,15 +123,39 @@ static int seq_client_rpc(struct lu_client_seq *seq,
 			req->rq_request_portal = SEQ_METADATA_PORTAL;
 		else
 			req->rq_request_portal = SEQ_DATA_PORTAL;
+=======
+		 * it can not release the export of MDT0
+		 */
+		if (seq->lcs_type == LUSTRE_SEQ_DATA) {
+			req->rq_no_delay = 1;
+			req->rq_no_resend = 1;
+		}
+		debug_mask = D_CONSOLE;
+	} else {
+		if (seq->lcs_type == LUSTRE_SEQ_METADATA) {
+			req->rq_reply_portal = MDC_REPLY_PORTAL;
+			req->rq_request_portal = SEQ_METADATA_PORTAL;
+		} else {
+			req->rq_reply_portal = OSC_REPLY_PORTAL;
+			req->rq_request_portal = SEQ_DATA_PORTAL;
+		}
+>>>>>>> v4.9.227
 		debug_mask = D_INFO;
 	}
 
 	ptlrpc_at_set_req_timeout(req);
 
+<<<<<<< HEAD
 	if (seq->lcs_type == LUSTRE_SEQ_METADATA)
 		mdc_get_rpc_lock(exp->exp_obd->u.cli.cl_rpc_lock, NULL);
 	rc = ptlrpc_queue_wait(req);
 	if (seq->lcs_type == LUSTRE_SEQ_METADATA)
+=======
+	if (opc != SEQ_ALLOC_SUPER && seq->lcs_type == LUSTRE_SEQ_METADATA)
+		mdc_get_rpc_lock(exp->exp_obd->u.cli.cl_rpc_lock, NULL);
+	rc = ptlrpc_queue_wait(req);
+	if (opc != SEQ_ALLOC_SUPER && seq->lcs_type == LUSTRE_SEQ_METADATA)
+>>>>>>> v4.9.227
 		mdc_put_rpc_lock(exp->exp_obd->u.cli.cl_rpc_lock, NULL);
 	if (rc)
 		goto out_req;
@@ -120,19 +165,31 @@ static int seq_client_rpc(struct lu_client_seq *seq,
 
 	if (!range_is_sane(output)) {
 		CERROR("%s: Invalid range received from server: "
+<<<<<<< HEAD
 		       DRANGE"\n", seq->lcs_name, PRANGE(output));
+=======
+		       DRANGE "\n", seq->lcs_name, PRANGE(output));
+>>>>>>> v4.9.227
 		rc = -EINVAL;
 		goto out_req;
 	}
 
 	if (range_is_exhausted(output)) {
 		CERROR("%s: Range received from server is exhausted: "
+<<<<<<< HEAD
 		       DRANGE"]\n", seq->lcs_name, PRANGE(output));
+=======
+		       DRANGE "]\n", seq->lcs_name, PRANGE(output));
+>>>>>>> v4.9.227
 		rc = -EINVAL;
 		goto out_req;
 	}
 
+<<<<<<< HEAD
 	CDEBUG_LIMIT(debug_mask, "%s: Allocated %s-sequence "DRANGE"]\n",
+=======
+	CDEBUG_LIMIT(debug_mask, "%s: Allocated %s-sequence " DRANGE "]\n",
+>>>>>>> v4.9.227
 		     seq->lcs_name, opcname, PRANGE(output));
 
 out_req:
@@ -140,6 +197,7 @@ out_req:
 	return rc;
 }
 
+<<<<<<< HEAD
 /* Request sequence-controller node to allocate new super-sequence. */
 int seq_client_alloc_super(struct lu_client_seq *seq,
 			   const struct lu_env *env)
@@ -165,12 +223,15 @@ int seq_client_alloc_super(struct lu_client_seq *seq,
 	return rc;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Request sequence-controller node to allocate new meta-sequence. */
 static int seq_client_alloc_meta(const struct lu_env *env,
 				 struct lu_client_seq *seq)
 {
 	int rc;
 
+<<<<<<< HEAD
 	if (seq->lcs_srv) {
 		rc = 0;
 	} else {
@@ -183,6 +244,17 @@ static int seq_client_alloc_meta(const struct lu_env *env,
 					    SEQ_ALLOC_META, "meta");
 		} while (rc == -EINPROGRESS || rc == -EAGAIN);
 	}
+=======
+	do {
+		/* If meta server return -EINPROGRESS or EAGAIN,
+		 * it means meta server might not be ready to
+		 * allocate super sequence from sequence controller
+		 * (MDT0)yet
+		 */
+		rc = seq_client_rpc(seq, &seq->lcs_space,
+				    SEQ_ALLOC_META, "meta");
+	} while (rc == -EINPROGRESS || rc == -EAGAIN);
+>>>>>>> v4.9.227
 
 	return rc;
 }
@@ -201,10 +273,16 @@ static int seq_client_alloc_seq(const struct lu_env *env,
 			CERROR("%s: Can't allocate new meta-sequence, rc %d\n",
 			       seq->lcs_name, rc);
 			return rc;
+<<<<<<< HEAD
 		} else {
 			CDEBUG(D_INFO, "%s: New range - "DRANGE"\n",
 			       seq->lcs_name, PRANGE(&seq->lcs_space));
 		}
+=======
+		}
+		CDEBUG(D_INFO, "%s: New range - " DRANGE "\n",
+		       seq->lcs_name, PRANGE(&seq->lcs_space));
+>>>>>>> v4.9.227
 	} else {
 		rc = 0;
 	}
@@ -247,6 +325,7 @@ static void seq_fid_alloc_fini(struct lu_client_seq *seq)
 	wake_up(&seq->lcs_waitq);
 }
 
+<<<<<<< HEAD
 /**
  * Allocate the whole seq to the caller.
  **/
@@ -298,6 +377,8 @@ int seq_client_get_seq(const struct lu_env *env,
 }
 EXPORT_SYMBOL(seq_client_get_seq);
 
+=======
+>>>>>>> v4.9.227
 /* Allocate new fid on passed client @seq and save it to @fid. */
 int seq_client_alloc_fid(const struct lu_env *env,
 			 struct lu_client_seq *seq, struct lu_fid *fid)
@@ -305,8 +386,13 @@ int seq_client_alloc_fid(const struct lu_env *env,
 	wait_queue_t link;
 	int rc;
 
+<<<<<<< HEAD
 	LASSERT(seq != NULL);
 	LASSERT(fid != NULL);
+=======
+	LASSERT(seq);
+	LASSERT(fid);
+>>>>>>> v4.9.227
 
 	init_waitqueue_entry(&link, current);
 	mutex_lock(&seq->lcs_mutex);
@@ -371,7 +457,11 @@ void seq_client_flush(struct lu_client_seq *seq)
 {
 	wait_queue_t link;
 
+<<<<<<< HEAD
 	LASSERT(seq != NULL);
+=======
+	LASSERT(seq);
+>>>>>>> v4.9.227
 	init_waitqueue_entry(&link, current);
 	mutex_lock(&seq->lcs_mutex);
 
@@ -400,6 +490,7 @@ void seq_client_flush(struct lu_client_seq *seq)
 }
 EXPORT_SYMBOL(seq_client_flush);
 
+<<<<<<< HEAD
 static void seq_client_proc_fini(struct lu_client_seq *seq)
 {
 #if defined (CONFIG_PROC_FS)
@@ -431,6 +522,34 @@ static int seq_client_proc_init(struct lu_client_seq *seq)
 			      seq_client_proc_list, seq);
 	if (rc) {
 		CERROR("%s: Can't init sequence manager proc, rc %d\n",
+=======
+static void seq_client_debugfs_fini(struct lu_client_seq *seq)
+{
+	if (!IS_ERR_OR_NULL(seq->lcs_debugfs_entry))
+		ldebugfs_remove(&seq->lcs_debugfs_entry);
+}
+
+static int seq_client_debugfs_init(struct lu_client_seq *seq)
+{
+	int rc;
+
+	seq->lcs_debugfs_entry = ldebugfs_register(seq->lcs_name,
+						   seq_debugfs_dir,
+						   NULL, NULL);
+
+	if (IS_ERR_OR_NULL(seq->lcs_debugfs_entry)) {
+		CERROR("%s: LdebugFS failed in seq-init\n", seq->lcs_name);
+		rc = seq->lcs_debugfs_entry ? PTR_ERR(seq->lcs_debugfs_entry)
+					    : -ENOMEM;
+		seq->lcs_debugfs_entry = NULL;
+		return rc;
+	}
+
+	rc = ldebugfs_add_vars(seq->lcs_debugfs_entry,
+			       seq_client_debugfs_list, seq);
+	if (rc) {
+		CERROR("%s: Can't init sequence manager debugfs, rc %d\n",
+>>>>>>> v4.9.227
 		       seq->lcs_name, rc);
 		goto out_cleanup;
 	}
@@ -438,6 +557,7 @@ static int seq_client_proc_init(struct lu_client_seq *seq)
 	return 0;
 
 out_cleanup:
+<<<<<<< HEAD
 	seq_client_proc_fini(seq);
 	return rc;
 
@@ -458,6 +578,32 @@ int seq_client_init(struct lu_client_seq *seq,
 	LASSERT(prefix != NULL);
 
 	seq->lcs_srv = srv;
+=======
+	seq_client_debugfs_fini(seq);
+	return rc;
+}
+
+static void seq_client_fini(struct lu_client_seq *seq)
+{
+	seq_client_debugfs_fini(seq);
+
+	if (seq->lcs_exp) {
+		class_export_put(seq->lcs_exp);
+		seq->lcs_exp = NULL;
+	}
+}
+
+static int seq_client_init(struct lu_client_seq *seq,
+			   struct obd_export *exp,
+			   enum lu_cli_type type,
+			   const char *prefix)
+{
+	int rc;
+
+	LASSERT(seq);
+	LASSERT(prefix);
+
+>>>>>>> v4.9.227
 	seq->lcs_type = type;
 
 	mutex_init(&seq->lcs_mutex);
@@ -470,19 +616,28 @@ int seq_client_init(struct lu_client_seq *seq,
 	/* Make sure that things are clear before work is started. */
 	seq_client_flush(seq);
 
+<<<<<<< HEAD
 	if (exp != NULL)
 		seq->lcs_exp = class_export_get(exp);
 	else if (type == LUSTRE_SEQ_METADATA)
 		LASSERT(seq->lcs_srv != NULL);
+=======
+	seq->lcs_exp = class_export_get(exp);
+>>>>>>> v4.9.227
 
 	snprintf(seq->lcs_name, sizeof(seq->lcs_name),
 		 "cli-%s", prefix);
 
+<<<<<<< HEAD
 	rc = seq_client_proc_init(seq);
+=======
+	rc = seq_client_debugfs_init(seq);
+>>>>>>> v4.9.227
 	if (rc)
 		seq_client_fini(seq);
 	return rc;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(seq_client_init);
 
 void seq_client_fini(struct lu_client_seq *seq)
@@ -497,6 +652,8 @@ void seq_client_fini(struct lu_client_seq *seq)
 	seq->lcs_srv = NULL;
 }
 EXPORT_SYMBOL(seq_client_fini);
+=======
+>>>>>>> v4.9.227
 
 int client_fid_init(struct obd_device *obd,
 		    struct obd_export *exp, enum lu_cli_type type)
@@ -505,12 +662,21 @@ int client_fid_init(struct obd_device *obd,
 	char *prefix;
 	int rc;
 
+<<<<<<< HEAD
 	OBD_ALLOC_PTR(cli->cl_seq);
 	if (cli->cl_seq == NULL)
 		return -ENOMEM;
 
 	OBD_ALLOC(prefix, MAX_OBD_NAME + 5);
 	if (prefix == NULL) {
+=======
+	cli->cl_seq = kzalloc(sizeof(*cli->cl_seq), GFP_NOFS);
+	if (!cli->cl_seq)
+		return -ENOMEM;
+
+	prefix = kzalloc(MAX_OBD_NAME + 5, GFP_NOFS);
+	if (!prefix) {
+>>>>>>> v4.9.227
 		rc = -ENOMEM;
 		goto out_free_seq;
 	}
@@ -518,14 +684,23 @@ int client_fid_init(struct obd_device *obd,
 	snprintf(prefix, MAX_OBD_NAME + 5, "cli-%s", obd->obd_name);
 
 	/* Init client side sequence-manager */
+<<<<<<< HEAD
 	rc = seq_client_init(cli->cl_seq, exp, type, prefix, NULL);
 	OBD_FREE(prefix, MAX_OBD_NAME + 5);
+=======
+	rc = seq_client_init(cli->cl_seq, exp, type, prefix);
+	kfree(prefix);
+>>>>>>> v4.9.227
 	if (rc)
 		goto out_free_seq;
 
 	return rc;
 out_free_seq:
+<<<<<<< HEAD
 	OBD_FREE_PTR(cli->cl_seq);
+=======
+	kfree(cli->cl_seq);
+>>>>>>> v4.9.227
 	cli->cl_seq = NULL;
 	return rc;
 }
@@ -535,9 +710,15 @@ int client_fid_fini(struct obd_device *obd)
 {
 	struct client_obd *cli = &obd->u.cli;
 
+<<<<<<< HEAD
 	if (cli->cl_seq != NULL) {
 		seq_client_fini(cli->cl_seq);
 		OBD_FREE_PTR(cli->cl_seq);
+=======
+	if (cli->cl_seq) {
+		seq_client_fini(cli->cl_seq);
+		kfree(cli->cl_seq);
+>>>>>>> v4.9.227
 		cli->cl_seq = NULL;
 	}
 
@@ -545,6 +726,7 @@ int client_fid_fini(struct obd_device *obd)
 }
 EXPORT_SYMBOL(client_fid_fini);
 
+<<<<<<< HEAD
 struct proc_dir_entry *seq_type_proc_dir;
 
 static int __init fid_mod_init(void)
@@ -570,3 +752,26 @@ MODULE_VERSION("0.1.0");
 
 module_init(fid_mod_init);
 module_exit(fid_mod_exit);
+=======
+static int __init fid_init(void)
+{
+	seq_debugfs_dir = ldebugfs_register(LUSTRE_SEQ_NAME,
+					    debugfs_lustre_root,
+					    NULL, NULL);
+	return PTR_ERR_OR_ZERO(seq_debugfs_dir);
+}
+
+static void __exit fid_exit(void)
+{
+	if (!IS_ERR_OR_NULL(seq_debugfs_dir))
+		ldebugfs_remove(&seq_debugfs_dir);
+}
+
+MODULE_AUTHOR("OpenSFS, Inc. <http://www.lustre.org/>");
+MODULE_DESCRIPTION("Lustre File IDentifier");
+MODULE_VERSION(LUSTRE_VERSION_STRING);
+MODULE_LICENSE("GPL");
+
+module_init(fid_init);
+module_exit(fid_exit);
+>>>>>>> v4.9.227

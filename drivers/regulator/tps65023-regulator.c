@@ -86,6 +86,45 @@
 
 #define TPS65023_MAX_REG_ID		TPS65023_LDO_2
 
+<<<<<<< HEAD
+=======
+#define TPS65023_REGULATOR_DCDC(_num, _t, _em)			\
+	{							\
+		.name		= "VDCDC"#_num,			\
+		.of_match	= of_match_ptr("VDCDC"#_num),	\
+		.regulators_node = of_match_ptr("regulators"),	\
+		.id		= TPS65023_DCDC_##_num,		\
+		.n_voltages     = ARRAY_SIZE(_t),		\
+		.ops		= &tps65023_dcdc_ops,		\
+		.type		= REGULATOR_VOLTAGE,		\
+		.owner		= THIS_MODULE,			\
+		.volt_table	= _t,				\
+		.vsel_reg	= TPS65023_REG_DEF_CORE,	\
+		.vsel_mask	= ARRAY_SIZE(_t) - 1,		\
+		.enable_mask	= _em,				\
+		.enable_reg	= TPS65023_REG_REG_CTRL,	\
+		.apply_reg	= TPS65023_REG_CON_CTRL2,	\
+		.apply_bit	= TPS65023_REG_CTRL2_GO,	\
+	}							\
+
+#define TPS65023_REGULATOR_LDO(_num, _t, _vm)			\
+	{							\
+		.name		= "LDO"#_num,			\
+		.of_match	= of_match_ptr("LDO"#_num),	\
+		.regulators_node = of_match_ptr("regulators"),	\
+		.id		= TPS65023_LDO_##_num,		\
+		.n_voltages     = ARRAY_SIZE(_t),		\
+		.ops		= &tps65023_ldo_ops,		\
+		.type		= REGULATOR_VOLTAGE,		\
+		.owner		= THIS_MODULE,			\
+		.volt_table	= _t,				\
+		.vsel_reg	= TPS65023_REG_LDO_CTRL,	\
+		.vsel_mask	= _vm,				\
+		.enable_mask	= 1 << (_num),			\
+		.enable_reg	= TPS65023_REG_REG_CTRL,	\
+	}							\
+
+>>>>>>> v4.9.227
 /* Supported voltage values for regulators */
 static const unsigned int VCORE_VSEL_table[] = {
 	800000, 825000, 850000, 875000,
@@ -124,6 +163,7 @@ static const unsigned int TPS65023_LDO2_VSEL_table[] = {
 	2500000, 2800000, 3000000, 3300000,
 };
 
+<<<<<<< HEAD
 /* Regulator specific details */
 struct tps_info {
 	const char *name;
@@ -138,11 +178,22 @@ struct tps_pmic {
 	const struct tps_info *info[TPS65023_NUM_REGULATOR];
 	struct regmap *regmap;
 	u8 core_regulator;
+=======
+/* PMIC details */
+struct tps_pmic {
+	struct regulator_dev *rdev[TPS65023_NUM_REGULATOR];
+	const struct tps_driver_data *driver_data;
+	struct regmap *regmap;
+>>>>>>> v4.9.227
 };
 
 /* Struct passed as driver data */
 struct tps_driver_data {
+<<<<<<< HEAD
 	const struct tps_info *info;
+=======
+	const struct regulator_desc *desc;
+>>>>>>> v4.9.227
 	u8 core_regulator;
 };
 
@@ -154,7 +205,11 @@ static int tps65023_dcdc_get_voltage_sel(struct regulator_dev *dev)
 	if (dcdc < TPS65023_DCDC_1 || dcdc > TPS65023_DCDC_3)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (dcdc != tps->core_regulator)
+=======
+	if (dcdc != tps->driver_data->core_regulator)
+>>>>>>> v4.9.227
 		return 0;
 
 	return regulator_get_voltage_sel_regmap(dev);
@@ -166,14 +221,22 @@ static int tps65023_dcdc_set_voltage_sel(struct regulator_dev *dev,
 	struct tps_pmic *tps = rdev_get_drvdata(dev);
 	int dcdc = rdev_get_id(dev);
 
+<<<<<<< HEAD
 	if (dcdc != tps->core_regulator)
+=======
+	if (dcdc != tps->driver_data->core_regulator)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	return regulator_set_voltage_sel_regmap(dev, selector);
 }
 
 /* Operations permitted on VDCDCx */
+<<<<<<< HEAD
 static struct regulator_ops tps65023_dcdc_ops = {
+=======
+static const struct regulator_ops tps65023_dcdc_ops = {
+>>>>>>> v4.9.227
 	.is_enabled = regulator_is_enabled_regmap,
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
@@ -184,7 +247,11 @@ static struct regulator_ops tps65023_dcdc_ops = {
 };
 
 /* Operations permitted on LDOx */
+<<<<<<< HEAD
 static struct regulator_ops tps65023_ldo_ops = {
+=======
+static const struct regulator_ops tps65023_ldo_ops = {
+>>>>>>> v4.9.227
 	.is_enabled = regulator_is_enabled_regmap,
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
@@ -194,11 +261,16 @@ static struct regulator_ops tps65023_ldo_ops = {
 	.map_voltage = regulator_map_voltage_ascend,
 };
 
+<<<<<<< HEAD
 static struct regmap_config tps65023_regmap_config = {
+=======
+static const struct regmap_config tps65023_regmap_config = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 };
 
+<<<<<<< HEAD
 static int tps_65023_probe(struct i2c_client *client,
 				     const struct i2c_device_id *id)
 {
@@ -207,10 +279,57 @@ static int tps_65023_probe(struct i2c_client *client,
 	struct regulator_config config = { };
 	struct regulator_init_data *init_data;
 	struct regulator_dev *rdev;
+=======
+static const struct regulator_desc tps65020_regulators[] = {
+	TPS65023_REGULATOR_DCDC(1, DCDC_FIXED_3300000_VSEL_table, 0x20),
+	TPS65023_REGULATOR_DCDC(2, DCDC_FIXED_1800000_VSEL_table, 0x10),
+	TPS65023_REGULATOR_DCDC(3, VCORE_VSEL_table, 0x08),
+	TPS65023_REGULATOR_LDO(1, TPS65020_LDO_VSEL_table, 0x07),
+	TPS65023_REGULATOR_LDO(2, TPS65020_LDO_VSEL_table, 0x70),
+};
+
+static const struct regulator_desc tps65021_regulators[] = {
+	TPS65023_REGULATOR_DCDC(1, DCDC_FIXED_3300000_VSEL_table, 0x20),
+	TPS65023_REGULATOR_DCDC(2, DCDC_FIXED_1800000_VSEL_table, 0x10),
+	TPS65023_REGULATOR_DCDC(3, VCORE_VSEL_table, 0x08),
+	TPS65023_REGULATOR_LDO(1, TPS65023_LDO1_VSEL_table, 0x07),
+	TPS65023_REGULATOR_LDO(2, TPS65023_LDO2_VSEL_table, 0x70),
+};
+
+static const struct regulator_desc tps65023_regulators[] = {
+	TPS65023_REGULATOR_DCDC(1, VCORE_VSEL_table, 0x20),
+	TPS65023_REGULATOR_DCDC(2, DCDC_FIXED_3300000_VSEL_table, 0x10),
+	TPS65023_REGULATOR_DCDC(3, DCDC_FIXED_1800000_VSEL_table, 0x08),
+	TPS65023_REGULATOR_LDO(1, TPS65023_LDO1_VSEL_table, 0x07),
+	TPS65023_REGULATOR_LDO(2, TPS65023_LDO2_VSEL_table, 0x70),
+};
+
+static struct tps_driver_data tps65020_drv_data = {
+	.desc = tps65020_regulators,
+	.core_regulator = TPS65023_DCDC_3,
+};
+
+static struct tps_driver_data tps65021_drv_data = {
+	.desc = tps65021_regulators,
+	.core_regulator = TPS65023_DCDC_3,
+};
+
+static struct tps_driver_data tps65023_drv_data = {
+	.desc = tps65023_regulators,
+	.core_regulator = TPS65023_DCDC_1,
+};
+
+static int tps_65023_probe(struct i2c_client *client,
+				     const struct i2c_device_id *id)
+{
+	struct regulator_init_data *init_data = dev_get_platdata(&client->dev);
+	struct regulator_config config = { };
+>>>>>>> v4.9.227
 	struct tps_pmic *tps;
 	int i;
 	int error;
 
+<<<<<<< HEAD
 	/**
 	 * init_data points to array of regulator_init structures
 	 * coming from the board-evm file.
@@ -219,10 +338,17 @@ static int tps_65023_probe(struct i2c_client *client,
 	if (!init_data)
 		return -EIO;
 
+=======
+>>>>>>> v4.9.227
 	tps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);
 	if (!tps)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	tps->driver_data = (struct tps_driver_data *)id->driver_data;
+
+>>>>>>> v4.9.227
 	tps->regmap = devm_regmap_init_i2c(client, &tps65023_regmap_config);
 	if (IS_ERR(tps->regmap)) {
 		error = PTR_ERR(tps->regmap);
@@ -232,6 +358,7 @@ static int tps_65023_probe(struct i2c_client *client,
 	}
 
 	/* common for all regulators */
+<<<<<<< HEAD
 	tps->core_regulator = drv_data->core_regulator;
 
 	for (i = 0; i < TPS65023_NUM_REGULATOR; i++, info++, init_data++) {
@@ -284,6 +411,24 @@ static int tps_65023_probe(struct i2c_client *client,
 
 		/* Save regulator for cleanup */
 		tps->rdev[i] = rdev;
+=======
+	config.dev = &client->dev;
+	config.driver_data = tps;
+	config.regmap = tps->regmap;
+
+	for (i = 0; i < TPS65023_NUM_REGULATOR; i++) {
+		if (init_data)
+			config.init_data = &init_data[i];
+
+		/* Register the regulators */
+		tps->rdev[i] = devm_regulator_register(&client->dev,
+					&tps->driver_data->desc[i], &config);
+		if (IS_ERR(tps->rdev[i])) {
+			dev_err(&client->dev, "failed to register %s\n",
+				id->name);
+			return PTR_ERR(tps->rdev[i]);
+		}
+>>>>>>> v4.9.227
 	}
 
 	i2c_set_clientdata(client, tps);
@@ -295,6 +440,7 @@ static int tps_65023_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct tps_info tps65020_regs[] = {
 	{
 		.name = "VDCDC1",
@@ -404,12 +550,39 @@ static const struct i2c_device_id tps_65023_id[] = {
 	{ },
 };
 
+=======
+static const struct of_device_id tps65023_of_match[] = {
+	{ .compatible = "ti,tps65020", .data = &tps65020_drv_data},
+	{ .compatible = "ti,tps65021", .data = &tps65021_drv_data},
+	{ .compatible = "ti,tps65023", .data = &tps65023_drv_data},
+	{},
+};
+MODULE_DEVICE_TABLE(of, tps65023_of_match);
+
+static const struct i2c_device_id tps_65023_id[] = {
+	{
+		.name = "tps65023",
+		.driver_data = (kernel_ulong_t)&tps65023_drv_data
+	}, {
+		.name = "tps65021",
+		.driver_data = (kernel_ulong_t)&tps65021_drv_data
+	}, {
+		.name = "tps65020",
+		.driver_data = (kernel_ulong_t)&tps65020_drv_data
+	},
+	{ },
+};
+>>>>>>> v4.9.227
 MODULE_DEVICE_TABLE(i2c, tps_65023_id);
 
 static struct i2c_driver tps_65023_i2c_driver = {
 	.driver = {
 		.name = "tps65023",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(tps65023_of_match),
+>>>>>>> v4.9.227
 	},
 	.probe = tps_65023_probe,
 	.id_table = tps_65023_id,

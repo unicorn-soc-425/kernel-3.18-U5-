@@ -12,6 +12,10 @@
 
 #include <linux/io.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
@@ -19,8 +23,11 @@
 
 #include <asm/exception.h>
 
+<<<<<<< HEAD
 #include "irqchip.h"
 
+=======
+>>>>>>> v4.9.227
 #define IRQ_SOURCE_REG		0
 #define IRQ_MASK_REG		0x04
 #define IRQ_CLEAR_REG		0x08

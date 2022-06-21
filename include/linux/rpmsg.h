@@ -41,6 +41,7 @@
 #include <linux/kref.h>
 #include <linux/mutex.h>
 
+<<<<<<< HEAD
 /* The feature bitmap for virtio rpmsg */
 #define VIRTIO_RPMSG_F_NS	0 /* RP supports name service notifications */
 
@@ -100,6 +101,29 @@ struct virtproc_info;
 /**
  * rpmsg_channel - devices that belong to the rpmsg bus are called channels
  * @vrp: the remote processor this channel belongs to
+=======
+#define RPMSG_ADDR_ANY		0xFFFFFFFF
+
+struct rpmsg_device;
+struct rpmsg_endpoint;
+struct rpmsg_device_ops;
+struct rpmsg_endpoint_ops;
+
+/**
+ * struct rpmsg_channel_info - channel info representation
+ * @name: name of service
+ * @src: local address
+ * @dst: destination address
+ */
+struct rpmsg_channel_info {
+	char name[RPMSG_NAME_SIZE];
+	u32 src;
+	u32 dst;
+};
+
+/**
+ * rpmsg_device - device that belong to the rpmsg bus
+>>>>>>> v4.9.227
  * @dev: the device struct
  * @id: device id (used to match between rpmsg drivers and devices)
  * @src: local address
@@ -107,17 +131,29 @@ struct virtproc_info;
  * @ept: the rpmsg endpoint of this channel
  * @announce: if set, rpmsg will announce the creation/removal of this channel
  */
+<<<<<<< HEAD
 struct rpmsg_channel {
 	struct virtproc_info *vrp;
+=======
+struct rpmsg_device {
+>>>>>>> v4.9.227
 	struct device dev;
 	struct rpmsg_device_id id;
 	u32 src;
 	u32 dst;
 	struct rpmsg_endpoint *ept;
 	bool announce;
+<<<<<<< HEAD
 };
 
 typedef void (*rpmsg_rx_cb_t)(struct rpmsg_channel *, void *, int, void *, u32);
+=======
+
+	const struct rpmsg_device_ops *ops;
+};
+
+typedef int (*rpmsg_rx_cb_t)(struct rpmsg_device *, void *, int, void *, u32);
+>>>>>>> v4.9.227
 
 /**
  * struct rpmsg_endpoint - binds a local rpmsg address to its user
@@ -143,12 +179,21 @@ typedef void (*rpmsg_rx_cb_t)(struct rpmsg_channel *, void *, int, void *, u32);
  * create additional endpoints by themselves (see rpmsg_create_ept()).
  */
 struct rpmsg_endpoint {
+<<<<<<< HEAD
 	struct rpmsg_channel *rpdev;
+=======
+	struct rpmsg_device *rpdev;
+>>>>>>> v4.9.227
 	struct kref refcount;
 	rpmsg_rx_cb_t cb;
 	struct mutex cb_lock;
 	u32 addr;
 	void *priv;
+<<<<<<< HEAD
+=======
+
+	const struct rpmsg_endpoint_ops *ops;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -162,6 +207,7 @@ struct rpmsg_endpoint {
 struct rpmsg_driver {
 	struct device_driver drv;
 	const struct rpmsg_device_id *id_table;
+<<<<<<< HEAD
 	int (*probe)(struct rpmsg_channel *dev);
 	void (*remove)(struct rpmsg_channel *dev);
 	void (*callback)(struct rpmsg_channel *, void *, int, void *, u32);
@@ -328,5 +374,46 @@ int rpmsg_trysend_offchannel(struct rpmsg_channel *rpdev, u32 src, u32 dst,
 {
 	return rpmsg_send_offchannel_raw(rpdev, src, dst, data, len, false);
 }
+=======
+	int (*probe)(struct rpmsg_device *dev);
+	void (*remove)(struct rpmsg_device *dev);
+	int (*callback)(struct rpmsg_device *, void *, int, void *, u32);
+};
+
+int register_rpmsg_device(struct rpmsg_device *dev);
+void unregister_rpmsg_device(struct rpmsg_device *dev);
+int __register_rpmsg_driver(struct rpmsg_driver *drv, struct module *owner);
+void unregister_rpmsg_driver(struct rpmsg_driver *drv);
+void rpmsg_destroy_ept(struct rpmsg_endpoint *);
+struct rpmsg_endpoint *rpmsg_create_ept(struct rpmsg_device *,
+					rpmsg_rx_cb_t cb, void *priv,
+					struct rpmsg_channel_info chinfo);
+
+/* use a macro to avoid include chaining to get THIS_MODULE */
+#define register_rpmsg_driver(drv) \
+	__register_rpmsg_driver(drv, THIS_MODULE)
+
+/**
+ * module_rpmsg_driver() - Helper macro for registering an rpmsg driver
+ * @__rpmsg_driver: rpmsg_driver struct
+ *
+ * Helper macro for rpmsg drivers which do not do anything special in module
+ * init/exit. This eliminates a lot of boilerplate.  Each module may only
+ * use this macro once, and calling it replaces module_init() and module_exit()
+ */
+#define module_rpmsg_driver(__rpmsg_driver) \
+	module_driver(__rpmsg_driver, register_rpmsg_driver, \
+			unregister_rpmsg_driver)
+
+int rpmsg_send(struct rpmsg_endpoint *ept, void *data, int len);
+int rpmsg_sendto(struct rpmsg_endpoint *ept, void *data, int len, u32 dst);
+int rpmsg_send_offchannel(struct rpmsg_endpoint *ept, u32 src, u32 dst,
+			  void *data, int len);
+
+int rpmsg_trysend(struct rpmsg_endpoint *ept, void *data, int len);
+int rpmsg_trysendto(struct rpmsg_endpoint *ept, void *data, int len, u32 dst);
+int rpmsg_trysend_offchannel(struct rpmsg_endpoint *ept, u32 src, u32 dst,
+			     void *data, int len);
+>>>>>>> v4.9.227
 
 #endif /* _LINUX_RPMSG_H */

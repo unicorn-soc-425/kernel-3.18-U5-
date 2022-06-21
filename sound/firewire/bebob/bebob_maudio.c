@@ -294,10 +294,13 @@ snd_bebob_maudio_special_discover(struct snd_bebob *bebob, bool is1814)
 		bebob->midi_output_ports = 2;
 	}
 end:
+<<<<<<< HEAD
 	if (err < 0) {
 		kfree(params);
 		bebob->maudio_special_quirk = NULL;
 	}
+=======
+>>>>>>> v4.9.227
 	mutex_unlock(&bebob->mutex);
 	return err;
 }
@@ -344,9 +347,18 @@ end:
 }
 
 /* Clock source control for special firmware */
+<<<<<<< HEAD
 static char *const special_clk_labels[] = {
 	SND_BEBOB_CLOCK_INTERNAL " with Digital Mute", "Digital",
 	"Word Clock", SND_BEBOB_CLOCK_INTERNAL};
+=======
+static enum snd_bebob_clock_type special_clk_types[] = {
+	SND_BEBOB_CLOCK_TYPE_INTERNAL,	/* With digital mute */
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* SPDIF/ADAT */
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* Word Clock */
+	SND_BEBOB_CLOCK_TYPE_INTERNAL,
+};
+>>>>>>> v4.9.227
 static int special_clk_get(struct snd_bebob *bebob, unsigned int *id)
 {
 	struct special_params *params = bebob->maudio_special_quirk;
@@ -356,6 +368,7 @@ static int special_clk_get(struct snd_bebob *bebob, unsigned int *id)
 static int special_clk_ctl_info(struct snd_kcontrol *kctl,
 				struct snd_ctl_elem_info *einf)
 {
+<<<<<<< HEAD
 	einf->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	einf->count = 1;
 	einf->value.enumerated.items = ARRAY_SIZE(special_clk_labels);
@@ -367,6 +380,16 @@ static int special_clk_ctl_info(struct snd_kcontrol *kctl,
 	       special_clk_labels[einf->value.enumerated.item]);
 
 	return 0;
+=======
+	static const char *const special_clk_labels[] = {
+		"Internal with Digital Mute",
+		"Digital",
+		"Word Clock",
+		"Internal"
+	};
+	return snd_ctl_enum_info(einf, 1, ARRAY_SIZE(special_clk_types),
+				 special_clk_labels);
+>>>>>>> v4.9.227
 }
 static int special_clk_ctl_get(struct snd_kcontrol *kctl,
 			       struct snd_ctl_elem_value *uval)
@@ -384,7 +407,11 @@ static int special_clk_ctl_put(struct snd_kcontrol *kctl,
 	int err, id;
 
 	id = uval->value.enumerated.item[0];
+<<<<<<< HEAD
 	if (id >= ARRAY_SIZE(special_clk_labels))
+=======
+	if (id >= ARRAY_SIZE(special_clk_types))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	mutex_lock(&bebob->mutex);
@@ -442,12 +469,17 @@ static struct snd_kcontrol_new special_sync_ctl = {
 };
 
 /* Digital input interface control for special firmware */
+<<<<<<< HEAD
 static char *const special_dig_in_iface_labels[] = {
+=======
+static const char *const special_dig_in_iface_labels[] = {
+>>>>>>> v4.9.227
 	"S/PDIF Optical", "S/PDIF Coaxial", "ADAT Optical"
 };
 static int special_dig_in_iface_ctl_info(struct snd_kcontrol *kctl,
 					 struct snd_ctl_elem_info *einf)
 {
+<<<<<<< HEAD
 	einf->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	einf->count = 1;
 	einf->value.enumerated.items = ARRAY_SIZE(special_dig_in_iface_labels);
@@ -459,6 +491,11 @@ static int special_dig_in_iface_ctl_info(struct snd_kcontrol *kctl,
 	       special_dig_in_iface_labels[einf->value.enumerated.item]);
 
 	return 0;
+=======
+	return snd_ctl_enum_info(einf, 1,
+				 ARRAY_SIZE(special_dig_in_iface_labels),
+				 special_dig_in_iface_labels);
+>>>>>>> v4.9.227
 }
 static int special_dig_in_iface_ctl_get(struct snd_kcontrol *kctl,
 					struct snd_ctl_elem_value *uval)
@@ -543,12 +580,17 @@ static struct snd_kcontrol_new special_dig_in_iface_ctl = {
 };
 
 /* Digital output interface control for special firmware */
+<<<<<<< HEAD
 static char *const special_dig_out_iface_labels[] = {
+=======
+static const char *const special_dig_out_iface_labels[] = {
+>>>>>>> v4.9.227
 	"S/PDIF Optical and Coaxial", "ADAT Optical"
 };
 static int special_dig_out_iface_ctl_info(struct snd_kcontrol *kctl,
 					  struct snd_ctl_elem_info *einf)
 {
+<<<<<<< HEAD
 	einf->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	einf->count = 1;
 	einf->value.enumerated.items = ARRAY_SIZE(special_dig_out_iface_labels);
@@ -560,6 +602,11 @@ static int special_dig_out_iface_ctl_info(struct snd_kcontrol *kctl,
 	       special_dig_out_iface_labels[einf->value.enumerated.item]);
 
 	return 0;
+=======
+	return snd_ctl_enum_info(einf, 1,
+				 ARRAY_SIZE(special_dig_out_iface_labels),
+				 special_dig_out_iface_labels);
+>>>>>>> v4.9.227
 }
 static int special_dig_out_iface_ctl_get(struct snd_kcontrol *kctl,
 					 struct snd_ctl_elem_value *uval)
@@ -635,7 +682,11 @@ end:
 }
 
 /* Hardware metering for special firmware */
+<<<<<<< HEAD
 static char *const special_meter_labels[] = {
+=======
+static const char *const special_meter_labels[] = {
+>>>>>>> v4.9.227
 	ANA_IN, ANA_IN, ANA_IN, ANA_IN,
 	SPDIF_IN,
 	ADAT_IN, ADAT_IN, ADAT_IN, ADAT_IN,
@@ -648,7 +699,11 @@ static char *const special_meter_labels[] = {
 static int
 special_meter_get(struct snd_bebob *bebob, u32 *target, unsigned int size)
 {
+<<<<<<< HEAD
 	u16 *buf;
+=======
+	__be16 *buf;
+>>>>>>> v4.9.227
 	unsigned int i, c, channels;
 	int err;
 
@@ -675,30 +730,50 @@ end:
 }
 
 /* last 4 bytes are omitted because it's clock info. */
+<<<<<<< HEAD
 static char *const fw410_meter_labels[] = {
+=======
+static const char *const fw410_meter_labels[] = {
+>>>>>>> v4.9.227
 	ANA_IN, DIG_IN,
 	ANA_OUT, ANA_OUT, ANA_OUT, ANA_OUT, DIG_OUT,
 	HP_OUT
 };
+<<<<<<< HEAD
 static char *const audiophile_meter_labels[] = {
+=======
+static const char *const audiophile_meter_labels[] = {
+>>>>>>> v4.9.227
 	ANA_IN, DIG_IN,
 	ANA_OUT, ANA_OUT, DIG_OUT,
 	HP_OUT, AUX_OUT,
 };
+<<<<<<< HEAD
 static char *const solo_meter_labels[] = {
+=======
+static const char *const solo_meter_labels[] = {
+>>>>>>> v4.9.227
 	ANA_IN, DIG_IN,
 	STRM_IN, STRM_IN,
 	ANA_OUT, DIG_OUT
 };
 
 /* no clock info */
+<<<<<<< HEAD
 static char *const ozonic_meter_labels[] = {
+=======
+static const char *const ozonic_meter_labels[] = {
+>>>>>>> v4.9.227
 	ANA_IN, ANA_IN,
 	STRM_IN, STRM_IN,
 	ANA_OUT, ANA_OUT
 };
 /* TODO: need testers. these positions are based on authour's assumption */
+<<<<<<< HEAD
 static char *const nrv10_meter_labels[] = {
+=======
+static const char *const nrv10_meter_labels[] = {
+>>>>>>> v4.9.227
 	ANA_IN, ANA_IN, ANA_IN, ANA_IN,
 	DIG_IN,
 	ANA_OUT, ANA_OUT, ANA_OUT, ANA_OUT,
@@ -707,7 +782,11 @@ static char *const nrv10_meter_labels[] = {
 static int
 normal_meter_get(struct snd_bebob *bebob, u32 *buf, unsigned int size)
 {
+<<<<<<< HEAD
 	struct snd_bebob_meter_spec *spec = bebob->spec->meter;
+=======
+	const struct snd_bebob_meter_spec *spec = bebob->spec->meter;
+>>>>>>> v4.9.227
 	unsigned int c, channels;
 	int err;
 
@@ -732,6 +811,7 @@ end:
 }
 
 /* for special customized devices */
+<<<<<<< HEAD
 static struct snd_bebob_rate_spec special_rate_spec = {
 	.get	= &special_get_rate,
 	.set	= &special_set_rate,
@@ -742,75 +822,135 @@ static struct snd_bebob_clock_spec special_clk_spec = {
 	.get	= &special_clk_get,
 };
 static struct snd_bebob_meter_spec special_meter_spec = {
+=======
+static const struct snd_bebob_rate_spec special_rate_spec = {
+	.get	= &special_get_rate,
+	.set	= &special_set_rate,
+};
+static const struct snd_bebob_clock_spec special_clk_spec = {
+	.num	= ARRAY_SIZE(special_clk_types),
+	.types	= special_clk_types,
+	.get	= &special_clk_get,
+};
+static const struct snd_bebob_meter_spec special_meter_spec = {
+>>>>>>> v4.9.227
 	.num	= ARRAY_SIZE(special_meter_labels),
 	.labels	= special_meter_labels,
 	.get	= &special_meter_get
 };
+<<<<<<< HEAD
 struct snd_bebob_spec maudio_special_spec = {
+=======
+const struct snd_bebob_spec maudio_special_spec = {
+>>>>>>> v4.9.227
 	.clock	= &special_clk_spec,
 	.rate	= &special_rate_spec,
 	.meter	= &special_meter_spec
 };
 
 /* Firewire 410 specification */
+<<<<<<< HEAD
 static struct snd_bebob_rate_spec usual_rate_spec = {
 	.get	= &snd_bebob_stream_get_rate,
 	.set	= &snd_bebob_stream_set_rate,
 };
 static struct snd_bebob_meter_spec fw410_meter_spec = {
+=======
+static const struct snd_bebob_rate_spec usual_rate_spec = {
+	.get	= &snd_bebob_stream_get_rate,
+	.set	= &snd_bebob_stream_set_rate,
+};
+static const struct snd_bebob_meter_spec fw410_meter_spec = {
+>>>>>>> v4.9.227
 	.num	= ARRAY_SIZE(fw410_meter_labels),
 	.labels	= fw410_meter_labels,
 	.get	= &normal_meter_get
 };
+<<<<<<< HEAD
 struct snd_bebob_spec maudio_fw410_spec = {
+=======
+const struct snd_bebob_spec maudio_fw410_spec = {
+>>>>>>> v4.9.227
 	.clock	= NULL,
 	.rate	= &usual_rate_spec,
 	.meter	= &fw410_meter_spec
 };
 
 /* Firewire Audiophile specification */
+<<<<<<< HEAD
 static struct snd_bebob_meter_spec audiophile_meter_spec = {
+=======
+static const struct snd_bebob_meter_spec audiophile_meter_spec = {
+>>>>>>> v4.9.227
 	.num	= ARRAY_SIZE(audiophile_meter_labels),
 	.labels	= audiophile_meter_labels,
 	.get	= &normal_meter_get
 };
+<<<<<<< HEAD
 struct snd_bebob_spec maudio_audiophile_spec = {
+=======
+const struct snd_bebob_spec maudio_audiophile_spec = {
+>>>>>>> v4.9.227
 	.clock	= NULL,
 	.rate	= &usual_rate_spec,
 	.meter	= &audiophile_meter_spec
 };
 
 /* Firewire Solo specification */
+<<<<<<< HEAD
 static struct snd_bebob_meter_spec solo_meter_spec = {
+=======
+static const struct snd_bebob_meter_spec solo_meter_spec = {
+>>>>>>> v4.9.227
 	.num	= ARRAY_SIZE(solo_meter_labels),
 	.labels	= solo_meter_labels,
 	.get	= &normal_meter_get
 };
+<<<<<<< HEAD
 struct snd_bebob_spec maudio_solo_spec = {
+=======
+const struct snd_bebob_spec maudio_solo_spec = {
+>>>>>>> v4.9.227
 	.clock	= NULL,
 	.rate	= &usual_rate_spec,
 	.meter	= &solo_meter_spec
 };
 
 /* Ozonic specification */
+<<<<<<< HEAD
 static struct snd_bebob_meter_spec ozonic_meter_spec = {
+=======
+static const struct snd_bebob_meter_spec ozonic_meter_spec = {
+>>>>>>> v4.9.227
 	.num	= ARRAY_SIZE(ozonic_meter_labels),
 	.labels	= ozonic_meter_labels,
 	.get	= &normal_meter_get
 };
+<<<<<<< HEAD
 struct snd_bebob_spec maudio_ozonic_spec = {
+=======
+const struct snd_bebob_spec maudio_ozonic_spec = {
+>>>>>>> v4.9.227
 	.clock	= NULL,
 	.rate	= &usual_rate_spec,
 	.meter	= &ozonic_meter_spec
 };
 
 /* NRV10 specification */
+<<<<<<< HEAD
 static struct snd_bebob_meter_spec nrv10_meter_spec = {
+=======
+static const struct snd_bebob_meter_spec nrv10_meter_spec = {
+>>>>>>> v4.9.227
 	.num	= ARRAY_SIZE(nrv10_meter_labels),
 	.labels	= nrv10_meter_labels,
 	.get	= &normal_meter_get
 };
+<<<<<<< HEAD
 struct snd_bebob_spec maudio_nrv10_spec = {
+=======
+const struct snd_bebob_spec maudio_nrv10_spec = {
+>>>>>>> v4.9.227
 	.clock	= NULL,
 	.rate	= &usual_rate_spec,
 	.meter	= &nrv10_meter_spec

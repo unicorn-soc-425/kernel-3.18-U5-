@@ -13,11 +13,15 @@
 /* need struct page definitions */
 #include <linux/mm.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 #include <linux/dma-attrs.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/dma-debug.h>
 #include <asm/io.h>
 #include <asm/swiotlb.h>
 
+<<<<<<< HEAD
 #define DMA_ERROR_CODE		(~(dma_addr_t)0x0)
 
 /* Some dma direct funcs must be visible for use in other dma_ops */
@@ -31,6 +35,23 @@ extern int dma_direct_mmap_coherent(struct device *dev,
 				    struct vm_area_struct *vma,
 				    void *cpu_addr, dma_addr_t handle,
 				    size_t size, struct dma_attrs *attrs);
+=======
+#ifdef CONFIG_PPC64
+#define DMA_ERROR_CODE		(~(dma_addr_t)0x0)
+#endif
+
+/* Some dma direct funcs must be visible for use in other dma_ops */
+extern void *__dma_direct_alloc_coherent(struct device *dev, size_t size,
+					 dma_addr_t *dma_handle, gfp_t flag,
+					 unsigned long attrs);
+extern void __dma_direct_free_coherent(struct device *dev, size_t size,
+				       void *vaddr, dma_addr_t dma_handle,
+				       unsigned long attrs);
+extern int dma_direct_mmap_coherent(struct device *dev,
+				    struct vm_area_struct *vma,
+				    void *cpu_addr, dma_addr_t handle,
+				    size_t size, unsigned long attrs);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_NOT_COHERENT_CACHE
 /*
@@ -106,7 +127,11 @@ static inline void set_dma_ops(struct device *dev, struct dma_map_ops *ops)
 static inline dma_addr_t get_dma_offset(struct device *dev)
 {
 	if (dev)
+<<<<<<< HEAD
 		return dev->archdata.dma_data.dma_offset;
+=======
+		return dev->archdata.dma_offset;
+>>>>>>> v4.9.227
 
 	return PCI_DRAM_OFFSET;
 }
@@ -114,12 +139,17 @@ static inline dma_addr_t get_dma_offset(struct device *dev)
 static inline void set_dma_offset(struct device *dev, dma_addr_t off)
 {
 	if (dev)
+<<<<<<< HEAD
 		dev->archdata.dma_data.dma_offset = off;
+=======
+		dev->archdata.dma_offset = off;
+>>>>>>> v4.9.227
 }
 
 /* this will be removed soon */
 #define flush_write_buffers()
 
+<<<<<<< HEAD
 #include <asm-generic/dma-mapping-common.h>
 
 static inline int dma_supported(struct device *dev, u64 mask)
@@ -185,17 +215,33 @@ static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 #endif
 }
 
+=======
+#define HAVE_ARCH_DMA_SET_MASK 1
+extern int dma_set_mask(struct device *dev, u64 dma_mask);
+
+extern int __dma_set_mask(struct device *dev, u64 dma_mask);
+extern u64 __dma_get_required_mask(struct device *dev);
+
+>>>>>>> v4.9.227
 static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
 {
 #ifdef CONFIG_SWIOTLB
 	struct dev_archdata *sd = &dev->archdata;
 
 	if (sd->max_direct_dma_addr && addr + size > sd->max_direct_dma_addr)
+<<<<<<< HEAD
 		return 0;
 #endif
 
 	if (!dev->dma_mask)
 		return 0;
+=======
+		return false;
+#endif
+
+	if (!dev->dma_mask)
+		return false;
+>>>>>>> v4.9.227
 
 	return addr + size - 1 <= *dev->dma_mask;
 }
@@ -210,9 +256,12 @@ static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
 	return daddr - get_dma_offset(dev);
 }
 
+<<<<<<< HEAD
 #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
 #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
 
+=======
+>>>>>>> v4.9.227
 #define ARCH_HAS_DMA_MMAP_COHERENT
 
 static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,

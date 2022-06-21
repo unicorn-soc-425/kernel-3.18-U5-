@@ -122,7 +122,11 @@ void release_vpe(struct vpe *v);
 void *alloc_progmem(unsigned long len);
 void release_progmem(void *ptr);
 
+<<<<<<< HEAD
 int __weak vpe_run(struct vpe *v);
+=======
+int vpe_run(struct vpe *v);
+>>>>>>> v4.9.227
 void cleanup_tc(struct tc *tc);
 
 int __init vpe_module_init(void);

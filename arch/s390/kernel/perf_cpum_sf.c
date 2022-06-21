@@ -185,7 +185,11 @@ static int realloc_sampling_buffer(struct sf_buffer *sfb,
 				   unsigned long num_sdb, gfp_t gfp_flags)
 {
 	int i, rc;
+<<<<<<< HEAD
 	unsigned long *new, *tail;
+=======
+	unsigned long *new, *tail, *tail_prev = NULL;
+>>>>>>> v4.9.227
 
 	if (!sfb->sdbt || !sfb->tail)
 		return -EINVAL;
@@ -224,6 +228,10 @@ static int realloc_sampling_buffer(struct sf_buffer *sfb,
 			sfb->num_sdbt++;
 			/* Link current page to tail of chain */
 			*tail = (unsigned long)(void *) new + 1;
+<<<<<<< HEAD
+=======
+			tail_prev = tail;
+>>>>>>> v4.9.227
 			tail = new;
 		}
 
@@ -233,10 +241,29 @@ static int realloc_sampling_buffer(struct sf_buffer *sfb,
 		 * issue, a new realloc call (if required) might succeed.
 		 */
 		rc = alloc_sample_data_block(tail, gfp_flags);
+<<<<<<< HEAD
 		if (rc)
 			break;
 		sfb->num_sdb++;
 		tail++;
+=======
+		if (rc) {
+			/* Undo last SDBT. An SDBT with no SDB at its first
+			 * entry but with an SDBT entry instead can not be
+			 * handled by the interrupt handler code.
+			 * Avoid this situation.
+			 */
+			if (tail_prev) {
+				sfb->num_sdbt--;
+				free_page((unsigned long) new);
+				tail = tail_prev;
+			}
+			break;
+		}
+		sfb->num_sdb++;
+		tail++;
+		tail_prev = new = NULL;	/* Allocated at least one SBD */
+>>>>>>> v4.9.227
 	}
 
 	/* Link sampling buffer to its origin */
@@ -601,17 +628,24 @@ static void release_pmc_hardware(void)
 
 	irq_subclass_unregister(IRQ_SUBCLASS_MEASUREMENT_ALERT);
 	on_each_cpu(setup_pmc_cpu, &flags, 1);
+<<<<<<< HEAD
 	perf_release_sampling();
+=======
+>>>>>>> v4.9.227
 }
 
 static int reserve_pmc_hardware(void)
 {
 	int flags = PMC_INIT;
+<<<<<<< HEAD
 	int err;
 
 	err = perf_reserve_sampling();
 	if (err)
 		return err;
+=======
+
+>>>>>>> v4.9.227
 	on_each_cpu(setup_pmc_cpu, &flags, 1);
 	if (flags & PMC_FAILURE) {
 		release_pmc_hardware();
@@ -744,6 +778,13 @@ static int __hw_perf_event_init(struct perf_event *event)
 	 */
 	rate = 0;
 	if (attr->freq) {
+<<<<<<< HEAD
+=======
+		if (!attr->sample_freq) {
+			err = -EINVAL;
+			goto out;
+		}
+>>>>>>> v4.9.227
 		rate = freq_to_sample_rate(&si, attr->sample_freq);
 		rate = hw_limit_rate(&si, rate);
 		attr->freq = 0;
@@ -979,12 +1020,24 @@ static int perf_push_sample(struct perf_event *event, struct sf_raw_sample *sfr)
 	struct pt_regs regs;
 	struct perf_sf_sde_regs *sde_regs;
 	struct perf_sample_data data;
+<<<<<<< HEAD
 	struct perf_raw_record raw;
 
 	/* Setup perf sample */
 	perf_sample_data_init(&data, 0, event->hw.last_period);
 	raw.size = sfr->size;
 	raw.data = sfr;
+=======
+	struct perf_raw_record raw = {
+		.frag = {
+			.size = sfr->size,
+			.data = sfr,
+		},
+	};
+
+	/* Setup perf sample */
+	perf_sample_data_init(&data, 0, event->hw.last_period);
+>>>>>>> v4.9.227
 	data.raw = &raw;
 
 	/* Setup pt_regs to look like an CPU-measurement external interrupt
@@ -1019,6 +1072,7 @@ static int perf_push_sample(struct perf_event *event, struct sf_raw_sample *sfr)
 		break;
 	}
 
+<<<<<<< HEAD
 	/* The host-program-parameter (hpp) contains the sie control
 	 * block that is set by sie64a() in entry64.S.	Check if hpp
 	 * refers to a valid control block and set sde_regs flags
@@ -1027,6 +1081,18 @@ static int perf_push_sample(struct perf_event *event, struct sf_raw_sample *sfr)
 	 * For now, simply use a non-zero value as guest indicator.
 	 */
 	if (sfr->basic.hpp)
+=======
+	/*
+	 * A non-zero guest program parameter indicates a guest
+	 * sample.
+	 * Note that some early samples or samples from guests without
+	 * lpp usage would be misaccounted to the host. We use the asn
+	 * value as a heuristic to detect most of these guest samples.
+	 * If the value differs from the host hpp value, we assume
+	 * it to be a KVM guest.
+	 */
+	if (sfr->basic.gpp || sfr->basic.prim_asn != (u16) sfr->basic.hpp)
+>>>>>>> v4.9.227
 		sde_regs->in_guest = 1;
 
 	overflow = 0;
@@ -1278,18 +1344,40 @@ static void hw_perf_event_update(struct perf_event *event, int flush_all)
 		 */
 		if (flush_all && done)
 			break;
+<<<<<<< HEAD
 
 		/* If an event overflow happened, discard samples by
 		 * processing any remaining sample-data-blocks.
 		 */
 		if (event_overflow)
 			flush_all = 1;
+=======
+>>>>>>> v4.9.227
 	}
 
 	/* Account sample overflows in the event hardware structure */
 	if (sampl_overflow)
 		OVERFLOW_REG(hwc) = DIV_ROUND_UP(OVERFLOW_REG(hwc) +
 						 sampl_overflow, 1 + num_sdb);
+<<<<<<< HEAD
+=======
+
+	/* Perf_event_overflow() and perf_event_account_interrupt() limit
+	 * the interrupt rate to an upper limit. Roughly 1000 samples per
+	 * task tick.
+	 * Hitting this limit results in a large number
+	 * of throttled REF_REPORT_THROTTLE entries and the samples
+	 * are dropped.
+	 * Slightly increase the interval to avoid hitting this limit.
+	 */
+	if (event_overflow) {
+		SAMPL_RATE(hwc) += DIV_ROUND_UP(SAMPL_RATE(hwc), 10);
+		debug_sprintf_event(sfdbg, 1, "%s: rate adjustment %ld\n",
+				    __func__,
+				    DIV_ROUND_UP(SAMPL_RATE(hwc), 10));
+	}
+
+>>>>>>> v4.9.227
 	if (sampl_overflow || event_overflow)
 		debug_sprintf_event(sfdbg, 4, "hw_perf_event_update: "
 				    "overflow stats: sample=%llu event=%llu\n",
@@ -1383,7 +1471,10 @@ static int cpumsf_pmu_add(struct perf_event *event, int flags)
 		cpuhw->lsctl.ed = 1;
 
 	/* Set in_use flag and store event */
+<<<<<<< HEAD
 	event->hw.idx = 0;	  /* only one sampling event per CPU supported */
+=======
+>>>>>>> v4.9.227
 	cpuhw->event = event;
 	cpuhw->flags |= PMU_F_IN_USE;
 
@@ -1416,7 +1507,11 @@ CPUMF_EVENT_ATTR(SF, SF_CYCLES_BASIC_DIAG, PERF_EVENT_CPUM_SF_DIAG);
 
 static struct attribute *cpumsf_pmu_events_attr[] = {
 	CPUMF_EVENT_PTR(SF, SF_CYCLES_BASIC),
+<<<<<<< HEAD
 	CPUMF_EVENT_PTR(SF, SF_CYCLES_BASIC_DIAG),
+=======
+	NULL,
+>>>>>>> v4.9.227
 	NULL,
 };
 
@@ -1505,6 +1600,7 @@ static void cpumf_measurement_alert(struct ext_code ext_code,
 		sf_disable();
 	}
 }
+<<<<<<< HEAD
 
 static int cpumf_pmu_notifier(struct notifier_block *self,
 			      unsigned long action, void *hcpu)
@@ -1512,10 +1608,15 @@ static int cpumf_pmu_notifier(struct notifier_block *self,
 	unsigned int cpu = (long) hcpu;
 	int flags;
 
+=======
+static int cpusf_pmu_setup(unsigned int cpu, int flags)
+{
+>>>>>>> v4.9.227
 	/* Ignore the notification if no events are scheduled on the PMU.
 	 * This might be racy...
 	 */
 	if (!atomic_read(&num_events))
+<<<<<<< HEAD
 		return NOTIFY_OK;
 
 	switch (action & ~CPU_TASKS_FROZEN) {
@@ -1533,6 +1634,24 @@ static int cpumf_pmu_notifier(struct notifier_block *self,
 	}
 
 	return NOTIFY_OK;
+=======
+		return 0;
+
+	local_irq_disable();
+	setup_pmc_cpu(&flags);
+	local_irq_enable();
+	return 0;
+}
+
+static int s390_pmu_sf_online_cpu(unsigned int cpu)
+{
+	return cpusf_pmu_setup(cpu, PMC_INIT);
+}
+
+static int s390_pmu_sf_offline_cpu(unsigned int cpu)
+{
+	return cpusf_pmu_setup(cpu, PMC_RELEASE);
+>>>>>>> v4.9.227
 }
 
 static int param_get_sfb_size(char *buffer, const struct kernel_param *kp)
@@ -1573,7 +1692,11 @@ static int param_set_sfb_size(const char *val, const struct kernel_param *kp)
 }
 
 #define param_check_sfb_size(name, p) __param_check(name, p, void)
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_sfb_size = {
+=======
+static const struct kernel_param_ops param_ops_sfb_size = {
+>>>>>>> v4.9.227
 	.set = param_set_sfb_size,
 	.get = param_get_sfb_size,
 };
@@ -1607,18 +1730,36 @@ static int __init init_cpum_sampling_pmu(void)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (si.ad)
 		sfb_set_limits(CPUM_SF_MIN_SDB, CPUM_SF_MAX_SDB);
 
 	sfdbg = debug_register(KMSG_COMPONENT, 2, 1, 80);
 	if (!sfdbg)
 		pr_err("Registering for s390dbf failed\n");
+=======
+	if (si.ad) {
+		sfb_set_limits(CPUM_SF_MIN_SDB, CPUM_SF_MAX_SDB);
+		cpumsf_pmu_events_attr[1] =
+			CPUMF_EVENT_PTR(SF, SF_CYCLES_BASIC_DIAG);
+	}
+
+	sfdbg = debug_register(KMSG_COMPONENT, 2, 1, 80);
+	if (!sfdbg) {
+		pr_err("Registering for s390dbf failed\n");
+		return -ENOMEM;
+	}
+>>>>>>> v4.9.227
 	debug_register_view(sfdbg, &debug_sprintf_view);
 
 	err = register_external_irq(EXT_IRQ_MEASURE_ALERT,
 				    cpumf_measurement_alert);
 	if (err) {
 		pr_cpumsf_err(RS_INIT_FAILURE_ALRT);
+<<<<<<< HEAD
+=======
+		debug_unregister(sfdbg);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -1627,9 +1768,18 @@ static int __init init_cpum_sampling_pmu(void)
 		pr_cpumsf_err(RS_INIT_FAILURE_PERF);
 		unregister_external_irq(EXT_IRQ_MEASURE_ALERT,
 					cpumf_measurement_alert);
+<<<<<<< HEAD
 		goto out;
 	}
 	perf_cpu_notifier(cpumf_pmu_notifier);
+=======
+		debug_unregister(sfdbg);
+		goto out;
+	}
+
+	cpuhp_setup_state(CPUHP_AP_PERF_S390_SF_ONLINE, "AP_PERF_S390_SF_ONLINE",
+			  s390_pmu_sf_online_cpu, s390_pmu_sf_offline_cpu);
+>>>>>>> v4.9.227
 out:
 	return err;
 }

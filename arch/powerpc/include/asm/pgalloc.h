@@ -1,5 +1,6 @@
 #ifndef _ASM_POWERPC_PGALLOC_H
 #define _ASM_POWERPC_PGALLOC_H
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
 #include <linux/mm.h>
@@ -22,4 +23,15 @@ extern void tlb_remove_table(struct mmu_gather *tlb, void *table);
 #endif
 
 #endif /* __KERNEL__ */
+=======
+
+#include <linux/mm.h>
+
+#ifdef CONFIG_PPC_BOOK3S
+#include <asm/book3s/pgalloc.h>
+#else
+#include <asm/nohash/pgalloc.h>
+#endif
+
+>>>>>>> v4.9.227
 #endif /* _ASM_POWERPC_PGALLOC_H */

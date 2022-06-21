@@ -10,5 +10,9 @@ bool pstack__empty(const struct pstack *pstack);
 void pstack__remove(struct pstack *pstack, void *key);
 void pstack__push(struct pstack *pstack, void *key);
 void *pstack__pop(struct pstack *pstack);
+<<<<<<< HEAD
+=======
+void *pstack__peek(struct pstack *pstack);
+>>>>>>> v4.9.227
 
 #endif /* _PERF_PSTACK_ */

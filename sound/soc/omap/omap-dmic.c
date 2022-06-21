@@ -48,6 +48,11 @@ struct omap_dmic {
 	struct device *dev;
 	void __iomem *io_base;
 	struct clk *fclk;
+<<<<<<< HEAD
+=======
+	struct pm_qos_request pm_qos_req;
+	int latency;
+>>>>>>> v4.9.227
 	int fclk_freq;
 	int out_freq;
 	int clk_div;
@@ -124,6 +129,11 @@ static void omap_dmic_dai_shutdown(struct snd_pcm_substream *substream,
 
 	mutex_lock(&dmic->mutex);
 
+<<<<<<< HEAD
+=======
+	pm_qos_remove_request(&dmic->pm_qos_req);
+
+>>>>>>> v4.9.227
 	if (!dai->active)
 		dmic->active = 0;
 
@@ -226,6 +236,11 @@ static int omap_dmic_dai_hw_params(struct snd_pcm_substream *substream,
 	/* packet size is threshold * channels */
 	dma_data = snd_soc_dai_get_dma_data(dai, substream);
 	dma_data->maxburst = dmic->threshold * channels;
+<<<<<<< HEAD
+=======
+	dmic->latency = (OMAP_DMIC_THRES_MAX - dmic->threshold) * USEC_PER_SEC /
+			params_rate(params);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -236,6 +251,12 @@ static int omap_dmic_dai_prepare(struct snd_pcm_substream *substream,
 	struct omap_dmic *dmic = snd_soc_dai_get_drvdata(dai);
 	u32 ctrl;
 
+<<<<<<< HEAD
+=======
+	if (pm_qos_request_active(&dmic->pm_qos_req))
+		pm_qos_update_request(&dmic->pm_qos_req, dmic->latency);
+
+>>>>>>> v4.9.227
 	/* Configure uplink threshold */
 	omap_dmic_write(dmic, OMAP_DMIC_FIFO_CTRL_REG, dmic->threshold);
 
@@ -509,7 +530,10 @@ MODULE_DEVICE_TABLE(of, omap_dmic_of_match);
 static struct platform_driver asoc_dmic_driver = {
 	.driver = {
 		.name = "omap-dmic",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = omap_dmic_of_match,
 	},
 	.probe = asoc_dmic_probe,

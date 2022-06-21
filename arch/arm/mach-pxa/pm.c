@@ -16,7 +16,11 @@
 #include <linux/errno.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <mach/pm.h>
+=======
+#include "pm.h"
+>>>>>>> v4.9.227
 
 struct pxa_cpu_pm_fns *pxa_cpu_pm_fns;
 static unsigned long *sleep_save;
@@ -104,8 +108,14 @@ static int __init pxa_pm_init(void)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	sleep_save = kmalloc(pxa_cpu_pm_fns->save_count * sizeof(unsigned long),
 			     GFP_KERNEL);
+=======
+	sleep_save = kmalloc_array(pxa_cpu_pm_fns->save_count,
+				   sizeof(*sleep_save),
+				   GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!sleep_save) {
 		printk(KERN_ERR "failed to alloc memory for pm save\n");
 		return -ENOMEM;

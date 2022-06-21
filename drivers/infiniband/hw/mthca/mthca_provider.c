@@ -46,7 +46,11 @@
 
 #include "mthca_dev.h"
 #include "mthca_cmd.h"
+<<<<<<< HEAD
 #include "mthca_user.h"
+=======
+#include <rdma/mthca-abi.h>
+>>>>>>> v4.9.227
 #include "mthca_memfree.h"
 
 static void init_query_mad(struct ib_smp *mad)
@@ -57,14 +61,25 @@ static void init_query_mad(struct ib_smp *mad)
 	mad->method    	   = IB_MGMT_METHOD_GET;
 }
 
+<<<<<<< HEAD
 static int mthca_query_device(struct ib_device *ibdev,
 			      struct ib_device_attr *props)
+=======
+static int mthca_query_device(struct ib_device *ibdev, struct ib_device_attr *props,
+			      struct ib_udata *uhw)
+>>>>>>> v4.9.227
 {
 	struct ib_smp *in_mad  = NULL;
 	struct ib_smp *out_mad = NULL;
 	int err = -ENOMEM;
 	struct mthca_dev *mdev = to_mdev(ibdev);
 
+<<<<<<< HEAD
+=======
+	if (uhw->inlen || uhw->outlen)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	in_mad  = kzalloc(sizeof *in_mad, GFP_KERNEL);
 	out_mad = kmalloc(sizeof *out_mad, GFP_KERNEL);
 	if (!in_mad || !out_mad)
@@ -94,6 +109,10 @@ static int mthca_query_device(struct ib_device *ibdev,
 	props->max_qp              = mdev->limits.num_qps - mdev->limits.reserved_qps;
 	props->max_qp_wr           = mdev->limits.max_wqes;
 	props->max_sge             = mdev->limits.max_sg;
+<<<<<<< HEAD
+=======
+	props->max_sge_rd          = props->max_sge;
+>>>>>>> v4.9.227
 	props->max_cq              = mdev->limits.num_cqs - mdev->limits.reserved_cqs;
 	props->max_cqe             = mdev->limits.max_cqes;
 	props->max_mr              = mdev->limits.num_mpts - mdev->limits.reserved_mrws;
@@ -189,7 +208,12 @@ static int mthca_modify_device(struct ib_device *ibdev,
 	if (mask & IB_DEVICE_MODIFY_NODE_DESC) {
 		if (mutex_lock_interruptible(&to_mdev(ibdev)->cap_mask_mutex))
 			return -ERESTARTSYS;
+<<<<<<< HEAD
 		memcpy(ibdev->node_desc, props->node_desc, 64);
+=======
+		memcpy(ibdev->node_desc, props->node_desc,
+		       IB_DEVICE_NODE_DESC_MAX);
+>>>>>>> v4.9.227
 		mutex_unlock(&to_mdev(ibdev)->cap_mask_mutex);
 	}
 
@@ -641,16 +665,31 @@ static int mthca_destroy_qp(struct ib_qp *qp)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct ib_cq *mthca_create_cq(struct ib_device *ibdev, int entries,
 				     int comp_vector,
 				     struct ib_ucontext *context,
 				     struct ib_udata *udata)
 {
+=======
+static struct ib_cq *mthca_create_cq(struct ib_device *ibdev,
+				     const struct ib_cq_init_attr *attr,
+				     struct ib_ucontext *context,
+				     struct ib_udata *udata)
+{
+	int entries = attr->cqe;
+>>>>>>> v4.9.227
 	struct mthca_create_cq ucmd;
 	struct mthca_cq *cq;
 	int nent;
 	int err;
 
+<<<<<<< HEAD
+=======
+	if (attr->flags)
+		return ERR_PTR(-EINVAL);
+
+>>>>>>> v4.9.227
 	if (entries < 1 || entries > to_mdev(ibdev)->limits.max_cqes)
 		return ERR_PTR(-EINVAL);
 
@@ -890,6 +929,7 @@ static struct ib_mr *mthca_get_dma_mr(struct ib_pd *pd, int acc)
 	return &mr->ibmr;
 }
 
+<<<<<<< HEAD
 static struct ib_mr *mthca_reg_phys_mr(struct ib_pd       *pd,
 				       struct ib_phys_buf *buffer_list,
 				       int                 num_phys_buf,
@@ -973,6 +1013,8 @@ static struct ib_mr *mthca_reg_phys_mr(struct ib_pd       *pd,
 	return &mr->ibmr;
 }
 
+=======
+>>>>>>> v4.9.227
 static struct ib_mr *mthca_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
 				       u64 virt, int acc, struct ib_udata *udata)
 {
@@ -1156,6 +1198,7 @@ static ssize_t show_rev(struct device *device, struct device_attribute *attr,
 	return sprintf(buf, "%x\n", dev->rev_id);
 }
 
+<<<<<<< HEAD
 static ssize_t show_fw_ver(struct device *device, struct device_attribute *attr,
 			   char *buf)
 {
@@ -1166,6 +1209,8 @@ static ssize_t show_fw_ver(struct device *device, struct device_attribute *attr,
 		       (int) dev->fw_ver & 0xffff);
 }
 
+=======
+>>>>>>> v4.9.227
 static ssize_t show_hca(struct device *device, struct device_attribute *attr,
 			char *buf)
 {
@@ -1195,13 +1240,19 @@ static ssize_t show_board(struct device *device, struct device_attribute *attr,
 }
 
 static DEVICE_ATTR(hw_rev,   S_IRUGO, show_rev,    NULL);
+<<<<<<< HEAD
 static DEVICE_ATTR(fw_ver,   S_IRUGO, show_fw_ver, NULL);
+=======
+>>>>>>> v4.9.227
 static DEVICE_ATTR(hca_type, S_IRUGO, show_hca,    NULL);
 static DEVICE_ATTR(board_id, S_IRUGO, show_board,  NULL);
 
 static struct device_attribute *mthca_dev_attributes[] = {
 	&dev_attr_hw_rev,
+<<<<<<< HEAD
 	&dev_attr_fw_ver,
+=======
+>>>>>>> v4.9.227
 	&dev_attr_hca_type,
 	&dev_attr_board_id
 };
@@ -1225,7 +1276,11 @@ static int mthca_init_node_data(struct mthca_dev *dev)
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	memcpy(dev->ib_dev.node_desc, out_mad->data, 64);
+=======
+	memcpy(dev->ib_dev.node_desc, out_mad->data, IB_DEVICE_NODE_DESC_MAX);
+>>>>>>> v4.9.227
 
 	in_mad->attr_id = IB_SMP_ATTR_NODE_INFO;
 
@@ -1244,6 +1299,38 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static int mthca_port_immutable(struct ib_device *ibdev, u8 port_num,
+			        struct ib_port_immutable *immutable)
+{
+	struct ib_port_attr attr;
+	int err;
+
+	err = mthca_query_port(ibdev, port_num, &attr);
+	if (err)
+		return err;
+
+	immutable->pkey_tbl_len = attr.pkey_tbl_len;
+	immutable->gid_tbl_len = attr.gid_tbl_len;
+	immutable->core_cap_flags = RDMA_CORE_PORT_IBA_IB;
+	immutable->max_mad_size = IB_MGMT_MAD_SIZE;
+
+	return 0;
+}
+
+static void get_dev_fw_str(struct ib_device *device, char *str,
+			   size_t str_len)
+{
+	struct mthca_dev *dev =
+		container_of(device, struct mthca_dev, ib_dev);
+	snprintf(str, str_len, "%d.%d.%d",
+		 (int) (dev->fw_ver >> 32),
+		 (int) (dev->fw_ver >> 16) & 0xffff,
+		 (int) dev->fw_ver & 0xffff);
+}
+
+>>>>>>> v4.9.227
 int mthca_register_device(struct mthca_dev *dev)
 {
 	int ret;
@@ -1320,9 +1407,16 @@ int mthca_register_device(struct mthca_dev *dev)
 	dev->ib_dev.destroy_cq           = mthca_destroy_cq;
 	dev->ib_dev.poll_cq              = mthca_poll_cq;
 	dev->ib_dev.get_dma_mr           = mthca_get_dma_mr;
+<<<<<<< HEAD
 	dev->ib_dev.reg_phys_mr          = mthca_reg_phys_mr;
 	dev->ib_dev.reg_user_mr          = mthca_reg_user_mr;
 	dev->ib_dev.dereg_mr             = mthca_dereg_mr;
+=======
+	dev->ib_dev.reg_user_mr          = mthca_reg_user_mr;
+	dev->ib_dev.dereg_mr             = mthca_dereg_mr;
+	dev->ib_dev.get_port_immutable   = mthca_port_immutable;
+	dev->ib_dev.get_dev_fw_str       = get_dev_fw_str;
+>>>>>>> v4.9.227
 
 	if (dev->mthca_flags & MTHCA_FLAG_FMR) {
 		dev->ib_dev.alloc_fmr            = mthca_alloc_fmr;

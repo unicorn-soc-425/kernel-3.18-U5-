@@ -47,7 +47,11 @@
 				 STACK_FRAME_OVERHEAD + KERNEL_REDZONE_SIZE)
 #define STACK_FRAME_MARKER	12
 
+<<<<<<< HEAD
 #if defined(_CALL_ELF) && _CALL_ELF == 2
+=======
+#ifdef PPC64_ELF_ABI_v2
+>>>>>>> v4.9.227
 #define STACK_FRAME_MIN_SIZE	32
 #else
 #define STACK_FRAME_MIN_SIZE	STACK_FRAME_OVERHEAD

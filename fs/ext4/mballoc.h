@@ -23,6 +23,7 @@
 #include "ext4.h"
 
 /*
+<<<<<<< HEAD
  * with AGGRESSIVE_CHECK allocator runs consistency checks over
  * structures. these checks slow things down a lot
  */
@@ -35,10 +36,13 @@
 #define DOUBLE_CHECK__
 
 /*
+=======
+>>>>>>> v4.9.227
  */
 #ifdef CONFIG_EXT4_DEBUG
 extern ushort ext4_mballoc_debug;
 
+<<<<<<< HEAD
 #define mb_debug(n, fmt, a...)	                                        \
 	do {								\
 		if ((n) <= ext4_mballoc_debug) {		        \
@@ -49,6 +53,17 @@ extern ushort ext4_mballoc_debug;
 	} while (0)
 #else
 #define mb_debug(n, fmt, a...)		no_printk(fmt, ## a)
+=======
+#define mb_debug(n, fmt, ...)	                                        \
+do {									\
+	if ((n) <= ext4_mballoc_debug) {				\
+		printk(KERN_DEBUG "(%s, %d): %s: " fmt,			\
+		       __FILE__, __LINE__, __func__, ##__VA_ARGS__);	\
+	}								\
+} while (0)
+#else
+#define mb_debug(n, fmt, ...)	no_printk(fmt, ##__VA_ARGS__)
+>>>>>>> v4.9.227
 #endif
 
 #define EXT4_MB_HISTORY_ALLOC		1	/* allocation */
@@ -91,8 +106,15 @@ extern ushort ext4_mballoc_debug;
 
 
 struct ext4_free_data {
+<<<<<<< HEAD
 	/* this links the free block information from sb_info */
 	struct list_head		efd_list;
+=======
+	/* MUST be the first member */
+	struct ext4_journal_cb_entry	efd_jce;
+
+	/* ext4_free_data private data starts from here */
+>>>>>>> v4.9.227
 
 	/* this links the free block information from group_info */
 	struct rb_node			efd_node;

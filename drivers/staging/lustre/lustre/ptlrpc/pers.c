@@ -15,17 +15,26 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
 /*
  * Copyright (c) 2004, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
+<<<<<<< HEAD
+=======
+ *
+ * Copyright (c) 2014, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -42,7 +51,10 @@
 
 #include "ptlrpc_internal.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 void ptlrpc_fill_bulk_md(lnet_md_t *md, struct ptlrpc_bulk_desc *desc,
 			 int mdidx)
 {
@@ -67,9 +79,15 @@ void ptlrpc_add_bulk_page(struct ptlrpc_bulk_desc *desc, struct page *page,
 {
 	lnet_kiov_t *kiov = &desc->bd_iov[desc->bd_iov_count];
 
+<<<<<<< HEAD
 	kiov->kiov_page = page;
 	kiov->kiov_offset = pageoffset;
 	kiov->kiov_len = len;
+=======
+	kiov->bv_page = page;
+	kiov->bv_offset = pageoffset;
+	kiov->bv_len = len;
+>>>>>>> v4.9.227
 
 	desc->bd_iov_count++;
 }

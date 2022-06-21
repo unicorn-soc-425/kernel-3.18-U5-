@@ -152,7 +152,11 @@ static int da9052_backlight_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_device_id da9052_wled_ids[] = {
+=======
+static const struct platform_device_id da9052_wled_ids[] = {
+>>>>>>> v4.9.227
 	{
 		.name		= "da9052-wled1",
 		.driver_data	= DA9052_TYPE_WLED1,
@@ -165,6 +169,10 @@ static struct platform_device_id da9052_wled_ids[] = {
 		.name		= "da9052-wled3",
 		.driver_data	= DA9052_TYPE_WLED3,
 	},
+<<<<<<< HEAD
+=======
+	{ },
+>>>>>>> v4.9.227
 };
 
 static struct platform_driver da9052_wled_driver = {

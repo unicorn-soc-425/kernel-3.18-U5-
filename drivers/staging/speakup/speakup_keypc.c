@@ -13,10 +13,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> v4.9.227
  * specificly written as a driver for the speakup screenreview
  * package it's not a general device driver.
  * This driver is for the Keynote Gold internal synthesizer.
@@ -229,7 +232,11 @@ spin_lock_irqsave(&speakup_info.spinlock, flags);
 			ch = PROCSPEECH;
 		outb_p(ch, synth_port);
 		SWAIT;
+<<<<<<< HEAD
 		if ((jiffies >= jiff_max) && (ch == SPACE)) {
+=======
+		if (time_after_eq(jiffies, jiff_max) && (ch == SPACE)) {
+>>>>>>> v4.9.227
 			timeout = 1000;
 			while (synth_writable())
 				if (--timeout <= 0)
@@ -319,6 +326,7 @@ module_param_named(start, synth_keypc.startup, short, S_IRUGO);
 MODULE_PARM_DESC(port, "Set the port for the synthesizer (override probing).");
 MODULE_PARM_DESC(start, "Start the synthesizer once it is loaded.");
 
+<<<<<<< HEAD
 static int __init keypc_init(void)
 {
 	return synth_add(&synth_keypc);
@@ -331,6 +339,10 @@ static void __exit keypc_exit(void)
 
 module_init(keypc_init);
 module_exit(keypc_exit);
+=======
+module_spk_synth(synth_keypc);
+
+>>>>>>> v4.9.227
 MODULE_AUTHOR("David Borowski");
 MODULE_DESCRIPTION("Speakup support for Keynote Gold PC synthesizers");
 MODULE_LICENSE("GPL");

@@ -38,8 +38,15 @@ struct class;
 struct subsys_private;
 struct bus_type;
 struct device_node;
+<<<<<<< HEAD
 struct iommu_ops;
 struct iommu_group;
+=======
+struct fwnode_handle;
+struct iommu_ops;
+struct iommu_group;
+struct iommu_fwspec;
+>>>>>>> v4.9.227
 
 struct bus_attribute {
 	struct attribute	attr;
@@ -69,8 +76,16 @@ extern void bus_remove_file(struct bus_type *, struct bus_attribute *);
  * @dev_groups:	Default attributes of the devices on the bus.
  * @drv_groups: Default attributes of the device drivers on the bus.
  * @match:	Called, perhaps multiple times, whenever a new device or driver
+<<<<<<< HEAD
  *		is added for this bus. It should return a nonzero value if the
  *		given device can be handled by the given driver.
+=======
+ *		is added for this bus. It should return a positive value if the
+ *		given device can be handled by the given driver and zero
+ *		otherwise. It may also return error code if determining that
+ *		the driver supports the device is not possible. In case of
+ *		-EPROBE_DEFER it will queue the device for deferred probing.
+>>>>>>> v4.9.227
  * @uevent:	Called when a device is added, removed, or a few other things
  *		that generate uevents to add the environment variables.
  * @probe:	Called when a new device or driver add to this bus, and callback
@@ -190,6 +205,10 @@ extern int bus_unregister_notifier(struct bus_type *bus,
 						      unbound */
 #define BUS_NOTIFY_UNBOUND_DRIVER	0x00000007 /* driver is unbound
 						      from the device */
+<<<<<<< HEAD
+=======
+#define BUS_NOTIFY_DRIVER_NOT_BOUND	0x00000008 /* driver fails to be bound */
+>>>>>>> v4.9.227
 
 extern struct kset *bus_get_kset(struct bus_type *bus);
 extern struct klist *bus_get_device_klist(struct bus_type *bus);
@@ -340,7 +359,11 @@ struct subsys_interface {
 	struct bus_type *subsys;
 	struct list_head node;
 	int (*add_dev)(struct device *dev, struct subsys_interface *sif);
+<<<<<<< HEAD
 	int (*remove_dev)(struct device *dev, struct subsys_interface *sif);
+=======
+	void (*remove_dev)(struct device *dev, struct subsys_interface *sif);
+>>>>>>> v4.9.227
 };
 
 int subsys_interface_register(struct subsys_interface *sif);
@@ -367,6 +390,10 @@ int subsys_virtual_register(struct bus_type *subsys,
  * @suspend:	Used to put the device to sleep mode, usually to a low power
  *		state.
  * @resume:	Used to bring the device from the sleep mode.
+<<<<<<< HEAD
+=======
+ * @shutdown:	Called at shut-down time to quiesce the device.
+>>>>>>> v4.9.227
  * @ns_type:	Callbacks so sysfs can detemine namespaces.
  * @namespace:	Namespace of the device belongs to this class.
  * @pm:		The default device power management operations of this class.
@@ -395,6 +422,10 @@ struct class {
 
 	int (*suspend)(struct device *dev, pm_message_t state);
 	int (*resume)(struct device *dev);
+<<<<<<< HEAD
+=======
+	int (*shutdown)(struct device *dev);
+>>>>>>> v4.9.227
 
 	const struct kobj_ns_type_operations *ns_type;
 	const void *(*namespace)(struct device *dev);
@@ -603,6 +634,7 @@ typedef void (*dr_release_t)(struct device *dev, void *res);
 typedef int (*dr_match_t)(struct device *dev, void *res, void *match_data);
 
 #ifdef CONFIG_DEBUG_DEVRES
+<<<<<<< HEAD
 extern void *__devres_alloc(dr_release_t release, size_t size, gfp_t gfp,
 			     const char *name);
 #define devres_alloc(release, size, gfp) \
@@ -610,6 +642,23 @@ extern void *__devres_alloc(dr_release_t release, size_t size, gfp_t gfp,
 #else
 extern void *devres_alloc(dr_release_t release, size_t size, gfp_t gfp);
 #endif
+=======
+extern void *__devres_alloc_node(dr_release_t release, size_t size, gfp_t gfp,
+				 int nid, const char *name) __malloc;
+#define devres_alloc(release, size, gfp) \
+	__devres_alloc_node(release, size, gfp, NUMA_NO_NODE, #release)
+#define devres_alloc_node(release, size, gfp, nid) \
+	__devres_alloc_node(release, size, gfp, nid, #release)
+#else
+extern void *devres_alloc_node(dr_release_t release, size_t size, gfp_t gfp,
+			       int nid) __malloc;
+static inline void *devres_alloc(dr_release_t release, size_t size, gfp_t gfp)
+{
+	return devres_alloc_node(release, size, gfp, NUMA_NO_NODE);
+}
+#endif
+
+>>>>>>> v4.9.227
 extern void devres_for_each_res(struct device *dev, dr_release_t release,
 				dr_match_t match, void *match_data,
 				void (*fn)(struct device *, void *, void *),
@@ -635,11 +684,20 @@ extern void devres_remove_group(struct device *dev, void *id);
 extern int devres_release_group(struct device *dev, void *id);
 
 /* managed devm_k.alloc/kfree for device drivers */
+<<<<<<< HEAD
 extern void *devm_kmalloc(struct device *dev, size_t size, gfp_t gfp);
 extern char *devm_kvasprintf(struct device *dev, gfp_t gfp, const char *fmt,
 			     va_list ap);
 extern __printf(3, 4)
 char *devm_kasprintf(struct device *dev, gfp_t gfp, const char *fmt, ...);
+=======
+extern void *devm_kmalloc(struct device *dev, size_t size, gfp_t gfp) __malloc;
+extern __printf(3, 0)
+char *devm_kvasprintf(struct device *dev, gfp_t gfp, const char *fmt,
+		      va_list ap) __malloc;
+extern __printf(3, 4)
+char *devm_kasprintf(struct device *dev, gfp_t gfp, const char *fmt, ...) __malloc;
+>>>>>>> v4.9.227
 static inline void *devm_kzalloc(struct device *dev, size_t size, gfp_t gfp)
 {
 	return devm_kmalloc(dev, size, gfp | __GFP_ZERO);
@@ -657,7 +715,11 @@ static inline void *devm_kcalloc(struct device *dev,
 	return devm_kmalloc_array(dev, n, size, flags | __GFP_ZERO);
 }
 extern void devm_kfree(struct device *dev, void *p);
+<<<<<<< HEAD
 extern char *devm_kstrdup(struct device *dev, const char *s, gfp_t gfp);
+=======
+extern char *devm_kstrdup(struct device *dev, const char *s, gfp_t gfp) __malloc;
+>>>>>>> v4.9.227
 extern void *devm_kmemdup(struct device *dev, const void *src, size_t len,
 			  gfp_t gfp);
 
@@ -665,12 +727,32 @@ extern unsigned long devm_get_free_pages(struct device *dev,
 					 gfp_t gfp_mask, unsigned int order);
 extern void devm_free_pages(struct device *dev, unsigned long addr);
 
+<<<<<<< HEAD
 void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
+=======
+void __iomem *devm_ioremap_resource(struct device *dev,
+				    const struct resource *res);
+>>>>>>> v4.9.227
 
 /* allows to add/remove a custom action to devres stack */
 int devm_add_action(struct device *dev, void (*action)(void *), void *data);
 void devm_remove_action(struct device *dev, void (*action)(void *), void *data);
 
+<<<<<<< HEAD
+=======
+static inline int devm_add_action_or_reset(struct device *dev,
+					   void (*action)(void *), void *data)
+{
+	int ret;
+
+	ret = devm_add_action(dev, action, data);
+	if (ret)
+		action(data);
+
+	return ret;
+}
+
+>>>>>>> v4.9.227
 struct device_dma_parameters {
 	/*
 	 * a low level driver may set these to teach IOMMU code about
@@ -680,6 +762,7 @@ struct device_dma_parameters {
 	unsigned long segment_boundary_mask;
 };
 
+<<<<<<< HEAD
 struct acpi_device;
 
 struct acpi_dev_node {
@@ -688,6 +771,8 @@ struct acpi_dev_node {
 #endif
 };
 
+=======
+>>>>>>> v4.9.227
 /**
  * struct device - The basic device structure
  * @parent:	The device's "parent" device, the device to which it is attached.
@@ -720,6 +805,10 @@ struct acpi_dev_node {
  * 		along with subsystem-level and driver-level callbacks.
  * @pins:	For device pin management.
  *		See Documentation/pinctrl.txt for details.
+<<<<<<< HEAD
+=======
+ * @msi_list:	Hosts MSI descriptors
+>>>>>>> v4.9.227
  * @msi_domain: The generic MSI domain this device is using.
  * @numa_node:	NUMA node this device is close to.
  * @dma_mask:	Dma mask (if dma'ble device).
@@ -734,7 +823,11 @@ struct acpi_dev_node {
  * @cma_area:	Contiguous memory area for dma allocations
  * @archdata:	For arch-specific additions.
  * @of_node:	Associated device tree node.
+<<<<<<< HEAD
  * @acpi_node:	Associated ACPI device node.
+=======
+ * @fwnode:	Associated device node supplied by platform firmware.
+>>>>>>> v4.9.227
  * @devt:	For creating the sysfs "dev".
  * @id:		device instance
  * @devres_lock: Spinlock to protect the resource of the device.
@@ -746,6 +839,10 @@ struct acpi_dev_node {
  * 		gone away. This should be set by the allocator of the
  * 		device (i.e. the bus driver that discovered the device).
  * @iommu_group: IOMMU group the device belongs to.
+<<<<<<< HEAD
+=======
+ * @iommu_fwspec: IOMMU-specific properties supplied by firmware.
+>>>>>>> v4.9.227
  *
  * @offline_disabled: If set, the device is permanently online.
  * @offline:	Set after successful invocation of bus type's .offline().
@@ -787,6 +884,12 @@ struct device {
 #ifdef CONFIG_PINCTRL
 	struct dev_pin_info	*pins;
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_GENERIC_MSI_IRQ
+	struct list_head	msi_list;
+#endif
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_NUMA
 	int		numa_node;	/* NUMA node this device is close to */
@@ -809,12 +912,19 @@ struct device {
 	struct cma *cma_area;		/* contiguous memory area for dma
 					   allocations */
 #endif
+<<<<<<< HEAD
 	struct removed_region *removed_mem;
+=======
+>>>>>>> v4.9.227
 	/* arch specific additions */
 	struct dev_archdata	archdata;
 
 	struct device_node	*of_node; /* associated device tree node */
+<<<<<<< HEAD
 	struct acpi_dev_node	acpi_node; /* associated ACPI device node */
+=======
+	struct fwnode_handle	*fwnode; /* firmware device node */
+>>>>>>> v4.9.227
 
 	dev_t			devt;	/* dev_t, creates the sysfs "dev" */
 	u32			id;	/* device instance */
@@ -828,6 +938,10 @@ struct device {
 
 	void	(*release)(struct device *dev);
 	struct iommu_group	*iommu_group;
+<<<<<<< HEAD
+=======
+	struct iommu_fwspec	*iommu_fwspec;
+>>>>>>> v4.9.227
 
 	bool			offline_disabled:1;
 	bool			offline:1;
@@ -935,11 +1049,14 @@ static inline bool device_async_suspend_enabled(struct device *dev)
 	return !!dev->power.async_suspend;
 }
 
+<<<<<<< HEAD
 static inline void pm_suspend_ignore_children(struct device *dev, bool enable)
 {
 	dev->power.ignore_children = enable;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void dev_pm_syscore_device(struct device *dev, bool val)
 {
 #ifdef CONFIG_PM_SLEEP
@@ -952,6 +1069,14 @@ static inline void device_lock(struct device *dev)
 	mutex_lock(&dev->mutex);
 }
 
+<<<<<<< HEAD
+=======
+static inline int device_lock_interruptible(struct device *dev)
+{
+	return mutex_lock_interruptible(&dev->mutex);
+}
+
+>>>>>>> v4.9.227
 static inline int device_trylock(struct device *dev)
 {
 	return mutex_trylock(&dev->mutex);
@@ -962,6 +1087,21 @@ static inline void device_unlock(struct device *dev)
 	mutex_unlock(&dev->mutex);
 }
 
+<<<<<<< HEAD
+=======
+static inline void device_lock_assert(struct device *dev)
+{
+	lockdep_assert_held(&dev->mutex);
+}
+
+static inline struct device_node *dev_of_node(struct device *dev)
+{
+	if (!IS_ENABLED(CONFIG_OF))
+		return NULL;
+	return dev->of_node;
+}
+
+>>>>>>> v4.9.227
 void driver_init(void);
 
 /*
@@ -974,6 +1114,11 @@ extern int __must_check device_add(struct device *dev);
 extern void device_del(struct device *dev);
 extern int device_for_each_child(struct device *dev, void *data,
 		     int (*fn)(struct device *dev, void *data));
+<<<<<<< HEAD
+=======
+extern int device_for_each_child_reverse(struct device *dev, void *data,
+		     int (*fn)(struct device *dev, void *data));
+>>>>>>> v4.9.227
 extern struct device *device_find_child(struct device *dev, void *data,
 				int (*match)(struct device *dev, void *data));
 extern int device_rename(struct device *dev, const char *new_name);
@@ -993,6 +1138,12 @@ extern void unlock_device_hotplug(void);
 extern int lock_device_hotplug_sysfs(void);
 extern int device_offline(struct device *dev);
 extern int device_online(struct device *dev);
+<<<<<<< HEAD
+=======
+extern void set_primary_fwnode(struct device *dev, struct fwnode_handle *fwnode);
+extern void set_secondary_fwnode(struct device *dev, struct fwnode_handle *fwnode);
+
+>>>>>>> v4.9.227
 /*
  * Root device objects for grouping under /sys/devices
  */
@@ -1021,6 +1172,7 @@ extern int __must_check driver_attach(struct device_driver *drv);
 extern void device_initial_probe(struct device *dev);
 extern int __must_check device_reprobe(struct device *dev);
 
+<<<<<<< HEAD
 /*
  * Easy functions for dynamically creating devices on the fly
  */
@@ -1030,6 +1182,17 @@ extern struct device *device_create_vargs(struct class *cls,
 					  void *drvdata,
 					  const char *fmt,
 					  va_list vargs);
+=======
+extern bool device_is_bound(struct device *dev);
+
+/*
+ * Easy functions for dynamically creating devices on the fly
+ */
+extern __printf(5, 0)
+struct device *device_create_vargs(struct class *cls, struct device *parent,
+				   dev_t devt, void *drvdata,
+				   const char *fmt, va_list vargs);
+>>>>>>> v4.9.227
 extern __printf(5, 6)
 struct device *device_create(struct class *cls, struct device *parent,
 			     dev_t devt, void *drvdata,
@@ -1085,6 +1248,7 @@ extern __printf(3, 4)
 int dev_printk_emit(int level, const struct device *dev, const char *fmt, ...);
 
 extern __printf(3, 4)
+<<<<<<< HEAD
 int dev_printk(const char *level, const struct device *dev,
 	       const char *fmt, ...);
 extern __printf(2, 3)
@@ -1101,6 +1265,24 @@ extern __printf(2, 3)
 int dev_notice(const struct device *dev, const char *fmt, ...);
 extern __printf(2, 3)
 int _dev_info(const struct device *dev, const char *fmt, ...);
+=======
+void dev_printk(const char *level, const struct device *dev,
+		const char *fmt, ...);
+extern __printf(2, 3)
+void dev_emerg(const struct device *dev, const char *fmt, ...);
+extern __printf(2, 3)
+void dev_alert(const struct device *dev, const char *fmt, ...);
+extern __printf(2, 3)
+void dev_crit(const struct device *dev, const char *fmt, ...);
+extern __printf(2, 3)
+void dev_err(const struct device *dev, const char *fmt, ...);
+extern __printf(2, 3)
+void dev_warn(const struct device *dev, const char *fmt, ...);
+extern __printf(2, 3)
+void dev_notice(const struct device *dev, const char *fmt, ...);
+extern __printf(2, 3)
+void _dev_info(const struct device *dev, const char *fmt, ...);
+>>>>>>> v4.9.227
 
 #else
 
@@ -1112,6 +1294,7 @@ static inline __printf(3, 4)
 int dev_printk_emit(int level, const struct device *dev, const char *fmt, ...)
 { return 0; }
 
+<<<<<<< HEAD
 static inline int __dev_printk(const char *level, const struct device *dev,
 			       struct va_format *vaf)
 { return 0; }
@@ -1141,6 +1324,37 @@ int dev_notice(const struct device *dev, const char *fmt, ...)
 static inline __printf(2, 3)
 int _dev_info(const struct device *dev, const char *fmt, ...)
 { return 0; }
+=======
+static inline void __dev_printk(const char *level, const struct device *dev,
+				struct va_format *vaf)
+{}
+static inline __printf(3, 4)
+void dev_printk(const char *level, const struct device *dev,
+		const char *fmt, ...)
+{}
+
+static inline __printf(2, 3)
+void dev_emerg(const struct device *dev, const char *fmt, ...)
+{}
+static inline __printf(2, 3)
+void dev_crit(const struct device *dev, const char *fmt, ...)
+{}
+static inline __printf(2, 3)
+void dev_alert(const struct device *dev, const char *fmt, ...)
+{}
+static inline __printf(2, 3)
+void dev_err(const struct device *dev, const char *fmt, ...)
+{}
+static inline __printf(2, 3)
+void dev_warn(const struct device *dev, const char *fmt, ...)
+{}
+static inline __printf(2, 3)
+void dev_notice(const struct device *dev, const char *fmt, ...)
+{}
+static inline __printf(2, 3)
+void _dev_info(const struct device *dev, const char *fmt, ...)
+{}
+>>>>>>> v4.9.227
 
 #endif
 
@@ -1166,10 +1380,51 @@ do {						     \
 ({								\
 	if (0)							\
 		dev_printk(KERN_DEBUG, dev, format, ##arg);	\
+<<<<<<< HEAD
 	0;							\
 })
 #endif
 
+=======
+})
+#endif
+
+#ifdef CONFIG_PRINTK
+#define dev_level_once(dev_level, dev, fmt, ...)			\
+do {									\
+	static bool __print_once __read_mostly;				\
+									\
+	if (!__print_once) {						\
+		__print_once = true;					\
+		dev_level(dev, fmt, ##__VA_ARGS__);			\
+	}								\
+} while (0)
+#else
+#define dev_level_once(dev_level, dev, fmt, ...)			\
+do {									\
+	if (0)								\
+		dev_level(dev, fmt, ##__VA_ARGS__);			\
+} while (0)
+#endif
+
+#define dev_emerg_once(dev, fmt, ...)					\
+	dev_level_once(dev_emerg, dev, fmt, ##__VA_ARGS__)
+#define dev_alert_once(dev, fmt, ...)					\
+	dev_level_once(dev_alert, dev, fmt, ##__VA_ARGS__)
+#define dev_crit_once(dev, fmt, ...)					\
+	dev_level_once(dev_crit, dev, fmt, ##__VA_ARGS__)
+#define dev_err_once(dev, fmt, ...)					\
+	dev_level_once(dev_err, dev, fmt, ##__VA_ARGS__)
+#define dev_warn_once(dev, fmt, ...)					\
+	dev_level_once(dev_warn, dev, fmt, ##__VA_ARGS__)
+#define dev_notice_once(dev, fmt, ...)					\
+	dev_level_once(dev_notice, dev, fmt, ##__VA_ARGS__)
+#define dev_info_once(dev, fmt, ...)					\
+	dev_level_once(dev_info, dev, fmt, ##__VA_ARGS__)
+#define dev_dbg_once(dev, fmt, ...)					\
+	dev_level_once(dev_dbg, dev, fmt, ##__VA_ARGS__)
+
+>>>>>>> v4.9.227
 #define dev_level_ratelimited(dev_level, dev, fmt, ...)			\
 do {									\
 	static DEFINE_RATELIMIT_STATE(_rs,				\
@@ -1216,8 +1471,16 @@ do {									\
 		dev_printk(KERN_DEBUG, dev, fmt, ##__VA_ARGS__);	\
 } while (0)
 #else
+<<<<<<< HEAD
 #define dev_dbg_ratelimited(dev, fmt, ...)			\
 	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+=======
+#define dev_dbg_ratelimited(dev, fmt, ...)				\
+do {									\
+	if (0)								\
+		dev_printk(KERN_DEBUG, dev, fmt, ##__VA_ARGS__);	\
+} while (0)
+>>>>>>> v4.9.227
 #endif
 
 #ifdef VERBOSE_DEBUG
@@ -1227,7 +1490,10 @@ do {									\
 ({								\
 	if (0)							\
 		dev_printk(KERN_DEBUG, dev, format, ##arg);	\
+<<<<<<< HEAD
 	0;							\
+=======
+>>>>>>> v4.9.227
 })
 #endif
 
@@ -1280,4 +1546,29 @@ static void __exit __driver##_exit(void) \
 } \
 module_exit(__driver##_exit);
 
+<<<<<<< HEAD
+=======
+/**
+ * builtin_driver() - Helper macro for drivers that don't do anything
+ * special in init and have no exit. This eliminates some boilerplate.
+ * Each driver may only use this macro once, and calling it replaces
+ * device_initcall (or in some cases, the legacy __initcall).  This is
+ * meant to be a direct parallel of module_driver() above but without
+ * the __exit stuff that is not used for builtin cases.
+ *
+ * @__driver: driver name
+ * @__register: register function for this driver type
+ * @...: Additional arguments to be passed to __register
+ *
+ * Use this macro to construct bus specific macros for registering
+ * drivers, and do not use it on its own.
+ */
+#define builtin_driver(__driver, __register, ...) \
+static int __init __driver##_init(void) \
+{ \
+	return __register(&(__driver) , ##__VA_ARGS__); \
+} \
+device_initcall(__driver##_init);
+
+>>>>>>> v4.9.227
 #endif /* _DEVICE_H_ */

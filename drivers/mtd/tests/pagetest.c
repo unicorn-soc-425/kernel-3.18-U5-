@@ -127,13 +127,20 @@ static int crosstest(void)
 	unsigned char *pp1, *pp2, *pp3, *pp4;
 
 	pr_info("crosstest\n");
+<<<<<<< HEAD
 	pp1 = kmalloc(pgsize * 4, GFP_KERNEL);
+=======
+	pp1 = kzalloc(pgsize * 4, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!pp1)
 		return -ENOMEM;
 	pp2 = pp1 + pgsize;
 	pp3 = pp2 + pgsize;
 	pp4 = pp3 + pgsize;
+<<<<<<< HEAD
 	memset(pp1, 0, pgsize * 4);
+=======
+>>>>>>> v4.9.227
 
 	addr0 = 0;
 	for (i = 0; i < ebcnt && bbt[i]; ++i)
@@ -239,7 +246,11 @@ static int erasecrosstest(void)
 	if (memcmp(writebuf, readbuf, pgsize)) {
 		pr_err("verify failed!\n");
 		errcnt += 1;
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return -1;
+>>>>>>> v4.9.227
 	}
 
 	pr_info("erasing block %d\n", ebnum);
@@ -269,7 +280,11 @@ static int erasecrosstest(void)
 	if (memcmp(writebuf, readbuf, pgsize)) {
 		pr_err("verify failed!\n");
 		errcnt += 1;
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return -1;
+>>>>>>> v4.9.227
 	}
 
 	if (!err)
@@ -329,6 +344,7 @@ static int erasetest(void)
 	return err;
 }
 
+<<<<<<< HEAD
 static int erase_neighbor_check(int ebnum, int ebnum2, loff_t addr0)
 {
 	int err = 0;
@@ -425,6 +441,8 @@ static int erase_neighbour_test(void)
 }
 
 
+=======
+>>>>>>> v4.9.227
 static int __init mtd_pagetest_init(void)
 {
 	int err = 0;
@@ -503,7 +521,14 @@ static int __init mtd_pagetest_init(void)
 			goto out;
 		if (i % 256 == 0)
 			pr_info("written up to eraseblock %u\n", i);
+<<<<<<< HEAD
 		cond_resched();
+=======
+
+		err = mtdtest_relax();
+		if (err)
+			goto out;
+>>>>>>> v4.9.227
 	}
 	pr_info("written %u eraseblocks\n", i);
 
@@ -518,7 +543,14 @@ static int __init mtd_pagetest_init(void)
 			goto out;
 		if (i % 256 == 0)
 			pr_info("verified up to eraseblock %u\n", i);
+<<<<<<< HEAD
 		cond_resched();
+=======
+
+		err = mtdtest_relax();
+		if (err)
+			goto out;
+>>>>>>> v4.9.227
 	}
 	pr_info("verified %u eraseblocks\n", i);
 
@@ -534,10 +566,13 @@ static int __init mtd_pagetest_init(void)
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	err = erase_neighbour_test();
 	if (err)
 		goto out;
 
+=======
+>>>>>>> v4.9.227
 	pr_info("finished with %d errors\n", errcnt);
 out:
 

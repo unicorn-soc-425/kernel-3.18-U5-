@@ -361,7 +361,11 @@ static int ext4_ext_swap_inode_data(handle_t *handle, struct inode *inode,
 	 * blocks.
 	 *
 	 * While converting to extents we need not
+<<<<<<< HEAD
 	 * update the orignal inode i_blocks for extent blocks
+=======
+	 * update the original inode i_blocks for extent blocks
+>>>>>>> v4.9.227
 	 * via quota APIs. The quota update happened via tmp_inode already.
 	 */
 	spin_lock(&inode->i_lock);
@@ -434,6 +438,10 @@ static int free_ext_block(handle_t *handle, struct inode *inode)
 
 int ext4_ext_migrate(struct inode *inode)
 {
+<<<<<<< HEAD
+=======
+	struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
+>>>>>>> v4.9.227
 	handle_t *handle;
 	int retval = 0, i;
 	__le32 *i_data;
@@ -448,8 +456,12 @@ int ext4_ext_migrate(struct inode *inode)
 	 * If the filesystem does not support extents, or the inode
 	 * already is extent-based, error out.
 	 */
+<<<<<<< HEAD
 	if (!EXT4_HAS_INCOMPAT_FEATURE(inode->i_sb,
 				       EXT4_FEATURE_INCOMPAT_EXTENTS) ||
+=======
+	if (!ext4_has_feature_extents(inode->i_sb) ||
+>>>>>>> v4.9.227
 	    (ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)))
 		return -EINVAL;
 
@@ -459,6 +471,11 @@ int ext4_ext_migrate(struct inode *inode)
 		 */
 		return retval;
 
+<<<<<<< HEAD
+=======
+	percpu_down_write(&sbi->s_writepages_rwsem);
+
+>>>>>>> v4.9.227
 	/*
 	 * Worst case we can touch the allocation bitmaps, a bgd
 	 * block, and a block to link in the orphan list.  We do need
@@ -469,18 +486,30 @@ int ext4_ext_migrate(struct inode *inode)
 
 	if (IS_ERR(handle)) {
 		retval = PTR_ERR(handle);
+<<<<<<< HEAD
 		return retval;
+=======
+		goto out_unlock;
+>>>>>>> v4.9.227
 	}
 	goal = (((inode->i_ino - 1) / EXT4_INODES_PER_GROUP(inode->i_sb)) *
 		EXT4_INODES_PER_GROUP(inode->i_sb)) + 1;
 	owner[0] = i_uid_read(inode);
 	owner[1] = i_gid_read(inode);
+<<<<<<< HEAD
 	tmp_inode = ext4_new_inode(handle, inode->i_sb->s_root->d_inode,
+=======
+	tmp_inode = ext4_new_inode(handle, d_inode(inode->i_sb->s_root),
+>>>>>>> v4.9.227
 				   S_IFREG, NULL, goal, owner);
 	if (IS_ERR(tmp_inode)) {
 		retval = PTR_ERR(tmp_inode);
 		ext4_journal_stop(handle);
+<<<<<<< HEAD
 		return retval;
+=======
+		goto out_unlock;
+>>>>>>> v4.9.227
 	}
 	i_size_write(tmp_inode, i_size_read(inode));
 	/*
@@ -522,7 +551,11 @@ int ext4_ext_migrate(struct inode *inode)
 		 */
 		ext4_orphan_del(NULL, tmp_inode);
 		retval = PTR_ERR(handle);
+<<<<<<< HEAD
 		goto out;
+=======
+		goto out_tmp_inode;
+>>>>>>> v4.9.227
 	}
 
 	ei = EXT4_I(inode);
@@ -592,7 +625,11 @@ err_out:
 
 	/*
 	 * set the  i_blocks count to zero
+<<<<<<< HEAD
 	 * so that the ext4_delete_inode does the
+=======
+	 * so that the ext4_evict_inode() does the
+>>>>>>> v4.9.227
 	 * right job
 	 *
 	 * We don't need to take the i_lock because
@@ -603,10 +640,18 @@ err_out:
 	/* Reset the extent details */
 	ext4_ext_tree_init(handle, tmp_inode);
 	ext4_journal_stop(handle);
+<<<<<<< HEAD
 out:
 	unlock_new_inode(tmp_inode);
 	iput(tmp_inode);
 
+=======
+out_tmp_inode:
+	unlock_new_inode(tmp_inode);
+	iput(tmp_inode);
+out_unlock:
+	percpu_up_write(&sbi->s_writepages_rwsem);
+>>>>>>> v4.9.227
 	return retval;
 }
 
@@ -616,7 +661,12 @@ out:
 int ext4_ind_migrate(struct inode *inode)
 {
 	struct ext4_extent_header	*eh;
+<<<<<<< HEAD
 	struct ext4_super_block		*es = EXT4_SB(inode->i_sb)->s_es;
+=======
+	struct ext4_sb_info		*sbi = EXT4_SB(inode->i_sb);
+	struct ext4_super_block		*es = sbi->s_es;
+>>>>>>> v4.9.227
 	struct ext4_inode_info		*ei = EXT4_I(inode);
 	struct ext4_extent		*ex;
 	unsigned int			i, len;
@@ -625,6 +675,7 @@ int ext4_ind_migrate(struct inode *inode)
 	handle_t			*handle;
 	int				ret;
 
+<<<<<<< HEAD
 	if (!EXT4_HAS_INCOMPAT_FEATURE(inode->i_sb,
 				       EXT4_FEATURE_INCOMPAT_EXTENTS) ||
 	    (!ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)))
@@ -632,6 +683,13 @@ int ext4_ind_migrate(struct inode *inode)
 
 	if (EXT4_HAS_RO_COMPAT_FEATURE(inode->i_sb,
 				       EXT4_FEATURE_RO_COMPAT_BIGALLOC))
+=======
+	if (!ext4_has_feature_extents(inode->i_sb) ||
+	    (!ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)))
+		return -EINVAL;
+
+	if (ext4_has_feature_bigalloc(inode->i_sb))
+>>>>>>> v4.9.227
 		return -EOPNOTSUPP;
 
 	/*
@@ -642,9 +700,19 @@ int ext4_ind_migrate(struct inode *inode)
 	if (test_opt(inode->i_sb, DELALLOC))
 		ext4_alloc_da_blocks(inode);
 
+<<<<<<< HEAD
 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE, 1);
 	if (IS_ERR(handle))
 		return PTR_ERR(handle);
+=======
+	percpu_down_write(&sbi->s_writepages_rwsem);
+
+	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE, 1);
+	if (IS_ERR(handle)) {
+		ret = PTR_ERR(handle);
+		goto out_unlock;
+	}
+>>>>>>> v4.9.227
 
 	down_write(&EXT4_I(inode)->i_data_sem);
 	ret = ext4_ext_check_inode(inode);
@@ -679,5 +747,10 @@ int ext4_ind_migrate(struct inode *inode)
 errout:
 	ext4_journal_stop(handle);
 	up_write(&EXT4_I(inode)->i_data_sem);
+<<<<<<< HEAD
+=======
+out_unlock:
+	percpu_up_write(&sbi->s_writepages_rwsem);
+>>>>>>> v4.9.227
 	return ret;
 }

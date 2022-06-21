@@ -30,11 +30,18 @@
 #define VENC_SECOND_FIELD	BIT(2)
 
 struct venc_platform_data {
+<<<<<<< HEAD
 	int (*setup_pinmux)(enum v4l2_mbus_pixelcode if_type,
 			    int field);
 	int (*setup_clock)(enum vpbe_enc_timings_type type,
 			   unsigned int pixclock);
 	int (*setup_if_config)(enum v4l2_mbus_pixelcode pixcode);
+=======
+	int (*setup_pinmux)(u32 if_type, int field);
+	int (*setup_clock)(enum vpbe_enc_timings_type type,
+			   unsigned int pixclock);
+	int (*setup_if_config)(u32 pixcode);
+>>>>>>> v4.9.227
 	/* Number of LCD outputs supported */
 	int num_lcd_outputs;
 	struct vpbe_if_params *lcd_if_params;

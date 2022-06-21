@@ -25,13 +25,21 @@
 
 /* PROT ** ICACHE line 2: More real fault processing */
 	ldxa		[%g4] ASI_DMMU, %g5		! Put tagaccess in %g5
+<<<<<<< HEAD
+=======
+	srlx		%g5, PAGE_SHIFT, %g5
+	sllx		%g5, PAGE_SHIFT, %g5		! Clear context ID bits
+>>>>>>> v4.9.227
 	bgu,pn		%xcc, winfix_trampoline		! Yes, perform winfixup
 	 mov		FAULT_CODE_DTLB | FAULT_CODE_WRITE, %g4
 	ba,pt		%xcc, sparc64_realfault_common	! Nope, normal fault
 	 nop
 	nop
+<<<<<<< HEAD
 	nop
 	nop
+=======
+>>>>>>> v4.9.227
 
 /* PROT ** ICACHE line 3: Unused...	*/
 	nop

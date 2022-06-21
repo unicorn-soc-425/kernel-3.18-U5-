@@ -65,7 +65,11 @@
  * mpc83xx_* files. Mostly for use by mpc83xx_setup
  */
 
+<<<<<<< HEAD
 extern void mpc83xx_restart(char *cmd);
+=======
+extern void __noreturn mpc83xx_restart(char *cmd);
+>>>>>>> v4.9.227
 extern long mpc83xx_time_init(void);
 extern int mpc837x_usb_cfg(void);
 extern int mpc834x_usb_cfg(void);
@@ -86,5 +90,9 @@ extern void mpc83xx_setup_pci(void);
 #endif
 
 extern int mpc83xx_declare_of_platform_devices(void);
+<<<<<<< HEAD
+=======
+extern void mpc83xx_setup_arch(void);
+>>>>>>> v4.9.227
 
 #endif				/* __MPC83XX_H__ */

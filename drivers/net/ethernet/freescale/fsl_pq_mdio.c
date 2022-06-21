@@ -29,7 +29,11 @@
 
 #include <asm/io.h>
 #if IS_ENABLED(CONFIG_UCC_GETH)
+<<<<<<< HEAD
 #include <asm/ucc.h>	/* for ucc_set_qe_mux_mii_mng() */
+=======
+#include <soc/fsl/qe/ucc.h>
+>>>>>>> v4.9.227
 #endif
 
 #include "gianfar.h"
@@ -69,7 +73,10 @@ struct fsl_pq_mdio {
 struct fsl_pq_mdio_priv {
 	void __iomem *map;
 	struct fsl_pq_mii __iomem *regs;
+<<<<<<< HEAD
 	int irqs[PHY_MAX_ADDR];
+=======
+>>>>>>> v4.9.227
 };
 
 /*
@@ -196,13 +203,24 @@ static int fsl_pq_mdio_reset(struct mii_bus *bus)
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_GIANFAR) || defined(CONFIG_GIANFAR_MODULE)
 /*
+=======
+#if IS_ENABLED(CONFIG_GIANFAR)
+/*
+ * Return the TBIPA address, starting from the address
+ * of the mapped GFAR MDIO registers (struct gfar)
+>>>>>>> v4.9.227
  * This is mildly evil, but so is our hardware for doing this.
  * Also, we have to cast back to struct gfar because of
  * definition weirdness done in gianfar.h.
  */
+<<<<<<< HEAD
 static uint32_t __iomem *get_gfar_tbipa(void __iomem *p)
+=======
+static uint32_t __iomem *get_gfar_tbipa_from_mdio(void __iomem *p)
+>>>>>>> v4.9.227
 {
 	struct gfar __iomem *enet_regs = p;
 
@@ -210,6 +228,18 @@ static uint32_t __iomem *get_gfar_tbipa(void __iomem *p)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Return the TBIPA address, starting from the address
+ * of the mapped GFAR MII registers (gfar_mii_regs[] within struct gfar)
+ */
+static uint32_t __iomem *get_gfar_tbipa_from_mii(void __iomem *p)
+{
+	return get_gfar_tbipa_from_mdio(container_of(p, struct gfar, gfar_mii_regs));
+}
+
+/*
+>>>>>>> v4.9.227
  * Return the TBIPAR address for an eTSEC2 node
  */
 static uint32_t __iomem *get_etsec_tbipa(void __iomem *p)
@@ -218,6 +248,7 @@ static uint32_t __iomem *get_etsec_tbipa(void __iomem *p)
 }
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_UCC_GETH) || defined(CONFIG_UCC_GETH_MODULE)
 /*
  * Return the TBIPAR address for a QE MDIO node
@@ -225,6 +256,16 @@ static uint32_t __iomem *get_etsec_tbipa(void __iomem *p)
 static uint32_t __iomem *get_ucc_tbipa(void __iomem *p)
 {
 	struct fsl_pq_mdio __iomem *mdio = p;
+=======
+#if IS_ENABLED(CONFIG_UCC_GETH)
+/*
+ * Return the TBIPAR address for a QE MDIO node, starting from the address
+ * of the mapped MII registers (struct fsl_pq_mii)
+ */
+static uint32_t __iomem *get_ucc_tbipa(void __iomem *p)
+{
+	struct fsl_pq_mdio __iomem *mdio = container_of(p, struct fsl_pq_mdio, mii);
+>>>>>>> v4.9.227
 
 	return &mdio->utbipar;
 }
@@ -294,20 +335,33 @@ static void ucc_configure(phys_addr_t start, phys_addr_t end)
 
 #endif
 
+<<<<<<< HEAD
 static struct of_device_id fsl_pq_mdio_match[] = {
 #if defined(CONFIG_GIANFAR) || defined(CONFIG_GIANFAR_MODULE)
+=======
+static const struct of_device_id fsl_pq_mdio_match[] = {
+#if IS_ENABLED(CONFIG_GIANFAR)
+>>>>>>> v4.9.227
 	{
 		.compatible = "fsl,gianfar-tbi",
 		.data = &(struct fsl_pq_mdio_data) {
 			.mii_offset = 0,
+<<<<<<< HEAD
 			.get_tbipa = get_gfar_tbipa,
+=======
+			.get_tbipa = get_gfar_tbipa_from_mii,
+>>>>>>> v4.9.227
 		},
 	},
 	{
 		.compatible = "fsl,gianfar-mdio",
 		.data = &(struct fsl_pq_mdio_data) {
 			.mii_offset = 0,
+<<<<<<< HEAD
 			.get_tbipa = get_gfar_tbipa,
+=======
+			.get_tbipa = get_gfar_tbipa_from_mii,
+>>>>>>> v4.9.227
 		},
 	},
 	{
@@ -315,7 +369,11 @@ static struct of_device_id fsl_pq_mdio_match[] = {
 		.compatible = "gianfar",
 		.data = &(struct fsl_pq_mdio_data) {
 			.mii_offset = offsetof(struct fsl_pq_mdio, mii),
+<<<<<<< HEAD
 			.get_tbipa = get_gfar_tbipa,
+=======
+			.get_tbipa = get_gfar_tbipa_from_mdio,
+>>>>>>> v4.9.227
 		},
 	},
 	{
@@ -333,7 +391,11 @@ static struct of_device_id fsl_pq_mdio_match[] = {
 		},
 	},
 #endif
+<<<<<<< HEAD
 #if defined(CONFIG_UCC_GETH) || defined(CONFIG_UCC_GETH_MODULE)
+=======
+#if IS_ENABLED(CONFIG_UCC_GETH)
+>>>>>>> v4.9.227
 	{
 		.compatible = "fsl,ucc-mdio",
 		.data = &(struct fsl_pq_mdio_data) {
@@ -396,7 +458,10 @@ static int fsl_pq_mdio_probe(struct platform_device *pdev)
 	new_bus->read = &fsl_pq_mdio_read;
 	new_bus->write = &fsl_pq_mdio_write;
 	new_bus->reset = &fsl_pq_mdio_reset;
+<<<<<<< HEAD
 	new_bus->irq = priv->irqs;
+=======
+>>>>>>> v4.9.227
 
 	err = of_address_to_resource(np, 0, &res);
 	if (err < 0) {
@@ -452,6 +517,19 @@ static int fsl_pq_mdio_probe(struct platform_device *pdev)
 
 			tbipa = data->get_tbipa(priv->map);
 
+<<<<<<< HEAD
+=======
+			/*
+			 * Add consistency check to make sure TBI is contained
+			 * within the mapped range (not because we would get a
+			 * segfault, rather to catch bugs in computing TBI
+			 * address). Print error message but continue anyway.
+			 */
+			if ((void *)tbipa > priv->map + resource_size(&res) - 4)
+				dev_err(&pdev->dev, "invalid register map (should be at least 0x%04zx to contain TBI address)\n",
+					((void *)tbipa - priv->map) + 4);
+
+>>>>>>> v4.9.227
 			iowrite32be(be32_to_cpup(prop), tbipa);
 		}
 	}
@@ -495,7 +573,10 @@ static int fsl_pq_mdio_remove(struct platform_device *pdev)
 static struct platform_driver fsl_pq_mdio_driver = {
 	.driver = {
 		.name = "fsl-pq_mdio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = fsl_pq_mdio_match,
 	},
 	.probe = fsl_pq_mdio_probe,

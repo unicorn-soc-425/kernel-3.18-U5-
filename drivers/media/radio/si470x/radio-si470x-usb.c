@@ -627,7 +627,10 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 
 	radio->int_in_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!radio->int_in_urb) {
+<<<<<<< HEAD
 		dev_info(&intf->dev, "could not allocate int_in_urb");
+=======
+>>>>>>> v4.9.227
 		retval = -ENOMEM;
 		goto err_intbuffer;
 	}
@@ -686,14 +689,23 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 		goto err_ctrl;
 	}
 	dev_info(&intf->dev, "DeviceID=0x%4.4hx ChipID=0x%4.4hx\n",
+<<<<<<< HEAD
 			radio->registers[DEVICEID], radio->registers[CHIPID]);
 	if ((radio->registers[CHIPID] & CHIPID_FIRMWARE) < RADIO_FW_VERSION) {
+=======
+			radio->registers[DEVICEID], radio->registers[SI_CHIPID]);
+	if ((radio->registers[SI_CHIPID] & SI_CHIPID_FIRMWARE) < RADIO_FW_VERSION) {
+>>>>>>> v4.9.227
 		dev_warn(&intf->dev,
 			"This driver is known to work with "
 			"firmware version %hu,\n", RADIO_FW_VERSION);
 		dev_warn(&intf->dev,
 			"but the device has firmware version %hu.\n",
+<<<<<<< HEAD
 			radio->registers[CHIPID] & CHIPID_FIRMWARE);
+=======
+			radio->registers[SI_CHIPID] & SI_CHIPID_FIRMWARE);
+>>>>>>> v4.9.227
 		version_warning = 1;
 	}
 
@@ -743,7 +755,11 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 	/* start radio */
 	retval = si470x_start_usb(radio);
 	if (retval < 0)
+<<<<<<< HEAD
 		goto err_all;
+=======
+		goto err_buf;
+>>>>>>> v4.9.227
 
 	/* set initial frequency */
 	si470x_set_freq(radio, 87.5 * FREQ_MUL); /* available in all regions */
@@ -758,6 +774,11 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 
 	return 0;
 err_all:
+<<<<<<< HEAD
+=======
+	usb_kill_urb(radio->int_in_urb);
+err_buf:
+>>>>>>> v4.9.227
 	kfree(radio->buffer);
 err_ctrl:
 	v4l2_ctrl_handler_free(&radio->hdl);
@@ -831,6 +852,10 @@ static void si470x_usb_driver_disconnect(struct usb_interface *intf)
 	mutex_lock(&radio->lock);
 	v4l2_device_disconnect(&radio->v4l2_dev);
 	video_unregister_device(&radio->videodev);
+<<<<<<< HEAD
+=======
+	usb_kill_urb(radio->int_in_urb);
+>>>>>>> v4.9.227
 	usb_set_intfdata(intf, NULL);
 	mutex_unlock(&radio->lock);
 	v4l2_device_put(&radio->v4l2_dev);

@@ -102,7 +102,11 @@ EXPORT_SYMBOL(__readb);
 EXPORT_SYMBOL(__readw);
 EXPORT_SYMBOL(__readl);
 
+<<<<<<< HEAD
 void readsw(const void __iomem *addr, void *data, int len)
+=======
+void readsw(const volatile void __iomem *addr, void *data, int len)
+>>>>>>> v4.9.227
 {
 	void __iomem *a = __isamem_convert_addr(addr);
 
@@ -112,7 +116,11 @@ void readsw(const void __iomem *addr, void *data, int len)
 }
 EXPORT_SYMBOL(readsw);
 
+<<<<<<< HEAD
 void readsl(const void __iomem *addr, void *data, int len)
+=======
+void readsl(const volatile void __iomem *addr, void *data, int len)
+>>>>>>> v4.9.227
 {
 	void __iomem *a = __isamem_convert_addr(addr);
 
@@ -122,7 +130,11 @@ void readsl(const void __iomem *addr, void *data, int len)
 }
 EXPORT_SYMBOL(readsl);
 
+<<<<<<< HEAD
 void __writeb(u8 val, void __iomem *addr)
+=======
+void __writeb(u8 val, volatile void __iomem *addr)
+>>>>>>> v4.9.227
 {
 	void __iomem *a = __isamem_convert_addr(addr);
 
@@ -132,7 +144,11 @@ void __writeb(u8 val, void __iomem *addr)
 		__raw_writeb(val, a);
 }
 
+<<<<<<< HEAD
 void __writew(u16 val, void __iomem *addr)
+=======
+void __writew(u16 val, volatile void __iomem *addr)
+>>>>>>> v4.9.227
 {
 	void __iomem *a = __isamem_convert_addr(addr);
 
@@ -142,7 +158,11 @@ void __writew(u16 val, void __iomem *addr)
 	__raw_writew(val, a);
 }
 
+<<<<<<< HEAD
 void __writel(u32 val, void __iomem *addr)
+=======
+void __writel(u32 val, volatile void __iomem *addr)
+>>>>>>> v4.9.227
 {
 	void __iomem *a = __isamem_convert_addr(addr);
 
@@ -157,7 +177,11 @@ EXPORT_SYMBOL(__writeb);
 EXPORT_SYMBOL(__writew);
 EXPORT_SYMBOL(__writel);
 
+<<<<<<< HEAD
 void writesw(void __iomem *addr, const void *data, int len)
+=======
+void writesw(volatile void __iomem *addr, const void *data, int len)
+>>>>>>> v4.9.227
 {
 	void __iomem *a = __isamem_convert_addr(addr);
 
@@ -167,7 +191,11 @@ void writesw(void __iomem *addr, const void *data, int len)
 }
 EXPORT_SYMBOL(writesw);
 
+<<<<<<< HEAD
 void writesl(void __iomem *addr, const void *data, int len)
+=======
+void writesl(volatile void __iomem *addr, const void *data, int len)
+>>>>>>> v4.9.227
 {
 	void __iomem *a = __isamem_convert_addr(addr);
 

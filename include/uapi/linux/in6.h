@@ -143,6 +143,10 @@ struct in6_flowlabel_req {
 #define IPV6_TLV_PAD1		0
 #define IPV6_TLV_PADN		1
 #define IPV6_TLV_ROUTERALERT	5
+<<<<<<< HEAD
+=======
+#define IPV6_TLV_CALIPSO	7	/* RFC 5570 */
+>>>>>>> v4.9.227
 #define IPV6_TLV_JUMBO		194
 #define IPV6_TLV_HAO		201	/* home address option */
 
@@ -196,6 +200,10 @@ struct in6_flowlabel_req {
 
 #define IPV6_IPSEC_POLICY	34
 #define IPV6_XFRM_POLICY	35
+<<<<<<< HEAD
+=======
+#define IPV6_HDRINCL		36
+>>>>>>> v4.9.227
 #endif
 
 /*

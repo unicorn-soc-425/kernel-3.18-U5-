@@ -415,7 +415,11 @@ static int tz1090_pdc_pinctrl_dt_subnode_to_map(struct device *dev,
 		function = NULL;
 	}
 
+<<<<<<< HEAD
 	ret = pinconf_generic_parse_dt_config(np, &configs, &num_configs);
+=======
+	ret = pinconf_generic_parse_dt_config(np, NULL, &configs, &num_configs);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -668,7 +672,11 @@ static int tz1090_pdc_pinconf_reg(struct pinctrl_dev *pctldev,
 		break;
 	default:
 		return -ENOTSUPP;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> v4.9.227
 
 	/* Only input bias parameters supported */
 	*reg = REG_GPIO_CONTROL2;
@@ -801,7 +809,11 @@ static int tz1090_pdc_pinconf_group_reg(struct pinctrl_dev *pctldev,
 		break;
 	default:
 		return -ENOTSUPP;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> v4.9.227
 
 	/* Calculate field information */
 	*mask = (BIT(*width) - 1) << *shift;
@@ -947,10 +959,18 @@ static int tz1090_pdc_pinctrl_probe(struct platform_device *pdev)
 	if (IS_ERR(pmx->regs))
 		return PTR_ERR(pmx->regs);
 
+<<<<<<< HEAD
 	pmx->pctl = pinctrl_register(&tz1090_pdc_pinctrl_desc, &pdev->dev, pmx);
 	if (!pmx->pctl) {
 		dev_err(&pdev->dev, "Couldn't register pinctrl driver\n");
 		return -ENODEV;
+=======
+	pmx->pctl = devm_pinctrl_register(&pdev->dev, &tz1090_pdc_pinctrl_desc,
+					  pmx);
+	if (IS_ERR(pmx->pctl)) {
+		dev_err(&pdev->dev, "Couldn't register pinctrl driver\n");
+		return PTR_ERR(pmx->pctl);
+>>>>>>> v4.9.227
 	}
 
 	platform_set_drvdata(pdev, pmx);
@@ -960,6 +980,7 @@ static int tz1090_pdc_pinctrl_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tz1090_pdc_pinctrl_remove(struct platform_device *pdev)
 {
 	struct tz1090_pdc_pmx *pmx = platform_get_drvdata(pdev);
@@ -970,6 +991,9 @@ static int tz1090_pdc_pinctrl_remove(struct platform_device *pdev)
 }
 
 static struct of_device_id tz1090_pdc_pinctrl_of_match[] = {
+=======
+static const struct of_device_id tz1090_pdc_pinctrl_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "img,tz1090-pdc-pinctrl", },
 	{ },
 };
@@ -977,11 +1001,17 @@ static struct of_device_id tz1090_pdc_pinctrl_of_match[] = {
 static struct platform_driver tz1090_pdc_pinctrl_driver = {
 	.driver = {
 		.name		= "tz1090-pdc-pinctrl",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 		.of_match_table	= tz1090_pdc_pinctrl_of_match,
 	},
 	.probe	= tz1090_pdc_pinctrl_probe,
 	.remove	= tz1090_pdc_pinctrl_remove,
+=======
+		.of_match_table	= tz1090_pdc_pinctrl_of_match,
+	},
+	.probe	= tz1090_pdc_pinctrl_probe,
+>>>>>>> v4.9.227
 };
 
 static int __init tz1090_pdc_pinctrl_init(void)

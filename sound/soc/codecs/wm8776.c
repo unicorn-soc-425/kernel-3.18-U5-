@@ -265,7 +265,11 @@ static int wm8776_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	/* Set word length */
+<<<<<<< HEAD
 	switch (snd_pcm_format_width(params_format(params))) {
+=======
+	switch (params_width(params)) {
+>>>>>>> v4.9.227
 	case 16:
 		iface = 0;
 		break;
@@ -280,7 +284,11 @@ static int wm8776_hw_params(struct snd_pcm_substream *substream,
 		break;
 	default:
 		dev_err(codec->dev, "Unsupported sample size: %i\n",
+<<<<<<< HEAD
 			snd_pcm_format_width(params_format(params)));
+=======
+			params_width(params));
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -344,7 +352,11 @@ static int wm8776_set_bias_level(struct snd_soc_codec *codec,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			regcache_sync(wm8776->regmap);
 
 			/* Disable the global powerdown; DAPM does the rest */
@@ -357,7 +369,10 @@ static int wm8776_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -408,6 +423,7 @@ static struct snd_soc_dai_driver wm8776_dai[] = {
 	},
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int wm8776_suspend(struct snd_soc_codec *codec)
 {
@@ -426,6 +442,8 @@ static int wm8776_resume(struct snd_soc_codec *codec)
 #define wm8776_resume NULL
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int wm8776_probe(struct snd_soc_codec *codec)
 {
 	int ret = 0;
@@ -436,8 +454,11 @@ static int wm8776_probe(struct snd_soc_codec *codec)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	wm8776_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
+=======
+>>>>>>> v4.9.227
 	/* Latch the update bits; right channel only since we always
 	 * update both. */
 	snd_soc_update_bits(codec, WM8776_HPRVOL, 0x100, 0x100);
@@ -446,6 +467,7 @@ static int wm8776_probe(struct snd_soc_codec *codec)
 	return ret;
 }
 
+<<<<<<< HEAD
 /* power down chip */
 static int wm8776_remove(struct snd_soc_codec *codec)
 {
@@ -466,6 +488,21 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8776 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8776_dapm_widgets),
 	.dapm_routes = routes,
 	.num_dapm_routes = ARRAY_SIZE(routes),
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8776 = {
+	.probe = 	wm8776_probe,
+	.set_bias_level = wm8776_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8776_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8776_snd_controls),
+		.dapm_widgets		= wm8776_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8776_dapm_widgets),
+		.dapm_routes		= routes,
+		.num_dapm_routes	= ARRAY_SIZE(routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct of_device_id wm8776_of_match[] = {
@@ -518,7 +555,10 @@ static int wm8776_spi_remove(struct spi_device *spi)
 static struct spi_driver wm8776_spi_driver = {
 	.driver = {
 		.name	= "wm8776",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = wm8776_of_match,
 	},
 	.probe		= wm8776_spi_probe,
@@ -566,7 +606,10 @@ MODULE_DEVICE_TABLE(i2c, wm8776_i2c_id);
 static struct i2c_driver wm8776_i2c_driver = {
 	.driver = {
 		.name = "wm8776",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = wm8776_of_match,
 	},
 	.probe =    wm8776_i2c_probe,

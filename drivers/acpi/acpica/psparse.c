@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -130,8 +134,13 @@ u16 acpi_ps_peek_opcode(struct acpi_parse_state * parser_state)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ps_complete_this_op(struct acpi_walk_state * walk_state,
 			 union acpi_parse_object * op)
+=======
+acpi_ps_complete_this_op(struct acpi_walk_state *walk_state,
+			 union acpi_parse_object *op)
+>>>>>>> v4.9.227
 {
 	union acpi_parse_object *prev;
 	union acpi_parse_object *next;
@@ -147,6 +156,11 @@ acpi_ps_complete_this_op(struct acpi_walk_state * walk_state,
 		return_ACPI_STATUS(AE_OK);	/* OK for now */
 	}
 
+<<<<<<< HEAD
+=======
+	acpi_ex_stop_trace_opcode(op, walk_state);
+
+>>>>>>> v4.9.227
 	/* Delete this op and the subtree below it if asked to */
 
 	if (((walk_state->parse_flags & ACPI_PARSE_TREE_MASK) !=
@@ -185,7 +199,12 @@ acpi_ps_complete_this_op(struct acpi_walk_state * walk_state,
 			 * op must be replaced by a placeholder return op
 			 */
 			replacement_op =
+<<<<<<< HEAD
 			    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP);
+=======
+			    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP,
+					     op->common.aml);
+>>>>>>> v4.9.227
 			if (!replacement_op) {
 				status = AE_NO_MEMORY;
 			}
@@ -209,7 +228,12 @@ acpi_ps_complete_this_op(struct acpi_walk_state * walk_state,
 			    || (op->common.parent->common.aml_opcode ==
 				AML_VAR_PACKAGE_OP)) {
 				replacement_op =
+<<<<<<< HEAD
 				    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP);
+=======
+				    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP,
+						     op->common.aml);
+>>>>>>> v4.9.227
 				if (!replacement_op) {
 					status = AE_NO_MEMORY;
 				}
@@ -224,7 +248,12 @@ acpi_ps_complete_this_op(struct acpi_walk_state * walk_state,
 					AML_VAR_PACKAGE_OP)) {
 					replacement_op =
 					    acpi_ps_alloc_op(op->common.
+<<<<<<< HEAD
 							     aml_opcode);
+=======
+							     aml_opcode,
+							     op->common.aml);
+>>>>>>> v4.9.227
 					if (!replacement_op) {
 						status = AE_NO_MEMORY;
 					} else {
@@ -240,7 +269,12 @@ acpi_ps_complete_this_op(struct acpi_walk_state * walk_state,
 		default:
 
 			replacement_op =
+<<<<<<< HEAD
 			    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP);
+=======
+			    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP,
+					     op->common.aml);
+>>>>>>> v4.9.227
 			if (!replacement_op) {
 				status = AE_NO_MEMORY;
 			}
@@ -520,8 +554,13 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 			}
 
 			/*
+<<<<<<< HEAD
 			 * If the transfer to the new method method call worked, a new walk
 			 * state was created -- get it
+=======
+			 * If the transfer to the new method method call worked
+			 *, a new walk state was created -- get it
+>>>>>>> v4.9.227
 			 */
 			walk_state = acpi_ds_get_current_walk_state(thread);
 			continue;
@@ -531,15 +570,28 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 
 			/* Either the method parse or actual execution failed */
 
+<<<<<<< HEAD
 			ACPI_ERROR_METHOD("Method parse/execution failed",
 					  walk_state->method_node, NULL,
 					  status);
+=======
+			acpi_ex_exit_interpreter();
+			ACPI_ERROR_METHOD("Method parse/execution failed",
+					  walk_state->method_node, NULL,
+					  status);
+			acpi_ex_enter_interpreter();
+>>>>>>> v4.9.227
 
 			/* Check for possible multi-thread reentrancy problem */
 
 			if ((status == AE_ALREADY_EXISTS) &&
+<<<<<<< HEAD
 			    (!(walk_state->method_desc->method.
 			       info_flags & ACPI_METHOD_SERIALIZED))) {
+=======
+			    (!(walk_state->method_desc->method.info_flags &
+			       ACPI_METHOD_SERIALIZED))) {
+>>>>>>> v4.9.227
 				/*
 				 * Method is not serialized and tried to create an object
 				 * twice. The probable cause is that the method cannot
@@ -565,7 +617,13 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 		 * cleanup to do
 		 */
 		if (((walk_state->parse_flags & ACPI_PARSE_MODE_MASK) ==
+<<<<<<< HEAD
 		     ACPI_PARSE_EXECUTE) || (ACPI_FAILURE(status))) {
+=======
+		     ACPI_PARSE_EXECUTE &&
+		     !(walk_state->parse_flags & ACPI_PARSE_MODULE_LEVEL)) ||
+		    (ACPI_FAILURE(status))) {
+>>>>>>> v4.9.227
 			acpi_ds_terminate_control_method(walk_state->
 							 method_desc,
 							 walk_state);

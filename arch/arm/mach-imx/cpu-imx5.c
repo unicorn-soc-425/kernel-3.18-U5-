@@ -60,6 +60,7 @@ static int get_mx51_srev(void)
 /*
  * Returns:
  *	the silicon revision of the cpu
+<<<<<<< HEAD
  *	-EINVAL - not a mx51
  */
 int mx51_revision(void)
@@ -67,6 +68,11 @@ int mx51_revision(void)
 	if (!cpu_is_mx51())
 		return -EINVAL;
 
+=======
+ */
+int mx51_revision(void)
+{
+>>>>>>> v4.9.227
 	if (mx5_cpu_rev == -1)
 		mx5_cpu_rev = get_mx51_srev();
 
@@ -112,6 +118,7 @@ static int get_mx53_srev(void)
 /*
  * Returns:
  *	the silicon revision of the cpu
+<<<<<<< HEAD
  *	-EINVAL - not a mx53
  */
 int mx53_revision(void)
@@ -119,6 +126,11 @@ int mx53_revision(void)
 	if (!cpu_is_mx53())
 		return -EINVAL;
 
+=======
+ */
+int mx53_revision(void)
+{
+>>>>>>> v4.9.227
 	if (mx5_cpu_rev == -1)
 		mx5_cpu_rev = get_mx53_srev();
 

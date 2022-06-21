@@ -14,12 +14,23 @@
 #include <asm-generic/module.h>
 
 
+<<<<<<< HEAD
+=======
+#ifdef CC_USING_MPROFILE_KERNEL
+#define MODULE_ARCH_VERMAGIC	"mprofile-kernel"
+#endif
+
+>>>>>>> v4.9.227
 #ifndef __powerpc64__
 /*
  * Thanks to Paul M for explaining this.
  *
  * PPC can only do rel jumps += 32MB, and often the kernel and other
+<<<<<<< HEAD
  * modules are furthur away than this.  So, we jump to a table of
+=======
+ * modules are further away than this.  So, we jump to a table of
+>>>>>>> v4.9.227
  * trampolines attached to the module (the Procedure Linkage Table)
  * whenever that happens.
  */
@@ -78,10 +89,25 @@ struct mod_arch_specific {
 #    endif	/* MODULE */
 #endif
 
+<<<<<<< HEAD
 bool is_module_trampoline(u32 *insns);
 int module_trampoline_target(struct module *mod, u32 *trampoline,
 			     unsigned long *target);
 
+=======
+int module_trampoline_target(struct module *mod, unsigned long trampoline,
+			     unsigned long *target);
+
+#ifdef CONFIG_DYNAMIC_FTRACE
+int module_finalize_ftrace(struct module *mod, const Elf_Shdr *sechdrs);
+#else
+static inline int module_finalize_ftrace(struct module *mod, const Elf_Shdr *sechdrs)
+{
+	return 0;
+}
+#endif
+
+>>>>>>> v4.9.227
 struct exception_table_entry;
 void sort_ex_table(struct exception_table_entry *start,
 		   struct exception_table_entry *finish);

@@ -416,7 +416,11 @@
 			gpios = <&qe_pio_e 18 0>;
 
 			flash {
+<<<<<<< HEAD
 				compatible = "stm,nand512-a";
+=======
+				compatible = "st,nand512-a";
+>>>>>>> v4.9.227
 			};
 		};
 

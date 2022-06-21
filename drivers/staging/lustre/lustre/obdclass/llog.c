@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2012, Intel Corporation.
+=======
+ * Copyright (c) 2012, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -47,7 +55,10 @@
 
 #define DEBUG_SUBSYSTEM S_LOG
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #include "../include/obd_class.h"
 #include "../include/lustre_log.h"
 #include "llog_internal.h"
@@ -60,8 +71,13 @@ static struct llog_handle *llog_alloc_handle(void)
 {
 	struct llog_handle *loghandle;
 
+<<<<<<< HEAD
 	OBD_ALLOC_PTR(loghandle);
 	if (loghandle == NULL)
+=======
+	loghandle = kzalloc(sizeof(*loghandle), GFP_NOFS);
+	if (!loghandle)
+>>>>>>> v4.9.227
 		return NULL;
 
 	init_rwsem(&loghandle->lgh_lock);
@@ -77,8 +93,11 @@ static struct llog_handle *llog_alloc_handle(void)
  */
 static void llog_free_handle(struct llog_handle *loghandle)
 {
+<<<<<<< HEAD
 	LASSERT(loghandle != NULL);
 
+=======
+>>>>>>> v4.9.227
 	/* failed llog_init_handle */
 	if (!loghandle->lgh_hdr)
 		goto out;
@@ -87,10 +106,17 @@ static void llog_free_handle(struct llog_handle *loghandle)
 		LASSERT(list_empty(&loghandle->u.phd.phd_entry));
 	else if (loghandle->lgh_hdr->llh_flags & LLOG_F_IS_CAT)
 		LASSERT(list_empty(&loghandle->u.chd.chd_head));
+<<<<<<< HEAD
 	LASSERT(sizeof(*(loghandle->lgh_hdr)) == LLOG_CHUNK_SIZE);
 	OBD_FREE(loghandle->lgh_hdr, LLOG_CHUNK_SIZE);
 out:
 	OBD_FREE_PTR(loghandle);
+=======
+	LASSERT(sizeof(*loghandle->lgh_hdr) == LLOG_CHUNK_SIZE);
+	kfree(loghandle->lgh_hdr);
+out:
+	kfree(loghandle);
+>>>>>>> v4.9.227
 }
 
 void llog_handle_get(struct llog_handle *loghandle)
@@ -105,6 +131,7 @@ void llog_handle_put(struct llog_handle *loghandle)
 		llog_free_handle(loghandle);
 }
 
+<<<<<<< HEAD
 /* returns negative on error; 0 if success; 1 if success & log destroyed */
 int llog_cancel_rec(const struct lu_env *env, struct llog_handle *loghandle,
 		    int index)
@@ -165,6 +192,8 @@ out_err:
 }
 EXPORT_SYMBOL(llog_cancel_rec);
 
+=======
+>>>>>>> v4.9.227
 static int llog_read_header(const struct lu_env *env,
 			    struct llog_handle *handle,
 			    struct obd_uuid *uuid)
@@ -176,7 +205,11 @@ static int llog_read_header(const struct lu_env *env,
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	if (lop->lop_read_header == NULL)
+=======
+	if (!lop->lop_read_header)
+>>>>>>> v4.9.227
 		return -EOPNOTSUPP;
 
 	rc = lop->lop_read_header(env, handle);
@@ -186,9 +219,17 @@ static int llog_read_header(const struct lu_env *env,
 		handle->lgh_last_idx = 0; /* header is record with index 0 */
 		llh->llh_count = 1;	 /* for the header record */
 		llh->llh_hdr.lrh_type = LLOG_HDR_MAGIC;
+<<<<<<< HEAD
 		llh->llh_hdr.lrh_len = llh->llh_tail.lrt_len = LLOG_CHUNK_SIZE;
 		llh->llh_hdr.lrh_index = llh->llh_tail.lrt_index = 0;
 		llh->llh_timestamp = get_seconds();
+=======
+		llh->llh_hdr.lrh_len = LLOG_CHUNK_SIZE;
+		llh->llh_tail.lrt_len = LLOG_CHUNK_SIZE;
+		llh->llh_hdr.lrh_index = 0;
+		llh->llh_tail.lrt_index = 0;
+		llh->llh_timestamp = ktime_get_real_seconds();
+>>>>>>> v4.9.227
 		if (uuid)
 			memcpy(&llh->llh_tgtuuid, uuid,
 			       sizeof(llh->llh_tgtuuid));
@@ -202,6 +243,7 @@ static int llog_read_header(const struct lu_env *env,
 int llog_init_handle(const struct lu_env *env, struct llog_handle *handle,
 		     int flags, struct obd_uuid *uuid)
 {
+<<<<<<< HEAD
 	struct llog_log_hdr	*llh;
 	int			 rc;
 
@@ -209,6 +251,16 @@ int llog_init_handle(const struct lu_env *env, struct llog_handle *handle,
 
 	OBD_ALLOC_PTR(llh);
 	if (llh == NULL)
+=======
+	enum llog_flag fmt = flags & LLOG_F_EXT_MASK;
+	struct llog_log_hdr	*llh;
+	int			 rc;
+
+	LASSERT(!handle->lgh_hdr);
+
+	llh = kzalloc(sizeof(*llh), GFP_NOFS);
+	if (!llh)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	handle->lgh_hdr = llh;
 	/* first assign flags to use llog_client_ops */
@@ -259,9 +311,16 @@ int llog_init_handle(const struct lu_env *env, struct llog_handle *handle,
 		       flags, LLOG_F_IS_CAT, LLOG_F_IS_PLAIN);
 		rc = -EINVAL;
 	}
+<<<<<<< HEAD
 out:
 	if (rc) {
 		OBD_FREE_PTR(llh);
+=======
+	llh->llh_flags |= fmt;
+out:
+	if (rc) {
+		kfree(llh);
+>>>>>>> v4.9.227
 		handle->lgh_hdr = NULL;
 	}
 	return rc;
@@ -283,21 +342,40 @@ static int llog_process_thread(void *arg)
 
 	LASSERT(llh);
 
+<<<<<<< HEAD
 	OBD_ALLOC(buf, LLOG_CHUNK_SIZE);
+=======
+	buf = kzalloc(LLOG_CHUNK_SIZE, GFP_NOFS);
+>>>>>>> v4.9.227
 	if (!buf) {
 		lpi->lpi_rc = -ENOMEM;
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (cd != NULL) {
 		last_called_index = cd->lpcd_first_idx;
 		index = cd->lpcd_first_idx + 1;
 	}
 	if (cd != NULL && cd->lpcd_last_idx)
+=======
+	if (cd) {
+		last_called_index = cd->lpcd_first_idx;
+		index = cd->lpcd_first_idx + 1;
+	}
+	if (cd && cd->lpcd_last_idx)
+>>>>>>> v4.9.227
 		last_index = cd->lpcd_last_idx;
 	else
 		last_index = LLOG_BITMAP_BYTES * 8 - 1;
 
+<<<<<<< HEAD
+=======
+	/* Record is not in this buffer. */
+	if (index > last_index)
+		goto out;
+
+>>>>>>> v4.9.227
 	while (rc == 0) {
 		struct llog_rec_hdr *rec;
 
@@ -323,11 +401,19 @@ repeat:
 
 		/* NB: when rec->lrh_len is accessed it is already swabbed
 		 * since it is used at the "end" of the loop and the rec
+<<<<<<< HEAD
 		 * swabbing is done at the beginning of the loop. */
 		for (rec = (struct llog_rec_hdr *)buf;
 		     (char *)rec < buf + LLOG_CHUNK_SIZE;
 		     rec = (struct llog_rec_hdr *)((char *)rec + rec->lrh_len)){
 
+=======
+		 * swabbing is done at the beginning of the loop.
+		 */
+		for (rec = (struct llog_rec_hdr *)buf;
+		     (char *)rec < buf + LLOG_CHUNK_SIZE;
+		     rec = llog_rec_hdr_next(rec)) {
+>>>>>>> v4.9.227
 			CDEBUG(D_OTHER, "processing rec 0x%p type %#x\n",
 			       rec, rec->lrh_type);
 
@@ -346,8 +432,13 @@ repeat:
 			}
 			if (rec->lrh_len == 0 ||
 			    rec->lrh_len > LLOG_CHUNK_SIZE) {
+<<<<<<< HEAD
 				CWARN("invalid length %d in llog record for "
 				      "index %d/%d\n", rec->lrh_len,
+=======
+				CWARN("invalid length %d in llog record for index %d/%d\n",
+				      rec->lrh_len,
+>>>>>>> v4.9.227
 				      rec->lrh_index, index);
 				rc = -EINVAL;
 				goto out;
@@ -373,6 +464,7 @@ repeat:
 				rc = lpi->lpi_cb(lpi->lpi_env, loghandle, rec,
 						 lpi->lpi_cbdata);
 				last_called_index = index;
+<<<<<<< HEAD
 				if (rc == LLOG_PROC_BREAK) {
 					goto out;
 				} else if (rc == LLOG_DEL_RECORD) {
@@ -381,6 +473,8 @@ repeat:
 							rec->lrh_index);
 					rc = 0;
 				}
+=======
+>>>>>>> v4.9.227
 				if (rc)
 					goto out;
 			} else {
@@ -397,10 +491,17 @@ repeat:
 	}
 
 out:
+<<<<<<< HEAD
 	if (cd != NULL)
 		cd->lpcd_last_idx = last_called_index;
 
 	OBD_FREE(buf, LLOG_CHUNK_SIZE);
+=======
+	if (cd)
+		cd->lpcd_last_idx = last_called_index;
+
+	kfree(buf);
+>>>>>>> v4.9.227
 	lpi->lpi_rc = rc;
 	return 0;
 }
@@ -434,17 +535,24 @@ int llog_process_or_fork(const struct lu_env *env,
 	struct llog_process_info *lpi;
 	int		      rc;
 
+<<<<<<< HEAD
 	OBD_ALLOC_PTR(lpi);
 	if (lpi == NULL) {
 		CERROR("cannot alloc pointer\n");
 		return -ENOMEM;
 	}
+=======
+	lpi = kzalloc(sizeof(*lpi), GFP_NOFS);
+	if (!lpi)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	lpi->lpi_loghandle = loghandle;
 	lpi->lpi_cb	= cb;
 	lpi->lpi_cbdata    = data;
 	lpi->lpi_catdata   = catdata;
 
 	if (fork) {
+<<<<<<< HEAD
 		/* The new thread can't use parent env,
 		 * init the new one in llog_process_thread_daemonize. */
 		lpi->lpi_env = NULL;
@@ -456,6 +564,22 @@ int llog_process_or_fork(const struct lu_env *env,
 			       loghandle->lgh_ctxt->loc_obd->obd_name, rc);
 			OBD_FREE_PTR(lpi);
 			return rc;
+=======
+		struct task_struct *task;
+
+		/* The new thread can't use parent env,
+		 * init the new one in llog_process_thread_daemonize.
+		 */
+		lpi->lpi_env = NULL;
+		init_completion(&lpi->lpi_completion);
+		task = kthread_run(llog_process_thread_daemonize, lpi,
+				   "llog_process_thread");
+		if (IS_ERR(task)) {
+			rc = PTR_ERR(task);
+			CERROR("%s: cannot start thread: rc = %d\n",
+			       loghandle->lgh_ctxt->loc_obd->obd_name, rc);
+			goto out_lpi;
+>>>>>>> v4.9.227
 		}
 		wait_for_completion(&lpi->lpi_completion);
 	} else {
@@ -463,7 +587,12 @@ int llog_process_or_fork(const struct lu_env *env,
 		llog_process_thread(lpi);
 	}
 	rc = lpi->lpi_rc;
+<<<<<<< HEAD
 	OBD_FREE_PTR(lpi);
+=======
+out_lpi:
+	kfree(lpi);
+>>>>>>> v4.9.227
 	return rc;
 }
 EXPORT_SYMBOL(llog_process_or_fork);
@@ -475,6 +604,7 @@ int llog_process(const struct lu_env *env, struct llog_handle *loghandle,
 }
 EXPORT_SYMBOL(llog_process);
 
+<<<<<<< HEAD
 int llog_reverse_process(const struct lu_env *env,
 			 struct llog_handle *loghandle, llog_cb_t cb,
 			 void *data, void *catdata)
@@ -850,6 +980,8 @@ out_trans:
 }
 EXPORT_SYMBOL(llog_write);
 
+=======
+>>>>>>> v4.9.227
 int llog_open(const struct lu_env *env, struct llog_ctxt *ctxt,
 	      struct llog_handle **lgh, struct llog_logid *logid,
 	      char *name, enum llog_open_param open_param)
@@ -860,13 +992,21 @@ int llog_open(const struct lu_env *env, struct llog_ctxt *ctxt,
 	LASSERT(ctxt);
 	LASSERT(ctxt->loc_logops);
 
+<<<<<<< HEAD
 	if (ctxt->loc_logops->lop_open == NULL) {
+=======
+	if (!ctxt->loc_logops->lop_open) {
+>>>>>>> v4.9.227
 		*lgh = NULL;
 		return -EOPNOTSUPP;
 	}
 
 	*lgh = llog_alloc_handle();
+<<<<<<< HEAD
 	if (*lgh == NULL)
+=======
+	if (!*lgh)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	(*lgh)->lgh_ctxt = ctxt;
 	(*lgh)->lgh_logops = ctxt->loc_logops;
@@ -893,7 +1033,11 @@ int llog_close(const struct lu_env *env, struct llog_handle *loghandle)
 	rc = llog_handle2ops(loghandle, &lop);
 	if (rc)
 		goto out;
+<<<<<<< HEAD
 	if (lop->lop_close == NULL) {
+=======
+	if (!lop->lop_close) {
+>>>>>>> v4.9.227
 		rc = -EOPNOTSUPP;
 		goto out;
 	}
@@ -903,6 +1047,7 @@ out:
 	return rc;
 }
 EXPORT_SYMBOL(llog_close);
+<<<<<<< HEAD
 
 int llog_is_empty(const struct lu_env *env, struct llog_ctxt *ctxt,
 		  char *name)
@@ -1005,3 +1150,5 @@ out_close:
 	return rc;
 }
 EXPORT_SYMBOL(llog_backup);
+=======
+>>>>>>> v4.9.227

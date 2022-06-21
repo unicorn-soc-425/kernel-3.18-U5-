@@ -32,16 +32,28 @@
 #include <linux/irqflags.h>
 #include <linux/notifier.h>
 #include <linux/kallsyms.h>
+<<<<<<< HEAD
 #include <linux/percpu.h>
 #include <linux/kdebug.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+=======
+#include <linux/kprobes.h>
+#include <linux/percpu.h>
+#include <linux/kdebug.h>
+#include <linux/kernel.h>
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/sched.h>
 #include <linux/smp.h>
 
 #include <asm/hw_breakpoint.h>
 #include <asm/processor.h>
 #include <asm/debugreg.h>
+<<<<<<< HEAD
+=======
+#include <asm/user.h>
+>>>>>>> v4.9.227
 
 /* Per cpu debug control register value */
 DEFINE_PER_CPU(unsigned long, cpu_dr7);
@@ -126,6 +138,11 @@ int arch_install_hw_breakpoint(struct perf_event *bp)
 	*dr7 |= encode_dr7(i, info->len, info->type);
 
 	set_debugreg(*dr7, 7);
+<<<<<<< HEAD
+=======
+	if (info->mask)
+		set_dr_addr_mask(info->mask, i);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -161,6 +178,7 @@ void arch_uninstall_hw_breakpoint(struct perf_event *bp)
 	*dr7 &= ~__encode_dr7(i, info->len, info->type);
 
 	set_debugreg(*dr7, 7);
+<<<<<<< HEAD
 }
 
 static int get_hbp_len(u8 hbp_len)
@@ -184,6 +202,10 @@ static int get_hbp_len(u8 hbp_len)
 #endif
 	}
 	return len_in_bytes;
+=======
+	if (info->mask)
+		set_dr_addr_mask(0, i);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -196,9 +218,19 @@ int arch_check_bp_in_kernelspace(struct perf_event *bp)
 	struct arch_hw_breakpoint *info = counter_arch_bp(bp);
 
 	va = info->address;
+<<<<<<< HEAD
 	len = get_hbp_len(info->len);
 
 	return (va >= TASK_SIZE) && ((va + len - 1) >= TASK_SIZE);
+=======
+	len = bp->attr.bp_len;
+
+	/*
+	 * We don't need to worry about va + len - 1 overflowing:
+	 * we already require that va is aligned to a multiple of len.
+	 */
+	return (va >= TASK_SIZE_MAX) || ((va + len - 1) >= TASK_SIZE_MAX);
+>>>>>>> v4.9.227
 }
 
 int arch_bp_generic_fields(int x86_len, int x86_type,
@@ -262,6 +294,23 @@ static int arch_build_bp_info(struct perf_event *bp)
 		info->type = X86_BREAKPOINT_RW;
 		break;
 	case HW_BREAKPOINT_X:
+<<<<<<< HEAD
+=======
+		/*
+		 * We don't allow kernel breakpoints in places that are not
+		 * acceptable for kprobes.  On non-kprobes kernels, we don't
+		 * allow kernel breakpoints at all.
+		 */
+		if (bp->attr.bp_addr >= TASK_SIZE_MAX) {
+#ifdef CONFIG_KPROBES
+			if (within_kprobe_blacklist(bp->attr.bp_addr))
+				return -EINVAL;
+#else
+			return -EINVAL;
+#endif
+		}
+
+>>>>>>> v4.9.227
 		info->type = X86_BREAKPOINT_EXECUTE;
 		/*
 		 * x86 inst breakpoints need to have a specific undefined len.
@@ -277,6 +326,11 @@ static int arch_build_bp_info(struct perf_event *bp)
 	}
 
 	/* Len */
+<<<<<<< HEAD
+=======
+	info->mask = 0;
+
+>>>>>>> v4.9.227
 	switch (bp->attr.bp_len) {
 	case HW_BREAKPOINT_LEN_1:
 		info->len = X86_BREAKPOINT_LEN_1;
@@ -293,11 +347,36 @@ static int arch_build_bp_info(struct perf_event *bp)
 		break;
 #endif
 	default:
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		/* AMD range breakpoint */
+		if (!is_power_of_2(bp->attr.bp_len))
+			return -EINVAL;
+		if (bp->attr.bp_addr & (bp->attr.bp_len - 1))
+			return -EINVAL;
+
+		if (!boot_cpu_has(X86_FEATURE_BPEXT))
+			return -EOPNOTSUPP;
+
+		/*
+		 * It's impossible to use a range breakpoint to fake out
+		 * user vs kernel detection because bp_len - 1 can't
+		 * have the high bit set.  If we ever allow range instruction
+		 * breakpoints, then we'll have to check for kprobe-blacklisted
+		 * addresses anywhere in the range.
+		 */
+		info->mask = bp->attr.bp_len - 1;
+		info->len = X86_BREAKPOINT_LEN_1;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 /*
  * Validate the arch-specific HW Breakpoint register settings
  */
@@ -312,11 +391,19 @@ int arch_validate_hwbkpt_settings(struct perf_event *bp)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = -EINVAL;
 
 	switch (info->len) {
 	case X86_BREAKPOINT_LEN_1:
 		align = 0;
+=======
+	switch (info->len) {
+	case X86_BREAKPOINT_LEN_1:
+		align = 0;
+		if (info->mask)
+			align = info->mask;
+>>>>>>> v4.9.227
 		break;
 	case X86_BREAKPOINT_LEN_2:
 		align = 1;
@@ -330,7 +417,12 @@ int arch_validate_hwbkpt_settings(struct perf_event *bp)
 		break;
 #endif
 	default:
+<<<<<<< HEAD
 		return ret;
+=======
+		WARN_ON_ONCE(1);
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	/*

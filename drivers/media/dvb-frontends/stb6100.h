@@ -86,7 +86,10 @@ struct stb6100_state {
 	const struct stb6100_config	*config;
 	struct dvb_tuner_ops		ops;
 	struct dvb_frontend		*frontend;
+<<<<<<< HEAD
 	struct tuner_state		status;
+=======
+>>>>>>> v4.9.227
 
 	u32 frequency;
 	u32 srate;

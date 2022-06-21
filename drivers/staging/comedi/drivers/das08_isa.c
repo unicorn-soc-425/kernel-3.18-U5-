@@ -21,6 +21,7 @@
 /*
  * Driver: das08_isa
  * Description: DAS-08 ISA/PC-104 compatible boards
+<<<<<<< HEAD
  * Devices: (Keithley Metrabyte) DAS08 [isa-das08],
  *	    (ComputerBoards) DAS08 [isa-das08]
  *	    (ComputerBoards) DAS08-PGM [das08-pgm]
@@ -33,6 +34,14 @@
  *	    (ComputerBoards) DAS08/JR-16-AO [das08jr-16-ao]
  *	    (ComputerBoards) PC104-DAS08 [pc104-das08]
  *	    (ComputerBoards) DAS08/JR/16 [das08jr/16]
+=======
+ * Devices: [Keithley Metrabyte] DAS08 (isa-das08),
+ *   [ComputerBoards] DAS08 (isa-das08), DAS08-PGM (das08-pgm),
+ *   DAS08-PGH (das08-pgh), DAS08-PGL (das08-pgl), DAS08-AOH (das08-aoh),
+ *   DAS08-AOL (das08-aol), DAS08-AOM (das08-aom), DAS08/JR-AO (das08/jr-ao),
+ *   DAS08/JR-16-AO (das08jr-16-ao), PC104-DAS08 (pc104-das08),
+ *   DAS08/JR/16 (das08jr/16)
+>>>>>>> v4.9.227
  * Author: Warren Jasper, ds, Frank Hess
  * Updated: Fri, 31 Aug 2012 19:19:06 +0100
  * Status: works
@@ -174,7 +183,11 @@ static const struct das08_board_struct das08_isa_boards[] = {
 static int das08_isa_attach(struct comedi_device *dev,
 			    struct comedi_devconfig *it)
 {
+<<<<<<< HEAD
 	const struct das08_board_struct *thisboard = dev->board_ptr;
+=======
+	const struct das08_board_struct *board = dev->board_ptr;
+>>>>>>> v4.9.227
 	struct das08_private_struct *devpriv;
 	int ret;
 
@@ -182,7 +195,11 @@ static int das08_isa_attach(struct comedi_device *dev,
 	if (!devpriv)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	ret = comedi_request_region(dev, it->options[0], thisboard->iosize);
+=======
+	ret = comedi_request_region(dev, it->options[0], board->iosize);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 

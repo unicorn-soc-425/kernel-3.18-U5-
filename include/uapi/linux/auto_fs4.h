@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 /* -*- c -*-
  * linux/include/linux/auto_fs4.h
  *
+=======
+/*
+>>>>>>> v4.9.227
  * Copyright 1999-2000 Jeremy Fitzhardinge <jeremy@goop.org>
  *
  * This file is part of the Linux kernel and is made available under
@@ -38,7 +42,10 @@
 static inline void set_autofs_type_indirect(unsigned int *type)
 {
 	*type = AUTOFS_TYPE_INDIRECT;
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> v4.9.227
 }
 
 static inline unsigned int autofs_type_indirect(unsigned int type)
@@ -49,7 +56,10 @@ static inline unsigned int autofs_type_indirect(unsigned int type)
 static inline void set_autofs_type_direct(unsigned int *type)
 {
 	*type = AUTOFS_TYPE_DIRECT;
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> v4.9.227
 }
 
 static inline unsigned int autofs_type_direct(unsigned int type)
@@ -60,7 +70,10 @@ static inline unsigned int autofs_type_direct(unsigned int type)
 static inline void set_autofs_type_offset(unsigned int *type)
 {
 	*type = AUTOFS_TYPE_OFFSET;
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> v4.9.227
 }
 
 static inline unsigned int autofs_type_offset(unsigned int type)
@@ -81,7 +94,10 @@ static inline unsigned int autofs_type_trigger(unsigned int type)
 static inline void set_autofs_type_any(unsigned int *type)
 {
 	*type = AUTOFS_TYPE_ANY;
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> v4.9.227
 }
 
 static inline unsigned int autofs_type_any(unsigned int type)
@@ -114,7 +130,11 @@ enum autofs_notify {
 /* v4 multi expire (via pipe) */
 struct autofs_packet_expire_multi {
 	struct autofs_packet_hdr hdr;
+<<<<<<< HEAD
         autofs_wqt_t wait_queue_token;
+=======
+	autofs_wqt_t wait_queue_token;
+>>>>>>> v4.9.227
 	int len;
 	char name[NAME_MAX+1];
 };
@@ -154,11 +174,19 @@ union autofs_v5_packet_union {
 	autofs_packet_expire_direct_t expire_direct;
 };
 
+<<<<<<< HEAD
 #define AUTOFS_IOC_EXPIRE_MULTI		_IOW(0x93,0x66,int)
 #define AUTOFS_IOC_EXPIRE_INDIRECT	AUTOFS_IOC_EXPIRE_MULTI
 #define AUTOFS_IOC_EXPIRE_DIRECT	AUTOFS_IOC_EXPIRE_MULTI
 #define AUTOFS_IOC_PROTOSUBVER		_IOR(0x93,0x67,int)
 #define AUTOFS_IOC_ASKUMOUNT		_IOR(0x93,0x70,int)
 
+=======
+#define AUTOFS_IOC_EXPIRE_MULTI		_IOW(0x93, 0x66, int)
+#define AUTOFS_IOC_EXPIRE_INDIRECT	AUTOFS_IOC_EXPIRE_MULTI
+#define AUTOFS_IOC_EXPIRE_DIRECT	AUTOFS_IOC_EXPIRE_MULTI
+#define AUTOFS_IOC_PROTOSUBVER		_IOR(0x93, 0x67, int)
+#define AUTOFS_IOC_ASKUMOUNT		_IOR(0x93, 0x70, int)
+>>>>>>> v4.9.227
 
 #endif /* _LINUX_AUTO_FS4_H */

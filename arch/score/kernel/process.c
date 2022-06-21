@@ -56,8 +56,11 @@ void start_thread(struct pt_regs *regs, unsigned long pc, unsigned long sp)
 	regs->regs[0] = sp;
 }
 
+<<<<<<< HEAD
 void exit_thread(void) {}
 
+=======
+>>>>>>> v4.9.227
 /*
  * When a process does an "exec", machine state like FPU and debug
  * registers need to be reset.  This is a hook function for that.

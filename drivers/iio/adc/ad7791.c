@@ -272,6 +272,7 @@ static ssize_t ad7791_write_frequency(struct device *dev,
 	struct ad7791_state *st = iio_priv(indio_dev);
 	int i, ret;
 
+<<<<<<< HEAD
 	mutex_lock(&indio_dev->mlock);
 	if (iio_buffer_enabled(indio_dev)) {
 		mutex_unlock(&indio_dev->mlock);
@@ -296,6 +297,24 @@ static ssize_t ad7791_write_frequency(struct device *dev,
 	}
 
 	return ret ? ret : len;
+=======
+	for (i = 0; i < ARRAY_SIZE(ad7791_sample_freq_avail); i++)
+		if (sysfs_streq(ad7791_sample_freq_avail[i], buf))
+			break;
+	if (i == ARRAY_SIZE(ad7791_sample_freq_avail))
+		return -EINVAL;
+
+	ret = iio_device_claim_direct_mode(indio_dev);
+	if (ret)
+		return ret;
+	st->filter &= ~AD7791_FILTER_RATE_MASK;
+	st->filter |= i;
+	ad_sd_write_reg(&st->sd, AD7791_REG_FILTER, sizeof(st->filter),
+			st->filter);
+	iio_device_release_direct_mode(indio_dev);
+
+	return len;
+>>>>>>> v4.9.227
 }
 
 static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
@@ -383,6 +402,10 @@ static int ad7791_probe(struct spi_device *spi)
 	spi_set_drvdata(spi, indio_dev);
 
 	indio_dev->dev.parent = &spi->dev;
+<<<<<<< HEAD
+=======
+	indio_dev->dev.of_node = spi->dev.of_node;
+>>>>>>> v4.9.227
 	indio_dev->name = spi_get_device_id(spi)->name;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->channels = st->info->channels;
@@ -440,7 +463,10 @@ MODULE_DEVICE_TABLE(spi, ad7791_spi_ids);
 static struct spi_driver ad7791_driver = {
 	.driver = {
 		.name	= "ad7791",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ad7791_probe,
 	.remove		= ad7791_remove,

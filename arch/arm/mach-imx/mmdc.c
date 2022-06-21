@@ -17,10 +17,24 @@
 #include <linux/of_address.h>
 #include <linux/of_device.h>
 
+<<<<<<< HEAD
+=======
+#include "common.h"
+
+>>>>>>> v4.9.227
 #define MMDC_MAPSR		0x404
 #define BP_MMDC_MAPSR_PSD	0
 #define BP_MMDC_MAPSR_PSS	4
 
+<<<<<<< HEAD
+=======
+#define MMDC_MDMISC		0x18
+#define BM_MMDC_MDMISC_DDR_TYPE	0x18
+#define BP_MMDC_MDMISC_DDR_TYPE	0x3
+
+static int ddr_type;
+
+>>>>>>> v4.9.227
 static int imx_mmdc_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
@@ -31,6 +45,15 @@ static int imx_mmdc_probe(struct platform_device *pdev)
 	mmdc_base = of_iomap(np, 0);
 	WARN_ON(!mmdc_base);
 
+<<<<<<< HEAD
+=======
+	reg = mmdc_base + MMDC_MDMISC;
+	/* Get ddr type */
+	val = readl_relaxed(reg);
+	ddr_type = (val & BM_MMDC_MDMISC_DDR_TYPE) >>
+		 BP_MMDC_MDMISC_DDR_TYPE;
+
+>>>>>>> v4.9.227
 	reg = mmdc_base + MMDC_MAPSR;
 
 	/* Enable automatic power saving */
@@ -51,7 +74,16 @@ static int imx_mmdc_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id imx_mmdc_dt_ids[] = {
+=======
+int imx_mmdc_get_ddr_type(void)
+{
+	return ddr_type;
+}
+
+static const struct of_device_id imx_mmdc_dt_ids[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "fsl,imx6q-mmdc", },
 	{ /* sentinel */ }
 };
@@ -59,7 +91,10 @@ static struct of_device_id imx_mmdc_dt_ids[] = {
 static struct platform_driver imx_mmdc_driver = {
 	.driver		= {
 		.name	= "imx-mmdc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = imx_mmdc_dt_ids,
 	},
 	.probe		= imx_mmdc_probe,

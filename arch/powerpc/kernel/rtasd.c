@@ -49,7 +49,11 @@ static unsigned int rtas_error_log_buffer_max;
 static unsigned int event_scan;
 static unsigned int rtas_event_scan_rate;
 
+<<<<<<< HEAD
 static int full_rtas_msgs = 0;
+=======
+static bool full_rtas_msgs;
+>>>>>>> v4.9.227
 
 /* Stop logging to nvram after first fatal error */
 static int logging_enabled; /* Until we initialize everything,
@@ -442,7 +446,11 @@ static void do_event_scan(void)
 }
 
 static void rtas_event_scan(struct work_struct *w);
+<<<<<<< HEAD
 DECLARE_DELAYED_WORK(event_scan_work, rtas_event_scan);
+=======
+static DECLARE_DELAYED_WORK(event_scan_work, rtas_event_scan);
+>>>>>>> v4.9.227
 
 /*
  * Delay should be at least one second since some machines have problems if
@@ -483,7 +491,11 @@ static void rtas_event_scan(struct work_struct *w)
 }
 
 #ifdef CONFIG_PPC64
+<<<<<<< HEAD
 static void retreive_nvram_error_log(void)
+=======
+static void retrieve_nvram_error_log(void)
+>>>>>>> v4.9.227
 {
 	unsigned int err_type ;
 	int rc ;
@@ -501,7 +513,11 @@ static void retreive_nvram_error_log(void)
 	}
 }
 #else /* CONFIG_PPC64 */
+<<<<<<< HEAD
 static void retreive_nvram_error_log(void)
+=======
+static void retrieve_nvram_error_log(void)
+>>>>>>> v4.9.227
 {
 }
 #endif /* CONFIG_PPC64 */
@@ -513,7 +529,11 @@ static void start_event_scan(void)
 		 (30000 / rtas_event_scan_rate));
 
 	/* Retrieve errors from nvram if any */
+<<<<<<< HEAD
 	retreive_nvram_error_log();
+=======
+	retrieve_nvram_error_log();
+>>>>>>> v4.9.227
 
 	schedule_delayed_work_on(cpumask_first(cpu_online_mask),
 				 &event_scan_work, event_scan_delay);
@@ -526,10 +546,15 @@ void rtas_cancel_event_scan(void)
 }
 EXPORT_SYMBOL_GPL(rtas_cancel_event_scan);
 
+<<<<<<< HEAD
 static int __init rtas_init(void)
 {
 	struct proc_dir_entry *entry;
 
+=======
+static int __init rtas_event_scan_init(void)
+{
+>>>>>>> v4.9.227
 	if (!machine_is(pseries) && !machine_is(chrp))
 		return 0;
 
@@ -562,13 +587,35 @@ static int __init rtas_init(void)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
+=======
+	start_event_scan();
+
+	return 0;
+}
+arch_initcall(rtas_event_scan_init);
+
+static int __init rtas_init(void)
+{
+	struct proc_dir_entry *entry;
+
+	if (!machine_is(pseries) && !machine_is(chrp))
+		return 0;
+
+	if (!rtas_log_buf)
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	entry = proc_create("powerpc/rtas/error_log", S_IRUSR, NULL,
 			    &proc_rtas_log_operations);
 	if (!entry)
 		printk(KERN_ERR "Failed to create error_log proc entry\n");
 
+<<<<<<< HEAD
 	start_event_scan();
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 __initcall(rtas_init);
@@ -592,11 +639,15 @@ __setup("surveillance=", surveillance_setup);
 
 static int __init rtasmsgs_setup(char *str)
 {
+<<<<<<< HEAD
 	if (strcmp(str, "on") == 0)
 		full_rtas_msgs = 1;
 	else if (strcmp(str, "off") == 0)
 		full_rtas_msgs = 0;
 
 	return 1;
+=======
+	return (kstrtobool(str, &full_rtas_msgs) == 0);
+>>>>>>> v4.9.227
 }
 __setup("rtasmsgs=", rtasmsgs_setup);

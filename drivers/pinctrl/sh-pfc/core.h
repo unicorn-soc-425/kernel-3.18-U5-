@@ -10,12 +10,16 @@
 #ifndef __SH_PFC_CORE_H__
 #define __SH_PFC_CORE_H__
 
+<<<<<<< HEAD
 #include <linux/compiler.h>
 #include <linux/spinlock.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/types.h>
 
 #include "sh_pfc.h"
 
+<<<<<<< HEAD
 struct sh_pfc_window {
 	phys_addr_t phys;
 	void __iomem *virt;
@@ -25,11 +29,14 @@ struct sh_pfc_window {
 struct sh_pfc_chip;
 struct sh_pfc_pinctrl;
 
+=======
+>>>>>>> v4.9.227
 struct sh_pfc_pin_range {
 	u16 start;
 	u16 end;
 };
 
+<<<<<<< HEAD
 struct sh_pfc {
 	struct device *dev;
 	const struct sh_pfc_soc_info *info;
@@ -61,10 +68,23 @@ unsigned long sh_pfc_read_raw_reg(void __iomem *mapped_reg,
 				  unsigned long reg_width);
 void sh_pfc_write_raw_reg(void __iomem *mapped_reg, unsigned long reg_width,
 			  unsigned long data);
+=======
+int sh_pfc_register_gpiochip(struct sh_pfc *pfc);
+
+int sh_pfc_register_pinctrl(struct sh_pfc *pfc);
+
+u32 sh_pfc_read_raw_reg(void __iomem *mapped_reg, unsigned int reg_width);
+void sh_pfc_write_raw_reg(void __iomem *mapped_reg, unsigned int reg_width,
+			  u32 data);
+u32 sh_pfc_read_reg(struct sh_pfc *pfc, u32 reg, unsigned int width);
+void sh_pfc_write_reg(struct sh_pfc *pfc, u32 reg, unsigned int width,
+		      u32 data);
+>>>>>>> v4.9.227
 
 int sh_pfc_get_pin_index(struct sh_pfc *pfc, unsigned int pin);
 int sh_pfc_config_mux(struct sh_pfc *pfc, unsigned mark, int pinmux_type);
 
+<<<<<<< HEAD
 extern const struct sh_pfc_soc_info r8a73a4_pinmux_info;
 extern const struct sh_pfc_soc_info r8a7740_pinmux_info;
 extern const struct sh_pfc_soc_info r8a7778_pinmux_info;
@@ -85,5 +105,10 @@ extern const struct sh_pfc_soc_info sh7757_pinmux_info;
 extern const struct sh_pfc_soc_info sh7785_pinmux_info;
 extern const struct sh_pfc_soc_info sh7786_pinmux_info;
 extern const struct sh_pfc_soc_info shx3_pinmux_info;
+=======
+const struct sh_pfc_bias_info *
+sh_pfc_pin_to_bias_info(const struct sh_pfc_bias_info *info,
+			unsigned int num, unsigned int pin);
+>>>>>>> v4.9.227
 
 #endif /* __SH_PFC_CORE_H__ */

@@ -54,6 +54,7 @@
 #include <asm/ioctls.h>
 #include "internal.h"
 
+<<<<<<< HEAD
 int compat_log = 1;
 
 int compat_printk(const char *fmt, ...)
@@ -68,6 +69,8 @@ int compat_printk(const char *fmt, ...)
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Not all architectures have sys_utime, so implement this in terms
  * of sys_utimes.
@@ -562,7 +565,11 @@ ssize_t compat_rw_copy_check_uvector(int type,
 		goto out;
 
 	ret = -EINVAL;
+<<<<<<< HEAD
 	if (nr_segs > UIO_MAXIOV || nr_segs < 0)
+=======
+	if (nr_segs > UIO_MAXIOV)
+>>>>>>> v4.9.227
 		goto out;
 	if (nr_segs > fast_segs) {
 		ret = -ENOMEM;
@@ -792,7 +799,11 @@ COMPAT_SYSCALL_DEFINE5(mount, const char __user *, dev_name,
 		       const void __user *, data)
 {
 	char *kernel_type;
+<<<<<<< HEAD
 	unsigned long data_page;
+=======
+	void *options;
+>>>>>>> v4.9.227
 	char *kernel_dev;
 	int retval;
 
@@ -806,6 +817,7 @@ COMPAT_SYSCALL_DEFINE5(mount, const char __user *, dev_name,
 	if (IS_ERR(kernel_dev))
 		goto out1;
 
+<<<<<<< HEAD
 	retval = copy_mount_options(data, &data_page);
 	if (retval < 0)
 		goto out2;
@@ -817,15 +829,35 @@ COMPAT_SYSCALL_DEFINE5(mount, const char __user *, dev_name,
 			do_ncp_super_data_conv((void *)data_page);
 		} else if (!strcmp(kernel_type, NFS4_NAME)) {
 			if (do_nfs4_super_data_conv((void *) data_page))
+=======
+	options = copy_mount_options(data);
+	retval = PTR_ERR(options);
+	if (IS_ERR(options))
+		goto out2;
+
+	if (kernel_type && options) {
+		if (!strcmp(kernel_type, NCPFS_NAME)) {
+			do_ncp_super_data_conv(options);
+		} else if (!strcmp(kernel_type, NFS4_NAME)) {
+			retval = -EINVAL;
+			if (do_nfs4_super_data_conv(options))
+>>>>>>> v4.9.227
 				goto out3;
 		}
 	}
 
+<<<<<<< HEAD
 	retval = do_mount(kernel_dev, dir_name, kernel_type,
 			flags, (void*)data_page);
 
  out3:
 	free_page(data_page);
+=======
+	retval = do_mount(kernel_dev, dir_name, kernel_type, flags, options);
+
+ out3:
+	kfree(options);
+>>>>>>> v4.9.227
  out2:
 	kfree(kernel_dev);
  out1:
@@ -847,10 +879,19 @@ struct compat_readdir_callback {
 	int result;
 };
 
+<<<<<<< HEAD
 static int compat_fillonedir(void *__buf, const char *name, int namlen,
 			loff_t offset, u64 ino, unsigned int d_type)
 {
 	struct compat_readdir_callback *buf = __buf;
+=======
+static int compat_fillonedir(struct dir_context *ctx, const char *name,
+			     int namlen, loff_t offset, u64 ino,
+			     unsigned int d_type)
+{
+	struct compat_readdir_callback *buf =
+		container_of(ctx, struct compat_readdir_callback, ctx);
+>>>>>>> v4.9.227
 	struct compat_old_linux_dirent __user *dirent;
 	compat_ulong_t d_ino;
 
@@ -883,7 +924,11 @@ COMPAT_SYSCALL_DEFINE3(old_readdir, unsigned int, fd,
 		struct compat_old_linux_dirent __user *, dirent, unsigned int, count)
 {
 	int error;
+<<<<<<< HEAD
 	struct fd f = fdget(fd);
+=======
+	struct fd f = fdget_pos(fd);
+>>>>>>> v4.9.227
 	struct compat_readdir_callback buf = {
 		.ctx.actor = compat_fillonedir,
 		.dirent = dirent
@@ -896,7 +941,11 @@ COMPAT_SYSCALL_DEFINE3(old_readdir, unsigned int, fd,
 	if (buf.result)
 		error = buf.result;
 
+<<<<<<< HEAD
 	fdput(f);
+=======
+	fdput_pos(f);
+>>>>>>> v4.9.227
 	return error;
 }
 
@@ -915,11 +964,20 @@ struct compat_getdents_callback {
 	int error;
 };
 
+<<<<<<< HEAD
 static int compat_filldir(void *__buf, const char *name, int namlen,
 		loff_t offset, u64 ino, unsigned int d_type)
 {
 	struct compat_linux_dirent __user * dirent;
 	struct compat_getdents_callback *buf = __buf;
+=======
+static int compat_filldir(struct dir_context *ctx, const char *name, int namlen,
+		loff_t offset, u64 ino, unsigned int d_type)
+{
+	struct compat_linux_dirent __user * dirent;
+	struct compat_getdents_callback *buf =
+		container_of(ctx, struct compat_getdents_callback, ctx);
+>>>>>>> v4.9.227
 	compat_ulong_t d_ino;
 	int reclen = ALIGN(offsetof(struct compat_linux_dirent, d_name) +
 		namlen + 2, sizeof(compat_long_t));
@@ -934,6 +992,11 @@ static int compat_filldir(void *__buf, const char *name, int namlen,
 	}
 	dirent = buf->previous;
 	if (dirent) {
+<<<<<<< HEAD
+=======
+		if (signal_pending(current))
+			return -EINTR;
+>>>>>>> v4.9.227
 		if (__put_user(offset, &dirent->d_off))
 			goto efault;
 	}
@@ -973,7 +1036,11 @@ COMPAT_SYSCALL_DEFINE3(getdents, unsigned int, fd,
 	if (!access_ok(VERIFY_WRITE, dirent, count))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	f = fdget(fd);
+=======
+	f = fdget_pos(fd);
+>>>>>>> v4.9.227
 	if (!f.file)
 		return -EBADF;
 
@@ -987,7 +1054,11 @@ COMPAT_SYSCALL_DEFINE3(getdents, unsigned int, fd,
 		else
 			error = count - buf.count;
 	}
+<<<<<<< HEAD
 	fdput(f);
+=======
+	fdput_pos(f);
+>>>>>>> v4.9.227
 	return error;
 }
 
@@ -1001,11 +1072,21 @@ struct compat_getdents_callback64 {
 	int error;
 };
 
+<<<<<<< HEAD
 static int compat_filldir64(void * __buf, const char * name, int namlen, loff_t offset,
 		     u64 ino, unsigned int d_type)
 {
 	struct linux_dirent64 __user *dirent;
 	struct compat_getdents_callback64 *buf = __buf;
+=======
+static int compat_filldir64(struct dir_context *ctx, const char *name,
+			    int namlen, loff_t offset, u64 ino,
+			    unsigned int d_type)
+{
+	struct linux_dirent64 __user *dirent;
+	struct compat_getdents_callback64 *buf =
+		container_of(ctx, struct compat_getdents_callback64, ctx);
+>>>>>>> v4.9.227
 	int reclen = ALIGN(offsetof(struct linux_dirent64, d_name) + namlen + 1,
 		sizeof(u64));
 	u64 off;
@@ -1016,6 +1097,11 @@ static int compat_filldir64(void * __buf, const char * name, int namlen, loff_t 
 	dirent = buf->previous;
 
 	if (dirent) {
+<<<<<<< HEAD
+=======
+		if (signal_pending(current))
+			return -EINTR;
+>>>>>>> v4.9.227
 		if (__put_user_unaligned(offset, &dirent->d_off))
 			goto efault;
 	}
@@ -1058,7 +1144,11 @@ COMPAT_SYSCALL_DEFINE3(getdents64, unsigned int, fd,
 	if (!access_ok(VERIFY_WRITE, dirent, count))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	f = fdget(fd);
+=======
+	f = fdget_pos(fd);
+>>>>>>> v4.9.227
 	if (!f.file)
 		return -EBADF;
 
@@ -1073,7 +1163,11 @@ COMPAT_SYSCALL_DEFINE3(getdents64, unsigned int, fd,
 		else
 			error = count - buf.count;
 	}
+<<<<<<< HEAD
 	fdput(f);
+=======
+	fdput_pos(f);
+>>>>>>> v4.9.227
 	return error;
 }
 #endif /* __ARCH_WANT_COMPAT_SYS_GETDENTS64 */

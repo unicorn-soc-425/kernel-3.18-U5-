@@ -491,7 +491,11 @@ static int au1x_ic_settype(struct irq_data *d, unsigned int flow_type)
 	default:
 		ret = -EINVAL;
 	}
+<<<<<<< HEAD
 	__irq_set_chip_handler_name_locked(d->irq, chip, handler, name);
+=======
+	irq_set_chip_handler_name_locked(d, chip, handler, name);
+>>>>>>> v4.9.227
 
 	wmb();
 
@@ -703,7 +707,11 @@ static int au1300_gpic_settype(struct irq_data *d, unsigned int type)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	__irq_set_chip_handler_name_locked(d->irq, &au1300_gpic, hdl, name);
+=======
+	irq_set_chip_handler_name_locked(d, &au1300_gpic, hdl, name);
+>>>>>>> v4.9.227
 
 	au1300_gpic_chgcfg(d->irq - ALCHEMY_GPIC_INT_BASE, GPIC_CFG_IC_MASK, s);
 
@@ -851,7 +859,11 @@ static struct syscore_ops alchemy_gpic_pmops = {
 
 /* create chained handlers for the 4 IC requests to the MIPS IRQ ctrl */
 #define DISP(name, base, addr)						      \
+<<<<<<< HEAD
 static void au1000_##name##_dispatch(unsigned int irq, struct irq_desc *d)    \
+=======
+static void au1000_##name##_dispatch(struct irq_desc *d)		      \
+>>>>>>> v4.9.227
 {									      \
 	unsigned long r = __raw_readl((void __iomem *)KSEG1ADDR(addr));	      \
 	if (likely(r))							      \
@@ -865,7 +877,11 @@ DISP(ic0r1, AU1000_INTC0_INT_BASE, AU1000_IC0_PHYS_ADDR + IC_REQ1INT)
 DISP(ic1r0, AU1000_INTC1_INT_BASE, AU1000_IC1_PHYS_ADDR + IC_REQ0INT)
 DISP(ic1r1, AU1000_INTC1_INT_BASE, AU1000_IC1_PHYS_ADDR + IC_REQ1INT)
 
+<<<<<<< HEAD
 static void alchemy_gpic_dispatch(unsigned int irq, struct irq_desc *d)
+=======
+static void alchemy_gpic_dispatch(struct irq_desc *d)
+>>>>>>> v4.9.227
 {
 	int i = __raw_readl(AU1300_GPIC_ADDR + AU1300_GPIC_PRIENC);
 	generic_handle_irq(ALCHEMY_GPIC_INT_BASE + i);

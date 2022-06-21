@@ -366,7 +366,10 @@ MODULE_DEVICE_TABLE(of, bpp_match);
 static struct platform_driver bpp_sbus_driver = {
 	.driver = {
 		.name = "bpp",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = bpp_match,
 	},
 	.probe		= bpp_probe,

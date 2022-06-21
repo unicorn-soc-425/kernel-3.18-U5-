@@ -8,8 +8,11 @@
  * Common Clock Framework support for S3C2443 and following SoCs.
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/clkdev.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -373,10 +376,17 @@ static struct notifier_block s3c2443_restart_handler = {
  * Only necessary until the devicetree-move is complete
  */
 struct samsung_fixed_rate_clock s3c2443_common_frate_clks[] __initdata = {
+<<<<<<< HEAD
 	FRATE(0, "xti", NULL, CLK_IS_ROOT, 0),
 	FRATE(0, "ext", NULL, CLK_IS_ROOT, 0),
 	FRATE(0, "ext_i2s", NULL, CLK_IS_ROOT, 0),
 	FRATE(0, "ext_uart", NULL, CLK_IS_ROOT, 0),
+=======
+	FRATE(0, "xti", NULL, 0, 0),
+	FRATE(0, "ext", NULL, 0, 0),
+	FRATE(0, "ext_i2s", NULL, 0, 0),
+	FRATE(0, "ext_uart", NULL, 0, 0),
+>>>>>>> v4.9.227
 };
 
 static void __init s3c2443_common_clk_register_fixed_ext(
@@ -402,8 +412,11 @@ void __init s3c2443_common_clk_init(struct device_node *np, unsigned long xti_f,
 	}
 
 	ctx = samsung_clk_init(np, reg_base, NR_CLKS);
+<<<<<<< HEAD
 	if (!ctx)
 		panic("%s: unable to allocate context.\n", __func__);
+=======
+>>>>>>> v4.9.227
 
 	/* Register external clocks only in non-dt cases */
 	if (!np)

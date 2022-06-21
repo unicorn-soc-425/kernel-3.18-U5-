@@ -31,6 +31,7 @@ static long compat_keyctl_instantiate_key_iov(
 	key_serial_t ringid)
 {
 	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
+<<<<<<< HEAD
 	long ret;
 
 	if (!_payload_iov || !ioc)
@@ -55,6 +56,23 @@ no_payload_free:
 		kfree(iov);
 no_payload:
 	return keyctl_instantiate_key_common(id, NULL, 0, 0, ringid);
+=======
+	struct iov_iter from;
+	long ret;
+
+	if (!_payload_iov)
+		ioc = 0;
+
+	ret = compat_import_iovec(WRITE, _payload_iov, ioc,
+				  ARRAY_SIZE(iovstack), &iov,
+				  &from);
+	if (ret < 0)
+		return ret;
+
+	ret = keyctl_instantiate_key_common(id, &from, ringid);
+	kfree(iov);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -141,6 +159,13 @@ COMPAT_SYSCALL_DEFINE5(keyctl, u32, option,
 	case KEYCTL_GET_PERSISTENT:
 		return keyctl_get_persistent(arg2, arg3);
 
+<<<<<<< HEAD
+=======
+	case KEYCTL_DH_COMPUTE:
+		return keyctl_dh_compute(compat_ptr(arg2), compat_ptr(arg3),
+					 arg4, compat_ptr(arg5));
+
+>>>>>>> v4.9.227
 	default:
 		return -EOPNOTSUPP;
 	}

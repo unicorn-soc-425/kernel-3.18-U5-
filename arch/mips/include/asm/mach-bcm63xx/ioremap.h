@@ -3,12 +3,20 @@
 
 #include <bcm63xx_cpu.h>
 
+<<<<<<< HEAD
 static inline phys_t fixup_bigphys_addr(phys_t phys_addr, phys_t size)
+=======
+static inline phys_addr_t fixup_bigphys_addr(phys_addr_t phys_addr, phys_addr_t size)
+>>>>>>> v4.9.227
 {
 	return phys_addr;
 }
 
+<<<<<<< HEAD
 static inline int is_bcm63xx_internal_registers(phys_t offset)
+=======
+static inline int is_bcm63xx_internal_registers(phys_addr_t offset)
+>>>>>>> v4.9.227
 {
 	switch (bcm63xx_get_cpu_id()) {
 	case BCM3368_CPU_ID:
@@ -32,7 +40,11 @@ static inline int is_bcm63xx_internal_registers(phys_t offset)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void __iomem *plat_ioremap(phys_t offset, unsigned long size,
+=======
+static inline void __iomem *plat_ioremap(phys_addr_t offset, unsigned long size,
+>>>>>>> v4.9.227
 					 unsigned long flags)
 {
 	if (is_bcm63xx_internal_registers(offset))

@@ -9,7 +9,11 @@
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/kobject.h>
 #include <linux/err.h>
 
@@ -20,6 +24,12 @@
 #include <xen/xenbus.h>
 #include <xen/interface/xen.h>
 #include <xen/interface/version.h>
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_XEN_HAVE_VPMU
+#include <xen/interface/xenpmu.h>
+#endif
+>>>>>>> v4.9.227
 
 #define HYPERVISOR_ATTR_RO(_name) \
 static struct hyp_sysfs_attr  _name##_attr = __ATTR_RO(_name)
@@ -47,11 +57,14 @@ static int __init xen_sysfs_type_init(void)
 	return sysfs_create_file(hypervisor_kobj, &type_attr.attr);
 }
 
+<<<<<<< HEAD
 static void xen_sysfs_type_destroy(void)
 {
 	sysfs_remove_file(hypervisor_kobj, &type_attr.attr);
 }
 
+=======
+>>>>>>> v4.9.227
 /* xen version attributes */
 static ssize_t major_show(struct hyp_sysfs_attr *attr, char *buffer)
 {
@@ -108,11 +121,14 @@ static int __init xen_sysfs_version_init(void)
 	return sysfs_create_group(hypervisor_kobj, &version_group);
 }
 
+<<<<<<< HEAD
 static void xen_sysfs_version_destroy(void)
 {
 	sysfs_remove_group(hypervisor_kobj, &version_group);
 }
 
+=======
+>>>>>>> v4.9.227
 /* UUID */
 
 static ssize_t uuid_show_fallback(struct hyp_sysfs_attr *attr, char *buffer)
@@ -154,11 +170,14 @@ static int __init xen_sysfs_uuid_init(void)
 	return sysfs_create_file(hypervisor_kobj, &uuid_attr.attr);
 }
 
+<<<<<<< HEAD
 static void xen_sysfs_uuid_destroy(void)
 {
 	sysfs_remove_file(hypervisor_kobj, &uuid_attr.attr);
 }
 
+=======
+>>>>>>> v4.9.227
 /* xen compilation attributes */
 
 static ssize_t compiler_show(struct hyp_sysfs_attr *attr, char *buffer)
@@ -227,16 +246,23 @@ static const struct attribute_group xen_compilation_group = {
 	.attrs = xen_compile_attrs,
 };
 
+<<<<<<< HEAD
 static int __init xen_compilation_init(void)
+=======
+static int __init xen_sysfs_compilation_init(void)
+>>>>>>> v4.9.227
 {
 	return sysfs_create_group(hypervisor_kobj, &xen_compilation_group);
 }
 
+<<<<<<< HEAD
 static void xen_compilation_destroy(void)
 {
 	sysfs_remove_group(hypervisor_kobj, &xen_compilation_group);
 }
 
+=======
+>>>>>>> v4.9.227
 /* xen properties info */
 
 static ssize_t capabilities_show(struct hyp_sysfs_attr *attr, char *buffer)
@@ -358,16 +384,138 @@ static const struct attribute_group xen_properties_group = {
 	.attrs = xen_properties_attrs,
 };
 
+<<<<<<< HEAD
 static int __init xen_properties_init(void)
+=======
+static int __init xen_sysfs_properties_init(void)
+>>>>>>> v4.9.227
 {
 	return sysfs_create_group(hypervisor_kobj, &xen_properties_group);
 }
 
+<<<<<<< HEAD
 static void xen_properties_destroy(void)
 {
 	sysfs_remove_group(hypervisor_kobj, &xen_properties_group);
 }
 
+=======
+#ifdef CONFIG_XEN_HAVE_VPMU
+struct pmu_mode {
+	const char *name;
+	uint32_t mode;
+};
+
+static struct pmu_mode pmu_modes[] = {
+	{"off", XENPMU_MODE_OFF},
+	{"self", XENPMU_MODE_SELF},
+	{"hv", XENPMU_MODE_HV},
+	{"all", XENPMU_MODE_ALL}
+};
+
+static ssize_t pmu_mode_store(struct hyp_sysfs_attr *attr,
+			      const char *buffer, size_t len)
+{
+	int ret;
+	struct xen_pmu_params xp;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(pmu_modes); i++) {
+		if (strncmp(buffer, pmu_modes[i].name, len - 1) == 0) {
+			xp.val = pmu_modes[i].mode;
+			break;
+		}
+	}
+
+	if (i == ARRAY_SIZE(pmu_modes))
+		return -EINVAL;
+
+	xp.version.maj = XENPMU_VER_MAJ;
+	xp.version.min = XENPMU_VER_MIN;
+	ret = HYPERVISOR_xenpmu_op(XENPMU_mode_set, &xp);
+	if (ret)
+		return ret;
+
+	return len;
+}
+
+static ssize_t pmu_mode_show(struct hyp_sysfs_attr *attr, char *buffer)
+{
+	int ret;
+	struct xen_pmu_params xp;
+	int i;
+	uint32_t mode;
+
+	xp.version.maj = XENPMU_VER_MAJ;
+	xp.version.min = XENPMU_VER_MIN;
+	ret = HYPERVISOR_xenpmu_op(XENPMU_mode_get, &xp);
+	if (ret)
+		return ret;
+
+	mode = (uint32_t)xp.val;
+	for (i = 0; i < ARRAY_SIZE(pmu_modes); i++) {
+		if (mode == pmu_modes[i].mode)
+			return sprintf(buffer, "%s\n", pmu_modes[i].name);
+	}
+
+	return -EINVAL;
+}
+HYPERVISOR_ATTR_RW(pmu_mode);
+
+static ssize_t pmu_features_store(struct hyp_sysfs_attr *attr,
+				  const char *buffer, size_t len)
+{
+	int ret;
+	uint32_t features;
+	struct xen_pmu_params xp;
+
+	ret = kstrtou32(buffer, 0, &features);
+	if (ret)
+		return ret;
+
+	xp.val = features;
+	xp.version.maj = XENPMU_VER_MAJ;
+	xp.version.min = XENPMU_VER_MIN;
+	ret = HYPERVISOR_xenpmu_op(XENPMU_feature_set, &xp);
+	if (ret)
+		return ret;
+
+	return len;
+}
+
+static ssize_t pmu_features_show(struct hyp_sysfs_attr *attr, char *buffer)
+{
+	int ret;
+	struct xen_pmu_params xp;
+
+	xp.version.maj = XENPMU_VER_MAJ;
+	xp.version.min = XENPMU_VER_MIN;
+	ret = HYPERVISOR_xenpmu_op(XENPMU_feature_get, &xp);
+	if (ret)
+		return ret;
+
+	return sprintf(buffer, "0x%x\n", (uint32_t)xp.val);
+}
+HYPERVISOR_ATTR_RW(pmu_features);
+
+static struct attribute *xen_pmu_attrs[] = {
+	&pmu_mode_attr.attr,
+	&pmu_features_attr.attr,
+	NULL
+};
+
+static const struct attribute_group xen_pmu_group = {
+	.name = "pmu",
+	.attrs = xen_pmu_attrs,
+};
+
+static int __init xen_sysfs_pmu_init(void)
+{
+	return sysfs_create_group(hypervisor_kobj, &xen_pmu_group);
+}
+#endif
+
+>>>>>>> v4.9.227
 static int __init hyper_sysfs_init(void)
 {
 	int ret;
@@ -381,12 +529,17 @@ static int __init hyper_sysfs_init(void)
 	ret = xen_sysfs_version_init();
 	if (ret)
 		goto version_out;
+<<<<<<< HEAD
 	ret = xen_compilation_init();
+=======
+	ret = xen_sysfs_compilation_init();
+>>>>>>> v4.9.227
 	if (ret)
 		goto comp_out;
 	ret = xen_sysfs_uuid_init();
 	if (ret)
 		goto uuid_out;
+<<<<<<< HEAD
 	ret = xen_properties_init();
 	if (ret)
 		goto prop_out;
@@ -416,6 +569,35 @@ static void __exit hyper_sysfs_exit(void)
 }
 module_init(hyper_sysfs_init);
 module_exit(hyper_sysfs_exit);
+=======
+	ret = xen_sysfs_properties_init();
+	if (ret)
+		goto prop_out;
+#ifdef CONFIG_XEN_HAVE_VPMU
+	if (xen_initial_domain()) {
+		ret = xen_sysfs_pmu_init();
+		if (ret) {
+			sysfs_remove_group(hypervisor_kobj,
+					   &xen_properties_group);
+			goto prop_out;
+		}
+	}
+#endif
+	goto out;
+
+prop_out:
+	sysfs_remove_file(hypervisor_kobj, &uuid_attr.attr);
+uuid_out:
+	sysfs_remove_group(hypervisor_kobj, &xen_compilation_group);
+comp_out:
+	sysfs_remove_group(hypervisor_kobj, &version_group);
+version_out:
+	sysfs_remove_file(hypervisor_kobj, &type_attr.attr);
+out:
+	return ret;
+}
+device_initcall(hyper_sysfs_init);
+>>>>>>> v4.9.227
 
 static ssize_t hyp_sysfs_show(struct kobject *kobj,
 			      struct attribute *attr,

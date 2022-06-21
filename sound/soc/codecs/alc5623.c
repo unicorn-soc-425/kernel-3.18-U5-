@@ -55,10 +55,16 @@ static inline int alc5623_reset(struct snd_soc_codec *codec)
 static int amp_mixer_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+
+>>>>>>> v4.9.227
 	/* to power-on/off class-d amp generators/speaker */
 	/* need to write to 'index-46h' register :        */
 	/* so write index num (here 0x46) to reg 0x6a     */
 	/* and then 0xffff/0 to reg 0x6c                  */
+<<<<<<< HEAD
 	snd_soc_write(w->codec, ALC5623_HID_CTRL_INDEX, 0x46);
 
 	switch (event) {
@@ -67,6 +73,16 @@ static int amp_mixer_event(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		snd_soc_write(w->codec, ALC5623_HID_CTRL_DATA, 0);
+=======
+	snd_soc_write(codec, ALC5623_HID_CTRL_INDEX, 0x46);
+
+	switch (event) {
+	case SND_SOC_DAPM_PRE_PMU:
+		snd_soc_write(codec, ALC5623_HID_CTRL_DATA, 0xFFFF);
+		break;
+	case SND_SOC_DAPM_POST_PMD:
+		snd_soc_write(codec, ALC5623_HID_CTRL_DATA, 0);
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -80,12 +96,20 @@ static int amp_mixer_event(struct snd_soc_dapm_widget *w,
 static const DECLARE_TLV_DB_SCALE(vol_tlv, -3450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(hp_tlv, -4650, 150, 0);
 static const DECLARE_TLV_DB_SCALE(adc_rec_tlv, -1650, 150, 0);
+<<<<<<< HEAD
 static const unsigned int boost_tlv[] = {
 	TLV_DB_RANGE_HEAD(3),
 	0, 0, TLV_DB_SCALE_ITEM(0, 0, 0),
 	1, 1, TLV_DB_SCALE_ITEM(2000, 0, 0),
 	2, 2, TLV_DB_SCALE_ITEM(3000, 0, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(boost_tlv,
+	0, 0, TLV_DB_SCALE_ITEM(0, 0, 0),
+	1, 1, TLV_DB_SCALE_ITEM(2000, 0, 0),
+	2, 2, TLV_DB_SCALE_ITEM(3000, 0, 0)
+);
+>>>>>>> v4.9.227
 static const DECLARE_TLV_DB_SCALE(dig_tlv, 0, 600, 0);
 
 static const struct snd_kcontrol_new alc5621_vol_snd_controls[] = {
@@ -824,7 +848,10 @@ static int alc5623_set_bias_level(struct snd_soc_codec *codec,
 		snd_soc_write(codec, ALC5623_PWR_MANAG_ADD1, 0);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -866,7 +893,10 @@ static int alc5623_suspend(struct snd_soc_codec *codec)
 {
 	struct alc5623_priv *alc5623 = snd_soc_codec_get_drvdata(codec);
 
+<<<<<<< HEAD
 	alc5623_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+>>>>>>> v4.9.227
 	regcache_cache_only(alc5623->regmap, true);
 
 	return 0;
@@ -887,6 +917,7 @@ static int alc5623_resume(struct snd_soc_codec *codec)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	alc5623_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
 	/* charge alc5623 caps */
@@ -896,12 +927,15 @@ static int alc5623_resume(struct snd_soc_codec *codec)
 		alc5623_set_bias_level(codec, codec->dapm.bias_level);
 	}
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int alc5623_probe(struct snd_soc_codec *codec)
 {
 	struct alc5623_priv *alc5623 = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
 	alc5623_reset(codec);
@@ -909,6 +943,12 @@ static int alc5623_probe(struct snd_soc_codec *codec)
 	/* power on device */
 	alc5623_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+
+	alc5623_reset(codec);
+
+>>>>>>> v4.9.227
 	if (alc5623->add_ctrl) {
 		snd_soc_write(codec, ALC5623_ADD_CTRL_REG,
 				alc5623->add_ctrl);
@@ -964,6 +1004,7 @@ static int alc5623_probe(struct snd_soc_codec *codec)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* power down chip */
 static int alc5623_remove(struct snd_soc_codec *codec)
 {
@@ -977,6 +1018,14 @@ static struct snd_soc_codec_driver soc_codec_device_alc5623 = {
 	.suspend = alc5623_suspend,
 	.resume = alc5623_resume,
 	.set_bias_level = alc5623_set_bias_level,
+=======
+static struct snd_soc_codec_driver soc_codec_device_alc5623 = {
+	.probe = alc5623_probe,
+	.suspend = alc5623_suspend,
+	.resume = alc5623_resume,
+	.set_bias_level = alc5623_set_bias_level,
+	.suspend_bias_off = true,
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config alc5623_regmap = {
@@ -1104,7 +1153,10 @@ MODULE_DEVICE_TABLE(of, alc5623_of_match);
 static struct i2c_driver alc5623_i2c_driver = {
 	.driver = {
 		.name = "alc562x-codec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(alc5623_of_match),
 	},
 	.probe = alc5623_i2c_probe,

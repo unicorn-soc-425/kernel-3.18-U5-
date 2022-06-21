@@ -14,15 +14,32 @@
 #include "ctrlchar.h"
 
 #ifdef CONFIG_MAGIC_SYSRQ
+<<<<<<< HEAD
 static int ctrlchar_sysrq_key;
+=======
+static struct sysrq_work ctrlchar_sysrq;
+>>>>>>> v4.9.227
 
 static void
 ctrlchar_handle_sysrq(struct work_struct *work)
 {
+<<<<<<< HEAD
 	handle_sysrq(ctrlchar_sysrq_key);
 }
 
 static DECLARE_WORK(ctrlchar_work, ctrlchar_handle_sysrq);
+=======
+	struct sysrq_work *sysrq = container_of(work, struct sysrq_work, work);
+
+	handle_sysrq(sysrq->key);
+}
+
+void schedule_sysrq_work(struct sysrq_work *sw)
+{
+	INIT_WORK(&sw->work, ctrlchar_handle_sysrq);
+	schedule_work(&sw->work);
+}
+>>>>>>> v4.9.227
 #endif
 
 
@@ -51,8 +68,13 @@ ctrlchar_handle(const unsigned char *buf, int len, struct tty_struct *tty)
 #ifdef CONFIG_MAGIC_SYSRQ
 	/* racy */
 	if (len == 3 && buf[1] == '-') {
+<<<<<<< HEAD
 		ctrlchar_sysrq_key = buf[2];
 		schedule_work(&ctrlchar_work);
+=======
+		ctrlchar_sysrq.key = buf[2];
+		schedule_sysrq_work(&ctrlchar_sysrq);
+>>>>>>> v4.9.227
 		return CTRLCHAR_SYSRQ;
 	}
 #endif

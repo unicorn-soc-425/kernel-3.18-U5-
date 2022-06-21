@@ -94,7 +94,11 @@ int dm_tm_read_lock(struct dm_transaction_manager *tm, dm_block_t b,
 		    struct dm_block_validator *v,
 		    struct dm_block **result);
 
+<<<<<<< HEAD
 int dm_tm_unlock(struct dm_transaction_manager *tm, struct dm_block *b);
+=======
+void dm_tm_unlock(struct dm_transaction_manager *tm, struct dm_block *b);
+>>>>>>> v4.9.227
 
 /*
  * Functions for altering the reference count of a block directly.
@@ -109,6 +113,16 @@ int dm_tm_ref(struct dm_transaction_manager *tm, dm_block_t b,
 struct dm_block_manager *dm_tm_get_bm(struct dm_transaction_manager *tm);
 
 /*
+<<<<<<< HEAD
+=======
+ * If you're using a non-blocking clone the tm will build up a list of
+ * requested blocks that weren't in core.  This call will request those
+ * blocks to be prefetched.
+ */
+void dm_tm_issue_prefetches(struct dm_transaction_manager *tm);
+
+/*
+>>>>>>> v4.9.227
  * A little utility that ties the knot by producing a transaction manager
  * that has a space map managed by the transaction manager...
  *

@@ -17,6 +17,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/netfilter.h>
@@ -120,14 +125,22 @@ static int help(struct sk_buff *skb,
 	ct_sane_info->state = SANE_STATE_NORMAL;
 
 	if (datalen < sizeof(struct sane_reply_net_start)) {
+<<<<<<< HEAD
 		pr_debug("nf_ct_sane: NET_START reply too short\n");
+=======
+		pr_debug("NET_START reply too short\n");
+>>>>>>> v4.9.227
 		goto out;
 	}
 
 	reply = sb_ptr;
 	if (reply->status != htonl(SANE_STATUS_SUCCESS)) {
 		/* saned refused the command */
+<<<<<<< HEAD
 		pr_debug("nf_ct_sane: unsuccessful SANE_STATUS = %u\n",
+=======
+		pr_debug("unsuccessful SANE_STATUS = %u\n",
+>>>>>>> v4.9.227
 			 ntohl(reply->status));
 		goto out;
 	}
@@ -148,7 +161,11 @@ static int help(struct sk_buff *skb,
 			  &tuple->src.u3, &tuple->dst.u3,
 			  IPPROTO_TCP, NULL, &reply->port);
 
+<<<<<<< HEAD
 	pr_debug("nf_ct_sane: expect: ");
+=======
+	pr_debug("expect: ");
+>>>>>>> v4.9.227
 	nf_ct_dump_tuple(&exp->tuple);
 
 	/* Can't expect this?  Best to drop packet now. */
@@ -164,7 +181,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct nf_conntrack_helper sane[MAX_PORTS][2] __read_mostly;
+=======
+static struct nf_conntrack_helper sane[MAX_PORTS * 2] __read_mostly;
+>>>>>>> v4.9.227
 
 static const struct nf_conntrack_expect_policy sane_exp_policy = {
 	.max_expected	= 1,
@@ -174,6 +195,7 @@ static const struct nf_conntrack_expect_policy sane_exp_policy = {
 /* don't make this __exit, since it's called from __init ! */
 static void nf_conntrack_sane_fini(void)
 {
+<<<<<<< HEAD
 	int i, j;
 
 	for (i = 0; i < ports_c; i++) {
@@ -185,12 +207,19 @@ static void nf_conntrack_sane_fini(void)
 		}
 	}
 
+=======
+	nf_conntrack_helpers_unregister(sane, ports_c * 2);
+>>>>>>> v4.9.227
 	kfree(sane_buffer);
 }
 
 static int __init nf_conntrack_sane_init(void)
 {
+<<<<<<< HEAD
 	int i, j = -1, ret = 0;
+=======
+	int i, ret = 0;
+>>>>>>> v4.9.227
 
 	sane_buffer = kmalloc(65536, GFP_KERNEL);
 	if (!sane_buffer)
@@ -202,6 +231,7 @@ static int __init nf_conntrack_sane_init(void)
 	/* FIXME should be configurable whether IPv4 and IPv6 connections
 		 are tracked or not - YK */
 	for (i = 0; i < ports_c; i++) {
+<<<<<<< HEAD
 		sane[i][0].tuple.src.l3num = PF_INET;
 		sane[i][1].tuple.src.l3num = PF_INET6;
 		for (j = 0; j < 2; j++) {
@@ -228,6 +258,25 @@ static int __init nf_conntrack_sane_init(void)
 				return ret;
 			}
 		}
+=======
+		nf_ct_helper_init(&sane[2 * i], AF_INET, IPPROTO_TCP, "sane",
+				  SANE_PORT, ports[i], ports[i],
+				  &sane_exp_policy, 0,
+				  sizeof(struct nf_ct_sane_master), help, NULL,
+				  THIS_MODULE);
+		nf_ct_helper_init(&sane[2 * i + 1], AF_INET6, IPPROTO_TCP, "sane",
+				  SANE_PORT, ports[i], ports[i],
+				  &sane_exp_policy, 0,
+				  sizeof(struct nf_ct_sane_master), help, NULL,
+				  THIS_MODULE);
+	}
+
+	ret = nf_conntrack_helpers_register(sane, ports_c * 2);
+	if (ret < 0) {
+		pr_err("failed to register helpers\n");
+		kfree(sane_buffer);
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	return 0;

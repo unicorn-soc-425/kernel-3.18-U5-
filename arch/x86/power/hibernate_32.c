@@ -106,7 +106,11 @@ static int resume_physical_mapping_init(pgd_t *pgd_base)
 			 * normal page tables.
 			 * NOTE: We can mark everything as executable here
 			 */
+<<<<<<< HEAD
 			if (cpu_has_pse) {
+=======
+			if (boot_cpu_has(X86_FEATURE_PSE)) {
+>>>>>>> v4.9.227
 				set_pmd(pmd, pfn_pmd(pfn, PAGE_KERNEL_LARGE_EXEC));
 				pfn += PTRS_PER_PTE;
 			} else {

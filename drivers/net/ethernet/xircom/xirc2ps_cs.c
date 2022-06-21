@@ -1144,8 +1144,13 @@ xirc2ps_interrupt(int irq, void *dev_id)
 	    dev->stats.tx_packets += lp->last_ptr_value - n;
 	netif_wake_queue(dev);
     }
+<<<<<<< HEAD
     if (tx_status & 0x0002) {	/* Execessive collissions */
 	pr_debug("tx restarted due to execssive collissions\n");
+=======
+    if (tx_status & 0x0002) {	/* Excessive collisions */
+	pr_debug("tx restarted due to excessive collisions\n");
+>>>>>>> v4.9.227
 	PutByte(XIRCREG_CR, RestartTx);  /* restart transmitter process */
     }
     if (tx_status & 0x0040)
@@ -1199,7 +1204,11 @@ xirc2ps_tx_timeout_task(struct work_struct *work)
 	struct net_device *dev = local->dev;
     /* reset the card */
     do_reset(dev,1);
+<<<<<<< HEAD
     dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+    netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
     netif_wake_queue(dev);
 }
 

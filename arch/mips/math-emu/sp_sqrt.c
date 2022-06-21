@@ -35,6 +35,7 @@ union ieee754sp ieee754sp_sqrt(union ieee754sp x)
 
 	/* x == INF or NAN? */
 	switch (xc) {
+<<<<<<< HEAD
 	case IEEE754_CLASS_QNAN:
 		/* sqrt(Nan) = Nan */
 		return ieee754sp_nanxcpt(x);
@@ -42,6 +43,14 @@ union ieee754sp ieee754sp_sqrt(union ieee754sp x)
 	case IEEE754_CLASS_SNAN:
 		ieee754_setcx(IEEE754_INVALID_OPERATION);
 		return ieee754sp_nanxcpt(ieee754sp_indef());
+=======
+	case IEEE754_CLASS_SNAN:
+		return ieee754sp_nanxcpt(x);
+
+	case IEEE754_CLASS_QNAN:
+		/* sqrt(Nan) = Nan */
+		return x;
+>>>>>>> v4.9.227
 
 	case IEEE754_CLASS_ZERO:
 		/* sqrt(0) = 0 */
@@ -51,7 +60,11 @@ union ieee754sp ieee754sp_sqrt(union ieee754sp x)
 		if (xs) {
 			/* sqrt(-Inf) = Nan */
 			ieee754_setcx(IEEE754_INVALID_OPERATION);
+<<<<<<< HEAD
 			return ieee754sp_nanxcpt(ieee754sp_indef());
+=======
+			return ieee754sp_indef();
+>>>>>>> v4.9.227
 		}
 		/* sqrt(+Inf) = Inf */
 		return x;
@@ -61,7 +74,11 @@ union ieee754sp ieee754sp_sqrt(union ieee754sp x)
 		if (xs) {
 			/* sqrt(-x) = Nan */
 			ieee754_setcx(IEEE754_INVALID_OPERATION);
+<<<<<<< HEAD
 			return ieee754sp_nanxcpt(ieee754sp_indef());
+=======
+			return ieee754sp_indef();
+>>>>>>> v4.9.227
 		}
 		break;
 	}

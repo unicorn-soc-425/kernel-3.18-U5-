@@ -1,7 +1,15 @@
 #ifndef _I810_DRM_H_
 #define _I810_DRM_H_
 
+<<<<<<< HEAD
 #include <drm/drm.h>
+=======
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+>>>>>>> v4.9.227
 
 /* WARNING: These defines must be the same as what the Xserver uses.
  * if you change them, you must change the defines in the Xserver.
@@ -280,4 +288,11 @@ typedef struct _drm_i810_mc {
 	unsigned int last_render;	/* Last Render Request */
 } drm_i810_mc_t;
 
+<<<<<<< HEAD
+=======
+#if defined(__cplusplus)
+}
+#endif
+
+>>>>>>> v4.9.227
 #endif				/* _I810_DRM_H_ */

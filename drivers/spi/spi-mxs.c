@@ -182,7 +182,10 @@ static int mxs_spi_txrx_dma(struct mxs_spi *spi,
 	int min, ret;
 	u32 ctrl0;
 	struct page *vm_page;
+<<<<<<< HEAD
 	void *sg_buf;
+=======
+>>>>>>> v4.9.227
 	struct {
 		u32			pio[4];
 		struct scatterlist	sg;
@@ -232,6 +235,7 @@ static int mxs_spi_txrx_dma(struct mxs_spi *spi,
 				ret = -ENOMEM;
 				goto err_vmalloc;
 			}
+<<<<<<< HEAD
 			sg_buf = page_address(vm_page) +
 				((size_t)buf & ~PAGE_MASK);
 		} else {
@@ -239,6 +243,16 @@ static int mxs_spi_txrx_dma(struct mxs_spi *spi,
 		}
 
 		sg_init_one(&dma_xfer[sg_count].sg, sg_buf, min);
+=======
+
+			sg_init_table(&dma_xfer[sg_count].sg, 1);
+			sg_set_page(&dma_xfer[sg_count].sg, vm_page,
+				    min, offset_in_page(buf));
+		} else {
+			sg_init_one(&dma_xfer[sg_count].sg, buf, min);
+		}
+
+>>>>>>> v4.9.227
 		ret = dma_map_sg(ssp->dev, &dma_xfer[sg_count].sg, 1,
 			(flags & TXRX_WRITE) ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
 
@@ -282,9 +296,14 @@ static int mxs_spi_txrx_dma(struct mxs_spi *spi,
 	dmaengine_submit(desc);
 	dma_async_issue_pending(ssp->dmach);
 
+<<<<<<< HEAD
 	ret = wait_for_completion_timeout(&spi->c,
 				msecs_to_jiffies(SSP_TIMEOUT));
 	if (!ret) {
+=======
+	if (!wait_for_completion_timeout(&spi->c,
+					 msecs_to_jiffies(SSP_TIMEOUT))) {
+>>>>>>> v4.9.227
 		dev_err(ssp->dev, "DMA transfer timeout\n");
 		ret = -ETIMEDOUT;
 		dmaengine_terminate_all(ssp->dmach);
@@ -511,7 +530,11 @@ static int mxs_spi_probe(struct platform_device *pdev)
 	init_completion(&spi->c);
 
 	ret = devm_request_irq(&pdev->dev, irq_err, mxs_ssp_irq_handler, 0,
+<<<<<<< HEAD
 			       DRIVER_NAME, ssp);
+=======
+			       dev_name(&pdev->dev), ssp);
+>>>>>>> v4.9.227
 	if (ret)
 		goto out_master_free;
 
@@ -572,7 +595,10 @@ static struct platform_driver mxs_spi_driver = {
 	.remove	= mxs_spi_remove,
 	.driver	= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = mxs_spi_dt_ids,
 	},
 };

@@ -83,9 +83,16 @@ EXPORT_SYMBOL(host1x_channel_put);
 struct host1x_channel *host1x_channel_request(struct device *dev)
 {
 	struct host1x *host = dev_get_drvdata(dev->parent);
+<<<<<<< HEAD
 	int max_channels = host->info->nb_channels;
 	struct host1x_channel *channel = NULL;
 	int index, err;
+=======
+	unsigned int max_channels = host->info->nb_channels;
+	struct host1x_channel *channel = NULL;
+	unsigned long index;
+	int err;
+>>>>>>> v4.9.227
 
 	mutex_lock(&host->chlist_mutex);
 

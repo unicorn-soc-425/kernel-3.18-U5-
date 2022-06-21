@@ -12,6 +12,7 @@
 #include <asm/siginfo.h>
 #include <asm/signal.h>
 
+<<<<<<< HEAD
 
 static bool first_fault = true;
 
@@ -33,16 +34,43 @@ static int bcm5301x_abort_handler(unsigned long addr, unsigned int fsr,
 	}
 
 	/* Others should cause a fault */
+=======
+#define FSR_EXTERNAL		(1 << 12)
+#define FSR_READ		(0 << 10)
+#define FSR_IMPRECISE		0x0406
+
+static const char *const bcm5301x_dt_compat[] __initconst = {
+	"brcm,bcm4708",
+	NULL,
+};
+
+static int bcm5301x_abort_handler(unsigned long addr, unsigned int fsr,
+				  struct pt_regs *regs)
+{
+	/*
+	 * We want to ignore aborts forwarded from the PCIe bus that are
+	 * expected and shouldn't really be passed by the PCIe controller.
+	 * The biggest disadvantage is the same FSR code may be reported when
+	 * reading non-existing APB register and we shouldn't ignore that.
+	 */
+	if (fsr == (FSR_EXTERNAL | FSR_READ | FSR_IMPRECISE))
+		return 0;
+
+>>>>>>> v4.9.227
 	return 1;
 }
 
 static void __init bcm5301x_init_early(void)
 {
+<<<<<<< HEAD
 	/* Install our hook */
+=======
+>>>>>>> v4.9.227
 	hook_fault_code(16 + 6, bcm5301x_abort_handler, SIGBUS, BUS_OBJERR,
 			"imprecise external abort");
 }
 
+<<<<<<< HEAD
 static const char __initconst *bcm5301x_dt_compat[] = {
 	"brcm,bcm4708",
 	NULL,
@@ -53,4 +81,11 @@ DT_MACHINE_START(BCM5301X, "BCM5301X")
 	.l2c_aux_mask	= ~0,
 	.init_early	= bcm5301x_init_early,
 	.dt_compat	= bcm5301x_dt_compat,
+=======
+DT_MACHINE_START(BCM5301X, "BCM5301X")
+	.l2c_aux_val	= 0,
+	.l2c_aux_mask	= ~0,
+	.dt_compat	= bcm5301x_dt_compat,
+	.init_early	= bcm5301x_init_early,
+>>>>>>> v4.9.227
 MACHINE_END

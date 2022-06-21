@@ -1,5 +1,6 @@
 #include <asm-generic/vmlinux.lds.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 OUTPUT_FORMAT("elf64-s390", "elf64-s390", "elf64-s390")
 OUTPUT_ARCH(s390:64-bit)
@@ -7,6 +8,10 @@ OUTPUT_ARCH(s390:64-bit)
 OUTPUT_FORMAT("elf32-s390", "elf32-s390", "elf32-s390")
 OUTPUT_ARCH(s390:31-bit)
 #endif
+=======
+OUTPUT_FORMAT("elf64-s390", "elf64-s390", "elf64-s390")
+OUTPUT_ARCH(s390:64-bit)
+>>>>>>> v4.9.227
 
 ENTRY(startup)
 

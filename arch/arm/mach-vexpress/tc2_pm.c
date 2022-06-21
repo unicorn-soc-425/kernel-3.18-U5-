@@ -18,7 +18,10 @@
 #include <linux/kernel.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/errno.h>
 #include <linux/irqchip/arm-gic.h>
 
@@ -44,6 +47,7 @@
 
 static void __iomem *scc;
 
+<<<<<<< HEAD
 /*
  * We can't use regular spinlocks. In the switcher case, it is possible
  * for an outbound CPU to call power_down() after its inbound counterpart
@@ -52,11 +56,14 @@ static void __iomem *scc;
  */
 static arch_spinlock_t tc2_pm_lock = __ARCH_SPIN_LOCK_UNLOCKED;
 
+=======
+>>>>>>> v4.9.227
 #define TC2_CLUSTERS			2
 #define TC2_MAX_CPUS_PER_CLUSTER	3
 
 static unsigned int tc2_nr_cpus[TC2_CLUSTERS];
 
+<<<<<<< HEAD
 /* Keep per-cpu usage count to cope with unordered up/down requests */
 static int tc2_pm_use_count[TC2_MAX_CPUS_PER_CLUSTER][TC2_CLUSTERS];
 
@@ -66,10 +73,14 @@ static int tc2_pm_use_count[TC2_MAX_CPUS_PER_CLUSTER][TC2_CLUSTERS];
 	 !tc2_pm_use_count[2][cluster])
 
 static int tc2_pm_power_up(unsigned int cpu, unsigned int cluster)
+=======
+static int tc2_pm_cpu_powerup(unsigned int cpu, unsigned int cluster)
+>>>>>>> v4.9.227
 {
 	pr_debug("%s: cpu %u cluster %u\n", __func__, cpu, cluster);
 	if (cluster >= TC2_CLUSTERS || cpu >= tc2_nr_cpus[cluster])
 		return -EINVAL;
+<<<<<<< HEAD
 
 	/*
 	 * Since this is called with IRQs enabled, and no arch_spin_lock_irq
@@ -139,6 +150,28 @@ static void tc2_pm_down(u64 residency)
 	} else
 		BUG();
 
+=======
+	ve_spc_set_resume_addr(cluster, cpu,
+			       virt_to_phys(mcpm_entry_point));
+	ve_spc_cpu_wakeup_irq(cluster, cpu, true);
+	return 0;
+}
+
+static int tc2_pm_cluster_powerup(unsigned int cluster)
+{
+	pr_debug("%s: cluster %u\n", __func__, cluster);
+	if (cluster >= TC2_CLUSTERS)
+		return -EINVAL;
+	ve_spc_powerdown(cluster, false);
+	return 0;
+}
+
+static void tc2_pm_cpu_powerdown_prepare(unsigned int cpu, unsigned int cluster)
+{
+	pr_debug("%s: cpu %u cluster %u\n", __func__, cpu, cluster);
+	BUG_ON(cluster >= TC2_CLUSTERS || cpu >= TC2_MAX_CPUS_PER_CLUSTER);
+	ve_spc_cpu_wakeup_irq(cluster, cpu, true);
+>>>>>>> v4.9.227
 	/*
 	 * If the CPU is committed to power down, make sure
 	 * the power controller will be in charge of waking it
@@ -146,6 +179,7 @@ static void tc2_pm_down(u64 residency)
 	 * to the CPU by disabling the GIC CPU IF to prevent wfi
 	 * from completing execution behind power controller back
 	 */
+<<<<<<< HEAD
 	if (!skip_wfi)
 		gic_cpu_if_down();
 
@@ -195,6 +229,40 @@ static void tc2_pm_down(u64 residency)
 static void tc2_pm_power_down(void)
 {
 	tc2_pm_down(0);
+=======
+	gic_cpu_if_down(0);
+}
+
+static void tc2_pm_cluster_powerdown_prepare(unsigned int cluster)
+{
+	pr_debug("%s: cluster %u\n", __func__, cluster);
+	BUG_ON(cluster >= TC2_CLUSTERS);
+	ve_spc_powerdown(cluster, true);
+	ve_spc_global_wakeup_irq(true);
+}
+
+static void tc2_pm_cpu_cache_disable(void)
+{
+	v7_exit_coherency_flush(louis);
+}
+
+static void tc2_pm_cluster_cache_disable(void)
+{
+	if (read_cpuid_part() == ARM_CPU_PART_CORTEX_A15) {
+		/*
+		 * On the Cortex-A15 we need to disable
+		 * L2 prefetching before flushing the cache.
+		 */
+		asm volatile(
+		"mcr	p15, 1, %0, c15, c0, 3 \n\t"
+		"isb	\n\t"
+		"dsb	"
+		: : "r" (0x400) );
+	}
+
+	v7_exit_coherency_flush(all);
+	cci_disable_port_by_cpu(read_cpuid_mpidr());
+>>>>>>> v4.9.227
 }
 
 static int tc2_core_in_reset(unsigned int cpu, unsigned int cluster)
@@ -217,6 +285,7 @@ static int tc2_pm_wait_for_powerdown(unsigned int cpu, unsigned int cluster)
 	BUG_ON(cluster >= TC2_CLUSTERS || cpu >= TC2_MAX_CPUS_PER_CLUSTER);
 
 	for (tries = 0; tries < TIMEOUT_MSEC / POLL_MSEC; ++tries) {
+<<<<<<< HEAD
 		/*
 		 * Only examine the hardware state if the target CPU has
 		 * caught up at least as far as tc2_pm_down():
@@ -238,6 +307,23 @@ static int tc2_pm_wait_for_powerdown(unsigned int cpu, unsigned int cluster)
 			    ve_spc_cpu_in_wfi(cpu, cluster))
 				return 0; /* success: the CPU is halted */
 		}
+=======
+		pr_debug("%s(cpu=%u, cluster=%u): RESET_CTRL = 0x%08X\n",
+			 __func__, cpu, cluster,
+			 readl_relaxed(scc + RESET_CTRL));
+
+		/*
+		 * We need the CPU to reach WFI, but the power
+		 * controller may put the cluster in reset and
+		 * power it off as soon as that happens, before
+		 * we have a chance to see STANDBYWFI.
+		 *
+		 * So we need to check for both conditions:
+		 */
+		if (tc2_core_in_reset(cpu, cluster) ||
+		    ve_spc_cpu_in_wfi(cpu, cluster))
+			return 0; /* success: the CPU is halted */
+>>>>>>> v4.9.227
 
 		/* Otherwise, wait and retry: */
 		msleep(POLL_MSEC);
@@ -246,6 +332,7 @@ static int tc2_pm_wait_for_powerdown(unsigned int cpu, unsigned int cluster)
 	return -ETIMEDOUT; /* timeout */
 }
 
+<<<<<<< HEAD
 static void tc2_pm_suspend(u64 residency)
 {
 	unsigned int mpidr, cpu, cluster;
@@ -312,6 +399,42 @@ static bool __init tc2_pm_usage_count_init(void)
 	return true;
 }
 
+=======
+static void tc2_pm_cpu_suspend_prepare(unsigned int cpu, unsigned int cluster)
+{
+	ve_spc_set_resume_addr(cluster, cpu, virt_to_phys(mcpm_entry_point));
+}
+
+static void tc2_pm_cpu_is_up(unsigned int cpu, unsigned int cluster)
+{
+	pr_debug("%s: cpu %u cluster %u\n", __func__, cpu, cluster);
+	BUG_ON(cluster >= TC2_CLUSTERS || cpu >= TC2_MAX_CPUS_PER_CLUSTER);
+	ve_spc_cpu_wakeup_irq(cluster, cpu, false);
+	ve_spc_set_resume_addr(cluster, cpu, 0);
+}
+
+static void tc2_pm_cluster_is_up(unsigned int cluster)
+{
+	pr_debug("%s: cluster %u\n", __func__, cluster);
+	BUG_ON(cluster >= TC2_CLUSTERS);
+	ve_spc_powerdown(cluster, false);
+	ve_spc_global_wakeup_irq(false);
+}
+
+static const struct mcpm_platform_ops tc2_pm_power_ops = {
+	.cpu_powerup		= tc2_pm_cpu_powerup,
+	.cluster_powerup	= tc2_pm_cluster_powerup,
+	.cpu_suspend_prepare	= tc2_pm_cpu_suspend_prepare,
+	.cpu_powerdown_prepare	= tc2_pm_cpu_powerdown_prepare,
+	.cluster_powerdown_prepare = tc2_pm_cluster_powerdown_prepare,
+	.cpu_cache_disable	= tc2_pm_cpu_cache_disable,
+	.cluster_cache_disable	= tc2_pm_cluster_cache_disable,
+	.wait_for_powerdown	= tc2_pm_wait_for_powerdown,
+	.cpu_is_up		= tc2_pm_cpu_is_up,
+	.cluster_is_up		= tc2_pm_cluster_is_up,
+};
+
+>>>>>>> v4.9.227
 /*
  * Enable cluster-level coherency, in preparation for turning on the MMU.
  */
@@ -323,6 +446,7 @@ static void __naked tc2_pm_power_up_setup(unsigned int affinity_level)
 "	b	cci_enable_port_for_self ");
 }
 
+<<<<<<< HEAD
 static void __init tc2_cache_off(void)
 {
 	pr_info("TC2: disabling cache during MCPM loopback test\n");
@@ -340,6 +464,11 @@ static void __init tc2_cache_off(void)
 
 static int __init tc2_pm_init(void)
 {
+=======
+static int __init tc2_pm_init(void)
+{
+	unsigned int mpidr, cpu, cluster;
+>>>>>>> v4.9.227
 	int ret, irq;
 	u32 a15_cluster_id, a7_cluster_id, sys_info;
 	struct device_node *np;
@@ -379,14 +508,29 @@ static int __init tc2_pm_init(void)
 	if (!cci_probed())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (!tc2_pm_usage_count_init())
 		return -EINVAL;
+=======
+	mpidr = read_cpuid_mpidr();
+	cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+	cluster = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+	pr_debug("%s: cpu %u cluster %u\n", __func__, cpu, cluster);
+	if (cluster >= TC2_CLUSTERS || cpu >= tc2_nr_cpus[cluster]) {
+		pr_err("%s: boot CPU is out of bound!\n", __func__);
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 
 	ret = mcpm_platform_register(&tc2_pm_power_ops);
 	if (!ret) {
 		mcpm_sync_init(tc2_pm_power_up_setup);
 		/* test if we can (re)enable the CCI on our own */
+<<<<<<< HEAD
 		BUG_ON(mcpm_loopback(tc2_cache_off) != 0);
+=======
+		BUG_ON(mcpm_loopback(tc2_pm_cluster_cache_disable) != 0);
+>>>>>>> v4.9.227
 		pr_info("TC2 power management initialized\n");
 	}
 	return ret;

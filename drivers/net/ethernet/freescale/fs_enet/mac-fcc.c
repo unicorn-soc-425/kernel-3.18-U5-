@@ -90,7 +90,11 @@ static int do_pd_setup(struct fs_enet_private *fep)
 	int ret = -EINVAL;
 
 	fep->interrupt = irq_of_parse_and_map(ofdev->dev.of_node, 0);
+<<<<<<< HEAD
 	if (fep->interrupt == NO_IRQ)
+=======
+	if (!fep->interrupt)
+>>>>>>> v4.9.227
 		goto out;
 
 	fep->fcc.fccp = of_iomap(ofdev->dev.of_node, 0);
@@ -124,10 +128,15 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 #define FCC_NAPI_RX_EVENT_MSK	(FCC_ENET_RXF | FCC_ENET_RXB)
 #define FCC_NAPI_TX_EVENT_MSK	(FCC_ENET_TXB)
 #define FCC_RX_EVENT		(FCC_ENET_RXF)
 #define FCC_TX_EVENT		(FCC_ENET_TXB)
+=======
+#define FCC_NAPI_EVENT_MSK	(FCC_ENET_RXF | FCC_ENET_RXB | FCC_ENET_TXB)
+#define FCC_EVENT		(FCC_ENET_RXF | FCC_ENET_TXB)
+>>>>>>> v4.9.227
 #define FCC_ERR_EVENT_MSK	(FCC_ENET_TXE)
 
 static int setup_data(struct net_device *dev)
@@ -137,10 +146,15 @@ static int setup_data(struct net_device *dev)
 	if (do_pd_setup(fep) != 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	fep->ev_napi_rx = FCC_NAPI_RX_EVENT_MSK;
 	fep->ev_napi_tx = FCC_NAPI_TX_EVENT_MSK;
 	fep->ev_rx = FCC_RX_EVENT;
 	fep->ev_tx = FCC_TX_EVENT;
+=======
+	fep->ev_napi = FCC_NAPI_EVENT_MSK;
+	fep->ev = FCC_EVENT;
+>>>>>>> v4.9.227
 	fep->ev_err = FCC_ERR_EVENT_MSK;
 
 	return 0;
@@ -370,7 +384,11 @@ static void restart(struct net_device *dev)
 
 	/* adjust to speed (for RMII mode) */
 	if (fpi->use_rmii) {
+<<<<<<< HEAD
 		if (fep->phydev->speed == 100)
+=======
+		if (dev->phydev->speed == 100)
+>>>>>>> v4.9.227
 			C8(fcccp, fcc_gfemr, 0x20);
 		else
 			S8(fcccp, fcc_gfemr, 0x20);
@@ -396,7 +414,11 @@ static void restart(struct net_device *dev)
 		S32(fccp, fcc_fpsmr, FCC_PSMR_RMII);
 
 	/* adjust to duplex mode */
+<<<<<<< HEAD
 	if (fep->phydev->duplex)
+=======
+	if (dev->phydev->duplex)
+>>>>>>> v4.9.227
 		S32(fccp, fcc_fpsmr, FCC_PSMR_FDE | FCC_PSMR_LPB);
 	else
 		C32(fccp, fcc_fpsmr, FCC_PSMR_FDE | FCC_PSMR_LPB);
@@ -424,27 +446,46 @@ static void stop(struct net_device *dev)
 	fs_cleanup_bds(dev);
 }
 
+<<<<<<< HEAD
 static void napi_clear_rx_event(struct net_device *dev)
+=======
+static void napi_clear_event_fs(struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
 	fcc_t __iomem *fccp = fep->fcc.fccp;
 
+<<<<<<< HEAD
 	W16(fccp, fcc_fcce, FCC_NAPI_RX_EVENT_MSK);
 }
 
 static void napi_enable_rx(struct net_device *dev)
+=======
+	W16(fccp, fcc_fcce, FCC_NAPI_EVENT_MSK);
+}
+
+static void napi_enable_fs(struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
 	fcc_t __iomem *fccp = fep->fcc.fccp;
 
+<<<<<<< HEAD
 	S16(fccp, fcc_fccm, FCC_NAPI_RX_EVENT_MSK);
 }
 
 static void napi_disable_rx(struct net_device *dev)
+=======
+	S16(fccp, fcc_fccm, FCC_NAPI_EVENT_MSK);
+}
+
+static void napi_disable_fs(struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
 	fcc_t __iomem *fccp = fep->fcc.fccp;
 
+<<<<<<< HEAD
 	C16(fccp, fcc_fccm, FCC_NAPI_RX_EVENT_MSK);
 }
 
@@ -470,6 +511,9 @@ static void napi_disable_tx(struct net_device *dev)
 	fcc_t __iomem *fccp = fep->fcc.fccp;
 
 	C16(fccp, fcc_fccm, FCC_NAPI_TX_EVENT_MSK);
+=======
+	C16(fccp, fcc_fccm, FCC_NAPI_EVENT_MSK);
+>>>>>>> v4.9.227
 }
 
 static void rx_bd_done(struct net_device *dev)
@@ -552,7 +596,11 @@ static void tx_restart(struct net_device *dev)
 	cbd_t __iomem *prev_bd;
 	cbd_t __iomem *last_tx_bd;
 
+<<<<<<< HEAD
 	last_tx_bd = fep->tx_bd_base + (fpi->tx_ring * sizeof(cbd_t));
+=======
+	last_tx_bd = fep->tx_bd_base + (fpi->tx_ring - 1);
+>>>>>>> v4.9.227
 
 	/* get the current bd held in TBPTR  and scan back from this point */
 	recheck_bd = curr_tbptr = (cbd_t __iomem *)
@@ -595,12 +643,18 @@ const struct fs_ops fs_fcc_ops = {
 	.set_multicast_list	= set_multicast_list,
 	.restart		= restart,
 	.stop			= stop,
+<<<<<<< HEAD
 	.napi_clear_rx_event	= napi_clear_rx_event,
 	.napi_enable_rx		= napi_enable_rx,
 	.napi_disable_rx	= napi_disable_rx,
 	.napi_clear_tx_event	= napi_clear_tx_event,
 	.napi_enable_tx		= napi_enable_tx,
 	.napi_disable_tx	= napi_disable_tx,
+=======
+	.napi_clear_event	= napi_clear_event_fs,
+	.napi_enable		= napi_enable_fs,
+	.napi_disable		= napi_disable_fs,
+>>>>>>> v4.9.227
 	.rx_bd_done		= rx_bd_done,
 	.tx_kickstart		= tx_kickstart,
 	.get_int_events		= get_int_events,

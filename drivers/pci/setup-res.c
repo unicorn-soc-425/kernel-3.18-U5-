@@ -25,17 +25,30 @@
 #include <linux/slab.h>
 #include "pci.h"
 
+<<<<<<< HEAD
 
 void pci_update_resource(struct pci_dev *dev, int resno)
+=======
+static void pci_std_update_resource(struct pci_dev *dev, int resno)
+>>>>>>> v4.9.227
 {
 	struct pci_bus_region region;
 	bool disable;
 	u16 cmd;
 	u32 new, check, mask;
 	int reg;
+<<<<<<< HEAD
 	enum pci_bar_type type;
 	struct resource *res = dev->resource + resno;
 
+=======
+	struct resource *res = dev->resource + resno;
+
+	/* Per SR-IOV spec 3.4.1.11, VF BARs are RO zero */
+	if (dev->is_virtfn)
+		return;
+
+>>>>>>> v4.9.227
 	/*
 	 * Ignore resources for unimplemented BARs and unused resource slots
 	 * for 64 bit BARs.
@@ -55,6 +68,7 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 		return;
 
 	pcibios_resource_to_bus(dev->bus, &region, res);
+<<<<<<< HEAD
 
 	new = region.start | (res->flags & PCI_REGION_FLAG_MASK);
 	if (res->flags & IORESOURCE_IO)
@@ -70,6 +84,36 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 			return;
 		new |= PCI_ROM_ADDRESS_ENABLE;
 	}
+=======
+	new = region.start;
+
+	if (res->flags & IORESOURCE_IO) {
+		mask = (u32)PCI_BASE_ADDRESS_IO_MASK;
+		new |= res->flags & ~PCI_BASE_ADDRESS_IO_MASK;
+	} else if (resno == PCI_ROM_RESOURCE) {
+		mask = PCI_ROM_ADDRESS_MASK;
+	} else {
+		mask = (u32)PCI_BASE_ADDRESS_MEM_MASK;
+		new |= res->flags & ~PCI_BASE_ADDRESS_MEM_MASK;
+	}
+
+	if (resno < PCI_ROM_RESOURCE) {
+		reg = PCI_BASE_ADDRESS_0 + 4 * resno;
+	} else if (resno == PCI_ROM_RESOURCE) {
+
+		/*
+		 * Apparently some Matrox devices have ROM BARs that read
+		 * as zero when disabled, so don't update ROM BARs unless
+		 * they're enabled.  See https://lkml.org/lkml/2005/8/30/138.
+		 */
+		if (!(res->flags & IORESOURCE_ROM_ENABLE))
+			return;
+
+		reg = dev->rom_base_reg;
+		new |= PCI_ROM_ADDRESS_ENABLE;
+	} else
+		return;
+>>>>>>> v4.9.227
 
 	/*
 	 * We can't update a 64-bit BAR atomically, so when possible,
@@ -105,6 +149,19 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 		pci_write_config_word(dev, PCI_COMMAND, cmd);
 }
 
+<<<<<<< HEAD
+=======
+void pci_update_resource(struct pci_dev *dev, int resno)
+{
+	if (resno <= PCI_ROM_RESOURCE)
+		pci_std_update_resource(dev, resno);
+#ifdef CONFIG_PCI_IOV
+	else if (resno >= PCI_IOV_RESOURCES && resno <= PCI_IOV_RESOURCE_END)
+		pci_iov_update_resource(dev, resno);
+#endif
+}
+
+>>>>>>> v4.9.227
 int pci_claim_resource(struct pci_dev *dev, int resource)
 {
 	struct resource *res = &dev->resource[resource];
@@ -116,6 +173,17 @@ int pci_claim_resource(struct pci_dev *dev, int resource)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If we have a shadow copy in RAM, the PCI device doesn't respond
+	 * to the shadow range, so we don't need to claim it, and upstream
+	 * bridges don't need to route the range to the device.
+	 */
+	if (res->flags & IORESOURCE_ROM_SHADOW)
+		return 0;
+
+>>>>>>> v4.9.227
 	root = pci_find_parent_resource(dev, res);
 	if (!root) {
 		dev_info(&dev->dev, "can't claim BAR %d %pR: no compatible bridge window\n",
@@ -177,6 +245,10 @@ static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev,
 	end = res->end;
 	res->start = fw_addr;
 	res->end = res->start + size - 1;
+<<<<<<< HEAD
+=======
+	res->flags &= ~IORESOURCE_UNSET;
+>>>>>>> v4.9.227
 
 	root = pci_find_parent_resource(dev, res);
 	if (!root) {
@@ -194,6 +266,10 @@ static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev,
 			 resno, res, conflict->name, conflict);
 		res->start = start;
 		res->end = end;
+<<<<<<< HEAD
+=======
+		res->flags |= IORESOURCE_UNSET;
+>>>>>>> v4.9.227
 		return -EBUSY;
 	}
 	return 0;
@@ -269,6 +345,12 @@ int pci_assign_resource(struct pci_dev *dev, int resno)
 	resource_size_t align, size;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (res->flags & IORESOURCE_PCI_FIXED)
+		return 0;
+
+>>>>>>> v4.9.227
 	res->flags |= IORESOURCE_UNSET;
 	align = pci_resource_alignment(dev, res);
 	if (!align) {
@@ -314,6 +396,12 @@ int pci_reassign_resource(struct pci_dev *dev, int resno, resource_size_t addsiz
 	resource_size_t new_size;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (res->flags & IORESOURCE_PCI_FIXED)
+		return 0;
+
+>>>>>>> v4.9.227
 	flags = res->flags;
 	res->flags |= IORESOURCE_UNSET;
 	if (!res->parent) {

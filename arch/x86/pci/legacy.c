@@ -54,7 +54,11 @@ void pcibios_scan_specific_bus(int busn)
 }
 EXPORT_SYMBOL_GPL(pcibios_scan_specific_bus);
 
+<<<<<<< HEAD
 int __init pci_subsys_init(void)
+=======
+static int __init pci_subsys_init(void)
+>>>>>>> v4.9.227
 {
 	/*
 	 * The init function returns an non zero value when

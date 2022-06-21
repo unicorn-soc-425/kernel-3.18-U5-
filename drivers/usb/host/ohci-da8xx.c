@@ -313,16 +313,24 @@ static int usb_hcd_da8xx_probe(const struct hc_driver *driver,
 		return -ENOMEM;
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!mem)
 		return -ENODEV;
 	hcd->rsrc_start = mem->start;
 	hcd->rsrc_len = resource_size(mem);
 
+=======
+>>>>>>> v4.9.227
 	hcd->regs = devm_ioremap_resource(&pdev->dev, mem);
 	if (IS_ERR(hcd->regs)) {
 		error = PTR_ERR(hcd->regs);
 		goto err;
 	}
+<<<<<<< HEAD
+=======
+	hcd->rsrc_start = mem->start;
+	hcd->rsrc_len = resource_size(mem);
+>>>>>>> v4.9.227
 
 	ohci_hcd_init(hcd_to_ohci(hcd));
 
@@ -434,7 +442,10 @@ static struct platform_driver ohci_hcd_da8xx_driver = {
 	.resume		= ohci_da8xx_resume,
 #endif
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "ohci",
 	},
 };

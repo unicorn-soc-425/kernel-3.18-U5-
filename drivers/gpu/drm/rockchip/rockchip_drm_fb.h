@@ -17,7 +17,11 @@
 
 struct drm_framebuffer *
 rockchip_drm_framebuffer_init(struct drm_device *dev,
+<<<<<<< HEAD
 			      struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+			      const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 			      struct drm_gem_object *obj);
 void rockchip_drm_framebuffer_fini(struct drm_framebuffer *fb);
 

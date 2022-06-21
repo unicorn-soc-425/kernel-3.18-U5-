@@ -17,6 +17,10 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip/arm-gic-v3.h>
+>>>>>>> v4.9.227
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 #include <asm/virt.h>
@@ -141,6 +145,22 @@ ARM_BE8(orr	r7, r7, #(1 << 25))     @ HSCTLR.EE
 	and	r7, #0x1f		@ Preserve HPMN
 	mcr	p15, 4, r7, c1, c1, 1	@ HDCR
 
+<<<<<<< HEAD
+=======
+	@ Make sure NS-SVC is initialised appropriately
+	mrc	p15, 0, r7, c1, c0, 0	@ SCTLR
+	orr	r7, #(1 << 5)		@ CP15 barriers enabled
+	bic	r7, #(3 << 7)		@ Clear SED/ITD for v8 (RES0 for v7)
+	bic	r7, #(3 << 19)		@ WXN and UWXN disabled
+	mcr	p15, 0, r7, c1, c0, 0	@ SCTLR
+
+	mrc	p15, 0, r7, c0, c0, 0	@ MIDR
+	mcr	p15, 4, r7, c0, c0, 0	@ VPIDR
+
+	mrc	p15, 0, r7, c0, c0, 5	@ MPIDR
+	mcr	p15, 4, r7, c0, c0, 5	@ VMPIDR
+
+>>>>>>> v4.9.227
 #if !defined(ZIMAGE) && defined(CONFIG_ARM_ARCH_TIMER)
 	@ make CNTP_* and CNTPCT accessible from PL1
 	mrc	p15, 0, r7, c0, c1, 1	@ ID_PFR1
@@ -161,6 +181,32 @@ ARM_BE8(orr	r7, r7, #(1 << 25))     @ HSCTLR.EE
 1:
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARM_GIC_V3
+	@ Check whether GICv3 system registers are available
+	mrc	p15, 0, r7, c0, c1, 1	@ ID_PFR1
+	ubfx	r7, r7, #28, #4
+	teq	r7, #0
+	beq	2f
+
+	@ Enable system register accesses
+	mrc	p15, 4, r7, c12, c9, 5	@ ICC_HSRE
+	orr	r7, r7, #(ICC_SRE_EL2_ENABLE | ICC_SRE_EL2_SRE)
+	mcr	p15, 4, r7, c12, c9, 5	@ ICC_HSRE
+	isb
+
+	@ SRE bit could be forced to 0 by firmware.
+	@ Check whether it sticks before accessing any other sysreg
+	mrc	p15, 4, r7, c12, c9, 5	@ ICC_HSRE
+	tst	r7, #ICC_SRE_EL2_SRE
+	beq	2f
+	mov	r7, #0
+	mcr	p15, 4, r7, c12, c11, 0	@ ICH_HCR
+2:
+#endif
+
+>>>>>>> v4.9.227
 	bx	lr			@ The boot CPU mode is left in r4.
 ENDPROC(__hyp_stub_install_secondary)
 

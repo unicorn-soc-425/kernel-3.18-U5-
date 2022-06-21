@@ -12,7 +12,10 @@
 #include <linux/gfp.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <asm-generic/dma-coherent.h>
+=======
+>>>>>>> v4.9.227
 
 /*
  * Managed DMA API
@@ -62,7 +65,11 @@ static int dmam_match(struct device *dev, void *res, void *match_data)
  * RETURNS:
  * Pointer to allocated memory on success, NULL on failure.
  */
+<<<<<<< HEAD
 void * dmam_alloc_coherent(struct device *dev, size_t size,
+=======
+void *dmam_alloc_coherent(struct device *dev, size_t size,
+>>>>>>> v4.9.227
 			   dma_addr_t *dma_handle, gfp_t gfp)
 {
 	struct dma_devres *dr;
@@ -167,7 +174,11 @@ void dmam_free_noncoherent(struct device *dev, size_t size, void *vaddr,
 }
 EXPORT_SYMBOL(dmam_free_noncoherent);
 
+<<<<<<< HEAD
 #ifdef ARCH_HAS_DMA_DECLARE_COHERENT_MEMORY
+=======
+#ifdef CONFIG_HAVE_GENERIC_DMA_COHERENT
+>>>>>>> v4.9.227
 
 static void dmam_coherent_decl_release(struct device *dev, void *res)
 {
@@ -199,10 +210,20 @@ int dmam_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
 
 	rc = dma_declare_coherent_memory(dev, phys_addr, device_addr, size,
 					 flags);
+<<<<<<< HEAD
 	if (rc == 0)
 		devres_add(dev, res);
 	else
 		devres_free(res);
+=======
+	if (rc) {
+		devres_add(dev, res);
+		rc = 0;
+	} else {
+		devres_free(res);
+		rc = -ENOMEM;
+	}
+>>>>>>> v4.9.227
 
 	return rc;
 }
@@ -247,8 +268,13 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
 		    void *cpu_addr, dma_addr_t dma_addr, size_t size)
 {
 	int ret = -ENXIO;
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 	unsigned long user_count = (vma->vm_end - vma->vm_start) >> PAGE_SHIFT;
+=======
+#if defined(CONFIG_MMU) && !defined(CONFIG_ARCH_NO_COHERENT_DMA_MMAP)
+	unsigned long user_count = vma_pages(vma);
+>>>>>>> v4.9.227
 	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
 	unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
 	unsigned long off = vma->vm_pgoff;
@@ -264,7 +290,11 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
 				      user_count << PAGE_SHIFT,
 				      vma->vm_page_prot);
 	}
+<<<<<<< HEAD
 #endif	/* CONFIG_MMU */
+=======
+#endif	/* CONFIG_MMU && !CONFIG_ARCH_NO_COHERENT_DMA_MMAP */
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -309,12 +339,16 @@ void *dma_common_contiguous_remap(struct page *page, size_t size,
 	void *ptr;
 	unsigned long pfn;
 
+<<<<<<< HEAD
 	pages = kmalloc(sizeof(struct page *) << get_order(size),
 			GFP_KERNEL | __GFP_NOWARN);
 
 	if (!pages)
 		pages = vmalloc(sizeof(struct page *) << get_order(size));
 
+=======
+	pages = kmalloc(sizeof(struct page *) << get_order(size), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!pages)
 		return NULL;
 
@@ -323,28 +357,46 @@ void *dma_common_contiguous_remap(struct page *page, size_t size,
 
 	ptr = dma_common_pages_remap(pages, size, vm_flags, prot, caller);
 
+<<<<<<< HEAD
 	kvfree(pages);
+=======
+	kfree(pages);
+>>>>>>> v4.9.227
 
 	return ptr;
 }
 
 /*
+<<<<<<< HEAD
 	area->pages = pages;
 
  * unmaps a range previously mapped by dma_common_*_remap
  */
 void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags,
 			   bool no_warn)
+=======
+ * unmaps a range previously mapped by dma_common_*_remap
+ */
+void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
+>>>>>>> v4.9.227
 {
 	struct vm_struct *area = find_vm_area(cpu_addr);
 
 	if (!area || (area->flags & vm_flags) != vm_flags) {
+<<<<<<< HEAD
 		WARN(!no_warn, "trying to free invalid coherent area: %p\n",
 			cpu_addr);
 		return;
 	}
 
 	unmap_kernel_range((unsigned long)cpu_addr, size);
+=======
+		WARN(1, "trying to free invalid coherent area: %p\n", cpu_addr);
+		return;
+	}
+
+	unmap_kernel_range((unsigned long)cpu_addr, PAGE_ALIGN(size));
+>>>>>>> v4.9.227
 	vunmap(cpu_addr);
 }
 #endif

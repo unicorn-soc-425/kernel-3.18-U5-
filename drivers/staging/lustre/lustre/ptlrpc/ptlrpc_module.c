@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -36,7 +40,10 @@
 
 #define DEBUG_SUBSYSTEM S_RPC
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #include "../include/obd_support.h"
 #include "../include/obd_class.h"
 #include "../include/lustre_net.h"
@@ -48,10 +55,15 @@ extern spinlock_t ptlrpc_last_xid_lock;
 #if RS_DEBUG
 extern spinlock_t ptlrpc_rs_debug_lock;
 #endif
+<<<<<<< HEAD
 extern struct mutex pinger_mutex;
 extern struct mutex ptlrpcd_mutex;
 
 __init int ptlrpc_init(void)
+=======
+
+static int __init ptlrpc_init(void)
+>>>>>>> v4.9.227
 {
 	int rc, cleanup_phase = 0;
 
@@ -143,7 +155,12 @@ cleanup:
 		ptlrpc_hr_fini();
 		req_layout_fini();
 		/* Fall through */
+<<<<<<< HEAD
 	default: ;
+=======
+	default:
+		;
+>>>>>>> v4.9.227
 	}
 
 	return rc;
@@ -162,10 +179,17 @@ static void __exit ptlrpc_exit(void)
 	ptlrpc_connection_fini();
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Sun Microsystems, Inc. <http://www.lustre.org/>");
 MODULE_DESCRIPTION("Lustre Request Processor and Lock Management");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("1.0.0");
+=======
+MODULE_AUTHOR("OpenSFS, Inc. <http://www.lustre.org/>");
+MODULE_DESCRIPTION("Lustre Request Processor and Lock Management");
+MODULE_VERSION(LUSTRE_VERSION_STRING);
+MODULE_LICENSE("GPL");
+>>>>>>> v4.9.227
 
 module_init(ptlrpc_init);
 module_exit(ptlrpc_exit);

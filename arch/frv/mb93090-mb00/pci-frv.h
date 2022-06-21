@@ -14,6 +14,7 @@
 #define DBG(x...)
 #endif
 
+<<<<<<< HEAD
 #define PCI_PROBE_BIOS		0x0001
 #define PCI_PROBE_CONF1		0x0002
 #define PCI_PROBE_CONF2		0x0004
@@ -22,6 +23,8 @@
 #define PCI_BIOS_IRQ_SCAN	0x2000
 #define PCI_ASSIGN_ALL_BUSSES	0x4000
 
+=======
+>>>>>>> v4.9.227
 extern unsigned int __nongpreldata pci_probe;
 
 /* pci-frv.c */

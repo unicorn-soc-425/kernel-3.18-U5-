@@ -62,7 +62,11 @@ static int notrace arch_save_image(unsigned long unused)
 
 	ret = swsusp_save();
 	if (ret == 0)
+<<<<<<< HEAD
 		_soft_restart(virt_to_phys(cpu_resume), false);
+=======
+		_soft_restart(virt_to_idmap(cpu_resume), false);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -87,7 +91,11 @@ static void notrace arch_restore_image(void *unused)
 	for (pbe = restore_pblist; pbe; pbe = pbe->next)
 		copy_page(pbe->orig_address, pbe->address);
 
+<<<<<<< HEAD
 	_soft_restart(virt_to_phys(cpu_resume), false);
+=======
+	_soft_restart(virt_to_idmap(cpu_resume), false);
+>>>>>>> v4.9.227
 }
 
 static u64 resume_stack[PAGE_SIZE/2/sizeof(u64)] __nosavedata;
@@ -100,7 +108,10 @@ static u64 resume_stack[PAGE_SIZE/2/sizeof(u64)] __nosavedata;
  */
 int swsusp_arch_resume(void)
 {
+<<<<<<< HEAD
 	extern void call_with_stack(void (*fn)(void *), void *arg, void *sp);
+=======
+>>>>>>> v4.9.227
 	call_with_stack(arch_restore_image, 0,
 		resume_stack + ARRAY_SIZE(resume_stack));
 	return 0;

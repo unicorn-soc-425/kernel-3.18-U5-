@@ -36,14 +36,22 @@ static int ebt_log_tg_check(const struct xt_tgchk_param *par)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct tcpudphdr
 {
+=======
+struct tcpudphdr {
+>>>>>>> v4.9.227
 	__be16 src;
 	__be16 dst;
 };
 
+<<<<<<< HEAD
 struct arppayload
 {
+=======
+struct arppayload {
+>>>>>>> v4.9.227
 	unsigned char mac_src[ETH_ALEN];
 	unsigned char ip_src[4];
 	unsigned char mac_dst[ETH_ALEN];
@@ -93,7 +101,11 @@ ebt_log_packet(struct net *net, u_int8_t pf, unsigned int hooknum,
 	if (loginfo->type == NF_LOG_TYPE_LOG)
 		bitmask = loginfo->u.log.logflags;
 	else
+<<<<<<< HEAD
 		bitmask = NF_LOG_MASK;
+=======
+		bitmask = NF_LOG_DEFAULT_MASK;
+>>>>>>> v4.9.227
 
 	if ((bitmask & EBT_LOG_IP) && eth_hdr(skb)->h_proto ==
 	   htons(ETH_P_IP)) {
@@ -152,7 +164,12 @@ ebt_log_packet(struct net *net, u_int8_t pf, unsigned int hooknum,
 		       ntohs(ah->ar_op));
 
 		/* If it's for Ethernet and the lengths are OK,
+<<<<<<< HEAD
 		 * then log the ARP payload */
+=======
+		 * then log the ARP payload
+		 */
+>>>>>>> v4.9.227
 		if (ah->ar_hrd == htons(1) &&
 		    ah->ar_hln == ETH_ALEN &&
 		    ah->ar_pln == sizeof(__be32)) {
@@ -180,7 +197,11 @@ ebt_log_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ebt_log_info *info = par->targinfo;
 	struct nf_loginfo li;
+<<<<<<< HEAD
 	struct net *net = dev_net(par->in ? par->in : par->out);
+=======
+	struct net *net = par->net;
+>>>>>>> v4.9.227
 
 	li.type = NF_LOG_TYPE_LOG;
 	li.u.log.level = info->loglevel;

@@ -61,6 +61,7 @@ struct tcm {
 
 	unsigned int y_offset;	/* offset to use for y coordinates */
 
+<<<<<<< HEAD
 	/* 'pvt' structure shall contain any tcm details (attr) along with
 	linked list of allocated areas and mutex for mutually exclusive access
 	to the list.  It may also contain copies of width and height to notice
@@ -73,6 +74,19 @@ struct tcm {
 	s32 (*reserve_1d)(struct tcm *tcm, u32 slots, struct tcm_area *area);
 	s32 (*free)      (struct tcm *tcm, struct tcm_area *area);
 	void (*deinit)   (struct tcm *tcm);
+=======
+	spinlock_t lock;
+	unsigned long *bitmap;
+	size_t map_size;
+
+	/* function table */
+	s32 (*reserve_2d)(struct tcm *tcm, u16 height, u16 width, u16 align,
+			  int16_t offset, uint16_t slot_bytes,
+			  struct tcm_area *area);
+	s32 (*reserve_1d)(struct tcm *tcm, u32 slots, struct tcm_area *area);
+	s32 (*free)(struct tcm *tcm, struct tcm_area *area);
+	void (*deinit)(struct tcm *tcm);
+>>>>>>> v4.9.227
 };
 
 /*=============================================================================
@@ -91,7 +105,11 @@ struct tcm {
  *
  */
 
+<<<<<<< HEAD
 struct tcm *sita_init(u16 width, u16 height, struct tcm_pt *attr);
+=======
+struct tcm *sita_init(u16 width, u16 height);
+>>>>>>> v4.9.227
 
 
 /**
@@ -120,6 +138,12 @@ static inline void tcm_deinit(struct tcm *tcm)
  *			all values may be supported by the container manager,
  *			but it must support 0 (1), 32 and 64.
  *			0 value is equivalent to 1.
+<<<<<<< HEAD
+=======
+ * @param offset	Offset requirement, in bytes.  This is the offset
+ *			from a 4KiB aligned virtual address.
+ * @param slot_bytes	Width of slot in bytes
+>>>>>>> v4.9.227
  * @param area		Pointer to where the reserved area should be stored.
  *
  * @return 0 on success.  Non-0 error code on failure.  Also,
@@ -129,7 +153,12 @@ static inline void tcm_deinit(struct tcm *tcm)
  *	    allocation.
  */
 static inline s32 tcm_reserve_2d(struct tcm *tcm, u16 width, u16 height,
+<<<<<<< HEAD
 				 u16 align, struct tcm_area *area)
+=======
+				u16 align, int16_t offset, uint16_t slot_bytes,
+				struct tcm_area *area)
+>>>>>>> v4.9.227
 {
 	/* perform rudimentary error checking */
 	s32 res = tcm  == NULL ? -ENODEV :
@@ -140,7 +169,12 @@ static inline s32 tcm_reserve_2d(struct tcm *tcm, u16 width, u16 height,
 
 	if (!res) {
 		area->is2d = true;
+<<<<<<< HEAD
 		res = tcm->reserve_2d(tcm, height, width, align, area);
+=======
+		res = tcm->reserve_2d(tcm, height, width, align, offset,
+					slot_bytes, area);
+>>>>>>> v4.9.227
 		area->tcm = res ? NULL : tcm;
 	}
 

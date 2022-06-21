@@ -18,7 +18,11 @@ config SH_R7780MP
 config SH_R7785RP
 	bool "R7785RP board support"
 	depends on CPU_SUBTYPE_SH7785
+<<<<<<< HEAD
 	select ARCH_REQUIRE_GPIOLIB
+=======
+	select GPIOLIB
+>>>>>>> v4.9.227
 
 endchoice
 

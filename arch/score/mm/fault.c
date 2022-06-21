@@ -34,6 +34,10 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 
 /*
  * This routine handles page faults.  It determines the address,
@@ -73,7 +77,11 @@ asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long write,
 	* If we're in an interrupt or have no user
 	* context, we must not take the fault..
 	*/
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (pagefault_disabled() || !mm)
+>>>>>>> v4.9.227
 		goto bad_area_nosemaphore;
 
 	if (user_mode(regs))
@@ -110,7 +118,11 @@ good_area:
 	* make sure we exit gracefully rather than endlessly redo
 	* the fault.
 	*/
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> v4.9.227
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;

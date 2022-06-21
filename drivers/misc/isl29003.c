@@ -465,7 +465,10 @@ MODULE_DEVICE_TABLE(i2c, isl29003_id);
 static struct i2c_driver isl29003_driver = {
 	.driver = {
 		.name	= ISL29003_DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= ISL29003_PM_OPS,
 	},
 	.probe	= isl29003_probe,

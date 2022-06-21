@@ -1,5 +1,6 @@
 /*
  * Architecture-specific kernel symbols
+<<<<<<< HEAD
  *
  * Don't put any exports here unless it's defined in an assembler file.
  * All other exports should be put directly after the definition.
@@ -24,10 +25,18 @@ EXPORT_SYMBOL(clear_page);
 EXPORT_SYMBOL(copy_page);
 
 #ifdef CONFIG_VIRTUAL_MEM_MAP
+=======
+ */
+
+#ifdef CONFIG_VIRTUAL_MEM_MAP
+#include <linux/compiler.h>
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/bootmem.h>
 EXPORT_SYMBOL(min_low_pfn);	/* defined by bootmem.c, but not exported by generic code */
 EXPORT_SYMBOL(max_low_pfn);	/* defined by bootmem.c, but not exported by generic code */
 #endif
+<<<<<<< HEAD
 
 #include <asm/processor.h>
 EXPORT_SYMBOL(ia64_cpu_info);
@@ -96,3 +105,5 @@ EXPORT_SYMBOL(ia64_ivt);
 /* mcount is defined in assembly */
 EXPORT_SYMBOL(_mcount);
 #endif
+=======
+>>>>>>> v4.9.227

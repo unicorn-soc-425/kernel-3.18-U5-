@@ -12,7 +12,11 @@ must be present contiguously. Generic DT driver will check only node 'x' for
 cpu:x.
 
 Required properties:
+<<<<<<< HEAD
 - operating-points: Refer to Documentation/devicetree/bindings/power/opp.txt
+=======
+- operating-points: Refer to Documentation/devicetree/bindings/opp/opp.txt
+>>>>>>> v4.9.227
   for details
 
 Optional properties:

@@ -1,6 +1,10 @@
 /*
  * apei-internal.h - ACPI Platform Error Interface internal
+<<<<<<< HEAD
  * definations.
+=======
+ * definitions.
+>>>>>>> v4.9.227
  */
 
 #ifndef APEI_INTERNAL_H

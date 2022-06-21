@@ -116,7 +116,11 @@ static int push_cxx_to_hypervisor(struct acpi_processor *_pr)
 	set_xen_guest_handle(op.u.set_pminfo.power.states, dst_cx_states);
 
 	if (!no_hypercall)
+<<<<<<< HEAD
 		ret = HYPERVISOR_dom0_op(&op);
+=======
+		ret = HYPERVISOR_platform_op(&op);
+>>>>>>> v4.9.227
 
 	if (!ret) {
 		pr_debug("ACPI CPU%u - C-states uploaded.\n", _pr->acpi_id);
@@ -244,7 +248,11 @@ static int push_pxx_to_hypervisor(struct acpi_processor *_pr)
 	}
 
 	if (!no_hypercall)
+<<<<<<< HEAD
 		ret = HYPERVISOR_dom0_op(&op);
+=======
+		ret = HYPERVISOR_platform_op(&op);
+>>>>>>> v4.9.227
 
 	if (!ret) {
 		struct acpi_processor_performance *perf;
@@ -302,7 +310,11 @@ static unsigned int __init get_max_acpi_id(void)
 	info = &op.u.pcpu_info;
 	info->xen_cpuid = 0;
 
+<<<<<<< HEAD
 	ret = HYPERVISOR_dom0_op(&op);
+=======
+	ret = HYPERVISOR_platform_op(&op);
+>>>>>>> v4.9.227
 	if (ret)
 		return NR_CPUS;
 
@@ -310,7 +322,11 @@ static unsigned int __init get_max_acpi_id(void)
 	last_cpu = op.u.pcpu_info.max_present;
 	for (i = 0; i <= last_cpu; i++) {
 		info->xen_cpuid = i;
+<<<<<<< HEAD
 		ret = HYPERVISOR_dom0_op(&op);
+=======
+		ret = HYPERVISOR_platform_op(&op);
+>>>>>>> v4.9.227
 		if (ret)
 			continue;
 		max_acpi_id = max(info->acpi_id, max_acpi_id);
@@ -549,11 +565,17 @@ static int __init xen_acpi_processor_init(void)
 
 	return 0;
 err_unregister:
+<<<<<<< HEAD
 	for_each_possible_cpu(i) {
 		struct acpi_processor_performance *perf;
 		perf = per_cpu_ptr(acpi_perf_data, i);
 		acpi_processor_unregister_performance(perf, i);
 	}
+=======
+	for_each_possible_cpu(i)
+		acpi_processor_unregister_performance(i);
+
+>>>>>>> v4.9.227
 err_out:
 	/* Freeing a NULL pointer is OK: alloc_percpu zeroes. */
 	free_acpi_perf_data();
@@ -568,11 +590,17 @@ static void __exit xen_acpi_processor_exit(void)
 	kfree(acpi_ids_done);
 	kfree(acpi_id_present);
 	kfree(acpi_id_cst_present);
+<<<<<<< HEAD
 	for_each_possible_cpu(i) {
 		struct acpi_processor_performance *perf;
 		perf = per_cpu_ptr(acpi_perf_data, i);
 		acpi_processor_unregister_performance(perf, i);
 	}
+=======
+	for_each_possible_cpu(i)
+		acpi_processor_unregister_performance(i);
+
+>>>>>>> v4.9.227
 	free_acpi_perf_data();
 }
 

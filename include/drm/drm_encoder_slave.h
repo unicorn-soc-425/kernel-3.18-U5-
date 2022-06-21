@@ -95,7 +95,11 @@ struct drm_encoder_slave_funcs {
 struct drm_encoder_slave {
 	struct drm_encoder base;
 
+<<<<<<< HEAD
 	struct drm_encoder_slave_funcs *slave_funcs;
+=======
+	const struct drm_encoder_slave_funcs *slave_funcs;
+>>>>>>> v4.9.227
 	void *slave_priv;
 	void *bus_priv;
 };

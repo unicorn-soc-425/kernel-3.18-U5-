@@ -5,7 +5,11 @@
 #include <linux/mm.h>
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/capability.h>
 
 #include <xen/xen.h>
@@ -18,8 +22,11 @@
 
 #include "xenbus_comms.h"
 
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
 
+=======
+>>>>>>> v4.9.227
 static int xenbus_backend_open(struct inode *inode, struct file *filp)
 {
 	if (!capable(CAP_SYS_ADMIN))
@@ -49,7 +56,11 @@ static long xenbus_alloc(domid_t domid)
 		goto out_err;
 
 	gnttab_grant_foreign_access_ref(GNTTAB_RESERVED_XENSTORE, domid,
+<<<<<<< HEAD
 			virt_to_mfn(xen_store_interface), 0 /* writable */);
+=======
+			virt_to_gfn(xen_store_interface), 0 /* writable */);
+>>>>>>> v4.9.227
 
 	arg.dom = DOMID_SELF;
 	arg.remote_dom = domid;
@@ -132,6 +143,7 @@ static int __init xenbus_backend_init(void)
 		pr_err("Could not register xenbus backend device\n");
 	return err;
 }
+<<<<<<< HEAD
 
 static void __exit xenbus_backend_exit(void)
 {
@@ -140,3 +152,6 @@ static void __exit xenbus_backend_exit(void)
 
 module_init(xenbus_backend_init);
 module_exit(xenbus_backend_exit);
+=======
+device_initcall(xenbus_backend_init);
+>>>>>>> v4.9.227

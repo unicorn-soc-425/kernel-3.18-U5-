@@ -11,10 +11,16 @@
 #include <linux/threads.h>
 #include <linux/cpumask.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/ctype.h>
 #include <linux/init.h>
+=======
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/ctype.h>
+>>>>>>> v4.9.227
 #include <linux/hardirq.h>
 #include <linux/dmar.h>
 

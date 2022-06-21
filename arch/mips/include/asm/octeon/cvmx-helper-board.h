@@ -58,6 +58,7 @@ typedef enum {
 #define CVMX_HELPER_BOARD_MGMT_IPD_PORT	    -10
 
 /**
+<<<<<<< HEAD
  * cvmx_override_board_link_get(int ipd_port) is a function
  * pointer. It is meant to allow customization of the process of
  * talking to a PHY to determine link speed. It is called every
@@ -68,6 +69,8 @@ typedef enum {
 extern cvmx_helper_link_info_t(*cvmx_override_board_link_get) (int ipd_port);
 
 /**
+=======
+>>>>>>> v4.9.227
  * Return the MII PHY address associated with the given IPD
  * port. A result of -1 means there isn't a MII capable PHY
  * connected to this port. On chips supporting multiple MII
@@ -86,6 +89,7 @@ extern cvmx_helper_link_info_t(*cvmx_override_board_link_get) (int ipd_port);
 extern int cvmx_helper_board_get_mii_address(int ipd_port);
 
 /**
+<<<<<<< HEAD
  * This function as a board specific method of changing the PHY
  * speed, duplex, and autonegotiation. This programs the PHY and
  * not Octeon. This can be used to force Octeon's links to
@@ -106,6 +110,8 @@ int cvmx_helper_board_link_set_phy(int phy_addr,
 				   cvmx_helper_link_info_t link_info);
 
 /**
+=======
+>>>>>>> v4.9.227
  * This function is the board specific method of determining an
  * ethernet ports link speed. Most Octeon boards have Marvell PHYs
  * and are handled by the fall through case. This function must be

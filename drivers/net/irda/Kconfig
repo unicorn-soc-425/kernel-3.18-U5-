@@ -394,6 +394,7 @@ config MCS_FIR
 	  To compile it as a module, choose M here: the module will be called
 	  mcs7780.
 
+<<<<<<< HEAD
 config SH_IRDA
 	tristate "SuperH IrDA driver"
 	depends on IRDA
@@ -401,5 +402,7 @@ config SH_IRDA
 	help
 	  Say Y here if your want to enable SuperH IrDA devices.
 
+=======
+>>>>>>> v4.9.227
 endmenu
 

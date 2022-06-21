@@ -18,6 +18,11 @@
  *                        SPEEDSTEP - DEFINITIONS                    *
  *********************************************************************/
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -68,13 +73,21 @@ static int speedstep_find_register(void)
 	/* get PMBASE */
 	pci_read_config_dword(speedstep_chipset_dev, 0x40, &pmbase);
 	if (!(pmbase & 0x01)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "speedstep-ich: could not find speedstep register\n");
+=======
+		pr_err("could not find speedstep register\n");
+>>>>>>> v4.9.227
 		return -ENODEV;
 	}
 
 	pmbase &= 0xFFFFFFFE;
 	if (!pmbase) {
+<<<<<<< HEAD
 		printk(KERN_ERR "speedstep-ich: could not find speedstep register\n");
+=======
+		pr_err("could not find speedstep register\n");
+>>>>>>> v4.9.227
 		return -ENODEV;
 	}
 
@@ -136,7 +149,11 @@ static void speedstep_set_state(unsigned int state)
 		pr_debug("change to %u MHz succeeded\n",
 			speedstep_get_frequency(speedstep_processor) / 1000);
 	else
+<<<<<<< HEAD
 		printk(KERN_ERR "cpufreq: change failed - I/O error\n");
+=======
+		pr_err("change failed - I/O error\n");
+>>>>>>> v4.9.227
 
 	return;
 }
@@ -292,7 +309,11 @@ static int speedstep_cpu_init(struct cpufreq_policy *policy)
 
 	/* only run on CPU to be set, or on its sibling */
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 	cpumask_copy(policy->cpus, cpu_sibling_mask(policy->cpu));
+=======
+	cpumask_copy(policy->cpus, topology_sibling_cpumask(policy->cpu));
+>>>>>>> v4.9.227
 #endif
 	policy_cpu = cpumask_any_and(policy->cpus, cpu_online_mask);
 
@@ -378,8 +399,12 @@ static void __exit speedstep_exit(void)
 }
 
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>, "
 		"Dominik Brodowski <linux@brodo.de>");
+=======
+MODULE_AUTHOR("Dave Jones, Dominik Brodowski <linux@brodo.de>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Speedstep driver for Intel mobile processors on chipsets "
 		"with ICH-M southbridges.");
 MODULE_LICENSE("GPL");

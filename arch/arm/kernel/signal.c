@@ -14,7 +14,10 @@
 #include <linux/uaccess.h>
 #include <linux/tracehook.h>
 #include <linux/uprobes.h>
+<<<<<<< HEAD
 #include <linux/syscalls.h>
+=======
+>>>>>>> v4.9.227
 
 #include <asm/elf.h>
 #include <asm/cacheflush.h>
@@ -95,6 +98,7 @@ static int restore_iwmmxt_context(struct iwmmxt_sigframe *frame)
 
 static int preserve_vfp_context(struct vfp_sigframe __user *frame)
 {
+<<<<<<< HEAD
 	const unsigned long magic = VFP_MAGIC;
 	const unsigned long size = VFP_STORAGE_SIZE;
 	int err = 0;
@@ -123,6 +127,36 @@ static int restore_vfp_context(struct vfp_sigframe __user *frame)
 		return -EINVAL;
 
 	return vfp_restore_user_hwstate(&frame->ufp, &frame->ufp_exc);
+=======
+	struct vfp_sigframe kframe;
+	int err = 0;
+
+	memset(&kframe, 0, sizeof(kframe));
+	kframe.magic = VFP_MAGIC;
+	kframe.size = VFP_STORAGE_SIZE;
+
+	err = vfp_preserve_user_clear_hwstate(&kframe.ufp, &kframe.ufp_exc);
+	if (err)
+		return err;
+
+	return __copy_to_user(frame, &kframe, sizeof(kframe));
+}
+
+static int restore_vfp_context(struct vfp_sigframe __user *auxp)
+{
+	struct vfp_sigframe frame;
+	int err;
+
+	err = __copy_from_user(&frame, (char __user *) auxp, sizeof(frame));
+
+	if (err)
+		return err;
+
+	if (frame.magic != VFP_MAGIC || frame.size != VFP_STORAGE_SIZE)
+		return -EINVAL;
+
+	return vfp_restore_user_hwstate(&frame.ufp, &frame.ufp_exc);
+>>>>>>> v4.9.227
 }
 
 #endif
@@ -142,6 +176,10 @@ struct rt_sigframe {
 
 static int restore_sigframe(struct pt_regs *regs, struct sigframe __user *sf)
 {
+<<<<<<< HEAD
+=======
+	struct sigcontext context;
+>>>>>>> v4.9.227
 	struct aux_sigframe __user *aux;
 	sigset_t set;
 	int err;
@@ -150,6 +188,7 @@ static int restore_sigframe(struct pt_regs *regs, struct sigframe __user *sf)
 	if (err == 0)
 		set_current_blocked(&set);
 
+<<<<<<< HEAD
 	__get_user_error(regs->ARM_r0, &sf->uc.uc_mcontext.arm_r0, err);
 	__get_user_error(regs->ARM_r1, &sf->uc.uc_mcontext.arm_r1, err);
 	__get_user_error(regs->ARM_r2, &sf->uc.uc_mcontext.arm_r2, err);
@@ -167,6 +206,28 @@ static int restore_sigframe(struct pt_regs *regs, struct sigframe __user *sf)
 	__get_user_error(regs->ARM_lr, &sf->uc.uc_mcontext.arm_lr, err);
 	__get_user_error(regs->ARM_pc, &sf->uc.uc_mcontext.arm_pc, err);
 	__get_user_error(regs->ARM_cpsr, &sf->uc.uc_mcontext.arm_cpsr, err);
+=======
+	err |= __copy_from_user(&context, &sf->uc.uc_mcontext, sizeof(context));
+	if (err == 0) {
+		regs->ARM_r0 = context.arm_r0;
+		regs->ARM_r1 = context.arm_r1;
+		regs->ARM_r2 = context.arm_r2;
+		regs->ARM_r3 = context.arm_r3;
+		regs->ARM_r4 = context.arm_r4;
+		regs->ARM_r5 = context.arm_r5;
+		regs->ARM_r6 = context.arm_r6;
+		regs->ARM_r7 = context.arm_r7;
+		regs->ARM_r8 = context.arm_r8;
+		regs->ARM_r9 = context.arm_r9;
+		regs->ARM_r10 = context.arm_r10;
+		regs->ARM_fp = context.arm_fp;
+		regs->ARM_ip = context.arm_ip;
+		regs->ARM_sp = context.arm_sp;
+		regs->ARM_lr = context.arm_lr;
+		regs->ARM_pc = context.arm_pc;
+		regs->ARM_cpsr = context.arm_cpsr;
+	}
+>>>>>>> v4.9.227
 
 	err |= !valid_user_regs(regs);
 
@@ -254,6 +315,7 @@ static int
 setup_sigframe(struct sigframe __user *sf, struct pt_regs *regs, sigset_t *set)
 {
 	struct aux_sigframe __user *aux;
+<<<<<<< HEAD
 	int err = 0;
 
 	__put_user_error(regs->ARM_r0, &sf->uc.uc_mcontext.arm_r0, err);
@@ -278,6 +340,37 @@ setup_sigframe(struct sigframe __user *sf, struct pt_regs *regs, sigset_t *set)
 	__put_user_error(current->thread.error_code, &sf->uc.uc_mcontext.error_code, err);
 	__put_user_error(current->thread.address, &sf->uc.uc_mcontext.fault_address, err);
 	__put_user_error(set->sig[0], &sf->uc.uc_mcontext.oldmask, err);
+=======
+	struct sigcontext context;
+	int err = 0;
+
+	context = (struct sigcontext) {
+		.arm_r0        = regs->ARM_r0,
+		.arm_r1        = regs->ARM_r1,
+		.arm_r2        = regs->ARM_r2,
+		.arm_r3        = regs->ARM_r3,
+		.arm_r4        = regs->ARM_r4,
+		.arm_r5        = regs->ARM_r5,
+		.arm_r6        = regs->ARM_r6,
+		.arm_r7        = regs->ARM_r7,
+		.arm_r8        = regs->ARM_r8,
+		.arm_r9        = regs->ARM_r9,
+		.arm_r10       = regs->ARM_r10,
+		.arm_fp        = regs->ARM_fp,
+		.arm_ip        = regs->ARM_ip,
+		.arm_sp        = regs->ARM_sp,
+		.arm_lr        = regs->ARM_lr,
+		.arm_pc        = regs->ARM_pc,
+		.arm_cpsr      = regs->ARM_cpsr,
+
+		.trap_no       = current->thread.trap_no,
+		.error_code    = current->thread.error_code,
+		.fault_address = current->thread.address,
+		.oldmask       = set->sig[0],
+	};
+
+	err |= __copy_to_user(&sf->uc.uc_mcontext, &context, sizeof(context));
+>>>>>>> v4.9.227
 
 	err |= __copy_to_user(&sf->uc.uc_sigmask, set, sizeof(*set));
 
@@ -294,7 +387,11 @@ setup_sigframe(struct sigframe __user *sf, struct pt_regs *regs, sigset_t *set)
 	if (err == 0)
 		err |= preserve_vfp_context(&aux->vfp);
 #endif
+<<<<<<< HEAD
 	__put_user_error(0, &aux->end_magic, err);
+=======
+	err |= __put_user(0, &aux->end_magic);
+>>>>>>> v4.9.227
 
 	return err;
 }
@@ -319,6 +416,7 @@ get_sigframe(struct ksignal *ksig, struct pt_regs *regs, int framesize)
 	return frame;
 }
 
+<<<<<<< HEAD
 /*
  * translate the signal
  */
@@ -330,6 +428,8 @@ static inline int map_sig(int sig)
 	return sig;
 }
 
+=======
+>>>>>>> v4.9.227
 static int
 setup_return(struct pt_regs *regs, struct ksignal *ksig,
 	     unsigned long __user *rc, void __user *frame)
@@ -355,7 +455,10 @@ setup_return(struct pt_regs *regs, struct ksignal *ksig,
 		 */
 		thumb = handler & 1;
 
+<<<<<<< HEAD
 #if __LINUX_ARM_ARCH__ >= 6
+=======
+>>>>>>> v4.9.227
 		/*
 		 * Clear the If-Then Thumb-2 execution state.  ARM spec
 		 * requires this to be all 000s in ARM mode.  Snapdragon
@@ -364,11 +467,18 @@ setup_return(struct pt_regs *regs, struct ksignal *ksig,
 		 *
 		 * We must do this whenever we are running on a Thumb-2
 		 * capable CPU, which includes ARMv6T2.  However, we elect
+<<<<<<< HEAD
 		 * to do this whenever we're on an ARMv6 or later CPU for
 		 * simplicity.
 		 */
 		cpsr &= ~PSR_IT_MASK;
 #endif
+=======
+		 * to always do this to simplify the code; this field is
+		 * marked UNK/SBZP for older architectures.
+		 */
+		cpsr &= ~PSR_IT_MASK;
+>>>>>>> v4.9.227
 
 		if (thumb) {
 			cpsr |= PSR_T_BIT;
@@ -418,7 +528,11 @@ setup_return(struct pt_regs *regs, struct ksignal *ksig,
 		}
 	}
 
+<<<<<<< HEAD
 	regs->ARM_r0 = map_sig(ksig->sig);
+=======
+	regs->ARM_r0 = ksig->sig;
+>>>>>>> v4.9.227
 	regs->ARM_sp = (unsigned long)frame;
 	regs->ARM_lr = retcode;
 	regs->ARM_pc = handler;
@@ -439,7 +553,11 @@ setup_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
 	/*
 	 * Set uc.uc_flags to a value which sc.trap_no would never have.
 	 */
+<<<<<<< HEAD
 	__put_user_error(0x5ac3c35a, &frame->uc.uc_flags, err);
+=======
+	err = __put_user(0x5ac3c35a, &frame->uc.uc_flags);
+>>>>>>> v4.9.227
 
 	err |= setup_sigframe(frame, regs, set);
 	if (err == 0)
@@ -459,8 +577,13 @@ setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
 
 	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
 
+<<<<<<< HEAD
 	__put_user_error(0, &frame->sig.uc.uc_flags, err);
 	__put_user_error(NULL, &frame->sig.uc.uc_link, err);
+=======
+	err |= __put_user(0, &frame->sig.uc.uc_flags);
+	err |= __put_user(NULL, &frame->sig.uc.uc_link);
+>>>>>>> v4.9.227
 
 	err |= __save_altstack(&frame->sig.uc.uc_stack, regs->ARM_sp);
 	err |= setup_sigframe(&frame->sig, regs, set);
@@ -579,6 +702,15 @@ static int do_signal(struct pt_regs *regs, int syscall)
 asmlinkage int
 do_work_pending(struct pt_regs *regs, unsigned int thread_flags, int syscall)
 {
+<<<<<<< HEAD
+=======
+	/*
+	 * The assembly code enters us with IRQs off, but it hasn't
+	 * informed the tracing code of that for efficiency reasons.
+	 * Update the trace code with the current status.
+	 */
+	trace_hardirqs_off();
+>>>>>>> v4.9.227
 	do {
 		if (likely(thread_flags & _TIF_NEED_RESCHED)) {
 			schedule();
@@ -598,7 +730,10 @@ do_work_pending(struct pt_regs *regs, unsigned int thread_flags, int syscall)
 				}
 				syscall = 0;
 			} else if (thread_flags & _TIF_UPROBE) {
+<<<<<<< HEAD
 				clear_thread_flag(TIF_UPROBE);
+=======
+>>>>>>> v4.9.227
 				uprobe_notify_resume(regs);
 			} else {
 				clear_thread_flag(TIF_NOTIFY_RESUME);
@@ -640,9 +775,12 @@ struct page *get_signal_page(void)
 
 	return page;
 }
+<<<<<<< HEAD
 
 /* Defer to generic check */
 asmlinkage void addr_limit_check_failed(void)
 {
 	addr_limit_user_check();
 }
+=======
+>>>>>>> v4.9.227

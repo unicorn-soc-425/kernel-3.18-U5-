@@ -523,6 +523,7 @@ static ssize_t tw_show_stats(struct device *dev, struct device_attribute *attr,
 	return len;
 } /* End tw_show_stats() */
 
+<<<<<<< HEAD
 /* This function will set a devices queue depth */
 static int tw_change_queue_depth(struct scsi_device *sdev, int queue_depth,
 				 int reason)
@@ -536,6 +537,8 @@ static int tw_change_queue_depth(struct scsi_device *sdev, int queue_depth,
 	return queue_depth;
 } /* End tw_change_queue_depth() */
 
+=======
+>>>>>>> v4.9.227
 /* Create sysfs 'stats' entry */
 static struct device_attribute tw_host_stats_attr = {
 	.attr = {
@@ -1061,6 +1064,12 @@ static int tw_chrdev_open(struct inode *inode, struct file *file)
 static const struct file_operations tw_fops = {
 	.owner		= THIS_MODULE,
 	.unlocked_ioctl	= tw_chrdev_ioctl,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+	.compat_ioctl   = tw_chrdev_ioctl,
+#endif
+>>>>>>> v4.9.227
 	.open		= tw_chrdev_open,
 	.release	= NULL,
 	.llseek		= noop_llseek,
@@ -2243,7 +2252,11 @@ static struct scsi_host_template driver_template = {
 	.queuecommand		= tw_scsi_queue,
 	.eh_host_reset_handler	= tw_scsi_eh_reset,
 	.bios_param		= tw_scsi_biosparam,
+<<<<<<< HEAD
 	.change_queue_depth	= tw_change_queue_depth,
+=======
+	.change_queue_depth	= scsi_change_queue_depth,
+>>>>>>> v4.9.227
 	.can_queue		= TW_Q_LENGTH-2,
 	.slave_configure	= tw_slave_configure,
 	.this_id		= -1,

@@ -306,6 +306,7 @@ static int idt77105_start(struct atm_dev *dev)
 	if (start_timer) {
 		start_timer = 0;
                 
+<<<<<<< HEAD
 		init_timer(&stats_timer);
 		stats_timer.expires = jiffies+IDT77105_STATS_TIMER_PERIOD;
 		stats_timer.function = idt77105_stats_timer_func;
@@ -314,6 +315,14 @@ static int idt77105_start(struct atm_dev *dev)
 		init_timer(&restart_timer);
 		restart_timer.expires = jiffies+IDT77105_RESTART_TIMER_PERIOD;
 		restart_timer.function = idt77105_restart_timer_func;
+=======
+		setup_timer(&stats_timer, idt77105_stats_timer_func, 0UL);
+		stats_timer.expires = jiffies+IDT77105_STATS_TIMER_PERIOD;
+		add_timer(&stats_timer);
+                
+		setup_timer(&restart_timer, idt77105_restart_timer_func, 0UL);
+		restart_timer.expires = jiffies+IDT77105_RESTART_TIMER_PERIOD;
+>>>>>>> v4.9.227
 		add_timer(&restart_timer);
 	}
 	spin_unlock_irqrestore(&idt77105_priv_lock, flags);

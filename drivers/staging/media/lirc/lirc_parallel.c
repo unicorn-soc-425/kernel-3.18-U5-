@@ -33,7 +33,11 @@
 #include <linux/fs.h>
 #include <linux/kernel.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <linux/mm.h>
 #include <linux/delay.h>
 
@@ -144,18 +148,29 @@ static void lirc_off(void)
 
 static unsigned int init_lirc_timer(void)
 {
+<<<<<<< HEAD
 	struct timeval tv, now;
 	unsigned int level, newlevel, timeelapsed, newtimer;
 	int count = 0;
 
 	do_gettimeofday(&tv);
 	tv.tv_sec++;                     /* wait max. 1 sec. */
+=======
+	ktime_t kt, now, timeout;
+	unsigned int level, newlevel, timeelapsed, newtimer;
+	int count = 0;
+
+	kt = ktime_get();
+	/* wait max. 1 sec. */
+	timeout = ktime_add_ns(kt, NSEC_PER_SEC);
+>>>>>>> v4.9.227
 	level = lirc_get_timer();
 	do {
 		newlevel = lirc_get_timer();
 		if (level == 0 && newlevel != 0)
 			count++;
 		level = newlevel;
+<<<<<<< HEAD
 		do_gettimeofday(&now);
 	} while (count < 1000 && (now.tv_sec < tv.tv_sec
 			     || (now.tv_sec == tv.tv_sec
@@ -172,6 +187,20 @@ static unsigned int init_lirc_timer(void)
 		}
 		newtimer = (1000000*count)/timeelapsed;
 		if (abs(newtimer - default_timer) > default_timer/10) {
+=======
+		now = ktime_get();
+	} while (count < 1000 && (ktime_before(now, timeout)));
+	timeelapsed = ktime_us_delta(now, kt);
+	if (count >= 1000 && timeelapsed > 0) {
+		if (default_timer == 0) {
+			/* autodetect timer */
+			newtimer = (1000000 * count) / timeelapsed;
+			pr_info("%u Hz timer detected\n", newtimer);
+			return newtimer;
+		}
+		newtimer = (1000000 * count) / timeelapsed;
+		if (abs(newtimer - default_timer) > default_timer / 10) {
+>>>>>>> v4.9.227
 			/* bad timer */
 			pr_notice("bad timer: %u Hz\n", newtimer);
 			pr_notice("using default timer: %u Hz\n",
@@ -196,7 +225,11 @@ static int lirc_claim(void)
 			return 0;
 		}
 	}
+<<<<<<< HEAD
 	out(LIRC_LP_CONTROL, LP_PSELECP|LP_PINITP);
+=======
+	out(LIRC_LP_CONTROL, LP_PSELECP | LP_PINITP);
+>>>>>>> v4.9.227
 	is_claimed = 1;
 	return 1;
 }
@@ -220,8 +253,13 @@ static void rbuf_write(int signal)
 
 static void lirc_lirc_irq_handler(void *blah)
 {
+<<<<<<< HEAD
 	struct timeval tv;
 	static struct timeval lasttv;
+=======
+	ktime_t kt, delkt;
+	static ktime_t lastkt;
+>>>>>>> v4.9.227
 	static int init;
 	long signal;
 	int data;
@@ -244,6 +282,7 @@ static void lirc_lirc_irq_handler(void *blah)
 
 #ifdef LIRC_TIMER
 	if (init) {
+<<<<<<< HEAD
 		do_gettimeofday(&tv);
 
 		signal = tv.tv_sec - lasttv.tv_sec;
@@ -254,6 +293,16 @@ static void lirc_lirc_irq_handler(void *blah)
 			data = (int) (signal*1000000 +
 					 tv.tv_usec - lasttv.tv_usec +
 					 LIRC_SFH506_DELAY);
+=======
+		kt = ktime_get();
+
+		delkt = ktime_sub(kt, lastkt);
+		if (ktime_compare(delkt, ktime_set(15, 0)) > 0)
+			/* really long time */
+			data = PULSE_MASK;
+		else
+			data = (int)(ktime_to_us(delkt) + LIRC_SFH506_DELAY);
+>>>>>>> v4.9.227
 
 		rbuf_write(data); /* space */
 	} else {
@@ -269,7 +318,11 @@ static void lirc_lirc_irq_handler(void *blah)
 		init = 1;
 	}
 
+<<<<<<< HEAD
 	timeout = timer/10;	/* timeout after 1/10 sec. */
+=======
+	timeout = timer / 10;	/* timeout after 1/10 sec. */
+>>>>>>> v4.9.227
 	signal = 1;
 	level = lirc_get_timer();
 	do {
@@ -291,17 +344,29 @@ static void lirc_lirc_irq_handler(void *blah)
 		/* adjust value to usecs */
 		__u64 helper;
 
+<<<<<<< HEAD
 		helper = ((__u64) signal)*1000000;
 		do_div(helper, timer);
 		signal = (long) helper;
+=======
+		helper = ((__u64)signal) * 1000000;
+		do_div(helper, timer);
+		signal = (long)helper;
+>>>>>>> v4.9.227
 
 		if (signal > LIRC_SFH506_DELAY)
 			data = signal - LIRC_SFH506_DELAY;
 		else
 			data = 1;
+<<<<<<< HEAD
 		rbuf_write(PULSE_BIT|data); /* pulse */
 	}
 	do_gettimeofday(&lasttv);
+=======
+		rbuf_write(PULSE_BIT | data); /* pulse */
+	}
+	lastkt = ktime_get();
+>>>>>>> v4.9.227
 #else
 	/* add your code here */
 #endif
@@ -310,9 +375,15 @@ static void lirc_lirc_irq_handler(void *blah)
 
 	/* enable interrupt */
 	/*
+<<<<<<< HEAD
 	  enable_irq(irq);
 	  out(LIRC_PORT_IRQ, in(LIRC_PORT_IRQ)|LP_PINTEN);
 	*/
+=======
+	 * enable_irq(irq);
+	 * out(LIRC_PORT_IRQ, in(LIRC_PORT_IRQ)|LP_PINTEN);
+	 */
+>>>>>>> v4.9.227
 }
 
 /*** file operations ***/
@@ -336,7 +407,11 @@ static ssize_t lirc_read(struct file *filep, char __user *buf, size_t n,
 	set_current_state(TASK_INTERRUPTIBLE);
 	while (count < n) {
 		if (rptr != wptr) {
+<<<<<<< HEAD
 			if (copy_to_user(buf+count, (char *) &rbuf[rptr],
+=======
+			if (copy_to_user(buf + count, &rbuf[rptr],
+>>>>>>> v4.9.227
 					 sizeof(int))) {
 				result = -EFAULT;
 				break;
@@ -398,9 +473,15 @@ static ssize_t lirc_write(struct file *filep, const char __user *buf, size_t n,
 	for (i = 0; i < count; i++) {
 		__u64 helper;
 
+<<<<<<< HEAD
 		helper = ((__u64) wbuf[i])*timer;
 		do_div(helper, 1000000);
 		wbuf[i] = (int) helper;
+=======
+		helper = ((__u64)wbuf[i]) * timer;
+		do_div(helper, 1000000);
+		wbuf[i] = (int)helper;
+>>>>>>> v4.9.227
 	}
 
 	local_irq_save(flags);
@@ -605,7 +686,10 @@ static struct platform_driver lirc_parallel_driver = {
 	.resume	= lirc_parallel_resume,
 	.driver	= {
 		.name	= LIRC_DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -626,7 +710,11 @@ static void kf(void *handle)
 	lirc_off();
 	/* this is a bit annoying when you actually print...*/
 	/*
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: reclaimed port\n", LIRC_DRIVER_NAME);
+=======
+	 * printk(KERN_INFO "%s: reclaimed port\n", LIRC_DRIVER_NAME);
+>>>>>>> v4.9.227
 	*/
 }
 
@@ -653,24 +741,42 @@ static int __init lirc_parallel_init(void)
 		goto exit_device_put;
 
 	pport = parport_find_base(io);
+<<<<<<< HEAD
 	if (pport == NULL) {
 		pr_notice("no port at %x found\n", io);
 		result = -ENXIO;
 		goto exit_device_put;
+=======
+	if (!pport) {
+		pr_notice("no port at %x found\n", io);
+		result = -ENXIO;
+		goto exit_device_del;
+>>>>>>> v4.9.227
 	}
 	ppdevice = parport_register_device(pport, LIRC_DRIVER_NAME,
 					   pf, kf, lirc_lirc_irq_handler, 0,
 					   NULL);
 	parport_put_port(pport);
+<<<<<<< HEAD
 	if (ppdevice == NULL) {
 		pr_notice("parport_register_device() failed\n");
 		result = -ENXIO;
 		goto exit_device_put;
+=======
+	if (!ppdevice) {
+		pr_notice("parport_register_device() failed\n");
+		result = -ENXIO;
+		goto exit_device_del;
+>>>>>>> v4.9.227
 	}
 	if (parport_claim(ppdevice) != 0)
 		goto skip_init;
 	is_claimed = 1;
+<<<<<<< HEAD
 	out(LIRC_LP_CONTROL, LP_PSELECP|LP_PINITP);
+=======
+	out(LIRC_LP_CONTROL, LP_PSELECP | LP_PINITP);
+>>>>>>> v4.9.227
 
 #ifdef LIRC_TIMER
 	if (debug)
@@ -684,7 +790,11 @@ static int __init lirc_parallel_init(void)
 		parport_release(pport);
 		parport_unregister_device(ppdevice);
 		result = -EIO;
+<<<<<<< HEAD
 		goto exit_device_put;
+=======
+		goto exit_device_del;
+>>>>>>> v4.9.227
 	}
 
 #endif
@@ -701,11 +811,20 @@ static int __init lirc_parallel_init(void)
 		pr_notice("register_chrdev() failed\n");
 		parport_unregister_device(ppdevice);
 		result = -EIO;
+<<<<<<< HEAD
 		goto exit_device_put;
+=======
+		goto exit_device_del;
+>>>>>>> v4.9.227
 	}
 	pr_info("installed using port 0x%04x irq %d\n", io, irq);
 	return 0;
 
+<<<<<<< HEAD
+=======
+exit_device_del:
+	platform_device_del(lirc_parallel_dev);
+>>>>>>> v4.9.227
 exit_device_put:
 	platform_device_put(lirc_parallel_dev);
 exit_driver_unregister:
@@ -736,7 +855,11 @@ module_param(irq, int, S_IRUGO);
 MODULE_PARM_DESC(irq, "Interrupt (7 or 5)");
 
 module_param(tx_mask, int, S_IRUGO);
+<<<<<<< HEAD
 MODULE_PARM_DESC(tx_maxk, "Transmitter mask (default: 0x01)");
+=======
+MODULE_PARM_DESC(tx_mask, "Transmitter mask (default: 0x01)");
+>>>>>>> v4.9.227
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Enable debugging messages");

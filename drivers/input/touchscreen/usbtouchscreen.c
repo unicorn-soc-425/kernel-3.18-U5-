@@ -132,6 +132,10 @@ enum {
 	DEVTYPE_GUNZE,
 	DEVTYPE_DMC_TSC10,
 	DEVTYPE_IRTOUCH,
+<<<<<<< HEAD
+=======
+	DEVTYPE_IRTOUCH_HIRES,
+>>>>>>> v4.9.227
 	DEVTYPE_IDEALTEK,
 	DEVTYPE_GENERAL_TOUCH,
 	DEVTYPE_GOTOP,
@@ -196,8 +200,15 @@ static const struct usb_device_id usbtouch_devices[] = {
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_USB_IRTOUCH
+<<<<<<< HEAD
 	{USB_DEVICE(0x595a, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
 	{USB_DEVICE(0x6615, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
+=======
+	{USB_DEVICE(0x255e, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
+	{USB_DEVICE(0x595a, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
+	{USB_DEVICE(0x6615, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
+	{USB_DEVICE(0x6615, 0x0012), .driver_info = DEVTYPE_IRTOUCH_HIRES},
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_USB_IDEALTEK
@@ -1180,6 +1191,18 @@ static struct usbtouch_device_info usbtouch_dev_info[] = {
 		.rept_size	= 8,
 		.read_data	= irtouch_read_data,
 	},
+<<<<<<< HEAD
+=======
+
+	[DEVTYPE_IRTOUCH_HIRES] = {
+		.min_xc		= 0x0,
+		.max_xc		= 0x7fff,
+		.min_yc		= 0x0,
+		.max_yc		= 0x7fff,
+		.rept_size	= 8,
+		.read_data	= irtouch_read_data,
+	},
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_USB_IDEALTEK

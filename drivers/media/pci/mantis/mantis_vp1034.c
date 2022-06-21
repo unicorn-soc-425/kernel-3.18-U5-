@@ -44,7 +44,11 @@ static struct mb86a16_config vp1034_mb86a16_config = {
 #define MANTIS_MODEL_NAME	"VP-1034"
 #define MANTIS_DEV_TYPE		"DVB-S/DSS"
 
+<<<<<<< HEAD
 int vp1034_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage)
+=======
+int vp1034_set_voltage(struct dvb_frontend *fe, enum fe_sec_voltage voltage)
+>>>>>>> v4.9.227
 {
 	struct mantis_pci *mantis = fe->dvb->priv;
 

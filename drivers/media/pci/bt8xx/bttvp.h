@@ -41,7 +41,12 @@
 #include <media/videobuf-dma-sg.h>
 #include <media/tveeprom.h>
 #include <media/rc-core.h>
+<<<<<<< HEAD
 #include <media/ir-kbd-i2c.h>
+=======
+#include <media/i2c/ir-kbd-i2c.h>
+#include <media/drv-intf/tea575x.h>
+>>>>>>> v4.9.227
 
 #include "bt848.h"
 #include "bttv.h"
@@ -139,7 +144,11 @@ struct bttv_ir {
 	bool			rc5_gpio;   /* Is RC5 legacy GPIO enabled? */
 	u32                     last_bit;   /* last raw bit seen */
 	u32                     code;       /* raw code under construction */
+<<<<<<< HEAD
 	struct timeval          base_time;  /* time of last seen code */
+=======
+	ktime_t          				base_time;  /* time of last seen code */
+>>>>>>> v4.9.227
 	bool                    active;     /* building raw code */
 };
 
@@ -231,7 +240,11 @@ struct bttv_fh {
 	const struct bttv_format *ovfmt;
 	struct bttv_overlay      ov;
 
+<<<<<<< HEAD
 	/* Application called VIDIOC_S_CROP. */
+=======
+	/* Application called VIDIOC_S_SELECTION. */
+>>>>>>> v4.9.227
 	int                      do_crop;
 
 	/* vbi capture */
@@ -359,6 +372,13 @@ struct bttv_suspend_state {
 	struct bttv_buffer     *vbi;
 };
 
+<<<<<<< HEAD
+=======
+struct bttv_tea575x_gpio {
+	u8 data, clk, wren, most;
+};
+
+>>>>>>> v4.9.227
 struct bttv {
 	struct bttv_core c;
 
@@ -399,9 +419,15 @@ struct bttv {
 	struct v4l2_subdev	  *sd_tda7432;
 
 	/* video4linux (1) */
+<<<<<<< HEAD
 	struct video_device *video_dev;
 	struct video_device *radio_dev;
 	struct video_device *vbi_dev;
+=======
+	struct video_device video_dev;
+	struct video_device radio_dev;
+	struct video_device vbi_dev;
+>>>>>>> v4.9.227
 
 	/* controls */
 	struct v4l2_ctrl_handler   ctrl_handler;
@@ -445,12 +471,18 @@ struct bttv {
 
 	/* miro/pinnacle + Aimslab VHX
 	   philips matchbox (tea5757 radio tuner) support */
+<<<<<<< HEAD
 	int has_matchbox;
 	int mbox_we;
 	int mbox_data;
 	int mbox_clk;
 	int mbox_most;
 	int mbox_mask;
+=======
+	int has_tea575x;
+	struct bttv_tea575x_gpio tea_gpio;
+	struct snd_tea575x tea;
+>>>>>>> v4.9.227
 
 	/* ISA stuff (Terratec Active Radio Upgrade) */
 	int mbox_ior;
@@ -531,9 +563,12 @@ static inline unsigned int bttv_muxsel(const struct bttv *btv,
 #define btaor(dat,mask,adr) btwrite((dat) | ((mask) & btread(adr)), adr)
 
 #endif /* _BTTVP_H_ */
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

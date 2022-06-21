@@ -28,10 +28,13 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> v4.9.227
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -48,7 +51,10 @@
 #include <linux/module.h>
 #include <linux/io.h>
 
+<<<<<<< HEAD
 #include <asm/irq.h>
+=======
+>>>>>>> v4.9.227
 #include <mach/hardware.h>
 #include <asm/mach-types.h>
 
@@ -210,7 +216,11 @@ static void uwire_chipselect(struct spi_device *spi, int value)
 static int uwire_txrx(struct spi_device *spi, struct spi_transfer *t)
 {
 	unsigned	len = t->len;
+<<<<<<< HEAD
 	unsigned	bits = t->bits_per_word ? : spi->bits_per_word;
+=======
+	unsigned	bits = t->bits_per_word;
+>>>>>>> v4.9.227
 	unsigned	bytes;
 	u16		val, w;
 	int		status = 0;
@@ -349,9 +359,16 @@ static int uwire_setup_transfer(struct spi_device *spi, struct spi_transfer *t)
 	/* assume it's already enabled */
 	rate = clk_get_rate(uwire->ck);
 
+<<<<<<< HEAD
 	hz = spi->max_speed_hz;
 	if (t != NULL && t->speed_hz)
 		hz = t->speed_hz;
+=======
+	if (t != NULL)
+		hz = t->speed_hz;
+	else
+		hz = spi->max_speed_hz;
+>>>>>>> v4.9.227
 
 	if (!hz) {
 		pr_debug("%s: zero speed?\n", dev_name(&spi->dev));
@@ -527,7 +544,10 @@ MODULE_ALIAS("platform:omap_uwire");
 static struct platform_driver uwire_driver = {
 	.driver = {
 		.name		= "omap_uwire",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = uwire_probe,
 	.remove = uwire_remove,

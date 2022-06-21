@@ -63,6 +63,14 @@
 #define TPS65218_CHIPID_CHIP_MASK	0xF8
 #define TPS65218_CHIPID_REV_MASK	0x07
 
+<<<<<<< HEAD
+=======
+#define TPS65218_REV_1_0		0x0
+#define TPS65218_REV_1_1		0x1
+#define TPS65218_REV_2_0		0x2
+#define TPS65218_REV_2_1		0x3
+
+>>>>>>> v4.9.227
 #define TPS65218_INT1_VPRG		BIT(5)
 #define TPS65218_INT1_AC		BIT(4)
 #define TPS65218_INT1_PB		BIT(3)
@@ -200,6 +208,11 @@ enum tps65218_regulator_id {
 	TPS65218_DCDC_4,
 	TPS65218_DCDC_5,
 	TPS65218_DCDC_6,
+<<<<<<< HEAD
+=======
+	/* LS's */
+	TPS65218_LS_3,
+>>>>>>> v4.9.227
 	/* LDOs */
 	TPS65218_LDO_1,
 };
@@ -210,8 +223,16 @@ enum tps65218_regulator_id {
 #define TPS65218_NUM_DCDC		6
 /* Number of LDO voltage regulators available */
 #define TPS65218_NUM_LDO		1
+<<<<<<< HEAD
 /* Number of total regulators available */
 #define TPS65218_NUM_REGULATOR		(TPS65218_NUM_DCDC + TPS65218_NUM_LDO)
+=======
+/* Number of total LS current regulators available */
+#define TPS65218_NUM_LS			1
+/* Number of total regulators available */
+#define TPS65218_NUM_REGULATOR		(TPS65218_NUM_DCDC + TPS65218_NUM_LDO \
+					 + TPS65218_NUM_LS)
+>>>>>>> v4.9.227
 
 /* Define the TPS65218 IRQ numbers */
 enum tps65218_irqs {
@@ -241,6 +262,10 @@ enum tps65218_irqs {
  * @name:		Voltage regulator name
  * @min_uV:		minimum micro volts
  * @max_uV:		minimum micro volts
+<<<<<<< HEAD
+=======
+ * @strobe:		sequencing strobe value for the regulator
+>>>>>>> v4.9.227
  *
  * This data is used to check the regualtor voltage limits while setting.
  */
@@ -249,6 +274,10 @@ struct tps_info {
 	const char *name;
 	int min_uV;
 	int max_uV;
+<<<<<<< HEAD
+=======
+	int strobe;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -260,6 +289,10 @@ struct tps_info {
 struct tps65218 {
 	struct device *dev;
 	unsigned int id;
+<<<<<<< HEAD
+=======
+	u8 rev;
+>>>>>>> v4.9.227
 
 	struct mutex tps_lock;		/* lock guarding the data structure */
 	/* IRQ Data */

@@ -79,6 +79,7 @@ static int wm8737_reset(struct snd_soc_codec *codec)
 	return snd_soc_write(codec, WM8737_RESET, 0);
 }
 
+<<<<<<< HEAD
 static const unsigned int micboost_tlv[] = {
 	TLV_DB_RANGE_HEAD(4),
 	0, 0, TLV_DB_SCALE_ITEM(1300, 0, 0),
@@ -86,6 +87,14 @@ static const unsigned int micboost_tlv[] = {
 	2, 2, TLV_DB_SCALE_ITEM(2800, 0, 0),
 	3, 3, TLV_DB_SCALE_ITEM(3300, 0, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(micboost_tlv,
+	0, 0, TLV_DB_SCALE_ITEM(1300, 0, 0),
+	1, 1, TLV_DB_SCALE_ITEM(1800, 0, 0),
+	2, 2, TLV_DB_SCALE_ITEM(2800, 0, 0),
+	3, 3, TLV_DB_SCALE_ITEM(3300, 0, 0)
+);
+>>>>>>> v4.9.227
 static const DECLARE_TLV_DB_SCALE(pga_tlv, -9750, 50, 1);
 static const DECLARE_TLV_DB_SCALE(adc_tlv, -600, 600, 0);
 static const DECLARE_TLV_DB_SCALE(ng_tlv, -7800, 600, 0);
@@ -171,7 +180,11 @@ SOC_DOUBLE("Polarity Invert Switch", WM8737_ADC_CONTROL, 5, 6, 1, 0),
 SOC_SINGLE("3D Switch", WM8737_3D_ENHANCE, 0, 1, 0),
 SOC_SINGLE("3D Depth", WM8737_3D_ENHANCE, 1, 15, 0),
 SOC_ENUM("3D Low Cut-off", low_3d),
+<<<<<<< HEAD
 SOC_ENUM("3D High Cut-off", low_3d),
+=======
+SOC_ENUM("3D High Cut-off", high_3d),
+>>>>>>> v4.9.227
 SOC_SINGLE_TLV("3D ADC Volume", WM8737_3D_ENHANCE, 7, 1, 1, adc_tlv),
 
 SOC_SINGLE("Noise Gate Switch", WM8737_NOISE_GATE, 0, 1, 0),
@@ -277,6 +290,7 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{ "AIF", NULL, "ADCR" },
 };
 
+<<<<<<< HEAD
 static int wm8737_add_widgets(struct snd_soc_codec *codec)
 {
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
@@ -288,6 +302,8 @@ static int wm8737_add_widgets(struct snd_soc_codec *codec)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /* codec mclk clock divider coefficients */
 static const struct {
 	u32 mclk;
@@ -480,7 +496,11 @@ static int wm8737_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			ret = regulator_bulk_enable(ARRAY_SIZE(wm8737->supplies),
 						    wm8737->supplies);
 			if (ret != 0) {
@@ -523,7 +543,10 @@ static int wm8737_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -550,6 +573,7 @@ static struct snd_soc_dai_driver wm8737_dai = {
 	.ops = &wm8737_dai_ops,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int wm8737_suspend(struct snd_soc_codec *codec)
 {
@@ -567,6 +591,8 @@ static int wm8737_resume(struct snd_soc_codec *codec)
 #define wm8737_resume NULL
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int wm8737_probe(struct snd_soc_codec *codec)
 {
 	struct wm8737_priv *wm8737 = snd_soc_codec_get_drvdata(codec);
@@ -590,15 +616,22 @@ static int wm8737_probe(struct snd_soc_codec *codec)
 	snd_soc_update_bits(codec, WM8737_RIGHT_PGA_VOLUME, WM8737_RVU,
 			    WM8737_RVU);
 
+<<<<<<< HEAD
 	wm8737_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
+=======
+	snd_soc_codec_force_bias_level(codec, SND_SOC_BIAS_STANDBY);
+>>>>>>> v4.9.227
 
 	/* Bias level configuration will have done an extra enable */
 	regulator_bulk_disable(ARRAY_SIZE(wm8737->supplies), wm8737->supplies);
 
+<<<<<<< HEAD
 	snd_soc_add_codec_controls(codec, wm8737_snd_controls,
 			     ARRAY_SIZE(wm8737_snd_controls));
 	wm8737_add_widgets(codec);
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 
 err_enable:
@@ -607,6 +640,7 @@ err_get:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int wm8737_remove(struct snd_soc_codec *codec)
 {
 	wm8737_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -619,6 +653,21 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8737 = {
 	.suspend	= wm8737_suspend,
 	.resume		= wm8737_resume,
 	.set_bias_level = wm8737_set_bias_level,
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8737 = {
+	.probe		= wm8737_probe,
+	.set_bias_level = wm8737_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8737_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8737_snd_controls),
+		.dapm_widgets		= wm8737_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8737_dapm_widgets),
+		.dapm_routes		= intercon,
+		.num_dapm_routes	= ARRAY_SIZE(intercon),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct of_device_id wm8737_of_match[] = {
@@ -691,7 +740,10 @@ MODULE_DEVICE_TABLE(i2c, wm8737_i2c_id);
 static struct i2c_driver wm8737_i2c_driver = {
 	.driver = {
 		.name = "wm8737",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = wm8737_of_match,
 	},
 	.probe =    wm8737_i2c_probe,
@@ -743,7 +795,10 @@ static int wm8737_spi_remove(struct spi_device *spi)
 static struct spi_driver wm8737_spi_driver = {
 	.driver = {
 		.name	= "wm8737",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = wm8737_of_match,
 	},
 	.probe		= wm8737_spi_probe,

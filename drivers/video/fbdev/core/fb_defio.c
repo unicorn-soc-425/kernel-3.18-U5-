@@ -78,13 +78,21 @@ int fb_deferred_io_fsync(struct file *file, loff_t start, loff_t end, int datasy
 	if (!info->fbdefio)
 		return 0;
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+>>>>>>> v4.9.227
 	/* Kill off the delayed work */
 	cancel_delayed_work_sync(&info->deferred_work);
 
 	/* Run it immediately */
 	schedule_delayed_work(&info->deferred_work, 0);
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_unlock(inode);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -164,7 +172,11 @@ static const struct address_space_operations fb_deferred_io_aops = {
 	.set_page_dirty = fb_deferred_io_set_page_dirty,
 };
 
+<<<<<<< HEAD
 static int fb_deferred_io_mmap(struct fb_info *info, struct vm_area_struct *vma)
+=======
+int fb_deferred_io_mmap(struct fb_info *info, struct vm_area_struct *vma)
+>>>>>>> v4.9.227
 {
 	vma->vm_ops = &fb_deferred_io_vm_ops;
 	vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP;
@@ -173,6 +185,10 @@ static int fb_deferred_io_mmap(struct fb_info *info, struct vm_area_struct *vma)
 	vma->vm_private_data = info;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(fb_deferred_io_mmap);
+>>>>>>> v4.9.227
 
 /* workqueue callback */
 static void fb_deferred_io_work(struct work_struct *work)
@@ -242,5 +258,8 @@ void fb_deferred_io_cleanup(struct fb_info *info)
 	mutex_destroy(&fbdefio->lock);
 }
 EXPORT_SYMBOL_GPL(fb_deferred_io_cleanup);
+<<<<<<< HEAD
 
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> v4.9.227

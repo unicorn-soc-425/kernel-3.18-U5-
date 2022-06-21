@@ -188,7 +188,11 @@ static const struct clk_ops berlin2_avpll_vco_ops = {
 	.recalc_rate	= berlin2_avpll_vco_recalc_rate,
 };
 
+<<<<<<< HEAD
 struct clk * __init berlin2_avpll_vco_register(void __iomem *base,
+=======
+int __init berlin2_avpll_vco_register(void __iomem *base,
+>>>>>>> v4.9.227
 			       const char *name, const char *parent_name,
 			       u8 vco_flags, unsigned long flags)
 {
@@ -197,7 +201,11 @@ struct clk * __init berlin2_avpll_vco_register(void __iomem *base,
 
 	vco = kzalloc(sizeof(*vco), GFP_KERNEL);
 	if (!vco)
+<<<<<<< HEAD
 		return ERR_PTR(-ENOMEM);
+=======
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	vco->base = base;
 	vco->flags = vco_flags;
@@ -208,7 +216,11 @@ struct clk * __init berlin2_avpll_vco_register(void __iomem *base,
 	init.num_parents = 1;
 	init.flags = flags;
 
+<<<<<<< HEAD
 	return clk_register(NULL, &vco->hw);
+=======
+	return clk_hw_register(NULL, &vco->hw);
+>>>>>>> v4.9.227
 }
 
 struct berlin2_avpll_channel {
@@ -364,7 +376,11 @@ static const struct clk_ops berlin2_avpll_channel_ops = {
  */
 static const u8 quirk_index[] __initconst = { 0, 6, 5, 4, 3, 2, 1, 7 };
 
+<<<<<<< HEAD
 struct clk * __init berlin2_avpll_channel_register(void __iomem *base,
+=======
+int __init berlin2_avpll_channel_register(void __iomem *base,
+>>>>>>> v4.9.227
 			   const char *name, u8 index, const char *parent_name,
 			   u8 ch_flags, unsigned long flags)
 {
@@ -373,7 +389,11 @@ struct clk * __init berlin2_avpll_channel_register(void __iomem *base,
 
 	ch = kzalloc(sizeof(*ch), GFP_KERNEL);
 	if (!ch)
+<<<<<<< HEAD
 		return ERR_PTR(-ENOMEM);
+=======
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	ch->base = base;
 	if (ch_flags & BERLIN2_AVPLL_SCRAMBLE_QUIRK)
@@ -389,5 +409,9 @@ struct clk * __init berlin2_avpll_channel_register(void __iomem *base,
 	init.num_parents = 1;
 	init.flags = flags;
 
+<<<<<<< HEAD
 	return clk_register(NULL, &ch->hw);
+=======
+	return clk_hw_register(NULL, &ch->hw);
+>>>>>>> v4.9.227
 }

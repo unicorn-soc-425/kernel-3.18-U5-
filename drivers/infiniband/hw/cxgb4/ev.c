@@ -50,12 +50,21 @@ static void print_tpte(struct c4iw_dev *dev, u32 stag)
 	PDBG("stag idx 0x%x valid %d key 0x%x state %d pdid %d "
 	       "perm 0x%x ps %d len 0x%llx va 0x%llx\n",
 	       stag & 0xffffff00,
+<<<<<<< HEAD
 	       G_FW_RI_TPTE_VALID(ntohl(tpte.valid_to_pdid)),
 	       G_FW_RI_TPTE_STAGKEY(ntohl(tpte.valid_to_pdid)),
 	       G_FW_RI_TPTE_STAGSTATE(ntohl(tpte.valid_to_pdid)),
 	       G_FW_RI_TPTE_PDID(ntohl(tpte.valid_to_pdid)),
 	       G_FW_RI_TPTE_PERM(ntohl(tpte.locread_to_qpid)),
 	       G_FW_RI_TPTE_PS(ntohl(tpte.locread_to_qpid)),
+=======
+	       FW_RI_TPTE_VALID_G(ntohl(tpte.valid_to_pdid)),
+	       FW_RI_TPTE_STAGKEY_G(ntohl(tpte.valid_to_pdid)),
+	       FW_RI_TPTE_STAGSTATE_G(ntohl(tpte.valid_to_pdid)),
+	       FW_RI_TPTE_PDID_G(ntohl(tpte.valid_to_pdid)),
+	       FW_RI_TPTE_PERM_G(ntohl(tpte.locread_to_qpid)),
+	       FW_RI_TPTE_PS_G(ntohl(tpte.locread_to_qpid)),
+>>>>>>> v4.9.227
 	       ((u64)ntohl(tpte.len_hi) << 32) | ntohl(tpte.len_lo),
 	       ((u64)ntohl(tpte.va_hi) << 32) | ntohl(tpte.va_lo_fbo));
 }
@@ -225,13 +234,30 @@ int c4iw_ev_handler(struct c4iw_dev *dev, u32 qid)
 	struct c4iw_cq *chp;
 	unsigned long flag;
 
+<<<<<<< HEAD
 	chp = get_chp(dev, qid);
 	if (chp) {
+=======
+	spin_lock_irqsave(&dev->lock, flag);
+	chp = get_chp(dev, qid);
+	if (chp) {
+		atomic_inc(&chp->refcnt);
+		spin_unlock_irqrestore(&dev->lock, flag);
+>>>>>>> v4.9.227
 		t4_clear_cq_armed(&chp->cq);
 		spin_lock_irqsave(&chp->comp_handler_lock, flag);
 		(*chp->ibcq.comp_handler)(&chp->ibcq, chp->ibcq.cq_context);
 		spin_unlock_irqrestore(&chp->comp_handler_lock, flag);
+<<<<<<< HEAD
 	} else
 		PDBG("%s unknown cqid 0x%x\n", __func__, qid);
+=======
+		if (atomic_dec_and_test(&chp->refcnt))
+			wake_up(&chp->wait);
+	} else {
+		PDBG("%s unknown cqid 0x%x\n", __func__, qid);
+		spin_unlock_irqrestore(&dev->lock, flag);
+	}
+>>>>>>> v4.9.227
 	return 0;
 }

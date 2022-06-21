@@ -150,6 +150,7 @@ static int i2c_powermac_master_xfer(	struct i2c_adapter *adap,
 {
 	struct pmac_i2c_bus	*bus = i2c_get_adapdata(adap);
 	int			rc = 0;
+<<<<<<< HEAD
 	int			read;
 	int			addrdir;
 
@@ -163,6 +164,13 @@ static int i2c_powermac_master_xfer(	struct i2c_adapter *adap,
 		return -EINVAL;
 	read = (msgs->flags & I2C_M_RD) != 0;
 	addrdir = (msgs->addr << 1) | read;
+=======
+	int			addrdir;
+
+	if (msgs->flags & I2C_M_TEN)
+		return -EINVAL;
+	addrdir = i2c_8bit_addr_from_msg(msgs);
+>>>>>>> v4.9.227
 
 	rc = pmac_i2c_open(bus, 0);
 	if (rc) {
@@ -205,6 +213,12 @@ static const struct i2c_algorithm i2c_powermac_algorithm = {
 	.functionality	= i2c_powermac_func,
 };
 
+<<<<<<< HEAD
+=======
+static struct i2c_adapter_quirks i2c_powermac_quirks = {
+	.max_num_msgs = 1,
+};
+>>>>>>> v4.9.227
 
 static int i2c_powermac_remove(struct platform_device *dev)
 {
@@ -434,6 +448,10 @@ static int i2c_powermac_probe(struct platform_device *dev)
 
 	platform_set_drvdata(dev, adapter);
 	adapter->algo = &i2c_powermac_algorithm;
+<<<<<<< HEAD
+=======
+	adapter->quirks = &i2c_powermac_quirks;
+>>>>>>> v4.9.227
 	i2c_set_adapdata(adapter, bus);
 	adapter->dev.parent = &dev->dev;
 

@@ -15,7 +15,10 @@
 #include <asm/pgtable.h>
 #include <asm/apollohw.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/machdep.h>
 
 u_long sio01_physaddr;

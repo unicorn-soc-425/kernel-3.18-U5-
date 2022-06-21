@@ -1,7 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
+<<<<<<< HEAD
  * Copyright (C) 2007-2014 Emulex.  All rights reserved.           *
+=======
+ * Copyright (C) 2007-2015 Emulex.  All rights reserved.           *
+>>>>>>> v4.9.227
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.emulex.com                                                  *
  *                                                                 *
@@ -710,7 +714,11 @@ lpfc_debugfs_slow_ring_trc(struct lpfc_hba *phba, char *fmt,
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
+<<<<<<< HEAD
  * This function returns zero if successful. On error it will return an negative
+=======
+ * This function returns zero if successful. On error it will return a negative
+>>>>>>> v4.9.227
  * error value.
  **/
 static int
@@ -760,7 +768,11 @@ out:
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
+<<<<<<< HEAD
  * This function returns zero if successful. On error it will return an negative
+=======
+ * This function returns zero if successful. On error it will return a negative
+>>>>>>> v4.9.227
  * error value.
  **/
 static int
@@ -810,7 +822,11 @@ out:
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
+<<<<<<< HEAD
  * This function returns zero if successful. On error it will return an negative
+=======
+ * This function returns zero if successful. On error it will return a negative
+>>>>>>> v4.9.227
  * error value.
  **/
 static int
@@ -852,7 +868,11 @@ out:
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
+<<<<<<< HEAD
  * This function returns zero if successful. On error it will return an negative
+=======
+ * This function returns zero if successful. On error it will return a negative
+>>>>>>> v4.9.227
  * error value.
  **/
 static int
@@ -894,7 +914,11 @@ out:
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
+<<<<<<< HEAD
  * This function returns zero if successful. On error it will return an negative
+=======
+ * This function returns zero if successful. On error it will return a negative
+>>>>>>> v4.9.227
  * error value.
  **/
 static int
@@ -968,8 +992,13 @@ lpfc_debugfs_dumpDif_open(struct inode *inode, struct file *file)
 		goto out;
 
 	/* Round to page boundary */
+<<<<<<< HEAD
 	printk(KERN_ERR	"9060 BLKGRD: %s: _dump_buf_dif=0x%p file=%s\n",
 		__func__, _dump_buf_dif, file->f_dentry->d_name.name);
+=======
+	printk(KERN_ERR	"9060 BLKGRD: %s: _dump_buf_dif=0x%p file=%pD\n",
+		__func__, _dump_buf_dif, file);
+>>>>>>> v4.9.227
 	debug->buffer = _dump_buf_dif;
 	if (!debug->buffer) {
 		kfree(debug);
@@ -1011,7 +1040,11 @@ static ssize_t
 lpfc_debugfs_dif_err_read(struct file *file, char __user *buf,
 	size_t nbytes, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct dentry *dent = file->f_dentry;
+=======
+	struct dentry *dent = file->f_path.dentry;
+>>>>>>> v4.9.227
 	struct lpfc_hba *phba = file->private_data;
 	char cbuf[32];
 	uint64_t tmp = 0;
@@ -1052,6 +1085,7 @@ static ssize_t
 lpfc_debugfs_dif_err_write(struct file *file, const char __user *buf,
 	size_t nbytes, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct dentry *dent = file->f_dentry;
 	struct lpfc_hba *phba = file->private_data;
 	char dstbuf[32];
@@ -1059,6 +1093,15 @@ lpfc_debugfs_dif_err_write(struct file *file, const char __user *buf,
 	int size;
 
 	memset(dstbuf, 0, 32);
+=======
+	struct dentry *dent = file->f_path.dentry;
+	struct lpfc_hba *phba = file->private_data;
+	char dstbuf[33];
+	uint64_t tmp = 0;
+	int size;
+
+	memset(dstbuf, 0, 33);
+>>>>>>> v4.9.227
 	size = (nbytes < 32) ? nbytes : 32;
 	if (copy_from_user(dstbuf, buf, size))
 		return 0;
@@ -1115,7 +1158,11 @@ lpfc_debugfs_dif_err_release(struct inode *inode, struct file *file)
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
+<<<<<<< HEAD
  * This function returns zero if successful. On error it will return an negative
+=======
+ * This function returns zero if successful. On error it will return a negative
+>>>>>>> v4.9.227
  * error value.
  **/
 static int

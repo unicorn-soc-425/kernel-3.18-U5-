@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
     comedi/drivers/serial2002.c
     Skeleton code for a Comedi driver
 
@@ -25,6 +26,33 @@ Updated: Fri,  7 Jun 2002 12:56:45 -0700
 Status: in development
 
 */
+=======
+ * serial2002.c
+ * Comedi driver for serial connected hardware
+ *
+ * COMEDI - Linux Control and Measurement Device Interface
+ * Copyright (C) 2002 Anders Blomdell <anders.blomdell@control.lth.se>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/*
+ * Driver: serial2002
+ * Description: Driver for serial connected hardware
+ * Devices:
+ * Author: Anders Blomdell
+ * Updated: Fri,  7 Jun 2002 12:56:45 -0700
+ * Status: in development
+ */
+>>>>>>> v4.9.227
 
 #include <linux/module.h>
 #include "../comedidev.h"
@@ -32,6 +60,10 @@ Status: in development
 #include <linux/delay.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 
 #include <linux/termios.h>
 #include <asm/ioctls.h>
@@ -39,14 +71,20 @@ Status: in development
 #include <linux/poll.h>
 
 struct serial2002_range_table_t {
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	/*  HACK... */
 	int length;
 	struct comedi_krange range;
 };
 
 struct serial2002_private {
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	int port;		/*  /dev/ttyS<port> */
 	int speed;		/*  baudrate */
 	struct file *tty;
@@ -97,29 +135,46 @@ struct serial_data {
 #define S2002_CFG_SIGN(x)		(((x) >> 13) & 0x1)
 #define S2002_CFG_BASE(x)		(((x) >> 14) & 0xfffff)
 
+<<<<<<< HEAD
 static long serial2002_tty_ioctl(struct file *f, unsigned op,
+=======
+static long serial2002_tty_ioctl(struct file *f, unsigned int op,
+>>>>>>> v4.9.227
 				 unsigned long param)
 {
 	if (f->f_op->unlocked_ioctl)
 		return f->f_op->unlocked_ioctl(f, op, param);
 
+<<<<<<< HEAD
 	return -ENOSYS;
+=======
+	return -ENOTTY;
+>>>>>>> v4.9.227
 }
 
 static int serial2002_tty_write(struct file *f, unsigned char *buf, int count)
 {
 	const char __user *p = (__force const char __user *)buf;
 	int result;
+<<<<<<< HEAD
+=======
+	loff_t offset = 0;
+>>>>>>> v4.9.227
 	mm_segment_t oldfs;
 
 	oldfs = get_fs();
 	set_fs(KERNEL_DS);
+<<<<<<< HEAD
 	f->f_pos = 0;
 	result = f->f_op->write(f, p, count, &f->f_pos);
+=======
+	result = __vfs_write(f, p, count, &offset);
+>>>>>>> v4.9.227
 	set_fs(oldfs);
 	return result;
 }
 
+<<<<<<< HEAD
 static int serial2002_tty_readb(struct file *f, unsigned char *buf)
 {
 	char __user *p = (__force char __user *)buf;
@@ -134,6 +189,14 @@ static void serial2002_tty_read_poll_wait(struct file *f, int timeout)
 	struct timeval start, now;
 
 	do_gettimeofday(&start);
+=======
+static void serial2002_tty_read_poll_wait(struct file *f, int timeout)
+{
+	struct poll_wqueues table;
+	ktime_t start, now;
+
+	start = ktime_get();
+>>>>>>> v4.9.227
 	poll_initwait(&table);
 	while (1) {
 		long elapsed;
@@ -144,9 +207,14 @@ static void serial2002_tty_read_poll_wait(struct file *f, int timeout)
 			    POLLHUP | POLLERR)) {
 			break;
 		}
+<<<<<<< HEAD
 		do_gettimeofday(&now);
 		elapsed = (1000000 * (now.tv_sec - start.tv_sec) +
 			  now.tv_usec - start.tv_usec);
+=======
+		now = ktime_get();
+		elapsed = ktime_us_delta(now, start);
+>>>>>>> v4.9.227
 		if (elapsed > timeout)
 			break;
 		set_current_state(TASK_INTERRUPTIBLE);
@@ -163,13 +231,22 @@ static int serial2002_tty_read(struct file *f, int timeout)
 	result = -1;
 	if (!IS_ERR(f)) {
 		mm_segment_t oldfs;
+<<<<<<< HEAD
+=======
+		char __user *p = (__force char __user *)&ch;
+		loff_t offset = 0;
+>>>>>>> v4.9.227
 
 		oldfs = get_fs();
 		set_fs(KERNEL_DS);
 		if (f->f_op->poll) {
 			serial2002_tty_read_poll_wait(f, timeout);
 
+<<<<<<< HEAD
 			if (serial2002_tty_readb(f, &ch) == 1)
+=======
+			if (__vfs_read(f, p, 1, &offset) == 1)
+>>>>>>> v4.9.227
 				result = ch;
 		} else {
 			/* Device does not support poll, busy wait */
@@ -180,11 +257,19 @@ static int serial2002_tty_read(struct file *f, int timeout)
 				if (retries >= timeout)
 					break;
 
+<<<<<<< HEAD
 				if (serial2002_tty_readb(f, &ch) == 1) {
 					result = ch;
 					break;
 				}
 				udelay(100);
+=======
+				if (__vfs_read(f, p, 1, &offset) == 1) {
+					result = ch;
+					break;
+				}
+				usleep_range(100, 1000);
+>>>>>>> v4.9.227
 			}
 		}
 		set_fs(oldfs);
@@ -300,7 +385,10 @@ static struct serial_data serial2002_read(struct file *f, int timeout)
 		}
 	}
 	return result;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 }
 
 static void serial2002_write(struct file *f, struct serial_data data)
@@ -382,14 +470,25 @@ static int serial2002_setup_subdevice(struct comedi_subdevice *s,
 		if (cfg[j].kind == kind) {
 			if (mapping)
 				mapping[chan] = j;
+<<<<<<< HEAD
 			if (range) {
+=======
+			if (range && range_table_list) {
+>>>>>>> v4.9.227
 				range[j].length = 1;
 				range[j].range.min = cfg[j].min;
 				range[j].range.max = cfg[j].max;
 				range_table_list[chan] =
 				    (const struct comedi_lrange *)&range[j];
 			}
+<<<<<<< HEAD
 			maxdata_list[chan] = ((long long)1 << cfg[j].bits) - 1;
+=======
+			if (cfg[j].bits < 32)
+				maxdata_list[chan] = (1u << cfg[j].bits) - 1;
+			else
+				maxdata_list[chan] = 0xffffffff;
+>>>>>>> v4.9.227
 			chan++;
 		}
 	}
@@ -742,7 +841,11 @@ static int serial2002_attach(struct comedi_device *dev,
 	/* digital output subdevice */
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_DO;
+<<<<<<< HEAD
 	s->subdev_flags	= SDF_WRITEABLE;
+=======
+	s->subdev_flags	= SDF_WRITABLE;
+>>>>>>> v4.9.227
 	s->n_chan	= 0;
 	s->maxdata	= 1;
 	s->range_table	= &range_digital;
@@ -760,7 +863,11 @@ static int serial2002_attach(struct comedi_device *dev,
 	/* analog output subdevice */
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_AO;
+<<<<<<< HEAD
 	s->subdev_flags	= SDF_WRITEABLE;
+=======
+	s->subdev_flags	= SDF_WRITABLE;
+>>>>>>> v4.9.227
 	s->n_chan	= 0;
 	s->maxdata	= 1;
 	s->range_table	= NULL;

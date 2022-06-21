@@ -14,6 +14,10 @@
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
@@ -176,11 +180,16 @@ static struct irq_chip imx_gpc_chip = {
 	.irq_unmask		= imx_gpc_irq_unmask,
 	.irq_retrigger		= irq_chip_retrigger_hierarchy,
 	.irq_set_wake		= imx_gpc_irq_set_wake,
+<<<<<<< HEAD
+=======
+	.irq_set_type           = irq_chip_set_type_parent,
+>>>>>>> v4.9.227
 #ifdef CONFIG_SMP
 	.irq_set_affinity	= irq_chip_set_affinity_parent,
 #endif
 };
 
+<<<<<<< HEAD
 static int imx_gpc_domain_xlate(struct irq_domain *domain,
 				struct device_node *controller,
 				const u32 *intspec,
@@ -198,12 +207,34 @@ static int imx_gpc_domain_xlate(struct irq_domain *domain,
 	*out_hwirq = intspec[1];
 	*out_type = intspec[2];
 	return 0;
+=======
+static int imx_gpc_domain_translate(struct irq_domain *d,
+				    struct irq_fwspec *fwspec,
+				    unsigned long *hwirq,
+				    unsigned int *type)
+{
+	if (is_of_node(fwspec->fwnode)) {
+		if (fwspec->param_count != 3)
+			return -EINVAL;
+
+		/* No PPI should point to this domain */
+		if (fwspec->param[0] != 0)
+			return -EINVAL;
+
+		*hwirq = fwspec->param[1];
+		*type = fwspec->param[2];
+		return 0;
+	}
+
+	return -EINVAL;
+>>>>>>> v4.9.227
 }
 
 static int imx_gpc_domain_alloc(struct irq_domain *domain,
 				  unsigned int irq,
 				  unsigned int nr_irqs, void *data)
 {
+<<<<<<< HEAD
 	struct of_phandle_args *args = data;
 	struct of_phandle_args parent_args;
 	irq_hw_number_t hwirq;
@@ -215,6 +246,19 @@ static int imx_gpc_domain_alloc(struct irq_domain *domain,
 		return -EINVAL;	/* No PPI should point to this domain */
 
 	hwirq = args->args[1];
+=======
+	struct irq_fwspec *fwspec = data;
+	struct irq_fwspec parent_fwspec;
+	irq_hw_number_t hwirq;
+	int i;
+
+	if (fwspec->param_count != 3)
+		return -EINVAL;	/* Not GIC compliant */
+	if (fwspec->param[0] != 0)
+		return -EINVAL;	/* No PPI should point to this domain */
+
+	hwirq = fwspec->param[1];
+>>>>>>> v4.9.227
 	if (hwirq >= GPC_MAX_IRQS)
 		return -EINVAL;	/* Can't deal with this */
 
@@ -222,6 +266,7 @@ static int imx_gpc_domain_alloc(struct irq_domain *domain,
 		irq_domain_set_hwirq_and_chip(domain, irq + i, hwirq + i,
 					      &imx_gpc_chip, NULL);
 
+<<<<<<< HEAD
 	parent_args = *args;
 	parent_args.np = domain->parent->of_node;
 	return irq_domain_alloc_irqs_parent(domain, irq, nr_irqs, &parent_args);
@@ -231,6 +276,18 @@ static struct irq_domain_ops imx_gpc_domain_ops = {
 	.xlate	= imx_gpc_domain_xlate,
 	.alloc	= imx_gpc_domain_alloc,
 	.free	= irq_domain_free_irqs_common,
+=======
+	parent_fwspec = *fwspec;
+	parent_fwspec.fwnode = domain->parent->fwnode;
+	return irq_domain_alloc_irqs_parent(domain, irq, nr_irqs,
+					    &parent_fwspec);
+}
+
+static const struct irq_domain_ops imx_gpc_domain_ops = {
+	.translate	= imx_gpc_domain_translate,
+	.alloc		= imx_gpc_domain_alloc,
+	.free		= irq_domain_free_irqs_common,
+>>>>>>> v4.9.227
 };
 
 static int __init imx_gpc_init(struct device_node *node,
@@ -266,6 +323,7 @@ static int __init imx_gpc_init(struct device_node *node,
 	for (i = 0; i < IMR_NUM; i++)
 		writel_relaxed(~0, gpc_base + GPC_IMR1 + i * 4);
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -274,6 +332,17 @@ static int __init imx_gpc_init(struct device_node *node,
  * drivers/irqchip, so we're forced to roll our own. Not very nice.
  */
 OF_DECLARE_2(irqchip, imx_gpc, "fsl,imx6q-gpc", imx_gpc_init);
+=======
+	/*
+	 * Clear the OF_POPULATED flag set in of_irq_init so that
+	 * later the GPC power domain driver will not be skipped.
+	 */
+	of_node_clear_flag(node, OF_POPULATED);
+
+	return 0;
+}
+IRQCHIP_DECLARE(imx_gpc, "fsl,imx6q-gpc", imx_gpc_init);
+>>>>>>> v4.9.227
 
 void __init imx_gpc_check_dt(void)
 {
@@ -291,8 +360,11 @@ void __init imx_gpc_check_dt(void)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_GENERIC_DOMAINS
 
+=======
+>>>>>>> v4.9.227
 static void _imx6q_pm_pu_power_off(struct generic_pm_domain *genpd)
 {
 	int iso, iso2sw;
@@ -376,8 +448,18 @@ static struct pu_domain imx6q_pu_domain = {
 		.name = "PU",
 		.power_off = imx6q_pm_pu_power_off,
 		.power_on = imx6q_pm_pu_power_on,
+<<<<<<< HEAD
 		.power_off_latency_ns = 25000,
 		.power_on_latency_ns = 2000000,
+=======
+		.states = {
+			[0] = {
+				.power_off_latency_ns = 25000,
+				.power_on_latency_ns = 2000000,
+			},
+		},
+		.state_count = 1,
+>>>>>>> v4.9.227
 	},
 };
 
@@ -399,8 +481,12 @@ static struct genpd_onecell_data imx_gpc_onecell_data = {
 static int imx_gpc_genpd_init(struct device *dev, struct regulator *pu_reg)
 {
 	struct clk *clk;
+<<<<<<< HEAD
 	bool is_off;
 	int i;
+=======
+	int i, ret;
+>>>>>>> v4.9.227
 
 	imx6q_pu_domain.reg = pu_reg;
 
@@ -416,6 +502,7 @@ static int imx_gpc_genpd_init(struct device *dev, struct regulator *pu_reg)
 	}
 	imx6q_pu_domain.num_clks = i;
 
+<<<<<<< HEAD
 	is_off = IS_ENABLED(CONFIG_PM);
 	if (is_off) {
 		_imx6q_pm_pu_power_off(&imx6q_pu_domain.base);
@@ -444,11 +531,45 @@ static inline int imx_gpc_genpd_init(struct device *dev, struct regulator *reg)
 }
 #endif /* CONFIG_PM_GENERIC_DOMAINS */
 
+=======
+	/* Enable power always in case bootloader disabled it. */
+	imx6q_pm_pu_power_on(&imx6q_pu_domain.base);
+
+	if (!IS_ENABLED(CONFIG_PM_GENERIC_DOMAINS))
+		return 0;
+
+	for (i = 0; i < ARRAY_SIZE(imx_gpc_domains); i++)
+		pm_genpd_init(imx_gpc_domains[i], NULL, false);
+
+	ret =  of_genpd_add_provider_onecell(dev->of_node,
+					     &imx_gpc_onecell_data);
+	if (ret)
+		goto power_off;
+
+	return 0;
+
+power_off:
+	imx6q_pm_pu_power_off(&imx6q_pu_domain.base);
+clk_err:
+	while (i--)
+		clk_put(imx6q_pu_domain.clk[i]);
+	imx6q_pu_domain.reg = NULL;
+	return -EINVAL;
+}
+
+>>>>>>> v4.9.227
 static int imx_gpc_probe(struct platform_device *pdev)
 {
 	struct regulator *pu_reg;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	/* bail out if DT too old and doesn't provide the necessary info */
+	if (!of_property_read_bool(pdev->dev.of_node, "#power-domain-cells"))
+		return 0;
+
+>>>>>>> v4.9.227
 	pu_reg = devm_regulator_get_optional(&pdev->dev, "pu");
 	if (PTR_ERR(pu_reg) == -ENODEV)
 		pu_reg = NULL;
@@ -470,7 +591,10 @@ static const struct of_device_id imx_gpc_dt_ids[] = {
 static struct platform_driver imx_gpc_driver = {
 	.driver = {
 		.name = "imx-gpc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = imx_gpc_dt_ids,
 	},
 	.probe = imx_gpc_probe,

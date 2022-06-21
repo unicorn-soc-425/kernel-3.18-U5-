@@ -147,6 +147,7 @@ int pvr2_eeprom_analyze(struct pvr2_hdw *hdw)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -157,3 +158,5 @@ int pvr2_eeprom_analyze(struct pvr2_hdw *hdw)
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

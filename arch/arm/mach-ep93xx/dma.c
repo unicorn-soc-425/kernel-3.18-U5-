@@ -66,11 +66,22 @@ static struct ep93xx_dma_platform_data ep93xx_dma_m2p_data = {
 	.num_channels		= ARRAY_SIZE(ep93xx_dma_m2p_channels),
 };
 
+<<<<<<< HEAD
+=======
+static u64 ep93xx_dma_m2p_mask = DMA_BIT_MASK(32);
+
+>>>>>>> v4.9.227
 static struct platform_device ep93xx_dma_m2p_device = {
 	.name			= "ep93xx-dma-m2p",
 	.id			= -1,
 	.dev			= {
+<<<<<<< HEAD
 		.platform_data	= &ep93xx_dma_m2p_data,
+=======
+		.platform_data		= &ep93xx_dma_m2p_data,
+		.dma_mask		= &ep93xx_dma_m2p_mask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+>>>>>>> v4.9.227
 	},
 };
 
@@ -93,11 +104,22 @@ static struct ep93xx_dma_platform_data ep93xx_dma_m2m_data = {
 	.num_channels		= ARRAY_SIZE(ep93xx_dma_m2m_channels),
 };
 
+<<<<<<< HEAD
+=======
+static u64 ep93xx_dma_m2m_mask = DMA_BIT_MASK(32);
+
+>>>>>>> v4.9.227
 static struct platform_device ep93xx_dma_m2m_device = {
 	.name			= "ep93xx-dma-m2m",
 	.id			= -1,
 	.dev			= {
+<<<<<<< HEAD
 		.platform_data	= &ep93xx_dma_m2m_data,
+=======
+		.platform_data		= &ep93xx_dma_m2m_data,
+		.dma_mask		= &ep93xx_dma_m2m_mask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+>>>>>>> v4.9.227
 	},
 };
 

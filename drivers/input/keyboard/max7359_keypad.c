@@ -84,6 +84,7 @@ static int max7359_read_reg(struct i2c_client *client, int reg)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void max7359_build_keycode(struct max7359_keypad *keypad,
 				const struct matrix_keymap_data *keymap_data)
 {
@@ -104,6 +105,8 @@ static void max7359_build_keycode(struct max7359_keypad *keypad,
 	__clear_bit(KEY_RESERVED, input_dev->keybit);
 }
 
+=======
+>>>>>>> v4.9.227
 /* runs in an IRQ thread -- can (and will!) sleep */
 static irqreturn_t max7359_interrupt(int irq, void *dev_id)
 {
@@ -166,7 +169,10 @@ static void max7359_close(struct input_dev *dev)
 static void max7359_initialize(struct i2c_client *client)
 {
 	max7359_write_reg(client, MAX7359_REG_CONFIG,
+<<<<<<< HEAD
 		MAX7359_CFG_INTERRUPT | /* Irq clears after host read */
+=======
+>>>>>>> v4.9.227
 		MAX7359_CFG_KEY_RELEASE | /* Key release enable */
 		MAX7359_CFG_WAKEUP); /* Key press wakeup enable */
 
@@ -233,7 +239,19 @@ static int max7359_probe(struct i2c_client *client,
 	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
 	input_set_drvdata(input_dev, keypad);
 
+<<<<<<< HEAD
 	max7359_build_keycode(keypad, keymap_data);
+=======
+	error = matrix_keypad_build_keymap(keymap_data, NULL,
+					   MAX7359_MAX_KEY_ROWS,
+					   MAX7359_MAX_KEY_COLS,
+					   keypad->keycodes,
+					   input_dev);
+	if (error) {
+		dev_err(&client->dev, "failed to build keymap\n");
+		return error;
+	}
+>>>>>>> v4.9.227
 
 	error = devm_request_threaded_irq(&client->dev, client->irq, NULL,
 					  max7359_interrupt,

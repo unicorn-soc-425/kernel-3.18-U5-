@@ -111,7 +111,11 @@ static void amdgpu_do_test_moves(struct amdgpu_device *adev)
 		amdgpu_bo_kunmap(gtt_obj[i]);
 
 		r = amdgpu_copy_buffer(ring, gtt_addr, vram_addr,
+<<<<<<< HEAD
 				       size, NULL, &fence);
+=======
+				       size, NULL, &fence, false);
+>>>>>>> v4.9.227
 
 		if (r) {
 			DRM_ERROR("Failed GTT->VRAM copy %d\n", i);
@@ -156,7 +160,11 @@ static void amdgpu_do_test_moves(struct amdgpu_device *adev)
 		amdgpu_bo_kunmap(vram_obj);
 
 		r = amdgpu_copy_buffer(ring, vram_addr, gtt_addr,
+<<<<<<< HEAD
 				       size, NULL, &fence);
+=======
+				       size, NULL, &fence, false);
+>>>>>>> v4.9.227
 
 		if (r) {
 			DRM_ERROR("Failed VRAM->GTT copy %d\n", i);
@@ -238,6 +246,7 @@ void amdgpu_test_moves(struct amdgpu_device *adev)
 		amdgpu_do_test_moves(adev);
 }
 
+<<<<<<< HEAD
 static int amdgpu_test_create_and_emit_fence(struct amdgpu_device *adev,
 					     struct amdgpu_ring *ring,
 					     struct fence **fence)
@@ -285,10 +294,13 @@ static int amdgpu_test_create_and_emit_fence(struct amdgpu_device *adev,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 void amdgpu_test_ring_sync(struct amdgpu_device *adev,
 			   struct amdgpu_ring *ringA,
 			   struct amdgpu_ring *ringB)
 {
+<<<<<<< HEAD
 	struct fence *fence1 = NULL, *fence2 = NULL;
 	struct amdgpu_semaphore *semaphore = NULL;
 	int r;
@@ -376,6 +388,8 @@ out_cleanup:
 
 	if (r)
 		printk(KERN_WARNING "Error while testing ring sync (%d).\n", r);
+=======
+>>>>>>> v4.9.227
 }
 
 static void amdgpu_test_ring_sync2(struct amdgpu_device *adev,
@@ -383,6 +397,7 @@ static void amdgpu_test_ring_sync2(struct amdgpu_device *adev,
 			    struct amdgpu_ring *ringB,
 			    struct amdgpu_ring *ringC)
 {
+<<<<<<< HEAD
 	struct fence *fenceA = NULL, *fenceB = NULL;
 	struct amdgpu_semaphore *semaphore = NULL;
 	bool sigA, sigB;
@@ -486,6 +501,8 @@ out_cleanup:
 
 	if (r)
 		printk(KERN_WARNING "Error while testing ring sync (%d).\n", r);
+=======
+>>>>>>> v4.9.227
 }
 
 static bool amdgpu_test_sync_possible(struct amdgpu_ring *ringA,

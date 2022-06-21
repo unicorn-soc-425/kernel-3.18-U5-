@@ -64,9 +64,13 @@ machine_arch_initcall(mpc8536_ds, swiotlb_setup_bus_notifier);
  */
 static int __init mpc8536_ds_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,mpc8536ds");
+=======
+	return of_machine_is_compatible("fsl,mpc8536ds");
+>>>>>>> v4.9.227
 }
 
 define_machine(mpc8536_ds) {
@@ -79,7 +83,10 @@ define_machine(mpc8536_ds) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };

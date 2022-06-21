@@ -407,7 +407,10 @@ static struct platform_driver wm8505fb_driver = {
 	.probe		= wm8505fb_probe,
 	.remove		= wm8505fb_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DRIVER_NAME,
 		.of_match_table = wmt_dt_ids,
 	},

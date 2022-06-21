@@ -7,6 +7,11 @@
  * publishhed by the Free Software Foundation.
  */
 #include <dt-bindings/input/input.h>
+<<<<<<< HEAD
+=======
+#include <dt-bindings/gpio/gpio.h>
+
+>>>>>>> v4.9.227
 / {
 
 	memory{
@@ -33,9 +38,14 @@
 		leds {
 			compatible	= "gpio-leds";
 			fp_led {
+<<<<<<< HEAD
 				#gpio-cells = <1>;
 				label	= "Front Panel LED";
 				gpios	= <&PIO105 7>;
+=======
+				label	= "Front Panel LED";
+				gpios	= <&pio105 7 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 				linux,default-trigger	= "heartbeat";
 			};
 		};
@@ -55,7 +65,11 @@
 			phy-mode		= "mii";
 			pinctrl-0		= <&pinctrl_mii0>;
 
+<<<<<<< HEAD
 			snps,reset-gpio 	= <&PIO106 2>;
+=======
+			snps,reset-gpio 	= <&pio106 2>;
+>>>>>>> v4.9.227
 			snps,reset-active-low;
 			snps,reset-delays-us 	= <0 10000 10000>;
 		};
@@ -65,7 +79,11 @@
 			phy-mode		= "mii";
 			st,tx-retime-src	= "txclk";
 
+<<<<<<< HEAD
 			snps,reset-gpio 	= <&PIO4 7>;
+=======
+			snps,reset-gpio 	= <&pio4 7>;
+>>>>>>> v4.9.227
 			snps,reset-active-low;
 			snps,reset-delays-us 	= <0 10000 10000>;
 		};

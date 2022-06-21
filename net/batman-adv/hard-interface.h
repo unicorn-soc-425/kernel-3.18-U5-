@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2007-2014 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2007-2016  B.A.T.M.A.N. contributors:
+>>>>>>> v4.9.227
  *
  * Marek Lindner, Simon Wunderlich
  *
@@ -18,6 +22,21 @@
 #ifndef _NET_BATMAN_ADV_HARD_INTERFACE_H_
 #define _NET_BATMAN_ADV_HARD_INTERFACE_H_
 
+<<<<<<< HEAD
+=======
+#include "main.h"
+
+#include <linux/compiler.h>
+#include <linux/kref.h>
+#include <linux/notifier.h>
+#include <linux/rcupdate.h>
+#include <linux/stddef.h>
+#include <linux/types.h>
+
+struct net_device;
+struct net;
+
+>>>>>>> v4.9.227
 enum batadv_hard_if_state {
 	BATADV_IF_NOT_IN_USE,
 	BATADV_IF_TO_BE_REMOVED,
@@ -44,12 +63,17 @@ bool batadv_is_wifi_iface(int ifindex);
 struct batadv_hard_iface*
 batadv_hardif_get_by_netdev(const struct net_device *net_dev);
 int batadv_hardif_enable_interface(struct batadv_hard_iface *hard_iface,
+<<<<<<< HEAD
 				   const char *iface_name);
+=======
+				   struct net *net, const char *iface_name);
+>>>>>>> v4.9.227
 void batadv_hardif_disable_interface(struct batadv_hard_iface *hard_iface,
 				     enum batadv_hard_if_cleanup autodel);
 void batadv_hardif_remove_interfaces(void);
 int batadv_hardif_min_mtu(struct net_device *soft_iface);
 void batadv_update_min_mtu(struct net_device *soft_iface);
+<<<<<<< HEAD
 void batadv_hardif_free_rcu(struct rcu_head *rcu);
 
 /**
@@ -74,6 +98,18 @@ batadv_hardif_free_ref_now(struct batadv_hard_iface *hard_iface)
 {
 	if (atomic_dec_and_test(&hard_iface->refcount))
 		batadv_hardif_free_rcu(&hard_iface->rcu);
+=======
+void batadv_hardif_release(struct kref *ref);
+
+/**
+ * batadv_hardif_put - decrement the hard interface refcounter and possibly
+ *  release it
+ * @hard_iface: the hard interface to free
+ */
+static inline void batadv_hardif_put(struct batadv_hard_iface *hard_iface)
+{
+	kref_put(&hard_iface->refcount, batadv_hardif_release);
+>>>>>>> v4.9.227
 }
 
 static inline struct batadv_hard_iface *
@@ -86,7 +122,11 @@ batadv_primary_if_get_selected(struct batadv_priv *bat_priv)
 	if (!hard_iface)
 		goto out;
 
+<<<<<<< HEAD
 	if (!atomic_inc_not_zero(&hard_iface->refcount))
+=======
+	if (!kref_get_unless_zero(&hard_iface->refcount))
+>>>>>>> v4.9.227
 		hard_iface = NULL;
 
 out:

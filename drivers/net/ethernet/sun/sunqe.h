@@ -334,12 +334,20 @@ struct sunqe {
 	void __iomem			*qcregs;		/* QEC per-channel Registers   */
 	void __iomem			*mregs;		/* Per-channel MACE Registers  */
 	struct qe_init_block      	*qe_block;	/* RX and TX descriptors       */
+<<<<<<< HEAD
 	__u32                      	qblock_dvma;	/* RX and TX descriptors       */
+=======
+	dma_addr_t			qblock_dvma;	/* RX and TX descriptors       */
+>>>>>>> v4.9.227
 	spinlock_t			lock;		/* Protects txfull state       */
 	int                        	rx_new, rx_old;	/* RX ring extents	       */
 	int			   	tx_new, tx_old;	/* TX ring extents	       */
 	struct sunqe_buffers		*buffers;	/* CPU visible address.        */
+<<<<<<< HEAD
 	__u32				buffers_dvma;	/* DVMA visible address.       */
+=======
+	dma_addr_t			buffers_dvma;	/* DVMA visible address.       */
+>>>>>>> v4.9.227
 	struct sunqec			*parent;
 	u8				mconfig;	/* Base MACE mconfig value     */
 	struct platform_device		*op;		/* QE's OF device struct       */

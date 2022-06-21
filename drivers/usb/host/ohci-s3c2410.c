@@ -249,14 +249,23 @@ static int ohci_s3c2410_hub_control(
 		 */
 
 		desc->wHubCharacteristics &= ~cpu_to_le16(HUB_CHAR_LPSM);
+<<<<<<< HEAD
 		desc->wHubCharacteristics |= cpu_to_le16(0x0001);
+=======
+		desc->wHubCharacteristics |= cpu_to_le16(
+			HUB_CHAR_INDV_PORT_LPSM);
+>>>>>>> v4.9.227
 
 		if (info->enable_oc) {
 			desc->wHubCharacteristics &= ~cpu_to_le16(
 				HUB_CHAR_OCPM);
 			desc->wHubCharacteristics |=  cpu_to_le16(
+<<<<<<< HEAD
 				0x0008 |
 				0x0001);
+=======
+				HUB_CHAR_INDV_PORT_OCPM);
+>>>>>>> v4.9.227
 		}
 
 		dev_dbg(hcd->self.controller, "wHubCharacteristics after 0x%04x\n",
@@ -462,7 +471,10 @@ static struct platform_driver ohci_hcd_s3c2410_driver = {
 	.remove		= ohci_hcd_s3c2410_drv_remove,
 	.shutdown	= usb_hcd_platform_shutdown,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "s3c2410-ohci",
 		.pm	= &ohci_hcd_s3c2410_pm_ops,
 	},

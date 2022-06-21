@@ -29,6 +29,7 @@
 
 struct jz4740_hwmon {
 	void __iomem *base;
+<<<<<<< HEAD
 
 	int irq;
 
@@ -46,6 +47,15 @@ static ssize_t jz4740_hwmon_show_name(struct device *dev,
 	return sprintf(buf, "jz4740\n");
 }
 
+=======
+	int irq;
+	const struct mfd_cell *cell;
+	struct platform_device *pdev;
+	struct completion read_completion;
+	struct mutex lock;
+};
+
+>>>>>>> v4.9.227
 static irqreturn_t jz4740_hwmon_irq(int irq, void *data)
 {
 	struct jz4740_hwmon *hwmon = data;
@@ -58,6 +68,10 @@ static ssize_t jz4740_hwmon_read_adcin(struct device *dev,
 	struct device_attribute *dev_attr, char *buf)
 {
 	struct jz4740_hwmon *hwmon = dev_get_drvdata(dev);
+<<<<<<< HEAD
+=======
+	struct platform_device *pdev = hwmon->pdev;
+>>>>>>> v4.9.227
 	struct completion *completion = &hwmon->read_completion;
 	long t;
 	unsigned long val;
@@ -68,7 +82,11 @@ static ssize_t jz4740_hwmon_read_adcin(struct device *dev,
 	reinit_completion(completion);
 
 	enable_irq(hwmon->irq);
+<<<<<<< HEAD
 	hwmon->cell->enable(to_platform_device(dev));
+=======
+	hwmon->cell->enable(pdev);
+>>>>>>> v4.9.227
 
 	t = wait_for_completion_interruptible_timeout(completion, HZ);
 
@@ -80,7 +98,11 @@ static ssize_t jz4740_hwmon_read_adcin(struct device *dev,
 		ret = t ? t : -ETIMEDOUT;
 	}
 
+<<<<<<< HEAD
 	hwmon->cell->disable(to_platform_device(dev));
+=======
+	hwmon->cell->disable(pdev);
+>>>>>>> v4.9.227
 	disable_irq(hwmon->irq);
 
 	mutex_unlock(&hwmon->lock);
@@ -88,26 +110,45 @@ static ssize_t jz4740_hwmon_read_adcin(struct device *dev,
 	return ret;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(name, S_IRUGO, jz4740_hwmon_show_name, NULL);
 static DEVICE_ATTR(in0_input, S_IRUGO, jz4740_hwmon_read_adcin, NULL);
 
 static struct attribute *jz4740_hwmon_attributes[] = {
 	&dev_attr_name.attr,
+=======
+static DEVICE_ATTR(in0_input, S_IRUGO, jz4740_hwmon_read_adcin, NULL);
+
+static struct attribute *jz4740_attrs[] = {
+>>>>>>> v4.9.227
 	&dev_attr_in0_input.attr,
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group jz4740_hwmon_attr_group = {
 	.attrs = jz4740_hwmon_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(jz4740);
+>>>>>>> v4.9.227
 
 static int jz4740_hwmon_probe(struct platform_device *pdev)
 {
 	int ret;
+<<<<<<< HEAD
 	struct jz4740_hwmon *hwmon;
 	struct resource *mem;
 
 	hwmon = devm_kzalloc(&pdev->dev, sizeof(*hwmon), GFP_KERNEL);
+=======
+	struct device *dev = &pdev->dev;
+	struct jz4740_hwmon *hwmon;
+	struct device *hwmon_dev;
+	struct resource *mem;
+
+	hwmon = devm_kzalloc(dev, sizeof(*hwmon), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!hwmon)
 		return -ENOMEM;
 
@@ -125,12 +166,20 @@ static int jz4740_hwmon_probe(struct platform_device *pdev)
 	if (IS_ERR(hwmon->base))
 		return PTR_ERR(hwmon->base);
 
+<<<<<<< HEAD
 	init_completion(&hwmon->read_completion);
 	mutex_init(&hwmon->lock);
 
 	platform_set_drvdata(pdev, hwmon);
 
 	ret = devm_request_irq(&pdev->dev, hwmon->irq, jz4740_hwmon_irq, 0,
+=======
+	hwmon->pdev = pdev;
+	init_completion(&hwmon->read_completion);
+	mutex_init(&hwmon->lock);
+
+	ret = devm_request_irq(dev, hwmon->irq, jz4740_hwmon_irq, 0,
+>>>>>>> v4.9.227
 			       pdev->name, hwmon);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to request irq: %d\n", ret);
@@ -138,6 +187,7 @@ static int jz4740_hwmon_probe(struct platform_device *pdev)
 	}
 	disable_irq(hwmon->irq);
 
+<<<<<<< HEAD
 	ret = sysfs_create_group(&pdev->dev.kobj, &jz4740_hwmon_attr_group);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to create sysfs group: %d\n", ret);
@@ -165,14 +215,24 @@ static int jz4740_hwmon_remove(struct platform_device *pdev)
 	sysfs_remove_group(&pdev->dev.kobj, &jz4740_hwmon_attr_group);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, "jz4740", hwmon,
+							   jz4740_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver jz4740_hwmon_driver = {
 	.probe	= jz4740_hwmon_probe,
+<<<<<<< HEAD
 	.remove = jz4740_hwmon_remove,
 	.driver = {
 		.name = "jz4740-hwmon",
 		.owner = THIS_MODULE,
+=======
+	.driver = {
+		.name = "jz4740-hwmon",
+>>>>>>> v4.9.227
 	},
 };
 

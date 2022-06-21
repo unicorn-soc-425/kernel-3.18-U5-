@@ -1,6 +1,7 @@
 #ifndef _ASM_DMA_MAPPING_H
 #define _ASM_DMA_MAPPING_H
 
+<<<<<<< HEAD
 #include <linux/device.h>
 #include <asm/cache.h>
 #include <asm/cacheflush.h>
@@ -14,10 +15,15 @@
 
 #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
 #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
+=======
+#include <asm/cache.h>
+#include <asm/cacheflush.h>
+>>>>>>> v4.9.227
 
 extern unsigned long __nongprelbss dma_coherent_mem_start;
 extern unsigned long __nongprelbss dma_coherent_mem_end;
 
+<<<<<<< HEAD
 void *dma_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle, gfp_t gfp);
 void dma_free_coherent(struct device *dev, size_t size, void *vaddr, dma_addr_t dma_handle);
 
@@ -123,6 +129,13 @@ int dma_set_mask(struct device *dev, u64 mask)
 	*dev->dma_mask = mask;
 
 	return 0;
+=======
+extern struct dma_map_ops frv_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	return &frv_dma_ops;
+>>>>>>> v4.9.227
 }
 
 static inline
@@ -132,6 +145,7 @@ void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 	flush_write_buffers();
 }
 
+<<<<<<< HEAD
 /* Not supported for now */
 static inline int dma_mmap_coherent(struct device *dev,
 				    struct vm_area_struct *vma, void *cpu_addr,
@@ -147,4 +161,6 @@ static inline int dma_get_sgtable(struct device *dev, struct sg_table *sgt,
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 #endif  /* _ASM_DMA_MAPPING_H */

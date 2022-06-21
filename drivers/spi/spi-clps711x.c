@@ -1,7 +1,11 @@
 /*
  *  CLPS711X SPI bus driver
  *
+<<<<<<< HEAD
  *  Copyright (C) 2012-2014 Alexander Shiyan <shc_work@mail.ru>
+=======
+ *  Copyright (C) 2012-2016 Alexander Shiyan <shc_work@mail.ru>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,7 +16,10 @@
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
@@ -20,9 +27,14 @@
 #include <linux/mfd/syscon.h>
 #include <linux/mfd/syscon/clps711x.h>
 #include <linux/spi/spi.h>
+<<<<<<< HEAD
 #include <linux/platform_data/spi-clps711x.h>
 
 #define DRIVER_NAME	"spi-clps711x"
+=======
+
+#define DRIVER_NAME		"clps711x-spi"
+>>>>>>> v4.9.227
 
 #define SYNCIO_FRMLEN(x)	((x) << 8)
 #define SYNCIO_TXFRMEN		(1 << 14)
@@ -40,6 +52,20 @@ struct spi_clps711x_data {
 
 static int spi_clps711x_setup(struct spi_device *spi)
 {
+<<<<<<< HEAD
+=======
+	if (!spi->controller_state) {
+		int ret;
+
+		ret = devm_gpio_request(&spi->master->dev, spi->cs_gpio,
+					dev_name(&spi->master->dev));
+		if (ret)
+			return ret;
+
+		spi->controller_state = spi;
+	}
+
+>>>>>>> v4.9.227
 	/* We are expect that SPI-device is not selected */
 	gpio_direction_output(spi->cs_gpio, !(spi->mode & SPI_CS_HIGH));
 
@@ -104,6 +130,7 @@ static irqreturn_t spi_clps711x_isr(int irq, void *dev_id)
 static int spi_clps711x_probe(struct platform_device *pdev)
 {
 	struct spi_clps711x_data *hw;
+<<<<<<< HEAD
 	struct spi_clps711x_pdata *pdata = dev_get_platdata(&pdev->dev);
 	struct spi_master *master;
 	struct resource *res;
@@ -118,6 +145,11 @@ static int spi_clps711x_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "At least one CS must be defined\n");
 		return -EINVAL;
 	}
+=======
+	struct spi_master *master;
+	struct resource *res;
+	int irq, ret;
+>>>>>>> v4.9.227
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
@@ -127,6 +159,7 @@ static int spi_clps711x_probe(struct platform_device *pdev)
 	if (!master)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	master->cs_gpios = devm_kzalloc(&pdev->dev, sizeof(int) *
 					pdata->num_chipselect, GFP_KERNEL);
 	if (!master->cs_gpios) {
@@ -138,12 +171,19 @@ static int spi_clps711x_probe(struct platform_device *pdev)
 	master->mode_bits = SPI_CPHA | SPI_CS_HIGH;
 	master->bits_per_word_mask =  SPI_BPW_RANGE_MASK(1, 8);
 	master->num_chipselect = pdata->num_chipselect;
+=======
+	master->bus_num = -1;
+	master->mode_bits = SPI_CPHA | SPI_CS_HIGH;
+	master->bits_per_word_mask =  SPI_BPW_RANGE_MASK(1, 8);
+	master->dev.of_node = pdev->dev.of_node;
+>>>>>>> v4.9.227
 	master->setup = spi_clps711x_setup;
 	master->prepare_message = spi_clps711x_prepare_message;
 	master->transfer_one = spi_clps711x_transfer_one;
 
 	hw = spi_master_get_devdata(master);
 
+<<<<<<< HEAD
 	for (i = 0; i < master->num_chipselect; i++) {
 		master->cs_gpios[i] = pdata->chipselect[i];
 		ret = devm_gpio_request(&pdev->dev, master->cs_gpios[i],
@@ -154,13 +194,20 @@ static int spi_clps711x_probe(struct platform_device *pdev)
 		}
 	}
 
+=======
+>>>>>>> v4.9.227
 	hw->spi_clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(hw->spi_clk)) {
 		ret = PTR_ERR(hw->spi_clk);
 		goto err_out;
 	}
 
+<<<<<<< HEAD
 	hw->syscon = syscon_regmap_lookup_by_pdevname("syscon.3");
+=======
+	hw->syscon =
+		syscon_regmap_lookup_by_compatible("cirrus,ep7209-syscon3");
+>>>>>>> v4.9.227
 	if (IS_ERR(hw->syscon)) {
 		ret = PTR_ERR(hw->syscon);
 		goto err_out;
@@ -185,6 +232,7 @@ static int spi_clps711x_probe(struct platform_device *pdev)
 		goto err_out;
 
 	ret = devm_spi_register_master(&pdev->dev, master);
+<<<<<<< HEAD
 	if (!ret) {
 		dev_info(&pdev->dev,
 			 "SPI bus driver initialized. Master clock %u Hz\n",
@@ -193,6 +241,10 @@ static int spi_clps711x_probe(struct platform_device *pdev)
 	}
 
 	dev_err(&pdev->dev, "Failed to register master\n");
+=======
+	if (!ret)
+		return 0;
+>>>>>>> v4.9.227
 
 err_out:
 	spi_master_put(master);
@@ -200,10 +252,23 @@ err_out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct platform_driver clps711x_spi_driver = {
 	.driver	= {
 		.name	= DRIVER_NAME,
 		.owner	= THIS_MODULE,
+=======
+static const struct of_device_id clps711x_spi_dt_ids[] = {
+	{ .compatible = "cirrus,ep7209-spi", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, clps711x_spi_dt_ids);
+
+static struct platform_driver clps711x_spi_driver = {
+	.driver	= {
+		.name	= DRIVER_NAME,
+		.of_match_table = clps711x_spi_dt_ids,
+>>>>>>> v4.9.227
 	},
 	.probe	= spi_clps711x_probe,
 };

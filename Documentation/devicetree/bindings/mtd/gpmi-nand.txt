@@ -1,7 +1,11 @@
 * Freescale General-Purpose Media Interface (GPMI)
 
 The GPMI nand controller provides an interface to control the
+<<<<<<< HEAD
 NAND flash chips. We support only one NAND chip now.
+=======
+NAND flash chips.
+>>>>>>> v4.9.227
 
 Required properties:
   - compatible : should be "fsl,<chip>-gpmi-nand"

@@ -7,6 +7,7 @@
 
 static struct class *bt_class;
 
+<<<<<<< HEAD
 static inline char *link_typetostr(int type)
 {
 	switch (type) {
@@ -51,6 +52,8 @@ static struct attribute *bt_link_attrs[] = {
 
 ATTRIBUTE_GROUPS(bt_link);
 
+=======
+>>>>>>> v4.9.227
 static void bt_link_release(struct device *dev)
 {
 	struct hci_conn *conn = to_hci_conn(dev);
@@ -59,7 +62,10 @@ static void bt_link_release(struct device *dev)
 
 static struct device_type bt_link = {
 	.name    = "link",
+<<<<<<< HEAD
 	.groups  = bt_link_groups,
+=======
+>>>>>>> v4.9.227
 	.release = bt_link_release,
 };
 
@@ -77,7 +83,11 @@ void hci_conn_init_sysfs(struct hci_conn *conn)
 {
 	struct hci_dev *hdev = conn->hdev;
 
+<<<<<<< HEAD
 	BT_DBG("conn %pK", conn);
+=======
+	BT_DBG("conn %p", conn);
+>>>>>>> v4.9.227
 
 	conn->dev.type = &bt_link;
 	conn->dev.class = bt_class;
@@ -90,7 +100,11 @@ void hci_conn_add_sysfs(struct hci_conn *conn)
 {
 	struct hci_dev *hdev = conn->hdev;
 
+<<<<<<< HEAD
 	BT_DBG("conn %pK", conn);
+=======
+	BT_DBG("conn %p", conn);
+>>>>>>> v4.9.227
 
 	dev_set_name(&conn->dev, "%s:%d", hdev->name, conn->handle);
 
@@ -124,6 +138,7 @@ void hci_conn_del_sysfs(struct hci_conn *conn)
 	hci_dev_put(hdev);
 }
 
+<<<<<<< HEAD
 static inline char *host_typetostr(int type)
 {
 	switch (type) {
@@ -177,6 +192,8 @@ static struct attribute *bt_host_attrs[] = {
 
 ATTRIBUTE_GROUPS(bt_host);
 
+=======
+>>>>>>> v4.9.227
 static void bt_host_release(struct device *dev)
 {
 	struct hci_dev *hdev = to_hci_dev(dev);
@@ -186,7 +203,10 @@ static void bt_host_release(struct device *dev)
 
 static struct device_type bt_host = {
 	.name    = "host",
+<<<<<<< HEAD
 	.groups  = bt_host_groups,
+=======
+>>>>>>> v4.9.227
 	.release = bt_host_release,
 };
 

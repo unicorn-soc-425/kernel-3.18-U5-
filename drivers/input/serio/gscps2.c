@@ -31,7 +31,10 @@
 #include <linux/spinlock.h>
 #include <linux/delay.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/pci_ids.h>
+=======
+>>>>>>> v4.9.227
 
 #include <asm/irq.h>
 #include <asm/io.h>
@@ -383,9 +386,15 @@ static int gscps2_probe(struct parisc_device *dev)
 		goto fail;
 #endif
 
+<<<<<<< HEAD
 	printk(KERN_INFO "serio: %s port at 0x%p irq %d @ %s\n",
 		ps2port->port->name,
 		ps2port->addr,
+=======
+	pr_info("serio: %s port at 0x%08lx irq %d @ %s\n",
+		ps2port->port->name,
+		hpa,
+>>>>>>> v4.9.227
 		ps2port->padev->irq,
 		ps2port->port->phys);
 

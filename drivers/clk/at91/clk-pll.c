@@ -12,6 +12,7 @@
 #include <linux/clkdev.h>
 #include <linux/clk/at91_pmc.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 #include <linux/io.h>
@@ -20,6 +21,10 @@
 #include <linux/sched.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+=======
+#include <linux/mfd/syscon.h>
+#include <linux/regmap.h>
+>>>>>>> v4.9.227
 
 #include "pmc.h"
 
@@ -58,9 +63,13 @@ struct clk_pll_layout {
 
 struct clk_pll {
 	struct clk_hw hw;
+<<<<<<< HEAD
 	struct at91_pmc *pmc;
 	unsigned int irq;
 	wait_queue_head_t wait;
+=======
+	struct regmap *regmap;
+>>>>>>> v4.9.227
 	u8 id;
 	u8 div;
 	u8 range;
@@ -69,6 +78,7 @@ struct clk_pll {
 	const struct clk_pll_characteristics *characteristics;
 };
 
+<<<<<<< HEAD
 static irqreturn_t clk_pll_irq_handler(int irq, void *dev_id)
 {
 	struct clk_pll *pll = (struct clk_pll *)dev_id;
@@ -77,12 +87,25 @@ static irqreturn_t clk_pll_irq_handler(int irq, void *dev_id)
 	disable_irq_nosync(pll->irq);
 
 	return IRQ_HANDLED;
+=======
+static inline bool clk_pll_ready(struct regmap *regmap, int id)
+{
+	unsigned int status;
+
+	regmap_read(regmap, AT91_PMC_SR, &status);
+
+	return status & PLL_STATUS_MASK(id) ? 1 : 0;
+>>>>>>> v4.9.227
 }
 
 static int clk_pll_prepare(struct clk_hw *hw)
 {
 	struct clk_pll *pll = to_clk_pll(hw);
+<<<<<<< HEAD
 	struct at91_pmc *pmc = pll->pmc;
+=======
+	struct regmap *regmap = pll->regmap;
+>>>>>>> v4.9.227
 	const struct clk_pll_layout *layout = pll->layout;
 	const struct clk_pll_characteristics *characteristics =
 							pll->characteristics;
@@ -90,6 +113,7 @@ static int clk_pll_prepare(struct clk_hw *hw)
 	u32 mask = PLL_STATUS_MASK(id);
 	int offset = PLL_REG(id);
 	u8 out = 0;
+<<<<<<< HEAD
 	u32 pllr, icpr;
 	u8 div;
 	u16 mul;
@@ -99,11 +123,25 @@ static int clk_pll_prepare(struct clk_hw *hw)
 	mul = PLL_MUL(pllr, layout);
 
 	if ((pmc_read(pmc, AT91_PMC_SR) & mask) &&
+=======
+	unsigned int pllr;
+	unsigned int status;
+	u8 div;
+	u16 mul;
+
+	regmap_read(regmap, offset, &pllr);
+	div = PLL_DIV(pllr);
+	mul = PLL_MUL(pllr, layout);
+
+	regmap_read(regmap, AT91_PMC_SR, &status);
+	if ((status & mask) &&
+>>>>>>> v4.9.227
 	    (div == pll->div && mul == pll->mul))
 		return 0;
 
 	if (characteristics->out)
 		out = characteristics->out[pll->range];
+<<<<<<< HEAD
 	if (characteristics->icpll) {
 		icpr = pmc_read(pmc, AT91_PMC_PLLICPR) & ~PLL_ICPR_MASK(id);
 		icpr |= (characteristics->icpll[pll->range] <<
@@ -123,6 +161,20 @@ static int clk_pll_prepare(struct clk_hw *hw)
 		wait_event(pll->wait,
 			   pmc_read(pmc, AT91_PMC_SR) & mask);
 	}
+=======
+
+	if (characteristics->icpll)
+		regmap_update_bits(regmap, AT91_PMC_PLLICPR, PLL_ICPR_MASK(id),
+			characteristics->icpll[pll->range] << PLL_ICPR_SHIFT(id));
+
+	regmap_update_bits(regmap, offset, layout->pllr_mask,
+			pll->div | (PLL_MAX_COUNT << PLL_COUNT_SHIFT) |
+			(out << PLL_OUT_SHIFT) |
+			((pll->mul & layout->mul_mask) << layout->mul_shift));
+
+	while (!clk_pll_ready(regmap, pll->id))
+		cpu_relax();
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -130,21 +182,32 @@ static int clk_pll_prepare(struct clk_hw *hw)
 static int clk_pll_is_prepared(struct clk_hw *hw)
 {
 	struct clk_pll *pll = to_clk_pll(hw);
+<<<<<<< HEAD
 	struct at91_pmc *pmc = pll->pmc;
 
 	return !!(pmc_read(pmc, AT91_PMC_SR) &
 		  PLL_STATUS_MASK(pll->id));
+=======
+
+	return clk_pll_ready(pll->regmap, pll->id);
+>>>>>>> v4.9.227
 }
 
 static void clk_pll_unprepare(struct clk_hw *hw)
 {
 	struct clk_pll *pll = to_clk_pll(hw);
+<<<<<<< HEAD
 	struct at91_pmc *pmc = pll->pmc;
 	const struct clk_pll_layout *layout = pll->layout;
 	int offset = PLL_REG(pll->id);
 	u32 tmp = pmc_read(pmc, offset) & ~(layout->pllr_mask);
 
 	pmc_write(pmc, offset, tmp);
+=======
+	unsigned int mask = pll->layout->pllr_mask;
+
+	regmap_update_bits(pll->regmap, PLL_REG(pll->id), mask, ~mask);
+>>>>>>> v4.9.227
 }
 
 static unsigned long clk_pll_recalc_rate(struct clk_hw *hw,
@@ -307,18 +370,31 @@ static const struct clk_ops pll_ops = {
 	.set_rate = clk_pll_set_rate,
 };
 
+<<<<<<< HEAD
 static struct clk * __init
 at91_clk_register_pll(struct at91_pmc *pmc, unsigned int irq, const char *name,
+=======
+static struct clk_hw * __init
+at91_clk_register_pll(struct regmap *regmap, const char *name,
+>>>>>>> v4.9.227
 		      const char *parent_name, u8 id,
 		      const struct clk_pll_layout *layout,
 		      const struct clk_pll_characteristics *characteristics)
 {
 	struct clk_pll *pll;
+<<<<<<< HEAD
 	struct clk *clk = NULL;
 	struct clk_init_data init;
 	int ret;
 	int offset = PLL_REG(id);
 	u32 tmp;
+=======
+	struct clk_hw *hw;
+	struct clk_init_data init;
+	int offset = PLL_REG(id);
+	unsigned int pllr;
+	int ret;
+>>>>>>> v4.9.227
 
 	if (id > PLL_MAX_ID)
 		return ERR_PTR(-EINVAL);
@@ -337,6 +413,7 @@ at91_clk_register_pll(struct at91_pmc *pmc, unsigned int irq, const char *name,
 	pll->hw.init = &init;
 	pll->layout = layout;
 	pll->characteristics = characteristics;
+<<<<<<< HEAD
 	pll->pmc = pmc;
 	pll->irq = irq;
 	tmp = pmc_read(pmc, offset) & layout->pllr_mask;
@@ -354,6 +431,21 @@ at91_clk_register_pll(struct at91_pmc *pmc, unsigned int irq, const char *name,
 		kfree(pll);
 
 	return clk;
+=======
+	pll->regmap = regmap;
+	regmap_read(regmap, offset, &pllr);
+	pll->div = PLL_DIV(pllr);
+	pll->mul = PLL_MUL(pllr, layout);
+
+	hw = &pll->hw;
+	ret = clk_hw_register(NULL, &pll->hw);
+	if (ret) {
+		kfree(pll);
+		hw = ERR_PTR(ret);
+	}
+
+	return hw;
+>>>>>>> v4.9.227
 }
 
 
@@ -479,12 +571,21 @@ out_free_characteristics:
 }
 
 static void __init
+<<<<<<< HEAD
 of_at91_clk_pll_setup(struct device_node *np, struct at91_pmc *pmc,
 		      const struct clk_pll_layout *layout)
 {
 	u32 id;
 	unsigned int irq;
 	struct clk *clk;
+=======
+of_at91_clk_pll_setup(struct device_node *np,
+		      const struct clk_pll_layout *layout)
+{
+	u32 id;
+	struct clk_hw *hw;
+	struct regmap *regmap;
+>>>>>>> v4.9.227
 	const char *parent_name;
 	const char *name = np->name;
 	struct clk_pll_characteristics *characteristics;
@@ -496,10 +597,18 @@ of_at91_clk_pll_setup(struct device_node *np, struct at91_pmc *pmc,
 
 	of_property_read_string(np, "clock-output-names", &name);
 
+<<<<<<< HEAD
+=======
+	regmap = syscon_node_to_regmap(of_get_parent(np));
+	if (IS_ERR(regmap))
+		return;
+
+>>>>>>> v4.9.227
 	characteristics = of_at91_clk_pll_get_characteristics(np);
 	if (!characteristics)
 		return;
 
+<<<<<<< HEAD
 	irq = irq_of_parse_and_map(np, 0);
 	if (!irq)
 		return;
@@ -510,12 +619,21 @@ of_at91_clk_pll_setup(struct device_node *np, struct at91_pmc *pmc,
 		goto out_free_characteristics;
 
 	of_clk_add_provider(np, of_clk_src_simple_get, clk);
+=======
+	hw = at91_clk_register_pll(regmap, name, parent_name, id, layout,
+				    characteristics);
+	if (IS_ERR(hw))
+		goto out_free_characteristics;
+
+	of_clk_add_hw_provider(np, of_clk_hw_simple_get, hw);
+>>>>>>> v4.9.227
 	return;
 
 out_free_characteristics:
 	kfree(characteristics);
 }
 
+<<<<<<< HEAD
 void __init of_at91rm9200_clk_pll_setup(struct device_node *np,
 					       struct at91_pmc *pmc)
 {
@@ -539,3 +657,32 @@ void __init of_sama5d3_clk_pll_setup(struct device_node *np,
 {
 	of_at91_clk_pll_setup(np, pmc, &sama5d3_pll_layout);
 }
+=======
+static void __init of_at91rm9200_clk_pll_setup(struct device_node *np)
+{
+	of_at91_clk_pll_setup(np, &at91rm9200_pll_layout);
+}
+CLK_OF_DECLARE(at91rm9200_clk_pll, "atmel,at91rm9200-clk-pll",
+	       of_at91rm9200_clk_pll_setup);
+
+static void __init of_at91sam9g45_clk_pll_setup(struct device_node *np)
+{
+	of_at91_clk_pll_setup(np, &at91sam9g45_pll_layout);
+}
+CLK_OF_DECLARE(at91sam9g45_clk_pll, "atmel,at91sam9g45-clk-pll",
+	       of_at91sam9g45_clk_pll_setup);
+
+static void __init of_at91sam9g20_clk_pllb_setup(struct device_node *np)
+{
+	of_at91_clk_pll_setup(np, &at91sam9g20_pllb_layout);
+}
+CLK_OF_DECLARE(at91sam9g20_clk_pllb, "atmel,at91sam9g20-clk-pllb",
+	       of_at91sam9g20_clk_pllb_setup);
+
+static void __init of_sama5d3_clk_pll_setup(struct device_node *np)
+{
+	of_at91_clk_pll_setup(np, &sama5d3_pll_layout);
+}
+CLK_OF_DECLARE(sama5d3_clk_pll, "atmel,sama5d3-clk-pll",
+	       of_sama5d3_clk_pll_setup);
+>>>>>>> v4.9.227

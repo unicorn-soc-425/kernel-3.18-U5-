@@ -673,7 +673,10 @@ failed_destroy_mutex:
 static struct platform_driver mmpfb_driver = {
 	.driver		= {
 		.name	= "mmp-fb",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= mmpfb_probe,
 };

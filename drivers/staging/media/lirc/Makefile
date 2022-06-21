@@ -4,7 +4,10 @@
 # Each configuration option enables a list of files.
 
 obj-$(CONFIG_LIRC_BT829)	+= lirc_bt829.o
+<<<<<<< HEAD
 obj-$(CONFIG_LIRC_IGORPLUGUSB)	+= lirc_igorplugusb.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_LIRC_IMON)		+= lirc_imon.o
 obj-$(CONFIG_LIRC_PARALLEL)	+= lirc_parallel.o
 obj-$(CONFIG_LIRC_SASEM)	+= lirc_sasem.o

@@ -18,12 +18,20 @@ struct shrink_control {
 	 */
 	unsigned long nr_to_scan;
 
+<<<<<<< HEAD
 	/* shrink from these nodes */
 	nodemask_t nodes_to_scan;
 	/* current node being shrunk (for NUMA aware shrinkers) */
 	int nid;
 
 	int priority;
+=======
+	/* current node being shrunk (for NUMA aware shrinkers) */
+	int nid;
+
+	/* current memcg being shrunk (for memcg aware shrinkers) */
+	struct mem_cgroup *memcg;
+>>>>>>> v4.9.227
 };
 
 #define SHRINK_STOP (~0UL)
@@ -65,7 +73,12 @@ struct shrinker {
 #define DEFAULT_SEEKS 2 /* A good number if you don't know better. */
 
 /* Flags */
+<<<<<<< HEAD
 #define SHRINKER_NUMA_AWARE (1 << 0)
+=======
+#define SHRINKER_NUMA_AWARE	(1 << 0)
+#define SHRINKER_MEMCG_AWARE	(1 << 1)
+>>>>>>> v4.9.227
 
 extern int register_shrinker(struct shrinker *);
 extern void unregister_shrinker(struct shrinker *);

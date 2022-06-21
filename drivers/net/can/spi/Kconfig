@@ -2,6 +2,7 @@ menu "CAN SPI interfaces"
 	depends on SPI
 
 config CAN_MCP251X
+<<<<<<< HEAD
 	tristate "Microchip MCP251x SPI CAN controllers"
 	depends on HAS_DMA
 	---help---
@@ -18,4 +19,12 @@ config QTI_CAN
 	depends on SPI
 	---help---
 	  Unified driver for QTI CAN controllers.
+=======
+	tristate "Microchip MCP251x and MCP25625 SPI CAN controllers"
+	depends on HAS_DMA
+	---help---
+	  Driver for the Microchip MCP251x and MCP25625 SPI CAN
+	  controllers.
+
+>>>>>>> v4.9.227
 endmenu

@@ -48,7 +48,11 @@ static inline int ffz(unsigned long x)
  * __ffs: Find first bit set in word. Return 0 for bit 0
  */
 
+<<<<<<< HEAD
 static inline int __ffs(unsigned long x)
+=======
+static inline unsigned long __ffs(unsigned long x)
+>>>>>>> v4.9.227
 {
 	return 31 - __cntlz(x & -x);
 }

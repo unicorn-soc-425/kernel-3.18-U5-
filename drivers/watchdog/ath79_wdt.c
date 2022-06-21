@@ -35,6 +35,10 @@
 #include <linux/err.h>
 #include <linux/of.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 
 #define DRIVER_NAME	"ath79-wdt"
 
@@ -326,7 +330,10 @@ static struct platform_driver ath79_wdt_driver = {
 	.shutdown	= ath97_wdt_shutdown,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(ath79_wdt_match),
 	},
 };

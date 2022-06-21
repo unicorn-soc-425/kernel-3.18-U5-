@@ -13,7 +13,12 @@ if OF
 
 config OF_UNITTEST
 	bool "Device Tree runtime unit tests"
+<<<<<<< HEAD
 	depends on OF_IRQ && OF_EARLY_FLATTREE
+=======
+	depends on OF_IRQ
+	select OF_EARLY_FLATTREE
+>>>>>>> v4.9.227
 	select OF_RESOLVE
 	help
 	  This option builds in test cases for the device tree infrastructure
@@ -22,6 +27,19 @@ config OF_UNITTEST
 
 	  If unsure, say N here, but this option is safe to enable.
 
+<<<<<<< HEAD
+=======
+config OF_ALL_DTBS
+	bool "Build all Device Tree Blobs"
+	depends on COMPILE_TEST
+	select DTC
+	help
+	  This option builds all possible Device Tree Blobs (DTBs) for the
+	  current architecture.
+
+	  If unsure, say N here, but this option is safe to enable.
+
+>>>>>>> v4.9.227
 config OF_FLATTREE
 	bool
 	select DTC
@@ -38,7 +56,15 @@ config OF_PROMTREE
 # Hardly any platforms need this.  It is safe to select, but only do so if you
 # need it.
 config OF_DYNAMIC
+<<<<<<< HEAD
 	bool
+=======
+	bool "Support for dynamic device trees" if OF_UNITTEST
+	help
+	  On some platforms, the device tree can be manipulated at runtime.
+	  While this option is selected automatically on such platforms, you
+	  can enable it manually to improve device tree unit test coverage.
+>>>>>>> v4.9.227
 
 config OF_ADDRESS
 	def_bool y
@@ -50,7 +76,11 @@ config OF_ADDRESS_PCI
 
 config OF_IRQ
 	def_bool y
+<<<<<<< HEAD
 	depends on !SPARC
+=======
+	depends on !SPARC && IRQ_DOMAIN
+>>>>>>> v4.9.227
 
 config OF_NET
 	depends on NETDEVICES
@@ -59,6 +89,10 @@ config OF_NET
 config OF_MDIO
 	def_tristate PHYLIB
 	depends on PHYLIB
+<<<<<<< HEAD
+=======
+	select FIXED_PHY
+>>>>>>> v4.9.227
 	help
 	  OpenFirmware MDIO bus (Ethernet PHY) accessors
 
@@ -74,6 +108,7 @@ config OF_PCI_IRQ
 	help
 	  OpenFirmware PCI IRQ routing helpers
 
+<<<<<<< HEAD
 config OF_SPMI
 	def_tristate MSM_SPMI
 	depends on MSM_SPMI
@@ -84,6 +119,8 @@ config OF_MTD
 	depends on MTD
 	def_bool y
 
+=======
+>>>>>>> v4.9.227
 config OF_RESERVED_MEM
 	depends on OF_EARLY_FLATTREE
 	bool
@@ -93,6 +130,7 @@ config OF_RESERVED_MEM
 config OF_RESOLVE
 	bool
 
+<<<<<<< HEAD
 config OF_SLIMBUS
 	def_tristate SLIMBUS
 	depends on SLIMBUS
@@ -110,9 +148,26 @@ config OF_BATTERYDATA
 	help
 	  OpenFirmware BatteryData accessors
 
+=======
+>>>>>>> v4.9.227
 config OF_OVERLAY
 	bool "Device Tree overlays"
 	select OF_DYNAMIC
 	select OF_RESOLVE
+<<<<<<< HEAD
+=======
+	help
+	  Overlays are a method to dynamically modify part of the kernel's
+	  device tree with dynamically loaded data.
+	  While this option is selected automatically when needed, you can
+	  enable it manually to improve device tree unit test coverage.
+
+config OF_NUMA
+	bool
+
+config OF_DMA_DEFAULT_COHERENT
+	# arches should select this if DMA is coherent by default for OF devices
+	bool
+>>>>>>> v4.9.227
 
 endif # OF

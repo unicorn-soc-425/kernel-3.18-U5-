@@ -19,6 +19,7 @@
 #define __MSM_MMU_H__
 
 #include <linux/iommu.h>
+<<<<<<< HEAD
 #include <linux/dma-buf.h>
 
 struct msm_mmu;
@@ -109,10 +110,21 @@ struct msm_mmu_funcs {
 			struct dma_buf *dma_buf, int dir);
 	void (*unmap_dma_buf)(struct msm_mmu *mmu, struct sg_table *sgt,
 			struct dma_buf *dma_buf, int dir);
+=======
+
+struct msm_mmu_funcs {
+	int (*attach)(struct msm_mmu *mmu, const char * const *names, int cnt);
+	void (*detach)(struct msm_mmu *mmu, const char * const *names, int cnt);
+	int (*map)(struct msm_mmu *mmu, uint32_t iova, struct sg_table *sgt,
+			unsigned len, int prot);
+	int (*unmap)(struct msm_mmu *mmu, uint32_t iova, struct sg_table *sgt,
+			unsigned len);
+>>>>>>> v4.9.227
 	void (*destroy)(struct msm_mmu *mmu);
 };
 
 struct msm_mmu {
+<<<<<<< HEAD
 	struct kref refcount;
 	const struct msm_mmu_funcs *funcs;
 	struct device *dev;
@@ -164,4 +176,20 @@ struct msm_mmu *msm_smmu_new(struct drm_device *drm_dev, struct device *dev,
 	enum msm_mmu_domain_type domain);
 struct msm_mmu *msm_iommu_new(struct drm_device *dev,
 	struct msm_mmu_dev *mmu_dev, uint32_t name);
+=======
+	const struct msm_mmu_funcs *funcs;
+	struct device *dev;
+};
+
+static inline void msm_mmu_init(struct msm_mmu *mmu, struct device *dev,
+		const struct msm_mmu_funcs *funcs)
+{
+	mmu->dev = dev;
+	mmu->funcs = funcs;
+}
+
+struct msm_mmu *msm_iommu_new(struct device *dev, struct iommu_domain *domain);
+struct msm_mmu *msm_gpummu_new(struct device *dev, struct msm_gpu *gpu);
+
+>>>>>>> v4.9.227
 #endif /* __MSM_MMU_H__ */

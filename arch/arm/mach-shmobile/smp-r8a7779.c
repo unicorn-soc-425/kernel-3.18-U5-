@@ -12,10 +12,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+>>>>>>> v4.9.227
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -23,43 +26,69 @@
 #include <linux/spinlock.h>
 #include <linux/io.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/soc/renesas/rcar-sysc.h>
+>>>>>>> v4.9.227
 
 #include <asm/cacheflush.h>
 #include <asm/smp_plat.h>
 #include <asm/smp_scu.h>
+<<<<<<< HEAD
 #include <asm/smp_twd.h>
 
 #include "common.h"
 #include "pm-rcar.h"
+=======
+
+#include "common.h"
+>>>>>>> v4.9.227
 #include "r8a7779.h"
 
 #define AVECR IOMEM(0xfe700040)
 #define R8A7779_SCU_BASE 0xf0000000
 
+<<<<<<< HEAD
 static struct rcar_sysc_ch r8a7779_ch_cpu1 = {
+=======
+static const struct rcar_sysc_ch r8a7779_ch_cpu1 = {
+>>>>>>> v4.9.227
 	.chan_offs = 0x40, /* PWRSR0 .. PWRER0 */
 	.chan_bit = 1, /* ARM1 */
 	.isr_bit = 1, /* ARM1 */
 };
 
+<<<<<<< HEAD
 static struct rcar_sysc_ch r8a7779_ch_cpu2 = {
+=======
+static const struct rcar_sysc_ch r8a7779_ch_cpu2 = {
+>>>>>>> v4.9.227
 	.chan_offs = 0x40, /* PWRSR0 .. PWRER0 */
 	.chan_bit = 2, /* ARM2 */
 	.isr_bit = 2, /* ARM2 */
 };
 
+<<<<<<< HEAD
 static struct rcar_sysc_ch r8a7779_ch_cpu3 = {
+=======
+static const struct rcar_sysc_ch r8a7779_ch_cpu3 = {
+>>>>>>> v4.9.227
 	.chan_offs = 0x40, /* PWRSR0 .. PWRER0 */
 	.chan_bit = 3, /* ARM3 */
 	.isr_bit = 3, /* ARM3 */
 };
 
+<<<<<<< HEAD
 static struct rcar_sysc_ch *r8a7779_ch_cpu[4] = {
+=======
+static const struct rcar_sysc_ch * const r8a7779_ch_cpu[4] = {
+>>>>>>> v4.9.227
 	[1] = &r8a7779_ch_cpu1,
 	[2] = &r8a7779_ch_cpu2,
 	[3] = &r8a7779_ch_cpu3,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_HAVE_ARM_TWD
 static DEFINE_TWD_LOCAL_TIMER(twd_local_timer, R8A7779_SCU_BASE + 0x600, 29);
 void __init r8a7779_register_twd(void)
@@ -71,6 +100,11 @@ void __init r8a7779_register_twd(void)
 static int r8a7779_platform_cpu_kill(unsigned int cpu)
 {
 	struct rcar_sysc_ch *ch = NULL;
+=======
+static int r8a7779_platform_cpu_kill(unsigned int cpu)
+{
+	const struct rcar_sysc_ch *ch = NULL;
+>>>>>>> v4.9.227
 	int ret = -EIO;
 
 	cpu = cpu_logical_map(cpu);
@@ -86,7 +120,11 @@ static int r8a7779_platform_cpu_kill(unsigned int cpu)
 
 static int r8a7779_boot_secondary(unsigned int cpu, struct task_struct *idle)
 {
+<<<<<<< HEAD
 	struct rcar_sysc_ch *ch = NULL;
+=======
+	const struct rcar_sysc_ch *ch = NULL;
+>>>>>>> v4.9.227
 	unsigned int lcpu = cpu_logical_map(cpu);
 	int ret;
 
@@ -105,12 +143,18 @@ static void __init r8a7779_smp_prepare_cpus(unsigned int max_cpus)
 {
 	/* Map the reset vector (in headsmp-scu.S, headsmp.S) */
 	__raw_writel(__pa(shmobile_boot_vector), AVECR);
+<<<<<<< HEAD
 	shmobile_boot_fn = virt_to_phys(shmobile_boot_scu);
 	shmobile_boot_arg = (unsigned long)shmobile_scu_base;
 
 	/* setup r8a7779 specific SCU bits */
 	shmobile_scu_base = IOMEM(R8A7779_SCU_BASE);
 	shmobile_smp_scu_prepare_cpus(max_cpus);
+=======
+
+	/* setup r8a7779 specific SCU bits */
+	shmobile_smp_scu_prepare_cpus(R8A7779_SCU_BASE, max_cpus);
+>>>>>>> v4.9.227
 
 	r8a7779_pm_init();
 
@@ -128,6 +172,7 @@ static int r8a7779_cpu_kill(unsigned int cpu)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int r8a7779_cpu_disable(unsigned int cpu)
 {
@@ -141,6 +186,14 @@ struct smp_operations r8a7779_smp_ops  __initdata = {
 	.smp_boot_secondary	= r8a7779_boot_secondary,
 #ifdef CONFIG_HOTPLUG_CPU
 	.cpu_disable		= r8a7779_cpu_disable,
+=======
+#endif /* CONFIG_HOTPLUG_CPU */
+
+const struct smp_operations r8a7779_smp_ops  __initconst = {
+	.smp_prepare_cpus	= r8a7779_smp_prepare_cpus,
+	.smp_boot_secondary	= r8a7779_boot_secondary,
+#ifdef CONFIG_HOTPLUG_CPU
+>>>>>>> v4.9.227
 	.cpu_die		= shmobile_smp_scu_cpu_die,
 	.cpu_kill		= r8a7779_cpu_kill,
 #endif

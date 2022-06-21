@@ -18,14 +18,24 @@
 #include "msm_gpu.h"
 #include "msm_gem.h"
 #include "msm_mmu.h"
+<<<<<<< HEAD
+=======
+#include "msm_fence.h"
+
+>>>>>>> v4.9.227
 
 /*
  * Power Management:
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_BUS_SCALING
 #include <linux/msm-bus.h>
 #include <linux/msm-bus-board.h>
+=======
+#ifdef DOWNSTREAM_CONFIG_MSM_BUS_SCALING
+#include <mach/board.h>
+>>>>>>> v4.9.227
 static void bs_init(struct msm_gpu *gpu)
 {
 	if (gpu->bus_scale_table) {
@@ -265,12 +275,17 @@ static void inactive_start(struct msm_gpu *gpu)
  * Hangcheck detection for locked gpu:
  */
 
+<<<<<<< HEAD
 static void retire_submits(struct msm_gpu *gpu, uint32_t fence);
+=======
+static void retire_submits(struct msm_gpu *gpu);
+>>>>>>> v4.9.227
 
 static void recover_worker(struct work_struct *work)
 {
 	struct msm_gpu *gpu = container_of(work, struct msm_gpu, recover_work);
 	struct drm_device *dev = gpu->dev;
+<<<<<<< HEAD
 
 	dev_err(dev->dev, "%s: hangcheck recover!\n", gpu->name);
 
@@ -281,6 +296,34 @@ static void recover_worker(struct work_struct *work)
 
 		/* retire completed submits, plus the one that hung: */
 		retire_submits(gpu, fence + 1);
+=======
+	struct msm_gem_submit *submit;
+	uint32_t fence = gpu->funcs->last_fence(gpu);
+
+	msm_update_fence(gpu->fctx, fence + 1);
+
+	mutex_lock(&dev->struct_mutex);
+
+	dev_err(dev->dev, "%s: hangcheck recover!\n", gpu->name);
+	list_for_each_entry(submit, &gpu->submit_list, node) {
+		if (submit->fence->seqno == (fence + 1)) {
+			struct task_struct *task;
+
+			rcu_read_lock();
+			task = pid_task(submit->pid, PIDTYPE_PID);
+			if (task) {
+				dev_err(dev->dev, "%s: offending task: %s\n",
+						gpu->name, task->comm);
+			}
+			rcu_read_unlock();
+			break;
+		}
+	}
+
+	if (msm_gpu_active(gpu)) {
+		/* retire completed submits, plus the one that hung: */
+		retire_submits(gpu);
+>>>>>>> v4.9.227
 
 		inactive_cancel(gpu);
 		gpu->funcs->recover(gpu);
@@ -290,6 +333,10 @@ static void recover_worker(struct work_struct *work)
 			gpu->funcs->submit(gpu, submit, NULL);
 		}
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	mutex_unlock(&dev->struct_mutex);
 
 	msm_gpu_retire(gpu);
@@ -312,7 +359,11 @@ static void hangcheck_handler(unsigned long data)
 	if (fence != gpu->hangcheck_fence) {
 		/* some progress has been made.. ya! */
 		gpu->hangcheck_fence = fence;
+<<<<<<< HEAD
 	} else if (fence < gpu->submitted_fence) {
+=======
+	} else if (fence < gpu->fctx->last_fence) {
+>>>>>>> v4.9.227
 		/* no progress and not done.. hung! */
 		gpu->hangcheck_fence = fence;
 		dev_err(dev->dev, "%s: hangcheck detected gpu lockup!\n",
@@ -320,12 +371,20 @@ static void hangcheck_handler(unsigned long data)
 		dev_err(dev->dev, "%s:     completed fence: %u\n",
 				gpu->name, fence);
 		dev_err(dev->dev, "%s:     submitted fence: %u\n",
+<<<<<<< HEAD
 				gpu->name, gpu->submitted_fence);
+=======
+				gpu->name, gpu->fctx->last_fence);
+>>>>>>> v4.9.227
 		queue_work(priv->wq, &gpu->recover_work);
 	}
 
 	/* if still more pending work, reset the hangcheck timer: */
+<<<<<<< HEAD
 	if (gpu->submitted_fence > gpu->hangcheck_fence)
+=======
+	if (gpu->fctx->last_fence > gpu->hangcheck_fence)
+>>>>>>> v4.9.227
 		hangcheck_timer_reset(gpu);
 
 	/* workaround for missing irq: */
@@ -431,7 +490,26 @@ out:
  * Cmdstream submission/retirement:
  */
 
+<<<<<<< HEAD
 static void retire_submits(struct msm_gpu *gpu, uint32_t fence)
+=======
+static void retire_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
+{
+	int i;
+
+	for (i = 0; i < submit->nr_bos; i++) {
+		struct msm_gem_object *msm_obj = submit->bos[i].obj;
+		/* move to inactive: */
+		msm_gem_move_to_inactive(&msm_obj->base);
+		msm_gem_put_iova(&msm_obj->base, gpu->id);
+		drm_gem_object_unreference(&msm_obj->base);
+	}
+
+	msm_gem_submit_free(submit);
+}
+
+static void retire_submits(struct msm_gpu *gpu)
+>>>>>>> v4.9.227
 {
 	struct drm_device *dev = gpu->dev;
 
@@ -443,15 +521,21 @@ static void retire_submits(struct msm_gpu *gpu, uint32_t fence)
 		submit = list_first_entry(&gpu->submit_list,
 				struct msm_gem_submit, node);
 
+<<<<<<< HEAD
 		if (submit->fence <= fence) {
 			list_del(&submit->node);
 			kfree(submit);
+=======
+		if (fence_is_signaled(submit->fence)) {
+			retire_submit(gpu, submit);
+>>>>>>> v4.9.227
 		} else {
 			break;
 		}
 	}
 }
 
+<<<<<<< HEAD
 static inline uint32_t get_retired_timestamp(struct msm_gpu *gpu)
 {
 	/* For global timestamp, the last retired timestamp
@@ -459,11 +543,14 @@ static inline uint32_t get_retired_timestamp(struct msm_gpu *gpu)
 	return gpu->funcs->last_fence(gpu);
 }
 
+=======
+>>>>>>> v4.9.227
 static void retire_worker(struct work_struct *work)
 {
 	struct msm_gpu *gpu = container_of(work, struct msm_gpu, retire_work);
 	struct drm_device *dev = gpu->dev;
 	uint32_t fence = gpu->funcs->last_fence(gpu);
+<<<<<<< HEAD
 	uint32_t retired_timestamp = get_retired_timestamp(gpu);
 
 	msm_update_fence(gpu->dev, fence);
@@ -489,6 +576,13 @@ static void retire_worker(struct work_struct *work)
 		}
 	}
 
+=======
+
+	msm_update_fence(gpu->fctx, fence);
+
+	mutex_lock(&dev->struct_mutex);
+	retire_submits(gpu);
+>>>>>>> v4.9.227
 	mutex_unlock(&dev->struct_mutex);
 
 	if (!msm_gpu_active(gpu))
@@ -503,6 +597,7 @@ void msm_gpu_retire(struct msm_gpu *gpu)
 	update_sw_cntrs(gpu);
 }
 
+<<<<<<< HEAD
 #ifdef MSM_FORCE_SUBMIT
 static inline bool get_force_submit(struct msm_drm_private *priv)
 {
@@ -570,10 +665,15 @@ int msm_gpu_cmd_dump(struct msm_gpu *gpu, struct msm_gem_submit *submit)
 
 /* add bo's to gpu's ring, and kick gpu: */
 int msm_gpu_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
+=======
+/* add bo's to gpu's ring, and kick gpu: */
+void msm_gpu_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
+>>>>>>> v4.9.227
 		struct msm_file_private *ctx)
 {
 	struct drm_device *dev = gpu->dev;
 	struct msm_drm_private *priv = dev->dev_private;
+<<<<<<< HEAD
 	int i, ret;
 
 	WARN_ON(!mutex_is_locked(&dev->struct_mutex));
@@ -591,16 +691,33 @@ int msm_gpu_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
 
 	gpu->submitted_fence = submit->fence;
 
+=======
+	int i;
+
+	WARN_ON(!mutex_is_locked(&dev->struct_mutex));
+
+	inactive_cancel(gpu);
+
+	list_add_tail(&submit->node, &gpu->submit_list);
+
+	msm_rd_dump_submit(submit);
+
+>>>>>>> v4.9.227
 	update_sw_cntrs(gpu);
 
 	for (i = 0; i < submit->nr_bos; i++) {
 		struct msm_gem_object *msm_obj = submit->bos[i].obj;
+<<<<<<< HEAD
+=======
+		uint32_t iova;
+>>>>>>> v4.9.227
 
 		/* can't happen yet.. but when we add 2d support we'll have
 		 * to deal w/ cross-ring synchronization:
 		 */
 		WARN_ON(is_active(msm_obj) && (msm_obj->gpu != gpu));
 
+<<<<<<< HEAD
 		if (!is_active(msm_obj)) {
 			uint32_t iova;
 
@@ -627,6 +744,23 @@ int msm_gpu_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
 	hangcheck_timer_reset(gpu);
 
 	return ret;
+=======
+		/* submit takes a reference to the bo and iova until retired: */
+		drm_gem_object_reference(&msm_obj->base);
+		msm_gem_get_iova_locked(&msm_obj->base,
+				submit->gpu->id, &iova);
+
+		if (submit->bos[i].flags & MSM_SUBMIT_BO_WRITE)
+			msm_gem_move_to_active(&msm_obj->base, gpu, true, submit->fence);
+		else if (submit->bos[i].flags & MSM_SUBMIT_BO_READ)
+			msm_gem_move_to_active(&msm_obj->base, gpu, false, submit->fence);
+	}
+
+	gpu->funcs->submit(gpu, submit, ctx);
+	priv->lastctx = ctx;
+
+	hangcheck_timer_reset(gpu);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -636,11 +770,15 @@ int msm_gpu_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
 static irqreturn_t irq_handler(int irq, void *data)
 {
 	struct msm_gpu *gpu = data;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	return gpu->funcs->irq(gpu);
 }
 
 static const char *clk_names[] = {
+<<<<<<< HEAD
 		"src_clk", "core_clk", "iface_clk", "rbbmtimer_clk",
 		"mem_clk", "mem_iface_clk", "alt_mem_iface_clk", "mx_clk"
 };
@@ -655,6 +793,18 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
 	int i, ret;
 	struct msm_iommu *iommu = get_gpu_iommu(pdev);
 	struct device *iommu_dev = iommu->ctx[KGSL_IOMMU_CONTEXT_USER].dev;
+=======
+		"src_clk", "core_clk", "iface_clk", "mem_clk", "mem_iface_clk",
+		"alt_mem_iface_clk",
+};
+
+int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
+		struct msm_gpu *gpu, const struct msm_gpu_funcs *funcs,
+		const char *name, const char *ioname, const char *irqname, int ringsz)
+{
+	struct iommu_domain *iommu;
+	int i, ret;
+>>>>>>> v4.9.227
 
 	if (WARN_ON(gpu->num_perfcntrs > ARRAY_SIZE(gpu->last_cntrs)))
 		gpu->num_perfcntrs = ARRAY_SIZE(gpu->last_cntrs);
@@ -663,6 +813,15 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
 	gpu->funcs = funcs;
 	gpu->name = name;
 	gpu->inactive = true;
+<<<<<<< HEAD
+=======
+	gpu->fctx = msm_fence_context_alloc(drm, name);
+	if (IS_ERR(gpu->fctx)) {
+		ret = PTR_ERR(gpu->fctx);
+		gpu->fctx = NULL;
+		goto fail;
+	}
+>>>>>>> v4.9.227
 
 	INIT_LIST_HEAD(&gpu->active_list);
 	INIT_WORK(&gpu->retire_work, retire_worker);
@@ -730,6 +889,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
 	 * and have separate page tables per context.  For now, to keep things
 	 * simple and to get something working, just use a single address space:
 	 */
+<<<<<<< HEAD
 	iommu_domain = iommu_domain_alloc(&platform_bus_type);
 	if (!IS_ERR_OR_NULL(iommu_domain)) {
 		dev_info(drm->dev, "%s: using IOMMU\n", name);
@@ -741,20 +901,39 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
 				"failed to init iommu domain: %d\n", ret);
 			gpu->mmu = NULL;
 			iommu_domain_free(iommu_domain);
+=======
+	iommu = iommu_domain_alloc(&platform_bus_type);
+	if (iommu) {
+		dev_info(drm->dev, "%s: using IOMMU\n", name);
+		gpu->mmu = msm_iommu_new(&pdev->dev, iommu);
+		if (IS_ERR(gpu->mmu)) {
+			ret = PTR_ERR(gpu->mmu);
+			dev_err(drm->dev, "failed to init iommu: %d\n", ret);
+			gpu->mmu = NULL;
+			iommu_domain_free(iommu);
+>>>>>>> v4.9.227
 			goto fail;
 		}
 
 	} else {
+<<<<<<< HEAD
 		gpu->mmu = NULL;
 		dev_info(drm->dev, "%s: no IOMMU, fallback to VRAM!\n",
 			 name);
+=======
+		dev_info(drm->dev, "%s: no IOMMU, fallback to VRAM carveout!\n", name);
+>>>>>>> v4.9.227
 	}
 	gpu->id = msm_register_mmu(drm, gpu->mmu);
 
 
 	/* Create ringbuffer: */
 	mutex_lock(&drm->struct_mutex);
+<<<<<<< HEAD
 	gpu->rb = msm_ringbuffer_new(gpu, RB_SIZE);
+=======
+	gpu->rb = msm_ringbuffer_new(gpu, ringsz);
+>>>>>>> v4.9.227
 	mutex_unlock(&drm->struct_mutex);
 	if (IS_ERR(gpu->rb)) {
 		ret = PTR_ERR(gpu->rb);
@@ -787,4 +966,10 @@ void msm_gpu_cleanup(struct msm_gpu *gpu)
 
 	if (gpu->mmu)
 		gpu->mmu->funcs->destroy(gpu->mmu);
+<<<<<<< HEAD
+=======
+
+	if (gpu->fctx)
+		msm_fence_context_free(gpu->fctx);
+>>>>>>> v4.9.227
 }

@@ -284,6 +284,7 @@ static int stac9460_mic_sw_info(struct snd_kcontrol *kcontrol,
 {
 	static const char * const texts[2] = { "Line In", "Mic" };
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 2;
@@ -293,6 +294,9 @@ static int stac9460_mic_sw_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 
         return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> v4.9.227
 }
 
 
@@ -563,6 +567,7 @@ static int ak4114_input_sw_info(struct snd_kcontrol *kcontrol,
 {
 	static const char * const texts[2] = { "Toslink", "Coax" };
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 2;
@@ -570,6 +575,9 @@ static int ak4114_input_sw_info(struct snd_kcontrol *kcontrol,
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
         return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> v4.9.227
 }
 
 
@@ -772,10 +780,15 @@ static int prodigy192_init(struct snd_ice1712 *ice)
 			"AK4114 initialized with status %d\n", err);
 	} else
 		dev_dbg(ice->card->dev, "AK4114 not found\n");
+<<<<<<< HEAD
 	if (err < 0)
 		return err;
 
 	return 0;
+=======
+
+	return err;
+>>>>>>> v4.9.227
 }
 
 

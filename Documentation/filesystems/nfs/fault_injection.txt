@@ -49,13 +49,21 @@ forget_locks:
 forget_delegations:
      A delegation is used to assure the client that a file, or part of a file,
      has not changed since the delegation was awarded.  Clearing this list will
+<<<<<<< HEAD
      force the client to reaquire its delegation before accessing the file
+=======
+     force the client to reacquire its delegation before accessing the file
+>>>>>>> v4.9.227
      again.
 
 recall_delegations:
      Delegations can be recalled by the server when another client attempts to
      access a file.  This test will notify the client that its delegation has
+<<<<<<< HEAD
      been revoked, forcing the client to reaquire the delegation before using
+=======
+     been revoked, forcing the client to reacquire the delegation before using
+>>>>>>> v4.9.227
      the file again.
 
 

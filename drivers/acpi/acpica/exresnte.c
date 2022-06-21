@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,7 +97,11 @@ acpi_ex_resolve_node_to_value(struct acpi_namespace_node **object_ptr,
 	 */
 	node = *object_ptr;
 	source_desc = acpi_ns_get_attached_object(node);
+<<<<<<< HEAD
 	entry_type = acpi_ns_get_type((acpi_handle) node);
+=======
+	entry_type = acpi_ns_get_type((acpi_handle)node);
+>>>>>>> v4.9.227
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "Entry=%p SourceDesc=%p [%s]\n",
 			  node, source_desc,
@@ -106,13 +114,21 @@ acpi_ex_resolve_node_to_value(struct acpi_namespace_node **object_ptr,
 
 		node = ACPI_CAST_PTR(struct acpi_namespace_node, node->object);
 		source_desc = acpi_ns_get_attached_object(node);
+<<<<<<< HEAD
 		entry_type = acpi_ns_get_type((acpi_handle) node);
+=======
+		entry_type = acpi_ns_get_type((acpi_handle)node);
+>>>>>>> v4.9.227
 		*object_ptr = node;
 	}
 
 	/*
 	 * Several object types require no further processing:
+<<<<<<< HEAD
 	 * 1) Device/Thermal objects don't have a "real" subobject, return the Node
+=======
+	 * 1) Device/Thermal objects don't have a "real" subobject, return Node
+>>>>>>> v4.9.227
 	 * 2) Method locals and arguments have a pseudo-Node
 	 * 3) 10/2007: Added method type to assist with Package construction.
 	 */
@@ -126,7 +142,11 @@ acpi_ex_resolve_node_to_value(struct acpi_namespace_node **object_ptr,
 	if (!source_desc) {
 		ACPI_ERROR((AE_INFO, "No object attached to node [%4.4s] %p",
 			    node->name.ascii, node));
+<<<<<<< HEAD
 		return_ACPI_STATUS(AE_AML_NO_OPERAND);
+=======
+		return_ACPI_STATUS(AE_AML_UNINITIALIZED_NODE);
+>>>>>>> v4.9.227
 	}
 
 	/*

@@ -11,6 +11,7 @@ config ETRAX_DRAM_VIRTUAL_BASE
 	default "c0000000"
 
 choice
+<<<<<<< HEAD
 	prompt "Nbr of Ethernet LED groups"
 	depends on ETRAX_ARCH_V32
 	default ETRAX_NBR_LED_GRP_ONE
@@ -100,6 +101,8 @@ config ETRAX_V32_LED3R
 	  Most Axis products use bit A7 here.
 
 choice
+=======
+>>>>>>> v4.9.227
 	prompt "Kernel GDB port"
 	depends on ETRAX_KGDB
 	default ETRAX_KGDB_PORT0

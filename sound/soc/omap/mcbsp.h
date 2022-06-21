@@ -280,6 +280,10 @@ struct omap_mcbsp_reg_cfg {
 
 struct omap_mcbsp_st_data {
 	void __iomem *io_base_st;
+<<<<<<< HEAD
+=======
+	struct clk *mcbsp_iclk;
+>>>>>>> v4.9.227
 	bool running;
 	bool enabled;
 	s16 taps[128];	/* Sidetone filter coefficients */
@@ -349,6 +353,10 @@ int omap_st_disable(struct omap_mcbsp *mcbsp);
 int omap_st_is_enabled(struct omap_mcbsp *mcbsp);
 
 int omap_mcbsp_init(struct platform_device *pdev);
+<<<<<<< HEAD
 void omap_mcbsp_sysfs_remove(struct omap_mcbsp *mcbsp);
+=======
+void omap_mcbsp_cleanup(struct omap_mcbsp *mcbsp);
+>>>>>>> v4.9.227
 
 #endif /* __ASOC_MCBSP_H */

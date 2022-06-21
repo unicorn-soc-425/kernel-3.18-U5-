@@ -21,11 +21,16 @@
 /* Kernel only BMAP related definitions and functions */
 
 struct xfs_bmbt_irec;
+<<<<<<< HEAD
 struct xfs_bmap_free_item;
+=======
+struct xfs_extent_free_item;
+>>>>>>> v4.9.227
 struct xfs_ifork;
 struct xfs_inode;
 struct xfs_mount;
 struct xfs_trans;
+<<<<<<< HEAD
 
 /*
  * Argument structure for xfs_bmap_alloc.
@@ -68,6 +73,26 @@ int	xfs_bmap_eof(struct xfs_inode *ip, xfs_fileoff_t endoff,
 		     int whichfork, int *eof);
 int	xfs_bmap_count_blocks(struct xfs_trans *tp, struct xfs_inode *ip,
 			      int whichfork, int *count);
+=======
+struct xfs_bmalloca;
+
+#ifdef CONFIG_XFS_RT
+int	xfs_bmap_rtalloc(struct xfs_bmalloca *ap);
+#else /* !CONFIG_XFS_RT */
+/*
+ * Attempts to allocate RT extents when RT is disable indicates corruption and
+ * should trigger a shutdown.
+ */
+static inline int
+xfs_bmap_rtalloc(struct xfs_bmalloca *ap)
+{
+	return -EFSCORRUPTED;
+}
+#endif /* CONFIG_XFS_RT */
+
+int	xfs_bmap_eof(struct xfs_inode *ip, xfs_fileoff_t endoff,
+		     int whichfork, int *eof);
+>>>>>>> v4.9.227
 int	xfs_bmap_punch_delalloc_range(struct xfs_inode *ip,
 		xfs_fileoff_t start_fsb, xfs_fileoff_t length);
 
@@ -77,9 +102,12 @@ int	xfs_getbmap(struct xfs_inode *ip, struct getbmapx *bmv,
 		xfs_bmap_format_t formatter, void *arg);
 
 /* functions in xfs_bmap.c that are only needed by xfs_bmap_util.c */
+<<<<<<< HEAD
 void	xfs_bmap_del_free(struct xfs_bmap_free *flist,
 			  struct xfs_bmap_free_item *prev,
 			  struct xfs_bmap_free_item *free);
+=======
+>>>>>>> v4.9.227
 int	xfs_bmap_extsize_align(struct xfs_mount *mp, struct xfs_bmbt_irec *gotp,
 			       struct xfs_bmbt_irec *prevp, xfs_extlen_t extsz,
 			       int rt, int eof, int delay, int convert,
@@ -98,11 +126,20 @@ int	xfs_zero_file_space(struct xfs_inode *ip, xfs_off_t offset,
 			    xfs_off_t len);
 int	xfs_collapse_file_space(struct xfs_inode *, xfs_off_t offset,
 				xfs_off_t len);
+<<<<<<< HEAD
 
 /* EOF block manipulation functions */
 bool	xfs_can_free_eofblocks(struct xfs_inode *ip, bool force);
 int	xfs_free_eofblocks(struct xfs_mount *mp, struct xfs_inode *ip,
 			   bool need_iolock);
+=======
+int	xfs_insert_file_space(struct xfs_inode *, xfs_off_t offset,
+				xfs_off_t len);
+
+/* EOF block manipulation functions */
+bool	xfs_can_free_eofblocks(struct xfs_inode *ip, bool force);
+int	xfs_free_eofblocks(struct xfs_inode *ip);
+>>>>>>> v4.9.227
 
 int	xfs_swap_extents(struct xfs_inode *ip, struct xfs_inode *tip,
 			 struct xfs_swapext *sx);

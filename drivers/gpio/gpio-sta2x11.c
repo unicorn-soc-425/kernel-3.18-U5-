@@ -20,7 +20,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/gpio.h>
@@ -74,7 +78,11 @@ static inline u32 __bit(int nr)
 
 static void gsta_gpio_set(struct gpio_chip *gpio, unsigned nr, int val)
 {
+<<<<<<< HEAD
 	struct gsta_gpio *chip = container_of(gpio, struct gsta_gpio, gpio);
+=======
+	struct gsta_gpio *chip = gpiochip_get_data(gpio);
+>>>>>>> v4.9.227
 	struct gsta_regs __iomem *regs = __regs(chip, nr);
 	u32 bit = __bit(nr);
 
@@ -86,17 +94,29 @@ static void gsta_gpio_set(struct gpio_chip *gpio, unsigned nr, int val)
 
 static int gsta_gpio_get(struct gpio_chip *gpio, unsigned nr)
 {
+<<<<<<< HEAD
 	struct gsta_gpio *chip = container_of(gpio, struct gsta_gpio, gpio);
 	struct gsta_regs __iomem *regs = __regs(chip, nr);
 	u32 bit = __bit(nr);
 
 	return readl(&regs->dat) & bit;
+=======
+	struct gsta_gpio *chip = gpiochip_get_data(gpio);
+	struct gsta_regs __iomem *regs = __regs(chip, nr);
+	u32 bit = __bit(nr);
+
+	return !!(readl(&regs->dat) & bit);
+>>>>>>> v4.9.227
 }
 
 static int gsta_gpio_direction_output(struct gpio_chip *gpio, unsigned nr,
 				      int val)
 {
+<<<<<<< HEAD
 	struct gsta_gpio *chip = container_of(gpio, struct gsta_gpio, gpio);
+=======
+	struct gsta_gpio *chip = gpiochip_get_data(gpio);
+>>>>>>> v4.9.227
 	struct gsta_regs __iomem *regs = __regs(chip, nr);
 	u32 bit = __bit(nr);
 
@@ -111,7 +131,11 @@ static int gsta_gpio_direction_output(struct gpio_chip *gpio, unsigned nr,
 
 static int gsta_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 {
+<<<<<<< HEAD
 	struct gsta_gpio *chip = container_of(gpio, struct gsta_gpio, gpio);
+=======
+	struct gsta_gpio *chip = gpiochip_get_data(gpio);
+>>>>>>> v4.9.227
 	struct gsta_regs __iomem *regs = __regs(chip, nr);
 	u32 bit = __bit(nr);
 
@@ -121,7 +145,11 @@ static int gsta_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 
 static int gsta_gpio_to_irq(struct gpio_chip *gpio, unsigned offset)
 {
+<<<<<<< HEAD
 	struct gsta_gpio *chip = container_of(gpio, struct gsta_gpio, gpio);
+=======
+	struct gsta_gpio *chip = gpiochip_get_data(gpio);
+>>>>>>> v4.9.227
 	return chip->irq_base + offset;
 }
 
@@ -346,7 +374,11 @@ static void gsta_alloc_irq_chip(struct gsta_gpio *chip)
 			i = chip->irq_base + j;
 			irq_set_chip_and_handler(i, &ct->chip, ct->handler);
 			irq_set_chip_data(i, gc);
+<<<<<<< HEAD
 			irq_modify_status(i, IRQ_NOREQUEST | IRQ_NOPROBE, 0);
+=======
+			irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> v4.9.227
 		}
 		gc->irq_cnt = i - gc->irq_base;
 	}
@@ -409,7 +441,11 @@ static int gsta_probe(struct platform_device *dev)
 		goto err_free_descs;
 	}
 
+<<<<<<< HEAD
 	err = gpiochip_add(&chip->gpio);
+=======
+	err = devm_gpiochip_add_data(&dev->dev, &chip->gpio, chip);
+>>>>>>> v4.9.227
 	if (err < 0) {
 		dev_err(&dev->dev, "sta2x11 gpio: Can't register (%i)\n",
 			-err);
@@ -429,6 +465,7 @@ err_free_descs:
 static struct platform_driver sta2x11_gpio_platform_driver = {
 	.driver = {
 		.name	= "sta2x11-gpio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe = gsta_probe,
@@ -438,3 +475,9 @@ module_platform_driver(sta2x11_gpio_platform_driver);
 
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("sta2x11_gpio GPIO driver");
+=======
+	},
+	.probe = gsta_probe,
+};
+builtin_platform_driver(sta2x11_gpio_platform_driver);
+>>>>>>> v4.9.227

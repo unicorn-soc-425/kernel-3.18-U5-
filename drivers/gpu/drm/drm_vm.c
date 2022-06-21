@@ -80,7 +80,11 @@ static pgprot_t drm_dma_prot(uint32_t map_type, struct vm_area_struct *vma)
 	pgprot_t tmp = vm_get_page_prot(vma->vm_flags);
 
 #if defined(__powerpc__) && defined(CONFIG_NOT_COHERENT_CACHE)
+<<<<<<< HEAD
 	tmp |= _PAGE_NO_CACHE;
+=======
+	tmp = pgprot_noncached_wc(tmp);
+>>>>>>> v4.9.227
 #endif
 	return tmp;
 }
@@ -395,6 +399,7 @@ static const struct vm_operations_struct drm_vm_sg_ops = {
 	.close = drm_vm_close,
 };
 
+<<<<<<< HEAD
 /**
  * \c open method for shared virtual memory.
  *
@@ -405,6 +410,10 @@ static const struct vm_operations_struct drm_vm_sg_ops = {
  */
 void drm_vm_open_locked(struct drm_device *dev,
 		struct vm_area_struct *vma)
+=======
+static void drm_vm_open_locked(struct drm_device *dev,
+			       struct vm_area_struct *vma)
+>>>>>>> v4.9.227
 {
 	struct drm_vma_entry *vma_entry;
 
@@ -429,8 +438,13 @@ static void drm_vm_open(struct vm_area_struct *vma)
 	mutex_unlock(&dev->struct_mutex);
 }
 
+<<<<<<< HEAD
 void drm_vm_close_locked(struct drm_device *dev,
 		struct vm_area_struct *vma)
+=======
+static void drm_vm_close_locked(struct drm_device *dev,
+				struct vm_area_struct *vma)
+>>>>>>> v4.9.227
 {
 	struct drm_vma_entry *pt, *temp;
 
@@ -601,7 +615,11 @@ static int drm_mmap_locked(struct file *filp, struct vm_area_struct *vma)
 			 * pages and mappings in fault()
 			 */
 #if defined(__powerpc__)
+<<<<<<< HEAD
 			pgprot_val(vma->vm_page_prot) |= _PAGE_NO_CACHE;
+=======
+			vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+>>>>>>> v4.9.227
 #endif
 			vma->vm_ops = &drm_vm_ops;
 			break;
@@ -678,6 +696,7 @@ void drm_legacy_vma_flush(struct drm_device *dev)
 		kfree(vma);
 	}
 }
+<<<<<<< HEAD
 
 int drm_vma_info(struct seq_file *m, void *data)
 {
@@ -732,3 +751,5 @@ int drm_vma_info(struct seq_file *m, void *data)
 	mutex_unlock(&dev->struct_mutex);
 	return 0;
 }
+=======
+>>>>>>> v4.9.227

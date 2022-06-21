@@ -27,10 +27,19 @@
 #include <linux/init.h>
 #include <linux/irqchip.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 #include <linux/ratelimit.h>
 
 unsigned long irq_err_count;
 
+=======
+
+unsigned long irq_err_count;
+
+/* irq stack only needs to be 16 byte aligned - not IRQ_STACK_SIZE aligned. */
+DEFINE_PER_CPU(unsigned long [IRQ_STACK_SIZE/sizeof(long)], irq_stack) __aligned(16);
+
+>>>>>>> v4.9.227
 int arch_show_interrupts(struct seq_file *p, int prec)
 {
 	show_ipi_list(p, prec);
@@ -54,6 +63,7 @@ void __init init_IRQ(void)
 	if (!handle_arch_irq)
 		panic("No interrupt controller found.");
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_HOTPLUG_CPU
 static bool migrate_one_irq(struct irq_desc *desc)
@@ -105,3 +115,5 @@ void migrate_irqs(void)
 	local_irq_restore(flags);
 }
 #endif /* CONFIG_HOTPLUG_CPU */
+=======
+>>>>>>> v4.9.227

@@ -81,7 +81,11 @@ static void script_browser__write(struct ui_browser *browser,
 	ui_browser__set_color(browser, current_entry ? HE_COLORSET_SELECTED :
 						       HE_COLORSET_NORMAL);
 
+<<<<<<< HEAD
 	slsmg_write_nstring(sline->line, browser->width);
+=======
+	ui_browser__write_nstring(browser, sline->line, browser->width);
+>>>>>>> v4.9.227
 }
 
 static int script_browser__run(struct perf_script_browser *browser)
@@ -89,7 +93,11 @@ static int script_browser__run(struct perf_script_browser *browser)
 	int key;
 
 	if (ui_browser__show(&browser->b, browser->script_name,
+<<<<<<< HEAD
 			     "Press <- or ESC to exit") < 0)
+=======
+			     "Press ESC to exit") < 0)
+>>>>>>> v4.9.227
 		return -1;
 
 	while (1) {

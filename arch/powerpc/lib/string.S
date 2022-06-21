@@ -11,11 +11,16 @@
 #include <asm/processor.h>
 #include <asm/errno.h>
 #include <asm/ppc_asm.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	.section __ex_table,"a"
 	PPC_LONG_ALIGN
 	.text
 	
+<<<<<<< HEAD
 _GLOBAL(strcpy)
 	addi	r5,r3,-1
 	addi	r4,r4,-1
@@ -25,6 +30,8 @@ _GLOBAL(strcpy)
 	bne	1b
 	blr
 
+=======
+>>>>>>> v4.9.227
 /* This clears out any unused part of the destination buffer,
    just as the libc version does.  -- paulus */
 _GLOBAL(strncpy)
@@ -33,6 +40,10 @@ _GLOBAL(strncpy)
 	mtctr	r5
 	addi	r6,r3,-1
 	addi	r4,r4,-1
+<<<<<<< HEAD
+=======
+	.balign 16
+>>>>>>> v4.9.227
 1:	lbzu	r0,1(r4)
 	cmpwi	0,r0,0
 	stbu	r0,1(r6)
@@ -44,6 +55,7 @@ _GLOBAL(strncpy)
 2:	stbu	r0,1(r6)	/* clear it out if so */
 	bdnz	2b
 	blr
+<<<<<<< HEAD
 
 _GLOBAL(strcat)
 	addi	r5,r3,-1
@@ -68,6 +80,9 @@ _GLOBAL(strcmp)
 	beqlr	1
 	beq	1b
 	blr
+=======
+EXPORT_SYMBOL(strncpy)
+>>>>>>> v4.9.227
 
 _GLOBAL(strncmp)
 	PPC_LCMPI 0,r5,0
@@ -75,6 +90,10 @@ _GLOBAL(strncmp)
 	mtctr	r5
 	addi	r5,r3,-1
 	addi	r4,r4,-1
+<<<<<<< HEAD
+=======
+	.balign 16
+>>>>>>> v4.9.227
 1:	lbzu	r3,1(r5)
 	cmpwi	1,r3,0
 	lbzu	r0,1(r4)
@@ -84,6 +103,7 @@ _GLOBAL(strncmp)
 	blr
 2:	li	r3,0
 	blr
+<<<<<<< HEAD
 
 _GLOBAL(strlen)
 	addi	r4,r3,-1
@@ -93,6 +113,11 @@ _GLOBAL(strlen)
 	subf	r3,r3,r4
 	blr
 
+=======
+EXPORT_SYMBOL(strncmp)
+
+#ifdef CONFIG_PPC32
+>>>>>>> v4.9.227
 _GLOBAL(memcmp)
 	PPC_LCMPI 0,r5,0
 	beq-	2f
@@ -106,18 +131,31 @@ _GLOBAL(memcmp)
 	blr
 2:	li	r3,0
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(memcmp)
+#endif
+>>>>>>> v4.9.227
 
 _GLOBAL(memchr)
 	PPC_LCMPI 0,r5,0
 	beq-	2f
 	mtctr	r5
 	addi	r3,r3,-1
+<<<<<<< HEAD
+=======
+	.balign 16
+>>>>>>> v4.9.227
 1:	lbzu	r0,1(r3)
 	cmpw	0,r0,r4
 	bdnzf	2,1b
 	beqlr
 2:	li	r3,0
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(memchr)
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_PPC32
 _GLOBAL(__clear_user)
@@ -161,4 +199,8 @@ _GLOBAL(__clear_user)
 	PPC_LONG	1b,91b
 	PPC_LONG	8b,92b
 	.text
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__clear_user)
+>>>>>>> v4.9.227
 #endif

@@ -37,6 +37,7 @@ do {	__asm__ __volatile__("ba,pt	%%xcc, 1f\n\t" \
 #define rmb()	__asm__ __volatile__("":::"memory")
 #define wmb()	__asm__ __volatile__("":::"memory")
 
+<<<<<<< HEAD
 #define read_barrier_depends()		do { } while(0)
 #define set_mb(__var, __value) \
 	do { __var = __value; membar_safe("#StoreLoad"); } while(0)
@@ -63,12 +64,31 @@ do {									\
 #define smp_load_acquire(p)						\
 ({									\
 	typeof(*p) ___p1 = ACCESS_ONCE(*p);				\
+=======
+#define __smp_store_release(p, v)						\
+do {									\
+	compiletime_assert_atomic_type(*p);				\
+	barrier();							\
+	WRITE_ONCE(*p, v);						\
+} while (0)
+
+#define __smp_load_acquire(p)						\
+({									\
+	typeof(*p) ___p1 = READ_ONCE(*p);				\
+>>>>>>> v4.9.227
 	compiletime_assert_atomic_type(*p);				\
 	barrier();							\
 	___p1;								\
 })
 
+<<<<<<< HEAD
 #define smp_mb__before_atomic()	barrier()
 #define smp_mb__after_atomic()	barrier()
+=======
+#define __smp_mb__before_atomic()	barrier()
+#define __smp_mb__after_atomic()	barrier()
+
+#include <asm-generic/barrier.h>
+>>>>>>> v4.9.227
 
 #endif /* !(__SPARC64_BARRIER_H) */

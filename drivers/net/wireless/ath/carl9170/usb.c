@@ -128,6 +128,11 @@ static struct usb_device_id carl9170_usb_ids[] = {
 };
 MODULE_DEVICE_TABLE(usb, carl9170_usb_ids);
 
+<<<<<<< HEAD
+=======
+static struct usb_driver carl9170_driver;
+
+>>>>>>> v4.9.227
 static void carl9170_usb_submit_data_urb(struct ar9170 *ar)
 {
 	struct urb *urb;
@@ -651,6 +656,10 @@ int carl9170_exec_cmd(struct ar9170 *ar, const enum carl9170_cmd_oids cmd,
 	unsigned int plen, void *payload, unsigned int outlen, void *out)
 {
 	int err = -ENOMEM;
+<<<<<<< HEAD
+=======
+	unsigned long time_left;
+>>>>>>> v4.9.227
 
 	if (!IS_ACCEPTING_CMD(ar))
 		return -EIO;
@@ -669,11 +678,20 @@ int carl9170_exec_cmd(struct ar9170 *ar, const enum carl9170_cmd_oids cmd,
 	ar->readlen = outlen;
 	spin_unlock_bh(&ar->cmd_lock);
 
+<<<<<<< HEAD
 	err = __carl9170_exec_cmd(ar, &ar->cmd, false);
 
 	if (!(cmd & CARL9170_CMD_ASYNC_FLAG)) {
 		err = wait_for_completion_timeout(&ar->cmd_wait, HZ);
 		if (err == 0) {
+=======
+	reinit_completion(&ar->cmd_wait);
+	err = __carl9170_exec_cmd(ar, &ar->cmd, false);
+
+	if (!(cmd & CARL9170_CMD_ASYNC_FLAG)) {
+		time_left = wait_for_completion_timeout(&ar->cmd_wait, HZ);
+		if (time_left == 0) {
+>>>>>>> v4.9.227
 			err = -ETIMEDOUT;
 			goto err_unbuf;
 		}
@@ -777,10 +795,14 @@ void carl9170_usb_stop(struct ar9170 *ar)
 	spin_lock_bh(&ar->cmd_lock);
 	ar->readlen = 0;
 	spin_unlock_bh(&ar->cmd_lock);
+<<<<<<< HEAD
 	complete_all(&ar->cmd_wait);
 
 	/* This is required to prevent an early completion on _start */
 	reinit_completion(&ar->cmd_wait);
+=======
+	complete(&ar->cmd_wait);
+>>>>>>> v4.9.227
 
 	/*
 	 * Note:
@@ -967,6 +989,7 @@ err_out:
 
 static void carl9170_usb_firmware_failed(struct ar9170 *ar)
 {
+<<<<<<< HEAD
 	struct device *parent = ar->udev->dev.parent;
 	struct usb_device *udev;
 
@@ -989,10 +1012,33 @@ static void carl9170_usb_firmware_failed(struct ar9170 *ar)
 		device_unlock(parent);
 
 	usb_put_dev(udev);
+=======
+	/* Store a copies of the usb_interface and usb_device pointer locally.
+	 * This is because release_driver initiates carl9170_usb_disconnect,
+	 * which in turn frees our driver context (ar).
+	 */
+	struct usb_interface *intf = ar->intf;
+	struct usb_device *udev = ar->udev;
+
+	complete(&ar->fw_load_wait);
+	/* at this point 'ar' could be already freed. Don't use it anymore */
+	ar = NULL;
+
+	/* unbind anything failed */
+	usb_lock_device(udev);
+	usb_driver_release_interface(&carl9170_driver, intf);
+	usb_unlock_device(udev);
+
+	usb_put_intf(intf);
+>>>>>>> v4.9.227
 }
 
 static void carl9170_usb_firmware_finish(struct ar9170 *ar)
 {
+<<<<<<< HEAD
+=======
+	struct usb_interface *intf = ar->intf;
+>>>>>>> v4.9.227
 	int err;
 
 	err = carl9170_parse_firmware(ar);
@@ -1010,7 +1056,11 @@ static void carl9170_usb_firmware_finish(struct ar9170 *ar)
 		goto err_unrx;
 
 	complete(&ar->fw_load_wait);
+<<<<<<< HEAD
 	usb_put_dev(ar->udev);
+=======
+	usb_put_intf(intf);
+>>>>>>> v4.9.227
 	return;
 
 err_unrx:
@@ -1053,7 +1103,10 @@ static int carl9170_usb_probe(struct usb_interface *intf,
 		return PTR_ERR(ar);
 
 	udev = interface_to_usbdev(intf);
+<<<<<<< HEAD
 	usb_get_dev(udev);
+=======
+>>>>>>> v4.9.227
 	ar->udev = udev;
 	ar->intf = intf;
 	ar->features = id->driver_info;
@@ -1095,15 +1148,23 @@ static int carl9170_usb_probe(struct usb_interface *intf,
 	atomic_set(&ar->rx_anch_urbs, 0);
 	atomic_set(&ar->rx_pool_urbs, 0);
 
+<<<<<<< HEAD
 	usb_get_dev(ar->udev);
+=======
+	usb_get_intf(intf);
+>>>>>>> v4.9.227
 
 	carl9170_set_state(ar, CARL9170_STOPPED);
 
 	err = request_firmware_nowait(THIS_MODULE, 1, CARL9170FW_NAME,
 		&ar->udev->dev, GFP_KERNEL, ar, carl9170_usb_firmware_step2);
 	if (err) {
+<<<<<<< HEAD
 		usb_put_dev(udev);
 		usb_put_dev(udev);
+=======
+		usb_put_intf(intf);
+>>>>>>> v4.9.227
 		carl9170_free(ar);
 	}
 	return err;
@@ -1132,7 +1193,10 @@ static void carl9170_usb_disconnect(struct usb_interface *intf)
 
 	carl9170_release_firmware(ar);
 	carl9170_free(ar);
+<<<<<<< HEAD
 	usb_put_dev(udev);
+=======
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_PM

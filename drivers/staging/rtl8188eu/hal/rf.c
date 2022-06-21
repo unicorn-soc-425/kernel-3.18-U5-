@@ -11,10 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 
 #include <osdep_service.h>
@@ -26,7 +29,11 @@
 void rtl88eu_phy_rf6052_set_bandwidth(struct adapter *adapt,
 				      enum ht_channel_width bandwidth)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
+=======
+	struct hal_data_8188e *hal_data = adapt->HalData;
+>>>>>>> v4.9.227
 
 	switch (bandwidth) {
 	case HT_CHANNEL_WIDTH_20:
@@ -48,7 +55,11 @@ void rtl88eu_phy_rf6052_set_bandwidth(struct adapter *adapt,
 
 void rtl88eu_phy_rf6052_set_cck_txpower(struct adapter *adapt, u8 *powerlevel)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
+=======
+	struct hal_data_8188e *hal_data = adapt->HalData;
+>>>>>>> v4.9.227
 	struct dm_priv *pdmpriv = &hal_data->dmpriv;
 	struct mlme_ext_priv *pmlmeext = &adapt->mlmeextpriv;
 	u32 tx_agc[2] = {0, 0}, tmpval = 0, pwrtrac_value;
@@ -102,7 +113,11 @@ void rtl88eu_phy_rf6052_set_cck_txpower(struct adapter *adapt, u8 *powerlevel)
 		}
 	}
 	rtl88eu_dm_txpower_track_adjust(&hal_data->odmpriv, 1, &direction,
+<<<<<<< HEAD
 				        &pwrtrac_value);
+=======
+					&pwrtrac_value);
+>>>>>>> v4.9.227
 
 	if (direction == 1) {
 		/*  Increase TX power */
@@ -131,9 +146,14 @@ void rtl88eu_phy_rf6052_set_cck_txpower(struct adapter *adapt, u8 *powerlevel)
 /*  powerbase1 for HT MCS rates */
 static void getpowerbase88e(struct adapter *adapt, u8 *pwr_level_ofdm,
 			    u8 *pwr_level_bw20, u8 *pwr_level_bw40,
+<<<<<<< HEAD
 			    u8 channel,u32 *ofdmbase, u32 *mcs_base)
 {
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
+=======
+			    u8 channel, u32 *ofdmbase, u32 *mcs_base)
+{
+>>>>>>> v4.9.227
 	u32 powerbase0, powerbase1;
 	u8 i, powerlevel[2];
 
@@ -144,9 +164,15 @@ static void getpowerbase88e(struct adapter *adapt, u8 *pwr_level_ofdm,
 			     (powerbase0<<8) | powerbase0;
 		*(ofdmbase+i) = powerbase0;
 	}
+<<<<<<< HEAD
 	for (i = 0; i < hal_data->NumTotalRFPath; i++) {
 		/* Check HT20 to HT40 diff */
 		if (hal_data->CurrentChannelBW == HT_CHANNEL_WIDTH_20)
+=======
+	for (i = 0; i < adapt->HalData->NumTotalRFPath; i++) {
+		/* Check HT20 to HT40 diff */
+		if (adapt->HalData->CurrentChannelBW == HT_CHANNEL_WIDTH_20)
+>>>>>>> v4.9.227
 			powerlevel[i] = pwr_level_bw20[i];
 		else
 			powerlevel[i] = pwr_level_bw40[i];
@@ -160,7 +186,11 @@ static void get_rx_power_val_by_reg(struct adapter *adapt, u8 channel,
 				    u8 index, u32 *powerbase0, u32 *powerbase1,
 				    u32 *out_val)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
+=======
+	struct hal_data_8188e *hal_data = adapt->HalData;
+>>>>>>> v4.9.227
 	struct dm_priv	*pdmpriv = &hal_data->dmpriv;
 	u8 i, chnlGroup = 0, pwr_diff_limit[4], customer_pwr_limit;
 	s8 pwr_diff = 0;
@@ -201,7 +231,11 @@ static void get_rx_power_val_by_reg(struct adapter *adapt, u8 channel,
 			break;
 		case 2:	/*  Better regulatory */
 				/*  don't increase any power diff */
+<<<<<<< HEAD
 			write_val = ((index < 2) ? powerbase0[rf] : powerbase1[rf]);
+=======
+			write_val = (index < 2) ? powerbase0[rf] : powerbase1[rf];
+>>>>>>> v4.9.227
 			break;
 		case 3:	/*  Customer defined power diff. */
 				/*  increase power diff defined by customer. */
@@ -290,7 +324,10 @@ void rtl88eu_phy_rf6052_set_ofdm_txpower(struct adapter *adapt,
 					 u8 *pwr_level_bw20,
 					 u8 *pwr_level_bw40, u8 channel)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
+=======
+>>>>>>> v4.9.227
 	u32 write_val[2], powerbase0[2], powerbase1[2], pwrtrac_value;
 	u8 direction;
 	u8 index = 0;
@@ -298,8 +335,13 @@ void rtl88eu_phy_rf6052_set_ofdm_txpower(struct adapter *adapt,
 	getpowerbase88e(adapt, pwr_level_ofdm, pwr_level_bw20, pwr_level_bw40,
 			channel, &powerbase0[0], &powerbase1[0]);
 
+<<<<<<< HEAD
 	rtl88eu_dm_txpower_track_adjust(&hal_data->odmpriv, 0, &direction,
 					&pwrtrac_value);
+=======
+	rtl88eu_dm_txpower_track_adjust(&adapt->HalData->odmpriv, 0,
+					&direction, &pwrtrac_value);
+>>>>>>> v4.9.227
 
 	for (index = 0; index < 6; index++) {
 		get_rx_power_val_by_reg(adapt, channel, index,

@@ -9,7 +9,10 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
 #include <linux/err.h>

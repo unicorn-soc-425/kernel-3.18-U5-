@@ -201,6 +201,7 @@ long sys32_fadvise64_64(int fd, __u32 offset_low, __u32 offset_high,
 				advice);
 }
 
+<<<<<<< HEAD
 long sys32_vm86_warning(void)
 {
 	struct task_struct *me = current;
@@ -215,6 +216,8 @@ long sys32_vm86_warning(void)
 	return -ENOSYS;
 }
 
+=======
+>>>>>>> v4.9.227
 asmlinkage ssize_t sys32_readahead(int fd, unsigned off_lo, unsigned off_hi,
 				   size_t count)
 {

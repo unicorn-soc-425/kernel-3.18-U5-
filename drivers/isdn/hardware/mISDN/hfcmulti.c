@@ -564,19 +564,31 @@ disable_hwirq(struct hfc_multi *hc)
 #define	MAX_TDM_CHAN 32
 
 
+<<<<<<< HEAD
 inline void
+=======
+static inline void
+>>>>>>> v4.9.227
 enablepcibridge(struct hfc_multi *c)
 {
 	HFC_outb(c, R_BRG_PCM_CFG, (0x0 << 6) | 0x3); /* was _io before */
 }
 
+<<<<<<< HEAD
 inline void
+=======
+static inline void
+>>>>>>> v4.9.227
 disablepcibridge(struct hfc_multi *c)
 {
 	HFC_outb(c, R_BRG_PCM_CFG, (0x0 << 6) | 0x2); /* was _io before */
 }
 
+<<<<<<< HEAD
 inline unsigned char
+=======
+static inline unsigned char
+>>>>>>> v4.9.227
 readpcibridge(struct hfc_multi *hc, unsigned char address)
 {
 	unsigned short cipv;
@@ -604,7 +616,11 @@ readpcibridge(struct hfc_multi *hc, unsigned char address)
 	return data;
 }
 
+<<<<<<< HEAD
 inline void
+=======
+static inline void
+>>>>>>> v4.9.227
 writepcibridge(struct hfc_multi *hc, unsigned char address, unsigned char data)
 {
 	unsigned short cipv;
@@ -634,14 +650,22 @@ writepcibridge(struct hfc_multi *hc, unsigned char address, unsigned char data)
 	outl(datav, hc->pci_iobase);
 }
 
+<<<<<<< HEAD
 inline void
+=======
+static inline void
+>>>>>>> v4.9.227
 cpld_set_reg(struct hfc_multi *hc, unsigned char reg)
 {
 	/* Do data pin read low byte */
 	HFC_outb(hc, R_GPIO_OUT1, reg);
 }
 
+<<<<<<< HEAD
 inline void
+=======
+static inline void
+>>>>>>> v4.9.227
 cpld_write_reg(struct hfc_multi *hc, unsigned char reg, unsigned char val)
 {
 	cpld_set_reg(hc, reg);
@@ -653,7 +677,11 @@ cpld_write_reg(struct hfc_multi *hc, unsigned char reg, unsigned char val)
 	return;
 }
 
+<<<<<<< HEAD
 inline unsigned char
+=======
+static inline unsigned char
+>>>>>>> v4.9.227
 cpld_read_reg(struct hfc_multi *hc, unsigned char reg)
 {
 	unsigned char bytein;
@@ -670,14 +698,22 @@ cpld_read_reg(struct hfc_multi *hc, unsigned char reg)
 	return bytein;
 }
 
+<<<<<<< HEAD
 inline void
+=======
+static inline void
+>>>>>>> v4.9.227
 vpm_write_address(struct hfc_multi *hc, unsigned short addr)
 {
 	cpld_write_reg(hc, 0, 0xff & addr);
 	cpld_write_reg(hc, 1, 0x01 & (addr >> 8));
 }
 
+<<<<<<< HEAD
 inline unsigned short
+=======
+static inline unsigned short
+>>>>>>> v4.9.227
 vpm_read_address(struct hfc_multi *c)
 {
 	unsigned short addr;
@@ -691,7 +727,11 @@ vpm_read_address(struct hfc_multi *c)
 	return addr & 0x1ff;
 }
 
+<<<<<<< HEAD
 inline unsigned char
+=======
+static inline unsigned char
+>>>>>>> v4.9.227
 vpm_in(struct hfc_multi *c, int which, unsigned short addr)
 {
 	unsigned char res;
@@ -712,7 +752,11 @@ vpm_in(struct hfc_multi *c, int which, unsigned short addr)
 	return res;
 }
 
+<<<<<<< HEAD
 inline void
+=======
+static inline void
+>>>>>>> v4.9.227
 vpm_out(struct hfc_multi *c, int which, unsigned short addr,
 	unsigned char data)
 {
@@ -1024,7 +1068,11 @@ hfcmulti_resync(struct hfc_multi *locked, struct hfc_multi *newmaster, int rm)
 }
 
 /* This must be called AND hc must be locked irqsave!!! */
+<<<<<<< HEAD
 inline void
+=======
+static inline void
+>>>>>>> v4.9.227
 plxsd_checksync(struct hfc_multi *hc, int rm)
 {
 	if (hc->syncronized) {
@@ -4370,7 +4418,12 @@ setup_pci(struct hfc_multi *hc, struct pci_dev *pdev,
 	if (m->clock2)
 		test_and_set_bit(HFC_CHIP_CLOCK2, &hc->chip);
 
+<<<<<<< HEAD
 	if (ent->device == 0xB410) {
+=======
+	if (ent->vendor == PCI_VENDOR_ID_DIGIUM &&
+	    ent->device == PCI_DEVICE_ID_DIGIUM_HFC4S) {
+>>>>>>> v4.9.227
 		test_and_set_bit(HFC_CHIP_B410P, &hc->chip);
 		test_and_set_bit(HFC_CHIP_PCM_MASTER, &hc->chip);
 		test_and_clear_bit(HFC_CHIP_PCM_SLAVE, &hc->chip);

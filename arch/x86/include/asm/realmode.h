@@ -44,9 +44,15 @@ struct trampoline_header {
 extern struct real_mode_header *real_mode_header;
 extern unsigned char real_mode_blob_end[];
 
+<<<<<<< HEAD
 extern unsigned long init_rsp;
 extern unsigned long initial_code;
 extern unsigned long initial_gs;
+=======
+extern unsigned long initial_code;
+extern unsigned long initial_gs;
+extern unsigned long initial_stack;
+>>>>>>> v4.9.227
 
 extern unsigned char real_mode_blob[];
 extern unsigned char real_mode_relocs[];
@@ -58,7 +64,20 @@ extern unsigned char boot_gdt[];
 extern unsigned char secondary_startup_64[];
 #endif
 
+<<<<<<< HEAD
 void reserve_real_mode(void);
 void setup_real_mode(void);
+=======
+static inline size_t real_mode_size_needed(void)
+{
+	if (real_mode_header)
+		return 0;	/* already allocated. */
+
+	return ALIGN(real_mode_blob_end - real_mode_blob, PAGE_SIZE);
+}
+
+void set_real_mode_mem(phys_addr_t mem, size_t size);
+void reserve_real_mode(void);
+>>>>>>> v4.9.227
 
 #endif /* _ARCH_X86_REALMODE_H */

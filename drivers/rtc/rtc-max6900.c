@@ -17,8 +17,11 @@
 #include <linux/rtc.h>
 #include <linux/delay.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.2"
 
+=======
+>>>>>>> v4.9.227
 /*
  * register indices
  */
@@ -218,8 +221,11 @@ max6900_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	dev_info(&client->dev, "chip found, driver version " DRV_VERSION "\n");
 
+=======
+>>>>>>> v4.9.227
 	rtc = devm_rtc_device_register(&client->dev, max6900_driver.driver.name,
 					&max6900_rtc_ops, THIS_MODULE);
 	if (IS_ERR(rtc))
@@ -234,6 +240,10 @@ static struct i2c_device_id max6900_id[] = {
 	{ "max6900", 0 },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, max6900_id);
+>>>>>>> v4.9.227
 
 static struct i2c_driver max6900_driver = {
 	.driver = {
@@ -248,4 +258,7 @@ module_i2c_driver(max6900_driver);
 MODULE_DESCRIPTION("Maxim MAX6900 RTC driver");
 MODULE_AUTHOR("Dale Farnsworth <dale@farnsworth.org>");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227

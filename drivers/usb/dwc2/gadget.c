@@ -20,19 +20,28 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/debugfs.h>
+=======
+#include <linux/mutex.h>
+>>>>>>> v4.9.227
 #include <linux/seq_file.h>
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/regulator/consumer.h>
 #include <linux/of_platform.h>
 #include <linux/phy/phy.h>
+=======
+#include <linux/of_platform.h>
+>>>>>>> v4.9.227
 
 #include <linux/usb/ch9.h>
 #include <linux/usb/gadget.h>
 #include <linux/usb/phy.h>
+<<<<<<< HEAD
 #include <linux/platform_data/s3c-hsotg.h>
 
 #include "core.h"
@@ -51,20 +60,61 @@ static inline struct s3c_hsotg_ep *our_ep(struct usb_ep *ep)
 static inline struct s3c_hsotg *to_hsotg(struct usb_gadget *gadget)
 {
 	return container_of(gadget, struct s3c_hsotg, gadget);
+=======
+
+#include "core.h"
+#include "hw.h"
+
+/* conversion functions */
+static inline struct dwc2_hsotg_req *our_req(struct usb_request *req)
+{
+	return container_of(req, struct dwc2_hsotg_req, req);
+}
+
+static inline struct dwc2_hsotg_ep *our_ep(struct usb_ep *ep)
+{
+	return container_of(ep, struct dwc2_hsotg_ep, ep);
+}
+
+static inline struct dwc2_hsotg *to_hsotg(struct usb_gadget *gadget)
+{
+	return container_of(gadget, struct dwc2_hsotg, gadget);
+>>>>>>> v4.9.227
 }
 
 static inline void __orr32(void __iomem *ptr, u32 val)
 {
+<<<<<<< HEAD
 	writel(readl(ptr) | val, ptr);
+=======
+	dwc2_writel(dwc2_readl(ptr) | val, ptr);
+>>>>>>> v4.9.227
 }
 
 static inline void __bic32(void __iomem *ptr, u32 val)
 {
+<<<<<<< HEAD
 	writel(readl(ptr) & ~val, ptr);
 }
 
 /* forward decleration of functions */
 static void s3c_hsotg_dump(struct s3c_hsotg *hsotg);
+=======
+	dwc2_writel(dwc2_readl(ptr) & ~val, ptr);
+}
+
+static inline struct dwc2_hsotg_ep *index_to_ep(struct dwc2_hsotg *hsotg,
+						u32 ep_index, u32 dir_in)
+{
+	if (dir_in)
+		return hsotg->eps_in[ep_index];
+	else
+		return hsotg->eps_out[ep_index];
+}
+
+/* forward declaration of functions */
+static void dwc2_hsotg_dump(struct dwc2_hsotg *hsotg);
+>>>>>>> v4.9.227
 
 /**
  * using_dma - return the DMA status of the driver.
@@ -83,6 +133,7 @@ static void s3c_hsotg_dump(struct s3c_hsotg *hsotg);
  * a core reset. This means we either need to fix the gadgets to take
  * account of DMA alignment, or add bounce buffers (yuerk).
  *
+<<<<<<< HEAD
  * Until this issue is sorted out, we always return 'false'.
  */
 static inline bool using_dma(struct s3c_hsotg *hsotg)
@@ -98,17 +149,58 @@ static inline bool using_dma(struct s3c_hsotg *hsotg)
 static void s3c_hsotg_en_gsint(struct s3c_hsotg *hsotg, u32 ints)
 {
 	u32 gsintmsk = readl(hsotg->regs + GINTMSK);
+=======
+ * g_using_dma is set depending on dts flag.
+ */
+static inline bool using_dma(struct dwc2_hsotg *hsotg)
+{
+	return hsotg->g_using_dma;
+}
+
+/**
+ * dwc2_gadget_incr_frame_num - Increments the targeted frame number.
+ * @hs_ep: The endpoint
+ * @increment: The value to increment by
+ *
+ * This function will also check if the frame number overruns DSTS_SOFFN_LIMIT.
+ * If an overrun occurs it will wrap the value and set the frame_overrun flag.
+ */
+static inline void dwc2_gadget_incr_frame_num(struct dwc2_hsotg_ep *hs_ep)
+{
+	hs_ep->target_frame += hs_ep->interval;
+	if (hs_ep->target_frame > DSTS_SOFFN_LIMIT) {
+		hs_ep->frame_overrun = 1;
+		hs_ep->target_frame &= DSTS_SOFFN_LIMIT;
+	} else {
+		hs_ep->frame_overrun = 0;
+	}
+}
+
+/**
+ * dwc2_hsotg_en_gsint - enable one or more of the general interrupt
+ * @hsotg: The device state
+ * @ints: A bitmask of the interrupts to enable
+ */
+static void dwc2_hsotg_en_gsint(struct dwc2_hsotg *hsotg, u32 ints)
+{
+	u32 gsintmsk = dwc2_readl(hsotg->regs + GINTMSK);
+>>>>>>> v4.9.227
 	u32 new_gsintmsk;
 
 	new_gsintmsk = gsintmsk | ints;
 
 	if (new_gsintmsk != gsintmsk) {
 		dev_dbg(hsotg->dev, "gsintmsk now 0x%08x\n", new_gsintmsk);
+<<<<<<< HEAD
 		writel(new_gsintmsk, hsotg->regs + GINTMSK);
+=======
+		dwc2_writel(new_gsintmsk, hsotg->regs + GINTMSK);
+>>>>>>> v4.9.227
 	}
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_disable_gsint - disable one or more of the general interrupt
  * @hsotg: The device state
  * @ints: A bitmask of the interrupts to enable
@@ -116,16 +208,33 @@ static void s3c_hsotg_en_gsint(struct s3c_hsotg *hsotg, u32 ints)
 static void s3c_hsotg_disable_gsint(struct s3c_hsotg *hsotg, u32 ints)
 {
 	u32 gsintmsk = readl(hsotg->regs + GINTMSK);
+=======
+ * dwc2_hsotg_disable_gsint - disable one or more of the general interrupt
+ * @hsotg: The device state
+ * @ints: A bitmask of the interrupts to enable
+ */
+static void dwc2_hsotg_disable_gsint(struct dwc2_hsotg *hsotg, u32 ints)
+{
+	u32 gsintmsk = dwc2_readl(hsotg->regs + GINTMSK);
+>>>>>>> v4.9.227
 	u32 new_gsintmsk;
 
 	new_gsintmsk = gsintmsk & ~ints;
 
 	if (new_gsintmsk != gsintmsk)
+<<<<<<< HEAD
 		writel(new_gsintmsk, hsotg->regs + GINTMSK);
 }
 
 /**
  * s3c_hsotg_ctrl_epint - enable/disable an endpoint irq
+=======
+		dwc2_writel(new_gsintmsk, hsotg->regs + GINTMSK);
+}
+
+/**
+ * dwc2_hsotg_ctrl_epint - enable/disable an endpoint irq
+>>>>>>> v4.9.227
  * @hsotg: The device state
  * @ep: The endpoint index
  * @dir_in: True if direction is in.
@@ -134,7 +243,11 @@ static void s3c_hsotg_disable_gsint(struct s3c_hsotg *hsotg, u32 ints)
  * Set or clear the mask for an individual endpoint's interrupt
  * request.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_ctrl_epint(struct s3c_hsotg *hsotg,
+=======
+static void dwc2_hsotg_ctrl_epint(struct dwc2_hsotg *hsotg,
+>>>>>>> v4.9.227
 				 unsigned int ep, unsigned int dir_in,
 				 unsigned int en)
 {
@@ -146,16 +259,25 @@ static void s3c_hsotg_ctrl_epint(struct s3c_hsotg *hsotg,
 		bit <<= 16;
 
 	local_irq_save(flags);
+<<<<<<< HEAD
 	daint = readl(hsotg->regs + DAINTMSK);
+=======
+	daint = dwc2_readl(hsotg->regs + DAINTMSK);
+>>>>>>> v4.9.227
 	if (en)
 		daint |= bit;
 	else
 		daint &= ~bit;
+<<<<<<< HEAD
 	writel(daint, hsotg->regs + DAINTMSK);
+=======
+	dwc2_writel(daint, hsotg->regs + DAINTMSK);
+>>>>>>> v4.9.227
 	local_irq_restore(flags);
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_init_fifo - initialise non-periodic FIFOs
  * @hsotg: The device instance.
  */
@@ -172,6 +294,27 @@ static void s3c_hsotg_init_fifo(struct s3c_hsotg *hsotg)
 	writel(2048, hsotg->regs + GRXFSIZ);
 	writel((2048 << FIFOSIZE_STARTADDR_SHIFT) |
 		(1024 << FIFOSIZE_DEPTH_SHIFT), hsotg->regs + GNPTXFSIZ);
+=======
+ * dwc2_hsotg_init_fifo - initialise non-periodic FIFOs
+ * @hsotg: The device instance.
+ */
+static void dwc2_hsotg_init_fifo(struct dwc2_hsotg *hsotg)
+{
+	unsigned int ep;
+	unsigned int addr;
+	int timeout;
+	u32 val;
+
+	/* Reset fifo map if not correctly cleared during previous session */
+	WARN_ON(hsotg->fifo_map);
+	hsotg->fifo_map = 0;
+
+	/* set RX/NPTX FIFO sizes */
+	dwc2_writel(hsotg->g_rx_fifo_sz, hsotg->regs + GRXFSIZ);
+	dwc2_writel((hsotg->g_rx_fifo_sz << FIFOSIZE_STARTADDR_SHIFT) |
+		(hsotg->g_np_g_tx_fifo_sz << FIFOSIZE_DEPTH_SHIFT),
+		hsotg->regs + GNPTXFSIZ);
+>>>>>>> v4.9.227
 
 	/*
 	 * arange all the rest of the TX FIFOs, as some versions of this
@@ -181,6 +324,7 @@ static void s3c_hsotg_init_fifo(struct s3c_hsotg *hsotg)
 	 */
 
 	/* start at the end of the GNPTXFSIZ, rounded up */
+<<<<<<< HEAD
 	addr = 2048 + 1024;
 
 	/*
@@ -212,6 +356,25 @@ static void s3c_hsotg_init_fifo(struct s3c_hsotg *hsotg)
 		addr += size;
 
 		writel(val, hsotg->regs + DPTXFSIZN(ep));
+=======
+	addr = hsotg->g_rx_fifo_sz + hsotg->g_np_g_tx_fifo_sz;
+
+	/*
+	 * Configure fifos sizes from provided configuration and assign
+	 * them to endpoints dynamically according to maxpacket size value of
+	 * given endpoint.
+	 */
+	for (ep = 1; ep < MAX_EPS_CHANNELS; ep++) {
+		if (!hsotg->g_tx_fifo_sz[ep])
+			continue;
+		val = addr;
+		val |= hsotg->g_tx_fifo_sz[ep] << FIFOSIZE_DEPTH_SHIFT;
+		WARN_ONCE(addr + hsotg->g_tx_fifo_sz[ep] > hsotg->fifo_mem,
+			  "insufficient fifo memory");
+		addr += hsotg->g_tx_fifo_sz[ep];
+
+		dwc2_writel(val, hsotg->regs + DPTXFSIZN(ep));
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -219,13 +382,21 @@ static void s3c_hsotg_init_fifo(struct s3c_hsotg *hsotg)
 	 * all fifos are flushed before continuing
 	 */
 
+<<<<<<< HEAD
 	writel(GRSTCTL_TXFNUM(0x10) | GRSTCTL_TXFFLSH |
+=======
+	dwc2_writel(GRSTCTL_TXFNUM(0x10) | GRSTCTL_TXFFLSH |
+>>>>>>> v4.9.227
 	       GRSTCTL_RXFFLSH, hsotg->regs + GRSTCTL);
 
 	/* wait until the fifos are both flushed */
 	timeout = 100;
 	while (1) {
+<<<<<<< HEAD
 		val = readl(hsotg->regs + GRSTCTL);
+=======
+		val = dwc2_readl(hsotg->regs + GRSTCTL);
+>>>>>>> v4.9.227
 
 		if ((val & (GRSTCTL_TXFFLSH | GRSTCTL_RXFFLSH)) == 0)
 			break;
@@ -234,6 +405,10 @@ static void s3c_hsotg_init_fifo(struct s3c_hsotg *hsotg)
 			dev_err(hsotg->dev,
 				"%s: timeout flushing fifos (GRSTCTL=%08x)\n",
 				__func__, val);
+<<<<<<< HEAD
+=======
+			break;
+>>>>>>> v4.9.227
 		}
 
 		udelay(1);
@@ -248,12 +423,21 @@ static void s3c_hsotg_init_fifo(struct s3c_hsotg *hsotg)
  *
  * Allocate a new USB request structure appropriate for the specified endpoint
  */
+<<<<<<< HEAD
 static struct usb_request *s3c_hsotg_ep_alloc_request(struct usb_ep *ep,
 						      gfp_t flags)
 {
 	struct s3c_hsotg_req *req;
 
 	req = kzalloc(sizeof(struct s3c_hsotg_req), flags);
+=======
+static struct usb_request *dwc2_hsotg_ep_alloc_request(struct usb_ep *ep,
+						      gfp_t flags)
+{
+	struct dwc2_hsotg_req *req;
+
+	req = kzalloc(sizeof(struct dwc2_hsotg_req), flags);
+>>>>>>> v4.9.227
 	if (!req)
 		return NULL;
 
@@ -269,23 +453,40 @@ static struct usb_request *s3c_hsotg_ep_alloc_request(struct usb_ep *ep,
  * Returns true if the endpoint is in periodic mode, meaning it is being
  * used for an Interrupt or ISO transfer.
  */
+<<<<<<< HEAD
 static inline int is_ep_periodic(struct s3c_hsotg_ep *hs_ep)
+=======
+static inline int is_ep_periodic(struct dwc2_hsotg_ep *hs_ep)
+>>>>>>> v4.9.227
 {
 	return hs_ep->periodic;
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_unmap_dma - unmap the DMA memory being used for the request
+=======
+ * dwc2_hsotg_unmap_dma - unmap the DMA memory being used for the request
+>>>>>>> v4.9.227
  * @hsotg: The device state.
  * @hs_ep: The endpoint for the request
  * @hs_req: The request being processed.
  *
+<<<<<<< HEAD
  * This is the reverse of s3c_hsotg_map_dma(), called for the completion
  * of a request to ensure the buffer is ready for access by the caller.
  */
 static void s3c_hsotg_unmap_dma(struct s3c_hsotg *hsotg,
 				struct s3c_hsotg_ep *hs_ep,
 				struct s3c_hsotg_req *hs_req)
+=======
+ * This is the reverse of dwc2_hsotg_map_dma(), called for the completion
+ * of a request to ensure the buffer is ready for access by the caller.
+ */
+static void dwc2_hsotg_unmap_dma(struct dwc2_hsotg *hsotg,
+				struct dwc2_hsotg_ep *hs_ep,
+				struct dwc2_hsotg_req *hs_req)
+>>>>>>> v4.9.227
 {
 	struct usb_request *req = &hs_req->req;
 
@@ -297,7 +498,11 @@ static void s3c_hsotg_unmap_dma(struct s3c_hsotg *hsotg,
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_write_fifo - write packet Data to the TxFIFO
+=======
+ * dwc2_hsotg_write_fifo - write packet Data to the TxFIFO
+>>>>>>> v4.9.227
  * @hsotg: The controller state.
  * @hs_ep: The endpoint we're going to write for.
  * @hs_req: The request to write data for.
@@ -312,12 +517,21 @@ static void s3c_hsotg_unmap_dma(struct s3c_hsotg *hsotg,
  *
  * This routine is only needed for PIO
  */
+<<<<<<< HEAD
 static int s3c_hsotg_write_fifo(struct s3c_hsotg *hsotg,
 				struct s3c_hsotg_ep *hs_ep,
 				struct s3c_hsotg_req *hs_req)
 {
 	bool periodic = is_ep_periodic(hs_ep);
 	u32 gnptxsts = readl(hsotg->regs + GNPTXSTS);
+=======
+static int dwc2_hsotg_write_fifo(struct dwc2_hsotg *hsotg,
+				struct dwc2_hsotg_ep *hs_ep,
+				struct dwc2_hsotg_req *hs_req)
+{
+	bool periodic = is_ep_periodic(hs_ep);
+	u32 gnptxsts = dwc2_readl(hsotg->regs + GNPTXSTS);
+>>>>>>> v4.9.227
 	int buf_pos = hs_req->req.actual;
 	int to_write = hs_ep->size_loaded;
 	void *data;
@@ -332,7 +546,11 @@ static int s3c_hsotg_write_fifo(struct s3c_hsotg *hsotg,
 		return 0;
 
 	if (periodic && !hsotg->dedicated_fifos) {
+<<<<<<< HEAD
 		u32 epsize = readl(hsotg->regs + DIEPTSIZ(hs_ep->index));
+=======
+		u32 epsize = dwc2_readl(hsotg->regs + DIEPTSIZ(hs_ep->index));
+>>>>>>> v4.9.227
 		int size_left;
 		int size_done;
 
@@ -348,7 +566,11 @@ static int s3c_hsotg_write_fifo(struct s3c_hsotg *hsotg,
 		 * previous data has been completely sent.
 		 */
 		if (hs_ep->fifo_load != 0) {
+<<<<<<< HEAD
 			s3c_hsotg_en_gsint(hsotg, GINTSTS_PTXFEMP);
+=======
+			dwc2_hsotg_en_gsint(hsotg, GINTSTS_PTXFEMP);
+>>>>>>> v4.9.227
 			return -ENOSPC;
 		}
 
@@ -369,11 +591,20 @@ static int s3c_hsotg_write_fifo(struct s3c_hsotg *hsotg,
 			__func__, can_write);
 
 		if (can_write <= 0) {
+<<<<<<< HEAD
 			s3c_hsotg_en_gsint(hsotg, GINTSTS_PTXFEMP);
 			return -ENOSPC;
 		}
 	} else if (hsotg->dedicated_fifos && hs_ep->index != 0) {
 		can_write = readl(hsotg->regs + DTXFSTS(hs_ep->index));
+=======
+			dwc2_hsotg_en_gsint(hsotg, GINTSTS_PTXFEMP);
+			return -ENOSPC;
+		}
+	} else if (hsotg->dedicated_fifos && hs_ep->index != 0) {
+		can_write = dwc2_readl(hsotg->regs +
+				DTXFSTS(hs_ep->fifo_index));
+>>>>>>> v4.9.227
 
 		can_write &= 0xffff;
 		can_write *= 4;
@@ -383,7 +614,11 @@ static int s3c_hsotg_write_fifo(struct s3c_hsotg *hsotg,
 				"%s: no queue slots available (0x%08x)\n",
 				__func__, gnptxsts);
 
+<<<<<<< HEAD
 			s3c_hsotg_en_gsint(hsotg, GINTSTS_NPTXFEMP);
+=======
+			dwc2_hsotg_en_gsint(hsotg, GINTSTS_NPTXFEMP);
+>>>>>>> v4.9.227
 			return -ENOSPC;
 		}
 
@@ -414,7 +649,11 @@ static int s3c_hsotg_write_fifo(struct s3c_hsotg *hsotg,
 
 		/* it's needed only when we do not use dedicated fifos */
 		if (!hsotg->dedicated_fifos)
+<<<<<<< HEAD
 			s3c_hsotg_en_gsint(hsotg,
+=======
+			dwc2_hsotg_en_gsint(hsotg,
+>>>>>>> v4.9.227
 					   periodic ? GINTSTS_PTXFEMP :
 					   GINTSTS_NPTXFEMP);
 	}
@@ -443,7 +682,11 @@ static int s3c_hsotg_write_fifo(struct s3c_hsotg *hsotg,
 
 		/* it's needed only when we do not use dedicated fifos */
 		if (!hsotg->dedicated_fifos)
+<<<<<<< HEAD
 			s3c_hsotg_en_gsint(hsotg,
+=======
+			dwc2_hsotg_en_gsint(hsotg,
+>>>>>>> v4.9.227
 					   periodic ? GINTSTS_PTXFEMP :
 					   GINTSTS_NPTXFEMP);
 	}
@@ -475,7 +718,11 @@ static int s3c_hsotg_write_fifo(struct s3c_hsotg *hsotg,
  * Return the maximum data that can be queued in one go on a given endpoint
  * so that transfers that are too long can be split.
  */
+<<<<<<< HEAD
 static unsigned get_ep_limit(struct s3c_hsotg_ep *hs_ep)
+=======
+static unsigned get_ep_limit(struct dwc2_hsotg_ep *hs_ep)
+>>>>>>> v4.9.227
 {
 	int index = hs_ep->index;
 	unsigned maxsize;
@@ -508,7 +755,28 @@ static unsigned get_ep_limit(struct s3c_hsotg_ep *hs_ep)
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_start_req - start a USB request from an endpoint's queue
+=======
+* dwc2_hsotg_read_frameno - read current frame number
+* @hsotg: The device instance
+*
+* Return the current frame number
+*/
+static u32 dwc2_hsotg_read_frameno(struct dwc2_hsotg *hsotg)
+{
+	u32 dsts;
+
+	dsts = dwc2_readl(hsotg->regs + DSTS);
+	dsts &= DSTS_SOFFN_MASK;
+	dsts >>= DSTS_SOFFN_SHIFT;
+
+	return dsts;
+}
+
+/**
+ * dwc2_hsotg_start_req - start a USB request from an endpoint's queue
+>>>>>>> v4.9.227
  * @hsotg: The controller state.
  * @hs_ep: The endpoint to process a request for
  * @hs_req: The request to start.
@@ -517,9 +785,15 @@ static unsigned get_ep_limit(struct s3c_hsotg_ep *hs_ep)
  * Start the given request running by setting the endpoint registers
  * appropriately, and writing any data to the FIFOs.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 				struct s3c_hsotg_ep *hs_ep,
 				struct s3c_hsotg_req *hs_req,
+=======
+static void dwc2_hsotg_start_req(struct dwc2_hsotg *hsotg,
+				struct dwc2_hsotg_ep *hs_ep,
+				struct dwc2_hsotg_req *hs_req,
+>>>>>>> v4.9.227
 				bool continuing)
 {
 	struct usb_request *ureq = &hs_req->req;
@@ -550,6 +824,7 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 	epsize_reg = dir_in ? DIEPTSIZ(index) : DOEPTSIZ(index);
 
 	dev_dbg(hsotg->dev, "%s: DxEPCTL=0x%08x, ep %d, dir %s\n",
+<<<<<<< HEAD
 		__func__, readl(hsotg->regs + epctrl_reg), index,
 		hs_ep->dir_in ? "in" : "out");
 
@@ -557,6 +832,15 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 	ctrl = readl(hsotg->regs + epctrl_reg);
 
 	if (ctrl & DXEPCTL_STALL) {
+=======
+		__func__, dwc2_readl(hsotg->regs + epctrl_reg), index,
+		hs_ep->dir_in ? "in" : "out");
+
+	/* If endpoint is stalled, we will restart request later */
+	ctrl = dwc2_readl(hsotg->regs + epctrl_reg);
+
+	if (index && ctrl & DXEPCTL_STALL) {
+>>>>>>> v4.9.227
 		dev_warn(hsotg->dev, "%s: ep%d is stalled\n", __func__, index);
 		return;
 	}
@@ -564,11 +848,14 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 	length = ureq->length - ureq->actual;
 	dev_dbg(hsotg->dev, "ureq->length:%d ureq->actual:%d\n",
 		ureq->length, ureq->actual);
+<<<<<<< HEAD
 	if (0)
 		dev_dbg(hsotg->dev,
 			"REQ buf %p len %d dma %pad noi=%d zp=%d snok=%d\n",
 			ureq->buf, length, &ureq->dma,
 			ureq->no_interrupt, ureq->zero, ureq->short_not_ok);
+=======
+>>>>>>> v4.9.227
 
 	maxreq = get_ep_limit(hs_ep);
 	if (length > maxreq) {
@@ -602,6 +889,7 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 	else
 		epsize = 0;
 
+<<<<<<< HEAD
 	if (index != 0 && ureq->zero) {
 		/*
 		 * test for the packets being exactly right for the
@@ -610,6 +898,17 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 
 		if (length == (packets * hs_ep->ep.maxpacket))
 			packets++;
+=======
+	/*
+	 * zero length packet should be programmed on its own and should not
+	 * be counted in DIEPTSIZ.PktCnt with other packets.
+	 */
+	if (dir_in && ureq->zero && !continuing) {
+		/* Test if zlp is actually required. */
+		if ((ureq->length >= hs_ep->ep.maxpacket) &&
+					!(ureq->length % hs_ep->ep.maxpacket))
+			hs_ep->send_zlp = 1;
+>>>>>>> v4.9.227
 	}
 
 	epsize |= DXEPTSIZ_PKTCNT(packets);
@@ -622,23 +921,36 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 	hs_ep->req = hs_req;
 
 	/* write size / packets */
+<<<<<<< HEAD
 	writel(epsize, hsotg->regs + epsize_reg);
+=======
+	dwc2_writel(epsize, hsotg->regs + epsize_reg);
+>>>>>>> v4.9.227
 
 	if (using_dma(hsotg) && !continuing) {
 		unsigned int dma_reg;
 
 		/*
 		 * write DMA address to control register, buffer already
+<<<<<<< HEAD
 		 * synced by s3c_hsotg_ep_queue().
 		 */
 
 		dma_reg = dir_in ? DIEPDMA(index) : DOEPDMA(index);
 		writel(ureq->dma, hsotg->regs + dma_reg);
+=======
+		 * synced by dwc2_hsotg_ep_queue().
+		 */
+
+		dma_reg = dir_in ? DIEPDMA(index) : DOEPDMA(index);
+		dwc2_writel(ureq->dma, hsotg->regs + dma_reg);
+>>>>>>> v4.9.227
 
 		dev_dbg(hsotg->dev, "%s: %pad => 0x%08x\n",
 			__func__, &ureq->dma, dma_reg);
 	}
 
+<<<<<<< HEAD
 	ctrl |= DXEPCTL_EPENA;	/* ensure ep enabled */
 	ctrl |= DXEPCTL_USBACTEP;
 
@@ -653,6 +965,28 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 
 	dev_dbg(hsotg->dev, "%s: DxEPCTL=0x%08x\n", __func__, ctrl);
 	writel(ctrl, hsotg->regs + epctrl_reg);
+=======
+	if (hs_ep->isochronous && hs_ep->interval == 1) {
+		hs_ep->target_frame = dwc2_hsotg_read_frameno(hsotg);
+		dwc2_gadget_incr_frame_num(hs_ep);
+
+		if (hs_ep->target_frame & 0x1)
+			ctrl |= DXEPCTL_SETODDFR;
+		else
+			ctrl |= DXEPCTL_SETEVENFR;
+	}
+
+	ctrl |= DXEPCTL_EPENA;	/* ensure ep enabled */
+
+	dev_dbg(hsotg->dev, "ep0 state:%d\n", hsotg->ep0_state);
+
+	/* For Setup request do not clear NAK */
+	if (!(index == 0 && hsotg->ep0_state == DWC2_EP0_SETUP))
+		ctrl |= DXEPCTL_CNAK;	/* clear NAK set by core */
+
+	dev_dbg(hsotg->dev, "%s: DxEPCTL=0x%08x\n", __func__, ctrl);
+	dwc2_writel(ctrl, hsotg->regs + epctrl_reg);
+>>>>>>> v4.9.227
 
 	/*
 	 * set these, it seems that DMA support increments past the end
@@ -666,6 +1000,7 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 		/* set these anyway, we may need them for non-periodic in */
 		hs_ep->fifo_load = 0;
 
+<<<<<<< HEAD
 		s3c_hsotg_write_fifo(hsotg, hs_ep, hs_req);
 	}
 
@@ -678,11 +1013,18 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 		       hsotg->regs + DIEPINT(index));
 
 	/*
+=======
+		dwc2_hsotg_write_fifo(hsotg, hs_ep, hs_req);
+	}
+
+	/*
+>>>>>>> v4.9.227
 	 * Note, trying to clear the NAK here causes problems with transmit
 	 * on the S3C6400 ending up with the TXFIFO becoming full.
 	 */
 
 	/* check ep is enabled */
+<<<<<<< HEAD
 	if (!(readl(hsotg->regs + epctrl_reg) & DXEPCTL_EPENA))
 		dev_warn(hsotg->dev,
 			 "ep%d: failed to become enabled (DXEPCTL=0x%08x)?\n",
@@ -697,6 +1039,22 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
 
 /**
  * s3c_hsotg_map_dma - map the DMA memory being used for the request
+=======
+	if (!(dwc2_readl(hsotg->regs + epctrl_reg) & DXEPCTL_EPENA))
+		dev_dbg(hsotg->dev,
+			 "ep%d: failed to become enabled (DXEPCTL=0x%08x)?\n",
+			 index, dwc2_readl(hsotg->regs + epctrl_reg));
+
+	dev_dbg(hsotg->dev, "%s: DXEPCTL=0x%08x\n",
+		__func__, dwc2_readl(hsotg->regs + epctrl_reg));
+
+	/* enable ep interrupts */
+	dwc2_hsotg_ctrl_epint(hsotg, hs_ep->index, hs_ep->dir_in, 1);
+}
+
+/**
+ * dwc2_hsotg_map_dma - map the DMA memory being used for the request
+>>>>>>> v4.9.227
  * @hsotg: The device state.
  * @hs_ep: The endpoint the request is on.
  * @req: The request being processed.
@@ -707,11 +1065,19 @@ static void s3c_hsotg_start_req(struct s3c_hsotg *hsotg,
  * DMA memory, then we map the memory and mark our request to allow us to
  * cleanup on completion.
  */
+<<<<<<< HEAD
 static int s3c_hsotg_map_dma(struct s3c_hsotg *hsotg,
 			     struct s3c_hsotg_ep *hs_ep,
 			     struct usb_request *req)
 {
 	struct s3c_hsotg_req *hs_req = our_req(req);
+=======
+static int dwc2_hsotg_map_dma(struct dwc2_hsotg *hsotg,
+			     struct dwc2_hsotg_ep *hs_ep,
+			     struct usb_request *req)
+{
+	struct dwc2_hsotg_req *hs_req = our_req(req);
+>>>>>>> v4.9.227
 	int ret;
 
 	/* if the length is zero, ignore the DMA data */
@@ -731,6 +1097,7 @@ dma_error:
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int s3c_hsotg_ep_queue(struct usb_ep *ep, struct usb_request *req,
 			      gfp_t gfp_flags)
 {
@@ -738,19 +1105,126 @@ static int s3c_hsotg_ep_queue(struct usb_ep *ep, struct usb_request *req,
 	struct s3c_hsotg_ep *hs_ep = our_ep(ep);
 	struct s3c_hsotg *hs = hs_ep->parent;
 	bool first;
+=======
+static int dwc2_hsotg_handle_unaligned_buf_start(struct dwc2_hsotg *hsotg,
+	struct dwc2_hsotg_ep *hs_ep, struct dwc2_hsotg_req *hs_req)
+{
+	void *req_buf = hs_req->req.buf;
+
+	/* If dma is not being used or buffer is aligned */
+	if (!using_dma(hsotg) || !((long)req_buf & 3))
+		return 0;
+
+	WARN_ON(hs_req->saved_req_buf);
+
+	dev_dbg(hsotg->dev, "%s: %s: buf=%p length=%d\n", __func__,
+			hs_ep->ep.name, req_buf, hs_req->req.length);
+
+	hs_req->req.buf = kmalloc(hs_req->req.length, GFP_ATOMIC);
+	if (!hs_req->req.buf) {
+		hs_req->req.buf = req_buf;
+		dev_err(hsotg->dev,
+			"%s: unable to allocate memory for bounce buffer\n",
+			__func__);
+		return -ENOMEM;
+	}
+
+	/* Save actual buffer */
+	hs_req->saved_req_buf = req_buf;
+
+	if (hs_ep->dir_in)
+		memcpy(hs_req->req.buf, req_buf, hs_req->req.length);
+	return 0;
+}
+
+static void dwc2_hsotg_handle_unaligned_buf_complete(struct dwc2_hsotg *hsotg,
+	struct dwc2_hsotg_ep *hs_ep, struct dwc2_hsotg_req *hs_req)
+{
+	/* If dma is not being used or buffer was aligned */
+	if (!using_dma(hsotg) || !hs_req->saved_req_buf)
+		return;
+
+	dev_dbg(hsotg->dev, "%s: %s: status=%d actual-length=%d\n", __func__,
+		hs_ep->ep.name, hs_req->req.status, hs_req->req.actual);
+
+	/* Copy data from bounce buffer on successful out transfer */
+	if (!hs_ep->dir_in && !hs_req->req.status)
+		memcpy(hs_req->saved_req_buf, hs_req->req.buf,
+							hs_req->req.actual);
+
+	/* Free bounce buffer */
+	kfree(hs_req->req.buf);
+
+	hs_req->req.buf = hs_req->saved_req_buf;
+	hs_req->saved_req_buf = NULL;
+}
+
+/**
+ * dwc2_gadget_target_frame_elapsed - Checks target frame
+ * @hs_ep: The driver endpoint to check
+ *
+ * Returns 1 if targeted frame elapsed. If returned 1 then we need to drop
+ * corresponding transfer.
+ */
+static bool dwc2_gadget_target_frame_elapsed(struct dwc2_hsotg_ep *hs_ep)
+{
+	struct dwc2_hsotg *hsotg = hs_ep->parent;
+	u32 target_frame = hs_ep->target_frame;
+	u32 current_frame = dwc2_hsotg_read_frameno(hsotg);
+	bool frame_overrun = hs_ep->frame_overrun;
+
+	if (!frame_overrun && current_frame >= target_frame)
+		return true;
+
+	if (frame_overrun && current_frame >= target_frame &&
+	    ((current_frame - target_frame) < DSTS_SOFFN_LIMIT / 2))
+		return true;
+
+	return false;
+}
+
+static int dwc2_hsotg_ep_queue(struct usb_ep *ep, struct usb_request *req,
+			      gfp_t gfp_flags)
+{
+	struct dwc2_hsotg_req *hs_req = our_req(req);
+	struct dwc2_hsotg_ep *hs_ep = our_ep(ep);
+	struct dwc2_hsotg *hs = hs_ep->parent;
+	bool first;
+	int ret;
+>>>>>>> v4.9.227
 
 	dev_dbg(hs->dev, "%s: req %p: %d@%p, noi=%d, zero=%d, snok=%d\n",
 		ep->name, req, req->length, req->buf, req->no_interrupt,
 		req->zero, req->short_not_ok);
 
+<<<<<<< HEAD
+=======
+	/* Prevent new request submission when controller is suspended */
+	if (hs->lx_state == DWC2_L2) {
+		dev_dbg(hs->dev, "%s: don't submit request while suspended\n",
+				__func__);
+		return -EAGAIN;
+	}
+
+>>>>>>> v4.9.227
 	/* initialise status of the request */
 	INIT_LIST_HEAD(&hs_req->queue);
 	req->actual = 0;
 	req->status = -EINPROGRESS;
 
+<<<<<<< HEAD
 	/* if we're using DMA, sync the buffers as necessary */
 	if (using_dma(hs)) {
 		int ret = s3c_hsotg_map_dma(hs, hs_ep, req);
+=======
+	ret = dwc2_hsotg_handle_unaligned_buf_start(hs, hs_ep, hs_req);
+	if (ret)
+		return ret;
+
+	/* if we're using DMA, sync the buffers as necessary */
+	if (using_dma(hs)) {
+		ret = dwc2_hsotg_map_dma(hs, hs_ep, req);
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 	}
@@ -758,6 +1232,7 @@ static int s3c_hsotg_ep_queue(struct usb_ep *ep, struct usb_request *req,
 	first = list_empty(&hs_ep->queue);
 	list_add_tail(&hs_req->queue, &hs_ep->queue);
 
+<<<<<<< HEAD
 	if (first)
 		s3c_hsotg_start_req(hs, hs_ep, hs_req, false);
 
@@ -769,32 +1244,70 @@ static int s3c_hsotg_ep_queue_lock(struct usb_ep *ep, struct usb_request *req,
 {
 	struct s3c_hsotg_ep *hs_ep = our_ep(ep);
 	struct s3c_hsotg *hs = hs_ep->parent;
+=======
+	if (first) {
+		if (!hs_ep->isochronous) {
+			dwc2_hsotg_start_req(hs, hs_ep, hs_req, false);
+			return 0;
+		}
+
+		while (dwc2_gadget_target_frame_elapsed(hs_ep))
+			dwc2_gadget_incr_frame_num(hs_ep);
+
+		if (hs_ep->target_frame != TARGET_FRAME_INITIAL)
+			dwc2_hsotg_start_req(hs, hs_ep, hs_req, false);
+	}
+	return 0;
+}
+
+static int dwc2_hsotg_ep_queue_lock(struct usb_ep *ep, struct usb_request *req,
+			      gfp_t gfp_flags)
+{
+	struct dwc2_hsotg_ep *hs_ep = our_ep(ep);
+	struct dwc2_hsotg *hs = hs_ep->parent;
+>>>>>>> v4.9.227
 	unsigned long flags = 0;
 	int ret = 0;
 
 	spin_lock_irqsave(&hs->lock, flags);
+<<<<<<< HEAD
 	ret = s3c_hsotg_ep_queue(ep, req, gfp_flags);
+=======
+	ret = dwc2_hsotg_ep_queue(ep, req, gfp_flags);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&hs->lock, flags);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static void s3c_hsotg_ep_free_request(struct usb_ep *ep,
 				      struct usb_request *req)
 {
 	struct s3c_hsotg_req *hs_req = our_req(req);
+=======
+static void dwc2_hsotg_ep_free_request(struct usb_ep *ep,
+				      struct usb_request *req)
+{
+	struct dwc2_hsotg_req *hs_req = our_req(req);
+>>>>>>> v4.9.227
 
 	kfree(hs_req);
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_complete_oursetup - setup completion callback
+=======
+ * dwc2_hsotg_complete_oursetup - setup completion callback
+>>>>>>> v4.9.227
  * @ep: The endpoint the request was on.
  * @req: The request completed.
  *
  * Called on completion of any requests the driver itself
  * submitted that need cleaning up.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_complete_oursetup(struct usb_ep *ep,
 					struct usb_request *req)
 {
@@ -804,6 +1317,17 @@ static void s3c_hsotg_complete_oursetup(struct usb_ep *ep,
 	dev_dbg(hsotg->dev, "%s: ep %p, req %p\n", __func__, ep, req);
 
 	s3c_hsotg_ep_free_request(ep, req);
+=======
+static void dwc2_hsotg_complete_oursetup(struct usb_ep *ep,
+					struct usb_request *req)
+{
+	struct dwc2_hsotg_ep *hs_ep = our_ep(ep);
+	struct dwc2_hsotg *hsotg = hs_ep->parent;
+
+	dev_dbg(hsotg->dev, "%s: ep %p, req %p\n", __func__, ep, req);
+
+	dwc2_hsotg_ep_free_request(ep, req);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -814,10 +1338,17 @@ static void s3c_hsotg_complete_oursetup(struct usb_ep *ep,
  * Convert the given wIndex into a pointer to an driver endpoint
  * structure, or return NULL if it is not a valid endpoint.
  */
+<<<<<<< HEAD
 static struct s3c_hsotg_ep *ep_from_windex(struct s3c_hsotg *hsotg,
 					   u32 windex)
 {
 	struct s3c_hsotg_ep *ep = &hsotg->eps[windex & 0x7F];
+=======
+static struct dwc2_hsotg_ep *ep_from_windex(struct dwc2_hsotg *hsotg,
+					   u32 windex)
+{
+	struct dwc2_hsotg_ep *ep;
+>>>>>>> v4.9.227
 	int dir = (windex & USB_DIR_IN) ? 1 : 0;
 	int idx = windex & 0x7F;
 
@@ -827,6 +1358,11 @@ static struct s3c_hsotg_ep *ep_from_windex(struct s3c_hsotg *hsotg,
 	if (idx > hsotg->num_of_eps)
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	ep = index_to_ep(hsotg, idx, dir);
+
+>>>>>>> v4.9.227
 	if (idx && ep->dir_in != dir)
 		return NULL;
 
@@ -834,7 +1370,37 @@ static struct s3c_hsotg_ep *ep_from_windex(struct s3c_hsotg *hsotg,
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_send_reply - send reply to control request
+=======
+ * dwc2_hsotg_set_test_mode - Enable usb Test Modes
+ * @hsotg: The driver state.
+ * @testmode: requested usb test mode
+ * Enable usb Test Mode requested by the Host.
+ */
+int dwc2_hsotg_set_test_mode(struct dwc2_hsotg *hsotg, int testmode)
+{
+	int dctl = dwc2_readl(hsotg->regs + DCTL);
+
+	dctl &= ~DCTL_TSTCTL_MASK;
+	switch (testmode) {
+	case TEST_J:
+	case TEST_K:
+	case TEST_SE0_NAK:
+	case TEST_PACKET:
+	case TEST_FORCE_EN:
+		dctl |= testmode << DCTL_TSTCTL_SHIFT;
+		break;
+	default:
+		return -EINVAL;
+	}
+	dwc2_writel(dctl, hsotg->regs + DCTL);
+	return 0;
+}
+
+/**
+ * dwc2_hsotg_send_reply - send reply to control request
+>>>>>>> v4.9.227
  * @hsotg: The device state
  * @ep: Endpoint 0
  * @buff: Buffer for request
@@ -843,8 +1409,13 @@ static struct s3c_hsotg_ep *ep_from_windex(struct s3c_hsotg *hsotg,
  * Create a request and queue it on the given endpoint. This is useful as
  * an internal method of sending replies to certain control requests, etc.
  */
+<<<<<<< HEAD
 static int s3c_hsotg_send_reply(struct s3c_hsotg *hsotg,
 				struct s3c_hsotg_ep *ep,
+=======
+static int dwc2_hsotg_send_reply(struct dwc2_hsotg *hsotg,
+				struct dwc2_hsotg_ep *ep,
+>>>>>>> v4.9.227
 				void *buff,
 				int length)
 {
@@ -853,7 +1424,11 @@ static int s3c_hsotg_send_reply(struct s3c_hsotg *hsotg,
 
 	dev_dbg(hsotg->dev, "%s: buff %p, len %d\n", __func__, buff, length);
 
+<<<<<<< HEAD
 	req = s3c_hsotg_ep_alloc_request(&ep->ep, GFP_ATOMIC);
+=======
+	req = dwc2_hsotg_ep_alloc_request(&ep->ep, GFP_ATOMIC);
+>>>>>>> v4.9.227
 	hsotg->ep0_reply = req;
 	if (!req) {
 		dev_warn(hsotg->dev, "%s: cannot alloc req\n", __func__);
@@ -862,6 +1437,7 @@ static int s3c_hsotg_send_reply(struct s3c_hsotg *hsotg,
 
 	req->buf = hsotg->ep0_buff;
 	req->length = length;
+<<<<<<< HEAD
 	req->zero = 1; /* always do zero-length final transfer */
 	req->complete = s3c_hsotg_complete_oursetup;
 
@@ -871,6 +1447,19 @@ static int s3c_hsotg_send_reply(struct s3c_hsotg *hsotg,
 		ep->sent_zlp = 1;
 
 	ret = s3c_hsotg_ep_queue(&ep->ep, req, GFP_ATOMIC);
+=======
+	/*
+	 * zero flag is for sending zlp in DATA IN stage. It has no impact on
+	 * STATUS stage.
+	 */
+	req->zero = 0;
+	req->complete = dwc2_hsotg_complete_oursetup;
+
+	if (length)
+		memcpy(req->buf, buff, length);
+
+	ret = dwc2_hsotg_ep_queue(&ep->ep, req, GFP_ATOMIC);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_warn(hsotg->dev, "%s: cannot queue req\n", __func__);
 		return ret;
@@ -880,6 +1469,7 @@ static int s3c_hsotg_send_reply(struct s3c_hsotg *hsotg,
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_process_req_status - process request GET_STATUS
  * @hsotg: The device state
  * @ctrl: USB control request
@@ -889,6 +1479,17 @@ static int s3c_hsotg_process_req_status(struct s3c_hsotg *hsotg,
 {
 	struct s3c_hsotg_ep *ep0 = &hsotg->eps[0];
 	struct s3c_hsotg_ep *ep;
+=======
+ * dwc2_hsotg_process_req_status - process request GET_STATUS
+ * @hsotg: The device state
+ * @ctrl: USB control request
+ */
+static int dwc2_hsotg_process_req_status(struct dwc2_hsotg *hsotg,
+					struct usb_ctrlrequest *ctrl)
+{
+	struct dwc2_hsotg_ep *ep0 = hsotg->eps_out[0];
+	struct dwc2_hsotg_ep *ep;
+>>>>>>> v4.9.227
 	__le16 reply;
 	int ret;
 
@@ -925,7 +1526,11 @@ static int s3c_hsotg_process_req_status(struct s3c_hsotg *hsotg,
 	if (le16_to_cpu(ctrl->wLength) != 2)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = s3c_hsotg_send_reply(hsotg, ep0, &reply, 2);
+=======
+	ret = dwc2_hsotg_send_reply(hsotg, ep0, &reply, 2);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(hsotg->dev, "%s: failed to send reply\n", __func__);
 		return ret;
@@ -934,7 +1539,11 @@ static int s3c_hsotg_process_req_status(struct s3c_hsotg *hsotg,
 	return 1;
 }
 
+<<<<<<< HEAD
 static int s3c_hsotg_ep_sethalt(struct usb_ep *ep, int value);
+=======
+static int dwc2_hsotg_ep_sethalt(struct usb_ep *ep, int value, bool now);
+>>>>>>> v4.9.227
 
 /**
  * get_ep_head - return the first request on the endpoint
@@ -942,11 +1551,16 @@ static int s3c_hsotg_ep_sethalt(struct usb_ep *ep, int value);
  *
  * Get the first request on the endpoint.
  */
+<<<<<<< HEAD
 static struct s3c_hsotg_req *get_ep_head(struct s3c_hsotg_ep *hs_ep)
+=======
+static struct dwc2_hsotg_req *get_ep_head(struct dwc2_hsotg_ep *hs_ep)
+>>>>>>> v4.9.227
 {
 	if (list_empty(&hs_ep->queue))
 		return NULL;
 
+<<<<<<< HEAD
 	return list_first_entry(&hs_ep->queue, struct s3c_hsotg_req, queue);
 }
 
@@ -965,10 +1579,69 @@ static int s3c_hsotg_process_req_feature(struct s3c_hsotg *hsotg,
 	struct s3c_hsotg_ep *ep;
 	int ret;
 	bool halted;
+=======
+	return list_first_entry(&hs_ep->queue, struct dwc2_hsotg_req, queue);
+}
+
+/**
+ * dwc2_gadget_start_next_request - Starts next request from ep queue
+ * @hs_ep: Endpoint structure
+ *
+ * If queue is empty and EP is ISOC-OUT - unmasks OUTTKNEPDIS which is masked
+ * in its handler. Hence we need to unmask it here to be able to do
+ * resynchronization.
+ */
+static void dwc2_gadget_start_next_request(struct dwc2_hsotg_ep *hs_ep)
+{
+	u32 mask;
+	struct dwc2_hsotg *hsotg = hs_ep->parent;
+	int dir_in = hs_ep->dir_in;
+	struct dwc2_hsotg_req *hs_req;
+	u32 epmsk_reg = dir_in ? DIEPMSK : DOEPMSK;
+
+	if (!list_empty(&hs_ep->queue)) {
+		hs_req = get_ep_head(hs_ep);
+		dwc2_hsotg_start_req(hsotg, hs_ep, hs_req, false);
+		return;
+	}
+	if (!hs_ep->isochronous)
+		return;
+
+	if (dir_in) {
+		dev_dbg(hsotg->dev, "%s: No more ISOC-IN requests\n",
+			__func__);
+	} else {
+		dev_dbg(hsotg->dev, "%s: No more ISOC-OUT requests\n",
+			__func__);
+		mask = dwc2_readl(hsotg->regs + epmsk_reg);
+		mask |= DOEPMSK_OUTTKNEPDISMSK;
+		dwc2_writel(mask, hsotg->regs + epmsk_reg);
+	}
+}
+
+/**
+ * dwc2_hsotg_process_req_feature - process request {SET,CLEAR}_FEATURE
+ * @hsotg: The device state
+ * @ctrl: USB control request
+ */
+static int dwc2_hsotg_process_req_feature(struct dwc2_hsotg *hsotg,
+					 struct usb_ctrlrequest *ctrl)
+{
+	struct dwc2_hsotg_ep *ep0 = hsotg->eps_out[0];
+	struct dwc2_hsotg_req *hs_req;
+	bool set = (ctrl->bRequest == USB_REQ_SET_FEATURE);
+	struct dwc2_hsotg_ep *ep;
+	int ret;
+	bool halted;
+	u32 recip;
+	u32 wValue;
+	u32 wIndex;
+>>>>>>> v4.9.227
 
 	dev_dbg(hsotg->dev, "%s: %s_FEATURE\n",
 		__func__, set ? "SET" : "CLEAR");
 
+<<<<<<< HEAD
 	if (ctrl->bRequestType == USB_RECIP_ENDPOINT) {
 		ep = ep_from_windex(hsotg, le16_to_cpu(ctrl->wIndex));
 		if (!ep) {
@@ -984,6 +1657,49 @@ static int s3c_hsotg_process_req_feature(struct s3c_hsotg *hsotg,
 			s3c_hsotg_ep_sethalt(&ep->ep, set);
 
 			ret = s3c_hsotg_send_reply(hsotg, ep0, NULL, 0);
+=======
+	wValue = le16_to_cpu(ctrl->wValue);
+	wIndex = le16_to_cpu(ctrl->wIndex);
+	recip = ctrl->bRequestType & USB_RECIP_MASK;
+
+	switch (recip) {
+	case USB_RECIP_DEVICE:
+		switch (wValue) {
+		case USB_DEVICE_TEST_MODE:
+			if ((wIndex & 0xff) != 0)
+				return -EINVAL;
+			if (!set)
+				return -EINVAL;
+
+			hsotg->test_mode = wIndex >> 8;
+			ret = dwc2_hsotg_send_reply(hsotg, ep0, NULL, 0);
+			if (ret) {
+				dev_err(hsotg->dev,
+					"%s: failed to send reply\n", __func__);
+				return ret;
+			}
+			break;
+		default:
+			return -ENOENT;
+		}
+		break;
+
+	case USB_RECIP_ENDPOINT:
+		ep = ep_from_windex(hsotg, wIndex);
+		if (!ep) {
+			dev_dbg(hsotg->dev, "%s: no endpoint for 0x%04x\n",
+				__func__, wIndex);
+			return -ENOENT;
+		}
+
+		switch (wValue) {
+		case USB_ENDPOINT_HALT:
+			halted = ep->halted;
+
+			dwc2_hsotg_ep_sethalt(&ep->ep, set, true);
+
+			ret = dwc2_hsotg_send_reply(hsotg, ep0, NULL, 0);
+>>>>>>> v4.9.227
 			if (ret) {
 				dev_err(hsotg->dev,
 					"%s: failed to send reply\n", __func__);
@@ -1004,6 +1720,7 @@ static int s3c_hsotg_process_req_feature(struct s3c_hsotg *hsotg,
 					hs_req = ep->req;
 					ep->req = NULL;
 					list_del_init(&hs_req->queue);
+<<<<<<< HEAD
 					usb_gadget_giveback_request(&ep->ep,
 								    &hs_req->req);
 				}
@@ -1014,6 +1731,19 @@ static int s3c_hsotg_process_req_feature(struct s3c_hsotg *hsotg,
 					hs_req = get_ep_head(ep);
 					s3c_hsotg_start_req(hsotg, ep,
 							    hs_req, false);
+=======
+					if (hs_req->req.complete) {
+						spin_unlock(&hsotg->lock);
+						usb_gadget_giveback_request(
+							&ep->ep, &hs_req->req);
+						spin_lock(&hsotg->lock);
+					}
+				}
+
+				/* If we have pending request, then start it */
+				if (!ep->req) {
+					dwc2_gadget_start_next_request(ep);
+>>>>>>> v4.9.227
 				}
 			}
 
@@ -1022,6 +1752,7 @@ static int s3c_hsotg_process_req_feature(struct s3c_hsotg *hsotg,
 		default:
 			return -ENOENT;
 		}
+<<<<<<< HEAD
 	} else
 		return -ENOENT;  /* currently only deal with endpoint */
 
@@ -1033,13 +1764,32 @@ static void s3c_hsotg_disconnect(struct s3c_hsotg *hsotg);
 
 /**
  * s3c_hsotg_stall_ep0 - stall ep0
+=======
+		break;
+	default:
+		return -ENOENT;
+	}
+	return 1;
+}
+
+static void dwc2_hsotg_enqueue_setup(struct dwc2_hsotg *hsotg);
+
+/**
+ * dwc2_hsotg_stall_ep0 - stall ep0
+>>>>>>> v4.9.227
  * @hsotg: The device state
  *
  * Set stall for ep0 as response for setup request.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_stall_ep0(struct s3c_hsotg *hsotg)
 {
 	struct s3c_hsotg_ep *ep0 = &hsotg->eps[0];
+=======
+static void dwc2_hsotg_stall_ep0(struct dwc2_hsotg *hsotg)
+{
+	struct dwc2_hsotg_ep *ep0 = hsotg->eps_out[0];
+>>>>>>> v4.9.227
 	u32 reg;
 	u32 ctrl;
 
@@ -1051,6 +1801,7 @@ static void s3c_hsotg_stall_ep0(struct s3c_hsotg *hsotg)
 	 * taken effect, so no need to clear later.
 	 */
 
+<<<<<<< HEAD
 	ctrl = readl(hsotg->regs + reg);
 	ctrl |= DXEPCTL_STALL;
 	ctrl |= DXEPCTL_CNAK;
@@ -1059,16 +1810,34 @@ static void s3c_hsotg_stall_ep0(struct s3c_hsotg *hsotg)
 	dev_dbg(hsotg->dev,
 		"written DXEPCTL=0x%08x to %08x (DXEPCTL=0x%08x)\n",
 		ctrl, reg, readl(hsotg->regs + reg));
+=======
+	ctrl = dwc2_readl(hsotg->regs + reg);
+	ctrl |= DXEPCTL_STALL;
+	ctrl |= DXEPCTL_CNAK;
+	dwc2_writel(ctrl, hsotg->regs + reg);
+
+	dev_dbg(hsotg->dev,
+		"written DXEPCTL=0x%08x to %08x (DXEPCTL=0x%08x)\n",
+		ctrl, reg, dwc2_readl(hsotg->regs + reg));
+>>>>>>> v4.9.227
 
 	 /*
 	  * complete won't be called, so we enqueue
 	  * setup request here
 	  */
+<<<<<<< HEAD
 	 s3c_hsotg_enqueue_setup(hsotg);
 }
 
 /**
  * s3c_hsotg_process_control - process a control request
+=======
+	 dwc2_hsotg_enqueue_setup(hsotg);
+}
+
+/**
+ * dwc2_hsotg_process_control - process a control request
+>>>>>>> v4.9.227
  * @hsotg: The device state
  * @ctrl: The control request received
  *
@@ -1076,6 +1845,7 @@ static void s3c_hsotg_stall_ep0(struct s3c_hsotg *hsotg)
  * needs to work out what to do next (and whether to pass it on to the
  * gadget driver).
  */
+<<<<<<< HEAD
 static void s3c_hsotg_process_control(struct s3c_hsotg *hsotg,
 				      struct usb_ctrlrequest *ctrl)
 {
@@ -1103,10 +1873,35 @@ static void s3c_hsotg_process_control(struct s3c_hsotg *hsotg,
 	 */
 	if (ctrl->wLength == 0)
 		ep0->dir_in = 1;
+=======
+static void dwc2_hsotg_process_control(struct dwc2_hsotg *hsotg,
+				      struct usb_ctrlrequest *ctrl)
+{
+	struct dwc2_hsotg_ep *ep0 = hsotg->eps_out[0];
+	int ret = 0;
+	u32 dcfg;
+
+	dev_dbg(hsotg->dev,
+		"ctrl Type=%02x, Req=%02x, V=%04x, I=%04x, L=%04x\n",
+		ctrl->bRequestType, ctrl->bRequest, ctrl->wValue,
+		ctrl->wIndex, ctrl->wLength);
+
+	if (ctrl->wLength == 0) {
+		ep0->dir_in = 1;
+		hsotg->ep0_state = DWC2_EP0_STATUS_IN;
+	} else if (ctrl->bRequestType & USB_DIR_IN) {
+		ep0->dir_in = 1;
+		hsotg->ep0_state = DWC2_EP0_DATA_IN;
+	} else {
+		ep0->dir_in = 0;
+		hsotg->ep0_state = DWC2_EP0_DATA_OUT;
+	}
+>>>>>>> v4.9.227
 
 	if ((ctrl->bRequestType & USB_TYPE_MASK) == USB_TYPE_STANDARD) {
 		switch (ctrl->bRequest) {
 		case USB_REQ_SET_ADDRESS:
+<<<<<<< HEAD
 			s3c_hsotg_disconnect(hsotg);
 			dcfg = readl(hsotg->regs + DCFG);
 			dcfg &= ~DCFG_DEVADDR_MASK;
@@ -1121,11 +1916,31 @@ static void s3c_hsotg_process_control(struct s3c_hsotg *hsotg,
 
 		case USB_REQ_GET_STATUS:
 			ret = s3c_hsotg_process_req_status(hsotg, ctrl);
+=======
+			hsotg->connected = 1;
+			dcfg = dwc2_readl(hsotg->regs + DCFG);
+			dcfg &= ~DCFG_DEVADDR_MASK;
+			dcfg |= (le16_to_cpu(ctrl->wValue) <<
+				 DCFG_DEVADDR_SHIFT) & DCFG_DEVADDR_MASK;
+			dwc2_writel(dcfg, hsotg->regs + DCFG);
+
+			dev_info(hsotg->dev, "new address %d\n", ctrl->wValue);
+
+			ret = dwc2_hsotg_send_reply(hsotg, ep0, NULL, 0);
+			return;
+
+		case USB_REQ_GET_STATUS:
+			ret = dwc2_hsotg_process_req_status(hsotg, ctrl);
+>>>>>>> v4.9.227
 			break;
 
 		case USB_REQ_CLEAR_FEATURE:
 		case USB_REQ_SET_FEATURE:
+<<<<<<< HEAD
 			ret = s3c_hsotg_process_req_feature(hsotg, ctrl);
+=======
+			ret = dwc2_hsotg_process_req_feature(hsotg, ctrl);
+>>>>>>> v4.9.227
 			break;
 		}
 	}
@@ -1146,22 +1961,38 @@ static void s3c_hsotg_process_control(struct s3c_hsotg *hsotg,
 	 */
 
 	if (ret < 0)
+<<<<<<< HEAD
 		s3c_hsotg_stall_ep0(hsotg);
 }
 
 /**
  * s3c_hsotg_complete_setup - completion of a setup transfer
+=======
+		dwc2_hsotg_stall_ep0(hsotg);
+}
+
+/**
+ * dwc2_hsotg_complete_setup - completion of a setup transfer
+>>>>>>> v4.9.227
  * @ep: The endpoint the request was on.
  * @req: The request completed.
  *
  * Called on completion of any requests the driver itself submitted for
  * EP0 setup packets
  */
+<<<<<<< HEAD
 static void s3c_hsotg_complete_setup(struct usb_ep *ep,
 				     struct usb_request *req)
 {
 	struct s3c_hsotg_ep *hs_ep = our_ep(ep);
 	struct s3c_hsotg *hsotg = hs_ep->parent;
+=======
+static void dwc2_hsotg_complete_setup(struct usb_ep *ep,
+				     struct usb_request *req)
+{
+	struct dwc2_hsotg_ep *hs_ep = our_ep(ep);
+	struct dwc2_hsotg *hsotg = hs_ep->parent;
+>>>>>>> v4.9.227
 
 	if (req->status < 0) {
 		dev_dbg(hsotg->dev, "%s: failed %d\n", __func__, req->status);
@@ -1170,23 +2001,40 @@ static void s3c_hsotg_complete_setup(struct usb_ep *ep,
 
 	spin_lock(&hsotg->lock);
 	if (req->actual == 0)
+<<<<<<< HEAD
 		s3c_hsotg_enqueue_setup(hsotg);
 	else
 		s3c_hsotg_process_control(hsotg, req->buf);
+=======
+		dwc2_hsotg_enqueue_setup(hsotg);
+	else
+		dwc2_hsotg_process_control(hsotg, req->buf);
+>>>>>>> v4.9.227
 	spin_unlock(&hsotg->lock);
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_enqueue_setup - start a request for EP0 packets
+=======
+ * dwc2_hsotg_enqueue_setup - start a request for EP0 packets
+>>>>>>> v4.9.227
  * @hsotg: The device state.
  *
  * Enqueue a request on EP0 if necessary to received any SETUP packets
  * received from the host.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_enqueue_setup(struct s3c_hsotg *hsotg)
 {
 	struct usb_request *req = hsotg->ctrl_req;
 	struct s3c_hsotg_req *hs_req = our_req(req);
+=======
+static void dwc2_hsotg_enqueue_setup(struct dwc2_hsotg *hsotg)
+{
+	struct usb_request *req = hsotg->ctrl_req;
+	struct dwc2_hsotg_req *hs_req = our_req(req);
+>>>>>>> v4.9.227
 	int ret;
 
 	dev_dbg(hsotg->dev, "%s: queueing setup request\n", __func__);
@@ -1194,16 +2042,28 @@ static void s3c_hsotg_enqueue_setup(struct s3c_hsotg *hsotg)
 	req->zero = 0;
 	req->length = 8;
 	req->buf = hsotg->ctrl_buff;
+<<<<<<< HEAD
 	req->complete = s3c_hsotg_complete_setup;
+=======
+	req->complete = dwc2_hsotg_complete_setup;
+>>>>>>> v4.9.227
 
 	if (!list_empty(&hs_req->queue)) {
 		dev_dbg(hsotg->dev, "%s already queued???\n", __func__);
 		return;
 	}
 
+<<<<<<< HEAD
 	hsotg->eps[0].dir_in = 0;
 
 	ret = s3c_hsotg_ep_queue(&hsotg->eps[0].ep, req, GFP_ATOMIC);
+=======
+	hsotg->eps_out[0]->dir_in = 0;
+	hsotg->eps_out[0]->send_zlp = 0;
+	hsotg->ep0_state = DWC2_EP0_SETUP;
+
+	ret = dwc2_hsotg_ep_queue(&hsotg->eps_out[0]->ep, req, GFP_ATOMIC);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(hsotg->dev, "%s: failed queue (%d)\n", __func__, ret);
 		/*
@@ -1213,8 +2073,39 @@ static void s3c_hsotg_enqueue_setup(struct s3c_hsotg *hsotg)
 	}
 }
 
+<<<<<<< HEAD
 /**
  * s3c_hsotg_complete_request - complete a request given to us
+=======
+static void dwc2_hsotg_program_zlp(struct dwc2_hsotg *hsotg,
+					struct dwc2_hsotg_ep *hs_ep)
+{
+	u32 ctrl;
+	u8 index = hs_ep->index;
+	u32 epctl_reg = hs_ep->dir_in ? DIEPCTL(index) : DOEPCTL(index);
+	u32 epsiz_reg = hs_ep->dir_in ? DIEPTSIZ(index) : DOEPTSIZ(index);
+
+	if (hs_ep->dir_in)
+		dev_dbg(hsotg->dev, "Sending zero-length packet on ep%d\n",
+									index);
+	else
+		dev_dbg(hsotg->dev, "Receiving zero-length packet on ep%d\n",
+									index);
+
+	dwc2_writel(DXEPTSIZ_MC(1) | DXEPTSIZ_PKTCNT(1) |
+		    DXEPTSIZ_XFERSIZE(0), hsotg->regs +
+		    epsiz_reg);
+
+	ctrl = dwc2_readl(hsotg->regs + epctl_reg);
+	ctrl |= DXEPCTL_CNAK;  /* clear NAK set by core */
+	ctrl |= DXEPCTL_EPENA; /* ensure ep enabled */
+	ctrl |= DXEPCTL_USBACTEP;
+	dwc2_writel(ctrl, hsotg->regs + epctl_reg);
+}
+
+/**
+ * dwc2_hsotg_complete_request - complete a request given to us
+>>>>>>> v4.9.227
  * @hsotg: The device state.
  * @hs_ep: The endpoint the request was on.
  * @hs_req: The request to complete.
@@ -1226,12 +2117,20 @@ static void s3c_hsotg_enqueue_setup(struct s3c_hsotg *hsotg)
  *
  * Note, expects the ep to already be locked as appropriate.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_complete_request(struct s3c_hsotg *hsotg,
 				       struct s3c_hsotg_ep *hs_ep,
 				       struct s3c_hsotg_req *hs_req,
 				       int result)
 {
 	bool restart;
+=======
+static void dwc2_hsotg_complete_request(struct dwc2_hsotg *hsotg,
+				       struct dwc2_hsotg_ep *hs_ep,
+				       struct dwc2_hsotg_req *hs_req,
+				       int result)
+{
+>>>>>>> v4.9.227
 
 	if (!hs_req) {
 		dev_dbg(hsotg->dev, "%s: nothing to complete?\n", __func__);
@@ -1249,12 +2148,23 @@ static void s3c_hsotg_complete_request(struct s3c_hsotg *hsotg,
 	if (hs_req->req.status == -EINPROGRESS)
 		hs_req->req.status = result;
 
+<<<<<<< HEAD
 	hs_ep->req = NULL;
 	list_del_init(&hs_req->queue);
 
 	if (using_dma(hsotg))
 		s3c_hsotg_unmap_dma(hsotg, hs_ep, hs_req);
 
+=======
+	if (using_dma(hsotg))
+		dwc2_hsotg_unmap_dma(hsotg, hs_ep, hs_req);
+
+	dwc2_hsotg_handle_unaligned_buf_complete(hsotg, hs_ep, hs_req);
+
+	hs_ep->req = NULL;
+	list_del_init(&hs_req->queue);
+
+>>>>>>> v4.9.227
 	/*
 	 * call the complete request with the locks off, just in case the
 	 * request tries to queue more work for this endpoint.
@@ -1273,16 +2183,24 @@ static void s3c_hsotg_complete_request(struct s3c_hsotg *hsotg,
 	 */
 
 	if (!hs_ep->req && result >= 0) {
+<<<<<<< HEAD
 		restart = !list_empty(&hs_ep->queue);
 		if (restart) {
 			hs_req = get_ep_head(hs_ep);
 			s3c_hsotg_start_req(hsotg, hs_ep, hs_req, false);
 		}
+=======
+		dwc2_gadget_start_next_request(hs_ep);
+>>>>>>> v4.9.227
 	}
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_rx_data - receive data from the FIFO for an endpoint
+=======
+ * dwc2_hsotg_rx_data - receive data from the FIFO for an endpoint
+>>>>>>> v4.9.227
  * @hsotg: The device state.
  * @ep_idx: The endpoint index for the data
  * @size: The size of data in the fifo, in bytes
@@ -1291,10 +2209,17 @@ static void s3c_hsotg_complete_request(struct s3c_hsotg *hsotg,
  * endpoint, so sort out whether we need to read the data into a request
  * that has been made for that endpoint.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_rx_data(struct s3c_hsotg *hsotg, int ep_idx, int size)
 {
 	struct s3c_hsotg_ep *hs_ep = &hsotg->eps[ep_idx];
 	struct s3c_hsotg_req *hs_req = hs_ep->req;
+=======
+static void dwc2_hsotg_rx_data(struct dwc2_hsotg *hsotg, int ep_idx, int size)
+{
+	struct dwc2_hsotg_ep *hs_ep = hsotg->eps_out[ep_idx];
+	struct dwc2_hsotg_req *hs_req = hs_ep->req;
+>>>>>>> v4.9.227
 	void __iomem *fifo = hsotg->regs + EPFIFO(ep_idx);
 	int to_read;
 	int max_req;
@@ -1302,16 +2227,27 @@ static void s3c_hsotg_rx_data(struct s3c_hsotg *hsotg, int ep_idx, int size)
 
 
 	if (!hs_req) {
+<<<<<<< HEAD
 		u32 epctl = readl(hsotg->regs + DOEPCTL(ep_idx));
 		int ptr;
 
 		dev_warn(hsotg->dev,
+=======
+		u32 epctl = dwc2_readl(hsotg->regs + DOEPCTL(ep_idx));
+		int ptr;
+
+		dev_dbg(hsotg->dev,
+>>>>>>> v4.9.227
 			 "%s: FIFO %d bytes on ep%d but no req (DXEPCTl=0x%08x)\n",
 			 __func__, size, ep_idx, epctl);
 
 		/* dump the data from the FIFO, we've nothing we can do */
 		for (ptr = 0; ptr < size; ptr += 4)
+<<<<<<< HEAD
 			(void)readl(fifo);
+=======
+			(void)dwc2_readl(fifo);
+>>>>>>> v4.9.227
 
 		return;
 	}
@@ -1345,9 +2281,15 @@ static void s3c_hsotg_rx_data(struct s3c_hsotg *hsotg, int ep_idx, int size)
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_send_zlp - send zero-length packet on control endpoint
  * @hsotg: The device instance
  * @req: The request currently on this endpoint
+=======
+ * dwc2_hsotg_ep0_zlp - send/receive zero-length packet on control endpoint
+ * @hsotg: The device instance
+ * @dir_in: If IN zlp
+>>>>>>> v4.9.227
  *
  * Generate a zero-length IN packet request for terminating a SETUP
  * transaction.
@@ -1356,6 +2298,7 @@ static void s3c_hsotg_rx_data(struct s3c_hsotg *hsotg, int ep_idx, int size)
  * currently believed that we do not need to wait for any space in
  * the TxFIFO.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_send_zlp(struct s3c_hsotg *hsotg,
 			       struct s3c_hsotg_req *req)
 {
@@ -1393,17 +2336,53 @@ static void s3c_hsotg_send_zlp(struct s3c_hsotg *hsotg,
  * @hsotg: The device instance
  * @epnum: The endpoint received from
  * @was_setup: Set if processing a SetupDone event.
+=======
+static void dwc2_hsotg_ep0_zlp(struct dwc2_hsotg *hsotg, bool dir_in)
+{
+	/* eps_out[0] is used in both directions */
+	hsotg->eps_out[0]->dir_in = dir_in;
+	hsotg->ep0_state = dir_in ? DWC2_EP0_STATUS_IN : DWC2_EP0_STATUS_OUT;
+
+	dwc2_hsotg_program_zlp(hsotg, hsotg->eps_out[0]);
+}
+
+static void dwc2_hsotg_change_ep_iso_parity(struct dwc2_hsotg *hsotg,
+			u32 epctl_reg)
+{
+	u32 ctrl;
+
+	ctrl = dwc2_readl(hsotg->regs + epctl_reg);
+	if (ctrl & DXEPCTL_EOFRNUM)
+		ctrl |= DXEPCTL_SETEVENFR;
+	else
+		ctrl |= DXEPCTL_SETODDFR;
+	dwc2_writel(ctrl, hsotg->regs + epctl_reg);
+}
+
+/**
+ * dwc2_hsotg_handle_outdone - handle receiving OutDone/SetupDone from RXFIFO
+ * @hsotg: The device instance
+ * @epnum: The endpoint received from
+>>>>>>> v4.9.227
  *
  * The RXFIFO has delivered an OutDone event, which means that the data
  * transfer for an OUT endpoint has been completed, either by a short
  * packet or by the finish of a transfer.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_handle_outdone(struct s3c_hsotg *hsotg,
 				     int epnum, bool was_setup)
 {
 	u32 epsize = readl(hsotg->regs + DOEPTSIZ(epnum));
 	struct s3c_hsotg_ep *hs_ep = &hsotg->eps[epnum];
 	struct s3c_hsotg_req *hs_req = hs_ep->req;
+=======
+static void dwc2_hsotg_handle_outdone(struct dwc2_hsotg *hsotg, int epnum)
+{
+	u32 epsize = dwc2_readl(hsotg->regs + DOEPTSIZ(epnum));
+	struct dwc2_hsotg_ep *hs_ep = hsotg->eps_out[epnum];
+	struct dwc2_hsotg_req *hs_req = hs_ep->req;
+>>>>>>> v4.9.227
 	struct usb_request *req = &hs_req->req;
 	unsigned size_left = DXEPTSIZ_XFERSIZE_GET(epsize);
 	int result = 0;
@@ -1413,6 +2392,16 @@ static void s3c_hsotg_handle_outdone(struct s3c_hsotg *hsotg,
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+	if (epnum == 0 && hsotg->ep0_state == DWC2_EP0_STATUS_OUT) {
+		dev_dbg(hsotg->dev, "zlp packet received\n");
+		dwc2_hsotg_complete_request(hsotg, hs_ep, hs_req, 0);
+		dwc2_hsotg_enqueue_setup(hsotg);
+		return;
+	}
+
+>>>>>>> v4.9.227
 	if (using_dma(hsotg)) {
 		unsigned size_done;
 
@@ -1433,6 +2422,7 @@ static void s3c_hsotg_handle_outdone(struct s3c_hsotg *hsotg,
 
 	/* if there is more request to do, schedule new transfer */
 	if (req->actual < req->length && size_left == 0) {
+<<<<<<< HEAD
 		s3c_hsotg_start_req(hsotg, hs_ep, hs_req, true);
 		return;
 	} else if (epnum == 0) {
@@ -1441,6 +2431,10 @@ static void s3c_hsotg_handle_outdone(struct s3c_hsotg *hsotg,
 		 * set CNAK for non Setup requests
 		 */
 		hsotg->setup = was_setup ? 0 : 1;
+=======
+		dwc2_hsotg_start_req(hsotg, hs_ep, hs_req, true);
+		return;
+>>>>>>> v4.9.227
 	}
 
 	if (req->actual < req->length && req->short_not_ok) {
@@ -1453,6 +2447,7 @@ static void s3c_hsotg_handle_outdone(struct s3c_hsotg *hsotg,
 		 */
 	}
 
+<<<<<<< HEAD
 	if (epnum == 0) {
 		/*
 		 * Condition req->complete != s3c_hsotg_complete_setup says:
@@ -1484,6 +2479,30 @@ static u32 s3c_hsotg_read_frameno(struct s3c_hsotg *hsotg)
 
 /**
  * s3c_hsotg_handle_rx - RX FIFO has data
+=======
+	if (epnum == 0 && hsotg->ep0_state == DWC2_EP0_DATA_OUT) {
+		/* Move to STATUS IN */
+		dwc2_hsotg_ep0_zlp(hsotg, true);
+		return;
+	}
+
+	/*
+	 * Slave mode OUT transfers do not go through XferComplete so
+	 * adjust the ISOC parity here.
+	 */
+	if (!using_dma(hsotg)) {
+		if (hs_ep->isochronous && hs_ep->interval == 1)
+			dwc2_hsotg_change_ep_iso_parity(hsotg, DOEPCTL(epnum));
+		else if (hs_ep->isochronous && hs_ep->interval > 1)
+			dwc2_gadget_incr_frame_num(hs_ep);
+	}
+
+	dwc2_hsotg_complete_request(hsotg, hs_ep, hs_req, result);
+}
+
+/**
+ * dwc2_hsotg_handle_rx - RX FIFO has data
+>>>>>>> v4.9.227
  * @hsotg: The device instance
  *
  * The IRQ handler has detected that the RX FIFO has some data in it
@@ -1498,9 +2517,15 @@ static u32 s3c_hsotg_read_frameno(struct s3c_hsotg *hsotg)
  * as the actual data should be sent to the memory directly and we turn
  * on the completion interrupts to get notifications of transfer completion.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_handle_rx(struct s3c_hsotg *hsotg)
 {
 	u32 grxstsr = readl(hsotg->regs + GRXSTSP);
+=======
+static void dwc2_hsotg_handle_rx(struct dwc2_hsotg *hsotg)
+{
+	u32 grxstsr = dwc2_readl(hsotg->regs + GRXSTSP);
+>>>>>>> v4.9.227
 	u32 epnum, status, size;
 
 	WARN_ON(using_dma(hsotg));
@@ -1511,8 +2536,12 @@ static void s3c_hsotg_handle_rx(struct s3c_hsotg *hsotg)
 	size = grxstsr & GRXSTS_BYTECNT_MASK;
 	size >>= GRXSTS_BYTECNT_SHIFT;
 
+<<<<<<< HEAD
 	if (1)
 		dev_dbg(hsotg->dev, "%s: GRXSTSP=0x%08x (%d@%d)\n",
+=======
+	dev_dbg(hsotg->dev, "%s: GRXSTSP=0x%08x (%d@%d)\n",
+>>>>>>> v4.9.227
 			__func__, grxstsr, size, epnum);
 
 	switch ((status & GRXSTS_PKTSTS_MASK) >> GRXSTS_PKTSTS_SHIFT) {
@@ -1522,15 +2551,23 @@ static void s3c_hsotg_handle_rx(struct s3c_hsotg *hsotg)
 
 	case GRXSTS_PKTSTS_OUTDONE:
 		dev_dbg(hsotg->dev, "OutDone (Frame=0x%08x)\n",
+<<<<<<< HEAD
 			s3c_hsotg_read_frameno(hsotg));
 
 		if (!using_dma(hsotg))
 			s3c_hsotg_handle_outdone(hsotg, epnum, false);
+=======
+			dwc2_hsotg_read_frameno(hsotg));
+
+		if (!using_dma(hsotg))
+			dwc2_hsotg_handle_outdone(hsotg, epnum);
+>>>>>>> v4.9.227
 		break;
 
 	case GRXSTS_PKTSTS_SETUPDONE:
 		dev_dbg(hsotg->dev,
 			"SetupDone (Frame=0x%08x, DOPEPCTL=0x%08x)\n",
+<<<<<<< HEAD
 			s3c_hsotg_read_frameno(hsotg),
 			readl(hsotg->regs + DOEPCTL(0)));
 
@@ -1539,31 +2576,66 @@ static void s3c_hsotg_handle_rx(struct s3c_hsotg *hsotg)
 
 	case GRXSTS_PKTSTS_OUTRX:
 		s3c_hsotg_rx_data(hsotg, epnum, size);
+=======
+			dwc2_hsotg_read_frameno(hsotg),
+			dwc2_readl(hsotg->regs + DOEPCTL(0)));
+		/*
+		 * Call dwc2_hsotg_handle_outdone here if it was not called from
+		 * GRXSTS_PKTSTS_OUTDONE. That is, if the core didn't
+		 * generate GRXSTS_PKTSTS_OUTDONE for setup packet.
+		 */
+		if (hsotg->ep0_state == DWC2_EP0_SETUP)
+			dwc2_hsotg_handle_outdone(hsotg, epnum);
+		break;
+
+	case GRXSTS_PKTSTS_OUTRX:
+		dwc2_hsotg_rx_data(hsotg, epnum, size);
+>>>>>>> v4.9.227
 		break;
 
 	case GRXSTS_PKTSTS_SETUPRX:
 		dev_dbg(hsotg->dev,
 			"SetupRX (Frame=0x%08x, DOPEPCTL=0x%08x)\n",
+<<<<<<< HEAD
 			s3c_hsotg_read_frameno(hsotg),
 			readl(hsotg->regs + DOEPCTL(0)));
 
 		s3c_hsotg_rx_data(hsotg, epnum, size);
+=======
+			dwc2_hsotg_read_frameno(hsotg),
+			dwc2_readl(hsotg->regs + DOEPCTL(0)));
+
+		WARN_ON(hsotg->ep0_state != DWC2_EP0_SETUP);
+
+		dwc2_hsotg_rx_data(hsotg, epnum, size);
+>>>>>>> v4.9.227
 		break;
 
 	default:
 		dev_warn(hsotg->dev, "%s: unknown status %08x\n",
 			 __func__, grxstsr);
 
+<<<<<<< HEAD
 		s3c_hsotg_dump(hsotg);
+=======
+		dwc2_hsotg_dump(hsotg);
+>>>>>>> v4.9.227
 		break;
 	}
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_ep0_mps - turn max packet size into register setting
  * @mps: The maximum packet size in bytes.
  */
 static u32 s3c_hsotg_ep0_mps(unsigned int mps)
+=======
+ * dwc2_hsotg_ep0_mps - turn max packet size into register setting
+ * @mps: The maximum packet size in bytes.
+ */
+static u32 dwc2_hsotg_ep0_mps(unsigned int mps)
+>>>>>>> v4.9.227
 {
 	switch (mps) {
 	case 64:
@@ -1582,7 +2654,11 @@ static u32 s3c_hsotg_ep0_mps(unsigned int mps)
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_set_ep_maxpacket - set endpoint's max-packet field
+=======
+ * dwc2_hsotg_set_ep_maxpacket - set endpoint's max-packet field
+>>>>>>> v4.9.227
  * @hsotg: The driver state.
  * @ep: The index number of the endpoint
  * @mps: The maximum packet size in bytes
@@ -1590,18 +2666,35 @@ static u32 s3c_hsotg_ep0_mps(unsigned int mps)
  * Configure the maximum packet size for the given endpoint, updating
  * the hardware control registers to reflect this.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_set_ep_maxpacket(struct s3c_hsotg *hsotg,
 				       unsigned int ep, unsigned int mps)
 {
 	struct s3c_hsotg_ep *hs_ep = &hsotg->eps[ep];
+=======
+static void dwc2_hsotg_set_ep_maxpacket(struct dwc2_hsotg *hsotg,
+			unsigned int ep, unsigned int mps, unsigned int dir_in)
+{
+	struct dwc2_hsotg_ep *hs_ep;
+>>>>>>> v4.9.227
 	void __iomem *regs = hsotg->regs;
 	u32 mpsval;
 	u32 mcval;
 	u32 reg;
 
+<<<<<<< HEAD
 	if (ep == 0) {
 		/* EP0 is a special case */
 		mpsval = s3c_hsotg_ep0_mps(mps);
+=======
+	hs_ep = index_to_ep(hsotg, ep, dir_in);
+	if (!hs_ep)
+		return;
+
+	if (ep == 0) {
+		/* EP0 is a special case */
+		mpsval = dwc2_hsotg_ep0_mps(mps);
+>>>>>>> v4.9.227
 		if (mpsval > 3)
 			goto bad_mps;
 		hs_ep->ep.maxpacket = mps;
@@ -1617,6 +2710,7 @@ static void s3c_hsotg_set_ep_maxpacket(struct s3c_hsotg *hsotg,
 		hs_ep->ep.maxpacket = mpsval;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * update both the in and out endpoint controldir_ registers, even
 	 * if one of the directions may not be in use.
@@ -1632,6 +2726,18 @@ static void s3c_hsotg_set_ep_maxpacket(struct s3c_hsotg *hsotg,
 		reg &= ~DXEPCTL_MPS_MASK;
 		reg |= mpsval;
 		writel(reg, regs + DOEPCTL(ep));
+=======
+	if (dir_in) {
+		reg = dwc2_readl(regs + DIEPCTL(ep));
+		reg &= ~DXEPCTL_MPS_MASK;
+		reg |= mpsval;
+		dwc2_writel(reg, regs + DIEPCTL(ep));
+	} else {
+		reg = dwc2_readl(regs + DOEPCTL(ep));
+		reg &= ~DXEPCTL_MPS_MASK;
+		reg |= mpsval;
+		dwc2_writel(reg, regs + DOEPCTL(ep));
+>>>>>>> v4.9.227
 	}
 
 	return;
@@ -1641,23 +2747,40 @@ bad_mps:
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_txfifo_flush - flush Tx FIFO
  * @hsotg: The driver state
  * @idx: The index for the endpoint (0..15)
  */
 static void s3c_hsotg_txfifo_flush(struct s3c_hsotg *hsotg, unsigned int idx)
+=======
+ * dwc2_hsotg_txfifo_flush - flush Tx FIFO
+ * @hsotg: The driver state
+ * @idx: The index for the endpoint (0..15)
+ */
+static void dwc2_hsotg_txfifo_flush(struct dwc2_hsotg *hsotg, unsigned int idx)
+>>>>>>> v4.9.227
 {
 	int timeout;
 	int val;
 
+<<<<<<< HEAD
 	writel(GRSTCTL_TXFNUM(idx) | GRSTCTL_TXFFLSH,
 		hsotg->regs + GRSTCTL);
+=======
+	dwc2_writel(GRSTCTL_TXFNUM(idx) | GRSTCTL_TXFFLSH,
+		    hsotg->regs + GRSTCTL);
+>>>>>>> v4.9.227
 
 	/* wait until the fifo is flushed */
 	timeout = 100;
 
 	while (1) {
+<<<<<<< HEAD
 		val = readl(hsotg->regs + GRSTCTL);
+=======
+		val = dwc2_readl(hsotg->regs + GRSTCTL);
+>>>>>>> v4.9.227
 
 		if ((val & (GRSTCTL_TXFFLSH)) == 0)
 			break;
@@ -1674,17 +2797,28 @@ static void s3c_hsotg_txfifo_flush(struct s3c_hsotg *hsotg, unsigned int idx)
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_trytx - check to see if anything needs transmitting
+=======
+ * dwc2_hsotg_trytx - check to see if anything needs transmitting
+>>>>>>> v4.9.227
  * @hsotg: The driver state
  * @hs_ep: The driver endpoint to check.
  *
  * Check to see if there is a request that has data to send, and if so
  * make an attempt to write data into the FIFO.
  */
+<<<<<<< HEAD
 static int s3c_hsotg_trytx(struct s3c_hsotg *hsotg,
 			   struct s3c_hsotg_ep *hs_ep)
 {
 	struct s3c_hsotg_req *hs_req = hs_ep->req;
+=======
+static int dwc2_hsotg_trytx(struct dwc2_hsotg *hsotg,
+			   struct dwc2_hsotg_ep *hs_ep)
+{
+	struct dwc2_hsotg_req *hs_req = hs_ep->req;
+>>>>>>> v4.9.227
 
 	if (!hs_ep->dir_in || !hs_req) {
 		/**
@@ -1692,7 +2826,11 @@ static int s3c_hsotg_trytx(struct s3c_hsotg *hsotg,
 		 * for endpoints, excepting ep0
 		 */
 		if (hs_ep->index != 0)
+<<<<<<< HEAD
 			s3c_hsotg_ctrl_epint(hsotg, hs_ep->index,
+=======
+			dwc2_hsotg_ctrl_epint(hsotg, hs_ep->index,
+>>>>>>> v4.9.227
 					     hs_ep->dir_in, 0);
 		return 0;
 	}
@@ -1700,25 +2838,41 @@ static int s3c_hsotg_trytx(struct s3c_hsotg *hsotg,
 	if (hs_req->req.actual < hs_req->req.length) {
 		dev_dbg(hsotg->dev, "trying to write more for ep%d\n",
 			hs_ep->index);
+<<<<<<< HEAD
 		return s3c_hsotg_write_fifo(hsotg, hs_ep, hs_req);
+=======
+		return dwc2_hsotg_write_fifo(hsotg, hs_ep, hs_req);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_complete_in - complete IN transfer
+=======
+ * dwc2_hsotg_complete_in - complete IN transfer
+>>>>>>> v4.9.227
  * @hsotg: The device state.
  * @hs_ep: The endpoint that has just completed.
  *
  * An IN transfer has been completed, update the transfer's state and then
  * call the relevant completion routines.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_complete_in(struct s3c_hsotg *hsotg,
 				  struct s3c_hsotg_ep *hs_ep)
 {
 	struct s3c_hsotg_req *hs_req = hs_ep->req;
 	u32 epsize = readl(hsotg->regs + DIEPTSIZ(hs_ep->index));
+=======
+static void dwc2_hsotg_complete_in(struct dwc2_hsotg *hsotg,
+				  struct dwc2_hsotg_ep *hs_ep)
+{
+	struct dwc2_hsotg_req *hs_req = hs_ep->req;
+	u32 epsize = dwc2_readl(hsotg->regs + DIEPTSIZ(hs_ep->index));
+>>>>>>> v4.9.227
 	int size_left, size_done;
 
 	if (!hs_req) {
@@ -1727,9 +2881,27 @@ static void s3c_hsotg_complete_in(struct s3c_hsotg *hsotg,
 	}
 
 	/* Finish ZLP handling for IN EP0 transactions */
+<<<<<<< HEAD
 	if (hsotg->eps[0].sent_zlp) {
 		dev_dbg(hsotg->dev, "zlp packet received\n");
 		s3c_hsotg_complete_request(hsotg, hs_ep, hs_req, 0);
+=======
+	if (hs_ep->index == 0 && hsotg->ep0_state == DWC2_EP0_STATUS_IN) {
+		dev_dbg(hsotg->dev, "zlp packet sent\n");
+		dwc2_hsotg_complete_request(hsotg, hs_ep, hs_req, 0);
+		if (hsotg->test_mode) {
+			int ret;
+
+			ret = dwc2_hsotg_set_test_mode(hsotg, hsotg->test_mode);
+			if (ret < 0) {
+				dev_dbg(hsotg->dev, "Invalid Test #%d\n",
+						hsotg->test_mode);
+				dwc2_hsotg_stall_ep0(hsotg);
+				return;
+			}
+		}
+		dwc2_hsotg_enqueue_setup(hsotg);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -1756,6 +2928,7 @@ static void s3c_hsotg_complete_in(struct s3c_hsotg *hsotg,
 	dev_dbg(hsotg->dev, "req->length:%d req->actual:%d req->zero:%d\n",
 		hs_req->req.length, hs_req->req.actual, hs_req->req.zero);
 
+<<<<<<< HEAD
 	/*
 	 * Check if dealing with Maximum Packet Size(MPS) IN transfer at EP0
 	 * When sent data is a multiple MPS size (e.g. 64B ,128B ,192B
@@ -1785,31 +2958,264 @@ static void s3c_hsotg_complete_in(struct s3c_hsotg *hsotg,
 
 /**
  * s3c_hsotg_epint - handle an in/out endpoint interrupt
+=======
+	if (!size_left && hs_req->req.actual < hs_req->req.length) {
+		dev_dbg(hsotg->dev, "%s trying more for req...\n", __func__);
+		dwc2_hsotg_start_req(hsotg, hs_ep, hs_req, true);
+		return;
+	}
+
+	/* Zlp for all endpoints, for ep0 only in DATA IN stage */
+	if (hs_ep->send_zlp) {
+		dwc2_hsotg_program_zlp(hsotg, hs_ep);
+		hs_ep->send_zlp = 0;
+		/* transfer will be completed on next complete interrupt */
+		return;
+	}
+
+	if (hs_ep->index == 0 && hsotg->ep0_state == DWC2_EP0_DATA_IN) {
+		/* Move to STATUS OUT */
+		dwc2_hsotg_ep0_zlp(hsotg, false);
+		return;
+	}
+
+	dwc2_hsotg_complete_request(hsotg, hs_ep, hs_req, 0);
+}
+
+/**
+ * dwc2_gadget_read_ep_interrupts - reads interrupts for given ep
+ * @hsotg: The device state.
+ * @idx: Index of ep.
+ * @dir_in: Endpoint direction 1-in 0-out.
+ *
+ * Reads for endpoint with given index and direction, by masking
+ * epint_reg with coresponding mask.
+ */
+static u32 dwc2_gadget_read_ep_interrupts(struct dwc2_hsotg *hsotg,
+					  unsigned int idx, int dir_in)
+{
+	u32 epmsk_reg = dir_in ? DIEPMSK : DOEPMSK;
+	u32 epint_reg = dir_in ? DIEPINT(idx) : DOEPINT(idx);
+	u32 ints;
+	u32 mask;
+	u32 diepempmsk;
+
+	mask = dwc2_readl(hsotg->regs + epmsk_reg);
+	diepempmsk = dwc2_readl(hsotg->regs + DIEPEMPMSK);
+	mask |= ((diepempmsk >> idx) & 0x1) ? DIEPMSK_TXFIFOEMPTY : 0;
+	mask |= DXEPINT_SETUP_RCVD;
+
+	ints = dwc2_readl(hsotg->regs + epint_reg);
+	ints &= mask;
+	return ints;
+}
+
+/**
+ * dwc2_gadget_handle_ep_disabled - handle DXEPINT_EPDISBLD
+ * @hs_ep: The endpoint on which interrupt is asserted.
+ *
+ * This interrupt indicates that the endpoint has been disabled per the
+ * application's request.
+ *
+ * For IN endpoints flushes txfifo, in case of BULK clears DCTL_CGNPINNAK,
+ * in case of ISOC completes current request.
+ *
+ * For ISOC-OUT endpoints completes expired requests. If there is remaining
+ * request starts it.
+ */
+static void dwc2_gadget_handle_ep_disabled(struct dwc2_hsotg_ep *hs_ep)
+{
+	struct dwc2_hsotg *hsotg = hs_ep->parent;
+	struct dwc2_hsotg_req *hs_req;
+	unsigned char idx = hs_ep->index;
+	int dir_in = hs_ep->dir_in;
+	u32 epctl_reg = dir_in ? DIEPCTL(idx) : DOEPCTL(idx);
+	int dctl = dwc2_readl(hsotg->regs + DCTL);
+
+	dev_dbg(hsotg->dev, "%s: EPDisbld\n", __func__);
+
+	if (dir_in) {
+		int epctl = dwc2_readl(hsotg->regs + epctl_reg);
+
+		dwc2_hsotg_txfifo_flush(hsotg, hs_ep->fifo_index);
+
+		if (hs_ep->isochronous) {
+			dwc2_hsotg_complete_in(hsotg, hs_ep);
+			return;
+		}
+
+		if ((epctl & DXEPCTL_STALL) && (epctl & DXEPCTL_EPTYPE_BULK)) {
+			int dctl = dwc2_readl(hsotg->regs + DCTL);
+
+			dctl |= DCTL_CGNPINNAK;
+			dwc2_writel(dctl, hsotg->regs + DCTL);
+		}
+		return;
+	}
+
+	if (dctl & DCTL_GOUTNAKSTS) {
+		dctl |= DCTL_CGOUTNAK;
+		dwc2_writel(dctl, hsotg->regs + DCTL);
+	}
+
+	if (!hs_ep->isochronous)
+		return;
+
+	if (list_empty(&hs_ep->queue)) {
+		dev_dbg(hsotg->dev, "%s: complete_ep 0x%p, ep->queue empty!\n",
+			__func__, hs_ep);
+		return;
+	}
+
+	do {
+		hs_req = get_ep_head(hs_ep);
+		if (hs_req)
+			dwc2_hsotg_complete_request(hsotg, hs_ep, hs_req,
+						    -ENODATA);
+		dwc2_gadget_incr_frame_num(hs_ep);
+	} while (dwc2_gadget_target_frame_elapsed(hs_ep));
+
+	dwc2_gadget_start_next_request(hs_ep);
+}
+
+/**
+ * dwc2_gadget_handle_out_token_ep_disabled - handle DXEPINT_OUTTKNEPDIS
+ * @hs_ep: The endpoint on which interrupt is asserted.
+ *
+ * This is starting point for ISOC-OUT transfer, synchronization done with
+ * first out token received from host while corresponding EP is disabled.
+ *
+ * Device does not know initial frame in which out token will come. For this
+ * HW generates OUTTKNEPDIS - out token is received while EP is disabled. Upon
+ * getting this interrupt SW starts calculation for next transfer frame.
+ */
+static void dwc2_gadget_handle_out_token_ep_disabled(struct dwc2_hsotg_ep *ep)
+{
+	struct dwc2_hsotg *hsotg = ep->parent;
+	int dir_in = ep->dir_in;
+	u32 doepmsk;
+
+	if (dir_in || !ep->isochronous)
+		return;
+
+	dwc2_hsotg_complete_request(hsotg, ep, get_ep_head(ep), -ENODATA);
+
+	if (ep->interval > 1 &&
+	    ep->target_frame == TARGET_FRAME_INITIAL) {
+		u32 dsts;
+		u32 ctrl;
+
+		dsts = dwc2_readl(hsotg->regs + DSTS);
+		ep->target_frame = dwc2_hsotg_read_frameno(hsotg);
+		dwc2_gadget_incr_frame_num(ep);
+
+		ctrl = dwc2_readl(hsotg->regs + DOEPCTL(ep->index));
+		if (ep->target_frame & 0x1)
+			ctrl |= DXEPCTL_SETODDFR;
+		else
+			ctrl |= DXEPCTL_SETEVENFR;
+
+		dwc2_writel(ctrl, hsotg->regs + DOEPCTL(ep->index));
+	}
+
+	dwc2_gadget_start_next_request(ep);
+	doepmsk = dwc2_readl(hsotg->regs + DOEPMSK);
+	doepmsk &= ~DOEPMSK_OUTTKNEPDISMSK;
+	dwc2_writel(doepmsk, hsotg->regs + DOEPMSK);
+}
+
+/**
+* dwc2_gadget_handle_nak - handle NAK interrupt
+* @hs_ep: The endpoint on which interrupt is asserted.
+*
+* This is starting point for ISOC-IN transfer, synchronization done with
+* first IN token received from host while corresponding EP is disabled.
+*
+* Device does not know when first one token will arrive from host. On first
+* token arrival HW generates 2 interrupts: 'in token received while FIFO empty'
+* and 'NAK'. NAK interrupt for ISOC-IN means that token has arrived and ZLP was
+* sent in response to that as there was no data in FIFO. SW is basing on this
+* interrupt to obtain frame in which token has come and then based on the
+* interval calculates next frame for transfer.
+*/
+static void dwc2_gadget_handle_nak(struct dwc2_hsotg_ep *hs_ep)
+{
+	struct dwc2_hsotg *hsotg = hs_ep->parent;
+	int dir_in = hs_ep->dir_in;
+
+	if (!dir_in || !hs_ep->isochronous)
+		return;
+
+	if (hs_ep->target_frame == TARGET_FRAME_INITIAL) {
+		hs_ep->target_frame = dwc2_hsotg_read_frameno(hsotg);
+		if (hs_ep->interval > 1) {
+			u32 ctrl = dwc2_readl(hsotg->regs +
+					      DIEPCTL(hs_ep->index));
+			if (hs_ep->target_frame & 0x1)
+				ctrl |= DXEPCTL_SETODDFR;
+			else
+				ctrl |= DXEPCTL_SETEVENFR;
+
+			dwc2_writel(ctrl, hsotg->regs + DIEPCTL(hs_ep->index));
+		}
+
+		dwc2_hsotg_complete_request(hsotg, hs_ep,
+					    get_ep_head(hs_ep), 0);
+	}
+
+	dwc2_gadget_incr_frame_num(hs_ep);
+}
+
+/**
+ * dwc2_hsotg_epint - handle an in/out endpoint interrupt
+>>>>>>> v4.9.227
  * @hsotg: The driver state
  * @idx: The index for the endpoint (0..15)
  * @dir_in: Set if this is an IN endpoint
  *
  * Process and clear any interrupt pending for an individual endpoint
  */
+<<<<<<< HEAD
 static void s3c_hsotg_epint(struct s3c_hsotg *hsotg, unsigned int idx,
 			    int dir_in)
 {
 	struct s3c_hsotg_ep *hs_ep = &hsotg->eps[idx];
+=======
+static void dwc2_hsotg_epint(struct dwc2_hsotg *hsotg, unsigned int idx,
+			    int dir_in)
+{
+	struct dwc2_hsotg_ep *hs_ep = index_to_ep(hsotg, idx, dir_in);
+>>>>>>> v4.9.227
 	u32 epint_reg = dir_in ? DIEPINT(idx) : DOEPINT(idx);
 	u32 epctl_reg = dir_in ? DIEPCTL(idx) : DOEPCTL(idx);
 	u32 epsiz_reg = dir_in ? DIEPTSIZ(idx) : DOEPTSIZ(idx);
 	u32 ints;
 	u32 ctrl;
 
+<<<<<<< HEAD
 	ints = readl(hsotg->regs + epint_reg);
 	ctrl = readl(hsotg->regs + epctl_reg);
 
 	/* Clear endpoint interrupts */
 	writel(ints, hsotg->regs + epint_reg);
+=======
+	ints = dwc2_gadget_read_ep_interrupts(hsotg, idx, dir_in);
+	ctrl = dwc2_readl(hsotg->regs + epctl_reg);
+
+	/* Clear endpoint interrupts */
+	dwc2_writel(ints, hsotg->regs + epint_reg);
+
+	if (!hs_ep) {
+		dev_err(hsotg->dev, "%s:Interrupt for unconfigured ep%d(%s)\n",
+					__func__, idx, dir_in ? "in" : "out");
+		return;
+	}
+>>>>>>> v4.9.227
 
 	dev_dbg(hsotg->dev, "%s: ep%d(%s) DxEPINT=0x%08x\n",
 		__func__, idx, dir_in ? "in" : "out", ints);
 
+<<<<<<< HEAD
 	if (ints & DXEPINT_XFERCOMPL) {
 		if (hs_ep->isochronous && hs_ep->interval == 1) {
 			if (ctrl & DXEPCTL_EOFRNUM)
@@ -1823,21 +3229,48 @@ static void s3c_hsotg_epint(struct s3c_hsotg *hsotg, unsigned int idx,
 			"%s: XferCompl: DxEPCTL=0x%08x, DXEPTSIZ=%08x\n",
 			__func__, readl(hsotg->regs + epctl_reg),
 			readl(hsotg->regs + epsiz_reg));
+=======
+	/* Don't process XferCompl interrupt if it is a setup packet */
+	if (idx == 0 && (ints & (DXEPINT_SETUP | DXEPINT_SETUP_RCVD)))
+		ints &= ~DXEPINT_XFERCOMPL;
+
+	if (ints & DXEPINT_STSPHSERCVD)
+		dev_dbg(hsotg->dev, "%s: StsPhseRcvd asserted\n", __func__);
+
+	if (ints & DXEPINT_XFERCOMPL) {
+		dev_dbg(hsotg->dev,
+			"%s: XferCompl: DxEPCTL=0x%08x, DXEPTSIZ=%08x\n",
+			__func__, dwc2_readl(hsotg->regs + epctl_reg),
+			dwc2_readl(hsotg->regs + epsiz_reg));
+>>>>>>> v4.9.227
 
 		/*
 		 * we get OutDone from the FIFO, so we only need to look
 		 * at completing IN requests here
 		 */
 		if (dir_in) {
+<<<<<<< HEAD
 			s3c_hsotg_complete_in(hsotg, hs_ep);
 
 			if (idx == 0 && !hs_ep->req)
 				s3c_hsotg_enqueue_setup(hsotg);
+=======
+			if (hs_ep->isochronous && hs_ep->interval > 1)
+				dwc2_gadget_incr_frame_num(hs_ep);
+
+			dwc2_hsotg_complete_in(hsotg, hs_ep);
+			if (ints & DXEPINT_NAKINTRPT)
+				ints &= ~DXEPINT_NAKINTRPT;
+
+			if (idx == 0 && !hs_ep->req)
+				dwc2_hsotg_enqueue_setup(hsotg);
+>>>>>>> v4.9.227
 		} else if (using_dma(hsotg)) {
 			/*
 			 * We're using DMA, we need to fire an OutDone here
 			 * as we ignore the RXFIFO.
 			 */
+<<<<<<< HEAD
 
 			s3c_hsotg_handle_outdone(hsotg, idx, false);
 		}
@@ -1860,6 +3293,23 @@ static void s3c_hsotg_epint(struct s3c_hsotg *hsotg, unsigned int idx,
 			}
 		}
 	}
+=======
+			if (hs_ep->isochronous && hs_ep->interval > 1)
+				dwc2_gadget_incr_frame_num(hs_ep);
+
+			dwc2_hsotg_handle_outdone(hsotg, idx);
+		}
+	}
+
+	if (ints & DXEPINT_EPDISBLD)
+		dwc2_gadget_handle_ep_disabled(hs_ep);
+
+	if (ints & DXEPINT_OUTTKNEPDIS)
+		dwc2_gadget_handle_out_token_ep_disabled(hs_ep);
+
+	if (ints & DXEPINT_NAKINTRPT)
+		dwc2_gadget_handle_nak(hs_ep);
+>>>>>>> v4.9.227
 
 	if (ints & DXEPINT_AHBERR)
 		dev_dbg(hsotg->dev, "%s: AHBErr\n", __func__);
@@ -1878,7 +3328,11 @@ static void s3c_hsotg_epint(struct s3c_hsotg *hsotg, unsigned int idx,
 			if (dir_in)
 				WARN_ON_ONCE(1);
 			else
+<<<<<<< HEAD
 				s3c_hsotg_handle_outdone(hsotg, 0, true);
+=======
+				dwc2_hsotg_handle_outdone(hsotg, 0);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -1887,38 +3341,64 @@ static void s3c_hsotg_epint(struct s3c_hsotg *hsotg, unsigned int idx,
 
 	if (dir_in && !hs_ep->isochronous) {
 		/* not sure if this is important, but we'll clear it anyway */
+<<<<<<< HEAD
 		if (ints & DIEPMSK_INTKNTXFEMPMSK) {
+=======
+		if (ints & DXEPINT_INTKNTXFEMP) {
+>>>>>>> v4.9.227
 			dev_dbg(hsotg->dev, "%s: ep%d: INTknTXFEmpMsk\n",
 				__func__, idx);
 		}
 
 		/* this probably means something bad is happening */
+<<<<<<< HEAD
 		if (ints & DIEPMSK_INTKNEPMISMSK) {
+=======
+		if (ints & DXEPINT_INTKNEPMIS) {
+>>>>>>> v4.9.227
 			dev_warn(hsotg->dev, "%s: ep%d: INTknEP\n",
 				 __func__, idx);
 		}
 
 		/* FIFO has space or is empty (see GAHBCFG) */
 		if (hsotg->dedicated_fifos &&
+<<<<<<< HEAD
 		    ints & DIEPMSK_TXFIFOEMPTY) {
 			dev_dbg(hsotg->dev, "%s: ep%d: TxFIFOEmpty\n",
 				__func__, idx);
 			if (!using_dma(hsotg))
 				s3c_hsotg_trytx(hsotg, hs_ep);
+=======
+		    ints & DXEPINT_TXFEMP) {
+			dev_dbg(hsotg->dev, "%s: ep%d: TxFIFOEmpty\n",
+				__func__, idx);
+			if (!using_dma(hsotg))
+				dwc2_hsotg_trytx(hsotg, hs_ep);
+>>>>>>> v4.9.227
 		}
 	}
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_irq_enumdone - Handle EnumDone interrupt (enumeration done)
+=======
+ * dwc2_hsotg_irq_enumdone - Handle EnumDone interrupt (enumeration done)
+>>>>>>> v4.9.227
  * @hsotg: The device state.
  *
  * Handle updating the device settings after the enumeration phase has
  * been completed.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_irq_enumdone(struct s3c_hsotg *hsotg)
 {
 	u32 dsts = readl(hsotg->regs + DSTS);
+=======
+static void dwc2_hsotg_irq_enumdone(struct dwc2_hsotg *hsotg)
+{
+	u32 dsts = dwc2_readl(hsotg->regs + DSTS);
+>>>>>>> v4.9.227
 	int ep0_mps = 0, ep_mps = 8;
 
 	/*
@@ -1936,7 +3416,11 @@ static void s3c_hsotg_irq_enumdone(struct s3c_hsotg *hsotg)
 	 */
 
 	/* catch both EnumSpd_FS and EnumSpd_FS48 */
+<<<<<<< HEAD
 	switch (dsts & DSTS_ENUMSPD_MASK) {
+=======
+	switch ((dsts & DSTS_ENUMSPD_MASK) >> DSTS_ENUMSPD_SHIFT) {
+>>>>>>> v4.9.227
 	case DSTS_ENUMSPD_FS:
 	case DSTS_ENUMSPD_FS48:
 		hsotg->gadget.speed = USB_SPEED_FULL;
@@ -1969,18 +3453,38 @@ static void s3c_hsotg_irq_enumdone(struct s3c_hsotg *hsotg)
 
 	if (ep0_mps) {
 		int i;
+<<<<<<< HEAD
 		s3c_hsotg_set_ep_maxpacket(hsotg, 0, ep0_mps);
 		for (i = 1; i < hsotg->num_of_eps; i++)
 			s3c_hsotg_set_ep_maxpacket(hsotg, i, ep_mps);
+=======
+		/* Initialize ep0 for both in and out directions */
+		dwc2_hsotg_set_ep_maxpacket(hsotg, 0, ep0_mps, 1);
+		dwc2_hsotg_set_ep_maxpacket(hsotg, 0, ep0_mps, 0);
+		for (i = 1; i < hsotg->num_of_eps; i++) {
+			if (hsotg->eps_in[i])
+				dwc2_hsotg_set_ep_maxpacket(hsotg, i, ep_mps, 1);
+			if (hsotg->eps_out[i])
+				dwc2_hsotg_set_ep_maxpacket(hsotg, i, ep_mps, 0);
+		}
+>>>>>>> v4.9.227
 	}
 
 	/* ensure after enumeration our EP0 is active */
 
+<<<<<<< HEAD
 	s3c_hsotg_enqueue_setup(hsotg);
 
 	dev_dbg(hsotg->dev, "EP0: DIEPCTL0=0x%08x, DOEPCTL0=0x%08x\n",
 		readl(hsotg->regs + DIEPCTL0),
 		readl(hsotg->regs + DOEPCTL0));
+=======
+	dwc2_hsotg_enqueue_setup(hsotg);
+
+	dev_dbg(hsotg->dev, "EP0: DIEPCTL0=0x%08x, DOEPCTL0=0x%08x\n",
+		dwc2_readl(hsotg->regs + DIEPCTL0),
+		dwc2_readl(hsotg->regs + DOEPCTL0));
+>>>>>>> v4.9.227
 }
 
 /**
@@ -1988,11 +3492,15 @@ static void s3c_hsotg_irq_enumdone(struct s3c_hsotg *hsotg)
  * @hsotg: The device state.
  * @ep: The endpoint the requests may be on.
  * @result: The result code to use.
+<<<<<<< HEAD
  * @force: Force removal of any current requests
+=======
+>>>>>>> v4.9.227
  *
  * Go through the requests on the given endpoint and mark them
  * completed with the given result code.
  */
+<<<<<<< HEAD
 static void kill_all_requests(struct s3c_hsotg *hsotg,
 			      struct s3c_hsotg_ep *ep,
 			      int result, bool force)
@@ -2021,12 +3529,37 @@ static void kill_all_requests(struct s3c_hsotg *hsotg,
 
 /**
  * s3c_hsotg_disconnect - disconnect service
+=======
+static void kill_all_requests(struct dwc2_hsotg *hsotg,
+			      struct dwc2_hsotg_ep *ep,
+			      int result)
+{
+	struct dwc2_hsotg_req *req, *treq;
+	unsigned size;
+
+	ep->req = NULL;
+
+	list_for_each_entry_safe(req, treq, &ep->queue, queue)
+		dwc2_hsotg_complete_request(hsotg, ep, req,
+					   result);
+
+	if (!hsotg->dedicated_fifos)
+		return;
+	size = (dwc2_readl(hsotg->regs + DTXFSTS(ep->fifo_index)) & 0xffff) * 4;
+	if (size < ep->fifo_size)
+		dwc2_hsotg_txfifo_flush(hsotg, ep->fifo_index);
+}
+
+/**
+ * dwc2_hsotg_disconnect - disconnect service
+>>>>>>> v4.9.227
  * @hsotg: The device state.
  *
  * The device has been disconnected. Remove all current
  * transactions and signal the gadget driver that this
  * has happened.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_disconnect(struct s3c_hsotg *hsotg)
 {
 	unsigned ep;
@@ -2051,6 +3584,47 @@ static void s3c_hsotg_irq_fifoempty(struct s3c_hsotg *hsotg, bool periodic)
 
 	for (epno = 0; epno < hsotg->num_of_eps; epno++) {
 		ep = &hsotg->eps[epno];
+=======
+void dwc2_hsotg_disconnect(struct dwc2_hsotg *hsotg)
+{
+	unsigned ep;
+
+	if (!hsotg->connected)
+		return;
+
+	hsotg->connected = 0;
+	hsotg->test_mode = 0;
+
+	for (ep = 0; ep < hsotg->num_of_eps; ep++) {
+		if (hsotg->eps_in[ep])
+			kill_all_requests(hsotg, hsotg->eps_in[ep],
+								-ESHUTDOWN);
+		if (hsotg->eps_out[ep])
+			kill_all_requests(hsotg, hsotg->eps_out[ep],
+								-ESHUTDOWN);
+	}
+
+	call_gadget(hsotg, disconnect);
+	hsotg->lx_state = DWC2_L3;
+}
+
+/**
+ * dwc2_hsotg_irq_fifoempty - TX FIFO empty interrupt handler
+ * @hsotg: The device state:
+ * @periodic: True if this is a periodic FIFO interrupt
+ */
+static void dwc2_hsotg_irq_fifoempty(struct dwc2_hsotg *hsotg, bool periodic)
+{
+	struct dwc2_hsotg_ep *ep;
+	int epno, ret;
+
+	/* look through for any more data to transmit */
+	for (epno = 0; epno < hsotg->num_of_eps; epno++) {
+		ep = index_to_ep(hsotg, epno, 1);
+
+		if (!ep)
+			continue;
+>>>>>>> v4.9.227
 
 		if (!ep->dir_in)
 			continue;
@@ -2059,7 +3633,11 @@ static void s3c_hsotg_irq_fifoempty(struct s3c_hsotg *hsotg, bool periodic)
 		    (!periodic && ep->periodic))
 			continue;
 
+<<<<<<< HEAD
 		ret = s3c_hsotg_trytx(hsotg, ep);
+=======
+		ret = dwc2_hsotg_trytx(hsotg, ep);
+>>>>>>> v4.9.227
 		if (ret < 0)
 			break;
 	}
@@ -2071,11 +3649,16 @@ static void s3c_hsotg_irq_fifoempty(struct s3c_hsotg *hsotg, bool periodic)
 			GINTSTS_RXFLVL)
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_corereset - issue softreset to the core
+=======
+ * dwc2_hsotg_core_init - issue softreset to the core
+>>>>>>> v4.9.227
  * @hsotg: The device state
  *
  * Issue a soft reset to the core, and await the core finishing it.
  */
+<<<<<<< HEAD
 static int s3c_hsotg_corereset(struct s3c_hsotg *hsotg)
 {
 	int timeout;
@@ -2127,12 +3710,28 @@ static int s3c_hsotg_corereset(struct s3c_hsotg *hsotg)
 static void s3c_hsotg_core_init(struct s3c_hsotg *hsotg)
 {
 	s3c_hsotg_corereset(hsotg);
+=======
+void dwc2_hsotg_core_init_disconnected(struct dwc2_hsotg *hsotg,
+						bool is_usb_reset)
+{
+	u32 intmsk;
+	u32 val;
+	u32 usbcfg;
+
+	/* Kill any ep0 requests as controller will be reinitialized */
+	kill_all_requests(hsotg, hsotg->eps_out[0], -ECONNRESET);
+
+	if (!is_usb_reset)
+		if (dwc2_core_reset(hsotg))
+			return;
+>>>>>>> v4.9.227
 
 	/*
 	 * we must now enable ep0 ready for host detection and then
 	 * set configuration.
 	 */
 
+<<<<<<< HEAD
 	/* set the PLL on, remove the HNP/SRP and set the PHY */
 	writel(hsotg->phyif | GUSBCFG_TOUTCAL(7) |
 	       (0x5 << 10), hsotg->regs + GUSBCFG);
@@ -2165,6 +3764,52 @@ static void s3c_hsotg_core_init(struct s3c_hsotg *hsotg)
 						    GAHBCFG_P_TXF_EMP_LVL) : 0) |
 		       GAHBCFG_GLBL_INTR_EN,
 		       hsotg->regs + GAHBCFG);
+=======
+	/* keep other bits untouched (so e.g. forced modes are not lost) */
+	usbcfg = dwc2_readl(hsotg->regs + GUSBCFG);
+	usbcfg &= ~(GUSBCFG_TOUTCAL_MASK | GUSBCFG_PHYIF16 | GUSBCFG_SRPCAP |
+		GUSBCFG_HNPCAP | GUSBCFG_USBTRDTIM_MASK);
+
+	/* set the PLL on, remove the HNP/SRP and set the PHY */
+	val = (hsotg->phyif == GUSBCFG_PHYIF8) ? 9 : 5;
+	usbcfg |= hsotg->phyif | GUSBCFG_TOUTCAL(7) |
+		(val << GUSBCFG_USBTRDTIM_SHIFT);
+	dwc2_writel(usbcfg, hsotg->regs + GUSBCFG);
+
+	dwc2_hsotg_init_fifo(hsotg);
+
+	if (!is_usb_reset)
+		__orr32(hsotg->regs + DCTL, DCTL_SFTDISCON);
+
+	dwc2_writel(DCFG_EPMISCNT(1) | DCFG_DEVSPD_HS,  hsotg->regs + DCFG);
+
+	/* Clear any pending OTG interrupts */
+	dwc2_writel(0xffffffff, hsotg->regs + GOTGINT);
+
+	/* Clear any pending interrupts */
+	dwc2_writel(0xffffffff, hsotg->regs + GINTSTS);
+	intmsk = GINTSTS_ERLYSUSP | GINTSTS_SESSREQINT |
+		GINTSTS_GOUTNAKEFF | GINTSTS_GINNAKEFF |
+		GINTSTS_USBRST | GINTSTS_RESETDET |
+		GINTSTS_ENUMDONE | GINTSTS_OTGINT |
+		GINTSTS_USBSUSP | GINTSTS_WKUPINT |
+		GINTSTS_INCOMPL_SOIN | GINTSTS_INCOMPL_SOOUT;
+
+	if (hsotg->core_params->external_id_pin_ctl <= 0)
+		intmsk |= GINTSTS_CONIDSTSCHNG;
+
+	dwc2_writel(intmsk, hsotg->regs + GINTMSK);
+
+	if (using_dma(hsotg))
+		dwc2_writel(GAHBCFG_GLBL_INTR_EN | GAHBCFG_DMA_EN |
+			    (GAHBCFG_HBSTLEN_INCR4 << GAHBCFG_HBSTLEN_SHIFT),
+			    hsotg->regs + GAHBCFG);
+	else
+		dwc2_writel(((hsotg->dedicated_fifos) ?
+						(GAHBCFG_NP_TXF_EMP_LVL |
+						 GAHBCFG_P_TXF_EMP_LVL) : 0) |
+			    GAHBCFG_GLBL_INTR_EN, hsotg->regs + GAHBCFG);
+>>>>>>> v4.9.227
 
 	/*
 	 * If INTknTXFEmpMsk is enabled, it's important to disable ep interrupts
@@ -2172,17 +3817,25 @@ static void s3c_hsotg_core_init(struct s3c_hsotg *hsotg)
 	 * interrupts.
 	 */
 
+<<<<<<< HEAD
 	writel(((hsotg->dedicated_fifos) ? DIEPMSK_TXFIFOEMPTY |
 		DIEPMSK_INTKNTXFEMPMSK : 0) |
 		DIEPMSK_EPDISBLDMSK | DIEPMSK_XFERCOMPLMSK |
 		DIEPMSK_TIMEOUTMSK | DIEPMSK_AHBERRMSK |
 		DIEPMSK_INTKNEPMISMSK,
+=======
+	dwc2_writel(((hsotg->dedicated_fifos && !using_dma(hsotg)) ?
+		DIEPMSK_TXFIFOEMPTY | DIEPMSK_INTKNTXFEMPMSK : 0) |
+		DIEPMSK_EPDISBLDMSK | DIEPMSK_XFERCOMPLMSK |
+		DIEPMSK_TIMEOUTMSK | DIEPMSK_AHBERRMSK,
+>>>>>>> v4.9.227
 		hsotg->regs + DIEPMSK);
 
 	/*
 	 * don't need XferCompl, we get that from RXFIFO in slave mode. In
 	 * DMA mode we may need this.
 	 */
+<<<<<<< HEAD
 	writel((using_dma(hsotg) ? (DIEPMSK_XFERCOMPLMSK |
 				    DIEPMSK_TIMEOUTMSK) : 0) |
 		DOEPMSK_EPDISBLDMSK | DOEPMSK_AHBERRMSK |
@@ -2197,6 +3850,21 @@ static void s3c_hsotg_core_init(struct s3c_hsotg *hsotg)
 
 	/* enable in and out endpoint interrupts */
 	s3c_hsotg_en_gsint(hsotg, GINTSTS_OEPINT | GINTSTS_IEPINT);
+=======
+	dwc2_writel((using_dma(hsotg) ? (DIEPMSK_XFERCOMPLMSK) : 0) |
+		DOEPMSK_EPDISBLDMSK | DOEPMSK_AHBERRMSK |
+		DOEPMSK_SETUPMSK | DOEPMSK_STSPHSERCVDMSK,
+		hsotg->regs + DOEPMSK);
+
+	dwc2_writel(0, hsotg->regs + DAINTMSK);
+
+	dev_dbg(hsotg->dev, "EP0: DIEPCTL0=0x%08x, DOEPCTL0=0x%08x\n",
+		dwc2_readl(hsotg->regs + DIEPCTL0),
+		dwc2_readl(hsotg->regs + DOEPCTL0));
+
+	/* enable in and out endpoint interrupts */
+	dwc2_hsotg_en_gsint(hsotg, GINTSTS_OEPINT | GINTSTS_IEPINT);
+>>>>>>> v4.9.227
 
 	/*
 	 * Enable the RXFIFO when in slave mode, as this is how we collect
@@ -2204,6 +3872,7 @@ static void s3c_hsotg_core_init(struct s3c_hsotg *hsotg)
 	 * things we cannot process, so do not use it.
 	 */
 	if (!using_dma(hsotg))
+<<<<<<< HEAD
 		s3c_hsotg_en_gsint(hsotg, GINTSTS_RXFLVL);
 
 	/* Enable interrupts for EP0 in and out */
@@ -2215,6 +3884,21 @@ static void s3c_hsotg_core_init(struct s3c_hsotg *hsotg)
 	__bic32(hsotg->regs + DCTL, DCTL_PWRONPRGDONE);
 
 	dev_dbg(hsotg->dev, "DCTL=0x%08x\n", readl(hsotg->regs + DCTL));
+=======
+		dwc2_hsotg_en_gsint(hsotg, GINTSTS_RXFLVL);
+
+	/* Enable interrupts for EP0 in and out */
+	dwc2_hsotg_ctrl_epint(hsotg, 0, 0, 1);
+	dwc2_hsotg_ctrl_epint(hsotg, 0, 1, 1);
+
+	if (!is_usb_reset) {
+		__orr32(hsotg->regs + DCTL, DCTL_PWRONPRGDONE);
+		udelay(10);  /* see openiboot */
+		__bic32(hsotg->regs + DCTL, DCTL_PWRONPRGDONE);
+	}
+
+	dev_dbg(hsotg->dev, "DCTL=0x%08x\n", dwc2_readl(hsotg->regs + DCTL));
+>>>>>>> v4.9.227
 
 	/*
 	 * DxEPCTL_USBActEp says RO in manual, but seems to be set by
@@ -2222,15 +3906,23 @@ static void s3c_hsotg_core_init(struct s3c_hsotg *hsotg)
 	 */
 
 	/* set to read 1 8byte packet */
+<<<<<<< HEAD
 	writel(DXEPTSIZ_MC(1) | DXEPTSIZ_PKTCNT(1) |
 	       DXEPTSIZ_XFERSIZE(8), hsotg->regs + DOEPTSIZ0);
 
 	writel(s3c_hsotg_ep0_mps(hsotg->eps[0].ep.maxpacket) |
+=======
+	dwc2_writel(DXEPTSIZ_MC(1) | DXEPTSIZ_PKTCNT(1) |
+	       DXEPTSIZ_XFERSIZE(8), hsotg->regs + DOEPTSIZ0);
+
+	dwc2_writel(dwc2_hsotg_ep0_mps(hsotg->eps_out[0]->ep.maxpacket) |
+>>>>>>> v4.9.227
 	       DXEPCTL_CNAK | DXEPCTL_EPENA |
 	       DXEPCTL_USBACTEP,
 	       hsotg->regs + DOEPCTL0);
 
 	/* enable, but don't activate EP0in */
+<<<<<<< HEAD
 	writel(s3c_hsotg_ep0_mps(hsotg->eps[0].ep.maxpacket) |
 	       DXEPCTL_USBACTEP, hsotg->regs + DIEPCTL0);
 
@@ -2243,15 +3935,46 @@ static void s3c_hsotg_core_init(struct s3c_hsotg *hsotg)
 	/* clear global NAKs */
 	writel(DCTL_CGOUTNAK | DCTL_CGNPINNAK,
 	       hsotg->regs + DCTL);
+=======
+	dwc2_writel(dwc2_hsotg_ep0_mps(hsotg->eps_out[0]->ep.maxpacket) |
+	       DXEPCTL_USBACTEP, hsotg->regs + DIEPCTL0);
+
+	/* clear global NAKs */
+	val = DCTL_CGOUTNAK | DCTL_CGNPINNAK;
+	if (!is_usb_reset)
+		val |= DCTL_SFTDISCON;
+	__orr32(hsotg->regs + DCTL, val);
+>>>>>>> v4.9.227
 
 	/* must be at-least 3ms to allow bus to see disconnect */
 	mdelay(3);
 
+<<<<<<< HEAD
+=======
+	hsotg->lx_state = DWC2_L0;
+
+	dwc2_hsotg_enqueue_setup(hsotg);
+
+	dev_dbg(hsotg->dev, "EP0: DIEPCTL0=0x%08x, DOEPCTL0=0x%08x\n",
+		dwc2_readl(hsotg->regs + DIEPCTL0),
+		dwc2_readl(hsotg->regs + DOEPCTL0));
+}
+
+static void dwc2_hsotg_core_disconnect(struct dwc2_hsotg *hsotg)
+{
+	/* set the soft-disconnect bit */
+	__orr32(hsotg->regs + DCTL, DCTL_SFTDISCON);
+}
+
+void dwc2_hsotg_core_connect(struct dwc2_hsotg *hsotg)
+{
+>>>>>>> v4.9.227
 	/* remove the soft-disconnect and let's go */
 	__bic32(hsotg->regs + DCTL, DCTL_SFTDISCON);
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_irq - handle device interrupt
  * @irq: The IRQ number triggered
  * @pw: The pw value when registered the handler.
@@ -2259,20 +3982,119 @@ static void s3c_hsotg_core_init(struct s3c_hsotg *hsotg)
 static irqreturn_t s3c_hsotg_irq(int irq, void *pw)
 {
 	struct s3c_hsotg *hsotg = pw;
+=======
+ * dwc2_gadget_handle_incomplete_isoc_in - handle incomplete ISO IN Interrupt.
+ * @hsotg: The device state:
+ *
+ * This interrupt indicates one of the following conditions occurred while
+ * transmitting an ISOC transaction.
+ * - Corrupted IN Token for ISOC EP.
+ * - Packet not complete in FIFO.
+ *
+ * The following actions will be taken:
+ * - Determine the EP
+ * - Disable EP; when 'Endpoint Disabled' interrupt is received Flush FIFO
+ */
+static void dwc2_gadget_handle_incomplete_isoc_in(struct dwc2_hsotg *hsotg)
+{
+	struct dwc2_hsotg_ep *hs_ep;
+	u32 epctrl;
+	u32 idx;
+
+	dev_dbg(hsotg->dev, "Incomplete isoc in interrupt received:\n");
+
+	for (idx = 1; idx <= hsotg->num_of_eps; idx++) {
+		hs_ep = hsotg->eps_in[idx];
+		epctrl = dwc2_readl(hsotg->regs + DIEPCTL(idx));
+		if ((epctrl & DXEPCTL_EPENA) && hs_ep->isochronous &&
+		    dwc2_gadget_target_frame_elapsed(hs_ep)) {
+			epctrl |= DXEPCTL_SNAK;
+			epctrl |= DXEPCTL_EPDIS;
+			dwc2_writel(epctrl, hsotg->regs + DIEPCTL(idx));
+		}
+	}
+
+	/* Clear interrupt */
+	dwc2_writel(GINTSTS_INCOMPL_SOIN, hsotg->regs + GINTSTS);
+}
+
+/**
+ * dwc2_gadget_handle_incomplete_isoc_out - handle incomplete ISO OUT Interrupt
+ * @hsotg: The device state:
+ *
+ * This interrupt indicates one of the following conditions occurred while
+ * transmitting an ISOC transaction.
+ * - Corrupted OUT Token for ISOC EP.
+ * - Packet not complete in FIFO.
+ *
+ * The following actions will be taken:
+ * - Determine the EP
+ * - Set DCTL_SGOUTNAK and unmask GOUTNAKEFF if target frame elapsed.
+ */
+static void dwc2_gadget_handle_incomplete_isoc_out(struct dwc2_hsotg *hsotg)
+{
+	u32 gintsts;
+	u32 gintmsk;
+	u32 epctrl;
+	struct dwc2_hsotg_ep *hs_ep;
+	int idx;
+
+	dev_dbg(hsotg->dev, "%s: GINTSTS_INCOMPL_SOOUT\n", __func__);
+
+	for (idx = 1; idx <= hsotg->num_of_eps; idx++) {
+		hs_ep = hsotg->eps_out[idx];
+		epctrl = dwc2_readl(hsotg->regs + DOEPCTL(idx));
+		if ((epctrl & DXEPCTL_EPENA) && hs_ep->isochronous &&
+		    dwc2_gadget_target_frame_elapsed(hs_ep)) {
+			/* Unmask GOUTNAKEFF interrupt */
+			gintmsk = dwc2_readl(hsotg->regs + GINTMSK);
+			gintmsk |= GINTSTS_GOUTNAKEFF;
+			dwc2_writel(gintmsk, hsotg->regs + GINTMSK);
+
+			gintsts = dwc2_readl(hsotg->regs + GINTSTS);
+			if (!(gintsts & GINTSTS_GOUTNAKEFF))
+				__orr32(hsotg->regs + DCTL, DCTL_SGOUTNAK);
+		}
+	}
+
+	/* Clear interrupt */
+	dwc2_writel(GINTSTS_INCOMPL_SOOUT, hsotg->regs + GINTSTS);
+}
+
+/**
+ * dwc2_hsotg_irq - handle device interrupt
+ * @irq: The IRQ number triggered
+ * @pw: The pw value when registered the handler.
+ */
+static irqreturn_t dwc2_hsotg_irq(int irq, void *pw)
+{
+	struct dwc2_hsotg *hsotg = pw;
+>>>>>>> v4.9.227
 	int retry_count = 8;
 	u32 gintsts;
 	u32 gintmsk;
 
+<<<<<<< HEAD
 	spin_lock(&hsotg->lock);
 irq_retry:
 	gintsts = readl(hsotg->regs + GINTSTS);
 	gintmsk = readl(hsotg->regs + GINTMSK);
+=======
+	if (!dwc2_is_device_mode(hsotg))
+		return IRQ_NONE;
+
+	spin_lock(&hsotg->lock);
+irq_retry:
+	gintsts = dwc2_readl(hsotg->regs + GINTSTS);
+	gintmsk = dwc2_readl(hsotg->regs + GINTMSK);
+>>>>>>> v4.9.227
 
 	dev_dbg(hsotg->dev, "%s: %08x %08x (%08x) retry %d\n",
 		__func__, gintsts, gintsts & gintmsk, gintmsk, retry_count);
 
 	gintsts &= gintmsk;
 
+<<<<<<< HEAD
 	if (gintsts & GINTSTS_OTGINT) {
 		u32 otgint = readl(hsotg->regs + GOTGINT);
 
@@ -2303,6 +4125,47 @@ irq_retry:
 	if (gintsts & (GINTSTS_OEPINT | GINTSTS_IEPINT)) {
 		u32 daint = readl(hsotg->regs + DAINT);
 		u32 daintmsk = readl(hsotg->regs + DAINTMSK);
+=======
+	if (gintsts & GINTSTS_RESETDET) {
+		dev_dbg(hsotg->dev, "%s: USBRstDet\n", __func__);
+
+		dwc2_writel(GINTSTS_RESETDET, hsotg->regs + GINTSTS);
+
+		/* This event must be used only if controller is suspended */
+		if (hsotg->lx_state == DWC2_L2) {
+			dwc2_exit_hibernation(hsotg, true);
+			hsotg->lx_state = DWC2_L0;
+		}
+	}
+
+	if (gintsts & (GINTSTS_USBRST | GINTSTS_RESETDET)) {
+
+		u32 usb_status = dwc2_readl(hsotg->regs + GOTGCTL);
+		u32 connected = hsotg->connected;
+
+		dev_dbg(hsotg->dev, "%s: USBRst\n", __func__);
+		dev_dbg(hsotg->dev, "GNPTXSTS=%08x\n",
+			dwc2_readl(hsotg->regs + GNPTXSTS));
+
+		dwc2_writel(GINTSTS_USBRST, hsotg->regs + GINTSTS);
+
+		/* Report disconnection if it is not already done. */
+		dwc2_hsotg_disconnect(hsotg);
+
+		if (usb_status & GOTGCTL_BSESVLD && connected)
+			dwc2_hsotg_core_init_disconnected(hsotg, true);
+	}
+
+	if (gintsts & GINTSTS_ENUMDONE) {
+		dwc2_writel(GINTSTS_ENUMDONE, hsotg->regs + GINTSTS);
+
+		dwc2_hsotg_irq_enumdone(hsotg);
+	}
+
+	if (gintsts & (GINTSTS_OEPINT | GINTSTS_IEPINT)) {
+		u32 daint = dwc2_readl(hsotg->regs + DAINT);
+		u32 daintmsk = dwc2_readl(hsotg->regs + DAINTMSK);
+>>>>>>> v4.9.227
 		u32 daint_out, daint_in;
 		int ep;
 
@@ -2312,6 +4175,7 @@ irq_retry:
 
 		dev_dbg(hsotg->dev, "%s: daint=%08x\n", __func__, daint);
 
+<<<<<<< HEAD
 		for (ep = 0; ep < 15 && daint_out; ep++, daint_out >>= 1) {
 			if (daint_out & 1)
 				s3c_hsotg_epint(hsotg, ep, 0);
@@ -2343,6 +4207,18 @@ irq_retry:
 				s3c_hsotg_core_init(hsotg);
 				hsotg->last_rst = jiffies;
 			}
+=======
+		for (ep = 0; ep < hsotg->num_of_eps && daint_out;
+						ep++, daint_out >>= 1) {
+			if (daint_out & 1)
+				dwc2_hsotg_epint(hsotg, ep, 0);
+		}
+
+		for (ep = 0; ep < hsotg->num_of_eps  && daint_in;
+						ep++, daint_in >>= 1) {
+			if (daint_in & 1)
+				dwc2_hsotg_epint(hsotg, ep, 1);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -2357,8 +4233,13 @@ irq_retry:
 		 * it needs re-enabling
 		 */
 
+<<<<<<< HEAD
 		s3c_hsotg_disable_gsint(hsotg, GINTSTS_NPTXFEMP);
 		s3c_hsotg_irq_fifoempty(hsotg, false);
+=======
+		dwc2_hsotg_disable_gsint(hsotg, GINTSTS_NPTXFEMP);
+		dwc2_hsotg_irq_fifoempty(hsotg, false);
+>>>>>>> v4.9.227
 	}
 
 	if (gintsts & GINTSTS_PTXFEMP) {
@@ -2366,13 +4247,19 @@ irq_retry:
 
 		/* See note in GINTSTS_NPTxFEmp */
 
+<<<<<<< HEAD
 		s3c_hsotg_disable_gsint(hsotg, GINTSTS_PTXFEMP);
 		s3c_hsotg_irq_fifoempty(hsotg, true);
+=======
+		dwc2_hsotg_disable_gsint(hsotg, GINTSTS_PTXFEMP);
+		dwc2_hsotg_irq_fifoempty(hsotg, true);
+>>>>>>> v4.9.227
 	}
 
 	if (gintsts & GINTSTS_RXFLVL) {
 		/*
 		 * note, since GINTSTS_RxFLvl doubles as FIFO-not-empty,
+<<<<<<< HEAD
 		 * we need to retry s3c_hsotg_handle_rx if this is still
 		 * set.
 		 */
@@ -2397,11 +4284,22 @@ irq_retry:
 		writel(GINTSTS_WKUPINT, hsotg->regs + GINTSTS);
 
 		call_gadget(hsotg, resume);
+=======
+		 * we need to retry dwc2_hsotg_handle_rx if this is still
+		 * set.
+		 */
+
+		dwc2_hsotg_handle_rx(hsotg);
+>>>>>>> v4.9.227
 	}
 
 	if (gintsts & GINTSTS_ERLYSUSP) {
 		dev_dbg(hsotg->dev, "GINTSTS_ErlySusp\n");
+<<<<<<< HEAD
 		writel(GINTSTS_ERLYSUSP, hsotg->regs + GINTSTS);
+=======
+		dwc2_writel(GINTSTS_ERLYSUSP, hsotg->regs + GINTSTS);
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -2411,21 +4309,61 @@ irq_retry:
 	 */
 
 	if (gintsts & GINTSTS_GOUTNAKEFF) {
+<<<<<<< HEAD
 		dev_info(hsotg->dev, "GOUTNakEff triggered\n");
 
 		writel(DCTL_CGOUTNAK, hsotg->regs + DCTL);
 
 		s3c_hsotg_dump(hsotg);
+=======
+		u8 idx;
+		u32 epctrl;
+		u32 gintmsk;
+		struct dwc2_hsotg_ep *hs_ep;
+
+		/* Mask this interrupt */
+		gintmsk = dwc2_readl(hsotg->regs + GINTMSK);
+		gintmsk &= ~GINTSTS_GOUTNAKEFF;
+		dwc2_writel(gintmsk, hsotg->regs + GINTMSK);
+
+		dev_dbg(hsotg->dev, "GOUTNakEff triggered\n");
+		for (idx = 1; idx <= hsotg->num_of_eps; idx++) {
+			hs_ep = hsotg->eps_out[idx];
+			epctrl = dwc2_readl(hsotg->regs + DOEPCTL(idx));
+
+			if ((epctrl & DXEPCTL_EPENA) && hs_ep->isochronous) {
+				epctrl |= DXEPCTL_SNAK;
+				epctrl |= DXEPCTL_EPDIS;
+				dwc2_writel(epctrl, hsotg->regs + DOEPCTL(idx));
+			}
+		}
+
+		/* This interrupt bit is cleared in DXEPINT_EPDISBLD handler */
+>>>>>>> v4.9.227
 	}
 
 	if (gintsts & GINTSTS_GINNAKEFF) {
 		dev_info(hsotg->dev, "GINNakEff triggered\n");
 
+<<<<<<< HEAD
 		writel(DCTL_CGNPINNAK, hsotg->regs + DCTL);
 
 		s3c_hsotg_dump(hsotg);
 	}
 
+=======
+		__orr32(hsotg->regs + DCTL, DCTL_CGNPINNAK);
+
+		dwc2_hsotg_dump(hsotg);
+	}
+
+	if (gintsts & GINTSTS_INCOMPL_SOIN)
+		dwc2_gadget_handle_incomplete_isoc_in(hsotg);
+
+	if (gintsts & GINTSTS_INCOMPL_SOOUT)
+		dwc2_gadget_handle_incomplete_isoc_out(hsotg);
+
+>>>>>>> v4.9.227
 	/*
 	 * if we've had fifo events, we should try and go around the
 	 * loop again to see if there's any point in returning yet.
@@ -2440,12 +4378,17 @@ irq_retry:
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_ep_enable - enable the given endpoint
+=======
+ * dwc2_hsotg_ep_enable - enable the given endpoint
+>>>>>>> v4.9.227
  * @ep: The USB endpint to configure
  * @desc: The USB endpoint descriptor to configure with.
  *
  * This is called from the USB gadget code's usb_ep_enable().
  */
+<<<<<<< HEAD
 static int s3c_hsotg_ep_enable(struct usb_ep *ep,
 			       const struct usb_endpoint_descriptor *desc)
 {
@@ -2458,6 +4401,21 @@ static int s3c_hsotg_ep_enable(struct usb_ep *ep,
 	u32 mps;
 	int dir_in;
 	int i, val, size;
+=======
+static int dwc2_hsotg_ep_enable(struct usb_ep *ep,
+			       const struct usb_endpoint_descriptor *desc)
+{
+	struct dwc2_hsotg_ep *hs_ep = our_ep(ep);
+	struct dwc2_hsotg *hsotg = hs_ep->parent;
+	unsigned long flags;
+	unsigned int index = hs_ep->index;
+	u32 epctrl_reg;
+	u32 epctrl;
+	u32 mps;
+	u32 mask;
+	unsigned int dir_in;
+	unsigned int i, val, size;
+>>>>>>> v4.9.227
 	int ret = 0;
 
 	dev_dbg(hsotg->dev,
@@ -2466,7 +4424,14 @@ static int s3c_hsotg_ep_enable(struct usb_ep *ep,
 		desc->wMaxPacketSize, desc->bInterval);
 
 	/* not to be called for EP0 */
+<<<<<<< HEAD
 	WARN_ON(index == 0);
+=======
+	if (index == 0) {
+		dev_err(hsotg->dev, "%s: called for EP 0\n", __func__);
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 
 	dir_in = (desc->bEndpointAddress & USB_ENDPOINT_DIR_MASK) ? 1 : 0;
 	if (dir_in != hs_ep->dir_in) {
@@ -2476,10 +4441,17 @@ static int s3c_hsotg_ep_enable(struct usb_ep *ep,
 
 	mps = usb_endpoint_maxp(desc);
 
+<<<<<<< HEAD
 	/* note, we handle this here instead of s3c_hsotg_set_ep_maxpacket */
 
 	epctrl_reg = dir_in ? DIEPCTL(index) : DOEPCTL(index);
 	epctrl = readl(hsotg->regs + epctrl_reg);
+=======
+	/* note, we handle this here instead of dwc2_hsotg_set_ep_maxpacket */
+
+	epctrl_reg = dir_in ? DIEPCTL(index) : DOEPCTL(index);
+	epctrl = dwc2_readl(hsotg->regs + epctrl_reg);
+>>>>>>> v4.9.227
 
 	dev_dbg(hsotg->dev, "%s: read DxEPCTL=0x%08x from 0x%08x\n",
 		__func__, epctrl, epctrl_reg);
@@ -2495,6 +4467,7 @@ static int s3c_hsotg_ep_enable(struct usb_ep *ep,
 	 */
 	epctrl |= DXEPCTL_USBACTEP;
 
+<<<<<<< HEAD
 	/*
 	 * set the NAK status on the endpoint, otherwise we might try and
 	 * do something with data that we've yet got a request to process
@@ -2506,6 +4479,10 @@ static int s3c_hsotg_ep_enable(struct usb_ep *ep,
 
 	/* update the endpoint state */
 	s3c_hsotg_set_ep_maxpacket(hsotg, hs_ep->index, mps);
+=======
+	/* update the endpoint state */
+	dwc2_hsotg_set_ep_maxpacket(hsotg, hs_ep->index, mps, dir_in);
+>>>>>>> v4.9.227
 
 	/* default, set to non-periodic */
 	hs_ep->isochronous = 0;
@@ -2513,16 +4490,34 @@ static int s3c_hsotg_ep_enable(struct usb_ep *ep,
 	hs_ep->halted = 0;
 	hs_ep->interval = desc->bInterval;
 
+<<<<<<< HEAD
 	if (hs_ep->interval > 1 && hs_ep->mc > 1)
 		dev_err(hsotg->dev, "MC > 1 when interval is not 1\n");
 
+=======
+>>>>>>> v4.9.227
 	switch (desc->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) {
 	case USB_ENDPOINT_XFER_ISOC:
 		epctrl |= DXEPCTL_EPTYPE_ISO;
 		epctrl |= DXEPCTL_SETEVENFR;
 		hs_ep->isochronous = 1;
+<<<<<<< HEAD
 		if (dir_in)
 			hs_ep->periodic = 1;
+=======
+		hs_ep->interval = 1 << (desc->bInterval - 1);
+		hs_ep->target_frame = TARGET_FRAME_INITIAL;
+		if (dir_in) {
+			hs_ep->periodic = 1;
+			mask = dwc2_readl(hsotg->regs + DIEPMSK);
+			mask |= DIEPMSK_NAKMSK;
+			dwc2_writel(mask, hsotg->regs + DIEPMSK);
+		} else {
+			mask = dwc2_readl(hsotg->regs + DOEPMSK);
+			mask |= DOEPMSK_OUTTKNEPDISMSK;
+			dwc2_writel(mask, hsotg->regs + DOEPMSK);
+		}
+>>>>>>> v4.9.227
 		break;
 
 	case USB_ENDPOINT_XFER_BULK:
@@ -2533,6 +4528,12 @@ static int s3c_hsotg_ep_enable(struct usb_ep *ep,
 		if (dir_in)
 			hs_ep->periodic = 1;
 
+<<<<<<< HEAD
+=======
+		if (hsotg->gadget.speed == USB_SPEED_HIGH)
+			hs_ep->interval = 1 << (desc->bInterval - 1);
+
+>>>>>>> v4.9.227
 		epctrl |= DXEPCTL_EPTYPE_INTERRUPT;
 		break;
 
@@ -2546,6 +4547,7 @@ static int s3c_hsotg_ep_enable(struct usb_ep *ep,
 	 * a unique tx-fifo even if it is non-periodic.
 	 */
 	if (dir_in && hsotg->dedicated_fifos) {
+<<<<<<< HEAD
 		size = hs_ep->ep.maxpacket*hs_ep->mc;
 		for (i = 1; i <= 8; ++i) {
 			if (hsotg->fifo_map & (1<<i))
@@ -2569,17 +4571,58 @@ static int s3c_hsotg_ep_enable(struct usb_ep *ep,
 
 	/* for non control endpoints, set PID to D0 */
 	if (index)
+=======
+		u32 fifo_index = 0;
+		u32 fifo_size = UINT_MAX;
+		size = hs_ep->ep.maxpacket*hs_ep->mc;
+		for (i = 1; i < hsotg->num_of_eps; ++i) {
+			if (hsotg->fifo_map & (1<<i))
+				continue;
+			val = dwc2_readl(hsotg->regs + DPTXFSIZN(i));
+			val = (val >> FIFOSIZE_DEPTH_SHIFT)*4;
+			if (val < size)
+				continue;
+			/* Search for smallest acceptable fifo */
+			if (val < fifo_size) {
+				fifo_size = val;
+				fifo_index = i;
+			}
+		}
+		if (!fifo_index) {
+			dev_err(hsotg->dev,
+				"%s: No suitable fifo found\n", __func__);
+			ret = -ENOMEM;
+			goto error;
+		}
+		hsotg->fifo_map |= 1 << fifo_index;
+		epctrl |= DXEPCTL_TXFNUM(fifo_index);
+		hs_ep->fifo_index = fifo_index;
+		hs_ep->fifo_size = fifo_size;
+	}
+
+	/* for non control endpoints, set PID to D0 */
+	if (index && !hs_ep->isochronous)
+>>>>>>> v4.9.227
 		epctrl |= DXEPCTL_SETD0PID;
 
 	dev_dbg(hsotg->dev, "%s: write DxEPCTL=0x%08x\n",
 		__func__, epctrl);
 
+<<<<<<< HEAD
 	writel(epctrl, hsotg->regs + epctrl_reg);
 	dev_dbg(hsotg->dev, "%s: read DxEPCTL=0x%08x\n",
 		__func__, readl(hsotg->regs + epctrl_reg));
 
 	/* enable the endpoint interrupt */
 	s3c_hsotg_ctrl_epint(hsotg, index, dir_in, 1);
+=======
+	dwc2_writel(epctrl, hsotg->regs + epctrl_reg);
+	dev_dbg(hsotg->dev, "%s: read DxEPCTL=0x%08x\n",
+		__func__, dwc2_readl(hsotg->regs + epctrl_reg));
+
+	/* enable the endpoint interrupt */
+	dwc2_hsotg_ctrl_epint(hsotg, index, dir_in, 1);
+>>>>>>> v4.9.227
 
 error:
 	spin_unlock_irqrestore(&hsotg->lock, flags);
@@ -2587,6 +4630,7 @@ error:
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_ep_disable - disable given endpoint
  * @ep: The endpoint to disable.
  */
@@ -2594,6 +4638,15 @@ static int s3c_hsotg_ep_disable(struct usb_ep *ep)
 {
 	struct s3c_hsotg_ep *hs_ep = our_ep(ep);
 	struct s3c_hsotg *hsotg = hs_ep->parent;
+=======
+ * dwc2_hsotg_ep_disable - disable given endpoint
+ * @ep: The endpoint to disable.
+ */
+static int dwc2_hsotg_ep_disable(struct usb_ep *ep)
+{
+	struct dwc2_hsotg_ep *hs_ep = our_ep(ep);
+	struct dwc2_hsotg *hsotg = hs_ep->parent;
+>>>>>>> v4.9.227
 	int dir_in = hs_ep->dir_in;
 	int index = hs_ep->index;
 	unsigned long flags;
@@ -2602,7 +4655,11 @@ static int s3c_hsotg_ep_disable(struct usb_ep *ep)
 
 	dev_dbg(hsotg->dev, "%s(ep %p)\n", __func__, ep);
 
+<<<<<<< HEAD
 	if (ep == &hsotg->eps[0].ep) {
+=======
+	if (ep == &hsotg->eps_out[0]->ep) {
+>>>>>>> v4.9.227
 		dev_err(hsotg->dev, "%s: called for ep0\n", __func__);
 		return -EINVAL;
 	}
@@ -2610,6 +4667,7 @@ static int s3c_hsotg_ep_disable(struct usb_ep *ep)
 	epctrl_reg = dir_in ? DIEPCTL(index) : DOEPCTL(index);
 
 	spin_lock_irqsave(&hsotg->lock, flags);
+<<<<<<< HEAD
 	/* terminate all requests with shutdown */
 	kill_all_requests(hsotg, hs_ep, -ESHUTDOWN, false);
 
@@ -2618,15 +4676,33 @@ static int s3c_hsotg_ep_disable(struct usb_ep *ep)
 	hs_ep->fifo_size = 0;
 
 	ctrl = readl(hsotg->regs + epctrl_reg);
+=======
+
+	ctrl = dwc2_readl(hsotg->regs + epctrl_reg);
+>>>>>>> v4.9.227
 	ctrl &= ~DXEPCTL_EPENA;
 	ctrl &= ~DXEPCTL_USBACTEP;
 	ctrl |= DXEPCTL_SNAK;
 
 	dev_dbg(hsotg->dev, "%s: DxEPCTL=0x%08x\n", __func__, ctrl);
+<<<<<<< HEAD
 	writel(ctrl, hsotg->regs + epctrl_reg);
 
 	/* disable endpoint interrupts */
 	s3c_hsotg_ctrl_epint(hsotg, hs_ep->index, hs_ep->dir_in, 0);
+=======
+	dwc2_writel(ctrl, hsotg->regs + epctrl_reg);
+
+	/* disable endpoint interrupts */
+	dwc2_hsotg_ctrl_epint(hsotg, hs_ep->index, hs_ep->dir_in, 0);
+
+	/* terminate all requests with shutdown */
+	kill_all_requests(hsotg, hs_ep, -ESHUTDOWN);
+
+	hsotg->fifo_map &= ~(1 << hs_ep->fifo_index);
+	hs_ep->fifo_index = 0;
+	hs_ep->fifo_size = 0;
+>>>>>>> v4.9.227
 
 	spin_unlock_irqrestore(&hsotg->lock, flags);
 	return 0;
@@ -2637,9 +4713,15 @@ static int s3c_hsotg_ep_disable(struct usb_ep *ep)
  * @ep: The endpoint to check.
  * @test: The request to test if it is on the endpoint.
  */
+<<<<<<< HEAD
 static bool on_list(struct s3c_hsotg_ep *ep, struct s3c_hsotg_req *test)
 {
 	struct s3c_hsotg_req *req, *treq;
+=======
+static bool on_list(struct dwc2_hsotg_ep *ep, struct dwc2_hsotg_req *test)
+{
+	struct dwc2_hsotg_req *req, *treq;
+>>>>>>> v4.9.227
 
 	list_for_each_entry_safe(req, treq, &ep->queue, queue) {
 		if (req == test)
@@ -2649,6 +4731,7 @@ static bool on_list(struct s3c_hsotg_ep *ep, struct s3c_hsotg_req *test)
 	return false;
 }
 
+<<<<<<< HEAD
 /**
  * s3c_hsotg_ep_dequeue - dequeue given endpoint
  * @ep: The endpoint to dequeue.
@@ -2659,6 +4742,89 @@ static int s3c_hsotg_ep_dequeue(struct usb_ep *ep, struct usb_request *req)
 	struct s3c_hsotg_req *hs_req = our_req(req);
 	struct s3c_hsotg_ep *hs_ep = our_ep(ep);
 	struct s3c_hsotg *hs = hs_ep->parent;
+=======
+static int dwc2_hsotg_wait_bit_set(struct dwc2_hsotg *hs_otg, u32 reg,
+							u32 bit, u32 timeout)
+{
+	u32 i;
+
+	for (i = 0; i < timeout; i++) {
+		if (dwc2_readl(hs_otg->regs + reg) & bit)
+			return 0;
+		udelay(1);
+	}
+
+	return -ETIMEDOUT;
+}
+
+static void dwc2_hsotg_ep_stop_xfr(struct dwc2_hsotg *hsotg,
+						struct dwc2_hsotg_ep *hs_ep)
+{
+	u32 epctrl_reg;
+	u32 epint_reg;
+
+	epctrl_reg = hs_ep->dir_in ? DIEPCTL(hs_ep->index) :
+		DOEPCTL(hs_ep->index);
+	epint_reg = hs_ep->dir_in ? DIEPINT(hs_ep->index) :
+		DOEPINT(hs_ep->index);
+
+	dev_dbg(hsotg->dev, "%s: stopping transfer on %s\n", __func__,
+			hs_ep->name);
+	if (hs_ep->dir_in) {
+		__orr32(hsotg->regs + epctrl_reg, DXEPCTL_SNAK);
+		/* Wait for Nak effect */
+		if (dwc2_hsotg_wait_bit_set(hsotg, epint_reg,
+						DXEPINT_INEPNAKEFF, 100))
+			dev_warn(hsotg->dev,
+				"%s: timeout DIEPINT.NAKEFF\n", __func__);
+	} else {
+		if (!(dwc2_readl(hsotg->regs + GINTSTS) & GINTSTS_GOUTNAKEFF))
+			__orr32(hsotg->regs + DCTL, DCTL_SGOUTNAK);
+
+		/* Wait for global nak to take effect */
+		if (dwc2_hsotg_wait_bit_set(hsotg, GINTSTS,
+						GINTSTS_GOUTNAKEFF, 100))
+			dev_warn(hsotg->dev,
+				"%s: timeout GINTSTS.GOUTNAKEFF\n", __func__);
+	}
+
+	/* Disable ep */
+	__orr32(hsotg->regs + epctrl_reg, DXEPCTL_EPDIS | DXEPCTL_SNAK);
+
+	/* Wait for ep to be disabled */
+	if (dwc2_hsotg_wait_bit_set(hsotg, epint_reg, DXEPINT_EPDISBLD, 100))
+		dev_warn(hsotg->dev,
+			"%s: timeout DOEPCTL.EPDisable\n", __func__);
+
+	if (hs_ep->dir_in) {
+		if (hsotg->dedicated_fifos) {
+			dwc2_writel(GRSTCTL_TXFNUM(hs_ep->fifo_index) |
+				GRSTCTL_TXFFLSH, hsotg->regs + GRSTCTL);
+			/* Wait for fifo flush */
+			if (dwc2_hsotg_wait_bit_set(hsotg, GRSTCTL,
+							GRSTCTL_TXFFLSH, 100))
+				dev_warn(hsotg->dev,
+					"%s: timeout flushing fifos\n",
+					__func__);
+		}
+		/* TODO: Flush shared tx fifo */
+	} else {
+		/* Remove global NAKs */
+		__bic32(hsotg->regs + DCTL, DCTL_SGOUTNAK);
+	}
+}
+
+/**
+ * dwc2_hsotg_ep_dequeue - dequeue given endpoint
+ * @ep: The endpoint to dequeue.
+ * @req: The request to be removed from a queue.
+ */
+static int dwc2_hsotg_ep_dequeue(struct usb_ep *ep, struct usb_request *req)
+{
+	struct dwc2_hsotg_req *hs_req = our_req(req);
+	struct dwc2_hsotg_ep *hs_ep = our_ep(ep);
+	struct dwc2_hsotg *hs = hs_ep->parent;
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	dev_dbg(hs->dev, "ep_dequeue(%p,%p)\n", ep, req);
@@ -2670,13 +4836,22 @@ static int s3c_hsotg_ep_dequeue(struct usb_ep *ep, struct usb_request *req)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	s3c_hsotg_complete_request(hs, hs_ep, hs_req, -ECONNRESET);
+=======
+	/* Dequeue already started request */
+	if (req == &hs_ep->req->req)
+		dwc2_hsotg_ep_stop_xfr(hs, hs_ep);
+
+	dwc2_hsotg_complete_request(hs, hs_ep, hs_req, -ECONNRESET);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&hs->lock, flags);
 
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_ep_sethalt - set halt on a given endpoint
  * @ep: The endpoint to set halt.
  * @value: Set or unset the halt.
@@ -2685,6 +4860,21 @@ static int s3c_hsotg_ep_sethalt(struct usb_ep *ep, int value)
 {
 	struct s3c_hsotg_ep *hs_ep = our_ep(ep);
 	struct s3c_hsotg *hs = hs_ep->parent;
+=======
+ * dwc2_hsotg_ep_sethalt - set halt on a given endpoint
+ * @ep: The endpoint to set halt.
+ * @value: Set or unset the halt.
+ * @now: If true, stall the endpoint now. Otherwise return -EAGAIN if
+ *       the endpoint is busy processing requests.
+ *
+ * We need to stall the endpoint immediately if request comes from set_feature
+ * protocol command handler.
+ */
+static int dwc2_hsotg_ep_sethalt(struct usb_ep *ep, int value, bool now)
+{
+	struct dwc2_hsotg_ep *hs_ep = our_ep(ep);
+	struct dwc2_hsotg *hs = hs_ep->parent;
+>>>>>>> v4.9.227
 	int index = hs_ep->index;
 	u32 epreg;
 	u32 epctl;
@@ -2694,13 +4884,18 @@ static int s3c_hsotg_ep_sethalt(struct usb_ep *ep, int value)
 
 	if (index == 0) {
 		if (value)
+<<<<<<< HEAD
 			s3c_hsotg_stall_ep0(hs);
+=======
+			dwc2_hsotg_stall_ep0(hs);
+>>>>>>> v4.9.227
 		else
 			dev_warn(hs->dev,
 				 "%s: can't clear halt on ep0\n", __func__);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	/* write both IN and OUT control registers */
 
 	epreg = DIEPCTL(index);
@@ -2735,12 +4930,59 @@ static int s3c_hsotg_ep_sethalt(struct usb_ep *ep, int value)
 
 	writel(epctl, hs->regs + epreg);
 
+=======
+	if (hs_ep->isochronous) {
+		dev_err(hs->dev, "%s is Isochronous Endpoint\n", ep->name);
+		return -EINVAL;
+	}
+
+	if (!now && value && !list_empty(&hs_ep->queue)) {
+		dev_dbg(hs->dev, "%s request is pending, cannot halt\n",
+			ep->name);
+		return -EAGAIN;
+	}
+
+	if (hs_ep->dir_in) {
+		epreg = DIEPCTL(index);
+		epctl = dwc2_readl(hs->regs + epreg);
+
+		if (value) {
+			epctl |= DXEPCTL_STALL | DXEPCTL_SNAK;
+			if (epctl & DXEPCTL_EPENA)
+				epctl |= DXEPCTL_EPDIS;
+		} else {
+			epctl &= ~DXEPCTL_STALL;
+			xfertype = epctl & DXEPCTL_EPTYPE_MASK;
+			if (xfertype == DXEPCTL_EPTYPE_BULK ||
+				xfertype == DXEPCTL_EPTYPE_INTERRUPT)
+					epctl |= DXEPCTL_SETD0PID;
+		}
+		dwc2_writel(epctl, hs->regs + epreg);
+	} else {
+
+		epreg = DOEPCTL(index);
+		epctl = dwc2_readl(hs->regs + epreg);
+
+		if (value)
+			epctl |= DXEPCTL_STALL;
+		else {
+			epctl &= ~DXEPCTL_STALL;
+			xfertype = epctl & DXEPCTL_EPTYPE_MASK;
+			if (xfertype == DXEPCTL_EPTYPE_BULK ||
+				xfertype == DXEPCTL_EPTYPE_INTERRUPT)
+					epctl |= DXEPCTL_SETD0PID;
+		}
+		dwc2_writel(epctl, hs->regs + epreg);
+	}
+
+>>>>>>> v4.9.227
 	hs_ep->halted = value;
 
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_ep_sethalt_lock - set halt on a given endpoint with lock held
  * @ep: The endpoint to set halt.
  * @value: Set or unset the halt.
@@ -2749,16 +4991,31 @@ static int s3c_hsotg_ep_sethalt_lock(struct usb_ep *ep, int value)
 {
 	struct s3c_hsotg_ep *hs_ep = our_ep(ep);
 	struct s3c_hsotg *hs = hs_ep->parent;
+=======
+ * dwc2_hsotg_ep_sethalt_lock - set halt on a given endpoint with lock held
+ * @ep: The endpoint to set halt.
+ * @value: Set or unset the halt.
+ */
+static int dwc2_hsotg_ep_sethalt_lock(struct usb_ep *ep, int value)
+{
+	struct dwc2_hsotg_ep *hs_ep = our_ep(ep);
+	struct dwc2_hsotg *hs = hs_ep->parent;
+>>>>>>> v4.9.227
 	unsigned long flags = 0;
 	int ret = 0;
 
 	spin_lock_irqsave(&hs->lock, flags);
+<<<<<<< HEAD
 	ret = s3c_hsotg_ep_sethalt(ep, value);
+=======
+	ret = dwc2_hsotg_ep_sethalt(ep, value, false);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&hs->lock, flags);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct usb_ep_ops s3c_hsotg_ep_ops = {
 	.enable		= s3c_hsotg_ep_enable,
 	.disable	= s3c_hsotg_ep_disable,
@@ -2767,10 +5024,21 @@ static struct usb_ep_ops s3c_hsotg_ep_ops = {
 	.queue		= s3c_hsotg_ep_queue_lock,
 	.dequeue	= s3c_hsotg_ep_dequeue,
 	.set_halt	= s3c_hsotg_ep_sethalt_lock,
+=======
+static struct usb_ep_ops dwc2_hsotg_ep_ops = {
+	.enable		= dwc2_hsotg_ep_enable,
+	.disable	= dwc2_hsotg_ep_disable,
+	.alloc_request	= dwc2_hsotg_ep_alloc_request,
+	.free_request	= dwc2_hsotg_ep_free_request,
+	.queue		= dwc2_hsotg_ep_queue_lock,
+	.dequeue	= dwc2_hsotg_ep_dequeue,
+	.set_halt	= dwc2_hsotg_ep_sethalt_lock,
+>>>>>>> v4.9.227
 	/* note, don't believe we have any call for the fifo routines */
 };
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_phy_enable - enable platform phy dev
  * @hsotg: The driver state
  *
@@ -2831,10 +5099,31 @@ static void s3c_hsotg_init(struct s3c_hsotg *hsotg)
 		hsotg->regs + DOEPMSK);
 
 	writel(0, hsotg->regs + DAINTMSK);
+=======
+ * dwc2_hsotg_init - initalize the usb core
+ * @hsotg: The driver state
+ */
+static void dwc2_hsotg_init(struct dwc2_hsotg *hsotg)
+{
+	u32 trdtim;
+	u32 usbcfg;
+	/* unmask subset of endpoint interrupts */
+
+	dwc2_writel(DIEPMSK_TIMEOUTMSK | DIEPMSK_AHBERRMSK |
+		    DIEPMSK_EPDISBLDMSK | DIEPMSK_XFERCOMPLMSK,
+		    hsotg->regs + DIEPMSK);
+
+	dwc2_writel(DOEPMSK_SETUPMSK | DOEPMSK_AHBERRMSK |
+		    DOEPMSK_EPDISBLDMSK | DOEPMSK_XFERCOMPLMSK,
+		    hsotg->regs + DOEPMSK);
+
+	dwc2_writel(0, hsotg->regs + DAINTMSK);
+>>>>>>> v4.9.227
 
 	/* Be in disconnected state until gadget is registered */
 	__orr32(hsotg->regs + DCTL, DCTL_SFTDISCON);
 
+<<<<<<< HEAD
 	if (0) {
 		/* post global nak until we're ready */
 		writel(DCTL_SGNPINNAK | DCTL_SGOUTNAK,
@@ -2859,16 +5148,51 @@ static void s3c_hsotg_init(struct s3c_hsotg *hsotg)
 
 /**
  * s3c_hsotg_udc_start - prepare the udc for work
+=======
+	/* setup fifos */
+
+	dev_dbg(hsotg->dev, "GRXFSIZ=0x%08x, GNPTXFSIZ=0x%08x\n",
+		dwc2_readl(hsotg->regs + GRXFSIZ),
+		dwc2_readl(hsotg->regs + GNPTXFSIZ));
+
+	dwc2_hsotg_init_fifo(hsotg);
+
+	/* keep other bits untouched (so e.g. forced modes are not lost) */
+	usbcfg = dwc2_readl(hsotg->regs + GUSBCFG);
+	usbcfg &= ~(GUSBCFG_TOUTCAL_MASK | GUSBCFG_PHYIF16 | GUSBCFG_SRPCAP |
+		GUSBCFG_HNPCAP | GUSBCFG_USBTRDTIM_MASK);
+
+	/* set the PLL on, remove the HNP/SRP and set the PHY */
+	trdtim = (hsotg->phyif == GUSBCFG_PHYIF8) ? 9 : 5;
+	usbcfg |= hsotg->phyif | GUSBCFG_TOUTCAL(7) |
+		(trdtim << GUSBCFG_USBTRDTIM_SHIFT);
+	dwc2_writel(usbcfg, hsotg->regs + GUSBCFG);
+
+	if (using_dma(hsotg))
+		__orr32(hsotg->regs + GAHBCFG, GAHBCFG_DMA_EN);
+}
+
+/**
+ * dwc2_hsotg_udc_start - prepare the udc for work
+>>>>>>> v4.9.227
  * @gadget: The usb gadget state
  * @driver: The usb gadget driver
  *
  * Perform initialization to prepare udc device and driver
  * to work.
  */
+<<<<<<< HEAD
 static int s3c_hsotg_udc_start(struct usb_gadget *gadget,
 			   struct usb_gadget_driver *driver)
 {
 	struct s3c_hsotg *hsotg = to_hsotg(gadget);
+=======
+static int dwc2_hsotg_udc_start(struct usb_gadget *gadget,
+			   struct usb_gadget_driver *driver)
+{
+	struct dwc2_hsotg *hsotg = to_hsotg(gadget);
+	unsigned long flags;
+>>>>>>> v4.9.227
 	int ret;
 
 	if (!hsotg) {
@@ -2896,6 +5220,7 @@ static int s3c_hsotg_udc_start(struct usb_gadget *gadget,
 	hsotg->gadget.dev.of_node = hsotg->dev->of_node;
 	hsotg->gadget.speed = USB_SPEED_UNKNOWN;
 
+<<<<<<< HEAD
 	clk_enable(hsotg->clk);
 
 	ret = regulator_bulk_enable(ARRAY_SIZE(hsotg->supplies),
@@ -2907,6 +5232,28 @@ static int s3c_hsotg_udc_start(struct usb_gadget *gadget,
 
 	hsotg->last_rst = jiffies;
 	dev_info(hsotg->dev, "bound driver %s\n", driver->driver.name);
+=======
+	if (hsotg->dr_mode == USB_DR_MODE_PERIPHERAL) {
+		ret = dwc2_lowlevel_hw_enable(hsotg);
+		if (ret)
+			goto err;
+	}
+
+	if (!IS_ERR_OR_NULL(hsotg->uphy))
+		otg_set_peripheral(hsotg->uphy->otg, &hsotg->gadget);
+
+	spin_lock_irqsave(&hsotg->lock, flags);
+	if (dwc2_hw_is_device(hsotg)) {
+		dwc2_hsotg_init(hsotg);
+		dwc2_hsotg_core_init_disconnected(hsotg, false);
+	}
+
+	hsotg->enabled = 0;
+	spin_unlock_irqrestore(&hsotg->lock, flags);
+
+	dev_info(hsotg->dev, "bound driver %s\n", driver->driver.name);
+
+>>>>>>> v4.9.227
 	return 0;
 
 err:
@@ -2915,16 +5262,26 @@ err:
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_udc_stop - stop the udc
+=======
+ * dwc2_hsotg_udc_stop - stop the udc
+>>>>>>> v4.9.227
  * @gadget: The usb gadget state
  * @driver: The usb gadget driver
  *
  * Stop udc hw block and stay tunned for future transmissions
  */
+<<<<<<< HEAD
 static int s3c_hsotg_udc_stop(struct usb_gadget *gadget,
 			  struct usb_gadget_driver *driver)
 {
 	struct s3c_hsotg *hsotg = to_hsotg(gadget);
+=======
+static int dwc2_hsotg_udc_stop(struct usb_gadget *gadget)
+{
+	struct dwc2_hsotg *hsotg = to_hsotg(gadget);
+>>>>>>> v4.9.227
 	unsigned long flags = 0;
 	int ep;
 
@@ -2932,29 +5289,55 @@ static int s3c_hsotg_udc_stop(struct usb_gadget *gadget,
 		return -ENODEV;
 
 	/* all endpoints should be shutdown */
+<<<<<<< HEAD
 	for (ep = 1; ep < hsotg->num_of_eps; ep++)
 		s3c_hsotg_ep_disable(&hsotg->eps[ep].ep);
+=======
+	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+		if (hsotg->eps_in[ep])
+			dwc2_hsotg_ep_disable(&hsotg->eps_in[ep]->ep);
+		if (hsotg->eps_out[ep])
+			dwc2_hsotg_ep_disable(&hsotg->eps_out[ep]->ep);
+	}
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&hsotg->lock, flags);
 
 	hsotg->driver = NULL;
 	hsotg->gadget.speed = USB_SPEED_UNKNOWN;
+<<<<<<< HEAD
 
 	spin_unlock_irqrestore(&hsotg->lock, flags);
 
 	regulator_bulk_disable(ARRAY_SIZE(hsotg->supplies), hsotg->supplies);
 
 	clk_disable(hsotg->clk);
+=======
+	hsotg->enabled = 0;
+
+	spin_unlock_irqrestore(&hsotg->lock, flags);
+
+	if (!IS_ERR_OR_NULL(hsotg->uphy))
+		otg_set_peripheral(hsotg->uphy->otg, NULL);
+
+	if (hsotg->dr_mode == USB_DR_MODE_PERIPHERAL)
+		dwc2_lowlevel_hw_disable(hsotg);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_gadget_getframe - read the frame number
+=======
+ * dwc2_hsotg_gadget_getframe - read the frame number
+>>>>>>> v4.9.227
  * @gadget: The usb gadget state
  *
  * Read the {micro} frame number
  */
+<<<<<<< HEAD
 static int s3c_hsotg_gadget_getframe(struct usb_gadget *gadget)
 {
 	return s3c_hsotg_read_frameno(to_hsotg(gadget));
@@ -2962,11 +5345,21 @@ static int s3c_hsotg_gadget_getframe(struct usb_gadget *gadget)
 
 /**
  * s3c_hsotg_pullup - connect/disconnect the USB PHY
+=======
+static int dwc2_hsotg_gadget_getframe(struct usb_gadget *gadget)
+{
+	return dwc2_hsotg_read_frameno(to_hsotg(gadget));
+}
+
+/**
+ * dwc2_hsotg_pullup - connect/disconnect the USB PHY
+>>>>>>> v4.9.227
  * @gadget: The usb gadget state
  * @is_on: Current state of the USB PHY
  *
  * Connect/Disconnect the USB PHY pullup
  */
+<<<<<<< HEAD
 static int s3c_hsotg_pullup(struct usb_gadget *gadget, int is_on)
 {
 	struct s3c_hsotg *hsotg = to_hsotg(gadget);
@@ -2982,6 +5375,31 @@ static int s3c_hsotg_pullup(struct usb_gadget *gadget, int is_on)
 	} else {
 		clk_disable(hsotg->clk);
 		s3c_hsotg_phy_disable(hsotg);
+=======
+static int dwc2_hsotg_pullup(struct usb_gadget *gadget, int is_on)
+{
+	struct dwc2_hsotg *hsotg = to_hsotg(gadget);
+	unsigned long flags = 0;
+
+	dev_dbg(hsotg->dev, "%s: is_on: %d op_state: %d\n", __func__, is_on,
+			hsotg->op_state);
+
+	/* Don't modify pullup state while in host mode */
+	if (hsotg->op_state != OTG_STATE_B_PERIPHERAL) {
+		hsotg->enabled = is_on;
+		return 0;
+	}
+
+	spin_lock_irqsave(&hsotg->lock, flags);
+	if (is_on) {
+		hsotg->enabled = 1;
+		dwc2_hsotg_core_init_disconnected(hsotg, false);
+		dwc2_hsotg_core_connect(hsotg);
+	} else {
+		dwc2_hsotg_core_disconnect(hsotg);
+		dwc2_hsotg_disconnect(hsotg);
+		hsotg->enabled = 0;
+>>>>>>> v4.9.227
 	}
 
 	hsotg->gadget.speed = USB_SPEED_UNKNOWN;
@@ -2990,6 +5408,7 @@ static int s3c_hsotg_pullup(struct usb_gadget *gadget, int is_on)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct usb_gadget_ops s3c_hsotg_gadget_ops = {
 	.get_frame	= s3c_hsotg_gadget_getframe,
 	.udc_start		= s3c_hsotg_udc_start,
@@ -2999,6 +5418,65 @@ static const struct usb_gadget_ops s3c_hsotg_gadget_ops = {
 
 /**
  * s3c_hsotg_initep - initialise a single endpoint
+=======
+static int dwc2_hsotg_vbus_session(struct usb_gadget *gadget, int is_active)
+{
+	struct dwc2_hsotg *hsotg = to_hsotg(gadget);
+	unsigned long flags;
+
+	dev_dbg(hsotg->dev, "%s: is_active: %d\n", __func__, is_active);
+	spin_lock_irqsave(&hsotg->lock, flags);
+
+	/*
+	 * If controller is hibernated, it must exit from hibernation
+	 * before being initialized / de-initialized
+	 */
+	if (hsotg->lx_state == DWC2_L2)
+		dwc2_exit_hibernation(hsotg, false);
+
+	if (is_active) {
+		hsotg->op_state = OTG_STATE_B_PERIPHERAL;
+
+		dwc2_hsotg_core_init_disconnected(hsotg, false);
+		if (hsotg->enabled)
+			dwc2_hsotg_core_connect(hsotg);
+	} else {
+		dwc2_hsotg_core_disconnect(hsotg);
+		dwc2_hsotg_disconnect(hsotg);
+	}
+
+	spin_unlock_irqrestore(&hsotg->lock, flags);
+	return 0;
+}
+
+/**
+ * dwc2_hsotg_vbus_draw - report bMaxPower field
+ * @gadget: The usb gadget state
+ * @mA: Amount of current
+ *
+ * Report how much power the device may consume to the phy.
+ */
+static int dwc2_hsotg_vbus_draw(struct usb_gadget *gadget, unsigned mA)
+{
+	struct dwc2_hsotg *hsotg = to_hsotg(gadget);
+
+	if (IS_ERR_OR_NULL(hsotg->uphy))
+		return -ENOTSUPP;
+	return usb_phy_set_power(hsotg->uphy, mA);
+}
+
+static const struct usb_gadget_ops dwc2_hsotg_gadget_ops = {
+	.get_frame	= dwc2_hsotg_gadget_getframe,
+	.udc_start		= dwc2_hsotg_udc_start,
+	.udc_stop		= dwc2_hsotg_udc_stop,
+	.pullup                 = dwc2_hsotg_pullup,
+	.vbus_session		= dwc2_hsotg_vbus_session,
+	.vbus_draw		= dwc2_hsotg_vbus_draw,
+};
+
+/**
+ * dwc2_hsotg_initep - initialise a single endpoint
+>>>>>>> v4.9.227
  * @hsotg: The device state.
  * @hs_ep: The endpoint to be initialised.
  * @epnum: The endpoint number
@@ -3007,14 +5485,22 @@ static const struct usb_gadget_ops s3c_hsotg_gadget_ops = {
  * creation) to give to the gadget driver. Setup the endpoint name, any
  * direction information and other state that may be required.
  */
+<<<<<<< HEAD
 static void s3c_hsotg_initep(struct s3c_hsotg *hsotg,
 				       struct s3c_hsotg_ep *hs_ep,
 				       int epnum)
+=======
+static void dwc2_hsotg_initep(struct dwc2_hsotg *hsotg,
+				       struct dwc2_hsotg_ep *hs_ep,
+				       int epnum,
+				       bool dir_in)
+>>>>>>> v4.9.227
 {
 	char *dir;
 
 	if (epnum == 0)
 		dir = "";
+<<<<<<< HEAD
 	else if ((epnum % 2) == 0) {
 		dir = "out";
 	} else {
@@ -3022,6 +5508,14 @@ static void s3c_hsotg_initep(struct s3c_hsotg *hsotg,
 		hs_ep->dir_in = 1;
 	}
 
+=======
+	else if (dir_in)
+		dir = "in";
+	else
+		dir = "out";
+
+	hs_ep->dir_in = dir_in;
+>>>>>>> v4.9.227
 	hs_ep->index = epnum;
 
 	snprintf(hs_ep->name, sizeof(hs_ep->name), "ep%d%s", epnum, dir);
@@ -3036,7 +5530,24 @@ static void s3c_hsotg_initep(struct s3c_hsotg *hsotg,
 	hs_ep->parent = hsotg;
 	hs_ep->ep.name = hs_ep->name;
 	usb_ep_set_maxpacket_limit(&hs_ep->ep, epnum ? 1024 : EP0_MPS_LIMIT);
+<<<<<<< HEAD
 	hs_ep->ep.ops = &s3c_hsotg_ep_ops;
+=======
+	hs_ep->ep.ops = &dwc2_hsotg_ep_ops;
+
+	if (epnum == 0) {
+		hs_ep->ep.caps.type_control = true;
+	} else {
+		hs_ep->ep.caps.type_iso = true;
+		hs_ep->ep.caps.type_bulk = true;
+		hs_ep->ep.caps.type_int = true;
+	}
+
+	if (dir_in)
+		hs_ep->ep.caps.dir_in = true;
+	else
+		hs_ep->ep.caps.dir_out = true;
+>>>>>>> v4.9.227
 
 	/*
 	 * if we're using dma, we need to set the next-endpoint pointer
@@ -3045,17 +5556,29 @@ static void s3c_hsotg_initep(struct s3c_hsotg *hsotg,
 
 	if (using_dma(hsotg)) {
 		u32 next = DXEPCTL_NEXTEP((epnum + 1) % 15);
+<<<<<<< HEAD
 		writel(next, hsotg->regs + DIEPCTL(epnum));
 		writel(next, hsotg->regs + DOEPCTL(epnum));
+=======
+		if (dir_in)
+			dwc2_writel(next, hsotg->regs + DIEPCTL(epnum));
+		else
+			dwc2_writel(next, hsotg->regs + DOEPCTL(epnum));
+>>>>>>> v4.9.227
 	}
 }
 
 /**
+<<<<<<< HEAD
  * s3c_hsotg_hw_cfg - read HW configuration registers
+=======
+ * dwc2_hsotg_hw_cfg - read HW configuration registers
+>>>>>>> v4.9.227
  * @param: The device state
  *
  * Read the USB core HW configuration registers
  */
+<<<<<<< HEAD
 static void s3c_hsotg_hw_cfg(struct s3c_hsotg *hsotg)
 {
 	u32 cfg2, cfg3, cfg4;
@@ -3069,11 +5592,55 @@ static void s3c_hsotg_hw_cfg(struct s3c_hsotg *hsotg)
 
 	cfg4 = readl(hsotg->regs + 0x50);
 	hsotg->dedicated_fifos = (cfg4 >> 25) & 1;
+=======
+static int dwc2_hsotg_hw_cfg(struct dwc2_hsotg *hsotg)
+{
+	u32 cfg;
+	u32 ep_type;
+	u32 i;
+
+	/* check hardware configuration */
+
+	hsotg->num_of_eps = hsotg->hw_params.num_dev_ep;
+
+	/* Add ep0 */
+	hsotg->num_of_eps++;
+
+	hsotg->eps_in[0] = devm_kzalloc(hsotg->dev, sizeof(struct dwc2_hsotg_ep),
+								GFP_KERNEL);
+	if (!hsotg->eps_in[0])
+		return -ENOMEM;
+	/* Same dwc2_hsotg_ep is used in both directions for ep0 */
+	hsotg->eps_out[0] = hsotg->eps_in[0];
+
+	cfg = hsotg->hw_params.dev_ep_dirs;
+	for (i = 1, cfg >>= 2; i < hsotg->num_of_eps; i++, cfg >>= 2) {
+		ep_type = cfg & 3;
+		/* Direction in or both */
+		if (!(ep_type & 2)) {
+			hsotg->eps_in[i] = devm_kzalloc(hsotg->dev,
+				sizeof(struct dwc2_hsotg_ep), GFP_KERNEL);
+			if (!hsotg->eps_in[i])
+				return -ENOMEM;
+		}
+		/* Direction out or both */
+		if (!(ep_type & 1)) {
+			hsotg->eps_out[i] = devm_kzalloc(hsotg->dev,
+				sizeof(struct dwc2_hsotg_ep), GFP_KERNEL);
+			if (!hsotg->eps_out[i])
+				return -ENOMEM;
+		}
+	}
+
+	hsotg->fifo_mem = hsotg->hw_params.total_fifo_size;
+	hsotg->dedicated_fifos = hsotg->hw_params.en_multiple_tx_fifo;
+>>>>>>> v4.9.227
 
 	dev_info(hsotg->dev, "EPs: %d, %s fifos, %d entries in SPRAM\n",
 		 hsotg->num_of_eps,
 		 hsotg->dedicated_fifos ? "dedicated" : "shared",
 		 hsotg->fifo_mem);
+<<<<<<< HEAD
 }
 
 /**
@@ -3081,6 +5648,16 @@ static void s3c_hsotg_hw_cfg(struct s3c_hsotg *hsotg)
  * @param: The device state
  */
 static void s3c_hsotg_dump(struct s3c_hsotg *hsotg)
+=======
+	return 0;
+}
+
+/**
+ * dwc2_hsotg_dump - dump state of the udc
+ * @param: The device state
+ */
+static void dwc2_hsotg_dump(struct dwc2_hsotg *hsotg)
+>>>>>>> v4.9.227
 {
 #ifdef DEBUG
 	struct device *dev = hsotg->dev;
@@ -3089,6 +5666,7 @@ static void s3c_hsotg_dump(struct s3c_hsotg *hsotg)
 	int idx;
 
 	dev_info(dev, "DCFG=0x%08x, DCTL=0x%08x, DIEPMSK=%08x\n",
+<<<<<<< HEAD
 		 readl(regs + DCFG), readl(regs + DCTL),
 		 readl(regs + DIEPMSK));
 
@@ -3102,11 +5680,27 @@ static void s3c_hsotg_dump(struct s3c_hsotg *hsotg)
 
 	for (idx = 1; idx <= 15; idx++) {
 		val = readl(regs + DPTXFSIZN(idx));
+=======
+		 dwc2_readl(regs + DCFG), dwc2_readl(regs + DCTL),
+		 dwc2_readl(regs + DIEPMSK));
+
+	dev_info(dev, "GAHBCFG=0x%08x, GHWCFG1=0x%08x\n",
+		 dwc2_readl(regs + GAHBCFG), dwc2_readl(regs + GHWCFG1));
+
+	dev_info(dev, "GRXFSIZ=0x%08x, GNPTXFSIZ=0x%08x\n",
+		 dwc2_readl(regs + GRXFSIZ), dwc2_readl(regs + GNPTXFSIZ));
+
+	/* show periodic fifo settings */
+
+	for (idx = 1; idx < hsotg->num_of_eps; idx++) {
+		val = dwc2_readl(regs + DPTXFSIZN(idx));
+>>>>>>> v4.9.227
 		dev_info(dev, "DPTx[%d] FSize=%d, StAddr=0x%08x\n", idx,
 			 val >> FIFOSIZE_DEPTH_SHIFT,
 			 val & FIFOSIZE_STARTADDR_MASK);
 	}
 
+<<<<<<< HEAD
 	for (idx = 0; idx < 15; idx++) {
 		dev_info(dev,
 			 "ep%d-in: EPCTL=0x%08x, SIZ=0x%08x, DMA=0x%08x\n", idx,
@@ -3120,10 +5714,26 @@ static void s3c_hsotg_dump(struct s3c_hsotg *hsotg)
 			 idx, readl(regs + DOEPCTL(idx)),
 			 readl(regs + DOEPTSIZ(idx)),
 			 readl(regs + DOEPDMA(idx)));
+=======
+	for (idx = 0; idx < hsotg->num_of_eps; idx++) {
+		dev_info(dev,
+			 "ep%d-in: EPCTL=0x%08x, SIZ=0x%08x, DMA=0x%08x\n", idx,
+			 dwc2_readl(regs + DIEPCTL(idx)),
+			 dwc2_readl(regs + DIEPTSIZ(idx)),
+			 dwc2_readl(regs + DIEPDMA(idx)));
+
+		val = dwc2_readl(regs + DOEPCTL(idx));
+		dev_info(dev,
+			 "ep%d-out: EPCTL=0x%08x, SIZ=0x%08x, DMA=0x%08x\n",
+			 idx, dwc2_readl(regs + DOEPCTL(idx)),
+			 dwc2_readl(regs + DOEPTSIZ(idx)),
+			 dwc2_readl(regs + DOEPDMA(idx)));
+>>>>>>> v4.9.227
 
 	}
 
 	dev_info(dev, "DVBUSDIS=0x%08x, DVBUSPULSE=%08x\n",
+<<<<<<< HEAD
 		 readl(regs + DVBUSDIS), readl(regs + DVBUSPULSE));
 #endif
 }
@@ -3529,12 +6139,131 @@ static int s3c_hsotg_probe(struct platform_device *pdev)
 				       hsotg->supplies);
 		dev_err(dev, "cannot claim IRQ\n");
 		goto err_clk;
+=======
+		 dwc2_readl(regs + DVBUSDIS), dwc2_readl(regs + DVBUSPULSE));
+#endif
+}
+
+#ifdef CONFIG_OF
+static void dwc2_hsotg_of_probe(struct dwc2_hsotg *hsotg)
+{
+	struct device_node *np = hsotg->dev->of_node;
+	u32 len = 0;
+	u32 i = 0;
+
+	/* Enable dma if requested in device tree */
+	hsotg->g_using_dma = of_property_read_bool(np, "g-use-dma");
+
+	/*
+	* Register TX periodic fifo size per endpoint.
+	* EP0 is excluded since it has no fifo configuration.
+	*/
+	if (!of_find_property(np, "g-tx-fifo-size", &len))
+		goto rx_fifo;
+
+	len /= sizeof(u32);
+
+	/* Read tx fifo sizes other than ep0 */
+	if (of_property_read_u32_array(np, "g-tx-fifo-size",
+						&hsotg->g_tx_fifo_sz[1], len))
+		goto rx_fifo;
+
+	/* Add ep0 */
+	len++;
+
+	/* Make remaining TX fifos unavailable */
+	if (len < MAX_EPS_CHANNELS) {
+		for (i = len; i < MAX_EPS_CHANNELS; i++)
+			hsotg->g_tx_fifo_sz[i] = 0;
+	}
+
+rx_fifo:
+	/* Register RX fifo size */
+	of_property_read_u32(np, "g-rx-fifo-size", &hsotg->g_rx_fifo_sz);
+
+	/* Register NPTX fifo size */
+	of_property_read_u32(np, "g-np-tx-fifo-size",
+						&hsotg->g_np_g_tx_fifo_sz);
+}
+#else
+static inline void dwc2_hsotg_of_probe(struct dwc2_hsotg *hsotg) { }
+#endif
+
+/**
+ * dwc2_gadget_init - init function for gadget
+ * @dwc2: The data structure for the DWC2 driver.
+ * @irq: The IRQ number for the controller.
+ */
+int dwc2_gadget_init(struct dwc2_hsotg *hsotg, int irq)
+{
+	struct device *dev = hsotg->dev;
+	int epnum;
+	int ret;
+	int i;
+	u32 p_tx_fifo[] = DWC2_G_P_LEGACY_TX_FIFO_SIZE;
+
+	/* Initialize to legacy fifo configuration values */
+	hsotg->g_rx_fifo_sz = 2048;
+	hsotg->g_np_g_tx_fifo_sz = 1024;
+	memcpy(&hsotg->g_tx_fifo_sz[1], p_tx_fifo, sizeof(p_tx_fifo));
+	/* Device tree specific probe */
+	dwc2_hsotg_of_probe(hsotg);
+
+	/* Check against largest possible value. */
+	if (hsotg->g_np_g_tx_fifo_sz >
+	    hsotg->hw_params.dev_nperio_tx_fifo_size) {
+		dev_warn(dev, "Specified GNPTXFDEP=%d > %d\n",
+			 hsotg->g_np_g_tx_fifo_sz,
+			 hsotg->hw_params.dev_nperio_tx_fifo_size);
+		hsotg->g_np_g_tx_fifo_sz =
+			hsotg->hw_params.dev_nperio_tx_fifo_size;
+	}
+
+	/* Dump fifo information */
+	dev_dbg(dev, "NonPeriodic TXFIFO size: %d\n",
+						hsotg->g_np_g_tx_fifo_sz);
+	dev_dbg(dev, "RXFIFO size: %d\n", hsotg->g_rx_fifo_sz);
+	for (i = 0; i < MAX_EPS_CHANNELS; i++)
+		dev_dbg(dev, "Periodic TXFIFO%2d size: %d\n", i,
+						hsotg->g_tx_fifo_sz[i]);
+
+	hsotg->gadget.max_speed = USB_SPEED_HIGH;
+	hsotg->gadget.ops = &dwc2_hsotg_gadget_ops;
+	hsotg->gadget.name = dev_name(dev);
+	if (hsotg->dr_mode == USB_DR_MODE_OTG)
+		hsotg->gadget.is_otg = 1;
+	else if (hsotg->dr_mode == USB_DR_MODE_PERIPHERAL)
+		hsotg->op_state = OTG_STATE_B_PERIPHERAL;
+
+	ret = dwc2_hsotg_hw_cfg(hsotg);
+	if (ret) {
+		dev_err(hsotg->dev, "Hardware configuration failed: %d\n", ret);
+		return ret;
+	}
+
+	hsotg->ctrl_buff = devm_kzalloc(hsotg->dev,
+			DWC2_CTRL_BUFF_SIZE, GFP_KERNEL);
+	if (!hsotg->ctrl_buff)
+		return -ENOMEM;
+
+	hsotg->ep0_buff = devm_kzalloc(hsotg->dev,
+			DWC2_CTRL_BUFF_SIZE, GFP_KERNEL);
+	if (!hsotg->ep0_buff)
+		return -ENOMEM;
+
+	ret = devm_request_irq(hsotg->dev, irq, dwc2_hsotg_irq, IRQF_SHARED,
+				dev_name(hsotg->dev), hsotg);
+	if (ret < 0) {
+		dev_err(dev, "cannot claim IRQ for gadget\n");
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	/* hsotg->num_of_eps holds number of EPs other than ep0 */
 
 	if (hsotg->num_of_eps == 0) {
 		dev_err(dev, "wrong number of EPs (zero)\n");
+<<<<<<< HEAD
 		ret = -EINVAL;
 		goto err_supplies;
 	}
@@ -3615,10 +6344,59 @@ static int s3c_hsotg_remove(struct platform_device *pdev)
 	}
 
 	clk_disable_unprepare(hsotg->clk);
+=======
+		return -EINVAL;
+	}
+
+	/* setup endpoint information */
+
+	INIT_LIST_HEAD(&hsotg->gadget.ep_list);
+	hsotg->gadget.ep0 = &hsotg->eps_out[0]->ep;
+
+	/* allocate EP0 request */
+
+	hsotg->ctrl_req = dwc2_hsotg_ep_alloc_request(&hsotg->eps_out[0]->ep,
+						     GFP_KERNEL);
+	if (!hsotg->ctrl_req) {
+		dev_err(dev, "failed to allocate ctrl req\n");
+		return -ENOMEM;
+	}
+
+	/* initialise the endpoints now the core has been initialised */
+	for (epnum = 0; epnum < hsotg->num_of_eps; epnum++) {
+		if (hsotg->eps_in[epnum])
+			dwc2_hsotg_initep(hsotg, hsotg->eps_in[epnum],
+								epnum, 1);
+		if (hsotg->eps_out[epnum])
+			dwc2_hsotg_initep(hsotg, hsotg->eps_out[epnum],
+								epnum, 0);
+	}
+
+	ret = usb_add_gadget_udc(dev, &hsotg->gadget);
+	if (ret) {
+		dwc2_hsotg_ep_free_request(&hsotg->eps_out[0]->ep,
+					   hsotg->ctrl_req);
+		return ret;
+	}
+	dwc2_hsotg_dump(hsotg);
 
 	return 0;
 }
 
+/**
+ * dwc2_hsotg_remove - remove function for hsotg driver
+ * @pdev: The platform information for the driver
+ */
+int dwc2_hsotg_remove(struct dwc2_hsotg *hsotg)
+{
+	usb_del_gadget_udc(&hsotg->gadget);
+	dwc2_hsotg_ep_free_request(&hsotg->eps_out[0]->ep, hsotg->ctrl_req);
+>>>>>>> v4.9.227
+
+	return 0;
+}
+
+<<<<<<< HEAD
 static int s3c_hsotg_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct s3c_hsotg *hsotg = platform_get_drvdata(pdev);
@@ -3653,11 +6431,51 @@ static int s3c_hsotg_resume(struct platform_device *pdev)
 	struct s3c_hsotg *hsotg = platform_get_drvdata(pdev);
 	unsigned long flags;
 	int ret = 0;
+=======
+int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
+{
+	unsigned long flags;
+
+	if (hsotg->lx_state != DWC2_L0)
+		return 0;
+
+	if (hsotg->driver) {
+		int ep;
+
+		dev_info(hsotg->dev, "suspending usb gadget %s\n",
+			 hsotg->driver->driver.name);
+
+		spin_lock_irqsave(&hsotg->lock, flags);
+		if (hsotg->enabled)
+			dwc2_hsotg_core_disconnect(hsotg);
+		dwc2_hsotg_disconnect(hsotg);
+		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
+		spin_unlock_irqrestore(&hsotg->lock, flags);
+
+		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
+			if (hsotg->eps_in[ep])
+				dwc2_hsotg_ep_disable(&hsotg->eps_in[ep]->ep);
+			if (hsotg->eps_out[ep])
+				dwc2_hsotg_ep_disable(&hsotg->eps_out[ep]->ep);
+		}
+	}
+
+	return 0;
+}
+
+int dwc2_hsotg_resume(struct dwc2_hsotg *hsotg)
+{
+	unsigned long flags;
+
+	if (hsotg->lx_state == DWC2_L2)
+		return 0;
+>>>>>>> v4.9.227
 
 	if (hsotg->driver) {
 		dev_info(hsotg->dev, "resuming usb gadget %s\n",
 			 hsotg->driver->driver.name);
 
+<<<<<<< HEAD
 		clk_enable(hsotg->clk);
 		ret = regulator_bulk_enable(ARRAY_SIZE(hsotg->supplies),
 				      hsotg->supplies);
@@ -3699,3 +6517,116 @@ MODULE_DESCRIPTION("Samsung S3C USB High-speed/OtG device");
 MODULE_AUTHOR("Ben Dooks <ben@simtec.co.uk>");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:s3c-hsotg");
+=======
+		spin_lock_irqsave(&hsotg->lock, flags);
+		dwc2_hsotg_core_init_disconnected(hsotg, false);
+		if (hsotg->enabled)
+			dwc2_hsotg_core_connect(hsotg);
+		spin_unlock_irqrestore(&hsotg->lock, flags);
+	}
+
+	return 0;
+}
+
+/**
+ * dwc2_backup_device_registers() - Backup controller device registers.
+ * When suspending usb bus, registers needs to be backuped
+ * if controller power is disabled once suspended.
+ *
+ * @hsotg: Programming view of the DWC_otg controller
+ */
+int dwc2_backup_device_registers(struct dwc2_hsotg *hsotg)
+{
+	struct dwc2_dregs_backup *dr;
+	int i;
+
+	dev_dbg(hsotg->dev, "%s\n", __func__);
+
+	/* Backup dev regs */
+	dr = &hsotg->dr_backup;
+
+	dr->dcfg = dwc2_readl(hsotg->regs + DCFG);
+	dr->dctl = dwc2_readl(hsotg->regs + DCTL);
+	dr->daintmsk = dwc2_readl(hsotg->regs + DAINTMSK);
+	dr->diepmsk = dwc2_readl(hsotg->regs + DIEPMSK);
+	dr->doepmsk = dwc2_readl(hsotg->regs + DOEPMSK);
+
+	for (i = 0; i < hsotg->num_of_eps; i++) {
+		/* Backup IN EPs */
+		dr->diepctl[i] = dwc2_readl(hsotg->regs + DIEPCTL(i));
+
+		/* Ensure DATA PID is correctly configured */
+		if (dr->diepctl[i] & DXEPCTL_DPID)
+			dr->diepctl[i] |= DXEPCTL_SETD1PID;
+		else
+			dr->diepctl[i] |= DXEPCTL_SETD0PID;
+
+		dr->dieptsiz[i] = dwc2_readl(hsotg->regs + DIEPTSIZ(i));
+		dr->diepdma[i] = dwc2_readl(hsotg->regs + DIEPDMA(i));
+
+		/* Backup OUT EPs */
+		dr->doepctl[i] = dwc2_readl(hsotg->regs + DOEPCTL(i));
+
+		/* Ensure DATA PID is correctly configured */
+		if (dr->doepctl[i] & DXEPCTL_DPID)
+			dr->doepctl[i] |= DXEPCTL_SETD1PID;
+		else
+			dr->doepctl[i] |= DXEPCTL_SETD0PID;
+
+		dr->doeptsiz[i] = dwc2_readl(hsotg->regs + DOEPTSIZ(i));
+		dr->doepdma[i] = dwc2_readl(hsotg->regs + DOEPDMA(i));
+	}
+	dr->valid = true;
+	return 0;
+}
+
+/**
+ * dwc2_restore_device_registers() - Restore controller device registers.
+ * When resuming usb bus, device registers needs to be restored
+ * if controller power were disabled.
+ *
+ * @hsotg: Programming view of the DWC_otg controller
+ */
+int dwc2_restore_device_registers(struct dwc2_hsotg *hsotg)
+{
+	struct dwc2_dregs_backup *dr;
+	u32 dctl;
+	int i;
+
+	dev_dbg(hsotg->dev, "%s\n", __func__);
+
+	/* Restore dev regs */
+	dr = &hsotg->dr_backup;
+	if (!dr->valid) {
+		dev_err(hsotg->dev, "%s: no device registers to restore\n",
+			__func__);
+		return -EINVAL;
+	}
+	dr->valid = false;
+
+	dwc2_writel(dr->dcfg, hsotg->regs + DCFG);
+	dwc2_writel(dr->dctl, hsotg->regs + DCTL);
+	dwc2_writel(dr->daintmsk, hsotg->regs + DAINTMSK);
+	dwc2_writel(dr->diepmsk, hsotg->regs + DIEPMSK);
+	dwc2_writel(dr->doepmsk, hsotg->regs + DOEPMSK);
+
+	for (i = 0; i < hsotg->num_of_eps; i++) {
+		/* Restore IN EPs */
+		dwc2_writel(dr->diepctl[i], hsotg->regs + DIEPCTL(i));
+		dwc2_writel(dr->dieptsiz[i], hsotg->regs + DIEPTSIZ(i));
+		dwc2_writel(dr->diepdma[i], hsotg->regs + DIEPDMA(i));
+
+		/* Restore OUT EPs */
+		dwc2_writel(dr->doepctl[i], hsotg->regs + DOEPCTL(i));
+		dwc2_writel(dr->doeptsiz[i], hsotg->regs + DOEPTSIZ(i));
+		dwc2_writel(dr->doepdma[i], hsotg->regs + DOEPDMA(i));
+	}
+
+	/* Set the Power-On Programming done bit */
+	dctl = dwc2_readl(hsotg->regs + DCTL);
+	dctl |= DCTL_PWRONPRGDONE;
+	dwc2_writel(dctl, hsotg->regs + DCTL);
+
+	return 0;
+}
+>>>>>>> v4.9.227

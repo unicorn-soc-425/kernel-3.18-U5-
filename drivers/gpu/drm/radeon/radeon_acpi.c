@@ -25,6 +25,10 @@
 #include <linux/acpi.h>
 #include <linux/slab.h>
 #include <linux/power_supply.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> v4.9.227
 #include <acpi/video.h>
 #include <drm/drmP.h>
 #include <drm/drm_crtc_helper.h>
@@ -32,6 +36,15 @@
 #include "radeon_acpi.h"
 #include "atom.h"
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_VGA_SWITCHEROO)
+bool radeon_atpx_dgpu_req_power_for_displays(void);
+#else
+static inline bool radeon_atpx_dgpu_req_power_for_displays(void) { return false; }
+#endif
+
+>>>>>>> v4.9.227
 #define ACPI_AC_CLASS           "ac_adapter"
 
 extern void radeon_pm_acpi_event_handler(struct radeon_device *rdev);
@@ -394,6 +407,19 @@ int radeon_atif_handler(struct radeon_device *rdev,
 #endif
 		}
 	}
+<<<<<<< HEAD
+=======
+	if (req.pending & ATIF_DGPU_DISPLAY_EVENT) {
+		if ((rdev->flags & RADEON_IS_PX) &&
+		    radeon_atpx_dgpu_req_power_for_displays()) {
+			pm_runtime_get_sync(rdev->ddev->dev);
+			/* Just fire off a uevent and let userspace tell us what to do */
+			drm_helper_hpd_irq_event(rdev->ddev);
+			pm_runtime_mark_last_busy(rdev->ddev->dev);
+			pm_runtime_put_autosuspend(rdev->ddev->dev);
+		}
+	}
+>>>>>>> v4.9.227
 	/* TODO: check other events */
 
 	/* We've handled the event, stop the notifier chain. The ACPI interface
@@ -741,6 +767,7 @@ int radeon_acpi_init(struct radeon_device *rdev)
 		}
 
 		atif->encoder_for_bl = target;
+<<<<<<< HEAD
 		if (!target) {
 			/* Brightness change notification is enabled, but we
 			 * didn't find a backlight controller, this should
@@ -748,6 +775,8 @@ int radeon_acpi_init(struct radeon_device *rdev)
 			 */
 			DRM_ERROR("Cannot find a backlight controller\n");
 		}
+=======
+>>>>>>> v4.9.227
 	}
 
 	if (atif->functions.sbios_requests && !atif->functions.system_params) {

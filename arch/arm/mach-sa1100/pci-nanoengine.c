@@ -22,7 +22,10 @@
 #include <linux/kernel.h>
 #include <linux/irq.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
+=======
+>>>>>>> v4.9.227
 
 #include <asm/mach/pci.h>
 #include <asm/mach-types.h>
@@ -30,6 +33,7 @@
 #include <mach/nanoengine.h>
 #include <mach/hardware.h>
 
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(nano_lock);
 
 static int nanoengine_get_pci_address(struct pci_bus *bus,
@@ -121,6 +125,22 @@ static int nanoengine_write_config(struct pci_bus *bus, unsigned int devfn, int 
 static struct pci_ops pci_nano_ops = {
 	.read	= nanoengine_read_config,
 	.write	= nanoengine_write_config,
+=======
+static void __iomem *nanoengine_pci_map_bus(struct pci_bus *bus,
+					    unsigned int devfn, int where)
+{
+	if (bus->number != 0 || (devfn >> 3) != 0)
+		return NULL;
+
+	return (void __iomem *)NANO_PCI_CONFIG_SPACE_VIRT +
+		((bus->number << 16) | (devfn << 8) | (where & ~3));
+}
+
+static struct pci_ops pci_nano_ops = {
+	.map_bus = nanoengine_pci_map_bus,
+	.read	= pci_generic_config_read32,
+	.write	= pci_generic_config_write32,
+>>>>>>> v4.9.227
 };
 
 static int __init pci_nanoengine_map_irq(const struct pci_dev *dev, u8 slot,

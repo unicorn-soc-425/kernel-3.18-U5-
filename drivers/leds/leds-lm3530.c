@@ -492,7 +492,10 @@ static struct i2c_driver lm3530_i2c_driver = {
 	.id_table = lm3530_id,
 	.driver = {
 		.name = LM3530_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

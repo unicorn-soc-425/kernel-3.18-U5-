@@ -281,7 +281,11 @@ static u32 cx25821_functionality(struct i2c_adapter *adap)
 		I2C_FUNC_SMBUS_READ_WORD_DATA | I2C_FUNC_SMBUS_WRITE_WORD_DATA;
 }
 
+<<<<<<< HEAD
 static struct i2c_algorithm cx25821_i2c_algo_template = {
+=======
+static const struct i2c_algorithm cx25821_i2c_algo_template = {
+>>>>>>> v4.9.227
 	.master_xfer = i2c_xfer,
 	.functionality = cx25821_functionality,
 #ifdef NEED_ALGO_CONTROL

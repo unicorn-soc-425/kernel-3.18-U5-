@@ -25,7 +25,11 @@
 #include <net/netfilter/nf_conntrack_timeout.h>
 
 struct ctnl_timeout *
+<<<<<<< HEAD
 (*nf_ct_timeout_find_get_hook)(const char *name) __read_mostly;
+=======
+(*nf_ct_timeout_find_get_hook)(struct net *net, const char *name) __read_mostly;
+>>>>>>> v4.9.227
 EXPORT_SYMBOL_GPL(nf_ct_timeout_find_get_hook);
 
 void (*nf_ct_timeout_put_hook)(struct ctnl_timeout *timeout) __read_mostly;

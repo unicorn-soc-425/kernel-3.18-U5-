@@ -92,7 +92,10 @@ void xen_hvm_callback_vector(void);
 #ifdef CONFIG_TRACING
 #define trace_xen_hvm_callback_vector xen_hvm_callback_vector
 #endif
+<<<<<<< HEAD
 extern int xen_have_vector_callback;
+=======
+>>>>>>> v4.9.227
 int xen_set_callback_via(uint64_t via);
 void xen_evtchn_do_upcall(struct pt_regs *regs);
 void xen_hvm_evtchn_do_upcall(void);

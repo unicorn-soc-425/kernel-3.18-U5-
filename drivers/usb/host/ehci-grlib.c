@@ -187,7 +187,10 @@ static struct platform_driver ehci_grlib_driver = {
 	.shutdown	= usb_hcd_platform_shutdown,
 	.driver = {
 		.name = "grlib-ehci",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ehci_hcd_grlib_of_match,
 	},
 };

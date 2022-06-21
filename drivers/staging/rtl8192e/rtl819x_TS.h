@@ -6,10 +6,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -19,8 +22,11 @@
 #ifndef _TSTYPE_H_
 #define _TSTYPE_H_
 #include "rtl819x_Qos.h"
+<<<<<<< HEAD
 #define TS_SETUP_TIMEOUT	60
 #define TS_INACT_TIMEOUT	60
+=======
+>>>>>>> v4.9.227
 #define TS_ADDBA_DELAY		60
 
 #define TOTAL_TS_NUM		16
@@ -35,7 +41,11 @@ struct ts_common_info {
 	struct list_head		List;
 	struct timer_list		SetupTimer;
 	struct timer_list		InactTimer;
+<<<<<<< HEAD
 	u8				Addr[6];
+=======
+	u8				Addr[ETH_ALEN];
+>>>>>>> v4.9.227
 	union tspec_body TSpec;
 	union qos_tclas TClass[TCLAS_NUM];
 	u8				TClasProc;
@@ -67,7 +77,10 @@ struct rx_ts_record {
 	u8				num;
 };
 
+<<<<<<< HEAD
 void _setup_timer(struct timer_list *, void *, unsigned long);
+=======
+>>>>>>> v4.9.227
 
 
 #endif

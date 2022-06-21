@@ -11,6 +11,14 @@ struct dma_map_ops;
 struct dev_archdata {
 	/* DMA operations on that device */
 	struct dma_map_ops *dma_ops;
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_DMA_PERDEV_COHERENT
+	/* Non-zero if DMA is coherent with CPU caches */
+	bool dma_coherent;
+#endif
+>>>>>>> v4.9.227
 };
 
 struct pdev_archdata {

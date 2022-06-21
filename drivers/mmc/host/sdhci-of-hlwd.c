@@ -75,11 +75,14 @@ static int sdhci_hlwd_probe(struct platform_device *pdev)
 	return sdhci_pltfm_register(pdev, &sdhci_hlwd_pdata, 0);
 }
 
+<<<<<<< HEAD
 static int sdhci_hlwd_remove(struct platform_device *pdev)
 {
 	return sdhci_pltfm_unregister(pdev);
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id sdhci_hlwd_of_match[] = {
 	{ .compatible = "nintendo,hollywood-sdhci" },
 	{ }
@@ -90,10 +93,17 @@ static struct platform_driver sdhci_hlwd_driver = {
 	.driver = {
 		.name = "sdhci-hlwd",
 		.of_match_table = sdhci_hlwd_of_match,
+<<<<<<< HEAD
 		.pm = SDHCI_PLTFM_PMOPS,
 	},
 	.probe = sdhci_hlwd_probe,
 	.remove = sdhci_hlwd_remove,
+=======
+		.pm = &sdhci_pltfm_pmops,
+	},
+	.probe = sdhci_hlwd_probe,
+	.remove = sdhci_pltfm_unregister,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(sdhci_hlwd_driver);

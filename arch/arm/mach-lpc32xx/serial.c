@@ -76,9 +76,12 @@ void __init lpc32xx_serial_init(void)
 	unsigned int puart;
 	int i, j;
 
+<<<<<<< HEAD
 	/* UART clocks are off, let clock driver manage them */
 	__raw_writel(0, LPC32XX_CLKPWR_UART_CLK_CTRL);
 
+=======
+>>>>>>> v4.9.227
 	for (i = 0; i < ARRAY_SIZE(uartinit_data); i++) {
 		clk = clk_get(NULL, uartinit_data[i].uart_ck_name);
 		if (!IS_ERR(clk)) {

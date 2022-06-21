@@ -140,13 +140,22 @@ void pn_deliver_sock_broadcast(struct net *net, struct sk_buff *skb)
 	rcu_read_unlock();
 }
 
+<<<<<<< HEAD
 void pn_sock_hash(struct sock *sk)
+=======
+int pn_sock_hash(struct sock *sk)
+>>>>>>> v4.9.227
 {
 	struct hlist_head *hlist = pn_hash_list(pn_sk(sk)->sobject);
 
 	mutex_lock(&pnsocks.lock);
 	sk_add_node_rcu(sk, hlist);
 	mutex_unlock(&pnsocks.lock);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(pn_sock_hash);
 
@@ -200,7 +209,11 @@ static int pn_socket_bind(struct socket *sock, struct sockaddr *addr, int len)
 	pn->resource = spn->spn_resource;
 
 	/* Enable RX on the socket */
+<<<<<<< HEAD
 	sk->sk_prot->hash(sk);
+=======
+	err = sk->sk_prot->hash(sk);
+>>>>>>> v4.9.227
 out_port:
 	mutex_unlock(&port_mutex);
 out:
@@ -425,15 +438,24 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int pn_socket_sendmsg(struct kiocb *iocb, struct socket *sock,
 				struct msghdr *m, size_t total_len)
+=======
+static int pn_socket_sendmsg(struct socket *sock, struct msghdr *m,
+			     size_t total_len)
+>>>>>>> v4.9.227
 {
 	struct sock *sk = sock->sk;
 
 	if (pn_socket_autobind(sock))
 		return -EAGAIN;
 
+<<<<<<< HEAD
 	return sk->sk_prot->sendmsg(iocb, sk, m, total_len);
+=======
+	return sk->sk_prot->sendmsg(sk, m, total_len);
+>>>>>>> v4.9.227
 }
 
 const struct proto_ops phonet_dgram_ops = {

@@ -202,6 +202,9 @@ static inline int default_mpp_ctrl_set(void __iomem *base, unsigned int pid,
 }
 
 int mvebu_pinctrl_probe(struct platform_device *pdev);
+<<<<<<< HEAD
 int mvebu_pinctrl_remove(struct platform_device *pdev);
+=======
+>>>>>>> v4.9.227
 
 #endif

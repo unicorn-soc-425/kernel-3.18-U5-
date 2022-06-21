@@ -20,19 +20,33 @@
 #include <linux/delay.h>
 #include <linux/elf.h>
 #include <linux/elfcore.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/slab.h>
+=======
+#include <linux/export.h>
+#include <linux/slab.h>
+#include <linux/vmalloc.h>
+>>>>>>> v4.9.227
 
 #include <asm/processor.h>
 #include <asm/hardirq.h>
 #include <asm/nmi.h>
 #include <asm/hw_irq.h>
 #include <asm/apic.h>
+<<<<<<< HEAD
+=======
+#include <asm/io_apic.h>
+>>>>>>> v4.9.227
 #include <asm/hpet.h>
 #include <linux/kdebug.h>
 #include <asm/cpu.h>
 #include <asm/reboot.h>
 #include <asm/virtext.h>
+<<<<<<< HEAD
+=======
+#include <asm/intel_pt.h>
+>>>>>>> v4.9.227
 
 /* Alignment required for elf header segment */
 #define ELF_CORE_HEADER_ALIGN   4096
@@ -54,10 +68,16 @@ struct crash_elf_data {
 	struct kimage *image;
 	/*
 	 * Total number of ram ranges we have after various adjustments for
+<<<<<<< HEAD
 	 * GART, crash reserved region etc.
 	 */
 	unsigned int max_nr_ranges;
 	unsigned long gart_start, gart_end;
+=======
+	 * crash reserved region, etc.
+	 */
+	unsigned int max_nr_ranges;
+>>>>>>> v4.9.227
 
 	/* Pointer to elf header */
 	void *ehdr;
@@ -73,8 +93,11 @@ struct crash_memmap_data {
 	unsigned int type;
 };
 
+<<<<<<< HEAD
 int in_crash_kexec;
 
+=======
+>>>>>>> v4.9.227
 /*
  * This is used to VMCLEAR all VMCSs loaded on the
  * processor. And when loading kvm_intel module, the
@@ -104,7 +127,11 @@ static void kdump_nmi_callback(int cpu, struct pt_regs *regs)
 #ifdef CONFIG_X86_32
 	struct pt_regs fixed_regs;
 
+<<<<<<< HEAD
 	if (!user_mode_vm(regs)) {
+=======
+	if (!user_mode(regs)) {
+>>>>>>> v4.9.227
 		crash_fixup_ss_esp(&fixed_regs, regs);
 		regs = &fixed_regs;
 	}
@@ -125,19 +152,53 @@ static void kdump_nmi_callback(int cpu, struct pt_regs *regs)
 	cpu_emergency_vmxoff();
 	cpu_emergency_svm_disable();
 
+<<<<<<< HEAD
 	disable_local_APIC();
 }
 
 static void kdump_nmi_shootdown_cpus(void)
 {
 	in_crash_kexec = 1;
+=======
+	/*
+	 * Disable Intel PT to stop its logging
+	 */
+	cpu_emergency_stop_pt();
+
+	disable_local_APIC();
+}
+
+void kdump_nmi_shootdown_cpus(void)
+{
+>>>>>>> v4.9.227
 	nmi_shootdown_cpus(kdump_nmi_callback);
 
 	disable_local_APIC();
 }
 
+<<<<<<< HEAD
 #else
 static void kdump_nmi_shootdown_cpus(void)
+=======
+/* Override the weak function in kernel/panic.c */
+void crash_smp_send_stop(void)
+{
+	static int cpus_stopped;
+
+	if (cpus_stopped)
+		return;
+
+	if (smp_ops.crash_stop_other_cpus)
+		smp_ops.crash_stop_other_cpus();
+	else
+		smp_send_stop();
+
+	cpus_stopped = 1;
+}
+
+#else
+void crash_smp_send_stop(void)
+>>>>>>> v4.9.227
 {
 	/* There are no cpus to shootdown */
 }
@@ -156,7 +217,11 @@ void native_machine_crash_shutdown(struct pt_regs *regs)
 	/* The kernel is broken so disable interrupts */
 	local_irq_disable();
 
+<<<<<<< HEAD
 	kdump_nmi_shootdown_cpus();
+=======
+	crash_smp_send_stop();
+>>>>>>> v4.9.227
 
 	/*
 	 * VMCLEAR VMCSs loaded on this cpu if needed.
@@ -170,6 +235,14 @@ void native_machine_crash_shutdown(struct pt_regs *regs)
 	cpu_emergency_vmxoff();
 	cpu_emergency_svm_disable();
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Disable Intel PT to stop its logging
+	 */
+	cpu_emergency_stop_pt();
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_X86_IO_APIC
 	/* Prevent crash_kexec() from deadlocking on ioapic_lock. */
 	ioapic_zap_locks();
@@ -191,6 +264,7 @@ static int get_nr_ram_ranges_callback(u64 start, u64 end, void *arg)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int get_gart_ranges_callback(u64 start, u64 end, void *arg)
 {
 	struct crash_elf_data *ced = arg;
@@ -202,6 +276,8 @@ static int get_gart_ranges_callback(u64 start, u64 end, void *arg)
 	return 1;
 }
 
+=======
+>>>>>>> v4.9.227
 
 /* Gather all the required information to prepare elf headers for ram regions */
 static void fill_up_crash_elf_data(struct crash_elf_data *ced,
@@ -216,6 +292,7 @@ static void fill_up_crash_elf_data(struct crash_elf_data *ced,
 
 	ced->max_nr_ranges = nr_ranges;
 
+<<<<<<< HEAD
 	/*
 	 * We don't create ELF headers for GART aperture as an attempt
 	 * to dump this memory in second kernel leads to hang/crash.
@@ -232,6 +309,8 @@ static void fill_up_crash_elf_data(struct crash_elf_data *ced,
 	if (ced->gart_end)
 		ced->max_nr_ranges++;
 
+=======
+>>>>>>> v4.9.227
 	/* Exclusion of crash region could split memory ranges */
 	ced->max_nr_ranges++;
 
@@ -340,6 +419,7 @@ static int elf_header_exclude_ranges(struct crash_elf_data *ced,
 			return ret;
 	}
 
+<<<<<<< HEAD
 	/* Exclude GART region */
 	if (ced->gart_end) {
 		ret = exclude_mem_range(cmem, ced->gart_start, ced->gart_end);
@@ -347,6 +427,8 @@ static int elf_header_exclude_ranges(struct crash_elf_data *ced,
 			return ret;
 	}
 
+=======
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -589,12 +671,20 @@ int crash_setup_memmap_entries(struct kimage *image, struct boot_params *params)
 	/* Add ACPI tables */
 	cmd.type = E820_ACPI;
 	flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+<<<<<<< HEAD
 	walk_iomem_res("ACPI Tables", flags, 0, -1, &cmd,
+=======
+	walk_iomem_res_desc(IORES_DESC_ACPI_TABLES, flags, 0, -1, &cmd,
+>>>>>>> v4.9.227
 		       memmap_entry_callback);
 
 	/* Add ACPI Non-volatile Storage */
 	cmd.type = E820_NVS;
+<<<<<<< HEAD
 	walk_iomem_res("ACPI Non-volatile Storage", flags, 0, -1, &cmd,
+=======
+	walk_iomem_res_desc(IORES_DESC_ACPI_NV_STORAGE, flags, 0, -1, &cmd,
+>>>>>>> v4.9.227
 			memmap_entry_callback);
 
 	/* Add crashk_low_res region */

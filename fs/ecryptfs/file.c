@@ -31,6 +31,7 @@
 #include <linux/security.h>
 #include <linux/compat.h>
 #include <linux/fs_stack.h>
+<<<<<<< HEAD
 #include <linux/aio.h>
 #include <linux/ecryptfs.h>
 #include <linux/xattr.h>
@@ -58,6 +59,10 @@
 #include <sdp/fs_request.h>
 #endif
 
+=======
+#include "ecryptfs_kernel.h"
+
+>>>>>>> v4.9.227
 /**
  * ecryptfs_read_update_atime
  *
@@ -76,12 +81,15 @@ static ssize_t ecryptfs_read_update_atime(struct kiocb *iocb,
 	struct file *file = iocb->ki_filp;
 
 	rc = generic_file_read_iter(iocb, to);
+<<<<<<< HEAD
 	/*
 	 * Even though this is a async interface, we need to wait
 	 * for IO to finish to update atime
 	 */
 	if (-EIOCBQUEUED == rc)
 		rc = wait_on_sync_kiocb(iocb);
+=======
+>>>>>>> v4.9.227
 	if (rc >= 0) {
 		path = ecryptfs_dentry_to_lower_path(file->f_path.dentry);
 		touch_atime(path);
@@ -99,11 +107,19 @@ struct ecryptfs_getdents_callback {
 
 /* Inspired by generic filldir in fs/readdir.c */
 static int
+<<<<<<< HEAD
 ecryptfs_filldir(void *dirent, const char *lower_name, int lower_namelen,
 		 loff_t offset, u64 ino, unsigned int d_type)
 {
 	struct ecryptfs_getdents_callback *buf =
 	    (struct ecryptfs_getdents_callback *)dirent;
+=======
+ecryptfs_filldir(struct dir_context *ctx, const char *lower_name,
+		 int lower_namelen, loff_t offset, u64 ino, unsigned int d_type)
+{
+	struct ecryptfs_getdents_callback *buf =
+		container_of(ctx, struct ecryptfs_getdents_callback, ctx);
+>>>>>>> v4.9.227
 	size_t name_size;
 	char *name;
 	int rc;
@@ -160,7 +176,11 @@ struct kmem_cache *ecryptfs_file_info_cache;
 
 static int read_or_initialize_metadata(struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	struct ecryptfs_mount_crypt_stat *mount_crypt_stat;
 	struct ecryptfs_crypt_stat *crypt_stat;
 	int rc;
@@ -168,6 +188,7 @@ static int read_or_initialize_metadata(struct dentry *dentry)
 	crypt_stat = &ecryptfs_inode_to_private(inode)->crypt_stat;
 	mount_crypt_stat = &ecryptfs_superblock_to_private(
 						inode->i_sb)->mount_crypt_stat;
+<<<<<<< HEAD
 
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
 	if (crypt_stat->flags & ECRYPTFS_STRUCT_INITIALIZED
@@ -209,6 +230,8 @@ static int read_or_initialize_metadata(struct dentry *dentry)
 	mutex_unlock(&crypt_stat->cs_mutex);
 #endif
 
+=======
+>>>>>>> v4.9.227
 	mutex_lock(&crypt_stat->cs_mutex);
 
 	if (crypt_stat->flags & ECRYPTFS_POLICY_APPLIED &&
@@ -221,6 +244,7 @@ static int read_or_initialize_metadata(struct dentry *dentry)
 	if (!rc)
 		goto out;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SDP
 	/*
 	 * no passthrough/xattr for sensitive files
@@ -229,6 +253,8 @@ static int read_or_initialize_metadata(struct dentry *dentry)
 		goto out;
 #endif
 
+=======
+>>>>>>> v4.9.227
 	if (mount_crypt_stat->flags & ECRYPTFS_PLAINTEXT_PASSTHROUGH_ENABLED) {
 		crypt_stat->flags &= ~(ECRYPTFS_I_SIZE_INITIALIZED
 				       | ECRYPTFS_ENCRYPTED);
@@ -246,6 +272,7 @@ static int read_or_initialize_metadata(struct dentry *dentry)
 	rc = -EIO;
 out:
 	mutex_unlock(&crypt_stat->cs_mutex);
+<<<<<<< HEAD
 #ifdef CONFIG_SDP
 	if(!rc)
 	{
@@ -265,6 +292,8 @@ out:
 		}
 	}
 #endif
+=======
+>>>>>>> v4.9.227
 	return rc;
 }
 
@@ -283,7 +312,11 @@ static int ecryptfs_mmap(struct file *file, struct vm_area_struct *vma)
 
 /**
  * ecryptfs_open
+<<<<<<< HEAD
  * @inode: inode speciying file to open
+=======
+ * @inode: inode specifying file to open
+>>>>>>> v4.9.227
  * @file: Structure to return filled in
  *
  * Opens the file specified by inode.
@@ -295,13 +328,17 @@ static int ecryptfs_open(struct inode *inode, struct file *file)
 	int rc = 0;
 	struct ecryptfs_crypt_stat *crypt_stat = NULL;
 	struct dentry *ecryptfs_dentry = file->f_path.dentry;
+<<<<<<< HEAD
 	int ret;
 
 
+=======
+>>>>>>> v4.9.227
 	/* Private value of ecryptfs_dentry allocated in
 	 * ecryptfs_lookup() */
 	struct ecryptfs_file_info *file_info;
 
+<<<<<<< HEAD
 #ifdef CONFIG_DLP
 	sdp_fs_command_t *cmd = NULL;
 	ssize_t dlp_len = 0;
@@ -316,6 +353,8 @@ static int ecryptfs_open(struct inode *inode, struct file *file)
 		ecryptfs_dentry->d_sb)->mount_crypt_stat;
 #endif
 
+=======
+>>>>>>> v4.9.227
 	/* Released in ecryptfs_release or end of function if failure */
 	file_info = kmem_cache_zalloc(ecryptfs_file_info_cache, GFP_KERNEL);
 	ecryptfs_set_file_private(file, file_info);
@@ -352,6 +391,7 @@ static int ecryptfs_open(struct inode *inode, struct file *file)
 	ecryptfs_set_file_lower(
 		file, ecryptfs_inode_to_private(inode)->lower_file);
 	rc = read_or_initialize_metadata(ecryptfs_dentry);
+<<<<<<< HEAD
 
 		if (rc) {
 #ifdef CONFIG_SDP
@@ -525,6 +565,13 @@ dlp_out:
 				ecryptfs_inode_to_lower(inode)->i_mapping, 0);
 		}
 	}
+=======
+	if (rc)
+		goto out_put;
+	ecryptfs_printk(KERN_DEBUG, "inode w/ addr = [0x%p], i_ino = "
+			"[0x%.16lx] size: [0x%.16llx]\n", inode, inode->i_ino,
+			(unsigned long long)i_size_read(inode));
+>>>>>>> v4.9.227
 	goto out;
 out_put:
 	ecryptfs_put_lower_file(inode);
@@ -532,18 +579,25 @@ out_free:
 	kmem_cache_free(ecryptfs_file_info_cache,
 			ecryptfs_file_to_private(file));
 out:
+<<<<<<< HEAD
 #ifdef CONFIG_DLP
 	if(cmd) {
 		sdp_fs_request(cmd, NULL);
 		sdp_fs_command_free(cmd);
 	}
 #endif
+=======
+>>>>>>> v4.9.227
 	return rc;
 }
 
 /**
  * ecryptfs_dir_open
+<<<<<<< HEAD
  * @inode: inode speciying file to open
+=======
+ * @inode: inode specifying file to open
+>>>>>>> v4.9.227
  * @file: Structure to return filled in
  *
  * Opens the file specified by inode.
@@ -594,6 +648,7 @@ static int ecryptfs_flush(struct file *file, fl_owner_t td)
 
 static int ecryptfs_release(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_SDP
 	struct ecryptfs_crypt_stat *crypt_stat;
 	crypt_stat = &ecryptfs_inode_to_private(inode)->crypt_stat;
@@ -608,6 +663,11 @@ static int ecryptfs_release(struct inode *inode, struct file *file)
 	kmem_cache_free(ecryptfs_file_info_cache,
 			ecryptfs_file_to_private(file));
 
+=======
+	ecryptfs_put_lower_file(inode);
+	kmem_cache_free(ecryptfs_file_info_cache,
+			ecryptfs_file_to_private(file));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -653,6 +713,7 @@ ecryptfs_unlocked_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	struct file *lower_file = ecryptfs_file_to_lower(file);
 	long rc = -ENOTTY;
 
+<<<<<<< HEAD
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
 	if (cmd == ECRYPTFS_IOCTL_GET_ATTRIBUTES) {
 		u32 __user *user_attr = (u32 __user *)arg;
@@ -700,6 +761,8 @@ ecryptfs_unlocked_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	printk("%s CONFIG_SDP not enabled \n", __func__);
 #endif
 
+=======
+>>>>>>> v4.9.227
 	if (!lower_file->f_op->unlocked_ioctl)
 		return rc;
 
@@ -725,6 +788,7 @@ ecryptfs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	struct file *lower_file = ecryptfs_file_to_lower(file);
 	long rc = -ENOIOCTLCMD;
 
+<<<<<<< HEAD
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
 	if (cmd == ECRYPTFS_IOCTL_GET_ATTRIBUTES) {
 		u32 __user *user_attr = (u32 __user *)arg;
@@ -772,11 +836,16 @@ ecryptfs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	printk("%s CONFIG_SDP not enabled \n", __func__);
 #endif
 
+=======
+>>>>>>> v4.9.227
 	if (!lower_file->f_op->compat_ioctl)
 		return rc;
 
 	switch (cmd) {
+<<<<<<< HEAD
 	case FITRIM:
+=======
+>>>>>>> v4.9.227
 	case FS_IOC32_GETFLAGS:
 	case FS_IOC32_SETFLAGS:
 	case FS_IOC32_GETVERSION:
@@ -791,6 +860,7 @@ ecryptfs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
 int is_file_name_match(struct ecryptfs_mount_crypt_stat *mcs,
 					struct dentry *fp_dentry)
@@ -874,6 +944,10 @@ int is_file_ext_match(struct ecryptfs_mount_crypt_stat *mcs, char *str)
 
 const struct file_operations ecryptfs_dir_fops = {
 	.iterate = ecryptfs_readdir,
+=======
+const struct file_operations ecryptfs_dir_fops = {
+	.iterate_shared = ecryptfs_readdir,
+>>>>>>> v4.9.227
 	.read = generic_read_dir,
 	.unlocked_ioctl = ecryptfs_unlocked_ioctl,
 #ifdef CONFIG_COMPAT
@@ -887,9 +961,13 @@ const struct file_operations ecryptfs_dir_fops = {
 
 const struct file_operations ecryptfs_main_fops = {
 	.llseek = generic_file_llseek,
+<<<<<<< HEAD
 	.read = new_sync_read,
 	.read_iter = ecryptfs_read_update_atime,
 	.write = new_sync_write,
+=======
+	.read_iter = ecryptfs_read_update_atime,
+>>>>>>> v4.9.227
 	.write_iter = generic_file_write_iter,
 	.unlocked_ioctl = ecryptfs_unlocked_ioctl,
 #ifdef CONFIG_COMPAT

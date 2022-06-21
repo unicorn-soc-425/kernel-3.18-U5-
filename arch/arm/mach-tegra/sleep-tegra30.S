@@ -223,7 +223,11 @@ wfe_war:
 	b	__cpu_reset_again
 
 	/*
+<<<<<<< HEAD
 	 * 38 nop's, which fills reset of wfe cache line and
+=======
+	 * 38 nop's, which fills rest of wfe cache line and
+>>>>>>> v4.9.227
 	 * 4 more cachelines with nop
 	 */
 	.rept 38
@@ -242,8 +246,16 @@ ENDPROC(tegra30_cpu_shutdown)
  * tegra30_tear_down_core in IRAM
  */
 ENTRY(tegra30_sleep_core_finish)
+<<<<<<< HEAD
 	/* Flush, disable the L1 data cache and exit SMP */
 	bl	tegra_disable_clean_inv_dcache
+=======
+	mov	r4, r0
+	/* Flush, disable the L1 data cache and exit SMP */
+	mov	r0, #TEGRA_FLUSH_CACHE_ALL
+	bl	tegra_disable_clean_inv_dcache
+	mov	r0, r4
+>>>>>>> v4.9.227
 
 	/*
 	 * Preload all the address literals that are needed for the
@@ -379,6 +391,17 @@ _pll_m_c_x_done:
 	pll_locked r1, r0, CLK_RESET_PLLC_BASE
 	pll_locked r1, r0, CLK_RESET_PLLX_BASE
 
+<<<<<<< HEAD
+=======
+	tegra_get_soc_id TEGRA_APB_MISC_BASE, r1
+	cmp	r1, #TEGRA30
+	beq	1f
+	ldr	r1, [r0, #CLK_RESET_PLLP_BASE]
+	bic	r1, r1, #(1<<31)	@ disable PllP bypass
+	str	r1, [r0, #CLK_RESET_PLLP_BASE]
+1:
+
+>>>>>>> v4.9.227
 	mov32	r7, TEGRA_TMRUS_BASE
 	ldr	r1, [r7]
 	add	r1, r1, #LOCK_DELAY
@@ -638,7 +661,14 @@ tegra30_switch_cpu_to_clk32k:
 	str	r0, [r4, #PMC_PLLP_WB0_OVERRIDE]
 
 	/* disable PLLP, PLLA, PLLC and PLLX */
+<<<<<<< HEAD
 	ldr	r0, [r5, #CLK_RESET_PLLP_BASE]
+=======
+	tegra_get_soc_id TEGRA_APB_MISC_BASE, r1
+	cmp	r1, #TEGRA30
+	ldr	r0, [r5, #CLK_RESET_PLLP_BASE]
+	orrne	r0, r0, #(1 << 31)	@ enable PllP bypass on fast cluster
+>>>>>>> v4.9.227
 	bic	r0, r0, #(1 << 30)
 	str	r0, [r5, #CLK_RESET_PLLP_BASE]
 	ldr	r0, [r5, #CLK_RESET_PLLA_BASE]

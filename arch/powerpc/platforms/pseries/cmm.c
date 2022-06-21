@@ -391,6 +391,13 @@ static struct bus_type cmm_subsys = {
 	.dev_name = "cmm",
 };
 
+<<<<<<< HEAD
+=======
+static void cmm_release_device(struct device *dev)
+{
+}
+
+>>>>>>> v4.9.227
 /**
  * cmm_sysfs_register - Register with sysfs
  *
@@ -406,6 +413,10 @@ static int cmm_sysfs_register(struct device *dev)
 
 	dev->id = 0;
 	dev->bus = &cmm_subsys;
+<<<<<<< HEAD
+=======
+	dev->release = cmm_release_device;
+>>>>>>> v4.9.227
 
 	if ((rc = device_register(dev)))
 		goto subsys_unregister;
@@ -574,7 +585,11 @@ static int cmm_mem_going_offline(void *arg)
 				cmm_dbg("Failed to allocate memory for list "
 						"management. Memory hotplug "
 						"failed.\n");
+<<<<<<< HEAD
 				return ENOMEM;
+=======
+				return -ENOMEM;
+>>>>>>> v4.9.227
 			}
 			memcpy(npa, pa_curr, PAGE_SIZE);
 			if (pa_curr == cmm_page_list)

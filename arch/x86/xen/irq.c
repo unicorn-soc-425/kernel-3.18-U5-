@@ -109,7 +109,12 @@ static void xen_safe_halt(void)
 static void xen_halt(void)
 {
 	if (irqs_disabled())
+<<<<<<< HEAD
 		HYPERVISOR_vcpu_op(VCPUOP_down, smp_processor_id(), NULL);
+=======
+		HYPERVISOR_vcpu_op(VCPUOP_down,
+				   xen_vcpu_nr(smp_processor_id()), NULL);
+>>>>>>> v4.9.227
 	else
 		xen_safe_halt();
 }

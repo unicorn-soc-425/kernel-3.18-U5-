@@ -86,14 +86,23 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	hcd->rsrc_start = res->start;
 	hcd->rsrc_len = resource_size(res);
 
+=======
+>>>>>>> v4.9.227
 	hcd->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(hcd->regs)) {
 		ret = PTR_ERR(hcd->regs);
 		goto err_rmr;
 	}
+<<<<<<< HEAD
+=======
+	hcd->rsrc_start = res->start;
+	hcd->rsrc_len = resource_size(res);
+
+>>>>>>> v4.9.227
 	uhci = hcd_to_uhci(hcd);
 
 	uhci->regs = hcd->regs;
@@ -140,6 +149,10 @@ static const struct of_device_id platform_uhci_ids[] = {
 	{ .compatible = "platform-uhci", },
 	{}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, platform_uhci_ids);
+>>>>>>> v4.9.227
 
 static struct platform_driver uhci_platform_driver = {
 	.probe		= uhci_hcd_platform_probe,
@@ -147,7 +160,10 @@ static struct platform_driver uhci_platform_driver = {
 	.shutdown	= uhci_hcd_platform_shutdown,
 	.driver = {
 		.name = "platform-uhci",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = platform_uhci_ids,
 	},
 };

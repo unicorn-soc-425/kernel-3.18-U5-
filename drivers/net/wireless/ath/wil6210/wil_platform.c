@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2016 Qualcomm Atheros, Inc.
+=======
+ * Copyright (c) 2014 Qualcomm Atheros, Inc.
+>>>>>>> v4.9.227
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,16 +20,26 @@
 
 #include <linux/device.h>
 #include "wil_platform.h"
+<<<<<<< HEAD
 #include "msm_11ad.h"
 
 int __init wil_platform_modinit(void)
 {
 	return msm_11ad_modinit();
+=======
+
+int __init wil_platform_modinit(void)
+{
+	return 0;
+>>>>>>> v4.9.227
 }
 
 void wil_platform_modexit(void)
 {
+<<<<<<< HEAD
 	msm_11ad_modexit();
+=======
+>>>>>>> v4.9.227
 }
 
 /**
@@ -38,6 +52,7 @@ void wil_platform_modexit(void)
 void *wil_platform_init(struct device *dev, struct wil_platform_ops *ops,
 			const struct wil_platform_rops *rops, void *wil_handle)
 {
+<<<<<<< HEAD
 	void *handle;
 
 	if (!ops) {
@@ -46,6 +61,17 @@ void *wil_platform_init(struct device *dev, struct wil_platform_ops *ops,
 	}
 
 	handle = msm_11ad_dev_init(dev, ops, rops, wil_handle);
+=======
+	void *handle = ops; /* to return some non-NULL for 'void' impl. */
+
+	if (!ops) {
+		dev_err(dev,
+			"Invalid parameter. Cannot init platform module\n");
+		return NULL;
+	}
+
+	/* platform specific init functions should be called here */
+>>>>>>> v4.9.227
 
 	return handle;
 }

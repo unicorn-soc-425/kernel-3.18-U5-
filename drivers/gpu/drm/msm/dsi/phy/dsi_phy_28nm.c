@@ -138,13 +138,22 @@ const struct msm_dsi_phy_cfg dsi_phy_28nm_hpm_cfgs = {
 	.reg_cfg = {
 		.num = 1,
 		.regs = {
+<<<<<<< HEAD
 			{"vddio", 1800000, 1800000, 100000, 100},
+=======
+			{"vddio", 100000, 100},
+>>>>>>> v4.9.227
 		},
 	},
 	.ops = {
 		.enable = dsi_28nm_phy_enable,
 		.disable = dsi_28nm_phy_disable,
 	},
+<<<<<<< HEAD
+=======
+	.io_start = { 0xfd922b00, 0xfd923100 },
+	.num_dsi_phy = 2,
+>>>>>>> v4.9.227
 };
 
 const struct msm_dsi_phy_cfg dsi_phy_28nm_lp_cfgs = {
@@ -153,12 +162,21 @@ const struct msm_dsi_phy_cfg dsi_phy_28nm_lp_cfgs = {
 	.reg_cfg = {
 		.num = 1,
 		.regs = {
+<<<<<<< HEAD
 			{"vddio", 1800000, 1800000, 100000, 100},
+=======
+			{"vddio", 100000, 100},	/* 1.8 V */
+>>>>>>> v4.9.227
 		},
 	},
 	.ops = {
 		.enable = dsi_28nm_phy_enable,
 		.disable = dsi_28nm_phy_disable,
 	},
+<<<<<<< HEAD
+=======
+	.io_start = { 0x1a98500 },
+	.num_dsi_phy = 1,
+>>>>>>> v4.9.227
 };
 

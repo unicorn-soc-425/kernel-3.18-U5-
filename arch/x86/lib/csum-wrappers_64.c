@@ -5,7 +5,12 @@
  * Wrappers of assembly checksum functions for x86-64.
  */
 #include <asm/checksum.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 #include <asm/smap.h>
 
 /**
@@ -135,7 +140,11 @@ EXPORT_SYMBOL(csum_partial_copy_nocheck);
 
 __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 			const struct in6_addr *daddr,
+<<<<<<< HEAD
 			__u32 len, unsigned short proto, __wsum sum)
+=======
+			__u32 len, __u8 proto, __wsum sum)
+>>>>>>> v4.9.227
 {
 	__u64 rest, sum64;
 

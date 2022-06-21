@@ -9,6 +9,10 @@
 #include <linux/list.h>
 #include <linux/device.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/mutex.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -19,7 +23,11 @@
 
 static LIST_HEAD(pnp_protocols);
 LIST_HEAD(pnp_global);
+<<<<<<< HEAD
 DEFINE_SPINLOCK(pnp_lock);
+=======
+DEFINE_MUTEX(pnp_lock);
+>>>>>>> v4.9.227
 
 /*
  * ACPI or PNPBIOS should tell us about all platform devices, so we can
@@ -41,6 +49,16 @@ void *pnp_alloc(long size)
 	return result;
 }
 
+<<<<<<< HEAD
+=======
+static void pnp_remove_protocol(struct pnp_protocol *protocol)
+{
+	mutex_lock(&pnp_lock);
+	list_del(&protocol->protocol_list);
+	mutex_unlock(&pnp_lock);
+}
+
+>>>>>>> v4.9.227
 /**
  * pnp_protocol_register - adds a pnp protocol to the pnp layer
  * @protocol: pointer to the corresponding pnp_protocol structure
@@ -49,13 +67,23 @@ void *pnp_alloc(long size)
  */
 int pnp_register_protocol(struct pnp_protocol *protocol)
 {
+<<<<<<< HEAD
 	int nodenum;
 	struct list_head *pos;
+=======
+	struct list_head *pos;
+	int nodenum, ret;
+>>>>>>> v4.9.227
 
 	INIT_LIST_HEAD(&protocol->devices);
 	INIT_LIST_HEAD(&protocol->cards);
 	nodenum = 0;
+<<<<<<< HEAD
 	spin_lock(&pnp_lock);
+=======
+
+	mutex_lock(&pnp_lock);
+>>>>>>> v4.9.227
 
 	/* assign the lowest unused number */
 	list_for_each(pos, &pnp_protocols) {
@@ -66,12 +94,27 @@ int pnp_register_protocol(struct pnp_protocol *protocol)
 		}
 	}
 
+<<<<<<< HEAD
 	list_add_tail(&protocol->protocol_list, &pnp_protocols);
 	spin_unlock(&pnp_lock);
 
 	protocol->number = nodenum;
 	dev_set_name(&protocol->dev, "pnp%d", nodenum);
 	return device_register(&protocol->dev);
+=======
+	protocol->number = nodenum;
+	dev_set_name(&protocol->dev, "pnp%d", nodenum);
+
+	list_add_tail(&protocol->protocol_list, &pnp_protocols);
+
+	mutex_unlock(&pnp_lock);
+
+	ret = device_register(&protocol->dev);
+	if (ret)
+		pnp_remove_protocol(protocol);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -80,9 +123,13 @@ int pnp_register_protocol(struct pnp_protocol *protocol)
  */
 void pnp_unregister_protocol(struct pnp_protocol *protocol)
 {
+<<<<<<< HEAD
 	spin_lock(&pnp_lock);
 	list_del(&protocol->protocol_list);
 	spin_unlock(&pnp_lock);
+=======
+	pnp_remove_protocol(protocol);
+>>>>>>> v4.9.227
 	device_unregister(&protocol->dev);
 }
 
@@ -157,6 +204,7 @@ struct pnp_dev *pnp_alloc_dev(struct pnp_protocol *protocol, int id,
 	return dev;
 }
 
+<<<<<<< HEAD
 int __pnp_add_device(struct pnp_dev *dev)
 {
 	pnp_fixup_device(dev);
@@ -169,6 +217,38 @@ int __pnp_add_device(struct pnp_dev *dev)
 		device_set_wakeup_capable(&dev->dev,
 				dev->protocol->can_wakeup(dev));
 	return device_register(&dev->dev);
+=======
+static void pnp_delist_device(struct pnp_dev *dev)
+{
+	mutex_lock(&pnp_lock);
+	list_del(&dev->global_list);
+	list_del(&dev->protocol_list);
+	mutex_unlock(&pnp_lock);
+}
+
+int __pnp_add_device(struct pnp_dev *dev)
+{
+	int ret;
+
+	pnp_fixup_device(dev);
+	dev->status = PNP_READY;
+
+	mutex_lock(&pnp_lock);
+
+	list_add_tail(&dev->global_list, &pnp_global);
+	list_add_tail(&dev->protocol_list, &dev->protocol->devices);
+
+	mutex_unlock(&pnp_lock);
+
+	ret = device_register(&dev->dev);
+	if (ret)
+		pnp_delist_device(dev);
+	else if (dev->protocol->can_wakeup)
+		device_set_wakeup_capable(&dev->dev,
+				dev->protocol->can_wakeup(dev));
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -203,10 +283,14 @@ int pnp_add_device(struct pnp_dev *dev)
 
 void __pnp_remove_device(struct pnp_dev *dev)
 {
+<<<<<<< HEAD
 	spin_lock(&pnp_lock);
 	list_del(&dev->global_list);
 	list_del(&dev->protocol_list);
 	spin_unlock(&pnp_lock);
+=======
+	pnp_delist_device(dev);
+>>>>>>> v4.9.227
 	device_unregister(&dev->dev);
 }
 

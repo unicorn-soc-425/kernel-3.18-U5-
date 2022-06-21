@@ -166,6 +166,7 @@ static struct usbhsh_request *usbhsh_ureq_alloc(struct usbhsh_hpriv *hpriv,
 					       gfp_t mem_flags)
 {
 	struct usbhsh_request *ureq;
+<<<<<<< HEAD
 	struct usbhs_priv *priv = usbhsh_hpriv_to_priv(hpriv);
 	struct device *dev = usbhs_priv_to_dev(priv);
 
@@ -174,6 +175,12 @@ static struct usbhsh_request *usbhsh_ureq_alloc(struct usbhsh_hpriv *hpriv,
 		dev_err(dev, "ureq alloc fail\n");
 		return NULL;
 	}
+=======
+
+	ureq = kzalloc(sizeof(struct usbhsh_request), mem_flags);
+	if (!ureq)
+		return NULL;
+>>>>>>> v4.9.227
 
 	usbhs_pkt_init(&ureq->pkt);
 	ureq->urb = urb;
@@ -388,10 +395,15 @@ static int usbhsh_endpoint_attach(struct usbhsh_hpriv *hpriv,
 	unsigned long flags;
 
 	uep = kzalloc(sizeof(struct usbhsh_ep), mem_flags);
+<<<<<<< HEAD
 	if (!uep) {
 		dev_err(dev, "usbhsh_ep alloc fail\n");
 		return -ENOMEM;
 	}
+=======
+	if (!uep)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	/********************  spin lock ********************/
 	usbhs_lock(priv, flags);
@@ -929,7 +941,12 @@ static int usbhsh_dcp_queue_push(struct usb_hcd *hcd,
 /*
  *		dma map functions
  */
+<<<<<<< HEAD
 static int usbhsh_dma_map_ctrl(struct usbhs_pkt *pkt, int map)
+=======
+static int usbhsh_dma_map_ctrl(struct device *dma_dev, struct usbhs_pkt *pkt,
+			       int map)
+>>>>>>> v4.9.227
 {
 	if (map) {
 		struct usbhsh_request *ureq = usbhsh_pkt_to_ureq(pkt);
@@ -1229,12 +1246,21 @@ static int __usbhsh_hub_get_status(struct usbhsh_hpriv *hpriv,
 		break;
 
 	case GetHubDescriptor:
+<<<<<<< HEAD
 		desc->bDescriptorType		= 0x29;
+=======
+		desc->bDescriptorType		= USB_DT_HUB;
+>>>>>>> v4.9.227
 		desc->bHubContrCurrent		= 0;
 		desc->bNbrPorts			= roothub_id;
 		desc->bDescLength		= 9;
 		desc->bPwrOn2PwrGood		= 0;
+<<<<<<< HEAD
 		desc->wHubCharacteristics	= cpu_to_le16(0x0011);
+=======
+		desc->wHubCharacteristics	=
+			cpu_to_le16(HUB_CHAR_INDV_PORT_LPSM | HUB_CHAR_NO_OCPM);
+>>>>>>> v4.9.227
 		desc->u.hs.DeviceRemovable[0]	= (roothub_id << 1);
 		desc->u.hs.DeviceRemovable[1]	= ~0;
 		dev_dbg(dev, "%s :: GetHubDescriptor\n", __func__);
@@ -1413,7 +1439,12 @@ static void usbhsh_pipe_init_for_host(struct usbhs_priv *priv)
 {
 	struct usbhsh_hpriv *hpriv = usbhsh_priv_to_hpriv(priv);
 	struct usbhs_pipe *pipe;
+<<<<<<< HEAD
 	u32 *pipe_type = usbhs_get_dparam(priv, pipe_type);
+=======
+	struct renesas_usbhs_driver_pipe_config *pipe_configs =
+					usbhs_get_dparam(priv, pipe_configs);
+>>>>>>> v4.9.227
 	int pipe_size = usbhs_get_dparam(priv, pipe_size);
 	int old_type, dir_in, i;
 
@@ -1441,15 +1472,26 @@ static void usbhsh_pipe_init_for_host(struct usbhs_priv *priv)
 		 * USB_ENDPOINT_XFER_BULK -> dir in
 		 * ...
 		 */
+<<<<<<< HEAD
 		dir_in = (pipe_type[i] == old_type);
 		old_type = pipe_type[i];
 
 		if (USB_ENDPOINT_XFER_CONTROL == pipe_type[i]) {
+=======
+		dir_in = (pipe_configs[i].type == old_type);
+		old_type = pipe_configs[i].type;
+
+		if (USB_ENDPOINT_XFER_CONTROL == pipe_configs[i].type) {
+>>>>>>> v4.9.227
 			pipe = usbhs_dcp_malloc(priv);
 			usbhsh_hpriv_to_dcp(hpriv) = pipe;
 		} else {
 			pipe = usbhs_pipe_malloc(priv,
+<<<<<<< HEAD
 						 pipe_type[i],
+=======
+						 pipe_configs[i].type,
+>>>>>>> v4.9.227
 						 dir_in);
 		}
 
@@ -1474,9 +1516,15 @@ static int usbhsh_start(struct usbhs_priv *priv)
 	/*
 	 * pipe initialize and enable DCP
 	 */
+<<<<<<< HEAD
 	usbhs_pipe_init(priv,
 			usbhsh_dma_map_ctrl);
 	usbhs_fifo_init(priv);
+=======
+	usbhs_fifo_init(priv);
+	usbhs_pipe_init(priv,
+			usbhsh_dma_map_ctrl);
+>>>>>>> v4.9.227
 	usbhsh_pipe_init_for_host(priv);
 
 	/*

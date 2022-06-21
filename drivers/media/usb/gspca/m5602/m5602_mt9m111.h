@@ -126,6 +126,7 @@ static const struct m5602_sensor mt9m111 = {
 	.disconnect = mt9m111_disconnect,
 	.start = mt9m111_start,
 };
+<<<<<<< HEAD
 
 static const unsigned char preinit_mt9m111[][4] = {
 	{BRIDGE, M5602_XB_MCU_CLK_DIV, 0x02, 0x00},
@@ -270,4 +271,6 @@ static const unsigned char start_mt9m111[][4] = {
 	{BRIDGE, M5602_XB_VSYNC_PARA, 0x00, 0x00},
 	{BRIDGE, M5602_XB_VSYNC_PARA, 0x00, 0x00},
 };
+=======
+>>>>>>> v4.9.227
 #endif

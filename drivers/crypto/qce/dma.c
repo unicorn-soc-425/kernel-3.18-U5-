@@ -54,6 +54,7 @@ void qce_dma_release(struct qce_dma_data *dma)
 	kfree(dma->result_buf);
 }
 
+<<<<<<< HEAD
 int qce_mapsg(struct device *dev, struct scatterlist *sg, int nents,
 	      enum dma_data_direction dir, bool chained)
 {
@@ -106,6 +107,8 @@ int qce_countsg(struct scatterlist *sglist, int nbytes, bool *chained)
 	return nents;
 }
 
+=======
+>>>>>>> v4.9.227
 struct scatterlist *
 qce_sgtable_add(struct sg_table *sgt, struct scatterlist *new_sgl)
 {

@@ -1259,7 +1259,10 @@ static const struct of_device_id msm8960_pinctrl_of_match[] = {
 static struct platform_driver msm8960_pinctrl_driver = {
 	.driver = {
 		.name = "msm8960-pinctrl",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = msm8960_pinctrl_of_match,
 	},
 	.probe = msm8960_pinctrl_probe,

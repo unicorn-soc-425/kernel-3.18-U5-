@@ -48,6 +48,10 @@
 #include <linux/migrate.h>
 #include <linux/gfp.h>
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/fs.h>
+>>>>>>> v4.9.227
 
 /*
  * Balloon device information descriptor.
@@ -62,6 +66,10 @@ struct balloon_dev_info {
 	struct list_head pages;		/* Pages enqueued & handled to Host */
 	int (*migratepage)(struct balloon_dev_info *, struct page *newpage,
 			struct page *page, enum migrate_mode mode);
+<<<<<<< HEAD
+=======
+	struct inode *inode;
+>>>>>>> v4.9.227
 };
 
 extern struct page *balloon_page_enqueue(struct balloon_dev_info *b_dev_info);
@@ -73,6 +81,7 @@ static inline void balloon_devinfo_init(struct balloon_dev_info *balloon)
 	spin_lock_init(&balloon->pages_lock);
 	INIT_LIST_HEAD(&balloon->pages);
 	balloon->migratepage = NULL;
+<<<<<<< HEAD
 }
 
 #ifdef CONFIG_BALLOON_COMPACTION
@@ -112,6 +121,21 @@ static inline bool isolated_balloon_page(struct page *page)
 }
 
 /*
+=======
+	balloon->inode = NULL;
+}
+
+#ifdef CONFIG_BALLOON_COMPACTION
+extern const struct address_space_operations balloon_aops;
+extern bool balloon_page_isolate(struct page *page,
+				isolate_mode_t mode);
+extern void balloon_page_putback(struct page *page);
+extern int balloon_page_migrate(struct address_space *mapping,
+				struct page *newpage,
+				struct page *page, enum migrate_mode mode);
+
+/*
+>>>>>>> v4.9.227
  * balloon_page_insert - insert a page into the balloon's page list and make
  *			 the page->private assignment accordingly.
  * @balloon : pointer to balloon device
@@ -124,7 +148,11 @@ static inline void balloon_page_insert(struct balloon_dev_info *balloon,
 				       struct page *page)
 {
 	__SetPageBalloon(page);
+<<<<<<< HEAD
 	SetPagePrivate(page);
+=======
+	__SetPageMovable(page, balloon->inode->i_mapping);
+>>>>>>> v4.9.227
 	set_page_private(page, (unsigned long)balloon);
 	list_add(&page->lru, &balloon->pages);
 }
@@ -140,11 +168,22 @@ static inline void balloon_page_insert(struct balloon_dev_info *balloon,
 static inline void balloon_page_delete(struct page *page)
 {
 	__ClearPageBalloon(page);
+<<<<<<< HEAD
 	set_page_private(page, 0);
 	if (PagePrivate(page)) {
 		ClearPagePrivate(page);
 		list_del(&page->lru);
 	}
+=======
+	__ClearPageMovable(page);
+	set_page_private(page, 0);
+	/*
+	 * No touch page.lru field once @page has been isolated
+	 * because VM is using the field.
+	 */
+	if (!PageIsolated(page))
+		list_del(&page->lru);
+>>>>>>> v4.9.227
 }
 
 /*

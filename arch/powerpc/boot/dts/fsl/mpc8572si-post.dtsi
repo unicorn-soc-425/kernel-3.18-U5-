@@ -162,7 +162,11 @@
 /include/ "pq3-dma-1.dtsi"
 /include/ "pq3-gpio-0.dtsi"
 	gpio-controller@f000 {
+<<<<<<< HEAD
 		compatible = "fsl,mpc8572-gpio", "fsl,pq3-gpio";
+=======
+		compatible = "fsl,mpc8572-gpio";
+>>>>>>> v4.9.227
 	};
 
 	L2: l2-cache-controller@20000 {

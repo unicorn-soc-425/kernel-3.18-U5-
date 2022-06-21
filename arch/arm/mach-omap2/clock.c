@@ -20,10 +20,18 @@
 #include <linux/errno.h>
 #include <linux/err.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/bitops.h>
 #include <linux/clk-private.h>
+=======
+#include <linux/clk.h>
+#include <linux/clk-provider.h>
+#include <linux/io.h>
+#include <linux/bitops.h>
+#include <linux/of_address.h>
+>>>>>>> v4.9.227
 #include <asm/cpu.h>
 
 #include <trace/events/power.h>
@@ -38,6 +46,7 @@
 #include "cm-regbits-34xx.h"
 #include "common.h"
 
+<<<<<<< HEAD
 /*
  * MAX_MODULE_ENABLE_WAIT: maximum of number of microseconds to wait
  * for a module to indicate that it is no longer in idle
@@ -51,6 +60,10 @@ u16 cpu_mask;
  */
 struct ti_clk_features ti_clk_features;
 
+=======
+u16 cpu_mask;
+
+>>>>>>> v4.9.227
 /* DPLL valid Fint frequency band limits - from 34xx TRM Section 4.7.6.2 */
 #define OMAP3430_DPLL_FINT_BAND1_MIN	750000
 #define OMAP3430_DPLL_FINT_BAND1_MAX	2100000
@@ -64,6 +77,7 @@ struct ti_clk_features ti_clk_features;
 #define OMAP3PLUS_DPLL_FINT_MIN		32000
 #define OMAP3PLUS_DPLL_FINT_MAX		52000000
 
+<<<<<<< HEAD
 /*
  * clkdm_control: if true, then when a clock is enabled in the
  * hardware, its clockdomain will first be enabled; and when a clock
@@ -97,6 +111,26 @@ u32 omap2_clk_readl(struct clk_hw_omap *clk, void __iomem *reg)
 	}
 
 	return val;
+=======
+static struct ti_clk_ll_ops omap_clk_ll_ops = {
+	.clkdm_clk_enable = clkdm_clk_enable,
+	.clkdm_clk_disable = clkdm_clk_disable,
+	.cm_wait_module_ready = omap_cm_wait_module_ready,
+	.cm_split_idlest_reg = cm_split_idlest_reg,
+};
+
+/**
+ * omap2_clk_setup_ll_ops - setup clock driver low-level ops
+ *
+ * Sets up clock driver low-level platform ops. These are needed
+ * for register accesses and various other misc platform operations.
+ * Returns 0 on success, -EBUSY if low level ops have been registered
+ * already.
+ */
+int __init omap2_clk_setup_ll_ops(void)
+{
+	return ti_clk_setup_ll_ops(&omap_clk_ll_ops);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -105,6 +139,7 @@ u32 omap2_clk_readl(struct clk_hw_omap *clk, void __iomem *reg)
 
 /* Private functions */
 
+<<<<<<< HEAD
 
 /**
  * _wait_idlest_generic - wait for a module to leave the idle state
@@ -175,6 +210,8 @@ static void _omap2_module_wait_ready(struct clk_hw_omap *clk)
 	};
 }
 
+=======
+>>>>>>> v4.9.227
 /* Public functions */
 
 /**
@@ -207,6 +244,7 @@ void omap2_init_clk_clkdm(struct clk_hw *hw)
 	}
 }
 
+<<<<<<< HEAD
 /**
  * omap2_clk_disable_clkdm_control - disable clkdm control on clk enable/disable
  *
@@ -480,6 +518,8 @@ int omap2_dflt_clk_is_enabled(struct clk_hw *hw)
 	return v ? 1 : 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int __initdata mpurate;
 
 /*
@@ -501,6 +541,7 @@ static int __init omap_clk_setup(char *str)
 __setup("mpurate=", omap_clk_setup);
 
 /**
+<<<<<<< HEAD
  * omap2_init_clk_hw_omap_clocks - initialize an OMAP clock
  * @clk: struct clk * to initialize
  *
@@ -685,6 +726,8 @@ int __init omap2_clk_switch_mpurate_at_boot(const char *mpurate_ck_name)
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * omap2_clk_print_new_rates - print summary of current clock tree rates
  * @hfclkin_ck_name: clk name for the off-chip HF oscillator
  * @core_ck_name: clk name for the on-chip CORE_CLK
@@ -730,6 +773,7 @@ void __init omap2_clk_print_new_rates(const char *hfclkin_ck_name,
  */
 void __init ti_clk_init_features(void)
 {
+<<<<<<< HEAD
 	/* Fint setup for DPLLs */
 	if (cpu_is_omap3430()) {
 		ti_clk_features.fint_min = OMAP3430_DPLL_FINT_BAND1_MIN;
@@ -739,20 +783,44 @@ void __init ti_clk_init_features(void)
 	} else {
 		ti_clk_features.fint_min = OMAP3PLUS_DPLL_FINT_MIN;
 		ti_clk_features.fint_max = OMAP3PLUS_DPLL_FINT_MAX;
+=======
+	struct ti_clk_features features = { 0 };
+	/* Fint setup for DPLLs */
+	if (cpu_is_omap3430()) {
+		features.fint_min = OMAP3430_DPLL_FINT_BAND1_MIN;
+		features.fint_max = OMAP3430_DPLL_FINT_BAND2_MAX;
+		features.fint_band1_max = OMAP3430_DPLL_FINT_BAND1_MAX;
+		features.fint_band2_min = OMAP3430_DPLL_FINT_BAND2_MIN;
+	} else {
+		features.fint_min = OMAP3PLUS_DPLL_FINT_MIN;
+		features.fint_max = OMAP3PLUS_DPLL_FINT_MAX;
+>>>>>>> v4.9.227
 	}
 
 	/* Bypass value setup for DPLLs */
 	if (cpu_is_omap24xx()) {
+<<<<<<< HEAD
 		ti_clk_features.dpll_bypass_vals |=
 			(1 << OMAP2XXX_EN_DPLL_LPBYPASS) |
 			(1 << OMAP2XXX_EN_DPLL_FRBYPASS);
 	} else if (cpu_is_omap34xx()) {
 		ti_clk_features.dpll_bypass_vals |=
+=======
+		features.dpll_bypass_vals |=
+			(1 << OMAP2XXX_EN_DPLL_LPBYPASS) |
+			(1 << OMAP2XXX_EN_DPLL_FRBYPASS);
+	} else if (cpu_is_omap34xx()) {
+		features.dpll_bypass_vals |=
+>>>>>>> v4.9.227
 			(1 << OMAP3XXX_EN_DPLL_LPBYPASS) |
 			(1 << OMAP3XXX_EN_DPLL_FRBYPASS);
 	} else if (soc_is_am33xx() || cpu_is_omap44xx() || soc_is_am43xx() ||
 		   soc_is_omap54xx() || soc_is_dra7xx()) {
+<<<<<<< HEAD
 		ti_clk_features.dpll_bypass_vals |=
+=======
+		features.dpll_bypass_vals |=
+>>>>>>> v4.9.227
 			(1 << OMAP4XXX_EN_DPLL_LPBYPASS) |
 			(1 << OMAP4XXX_EN_DPLL_FRBYPASS) |
 			(1 << OMAP4XXX_EN_DPLL_MNBYPASS);
@@ -760,7 +828,11 @@ void __init ti_clk_init_features(void)
 
 	/* Jitter correction only available on OMAP343X */
 	if (cpu_is_omap343x())
+<<<<<<< HEAD
 		ti_clk_features.flags |= TI_CLK_DPLL_HAS_FREQSEL;
+=======
+		features.flags |= TI_CLK_DPLL_HAS_FREQSEL;
+>>>>>>> v4.9.227
 
 	/* Idlest value for interface clocks.
 	 * 24xx uses 0 to indicate not ready, and 1 to indicate ready.
@@ -768,7 +840,23 @@ void __init ti_clk_init_features(void)
 	 * AM35xx uses both, depending on the module.
 	 */
 	if (cpu_is_omap24xx())
+<<<<<<< HEAD
 		ti_clk_features.cm_idlest_val = OMAP24XX_CM_IDLEST_VAL;
 	else if (cpu_is_omap34xx())
 		ti_clk_features.cm_idlest_val = OMAP34XX_CM_IDLEST_VAL;
+=======
+		features.cm_idlest_val = OMAP24XX_CM_IDLEST_VAL;
+	else if (cpu_is_omap34xx())
+		features.cm_idlest_val = OMAP34XX_CM_IDLEST_VAL;
+
+	/* On OMAP3430 ES1.0, DPLL4 can't be re-programmed */
+	if (omap_rev() == OMAP3430_REV_ES1_0)
+		features.flags |= TI_CLK_DPLL4_DENY_REPROGRAM;
+
+	/* Errata I810 for omap5 / dra7 */
+	if (soc_is_omap54xx() || soc_is_dra7xx())
+		features.flags |= TI_CLK_ERRATA_I810;
+
+	ti_clk_setup_features(&features);
+>>>>>>> v4.9.227
 }

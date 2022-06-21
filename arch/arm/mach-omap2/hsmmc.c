@@ -14,24 +14,38 @@
 #include <linux/string.h>
 #include <linux/delay.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
 #include <linux/platform_data/gpio-omap.h>
+=======
+#include <linux/mmc/host.h>
+#include <linux/platform_data/gpio-omap.h>
+#include <linux/platform_data/hsmmc-omap.h>
+>>>>>>> v4.9.227
 
 #include "soc.h"
 #include "omap_device.h"
 #include "omap-pm.h"
 
 #include "mux.h"
+<<<<<<< HEAD
 #include "mmc.h"
 #include "hsmmc.h"
 #include "control.h"
 
 #if defined(CONFIG_MMC_OMAP_HS) || defined(CONFIG_MMC_OMAP_HS_MODULE)
+=======
+#include "hsmmc.h"
+#include "control.h"
+
+#if IS_ENABLED(CONFIG_MMC_OMAP_HS)
+>>>>>>> v4.9.227
 
 static u16 control_pbias_offset;
 static u16 control_devconf1_offset;
 
 #define HSMMC_NAME_LEN	9
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_OMAP3) && defined(CONFIG_PM)
 
 static int hsmmc_get_context_loss(struct device *dev)
@@ -51,6 +65,16 @@ static void omap_hsmmc1_before_set_reg(struct device *dev, int slot,
 
 	if (mmc->slots[0].remux)
 		mmc->slots[0].remux(dev, slot, power_on);
+=======
+static void omap_hsmmc1_before_set_reg(struct device *dev,
+				       int power_on, int vdd)
+{
+	u32 reg, prog_io;
+	struct omap_hsmmc_platform_data *mmc = dev->platform_data;
+
+	if (mmc->remux)
+		mmc->remux(dev, power_on);
+>>>>>>> v4.9.227
 
 	/*
 	 * Assume we power both OMAP VMMC1 (for CMD, CLK, DAT0..3) and the
@@ -72,7 +96,11 @@ static void omap_hsmmc1_before_set_reg(struct device *dev, int slot,
 			omap_ctrl_writel(reg, OMAP243X_CONTROL_DEVCONF1);
 		}
 
+<<<<<<< HEAD
 		if (mmc->slots[0].internal_clock) {
+=======
+		if (mmc->internal_clock) {
+>>>>>>> v4.9.227
 			reg = omap_ctrl_readl(OMAP2_CONTROL_DEVCONF0);
 			reg |= OMAP2_MMCSDIO1ADPCLKISEL;
 			omap_ctrl_writel(reg, OMAP2_CONTROL_DEVCONF0);
@@ -80,7 +108,11 @@ static void omap_hsmmc1_before_set_reg(struct device *dev, int slot,
 
 		reg = omap_ctrl_readl(control_pbias_offset);
 		if (cpu_is_omap3630()) {
+<<<<<<< HEAD
 			/* Set MMC I/O to 52Mhz */
+=======
+			/* Set MMC I/O to 52MHz */
+>>>>>>> v4.9.227
 			prog_io = omap_ctrl_readl(OMAP343X_CONTROL_PROG_IO1);
 			prog_io |= OMAP3630_PRG_SDMMC1_SPEEDCTRL;
 			omap_ctrl_writel(prog_io, OMAP343X_CONTROL_PROG_IO1);
@@ -96,8 +128,12 @@ static void omap_hsmmc1_before_set_reg(struct device *dev, int slot,
 	}
 }
 
+<<<<<<< HEAD
 static void omap_hsmmc1_after_set_reg(struct device *dev, int slot,
 				 int power_on, int vdd)
+=======
+static void omap_hsmmc1_after_set_reg(struct device *dev, int power_on, int vdd)
+>>>>>>> v4.9.227
 {
 	u32 reg;
 
@@ -120,18 +156,27 @@ static void omap_hsmmc1_after_set_reg(struct device *dev, int slot,
 	}
 }
 
+<<<<<<< HEAD
 static void hsmmc2_select_input_clk_src(struct omap_mmc_platform_data *mmc)
+=======
+static void hsmmc2_select_input_clk_src(struct omap_hsmmc_platform_data *mmc)
+>>>>>>> v4.9.227
 {
 	u32 reg;
 
 	reg = omap_ctrl_readl(control_devconf1_offset);
+<<<<<<< HEAD
 	if (mmc->slots[0].internal_clock)
+=======
+	if (mmc->internal_clock)
+>>>>>>> v4.9.227
 		reg |= OMAP2_MMCSDIO2ADPCLKISEL;
 	else
 		reg &= ~OMAP2_MMCSDIO2ADPCLKISEL;
 	omap_ctrl_writel(reg, control_devconf1_offset);
 }
 
+<<<<<<< HEAD
 static void hsmmc2_before_set_reg(struct device *dev, int slot,
 				   int power_on, int vdd)
 {
@@ -139,15 +184,29 @@ static void hsmmc2_before_set_reg(struct device *dev, int slot,
 
 	if (mmc->slots[0].remux)
 		mmc->slots[0].remux(dev, slot, power_on);
+=======
+static void hsmmc2_before_set_reg(struct device *dev, int power_on, int vdd)
+{
+	struct omap_hsmmc_platform_data *mmc = dev->platform_data;
+
+	if (mmc->remux)
+		mmc->remux(dev, power_on);
+>>>>>>> v4.9.227
 
 	if (power_on)
 		hsmmc2_select_input_clk_src(mmc);
 }
 
+<<<<<<< HEAD
 static int am35x_hsmmc2_set_power(struct device *dev, int slot,
 				  int power_on, int vdd)
 {
 	struct omap_mmc_platform_data *mmc = dev->platform_data;
+=======
+static int am35x_hsmmc2_set_power(struct device *dev, int power_on, int vdd)
+{
+	struct omap_hsmmc_platform_data *mmc = dev->platform_data;
+>>>>>>> v4.9.227
 
 	if (power_on)
 		hsmmc2_select_input_clk_src(mmc);
@@ -155,12 +214,17 @@ static int am35x_hsmmc2_set_power(struct device *dev, int slot,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int nop_mmc_set_power(struct device *dev, int slot, int power_on,
 							int vdd)
+=======
+static int nop_mmc_set_power(struct device *dev, int power_on, int vdd)
+>>>>>>> v4.9.227
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void omap_hsmmc_mux(struct omap_mmc_platform_data *mmc_controller,
 			int controller_nr)
 {
@@ -172,6 +236,23 @@ static inline void omap_hsmmc_mux(struct omap_mmc_platform_data *mmc_controller,
 		(mmc_controller->slots[0].gpio_wp < OMAP_MAX_GPIO_LINES))
 		omap_mux_init_gpio(mmc_controller->slots[0].gpio_wp,
 					OMAP_PIN_INPUT_PULLUP);
+=======
+static inline void omap_hsmmc_mux(struct omap_hsmmc_platform_data
+				  *mmc_controller, int controller_nr)
+{
+	if (gpio_is_valid(mmc_controller->gpio_cd) &&
+	    (mmc_controller->gpio_cd < OMAP_MAX_GPIO_LINES))
+		omap_mux_init_gpio(mmc_controller->gpio_cd,
+				   OMAP_PIN_INPUT_PULLUP);
+	if (gpio_is_valid(mmc_controller->gpio_cod) &&
+	    (mmc_controller->gpio_cod < OMAP_MAX_GPIO_LINES))
+		omap_mux_init_gpio(mmc_controller->gpio_cod,
+				   OMAP_PIN_INPUT_PULLUP);
+	if (gpio_is_valid(mmc_controller->gpio_wp) &&
+	    (mmc_controller->gpio_wp < OMAP_MAX_GPIO_LINES))
+		omap_mux_init_gpio(mmc_controller->gpio_wp,
+				   OMAP_PIN_INPUT_PULLUP);
+>>>>>>> v4.9.227
 	if (cpu_is_omap34xx()) {
 		if (controller_nr == 0) {
 			omap_mux_init_signal("sdmmc1_clk",
@@ -180,7 +261,11 @@ static inline void omap_hsmmc_mux(struct omap_mmc_platform_data *mmc_controller,
 				OMAP_PIN_INPUT_PULLUP);
 			omap_mux_init_signal("sdmmc1_dat0",
 				OMAP_PIN_INPUT_PULLUP);
+<<<<<<< HEAD
 			if (mmc_controller->slots[0].caps &
+=======
+			if (mmc_controller->caps &
+>>>>>>> v4.9.227
 				(MMC_CAP_4_BIT_DATA | MMC_CAP_8_BIT_DATA)) {
 				omap_mux_init_signal("sdmmc1_dat1",
 					OMAP_PIN_INPUT_PULLUP);
@@ -189,7 +274,11 @@ static inline void omap_hsmmc_mux(struct omap_mmc_platform_data *mmc_controller,
 				omap_mux_init_signal("sdmmc1_dat3",
 					OMAP_PIN_INPUT_PULLUP);
 			}
+<<<<<<< HEAD
 			if (mmc_controller->slots[0].caps &
+=======
+			if (mmc_controller->caps &
+>>>>>>> v4.9.227
 						MMC_CAP_8_BIT_DATA) {
 				omap_mux_init_signal("sdmmc1_dat4",
 					OMAP_PIN_INPUT_PULLUP);
@@ -214,7 +303,11 @@ static inline void omap_hsmmc_mux(struct omap_mmc_platform_data *mmc_controller,
 			 * For 8 wire configurations, Lines DAT4, 5, 6 and 7
 			 * need to be muxed in the board-*.c files
 			 */
+<<<<<<< HEAD
 			if (mmc_controller->slots[0].caps &
+=======
+			if (mmc_controller->caps &
+>>>>>>> v4.9.227
 				(MMC_CAP_4_BIT_DATA | MMC_CAP_8_BIT_DATA)) {
 				omap_mux_init_signal("sdmmc2_dat1",
 					OMAP_PIN_INPUT_PULLUP);
@@ -223,7 +316,11 @@ static inline void omap_hsmmc_mux(struct omap_mmc_platform_data *mmc_controller,
 				omap_mux_init_signal("sdmmc2_dat3",
 					OMAP_PIN_INPUT_PULLUP);
 			}
+<<<<<<< HEAD
 			if (mmc_controller->slots[0].caps &
+=======
+			if (mmc_controller->caps &
+>>>>>>> v4.9.227
 							MMC_CAP_8_BIT_DATA) {
 				omap_mux_init_signal("sdmmc2_dat4.sdmmc2_dat4",
 					OMAP_PIN_INPUT_PULLUP);
@@ -243,7 +340,11 @@ static inline void omap_hsmmc_mux(struct omap_mmc_platform_data *mmc_controller,
 }
 
 static int __init omap_hsmmc_pdata_init(struct omap2_hsmmc_info *c,
+<<<<<<< HEAD
 					struct omap_mmc_platform_data *mmc)
+=======
+					struct omap_hsmmc_platform_data *mmc)
+>>>>>>> v4.9.227
 {
 	char *hc_name;
 
@@ -259,6 +360,7 @@ static int __init omap_hsmmc_pdata_init(struct omap2_hsmmc_info *c,
 	else
 		snprintf(hc_name, (HSMMC_NAME_LEN + 1), "mmc%islot%i",
 								c->mmc, 1);
+<<<<<<< HEAD
 	mmc->slots[0].name = hc_name;
 	mmc->nr_slots = 1;
 	mmc->slots[0].caps = c->caps;
@@ -291,6 +393,29 @@ static int __init omap_hsmmc_pdata_init(struct omap2_hsmmc_info *c,
 
 	if (c->vcc_aux_disable_is_sleep)
 		mmc->slots[0].vcc_aux_disable_is_sleep = 1;
+=======
+	mmc->name = hc_name;
+	mmc->caps = c->caps;
+	mmc->internal_clock = !c->ext_clock;
+	mmc->reg_offset = 0;
+
+	if (c->cover_only) {
+		/* detect if mobile phone cover removed */
+		mmc->gpio_cd = -EINVAL;
+		mmc->gpio_cod = c->gpio_cd;
+	} else {
+		/* card detect pin on the mmc socket itself */
+		mmc->gpio_cd = c->gpio_cd;
+		mmc->gpio_cod = -EINVAL;
+	}
+	mmc->gpio_wp = c->gpio_wp;
+
+	mmc->remux = c->remux;
+	mmc->init_card = c->init_card;
+
+	if (c->nonremovable)
+		mmc->nonremovable = 1;
+>>>>>>> v4.9.227
 
 	/*
 	 * NOTE:  MMC slots should have a Vcc regulator set up.
@@ -300,13 +425,18 @@ static int __init omap_hsmmc_pdata_init(struct omap2_hsmmc_info *c,
 	 * temporary HACK: ocr_mask instead of fixed supply
 	 */
 	if (soc_is_am35xx())
+<<<<<<< HEAD
 		mmc->slots[0].ocr_mask = MMC_VDD_165_195 |
+=======
+		mmc->ocr_mask = MMC_VDD_165_195 |
+>>>>>>> v4.9.227
 					 MMC_VDD_26_27 |
 					 MMC_VDD_27_28 |
 					 MMC_VDD_29_30 |
 					 MMC_VDD_30_31 |
 					 MMC_VDD_31_32;
 	else
+<<<<<<< HEAD
 		mmc->slots[0].ocr_mask = c->ocr_mask;
 
 	if (!soc_is_am35xx())
@@ -319,23 +449,49 @@ static int __init omap_hsmmc_pdata_init(struct omap2_hsmmc_info *c,
 			mmc->slots[0].before_set_reg =
 					omap_hsmmc1_before_set_reg;
 			mmc->slots[0].after_set_reg =
+=======
+		mmc->ocr_mask = c->ocr_mask;
+
+	if (!soc_is_am35xx())
+		mmc->features |= HSMMC_HAS_PBIAS;
+
+	switch (c->mmc) {
+	case 1:
+		if (mmc->features & HSMMC_HAS_PBIAS) {
+			/* on-chip level shifting via PBIAS0/PBIAS1 */
+			mmc->before_set_reg =
+					omap_hsmmc1_before_set_reg;
+			mmc->after_set_reg =
+>>>>>>> v4.9.227
 					omap_hsmmc1_after_set_reg;
 		}
 
 		if (soc_is_am35xx())
+<<<<<<< HEAD
 			mmc->slots[0].set_power = nop_mmc_set_power;
+=======
+			mmc->set_power = nop_mmc_set_power;
+>>>>>>> v4.9.227
 
 		/* OMAP3630 HSMMC1 supports only 4-bit */
 		if (cpu_is_omap3630() &&
 				(c->caps & MMC_CAP_8_BIT_DATA)) {
 			c->caps &= ~MMC_CAP_8_BIT_DATA;
 			c->caps |= MMC_CAP_4_BIT_DATA;
+<<<<<<< HEAD
 			mmc->slots[0].caps = c->caps;
+=======
+			mmc->caps = c->caps;
+>>>>>>> v4.9.227
 		}
 		break;
 	case 2:
 		if (soc_is_am35xx())
+<<<<<<< HEAD
 			mmc->slots[0].set_power = am35x_hsmmc2_set_power;
+=======
+			mmc->set_power = am35x_hsmmc2_set_power;
+>>>>>>> v4.9.227
 
 		if (c->ext_clock)
 			c->transceiver = 1;
@@ -343,17 +499,29 @@ static int __init omap_hsmmc_pdata_init(struct omap2_hsmmc_info *c,
 			c->caps &= ~MMC_CAP_8_BIT_DATA;
 			c->caps |= MMC_CAP_4_BIT_DATA;
 		}
+<<<<<<< HEAD
 		if (mmc->slots[0].features & HSMMC_HAS_PBIAS) {
 			/* off-chip level shifting, or none */
 			mmc->slots[0].before_set_reg = hsmmc2_before_set_reg;
 			mmc->slots[0].after_set_reg = NULL;
+=======
+		if (mmc->features & HSMMC_HAS_PBIAS) {
+			/* off-chip level shifting, or none */
+			mmc->before_set_reg = hsmmc2_before_set_reg;
+			mmc->after_set_reg = NULL;
+>>>>>>> v4.9.227
 		}
 		break;
 	case 3:
 	case 4:
 	case 5:
+<<<<<<< HEAD
 		mmc->slots[0].before_set_reg = NULL;
 		mmc->slots[0].after_set_reg = NULL;
+=======
+		mmc->before_set_reg = NULL;
+		mmc->after_set_reg = NULL;
+>>>>>>> v4.9.227
 		break;
 	default:
 		pr_err("MMC%d configuration not supported!\n", c->mmc);
@@ -368,7 +536,11 @@ static int omap_hsmmc_done;
 void omap_hsmmc_late_init(struct omap2_hsmmc_info *c)
 {
 	struct platform_device *pdev;
+<<<<<<< HEAD
 	struct omap_mmc_platform_data *mmc_pdata;
+=======
+	struct omap_hsmmc_platform_data *mmc_pdata;
+>>>>>>> v4.9.227
 	int res;
 
 	if (omap_hsmmc_done != 1)
@@ -388,8 +560,21 @@ void omap_hsmmc_late_init(struct omap2_hsmmc_info *c)
 		if (!mmc_pdata)
 			continue;
 
+<<<<<<< HEAD
 		mmc_pdata->slots[0].switch_pin = c->gpio_cd;
 		mmc_pdata->slots[0].gpio_wp = c->gpio_wp;
+=======
+		if (c->cover_only) {
+			/* detect if mobile phone cover removed */
+			mmc_pdata->gpio_cd = -EINVAL;
+			mmc_pdata->gpio_cod = c->gpio_cd;
+		} else {
+			/* card detect pin on the mmc socket itself */
+			mmc_pdata->gpio_cd = c->gpio_cd;
+			mmc_pdata->gpio_cod = -EINVAL;
+		}
+		mmc_pdata->gpio_wp = c->gpio_wp;
+>>>>>>> v4.9.227
 
 		res = omap_device_register(pdev);
 		if (res)
@@ -408,12 +593,21 @@ static void __init omap_hsmmc_init_one(struct omap2_hsmmc_info *hsmmcinfo,
 	struct omap_device *od;
 	struct platform_device *pdev;
 	char oh_name[MAX_OMAP_MMC_HWMOD_NAME_LEN];
+<<<<<<< HEAD
 	struct omap_mmc_platform_data *mmc_data;
 	struct omap_mmc_dev_attr *mmc_dev_attr;
 	char *name;
 	int res;
 
 	mmc_data = kzalloc(sizeof(struct omap_mmc_platform_data), GFP_KERNEL);
+=======
+	struct omap_hsmmc_platform_data *mmc_data;
+	struct omap_hsmmc_dev_attr *mmc_dev_attr;
+	char *name;
+	int res;
+
+	mmc_data = kzalloc(sizeof(*mmc_data), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!mmc_data) {
 		pr_err("Cannot allocate memory for mmc device!\n");
 		return;
@@ -463,7 +657,11 @@ static void __init omap_hsmmc_init_one(struct omap2_hsmmc_info *hsmmcinfo,
 	}
 
 	res = platform_device_add_data(pdev, mmc_data,
+<<<<<<< HEAD
 			      sizeof(struct omap_mmc_platform_data));
+=======
+			      sizeof(struct omap_hsmmc_platform_data));
+>>>>>>> v4.9.227
 	if (res) {
 		pr_err("Could not add pdata for %s\n", name);
 		goto put_pdev;
@@ -489,7 +687,11 @@ put_pdev:
 	platform_device_put(pdev);
 
 free_name:
+<<<<<<< HEAD
 	kfree(mmc_data->slots[0].name);
+=======
+	kfree(mmc_data->name);
+>>>>>>> v4.9.227
 
 free_mmc:
 	kfree(mmc_data);

@@ -9,6 +9,10 @@
  * 2 of the Licence, or (at your option) any later version.
  */
 #include <asm/fpu.h>
+<<<<<<< HEAD
+=======
+#include <asm/elf.h>
+>>>>>>> v4.9.227
 
 /*
  * handle an FPU operational exception

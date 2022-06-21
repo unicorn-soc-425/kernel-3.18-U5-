@@ -8,7 +8,11 @@ config CASIO_E55
 	select CEVT_R4K
 	select CSRC_R4K
 	select DMA_NONCOHERENT
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select ISA
 	select SYS_SUPPORTS_32BIT_KERNEL
 	select SYS_SUPPORTS_LITTLE_ENDIAN
@@ -18,7 +22,11 @@ config IBM_WORKPAD
 	select CEVT_R4K
 	select CSRC_R4K
 	select DMA_NONCOHERENT
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select ISA
 	select SYS_SUPPORTS_32BIT_KERNEL
 	select SYS_SUPPORTS_LITTLE_ENDIAN
@@ -28,7 +36,11 @@ config TANBAC_TB022X
 	select CEVT_R4K
 	select CSRC_R4K
 	select DMA_NONCOHERENT
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select HW_HAS_PCI
 	select SYS_SUPPORTS_32BIT_KERNEL
 	select SYS_SUPPORTS_LITTLE_ENDIAN
@@ -44,7 +56,11 @@ config VICTOR_MPC30X
 	select CEVT_R4K
 	select CSRC_R4K
 	select DMA_NONCOHERENT
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select HW_HAS_PCI
 	select PCI_VR41XX
 	select SYS_SUPPORTS_32BIT_KERNEL
@@ -55,7 +71,11 @@ config ZAO_CAPCELLA
 	select CEVT_R4K
 	select CSRC_R4K
 	select DMA_NONCOHERENT
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select HW_HAS_PCI
 	select PCI_VR41XX
 	select SYS_SUPPORTS_32BIT_KERNEL

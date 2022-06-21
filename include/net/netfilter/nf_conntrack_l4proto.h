@@ -23,10 +23,20 @@ struct nf_conntrack_l4proto {
 	/* L4 Protocol number. */
 	u_int8_t l4proto;
 
+<<<<<<< HEAD
 	/* Try to fill in the third arg: dataoff is offset past network protocol
            hdr.  Return true if possible. */
 	bool (*pkt_to_tuple)(const struct sk_buff *skb, unsigned int dataoff,
 			     struct nf_conntrack_tuple *tuple);
+=======
+	/* Resolve clashes on insertion races. */
+	bool allow_clash;
+
+	/* Try to fill in the third arg: dataoff is offset past network protocol
+           hdr.  Return true if possible. */
+	bool (*pkt_to_tuple)(const struct sk_buff *skb, unsigned int dataoff,
+			     struct net *net, struct nf_conntrack_tuple *tuple);
+>>>>>>> v4.9.227
 
 	/* Invert the per-proto part of the tuple: ie. turn xmit into reply.
 	 * Some packets can't be inverted: return 0 in that case.
@@ -56,11 +66,19 @@ struct nf_conntrack_l4proto {
 		     u_int8_t pf, unsigned int hooknum);
 
 	/* Print out the per-protocol part of the tuple. Return like seq_* */
+<<<<<<< HEAD
 	int (*print_tuple)(struct seq_file *s,
 			   const struct nf_conntrack_tuple *);
 
 	/* Print out the private part of the conntrack. */
 	int (*print_conntrack)(struct seq_file *s, struct nf_conn *);
+=======
+	void (*print_tuple)(struct seq_file *s,
+			    const struct nf_conntrack_tuple *);
+
+	/* Print out the private part of the conntrack. */
+	void (*print_conntrack)(struct seq_file *s, struct nf_conn *);
+>>>>>>> v4.9.227
 
 	/* Return the array of timeouts for this protocol. */
 	unsigned int *(*get_timeouts)(struct net *net);
@@ -131,6 +149,7 @@ void nf_ct_l4proto_pernet_unregister(struct net *net,
 int nf_ct_l4proto_register(struct nf_conntrack_l4proto *proto);
 void nf_ct_l4proto_unregister(struct nf_conntrack_l4proto *proto);
 
+<<<<<<< HEAD
 static inline void nf_ct_kfree_compat_sysctl_table(struct nf_proto_net *pn)
 {
 #if defined(CONFIG_SYSCTL) && defined(CONFIG_NF_CONNTRACK_PROC_COMPAT)
@@ -139,6 +158,8 @@ static inline void nf_ct_kfree_compat_sysctl_table(struct nf_proto_net *pn)
 #endif
 }
 
+=======
+>>>>>>> v4.9.227
 /* Generic netlink helpers */
 int nf_ct_port_tuple_to_nlattr(struct sk_buff *skb,
 			       const struct nf_conntrack_tuple *tuple);

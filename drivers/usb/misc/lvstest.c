@@ -4,7 +4,11 @@
  * Test pattern generation for Link Layer Validation System Tests
  *
  * Copyright (C) 2014 ST Microelectronics
+<<<<<<< HEAD
  * Pratyush Anand <pratyush.anand@st.com>
+=======
+ * Pratyush Anand <pratyush.anand@gmail.com>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -34,8 +38,11 @@ struct lvs_rh {
 	struct usb_hub_descriptor descriptor;
 	/* urb for polling interrupt pipe */
 	struct urb *urb;
+<<<<<<< HEAD
 	/* LVS RH work queue */
 	struct workqueue_struct *rh_queue;
+=======
+>>>>>>> v4.9.227
 	/* LVH RH work */
 	struct work_struct	rh_work;
 	/* RH port status */
@@ -247,10 +254,15 @@ static ssize_t get_dev_desc_store(struct device *dev,
 	int ret;
 
 	descriptor = kmalloc(sizeof(*descriptor), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!descriptor) {
 		dev_err(dev, "failed to allocate descriptor memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (!descriptor)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	udev = create_lvs_device(intf);
 	if (!udev) {
@@ -355,7 +367,11 @@ static void lvs_rh_irq(struct urb *urb)
 {
 	struct lvs_rh *lvs = urb->context;
 
+<<<<<<< HEAD
 	queue_work(lvs->rh_queue, &lvs->rh_work);
+=======
+	schedule_work(&lvs->rh_work);
+>>>>>>> v4.9.227
 }
 
 static int lvs_rh_probe(struct usb_interface *intf,
@@ -370,6 +386,13 @@ static int lvs_rh_probe(struct usb_interface *intf,
 
 	hdev = interface_to_usbdev(intf);
 	desc = intf->cur_altsetting;
+<<<<<<< HEAD
+=======
+
+	if (desc->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	endpoint = &desc->endpoint[0].desc;
 
 	/* valid only for SS root hub */
@@ -397,6 +420,7 @@ static int lvs_rh_probe(struct usb_interface *intf,
 
 	/* submit urb to poll interrupt endpoint */
 	lvs->urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!lvs->urb) {
 		dev_err(&intf->dev, "couldn't allocate lvs urb\n");
 		return -ENOMEM;
@@ -408,13 +432,21 @@ static int lvs_rh_probe(struct usb_interface *intf,
 		ret = -ENOMEM;
 		goto free_urb;
 	}
+=======
+	if (!lvs->urb)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	INIT_WORK(&lvs->rh_work, lvs_rh_work);
 
 	ret = sysfs_create_group(&intf->dev.kobj, &lvs_attr_group);
 	if (ret < 0) {
 		dev_err(&intf->dev, "Failed to create sysfs node %d\n", ret);
+<<<<<<< HEAD
 		goto destroy_queue;
+=======
+		goto free_urb;
+>>>>>>> v4.9.227
 	}
 
 	pipe = usb_rcvintpipe(hdev, endpoint->bEndpointAddress);
@@ -432,8 +464,11 @@ static int lvs_rh_probe(struct usb_interface *intf,
 
 sysfs_remove:
 	sysfs_remove_group(&intf->dev.kobj, &lvs_attr_group);
+<<<<<<< HEAD
 destroy_queue:
 	destroy_workqueue(lvs->rh_queue);
+=======
+>>>>>>> v4.9.227
 free_urb:
 	usb_free_urb(lvs->urb);
 	return ret;
@@ -444,7 +479,12 @@ static void lvs_rh_disconnect(struct usb_interface *intf)
 	struct lvs_rh *lvs = usb_get_intfdata(intf);
 
 	sysfs_remove_group(&intf->dev.kobj, &lvs_attr_group);
+<<<<<<< HEAD
 	destroy_workqueue(lvs->rh_queue);
+=======
+	usb_poison_urb(lvs->urb); /* used in scheduled work */
+	flush_work(&lvs->rh_work);
+>>>>>>> v4.9.227
 	usb_free_urb(lvs->urb);
 }
 

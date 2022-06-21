@@ -258,6 +258,7 @@ static const struct reg_default max98088_reg[] = {
 	{ 0xc9, 0x00 }, /* C9 DAI2 biquad */
 };
 
+<<<<<<< HEAD
 static struct {
        int readable;
        int writable;
@@ -539,11 +540,42 @@ static struct {
 static bool max98088_readable_register(struct device *dev, unsigned int reg)
 {
        return max98088_access[reg].readable;
+=======
+static bool max98088_readable_register(struct device *dev, unsigned int reg)
+{
+	switch (reg) {
+	case M98088_REG_00_IRQ_STATUS ... 0xC9:
+	case M98088_REG_FF_REV_ID:
+		return true;
+	default:
+		return false;
+	}
+}
+
+static bool max98088_writeable_register(struct device *dev, unsigned int reg)
+{
+	switch (reg) {
+	case M98088_REG_03_BATTERY_VOLTAGE ... 0xC9:
+		return true;
+	default:
+		return false;
+	}
+>>>>>>> v4.9.227
 }
 
 static bool max98088_volatile_register(struct device *dev, unsigned int reg)
 {
+<<<<<<< HEAD
        return max98088_access[reg].vol;
+=======
+	switch (reg) {
+	case M98088_REG_00_IRQ_STATUS ... M98088_REG_03_BATTERY_VOLTAGE:
+	case M98088_REG_FF_REV_ID:
+		return true;
+	default:
+		return false;
+	}
+>>>>>>> v4.9.227
 }
 
 static const struct regmap_config max98088_regmap = {
@@ -551,6 +583,10 @@ static const struct regmap_config max98088_regmap = {
 	.val_bits = 8,
 
 	.readable_reg = max98088_readable_register,
+<<<<<<< HEAD
+=======
+	.writeable_reg = max98088_writeable_register,
+>>>>>>> v4.9.227
 	.volatile_reg = max98088_volatile_register,
 	.max_register = 0xff,
 
@@ -680,6 +716,7 @@ static int max98088_mic2pre_get(struct snd_kcontrol *kcontrol,
        return 0;
 }
 
+<<<<<<< HEAD
 static const unsigned int max98088_micboost_tlv[] = {
        TLV_DB_RANGE_HEAD(2),
        0, 1, TLV_DB_SCALE_ITEM(0, 2000, 0),
@@ -688,21 +725,41 @@ static const unsigned int max98088_micboost_tlv[] = {
 
 static const unsigned int max98088_hp_tlv[] = {
 	TLV_DB_RANGE_HEAD(5),
+=======
+static const DECLARE_TLV_DB_RANGE(max98088_micboost_tlv,
+	0, 1, TLV_DB_SCALE_ITEM(0, 2000, 0),
+	2, 2, TLV_DB_SCALE_ITEM(3000, 0, 0)
+);
+
+static const DECLARE_TLV_DB_RANGE(max98088_hp_tlv,
+>>>>>>> v4.9.227
 	0, 6, TLV_DB_SCALE_ITEM(-6700, 400, 0),
 	7, 14, TLV_DB_SCALE_ITEM(-4000, 300, 0),
 	15, 21, TLV_DB_SCALE_ITEM(-1700, 200, 0),
 	22, 27, TLV_DB_SCALE_ITEM(-400, 100, 0),
+<<<<<<< HEAD
 	28, 31, TLV_DB_SCALE_ITEM(150, 50, 0),
 };
 
 static const unsigned int max98088_spk_tlv[] = {
 	TLV_DB_RANGE_HEAD(5),
+=======
+	28, 31, TLV_DB_SCALE_ITEM(150, 50, 0)
+);
+
+static const DECLARE_TLV_DB_RANGE(max98088_spk_tlv,
+>>>>>>> v4.9.227
 	0, 6, TLV_DB_SCALE_ITEM(-6200, 400, 0),
 	7, 14, TLV_DB_SCALE_ITEM(-3500, 300, 0),
 	15, 21, TLV_DB_SCALE_ITEM(-1200, 200, 0),
 	22, 27, TLV_DB_SCALE_ITEM(100, 100, 0),
+<<<<<<< HEAD
 	28, 31, TLV_DB_SCALE_ITEM(650, 50, 0),
 };
+=======
+	28, 31, TLV_DB_SCALE_ITEM(650, 50, 0)
+);
+>>>>>>> v4.9.227
 
 static const struct snd_kcontrol_new max98088_snd_controls[] = {
 
@@ -875,7 +932,11 @@ static const struct snd_kcontrol_new max98088_right_ADC_mixer_controls[] = {
 static int max98088_mic_event(struct snd_soc_dapm_widget *w,
                             struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
        struct snd_soc_codec *codec = w->codec;
+=======
+       struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
        struct max98088_priv *max98088 = snd_soc_codec_get_drvdata(codec);
 
        switch (event) {
@@ -905,7 +966,11 @@ static int max98088_mic_event(struct snd_soc_dapm_widget *w,
 static int max98088_line_pga(struct snd_soc_dapm_widget *w,
                             int event, int line, u8 channel)
 {
+<<<<<<< HEAD
        struct snd_soc_codec *codec = w->codec;
+=======
+       struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
        struct max98088_priv *max98088 = snd_soc_codec_get_drvdata(codec);
        u8 *state;
 
@@ -1571,7 +1636,11 @@ static int max98088_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF)
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF)
+>>>>>>> v4.9.227
 			regcache_sync(max98088->regmap);
 
 		snd_soc_update_bits(codec, M98088_REG_4C_PWR_EN_IN,
@@ -1584,7 +1653,10 @@ static int max98088_set_bias_level(struct snd_soc_codec *codec,
 		regcache_mark_dirty(max98088->regmap);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1755,7 +1827,11 @@ static int max98088_put_eq_enum(struct snd_kcontrol *kcontrol,
        struct max98088_pdata *pdata = max98088->pdata;
        int channel = max98088_get_channel(codec, kcontrol->id.name);
        struct max98088_cdata *cdata;
+<<<<<<< HEAD
        int sel = ucontrol->value.integer.value[0];
+=======
+	int sel = ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 
        if (channel < 0)
 	       return channel;
@@ -1887,6 +1963,7 @@ static void max98088_handle_pdata(struct snd_soc_codec *codec)
                max98088_handle_eq_pdata(codec);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int max98088_suspend(struct snd_soc_codec *codec)
 {
@@ -1906,6 +1983,8 @@ static int max98088_resume(struct snd_soc_codec *codec)
 #define max98088_resume NULL
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int max98088_probe(struct snd_soc_codec *codec)
 {
        struct max98088_priv *max98088 = snd_soc_codec_get_drvdata(codec);
@@ -1946,9 +2025,12 @@ static int max98088_probe(struct snd_soc_codec *codec)
 
        snd_soc_write(codec, M98088_REG_51_PWR_SYS, M98088_PWRSV);
 
+<<<<<<< HEAD
        /* initialize registers cache to hardware default */
        max98088_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
+=======
+>>>>>>> v4.9.227
        snd_soc_write(codec, M98088_REG_0F_IRQ_ENABLE, 0x00);
 
        snd_soc_write(codec, M98088_REG_22_MIX_DAC,
@@ -1974,7 +2056,10 @@ static int max98088_remove(struct snd_soc_codec *codec)
 {
        struct max98088_priv *max98088 = snd_soc_codec_get_drvdata(codec);
 
+<<<<<<< HEAD
        max98088_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+>>>>>>> v4.9.227
        kfree(max98088->eq_texts);
 
        return 0;
@@ -1983,6 +2068,7 @@ static int max98088_remove(struct snd_soc_codec *codec)
 static struct snd_soc_codec_driver soc_codec_dev_max98088 = {
 	.probe   = max98088_probe,
 	.remove  = max98088_remove,
+<<<<<<< HEAD
 	.suspend = max98088_suspend,
 	.resume  = max98088_resume,
 	.set_bias_level = max98088_set_bias_level,
@@ -1992,6 +2078,19 @@ static struct snd_soc_codec_driver soc_codec_dev_max98088 = {
 	.num_dapm_widgets = ARRAY_SIZE(max98088_dapm_widgets),
 	.dapm_routes = max98088_audio_map,
 	.num_dapm_routes = ARRAY_SIZE(max98088_audio_map),
+=======
+	.set_bias_level = max98088_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= max98088_snd_controls,
+		.num_controls		= ARRAY_SIZE(max98088_snd_controls),
+		.dapm_widgets		= max98088_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(max98088_dapm_widgets),
+		.dapm_routes		= max98088_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(max98088_audio_map),
+	},
+>>>>>>> v4.9.227
 };
 
 static int max98088_i2c_probe(struct i2c_client *i2c,
@@ -2035,7 +2134,10 @@ MODULE_DEVICE_TABLE(i2c, max98088_i2c_id);
 static struct i2c_driver max98088_i2c_driver = {
 	.driver = {
 		.name = "max98088",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe  = max98088_i2c_probe,
 	.remove = max98088_i2c_remove,

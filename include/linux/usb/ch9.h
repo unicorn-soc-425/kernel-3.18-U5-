@@ -32,9 +32,15 @@
 #ifndef __LINUX_USB_CH9_H
 #define __LINUX_USB_CH9_H
 
+<<<<<<< HEAD
 #include <uapi/linux/usb/ch9.h>
 
 
+=======
+#include <linux/device.h>
+#include <uapi/linux/usb/ch9.h>
+
+>>>>>>> v4.9.227
 /**
  * usb_speed_string() - Returns human readable-name of the speed.
  * @speed: The speed to return human-readable name for.  If it's not
@@ -43,6 +49,18 @@
  */
 extern const char *usb_speed_string(enum usb_device_speed speed);
 
+<<<<<<< HEAD
+=======
+/**
+ * usb_get_maximum_speed - Get maximum requested speed for a given USB
+ * controller.
+ * @dev: Pointer to the given USB controller device
+ *
+ * The function gets the maximum speed string from property "maximum-speed",
+ * and returns the corresponding enum usb_device_speed.
+ */
+extern enum usb_device_speed usb_get_maximum_speed(struct device *dev);
+>>>>>>> v4.9.227
 
 /**
  * usb_state_string - Returns human readable name for the state.

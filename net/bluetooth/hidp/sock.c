@@ -33,7 +33,11 @@ static int hidp_sock_release(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
 
+<<<<<<< HEAD
 	BT_DBG("sock %pK sk %pK", sock, sk);
+=======
+	BT_DBG("sock %p sk %p", sock, sk);
+>>>>>>> v4.9.227
 
 	if (!sk)
 		return 0;
@@ -76,6 +80,10 @@ static int hidp_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long 
 			sockfd_put(csock);
 			return err;
 		}
+<<<<<<< HEAD
+=======
+		ca.name[sizeof(ca.name)-1] = 0;
+>>>>>>> v4.9.227
 
 		err = hidp_connection_add(&ca, csock, isock);
 		if (!err && copy_to_user(argp, &ca, sizeof(ca)))
@@ -230,12 +238,20 @@ static int hidp_sock_create(struct net *net, struct socket *sock, int protocol,
 {
 	struct sock *sk;
 
+<<<<<<< HEAD
 	BT_DBG("sock %pK", sock);
+=======
+	BT_DBG("sock %p", sock);
+>>>>>>> v4.9.227
 
 	if (sock->type != SOCK_RAW)
 		return -ESOCKTNOSUPPORT;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &hidp_proto);
+=======
+	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &hidp_proto, kern);
+>>>>>>> v4.9.227
 	if (!sk)
 		return -ENOMEM;
 

@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
   comedi/drivers/jr3_pci.c
   hardware driver for JR3/PCI force sensor board
 
@@ -15,6 +16,24 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
 */
+=======
+ * comedi/drivers/jr3_pci.c
+ * hardware driver for JR3/PCI force sensor board
+ *
+ * COMEDI - Linux Control and Measurement Device Interface
+ * Copyright (C) 2007 Anders Blomdell <anders.blomdell@control.lth.se>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+>>>>>>> v4.9.227
 /*
  * Driver: jr3_pci
  * Description: JR3/PCI force sensor board
@@ -39,14 +58,21 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/ctype.h>
 #include <linux/jiffies.h>
 #include <linux/slab.h>
 #include <linux/timer.h>
 
+<<<<<<< HEAD
 #include "../comedidev.h"
+=======
+#include "../comedi_pci.h"
+>>>>>>> v4.9.227
 
 #include "jr3_pci.h"
 
@@ -142,7 +168,11 @@ static void set_transforms(struct jr3_channel __iomem *channel,
 {
 	int i;
 
+<<<<<<< HEAD
 	num &= 0x000f;		/*  Make sure that 0 <= num <= 15 */
+=======
+	num &= 0x000f;		/* Make sure that 0 <= num <= 15 */
+>>>>>>> v4.9.227
 	for (i = 0; i < 8; i++) {
 		set_u16(&channel->transforms[num].link[i].link_type,
 			transf.link[i].link_type);
@@ -232,7 +262,11 @@ static unsigned int jr3_pci_ai_read_chan(struct comedi_device *dev,
 
 	if (chan < 56) {
 		unsigned int axis = chan % 8;
+<<<<<<< HEAD
 		unsigned filter = chan / 8;
+=======
+		unsigned int filter = chan / 8;
+>>>>>>> v4.9.227
 
 		switch (axis) {
 		case 0:
@@ -324,10 +358,17 @@ static int read_idm_word(const u8 *data, size_t size, int *pos,
 	int value;
 
 	if (pos && val) {
+<<<<<<< HEAD
 		/*  Skip over non hex */
 		for (; *pos < size && !isxdigit(data[*pos]); (*pos)++)
 			;
 		/*  Collect value */
+=======
+		/* Skip over non hex */
+		for (; *pos < size && !isxdigit(data[*pos]); (*pos)++)
+			;
+		/* Collect value */
+>>>>>>> v4.9.227
 		*val = 0;
 		for (; *pos < size; (*pos)++) {
 			value = hex_to_bin(data[*pos]);
@@ -449,7 +490,12 @@ static int jr3_download_firmware(struct comedi_device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct jr3_pci_poll_delay jr3_pci_poll_subdevice(struct comedi_subdevice *s)
+=======
+static struct jr3_pci_poll_delay
+jr3_pci_poll_subdevice(struct comedi_subdevice *s)
+>>>>>>> v4.9.227
 {
 	struct jr3_pci_subdev_private *spriv = s->private;
 	struct jr3_pci_poll_delay result = poll_delay_min_max(1000, 2000);
@@ -691,7 +737,11 @@ static int jr3_pci_auto_attach(struct comedi_device *dev,
 	if (sizeof(struct jr3_channel) != 0xc00) {
 		dev_err(dev->class_dev,
 			"sizeof(struct jr3_channel) = %x [expected %x]\n",
+<<<<<<< HEAD
 			(unsigned)sizeof(struct jr3_channel), 0xc00);
+=======
+			(unsigned int)sizeof(struct jr3_channel), 0xc00);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -706,8 +756,11 @@ static int jr3_pci_auto_attach(struct comedi_device *dev,
 	if (!devpriv)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	init_timer(&devpriv->timer);
 
+=======
+>>>>>>> v4.9.227
 	ret = comedi_pci_enable(dev);
 	if (ret)
 		return ret;
@@ -737,13 +790,21 @@ static int jr3_pci_auto_attach(struct comedi_device *dev,
 		s->maxdata_list		= spriv->maxdata_list;
 	}
 
+<<<<<<< HEAD
 	/*  Reset DSP card */
+=======
+	/* Reset DSP card */
+>>>>>>> v4.9.227
 	writel(0, &devpriv->iobase->channel[0].reset);
 
 	ret = comedi_load_firmware(dev, &comedi_to_pci_dev(dev)->dev,
 				   "comedi/jr3pci.idm",
 				   jr3_download_firmware, 0);
+<<<<<<< HEAD
 	dev_dbg(dev->class_dev, "Firmare load %d\n", ret);
+=======
+	dev_dbg(dev->class_dev, "Firmware load %d\n", ret);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 	/*
@@ -767,7 +828,11 @@ static int jr3_pci_auto_attach(struct comedi_device *dev,
 				data.copyright[i]) >> 8);
 	}
 
+<<<<<<< HEAD
 	/*  Start card timer */
+=======
+	/* Start card timer */
+>>>>>>> v4.9.227
 	for (i = 0; i < dev->n_subdevices; i++) {
 		s = &dev->subdevices[i];
 		spriv = s->private;
@@ -776,8 +841,12 @@ static int jr3_pci_auto_attach(struct comedi_device *dev,
 		spriv->next_time_max = jiffies + msecs_to_jiffies(2000);
 	}
 
+<<<<<<< HEAD
 	devpriv->timer.data = (unsigned long)dev;
 	devpriv->timer.function = jr3_pci_poll_dev;
+=======
+	setup_timer(&devpriv->timer, jr3_pci_poll_dev, (unsigned long)dev);
+>>>>>>> v4.9.227
 	devpriv->timer.expires = jiffies + msecs_to_jiffies(1000);
 	add_timer(&devpriv->timer);
 

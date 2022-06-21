@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Linux network driver for Brocade Converged Network Adapter.
+=======
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -11,9 +15,16 @@
  * General Public License for more details.
  */
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2011 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> v4.9.227
  */
 #ifndef __BNA_H__
 #define __BNA_H__
@@ -27,6 +38,7 @@ extern const u32 bna_napi_dim_vector[][BNA_BIAS_T_MAX];
 
 /*  Macros and constants  */
 
+<<<<<<< HEAD
 #define BNA_IOC_TIMER_FREQ		200
 
 /* Log string size */
@@ -57,6 +69,10 @@ do {									\
 	(x) = n;							\
 } while (0)
 
+=======
+#define bna_is_small_rxq(_id) ((_id) & 0x1)
+
+>>>>>>> v4.9.227
 /*
  * input : _addr-> os dma addr in host endian format,
  * output : _bna_dma_addr-> pointer to hw dma addr
@@ -79,6 +95,7 @@ do {								\
 	| ((ntohl((_bna_dma_addr)->lsb) & 0xffffffff));	\
 } while (0)
 
+<<<<<<< HEAD
 #define	containing_rec(addr, type, field)				\
 	((type *)((unsigned char *)(addr) -				\
 	(unsigned char *)(&((type *)0)->field)))
@@ -135,6 +152,10 @@ do {								\
 
 #define BNA_QE_INDX_RANGE(_qe_idx, _q_depth) ((_q_depth) - (_qe_idx))
 
+=======
+#define BNA_TXQ_WI_NEEDED(_vectors)	(((_vectors) + 3) >> 2)
+
+>>>>>>> v4.9.227
 #define BNA_QE_INDX_ADD(_qe_idx, _qe_num, _q_depth)			\
 	((_qe_idx) = ((_qe_idx) + (_qe_num)) & ((_q_depth) - 1))
 
@@ -146,11 +167,15 @@ do {								\
 #define BNA_QE_FREE_CNT(_q_ptr, _q_depth)				\
 	(((_q_ptr)->consumer_index - (_q_ptr)->producer_index - 1) &	\
 	 ((_q_depth) - 1))
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #define BNA_QE_IN_USE_CNT(_q_ptr, _q_depth)				\
 	((((_q_ptr)->producer_index - (_q_ptr)->consumer_index)) &	\
 	 (_q_depth - 1))
 
+<<<<<<< HEAD
 #define BNA_Q_GET_CI(_q_ptr)		((_q_ptr)->q.consumer_index)
 
 #define BNA_Q_GET_PI(_q_ptr)		((_q_ptr)->q.producer_index)
@@ -171,6 +196,8 @@ do {								\
 #define BNA_Q_IN_USE_COUNT(_q_ptr)					\
 	(BNA_QE_IN_USE_CNT(&(_q_ptr)->q, (_q_ptr)->q.q_depth))
 
+=======
+>>>>>>> v4.9.227
 #define BNA_LARGE_PKT_SIZE		1000
 
 #define BNA_UPDATE_PKT_CNT(_pkt, _len)					\
@@ -221,6 +248,7 @@ do {									\
 	}								\
 } while (0)
 
+<<<<<<< HEAD
 #define	call_rxf_pause_cbfn(rxf)					\
 do {									\
 	if ((rxf)->oper_state_cbfn) {					\
@@ -236,6 +264,8 @@ do {									\
 
 #define	call_rxf_resume_cbfn(rxf) call_rxf_pause_cbfn(rxf)
 
+=======
+>>>>>>> v4.9.227
 #define is_xxx_enable(mode, bitmask, xxx) ((bitmask & xxx) && (mode & xxx))
 
 #define is_xxx_disable(mode, bitmask, xxx) ((bitmask & xxx) && !(mode & xxx))
@@ -325,6 +355,7 @@ do {									\
 #define bna_rx_rid_mask(_bna) ((_bna)->rx_mod.rid_mask)
 
 #define bna_tx_from_rid(_bna, _rid, _tx)				\
+<<<<<<< HEAD
 do {								    \
 	struct bna_tx_mod *__tx_mod = &(_bna)->tx_mod;	  \
 	struct bna_tx *__tx;					    \
@@ -337,16 +368,33 @@ do {								    \
 			break;					  \
 		}						       \
 	}							       \
+=======
+do {									\
+	struct bna_tx_mod *__tx_mod = &(_bna)->tx_mod;			\
+	struct bna_tx *__tx;						\
+	_tx = NULL;							\
+	list_for_each_entry(__tx, &__tx_mod->tx_active_q, qe) {		\
+		if (__tx->rid == (_rid)) {				\
+			(_tx) = __tx;					\
+			break;						\
+		}							\
+	}								\
+>>>>>>> v4.9.227
 } while (0)
 
 #define bna_rx_from_rid(_bna, _rid, _rx)				\
 do {									\
 	struct bna_rx_mod *__rx_mod = &(_bna)->rx_mod;			\
 	struct bna_rx *__rx;						\
+<<<<<<< HEAD
 	struct list_head *qe;						\
 	_rx = NULL;							\
 	list_for_each(qe, &__rx_mod->rx_active_q) {			\
 		__rx = (struct bna_rx *)qe;				\
+=======
+	_rx = NULL;							\
+	list_for_each_entry(__rx, &__rx_mod->rx_active_q, qe) {		\
+>>>>>>> v4.9.227
 		if (__rx->rid == (_rid)) {				\
 			(_rx) = __rx;					\
 			break;						\
@@ -364,6 +412,7 @@ do {									\
 
 /*  Inline functions  */
 
+<<<<<<< HEAD
 static inline struct bna_mac *bna_mac_find(struct list_head *q, u8 *addr)
 {
 	struct bna_mac *mac = NULL;
@@ -375,6 +424,16 @@ static inline struct bna_mac *bna_mac_find(struct list_head *q, u8 *addr)
 		}
 	}
 	return mac;
+=======
+static inline struct bna_mac *bna_mac_find(struct list_head *q, const u8 *addr)
+{
+	struct bna_mac *mac;
+
+	list_for_each_entry(mac, q, qe)
+		if (ether_addr_equal(mac->addr, addr))
+			return mac;
+	return NULL;
+>>>>>>> v4.9.227
 }
 
 #define bna_attr(_bna) (&(_bna)->ioceth.attr)
@@ -400,7 +459,10 @@ void bna_hw_stats_get(struct bna *bna);
 
 /* APIs for RxF */
 struct bna_mac *bna_cam_mod_mac_get(struct list_head *head);
+<<<<<<< HEAD
 void bna_cam_mod_mac_put(struct list_head *tail, struct bna_mac *mac);
+=======
+>>>>>>> v4.9.227
 struct bna_mcam_handle *bna_mcam_mod_handle_get(struct bna_mcam_mod *mod);
 void bna_mcam_mod_handle_put(struct bna_mcam_mod *mcam_mod,
 			  struct bna_mcam_handle *handle);
@@ -487,6 +549,7 @@ void bna_rx_cleanup_complete(struct bna_rx *rx);
 void bna_rx_coalescing_timeo_set(struct bna_rx *rx, int coalescing_timeo);
 void bna_rx_dim_reconfig(struct bna *bna, const u32 vector[][BNA_BIAS_T_MAX]);
 void bna_rx_dim_update(struct bna_ccb *ccb);
+<<<<<<< HEAD
 enum bna_cb_status
 bna_rx_ucast_set(struct bna_rx *rx, u8 *ucmac,
 		 void (*cbfn)(struct bnad *, struct bna_rx *));
@@ -512,6 +575,21 @@ enum bna_cb_status
 bna_rx_mode_set(struct bna_rx *rx, enum bna_rxmode rxmode,
 		enum bna_rxmode bitmask,
 		void (*cbfn)(struct bnad *, struct bna_rx *));
+=======
+enum bna_cb_status bna_rx_ucast_set(struct bna_rx *rx, const u8 *ucmac);
+enum bna_cb_status bna_rx_ucast_listset(struct bna_rx *rx, int count,
+					const u8 *uclist);
+enum bna_cb_status bna_rx_mcast_add(struct bna_rx *rx, const u8 *mcmac,
+				    void (*cbfn)(struct bnad *,
+						 struct bna_rx *));
+enum bna_cb_status bna_rx_mcast_listset(struct bna_rx *rx, int count,
+					const u8 *mcmac);
+void
+bna_rx_mcast_delall(struct bna_rx *rx);
+enum bna_cb_status
+bna_rx_mode_set(struct bna_rx *rx, enum bna_rxmode rxmode,
+		enum bna_rxmode bitmask);
+>>>>>>> v4.9.227
 void bna_rx_vlan_add(struct bna_rx *rx, int vlan_id);
 void bna_rx_vlan_del(struct bna_rx *rx, int vlan_id);
 void bna_rx_vlanfilter_enable(struct bna_rx *rx);
@@ -531,11 +609,18 @@ void bna_enet_enable(struct bna_enet *enet);
 void bna_enet_disable(struct bna_enet *enet, enum bna_cleanup_type type,
 		      void (*cbfn)(void *));
 void bna_enet_pause_config(struct bna_enet *enet,
+<<<<<<< HEAD
 			   struct bna_pause_config *pause_config,
 			   void (*cbfn)(struct bnad *));
 void bna_enet_mtu_set(struct bna_enet *enet, int mtu,
 		      void (*cbfn)(struct bnad *));
 void bna_enet_perm_mac_get(struct bna_enet *enet, mac_t *mac);
+=======
+			   struct bna_pause_config *pause_config);
+void bna_enet_mtu_set(struct bna_enet *enet, int mtu,
+		      void (*cbfn)(struct bnad *));
+void bna_enet_perm_mac_get(struct bna_enet *enet, u8 *mac);
+>>>>>>> v4.9.227
 
 /* IOCETH */
 

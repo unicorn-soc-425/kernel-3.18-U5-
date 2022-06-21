@@ -40,14 +40,23 @@ static int amdgpu_ih_ring_alloc(struct amdgpu_device *adev)
 
 	/* Allocate ring buffer */
 	if (adev->irq.ih.ring_obj == NULL) {
+<<<<<<< HEAD
 		r = amdgpu_bo_create(adev, adev->irq.ih.ring_size,
 				     PAGE_SIZE, true,
 				     AMDGPU_GEM_DOMAIN_GTT, 0,
 				     NULL, NULL, &adev->irq.ih.ring_obj);
+=======
+		r = amdgpu_bo_create_kernel(adev, adev->irq.ih.ring_size,
+					    PAGE_SIZE, AMDGPU_GEM_DOMAIN_GTT,
+					    &adev->irq.ih.ring_obj,
+					    &adev->irq.ih.gpu_addr,
+					    (void **)&adev->irq.ih.ring);
+>>>>>>> v4.9.227
 		if (r) {
 			DRM_ERROR("amdgpu: failed to create ih ring buffer (%d).\n", r);
 			return r;
 		}
+<<<<<<< HEAD
 		r = amdgpu_bo_reserve(adev->irq.ih.ring_obj, false);
 		if (unlikely(r != 0))
 			return r;
@@ -66,6 +75,8 @@ static int amdgpu_ih_ring_alloc(struct amdgpu_device *adev)
 			DRM_ERROR("amdgpu: failed to map ih ring buffer (%d).\n", r);
 			return r;
 		}
+=======
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -136,8 +147,11 @@ int amdgpu_ih_ring_init(struct amdgpu_device *adev, unsigned ring_size,
  */
 void amdgpu_ih_ring_fini(struct amdgpu_device *adev)
 {
+<<<<<<< HEAD
 	int r;
 
+=======
+>>>>>>> v4.9.227
 	if (adev->irq.ih.use_bus_addr) {
 		if (adev->irq.ih.ring) {
 			/* add 8 bytes for the rptr/wptr shadows and
@@ -149,6 +163,7 @@ void amdgpu_ih_ring_fini(struct amdgpu_device *adev)
 			adev->irq.ih.ring = NULL;
 		}
 	} else {
+<<<<<<< HEAD
 		if (adev->irq.ih.ring_obj) {
 			r = amdgpu_bo_reserve(adev->irq.ih.ring_obj, false);
 			if (likely(r == 0)) {
@@ -160,6 +175,11 @@ void amdgpu_ih_ring_fini(struct amdgpu_device *adev)
 			adev->irq.ih.ring = NULL;
 			adev->irq.ih.ring_obj = NULL;
 		}
+=======
+		amdgpu_bo_free_kernel(&adev->irq.ih.ring_obj,
+				      &adev->irq.ih.gpu_addr,
+				      (void **)&adev->irq.ih.ring);
+>>>>>>> v4.9.227
 		amdgpu_wb_free(adev, adev->irq.ih.wptr_offs);
 		amdgpu_wb_free(adev, adev->irq.ih.rptr_offs);
 	}

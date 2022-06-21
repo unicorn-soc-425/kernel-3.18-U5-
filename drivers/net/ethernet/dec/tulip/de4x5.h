@@ -860,8 +860,13 @@
 #define PCI  0
 #define EISA 1
 
+<<<<<<< HEAD
 #define HASH_TABLE_LEN   512       /* Bits */
 #define HASH_BITS        0x01ff    /* 9 LS bits */
+=======
+#define DE4X5_HASH_TABLE_LEN   512       /* Bits */
+#define DE4X5_HASH_BITS        0x01ff    /* 9 LS bits */
+>>>>>>> v4.9.227
 
 #define SETUP_FRAME_LEN  192       /* Bytes */
 #define IMPERF_PA_OFFSET 156       /* Bytes */

@@ -61,8 +61,11 @@ extern void ia64_xchg_called_with_bad_pointer(void);
  * indicated by comparing RETURN with OLD.
  */
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG 1
 
+=======
+>>>>>>> v4.9.227
 /*
  * This function doesn't exist, so you'll get a linker error
  * if something tries to do an invalid cmpxchg().

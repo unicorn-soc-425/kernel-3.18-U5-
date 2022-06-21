@@ -36,14 +36,22 @@ static inline void fill_ldt(struct desc_struct *desc, const struct user_desc *in
 
 extern struct desc_ptr idt_descr;
 extern gate_desc idt_table[];
+<<<<<<< HEAD
 extern struct desc_ptr debug_idt_descr;
+=======
+extern const struct desc_ptr debug_idt_descr;
+>>>>>>> v4.9.227
 extern gate_desc debug_idt_table[];
 
 struct gdt_page {
 	struct desc_struct gdt[GDT_ENTRIES];
 } __attribute__((aligned(PAGE_SIZE)));
 
+<<<<<<< HEAD
 DECLARE_PER_CPU_PAGE_ALIGNED(struct gdt_page, gdt_page);
+=======
+DECLARE_PER_CPU_PAGE_ALIGNED_USER_MAPPED(struct gdt_page, gdt_page);
+>>>>>>> v4.9.227
 
 static inline struct desc_struct *get_cpu_gdt_table(unsigned int cpu)
 {
@@ -361,11 +369,23 @@ static inline void _set_gate(int gate, unsigned type, void *addr,
  * Pentium F0 0F bugfix can have resulted in the mapped
  * IDT being write-protected.
  */
+<<<<<<< HEAD
 #define set_intr_gate(n, addr)						\
+=======
+#define set_intr_gate_notrace(n, addr)					\
+>>>>>>> v4.9.227
 	do {								\
 		BUG_ON((unsigned)n > 0xFF);				\
 		_set_gate(n, GATE_INTERRUPT, (void *)addr, 0, 0,	\
 			  __KERNEL_CS);					\
+<<<<<<< HEAD
+=======
+	} while (0)
+
+#define set_intr_gate(n, addr)						\
+	do {								\
+		set_intr_gate_notrace(n, addr);				\
+>>>>>>> v4.9.227
 		_trace_set_gate(n, GATE_INTERRUPT, (void *)trace_##addr,\
 				0, 0, __KERNEL_CS);			\
 	} while (0)

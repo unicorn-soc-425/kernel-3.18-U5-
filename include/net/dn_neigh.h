@@ -18,10 +18,18 @@ struct dn_neigh {
 
 void dn_neigh_init(void);
 void dn_neigh_cleanup(void);
+<<<<<<< HEAD
 int dn_neigh_router_hello(struct sk_buff *skb);
 int dn_neigh_endnode_hello(struct sk_buff *skb);
 void dn_neigh_pointopoint_hello(struct sk_buff *skb);
 int dn_neigh_elist(struct net_device *dev, unsigned char *ptr, int n);
+=======
+int dn_neigh_router_hello(struct net *net, struct sock *sk, struct sk_buff *skb);
+int dn_neigh_endnode_hello(struct net *net, struct sock *sk, struct sk_buff *skb);
+void dn_neigh_pointopoint_hello(struct sk_buff *skb);
+int dn_neigh_elist(struct net_device *dev, unsigned char *ptr, int n);
+int dn_to_neigh_output(struct net *net, struct sock *sk, struct sk_buff *skb);
+>>>>>>> v4.9.227
 
 extern struct neigh_table dn_neigh_table;
 

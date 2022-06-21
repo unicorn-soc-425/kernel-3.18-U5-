@@ -50,6 +50,10 @@
 #include <linux/ptrace.h>
 #include <linux/security.h>
 #include <linux/task_work.h>
+<<<<<<< HEAD
+=======
+#include <linux/memcontrol.h>
+>>>>>>> v4.9.227
 struct linux_binprm;
 
 /*
@@ -188,6 +192,11 @@ static inline void tracehook_notify_resume(struct pt_regs *regs)
 	smp_mb__after_atomic();
 	if (unlikely(current->task_works))
 		task_work_run();
+<<<<<<< HEAD
+=======
+
+	mem_cgroup_handle_over_high();
+>>>>>>> v4.9.227
 }
 
 #endif	/* <linux/tracehook.h> */

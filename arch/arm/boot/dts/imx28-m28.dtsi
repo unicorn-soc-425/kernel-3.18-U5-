@@ -27,6 +27,7 @@
 				pinctrl-names = "default";
 				pinctrl-0 = <&gpmi_pins_a &gpmi_status_cfg>;
 				status = "okay";
+<<<<<<< HEAD
 
 				partition@0 {
 					label = "bootloader";
@@ -53,6 +54,8 @@
 					label = "filesystem";
 					reg = <0x00800000 0x0f800000>;
 				};
+=======
+>>>>>>> v4.9.227
 			};
 		};
 
@@ -63,7 +66,11 @@
 				status = "okay";
 
 				rtc: rtc@68 {
+<<<<<<< HEAD
 					compatible = "stm,m41t62";
+=======
+					compatible = "st,m41t62";
+>>>>>>> v4.9.227
 					reg = <0x68>;
 				};
 			};

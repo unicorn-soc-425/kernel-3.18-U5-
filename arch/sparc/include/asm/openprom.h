@@ -29,12 +29,21 @@ struct linux_dev_v0_funcs {
 /* V2 and later prom device operations. */
 struct linux_dev_v2_funcs {
 	phandle (*v2_inst2pkg)(int d);	/* Convert ihandle to phandle */
+<<<<<<< HEAD
 	char * (*v2_dumb_mem_alloc)(char *va, unsigned sz);
 	void (*v2_dumb_mem_free)(char *va, unsigned sz);
 
 	/* To map devices into virtual I/O space. */
 	char * (*v2_dumb_mmap)(char *virta, int which_io, unsigned paddr, unsigned sz);
 	void (*v2_dumb_munmap)(char *virta, unsigned size);
+=======
+	char * (*v2_dumb_mem_alloc)(char *va, unsigned int sz);
+	void (*v2_dumb_mem_free)(char *va, unsigned int sz);
+
+	/* To map devices into virtual I/O space. */
+	char * (*v2_dumb_mmap)(char *virta, int which_io, unsigned int paddr, unsigned int sz);
+	void (*v2_dumb_munmap)(char *virta, unsigned int size);
+>>>>>>> v4.9.227
 
 	int (*v2_dev_open)(char *devpath);
 	void (*v2_dev_close)(int d);
@@ -50,7 +59,11 @@ struct linux_dev_v2_funcs {
 struct linux_mlist_v0 {
 	struct linux_mlist_v0 *theres_more;
 	unsigned int start_adr;
+<<<<<<< HEAD
 	unsigned num_bytes;
+=======
+	unsigned int num_bytes;
+>>>>>>> v4.9.227
 };
 
 struct linux_mem_v0 {

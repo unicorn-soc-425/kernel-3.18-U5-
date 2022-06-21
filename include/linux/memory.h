@@ -109,6 +109,12 @@ extern void unregister_memory_notifier(struct notifier_block *nb);
 extern int register_memory_isolate_notifier(struct notifier_block *nb);
 extern void unregister_memory_isolate_notifier(struct notifier_block *nb);
 extern int register_new_memory(int, struct mem_section *);
+<<<<<<< HEAD
+=======
+extern int memory_block_change_state(struct memory_block *mem,
+				     unsigned long to_state,
+				     unsigned long from_state_req);
+>>>>>>> v4.9.227
 #ifdef CONFIG_MEMORY_HOTREMOVE
 extern int unregister_memory_section(struct mem_section *);
 #endif
@@ -137,6 +143,7 @@ extern struct memory_block *find_memory_block(struct mem_section *);
 #endif
 
 /*
+<<<<<<< HEAD
  * 'struct memory_accessor' is a generic interface to provide
  * in-kernel access to persistent memory such as i2c or SPI EEPROMs
  */
@@ -148,6 +155,8 @@ struct memory_accessor {
 };
 
 /*
+=======
+>>>>>>> v4.9.227
  * Kernel text modification mutex, used for code patching. Users of this lock
  * can sleep.
  */

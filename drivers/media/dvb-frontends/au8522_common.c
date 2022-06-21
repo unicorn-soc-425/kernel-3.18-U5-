@@ -44,7 +44,11 @@ int au8522_writereg(struct au8522_state *state, u16 reg, u8 data)
 	int ret;
 	u8 buf[] = { (reg >> 8) | 0x80, reg & 0xff, data };
 
+<<<<<<< HEAD
 	struct i2c_msg msg = { .addr = state->config->demod_address,
+=======
+	struct i2c_msg msg = { .addr = state->config.demod_address,
+>>>>>>> v4.9.227
 			       .flags = 0, .buf = buf, .len = 3 };
 
 	ret = i2c_transfer(state->i2c, &msg, 1);
@@ -64,9 +68,15 @@ u8 au8522_readreg(struct au8522_state *state, u16 reg)
 	u8 b1[] = { 0 };
 
 	struct i2c_msg msg[] = {
+<<<<<<< HEAD
 		{ .addr = state->config->demod_address, .flags = 0,
 		  .buf = b0, .len = 2 },
 		{ .addr = state->config->demod_address, .flags = I2C_M_RD,
+=======
+		{ .addr = state->config.demod_address, .flags = 0,
+		  .buf = b0, .len = 2 },
+		{ .addr = state->config.demod_address, .flags = I2C_M_RD,
+>>>>>>> v4.9.227
 		  .buf = b1, .len = 1 } };
 
 	ret = i2c_transfer(state->i2c, msg, 2);
@@ -140,7 +150,11 @@ EXPORT_SYMBOL(au8522_release_state);
 
 static int au8522_led_gpio_enable(struct au8522_state *state, int onoff)
 {
+<<<<<<< HEAD
 	struct au8522_led_config *led_config = state->config->led_cfg;
+=======
+	struct au8522_led_config *led_config = state->config.led_cfg;
+>>>>>>> v4.9.227
 	u8 val;
 
 	/* bail out if we can't control an LED */
@@ -170,7 +184,11 @@ static int au8522_led_gpio_enable(struct au8522_state *state, int onoff)
  */
 int au8522_led_ctrl(struct au8522_state *state, int led)
 {
+<<<<<<< HEAD
 	struct au8522_led_config *led_config = state->config->led_cfg;
+=======
+	struct au8522_led_config *led_config = state->config.led_cfg;
+>>>>>>> v4.9.227
 	int i, ret = 0;
 
 	/* bail out if we can't control an LED */

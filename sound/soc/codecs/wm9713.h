@@ -45,6 +45,9 @@
 #define WM9713_DAI_AC97_AUX		1
 #define WM9713_DAI_PCM_VOICE	2
 
+<<<<<<< HEAD
 int wm9713_reset(struct snd_soc_codec *codec,  int try_warm);
 
+=======
+>>>>>>> v4.9.227
 #endif

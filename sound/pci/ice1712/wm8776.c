@@ -452,6 +452,7 @@ void snd_wm8776_resume(struct snd_wm8776 *wm)
 		snd_wm8776_write(wm, i, wm->regs[i]);
 }
 
+<<<<<<< HEAD
 void snd_wm8776_set_dac_if(struct snd_wm8776 *wm, u16 dac)
 {
 	snd_wm8776_write(wm, WM8776_REG_DACIFCTRL, dac);
@@ -467,6 +468,8 @@ void snd_wm8776_set_master_mode(struct snd_wm8776 *wm, u16 mode)
 	snd_wm8776_write(wm, WM8776_REG_MSTRCTRL, mode);
 }
 
+=======
+>>>>>>> v4.9.227
 void snd_wm8776_set_power(struct snd_wm8776 *wm, u16 power)
 {
 	snd_wm8776_write(wm, WM8776_REG_PWRDOWN, power);

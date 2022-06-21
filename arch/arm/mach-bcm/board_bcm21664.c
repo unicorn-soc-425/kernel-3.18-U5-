@@ -11,14 +11,18 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include <linux/of_address.h>
 #include <linux/of_platform.h>
 #include <linux/io.h>
 
+=======
+>>>>>>> v4.9.227
 #include <asm/mach/arch.h>
 
 #include "kona_l2_cache.h"
 
+<<<<<<< HEAD
 #define RSTMGR_DT_STRING		"brcm,bcm21664-resetmgr"
 
 #define RSTMGR_REG_WR_ACCESS_OFFSET	0
@@ -61,6 +65,10 @@ static void bcm21664_restart(enum reboot_mode mode, const char *cmd)
 static void __init bcm21664_init(void)
 {
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+=======
+static void __init bcm21664_init(void)
+{
+>>>>>>> v4.9.227
 	kona_l2_cache_init();
 }
 
@@ -71,6 +79,9 @@ static const char * const bcm21664_dt_compat[] = {
 
 DT_MACHINE_START(BCM21664_DT, "BCM21664 Broadcom Application Processor")
 	.init_machine = bcm21664_init,
+<<<<<<< HEAD
 	.restart = bcm21664_restart,
+=======
+>>>>>>> v4.9.227
 	.dt_compat = bcm21664_dt_compat,
 MACHINE_END

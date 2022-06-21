@@ -12,7 +12,10 @@
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/pinctrl/machine.h>
@@ -453,11 +456,43 @@ static int mxs_pinctrl_probe_dt(struct platform_device *pdev,
 		if (of_property_read_u32(child, "reg", &val))
 			continue;
 		if (strcmp(fn, child->name)) {
+<<<<<<< HEAD
+=======
+			struct device_node *child2;
+
+			/*
+			 * This reference is dropped by
+			 * of_get_next_child(np, * child)
+			 */
+			of_node_get(child);
+
+			/*
+			 * The logic parsing the functions from dt currently
+			 * doesn't handle if functions with the same name are
+			 * not grouped together. Only the first contiguous
+			 * cluster is usable for each function name. This is a
+			 * bug that is not trivial to fix, but at least warn
+			 * about it.
+			 */
+			for (child2 = of_get_next_child(np, child);
+			     child2 != NULL;
+			     child2 = of_get_next_child(np, child2)) {
+				if (!strcmp(child2->name, fn))
+					dev_warn(&pdev->dev,
+						 "function nodes must be grouped by name (failed for: %s)",
+						 fn);
+			}
+
+>>>>>>> v4.9.227
 			f = &soc->functions[idxf++];
 			f->name = fn = child->name;
 		}
 		f->ngroups++;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> v4.9.227
 
 	/* Get groups for each function */
 	idxf = 0;
@@ -523,9 +558,15 @@ int mxs_pinctrl_probe(struct platform_device *pdev,
 	}
 
 	d->pctl = pinctrl_register(&mxs_pinctrl_desc, &pdev->dev, d);
+<<<<<<< HEAD
 	if (!d->pctl) {
 		dev_err(&pdev->dev, "Couldn't register MXS pinctrl driver\n");
 		ret = -EINVAL;
+=======
+	if (IS_ERR(d->pctl)) {
+		dev_err(&pdev->dev, "Couldn't register MXS pinctrl driver\n");
+		ret = PTR_ERR(d->pctl);
+>>>>>>> v4.9.227
 		goto err;
 	}
 
@@ -536,6 +577,7 @@ err:
 	return ret;
 }
 EXPORT_SYMBOL_GPL(mxs_pinctrl_probe);
+<<<<<<< HEAD
 
 int mxs_pinctrl_remove(struct platform_device *pdev)
 {
@@ -547,3 +589,5 @@ int mxs_pinctrl_remove(struct platform_device *pdev)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(mxs_pinctrl_remove);
+=======
+>>>>>>> v4.9.227

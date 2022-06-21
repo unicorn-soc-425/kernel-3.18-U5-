@@ -23,6 +23,7 @@ typedef u32 __ticketpair_t;
 
 #define TICKET_SHIFT	(sizeof(__ticket_t) * 8)
 
+<<<<<<< HEAD
 typedef struct arch_spinlock {
 	union {
 		__ticketpair_t head_tail;
@@ -33,6 +34,9 @@ typedef struct arch_spinlock {
 } arch_spinlock_t;
 
 #define __ARCH_SPIN_LOCK_UNLOCKED	{ { 0 } }
+=======
+#include <asm-generic/qspinlock_types.h>
+>>>>>>> v4.9.227
 
 #include <asm-generic/qrwlock_types.h>
 

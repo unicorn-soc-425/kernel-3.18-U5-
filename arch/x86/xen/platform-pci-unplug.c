@@ -21,7 +21,11 @@
 
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 
 #include <xen/platform_pci.h>
 #include "xen-ops.h"
@@ -61,14 +65,22 @@ static int check_platform_magic(void)
 		}
 		break;
 	default:
+<<<<<<< HEAD
 		printk(KERN_WARNING "Xen Platform PCI: unknown I/O protocol version");
+=======
+		printk(KERN_WARNING "Xen Platform PCI: unknown I/O protocol version\n");
+>>>>>>> v4.9.227
 		return XEN_PLATFORM_ERR_PROTOCOL;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 bool xen_has_pv_devices()
+=======
+bool xen_has_pv_devices(void)
+>>>>>>> v4.9.227
 {
 	if (!xen_domain())
 		return false;

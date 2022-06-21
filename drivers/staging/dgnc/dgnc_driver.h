@@ -12,12 +12,15 @@
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE.  See the GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  *	NOTE: THIS IS A SHARED HEADER. DO NOT CHANGE CODING STYLE!!!
  *
+=======
+>>>>>>> v4.9.227
  *************************************************************************
  *
  * Driver includes
@@ -27,6 +30,7 @@
 #ifndef __DGNC_DRIVER_H
 #define __DGNC_DRIVER_H
 
+<<<<<<< HEAD
 #include <linux/types.h>	/* To pick up the varions Linux types */
 #include <linux/tty.h>	  /* To pick up the various tty structs/defines */
 #include <linux/interrupt.h>	/* For irqreturn_t type */
@@ -34,6 +38,13 @@
 #include "dgnc_types.h"		/* Additional types needed by the Digi header files */
 #include "digi.h"		/* Digi specific ioctl header */
 #include "dgnc_kcompat.h"	/* Kernel 2.4/2.6 compat includes */
+=======
+#include <linux/types.h>
+#include <linux/tty.h>
+#include <linux/interrupt.h>
+
+#include "digi.h"		/* Digi specific ioctl header */
+>>>>>>> v4.9.227
 #include "dgnc_sysfs.h"		/* Support for SYSFS */
 
 /*************************************************************************
@@ -42,6 +53,7 @@
  *
  *************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Driver identification, error and debugging statments
  *
@@ -89,6 +101,16 @@
 
 #define	DBG_CARR		(dgnc_debug & 0x10000)
 
+=======
+/* Driver identification and error statments */
+#define	PROCSTR		"dgnc"			/* /proc entries	 */
+#define	DEVSTR		"/dev/dg/dgnc"		/* /dev entries		 */
+#define	DRVSTR		"dgnc"			/* Driver name string	 */
+#define	DG_PART		"40002369_F"		/* RPM part number	 */
+
+#define TRC_TO_CONSOLE 1
+
+>>>>>>> v4.9.227
 /* Number of boards we support at once. */
 #define	MAXBOARDS	20
 #define	MAXPORTS	8
@@ -108,19 +130,32 @@
 #define PORT_NUM(dev)	((dev) & 0x7f)
 #define IS_PRINT(dev)	(((dev) & 0xff) >= 0x80)
 
+<<<<<<< HEAD
 /* MAX number of stop characters we will send when our read queue is getting full */
+=======
+/* MAX number of stop characters we will send
+ * when our read queue is getting full
+ */
+>>>>>>> v4.9.227
 #define MAX_STOPS_SENT 5
 
 /* 4 extra for alignment play space */
 #define WRITEBUFLEN		((4096) + 4)
+<<<<<<< HEAD
 #define MYFLIPLEN		N_TTY_BUF_SIZE
+=======
+>>>>>>> v4.9.227
 
 #define dgnc_jiffies_from_ms(a) (((a) * HZ) / 1000)
 
 /*
  * Define a local default termios struct. All ports will be created
  * with this termios initially.  This is the same structure that is defined
+<<<<<<< HEAD
  * as the default in tty_io.c with the same settings overriden as in serial.c
+=======
+ * as the default in tty_io.c with the same settings overridden as in serial.c
+>>>>>>> v4.9.227
  *
  * In short, this should match the internal serial ports' defaults.
  */
@@ -134,9 +169,12 @@
 #define   _POSIX_VDISABLE '\0'
 #endif
 
+<<<<<<< HEAD
 #define SNIFF_MAX	65536		/* Sniff buffer size (2^n) */
 #define SNIFF_MASK	(SNIFF_MAX - 1)	/* Sniff wrap mask */
 
+=======
+>>>>>>> v4.9.227
 /*
  * All the possible states the driver can be while being loaded.
  */
@@ -154,7 +192,10 @@ enum {
 	BOARD_READY
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*************************************************************************
  *
  * Structures and closely related defines.
@@ -193,7 +234,10 @@ struct board_ops {
  ************************************************************************/
 #define BD_IS_PCI_EXPRESS     0x0001	  /* Is a PCI Express board */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  *	Per-board information
  */
@@ -215,12 +259,24 @@ struct dgnc_board {
 	uint		maxports;	/* MAX ports this board can handle */
 	unsigned char	dvid;		/* Board specific device id */
 	unsigned char	vpd[128];	/* VPD of board, if found */
+<<<<<<< HEAD
 	unsigned char	serial_num[20];	/* Serial number of board, if found in VPD */
 
 	spinlock_t	bd_lock;	/* Used to protect board */
 
 	spinlock_t	bd_intr_lock;	/* Used to protect the poller tasklet and
 					 * the interrupt routine from each other.
+=======
+	unsigned char	serial_num[20];	/* Serial number of board,
+					 * if found in VPD
+					 */
+
+	spinlock_t	bd_lock;	/* Used to protect board */
+
+	spinlock_t	bd_intr_lock;	/* Used to protect the poller tasklet
+					 * and the interrupt routine from each
+					 * other.
+>>>>>>> v4.9.227
 					 */
 
 	uint		state;		/* State of card. */
@@ -231,21 +287,29 @@ struct dgnc_board {
 	uint		nasync;		/* Number of ports on card */
 
 	uint		irq;		/* Interrupt request number */
+<<<<<<< HEAD
 	ulong		intr_count;	/* Count of interrupts */
 	ulong		intr_modem;	/* Count of interrupts */
 	ulong		intr_tx;	/* Count of interrupts */
 	ulong		intr_rx;	/* Count of interrupts */
+=======
+>>>>>>> v4.9.227
 
 	ulong		membase;	/* Start of base memory of the card */
 	ulong		membase_end;	/* End of base memory of the card */
 
+<<<<<<< HEAD
 	u8 __iomem		*re_map_membase;/* Remapped memory of the card */
+=======
+	u8 __iomem	*re_map_membase; /* Remapped memory of the card */
+>>>>>>> v4.9.227
 
 	ulong		iobase;		/* Start of io base of the card */
 	ulong		iobase_end;	/* End of io base of the card */
 
 	uint		bd_uart_offset;	/* Space between each UART */
 
+<<<<<<< HEAD
 	struct channel_t *channels[MAXPORTS]; /* array of pointers to our channels. */
 
 	struct tty_driver	SerialDriver;
@@ -271,6 +335,23 @@ struct dgnc_board {
 	 */
 	char		*msgbuf_head;
 	char		*msgbuf;
+=======
+	struct channel_t *channels[MAXPORTS];	/* array of pointers
+						 * to our channels.
+						 */
+
+	struct tty_driver *serial_driver;
+	char		serial_name[200];
+	struct tty_driver *print_driver;
+	char		print_name[200];
+
+	u16		dpatype;	/* The board "type",
+					 * as defined by DPA
+					 */
+	u16		dpastatus;	/* The board "status",
+					 * as defined by DPA
+					 */
+>>>>>>> v4.9.227
 
 	uint		bd_dividend;	/* Board/UARTs specific dividend */
 
@@ -282,7 +363,10 @@ struct dgnc_board {
 
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /************************************************************************
  * Unit flag definitions for un_flags.
  ************************************************************************/
@@ -318,7 +402,10 @@ struct un_t {
 	struct device *un_sysfs;
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /************************************************************************
  * Device flag definitions for ch_flags.
  ************************************************************************/
@@ -337,11 +424,15 @@ struct un_t {
 #define CH_TX_FIFO_LWM  0x0800		/* TX Fifo is below Low Water	*/
 #define CH_BREAK_SENDING 0x1000		/* Break is being sent		*/
 #define CH_LOOPBACK 0x2000		/* Channel is in lookback mode	*/
+<<<<<<< HEAD
 #define CH_FLIPBUF_IN_USE 0x4000	/* Channel's flipbuf is in use	*/
+=======
+>>>>>>> v4.9.227
 #define CH_BAUD0	0x08000		/* Used for checking B0 transitions */
 #define CH_FORCED_STOP  0x20000		/* Output is forcibly stopped	*/
 #define CH_FORCED_STOPI 0x40000		/* Input is forcibly stopped	*/
 
+<<<<<<< HEAD
 /*
  * Definitions for ch_sniff_flags
  */
@@ -350,6 +441,8 @@ struct un_t {
 #define SNIFF_WAIT_SPACE 0x4
 
 
+=======
+>>>>>>> v4.9.227
 /* Our Read/Error/Write queue sizes */
 #define RQUEUEMASK	0x1FFF		/* 8 K - 1 */
 #define EQUEUEMASK	0x1FFF		/* 8 K - 1 */
@@ -358,13 +451,20 @@ struct un_t {
 #define EQUEUESIZE	RQUEUESIZE
 #define WQUEUESIZE	(WQUEUEMASK + 1)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /************************************************************************
  * Channel information structure.
  ************************************************************************/
 struct channel_t {
 	int magic;			/* Channel Magic Number		*/
+<<<<<<< HEAD
 	struct dgnc_board	*ch_bd;		/* Board structure pointer      */
+=======
+	struct dgnc_board	*ch_bd;		/* Board structure pointer */
+>>>>>>> v4.9.227
 	struct digi_t	ch_digi;	/* Transparent Print structure  */
 	struct un_t	ch_tun;		/* Terminal unit info	   */
 	struct un_t	ch_pun;		/* Printer unit info	    */
@@ -376,7 +476,13 @@ struct channel_t {
 	uint		ch_open_count;	/* open count			*/
 	uint		ch_flags;	/* Channel flags		*/
 
+<<<<<<< HEAD
 	ulong		ch_close_delay;	/* How long we should drop RTS/DTR for */
+=======
+	ulong		ch_close_delay;	/* How long we should
+					 * drop RTS/DTR for
+					 */
+>>>>>>> v4.9.227
 
 	ulong		ch_cpstime;	/* Time for CPS calculations    */
 
@@ -392,11 +498,23 @@ struct channel_t {
 
 	uint		ch_wopen;	/* Waiting for open process cnt */
 
+<<<<<<< HEAD
 	unsigned char		ch_mostat;	/* FEP output modem status      */
 	unsigned char		ch_mistat;	/* FEP input modem status       */
 
 	struct neo_uart_struct __iomem *ch_neo_uart;	/* Pointer to the "mapped" UART struct */
 	struct cls_uart_struct __iomem *ch_cls_uart;	/* Pointer to the "mapped" UART struct */
+=======
+	unsigned char		ch_mostat;	/* FEP output modem status */
+	unsigned char		ch_mistat;	/* FEP input modem status */
+
+	struct neo_uart_struct __iomem *ch_neo_uart;	/* Pointer to the
+							 * "mapped" UART struct
+							 */
+	struct cls_uart_struct __iomem *ch_cls_uart;	/* Pointer to the
+							 * "mapped" UART struct
+							 */
+>>>>>>> v4.9.227
 
 	unsigned char	ch_cached_lsr;	/* Cached value of the LSR register */
 
@@ -420,10 +538,20 @@ struct channel_t {
 
 	unsigned char		ch_r_watermark;	/* Receive Watermark */
 
+<<<<<<< HEAD
 	ulong		ch_stop_sending_break;	/* Time we should STOP sending a break */
 
 	uint		ch_stops_sent;	/* How many times I have sent a stop character
 					 * to try to stop the other guy sending.
+=======
+	ulong		ch_stop_sending_break;	/* Time we should STOP
+						 * sending a break
+						 */
+
+	uint		ch_stops_sent;	/* How many times I have sent a stop
+					 * character to try to stop the other
+					 * guy sending.
+>>>>>>> v4.9.227
 					 */
 	ulong		ch_err_parity;	/* Count of parity errors on channel */
 	ulong		ch_err_frame;	/* Count of framing errors on channel */
@@ -433,25 +561,32 @@ struct channel_t {
 	ulong		ch_xon_sends;	/* Count of xons transmitted */
 	ulong		ch_xoff_sends;	/* Count of xoffs transmitted */
 
+<<<<<<< HEAD
 	ulong		ch_intr_modem;	/* Count of interrupts */
 	ulong		ch_intr_tx;	/* Count of interrupts */
 	ulong		ch_intr_rx;	/* Count of interrupts */
 
 
+=======
+>>>>>>> v4.9.227
 	/* /proc/<board>/<channel> entries */
 	struct proc_dir_entry *proc_entry_pointer;
 	struct dgnc_proc_entry *dgnc_channel_table;
 
+<<<<<<< HEAD
 	uint ch_sniff_in;
 	uint ch_sniff_out;
 	char *ch_sniff_buf;		/* Sniff buffer for proc */
 	ulong ch_sniff_flags;		/* Channel flags		*/
 	wait_queue_head_t ch_sniff_wait;
+=======
+>>>>>>> v4.9.227
 };
 
 /*
  * Our Global Variables.
  */
+<<<<<<< HEAD
 extern uint		dgnc_Major;		/* Our driver/mgmt major	*/
 extern int		dgnc_debug;		/* Debug variable		*/
 extern int		dgnc_rawreadok;		/* Set if user wants rawreads	*/
@@ -461,5 +596,15 @@ extern spinlock_t	dgnc_global_lock;	/* Driver global spinlock	*/
 extern uint		dgnc_NumBoards;		/* Total number of boards	*/
 extern struct dgnc_board	*dgnc_Board[MAXBOARDS];	/* Array of board structs	*/
 extern char		*dgnc_state_text[];	/* Array of state text		*/
+=======
+extern uint		dgnc_major;		/* Our driver/mgmt major */
+extern int		dgnc_poll_tick;		/* Poll interval - 20 ms */
+extern spinlock_t	dgnc_global_lock;	/* Driver global spinlock */
+extern spinlock_t	dgnc_poll_lock;		/* Poll scheduling lock */
+extern uint		dgnc_num_boards;	/* Total number of boards */
+extern struct dgnc_board	*dgnc_board[MAXBOARDS];	/* Array of board
+							 * structs
+							 */
+>>>>>>> v4.9.227
 
 #endif

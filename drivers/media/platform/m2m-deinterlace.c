@@ -127,7 +127,11 @@ static struct deinterlace_fmt *find_format(struct v4l2_format *f)
 
 struct deinterlace_dev {
 	struct v4l2_device	v4l2_dev;
+<<<<<<< HEAD
 	struct video_device	*vfd;
+=======
+	struct video_device	vfd;
+>>>>>>> v4.9.227
 
 	atomic_t		busy;
 	struct mutex		dev_mutex;
@@ -136,7 +140,10 @@ struct deinterlace_dev {
 	struct dma_chan		*dma_chan;
 
 	struct v4l2_m2m_dev	*m2m_dev;
+<<<<<<< HEAD
 	struct vb2_alloc_ctx	*alloc_ctx;
+=======
+>>>>>>> v4.9.227
 };
 
 struct deinterlace_ctx {
@@ -200,18 +207,30 @@ static void dma_callback(void *data)
 {
 	struct deinterlace_ctx *curr_ctx = data;
 	struct deinterlace_dev *pcdev = curr_ctx->dev;
+<<<<<<< HEAD
 	struct vb2_buffer *src_vb, *dst_vb;
+=======
+	struct vb2_v4l2_buffer *src_vb, *dst_vb;
+>>>>>>> v4.9.227
 
 	atomic_set(&pcdev->busy, 0);
 
 	src_vb = v4l2_m2m_src_buf_remove(curr_ctx->m2m_ctx);
 	dst_vb = v4l2_m2m_dst_buf_remove(curr_ctx->m2m_ctx);
 
+<<<<<<< HEAD
 	dst_vb->v4l2_buf.timestamp = src_vb->v4l2_buf.timestamp;
 	dst_vb->v4l2_buf.flags &= ~V4L2_BUF_FLAG_TSTAMP_SRC_MASK;
 	dst_vb->v4l2_buf.flags |=
 		src_vb->v4l2_buf.flags & V4L2_BUF_FLAG_TSTAMP_SRC_MASK;
 	dst_vb->v4l2_buf.timecode = src_vb->v4l2_buf.timecode;
+=======
+	dst_vb->vb2_buf.timestamp = src_vb->vb2_buf.timestamp;
+	dst_vb->flags &= ~V4L2_BUF_FLAG_TSTAMP_SRC_MASK;
+	dst_vb->flags |=
+		src_vb->flags & V4L2_BUF_FLAG_TSTAMP_SRC_MASK;
+	dst_vb->timecode = src_vb->timecode;
+>>>>>>> v4.9.227
 
 	v4l2_m2m_buf_done(src_vb, VB2_BUF_STATE_DONE);
 	v4l2_m2m_buf_done(dst_vb, VB2_BUF_STATE_DONE);
@@ -225,7 +244,11 @@ static void deinterlace_issue_dma(struct deinterlace_ctx *ctx, int op,
 				  int do_callback)
 {
 	struct deinterlace_q_data *s_q_data;
+<<<<<<< HEAD
 	struct vb2_buffer *src_buf, *dst_buf;
+=======
+	struct vb2_v4l2_buffer *src_buf, *dst_buf;
+>>>>>>> v4.9.227
 	struct deinterlace_dev *pcdev = ctx->dev;
 	struct dma_chan *chan = pcdev->dma_chan;
 	struct dma_device *dmadev = chan->device;
@@ -243,8 +266,14 @@ static void deinterlace_issue_dma(struct deinterlace_ctx *ctx, int op,
 	s_height = s_q_data->height;
 	s_size = s_width * s_height;
 
+<<<<<<< HEAD
 	p_in = (dma_addr_t)vb2_dma_contig_plane_dma_addr(src_buf, 0);
 	p_out = (dma_addr_t)vb2_dma_contig_plane_dma_addr(dst_buf, 0);
+=======
+	p_in = (dma_addr_t)vb2_dma_contig_plane_dma_addr(&src_buf->vb2_buf, 0);
+	p_out = (dma_addr_t)vb2_dma_contig_plane_dma_addr(&dst_buf->vb2_buf,
+							  0);
+>>>>>>> v4.9.227
 	if (!p_in || !p_out) {
 		v4l2_err(&pcdev->v4l2_dev,
 			 "Acquiring kernel pointers to buffers failed\n");
@@ -797,9 +826,14 @@ struct vb2_dc_conf {
 };
 
 static int deinterlace_queue_setup(struct vb2_queue *vq,
+<<<<<<< HEAD
 				const struct v4l2_format *fmt,
 				unsigned int *nbuffers, unsigned int *nplanes,
 				unsigned int sizes[], void *alloc_ctxs[])
+=======
+				unsigned int *nbuffers, unsigned int *nplanes,
+				unsigned int sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	struct deinterlace_ctx *ctx = vb2_get_drv_priv(vq);
 	struct deinterlace_q_data *q_data;
@@ -820,8 +854,11 @@ static int deinterlace_queue_setup(struct vb2_queue *vq,
 	*nbuffers = count;
 	sizes[0] = size;
 
+<<<<<<< HEAD
 	alloc_ctxs[0] = ctx->dev->alloc_ctx;
 
+=======
+>>>>>>> v4.9.227
 	dprintk(ctx->dev, "get %d buffer(s) of size %d each.\n", count, size);
 
 	return 0;
@@ -849,11 +886,21 @@ static int deinterlace_buf_prepare(struct vb2_buffer *vb)
 
 static void deinterlace_buf_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct deinterlace_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
 	v4l2_m2m_buf_queue(ctx->m2m_ctx, vb);
 }
 
 static struct vb2_ops deinterlace_qops = {
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct deinterlace_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
+
+	v4l2_m2m_buf_queue(ctx->m2m_ctx, vbuf);
+}
+
+static const struct vb2_ops deinterlace_qops = {
+>>>>>>> v4.9.227
 	.queue_setup	 = deinterlace_queue_setup,
 	.buf_prepare	 = deinterlace_buf_prepare,
 	.buf_queue	 = deinterlace_buf_queue,
@@ -872,6 +919,10 @@ static int queue_init(void *priv, struct vb2_queue *src_vq,
 	src_vq->ops = &deinterlace_qops;
 	src_vq->mem_ops = &vb2_dma_contig_memops;
 	src_vq->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
+<<<<<<< HEAD
+=======
+	src_vq->dev = ctx->dev->v4l2_dev.dev;
+>>>>>>> v4.9.227
 	q_data[V4L2_M2M_SRC].fmt = &formats[0];
 	q_data[V4L2_M2M_SRC].width = 640;
 	q_data[V4L2_M2M_SRC].height = 480;
@@ -889,6 +940,10 @@ static int queue_init(void *priv, struct vb2_queue *src_vq,
 	dst_vq->ops = &deinterlace_qops;
 	dst_vq->mem_ops = &vb2_dma_contig_memops;
 	dst_vq->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
+<<<<<<< HEAD
+=======
+	dst_vq->dev = ctx->dev->v4l2_dev.dev;
+>>>>>>> v4.9.227
 	q_data[V4L2_M2M_DST].fmt = &formats[0];
 	q_data[V4L2_M2M_DST].width = 640;
 	q_data[V4L2_M2M_DST].height = 480;
@@ -983,7 +1038,11 @@ static struct video_device deinterlace_videodev = {
 	.fops		= &deinterlace_fops,
 	.ioctl_ops	= &deinterlace_ioctl_ops,
 	.minor		= -1,
+<<<<<<< HEAD
 	.release	= video_device_release,
+=======
+	.release	= video_device_release_empty,
+>>>>>>> v4.9.227
 	.vfl_dir	= VFL_DIR_M2M,
 };
 
@@ -1015,7 +1074,11 @@ static int deinterlace_probe(struct platform_device *pdev)
 		return -ENODEV;
 
 	if (!dma_has_cap(DMA_INTERLEAVE, pcdev->dma_chan->device->cap_mask)) {
+<<<<<<< HEAD
 		v4l2_err(&pcdev->v4l2_dev, "DMA does not support INTERLEAVE\n");
+=======
+		dev_err(&pdev->dev, "DMA does not support INTERLEAVE\n");
+>>>>>>> v4.9.227
 		goto rel_dma;
 	}
 
@@ -1026,6 +1089,7 @@ static int deinterlace_probe(struct platform_device *pdev)
 	atomic_set(&pcdev->busy, 0);
 	mutex_init(&pcdev->dev_mutex);
 
+<<<<<<< HEAD
 	vfd = video_device_alloc();
 	if (!vfd) {
 		v4l2_err(&pcdev->v4l2_dev, "Failed to allocate video device\n");
@@ -1033,6 +1097,9 @@ static int deinterlace_probe(struct platform_device *pdev)
 		goto unreg_dev;
 	}
 
+=======
+	vfd = &pcdev->vfd;
+>>>>>>> v4.9.227
 	*vfd = deinterlace_videodev;
 	vfd->lock = &pcdev->dev_mutex;
 	vfd->v4l2_dev = &pcdev->v4l2_dev;
@@ -1040,17 +1107,25 @@ static int deinterlace_probe(struct platform_device *pdev)
 	ret = video_register_device(vfd, VFL_TYPE_GRABBER, 0);
 	if (ret) {
 		v4l2_err(&pcdev->v4l2_dev, "Failed to register video device\n");
+<<<<<<< HEAD
 		goto rel_vdev;
+=======
+		goto unreg_dev;
+>>>>>>> v4.9.227
 	}
 
 	video_set_drvdata(vfd, pcdev);
 	snprintf(vfd->name, sizeof(vfd->name), "%s", deinterlace_videodev.name);
+<<<<<<< HEAD
 	pcdev->vfd = vfd;
+=======
+>>>>>>> v4.9.227
 	v4l2_info(&pcdev->v4l2_dev, MEM2MEM_TEST_MODULE_NAME
 			" Device registered as /dev/video%d\n", vfd->num);
 
 	platform_set_drvdata(pdev, pcdev);
 
+<<<<<<< HEAD
 	pcdev->alloc_ctx = vb2_dma_contig_init_ctx(&pdev->dev);
 	if (IS_ERR(pcdev->alloc_ctx)) {
 		v4l2_err(&pcdev->v4l2_dev, "Failed to alloc vb2 context\n");
@@ -1058,6 +1133,8 @@ static int deinterlace_probe(struct platform_device *pdev)
 		goto err_ctx;
 	}
 
+=======
+>>>>>>> v4.9.227
 	pcdev->m2m_dev = v4l2_m2m_init(&m2m_ops);
 	if (IS_ERR(pcdev->m2m_dev)) {
 		v4l2_err(&pcdev->v4l2_dev, "Failed to init mem2mem device\n");
@@ -1067,6 +1144,7 @@ static int deinterlace_probe(struct platform_device *pdev)
 
 	return 0;
 
+<<<<<<< HEAD
 	v4l2_m2m_release(pcdev->m2m_dev);
 err_m2m:
 	video_unregister_device(pcdev->vfd);
@@ -1074,6 +1152,10 @@ err_ctx:
 	vb2_dma_contig_cleanup_ctx(pcdev->alloc_ctx);
 rel_vdev:
 	video_device_release(vfd);
+=======
+err_m2m:
+	video_unregister_device(&pcdev->vfd);
+>>>>>>> v4.9.227
 unreg_dev:
 	v4l2_device_unregister(&pcdev->v4l2_dev);
 rel_dma:
@@ -1088,9 +1170,14 @@ static int deinterlace_remove(struct platform_device *pdev)
 
 	v4l2_info(&pcdev->v4l2_dev, "Removing " MEM2MEM_TEST_MODULE_NAME);
 	v4l2_m2m_release(pcdev->m2m_dev);
+<<<<<<< HEAD
 	video_unregister_device(pcdev->vfd);
 	v4l2_device_unregister(&pcdev->v4l2_dev);
 	vb2_dma_contig_cleanup_ctx(pcdev->alloc_ctx);
+=======
+	video_unregister_device(&pcdev->vfd);
+	v4l2_device_unregister(&pcdev->v4l2_dev);
+>>>>>>> v4.9.227
 	dma_release_channel(pcdev->dma_chan);
 
 	return 0;
@@ -1101,7 +1188,10 @@ static struct platform_driver deinterlace_pdrv = {
 	.remove		= deinterlace_remove,
 	.driver		= {
 		.name	= MEM2MEM_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(deinterlace_pdrv);

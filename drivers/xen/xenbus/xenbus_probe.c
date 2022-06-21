@@ -75,7 +75,11 @@ EXPORT_SYMBOL_GPL(xen_store_interface);
 enum xenstore_init xen_store_domain_type;
 EXPORT_SYMBOL_GPL(xen_store_domain_type);
 
+<<<<<<< HEAD
 static unsigned long xen_store_mfn;
+=======
+static unsigned long xen_store_gfn;
+>>>>>>> v4.9.227
 
 static BLOCKING_NOTIFIER_HEAD(xenstore_chain);
 
@@ -714,9 +718,13 @@ static int __init xenstored_local_init(void)
 	if (!page)
 		goto out_err;
 
+<<<<<<< HEAD
 	xen_store_mfn = xen_start_info->store_mfn =
 		pfn_to_mfn(virt_to_phys((void *)page) >>
 			   PAGE_SHIFT);
+=======
+	xen_store_gfn = xen_start_info->store_mfn = virt_to_gfn((void *)page);
+>>>>>>> v4.9.227
 
 	/* Next allocate a local port which xenstored can bind to */
 	alloc_unbound.dom        = DOMID_SELF;
@@ -745,7 +753,11 @@ static int xenbus_resume_cb(struct notifier_block *nb,
 	int err = 0;
 
 	if (xen_hvm_domain()) {
+<<<<<<< HEAD
 		uint64_t v;
+=======
+		uint64_t v = 0;
+>>>>>>> v4.9.227
 
 		err = hvm_get_parameter(HVM_PARAM_STORE_EVTCHN, &v);
 		if (!err && v)
@@ -790,12 +802,21 @@ static int __init xenbus_init(void)
 		err = xenstored_local_init();
 		if (err)
 			goto out_error;
+<<<<<<< HEAD
 		xen_store_interface = mfn_to_virt(xen_store_mfn);
 		break;
 	case XS_PV:
 		xen_store_evtchn = xen_start_info->store_evtchn;
 		xen_store_mfn = xen_start_info->store_mfn;
 		xen_store_interface = mfn_to_virt(xen_store_mfn);
+=======
+		xen_store_interface = gfn_to_virt(xen_store_gfn);
+		break;
+	case XS_PV:
+		xen_store_evtchn = xen_start_info->store_evtchn;
+		xen_store_gfn = xen_start_info->store_mfn;
+		xen_store_interface = gfn_to_virt(xen_store_gfn);
+>>>>>>> v4.9.227
 		break;
 	case XS_HVM:
 		err = hvm_get_parameter(HVM_PARAM_STORE_EVTCHN, &v);
@@ -805,9 +826,16 @@ static int __init xenbus_init(void)
 		err = hvm_get_parameter(HVM_PARAM_STORE_PFN, &v);
 		if (err)
 			goto out_error;
+<<<<<<< HEAD
 		xen_store_mfn = (unsigned long)v;
 		xen_store_interface =
 			xen_remap(xen_store_mfn << PAGE_SHIFT, PAGE_SIZE);
+=======
+		xen_store_gfn = (unsigned long)v;
+		xen_store_interface =
+			xen_remap(xen_store_gfn << XEN_PAGE_SHIFT,
+				  XEN_PAGE_SIZE);
+>>>>>>> v4.9.227
 		break;
 	default:
 		pr_warn("Xenstore state unknown\n");

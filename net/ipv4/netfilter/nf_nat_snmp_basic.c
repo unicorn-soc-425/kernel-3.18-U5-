@@ -1048,7 +1048,11 @@ static int snmp_parse_mangle(unsigned char *msg,
 	if (!asn1_uint_decode (&ctx, end, &vers))
 		return 0;
 	if (debug > 1)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "bsalg: snmp version: %u\n", vers + 1);
+=======
+		pr_debug("bsalg: snmp version: %u\n", vers + 1);
+>>>>>>> v4.9.227
 	if (vers > 1)
 		return 1;
 
@@ -1064,10 +1068,17 @@ static int snmp_parse_mangle(unsigned char *msg,
 	if (debug > 1) {
 		unsigned int i;
 
+<<<<<<< HEAD
 		printk(KERN_DEBUG "bsalg: community: ");
 		for (i = 0; i < comm.len; i++)
 			printk("%c", comm.data[i]);
 		printk("\n");
+=======
+		pr_debug("bsalg: community: ");
+		for (i = 0; i < comm.len; i++)
+			pr_cont("%c", comm.data[i]);
+		pr_cont("\n");
+>>>>>>> v4.9.227
 	}
 	kfree(comm.data);
 
@@ -1091,9 +1102,15 @@ static int snmp_parse_mangle(unsigned char *msg,
 		};
 
 		if (pdutype > SNMP_PDU_TRAP2)
+<<<<<<< HEAD
 			printk(KERN_DEBUG "bsalg: bad pdu type %u\n", pdutype);
 		else
 			printk(KERN_DEBUG "bsalg: pdu: %s\n", pdus[pdutype]);
+=======
+			pr_debug("bsalg: bad pdu type %u\n", pdutype);
+		else
+			pr_debug("bsalg: pdu: %s\n", pdus[pdutype]);
+>>>>>>> v4.9.227
 	}
 	if (pdutype != SNMP_PDU_RESPONSE &&
 	    pdutype != SNMP_PDU_TRAP1 && pdutype != SNMP_PDU_TRAP2)
@@ -1119,7 +1136,11 @@ static int snmp_parse_mangle(unsigned char *msg,
 			return 0;
 
 		if (debug > 1)
+<<<<<<< HEAD
 			printk(KERN_DEBUG "bsalg: request: id=0x%lx error_status=%u "
+=======
+			pr_debug("bsalg: request: id=0x%lx error_status=%u "
+>>>>>>> v4.9.227
 			"error_index=%u\n", req.id, req.error_status,
 			req.error_index);
 	}
@@ -1145,6 +1166,7 @@ static int snmp_parse_mangle(unsigned char *msg,
 		}
 
 		if (debug > 1) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG "bsalg: object: ");
 			for (i = 0; i < obj->id_len; i++) {
 				if (i > 0)
@@ -1152,11 +1174,24 @@ static int snmp_parse_mangle(unsigned char *msg,
 				printk("%lu", obj->id[i]);
 			}
 			printk(": type=%u\n", obj->type);
+=======
+			pr_debug("bsalg: object: ");
+			for (i = 0; i < obj->id_len; i++) {
+				if (i > 0)
+					pr_cont(".");
+				pr_cont("%lu", obj->id[i]);
+			}
+			pr_cont(": type=%u\n", obj->type);
+>>>>>>> v4.9.227
 
 		}
 
 		if (obj->type == SNMP_IPADDR)
+<<<<<<< HEAD
 			mangle_address(ctx.begin, ctx.pointer - 4 , map, check);
+=======
+			mangle_address(ctx.begin, ctx.pointer - 4, map, check);
+>>>>>>> v4.9.227
 
 		kfree(obj->id);
 		kfree(obj);

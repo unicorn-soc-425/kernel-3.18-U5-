@@ -21,6 +21,10 @@
 #include <linux/sched.h>
 #include <linux/cpumask.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip/mips-gic.h>
+>>>>>>> v4.9.227
 #include <linux/compiler.h>
 #include <linux/smp.h>
 
@@ -34,7 +38,10 @@
 #include <asm/mipsregs.h>
 #include <asm/mipsmtregs.h>
 #include <asm/mips_mt.h>
+<<<<<<< HEAD
 #include <asm/gic.h>
+=======
+>>>>>>> v4.9.227
 
 static void __init smvp_copy_vpe_config(void)
 {
@@ -119,9 +126,15 @@ static void vsmp_send_ipi_single(int cpu, unsigned int action)
 	unsigned long flags;
 	int vpflags;
 
+<<<<<<< HEAD
 #ifdef CONFIG_IRQ_GIC
 	if (gic_present) {
 		gic_send_ipi_single(cpu, action);
+=======
+#ifdef CONFIG_MIPS_GIC
+	if (gic_present) {
+		mips_smp_send_ipi_single(cpu, action);
+>>>>>>> v4.9.227
 		return;
 	}
 #endif
@@ -158,10 +171,18 @@ static void vsmp_send_ipi_mask(const struct cpumask *mask, unsigned int action)
 
 static void vsmp_init_secondary(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_IRQ_GIC
 	/* This is Malta specific: IPI,performance and timer interrupts */
 	if (gic_present)
 		change_c0_status(ST0_IM, STATUSF_IP3 | STATUSF_IP4 |
+=======
+#ifdef CONFIG_MIPS_GIC
+	/* This is Malta specific: IPI,performance and timer interrupts */
+	if (gic_present)
+		change_c0_status(ST0_IM, STATUSF_IP2 | STATUSF_IP3 |
+					 STATUSF_IP4 | STATUSF_IP5 |
+>>>>>>> v4.9.227
 					 STATUSF_IP6 | STATUSF_IP7);
 	else
 #endif
@@ -177,7 +198,11 @@ static void vsmp_smp_finish(void)
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/* If we have an FPU, enroll ourselves in the FPU-full mask */
 	if (cpu_has_fpu)
+<<<<<<< HEAD
 		cpu_set(smp_processor_id(), mt_fpu_cpumask);
+=======
+		cpumask_set_cpu(smp_processor_id(), &mt_fpu_cpumask);
+>>>>>>> v4.9.227
 #endif /* CONFIG_MIPS_MT_FPAFF */
 
 	local_irq_enable();
@@ -238,7 +263,11 @@ static void __init vsmp_smp_setup(void)
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/* If we have an FPU, enroll ourselves in the FPU-full mask */
 	if (cpu_has_fpu)
+<<<<<<< HEAD
 		cpu_set(0, mt_fpu_cpumask);
+=======
+		cpumask_set_cpu(0, &mt_fpu_cpumask);
+>>>>>>> v4.9.227
 #endif /* CONFIG_MIPS_MT_FPAFF */
 	if (!cpu_has_mipsmt)
 		return;
@@ -288,6 +317,7 @@ struct plat_smp_ops vsmp_smp_ops = {
 	.prepare_cpus		= vsmp_prepare_cpus,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 static int proc_cpuinfo_chain_call(struct notifier_block *nfb,
 	unsigned long action_unused, void *data)
@@ -311,3 +341,5 @@ static int __init proc_cpuinfo_notifier_init(void)
 
 subsys_initcall(proc_cpuinfo_notifier_init);
 #endif
+=======
+>>>>>>> v4.9.227

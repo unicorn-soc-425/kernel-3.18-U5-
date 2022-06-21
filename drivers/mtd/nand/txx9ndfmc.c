@@ -63,7 +63,10 @@
 struct txx9ndfmc_priv {
 	struct platform_device *dev;
 	struct nand_chip chip;
+<<<<<<< HEAD
 	struct mtd_info mtd;
+=======
+>>>>>>> v4.9.227
 	int cs;
 	const char *mtdname;
 };
@@ -79,8 +82,13 @@ struct txx9ndfmc_drvdata {
 
 static struct platform_device *mtd_to_platdev(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
 	struct txx9ndfmc_priv *txx9_priv = chip->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+	struct txx9ndfmc_priv *txx9_priv = nand_get_controller_data(chip);
+>>>>>>> v4.9.227
 	return txx9_priv->dev;
 }
 
@@ -135,8 +143,13 @@ static void txx9ndfmc_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 static void txx9ndfmc_cmd_ctrl(struct mtd_info *mtd, int cmd,
 			       unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
 	struct txx9ndfmc_priv *txx9_priv = chip->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+	struct txx9ndfmc_priv *txx9_priv = nand_get_controller_data(chip);
+>>>>>>> v4.9.227
 	struct platform_device *dev = txx9_priv->dev;
 	struct txx9ndfmc_platform_data *plat = dev_get_platdata(&dev->dev);
 
@@ -175,7 +188,11 @@ static int txx9ndfmc_calculate_ecc(struct mtd_info *mtd, const uint8_t *dat,
 				   uint8_t *ecc_code)
 {
 	struct platform_device *dev = mtd_to_platdev(mtd);
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	int eccbytes;
 	u32 mcr = txx9ndfmc_read(dev, TXX9_NDFMCR);
 
@@ -195,7 +212,11 @@ static int txx9ndfmc_calculate_ecc(struct mtd_info *mtd, const uint8_t *dat,
 static int txx9ndfmc_correct_data(struct mtd_info *mtd, unsigned char *buf,
 		unsigned char *read_ecc, unsigned char *calc_ecc)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	int eccsize;
 	int corrected = 0;
 	int stat;
@@ -257,7 +278,11 @@ static void txx9ndfmc_initialize(struct platform_device *dev)
 
 static int txx9ndfmc_nand_scan(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	int ret;
 
 	ret = nand_scan_ident(mtd, 1, NULL);
@@ -304,8 +329,12 @@ static int __init txx9ndfmc_probe(struct platform_device *dev)
 	dev_info(&dev->dev, "CLK:%ldMHz HOLD:%d SPW:%d\n",
 		 (gbusclk + 500000) / 1000000, hold, spw);
 
+<<<<<<< HEAD
 	spin_lock_init(&drvdata->hw_control.lock);
 	init_waitqueue_head(&drvdata->hw_control.wq);
+=======
+	nand_hw_control_init(&drvdata->hw_control);
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(dev, drvdata);
 	txx9ndfmc_initialize(dev);
@@ -322,10 +351,15 @@ static int __init txx9ndfmc_probe(struct platform_device *dev)
 		if (!txx9_priv)
 			continue;
 		chip = &txx9_priv->chip;
+<<<<<<< HEAD
 		mtd = &txx9_priv->mtd;
 		mtd->owner = THIS_MODULE;
 
 		mtd->priv = chip;
+=======
+		mtd = nand_to_mtd(chip);
+		mtd->dev.parent = &dev->dev;
+>>>>>>> v4.9.227
 
 		chip->read_byte = txx9ndfmc_read_byte;
 		chip->read_buf = txx9ndfmc_read_buf;
@@ -343,7 +377,11 @@ static int __init txx9ndfmc_probe(struct platform_device *dev)
 		chip->chip_delay = 100;
 		chip->controller = &drvdata->hw_control;
 
+<<<<<<< HEAD
 		chip->priv = txx9_priv;
+=======
+		nand_set_controller_data(chip, txx9_priv);
+>>>>>>> v4.9.227
 		txx9_priv->dev = dev;
 
 		if (plat->ch_mask != 1) {
@@ -391,8 +429,13 @@ static int __exit txx9ndfmc_remove(struct platform_device *dev)
 
 		if (!mtd)
 			continue;
+<<<<<<< HEAD
 		chip = mtd->priv;
 		txx9_priv = chip->priv;
+=======
+		chip = mtd_to_nand(mtd);
+		txx9_priv = nand_get_controller_data(chip);
+>>>>>>> v4.9.227
 
 		nand_release(mtd);
 		kfree(txx9_priv->mtdname);
@@ -417,7 +460,10 @@ static struct platform_driver txx9ndfmc_driver = {
 	.resume		= txx9ndfmc_resume,
 	.driver		= {
 		.name	= "txx9ndfmc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

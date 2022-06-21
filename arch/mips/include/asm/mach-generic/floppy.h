@@ -115,11 +115,15 @@ static inline unsigned long fd_getfdaddr1(void)
 
 static inline unsigned long fd_dma_mem_alloc(unsigned long size)
 {
+<<<<<<< HEAD
 	unsigned long mem;
 
 	mem = __get_dma_pages(GFP_KERNEL, get_order(size));
 
 	return mem;
+=======
+	return __get_dma_pages(GFP_KERNEL, get_order(size));
+>>>>>>> v4.9.227
 }
 
 static inline void fd_dma_mem_free(unsigned long addr, unsigned long size)

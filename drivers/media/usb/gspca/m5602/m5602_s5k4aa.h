@@ -85,6 +85,7 @@ static const struct m5602_sensor s5k4aa = {
 	.disconnect = s5k4aa_disconnect,
 };
 
+<<<<<<< HEAD
 static const unsigned char preinit_s5k4aa[][4] = {
 	{BRIDGE, M5602_XB_MCU_CLK_DIV, 0x02, 0x00},
 	{BRIDGE, M5602_XB_MCU_CLK_CTRL, 0xb0, 0x00},
@@ -282,4 +283,6 @@ static const unsigned char SXGA_s5k4aa[][4] = {
 	{SENSOR, S5K4AA_PAGE_MAP, 0x02, 0x00},
 	{SENSOR, 0x02, 0x0e, 0x00},
 };
+=======
+>>>>>>> v4.9.227
 #endif

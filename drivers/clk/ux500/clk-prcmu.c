@@ -8,7 +8,10 @@
  */
 
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
 #include <linux/clk-private.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/mfd/dbx500-prcmu.h>
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -44,7 +47,11 @@ static void clk_prcmu_unprepare(struct clk_hw *hw)
 	struct clk_prcmu *clk = to_clk_prcmu(hw);
 	if (prcmu_request_clock(clk->cg_sel, false))
 		pr_err("clk_prcmu: %s failed to disable %s.\n", __func__,
+<<<<<<< HEAD
 			__clk_get_name(hw->clk));
+=======
+			clk_hw_get_name(hw));
+>>>>>>> v4.9.227
 	else
 		clk->is_prepared = 0;
 }
@@ -102,11 +109,19 @@ static int clk_prcmu_opp_prepare(struct clk_hw *hw)
 
 	if (!clk->opp_requested) {
 		err = prcmu_qos_add_requirement(PRCMU_QOS_APE_OPP,
+<<<<<<< HEAD
 						(char *)__clk_get_name(hw->clk),
 						100);
 		if (err) {
 			pr_err("clk_prcmu: %s fail req APE OPP for %s.\n",
 				__func__, __clk_get_name(hw->clk));
+=======
+						(char *)clk_hw_get_name(hw),
+						100);
+		if (err) {
+			pr_err("clk_prcmu: %s fail req APE OPP for %s.\n",
+				__func__, clk_hw_get_name(hw));
+>>>>>>> v4.9.227
 			return err;
 		}
 		clk->opp_requested = 1;
@@ -115,7 +130,11 @@ static int clk_prcmu_opp_prepare(struct clk_hw *hw)
 	err = prcmu_request_clock(clk->cg_sel, true);
 	if (err) {
 		prcmu_qos_remove_requirement(PRCMU_QOS_APE_OPP,
+<<<<<<< HEAD
 					(char *)__clk_get_name(hw->clk));
+=======
+					(char *)clk_hw_get_name(hw));
+>>>>>>> v4.9.227
 		clk->opp_requested = 0;
 		return err;
 	}
@@ -130,13 +149,21 @@ static void clk_prcmu_opp_unprepare(struct clk_hw *hw)
 
 	if (prcmu_request_clock(clk->cg_sel, false)) {
 		pr_err("clk_prcmu: %s failed to disable %s.\n", __func__,
+<<<<<<< HEAD
 			__clk_get_name(hw->clk));
+=======
+			clk_hw_get_name(hw));
+>>>>>>> v4.9.227
 		return;
 	}
 
 	if (clk->opp_requested) {
 		prcmu_qos_remove_requirement(PRCMU_QOS_APE_OPP,
+<<<<<<< HEAD
 					(char *)__clk_get_name(hw->clk));
+=======
+					(char *)clk_hw_get_name(hw));
+>>>>>>> v4.9.227
 		clk->opp_requested = 0;
 	}
 
@@ -152,7 +179,11 @@ static int clk_prcmu_opp_volt_prepare(struct clk_hw *hw)
 		err = prcmu_request_ape_opp_100_voltage(true);
 		if (err) {
 			pr_err("clk_prcmu: %s fail req APE OPP VOLT for %s.\n",
+<<<<<<< HEAD
 				__func__, __clk_get_name(hw->clk));
+=======
+				__func__, clk_hw_get_name(hw));
+>>>>>>> v4.9.227
 			return err;
 		}
 		clk->opp_requested = 1;
@@ -175,7 +206,11 @@ static void clk_prcmu_opp_volt_unprepare(struct clk_hw *hw)
 
 	if (prcmu_request_clock(clk->cg_sel, false)) {
 		pr_err("clk_prcmu: %s failed to disable %s.\n", __func__,
+<<<<<<< HEAD
 			__clk_get_name(hw->clk));
+=======
+			clk_hw_get_name(hw));
+>>>>>>> v4.9.227
 		return;
 	}
 

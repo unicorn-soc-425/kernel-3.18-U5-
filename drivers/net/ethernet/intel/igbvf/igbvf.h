@@ -13,8 +13,12 @@
   more details.
 
   You should have received a copy of the GNU General Public License along with
+<<<<<<< HEAD
   this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+  this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> v4.9.227
 
   The full GNU General Public License is included in this distribution in
   the file called "COPYING".
@@ -43,10 +47,17 @@ struct igbvf_info;
 struct igbvf_adapter;
 
 /* Interrupt defines */
+<<<<<<< HEAD
 #define IGBVF_START_ITR                    488 /* ~8000 ints/sec */
 #define IGBVF_4K_ITR                       980
 #define IGBVF_20K_ITR                      196
 #define IGBVF_70K_ITR                       56
+=======
+#define IGBVF_START_ITR		488 /* ~8000 ints/sec */
+#define IGBVF_4K_ITR		980
+#define IGBVF_20K_ITR		196
+#define IGBVF_70K_ITR		56
+>>>>>>> v4.9.227
 
 enum latency_range {
 	lowest_latency = 0,
@@ -55,6 +66,7 @@ enum latency_range {
 	latency_invalid = 255
 };
 
+<<<<<<< HEAD
 
 /* Interrupt modes, as used by the IntMode parameter */
 #define IGBVF_INT_MODE_LEGACY           0
@@ -105,6 +117,57 @@ enum latency_range {
 
 /* Number of packet split data buffers (not including the header buffer) */
 #define PS_PAGE_BUFFERS                 (MAX_PS_BUFFERS - 1)
+=======
+/* Interrupt modes, as used by the IntMode parameter */
+#define IGBVF_INT_MODE_LEGACY	0
+#define IGBVF_INT_MODE_MSI	1
+#define IGBVF_INT_MODE_MSIX	2
+
+/* Tx/Rx descriptor defines */
+#define IGBVF_DEFAULT_TXD	256
+#define IGBVF_MAX_TXD		4096
+#define IGBVF_MIN_TXD		80
+
+#define IGBVF_DEFAULT_RXD	256
+#define IGBVF_MAX_RXD		4096
+#define IGBVF_MIN_RXD		80
+
+#define IGBVF_MIN_ITR_USECS	10 /* 100000 irq/sec */
+#define IGBVF_MAX_ITR_USECS	10000 /* 100    irq/sec */
+
+/* RX descriptor control thresholds.
+ * PTHRESH - MAC will consider prefetch if it has fewer than this number of
+ *	   descriptors available in its onboard memory.
+ *	   Setting this to 0 disables RX descriptor prefetch.
+ * HTHRESH - MAC will only prefetch if there are at least this many descriptors
+ *	   available in host memory.
+ *	   If PTHRESH is 0, this should also be 0.
+ * WTHRESH - RX descriptor writeback threshold - MAC will delay writing back
+ *	   descriptors until either it has this many to write back, or the
+ *	   ITR timer expires.
+ */
+#define IGBVF_RX_PTHRESH	16
+#define IGBVF_RX_HTHRESH	8
+#define IGBVF_RX_WTHRESH	1
+
+/* this is the size past which hardware will drop packets when setting LPE=0 */
+#define MAXIMUM_ETHERNET_VLAN_SIZE	1522
+
+#define IGBVF_FC_PAUSE_TIME	0x0680 /* 858 usec */
+
+/* How many Tx Descriptors do we need to call netif_wake_queue ? */
+#define IGBVF_TX_QUEUE_WAKE	32
+/* How many Rx Buffers do we bundle into one write to the hardware ? */
+#define IGBVF_RX_BUFFER_WRITE	16 /* Must be power of 2 */
+
+#define AUTO_ALL_MODES		0
+#define IGBVF_EEPROM_APME	0x0400
+
+#define IGBVF_MNG_VLAN_NONE	(-1)
+
+/* Number of packet split data buffers (not including the header buffer) */
+#define PS_PAGE_BUFFERS		(MAX_PS_BUFFERS - 1)
+>>>>>>> v4.9.227
 
 enum igbvf_boards {
 	board_vf,
@@ -116,8 +179,12 @@ struct igbvf_queue_stats {
 	u64 bytes;
 };
 
+<<<<<<< HEAD
 /*
  * wrappers around a pointer to a socket buffer,
+=======
+/* wrappers around a pointer to a socket buffer,
+>>>>>>> v4.9.227
  * so a DMA handle can be stored along with the buffer
  */
 struct igbvf_buffer {
@@ -148,10 +215,17 @@ union igbvf_desc {
 
 struct igbvf_ring {
 	struct igbvf_adapter *adapter;  /* backlink */
+<<<<<<< HEAD
 	union igbvf_desc *desc;         /* pointer to ring memory  */
 	dma_addr_t dma;                 /* phys address of ring    */
 	unsigned int size;              /* length of ring in bytes */
 	unsigned int count;             /* number of desc. in ring */
+=======
+	union igbvf_desc *desc;	/* pointer to ring memory  */
+	dma_addr_t dma;		/* phys address of ring    */
+	unsigned int size;	/* length of ring in bytes */
+	unsigned int count;	/* number of desc. in ring */
+>>>>>>> v4.9.227
 
 	u16 next_to_use;
 	u16 next_to_clean;
@@ -202,9 +276,13 @@ struct igbvf_adapter {
 	u32 requested_itr; /* ints/sec or adaptive */
 	u32 current_itr; /* Actual ITR register value, not ints/sec */
 
+<<<<<<< HEAD
 	/*
 	 * Tx
 	 */
+=======
+	/* Tx */
+>>>>>>> v4.9.227
 	struct igbvf_ring *tx_ring /* One per active queue */
 	____cacheline_aligned_in_smp;
 
@@ -226,9 +304,13 @@ struct igbvf_adapter {
 	u32 tx_fifo_size;
 	u32 tx_dma_failed;
 
+<<<<<<< HEAD
 	/*
 	 * Rx
 	 */
+=======
+	/* Rx */
+>>>>>>> v4.9.227
 	struct igbvf_ring *rx_ring;
 
 	u32 rx_int_delay;
@@ -249,7 +331,11 @@ struct igbvf_adapter {
 	struct net_device *netdev;
 	struct pci_dev *pdev;
 	struct net_device_stats net_stats;
+<<<<<<< HEAD
 	spinlock_t stats_lock;      /* prevent concurrent stats updates */
+=======
+	spinlock_t stats_lock; /* prevent concurrent stats updates */
+>>>>>>> v4.9.227
 
 	/* structs defined in e1000_hw.h */
 	struct e1000_hw hw;
@@ -286,6 +372,7 @@ struct igbvf_adapter {
 };
 
 struct igbvf_info {
+<<<<<<< HEAD
 	enum e1000_mac_type     mac;
 	unsigned int            flags;
 	u32                     pba;
@@ -296,6 +383,18 @@ struct igbvf_info {
 /* hardware capability, feature, and workaround flags */
 #define IGBVF_FLAG_RX_CSUM_DISABLED             (1 << 0)
 #define IGBVF_FLAG_RX_LB_VLAN_BSWAP		(1 << 1)
+=======
+	enum e1000_mac_type	mac;
+	unsigned int		flags;
+	u32			pba;
+	void			(*init_ops)(struct e1000_hw *);
+	s32			(*get_variants)(struct igbvf_adapter *);
+};
+
+/* hardware capability, feature, and workaround flags */
+#define IGBVF_FLAG_RX_CSUM_DISABLED	BIT(0)
+#define IGBVF_FLAG_RX_LB_VLAN_BSWAP	BIT(1)
+>>>>>>> v4.9.227
 #define IGBVF_RX_DESC_ADV(R, i)     \
 	(&((((R).desc))[i].rx_desc))
 #define IGBVF_TX_DESC_ADV(R, i)     \

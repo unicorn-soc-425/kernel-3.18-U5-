@@ -57,7 +57,12 @@ struct armada_private {
 	DECLARE_KFIFO(fb_unref, struct drm_framebuffer *, 8);
 	struct drm_fb_helper	*fbdev;
 	struct armada_crtc	*dcrtc[2];
+<<<<<<< HEAD
 	struct drm_mm		linear;
+=======
+	struct drm_mm		linear; /* protected by linear_lock */
+	struct mutex		linear_lock;
+>>>>>>> v4.9.227
 	struct drm_property	*csc_yuv_prop;
 	struct drm_property	*csc_rgb_prop;
 	struct drm_property	*colorkey_prop;

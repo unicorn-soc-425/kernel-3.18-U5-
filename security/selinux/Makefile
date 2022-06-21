@@ -2,6 +2,7 @@
 # Makefile for building the SELinux module as part of the kernel tree.
 #
 
+<<<<<<< HEAD
 # [ SEC_SELINUX_PORTING_COMMON
 ccflags-y := -Isecurity/selinux -Isecurity/selinux/include
 
@@ -24,6 +25,8 @@ endif
 endif
 # ] SEC_SELINUX_PORTING_COMMON
 
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_SECURITY_SELINUX) := selinux.o
 
 selinux-y := avc.o hooks.o selinuxfs.o netlink.o nlmsgtab.o netif.o \
@@ -35,6 +38,11 @@ selinux-$(CONFIG_SECURITY_NETWORK_XFRM) += xfrm.o
 
 selinux-$(CONFIG_NETLABEL) += netlabel.o
 
+<<<<<<< HEAD
+=======
+ccflags-y := -I$(srctree)/security/selinux -I$(srctree)/security/selinux/include
+
+>>>>>>> v4.9.227
 $(addprefix $(obj)/,$(selinux-y)): $(obj)/flask.h
 
 quiet_cmd_flask = GEN     $(obj)/flask.h $(obj)/av_permissions.h

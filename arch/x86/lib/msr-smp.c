@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/preempt.h>
 #include <linux/smp.h>
 #include <asm/msr.h>

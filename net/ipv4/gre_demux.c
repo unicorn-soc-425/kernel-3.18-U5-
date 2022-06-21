@@ -31,7 +31,10 @@
 #include <net/xfrm.h>
 
 static const struct gre_protocol __rcu *gre_proto[GREPROTO_MAX] __read_mostly;
+<<<<<<< HEAD
 static struct gre_cisco_protocol __rcu *gre_cisco_proto_list[GRE_IP_PROTO_MAX];
+=======
+>>>>>>> v4.9.227
 
 int gre_add_protocol(const struct gre_protocol *proto, u8 version)
 {
@@ -61,6 +64,7 @@ int gre_del_protocol(const struct gre_protocol *proto, u8 version)
 }
 EXPORT_SYMBOL_GPL(gre_del_protocol);
 
+<<<<<<< HEAD
 void gre_build_header(struct sk_buff *skb, const struct tnl_ptk_info *tpi,
 		      int hdr_len)
 {
@@ -97,43 +101,77 @@ EXPORT_SYMBOL_GPL(gre_build_header);
 
 static int parse_gre_header(struct sk_buff *skb, struct tnl_ptk_info *tpi,
 			    bool *csum_err)
+=======
+/* Fills in tpi and returns header length to be pulled.
+ * Note that caller must use pskb_may_pull() before pulling GRE header.
+ */
+int gre_parse_header(struct sk_buff *skb, struct tnl_ptk_info *tpi,
+		     bool *csum_err, __be16 proto, int nhs)
+>>>>>>> v4.9.227
 {
 	const struct gre_base_hdr *greh;
 	__be32 *options;
 	int hdr_len;
 
+<<<<<<< HEAD
 	if (unlikely(!pskb_may_pull(skb, sizeof(struct gre_base_hdr))))
 		return -EINVAL;
 
 	greh = (struct gre_base_hdr *)skb_transport_header(skb);
+=======
+	if (unlikely(!pskb_may_pull(skb, nhs + sizeof(struct gre_base_hdr))))
+		return -EINVAL;
+
+	greh = (struct gre_base_hdr *)(skb->data + nhs);
+>>>>>>> v4.9.227
 	if (unlikely(greh->flags & (GRE_VERSION | GRE_ROUTING)))
 		return -EINVAL;
 
 	tpi->flags = gre_flags_to_tnl_flags(greh->flags);
+<<<<<<< HEAD
 	hdr_len = ip_gre_calc_hlen(tpi->flags);
 
 	if (!pskb_may_pull(skb, hdr_len))
 		return -EINVAL;
 
 	greh = (struct gre_base_hdr *)skb_transport_header(skb);
+=======
+	hdr_len = gre_calc_hlen(tpi->flags);
+
+	if (!pskb_may_pull(skb, nhs + hdr_len))
+		return -EINVAL;
+
+	greh = (struct gre_base_hdr *)(skb->data + nhs);
+>>>>>>> v4.9.227
 	tpi->proto = greh->protocol;
 
 	options = (__be32 *)(greh + 1);
 	if (greh->flags & GRE_CSUM) {
+<<<<<<< HEAD
 		if (skb_checksum_simple_validate(skb)) {
+=======
+		if (!skb_checksum_simple_validate(skb)) {
+			skb_checksum_try_convert(skb, IPPROTO_GRE, 0,
+						 null_compute_pseudo);
+		} else if (csum_err) {
+>>>>>>> v4.9.227
 			*csum_err = true;
 			return -EINVAL;
 		}
 
+<<<<<<< HEAD
 		skb_checksum_try_convert(skb, IPPROTO_GRE, 0,
 					 null_compute_pseudo);
 
+=======
+>>>>>>> v4.9.227
 		options++;
 	}
 
 	if (greh->flags & GRE_KEY) {
 		tpi->key = *options;
 		options++;
+<<<<<<< HEAD
 	} else
 		tpi->key = 0;
 
@@ -251,6 +289,36 @@ static void gre_cisco_err(struct sk_buff *skb, u32 info)
 out:
 	rcu_read_unlock();
 }
+=======
+	} else {
+		tpi->key = 0;
+	}
+	if (unlikely(greh->flags & GRE_SEQ)) {
+		tpi->seq = *options;
+		options++;
+	} else {
+		tpi->seq = 0;
+	}
+	/* WCCP version 1 and 2 protocol decoding.
+	 * - Change protocol to IPv4/IPv6
+	 * - When dealing with WCCPv2, Skip extra 4 bytes in GRE header
+	 */
+	if (greh->flags == 0 && tpi->proto == htons(ETH_P_WCCP)) {
+		u8 _val, *val;
+
+		val = skb_header_pointer(skb, nhs + hdr_len,
+					 sizeof(_val), &_val);
+		if (!val)
+			return -EINVAL;
+		tpi->proto = proto;
+		if ((*val & 0xF0) != 0x40)
+			hdr_len += 4;
+	}
+	tpi->hdr_len = hdr_len;
+	return hdr_len;
+}
+EXPORT_SYMBOL(gre_parse_header);
+>>>>>>> v4.9.227
 
 static int gre_rcv(struct sk_buff *skb)
 {
@@ -302,6 +370,7 @@ static const struct net_protocol net_gre_protocol = {
 	.netns_ok    = 1,
 };
 
+<<<<<<< HEAD
 static const struct gre_protocol ipgre_protocol = {
 	.handler     = gre_cisco_rcv,
 	.err_handler = gre_cisco_err,
@@ -332,12 +401,15 @@ int gre_cisco_unregister(struct gre_cisco_protocol *del_proto)
 }
 EXPORT_SYMBOL_GPL(gre_cisco_unregister);
 
+=======
+>>>>>>> v4.9.227
 static int __init gre_init(void)
 {
 	pr_info("GRE over IPv4 demultiplexor driver\n");
 
 	if (inet_add_protocol(&net_gre_protocol, IPPROTO_GRE) < 0) {
 		pr_err("can't add protocol\n");
+<<<<<<< HEAD
 		goto err;
 	}
 
@@ -351,11 +423,19 @@ err_gre:
 	inet_del_protocol(&net_gre_protocol, IPPROTO_GRE);
 err:
 	return -EAGAIN;
+=======
+		return -EAGAIN;
+	}
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void __exit gre_exit(void)
 {
+<<<<<<< HEAD
 	gre_del_protocol(&ipgre_protocol, GREPROTO_CISCO);
+=======
+>>>>>>> v4.9.227
 	inet_del_protocol(&net_gre_protocol, IPPROTO_GRE);
 }
 

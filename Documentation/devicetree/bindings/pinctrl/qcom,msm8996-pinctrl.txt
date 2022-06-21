@@ -1,12 +1,23 @@
+<<<<<<< HEAD
 Qualcomm Technologies, Inc. MSM8996 TLMM block
 
 This binding describes the Top Level Mode Multiplexer block found in the
 MSM8960 platform.
+=======
+Qualcomm MSM8996 TLMM block
+
+This binding describes the Top Level Mode Multiplexer block found in the
+MSM8996 platform.
+>>>>>>> v4.9.227
 
 - compatible:
 	Usage: required
 	Value type: <string>
+<<<<<<< HEAD
 	Definition: must be "qcom,apq8084-pinctrl"
+=======
+	Definition: must be "qcom,msm8996-pinctrl"
+>>>>>>> v4.9.227
 
 - reg:
 	Usage: required
@@ -73,6 +84,7 @@ to specify in a pin configuration subnode:
 	Usage: required
 	Value type: <string-array>
 	Definition: List of gpio pins affected by the properties specified in
+<<<<<<< HEAD
 		    this subnode.  Valid pins are:
 		    gpio0-gpio149,
 		    sdc1_clk,
@@ -82,6 +94,17 @@ to specify in a pin configuration subnode:
 		    sdc2_cmd,
 		    sdc2_data
 		    sdc1_rclk,
+=======
+		    this subnode.
+
+		    Valid pins are:
+		      gpio0-gpio149
+		        Supports mux, bias and drive-strength
+
+		      sdc1_clk, sdc1_cmd, sdc1_data sdc2_clk, sdc2_cmd,
+		      sdc2_data sdc1_rclk
+		        Supports bias and drive-strength
+>>>>>>> v4.9.227
 
 - function:
 	Usage: required

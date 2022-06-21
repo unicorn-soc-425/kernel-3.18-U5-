@@ -14,6 +14,10 @@ enum {
 	FOU_ATTR_AF,				/* u8 */
 	FOU_ATTR_IPPROTO,			/* u8 */
 	FOU_ATTR_TYPE,				/* u8 */
+<<<<<<< HEAD
+=======
+	FOU_ATTR_REMCSUM_NOPARTIAL,		/* flag */
+>>>>>>> v4.9.227
 
 	__FOU_ATTR_MAX,
 };
@@ -24,6 +28,10 @@ enum {
 	FOU_CMD_UNSPEC,
 	FOU_CMD_ADD,
 	FOU_CMD_DEL,
+<<<<<<< HEAD
+=======
+	FOU_CMD_GET,
+>>>>>>> v4.9.227
 
 	__FOU_CMD_MAX,
 };

@@ -602,7 +602,11 @@ void pcibios_fixup_bus(struct pci_bus *bus)
 {
 	struct pci_dev *dev;
 	int i, has_io, has_mem;
+<<<<<<< HEAD
 	unsigned int cmd;
+=======
+	unsigned int cmd = 0;
+>>>>>>> v4.9.227
 	struct linux_pcic *pcic;
 	/* struct linux_pbm_info* pbm = &pcic->pbm; */
 	int node;

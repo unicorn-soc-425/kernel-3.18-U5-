@@ -23,6 +23,7 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 struct regmap_mmio_context {
 	void __iomem *regs;
 	unsigned reg_bytes;
@@ -45,6 +46,20 @@ static inline void regmap_mmio_regsize_check(size_t reg_size)
 		BUG();
 	}
 }
+=======
+#include "internal.h"
+
+struct regmap_mmio_context {
+	void __iomem *regs;
+	unsigned val_bytes;
+	struct clk *clk;
+
+	void (*reg_write)(struct regmap_mmio_context *ctx,
+			  unsigned int reg, unsigned int val);
+	unsigned int (*reg_read)(struct regmap_mmio_context *ctx,
+			         unsigned int reg);
+};
+>>>>>>> v4.9.227
 
 static int regmap_mmio_regbits_check(size_t reg_bits)
 {
@@ -61,6 +76,7 @@ static int regmap_mmio_regbits_check(size_t reg_bits)
 	}
 }
 
+<<<<<<< HEAD
 static inline void regmap_mmio_count_check(size_t count, u32 offset)
 {
 	BUG_ON(count <= offset);
@@ -95,12 +111,91 @@ static int regmap_mmio_gather_write(void *context,
 
 	regmap_mmio_regsize_check(reg_size);
 
+=======
+static int regmap_mmio_get_min_stride(size_t val_bits)
+{
+	int min_stride;
+
+	switch (val_bits) {
+	case 8:
+		/* The core treats 0 as 1 */
+		min_stride = 0;
+		return 0;
+	case 16:
+		min_stride = 2;
+		break;
+	case 32:
+		min_stride = 4;
+		break;
+#ifdef CONFIG_64BIT
+	case 64:
+		min_stride = 8;
+		break;
+#endif
+	default:
+		return -EINVAL;
+	}
+
+	return min_stride;
+}
+
+static void regmap_mmio_write8(struct regmap_mmio_context *ctx,
+				unsigned int reg,
+				unsigned int val)
+{
+	writeb(val, ctx->regs + reg);
+}
+
+static void regmap_mmio_write16le(struct regmap_mmio_context *ctx,
+				  unsigned int reg,
+				  unsigned int val)
+{
+	writew(val, ctx->regs + reg);
+}
+
+static void regmap_mmio_write16be(struct regmap_mmio_context *ctx,
+				  unsigned int reg,
+				  unsigned int val)
+{
+	iowrite16be(val, ctx->regs + reg);
+}
+
+static void regmap_mmio_write32le(struct regmap_mmio_context *ctx,
+				  unsigned int reg,
+				  unsigned int val)
+{
+	writel(val, ctx->regs + reg);
+}
+
+static void regmap_mmio_write32be(struct regmap_mmio_context *ctx,
+				  unsigned int reg,
+				  unsigned int val)
+{
+	iowrite32be(val, ctx->regs + reg);
+}
+
+#ifdef CONFIG_64BIT
+static void regmap_mmio_write64le(struct regmap_mmio_context *ctx,
+				  unsigned int reg,
+				  unsigned int val)
+{
+	writeq(val, ctx->regs + reg);
+}
+#endif
+
+static int regmap_mmio_write(void *context, unsigned int reg, unsigned int val)
+{
+	struct regmap_mmio_context *ctx = context;
+	int ret;
+
+>>>>>>> v4.9.227
 	if (!IS_ERR(ctx->clk)) {
 		ret = clk_enable(ctx->clk);
 		if (ret < 0)
 			return ret;
 	}
 
+<<<<<<< HEAD
 	offset = regmap_mmio_get_offset(reg, reg_size);
 
 	while (val_size) {
@@ -127,6 +222,9 @@ static int regmap_mmio_gather_write(void *context,
 		val += ctx->val_bytes;
 		offset += ctx->val_bytes;
 	}
+=======
+	ctx->reg_write(ctx, reg, val);
+>>>>>>> v4.9.227
 
 	if (!IS_ERR(ctx->clk))
 		clk_disable(ctx->clk);
@@ -134,6 +232,7 @@ static int regmap_mmio_gather_write(void *context,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int regmap_mmio_write(void *context, const void *data, size_t count)
 {
 	struct regmap_mmio_context *ctx = context;
@@ -155,12 +254,58 @@ static int regmap_mmio_read(void *context,
 
 	regmap_mmio_regsize_check(reg_size);
 
+=======
+static unsigned int regmap_mmio_read8(struct regmap_mmio_context *ctx,
+				      unsigned int reg)
+{
+	return readb(ctx->regs + reg);
+}
+
+static unsigned int regmap_mmio_read16le(struct regmap_mmio_context *ctx,
+				         unsigned int reg)
+{
+	return readw(ctx->regs + reg);
+}
+
+static unsigned int regmap_mmio_read16be(struct regmap_mmio_context *ctx,
+				         unsigned int reg)
+{
+	return ioread16be(ctx->regs + reg);
+}
+
+static unsigned int regmap_mmio_read32le(struct regmap_mmio_context *ctx,
+				         unsigned int reg)
+{
+	return readl(ctx->regs + reg);
+}
+
+static unsigned int regmap_mmio_read32be(struct regmap_mmio_context *ctx,
+				         unsigned int reg)
+{
+	return ioread32be(ctx->regs + reg);
+}
+
+#ifdef CONFIG_64BIT
+static unsigned int regmap_mmio_read64le(struct regmap_mmio_context *ctx,
+				         unsigned int reg)
+{
+	return readq(ctx->regs + reg);
+}
+#endif
+
+static int regmap_mmio_read(void *context, unsigned int reg, unsigned int *val)
+{
+	struct regmap_mmio_context *ctx = context;
+	int ret;
+
+>>>>>>> v4.9.227
 	if (!IS_ERR(ctx->clk)) {
 		ret = clk_enable(ctx->clk);
 		if (ret < 0)
 			return ret;
 	}
 
+<<<<<<< HEAD
 	offset = regmap_mmio_get_offset(reg, reg_size);
 
 	while (val_size) {
@@ -187,6 +332,9 @@ static int regmap_mmio_read(void *context,
 		val += ctx->val_bytes;
 		offset += ctx->val_bytes;
 	}
+=======
+	*val = ctx->reg_read(ctx, reg);
+>>>>>>> v4.9.227
 
 	if (!IS_ERR(ctx->clk))
 		clk_disable(ctx->clk);
@@ -205,6 +353,7 @@ static void regmap_mmio_free_context(void *context)
 	kfree(context);
 }
 
+<<<<<<< HEAD
 static struct regmap_bus regmap_mmio = {
 	.fast_io = true,
 	.write = regmap_mmio_write,
@@ -213,6 +362,14 @@ static struct regmap_bus regmap_mmio = {
 	.free_context = regmap_mmio_free_context,
 	.reg_format_endian_default = REGMAP_ENDIAN_NATIVE,
 	.val_format_endian_default = REGMAP_ENDIAN_NATIVE,
+=======
+static const struct regmap_bus regmap_mmio = {
+	.fast_io = true,
+	.reg_write = regmap_mmio_write,
+	.reg_read = regmap_mmio_read,
+	.free_context = regmap_mmio_free_context,
+	.val_format_endian_default = REGMAP_ENDIAN_LITTLE,
+>>>>>>> v4.9.227
 };
 
 static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
@@ -231,6 +388,7 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
 	if (config->pad_bits)
 		return ERR_PTR(-EINVAL);
 
+<<<<<<< HEAD
 	switch (config->val_bits) {
 	case 8:
 		/* The core treats 0 as 1 */
@@ -251,10 +409,16 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
 	default:
 		return ERR_PTR(-EINVAL);
 	}
+=======
+	min_stride = regmap_mmio_get_min_stride(config->val_bits);
+	if (min_stride < 0)
+		return ERR_PTR(min_stride);
+>>>>>>> v4.9.227
 
 	if (config->reg_stride < min_stride)
 		return ERR_PTR(-EINVAL);
 
+<<<<<<< HEAD
 	switch (config->reg_format_endian) {
 	case REGMAP_ENDIAN_DEFAULT:
 	case REGMAP_ENDIAN_NATIVE:
@@ -263,16 +427,80 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
 		return ERR_PTR(-EINVAL);
 	}
 
+=======
+>>>>>>> v4.9.227
 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
 	if (!ctx)
 		return ERR_PTR(-ENOMEM);
 
 	ctx->regs = regs;
 	ctx->val_bytes = config->val_bits / 8;
+<<<<<<< HEAD
 	ctx->reg_bytes = config->reg_bits / 8;
 	ctx->pad_bytes = config->pad_bits / 8;
 	ctx->clk = ERR_PTR(-ENODEV);
 
+=======
+	ctx->clk = ERR_PTR(-ENODEV);
+
+	switch (regmap_get_val_endian(dev, &regmap_mmio, config)) {
+	case REGMAP_ENDIAN_DEFAULT:
+	case REGMAP_ENDIAN_LITTLE:
+#ifdef __LITTLE_ENDIAN
+	case REGMAP_ENDIAN_NATIVE:
+#endif
+		switch (config->val_bits) {
+		case 8:
+			ctx->reg_read = regmap_mmio_read8;
+			ctx->reg_write = regmap_mmio_write8;
+			break;
+		case 16:
+			ctx->reg_read = regmap_mmio_read16le;
+			ctx->reg_write = regmap_mmio_write16le;
+			break;
+		case 32:
+			ctx->reg_read = regmap_mmio_read32le;
+			ctx->reg_write = regmap_mmio_write32le;
+			break;
+#ifdef CONFIG_64BIT
+		case 64:
+			ctx->reg_read = regmap_mmio_read64le;
+			ctx->reg_write = regmap_mmio_write64le;
+			break;
+#endif
+		default:
+			ret = -EINVAL;
+			goto err_free;
+		}
+		break;
+	case REGMAP_ENDIAN_BIG:
+#ifdef __BIG_ENDIAN
+	case REGMAP_ENDIAN_NATIVE:
+#endif
+		switch (config->val_bits) {
+		case 8:
+			ctx->reg_read = regmap_mmio_read8;
+			ctx->reg_write = regmap_mmio_write8;
+			break;
+		case 16:
+			ctx->reg_read = regmap_mmio_read16be;
+			ctx->reg_write = regmap_mmio_write16be;
+			break;
+		case 32:
+			ctx->reg_read = regmap_mmio_read32be;
+			ctx->reg_write = regmap_mmio_write32be;
+			break;
+		default:
+			ret = -EINVAL;
+			goto err_free;
+		}
+		break;
+	default:
+		ret = -EINVAL;
+		goto err_free;
+	}
+
+>>>>>>> v4.9.227
 	if (clk_id == NULL)
 		return ctx;
 
@@ -296,6 +524,7 @@ err_free:
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 /**
  * regmap_init_mmio_clk(): Initialise register map with register clock
  *
@@ -310,6 +539,13 @@ err_free:
 struct regmap *regmap_init_mmio_clk(struct device *dev, const char *clk_id,
 				    void __iomem *regs,
 				    const struct regmap_config *config)
+=======
+struct regmap *__regmap_init_mmio_clk(struct device *dev, const char *clk_id,
+				      void __iomem *regs,
+				      const struct regmap_config *config,
+				      struct lock_class_key *lock_key,
+				      const char *lock_name)
+>>>>>>> v4.9.227
 {
 	struct regmap_mmio_context *ctx;
 
@@ -317,6 +553,7 @@ struct regmap *regmap_init_mmio_clk(struct device *dev, const char *clk_id,
 	if (IS_ERR(ctx))
 		return ERR_CAST(ctx);
 
+<<<<<<< HEAD
 	return regmap_init(dev, &regmap_mmio, ctx, config);
 }
 EXPORT_SYMBOL_GPL(regmap_init_mmio_clk);
@@ -336,6 +573,19 @@ EXPORT_SYMBOL_GPL(regmap_init_mmio_clk);
 struct regmap *devm_regmap_init_mmio_clk(struct device *dev, const char *clk_id,
 					 void __iomem *regs,
 					 const struct regmap_config *config)
+=======
+	return __regmap_init(dev, &regmap_mmio, ctx, config,
+			     lock_key, lock_name);
+}
+EXPORT_SYMBOL_GPL(__regmap_init_mmio_clk);
+
+struct regmap *__devm_regmap_init_mmio_clk(struct device *dev,
+					   const char *clk_id,
+					   void __iomem *regs,
+					   const struct regmap_config *config,
+					   struct lock_class_key *lock_key,
+					   const char *lock_name)
+>>>>>>> v4.9.227
 {
 	struct regmap_mmio_context *ctx;
 
@@ -343,8 +593,15 @@ struct regmap *devm_regmap_init_mmio_clk(struct device *dev, const char *clk_id,
 	if (IS_ERR(ctx))
 		return ERR_CAST(ctx);
 
+<<<<<<< HEAD
 	return devm_regmap_init(dev, &regmap_mmio, ctx, config);
 }
 EXPORT_SYMBOL_GPL(devm_regmap_init_mmio_clk);
+=======
+	return __devm_regmap_init(dev, &regmap_mmio, ctx, config,
+				  lock_key, lock_name);
+}
+EXPORT_SYMBOL_GPL(__devm_regmap_init_mmio_clk);
+>>>>>>> v4.9.227
 
 MODULE_LICENSE("GPL v2");

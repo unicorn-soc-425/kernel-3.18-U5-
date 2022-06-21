@@ -27,7 +27,11 @@
 #include <linux/types.h>
 #include <linux/videodev2.h>
 
+<<<<<<< HEAD
 #include <media/adv7183.h>
+=======
+#include <media/i2c/adv7183.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 
@@ -420,6 +424,7 @@ static int adv7183_g_input_status(struct v4l2_subdev *sd, u32 *status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int adv7183_enum_mbus_fmt(struct v4l2_subdev *sd, unsigned index,
 				enum v4l2_mbus_pixelcode *code)
 {
@@ -436,6 +441,30 @@ static int adv7183_try_mbus_fmt(struct v4l2_subdev *sd,
 	struct adv7183 *decoder = to_adv7183(sd);
 
 	fmt->code = V4L2_MBUS_FMT_UYVY8_2X8;
+=======
+static int adv7183_enum_mbus_code(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_mbus_code_enum *code)
+{
+	if (code->pad || code->index > 0)
+		return -EINVAL;
+
+	code->code = MEDIA_BUS_FMT_UYVY8_2X8;
+	return 0;
+}
+
+static int adv7183_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct adv7183 *decoder = to_adv7183(sd);
+	struct v4l2_mbus_framefmt *fmt = &format->format;
+
+	if (format->pad)
+		return -EINVAL;
+
+	fmt->code = MEDIA_BUS_FMT_UYVY8_2X8;
+>>>>>>> v4.9.227
 	fmt->colorspace = V4L2_COLORSPACE_SMPTE170M;
 	if (decoder->std & V4L2_STD_525_60) {
 		fmt->field = V4L2_FIELD_SEQ_TB;
@@ -446,6 +475,7 @@ static int adv7183_try_mbus_fmt(struct v4l2_subdev *sd,
 		fmt->width = 720;
 		fmt->height = 576;
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -465,6 +495,25 @@ static int adv7183_g_mbus_fmt(struct v4l2_subdev *sd,
 	struct adv7183 *decoder = to_adv7183(sd);
 
 	*fmt = decoder->fmt;
+=======
+	if (format->which == V4L2_SUBDEV_FORMAT_ACTIVE)
+		decoder->fmt = *fmt;
+	else
+		cfg->try_fmt = *fmt;
+	return 0;
+}
+
+static int adv7183_get_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct adv7183 *decoder = to_adv7183(sd);
+
+	if (format->pad)
+		return -EINVAL;
+
+	format->format = decoder->fmt;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -514,6 +563,7 @@ static const struct v4l2_subdev_video_ops adv7183_video_ops = {
 	.s_routing = adv7183_s_routing,
 	.querystd = adv7183_querystd,
 	.g_input_status = adv7183_g_input_status,
+<<<<<<< HEAD
 	.enum_mbus_fmt = adv7183_enum_mbus_fmt,
 	.try_mbus_fmt = adv7183_try_mbus_fmt,
 	.s_mbus_fmt = adv7183_s_mbus_fmt,
@@ -524,6 +574,21 @@ static const struct v4l2_subdev_video_ops adv7183_video_ops = {
 static const struct v4l2_subdev_ops adv7183_ops = {
 	.core = &adv7183_core_ops,
 	.video = &adv7183_video_ops,
+=======
+	.s_stream = adv7183_s_stream,
+};
+
+static const struct v4l2_subdev_pad_ops adv7183_pad_ops = {
+	.enum_mbus_code = adv7183_enum_mbus_code,
+	.get_fmt = adv7183_get_fmt,
+	.set_fmt = adv7183_set_fmt,
+};
+
+static const struct v4l2_subdev_ops adv7183_ops = {
+	.core = &adv7183_core_ops,
+	.video = &adv7183_video_ops,
+	.pad = &adv7183_pad_ops,
+>>>>>>> v4.9.227
 };
 
 static int adv7183_probe(struct i2c_client *client,
@@ -533,7 +598,13 @@ static int adv7183_probe(struct i2c_client *client,
 	struct v4l2_subdev *sd;
 	struct v4l2_ctrl_handler *hdl;
 	int ret;
+<<<<<<< HEAD
 	struct v4l2_mbus_framefmt fmt;
+=======
+	struct v4l2_subdev_format fmt = {
+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+	};
+>>>>>>> v4.9.227
 	const unsigned *pin_array;
 
 	/* Check if the adapter supports the needed features */
@@ -603,9 +674,15 @@ static int adv7183_probe(struct i2c_client *client,
 
 	adv7183_writeregs(sd, adv7183_init_regs, ARRAY_SIZE(adv7183_init_regs));
 	adv7183_s_std(sd, decoder->std);
+<<<<<<< HEAD
 	fmt.width = 720;
 	fmt.height = 576;
 	adv7183_s_mbus_fmt(sd, &fmt);
+=======
+	fmt.format.width = 720;
+	fmt.format.height = 576;
+	adv7183_set_fmt(sd, NULL, &fmt);
+>>>>>>> v4.9.227
 
 	/* initialize the hardware to the default control values */
 	ret = v4l2_ctrl_handler_setup(hdl);
@@ -635,7 +712,10 @@ MODULE_DEVICE_TABLE(i2c, adv7183_id);
 
 static struct i2c_driver adv7183_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name   = "adv7183",
 	},
 	.probe          = adv7183_probe,

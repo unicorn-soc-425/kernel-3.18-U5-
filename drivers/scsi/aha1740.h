@@ -149,6 +149,9 @@ struct ecb {			/* Enhanced Control Block 6.1 */
 
 #define AHA1740_ECBS 32
 #define AHA1740_SCATTER 16
+<<<<<<< HEAD
 #define AHA1740_CMDLUN 1
+=======
+>>>>>>> v4.9.227
 
 #endif

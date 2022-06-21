@@ -107,7 +107,21 @@ int inet6addr_notifier_call_chain(unsigned long val, void *v)
 }
 EXPORT_SYMBOL(inet6addr_notifier_call_chain);
 
+<<<<<<< HEAD
 const struct ipv6_stub *ipv6_stub __read_mostly;
+=======
+static struct dst_entry *eafnosupport_ipv6_dst_lookup_flow(struct net *net,
+							   const struct sock *sk,
+							   struct flowi6 *fl6,
+							   const struct in6_addr *final_dst)
+{
+	return ERR_PTR(-EAFNOSUPPORT);
+}
+
+const struct ipv6_stub *ipv6_stub __read_mostly = &(struct ipv6_stub) {
+	.ipv6_dst_lookup_flow = eafnosupport_ipv6_dst_lookup_flow,
+};
+>>>>>>> v4.9.227
 EXPORT_SYMBOL_GPL(ipv6_stub);
 
 /* IPv6 Wildcard Address and Loopback Address defined by RFC2553 */
@@ -133,6 +147,17 @@ static void snmp6_free_dev(struct inet6_dev *idev)
 	free_percpu(idev->stats.ipv6);
 }
 
+<<<<<<< HEAD
+=======
+static void in6_dev_finish_destroy_rcu(struct rcu_head *head)
+{
+	struct inet6_dev *idev = container_of(head, struct inet6_dev, rcu);
+
+	snmp6_free_dev(idev);
+	kfree(idev);
+}
+
+>>>>>>> v4.9.227
 /* Nobody refers to this device, we may destroy it. */
 
 void in6_dev_finish_destroy(struct inet6_dev *idev)
@@ -140,7 +165,11 @@ void in6_dev_finish_destroy(struct inet6_dev *idev)
 	struct net_device *dev = idev->dev;
 
 	WARN_ON(!list_empty(&idev->addr_list));
+<<<<<<< HEAD
 	WARN_ON(idev->mc_list != NULL);
+=======
+	WARN_ON(idev->mc_list);
+>>>>>>> v4.9.227
 	WARN_ON(timer_pending(&idev->rs_timer));
 
 #ifdef NET_REFCNT_DEBUG
@@ -151,7 +180,11 @@ void in6_dev_finish_destroy(struct inet6_dev *idev)
 		pr_warn("Freeing alive inet6 device %p\n", idev);
 		return;
 	}
+<<<<<<< HEAD
 	snmp6_free_dev(idev);
 	kfree_rcu(idev, rcu);
+=======
+	call_rcu(&idev->rcu, in6_dev_finish_destroy_rcu);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(in6_dev_finish_destroy);

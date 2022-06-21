@@ -47,6 +47,11 @@
 #define ADT7516_MSB_AIN3		0xA
 #define ADT7516_MSB_AIN4		0xB
 #define ADT7316_DA_DATA_BASE		0x10
+<<<<<<< HEAD
+=======
+#define ADT7316_DA_10_BIT_LSB_SHIFT	6
+#define ADT7316_DA_12_BIT_LSB_SHIFT	4
+>>>>>>> v4.9.227
 #define ADT7316_DA_MSB_DATA_REGS	4
 #define ADT7316_LSB_DAC_A		0x10
 #define ADT7316_MSB_DAC_A		0x11
@@ -465,9 +470,14 @@ static ssize_t adt7316_show_all_ad_channels(struct device *dev,
 		return sprintf(buf, "0 - VDD\n1 - Internal Temperature\n"
 				"2 - External Temperature or AIN1\n"
 				"3 - AIN2\n4 - AIN3\n5 - AIN4\n");
+<<<<<<< HEAD
 	else
 		return sprintf(buf, "0 - VDD\n1 - Internal Temperature\n"
 				"2 - External Temperature\n");
+=======
+	return sprintf(buf, "0 - VDD\n1 - Internal Temperature\n"
+			"2 - External Temperature\n");
+>>>>>>> v4.9.227
 }
 
 static IIO_DEVICE_ATTR(all_ad_channels, S_IRUGO,
@@ -637,7 +647,11 @@ static ssize_t adt7316_show_da_high_resolution(struct device *dev,
 	if (chip->config3 & ADT7316_DA_HIGH_RESOLUTION) {
 		if (chip->id == ID_ADT7316 || chip->id == ID_ADT7516)
 			return sprintf(buf, "1 (12 bits)\n");
+<<<<<<< HEAD
 		else if (chip->id == ID_ADT7317 || chip->id == ID_ADT7517)
+=======
+		if (chip->id == ID_ADT7317 || chip->id == ID_ADT7517)
+>>>>>>> v4.9.227
 			return sprintf(buf, "1 (10 bits)\n");
 	}
 
@@ -919,8 +933,12 @@ static ssize_t adt7316_show_all_DAC_update_modes(struct device *dev,
 				"1 - auto at MSB DAC AB and CD writing\n"
 				"2 - auto at MSB DAC ABCD writing\n"
 				"3 - manual\n");
+<<<<<<< HEAD
 	else
 		return sprintf(buf, "manual\n");
+=======
+	return sprintf(buf, "manual\n");
+>>>>>>> v4.9.227
 }
 
 static IIO_DEVICE_ATTR(all_DAC_update_modes, S_IRUGO,
@@ -1068,9 +1086,14 @@ static ssize_t adt7316_show_DAC_internal_Vref(struct device *dev,
 		return sprintf(buf, "0x%x\n",
 			(chip->dac_config & ADT7516_DAC_IN_VREF_MASK) >>
 			ADT7516_DAC_IN_VREF_OFFSET);
+<<<<<<< HEAD
 	else
 		return sprintf(buf, "%d\n",
 			!!(chip->dac_config & ADT7316_DAC_IN_VREF));
+=======
+	return sprintf(buf, "%d\n",
+		       !!(chip->dac_config & ADT7316_DAC_IN_VREF));
+>>>>>>> v4.9.227
 }
 
 static ssize_t adt7316_store_DAC_internal_Vref(struct device *dev,
@@ -1092,7 +1115,11 @@ static ssize_t adt7316_store_DAC_internal_Vref(struct device *dev,
 		ldac_config = chip->ldac_config & (~ADT7516_DAC_IN_VREF_MASK);
 		if (data & 0x1)
 			ldac_config |= ADT7516_DAC_AB_IN_VREF;
+<<<<<<< HEAD
 		else if (data & 0x2)
+=======
+		if (data & 0x2)
+>>>>>>> v4.9.227
 			ldac_config |= ADT7516_DAC_CD_IN_VREF;
 	} else {
 		ret = kstrtou8(buf, 16, &data);
@@ -1414,7 +1441,11 @@ static IIO_DEVICE_ATTR(ex_analog_temp_offset, S_IRUGO | S_IWUSR,
 static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
 		int channel, char *buf)
 {
+<<<<<<< HEAD
 	u16 data;
+=======
+	u16 data = 0;
+>>>>>>> v4.9.227
 	u8 msb, lsb, offset;
 	int ret;
 
@@ -1439,7 +1470,15 @@ static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
 	if (ret)
 		return -EIO;
 
+<<<<<<< HEAD
 	data = (msb << offset) + (lsb & ((1 << offset) - 1));
+=======
+	if (chip->dac_bits == 12)
+		data = lsb >> ADT7316_DA_12_BIT_LSB_SHIFT;
+	else if (chip->dac_bits == 10)
+		data = lsb >> ADT7316_DA_10_BIT_LSB_SHIFT;
+	data |= msb << offset;
+>>>>>>> v4.9.227
 
 	return sprintf(buf, "%d\n", data);
 }
@@ -1447,7 +1486,11 @@ static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
 static ssize_t adt7316_store_DAC(struct adt7316_chip_info *chip,
 		int channel, const char *buf, size_t len)
 {
+<<<<<<< HEAD
 	u8 msb, lsb, offset;
+=======
+	u8 msb, lsb, lsb_reg, offset;
+>>>>>>> v4.9.227
 	u16 data;
 	int ret;
 
@@ -1465,9 +1508,19 @@ static ssize_t adt7316_store_DAC(struct adt7316_chip_info *chip,
 		return -EINVAL;
 
 	if (chip->dac_bits > 8) {
+<<<<<<< HEAD
 		lsb = data & (1 << offset);
 		ret = chip->bus.write(chip->bus.client,
 			ADT7316_DA_DATA_BASE + channel * 2, lsb);
+=======
+		lsb = data & ((1 << offset) - 1);
+		if (chip->dac_bits == 12)
+			lsb_reg = lsb << ADT7316_DA_12_BIT_LSB_SHIFT;
+		else
+			lsb_reg = lsb << ADT7316_DA_10_BIT_LSB_SHIFT;
+		ret = chip->bus.write(chip->bus.client,
+			ADT7316_DA_DATA_BASE + channel * 2, lsb_reg);
+>>>>>>> v4.9.227
 		if (ret)
 			return -EIO;
 	}
@@ -1755,44 +1808,73 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
 		if ((chip->id & ID_FAMILY_MASK) != ID_ADT75XX)
 			stat1 &= 0x1F;
 
+<<<<<<< HEAD
 		time = iio_get_time_ns();
 		if (stat1 & (1 << 0))
+=======
+		time = iio_get_time_ns(indio_dev);
+		if (stat1 & BIT(0))
+>>>>>>> v4.9.227
 			iio_push_event(indio_dev,
 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
 							    IIO_EV_TYPE_THRESH,
 							    IIO_EV_DIR_RISING),
 				       time);
+<<<<<<< HEAD
 		if (stat1 & (1 << 1))
+=======
+		if (stat1 & BIT(1))
+>>>>>>> v4.9.227
 			iio_push_event(indio_dev,
 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
 							    IIO_EV_TYPE_THRESH,
 							    IIO_EV_DIR_FALLING),
 				       time);
+<<<<<<< HEAD
 		if (stat1 & (1 << 2))
+=======
+		if (stat1 & BIT(2))
+>>>>>>> v4.9.227
 			iio_push_event(indio_dev,
 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 1,
 							    IIO_EV_TYPE_THRESH,
 							    IIO_EV_DIR_RISING),
 				       time);
+<<<<<<< HEAD
 		if (stat1 & (1 << 3))
+=======
+		if (stat1 & BIT(3))
+>>>>>>> v4.9.227
 			iio_push_event(indio_dev,
 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 1,
 							    IIO_EV_TYPE_THRESH,
 							    IIO_EV_DIR_FALLING),
 				       time);
+<<<<<<< HEAD
 		if (stat1 & (1 << 5))
+=======
+		if (stat1 & BIT(5))
+>>>>>>> v4.9.227
 			iio_push_event(indio_dev,
 				       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, 1,
 							    IIO_EV_TYPE_THRESH,
 							    IIO_EV_DIR_EITHER),
 				       time);
+<<<<<<< HEAD
 		if (stat1 & (1 << 6))
+=======
+		if (stat1 & BIT(6))
+>>>>>>> v4.9.227
 			iio_push_event(indio_dev,
 				       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, 2,
 							    IIO_EV_TYPE_THRESH,
 							    IIO_EV_DIR_EITHER),
 				       time);
+<<<<<<< HEAD
 		if (stat1 & (1 << 7))
+=======
+		if (stat1 & BIT(7))
+>>>>>>> v4.9.227
 			iio_push_event(indio_dev,
 				       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, 3,
 							    IIO_EV_TYPE_THRESH,
@@ -1807,7 +1889,11 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
 							    0,
 							    IIO_EV_TYPE_THRESH,
 							    IIO_EV_DIR_RISING),
+<<<<<<< HEAD
 				       iio_get_time_ns());
+=======
+				       iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 	}
 
 	return IRQ_HANDLED;
@@ -2152,7 +2238,11 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
 
 		ret = devm_request_threaded_irq(dev, chip->bus.irq,
 						NULL,
+<<<<<<< HEAD
 						&adt7316_event_handler,
+=======
+						adt7316_event_handler,
+>>>>>>> v4.9.227
 						chip->bus.irq_flags |
 						IRQF_ONESHOT,
 						indio_dev->name,

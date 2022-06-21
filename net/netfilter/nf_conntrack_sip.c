@@ -1,6 +1,9 @@
 /* SIP extension for IP connection tracking.
  *
+<<<<<<< HEAD
  * Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
+=======
+>>>>>>> v4.9.227
  * (C) 2005 by Christian Hentschel <chentschel@arnet.com.ar>
  * based on RR's ip_conntrack_ftp.c and other modules.
  * (C) 2007 United Security Providers
@@ -11,6 +14,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/ctype.h>
 #include <linux/skbuff.h>
@@ -19,18 +27,25 @@
 #include <linux/udp.h>
 #include <linux/tcp.h>
 #include <linux/netfilter.h>
+<<<<<<< HEAD
 #include <net/tcp.h>
+=======
+
+>>>>>>> v4.9.227
 #include <net/netfilter/nf_conntrack.h>
 #include <net/netfilter/nf_conntrack_core.h>
 #include <net/netfilter/nf_conntrack_expect.h>
 #include <net/netfilter/nf_conntrack_helper.h>
 #include <net/netfilter/nf_conntrack_zones.h>
 #include <linux/netfilter/nf_conntrack_sip.h>
+<<<<<<< HEAD
 #include <net/netfilter/nf_nat.h>
 #include <net/netfilter/nf_nat_l3proto.h>
 #include <net/netfilter/nf_nat_l4proto.h>
 #include <net/netfilter/nf_queue.h>
 
+=======
+>>>>>>> v4.9.227
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Christian Hentschel <chentschel@arnet.com.ar>");
@@ -53,6 +68,7 @@ module_param(sip_direct_signalling, int, 0600);
 MODULE_PARM_DESC(sip_direct_signalling, "expect incoming calls from registrar "
 					"only (default 1)");
 
+<<<<<<< HEAD
 const struct nf_nat_sip_hooks *nf_nat_sip_hooks;
 EXPORT_SYMBOL_GPL(nf_nat_sip_hooks);
 static struct ctl_table_header *sip_sysctl_header;
@@ -403,6 +419,15 @@ unsigned int (*nf_nat_sdp_media_hook)(struct sk_buff *skb, unsigned int protoff,
 				      union nf_inet_addr *rtp_addr)
 				      __read_mostly;
 EXPORT_SYMBOL(nf_nat_sdp_media_hook);
+=======
+static int sip_direct_media __read_mostly = 1;
+module_param(sip_direct_media, int, 0600);
+MODULE_PARM_DESC(sip_direct_media, "Expect Media streams between signalling "
+				   "endpoints only (default 1)");
+
+const struct nf_nat_sip_hooks *nf_nat_sip_hooks;
+EXPORT_SYMBOL_GPL(nf_nat_sip_hooks);
+>>>>>>> v4.9.227
 
 static int string_len(const struct nf_conn *ct, const char *dptr,
 		      const char *limit, int *shift)
@@ -416,6 +441,7 @@ static int string_len(const struct nf_conn *ct, const char *dptr,
 	return len;
 }
 
+<<<<<<< HEAD
 static int nf_sip_enqueue_packet(struct nf_queue_entry *entry,
 				 unsigned int queuenum)
 {
@@ -464,6 +490,8 @@ int proc_sip_segment(struct ctl_table *ctl, int write,
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static int digits_len(const struct nf_conn *ct, const char *dptr,
 		      const char *limit, int *shift)
 {
@@ -478,9 +506,16 @@ static int digits_len(const struct nf_conn *ct, const char *dptr,
 static int iswordc(const char c)
 {
 	if (isalnum(c) || c == '!' || c == '"' || c == '%' ||
+<<<<<<< HEAD
 	    (c >= '(' && c <= '/') || c == ':' || c == '<' || c == '>' ||
 	    c == '?' || (c >= '[' && c <= ']') || c == '_' || c == '`' ||
 	    c == '{' || c == '}' || c == '~')
+=======
+	    (c >= '(' && c <= '+') || c == ':' || c == '<' || c == '>' ||
+	    c == '?' || (c >= '[' && c <= ']') || c == '_' || c == '`' ||
+	    c == '{' || c == '}' || c == '~' || (c >= '-' && c <= '/') ||
+	    c == '\'')
+>>>>>>> v4.9.227
 		return 1;
 	return 0;
 }
@@ -724,13 +759,21 @@ static const char *sip_follow_continuation(const char *dptr, const char *limit)
 static const char *sip_skip_whitespace(const char *dptr, const char *limit)
 {
 	for (; dptr < limit; dptr++) {
+<<<<<<< HEAD
 		if (*dptr == ' ')
+=======
+		if (*dptr == ' ' || *dptr == '\t')
+>>>>>>> v4.9.227
 			continue;
 		if (*dptr != '\r' && *dptr != '\n')
 			break;
 		dptr = sip_follow_continuation(dptr, limit);
+<<<<<<< HEAD
 		if (dptr == NULL)
 			return NULL;
+=======
+		break;
+>>>>>>> v4.9.227
 	}
 	return dptr;
 }
@@ -1778,7 +1821,11 @@ static int process_sip_response(struct sk_buff *skb, unsigned int protoff,
 		return NF_DROP;
 	}
 	cseq = simple_strtoul(*dptr + matchoff, NULL, 10);
+<<<<<<< HEAD
 	if (!cseq) {
+=======
+	if (!cseq && *(*dptr + matchoff) != '0') {
+>>>>>>> v4.9.227
 		nf_ct_helper_log(skb, ct, "cannot get cseq");
 		return NF_DROP;
 	}
@@ -1822,8 +1869,12 @@ static int process_sip_request(struct sk_buff *skb, unsigned int protoff,
 				    SIP_HDR_VIA_UDP, NULL, &matchoff,
 				    &matchlen, &addr, &port) > 0 &&
 	    port != ct->tuplehash[dir].tuple.src.u.udp.port &&
+<<<<<<< HEAD
 	    nf_inet_addr_cmp(&addr, &ct->tuplehash[dir].tuple.src.u3) &&
 		(dir == IP_CT_DIR_ORIGINAL))
+=======
+	    nf_inet_addr_cmp(&addr, &ct->tuplehash[dir].tuple.src.u3))
+>>>>>>> v4.9.227
 		ct_sip_info->forced_dport = port;
 
 	for (i = 0; i < ARRAY_SIZE(sip_handlers); i++) {
@@ -1845,7 +1896,11 @@ static int process_sip_request(struct sk_buff *skb, unsigned int protoff,
 			return NF_DROP;
 		}
 		cseq = simple_strtoul(*dptr + matchoff, NULL, 10);
+<<<<<<< HEAD
 		if (!cseq) {
+=======
+		if (!cseq && *(*dptr + matchoff) != '0') {
+>>>>>>> v4.9.227
 			nf_ct_helper_log(skb, ct, "cannot get cseq");
 			return NF_DROP;
 		}
@@ -1884,12 +1939,19 @@ static int sip_help_tcp(struct sk_buff *skb, unsigned int protoff,
 			struct nf_conn *ct, enum ip_conntrack_info ctinfo)
 {
 	struct tcphdr *th, _tcph;
+<<<<<<< HEAD
 	unsigned int dataoff;
 	unsigned int matchoff, matchlen, clen;
+=======
+	unsigned int dataoff, datalen;
+	unsigned int matchoff, matchlen, clen;
+	unsigned int msglen, origlen;
+>>>>>>> v4.9.227
 	const char *dptr, *end;
 	s16 diff, tdiff = 0;
 	int ret = NF_ACCEPT;
 	bool term;
+<<<<<<< HEAD
 	unsigned int datalen = 0, msglen = 0, origlen = 0, partialdatalen = 0;
 	unsigned int dataoff_orig = 0, datalen_orig = 0;
 	unsigned int splitlen, oldlen, oldlen1;
@@ -1909,6 +1971,8 @@ static int sip_help_tcp(struct sk_buff *skb, unsigned int protoff,
 
 	if (nf_ct_disable_sip_alg)
 		return NF_ACCEPT;
+=======
+>>>>>>> v4.9.227
 
 	if (ctinfo != IP_CT_ESTABLISHED &&
 	    ctinfo != IP_CT_ESTABLISHED_REPLY)
@@ -1922,9 +1986,12 @@ static int sip_help_tcp(struct sk_buff *skb, unsigned int protoff,
 	if (dataoff >= skb->len)
 		return NF_ACCEPT;
 
+<<<<<<< HEAD
 	if (!ct)
 		return NF_DROP;
 
+=======
+>>>>>>> v4.9.227
 	nf_ct_refresh(ct, skb, sip_timeout * HZ);
 
 	if (unlikely(skb_linearize(skb)))
@@ -1932,6 +1999,7 @@ static int sip_help_tcp(struct sk_buff *skb, unsigned int protoff,
 
 	dptr = skb->data + dataoff;
 	datalen = skb->len - dataoff;
+<<<<<<< HEAD
 	datalen_orig = datalen;
 
 	if (datalen < strlen("SIP/2.0 200"))
@@ -1984,6 +2052,20 @@ sip_header_process:
 		if (dptr + matchoff == end) {
 			break;
 		}
+=======
+	if (datalen < strlen("SIP/2.0 200"))
+		return NF_ACCEPT;
+
+	while (1) {
+		if (ct_sip_get_header(ct, dptr, 0, datalen,
+				      SIP_HDR_CONTENT_LENGTH,
+				      &matchoff, &matchlen) <= 0)
+			break;
+
+		clen = simple_strtoul(dptr + matchoff, (char **)&end, 10);
+		if (dptr + matchoff == end)
+			break;
+>>>>>>> v4.9.227
 
 		term = false;
 		for (; end + strlen("\r\n\r\n") <= dptr + datalen; end++) {
@@ -1995,6 +2077,7 @@ sip_header_process:
 		}
 		if (!term)
 			break;
+<<<<<<< HEAD
 
 		end += strlen("\r\n\r\n") + clen;
 destination:
@@ -2144,6 +2227,26 @@ destination:
 	}
 
 here:
+=======
+		end += strlen("\r\n\r\n") + clen;
+
+		msglen = origlen = end - dptr;
+		if (msglen > datalen)
+			return NF_ACCEPT;
+
+		ret = process_sip_msg(skb, ct, protoff, dataoff,
+				      &dptr, &msglen);
+		/* process_sip_* functions report why this packet is dropped */
+		if (ret != NF_ACCEPT)
+			break;
+		diff     = msglen - origlen;
+		tdiff   += diff;
+
+		dataoff += msglen;
+		dptr    += msglen;
+		datalen  = datalen + diff - msglen;
+	}
+>>>>>>> v4.9.227
 
 	if (ret == NF_ACCEPT && ct->status & IPS_NAT_MASK) {
 		const struct nf_nat_sip_hooks *hooks;
@@ -2162,9 +2265,12 @@ static int sip_help_udp(struct sk_buff *skb, unsigned int protoff,
 	unsigned int dataoff, datalen;
 	const char *dptr;
 
+<<<<<<< HEAD
 	if (nf_ct_disable_sip_alg)
 		return NF_ACCEPT;
 
+=======
+>>>>>>> v4.9.227
 	/* No Data ? */
 	dataoff = protoff + sizeof(struct udphdr);
 	if (dataoff >= skb->len)
@@ -2180,6 +2286,7 @@ static int sip_help_udp(struct sk_buff *skb, unsigned int protoff,
 	if (datalen < strlen("SIP/2.0 200"))
 		return NF_ACCEPT;
 
+<<<<<<< HEAD
 	/* Check if the header contains SIP version */
 	if (!strnstr(dptr, "SIP/2.0", datalen))
 		return NF_ACCEPT;
@@ -2188,6 +2295,12 @@ static int sip_help_udp(struct sk_buff *skb, unsigned int protoff,
 }
 
 static struct nf_conntrack_helper sip[MAX_PORTS][4] __read_mostly;
+=======
+	return process_sip_msg(skb, ct, protoff, dataoff, &dptr, &datalen);
+}
+
+static struct nf_conntrack_helper sip[MAX_PORTS * 4] __read_mostly;
+>>>>>>> v4.9.227
 
 static const struct nf_conntrack_expect_policy sip_exp_policy[SIP_EXPECT_MAX + 1] = {
 	[SIP_EXPECT_SIGNALLING] = {
@@ -2214,6 +2327,7 @@ static const struct nf_conntrack_expect_policy sip_exp_policy[SIP_EXPECT_MAX + 1
 
 static void nf_conntrack_sip_fini(void)
 {
+<<<<<<< HEAD
 	int i, j;
 
 	for (i = 0; i < ports_c; i++) {
@@ -2223,10 +2337,14 @@ static void nf_conntrack_sip_fini(void)
 			nf_conntrack_helper_unregister(&sip[i][j]);
 		}
 	}
+=======
+	nf_conntrack_helpers_unregister(sip, ports_c * 4);
+>>>>>>> v4.9.227
 }
 
 static int __init nf_conntrack_sip_init(void)
 {
+<<<<<<< HEAD
 	int i, j, ret;
 
 	sip_sysctl_header = register_net_sysctl(&init_net, "net/netfilter",
@@ -2238,11 +2356,15 @@ static int __init nf_conntrack_sip_init(void)
 		pr_debug("nf_ct_sip: SIP ALG disabled\n");
 	else
 		pr_debug("nf_ct_sip: SIP ALG enabled\n");
+=======
+	int i, ret;
+>>>>>>> v4.9.227
 
 	if (ports_c == 0)
 		ports[ports_c++] = SIP_PORT;
 
 	for (i = 0; i < ports_c; i++) {
+<<<<<<< HEAD
 		memset(&sip[i], 0, sizeof(sip[i]));
 
 		sip[i][0].tuple.src.l3num = AF_INET;
@@ -2282,6 +2404,34 @@ static int __init nf_conntrack_sip_init(void)
 				return ret;
 			}
 		}
+=======
+		nf_ct_helper_init(&sip[4 * i], AF_INET, IPPROTO_UDP, "sip",
+				  SIP_PORT, ports[i], i, sip_exp_policy,
+				  SIP_EXPECT_MAX,
+				  sizeof(struct nf_ct_sip_master), sip_help_udp,
+				  NULL, THIS_MODULE);
+		nf_ct_helper_init(&sip[4 * i + 1], AF_INET, IPPROTO_TCP, "sip",
+				  SIP_PORT, ports[i], i, sip_exp_policy,
+				  SIP_EXPECT_MAX,
+				  sizeof(struct nf_ct_sip_master), sip_help_tcp,
+				  NULL, THIS_MODULE);
+		nf_ct_helper_init(&sip[4 * i + 2], AF_INET6, IPPROTO_UDP, "sip",
+				  SIP_PORT, ports[i], i, sip_exp_policy,
+				  SIP_EXPECT_MAX,
+				  sizeof(struct nf_ct_sip_master), sip_help_udp,
+				  NULL, THIS_MODULE);
+		nf_ct_helper_init(&sip[4 * i + 3], AF_INET6, IPPROTO_TCP, "sip",
+				  SIP_PORT, ports[i], i, sip_exp_policy,
+				  SIP_EXPECT_MAX,
+				  sizeof(struct nf_ct_sip_master), sip_help_tcp,
+				  NULL, THIS_MODULE);
+	}
+
+	ret = nf_conntrack_helpers_register(sip, ports_c * 4);
+	if (ret < 0) {
+		pr_err("failed to register helpers\n");
+		return ret;
+>>>>>>> v4.9.227
 	}
 	return 0;
 }

@@ -618,7 +618,10 @@ static int tx4939ide_resume(struct platform_device *dev)
 static struct platform_driver tx4939ide_driver = {
 	.driver = {
 		.name = MODNAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.remove = __exit_p(tx4939ide_remove),
 	.resume = tx4939ide_resume,

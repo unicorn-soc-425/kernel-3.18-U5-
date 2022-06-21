@@ -42,8 +42,11 @@
 drm_dma_handle_t *drm_pci_alloc(struct drm_device * dev, size_t size, size_t align)
 {
 	drm_dma_handle_t *dmah;
+<<<<<<< HEAD
 	unsigned long addr;
 	size_t sz;
+=======
+>>>>>>> v4.9.227
 
 	/* pci_alloc_consistent only guarantees alignment to the smallest
 	 * PAGE_SIZE order which is greater than or equal to the requested size.
@@ -57,13 +60,18 @@ drm_dma_handle_t *drm_pci_alloc(struct drm_device * dev, size_t size, size_t ali
 		return NULL;
 
 	dmah->size = size;
+<<<<<<< HEAD
 	dmah->vaddr = dma_alloc_coherent(&dev->pdev->dev, size, &dmah->busaddr, GFP_KERNEL | __GFP_COMP);
+=======
+	dmah->vaddr = dma_alloc_coherent(&dev->pdev->dev, size, &dmah->busaddr, GFP_KERNEL);
+>>>>>>> v4.9.227
 
 	if (dmah->vaddr == NULL) {
 		kfree(dmah);
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	memset(dmah->vaddr, 0, size);
 
 	/* XXX - Is virt_to_page() legal for consistent mem? */
@@ -73,6 +81,8 @@ drm_dma_handle_t *drm_pci_alloc(struct drm_device * dev, size_t size, size_t ali
 		SetPageReserved(virt_to_page((void *)addr));
 	}
 
+=======
+>>>>>>> v4.9.227
 	return dmah;
 }
 
@@ -85,6 +95,7 @@ EXPORT_SYMBOL(drm_pci_alloc);
  */
 void __drm_legacy_pci_free(struct drm_device * dev, drm_dma_handle_t * dmah)
 {
+<<<<<<< HEAD
 	unsigned long addr;
 	size_t sz;
 
@@ -98,6 +109,11 @@ void __drm_legacy_pci_free(struct drm_device * dev, drm_dma_handle_t * dmah)
 		dma_free_coherent(&dev->pdev->dev, dmah->size, dmah->vaddr,
 				  dmah->busaddr);
 	}
+=======
+	if (dmah->vaddr)
+		dma_free_coherent(&dev->pdev->dev, dmah->size, dmah->vaddr,
+				  dmah->busaddr);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -144,6 +160,7 @@ int drm_pci_set_busid(struct drm_device *dev, struct drm_master *master)
 }
 EXPORT_SYMBOL(drm_pci_set_busid);
 
+<<<<<<< HEAD
 int drm_pci_set_unique(struct drm_device *dev,
 		       struct drm_master *master,
 		       struct drm_unique *u)
@@ -188,6 +205,8 @@ err:
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static int drm_pci_irq_by_busid(struct drm_device *dev, struct drm_irq_busid *p)
 {
 	if ((p->busnum >> 8) != drm_get_pci_domain(dev) ||
@@ -219,7 +238,11 @@ int drm_irq_by_busid(struct drm_device *dev, void *data,
 {
 	struct drm_irq_busid *p = data;
 
+<<<<<<< HEAD
 	if (drm_core_check_feature(dev, DRIVER_MODESET))
+=======
+	if (!drm_core_check_feature(dev, DRIVER_LEGACY))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	/* UMS was only ever support on PCI devices. */
@@ -250,7 +273,11 @@ void drm_pci_agp_destroy(struct drm_device *dev)
 {
 	if (dev->agp) {
 		arch_phys_wc_del(dev->agp->agp_mtrr);
+<<<<<<< HEAD
 		drm_agp_clear(dev);
+=======
+		drm_legacy_agp_clear(dev);
+>>>>>>> v4.9.227
 		kfree(dev->agp);
 		dev->agp = NULL;
 	}
@@ -280,8 +307,13 @@ int drm_get_pci_dev(struct pci_dev *pdev, const struct pci_device_id *ent,
 	DRM_DEBUG("\n");
 
 	dev = drm_dev_alloc(driver, &pdev->dev);
+<<<<<<< HEAD
 	if (!dev)
 		return -ENOMEM;
+=======
+	if (IS_ERR(dev))
+		return PTR_ERR(dev);
+>>>>>>> v4.9.227
 
 	ret = pci_enable_device(pdev);
 	if (ret)
@@ -307,7 +339,11 @@ int drm_get_pci_dev(struct pci_dev *pdev, const struct pci_device_id *ent,
 
 	/* No locking needed since shadow-attach is single-threaded since it may
 	 * only be called from the per-driver module init hook. */
+<<<<<<< HEAD
 	if (!drm_core_check_feature(dev, DRIVER_MODESET))
+=======
+	if (drm_core_check_feature(dev, DRIVER_LEGACY))
+>>>>>>> v4.9.227
 		list_add_tail(&dev->legacy_dev_list, &driver->legacy_dev_list);
 
 	return 0;
@@ -343,7 +379,11 @@ int drm_pci_init(struct drm_driver *driver, struct pci_driver *pdriver)
 
 	DRM_DEBUG("\n");
 
+<<<<<<< HEAD
 	if (driver->driver_features & DRIVER_MODESET)
+=======
+	if (!(driver->driver_features & DRIVER_LEGACY))
+>>>>>>> v4.9.227
 		return pci_register_driver(pdriver);
 
 	/* If not using KMS, fall back to stealth mode manual scanning. */
@@ -410,6 +450,29 @@ int drm_pcie_get_speed_cap_mask(struct drm_device *dev, u32 *mask)
 }
 EXPORT_SYMBOL(drm_pcie_get_speed_cap_mask);
 
+<<<<<<< HEAD
+=======
+int drm_pcie_get_max_link_width(struct drm_device *dev, u32 *mlw)
+{
+	struct pci_dev *root;
+	u32 lnkcap;
+
+	*mlw = 0;
+	if (!dev->pdev)
+		return -EINVAL;
+
+	root = dev->pdev->bus->self;
+
+	pcie_capability_read_dword(root, PCI_EXP_LNKCAP, &lnkcap);
+
+	*mlw = (lnkcap & PCI_EXP_LNKCAP_MLW) >> 4;
+
+	DRM_INFO("probing mlw for device %x:%x = %x\n", root->vendor, root->device, lnkcap);
+	return 0;
+}
+EXPORT_SYMBOL(drm_pcie_get_max_link_width);
+
+>>>>>>> v4.9.227
 #else
 
 int drm_pci_init(struct drm_driver *driver, struct pci_driver *pdriver)
@@ -424,6 +487,7 @@ int drm_irq_by_busid(struct drm_device *dev, void *data,
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
 
 int drm_pci_set_unique(struct drm_device *dev,
 		       struct drm_master *master,
@@ -431,6 +495,8 @@ int drm_pci_set_unique(struct drm_device *dev,
 {
 	return -EINVAL;
 }
+=======
+>>>>>>> v4.9.227
 #endif
 
 EXPORT_SYMBOL(drm_pci_init);
@@ -452,7 +518,11 @@ void drm_pci_exit(struct drm_driver *driver, struct pci_driver *pdriver)
 	struct drm_device *dev, *tmp;
 	DRM_DEBUG("\n");
 
+<<<<<<< HEAD
 	if (driver->driver_features & DRIVER_MODESET) {
+=======
+	if (!(driver->driver_features & DRIVER_LEGACY)) {
+>>>>>>> v4.9.227
 		pci_unregister_driver(pdriver);
 	} else {
 		list_for_each_entry_safe(dev, tmp, &driver->legacy_dev_list,

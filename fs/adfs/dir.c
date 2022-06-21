@@ -21,7 +21,11 @@ adfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct inode *inode = file_inode(file);
 	struct super_block *sb = inode->i_sb;
+<<<<<<< HEAD
 	struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+=======
+	const struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+>>>>>>> v4.9.227
 	struct object_info obj;
 	struct adfs_dir dir;
 	int ret = 0;
@@ -69,7 +73,11 @@ adfs_dir_update(struct super_block *sb, struct object_info *obj, int wait)
 {
 	int ret = -EINVAL;
 #ifdef CONFIG_ADFS_FS_RW
+<<<<<<< HEAD
 	struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+=======
+	const struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+>>>>>>> v4.9.227
 	struct adfs_dir dir;
 
 	printk(KERN_INFO "adfs_dir_update: object %06X in dir %06X\n",
@@ -101,7 +109,11 @@ out:
 }
 
 static int
+<<<<<<< HEAD
 adfs_match(struct qstr *name, struct object_info *obj)
+=======
+adfs_match(const struct qstr *name, struct object_info *obj)
+>>>>>>> v4.9.227
 {
 	int i;
 
@@ -126,10 +138,17 @@ adfs_match(struct qstr *name, struct object_info *obj)
 }
 
 static int
+<<<<<<< HEAD
 adfs_dir_lookup_byname(struct inode *inode, struct qstr *name, struct object_info *obj)
 {
 	struct super_block *sb = inode->i_sb;
 	struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+=======
+adfs_dir_lookup_byname(struct inode *inode, const struct qstr *name, struct object_info *obj)
+{
+	struct super_block *sb = inode->i_sb;
+	const struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+>>>>>>> v4.9.227
 	struct adfs_dir dir;
 	int ret;
 
@@ -207,7 +226,11 @@ adfs_hash(const struct dentry *parent, struct qstr *qstr)
 	 */
 	qstr->len = i = name_len;
 	name = qstr->name;
+<<<<<<< HEAD
 	hash = init_name_hash();
+=======
+	hash = init_name_hash(parent);
+>>>>>>> v4.9.227
 	while (i--) {
 		char c;
 
@@ -227,7 +250,11 @@ adfs_hash(const struct dentry *parent, struct qstr *qstr)
  * requirements of the underlying filesystem.
  */
 static int
+<<<<<<< HEAD
 adfs_compare(const struct dentry *parent, const struct dentry *dentry,
+=======
+adfs_compare(const struct dentry *dentry,
+>>>>>>> v4.9.227
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	int i;

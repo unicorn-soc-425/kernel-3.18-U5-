@@ -373,11 +373,16 @@ static int aat2870_i2c_probe(struct i2c_client *client,
 
 	aat2870 = devm_kzalloc(&client->dev, sizeof(struct aat2870_data),
 				GFP_KERNEL);
+<<<<<<< HEAD
 	if (!aat2870) {
 		dev_err(&client->dev,
 			"Failed to allocate memory for aat2870\n");
 		return -ENOMEM;
 	}
+=======
+	if (!aat2870)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	aat2870->dev = &client->dev;
 	dev_set_drvdata(aat2870->dev, aat2870);
@@ -500,7 +505,10 @@ MODULE_DEVICE_TABLE(i2c, aat2870_i2c_id_table);
 static struct i2c_driver aat2870_i2c_driver = {
 	.driver = {
 		.name	= "aat2870",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &aat2870_pm_ops,
 	},
 	.probe		= aat2870_i2c_probe,

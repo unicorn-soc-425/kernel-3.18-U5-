@@ -1,7 +1,11 @@
 /*******************************************************************************
 
   Intel 10 Gigabit PCI Express Linux driver
+<<<<<<< HEAD
   Copyright(c) 1999 - 2014 Intel Corporation.
+=======
+  Copyright(c) 1999 - 2016 Intel Corporation.
+>>>>>>> v4.9.227
 
   This program is free software; you can redistribute it and/or modify it
   under the terms and conditions of the GNU General Public License,
@@ -48,10 +52,17 @@ s32 ixgbe_read_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size, u16 mbx_id)
 	if (size > mbx->size)
 		size = mbx->size;
 
+<<<<<<< HEAD
 	if (!mbx->ops.read)
 		return IXGBE_ERR_MBX;
 
 	return mbx->ops.read(hw, msg, size, mbx_id);
+=======
+	if (!mbx->ops)
+		return IXGBE_ERR_MBX;
+
+	return mbx->ops->read(hw, msg, size, mbx_id);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -70,10 +81,17 @@ s32 ixgbe_write_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size, u16 mbx_id)
 	if (size > mbx->size)
 		return IXGBE_ERR_MBX;
 
+<<<<<<< HEAD
 	if (!mbx->ops.write)
 		return IXGBE_ERR_MBX;
 
 	return mbx->ops.write(hw, msg, size, mbx_id);
+=======
+	if (!mbx->ops)
+		return IXGBE_ERR_MBX;
+
+	return mbx->ops->write(hw, msg, size, mbx_id);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -87,10 +105,17 @@ s32 ixgbe_check_for_msg(struct ixgbe_hw *hw, u16 mbx_id)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 
+<<<<<<< HEAD
 	if (!mbx->ops.check_for_msg)
 		return IXGBE_ERR_MBX;
 
 	return mbx->ops.check_for_msg(hw, mbx_id);
+=======
+	if (!mbx->ops)
+		return IXGBE_ERR_MBX;
+
+	return mbx->ops->check_for_msg(hw, mbx_id);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -104,10 +129,17 @@ s32 ixgbe_check_for_ack(struct ixgbe_hw *hw, u16 mbx_id)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 
+<<<<<<< HEAD
 	if (!mbx->ops.check_for_ack)
 		return IXGBE_ERR_MBX;
 
 	return mbx->ops.check_for_ack(hw, mbx_id);
+=======
+	if (!mbx->ops)
+		return IXGBE_ERR_MBX;
+
+	return mbx->ops->check_for_ack(hw, mbx_id);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -121,10 +153,17 @@ s32 ixgbe_check_for_rst(struct ixgbe_hw *hw, u16 mbx_id)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 
+<<<<<<< HEAD
 	if (!mbx->ops.check_for_rst)
 		return IXGBE_ERR_MBX;
 
 	return mbx->ops.check_for_rst(hw, mbx_id);
+=======
+	if (!mbx->ops)
+		return IXGBE_ERR_MBX;
+
+	return mbx->ops->check_for_rst(hw, mbx_id);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -139,10 +178,17 @@ static s32 ixgbe_poll_for_msg(struct ixgbe_hw *hw, u16 mbx_id)
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 	int countdown = mbx->timeout;
 
+<<<<<<< HEAD
 	if (!countdown || !mbx->ops.check_for_msg)
 		return IXGBE_ERR_MBX;
 
 	while (mbx->ops.check_for_msg(hw, mbx_id)) {
+=======
+	if (!countdown || !mbx->ops)
+		return IXGBE_ERR_MBX;
+
+	while (mbx->ops->check_for_msg(hw, mbx_id)) {
+>>>>>>> v4.9.227
 		countdown--;
 		if (!countdown)
 			return IXGBE_ERR_MBX;
@@ -164,10 +210,17 @@ static s32 ixgbe_poll_for_ack(struct ixgbe_hw *hw, u16 mbx_id)
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 	int countdown = mbx->timeout;
 
+<<<<<<< HEAD
 	if (!countdown || !mbx->ops.check_for_ack)
 		return IXGBE_ERR_MBX;
 
 	while (mbx->ops.check_for_ack(hw, mbx_id)) {
+=======
+	if (!countdown || !mbx->ops)
+		return IXGBE_ERR_MBX;
+
+	while (mbx->ops->check_for_ack(hw, mbx_id)) {
+>>>>>>> v4.9.227
 		countdown--;
 		if (!countdown)
 			return IXGBE_ERR_MBX;
@@ -193,7 +246,11 @@ static s32 ixgbe_read_posted_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size,
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 	s32 ret_val;
 
+<<<<<<< HEAD
 	if (!mbx->ops.read)
+=======
+	if (!mbx->ops)
+>>>>>>> v4.9.227
 		return IXGBE_ERR_MBX;
 
 	ret_val = ixgbe_poll_for_msg(hw, mbx_id);
@@ -201,7 +258,11 @@ static s32 ixgbe_read_posted_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size,
 		return ret_val;
 
 	/* if ack received read message */
+<<<<<<< HEAD
 	return mbx->ops.read(hw, msg, size, mbx_id);
+=======
+	return mbx->ops->read(hw, msg, size, mbx_id);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -221,11 +282,19 @@ static s32 ixgbe_write_posted_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size,
 	s32 ret_val;
 
 	/* exit if either we can't write or there isn't a defined timeout */
+<<<<<<< HEAD
 	if (!mbx->ops.write || !mbx->timeout)
 		return IXGBE_ERR_MBX;
 
 	/* send msg */
 	ret_val = mbx->ops.write(hw, msg, size, mbx_id);
+=======
+	if (!mbx->ops || !mbx->timeout)
+		return IXGBE_ERR_MBX;
+
+	/* send msg */
+	ret_val = mbx->ops->write(hw, msg, size, mbx_id);
+>>>>>>> v4.9.227
 	if (ret_val)
 		return ret_val;
 
@@ -305,14 +374,25 @@ static s32 ixgbe_check_for_rst_pf(struct ixgbe_hw *hw, u16 vf_number)
 		vflre = IXGBE_READ_REG(hw, IXGBE_VFLRE(reg_offset));
 		break;
 	case ixgbe_mac_X540:
+<<<<<<< HEAD
+=======
+	case ixgbe_mac_X550:
+	case ixgbe_mac_X550EM_x:
+	case ixgbe_mac_x550em_a:
+>>>>>>> v4.9.227
 		vflre = IXGBE_READ_REG(hw, IXGBE_VFLREC(reg_offset));
 		break;
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 	if (vflre & (1 << vf_shift)) {
 		IXGBE_WRITE_REG(hw, IXGBE_VFLREC(reg_offset), (1 << vf_shift));
+=======
+	if (vflre & BIT(vf_shift)) {
+		IXGBE_WRITE_REG(hw, IXGBE_VFLREC(reg_offset), BIT(vf_shift));
+>>>>>>> v4.9.227
 		hw->mbx.stats.rsts++;
 		return 0;
 	}
@@ -426,6 +506,12 @@ void ixgbe_init_mbx_params_pf(struct ixgbe_hw *hw)
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 
 	if (hw->mac.type != ixgbe_mac_82599EB &&
+<<<<<<< HEAD
+=======
+	    hw->mac.type != ixgbe_mac_X550 &&
+	    hw->mac.type != ixgbe_mac_X550EM_x &&
+	    hw->mac.type != ixgbe_mac_x550em_a &&
+>>>>>>> v4.9.227
 	    hw->mac.type != ixgbe_mac_X540)
 		return;
 
@@ -442,7 +528,11 @@ void ixgbe_init_mbx_params_pf(struct ixgbe_hw *hw)
 }
 #endif /* CONFIG_PCI_IOV */
 
+<<<<<<< HEAD
 struct ixgbe_mbx_operations mbx_ops_generic = {
+=======
+const struct ixgbe_mbx_operations mbx_ops_generic = {
+>>>>>>> v4.9.227
 	.read                   = ixgbe_read_mbx_pf,
 	.write                  = ixgbe_write_mbx_pf,
 	.read_posted            = ixgbe_read_posted_mbx,

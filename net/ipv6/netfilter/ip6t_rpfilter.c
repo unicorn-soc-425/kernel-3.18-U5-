@@ -26,7 +26,11 @@ static bool rpfilter_addr_unicast(const struct in6_addr *addr)
 	return addr_type & IPV6_ADDR_UNICAST;
 }
 
+<<<<<<< HEAD
 static bool rpfilter_lookup_reverse6(const struct sk_buff *skb,
+=======
+static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+>>>>>>> v4.9.227
 				     const struct net_device *dev, u8 flags)
 {
 	struct rt6_info *rt;
@@ -53,7 +57,11 @@ static bool rpfilter_lookup_reverse6(const struct sk_buff *skb,
 		lookup_flags |= RT6_LOOKUP_F_IFACE;
 	}
 
+<<<<<<< HEAD
 	rt = (void *) ip6_route_lookup(dev_net(dev), &fl6, lookup_flags);
+=======
+	rt = (void *) ip6_route_lookup(net, &fl6, lookup_flags);
+>>>>>>> v4.9.227
 	if (rt->dst.error)
 		goto out;
 
@@ -93,7 +101,11 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	if (unlikely(saddrtype == IPV6_ADDR_ANY))
 		return true ^ invert; /* not routable: forward path will drop it */
 
+<<<<<<< HEAD
 	return rpfilter_lookup_reverse6(skb, par->in, info->flags) ^ invert;
+=======
+	return rpfilter_lookup_reverse6(par->net, skb, par->in, info->flags) ^ invert;
+>>>>>>> v4.9.227
 }
 
 static int rpfilter_check(const struct xt_mtchk_param *par)

@@ -13,11 +13,14 @@
  * General Public License version 2 for more details (a copy is included
  * in the LICENSE file that accompanied this code).
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA
  *
+=======
+>>>>>>> v4.9.227
  * GPL HEADER END
  */
 /*
@@ -28,7 +31,11 @@
  * This file is part of Lustre, http://www.lustre.org/
  * Lustre is a trademark of Sun Microsystems, Inc.
  *
+<<<<<<< HEAD
  * libcfs/include/libcfs/linux/linux-mem.h
+=======
+ * libcfs/include/libcfs/linux/linux-cpu.h
+>>>>>>> v4.9.227
  *
  * Basic library routines.
  *

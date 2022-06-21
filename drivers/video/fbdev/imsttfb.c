@@ -33,7 +33,10 @@
 #if defined(CONFIG_PPC)
 #include <linux/nvram.h>
 #include <asm/prom.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> v4.9.227
 #include "macmodes.h"
 #endif
 
@@ -1470,15 +1473,23 @@ static int imsttfb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	unsigned long addr, size;
 	struct imstt_par *par;
 	struct fb_info *info;
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
+=======
+>>>>>>> v4.9.227
 	struct device_node *dp;
 	
 	dp = pci_device_to_OF_node(pdev);
 	if(dp)
 		printk(KERN_INFO "%s: OF name %s\n",__func__, dp->name);
+<<<<<<< HEAD
 	else
 		printk(KERN_ERR "imsttfb: no OF node for pci device\n");
 #endif /* CONFIG_PPC_OF */
+=======
+	else if (IS_ENABLED(CONFIG_OF))
+		printk(KERN_ERR "imsttfb: no OF node for pci device\n");
+>>>>>>> v4.9.227
 
 	info = framebuffer_alloc(sizeof(struct imstt_par), &pdev->dev);
 
@@ -1501,11 +1512,17 @@ static int imsttfb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	switch (pdev->device) {
 		case PCI_DEVICE_ID_IMS_TT128: /* IMS,tt128mbA */
 			par->ramdac = IBM;
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
 			if (dp && ((strcmp(dp->name, "IMS,tt128mb8") == 0) ||
 				   (strcmp(dp->name, "IMS,tt128mb8A") == 0)))
 				par->ramdac = TVP;
 #endif /* CONFIG_PPC_OF */
+=======
+			if (dp && ((strcmp(dp->name, "IMS,tt128mb8") == 0) ||
+				   (strcmp(dp->name, "IMS,tt128mb8A") == 0)))
+				par->ramdac = TVP;
+>>>>>>> v4.9.227
 			break;
 		case PCI_DEVICE_ID_IMS_TT3D:  /* IMS,tt3d */
 			par->ramdac = TVP;
@@ -1521,6 +1538,14 @@ static int imsttfb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	info->fix.smem_start = addr;
 	info->screen_base = (__u8 *)ioremap(addr, par->ramdac == IBM ?
 					    0x400000 : 0x800000);
+<<<<<<< HEAD
+=======
+	if (!info->screen_base) {
+		release_mem_region(addr, size);
+		framebuffer_release(info);
+		return -ENOMEM;
+	}
+>>>>>>> v4.9.227
 	info->fix.mmio_start = addr + 0x800000;
 	par->dc_regs = ioremap(addr + 0x800000, 0x1000);
 	par->cmap_regs_phys = addr + 0x840000;

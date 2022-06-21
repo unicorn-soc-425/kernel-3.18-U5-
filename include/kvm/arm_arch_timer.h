@@ -24,6 +24,7 @@
 #include <linux/workqueue.h>
 
 struct arch_timer_kvm {
+<<<<<<< HEAD
 #ifdef CONFIG_KVM_ARM_TIMER
 	/* Is the timer enabled */
 	bool			enabled;
@@ -35,6 +36,13 @@ struct arch_timer_kvm {
 
 struct arch_timer_cpu {
 #ifdef CONFIG_KVM_ARM_TIMER
+=======
+	/* Virtual offset */
+	cycle_t			cntvoff;
+};
+
+struct arch_timer_cpu {
+>>>>>>> v4.9.227
 	/* Registers: control register, timer value */
 	u32				cntv_ctl;	/* Saved/restored */
 	cycle_t				cntv_cval;	/* Saved/restored */
@@ -54,6 +62,7 @@ struct arch_timer_cpu {
 	bool				armed;
 
 	/* Timer IRQ */
+<<<<<<< HEAD
 	const struct kvm_irq_level	*irq;
 #endif
 };
@@ -64,6 +73,22 @@ void kvm_timer_enable(struct kvm *kvm);
 void kvm_timer_init(struct kvm *kvm);
 void kvm_timer_vcpu_reset(struct kvm_vcpu *vcpu,
 			  const struct kvm_irq_level *irq);
+=======
+	struct kvm_irq_level		irq;
+
+	/* Active IRQ state caching */
+	bool				active_cleared_last;
+
+	/* Is the timer enabled */
+	bool			enabled;
+};
+
+int kvm_timer_hyp_init(void);
+int kvm_timer_enable(struct kvm_vcpu *vcpu);
+void kvm_timer_init(struct kvm *kvm);
+int kvm_timer_vcpu_reset(struct kvm_vcpu *vcpu,
+			 const struct kvm_irq_level *irq);
+>>>>>>> v4.9.227
 void kvm_timer_vcpu_init(struct kvm_vcpu *vcpu);
 void kvm_timer_flush_hwstate(struct kvm_vcpu *vcpu);
 void kvm_timer_sync_hwstate(struct kvm_vcpu *vcpu);
@@ -72,6 +97,7 @@ void kvm_timer_vcpu_terminate(struct kvm_vcpu *vcpu);
 u64 kvm_arm_timer_get_reg(struct kvm_vcpu *, u64 regid);
 int kvm_arm_timer_set_reg(struct kvm_vcpu *, u64 regid, u64 value);
 
+<<<<<<< HEAD
 #else
 static inline int kvm_timer_hyp_init(void)
 {
@@ -97,5 +123,12 @@ static inline u64 kvm_arm_timer_get_reg(struct kvm_vcpu *vcpu, u64 regid)
 	return 0;
 }
 #endif
+=======
+bool kvm_timer_should_fire(struct kvm_vcpu *vcpu);
+void kvm_timer_schedule(struct kvm_vcpu *vcpu);
+void kvm_timer_unschedule(struct kvm_vcpu *vcpu);
+
+void kvm_timer_vcpu_put(struct kvm_vcpu *vcpu);
+>>>>>>> v4.9.227
 
 #endif

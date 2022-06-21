@@ -16,6 +16,10 @@
 #include <asm/ppc_asm.h>
 #include <asm/asm-compat.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 #ifndef CONFIG_PPC64
 /* epapr_ev_idle() was derived from e500_idle() */
@@ -53,3 +57,7 @@ epapr_hypercall_start:
 	nop
 	nop
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(epapr_hypercall_start)
+>>>>>>> v4.9.227

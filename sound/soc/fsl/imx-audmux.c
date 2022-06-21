@@ -86,6 +86,7 @@ static ssize_t audmux_read_file(struct file *file, char __user *user_buf,
 	if (!buf)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	ret = snprintf(buf, PAGE_SIZE, "PDCR: %08x\nPTCR: %08x\n",
 		       pdcr, ptcr);
 
@@ -129,6 +130,51 @@ static ssize_t audmux_read_file(struct file *file, char __user *user_buf,
 	}
 
 	ret += snprintf(buf + ret, PAGE_SIZE - ret,
+=======
+	ret = scnprintf(buf, PAGE_SIZE, "PDCR: %08x\nPTCR: %08x\n",
+		       pdcr, ptcr);
+
+	if (ptcr & IMX_AUDMUX_V2_PTCR_TFSDIR)
+		ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+				"TxFS output from %s, ",
+				audmux_port_string((ptcr >> 27) & 0x7));
+	else
+		ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+				"TxFS input, ");
+
+	if (ptcr & IMX_AUDMUX_V2_PTCR_TCLKDIR)
+		ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+				"TxClk output from %s",
+				audmux_port_string((ptcr >> 22) & 0x7));
+	else
+		ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+				"TxClk input");
+
+	ret += scnprintf(buf + ret, PAGE_SIZE - ret, "\n");
+
+	if (ptcr & IMX_AUDMUX_V2_PTCR_SYN) {
+		ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+				"Port is symmetric");
+	} else {
+		if (ptcr & IMX_AUDMUX_V2_PTCR_RFSDIR)
+			ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+					"RxFS output from %s, ",
+					audmux_port_string((ptcr >> 17) & 0x7));
+		else
+			ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+					"RxFS input, ");
+
+		if (ptcr & IMX_AUDMUX_V2_PTCR_RCLKDIR)
+			ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+					"RxClk output from %s",
+					audmux_port_string((ptcr >> 12) & 0x7));
+		else
+			ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+					"RxClk input");
+	}
+
+	ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+>>>>>>> v4.9.227
 			"\nData received from %s\n",
 			audmux_port_string((pdcr >> 13) & 0x7));
 
@@ -184,7 +230,11 @@ static enum imx_audmux_type {
 	IMX31_AUDMUX,
 } audmux_type;
 
+<<<<<<< HEAD
 static struct platform_device_id imx_audmux_ids[] = {
+=======
+static const struct platform_device_id imx_audmux_ids[] = {
+>>>>>>> v4.9.227
 	{
 		.name = "imx21-audmux",
 		.driver_data = IMX21_AUDMUX,
@@ -356,7 +406,10 @@ static struct platform_driver imx_audmux_driver = {
 	.id_table	= imx_audmux_ids,
 	.driver	= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = imx_audmux_dt_ids,
 	}
 };

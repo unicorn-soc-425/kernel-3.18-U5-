@@ -68,6 +68,19 @@ struct iuu_private {
 	u32 clk;
 };
 
+<<<<<<< HEAD
+=======
+static int iuu_attach(struct usb_serial *serial)
+{
+	unsigned char num_ports = serial->num_ports;
+
+	if (serial->num_bulk_in < num_ports || serial->num_bulk_out < num_ports)
+		return -ENODEV;
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int iuu_port_probe(struct usb_serial_port *port)
 {
 	struct iuu_private *priv;
@@ -360,7 +373,11 @@ static void iuu_led_activity_on(struct urb *urb)
 	int result;
 	char *buf_ptr = port->write_urb->transfer_buffer;
 	*buf_ptr++ = IUU_SET_LED;
+<<<<<<< HEAD
 	if (xmas == 1) {
+=======
+	if (xmas) {
+>>>>>>> v4.9.227
 		get_random_bytes(buf_ptr, 6);
 		*(buf_ptr+7) = 1;
 	} else {
@@ -380,7 +397,11 @@ static void iuu_led_activity_off(struct urb *urb)
 	struct usb_serial_port *port = urb->context;
 	int result;
 	char *buf_ptr = port->write_urb->transfer_buffer;
+<<<<<<< HEAD
 	if (xmas == 1) {
+=======
+	if (xmas) {
+>>>>>>> v4.9.227
 		iuu_rxcmd(urb);
 		return;
 	} else {
@@ -1196,6 +1217,10 @@ static struct usb_serial_driver iuu_device = {
 	.tiocmset = iuu_tiocmset,
 	.set_termios = iuu_set_termios,
 	.init_termios = iuu_init_termios,
+<<<<<<< HEAD
+=======
+	.attach = iuu_attach,
+>>>>>>> v4.9.227
 	.port_probe = iuu_port_probe,
 	.port_remove = iuu_port_remove,
 };

@@ -29,14 +29,22 @@
 #include <linux/hw_breakpoint.h>
 #include <linux/smp.h>
 #include <linux/cpu_pm.h>
+<<<<<<< HEAD
+=======
+#include <linux/coresight.h>
+>>>>>>> v4.9.227
 
 #include <asm/cacheflush.h>
 #include <asm/cputype.h>
 #include <asm/current.h>
 #include <asm/hw_breakpoint.h>
+<<<<<<< HEAD
 #include <asm/kdebug.h>
 #include <asm/traps.h>
 #include <asm/hardware/coresight.h>
+=======
+#include <asm/traps.h>
+>>>>>>> v4.9.227
 
 /* Breakpoint currently in use for each BRP. */
 static DEFINE_PER_CPU(struct perf_event *, bp_on_reg[ARM_MAX_BRP]);
@@ -227,6 +235,7 @@ static int get_num_brps(void)
 	return core_has_mismatch_brps() ? brps - 1 : brps;
 }
 
+<<<<<<< HEAD
 /* Determine if halting mode is enabled */
 static int halting_mode_enabled(void)
 {
@@ -238,6 +247,8 @@ static int halting_mode_enabled(void)
 	return !!(dscr & ARM_DSCR_HDBGEN);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * In order to access the breakpoint/watchpoint control registers,
  * we must be running in debug monitor mode. Unfortunately, we can
@@ -643,7 +654,11 @@ int arch_validate_hwbkpt_settings(struct perf_event *bp)
 	info->address &= ~alignment_mask;
 	info->ctrl.len <<= offset;
 
+<<<<<<< HEAD
 	if (!bp->overflow_handler) {
+=======
+	if (is_default_overflow_handler(bp)) {
+>>>>>>> v4.9.227
 		/*
 		 * Mismatch breakpoints are required for single-stepping
 		 * breakpoints.
@@ -659,7 +674,11 @@ int arch_validate_hwbkpt_settings(struct perf_event *bp)
 		 * Per-cpu breakpoints are not supported by our stepping
 		 * mechanism.
 		 */
+<<<<<<< HEAD
 		if (!bp->hw.bp_target)
+=======
+		if (!bp->hw.target)
+>>>>>>> v4.9.227
 			return -EINVAL;
 
 		/*
@@ -766,7 +785,11 @@ static void watchpoint_handler(unsigned long addr, unsigned int fsr,
 		 * mismatch breakpoint so we can single-step over the
 		 * watchpoint trigger.
 		 */
+<<<<<<< HEAD
 		if (!wp->overflow_handler)
+=======
+		if (is_default_overflow_handler(wp))
+>>>>>>> v4.9.227
 			enable_single_step(wp, instruction_pointer(regs));
 
 unlock:
@@ -943,6 +966,7 @@ static void reset_ctrl_regs(void *unused)
 	u32 val;
 
 	/*
+<<<<<<< HEAD
 	 * Bail out without clearing the breakpoint registers if halting
 	 * debug mode or monitor debug mode is enabled. Checking for monitor
 	 * debug mode here ensures we don't clear the breakpoint registers
@@ -954,6 +978,8 @@ static void reset_ctrl_regs(void *unused)
 		return;
 
 	/*
+=======
+>>>>>>> v4.9.227
 	 * v7 debug contains save and restore registers so that debug state
 	 * can be maintained across low-power modes without leaving the debug
 	 * logic powered up. It is IMPLEMENTATION DEFINED whether we can access
@@ -998,7 +1024,11 @@ static void reset_ctrl_regs(void *unused)
 	 * Unconditionally clear the OS lock by writing a value
 	 * other than CS_LAR_KEY to the access register.
 	 */
+<<<<<<< HEAD
 	ARM_DBG_WRITE(c1, c0, 4, ~CS_LAR_KEY);
+=======
+	ARM_DBG_WRITE(c1, c0, 4, ~CORESIGHT_UNLOCK);
+>>>>>>> v4.9.227
 	isb();
 
 	/*
@@ -1089,6 +1119,25 @@ static int __init arch_hw_breakpoint_init(void)
 		return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Scorpion CPUs (at least those in APQ8060) seem to set DBGPRSR.SPD
+	 * whenever a WFI is issued, even if the core is not powered down, in
+	 * violation of the architecture.  When DBGPRSR.SPD is set, accesses to
+	 * breakpoint and watchpoint registers are treated as undefined, so
+	 * this results in boot time and runtime failures when these are
+	 * accessed and we unexpectedly take a trap.
+	 *
+	 * It's not clear if/how this can be worked around, so we blacklist
+	 * Scorpion CPUs to avoid these issues.
+	*/
+	if (read_cpuid_part() == ARM_CPU_PART_SCORPION) {
+		pr_info("Scorpion CPU detected. Hardware breakpoints and watchpoints disabled\n");
+		return 0;
+	}
+
+>>>>>>> v4.9.227
 	has_ossr = core_has_os_save_restore();
 
 	/* Determine how many BRPs/WRPs are available. */

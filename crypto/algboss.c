@@ -248,6 +248,7 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
 	type = alg->cra_flags;
 
 	/* This piece of crap needs to disappear into per-type test hooks. */
+<<<<<<< HEAD
 	if ((!((type ^ CRYPTO_ALG_TYPE_BLKCIPHER) &
 	       CRYPTO_ALG_TYPE_BLKCIPHER_MASK) && !(type & CRYPTO_ALG_GENIV) &&
 	     ((alg->cra_flags & CRYPTO_ALG_TYPE_MASK) ==
@@ -255,6 +256,13 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
 					  alg->cra_ablkcipher.ivsize)) ||
 	    (!((type ^ CRYPTO_ALG_TYPE_AEAD) & CRYPTO_ALG_TYPE_MASK) &&
 	     alg->cra_type == &crypto_nivaead_type && alg->cra_aead.ivsize))
+=======
+	if (!((type ^ CRYPTO_ALG_TYPE_BLKCIPHER) &
+	      CRYPTO_ALG_TYPE_BLKCIPHER_MASK) && !(type & CRYPTO_ALG_GENIV) &&
+	    ((alg->cra_flags & CRYPTO_ALG_TYPE_MASK) ==
+	     CRYPTO_ALG_TYPE_BLKCIPHER ? alg->cra_blkcipher.ivsize :
+					 alg->cra_ablkcipher.ivsize))
+>>>>>>> v4.9.227
 		type |= CRYPTO_ALG_TESTED;
 
 	param->type = type;

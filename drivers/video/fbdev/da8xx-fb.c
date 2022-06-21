@@ -152,7 +152,11 @@ static void lcdc_write(unsigned int val, unsigned int addr)
 
 struct da8xx_fb_par {
 	struct device		*dev;
+<<<<<<< HEAD
 	resource_size_t p_palette_base;
+=======
+	dma_addr_t		p_palette_base;
+>>>>>>> v4.9.227
 	unsigned char *v_palette_base;
 	dma_addr_t		vram_phys;
 	unsigned long		vram_size;
@@ -713,7 +717,11 @@ static int da8xx_fb_config_clk_divider(struct da8xx_fb_par *par,
 
 	if (par->lcdc_clk_rate != lcdc_clk_rate) {
 		ret = clk_set_rate(par->lcdc_clk, lcdc_clk_rate);
+<<<<<<< HEAD
 		if (IS_ERR_VALUE(ret)) {
+=======
+		if (ret) {
+>>>>>>> v4.9.227
 			dev_err(par->dev,
 				"unable to set clock rate at %u\n",
 				lcdc_clk_rate);
@@ -784,7 +792,11 @@ static int lcd_init(struct da8xx_fb_par *par, const struct lcd_ctrl_config *cfg,
 	int ret = 0;
 
 	ret = da8xx_fb_calc_config_clk_divider(par, panel);
+<<<<<<< HEAD
 	if (IS_ERR_VALUE(ret)) {
+=======
+	if (ret) {
+>>>>>>> v4.9.227
 		dev_err(par->dev, "unable to configure clock\n");
 		return ret;
 	}
@@ -1427,7 +1439,11 @@ static int fb_probe(struct platform_device *device)
 
 	par->vram_virt = dma_alloc_coherent(NULL,
 					    par->vram_size,
+<<<<<<< HEAD
 					    (resource_size_t *) &par->vram_phys,
+=======
+					    &par->vram_phys,
+>>>>>>> v4.9.227
 					    GFP_KERNEL | GFP_DMA);
 	if (!par->vram_virt) {
 		dev_err(&device->dev,
@@ -1447,7 +1463,11 @@ static int fb_probe(struct platform_device *device)
 
 	/* allocate palette buffer */
 	par->v_palette_base = dma_zalloc_coherent(NULL, PALETTE_SIZE,
+<<<<<<< HEAD
 						  (resource_size_t *)&par->p_palette_base,
+=======
+						  &par->p_palette_base,
+>>>>>>> v4.9.227
 						  GFP_KERNEL | GFP_DMA);
 	if (!par->v_palette_base) {
 		dev_err(&device->dev,
@@ -1658,7 +1678,10 @@ static struct platform_driver da8xx_fb_driver = {
 	.remove = fb_remove,
 	.driver = {
 		   .name = DRIVER_NAME,
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   .pm	= &fb_pm_ops,
 		   },
 };

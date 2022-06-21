@@ -12,7 +12,12 @@
  */
 
 #include <linux/amba/sp810.h>
+<<<<<<< HEAD
 #include <linux/clkdev.h>
+=======
+#include <linux/slab.h>
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/of.h>
@@ -32,12 +37,18 @@ struct clk_sp810_timerclken {
 
 struct clk_sp810 {
 	struct device_node *node;
+<<<<<<< HEAD
 	int refclk_index, timclk_index;
 	void __iomem *base;
 	spinlock_t lock;
 	struct clk_sp810_timerclken timerclken[4];
 	struct clk *refclk;
 	struct clk *timclk;
+=======
+	void __iomem *base;
+	spinlock_t lock;
+	struct clk_sp810_timerclken timerclken[4];
+>>>>>>> v4.9.227
 };
 
 static u8 clk_sp810_timerclken_get_parent(struct clk_hw *hw)
@@ -70,6 +81,7 @@ static int clk_sp810_timerclken_set_parent(struct clk_hw *hw, u8 index)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * FIXME - setting the parent every time .prepare is invoked is inefficient.
  * This is better handled by a dedicated clock tree configuration mechanism at
@@ -119,6 +131,9 @@ static void clk_sp810_timerclken_unprepare(struct clk_hw *hw)
 static const struct clk_ops clk_sp810_timerclken_ops = {
 	.prepare = clk_sp810_timerclken_prepare,
 	.unprepare = clk_sp810_timerclken_unprepare,
+=======
+static const struct clk_ops clk_sp810_timerclken_ops = {
+>>>>>>> v4.9.227
 	.get_parent = clk_sp810_timerclken_get_parent,
 	.set_parent = clk_sp810_timerclken_set_parent,
 };
@@ -135,14 +150,23 @@ static struct clk *clk_sp810_timerclken_of_get(struct of_phandle_args *clkspec,
 	return sp810->timerclken[clkspec->args[0]].clk;
 }
 
+<<<<<<< HEAD
 void __init clk_sp810_of_setup(struct device_node *node)
 {
 	struct clk_sp810 *sp810 = kzalloc(sizeof(*sp810), GFP_KERNEL);
 	const char *parent_names[2];
+=======
+static void __init clk_sp810_of_setup(struct device_node *node)
+{
+	struct clk_sp810 *sp810 = kzalloc(sizeof(*sp810), GFP_KERNEL);
+	const char *parent_names[2];
+	int num = ARRAY_SIZE(parent_names);
+>>>>>>> v4.9.227
 	char name[12];
 	struct clk_init_data init;
 	static int instance;
 	int i;
+<<<<<<< HEAD
 
 	if (!sp810) {
 		pr_err("Failed to allocate memory for SP810!\n");
@@ -159,6 +183,16 @@ void __init clk_sp810_of_setup(struct device_node *node)
 
 	if (parent_names[0] <= 0 || parent_names[1] <= 0) {
 		pr_warn("Failed to obtain parent clocks for SP810!\n");
+=======
+	bool deprecated;
+
+	if (!sp810)
+		return;
+
+	if (of_clk_parent_fill(node, parent_names, num) != num) {
+		pr_warn("Failed to obtain parent clocks for SP810!\n");
+		kfree(sp810);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -170,7 +204,13 @@ void __init clk_sp810_of_setup(struct device_node *node)
 	init.ops = &clk_sp810_timerclken_ops;
 	init.flags = CLK_IS_BASIC;
 	init.parent_names = parent_names;
+<<<<<<< HEAD
 	init.num_parents = ARRAY_SIZE(parent_names);
+=======
+	init.num_parents = num;
+
+	deprecated = !of_find_property(node, "assigned-clock-parents", NULL);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < ARRAY_SIZE(sp810->timerclken); i++) {
 		snprintf(name, sizeof(name), "sp810_%d_%d", instance, i);
@@ -179,6 +219,18 @@ void __init clk_sp810_of_setup(struct device_node *node)
 		sp810->timerclken[i].channel = i;
 		sp810->timerclken[i].hw.init = &init;
 
+<<<<<<< HEAD
+=======
+		/*
+		 * If DT isn't setting the parent, force it to be
+		 * the 1 MHz clock without going through the framework.
+		 * We do this before clk_register() so that it can determine
+		 * the parent and setup the tree properly.
+		 */
+		if (deprecated)
+			init.ops->set_parent(&sp810->timerclken[i].hw, 1);
+
+>>>>>>> v4.9.227
 		sp810->timerclken[i].clk = clk_register(NULL,
 				&sp810->timerclken[i].hw);
 		WARN_ON(IS_ERR(sp810->timerclken[i].clk));

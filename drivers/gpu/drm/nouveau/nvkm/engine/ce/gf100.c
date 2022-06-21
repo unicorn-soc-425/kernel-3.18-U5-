@@ -40,7 +40,10 @@ gf100_ce0 = {
 	.code.size = sizeof(gf100_ce_code),
 	.data.data = gf100_ce_data,
 	.data.size = sizeof(gf100_ce_data),
+<<<<<<< HEAD
 	.pmc_enable = 0x00000040,
+=======
+>>>>>>> v4.9.227
 	.init = gf100_ce_init,
 	.intr = gt215_ce_intr,
 	.sclass = {
@@ -55,7 +58,10 @@ gf100_ce1 = {
 	.code.size = sizeof(gf100_ce_code),
 	.data.data = gf100_ce_data,
 	.data.size = sizeof(gf100_ce_data),
+<<<<<<< HEAD
 	.pmc_enable = 0x00000080,
+=======
+>>>>>>> v4.9.227
 	.init = gf100_ce_init,
 	.intr = gt215_ce_intr,
 	.sclass = {

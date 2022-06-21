@@ -19,7 +19,10 @@
 #include <linux/atomic.h>
 #include <linux/kernel.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
+=======
+>>>>>>> v4.9.227
 
 struct kref {
 	atomic_t refcount;
@@ -34,6 +37,14 @@ static inline void kref_init(struct kref *kref)
 	atomic_set(&kref->refcount, 1);
 }
 
+<<<<<<< HEAD
+=======
+static inline int kref_read(const struct kref *kref)
+{
+	return atomic_read(&kref->refcount);
+}
+
+>>>>>>> v4.9.227
 /**
  * kref_get - increment refcount for object.
  * @kref: object.
@@ -99,6 +110,7 @@ static inline int kref_put(struct kref *kref, void (*release)(struct kref *kref)
 	return kref_sub(kref, 1, release);
 }
 
+<<<<<<< HEAD
 /**
  * kref_put_spinlock_irqsave - decrement refcount for object.
  * @kref: object.
@@ -131,6 +143,8 @@ static inline int kref_put_spinlock_irqsave(struct kref *kref,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int kref_put_mutex(struct kref *kref,
 				 void (*release)(struct kref *kref),
 				 struct mutex *lock)

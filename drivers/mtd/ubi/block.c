@@ -99,6 +99,11 @@ struct ubiblock {
 
 /* Linked list of all ubiblock instances */
 static LIST_HEAD(ubiblock_devices);
+<<<<<<< HEAD
+=======
+static DEFINE_IDR(ubiblock_minor_idr);
+/* Protects ubiblock_devices and ubiblock_minor_idr */
+>>>>>>> v4.9.227
 static DEFINE_MUTEX(devices_mutex);
 static int ubiblock_major;
 
@@ -162,7 +167,11 @@ static int __init ubiblock_set_param(const char *val,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops ubiblock_param_ops = {
+=======
+static const struct kernel_param_ops ubiblock_param_ops = {
+>>>>>>> v4.9.227
 	.set    = ubiblock_set_param,
 };
 module_param_cb(block, &ubiblock_param_ops, NULL, 0);
@@ -351,11 +360,16 @@ static int ubiblock_init_request(void *data, struct request *req,
 static struct blk_mq_ops ubiblock_mq_ops = {
 	.queue_rq       = ubiblock_queue_rq,
 	.init_request	= ubiblock_init_request,
+<<<<<<< HEAD
 	.map_queue      = blk_mq_map_queue,
 };
 
 static DEFINE_IDR(ubiblock_minor_idr);
 
+=======
+};
+
+>>>>>>> v4.9.227
 int ubiblock_create(struct ubi_volume_info *vi)
 {
 	struct ubiblock *dev;
@@ -368,6 +382,7 @@ int ubiblock_create(struct ubi_volume_info *vi)
 	/* Check that the volume isn't already handled */
 	mutex_lock(&devices_mutex);
 	if (find_dev_nolock(vi->ubi_num, vi->vol_id)) {
+<<<<<<< HEAD
 		mutex_unlock(&devices_mutex);
 		return -EEXIST;
 	}
@@ -376,6 +391,17 @@ int ubiblock_create(struct ubi_volume_info *vi)
 	dev = kzalloc(sizeof(struct ubiblock), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
+=======
+		ret = -EEXIST;
+		goto out_unlock;
+	}
+
+	dev = kzalloc(sizeof(struct ubiblock), GFP_KERNEL);
+	if (!dev) {
+		ret = -ENOMEM;
+		goto out_unlock;
+	}
+>>>>>>> v4.9.227
 
 	mutex_init(&dev->dev_mutex);
 
@@ -440,14 +466,22 @@ int ubiblock_create(struct ubi_volume_info *vi)
 		goto out_free_queue;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&devices_mutex);
 	list_add_tail(&dev->list, &ubiblock_devices);
 	mutex_unlock(&devices_mutex);
+=======
+	list_add_tail(&dev->list, &ubiblock_devices);
+>>>>>>> v4.9.227
 
 	/* Must be the last step: anyone can call file ops from now on */
 	add_disk(dev->gd);
 	dev_info(disk_to_dev(dev->gd), "created from ubi%d:%d(%s)",
 		 dev->ubi_num, dev->vol_id, vi->name);
+<<<<<<< HEAD
+=======
+	mutex_unlock(&devices_mutex);
+>>>>>>> v4.9.227
 	return 0;
 
 out_free_queue:
@@ -460,6 +494,11 @@ out_put_disk:
 	put_disk(dev->gd);
 out_free_dev:
 	kfree(dev);
+<<<<<<< HEAD
+=======
+out_unlock:
+	mutex_unlock(&devices_mutex);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -481,30 +520,59 @@ static void ubiblock_cleanup(struct ubiblock *dev)
 int ubiblock_remove(struct ubi_volume_info *vi)
 {
 	struct ubiblock *dev;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	mutex_lock(&devices_mutex);
 	dev = find_dev_nolock(vi->ubi_num, vi->vol_id);
 	if (!dev) {
+<<<<<<< HEAD
 		mutex_unlock(&devices_mutex);
 		return -ENODEV;
+=======
+		ret = -ENODEV;
+		goto out_unlock;
+>>>>>>> v4.9.227
 	}
 
 	/* Found a device, let's lock it so we can check if it's busy */
 	mutex_lock(&dev->dev_mutex);
 	if (dev->refcnt > 0) {
+<<<<<<< HEAD
 		mutex_unlock(&dev->dev_mutex);
 		mutex_unlock(&devices_mutex);
 		return -EBUSY;
+=======
+		ret = -EBUSY;
+		goto out_unlock_dev;
+>>>>>>> v4.9.227
 	}
 
 	/* Remove from device list */
 	list_del(&dev->list);
+<<<<<<< HEAD
 	mutex_unlock(&devices_mutex);
 
 	ubiblock_cleanup(dev);
 	mutex_unlock(&dev->dev_mutex);
 	kfree(dev);
 	return 0;
+=======
+	ubiblock_cleanup(dev);
+	mutex_unlock(&dev->dev_mutex);
+	mutex_unlock(&devices_mutex);
+
+	kfree(dev);
+	return 0;
+
+out_unlock_dev:
+	mutex_unlock(&dev->dev_mutex);
+out_unlock:
+	mutex_unlock(&devices_mutex);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int ubiblock_resize(struct ubi_volume_info *vi)
@@ -633,6 +701,10 @@ static void ubiblock_remove_all(void)
 	struct ubiblock *next;
 	struct ubiblock *dev;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&devices_mutex);
+>>>>>>> v4.9.227
 	list_for_each_entry_safe(dev, next, &ubiblock_devices, list) {
 		/* The module is being forcefully removed */
 		WARN_ON(dev->desc);
@@ -641,6 +713,10 @@ static void ubiblock_remove_all(void)
 		ubiblock_cleanup(dev);
 		kfree(dev);
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&devices_mutex);
+>>>>>>> v4.9.227
 }
 
 int __init ubiblock_init(void)

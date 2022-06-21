@@ -94,6 +94,10 @@ static void __init dove_db_init(void)
 
 MACHINE_START(DOVE_DB, "Marvell DB-MV88AP510-BP Development Board")
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= DOVE_NR_IRQS,
+>>>>>>> v4.9.227
 	.init_machine	= dove_db_init,
 	.map_io		= dove_map_io,
 	.init_early	= dove_init_early,

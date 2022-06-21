@@ -10,6 +10,10 @@
 #include <linux/linkage.h>
 #include <linux/init.h>
 #include <asm/memory.h>
+<<<<<<< HEAD
+=======
+#include <asm/assembler.h>
+>>>>>>> v4.9.227
 
 	.arch	armv7-a
 	.arm
@@ -19,20 +23,32 @@ ENTRY(secondary_trampoline)
 	 * Thus, we can just subtract the PAGE_OFFSET to get the physical
 	 * address of &cpu1start_addr. This would not work for platforms
 	 * where the physical memory does not start at 0x0.
+<<<<<<< HEAD
 	 */
+=======
+	*/
+ARM_BE8(setend	be)
+>>>>>>> v4.9.227
 	adr	r0, 1f
 	ldmia	r0, {r1, r2}
 	sub	r2, r2, #PAGE_OFFSET
 	ldr	r3, [r2]
 	ldr	r4, [r3]
+<<<<<<< HEAD
+=======
+ARM_BE8(rev	r4, r4)
+>>>>>>> v4.9.227
 	bx	r4
 
 	.align
 1:	.long	.
 	.long	socfpga_cpu1start_addr
 ENTRY(secondary_trampoline_end)
+<<<<<<< HEAD
 
 ENTRY(socfpga_secondary_startup)
        bl      v7_invalidate_l1
        b       secondary_startup
 ENDPROC(socfpga_secondary_startup)
+=======
+>>>>>>> v4.9.227

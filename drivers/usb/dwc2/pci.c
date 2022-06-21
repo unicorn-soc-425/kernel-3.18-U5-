@@ -50,6 +50,7 @@
 
 #include <linux/usb/hcd.h>
 #include <linux/usb/ch11.h>
+<<<<<<< HEAD
 
 #include "core.h"
 #include "hcd.h"
@@ -150,6 +151,99 @@ static int dwc2_driver_probe(struct pci_dev *dev,
 	pci_set_drvdata(dev, hsotg);
 
 	return retval;
+=======
+#include <linux/platform_device.h>
+#include <linux/usb/usb_phy_generic.h>
+
+#define PCI_PRODUCT_ID_HAPS_HSOTG	0xabc0
+
+static const char dwc2_driver_name[] = "dwc2-pci";
+
+struct dwc2_pci_glue {
+	struct platform_device *dwc2;
+	struct platform_device *phy;
+};
+
+static void dwc2_pci_remove(struct pci_dev *pci)
+{
+	struct dwc2_pci_glue *glue = pci_get_drvdata(pci);
+
+	platform_device_unregister(glue->dwc2);
+	usb_phy_generic_unregister(glue->phy);
+	kfree(glue);
+	pci_set_drvdata(pci, NULL);
+}
+
+static int dwc2_pci_probe(struct pci_dev *pci,
+		const struct pci_device_id *id)
+{
+	struct resource		res[2];
+	struct platform_device	*dwc2;
+	struct platform_device	*phy;
+	int			ret;
+	struct device		*dev = &pci->dev;
+	struct dwc2_pci_glue	*glue;
+
+	ret = pcim_enable_device(pci);
+	if (ret) {
+		dev_err(dev, "failed to enable pci device\n");
+		return -ENODEV;
+	}
+
+	pci_set_master(pci);
+
+	dwc2 = platform_device_alloc("dwc2", PLATFORM_DEVID_AUTO);
+	if (!dwc2) {
+		dev_err(dev, "couldn't allocate dwc2 device\n");
+		return -ENOMEM;
+	}
+
+	memset(res, 0x00, sizeof(struct resource) * ARRAY_SIZE(res));
+
+	res[0].start	= pci_resource_start(pci, 0);
+	res[0].end	= pci_resource_end(pci, 0);
+	res[0].name	= "dwc2";
+	res[0].flags	= IORESOURCE_MEM;
+
+	res[1].start	= pci->irq;
+	res[1].name	= "dwc2";
+	res[1].flags	= IORESOURCE_IRQ;
+
+	ret = platform_device_add_resources(dwc2, res, ARRAY_SIZE(res));
+	if (ret) {
+		dev_err(dev, "couldn't add resources to dwc2 device\n");
+		return ret;
+	}
+
+	dwc2->dev.parent = dev;
+
+	phy = usb_phy_generic_register();
+	if (IS_ERR(phy)) {
+		dev_err(dev, "error registering generic PHY (%ld)\n",
+			PTR_ERR(phy));
+		return PTR_ERR(phy);
+	}
+
+	ret = platform_device_add(dwc2);
+	if (ret) {
+		dev_err(dev, "failed to register dwc2 device\n");
+		goto err;
+	}
+
+	glue = kzalloc(sizeof(*glue), GFP_KERNEL);
+	if (!glue)
+		return -ENOMEM;
+
+	glue->phy = phy;
+	glue->dwc2 = dwc2;
+	pci_set_drvdata(pci, glue);
+
+	return 0;
+err:
+	usb_phy_generic_unregister(phy);
+	platform_device_put(dwc2);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static const struct pci_device_id dwc2_pci_ids[] = {
@@ -167,8 +261,13 @@ MODULE_DEVICE_TABLE(pci, dwc2_pci_ids);
 static struct pci_driver dwc2_pci_driver = {
 	.name = dwc2_driver_name,
 	.id_table = dwc2_pci_ids,
+<<<<<<< HEAD
 	.probe = dwc2_driver_probe,
 	.remove = dwc2_driver_remove,
+=======
+	.probe = dwc2_pci_probe,
+	.remove = dwc2_pci_remove,
+>>>>>>> v4.9.227
 };
 
 module_pci_driver(dwc2_pci_driver);

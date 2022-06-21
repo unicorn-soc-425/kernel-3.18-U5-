@@ -161,7 +161,11 @@ static u32 ipu_ch_param_read_field(struct ipuv3_channel *ch, u32 wbs)
  * The DRM pixel formats and IPU internal representation are ordered the other
  * way around, with the first named component ordered at the most significant
  * bits. Further, V4L2 formats are not well defined:
+<<<<<<< HEAD
  *     http://linuxtv.org/downloads/v4l-dvb-apis/packed-rgb.html
+=======
+ *     https://linuxtv.org/downloads/v4l-dvb-apis/packed-rgb.html
+>>>>>>> v4.9.227
  * We choose the interpretation which matches GStreamer behavior.
  */
 static int v4l2_pix_fmt_to_drm_fourcc(u32 pixelformat)
@@ -253,6 +257,16 @@ void ipu_cpmem_set_buffer(struct ipuv3_channel *ch, int bufnum, dma_addr_t buf)
 }
 EXPORT_SYMBOL_GPL(ipu_cpmem_set_buffer);
 
+<<<<<<< HEAD
+=======
+void ipu_cpmem_set_uv_offset(struct ipuv3_channel *ch, u32 u_off, u32 v_off)
+{
+	ipu_ch_param_write_field(ch, IPU_FIELD_UBO, u_off / 8);
+	ipu_ch_param_write_field(ch, IPU_FIELD_VBO, v_off / 8);
+}
+EXPORT_SYMBOL_GPL(ipu_cpmem_set_uv_offset);
+
+>>>>>>> v4.9.227
 void ipu_cpmem_interlaced_scan(struct ipuv3_channel *ch, int stride)
 {
 	ipu_ch_param_write_field(ch, IPU_FIELD_SO, 1);
@@ -268,6 +282,15 @@ void ipu_cpmem_set_axi_id(struct ipuv3_channel *ch, u32 id)
 }
 EXPORT_SYMBOL_GPL(ipu_cpmem_set_axi_id);
 
+<<<<<<< HEAD
+=======
+int ipu_cpmem_get_burstsize(struct ipuv3_channel *ch)
+{
+	return ipu_ch_param_read_field(ch, IPU_FIELD_NPB) + 1;
+}
+EXPORT_SYMBOL_GPL(ipu_cpmem_get_burstsize);
+
+>>>>>>> v4.9.227
 void ipu_cpmem_set_burstsize(struct ipuv3_channel *ch, int burstsize)
 {
 	ipu_ch_param_write_field(ch, IPU_FIELD_NPB, burstsize - 1);
@@ -395,6 +418,7 @@ void ipu_cpmem_set_yuv_interleaved(struct ipuv3_channel *ch, u32 pixel_format)
 EXPORT_SYMBOL_GPL(ipu_cpmem_set_yuv_interleaved);
 
 void ipu_cpmem_set_yuv_planar_full(struct ipuv3_channel *ch,
+<<<<<<< HEAD
 				   u32 pixel_format, int stride,
 				   int u_offset, int v_offset)
 {
@@ -417,12 +441,21 @@ void ipu_cpmem_set_yuv_planar_full(struct ipuv3_channel *ch,
 		ipu_ch_param_write_field(ch, IPU_FIELD_VBO, u_offset / 8);
 		break;
 	}
+=======
+				   unsigned int uv_stride,
+				   unsigned int u_offset, unsigned int v_offset)
+{
+	ipu_ch_param_write_field(ch, IPU_FIELD_SLUV, uv_stride - 1);
+	ipu_ch_param_write_field(ch, IPU_FIELD_UBO, u_offset / 8);
+	ipu_ch_param_write_field(ch, IPU_FIELD_VBO, v_offset / 8);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(ipu_cpmem_set_yuv_planar_full);
 
 void ipu_cpmem_set_yuv_planar(struct ipuv3_channel *ch,
 			      u32 pixel_format, int stride, int height)
 {
+<<<<<<< HEAD
 	int u_offset, v_offset;
 	int uv_stride = 0;
 
@@ -453,6 +486,42 @@ void ipu_cpmem_set_yuv_planar(struct ipuv3_channel *ch,
 EXPORT_SYMBOL_GPL(ipu_cpmem_set_yuv_planar);
 
 static const struct ipu_rgb def_rgb_32 = {
+=======
+	int fourcc, u_offset, v_offset;
+	int uv_stride = 0;
+
+	fourcc = v4l2_pix_fmt_to_drm_fourcc(pixel_format);
+	switch (fourcc) {
+	case DRM_FORMAT_YUV420:
+		uv_stride = stride / 2;
+		u_offset = stride * height;
+		v_offset = u_offset + (uv_stride * height / 2);
+		break;
+	case DRM_FORMAT_YVU420:
+		uv_stride = stride / 2;
+		v_offset = stride * height;
+		u_offset = v_offset + (uv_stride * height / 2);
+		break;
+	case DRM_FORMAT_YUV422:
+		uv_stride = stride / 2;
+		u_offset = stride * height;
+		v_offset = u_offset + (uv_stride * height);
+		break;
+	case DRM_FORMAT_NV12:
+	case DRM_FORMAT_NV16:
+		uv_stride = stride;
+		u_offset = stride * height;
+		v_offset = 0;
+		break;
+	default:
+		return;
+	}
+	ipu_cpmem_set_yuv_planar_full(ch, uv_stride, u_offset, v_offset);
+}
+EXPORT_SYMBOL_GPL(ipu_cpmem_set_yuv_planar);
+
+static const struct ipu_rgb def_xrgb_32 = {
+>>>>>>> v4.9.227
 	.red	= { .offset = 16, .length = 8, },
 	.green	= { .offset =  8, .length = 8, },
 	.blue	= { .offset =  0, .length = 8, },
@@ -460,7 +529,11 @@ static const struct ipu_rgb def_rgb_32 = {
 	.bits_per_pixel = 32,
 };
 
+<<<<<<< HEAD
 static const struct ipu_rgb def_bgr_32 = {
+=======
+static const struct ipu_rgb def_xbgr_32 = {
+>>>>>>> v4.9.227
 	.red	= { .offset =  0, .length = 8, },
 	.green	= { .offset =  8, .length = 8, },
 	.blue	= { .offset = 16, .length = 8, },
@@ -468,6 +541,25 @@ static const struct ipu_rgb def_bgr_32 = {
 	.bits_per_pixel = 32,
 };
 
+<<<<<<< HEAD
+=======
+static const struct ipu_rgb def_rgbx_32 = {
+	.red	= { .offset = 24, .length = 8, },
+	.green	= { .offset = 16, .length = 8, },
+	.blue	= { .offset =  8, .length = 8, },
+	.transp = { .offset =  0, .length = 8, },
+	.bits_per_pixel = 32,
+};
+
+static const struct ipu_rgb def_bgrx_32 = {
+	.red	= { .offset =  8, .length = 8, },
+	.green	= { .offset = 16, .length = 8, },
+	.blue	= { .offset = 24, .length = 8, },
+	.transp = { .offset =  0, .length = 8, },
+	.bits_per_pixel = 32,
+};
+
+>>>>>>> v4.9.227
 static const struct ipu_rgb def_rgb_24 = {
 	.red	= { .offset = 16, .length = 8, },
 	.green	= { .offset =  8, .length = 8, },
@@ -500,6 +592,49 @@ static const struct ipu_rgb def_bgr_16 = {
 	.bits_per_pixel = 16,
 };
 
+<<<<<<< HEAD
+=======
+static const struct ipu_rgb def_argb_16 = {
+	.red	= { .offset = 10, .length = 5, },
+	.green	= { .offset =  5, .length = 5, },
+	.blue	= { .offset =  0, .length = 5, },
+	.transp = { .offset = 15, .length = 1, },
+	.bits_per_pixel = 16,
+};
+
+static const struct ipu_rgb def_argb_16_4444 = {
+	.red	= { .offset =  8, .length = 4, },
+	.green	= { .offset =  4, .length = 4, },
+	.blue	= { .offset =  0, .length = 4, },
+	.transp = { .offset = 12, .length = 4, },
+	.bits_per_pixel = 16,
+};
+
+static const struct ipu_rgb def_abgr_16 = {
+	.red	= { .offset =  0, .length = 5, },
+	.green	= { .offset =  5, .length = 5, },
+	.blue	= { .offset = 10, .length = 5, },
+	.transp = { .offset = 15, .length = 1, },
+	.bits_per_pixel = 16,
+};
+
+static const struct ipu_rgb def_rgba_16 = {
+	.red	= { .offset = 11, .length = 5, },
+	.green	= { .offset =  6, .length = 5, },
+	.blue	= { .offset =  1, .length = 5, },
+	.transp = { .offset =  0, .length = 1, },
+	.bits_per_pixel = 16,
+};
+
+static const struct ipu_rgb def_bgra_16 = {
+	.red	= { .offset =  1, .length = 5, },
+	.green	= { .offset =  6, .length = 5, },
+	.blue	= { .offset = 11, .length = 5, },
+	.transp = { .offset =  0, .length = 1, },
+	.bits_per_pixel = 16,
+};
+
+>>>>>>> v4.9.227
 #define Y_OFFSET(pix, x, y)	((x) + pix->width * (y))
 #define U_OFFSET(pix, x, y)	((pix->width * pix->height) +		\
 				 (pix->width * (y) / 4) + (x) / 2)
@@ -563,11 +698,27 @@ int ipu_cpmem_set_fmt(struct ipuv3_channel *ch, u32 drm_fourcc)
 		break;
 	case DRM_FORMAT_ABGR8888:
 	case DRM_FORMAT_XBGR8888:
+<<<<<<< HEAD
 		ipu_cpmem_set_format_rgb(ch, &def_bgr_32);
 		break;
 	case DRM_FORMAT_ARGB8888:
 	case DRM_FORMAT_XRGB8888:
 		ipu_cpmem_set_format_rgb(ch, &def_rgb_32);
+=======
+		ipu_cpmem_set_format_rgb(ch, &def_xbgr_32);
+		break;
+	case DRM_FORMAT_ARGB8888:
+	case DRM_FORMAT_XRGB8888:
+		ipu_cpmem_set_format_rgb(ch, &def_xrgb_32);
+		break;
+	case DRM_FORMAT_RGBA8888:
+	case DRM_FORMAT_RGBX8888:
+		ipu_cpmem_set_format_rgb(ch, &def_rgbx_32);
+		break;
+	case DRM_FORMAT_BGRA8888:
+	case DRM_FORMAT_BGRX8888:
+		ipu_cpmem_set_format_rgb(ch, &def_bgrx_32);
+>>>>>>> v4.9.227
 		break;
 	case DRM_FORMAT_BGR888:
 		ipu_cpmem_set_format_rgb(ch, &def_bgr_24);
@@ -581,6 +732,24 @@ int ipu_cpmem_set_fmt(struct ipuv3_channel *ch, u32 drm_fourcc)
 	case DRM_FORMAT_BGR565:
 		ipu_cpmem_set_format_rgb(ch, &def_bgr_16);
 		break;
+<<<<<<< HEAD
+=======
+	case DRM_FORMAT_ARGB1555:
+		ipu_cpmem_set_format_rgb(ch, &def_argb_16);
+		break;
+	case DRM_FORMAT_ABGR1555:
+		ipu_cpmem_set_format_rgb(ch, &def_abgr_16);
+		break;
+	case DRM_FORMAT_RGBA5551:
+		ipu_cpmem_set_format_rgb(ch, &def_rgba_16);
+		break;
+	case DRM_FORMAT_BGRA5551:
+		ipu_cpmem_set_format_rgb(ch, &def_bgra_16);
+		break;
+	case DRM_FORMAT_ARGB4444:
+		ipu_cpmem_set_format_rgb(ch, &def_argb_16_4444);
+		break;
+>>>>>>> v4.9.227
 	default:
 		return -EINVAL;
 	}
@@ -605,6 +774,18 @@ int ipu_cpmem_set_image(struct ipuv3_channel *ch, struct ipu_image *image)
 
 	switch (pix->pixelformat) {
 	case V4L2_PIX_FMT_YUV420:
+<<<<<<< HEAD
+=======
+		offset = Y_OFFSET(pix, image->rect.left, image->rect.top);
+		u_offset = U_OFFSET(pix, image->rect.left,
+				    image->rect.top) - offset;
+		v_offset = V_OFFSET(pix, image->rect.left,
+				    image->rect.top) - offset;
+
+		ipu_cpmem_set_yuv_planar_full(ch, pix->bytesperline / 2,
+					      u_offset, v_offset);
+		break;
+>>>>>>> v4.9.227
 	case V4L2_PIX_FMT_YVU420:
 		offset = Y_OFFSET(pix, image->rect.left, image->rect.top);
 		u_offset = U_OFFSET(pix, image->rect.left,
@@ -612,9 +793,14 @@ int ipu_cpmem_set_image(struct ipuv3_channel *ch, struct ipu_image *image)
 		v_offset = V_OFFSET(pix, image->rect.left,
 				    image->rect.top) - offset;
 
+<<<<<<< HEAD
 		ipu_cpmem_set_yuv_planar_full(ch, pix->pixelformat,
 					      pix->bytesperline,
 					      u_offset, v_offset);
+=======
+		ipu_cpmem_set_yuv_planar_full(ch, pix->bytesperline / 2,
+					      v_offset, u_offset);
+>>>>>>> v4.9.227
 		break;
 	case V4L2_PIX_FMT_YUV422P:
 		offset = Y_OFFSET(pix, image->rect.left, image->rect.top);
@@ -623,8 +809,12 @@ int ipu_cpmem_set_image(struct ipuv3_channel *ch, struct ipu_image *image)
 		v_offset = V2_OFFSET(pix, image->rect.left,
 				     image->rect.top) - offset;
 
+<<<<<<< HEAD
 		ipu_cpmem_set_yuv_planar_full(ch, pix->pixelformat,
 					      pix->bytesperline,
+=======
+		ipu_cpmem_set_yuv_planar_full(ch, pix->bytesperline / 2,
+>>>>>>> v4.9.227
 					      u_offset, v_offset);
 		break;
 	case V4L2_PIX_FMT_NV12:
@@ -633,8 +823,12 @@ int ipu_cpmem_set_image(struct ipuv3_channel *ch, struct ipu_image *image)
 				     image->rect.top) - offset;
 		v_offset = 0;
 
+<<<<<<< HEAD
 		ipu_cpmem_set_yuv_planar_full(ch, pix->pixelformat,
 					      pix->bytesperline,
+=======
+		ipu_cpmem_set_yuv_planar_full(ch, pix->bytesperline,
+>>>>>>> v4.9.227
 					      u_offset, v_offset);
 		break;
 	case V4L2_PIX_FMT_NV16:
@@ -643,8 +837,12 @@ int ipu_cpmem_set_image(struct ipuv3_channel *ch, struct ipu_image *image)
 				      image->rect.top) - offset;
 		v_offset = 0;
 
+<<<<<<< HEAD
 		ipu_cpmem_set_yuv_planar_full(ch, pix->pixelformat,
 					      pix->bytesperline,
+=======
+		ipu_cpmem_set_yuv_planar_full(ch, pix->bytesperline,
+>>>>>>> v4.9.227
 					      u_offset, v_offset);
 		break;
 	case V4L2_PIX_FMT_UYVY:

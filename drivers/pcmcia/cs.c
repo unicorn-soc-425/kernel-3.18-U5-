@@ -177,8 +177,13 @@ int pcmcia_register_socket(struct pcmcia_socket *socket)
 
 	wait_for_completion(&socket->thread_done);
 	if (!socket->thread) {
+<<<<<<< HEAD
 		dev_printk(KERN_WARNING, &socket->dev,
 			   "PCMCIA: warning: socket thread did not start\n");
+=======
+		dev_warn(&socket->dev,
+			 "PCMCIA: warning: socket thread did not start\n");
+>>>>>>> v4.9.227
 		return -EIO;
 	}
 
@@ -275,7 +280,11 @@ static int socket_reset(struct pcmcia_socket *skt)
 		msleep(unreset_check * 10);
 	}
 
+<<<<<<< HEAD
 	dev_printk(KERN_ERR, &skt->dev, "time out after reset.\n");
+=======
+	dev_err(&skt->dev, "time out after reset\n");
+>>>>>>> v4.9.227
 	return -ETIMEDOUT;
 }
 
@@ -325,8 +334,13 @@ static void socket_shutdown(struct pcmcia_socket *s)
 
 	s->ops->get_status(s, &status);
 	if (status & SS_POWERON) {
+<<<<<<< HEAD
 		dev_printk(KERN_ERR, &s->dev,
 			   "*** DANGER *** unable to remove socket power\n");
+=======
+		dev_err(&s->dev,
+			"*** DANGER *** unable to remove socket power\n");
+>>>>>>> v4.9.227
 	}
 
 	s->state &= ~SOCKET_INUSE;
@@ -356,15 +370,23 @@ static int socket_setup(struct pcmcia_socket *skt, int initial_delay)
 	}
 
 	if (status & SS_PENDING) {
+<<<<<<< HEAD
 		dev_printk(KERN_ERR, &skt->dev,
 			   "voltage interrogation timed out.\n");
+=======
+		dev_err(&skt->dev, "voltage interrogation timed out\n");
+>>>>>>> v4.9.227
 		return -ETIMEDOUT;
 	}
 
 	if (status & SS_CARDBUS) {
 		if (!(skt->features & SS_CAP_CARDBUS)) {
+<<<<<<< HEAD
 			dev_printk(KERN_ERR, &skt->dev,
 				"cardbus cards are not supported.\n");
+=======
+			dev_err(&skt->dev, "cardbus cards are not supported\n");
+>>>>>>> v4.9.227
 			return -EINVAL;
 		}
 		skt->state |= SOCKET_CARDBUS;
@@ -379,7 +401,11 @@ static int socket_setup(struct pcmcia_socket *skt, int initial_delay)
 	else if (!(status & SS_XVCARD))
 		skt->socket.Vcc = skt->socket.Vpp = 50;
 	else {
+<<<<<<< HEAD
 		dev_printk(KERN_ERR, &skt->dev, "unsupported voltage key.\n");
+=======
+		dev_err(&skt->dev, "unsupported voltage key\n");
+>>>>>>> v4.9.227
 		return -EIO;
 	}
 
@@ -396,7 +422,11 @@ static int socket_setup(struct pcmcia_socket *skt, int initial_delay)
 
 	skt->ops->get_status(skt, &status);
 	if (!(status & SS_POWERON)) {
+<<<<<<< HEAD
 		dev_printk(KERN_ERR, &skt->dev, "unable to apply power.\n");
+=======
+		dev_err(&skt->dev, "unable to apply power\n");
+>>>>>>> v4.9.227
 		return -EIO;
 	}
 
@@ -429,8 +459,12 @@ static int socket_insert(struct pcmcia_socket *skt)
 	if (ret == 0) {
 		skt->state |= SOCKET_PRESENT;
 
+<<<<<<< HEAD
 		dev_printk(KERN_NOTICE, &skt->dev,
 			   "pccard: %s card inserted into slot %d\n",
+=======
+		dev_notice(&skt->dev, "pccard: %s card inserted into slot %d\n",
+>>>>>>> v4.9.227
 			   (skt->state & SOCKET_CARDBUS) ? "CardBus" : "PCMCIA",
 			   skt->sock);
 
@@ -558,8 +592,12 @@ static int socket_resume(struct pcmcia_socket *skt)
 
 static void socket_remove(struct pcmcia_socket *skt)
 {
+<<<<<<< HEAD
 	dev_printk(KERN_NOTICE, &skt->dev,
 		   "pccard: card ejected from slot %d\n", skt->sock);
+=======
+	dev_notice(&skt->dev, "pccard: card ejected from slot %d\n", skt->sock);
+>>>>>>> v4.9.227
 	socket_shutdown(skt);
 }
 
@@ -605,8 +643,12 @@ static int pccardd(void *__skt)
 	/* register with the device core */
 	ret = device_register(&skt->dev);
 	if (ret) {
+<<<<<<< HEAD
 		dev_printk(KERN_WARNING, &skt->dev,
 			   "PCMCIA: unable to register socket\n");
+=======
+		dev_warn(&skt->dev, "PCMCIA: unable to register socket\n");
+>>>>>>> v4.9.227
 		skt->thread = NULL;
 		complete(&skt->thread_done);
 		return 0;
@@ -626,8 +668,11 @@ static int pccardd(void *__skt)
 		unsigned int events;
 		unsigned int sysfs_events;
 
+<<<<<<< HEAD
 		set_current_state(TASK_INTERRUPTIBLE);
 
+=======
+>>>>>>> v4.9.227
 		spin_lock_irqsave(&skt->thread_lock, flags);
 		events = skt->thread_events;
 		skt->thread_events = 0;
@@ -675,11 +720,23 @@ static int pccardd(void *__skt)
 		if (kthread_should_stop())
 			break;
 
+<<<<<<< HEAD
 		schedule();
 		try_to_freeze();
 	}
 	/* make sure we are running before we exit */
 	set_current_state(TASK_RUNNING);
+=======
+		set_current_state(TASK_INTERRUPTIBLE);
+
+		schedule();
+
+		/* make sure we are running */
+		__set_current_state(TASK_RUNNING);
+
+		try_to_freeze();
+	}
+>>>>>>> v4.9.227
 
 	/* shut down socket, if a device is still present */
 	if (skt->state & SOCKET_PRESENT) {

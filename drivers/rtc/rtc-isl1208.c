@@ -15,8 +15,11 @@
 #include <linux/bcd.h>
 #include <linux/rtc.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.3"
 
+=======
+>>>>>>> v4.9.227
 /* Register map */
 /* rtc section */
 #define ISL1208_REG_SC  0x00
@@ -370,13 +373,17 @@ isl1208_i2c_set_alarm(struct i2c_client *client, struct rtc_wkalrm *alarm)
 	struct rtc_time *alarm_tm = &alarm->time;
 	u8 regs[ISL1208_ALARM_SECTION_LEN] = { 0, };
 	const int offs = ISL1208_REG_SCA;
+<<<<<<< HEAD
 	unsigned long rtc_secs, alarm_secs;
+=======
+>>>>>>> v4.9.227
 	struct rtc_time rtc_tm;
 	int err, enable;
 
 	err = isl1208_i2c_read_time(client, &rtc_tm);
 	if (err)
 		return err;
+<<<<<<< HEAD
 	err = rtc_tm_to_time(&rtc_tm, &rtc_secs);
 	if (err)
 		return err;
@@ -386,6 +393,11 @@ isl1208_i2c_set_alarm(struct i2c_client *client, struct rtc_wkalrm *alarm)
 
 	/* If the alarm time is before the current time disable the alarm */
 	if (!alarm->enabled || alarm_secs <= rtc_secs)
+=======
+
+	/* If the alarm time is before the current time disable the alarm */
+	if (!alarm->enabled || rtc_tm_sub(alarm_tm, &rtc_tm) <= 0)
+>>>>>>> v4.9.227
 		enable = 0x00;
 	else
 		enable = 0x80;
@@ -639,6 +651,7 @@ isl1208_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	if (isl1208_i2c_validate_client(client) < 0)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	dev_info(&client->dev,
 		 "chip found, driver version " DRV_VERSION "\n");
 
@@ -646,6 +659,12 @@ isl1208_probe(struct i2c_client *client, const struct i2c_device_id *id)
 		rc = devm_request_threaded_irq(&client->dev, client->irq, NULL,
 					       isl1208_rtc_interrupt,
 					       IRQF_SHARED,
+=======
+	if (client->irq > 0) {
+		rc = devm_request_threaded_irq(&client->dev, client->irq, NULL,
+					       isl1208_rtc_interrupt,
+					       IRQF_SHARED | IRQF_ONESHOT,
+>>>>>>> v4.9.227
 					       isl1208_driver.driver.name,
 					       client);
 		if (!rc) {
@@ -713,4 +732,7 @@ module_i2c_driver(isl1208_driver);
 MODULE_AUTHOR("Herbert Valerio Riedel <hvr@gnu.org>");
 MODULE_DESCRIPTION("Intersil ISL1208 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227

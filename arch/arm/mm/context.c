@@ -15,7 +15,10 @@
 #include <linux/mm.h>
 #include <linux/smp.h>
 #include <linux/percpu.h>
+<<<<<<< HEAD
 #include <linux/msm_rtb.h>
+=======
+>>>>>>> v4.9.227
 
 #include <asm/mmu_context.h>
 #include <asm/smp_plat.h>
@@ -121,7 +124,10 @@ static int contextidr_notifier(struct notifier_block *unused, unsigned long cmd,
 	"	mcr	p15, 0, %0, c13, c0, 1\n"
 	: "=r" (contextidr), "+r" (pid)
 	: "I" (~ASID_MASK));
+<<<<<<< HEAD
 	uncached_logk(LOGK_CTXID, (void *)contextidr);
+=======
+>>>>>>> v4.9.227
 	isb();
 
 	return NOTIFY_OK;

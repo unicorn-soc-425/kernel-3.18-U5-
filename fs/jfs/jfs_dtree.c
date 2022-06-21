@@ -1040,8 +1040,13 @@ static int dtSplitUp(tid_t tid,
 		pxdlist.maxnpxd = 1;
 		pxdlist.npxd = 0;
 		pxd = &pxdlist.pxd[0];
+<<<<<<< HEAD
 		PXDaddress(pxd, nxaddr)
 		    PXDlength(pxd, xlen + n);
+=======
+		PXDaddress(pxd, nxaddr);
+		PXDlength(pxd, xlen + n);
+>>>>>>> v4.9.227
 		split->pxdlist = &pxdlist;
 		if ((rc = dtExtendPage(tid, ip, split, btstack))) {
 			nxaddr = addressPXD(pxd);
@@ -3072,8 +3077,12 @@ int jfs_readdir(struct file *file, struct dir_context *ctx)
 			}
 			if (dirtab_slot.flag == DIR_INDEX_FREE) {
 				if (loop_count++ > JFS_IP(ip)->next_index) {
+<<<<<<< HEAD
 					jfs_err("jfs_readdir detected "
 						   "infinite loop!");
+=======
+					jfs_err("jfs_readdir detected infinite loop!");
+>>>>>>> v4.9.227
 					ctx->pos = DIREND;
 					return 0;
 				}
@@ -3151,8 +3160,12 @@ int jfs_readdir(struct file *file, struct dir_context *ctx)
 				if (!dir_emit(ctx, "..", 2, PARENT(ip), DT_DIR))
 					return 0;
 			} else {
+<<<<<<< HEAD
 				jfs_err("jfs_readdir called with "
 					"invalid offset!");
+=======
+				jfs_err("jfs_readdir called with invalid offset!");
+>>>>>>> v4.9.227
 			}
 			dtoffset->pn = 1;
 			dtoffset->index = 0;
@@ -3165,8 +3178,13 @@ int jfs_readdir(struct file *file, struct dir_context *ctx)
 		}
 
 		if ((rc = dtReadNext(ip, &ctx->pos, &btstack))) {
+<<<<<<< HEAD
 			jfs_err("jfs_readdir: unexpected rc = %d "
 				"from dtReadNext", rc);
+=======
+			jfs_err("jfs_readdir: unexpected rc = %d from dtReadNext",
+				rc);
+>>>>>>> v4.9.227
 			ctx->pos = DIREND;
 			return 0;
 		}

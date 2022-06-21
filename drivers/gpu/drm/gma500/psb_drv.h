@@ -465,6 +465,11 @@ struct drm_psb_private {
 	struct mutex gtt_mutex;
 	struct resource *gtt_mem;	/* Our PCI resource */
 
+<<<<<<< HEAD
+=======
+	struct mutex mmap_mutex;
+
+>>>>>>> v4.9.227
 	struct psb_mmu_driver *mmu;
 	struct psb_mmu_pd *pf_pd;
 
@@ -536,6 +541,10 @@ struct drm_psb_private {
 	int lvds_ssc_freq;
 	bool is_lvds_on;
 	bool is_mipi_on;
+<<<<<<< HEAD
+=======
+	bool lvds_enabled_in_vbt;
+>>>>>>> v4.9.227
 	u32 mipi_ctrl_display;
 
 	unsigned int core_freq;
@@ -651,6 +660,11 @@ struct psb_ops {
 	void (*init_pm)(struct drm_device *dev);
 	int (*save_regs)(struct drm_device *dev);
 	int (*restore_regs)(struct drm_device *dev);
+<<<<<<< HEAD
+=======
+	void (*save_crtc)(struct drm_crtc *crtc);
+	void (*restore_crtc)(struct drm_crtc *crtc);
+>>>>>>> v4.9.227
 	int (*power_up)(struct drm_device *dev);
 	int (*power_down)(struct drm_device *dev);
 	void (*update_wm)(struct drm_device *dev, struct drm_crtc *crtc);

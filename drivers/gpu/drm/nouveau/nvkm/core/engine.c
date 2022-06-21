@@ -137,11 +137,18 @@ nvkm_engine_func = {
 
 int
 nvkm_engine_ctor(const struct nvkm_engine_func *func,
+<<<<<<< HEAD
 		 struct nvkm_device *device, int index, u32 pmc_enable,
 		 bool enable, struct nvkm_engine *engine)
 {
 	nvkm_subdev_ctor(&nvkm_engine_func, device, index,
 			 pmc_enable, &engine->subdev);
+=======
+		 struct nvkm_device *device, int index, bool enable,
+		 struct nvkm_engine *engine)
+{
+	nvkm_subdev_ctor(&nvkm_engine_func, device, index, &engine->subdev);
+>>>>>>> v4.9.227
 	engine->func = func;
 
 	if (!nvkm_boolopt(device->cfgopt, nvkm_subdev_name[index], enable)) {
@@ -155,6 +162,7 @@ nvkm_engine_ctor(const struct nvkm_engine_func *func,
 
 int
 nvkm_engine_new_(const struct nvkm_engine_func *func,
+<<<<<<< HEAD
 		 struct nvkm_device *device, int index, u32 pmc_enable,
 		 bool enable, struct nvkm_engine **pengine)
 {
@@ -162,4 +170,12 @@ nvkm_engine_new_(const struct nvkm_engine_func *func,
 		return -ENOMEM;
 	return nvkm_engine_ctor(func, device, index, pmc_enable,
 				enable, *pengine);
+=======
+		 struct nvkm_device *device, int index, bool enable,
+		 struct nvkm_engine **pengine)
+{
+	if (!(*pengine = kzalloc(sizeof(**pengine), GFP_KERNEL)))
+		return -ENOMEM;
+	return nvkm_engine_ctor(func, device, index, enable, *pengine);
+>>>>>>> v4.9.227
 }

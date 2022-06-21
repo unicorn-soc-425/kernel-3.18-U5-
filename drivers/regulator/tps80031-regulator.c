@@ -746,7 +746,10 @@ static int tps80031_regulator_probe(struct platform_device *pdev)
 static struct platform_driver tps80031_regulator_driver = {
 	.driver	= {
 		.name	= "tps80031-pmic",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= tps80031_regulator_probe,
 };

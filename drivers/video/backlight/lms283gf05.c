@@ -192,7 +192,10 @@ static int lms283gf05_probe(struct spi_device *spi)
 static struct spi_driver lms283gf05_driver = {
 	.driver = {
 		.name	= "lms283gf05",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= lms283gf05_probe,
 };

@@ -4,6 +4,10 @@
 
 obj-$(CONFIG_MVMDIO) += mvmdio.o
 obj-$(CONFIG_MV643XX_ETH) += mv643xx_eth.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_MVNETA_BM) += mvneta_bm.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_MVNETA) += mvneta.o
 obj-$(CONFIG_MVPP2) += mvpp2.o
 obj-$(CONFIG_PXA168_ETH) += pxa168_eth.o

@@ -229,8 +229,14 @@ static int gssx_dec_linux_creds(struct xdr_stream *xdr,
 		kgid = make_kgid(&init_user_ns, tmp);
 		if (!gid_valid(kgid))
 			goto out_free_groups;
+<<<<<<< HEAD
 		GROUP_AT(creds->cr_group_info, i) = kgid;
 	}
+=======
+		creds->cr_group_info->gid[i] = kgid;
+	}
+	groups_sort(creds->cr_group_info);
+>>>>>>> v4.9.227
 
 	return 0;
 out_free_groups:
@@ -260,7 +266,11 @@ static int gssx_dec_option_array(struct xdr_stream *xdr,
 	if (!oa->data)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	creds = kmalloc(sizeof(struct svc_cred), GFP_KERNEL);
+=======
+	creds = kzalloc(sizeof(struct svc_cred), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!creds) {
 		kfree(oa->data);
 		return -ENOMEM;

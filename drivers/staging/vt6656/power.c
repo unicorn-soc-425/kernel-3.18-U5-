@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  *
  * File: power.c
  *
@@ -59,10 +62,16 @@ void vnt_enable_power_saving(struct vnt_private *priv, u16 listen_interval)
 	/* set period of power up before TBTT */
 	vnt_mac_write_word(priv, MAC_REG_PWBT, C_PWBT);
 
+<<<<<<< HEAD
 	if (priv->op_mode != NL80211_IFTYPE_ADHOC) {
 		/* set AID */
 		vnt_mac_write_word(priv, MAC_REG_AIDATIM, aid);
 	}
+=======
+	if (priv->op_mode != NL80211_IFTYPE_ADHOC)
+		/* set AID */
+		vnt_mac_write_word(priv, MAC_REG_AIDATIM, aid);
+>>>>>>> v4.9.227
 
 	/* Warren:06-18-2004,the sequence must follow
 	 * PSEN->AUTOSLEEP->GO2DOZE
@@ -85,11 +94,18 @@ void vnt_enable_power_saving(struct vnt_private *priv, u16 listen_interval)
 
 		/* first time set listen next beacon */
 		vnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_LNBCN);
+<<<<<<< HEAD
 	} else {
 
 		/* always listen beacon */
 		vnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_ALBCN);
 	}
+=======
+	} else
+
+		/* always listen beacon */
+		vnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_ALBCN);
+>>>>>>> v4.9.227
 
 	dev_dbg(&priv->usb->dev,  "PS:Power Saving Mode Enable...\n");
 }
@@ -109,7 +125,11 @@ void vnt_disable_power_saving(struct vnt_private *priv)
 
 	/* disable power saving hw function */
 	vnt_control_out(priv, MESSAGE_TYPE_DISABLE_PS, 0,
+<<<<<<< HEAD
 						0, 0, NULL);
+=======
+			0, 0, NULL);
+>>>>>>> v4.9.227
 
 	/* clear AutoSleep */
 	vnt_mac_reg_bits_off(priv, MAC_REG_PSCFG, PSCFG_AUTOSLEEP);
@@ -134,7 +154,11 @@ int vnt_next_tbtt_wakeup(struct vnt_private *priv)
 	struct ieee80211_conf *conf = &hw->conf;
 	int wake_up = false;
 
+<<<<<<< HEAD
 	if (conf->listen_interval == 1) {
+=======
+	if (conf->listen_interval > 1) {
+>>>>>>> v4.9.227
 		/* Turn on wake up to listen next beacon */
 		vnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_LNBCN);
 		wake_up = true;

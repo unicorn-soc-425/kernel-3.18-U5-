@@ -16,10 +16,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+>>>>>>> v4.9.227
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
@@ -27,6 +30,10 @@
 #define __ACPI_BUS_H__
 
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/property.h>
+>>>>>>> v4.9.227
 
 /* TBD: Make dynamic */
 #define ACPI_MAX_HANDLES	10
@@ -64,12 +71,21 @@ bool acpi_ata_match(acpi_handle handle);
 bool acpi_bay_match(acpi_handle handle);
 bool acpi_dock_match(acpi_handle handle);
 
+<<<<<<< HEAD
 bool acpi_check_dsm(acpi_handle handle, const u8 *uuid, int rev, u64 funcs);
 union acpi_object *acpi_evaluate_dsm(acpi_handle handle, const u8 *uuid,
 			int rev, int func, union acpi_object *argv4);
 
 static inline union acpi_object *
 acpi_evaluate_dsm_typed(acpi_handle handle, const u8 *uuid, int rev, int func,
+=======
+bool acpi_check_dsm(acpi_handle handle, const u8 *uuid, u64 rev, u64 funcs);
+union acpi_object *acpi_evaluate_dsm(acpi_handle handle, const u8 *uuid,
+			u64 rev, u64 func, union acpi_object *argv4);
+
+static inline union acpi_object *
+acpi_evaluate_dsm_typed(acpi_handle handle, const u8 *uuid, u64 rev, u64 func,
+>>>>>>> v4.9.227
 			union acpi_object *argv4, acpi_object_type type)
 {
 	union acpi_object *obj;
@@ -90,6 +106,11 @@ acpi_evaluate_dsm_typed(acpi_handle handle, const u8 *uuid, int rev, int func,
 	  .package.elements = (eles)			\
 	}
 
+<<<<<<< HEAD
+=======
+bool acpi_dev_found(const char *hid);
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_ACPI
 
 #include <linux/proc_fs.h>
@@ -132,7 +153,11 @@ static inline struct acpi_hotplug_profile *to_acpi_hotplug_profile(
 struct acpi_scan_handler {
 	const struct acpi_device_id *ids;
 	struct list_head list_node;
+<<<<<<< HEAD
 	bool (*match)(char *idstr, const struct acpi_device_id **matchid);
+=======
+	bool (*match)(const char *idstr, const struct acpi_device_id **matchid);
+>>>>>>> v4.9.227
 	int (*attach)(struct acpi_device *dev, const struct acpi_device_id *id);
 	void (*detach)(struct acpi_device *dev);
 	void (*bind)(struct device *phys_dev);
@@ -207,7 +232,14 @@ struct acpi_device_flags {
 	u32 visited:1;
 	u32 hotplug_notify:1;
 	u32 is_dock_station:1;
+<<<<<<< HEAD
 	u32 reserved:23;
+=======
+	u32 of_compatible_ok:1;
+	u32 coherent_dma:1;
+	u32 cca_seen:1;
+	u32 reserved:20;
+>>>>>>> v4.9.227
 };
 
 /* File System */
@@ -227,7 +259,11 @@ typedef char acpi_device_class[20];
 
 struct acpi_hardware_id {
 	struct list_head list;
+<<<<<<< HEAD
 	char *id;
+=======
+	const char *id;
+>>>>>>> v4.9.227
 };
 
 struct acpi_pnp_type {
@@ -251,6 +287,10 @@ struct acpi_device_pnp {
 #define acpi_device_bid(d)	((d)->pnp.bus_id)
 #define acpi_device_adr(d)	((d)->pnp.bus_address)
 const char *acpi_device_hid(struct acpi_device *device);
+<<<<<<< HEAD
+=======
+#define acpi_device_uid(d)	((d)->pnp.unique_id)
+>>>>>>> v4.9.227
 #define acpi_device_name(d)	((d)->pnp.device_name)
 #define acpi_device_class(d)	((d)->pnp.device_class)
 
@@ -269,7 +309,10 @@ struct acpi_device_power_flags {
 struct acpi_device_power_state {
 	struct {
 		u8 valid:1;
+<<<<<<< HEAD
 		u8 os_accessible:1;
+=======
+>>>>>>> v4.9.227
 		u8 explicit_set:1;	/* _PSx present? */
 		u8 reserved:6;
 	} flags;
@@ -342,12 +385,25 @@ struct acpi_device_physical_node {
 struct acpi_device_data {
 	const union acpi_object *pointer;
 	const union acpi_object *properties;
+<<<<<<< HEAD
 };
 
+=======
+	const union acpi_object *of_compatible;
+	struct list_head subnodes;
+};
+
+struct acpi_gpio_mapping;
+
+>>>>>>> v4.9.227
 /* Device */
 struct acpi_device {
 	int device_type;
 	acpi_handle handle;		/* no handle for fixed hardware */
+<<<<<<< HEAD
+=======
+	struct fwnode_handle fwnode;
+>>>>>>> v4.9.227
 	struct acpi_device *parent;
 	struct list_head children;
 	struct list_head node;
@@ -364,14 +420,76 @@ struct acpi_device {
 	struct acpi_scan_handler *handler;
 	struct acpi_hotplug_context *hp;
 	struct acpi_driver *driver;
+<<<<<<< HEAD
 	void *driver_data;
 	struct device dev;
 	unsigned int physical_node_count;
+=======
+	const struct acpi_gpio_mapping *driver_gpios;
+	void *driver_data;
+	struct device dev;
+	unsigned int physical_node_count;
+	unsigned int dep_unmet;
+>>>>>>> v4.9.227
 	struct list_head physical_node_list;
 	struct mutex physical_node_lock;
 	void (*remove)(struct acpi_device *);
 };
 
+<<<<<<< HEAD
+=======
+/* Non-device subnode */
+struct acpi_data_node {
+	const char *name;
+	acpi_handle handle;
+	struct fwnode_handle fwnode;
+	struct acpi_device_data data;
+	struct list_head sibling;
+	struct kobject kobj;
+	struct completion kobj_done;
+};
+
+static inline bool is_acpi_node(struct fwnode_handle *fwnode)
+{
+	return !IS_ERR_OR_NULL(fwnode) && (fwnode->type == FWNODE_ACPI
+		|| fwnode->type == FWNODE_ACPI_DATA);
+}
+
+static inline bool is_acpi_device_node(struct fwnode_handle *fwnode)
+{
+	return !IS_ERR_OR_NULL(fwnode) && fwnode->type == FWNODE_ACPI;
+}
+
+static inline struct acpi_device *to_acpi_device_node(struct fwnode_handle *fwnode)
+{
+	return is_acpi_device_node(fwnode) ?
+		container_of(fwnode, struct acpi_device, fwnode) : NULL;
+}
+
+static inline bool is_acpi_data_node(struct fwnode_handle *fwnode)
+{
+	return fwnode && fwnode->type == FWNODE_ACPI_DATA;
+}
+
+static inline struct acpi_data_node *to_acpi_data_node(struct fwnode_handle *fwnode)
+{
+	return is_acpi_data_node(fwnode) ?
+		container_of(fwnode, struct acpi_data_node, fwnode) : NULL;
+}
+
+static inline bool acpi_data_node_match(struct fwnode_handle *fwnode,
+					const char *name)
+{
+	return is_acpi_data_node(fwnode) ?
+		(!strcmp(to_acpi_data_node(fwnode)->name, name)) : false;
+}
+
+static inline struct fwnode_handle *acpi_fwnode_handle(struct acpi_device *adev)
+{
+	return &adev->fwnode;
+}
+
+>>>>>>> v4.9.227
 static inline void *acpi_driver_data(struct acpi_device *d)
 {
 	return d->driver_data;
@@ -511,6 +629,12 @@ struct acpi_pci_root {
 
 /* helper */
 
+<<<<<<< HEAD
+=======
+bool acpi_dma_supported(struct acpi_device *adev);
+enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
+
+>>>>>>> v4.9.227
 struct acpi_device *acpi_find_child_device(struct acpi_device *parent,
 					   u64 address, bool check_children);
 int acpi_is_root_bridge(acpi_handle);
@@ -524,6 +648,10 @@ acpi_status acpi_add_pm_notifier(struct acpi_device *adev, struct device *dev,
 				 void (*work_func)(struct work_struct *work));
 acpi_status acpi_remove_pm_notifier(struct acpi_device *adev);
 int acpi_pm_device_sleep_state(struct device *, int *, int);
+<<<<<<< HEAD
+=======
+int acpi_pm_device_run_wake(struct device *, bool);
+>>>>>>> v4.9.227
 #else
 static inline acpi_status acpi_add_pm_notifier(struct acpi_device *adev,
 					       struct device *dev,
@@ -543,11 +671,14 @@ static inline int acpi_pm_device_sleep_state(struct device *d, int *p, int m)
 	return (m >= ACPI_STATE_D0 && m <= ACPI_STATE_D3_COLD) ?
 		m : ACPI_STATE_D0;
 }
+<<<<<<< HEAD
 #endif
 
 #ifdef CONFIG_PM_RUNTIME
 int acpi_pm_device_run_wake(struct device *, bool);
 #else
+=======
+>>>>>>> v4.9.227
 static inline int acpi_pm_device_run_wake(struct device *dev, bool enable)
 {
 	return -ENODEV;
@@ -581,7 +712,13 @@ static inline bool acpi_device_can_wakeup(struct acpi_device *adev)
 
 static inline bool acpi_device_can_poweroff(struct acpi_device *adev)
 {
+<<<<<<< HEAD
 	return adev->power.states[ACPI_STATE_D3_COLD].flags.os_accessible;
+=======
+	return adev->power.states[ACPI_STATE_D3_COLD].flags.valid ||
+		((acpi_gbl_FADT.header.revision < 6) &&
+		adev->power.states[ACPI_STATE_D3_HOT].flags.explicit_set);
+>>>>>>> v4.9.227
 }
 
 #else	/* CONFIG_ACPI */

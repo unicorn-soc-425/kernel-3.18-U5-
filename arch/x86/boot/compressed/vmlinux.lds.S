@@ -70,5 +70,9 @@ SECTIONS
 		_epgtable = . ;
 	}
 #endif
+<<<<<<< HEAD
+=======
+	. = ALIGN(PAGE_SIZE);	/* keep ZO size page aligned */
+>>>>>>> v4.9.227
 	_end = .;
 }

@@ -168,6 +168,12 @@ struct net2280_regs {
 #define     ENDPOINT_B_INTERRUPT                                2
 #define     ENDPOINT_A_INTERRUPT                                1
 #define     ENDPOINT_0_INTERRUPT                                0
+<<<<<<< HEAD
+=======
+#define     USB3380_IRQSTAT0_EP_INTR_MASK_IN (0xF << 17)
+#define     USB3380_IRQSTAT0_EP_INTR_MASK_OUT (0xF << 1)
+
+>>>>>>> v4.9.227
 	u32		irqstat1;
 #define     POWER_STATE_CHANGE_INTERRUPT                        27
 #define     PCI_ARBITER_TIMEOUT_INTERRUPT                       26

@@ -10,6 +10,11 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
+=======
+#include <asm/unaligned.h>
+
+>>>>>>> v4.9.227
 #include <drm/drmP.h>
 #include <drm/drm_crtc_helper.h>
 #include <drm/drm_mipi_dsi.h>
@@ -209,12 +214,15 @@
 
 #define OLD_SCLK_MIPI_CLK_NAME "pll_clk"
 
+<<<<<<< HEAD
 #define REG_ADDR(dsi, reg_idx)		((dsi)->reg_base + \
 					dsi->driver_data->reg_ofs[(reg_idx)])
 #define DSI_WRITE(dsi, reg_idx, val)	writel((val), \
 					REG_ADDR((dsi), (reg_idx)))
 #define DSI_READ(dsi, reg_idx)		readl(REG_ADDR((dsi), (reg_idx)))
 
+=======
+>>>>>>> v4.9.227
 static char *clk_names[5] = { "bus_clk", "sclk_mipi",
 	"phyclk_mipidphy0_bitclkdiv8", "phyclk_mipidphy0_rxclkesc0",
 	"sclk_rgb_vclk_to_dsim0" };
@@ -228,12 +236,17 @@ struct exynos_dsi_transfer {
 	struct list_head list;
 	struct completion completed;
 	int result;
+<<<<<<< HEAD
 	u8 data_id;
 	u8 data[2];
 	u16 flags;
 
 	const u8 *tx_payload;
 	u16 tx_len;
+=======
+	struct mipi_dsi_packet packet;
+	u16 flags;
+>>>>>>> v4.9.227
 	u16 tx_done;
 
 	u8 *rx_payload;
@@ -247,7 +260,11 @@ struct exynos_dsi_transfer {
 #define DSIM_STATE_VIDOUT_AVAILABLE	BIT(3)
 
 struct exynos_dsi_driver_data {
+<<<<<<< HEAD
 	unsigned int *reg_ofs;
+=======
+	const unsigned int *reg_ofs;
+>>>>>>> v4.9.227
 	unsigned int plltmr_reg;
 	unsigned int has_freqband:1;
 	unsigned int has_clklane_stop:1;
@@ -255,7 +272,11 @@ struct exynos_dsi_driver_data {
 	unsigned int max_freq;
 	unsigned int wait_for_reset;
 	unsigned int num_bits_resol;
+<<<<<<< HEAD
 	unsigned int *reg_values;
+=======
+	const unsigned int *reg_values;
+>>>>>>> v4.9.227
 };
 
 struct exynos_dsi {
@@ -288,7 +309,11 @@ struct exynos_dsi {
 	spinlock_t transfer_lock; /* protects transfer_list */
 	struct list_head transfer_list;
 
+<<<<<<< HEAD
 	struct exynos_dsi_driver_data *driver_data;
+=======
+	const struct exynos_dsi_driver_data *driver_data;
+>>>>>>> v4.9.227
 	struct device_node *bridge_node;
 };
 
@@ -324,7 +349,24 @@ enum reg_idx {
 	DSIM_PHYTIMING2_REG,
 	NUM_REGS
 };
+<<<<<<< HEAD
 static unsigned int exynos_reg_ofs[] = {
+=======
+
+static inline void exynos_dsi_write(struct exynos_dsi *dsi, enum reg_idx idx,
+				    u32 val)
+{
+
+	writel(val, dsi->reg_base + dsi->driver_data->reg_ofs[idx]);
+}
+
+static inline u32 exynos_dsi_read(struct exynos_dsi *dsi, enum reg_idx idx)
+{
+	return readl(dsi->reg_base + dsi->driver_data->reg_ofs[idx]);
+}
+
+static const unsigned int exynos_reg_ofs[] = {
+>>>>>>> v4.9.227
 	[DSIM_STATUS_REG] =  0x00,
 	[DSIM_SWRST_REG] =  0x04,
 	[DSIM_CLKCTRL_REG] =  0x08,
@@ -348,7 +390,11 @@ static unsigned int exynos_reg_ofs[] = {
 	[DSIM_PHYTIMING2_REG] =  0x6c,
 };
 
+<<<<<<< HEAD
 static unsigned int exynos5433_reg_ofs[] = {
+=======
+static const unsigned int exynos5433_reg_ofs[] = {
+>>>>>>> v4.9.227
 	[DSIM_STATUS_REG] = 0x04,
 	[DSIM_SWRST_REG] = 0x0C,
 	[DSIM_CLKCTRL_REG] = 0x10,
@@ -390,7 +436,11 @@ enum reg_value_idx {
 	PHYTIMING_HS_TRAIL
 };
 
+<<<<<<< HEAD
 static unsigned int reg_values[] = {
+=======
+static const unsigned int reg_values[] = {
+>>>>>>> v4.9.227
 	[RESET_TYPE] = DSIM_SWRST,
 	[PLL_TIMER] = 500,
 	[STOP_STATE_CNT] = 0xf,
@@ -408,7 +458,29 @@ static unsigned int reg_values[] = {
 	[PHYTIMING_HS_TRAIL] = DSIM_PHYTIMING2_HS_TRAIL(0x0b),
 };
 
+<<<<<<< HEAD
 static unsigned int exynos5433_reg_values[] = {
+=======
+static const unsigned int exynos5422_reg_values[] = {
+	[RESET_TYPE] = DSIM_SWRST,
+	[PLL_TIMER] = 500,
+	[STOP_STATE_CNT] = 0xf,
+	[PHYCTRL_ULPS_EXIT] = DSIM_PHYCTRL_ULPS_EXIT(0xaf),
+	[PHYCTRL_VREG_LP] = 0,
+	[PHYCTRL_SLEW_UP] = 0,
+	[PHYTIMING_LPX] = DSIM_PHYTIMING_LPX(0x08),
+	[PHYTIMING_HS_EXIT] = DSIM_PHYTIMING_HS_EXIT(0x0d),
+	[PHYTIMING_CLK_PREPARE] = DSIM_PHYTIMING1_CLK_PREPARE(0x09),
+	[PHYTIMING_CLK_ZERO] = DSIM_PHYTIMING1_CLK_ZERO(0x30),
+	[PHYTIMING_CLK_POST] = DSIM_PHYTIMING1_CLK_POST(0x0e),
+	[PHYTIMING_CLK_TRAIL] = DSIM_PHYTIMING1_CLK_TRAIL(0x0a),
+	[PHYTIMING_HS_PREPARE] = DSIM_PHYTIMING2_HS_PREPARE(0x0c),
+	[PHYTIMING_HS_ZERO] = DSIM_PHYTIMING2_HS_ZERO(0x11),
+	[PHYTIMING_HS_TRAIL] = DSIM_PHYTIMING2_HS_TRAIL(0x0d),
+};
+
+static const unsigned int exynos5433_reg_values[] = {
+>>>>>>> v4.9.227
 	[RESET_TYPE] = DSIM_FUNCRST,
 	[PLL_TIMER] = 22200,
 	[STOP_STATE_CNT] = 0xa,
@@ -426,7 +498,11 @@ static unsigned int exynos5433_reg_values[] = {
 	[PHYTIMING_HS_TRAIL] = DSIM_PHYTIMING2_HS_TRAIL(0x0c),
 };
 
+<<<<<<< HEAD
 static struct exynos_dsi_driver_data exynos3_dsi_driver_data = {
+=======
+static const struct exynos_dsi_driver_data exynos3_dsi_driver_data = {
+>>>>>>> v4.9.227
 	.reg_ofs = exynos_reg_ofs,
 	.plltmr_reg = 0x50,
 	.has_freqband = 1,
@@ -438,7 +514,11 @@ static struct exynos_dsi_driver_data exynos3_dsi_driver_data = {
 	.reg_values = reg_values,
 };
 
+<<<<<<< HEAD
 static struct exynos_dsi_driver_data exynos4_dsi_driver_data = {
+=======
+static const struct exynos_dsi_driver_data exynos4_dsi_driver_data = {
+>>>>>>> v4.9.227
 	.reg_ofs = exynos_reg_ofs,
 	.plltmr_reg = 0x50,
 	.has_freqband = 1,
@@ -450,7 +530,11 @@ static struct exynos_dsi_driver_data exynos4_dsi_driver_data = {
 	.reg_values = reg_values,
 };
 
+<<<<<<< HEAD
 static struct exynos_dsi_driver_data exynos4415_dsi_driver_data = {
+=======
+static const struct exynos_dsi_driver_data exynos4415_dsi_driver_data = {
+>>>>>>> v4.9.227
 	.reg_ofs = exynos_reg_ofs,
 	.plltmr_reg = 0x58,
 	.has_clklane_stop = 1,
@@ -461,7 +545,11 @@ static struct exynos_dsi_driver_data exynos4415_dsi_driver_data = {
 	.reg_values = reg_values,
 };
 
+<<<<<<< HEAD
 static struct exynos_dsi_driver_data exynos5_dsi_driver_data = {
+=======
+static const struct exynos_dsi_driver_data exynos5_dsi_driver_data = {
+>>>>>>> v4.9.227
 	.reg_ofs = exynos_reg_ofs,
 	.plltmr_reg = 0x58,
 	.num_clks = 2,
@@ -471,7 +559,11 @@ static struct exynos_dsi_driver_data exynos5_dsi_driver_data = {
 	.reg_values = reg_values,
 };
 
+<<<<<<< HEAD
 static struct exynos_dsi_driver_data exynos5433_dsi_driver_data = {
+=======
+static const struct exynos_dsi_driver_data exynos5433_dsi_driver_data = {
+>>>>>>> v4.9.227
 	.reg_ofs = exynos5433_reg_ofs,
 	.plltmr_reg = 0xa0,
 	.has_clklane_stop = 1,
@@ -482,7 +574,22 @@ static struct exynos_dsi_driver_data exynos5433_dsi_driver_data = {
 	.reg_values = exynos5433_reg_values,
 };
 
+<<<<<<< HEAD
 static struct of_device_id exynos_dsi_of_match[] = {
+=======
+static const struct exynos_dsi_driver_data exynos5422_dsi_driver_data = {
+	.reg_ofs = exynos5433_reg_ofs,
+	.plltmr_reg = 0xa0,
+	.has_clklane_stop = 1,
+	.num_clks = 2,
+	.max_freq = 1500,
+	.wait_for_reset = 1,
+	.num_bits_resol = 12,
+	.reg_values = exynos5422_reg_values,
+};
+
+static const struct of_device_id exynos_dsi_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "samsung,exynos3250-mipi-dsi",
 	  .data = &exynos3_dsi_driver_data },
 	{ .compatible = "samsung,exynos4210-mipi-dsi",
@@ -491,11 +598,17 @@ static struct of_device_id exynos_dsi_of_match[] = {
 	  .data = &exynos4415_dsi_driver_data },
 	{ .compatible = "samsung,exynos5410-mipi-dsi",
 	  .data = &exynos5_dsi_driver_data },
+<<<<<<< HEAD
+=======
+	{ .compatible = "samsung,exynos5422-mipi-dsi",
+	  .data = &exynos5422_dsi_driver_data },
+>>>>>>> v4.9.227
 	{ .compatible = "samsung,exynos5433-mipi-dsi",
 	  .data = &exynos5433_dsi_driver_data },
 	{ }
 };
 
+<<<<<<< HEAD
 static inline struct exynos_dsi_driver_data *exynos_dsi_get_driver_data(
 						struct platform_device *pdev)
 {
@@ -505,6 +618,8 @@ static inline struct exynos_dsi_driver_data *exynos_dsi_get_driver_data(
 	return (struct exynos_dsi_driver_data *)of_id->data;
 }
 
+=======
+>>>>>>> v4.9.227
 static void exynos_dsi_wait_for_reset(struct exynos_dsi *dsi)
 {
 	if (wait_for_completion_timeout(&dsi->completed, msecs_to_jiffies(300)))
@@ -515,10 +630,17 @@ static void exynos_dsi_wait_for_reset(struct exynos_dsi *dsi)
 
 static void exynos_dsi_reset(struct exynos_dsi *dsi)
 {
+<<<<<<< HEAD
 	struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
 
 	reinit_completion(&dsi->completed);
 	DSI_WRITE(dsi, DSIM_SWRST_REG, driver_data->reg_values[RESET_TYPE]);
+=======
+	u32 reset_val = dsi->driver_data->reg_values[RESET_TYPE];
+
+	reinit_completion(&dsi->completed);
+	exynos_dsi_write(dsi, DSIM_SWRST_REG, reset_val);
+>>>>>>> v4.9.227
 }
 
 #ifndef MHZ
@@ -528,7 +650,11 @@ static void exynos_dsi_reset(struct exynos_dsi *dsi)
 static unsigned long exynos_dsi_pll_find_pms(struct exynos_dsi *dsi,
 		unsigned long fin, unsigned long fout, u8 *p, u16 *m, u8 *s)
 {
+<<<<<<< HEAD
 	struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+=======
+	const struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+>>>>>>> v4.9.227
 	unsigned long best_freq = 0;
 	u32 min_delta = 0xffffffff;
 	u8 p_min, p_max;
@@ -582,7 +708,11 @@ static unsigned long exynos_dsi_pll_find_pms(struct exynos_dsi *dsi,
 static unsigned long exynos_dsi_set_pll(struct exynos_dsi *dsi,
 					unsigned long freq)
 {
+<<<<<<< HEAD
 	struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+=======
+	const struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+>>>>>>> v4.9.227
 	unsigned long fin, fout;
 	int timeout;
 	u8 p, s;
@@ -621,7 +751,11 @@ static unsigned long exynos_dsi_set_pll(struct exynos_dsi *dsi,
 		reg |= DSIM_FREQ_BAND(band);
 	}
 
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_PLLCTRL_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_PLLCTRL_REG, reg);
+>>>>>>> v4.9.227
 
 	timeout = 1000;
 	do {
@@ -629,7 +763,11 @@ static unsigned long exynos_dsi_set_pll(struct exynos_dsi *dsi,
 			dev_err(dsi->dev, "PLL failed to stabilize\n");
 			return 0;
 		}
+<<<<<<< HEAD
 		reg = DSI_READ(dsi, DSIM_STATUS_REG);
+=======
+		reg = exynos_dsi_read(dsi, DSIM_STATUS_REG);
+>>>>>>> v4.9.227
 	} while ((reg & DSIM_PLL_STABLE) == 0);
 
 	return fout;
@@ -659,7 +797,11 @@ static int exynos_dsi_enable_clock(struct exynos_dsi *dsi)
 	dev_dbg(dsi->dev, "hs_clk = %lu, byte_clk = %lu, esc_clk = %lu\n",
 		hs_clk, byte_clk, esc_clk);
 
+<<<<<<< HEAD
 	reg = DSI_READ(dsi, DSIM_CLKCTRL_REG);
+=======
+	reg = exynos_dsi_read(dsi, DSIM_CLKCTRL_REG);
+>>>>>>> v4.9.227
 	reg &= ~(DSIM_ESC_PRESCALER_MASK | DSIM_LANE_ESC_CLK_EN_CLK
 			| DSIM_LANE_ESC_CLK_EN_DATA_MASK | DSIM_PLL_BYPASS
 			| DSIM_BYTE_CLK_SRC_MASK);
@@ -669,15 +811,24 @@ static int exynos_dsi_enable_clock(struct exynos_dsi *dsi)
 			| DSIM_LANE_ESC_CLK_EN_DATA(BIT(dsi->lanes) - 1)
 			| DSIM_BYTE_CLK_SRC(0)
 			| DSIM_TX_REQUEST_HSCLK;
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_CLKCTRL_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_CLKCTRL_REG, reg);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static void exynos_dsi_set_phy_ctrl(struct exynos_dsi *dsi)
 {
+<<<<<<< HEAD
 	struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
 	unsigned int *reg_values = driver_data->reg_values;
+=======
+	const struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+	const unsigned int *reg_values = driver_data->reg_values;
+>>>>>>> v4.9.227
 	u32 reg;
 
 	if (driver_data->has_freqband)
@@ -686,7 +837,11 @@ static void exynos_dsi_set_phy_ctrl(struct exynos_dsi *dsi)
 	/* B D-PHY: D-PHY Master & Slave Analog Block control */
 	reg = reg_values[PHYCTRL_ULPS_EXIT] | reg_values[PHYCTRL_VREG_LP] |
 		reg_values[PHYCTRL_SLEW_UP];
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_PHYCTRL_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_PHYCTRL_REG, reg);
+>>>>>>> v4.9.227
 
 	/*
 	 * T LPX: Transmitted length of any Low-Power state period
@@ -694,7 +849,11 @@ static void exynos_dsi_set_phy_ctrl(struct exynos_dsi *dsi)
 	 *	burst
 	 */
 	reg = reg_values[PHYTIMING_LPX] | reg_values[PHYTIMING_HS_EXIT];
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_PHYTIMING_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_PHYTIMING_REG, reg);
+>>>>>>> v4.9.227
 
 	/*
 	 * T CLK-PREPARE: Time that the transmitter drives the Clock Lane LP-00
@@ -714,7 +873,11 @@ static void exynos_dsi_set_phy_ctrl(struct exynos_dsi *dsi)
 		reg_values[PHYTIMING_CLK_POST] |
 		reg_values[PHYTIMING_CLK_TRAIL];
 
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_PHYTIMING1_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_PHYTIMING1_REG, reg);
+>>>>>>> v4.9.227
 
 	/*
 	 * T HS-PREPARE: Time that the transmitter drives the Data Lane LP-00
@@ -727,13 +890,18 @@ static void exynos_dsi_set_phy_ctrl(struct exynos_dsi *dsi)
 	 */
 	reg = reg_values[PHYTIMING_HS_PREPARE] | reg_values[PHYTIMING_HS_ZERO] |
 		reg_values[PHYTIMING_HS_TRAIL];
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_PHYTIMING2_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_PHYTIMING2_REG, reg);
+>>>>>>> v4.9.227
 }
 
 static void exynos_dsi_disable_clock(struct exynos_dsi *dsi)
 {
 	u32 reg;
 
+<<<<<<< HEAD
 	reg = DSI_READ(dsi, DSIM_CLKCTRL_REG);
 	reg &= ~(DSIM_LANE_ESC_CLK_EN_CLK | DSIM_LANE_ESC_CLK_EN_DATA_MASK
 			| DSIM_ESC_CLKEN | DSIM_BYTE_CLKEN);
@@ -742,32 +910,63 @@ static void exynos_dsi_disable_clock(struct exynos_dsi *dsi)
 	reg = DSI_READ(dsi, DSIM_PLLCTRL_REG);
 	reg &= ~DSIM_PLL_EN;
 	DSI_WRITE(dsi, DSIM_PLLCTRL_REG, reg);
+=======
+	reg = exynos_dsi_read(dsi, DSIM_CLKCTRL_REG);
+	reg &= ~(DSIM_LANE_ESC_CLK_EN_CLK | DSIM_LANE_ESC_CLK_EN_DATA_MASK
+			| DSIM_ESC_CLKEN | DSIM_BYTE_CLKEN);
+	exynos_dsi_write(dsi, DSIM_CLKCTRL_REG, reg);
+
+	reg = exynos_dsi_read(dsi, DSIM_PLLCTRL_REG);
+	reg &= ~DSIM_PLL_EN;
+	exynos_dsi_write(dsi, DSIM_PLLCTRL_REG, reg);
+>>>>>>> v4.9.227
 }
 
 static void exynos_dsi_enable_lane(struct exynos_dsi *dsi, u32 lane)
 {
+<<<<<<< HEAD
 	u32 reg = DSI_READ(dsi, DSIM_CONFIG_REG);
 	reg |= (DSIM_NUM_OF_DATA_LANE(dsi->lanes - 1) | DSIM_LANE_EN_CLK |
 			DSIM_LANE_EN(lane));
 	DSI_WRITE(dsi, DSIM_CONFIG_REG, reg);
+=======
+	u32 reg = exynos_dsi_read(dsi, DSIM_CONFIG_REG);
+	reg |= (DSIM_NUM_OF_DATA_LANE(dsi->lanes - 1) | DSIM_LANE_EN_CLK |
+			DSIM_LANE_EN(lane));
+	exynos_dsi_write(dsi, DSIM_CONFIG_REG, reg);
+>>>>>>> v4.9.227
 }
 
 static int exynos_dsi_init_link(struct exynos_dsi *dsi)
 {
+<<<<<<< HEAD
 	struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+=======
+	const struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+>>>>>>> v4.9.227
 	int timeout;
 	u32 reg;
 	u32 lanes_mask;
 
 	/* Initialize FIFO pointers */
+<<<<<<< HEAD
 	reg = DSI_READ(dsi, DSIM_FIFOCTRL_REG);
 	reg &= ~0x1f;
 	DSI_WRITE(dsi, DSIM_FIFOCTRL_REG, reg);
+=======
+	reg = exynos_dsi_read(dsi, DSIM_FIFOCTRL_REG);
+	reg &= ~0x1f;
+	exynos_dsi_write(dsi, DSIM_FIFOCTRL_REG, reg);
+>>>>>>> v4.9.227
 
 	usleep_range(9000, 11000);
 
 	reg |= 0x1f;
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_FIFOCTRL_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_FIFOCTRL_REG, reg);
+>>>>>>> v4.9.227
 	usleep_range(9000, 11000);
 
 	/* DSI configuration */
@@ -836,7 +1035,11 @@ static int exynos_dsi_init_link(struct exynos_dsi *dsi)
 			dsi->mode_flags & MIPI_DSI_CLOCK_NON_CONTINUOUS) {
 		reg |= DSIM_CLKLANE_STOP;
 	}
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_CONFIG_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_CONFIG_REG, reg);
+>>>>>>> v4.9.227
 
 	lanes_mask = BIT(dsi->lanes) - 1;
 	exynos_dsi_enable_lane(dsi, lanes_mask);
@@ -849,12 +1052,17 @@ static int exynos_dsi_init_link(struct exynos_dsi *dsi)
 			return -EFAULT;
 		}
 
+<<<<<<< HEAD
 		reg = DSI_READ(dsi, DSIM_STATUS_REG);
+=======
+		reg = exynos_dsi_read(dsi, DSIM_STATUS_REG);
+>>>>>>> v4.9.227
 		if ((reg & DSIM_STOP_STATE_DAT(lanes_mask))
 		    != DSIM_STOP_STATE_DAT(lanes_mask))
 			continue;
 	} while (!(reg & (DSIM_STOP_STATE_CLK | DSIM_TX_READY_HS_CLK)));
 
+<<<<<<< HEAD
 	reg = DSI_READ(dsi, DSIM_ESCMODE_REG);
 	reg &= ~DSIM_STOP_STATE_CNT_MASK;
 	reg |= DSIM_STOP_STATE_CNT(driver_data->reg_values[STOP_STATE_CNT]);
@@ -862,6 +1070,15 @@ static int exynos_dsi_init_link(struct exynos_dsi *dsi)
 
 	reg = DSIM_BTA_TIMEOUT(0xff) | DSIM_LPDR_TIMEOUT(0xffff);
 	DSI_WRITE(dsi, DSIM_TIMEOUT_REG, reg);
+=======
+	reg = exynos_dsi_read(dsi, DSIM_ESCMODE_REG);
+	reg &= ~DSIM_STOP_STATE_CNT_MASK;
+	reg |= DSIM_STOP_STATE_CNT(driver_data->reg_values[STOP_STATE_CNT]);
+	exynos_dsi_write(dsi, DSIM_ESCMODE_REG, reg);
+
+	reg = DSIM_BTA_TIMEOUT(0xff) | DSIM_LPDR_TIMEOUT(0xffff);
+	exynos_dsi_write(dsi, DSIM_TIMEOUT_REG, reg);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -876,6 +1093,7 @@ static void exynos_dsi_set_display_mode(struct exynos_dsi *dsi)
 		reg = DSIM_CMD_ALLOW(0xf)
 			| DSIM_STABLE_VFP(vm->vfront_porch)
 			| DSIM_MAIN_VBP(vm->vback_porch);
+<<<<<<< HEAD
 		DSI_WRITE(dsi, DSIM_MVPORCH_REG, reg);
 
 		reg = DSIM_MAIN_HFP(vm->hfront_porch)
@@ -885,11 +1103,26 @@ static void exynos_dsi_set_display_mode(struct exynos_dsi *dsi)
 		reg = DSIM_MAIN_VSA(vm->vsync_len)
 			| DSIM_MAIN_HSA(vm->hsync_len);
 		DSI_WRITE(dsi, DSIM_MSYNC_REG, reg);
+=======
+		exynos_dsi_write(dsi, DSIM_MVPORCH_REG, reg);
+
+		reg = DSIM_MAIN_HFP(vm->hfront_porch)
+			| DSIM_MAIN_HBP(vm->hback_porch);
+		exynos_dsi_write(dsi, DSIM_MHPORCH_REG, reg);
+
+		reg = DSIM_MAIN_VSA(vm->vsync_len)
+			| DSIM_MAIN_HSA(vm->hsync_len);
+		exynos_dsi_write(dsi, DSIM_MSYNC_REG, reg);
+>>>>>>> v4.9.227
 	}
 	reg =  DSIM_MAIN_HRESOL(vm->hactive, num_bits_resol) |
 		DSIM_MAIN_VRESOL(vm->vactive, num_bits_resol);
 
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_MDRESOL_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_MDRESOL_REG, reg);
+>>>>>>> v4.9.227
 
 	dev_dbg(dsi->dev, "LCD size = %dx%d\n", vm->hactive, vm->vactive);
 }
@@ -898,12 +1131,20 @@ static void exynos_dsi_set_display_enable(struct exynos_dsi *dsi, bool enable)
 {
 	u32 reg;
 
+<<<<<<< HEAD
 	reg = DSI_READ(dsi, DSIM_MDRESOL_REG);
+=======
+	reg = exynos_dsi_read(dsi, DSIM_MDRESOL_REG);
+>>>>>>> v4.9.227
 	if (enable)
 		reg |= DSIM_MAIN_STAND_BY;
 	else
 		reg &= ~DSIM_MAIN_STAND_BY;
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_MDRESOL_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_MDRESOL_REG, reg);
+>>>>>>> v4.9.227
 }
 
 static int exynos_dsi_wait_for_hdr_fifo(struct exynos_dsi *dsi)
@@ -911,7 +1152,11 @@ static int exynos_dsi_wait_for_hdr_fifo(struct exynos_dsi *dsi)
 	int timeout = 2000;
 
 	do {
+<<<<<<< HEAD
 		u32 reg = DSI_READ(dsi, DSIM_FIFOCTRL_REG);
+=======
+		u32 reg = exynos_dsi_read(dsi, DSIM_FIFOCTRL_REG);
+>>>>>>> v4.9.227
 
 		if (!(reg & DSIM_SFR_HEADER_FULL))
 			return 0;
@@ -925,34 +1170,58 @@ static int exynos_dsi_wait_for_hdr_fifo(struct exynos_dsi *dsi)
 
 static void exynos_dsi_set_cmd_lpm(struct exynos_dsi *dsi, bool lpm)
 {
+<<<<<<< HEAD
 	u32 v = DSI_READ(dsi, DSIM_ESCMODE_REG);
+=======
+	u32 v = exynos_dsi_read(dsi, DSIM_ESCMODE_REG);
+>>>>>>> v4.9.227
 
 	if (lpm)
 		v |= DSIM_CMD_LPDT_LP;
 	else
 		v &= ~DSIM_CMD_LPDT_LP;
 
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_ESCMODE_REG, v);
+=======
+	exynos_dsi_write(dsi, DSIM_ESCMODE_REG, v);
+>>>>>>> v4.9.227
 }
 
 static void exynos_dsi_force_bta(struct exynos_dsi *dsi)
 {
+<<<<<<< HEAD
 	u32 v = DSI_READ(dsi, DSIM_ESCMODE_REG);
 	v |= DSIM_FORCE_BTA;
 	DSI_WRITE(dsi, DSIM_ESCMODE_REG, v);
+=======
+	u32 v = exynos_dsi_read(dsi, DSIM_ESCMODE_REG);
+	v |= DSIM_FORCE_BTA;
+	exynos_dsi_write(dsi, DSIM_ESCMODE_REG, v);
+>>>>>>> v4.9.227
 }
 
 static void exynos_dsi_send_to_fifo(struct exynos_dsi *dsi,
 					struct exynos_dsi_transfer *xfer)
 {
 	struct device *dev = dsi->dev;
+<<<<<<< HEAD
 	const u8 *payload = xfer->tx_payload + xfer->tx_done;
 	u16 length = xfer->tx_len - xfer->tx_done;
+=======
+	struct mipi_dsi_packet *pkt = &xfer->packet;
+	const u8 *payload = pkt->payload + xfer->tx_done;
+	u16 length = pkt->payload_length - xfer->tx_done;
+>>>>>>> v4.9.227
 	bool first = !xfer->tx_done;
 	u32 reg;
 
 	dev_dbg(dev, "< xfer %p: tx len %u, done %u, rx len %u, done %u\n",
+<<<<<<< HEAD
 		xfer, xfer->tx_len, xfer->tx_done, xfer->rx_len, xfer->rx_done);
+=======
+		xfer, length, xfer->tx_done, xfer->rx_len, xfer->rx_done);
+>>>>>>> v4.9.227
 
 	if (length > DSI_TX_FIFO_SIZE)
 		length = DSI_TX_FIFO_SIZE;
@@ -961,9 +1230,14 @@ static void exynos_dsi_send_to_fifo(struct exynos_dsi *dsi,
 
 	/* Send payload */
 	while (length >= 4) {
+<<<<<<< HEAD
 		reg = (payload[3] << 24) | (payload[2] << 16)
 					| (payload[1] << 8) | payload[0];
 		DSI_WRITE(dsi, DSIM_PAYLOAD_REG, reg);
+=======
+		reg = get_unaligned_le32(payload);
+		exynos_dsi_write(dsi, DSIM_PAYLOAD_REG, reg);
+>>>>>>> v4.9.227
 		payload += 4;
 		length -= 4;
 	}
@@ -978,10 +1252,14 @@ static void exynos_dsi_send_to_fifo(struct exynos_dsi *dsi,
 		/* Fall through */
 	case 1:
 		reg |= payload[0];
+<<<<<<< HEAD
 		DSI_WRITE(dsi, DSIM_PAYLOAD_REG, reg);
 		break;
 	case 0:
 		/* Do nothing */
+=======
+		exynos_dsi_write(dsi, DSIM_PAYLOAD_REG, reg);
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -989,7 +1267,11 @@ static void exynos_dsi_send_to_fifo(struct exynos_dsi *dsi,
 	if (!first)
 		return;
 
+<<<<<<< HEAD
 	reg = (xfer->data[1] << 16) | (xfer->data[0] << 8) | xfer->data_id;
+=======
+	reg = get_unaligned_le32(pkt->header);
+>>>>>>> v4.9.227
 	if (exynos_dsi_wait_for_hdr_fifo(dsi)) {
 		dev_err(dev, "waiting for header FIFO timed out\n");
 		return;
@@ -1001,7 +1283,11 @@ static void exynos_dsi_send_to_fifo(struct exynos_dsi *dsi,
 		dsi->state ^= DSIM_STATE_CMD_LPM;
 	}
 
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_PKTHDR_REG, reg);
+=======
+	exynos_dsi_write(dsi, DSIM_PKTHDR_REG, reg);
+>>>>>>> v4.9.227
 
 	if (xfer->flags & MIPI_DSI_MSG_REQ_ACK)
 		exynos_dsi_force_bta(dsi);
@@ -1017,7 +1303,11 @@ static void exynos_dsi_read_from_fifo(struct exynos_dsi *dsi,
 	u32 reg;
 
 	if (first) {
+<<<<<<< HEAD
 		reg = DSI_READ(dsi, DSIM_RXFIFO_REG);
+=======
+		reg = exynos_dsi_read(dsi, DSIM_RXFIFO_REG);
+>>>>>>> v4.9.227
 
 		switch (reg & 0x3f) {
 		case MIPI_DSI_RX_GENERIC_SHORT_READ_RESPONSE_2BYTE:
@@ -1056,7 +1346,11 @@ static void exynos_dsi_read_from_fifo(struct exynos_dsi *dsi,
 
 	/* Receive payload */
 	while (length >= 4) {
+<<<<<<< HEAD
 		reg = DSI_READ(dsi, DSIM_RXFIFO_REG);
+=======
+		reg = exynos_dsi_read(dsi, DSIM_RXFIFO_REG);
+>>>>>>> v4.9.227
 		payload[0] = (reg >>  0) & 0xff;
 		payload[1] = (reg >>  8) & 0xff;
 		payload[2] = (reg >> 16) & 0xff;
@@ -1066,7 +1360,11 @@ static void exynos_dsi_read_from_fifo(struct exynos_dsi *dsi,
 	}
 
 	if (length) {
+<<<<<<< HEAD
 		reg = DSI_READ(dsi, DSIM_RXFIFO_REG);
+=======
+		reg = exynos_dsi_read(dsi, DSIM_RXFIFO_REG);
+>>>>>>> v4.9.227
 		switch (length) {
 		case 3:
 			payload[2] = (reg >> 16) & 0xff;
@@ -1085,7 +1383,11 @@ static void exynos_dsi_read_from_fifo(struct exynos_dsi *dsi,
 clear_fifo:
 	length = DSI_RX_FIFO_SIZE / 4;
 	do {
+<<<<<<< HEAD
 		reg = DSI_READ(dsi, DSIM_RXFIFO_REG);
+=======
+		reg = exynos_dsi_read(dsi, DSIM_RXFIFO_REG);
+>>>>>>> v4.9.227
 		if (reg == DSI_RX_FIFO_EMPTY)
 			break;
 	} while (--length);
@@ -1110,13 +1412,22 @@ again:
 
 	spin_unlock_irqrestore(&dsi->transfer_lock, flags);
 
+<<<<<<< HEAD
 	if (xfer->tx_len && xfer->tx_done == xfer->tx_len)
+=======
+	if (xfer->packet.payload_length &&
+	    xfer->tx_done == xfer->packet.payload_length)
+>>>>>>> v4.9.227
 		/* waiting for RX */
 		return;
 
 	exynos_dsi_send_to_fifo(dsi, xfer);
 
+<<<<<<< HEAD
 	if (xfer->tx_len || xfer->rx_len)
+=======
+	if (xfer->packet.payload_length || xfer->rx_len)
+>>>>>>> v4.9.227
 		return;
 
 	xfer->result = 0;
@@ -1152,10 +1463,18 @@ static bool exynos_dsi_transfer_finish(struct exynos_dsi *dsi)
 	spin_unlock_irqrestore(&dsi->transfer_lock, flags);
 
 	dev_dbg(dsi->dev,
+<<<<<<< HEAD
 		"> xfer %p, tx_len %u, tx_done %u, rx_len %u, rx_done %u\n",
 		xfer, xfer->tx_len, xfer->tx_done, xfer->rx_len, xfer->rx_done);
 
 	if (xfer->tx_done != xfer->tx_len)
+=======
+		"> xfer %p, tx_len %zu, tx_done %u, rx_len %u, rx_done %u\n",
+		xfer, xfer->packet.payload_length, xfer->tx_done, xfer->rx_len,
+		xfer->rx_done);
+
+	if (xfer->tx_done != xfer->packet.payload_length)
+>>>>>>> v4.9.227
 		return true;
 
 	if (xfer->rx_done != xfer->rx_len)
@@ -1226,9 +1545,16 @@ static int exynos_dsi_transfer(struct exynos_dsi *dsi,
 	wait_for_completion_timeout(&xfer->completed,
 				    msecs_to_jiffies(DSI_XFER_TIMEOUT_MS));
 	if (xfer->result == -ETIMEDOUT) {
+<<<<<<< HEAD
 		exynos_dsi_remove_transfer(dsi, xfer);
 		dev_err(dsi->dev, "xfer timed out: %*ph %*ph\n", 2, xfer->data,
 			xfer->tx_len, xfer->tx_payload);
+=======
+		struct mipi_dsi_packet *pkt = &xfer->packet;
+		exynos_dsi_remove_transfer(dsi, xfer);
+		dev_err(dsi->dev, "xfer timed out: %*ph %*ph\n", 4, pkt->header,
+			(int)pkt->payload_length, pkt->payload);
+>>>>>>> v4.9.227
 		return -ETIMEDOUT;
 	}
 
@@ -1241,20 +1567,32 @@ static irqreturn_t exynos_dsi_irq(int irq, void *dev_id)
 	struct exynos_dsi *dsi = dev_id;
 	u32 status;
 
+<<<<<<< HEAD
 	status = DSI_READ(dsi, DSIM_INTSRC_REG);
+=======
+	status = exynos_dsi_read(dsi, DSIM_INTSRC_REG);
+>>>>>>> v4.9.227
 	if (!status) {
 		static unsigned long int j;
 		if (printk_timed_ratelimit(&j, 500))
 			dev_warn(dsi->dev, "spurious interrupt\n");
 		return IRQ_HANDLED;
 	}
+<<<<<<< HEAD
 	DSI_WRITE(dsi, DSIM_INTSRC_REG, status);
+=======
+	exynos_dsi_write(dsi, DSIM_INTSRC_REG, status);
+>>>>>>> v4.9.227
 
 	if (status & DSIM_INT_SW_RST_RELEASE) {
 		u32 mask = ~(DSIM_INT_RX_DONE | DSIM_INT_SFR_FIFO_EMPTY |
 			DSIM_INT_SFR_HDR_FIFO_EMPTY | DSIM_INT_FRAME_DONE |
 			DSIM_INT_RX_ECC_ERR | DSIM_INT_SW_RST_RELEASE);
+<<<<<<< HEAD
 		DSI_WRITE(dsi, DSIM_INTMSK_REG, mask);
+=======
+		exynos_dsi_write(dsi, DSIM_INTMSK_REG, mask);
+>>>>>>> v4.9.227
 		complete(&dsi->completed);
 		return IRQ_HANDLED;
 	}
@@ -1298,7 +1636,11 @@ static void exynos_dsi_disable_irq(struct exynos_dsi *dsi)
 
 static int exynos_dsi_init(struct exynos_dsi *dsi)
 {
+<<<<<<< HEAD
 	struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+=======
+	const struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+>>>>>>> v4.9.227
 
 	exynos_dsi_reset(dsi);
 	exynos_dsi_enable_irq(dsi);
@@ -1401,12 +1743,15 @@ static int exynos_dsi_host_detach(struct mipi_dsi_host *host,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* distinguish between short and long DSI packet types */
 static bool exynos_dsi_is_short_dsi_type(u8 type)
 {
 	return (type & 0x0f) <= 8;
 }
 
+=======
+>>>>>>> v4.9.227
 static ssize_t exynos_dsi_host_transfer(struct mipi_dsi_host *host,
 				        const struct mipi_dsi_msg *msg)
 {
@@ -1424,6 +1769,7 @@ static ssize_t exynos_dsi_host_transfer(struct mipi_dsi_host *host,
 		dsi->state |= DSIM_STATE_INITIALIZED;
 	}
 
+<<<<<<< HEAD
 	if (msg->tx_len == 0)
 		return -EINVAL;
 
@@ -1443,6 +1789,11 @@ static ssize_t exynos_dsi_host_transfer(struct mipi_dsi_host *host,
 		xfer.data[1] = msg->tx_len >> 8;
 		xfer.tx_payload = msg->tx_buf;
 	}
+=======
+	ret = mipi_dsi_create_packet(&xfer.packet, msg);
+	if (ret < 0)
+		return ret;
+>>>>>>> v4.9.227
 
 	xfer.rx_len = msg->rx_len;
 	xfer.rx_payload = msg->rx_buf;
@@ -1458,6 +1809,7 @@ static const struct mipi_dsi_host_ops exynos_dsi_ops = {
 	.transfer = exynos_dsi_host_transfer,
 };
 
+<<<<<<< HEAD
 static int exynos_dsi_poweron(struct exynos_dsi *dsi)
 {
 	struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
@@ -1518,6 +1870,8 @@ static void exynos_dsi_poweroff(struct exynos_dsi *dsi)
 		dev_err(dsi->dev, "cannot disable regulators %d\n", ret);
 }
 
+=======
+>>>>>>> v4.9.227
 static void exynos_dsi_enable(struct drm_encoder *encoder)
 {
 	struct exynos_dsi *dsi = encoder_to_dsi(encoder);
@@ -1526,16 +1880,24 @@ static void exynos_dsi_enable(struct drm_encoder *encoder)
 	if (dsi->state & DSIM_STATE_ENABLED)
 		return;
 
+<<<<<<< HEAD
 	ret = exynos_dsi_poweron(dsi);
 	if (ret < 0)
 		return;
+=======
+	pm_runtime_get_sync(dsi->dev);
+>>>>>>> v4.9.227
 
 	dsi->state |= DSIM_STATE_ENABLED;
 
 	ret = drm_panel_prepare(dsi->panel);
 	if (ret < 0) {
 		dsi->state &= ~DSIM_STATE_ENABLED;
+<<<<<<< HEAD
 		exynos_dsi_poweroff(dsi);
+=======
+		pm_runtime_put_sync(dsi->dev);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -1547,7 +1909,11 @@ static void exynos_dsi_enable(struct drm_encoder *encoder)
 		dsi->state &= ~DSIM_STATE_ENABLED;
 		exynos_dsi_set_display_enable(dsi, false);
 		drm_panel_unprepare(dsi->panel);
+<<<<<<< HEAD
 		exynos_dsi_poweroff(dsi);
+=======
+		pm_runtime_put_sync(dsi->dev);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -1569,7 +1935,11 @@ static void exynos_dsi_disable(struct drm_encoder *encoder)
 
 	dsi->state &= ~DSIM_STATE_ENABLED;
 
+<<<<<<< HEAD
 	exynos_dsi_poweroff(dsi);
+=======
+	pm_runtime_put_sync(dsi->dev);
+>>>>>>> v4.9.227
 }
 
 static enum drm_connector_status
@@ -1603,7 +1973,11 @@ static void exynos_dsi_connector_destroy(struct drm_connector *connector)
 	connector->dev = NULL;
 }
 
+<<<<<<< HEAD
 static struct drm_connector_funcs exynos_dsi_connector_funcs = {
+=======
+static const struct drm_connector_funcs exynos_dsi_connector_funcs = {
+>>>>>>> v4.9.227
 	.dpms = drm_atomic_helper_connector_dpms,
 	.detect = exynos_dsi_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,
@@ -1623,6 +1997,7 @@ static int exynos_dsi_get_modes(struct drm_connector *connector)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct drm_encoder *
 exynos_dsi_best_encoder(struct drm_connector *connector)
 {
@@ -1634,6 +2009,10 @@ exynos_dsi_best_encoder(struct drm_connector *connector)
 static struct drm_connector_helper_funcs exynos_dsi_connector_helper_funcs = {
 	.get_modes = exynos_dsi_get_modes,
 	.best_encoder = exynos_dsi_best_encoder,
+=======
+static const struct drm_connector_helper_funcs exynos_dsi_connector_helper_funcs = {
+	.get_modes = exynos_dsi_get_modes,
+>>>>>>> v4.9.227
 };
 
 static int exynos_dsi_create_connector(struct drm_encoder *encoder)
@@ -1659,6 +2038,7 @@ static int exynos_dsi_create_connector(struct drm_encoder *encoder)
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool exynos_dsi_mode_fixup(struct drm_encoder *encoder,
 				  const struct drm_display_mode *mode,
 				  struct drm_display_mode *adjusted_mode)
@@ -1666,6 +2046,8 @@ static bool exynos_dsi_mode_fixup(struct drm_encoder *encoder,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 static void exynos_dsi_mode_set(struct drm_encoder *encoder,
 				struct drm_display_mode *mode,
 				struct drm_display_mode *adjusted_mode)
@@ -1684,19 +2066,28 @@ static void exynos_dsi_mode_set(struct drm_encoder *encoder,
 	vm->hsync_len = m->hsync_end - m->hsync_start;
 }
 
+<<<<<<< HEAD
 static struct drm_encoder_helper_funcs exynos_dsi_encoder_helper_funcs = {
 	.mode_fixup = exynos_dsi_mode_fixup,
+=======
+static const struct drm_encoder_helper_funcs exynos_dsi_encoder_helper_funcs = {
+>>>>>>> v4.9.227
 	.mode_set = exynos_dsi_mode_set,
 	.enable = exynos_dsi_enable,
 	.disable = exynos_dsi_disable,
 };
 
+<<<<<<< HEAD
 static struct drm_encoder_funcs exynos_dsi_encoder_funcs = {
+=======
+static const struct drm_encoder_funcs exynos_dsi_encoder_funcs = {
+>>>>>>> v4.9.227
 	.destroy = drm_encoder_cleanup,
 };
 
 MODULE_DEVICE_TABLE(of, exynos_dsi_of_match);
 
+<<<<<<< HEAD
 /* of_* functions will be removed after merge of of_graph patches */
 static struct device_node *
 of_get_child_by_name_reg(struct device_node *parent, const char *name, u32 reg)
@@ -1741,6 +2132,8 @@ of_graph_get_endpoint_by_reg(struct device_node *port, u32 reg)
 	return of_get_child_by_name_reg(port, "endpoint", reg);
 }
 
+=======
+>>>>>>> v4.9.227
 static int exynos_dsi_of_read_u32(const struct device_node *np,
 				  const char *propname, u32 *out_value)
 {
@@ -1762,7 +2155,11 @@ static int exynos_dsi_parse_dt(struct exynos_dsi *dsi)
 {
 	struct device *dev = dsi->dev;
 	struct device_node *node = dev->of_node;
+<<<<<<< HEAD
 	struct device_node *port, *ep;
+=======
+	struct device_node *ep;
+>>>>>>> v4.9.227
 	int ret;
 
 	ret = exynos_dsi_of_read_u32(node, "samsung,pll-clock-frequency",
@@ -1770,6 +2167,7 @@ static int exynos_dsi_parse_dt(struct exynos_dsi *dsi)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	port = of_graph_get_port_by_reg(node, DSI_PORT_OUT);
 	if (!port) {
 		dev_err(dev, "no output port specified\n");
@@ -1780,6 +2178,11 @@ static int exynos_dsi_parse_dt(struct exynos_dsi *dsi)
 	of_node_put(port);
 	if (!ep) {
 		dev_err(dev, "no endpoint specified in output port\n");
+=======
+	ep = of_graph_get_endpoint_by_regs(node, DSI_PORT_OUT, 0);
+	if (!ep) {
+		dev_err(dev, "no output port with endpoint specified\n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -1797,13 +2200,21 @@ static int exynos_dsi_parse_dt(struct exynos_dsi *dsi)
 
 	ep = of_graph_get_next_endpoint(node, NULL);
 	if (!ep) {
+<<<<<<< HEAD
 		ret = -ENXIO;
+=======
+		ret = -EINVAL;
+>>>>>>> v4.9.227
 		goto end;
 	}
 
 	dsi->bridge_node = of_graph_get_remote_port_parent(ep);
 	if (!dsi->bridge_node) {
+<<<<<<< HEAD
 		ret = -ENXIO;
+=======
+		ret = -EINVAL;
+>>>>>>> v4.9.227
 		goto end;
 	}
 end:
@@ -1831,7 +2242,11 @@ static int exynos_dsi_bind(struct device *dev, struct device *master,
 	DRM_DEBUG_KMS("possible_crtcs = 0x%x\n", encoder->possible_crtcs);
 
 	drm_encoder_init(drm_dev, encoder, &exynos_dsi_encoder_funcs,
+<<<<<<< HEAD
 			 DRM_MODE_ENCODER_TMDS);
+=======
+			 DRM_MODE_ENCODER_TMDS, NULL);
+>>>>>>> v4.9.227
 
 	drm_encoder_helper_add(encoder, &exynos_dsi_encoder_helper_funcs);
 
@@ -1844,6 +2259,10 @@ static int exynos_dsi_bind(struct device *dev, struct device *master,
 
 	bridge = of_drm_find_bridge(dsi->bridge_node);
 	if (bridge) {
+<<<<<<< HEAD
+=======
+		encoder->bridge = bridge;
+>>>>>>> v4.9.227
 		drm_bridge_attach(drm_dev, bridge);
 	}
 
@@ -1888,7 +2307,11 @@ static int exynos_dsi_probe(struct platform_device *pdev)
 	dsi->dsi_host.dev = dev;
 
 	dsi->dev = dev;
+<<<<<<< HEAD
 	dsi->driver_data = exynos_dsi_get_driver_data(pdev);
+=======
+	dsi->driver_data = of_device_get_match_data(dev);
+>>>>>>> v4.9.227
 
 	ret = exynos_dsi_parse_dt(dsi);
 	if (ret)
@@ -1899,8 +2322,14 @@ static int exynos_dsi_probe(struct platform_device *pdev)
 	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(dsi->supplies),
 				      dsi->supplies);
 	if (ret) {
+<<<<<<< HEAD
 		dev_info(dev, "failed to get regulators: %d\n", ret);
 		return -EPROBE_DEFER;
+=======
+		if (ret != -EPROBE_DEFER)
+			dev_info(dev, "failed to get regulators: %d\n", ret);
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	dsi->clks = devm_kzalloc(dev,
@@ -1913,9 +2342,16 @@ static int exynos_dsi_probe(struct platform_device *pdev)
 		dsi->clks[i] = devm_clk_get(dev, clk_names[i]);
 		if (IS_ERR(dsi->clks[i])) {
 			if (strcmp(clk_names[i], "sclk_mipi") == 0) {
+<<<<<<< HEAD
 				strcpy(clk_names[i], OLD_SCLK_MIPI_CLK_NAME);
 				i--;
 				continue;
+=======
+				dsi->clks[i] = devm_clk_get(dev,
+							OLD_SCLK_MIPI_CLK_NAME);
+				if (!IS_ERR(dsi->clks[i]))
+					continue;
+>>>>>>> v4.9.227
 			}
 
 			dev_info(dev, "failed to get the clock: %s\n",
@@ -1954,22 +2390,109 @@ static int exynos_dsi_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, &dsi->encoder);
 
+<<<<<<< HEAD
+=======
+	pm_runtime_enable(dev);
+
+>>>>>>> v4.9.227
 	return component_add(dev, &exynos_dsi_component_ops);
 }
 
 static int exynos_dsi_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
+=======
+	pm_runtime_disable(&pdev->dev);
+
+>>>>>>> v4.9.227
 	component_del(&pdev->dev, &exynos_dsi_component_ops);
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int __maybe_unused exynos_dsi_suspend(struct device *dev)
+{
+	struct drm_encoder *encoder = dev_get_drvdata(dev);
+	struct exynos_dsi *dsi = encoder_to_dsi(encoder);
+	const struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+	int ret, i;
+
+	usleep_range(10000, 20000);
+
+	if (dsi->state & DSIM_STATE_INITIALIZED) {
+		dsi->state &= ~DSIM_STATE_INITIALIZED;
+
+		exynos_dsi_disable_clock(dsi);
+
+		exynos_dsi_disable_irq(dsi);
+	}
+
+	dsi->state &= ~DSIM_STATE_CMD_LPM;
+
+	phy_power_off(dsi->phy);
+
+	for (i = driver_data->num_clks - 1; i > -1; i--)
+		clk_disable_unprepare(dsi->clks[i]);
+
+	ret = regulator_bulk_disable(ARRAY_SIZE(dsi->supplies), dsi->supplies);
+	if (ret < 0)
+		dev_err(dsi->dev, "cannot disable regulators %d\n", ret);
+
+	return 0;
+}
+
+static int __maybe_unused exynos_dsi_resume(struct device *dev)
+{
+	struct drm_encoder *encoder = dev_get_drvdata(dev);
+	struct exynos_dsi *dsi = encoder_to_dsi(encoder);
+	const struct exynos_dsi_driver_data *driver_data = dsi->driver_data;
+	int ret, i;
+
+	ret = regulator_bulk_enable(ARRAY_SIZE(dsi->supplies), dsi->supplies);
+	if (ret < 0) {
+		dev_err(dsi->dev, "cannot enable regulators %d\n", ret);
+		return ret;
+	}
+
+	for (i = 0; i < driver_data->num_clks; i++) {
+		ret = clk_prepare_enable(dsi->clks[i]);
+		if (ret < 0)
+			goto err_clk;
+	}
+
+	ret = phy_power_on(dsi->phy);
+	if (ret < 0) {
+		dev_err(dsi->dev, "cannot enable phy %d\n", ret);
+		goto err_clk;
+	}
+
+	return 0;
+
+err_clk:
+	while (--i > -1)
+		clk_disable_unprepare(dsi->clks[i]);
+	regulator_bulk_disable(ARRAY_SIZE(dsi->supplies), dsi->supplies);
+
+	return ret;
+}
+
+static const struct dev_pm_ops exynos_dsi_pm_ops = {
+	SET_RUNTIME_PM_OPS(exynos_dsi_suspend, exynos_dsi_resume, NULL)
+};
+
+>>>>>>> v4.9.227
 struct platform_driver dsi_driver = {
 	.probe = exynos_dsi_probe,
 	.remove = exynos_dsi_remove,
 	.driver = {
 		   .name = "exynos-dsi",
 		   .owner = THIS_MODULE,
+<<<<<<< HEAD
+=======
+		   .pm = &exynos_dsi_pm_ops,
+>>>>>>> v4.9.227
 		   .of_match_table = exynos_dsi_of_match,
 	},
 };

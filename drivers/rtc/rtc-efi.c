@@ -3,7 +3,11 @@
  *
  * Copyright (C) 2009 Hewlett-Packard Development Company, L.P.
  *
+<<<<<<< HEAD
  * Author: dann frazier <dannf@hp.com>
+=======
+ * Author: dann frazier <dannf@dannf.org>
+>>>>>>> v4.9.227
  * Based on efirtc.c by Stephane Eranian
  *
  *  This program is free software; you can redistribute  it and/or modify it
@@ -24,10 +28,13 @@
 #include <linux/efi.h>
 
 #define EFI_ISDST (EFI_TIME_ADJUST_DAYLIGHT|EFI_TIME_IN_DAYLIGHT)
+<<<<<<< HEAD
 /*
  * EFI Epoch is 1/1/1998
  */
 #define EFI_RTC_EPOCH		1998
+=======
+>>>>>>> v4.9.227
 
 /*
  * returns day of the year [0-365]
@@ -38,6 +45,7 @@ compute_yday(efi_time_t *eft)
 	/* efi_time_t.month is in the [1-12] so, we need -1 */
 	return rtc_year_days(eft->day, eft->month - 1, eft->year);
 }
+<<<<<<< HEAD
 /*
  * returns day of the week [0-6] 0=Sunday
  *
@@ -63,6 +71,26 @@ compute_wday(efi_time_t *eft)
 	 * 4=1/1/1998 was a Thursday
 	 */
 	return (ndays + 4) % 7;
+=======
+
+/*
+ * returns day of the week [0-6] 0=Sunday
+ */
+static int
+compute_wday(efi_time_t *eft, int yday)
+{
+	int ndays = eft->year * (365 % 7)
+		    + (eft->year - 1) / 4
+		    - (eft->year - 1) / 100
+		    + (eft->year - 1) / 400
+		    + yday;
+
+	/*
+	 * 1/1/0000 may or may not have been a Sunday (if it ever existed at
+	 * all) but assuming it was makes this calculation work correctly.
+	 */
+	return ndays % 7;
+>>>>>>> v4.9.227
 }
 
 static void
@@ -103,16 +131,28 @@ convert_from_efi_time(efi_time_t *eft, struct rtc_time *wtime)
 	if (!eft->month || eft->month > 12)
 		return false;
 	wtime->tm_mon  = eft->month - 1;
+<<<<<<< HEAD
 	wtime->tm_year = eft->year - 1900;
 
 	/* day of the week [0-6], Sunday=0 */
 	wtime->tm_wday = compute_wday(eft);
 	if (wtime->tm_wday < 0)
 		return false;
+=======
+
+	if (eft->year < 1900 || eft->year > 9999)
+		return false;
+	wtime->tm_year = eft->year - 1900;
+>>>>>>> v4.9.227
 
 	/* day in the year [1-365]*/
 	wtime->tm_yday = compute_yday(eft);
 
+<<<<<<< HEAD
+=======
+	/* day of the week [0-6], Sunday=0 */
+	wtime->tm_wday = compute_wday(eft, wtime->tm_yday);
+>>>>>>> v4.9.227
 
 	switch (eft->daylight & EFI_ISDST) {
 	case EFI_ISDST:
@@ -202,22 +242,101 @@ static int efi_set_time(struct device *dev, struct rtc_time *tm)
 	return status == EFI_SUCCESS ? 0 : -EINVAL;
 }
 
+<<<<<<< HEAD
 static const struct rtc_class_ops efi_rtc_ops = {
 	.read_time = efi_read_time,
 	.set_time = efi_set_time,
 	.read_alarm = efi_read_alarm,
 	.set_alarm = efi_set_alarm,
+=======
+static int efi_procfs(struct device *dev, struct seq_file *seq)
+{
+	efi_time_t      eft, alm;
+	efi_time_cap_t  cap;
+	efi_bool_t      enabled, pending;
+
+	memset(&eft, 0, sizeof(eft));
+	memset(&alm, 0, sizeof(alm));
+	memset(&cap, 0, sizeof(cap));
+
+	efi.get_time(&eft, &cap);
+	efi.get_wakeup_time(&enabled, &pending, &alm);
+
+	seq_printf(seq,
+		   "Time\t\t: %u:%u:%u.%09u\n"
+		   "Date\t\t: %u-%u-%u\n"
+		   "Daylight\t: %u\n",
+		   eft.hour, eft.minute, eft.second, eft.nanosecond,
+		   eft.year, eft.month, eft.day,
+		   eft.daylight);
+
+	if (eft.timezone == EFI_UNSPECIFIED_TIMEZONE)
+		seq_puts(seq, "Timezone\t: unspecified\n");
+	else
+		/* XXX fixme: convert to string? */
+		seq_printf(seq, "Timezone\t: %u\n", eft.timezone);
+
+	seq_printf(seq,
+		   "Alarm Time\t: %u:%u:%u.%09u\n"
+		   "Alarm Date\t: %u-%u-%u\n"
+		   "Alarm Daylight\t: %u\n"
+		   "Enabled\t\t: %s\n"
+		   "Pending\t\t: %s\n",
+		   alm.hour, alm.minute, alm.second, alm.nanosecond,
+		   alm.year, alm.month, alm.day,
+		   alm.daylight,
+		   enabled == 1 ? "yes" : "no",
+		   pending == 1 ? "yes" : "no");
+
+	if (eft.timezone == EFI_UNSPECIFIED_TIMEZONE)
+		seq_puts(seq, "Timezone\t: unspecified\n");
+	else
+		/* XXX fixme: convert to string? */
+		seq_printf(seq, "Timezone\t: %u\n", alm.timezone);
+
+	/*
+	 * now prints the capabilities
+	 */
+	seq_printf(seq,
+		   "Resolution\t: %u\n"
+		   "Accuracy\t: %u\n"
+		   "SetstoZero\t: %u\n",
+		   cap.resolution, cap.accuracy, cap.sets_to_zero);
+
+	return 0;
+}
+
+static const struct rtc_class_ops efi_rtc_ops = {
+	.read_time	= efi_read_time,
+	.set_time	= efi_set_time,
+	.read_alarm	= efi_read_alarm,
+	.set_alarm	= efi_set_alarm,
+	.proc		= efi_procfs,
+>>>>>>> v4.9.227
 };
 
 static int __init efi_rtc_probe(struct platform_device *dev)
 {
 	struct rtc_device *rtc;
+<<<<<<< HEAD
+=======
+	efi_time_t eft;
+	efi_time_cap_t cap;
+
+	/* First check if the RTC is usable */
+	if (efi.get_time(&eft, &cap) != EFI_SUCCESS)
+		return -ENODEV;
+>>>>>>> v4.9.227
 
 	rtc = devm_rtc_device_register(&dev->dev, "rtc-efi", &efi_rtc_ops,
 					THIS_MODULE);
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
 
+<<<<<<< HEAD
+=======
+	rtc->uie_unsupported = 1;
+>>>>>>> v4.9.227
 	platform_set_drvdata(dev, rtc);
 
 	return 0;
@@ -226,14 +345,21 @@ static int __init efi_rtc_probe(struct platform_device *dev)
 static struct platform_driver efi_rtc_driver = {
 	.driver = {
 		.name = "rtc-efi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
 module_platform_driver_probe(efi_rtc_driver, efi_rtc_probe);
 
 MODULE_ALIAS("platform:rtc-efi");
+<<<<<<< HEAD
 MODULE_AUTHOR("dann frazier <dannf@hp.com>");
+=======
+MODULE_AUTHOR("dann frazier <dannf@dannf.org>");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("EFI RTC driver");
 MODULE_ALIAS("platform:rtc-efi");

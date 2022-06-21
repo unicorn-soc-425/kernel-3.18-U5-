@@ -14,7 +14,10 @@
 #define cpu_has_3k_cache	0
 #define cpu_has_4k_cache	1
 #define cpu_has_tx39_cache	0
+<<<<<<< HEAD
 #define cpu_has_fpu		1
+=======
+>>>>>>> v4.9.227
 #define cpu_has_32fpr		1
 #define cpu_has_counter		1
 #define cpu_has_watch		0

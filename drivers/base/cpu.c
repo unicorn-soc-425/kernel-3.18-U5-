@@ -16,6 +16,10 @@
 #include <linux/acpi.h>
 #include <linux/of.h>
 #include <linux/cpufeature.h>
+<<<<<<< HEAD
+=======
+#include <linux/tick.h>
+>>>>>>> v4.9.227
 
 #include "base.h"
 
@@ -40,7 +44,11 @@ static void change_cpu_under_node(struct cpu *cpu,
 	cpu->node_id = to_nid;
 }
 
+<<<<<<< HEAD
 static int __ref cpu_subsys_online(struct device *dev)
+=======
+static int cpu_subsys_online(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct cpu *cpu = container_of(dev, struct cpu, dev);
 	int cpuid = dev->id;
@@ -179,6 +187,7 @@ static struct attribute_group crash_note_cpu_attr_group = {
 };
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_HMP
 
 static ssize_t show_sched_static_cpu_pwr_cost(struct device *dev,
@@ -466,16 +475,21 @@ static struct attribute_group uevent_suppress_cpu_attr_group = {
 	.attrs = uevent_suppress_cpu_attrs,
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct attribute_group *common_cpu_attr_groups[] = {
 #ifdef CONFIG_KEXEC
 	&crash_note_cpu_attr_group,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_HMP
 	&sched_hmp_cpu_attr_group,
 #endif
 #ifdef CONFIG_SCHED_QHMP
 	&sched_qhmp_cpu_attr_group,
 #endif
+=======
+>>>>>>> v4.9.227
 	NULL
 };
 
@@ -483,6 +497,7 @@ static const struct attribute_group *hotplugable_cpu_attr_groups[] = {
 #ifdef CONFIG_KEXEC
 	&crash_note_cpu_attr_group,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_HMP
 	&sched_hmp_cpu_attr_group,
 #endif
@@ -490,6 +505,8 @@ static const struct attribute_group *hotplugable_cpu_attr_groups[] = {
 	&sched_qhmp_cpu_attr_group,
 #endif
 	&uevent_suppress_cpu_attr_group,
+=======
+>>>>>>> v4.9.227
 	NULL
 };
 
@@ -499,7 +516,11 @@ static const struct attribute_group *hotplugable_cpu_attr_groups[] = {
 
 struct cpu_attr {
 	struct device_attribute attr;
+<<<<<<< HEAD
 	const struct cpumask *const * const map;
+=======
+	const struct cpumask *const map;
+>>>>>>> v4.9.227
 };
 
 static ssize_t show_cpus_attr(struct device *dev,
@@ -507,11 +528,16 @@ static ssize_t show_cpus_attr(struct device *dev,
 			      char *buf)
 {
 	struct cpu_attr *ca = container_of(attr, struct cpu_attr, attr);
+<<<<<<< HEAD
 	int n = cpulist_scnprintf(buf, PAGE_SIZE-2, *(ca->map));
 
 	buf[n++] = '\n';
 	buf[n] = '\0';
 	return n;
+=======
+
+	return cpumap_print_to_pagebuf(true, buf, ca->map);
+>>>>>>> v4.9.227
 }
 
 #define _CPU_ATTR(name, map) \
@@ -519,9 +545,15 @@ static ssize_t show_cpus_attr(struct device *dev,
 
 /* Keep in sync with cpu_subsys_attrs */
 static struct cpu_attr cpu_attrs[] = {
+<<<<<<< HEAD
 	_CPU_ATTR(online, &cpu_online_mask),
 	_CPU_ATTR(possible, &cpu_possible_mask),
 	_CPU_ATTR(present, &cpu_present_mask),
+=======
+	_CPU_ATTR(online, &__cpu_online_mask),
+	_CPU_ATTR(possible, &__cpu_possible_mask),
+	_CPU_ATTR(present, &__cpu_present_mask),
+>>>>>>> v4.9.227
 };
 
 /*
@@ -548,7 +580,11 @@ static ssize_t print_cpus_offline(struct device *dev,
 	if (!alloc_cpumask_var(&offline, GFP_KERNEL))
 		return -ENOMEM;
 	cpumask_andnot(offline, cpu_possible_mask, cpu_online_mask);
+<<<<<<< HEAD
 	n = cpulist_scnprintf(buf, len, offline);
+=======
+	n = scnprintf(buf, len, "%*pbl", cpumask_pr_args(offline));
+>>>>>>> v4.9.227
 	free_cpumask_var(offline);
 
 	/* display offline cpus >= nr_cpu_ids */
@@ -568,6 +604,33 @@ static ssize_t print_cpus_offline(struct device *dev,
 }
 static DEVICE_ATTR(offline, 0444, print_cpus_offline, NULL);
 
+<<<<<<< HEAD
+=======
+static ssize_t print_cpus_isolated(struct device *dev,
+				  struct device_attribute *attr, char *buf)
+{
+	int n = 0, len = PAGE_SIZE-2;
+
+	n = scnprintf(buf, len, "%*pbl\n", cpumask_pr_args(cpu_isolated_map));
+
+	return n;
+}
+static DEVICE_ATTR(isolated, 0444, print_cpus_isolated, NULL);
+
+#ifdef CONFIG_NO_HZ_FULL
+static ssize_t print_cpus_nohz_full(struct device *dev,
+				  struct device_attribute *attr, char *buf)
+{
+	int n = 0, len = PAGE_SIZE-2;
+
+	n = scnprintf(buf, len, "%*pbl\n", cpumask_pr_args(tick_nohz_full_mask));
+
+	return n;
+}
+static DEVICE_ATTR(nohz_full, 0444, print_cpus_nohz_full, NULL);
+#endif
+
+>>>>>>> v4.9.227
 static void cpu_device_release(struct device *dev)
 {
 	/*
@@ -649,12 +712,22 @@ int register_cpu(struct cpu *cpu, int num)
 	if (cpu->hotpluggable)
 		cpu->dev.groups = hotplugable_cpu_attr_groups;
 	error = device_register(&cpu->dev);
+<<<<<<< HEAD
 	if (!error)
 		per_cpu(cpu_sys_devices, num) = &cpu->dev;
 	if (!error)
 		register_cpu_under_node(num, cpu_to_node(num));
 
 	return error;
+=======
+	if (error)
+		return error;
+
+	per_cpu(cpu_sys_devices, num) = &cpu->dev;
+	register_cpu_under_node(num, cpu_to_node(num));
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 struct device *get_cpu_device(unsigned cpu)
@@ -734,6 +807,13 @@ static struct attribute *cpu_root_attrs[] = {
 	&cpu_attrs[2].attr.attr,
 	&dev_attr_kernel_max.attr,
 	&dev_attr_offline.attr,
+<<<<<<< HEAD
+=======
+	&dev_attr_isolated.attr,
+#ifdef CONFIG_NO_HZ_FULL
+	&dev_attr_nohz_full.attr,
+#endif
+>>>>>>> v4.9.227
 #ifdef CONFIG_GENERIC_CPU_AUTOPROBE
 	&dev_attr_modalias.attr,
 #endif
@@ -772,10 +852,113 @@ static void __init cpu_dev_register_generic(void)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_GENERIC_CPU_VULNERABILITIES
+
+ssize_t __weak cpu_show_meltdown(struct device *dev,
+				 struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+ssize_t __weak cpu_show_spectre_v1(struct device *dev,
+				   struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+ssize_t __weak cpu_show_spectre_v2(struct device *dev,
+				   struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+ssize_t __weak cpu_show_spec_store_bypass(struct device *dev,
+					  struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+ssize_t __weak cpu_show_l1tf(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+ssize_t __weak cpu_show_mds(struct device *dev,
+			    struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+ssize_t __weak cpu_show_tsx_async_abort(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+ssize_t __weak cpu_show_itlb_multihit(struct device *dev,
+			    struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+ssize_t __weak cpu_show_srbds(struct device *dev,
+			      struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+static DEVICE_ATTR(meltdown, 0444, cpu_show_meltdown, NULL);
+static DEVICE_ATTR(spectre_v1, 0444, cpu_show_spectre_v1, NULL);
+static DEVICE_ATTR(spectre_v2, 0444, cpu_show_spectre_v2, NULL);
+static DEVICE_ATTR(spec_store_bypass, 0444, cpu_show_spec_store_bypass, NULL);
+static DEVICE_ATTR(l1tf, 0444, cpu_show_l1tf, NULL);
+static DEVICE_ATTR(mds, 0444, cpu_show_mds, NULL);
+static DEVICE_ATTR(tsx_async_abort, 0444, cpu_show_tsx_async_abort, NULL);
+static DEVICE_ATTR(itlb_multihit, 0444, cpu_show_itlb_multihit, NULL);
+static DEVICE_ATTR(srbds, 0444, cpu_show_srbds, NULL);
+
+static struct attribute *cpu_root_vulnerabilities_attrs[] = {
+	&dev_attr_meltdown.attr,
+	&dev_attr_spectre_v1.attr,
+	&dev_attr_spectre_v2.attr,
+	&dev_attr_spec_store_bypass.attr,
+	&dev_attr_l1tf.attr,
+	&dev_attr_mds.attr,
+	&dev_attr_tsx_async_abort.attr,
+	&dev_attr_itlb_multihit.attr,
+	&dev_attr_srbds.attr,
+	NULL
+};
+
+static const struct attribute_group cpu_root_vulnerabilities_group = {
+	.name  = "vulnerabilities",
+	.attrs = cpu_root_vulnerabilities_attrs,
+};
+
+static void __init cpu_register_vulnerabilities(void)
+{
+	if (sysfs_create_group(&cpu_subsys.dev_root->kobj,
+			       &cpu_root_vulnerabilities_group))
+		pr_err("Unable to register CPU vulnerabilities\n");
+}
+
+#else
+static inline void cpu_register_vulnerabilities(void) { }
+#endif
+
+>>>>>>> v4.9.227
 void __init cpu_dev_init(void)
 {
 	if (subsys_system_register(&cpu_subsys, cpu_root_attr_groups))
 		panic("Failed to register CPU subsystem");
 
 	cpu_dev_register_generic();
+<<<<<<< HEAD
+=======
+	cpu_register_vulnerabilities();
+>>>>>>> v4.9.227
 }

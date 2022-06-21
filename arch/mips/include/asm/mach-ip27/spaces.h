@@ -12,13 +12,25 @@
 
 /*
  * IP27 uses the R10000's uncached attribute feature.  Attribute 3 selects
+<<<<<<< HEAD
  * uncached memory addressing.
  */
 
+=======
+ * uncached memory addressing. Hide the definitions on 32-bit compilation
+ * of the compat-vdso code.
+ */
+#ifdef CONFIG_64BIT
+>>>>>>> v4.9.227
 #define HSPEC_BASE		0x9000000000000000
 #define IO_BASE			0x9200000000000000
 #define MSPEC_BASE		0x9400000000000000
 #define UNCAC_BASE		0x9600000000000000
+<<<<<<< HEAD
+=======
+#define CAC_BASE		0xa800000000000000
+#endif
+>>>>>>> v4.9.227
 
 #define TO_MSPEC(x)		(MSPEC_BASE | ((x) & TO_PHYS_MASK))
 #define TO_HSPEC(x)		(HSPEC_BASE | ((x) & TO_PHYS_MASK))

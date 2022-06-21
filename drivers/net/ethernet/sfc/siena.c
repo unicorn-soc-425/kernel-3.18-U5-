@@ -25,6 +25,10 @@
 #include "mcdi.h"
 #include "mcdi_pcol.h"
 #include "selftest.h"
+<<<<<<< HEAD
+=======
+#include "siena_sriov.h"
+>>>>>>> v4.9.227
 
 /* Hardware control for SFC9000 family including SFL9021 (aka Siena). */
 
@@ -33,19 +37,38 @@ static void siena_init_wol(struct efx_nic *efx);
 
 static void siena_push_irq_moderation(struct efx_channel *channel)
 {
+<<<<<<< HEAD
 	efx_dword_t timer_cmd;
 
 	if (channel->irq_moderation)
+=======
+	struct efx_nic *efx = channel->efx;
+	efx_dword_t timer_cmd;
+
+	if (channel->irq_moderation_us) {
+		unsigned int ticks;
+
+		ticks = efx_usecs_to_ticks(efx, channel->irq_moderation_us);
+>>>>>>> v4.9.227
 		EFX_POPULATE_DWORD_2(timer_cmd,
 				     FRF_CZ_TC_TIMER_MODE,
 				     FFE_CZ_TIMER_MODE_INT_HLDOFF,
 				     FRF_CZ_TC_TIMER_VAL,
+<<<<<<< HEAD
 				     channel->irq_moderation - 1);
 	else
+=======
+				     ticks - 1);
+	} else {
+>>>>>>> v4.9.227
 		EFX_POPULATE_DWORD_2(timer_cmd,
 				     FRF_CZ_TC_TIMER_MODE,
 				     FFE_CZ_TIMER_MODE_DIS,
 				     FRF_CZ_TC_TIMER_VAL, 0);
+<<<<<<< HEAD
+=======
+	}
+>>>>>>> v4.9.227
 	efx_writed_page_locked(channel->efx, &timer_cmd, FR_BZ_TIMER_COMMAND_P0,
 			       channel->channel);
 }
@@ -205,8 +228,12 @@ static int siena_map_reset_flags(u32 *flags)
  */
 static void siena_monitor(struct efx_nic *efx)
 {
+<<<<<<< HEAD
 	struct eeh_dev *eehdev =
 		of_node_to_eeh_dev(pci_device_to_OF_node(efx->pci_dev));
+=======
+	struct eeh_dev *eehdev = pci_dev_to_eeh_dev(efx->pci_dev);
+>>>>>>> v4.9.227
 
 	eeh_dev_check_failure(eehdev);
 }
@@ -222,6 +249,12 @@ static int siena_probe_nvconfig(struct efx_nic *efx)
 	efx->timer_quantum_ns =
 		(caps & (1 << MC_CMD_CAPABILITIES_TURBO_ACTIVE_LBN)) ?
 		3072 : 6144; /* 768 cycles */
+<<<<<<< HEAD
+=======
+	efx->timer_max_ns = efx->type->timer_period_max *
+			    efx->timer_quantum_ns;
+
+>>>>>>> v4.9.227
 	return rc;
 }
 
@@ -251,6 +284,10 @@ static int siena_probe_nic(struct efx_nic *efx)
 	nic_data = kzalloc(sizeof(struct siena_nic_data), GFP_KERNEL);
 	if (!nic_data)
 		return -ENOMEM;
+<<<<<<< HEAD
+=======
+	nic_data->efx = efx;
+>>>>>>> v4.9.227
 	efx->nic_data = nic_data;
 
 	if (efx_farch_fpga_ver(efx) != 0) {
@@ -261,6 +298,10 @@ static int siena_probe_nic(struct efx_nic *efx)
 	}
 
 	efx->max_channels = EFX_MAX_CHANNELS;
+<<<<<<< HEAD
+=======
+	efx->max_tx_channels = EFX_MAX_CHANNELS;
+>>>>>>> v4.9.227
 
 	efx_reado(efx, &reg, FR_AZ_CS_DEBUG);
 	efx->port_num = EFX_OWORD_FIELD(reg, FRF_CZ_CS_PORT_NUM) - 1;
@@ -306,7 +347,13 @@ static int siena_probe_nic(struct efx_nic *efx)
 	if (rc)
 		goto fail5;
 
+<<<<<<< HEAD
 	efx_sriov_probe(efx);
+=======
+#ifdef CONFIG_SFC_SRIOV
+	efx_siena_sriov_probe(efx);
+#endif
+>>>>>>> v4.9.227
 	efx_ptp_defer_probe_with_channel(efx);
 
 	return 0;
@@ -321,7 +368,12 @@ fail1:
 	return rc;
 }
 
+<<<<<<< HEAD
 static void siena_rx_push_rss_config(struct efx_nic *efx)
+=======
+static int siena_rx_push_rss_config(struct efx_nic *efx, bool user,
+				    const u32 *rx_indir_table)
+>>>>>>> v4.9.227
 {
 	efx_oword_t temp;
 
@@ -343,7 +395,15 @@ static void siena_rx_push_rss_config(struct efx_nic *efx)
 	       FRF_CZ_RX_RSS_IPV6_TKEY_HI_WIDTH / 8);
 	efx_writeo(efx, &temp, FR_CZ_RX_RSS_IPV6_REG3);
 
+<<<<<<< HEAD
 	efx_farch_rx_push_indir_table(efx);
+=======
+	memcpy(efx->rx_indir_table, rx_indir_table,
+	       sizeof(efx->rx_indir_table));
+	efx_farch_rx_push_indir_table(efx);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /* This call performs hardware-specific global initialisation, such as
@@ -386,7 +446,11 @@ static int siena_init_nic(struct efx_nic *efx)
 			    EFX_RX_USR_BUF_SIZE >> 5);
 	efx_writeo(efx, &temp, FR_AZ_RX_CFG);
 
+<<<<<<< HEAD
 	siena_rx_push_rss_config(efx);
+=======
+	siena_rx_push_rss_config(efx, false, efx->rx_indir_table);
+>>>>>>> v4.9.227
 
 	/* Enable event logging */
 	rc = efx_mcdi_log_ctrl(efx, true, false, 0);
@@ -909,6 +973,11 @@ fail:
  */
 
 const struct efx_nic_type siena_a0_nic_type = {
+<<<<<<< HEAD
+=======
+	.is_vf = false,
+	.mem_bar = EFX_MEM_BAR,
+>>>>>>> v4.9.227
 	.mem_map_size = siena_mem_map_size,
 	.probe = siena_probe_nic,
 	.remove = siena_remove_nic,
@@ -996,6 +1065,25 @@ const struct efx_nic_type siena_a0_nic_type = {
 #endif
 	.ptp_write_host_time = siena_ptp_write_host_time,
 	.ptp_set_ts_config = siena_ptp_set_ts_config,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SFC_SRIOV
+	.sriov_configure = efx_siena_sriov_configure,
+	.sriov_init = efx_siena_sriov_init,
+	.sriov_fini = efx_siena_sriov_fini,
+	.sriov_wanted = efx_siena_sriov_wanted,
+	.sriov_reset = efx_siena_sriov_reset,
+	.sriov_flr = efx_siena_sriov_flr,
+	.sriov_set_vf_mac = efx_siena_sriov_set_vf_mac,
+	.sriov_set_vf_vlan = efx_siena_sriov_set_vf_vlan,
+	.sriov_set_vf_spoofchk = efx_siena_sriov_set_vf_spoofchk,
+	.sriov_get_vf_config = efx_siena_sriov_get_vf_config,
+	.vswitching_probe = efx_port_dummy_op_int,
+	.vswitching_restore = efx_port_dummy_op_int,
+	.vswitching_remove = efx_port_dummy_op_void,
+	.set_mac_address = efx_siena_sriov_mac_address_changed,
+#endif
+>>>>>>> v4.9.227
 
 	.revision = EFX_REV_SIENA_A0,
 	.txd_ptr_tbl_base = FR_BZ_TX_DESC_PTR_TBL,
@@ -1016,9 +1104,13 @@ const struct efx_nic_type siena_a0_nic_type = {
 	.max_rx_ip_filters = FR_BZ_RX_FILTER_TBL0_ROWS,
 	.hwtstamp_filters = (1 << HWTSTAMP_FILTER_NONE |
 			     1 << HWTSTAMP_FILTER_PTP_V1_L4_EVENT |
+<<<<<<< HEAD
 			     1 << HWTSTAMP_FILTER_PTP_V1_L4_SYNC |
 			     1 << HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ |
 			     1 << HWTSTAMP_FILTER_PTP_V2_L4_EVENT |
 			     1 << HWTSTAMP_FILTER_PTP_V2_L4_SYNC |
 			     1 << HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ),
+=======
+			     1 << HWTSTAMP_FILTER_PTP_V2_L4_EVENT),
+>>>>>>> v4.9.227
 };

@@ -27,7 +27,11 @@ static void ab8500_power_off(void)
 {
 	sigset_t old;
 	sigset_t all;
+<<<<<<< HEAD
 	static char *pss[] = {"ab8500_ac", "pm2301", "ab8500_usb"};
+=======
+	static const char * const pss[] = {"ab8500_ac", "pm2301", "ab8500_usb"};
+>>>>>>> v4.9.227
 	int i;
 	bool charger_present = false;
 	union power_supply_propval val;
@@ -49,7 +53,13 @@ static void ab8500_power_off(void)
 		if (!psy)
 			continue;
 
+<<<<<<< HEAD
 		ret = psy->get_property(psy, POWER_SUPPLY_PROP_ONLINE, &val);
+=======
+		ret = power_supply_get_property(psy, POWER_SUPPLY_PROP_ONLINE,
+				&val);
+		power_supply_put(psy);
+>>>>>>> v4.9.227
 
 		if (!ret && val.intval) {
 			charger_present = true;
@@ -63,6 +73,7 @@ static void ab8500_power_off(void)
 	/* Check if battery is known */
 	psy = power_supply_get_by_name("ab8500_btemp");
 	if (psy) {
+<<<<<<< HEAD
 		ret = psy->get_property(psy, POWER_SUPPLY_PROP_TECHNOLOGY,
 					&val);
 		if (!ret && val.intval != POWER_SUPPLY_TECHNOLOGY_UNKNOWN) {
@@ -72,6 +83,17 @@ static void ab8500_power_off(void)
 			       pss[i]);
 			machine_restart("charging");
 		}
+=======
+		ret = power_supply_get_property(psy,
+				POWER_SUPPLY_PROP_TECHNOLOGY, &val);
+		if (!ret && val.intval != POWER_SUPPLY_TECHNOLOGY_UNKNOWN) {
+			pr_info("Charger '%s' is connected with known battery",
+				pss[i]);
+			pr_info(" - Rebooting.\n");
+			machine_restart("charging");
+		}
+		power_supply_put(psy);
+>>>>>>> v4.9.227
 	}
 
 shutdown:
@@ -85,6 +107,7 @@ shutdown:
 	}
 }
 
+<<<<<<< HEAD
 /*
  * Use the AB WD to reset the platform. It will perform a hard
  * reset instead of a soft reset. Write the reset reason to
@@ -142,6 +165,8 @@ void ab8500_restart(char mode, const char *cmd)
 		AB8500_WD_RESTART_ON_EXPIRE | AB8500_KICK_WD));
 }
 
+=======
+>>>>>>> v4.9.227
 static inline bool valid_bank(u8 bank)
 {
 	return ((bank == AB8500_SYS_CTRL1_BLOCK) ||
@@ -153,7 +178,11 @@ int ab8500_sysctrl_read(u16 reg, u8 *value)
 	u8 bank;
 
 	if (sysctrl_dev == NULL)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return -EPROBE_DEFER;
+>>>>>>> v4.9.227
 
 	bank = (reg >> 8);
 	if (!valid_bank(bank))
@@ -169,11 +198,21 @@ int ab8500_sysctrl_write(u16 reg, u8 mask, u8 value)
 	u8 bank;
 
 	if (sysctrl_dev == NULL)
+<<<<<<< HEAD
 		return -EINVAL;
 
 	bank = (reg >> 8);
 	if (!valid_bank(bank))
 		return -EINVAL;
+=======
+		return -EPROBE_DEFER;
+
+	bank = (reg >> 8);
+	if (!valid_bank(bank)) {
+		pr_err("invalid bank\n");
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 
 	return abx500_mask_and_set_register_interruptible(sysctrl_dev, bank,
 		(u8)(reg & 0xFF), mask, value);
@@ -182,6 +221,7 @@ EXPORT_SYMBOL(ab8500_sysctrl_write);
 
 static int ab8500_sysctrl_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct ab8500 *ab8500 = dev_get_drvdata(pdev->dev.parent);
 	struct ab8500_platform_data *plat;
 	struct ab8500_sysctrl_platform_data *pdata;
@@ -191,11 +231,14 @@ static int ab8500_sysctrl_probe(struct platform_device *pdev)
 	if (!plat)
 		return -EINVAL;
 
+=======
+>>>>>>> v4.9.227
 	sysctrl_dev = &pdev->dev;
 
 	if (!pm_power_off)
 		pm_power_off = ab8500_power_off;
 
+<<<<<<< HEAD
 	pdata = plat->sysctrl;
 	if (pdata) {
 		int last, ret, i, j;
@@ -221,6 +264,8 @@ static int ab8500_sysctrl_probe(struct platform_device *pdev)
 		}
 	}
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -234,10 +279,22 @@ static int ab8500_sysctrl_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_driver ab8500_sysctrl_driver = {
 	.driver = {
 		.name = "ab8500-sysctrl",
 		.owner = THIS_MODULE,
+=======
+static const struct of_device_id ab8500_sysctrl_match[] = {
+	{ .compatible = "stericsson,ab8500-sysctrl", },
+	{}
+};
+
+static struct platform_driver ab8500_sysctrl_driver = {
+	.driver = {
+		.name = "ab8500-sysctrl",
+		.of_match_table = ab8500_sysctrl_match,
+>>>>>>> v4.9.227
 	},
 	.probe = ab8500_sysctrl_probe,
 	.remove = ab8500_sysctrl_remove,

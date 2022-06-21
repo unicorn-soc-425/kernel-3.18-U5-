@@ -41,11 +41,19 @@
 			label = "user";
 			gpios = <&gpio6 24 GPIO_ACTIVE_HIGH>; /* gpio 184 */
 			linux,code = <BTN_EXTRA>;
+<<<<<<< HEAD
 			gpio-key,wakeup;
 		};
 	};
 
 	hdmi0: connector@0 {
+=======
+			wakeup-source;
+		};
+	};
+
+	hdmi0: connector {
+>>>>>>> v4.9.227
 		compatible = "hdmi-connector";
 		pinctrl-names = "default";
 		pinctrl-0 = <&hdmi_hpd_pins>;

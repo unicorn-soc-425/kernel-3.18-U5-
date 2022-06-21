@@ -21,6 +21,7 @@
 #include <asm/smp_plat.h>
 
 #include "common.h"
+<<<<<<< HEAD
 #include "r8a7791.h"
 #include "rcar-gen2.h"
 
@@ -30,6 +31,27 @@ static void __init r8a7791_smp_prepare_cpus(unsigned int max_cpus)
 	shmobile_smp_apmu_prepare_cpus(max_cpus);
 
 	r8a7791_pm_init();
+=======
+#include "platsmp-apmu.h"
+#include "r8a7791.h"
+#include "rcar-gen2.h"
+
+static struct rcar_apmu_config r8a7791_apmu_config[] = {
+	{
+		.iomem = DEFINE_RES_MEM(0xe6152000, 0x188),
+		.cpus = { 0, 1 },
+	}
+};
+
+static void __init r8a7791_smp_prepare_cpus(unsigned int max_cpus)
+{
+	/* let APMU code install data related to shmobile_boot_vector */
+	shmobile_smp_apmu_prepare_cpus(max_cpus,
+				       r8a7791_apmu_config,
+				       ARRAY_SIZE(r8a7791_apmu_config));
+
+	rcar_gen2_pm_init();
+>>>>>>> v4.9.227
 }
 
 static int r8a7791_smp_boot_secondary(unsigned int cpu,
@@ -44,11 +66,19 @@ static int r8a7791_smp_boot_secondary(unsigned int cpu,
 	return shmobile_smp_apmu_boot_secondary(cpu, idle);
 }
 
+<<<<<<< HEAD
 struct smp_operations r8a7791_smp_ops __initdata = {
 	.smp_prepare_cpus	= r8a7791_smp_prepare_cpus,
 	.smp_boot_secondary	= r8a7791_smp_boot_secondary,
 #ifdef CONFIG_HOTPLUG_CPU
 	.cpu_disable		= shmobile_smp_cpu_disable,
+=======
+const struct smp_operations r8a7791_smp_ops __initconst = {
+	.smp_prepare_cpus	= r8a7791_smp_prepare_cpus,
+	.smp_boot_secondary	= r8a7791_smp_boot_secondary,
+#ifdef CONFIG_HOTPLUG_CPU
+	.cpu_can_disable	= shmobile_smp_cpu_can_disable,
+>>>>>>> v4.9.227
 	.cpu_die		= shmobile_smp_apmu_cpu_die,
 	.cpu_kill		= shmobile_smp_apmu_cpu_kill,
 #endif

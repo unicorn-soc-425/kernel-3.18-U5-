@@ -20,8 +20,13 @@
 
 /**
  * struct adc_jack_cond - condition to use an extcon state
+<<<<<<< HEAD
  * @state:		the corresponding extcon state (if 0, this struct
  *			denotes the last adc_jack_cond element among the array)
+=======
+ *			denotes the last adc_jack_cond element among the array)
+ * @id:			the unique id of each external connector
+>>>>>>> v4.9.227
  * @min_adc:		min adc value for this condition
  * @max_adc:		max adc value for this condition
  *
@@ -33,7 +38,11 @@
  * because when no adc_jack_cond is met, state = 0 is automatically chosen.
  */
 struct adc_jack_cond {
+<<<<<<< HEAD
 	u32 state;	/* extcon state value. 0 if invalid */
+=======
+	unsigned int id;
+>>>>>>> v4.9.227
 	u32 min_adc;
 	u32 max_adc;
 };
@@ -44,7 +53,11 @@ struct adc_jack_cond {
  * @consumer_channel:	Unique name to identify the channel on the consumer
  *			side. This typically describes the channels used within
  *			the consumer. E.g. 'battery_voltage'
+<<<<<<< HEAD
  * @cable_names:	array of cable names ending with null.
+=======
+ * @cable_names:	array of extcon id for supported cables.
+>>>>>>> v4.9.227
  * @adc_contitions:	array of struct adc_jack_cond conditions ending
  *			with .state = 0 entry. This describes how to decode
  *			adc values into extcon state.
@@ -53,19 +66,31 @@ struct adc_jack_cond {
  *			milli-seconds after the interrupt occurs. You may
  *			describe such delays with @handling_delay_ms, which
  *			is rounded-off by jiffies.
+<<<<<<< HEAD
+=======
+ * @wakeup_source:	flag to wake up the system for extcon events.
+>>>>>>> v4.9.227
  */
 struct adc_jack_pdata {
 	const char *name;
 	const char *consumer_channel;
 
+<<<<<<< HEAD
 	/* The last entry should be NULL */
 	const char **cable_names;
+=======
+	const enum extcon *cable_names;
+>>>>>>> v4.9.227
 
 	/* The last entry's state should be 0 */
 	struct adc_jack_cond *adc_conditions;
 
 	unsigned long irq_flags;
 	unsigned long handling_delay_ms; /* in ms */
+<<<<<<< HEAD
+=======
+	bool wakeup_source;
+>>>>>>> v4.9.227
 };
 
 #endif /* _EXTCON_ADC_JACK_H */

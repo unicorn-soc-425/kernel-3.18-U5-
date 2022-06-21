@@ -378,6 +378,10 @@ static int cisco_ioctl(struct net_device *dev, struct ifreq *ifr)
 		spin_lock_init(&state(hdlc)->lock);
 		dev->header_ops = &cisco_header_ops;
 		dev->type = ARPHRD_CISCO;
+<<<<<<< HEAD
+=======
+		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
+>>>>>>> v4.9.227
 		netif_dormant_on(dev);
 		return 0;
 	}

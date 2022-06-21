@@ -18,6 +18,10 @@ config GPROF
 config GCOV
 	bool "Enable gcov support"
 	depends on DEBUG_INFO
+<<<<<<< HEAD
+=======
+	depends on !KCOV
+>>>>>>> v4.9.227
 	help
 	  This option allows developers to retrieve coverage data from a UML
 	  session.

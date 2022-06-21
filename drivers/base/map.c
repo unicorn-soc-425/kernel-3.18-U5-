@@ -41,8 +41,12 @@ int kobj_map(struct kobj_map *domain, dev_t dev, unsigned long range,
 	if (n > 255)
 		n = 255;
 
+<<<<<<< HEAD
 	p = kmalloc(sizeof(struct probe) * n, GFP_KERNEL);
 
+=======
+	p = kmalloc_array(n, sizeof(struct probe), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (p == NULL)
 		return -ENOMEM;
 

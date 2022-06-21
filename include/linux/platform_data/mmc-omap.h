@@ -10,6 +10,7 @@
 
 #define OMAP_MMC_MAX_SLOTS	2
 
+<<<<<<< HEAD
 /*
  * struct omap_mmc_dev_attr.flags possibilities
  *
@@ -36,6 +37,10 @@ struct omap_mmc_dev_attr {
 	u8 flags;
 };
 
+=======
+struct mmc_card;
+
+>>>>>>> v4.9.227
 struct omap_mmc_platform_data {
 	/* back-link to device */
 	struct device *dev;
@@ -55,10 +60,13 @@ struct omap_mmc_platform_data {
 	void (*cleanup)(struct device *dev);
 	void (*shutdown)(struct device *dev);
 
+<<<<<<< HEAD
 	/* To handle board related suspend/resume functionality for MMC */
 	int (*suspend)(struct device *dev, int slot);
 	int (*resume)(struct device *dev, int slot);
 
+=======
+>>>>>>> v4.9.227
 	/* Return context loss count due to PM states changing */
 	int (*get_context_loss_count)(struct device *dev);
 
@@ -106,9 +114,12 @@ struct omap_mmc_platform_data {
 		unsigned vcc_aux_disable_is_sleep:1;
 
 		/* we can put the features above into this variable */
+<<<<<<< HEAD
 #define HSMMC_HAS_PBIAS		(1 << 0)
 #define HSMMC_HAS_UPDATED_RESET	(1 << 1)
 #define HSMMC_HAS_HSPE_SUPPORT	(1 << 2)
+=======
+>>>>>>> v4.9.227
 #define MMC_OMAP7XX		(1 << 3)
 #define MMC_OMAP15XX		(1 << 4)
 #define MMC_OMAP16XX		(1 << 5)

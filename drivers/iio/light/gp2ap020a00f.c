@@ -46,6 +46,10 @@
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <asm/unaligned.h>
+>>>>>>> v4.9.227
 #include <linux/iio/buffer.h>
 #include <linux/iio/events.h>
 #include <linux/iio/iio.h>
@@ -850,7 +854,11 @@ static irqreturn_t gp2ap020a00f_prox_sensing_handler(int irq, void *data)
 				    GP2AP020A00F_SCAN_MODE_PROXIMITY,
 				    IIO_EV_TYPE_ROC,
 				    IIO_EV_DIR_RISING),
+<<<<<<< HEAD
 			       iio_get_time_ns());
+=======
+			       iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 		} else {
 			iio_push_event(indio_dev,
 			       IIO_UNMOD_EVENT_CODE(
@@ -858,7 +866,11 @@ static irqreturn_t gp2ap020a00f_prox_sensing_handler(int irq, void *data)
 				    GP2AP020A00F_SCAN_MODE_PROXIMITY,
 				    IIO_EV_TYPE_ROC,
 				    IIO_EV_DIR_FALLING),
+<<<<<<< HEAD
 			       iio_get_time_ns());
+=======
+			       iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -924,7 +936,11 @@ static irqreturn_t gp2ap020a00f_thresh_event_handler(int irq, void *data)
 					    IIO_MOD_LIGHT_CLEAR,
 					    IIO_EV_TYPE_THRESH,
 					    IIO_EV_DIR_RISING),
+<<<<<<< HEAD
 				       iio_get_time_ns());
+=======
+				       iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 		}
 
 		if (test_bit(GP2AP020A00F_FLAG_ALS_FALLING_EV, &priv->flags)) {
@@ -938,7 +954,11 @@ static irqreturn_t gp2ap020a00f_thresh_event_handler(int irq, void *data)
 					    IIO_MOD_LIGHT_CLEAR,
 					    IIO_EV_TYPE_THRESH,
 					    IIO_EV_DIR_FALLING),
+<<<<<<< HEAD
 				       iio_get_time_ns());
+=======
+				       iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -966,7 +986,10 @@ static irqreturn_t gp2ap020a00f_trigger_handler(int irq, void *data)
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct gp2ap020a00f_data *priv = iio_priv(indio_dev);
 	size_t d_size = 0;
+<<<<<<< HEAD
 	__le32 light_lux;
+=======
+>>>>>>> v4.9.227
 	int i, out_val, ret;
 
 	for_each_set_bit(i, indio_dev->active_scan_mask,
@@ -981,8 +1004,13 @@ static irqreturn_t gp2ap020a00f_trigger_handler(int irq, void *data)
 		    i == GP2AP020A00F_SCAN_MODE_LIGHT_IR) {
 			out_val = le16_to_cpup((__le16 *)&priv->buffer[d_size]);
 			gp2ap020a00f_output_to_lux(priv, &out_val);
+<<<<<<< HEAD
 			light_lux = cpu_to_le32(out_val);
 			memcpy(&priv->buffer[d_size], (u8 *)&light_lux, 4);
+=======
+
+			put_unaligned_le32(out_val, &priv->buffer[d_size]);
+>>>>>>> v4.9.227
 			d_size += 4;
 		} else {
 			d_size += 2;
@@ -1287,6 +1315,7 @@ static int gp2ap020a00f_read_raw(struct iio_dev *indio_dev,
 	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
 	int err = -EINVAL;
 
+<<<<<<< HEAD
 	mutex_lock(&data->lock);
 
 	switch (mask) {
@@ -1303,6 +1332,16 @@ static int gp2ap020a00f_read_raw(struct iio_dev *indio_dev,
 error_unlock:
 	mutex_unlock(&data->lock);
 
+=======
+	if (mask == IIO_CHAN_INFO_RAW) {
+		err = iio_device_claim_direct_mode(indio_dev);
+		if (err)
+			return err;
+
+		err = gp2ap020a00f_read_channel(data, chan, val);
+		iio_device_release_direct_mode(indio_dev);
+	}
+>>>>>>> v4.9.227
 	return err < 0 ? err : IIO_VAL_INT;
 }
 
@@ -1634,13 +1673,20 @@ static const struct of_device_id gp2ap020a00f_of_match[] = {
 	{ .compatible = "sharp,gp2ap020a00f" },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, gp2ap020a00f_of_match);
+>>>>>>> v4.9.227
 #endif
 
 static struct i2c_driver gp2ap020a00f_driver = {
 	.driver = {
 		.name	= GP2A_I2C_NAME,
 		.of_match_table = of_match_ptr(gp2ap020a00f_of_match),
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= gp2ap020a00f_probe,
 	.remove		= gp2ap020a00f_remove,

@@ -58,7 +58,11 @@
  * About SOFTNET:
  * Most of the changes were pretty obvious and basically done by HE already.
  *
+<<<<<<< HEAD
  * One problem of the isdn net device code is that is uses struct net_device
+=======
+ * One problem of the isdn net device code is that it uses struct net_device
+>>>>>>> v4.9.227
  * for masters and slaves. However, only master interface are registered to
  * the network layer, and therefore, it only makes sense to call netif_*
  * functions on them.
@@ -1153,7 +1157,11 @@ static void isdn_net_tx_timeout(struct net_device *ndev)
 		 * ever called   --KG
 		 */
 	}
+<<<<<<< HEAD
 	ndev->trans_start = jiffies;
+=======
+	netif_trans_update(ndev);
+>>>>>>> v4.9.227
 	netif_wake_queue(ndev);
 }
 
@@ -1291,7 +1299,11 @@ isdn_net_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 			}
 		} else {
 			/* Device is connected to an ISDN channel */
+<<<<<<< HEAD
 			ndev->trans_start = jiffies;
+=======
+			netif_trans_update(ndev);
+>>>>>>> v4.9.227
 			if (!lp->dialstate) {
 				/* ISDN connection is established, try sending */
 				int ret;
@@ -1951,6 +1963,7 @@ static int isdn_net_header(struct sk_buff *skb, struct net_device *dev,
 	return len;
 }
 
+<<<<<<< HEAD
 /* We don't need to send arp, because we have point-to-point connections. */
 static int
 isdn_net_rebuild_header(struct sk_buff *skb)
@@ -1983,6 +1996,8 @@ isdn_net_rebuild_header(struct sk_buff *skb)
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static int isdn_header_cache(const struct neighbour *neigh, struct hh_cache *hh,
 			     __be16 type)
 {
@@ -2005,7 +2020,10 @@ static void isdn_header_cache_update(struct hh_cache *hh,
 
 static const struct header_ops isdn_header_ops = {
 	.create = isdn_net_header,
+<<<<<<< HEAD
 	.rebuild = isdn_net_rebuild_header,
+=======
+>>>>>>> v4.9.227
 	.cache = isdn_header_cache,
 	.cache_update = isdn_header_cache_update,
 };

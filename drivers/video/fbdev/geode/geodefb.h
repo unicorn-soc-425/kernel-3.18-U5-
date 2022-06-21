@@ -31,8 +31,13 @@ struct geodefb_par {
 	int panel_y;
 	void __iomem *dc_regs;
 	void __iomem *vid_regs;
+<<<<<<< HEAD
 	struct geode_dc_ops  *dc_ops;
 	struct geode_vid_ops *vid_ops;
+=======
+	const struct geode_dc_ops  *dc_ops;
+	const struct geode_vid_ops *vid_ops;
+>>>>>>> v4.9.227
 };
 
 #endif /* !__GEODEFB_H__ */

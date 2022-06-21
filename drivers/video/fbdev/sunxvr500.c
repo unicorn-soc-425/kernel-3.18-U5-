@@ -1,9 +1,18 @@
+<<<<<<< HEAD
 /* sunxvr500.c: Sun 3DLABS XVR-500 Expert3D driver for sparc64 systems
+=======
+/* sunxvr500.c: Sun 3DLABS XVR-500 Expert3D fb driver for sparc64 systems
+ *
+ * License: GPL
+>>>>>>> v4.9.227
  *
  * Copyright (C) 2007 David S. Miller (davem@davemloft.net)
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/fb.h>
 #include <linux/pci.h>
@@ -392,6 +401,7 @@ err_out:
 	return err;
 }
 
+<<<<<<< HEAD
 static void e3d_pci_unregister(struct pci_dev *pdev)
 {
 	struct fb_info *info = pci_get_drvdata(pdev);
@@ -411,6 +421,8 @@ static void e3d_pci_unregister(struct pci_dev *pdev)
 	pci_disable_device(pdev);
 }
 
+=======
+>>>>>>> v4.9.227
 static struct pci_device_id e3d_pci_table[] = {
 	{	PCI_DEVICE(PCI_VENDOR_ID_3DLABS, 0x7a0),	},
 	{	PCI_DEVICE(0x1091, 0x7a0),			},
@@ -434,10 +446,19 @@ static struct pci_device_id e3d_pci_table[] = {
 };
 
 static struct pci_driver e3d_driver = {
+<<<<<<< HEAD
 	.name		= "e3d",
 	.id_table	= e3d_pci_table,
 	.probe		= e3d_pci_register,
 	.remove		= e3d_pci_unregister,
+=======
+	.driver = {
+		.suppress_bind_attrs = true,
+	},
+	.name		= "e3d",
+	.id_table	= e3d_pci_table,
+	.probe		= e3d_pci_register,
+>>>>>>> v4.9.227
 };
 
 static int __init e3d_init(void)
@@ -447,6 +468,7 @@ static int __init e3d_init(void)
 
 	return pci_register_driver(&e3d_driver);
 }
+<<<<<<< HEAD
 
 static void __exit e3d_exit(void)
 {
@@ -460,3 +482,6 @@ MODULE_DESCRIPTION("framebuffer driver for Sun XVR-500 graphics");
 MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(e3d_init);
+>>>>>>> v4.9.227

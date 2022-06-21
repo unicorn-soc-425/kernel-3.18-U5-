@@ -30,13 +30,20 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/phy/phy.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/usb/usb_phy_generic.h>
 
+<<<<<<< HEAD
 #include <mach/da8xx.h>
 #include <linux/platform_data/usb-davinci.h>
 
+=======
+>>>>>>> v4.9.227
 #include "musb_core.h"
 
 /*
@@ -80,6 +87,7 @@
 
 #define DA8XX_MENTOR_CORE_OFFSET 0x400
 
+<<<<<<< HEAD
 #define CFGCHIP2	IO_ADDRESS(DA8XX_SYSCFG0_BASE + DA8XX_CFGCHIP2_REG)
 
 struct da8xx_glue {
@@ -135,6 +143,17 @@ static inline void phy_off(void)
 }
 
 /*
+=======
+struct da8xx_glue {
+	struct device		*dev;
+	struct platform_device	*musb;
+	struct platform_device	*usb_phy;
+	struct clk		*clk;
+	struct phy		*phy;
+};
+
+/*
+>>>>>>> v4.9.227
  * Because we don't set CTRL.UINT, it's "important" to:
  *	- not read/write INTRUSB/INTRUSBE (except during
  *	  initial setup, as a workaround);
@@ -198,20 +217,34 @@ static void otg_timer(unsigned long _musb)
 	 */
 	devctl = musb_readb(mregs, MUSB_DEVCTL);
 	dev_dbg(musb->controller, "Poll devctl %02x (%s)\n", devctl,
+<<<<<<< HEAD
 		usb_otg_state_string(musb->xceiv->state));
 
 	spin_lock_irqsave(&musb->lock, flags);
 	switch (musb->xceiv->state) {
+=======
+		usb_otg_state_string(musb->xceiv->otg->state));
+
+	spin_lock_irqsave(&musb->lock, flags);
+	switch (musb->xceiv->otg->state) {
+>>>>>>> v4.9.227
 	case OTG_STATE_A_WAIT_BCON:
 		devctl &= ~MUSB_DEVCTL_SESSION;
 		musb_writeb(musb->mregs, MUSB_DEVCTL, devctl);
 
 		devctl = musb_readb(musb->mregs, MUSB_DEVCTL);
 		if (devctl & MUSB_DEVCTL_BDEVICE) {
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_B_IDLE;
 			MUSB_DEV_MODE(musb);
 		} else {
 			musb->xceiv->state = OTG_STATE_A_IDLE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_B_IDLE;
+			MUSB_DEV_MODE(musb);
+		} else {
+			musb->xceiv->otg->state = OTG_STATE_A_IDLE;
+>>>>>>> v4.9.227
 			MUSB_HST_MODE(musb);
 		}
 		break;
@@ -226,7 +259,11 @@ static void otg_timer(unsigned long _musb)
 			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 			break;
 		}
+<<<<<<< HEAD
 		musb->xceiv->state = OTG_STATE_A_WAIT_VRISE;
+=======
+		musb->xceiv->otg->state = OTG_STATE_A_WAIT_VRISE;
+>>>>>>> v4.9.227
 		musb_writel(musb->ctrl_base, DA8XX_USB_INTR_SRC_SET_REG,
 			    MUSB_INTR_VBUSERROR << DA8XX_INTR_USB_SHIFT);
 		break;
@@ -248,7 +285,11 @@ static void otg_timer(unsigned long _musb)
 		if (devctl & MUSB_DEVCTL_BDEVICE)
 			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 		else
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_A_IDLE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_A_IDLE;
+>>>>>>> v4.9.227
 		break;
 	default:
 		break;
@@ -265,9 +306,15 @@ static void da8xx_musb_try_idle(struct musb *musb, unsigned long timeout)
 
 	/* Never idle if active, or when VBUS timeout is not set as host */
 	if (musb->is_active || (musb->a_wait_bcon == 0 &&
+<<<<<<< HEAD
 				musb->xceiv->state == OTG_STATE_A_WAIT_BCON)) {
 		dev_dbg(musb->controller, "%s active, deleting timer\n",
 			usb_otg_state_string(musb->xceiv->state));
+=======
+				musb->xceiv->otg->state == OTG_STATE_A_WAIT_BCON)) {
+		dev_dbg(musb->controller, "%s active, deleting timer\n",
+			usb_otg_state_string(musb->xceiv->otg->state));
+>>>>>>> v4.9.227
 		del_timer(&otg_workaround);
 		last_timer = jiffies;
 		return;
@@ -280,7 +327,11 @@ static void da8xx_musb_try_idle(struct musb *musb, unsigned long timeout)
 	last_timer = timeout;
 
 	dev_dbg(musb->controller, "%s inactive, starting idle timer for %u ms\n",
+<<<<<<< HEAD
 		usb_otg_state_string(musb->xceiv->state),
+=======
+		usb_otg_state_string(musb->xceiv->otg->state),
+>>>>>>> v4.9.227
 		jiffies_to_msecs(timeout - jiffies));
 	mod_timer(&otg_workaround, timeout);
 }
@@ -341,13 +392,21 @@ static irqreturn_t da8xx_musb_interrupt(int irq, void *hci)
 			 * devctl.
 			 */
 			musb->int_usb &= ~MUSB_INTR_VBUSERROR;
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_A_WAIT_VFALL;
+=======
+			musb->xceiv->otg->state = OTG_STATE_A_WAIT_VFALL;
+>>>>>>> v4.9.227
 			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 			WARNING("VBUS error workaround (delay coming)\n");
 		} else if (drvvbus) {
 			MUSB_HST_MODE(musb);
 			otg->default_a = 1;
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_A_WAIT_VRISE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_A_WAIT_VRISE;
+>>>>>>> v4.9.227
 			portstate(musb->port1_status |= USB_PORT_STAT_POWER);
 			del_timer(&otg_workaround);
 		} else if (!(musb->int_usb & MUSB_INTR_BABBLE)){
@@ -362,13 +421,21 @@ static irqreturn_t da8xx_musb_interrupt(int irq, void *hci)
 			musb->is_active = 0;
 			MUSB_DEV_MODE(musb);
 			otg->default_a = 0;
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_B_IDLE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_B_IDLE;
+>>>>>>> v4.9.227
 			portstate(musb->port1_status &= ~USB_PORT_STAT_POWER);
 		}
 
 		dev_dbg(musb->controller, "VBUS %s (%s)%s, devctl %02x\n",
 				drvvbus ? "on" : "off",
+<<<<<<< HEAD
 				usb_otg_state_string(musb->xceiv->state),
+=======
+				usb_otg_state_string(musb->xceiv->otg->state),
+>>>>>>> v4.9.227
 				err ? " ERROR" : "",
 				devctl);
 		ret = IRQ_HANDLED;
@@ -383,7 +450,11 @@ static irqreturn_t da8xx_musb_interrupt(int irq, void *hci)
 		musb_writel(reg_base, DA8XX_USB_END_OF_INTR_REG, 0);
 
 	/* Poll for ID change */
+<<<<<<< HEAD
 	if (musb->xceiv->state == OTG_STATE_B_IDLE)
+=======
+	if (musb->xceiv->otg->state == OTG_STATE_B_IDLE)
+>>>>>>> v4.9.227
 		mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 
 	spin_unlock_irqrestore(&musb->lock, flags);
@@ -393,6 +464,7 @@ static irqreturn_t da8xx_musb_interrupt(int irq, void *hci)
 
 static int da8xx_musb_set_mode(struct musb *musb, u8 musb_mode)
 {
+<<<<<<< HEAD
 	u32 cfgchip2 = __raw_readl(CFGCHIP2);
 
 	cfgchip2 &= ~CFGCHIP2_OTGMODE;
@@ -412,10 +484,34 @@ static int da8xx_musb_set_mode(struct musb *musb, u8 musb_mode)
 
 	__raw_writel(cfgchip2, CFGCHIP2);
 	return 0;
+=======
+	struct da8xx_glue *glue = dev_get_drvdata(musb->controller->parent);
+	enum phy_mode phy_mode;
+
+	switch (musb_mode) {
+	case MUSB_HOST:		/* Force VBUS valid, ID = 0 */
+		phy_mode = PHY_MODE_USB_HOST;
+		break;
+	case MUSB_PERIPHERAL:	/* Force VBUS valid, ID = 1 */
+		phy_mode = PHY_MODE_USB_DEVICE;
+		break;
+	case MUSB_OTG:		/* Don't override the VBUS/ID comparators */
+		phy_mode = PHY_MODE_USB_OTG;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	return phy_set_mode(glue->phy, phy_mode);
+>>>>>>> v4.9.227
 }
 
 static int da8xx_musb_init(struct musb *musb)
 {
+<<<<<<< HEAD
+=======
+	struct da8xx_glue *glue = dev_get_drvdata(musb->controller->parent);
+>>>>>>> v4.9.227
 	void __iomem *reg_base = musb->ctrl_base;
 	u32 rev;
 	int ret = -ENODEV;
@@ -433,32 +529,77 @@ static int da8xx_musb_init(struct musb *musb)
 		goto fail;
 	}
 
+<<<<<<< HEAD
+=======
+	ret = clk_prepare_enable(glue->clk);
+	if (ret) {
+		dev_err(glue->dev, "failed to enable clock\n");
+		goto fail;
+	}
+
+>>>>>>> v4.9.227
 	setup_timer(&otg_workaround, otg_timer, (unsigned long)musb);
 
 	/* Reset the controller */
 	musb_writel(reg_base, DA8XX_USB_CTRL_REG, DA8XX_SOFT_RESET_MASK);
 
 	/* Start the on-chip PHY and its PLL. */
+<<<<<<< HEAD
 	phy_on();
+=======
+	ret = phy_init(glue->phy);
+	if (ret) {
+		dev_err(glue->dev, "Failed to init phy.\n");
+		goto err_phy_init;
+	}
+
+	ret = phy_power_on(glue->phy);
+	if (ret) {
+		dev_err(glue->dev, "Failed to power on phy.\n");
+		goto err_phy_power_on;
+	}
+>>>>>>> v4.9.227
 
 	msleep(5);
 
 	/* NOTE: IRQs are in mixed mode, not bypass to pure MUSB */
+<<<<<<< HEAD
 	pr_debug("DA8xx OTG revision %08x, PHY %03x, control %02x\n",
 		 rev, __raw_readl(CFGCHIP2),
+=======
+	pr_debug("DA8xx OTG revision %08x, control %02x\n", rev,
+>>>>>>> v4.9.227
 		 musb_readb(reg_base, DA8XX_USB_CTRL_REG));
 
 	musb->isr = da8xx_musb_interrupt;
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_phy_power_on:
+	phy_exit(glue->phy);
+err_phy_init:
+	clk_disable_unprepare(glue->clk);
+>>>>>>> v4.9.227
 fail:
 	return ret;
 }
 
 static int da8xx_musb_exit(struct musb *musb)
 {
+<<<<<<< HEAD
 	del_timer_sync(&otg_workaround);
 
 	phy_off();
+=======
+	struct da8xx_glue *glue = dev_get_drvdata(musb->controller->parent);
+
+	del_timer_sync(&otg_workaround);
+
+	phy_power_off(glue->phy);
+	phy_exit(glue->phy);
+	clk_disable_unprepare(glue->clk);
+>>>>>>> v4.9.227
 
 	usb_put_phy(musb->xceiv);
 
@@ -466,9 +607,17 @@ static int da8xx_musb_exit(struct musb *musb)
 }
 
 static const struct musb_platform_ops da8xx_ops = {
+<<<<<<< HEAD
 	.init		= da8xx_musb_init,
 	.exit		= da8xx_musb_exit,
 
+=======
+	.quirks		= MUSB_INDEXED_EP,
+	.init		= da8xx_musb_init,
+	.exit		= da8xx_musb_exit,
+
+	.fifo_mode	= 2,
+>>>>>>> v4.9.227
 	.enable		= da8xx_musb_enable,
 	.disable	= da8xx_musb_disable,
 
@@ -488,6 +637,7 @@ static int da8xx_probe(struct platform_device *pdev)
 {
 	struct resource musb_resources[2];
 	struct musb_hdrc_platform_data	*pdata = dev_get_platdata(&pdev->dev);
+<<<<<<< HEAD
 	struct platform_device		*musb;
 	struct da8xx_glue		*glue;
 	struct platform_device_info	pinfo;
@@ -512,6 +662,28 @@ static int da8xx_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(&pdev->dev, "failed to enable clock\n");
 		goto err4;
+=======
+	struct da8xx_glue		*glue;
+	struct platform_device_info	pinfo;
+	struct clk			*clk;
+	int				ret;
+
+	glue = devm_kzalloc(&pdev->dev, sizeof(*glue), GFP_KERNEL);
+	if (!glue)
+		return -ENOMEM;
+
+	clk = devm_clk_get(&pdev->dev, "usb20");
+	if (IS_ERR(clk)) {
+		dev_err(&pdev->dev, "failed to get clock\n");
+		return PTR_ERR(clk);
+	}
+
+	glue->phy = devm_phy_get(&pdev->dev, "usb-phy");
+	if (IS_ERR(glue->phy)) {
+		if (PTR_ERR(glue->phy) != -EPROBE_DEFER)
+			dev_err(&pdev->dev, "failed to get phy\n");
+		return PTR_ERR(glue->phy);
+>>>>>>> v4.9.227
 	}
 
 	glue->dev			= &pdev->dev;
@@ -519,10 +691,18 @@ static int da8xx_probe(struct platform_device *pdev)
 
 	pdata->platform_ops		= &da8xx_ops;
 
+<<<<<<< HEAD
 	glue->phy = usb_phy_generic_register();
 	if (IS_ERR(glue->phy)) {
 		ret = PTR_ERR(glue->phy);
 		goto err5;
+=======
+	glue->usb_phy = usb_phy_generic_register();
+	ret = PTR_ERR_OR_ZERO(glue->usb_phy);
+	if (ret) {
+		dev_err(&pdev->dev, "failed to register usb_phy\n");
+		return ret;
+>>>>>>> v4.9.227
 	}
 	platform_set_drvdata(pdev, glue);
 
@@ -546,6 +726,7 @@ static int da8xx_probe(struct platform_device *pdev)
 	pinfo.data = pdata;
 	pinfo.size_data = sizeof(*pdata);
 
+<<<<<<< HEAD
 	glue->musb = musb = platform_device_register_full(&pinfo);
 	if (IS_ERR(musb)) {
 		ret = PTR_ERR(musb);
@@ -568,6 +749,15 @@ err3:
 	kfree(glue);
 
 err0:
+=======
+	glue->musb = platform_device_register_full(&pinfo);
+	ret = PTR_ERR_OR_ZERO(glue->musb);
+	if (ret) {
+		dev_err(&pdev->dev, "failed to register musb device: %d\n", ret);
+		usb_phy_generic_unregister(glue->usb_phy);
+	}
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -576,10 +766,14 @@ static int da8xx_remove(struct platform_device *pdev)
 	struct da8xx_glue		*glue = platform_get_drvdata(pdev);
 
 	platform_device_unregister(glue->musb);
+<<<<<<< HEAD
 	usb_phy_generic_unregister(glue->phy);
 	clk_disable(glue->clk);
 	clk_put(glue->clk);
 	kfree(glue);
+=======
+	usb_phy_generic_unregister(glue->usb_phy);
+>>>>>>> v4.9.227
 
 	return 0;
 }

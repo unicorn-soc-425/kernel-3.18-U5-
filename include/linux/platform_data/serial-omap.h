@@ -21,7 +21,11 @@
 #include <linux/device.h>
 #include <linux/pm_qos.h>
 
+<<<<<<< HEAD
 #define DRIVER_NAME	"omap_uart"
+=======
+#define OMAP_SERIAL_DRIVER_NAME	"omap_uart"
+>>>>>>> v4.9.227
 
 /*
  * Use tty device name as ttyO, [O -> OMAP]
@@ -38,9 +42,12 @@ struct omap_uart_port_info {
 	unsigned int		dma_rx_timeout;
 	unsigned int		autosuspend_timeout;
 	unsigned int		dma_rx_poll_rate;
+<<<<<<< HEAD
 	int			DTR_gpio;
 	int			DTR_inverted;
 	int			DTR_present;
+=======
+>>>>>>> v4.9.227
 
 	int (*get_context_loss_count)(struct device *);
 	void (*enable_wakeup)(struct device *, bool);

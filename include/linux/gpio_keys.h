@@ -1,9 +1,14 @@
 #ifndef _GPIO_KEYS_H
 #define _GPIO_KEYS_H
 
+<<<<<<< HEAD
 #define GPIO_KEYS_DEV_NAME "gpio_keys"
 
 struct device;
+=======
+struct device;
+struct gpio_desc;
+>>>>>>> v4.9.227
 
 /**
  * struct gpio_keys_button - configuration parameters
@@ -19,6 +24,10 @@ struct device;
  *			disable button via sysfs
  * @value:		axis value for %EV_ABS
  * @irq:		Irq number in case of interrupt keys
+<<<<<<< HEAD
+=======
+ * @gpiod:		GPIO descriptor
+>>>>>>> v4.9.227
  */
 struct gpio_keys_button {
 	unsigned int code;
@@ -27,7 +36,10 @@ struct gpio_keys_button {
 	const char *desc;
 	unsigned int type;
 	int wakeup;
+<<<<<<< HEAD
 	int wakeup_default;
+=======
+>>>>>>> v4.9.227
 	int debounce_interval;
 	bool can_disable;
 	int value;
@@ -53,9 +65,13 @@ struct gpio_keys_platform_data {
 	unsigned int rep:1;
 	int (*enable)(struct device *dev);
 	void (*disable)(struct device *dev);
+<<<<<<< HEAD
 	const char *name;		/* input device name */
 	bool use_syscore;
 	int wakeup;
+=======
+	const char *name;
+>>>>>>> v4.9.227
 };
 
 #endif

@@ -151,7 +151,11 @@ int direct2indirect(struct reiserfs_transaction_handle *th, struct inode *inode,
 	 */
 	if (up_to_date_bh) {
 		unsigned pgoff =
+<<<<<<< HEAD
 		    (tail_offset + total_tail - 1) & (PAGE_CACHE_SIZE - 1);
+=======
+		    (tail_offset + total_tail - 1) & (PAGE_SIZE - 1);
+>>>>>>> v4.9.227
 		char *kaddr = kmap_atomic(up_to_date_bh->b_page);
 		memset(kaddr + pgoff, 0, blk_size - total_tail);
 		kunmap_atomic(kaddr);
@@ -271,7 +275,11 @@ int indirect2direct(struct reiserfs_transaction_handle *th,
 	 * the page was locked and this part of the page was up to date when
 	 * indirect2direct was called, so we know the bytes are still valid
 	 */
+<<<<<<< HEAD
 	tail = tail + (pos & (PAGE_CACHE_SIZE - 1));
+=======
+	tail = tail + (pos & (PAGE_SIZE - 1));
+>>>>>>> v4.9.227
 
 	PATH_LAST_POSITION(path)++;
 

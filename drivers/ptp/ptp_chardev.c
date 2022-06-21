@@ -22,6 +22,12 @@
 #include <linux/poll.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/timekeeping.h>
+
+#include <linux/nospec.h>
+>>>>>>> v4.9.227
 
 #include "ptp_private.h"
 
@@ -121,11 +127,20 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 	struct ptp_clock_caps caps;
 	struct ptp_clock_request req;
 	struct ptp_sys_offset *sysoff = NULL;
+<<<<<<< HEAD
+=======
+	struct ptp_sys_offset_precise precise_offset;
+>>>>>>> v4.9.227
 	struct ptp_pin_desc pd;
 	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
 	struct ptp_clock_info *ops = ptp->info;
 	struct ptp_clock_time *pct;
+<<<<<<< HEAD
 	struct timespec ts;
+=======
+	struct timespec64 ts;
+	struct system_device_crosststamp xtstamp;
+>>>>>>> v4.9.227
 	int enable, err = 0;
 	unsigned int i, pin_index;
 
@@ -139,6 +154,10 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 		caps.n_per_out = ptp->info->n_per_out;
 		caps.pps = ptp->info->pps;
 		caps.n_pins = ptp->info->n_pins;
+<<<<<<< HEAD
+=======
+		caps.cross_timestamping = ptp->info->getcrosststamp != NULL;
+>>>>>>> v4.9.227
 		if (copy_to_user((void __user *)arg, &caps, sizeof(caps)))
 			err = -EFAULT;
 		break;
@@ -181,6 +200,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 		err = ops->enable(ops, &req, enable);
 		break;
 
+<<<<<<< HEAD
 	case PTP_SYS_OFFSET:
 		sysoff = kmalloc(sizeof(*sysoff), GFP_KERNEL);
 		if (!sysoff) {
@@ -190,6 +210,37 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 		if (copy_from_user(sysoff, (void __user *)arg,
 				   sizeof(*sysoff))) {
 			err = -EFAULT;
+=======
+	case PTP_SYS_OFFSET_PRECISE:
+		if (!ptp->info->getcrosststamp) {
+			err = -EOPNOTSUPP;
+			break;
+		}
+		err = ptp->info->getcrosststamp(ptp->info, &xtstamp);
+		if (err)
+			break;
+
+		memset(&precise_offset, 0, sizeof(precise_offset));
+		ts = ktime_to_timespec64(xtstamp.device);
+		precise_offset.device.sec = ts.tv_sec;
+		precise_offset.device.nsec = ts.tv_nsec;
+		ts = ktime_to_timespec64(xtstamp.sys_realtime);
+		precise_offset.sys_realtime.sec = ts.tv_sec;
+		precise_offset.sys_realtime.nsec = ts.tv_nsec;
+		ts = ktime_to_timespec64(xtstamp.sys_monoraw);
+		precise_offset.sys_monoraw.sec = ts.tv_sec;
+		precise_offset.sys_monoraw.nsec = ts.tv_nsec;
+		if (copy_to_user((void __user *)arg, &precise_offset,
+				 sizeof(precise_offset)))
+			err = -EFAULT;
+		break;
+
+	case PTP_SYS_OFFSET:
+		sysoff = memdup_user((void __user *)arg, sizeof(*sysoff));
+		if (IS_ERR(sysoff)) {
+			err = PTR_ERR(sysoff);
+			sysoff = NULL;
+>>>>>>> v4.9.227
 			break;
 		}
 		if (sysoff->n_samples > PTP_MAX_SAMPLES) {
@@ -198,16 +249,30 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 		}
 		pct = &sysoff->ts[0];
 		for (i = 0; i < sysoff->n_samples; i++) {
+<<<<<<< HEAD
 			getnstimeofday(&ts);
 			pct->sec = ts.tv_sec;
 			pct->nsec = ts.tv_nsec;
 			pct++;
 			ptp->info->gettime(ptp->info, &ts);
+=======
+			getnstimeofday64(&ts);
+			pct->sec = ts.tv_sec;
+			pct->nsec = ts.tv_nsec;
+			pct++;
+			err = ptp->info->gettime64(ptp->info, &ts);
+			if (err)
+				goto out;
+>>>>>>> v4.9.227
 			pct->sec = ts.tv_sec;
 			pct->nsec = ts.tv_nsec;
 			pct++;
 		}
+<<<<<<< HEAD
 		getnstimeofday(&ts);
+=======
+		getnstimeofday64(&ts);
+>>>>>>> v4.9.227
 		pct->sec = ts.tv_sec;
 		pct->nsec = ts.tv_nsec;
 		if (copy_to_user((void __user *)arg, sysoff, sizeof(*sysoff)))
@@ -224,6 +289,10 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 			err = -EINVAL;
 			break;
 		}
+<<<<<<< HEAD
+=======
+		pin_index = array_index_nospec(pin_index, ops->n_pins);
+>>>>>>> v4.9.227
 		if (mutex_lock_interruptible(&ptp->pincfg_mux))
 			return -ERESTARTSYS;
 		pd = ops->pin_config[pin_index];
@@ -242,6 +311,10 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 			err = -EINVAL;
 			break;
 		}
+<<<<<<< HEAD
+=======
+		pin_index = array_index_nospec(pin_index, ops->n_pins);
+>>>>>>> v4.9.227
 		if (mutex_lock_interruptible(&ptp->pincfg_mux))
 			return -ERESTARTSYS;
 		err = ptp_set_pinfunc(ptp, pin_index, pd.func, pd.chan);
@@ -253,6 +326,10 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+out:
+>>>>>>> v4.9.227
 	kfree(sysoff);
 	return err;
 }

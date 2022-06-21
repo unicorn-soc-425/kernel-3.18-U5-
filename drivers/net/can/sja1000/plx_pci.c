@@ -39,6 +39,10 @@ MODULE_DESCRIPTION("Socket-CAN driver for PLX90xx PCI-bridge cards with "
 MODULE_SUPPORTED_DEVICE("Adlink PCI-7841/cPCI-7841, "
 			"Adlink PCI-7841/cPCI-7841 SE, "
 			"Marathon CAN-bus-PCI, "
+<<<<<<< HEAD
+=======
+			"Marathon CAN-bus-PCIe, "
+>>>>>>> v4.9.227
 			"TEWS TECHNOLOGIES TPMC810, "
 			"esd CAN-PCI/CPCI/PCI104/200, "
 			"esd CAN-PCI/PMC/266, "
@@ -133,6 +137,10 @@ struct plx_pci_card {
 #define IXXAT_PCI_SUB_SYS_ID		0x2540
 
 #define MARATHON_PCI_DEVICE_ID		0x2715
+<<<<<<< HEAD
+=======
+#define MARATHON_PCIE_DEVICE_ID		0x3432
+>>>>>>> v4.9.227
 
 #define TEWS_PCI_VENDOR_ID		0x1498
 #define TEWS_PCI_DEVICE_ID_TMPC810	0x032A
@@ -140,9 +148,19 @@ struct plx_pci_card {
 #define CTI_PCI_VENDOR_ID		0x12c4
 #define CTI_PCI_DEVICE_ID_CRG001	0x0900
 
+<<<<<<< HEAD
 static void plx_pci_reset_common(struct pci_dev *pdev);
 static void plx_pci_reset_marathon(struct pci_dev *pdev);
 static void plx9056_pci_reset_common(struct pci_dev *pdev);
+=======
+#define MOXA_PCI_VENDOR_ID		0x1393
+#define MOXA_PCI_DEVICE_ID		0x0100
+
+static void plx_pci_reset_common(struct pci_dev *pdev);
+static void plx9056_pci_reset_common(struct pci_dev *pdev);
+static void plx_pci_reset_marathon_pci(struct pci_dev *pdev);
+static void plx_pci_reset_marathon_pcie(struct pci_dev *pdev);
+>>>>>>> v4.9.227
 
 struct plx_pci_channel_map {
 	u32 bar;
@@ -215,6 +233,7 @@ static struct plx_pci_card_info plx_pci_card_info_ixxat = {
 	/* based on PLX9050 */
 };
 
+<<<<<<< HEAD
 static struct plx_pci_card_info plx_pci_card_info_marathon = {
 	"Marathon CAN-bus-PCI", 2,
 	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
@@ -223,6 +242,24 @@ static struct plx_pci_card_info plx_pci_card_info_marathon = {
 	/* based on PLX9052 */
 };
 
+=======
+static struct plx_pci_card_info plx_pci_card_info_marathon_pci = {
+	"Marathon CAN-bus-PCI", 2,
+	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
+	{0, 0x00, 0x00}, { {2, 0x00, 0x00}, {4, 0x00, 0x00} },
+	&plx_pci_reset_marathon_pci
+	/* based on PLX9052 */
+};
+
+static struct plx_pci_card_info plx_pci_card_info_marathon_pcie = {
+	"Marathon CAN-bus-PCIe", 2,
+	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
+	{0, 0x00, 0x00}, { {2, 0x00, 0x00}, {3, 0x80, 0x00} },
+	&plx_pci_reset_marathon_pcie
+	/* based on PEX8311 */
+};
+
+>>>>>>> v4.9.227
 static struct plx_pci_card_info plx_pci_card_info_tews = {
 	"TEWS TECHNOLOGIES TPMC810", 2,
 	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
@@ -247,6 +284,17 @@ static struct plx_pci_card_info plx_pci_card_info_elcus = {
 	/* based on PLX9030 */
 };
 
+<<<<<<< HEAD
+=======
+static struct plx_pci_card_info plx_pci_card_info_moxa = {
+	"MOXA", 2,
+	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
+	{0, 0x00, 0x00}, { {0, 0x00, 0x80}, {1, 0x00, 0x80} },
+	&plx_pci_reset_common
+	 /* based on PLX9052 */
+};
+
+>>>>>>> v4.9.227
 static const struct pci_device_id plx_pci_tbl[] = {
 	{
 		/* Adlink PCI-7841/cPCI-7841 */
@@ -316,7 +364,18 @@ static const struct pci_device_id plx_pci_tbl[] = {
 		PCI_VENDOR_ID_PLX, MARATHON_PCI_DEVICE_ID,
 		PCI_ANY_ID, PCI_ANY_ID,
 		0, 0,
+<<<<<<< HEAD
 		(kernel_ulong_t)&plx_pci_card_info_marathon
+=======
+		(kernel_ulong_t)&plx_pci_card_info_marathon_pci
+	},
+	{
+		/* Marathon CAN-bus-PCIe card */
+		PCI_VENDOR_ID_PLX, MARATHON_PCIE_DEVICE_ID,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0, 0,
+		(kernel_ulong_t)&plx_pci_card_info_marathon_pcie
+>>>>>>> v4.9.227
 	},
 	{
 		/* TEWS TECHNOLOGIES TPMC810 card */
@@ -339,6 +398,16 @@ static const struct pci_device_id plx_pci_tbl[] = {
 		0, 0,
 		(kernel_ulong_t)&plx_pci_card_info_elcus
 	},
+<<<<<<< HEAD
+=======
+	{
+		/* moxa */
+		MOXA_PCI_VENDOR_ID, MOXA_PCI_DEVICE_ID,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0, 0,
+		(kernel_ulong_t)&plx_pci_card_info_moxa
+	},
+>>>>>>> v4.9.227
 	{ 0,}
 };
 MODULE_DEVICE_TABLE(pci, plx_pci_tbl);
@@ -437,8 +506,13 @@ static void plx9056_pci_reset_common(struct pci_dev *pdev)
 	iowrite32(cntrl, card->conf_addr + PLX9056_CNTRL);
 };
 
+<<<<<<< HEAD
 /* Special reset function for Marathon card */
 static void plx_pci_reset_marathon(struct pci_dev *pdev)
+=======
+/* Special reset function for Marathon CAN-bus-PCI card */
+static void plx_pci_reset_marathon_pci(struct pci_dev *pdev)
+>>>>>>> v4.9.227
 {
 	void __iomem *reset_addr;
 	int i;
@@ -460,6 +534,37 @@ static void plx_pci_reset_marathon(struct pci_dev *pdev)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/* Special reset function for Marathon CAN-bus-PCIe card */
+static void plx_pci_reset_marathon_pcie(struct pci_dev *pdev)
+{
+	void __iomem *addr;
+	void __iomem *reset_addr;
+	int i;
+
+	plx9056_pci_reset_common(pdev);
+
+	for (i = 0; i < 2; i++) {
+		struct plx_pci_channel_map *chan_map =
+			&plx_pci_card_info_marathon_pcie.chan_map_tbl[i];
+		addr = pci_iomap(pdev, chan_map->bar, chan_map->size);
+		if (!addr) {
+			dev_err(&pdev->dev, "Failed to remap reset "
+				"space %d (BAR%d)\n", i, chan_map->bar);
+		} else {
+			/* reset the SJA1000 chip */
+			#define MARATHON_PCIE_RESET_OFFSET 32
+			reset_addr = addr + chan_map->offset +
+			             MARATHON_PCIE_RESET_OFFSET;
+			iowrite8(0x1, reset_addr);
+			udelay(100);
+			pci_iounmap(pdev, addr);
+		}
+	}
+}
+
+>>>>>>> v4.9.227
 static void plx_pci_del_card(struct pci_dev *pdev)
 {
 	struct plx_pci_card *card = pci_get_drvdata(pdev);
@@ -486,7 +591,12 @@ static void plx_pci_del_card(struct pci_dev *pdev)
 	 * Disable interrupts from PCI-card and disable local
 	 * interrupts
 	 */
+<<<<<<< HEAD
 	if (pdev->device != PCI_DEVICE_ID_PLX_9056)
+=======
+	if (pdev->device != PCI_DEVICE_ID_PLX_9056 &&
+	    pdev->device != MARATHON_PCIE_DEVICE_ID)
+>>>>>>> v4.9.227
 		iowrite32(0x0, card->conf_addr + PLX_INTCSR);
 	else
 		iowrite32(0x0, card->conf_addr + PLX9056_INTCSR);
@@ -619,7 +729,12 @@ static int plx_pci_add_card(struct pci_dev *pdev,
 	 * Enable interrupts from PCI-card (PLX90xx) and enable Local_1,
 	 * Local_2 interrupts from the SJA1000 chips
 	 */
+<<<<<<< HEAD
 	if (pdev->device != PCI_DEVICE_ID_PLX_9056) {
+=======
+	if (pdev->device != PCI_DEVICE_ID_PLX_9056 &&
+	    pdev->device != MARATHON_PCIE_DEVICE_ID) {
+>>>>>>> v4.9.227
 		val = ioread32(card->conf_addr + PLX_INTCSR);
 		if (pdev->subsystem_vendor == PCI_VENDOR_ID_ESDGMBH)
 			val |= PLX_LINT1_EN | PLX_PCI_INT_EN;

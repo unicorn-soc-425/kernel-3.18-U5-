@@ -227,6 +227,10 @@ TRACKPOINT_INT_ATTR(thresh, TP_THRESH, TP_DEF_THRESH);
 TRACKPOINT_INT_ATTR(upthresh, TP_UP_THRESH, TP_DEF_UP_THRESH);
 TRACKPOINT_INT_ATTR(ztime, TP_Z_TIME, TP_DEF_Z_TIME);
 TRACKPOINT_INT_ATTR(jenks, TP_JENKS_CURV, TP_DEF_JENKS_CURV);
+<<<<<<< HEAD
+=======
+TRACKPOINT_INT_ATTR(drift_time, TP_DRIFT_TIME, TP_DEF_DRIFT_TIME);
+>>>>>>> v4.9.227
 
 TRACKPOINT_BIT_ATTR(press_to_select, TP_TOGGLE_PTSON, TP_MASK_PTSON, 0,
 		    TP_DEF_PTSON);
@@ -246,6 +250,10 @@ static struct attribute *trackpoint_attrs[] = {
 	&psmouse_attr_upthresh.dattr.attr,
 	&psmouse_attr_ztime.dattr.attr,
 	&psmouse_attr_jenks.dattr.attr,
+<<<<<<< HEAD
+=======
+	&psmouse_attr_drift_time.dattr.attr,
+>>>>>>> v4.9.227
 	&psmouse_attr_press_to_select.dattr.attr,
 	&psmouse_attr_skipback.dattr.attr,
 	&psmouse_attr_ext_dev.dattr.attr,
@@ -313,6 +321,10 @@ static int trackpoint_sync(struct psmouse *psmouse, bool in_power_on_state)
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, upthresh);
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, ztime);
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, jenks);
+<<<<<<< HEAD
+=======
+	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, drift_time);
+>>>>>>> v4.9.227
 
 	/* toggles */
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, press_to_select);
@@ -333,6 +345,10 @@ static void trackpoint_defaults(struct trackpoint_data *tp)
 	TRACKPOINT_SET_POWER_ON_DEFAULT(tp, upthresh);
 	TRACKPOINT_SET_POWER_ON_DEFAULT(tp, ztime);
 	TRACKPOINT_SET_POWER_ON_DEFAULT(tp, jenks);
+<<<<<<< HEAD
+=======
+	TRACKPOINT_SET_POWER_ON_DEFAULT(tp, drift_time);
+>>>>>>> v4.9.227
 	TRACKPOINT_SET_POWER_ON_DEFAULT(tp, inertia);
 
 	/* toggles */
@@ -379,6 +395,12 @@ int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
 	if (trackpoint_read(&psmouse->ps2dev, TP_EXT_BTN, &button_info)) {
 		psmouse_warn(psmouse, "failed to get extended button data, assuming 3 buttons\n");
 		button_info = 0x33;
+<<<<<<< HEAD
+=======
+	} else if (!button_info) {
+		psmouse_warn(psmouse, "got 0 in extended button data, assuming 3 buttons\n");
+		button_info = 0x33;
+>>>>>>> v4.9.227
 	}
 
 	psmouse->private = kzalloc(sizeof(struct trackpoint_data), GFP_KERNEL);

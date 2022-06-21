@@ -39,7 +39,11 @@
 
 extern int tsi108_setup_pci(struct device_node *dev, u32 cfg_phys, int primary);
 extern void tsi108_pci_int_init(struct device_node *node);
+<<<<<<< HEAD
 extern void tsi108_irq_cascade(unsigned int irq, struct irq_desc *desc);
+=======
+extern void tsi108_irq_cascade(struct irq_desc *desc);
+>>>>>>> v4.9.227
 extern void tsi108_clear_pci_cfg_error(void);
 
 #endif				/*  _ASM_POWERPC_TSI108_PCI_H */

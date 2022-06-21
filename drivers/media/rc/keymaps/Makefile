@@ -18,6 +18,10 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
 			rc-behold.o \
 			rc-behold-columbus.o \
 			rc-budget-ci-old.o \
+<<<<<<< HEAD
+=======
+			rc-cec.o \
+>>>>>>> v4.9.227
 			rc-cinergy-1400.o \
 			rc-cinergy.o \
 			rc-delock-61959.o \
@@ -28,6 +32,10 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
 			rc-dm1105-nec.o \
 			rc-dntv-live-dvb-t.o \
 			rc-dntv-live-dvbt-pro.o \
+<<<<<<< HEAD
+=======
+			rc-dtt200u.o \
+>>>>>>> v4.9.227
 			rc-dvbsky.o \
 			rc-em-terratec.o \
 			rc-encore-enltv2.o \
@@ -84,7 +92,14 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
 			rc-snapstream-firefly.o \
 			rc-streamzap.o \
 			rc-tbs-nec.o \
+<<<<<<< HEAD
 			rc-technisat-usb2.o \
+=======
+			rc-technisat-ts35.o \
+			rc-technisat-usb2.o \
+			rc-terratec-cinergy-c-pci.o \
+			rc-terratec-cinergy-s2-hd.o \
+>>>>>>> v4.9.227
 			rc-terratec-cinergy-xs.o \
 			rc-terratec-slim.o \
 			rc-terratec-slim-2.o \
@@ -94,6 +109,10 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
 			rc-total-media-in-hand-02.o \
 			rc-trekstor.o \
 			rc-tt-1500.o \
+<<<<<<< HEAD
+=======
+			rc-twinhan-dtv-cab-ci.o \
+>>>>>>> v4.9.227
 			rc-twinhan1027.o \
 			rc-videomate-m1f.o \
 			rc-videomate-s350.o \

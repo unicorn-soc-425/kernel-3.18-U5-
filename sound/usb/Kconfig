@@ -160,5 +160,10 @@ config SND_BCD2000
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-bcd2000.
 
+<<<<<<< HEAD
+=======
+source "sound/usb/line6/Kconfig"
+
+>>>>>>> v4.9.227
 endif	# SND_USB
 

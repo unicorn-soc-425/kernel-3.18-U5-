@@ -6,7 +6,11 @@
 #include <linux/kernel.h>
 #include <linux/poll.h>
 #include <linux/videodev2.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 
 /* Maximum frame size in bytes, for sanity checking. */
 #define UVC_MAX_FRAME_SIZE	(16*1024*1024)
@@ -26,7 +30,11 @@ enum uvc_buffer_state {
 };
 
 struct uvc_buffer {
+<<<<<<< HEAD
 	struct vb2_buffer buf;
+=======
+	struct vb2_v4l2_buffer buf;
+>>>>>>> v4.9.227
 	struct list_head queue;
 
 	enum uvc_buffer_state state;
@@ -41,7 +49,10 @@ struct uvc_buffer {
 
 struct uvc_video_queue {
 	struct vb2_queue queue;
+<<<<<<< HEAD
 	struct mutex mutex;	/* Protects queue */
+=======
+>>>>>>> v4.9.227
 
 	unsigned int flags;
 	__u32 sequence;
@@ -57,7 +68,12 @@ static inline int uvc_queue_streaming(struct uvc_video_queue *queue)
 	return vb2_is_streaming(&queue->queue);
 }
 
+<<<<<<< HEAD
 int uvcg_queue_init(struct uvc_video_queue *queue, enum v4l2_buf_type type);
+=======
+int uvcg_queue_init(struct uvc_video_queue *queue, enum v4l2_buf_type type,
+		    struct mutex *lock);
+>>>>>>> v4.9.227
 
 void uvcg_free_buffers(struct uvc_video_queue *queue);
 

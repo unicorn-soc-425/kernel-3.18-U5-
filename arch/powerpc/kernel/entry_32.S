@@ -20,6 +20,10 @@
  */
 
 #include <linux/errno.h>
+<<<<<<< HEAD
+=======
+#include <linux/err.h>
+>>>>>>> v4.9.227
 #include <linux/sys.h>
 #include <linux/threads.h>
 #include <asm/reg.h>
@@ -32,9 +36,14 @@
 #include <asm/unistd.h>
 #include <asm/ftrace.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
 
 #undef SHOW_SYSCALLS
 #undef SHOW_SYSCALLS_TASK
+=======
+#include <asm/export.h>
+#include <asm/barrier.h>
+>>>>>>> v4.9.227
 
 /*
  * MSR_KERNEL is > 0x10000 on 4xx/Book-E since it include MSR_CE.
@@ -177,6 +186,15 @@ transfer_to_handler:
 	addi	r12,r12,-1
 	stw	r12,4(r11)
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
+	CURRENT_THREAD_INFO(r9, r1)
+	tophys(r9, r9)
+	ACCOUNT_CPU_USER_ENTRY(r9, r11, r12)
+#endif
+
+>>>>>>> v4.9.227
 	b	3f
 
 2:	/* if from kernel, check interrupted DOZE/NAP mode and
@@ -307,9 +325,12 @@ _GLOBAL(DoSyscall)
 	lwz	r11,_CCR(r1)	/* Clear SO bit in CR */
 	rlwinm	r11,r11,0,4,2
 	stw	r11,_CCR(r1)
+<<<<<<< HEAD
 #ifdef SHOW_SYSCALLS
 	bl	do_show_syscall
 #endif /* SHOW_SYSCALLS */
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_TRACE_IRQFLAGS
 	/* Return from syscalls can (and generally will) hard enable
 	 * interrupts. You aren't supposed to call a syscall with
@@ -337,7 +358,11 @@ _GLOBAL(DoSyscall)
 #endif /* CONFIG_TRACE_IRQFLAGS */
 	CURRENT_THREAD_INFO(r10, r1)
 	lwz	r11,TI_FLAGS(r10)
+<<<<<<< HEAD
 	andi.	r11,r11,_TIF_SYSCALL_T_OR_A
+=======
+	andi.	r11,r11,_TIF_SYSCALL_DOTRACE
+>>>>>>> v4.9.227
 	bne-	syscall_dotrace
 syscall_dotrace_cont:
 	cmplwi	0,r0,NR_syscalls
@@ -345,6 +370,18 @@ syscall_dotrace_cont:
 	ori	r10,r10,sys_call_table@l
 	slwi	r0,r0,2
 	bge-	66f
+<<<<<<< HEAD
+=======
+
+	barrier_nospec_asm
+	/*
+	 * Prevent the load of the handler below (based on the user-passed
+	 * system call number) being speculatively executed until the test
+	 * against NR_syscalls and branch to .66f above has
+	 * committed.
+	 */
+
+>>>>>>> v4.9.227
 	lwzx	r10,r10,r0	/* Fetch system call handler [ptr] */
 	mtlr	r10
 	addi	r9,r1,STACK_FRAME_OVERHEAD
@@ -352,9 +389,12 @@ syscall_dotrace_cont:
 	blrl			/* Call handler */
 	.globl	ret_from_syscall
 ret_from_syscall:
+<<<<<<< HEAD
 #ifdef SHOW_SYSCALLS
 	bl	do_show_syscall_exit
 #endif
+=======
+>>>>>>> v4.9.227
 	mr	r6,r3
 	CURRENT_THREAD_INFO(r12, r1)
 	/* disable interrupts so current_thread_info()->flags can't change */
@@ -363,8 +403,13 @@ ret_from_syscall:
 	SYNC
 	MTMSRD(r10)
 	lwz	r9,TI_FLAGS(r12)
+<<<<<<< HEAD
 	li	r8,-_LAST_ERRNO
 	andi.	r0,r9,(_TIF_SYSCALL_T_OR_A|_TIF_SINGLESTEP|_TIF_USER_WORK_MASK|_TIF_PERSYSCALL_MASK)
+=======
+	li	r8,-MAX_ERRNO
+	andi.	r0,r9,(_TIF_SYSCALL_DOTRACE|_TIF_SINGLESTEP|_TIF_USER_WORK_MASK|_TIF_PERSYSCALL_MASK)
+>>>>>>> v4.9.227
 	bne-	syscall_exit_work
 	cmplw	0,r3,r8
 	blt+	syscall_exit_cont
@@ -406,6 +451,16 @@ BEGIN_FTR_SECTION
 	lwarx	r7,0,r1
 END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRED_STWCX)
 	stwcx.	r0,0,r1			/* to clear the reservation */
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
+	andi.	r4,r8,MSR_PR
+	beq	3f
+	CURRENT_THREAD_INFO(r4, r1)
+	ACCOUNT_CPU_USER_EXIT(r4, r5, r7)
+3:
+#endif
+>>>>>>> v4.9.227
 	lwz	r4,_LINK(r1)
 	lwz	r5,_CCR(r1)
 	mtlr	r4
@@ -466,6 +521,13 @@ syscall_dotrace:
 	lwz	r7,GPR7(r1)
 	lwz	r8,GPR8(r1)
 	REST_NVGPRS(r1)
+<<<<<<< HEAD
+=======
+
+	cmplwi	r0,NR_syscalls
+	/* Return code is already in r3 thanks to do_syscall_trace_enter() */
+	bge-	ret_from_syscall
+>>>>>>> v4.9.227
 	b	syscall_dotrace_cont
 
 syscall_exit_work:
@@ -501,7 +563,11 @@ syscall_exit_work:
 	subi	r12,r12,TI_FLAGS
 	
 4:	/* Anything which requires enabling interrupts? */
+<<<<<<< HEAD
 	andi.	r0,r9,(_TIF_SYSCALL_T_OR_A|_TIF_SINGLESTEP)
+=======
+	andi.	r0,r9,(_TIF_SYSCALL_DOTRACE|_TIF_SINGLESTEP)
+>>>>>>> v4.9.227
 	beq	ret_from_except
 
 	/* Re-enable interrupts. There is no need to trace that with
@@ -523,6 +589,7 @@ syscall_exit_work:
 	bl	do_syscall_trace_leave
 	b	ret_from_except_full
 
+<<<<<<< HEAD
 #ifdef SHOW_SYSCALLS
 do_show_syscall:
 #ifdef SHOW_SYSCALLS_TASK
@@ -591,6 +658,8 @@ show_syscalls_task:
 #endif
 #endif /* SHOW_SYSCALLS */
 
+=======
+>>>>>>> v4.9.227
 /*
  * The fork/clone functions need to copy the full register set into
  * the child process. Therefore we need to save all the nonvolatile
@@ -713,7 +782,10 @@ END_FTR_SECTION_IFSET(CPU_FTR_SPE)
 #endif /* CONFIG_SMP */
 
 	tophys(r0,r4)
+<<<<<<< HEAD
 	CLR_TOP32(r0)
+=======
+>>>>>>> v4.9.227
 	mtspr	SPRN_SPRG_THREAD,r0	/* Update current THREAD phys addr */
 	lwz	r1,KSP(r4)	/* Load new stack pointer */
 
@@ -757,6 +829,12 @@ fast_exception_return:
 	mtcr	r10
 	lwz	r10,_LINK(r11)
 	mtlr	r10
+<<<<<<< HEAD
+=======
+	/* Clear the exception_marker on the stack to avoid confusing stacktrace */
+	li	r10, 0
+	stw	r10, 8(r11)
+>>>>>>> v4.9.227
 	REST_GPR(10, r11)
 	mtspr	SPRN_SRR1,r9
 	mtspr	SPRN_SRR0,r12
@@ -841,6 +919,13 @@ restore_user:
 	andis.	r10,r0,DBCR0_IDM@h
 	bnel-	load_dbcr0
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
+	CURRENT_THREAD_INFO(r9, r1)
+	ACCOUNT_CPU_USER_EXIT(r9, r10, r11)
+#endif
+>>>>>>> v4.9.227
 
 	b	restore
 
@@ -987,6 +1072,12 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRED_STWCX)
 	mtcrf	0xFF,r10
 	mtlr	r11
 
+<<<<<<< HEAD
+=======
+	/* Clear the exception_marker on the stack to avoid confusing stacktrace */
+	li	r10, 0
+	stw	r10, 8(r1)
+>>>>>>> v4.9.227
 	/*
 	 * Once we put values in SRR0 and SRR1, we are in a state
 	 * where exceptions are not recoverable, since taking an
@@ -1024,6 +1115,12 @@ exc_exit_restart_end:
 	mtlr	r11
 	lwz	r10,_CCR(r1)
 	mtcrf	0xff,r10
+<<<<<<< HEAD
+=======
+	/* Clear the exception_marker on the stack to avoid confusing stacktrace */
+	li	r10, 0
+	stw	r10, 8(r1)
+>>>>>>> v4.9.227
 	REST_2GPRS(9, r1)
 	.globl exc_exit_restart
 exc_exit_restart:
@@ -1414,6 +1511,10 @@ _GLOBAL(_mcount)
 	MCOUNT_RESTORE_FRAME
 	bctr
 #endif
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(_mcount)
+>>>>>>> v4.9.227
 
 _GLOBAL(ftrace_stub)
 	blr
@@ -1424,12 +1525,26 @@ _GLOBAL(ftrace_graph_caller)
 	lwz	r4, 44(r1)
 	subi	r4, r4, MCOUNT_INSN_SIZE
 
+<<<<<<< HEAD
 	/* get the parent address */
 	addi	r3, r1, 52
+=======
+	/* Grab the LR out of the caller stack frame */
+	lwz	r3,52(r1)
+>>>>>>> v4.9.227
 
 	bl	prepare_ftrace_return
 	nop
 
+<<<<<<< HEAD
+=======
+        /*
+         * prepare_ftrace_return gives us the address we divert to.
+         * Change the LR in the callers stack frame to this.
+         */
+	stw	r3,52(r1)
+
+>>>>>>> v4.9.227
 	MCOUNT_RESTORE_FRAME
 	/* old link register ends up in ctr reg */
 	bctr
@@ -1457,4 +1572,8 @@ _GLOBAL(return_to_handler)
 	blr
 #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
 
+<<<<<<< HEAD
 #endif /* CONFIG_MCOUNT */
+=======
+#endif /* CONFIG_FUNCTION_TRACER */
+>>>>>>> v4.9.227

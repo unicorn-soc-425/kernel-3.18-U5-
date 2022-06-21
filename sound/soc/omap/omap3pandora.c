@@ -154,8 +154,12 @@ static const struct snd_soc_dapm_route omap3pandora_map[] = {
 
 static int omap3pandora_out_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
+>>>>>>> v4.9.227
 
 	/* All TWL4030 output pins are floating */
 	snd_soc_dapm_nc_pin(dapm, "EARPIECE");
@@ -174,8 +178,12 @@ static int omap3pandora_out_init(struct snd_soc_pcm_runtime *rtd)
 
 static int omap3pandora_in_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
+>>>>>>> v4.9.227
 
 	/* Not comnnected */
 	snd_soc_dapm_nc_pin(dapm, "HSMIC");

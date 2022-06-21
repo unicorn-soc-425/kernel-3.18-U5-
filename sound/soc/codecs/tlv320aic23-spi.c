@@ -43,7 +43,10 @@ static int aic23_spi_remove(struct spi_device *spi)
 static struct spi_driver aic23_spi = {
 	.driver = {
 		.name = "tlv320aic23",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = aic23_spi_probe,
 	.remove = aic23_spi_remove,

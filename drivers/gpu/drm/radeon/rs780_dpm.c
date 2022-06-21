@@ -795,7 +795,11 @@ static int rs780_parse_power_table(struct radeon_device *rdev)
 	union pplib_clock_info *clock_info;
 	union power_info *power_info;
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
+<<<<<<< HEAD
         u16 data_offset;
+=======
+	u16 data_offset;
+>>>>>>> v4.9.227
 	u8 frev, crev;
 	struct igp_ps *ps;
 

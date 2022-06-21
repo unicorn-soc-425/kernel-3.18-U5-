@@ -10,6 +10,7 @@
 #include <linux/init.h>
 #include <linux/serial_8250.h>
 
+<<<<<<< HEAD
 #define PORT(_base,_irq)				\
 	{						\
 		.iobase		= _base,		\
@@ -22,6 +23,13 @@
 static struct plat_serial8250_port accent_data[] = {
 	PORT(0x330, 4),
 	PORT(0x338, 4),
+=======
+#include "8250.h"
+
+static struct plat_serial8250_port accent_data[] = {
+	SERIAL8250_PORT(0x330, 4),
+	SERIAL8250_PORT(0x338, 4),
+>>>>>>> v4.9.227
 	{ },
 };
 

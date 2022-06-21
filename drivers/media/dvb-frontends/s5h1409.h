@@ -22,7 +22,10 @@
 #ifndef __S5H1409_H__
 #define __S5H1409_H__
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/dvb/frontend.h>
 
 struct s5h1409_config {
@@ -81,8 +84,11 @@ static inline struct dvb_frontend *s5h1409_attach(
 #endif /* CONFIG_DVB_S5H1409 */
 
 #endif /* __S5H1409_H__ */
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  */
+=======
+>>>>>>> v4.9.227

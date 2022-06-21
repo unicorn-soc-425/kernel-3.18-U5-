@@ -1,9 +1,15 @@
 /*
  *  Universal power supply monitor class
  *
+<<<<<<< HEAD
  *  Copyright  2007  Anton Vorontsov <cbou@mail.ru>
  *  Copyright  2004  Szabolcs Gyurko
  *  Copyright  2003  Ian Molton <spyro@f2s.com>
+=======
+ *  Copyright © 2007  Anton Vorontsov <cbou@mail.ru>
+ *  Copyright © 2004  Szabolcs Gyurko
+ *  Copyright © 2003  Ian Molton <spyro@f2s.com>
+>>>>>>> v4.9.227
  *
  *  Modified: 2004, Oct     Szabolcs Gyurko
  *
@@ -13,15 +19,26 @@
 #ifndef __LINUX_POWER_SUPPLY_H__
 #define __LINUX_POWER_SUPPLY_H__
 
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> v4.9.227
 #include <linux/workqueue.h>
 #include <linux/leds.h>
 #include <linux/spinlock.h>
 #include <linux/notifier.h>
+<<<<<<< HEAD
 #include <linux/types.h>
 
 /*
  * All voltages, currents, charges, energies, time and temperatures in uV,
  * ��A, ��Ah, ��Wh, seconds and tenths of degree Celsius unless otherwise
+=======
+
+/*
+ * All voltages, currents, charges, energies, time and temperatures in uV,
+ * µA, µAh, µWh, seconds and tenths of degree Celsius unless otherwise
+>>>>>>> v4.9.227
  * stated. It's driver's job to convert its raw values to units in which
  * this class operates.
  */
@@ -45,8 +62,11 @@ enum {
 	POWER_SUPPLY_CHARGE_TYPE_NONE,
 	POWER_SUPPLY_CHARGE_TYPE_TRICKLE,
 	POWER_SUPPLY_CHARGE_TYPE_FAST,
+<<<<<<< HEAD
 	POWER_SUPPLY_CHARGE_TYPE_TAPER,
 	POWER_SUPPLY_CHARGE_TYPE_SLOW,
+=======
+>>>>>>> v4.9.227
 };
 
 enum {
@@ -59,12 +79,15 @@ enum {
 	POWER_SUPPLY_HEALTH_COLD,
 	POWER_SUPPLY_HEALTH_WATCHDOG_TIMER_EXPIRE,
 	POWER_SUPPLY_HEALTH_SAFETY_TIMER_EXPIRE,
+<<<<<<< HEAD
 	POWER_SUPPLY_HEALTH_WARM,
 	POWER_SUPPLY_HEALTH_COOL,
 	POWER_SUPPLY_HEALTH_HOT,
 	POWER_SUPPLY_HEALTH_UNDERVOLTAGE,
 	POWER_SUPPLY_HEALTH_OVERHEATLIMIT,
 	POWER_SUPPLY_HEALTH_MAX,
+=======
+>>>>>>> v4.9.227
 };
 
 enum {
@@ -92,6 +115,7 @@ enum {
 	POWER_SUPPLY_SCOPE_DEVICE,
 };
 
+<<<<<<< HEAD
 enum {
 	POWER_SUPPLY_DP_DM_UNKNOWN = 0,
 	POWER_SUPPLY_DP_DM_PREPARE = 1,
@@ -119,6 +143,8 @@ enum {
 	POWER_SUPPLY_PL_USBMID_USBMID,
 };
 
+=======
+>>>>>>> v4.9.227
 enum power_supply_property {
 	/* Properties of type `int' */
 	POWER_SUPPLY_PROP_STATUS = 0,
@@ -131,7 +157,11 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_CYCLE_COUNT,
 	POWER_SUPPLY_PROP_VOLTAGE_MAX,
 	POWER_SUPPLY_PROP_VOLTAGE_MIN,
+<<<<<<< HEAD
 	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN, /* 10 */
+=======
+	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
+>>>>>>> v4.9.227
 	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 	POWER_SUPPLY_PROP_VOLTAGE_AVG,
@@ -141,8 +171,11 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_CURRENT_NOW,
 	POWER_SUPPLY_PROP_CURRENT_AVG,
 	POWER_SUPPLY_PROP_CURRENT_BOOT,
+<<<<<<< HEAD
 	POWER_SUPPLY_PROP_CURRENT_FULL,/* 20 */
 	POWER_SUPPLY_PROP_POWER_DESIGN,
+=======
+>>>>>>> v4.9.227
 	POWER_SUPPLY_PROP_POWER_NOW,
 	POWER_SUPPLY_PROP_POWER_AVG,
 	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
@@ -150,6 +183,7 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_CHARGE_FULL,
 	POWER_SUPPLY_PROP_CHARGE_EMPTY,
 	POWER_SUPPLY_PROP_CHARGE_NOW,
+<<<<<<< HEAD
 	POWER_SUPPLY_PROP_CHARGE_NOW_RAW,
 	POWER_SUPPLY_PROP_CHARGE_NOW_ERROR,/* 30 */
 	POWER_SUPPLY_PROP_CHARGE_AVG,
@@ -157,11 +191,19 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_CHARGE_OTG_CONTROL,
 	POWER_SUPPLY_PROP_CHARGE_POWERED_OTG_CONTROL,
 	POWER_SUPPLY_PROP_CHARGE_UNO_CONTROL,
+=======
+	POWER_SUPPLY_PROP_CHARGE_AVG,
+	POWER_SUPPLY_PROP_CHARGE_COUNTER,
+>>>>>>> v4.9.227
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT,
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE,
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX,
+<<<<<<< HEAD
 	POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT,/* 40 */
+=======
+	POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT,
+>>>>>>> v4.9.227
 	POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT_MAX,
 	POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT,
 	POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN,
@@ -171,17 +213,27 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_ENERGY_NOW,
 	POWER_SUPPLY_PROP_ENERGY_AVG,
 	POWER_SUPPLY_PROP_CAPACITY, /* in percents! */
+<<<<<<< HEAD
 	POWER_SUPPLY_PROP_CAPACITY_ALERT_MIN, /* in percents! *//* 50 */
 	POWER_SUPPLY_PROP_CAPACITY_ALERT_MAX, /* in percents! */
 	POWER_SUPPLY_PROP_CAPACITY_LEVEL,
 	POWER_SUPPLY_PROP_CAPACITY_RAW,
+=======
+	POWER_SUPPLY_PROP_CAPACITY_ALERT_MIN, /* in percents! */
+	POWER_SUPPLY_PROP_CAPACITY_ALERT_MAX, /* in percents! */
+	POWER_SUPPLY_PROP_CAPACITY_LEVEL,
+>>>>>>> v4.9.227
 	POWER_SUPPLY_PROP_TEMP,
 	POWER_SUPPLY_PROP_TEMP_MAX,
 	POWER_SUPPLY_PROP_TEMP_MIN,
 	POWER_SUPPLY_PROP_TEMP_ALERT_MIN,
 	POWER_SUPPLY_PROP_TEMP_ALERT_MAX,
 	POWER_SUPPLY_PROP_TEMP_AMBIENT,
+<<<<<<< HEAD
 	POWER_SUPPLY_PROP_TEMP_AMBIENT_ALERT_MIN,/* 60 */
+=======
+	POWER_SUPPLY_PROP_TEMP_AMBIENT_ALERT_MIN,
+>>>>>>> v4.9.227
 	POWER_SUPPLY_PROP_TEMP_AMBIENT_ALERT_MAX,
 	POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW,
 	POWER_SUPPLY_PROP_TIME_TO_EMPTY_AVG,
@@ -191,6 +243,7 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_SCOPE,
 	POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT,
 	POWER_SUPPLY_PROP_CALIBRATE,
+<<<<<<< HEAD
 	/* Local extensions */
 	POWER_SUPPLY_PROP_USB_HC,/* 70 */
 	POWER_SUPPLY_PROP_USB_OTG,
@@ -393,6 +446,26 @@ enum power_supply_typec_power_role {
 	POWER_SUPPLY_TYPEC_PR_DUAL,
 	POWER_SUPPLY_TYPEC_PR_SINK,
 	POWER_SUPPLY_TYPEC_PR_SOURCE,
+=======
+	/* Properties of type `const char *' */
+	POWER_SUPPLY_PROP_MODEL_NAME,
+	POWER_SUPPLY_PROP_MANUFACTURER,
+	POWER_SUPPLY_PROP_SERIAL_NUMBER,
+};
+
+enum power_supply_type {
+	POWER_SUPPLY_TYPE_UNKNOWN = 0,
+	POWER_SUPPLY_TYPE_BATTERY,
+	POWER_SUPPLY_TYPE_UPS,
+	POWER_SUPPLY_TYPE_MAINS,
+	POWER_SUPPLY_TYPE_USB,		/* Standard Downstream Port */
+	POWER_SUPPLY_TYPE_USB_DCP,	/* Dedicated Charging Port */
+	POWER_SUPPLY_TYPE_USB_CDP,	/* Charging Downstream Port */
+	POWER_SUPPLY_TYPE_USB_ACA,	/* Accessory Charger Adapters */
+	POWER_SUPPLY_TYPE_USB_TYPE_C,	/* Type C Port */
+	POWER_SUPPLY_TYPE_USB_PD,	/* Power Delivery Port */
+	POWER_SUPPLY_TYPE_USB_PD_DRP,	/* PD Dual Role Port */
+>>>>>>> v4.9.227
 };
 
 enum power_supply_notifier_events {
@@ -402,6 +475,7 @@ enum power_supply_notifier_events {
 union power_supply_propval {
 	int intval;
 	const char *strval;
+<<<<<<< HEAD
 	int64_t int64val;
 };
 
@@ -409,11 +483,31 @@ struct device;
 struct device_node;
 
 struct power_supply {
+=======
+};
+
+struct device_node;
+struct power_supply;
+
+/* Run-time specific power supply configuration */
+struct power_supply_config {
+	struct device_node *of_node;
+	/* Driver private data */
+	void *drv_data;
+
+	char **supplied_to;
+	size_t num_supplicants;
+};
+
+/* Description of power supply */
+struct power_supply_desc {
+>>>>>>> v4.9.227
 	const char *name;
 	enum power_supply_type type;
 	enum power_supply_property *properties;
 	size_t num_properties;
 
+<<<<<<< HEAD
 	char **supplied_to;
 	size_t num_supplicants;
 
@@ -421,6 +515,8 @@ struct power_supply {
 	size_t num_supplies;
 	struct device_node *of_node;
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * Functions for drivers implementing power supply class.
 	 * These shouldn't be called directly by other drivers for accessing
@@ -433,6 +529,14 @@ struct power_supply {
 	int (*set_property)(struct power_supply *psy,
 			    enum power_supply_property psp,
 			    const union power_supply_propval *val);
+<<<<<<< HEAD
+=======
+	/*
+	 * property_is_writeable() will be called during registration
+	 * of power supply. If this happens during device probe then it must
+	 * not access internal data of device (because probe did not end).
+	 */
+>>>>>>> v4.9.227
 	int (*property_is_writeable)(struct power_supply *psy,
 				     enum power_supply_property psp);
 	void (*external_power_changed)(struct power_supply *psy);
@@ -446,15 +550,39 @@ struct power_supply {
 	bool no_thermal;
 	/* For APM emulation, think legacy userspace. */
 	int use_for_apm;
+<<<<<<< HEAD
+=======
+};
+
+struct power_supply {
+	const struct power_supply_desc *desc;
+
+	char **supplied_to;
+	size_t num_supplicants;
+
+	char **supplied_from;
+	size_t num_supplies;
+	struct device_node *of_node;
+>>>>>>> v4.9.227
 
 	/* Driver private data */
 	void *drv_data;
 
 	/* private */
+<<<<<<< HEAD
 	struct device *dev;
 	struct work_struct changed_work;
 	spinlock_t changed_lock;
 	bool changed;
+=======
+	struct device dev;
+	struct work_struct changed_work;
+	struct delayed_work deferred_register_work;
+	spinlock_t changed_lock;
+	bool changed;
+	bool initialized;
+	bool removing;
+>>>>>>> v4.9.227
 	atomic_t use_cnt;
 #ifdef CONFIG_THERMAL
 	struct thermal_zone_device *tzd;
@@ -498,13 +626,28 @@ extern struct atomic_notifier_head power_supply_notifier;
 extern int power_supply_reg_notifier(struct notifier_block *nb);
 extern void power_supply_unreg_notifier(struct notifier_block *nb);
 extern struct power_supply *power_supply_get_by_name(const char *name);
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 extern struct power_supply *power_supply_get_by_phandle(struct device_node *np,
 							const char *property);
+=======
+extern void power_supply_put(struct power_supply *psy);
+#ifdef CONFIG_OF
+extern struct power_supply *power_supply_get_by_phandle(struct device_node *np,
+							const char *property);
+extern struct power_supply *devm_power_supply_get_by_phandle(
+				    struct device *dev, const char *property);
+>>>>>>> v4.9.227
 #else /* !CONFIG_OF */
 static inline struct power_supply *
 power_supply_get_by_phandle(struct device_node *np, const char *property)
 { return NULL; }
+<<<<<<< HEAD
+=======
+static inline struct power_supply *
+devm_power_supply_get_by_phandle(struct device *dev, const char *property)
+{ return NULL; }
+>>>>>>> v4.9.227
 #endif /* CONFIG_OF */
 extern void power_supply_changed(struct power_supply *psy);
 extern int power_supply_am_i_supplied(struct power_supply *psy);
@@ -525,6 +668,7 @@ extern int power_supply_set_property(struct power_supply *psy,
 extern int power_supply_property_is_writeable(struct power_supply *psy,
 					enum power_supply_property psp);
 extern void power_supply_external_power_changed(struct power_supply *psy);
+<<<<<<< HEAD
 extern int power_supply_register(struct device *parent,
 				 struct power_supply *psy);
 extern int power_supply_register_no_ws(struct device *parent,
@@ -551,6 +695,28 @@ extern int power_supply_set_dp_dm(struct power_supply *psy,
 							int value);
 extern int power_supply_is_system_supplied(void);
 extern int power_supply_set_scope(struct power_supply *psy, int scope);
+=======
+
+extern struct power_supply *__must_check
+power_supply_register(struct device *parent,
+				 const struct power_supply_desc *desc,
+				 const struct power_supply_config *cfg);
+extern struct power_supply *__must_check
+power_supply_register_no_ws(struct device *parent,
+				 const struct power_supply_desc *desc,
+				 const struct power_supply_config *cfg);
+extern struct power_supply *__must_check
+devm_power_supply_register(struct device *parent,
+				 const struct power_supply_desc *desc,
+				 const struct power_supply_config *cfg);
+extern struct power_supply *__must_check
+devm_power_supply_register_no_ws(struct device *parent,
+				 const struct power_supply_desc *desc,
+				 const struct power_supply_config *cfg);
+extern void power_supply_unregister(struct power_supply *psy);
+extern int power_supply_powers(struct power_supply *psy, struct device *dev);
+
+>>>>>>> v4.9.227
 extern void *power_supply_get_drvdata(struct power_supply *psy);
 /* For APM emulation, think legacy userspace. */
 extern struct class *power_supply_class;
@@ -571,9 +737,12 @@ static inline bool power_supply_is_amp_property(enum power_supply_property psp)
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
 	case POWER_SUPPLY_PROP_CURRENT_AVG:
 	case POWER_SUPPLY_PROP_CURRENT_BOOT:
+<<<<<<< HEAD
 	case POWER_SUPPLY_PROP_CHARGE_COUNTER_SHADOW:
 	case POWER_SUPPLY_PROP_INPUT_CURRENT_MAX:
 	case POWER_SUPPLY_PROP_FLASH_CURRENT_MAX:
+=======
+>>>>>>> v4.9.227
 		return 1;
 	default:
 		break;

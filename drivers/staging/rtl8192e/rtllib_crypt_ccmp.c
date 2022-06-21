@@ -69,8 +69,12 @@ static void *rtllib_ccmp_init(int key_idx)
 
 	priv->tfm = (void *)crypto_alloc_cipher("aes", 0, CRYPTO_ALG_ASYNC);
 	if (IS_ERR(priv->tfm)) {
+<<<<<<< HEAD
 		pr_debug("rtllib_crypt_ccmp: could not allocate "
 		       "crypto API aes\n");
+=======
+		pr_debug("Could not allocate crypto API aes\n");
+>>>>>>> v4.9.227
 		priv->tfm = NULL;
 		goto fail;
 	}
@@ -121,10 +125,14 @@ static void ccmp_init_blocks(struct crypto_tfm *tfm,
 	fc = le16_to_cpu(hdr->frame_ctl);
 	a4_included = ((fc & (RTLLIB_FCTL_TODS | RTLLIB_FCTL_FROMDS)) ==
 		       (RTLLIB_FCTL_TODS | RTLLIB_FCTL_FROMDS));
+<<<<<<< HEAD
 	/*
 	qc_included = ((WLAN_FC_GET_TYPE(fc) == RTLLIB_FTYPE_DATA) &&
 		       (WLAN_FC_GET_STYPE(fc) & 0x08));
 	*/
+=======
+
+>>>>>>> v4.9.227
 	qc_included = ((WLAN_FC_GET_TYPE(fc) == RTLLIB_FTYPE_DATA) &&
 		       (WLAN_FC_GET_STYPE(fc) & 0x80));
 	aad_len = 22;
@@ -141,7 +149,12 @@ static void ccmp_init_blocks(struct crypto_tfm *tfm,
 	 * Flag (Include authentication header, M=3 (8-octet MIC),
 	 *       L=1 (2-octet Dlen))
 	 * Nonce: 0x00 | A2 | PN
+<<<<<<< HEAD
 	 * Dlen */
+=======
+	 * Dlen
+	 */
+>>>>>>> v4.9.227
 	b0[0] = 0x59;
 	b0[1] = qc;
 	memcpy(b0 + 2, hdr->addr2, ETH_ALEN);
@@ -236,7 +249,11 @@ static int rtllib_ccmp_encrypt(struct sk_buff *skb, int hdr_len, void *priv)
 		ccmp_init_blocks(key->tfm, hdr, key->tx_pn, data_len,
 				 b0, b, s0);
 
+<<<<<<< HEAD
 		blocks = (data_len + AES_BLOCK_LEN - 1) / AES_BLOCK_LEN;
+=======
+		blocks = DIV_ROUND_UP(data_len, AES_BLOCK_LEN);
+>>>>>>> v4.9.227
 		last = data_len % AES_BLOCK_LEN;
 
 		for (i = 1; i <= blocks; i++) {
@@ -278,23 +295,38 @@ static int rtllib_ccmp_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 	keyidx = pos[3];
 	if (!(keyidx & (1 << 5))) {
 		if (net_ratelimit()) {
+<<<<<<< HEAD
 			pr_debug("CCMP: received packet without ExtIV"
 			       " flag from %pM\n", hdr->addr2);
+=======
+			pr_debug("CCMP: received packet without ExtIV flag from %pM\n",
+				 hdr->addr2);
+>>>>>>> v4.9.227
 		}
 		key->dot11RSNAStatsCCMPFormatErrors++;
 		return -2;
 	}
 	keyidx >>= 6;
 	if (key->key_idx != keyidx) {
+<<<<<<< HEAD
 		pr_debug("CCMP: RX tkey->key_idx=%d frame "
 		       "keyidx=%d priv=%p\n", key->key_idx, keyidx, priv);
+=======
+		pr_debug("CCMP: RX tkey->key_idx=%d frame keyidx=%d priv=%p\n",
+			 key->key_idx, keyidx, priv);
+>>>>>>> v4.9.227
 		return -6;
 	}
 	if (!key->key_set) {
 		if (net_ratelimit()) {
+<<<<<<< HEAD
 			pr_debug("CCMP: received packet from %pM"
 			       " with keyid=%d that does not have a configured"
 			       " key\n", hdr->addr2, keyidx);
+=======
+			pr_debug("CCMP: received packet from %pM with keyid=%d that does not have a configured key\n",
+				 hdr->addr2, keyidx);
+>>>>>>> v4.9.227
 		}
 		return -3;
 	}
@@ -323,7 +355,11 @@ static int rtllib_ccmp_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 		ccmp_init_blocks(key->tfm, hdr, pn, data_len, b0, a, b);
 		xor_block(mic, b, CCMP_MIC_LEN);
 
+<<<<<<< HEAD
 		blocks = (data_len + AES_BLOCK_LEN - 1) / AES_BLOCK_LEN;
+=======
+		blocks = DIV_ROUND_UP(data_len, AES_BLOCK_LEN);
+>>>>>>> v4.9.227
 		last = data_len % AES_BLOCK_LEN;
 
 		for (i = 1; i <= blocks; i++) {
@@ -341,8 +377,13 @@ static int rtllib_ccmp_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 
 		if (memcmp(mic, a, CCMP_MIC_LEN) != 0) {
 			if (net_ratelimit()) {
+<<<<<<< HEAD
 				pr_debug("CCMP: decrypt failed: STA="
 				" %pM\n", hdr->addr2);
+=======
+				pr_debug("CCMP: decrypt failed: STA= %pM\n",
+					 hdr->addr2);
+>>>>>>> v4.9.227
 			}
 			key->dot11RSNAStatsCCMPDecryptErrors++;
 			return -5;
@@ -419,9 +460,13 @@ static void rtllib_ccmp_print_stats(struct seq_file *m, void *priv)
 	struct rtllib_ccmp_data *ccmp = priv;
 
 	seq_printf(m,
+<<<<<<< HEAD
 		   "key[%d] alg=CCMP key_set=%d "
 		   "tx_pn=%pM rx_pn=%pM "
 		   "format_errors=%d replays=%d decrypt_errors=%d\n",
+=======
+		   "key[%d] alg=CCMP key_set=%d tx_pn=%pM rx_pn=%pM format_errors=%d replays=%d decrypt_errors=%d\n",
+>>>>>>> v4.9.227
 		   ccmp->key_idx, ccmp->key_set,
 		   ccmp->tx_pn, ccmp->rx_pn,
 		   ccmp->dot11RSNAStatsCCMPFormatErrors,

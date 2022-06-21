@@ -325,6 +325,11 @@ static int __init palm_bk3710_probe(struct platform_device *pdev)
 
 	clk_enable(clk);
 	rate = clk_get_rate(clk);
+<<<<<<< HEAD
+=======
+	if (!rate)
+		return -EINVAL;
+>>>>>>> v4.9.227
 
 	/* NOTE:  round *down* to meet minimum timings; we count in clocks */
 	ideclk_period = 1000000000UL / rate;
@@ -386,7 +391,10 @@ MODULE_ALIAS("platform:palm_bk3710");
 static struct platform_driver platform_bk_driver = {
 	.driver = {
 		.name = "palm_bk3710",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

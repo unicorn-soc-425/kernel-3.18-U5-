@@ -45,9 +45,15 @@
 #define DMA_FIFO_GUARD 3   /* # of cache lines to reserve for the guard area */
 
 struct dma_fifo {
+<<<<<<< HEAD
 	unsigned	 in;
 	unsigned	 out;		/* updated when dma is pended         */
 	unsigned	 done;		/* updated upon dma completion        */
+=======
+	unsigned int	 in;
+	unsigned int	 out;		/* updated when dma is pended         */
+	unsigned int	 done;		/* updated upon dma completion        */
+>>>>>>> v4.9.227
 	struct {
 		unsigned corrupt:1;
 	};
@@ -55,7 +61,11 @@ struct dma_fifo {
 	int		 guard;		/* ofs of guard area		      */
 	int		 capacity;	/* size + reserved                    */
 	int		 avail;		/* # of unused bytes in fifo          */
+<<<<<<< HEAD
 	unsigned	 align;		/* must be power of 2                 */
+=======
+	unsigned int	 align;		/* must be power of 2                 */
+>>>>>>> v4.9.227
 	int		 tx_limit;	/* max # of bytes per dma transaction */
 	int		 open_limit;	/* max # of outstanding allowed       */
 	int		 open;		/* # of outstanding dma transactions  */
@@ -66,9 +76,15 @@ struct dma_fifo {
 struct dma_pending {
 	struct list_head link;
 	void		 *data;
+<<<<<<< HEAD
 	unsigned	 len;
 	unsigned         next;
 	unsigned         out;
+=======
+	unsigned int	 len;
+	unsigned int	 next;
+	unsigned int	 out;
+>>>>>>> v4.9.227
 };
 
 static inline void dp_mark_completed(struct dma_pending *dp)
@@ -82,7 +98,11 @@ static inline bool dp_is_completed(struct dma_pending *dp)
 }
 
 void dma_fifo_init(struct dma_fifo *fifo);
+<<<<<<< HEAD
 int dma_fifo_alloc(struct dma_fifo *fifo, int size, unsigned align,
+=======
+int dma_fifo_alloc(struct dma_fifo *fifo, int size, unsigned int align,
+>>>>>>> v4.9.227
 		   int tx_limit, int open_limit, gfp_t gfp_mask);
 void dma_fifo_free(struct dma_fifo *fifo);
 void dma_fifo_reset(struct dma_fifo *fifo);

@@ -12,7 +12,10 @@
  */
 
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/hid.h>
 #include <linux/module.h>
 
@@ -142,7 +145,11 @@ static void steelseries_srws1_led_all_set_brightness(struct led_classdev *led_cd
 			enum led_brightness value)
 {
 	struct device *dev = led_cdev->dev->parent;
+<<<<<<< HEAD
 	struct hid_device *hid = container_of(dev, struct hid_device, dev);
+=======
+	struct hid_device *hid = to_hid_device(dev);
+>>>>>>> v4.9.227
 	struct steelseries_srws1_data *drv_data = hid_get_drvdata(hid);
 
 	if (!drv_data) {
@@ -161,7 +168,11 @@ static void steelseries_srws1_led_all_set_brightness(struct led_classdev *led_cd
 static enum led_brightness steelseries_srws1_led_all_get_brightness(struct led_classdev *led_cdev)
 {
 	struct device *dev = led_cdev->dev->parent;
+<<<<<<< HEAD
 	struct hid_device *hid = container_of(dev, struct hid_device, dev);
+=======
+	struct hid_device *hid = to_hid_device(dev);
+>>>>>>> v4.9.227
 	struct steelseries_srws1_data *drv_data;
 
 	drv_data = hid_get_drvdata(hid);
@@ -178,7 +189,11 @@ static void steelseries_srws1_led_set_brightness(struct led_classdev *led_cdev,
 			enum led_brightness value)
 {
 	struct device *dev = led_cdev->dev->parent;
+<<<<<<< HEAD
 	struct hid_device *hid = container_of(dev, struct hid_device, dev);
+=======
+	struct hid_device *hid = to_hid_device(dev);
+>>>>>>> v4.9.227
 	struct steelseries_srws1_data *drv_data = hid_get_drvdata(hid);
 	int i, state = 0;
 
@@ -206,7 +221,11 @@ static void steelseries_srws1_led_set_brightness(struct led_classdev *led_cdev,
 static enum led_brightness steelseries_srws1_led_get_brightness(struct led_classdev *led_cdev)
 {
 	struct device *dev = led_cdev->dev->parent;
+<<<<<<< HEAD
 	struct hid_device *hid = container_of(dev, struct hid_device, dev);
+=======
+	struct hid_device *hid = to_hid_device(dev);
+>>>>>>> v4.9.227
 	struct steelseries_srws1_data *drv_data;
 	int i, value = 0;
 
@@ -254,11 +273,14 @@ static int steelseries_srws1_probe(struct hid_device *hdev,
 		goto err_free;
 	}
 
+<<<<<<< HEAD
 	if (!hid_validate_values(hdev, HID_OUTPUT_REPORT, 0, 0, 16)) {
 		ret = -ENODEV;
 		goto err_free;
 	}
 
+=======
+>>>>>>> v4.9.227
 	ret = hid_hw_start(hdev, HID_CONNECT_DEFAULT);
 	if (ret) {
 		hid_err(hdev, "hw start failed\n");

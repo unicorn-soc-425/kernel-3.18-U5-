@@ -39,13 +39,25 @@ MODULE_PARM_DESC(timeout, "Default watchdog timeout (in seconds)");
 MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 			__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
+<<<<<<< HEAD
+=======
+static void __iomem *sirfsoc_wdt_base(struct watchdog_device *wdd)
+{
+	return (void __iomem __force *)watchdog_get_drvdata(wdd);
+}
+
+>>>>>>> v4.9.227
 static unsigned int sirfsoc_wdt_gettimeleft(struct watchdog_device *wdd)
 {
 	u32 counter, match;
 	void __iomem *wdt_base;
 	int time_left;
 
+<<<<<<< HEAD
 	wdt_base = watchdog_get_drvdata(wdd);
+=======
+	wdt_base = sirfsoc_wdt_base(wdd);
+>>>>>>> v4.9.227
 	counter = readl(wdt_base + SIRFSOC_TIMER_COUNTER_LO);
 	match = readl(wdt_base +
 		SIRFSOC_TIMER_MATCH_0 + (SIRFSOC_TIMER_WDT_INDEX << 2));
@@ -61,7 +73,11 @@ static int sirfsoc_wdt_updatetimeout(struct watchdog_device *wdd)
 	void __iomem *wdt_base;
 
 	timeout_ticks = wdd->timeout * CLOCK_FREQ;
+<<<<<<< HEAD
 	wdt_base = watchdog_get_drvdata(wdd);
+=======
+	wdt_base = sirfsoc_wdt_base(wdd);
+>>>>>>> v4.9.227
 
 	/* Enable the latch before reading the LATCH_LO register */
 	writel(1, wdt_base + SIRFSOC_TIMER_LATCH);
@@ -79,7 +95,11 @@ static int sirfsoc_wdt_updatetimeout(struct watchdog_device *wdd)
 
 static int sirfsoc_wdt_enable(struct watchdog_device *wdd)
 {
+<<<<<<< HEAD
 	void __iomem *wdt_base = watchdog_get_drvdata(wdd);
+=======
+	void __iomem *wdt_base = sirfsoc_wdt_base(wdd);
+>>>>>>> v4.9.227
 	sirfsoc_wdt_updatetimeout(wdd);
 
 	/*
@@ -96,7 +116,11 @@ static int sirfsoc_wdt_enable(struct watchdog_device *wdd)
 
 static int sirfsoc_wdt_disable(struct watchdog_device *wdd)
 {
+<<<<<<< HEAD
 	void __iomem *wdt_base = watchdog_get_drvdata(wdd);
+=======
+	void __iomem *wdt_base = sirfsoc_wdt_base(wdd);
+>>>>>>> v4.9.227
 
 	writel(0, wdt_base + SIRFSOC_TIMER_WATCHDOG_EN);
 	writel(readl(wdt_base + SIRFSOC_TIMER_INT_EN)
@@ -150,10 +174,18 @@ static int sirfsoc_wdt_probe(struct platform_device *pdev)
 	if (IS_ERR(base))
 		return PTR_ERR(base);
 
+<<<<<<< HEAD
 	watchdog_set_drvdata(&sirfsoc_wdd, base);
 
 	watchdog_init_timeout(&sirfsoc_wdd, timeout, &pdev->dev);
 	watchdog_set_nowayout(&sirfsoc_wdd, nowayout);
+=======
+	watchdog_set_drvdata(&sirfsoc_wdd, (__force void *)base);
+
+	watchdog_init_timeout(&sirfsoc_wdd, timeout, &pdev->dev);
+	watchdog_set_nowayout(&sirfsoc_wdd, nowayout);
+	sirfsoc_wdd.parent = &pdev->dev;
+>>>>>>> v4.9.227
 
 	ret = watchdog_register_device(&sirfsoc_wdd);
 	if (ret)
@@ -210,7 +242,10 @@ MODULE_DEVICE_TABLE(of, sirfsoc_wdt_of_match);
 static struct platform_driver sirfsoc_wdt_driver = {
 	.driver = {
 		.name = "sirfsoc-wdt",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &sirfsoc_wdt_pm_ops,
 		.of_match_table	= sirfsoc_wdt_of_match,
 	},

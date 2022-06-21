@@ -24,8 +24,13 @@
 #include "iss_resizer.h"
 
 static const unsigned int resizer_fmts[] = {
+<<<<<<< HEAD
 	V4L2_MBUS_FMT_UYVY8_1X16,
 	V4L2_MBUS_FMT_YUYV8_1X16,
+=======
+	MEDIA_BUS_FMT_UYVY8_1X16,
+	MEDIA_BUS_FMT_YUYV8_1X16,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -143,7 +148,11 @@ static void resizer_set_outaddr(struct iss_resizer_device *resizer, u32 addr)
 	informat = &resizer->formats[RESIZER_PAD_SINK];
 	outformat = &resizer->formats[RESIZER_PAD_SOURCE_MEM];
 
+<<<<<<< HEAD
 	/* Save address splitted in Base Address H & L */
+=======
+	/* Save address split in Base Address H & L */
+>>>>>>> v4.9.227
 	iss_reg_write(iss, OMAP4_ISS_MEM_ISP_RESIZER, RZA_SDR_Y_BAD_H,
 		      (addr >> 16) & 0xffff);
 	iss_reg_write(iss, OMAP4_ISS_MEM_ISP_RESIZER, RZA_SDR_Y_BAD_L,
@@ -156,10 +165,17 @@ static void resizer_set_outaddr(struct iss_resizer_device *resizer, u32 addr)
 		      addr & 0xffff);
 
 	/* Program UV buffer address... Hardcoded to be contiguous! */
+<<<<<<< HEAD
 	if ((informat->code == V4L2_MBUS_FMT_UYVY8_1X16) &&
 	    (outformat->code == V4L2_MBUS_FMT_YUYV8_1_5X8)) {
 		u32 c_addr = addr + (resizer->video_out.bpl_value *
 				     (outformat->height - 1));
+=======
+	if ((informat->code == MEDIA_BUS_FMT_UYVY8_1X16) &&
+	    (outformat->code == MEDIA_BUS_FMT_YUYV8_1_5X8)) {
+		u32 c_addr = addr + resizer->video_out.bpl_value
+			   * outformat->height;
+>>>>>>> v4.9.227
 
 		/* Ensure Y_BAD_L[6:0] = C_BAD_L[6:0]*/
 		if ((c_addr ^ addr) & 0x7f) {
@@ -168,7 +184,11 @@ static void resizer_set_outaddr(struct iss_resizer_device *resizer, u32 addr)
 			c_addr |= addr & 0x7f;
 		}
 
+<<<<<<< HEAD
 		/* Save address splitted in Base Address H & L */
+=======
+		/* Save address split in Base Address H & L */
+>>>>>>> v4.9.227
 		iss_reg_write(iss, OMAP4_ISS_MEM_ISP_RESIZER, RZA_SDR_C_BAD_H,
 			      (c_addr >> 16) & 0xffff);
 		iss_reg_write(iss, OMAP4_ISS_MEM_ISP_RESIZER, RZA_SDR_C_BAD_L,
@@ -242,8 +262,13 @@ static void resizer_configure(struct iss_resizer_device *resizer)
 		      resizer->video_out.bpl_value);
 
 	/* UYVY -> NV12 conversion */
+<<<<<<< HEAD
 	if ((informat->code == V4L2_MBUS_FMT_UYVY8_1X16) &&
 	    (outformat->code == V4L2_MBUS_FMT_YUYV8_1_5X8)) {
+=======
+	if ((informat->code == MEDIA_BUS_FMT_UYVY8_1X16) &&
+	    (outformat->code == MEDIA_BUS_FMT_YUYV8_1_5X8)) {
+>>>>>>> v4.9.227
 		iss_reg_write(iss, OMAP4_ISS_MEM_ISP_RESIZER, RZA_420,
 			      RSZ_420_CEN | RSZ_420_YEN);
 
@@ -274,7 +299,11 @@ static void resizer_isr_buffer(struct iss_resizer_device *resizer)
 	resizer_enable(resizer, 0);
 
 	buffer = omap4iss_video_buffer_next(&resizer->video_out);
+<<<<<<< HEAD
 	if (buffer == NULL)
+=======
+	if (!buffer)
+>>>>>>> v4.9.227
 		return;
 
 	resizer_set_outaddr(resizer, buffer->iss_addr);
@@ -283,6 +312,7 @@ static void resizer_isr_buffer(struct iss_resizer_device *resizer)
 }
 
 /*
+<<<<<<< HEAD
  * resizer_isif0_isr - Handle ISIF0 event
  * @resizer: Pointer to ISP RESIZER device.
  *
@@ -299,6 +329,8 @@ static void resizer_int_dma_isr(struct iss_resizer_device *resizer)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * omap4iss_resizer_isr - Configure resizer during interframe time.
  * @resizer: Pointer to ISP RESIZER device.
  * @events: RESIZER events
@@ -322,7 +354,11 @@ void omap4iss_resizer_isr(struct iss_resizer_device *resizer, u32 events)
 		return;
 
 	if (events & ISP5_IRQ_RSZ_INT_DMA)
+<<<<<<< HEAD
 		resizer_int_dma_isr(resizer);
+=======
+		resizer_isr_buffer(resizer);
+>>>>>>> v4.9.227
 }
 
 /* -----------------------------------------------------------------------------
@@ -436,28 +472,48 @@ static int resizer_set_stream(struct v4l2_subdev *sd, int enable)
 
 static struct v4l2_mbus_framefmt *
 __resizer_get_format(struct iss_resizer_device *resizer,
+<<<<<<< HEAD
 		     struct v4l2_subdev_fh *fh, unsigned int pad,
 		     enum v4l2_subdev_format_whence which)
 {
 	if (which == V4L2_SUBDEV_FORMAT_TRY)
 		return v4l2_subdev_get_try_format(fh, pad);
+=======
+		     struct v4l2_subdev_pad_config *cfg, unsigned int pad,
+		     enum v4l2_subdev_format_whence which)
+{
+	if (which == V4L2_SUBDEV_FORMAT_TRY)
+		return v4l2_subdev_get_try_format(&resizer->subdev, cfg, pad);
+>>>>>>> v4.9.227
 	return &resizer->formats[pad];
 }
 
 /*
  * resizer_try_format - Try video format on a pad
  * @resizer: ISS RESIZER device
+<<<<<<< HEAD
  * @fh : V4L2 subdev file handle
+=======
+ * @cfg: V4L2 subdev pad config
+>>>>>>> v4.9.227
  * @pad: Pad number
  * @fmt: Format
  */
 static void
 resizer_try_format(struct iss_resizer_device *resizer,
+<<<<<<< HEAD
 		   struct v4l2_subdev_fh *fh, unsigned int pad,
 		   struct v4l2_mbus_framefmt *fmt,
 		   enum v4l2_subdev_format_whence which)
 {
 	enum v4l2_mbus_pixelcode pixelcode;
+=======
+		   struct v4l2_subdev_pad_config *cfg, unsigned int pad,
+		   struct v4l2_mbus_framefmt *fmt,
+		   enum v4l2_subdev_format_whence which)
+{
+	u32 pixelcode;
+>>>>>>> v4.9.227
 	struct v4l2_mbus_framefmt *format;
 	unsigned int width = fmt->width;
 	unsigned int height = fmt->height;
@@ -472,7 +528,11 @@ resizer_try_format(struct iss_resizer_device *resizer,
 
 		/* If not found, use UYVY as default */
 		if (i >= ARRAY_SIZE(resizer_fmts))
+<<<<<<< HEAD
 			fmt->code = V4L2_MBUS_FMT_UYVY8_1X16;
+=======
+			fmt->code = MEDIA_BUS_FMT_UYVY8_1X16;
+>>>>>>> v4.9.227
 
 		/* Clamp the input size. */
 		fmt->width = clamp_t(u32, width, 1, 8192);
@@ -481,12 +541,21 @@ resizer_try_format(struct iss_resizer_device *resizer,
 
 	case RESIZER_PAD_SOURCE_MEM:
 		pixelcode = fmt->code;
+<<<<<<< HEAD
 		format = __resizer_get_format(resizer, fh, RESIZER_PAD_SINK,
 					      which);
 		memcpy(fmt, format, sizeof(*fmt));
 
 		if ((pixelcode == V4L2_MBUS_FMT_YUYV8_1_5X8) &&
 		    (fmt->code == V4L2_MBUS_FMT_UYVY8_1X16))
+=======
+		format = __resizer_get_format(resizer, cfg, RESIZER_PAD_SINK,
+					      which);
+		memcpy(fmt, format, sizeof(*fmt));
+
+		if ((pixelcode == MEDIA_BUS_FMT_YUYV8_1_5X8) &&
+		    (fmt->code == MEDIA_BUS_FMT_UYVY8_1X16))
+>>>>>>> v4.9.227
 			fmt->code = pixelcode;
 
 		/* The data formatter truncates the number of horizontal output
@@ -498,7 +567,10 @@ resizer_try_format(struct iss_resizer_device *resizer,
 		fmt->width &= ~15;
 		fmt->height = clamp_t(u32, height, 32, fmt->height);
 		break;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	}
 
 	fmt->colorspace = V4L2_COLORSPACE_JPEG;
@@ -508,13 +580,22 @@ resizer_try_format(struct iss_resizer_device *resizer,
 /*
  * resizer_enum_mbus_code - Handle pixel format enumeration
  * @sd     : pointer to v4l2 subdev structure
+<<<<<<< HEAD
  * @fh : V4L2 subdev file handle
+=======
+ * @cfg: V4L2 subdev pad config
+>>>>>>> v4.9.227
  * @code   : pointer to v4l2_subdev_mbus_code_enum structure
  * return -EINVAL or zero on success
  */
 static int resizer_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			       struct v4l2_subdev_fh *fh,
 			       struct v4l2_subdev_mbus_code_enum *code)
+=======
+				  struct v4l2_subdev_pad_config *cfg,
+				  struct v4l2_subdev_mbus_code_enum *code)
+>>>>>>> v4.9.227
 {
 	struct iss_resizer_device *resizer = v4l2_get_subdevdata(sd);
 	struct v4l2_mbus_framefmt *format;
@@ -528,8 +609,13 @@ static int resizer_enum_mbus_code(struct v4l2_subdev *sd,
 		break;
 
 	case RESIZER_PAD_SOURCE_MEM:
+<<<<<<< HEAD
 		format = __resizer_get_format(resizer, fh, RESIZER_PAD_SINK,
 					      V4L2_SUBDEV_FORMAT_TRY);
+=======
+		format = __resizer_get_format(resizer, cfg, RESIZER_PAD_SINK,
+					      code->which);
+>>>>>>> v4.9.227
 
 		if (code->index == 0) {
 			code->code = format->code;
@@ -537,9 +623,15 @@ static int resizer_enum_mbus_code(struct v4l2_subdev *sd,
 		}
 
 		switch (format->code) {
+<<<<<<< HEAD
 		case V4L2_MBUS_FMT_UYVY8_1X16:
 			if (code->index == 1)
 				code->code = V4L2_MBUS_FMT_YUYV8_1_5X8;
+=======
+		case MEDIA_BUS_FMT_UYVY8_1X16:
+			if (code->index == 1)
+				code->code = MEDIA_BUS_FMT_YUYV8_1_5X8;
+>>>>>>> v4.9.227
 			else
 				return -EINVAL;
 			break;
@@ -558,8 +650,13 @@ static int resizer_enum_mbus_code(struct v4l2_subdev *sd,
 }
 
 static int resizer_enum_frame_size(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				struct v4l2_subdev_fh *fh,
 				struct v4l2_subdev_frame_size_enum *fse)
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+				   struct v4l2_subdev_frame_size_enum *fse)
+>>>>>>> v4.9.227
 {
 	struct iss_resizer_device *resizer = v4l2_get_subdevdata(sd);
 	struct v4l2_mbus_framefmt format;
@@ -570,8 +667,12 @@ static int resizer_enum_frame_size(struct v4l2_subdev *sd,
 	format.code = fse->code;
 	format.width = 1;
 	format.height = 1;
+<<<<<<< HEAD
 	resizer_try_format(resizer, fh, fse->pad, &format,
 			   V4L2_SUBDEV_FORMAT_TRY);
+=======
+	resizer_try_format(resizer, cfg, fse->pad, &format, fse->which);
+>>>>>>> v4.9.227
 	fse->min_width = format.width;
 	fse->min_height = format.height;
 
@@ -581,8 +682,12 @@ static int resizer_enum_frame_size(struct v4l2_subdev *sd,
 	format.code = fse->code;
 	format.width = -1;
 	format.height = -1;
+<<<<<<< HEAD
 	resizer_try_format(resizer, fh, fse->pad, &format,
 			   V4L2_SUBDEV_FORMAT_TRY);
+=======
+	resizer_try_format(resizer, cfg, fse->pad, &format, fse->which);
+>>>>>>> v4.9.227
 	fse->max_width = format.width;
 	fse->max_height = format.height;
 
@@ -592,20 +697,35 @@ static int resizer_enum_frame_size(struct v4l2_subdev *sd,
 /*
  * resizer_get_format - Retrieve the video format on a pad
  * @sd : ISP RESIZER V4L2 subdevice
+<<<<<<< HEAD
  * @fh : V4L2 subdev file handle
+=======
+ * @cfg: V4L2 subdev pad config
+>>>>>>> v4.9.227
  * @fmt: Format
  *
  * Return 0 on success or -EINVAL if the pad is invalid or doesn't correspond
  * to the format type.
  */
+<<<<<<< HEAD
 static int resizer_get_format(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 			   struct v4l2_subdev_format *fmt)
+=======
+static int resizer_get_format(struct v4l2_subdev *sd,
+			      struct v4l2_subdev_pad_config *cfg,
+			      struct v4l2_subdev_format *fmt)
+>>>>>>> v4.9.227
 {
 	struct iss_resizer_device *resizer = v4l2_get_subdevdata(sd);
 	struct v4l2_mbus_framefmt *format;
 
+<<<<<<< HEAD
 	format = __resizer_get_format(resizer, fh, fmt->pad, fmt->which);
 	if (format == NULL)
+=======
+	format = __resizer_get_format(resizer, cfg, fmt->pad, fmt->which);
+	if (!format)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	fmt->format = *format;
@@ -615,33 +735,59 @@ static int resizer_get_format(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 /*
  * resizer_set_format - Set the video format on a pad
  * @sd : ISP RESIZER V4L2 subdevice
+<<<<<<< HEAD
  * @fh : V4L2 subdev file handle
+=======
+ * @cfg: V4L2 subdev pad config
+>>>>>>> v4.9.227
  * @fmt: Format
  *
  * Return 0 on success or -EINVAL if the pad is invalid or doesn't correspond
  * to the format type.
  */
+<<<<<<< HEAD
 static int resizer_set_format(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
+=======
+static int resizer_set_format(struct v4l2_subdev *sd,
+			      struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			      struct v4l2_subdev_format *fmt)
 {
 	struct iss_resizer_device *resizer = v4l2_get_subdevdata(sd);
 	struct v4l2_mbus_framefmt *format;
 
+<<<<<<< HEAD
 	format = __resizer_get_format(resizer, fh, fmt->pad, fmt->which);
 	if (format == NULL)
 		return -EINVAL;
 
 	resizer_try_format(resizer, fh, fmt->pad, &fmt->format, fmt->which);
+=======
+	format = __resizer_get_format(resizer, cfg, fmt->pad, fmt->which);
+	if (!format)
+		return -EINVAL;
+
+	resizer_try_format(resizer, cfg, fmt->pad, &fmt->format, fmt->which);
+>>>>>>> v4.9.227
 	*format = fmt->format;
 
 	/* Propagate the format from sink to source */
 	if (fmt->pad == RESIZER_PAD_SINK) {
+<<<<<<< HEAD
 		format = __resizer_get_format(resizer, fh,
 					      RESIZER_PAD_SOURCE_MEM,
 					      fmt->which);
 		*format = fmt->format;
 		resizer_try_format(resizer, fh, RESIZER_PAD_SOURCE_MEM, format,
 				fmt->which);
+=======
+		format = __resizer_get_format(resizer, cfg,
+					      RESIZER_PAD_SOURCE_MEM,
+					      fmt->which);
+		*format = fmt->format;
+		resizer_try_format(resizer, cfg, RESIZER_PAD_SOURCE_MEM, format,
+				   fmt->which);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -680,10 +826,17 @@ static int resizer_init_formats(struct v4l2_subdev *sd,
 	memset(&format, 0, sizeof(format));
 	format.pad = RESIZER_PAD_SINK;
 	format.which = fh ? V4L2_SUBDEV_FORMAT_TRY : V4L2_SUBDEV_FORMAT_ACTIVE;
+<<<<<<< HEAD
 	format.format.code = V4L2_MBUS_FMT_UYVY8_1X16;
 	format.format.width = 4096;
 	format.format.height = 4096;
 	resizer_set_format(sd, fh, &format);
+=======
+	format.format.code = MEDIA_BUS_FMT_UYVY8_1X16;
+	format.format.width = 4096;
+	format.format.height = 4096;
+	resizer_set_format(sd, fh ? fh->pad : NULL, &format);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -727,15 +880,31 @@ static const struct v4l2_subdev_internal_ops resizer_v4l2_internal_ops = {
  * return -EINVAL or zero on success
  */
 static int resizer_link_setup(struct media_entity *entity,
+<<<<<<< HEAD
 			   const struct media_pad *local,
 			   const struct media_pad *remote, u32 flags)
+=======
+			      const struct media_pad *local,
+			      const struct media_pad *remote, u32 flags)
+>>>>>>> v4.9.227
 {
 	struct v4l2_subdev *sd = media_entity_to_v4l2_subdev(entity);
 	struct iss_resizer_device *resizer = v4l2_get_subdevdata(sd);
 	struct iss_device *iss = to_iss_device(resizer);
+<<<<<<< HEAD
 
 	switch (local->index | media_entity_type(remote->entity)) {
 	case RESIZER_PAD_SINK | MEDIA_ENT_T_V4L2_SUBDEV:
+=======
+	unsigned int index = local->index;
+
+	/* FIXME: this is actually a hack! */
+	if (is_media_entity_v4l2_subdev(remote->entity))
+		index |= 2 << 16;
+
+	switch (index) {
+	case RESIZER_PAD_SINK | 2 << 16:
+>>>>>>> v4.9.227
 		/* Read from IPIPE or IPIPEIF. */
 		if (!(flags & MEDIA_LNK_FL_ENABLED)) {
 			resizer->input = RESIZER_INPUT_NONE;
@@ -750,10 +919,16 @@ static int resizer_link_setup(struct media_entity *entity,
 		else if (remote->entity == &iss->ipipe.subdev.entity)
 			resizer->input = RESIZER_INPUT_IPIPE;
 
+<<<<<<< HEAD
 
 		break;
 
 	case RESIZER_PAD_SOURCE_MEM | MEDIA_ENT_T_DEVNODE:
+=======
+		break;
+
+	case RESIZER_PAD_SOURCE_MEM:
+>>>>>>> v4.9.227
 		/* Write to memory */
 		if (flags & MEDIA_LNK_FL_ENABLED) {
 			if (resizer->output & ~RESIZER_OUTPUT_MEMORY)
@@ -803,7 +978,11 @@ static int resizer_init_entities(struct iss_resizer_device *resizer)
 	pads[RESIZER_PAD_SOURCE_MEM].flags = MEDIA_PAD_FL_SOURCE;
 
 	me->ops = &resizer_media_ops;
+<<<<<<< HEAD
 	ret = media_entity_init(me, RESIZER_PADS_NUM, pads, 0);
+=======
+	ret = media_entity_pads_init(me, RESIZER_PADS_NUM, pads);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
@@ -817,6 +996,7 @@ static int resizer_init_entities(struct iss_resizer_device *resizer)
 	resizer->video_out.bpl_zero_padding = 1;
 	resizer->video_out.bpl_max = 0x1ffe0;
 
+<<<<<<< HEAD
 	ret = omap4iss_video_init(&resizer->video_out, "ISP resizer a");
 	if (ret < 0)
 		return ret;
@@ -829,18 +1009,28 @@ static int resizer_init_entities(struct iss_resizer_device *resizer)
 		return ret;
 
 	return 0;
+=======
+	return omap4iss_video_init(&resizer->video_out, "ISP resizer a");
+>>>>>>> v4.9.227
 }
 
 void omap4iss_resizer_unregister_entities(struct iss_resizer_device *resizer)
 {
+<<<<<<< HEAD
 	media_entity_cleanup(&resizer->subdev.entity);
 
+=======
+>>>>>>> v4.9.227
 	v4l2_device_unregister_subdev(&resizer->subdev);
 	omap4iss_video_unregister(&resizer->video_out);
 }
 
 int omap4iss_resizer_register_entities(struct iss_resizer_device *resizer,
+<<<<<<< HEAD
 	struct v4l2_device *vdev)
+=======
+				       struct v4l2_device *vdev)
+>>>>>>> v4.9.227
 {
 	int ret;
 
@@ -883,10 +1073,35 @@ int omap4iss_resizer_init(struct iss_device *iss)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * omap4iss_resizer_create_links() - RESIZER pads links creation
+ * @iss: Pointer to ISS device
+ *
+ * return negative error code or zero on success
+ */
+int omap4iss_resizer_create_links(struct iss_device *iss)
+{
+	struct iss_resizer_device *resizer = &iss->resizer;
+
+	/* Connect the RESIZER subdev to the video node. */
+	return media_create_pad_link(&resizer->subdev.entity,
+				     RESIZER_PAD_SOURCE_MEM,
+				     &resizer->video_out.video.entity, 0, 0);
+}
+
+/*
+>>>>>>> v4.9.227
  * omap4iss_resizer_cleanup - RESIZER module cleanup.
  * @iss: Device pointer specific to the OMAP4 ISS.
  */
 void omap4iss_resizer_cleanup(struct iss_device *iss)
 {
+<<<<<<< HEAD
 	/* FIXME: are you sure there's nothing to do? */
+=======
+	struct iss_resizer_device *resizer = &iss->resizer;
+
+	media_entity_cleanup(&resizer->subdev.entity);
+>>>>>>> v4.9.227
 }

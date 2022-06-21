@@ -13,11 +13,19 @@ typedef void (*mts_scsi_cmnd_callback)(struct scsi_cmnd *);
 
 struct mts_transfer_context
 {
+<<<<<<< HEAD
 	struct mts_desc* instance;
 	mts_scsi_cmnd_callback final_callback;
 	struct scsi_cmnd *srb;
 	
 	void* data;
+=======
+	struct mts_desc *instance;
+	mts_scsi_cmnd_callback final_callback;
+	struct scsi_cmnd *srb;
+	
+	void *data;
+>>>>>>> v4.9.227
 	unsigned data_length;
 	int data_pipe;
 	int fragment;
@@ -38,7 +46,11 @@ struct mts_desc {
 	u8 ep_response;
 	u8 ep_image;
 
+<<<<<<< HEAD
 	struct Scsi_Host * host;
+=======
+	struct Scsi_Host *host;
+>>>>>>> v4.9.227
 
 	struct urb *urb;
 	struct mts_transfer_context context;

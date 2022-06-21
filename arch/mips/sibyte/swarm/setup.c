@@ -76,7 +76,11 @@ int swarm_be_handler(struct pt_regs *regs, int is_fixup)
 		printk("DBE physical address: %010Lx\n",
 		       __read_64bit_c0_register($26, 1));
 	}
+<<<<<<< HEAD
 	return (is_fixup ? MIPS_BE_FIXUP : MIPS_BE_FATAL);
+=======
+	return is_fixup ? MIPS_BE_FIXUP : MIPS_BE_FATAL;
+>>>>>>> v4.9.227
 }
 
 enum swarm_rtc_type {

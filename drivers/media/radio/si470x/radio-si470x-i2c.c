@@ -384,14 +384,23 @@ static int si470x_i2c_probe(struct i2c_client *client,
 		goto err_radio;
 	}
 	dev_info(&client->dev, "DeviceID=0x%4.4hx ChipID=0x%4.4hx\n",
+<<<<<<< HEAD
 			radio->registers[DEVICEID], radio->registers[CHIPID]);
 	if ((radio->registers[CHIPID] & CHIPID_FIRMWARE) < RADIO_FW_VERSION) {
+=======
+			radio->registers[DEVICEID], radio->registers[SI_CHIPID]);
+	if ((radio->registers[SI_CHIPID] & SI_CHIPID_FIRMWARE) < RADIO_FW_VERSION) {
+>>>>>>> v4.9.227
 		dev_warn(&client->dev,
 			"This driver is known to work with "
 			"firmware version %hu,\n", RADIO_FW_VERSION);
 		dev_warn(&client->dev,
 			"but the device has firmware version %hu.\n",
+<<<<<<< HEAD
 			radio->registers[CHIPID] & CHIPID_FIRMWARE);
+=======
+			radio->registers[SI_CHIPID] & SI_CHIPID_FIRMWARE);
+>>>>>>> v4.9.227
 		version_warning = 1;
 	}
 
@@ -421,7 +430,12 @@ static int si470x_i2c_probe(struct i2c_client *client,
 	init_waitqueue_head(&radio->read_queue);
 
 	retval = request_threaded_irq(client->irq, NULL, si470x_i2c_interrupt,
+<<<<<<< HEAD
 			IRQF_TRIGGER_FALLING, DRIVER_NAME, radio);
+=======
+			IRQF_TRIGGER_FALLING | IRQF_ONESHOT, DRIVER_NAME,
+			radio);
+>>>>>>> v4.9.227
 	if (retval) {
 		dev_err(&client->dev, "Failed to register interrupt\n");
 		goto err_rds;
@@ -457,8 +471,15 @@ static int si470x_i2c_remove(struct i2c_client *client)
 
 	free_irq(client->irq, radio);
 	video_unregister_device(&radio->videodev);
+<<<<<<< HEAD
 	kfree(radio);
 
+=======
+
+	v4l2_ctrl_handler_free(&radio->hdl);
+	v4l2_device_unregister(&radio->v4l2_dev);
+	kfree(radio);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -508,7 +529,10 @@ static SIMPLE_DEV_PM_OPS(si470x_i2c_pm, si470x_i2c_suspend, si470x_i2c_resume);
 static struct i2c_driver si470x_i2c_driver = {
 	.driver = {
 		.name		= "si470x",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM_SLEEP
 		.pm		= &si470x_i2c_pm,
 #endif

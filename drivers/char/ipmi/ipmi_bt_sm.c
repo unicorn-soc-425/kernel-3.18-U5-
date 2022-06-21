@@ -695,7 +695,11 @@ static int bt_size(void)
 	return sizeof(struct si_sm_data);
 }
 
+<<<<<<< HEAD
 struct si_sm_handlers bt_smi_handlers = {
+=======
+const struct si_sm_handlers bt_smi_handlers = {
+>>>>>>> v4.9.227
 	.init_data		= bt_init_data,
 	.start_transaction	= bt_start_transaction,
 	.get_result		= bt_get_result,

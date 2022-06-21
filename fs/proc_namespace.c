@@ -17,7 +17,12 @@
 
 static unsigned mounts_poll(struct file *file, poll_table *wait)
 {
+<<<<<<< HEAD
 	struct proc_mounts *p = proc_mounts(file->private_data);
+=======
+	struct seq_file *m = file->private_data;
+	struct proc_mounts *p = m->private;
+>>>>>>> v4.9.227
 	struct mnt_namespace *ns = p->ns;
 	unsigned res = POLLIN | POLLRDNORM;
 	int event;
@@ -25,8 +30,13 @@ static unsigned mounts_poll(struct file *file, poll_table *wait)
 	poll_wait(file, &p->ns->poll, wait);
 
 	event = ACCESS_ONCE(ns->event);
+<<<<<<< HEAD
 	if (p->m.poll_event != event) {
 		p->m.poll_event = event;
+=======
+	if (m->poll_event != event) {
+		m->poll_event = event;
+>>>>>>> v4.9.227
 		res |= POLLERR | POLLPRI;
 	}
 
@@ -92,10 +102,18 @@ static void show_type(struct seq_file *m, struct super_block *sb)
 
 static int show_vfsmnt(struct seq_file *m, struct vfsmount *mnt)
 {
+<<<<<<< HEAD
 	struct mount *r = real_mount(mnt);
 	int err = 0;
 	struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
 	struct super_block *sb = mnt_path.dentry->d_sb;
+=======
+	struct proc_mounts *p = m->private;
+	struct mount *r = real_mount(mnt);
+	struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
+	struct super_block *sb = mnt_path.dentry->d_sb;
+	int err;
+>>>>>>> v4.9.227
 
 	if (sb->s_op->show_devname) {
 		err = sb->s_op->show_devname(m, mnt_path.dentry);
@@ -105,7 +123,14 @@ static int show_vfsmnt(struct seq_file *m, struct vfsmount *mnt)
 		mangle(m, r->mnt_devname ? r->mnt_devname : "none");
 	}
 	seq_putc(m, ' ');
+<<<<<<< HEAD
 	seq_path(m, &mnt_path, " \t\n\\");
+=======
+	/* mountpoints outside of chroot jail will give SEQ_SKIP on this */
+	err = seq_path_root(m, &mnt_path, &p->root, " \t\n\\");
+	if (err)
+		goto out;
+>>>>>>> v4.9.227
 	seq_putc(m, ' ');
 	show_type(m, sb);
 	seq_puts(m, __mnt_is_readonly(mnt) ? " ro" : " rw");
@@ -113,9 +138,13 @@ static int show_vfsmnt(struct seq_file *m, struct vfsmount *mnt)
 	if (err)
 		goto out;
 	show_mnt_opts(m, mnt);
+<<<<<<< HEAD
 	if (sb->s_op->show_options2)
 			err = sb->s_op->show_options2(mnt, m, mnt_path.dentry);
 	else if (sb->s_op->show_options)
+=======
+	if (sb->s_op->show_options)
+>>>>>>> v4.9.227
 		err = sb->s_op->show_options(m, mnt_path.dentry);
 	seq_puts(m, " 0 0\n");
 out:
@@ -124,6 +153,7 @@ out:
 
 static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
 {
+<<<<<<< HEAD
 	struct proc_mounts *p = proc_mounts(m);
 	struct mount *r = real_mount(mnt);
 	struct super_block *sb = mnt->mnt_sb;
@@ -143,6 +173,27 @@ static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
 
 	/* mountpoints outside of chroot jail will give SEQ_SKIP on this */
 	err = seq_path_root(m, &mnt_path, &root, " \t\n\\");
+=======
+	struct proc_mounts *p = m->private;
+	struct mount *r = real_mount(mnt);
+	struct super_block *sb = mnt->mnt_sb;
+	struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
+	int err;
+
+	seq_printf(m, "%i %i %u:%u ", r->mnt_id, r->mnt_parent->mnt_id,
+		   MAJOR(sb->s_dev), MINOR(sb->s_dev));
+	if (sb->s_op->show_path) {
+		err = sb->s_op->show_path(m, mnt->mnt_root);
+		if (err)
+			goto out;
+	} else {
+		seq_dentry(m, mnt->mnt_root, " \t\n\\");
+	}
+	seq_putc(m, ' ');
+
+	/* mountpoints outside of chroot jail will give SEQ_SKIP on this */
+	err = seq_path_root(m, &mnt_path, &p->root, " \t\n\\");
+>>>>>>> v4.9.227
 	if (err)
 		goto out;
 
@@ -166,19 +217,33 @@ static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
 	seq_puts(m, " - ");
 	show_type(m, sb);
 	seq_putc(m, ' ');
+<<<<<<< HEAD
 	if (sb->s_op->show_devname)
 		err = sb->s_op->show_devname(m, mnt->mnt_root);
 	else
 		mangle(m, r->mnt_devname ? r->mnt_devname : "none");
 	if (err)
 		goto out;
+=======
+	if (sb->s_op->show_devname) {
+		err = sb->s_op->show_devname(m, mnt->mnt_root);
+		if (err)
+			goto out;
+	} else {
+		mangle(m, r->mnt_devname ? r->mnt_devname : "none");
+	}
+>>>>>>> v4.9.227
 	seq_puts(m, sb->s_flags & MS_RDONLY ? " ro" : " rw");
 	err = show_sb_opts(m, sb);
 	if (err)
 		goto out;
+<<<<<<< HEAD
 	if (sb->s_op->show_options2) {
 		err = sb->s_op->show_options2(mnt, m, mnt->mnt_root);
 	} else if (sb->s_op->show_options)
+=======
+	if (sb->s_op->show_options)
+>>>>>>> v4.9.227
 		err = sb->s_op->show_options(m, mnt->mnt_root);
 	seq_putc(m, '\n');
 out:
@@ -187,15 +252,28 @@ out:
 
 static int show_vfsstat(struct seq_file *m, struct vfsmount *mnt)
 {
+<<<<<<< HEAD
 	struct mount *r = real_mount(mnt);
 	struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
 	struct super_block *sb = mnt_path.dentry->d_sb;
 	int err = 0;
+=======
+	struct proc_mounts *p = m->private;
+	struct mount *r = real_mount(mnt);
+	struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
+	struct super_block *sb = mnt_path.dentry->d_sb;
+	int err;
+>>>>>>> v4.9.227
 
 	/* device */
 	if (sb->s_op->show_devname) {
 		seq_puts(m, "device ");
 		err = sb->s_op->show_devname(m, mnt_path.dentry);
+<<<<<<< HEAD
+=======
+		if (err)
+			goto out;
+>>>>>>> v4.9.227
 	} else {
 		if (r->mnt_devname) {
 			seq_puts(m, "device ");
@@ -206,7 +284,14 @@ static int show_vfsstat(struct seq_file *m, struct vfsmount *mnt)
 
 	/* mount point */
 	seq_puts(m, " mounted on ");
+<<<<<<< HEAD
 	seq_path(m, &mnt_path, " \t\n\\");
+=======
+	/* mountpoints outside of chroot jail will give SEQ_SKIP on this */
+	err = seq_path_root(m, &mnt_path, &p->root, " \t\n\\");
+	if (err)
+		goto out;
+>>>>>>> v4.9.227
 	seq_putc(m, ' ');
 
 	/* file system type */
@@ -216,11 +301,19 @@ static int show_vfsstat(struct seq_file *m, struct vfsmount *mnt)
 	/* optional statistics */
 	if (sb->s_op->show_stats) {
 		seq_putc(m, ' ');
+<<<<<<< HEAD
 		if (!err)
 			err = sb->s_op->show_stats(m, mnt_path.dentry);
 	}
 
 	seq_putc(m, '\n');
+=======
+		err = sb->s_op->show_stats(m, mnt_path.dentry);
+	}
+
+	seq_putc(m, '\n');
+out:
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -232,6 +325,10 @@ static int mounts_open_common(struct inode *inode, struct file *file,
 	struct mnt_namespace *ns = NULL;
 	struct path root;
 	struct proc_mounts *p;
+<<<<<<< HEAD
+=======
+	struct seq_file *m;
+>>>>>>> v4.9.227
 	int ret = -EINVAL;
 
 	if (!task)
@@ -256,6 +353,7 @@ static int mounts_open_common(struct inode *inode, struct file *file,
 	task_unlock(task);
 	put_task_struct(task);
 
+<<<<<<< HEAD
 	ret = -ENOMEM;
 	p = kmalloc(sizeof(struct proc_mounts), GFP_KERNEL);
 	if (!p)
@@ -269,13 +367,28 @@ static int mounts_open_common(struct inode *inode, struct file *file,
 	p->ns = ns;
 	p->root = root;
 	p->m.poll_event = ns->event;
+=======
+	ret = seq_open_private(file, &mounts_op, sizeof(struct proc_mounts));
+	if (ret)
+		goto err_put_path;
+
+	m = file->private_data;
+	m->poll_event = ns->event;
+
+	p = m->private;
+	p->ns = ns;
+	p->root = root;
+>>>>>>> v4.9.227
 	p->show = show;
 	p->cached_event = ~0ULL;
 
 	return 0;
 
+<<<<<<< HEAD
  err_free:
 	kfree(p);
+=======
+>>>>>>> v4.9.227
  err_put_path:
 	path_put(&root);
  err_put_ns:
@@ -286,10 +399,18 @@ static int mounts_open_common(struct inode *inode, struct file *file,
 
 static int mounts_release(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct proc_mounts *p = proc_mounts(file->private_data);
 	path_put(&p->root);
 	put_mnt_ns(p->ns);
 	return seq_release(inode, file);
+=======
+	struct seq_file *m = file->private_data;
+	struct proc_mounts *p = m->private;
+	path_put(&p->root);
+	put_mnt_ns(p->ns);
+	return seq_release_private(inode, file);
+>>>>>>> v4.9.227
 }
 
 static int mounts_open(struct inode *inode, struct file *file)

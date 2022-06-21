@@ -5,6 +5,7 @@
 #include <asm-generic/cacheflush.h>
 #include <asm/special_insns.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_PAT
 /*
  * X86 PAT uses page flags WC and Uncached together to keep track of
@@ -68,6 +69,12 @@ static inline void set_page_memtype(struct page *pg, unsigned long memtype) { }
  * The set_memory_* API can be used to change various attributes of a virtual
  * address range. The attributes include:
  * Cachability   : UnCached, WriteCombining, WriteBack
+=======
+/*
+ * The set_memory_* API can be used to change various attributes of a virtual
+ * address range. The attributes include:
+ * Cachability   : UnCached, WriteCombining, WriteThrough, WriteBack
+>>>>>>> v4.9.227
  * Executability : eXeutable, NoteXecutable
  * Read/Write    : ReadOnly, ReadWrite
  * Presence      : NotPresent
@@ -94,9 +101,17 @@ static inline void set_page_memtype(struct page *pg, unsigned long memtype) { }
 
 int _set_memory_uc(unsigned long addr, int numpages);
 int _set_memory_wc(unsigned long addr, int numpages);
+<<<<<<< HEAD
 int _set_memory_wb(unsigned long addr, int numpages);
 int set_memory_uc(unsigned long addr, int numpages);
 int set_memory_wc(unsigned long addr, int numpages);
+=======
+int _set_memory_wt(unsigned long addr, int numpages);
+int _set_memory_wb(unsigned long addr, int numpages);
+int set_memory_uc(unsigned long addr, int numpages);
+int set_memory_wc(unsigned long addr, int numpages);
+int set_memory_wt(unsigned long addr, int numpages);
+>>>>>>> v4.9.227
 int set_memory_wb(unsigned long addr, int numpages);
 int set_memory_x(unsigned long addr, int numpages);
 int set_memory_nx(unsigned long addr, int numpages);
@@ -107,10 +122,18 @@ int set_memory_4k(unsigned long addr, int numpages);
 
 int set_memory_array_uc(unsigned long *addr, int addrinarray);
 int set_memory_array_wc(unsigned long *addr, int addrinarray);
+<<<<<<< HEAD
+=======
+int set_memory_array_wt(unsigned long *addr, int addrinarray);
+>>>>>>> v4.9.227
 int set_memory_array_wb(unsigned long *addr, int addrinarray);
 
 int set_pages_array_uc(struct page **pages, int addrinarray);
 int set_pages_array_wc(struct page **pages, int addrinarray);
+<<<<<<< HEAD
+=======
+int set_pages_array_wt(struct page **pages, int addrinarray);
+>>>>>>> v4.9.227
 int set_pages_array_wb(struct page **pages, int addrinarray);
 
 /*
@@ -143,6 +166,11 @@ int set_pages_rw(struct page *page, int numpages);
 
 void clflush_cache_range(void *addr, unsigned int size);
 
+<<<<<<< HEAD
+=======
+#define mmio_flush_range(addr, size) clflush_cache_range(addr, size)
+
+>>>>>>> v4.9.227
 extern const int rodata_test_data;
 extern int kernel_set_to_readonly;
 void set_kernel_text_rw(void);

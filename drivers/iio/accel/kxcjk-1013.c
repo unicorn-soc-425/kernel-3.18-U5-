@@ -20,7 +20,10 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/acpi.h>
+<<<<<<< HEAD
 #include <linux/gpio/consumer.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/pm.h>
 #include <linux/pm_runtime.h>
 #include <linux/iio/iio.h>
@@ -108,12 +111,20 @@ struct kxcjk1013_data {
 	bool motion_trigger_on;
 	int64_t timestamp;
 	enum kx_chipset chipset;
+<<<<<<< HEAD
+=======
+	bool is_smo8500_device;
+>>>>>>> v4.9.227
 };
 
 enum kxcjk1013_axis {
 	AXIS_X,
 	AXIS_Y,
 	AXIS_Z,
+<<<<<<< HEAD
+=======
+	AXIS_MAX,
+>>>>>>> v4.9.227
 };
 
 enum kxcjk1013_mode {
@@ -360,7 +371,11 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
 {
 	int i;
@@ -377,6 +392,10 @@ static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
 
 static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
 {
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 	int ret;
 
 	if (on)
@@ -388,8 +407,16 @@ static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
 	if (ret < 0) {
 		dev_err(&data->client->dev,
 			"Failed: kxcjk1013_set_power_state for %d\n", on);
+<<<<<<< HEAD
 		return ret;
 	}
+=======
+		if (on)
+			pm_runtime_put_noidle(&data->client->dev);
+		return ret;
+	}
+#endif
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -653,10 +680,15 @@ static int kxcjk1013_set_scale(struct kxcjk1013_data *data, int val)
 	int ret, i;
 	enum kxcjk1013_mode store_mode;
 
+<<<<<<< HEAD
 
 	for (i = 0; i < ARRAY_SIZE(KXCJK1013_scale_table); ++i) {
 		if (KXCJK1013_scale_table[i].scale == val) {
 
+=======
+	for (i = 0; i < ARRAY_SIZE(KXCJK1013_scale_table); ++i) {
+		if (KXCJK1013_scale_table[i].scale == val) {
+>>>>>>> v4.9.227
 			ret = kxcjk1013_get_mode(data, &store_mode);
 			if (ret < 0)
 				return ret;
@@ -815,7 +847,10 @@ static int kxcjk1013_read_event_config(struct iio_dev *indio_dev,
 					  enum iio_event_type type,
 					  enum iio_event_direction dir)
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	struct kxcjk1013_data *data = iio_priv(indio_dev);
 
 	return data->ev_enable_state;
@@ -858,6 +893,11 @@ static int kxcjk1013_write_event_config(struct iio_dev *indio_dev,
 
 	ret =  kxcjk1013_setup_any_motion_interrupt(data, state);
 	if (ret < 0) {
+<<<<<<< HEAD
+=======
+		kxcjk1013_set_power_state(data, false);
+		data->ev_enable_state = 0;
+>>>>>>> v4.9.227
 		mutex_unlock(&data->mutex);
 		return ret;
 	}
@@ -868,6 +908,7 @@ static int kxcjk1013_write_event_config(struct iio_dev *indio_dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int kxcjk1013_validate_trigger(struct iio_dev *indio_dev,
 				      struct iio_trigger *trig)
 {
@@ -877,6 +918,20 @@ static int kxcjk1013_validate_trigger(struct iio_dev *indio_dev,
 		return -EINVAL;
 
 	return 0;
+=======
+static int kxcjk1013_buffer_preenable(struct iio_dev *indio_dev)
+{
+	struct kxcjk1013_data *data = iio_priv(indio_dev);
+
+	return kxcjk1013_set_power_state(data, true);
+}
+
+static int kxcjk1013_buffer_postdisable(struct iio_dev *indio_dev)
+{
+	struct kxcjk1013_data *data = iio_priv(indio_dev);
+
+	return kxcjk1013_set_power_state(data, false);
+>>>>>>> v4.9.227
 }
 
 static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
@@ -915,7 +970,11 @@ static const struct iio_event_spec kxcjk1013_event = {
 		.realbits = 12,						\
 		.storagebits = 16,					\
 		.shift = 4,						\
+<<<<<<< HEAD
 		.endianness = IIO_CPU,					\
+=======
+		.endianness = IIO_LE,					\
+>>>>>>> v4.9.227
 	},								\
 	.event_spec = &kxcjk1013_event,				\
 	.num_event_specs = 1						\
@@ -928,6 +987,16 @@ static const struct iio_chan_spec kxcjk1013_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(3),
 };
 
+<<<<<<< HEAD
+=======
+static const struct iio_buffer_setup_ops kxcjk1013_buffer_setup_ops = {
+	.preenable		= kxcjk1013_buffer_preenable,
+	.postenable		= iio_triggered_buffer_postenable,
+	.postdisable		= kxcjk1013_buffer_postdisable,
+	.predisable		= iio_triggered_buffer_predisable,
+};
+
+>>>>>>> v4.9.227
 static const struct iio_info kxcjk1013_info = {
 	.attrs			= &kxcjk1013_attrs_group,
 	.read_raw		= kxcjk1013_read_raw,
@@ -936,15 +1005,24 @@ static const struct iio_info kxcjk1013_info = {
 	.write_event_value	= kxcjk1013_write_event,
 	.write_event_config	= kxcjk1013_write_event_config,
 	.read_event_config	= kxcjk1013_read_event_config,
+<<<<<<< HEAD
 	.validate_trigger	= kxcjk1013_validate_trigger,
 	.driver_module		= THIS_MODULE,
 };
 
+=======
+	.driver_module		= THIS_MODULE,
+};
+
+static const unsigned long kxcjk1013_scan_masks[] = {0x7, 0};
+
+>>>>>>> v4.9.227
 static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
 {
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct kxcjk1013_data *data = iio_priv(indio_dev);
+<<<<<<< HEAD
 	int bit, ret, i = 0;
 
 	mutex_lock(&data->mutex);
@@ -959,6 +1037,18 @@ static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
 		data->buffer[i++] = ret;
 	}
 	mutex_unlock(&data->mutex);
+=======
+	int ret;
+
+	mutex_lock(&data->mutex);
+	ret = i2c_smbus_read_i2c_block_data_or_emulated(data->client,
+							KXCJK1013_REG_XOUT_L,
+							AXIS_MAX * 2,
+							(u8 *)data->buffer);
+	mutex_unlock(&data->mutex);
+	if (ret < 0)
+		goto err;
+>>>>>>> v4.9.227
 
 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
 					   data->timestamp);
@@ -1008,6 +1098,10 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
 	else
 		ret = kxcjk1013_setup_new_data_interrupt(data, state);
 	if (ret < 0) {
+<<<<<<< HEAD
+=======
+		kxcjk1013_set_power_state(data, false);
+>>>>>>> v4.9.227
 		mutex_unlock(&data->mutex);
 		return ret;
 	}
@@ -1117,7 +1211,11 @@ static irqreturn_t kxcjk1013_data_rdy_trig_poll(int irq, void *private)
 	struct iio_dev *indio_dev = private;
 	struct kxcjk1013_data *data = iio_priv(indio_dev);
 
+<<<<<<< HEAD
 	data->timestamp = iio_get_time_ns();
+=======
+	data->timestamp = iio_get_time_ns(indio_dev);
+>>>>>>> v4.9.227
 
 	if (data->dready_trigger_on)
 		iio_trigger_poll(data->dready_trig);
@@ -1131,17 +1229,33 @@ static irqreturn_t kxcjk1013_data_rdy_trig_poll(int irq, void *private)
 }
 
 static const char *kxcjk1013_match_acpi_device(struct device *dev,
+<<<<<<< HEAD
 					       enum kx_chipset *chipset)
 {
 	const struct acpi_device_id *id;
 	id = acpi_match_device(dev->driver->acpi_match_table, dev);
 	if (!id)
 		return NULL;
+=======
+					       enum kx_chipset *chipset,
+					       bool *is_smo8500_device)
+{
+	const struct acpi_device_id *id;
+
+	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+	if (!id)
+		return NULL;
+
+	if (strcmp(id->id, "SMO8500") == 0)
+		*is_smo8500_device = true;
+
+>>>>>>> v4.9.227
 	*chipset = (enum kx_chipset)id->driver_data;
 
 	return dev_name(dev);
 }
 
+<<<<<<< HEAD
 static int kxcjk1013_gpio_probe(struct i2c_client *client,
 				struct kxcjk1013_data *data)
 {
@@ -1172,6 +1286,8 @@ static int kxcjk1013_gpio_probe(struct i2c_client *client,
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static int kxcjk1013_probe(struct i2c_client *client,
 			   const struct i2c_device_id *id)
 {
@@ -1200,7 +1316,12 @@ static int kxcjk1013_probe(struct i2c_client *client,
 		name = id->name;
 	} else if (ACPI_HANDLE(&client->dev)) {
 		name = kxcjk1013_match_acpi_device(&client->dev,
+<<<<<<< HEAD
 						   &data->chipset);
+=======
+						   &data->chipset,
+						   &data->is_smo8500_device);
+>>>>>>> v4.9.227
 	} else
 		return -ENODEV;
 
@@ -1213,14 +1334,22 @@ static int kxcjk1013_probe(struct i2c_client *client,
 	indio_dev->dev.parent = &client->dev;
 	indio_dev->channels = kxcjk1013_channels;
 	indio_dev->num_channels = ARRAY_SIZE(kxcjk1013_channels);
+<<<<<<< HEAD
+=======
+	indio_dev->available_scan_masks = kxcjk1013_scan_masks;
+>>>>>>> v4.9.227
 	indio_dev->name = name;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->info = &kxcjk1013_info;
 
+<<<<<<< HEAD
 	if (client->irq < 0)
 		client->irq = kxcjk1013_gpio_probe(client, data);
 
 	if (client->irq >= 0) {
+=======
+	if (client->irq > 0 && !data->is_smo8500_device) {
+>>>>>>> v4.9.227
 		ret = devm_request_threaded_irq(&client->dev, client->irq,
 						kxcjk1013_data_rdy_trig_poll,
 						kxcjk1013_event_handler,
@@ -1228,21 +1357,39 @@ static int kxcjk1013_probe(struct i2c_client *client,
 						KXCJK1013_IRQ_NAME,
 						indio_dev);
 		if (ret)
+<<<<<<< HEAD
 			return ret;
+=======
+			goto err_poweroff;
+>>>>>>> v4.9.227
 
 		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
 							   "%s-dev%d",
 							   indio_dev->name,
 							   indio_dev->id);
+<<<<<<< HEAD
 		if (!data->dready_trig)
 			return -ENOMEM;
+=======
+		if (!data->dready_trig) {
+			ret = -ENOMEM;
+			goto err_poweroff;
+		}
+>>>>>>> v4.9.227
 
 		data->motion_trig = devm_iio_trigger_alloc(&client->dev,
 							  "%s-any-motion-dev%d",
 							  indio_dev->name,
 							  indio_dev->id);
+<<<<<<< HEAD
 		if (!data->motion_trig)
 			return -ENOMEM;
+=======
+		if (!data->motion_trig) {
+			ret = -ENOMEM;
+			goto err_poweroff;
+		}
+>>>>>>> v4.9.227
 
 		data->dready_trig->dev.parent = &client->dev;
 		data->dready_trig->ops = &kxcjk1013_trigger_ops;
@@ -1251,7 +1398,11 @@ static int kxcjk1013_probe(struct i2c_client *client,
 		iio_trigger_get(indio_dev->trig);
 		ret = iio_trigger_register(data->dready_trig);
 		if (ret)
+<<<<<<< HEAD
 			return ret;
+=======
+			goto err_poweroff;
+>>>>>>> v4.9.227
 
 		data->motion_trig->dev.parent = &client->dev;
 		data->motion_trig->ops = &kxcjk1013_trigger_ops;
@@ -1261,6 +1412,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
 			data->motion_trig = NULL;
 			goto err_trigger_unregister;
 		}
+<<<<<<< HEAD
 
 		ret = iio_triggered_buffer_setup(indio_dev,
 						&iio_pollfunc_store_time,
@@ -1273,12 +1425,35 @@ static int kxcjk1013_probe(struct i2c_client *client,
 		}
 	}
 
+=======
+	}
+
+	ret = iio_triggered_buffer_setup(indio_dev,
+					 &iio_pollfunc_store_time,
+					 kxcjk1013_trigger_handler,
+					 &kxcjk1013_buffer_setup_ops);
+	if (ret < 0) {
+		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+		goto err_trigger_unregister;
+	}
+
+	ret = pm_runtime_set_active(&client->dev);
+	if (ret)
+		goto err_buffer_cleanup;
+
+	pm_runtime_enable(&client->dev);
+	pm_runtime_set_autosuspend_delay(&client->dev,
+					 KXCJK1013_SLEEP_DELAY_MS);
+	pm_runtime_use_autosuspend(&client->dev);
+
+>>>>>>> v4.9.227
 	ret = iio_device_register(indio_dev);
 	if (ret < 0) {
 		dev_err(&client->dev, "unable to register iio device\n");
 		goto err_buffer_cleanup;
 	}
 
+<<<<<<< HEAD
 	ret = pm_runtime_set_active(&client->dev);
 	if (ret)
 		goto err_iio_unregister;
@@ -1292,6 +1467,10 @@ static int kxcjk1013_probe(struct i2c_client *client,
 
 err_iio_unregister:
 	iio_device_unregister(indio_dev);
+=======
+	return 0;
+
+>>>>>>> v4.9.227
 err_buffer_cleanup:
 	if (data->dready_trig)
 		iio_triggered_buffer_cleanup(indio_dev);
@@ -1300,6 +1479,11 @@ err_trigger_unregister:
 		iio_trigger_unregister(data->dready_trig);
 	if (data->motion_trig)
 		iio_trigger_unregister(data->motion_trig);
+<<<<<<< HEAD
+=======
+err_poweroff:
+	kxcjk1013_set_mode(data, STANDBY);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -1309,12 +1493,20 @@ static int kxcjk1013_remove(struct i2c_client *client)
 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 	struct kxcjk1013_data *data = iio_priv(indio_dev);
 
+<<<<<<< HEAD
+=======
+	iio_device_unregister(indio_dev);
+
+>>>>>>> v4.9.227
 	pm_runtime_disable(&client->dev);
 	pm_runtime_set_suspended(&client->dev);
 	pm_runtime_put_noidle(&client->dev);
 
+<<<<<<< HEAD
 	iio_device_unregister(indio_dev);
 
+=======
+>>>>>>> v4.9.227
 	if (data->dready_trig) {
 		iio_triggered_buffer_cleanup(indio_dev);
 		iio_trigger_unregister(data->dready_trig);
@@ -1349,23 +1541,44 @@ static int kxcjk1013_resume(struct device *dev)
 	int ret = 0;
 
 	mutex_lock(&data->mutex);
+<<<<<<< HEAD
 	/* Check, if the suspend occured while active */
 	if (data->dready_trigger_on || data->motion_trigger_on ||
 							data->ev_enable_state)
 		ret = kxcjk1013_set_mode(data, OPERATION);
+=======
+	ret = kxcjk1013_set_mode(data, OPERATION);
+	if (ret == 0)
+		ret = kxcjk1013_set_range(data, data->range);
+>>>>>>> v4.9.227
 	mutex_unlock(&data->mutex);
 
 	return ret;
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 static int kxcjk1013_runtime_suspend(struct device *dev)
 {
 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
 	struct kxcjk1013_data *data = iio_priv(indio_dev);
+<<<<<<< HEAD
 
 	return kxcjk1013_set_mode(data, STANDBY);
+=======
+	int ret;
+
+	ret = kxcjk1013_set_mode(data, STANDBY);
+	if (ret < 0) {
+		dev_err(&data->client->dev, "powering off device failed\n");
+		return -EAGAIN;
+	}
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int kxcjk1013_runtime_resume(struct device *dev)
@@ -1398,7 +1611,15 @@ static const struct dev_pm_ops kxcjk1013_pm_ops = {
 static const struct acpi_device_id kx_acpi_match[] = {
 	{"KXCJ1013", KXCJK1013},
 	{"KXCJ1008", KXCJ91008},
+<<<<<<< HEAD
 	{"KXTJ1009", KXTJ21009},
+=======
+	{"KXCJ9000", KXCJ91008},
+	{"KIOX000A", KXCJ91008},
+	{"KIOX010A", KXCJ91008}, /* KXCJ91008 inside the display of a 2-in-1 */
+	{"KXTJ1009", KXTJ21009},
+	{"SMO8500",  KXCJ91008},
+>>>>>>> v4.9.227
 	{ },
 };
 MODULE_DEVICE_TABLE(acpi, kx_acpi_match);
@@ -1407,6 +1628,10 @@ static const struct i2c_device_id kxcjk1013_id[] = {
 	{"kxcjk1013", KXCJK1013},
 	{"kxcj91008", KXCJ91008},
 	{"kxtj21009", KXTJ21009},
+<<<<<<< HEAD
+=======
+	{"SMO8500",   KXCJ91008},
+>>>>>>> v4.9.227
 	{}
 };
 

@@ -18,7 +18,10 @@
 #include <asm/pgtable.h>
 #include <asm/fasttimer.h>
 
+<<<<<<< HEAD
 extern unsigned long get_cmos_time(void);
+=======
+>>>>>>> v4.9.227
 extern void __Udiv(void);
 extern void __Umod(void);
 extern void __Div(void);
@@ -30,7 +33,10 @@ extern void __negdi2(void);
 extern void iounmap(volatile void * __iomem);
 
 /* Platform dependent support */
+<<<<<<< HEAD
 EXPORT_SYMBOL(get_cmos_time);
+=======
+>>>>>>> v4.9.227
 EXPORT_SYMBOL(loops_per_usec);
 
 /* Math functions */
@@ -47,16 +53,26 @@ EXPORT_SYMBOL(__negdi2);
 EXPORT_SYMBOL(__ioremap);
 EXPORT_SYMBOL(iounmap);
 
+<<<<<<< HEAD
 /* Userspace access functions */
 EXPORT_SYMBOL(__copy_user_zeroing);
 EXPORT_SYMBOL(__copy_user);
 
+=======
+>>>>>>> v4.9.227
 #undef memcpy
 #undef memset
 extern void * memset(void *, int, __kernel_size_t);
 extern void * memcpy(void *, const void *, __kernel_size_t);
 EXPORT_SYMBOL(memcpy);
 EXPORT_SYMBOL(memset);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ETRAX_ARCH_V32
+#undef strcmp
+EXPORT_SYMBOL(strcmp);
+#endif
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_ETRAX_FAST_TIMER
 /* Fast timer functions */
@@ -66,3 +82,8 @@ EXPORT_SYMBOL(del_fast_timer);
 EXPORT_SYMBOL(schedule_usleep);
 #endif
 EXPORT_SYMBOL(csum_partial);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(csum_partial_copy_from_user);
+EXPORT_SYMBOL(csum_partial_copy_nocheck);
+>>>>>>> v4.9.227

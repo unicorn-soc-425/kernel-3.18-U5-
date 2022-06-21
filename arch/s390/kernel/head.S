@@ -25,6 +25,7 @@
 #include <linux/linkage.h>
 #include <asm/asm-offsets.h>
 #include <asm/thread_info.h>
+<<<<<<< HEAD
 #include <asm/page.h>
 
 #ifdef CONFIG_64BIT
@@ -32,6 +33,13 @@
 #else
 #define ARCH_OFFSET	0
 #endif
+=======
+#include <asm/facility.h>
+#include <asm/page.h>
+#include <asm/ptrace.h>
+
+#define ARCH_OFFSET	4
+>>>>>>> v4.9.227
 
 __HEAD
 
@@ -63,6 +71,7 @@ __HEAD
 	.long	0x020006e0,0x20000050
 
 	.org	0x200
+<<<<<<< HEAD
 #
 # subroutine to set architecture mode
 #
@@ -80,12 +89,17 @@ __HEAD
 	mvi	__LC_AR_MODE_ID,0	# set ESA flag (mode 0)
 #endif
 	br	%r14
+=======
+>>>>>>> v4.9.227
 
 #
 # subroutine to wait for end I/O
 #
 .Lirqwait:
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	mvc	0x1f0(16),.Lnewpsw	# set up IO interrupt psw
 	lpsw	.Lwaitpsw
 .Lioint:
@@ -93,6 +107,7 @@ __HEAD
 	.align	8
 .Lnewpsw:
 	.quad	0x0000000080000000,.Lioint
+<<<<<<< HEAD
 #else
 	mvc	0x78(8),.Lnewpsw	# set up IO interrupt psw
 	lpsw	.Lwaitpsw
@@ -102,6 +117,8 @@ __HEAD
 .Lnewpsw:
 	.long	0x00080000,0x80000000+.Lioint
 #endif
+=======
+>>>>>>> v4.9.227
 .Lwaitpsw:
 	.long	0x020a0000,0x80000000+.Lioint
 
@@ -177,7 +194,18 @@ __HEAD
 	.long	0x02200050,0x00000000
 
 iplstart:
+<<<<<<< HEAD
 	bas	%r14,.Lsetmode		# Immediately switch to 64 bit mode
+=======
+	mvi	__LC_AR_MODE_ID,1	# set esame flag
+	slr	%r0,%r0			# set cpuid to zero
+	lhi	%r1,2			# mode 2 = esame (dump)
+	sigp	%r1,%r0,0x12		# switch to esame mode
+	bras	%r13,0f
+	.fill	16,4,0x0
+0:	lmh	%r0,%r15,0(%r13)	# clear high-order half of gprs
+	sam31				# switch to 31 bit addressing mode
+>>>>>>> v4.9.227
 	lh	%r1,0xb8		# test if subchannel number
 	bct	%r1,.Lnoload		#  is valid
 	l	%r1,0xb8		# load ipl subchannel number
@@ -287,6 +315,7 @@ iplstart:
 .Lcpuid:.fill	8,1,0
 
 #
+<<<<<<< HEAD
 # SALIPL loader support. Based on a patch by Rob van der Heij.
 # This entry point is called directly from the SALIPL loader and
 # doesn't need a builtin ipl record.
@@ -352,6 +381,8 @@ ENTRY(start)
 	.byte 0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff
 
 #
+=======
+>>>>>>> v4.9.227
 # startup-code at 0x10000, running in absolute addressing mode
 # this is called either by the ipl loader or directly by PSW restart
 # or linload or SALIPL
@@ -375,7 +406,10 @@ ENTRY(startup)
 ENTRY(startup_kdump)
 	j	.Lep_startup_kdump
 .Lep_startup_normal:
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	mvi	__LC_AR_MODE_ID,1	# set esame flag
 	slr	%r0,%r0 		# set cpuid to zero
 	lhi	%r1,2			# mode 2 = esame (dump)
@@ -383,15 +417,20 @@ ENTRY(startup_kdump)
 	bras	%r13,0f
 	.fill	16,4,0x0
 0:	lmh	%r0,%r15,0(%r13)	# clear high-order half of gprs
+<<<<<<< HEAD
 	sam31				# switch to 31 bit addressing mode
 #else
 	mvi	__LC_AR_MODE_ID,0	# set ESA flag (mode 0)
 #endif
+=======
+	sam64				# switch to 64 bit addressing mode
+>>>>>>> v4.9.227
 	basr	%r13,0			# get base
 .LPG0:
 	xc	0x200(256),0x200	# partially clear lowcore
 	xc	0x300(256),0x300
 	xc	0xe00(256),0xe00
+<<<<<<< HEAD
 	stck	__LC_LAST_UPDATE_CLOCK
 	spt	6f-.LPG0(%r13)
 	mvc	__LC_LAST_UPDATE_TIMER(8),6f-.LPG0(%r13)
@@ -479,6 +518,23 @@ ENTRY(startup_kdump)
 5:	.long	startup_continue
 #endif
 
+=======
+	xc	0xf00(256),0xf00
+	lctlg	%c0,%c15,0x200(%r0)	# initialize control registers
+	stck	__LC_LAST_UPDATE_CLOCK
+	spt	6f-.LPG0(%r13)
+	mvc	__LC_LAST_UPDATE_TIMER(8),6f-.LPG0(%r13)
+	l	%r15,.Lstack-.LPG0(%r13)
+	ahi	%r15,-STACK_FRAME_OVERHEAD
+	brasl	%r14,verify_facilities
+# For uncompressed images, continue in
+# arch/s390/kernel/head64.S. For compressed images, continue in
+# arch/s390/boot/compressed/head.S.
+	jg	startup_continue
+
+.Lstack:
+	.long	0x8000 + (1<<(PAGE_SHIFT+THREAD_ORDER))
+>>>>>>> v4.9.227
 	.align	8
 6:	.long	0x7fffffff,0xffffffff
 

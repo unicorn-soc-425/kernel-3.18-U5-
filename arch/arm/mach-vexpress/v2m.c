@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Versatile Express V2M Motherboard Support
  */
@@ -375,6 +376,12 @@ static void __init v2m_dt_init(void)
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
 }
 
+=======
+#include <asm/mach/arch.h>
+
+#include "core.h"
+
+>>>>>>> v4.9.227
 static const char * const v2m_dt_match[] __initconst = {
 	"arm,vexpress",
 	NULL,
@@ -386,5 +393,8 @@ DT_MACHINE_START(VEXPRESS_DT, "ARM-Versatile Express")
 	.l2c_aux_mask	= 0xfe0fffff,
 	.smp		= smp_ops(vexpress_smp_dt_ops),
 	.smp_init	= smp_init_ops(vexpress_smp_init_ops),
+<<<<<<< HEAD
 	.init_machine	= v2m_dt_init,
+=======
+>>>>>>> v4.9.227
 MACHINE_END

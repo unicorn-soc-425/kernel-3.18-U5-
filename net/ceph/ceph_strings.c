@@ -15,6 +15,10 @@ const char *ceph_entity_type_name(int type)
 	default: return "unknown";
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ceph_entity_type_name);
+>>>>>>> v4.9.227
 
 const char *ceph_osd_op_name(int op)
 {
@@ -27,6 +31,25 @@ __CEPH_FORALL_OSD_OPS(GENERATE_CASE)
 	}
 }
 
+<<<<<<< HEAD
+=======
+const char *ceph_osd_watch_op_name(int o)
+{
+	switch (o) {
+	case CEPH_OSD_WATCH_OP_UNWATCH:
+		return "unwatch";
+	case CEPH_OSD_WATCH_OP_WATCH:
+		return "watch";
+	case CEPH_OSD_WATCH_OP_RECONNECT:
+		return "reconnect";
+	case CEPH_OSD_WATCH_OP_PING:
+		return "ping";
+	default:
+		return "???";
+	}
+}
+
+>>>>>>> v4.9.227
 const char *ceph_osd_state_name(int s)
 {
 	switch (s) {
@@ -42,6 +65,7 @@ const char *ceph_osd_state_name(int s)
 		return "???";
 	}
 }
+<<<<<<< HEAD
 
 const char *ceph_pool_op_name(int op)
 {
@@ -56,3 +80,5 @@ const char *ceph_pool_op_name(int op)
 	}
 	return "???";
 }
+=======
+>>>>>>> v4.9.227

@@ -44,7 +44,11 @@ struct stv0288_state {
 	u8 initialised:1;
 	u32 tuner_frequency;
 	u32 symbol_rate;
+<<<<<<< HEAD
 	fe_code_rate_t fec_inner;
+=======
+	enum fe_code_rate fec_inner;
+>>>>>>> v4.9.227
 	int errmode;
 };
 
@@ -134,6 +138,7 @@ static int stv0288_set_symbolrate(struct dvb_frontend *fe, u32 srate)
 
 	temp = (unsigned int)srate / 1000;
 
+<<<<<<< HEAD
 		temp = temp * 32768;
 		temp = temp / 25;
 		temp = temp / 125;
@@ -148,6 +153,22 @@ static int stv0288_set_symbolrate(struct dvb_frontend *fe, u32 srate)
 		stv0288_writeregI(state, 0x29, b[1]);
 		stv0288_writeregI(state, 0x2a, b[2]);
 		dprintk("stv0288: stv0288_set_symbolrate\n");
+=======
+	temp = temp * 32768;
+	temp = temp / 25;
+	temp = temp / 125;
+	b[0] = (unsigned char)((temp >> 12) & 0xff);
+	b[1] = (unsigned char)((temp >> 4) & 0xff);
+	b[2] = (unsigned char)((temp << 4) & 0xf0);
+	stv0288_writeregI(state, 0x28, 0x80); /* SFRH */
+	stv0288_writeregI(state, 0x29, 0); /* SFRM */
+	stv0288_writeregI(state, 0x2a, 0); /* SFRL */
+
+	stv0288_writeregI(state, 0x28, b[0]);
+	stv0288_writeregI(state, 0x29, b[1]);
+	stv0288_writeregI(state, 0x2a, b[2]);
+	dprintk("stv0288: stv0288_set_symbolrate\n");
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -174,7 +195,11 @@ static int stv0288_send_diseqc_msg(struct dvb_frontend *fe,
 }
 
 static int stv0288_send_diseqc_burst(struct dvb_frontend *fe,
+<<<<<<< HEAD
 						fe_sec_mini_cmd_t burst)
+=======
+				     enum fe_sec_mini_cmd burst)
+>>>>>>> v4.9.227
 {
 	struct stv0288_state *state = fe->demodulator_priv;
 
@@ -193,7 +218,11 @@ static int stv0288_send_diseqc_burst(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int stv0288_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
+=======
+static int stv0288_set_tone(struct dvb_frontend *fe, enum fe_sec_tone_mode tone)
+>>>>>>> v4.9.227
 {
 	struct stv0288_state *state = fe->demodulator_priv;
 
@@ -323,7 +352,12 @@ static u8 stv0288_inittab[] = {
 	0xff, 0xff,
 };
 
+<<<<<<< HEAD
 static int stv0288_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t volt)
+=======
+static int stv0288_set_voltage(struct dvb_frontend *fe,
+			       enum fe_sec_voltage volt)
+>>>>>>> v4.9.227
 {
 	dprintk("%s: %s\n", __func__,
 		volt == SEC_VOLTAGE_13 ? "SEC_VOLTAGE_13" :
@@ -361,7 +395,11 @@ static int stv0288_init(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int stv0288_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int stv0288_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct stv0288_state *state = fe->demodulator_priv;
 

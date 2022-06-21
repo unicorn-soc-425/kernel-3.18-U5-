@@ -73,7 +73,11 @@ icmpv6_manip_pkt(struct sk_buff *skb,
 	    hdr->icmp6_type == ICMPV6_ECHO_REPLY) {
 		inet_proto_csum_replace2(&hdr->icmp6_cksum, skb,
 					 hdr->icmp6_identifier,
+<<<<<<< HEAD
 					 tuple->src.u.icmp.id, 0);
+=======
+					 tuple->src.u.icmp.id, false);
+>>>>>>> v4.9.227
 		hdr->icmp6_identifier = tuple->src.u.icmp.id;
 	}
 	return true;

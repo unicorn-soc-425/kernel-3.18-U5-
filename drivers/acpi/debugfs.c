@@ -7,6 +7,11 @@
 #include <linux/debugfs.h>
 #include <linux/acpi.h>
 
+<<<<<<< HEAD
+=======
+#include "internal.h"
+
+>>>>>>> v4.9.227
 #define _COMPONENT		ACPI_SYSTEM_COMPONENT
 ACPI_MODULE_NAME("debugfs");
 

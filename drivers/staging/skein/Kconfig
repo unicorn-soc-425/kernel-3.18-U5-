@@ -1,8 +1,15 @@
 config CRYPTO_SKEIN
+<<<<<<< HEAD
 	bool "Skein digest algorithm"
 	depends on (X86 || UML_X86) && 64BIT && CRYPTO
 	select CRYPTO_THREEFISH
 	select CRYPTO_HASH
+=======
+	tristate "Skein digest algorithm"
+	depends on (X86 || UML_X86) && 64BIT && CRYPTO
+	select CRYPTO_HASH
+	select CRYPTO_ALGAPI
+>>>>>>> v4.9.227
 	help
 	  Skein secure hash algorithm is one of 5 finalists from the NIST SHA3
 	  competition.
@@ -12,6 +19,7 @@ config CRYPTO_SKEIN
 
 	  http://www.skein-hash.info/sites/default/files/skein1.3.pdf
 
+<<<<<<< HEAD
 	  for more information.  This module depends on the threefish block
 	  cipher module.
 
@@ -30,3 +38,7 @@ config CRYPTO_THREEFISH
 	  http://www.skein-hash.info/sites/default/files/skein1.3.pdf
 
 	  for more information.
+=======
+	  for more information. This module also contains the threefish block
+	  cipher algorithm.
+>>>>>>> v4.9.227

@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __WLAN_BSSDEF_H__
 #define __WLAN_BSSDEF_H__
@@ -128,6 +131,7 @@ enum ndis_802_11_wep_status {
 #define NDIS_802_11_AI_RESFI_STATUSCODE        2
 #define NDIS_802_11_AI_RESFI_ASSOCIATIONID     4
 
+<<<<<<< HEAD
 struct ndis_802_11_ai_reqfi {
     u16 Capabilities;
     u16 ListenInterval;
@@ -152,10 +156,13 @@ struct ndis_802_11_assoc_info {
 	u32  OffsetResponseIEs;
 };
 
+=======
+>>>>>>> v4.9.227
 enum ndis_802_11_reload_def {
 	Ndis802_11ReloadWEPKeys
 };
 
+<<<<<<< HEAD
 /*  Key mapping keys require a BSSID */
 struct ndis_802_11_key {
 	u32           Length;             /*  Length of this structure */
@@ -172,6 +179,8 @@ struct ndis_802_11_remove_key {
 	unsigned char BSSID[ETH_ALEN];
 };
 
+=======
+>>>>>>> v4.9.227
 struct ndis_802_11_wep {
 	u32     Length;        /*  Length of this structure */
 	u32     KeyIndex;      /*  0 is the per-client key,
@@ -180,12 +189,15 @@ struct ndis_802_11_wep {
 	u8     KeyMaterial[16];/*  variable len depending on above field */
 };
 
+<<<<<<< HEAD
 struct ndis_802_11_auth_req {
 	u32 Length;            /*  Length of structure */
 	unsigned char Bssid[ETH_ALEN];
 	u32 Flags;
 };
 
+=======
+>>>>>>> v4.9.227
 enum ndis_802_11_status_type {
 	Ndis802_11StatusType_Authentication,
 	Ndis802_11StatusType_MediaStreamMode,
@@ -194,10 +206,13 @@ enum ndis_802_11_status_type {
 				    * an upper bound */
 };
 
+<<<<<<< HEAD
 struct ndis_802_11_status_ind {
 	enum ndis_802_11_status_type StatusType;
 };
 
+=======
+>>>>>>> v4.9.227
 /*  mask for authentication/integrity fields */
 #define NDIS_802_11_AUTH_REQUEST_AUTH_FIELDS        	0x0f
 #define NDIS_802_11_AUTH_REQUEST_REAUTH			0x01
@@ -208,6 +223,7 @@ struct ndis_802_11_status_ind {
 /*  MIC check time, 60 seconds. */
 #define MIC_CHECK_TIME	60000000
 
+<<<<<<< HEAD
 struct ndis_802_11_auth_evt {
 	struct ndis_802_11_status_ind       Status;
 	struct ndis_802_11_auth_req  Request[1];
@@ -223,6 +239,8 @@ struct ndis_802_11_test {
 };
 
 
+=======
+>>>>>>> v4.9.227
 #ifndef Ndis802_11APMode
 #define Ndis802_11APMode (Ndis802_11InfrastructureMax+1)
 #endif
@@ -312,6 +330,7 @@ enum UAPSD_MAX_SP {
 #define NUM_PRE_AUTH_KEY 16
 #define NUM_PMKID_CACHE NUM_PRE_AUTH_KEY
 
+<<<<<<< HEAD
 /*
 *	WPA2
 */
@@ -340,4 +359,6 @@ struct ndis_802_11_cap {
 	struct ndis_802_11_auth_encrypt AuthenticationEncryptionSupported[1];
 };
 
+=======
+>>>>>>> v4.9.227
 #endif /* ifndef WLAN_BSSDEF_H_ */

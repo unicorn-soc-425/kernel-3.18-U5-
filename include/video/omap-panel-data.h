@@ -27,6 +27,7 @@
 #ifndef __OMAP_PANEL_DATA_H
 #define __OMAP_PANEL_DATA_H
 
+<<<<<<< HEAD
 #include <video/omapdss.h>
 #include <video/display_timing.h>
 
@@ -83,18 +84,28 @@ struct connector_hdmi_platform_data {
 	const char *source;
 };
 
+=======
+#include <video/display_timing.h>
+
+>>>>>>> v4.9.227
 /**
  * connector_atv platform data
  * @name: name for this display entity
  * @source: name of the display entity used as a video source
+<<<<<<< HEAD
  * @connector_type: composite/svideo
+=======
+>>>>>>> v4.9.227
  * @invert_polarity: invert signal polarity
  */
 struct connector_atv_platform_data {
 	const char *name;
 	const char *source;
 
+<<<<<<< HEAD
 	enum omap_dss_venc_type connector_type;
+=======
+>>>>>>> v4.9.227
 	bool invert_polarity;
 };
 
@@ -120,6 +131,7 @@ struct panel_dpi_platform_data {
 };
 
 /**
+<<<<<<< HEAD
  * panel_dsicm platform data
  * @name: name for this display entity
  * @source: name of the display entity used as a video source
@@ -147,6 +159,8 @@ struct panel_dsicm_platform_data {
 };
 
 /**
+=======
+>>>>>>> v4.9.227
  * panel_acx565akm platform data
  * @name: name for this display entity
  * @source: name of the display entity used as a video source
@@ -162,6 +176,7 @@ struct panel_acx565akm_platform_data {
 	int datapairs;
 };
 
+<<<<<<< HEAD
 /**
  * panel_lb035q02 platform data
  * @name: name for this display entity
@@ -251,4 +266,6 @@ struct panel_tpo_td028ttec1_platform_data {
 	int data_lines;
 };
 
+=======
+>>>>>>> v4.9.227
 #endif /* __OMAP_PANEL_DATA_H */

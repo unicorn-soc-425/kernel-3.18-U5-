@@ -13,6 +13,10 @@ enum bug_trap_type {
 struct pt_regs;
 
 #ifdef __CHECKER__
+<<<<<<< HEAD
+=======
+#define __BUILD_BUG_ON_NOT_POWER_OF_2(n) (0)
+>>>>>>> v4.9.227
 #define BUILD_BUG_ON_NOT_POWER_OF_2(n) (0)
 #define BUILD_BUG_ON_ZERO(e) (0)
 #define BUILD_BUG_ON_NULL(e) ((void*)0)
@@ -20,9 +24,18 @@ struct pt_regs;
 #define BUILD_BUG_ON_MSG(cond, msg) (0)
 #define BUILD_BUG_ON(condition) (0)
 #define BUILD_BUG() (0)
+<<<<<<< HEAD
 #else /* __CHECKER__ */
 
 /* Force a compilation error if a constant expression is not a power of 2 */
+=======
+#define MAYBE_BUILD_BUG_ON(cond) (0)
+#else /* __CHECKER__ */
+
+/* Force a compilation error if a constant expression is not a power of 2 */
+#define __BUILD_BUG_ON_NOT_POWER_OF_2(n)	\
+	BUILD_BUG_ON(((n) & ((n) - 1)) != 0)
+>>>>>>> v4.9.227
 #define BUILD_BUG_ON_NOT_POWER_OF_2(n)			\
 	BUILD_BUG_ON((n) == 0 || (((n) & ((n) - 1)) != 0))
 
@@ -83,6 +96,17 @@ struct pt_regs;
  */
 #define BUILD_BUG() BUILD_BUG_ON_MSG(1, "BUILD_BUG failed")
 
+<<<<<<< HEAD
+=======
+#define MAYBE_BUILD_BUG_ON(cond)			\
+	do {						\
+		if (__builtin_constant_p((cond)))       \
+			BUILD_BUG_ON(cond);             \
+		else                                    \
+			BUG_ON(cond);                   \
+	} while (0)
+
+>>>>>>> v4.9.227
 #endif	/* __CHECKER__ */
 
 #ifdef CONFIG_GENERIC_BUG
@@ -102,6 +126,14 @@ int is_valid_bugaddr(unsigned long addr);
 
 #else	/* !CONFIG_GENERIC_BUG */
 
+<<<<<<< HEAD
+=======
+static inline void *find_bug(unsigned long bugaddr)
+{
+	return NULL;
+}
+
+>>>>>>> v4.9.227
 static inline enum bug_trap_type report_bug(unsigned long bug_addr,
 					    struct pt_regs *regs)
 {
@@ -109,6 +141,7 @@ static inline enum bug_trap_type report_bug(unsigned long bug_addr,
 }
 
 #endif	/* CONFIG_GENERIC_BUG */
+<<<<<<< HEAD
 
 #ifdef CONFIG_PANIC_ON_DATA_CORRUPTION
 #define PANIC_CORRUPTION 1
@@ -134,4 +167,6 @@ static inline __must_check bool check_data_corruption(bool v) { return v; }
 		corruption;						 \
 	}))
 
+=======
+>>>>>>> v4.9.227
 #endif	/* _LINUX_BUG_H */

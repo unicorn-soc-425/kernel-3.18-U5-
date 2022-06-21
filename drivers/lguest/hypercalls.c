@@ -117,9 +117,12 @@ static void do_hcall(struct lg_cpu *cpu, struct hcall_args *args)
 		/* Similarly, this sets the halted flag for run_guest(). */
 		cpu->halted = 1;
 		break;
+<<<<<<< HEAD
 	case LHCALL_NOTIFY:
 		cpu->pending_notify = args->arg1;
 		break;
+=======
+>>>>>>> v4.9.227
 	default:
 		/* It should be an architecture-specific hypercall. */
 		if (lguest_arch_do_hcall(cpu, args))
@@ -189,7 +192,11 @@ static void do_async_hcalls(struct lg_cpu *cpu)
 		 * Stop doing hypercalls if they want to notify the Launcher:
 		 * it needs to service this first.
 		 */
+<<<<<<< HEAD
 		if (cpu->pending_notify)
+=======
+		if (cpu->pending.trap)
+>>>>>>> v4.9.227
 			break;
 	}
 }
@@ -214,10 +221,16 @@ static void initialize(struct lg_cpu *cpu)
 
 	/*
 	 * The Guest tells us where we're not to deliver interrupts by putting
+<<<<<<< HEAD
 	 * the range of addresses into "struct lguest_data".
 	 */
 	if (get_user(cpu->lg->noirq_start, &cpu->lg->lguest_data->noirq_start)
 	    || get_user(cpu->lg->noirq_end, &cpu->lg->lguest_data->noirq_end))
+=======
+	 * the instruction address into "struct lguest_data".
+	 */
+	if (get_user(cpu->lg->noirq_iret, &cpu->lg->lguest_data->noirq_iret))
+>>>>>>> v4.9.227
 		kill_guest(cpu, "bad guest page %p", cpu->lg->lguest_data);
 
 	/*
@@ -280,7 +293,11 @@ void do_hypercalls(struct lg_cpu *cpu)
 	 * NOTIFY to the Launcher, we want to return now.  Otherwise we do
 	 * the hypercall.
 	 */
+<<<<<<< HEAD
 	if (!cpu->pending_notify) {
+=======
+	if (!cpu->pending.trap) {
+>>>>>>> v4.9.227
 		do_hcall(cpu, cpu->hcall);
 		/*
 		 * Tricky point: we reset the hcall pointer to mark the

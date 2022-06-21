@@ -67,7 +67,11 @@ struct hd29l2_priv {
 	struct hd29l2_config cfg;
 	u8 tuner_i2c_addr_programmed:1;
 
+<<<<<<< HEAD
 	fe_status_t fe_status;
+=======
+	enum fe_status fe_status;
+>>>>>>> v4.9.227
 };
 
 static const struct reg_mod_vals reg_mod_vals_tab[] = {

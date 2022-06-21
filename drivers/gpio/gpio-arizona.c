@@ -28,6 +28,7 @@ struct arizona_gpio {
 	struct gpio_chip gpio_chip;
 };
 
+<<<<<<< HEAD
 static inline struct arizona_gpio *to_arizona_gpio(struct gpio_chip *chip)
 {
 	return container_of(chip, struct arizona_gpio, gpio_chip);
@@ -36,6 +37,11 @@ static inline struct arizona_gpio *to_arizona_gpio(struct gpio_chip *chip)
 static int arizona_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 {
 	struct arizona_gpio *arizona_gpio = to_arizona_gpio(chip);
+=======
+static int arizona_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
+{
+	struct arizona_gpio *arizona_gpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	struct arizona *arizona = arizona_gpio->arizona;
 
 	return regmap_update_bits(arizona->regmap, ARIZONA_GPIO1_CTRL + offset,
@@ -44,7 +50,11 @@ static int arizona_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 
 static int arizona_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct arizona_gpio *arizona_gpio = to_arizona_gpio(chip);
+=======
+	struct arizona_gpio *arizona_gpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	struct arizona *arizona = arizona_gpio->arizona;
 	unsigned int val;
 	int ret;
@@ -62,7 +72,11 @@ static int arizona_gpio_get(struct gpio_chip *chip, unsigned offset)
 static int arizona_gpio_direction_out(struct gpio_chip *chip,
 				     unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct arizona_gpio *arizona_gpio = to_arizona_gpio(chip);
+=======
+	struct arizona_gpio *arizona_gpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	struct arizona *arizona = arizona_gpio->arizona;
 
 	if (value)
@@ -74,7 +88,11 @@ static int arizona_gpio_direction_out(struct gpio_chip *chip,
 
 static void arizona_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct arizona_gpio *arizona_gpio = to_arizona_gpio(chip);
+=======
+	struct arizona_gpio *arizona_gpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	struct arizona *arizona = arizona_gpio->arizona;
 
 	if (value)
@@ -84,7 +102,11 @@ static void arizona_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 			   ARIZONA_GPN_LVL, value);
 }
 
+<<<<<<< HEAD
 static struct gpio_chip template_chip = {
+=======
+static const struct gpio_chip template_chip = {
+>>>>>>> v4.9.227
 	.label			= "arizona",
 	.owner			= THIS_MODULE,
 	.direction_input	= arizona_gpio_direction_in,
@@ -103,12 +125,20 @@ static int arizona_gpio_probe(struct platform_device *pdev)
 
 	arizona_gpio = devm_kzalloc(&pdev->dev, sizeof(*arizona_gpio),
 				    GFP_KERNEL);
+<<<<<<< HEAD
 	if (arizona_gpio == NULL)
+=======
+	if (!arizona_gpio)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	arizona_gpio->arizona = arizona;
 	arizona_gpio->gpio_chip = template_chip;
+<<<<<<< HEAD
 	arizona_gpio->gpio_chip.dev = &pdev->dev;
+=======
+	arizona_gpio->gpio_chip.parent = &pdev->dev;
+>>>>>>> v4.9.227
 #ifdef CONFIG_OF_GPIO
 	arizona_gpio->gpio_chip.of_node = arizona->dev->of_node;
 #endif
@@ -116,9 +146,22 @@ static int arizona_gpio_probe(struct platform_device *pdev)
 	switch (arizona->type) {
 	case WM5102:
 	case WM5110:
+<<<<<<< HEAD
 	case WM8997:
 		arizona_gpio->gpio_chip.ngpio = 5;
 		break;
+=======
+	case WM8280:
+	case WM8997:
+	case WM8998:
+	case WM1814:
+		arizona_gpio->gpio_chip.ngpio = 5;
+		break;
+	case WM1831:
+	case CS47L24:
+		arizona_gpio->gpio_chip.ngpio = 2;
+		break;
+>>>>>>> v4.9.227
 	default:
 		dev_err(&pdev->dev, "Unknown chip variant %d\n",
 			arizona->type);
@@ -130,7 +173,12 @@ static int arizona_gpio_probe(struct platform_device *pdev)
 	else
 		arizona_gpio->gpio_chip.base = -1;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&arizona_gpio->gpio_chip);
+=======
+	ret = devm_gpiochip_add_data(&pdev->dev, &arizona_gpio->gpio_chip,
+				     arizona_gpio);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Could not register gpiochip, %d\n",
 			ret);
@@ -145,6 +193,7 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int arizona_gpio_remove(struct platform_device *pdev)
 {
 	struct arizona_gpio *arizona_gpio = platform_get_drvdata(pdev);
@@ -158,6 +207,11 @@ static struct platform_driver arizona_gpio_driver = {
 	.driver.owner	= THIS_MODULE,
 	.probe		= arizona_gpio_probe,
 	.remove		= arizona_gpio_remove,
+=======
+static struct platform_driver arizona_gpio_driver = {
+	.driver.name	= "arizona-gpio",
+	.probe		= arizona_gpio_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(arizona_gpio_driver);

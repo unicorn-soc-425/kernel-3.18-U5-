@@ -15,12 +15,21 @@
 #define _OMAP4_ISS_H_
 
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
+=======
+#include <media/v4l2-mc.h>
+
+>>>>>>> v4.9.227
 #include <linux/device.h>
 #include <linux/io.h>
 #include <linux/platform_device.h>
 #include <linux/wait.h>
 
+<<<<<<< HEAD
 #include <media/omap4iss.h>
+=======
+#include <linux/platform_data/media/omap4iss.h>
+>>>>>>> v4.9.227
 
 #include "iss_regs.h"
 #include "iss_csiphy.h"
@@ -29,6 +38,11 @@
 #include "iss_ipipe.h"
 #include "iss_resizer.h"
 
+<<<<<<< HEAD
+=======
+struct regmap;
+
+>>>>>>> v4.9.227
 #define to_iss_device(ptr_module)				\
 	container_of(ptr_module, struct iss_device, ptr_module)
 #define to_device(ptr_module)						\
@@ -79,7 +93,12 @@ struct iss_reg {
 
 /*
  * struct iss_device - ISS device structure.
+<<<<<<< HEAD
  * @crashed: Bitmask of crashed entities (indexed by entity ID)
+=======
+ * @syscon: Regmap for the syscon register space
+ * @crashed: Crashed entities
+>>>>>>> v4.9.227
  */
 struct iss_device {
 	struct v4l2_device v4l2_dev;
@@ -93,11 +112,19 @@ struct iss_device {
 
 	struct resource *res[OMAP4_ISS_MEM_LAST];
 	void __iomem *regs[OMAP4_ISS_MEM_LAST];
+<<<<<<< HEAD
+=======
+	struct regmap *syscon;
+>>>>>>> v4.9.227
 
 	u64 raw_dmamask;
 
 	struct mutex iss_mutex;	/* For handling ref_count field */
+<<<<<<< HEAD
 	unsigned int crashed;
+=======
+	struct media_entity_enum crashed;
+>>>>>>> v4.9.227
 	int has_context;
 	int ref_count;
 
@@ -147,8 +174,11 @@ void omap4iss_isp_subclk_enable(struct iss_device *iss,
 void omap4iss_isp_subclk_disable(struct iss_device *iss,
 				 enum iss_isp_subclk_resource res);
 
+<<<<<<< HEAD
 int omap4iss_pipeline_pm_use(struct media_entity *entity, int use);
 
+=======
+>>>>>>> v4.9.227
 int omap4iss_register_entities(struct platform_device *pdev,
 			       struct v4l2_device *v4l2_dev);
 void omap4iss_unregister_entities(struct platform_device *pdev);

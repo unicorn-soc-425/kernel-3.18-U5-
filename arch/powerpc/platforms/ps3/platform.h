@@ -196,6 +196,10 @@ int ps3_repository_read_highmem_size(unsigned int region_index,
 int ps3_repository_read_highmem_info(unsigned int region_index,
 	u64 *highmem_base, u64 *highmem_size);
 
+<<<<<<< HEAD
+=======
+#if defined (CONFIG_PS3_REPOSITORY_WRITE)
+>>>>>>> v4.9.227
 int ps3_repository_write_highmem_region_count(unsigned int region_count);
 int ps3_repository_write_highmem_base(unsigned int region_index,
 	u64 highmem_base);
@@ -204,6 +208,21 @@ int ps3_repository_write_highmem_size(unsigned int region_index,
 int ps3_repository_write_highmem_info(unsigned int region_index,
 	u64 highmem_base, u64 highmem_size);
 int ps3_repository_delete_highmem_info(unsigned int region_index);
+<<<<<<< HEAD
+=======
+#else
+static inline int ps3_repository_write_highmem_region_count(
+	unsigned int region_count) {return 0;}
+static inline int ps3_repository_write_highmem_base(unsigned int region_index,
+	u64 highmem_base) {return 0;}
+static inline int ps3_repository_write_highmem_size(unsigned int region_index,
+	u64 highmem_size) {return 0;}
+static inline int ps3_repository_write_highmem_info(unsigned int region_index,
+	u64 highmem_base, u64 highmem_size) {return 0;}
+static inline int ps3_repository_delete_highmem_info(unsigned int region_index)
+	{return 0;}
+#endif
+>>>>>>> v4.9.227
 
 /* repository pme info */
 

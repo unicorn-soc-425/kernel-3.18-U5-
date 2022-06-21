@@ -4,14 +4,32 @@
 /* CLP common request & response block size */
 #define CLP_BLK_SIZE			PAGE_SIZE
 
+<<<<<<< HEAD
 struct clp_req_hdr {
 	u16 len;
 	u16 cmd;
+=======
+#define CLP_LPS_BASE	0
+#define CLP_LPS_PCI	2
+
+struct clp_req_hdr {
+	u16 len;
+	u16 cmd;
+	u32 fmt		: 4;
+	u32 reserved1	: 28;
+	u64 reserved2;
+>>>>>>> v4.9.227
 } __packed;
 
 struct clp_rsp_hdr {
 	u16 len;
 	u16 rsp;
+<<<<<<< HEAD
+=======
+	u32 fmt		: 4;
+	u32 reserved1	: 28;
+	u64 reserved2;
+>>>>>>> v4.9.227
 } __packed;
 
 /* CLP Response Codes */
@@ -25,4 +43,25 @@ struct clp_rsp_hdr {
 #define CLP_RC_NODATA			0x0080	/* No data available */
 #define CLP_RC_FC_UNKNOWN		0x0100	/* Function code not recognized */
 
+<<<<<<< HEAD
+=======
+/* Store logical-processor characteristics request */
+struct clp_req_slpc {
+	struct clp_req_hdr hdr;
+} __packed;
+
+struct clp_rsp_slpc {
+	struct clp_rsp_hdr hdr;
+	u32 reserved2[4];
+	u32 lpif[8];
+	u32 reserved3[8];
+	u32 lpic[8];
+} __packed;
+
+struct clp_req_rsp_slpc {
+	struct clp_req_slpc request;
+	struct clp_rsp_slpc response;
+} __packed;
+
+>>>>>>> v4.9.227
 #endif

@@ -45,12 +45,17 @@ static void btrfs_read_root_item(struct extent_buffer *eb, int slot,
 	if (!need_reset && btrfs_root_generation(item)
 		!= btrfs_root_generation_v2(item)) {
 		if (btrfs_root_generation_v2(item) != 0) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "BTRFS: mismatching "
 					"generation and generation_v2 "
 					"found in root item. This root "
 					"was probably mounted with an "
 					"older kernel. Resetting all "
 					"new fields.\n");
+=======
+			btrfs_warn(eb->fs_info,
+					"mismatching generation and generation_v2 found in root item. This root was probably mounted with an older kernel. Resetting all new fields.");
+>>>>>>> v4.9.227
 		}
 		need_reset = 1;
 	}
@@ -70,9 +75,15 @@ static void btrfs_read_root_item(struct extent_buffer *eb, int slot,
  * search_key: the key to search
  * path: the path we search
  * root_item: the root item of the tree we look for
+<<<<<<< HEAD
  * root_key: the reak key of the tree we look for
  *
  * If ->offset of 'seach_key' is -1ULL, it means we are not sure the offset
+=======
+ * root_key: the root key of the tree we look for
+ *
+ * If ->offset of 'search_key' is -1ULL, it means we are not sure the offset
+>>>>>>> v4.9.227
  * of the search key, just lookup the root with the highest offset for a
  * given objectid.
  *
@@ -141,13 +152,18 @@ int btrfs_update_root(struct btrfs_trans_handle *trans, struct btrfs_root
 	int ret;
 	int slot;
 	unsigned long ptr;
+<<<<<<< HEAD
 	int old_len;
+=======
+	u32 old_len;
+>>>>>>> v4.9.227
 
 	path = btrfs_alloc_path();
 	if (!path)
 		return -ENOMEM;
 
 	ret = btrfs_search_slot(trans, root, key, path, 0, 1);
+<<<<<<< HEAD
 	if (ret < 0) {
 		btrfs_abort_transaction(trans, root, ret);
 		goto out;
@@ -157,6 +173,16 @@ int btrfs_update_root(struct btrfs_trans_handle *trans, struct btrfs_root
 		btrfs_print_leaf(root, path->nodes[0]);
 		btrfs_crit(root->fs_info, "unable to update root key %llu %u %llu",
 		       key->objectid, key->type, key->offset);
+=======
+	if (ret < 0)
+		goto out;
+
+	if (ret != 0) {
+		btrfs_print_leaf(root, path->nodes[0]);
+		btrfs_crit(root->fs_info,
+			   "unable to update root key %llu %u %llu",
+			   key->objectid, key->type, key->offset);
+>>>>>>> v4.9.227
 		BUG_ON(1);
 	}
 
@@ -175,20 +201,32 @@ int btrfs_update_root(struct btrfs_trans_handle *trans, struct btrfs_root
 		ret = btrfs_search_slot(trans, root, key, path,
 				-1, 1);
 		if (ret < 0) {
+<<<<<<< HEAD
 			btrfs_abort_transaction(trans, root, ret);
+=======
+			btrfs_abort_transaction(trans, ret);
+>>>>>>> v4.9.227
 			goto out;
 		}
 
 		ret = btrfs_del_item(trans, root, path);
 		if (ret < 0) {
+<<<<<<< HEAD
 			btrfs_abort_transaction(trans, root, ret);
+=======
+			btrfs_abort_transaction(trans, ret);
+>>>>>>> v4.9.227
 			goto out;
 		}
 		btrfs_release_path(path);
 		ret = btrfs_insert_empty_item(trans, root, path,
 				key, sizeof(*item));
 		if (ret < 0) {
+<<<<<<< HEAD
 			btrfs_abort_transaction(trans, root, ret);
+=======
+			btrfs_abort_transaction(trans, ret);
+>>>>>>> v4.9.227
 			goto out;
 		}
 		l = path->nodes[0];
@@ -271,6 +309,26 @@ int btrfs_find_orphan_roots(struct btrfs_root *tree_root)
 		root_key.objectid = key.offset;
 		key.offset++;
 
+<<<<<<< HEAD
+=======
+		/*
+		 * The root might have been inserted already, as before we look
+		 * for orphan roots, log replay might have happened, which
+		 * triggers a transaction commit and qgroup accounting, which
+		 * in turn reads and inserts fs roots while doing backref
+		 * walking.
+		 */
+		root = btrfs_lookup_fs_root(tree_root->fs_info,
+					    root_key.objectid);
+		if (root) {
+			WARN_ON(!test_bit(BTRFS_ROOT_ORPHAN_ITEM_INSERTED,
+					  &root->state));
+			if (btrfs_root_refs(&root->root_item) == 0)
+				btrfs_add_dead_root(root);
+			continue;
+		}
+
+>>>>>>> v4.9.227
 		root = btrfs_read_fs_root(tree_root, &root_key);
 		err = PTR_ERR_OR_ZERO(root);
 		if (err && err != -ENOENT) {
@@ -283,18 +341,28 @@ int btrfs_find_orphan_roots(struct btrfs_root *tree_root)
 			trans = btrfs_join_transaction(tree_root);
 			if (IS_ERR(trans)) {
 				err = PTR_ERR(trans);
+<<<<<<< HEAD
 				btrfs_error(tree_root->fs_info, err,
 					    "Failed to start trans to delete "
 					    "orphan item");
+=======
+				btrfs_handle_fs_error(tree_root->fs_info, err,
+					    "Failed to start trans to delete orphan item");
+>>>>>>> v4.9.227
 				break;
 			}
 			err = btrfs_del_orphan_item(trans, tree_root,
 						    root_key.objectid);
 			btrfs_end_transaction(trans, tree_root);
 			if (err) {
+<<<<<<< HEAD
 				btrfs_error(tree_root->fs_info, err,
 					    "Failed to delete root orphan "
 					    "item");
+=======
+				btrfs_handle_fs_error(tree_root->fs_info, err,
+					    "Failed to delete root orphan item");
+>>>>>>> v4.9.227
 				break;
 			}
 			continue;
@@ -439,7 +507,11 @@ again:
 	ret = btrfs_insert_empty_item(trans, tree_root, path, &key,
 				      sizeof(*ref) + name_len);
 	if (ret) {
+<<<<<<< HEAD
 		btrfs_abort_transaction(trans, tree_root, ret);
+=======
+		btrfs_abort_transaction(trans, ret);
+>>>>>>> v4.9.227
 		btrfs_free_path(path);
 		return ret;
 	}
@@ -487,7 +559,11 @@ void btrfs_update_root_times(struct btrfs_trans_handle *trans,
 			     struct btrfs_root *root)
 {
 	struct btrfs_root_item *item = &root->root_item;
+<<<<<<< HEAD
 	struct timespec ct = CURRENT_TIME;
+=======
+	struct timespec ct = current_fs_time(root->fs_info->sb);
+>>>>>>> v4.9.227
 
 	spin_lock(&root->root_item_lock);
 	btrfs_set_root_ctransid(item, trans->transid);

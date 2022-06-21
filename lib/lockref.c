@@ -4,6 +4,7 @@
 #if USE_CMPXCHG_LOCKREF
 
 /*
+<<<<<<< HEAD
  * Allow weakly-ordered memory architectures to provide barrier-less
  * cmpxchg semantics for lockref updates.
  */
@@ -12,13 +13,19 @@
 #endif
 
 /*
+=======
+>>>>>>> v4.9.227
  * Note that the "cmpxchg()" reloads the "old" value for the
  * failure case.
  */
 #define CMPXCHG_LOOP(CODE, SUCCESS) do {					\
 	struct lockref old;							\
 	BUILD_BUG_ON(sizeof(old) != 8);						\
+<<<<<<< HEAD
 	old.lock_count = ACCESS_ONCE(lockref->lock_count);			\
+=======
+	old.lock_count = READ_ONCE(lockref->lock_count);			\
+>>>>>>> v4.9.227
 	while (likely(arch_spin_value_unlocked(old.lock.rlock.raw_lock))) {  	\
 		struct lockref new = old, prev = old;				\
 		CODE								\

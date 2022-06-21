@@ -13,7 +13,10 @@
 #include <linux/platform_device.h>
 #include <linux/mfd/abx500/ab8500.h>
 #include <linux/mfd/abx500/ab8500-sysctrl.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clkdev.h>
 #include <linux/clk-provider.h>
 #include <linux/mfd/dbx500-prcmu.h>
@@ -41,8 +44,12 @@ static int ab8500_reg_clks(struct device *dev)
 		return ret;
 
 	/* ab8500_sysclk */
+<<<<<<< HEAD
 	clk = clk_reg_prcmu_gate("ab8500_sysclk", NULL, PRCMU_SYSCLK,
 				CLK_IS_ROOT);
+=======
+	clk = clk_reg_prcmu_gate("ab8500_sysclk", NULL, PRCMU_SYSCLK, 0);
+>>>>>>> v4.9.227
 	clk_register_clkdev(clk, "sysclk", "ab8500-usb.0");
 	clk_register_clkdev(clk, "sysclk", "ab-iddet.0");
 	clk_register_clkdev(clk, "sysclk", "snd-soc-mop500.0");
@@ -69,7 +76,11 @@ static int ab8500_reg_clks(struct device *dev)
 	clk = clk_reg_sysctrl_gate_fixed_rate(dev, "ulpclk", NULL,
 		AB8500_SYSULPCLKCTRL1, AB8500_SYSULPCLKCTRL1_ULPCLKREQ,
 		AB8500_SYSULPCLKCTRL1_ULPCLKREQ,
+<<<<<<< HEAD
 		38400000, 9000, CLK_IS_ROOT);
+=======
+		38400000, 9000, 0);
+>>>>>>> v4.9.227
 	clk_register_clkdev(clk, "ulpclk", "snd-soc-mop500.0");
 
 	/* ab8500_intclk */
@@ -121,7 +132,10 @@ static int abx500_clk_probe(struct platform_device *pdev)
 static struct platform_driver abx500_clk_driver = {
 	.driver = {
 		.name = "abx500-clk",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe	= abx500_clk_probe,
 };

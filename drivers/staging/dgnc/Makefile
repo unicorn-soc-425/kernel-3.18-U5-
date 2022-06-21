@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 EXTRA_CFLAGS += -DDG_NAME=\"dgnc-1.3-16\" -DDG_PART=\"40002369_F\"
 
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_DGNC) += dgnc.o
 
 dgnc-objs :=   dgnc_cls.o dgnc_driver.o\

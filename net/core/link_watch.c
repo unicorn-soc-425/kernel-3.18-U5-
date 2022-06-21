@@ -21,7 +21,11 @@
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include <asm/types.h>
+=======
+#include <linux/types.h>
+>>>>>>> v4.9.227
 
 
 enum lw_bits {
@@ -40,7 +44,11 @@ static DEFINE_SPINLOCK(lweventlist_lock);
 static unsigned char default_operstate(const struct net_device *dev)
 {
 	if (!netif_carrier_ok(dev))
+<<<<<<< HEAD
 		return (dev->ifindex != dev->iflink ?
+=======
+		return (dev->ifindex != dev_get_iflink(dev) ?
+>>>>>>> v4.9.227
 			IF_OPER_LOWERLAYERDOWN : IF_OPER_DOWN);
 
 	if (netif_dormant(dev))
@@ -89,7 +97,11 @@ static bool linkwatch_urgent_event(struct net_device *dev)
 	if (!netif_running(dev))
 		return false;
 
+<<<<<<< HEAD
 	if (dev->ifindex != dev->iflink)
+=======
+	if (dev->ifindex != dev_get_iflink(dev))
+>>>>>>> v4.9.227
 		return true;
 
 	if (dev->priv_flags & IFF_TEAM_PORT)

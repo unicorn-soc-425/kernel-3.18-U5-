@@ -14,7 +14,11 @@
 
 struct sharpsl_nand_platform_data {
 	struct nand_bbt_descr	*badblock_pattern;
+<<<<<<< HEAD
 	struct nand_ecclayout	*ecc_layout;
+=======
+	const struct mtd_ooblayout_ops *ecc_layout;
+>>>>>>> v4.9.227
 	struct mtd_partition	*partitions;
 	unsigned int		nr_partitions;
 };

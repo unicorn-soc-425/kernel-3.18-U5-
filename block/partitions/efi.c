@@ -430,7 +430,11 @@ static int is_gpt_valid(struct parsed_partitions *state, u64 lba,
 	}
 	/* Check that sizeof_partition_entry has the correct value */
 	if (le32_to_cpu((*gpt)->sizeof_partition_entry) != sizeof(gpt_entry)) {
+<<<<<<< HEAD
 		pr_debug("GUID Partitition Entry Size check failed.\n");
+=======
+		pr_debug("GUID Partition Entry Size check failed.\n");
+>>>>>>> v4.9.227
 		goto fail;
 	}
 
@@ -450,7 +454,11 @@ static int is_gpt_valid(struct parsed_partitions *state, u64 lba,
 	crc = efi_crc32((const unsigned char *) (*ptes), pt_size);
 
 	if (crc != le32_to_cpu((*gpt)->partition_entry_array_crc32)) {
+<<<<<<< HEAD
 		pr_debug("GUID Partitition Entry Array CRC check failed.\n");
+=======
+		pr_debug("GUID Partition Entry Array CRC check failed.\n");
+>>>>>>> v4.9.227
 		goto fail_ptes;
 	}
 
@@ -722,7 +730,11 @@ int efi_partition(struct parsed_partitions *state)
 			state->parts[i + 1].flags = ADDPART_FLAG_RAID;
 
 		info = &state->parts[i + 1].info;
+<<<<<<< HEAD
 		efi_guid_unparse(&ptes[i].unique_partition_guid, info->uuid);
+=======
+		efi_guid_to_str(&ptes[i].unique_partition_guid, info->uuid);
+>>>>>>> v4.9.227
 
 		/* Naively convert UTF16-LE to 7 bits. */
 		label_max = min(ARRAY_SIZE(info->volname) - 1,

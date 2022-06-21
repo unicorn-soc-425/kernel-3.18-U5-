@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -226,7 +230,11 @@ acpi_ns_check_object_type(struct acpi_evaluate_info *info,
 {
 	union acpi_operand_object *return_object = *return_object_ptr;
 	acpi_status status = AE_OK;
+<<<<<<< HEAD
 	char type_buffer[48];	/* Room for 5 types */
+=======
+	char type_buffer[96];	/* Room for 10 types */
+>>>>>>> v4.9.227
 
 	/* A Namespace node should not get here, but make sure */
 

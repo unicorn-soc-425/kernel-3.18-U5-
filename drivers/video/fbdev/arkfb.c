@@ -26,6 +26,7 @@
 #include <linux/console.h> /* Why should fb driver call console functions? because console_lock() */
 #include <video/vga.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 #include <asm/mtrr.h>
 #endif
@@ -33,6 +34,11 @@
 struct arkfb_info {
 	int mclk_freq;
 	int mtrr_reg;
+=======
+struct arkfb_info {
+	int mclk_freq;
+	int wc_cookie;
+>>>>>>> v4.9.227
 
 	struct dac_info *dac;
 	struct vgastate state;
@@ -102,10 +108,13 @@ static const struct svga_timing_regs ark_timing_regs     = {
 
 static char *mode_option = "640x480-8@60";
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 static int mtrr = 1;
 #endif
 
+=======
+>>>>>>> v4.9.227
 MODULE_AUTHOR("(c) 2007 Ondrej Zajicek <santiago@crfreenet.org>");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("fbdev driver for ARK 2000PV");
@@ -115,11 +124,14 @@ MODULE_PARM_DESC(mode_option, "Default video mode ('640x480-8@60', etc)");
 module_param_named(mode, mode_option, charp, 0444);
 MODULE_PARM_DESC(mode, "Default video mode ('640x480-8@60', etc) (deprecated)");
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 module_param(mtrr, int, 0444);
 MODULE_PARM_DESC(mtrr, "Enable write-combining with MTRR (1=enable, 0=disable, default=1)");
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int threshold = 4;
 
 module_param(threshold, int, 0644);
@@ -1002,7 +1014,11 @@ static int ark_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	info->fix.smem_len = pci_resource_len(dev, 0);
 
 	/* Map physical IO memory address into kernel space */
+<<<<<<< HEAD
 	info->screen_base = pci_iomap(dev, 0, 0);
+=======
+	info->screen_base = pci_iomap_wc(dev, 0, 0);
+>>>>>>> v4.9.227
 	if (! info->screen_base) {
 		rc = -ENOMEM;
 		dev_err(info->device, "iomap for framebuffer failed\n");
@@ -1016,7 +1032,11 @@ static int ark_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 
 	pcibios_bus_to_resource(dev->bus, &vga_res, &bus_reg);
 
+<<<<<<< HEAD
 	par->state.vgabase = (void __iomem *) vga_res.start;
+=======
+	par->state.vgabase = (void __iomem *) (unsigned long) vga_res.start;
+>>>>>>> v4.9.227
 
 	/* FIXME get memsize */
 	regval = vga_rseq(par->state.vgabase, 0x10);
@@ -1057,6 +1077,7 @@ static int ark_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 
 	/* Record a reference to the driver data */
 	pci_set_drvdata(dev, info);
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTRR
 	if (mtrr) {
@@ -1065,6 +1086,10 @@ static int ark_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	}
 #endif
 
+=======
+	par->wc_cookie = arch_phys_wc_add(info->fix.smem_start,
+					  info->fix.smem_len);
+>>>>>>> v4.9.227
 	return 0;
 
 	/* Error handling */
@@ -1092,6 +1117,7 @@ static void ark_pci_remove(struct pci_dev *dev)
 
 	if (info) {
 		struct arkfb_info *par = info->par;
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTRR
 		if (par->mtrr_reg >= 0) {
@@ -1100,6 +1126,9 @@ static void ark_pci_remove(struct pci_dev *dev)
 		}
 #endif
 
+=======
+		arch_phys_wc_del(par->wc_cookie);
+>>>>>>> v4.9.227
 		dac_release(par->dac);
 		unregister_framebuffer(info);
 		fb_dealloc_cmap(&info->cmap);

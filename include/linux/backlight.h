@@ -117,12 +117,25 @@ struct backlight_device {
 	int use_count;
 };
 
+<<<<<<< HEAD
 static inline void backlight_update_status(struct backlight_device *bd)
 {
 	mutex_lock(&bd->update_lock);
 	if (bd->ops && bd->ops->update_status)
 		bd->ops->update_status(bd);
 	mutex_unlock(&bd->update_lock);
+=======
+static inline int backlight_update_status(struct backlight_device *bd)
+{
+	int ret = -ENOENT;
+
+	mutex_lock(&bd->update_lock);
+	if (bd->ops && bd->ops->update_status)
+		ret = bd->ops->update_status(bd);
+	mutex_unlock(&bd->update_lock);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 extern struct backlight_device *backlight_device_register(const char *name,
@@ -137,9 +150,16 @@ extern void devm_backlight_device_unregister(struct device *dev,
 					struct backlight_device *bd);
 extern void backlight_force_update(struct backlight_device *bd,
 				   enum backlight_update_reason reason);
+<<<<<<< HEAD
 extern bool backlight_device_registered(enum backlight_type type);
 extern int backlight_register_notifier(struct notifier_block *nb);
 extern int backlight_unregister_notifier(struct notifier_block *nb);
+=======
+extern int backlight_register_notifier(struct notifier_block *nb);
+extern int backlight_unregister_notifier(struct notifier_block *nb);
+extern struct backlight_device *backlight_device_get_by_type(enum backlight_type type);
+extern int backlight_device_set_brightness(struct backlight_device *bd, unsigned long brightness);
+>>>>>>> v4.9.227
 
 #define to_backlight_device(obj) container_of(obj, struct backlight_device, dev)
 

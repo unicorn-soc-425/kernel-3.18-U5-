@@ -36,25 +36,43 @@
 #include <linux/linkage.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/smp.h>
 #include <linux/percpu.h>
 #include <linux/cpu.h>
 
+<<<<<<< HEAD
 #include <asm/sync_bitops.h>
 #include <asm/xen/hypercall.h>
 #include <asm/xen/hypervisor.h>
 #include <asm/xen/page.h>
+=======
+#include <asm/barrier.h>
+#include <asm/sync_bitops.h>
+#include <asm/xen/hypercall.h>
+#include <asm/xen/hypervisor.h>
+>>>>>>> v4.9.227
 
 #include <xen/xen.h>
 #include <xen/xen-ops.h>
 #include <xen/events.h>
 #include <xen/interface/xen.h>
 #include <xen/interface/event_channel.h>
+<<<<<<< HEAD
 
 #include "events_internal.h"
 
 #define EVENT_WORDS_PER_PAGE (PAGE_SIZE / sizeof(event_word_t))
+=======
+#include <xen/page.h>
+
+#include "events_internal.h"
+
+#define EVENT_WORDS_PER_PAGE (XEN_PAGE_SIZE / sizeof(event_word_t))
+>>>>>>> v4.9.227
 #define MAX_EVENT_ARRAY_PAGES (EVTCHN_FIFO_NR_CHANNELS / EVENT_WORDS_PER_PAGE)
 
 struct evtchn_fifo_queue {
@@ -111,9 +129,15 @@ static int init_control_block(int cpu,
 	for (i = 0; i < EVTCHN_FIFO_MAX_QUEUES; i++)
 		q->head[i] = 0;
 
+<<<<<<< HEAD
 	init_control.control_gfn = virt_to_mfn(control_block);
 	init_control.offset      = 0;
 	init_control.vcpu        = cpu;
+=======
+	init_control.control_gfn = virt_to_gfn(control_block);
+	init_control.offset      = 0;
+	init_control.vcpu        = xen_vcpu_nr(cpu);
+>>>>>>> v4.9.227
 
 	return HYPERVISOR_event_channel_op(EVTCHNOP_init_control, &init_control);
 }
@@ -167,7 +191,11 @@ static int evtchn_fifo_setup(struct irq_info *info)
 		/* Mask all events in this page before adding it. */
 		init_array_page(array_page);
 
+<<<<<<< HEAD
 		expand_array.array_gfn = virt_to_mfn(array_page);
+=======
+		expand_array.array_gfn = virt_to_gfn(array_page);
+>>>>>>> v4.9.227
 
 		ret = HYPERVISOR_event_channel_op(EVTCHNOP_expand_array, &expand_array);
 		if (ret < 0)
@@ -281,7 +309,12 @@ static void handle_irq_for_port(unsigned port)
 
 static void consume_one_event(unsigned cpu,
 			      struct evtchn_fifo_control_block *control_block,
+<<<<<<< HEAD
 			      unsigned priority, unsigned long *ready)
+=======
+			      unsigned priority, unsigned long *ready,
+			      bool drop)
+>>>>>>> v4.9.227
 {
 	struct evtchn_fifo_queue *q = &per_cpu(cpu_queue, cpu);
 	uint32_t head;
@@ -295,7 +328,11 @@ static void consume_one_event(unsigned cpu,
 	 * control block.
 	 */
 	if (head == 0) {
+<<<<<<< HEAD
 		rmb(); /* Ensure word is up-to-date before reading head. */
+=======
+		virt_rmb(); /* Ensure word is up-to-date before reading head. */
+>>>>>>> v4.9.227
 		head = control_block->head[priority];
 	}
 
@@ -313,13 +350,26 @@ static void consume_one_event(unsigned cpu,
 	if (head == 0)
 		clear_bit(priority, ready);
 
+<<<<<<< HEAD
 	if (evtchn_fifo_is_pending(port) && !evtchn_fifo_is_masked(port))
 		handle_irq_for_port(port);
+=======
+	if (evtchn_fifo_is_pending(port) && !evtchn_fifo_is_masked(port)) {
+		if (unlikely(drop))
+			pr_warn("Dropping pending event for port %u\n", port);
+		else
+			handle_irq_for_port(port);
+	}
+>>>>>>> v4.9.227
 
 	q->head[priority] = head;
 }
 
+<<<<<<< HEAD
 static void evtchn_fifo_handle_events(unsigned cpu)
+=======
+static void __evtchn_fifo_handle_events(unsigned cpu, bool drop)
+>>>>>>> v4.9.227
 {
 	struct evtchn_fifo_control_block *control_block;
 	unsigned long ready;
@@ -331,11 +381,23 @@ static void evtchn_fifo_handle_events(unsigned cpu)
 
 	while (ready) {
 		q = find_first_bit(&ready, EVTCHN_FIFO_MAX_QUEUES);
+<<<<<<< HEAD
 		consume_one_event(cpu, control_block, q, &ready);
+=======
+		consume_one_event(cpu, control_block, q, &ready, drop);
+>>>>>>> v4.9.227
 		ready |= xchg(&control_block->ready, 0);
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void evtchn_fifo_handle_events(unsigned cpu)
+{
+	__evtchn_fifo_handle_events(cpu, false);
+}
+
+>>>>>>> v4.9.227
 static void evtchn_fifo_resume(void)
 {
 	unsigned cpu;
@@ -408,6 +470,7 @@ static int evtchn_fifo_alloc_control_block(unsigned cpu)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int evtchn_fifo_cpu_notification(struct notifier_block *self,
 						  unsigned long action,
 						  void *hcpu)
@@ -429,6 +492,20 @@ static int evtchn_fifo_cpu_notification(struct notifier_block *self,
 static struct notifier_block evtchn_fifo_cpu_notifier = {
 	.notifier_call	= evtchn_fifo_cpu_notification,
 };
+=======
+static int xen_evtchn_cpu_prepare(unsigned int cpu)
+{
+	if (!per_cpu(cpu_control_block, cpu))
+		return evtchn_fifo_alloc_control_block(cpu);
+	return 0;
+}
+
+static int xen_evtchn_cpu_dead(unsigned int cpu)
+{
+	__evtchn_fifo_handle_events(cpu, true);
+	return 0;
+}
+>>>>>>> v4.9.227
 
 int __init xen_evtchn_fifo_init(void)
 {
@@ -443,7 +520,13 @@ int __init xen_evtchn_fifo_init(void)
 
 	evtchn_ops = &evtchn_ops_fifo;
 
+<<<<<<< HEAD
 	register_cpu_notifier(&evtchn_fifo_cpu_notifier);
+=======
+	cpuhp_setup_state_nocalls(CPUHP_XEN_EVTCHN_PREPARE,
+				  "CPUHP_XEN_EVTCHN_PREPARE",
+				  xen_evtchn_cpu_prepare, xen_evtchn_cpu_dead);
+>>>>>>> v4.9.227
 out:
 	put_cpu();
 	return ret;

@@ -4,6 +4,10 @@
 #include <linux/user.h>
 #include <linux/regset.h>
 #include <linux/syscalls.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> v4.9.227
 
 #include <asm/uaccess.h>
 #include <asm/desc.h>
@@ -114,6 +118,10 @@ int do_set_thread_area(struct task_struct *p, int idx,
 		       int can_allocate)
 {
 	struct user_desc info;
+<<<<<<< HEAD
+=======
+	unsigned short __maybe_unused sel, modified_sel;
+>>>>>>> v4.9.227
 
 	if (copy_from_user(&info, u_info, sizeof(info)))
 		return -EFAULT;
@@ -141,6 +149,50 @@ int do_set_thread_area(struct task_struct *p, int idx,
 
 	set_tls_desc(p, idx, &info, 1);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If DS, ES, FS, or GS points to the modified segment, forcibly
+	 * refresh it.  Only needed on x86_64 because x86_32 reloads them
+	 * on return to user mode.
+	 */
+	modified_sel = (idx << 3) | 3;
+
+	if (p == current) {
+#ifdef CONFIG_X86_64
+		savesegment(ds, sel);
+		if (sel == modified_sel)
+			loadsegment(ds, sel);
+
+		savesegment(es, sel);
+		if (sel == modified_sel)
+			loadsegment(es, sel);
+
+		savesegment(fs, sel);
+		if (sel == modified_sel)
+			loadsegment(fs, sel);
+
+		savesegment(gs, sel);
+		if (sel == modified_sel)
+			load_gs_index(sel);
+#endif
+
+#ifdef CONFIG_X86_32_LAZY_GS
+		savesegment(gs, sel);
+		if (sel == modified_sel)
+			loadsegment(gs, sel);
+#endif
+	} else {
+#ifdef CONFIG_X86_64
+		if (p->thread.fsindex == modified_sel)
+			p->thread.fsbase = info.base_addr;
+
+		if (p->thread.gsindex == modified_sel)
+			p->thread.gsbase = info.base_addr;
+#endif
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -177,6 +229,10 @@ int do_get_thread_area(struct task_struct *p, int idx,
 		       struct user_desc __user *u_info)
 {
 	struct user_desc info;
+<<<<<<< HEAD
+=======
+	int index;
+>>>>>>> v4.9.227
 
 	if (idx == -1 && get_user(idx, &u_info->entry_number))
 		return -EFAULT;
@@ -184,8 +240,16 @@ int do_get_thread_area(struct task_struct *p, int idx,
 	if (idx < GDT_ENTRY_TLS_MIN || idx > GDT_ENTRY_TLS_MAX)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	fill_user_desc(&info, idx,
 		       &p->thread.tls_array[idx - GDT_ENTRY_TLS_MIN]);
+=======
+	index = idx - GDT_ENTRY_TLS_MIN;
+	index = array_index_nospec(index,
+			GDT_ENTRY_TLS_MAX - GDT_ENTRY_TLS_MIN + 1);
+
+	fill_user_desc(&info, idx, &p->thread.tls_array[index]);
+>>>>>>> v4.9.227
 
 	if (copy_to_user(u_info, &info, sizeof(info)))
 		return -EFAULT;

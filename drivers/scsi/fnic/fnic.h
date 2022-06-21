@@ -39,7 +39,11 @@
 
 #define DRV_NAME		"fnic"
 #define DRV_DESCRIPTION		"Cisco FCoE HBA Driver"
+<<<<<<< HEAD
 #define DRV_VERSION		"1.6.0.11"
+=======
+#define DRV_VERSION		"1.6.0.21"
+>>>>>>> v4.9.227
 #define PFX			DRV_NAME ": "
 #define DFX                     DRV_NAME "%d: "
 
@@ -248,6 +252,10 @@ struct fnic {
 	struct completion *remove_wait; /* device remove thread blocks */
 
 	atomic_t in_flight;		/* io counter */
+<<<<<<< HEAD
+=======
+	bool internal_reset_inprogress;
+>>>>>>> v4.9.227
 	u32 _reserved;			/* fill hole */
 	unsigned long state_flags;	/* protected by host lock */
 	enum fnic_state state;

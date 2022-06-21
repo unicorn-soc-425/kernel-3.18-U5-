@@ -74,6 +74,7 @@ static void oprofile_hrtimer_stop(void)
 	put_online_cpus();
 }
 
+<<<<<<< HEAD
 static int oprofile_cpu_notify(struct notifier_block *self,
 			       unsigned long action, void *hcpu)
 {
@@ -100,11 +101,45 @@ static struct notifier_block __refdata oprofile_cpu_notifier = {
 static int oprofile_hrtimer_setup(void)
 {
 	return register_hotcpu_notifier(&oprofile_cpu_notifier);
+=======
+static int oprofile_timer_online(unsigned int cpu)
+{
+	local_irq_disable();
+	__oprofile_hrtimer_start(NULL);
+	local_irq_enable();
+	return 0;
+}
+
+static int oprofile_timer_prep_down(unsigned int cpu)
+{
+	__oprofile_hrtimer_stop(cpu);
+	return 0;
+}
+
+static enum cpuhp_state hp_online;
+
+static int oprofile_hrtimer_setup(void)
+{
+	int ret;
+
+	ret = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
+					"oprofile/timer:online",
+					oprofile_timer_online,
+					oprofile_timer_prep_down);
+	if (ret < 0)
+		return ret;
+	hp_online = ret;
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void oprofile_hrtimer_shutdown(void)
 {
+<<<<<<< HEAD
 	unregister_hotcpu_notifier(&oprofile_cpu_notifier);
+=======
+	cpuhp_remove_state_nocalls(hp_online);
+>>>>>>> v4.9.227
 }
 
 int oprofile_timer_init(struct oprofile_operations *ops)

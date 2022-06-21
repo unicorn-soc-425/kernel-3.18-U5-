@@ -26,6 +26,13 @@ config PINCTRL_ARMADA_38X
 	bool
 	select PINCTRL_MVEBU
 
+<<<<<<< HEAD
+=======
+config PINCTRL_ARMADA_39X
+	bool
+	select PINCTRL_MVEBU
+
+>>>>>>> v4.9.227
 config PINCTRL_ARMADA_XP
 	bool
 	select PINCTRL_MVEBU

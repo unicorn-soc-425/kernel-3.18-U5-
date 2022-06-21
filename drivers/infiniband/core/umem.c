@@ -37,8 +37,13 @@
 #include <linux/sched.h>
 #include <linux/export.h>
 #include <linux/hugetlb.h>
+<<<<<<< HEAD
 #include <linux/dma-attrs.h>
 #include <linux/slab.h>
+=======
+#include <linux/slab.h>
+#include <rdma/ib_umem_odp.h>
+>>>>>>> v4.9.227
 
 #include "uverbs.h"
 
@@ -69,6 +74,13 @@ static void __ib_umem_release(struct ib_device *dev, struct ib_umem *umem, int d
 
 /**
  * ib_umem_get - Pin and DMA map userspace memory.
+<<<<<<< HEAD
+=======
+ *
+ * If access flags indicate ODP memory, avoid pinning. Instead, stores
+ * the mm for future page fault handling in conjunction with MMU notifiers.
+ *
+>>>>>>> v4.9.227
  * @context: userspace context to pin memory for
  * @addr: userspace virtual address to start at
  * @size: length of region to pin
@@ -87,12 +99,22 @@ struct ib_umem *ib_umem_get(struct ib_ucontext *context, unsigned long addr,
 	unsigned long npages;
 	int ret;
 	int i;
+<<<<<<< HEAD
 	DEFINE_DMA_ATTRS(attrs);
 	struct scatterlist *sg, *sg_list_start;
 	int need_release = 0;
 
 	if (dmasync)
 		dma_set_attr(DMA_ATTR_WRITE_BARRIER, &attrs);
+=======
+	unsigned long dma_attrs = 0;
+	struct scatterlist *sg, *sg_list_start;
+	int need_release = 0;
+	unsigned int gup_flags = FOLL_WRITE;
+
+	if (dmasync)
+		dma_attrs |= DMA_ATTR_WRITE_BARRIER;
+>>>>>>> v4.9.227
 
 	if (!size)
 		return ERR_PTR(-EINVAL);
@@ -114,6 +136,7 @@ struct ib_umem *ib_umem_get(struct ib_ucontext *context, unsigned long addr,
 
 	umem->context   = context;
 	umem->length    = size;
+<<<<<<< HEAD
 	umem->offset    = addr & ~PAGE_MASK;
 	umem->page_size = PAGE_SIZE;
 	umem->pid       = get_task_pid(current, PIDTYPE_PID);
@@ -125,12 +148,34 @@ struct ib_umem *ib_umem_get(struct ib_ucontext *context, unsigned long addr,
 	 * "MW bind" can change permissions by binding a window.
 	 */
 	umem->writable  = !!(access & ~IB_ACCESS_REMOTE_READ);
+=======
+	umem->address   = addr;
+	umem->page_size = PAGE_SIZE;
+	umem->pid       = get_task_pid(current, PIDTYPE_PID);
+	umem->writable   = ib_access_writable(access);
+
+	if (access & IB_ACCESS_ON_DEMAND) {
+		put_pid(umem->pid);
+		ret = ib_umem_odp_get(context, umem);
+		if (ret) {
+			kfree(umem);
+			return ERR_PTR(ret);
+		}
+		return umem;
+	}
+
+	umem->odp_data = NULL;
+>>>>>>> v4.9.227
 
 	/* We assume the memory is from hugetlb until proved otherwise */
 	umem->hugetlb   = 1;
 
 	page_list = (struct page **) __get_free_page(GFP_KERNEL);
 	if (!page_list) {
+<<<<<<< HEAD
+=======
+		put_pid(umem->pid);
+>>>>>>> v4.9.227
 		kfree(umem);
 		return ERR_PTR(-ENOMEM);
 	}
@@ -143,7 +188,11 @@ struct ib_umem *ib_umem_get(struct ib_ucontext *context, unsigned long addr,
 	if (!vma_list)
 		umem->hugetlb = 0;
 
+<<<<<<< HEAD
 	npages = PAGE_ALIGN(size + umem->offset) >> PAGE_SHIFT;
+=======
+	npages = ib_umem_num_pages(umem);
+>>>>>>> v4.9.227
 
 	down_write(&current->mm->mmap_sem);
 
@@ -157,7 +206,11 @@ struct ib_umem *ib_umem_get(struct ib_ucontext *context, unsigned long addr,
 
 	cur_base = addr & PAGE_MASK;
 
+<<<<<<< HEAD
 	if (npages == 0) {
+=======
+	if (npages == 0 || npages > UINT_MAX) {
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 		goto out;
 	}
@@ -166,14 +219,27 @@ struct ib_umem *ib_umem_get(struct ib_ucontext *context, unsigned long addr,
 	if (ret)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	if (!umem->writable)
+		gup_flags |= FOLL_FORCE;
+
+>>>>>>> v4.9.227
 	need_release = 1;
 	sg_list_start = umem->sg_head.sgl;
 
 	while (npages) {
+<<<<<<< HEAD
 		ret = get_user_pages(current, current->mm, cur_base,
 				     min_t(unsigned long, npages,
 					   PAGE_SIZE / sizeof (struct page *)),
 				     1, !umem->writable, page_list, vma_list);
+=======
+		ret = get_user_pages_longterm(cur_base,
+				     min_t(unsigned long, npages,
+					   PAGE_SIZE / sizeof (struct page *)),
+				     gup_flags, page_list, vma_list);
+>>>>>>> v4.9.227
 
 		if (ret < 0)
 			goto out;
@@ -197,7 +263,11 @@ struct ib_umem *ib_umem_get(struct ib_ucontext *context, unsigned long addr,
 				  umem->sg_head.sgl,
 				  umem->npages,
 				  DMA_BIDIRECTIONAL,
+<<<<<<< HEAD
 				  &attrs);
+=======
+				  dma_attrs);
+>>>>>>> v4.9.227
 
 	if (umem->nmap <= 0) {
 		ret = -ENOMEM;
@@ -246,6 +316,14 @@ void ib_umem_release(struct ib_umem *umem)
 	struct task_struct *task;
 	unsigned long diff;
 
+<<<<<<< HEAD
+=======
+	if (umem->odp_data) {
+		ib_umem_odp_release(umem);
+		return;
+	}
+
+>>>>>>> v4.9.227
 	__ib_umem_release(umem->context->device, umem, 1);
 
 	task = get_pid_task(umem->pid, PIDTYPE_PID);
@@ -257,7 +335,11 @@ void ib_umem_release(struct ib_umem *umem)
 	if (!mm)
 		goto out;
 
+<<<<<<< HEAD
 	diff = PAGE_ALIGN(umem->length + umem->offset) >> PAGE_SHIFT;
+=======
+	diff = ib_umem_num_pages(umem);
+>>>>>>> v4.9.227
 
 	/*
 	 * We may be called with the mm's mmap_sem already held.  This
@@ -294,6 +376,12 @@ int ib_umem_page_count(struct ib_umem *umem)
 	int n;
 	struct scatterlist *sg;
 
+<<<<<<< HEAD
+=======
+	if (umem->odp_data)
+		return ib_umem_num_pages(umem);
+
+>>>>>>> v4.9.227
 	shift = ilog2(umem->page_size);
 
 	n = 0;
@@ -303,3 +391,40 @@ int ib_umem_page_count(struct ib_umem *umem)
 	return n;
 }
 EXPORT_SYMBOL(ib_umem_page_count);
+<<<<<<< HEAD
+=======
+
+/*
+ * Copy from the given ib_umem's pages to the given buffer.
+ *
+ * umem - the umem to copy from
+ * offset - offset to start copying from
+ * dst - destination buffer
+ * length - buffer length
+ *
+ * Returns 0 on success, or an error code.
+ */
+int ib_umem_copy_from(void *dst, struct ib_umem *umem, size_t offset,
+		      size_t length)
+{
+	size_t end = offset + length;
+	int ret;
+
+	if (offset > umem->length || length > umem->length - offset) {
+		pr_err("ib_umem_copy_from not in range. offset: %zd umem length: %zd end: %zd\n",
+		       offset, umem->length, end);
+		return -EINVAL;
+	}
+
+	ret = sg_pcopy_to_buffer(umem->sg_head.sgl, umem->npages, dst, length,
+				 offset + ib_umem_offset(umem));
+
+	if (ret < 0)
+		return ret;
+	else if (ret != length)
+		return -EINVAL;
+	else
+		return 0;
+}
+EXPORT_SYMBOL(ib_umem_copy_from);
+>>>>>>> v4.9.227

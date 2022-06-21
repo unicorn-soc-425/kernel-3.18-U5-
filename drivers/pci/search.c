@@ -40,11 +40,23 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
 	 * If the device is broken and uses an alias requester ID for
 	 * DMA, iterate over that too.
 	 */
+<<<<<<< HEAD
 	if (unlikely(pdev->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN)) {
 		ret = fn(pdev, PCI_DEVID(pdev->bus->number,
 					 pdev->dma_alias_devfn), data);
 		if (ret)
 			return ret;
+=======
+	if (unlikely(pdev->dma_alias_mask)) {
+		u8 devfn;
+
+		for_each_set_bit(devfn, pdev->dma_alias_mask, U8_MAX) {
+			ret = fn(pdev, PCI_DEVID(pdev->bus->number, devfn),
+				 data);
+			if (ret)
+				return ret;
+		}
+>>>>>>> v4.9.227
 	}
 
 	for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
@@ -271,8 +283,12 @@ static struct pci_dev *pci_get_dev_by_id(const struct pci_device_id *id,
 			      match_pci_dev_by_id);
 	if (dev)
 		pdev = to_pci_dev(dev);
+<<<<<<< HEAD
 	if (from)
 		pci_dev_put(from);
+=======
+	pci_dev_put(from);
+>>>>>>> v4.9.227
 	return pdev;
 }
 

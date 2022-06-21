@@ -10,6 +10,10 @@
 #include <asm/processor.h>
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
         .section        ".toc","aw"
 PPC64_CACHES:
@@ -110,3 +114,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_CP_USE_DCBTZ)
 	std	r11,120(r3)
 	std	r12,128(r3)
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(copy_page)
+>>>>>>> v4.9.227

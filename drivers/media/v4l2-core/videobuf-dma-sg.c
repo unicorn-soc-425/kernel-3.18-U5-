@@ -145,18 +145,29 @@ struct videobuf_dmabuf *videobuf_to_dma(struct videobuf_buffer *buf)
 }
 EXPORT_SYMBOL_GPL(videobuf_to_dma);
 
+<<<<<<< HEAD
 void videobuf_dma_init(struct videobuf_dmabuf *dma)
+=======
+static void videobuf_dma_init(struct videobuf_dmabuf *dma)
+>>>>>>> v4.9.227
 {
 	memset(dma, 0, sizeof(*dma));
 	dma->magic = MAGIC_DMABUF;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(videobuf_dma_init);
+=======
+>>>>>>> v4.9.227
 
 static int videobuf_dma_init_user_locked(struct videobuf_dmabuf *dma,
 			int direction, unsigned long data, unsigned long size)
 {
 	unsigned long first, last;
 	int err, rw = 0;
+<<<<<<< HEAD
+=======
+	unsigned int flags = FOLL_FORCE;
+>>>>>>> v4.9.227
 
 	dma->direction = direction;
 	switch (dma->direction) {
@@ -179,6 +190,7 @@ static int videobuf_dma_init_user_locked(struct videobuf_dmabuf *dma,
 	if (NULL == dma->pages)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	dprintk(1, "init user [0x%lx+0x%lx => %d pages]\n",
 		data, size, dma->nr_pages);
 
@@ -190,12 +202,31 @@ static int videobuf_dma_init_user_locked(struct videobuf_dmabuf *dma,
 	if (err != dma->nr_pages) {
 		dma->nr_pages = (err >= 0) ? err : 0;
 		dprintk(1, "get_user_pages: err=%d [%d]\n", err, dma->nr_pages);
+=======
+	if (rw == READ)
+		flags |= FOLL_WRITE;
+
+	dprintk(1, "init user [0x%lx+0x%lx => %d pages]\n",
+		data, size, dma->nr_pages);
+
+	err = get_user_pages_longterm(data & PAGE_MASK, dma->nr_pages,
+			     flags, dma->pages, NULL);
+
+	if (err != dma->nr_pages) {
+		dma->nr_pages = (err >= 0) ? err : 0;
+		dprintk(1, "get_user_pages_longterm: err=%d [%d]\n", err,
+			dma->nr_pages);
+>>>>>>> v4.9.227
 		return err < 0 ? err : -EINVAL;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 int videobuf_dma_init_user(struct videobuf_dmabuf *dma, int direction,
+=======
+static int videobuf_dma_init_user(struct videobuf_dmabuf *dma, int direction,
+>>>>>>> v4.9.227
 			   unsigned long data, unsigned long size)
 {
 	int ret;
@@ -206,9 +237,14 @@ int videobuf_dma_init_user(struct videobuf_dmabuf *dma, int direction,
 
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(videobuf_dma_init_user);
 
 int videobuf_dma_init_kernel(struct videobuf_dmabuf *dma, int direction,
+=======
+
+static int videobuf_dma_init_kernel(struct videobuf_dmabuf *dma, int direction,
+>>>>>>> v4.9.227
 			     int nr_pages)
 {
 	int i;
@@ -267,9 +303,14 @@ out_free_pages:
 	return -ENOMEM;
 
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(videobuf_dma_init_kernel);
 
 int videobuf_dma_init_overlay(struct videobuf_dmabuf *dma, int direction,
+=======
+
+static int videobuf_dma_init_overlay(struct videobuf_dmabuf *dma, int direction,
+>>>>>>> v4.9.227
 			      dma_addr_t addr, int nr_pages)
 {
 	dprintk(1, "init overlay [%d pages @ bus 0x%lx]\n",
@@ -284,9 +325,14 @@ int videobuf_dma_init_overlay(struct videobuf_dmabuf *dma, int direction,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(videobuf_dma_init_overlay);
 
 int videobuf_dma_map(struct device *dev, struct videobuf_dmabuf *dma)
+=======
+
+static int videobuf_dma_map(struct device *dev, struct videobuf_dmabuf *dma)
+>>>>>>> v4.9.227
 {
 	MAGIC_CHECK(dma->magic, MAGIC_DMABUF);
 	BUG_ON(0 == dma->nr_pages);
@@ -328,7 +374,10 @@ int videobuf_dma_map(struct device *dev, struct videobuf_dmabuf *dma)
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(videobuf_dma_map);
+=======
+>>>>>>> v4.9.227
 
 int videobuf_dma_unmap(struct device *dev, struct videobuf_dmabuf *dma)
 {
@@ -354,8 +403,16 @@ int videobuf_dma_free(struct videobuf_dmabuf *dma)
 	BUG_ON(dma->sglen);
 
 	if (dma->pages) {
+<<<<<<< HEAD
 		for (i = 0; i < dma->nr_pages; i++)
 			page_cache_release(dma->pages[i]);
+=======
+		for (i = 0; i < dma->nr_pages; i++) {
+			if (dma->direction == DMA_FROM_DEVICE)
+				set_page_dirty_lock(dma->pages[i]);
+			put_page(dma->pages[i]);
+		}
+>>>>>>> v4.9.227
 		kfree(dma->pages);
 		dma->pages = NULL;
 	}

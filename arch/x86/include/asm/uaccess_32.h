@@ -33,6 +33,7 @@ unsigned long __must_check __copy_from_user_ll_nocache_nozero
  * the specified block with access_ok() before calling this function.
  * The caller should also make sure he pins the user space address
  * so that we don't result in page fault and sleep.
+<<<<<<< HEAD
  *
  * Here we special-case 1, 2 and 4-byte copy_*_user invocations.  On a fault
  * we return the initial request size (1, 2 or 4), as copy_*_user should do.
@@ -40,10 +41,14 @@ unsigned long __must_check __copy_from_user_ll_nocache_nozero
  * anything, so this is accurate.
  */
 
+=======
+ */
+>>>>>>> v4.9.227
 static __always_inline unsigned long __must_check
 __copy_to_user_inatomic(void __user *to, const void *from, unsigned long n)
 {
 	check_object_size(from, n, true);
+<<<<<<< HEAD
 	if (__builtin_constant_p(n)) {
 		unsigned long ret;
 
@@ -68,6 +73,8 @@ __copy_to_user_inatomic(void __user *to, const void *from, unsigned long n)
 			return ret;
 		}
 	}
+=======
+>>>>>>> v4.9.227
 	return __copy_to_user_ll(to, from, n);
 }
 
@@ -77,7 +84,12 @@ __copy_to_user_inatomic(void __user *to, const void *from, unsigned long n)
  * @from: Source address, in kernel space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Copy data from kernel space to user space.  Caller must check
  * the specified block with access_ok() before calling this function.
@@ -95,6 +107,7 @@ __copy_to_user(void __user *to, const void *from, unsigned long n)
 static __always_inline unsigned long
 __copy_from_user_inatomic(void *to, const void __user *from, unsigned long n)
 {
+<<<<<<< HEAD
 	/* Avoid zeroing the tail if the copy fails..
 	 * If 'n' is constant and 1, 2, or 4, we do still zero on a failure,
 	 * but as the zeroing behaviour is only significant when n is not
@@ -121,6 +134,8 @@ __copy_from_user_inatomic(void *to, const void __user *from, unsigned long n)
 			return ret;
 		}
 	}
+=======
+>>>>>>> v4.9.227
 	return __copy_from_user_ll_nozero(to, from, n);
 }
 
@@ -130,7 +145,12 @@ __copy_from_user_inatomic(void *to, const void __user *from, unsigned long n)
  * @from: Source address, in user space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Copy data from user space to kernel space.  Caller must check
  * the specified block with access_ok() before calling this function.
@@ -156,17 +176,29 @@ __copy_from_user(void *to, const void __user *from, unsigned long n)
 
 		switch (n) {
 		case 1:
+<<<<<<< HEAD
 			__uaccess_begin();
+=======
+			__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 			__get_user_size(*(u8 *)to, from, 1, ret, 1);
 			__uaccess_end();
 			return ret;
 		case 2:
+<<<<<<< HEAD
 			__uaccess_begin();
+=======
+			__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 			__get_user_size(*(u16 *)to, from, 2, ret, 2);
 			__uaccess_end();
 			return ret;
 		case 4:
+<<<<<<< HEAD
 			__uaccess_begin();
+=======
+			__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 			__get_user_size(*(u32 *)to, from, 4, ret, 4);
 			__uaccess_end();
 			return ret;
@@ -184,17 +216,29 @@ static __always_inline unsigned long __copy_from_user_nocache(void *to,
 
 		switch (n) {
 		case 1:
+<<<<<<< HEAD
 			__uaccess_begin();
+=======
+			__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 			__get_user_size(*(u8 *)to, from, 1, ret, 1);
 			__uaccess_end();
 			return ret;
 		case 2:
+<<<<<<< HEAD
 			__uaccess_begin();
+=======
+			__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 			__get_user_size(*(u16 *)to, from, 2, ret, 2);
 			__uaccess_end();
 			return ret;
 		case 4:
+<<<<<<< HEAD
 			__uaccess_begin();
+=======
+			__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 			__get_user_size(*(u32 *)to, from, 4, ret, 4);
 			__uaccess_end();
 			return ret;

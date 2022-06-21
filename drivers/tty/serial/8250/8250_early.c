@@ -29,13 +29,19 @@
 #include <linux/tty.h>
 #include <linux/init.h>
 #include <linux/console.h>
+<<<<<<< HEAD
 #include <linux/serial_core.h>
+=======
+#include <linux/of.h>
+#include <linux/of_device.h>
+>>>>>>> v4.9.227
 #include <linux/serial_reg.h>
 #include <linux/serial.h>
 #include <linux/serial_8250.h>
 #include <asm/io.h>
 #include <asm/serial.h>
 
+<<<<<<< HEAD
 static struct earlycon_device *early_device;
 
 unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offset)
@@ -45,6 +51,21 @@ unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offse
 		return readb(port->membase + offset);
 	case UPIO_MEM32:
 		return readl(port->membase + (offset << 2));
+=======
+static unsigned int __init serial8250_early_in(struct uart_port *port, int offset)
+{
+	offset <<= port->regshift;
+
+	switch (port->iotype) {
+	case UPIO_MEM:
+		return readb(port->membase + offset);
+	case UPIO_MEM16:
+		return readw(port->membase + offset);
+	case UPIO_MEM32:
+		return readl(port->membase + offset);
+	case UPIO_MEM32BE:
+		return ioread32be(port->membase + offset);
+>>>>>>> v4.9.227
 	case UPIO_PORT:
 		return inb(port->iobase + offset);
 	default:
@@ -52,14 +73,32 @@ unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offse
 	}
 }
 
+<<<<<<< HEAD
 void __weak __init serial8250_early_out(struct uart_port *port, int offset, int value)
 {
+=======
+static void __init serial8250_early_out(struct uart_port *port, int offset, int value)
+{
+	offset <<= port->regshift;
+
+>>>>>>> v4.9.227
 	switch (port->iotype) {
 	case UPIO_MEM:
 		writeb(value, port->membase + offset);
 		break;
+<<<<<<< HEAD
 	case UPIO_MEM32:
 		writel(value, port->membase + (offset << 2));
+=======
+	case UPIO_MEM16:
+		writew(value, port->membase + offset);
+		break;
+	case UPIO_MEM32:
+		writel(value, port->membase + offset);
+		break;
+	case UPIO_MEM32BE:
+		iowrite32be(value, port->membase + offset);
+>>>>>>> v4.9.227
 		break;
 	case UPIO_PORT:
 		outb(value, port->iobase + offset);
@@ -69,6 +108,7 @@ void __weak __init serial8250_early_out(struct uart_port *port, int offset, int 
 
 #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
 
+<<<<<<< HEAD
 static void __init wait_for_xmitr(struct uart_port *port)
 {
 	unsigned int status;
@@ -77,10 +117,23 @@ static void __init wait_for_xmitr(struct uart_port *port)
 		status = serial8250_early_in(port, UART_LSR);
 		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
 			return;
+=======
+static void __init serial_putc(struct uart_port *port, int c)
+{
+	unsigned int status;
+
+	serial8250_early_out(port, UART_TX, c);
+
+	for (;;) {
+		status = serial8250_early_in(port, UART_LSR);
+		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
+			break;
+>>>>>>> v4.9.227
 		cpu_relax();
 	}
 }
 
+<<<<<<< HEAD
 static void __init serial_putc(struct uart_port *port, int c)
 {
 	wait_for_xmitr(port);
@@ -117,6 +170,15 @@ static unsigned int __init probe_baud(struct uart_port *port)
 
 	quot = (dlm << 8) | dll;
 	return (port->uartclk / 16) / quot;
+=======
+static void __init early_serial8250_write(struct console *console,
+					const char *s, unsigned int count)
+{
+	struct earlycon_device *device = console->data;
+	struct uart_port *port = &device->port;
+
+	uart_console_write(port, s, count, serial_putc);
+>>>>>>> v4.9.227
 }
 
 static void __init init_port(struct earlycon_device *device)
@@ -124,9 +186,17 @@ static void __init init_port(struct earlycon_device *device)
 	struct uart_port *port = &device->port;
 	unsigned int divisor;
 	unsigned char c;
+<<<<<<< HEAD
 
 	serial8250_early_out(port, UART_LCR, 0x3);	/* 8n1 */
 	serial8250_early_out(port, UART_IER, 0);	/* no interrupt */
+=======
+	unsigned int ier;
+
+	serial8250_early_out(port, UART_LCR, 0x3);	/* 8n1 */
+	ier = serial8250_early_in(port, UART_IER);
+	serial8250_early_out(port, UART_IER, ier & UART_IER_UUE); /* no interrupt */
+>>>>>>> v4.9.227
 	serial8250_early_out(port, UART_FCR, 0);	/* no fifo */
 	serial8250_early_out(port, UART_MCR, 0x3);	/* DTR + RTS */
 
@@ -138,6 +208,7 @@ static void __init init_port(struct earlycon_device *device)
 	serial8250_early_out(port, UART_LCR, c & ~UART_LCR_DLAB);
 }
 
+<<<<<<< HEAD
 static int __init early_serial8250_setup(struct earlycon_device *device,
 					 const char *options)
 {
@@ -153,11 +224,30 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
 	init_port(device);
 
 	early_device = device;
+=======
+int __init early_serial8250_setup(struct earlycon_device *device,
+					 const char *options)
+{
+	if (!(device->port.membase || device->port.iobase))
+		return -ENODEV;
+
+	if (!device->baud) {
+		struct uart_port *port = &device->port;
+		unsigned int ier;
+
+		/* assume the device was initialized, only mask interrupts */
+		ier = serial8250_early_in(port, UART_IER);
+		serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
+	} else
+		init_port(device);
+
+>>>>>>> v4.9.227
 	device->con->write = early_serial8250_write;
 	return 0;
 }
 EARLYCON_DECLARE(uart8250, early_serial8250_setup);
 EARLYCON_DECLARE(uart, early_serial8250_setup);
+<<<<<<< HEAD
 
 int __init setup_early_serial8250_console(char *cmdline)
 {
@@ -191,3 +281,30 @@ int serial8250_find_port_for_earlycon(void)
 
 	return ret;
 }
+=======
+OF_EARLYCON_DECLARE(ns16550, "ns16550", early_serial8250_setup);
+OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
+OF_EARLYCON_DECLARE(uart, "nvidia,tegra20-uart", early_serial8250_setup);
+OF_EARLYCON_DECLARE(uart, "snps,dw-apb-uart", early_serial8250_setup);
+
+#ifdef CONFIG_SERIAL_8250_OMAP
+
+static int __init early_omap8250_setup(struct earlycon_device *device,
+				       const char *options)
+{
+	struct uart_port *port = &device->port;
+
+	if (!(device->port.membase || device->port.iobase))
+		return -ENODEV;
+
+	port->regshift = 2;
+	device->con->write = early_serial8250_write;
+	return 0;
+}
+
+OF_EARLYCON_DECLARE(omap8250, "ti,omap2-uart", early_omap8250_setup);
+OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
+OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
+
+#endif
+>>>>>>> v4.9.227

@@ -819,7 +819,10 @@ static struct platform_driver efm32_uart_driver = {
 
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = efm32_uart_dt_ids,
 	},
 };

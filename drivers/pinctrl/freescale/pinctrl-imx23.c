@@ -1,4 +1,10 @@
 /*
+<<<<<<< HEAD
+=======
+ * Freescale i.MX23 pinctrl driver
+ *
+ * Author: Shawn Guo <shawn.guo@linaro.org>
+>>>>>>> v4.9.227
  * Copyright 2012 Freescale Semiconductor, Inc.
  *
  * The code contained herein is licensed under the GNU General Public
@@ -10,7 +16,10 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/of_device.h>
 #include <linux/pinctrl/pinctrl.h>
 #include "pinctrl-mxs.h"
@@ -276,16 +285,26 @@ static const struct of_device_id imx23_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx23-pinctrl", },
 	{ /* sentinel */ }
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, imx23_pinctrl_of_match);
+=======
+>>>>>>> v4.9.227
 
 static struct platform_driver imx23_pinctrl_driver = {
 	.driver = {
 		.name = "imx23-pinctrl",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = imx23_pinctrl_of_match,
 	},
 	.probe = imx23_pinctrl_probe,
 	.remove = mxs_pinctrl_remove,
+=======
+		.suppress_bind_attrs = true,
+		.of_match_table = imx23_pinctrl_of_match,
+	},
+	.probe = imx23_pinctrl_probe,
+>>>>>>> v4.9.227
 };
 
 static int __init imx23_pinctrl_init(void)
@@ -293,6 +312,7 @@ static int __init imx23_pinctrl_init(void)
 	return platform_driver_register(&imx23_pinctrl_driver);
 }
 postcore_initcall(imx23_pinctrl_init);
+<<<<<<< HEAD
 
 static void __exit imx23_pinctrl_exit(void)
 {
@@ -303,3 +323,5 @@ module_exit(imx23_pinctrl_exit);
 MODULE_AUTHOR("Shawn Guo <shawn.guo@linaro.org>");
 MODULE_DESCRIPTION("Freescale i.MX23 pinctrl driver");
 MODULE_LICENSE("GPL v2");
+=======
+>>>>>>> v4.9.227

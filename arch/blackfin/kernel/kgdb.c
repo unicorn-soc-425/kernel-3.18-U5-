@@ -330,9 +330,12 @@ static void bfin_disable_hw_debug(struct pt_regs *regs)
 }
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 extern void generic_exec_single(int cpu, struct call_single_data *data, int wait);
 static struct call_single_data kgdb_smp_ipi_data[NR_CPUS];
 
+=======
+>>>>>>> v4.9.227
 void kgdb_passive_cpu_callback(void *info)
 {
 	kgdb_nmicallback(raw_smp_processor_id(), get_irq_regs());
@@ -343,15 +346,25 @@ void kgdb_roundup_cpus(unsigned long flags)
 	unsigned int cpu;
 
 	for (cpu = cpumask_first(cpu_online_mask); cpu < nr_cpu_ids;
+<<<<<<< HEAD
 		cpu = cpumask_next(cpu, cpu_online_mask)) {
 		kgdb_smp_ipi_data[cpu].func = kgdb_passive_cpu_callback;
 		generic_exec_single(cpu, &kgdb_smp_ipi_data[cpu], 0);
 	}
+=======
+		cpu = cpumask_next(cpu, cpu_online_mask))
+		smp_call_function_single(cpu, kgdb_passive_cpu_callback,
+					 NULL, 0);
+>>>>>>> v4.9.227
 }
 
 void kgdb_roundup_cpu(int cpu, unsigned long flags)
 {
+<<<<<<< HEAD
 	generic_exec_single(cpu, &kgdb_smp_ipi_data[cpu], 0);
+=======
+	smp_call_function_single(cpu, kgdb_passive_cpu_callback, NULL, 0);
+>>>>>>> v4.9.227
 }
 #endif
 
@@ -359,6 +372,7 @@ void kgdb_roundup_cpu(int cpu, unsigned long flags)
 static unsigned long kgdb_arch_imask;
 #endif
 
+<<<<<<< HEAD
 void kgdb_post_primary_code(struct pt_regs *regs, int e_vector, int err_code)
 {
 	if (kgdb_single_step)
@@ -372,6 +386,8 @@ void kgdb_post_primary_code(struct pt_regs *regs, int e_vector, int err_code)
 #endif
 }
 
+=======
+>>>>>>> v4.9.227
 int kgdb_arch_handle_exception(int vector, int signo,
 			       int err_code, char *remcom_in_buffer,
 			       char *remcom_out_buffer,

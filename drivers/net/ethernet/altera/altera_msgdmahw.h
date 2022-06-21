@@ -58,6 +58,7 @@ struct msgdma_extended_desc {
 /* Tx buffer control flags
  */
 #define MSGDMA_DESC_CTL_TX_FIRST	(MSGDMA_DESC_CTL_GEN_SOP |	\
+<<<<<<< HEAD
 					 MSGDMA_DESC_CTL_TR_ERR_IRQ |	\
 					 MSGDMA_DESC_CTL_GO)
 
@@ -67,12 +68,23 @@ struct msgdma_extended_desc {
 #define MSGDMA_DESC_CTL_TX_LAST		(MSGDMA_DESC_CTL_GEN_EOP |	\
 					 MSGDMA_DESC_CTL_TR_COMP_IRQ |	\
 					 MSGDMA_DESC_CTL_TR_ERR_IRQ |	\
+=======
+					 MSGDMA_DESC_CTL_GO)
+
+#define MSGDMA_DESC_CTL_TX_MIDDLE	(MSGDMA_DESC_CTL_GO)
+
+#define MSGDMA_DESC_CTL_TX_LAST		(MSGDMA_DESC_CTL_GEN_EOP |	\
+					 MSGDMA_DESC_CTL_TR_COMP_IRQ |	\
+>>>>>>> v4.9.227
 					 MSGDMA_DESC_CTL_GO)
 
 #define MSGDMA_DESC_CTL_TX_SINGLE	(MSGDMA_DESC_CTL_GEN_SOP |	\
 					 MSGDMA_DESC_CTL_GEN_EOP |	\
 					 MSGDMA_DESC_CTL_TR_COMP_IRQ |	\
+<<<<<<< HEAD
 					 MSGDMA_DESC_CTL_TR_ERR_IRQ |	\
+=======
+>>>>>>> v4.9.227
 					 MSGDMA_DESC_CTL_GO)
 
 #define MSGDMA_DESC_CTL_RX_SINGLE	(MSGDMA_DESC_CTL_END_ON_EOP |	\

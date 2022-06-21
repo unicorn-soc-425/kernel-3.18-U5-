@@ -31,7 +31,10 @@
 #include <linux/notifier.h>
 #include <linux/proc_fs.h>
 #include <linux/stat.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/sysctl.h>
 #include <net/ip.h>
 #include <net/arp.h>
@@ -46,9 +49,15 @@
 
 #ifdef CONFIG_INET
 
+<<<<<<< HEAD
 int ax25_hard_header(struct sk_buff *skb, struct net_device *dev,
 		     unsigned short type, const void *daddr,
 		     const void *saddr, unsigned int len)
+=======
+static int ax25_hard_header(struct sk_buff *skb, struct net_device *dev,
+			    unsigned short type, const void *daddr,
+			    const void *saddr, unsigned int len)
+>>>>>>> v4.9.227
 {
 	unsigned char *buff;
 
@@ -100,7 +109,11 @@ int ax25_hard_header(struct sk_buff *skb, struct net_device *dev,
 	return -AX25_HEADER_LEN;	/* Unfinished header */
 }
 
+<<<<<<< HEAD
 int ax25_rebuild_header(struct sk_buff *skb)
+=======
+netdev_tx_t ax25_ip_xmit(struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	struct sk_buff *ourskb;
 	unsigned char *bp  = skb->data;
@@ -115,9 +128,13 @@ int ax25_rebuild_header(struct sk_buff *skb)
 	dst = (ax25_address *)(bp + 1);
 	src = (ax25_address *)(bp + 8);
 
+<<<<<<< HEAD
 	if (arp_find(bp + 1, skb))
 		return 1;
 
+=======
+	ax25_route_lock_use();
+>>>>>>> v4.9.227
 	route = ax25_get_route(dst, NULL);
 	if (route) {
 		digipeat = route->digipeat;
@@ -129,6 +146,10 @@ int ax25_rebuild_header(struct sk_buff *skb)
 		dev = skb->dev;
 
 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL) {
+<<<<<<< HEAD
+=======
+		kfree_skb(skb);
+>>>>>>> v4.9.227
 		goto put;
 	}
 
@@ -209,21 +230,34 @@ int ax25_rebuild_header(struct sk_buff *skb)
 	ax25_queue_xmit(skb, dev);
 
 put:
+<<<<<<< HEAD
 	if (route)
 		ax25_put_route(route);
 
 	return 1;
+=======
+
+	ax25_route_lock_unuse();
+	return NETDEV_TX_OK;
+>>>>>>> v4.9.227
 }
 
 #else	/* INET */
 
+<<<<<<< HEAD
 int ax25_hard_header(struct sk_buff *skb, struct net_device *dev,
 		     unsigned short type, const void *daddr,
 		     const void *saddr, unsigned int len)
+=======
+static int ax25_hard_header(struct sk_buff *skb, struct net_device *dev,
+			    unsigned short type, const void *daddr,
+			    const void *saddr, unsigned int len)
+>>>>>>> v4.9.227
 {
 	return -AX25_HEADER_LEN;
 }
 
+<<<<<<< HEAD
 int ax25_rebuild_header(struct sk_buff *skb)
 {
 	return 1;
@@ -239,4 +273,34 @@ const struct header_ops ax25_header_ops = {
 EXPORT_SYMBOL(ax25_hard_header);
 EXPORT_SYMBOL(ax25_rebuild_header);
 EXPORT_SYMBOL(ax25_header_ops);
+=======
+netdev_tx_t ax25_ip_xmit(struct sk_buff *skb)
+{
+	kfree_skb(skb);
+	return NETDEV_TX_OK;
+}
+#endif
+
+static bool ax25_validate_header(const char *header, unsigned int len)
+{
+	ax25_digi digi;
+
+	if (!len)
+		return false;
+
+	if (header[0])
+		return true;
+
+	return ax25_addr_parse(header + 1, len - 1, NULL, NULL, &digi, NULL,
+			       NULL);
+}
+
+const struct header_ops ax25_header_ops = {
+	.create = ax25_hard_header,
+	.validate = ax25_validate_header,
+};
+
+EXPORT_SYMBOL(ax25_header_ops);
+EXPORT_SYMBOL(ax25_ip_xmit);
+>>>>>>> v4.9.227
 

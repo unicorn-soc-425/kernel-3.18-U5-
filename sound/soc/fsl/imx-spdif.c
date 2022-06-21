@@ -60,6 +60,10 @@ static int imx_spdif_audio_probe(struct platform_device *pdev)
 	data->card.dev = &pdev->dev;
 	data->card.dai_link = &data->dai;
 	data->card.num_links = 1;
+<<<<<<< HEAD
+=======
+	data->card.owner = THIS_MODULE;
+>>>>>>> v4.9.227
 
 	ret = snd_soc_of_parse_card_name(&data->card, "model");
 	if (ret)
@@ -71,11 +75,16 @@ static int imx_spdif_audio_probe(struct platform_device *pdev)
 		goto end;
 	}
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, data);
 
 end:
 	if (spdif_np)
 		of_node_put(spdif_np);
+=======
+end:
+	of_node_put(spdif_np);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -89,7 +98,11 @@ MODULE_DEVICE_TABLE(of, imx_spdif_dt_ids);
 static struct platform_driver imx_spdif_driver = {
 	.driver = {
 		.name = "imx-spdif",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+		.pm = &snd_soc_pm_ops,
+>>>>>>> v4.9.227
 		.of_match_table = imx_spdif_dt_ids,
 	},
 	.probe = imx_spdif_audio_probe,

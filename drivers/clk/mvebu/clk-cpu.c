@@ -10,7 +10,12 @@
  * warranty of any kind, whether express or implied.
  */
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/clkdev.h>
+=======
+#include <linux/slab.h>
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/of_address.h>
 #include <linux/io.h>
@@ -120,7 +125,11 @@ static int clk_cpu_on_set_rate(struct clk_hw *hwclk, unsigned long rate,
 	if (!cpuclk->pmu_dfs)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	cur_rate = __clk_get_rate(hwclk->clk);
+=======
+	cur_rate = clk_hw_get_rate(hwclk);
+>>>>>>> v4.9.227
 
 	reg = readl(cpuclk->reg_base + SYS_CTRL_CLK_DIVIDER_CTRL2_OFFSET);
 	fabric_div = (reg >> SYS_CTRL_CLK_DIVIDER_CTRL2_NBCLK_RATIO_SHIFT) &
@@ -196,7 +205,10 @@ static void __init of_cpu_clk_setup(struct device_node *node)
 	for_each_node_by_type(dn, "cpu") {
 		struct clk_init_data init;
 		struct clk *clk;
+<<<<<<< HEAD
 		struct clk *parent_clk;
+=======
+>>>>>>> v4.9.227
 		char *clk_name = kzalloc(5, GFP_KERNEL);
 		int cpu, err;
 
@@ -208,9 +220,14 @@ static void __init of_cpu_clk_setup(struct device_node *node)
 			goto bail_out;
 
 		sprintf(clk_name, "cpu%d", cpu);
+<<<<<<< HEAD
 		parent_clk = of_clk_get(node, 0);
 
 		cpuclk[cpu].parent_name = __clk_get_name(parent_clk);
+=======
+
+		cpuclk[cpu].parent_name = of_clk_get_parent_name(node, 0);
+>>>>>>> v4.9.227
 		cpuclk[cpu].clk_name = clk_name;
 		cpuclk[cpu].cpu = cpu;
 		cpuclk[cpu].reg_base = clock_complex_base;

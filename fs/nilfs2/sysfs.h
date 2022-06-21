@@ -66,7 +66,11 @@ struct nilfs_##name##_attr { \
 			char *); \
 	ssize_t (*store)(struct kobject *, struct attribute *, \
 			 const char *, size_t); \
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> v4.9.227
 
 NILFS_COMMON_ATTR_STRUCT(feature);
 
@@ -77,7 +81,11 @@ struct nilfs_##name##_attr { \
 			char *); \
 	ssize_t (*store)(struct nilfs_##name##_attr *, struct the_nilfs *, \
 			 const char *, size_t); \
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> v4.9.227
 
 NILFS_DEV_ATTR_STRUCT(dev);
 NILFS_DEV_ATTR_STRUCT(segments);
@@ -93,7 +101,11 @@ struct nilfs_##name##_attr { \
 			char *); \
 	ssize_t (*store)(struct nilfs_##name##_attr *, struct nilfs_root *, \
 			 const char *, size_t); \
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> v4.9.227
 
 NILFS_CP_ATTR_STRUCT(snapshot);
 

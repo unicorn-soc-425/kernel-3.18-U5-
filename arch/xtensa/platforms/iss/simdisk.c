@@ -86,6 +86,10 @@ static void simdisk_transfer(struct simdisk *dev, unsigned long sector,
 		unsigned long io;
 
 		simc_lseek(dev->fd, offset, SEEK_SET);
+<<<<<<< HEAD
+=======
+		READ_ONCE(*buffer);
+>>>>>>> v4.9.227
 		if (write)
 			io = simc_write(dev->fd, buffer, nbytes);
 		else
@@ -101,8 +105,14 @@ static void simdisk_transfer(struct simdisk *dev, unsigned long sector,
 	spin_unlock(&dev->lock);
 }
 
+<<<<<<< HEAD
 static int simdisk_xfer_bio(struct simdisk *dev, struct bio *bio)
 {
+=======
+static blk_qc_t simdisk_make_request(struct request_queue *q, struct bio *bio)
+{
+	struct simdisk *dev = q->queuedata;
+>>>>>>> v4.9.227
 	struct bio_vec bvec;
 	struct bvec_iter iter;
 	sector_t sector = bio->bi_iter.bi_sector;
@@ -116,6 +126,7 @@ static int simdisk_xfer_bio(struct simdisk *dev, struct bio *bio)
 		sector += len;
 		__bio_kunmap_atomic(buffer);
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -127,6 +138,13 @@ static void simdisk_make_request(struct request_queue *q, struct bio *bio)
 }
 
 
+=======
+
+	bio_endio(bio);
+	return BLK_QC_T_NONE;
+}
+
+>>>>>>> v4.9.227
 static int simdisk_open(struct block_device *bdev, fmode_t mode)
 {
 	struct simdisk *dev = bdev->bd_disk->private_data;
@@ -232,6 +250,7 @@ static ssize_t proc_read_simdisk(struct file *file, char __user *buf,
 static ssize_t proc_write_simdisk(struct file *file, const char __user *buf,
 			size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	char *tmp = kmalloc(count + 1, GFP_KERNEL);
 	struct simdisk *dev = PDE_DATA(file_inode(file));
 	int err;
@@ -242,6 +261,14 @@ static ssize_t proc_write_simdisk(struct file *file, const char __user *buf,
 		err = -EFAULT;
 		goto out_free;
 	}
+=======
+	char *tmp = memdup_user_nul(buf, count);
+	struct simdisk *dev = PDE_DATA(file_inode(file));
+	int err;
+
+	if (IS_ERR(tmp))
+		return PTR_ERR(tmp);
+>>>>>>> v4.9.227
 
 	err = simdisk_detach(dev);
 	if (err != 0)
@@ -249,8 +276,11 @@ static ssize_t proc_write_simdisk(struct file *file, const char __user *buf,
 
 	if (count > 0 && tmp[count - 1] == '\n')
 		tmp[count - 1] = 0;
+<<<<<<< HEAD
 	else
 		tmp[count] = 0;
+=======
+>>>>>>> v4.9.227
 
 	if (tmp[0])
 		err = simdisk_attach(dev, tmp);

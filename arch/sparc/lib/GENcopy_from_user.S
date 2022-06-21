@@ -3,11 +3,19 @@
  * Copyright (C) 2007 David S. Miller (davem@davemloft.net)
  */
 
+<<<<<<< HEAD
 #define EX_LD(x)		\
 98:	x;			\
 	.section __ex_table,"a";\
 	.align 4;		\
 	.word 98b, __retl_one;	\
+=======
+#define EX_LD(x,y)		\
+98:	x;			\
+	.section __ex_table,"a";\
+	.align 4;		\
+	.word 98b, y;		\
+>>>>>>> v4.9.227
 	.text;			\
 	.align 4;
 

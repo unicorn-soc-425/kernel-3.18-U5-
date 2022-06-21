@@ -120,7 +120,10 @@ static struct platform_driver denali_dt_driver = {
 	.remove		= denali_dt_remove,
 	.driver		= {
 		.name	= "denali-nand-dt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= denali_nand_dt_ids,
 	},
 };

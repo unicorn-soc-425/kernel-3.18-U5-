@@ -303,11 +303,18 @@ static int show_journal(struct seq_file *m, void *unused)
 	struct reiserfs_sb_info *r = REISERFS_SB(sb);
 	struct reiserfs_super_block *rs = r->s_rs;
 	struct journal_params *jp = &rs->s_v1.s_journal;
+<<<<<<< HEAD
 	char b[BDEVNAME_SIZE];
 
 	seq_printf(m,		/* on-disk fields */
 		   "jp_journal_1st_block: \t%i\n"
 		   "jp_journal_dev: \t%s[%x]\n"
+=======
+
+	seq_printf(m,		/* on-disk fields */
+		   "jp_journal_1st_block: \t%i\n"
+		   "jp_journal_dev: \t%pg[%x]\n"
+>>>>>>> v4.9.227
 		   "jp_journal_size: \t%i\n"
 		   "jp_journal_trans_max: \t%i\n"
 		   "jp_journal_magic: \t%i\n"
@@ -348,7 +355,11 @@ static int show_journal(struct seq_file *m, void *unused)
 		   "prepare: \t%12lu\n"
 		   "prepare_retry: \t%12lu\n",
 		   DJP(jp_journal_1st_block),
+<<<<<<< HEAD
 		   bdevname(SB_JOURNAL(sb)->j_dev_bd, b),
+=======
+		   SB_JOURNAL(sb)->j_dev_bd,
+>>>>>>> v4.9.227
 		   DJP(jp_journal_dev),
 		   DJP(jp_journal_size),
 		   DJP(jp_journal_trans_max),

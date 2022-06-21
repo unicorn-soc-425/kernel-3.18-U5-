@@ -509,7 +509,11 @@ static int xilly_setupchannels(struct xilly_endpoint *ep,
 			channel->log2_element_size = ((format > 2) ?
 						      2 : format);
 
+<<<<<<< HEAD
 			bytebufsize = channel->rd_buf_size = bufsize *
+=======
+			bytebufsize = bufsize *
+>>>>>>> v4.9.227
 				(1 << channel->log2_element_size);
 
 			buffers = devm_kcalloc(dev, bufnum,
@@ -523,6 +527,10 @@ static int xilly_setupchannels(struct xilly_endpoint *ep,
 
 		if (!is_writebuf) {
 			channel->num_rd_buffers = bufnum;
+<<<<<<< HEAD
+=======
+			channel->rd_buf_size = bytebufsize;
+>>>>>>> v4.9.227
 			channel->rd_allow_partial = allowpartial;
 			channel->rd_synchronous = synchronous;
 			channel->rd_exclusive_open = exclusive_open;
@@ -533,6 +541,10 @@ static int xilly_setupchannels(struct xilly_endpoint *ep,
 						   bufnum, bytebufsize);
 		} else if (channelnum > 0) {
 			channel->num_wr_buffers = bufnum;
+<<<<<<< HEAD
+=======
+			channel->wr_buf_size = bytebufsize;
+>>>>>>> v4.9.227
 
 			channel->seekable = seekable;
 			channel->wr_supports_nonempty = supports_nonempty;
@@ -653,10 +665,17 @@ static int xilly_obtain_idt(struct xilly_endpoint *endpoint)
 
 	version = channel->wr_buffers[0]->addr;
 
+<<<<<<< HEAD
 	/* Check version number. Accept anything below 0x82 for now. */
 	if (*version > 0x82) {
 		dev_err(endpoint->dev,
 			"No support for IDT version 0x%02x. Maybe the xillybus driver needs an upgarde. Aborting.\n",
+=======
+	/* Check version number. Reject anything above 0x82. */
+	if (*version > 0x82) {
+		dev_err(endpoint->dev,
+			"No support for IDT version 0x%02x. Maybe the xillybus driver needs an upgrade. Aborting.\n",
+>>>>>>> v4.9.227
 			*version);
 		return -ENODEV;
 	}
@@ -1237,6 +1256,11 @@ static ssize_t xillybus_write(struct file *filp, const char __user *userbuf,
 					unsigned char *tail;
 					int i;
 
+<<<<<<< HEAD
+=======
+					howmany = 0;
+
+>>>>>>> v4.9.227
 					end_offset_plus1 = bufpos >>
 						channel->log2_element_size;
 

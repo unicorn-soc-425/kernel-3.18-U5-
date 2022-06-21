@@ -26,6 +26,13 @@
 #endif
 #include <net/netns/nftables.h>
 #include <net/netns/xfrm.h>
+<<<<<<< HEAD
+=======
+#include <net/netns/mpls.h>
+#include <linux/ns_common.h>
+#include <linux/idr.h>
+#include <linux/skbuff.h>
+>>>>>>> v4.9.227
 
 struct user_namespace;
 struct proc_dir_entry;
@@ -47,6 +54,7 @@ struct net {
 	atomic_t		count;		/* To decided when the network
 						 *  namespace should be shut down.
 						 */
+<<<<<<< HEAD
 #ifdef NETNS_REFCNT_DEBUG
 	atomic_t		use_count;	/* To track references we
 						 * destroy on demand
@@ -54,13 +62,28 @@ struct net {
 #endif
 	spinlock_t		rules_mod_lock;
 
+=======
+	spinlock_t		rules_mod_lock;
+
+	u32			hash_mix;
+	atomic64_t		cookie_gen;
+
+>>>>>>> v4.9.227
 	struct list_head	list;		/* list of network namespaces */
 	struct list_head	cleanup_list;	/* namespaces on death row */
 	struct list_head	exit_list;	/* Use only net_mutex */
 
 	struct user_namespace   *user_ns;	/* Owning user namespace */
+<<<<<<< HEAD
 
 	unsigned int		proc_inum;
+=======
+	struct ucounts		*ucounts;
+	spinlock_t		nsid_lock;
+	struct idr		netns_ids;
+
+	struct ns_common	ns;
+>>>>>>> v4.9.227
 
 	struct proc_dir_entry 	*proc_net;
 	struct proc_dir_entry 	*proc_net_stat;
@@ -116,6 +139,15 @@ struct net {
 #endif
 	struct sock		*nfnl;
 	struct sock		*nfnl_stash;
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_NETFILTER_NETLINK_ACCT)
+	struct list_head        nfnl_acct_list;
+#endif
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK_TIMEOUT)
+	struct list_head	nfct_timeout_list;
+#endif
+>>>>>>> v4.9.227
 #endif
 #ifdef CONFIG_WEXT_CORE
 	struct sk_buff_head	wext_nlevents;
@@ -129,6 +161,12 @@ struct net {
 #if IS_ENABLED(CONFIG_IP_VS)
 	struct netns_ipvs	*ipvs;
 #endif
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_MPLS)
+	struct netns_mpls	mpls;
+#endif
+>>>>>>> v4.9.227
 	struct sock		*diag_nlsk;
 	atomic_t		fnhe_genid;
 };
@@ -158,7 +196,11 @@ static inline struct net *copy_net_ns(unsigned long flags,
 extern struct list_head net_namespace_list;
 
 struct net *get_net_ns_by_pid(pid_t pid);
+<<<<<<< HEAD
 struct net *get_net_ns_by_fd(int pid);
+=======
+struct net *get_net_ns_by_fd(int fd);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_SYSCTL
 void ipx_register_sysctl(void);
@@ -239,6 +281,7 @@ static inline int check_net(const struct net *net)
 #endif
 
 
+<<<<<<< HEAD
 #ifdef NETNS_REFCNT_DEBUG
 static inline struct net *hold_net(struct net *net)
 {
@@ -281,6 +324,29 @@ static inline struct net *read_pnet(struct net * const *pnet)
 #define read_pnet(pnet)		(&init_net)
 
 #endif
+=======
+typedef struct {
+#ifdef CONFIG_NET_NS
+	struct net *net;
+#endif
+} possible_net_t;
+
+static inline void write_pnet(possible_net_t *pnet, struct net *net)
+{
+#ifdef CONFIG_NET_NS
+	pnet->net = net;
+#endif
+}
+
+static inline struct net *read_pnet(const possible_net_t *pnet)
+{
+#ifdef CONFIG_NET_NS
+	return pnet->net;
+#else
+	return &init_net;
+#endif
+}
+>>>>>>> v4.9.227
 
 #define for_each_net(VAR)				\
 	list_for_each_entry(VAR, &net_namespace_list, list)
@@ -295,11 +361,23 @@ static inline struct net *read_pnet(struct net * const *pnet)
 #define __net_initconst
 #else
 #define __net_init	__init
+<<<<<<< HEAD
 #define __net_exit	__exit_refok
+=======
+#define __net_exit	__ref
+>>>>>>> v4.9.227
 #define __net_initdata	__initdata
 #define __net_initconst	__initconst
 #endif
 
+<<<<<<< HEAD
+=======
+int peernet2id_alloc(struct net *net, struct net *peer);
+int peernet2id(struct net *net, struct net *peer);
+bool peernet_has_id(struct net *net, struct net *peer);
+struct net *get_net_ns_by_id(struct net *net, int id);
+
+>>>>>>> v4.9.227
 struct pernet_operations {
 	struct list_head list;
 	int (*init)(struct net *net);

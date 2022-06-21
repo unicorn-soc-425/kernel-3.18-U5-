@@ -62,6 +62,7 @@ int strncasecmp(const char *s1, const char *s2, size_t len)
 }
 EXPORT_SYMBOL(strncasecmp);
 #endif
+<<<<<<< HEAD
 #ifndef __HAVE_ARCH_STRNICMP
 #undef strnicmp
 int strnicmp(const char *s1, const char *s2, size_t len)
@@ -70,6 +71,8 @@ int strnicmp(const char *s1, const char *s2, size_t len)
 }
 EXPORT_SYMBOL(strnicmp);
 #endif
+=======
+>>>>>>> v4.9.227
 
 #ifndef __HAVE_ARCH_STRCASECMP
 int strcasecmp(const char *s1, const char *s2)
@@ -210,7 +213,11 @@ ssize_t strscpy(char *dest, const char *src, size_t count)
 	while (max >= sizeof(unsigned long)) {
 		unsigned long c, data;
 
+<<<<<<< HEAD
 		c = *(unsigned long *)(src+res);
+=======
+		c = read_word_at_a_time(src+res);
+>>>>>>> v4.9.227
 		if (has_zero(c, &data, &constants)) {
 			data = prep_zero_mask(c, data, &constants);
 			data = create_zero_mask(data);
@@ -410,12 +417,21 @@ EXPORT_SYMBOL(strchrnul);
  */
 char *strrchr(const char *s, int c)
 {
+<<<<<<< HEAD
        const char *p = s + strlen(s);
        do {
            if (*p == (char)c)
                return (char *)p;
        } while (--p >= s);
        return NULL;
+=======
+	const char *last = NULL;
+	do {
+		if (*s == (char)c)
+			last = s;
+	} while (*s++);
+	return (char *)last;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(strrchr);
 #endif
@@ -664,6 +680,7 @@ int match_string(const char * const *array, size_t n, const char *string)
 }
 EXPORT_SYMBOL(match_string);
 
+<<<<<<< HEAD
 /**
  * __sysfs_match_string - matches given string in an array
  * @array: array of strings
@@ -719,6 +736,8 @@ int strtobool(const char *s, bool *res)
 }
 EXPORT_SYMBOL(strtobool);
 
+=======
+>>>>>>> v4.9.227
 #ifndef __HAVE_ARCH_MEMSET
 /**
  * memset - Fill a region of memory with the given value
@@ -745,6 +764,14 @@ EXPORT_SYMBOL(memset);
  * @s: Pointer to the start of the area.
  * @count: The size of the area.
  *
+<<<<<<< HEAD
+=======
+ * Note: usually using memset() is just fine (!), but in cases
+ * where clearing out _local_ data at the end of a scope is
+ * necessary, memzero_explicit() should be used instead in
+ * order to prevent the compiler from optimising away zeroing.
+ *
+>>>>>>> v4.9.227
  * memzero_explicit() doesn't need an arch-specific version as
  * it just invokes the one of memset() implicitly.
  */
@@ -830,6 +857,29 @@ __visible int memcmp(const void *cs, const void *ct, size_t count)
 EXPORT_SYMBOL(memcmp);
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef __HAVE_ARCH_BCMP
+/**
+ * bcmp - returns 0 if and only if the buffers have identical contents.
+ * @a: pointer to first buffer.
+ * @b: pointer to second buffer.
+ * @len: size of buffers.
+ *
+ * The sign or magnitude of a non-zero return value has no particular
+ * meaning, and architectures may implement their own more efficient bcmp(). So
+ * while this particular implementation is a simple (tail) call to memcmp, do
+ * not rely on anything but whether the return value is zero or non-zero.
+ */
+#undef bcmp
+int bcmp(const void *a, const void *b, size_t len)
+{
+	return memcmp(a, b, len);
+}
+EXPORT_SYMBOL(bcmp);
+#endif
+
+>>>>>>> v4.9.227
 #ifndef __HAVE_ARCH_MEMSCAN
 /**
  * memscan - Find a character in an area of memory.
@@ -959,7 +1009,11 @@ void *memchr_inv(const void *start, int c, size_t bytes)
 
 	value64 = value;
 #if defined(CONFIG_ARCH_HAS_FAST_MULTIPLIER) && BITS_PER_LONG == 64
+<<<<<<< HEAD
 	value64 *= 0x0101010101010101;
+=======
+	value64 *= 0x0101010101010101ULL;
+>>>>>>> v4.9.227
 #elif defined(CONFIG_ARCH_HAS_FAST_MULTIPLIER)
 	value64 *= 0x01010101;
 	value64 |= value64 << 32;

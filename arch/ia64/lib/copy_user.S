@@ -30,6 +30,10 @@
  */
 
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 //
 // Tuneable parameters
@@ -608,3 +612,7 @@ GLOBAL_ENTRY(__copy_user)
 	mov ar.pfs=saved_pfs
 	br.ret.sptk.many rp
 END(__copy_user)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__copy_user)
+>>>>>>> v4.9.227

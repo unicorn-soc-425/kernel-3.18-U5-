@@ -77,6 +77,7 @@ static void mcf54xx_reset(void)
 
 /***************************************************************************/
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 
 unsigned long num_pages;
@@ -118,6 +119,12 @@ void __init config_BSP(char *commandp, int size)
 {
 #ifdef CONFIG_MMU
 	mcf54xx_bootmem_alloc();
+=======
+void __init config_BSP(char *commandp, int size)
+{
+#ifdef CONFIG_MMU
+	cf_bootmem_alloc();
+>>>>>>> v4.9.227
 	mmu_context_init();
 #endif
 	mach_reset = mcf54xx_reset;

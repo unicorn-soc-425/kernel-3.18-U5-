@@ -5,23 +5,37 @@
 #include <linux/seq_file.h>
 #include <linux/time.h>
 #include <linux/kernel_stat.h>
+<<<<<<< HEAD
 #include <linux/cputime.h>
+=======
+>>>>>>> v4.9.227
 
 static int uptime_proc_show(struct seq_file *m, void *v)
 {
 	struct timespec uptime;
 	struct timespec idle;
+<<<<<<< HEAD
 	u64 idletime;
+=======
+>>>>>>> v4.9.227
 	u64 nsec;
 	u32 rem;
 	int i;
 
+<<<<<<< HEAD
 	idletime = 0;
 	for_each_possible_cpu(i)
 		idletime += (__force u64) kcpustat_cpu(i).cpustat[CPUTIME_IDLE];
 
 	get_monotonic_boottime(&uptime);
 	nsec = cputime64_to_jiffies64(idletime) * TICK_NSEC;
+=======
+	nsec = 0;
+	for_each_possible_cpu(i)
+		nsec += (__force u64) kcpustat_cpu(i).cpustat[CPUTIME_IDLE];
+
+	get_monotonic_boottime(&uptime);
+>>>>>>> v4.9.227
 	idle.tv_sec = div_u64_rem(nsec, NSEC_PER_SEC, &rem);
 	idle.tv_nsec = rem;
 	seq_printf(m, "%lu.%02lu %lu.%02lu\n",

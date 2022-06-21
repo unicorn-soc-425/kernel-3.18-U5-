@@ -30,7 +30,11 @@ static ssize_t ieee80211_if_read(
 	size_t count, loff_t *ppos,
 	ssize_t (*format)(const struct ieee80211_sub_if_data *, char *, int))
 {
+<<<<<<< HEAD
 	char buf[70];
+=======
+	char buf[200];
+>>>>>>> v4.9.227
 	ssize_t ret = -EINVAL;
 
 	read_lock(&dev_base_lock);
@@ -114,6 +118,7 @@ static ssize_t ieee80211_if_fmt_##name(					\
 	return scnprintf(buf, buflen, "%pM\n", sdata->field);		\
 }
 
+<<<<<<< HEAD
 #define IEEE80211_IF_FMT_DEC_DIV_16(name, field)			\
 static ssize_t ieee80211_if_fmt_##name(					\
 	const struct ieee80211_sub_if_data *sdata,			\
@@ -122,6 +127,8 @@ static ssize_t ieee80211_if_fmt_##name(					\
 	return scnprintf(buf, buflen, "%d\n", sdata->field / 16);	\
 }
 
+=======
+>>>>>>> v4.9.227
 #define IEEE80211_IF_FMT_JIFFIES_TO_MS(name, field)			\
 static ssize_t ieee80211_if_fmt_##name(					\
 	const struct ieee80211_sub_if_data *sdata,			\
@@ -177,6 +184,7 @@ static ssize_t ieee80211_if_write_##name(struct file *file,		\
 	IEEE80211_IF_FILE_R(name)
 
 /* common attributes */
+<<<<<<< HEAD
 IEEE80211_IF_FILE(drop_unencrypted, drop_unencrypted, DEC);
 IEEE80211_IF_FILE(rc_rateidx_mask_2ghz, rc_rateidx_mask[IEEE80211_BAND_2GHZ],
 		  HEX);
@@ -186,6 +194,48 @@ IEEE80211_IF_FILE(rc_rateidx_mcs_mask_2ghz,
 		  rc_rateidx_mcs_mask[IEEE80211_BAND_2GHZ], HEXARRAY);
 IEEE80211_IF_FILE(rc_rateidx_mcs_mask_5ghz,
 		  rc_rateidx_mcs_mask[IEEE80211_BAND_5GHZ], HEXARRAY);
+=======
+IEEE80211_IF_FILE(rc_rateidx_mask_2ghz, rc_rateidx_mask[NL80211_BAND_2GHZ],
+		  HEX);
+IEEE80211_IF_FILE(rc_rateidx_mask_5ghz, rc_rateidx_mask[NL80211_BAND_5GHZ],
+		  HEX);
+IEEE80211_IF_FILE(rc_rateidx_mcs_mask_2ghz,
+		  rc_rateidx_mcs_mask[NL80211_BAND_2GHZ], HEXARRAY);
+IEEE80211_IF_FILE(rc_rateidx_mcs_mask_5ghz,
+		  rc_rateidx_mcs_mask[NL80211_BAND_5GHZ], HEXARRAY);
+
+static ssize_t ieee80211_if_fmt_rc_rateidx_vht_mcs_mask_2ghz(
+				const struct ieee80211_sub_if_data *sdata,
+				char *buf, int buflen)
+{
+	int i, len = 0;
+	const u16 *mask = sdata->rc_rateidx_vht_mcs_mask[NL80211_BAND_2GHZ];
+
+	for (i = 0; i < NL80211_VHT_NSS_MAX; i++)
+		len += scnprintf(buf + len, buflen - len, "%04x ", mask[i]);
+	len += scnprintf(buf + len, buflen - len, "\n");
+
+	return len;
+}
+
+IEEE80211_IF_FILE_R(rc_rateidx_vht_mcs_mask_2ghz);
+
+static ssize_t ieee80211_if_fmt_rc_rateidx_vht_mcs_mask_5ghz(
+				const struct ieee80211_sub_if_data *sdata,
+				char *buf, int buflen)
+{
+	int i, len = 0;
+	const u16 *mask = sdata->rc_rateidx_vht_mcs_mask[NL80211_BAND_5GHZ];
+
+	for (i = 0; i < NL80211_VHT_NSS_MAX; i++)
+		len += scnprintf(buf + len, buflen - len, "%04x ", mask[i]);
+	len += scnprintf(buf + len, buflen - len, "\n");
+
+	return len;
+}
+
+IEEE80211_IF_FILE_R(rc_rateidx_vht_mcs_mask_5ghz);
+>>>>>>> v4.9.227
 
 IEEE80211_IF_FILE(flags, flags, HEX);
 IEEE80211_IF_FILE(state, state, LHEX);
@@ -216,8 +266,11 @@ IEEE80211_IF_FILE_R(hw_queues);
 /* STA attributes */
 IEEE80211_IF_FILE(bssid, u.mgd.bssid, MAC);
 IEEE80211_IF_FILE(aid, u.mgd.aid, DEC);
+<<<<<<< HEAD
 IEEE80211_IF_FILE(last_beacon, u.mgd.last_beacon_signal, DEC);
 IEEE80211_IF_FILE(ave_beacon, u.mgd.ave_beacon_signal, DEC_DIV_16);
+=======
+>>>>>>> v4.9.227
 IEEE80211_IF_FILE(beacon_timeout, u.mgd.beacon_timeout, JIFFIES_TO_MS);
 
 static int ieee80211_set_smps(struct ieee80211_sub_if_data *sdata,
@@ -424,6 +477,37 @@ static ssize_t ieee80211_if_parse_uapsd_max_sp_len(
 }
 IEEE80211_IF_FILE_RW(uapsd_max_sp_len);
 
+<<<<<<< HEAD
+=======
+static ssize_t ieee80211_if_fmt_tdls_wider_bw(
+	const struct ieee80211_sub_if_data *sdata, char *buf, int buflen)
+{
+	const struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
+	bool tdls_wider_bw;
+
+	tdls_wider_bw = ieee80211_hw_check(&sdata->local->hw, TDLS_WIDER_BW) &&
+			!ifmgd->tdls_wider_bw_prohibited;
+
+	return snprintf(buf, buflen, "%d\n", tdls_wider_bw);
+}
+
+static ssize_t ieee80211_if_parse_tdls_wider_bw(
+	struct ieee80211_sub_if_data *sdata, const char *buf, int buflen)
+{
+	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
+	u8 val;
+	int ret;
+
+	ret = kstrtou8(buf, 0, &val);
+	if (ret)
+		return ret;
+
+	ifmgd->tdls_wider_bw_prohibited = !val;
+	return buflen;
+}
+IEEE80211_IF_FILE_RW(tdls_wider_bw);
+
+>>>>>>> v4.9.227
 /* AP attributes */
 IEEE80211_IF_FILE(num_mcast_sta, u.ap.num_mcast_sta, ATOMIC);
 IEEE80211_IF_FILE(num_sta_ps, u.ap.ps.num_sta_ps, ATOMIC);
@@ -437,6 +521,46 @@ static ssize_t ieee80211_if_fmt_num_buffered_multicast(
 }
 IEEE80211_IF_FILE_R(num_buffered_multicast);
 
+<<<<<<< HEAD
+=======
+static ssize_t ieee80211_if_fmt_aqm(
+	const struct ieee80211_sub_if_data *sdata, char *buf, int buflen)
+{
+	struct ieee80211_local *local = sdata->local;
+	struct txq_info *txqi;
+	int len;
+
+	if (!sdata->vif.txq)
+		return 0;
+
+	txqi = to_txq_info(sdata->vif.txq);
+
+	spin_lock_bh(&local->fq.lock);
+	rcu_read_lock();
+
+	len = scnprintf(buf,
+			buflen,
+			"ac backlog-bytes backlog-packets new-flows drops marks overlimit collisions tx-bytes tx-packets\n"
+			"%u %u %u %u %u %u %u %u %u %u\n",
+			txqi->txq.ac,
+			txqi->tin.backlog_bytes,
+			txqi->tin.backlog_packets,
+			txqi->tin.flows,
+			txqi->cstats.drop_count,
+			txqi->cstats.ecn_mark,
+			txqi->tin.overlimit,
+			txqi->tin.collisions,
+			txqi->tin.tx_bytes,
+			txqi->tin.tx_packets);
+
+	rcu_read_unlock();
+	spin_unlock_bh(&local->fq.lock);
+
+	return len;
+}
+IEEE80211_IF_FILE_R(aqm);
+
+>>>>>>> v4.9.227
 /* IBSS attributes */
 static ssize_t ieee80211_if_fmt_tsf(
 	const struct ieee80211_sub_if_data *sdata, char *buf, int buflen)
@@ -475,9 +599,21 @@ static ssize_t ieee80211_if_parse_tsf(
 		ret = kstrtoull(buf, 10, &tsf);
 		if (ret < 0)
 			return ret;
+<<<<<<< HEAD
 		if (tsf_is_delta)
 			tsf = drv_get_tsf(local, sdata) + tsf_is_delta * tsf;
 		if (local->ops->set_tsf) {
+=======
+		if (tsf_is_delta && local->ops->offset_tsf) {
+			drv_offset_tsf(local, sdata, tsf_is_delta * tsf);
+			wiphy_info(local->hw.wiphy,
+				   "debugfs offset TSF by %018lld\n",
+				   tsf_is_delta * tsf);
+		} else if (local->ops->set_tsf) {
+			if (tsf_is_delta)
+				tsf = drv_get_tsf(local, sdata) +
+				      tsf_is_delta * tsf;
+>>>>>>> v4.9.227
 			drv_set_tsf(local, sdata, tsf);
 			wiphy_info(local->hw.wiphy,
 				   "debugfs set TSF to %#018llx\n", tsf);
@@ -562,26 +698,47 @@ IEEE80211_IF_FILE(dot11MeshAwakeWindowDuration,
 
 static void add_common_files(struct ieee80211_sub_if_data *sdata)
 {
+<<<<<<< HEAD
 	DEBUGFS_ADD(drop_unencrypted);
+=======
+>>>>>>> v4.9.227
 	DEBUGFS_ADD(rc_rateidx_mask_2ghz);
 	DEBUGFS_ADD(rc_rateidx_mask_5ghz);
 	DEBUGFS_ADD(rc_rateidx_mcs_mask_2ghz);
 	DEBUGFS_ADD(rc_rateidx_mcs_mask_5ghz);
+<<<<<<< HEAD
 	DEBUGFS_ADD(hw_queues);
+=======
+	DEBUGFS_ADD(rc_rateidx_vht_mcs_mask_2ghz);
+	DEBUGFS_ADD(rc_rateidx_vht_mcs_mask_5ghz);
+	DEBUGFS_ADD(hw_queues);
+
+	if (sdata->local->ops->wake_tx_queue &&
+	    sdata->vif.type != NL80211_IFTYPE_P2P_DEVICE &&
+	    sdata->vif.type != NL80211_IFTYPE_NAN)
+		DEBUGFS_ADD(aqm);
+>>>>>>> v4.9.227
 }
 
 static void add_sta_files(struct ieee80211_sub_if_data *sdata)
 {
 	DEBUGFS_ADD(bssid);
 	DEBUGFS_ADD(aid);
+<<<<<<< HEAD
 	DEBUGFS_ADD(last_beacon);
 	DEBUGFS_ADD(ave_beacon);
+=======
+>>>>>>> v4.9.227
 	DEBUGFS_ADD(beacon_timeout);
 	DEBUGFS_ADD_MODE(smps, 0600);
 	DEBUGFS_ADD_MODE(tkip_mic_test, 0200);
 	DEBUGFS_ADD_MODE(beacon_loss, 0200);
 	DEBUGFS_ADD_MODE(uapsd_queues, 0600);
 	DEBUGFS_ADD_MODE(uapsd_max_sp_len, 0600);
+<<<<<<< HEAD
+=======
+	DEBUGFS_ADD_MODE(tdls_wider_bw, 0600);
+>>>>>>> v4.9.227
 }
 
 static void add_ap_files(struct ieee80211_sub_if_data *sdata)

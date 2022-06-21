@@ -50,6 +50,7 @@ def tcm_mod_build_FC_include(fabric_mod_dir_var, fabric_mod_name):
 	buf = "#define " + fabric_mod_name.upper() + "_VERSION	\"v0.1\"\n"
 	buf += "#define " + fabric_mod_name.upper() + "_NAMELEN	32\n"
 	buf += "\n"
+<<<<<<< HEAD
 	buf += "struct " + fabric_mod_name + "_nacl {\n"
 	buf += "	/* Binary World Wide unique Port Name for FC Initiator Nport */\n"
 	buf += "	u64 nport_wwpn;\n"
@@ -59,6 +60,8 @@ def tcm_mod_build_FC_include(fabric_mod_dir_var, fabric_mod_name):
 	buf += "	struct se_node_acl se_node_acl;\n"
 	buf += "};\n"
 	buf += "\n"
+=======
+>>>>>>> v4.9.227
 	buf += "struct " + fabric_mod_name + "_tpg {\n"
 	buf += "	/* FC lport target portal group tag for TCM */\n"
 	buf += "	u16 lport_tpgt;\n"
@@ -69,8 +72,11 @@ def tcm_mod_build_FC_include(fabric_mod_dir_var, fabric_mod_name):
 	buf += "};\n"
 	buf += "\n"
 	buf += "struct " + fabric_mod_name + "_lport {\n"
+<<<<<<< HEAD
 	buf += "	/* SCSI protocol the lport is providing */\n"
 	buf += "	u8 lport_proto_id;\n"
+=======
+>>>>>>> v4.9.227
 	buf += "	/* Binary World Wide unique Port Name for FC Target Lport */\n"
 	buf += "	u64 lport_wwpn;\n"
 	buf += "	/* ASCII formatted WWPN for FC Target Lport */\n"
@@ -105,6 +111,7 @@ def tcm_mod_build_SAS_include(fabric_mod_dir_var, fabric_mod_name):
 	buf = "#define " + fabric_mod_name.upper() + "_VERSION  \"v0.1\"\n"
 	buf += "#define " + fabric_mod_name.upper() + "_NAMELEN 32\n"
 	buf += "\n"
+<<<<<<< HEAD
 	buf += "struct " + fabric_mod_name + "_nacl {\n"
 	buf += "	/* Binary World Wide unique Port Name for SAS Initiator port */\n"
 	buf += "	u64 iport_wwpn;\n"
@@ -113,6 +120,8 @@ def tcm_mod_build_SAS_include(fabric_mod_dir_var, fabric_mod_name):
 	buf += "	/* Returned by " + fabric_mod_name + "_make_nodeacl() */\n"
 	buf += "	struct se_node_acl se_node_acl;\n"
 	buf += "};\n\n"
+=======
+>>>>>>> v4.9.227
 	buf += "struct " + fabric_mod_name + "_tpg {\n"
 	buf += "	/* SAS port target portal group tag for TCM */\n"
 	buf += "	u16 tport_tpgt;\n"
@@ -122,8 +131,11 @@ def tcm_mod_build_SAS_include(fabric_mod_dir_var, fabric_mod_name):
 	buf += "	struct se_portal_group se_tpg;\n"
 	buf += "};\n\n"
 	buf += "struct " + fabric_mod_name + "_tport {\n"
+<<<<<<< HEAD
 	buf += "	/* SCSI protocol the tport is providing */\n"
 	buf += "	u8 tport_proto_id;\n"
+=======
+>>>>>>> v4.9.227
 	buf += "	/* Binary World Wide unique Port Name for SAS Target port */\n"
 	buf += "	u64 tport_wwpn;\n"
 	buf += "	/* ASCII formatted WWPN for SAS Target port */\n"
@@ -158,12 +170,15 @@ def tcm_mod_build_iSCSI_include(fabric_mod_dir_var, fabric_mod_name):
 	buf = "#define " + fabric_mod_name.upper() + "_VERSION  \"v0.1\"\n"
 	buf += "#define " + fabric_mod_name.upper() + "_NAMELEN 32\n"
 	buf += "\n"
+<<<<<<< HEAD
 	buf += "struct " + fabric_mod_name + "_nacl {\n"
 	buf += "	/* ASCII formatted InitiatorName */\n"
 	buf += "	char iport_name[" + fabric_mod_name.upper() + "_NAMELEN];\n"
 	buf += "	/* Returned by " + fabric_mod_name + "_make_nodeacl() */\n"
 	buf += "	struct se_node_acl se_node_acl;\n"
 	buf += "};\n\n"
+=======
+>>>>>>> v4.9.227
 	buf += "struct " + fabric_mod_name + "_tpg {\n"
 	buf += "	/* iSCSI target portal group tag for TCM */\n"
 	buf += "	u16 tport_tpgt;\n"
@@ -173,8 +188,11 @@ def tcm_mod_build_iSCSI_include(fabric_mod_dir_var, fabric_mod_name):
 	buf += "	struct se_portal_group se_tpg;\n"
 	buf += "};\n\n"
 	buf += "struct " + fabric_mod_name + "_tport {\n"
+<<<<<<< HEAD
 	buf += "	/* SCSI protocol the tport is providing */\n"
 	buf += "	u8 tport_proto_id;\n"
+=======
+>>>>>>> v4.9.227
 	buf += "	/* ASCII formatted TargetName for IQN */\n"
 	buf += "	char tport_name[" + fabric_mod_name.upper() + "_NAMELEN];\n"
 	buf += "	/* Returned by " + fabric_mod_name + "_make_tport() */\n"
@@ -228,6 +246,7 @@ def tcm_mod_build_configfs(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "#include <linux/string.h>\n"
 	buf += "#include <linux/configfs.h>\n"
 	buf += "#include <linux/ctype.h>\n"
+<<<<<<< HEAD
 	buf += "#include <asm/unaligned.h>\n\n"
 	buf += "#include <target/target_core_base.h>\n"
 	buf += "#include <target/target_core_fabric.h>\n"
@@ -287,6 +306,16 @@ def tcm_mod_build_configfs(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "	core_tpg_del_initiator_node_acl(se_acl->se_tpg, se_acl, 1);\n"
 	buf += "	kfree(nacl);\n"
 	buf += "}\n\n"
+=======
+	buf += "#include <asm/unaligned.h>\n"
+	buf += "#include <scsi/scsi_proto.h>\n\n"
+	buf += "#include <target/target_core_base.h>\n"
+	buf += "#include <target/target_core_fabric.h>\n"
+	buf += "#include \"" + fabric_mod_name + "_base.h\"\n"
+	buf += "#include \"" + fabric_mod_name + "_fabric.h\"\n\n"
+
+	buf += "static const struct target_core_fabric_ops " + fabric_mod_name + "_ops;\n\n"
+>>>>>>> v4.9.227
 
 	buf += "static struct se_portal_group *" + fabric_mod_name + "_make_tpg(\n"
 	buf += "	struct se_wwn *wwn,\n"
@@ -309,9 +338,20 @@ def tcm_mod_build_configfs(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "	}\n"
 	buf += "	tpg->" + fabric_mod_port + " = " + fabric_mod_port + ";\n"
 	buf += "	tpg->" + fabric_mod_port + "_tpgt = tpgt;\n\n"
+<<<<<<< HEAD
 	buf += "	ret = core_tpg_register(&" + fabric_mod_name + "_fabric_configfs->tf_ops, wwn,\n"
 	buf += "				&tpg->se_tpg, (void *)tpg,\n"
 	buf += "				TRANSPORT_TPG_TYPE_NORMAL);\n"
+=======
+
+	if proto_ident == "FC":
+		buf += "	ret = core_tpg_register(wwn, &tpg->se_tpg, SCSI_PROTOCOL_FCP);\n"
+	elif proto_ident == "SAS":
+		buf += "	ret = core_tpg_register(wwn, &tpg->se_tpg, SCSI_PROTOCOL_SAS);\n"
+	elif proto_ident == "iSCSI":
+		buf += "	ret = core_tpg_register(wwn, &tpg->se_tpg, SCSI_PROTOCOL_ISCSI);\n"
+
+>>>>>>> v4.9.227
 	buf += "	if (ret < 0) {\n"
 	buf += "		kfree(tpg);\n"
 	buf += "		return NULL;\n"
@@ -356,6 +396,7 @@ def tcm_mod_build_configfs(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "				struct " + fabric_mod_name + "_" + fabric_mod_port + ", " + fabric_mod_port + "_wwn);\n"
 	buf += "	kfree(" + fabric_mod_port + ");\n"
 	buf += "}\n\n"
+<<<<<<< HEAD
 	buf += "static ssize_t " + fabric_mod_name + "_wwn_show_attr_version(\n"
 	buf += "	struct target_fabric_configfs *tf,\n"
 	buf += "	char *page)\n"
@@ -379,10 +420,20 @@ def tcm_mod_build_configfs(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "	.tpg_get_pr_transport_id	= " + fabric_mod_name + "_get_pr_transport_id,\n"
 	buf += "	.tpg_get_pr_transport_id_len	= " + fabric_mod_name + "_get_pr_transport_id_len,\n"
 	buf += "	.tpg_parse_pr_out_transport_id	= " + fabric_mod_name + "_parse_pr_out_transport_id,\n"
+=======
+
+	buf += "static const struct target_core_fabric_ops " + fabric_mod_name + "_ops = {\n"
+	buf += "	.module				= THIS_MODULE,\n"
+	buf += "	.name				= \"" + fabric_mod_name + "\",\n"
+	buf += "	.get_fabric_name		= " + fabric_mod_name + "_get_fabric_name,\n"
+	buf += "	.tpg_get_wwn			= " + fabric_mod_name + "_get_fabric_wwn,\n"
+	buf += "	.tpg_get_tag			= " + fabric_mod_name + "_get_tag,\n"
+>>>>>>> v4.9.227
 	buf += "	.tpg_check_demo_mode		= " + fabric_mod_name + "_check_false,\n"
 	buf += "	.tpg_check_demo_mode_cache	= " + fabric_mod_name + "_check_true,\n"
 	buf += "	.tpg_check_demo_mode_write_protect = " + fabric_mod_name + "_check_true,\n"
 	buf += "	.tpg_check_prod_mode_write_protect = " + fabric_mod_name + "_check_false,\n"
+<<<<<<< HEAD
 	buf += "	.tpg_alloc_fabric_acl		= " + fabric_mod_name + "_alloc_fabric_acl,\n"
 	buf += "	.tpg_release_fabric_acl		= " + fabric_mod_name + "_release_fabric_acl,\n"
 	buf += "	.tpg_get_inst_index		= " + fabric_mod_name + "_tpg_get_inst_index,\n"
@@ -392,17 +443,28 @@ def tcm_mod_build_configfs(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "	.stop_session			= " + fabric_mod_name + "_stop_session,\n"
 	buf += "	.fall_back_to_erl0		= " + fabric_mod_name + "_reset_nexus,\n"
 	buf += "	.sess_logged_in			= " + fabric_mod_name + "_sess_logged_in,\n"
+=======
+	buf += "	.tpg_get_inst_index		= " + fabric_mod_name + "_tpg_get_inst_index,\n"
+	buf += "	.release_cmd			= " + fabric_mod_name + "_release_cmd,\n"
+>>>>>>> v4.9.227
 	buf += "	.sess_get_index			= " + fabric_mod_name + "_sess_get_index,\n"
 	buf += "	.sess_get_initiator_sid		= NULL,\n"
 	buf += "	.write_pending			= " + fabric_mod_name + "_write_pending,\n"
 	buf += "	.write_pending_status		= " + fabric_mod_name + "_write_pending_status,\n"
 	buf += "	.set_default_node_attributes	= " + fabric_mod_name + "_set_default_node_attrs,\n"
+<<<<<<< HEAD
 	buf += "	.get_task_tag			= " + fabric_mod_name + "_get_task_tag,\n"
+=======
+>>>>>>> v4.9.227
 	buf += "	.get_cmd_state			= " + fabric_mod_name + "_get_cmd_state,\n"
 	buf += "	.queue_data_in			= " + fabric_mod_name + "_queue_data_in,\n"
 	buf += "	.queue_status			= " + fabric_mod_name + "_queue_status,\n"
 	buf += "	.queue_tm_rsp			= " + fabric_mod_name + "_queue_tm_rsp,\n"
+<<<<<<< HEAD
 	buf += "	.is_state_remove		= " + fabric_mod_name + "_is_state_remove,\n"
+=======
+	buf += "	.aborted_task			= " + fabric_mod_name + "_aborted_task,\n"
+>>>>>>> v4.9.227
 	buf += "	/*\n"
 	buf += "	 * Setup function pointers for generic logic in target_core_fabric_configfs.c\n"
 	buf += "	 */\n"
@@ -410,6 +472,7 @@ def tcm_mod_build_configfs(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "	.fabric_drop_wwn		= " + fabric_mod_name + "_drop_" + fabric_mod_port + ",\n"
 	buf += "	.fabric_make_tpg		= " + fabric_mod_name + "_make_tpg,\n"
 	buf += "	.fabric_drop_tpg		= " + fabric_mod_name + "_drop_tpg,\n"
+<<<<<<< HEAD
 	buf += "	.fabric_post_link		= NULL,\n"
 	buf += "	.fabric_pre_unlink		= NULL,\n"
 	buf += "	.fabric_make_np			= NULL,\n"
@@ -472,10 +535,13 @@ def tcm_mod_build_configfs(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "	target_fabric_configfs_deregister(" + fabric_mod_name + "_fabric_configfs);\n"
 	buf += "	" + fabric_mod_name + "_fabric_configfs = NULL;\n"
 	buf += "	printk(KERN_INFO \"" +  fabric_mod_name.upper() + "[0] - Cleared " + fabric_mod_name + "_fabric_configfs\\n\");\n"
+=======
+>>>>>>> v4.9.227
 	buf += "};\n\n"
 
 	buf += "static int __init " + fabric_mod_name + "_init(void)\n"
 	buf += "{\n"
+<<<<<<< HEAD
 	buf += "	int ret;\n\n"
 	buf += "	ret = " + fabric_mod_name + "_register_configfs();\n"
 	buf += "	if (ret < 0)\n"
@@ -485,6 +551,14 @@ def tcm_mod_build_configfs(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "static void __exit " + fabric_mod_name + "_exit(void)\n"
 	buf += "{\n"
 	buf += "	" + fabric_mod_name + "_deregister_configfs();\n"
+=======
+	buf += "	return target_register_template(&" + fabric_mod_name + "_ops);\n"
+	buf += "};\n\n"
+
+	buf += "static void __exit " + fabric_mod_name + "_exit(void)\n"
+	buf += "{\n"
+	buf += "	target_unregister_template(&" + fabric_mod_name + "_ops);\n"
+>>>>>>> v4.9.227
 	buf += "};\n\n"
 
 	buf += "MODULE_DESCRIPTION(\"" + fabric_mod_name.upper() + " series fabric driver\");\n"
@@ -561,6 +635,7 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "#include <linux/string.h>\n"
 	buf += "#include <linux/ctype.h>\n"
 	buf += "#include <asm/unaligned.h>\n"
+<<<<<<< HEAD
 	buf += "#include <scsi/scsi.h>\n"
 	buf += "#include <scsi/scsi_host.h>\n"
 	buf += "#include <scsi/scsi_device.h>\n"
@@ -569,6 +644,12 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf += "#include <target/target_core_base.h>\n"
 	buf += "#include <target/target_core_fabric.h>\n"
 	buf += "#include <target/target_core_configfs.h>\n\n"
+=======
+	buf += "#include <scsi/scsi_common.h>\n"
+	buf += "#include <scsi/scsi_proto.h>\n"
+	buf += "#include <target/target_core_base.h>\n"
+	buf += "#include <target/target_core_fabric.h>\n"
+>>>>>>> v4.9.227
 	buf += "#include \"" + fabric_mod_name + "_base.h\"\n"
 	buf += "#include \"" + fabric_mod_name + "_fabric.h\"\n\n"
 
@@ -595,11 +676,16 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 		if re.search('get_fabric_name', fo):
 			buf += "char *" + fabric_mod_name + "_get_fabric_name(void)\n"
 			buf += "{\n"
+<<<<<<< HEAD
 			buf += "	return \"" + fabric_mod_name[4:] + "\";\n"
+=======
+			buf += "	return \"" + fabric_mod_name + "\";\n"
+>>>>>>> v4.9.227
 			buf += "}\n\n"
 			bufi += "char *" + fabric_mod_name + "_get_fabric_name(void);\n"
 			continue
 
+<<<<<<< HEAD
 		if re.search('get_fabric_proto_ident', fo):
 			buf += "u8 " + fabric_mod_name + "_get_fabric_proto_ident(struct se_portal_group *se_tpg)\n"
 			buf += "{\n"
@@ -629,6 +715,8 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 			buf += "}\n\n"
 			bufi += "u8 " + fabric_mod_name + "_get_fabric_proto_ident(struct se_portal_group *);\n"
 
+=======
+>>>>>>> v4.9.227
 		if re.search('get_wwn', fo):
 			buf += "char *" + fabric_mod_name + "_get_fabric_wwn(struct se_portal_group *se_tpg)\n"
 			buf += "{\n"
@@ -648,6 +736,7 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 			buf += "}\n\n"
 			bufi += "u16 " + fabric_mod_name + "_get_tag(struct se_portal_group *);\n"
 
+<<<<<<< HEAD
 		if re.search('get_default_depth', fo):
 			buf += "u32 " + fabric_mod_name + "_get_default_depth(struct se_portal_group *se_tpg)\n"
 			buf += "{\n"
@@ -792,6 +881,8 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 			bufi += "void " + fabric_mod_name + "_release_fabric_acl(struct se_portal_group *,\n"
 			bufi +=	"			struct se_node_acl *);\n"
 
+=======
+>>>>>>> v4.9.227
 		if re.search('tpg_get_inst_index\)\(', fo):
 			buf += "u32 " + fabric_mod_name + "_tpg_get_inst_index(struct se_portal_group *se_tpg)\n"
 			buf += "{\n"
@@ -806,6 +897,7 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 			buf += "}\n\n"
 			bufi += "void " + fabric_mod_name + "_release_cmd(struct se_cmd *);\n"
 
+<<<<<<< HEAD
 		if re.search('shutdown_session\)\(', fo):
 			buf += "int " + fabric_mod_name + "_shutdown_session(struct se_session *se_sess)\n"
 			buf += "{\n"
@@ -841,6 +933,8 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 			buf += "}\n\n"
 			bufi += "int " + fabric_mod_name + "_sess_logged_in(struct se_session *);\n"
 
+=======
+>>>>>>> v4.9.227
 		if re.search('sess_get_index\)\(', fo):
 			buf += "u32 " + fabric_mod_name + "_sess_get_index(struct se_session *se_sess)\n"
 			buf += "{\n"
@@ -869,6 +963,7 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 			buf += "}\n\n"
 			bufi += "void " + fabric_mod_name + "_set_default_node_attrs(struct se_node_acl *);\n"
 
+<<<<<<< HEAD
 		if re.search('get_task_tag\)\(', fo):
 			buf += "u32 " + fabric_mod_name + "_get_task_tag(struct se_cmd *se_cmd)\n"
 			buf += "{\n"
@@ -876,6 +971,8 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 			buf += "}\n\n"
 			bufi += "u32 " + fabric_mod_name + "_get_task_tag(struct se_cmd *);\n"
 
+=======
+>>>>>>> v4.9.227
 		if re.search('get_cmd_state\)\(', fo):
 			buf += "int " + fabric_mod_name + "_get_cmd_state(struct se_cmd *se_cmd)\n"
 			buf += "{\n"
@@ -898,6 +995,7 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 			bufi += "int " + fabric_mod_name + "_queue_status(struct se_cmd *);\n"
 
 		if re.search('queue_tm_rsp\)\(', fo):
+<<<<<<< HEAD
 			buf += "int " + fabric_mod_name + "_queue_tm_rsp(struct se_cmd *se_cmd)\n"
 			buf += "{\n"
 			buf += "	return 0;\n"
@@ -911,6 +1009,20 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 			buf += "}\n\n"
 			bufi += "int " + fabric_mod_name + "_is_state_remove(struct se_cmd *);\n"
 
+=======
+			buf += "void " + fabric_mod_name + "_queue_tm_rsp(struct se_cmd *se_cmd)\n"
+			buf += "{\n"
+			buf += "	return;\n"
+			buf += "}\n\n"
+			bufi += "void " + fabric_mod_name + "_queue_tm_rsp(struct se_cmd *);\n"
+
+		if re.search('aborted_task\)\(', fo):
+			buf += "void " + fabric_mod_name + "_aborted_task(struct se_cmd *se_cmd)\n"
+			buf += "{\n"
+			buf += "	return;\n"
+			buf += "}\n\n"
+			bufi += "void " + fabric_mod_name + "_aborted_task(struct se_cmd *);\n"
+>>>>>>> v4.9.227
 
 	ret = p.write(buf)
 	if ret:
@@ -1018,11 +1130,19 @@ def main(modname, proto_ident):
 	tcm_mod_build_kbuild(fabric_mod_dir, fabric_mod_name)
 	tcm_mod_build_kconfig(fabric_mod_dir, fabric_mod_name)
 
+<<<<<<< HEAD
 	input = raw_input("Would you like to add " + fabric_mod_name + "to drivers/target/Makefile..? [yes,no]: ")
 	if input == "yes" or input == "y":
 		tcm_mod_add_kbuild(tcm_dir, fabric_mod_name)
 
 	input = raw_input("Would you like to add " + fabric_mod_name + "to drivers/target/Kconfig..? [yes,no]: ")
+=======
+	input = raw_input("Would you like to add " + fabric_mod_name + " to drivers/target/Makefile..? [yes,no]: ")
+	if input == "yes" or input == "y":
+		tcm_mod_add_kbuild(tcm_dir, fabric_mod_name)
+
+	input = raw_input("Would you like to add " + fabric_mod_name + " to drivers/target/Kconfig..? [yes,no]: ")
+>>>>>>> v4.9.227
 	if input == "yes" or input == "y":
 		tcm_mod_add_kconfig(tcm_dir, fabric_mod_name)
 

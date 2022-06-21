@@ -64,6 +64,11 @@ enum pm_qos_flags_status __dev_pm_qos_flags(struct device *dev, s32 mask)
 	struct pm_qos_flags *pqf;
 	s32 val;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&dev->power.lock);
+
+>>>>>>> v4.9.227
 	if (IS_ERR_OR_NULL(qos))
 		return PM_QOS_FLAGS_UNDEFINED;
 
@@ -104,6 +109,11 @@ EXPORT_SYMBOL_GPL(dev_pm_qos_flags);
  */
 s32 __dev_pm_qos_read_value(struct device *dev)
 {
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&dev->power.lock);
+
+>>>>>>> v4.9.227
 	return IS_ERR_OR_NULL(dev->power.qos) ?
 		0 : pm_qos_read_value(&dev->power.qos->resume_latency);
 }
@@ -143,7 +153,11 @@ static int apply_constraint(struct dev_pm_qos_request *req,
 	switch(req->type) {
 	case DEV_PM_QOS_RESUME_LATENCY:
 		ret = pm_qos_update_target(&qos->resume_latency,
+<<<<<<< HEAD
 					   &req->data.lat, action, value);
+=======
+					   &req->data.pnode, action, value);
+>>>>>>> v4.9.227
 		if (ret) {
 			value = pm_qos_read_value(&qos->resume_latency);
 			blocking_notifier_call_chain(&dev_pm_notifiers,
@@ -153,7 +167,11 @@ static int apply_constraint(struct dev_pm_qos_request *req,
 		break;
 	case DEV_PM_QOS_LATENCY_TOLERANCE:
 		ret = pm_qos_update_target(&qos->latency_tolerance,
+<<<<<<< HEAD
 					   &req->data.lat, action, value);
+=======
+					   &req->data.pnode, action, value);
+>>>>>>> v4.9.227
 		if (ret) {
 			value = pm_qos_read_value(&qos->latency_tolerance);
 			req->dev->power.set_latency_tolerance(req->dev, value);
@@ -254,7 +272,11 @@ void dev_pm_qos_constraints_destroy(struct device *dev)
 
 	/* Flush the constraints lists for the device. */
 	c = &qos->resume_latency;
+<<<<<<< HEAD
 	plist_for_each_entry_safe(req, tmp, &c->list, data.lat.node) {
+=======
+	plist_for_each_entry_safe(req, tmp, &c->list, data.pnode) {
+>>>>>>> v4.9.227
 		/*
 		 * Update constraints list and call the notification
 		 * callbacks if needed
@@ -262,11 +284,16 @@ void dev_pm_qos_constraints_destroy(struct device *dev)
 		apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE);
 		memset(req, 0, sizeof(*req));
 	}
+<<<<<<< HEAD
 
 	kfree(c->notifiers);
 
 	c = &qos->latency_tolerance;
 	plist_for_each_entry_safe(req, tmp, &c->list, data.lat.node) {
+=======
+	c = &qos->latency_tolerance;
+	plist_for_each_entry_safe(req, tmp, &c->list, data.pnode) {
+>>>>>>> v4.9.227
 		apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE);
 		memset(req, 0, sizeof(*req));
 	}
@@ -381,7 +408,11 @@ static int __dev_pm_qos_update_request(struct dev_pm_qos_request *req,
 	switch(req->type) {
 	case DEV_PM_QOS_RESUME_LATENCY:
 	case DEV_PM_QOS_LATENCY_TOLERANCE:
+<<<<<<< HEAD
 		curr_value = req->data.lat.node.prio;
+=======
+		curr_value = req->data.pnode.prio;
+>>>>>>> v4.9.227
 		break;
 	case DEV_PM_QOS_FLAGS:
 		curr_value = req->data.flr.flags;
@@ -602,7 +633,10 @@ int dev_pm_qos_add_ancestor_request(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(dev_pm_qos_add_ancestor_request);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+>>>>>>> v4.9.227
 static void __dev_pm_qos_drop_user_request(struct device *dev,
 					   enum dev_pm_qos_req_type type)
 {
@@ -835,7 +869,11 @@ s32 dev_pm_qos_get_user_latency_tolerance(struct device *dev)
 	ret = IS_ERR_OR_NULL(dev->power.qos)
 		|| !dev->power.qos->latency_tolerance_req ?
 			PM_QOS_LATENCY_TOLERANCE_NO_CONSTRAINT :
+<<<<<<< HEAD
 			dev->power.qos->latency_tolerance_req->data.lat.node.prio;
+=======
+			dev->power.qos->latency_tolerance_req->data.pnode.prio;
+>>>>>>> v4.9.227
 	mutex_unlock(&dev_pm_qos_mtx);
 	return ret;
 }
@@ -883,7 +921,47 @@ int dev_pm_qos_update_user_latency_tolerance(struct device *dev, s32 val)
 	mutex_unlock(&dev_pm_qos_mtx);
 	return ret;
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PM_RUNTIME */
 static void __dev_pm_qos_hide_latency_limit(struct device *dev) {}
 static void __dev_pm_qos_hide_flags(struct device *dev) {}
 #endif /* CONFIG_PM_RUNTIME */
+=======
+
+/**
+ * dev_pm_qos_expose_latency_tolerance - Expose latency tolerance to userspace
+ * @dev: Device whose latency tolerance to expose
+ */
+int dev_pm_qos_expose_latency_tolerance(struct device *dev)
+{
+	int ret;
+
+	if (!dev->power.set_latency_tolerance)
+		return -EINVAL;
+
+	mutex_lock(&dev_pm_qos_sysfs_mtx);
+	ret = pm_qos_sysfs_add_latency_tolerance(dev);
+	mutex_unlock(&dev_pm_qos_sysfs_mtx);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(dev_pm_qos_expose_latency_tolerance);
+
+/**
+ * dev_pm_qos_hide_latency_tolerance - Hide latency tolerance from userspace
+ * @dev: Device whose latency tolerance to hide
+ */
+void dev_pm_qos_hide_latency_tolerance(struct device *dev)
+{
+	mutex_lock(&dev_pm_qos_sysfs_mtx);
+	pm_qos_sysfs_remove_latency_tolerance(dev);
+	mutex_unlock(&dev_pm_qos_sysfs_mtx);
+
+	/* Remove the request from user space now */
+	pm_runtime_get_sync(dev);
+	dev_pm_qos_update_user_latency_tolerance(dev,
+		PM_QOS_LATENCY_TOLERANCE_NO_CONSTRAINT);
+	pm_runtime_put(dev);
+}
+EXPORT_SYMBOL_GPL(dev_pm_qos_hide_latency_tolerance);
+>>>>>>> v4.9.227

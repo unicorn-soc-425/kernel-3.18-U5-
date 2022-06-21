@@ -26,6 +26,10 @@
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-common.h>
 #include <media/v4l2-event.h>
+<<<<<<< HEAD
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/videobuf2-dma-contig.h>
 
 #include "solo6x10.h"
@@ -191,13 +195,23 @@ static int solo_v4l2_set_ch(struct solo_dev *solo_dev, u8 ch)
 static void solo_fillbuf(struct solo_dev *solo_dev,
 			 struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	dma_addr_t vbuf;
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	dma_addr_t addr;
+>>>>>>> v4.9.227
 	unsigned int fdma_addr;
 	int error = -1;
 	int i;
 
+<<<<<<< HEAD
 	vbuf = vb2_dma_contig_plane_dma_addr(vb, 0);
 	if (!vbuf)
+=======
+	addr = vb2_dma_contig_plane_dma_addr(vb, 0);
+	if (!addr)
+>>>>>>> v4.9.227
 		goto finish_buf;
 
 	if (erase_off(solo_dev)) {
@@ -213,7 +227,11 @@ static void solo_fillbuf(struct solo_dev *solo_dev,
 		fdma_addr = SOLO_DISP_EXT_ADDR + (solo_dev->old_write *
 				(SOLO_HW_BPL * solo_vlines(solo_dev)));
 
+<<<<<<< HEAD
 		error = solo_p2m_dma_t(solo_dev, 0, vbuf, fdma_addr,
+=======
+		error = solo_p2m_dma_t(solo_dev, 0, addr, fdma_addr,
+>>>>>>> v4.9.227
 				       solo_bytesperline(solo_dev),
 				       solo_vlines(solo_dev), SOLO_HW_BPL);
 	}
@@ -222,8 +240,13 @@ finish_buf:
 	if (!error) {
 		vb2_set_plane_payload(vb, 0,
 			solo_vlines(solo_dev) * solo_bytesperline(solo_dev));
+<<<<<<< HEAD
 		vb->v4l2_buf.sequence = solo_dev->sequence++;
 		v4l2_get_timestamp(&vb->v4l2_buf.timestamp);
+=======
+		vbuf->sequence = solo_dev->sequence++;
+		vb->timestamp = ktime_get_ns();
+>>>>>>> v4.9.227
 	}
 
 	vb2_buffer_done(vb, error ? VB2_BUF_STATE_ERROR : VB2_BUF_STATE_DONE);
@@ -256,7 +279,11 @@ static void solo_thread_try(struct solo_dev *solo_dev)
 
 		spin_unlock(&solo_dev->slock);
 
+<<<<<<< HEAD
 		solo_fillbuf(solo_dev, &vb->vb);
+=======
+		solo_fillbuf(solo_dev, &vb->vb.vb2_buf);
+>>>>>>> v4.9.227
 	}
 
 	assert_spin_locked(&solo_dev->slock);
@@ -311,14 +338,23 @@ static void solo_stop_thread(struct solo_dev *solo_dev)
 	solo_dev->kthread = NULL;
 }
 
+<<<<<<< HEAD
 static int solo_queue_setup(struct vb2_queue *q, const struct v4l2_format *fmt,
 			   unsigned int *num_buffers, unsigned int *num_planes,
 			   unsigned int sizes[], void *alloc_ctxs[])
+=======
+static int solo_queue_setup(struct vb2_queue *q,
+			   unsigned int *num_buffers, unsigned int *num_planes,
+			   unsigned int sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	struct solo_dev *solo_dev = vb2_get_drv_priv(q);
 
 	sizes[0] = solo_image_size(solo_dev);
+<<<<<<< HEAD
 	alloc_ctxs[0] = solo_dev->alloc_ctx;
+=======
+>>>>>>> v4.9.227
 	*num_planes = 1;
 
 	if (*num_buffers < MIN_VID_BUFFERS)
@@ -340,15 +376,37 @@ static void solo_stop_streaming(struct vb2_queue *q)
 	struct solo_dev *solo_dev = vb2_get_drv_priv(q);
 
 	solo_stop_thread(solo_dev);
+<<<<<<< HEAD
+=======
+
+	spin_lock(&solo_dev->slock);
+	while (!list_empty(&solo_dev->vidq_active)) {
+		struct solo_vb2_buf *buf = list_entry(
+				solo_dev->vidq_active.next,
+				struct solo_vb2_buf, list);
+
+		list_del(&buf->list);
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+	}
+	spin_unlock(&solo_dev->slock);
+>>>>>>> v4.9.227
 	INIT_LIST_HEAD(&solo_dev->vidq_active);
 }
 
 static void solo_buf_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct vb2_queue *vq = vb->vb2_queue;
 	struct solo_dev *solo_dev = vb2_get_drv_priv(vq);
 	struct solo_vb2_buf *solo_vb =
 		container_of(vb, struct solo_vb2_buf, vb);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct vb2_queue *vq = vb->vb2_queue;
+	struct solo_dev *solo_dev = vb2_get_drv_priv(vq);
+	struct solo_vb2_buf *solo_vb =
+		container_of(vbuf, struct solo_vb2_buf, vb);
+>>>>>>> v4.9.227
 
 	spin_lock(&solo_dev->slock);
 	list_add_tail(&solo_vb->list, &solo_dev->vidq_active);
@@ -383,6 +441,7 @@ static int solo_querycap(struct file *file, void  *priv,
 static int solo_enum_ext_input(struct solo_dev *solo_dev,
 			       struct v4l2_input *input)
 {
+<<<<<<< HEAD
 	static const char * const dispnames_1[] = { "4UP" };
 	static const char * const dispnames_2[] = { "4UP-1", "4UP-2" };
 	static const char * const dispnames_5[] = {
@@ -403,6 +462,26 @@ static int solo_enum_ext_input(struct solo_dev *solo_dev,
 	snprintf(input->name, sizeof(input->name), "Multi %s",
 		 dispnames[input->index - solo_dev->nr_chans]);
 
+=======
+	int ext = input->index - solo_dev->nr_chans;
+	unsigned int nup, first;
+
+	if (ext >= solo_dev->nr_ext)
+		return -EINVAL;
+
+	nup   = (ext == 4) ? 16 : 4;
+	first = (ext & 3) << 2; /* first channel in the n-up */
+	snprintf(input->name, sizeof(input->name),
+		 "Multi %d-up (cameras %d-%d)",
+		 nup, first + 1, first + nup);
+	/* Possible outputs:
+	 *  Multi 4-up (cameras 1-4)
+	 *  Multi 4-up (cameras 5-8)
+	 *  Multi 4-up (cameras 9-12)
+	 *  Multi 4-up (cameras 13-16)
+	 *  Multi 16-up (cameras 1-16)
+	 */
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -675,19 +754,29 @@ int solo_v4l2_init(struct solo_dev *solo_dev, unsigned nr)
 	solo_dev->vidq.mem_ops = &vb2_dma_contig_memops;
 	solo_dev->vidq.drv_priv = solo_dev;
 	solo_dev->vidq.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+<<<<<<< HEAD
 	solo_dev->vidq.gfp_flags = __GFP_DMA32;
 	solo_dev->vidq.buf_struct_size = sizeof(struct solo_vb2_buf);
 	solo_dev->vidq.lock = &solo_dev->lock;
+=======
+	solo_dev->vidq.gfp_flags = __GFP_DMA32 | __GFP_KSWAPD_RECLAIM;
+	solo_dev->vidq.buf_struct_size = sizeof(struct solo_vb2_buf);
+	solo_dev->vidq.lock = &solo_dev->lock;
+	solo_dev->vidq.dev = &solo_dev->pdev->dev;
+>>>>>>> v4.9.227
 	ret = vb2_queue_init(&solo_dev->vidq);
 	if (ret < 0)
 		goto fail;
 
+<<<<<<< HEAD
 	solo_dev->alloc_ctx = vb2_dma_contig_init_ctx(&solo_dev->pdev->dev);
 	if (IS_ERR(solo_dev->alloc_ctx)) {
 		dev_err(&solo_dev->pdev->dev, "Can't allocate buffer context");
 		return PTR_ERR(solo_dev->alloc_ctx);
 	}
 
+=======
+>>>>>>> v4.9.227
 	/* Cycle all the channels and clear */
 	for (i = 0; i < solo_dev->nr_chans; i++) {
 		solo_v4l2_set_ch(solo_dev, i);
@@ -715,7 +804,10 @@ int solo_v4l2_init(struct solo_dev *solo_dev, unsigned nr)
 
 fail:
 	video_device_release(solo_dev->vfd);
+<<<<<<< HEAD
 	vb2_dma_contig_cleanup_ctx(solo_dev->alloc_ctx);
+=======
+>>>>>>> v4.9.227
 	v4l2_ctrl_handler_free(&solo_dev->disp_hdl);
 	solo_dev->vfd = NULL;
 	return ret;
@@ -727,7 +819,10 @@ void solo_v4l2_exit(struct solo_dev *solo_dev)
 		return;
 
 	video_unregister_device(solo_dev->vfd);
+<<<<<<< HEAD
 	vb2_dma_contig_cleanup_ctx(solo_dev->alloc_ctx);
+=======
+>>>>>>> v4.9.227
 	v4l2_ctrl_handler_free(&solo_dev->disp_hdl);
 	solo_dev->vfd = NULL;
 }

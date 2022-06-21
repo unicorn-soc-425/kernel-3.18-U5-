@@ -6,7 +6,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,9 +58,15 @@ ACPI_MODULE_NAME("nsrepair2")
  * be repaired on a per-name basis.
  */
 typedef
+<<<<<<< HEAD
 acpi_status(*acpi_repair_function) (struct acpi_evaluate_info * info,
 				    union acpi_operand_object
 				    **return_object_ptr);
+=======
+acpi_status (*acpi_repair_function) (struct acpi_evaluate_info * info,
+				     union acpi_operand_object **
+				     return_object_ptr);
+>>>>>>> v4.9.227
 
 typedef struct acpi_repair_info {
 	char name[ACPI_NAME_SIZE];
@@ -225,6 +235,10 @@ static const struct acpi_repair_info *acpi_ns_match_complex_repair(struct
 		if (ACPI_COMPARE_NAME(node->name.ascii, this_name->name)) {
 			return (this_name);
 		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		this_name++;
 	}
 
@@ -301,7 +315,12 @@ acpi_ns_repair_FDE(struct acpi_evaluate_info *info,
 		/* We can only repair if we have exactly 5 BYTEs */
 
 		if (return_object->buffer.length != ACPI_FDE_BYTE_BUFFER_SIZE) {
+<<<<<<< HEAD
 			ACPI_WARN_PREDEFINED((AE_INFO, info->full_pathname,
+=======
+			ACPI_WARN_PREDEFINED((AE_INFO,
+					      info->full_pathname,
+>>>>>>> v4.9.227
 					      info->node_flags,
 					      "Incorrect return buffer length %u, expected %u",
 					      return_object->buffer.length,
@@ -321,8 +340,13 @@ acpi_ns_repair_FDE(struct acpi_evaluate_info *info,
 		/* Expand each byte to a DWORD */
 
 		byte_buffer = return_object->buffer.pointer;
+<<<<<<< HEAD
 		dword_buffer =
 		    ACPI_CAST_PTR(u32, buffer_object->buffer.pointer);
+=======
+		dword_buffer = ACPI_CAST_PTR(u32,
+					     buffer_object->buffer.pointer);
+>>>>>>> v4.9.227
 
 		for (i = 0; i < ACPI_FDE_FIELD_COUNT; i++) {
 			*dword_buffer = (u32) *byte_buffer;
@@ -461,7 +485,12 @@ acpi_ns_repair_CST(struct acpi_evaluate_info *info,
 		removing = FALSE;
 
 		if ((*outer_elements)->package.count == 0) {
+<<<<<<< HEAD
 			ACPI_WARN_PREDEFINED((AE_INFO, info->full_pathname,
+=======
+			ACPI_WARN_PREDEFINED((AE_INFO,
+					      info->full_pathname,
+>>>>>>> v4.9.227
 					      info->node_flags,
 					      "SubPackage[%u] - removing entry due to zero count",
 					      i));
@@ -471,7 +500,12 @@ acpi_ns_repair_CST(struct acpi_evaluate_info *info,
 
 		obj_desc = (*outer_elements)->package.elements[1];	/* Index1 = Type */
 		if ((u32)obj_desc->integer.value == 0) {
+<<<<<<< HEAD
 			ACPI_WARN_PREDEFINED((AE_INFO, info->full_pathname,
+=======
+			ACPI_WARN_PREDEFINED((AE_INFO,
+					      info->full_pathname,
+>>>>>>> v4.9.227
 					      info->node_flags,
 					      "SubPackage[%u] - removing entry due to invalid Type(0)",
 					      i));
@@ -538,8 +572,13 @@ acpi_ns_repair_HID(struct acpi_evaluate_info *info,
 	}
 
 	if (return_object->string.length == 0) {
+<<<<<<< HEAD
 		ACPI_WARN_PREDEFINED((AE_INFO, info->full_pathname,
 				      info->node_flags,
+=======
+		ACPI_WARN_PREDEFINED((AE_INFO,
+				      info->full_pathname, info->node_flags,
+>>>>>>> v4.9.227
 				      "Invalid zero-length _HID or _CID string"));
 
 		/* Return AE_OK anyway, let driver handle it */
@@ -580,7 +619,11 @@ acpi_ns_repair_HID(struct acpi_evaluate_info *info,
 	 * # is a hex digit.
 	 */
 	for (dest = new_string->string.pointer; *source; dest++, source++) {
+<<<<<<< HEAD
 		*dest = (char)ACPI_TOUPPER(*source);
+=======
+		*dest = (char)toupper((int)*source);
+>>>>>>> v4.9.227
 	}
 
 	acpi_ut_remove_reference(return_object);
@@ -710,8 +753,14 @@ acpi_ns_repair_PSS(struct acpi_evaluate_info *info,
 		elements = (*outer_elements)->package.elements;
 		obj_desc = elements[1];	/* Index1 = power_dissipation */
 
+<<<<<<< HEAD
 		if ((u32) obj_desc->integer.value > previous_value) {
 			ACPI_WARN_PREDEFINED((AE_INFO, info->full_pathname,
+=======
+		if ((u32)obj_desc->integer.value > previous_value) {
+			ACPI_WARN_PREDEFINED((AE_INFO,
+					      info->full_pathname,
+>>>>>>> v4.9.227
 					      info->node_flags,
 					      "SubPackage[%u,%u] - suspicious power dissipation values",
 					      i - 1, i));
@@ -969,6 +1018,10 @@ acpi_ns_remove_element(union acpi_operand_object *obj_desc, u32 index)
 			*dest = *source;
 			dest++;
 		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		source++;
 	}
 

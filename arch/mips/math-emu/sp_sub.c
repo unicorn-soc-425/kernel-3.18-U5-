@@ -37,19 +37,34 @@ union ieee754sp ieee754sp_sub(union ieee754sp x, union ieee754sp y)
 	FLUSHYSP;
 
 	switch (CLPAIR(xc, yc)) {
+<<<<<<< HEAD
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_QNAN):
 	case CLPAIR(IEEE754_CLASS_QNAN, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_SNAN):
+=======
+	case CLPAIR(IEEE754_CLASS_QNAN, IEEE754_CLASS_SNAN):
+>>>>>>> v4.9.227
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_DNORM, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_INF, IEEE754_CLASS_SNAN):
+<<<<<<< HEAD
+=======
+		return ieee754sp_nanxcpt(y);
+
+	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_SNAN):
+	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_QNAN):
+>>>>>>> v4.9.227
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_ZERO):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_NORM):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_DNORM):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_INF):
+<<<<<<< HEAD
 		ieee754_setcx(IEEE754_INVALID_OPERATION);
 		return ieee754sp_nanxcpt(ieee754sp_indef());
+=======
+		return ieee754sp_nanxcpt(x);
+>>>>>>> v4.9.227
 
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_QNAN):
 	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_QNAN):
@@ -133,13 +148,23 @@ union ieee754sp ieee754sp_sub(union ieee754sp x, union ieee754sp y)
 		 * have to shift y fraction right to align
 		 */
 		s = xe - ye;
+<<<<<<< HEAD
 		SPXSRSYn(s);
+=======
+		ym = XSPSRS(ym, s);
+		ye += s;
+>>>>>>> v4.9.227
 	} else if (ye > xe) {
 		/*
 		 * have to shift x fraction right to align
 		 */
 		s = ye - xe;
+<<<<<<< HEAD
 		SPXSRSXn(s);
+=======
+		xm = XSPSRS(xm, s);
+		xe += s;
+>>>>>>> v4.9.227
 	}
 	assert(xe == ye);
 	assert(xe <= SP_EMAX);
@@ -148,8 +173,11 @@ union ieee754sp ieee754sp_sub(union ieee754sp x, union ieee754sp y)
 		/* generate 28 bit result of adding two 27 bit numbers
 		 */
 		xm = xm + ym;
+<<<<<<< HEAD
 		xe = xe;
 		xs = xs;
+=======
+>>>>>>> v4.9.227
 
 		if (xm >> (SP_FBITS + 1 + 3)) { /* carry out */
 			SPXSRSX1();	/* shift preserving sticky */
@@ -157,11 +185,16 @@ union ieee754sp ieee754sp_sub(union ieee754sp x, union ieee754sp y)
 	} else {
 		if (xm >= ym) {
 			xm = xm - ym;
+<<<<<<< HEAD
 			xe = xe;
 			xs = xs;
 		} else {
 			xm = ym - xm;
 			xe = xe;
+=======
+		} else {
+			xm = ym - xm;
+>>>>>>> v4.9.227
 			xs = ys;
 		}
 		if (xm == 0) {

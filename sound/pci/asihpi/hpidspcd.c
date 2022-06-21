@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 /***********************************************************************/
 /**
 
     AudioScience HPI driver
     Copyright (C) 1997-2011  AudioScience Inc. <support@audioscience.com>
+=======
+/***********************************************************************
+
+    AudioScience HPI driver
+    Functions for reading DSP code using hotplug firmware loader
+
+    Copyright (C) 1997-2014  AudioScience Inc. <support@audioscience.com>
+>>>>>>> v4.9.227
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of version 2 of the GNU General Public License as
@@ -17,11 +26,15 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+<<<<<<< HEAD
 \file
 Functions for reading DSP code using
 hotplug firmware loader from individual dsp code files
 */
 /***********************************************************************/
+=======
+***********************************************************************/
+>>>>>>> v4.9.227
 #define SOURCEFILE_NAME "hpidspcd.c"
 #include "hpidspcd.h"
 #include "hpidebug.h"
@@ -68,17 +81,30 @@ short hpi_dsp_code_open(u32 adapter, void *os_data, struct dsp_code *dsp_code,
 		goto error2;
 	}
 
+<<<<<<< HEAD
 	if ((header.version >> 9) != (HPI_VER >> 9)) {
 		/* Consider even and subsequent odd minor versions to be compatible */
 		dev_err(&dev->dev, "Incompatible firmware version DSP image %X != Driver %X\n",
+=======
+	if (HPI_VER_MAJOR(header.version) != HPI_VER_MAJOR(HPI_VER)) {
+		/* Major version change probably means Host-DSP protocol change */
+		dev_err(&dev->dev,
+			"Incompatible firmware version DSP image %X != Driver %X\n",
+>>>>>>> v4.9.227
 			header.version, HPI_VER);
 		goto error2;
 	}
 
 	if (header.version != HPI_VER) {
+<<<<<<< HEAD
 		dev_info(&dev->dev,
 			 "Firmware: release version mismatch  DSP image %X != Driver %X\n",
 			 header.version, HPI_VER);
+=======
+		dev_warn(&dev->dev,
+			"Firmware version mismatch: DSP image %X != Driver %X\n",
+			header.version, HPI_VER);
+>>>>>>> v4.9.227
 	}
 
 	HPI_DEBUG_LOG(DEBUG, "dsp code %s opened\n", fw_name);

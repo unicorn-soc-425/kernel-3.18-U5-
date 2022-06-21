@@ -131,7 +131,11 @@ struct xlp_msi_data {
  */
 static void xlp_msi_enable(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct xlp_msi_data *md = irq_data_get_irq_handler_data(d);
+=======
+	struct xlp_msi_data *md = irq_data_get_irq_chip_data(d);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	int vec;
 
@@ -148,7 +152,11 @@ static void xlp_msi_enable(struct irq_data *d)
 
 static void xlp_msi_disable(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct xlp_msi_data *md = irq_data_get_irq_handler_data(d);
+=======
+	struct xlp_msi_data *md = irq_data_get_irq_chip_data(d);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	int vec;
 
@@ -165,7 +173,11 @@ static void xlp_msi_disable(struct irq_data *d)
 
 static void xlp_msi_mask_ack(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct xlp_msi_data *md = irq_data_get_irq_handler_data(d);
+=======
+	struct xlp_msi_data *md = irq_data_get_irq_chip_data(d);
+>>>>>>> v4.9.227
 	int link, vec;
 
 	link = nlm_irq_msilink(d->irq);
@@ -178,6 +190,7 @@ static void xlp_msi_mask_ack(struct irq_data *d)
 	else
 		nlm_write_reg(md->lnkbase, PCIE_MSI_STATUS, 1u << vec);
 
+<<<<<<< HEAD
 	/* Ack at eirr and PIC */
 	ack_c0_eirr(PIC_PCIE_LINK_MSI_IRQ(link));
 	if (cpu_is_xlp9xx())
@@ -185,6 +198,8 @@ static void xlp_msi_mask_ack(struct irq_data *d)
 				PIC_9XX_IRT_PCIE_LINK_INDEX(link));
 	else
 		nlm_pic_ack(md->node->picbase, PIC_IRT_PCIE_LINK_INDEX(link));
+=======
+>>>>>>> v4.9.227
 }
 
 static struct irq_chip xlp_msi_chip = {
@@ -218,7 +233,11 @@ static void xlp_msix_mask_ack(struct irq_data *d)
 	msixvec = nlm_irq_msixvec(d->irq);
 	link = nlm_irq_msixlink(msixvec);
 	pci_msi_mask_irq(d);
+<<<<<<< HEAD
 	md = irq_data_get_irq_handler_data(d);
+=======
+	md = irq_data_get_irq_chip_data(d);
+>>>>>>> v4.9.227
 
 	/* Ack MSI on bridge */
 	if (cpu_is_xlp9xx()) {
@@ -230,8 +249,11 @@ static void xlp_msix_mask_ack(struct irq_data *d)
 	}
 	nlm_write_reg(md->lnkbase, status_reg, 1u << bit);
 
+<<<<<<< HEAD
 	/* Ack at eirr and PIC */
 	ack_c0_eirr(PIC_PCIE_MSIX_IRQ(link));
+=======
+>>>>>>> v4.9.227
 	if (!cpu_is_xlp9xx())
 		nlm_pic_ack(md->node->picbase,
 				PIC_IRT_PCIE_MSIX_INDEX(msixvec));
@@ -311,7 +333,11 @@ static int xlp_setup_msi(uint64_t lnkbase, int node, int link,
 	/* Get MSI data for the link */
 	lirq = PIC_PCIE_LINK_MSI_IRQ(link);
 	xirq = nlm_irq_to_xirq(node, nlm_link_msiirq(link, 0));
+<<<<<<< HEAD
 	md = irq_get_handler_data(xirq);
+=======
+	md = irq_get_chip_data(xirq);
+>>>>>>> v4.9.227
 	msiaddr = MSI_LINK_ADDR(node, link);
 
 	spin_lock_irqsave(&md->msi_lock, flags);
@@ -418,7 +444,11 @@ static int xlp_setup_msix(uint64_t lnkbase, int node, int link,
 	/* Get MSI data for the link */
 	lirq = PIC_PCIE_MSIX_IRQ(link);
 	xirq = nlm_irq_to_xirq(node, nlm_link_msixirq(link, 0));
+<<<<<<< HEAD
 	md = irq_get_handler_data(xirq);
+=======
+	md = irq_get_chip_data(xirq);
+>>>>>>> v4.9.227
 	msixaddr = MSIX_LINK_ADDR(node, link);
 
 	spin_lock_irqsave(&md->msi_lock, flags);
@@ -494,7 +524,11 @@ void __init xlp_init_node_msi_irqs(int node, int link)
 	irq = nlm_irq_to_xirq(node, nlm_link_msiirq(link, 0));
 	for (i = irq; i < irq + XLP_MSIVEC_PER_LINK; i++) {
 		irq_set_chip_and_handler(i, &xlp_msi_chip, handle_level_irq);
+<<<<<<< HEAD
 		irq_set_handler_data(i, md);
+=======
+		irq_set_chip_data(i, md);
+>>>>>>> v4.9.227
 	}
 
 	for (i = 0; i < XLP_MSIXVEC_PER_LINK ; i++) {
@@ -517,7 +551,11 @@ void __init xlp_init_node_msi_irqs(int node, int link)
 		/* Initialize MSI-X extended irq space for the link  */
 		irq = nlm_irq_to_xirq(node, nlm_link_msixirq(link, i));
 		irq_set_chip_and_handler(irq, &xlp_msix_chip, handle_level_irq);
+<<<<<<< HEAD
 		irq_set_handler_data(irq, md);
+=======
+		irq_set_chip_data(irq, md);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -529,7 +567,11 @@ void nlm_dispatch_msi(int node, int lirq)
 
 	link = lirq - PIC_PCIE_LINK_MSI_IRQ_BASE;
 	irqbase = nlm_irq_to_xirq(node, nlm_link_msiirq(link, 0));
+<<<<<<< HEAD
 	md = irq_get_handler_data(irqbase);
+=======
+	md = irq_get_chip_data(irqbase);
+>>>>>>> v4.9.227
 	if (cpu_is_xlp9xx())
 		status = nlm_read_reg(md->lnkbase, PCIE_9XX_MSI_STATUS) &
 						md->msi_enabled_mask;
@@ -541,6 +583,17 @@ void nlm_dispatch_msi(int node, int lirq)
 		do_IRQ(irqbase + i);
 		status &= status - 1;
 	}
+<<<<<<< HEAD
+=======
+
+	/* Ack at eirr and PIC */
+	ack_c0_eirr(PIC_PCIE_LINK_MSI_IRQ(link));
+	if (cpu_is_xlp9xx())
+		nlm_pic_ack(md->node->picbase,
+				PIC_9XX_IRT_PCIE_LINK_INDEX(link));
+	else
+		nlm_pic_ack(md->node->picbase, PIC_IRT_PCIE_LINK_INDEX(link));
+>>>>>>> v4.9.227
 }
 
 void nlm_dispatch_msix(int node, int lirq)
@@ -551,7 +604,11 @@ void nlm_dispatch_msix(int node, int lirq)
 
 	link = lirq - PIC_PCIE_MSIX_IRQ_BASE;
 	irqbase = nlm_irq_to_xirq(node, nlm_link_msixirq(link, 0));
+<<<<<<< HEAD
 	md = irq_get_handler_data(irqbase);
+=======
+	md = irq_get_chip_data(irqbase);
+>>>>>>> v4.9.227
 	if (cpu_is_xlp9xx())
 		status = nlm_read_reg(md->lnkbase, PCIE_9XX_MSIX_STATUSX(link));
 	else
@@ -567,4 +624,9 @@ void nlm_dispatch_msix(int node, int lirq)
 		do_IRQ(irqbase + i);
 		status &= status - 1;
 	}
+<<<<<<< HEAD
+=======
+	/* Ack at eirr and PIC */
+	ack_c0_eirr(PIC_PCIE_MSIX_IRQ(link));
+>>>>>>> v4.9.227
 }

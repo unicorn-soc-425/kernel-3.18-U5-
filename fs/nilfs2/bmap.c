@@ -13,11 +13,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Koji Sato <koji@osrg.net>.
+=======
+ * Written by Koji Sato.
+>>>>>>> v4.9.227
  */
 
 #include <linux/fs.h>
@@ -45,8 +49,13 @@ static int nilfs_bmap_convert_error(struct nilfs_bmap *bmap,
 	struct inode *inode = bmap->b_inode;
 
 	if (err == -EINVAL) {
+<<<<<<< HEAD
 		nilfs_error(inode->i_sb, fname,
 			    "broken bmap (inode number=%lu)\n", inode->i_ino);
+=======
+		__nilfs_error(inode->i_sb, fname,
+			      "broken bmap (inode number=%lu)", inode->i_ino);
+>>>>>>> v4.9.227
 		err = -EIO;
 	}
 	return err;
@@ -97,7 +106,11 @@ int nilfs_bmap_lookup_at_level(struct nilfs_bmap *bmap, __u64 key, int level,
 }
 
 int nilfs_bmap_lookup_contig(struct nilfs_bmap *bmap, __u64 key, __u64 *ptrp,
+<<<<<<< HEAD
 			     unsigned maxblocks)
+=======
+			     unsigned int maxblocks)
+>>>>>>> v4.9.227
 {
 	int ret;
 
@@ -152,9 +165,13 @@ static int nilfs_bmap_do_insert(struct nilfs_bmap *bmap, __u64 key, __u64 ptr)
  *
  * %-EEXIST - A record associated with @key already exist.
  */
+<<<<<<< HEAD
 int nilfs_bmap_insert(struct nilfs_bmap *bmap,
 		      unsigned long key,
 		      unsigned long rec)
+=======
+int nilfs_bmap_insert(struct nilfs_bmap *bmap, __u64 key, unsigned long rec)
+>>>>>>> v4.9.227
 {
 	int ret;
 
@@ -191,6 +208,7 @@ static int nilfs_bmap_do_delete(struct nilfs_bmap *bmap, __u64 key)
 	return bmap->b_ops->bop_delete(bmap, key);
 }
 
+<<<<<<< HEAD
 int nilfs_bmap_last_key(struct nilfs_bmap *bmap, unsigned long *key)
 {
 	__u64 lastkey;
@@ -198,12 +216,54 @@ int nilfs_bmap_last_key(struct nilfs_bmap *bmap, unsigned long *key)
 
 	down_read(&bmap->b_sem);
 	ret = bmap->b_ops->bop_last_key(bmap, &lastkey);
+=======
+/**
+ * nilfs_bmap_seek_key - seek a valid entry and return its key
+ * @bmap: bmap struct
+ * @start: start key number
+ * @keyp: place to store valid key
+ *
+ * Description: nilfs_bmap_seek_key() seeks a valid key on @bmap
+ * starting from @start, and stores it to @keyp if found.
+ *
+ * Return Value: On success, 0 is returned. On error, one of the following
+ * negative error codes is returned.
+ *
+ * %-EIO - I/O error.
+ *
+ * %-ENOMEM - Insufficient amount of memory available.
+ *
+ * %-ENOENT - No valid entry was found
+ */
+int nilfs_bmap_seek_key(struct nilfs_bmap *bmap, __u64 start, __u64 *keyp)
+{
+	int ret;
+
+	down_read(&bmap->b_sem);
+	ret = bmap->b_ops->bop_seek_key(bmap, start, keyp);
 	up_read(&bmap->b_sem);
 
 	if (ret < 0)
 		ret = nilfs_bmap_convert_error(bmap, __func__, ret);
+	return ret;
+}
+
+int nilfs_bmap_last_key(struct nilfs_bmap *bmap, __u64 *keyp)
+{
+	int ret;
+
+	down_read(&bmap->b_sem);
+	ret = bmap->b_ops->bop_last_key(bmap, keyp);
+>>>>>>> v4.9.227
+	up_read(&bmap->b_sem);
+
+	if (ret < 0)
+		ret = nilfs_bmap_convert_error(bmap, __func__, ret);
+<<<<<<< HEAD
 	else
 		*key = lastkey;
+=======
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -224,7 +284,11 @@ int nilfs_bmap_last_key(struct nilfs_bmap *bmap, unsigned long *key)
  *
  * %-ENOENT - A record associated with @key does not exist.
  */
+<<<<<<< HEAD
 int nilfs_bmap_delete(struct nilfs_bmap *bmap, unsigned long key)
+=======
+int nilfs_bmap_delete(struct nilfs_bmap *bmap, __u64 key)
+>>>>>>> v4.9.227
 {
 	int ret;
 
@@ -235,7 +299,11 @@ int nilfs_bmap_delete(struct nilfs_bmap *bmap, unsigned long key)
 	return nilfs_bmap_convert_error(bmap, __func__, ret);
 }
 
+<<<<<<< HEAD
 static int nilfs_bmap_do_truncate(struct nilfs_bmap *bmap, unsigned long key)
+=======
+static int nilfs_bmap_do_truncate(struct nilfs_bmap *bmap, __u64 key)
+>>>>>>> v4.9.227
 {
 	__u64 lastkey;
 	int ret;
@@ -276,7 +344,11 @@ static int nilfs_bmap_do_truncate(struct nilfs_bmap *bmap, unsigned long key)
  *
  * %-ENOMEM - Insufficient amount of memory available.
  */
+<<<<<<< HEAD
 int nilfs_bmap_truncate(struct nilfs_bmap *bmap, unsigned long key)
+=======
+int nilfs_bmap_truncate(struct nilfs_bmap *bmap, __u64 key)
+>>>>>>> v4.9.227
 {
 	int ret;
 
@@ -432,7 +504,11 @@ __u64 nilfs_bmap_data_get_key(const struct nilfs_bmap *bmap,
 	struct buffer_head *pbh;
 	__u64 key;
 
+<<<<<<< HEAD
 	key = page_index(bh->b_page) << (PAGE_CACHE_SHIFT -
+=======
+	key = page_index(bh->b_page) << (PAGE_SHIFT -
+>>>>>>> v4.9.227
 					 bmap->b_inode->i_blkbits);
 	for (pbh = page_buffers(bh->b_page); pbh != bh; pbh = pbh->b_this_page)
 		key++;

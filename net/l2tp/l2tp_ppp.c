@@ -122,8 +122,16 @@
 struct pppol2tp_session {
 	int			owner;		/* pid that opened the socket */
 
+<<<<<<< HEAD
 	struct sock		*sock;		/* Pointer to the session
 						 * PPPoX socket */
+=======
+	struct mutex		sk_lock;	/* Protects .sk */
+	struct sock __rcu	*sk;		/* Pointer to the session
+						 * PPPoX socket */
+	struct sock		*__sk;		/* Copy of .sk, for cleanup */
+	struct rcu_head		rcu;		/* For asynchronous release */
+>>>>>>> v4.9.227
 	struct sock		*tunnel_sock;	/* Pointer to the tunnel UDP
 						 * socket */
 	int			flags;		/* accessed by PPPIOCGFLAGS.
@@ -138,6 +146,27 @@ static const struct ppp_channel_ops pppol2tp_chan_ops = {
 
 static const struct proto_ops pppol2tp_ops;
 
+<<<<<<< HEAD
+=======
+/* Retrieves the pppol2tp socket associated to a session.
+ * A reference is held on the returned socket, so this function must be paired
+ * with sock_put().
+ */
+static struct sock *pppol2tp_session_get_sock(struct l2tp_session *session)
+{
+	struct pppol2tp_session *ps = l2tp_session_priv(session);
+	struct sock *sk;
+
+	rcu_read_lock();
+	sk = rcu_dereference(ps->sk);
+	if (sk)
+		sock_hold(sk);
+	rcu_read_unlock();
+
+	return sk;
+}
+
+>>>>>>> v4.9.227
 /* Helpers to obtain tunnel/session contexts from sockets.
  */
 static inline struct l2tp_session *pppol2tp_sock_to_session(struct sock *sk)
@@ -177,7 +206,11 @@ static int pppol2tp_recv_payload_hook(struct sk_buff *skb)
 	if (!pskb_may_pull(skb, 2))
 		return 1;
 
+<<<<<<< HEAD
 	if ((skb->data[0] == 0xff) && (skb->data[1] == 0x03))
+=======
+	if ((skb->data[0] == PPP_ALLSTATIONS) && (skb->data[1] == PPP_UI))
+>>>>>>> v4.9.227
 		skb_pull(skb, 2);
 
 	return 0;
@@ -185,9 +218,14 @@ static int pppol2tp_recv_payload_hook(struct sk_buff *skb)
 
 /* Receive message. This is the recvmsg for the PPPoL2TP socket.
  */
+<<<<<<< HEAD
 static int pppol2tp_recvmsg(struct kiocb *iocb, struct socket *sock,
 			    struct msghdr *msg, size_t len,
 			    int flags)
+=======
+static int pppol2tp_recvmsg(struct socket *sock, struct msghdr *msg,
+			    size_t len, int flags)
+>>>>>>> v4.9.227
 {
 	int err;
 	struct sk_buff *skb;
@@ -208,7 +246,11 @@ static int pppol2tp_recvmsg(struct kiocb *iocb, struct socket *sock,
 	else if (len < skb->len)
 		msg->msg_flags |= MSG_TRUNC;
 
+<<<<<<< HEAD
 	err = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, len);
+=======
+	err = skb_copy_datagram_msg(skb, 0, msg, len);
+>>>>>>> v4.9.227
 	if (likely(err == 0))
 		err = len;
 
@@ -225,12 +267,18 @@ static void pppol2tp_recv(struct l2tp_session *session, struct sk_buff *skb, int
 	/* If the socket is bound, send it in to PPP's input queue. Otherwise
 	 * queue it on the session socket.
 	 */
+<<<<<<< HEAD
 	sk = ps->sock;
+=======
+	rcu_read_lock();
+	sk = rcu_dereference(ps->sk);
+>>>>>>> v4.9.227
 	if (sk == NULL)
 		goto no_sock;
 
 	if (sk->sk_state & PPPOX_BOUND) {
 		struct pppox_sock *po;
+<<<<<<< HEAD
 		l2tp_dbg(session, PPPOL2TP_MSG_DATA,
 			 "%s: recv %d byte data frame, passing to ppp\n",
 			 session->name, data_len);
@@ -255,6 +303,17 @@ static void pppol2tp_recv(struct l2tp_session *session, struct sk_buff *skb, int
 		ppp_input(&po->chan, skb);
 	} else {
 		l2tp_dbg(session, PPPOL2TP_MSG_DATA,
+=======
+
+		l2tp_dbg(session, L2TP_MSG_DATA,
+			 "%s: recv %d byte data frame, passing to ppp\n",
+			 session->name, data_len);
+
+		po = pppox_sk(sk);
+		ppp_input(&po->chan, skb);
+	} else {
+		l2tp_dbg(session, L2TP_MSG_DATA,
+>>>>>>> v4.9.227
 			 "%s: recv %d byte data frame, passing to L2TP socket\n",
 			 session->name, data_len);
 
@@ -263,10 +322,15 @@ static void pppol2tp_recv(struct l2tp_session *session, struct sk_buff *skb, int
 			kfree_skb(skb);
 		}
 	}
+<<<<<<< HEAD
+=======
+	rcu_read_unlock();
+>>>>>>> v4.9.227
 
 	return;
 
 no_sock:
+<<<<<<< HEAD
 	l2tp_info(session, PPPOL2TP_MSG_DATA, "%s: no socket\n", session->name);
 	kfree_skb(skb);
 }
@@ -287,6 +351,13 @@ static void pppol2tp_session_sock_put(struct l2tp_session *session)
 		sock_put(ps->sock);
 }
 
+=======
+	rcu_read_unlock();
+	l2tp_info(session, L2TP_MSG_DATA, "%s: no socket\n", session->name);
+	kfree_skb(skb);
+}
+
+>>>>>>> v4.9.227
 /************************************************************************
  * Transmit handling
  ***********************************************************************/
@@ -295,10 +366,16 @@ static void pppol2tp_session_sock_put(struct l2tp_session *session)
  * when a user application does a sendmsg() on the session socket. L2TP and
  * PPP headers must be inserted into the user's data.
  */
+<<<<<<< HEAD
 static int pppol2tp_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *m,
 			    size_t total_len)
 {
 	static const unsigned char ppph[2] = { 0xff, 0x03 };
+=======
+static int pppol2tp_sendmsg(struct socket *sock, struct msghdr *m,
+			    size_t total_len)
+{
+>>>>>>> v4.9.227
 	struct sock *sk = sock->sk;
 	struct sk_buff *skb;
 	int error;
@@ -328,7 +405,11 @@ static int pppol2tp_sendmsg(struct kiocb *iocb, struct socket *sock, struct msgh
 	error = -ENOMEM;
 	skb = sock_wmalloc(sk, NET_SKB_PAD + sizeof(struct iphdr) +
 			   uhlen + session->hdr_len +
+<<<<<<< HEAD
 			   sizeof(ppph) + total_len,
+=======
+			   2 + total_len, /* 2 bytes for PPP_ALLSTATIONS & PPP_UI */
+>>>>>>> v4.9.227
 			   0, GFP_KERNEL);
 	if (!skb)
 		goto error_put_sess_tun;
@@ -341,6 +422,7 @@ static int pppol2tp_sendmsg(struct kiocb *iocb, struct socket *sock, struct msgh
 	skb_reserve(skb, uhlen);
 
 	/* Add PPP header */
+<<<<<<< HEAD
 	skb->data[0] = ppph[0];
 	skb->data[1] = ppph[1];
 	skb_put(skb, 2);
@@ -348,6 +430,14 @@ static int pppol2tp_sendmsg(struct kiocb *iocb, struct socket *sock, struct msgh
 	/* Copy user data into skb */
 	error = memcpy_fromiovec(skb_put(skb, total_len), m->msg_iov,
 				 total_len);
+=======
+	skb->data[0] = PPP_ALLSTATIONS;
+	skb->data[1] = PPP_UI;
+	skb_put(skb, 2);
+
+	/* Copy user data into skb */
+	error = memcpy_from_msg(skb_put(skb, total_len), m, total_len);
+>>>>>>> v4.9.227
 	if (error < 0) {
 		kfree_skb(skb);
 		goto error_put_sess_tun;
@@ -386,7 +476,10 @@ error:
  */
 static int pppol2tp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	static const u8 ppph[2] = { 0xff, 0x03 };
+=======
+>>>>>>> v4.9.227
 	struct sock *sk = (struct sock *) chan->private;
 	struct sock *sk_tun;
 	struct l2tp_session *session;
@@ -415,14 +508,24 @@ static int pppol2tp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 		   sizeof(struct iphdr) + /* IP header */
 		   uhlen +		/* UDP header (if L2TP_ENCAPTYPE_UDP) */
 		   session->hdr_len +	/* L2TP header */
+<<<<<<< HEAD
 		   sizeof(ppph);	/* PPP header */
+=======
+		   2;			/* 2 bytes for PPP_ALLSTATIONS & PPP_UI */
+>>>>>>> v4.9.227
 	if (skb_cow_head(skb, headroom))
 		goto abort_put_sess_tun;
 
 	/* Setup PPP header */
+<<<<<<< HEAD
 	__skb_push(skb, sizeof(ppph));
 	skb->data[0] = ppph[0];
 	skb->data[1] = ppph[1];
+=======
+	__skb_push(skb, 2);
+	skb->data[0] = PPP_ALLSTATIONS;
+	skb->data[1] = PPP_UI;
+>>>>>>> v4.9.227
 
 	local_bh_disable();
 	l2tp_xmit_skb(session, skb, session->hdr_len);
@@ -450,6 +553,7 @@ abort:
  */
 static void pppol2tp_session_close(struct l2tp_session *session)
 {
+<<<<<<< HEAD
 	struct pppol2tp_session *ps = l2tp_session_priv(session);
 	struct sock *sk = ps->sock;
 	struct socket *sock = sk->sk_socket;
@@ -460,6 +564,17 @@ static void pppol2tp_session_close(struct l2tp_session *session)
 		inet_shutdown(sock, 2);
 		/* Don't let the session go away before our socket does */
 		l2tp_session_inc_refcount(session);
+=======
+	struct sock *sk;
+
+	BUG_ON(session->magic != L2TP_SESSION_MAGIC);
+
+	sk = pppol2tp_session_get_sock(session);
+	if (sk) {
+		if (sk->sk_socket)
+			inet_shutdown(sk->sk_socket, SEND_SHUTDOWN);
+		sock_put(sk);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -480,6 +595,17 @@ static void pppol2tp_session_destruct(struct sock *sk)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void pppol2tp_put_sk(struct rcu_head *head)
+{
+	struct pppol2tp_session *ps;
+
+	ps = container_of(head, typeof(*ps), rcu);
+	sock_put(ps->__sk);
+}
+
+>>>>>>> v4.9.227
 /* Called when the PPPoX socket (session) is closed.
  */
 static int pppol2tp_release(struct socket *sock)
@@ -505,11 +631,31 @@ static int pppol2tp_release(struct socket *sock)
 
 	session = pppol2tp_sock_to_session(sk);
 
+<<<<<<< HEAD
 	/* Purge any queued data */
 	if (session != NULL) {
 		__l2tp_session_unhash(session);
 		l2tp_session_queue_purge(session);
 		sock_put(sk);
+=======
+	if (session != NULL) {
+		struct pppol2tp_session *ps;
+
+		l2tp_session_delete(session);
+
+		ps = l2tp_session_priv(session);
+		mutex_lock(&ps->sk_lock);
+		ps->__sk = rcu_dereference_protected(ps->sk,
+						     lockdep_is_held(&ps->sk_lock));
+		RCU_INIT_POINTER(ps->sk, NULL);
+		mutex_unlock(&ps->sk_lock);
+		call_rcu(&ps->rcu, pppol2tp_put_sk);
+
+		/* Rely on the sock_put() call at the end of the function for
+		 * dropping the reference held by pppol2tp_sock_to_session().
+		 * The last reference will be dropped by pppol2tp_put_sk().
+		 */
+>>>>>>> v4.9.227
 	}
 	release_sock(sk);
 
@@ -545,12 +691,20 @@ static int pppol2tp_backlog_recv(struct sock *sk, struct sk_buff *skb)
 
 /* socket() handler. Initialize a new struct sock.
  */
+<<<<<<< HEAD
 static int pppol2tp_create(struct net *net, struct socket *sock)
+=======
+static int pppol2tp_create(struct net *net, struct socket *sock, int kern)
+>>>>>>> v4.9.227
 {
 	int error = -ENOMEM;
 	struct sock *sk;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pppol2tp_sk_proto);
+=======
+	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pppol2tp_sk_proto, kern);
+>>>>>>> v4.9.227
 	if (!sk)
 		goto out;
 
@@ -572,6 +726,7 @@ out:
 	return error;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_L2TP_DEBUGFS) || defined(CONFIG_L2TP_DEBUGFS_MODULE)
 static void pppol2tp_show(struct seq_file *m, void *arg)
 {
@@ -582,10 +737,56 @@ static void pppol2tp_show(struct seq_file *m, void *arg)
 		struct pppox_sock *po = pppox_sk(ps->sock);
 		if (po)
 			seq_printf(m, "   interface %s\n", ppp_dev_name(&po->chan));
+=======
+#if IS_ENABLED(CONFIG_L2TP_DEBUGFS)
+static void pppol2tp_show(struct seq_file *m, void *arg)
+{
+	struct l2tp_session *session = arg;
+	struct sock *sk;
+
+	sk = pppol2tp_session_get_sock(session);
+	if (sk) {
+		struct pppox_sock *po = pppox_sk(sk);
+
+		seq_printf(m, "   interface %s\n", ppp_dev_name(&po->chan));
+		sock_put(sk);
+>>>>>>> v4.9.227
 	}
 }
 #endif
 
+<<<<<<< HEAD
+=======
+static void pppol2tp_session_init(struct l2tp_session *session)
+{
+	struct pppol2tp_session *ps;
+	struct dst_entry *dst;
+
+	session->recv_skb = pppol2tp_recv;
+	session->session_close = pppol2tp_session_close;
+#if IS_ENABLED(CONFIG_L2TP_DEBUGFS)
+	session->show = pppol2tp_show;
+#endif
+
+	ps = l2tp_session_priv(session);
+	mutex_init(&ps->sk_lock);
+	ps->tunnel_sock = session->tunnel->sock;
+	ps->owner = current->pid;
+
+	/* If PMTU discovery was enabled, use the MTU that was discovered */
+	dst = sk_dst_get(session->tunnel->sock);
+	if (dst) {
+		u32 pmtu = dst_mtu(dst);
+
+		if (pmtu) {
+			session->mtu = pmtu - PPPOL2TP_HEADER_OVERHEAD;
+			session->mru = pmtu - PPPOL2TP_HEADER_OVERHEAD;
+		}
+		dst_release(dst);
+	}
+}
+
+>>>>>>> v4.9.227
 /* connect() handler. Attach a PPPoX socket to a tunnel UDP socket
  */
 static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
@@ -597,11 +798,18 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
 	struct l2tp_session *session = NULL;
 	struct l2tp_tunnel *tunnel;
 	struct pppol2tp_session *ps;
+<<<<<<< HEAD
 	struct dst_entry *dst;
+=======
+>>>>>>> v4.9.227
 	struct l2tp_session_cfg cfg = { 0, };
 	int error = 0;
 	u32 tunnel_id, peer_tunnel_id;
 	u32 session_id, peer_session_id;
+<<<<<<< HEAD
+=======
+	bool drop_refcnt = false;
+>>>>>>> v4.9.227
 	int ver = 2;
 	int fd;
 
@@ -710,6 +918,7 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
 	if (tunnel->peer_tunnel_id == 0)
 		tunnel->peer_tunnel_id = peer_tunnel_id;
 
+<<<<<<< HEAD
 	/* Create session if it doesn't already exist. We handle the
 	 * case where a session was previously created by the netlink
 	 * interface by checking that the session doesn't already have
@@ -769,6 +978,55 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
 			session->mtu = session->mru = pmtu -
 				PPPOL2TP_HEADER_OVERHEAD;
 		dst_release(dst);
+=======
+	session = l2tp_session_get(sock_net(sk), tunnel, session_id, false);
+	if (session) {
+		drop_refcnt = true;
+		ps = l2tp_session_priv(session);
+
+		/* Using a pre-existing session is fine as long as it hasn't
+		 * been connected yet.
+		 */
+		mutex_lock(&ps->sk_lock);
+		if (rcu_dereference_protected(ps->sk,
+					      lockdep_is_held(&ps->sk_lock))) {
+			mutex_unlock(&ps->sk_lock);
+			error = -EEXIST;
+			goto end;
+		}
+
+		/* consistency checks */
+		if (ps->tunnel_sock != tunnel->sock) {
+			mutex_unlock(&ps->sk_lock);
+			error = -EEXIST;
+			goto end;
+		}
+	} else {
+		/* Default MTU must allow space for UDP/L2TP/PPP headers */
+		cfg.mtu = 1500 - PPPOL2TP_HEADER_OVERHEAD;
+		cfg.mru = cfg.mtu;
+
+		session = l2tp_session_create(sizeof(struct pppol2tp_session),
+					      tunnel, session_id,
+					      peer_session_id, &cfg);
+		if (IS_ERR(session)) {
+			error = PTR_ERR(session);
+			goto end;
+		}
+
+		pppol2tp_session_init(session);
+		ps = l2tp_session_priv(session);
+		l2tp_session_inc_refcount(session);
+
+		mutex_lock(&ps->sk_lock);
+		error = l2tp_session_register(session, tunnel);
+		if (error < 0) {
+			mutex_unlock(&ps->sk_lock);
+			kfree(session);
+			goto end;
+		}
+		drop_refcnt = true;
+>>>>>>> v4.9.227
 	}
 
 	/* Special case: if source & dest session_id == 0x0000, this
@@ -793,17 +1051,43 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
 	po->chan.mtu	 = session->mtu;
 
 	error = ppp_register_net_channel(sock_net(sk), &po->chan);
+<<<<<<< HEAD
 	if (error)
 		goto end;
+=======
+	if (error) {
+		mutex_unlock(&ps->sk_lock);
+		goto end;
+	}
+>>>>>>> v4.9.227
 
 out_no_ppp:
 	/* This is how we get the session context from the socket. */
 	sk->sk_user_data = session;
+<<<<<<< HEAD
 	sk->sk_state = PPPOX_CONNECTED;
 	l2tp_info(session, PPPOL2TP_MSG_CONTROL, "%s: created\n",
 		  session->name);
 
 end:
+=======
+	rcu_assign_pointer(ps->sk, sk);
+	mutex_unlock(&ps->sk_lock);
+
+	/* Keep the reference we've grabbed on the session: sk doesn't expect
+	 * the session to disappear. pppol2tp_session_destruct() is responsible
+	 * for dropping it.
+	 */
+	drop_refcnt = false;
+
+	sk->sk_state = PPPOX_CONNECTED;
+	l2tp_info(session, L2TP_MSG_CONTROL, "%s: created\n",
+		  session->name);
+
+end:
+	if (drop_refcnt)
+		l2tp_session_dec_refcount(session);
+>>>>>>> v4.9.227
 	release_sock(sk);
 
 	return error;
@@ -818,11 +1102,15 @@ static int pppol2tp_session_create(struct net *net, struct l2tp_tunnel *tunnel,
 {
 	int error;
 	struct l2tp_session *session;
+<<<<<<< HEAD
 	struct pppol2tp_session *ps;
+=======
+>>>>>>> v4.9.227
 
 	/* Error if tunnel socket is not prepped */
 	if (!tunnel->sock) {
 		error = -ENOENT;
+<<<<<<< HEAD
 		goto out;
 	}
 
@@ -832,6 +1120,11 @@ static int pppol2tp_session_create(struct net *net, struct l2tp_tunnel *tunnel,
 	if (session != NULL)
 		goto out;
 
+=======
+		goto err;
+	}
+
+>>>>>>> v4.9.227
 	/* Default MTU values. */
 	if (cfg->mtu == 0)
 		cfg->mtu = 1500 - PPPOL2TP_HEADER_OVERHEAD;
@@ -839,6 +1132,7 @@ static int pppol2tp_session_create(struct net *net, struct l2tp_tunnel *tunnel,
 		cfg->mru = cfg->mtu;
 
 	/* Allocate and initialize a new session context. */
+<<<<<<< HEAD
 	error = -ENOMEM;
 	session = l2tp_session_create(sizeof(struct pppol2tp_session),
 				      tunnel, session_id,
@@ -855,6 +1149,27 @@ static int pppol2tp_session_create(struct net *net, struct l2tp_tunnel *tunnel,
 	error = 0;
 
 out:
+=======
+	session = l2tp_session_create(sizeof(struct pppol2tp_session),
+				      tunnel, session_id,
+				      peer_session_id, cfg);
+	if (IS_ERR(session)) {
+		error = PTR_ERR(session);
+		goto err;
+	}
+
+	pppol2tp_session_init(session);
+
+	error = l2tp_session_register(session, tunnel);
+	if (error < 0)
+		goto err_sess;
+
+	return 0;
+
+err_sess:
+	kfree(session);
+err:
+>>>>>>> v4.9.227
 	return error;
 }
 
@@ -876,7 +1191,11 @@ static int pppol2tp_getname(struct socket *sock, struct sockaddr *uaddr,
 	error = -ENOTCONN;
 	if (sk == NULL)
 		goto end;
+<<<<<<< HEAD
 	if (sk->sk_state != PPPOX_CONNECTED)
+=======
+	if (!(sk->sk_state & PPPOX_CONNECTED))
+>>>>>>> v4.9.227
 		goto end;
 
 	error = -EBADF;
@@ -886,10 +1205,15 @@ static int pppol2tp_getname(struct socket *sock, struct sockaddr *uaddr,
 
 	pls = l2tp_session_priv(session);
 	tunnel = l2tp_sock_to_tunnel(pls->tunnel_sock);
+<<<<<<< HEAD
 	if (tunnel == NULL) {
 		error = -EBADF;
 		goto end_put_sess;
 	}
+=======
+	if (tunnel == NULL)
+		goto end_put_sess;
+>>>>>>> v4.9.227
 
 	inet = inet_sk(tunnel->sock);
 	if ((tunnel->version == 2) && (tunnel->sock->sk_family == AF_INET)) {
@@ -967,12 +1291,19 @@ static int pppol2tp_getname(struct socket *sock, struct sockaddr *uaddr,
 	}
 
 	*usockaddr_len = len;
+<<<<<<< HEAD
+=======
+	error = 0;
+>>>>>>> v4.9.227
 
 	sock_put(pls->tunnel_sock);
 end_put_sess:
 	sock_put(sk);
+<<<<<<< HEAD
 	error = 0;
 
+=======
+>>>>>>> v4.9.227
 end:
 	return error;
 }
@@ -1014,6 +1345,7 @@ static int pppol2tp_session_ioctl(struct l2tp_session *session,
 	struct l2tp_tunnel *tunnel = session->tunnel;
 	struct pppol2tp_ioc_stats stats;
 
+<<<<<<< HEAD
 	l2tp_dbg(session, PPPOL2TP_MSG_CONTROL,
 		 "%s: pppol2tp_session_ioctl(cmd=%#x, arg=%#lx)\n",
 		 session->name, cmd, arg);
@@ -1024,6 +1356,16 @@ static int pppol2tp_session_ioctl(struct l2tp_session *session,
 
 	sock_hold(sk);
 
+=======
+	l2tp_dbg(session, L2TP_MSG_CONTROL,
+		 "%s: pppol2tp_session_ioctl(cmd=%#x, arg=%#lx)\n",
+		 session->name, cmd, arg);
+
+	sk = pppol2tp_session_get_sock(session);
+	if (!sk)
+		return -EBADR;
+
+>>>>>>> v4.9.227
 	switch (cmd) {
 	case SIOCGIFMTU:
 		err = -ENXIO;
@@ -1037,7 +1379,11 @@ static int pppol2tp_session_ioctl(struct l2tp_session *session,
 		if (copy_to_user((void __user *) arg, &ifr, sizeof(struct ifreq)))
 			break;
 
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL, "%s: get mtu=%d\n",
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL, "%s: get mtu=%d\n",
+>>>>>>> v4.9.227
 			  session->name, session->mtu);
 		err = 0;
 		break;
@@ -1053,7 +1399,11 @@ static int pppol2tp_session_ioctl(struct l2tp_session *session,
 
 		session->mtu = ifr.ifr_mtu;
 
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL, "%s: set mtu=%d\n",
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL, "%s: set mtu=%d\n",
+>>>>>>> v4.9.227
 			  session->name, session->mtu);
 		err = 0;
 		break;
@@ -1067,7 +1417,11 @@ static int pppol2tp_session_ioctl(struct l2tp_session *session,
 		if (put_user(session->mru, (int __user *) arg))
 			break;
 
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL, "%s: get mru=%d\n",
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL, "%s: get mru=%d\n",
+>>>>>>> v4.9.227
 			  session->name, session->mru);
 		err = 0;
 		break;
@@ -1082,7 +1436,11 @@ static int pppol2tp_session_ioctl(struct l2tp_session *session,
 			break;
 
 		session->mru = val;
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL, "%s: set mru=%d\n",
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL, "%s: set mru=%d\n",
+>>>>>>> v4.9.227
 			  session->name, session->mru);
 		err = 0;
 		break;
@@ -1092,7 +1450,11 @@ static int pppol2tp_session_ioctl(struct l2tp_session *session,
 		if (put_user(ps->flags, (int __user *) arg))
 			break;
 
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL, "%s: get flags=%d\n",
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL, "%s: get flags=%d\n",
+>>>>>>> v4.9.227
 			  session->name, ps->flags);
 		err = 0;
 		break;
@@ -1102,7 +1464,11 @@ static int pppol2tp_session_ioctl(struct l2tp_session *session,
 		if (get_user(val, (int __user *) arg))
 			break;
 		ps->flags = val;
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL, "%s: set flags=%d\n",
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL, "%s: set flags=%d\n",
+>>>>>>> v4.9.227
 			  session->name, ps->flags);
 		err = 0;
 		break;
@@ -1119,7 +1485,11 @@ static int pppol2tp_session_ioctl(struct l2tp_session *session,
 		if (copy_to_user((void __user *) arg, &stats,
 				 sizeof(stats)))
 			break;
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL, "%s: get L2TP stats\n",
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL, "%s: get L2TP stats\n",
+>>>>>>> v4.9.227
 			  session->name);
 		err = 0;
 		break;
@@ -1147,7 +1517,11 @@ static int pppol2tp_tunnel_ioctl(struct l2tp_tunnel *tunnel,
 	struct sock *sk;
 	struct pppol2tp_ioc_stats stats;
 
+<<<<<<< HEAD
 	l2tp_dbg(tunnel, PPPOL2TP_MSG_CONTROL,
+=======
+	l2tp_dbg(tunnel, L2TP_MSG_CONTROL,
+>>>>>>> v4.9.227
 		 "%s: pppol2tp_tunnel_ioctl(cmd=%#x, arg=%#lx)\n",
 		 tunnel->name, cmd, arg);
 
@@ -1168,11 +1542,26 @@ static int pppol2tp_tunnel_ioctl(struct l2tp_tunnel *tunnel,
 		if (stats.session_id != 0) {
 			/* resend to session ioctl handler */
 			struct l2tp_session *session =
+<<<<<<< HEAD
 				l2tp_session_find(sock_net(sk), tunnel, stats.session_id);
 			if (session != NULL)
 				err = pppol2tp_session_ioctl(session, cmd, arg);
 			else
 				err = -EBADR;
+=======
+				l2tp_session_get(sock_net(sk), tunnel,
+						 stats.session_id, true);
+
+			if (session) {
+				err = pppol2tp_session_ioctl(session, cmd,
+							     arg);
+				if (session->deref)
+					session->deref(session);
+				l2tp_session_dec_refcount(session);
+			} else {
+				err = -EBADR;
+			}
+>>>>>>> v4.9.227
 			break;
 		}
 #ifdef CONFIG_XFRM
@@ -1183,7 +1572,11 @@ static int pppol2tp_tunnel_ioctl(struct l2tp_tunnel *tunnel,
 			err = -EFAULT;
 			break;
 		}
+<<<<<<< HEAD
 		l2tp_info(tunnel, PPPOL2TP_MSG_CONTROL, "%s: get L2TP stats\n",
+=======
+		l2tp_info(tunnel, L2TP_MSG_CONTROL, "%s: get L2TP stats\n",
+>>>>>>> v4.9.227
 			  tunnel->name);
 		err = 0;
 		break;
@@ -1273,7 +1666,11 @@ static int pppol2tp_tunnel_setsockopt(struct sock *sk,
 	switch (optname) {
 	case PPPOL2TP_SO_DEBUG:
 		tunnel->debug = val;
+<<<<<<< HEAD
 		l2tp_info(tunnel, PPPOL2TP_MSG_CONTROL, "%s: set debug=%x\n",
+=======
+		l2tp_info(tunnel, L2TP_MSG_CONTROL, "%s: set debug=%x\n",
+>>>>>>> v4.9.227
 			  tunnel->name, tunnel->debug);
 		break;
 
@@ -1292,7 +1689,10 @@ static int pppol2tp_session_setsockopt(struct sock *sk,
 				       int optname, int val)
 {
 	int err = 0;
+<<<<<<< HEAD
 	struct pppol2tp_session *ps = l2tp_session_priv(session);
+=======
+>>>>>>> v4.9.227
 
 	switch (optname) {
 	case PPPOL2TP_SO_RECVSEQ:
@@ -1301,7 +1701,11 @@ static int pppol2tp_session_setsockopt(struct sock *sk,
 			break;
 		}
 		session->recv_seq = val ? -1 : 0;
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL,
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL,
+>>>>>>> v4.9.227
 			  "%s: set recv_seq=%d\n",
 			  session->name, session->recv_seq);
 		break;
@@ -1313,13 +1717,22 @@ static int pppol2tp_session_setsockopt(struct sock *sk,
 		}
 		session->send_seq = val ? -1 : 0;
 		{
+<<<<<<< HEAD
 			struct sock *ssk      = ps->sock;
 			struct pppox_sock *po = pppox_sk(ssk);
+=======
+			struct pppox_sock *po = pppox_sk(sk);
+
+>>>>>>> v4.9.227
 			po->chan.hdrlen = val ? PPPOL2TP_L2TP_HDR_SIZE_SEQ :
 				PPPOL2TP_L2TP_HDR_SIZE_NOSEQ;
 		}
 		l2tp_session_set_header_len(session, session->tunnel->version);
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL,
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL,
+>>>>>>> v4.9.227
 			  "%s: set send_seq=%d\n",
 			  session->name, session->send_seq);
 		break;
@@ -1330,20 +1743,32 @@ static int pppol2tp_session_setsockopt(struct sock *sk,
 			break;
 		}
 		session->lns_mode = val ? -1 : 0;
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL,
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL,
+>>>>>>> v4.9.227
 			  "%s: set lns_mode=%d\n",
 			  session->name, session->lns_mode);
 		break;
 
 	case PPPOL2TP_SO_DEBUG:
 		session->debug = val;
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL, "%s: set debug=%x\n",
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL, "%s: set debug=%x\n",
+>>>>>>> v4.9.227
 			  session->name, session->debug);
 		break;
 
 	case PPPOL2TP_SO_REORDERTO:
 		session->reorder_timeout = msecs_to_jiffies(val);
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL,
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL,
+>>>>>>> v4.9.227
 			  "%s: set reorder_timeout=%d\n",
 			  session->name, session->reorder_timeout);
 		break;
@@ -1424,7 +1849,11 @@ static int pppol2tp_tunnel_getsockopt(struct sock *sk,
 	switch (optname) {
 	case PPPOL2TP_SO_DEBUG:
 		*val = tunnel->debug;
+<<<<<<< HEAD
 		l2tp_info(tunnel, PPPOL2TP_MSG_CONTROL, "%s: get debug=%x\n",
+=======
+		l2tp_info(tunnel, L2TP_MSG_CONTROL, "%s: get debug=%x\n",
+>>>>>>> v4.9.227
 			  tunnel->name, tunnel->debug);
 		break;
 
@@ -1447,31 +1876,51 @@ static int pppol2tp_session_getsockopt(struct sock *sk,
 	switch (optname) {
 	case PPPOL2TP_SO_RECVSEQ:
 		*val = session->recv_seq;
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL,
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL,
+>>>>>>> v4.9.227
 			  "%s: get recv_seq=%d\n", session->name, *val);
 		break;
 
 	case PPPOL2TP_SO_SENDSEQ:
 		*val = session->send_seq;
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL,
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL,
+>>>>>>> v4.9.227
 			  "%s: get send_seq=%d\n", session->name, *val);
 		break;
 
 	case PPPOL2TP_SO_LNSMODE:
 		*val = session->lns_mode;
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL,
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL,
+>>>>>>> v4.9.227
 			  "%s: get lns_mode=%d\n", session->name, *val);
 		break;
 
 	case PPPOL2TP_SO_DEBUG:
 		*val = session->debug;
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL, "%s: get debug=%d\n",
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL, "%s: get debug=%d\n",
+>>>>>>> v4.9.227
 			  session->name, *val);
 		break;
 
 	case PPPOL2TP_SO_REORDERTO:
 		*val = (int) jiffies_to_msecs(session->reorder_timeout);
+<<<<<<< HEAD
 		l2tp_info(session, PPPOL2TP_MSG_CONTROL,
+=======
+		l2tp_info(session, L2TP_MSG_CONTROL,
+>>>>>>> v4.9.227
 			  "%s: get reorder_timeout=%d\n", session->name, *val);
 		break;
 
@@ -1582,7 +2031,11 @@ static void pppol2tp_next_tunnel(struct net *net, struct pppol2tp_seq_data *pd)
 
 static void pppol2tp_next_session(struct net *net, struct pppol2tp_seq_data *pd)
 {
+<<<<<<< HEAD
 	pd->session = l2tp_session_find_nth(pd->tunnel, pd->session_idx);
+=======
+	pd->session = l2tp_session_get_nth(pd->tunnel, pd->session_idx, true);
+>>>>>>> v4.9.227
 	pd->session_idx++;
 
 	if (pd->session == NULL) {
@@ -1650,8 +2103,14 @@ static void pppol2tp_seq_session_show(struct seq_file *m, void *v)
 {
 	struct l2tp_session *session = v;
 	struct l2tp_tunnel *tunnel = session->tunnel;
+<<<<<<< HEAD
 	struct pppol2tp_session *ps = l2tp_session_priv(session);
 	struct pppox_sock *po = pppox_sk(ps->sock);
+=======
+	unsigned char state;
+	char user_data_ok;
+	struct sock *sk;
+>>>>>>> v4.9.227
 	u32 ip = 0;
 	u16 port = 0;
 
@@ -1661,6 +2120,18 @@ static void pppol2tp_seq_session_show(struct seq_file *m, void *v)
 		port = ntohs(inet->inet_sport);
 	}
 
+<<<<<<< HEAD
+=======
+	sk = pppol2tp_session_get_sock(session);
+	if (sk) {
+		state = sk->sk_state;
+		user_data_ok = (session == sk->sk_user_data) ? 'Y' : 'N';
+	} else {
+		state = 0;
+		user_data_ok = 'N';
+	}
+
+>>>>>>> v4.9.227
 	seq_printf(m, "  SESSION '%s' %08X/%d %04X/%04X -> "
 		   "%04X/%04X %d %c\n",
 		   session->name, ip, port,
@@ -1668,9 +2139,13 @@ static void pppol2tp_seq_session_show(struct seq_file *m, void *v)
 		   session->session_id,
 		   tunnel->peer_tunnel_id,
 		   session->peer_session_id,
+<<<<<<< HEAD
 		   ps->sock->sk_state,
 		   (session == ps->sock->sk_user_data) ?
 		   'Y' : 'N');
+=======
+		   state, user_data_ok);
+>>>>>>> v4.9.227
 	seq_printf(m, "   %d/%d/%c/%c/%s %08x %u\n",
 		   session->mtu, session->mru,
 		   session->recv_seq ? 'R' : '-',
@@ -1687,8 +2162,17 @@ static void pppol2tp_seq_session_show(struct seq_file *m, void *v)
 		   atomic_long_read(&session->stats.rx_bytes),
 		   atomic_long_read(&session->stats.rx_errors));
 
+<<<<<<< HEAD
 	if (po)
 		seq_printf(m, "   interface %s\n", ppp_dev_name(&po->chan));
+=======
+	if (sk) {
+		struct pppox_sock *po = pppox_sk(sk);
+
+		seq_printf(m, "   interface %s\n", ppp_dev_name(&po->chan));
+		sock_put(sk);
+	}
+>>>>>>> v4.9.227
 }
 
 static int pppol2tp_seq_show(struct seq_file *m, void *v)
@@ -1709,10 +2193,21 @@ static int pppol2tp_seq_show(struct seq_file *m, void *v)
 
 	/* Show the tunnel or session context.
 	 */
+<<<<<<< HEAD
 	if (pd->session == NULL)
 		pppol2tp_seq_tunnel_show(m, pd->tunnel);
 	else
 		pppol2tp_seq_session_show(m, pd->session);
+=======
+	if (!pd->session) {
+		pppol2tp_seq_tunnel_show(m, pd->tunnel);
+	} else {
+		pppol2tp_seq_session_show(m, pd->session);
+		if (pd->session->deref)
+			pd->session->deref(pd->session);
+		l2tp_session_dec_refcount(pd->session);
+	}
+>>>>>>> v4.9.227
 
 out:
 	return 0;
@@ -1798,6 +2293,12 @@ static const struct proto_ops pppol2tp_ops = {
 	.recvmsg	= pppol2tp_recvmsg,
 	.mmap		= sock_no_mmap,
 	.ioctl		= pppox_ioctl,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+	.compat_ioctl = pppox_compat_ioctl,
+#endif
+>>>>>>> v4.9.227
 };
 
 static const struct pppox_proto pppol2tp_proto = {
@@ -1870,4 +2371,9 @@ MODULE_AUTHOR("James Chapman <jchapman@katalix.com>");
 MODULE_DESCRIPTION("PPP over L2TP over UDP");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(PPPOL2TP_DRV_VERSION);
+<<<<<<< HEAD
 MODULE_ALIAS("pppox-proto-" __stringify(PX_PROTO_OL2TP));
+=======
+MODULE_ALIAS_NET_PF_PROTO(PF_PPPOX, PX_PROTO_OL2TP);
+MODULE_ALIAS_L2TP_PWTYPE(7);
+>>>>>>> v4.9.227

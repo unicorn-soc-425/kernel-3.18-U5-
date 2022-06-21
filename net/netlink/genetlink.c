@@ -23,6 +23,12 @@
 static DEFINE_MUTEX(genl_mutex); /* serialization of message processing */
 static DECLARE_RWSEM(cb_lock);
 
+<<<<<<< HEAD
+=======
+atomic_t genl_sk_destructing_cnt = ATOMIC_INIT(0);
+DECLARE_WAIT_QUEUE_HEAD(genl_sk_destructing_waitq);
+
+>>>>>>> v4.9.227
 void genl_lock(void)
 {
 	mutex_lock(&genl_mutex);
@@ -36,7 +42,11 @@ void genl_unlock(void)
 EXPORT_SYMBOL(genl_unlock);
 
 #ifdef CONFIG_LOCKDEP
+<<<<<<< HEAD
 int lockdep_genl_is_held(void)
+=======
+bool lockdep_genl_is_held(void)
+>>>>>>> v4.9.227
 {
 	return lockdep_is_held(&genl_mutex);
 }
@@ -182,7 +192,11 @@ static int genl_allocate_reserve_groups(int n_groups, int *first_id)
 			}
 		}
 
+<<<<<<< HEAD
 		if (id >= mc_groups_longs * BITS_PER_LONG) {
+=======
+		if (id + n_groups > mc_groups_longs * BITS_PER_LONG) {
+>>>>>>> v4.9.227
 			unsigned long new_longs = mc_groups_longs +
 						  BITS_TO_LONGS(n_groups);
 			size_t nlen = new_longs * sizeof(unsigned long);
@@ -401,7 +415,11 @@ int __genl_register_family(struct genl_family *family)
 
 	err = genl_validate_assign_mc_groups(family);
 	if (err)
+<<<<<<< HEAD
 		goto errout_locked;
+=======
+		goto errout_free;
+>>>>>>> v4.9.227
 
 	list_add_tail(&family->family_list, genl_family_chain(family->id));
 	genl_unlock_all();
@@ -414,6 +432,11 @@ int __genl_register_family(struct genl_family *family)
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+errout_free:
+	kfree(family->attrbuf);
+>>>>>>> v4.9.227
 errout_locked:
 	genl_unlock_all();
 errout:
@@ -435,15 +458,29 @@ int genl_unregister_family(struct genl_family *family)
 
 	genl_lock_all();
 
+<<<<<<< HEAD
 	genl_unregister_mc_groups(family);
 
+=======
+>>>>>>> v4.9.227
 	list_for_each_entry(rc, genl_family_chain(family->id), family_list) {
 		if (family->id != rc->id || strcmp(rc->name, family->name))
 			continue;
 
+<<<<<<< HEAD
 		list_del(&rc->family_list);
 		family->n_ops = 0;
 		genl_unlock_all();
+=======
+		genl_unregister_mc_groups(family);
+
+		list_del(&rc->family_list);
+		family->n_ops = 0;
+		up_write(&cb_lock);
+		wait_event(genl_sk_destructing_waitq,
+			   atomic_read(&genl_sk_destructing_cnt) == 0);
+		genl_unlock();
+>>>>>>> v4.9.227
 
 		kfree(family->attrbuf);
 		genl_ctrl_event(CTRL_CMD_DELFAMILY, family, NULL, 0);
@@ -457,6 +494,7 @@ int genl_unregister_family(struct genl_family *family)
 EXPORT_SYMBOL(genl_unregister_family);
 
 /**
+<<<<<<< HEAD
  * genlmsg_new_unicast - Allocate generic netlink message for unicast
  * @payload: size of the message payload
  * @info: information on destination
@@ -477,6 +515,8 @@ struct sk_buff *genlmsg_new_unicast(size_t payload, struct genl_info *info,
 EXPORT_SYMBOL_GPL(genlmsg_new_unicast);
 
 /**
+=======
+>>>>>>> v4.9.227
  * genlmsg_put - Add generic netlink header to netlink message
  * @skb: socket buffer holding the message
  * @portid: netlink portid the message is addressed to
@@ -574,6 +614,13 @@ static int genl_family_rcv_msg(struct genl_family *family,
 	    !netlink_capable(skb, CAP_NET_ADMIN))
 		return -EPERM;
 
+<<<<<<< HEAD
+=======
+	if ((ops->flags & GENL_UNS_ADMIN_PERM) &&
+	    !netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+		return -EPERM;
+
+>>>>>>> v4.9.227
 	if ((nlh->nlmsg_flags & NLM_F_DUMP) == NLM_F_DUMP) {
 		int rc;
 
@@ -632,7 +679,10 @@ static int genl_family_rcv_msg(struct genl_family *family,
 	info.genlhdr = nlmsg_data(nlh);
 	info.userhdr = nlmsg_data(nlh) + GENL_HDRLEN;
 	info.attrs = attrbuf;
+<<<<<<< HEAD
 	info.dst_sk = skb->sk;
+=======
+>>>>>>> v4.9.227
 	genl_info_net_set(&info, net);
 	memset(&info.user_ptr, 0, sizeof(info.user_ptr));
 
@@ -772,7 +822,12 @@ static int ctrl_fill_info(struct genl_family *family, u32 portid, u32 seq,
 		nla_nest_end(skb, nla_grps);
 	}
 
+<<<<<<< HEAD
 	return genlmsg_end(skb, hdr);
+=======
+	genlmsg_end(skb, hdr);
+	return 0;
+>>>>>>> v4.9.227
 
 nla_put_failure:
 	genlmsg_cancel(skb, hdr);
@@ -812,7 +867,12 @@ static int ctrl_fill_mcgrp_info(struct genl_family *family,
 	nla_nest_end(skb, nest);
 	nla_nest_end(skb, nla_grps);
 
+<<<<<<< HEAD
 	return genlmsg_end(skb, hdr);
+=======
+	genlmsg_end(skb, hdr);
+	return 0;
+>>>>>>> v4.9.227
 
 nla_put_failure:
 	genlmsg_cancel(skb, hdr);
@@ -986,7 +1046,11 @@ static int genl_ctrl_event(int event, struct genl_family *family,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct genl_ops genl_ctrl_ops[] = {
+=======
+static const struct genl_ops genl_ctrl_ops[] = {
+>>>>>>> v4.9.227
 	{
 		.cmd		= CTRL_CMD_GETFAMILY,
 		.doit		= ctrl_getfamily,
@@ -995,15 +1059,77 @@ static struct genl_ops genl_ctrl_ops[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct genl_multicast_group genl_ctrl_groups[] = {
 	{ .name = "notify", },
 };
 
+=======
+static const struct genl_multicast_group genl_ctrl_groups[] = {
+	{ .name = "notify", },
+};
+
+static int genl_bind(struct net *net, int group)
+{
+	int i, err = -ENOENT;
+
+	down_read(&cb_lock);
+	for (i = 0; i < GENL_FAM_TAB_SIZE; i++) {
+		struct genl_family *f;
+
+		list_for_each_entry(f, genl_family_chain(i), family_list) {
+			if (group >= f->mcgrp_offset &&
+			    group < f->mcgrp_offset + f->n_mcgrps) {
+				int fam_grp = group - f->mcgrp_offset;
+
+				if (!f->netnsok && net != &init_net)
+					err = -ENOENT;
+				else if (f->mcast_bind)
+					err = f->mcast_bind(net, fam_grp);
+				else
+					err = 0;
+				break;
+			}
+		}
+	}
+	up_read(&cb_lock);
+
+	return err;
+}
+
+static void genl_unbind(struct net *net, int group)
+{
+	int i;
+
+	down_read(&cb_lock);
+	for (i = 0; i < GENL_FAM_TAB_SIZE; i++) {
+		struct genl_family *f;
+
+		list_for_each_entry(f, genl_family_chain(i), family_list) {
+			if (group >= f->mcgrp_offset &&
+			    group < f->mcgrp_offset + f->n_mcgrps) {
+				int fam_grp = group - f->mcgrp_offset;
+
+				if (f->mcast_unbind)
+					f->mcast_unbind(net, fam_grp);
+				break;
+			}
+		}
+	}
+	up_read(&cb_lock);
+}
+
+>>>>>>> v4.9.227
 static int __net_init genl_pernet_init(struct net *net)
 {
 	struct netlink_kernel_cfg cfg = {
 		.input		= genl_rcv,
 		.flags		= NL_CFG_F_NONROOT_RECV,
+<<<<<<< HEAD
+=======
+		.bind		= genl_bind,
+		.unbind		= genl_unbind,
+>>>>>>> v4.9.227
 	};
 
 	/* we'll bump the group number right afterwards */
@@ -1100,6 +1226,7 @@ int genlmsg_multicast_allns(struct genl_family *family, struct sk_buff *skb,
 }
 EXPORT_SYMBOL(genlmsg_multicast_allns);
 
+<<<<<<< HEAD
 void genl_notify(struct genl_family *family,
 		 struct sk_buff *skb, struct net *net, u32 portid, u32 group,
 		 struct nlmsghdr *nlh, gfp_t flags)
@@ -1109,10 +1236,25 @@ void genl_notify(struct genl_family *family,
 
 	if (nlh)
 		report = nlmsg_report(nlh);
+=======
+void genl_notify(struct genl_family *family, struct sk_buff *skb,
+		 struct genl_info *info, u32 group, gfp_t flags)
+{
+	struct net *net = genl_info_net(info);
+	struct sock *sk = net->genl_sock;
+	int report = 0;
+
+	if (info->nlhdr)
+		report = nlmsg_report(info->nlhdr);
+>>>>>>> v4.9.227
 
 	if (WARN_ON_ONCE(group >= family->n_mcgrps))
 		return;
 	group = family->mcgrp_offset + group;
+<<<<<<< HEAD
 	nlmsg_notify(sk, skb, portid, group, report, flags);
+=======
+	nlmsg_notify(sk, skb, info->snd_portid, group, report, flags);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(genl_notify);

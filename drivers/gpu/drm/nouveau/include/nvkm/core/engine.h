@@ -38,11 +38,17 @@ struct nvkm_engine_func {
 };
 
 int nvkm_engine_ctor(const struct nvkm_engine_func *, struct nvkm_device *,
+<<<<<<< HEAD
 		     int index, u32 pmc_enable, bool enable,
 		     struct nvkm_engine *);
 int nvkm_engine_new_(const struct nvkm_engine_func *, struct nvkm_device *,
 		     int index, u32 pmc_enable, bool enable,
 		     struct nvkm_engine **);
+=======
+		     int index, bool enable, struct nvkm_engine *);
+int nvkm_engine_new_(const struct nvkm_engine_func *, struct nvkm_device *,
+		     int index, bool enable, struct nvkm_engine **);
+>>>>>>> v4.9.227
 struct nvkm_engine *nvkm_engine_ref(struct nvkm_engine *);
 void nvkm_engine_unref(struct nvkm_engine **);
 void nvkm_engine_tile(struct nvkm_engine *, int region);

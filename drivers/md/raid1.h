@@ -61,6 +61,14 @@ struct r1conf {
 	 * block, or anything else.
 	 */
 	struct list_head	retry_list;
+<<<<<<< HEAD
+=======
+	/* A separate list of r1bio which just need raid_end_bio_io called.
+	 * This mustn't happen for writes which had any errors if the superblock
+	 * needs to be written.
+	 */
+	struct list_head	bio_end_io_list;
+>>>>>>> v4.9.227
 
 	/* queue pending writes to be submitted on unplug */
 	struct bio_list		pending_bio_list;
@@ -106,6 +114,16 @@ struct r1conf {
 	 * the new thread here until we fully activate the array.
 	 */
 	struct md_thread	*thread;
+<<<<<<< HEAD
+=======
+
+	/* Keep track of cluster resync window to send to other
+	 * nodes.
+	 */
+	sector_t		cluster_sync_low;
+	sector_t		cluster_sync_high;
+
+>>>>>>> v4.9.227
 };
 
 /*
@@ -170,7 +188,10 @@ struct r1bio {
  */
 #define	R1BIO_MadeGood 7
 #define	R1BIO_WriteError 8
+<<<<<<< HEAD
 
 extern int md_raid1_congested(struct mddev *mddev, int bits);
 
+=======
+>>>>>>> v4.9.227
 #endif

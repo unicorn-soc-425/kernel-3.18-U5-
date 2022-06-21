@@ -545,6 +545,14 @@ static int treo_attach(struct usb_serial *serial)
 		(serial->num_interrupt_in == 0))
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if (serial->num_bulk_in < 2 || serial->num_interrupt_in < 2) {
+		dev_err(&serial->interface->dev, "missing endpoints\n");
+		return -ENODEV;
+	}
+
+>>>>>>> v4.9.227
 	/*
 	* It appears that Treos and Kyoceras want to use the
 	* 1st bulk in endpoint to communicate with the 2nd bulk out endpoint,
@@ -599,8 +607,12 @@ static int clie_5_attach(struct usb_serial *serial)
 
 	/* some sanity check */
 	if (serial->num_bulk_out < 2) {
+<<<<<<< HEAD
 		dev_err(&serial->interface->dev,
 				"missing bulk out endpoints\n");
+=======
+		dev_err(&serial->interface->dev, "missing bulk out endpoints\n");
+>>>>>>> v4.9.227
 		return -ENODEV;
 	}
 

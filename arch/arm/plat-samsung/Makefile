@@ -4,7 +4,12 @@
 #
 # Licensed under GPLv2
 
+<<<<<<< HEAD
 ccflags-$(CONFIG_ARCH_MULTI_V7) += -I$(srctree)/$(src)/include
+=======
+ccflags-$(CONFIG_ARCH_S3C64XX) := -I$(srctree)/arch/arm/mach-s3c64xx/include
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/$(src)/include
+>>>>>>> v4.9.227
 
 # Objects we always build independent of SoC choice
 
@@ -20,6 +25,7 @@ obj-$(CONFIG_SAMSUNG_ATAGS)	+= platformdata.o
 
 obj-$(CONFIG_SAMSUNG_ATAGS)	+= devs.o
 obj-$(CONFIG_SAMSUNG_ATAGS)	+= dev-uart.o
+<<<<<<< HEAD
 obj-$(CONFIG_S5P_DEV_MFC)	+= s5p-dev-mfc.o
 
 obj-$(CONFIG_SAMSUNG_DEV_BACKLIGHT)	+= dev-backlight.o
@@ -31,10 +37,18 @@ obj-$(CONFIG_S3C_SETUP_CAMIF)	+= setup-camif.o
 obj-$(CONFIG_S3C_DMA)		+= dma.o s3c-dma-ops.o
 
 obj-$(CONFIG_SAMSUNG_DMADEV)	+= dma-ops.o
+=======
+
+obj-$(CONFIG_GPIO_SAMSUNG)     += gpio-samsung.o
+>>>>>>> v4.9.227
 
 # PM support
 
 obj-$(CONFIG_PM_SLEEP)		+= pm-common.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_EXYNOS_CPU_SUSPEND) += pm-common.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_SAMSUNG_PM)	+= pm.o
 obj-$(CONFIG_SAMSUNG_PM_GPIO)	+= pm-gpio.o
 obj-$(CONFIG_SAMSUNG_PM_CHECK)	+= pm-check.o

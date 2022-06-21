@@ -21,6 +21,14 @@
 #include <linux/list.h>
 #include <linux/nl80211.h>
 
+<<<<<<< HEAD
+=======
+/* tolerated deviation of radar time stamp in usecs on both sides
+ * TODO: this might need to be HW-dependent
+ */
+#define PRI_TOLERANCE	16
+
+>>>>>>> v4.9.227
 /**
  * struct ath_dfs_pool_stats - DFS Statistics for global pools
  */
@@ -40,12 +48,20 @@ struct ath_dfs_pool_stats {
  * @freq: channel frequency in MHz
  * @width: pulse duration in us
  * @rssi: rssi of radar event
+<<<<<<< HEAD
+=======
+ * @chirp: chirp detected in pulse
+>>>>>>> v4.9.227
  */
 struct pulse_event {
 	u64 ts;
 	u16 freq;
 	u8 width;
 	u8 rssi;
+<<<<<<< HEAD
+=======
+	bool chirp;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -59,6 +75,10 @@ struct pulse_event {
  * @ppb: pulses per bursts for this type
  * @ppb_thresh: number of pulses required to trigger detection
  * @max_pri_tolerance: pulse time stamp tolerance on both sides [us]
+<<<<<<< HEAD
+=======
+ * @chirp: chirp required for the radar pattern
+>>>>>>> v4.9.227
  */
 struct radar_detector_specs {
 	u8 type_id;
@@ -70,6 +90,10 @@ struct radar_detector_specs {
 	u8 ppb;
 	u8 ppb_thresh;
 	u8 max_pri_tolerance;
+<<<<<<< HEAD
+=======
+	bool chirp;
+>>>>>>> v4.9.227
 };
 
 /**

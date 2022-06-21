@@ -22,7 +22,11 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+<<<<<<< HEAD
 #define DEBUG
+=======
+
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
@@ -51,7 +55,11 @@
  */
 struct ti_st {
 	struct hci_dev *hdev;
+<<<<<<< HEAD
 	char reg_status;
+=======
+	int reg_status;
+>>>>>>> v4.9.227
 	long (*st_write) (struct sk_buff *);
 	struct completion wait_reg_completion;
 };
@@ -83,7 +91,11 @@ static inline void ti_st_tx_complete(struct ti_st *hst, int pkt_type)
  * status.ti_st_open() function will wait for signal from this
  * API when st_register() function returns ST_PENDING.
  */
+<<<<<<< HEAD
 static void st_reg_completion_cb(void *priv_data, char data)
+=======
+static void st_reg_completion_cb(void *priv_data, int data)
+>>>>>>> v4.9.227
 {
 	struct ti_st *lhst = priv_data;
 
@@ -155,9 +167,12 @@ static int ti_st_open(struct hci_dev *hdev)
 
 	BT_DBG("%s %p", hdev->name, hdev);
 
+<<<<<<< HEAD
 	if (test_and_set_bit(HCI_RUNNING, &hdev->flags))
 		return -EBUSY;
 
+=======
+>>>>>>> v4.9.227
 	/* provide contexts for callbacks from ST */
 	hst = hci_get_drvdata(hdev);
 
@@ -181,7 +196,10 @@ static int ti_st_open(struct hci_dev *hdev)
 			goto done;
 
 		if (err != -EINPROGRESS) {
+<<<<<<< HEAD
 			clear_bit(HCI_RUNNING, &hdev->flags);
+=======
+>>>>>>> v4.9.227
 			BT_ERR("st_register failed %d", err);
 			return err;
 		}
@@ -195,7 +213,10 @@ static int ti_st_open(struct hci_dev *hdev)
 			(&hst->wait_reg_completion,
 			 msecs_to_jiffies(BT_REGISTER_TIMEOUT));
 		if (!timeleft) {
+<<<<<<< HEAD
 			clear_bit(HCI_RUNNING, &hdev->flags);
+=======
+>>>>>>> v4.9.227
 			BT_ERR("Timeout(%d sec),didn't get reg "
 					"completion signal from ST",
 					BT_REGISTER_TIMEOUT / 1000);
@@ -205,7 +226,10 @@ static int ti_st_open(struct hci_dev *hdev)
 		/* Is ST registration callback
 		 * called with ERROR status? */
 		if (hst->reg_status != 0) {
+<<<<<<< HEAD
 			clear_bit(HCI_RUNNING, &hdev->flags);
+=======
+>>>>>>> v4.9.227
 			BT_ERR("ST registration completed with invalid "
 					"status %d", hst->reg_status);
 			return -EAGAIN;
@@ -215,7 +239,10 @@ done:
 		hst->st_write = ti_st_proto[i].write;
 		if (!hst->st_write) {
 			BT_ERR("undefined ST write function");
+<<<<<<< HEAD
 			clear_bit(HCI_RUNNING, &hdev->flags);
+=======
+>>>>>>> v4.9.227
 			for (i = 0; i < MAX_BT_CHNL_IDS; i++) {
 				/* Undo registration with ST */
 				err = st_unregister(&ti_st_proto[i]);
@@ -236,9 +263,12 @@ static int ti_st_close(struct hci_dev *hdev)
 	int err, i;
 	struct ti_st *hst = hci_get_drvdata(hdev);
 
+<<<<<<< HEAD
 	if (!test_and_clear_bit(HCI_RUNNING, &hdev->flags))
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	for (i = MAX_BT_CHNL_IDS-1; i >= 0; i--) {
 		err = st_unregister(&ti_st_proto[i]);
 		if (err)
@@ -255,22 +285,37 @@ static int ti_st_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct ti_st *hst;
 	long len;
+<<<<<<< HEAD
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		return -EBUSY;
+=======
+	int pkt_type;
+>>>>>>> v4.9.227
 
 	hst = hci_get_drvdata(hdev);
 
 	/* Prepend skb with frame type */
+<<<<<<< HEAD
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
 
 	BT_DBG("%s: type %d len %d", hdev->name, bt_cb(skb)->pkt_type,
 			skb->len);
+=======
+	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
+
+	BT_DBG("%s: type %d len %d", hdev->name, hci_skb_pkt_type(skb),
+	       skb->len);
+>>>>>>> v4.9.227
 
 	/* Insert skb to shared transport layer's transmit queue.
 	 * Freeing skb memory is taken care in shared transport layer,
 	 * so don't free skb memory here.
 	 */
+<<<<<<< HEAD
+=======
+	pkt_type = hci_skb_pkt_type(skb);
+>>>>>>> v4.9.227
 	len = hst->st_write(skb);
 	if (len < 0) {
 		kfree_skb(skb);
@@ -281,7 +326,11 @@ static int ti_st_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 
 	/* ST accepted our skb. So, Go ahead and do rest */
 	hdev->stat.byte_tx += len;
+<<<<<<< HEAD
 	ti_st_tx_complete(hst, bt_cb(skb)->pkt_type);
+=======
+	ti_st_tx_complete(hst, pkt_type);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -321,7 +370,11 @@ static int bt_ti_probe(struct platform_device *pdev)
 	BT_DBG("HCI device registered (hdev %p)", hdev);
 
 	dev_set_drvdata(&pdev->dev, hst);
+<<<<<<< HEAD
 	return err;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int bt_ti_remove(struct platform_device *pdev)
@@ -349,7 +402,10 @@ static struct platform_driver btwilink_driver = {
 	.remove = bt_ti_remove,
 	.driver = {
 		.name = "btwilink",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

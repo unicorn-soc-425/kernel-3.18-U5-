@@ -8,15 +8,23 @@
 #include <asm/fixmap.h>
 #include <asm/smp_plat.h>
 #include <asm/opcodes.h>
+<<<<<<< HEAD
 
 #include "patch.h"
+=======
+#include <asm/patch.h>
+>>>>>>> v4.9.227
 
 struct patch {
 	void *addr;
 	unsigned int insn;
 };
 
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(patch_lock);
+=======
+static DEFINE_RAW_SPINLOCK(patch_lock);
+>>>>>>> v4.9.227
 
 static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags)
 	__acquires(&patch_lock)
@@ -33,7 +41,11 @@ static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags)
 		return addr;
 
 	if (flags)
+<<<<<<< HEAD
 		spin_lock_irqsave(&patch_lock, *flags);
+=======
+		raw_spin_lock_irqsave(&patch_lock, *flags);
+>>>>>>> v4.9.227
 	else
 		__acquire(&patch_lock);
 
@@ -48,7 +60,11 @@ static void __kprobes patch_unmap(int fixmap, unsigned long *flags)
 	clear_fixmap(fixmap);
 
 	if (flags)
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&patch_lock, *flags);
+=======
+		raw_spin_unlock_irqrestore(&patch_lock, *flags);
+>>>>>>> v4.9.227
 	else
 		__release(&patch_lock);
 }

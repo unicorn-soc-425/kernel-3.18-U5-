@@ -27,7 +27,11 @@
 #include <linux/slab.h>
 #include <linux/clk.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/videobuf2-dma-contig.h>
 
 #include "fimc-core.h"
@@ -81,7 +85,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.flags		= FMT_FLAGS_M2M_OUT | FMT_HAS_ALPHA,
 	}, {
 		.name		= "YUV 4:4:4",
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_YUV10_1X30,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_YUV10_1X30,
+>>>>>>> v4.9.227
 		.flags		= FMT_FLAGS_WRITEBACK,
 	}, {
 		.name		= "YUV 4:2:2 packed, YCbYCr",
@@ -90,7 +98,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.color		= FIMC_FMT_YCBYCR422,
 		.memplanes	= 1,
 		.colplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_YUYV8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_YUYV8_2X8,
+>>>>>>> v4.9.227
 		.flags		= FMT_FLAGS_M2M | FMT_FLAGS_CAM,
 	}, {
 		.name		= "YUV 4:2:2 packed, CbYCrY",
@@ -99,7 +111,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.color		= FIMC_FMT_CBYCRY422,
 		.memplanes	= 1,
 		.colplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_UYVY8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_UYVY8_2X8,
+>>>>>>> v4.9.227
 		.flags		= FMT_FLAGS_M2M | FMT_FLAGS_CAM,
 	}, {
 		.name		= "YUV 4:2:2 packed, CrYCbY",
@@ -108,7 +124,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.color		= FIMC_FMT_CRYCBY422,
 		.memplanes	= 1,
 		.colplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_VYUY8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_VYUY8_2X8,
+>>>>>>> v4.9.227
 		.flags		= FMT_FLAGS_M2M | FMT_FLAGS_CAM,
 	}, {
 		.name		= "YUV 4:2:2 packed, YCrYCb",
@@ -117,7 +137,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.color		= FIMC_FMT_YCRYCB422,
 		.memplanes	= 1,
 		.colplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_YVYU8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_YVYU8_2X8,
+>>>>>>> v4.9.227
 		.flags		= FMT_FLAGS_M2M | FMT_FLAGS_CAM,
 	}, {
 		.name		= "YUV 4:2:2 planar, Y/Cb/Cr",
@@ -190,7 +214,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.depth		= { 8 },
 		.memplanes	= 1,
 		.colplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_JPEG_1X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_JPEG_1X8,
+>>>>>>> v4.9.227
 		.flags		= FMT_FLAGS_CAM | FMT_FLAGS_COMPRESSED,
 	}, {
 		.name		= "S5C73MX interleaved UYVY/JPEG",
@@ -200,7 +228,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.memplanes	= 2,
 		.colplanes	= 1,
 		.mdataplanes	= 0x2, /* plane 1 holds frame meta data */
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_S5C_UYVY_JPEG_1X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8,
+>>>>>>> v4.9.227
 		.flags		= FMT_FLAGS_CAM | FMT_FLAGS_COMPRESSED,
 	},
 };
@@ -832,7 +864,11 @@ err:
 	return -ENXIO;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_PM_RUNTIME) || defined(CONFIG_PM_SLEEP)
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 static int fimc_m2m_suspend(struct fimc_dev *fimc)
 {
 	unsigned long flags;
@@ -871,7 +907,11 @@ static int fimc_m2m_resume(struct fimc_dev *fimc)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM_RUNTIME || CONFIG_PM_SLEEP */
+=======
+#endif /* CONFIG_PM */
+>>>>>>> v4.9.227
 
 static const struct of_device_id fimc_of_match[];
 
@@ -1018,19 +1058,26 @@ static int fimc_probe(struct platform_device *pdev)
 			goto err_sd;
 	}
 
+<<<<<<< HEAD
 	/* Initialize contiguous memory allocator */
 	fimc->alloc_ctx = vb2_dma_contig_init_ctx(dev);
 	if (IS_ERR(fimc->alloc_ctx)) {
 		ret = PTR_ERR(fimc->alloc_ctx);
 		goto err_gclk;
 	}
+=======
+	vb2_dma_contig_set_max_seg_size(dev, DMA_BIT_MASK(32));
+>>>>>>> v4.9.227
 
 	dev_dbg(dev, "FIMC.%d registered successfully\n", fimc->id);
 	return 0;
 
+<<<<<<< HEAD
 err_gclk:
 	if (!pm_runtime_enabled(dev))
 		clk_disable(fimc->clock[CLK_GATE]);
+=======
+>>>>>>> v4.9.227
 err_sd:
 	fimc_unregister_capture_subdev(fimc);
 err_sclk:
@@ -1039,7 +1086,11 @@ err_sclk:
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 static int fimc_runtime_resume(struct device *dev)
 {
 	struct fimc_dev *fimc =	dev_get_drvdata(dev);
@@ -1123,7 +1174,11 @@ static int fimc_remove(struct platform_device *pdev)
 	pm_runtime_set_suspended(&pdev->dev);
 
 	fimc_unregister_capture_subdev(fimc);
+<<<<<<< HEAD
 	vb2_dma_contig_cleanup_ctx(fimc->alloc_ctx);
+=======
+	vb2_dma_contig_clear_max_seg_size(&pdev->dev);
+>>>>>>> v4.9.227
 
 	clk_disable(fimc->clock[CLK_BUS]);
 	fimc_clk_put(fimc);
@@ -1154,6 +1209,7 @@ static const struct fimc_pix_limit s5p_pix_limit[4] = {
 	},
 };
 
+<<<<<<< HEAD
 static const struct fimc_variant fimc0_variant_s5p = {
 	.has_inp_rot	 = 1,
 	.has_out_rot	 = 1,
@@ -1174,6 +1230,8 @@ static const struct fimc_variant fimc2_variant_s5p = {
 	.pix_limit	 = &s5p_pix_limit[1],
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct fimc_variant fimc0_variant_s5pv210 = {
 	.has_inp_rot	 = 1,
 	.has_out_rot	 = 1,
@@ -1206,6 +1264,7 @@ static const struct fimc_variant fimc2_variant_s5pv210 = {
 	.pix_limit	 = &s5p_pix_limit[2],
 };
 
+<<<<<<< HEAD
 /* S5PC100 */
 static const struct fimc_drvdata fimc_drvdata_s5p = {
 	.variant = {
@@ -1218,6 +1277,8 @@ static const struct fimc_drvdata fimc_drvdata_s5p = {
 	.out_buf_count	= 4,
 };
 
+=======
+>>>>>>> v4.9.227
 /* S5PV210, S5PC110 */
 static const struct fimc_drvdata fimc_drvdata_s5pv210 = {
 	.variant = {
@@ -1251,6 +1312,7 @@ static const struct fimc_drvdata fimc_drvdata_exynos4x12 = {
 	.out_buf_count	= 32,
 };
 
+<<<<<<< HEAD
 static const struct platform_device_id fimc_driver_ids[] = {
 	{
 		.name		= "s5p-fimc",
@@ -1268,6 +1330,8 @@ static const struct platform_device_id fimc_driver_ids[] = {
 	{ },
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id fimc_of_match[] = {
 	{
 		.compatible = "samsung,s5pv210-fimc",
@@ -1290,11 +1354,17 @@ static const struct dev_pm_ops fimc_pm_ops = {
 static struct platform_driver fimc_driver = {
 	.probe		= fimc_probe,
 	.remove		= fimc_remove,
+<<<<<<< HEAD
 	.id_table	= fimc_driver_ids,
 	.driver = {
 		.of_match_table = fimc_of_match,
 		.name		= FIMC_DRIVER_NAME,
 		.owner		= THIS_MODULE,
+=======
+	.driver = {
+		.of_match_table = fimc_of_match,
+		.name		= FIMC_DRIVER_NAME,
+>>>>>>> v4.9.227
 		.pm     	= &fimc_pm_ops,
 	}
 };

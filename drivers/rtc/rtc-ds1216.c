@@ -11,8 +11,11 @@
 #include <linux/bcd.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.2"
 
+=======
+>>>>>>> v4.9.227
 struct ds1216_regs {
 	u8 tsec;
 	u8 sec;
@@ -144,15 +147,22 @@ static int __init ds1216_rtc_probe(struct platform_device *pdev)
 	struct ds1216_priv *priv;
 	u8 dummy[8];
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -ENODEV;
+=======
+>>>>>>> v4.9.227
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 
 	platform_set_drvdata(pdev, priv);
 
+<<<<<<< HEAD
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> v4.9.227
 	priv->ioaddr = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(priv->ioaddr))
 		return PTR_ERR(priv->ioaddr);
@@ -170,7 +180,10 @@ static int __init ds1216_rtc_probe(struct platform_device *pdev)
 static struct platform_driver ds1216_rtc_platform_driver = {
 	.driver		= {
 		.name	= "rtc-ds1216",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -179,5 +192,8 @@ module_platform_driver_probe(ds1216_rtc_platform_driver, ds1216_rtc_probe);
 MODULE_AUTHOR("Thomas Bogendoerfer <tsbogend@alpha.franken.de>");
 MODULE_DESCRIPTION("DS1216 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227
 MODULE_ALIAS("platform:rtc-ds1216");

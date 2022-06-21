@@ -89,12 +89,23 @@ struct ib_uverbs_device {
 	int					num_comp_vectors;
 	struct completion			comp;
 	struct device			       *dev;
+<<<<<<< HEAD
 	struct ib_device		       *ib_dev;
+=======
+	struct ib_device	__rcu	       *ib_dev;
+>>>>>>> v4.9.227
 	int					devnum;
 	struct cdev			        cdev;
 	struct rb_root				xrcd_tree;
 	struct mutex				xrcd_tree_mutex;
 	struct kobject				kobj;
+<<<<<<< HEAD
+=======
+	struct srcu_struct			disassociate_srcu;
+	struct mutex				lists_mutex; /* protect lists */
+	struct list_head			uverbs_file_list;
+	struct list_head			uverbs_events_file_list;
+>>>>>>> v4.9.227
 };
 
 struct ib_uverbs_event_file {
@@ -106,15 +117,28 @@ struct ib_uverbs_event_file {
 	wait_queue_head_t			poll_wait;
 	struct fasync_struct		       *async_queue;
 	struct list_head			event_list;
+<<<<<<< HEAD
+=======
+	struct list_head			list;
+>>>>>>> v4.9.227
 };
 
 struct ib_uverbs_file {
 	struct kref				ref;
 	struct mutex				mutex;
+<<<<<<< HEAD
+=======
+	struct mutex                            cleanup_mutex; /* protect cleanup */
+>>>>>>> v4.9.227
 	struct ib_uverbs_device		       *device;
 	struct ib_ucontext		       *ucontext;
 	struct ib_event_handler			event_handler;
 	struct ib_uverbs_event_file	       *async_file;
+<<<<<<< HEAD
+=======
+	struct list_head			list;
+	int					is_closed;
+>>>>>>> v4.9.227
 };
 
 struct ib_uverbs_event {
@@ -155,6 +179,13 @@ struct ib_uqp_object {
 	struct ib_uxrcd_object *uxrcd;
 };
 
+<<<<<<< HEAD
+=======
+struct ib_uwq_object {
+	struct ib_uevent_object	uevent;
+};
+
+>>>>>>> v4.9.227
 struct ib_ucq_object {
 	struct ib_uobject	uobject;
 	struct ib_uverbs_file  *uverbs_file;
@@ -174,11 +205,22 @@ extern struct idr ib_uverbs_qp_idr;
 extern struct idr ib_uverbs_srq_idr;
 extern struct idr ib_uverbs_xrcd_idr;
 extern struct idr ib_uverbs_rule_idr;
+<<<<<<< HEAD
+=======
+extern struct idr ib_uverbs_wq_idr;
+extern struct idr ib_uverbs_rwq_ind_tbl_idr;
+>>>>>>> v4.9.227
 
 void idr_remove_uobj(struct idr *idp, struct ib_uobject *uobj);
 
 struct file *ib_uverbs_alloc_event_file(struct ib_uverbs_file *uverbs_file,
+<<<<<<< HEAD
 					int is_async);
+=======
+					struct ib_device *ib_dev,
+					int is_async);
+void ib_uverbs_free_async_event_file(struct ib_uverbs_file *uverbs_file);
+>>>>>>> v4.9.227
 struct ib_uverbs_event_file *ib_uverbs_lookup_comp_file(int fd);
 
 void ib_uverbs_release_ucq(struct ib_uverbs_file *file,
@@ -190,11 +232,20 @@ void ib_uverbs_release_uevent(struct ib_uverbs_file *file,
 void ib_uverbs_comp_handler(struct ib_cq *cq, void *cq_context);
 void ib_uverbs_cq_event_handler(struct ib_event *event, void *context_ptr);
 void ib_uverbs_qp_event_handler(struct ib_event *event, void *context_ptr);
+<<<<<<< HEAD
+=======
+void ib_uverbs_wq_event_handler(struct ib_event *event, void *context_ptr);
+>>>>>>> v4.9.227
 void ib_uverbs_srq_event_handler(struct ib_event *event, void *context_ptr);
 void ib_uverbs_event_handler(struct ib_event_handler *handler,
 			     struct ib_event *event);
 void ib_uverbs_dealloc_xrcd(struct ib_uverbs_device *dev, struct ib_xrcd *xrcd);
 
+<<<<<<< HEAD
+=======
+int uverbs_dealloc_mw(struct ib_mw *mw);
+
+>>>>>>> v4.9.227
 struct ib_uverbs_flow_spec {
 	union {
 		union {
@@ -208,11 +259,19 @@ struct ib_uverbs_flow_spec {
 		struct ib_uverbs_flow_spec_eth     eth;
 		struct ib_uverbs_flow_spec_ipv4    ipv4;
 		struct ib_uverbs_flow_spec_tcp_udp tcp_udp;
+<<<<<<< HEAD
+=======
+		struct ib_uverbs_flow_spec_ipv6    ipv6;
+>>>>>>> v4.9.227
 	};
 };
 
 #define IB_UVERBS_DECLARE_CMD(name)					\
 	ssize_t ib_uverbs_##name(struct ib_uverbs_file *file,		\
+<<<<<<< HEAD
+=======
+				 struct ib_device *ib_dev,              \
+>>>>>>> v4.9.227
 				 const char __user *buf, int in_len,	\
 				 int out_len)
 
@@ -254,10 +313,25 @@ IB_UVERBS_DECLARE_CMD(close_xrcd);
 
 #define IB_UVERBS_DECLARE_EX_CMD(name)				\
 	int ib_uverbs_ex_##name(struct ib_uverbs_file *file,	\
+<<<<<<< HEAD
+=======
+				struct ib_device *ib_dev,		\
+>>>>>>> v4.9.227
 				struct ib_udata *ucore,		\
 				struct ib_udata *uhw)
 
 IB_UVERBS_DECLARE_EX_CMD(create_flow);
 IB_UVERBS_DECLARE_EX_CMD(destroy_flow);
+<<<<<<< HEAD
+=======
+IB_UVERBS_DECLARE_EX_CMD(query_device);
+IB_UVERBS_DECLARE_EX_CMD(create_cq);
+IB_UVERBS_DECLARE_EX_CMD(create_qp);
+IB_UVERBS_DECLARE_EX_CMD(create_wq);
+IB_UVERBS_DECLARE_EX_CMD(modify_wq);
+IB_UVERBS_DECLARE_EX_CMD(destroy_wq);
+IB_UVERBS_DECLARE_EX_CMD(create_rwq_ind_table);
+IB_UVERBS_DECLARE_EX_CMD(destroy_rwq_ind_table);
+>>>>>>> v4.9.227
 
 #endif /* UVERBS_H */

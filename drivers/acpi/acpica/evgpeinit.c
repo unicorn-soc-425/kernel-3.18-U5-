@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -281,7 +285,11 @@ void acpi_ev_update_gpes(acpi_owner_id table_owner_id)
 	}
 
 	if (walk_info.count) {
+<<<<<<< HEAD
 		ACPI_INFO((AE_INFO, "Enabled %u new GPEs", walk_info.count));
+=======
+		ACPI_INFO(("Enabled %u new GPEs", walk_info.count));
+>>>>>>> v4.9.227
 	}
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_EVENTS);
@@ -323,7 +331,13 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 	struct acpi_gpe_walk_info *walk_info =
 	    ACPI_CAST_PTR(struct acpi_gpe_walk_info, context);
 	struct acpi_gpe_event_info *gpe_event_info;
+<<<<<<< HEAD
 	u32 gpe_number;
+=======
+	acpi_status status;
+	u32 gpe_number;
+	u8 temp_gpe_number;
+>>>>>>> v4.9.227
 	char name[ACPI_NAME_SIZE + 1];
 	u8 type;
 
@@ -377,8 +391,13 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 
 	/* 4) The last two characters of the name are the hex GPE Number */
 
+<<<<<<< HEAD
 	gpe_number = ACPI_STRTOUL(&name[2], NULL, 16);
 	if (gpe_number == ACPI_UINT32_MAX) {
+=======
+	status = acpi_ut_ascii_to_hex_byte(&name[2], &temp_gpe_number);
+	if (ACPI_FAILURE(status)) {
+>>>>>>> v4.9.227
 
 		/* Conversion failed; invalid method, just ignore it */
 
@@ -390,6 +409,10 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 
 	/* Ensure that we have a valid GPE number for this GPE block */
 
+<<<<<<< HEAD
+=======
+	gpe_number = (u32)temp_gpe_number;
+>>>>>>> v4.9.227
 	gpe_event_info =
 	    acpi_ev_low_get_gpe_info(gpe_number, walk_info->gpe_block);
 	if (!gpe_event_info) {
@@ -401,15 +424,26 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 		return_ACPI_STATUS(AE_OK);
 	}
 
+<<<<<<< HEAD
 	if ((gpe_event_info->flags & ACPI_GPE_DISPATCH_MASK) ==
 	    ACPI_GPE_DISPATCH_HANDLER) {
+=======
+	if ((ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+	     ACPI_GPE_DISPATCH_HANDLER) ||
+	    (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+	     ACPI_GPE_DISPATCH_RAW_HANDLER)) {
+>>>>>>> v4.9.227
 
 		/* If there is already a handler, ignore this GPE method */
 
 		return_ACPI_STATUS(AE_OK);
 	}
 
+<<<<<<< HEAD
 	if ((gpe_event_info->flags & ACPI_GPE_DISPATCH_MASK) ==
+=======
+	if (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+>>>>>>> v4.9.227
 	    ACPI_GPE_DISPATCH_METHOD) {
 		/*
 		 * If there is already a method, ignore this method. But check

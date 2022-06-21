@@ -331,6 +331,7 @@ static const struct v4l2_ctrl_ops tda7432_ctrl_ops = {
 
 static const struct v4l2_subdev_core_ops tda7432_core_ops = {
 	.log_status = tda7432_log_status,
+<<<<<<< HEAD
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
 	.s_ext_ctrls = v4l2_subdev_s_ext_ctrls,
@@ -338,6 +339,8 @@ static const struct v4l2_subdev_core_ops tda7432_core_ops = {
 	.s_ctrl = v4l2_subdev_s_ctrl,
 	.queryctrl = v4l2_subdev_queryctrl,
 	.querymenu = v4l2_subdev_querymenu,
+=======
+>>>>>>> v4.9.227
 };
 
 static const struct v4l2_subdev_ops tda7432_ops = {
@@ -416,7 +419,10 @@ MODULE_DEVICE_TABLE(i2c, tda7432_id);
 
 static struct i2c_driver tda7432_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "tda7432",
 	},
 	.probe		= tda7432_probe,

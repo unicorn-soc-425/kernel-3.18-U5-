@@ -8,7 +8,13 @@
  * modify it under the terms of the GNU General Public License
  * version 2 as published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #undef DEBUG
+=======
+
+#define pr_fmt(fmt)	"OF: overlay: " fmt
+
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -137,8 +143,13 @@ static int of_overlay_apply_one(struct of_overlay *ov,
 	for_each_property_of_node(overlay, prop) {
 		ret = of_overlay_apply_single_property(ov, target, prop);
 		if (ret) {
+<<<<<<< HEAD
 			pr_err("%s: Failed to apply prop @%s/%s\n",
 				__func__, target->full_name, prop->name);
+=======
+			pr_err("Failed to apply prop @%s/%s\n",
+			       target->full_name, prop->name);
+>>>>>>> v4.9.227
 			return ret;
 		}
 	}
@@ -146,9 +157,15 @@ static int of_overlay_apply_one(struct of_overlay *ov,
 	for_each_child_of_node(overlay, child) {
 		ret = of_overlay_apply_single_device_node(ov, target, child);
 		if (ret != 0) {
+<<<<<<< HEAD
 			pr_err("%s: Failed to apply single node @%s/%s\n",
 					__func__, target->full_name,
 					child->name);
+=======
+			pr_err("Failed to apply single node @%s/%s\n",
+			       target->full_name, child->name);
+			of_node_put(child);
+>>>>>>> v4.9.227
 			return ret;
 		}
 	}
@@ -175,8 +192,12 @@ static int of_overlay_apply(struct of_overlay *ov)
 
 		err = of_overlay_apply_one(ov, ovinfo->target, ovinfo->overlay);
 		if (err != 0) {
+<<<<<<< HEAD
 			pr_err("%s: overlay failed '%s'\n",
 				__func__, ovinfo->target->full_name);
+=======
+			pr_err("apply failed '%s'\n", ovinfo->target->full_name);
+>>>>>>> v4.9.227
 			return err;
 		}
 	}
@@ -207,7 +228,11 @@ static struct device_node *find_target_node(struct device_node *info_node)
 	if (ret == 0)
 		return of_find_node_by_path(path);
 
+<<<<<<< HEAD
 	pr_err("%s: Failed to find target for node %p (%s)\n", __func__,
+=======
+	pr_err("Failed to find target for node %p (%s)\n",
+>>>>>>> v4.9.227
 		info_node, info_node->name);
 
 	return NULL;
@@ -354,8 +379,11 @@ int of_overlay_create(struct device_node *tree)
 
 	id = idr_alloc(&ov_idr, ov, 0, 0, GFP_KERNEL);
 	if (id < 0) {
+<<<<<<< HEAD
 		pr_err("%s: idr_alloc() failed for tree@%s\n",
 				__func__, tree->full_name);
+=======
+>>>>>>> v4.9.227
 		err = id;
 		goto err_destroy_trans;
 	}
@@ -364,13 +392,19 @@ int of_overlay_create(struct device_node *tree)
 	/* build the overlay info structures */
 	err = of_build_overlay_info(ov, tree);
 	if (err) {
+<<<<<<< HEAD
 		pr_err("%s: of_build_overlay_info() failed for tree@%s\n",
 				__func__, tree->full_name);
+=======
+		pr_err("of_build_overlay_info() failed for tree@%s\n",
+		       tree->full_name);
+>>>>>>> v4.9.227
 		goto err_free_idr;
 	}
 
 	/* apply the overlay */
 	err = of_overlay_apply(ov);
+<<<<<<< HEAD
 	if (err) {
 		pr_err("%s: of_overlay_apply() failed for tree@%s\n",
 				__func__, tree->full_name);
@@ -384,6 +418,16 @@ int of_overlay_create(struct device_node *tree)
 				__func__, tree->full_name);
 		goto err_revert_overlay;
 	}
+=======
+	if (err)
+		goto err_abort_trans;
+
+	/* apply the changeset */
+	err = __of_changeset_apply(&ov->cset);
+	if (err)
+		goto err_revert_overlay;
+
+>>>>>>> v4.9.227
 
 	/* add to the tail of the overlay list */
 	list_add_tail(&ov->node, &ov_list);
@@ -417,8 +461,15 @@ static int overlay_subtree_check(struct device_node *tree,
 		return 1;
 
 	for_each_child_of_node(tree, child) {
+<<<<<<< HEAD
 		if (overlay_subtree_check(child, dn))
 			return 1;
+=======
+		if (overlay_subtree_check(child, dn)) {
+			of_node_put(child);
+			return 1;
+		}
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -466,8 +517,12 @@ static int overlay_removal_is_ok(struct of_overlay *ov)
 
 	list_for_each_entry(ce, &ov->cset.entries, node) {
 		if (!overlay_is_topmost(ov, ce->np)) {
+<<<<<<< HEAD
 			pr_err("%s: overlay #%d is not topmost\n",
 					__func__, ov->id);
+=======
+			pr_err("overlay #%d is not topmost\n", ov->id);
+>>>>>>> v4.9.227
 			return 0;
 		}
 	}
@@ -493,22 +548,33 @@ int of_overlay_destroy(int id)
 	ov = idr_find(&ov_idr, id);
 	if (ov == NULL) {
 		err = -ENODEV;
+<<<<<<< HEAD
 		pr_err("%s: Could not find overlay #%d\n",
 				__func__, id);
+=======
+		pr_err("destroy: Could not find overlay #%d\n", id);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
 	/* check whether the overlay is safe to remove */
 	if (!overlay_removal_is_ok(ov)) {
 		err = -EBUSY;
+<<<<<<< HEAD
 		pr_err("%s: removal check failed for overlay #%d\n",
 				__func__, id);
+=======
+>>>>>>> v4.9.227
 		goto out;
 	}
 
 
 	list_del(&ov->node);
+<<<<<<< HEAD
 	of_changeset_revert(&ov->cset);
+=======
+	__of_changeset_revert(&ov->cset);
+>>>>>>> v4.9.227
 	of_free_overlay_info(ov);
 	idr_remove(&ov_idr, id);
 	of_changeset_destroy(&ov->cset);
@@ -539,7 +605,11 @@ int of_overlay_destroy_all(void)
 	/* the tail of list is guaranteed to be safe to remove */
 	list_for_each_entry_safe_reverse(ov, ovn, &ov_list, node) {
 		list_del(&ov->node);
+<<<<<<< HEAD
 		of_changeset_revert(&ov->cset);
+=======
+		__of_changeset_revert(&ov->cset);
+>>>>>>> v4.9.227
 		of_free_overlay_info(ov);
 		idr_remove(&ov_idr, ov->id);
 		kfree(ov);

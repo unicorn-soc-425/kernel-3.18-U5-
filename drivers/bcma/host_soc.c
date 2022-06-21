@@ -193,7 +193,11 @@ int __init bcma_host_soc_init(struct bcma_soc *soc)
 	int err;
 
 	/* Scan bus and initialize it */
+<<<<<<< HEAD
 	err = bcma_bus_early_register(bus, &soc->core_cc, &soc->core_mips);
+=======
+	err = bcma_bus_early_register(bus);
+>>>>>>> v4.9.227
 	if (err)
 		iounmap(bus->mmio);
 

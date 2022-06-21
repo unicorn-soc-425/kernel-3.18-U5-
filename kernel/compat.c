@@ -912,7 +912,12 @@ long compat_get_bitmap(unsigned long *mask, const compat_ulong_t __user *umask,
 			 * bitmap. We must however ensure the end of the
 			 * kernel bitmap is zeroed.
 			 */
+<<<<<<< HEAD
 			if (nr_compat_longs-- > 0) {
+=======
+			if (nr_compat_longs) {
+				nr_compat_longs--;
+>>>>>>> v4.9.227
 				if (__get_user(um, umask))
 					return -EFAULT;
 			} else {
@@ -954,7 +959,12 @@ long compat_put_bitmap(compat_ulong_t __user *umask, unsigned long *mask,
 			 * We dont want to write past the end of the userspace
 			 * bitmap.
 			 */
+<<<<<<< HEAD
 			if (nr_compat_longs-- > 0) {
+=======
+			if (nr_compat_longs) {
+				nr_compat_longs--;
+>>>>>>> v4.9.227
 				if (__put_user(um, umask))
 					return -EFAULT;
 			}

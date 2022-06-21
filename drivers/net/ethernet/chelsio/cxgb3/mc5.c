@@ -97,6 +97,7 @@ static int mc5_cmd_write(struct adapter *adapter, u32 cmd)
 			       F_DBGIRSPVALID, 1, MAX_WRITE_ATTEMPTS, 1);
 }
 
+<<<<<<< HEAD
 static inline void dbgi_wr_addr3(struct adapter *adapter, u32 v1, u32 v2,
 				 u32 v3)
 {
@@ -105,6 +106,8 @@ static inline void dbgi_wr_addr3(struct adapter *adapter, u32 v1, u32 v2,
 	t3_write_reg(adapter, A_MC5_DB_DBGI_REQ_ADDR2, v3);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void dbgi_wr_data3(struct adapter *adapter, u32 v1, u32 v2,
 				 u32 v3)
 {
@@ -113,6 +116,7 @@ static inline void dbgi_wr_data3(struct adapter *adapter, u32 v1, u32 v2,
 	t3_write_reg(adapter, A_MC5_DB_DBGI_REQ_DATA2, v3);
 }
 
+<<<<<<< HEAD
 static inline void dbgi_rd_rsp3(struct adapter *adapter, u32 *v1, u32 *v2,
 				u32 *v3)
 {
@@ -121,6 +125,8 @@ static inline void dbgi_rd_rsp3(struct adapter *adapter, u32 *v1, u32 *v2,
 	*v3 = t3_read_reg(adapter, A_MC5_DB_DBGI_RSP_DATA2);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Write data to the TCAM register at address (0, 0, addr_lo) using the TCAM
  * command cmd.  The data to be written must have been set up by the caller.

@@ -23,6 +23,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -31,6 +32,12 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+=======
+ */
+
+#include <linux/kernel.h>
+#include <linux/moduleparam.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/acpi.h>
 #include <linux/io.h>
@@ -83,6 +90,14 @@
 	((struct acpi_hest_generic_status *)				\
 	 ((struct ghes_estatus_node *)(estatus_node) + 1))
 
+<<<<<<< HEAD
+=======
+/*
+ * This driver isn't really modular, however for the time being,
+ * continuing to use module_param is the easiest way to remain
+ * compatible with existing boot arg use cases.
+ */
+>>>>>>> v4.9.227
 bool ghes_disable;
 module_param_named(disable, ghes_disable, bool, 0);
 
@@ -128,7 +143,11 @@ static DEFINE_SPINLOCK(ghes_ioremap_lock_irq);
 static struct gen_pool *ghes_estatus_pool;
 static unsigned long ghes_estatus_pool_size_request;
 
+<<<<<<< HEAD
 struct ghes_estatus_cache *ghes_estatus_caches[GHES_ESTATUS_CACHES_SIZE];
+=======
+static struct ghes_estatus_cache *ghes_estatus_caches[GHES_ESTATUS_CACHES_SIZE];
+>>>>>>> v4.9.227
 static atomic_t ghes_estatus_cache_alloced;
 
 static int ghes_ioremap_init(void)
@@ -161,11 +180,23 @@ static void __iomem *ghes_ioremap_pfn_nmi(u64 pfn)
 
 static void __iomem *ghes_ioremap_pfn_irq(u64 pfn)
 {
+<<<<<<< HEAD
 	unsigned long vaddr;
 
 	vaddr = (unsigned long)GHES_IOREMAP_IRQ_PAGE(ghes_ioremap_area->addr);
 	ioremap_page_range(vaddr, vaddr + PAGE_SIZE,
 			   pfn << PAGE_SHIFT, PAGE_KERNEL);
+=======
+	unsigned long vaddr, paddr;
+	pgprot_t prot;
+
+	vaddr = (unsigned long)GHES_IOREMAP_IRQ_PAGE(ghes_ioremap_area->addr);
+
+	paddr = pfn << PAGE_SHIFT;
+	prot = arch_apei_get_mem_attribute(paddr);
+
+	ioremap_page_range(vaddr, vaddr + PAGE_SIZE, paddr, prot);
+>>>>>>> v4.9.227
 
 	return (void __iomem *)vaddr;
 }
@@ -198,29 +229,46 @@ static int ghes_estatus_pool_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void ghes_estatus_pool_free_chunk_page(struct gen_pool *pool,
 					      struct gen_pool_chunk *chunk,
 					      void *data)
 {
 	free_page(chunk->start_addr);
+=======
+static void ghes_estatus_pool_free_chunk(struct gen_pool *pool,
+					      struct gen_pool_chunk *chunk,
+					      void *data)
+{
+	vfree((void *)chunk->start_addr);
+>>>>>>> v4.9.227
 }
 
 static void ghes_estatus_pool_exit(void)
 {
 	gen_pool_for_each_chunk(ghes_estatus_pool,
+<<<<<<< HEAD
 				ghes_estatus_pool_free_chunk_page, NULL);
+=======
+				ghes_estatus_pool_free_chunk, NULL);
+>>>>>>> v4.9.227
 	gen_pool_destroy(ghes_estatus_pool);
 }
 
 static int ghes_estatus_pool_expand(unsigned long len)
 {
+<<<<<<< HEAD
 	unsigned long i, pages, size, addr;
 	int ret;
+=======
+	unsigned long size, addr;
+>>>>>>> v4.9.227
 
 	ghes_estatus_pool_size_request += PAGE_ALIGN(len);
 	size = gen_pool_size(ghes_estatus_pool);
 	if (size >= ghes_estatus_pool_size_request)
 		return 0;
+<<<<<<< HEAD
 	pages = (ghes_estatus_pool_size_request - size) / PAGE_SIZE;
 	for (i = 0; i < pages; i++) {
 		addr = __get_free_page(GFP_KERNEL);
@@ -232,6 +280,20 @@ static int ghes_estatus_pool_expand(unsigned long len)
 	}
 
 	return 0;
+=======
+
+	addr = (unsigned long)vmalloc(PAGE_ALIGN(len));
+	if (!addr)
+		return -ENOMEM;
+
+	/*
+	 * New allocation must be visible in all pgd before it can be found by
+	 * an NMI allocating from the pool.
+	 */
+	vmalloc_sync_mappings();
+
+	return gen_pool_add(ghes_estatus_pool, addr, PAGE_ALIGN(len), -1);
+>>>>>>> v4.9.227
 }
 
 static struct ghes *ghes_new(struct acpi_hest_generic *generic)
@@ -452,7 +514,11 @@ static void ghes_do_proc(struct ghes *ghes,
 
 				devfn = PCI_DEVFN(pcie_err->device_id.device,
 						  pcie_err->device_id.function);
+<<<<<<< HEAD
 				aer_severity = cper_severity_to_aer(sev);
+=======
+				aer_severity = cper_severity_to_aer(gdata->error_severity);
+>>>>>>> v4.9.227
 
 				/*
 				 * If firmware reset the component to contain
@@ -657,7 +723,11 @@ static int ghes_proc(struct ghes *ghes)
 	ghes_do_proc(ghes, ghes->estatus);
 out:
 	ghes_clear_estatus(ghes);
+<<<<<<< HEAD
 	return 0;
+=======
+	return rc;
+>>>>>>> v4.9.227
 }
 
 static void ghes_add_timer(struct ghes *ghes)
@@ -729,15 +799,23 @@ static struct llist_head ghes_estatus_llist;
 static struct irq_work ghes_proc_irq_work;
 
 /*
+<<<<<<< HEAD
  * NMI may be triggered on any CPU, so ghes_nmi_lock is used for
  * mutual exclusion.
  */
 static DEFINE_RAW_SPINLOCK(ghes_nmi_lock);
+=======
+ * NMI may be triggered on any CPU, so ghes_in_nmi is used for
+ * having only one concurrent reader.
+ */
+static atomic_t ghes_in_nmi = ATOMIC_INIT(0);
+>>>>>>> v4.9.227
 
 static LIST_HEAD(ghes_nmi);
 
 static int ghes_panic_timeout	__read_mostly = 30;
 
+<<<<<<< HEAD
 static struct llist_node *llist_nodes_reverse(struct llist_node *llnode)
 {
 	struct llist_node *next, *tail = NULL;
@@ -752,6 +830,8 @@ static struct llist_node *llist_nodes_reverse(struct llist_node *llnode)
 	return tail;
 }
 
+=======
+>>>>>>> v4.9.227
 static void ghes_proc_in_irq(struct irq_work *irq_work)
 {
 	struct llist_node *llnode, *next;
@@ -765,7 +845,11 @@ static void ghes_proc_in_irq(struct irq_work *irq_work)
 	 * Because the time order of estatus in list is reversed,
 	 * revert it back to proper order.
 	 */
+<<<<<<< HEAD
 	llnode = llist_nodes_reverse(llnode);
+=======
+	llnode = llist_reverse_order(llnode);
+>>>>>>> v4.9.227
 	while (llnode) {
 		next = llnode->next;
 		estatus_node = llist_entry(llnode, struct ghes_estatus_node,
@@ -798,7 +882,11 @@ static void ghes_print_queued_estatus(void)
 	 * Because the time order of estatus in list is reversed,
 	 * revert it back to proper order.
 	 */
+<<<<<<< HEAD
 	llnode = llist_nodes_reverse(llnode);
+=======
+	llnode = llist_reverse_order(llnode);
+>>>>>>> v4.9.227
 	while (llnode) {
 		estatus_node = llist_entry(llnode, struct ghes_estatus_node,
 					   llnode);
@@ -811,6 +899,7 @@ static void ghes_print_queued_estatus(void)
 	}
 }
 
+<<<<<<< HEAD
 static int ghes_notify_nmi(unsigned int cmd, struct pt_regs *regs)
 {
 	struct ghes *ghes, *ghes_global = NULL;
@@ -818,10 +907,59 @@ static int ghes_notify_nmi(unsigned int cmd, struct pt_regs *regs)
 	int ret = NMI_DONE;
 
 	raw_spin_lock(&ghes_nmi_lock);
+=======
+/* Save estatus for further processing in IRQ context */
+static void __process_error(struct ghes *ghes)
+{
+#ifdef CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG
+	u32 len, node_len;
+	struct ghes_estatus_node *estatus_node;
+	struct acpi_hest_generic_status *estatus;
+
+	if (ghes_estatus_cached(ghes->estatus))
+		return;
+
+	len = cper_estatus_len(ghes->estatus);
+	node_len = GHES_ESTATUS_NODE_LEN(len);
+
+	estatus_node = (void *)gen_pool_alloc(ghes_estatus_pool, node_len);
+	if (!estatus_node)
+		return;
+
+	estatus_node->ghes = ghes;
+	estatus_node->generic = ghes->generic;
+	estatus = GHES_ESTATUS_FROM_NODE(estatus_node);
+	memcpy(estatus, ghes->estatus, len);
+	llist_add(&estatus_node->llnode, &ghes_estatus_llist);
+#endif
+}
+
+static void __ghes_panic(struct ghes *ghes)
+{
+	oops_begin();
+	ghes_print_queued_estatus();
+	__ghes_print_estatus(KERN_EMERG, ghes->generic, ghes->estatus);
+
+	/* reboot to log the error! */
+	if (panic_timeout == 0)
+		panic_timeout = ghes_panic_timeout;
+	panic("Fatal hardware error!");
+}
+
+static int ghes_notify_nmi(unsigned int cmd, struct pt_regs *regs)
+{
+	struct ghes *ghes;
+	int sev, ret = NMI_DONE;
+
+	if (!atomic_add_unless(&ghes_in_nmi, 1, 1))
+		return ret;
+
+>>>>>>> v4.9.227
 	list_for_each_entry_rcu(ghes, &ghes_nmi, list) {
 		if (ghes_read_estatus(ghes, 1)) {
 			ghes_clear_estatus(ghes);
 			continue;
+<<<<<<< HEAD
 		}
 		sev = ghes_severity(ghes->estatus->error_severity);
 		if (sev > sev_global) {
@@ -878,6 +1016,28 @@ next:
 
 out:
 	raw_spin_unlock(&ghes_nmi_lock);
+=======
+		} else {
+			ret = NMI_HANDLED;
+		}
+
+		sev = ghes_severity(ghes->estatus->error_severity);
+		if (sev >= GHES_SEV_PANIC)
+			__ghes_panic(ghes);
+
+		if (!(ghes->flags & GHES_TO_CLEAR))
+			continue;
+
+		__process_error(ghes);
+		ghes_clear_estatus(ghes);
+	}
+
+#ifdef CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG
+	if (ret == NMI_HANDLED)
+		irq_work_queue(&ghes_proc_irq_work);
+#endif
+	atomic_dec(&ghes_in_nmi);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -1102,7 +1262,10 @@ static int ghes_remove(struct platform_device *ghes_dev)
 static struct platform_driver ghes_platform_driver = {
 	.driver		= {
 		.name	= "GHES",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ghes_probe,
 	.remove		= ghes_remove,
@@ -1162,6 +1325,7 @@ err_ioremap_exit:
 err:
 	return rc;
 }
+<<<<<<< HEAD
 
 static void __exit ghes_exit(void)
 {
@@ -1177,3 +1341,6 @@ MODULE_AUTHOR("Huang Ying");
 MODULE_DESCRIPTION("APEI Generic Hardware Error Source support");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:GHES");
+=======
+device_initcall(ghes_init);
+>>>>>>> v4.9.227

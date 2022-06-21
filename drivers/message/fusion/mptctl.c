@@ -100,6 +100,7 @@ struct buflist {
  * Function prototypes. Called from OS entry point mptctl_ioctl.
  * arg contents specific to function.
  */
+<<<<<<< HEAD
 static int mptctl_fw_download(unsigned long arg);
 static int mptctl_getiocinfo(unsigned long arg, unsigned int cmd);
 static int mptctl_gettargetinfo(unsigned long arg);
@@ -113,6 +114,21 @@ static int mptctl_replace_fw(unsigned long arg);
 static int mptctl_do_reset(unsigned long arg);
 static int mptctl_hp_hostinfo(unsigned long arg, unsigned int cmd);
 static int mptctl_hp_targetinfo(unsigned long arg);
+=======
+static int mptctl_fw_download(MPT_ADAPTER *iocp, unsigned long arg);
+static int mptctl_getiocinfo(MPT_ADAPTER *iocp, unsigned long arg, unsigned int cmd);
+static int mptctl_gettargetinfo(MPT_ADAPTER *iocp, unsigned long arg);
+static int mptctl_readtest(MPT_ADAPTER *iocp, unsigned long arg);
+static int mptctl_mpt_command(MPT_ADAPTER *iocp, unsigned long arg);
+static int mptctl_eventquery(MPT_ADAPTER *iocp, unsigned long arg);
+static int mptctl_eventenable(MPT_ADAPTER *iocp, unsigned long arg);
+static int mptctl_eventreport(MPT_ADAPTER *iocp, unsigned long arg);
+static int mptctl_replace_fw(MPT_ADAPTER *iocp, unsigned long arg);
+
+static int mptctl_do_reset(MPT_ADAPTER *iocp, unsigned long arg);
+static int mptctl_hp_hostinfo(MPT_ADAPTER *iocp, unsigned long arg, unsigned int cmd);
+static int mptctl_hp_targetinfo(MPT_ADAPTER *iocp, unsigned long arg);
+>>>>>>> v4.9.227
 
 static int  mptctl_probe(struct pci_dev *, const struct pci_device_id *);
 static void mptctl_remove(struct pci_dev *);
@@ -123,8 +139,13 @@ static long compat_mpctl_ioctl(struct file *f, unsigned cmd, unsigned long arg);
 /*
  * Private function calls.
  */
+<<<<<<< HEAD
 static int mptctl_do_mpt_command(struct mpt_ioctl_command karg, void __user *mfPtr);
 static int mptctl_do_fw_download(int ioc, char __user *ufwbuf, size_t fwlen);
+=======
+static int mptctl_do_mpt_command(MPT_ADAPTER *iocp, struct mpt_ioctl_command karg, void __user *mfPtr);
+static int mptctl_do_fw_download(MPT_ADAPTER *iocp, char __user *ufwbuf, size_t fwlen);
+>>>>>>> v4.9.227
 static MptSge_t *kbuf_alloc_2_sgl(int bytes, u32 dir, int sge_offset, int *frags,
 		struct buflist **blp, dma_addr_t *sglbuf_dma, MPT_ADAPTER *ioc);
 static void kfree_sgl(MptSge_t *sgl, dma_addr_t sgl_dma,
@@ -656,6 +677,7 @@ __mptctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	 * by TM and FW reloads.
 	 */
 	if ((cmd & ~IOCSIZE_MASK) == (MPTIOCINFO & ~IOCSIZE_MASK)) {
+<<<<<<< HEAD
 		return mptctl_getiocinfo(arg, _IOC_SIZE(cmd));
 	} else if (cmd == MPTTARGETINFO) {
 		return mptctl_gettargetinfo(arg);
@@ -669,6 +691,21 @@ __mptctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		return mptctl_eventreport(arg);
 	} else if (cmd == MPTFWREPLACE) {
 		return mptctl_replace_fw(arg);
+=======
+		return mptctl_getiocinfo(iocp, arg, _IOC_SIZE(cmd));
+	} else if (cmd == MPTTARGETINFO) {
+		return mptctl_gettargetinfo(iocp, arg);
+	} else if (cmd == MPTTEST) {
+		return mptctl_readtest(iocp, arg);
+	} else if (cmd == MPTEVENTQUERY) {
+		return mptctl_eventquery(iocp, arg);
+	} else if (cmd == MPTEVENTENABLE) {
+		return mptctl_eventenable(iocp, arg);
+	} else if (cmd == MPTEVENTREPORT) {
+		return mptctl_eventreport(iocp, arg);
+	} else if (cmd == MPTFWREPLACE) {
+		return mptctl_replace_fw(iocp, arg);
+>>>>>>> v4.9.227
 	}
 
 	/* All of these commands require an interrupt or
@@ -678,6 +715,7 @@ __mptctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		return ret;
 
 	if (cmd == MPTFWDOWNLOAD)
+<<<<<<< HEAD
 		ret = mptctl_fw_download(arg);
 	else if (cmd == MPTCOMMAND)
 		ret = mptctl_mpt_command(arg);
@@ -687,6 +725,17 @@ __mptctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		ret = mptctl_hp_hostinfo(arg, _IOC_SIZE(cmd));
 	else if (cmd == HP_GETTARGETINFO)
 		ret = mptctl_hp_targetinfo(arg);
+=======
+		ret = mptctl_fw_download(iocp, arg);
+	else if (cmd == MPTCOMMAND)
+		ret = mptctl_mpt_command(iocp, arg);
+	else if (cmd == MPTHARDRESET)
+		ret = mptctl_do_reset(iocp, arg);
+	else if ((cmd & ~IOCSIZE_MASK) == (HP_GETHOSTINFO & ~IOCSIZE_MASK))
+		ret = mptctl_hp_hostinfo(iocp, arg, _IOC_SIZE(cmd));
+	else if (cmd == HP_GETTARGETINFO)
+		ret = mptctl_hp_targetinfo(iocp, arg);
+>>>>>>> v4.9.227
 	else
 		ret = -EINVAL;
 
@@ -705,11 +754,18 @@ mptctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int mptctl_do_reset(unsigned long arg)
 {
 	struct mpt_ioctl_diag_reset __user *urinfo = (void __user *) arg;
 	struct mpt_ioctl_diag_reset krinfo;
 	MPT_ADAPTER		*iocp;
+=======
+static int mptctl_do_reset(MPT_ADAPTER *iocp, unsigned long arg)
+{
+	struct mpt_ioctl_diag_reset __user *urinfo = (void __user *) arg;
+	struct mpt_ioctl_diag_reset krinfo;
+>>>>>>> v4.9.227
 
 	if (copy_from_user(&krinfo, urinfo, sizeof(struct mpt_ioctl_diag_reset))) {
 		printk(KERN_ERR MYNAM "%s@%d::mptctl_do_reset - "
@@ -718,12 +774,15 @@ static int mptctl_do_reset(unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (mpt_verify_adapter(krinfo.hdr.iocnum, &iocp) < 0) {
 		printk(KERN_DEBUG MYNAM "%s@%d::mptctl_do_reset - ioc%d not found!\n",
 				__FILE__, __LINE__, krinfo.hdr.iocnum);
 		return -ENODEV; /* (-6) No such device or address */
 	}
 
+=======
+>>>>>>> v4.9.227
 	dctlprintk(iocp, printk(MYIOC_s_DEBUG_FMT "mptctl_do_reset called.\n",
 	    iocp->name));
 
@@ -754,7 +813,11 @@ static int mptctl_do_reset(unsigned long arg)
  *		-ENOMSG if FW upload returned bad status
  */
 static int
+<<<<<<< HEAD
 mptctl_fw_download(unsigned long arg)
+=======
+mptctl_fw_download(MPT_ADAPTER *iocp, unsigned long arg)
+>>>>>>> v4.9.227
 {
 	struct mpt_fw_xfer __user *ufwdl = (void __user *) arg;
 	struct mpt_fw_xfer	 kfwdl;
@@ -766,7 +829,11 @@ mptctl_fw_download(unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	return mptctl_do_fw_download(kfwdl.iocnum, kfwdl.bufp, kfwdl.fwlen);
+=======
+	return mptctl_do_fw_download(iocp, kfwdl.bufp, kfwdl.fwlen);
+>>>>>>> v4.9.227
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -784,11 +851,18 @@ mptctl_fw_download(unsigned long arg)
  *		-ENOMSG if FW upload returned bad status
  */
 static int
+<<<<<<< HEAD
 mptctl_do_fw_download(int ioc, char __user *ufwbuf, size_t fwlen)
 {
 	FWDownload_t		*dlmsg;
 	MPT_FRAME_HDR		*mf;
 	MPT_ADAPTER		*iocp;
+=======
+mptctl_do_fw_download(MPT_ADAPTER *iocp, char __user *ufwbuf, size_t fwlen)
+{
+	FWDownload_t		*dlmsg;
+	MPT_FRAME_HDR		*mf;
+>>>>>>> v4.9.227
 	FWDownloadTCSGE_t	*ptsge;
 	MptSge_t		*sgl, *sgIn;
 	char			*sgOut;
@@ -808,6 +882,7 @@ mptctl_do_fw_download(int ioc, char __user *ufwbuf, size_t fwlen)
 	pFWDownloadReply_t	 ReplyMsg = NULL;
 	unsigned long		 timeleft;
 
+<<<<<<< HEAD
 	if (mpt_verify_adapter(ioc, &iocp) < 0) {
 		printk(KERN_DEBUG MYNAM "ioctl_fwdl - ioc%d not found!\n",
 				 ioc);
@@ -819,6 +894,12 @@ mptctl_do_fw_download(int ioc, char __user *ufwbuf, size_t fwlen)
 		if ((mf = mpt_get_msg_frame(mptctl_id, iocp)) == NULL)
 			return -EAGAIN;
 	}
+=======
+	/*  Valid device. Get a message frame and construct the FW download message.
+	*/
+	if ((mf = mpt_get_msg_frame(mptctl_id, iocp)) == NULL)
+		return -EAGAIN;
+>>>>>>> v4.9.227
 
 	dctlprintk(iocp, printk(MYIOC_s_DEBUG_FMT
 	    "mptctl_do_fwdl called. mptctl_id = %xh.\n", iocp->name, mptctl_id));
@@ -826,8 +907,11 @@ mptctl_do_fw_download(int ioc, char __user *ufwbuf, size_t fwlen)
 	    iocp->name, ufwbuf));
 	dctlprintk(iocp, printk(MYIOC_s_DEBUG_FMT "DbG: kfwdl.fwlen = %d\n",
 	    iocp->name, (int)fwlen));
+<<<<<<< HEAD
 	dctlprintk(iocp, printk(MYIOC_s_DEBUG_FMT "DbG: kfwdl.ioc   = %04xh\n",
 	    iocp->name, ioc));
+=======
+>>>>>>> v4.9.227
 
 	dlmsg = (FWDownload_t*) mf;
 	ptsge = (FWDownloadTCSGE_t *) &dlmsg->SGL;
@@ -1038,6 +1122,13 @@ kbuf_alloc_2_sgl(int bytes, u32 sgdir, int sge_offset, int *frags,
 	int		 i, buflist_ent;
 	int		 sg_spill = MAX_FRAGS_SPILL1;
 	int		 dir;
+<<<<<<< HEAD
+=======
+
+	if (bytes < 0)
+		return NULL;
+
+>>>>>>> v4.9.227
 	/* initialization */
 	*frags = 0;
 	*blp = NULL;
@@ -1234,6 +1325,7 @@ kfree_sgl(MptSge_t *sgl, dma_addr_t sgl_dma, struct buflist *buflist, MPT_ADAPTE
  *		-ENODEV  if no such device/adapter
  */
 static int
+<<<<<<< HEAD
 mptctl_getiocinfo (unsigned long arg, unsigned int data_size)
 {
 	struct mpt_ioctl_iocinfo __user *uarg = (void __user *) arg;
@@ -1241,6 +1333,13 @@ mptctl_getiocinfo (unsigned long arg, unsigned int data_size)
 	MPT_ADAPTER		*ioc;
 	struct pci_dev		*pdev;
 	int			iocnum;
+=======
+mptctl_getiocinfo (MPT_ADAPTER *ioc, unsigned long arg, unsigned int data_size)
+{
+	struct mpt_ioctl_iocinfo __user *uarg = (void __user *) arg;
+	struct mpt_ioctl_iocinfo *karg;
+	struct pci_dev		*pdev;
+>>>>>>> v4.9.227
 	unsigned int		port;
 	int			cim_rev;
 	struct scsi_device 	*sdev;
@@ -1268,6 +1367,7 @@ mptctl_getiocinfo (unsigned long arg, unsigned int data_size)
 		return PTR_ERR(karg);
 	}
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg->hdr.iocnum, &ioc)) < 0) ||
 	    (ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_getiocinfo() @%d - ioc%d not found!\n",
@@ -1276,6 +1376,8 @@ mptctl_getiocinfo (unsigned long arg, unsigned int data_size)
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> v4.9.227
 	/* Verify the data transfer size is correct. */
 	if (karg->hdr.maxDataSize != data_size) {
 		printk(MYIOC_s_ERR_FMT "%s@%d::mptctl_getiocinfo - "
@@ -1381,6 +1483,7 @@ mptctl_getiocinfo (unsigned long arg, unsigned int data_size)
  *		-ENODEV  if no such device/adapter
  */
 static int
+<<<<<<< HEAD
 mptctl_gettargetinfo (unsigned long arg)
 {
 	struct mpt_ioctl_targetinfo __user *uarg = (void __user *) arg;
@@ -1390,6 +1493,15 @@ mptctl_gettargetinfo (unsigned long arg)
 	char			*pmem;
 	int			*pdata;
 	int			iocnum;
+=======
+mptctl_gettargetinfo (MPT_ADAPTER *ioc, unsigned long arg)
+{
+	struct mpt_ioctl_targetinfo __user *uarg = (void __user *) arg;
+	struct mpt_ioctl_targetinfo karg;
+	VirtDevice		*vdevice;
+	char			*pmem;
+	int			*pdata;
+>>>>>>> v4.9.227
 	int			numDevices = 0;
 	int			lun;
 	int			maxWordsLeft;
@@ -1404,6 +1516,7 @@ mptctl_gettargetinfo (unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg.hdr.iocnum, &ioc)) < 0) ||
 	    (ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_gettargetinfo() @%d - ioc%d not found!\n",
@@ -1411,6 +1524,8 @@ mptctl_gettargetinfo (unsigned long arg)
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> v4.9.227
 	dctlprintk(ioc, printk(MYIOC_s_DEBUG_FMT "mptctl_gettargetinfo called.\n",
 	    ioc->name));
 	/* Get the port number and set the maximum number of bytes
@@ -1506,12 +1621,19 @@ mptctl_gettargetinfo (unsigned long arg)
  *		-ENODEV  if no such device/adapter
  */
 static int
+<<<<<<< HEAD
 mptctl_readtest (unsigned long arg)
 {
 	struct mpt_ioctl_test __user *uarg = (void __user *) arg;
 	struct mpt_ioctl_test	 karg;
 	MPT_ADAPTER *ioc;
 	int iocnum;
+=======
+mptctl_readtest (MPT_ADAPTER *ioc, unsigned long arg)
+{
+	struct mpt_ioctl_test __user *uarg = (void __user *) arg;
+	struct mpt_ioctl_test	 karg;
+>>>>>>> v4.9.227
 
 	if (copy_from_user(&karg, uarg, sizeof(struct mpt_ioctl_test))) {
 		printk(KERN_ERR MYNAM "%s@%d::mptctl_readtest - "
@@ -1520,6 +1642,7 @@ mptctl_readtest (unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg.hdr.iocnum, &ioc)) < 0) ||
 	    (ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_readtest() @%d - ioc%d not found!\n",
@@ -1527,6 +1650,8 @@ mptctl_readtest (unsigned long arg)
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> v4.9.227
 	dctlprintk(ioc, printk(MYIOC_s_DEBUG_FMT "mptctl_readtest called.\n",
 	    ioc->name));
 	/* Fill in the data and return the structure to the calling
@@ -1567,12 +1692,19 @@ mptctl_readtest (unsigned long arg)
  *		-ENODEV  if no such device/adapter
  */
 static int
+<<<<<<< HEAD
 mptctl_eventquery (unsigned long arg)
 {
 	struct mpt_ioctl_eventquery __user *uarg = (void __user *) arg;
 	struct mpt_ioctl_eventquery	 karg;
 	MPT_ADAPTER *ioc;
 	int iocnum;
+=======
+mptctl_eventquery (MPT_ADAPTER *ioc, unsigned long arg)
+{
+	struct mpt_ioctl_eventquery __user *uarg = (void __user *) arg;
+	struct mpt_ioctl_eventquery	 karg;
+>>>>>>> v4.9.227
 
 	if (copy_from_user(&karg, uarg, sizeof(struct mpt_ioctl_eventquery))) {
 		printk(KERN_ERR MYNAM "%s@%d::mptctl_eventquery - "
@@ -1581,6 +1713,7 @@ mptctl_eventquery (unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg.hdr.iocnum, &ioc)) < 0) ||
 	    (ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_eventquery() @%d - ioc%d not found!\n",
@@ -1588,6 +1721,8 @@ mptctl_eventquery (unsigned long arg)
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> v4.9.227
 	dctlprintk(ioc, printk(MYIOC_s_DEBUG_FMT "mptctl_eventquery called.\n",
 	    ioc->name));
 	karg.eventEntries = MPTCTL_EVENT_LOG_SIZE;
@@ -1606,12 +1741,19 @@ mptctl_eventquery (unsigned long arg)
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 static int
+<<<<<<< HEAD
 mptctl_eventenable (unsigned long arg)
 {
 	struct mpt_ioctl_eventenable __user *uarg = (void __user *) arg;
 	struct mpt_ioctl_eventenable	 karg;
 	MPT_ADAPTER *ioc;
 	int iocnum;
+=======
+mptctl_eventenable (MPT_ADAPTER *ioc, unsigned long arg)
+{
+	struct mpt_ioctl_eventenable __user *uarg = (void __user *) arg;
+	struct mpt_ioctl_eventenable	 karg;
+>>>>>>> v4.9.227
 
 	if (copy_from_user(&karg, uarg, sizeof(struct mpt_ioctl_eventenable))) {
 		printk(KERN_ERR MYNAM "%s@%d::mptctl_eventenable - "
@@ -1620,6 +1762,7 @@ mptctl_eventenable (unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg.hdr.iocnum, &ioc)) < 0) ||
 	    (ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_eventenable() @%d - ioc%d not found!\n",
@@ -1627,6 +1770,8 @@ mptctl_eventenable (unsigned long arg)
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> v4.9.227
 	dctlprintk(ioc, printk(MYIOC_s_DEBUG_FMT "mptctl_eventenable called.\n",
 	    ioc->name));
 	if (ioc->events == NULL) {
@@ -1654,12 +1799,19 @@ mptctl_eventenable (unsigned long arg)
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 static int
+<<<<<<< HEAD
 mptctl_eventreport (unsigned long arg)
 {
 	struct mpt_ioctl_eventreport __user *uarg = (void __user *) arg;
 	struct mpt_ioctl_eventreport	 karg;
 	MPT_ADAPTER		 *ioc;
 	int			 iocnum;
+=======
+mptctl_eventreport (MPT_ADAPTER *ioc, unsigned long arg)
+{
+	struct mpt_ioctl_eventreport __user *uarg = (void __user *) arg;
+	struct mpt_ioctl_eventreport	 karg;
+>>>>>>> v4.9.227
 	int			 numBytes, maxEvents, max;
 
 	if (copy_from_user(&karg, uarg, sizeof(struct mpt_ioctl_eventreport))) {
@@ -1669,12 +1821,15 @@ mptctl_eventreport (unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg.hdr.iocnum, &ioc)) < 0) ||
 	    (ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_eventreport() @%d - ioc%d not found!\n",
 				__FILE__, __LINE__, iocnum);
 		return -ENODEV;
 	}
+=======
+>>>>>>> v4.9.227
 	dctlprintk(ioc, printk(MYIOC_s_DEBUG_FMT "mptctl_eventreport called.\n",
 	    ioc->name));
 
@@ -1708,12 +1863,19 @@ mptctl_eventreport (unsigned long arg)
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 static int
+<<<<<<< HEAD
 mptctl_replace_fw (unsigned long arg)
 {
 	struct mpt_ioctl_replace_fw __user *uarg = (void __user *) arg;
 	struct mpt_ioctl_replace_fw	 karg;
 	MPT_ADAPTER		 *ioc;
 	int			 iocnum;
+=======
+mptctl_replace_fw (MPT_ADAPTER *ioc, unsigned long arg)
+{
+	struct mpt_ioctl_replace_fw __user *uarg = (void __user *) arg;
+	struct mpt_ioctl_replace_fw	 karg;
+>>>>>>> v4.9.227
 	int			 newFwSize;
 
 	if (copy_from_user(&karg, uarg, sizeof(struct mpt_ioctl_replace_fw))) {
@@ -1723,6 +1885,7 @@ mptctl_replace_fw (unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg.hdr.iocnum, &ioc)) < 0) ||
 	    (ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_replace_fw() @%d - ioc%d not found!\n",
@@ -1730,6 +1893,8 @@ mptctl_replace_fw (unsigned long arg)
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> v4.9.227
 	dctlprintk(ioc, printk(MYIOC_s_DEBUG_FMT "mptctl_replace_fw called.\n",
 	    ioc->name));
 	/* If caching FW, Free the old FW image
@@ -1776,12 +1941,19 @@ mptctl_replace_fw (unsigned long arg)
  *		-ENOMEM if memory allocation error
  */
 static int
+<<<<<<< HEAD
 mptctl_mpt_command (unsigned long arg)
 {
 	struct mpt_ioctl_command __user *uarg = (void __user *) arg;
 	struct mpt_ioctl_command  karg;
 	MPT_ADAPTER	*ioc;
 	int		iocnum;
+=======
+mptctl_mpt_command (MPT_ADAPTER *ioc, unsigned long arg)
+{
+	struct mpt_ioctl_command __user *uarg = (void __user *) arg;
+	struct mpt_ioctl_command  karg;
+>>>>>>> v4.9.227
 	int		rc;
 
 
@@ -1792,6 +1964,7 @@ mptctl_mpt_command (unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg.hdr.iocnum, &ioc)) < 0) ||
 	    (ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_mpt_command() @%d - ioc%d not found!\n",
@@ -1800,6 +1973,9 @@ mptctl_mpt_command (unsigned long arg)
 	}
 
 	rc = mptctl_do_mpt_command (karg, &uarg->MF);
+=======
+	rc = mptctl_do_mpt_command (ioc, karg, &uarg->MF);
+>>>>>>> v4.9.227
 
 	return rc;
 }
@@ -1817,9 +1993,14 @@ mptctl_mpt_command (unsigned long arg)
  *		-EPERM if SCSI I/O and target is untagged
  */
 static int
+<<<<<<< HEAD
 mptctl_do_mpt_command (struct mpt_ioctl_command karg, void __user *mfPtr)
 {
 	MPT_ADAPTER	*ioc;
+=======
+mptctl_do_mpt_command (MPT_ADAPTER *ioc, struct mpt_ioctl_command karg, void __user *mfPtr)
+{
+>>>>>>> v4.9.227
 	MPT_FRAME_HDR	*mf = NULL;
 	MPIHeader_t	*hdr;
 	char		*psge;
@@ -1828,7 +2009,11 @@ mptctl_do_mpt_command (struct mpt_ioctl_command karg, void __user *mfPtr)
 	dma_addr_t	dma_addr_in;
 	dma_addr_t	dma_addr_out;
 	int		sgSize = 0;	/* Num SG elements */
+<<<<<<< HEAD
 	int		iocnum, flagsLength;
+=======
+	int		flagsLength;
+>>>>>>> v4.9.227
 	int		sz, rc = 0;
 	int		msgContext;
 	u16		req_idx;
@@ -1843,6 +2028,7 @@ mptctl_do_mpt_command (struct mpt_ioctl_command karg, void __user *mfPtr)
 	bufIn.kptr = bufOut.kptr = NULL;
 	bufIn.len = bufOut.len = 0;
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg.hdr.iocnum, &ioc)) < 0) ||
 	    (ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_do_mpt_command() @%d - ioc%d not found!\n",
@@ -1850,6 +2036,8 @@ mptctl_do_mpt_command (struct mpt_ioctl_command karg, void __user *mfPtr)
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&ioc->taskmgmt_lock, flags);
 	if (ioc->ioc_reset_in_progress) {
 		spin_unlock_irqrestore(&ioc->taskmgmt_lock, flags);
@@ -2414,17 +2602,26 @@ done_free_mem:
  *		-ENOMEM if memory allocation error
  */
 static int
+<<<<<<< HEAD
 mptctl_hp_hostinfo(unsigned long arg, unsigned int data_size)
 {
 	hp_host_info_t	__user *uarg = (void __user *) arg;
 	MPT_ADAPTER		*ioc;
+=======
+mptctl_hp_hostinfo(MPT_ADAPTER *ioc, unsigned long arg, unsigned int data_size)
+{
+	hp_host_info_t	__user *uarg = (void __user *) arg;
+>>>>>>> v4.9.227
 	struct pci_dev		*pdev;
 	char                    *pbuf=NULL;
 	dma_addr_t		buf_dma;
 	hp_host_info_t		karg;
 	CONFIGPARMS		cfg;
 	ConfigPageHeader_t	hdr;
+<<<<<<< HEAD
 	int			iocnum;
+=======
+>>>>>>> v4.9.227
 	int			rc, cim_rev;
 	ToolboxIstwiReadWriteRequest_t	*IstwiRWRequest;
 	MPT_FRAME_HDR		*mf = NULL;
@@ -2448,12 +2645,15 @@ mptctl_hp_hostinfo(unsigned long arg, unsigned int data_size)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg.hdr.iocnum, &ioc)) < 0) ||
 	    (ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_hp_hostinfo() @%d - ioc%d not found!\n",
 				__FILE__, __LINE__, iocnum);
 		return -ENODEV;
 	}
+=======
+>>>>>>> v4.9.227
 	dctlprintk(ioc, printk(MYIOC_s_DEBUG_FMT ": mptctl_hp_hostinfo called.\n",
 	    ioc->name));
 
@@ -2666,15 +2866,24 @@ retry_wait:
  *		-ENOMEM if memory allocation error
  */
 static int
+<<<<<<< HEAD
 mptctl_hp_targetinfo(unsigned long arg)
+=======
+mptctl_hp_targetinfo(MPT_ADAPTER *ioc, unsigned long arg)
+>>>>>>> v4.9.227
 {
 	hp_target_info_t __user *uarg = (void __user *) arg;
 	SCSIDevicePage0_t	*pg0_alloc;
 	SCSIDevicePage3_t	*pg3_alloc;
+<<<<<<< HEAD
 	MPT_ADAPTER		*ioc;
 	MPT_SCSI_HOST 		*hd = NULL;
 	hp_target_info_t	karg;
 	int			iocnum;
+=======
+	MPT_SCSI_HOST 		*hd = NULL;
+	hp_target_info_t	karg;
+>>>>>>> v4.9.227
 	int			data_sz;
 	dma_addr_t		page_dma;
 	CONFIGPARMS	 	cfg;
@@ -2688,12 +2897,15 @@ mptctl_hp_targetinfo(unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (((iocnum = mpt_verify_adapter(karg.hdr.iocnum, &ioc)) < 0) ||
 		(ioc == NULL)) {
 		printk(KERN_DEBUG MYNAM "%s::mptctl_hp_targetinfo() @%d - ioc%d not found!\n",
 				__FILE__, __LINE__, iocnum);
 		return -ENODEV;
 	}
+=======
+>>>>>>> v4.9.227
 	if (karg.hdr.id >= MPT_MAX_FC_DEVICES)
 		return -EINVAL;
 	dctlprintk(ioc, printk(MYIOC_s_DEBUG_FMT "mptctl_hp_targetinfo called.\n",
@@ -2861,7 +3073,11 @@ compat_mptfwxfer_ioctl(struct file *filp, unsigned int cmd,
 	kfw.fwlen = kfw32.fwlen;
 	kfw.bufp = compat_ptr(kfw32.bufp);
 
+<<<<<<< HEAD
 	ret = mptctl_do_fw_download(kfw.iocnum, kfw.bufp, kfw.fwlen);
+=======
+	ret = mptctl_do_fw_download(iocp, kfw.bufp, kfw.fwlen);
+>>>>>>> v4.9.227
 
 	mutex_unlock(&iocp->ioctl_cmds.mutex);
 
@@ -2915,7 +3131,11 @@ compat_mpt_command(struct file *filp, unsigned int cmd,
 
 	/* Pass new structure to do_mpt_command
 	 */
+<<<<<<< HEAD
 	ret = mptctl_do_mpt_command (karg, &uarg->MF);
+=======
+	ret = mptctl_do_mpt_command (iocp, karg, &uarg->MF);
+>>>>>>> v4.9.227
 
 	mutex_unlock(&iocp->ioctl_cmds.mutex);
 

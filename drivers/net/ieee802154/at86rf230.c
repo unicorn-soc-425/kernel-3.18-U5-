@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  * Written by:
  * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
  * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
@@ -23,20 +26,38 @@
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/hrtimer.h>
+#include <linux/jiffies.h>
+>>>>>>> v4.9.227
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/gpio.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/spi/spi.h>
 #include <linux/spi/at86rf230.h>
 #include <linux/regmap.h>
 #include <linux/skbuff.h>
 #include <linux/of_gpio.h>
+<<<<<<< HEAD
 
 #include <net/ieee802154.h>
 #include <net/mac802154.h>
 #include <net/wpan-phy.h>
+=======
+#include <linux/ieee802154.h>
+#include <linux/debugfs.h>
+
+#include <net/mac802154.h>
+#include <net/cfg802154.h>
+
+#include "at86rf230.h"
+>>>>>>> v4.9.227
 
 struct at86rf230_local;
 /* at86rf2xx chip depend data.
@@ -48,6 +69,7 @@ struct at86rf2xx_chip_data {
 	u16 t_reset_to_off;
 	u16 t_off_to_aack;
 	u16 t_off_to_tx_on;
+<<<<<<< HEAD
 	u16 t_frame;
 	u16 t_p_ack;
 	/* short interframe spacing time */
@@ -67,6 +89,33 @@ struct at86rf2xx_chip_data {
 struct at86rf230_state_change {
 	struct at86rf230_local *lp;
 
+=======
+	u16 t_off_to_sleep;
+	u16 t_sleep_to_off;
+	u16 t_frame;
+	u16 t_p_ack;
+	int rssi_base_val;
+
+	int (*set_channel)(struct at86rf230_local *, u8, u8);
+	int (*set_txpower)(struct at86rf230_local *, s32);
+};
+
+#define AT86RF2XX_MAX_BUF		(127 + 3)
+/* tx retries to access the TX_ON state
+ * if it's above then force change will be started.
+ *
+ * We assume the max_frame_retries (7) value of 802.15.4 here.
+ */
+#define AT86RF2XX_MAX_TX_RETRIES	7
+/* We use the recommended 5 minutes timeout to recalibrate */
+#define AT86RF2XX_CAL_LOOP_TIMEOUT	(5 * 60 * HZ)
+
+struct at86rf230_state_change {
+	struct at86rf230_local *lp;
+	int irq;
+
+	struct hrtimer timer;
+>>>>>>> v4.9.227
 	struct spi_message msg;
 	struct spi_transfer trx;
 	u8 buf[AT86RF2XX_MAX_BUF];
@@ -74,18 +123,41 @@ struct at86rf230_state_change {
 	void (*complete)(void *context);
 	u8 from_state;
 	u8 to_state;
+<<<<<<< HEAD
+=======
+
+	bool free;
+};
+
+struct at86rf230_trac {
+	u64 success;
+	u64 success_data_pending;
+	u64 success_wait_for_ack;
+	u64 channel_access_failure;
+	u64 no_ack;
+	u64 invalid;
+>>>>>>> v4.9.227
 };
 
 struct at86rf230_local {
 	struct spi_device *spi;
 
+<<<<<<< HEAD
 	struct ieee802154_dev *dev;
 	struct at86rf2xx_chip_data *data;
 	struct regmap *regmap;
+=======
+	struct ieee802154_hw *hw;
+	struct at86rf2xx_chip_data *data;
+	struct regmap *regmap;
+	int slp_tr;
+	bool sleep;
+>>>>>>> v4.9.227
 
 	struct completion state_complete;
 	struct at86rf230_state_change state;
 
+<<<<<<< HEAD
 	struct at86rf230_state_change irq;
 
 	bool tx_aret;
@@ -292,22 +364,96 @@ struct at86rf230_local {
 #define AT86RF2XX_NUMREGS 0x3F
 
 static int
+=======
+	unsigned long cal_timeout;
+	bool is_tx;
+	bool is_tx_from_off;
+	u8 tx_retry;
+	struct sk_buff *tx_skb;
+	struct at86rf230_state_change tx;
+
+	struct at86rf230_trac trac;
+};
+
+#define AT86RF2XX_NUMREGS 0x3F
+
+static void
+>>>>>>> v4.9.227
 at86rf230_async_state_change(struct at86rf230_local *lp,
 			     struct at86rf230_state_change *ctx,
 			     const u8 state, void (*complete)(void *context));
 
+<<<<<<< HEAD
+=======
+static inline void
+at86rf230_sleep(struct at86rf230_local *lp)
+{
+	if (gpio_is_valid(lp->slp_tr)) {
+		gpio_set_value(lp->slp_tr, 1);
+		usleep_range(lp->data->t_off_to_sleep,
+			     lp->data->t_off_to_sleep + 10);
+		lp->sleep = true;
+	}
+}
+
+static inline void
+at86rf230_awake(struct at86rf230_local *lp)
+{
+	if (gpio_is_valid(lp->slp_tr)) {
+		gpio_set_value(lp->slp_tr, 0);
+		usleep_range(lp->data->t_sleep_to_off,
+			     lp->data->t_sleep_to_off + 100);
+		lp->sleep = false;
+	}
+}
+
+>>>>>>> v4.9.227
 static inline int
 __at86rf230_write(struct at86rf230_local *lp,
 		  unsigned int addr, unsigned int data)
 {
+<<<<<<< HEAD
 	return regmap_write(lp->regmap, addr, data);
+=======
+	bool sleep = lp->sleep;
+	int ret;
+
+	/* awake for register setting if sleep */
+	if (sleep)
+		at86rf230_awake(lp);
+
+	ret = regmap_write(lp->regmap, addr, data);
+
+	/* sleep again if was sleeping */
+	if (sleep)
+		at86rf230_sleep(lp);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static inline int
 __at86rf230_read(struct at86rf230_local *lp,
 		 unsigned int addr, unsigned int *data)
 {
+<<<<<<< HEAD
 	return regmap_read(lp->regmap, addr, data);
+=======
+	bool sleep = lp->sleep;
+	int ret;
+
+	/* awake for register setting if sleep */
+	if (sleep)
+		at86rf230_awake(lp);
+
+	ret = regmap_read(lp->regmap, addr, data);
+
+	/* sleep again if was sleeping */
+	if (sleep)
+		at86rf230_sleep(lp);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static inline int
@@ -318,7 +464,11 @@ at86rf230_read_subreg(struct at86rf230_local *lp,
 	int rc;
 
 	rc = __at86rf230_read(lp, addr, data);
+<<<<<<< HEAD
 	if (rc > 0)
+=======
+	if (!rc)
+>>>>>>> v4.9.227
 		*data = (*data & mask) >> shift;
 
 	return rc;
@@ -329,7 +479,32 @@ at86rf230_write_subreg(struct at86rf230_local *lp,
 		       unsigned int addr, unsigned int mask,
 		       unsigned int shift, unsigned int data)
 {
+<<<<<<< HEAD
 	return regmap_update_bits(lp->regmap, addr, mask, data << shift);
+=======
+	bool sleep = lp->sleep;
+	int ret;
+
+	/* awake for register setting if sleep */
+	if (sleep)
+		at86rf230_awake(lp);
+
+	ret = regmap_update_bits(lp->regmap, addr, mask, data << shift);
+
+	/* sleep again if was sleeping */
+	if (sleep)
+		at86rf230_sleep(lp);
+
+	return ret;
+}
+
+static inline void
+at86rf230_slp_tr_rising_edge(struct at86rf230_local *lp)
+{
+	gpio_set_value(lp->slp_tr, 1);
+	udelay(1);
+	gpio_set_value(lp->slp_tr, 0);
+>>>>>>> v4.9.227
 }
 
 static bool
@@ -414,6 +589,11 @@ at86rf230_reg_volatile(struct device *dev, unsigned int reg)
 	case RG_PHY_ED_LEVEL:
 	case RG_IRQ_STATUS:
 	case RG_VREG_CTRL:
+<<<<<<< HEAD
+=======
+	case RG_PLL_CF:
+	case RG_PLL_DCU:
+>>>>>>> v4.9.227
 		return true;
 	default:
 		return false;
@@ -432,7 +612,11 @@ at86rf230_reg_precious(struct device *dev, unsigned int reg)
 	}
 }
 
+<<<<<<< HEAD
 static struct regmap_config at86rf230_regmap_spi_config = {
+=======
+static const struct regmap_config at86rf230_regmap_spi_config = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 	.write_flag_mask = CMD_REG | CMD_WRITE,
@@ -446,15 +630,39 @@ static struct regmap_config at86rf230_regmap_spi_config = {
 };
 
 static void
+<<<<<<< HEAD
+=======
+at86rf230_async_error_recover_complete(void *context)
+{
+	struct at86rf230_state_change *ctx = context;
+	struct at86rf230_local *lp = ctx->lp;
+
+	if (ctx->free)
+		kfree(ctx);
+
+	ieee802154_wake_queue(lp->hw);
+}
+
+static void
+>>>>>>> v4.9.227
 at86rf230_async_error_recover(void *context)
 {
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
 
+<<<<<<< HEAD
 	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON, NULL);
 }
 
 static void
+=======
+	lp->is_tx = 0;
+	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON,
+				     at86rf230_async_error_recover_complete);
+}
+
+static inline void
+>>>>>>> v4.9.227
 at86rf230_async_error(struct at86rf230_local *lp,
 		      struct at86rf230_state_change *ctx, int rc)
 {
@@ -465,6 +673,7 @@ at86rf230_async_error(struct at86rf230_local *lp,
 }
 
 /* Generic function to get some register value in async mode */
+<<<<<<< HEAD
 static int
 at86rf230_async_read_reg(struct at86rf230_local *lp, const u8 reg,
 			 struct at86rf230_state_change *ctx,
@@ -476,6 +685,37 @@ at86rf230_async_read_reg(struct at86rf230_local *lp, const u8 reg,
 	ctx->trx.len = 2;
 	ctx->msg.complete = complete;
 	return spi_async(lp->spi, &ctx->msg);
+=======
+static void
+at86rf230_async_read_reg(struct at86rf230_local *lp, u8 reg,
+			 struct at86rf230_state_change *ctx,
+			 void (*complete)(void *context))
+{
+	int rc;
+
+	u8 *tx_buf = ctx->buf;
+
+	tx_buf[0] = (reg & CMD_REG_MASK) | CMD_REG;
+	ctx->msg.complete = complete;
+	rc = spi_async(lp->spi, &ctx->msg);
+	if (rc)
+		at86rf230_async_error(lp, ctx, rc);
+}
+
+static void
+at86rf230_async_write_reg(struct at86rf230_local *lp, u8 reg, u8 val,
+			  struct at86rf230_state_change *ctx,
+			  void (*complete)(void *context))
+{
+	int rc;
+
+	ctx->buf[0] = (reg & CMD_REG_MASK) | CMD_REG | CMD_WRITE;
+	ctx->buf[1] = val;
+	ctx->msg.complete = complete;
+	rc = spi_async(lp->spi, &ctx->msg);
+	if (rc)
+		at86rf230_async_error(lp, ctx, rc);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -484,7 +724,11 @@ at86rf230_async_state_assert(void *context)
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
 	const u8 *buf = ctx->buf;
+<<<<<<< HEAD
 	const u8 trx_state = buf[1] & 0x1f;
+=======
+	const u8 trx_state = buf[1] & TRX_STATE_MASK;
+>>>>>>> v4.9.227
 
 	/* Assert state change */
 	if (trx_state != ctx->to_state) {
@@ -508,16 +752,37 @@ at86rf230_async_state_assert(void *context)
 			 * in STATE_BUSY_RX_AACK, we run a force state change
 			 * to STATE_TX_ON. This is a timeout handling, if the
 			 * transceiver stucks in STATE_BUSY_RX_AACK.
+<<<<<<< HEAD
 			 */
 			if (ctx->to_state == STATE_TX_ON) {
 				at86rf230_async_state_change(lp, ctx,
 							     STATE_FORCE_TX_ON,
+=======
+			 *
+			 * Additional we do several retries to try to get into
+			 * TX_ON state without forcing. If the retries are
+			 * higher or equal than AT86RF2XX_MAX_TX_RETRIES we
+			 * will do a force change.
+			 */
+			if (ctx->to_state == STATE_TX_ON ||
+			    ctx->to_state == STATE_TRX_OFF) {
+				u8 state = ctx->to_state;
+
+				if (lp->tx_retry >= AT86RF2XX_MAX_TX_RETRIES)
+					state = STATE_FORCE_TRX_OFF;
+				lp->tx_retry++;
+
+				at86rf230_async_state_change(lp, ctx, state,
+>>>>>>> v4.9.227
 							     ctx->complete);
 				return;
 			}
 		}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 		dev_warn(&lp->spi->dev, "unexcept state change from 0x%02x to 0x%02x. Actual state: 0x%02x\n",
 			 ctx->from_state, ctx->to_state, trx_state);
 	}
@@ -527,6 +792,21 @@ done:
 		ctx->complete(context);
 }
 
+<<<<<<< HEAD
+=======
+static enum hrtimer_restart at86rf230_async_state_timer(struct hrtimer *timer)
+{
+	struct at86rf230_state_change *ctx =
+		container_of(timer, struct at86rf230_state_change, timer);
+	struct at86rf230_local *lp = ctx->lp;
+
+	at86rf230_async_read_reg(lp, RG_TRX_STATUS, ctx,
+				 at86rf230_async_state_assert);
+
+	return HRTIMER_NORESTART;
+}
+
+>>>>>>> v4.9.227
 /* Do state change timing delay. */
 static void
 at86rf230_async_state_delay(void *context)
@@ -535,7 +815,11 @@ at86rf230_async_state_delay(void *context)
 	struct at86rf230_local *lp = ctx->lp;
 	struct at86rf2xx_chip_data *c = lp->data;
 	bool force = false;
+<<<<<<< HEAD
 	int rc;
+=======
+	ktime_t tim;
+>>>>>>> v4.9.227
 
 	/* The force state changes are will show as normal states in the
 	 * state status subregister. We change the to_state to the
@@ -559,11 +843,29 @@ at86rf230_async_state_delay(void *context)
 	case STATE_TRX_OFF:
 		switch (ctx->to_state) {
 		case STATE_RX_AACK_ON:
+<<<<<<< HEAD
 			usleep_range(c->t_off_to_aack, c->t_off_to_aack + 10);
 			goto change;
 		case STATE_TX_ON:
 			usleep_range(c->t_off_to_tx_on,
 				     c->t_off_to_tx_on + 10);
+=======
+			tim = ktime_set(0, c->t_off_to_aack * NSEC_PER_USEC);
+			/* state change from TRX_OFF to RX_AACK_ON to do a
+			 * calibration, we need to reset the timeout for the
+			 * next one.
+			 */
+			lp->cal_timeout = jiffies + AT86RF2XX_CAL_LOOP_TIMEOUT;
+			goto change;
+		case STATE_TX_ARET_ON:
+		case STATE_TX_ON:
+			tim = ktime_set(0, c->t_off_to_tx_on * NSEC_PER_USEC);
+			/* state change from TRX_OFF to TX_ON or ARET_ON to do
+			 * a calibration, we need to reset the timeout for the
+			 * next one.
+			 */
+			lp->cal_timeout = jiffies + AT86RF2XX_CAL_LOOP_TIMEOUT;
+>>>>>>> v4.9.227
 			goto change;
 		default:
 			break;
@@ -571,6 +873,7 @@ at86rf230_async_state_delay(void *context)
 		break;
 	case STATE_BUSY_RX_AACK:
 		switch (ctx->to_state) {
+<<<<<<< HEAD
 		case STATE_TX_ON:
 			/* Wait for worst case receiving time if we
 			 * didn't make a force change from BUSY_RX_AACK
@@ -579,6 +882,17 @@ at86rf230_async_state_delay(void *context)
 			if (!force) {
 				usleep_range(c->t_frame + c->t_p_ack,
 					     c->t_frame + c->t_p_ack + 1000);
+=======
+		case STATE_TRX_OFF:
+		case STATE_TX_ON:
+			/* Wait for worst case receiving time if we
+			 * didn't make a force change from BUSY_RX_AACK
+			 * to TX_ON or TRX_OFF.
+			 */
+			if (!force) {
+				tim = ktime_set(0, (c->t_frame + c->t_p_ack) *
+						   NSEC_PER_USEC);
+>>>>>>> v4.9.227
 				goto change;
 			}
 			break;
@@ -590,7 +904,11 @@ at86rf230_async_state_delay(void *context)
 	case STATE_P_ON:
 		switch (ctx->to_state) {
 		case STATE_TRX_OFF:
+<<<<<<< HEAD
 			usleep_range(c->t_reset_to_off, c->t_reset_to_off + 10);
+=======
+			tim = ktime_set(0, c->t_reset_to_off * NSEC_PER_USEC);
+>>>>>>> v4.9.227
 			goto change;
 		default:
 			break;
@@ -602,12 +920,20 @@ at86rf230_async_state_delay(void *context)
 
 	/* Default delay is 1us in the most cases */
 	udelay(1);
+<<<<<<< HEAD
 
 change:
 	rc = at86rf230_async_read_reg(lp, RG_TRX_STATUS, ctx,
 				      at86rf230_async_state_assert);
 	if (rc)
 		dev_err(&lp->spi->dev, "spi_async error %d\n", rc);
+=======
+	at86rf230_async_state_timer(&ctx->timer);
+	return;
+
+change:
+	hrtimer_start(&ctx->timer, tim, HRTIMER_MODE_REL);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -616,16 +942,25 @@ at86rf230_async_state_change_start(void *context)
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
 	u8 *buf = ctx->buf;
+<<<<<<< HEAD
 	const u8 trx_state = buf[1] & 0x1f;
 	int rc;
+=======
+	const u8 trx_state = buf[1] & TRX_STATE_MASK;
+>>>>>>> v4.9.227
 
 	/* Check for "possible" STATE_TRANSITION_IN_PROGRESS */
 	if (trx_state == STATE_TRANSITION_IN_PROGRESS) {
 		udelay(1);
+<<<<<<< HEAD
 		rc = at86rf230_async_read_reg(lp, RG_TRX_STATUS, ctx,
 					      at86rf230_async_state_change_start);
 		if (rc)
 			dev_err(&lp->spi->dev, "spi_async error %d\n", rc);
+=======
+		at86rf230_async_read_reg(lp, RG_TRX_STATUS, ctx,
+					 at86rf230_async_state_change_start);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -642,6 +977,7 @@ at86rf230_async_state_change_start(void *context)
 	/* Going into the next step for a state change which do a timing
 	 * relevant delay.
 	 */
+<<<<<<< HEAD
 	buf[0] = (RG_TRX_STATE & CMD_REG_MASK) | CMD_REG | CMD_WRITE;
 	buf[1] = ctx->to_state;
 	ctx->trx.len = 2;
@@ -652,6 +988,13 @@ at86rf230_async_state_change_start(void *context)
 }
 
 static int
+=======
+	at86rf230_async_write_reg(lp, RG_TRX_STATE, ctx->to_state, ctx,
+				  at86rf230_async_state_delay);
+}
+
+static void
+>>>>>>> v4.9.227
 at86rf230_async_state_change(struct at86rf230_local *lp,
 			     struct at86rf230_state_change *ctx,
 			     const u8 state, void (*complete)(void *context))
@@ -659,8 +1002,13 @@ at86rf230_async_state_change(struct at86rf230_local *lp,
 	/* Initialization for the state change context */
 	ctx->to_state = state;
 	ctx->complete = complete;
+<<<<<<< HEAD
 	return at86rf230_async_read_reg(lp, RG_TRX_STATUS, ctx,
 					at86rf230_async_state_change_start);
+=======
+	at86rf230_async_read_reg(lp, RG_TRX_STATUS, ctx,
+				 at86rf230_async_state_change_start);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -679,6 +1027,7 @@ at86rf230_sync_state_change_complete(void *context)
 static int
 at86rf230_sync_state_change(struct at86rf230_local *lp, unsigned int state)
 {
+<<<<<<< HEAD
 	int rc;
 
 	rc = at86rf230_async_state_change(lp, &lp->state, state,
@@ -692,6 +1041,19 @@ at86rf230_sync_state_change(struct at86rf230_local *lp, unsigned int state)
 					 msecs_to_jiffies(100));
 	if (!rc)
 		return -ETIMEDOUT;
+=======
+	unsigned long rc;
+
+	at86rf230_async_state_change(lp, &lp->state, state,
+				     at86rf230_sync_state_change_complete);
+
+	rc = wait_for_completion_timeout(&lp->state_complete,
+					 msecs_to_jiffies(100));
+	if (!rc) {
+		at86rf230_async_error(lp, &lp->state, -ETIMEDOUT);
+		return -ETIMEDOUT;
+	}
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -702,7 +1064,12 @@ at86rf230_tx_complete(void *context)
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
 
+<<<<<<< HEAD
 	complete(&lp->tx_complete);
+=======
+	ieee802154_xmit_complete(lp->hw, lp->tx_skb, false);
+	kfree(ctx);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -710,6 +1077,7 @@ at86rf230_tx_on(void *context)
 {
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
+<<<<<<< HEAD
 	int rc;
 
 	rc = at86rf230_async_state_change(lp, &lp->irq, STATE_RX_AACK_ON,
@@ -729,6 +1097,11 @@ at86rf230_tx_trac_error(void *context)
 					  at86rf230_tx_on);
 	if (rc)
 		at86rf230_async_error(lp, ctx, rc);
+=======
+
+	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON,
+				     at86rf230_tx_complete);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -736,6 +1109,7 @@ at86rf230_tx_trac_check(void *context)
 {
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
+<<<<<<< HEAD
 	const u8 *buf = ctx->buf;
 	const u8 trac = (buf[1] & 0xe0) >> 5;
 	int rc;
@@ -806,6 +1180,35 @@ at86rf230_rx(struct at86rf230_local *lp,
 	skb_trim(skb, len - 2);
 
 	ieee802154_rx_irqsafe(lp->dev, skb, lqi);
+=======
+
+	if (IS_ENABLED(CONFIG_IEEE802154_AT86RF230_DEBUGFS)) {
+		u8 trac = TRAC_MASK(ctx->buf[1]);
+
+		switch (trac) {
+		case TRAC_SUCCESS:
+			lp->trac.success++;
+			break;
+		case TRAC_SUCCESS_DATA_PENDING:
+			lp->trac.success_data_pending++;
+			break;
+		case TRAC_CHANNEL_ACCESS_FAILURE:
+			lp->trac.channel_access_failure++;
+			break;
+		case TRAC_NO_ACK:
+			lp->trac.no_ack++;
+			break;
+		case TRAC_INVALID:
+			lp->trac.invalid++;
+			break;
+		default:
+			WARN_ONCE(1, "received tx trac status %d\n", trac);
+			break;
+		}
+	}
+
+	at86rf230_async_state_change(lp, ctx, STATE_TX_ON, at86rf230_tx_on);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -813,6 +1216,7 @@ at86rf230_rx_read_frame_complete(void *context)
 {
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
+<<<<<<< HEAD
 	const u8 *buf = lp->irq.buf;
 	const u8 len = buf[1];
 
@@ -828,6 +1232,29 @@ at86rf230_rx_read_frame(struct at86rf230_local *lp)
 	lp->irq.trx.len = AT86RF2XX_MAX_BUF;
 	lp->irq.msg.complete = at86rf230_rx_read_frame_complete;
 	return spi_async(lp->spi, &lp->irq.msg);
+=======
+	const u8 *buf = ctx->buf;
+	struct sk_buff *skb;
+	u8 len, lqi;
+
+	len = buf[1];
+	if (!ieee802154_is_valid_psdu_len(len)) {
+		dev_vdbg(&lp->spi->dev, "corrupted frame received\n");
+		len = IEEE802154_MTU;
+	}
+	lqi = buf[2 + len];
+
+	skb = dev_alloc_skb(IEEE802154_MTU);
+	if (!skb) {
+		dev_vdbg(&lp->spi->dev, "failed to allocate sk_buff\n");
+		kfree(ctx);
+		return;
+	}
+
+	memcpy(skb_put(skb, len), buf + 2, len);
+	ieee802154_rx_irqsafe(lp->hw, skb, lqi);
+	kfree(ctx);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -835,6 +1262,7 @@ at86rf230_rx_trac_check(void *context)
 {
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
+<<<<<<< HEAD
 	int rc;
 
 	/* Possible check on trac status here. This could be useful to make
@@ -846,10 +1274,41 @@ at86rf230_rx_trac_check(void *context)
 	rc = at86rf230_rx_read_frame(lp);
 	if (rc) {
 		enable_irq(lp->spi->irq);
+=======
+	u8 *buf = ctx->buf;
+	int rc;
+
+	if (IS_ENABLED(CONFIG_IEEE802154_AT86RF230_DEBUGFS)) {
+		u8 trac = TRAC_MASK(buf[1]);
+
+		switch (trac) {
+		case TRAC_SUCCESS:
+			lp->trac.success++;
+			break;
+		case TRAC_SUCCESS_WAIT_FOR_ACK:
+			lp->trac.success_wait_for_ack++;
+			break;
+		case TRAC_INVALID:
+			lp->trac.invalid++;
+			break;
+		default:
+			WARN_ONCE(1, "received rx trac status %d\n", trac);
+			break;
+		}
+	}
+
+	buf[0] = CMD_FB;
+	ctx->trx.len = AT86RF2XX_MAX_BUF;
+	ctx->msg.complete = at86rf230_rx_read_frame_complete;
+	rc = spi_async(lp->spi, &ctx->msg);
+	if (rc) {
+		ctx->trx.len = 2;
+>>>>>>> v4.9.227
 		at86rf230_async_error(lp, ctx, rc);
 	}
 }
 
+<<<<<<< HEAD
 static int
 at86rf230_irq_trx_end(struct at86rf230_local *lp)
 {
@@ -871,6 +1330,21 @@ at86rf230_irq_trx_end(struct at86rf230_local *lp)
 		spin_unlock(&lp->lock);
 		return at86rf230_async_read_reg(lp, RG_TRX_STATE, &lp->irq,
 						at86rf230_rx_trac_check);
+=======
+static void
+at86rf230_irq_trx_end(void *context)
+{
+	struct at86rf230_state_change *ctx = context;
+	struct at86rf230_local *lp = ctx->lp;
+
+	if (lp->is_tx) {
+		lp->is_tx = 0;
+		at86rf230_async_read_reg(lp, RG_TRX_STATE, ctx,
+					 at86rf230_tx_trac_check);
+	} else {
+		at86rf230_async_read_reg(lp, RG_TRX_STATE, ctx,
+					 at86rf230_rx_trac_check);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -879,6 +1353,7 @@ at86rf230_irq_status(void *context)
 {
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
+<<<<<<< HEAD
 	const u8 *buf = lp->irq.buf;
 	const u8 irq = buf[1];
 	int rc;
@@ -905,10 +1380,65 @@ static irqreturn_t at86rf230_isr(int irq, void *data)
 
 	buf[0] = (RG_IRQ_STATUS & CMD_REG_MASK) | CMD_REG;
 	ctx->trx.len = 2;
+=======
+	const u8 *buf = ctx->buf;
+	u8 irq = buf[1];
+
+	enable_irq(lp->spi->irq);
+
+	if (irq & IRQ_TRX_END) {
+		at86rf230_irq_trx_end(ctx);
+	} else {
+		dev_err(&lp->spi->dev, "not supported irq %02x received\n",
+			irq);
+		kfree(ctx);
+	}
+}
+
+static void
+at86rf230_setup_spi_messages(struct at86rf230_local *lp,
+			     struct at86rf230_state_change *state)
+{
+	state->lp = lp;
+	state->irq = lp->spi->irq;
+	spi_message_init(&state->msg);
+	state->msg.context = state;
+	state->trx.len = 2;
+	state->trx.tx_buf = state->buf;
+	state->trx.rx_buf = state->buf;
+	spi_message_add_tail(&state->trx, &state->msg);
+	hrtimer_init(&state->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+	state->timer.function = at86rf230_async_state_timer;
+}
+
+static irqreturn_t at86rf230_isr(int irq, void *data)
+{
+	struct at86rf230_local *lp = data;
+	struct at86rf230_state_change *ctx;
+	int rc;
+
+	disable_irq_nosync(irq);
+
+	ctx = kzalloc(sizeof(*ctx), GFP_ATOMIC);
+	if (!ctx) {
+		enable_irq(irq);
+		return IRQ_NONE;
+	}
+
+	at86rf230_setup_spi_messages(lp, ctx);
+	/* tell on error handling to free ctx */
+	ctx->free = true;
+
+	ctx->buf[0] = (RG_IRQ_STATUS & CMD_REG_MASK) | CMD_REG;
+>>>>>>> v4.9.227
 	ctx->msg.complete = at86rf230_irq_status;
 	rc = spi_async(lp->spi, &ctx->msg);
 	if (rc) {
 		at86rf230_async_error(lp, ctx, rc);
+<<<<<<< HEAD
+=======
+		enable_irq(irq);
+>>>>>>> v4.9.227
 		return IRQ_NONE;
 	}
 
@@ -920,6 +1450,7 @@ at86rf230_write_frame_complete(void *context)
 {
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
+<<<<<<< HEAD
 	u8 *buf = ctx->buf;
 	int rc;
 
@@ -930,6 +1461,16 @@ at86rf230_write_frame_complete(void *context)
 	rc = spi_async(lp->spi, &ctx->msg);
 	if (rc)
 		at86rf230_async_error(lp, ctx, rc);
+=======
+
+	ctx->trx.len = 2;
+
+	if (gpio_is_valid(lp->slp_tr))
+		at86rf230_slp_tr_rising_edge(lp);
+	else
+		at86rf230_async_write_reg(lp, RG_TRX_STATE, STATE_BUSY_TX, ctx,
+					  NULL);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -938,21 +1479,38 @@ at86rf230_write_frame(void *context)
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
 	struct sk_buff *skb = lp->tx_skb;
+<<<<<<< HEAD
 	u8 *buf = lp->tx.buf;
 	int rc;
 
 	spin_lock(&lp->lock);
 	lp->is_tx = 1;
 	spin_unlock(&lp->lock);
+=======
+	u8 *buf = ctx->buf;
+	int rc;
+
+	lp->is_tx = 1;
+>>>>>>> v4.9.227
 
 	buf[0] = CMD_FB | CMD_WRITE;
 	buf[1] = skb->len + 2;
 	memcpy(buf + 2, skb->data, skb->len);
+<<<<<<< HEAD
 	lp->tx.trx.len = skb->len + 2;
 	lp->tx.msg.complete = at86rf230_write_frame_complete;
 	rc = spi_async(lp->spi, &lp->tx.msg);
 	if (rc)
 		at86rf230_async_error(lp, ctx, rc);
+=======
+	ctx->trx.len = skb->len + 2;
+	ctx->msg.complete = at86rf230_write_frame_complete;
+	rc = spi_async(lp->spi, &ctx->msg);
+	if (rc) {
+		ctx->trx.len = 2;
+		at86rf230_async_error(lp, ctx, rc);
+	}
+>>>>>>> v4.9.227
 }
 
 static void
@@ -960,6 +1518,7 @@ at86rf230_xmit_tx_on(void *context)
 {
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
+<<<<<<< HEAD
 	int rc;
 
 	rc = at86rf230_async_state_change(lp, ctx, STATE_TX_ARET_ON,
@@ -1008,20 +1567,73 @@ at86rf230_xmit(struct ieee802154_dev *dev, struct sk_buff *skb)
 		usleep_range(lp->data->t_lifs, lp->data->t_lifs + 10);
 	else
 		usleep_range(lp->data->t_sifs, lp->data->t_sifs + 10);
+=======
+
+	at86rf230_async_state_change(lp, ctx, STATE_TX_ARET_ON,
+				     at86rf230_write_frame);
+}
+
+static void
+at86rf230_xmit_start(void *context)
+{
+	struct at86rf230_state_change *ctx = context;
+	struct at86rf230_local *lp = ctx->lp;
+
+	/* check if we change from off state */
+	if (lp->is_tx_from_off)
+		at86rf230_async_state_change(lp, ctx, STATE_TX_ARET_ON,
+					     at86rf230_write_frame);
+	else
+		at86rf230_async_state_change(lp, ctx, STATE_TX_ON,
+					     at86rf230_xmit_tx_on);
+}
+
+static int
+at86rf230_xmit(struct ieee802154_hw *hw, struct sk_buff *skb)
+{
+	struct at86rf230_local *lp = hw->priv;
+	struct at86rf230_state_change *ctx = &lp->tx;
+
+	lp->tx_skb = skb;
+	lp->tx_retry = 0;
+
+	/* After 5 minutes in PLL and the same frequency we run again the
+	 * calibration loops which is recommended by at86rf2xx datasheets.
+	 *
+	 * The calibration is initiate by a state change from TRX_OFF
+	 * to TX_ON, the lp->cal_timeout should be reinit by state_delay
+	 * function then to start in the next 5 minutes.
+	 */
+	if (time_is_before_jiffies(lp->cal_timeout)) {
+		lp->is_tx_from_off = true;
+		at86rf230_async_state_change(lp, ctx, STATE_TRX_OFF,
+					     at86rf230_xmit_start);
+	} else {
+		lp->is_tx_from_off = false;
+		at86rf230_xmit_start(ctx);
+	}
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static int
+<<<<<<< HEAD
 at86rf230_ed(struct ieee802154_dev *dev, u8 *level)
 {
 	might_sleep();
 	BUG_ON(!level);
+=======
+at86rf230_ed(struct ieee802154_hw *hw, u8 *level)
+{
+	WARN_ON(!level);
+>>>>>>> v4.9.227
 	*level = 0xbe;
 	return 0;
 }
 
 static int
+<<<<<<< HEAD
 at86rf230_start(struct ieee802154_dev *dev)
 {
 	return at86rf230_sync_state_change(dev->priv, STATE_RX_AACK_ON);
@@ -1035,12 +1647,101 @@ at86rf230_stop(struct ieee802154_dev *dev)
 
 static int
 at86rf23x_set_channel(struct at86rf230_local *lp, int page, int channel)
+=======
+at86rf230_start(struct ieee802154_hw *hw)
+{
+	struct at86rf230_local *lp = hw->priv;
+
+	/* reset trac stats on start */
+	if (IS_ENABLED(CONFIG_IEEE802154_AT86RF230_DEBUGFS))
+		memset(&lp->trac, 0, sizeof(struct at86rf230_trac));
+
+	at86rf230_awake(lp);
+	enable_irq(lp->spi->irq);
+
+	return at86rf230_sync_state_change(lp, STATE_RX_AACK_ON);
+}
+
+static void
+at86rf230_stop(struct ieee802154_hw *hw)
+{
+	struct at86rf230_local *lp = hw->priv;
+	u8 csma_seed[2];
+
+	at86rf230_sync_state_change(lp, STATE_FORCE_TRX_OFF);
+
+	disable_irq(lp->spi->irq);
+
+	/* It's recommended to set random new csma_seeds before sleep state.
+	 * Makes only sense in the stop callback, not doing this inside of
+	 * at86rf230_sleep, this is also used when we don't transmit afterwards
+	 * when calling start callback again.
+	 */
+	get_random_bytes(csma_seed, ARRAY_SIZE(csma_seed));
+	at86rf230_write_subreg(lp, SR_CSMA_SEED_0, csma_seed[0]);
+	at86rf230_write_subreg(lp, SR_CSMA_SEED_1, csma_seed[1]);
+
+	at86rf230_sleep(lp);
+}
+
+static int
+at86rf23x_set_channel(struct at86rf230_local *lp, u8 page, u8 channel)
+>>>>>>> v4.9.227
 {
 	return at86rf230_write_subreg(lp, SR_CHANNEL, channel);
 }
 
+<<<<<<< HEAD
 static int
 at86rf212_set_channel(struct at86rf230_local *lp, int page, int channel)
+=======
+#define AT86RF2XX_MAX_ED_LEVELS 0xF
+static const s32 at86rf23x_ed_levels[AT86RF2XX_MAX_ED_LEVELS + 1] = {
+	-9100, -8900, -8700, -8500, -8300, -8100, -7900, -7700, -7500, -7300,
+	-7100, -6900, -6700, -6500, -6300, -6100,
+};
+
+static const s32 at86rf212_ed_levels_100[AT86RF2XX_MAX_ED_LEVELS + 1] = {
+	-10000, -9800, -9600, -9400, -9200, -9000, -8800, -8600, -8400, -8200,
+	-8000, -7800, -7600, -7400, -7200, -7000,
+};
+
+static const s32 at86rf212_ed_levels_98[AT86RF2XX_MAX_ED_LEVELS + 1] = {
+	-9800, -9600, -9400, -9200, -9000, -8800, -8600, -8400, -8200, -8000,
+	-7800, -7600, -7400, -7200, -7000, -6800,
+};
+
+static inline int
+at86rf212_update_cca_ed_level(struct at86rf230_local *lp, int rssi_base_val)
+{
+	unsigned int cca_ed_thres;
+	int rc;
+
+	rc = at86rf230_read_subreg(lp, SR_CCA_ED_THRES, &cca_ed_thres);
+	if (rc < 0)
+		return rc;
+
+	switch (rssi_base_val) {
+	case -98:
+		lp->hw->phy->supported.cca_ed_levels = at86rf212_ed_levels_98;
+		lp->hw->phy->supported.cca_ed_levels_size = ARRAY_SIZE(at86rf212_ed_levels_98);
+		lp->hw->phy->cca_ed_level = at86rf212_ed_levels_98[cca_ed_thres];
+		break;
+	case -100:
+		lp->hw->phy->supported.cca_ed_levels = at86rf212_ed_levels_100;
+		lp->hw->phy->supported.cca_ed_levels_size = ARRAY_SIZE(at86rf212_ed_levels_100);
+		lp->hw->phy->cca_ed_level = at86rf212_ed_levels_100[cca_ed_thres];
+		break;
+	default:
+		WARN_ON(1);
+	}
+
+	return 0;
+}
+
+static int
+at86rf212_set_channel(struct at86rf230_local *lp, u8 page, u8 channel)
+>>>>>>> v4.9.227
 {
 	int rc;
 
@@ -1061,10 +1762,48 @@ at86rf212_set_channel(struct at86rf230_local *lp, int page, int channel)
 	if (rc < 0)
 		return rc;
 
+<<<<<<< HEAD
+=======
+	rc = at86rf212_update_cca_ed_level(lp, lp->data->rssi_base_val);
+	if (rc < 0)
+		return rc;
+
+	/* This sets the symbol_duration according frequency on the 212.
+	 * TODO move this handling while set channel and page in cfg802154.
+	 * We can do that, this timings are according 802.15.4 standard.
+	 * If we do that in cfg802154, this is a more generic calculation.
+	 *
+	 * This should also protected from ifs_timer. Means cancel timer and
+	 * init with a new value. For now, this is okay.
+	 */
+	if (channel == 0) {
+		if (page == 0) {
+			/* SUB:0 and BPSK:0 -> BPSK-20 */
+			lp->hw->phy->symbol_duration = 50;
+		} else {
+			/* SUB:1 and BPSK:0 -> BPSK-40 */
+			lp->hw->phy->symbol_duration = 25;
+		}
+	} else {
+		if (page == 0)
+			/* SUB:0 and BPSK:1 -> OQPSK-100/200/400 */
+			lp->hw->phy->symbol_duration = 40;
+		else
+			/* SUB:1 and BPSK:1 -> OQPSK-250/500/1000 */
+			lp->hw->phy->symbol_duration = 16;
+	}
+
+	lp->hw->phy->lifs_period = IEEE802154_LIFS_PERIOD *
+				   lp->hw->phy->symbol_duration;
+	lp->hw->phy->sifs_period = IEEE802154_SIFS_PERIOD *
+				   lp->hw->phy->symbol_duration;
+
+>>>>>>> v4.9.227
 	return at86rf230_write_subreg(lp, SR_CHANNEL, channel);
 }
 
 static int
+<<<<<<< HEAD
 at86rf230_channel(struct ieee802154_dev *dev, int page, int channel)
 {
 	struct at86rf230_local *lp = dev->priv;
@@ -1097,12 +1836,38 @@ at86rf230_set_hw_addr_filt(struct ieee802154_dev *dev,
 			   unsigned long changed)
 {
 	struct at86rf230_local *lp = dev->priv;
+=======
+at86rf230_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
+{
+	struct at86rf230_local *lp = hw->priv;
+	int rc;
+
+	rc = lp->data->set_channel(lp, page, channel);
+	/* Wait for PLL */
+	usleep_range(lp->data->t_channel_switch,
+		     lp->data->t_channel_switch + 10);
+
+	lp->cal_timeout = jiffies + AT86RF2XX_CAL_LOOP_TIMEOUT;
+	return rc;
+}
+
+static int
+at86rf230_set_hw_addr_filt(struct ieee802154_hw *hw,
+			   struct ieee802154_hw_addr_filt *filt,
+			   unsigned long changed)
+{
+	struct at86rf230_local *lp = hw->priv;
+>>>>>>> v4.9.227
 
 	if (changed & IEEE802154_AFILT_SADDR_CHANGED) {
 		u16 addr = le16_to_cpu(filt->short_addr);
 
+<<<<<<< HEAD
 		dev_vdbg(&lp->spi->dev,
 			"at86rf230_set_hw_addr_filt called for saddr\n");
+=======
+		dev_vdbg(&lp->spi->dev, "%s called for saddr\n", __func__);
+>>>>>>> v4.9.227
 		__at86rf230_write(lp, RG_SHORT_ADDR_0, addr);
 		__at86rf230_write(lp, RG_SHORT_ADDR_1, addr >> 8);
 	}
@@ -1110,8 +1875,12 @@ at86rf230_set_hw_addr_filt(struct ieee802154_dev *dev,
 	if (changed & IEEE802154_AFILT_PANID_CHANGED) {
 		u16 pan = le16_to_cpu(filt->pan_id);
 
+<<<<<<< HEAD
 		dev_vdbg(&lp->spi->dev,
 			"at86rf230_set_hw_addr_filt called for pan id\n");
+=======
+		dev_vdbg(&lp->spi->dev, "%s called for pan id\n", __func__);
+>>>>>>> v4.9.227
 		__at86rf230_write(lp, RG_PAN_ID_0, pan);
 		__at86rf230_write(lp, RG_PAN_ID_1, pan >> 8);
 	}
@@ -1120,15 +1889,23 @@ at86rf230_set_hw_addr_filt(struct ieee802154_dev *dev,
 		u8 i, addr[8];
 
 		memcpy(addr, &filt->ieee_addr, 8);
+<<<<<<< HEAD
 		dev_vdbg(&lp->spi->dev,
 			"at86rf230_set_hw_addr_filt called for IEEE addr\n");
+=======
+		dev_vdbg(&lp->spi->dev, "%s called for IEEE addr\n", __func__);
+>>>>>>> v4.9.227
 		for (i = 0; i < 8; i++)
 			__at86rf230_write(lp, RG_IEEE_ADDR_0 + i, addr[i]);
 	}
 
 	if (changed & IEEE802154_AFILT_PANC_CHANGED) {
+<<<<<<< HEAD
 		dev_vdbg(&lp->spi->dev,
 			"at86rf230_set_hw_addr_filt called for panc change\n");
+=======
+		dev_vdbg(&lp->spi->dev, "%s called for panc change\n", __func__);
+>>>>>>> v4.9.227
 		if (filt->pan_coord)
 			at86rf230_write_subreg(lp, SR_AACK_I_AM_COORD, 1);
 		else
@@ -1138,6 +1915,7 @@ at86rf230_set_hw_addr_filt(struct ieee802154_dev *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 at86rf230_set_txpower(struct ieee802154_dev *dev, int db)
 {
@@ -1161,11 +1939,70 @@ static int
 at86rf230_set_lbt(struct ieee802154_dev *dev, bool on)
 {
 	struct at86rf230_local *lp = dev->priv;
+=======
+#define AT86RF23X_MAX_TX_POWERS 0xF
+static const s32 at86rf233_powers[AT86RF23X_MAX_TX_POWERS + 1] = {
+	400, 370, 340, 300, 250, 200, 100, 0, -100, -200, -300, -400, -600,
+	-800, -1200, -1700,
+};
+
+static const s32 at86rf231_powers[AT86RF23X_MAX_TX_POWERS + 1] = {
+	300, 280, 230, 180, 130, 70, 0, -100, -200, -300, -400, -500, -700,
+	-900, -1200, -1700,
+};
+
+#define AT86RF212_MAX_TX_POWERS 0x1F
+static const s32 at86rf212_powers[AT86RF212_MAX_TX_POWERS + 1] = {
+	500, 400, 300, 200, 100, 0, -100, -200, -300, -400, -500, -600, -700,
+	-800, -900, -1000, -1100, -1200, -1300, -1400, -1500, -1600, -1700,
+	-1800, -1900, -2000, -2100, -2200, -2300, -2400, -2500, -2600,
+};
+
+static int
+at86rf23x_set_txpower(struct at86rf230_local *lp, s32 mbm)
+{
+	u32 i;
+
+	for (i = 0; i < lp->hw->phy->supported.tx_powers_size; i++) {
+		if (lp->hw->phy->supported.tx_powers[i] == mbm)
+			return at86rf230_write_subreg(lp, SR_TX_PWR_23X, i);
+	}
+
+	return -EINVAL;
+}
+
+static int
+at86rf212_set_txpower(struct at86rf230_local *lp, s32 mbm)
+{
+	u32 i;
+
+	for (i = 0; i < lp->hw->phy->supported.tx_powers_size; i++) {
+		if (lp->hw->phy->supported.tx_powers[i] == mbm)
+			return at86rf230_write_subreg(lp, SR_TX_PWR_212, i);
+	}
+
+	return -EINVAL;
+}
+
+static int
+at86rf230_set_txpower(struct ieee802154_hw *hw, s32 mbm)
+{
+	struct at86rf230_local *lp = hw->priv;
+
+	return lp->data->set_txpower(lp, mbm);
+}
+
+static int
+at86rf230_set_lbt(struct ieee802154_hw *hw, bool on)
+{
+	struct at86rf230_local *lp = hw->priv;
+>>>>>>> v4.9.227
 
 	return at86rf230_write_subreg(lp, SR_CSMA_LBT_MODE, on);
 }
 
 static int
+<<<<<<< HEAD
 at86rf230_set_cca_mode(struct ieee802154_dev *dev, u8 mode)
 {
 	struct at86rf230_local *lp = dev->priv;
@@ -1207,6 +2044,62 @@ at86rf230_set_csma_params(struct ieee802154_dev *dev, u8 min_be, u8 max_be,
 	if (min_be > max_be || max_be > 8 || retries > 5)
 		return -EINVAL;
 
+=======
+at86rf230_set_cca_mode(struct ieee802154_hw *hw,
+		       const struct wpan_phy_cca *cca)
+{
+	struct at86rf230_local *lp = hw->priv;
+	u8 val;
+
+	/* mapping 802.15.4 to driver spec */
+	switch (cca->mode) {
+	case NL802154_CCA_ENERGY:
+		val = 1;
+		break;
+	case NL802154_CCA_CARRIER:
+		val = 2;
+		break;
+	case NL802154_CCA_ENERGY_CARRIER:
+		switch (cca->opt) {
+		case NL802154_CCA_OPT_ENERGY_CARRIER_AND:
+			val = 3;
+			break;
+		case NL802154_CCA_OPT_ENERGY_CARRIER_OR:
+			val = 0;
+			break;
+		default:
+			return -EINVAL;
+		}
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	return at86rf230_write_subreg(lp, SR_CCA_MODE, val);
+}
+
+static int
+at86rf230_set_cca_ed_level(struct ieee802154_hw *hw, s32 mbm)
+{
+	struct at86rf230_local *lp = hw->priv;
+	u32 i;
+
+	for (i = 0; i < hw->phy->supported.cca_ed_levels_size; i++) {
+		if (hw->phy->supported.cca_ed_levels[i] == mbm)
+			return at86rf230_write_subreg(lp, SR_CCA_ED_THRES, i);
+	}
+
+	return -EINVAL;
+}
+
+static int
+at86rf230_set_csma_params(struct ieee802154_hw *hw, u8 min_be, u8 max_be,
+			  u8 retries)
+{
+	struct at86rf230_local *lp = hw->priv;
+	int rc;
+
+>>>>>>> v4.9.227
 	rc = at86rf230_write_subreg(lp, SR_MIN_BE, min_be);
 	if (rc)
 		return rc;
@@ -1219,6 +2112,7 @@ at86rf230_set_csma_params(struct ieee802154_dev *dev, u8 min_be, u8 max_be,
 }
 
 static int
+<<<<<<< HEAD
 at86rf230_set_frame_retries(struct ieee802154_dev *dev, s8 retries)
 {
 	struct at86rf230_local *lp = dev->priv;
@@ -1238,6 +2132,45 @@ at86rf230_set_frame_retries(struct ieee802154_dev *dev, s8 retries)
 static struct ieee802154_ops at86rf230_ops = {
 	.owner = THIS_MODULE,
 	.xmit = at86rf230_xmit,
+=======
+at86rf230_set_frame_retries(struct ieee802154_hw *hw, s8 retries)
+{
+	struct at86rf230_local *lp = hw->priv;
+
+	return at86rf230_write_subreg(lp, SR_MAX_FRAME_RETRIES, retries);
+}
+
+static int
+at86rf230_set_promiscuous_mode(struct ieee802154_hw *hw, const bool on)
+{
+	struct at86rf230_local *lp = hw->priv;
+	int rc;
+
+	if (on) {
+		rc = at86rf230_write_subreg(lp, SR_AACK_DIS_ACK, 1);
+		if (rc < 0)
+			return rc;
+
+		rc = at86rf230_write_subreg(lp, SR_AACK_PROM_MODE, 1);
+		if (rc < 0)
+			return rc;
+	} else {
+		rc = at86rf230_write_subreg(lp, SR_AACK_PROM_MODE, 0);
+		if (rc < 0)
+			return rc;
+
+		rc = at86rf230_write_subreg(lp, SR_AACK_DIS_ACK, 0);
+		if (rc < 0)
+			return rc;
+	}
+
+	return 0;
+}
+
+static const struct ieee802154_ops at86rf230_ops = {
+	.owner = THIS_MODULE,
+	.xmit_async = at86rf230_xmit,
+>>>>>>> v4.9.227
 	.ed = at86rf230_ed,
 	.set_channel = at86rf230_channel,
 	.start = at86rf230_start,
@@ -1249,6 +2182,10 @@ static struct ieee802154_ops at86rf230_ops = {
 	.set_cca_ed_level = at86rf230_set_cca_ed_level,
 	.set_csma_params = at86rf230_set_csma_params,
 	.set_frame_retries = at86rf230_set_frame_retries,
+<<<<<<< HEAD
+=======
+	.set_promiscuous_mode = at86rf230_set_promiscuous_mode,
+>>>>>>> v4.9.227
 };
 
 static struct at86rf2xx_chip_data at86rf233_data = {
@@ -1257,6 +2194,7 @@ static struct at86rf2xx_chip_data at86rf233_data = {
 	.t_reset_to_off = 26,
 	.t_off_to_aack = 80,
 	.t_off_to_tx_on = 80,
+<<<<<<< HEAD
 	.t_frame = 4096,
 	.t_p_ack = 545,
 	.t_sifs = 192,
@@ -1265,6 +2203,15 @@ static struct at86rf2xx_chip_data at86rf233_data = {
 	.rssi_base_val = -91,
 	.set_channel = at86rf23x_set_channel,
 	.get_desense_steps = at86rf23x_get_desens_steps
+=======
+	.t_off_to_sleep = 35,
+	.t_sleep_to_off = 1000,
+	.t_frame = 4096,
+	.t_p_ack = 545,
+	.rssi_base_val = -91,
+	.set_channel = at86rf23x_set_channel,
+	.set_txpower = at86rf23x_set_txpower,
+>>>>>>> v4.9.227
 };
 
 static struct at86rf2xx_chip_data at86rf231_data = {
@@ -1273,6 +2220,7 @@ static struct at86rf2xx_chip_data at86rf231_data = {
 	.t_reset_to_off = 37,
 	.t_off_to_aack = 110,
 	.t_off_to_tx_on = 110,
+<<<<<<< HEAD
 	.t_frame = 4096,
 	.t_p_ack = 545,
 	.t_sifs = 192,
@@ -1281,6 +2229,15 @@ static struct at86rf2xx_chip_data at86rf231_data = {
 	.rssi_base_val = -91,
 	.set_channel = at86rf23x_set_channel,
 	.get_desense_steps = at86rf23x_get_desens_steps
+=======
+	.t_off_to_sleep = 35,
+	.t_sleep_to_off = 1000,
+	.t_frame = 4096,
+	.t_p_ack = 545,
+	.rssi_base_val = -91,
+	.set_channel = at86rf23x_set_channel,
+	.set_txpower = at86rf23x_set_txpower,
+>>>>>>> v4.9.227
 };
 
 static struct at86rf2xx_chip_data at86rf212_data = {
@@ -1289,6 +2246,7 @@ static struct at86rf2xx_chip_data at86rf212_data = {
 	.t_reset_to_off = 26,
 	.t_off_to_aack = 200,
 	.t_off_to_tx_on = 200,
+<<<<<<< HEAD
 	.t_frame = 4096,
 	.t_p_ack = 545,
 	.t_sifs = 192,
@@ -1300,6 +2258,18 @@ static struct at86rf2xx_chip_data at86rf212_data = {
 };
 
 static int at86rf230_hw_init(struct at86rf230_local *lp)
+=======
+	.t_off_to_sleep = 35,
+	.t_sleep_to_off = 1000,
+	.t_frame = 4096,
+	.t_p_ack = 545,
+	.rssi_base_val = -100,
+	.set_channel = at86rf212_set_channel,
+	.set_txpower = at86rf212_set_txpower,
+};
+
+static int at86rf230_hw_init(struct at86rf230_local *lp, u8 xtal_trim)
+>>>>>>> v4.9.227
 {
 	int rc, irq_type, irq_pol = IRQ_ACTIVE_HIGH;
 	unsigned int dvdd;
@@ -1310,7 +2280,12 @@ static int at86rf230_hw_init(struct at86rf230_local *lp)
 		return rc;
 
 	irq_type = irq_get_trigger_type(lp->spi->irq);
+<<<<<<< HEAD
 	if (irq_type == IRQ_TYPE_EDGE_FALLING)
+=======
+	if (irq_type == IRQ_TYPE_EDGE_FALLING ||
+	    irq_type == IRQ_TYPE_LEVEL_LOW)
+>>>>>>> v4.9.227
 		irq_pol = IRQ_ACTIVE_LOW;
 
 	rc = at86rf230_write_subreg(lp, SR_IRQ_POLARITY, irq_pol);
@@ -1325,6 +2300,14 @@ static int at86rf230_hw_init(struct at86rf230_local *lp)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
+=======
+	/* reset values differs in at86rf231 and at86rf233 */
+	rc = at86rf230_write_subreg(lp, SR_IRQ_MASK_MODE, 0);
+	if (rc)
+		return rc;
+
+>>>>>>> v4.9.227
 	get_random_bytes(csma_seed, ARRAY_SIZE(csma_seed));
 	rc = at86rf230_write_subreg(lp, SR_CSMA_SEED_0, csma_seed[0]);
 	if (rc)
@@ -1346,6 +2329,48 @@ static int at86rf230_hw_init(struct at86rf230_local *lp)
 	usleep_range(lp->data->t_sleep_cycle,
 		     lp->data->t_sleep_cycle + 100);
 
+<<<<<<< HEAD
+=======
+	/* xtal_trim value is calculated by:
+	 * CL = 0.5 * (CX + CTRIM + CPAR)
+	 *
+	 * whereas:
+	 * CL = capacitor of used crystal
+	 * CX = connected capacitors at xtal pins
+	 * CPAR = in all at86rf2xx datasheets this is a constant value 3 pF,
+	 *	  but this is different on each board setup. You need to fine
+	 *	  tuning this value via CTRIM.
+	 * CTRIM = variable capacitor setting. Resolution is 0.3 pF range is
+	 *	   0 pF upto 4.5 pF.
+	 *
+	 * Examples:
+	 * atben transceiver:
+	 *
+	 * CL = 8 pF
+	 * CX = 12 pF
+	 * CPAR = 3 pF (We assume the magic constant from datasheet)
+	 * CTRIM = 0.9 pF
+	 *
+	 * (12+0.9+3)/2 = 7.95 which is nearly at 8 pF
+	 *
+	 * xtal_trim = 0x3
+	 *
+	 * openlabs transceiver:
+	 *
+	 * CL = 16 pF
+	 * CX = 22 pF
+	 * CPAR = 3 pF (We assume the magic constant from datasheet)
+	 * CTRIM = 4.5 pF
+	 *
+	 * (22+4.5+3)/2 = 14.75 which is the nearest value to 16 pF
+	 *
+	 * xtal_trim = 0xf
+	 */
+	rc = at86rf230_write_subreg(lp, SR_XTAL_TRIM, xtal_trim);
+	if (rc)
+		return rc;
+
+>>>>>>> v4.9.227
 	rc = at86rf230_read_subreg(lp, SR_DVDD_OK, &dvdd);
 	if (rc)
 		return rc;
@@ -1354,6 +2379,7 @@ static int at86rf230_hw_init(struct at86rf230_local *lp)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -1375,6 +2401,39 @@ at86rf230_get_pdata(struct spi_device *spi)
 	spi->dev.platform_data = pdata;
 done:
 	return pdata;
+=======
+	/* Force setting slotted operation bit to 0. Sometimes the atben
+	 * sets this bit and I don't know why. We set this always force
+	 * to zero while probing.
+	 */
+	return at86rf230_write_subreg(lp, SR_SLOTTED_OPERATION, 0);
+}
+
+static int
+at86rf230_get_pdata(struct spi_device *spi, int *rstn, int *slp_tr,
+		    u8 *xtal_trim)
+{
+	struct at86rf230_platform_data *pdata = spi->dev.platform_data;
+	int ret;
+
+	if (!IS_ENABLED(CONFIG_OF) || !spi->dev.of_node) {
+		if (!pdata)
+			return -ENOENT;
+
+		*rstn = pdata->rstn;
+		*slp_tr = pdata->slp_tr;
+		*xtal_trim = pdata->xtal_trim;
+		return 0;
+	}
+
+	*rstn = of_get_named_gpio(spi->dev.of_node, "reset-gpio", 0);
+	*slp_tr = of_get_named_gpio(spi->dev.of_node, "sleep-gpio", 0);
+	ret = of_property_read_u8(spi->dev.of_node, "xtal-trim", xtal_trim);
+	if (ret < 0 && ret != -EINVAL)
+		return ret;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int
@@ -1399,7 +2458,11 @@ at86rf230_detect_device(struct at86rf230_local *lp)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	rc = __at86rf230_read(lp, RG_PART_NUM, &version);
+=======
+	rc = __at86rf230_read(lp, RG_VERSION_NUM, &version);
+>>>>>>> v4.9.227
 	if (rc)
 		return rc;
 
@@ -1409,14 +2472,36 @@ at86rf230_detect_device(struct at86rf230_local *lp)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	lp->dev->extra_tx_headroom = 0;
 	lp->dev->flags = IEEE802154_HW_OMIT_CKSUM | IEEE802154_HW_AACK |
 			 IEEE802154_HW_TXPOWER | IEEE802154_HW_CSMA;
+=======
+	lp->hw->flags = IEEE802154_HW_TX_OMIT_CKSUM |
+			IEEE802154_HW_CSMA_PARAMS |
+			IEEE802154_HW_FRAME_RETRIES | IEEE802154_HW_AFILT |
+			IEEE802154_HW_PROMISCUOUS;
+
+	lp->hw->phy->flags = WPAN_PHY_FLAG_TXPOWER |
+			     WPAN_PHY_FLAG_CCA_ED_LEVEL |
+			     WPAN_PHY_FLAG_CCA_MODE;
+
+	lp->hw->phy->supported.cca_modes = BIT(NL802154_CCA_ENERGY) |
+		BIT(NL802154_CCA_CARRIER) | BIT(NL802154_CCA_ENERGY_CARRIER);
+	lp->hw->phy->supported.cca_opts = BIT(NL802154_CCA_OPT_ENERGY_CARRIER_AND) |
+		BIT(NL802154_CCA_OPT_ENERGY_CARRIER_OR);
+
+	lp->hw->phy->supported.cca_ed_levels = at86rf23x_ed_levels;
+	lp->hw->phy->supported.cca_ed_levels_size = ARRAY_SIZE(at86rf23x_ed_levels);
+
+	lp->hw->phy->cca.mode = NL802154_CCA_ENERGY;
+>>>>>>> v4.9.227
 
 	switch (part) {
 	case 2:
 		chip = "at86rf230";
 		rc = -ENOTSUPP;
+<<<<<<< HEAD
 		break;
 	case 3:
 		chip = "at86rf231";
@@ -1433,10 +2518,36 @@ at86rf230_detect_device(struct at86rf230_local *lp)
 		} else {
 			rc = -ENOTSUPP;
 		}
+=======
+		goto not_supp;
+	case 3:
+		chip = "at86rf231";
+		lp->data = &at86rf231_data;
+		lp->hw->phy->supported.channels[0] = 0x7FFF800;
+		lp->hw->phy->current_channel = 11;
+		lp->hw->phy->symbol_duration = 16;
+		lp->hw->phy->supported.tx_powers = at86rf231_powers;
+		lp->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf231_powers);
+		break;
+	case 7:
+		chip = "at86rf212";
+		lp->data = &at86rf212_data;
+		lp->hw->flags |= IEEE802154_HW_LBT;
+		lp->hw->phy->supported.channels[0] = 0x00007FF;
+		lp->hw->phy->supported.channels[2] = 0x00007FF;
+		lp->hw->phy->current_channel = 5;
+		lp->hw->phy->symbol_duration = 25;
+		lp->hw->phy->supported.lbt = NL802154_SUPPORTED_BOOL_BOTH;
+		lp->hw->phy->supported.tx_powers = at86rf212_powers;
+		lp->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf212_powers);
+		lp->hw->phy->supported.cca_ed_levels = at86rf212_ed_levels_100;
+		lp->hw->phy->supported.cca_ed_levels_size = ARRAY_SIZE(at86rf212_ed_levels_100);
+>>>>>>> v4.9.227
 		break;
 	case 11:
 		chip = "at86rf233";
 		lp->data = &at86rf233_data;
+<<<<<<< HEAD
 		lp->dev->phy->channels_supported[0] = 0x7FFF800;
 		break;
 	default:
@@ -1445,11 +2556,30 @@ at86rf230_detect_device(struct at86rf230_local *lp)
 		break;
 	}
 
+=======
+		lp->hw->phy->supported.channels[0] = 0x7FFF800;
+		lp->hw->phy->current_channel = 13;
+		lp->hw->phy->symbol_duration = 16;
+		lp->hw->phy->supported.tx_powers = at86rf233_powers;
+		lp->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf233_powers);
+		break;
+	default:
+		chip = "unknown";
+		rc = -ENOTSUPP;
+		goto not_supp;
+	}
+
+	lp->hw->phy->cca_ed_level = lp->hw->phy->supported.cca_ed_levels[7];
+	lp->hw->phy->transmit_power = lp->hw->phy->supported.tx_powers[0];
+
+not_supp:
+>>>>>>> v4.9.227
 	dev_info(&lp->spi->dev, "Detected %s chip version %d\n", chip, version);
 
 	return rc;
 }
 
+<<<<<<< HEAD
 static void
 at86rf230_setup_spi_messages(struct at86rf230_local *lp)
 {
@@ -1482,12 +2612,82 @@ static int at86rf230_probe(struct spi_device *spi)
 	struct at86rf230_local *lp;
 	unsigned int status;
 	int rc, irq_type;
+=======
+#ifdef CONFIG_IEEE802154_AT86RF230_DEBUGFS
+static struct dentry *at86rf230_debugfs_root;
+
+static int at86rf230_stats_show(struct seq_file *file, void *offset)
+{
+	struct at86rf230_local *lp = file->private;
+
+	seq_printf(file, "SUCCESS:\t\t%8llu\n", lp->trac.success);
+	seq_printf(file, "SUCCESS_DATA_PENDING:\t%8llu\n",
+		   lp->trac.success_data_pending);
+	seq_printf(file, "SUCCESS_WAIT_FOR_ACK:\t%8llu\n",
+		   lp->trac.success_wait_for_ack);
+	seq_printf(file, "CHANNEL_ACCESS_FAILURE:\t%8llu\n",
+		   lp->trac.channel_access_failure);
+	seq_printf(file, "NO_ACK:\t\t\t%8llu\n", lp->trac.no_ack);
+	seq_printf(file, "INVALID:\t\t%8llu\n", lp->trac.invalid);
+	return 0;
+}
+
+static int at86rf230_stats_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, at86rf230_stats_show, inode->i_private);
+}
+
+static const struct file_operations at86rf230_stats_fops = {
+	.open		= at86rf230_stats_open,
+	.read		= seq_read,
+	.llseek		= seq_lseek,
+	.release	= single_release,
+};
+
+static int at86rf230_debugfs_init(struct at86rf230_local *lp)
+{
+	char debugfs_dir_name[DNAME_INLINE_LEN + 1] = "at86rf230-";
+	struct dentry *stats;
+
+	strncat(debugfs_dir_name, dev_name(&lp->spi->dev), DNAME_INLINE_LEN);
+
+	at86rf230_debugfs_root = debugfs_create_dir(debugfs_dir_name, NULL);
+	if (!at86rf230_debugfs_root)
+		return -ENOMEM;
+
+	stats = debugfs_create_file("trac_stats", S_IRUGO,
+				    at86rf230_debugfs_root, lp,
+				    &at86rf230_stats_fops);
+	if (!stats)
+		return -ENOMEM;
+
+	return 0;
+}
+
+static void at86rf230_debugfs_remove(void)
+{
+	debugfs_remove_recursive(at86rf230_debugfs_root);
+}
+#else
+static int at86rf230_debugfs_init(struct at86rf230_local *lp) { return 0; }
+static void at86rf230_debugfs_remove(void) { }
+#endif
+
+static int at86rf230_probe(struct spi_device *spi)
+{
+	struct ieee802154_hw *hw;
+	struct at86rf230_local *lp;
+	unsigned int status;
+	int rc, irq_type, rstn, slp_tr;
+	u8 xtal_trim = 0;
+>>>>>>> v4.9.227
 
 	if (!spi->irq) {
 		dev_err(&spi->dev, "no IRQ specified\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	pdata = at86rf230_get_pdata(spi);
 	if (!pdata) {
 		dev_err(&spi->dev, "no platform_data\n");
@@ -1496,19 +2696,35 @@ static int at86rf230_probe(struct spi_device *spi)
 
 	if (gpio_is_valid(pdata->rstn)) {
 		rc = devm_gpio_request_one(&spi->dev, pdata->rstn,
+=======
+	rc = at86rf230_get_pdata(spi, &rstn, &slp_tr, &xtal_trim);
+	if (rc < 0) {
+		dev_err(&spi->dev, "failed to parse platform_data: %d\n", rc);
+		return rc;
+	}
+
+	if (gpio_is_valid(rstn)) {
+		rc = devm_gpio_request_one(&spi->dev, rstn,
+>>>>>>> v4.9.227
 					   GPIOF_OUT_INIT_HIGH, "rstn");
 		if (rc)
 			return rc;
 	}
 
+<<<<<<< HEAD
 	if (gpio_is_valid(pdata->slp_tr)) {
 		rc = devm_gpio_request_one(&spi->dev, pdata->slp_tr,
+=======
+	if (gpio_is_valid(slp_tr)) {
+		rc = devm_gpio_request_one(&spi->dev, slp_tr,
+>>>>>>> v4.9.227
 					   GPIOF_OUT_INIT_LOW, "slp_tr");
 		if (rc)
 			return rc;
 	}
 
 	/* Reset */
+<<<<<<< HEAD
 	if (gpio_is_valid(pdata->rstn)) {
 		udelay(1);
 		gpio_set_value(pdata->rstn, 0);
@@ -1525,6 +2741,26 @@ static int at86rf230_probe(struct spi_device *spi)
 	lp->dev = dev;
 	lp->spi = spi;
 	dev->parent = &spi->dev;
+=======
+	if (gpio_is_valid(rstn)) {
+		udelay(1);
+		gpio_set_value(rstn, 0);
+		udelay(1);
+		gpio_set_value(rstn, 1);
+		usleep_range(120, 240);
+	}
+
+	hw = ieee802154_alloc_hw(sizeof(*lp), &at86rf230_ops);
+	if (!hw)
+		return -ENOMEM;
+
+	lp = hw->priv;
+	lp->hw = hw;
+	lp->spi = spi;
+	lp->slp_tr = slp_tr;
+	hw->parent = &spi->dev;
+	ieee802154_random_extended_addr(&hw->phy->perm_extended_addr);
+>>>>>>> v4.9.227
 
 	lp->regmap = devm_regmap_init_spi(spi, &at86rf230_regmap_spi_config);
 	if (IS_ERR(lp->regmap)) {
@@ -1534,19 +2770,31 @@ static int at86rf230_probe(struct spi_device *spi)
 		goto free_dev;
 	}
 
+<<<<<<< HEAD
 	at86rf230_setup_spi_messages(lp);
+=======
+	at86rf230_setup_spi_messages(lp, &lp->state);
+	at86rf230_setup_spi_messages(lp, &lp->tx);
+>>>>>>> v4.9.227
 
 	rc = at86rf230_detect_device(lp);
 	if (rc < 0)
 		goto free_dev;
 
+<<<<<<< HEAD
 	spin_lock_init(&lp->lock);
 	init_completion(&lp->tx_complete);
+=======
+>>>>>>> v4.9.227
 	init_completion(&lp->state_complete);
 
 	spi_set_drvdata(spi, lp);
 
+<<<<<<< HEAD
 	rc = at86rf230_hw_init(lp);
+=======
+	rc = at86rf230_hw_init(lp, xtal_trim);
+>>>>>>> v4.9.227
 	if (rc)
 		goto free_dev;
 
@@ -1557,13 +2805,18 @@ static int at86rf230_probe(struct spi_device *spi)
 
 	irq_type = irq_get_trigger_type(spi->irq);
 	if (!irq_type)
+<<<<<<< HEAD
 		irq_type = IRQF_TRIGGER_RISING;
+=======
+		irq_type = IRQF_TRIGGER_HIGH;
+>>>>>>> v4.9.227
 
 	rc = devm_request_irq(&spi->dev, spi->irq, at86rf230_isr,
 			      IRQF_SHARED | irq_type, dev_name(&spi->dev), lp);
 	if (rc)
 		goto free_dev;
 
+<<<<<<< HEAD
 	rc = ieee802154_register_device(lp->dev);
 	if (rc)
 		goto free_dev;
@@ -1572,6 +2825,28 @@ static int at86rf230_probe(struct spi_device *spi)
 
 free_dev:
 	ieee802154_free_device(lp->dev);
+=======
+	/* disable_irq by default and wait for starting hardware */
+	disable_irq(spi->irq);
+
+	/* going into sleep by default */
+	at86rf230_sleep(lp);
+
+	rc = at86rf230_debugfs_init(lp);
+	if (rc)
+		goto free_dev;
+
+	rc = ieee802154_register_hw(lp->hw);
+	if (rc)
+		goto free_debugfs;
+
+	return rc;
+
+free_debugfs:
+	at86rf230_debugfs_remove();
+free_dev:
+	ieee802154_free_hw(lp->hw);
+>>>>>>> v4.9.227
 
 	return rc;
 }
@@ -1582,8 +2857,14 @@ static int at86rf230_remove(struct spi_device *spi)
 
 	/* mask all at86rf230 irq's */
 	at86rf230_write_subreg(lp, SR_IRQ_MASK, 0);
+<<<<<<< HEAD
 	ieee802154_unregister_device(lp->dev);
 	ieee802154_free_device(lp->dev);
+=======
+	ieee802154_unregister_hw(lp->hw);
+	ieee802154_free_hw(lp->hw);
+	at86rf230_debugfs_remove();
+>>>>>>> v4.9.227
 	dev_dbg(&spi->dev, "unregistered at86rf230\n");
 
 	return 0;
@@ -1612,7 +2893,10 @@ static struct spi_driver at86rf230_driver = {
 	.driver = {
 		.of_match_table = of_match_ptr(at86rf230_of_match),
 		.name	= "at86rf230",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe      = at86rf230_probe,
 	.remove     = at86rf230_remove,

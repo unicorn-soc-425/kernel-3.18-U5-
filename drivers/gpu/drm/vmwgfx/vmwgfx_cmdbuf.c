@@ -293,6 +293,7 @@ static int vmw_cmdbuf_header_submit(struct vmw_cmdbuf_header *header)
 	struct vmw_cmdbuf_man *man = header->man;
 	u32 val;
 
+<<<<<<< HEAD
 	if (sizeof(header->handle) > 4)
 		val = (header->handle >> 32);
 	else
@@ -300,6 +301,12 @@ static int vmw_cmdbuf_header_submit(struct vmw_cmdbuf_header *header)
 	vmw_write(man->dev_priv, SVGA_REG_COMMAND_HIGH, val);
 
 	val = (header->handle & 0xFFFFFFFFULL);
+=======
+	val = upper_32_bits(header->handle);
+	vmw_write(man->dev_priv, SVGA_REG_COMMAND_HIGH, val);
+
+	val = lower_32_bits(header->handle);
+>>>>>>> v4.9.227
 	val |= header->cb_context & SVGA_CB_CONTEXT_MASK;
 	vmw_write(man->dev_priv, SVGA_REG_COMMAND_LOW, val);
 

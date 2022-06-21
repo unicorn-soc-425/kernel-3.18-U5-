@@ -261,7 +261,10 @@ int __cpu_up(unsigned int cpu, struct task_struct *idle)
 }
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 static DECLARE_COMPLETION(cpu_killed);
+=======
+>>>>>>> v4.9.227
 
 /*
  * __cpu_disable runs on the processor to be shutdown.
@@ -299,7 +302,11 @@ int __cpu_disable(void)
  */
 void __cpu_die(unsigned int cpu)
 {
+<<<<<<< HEAD
 	if (!wait_for_completion_timeout(&cpu_killed, msecs_to_jiffies(1)))
+=======
+	if (!cpu_wait_death(cpu, 1))
+>>>>>>> v4.9.227
 		pr_err("CPU%u: unable to kill\n", cpu);
 }
 
@@ -313,8 +320,14 @@ void cpu_die(void)
 {
 	local_irq_disable();
 	idle_task_exit();
+<<<<<<< HEAD
 
 	complete(&cpu_killed);
+=======
+	irq_ctx_exit(smp_processor_id());
+
+	(void)cpu_report_death();
+>>>>>>> v4.9.227
 
 	asm ("XOR	TXENABLE, D0Re0,D0Re0\n");
 }
@@ -367,6 +380,10 @@ asmlinkage void secondary_start_kernel(void)
 		panic("No TBI found!");
 
 	per_cpu_trap_init(cpu);
+<<<<<<< HEAD
+=======
+	irq_ctx_init(cpu);
+>>>>>>> v4.9.227
 
 	preempt_disable();
 
@@ -395,7 +412,11 @@ asmlinkage void secondary_start_kernel(void)
 	/*
 	 * OK, it's off to the idle thread for us
 	 */
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> v4.9.227
 }
 
 void __init smp_cpus_done(unsigned int max_cpus)

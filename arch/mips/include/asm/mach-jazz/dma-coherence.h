@@ -48,6 +48,13 @@ static inline int plat_dma_supported(struct device *dev, u64 mask)
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+static inline void plat_post_dma_flush(struct device *dev)
+{
+}
+
+>>>>>>> v4.9.227
 static inline int plat_device_is_coherent(struct device *dev)
 {
 	return 0;

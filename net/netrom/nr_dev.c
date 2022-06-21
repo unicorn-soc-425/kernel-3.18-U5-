@@ -65,6 +65,7 @@ int nr_rx_ip(struct sk_buff *skb, struct net_device *dev)
 	return 1;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_INET
 
 static int nr_rebuild_header(struct sk_buff *skb)
@@ -95,6 +96,8 @@ static int nr_rebuild_header(struct sk_buff *skb)
 
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int nr_header(struct sk_buff *skb, struct net_device *dev,
 		     unsigned short type,
 		     const void *daddr, const void *saddr, unsigned int len)
@@ -188,7 +191,10 @@ static netdev_tx_t nr_xmit(struct sk_buff *skb, struct net_device *dev)
 
 static const struct header_ops nr_header_ops = {
 	.create	= nr_header,
+<<<<<<< HEAD
 	.rebuild= nr_rebuild_header,
+=======
+>>>>>>> v4.9.227
 };
 
 static const struct net_device_ops nr_netdev_ops = {

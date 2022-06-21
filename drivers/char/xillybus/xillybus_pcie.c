@@ -98,7 +98,10 @@ static int xilly_map_single_pci(struct xilly_endpoint *ep,
 	int pci_direction;
 	dma_addr_t addr;
 	struct xilly_mapping *this;
+<<<<<<< HEAD
 	int rc;
+=======
+>>>>>>> v4.9.227
 
 	this = kzalloc(sizeof(*this), GFP_KERNEL);
 	if (!this)
@@ -120,6 +123,7 @@ static int xilly_map_single_pci(struct xilly_endpoint *ep,
 
 	*ret_dma_handle = addr;
 
+<<<<<<< HEAD
 	rc = devm_add_action(ep->dev, xilly_pci_unmap, this);
 	if (rc) {
 		pci_unmap_single(ep->pdev, addr, size, pci_direction);
@@ -128,6 +132,9 @@ static int xilly_map_single_pci(struct xilly_endpoint *ep,
 	}
 
 	return 0;
+=======
+	return devm_add_action_or_reset(ep->dev, xilly_pci_unmap, this);
+>>>>>>> v4.9.227
 }
 
 static struct xilly_endpoint_hardware pci_hw = {
@@ -193,14 +200,26 @@ static int xilly_probe(struct pci_dev *pdev,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * In theory, an attempt to set the DMA mask to 64 and dma_using_dac=1
 	 * is the right thing. But some unclever PCIe drivers report it's OK
 	 * when the hardware drops those 64-bit PCIe packets. So trust
 	 * nobody and use 32 bits DMA addressing in any case.
+=======
+	 * Some (old and buggy?) hardware drops 64-bit addressed PCIe packets,
+	 * even when the PCIe driver claims that a 64-bit mask is OK. On the
+	 * other hand, on some architectures, 64-bit addressing is mandatory.
+	 * So go for the 64-bit mask only when failing is the other option.
+>>>>>>> v4.9.227
 	 */
 
 	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
 		endpoint->dma_using_dac = 0;
+<<<<<<< HEAD
+=======
+	} else if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
+		endpoint->dma_using_dac = 1;
+>>>>>>> v4.9.227
 	} else {
 		dev_err(endpoint->dev, "Failed to set DMA mask. Aborting.\n");
 		return -ENODEV;

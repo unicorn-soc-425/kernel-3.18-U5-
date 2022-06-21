@@ -86,6 +86,10 @@ static int cbe_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	if (!cbe_get_cpu_pmd_regs(policy->cpu) ||
 	    !cbe_get_cpu_mic_tm_regs(policy->cpu)) {
 		pr_info("invalid CBE regs pointers for cpufreq\n");
+<<<<<<< HEAD
+=======
+		of_node_put(cpu);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 

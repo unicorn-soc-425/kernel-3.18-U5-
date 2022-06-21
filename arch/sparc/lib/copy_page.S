@@ -10,6 +10,10 @@
 #include <asm/pgtable.h>
 #include <asm/spitfire.h>
 #include <asm/head.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	/* What we used to do was lock a TLB entry into a specific
 	 * TLB slot, clear the page with interrupts disabled, then
@@ -44,6 +48,10 @@
 	.align		32
 	.globl		copy_user_page
 	.type		copy_user_page,#function
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(copy_user_page)
+>>>>>>> v4.9.227
 copy_user_page:		/* %o0=dest, %o1=src, %o2=vaddr */
 	lduw		[%g6 + TI_PRE_COUNT], %o4
 	sethi		%hi(PAGE_OFFSET), %g2

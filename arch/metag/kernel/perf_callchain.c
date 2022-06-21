@@ -29,7 +29,11 @@ static bool is_valid_call(unsigned long calladdr)
 
 static struct metag_frame __user *
 user_backtrace(struct metag_frame __user *user_frame,
+<<<<<<< HEAD
 	       struct perf_callchain_entry *entry)
+=======
+	       struct perf_callchain_entry_ctx *entry)
+>>>>>>> v4.9.227
 {
 	struct metag_frame frame;
 	unsigned long calladdr;
@@ -56,7 +60,11 @@ user_backtrace(struct metag_frame __user *user_frame,
 }
 
 void
+<<<<<<< HEAD
 perf_callchain_user(struct perf_callchain_entry *entry, struct pt_regs *regs)
+=======
+perf_callchain_user(struct perf_callchain_entry_ctx *entry, struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	unsigned long sp = regs->ctx.AX[0].U0;
 	struct metag_frame __user *frame;
@@ -65,7 +73,11 @@ perf_callchain_user(struct perf_callchain_entry *entry, struct pt_regs *regs)
 
 	--frame;
 
+<<<<<<< HEAD
 	while ((entry->nr < PERF_MAX_STACK_DEPTH) && frame)
+=======
+	while ((entry->nr < entry->max_stack) && frame)
+>>>>>>> v4.9.227
 		frame = user_backtrace(frame, entry);
 }
 
@@ -78,13 +90,21 @@ static int
 callchain_trace(struct stackframe *fr,
 		void *data)
 {
+<<<<<<< HEAD
 	struct perf_callchain_entry *entry = data;
+=======
+	struct perf_callchain_entry_ctx *entry = data;
+>>>>>>> v4.9.227
 	perf_callchain_store(entry, fr->pc);
 	return 0;
 }
 
 void
+<<<<<<< HEAD
 perf_callchain_kernel(struct perf_callchain_entry *entry, struct pt_regs *regs)
+=======
+perf_callchain_kernel(struct perf_callchain_entry_ctx *entry, struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	struct stackframe fr;
 

@@ -99,7 +99,10 @@ struct via_spec {
 
 	/* HP mode source */
 	unsigned int dmic_enabled;
+<<<<<<< HEAD
 	unsigned int no_pin_power_ctl;
+=======
+>>>>>>> v4.9.227
 	enum VIA_HDA_CODEC codec_type;
 
 	/* analog low-power control */
@@ -109,8 +112,12 @@ struct via_spec {
 	int hp_work_active;
 	int vt1708_jack_detect;
 
+<<<<<<< HEAD
 	void (*set_widgets_power_state)(struct hda_codec *codec);
 	unsigned int dac_stream_tag[4];
+=======
+	unsigned int beep_amp;
+>>>>>>> v4.9.227
 };
 
 static enum VIA_HDA_CODEC get_codec_type(struct hda_codec *codec);
@@ -119,6 +126,11 @@ static void via_playback_pcm_hook(struct hda_pcm_stream *hinfo,
 				  struct snd_pcm_substream *substream,
 				  int action);
 
+<<<<<<< HEAD
+=======
+static const struct hda_codec_ops via_patch_ops; /* defined below */
+
+>>>>>>> v4.9.227
 static struct via_spec *via_new_spec(struct hda_codec *codec)
 {
 	struct via_spec *spec;
@@ -133,17 +145,31 @@ static struct via_spec *via_new_spec(struct hda_codec *codec)
 	/* VT1708BCE & VT1708S are almost same */
 	if (spec->codec_type == VT1708BCE)
 		spec->codec_type = VT1708S;
+<<<<<<< HEAD
 	spec->no_pin_power_ctl = 1;
 	spec->gen.indep_hp = 1;
 	spec->gen.keep_eapd_on = 1;
 	spec->gen.pcm_playback_hook = via_playback_pcm_hook;
 	spec->gen.add_stereo_mix_input = 1;
+=======
+	spec->gen.indep_hp = 1;
+	spec->gen.keep_eapd_on = 1;
+	spec->gen.pcm_playback_hook = via_playback_pcm_hook;
+	spec->gen.add_stereo_mix_input = HDA_HINT_STEREO_MIX_AUTO;
+	codec->power_save_node = 1;
+	spec->gen.power_down_unused = 1;
+	codec->patch_ops = via_patch_ops;
+>>>>>>> v4.9.227
 	return spec;
 }
 
 static enum VIA_HDA_CODEC get_codec_type(struct hda_codec *codec)
 {
+<<<<<<< HEAD
 	u32 vendor_id = codec->vendor_id;
+=======
+	u32 vendor_id = codec->core.vendor_id;
+>>>>>>> v4.9.227
 	u16 ven_id = vendor_id >> 16;
 	u16 dev_id = vendor_id & 0xffff;
 	enum VIA_HDA_CODEC codec_type;
@@ -222,14 +248,19 @@ static void vt1708_update_hp_work(struct hda_codec *codec)
 		if (!spec->hp_work_active) {
 			codec->jackpoll_interval = msecs_to_jiffies(100);
 			snd_hda_codec_write(codec, 0x1, 0, 0xf81, 0);
+<<<<<<< HEAD
 			queue_delayed_work(codec->bus->workq,
 					   &codec->jackpoll_work, 0);
+=======
+			schedule_delayed_work(&codec->jackpoll_work, 0);
+>>>>>>> v4.9.227
 			spec->hp_work_active = true;
 		}
 	} else if (!hp_detect_with_aa(codec))
 		vt1708_stop_hp_work(codec);
 }
 
+<<<<<<< HEAD
 static void set_widgets_power_state(struct hda_codec *codec)
 {
 #if 0 /* FIXME: the assumed connections don't match always with the
@@ -314,6 +345,8 @@ static void set_pin_power_state(struct hda_codec *codec, hda_nid_t nid,
 	update_power_state(codec, nid, parm);
 }
 
+=======
+>>>>>>> v4.9.227
 static int via_pin_power_ctl_info(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_info *uinfo)
 {
@@ -325,7 +358,12 @@ static int via_pin_power_ctl_get(struct snd_kcontrol *kcontrol,
 {
 	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct via_spec *spec = codec->spec;
+<<<<<<< HEAD
 	ucontrol->value.enumerated.item[0] = !spec->no_pin_power_ctl;
+=======
+
+	ucontrol->value.enumerated.item[0] = spec->gen.power_down_unused;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -334,12 +372,21 @@ static int via_pin_power_ctl_put(struct snd_kcontrol *kcontrol,
 {
 	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct via_spec *spec = codec->spec;
+<<<<<<< HEAD
 	unsigned int val = !ucontrol->value.enumerated.item[0];
 
 	if (val == spec->no_pin_power_ctl)
 		return 0;
 	spec->no_pin_power_ctl = val;
 	set_widgets_power_state(codec);
+=======
+	bool val = !!ucontrol->value.enumerated.item[0];
+
+	if (val == spec->gen.power_down_unused)
+		return 0;
+	/* codec->power_save_node = val; */ /* widget PM seems yet broken */
+	spec->gen.power_down_unused = val;
+>>>>>>> v4.9.227
 	analog_low_current_mode(codec);
 	return 1;
 }
@@ -355,6 +402,62 @@ static const struct snd_kcontrol_new via_pin_power_ctl_enum[] = {
 	{} /* terminator */
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SND_HDA_INPUT_BEEP
+static inline void set_beep_amp(struct via_spec *spec, hda_nid_t nid,
+				int idx, int dir)
+{
+	spec->gen.beep_nid = nid;
+	spec->beep_amp = HDA_COMPOSE_AMP_VAL(nid, 1, idx, dir);
+}
+
+/* additional beep mixers; the actual parameters are overwritten at build */
+static const struct snd_kcontrol_new cxt_beep_mixer[] = {
+	HDA_CODEC_VOLUME_MONO("Beep Playback Volume", 0, 1, 0, HDA_OUTPUT),
+	HDA_CODEC_MUTE_BEEP_MONO("Beep Playback Switch", 0, 1, 0, HDA_OUTPUT),
+	{ } /* end */
+};
+
+/* create beep controls if needed */
+static int add_beep_ctls(struct hda_codec *codec)
+{
+	struct via_spec *spec = codec->spec;
+	int err;
+
+	if (spec->beep_amp) {
+		const struct snd_kcontrol_new *knew;
+		for (knew = cxt_beep_mixer; knew->name; knew++) {
+			struct snd_kcontrol *kctl;
+			kctl = snd_ctl_new1(knew, codec);
+			if (!kctl)
+				return -ENOMEM;
+			kctl->private_value = spec->beep_amp;
+			err = snd_hda_ctl_add(codec, 0, kctl);
+			if (err < 0)
+				return err;
+		}
+	}
+	return 0;
+}
+
+static void auto_parse_beep(struct hda_codec *codec)
+{
+	struct via_spec *spec = codec->spec;
+	hda_nid_t nid;
+
+	for_each_hda_codec_node(nid, codec)
+		if (get_wcaps_type(get_wcaps(codec, nid)) == AC_WID_BEEP) {
+			set_beep_amp(spec, nid, 0, HDA_OUTPUT);
+			break;
+		}
+}
+#else
+#define set_beep_amp(spec, nid, idx, dir) /* NOP */
+#define add_beep_ctls(codec)	0
+#define auto_parse_beep(codec)
+#endif
+>>>>>>> v4.9.227
 
 /* check AA path's mute status */
 static bool is_aa_path_mute(struct hda_codec *codec)
@@ -384,7 +487,11 @@ static void __analog_low_current_mode(struct hda_codec *codec, bool force)
 	bool enable;
 	unsigned int verb, parm;
 
+<<<<<<< HEAD
 	if (spec->no_pin_power_ctl)
+=======
+	if (!codec->power_save_node)
+>>>>>>> v4.9.227
 		enable = false;
 	else
 		enable = is_aa_path_mute(codec) && !spec->gen.active_streams;
@@ -424,7 +531,11 @@ static void __analog_low_current_mode(struct hda_codec *codec, bool force)
 		return;		/* other codecs are not supported */
 	}
 	/* send verb */
+<<<<<<< HEAD
 	snd_hda_codec_write(codec, codec->afg, 0, verb, parm);
+=======
+	snd_hda_codec_write(codec, codec->core.afg, 0, verb, parm);
+>>>>>>> v4.9.227
 }
 
 static void analog_low_current_mode(struct hda_codec *codec)
@@ -441,8 +552,16 @@ static int via_build_controls(struct hda_codec *codec)
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	if (spec->set_widgets_power_state)
 		spec->mixers[spec->num_mixers++] = via_pin_power_ctl_enum;
+=======
+	err = add_beep_ctls(codec);
+	if (err < 0)
+		return err;
+
+	spec->mixers[spec->num_mixers++] = via_pin_power_ctl_enum;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < spec->num_mixers; i++) {
 		err = snd_hda_add_new_ctls(codec, spec->mixers[i]);
@@ -480,13 +599,28 @@ static int via_suspend(struct hda_codec *codec)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+static int via_resume(struct hda_codec *codec)
+{
+	/* some delay here to make jack detection working (bko#98921) */
+	msleep(10);
+	codec->patch_ops.init(codec);
+	regcache_sync(codec->core.regmap);
+	return 0;
+}
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_PM
 static int via_check_power_status(struct hda_codec *codec, hda_nid_t nid)
 {
 	struct via_spec *spec = codec->spec;
+<<<<<<< HEAD
 	set_widgets_power_state(codec);
+=======
+>>>>>>> v4.9.227
 	analog_low_current_mode(codec);
 	vt1708_update_hp_work(codec);
 	return snd_hda_check_amp_list_power(codec, &spec->gen.loopback, nid);
@@ -506,6 +640,10 @@ static const struct hda_codec_ops via_patch_ops = {
 	.unsol_event = snd_hda_jack_unsol_event,
 #ifdef CONFIG_PM
 	.suspend = via_suspend,
+<<<<<<< HEAD
+=======
+	.resume = via_resume,
+>>>>>>> v4.9.227
 	.check_power_status = via_check_power_status,
 #endif
 };
@@ -574,6 +712,7 @@ static const struct snd_kcontrol_new vt1708_jack_detect_ctl[] = {
 	{} /* terminator */
 };
 
+<<<<<<< HEAD
 static void via_jack_powerstate_event(struct hda_codec *codec,
 				      struct hda_jack_callback *tbl)
 {
@@ -602,6 +741,8 @@ static void via_set_jack_unsol_events(struct hda_codec *codec)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct badness_table via_main_out_badness = {
 	.no_primary_dac = 0x10000,
 	.no_dac = 0x4000,
@@ -631,11 +772,22 @@ static int via_parse_auto_config(struct hda_codec *codec)
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
+=======
+	auto_parse_beep(codec);
+
+>>>>>>> v4.9.227
 	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	via_set_jack_unsol_events(codec);
+=======
+	/* disable widget PM at start for compatibility */
+	codec->power_save_node = 0;
+	spec->gen.power_down_unused = 0;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -648,7 +800,10 @@ static int via_init(struct hda_codec *codec)
 		snd_hda_sequence_write(codec, spec->init_verbs[i]);
 
 	/* init power states */
+<<<<<<< HEAD
 	set_widgets_power_state(codec);
+=======
+>>>>>>> v4.9.227
 	__analog_low_current_mode(codec, true);
 
 	snd_hda_gen_init(codec);
@@ -676,15 +831,26 @@ static int vt1708_build_pcms(struct hda_codec *codec)
 	int i, err;
 
 	err = snd_hda_gen_build_pcms(codec);
+<<<<<<< HEAD
 	if (err < 0 || codec->vendor_id != 0x11061708)
+=======
+	if (err < 0 || codec->core.vendor_id != 0x11061708)
+>>>>>>> v4.9.227
 		return err;
 
 	/* We got noisy outputs on the right channel on VT1708 when
 	 * 24bit samples are used.  Until any workaround is found,
 	 * disable the 24bit format, so far.
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < codec->num_pcms; i++) {
 		struct hda_pcm *info = &spec->gen.pcm_rec[i];
+=======
+	for (i = 0; i < ARRAY_SIZE(spec->gen.pcm_rec); i++) {
+		struct hda_pcm *info = spec->gen.pcm_rec[i];
+		if (!info)
+			continue;
+>>>>>>> v4.9.227
 		if (!info->stream[SNDRV_PCM_STREAM_PLAYBACK].substreams ||
 		    info->pcm_type != HDA_PCM_TYPE_AUDIO)
 			continue;
@@ -705,6 +871,12 @@ static int patch_vt1708(struct hda_codec *codec)
 	if (spec == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	/* override some patch_ops */
+	codec->patch_ops.build_controls = vt1708_build_controls;
+	codec->patch_ops.build_pcms = vt1708_build_pcms;
+>>>>>>> v4.9.227
 	spec->gen.mixer_nid = 0x17;
 
 	/* set jackpoll_interval while parsing the codec */
@@ -733,10 +905,13 @@ static int patch_vt1708(struct hda_codec *codec)
 
 	spec->init_verbs[spec->num_iverbs++] = vt1708_init_verbs;
 
+<<<<<<< HEAD
 	codec->patch_ops = via_patch_ops;
 	codec->patch_ops.build_controls = vt1708_build_controls;
 	codec->patch_ops.build_pcms = vt1708_build_pcms;
 
+=======
+>>>>>>> v4.9.227
 	/* clear jackpoll_interval again; it's set dynamically */
 	codec->jackpoll_interval = 0;
 
@@ -761,6 +936,7 @@ static int patch_vt1709(struct hda_codec *codec)
 		return err;
 	}
 
+<<<<<<< HEAD
 	codec->patch_ops = via_patch_ops;
 
 	return 0;
@@ -838,6 +1014,11 @@ static void set_widgets_power_state_vt1708B(struct hda_codec *codec)
 		update_power_state(codec, 0x25, parm);
 }
 
+=======
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int patch_vt1708S(struct hda_codec *codec);
 static int patch_vt1708B(struct hda_codec *codec)
 {
@@ -861,10 +1042,13 @@ static int patch_vt1708B(struct hda_codec *codec)
 		return err;
 	}
 
+<<<<<<< HEAD
 	codec->patch_ops = via_patch_ops;
 
 	spec->set_widgets_power_state =  set_widgets_power_state_vt1708B;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -904,6 +1088,7 @@ static int patch_vt1708S(struct hda_codec *codec)
 	override_mic_boost(codec, 0x1e, 0, 3, 40);
 
 	/* correct names for VT1708BCE */
+<<<<<<< HEAD
 	if (get_codec_type(codec) == VT1708BCE)	{
 		kfree(codec->chip_name);
 		codec->chip_name = kstrdup("VT1708BCE", GFP_KERNEL);
@@ -919,6 +1104,13 @@ static int patch_vt1708S(struct hda_codec *codec)
 			 sizeof(codec->bus->card->mixername),
 			 "%s %s", codec->vendor_name, codec->chip_name);
 	}
+=======
+	if (get_codec_type(codec) == VT1708BCE)
+		snd_hda_codec_set_name(codec, "VT1708BCE");
+	/* correct names for VT1705 */
+	if (codec->core.vendor_id == 0x11064397)
+		snd_hda_codec_set_name(codec, "VT1705");
+>>>>>>> v4.9.227
 
 	/* automatic parse from the BIOS config */
 	err = via_parse_auto_config(codec);
@@ -929,9 +1121,12 @@ static int patch_vt1708S(struct hda_codec *codec)
 
 	spec->init_verbs[spec->num_iverbs++] = vt1708S_init_verbs;
 
+<<<<<<< HEAD
 	codec->patch_ops = via_patch_ops;
 
 	spec->set_widgets_power_state =  set_widgets_power_state_vt1708B;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -945,6 +1140,7 @@ static const struct hda_verb vt1702_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt1702(struct hda_codec *codec)
 {
 	int imux_is_smixer =
@@ -975,6 +1171,8 @@ static void set_widgets_power_state_vt1702(struct hda_codec *codec)
 	update_power_state(codec, 0x1d, parm);
 }
 
+=======
+>>>>>>> v4.9.227
 static int patch_vt1702(struct hda_codec *codec)
 {
 	struct via_spec *spec;
@@ -1003,9 +1201,12 @@ static int patch_vt1702(struct hda_codec *codec)
 
 	spec->init_verbs[spec->num_iverbs++] = vt1702_init_verbs;
 
+<<<<<<< HEAD
 	codec->patch_ops = via_patch_ops;
 
 	spec->set_widgets_power_state =  set_widgets_power_state_vt1702;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1020,6 +1221,7 @@ static const struct hda_verb vt1718S_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt1718S(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
@@ -1085,6 +1287,8 @@ static void set_widgets_power_state_vt1718S(struct hda_codec *codec)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 /* Add a connection to the primary DAC from AA-mixer for some codecs
  * This isn't listed from the raw info, but the chip has a secret connection.
  */
@@ -1105,8 +1309,12 @@ static int add_secret_dac_path(struct hda_codec *codec)
 	}
 
 	/* find the primary DAC and add to the connection list */
+<<<<<<< HEAD
 	nid = codec->start_nid;
 	for (i = 0; i < codec->num_nodes; i++, nid++) {
+=======
+	for_each_hda_codec_node(nid, codec) {
+>>>>>>> v4.9.227
 		unsigned int caps = get_wcaps(codec, nid);
 		if (get_wcaps_type(caps) == AC_WID_AUD_OUT &&
 		    !(caps & AC_WCAP_DIGITAL)) {
@@ -1144,10 +1352,13 @@ static int patch_vt1718S(struct hda_codec *codec)
 
 	spec->init_verbs[spec->num_iverbs++] = vt1718S_init_verbs;
 
+<<<<<<< HEAD
 	codec->patch_ops = via_patch_ops;
 
 	spec->set_widgets_power_state =  set_widgets_power_state_vt1718S;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1187,7 +1398,10 @@ static int vt1716s_dmic_put(struct snd_kcontrol *kcontrol,
 	snd_hda_codec_write(codec, 0x26, 0,
 					       AC_VERB_SET_CONNECT_SEL, index);
 	spec->dmic_enabled = index;
+<<<<<<< HEAD
 	set_widgets_power_state(codec);
+=======
+>>>>>>> v4.9.227
 	return 1;
 }
 
@@ -1222,6 +1436,7 @@ static const struct hda_verb vt1716S_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt1716S(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
@@ -1311,6 +1526,8 @@ static void set_widgets_power_state_vt1716S(struct hda_codec *codec)
 	update_power_state(codec, 0x10, mono_out ? AC_PWRST_D0 : parm);
 }
 
+=======
+>>>>>>> v4.9.227
 static int patch_vt1716S(struct hda_codec *codec)
 {
 	struct via_spec *spec;
@@ -1337,9 +1554,12 @@ static int patch_vt1716S(struct hda_codec *codec)
 	spec->mixers[spec->num_mixers++] = vt1716s_dmic_mixer;
 	spec->mixers[spec->num_mixers++] = vt1716S_mono_out_mixer;
 
+<<<<<<< HEAD
 	codec->patch_ops = via_patch_ops;
 
 	spec->set_widgets_power_state = set_widgets_power_state_vt1716S;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1365,6 +1585,7 @@ static const struct hda_verb vt1802_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt2002P(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
@@ -1457,6 +1678,8 @@ static void set_widgets_power_state_vt2002P(struct hda_codec *codec)
 		update_power_state(codec, 0x21, AC_PWRST_D3);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * pin fix-up
  */
@@ -1539,9 +1762,12 @@ static int patch_vt2002P(struct hda_codec *codec)
 	else
 		spec->init_verbs[spec->num_iverbs++] = vt2002P_init_verbs;
 
+<<<<<<< HEAD
 	codec->patch_ops = via_patch_ops;
 
 	spec->set_widgets_power_state =  set_widgets_power_state_vt2002P;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1555,6 +1781,7 @@ static const struct hda_verb vt1812_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt1812(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
@@ -1630,6 +1857,8 @@ static void set_widgets_power_state_vt1812(struct hda_codec *codec)
 
 }
 
+=======
+>>>>>>> v4.9.227
 /* patch for vt1812 */
 static int patch_vt1812(struct hda_codec *codec)
 {
@@ -1655,9 +1884,12 @@ static int patch_vt1812(struct hda_codec *codec)
 
 	spec->init_verbs[spec->num_iverbs++]  = vt1812_init_verbs;
 
+<<<<<<< HEAD
 	codec->patch_ops = via_patch_ops;
 
 	spec->set_widgets_power_state =  set_widgets_power_state_vt1812;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1673,6 +1905,7 @@ static const struct hda_verb vt3476_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt3476(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
@@ -1751,6 +1984,8 @@ static void set_widgets_power_state_vt3476(struct hda_codec *codec)
 	update_power_state(codec, 0x3f, imux_is_smixer ? AC_PWRST_D0 : parm);
 }
 
+=======
+>>>>>>> v4.9.227
 static int patch_vt3476(struct hda_codec *codec)
 {
 	struct via_spec *spec;
@@ -1773,16 +2008,20 @@ static int patch_vt3476(struct hda_codec *codec)
 
 	spec->init_verbs[spec->num_iverbs++] = vt3476_init_verbs;
 
+<<<<<<< HEAD
 	codec->patch_ops = via_patch_ops;
 
 	spec->set_widgets_power_state = set_widgets_power_state_vt3476;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 /*
  * patch entries
  */
+<<<<<<< HEAD
 static const struct hda_codec_preset snd_hda_preset_via[] = {
 	{ .id = 0x11061708, .name = "VT1708", .patch = patch_vt1708},
 	{ .id = 0x11061709, .name = "VT1708", .patch = patch_vt1708},
@@ -1887,11 +2126,72 @@ MODULE_ALIAS("snd-hda-codec-id:1106*");
 static struct hda_codec_preset_list via_list = {
 	.preset = snd_hda_preset_via,
 	.owner = THIS_MODULE,
+=======
+static const struct hda_device_id snd_hda_id_via[] = {
+	HDA_CODEC_ENTRY(0x11061708, "VT1708", patch_vt1708),
+	HDA_CODEC_ENTRY(0x11061709, "VT1708", patch_vt1708),
+	HDA_CODEC_ENTRY(0x1106170a, "VT1708", patch_vt1708),
+	HDA_CODEC_ENTRY(0x1106170b, "VT1708", patch_vt1708),
+	HDA_CODEC_ENTRY(0x1106e710, "VT1709 10-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e711, "VT1709 10-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e712, "VT1709 10-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e713, "VT1709 10-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e714, "VT1709 6-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e715, "VT1709 6-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e716, "VT1709 6-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e717, "VT1709 6-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e720, "VT1708B 8-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e721, "VT1708B 8-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e722, "VT1708B 8-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e723, "VT1708B 8-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e724, "VT1708B 4-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e725, "VT1708B 4-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e726, "VT1708B 4-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e727, "VT1708B 4-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x11060397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11061397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11062397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11063397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11064397, "VT1705", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11065397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11066397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11067397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11060398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11061398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11062398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11063398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11064398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11065398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11066398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11067398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11060428, "VT1718S", patch_vt1718S),
+	HDA_CODEC_ENTRY(0x11064428, "VT1718S", patch_vt1718S),
+	HDA_CODEC_ENTRY(0x11060441, "VT2020", patch_vt1718S),
+	HDA_CODEC_ENTRY(0x11064441, "VT1828S", patch_vt1718S),
+	HDA_CODEC_ENTRY(0x11060433, "VT1716S", patch_vt1716S),
+	HDA_CODEC_ENTRY(0x1106a721, "VT1716S", patch_vt1716S),
+	HDA_CODEC_ENTRY(0x11060438, "VT2002P", patch_vt2002P),
+	HDA_CODEC_ENTRY(0x11064438, "VT2002P", patch_vt2002P),
+	HDA_CODEC_ENTRY(0x11060448, "VT1812", patch_vt1812),
+	HDA_CODEC_ENTRY(0x11060440, "VT1818S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11060446, "VT1802", patch_vt2002P),
+	HDA_CODEC_ENTRY(0x11068446, "VT1802", patch_vt2002P),
+	HDA_CODEC_ENTRY(0x11064760, "VT1705CF", patch_vt3476),
+	HDA_CODEC_ENTRY(0x11064761, "VT1708SCE", patch_vt3476),
+	HDA_CODEC_ENTRY(0x11064762, "VT1808", patch_vt3476),
+	{} /* terminator */
+};
+MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_via);
+
+static struct hda_codec_driver via_driver = {
+	.id = snd_hda_id_via,
+>>>>>>> v4.9.227
 };
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("VIA HD-audio codec");
 
+<<<<<<< HEAD
 static int __init patch_via_init(void)
 {
 	return snd_hda_add_codec_preset(&via_list);
@@ -1904,3 +2204,6 @@ static void __exit patch_via_exit(void)
 
 module_init(patch_via_init)
 module_exit(patch_via_exit)
+=======
+module_hda_codec_driver(via_driver);
+>>>>>>> v4.9.227

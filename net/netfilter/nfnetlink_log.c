@@ -12,6 +12,12 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/if_arp.h>
@@ -20,9 +26,17 @@
 #include <linux/ipv6.h>
 #include <linux/netdevice.h>
 #include <linux/netfilter.h>
+<<<<<<< HEAD
 #include <net/netlink.h>
 #include <linux/netfilter/nfnetlink.h>
 #include <linux/netfilter/nfnetlink_log.h>
+=======
+#include <linux/netfilter_bridge.h>
+#include <net/netlink.h>
+#include <linux/netfilter/nfnetlink.h>
+#include <linux/netfilter/nfnetlink_log.h>
+#include <linux/netfilter/nf_conntrack_common.h>
+>>>>>>> v4.9.227
 #include <linux/spinlock.h>
 #include <linux/sysctl.h>
 #include <linux/proc_fs.h>
@@ -59,7 +73,11 @@ struct nfulnl_instance {
 	struct timer_list timer;
 	struct net *net;
 	struct user_namespace *peer_user_ns;	/* User namespace of the peer process */
+<<<<<<< HEAD
 	int peer_portid;			/* PORTID of the peer process */
+=======
+	u32 peer_portid;		/* PORTID of the peer process */
+>>>>>>> v4.9.227
 
 	/* configurable parameters */
 	unsigned int flushtimeout;	/* timeout until queue flush */
@@ -148,7 +166,11 @@ static void nfulnl_timer(unsigned long data);
 
 static struct nfulnl_instance *
 instance_create(struct net *net, u_int16_t group_num,
+<<<<<<< HEAD
 		int portid, struct user_namespace *user_ns)
+=======
+		u32 portid, struct user_namespace *user_ns)
+>>>>>>> v4.9.227
 {
 	struct nfulnl_instance *inst;
 	struct nfnl_log_net *log = nfnl_log_pernet(net);
@@ -288,24 +310,37 @@ nfulnl_set_nlbufsiz(struct nfulnl_instance *inst, u_int32_t nlbufsiz)
 	return status;
 }
 
+<<<<<<< HEAD
 static int
+=======
+static void
+>>>>>>> v4.9.227
 nfulnl_set_timeout(struct nfulnl_instance *inst, u_int32_t timeout)
 {
 	spin_lock_bh(&inst->lock);
 	inst->flushtimeout = timeout;
 	spin_unlock_bh(&inst->lock);
+<<<<<<< HEAD
 
 	return 0;
 }
 
 static int
+=======
+}
+
+static void
+>>>>>>> v4.9.227
 nfulnl_set_qthresh(struct nfulnl_instance *inst, u_int32_t qthresh)
 {
 	spin_lock_bh(&inst->lock);
 	inst->qthreshold = qthresh;
 	spin_unlock_bh(&inst->lock);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> v4.9.227
 }
 
 static int
@@ -329,17 +364,25 @@ nfulnl_alloc_skb(struct net *net, u32 peer_portid, unsigned int inst_size,
 	 * message.  WARNING: has to be <= 128k due to slab restrictions */
 
 	n = max(inst_size, pkt_size);
+<<<<<<< HEAD
 	skb = nfnetlink_alloc_skb(net, n, peer_portid, GFP_ATOMIC);
+=======
+	skb = alloc_skb(n, GFP_ATOMIC);
+>>>>>>> v4.9.227
 	if (!skb) {
 		if (n > pkt_size) {
 			/* try to allocate only as much as we need for current
 			 * packet */
 
+<<<<<<< HEAD
 			skb = nfnetlink_alloc_skb(net, pkt_size,
 						  peer_portid, GFP_ATOMIC);
 			if (!skb)
 				pr_err("nfnetlink_log: can't even alloc %u bytes\n",
 				       pkt_size);
+=======
+			skb = alloc_skb(pkt_size, GFP_ATOMIC);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -400,7 +443,13 @@ __build_packet_message(struct nfnl_log_net *log,
 			unsigned int hooknum,
 			const struct net_device *indev,
 			const struct net_device *outdev,
+<<<<<<< HEAD
 			const char *prefix, unsigned int plen)
+=======
+			const char *prefix, unsigned int plen,
+			const struct nfnl_ct_hook *nfnl_ct,
+			struct nf_conn *ct, enum ip_conntrack_info ctinfo)
+>>>>>>> v4.9.227
 {
 	struct nfulnl_msg_packet_hdr pmsg;
 	struct nlmsghdr *nlh;
@@ -443,19 +492,38 @@ __build_packet_message(struct nfnl_log_net *log,
 			if (nla_put_be32(inst->skb, NFULA_IFINDEX_PHYSINDEV,
 					 htonl(indev->ifindex)) ||
 			/* this is the bridge group "brX" */
+<<<<<<< HEAD
 			/* rcu_read_lock()ed by nf_hook_slow or nf_log_packet */
+=======
+			/* rcu_read_lock()ed by nf_hook_thresh or
+			 * nf_log_packet.
+			 */
+>>>>>>> v4.9.227
 			    nla_put_be32(inst->skb, NFULA_IFINDEX_INDEV,
 					 htonl(br_port_get_rcu(indev)->br->dev->ifindex)))
 				goto nla_put_failure;
 		} else {
+<<<<<<< HEAD
+=======
+			struct net_device *physindev;
+
+>>>>>>> v4.9.227
 			/* Case 2: indev is bridge group, we need to look for
 			 * physical device (when called from ipv4) */
 			if (nla_put_be32(inst->skb, NFULA_IFINDEX_INDEV,
 					 htonl(indev->ifindex)))
 				goto nla_put_failure;
+<<<<<<< HEAD
 			if (skb->nf_bridge && skb->nf_bridge->physindev &&
 			    nla_put_be32(inst->skb, NFULA_IFINDEX_PHYSINDEV,
 					 htonl(skb->nf_bridge->physindev->ifindex)))
+=======
+
+			physindev = nf_bridge_get_physindev(skb);
+			if (physindev &&
+			    nla_put_be32(inst->skb, NFULA_IFINDEX_PHYSINDEV,
+					 htonl(physindev->ifindex)))
+>>>>>>> v4.9.227
 				goto nla_put_failure;
 		}
 #endif
@@ -474,19 +542,38 @@ __build_packet_message(struct nfnl_log_net *log,
 			if (nla_put_be32(inst->skb, NFULA_IFINDEX_PHYSOUTDEV,
 					 htonl(outdev->ifindex)) ||
 			/* this is the bridge group "brX" */
+<<<<<<< HEAD
 			/* rcu_read_lock()ed by nf_hook_slow or nf_log_packet */
+=======
+			/* rcu_read_lock()ed by nf_hook_thresh or
+			 * nf_log_packet.
+			 */
+>>>>>>> v4.9.227
 			    nla_put_be32(inst->skb, NFULA_IFINDEX_OUTDEV,
 					 htonl(br_port_get_rcu(outdev)->br->dev->ifindex)))
 				goto nla_put_failure;
 		} else {
+<<<<<<< HEAD
+=======
+			struct net_device *physoutdev;
+
+>>>>>>> v4.9.227
 			/* Case 2: indev is a bridge group, we need to look
 			 * for physical device (when called from ipv4) */
 			if (nla_put_be32(inst->skb, NFULA_IFINDEX_OUTDEV,
 					 htonl(outdev->ifindex)))
 				goto nla_put_failure;
+<<<<<<< HEAD
 			if (skb->nf_bridge && skb->nf_bridge->physoutdev &&
 			    nla_put_be32(inst->skb, NFULA_IFINDEX_PHYSOUTDEV,
 					 htonl(skb->nf_bridge->physoutdev->ifindex)))
+=======
+
+			physoutdev = nf_bridge_get_physoutdev(skb);
+			if (physoutdev &&
+			    nla_put_be32(inst->skb, NFULA_IFINDEX_PHYSOUTDEV,
+					 htonl(physoutdev->ifindex)))
+>>>>>>> v4.9.227
 				goto nla_put_failure;
 		}
 #endif
@@ -529,9 +616,15 @@ __build_packet_message(struct nfnl_log_net *log,
 
 	if (skb->tstamp.tv64) {
 		struct nfulnl_msg_packet_timestamp ts;
+<<<<<<< HEAD
 		struct timeval tv = ktime_to_timeval(skb->tstamp);
 		ts.sec = cpu_to_be64(tv.tv_sec);
 		ts.usec = cpu_to_be64(tv.tv_usec);
+=======
+		struct timespec64 kts = ktime_to_timespec64(skb->tstamp);
+		ts.sec = cpu_to_be64(kts.tv_sec);
+		ts.usec = cpu_to_be64(kts.tv_nsec / NSEC_PER_USEC);
+>>>>>>> v4.9.227
 
 		if (nla_put(inst->skb, NFULA_TIMESTAMP, sizeof(ts), &ts))
 			goto nla_put_failure;
@@ -539,7 +632,11 @@ __build_packet_message(struct nfnl_log_net *log,
 
 	/* UID */
 	sk = skb->sk;
+<<<<<<< HEAD
 	if (sk && sk->sk_state != TCP_TIME_WAIT) {
+=======
+	if (sk && sk_fullsock(sk)) {
+>>>>>>> v4.9.227
 		read_lock_bh(&sk->sk_callback_lock);
 		if (sk->sk_socket && sk->sk_socket->file) {
 			struct file *file = sk->sk_socket->file;
@@ -566,14 +663,26 @@ __build_packet_message(struct nfnl_log_net *log,
 			 htonl(atomic_inc_return(&log->global_seq))))
 		goto nla_put_failure;
 
+<<<<<<< HEAD
+=======
+	if (ct && nfnl_ct->build(inst->skb, ct, ctinfo,
+				 NFULA_CT, NFULA_CT_INFO) < 0)
+		goto nla_put_failure;
+
+>>>>>>> v4.9.227
 	if (data_len) {
 		struct nlattr *nla;
 		int size = nla_attr_size(data_len);
 
+<<<<<<< HEAD
 		if (skb_tailroom(inst->skb) < nla_total_size(data_len)) {
 			printk(KERN_WARNING "nfnetlink_log: no tailroom!\n");
 			return -1;
 		}
+=======
+		if (skb_tailroom(inst->skb) < nla_total_size(data_len))
+			goto nla_put_failure;
+>>>>>>> v4.9.227
 
 		nla = (struct nlattr *)skb_put(inst->skb, nla_total_size(data_len));
 		nla->nla_type = NFULA_PAYLOAD;
@@ -591,8 +700,11 @@ nla_put_failure:
 	return -1;
 }
 
+<<<<<<< HEAD
 #define RCV_SKB_FAIL(err) do { netlink_ack(skb, nlh, (err)); return; } while (0)
 
+=======
+>>>>>>> v4.9.227
 static struct nf_loginfo default_loginfo = {
 	.type =		NF_LOG_TYPE_ULOG,
 	.u = {
@@ -615,12 +727,23 @@ nfulnl_log_packet(struct net *net,
 		  const struct nf_loginfo *li_user,
 		  const char *prefix)
 {
+<<<<<<< HEAD
 	unsigned int size, data_len;
+=======
+	size_t size;
+	unsigned int data_len;
+>>>>>>> v4.9.227
 	struct nfulnl_instance *inst;
 	const struct nf_loginfo *li;
 	unsigned int qthreshold;
 	unsigned int plen;
 	struct nfnl_log_net *log = nfnl_log_pernet(net);
+<<<<<<< HEAD
+=======
+	const struct nfnl_ct_hook *nfnl_ct = NULL;
+	struct nf_conn *ct = NULL;
+	enum ip_conntrack_info uninitialized_var(ctinfo);
+>>>>>>> v4.9.227
 
 	if (li_user && li_user->type == NF_LOG_TYPE_ULOG)
 		li = li_user;
@@ -666,6 +789,17 @@ nfulnl_log_packet(struct net *net,
 		size += nla_total_size(sizeof(u_int32_t));
 	if (inst->flags & NFULNL_CFG_F_SEQ_GLOBAL)
 		size += nla_total_size(sizeof(u_int32_t));
+<<<<<<< HEAD
+=======
+	if (inst->flags & NFULNL_CFG_F_CONNTRACK) {
+		nfnl_ct = rcu_dereference(nfnl_ct_hook);
+		if (nfnl_ct != NULL) {
+			ct = nfnl_ct->get_ct(skb, &ctinfo);
+			if (ct != NULL)
+				size += nfnl_ct->build_size(ct);
+		}
+	}
+>>>>>>> v4.9.227
 
 	qthreshold = inst->qthreshold;
 	/* per-rule qthreshold overrides per-instance */
@@ -681,10 +815,20 @@ nfulnl_log_packet(struct net *net,
 		break;
 
 	case NFULNL_COPY_PACKET:
+<<<<<<< HEAD
 		if (inst->copy_range > skb->len)
 			data_len = skb->len;
 		else
 			data_len = inst->copy_range;
+=======
+		data_len = inst->copy_range;
+		if ((li->u.ulog.flags & NF_LOG_F_COPY_LEN) &&
+		    (li->u.ulog.copy_len < data_len))
+			data_len = li->u.ulog.copy_len;
+
+		if (data_len > skb->len)
+			data_len = skb->len;
+>>>>>>> v4.9.227
 
 		size += nla_total_size(data_len);
 		break;
@@ -710,7 +854,12 @@ nfulnl_log_packet(struct net *net,
 	inst->qlen++;
 
 	__build_packet_message(log, inst, skb, data_len, pf,
+<<<<<<< HEAD
 				hooknum, in, out, prefix, plen);
+=======
+				hooknum, in, out, prefix, plen,
+				nfnl_ct, ct, ctinfo);
+>>>>>>> v4.9.227
 
 	if (inst->qlen >= qthreshold)
 		__nfulnl_flush(inst);
@@ -764,10 +913,16 @@ static struct notifier_block nfulnl_rtnl_notifier = {
 	.notifier_call	= nfulnl_rcv_nl_event,
 };
 
+<<<<<<< HEAD
 static int
 nfulnl_recv_unsupp(struct sock *ctnl, struct sk_buff *skb,
 		   const struct nlmsghdr *nlh,
 		   const struct nlattr * const nfqa[])
+=======
+static int nfulnl_recv_unsupp(struct net *net, struct sock *ctnl,
+			      struct sk_buff *skb, const struct nlmsghdr *nlh,
+			      const struct nlattr * const nfqa[])
+>>>>>>> v4.9.227
 {
 	return -ENOTSUPP;
 }
@@ -788,18 +943,30 @@ static const struct nla_policy nfula_cfg_policy[NFULA_CFG_MAX+1] = {
 	[NFULA_CFG_FLAGS]	= { .type = NLA_U16 },
 };
 
+<<<<<<< HEAD
 static int
 nfulnl_recv_config(struct sock *ctnl, struct sk_buff *skb,
 		   const struct nlmsghdr *nlh,
 		   const struct nlattr * const nfula[])
+=======
+static int nfulnl_recv_config(struct net *net, struct sock *ctnl,
+			      struct sk_buff *skb, const struct nlmsghdr *nlh,
+			      const struct nlattr * const nfula[])
+>>>>>>> v4.9.227
 {
 	struct nfgenmsg *nfmsg = nlmsg_data(nlh);
 	u_int16_t group_num = ntohs(nfmsg->res_id);
 	struct nfulnl_instance *inst;
 	struct nfulnl_msg_config_cmd *cmd = NULL;
+<<<<<<< HEAD
 	struct net *net = sock_net(ctnl);
 	struct nfnl_log_net *log = nfnl_log_pernet(net);
 	int ret = 0;
+=======
+	struct nfnl_log_net *log = nfnl_log_pernet(net);
+	int ret = 0;
+	u16 flags = 0;
+>>>>>>> v4.9.227
 
 	if (nfula[NFULA_CFG_CMD]) {
 		u_int8_t pf = nfmsg->nfgen_family;
@@ -821,6 +988,31 @@ nfulnl_recv_config(struct sock *ctnl, struct sk_buff *skb,
 		goto out_put;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Check if we support these flags in first place, dependencies should
+	 * be there too not to break atomicity.
+	 */
+	if (nfula[NFULA_CFG_FLAGS]) {
+		flags = ntohs(nla_get_be16(nfula[NFULA_CFG_FLAGS]));
+
+		if ((flags & NFULNL_CFG_F_CONNTRACK) &&
+		    !rcu_access_pointer(nfnl_ct_hook)) {
+#ifdef CONFIG_MODULES
+			nfnl_unlock(NFNL_SUBSYS_ULOG);
+			request_module("ip_conntrack_netlink");
+			nfnl_lock(NFNL_SUBSYS_ULOG);
+			if (rcu_access_pointer(nfnl_ct_hook)) {
+				ret = -EAGAIN;
+				goto out_put;
+			}
+#endif
+			ret = -EOPNOTSUPP;
+			goto out_put;
+		}
+	}
+
+>>>>>>> v4.9.227
 	if (cmd != NULL) {
 		switch (cmd->command) {
 		case NFULNL_CFG_CMD_BIND:
@@ -847,6 +1039,7 @@ nfulnl_recv_config(struct sock *ctnl, struct sk_buff *skb,
 			goto out_put;
 		default:
 			ret = -ENOTSUPP;
+<<<<<<< HEAD
 			break;
 		}
 	}
@@ -859,6 +1052,19 @@ nfulnl_recv_config(struct sock *ctnl, struct sk_buff *skb,
 			ret = -ENODEV;
 			goto out;
 		}
+=======
+			goto out_put;
+		}
+	} else if (!inst) {
+		ret = -ENODEV;
+		goto out;
+	}
+
+	if (nfula[NFULA_CFG_MODE]) {
+		struct nfulnl_msg_config_mode *params =
+			nla_data(nfula[NFULA_CFG_MODE]);
+
+>>>>>>> v4.9.227
 		nfulnl_set_mode(inst, params->copy_mode,
 				ntohl(params->copy_range));
 	}
@@ -866,26 +1072,33 @@ nfulnl_recv_config(struct sock *ctnl, struct sk_buff *skb,
 	if (nfula[NFULA_CFG_TIMEOUT]) {
 		__be32 timeout = nla_get_be32(nfula[NFULA_CFG_TIMEOUT]);
 
+<<<<<<< HEAD
 		if (!inst) {
 			ret = -ENODEV;
 			goto out;
 		}
+=======
+>>>>>>> v4.9.227
 		nfulnl_set_timeout(inst, ntohl(timeout));
 	}
 
 	if (nfula[NFULA_CFG_NLBUFSIZ]) {
 		__be32 nlbufsiz = nla_get_be32(nfula[NFULA_CFG_NLBUFSIZ]);
 
+<<<<<<< HEAD
 		if (!inst) {
 			ret = -ENODEV;
 			goto out;
 		}
+=======
+>>>>>>> v4.9.227
 		nfulnl_set_nlbufsiz(inst, ntohl(nlbufsiz));
 	}
 
 	if (nfula[NFULA_CFG_QTHRESH]) {
 		__be32 qthresh = nla_get_be32(nfula[NFULA_CFG_QTHRESH]);
 
+<<<<<<< HEAD
 		if (!inst) {
 			ret = -ENODEV;
 			goto out;
@@ -902,6 +1115,13 @@ nfulnl_recv_config(struct sock *ctnl, struct sk_buff *skb,
 		}
 		nfulnl_set_flags(inst, ntohs(flags));
 	}
+=======
+		nfulnl_set_qthresh(inst, ntohl(qthresh));
+	}
+
+	if (nfula[NFULA_CFG_FLAGS])
+		nfulnl_set_flags(inst, flags);
+>>>>>>> v4.9.227
 
 out_put:
 	instance_put(inst);
@@ -1000,11 +1220,21 @@ static int seq_show(struct seq_file *s, void *v)
 {
 	const struct nfulnl_instance *inst = v;
 
+<<<<<<< HEAD
 	return seq_printf(s, "%5d %6d %5d %1d %5d %6d %2d\n",
 			  inst->group_num,
 			  inst->peer_portid, inst->qlen,
 			  inst->copy_mode, inst->copy_range,
 			  inst->flushtimeout, atomic_read(&inst->use));
+=======
+	seq_printf(s, "%5u %6u %5u %1u %5u %6u %2u\n",
+		   inst->group_num,
+		   inst->peer_portid, inst->qlen,
+		   inst->copy_mode, inst->copy_range,
+		   inst->flushtimeout, atomic_read(&inst->use));
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static const struct seq_operations nful_seq_ops = {
@@ -1034,15 +1264,35 @@ static int __net_init nfnl_log_net_init(struct net *net)
 {
 	unsigned int i;
 	struct nfnl_log_net *log = nfnl_log_pernet(net);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PROC_FS
+	struct proc_dir_entry *proc;
+	kuid_t root_uid;
+	kgid_t root_gid;
+#endif
+>>>>>>> v4.9.227
 
 	for (i = 0; i < INSTANCE_BUCKETS; i++)
 		INIT_HLIST_HEAD(&log->instance_table[i]);
 	spin_lock_init(&log->instances_lock);
 
 #ifdef CONFIG_PROC_FS
+<<<<<<< HEAD
 	if (!proc_create("nfnetlink_log", 0440,
 			 net->nf.proc_netfilter, &nful_file_ops))
 		return -ENOMEM;
+=======
+	proc = proc_create("nfnetlink_log", 0440,
+			   net->nf.proc_netfilter, &nful_file_ops);
+	if (!proc)
+		return -ENOMEM;
+
+	root_uid = make_kuid(net->user_ns, 0);
+	root_gid = make_kgid(net->user_ns, 0);
+	if (uid_valid(root_uid) && gid_valid(root_gid))
+		proc_set_user(proc, root_uid, root_gid);
+>>>>>>> v4.9.227
 #endif
 	return 0;
 }
@@ -1064,17 +1314,32 @@ static struct pernet_operations nfnl_log_net_ops = {
 
 static int __init nfnetlink_log_init(void)
 {
+<<<<<<< HEAD
 	int status = -ENOMEM;
+=======
+	int status;
+
+	status = register_pernet_subsys(&nfnl_log_net_ops);
+	if (status < 0) {
+		pr_err("failed to register pernet ops\n");
+		goto out;
+	}
+>>>>>>> v4.9.227
 
 	netlink_register_notifier(&nfulnl_rtnl_notifier);
 	status = nfnetlink_subsys_register(&nfulnl_subsys);
 	if (status < 0) {
+<<<<<<< HEAD
 		pr_err("log: failed to create netlink socket\n");
+=======
+		pr_err("failed to create netlink socket\n");
+>>>>>>> v4.9.227
 		goto cleanup_netlink_notifier;
 	}
 
 	status = nf_log_register(NFPROTO_UNSPEC, &nfulnl_logger);
 	if (status < 0) {
+<<<<<<< HEAD
 		pr_err("log: failed to register logger\n");
 		goto cleanup_subsys;
 	}
@@ -1088,19 +1353,39 @@ static int __init nfnetlink_log_init(void)
 
 cleanup_logger:
 	nf_log_unregister(&nfulnl_logger);
+=======
+		pr_err("failed to register logger\n");
+		goto cleanup_subsys;
+	}
+
+	return status;
+
+>>>>>>> v4.9.227
 cleanup_subsys:
 	nfnetlink_subsys_unregister(&nfulnl_subsys);
 cleanup_netlink_notifier:
 	netlink_unregister_notifier(&nfulnl_rtnl_notifier);
+<<<<<<< HEAD
+=======
+	unregister_pernet_subsys(&nfnl_log_net_ops);
+out:
+>>>>>>> v4.9.227
 	return status;
 }
 
 static void __exit nfnetlink_log_fini(void)
 {
+<<<<<<< HEAD
 	unregister_pernet_subsys(&nfnl_log_net_ops);
 	nf_log_unregister(&nfulnl_logger);
 	nfnetlink_subsys_unregister(&nfulnl_subsys);
 	netlink_unregister_notifier(&nfulnl_rtnl_notifier);
+=======
+	nf_log_unregister(&nfulnl_logger);
+	nfnetlink_subsys_unregister(&nfulnl_subsys);
+	netlink_unregister_notifier(&nfulnl_rtnl_notifier);
+	unregister_pernet_subsys(&nfnl_log_net_ops);
+>>>>>>> v4.9.227
 }
 
 MODULE_DESCRIPTION("netfilter userspace logging");
@@ -1110,6 +1395,10 @@ MODULE_ALIAS_NFNL_SUBSYS(NFNL_SUBSYS_ULOG);
 MODULE_ALIAS_NF_LOGGER(AF_INET, 1);
 MODULE_ALIAS_NF_LOGGER(AF_INET6, 1);
 MODULE_ALIAS_NF_LOGGER(AF_BRIDGE, 1);
+<<<<<<< HEAD
+=======
+MODULE_ALIAS_NF_LOGGER(3, 1); /* NFPROTO_ARP */
+>>>>>>> v4.9.227
 
 module_init(nfnetlink_log_init);
 module_exit(nfnetlink_log_fini);

@@ -60,4 +60,8 @@ Introduction
   Document Author
   ---------------
 
+<<<<<<< HEAD
   Viresh Kumar <viresh.linux@gmail.com>, (c) 2010-2012 ST Microelectronics
+=======
+  Viresh Kumar <vireshk@kernel.org>, (c) 2010-2012 ST Microelectronics
+>>>>>>> v4.9.227

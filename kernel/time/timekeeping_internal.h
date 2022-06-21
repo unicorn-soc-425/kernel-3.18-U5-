@@ -17,7 +17,15 @@ static inline cycle_t clocksource_delta(cycle_t now, cycle_t last, cycle_t mask)
 {
 	cycle_t ret = (now - last) & mask;
 
+<<<<<<< HEAD
 	return (s64) ret > 0 ? ret : 0;
+=======
+	/*
+	 * Prevent time going backwards by checking the MSB of mask in
+	 * the result. If set, return 0.
+	 */
+	return ret & ~(mask >> 1) ? 0 : ret;
+>>>>>>> v4.9.227
 }
 #else
 static inline cycle_t clocksource_delta(cycle_t now, cycle_t last, cycle_t mask)
@@ -26,4 +34,9 @@ static inline cycle_t clocksource_delta(cycle_t now, cycle_t last, cycle_t mask)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+extern time64_t __ktime_get_real_seconds(void);
+
+>>>>>>> v4.9.227
 #endif /* _TIMEKEEPING_INTERNAL_H */

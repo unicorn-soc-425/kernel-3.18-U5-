@@ -15,11 +15,19 @@ virtual org
 virtual report
 
 @depends on patch@
+<<<<<<< HEAD
 expression from,to,size,flag;
 identifier l1,l2;
 @@
 
 -  to = \(kmalloc\|kzalloc\)(size,flag);
+=======
+expression from,to,size;
+identifier l1,l2;
+@@
+
+-  to = \(kmalloc\|kzalloc\)(size,GFP_KERNEL);
+>>>>>>> v4.9.227
 +  to = memdup_user(from,size);
    if (
 -      to==NULL
@@ -37,12 +45,20 @@ identifier l1,l2;
 -  }
 
 @r depends on !patch@
+<<<<<<< HEAD
 expression from,to,size,flag;
+=======
+expression from,to,size;
+>>>>>>> v4.9.227
 position p;
 statement S1,S2;
 @@
 
+<<<<<<< HEAD
 *  to = \(kmalloc@p\|kzalloc@p\)(size,flag);
+=======
+*  to = \(kmalloc@p\|kzalloc@p\)(size,GFP_KERNEL);
+>>>>>>> v4.9.227
    if (to==NULL || ...) S1
    if (copy_from_user(to, from, size) != 0)
    S2

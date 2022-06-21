@@ -15,8 +15,11 @@
 #include <linux/dmaengine.h>
 #include <linux/of.h>
 
+<<<<<<< HEAD
 #include <mach/dma.h>
 
+=======
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/soc.h>
 #include <sound/pxa2xx-lib.h>
@@ -27,11 +30,16 @@
 static int pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params)
 {
+<<<<<<< HEAD
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct pxa2xx_runtime_data *prtd = runtime->private_data;
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_dmaengine_dai_dma_data *dma;
 	int ret;
+=======
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_dmaengine_dai_dma_data *dma;
+>>>>>>> v4.9.227
 
 	dma = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
 
@@ -40,6 +48,7 @@ static int pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (!dma)
 		return 0;
 
+<<<<<<< HEAD
 	/* this may get called several times by oss emulation
 	 * with different params */
 	if (prtd->params == NULL) {
@@ -59,11 +68,14 @@ static int pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
 		prtd->dma_ch = ret;
 	}
 
+=======
+>>>>>>> v4.9.227
 	return __pxa2xx_pcm_hw_params(substream, params);
 }
 
 static int pxa2xx_pcm_hw_free(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	struct pxa2xx_runtime_data *prtd = substream->runtime->private_data;
 
 	__pxa2xx_pcm_hw_free(substream);
@@ -74,6 +86,10 @@ static int pxa2xx_pcm_hw_free(struct snd_pcm_substream *substream)
 		prtd->params = NULL;
 	}
 
+=======
+	__pxa2xx_pcm_hw_free(substream);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -124,6 +140,7 @@ static struct snd_soc_platform_driver pxa2xx_soc_platform = {
 
 static int pxa2xx_soc_platform_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_platform(&pdev->dev, &pxa2xx_soc_platform);
 }
 
@@ -131,6 +148,9 @@ static int pxa2xx_soc_platform_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_platform(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_platform(&pdev->dev, &pxa2xx_soc_platform);
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_OF
@@ -138,17 +158,27 @@ static const struct of_device_id snd_soc_pxa_audio_match[] = {
 	{ .compatible   = "mrvl,pxa-pcm-audio" },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, snd_soc_pxa_audio_match);
+>>>>>>> v4.9.227
 #endif
 
 static struct platform_driver pxa_pcm_driver = {
 	.driver = {
 		.name = "pxa-pcm-audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(snd_soc_pxa_audio_match),
 	},
 
 	.probe = pxa2xx_soc_platform_probe,
+<<<<<<< HEAD
 	.remove = pxa2xx_soc_platform_remove,
+=======
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(pxa_pcm_driver);
@@ -156,3 +186,7 @@ module_platform_driver(pxa_pcm_driver);
 MODULE_AUTHOR("Nicolas Pitre");
 MODULE_DESCRIPTION("Intel PXA2xx PCM DMA module");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:pxa-pcm-audio");
+>>>>>>> v4.9.227

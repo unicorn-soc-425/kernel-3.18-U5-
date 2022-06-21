@@ -394,4 +394,18 @@ error_alloc_state:
  * This macro is used by architecture-specific files to decompress
  * the kernel image.
  */
+<<<<<<< HEAD
 #define decompress unxz
+=======
+#ifdef XZ_PREBOOT
+STATIC int INIT __decompress(unsigned char *buf, long len,
+			   long (*fill)(void*, unsigned long),
+			   long (*flush)(void*, unsigned long),
+			   unsigned char *out_buf, long olen,
+			   long *pos,
+			   void (*error)(char *x))
+{
+	return unxz(buf, len, fill, flush, out_buf, pos, error);
+}
+#endif
+>>>>>>> v4.9.227

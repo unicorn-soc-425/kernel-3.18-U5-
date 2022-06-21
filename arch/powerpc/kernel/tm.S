@@ -108,6 +108,10 @@ _GLOBAL(tm_reclaim)
 	/* We've a struct pt_regs at [r1+STACK_FRAME_OVERHEAD]. */
 
 	std	r3, STK_PARAM(R3)(r1)
+<<<<<<< HEAD
+=======
+	std	r4, STK_PARAM(R4)(r1)
+>>>>>>> v4.9.227
 	SAVE_NVGPRS(r1)
 
 	/* We need to setup MSR for VSX register save instructions. */
@@ -126,6 +130,7 @@ _GLOBAL(tm_reclaim)
 	mtmsrd	r15
 	std	r14, TM_FRAME_L0(r1)
 
+<<<<<<< HEAD
 	/* Stash the stack pointer away for use after reclaim */
 	std	r1, PACAR1(r13)
 
@@ -163,6 +168,8 @@ dont_backup_vec:
 	stfd    fr0,FPSTATE_FPSCR(r7)
 
 dont_backup_fp:
+=======
+>>>>>>> v4.9.227
 	/* Do sanity check on MSR to make sure we are suspended */
 	li	r7, (MSR_TS_S)@higher
 	srdi	r6, r14, 32
@@ -170,6 +177,12 @@ dont_backup_fp:
 1:	tdeqi   r6, 0
 	EMIT_BUG_ENTRY 1b,__FILE__,__LINE__,0
 
+<<<<<<< HEAD
+=======
+	/* Stash the stack pointer away for use after reclaim */
+	std	r1, PACAR1(r13)
+
+>>>>>>> v4.9.227
 	/* Clear MSR RI since we are about to change r1, EE is already off. */
 	li	r4, 0
 	mtmsrd	r4, 1
@@ -199,13 +212,36 @@ dont_backup_fp:
 	std	r1, PACATMSCRATCH(r13)
 	ld	r1, PACAR1(r13)
 
+<<<<<<< HEAD
 	/* Store the PPR in r11 and reset to decent value */
 	std	r11, GPR11(r1)			/* Temporary stash */
 
+=======
+	std	r11, GPR11(r1)			/* Temporary stash */
+
+	/*
+	 * Move the saved user r1 to the kernel stack in case PACATMSCRATCH is
+	 * clobbered by an exception once we turn on MSR_RI below.
+	 */
+	ld	r11, PACATMSCRATCH(r13)
+	std	r11, GPR1(r1)
+
+	/*
+	 * Store r13 away so we can free up the scratch SPR for the SLB fault
+	 * handler (needed once we start accessing the thread_struct).
+	 */
+	GET_SCRATCH0(r11)
+	std	r11, GPR13(r1)
+
+>>>>>>> v4.9.227
 	/* Reset MSR RI so we can take SLB faults again */
 	li	r11, MSR_RI
 	mtmsrd	r11, 1
 
+<<<<<<< HEAD
+=======
+	/* Store the PPR in r11 and reset to decent value */
+>>>>>>> v4.9.227
 	mfspr	r11, SPRN_PPR
 	HMT_MEDIUM
 
@@ -230,11 +266,19 @@ dont_backup_fp:
 	SAVE_GPR(8, r7)				/* user r8 */
 	SAVE_GPR(9, r7)				/* user r9 */
 	SAVE_GPR(10, r7)			/* user r10 */
+<<<<<<< HEAD
 	ld	r3, PACATMSCRATCH(r13)		/* user r1 */
 	ld	r4, GPR7(r1)			/* user r7 */
 	ld	r5, GPR11(r1)			/* user r11 */
 	ld	r6, GPR12(r1)			/* user r12 */
 	GET_SCRATCH0(8)				/* user r13 */
+=======
+	ld	r3, GPR1(r1)			/* user r1 */
+	ld	r4, GPR7(r1)			/* user r7 */
+	ld	r5, GPR11(r1)			/* user r11 */
+	ld	r6, GPR12(r1)			/* user r12 */
+	ld	r8, GPR13(r1)			/* user r13 */
+>>>>>>> v4.9.227
 	std	r3, GPR1(r7)
 	std	r4, GPR7(r7)
 	std	r5, GPR11(r7)
@@ -273,6 +317,46 @@ dont_backup_fp:
 	 * MSR.
 	 */
 
+<<<<<<< HEAD
+=======
+
+	/* ******************** FPR/VR/VSRs ************
+	 * After reclaiming, capture the checkpointed FPRs/VRs /if used/.
+	 *
+	 * (If VSX used, FP and VMX are implied.  Or, we don't need to look
+	 * at MSR.VSX as copying FP regs if .FP, vector regs if .VMX covers it.)
+	 *
+	 * We're passed the thread's MSR as the second parameter
+	 *
+	 * We enabled VEC/FP/VSX in the msr above, so we can execute these
+	 * instructions!
+	 */
+	ld	r4, STK_PARAM(R4)(r1)		/* Second parameter, MSR * */
+	mr	r3, r12
+	andis.		r0, r4, MSR_VEC@h
+	beq	dont_backup_vec
+
+	addi	r7, r3, THREAD_CKVRSTATE
+	SAVE_32VRS(0, r6, r7)	/* r6 scratch, r7 transact vr state */
+	mfvscr	v0
+	li	r6, VRSTATE_VSCR
+	stvx	v0, r7, r6
+dont_backup_vec:
+	mfspr	r0, SPRN_VRSAVE
+	std	r0, THREAD_CKVRSAVE(r3)
+
+	andi.	r0, r4, MSR_FP
+	beq	dont_backup_fp
+
+	addi	r7, r3, THREAD_CKFPSTATE
+	SAVE_32FPRS_VSRS(0, R6, R7)	/* r6 scratch, r7 transact fp state */
+
+	mffs    fr0
+	stfd    fr0,FPSTATE_FPSCR(r7)
+
+dont_backup_fp:
+
+>>>>>>> v4.9.227
 	/* TM regs, incl TEXASR -- these live in thread_struct.  Note they've
 	 * been updated by the treclaim, to explain to userland the failure
 	 * cause (aborted).
@@ -288,6 +372,10 @@ dont_backup_fp:
 
 	/* Restore original MSR/IRQ state & clear TM mode */
 	ld	r14, TM_FRAME_L0(r1)		/* Orig MSR */
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	li	r15, 0
 	rldimi  r14, r15, MSR_TS_LG, (63-MSR_TS_LG)-1
 	mtmsrd  r14
@@ -302,7 +390,11 @@ dont_backup_fp:
 	ld	r2, STK_GOT(r1)
 
 	/* Load CPU's default DSCR */
+<<<<<<< HEAD
 	ld	r0, PACA_DSCR(r13)
+=======
+	ld	r0, PACA_DSCR_DEFAULT(r13)
+>>>>>>> v4.9.227
 	mtspr	SPRN_DSCR, r0
 
 	blr
@@ -356,14 +448,23 @@ _GLOBAL(__tm_recheckpoint)
 	mtmsr	r5
 
 #ifdef CONFIG_ALTIVEC
+<<<<<<< HEAD
 	/* FP and VEC registers:  These are recheckpointed from thread.fpr[]
 	 * and thread.vr[] respectively.  The thread.transact_fpr[] version
 	 * is more modern, and will be loaded subsequently by any FPUnavailable
 	 * trap.
+=======
+	/*
+	 * FP and VEC registers: These are recheckpointed from
+	 * thread.ckfp_state and thread.ckvr_state respectively. The
+	 * thread.fp_state[] version holds the 'live' (transactional)
+	 * and will be loaded subsequently by any FPUnavailable trap.
+>>>>>>> v4.9.227
 	 */
 	andis.	r0, r4, MSR_VEC@h
 	beq	dont_restore_vec
 
+<<<<<<< HEAD
 	addi	r8, r3, THREAD_VRSTATE
 	li	r5, VRSTATE_VSCR
 	lvx	vr0, r8, r5
@@ -371,13 +472,26 @@ _GLOBAL(__tm_recheckpoint)
 	REST_32VRS(0, r5, r8)			/* r5 scratch, r8 ptr */
 dont_restore_vec:
 	ld	r5, THREAD_VRSAVE(r3)
+=======
+	addi	r8, r3, THREAD_CKVRSTATE
+	li	r5, VRSTATE_VSCR
+	lvx	v0, r8, r5
+	mtvscr	v0
+	REST_32VRS(0, r5, r8)			/* r5 scratch, r8 ptr */
+dont_restore_vec:
+	ld	r5, THREAD_CKVRSAVE(r3)
+>>>>>>> v4.9.227
 	mtspr	SPRN_VRSAVE, r5
 #endif
 
 	andi.	r0, r4, MSR_FP
 	beq	dont_restore_fp
 
+<<<<<<< HEAD
 	addi	r8, r3, THREAD_FPSTATE
+=======
+	addi	r8, r3, THREAD_CKFPSTATE
+>>>>>>> v4.9.227
 	lfd	fr0, FPSTATE_FPSCR(r8)
 	MTFSF_L(fr0)
 	REST_32FPRS_VSRS(0, R4, R8)
@@ -499,7 +613,11 @@ restore_gprs:
 	ld	r2, STK_GOT(r1)
 
 	/* Load CPU's default DSCR */
+<<<<<<< HEAD
 	ld	r0, PACA_DSCR(r13)
+=======
+	ld	r0, PACA_DSCR_DEFAULT(r13)
+>>>>>>> v4.9.227
 	mtspr	SPRN_DSCR, r0
 
 	blr

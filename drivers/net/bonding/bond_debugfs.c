@@ -3,8 +3,13 @@
 #include <linux/device.h>
 #include <linux/netdevice.h>
 
+<<<<<<< HEAD
 #include "bonding.h"
 #include "bond_alb.h"
+=======
+#include <net/bonding.h>
+#include <net/bond_alb.h>
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_DEBUG_FS) && !defined(CONFIG_NET_NS)
 

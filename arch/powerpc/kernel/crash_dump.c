@@ -12,7 +12,10 @@
 #undef DEBUG
 
 #include <linux/crash_dump.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/io.h>
 #include <linux/memblock.h>
 #include <asm/code-patching.h>

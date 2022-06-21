@@ -57,7 +57,11 @@ static int open_file_read(struct perf_data_file *file)
 		int err = errno;
 
 		pr_err("failed to open %s: %s", file->path,
+<<<<<<< HEAD
 			strerror_r(err, sbuf, sizeof(sbuf)));
+=======
+			str_error_r(err, sbuf, sizeof(sbuf)));
+>>>>>>> v4.9.227
 		if (err == ENOENT && !strcmp(file->path, "perf.data"))
 			pr_err("  (try 'perf record' first)");
 		pr_err("\n");
@@ -99,7 +103,11 @@ static int open_file_write(struct perf_data_file *file)
 
 	if (fd < 0)
 		pr_err("failed to open %s : %s\n", file->path,
+<<<<<<< HEAD
 			strerror_r(errno, sbuf, sizeof(sbuf)));
+=======
+			str_error_r(errno, sbuf, sizeof(sbuf)));
+>>>>>>> v4.9.227
 
 	return fd;
 }
@@ -136,3 +144,47 @@ ssize_t perf_data_file__write(struct perf_data_file *file,
 {
 	return writen(file->fd, buf, size);
 }
+<<<<<<< HEAD
+=======
+
+int perf_data_file__switch(struct perf_data_file *file,
+			   const char *postfix,
+			   size_t pos, bool at_exit)
+{
+	char *new_filepath;
+	int ret;
+
+	if (check_pipe(file))
+		return -EINVAL;
+	if (perf_data_file__is_read(file))
+		return -EINVAL;
+
+	if (asprintf(&new_filepath, "%s.%s", file->path, postfix) < 0)
+		return -ENOMEM;
+
+	/*
+	 * Only fire a warning, don't return error, continue fill
+	 * original file.
+	 */
+	if (rename(file->path, new_filepath))
+		pr_warning("Failed to rename %s to %s\n", file->path, new_filepath);
+
+	if (!at_exit) {
+		close(file->fd);
+		ret = perf_data_file__open(file);
+		if (ret < 0)
+			goto out;
+
+		if (lseek(file->fd, pos, SEEK_SET) == (off_t)-1) {
+			ret = -errno;
+			pr_debug("Failed to lseek to %zu: %s",
+				 pos, strerror(errno));
+			goto out;
+		}
+	}
+	ret = file->fd;
+out:
+	free(new_filepath);
+	return ret;
+}
+>>>>>>> v4.9.227

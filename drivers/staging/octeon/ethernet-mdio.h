@@ -1,14 +1,20 @@
+<<<<<<< HEAD
 /*********************************************************************
  * Author: Cavium Networks
  *
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
+=======
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+>>>>>>> v4.9.227
  *
  * Copyright (c) 2003-2007 Cavium Networks
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This file is distributed in the hope that it will be useful, but
  * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
@@ -24,6 +30,10 @@
  * This file may also be available under a different license from Cavium.
  * Contact Cavium Networks for more information
 *********************************************************************/
+=======
+ */
+
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -40,5 +50,11 @@
 #endif /* CONFIG_XFRM */
 
 extern const struct ethtool_ops cvm_oct_ethtool_ops;
+<<<<<<< HEAD
+=======
+
+void octeon_mdiobus_force_mod_depencency(void);
+
+>>>>>>> v4.9.227
 int cvm_oct_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 int cvm_oct_phy_setup_device(struct net_device *dev);

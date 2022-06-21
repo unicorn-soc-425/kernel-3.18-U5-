@@ -20,8 +20,14 @@
 #ifndef __SMS_CARDS_H__
 #define __SMS_CARDS_H__
 
+<<<<<<< HEAD
 #include <linux/usb.h>
 #include "smscoreapi.h"
+=======
+#include "smscoreapi.h"
+
+#include <linux/usb.h>
+>>>>>>> v4.9.227
 #include "smsir.h"
 
 #define SMS_BOARD_UNKNOWN 0

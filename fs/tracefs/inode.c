@@ -84,9 +84,15 @@ static int tracefs_syscall_mkdir(struct inode *inode, struct dentry *dentry, umo
 	 * the files within the tracefs system. It is up to the individual
 	 * mkdir routine to handle races.
 	 */
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
 	ret = tracefs_ops.mkdir(name);
 	mutex_lock(&inode->i_mutex);
+=======
+	inode_unlock(inode);
+	ret = tracefs_ops.mkdir(name);
+	inode_lock(inode);
+>>>>>>> v4.9.227
 
 	kfree(name);
 
@@ -109,6 +115,7 @@ static int tracefs_syscall_rmdir(struct inode *inode, struct dentry *dentry)
 	 * This time we need to unlock not only the parent (inode) but
 	 * also the directory that is being deleted.
 	 */
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
 	mutex_unlock(&dentry->d_inode->i_mutex);
 
@@ -116,6 +123,15 @@ static int tracefs_syscall_rmdir(struct inode *inode, struct dentry *dentry)
 
 	mutex_lock_nested(&inode->i_mutex, I_MUTEX_PARENT);
 	mutex_lock(&dentry->d_inode->i_mutex);
+=======
+	inode_unlock(inode);
+	inode_unlock(dentry->d_inode);
+
+	ret = tracefs_ops.rmdir(name);
+
+	inode_lock_nested(inode, I_MUTEX_PARENT);
+	inode_lock(dentry->d_inode);
+>>>>>>> v4.9.227
 
 	kfree(name);
 
@@ -133,7 +149,11 @@ static struct inode *tracefs_get_inode(struct super_block *sb)
 	struct inode *inode = new_inode(sb);
 	if (inode) {
 		inode->i_ino = get_next_ino();
+<<<<<<< HEAD
 		inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+		inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 	}
 	return inode;
 }
@@ -334,7 +354,11 @@ static struct dentry *start_creating(const char *name, struct dentry *parent)
 	if (!parent)
 		parent = tracefs_mount->mnt_root;
 
+<<<<<<< HEAD
 	mutex_lock(&parent->d_inode->i_mutex);
+=======
+	inode_lock(parent->d_inode);
+>>>>>>> v4.9.227
 	dentry = lookup_one_len(name, parent, strlen(name));
 	if (!IS_ERR(dentry) && dentry->d_inode) {
 		dput(dentry);
@@ -342,7 +366,11 @@ static struct dentry *start_creating(const char *name, struct dentry *parent)
 	}
 
 	if (IS_ERR(dentry)) {
+<<<<<<< HEAD
 		mutex_unlock(&parent->d_inode->i_mutex);
+=======
+		inode_unlock(parent->d_inode);
+>>>>>>> v4.9.227
 		simple_release_fs(&tracefs_mount, &tracefs_mount_count);
 	}
 
@@ -351,7 +379,11 @@ static struct dentry *start_creating(const char *name, struct dentry *parent)
 
 static struct dentry *failed_creating(struct dentry *dentry)
 {
+<<<<<<< HEAD
 	mutex_unlock(&dentry->d_parent->d_inode->i_mutex);
+=======
+	inode_unlock(dentry->d_parent->d_inode);
+>>>>>>> v4.9.227
 	dput(dentry);
 	simple_release_fs(&tracefs_mount, &tracefs_mount_count);
 	return NULL;
@@ -359,7 +391,11 @@ static struct dentry *failed_creating(struct dentry *dentry)
 
 static struct dentry *end_creating(struct dentry *dentry)
 {
+<<<<<<< HEAD
 	mutex_unlock(&dentry->d_parent->d_inode->i_mutex);
+=======
+	inode_unlock(dentry->d_parent->d_inode);
+>>>>>>> v4.9.227
 	return dentry;
 }
 
@@ -500,16 +536,23 @@ struct dentry *tracefs_create_instance_dir(const char *name, struct dentry *pare
 	return dentry;
 }
 
+<<<<<<< HEAD
 static inline int tracefs_positive(struct dentry *dentry)
 {
 	return dentry->d_inode && !d_unhashed(dentry);
 }
 
+=======
+>>>>>>> v4.9.227
 static int __tracefs_remove(struct dentry *dentry, struct dentry *parent)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (tracefs_positive(dentry)) {
+=======
+	if (simple_positive(dentry)) {
+>>>>>>> v4.9.227
 		if (dentry->d_inode) {
 			dget(dentry);
 			switch (dentry->d_inode->i_mode & S_IFMT) {
@@ -546,12 +589,18 @@ void tracefs_remove(struct dentry *dentry)
 		return;
 
 	parent = dentry->d_parent;
+<<<<<<< HEAD
 	if (!parent || !parent->d_inode)
 		return;
 
 	mutex_lock(&parent->d_inode->i_mutex);
 	ret = __tracefs_remove(dentry, parent);
 	mutex_unlock(&parent->d_inode->i_mutex);
+=======
+	inode_lock(parent->d_inode);
+	ret = __tracefs_remove(dentry, parent);
+	inode_unlock(parent->d_inode);
+>>>>>>> v4.9.227
 	if (!ret)
 		simple_release_fs(&tracefs_mount, &tracefs_mount_count);
 }
@@ -571,6 +620,7 @@ void tracefs_remove_recursive(struct dentry *dentry)
 	if (IS_ERR_OR_NULL(dentry))
 		return;
 
+<<<<<<< HEAD
 	parent = dentry->d_parent;
 	if (!parent || !parent->d_inode)
 		return;
@@ -578,6 +628,11 @@ void tracefs_remove_recursive(struct dentry *dentry)
 	parent = dentry;
  down:
 	mutex_lock(&parent->d_inode->i_mutex);
+=======
+	parent = dentry;
+ down:
+	inode_lock(parent->d_inode);
+>>>>>>> v4.9.227
  loop:
 	/*
 	 * The parent->d_subdirs is protected by the d_lock. Outside that
@@ -586,13 +641,21 @@ void tracefs_remove_recursive(struct dentry *dentry)
 	 */
 	spin_lock(&parent->d_lock);
 	list_for_each_entry(child, &parent->d_subdirs, d_child) {
+<<<<<<< HEAD
 		if (!tracefs_positive(child))
+=======
+		if (!simple_positive(child))
+>>>>>>> v4.9.227
 			continue;
 
 		/* perhaps simple_empty(child) makes more sense */
 		if (!list_empty(&child->d_subdirs)) {
 			spin_unlock(&parent->d_lock);
+<<<<<<< HEAD
 			mutex_unlock(&parent->d_inode->i_mutex);
+=======
+			inode_unlock(parent->d_inode);
+>>>>>>> v4.9.227
 			parent = child;
 			goto down;
 		}
@@ -607,16 +670,27 @@ void tracefs_remove_recursive(struct dentry *dentry)
 		 * from d_subdirs. When releasing the parent->d_lock we can
 		 * no longer trust that the next pointer is valid.
 		 * Restart the loop. We'll skip this one with the
+<<<<<<< HEAD
 		 * tracefs_positive() check.
+=======
+		 * simple_positive() check.
+>>>>>>> v4.9.227
 		 */
 		goto loop;
 	}
 	spin_unlock(&parent->d_lock);
 
+<<<<<<< HEAD
 	mutex_unlock(&parent->d_inode->i_mutex);
 	child = parent;
 	parent = parent->d_parent;
 	mutex_lock(&parent->d_inode->i_mutex);
+=======
+	inode_unlock(parent->d_inode);
+	child = parent;
+	parent = parent->d_parent;
+	inode_lock(parent->d_inode);
+>>>>>>> v4.9.227
 
 	if (child != dentry)
 		/* go up */
@@ -624,7 +698,11 @@ void tracefs_remove_recursive(struct dentry *dentry)
 
 	if (!__tracefs_remove(child, parent))
 		simple_release_fs(&tracefs_mount, &tracefs_mount_count);
+<<<<<<< HEAD
 	mutex_unlock(&parent->d_inode->i_mutex);
+=======
+	inode_unlock(parent->d_inode);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -635,14 +713,22 @@ bool tracefs_initialized(void)
 	return tracefs_registered;
 }
 
+<<<<<<< HEAD
 static struct kobject *trace_kobj;
 
+=======
+>>>>>>> v4.9.227
 static int __init tracefs_init(void)
 {
 	int retval;
 
+<<<<<<< HEAD
 	trace_kobj = kobject_create_and_add("tracing", kernel_kobj);
 	if (!trace_kobj)
+=======
+	retval = sysfs_create_mount_point(kernel_kobj, "tracing");
+	if (retval)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	retval = register_filesystem(&trace_fs_type);

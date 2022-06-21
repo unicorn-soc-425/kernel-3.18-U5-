@@ -1,6 +1,7 @@
 #ifndef __ASM_SH73A0_H__
 #define __ASM_SH73A0_H__
 
+<<<<<<< HEAD
 /* DMA slave IDs */
 enum {
 	SHDMA_SLAVE_INVALID,
@@ -87,5 +88,8 @@ extern struct clk sh73a0_extal2_clk;
 extern struct clk sh73a0_extcki_clk;
 extern struct clk sh73a0_extalr_clk;
 extern struct smp_operations sh73a0_smp_ops;
+=======
+extern const struct smp_operations sh73a0_smp_ops;
+>>>>>>> v4.9.227
 
 #endif /* __ASM_SH73A0_H__ */

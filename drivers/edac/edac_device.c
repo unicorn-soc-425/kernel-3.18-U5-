@@ -390,11 +390,17 @@ static void edac_device_workq_function(struct work_struct *work_req)
 	 * between integral seconds
 	 */
 	if (edac_dev->poll_msec == 1000)
+<<<<<<< HEAD
 		queue_delayed_work(edac_workqueue, &edac_dev->work,
 				round_jiffies_relative(edac_dev->delay));
 	else
 		queue_delayed_work(edac_workqueue, &edac_dev->work,
 				edac_dev->delay);
+=======
+		edac_queue_work(&edac_dev->work, round_jiffies_relative(edac_dev->delay));
+	else
+		edac_queue_work(&edac_dev->work, edac_dev->delay);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -402,8 +408,13 @@ static void edac_device_workq_function(struct work_struct *work_req)
  *	initialize a workq item for this edac_device instance
  *	passing in the new delay period in msec
  */
+<<<<<<< HEAD
 void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
 				unsigned msec)
+=======
+static void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
+				    unsigned msec)
+>>>>>>> v4.9.227
 {
 	edac_dbg(0, "\n");
 
@@ -411,6 +422,7 @@ void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
 	 * to used in the time period calculation
 	 * then calc the number of jiffies that represents
 	 */
+<<<<<<< HEAD
 	if (!msec)
 		msec = 1000;
 	edac_dev->poll_msec = msec;
@@ -421,6 +433,12 @@ void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
 					edac_device_workq_function);
 	else
 		INIT_DELAYED_WORK(&edac_dev->work, edac_device_workq_function);
+=======
+	edac_dev->poll_msec = msec;
+	edac_dev->delay = msecs_to_jiffies(msec);
+
+	INIT_DELAYED_WORK(&edac_dev->work, edac_device_workq_function);
+>>>>>>> v4.9.227
 
 	/* optimize here for the 1 second case, which will be normal value, to
 	 * fire ON the 1 second time event. This helps reduce all sorts of
@@ -428,26 +446,40 @@ void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
 	 * to fire together on the 1 second exactly
 	 */
 	if (edac_dev->poll_msec == 1000)
+<<<<<<< HEAD
 		queue_delayed_work(edac_workqueue, &edac_dev->work,
 				round_jiffies_relative(edac_dev->delay));
 	else
 		queue_delayed_work(edac_workqueue, &edac_dev->work,
 				edac_dev->delay);
+=======
+		edac_queue_work(&edac_dev->work, round_jiffies_relative(edac_dev->delay));
+	else
+		edac_queue_work(&edac_dev->work, edac_dev->delay);
+>>>>>>> v4.9.227
 }
 
 /*
  * edac_device_workq_teardown
  *	stop the workq processing on this edac_dev
  */
+<<<<<<< HEAD
 void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
+=======
+static void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
+>>>>>>> v4.9.227
 {
 	if (!edac_dev->edac_check)
 		return;
 
 	edac_dev->op_state = OP_OFFLINE;
 
+<<<<<<< HEAD
 	cancel_delayed_work_sync(&edac_dev->work);
 	flush_workqueue(edac_workqueue);
+=======
+	edac_stop_work(&edac_dev->work);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -460,6 +492,7 @@ void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
 void edac_device_reset_delay_period(struct edac_device_ctl_info *edac_dev,
 					unsigned long value)
 {
+<<<<<<< HEAD
 	/* cancel the current workq request, without the mutex lock */
 	edac_device_workq_teardown(edac_dev);
 
@@ -470,6 +503,17 @@ void edac_device_reset_delay_period(struct edac_device_ctl_info *edac_dev,
 	edac_device_workq_setup(edac_dev, value);
 
 	mutex_unlock(&device_ctls_mutex);
+=======
+	unsigned long jiffs = msecs_to_jiffies(value);
+
+	if (value == 1000)
+		jiffs = round_jiffies_relative(value);
+
+	edac_dev->poll_msec = value;
+	edac_dev->delay	    = jiffs;
+
+	edac_mod_work(&edac_dev->work, jiffs);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -529,7 +573,11 @@ int edac_device_add_device(struct edac_device_ctl_info *edac_dev)
 		 * enable workq processing on this instance,
 		 * default = 1000 msec
 		 */
+<<<<<<< HEAD
 		edac_device_workq_setup(edac_dev, edac_dev->poll_msec);
+=======
+		edac_device_workq_setup(edac_dev, 1000);
+>>>>>>> v4.9.227
 	} else {
 		edac_dev->op_state = OP_RUNNING_INTERRUPT;
 	}
@@ -614,12 +662,15 @@ static inline int edac_device_get_log_ue(struct edac_device_ctl_info *edac_dev)
 	return edac_dev->log_ue;
 }
 
+<<<<<<< HEAD
 static inline int edac_device_get_panic_on_ce(struct edac_device_ctl_info
 					*edac_dev)
 {
 	return edac_dev->panic_on_ce;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int edac_device_get_panic_on_ue(struct edac_device_ctl_info
 					*edac_dev)
 {
@@ -669,11 +720,14 @@ void edac_device_handle_ce(struct edac_device_ctl_info *edac_dev,
 				"CE: %s instance: %s block: %s '%s'\n",
 				edac_dev->ctl_name, instance->name,
 				block ? block->name : "N/A", msg);
+<<<<<<< HEAD
 
 	if (edac_device_get_panic_on_ce(edac_dev))
 		panic("EDAC %s: CE instance: %s block %s '%s'\n",
 			edac_dev->ctl_name, instance->name,
 			block ? block->name : "N/A", msg);
+=======
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(edac_device_handle_ce);
 

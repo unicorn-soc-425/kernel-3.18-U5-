@@ -5,6 +5,10 @@
 
 #include <locale.h>
 #include <ctype.h>
+<<<<<<< HEAD
+=======
+#include <limits.h>
+>>>>>>> v4.9.227
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,7 +45,11 @@ static int tty_stdio;
 static int valid_stdin = 1;
 static int sync_kconfig;
 static int conf_cnt;
+<<<<<<< HEAD
 static char line[128];
+=======
+static char line[PATH_MAX];
+>>>>>>> v4.9.227
 static struct menu *rootEntry;
 
 static void print_help(struct menu *menu)
@@ -109,7 +117,11 @@ static int conf_askvalue(struct symbol *sym, const char *def)
 		/* fall through */
 	case oldaskconfig:
 		fflush(stdout);
+<<<<<<< HEAD
 		xfgets(line, 128, stdin);
+=======
+		xfgets(line, sizeof(line), stdin);
+>>>>>>> v4.9.227
 		if (!tty_stdio)
 			printf("\n");
 		return 1;
@@ -311,7 +323,11 @@ static int conf_choice(struct menu *menu)
 			/* fall through */
 		case oldaskconfig:
 			fflush(stdout);
+<<<<<<< HEAD
 			xfgets(line, 128, stdin);
+=======
+			xfgets(line, sizeof(line), stdin);
+>>>>>>> v4.9.227
 			strip(line);
 			if (line[0] == '?') {
 				print_help(menu);
@@ -488,6 +504,7 @@ static void conf_usage(const char *progname)
 	printf("  --randconfig            New config with random answer to all options\n");
 }
 
+<<<<<<< HEAD
 static void conf_check_read(const char *confname, const char *logmsg) {
 	const char *name;
 
@@ -503,6 +520,8 @@ static void conf_check_read(const char *confname, const char *logmsg) {
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 int main(int ac, char **av)
 {
 	const char *progname = av[0];
@@ -601,6 +620,7 @@ int main(int ac, char **av)
 				"***\n"), defconfig_file);
 			exit(1);
 		}
+<<<<<<< HEAD
 
 		conf_check_read("KCONFIG_SELINUX", "selinux");
 		conf_check_read("KCONFIG_LOG_SELINUX", "log selinux");
@@ -664,6 +684,8 @@ int main(int ac, char **av)
 			}
 		}
 
+=======
+>>>>>>> v4.9.227
 		break;
 	case savedefconfig:
 	case silentoldconfig:
@@ -682,7 +704,11 @@ int main(int ac, char **av)
 		if (!name)
 			break;
 		if ((strcmp(name, "") != 0) && (strcmp(name, "1") != 0)) {
+<<<<<<< HEAD
 			if (conf_read_simple(name, S_DEF_USER, true)) {
+=======
+			if (conf_read_simple(name, S_DEF_USER)) {
+>>>>>>> v4.9.227
 				fprintf(stderr,
 					_("*** Can't read seed configuration \"%s\"!\n"),
 					name);
@@ -698,8 +724,13 @@ int main(int ac, char **av)
 		case randconfig:	name = "allrandom.config"; break;
 		default: break;
 		}
+<<<<<<< HEAD
 		if (conf_read_simple(name, S_DEF_USER, true) &&
 		    conf_read_simple("all.config", S_DEF_USER, true)) {
+=======
+		if (conf_read_simple(name, S_DEF_USER) &&
+		    conf_read_simple("all.config", S_DEF_USER)) {
+>>>>>>> v4.9.227
 			fprintf(stderr,
 				_("*** KCONFIG_ALLCONFIG set, but no \"%s\" or \"all.config\" file found\n"),
 				name);

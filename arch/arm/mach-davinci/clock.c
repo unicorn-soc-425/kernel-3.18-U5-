@@ -23,7 +23,11 @@
 #include <mach/hardware.h>
 
 #include <mach/clock.h>
+<<<<<<< HEAD
 #include <mach/psc.h>
+=======
+#include "psc.h"
+>>>>>>> v4.9.227
 #include <mach/cputype.h>
 #include "clock.h"
 
@@ -97,7 +101,13 @@ int clk_enable(struct clk *clk)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (clk == NULL || IS_ERR(clk))
+=======
+	if (!clk)
+		return 0;
+	else if (IS_ERR(clk))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	spin_lock_irqsave(&clockfw_lock, flags);
@@ -124,7 +134,11 @@ EXPORT_SYMBOL(clk_disable);
 unsigned long clk_get_rate(struct clk *clk)
 {
 	if (clk == NULL || IS_ERR(clk))
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return 0;
+>>>>>>> v4.9.227
 
 	return clk->rate;
 }
@@ -159,8 +173,15 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 	unsigned long flags;
 	int ret = -EINVAL;
 
+<<<<<<< HEAD
 	if (clk == NULL || IS_ERR(clk))
 		return ret;
+=======
+	if (!clk)
+		return 0;
+	else if (IS_ERR(clk))
+		return -EINVAL;
+>>>>>>> v4.9.227
 
 	if (clk->set_rate)
 		ret = clk->set_rate(clk, rate);
@@ -181,7 +202,13 @@ int clk_set_parent(struct clk *clk, struct clk *parent)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (clk == NULL || IS_ERR(clk))
+=======
+	if (!clk)
+		return 0;
+	else if (IS_ERR(clk))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	/* Cannot change parent on enabled clock */
@@ -189,6 +216,17 @@ int clk_set_parent(struct clk *clk, struct clk *parent)
 		return -EINVAL;
 
 	mutex_lock(&clocks_mutex);
+<<<<<<< HEAD
+=======
+	if (clk->set_parent) {
+		int ret = clk->set_parent(clk, parent);
+
+		if (ret) {
+			mutex_unlock(&clocks_mutex);
+			return ret;
+		}
+	}
+>>>>>>> v4.9.227
 	clk->parent = parent;
 	list_del_init(&clk->childnode);
 	list_add(&clk->childnode, &clk->parent->children);
@@ -218,8 +256,22 @@ int clk_register(struct clk *clk)
 
 	mutex_lock(&clocks_mutex);
 	list_add_tail(&clk->node, &clocks);
+<<<<<<< HEAD
 	if (clk->parent)
 		list_add_tail(&clk->childnode, &clk->parent->children);
+=======
+	if (clk->parent) {
+		if (clk->set_parent) {
+			int ret = clk->set_parent(clk, clk->parent);
+
+			if (ret) {
+				mutex_unlock(&clocks_mutex);
+				return ret;
+			}
+		}
+		list_add_tail(&clk->childnode, &clk->parent->children);
+	}
+>>>>>>> v4.9.227
 	mutex_unlock(&clocks_mutex);
 
 	/* If rate is already set, use it */
@@ -554,7 +606,11 @@ EXPORT_SYMBOL(davinci_set_pllrate);
  * than that used by default in <soc>.c file. The reference clock rate
  * should be updated early in the boot process; ideally soon after the
  * clock tree has been initialized once with the default reference clock
+<<<<<<< HEAD
  * rate (davinci_common_init()).
+=======
+ * rate (davinci_clk_init()).
+>>>>>>> v4.9.227
  *
  * Returns 0 on success, error otherwise.
  */
@@ -564,7 +620,11 @@ int davinci_set_refclk_rate(unsigned long rate)
 
 	refclk = clk_get(NULL, "ref");
 	if (IS_ERR(refclk)) {
+<<<<<<< HEAD
 		pr_err("%s: failed to get reference clock.\n", __func__);
+=======
+		pr_err("%s: failed to get reference clock\n", __func__);
+>>>>>>> v4.9.227
 		return PTR_ERR(refclk);
 	}
 

@@ -4,6 +4,10 @@
  * GPL LICENSE SUMMARY
  *
  * Copyright(c) 2014 Intel Mobile Communications GmbH
+<<<<<<< HEAD
+=======
+ * Copyright(c) 2015 Intel Deutschland GmbH
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -31,17 +35,34 @@
 #include <linux/fs.h>
 #include <linux/workqueue.h>
 
+<<<<<<< HEAD
+=======
+static struct class devcd_class;
+
+/* global disable flag, for security purposes */
+static bool devcd_disabled;
+
+>>>>>>> v4.9.227
 /* if data isn't read by userspace after 5 minutes then delete it */
 #define DEVCD_TIMEOUT	(HZ * 60 * 5)
 
 struct devcd_entry {
 	struct device devcd_dev;
+<<<<<<< HEAD
 	const void *data;
 	size_t datalen;
 	struct module *owner;
 	ssize_t (*read)(char *buffer, loff_t offset, size_t count,
 			const void *data, size_t datalen);
 	void (*free)(const void *data);
+=======
+	void *data;
+	size_t datalen;
+	struct module *owner;
+	ssize_t (*read)(char *buffer, loff_t offset, size_t count,
+			void *data, size_t datalen);
+	void (*free)(void *data);
+>>>>>>> v4.9.227
 	struct delayed_work del_wk;
 	struct device *failing_dev;
 };
@@ -121,15 +142,65 @@ static const struct attribute_group *devcd_dev_groups[] = {
 	&devcd_dev_group, NULL,
 };
 
+<<<<<<< HEAD
+=======
+static int devcd_free(struct device *dev, void *data)
+{
+	struct devcd_entry *devcd = dev_to_devcd(dev);
+
+	flush_delayed_work(&devcd->del_wk);
+	return 0;
+}
+
+static ssize_t disabled_show(struct class *class, struct class_attribute *attr,
+			     char *buf)
+{
+	return sprintf(buf, "%d\n", devcd_disabled);
+}
+
+static ssize_t disabled_store(struct class *class, struct class_attribute *attr,
+			      const char *buf, size_t count)
+{
+	long tmp = simple_strtol(buf, NULL, 10);
+
+	/*
+	 * This essentially makes the attribute write-once, since you can't
+	 * go back to not having it disabled. This is intentional, it serves
+	 * as a system lockdown feature.
+	 */
+	if (tmp != 1)
+		return -EINVAL;
+
+	devcd_disabled = true;
+
+	class_for_each_device(&devcd_class, NULL, NULL, devcd_free);
+
+	return count;
+}
+
+static struct class_attribute devcd_class_attrs[] = {
+	__ATTR_RW(disabled),
+	__ATTR_NULL
+};
+
+>>>>>>> v4.9.227
 static struct class devcd_class = {
 	.name		= "devcoredump",
 	.owner		= THIS_MODULE,
 	.dev_release	= devcd_dev_release,
 	.dev_groups	= devcd_dev_groups,
+<<<<<<< HEAD
 };
 
 static ssize_t devcd_readv(char *buffer, loff_t offset, size_t count,
 			   const void *data, size_t datalen)
+=======
+	.class_attrs	= devcd_class_attrs,
+};
+
+static ssize_t devcd_readv(char *buffer, loff_t offset, size_t count,
+			   void *data, size_t datalen)
+>>>>>>> v4.9.227
 {
 	if (offset > datalen)
 		return -EINVAL;
@@ -143,6 +214,14 @@ static ssize_t devcd_readv(char *buffer, loff_t offset, size_t count,
 	return count;
 }
 
+<<<<<<< HEAD
+=======
+static void devcd_freev(void *data)
+{
+	vfree(data);
+}
+
+>>>>>>> v4.9.227
 /**
  * dev_coredumpv - create device coredump with vmalloc data
  * @dev: the struct device for the crashed device
@@ -153,10 +232,17 @@ static ssize_t devcd_readv(char *buffer, loff_t offset, size_t count,
  * This function takes ownership of the vmalloc'ed data and will free
  * it when it is no longer used. See dev_coredumpm() for more information.
  */
+<<<<<<< HEAD
 void dev_coredumpv(struct device *dev, const void *data, size_t datalen,
 		   gfp_t gfp)
 {
 	dev_coredumpm(dev, NULL, data, datalen, gfp, devcd_readv, vfree);
+=======
+void dev_coredumpv(struct device *dev, void *data, size_t datalen,
+		   gfp_t gfp)
+{
+	dev_coredumpm(dev, NULL, data, datalen, gfp, devcd_readv, devcd_freev);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(dev_coredumpv);
 
@@ -168,6 +254,47 @@ static int devcd_match_failing(struct device *dev, const void *failing)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * devcd_free_sgtable - free all the memory of the given scatterlist table
+ * (i.e. both pages and scatterlist instances)
+ * NOTE: if two tables allocated with devcd_alloc_sgtable and then chained
+ * using the sg_chain function then that function should be called only once
+ * on the chained table
+ * @table: pointer to sg_table to free
+ */
+static void devcd_free_sgtable(void *data)
+{
+	_devcd_free_sgtable(data);
+}
+
+/**
+ * devcd_read_from_table - copy data from sg_table to a given buffer
+ * and return the number of bytes read
+ * @buffer: the buffer to copy the data to it
+ * @buf_len: the length of the buffer
+ * @data: the scatterlist table to copy from
+ * @offset: start copy from @offset@ bytes from the head of the data
+ *	in the given scatterlist
+ * @data_len: the length of the data in the sg_table
+ */
+static ssize_t devcd_read_from_sgtable(char *buffer, loff_t offset,
+				       size_t buf_len, void *data,
+				       size_t data_len)
+{
+	struct scatterlist *table = data;
+
+	if (offset > data_len)
+		return -EINVAL;
+
+	if (offset + buf_len > data_len)
+		buf_len = data_len - offset;
+	return sg_pcopy_to_buffer(table, sg_nents(table), buffer, buf_len,
+				  offset);
+}
+
+/**
+>>>>>>> v4.9.227
  * dev_coredumpm - create device coredump with read/free methods
  * @dev: the struct device for the crashed device
  * @owner: the module that contains the read/free functions, use %THIS_MODULE
@@ -183,15 +310,28 @@ static int devcd_match_failing(struct device *dev, const void *failing)
  * function will be called to free the data.
  */
 void dev_coredumpm(struct device *dev, struct module *owner,
+<<<<<<< HEAD
 		   const void *data, size_t datalen, gfp_t gfp,
 		   ssize_t (*read)(char *buffer, loff_t offset, size_t count,
 				   const void *data, size_t datalen),
 		   void (*free)(const void *data))
+=======
+		   void *data, size_t datalen, gfp_t gfp,
+		   ssize_t (*read)(char *buffer, loff_t offset, size_t count,
+				   void *data, size_t datalen),
+		   void (*free)(void *data))
+>>>>>>> v4.9.227
 {
 	static atomic_t devcd_count = ATOMIC_INIT(0);
 	struct devcd_entry *devcd;
 	struct device *existing;
 
+<<<<<<< HEAD
+=======
+	if (devcd_disabled)
+		goto free;
+
+>>>>>>> v4.9.227
 	existing = class_find_device(&devcd_class, NULL, dev,
 				     devcd_match_failing);
 	if (existing) {
@@ -243,12 +383,37 @@ void dev_coredumpm(struct device *dev, struct module *owner,
 }
 EXPORT_SYMBOL_GPL(dev_coredumpm);
 
+<<<<<<< HEAD
+=======
+/**
+ * dev_coredumpmsg - create device coredump that uses scatterlist as data
+ * parameter
+ * @dev: the struct device for the crashed device
+ * @table: the dump data
+ * @datalen: length of the data
+ * @gfp: allocation flags
+ *
+ * Creates a new device coredump for the given device. If a previous one hasn't
+ * been read yet, the new coredump is discarded. The data lifetime is determined
+ * by the device coredump framework and when it is no longer needed
+ * it will free the data.
+ */
+void dev_coredumpsg(struct device *dev, struct scatterlist *table,
+		    size_t datalen, gfp_t gfp)
+{
+	dev_coredumpm(dev, NULL, table, datalen, gfp, devcd_read_from_sgtable,
+		      devcd_free_sgtable);
+}
+EXPORT_SYMBOL_GPL(dev_coredumpsg);
+
+>>>>>>> v4.9.227
 static int __init devcoredump_init(void)
 {
 	return class_register(&devcd_class);
 }
 __initcall(devcoredump_init);
 
+<<<<<<< HEAD
 static int devcd_free(struct device *dev, void *data)
 {
 	struct devcd_entry *devcd = dev_to_devcd(dev);
@@ -257,6 +422,8 @@ static int devcd_free(struct device *dev, void *data)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static void __exit devcoredump_exit(void)
 {
 	class_for_each_device(&devcd_class, NULL, NULL, devcd_free);

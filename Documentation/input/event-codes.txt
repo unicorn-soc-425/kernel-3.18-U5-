@@ -91,11 +91,14 @@ sent in the evdev event stream.
     event and query the device (using EVIOCG* ioctls) to obtain its
     current state.
 
+<<<<<<< HEAD
 * SYN_TIME_SEC, SYN_TIME_NSEC:
   - Used to report the timestamp from the hardware. The timestamp should record
     the exact time when the hardware events happens. The timestamp is
     CLOCK_MONOTONIC based.
 
+=======
+>>>>>>> v4.9.227
 EV_KEY:
 ----------
 EV_KEY events take the form KEY_<name> or BTN_<name>. For example, KEY_A is used
@@ -178,6 +181,13 @@ A few EV_ABS codes have special meanings:
     proximity of the device and while the value of the BTN_TOUCH code is 0. If
     the input device may be used freely in three dimensions, consider ABS_Z
     instead.
+<<<<<<< HEAD
+=======
+  - BTN_TOOL_<name> should be set to 1 when the tool comes into detectable
+    proximity and set to 0 when the tool leaves detectable proximity.
+    BTN_TOOL_<name> signals the type of tool that is currently detected by the
+    hardware and is otherwise independent of ABS_DISTANCE and/or BTN_TOUCH.
+>>>>>>> v4.9.227
 
 * ABS_MT_<name>:
   - Used to describe multitouch input events. Please see
@@ -234,7 +244,11 @@ such device to feedback.
 EV_PWR:
 ----------
 EV_PWR events are a special type of event used specifically for power
+<<<<<<< HEAD
 mangement. Its usage is not well defined. To be addressed later.
+=======
+management. Its usage is not well defined. To be addressed later.
+>>>>>>> v4.9.227
 
 Device properties:
 =================
@@ -299,6 +313,15 @@ accordingly. This property does not affect kernel behavior.
 The kernel does not provide button emulation for such devices but treats
 them as any other INPUT_PROP_BUTTONPAD device.
 
+<<<<<<< HEAD
+=======
+INPUT_PROP_ACCELEROMETER
+-------------------------
+Directional axes on this device (absolute and/or relative x, y, z) represent
+accelerometer data. All other axes retain their meaning. A device must not mix
+regular directional axes and accelerometer axes on the same event node.
+
+>>>>>>> v4.9.227
 Guidelines:
 ==========
 The guidelines below ensure proper single-touch and multi-finger functionality.

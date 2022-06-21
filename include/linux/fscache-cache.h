@@ -74,6 +74,10 @@ extern wait_queue_head_t fscache_cache_cleared_wq;
  */
 typedef void (*fscache_operation_release_t)(struct fscache_operation *op);
 typedef void (*fscache_operation_processor_t)(struct fscache_operation *op);
+<<<<<<< HEAD
+=======
+typedef void (*fscache_operation_cancel_t)(struct fscache_operation *op);
+>>>>>>> v4.9.227
 
 enum fscache_operation_state {
 	FSCACHE_OP_ST_BLANK,		/* Op is not yet submitted */
@@ -109,6 +113,12 @@ struct fscache_operation {
 	 *   the op in a non-pool thread */
 	fscache_operation_processor_t processor;
 
+<<<<<<< HEAD
+=======
+	/* Operation cancellation cleanup (optional) */
+	fscache_operation_cancel_t cancel;
+
+>>>>>>> v4.9.227
 	/* operation releaser */
 	fscache_operation_release_t release;
 };
@@ -119,6 +129,7 @@ extern void fscache_op_work_func(struct work_struct *work);
 extern void fscache_enqueue_operation(struct fscache_operation *);
 extern void fscache_op_complete(struct fscache_operation *, bool);
 extern void fscache_put_operation(struct fscache_operation *);
+<<<<<<< HEAD
 
 /**
  * fscache_operation_init - Do basic initialisation of an operation
@@ -140,12 +151,22 @@ static inline void fscache_operation_init(struct fscache_operation *op,
 	op->release = release;
 	INIT_LIST_HEAD(&op->pend_link);
 }
+=======
+extern void fscache_operation_init(struct fscache_operation *,
+				   fscache_operation_processor_t,
+				   fscache_operation_cancel_t,
+				   fscache_operation_release_t);
+>>>>>>> v4.9.227
 
 /*
  * data read operation
  */
 struct fscache_retrieval {
 	struct fscache_operation op;
+<<<<<<< HEAD
+=======
+	struct fscache_cookie	*cookie;	/* The netfs cookie */
+>>>>>>> v4.9.227
 	struct address_space	*mapping;	/* netfs pages */
 	fscache_rw_complete_t	end_io_func;	/* function to call on I/O completion */
 	void			*context;	/* netfs read context (pinned) */
@@ -253,7 +274,11 @@ struct fscache_cache_ops {
 
 	/* check the consistency between the backing cache and the FS-Cache
 	 * cookie */
+<<<<<<< HEAD
 	bool (*check_consistency)(struct fscache_operation *op);
+=======
+	int (*check_consistency)(struct fscache_operation *op);
+>>>>>>> v4.9.227
 
 	/* store the updated auxiliary data on an object */
 	void (*update_object)(struct fscache_object *object);
@@ -371,6 +396,11 @@ struct fscache_object {
 #define FSCACHE_OBJECT_IS_LOOKED_UP	4	/* T if object has been looked up */
 #define FSCACHE_OBJECT_IS_AVAILABLE	5	/* T if object has become active */
 #define FSCACHE_OBJECT_RETIRED		6	/* T if object was retired on relinquishment */
+<<<<<<< HEAD
+=======
+#define FSCACHE_OBJECT_KILLED_BY_CACHE	7	/* T if object was killed by the cache */
+#define FSCACHE_OBJECT_RUN_AFTER_DEAD	8	/* T if object has been dispatched after death */
+>>>>>>> v4.9.227
 
 	struct list_head	cache_link;	/* link in cache->object_list */
 	struct hlist_node	cookie_link;	/* link in cookie->backing_objects */
@@ -410,10 +440,19 @@ static inline bool fscache_object_is_available(struct fscache_object *object)
 	return test_bit(FSCACHE_OBJECT_IS_AVAILABLE, &object->flags);
 }
 
+<<<<<<< HEAD
+=======
+static inline bool fscache_cache_is_broken(struct fscache_object *object)
+{
+	return test_bit(FSCACHE_IOERROR, &object->cache->flags);
+}
+
+>>>>>>> v4.9.227
 static inline bool fscache_object_is_active(struct fscache_object *object)
 {
 	return fscache_object_is_available(object) &&
 		fscache_object_is_live(object) &&
+<<<<<<< HEAD
 		!test_bit(FSCACHE_IOERROR, &object->cache->flags);
 }
 
@@ -421,6 +460,9 @@ static inline bool fscache_object_is_dead(struct fscache_object *object)
 {
 	return fscache_object_is_dying(object) &&
 		test_bit(FSCACHE_IOERROR, &object->cache->flags);
+=======
+		!fscache_cache_is_broken(object);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -551,4 +593,18 @@ extern enum fscache_checkaux fscache_check_aux(struct fscache_object *object,
 					       const void *data,
 					       uint16_t datalen);
 
+<<<<<<< HEAD
+=======
+extern void fscache_object_retrying_stale(struct fscache_object *object);
+
+enum fscache_why_object_killed {
+	FSCACHE_OBJECT_IS_STALE,
+	FSCACHE_OBJECT_NO_SPACE,
+	FSCACHE_OBJECT_WAS_RETIRED,
+	FSCACHE_OBJECT_WAS_CULLED,
+};
+extern void fscache_object_mark_killed(struct fscache_object *object,
+				       enum fscache_why_object_killed why);
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_FSCACHE_CACHE_H */

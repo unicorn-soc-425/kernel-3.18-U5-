@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /* Intel Ethernet Switch Host Interface Driver
  * Copyright(c) 2013 - 2014 Intel Corporation.
+=======
+/* Intel(R) Ethernet Switch Host Interface Driver
+ * Copyright(c) 2013 - 2016 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -18,8 +23,11 @@
  * Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_FS
 
+=======
+>>>>>>> v4.9.227
 #include "fm10k.h"
 
 #include <linux/debugfs.h>
@@ -36,14 +44,25 @@ static void *fm10k_dbg_desc_seq_start(struct seq_file *s, loff_t *pos)
 	return (*pos < ring->count) ? pos : NULL;
 }
 
+<<<<<<< HEAD
 static void *fm10k_dbg_desc_seq_next(struct seq_file *s, void *v, loff_t *pos)
+=======
+static void *fm10k_dbg_desc_seq_next(struct seq_file *s,
+				     void __always_unused *v,
+				     loff_t *pos)
+>>>>>>> v4.9.227
 {
 	struct fm10k_ring *ring = s->private;
 
 	return (++(*pos) < ring->count) ? pos : NULL;
 }
 
+<<<<<<< HEAD
 static void fm10k_dbg_desc_seq_stop(struct seq_file *s, void *v)
+=======
+static void fm10k_dbg_desc_seq_stop(struct seq_file __always_unused *s,
+				    void __always_unused *v)
+>>>>>>> v4.9.227
 {
 	/* Do nothing. */
 }
@@ -173,7 +192,11 @@ void fm10k_dbg_q_vector_init(struct fm10k_q_vector *q_vector)
 		return;
 
 	/* Generate a folder for each q_vector */
+<<<<<<< HEAD
 	sprintf(name, "q_vector.%03d", q_vector->v_idx);
+=======
+	snprintf(name, sizeof(name), "q_vector.%03d", q_vector->v_idx);
+>>>>>>> v4.9.227
 
 	q_vector->dbg_q_vector = debugfs_create_dir(name, interface->dbg_intfc);
 	if (!q_vector->dbg_q_vector)
@@ -183,7 +206,11 @@ void fm10k_dbg_q_vector_init(struct fm10k_q_vector *q_vector)
 	for (i = 0; i < q_vector->tx.count; i++) {
 		struct fm10k_ring *ring = &q_vector->tx.ring[i];
 
+<<<<<<< HEAD
 		sprintf(name, "tx_ring.%03d", ring->queue_index);
+=======
+		snprintf(name, sizeof(name), "tx_ring.%03d", ring->queue_index);
+>>>>>>> v4.9.227
 
 		debugfs_create_file(name, 0600,
 				    q_vector->dbg_q_vector, ring,
@@ -194,7 +221,11 @@ void fm10k_dbg_q_vector_init(struct fm10k_q_vector *q_vector)
 	for (i = 0; i < q_vector->rx.count; i++) {
 		struct fm10k_ring *ring = &q_vector->rx.ring[i];
 
+<<<<<<< HEAD
 		sprintf(name, "rx_ring.%03d", ring->queue_index);
+=======
+		snprintf(name, sizeof(name), "rx_ring.%03d", ring->queue_index);
+>>>>>>> v4.9.227
 
 		debugfs_create_file(name, 0600,
 				    q_vector->dbg_q_vector, ring,
@@ -255,5 +286,8 @@ void fm10k_dbg_exit(void)
 	debugfs_remove_recursive(dbg_root);
 	dbg_root = NULL;
 }
+<<<<<<< HEAD
 
 #endif /* CONFIG_DEBUG_FS */
+=======
+>>>>>>> v4.9.227

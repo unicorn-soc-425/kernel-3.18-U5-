@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -49,6 +53,7 @@
  * being an atomic operation.
  */
 struct ldlm_resource *lock_res_and_lock(struct ldlm_lock *lock)
+<<<<<<< HEAD
 {
 	/* on server-side resource of lock doesn't change */
 	if ((lock->l_flags & LDLM_FL_NS_SRV) == 0)
@@ -57,6 +62,16 @@ struct ldlm_resource *lock_res_and_lock(struct ldlm_lock *lock)
 	lock_res(lock->l_resource);
 
 	lock->l_flags |= LDLM_FL_RES_LOCKED;
+=======
+				__acquires(&lock->l_lock)
+				__acquires(&lock->l_resource->lr_lock)
+{
+	spin_lock(&lock->l_lock);
+
+	lock_res(lock->l_resource);
+
+	ldlm_set_res_locked(lock);
+>>>>>>> v4.9.227
 	return lock->l_resource;
 }
 EXPORT_SYMBOL(lock_res_and_lock);
@@ -65,6 +80,7 @@ EXPORT_SYMBOL(lock_res_and_lock);
  * Unlock a lock and its resource previously locked with lock_res_and_lock
  */
 void unlock_res_and_lock(struct ldlm_lock *lock)
+<<<<<<< HEAD
 {
 	/* on server-side resource of lock doesn't change */
 	lock->l_flags &= ~LDLM_FL_RES_LOCKED;
@@ -72,5 +88,15 @@ void unlock_res_and_lock(struct ldlm_lock *lock)
 	unlock_res(lock->l_resource);
 	if ((lock->l_flags & LDLM_FL_NS_SRV) == 0)
 		spin_unlock(&lock->l_lock);
+=======
+		__releases(&lock->l_resource->lr_lock)
+		__releases(&lock->l_lock)
+{
+	/* on server-side resource of lock doesn't change */
+	ldlm_clear_res_locked(lock);
+
+	unlock_res(lock->l_resource);
+	spin_unlock(&lock->l_lock);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(unlock_res_and_lock);

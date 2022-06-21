@@ -140,6 +140,12 @@ static void sun4i_spi_set_cs(struct spi_device *spi, bool enable)
 	reg &= ~SUN4I_CTL_CS_MASK;
 	reg |= SUN4I_CTL_CS(spi->chip_select);
 
+<<<<<<< HEAD
+=======
+	/* We want to control the chip select manually */
+	reg |= SUN4I_CTL_CS_MANUAL;
+
+>>>>>>> v4.9.227
 	if (enable)
 		reg |= SUN4I_CTL_CS_LEVEL;
 	else
@@ -164,6 +170,14 @@ static void sun4i_spi_set_cs(struct spi_device *spi, bool enable)
 	sun4i_spi_write(sspi, SUN4I_CTL_REG, reg);
 }
 
+<<<<<<< HEAD
+=======
+static size_t sun4i_spi_max_transfer_size(struct spi_device *spi)
+{
+	return SUN4I_FIFO_DEPTH - 1;
+}
+
+>>>>>>> v4.9.227
 static int sun4i_spi_transfer_one(struct spi_master *master,
 				  struct spi_device *spi,
 				  struct spi_transfer *tfr)
@@ -226,9 +240,12 @@ static int sun4i_spi_transfer_one(struct spi_master *master,
 	else
 		reg |= SUN4I_CTL_DHB;
 
+<<<<<<< HEAD
 	/* We want to control the chip select manually */
 	reg |= SUN4I_CTL_CS_MANUAL;
 
+=======
+>>>>>>> v4.9.227
 	sun4i_spi_write(sspi, SUN4I_CTL_REG, reg);
 
 	/* Ensure that we have a parent clock fast enough */
@@ -402,6 +419,11 @@ static int sun4i_spi_probe(struct platform_device *pdev)
 	}
 
 	sspi->master = master;
+<<<<<<< HEAD
+=======
+	master->max_speed_hz = 100 * 1000 * 1000;
+	master->min_speed_hz = 3 * 1000;
+>>>>>>> v4.9.227
 	master->set_cs = sun4i_spi_set_cs;
 	master->transfer_one = sun4i_spi_transfer_one;
 	master->num_chipselect = 4;
@@ -409,6 +431,10 @@ static int sun4i_spi_probe(struct platform_device *pdev)
 	master->bits_per_word_mask = SPI_BPW_MASK(8);
 	master->dev.of_node = pdev->dev.of_node;
 	master->auto_runtime_pm = true;
+<<<<<<< HEAD
+=======
+	master->max_transfer_size = sun4i_spi_max_transfer_size;
+>>>>>>> v4.9.227
 
 	sspi->hclk = devm_clk_get(&pdev->dev, "ahb");
 	if (IS_ERR(sspi->hclk)) {
@@ -479,7 +505,10 @@ static struct platform_driver sun4i_spi_driver = {
 	.remove	= sun4i_spi_remove,
 	.driver	= {
 		.name		= "sun4i-spi",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= sun4i_spi_match,
 		.pm		= &sun4i_spi_pm_ops,
 	},

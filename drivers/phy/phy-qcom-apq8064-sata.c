@@ -204,7 +204,11 @@ static int qcom_apq8064_sata_phy_exit(struct phy *generic_phy)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct phy_ops qcom_apq8064_sata_phy_ops = {
+=======
+static const struct phy_ops qcom_apq8064_sata_phy_ops = {
+>>>>>>> v4.9.227
 	.init		= qcom_apq8064_sata_phy_init,
 	.exit		= qcom_apq8064_sata_phy_exit,
 	.owner		= THIS_MODULE,
@@ -228,8 +232,12 @@ static int qcom_apq8064_sata_phy_probe(struct platform_device *pdev)
 	if (IS_ERR(phy->mmio))
 		return PTR_ERR(phy->mmio);
 
+<<<<<<< HEAD
 	generic_phy = devm_phy_create(dev, NULL, &qcom_apq8064_sata_phy_ops,
 				      NULL);
+=======
+	generic_phy = devm_phy_create(dev, NULL, &qcom_apq8064_sata_phy_ops);
+>>>>>>> v4.9.227
 	if (IS_ERR(generic_phy)) {
 		dev_err(dev, "%s: failed to create phy\n", __func__);
 		return PTR_ERR(generic_phy);

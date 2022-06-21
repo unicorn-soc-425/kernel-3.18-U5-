@@ -30,7 +30,10 @@
 #include <linux/watchdog.h>
 #include <linux/miscdevice.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 #include <linux/kref.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include "sch56xx-common.h"
 
@@ -67,7 +70,10 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 struct sch56xx_watchdog_data {
 	u16 addr;
 	struct mutex *io_lock;
+<<<<<<< HEAD
 	struct kref kref;
+=======
+>>>>>>> v4.9.227
 	struct watchdog_info wdinfo;
 	struct watchdog_device wddev;
 	u8 watchdog_preset;
@@ -258,6 +264,7 @@ EXPORT_SYMBOL(sch56xx_read_virtual_reg12);
  * Watchdog routines
  */
 
+<<<<<<< HEAD
 /* Release our data struct when we're unregistered *and*
    all references to our watchdog device are released */
 static void watchdog_release_resources(struct kref *r)
@@ -267,6 +274,8 @@ static void watchdog_release_resources(struct kref *r)
 	kfree(data);
 }
 
+=======
+>>>>>>> v4.9.227
 static int watchdog_set_timeout(struct watchdog_device *wddev,
 				unsigned int timeout)
 {
@@ -395,6 +404,7 @@ static int watchdog_stop(struct watchdog_device *wddev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void watchdog_ref(struct watchdog_device *wddev)
 {
 	struct sch56xx_watchdog_data *data = watchdog_get_drvdata(wddev);
@@ -409,14 +419,19 @@ static void watchdog_unref(struct watchdog_device *wddev)
 	kref_put(&data->kref, watchdog_release_resources);
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct watchdog_ops watchdog_ops = {
 	.owner		= THIS_MODULE,
 	.start		= watchdog_start,
 	.stop		= watchdog_stop,
 	.ping		= watchdog_trigger,
 	.set_timeout	= watchdog_set_timeout,
+<<<<<<< HEAD
 	.ref		= watchdog_ref,
 	.unref		= watchdog_unref,
+=======
+>>>>>>> v4.9.227
 };
 
 struct sch56xx_watchdog_data *sch56xx_watchdog_register(struct device *parent,
@@ -448,7 +463,10 @@ struct sch56xx_watchdog_data *sch56xx_watchdog_register(struct device *parent,
 
 	data->addr = addr;
 	data->io_lock = io_lock;
+<<<<<<< HEAD
 	kref_init(&data->kref);
+=======
+>>>>>>> v4.9.227
 
 	strlcpy(data->wdinfo.identity, "sch56xx watchdog",
 		sizeof(data->wdinfo.identity));
@@ -494,8 +512,12 @@ EXPORT_SYMBOL(sch56xx_watchdog_register);
 void sch56xx_watchdog_unregister(struct sch56xx_watchdog_data *data)
 {
 	watchdog_unregister_device(&data->wddev);
+<<<<<<< HEAD
 	kref_put(&data->kref, watchdog_release_resources);
 	/* Don't touch data after this it may have been free-ed! */
+=======
+	kfree(data);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(sch56xx_watchdog_unregister);
 

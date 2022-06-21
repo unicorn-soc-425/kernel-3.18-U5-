@@ -185,6 +185,7 @@
 
 #define MX3x_PROD_SIGNATURE		0x1	/* For MX31 */
 
+<<<<<<< HEAD
 /* Mandatory defines used globally */
 
 #if !defined(__ASSEMBLY__) && !defined(__MXC_BOOT_UNCOMPRESS)
@@ -192,4 +193,6 @@ extern int mx35_revision(void);
 extern int mx31_revision(void);
 #endif
 
+=======
+>>>>>>> v4.9.227
 #endif /* ifndef __MACH_MX3x_H__ */

@@ -10,7 +10,11 @@
 
 static inline int atomic_read(const atomic_t *v)
 {
+<<<<<<< HEAD
 	return (v)->counter;
+=======
+	return READ_ONCE((v)->counter);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -64,12 +68,35 @@ static inline int atomic_##op##_return(int i, atomic_t *v)		\
 	return result;							\
 }
 
+<<<<<<< HEAD
 #define ATOMIC_OPS(op, c_op) ATOMIC_OP(op, c_op) ATOMIC_OP_RETURN(op, c_op)
+=======
+#define ATOMIC_FETCH_OP(op, c_op)					\
+static inline int atomic_fetch_##op(int i, atomic_t *v)			\
+{									\
+	unsigned long result;						\
+	unsigned long flags;						\
+									\
+	__global_lock1(flags);						\
+	result = v->counter;						\
+	fence();							\
+	v->counter c_op i;						\
+	__global_unlock1(flags);					\
+									\
+	return result;							\
+}
+
+#define ATOMIC_OPS(op, c_op)						\
+	ATOMIC_OP(op, c_op)						\
+	ATOMIC_OP_RETURN(op, c_op)					\
+	ATOMIC_FETCH_OP(op, c_op)
+>>>>>>> v4.9.227
 
 ATOMIC_OPS(add, +=)
 ATOMIC_OPS(sub, -=)
 
 #undef ATOMIC_OPS
+<<<<<<< HEAD
 #undef ATOMIC_OP_RETURN
 #undef ATOMIC_OP
 
@@ -93,6 +120,21 @@ static inline void atomic_set_mask(unsigned int mask, atomic_t *v)
 	__global_unlock1(flags);
 }
 
+=======
+#define ATOMIC_OPS(op, c_op)						\
+	ATOMIC_OP(op, c_op)						\
+	ATOMIC_FETCH_OP(op, c_op)
+
+ATOMIC_OPS(and, &=)
+ATOMIC_OPS(or, |=)
+ATOMIC_OPS(xor, ^=)
+
+#undef ATOMIC_OPS
+#undef ATOMIC_FETCH_OP
+#undef ATOMIC_OP_RETURN
+#undef ATOMIC_OP
+
+>>>>>>> v4.9.227
 static inline int atomic_cmpxchg(atomic_t *v, int old, int new)
 {
 	int ret;

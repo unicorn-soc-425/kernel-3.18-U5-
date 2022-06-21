@@ -18,6 +18,10 @@
 
 struct page;
 
+<<<<<<< HEAD
+=======
+#include <linux/pfn.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <asm/vm-flags.h>
 
@@ -33,6 +37,7 @@ struct page;
 
 #if defined(CONFIG_3_LEVEL_PGTABLES) && !defined(CONFIG_64BIT)
 
+<<<<<<< HEAD
 typedef struct { unsigned long pte_low, pte_high; } pte_t;
 typedef struct { unsigned long pmd; } pmd_t;
 typedef struct { unsigned long pgd; } pgd_t;
@@ -48,11 +53,28 @@ typedef struct { unsigned long pgd; } pgd_t;
 #define pte_set_val(pte, phys, prot) \
 	({ (pte).pte_high = (phys) >> 32; \
 	   (pte).pte_low = (phys) | pgprot_val(prot); })
+=======
+typedef struct { unsigned long pte; } pte_t;
+typedef struct { unsigned long pmd; } pmd_t;
+typedef struct { unsigned long pgd; } pgd_t;
+#define pte_val(p) ((p).pte)
+
+#define pte_get_bits(p, bits) ((p).pte & (bits))
+#define pte_set_bits(p, bits) ((p).pte |= (bits))
+#define pte_clear_bits(p, bits) ((p).pte &= ~(bits))
+#define pte_copy(to, from) ({ (to).pte = (from).pte; })
+#define pte_is_zero(p) (!((p).pte & ~_PAGE_NEWPAGE))
+#define pte_set_val(p, phys, prot) \
+	({ (p).pte = (phys) | pgprot_val(prot); })
+>>>>>>> v4.9.227
 
 #define pmd_val(x)	((x).pmd)
 #define __pmd(x) ((pmd_t) { (x) } )
 
+<<<<<<< HEAD
 typedef unsigned long long pfn_t;
+=======
+>>>>>>> v4.9.227
 typedef unsigned long long phys_t;
 
 #else
@@ -76,7 +98,10 @@ typedef struct { unsigned long pmd; } pmd_t;
 #define pte_is_zero(p) (!((p).pte & ~_PAGE_NEWPAGE))
 #define pte_set_val(p, phys, prot) (p).pte = (phys | pgprot_val(prot))
 
+<<<<<<< HEAD
 typedef unsigned long pfn_t;
+=======
+>>>>>>> v4.9.227
 typedef unsigned long phys_t;
 
 #endif
@@ -109,8 +134,13 @@ extern unsigned long uml_physmem;
 #define __pa(virt) to_phys((void *) (unsigned long) (virt))
 #define __va(phys) to_virt((unsigned long) (phys))
 
+<<<<<<< HEAD
 #define phys_to_pfn(p) ((pfn_t) ((p) >> PAGE_SHIFT))
 #define pfn_to_phys(pfn) ((phys_t) ((pfn) << PAGE_SHIFT))
+=======
+#define phys_to_pfn(p) ((p) >> PAGE_SHIFT)
+#define pfn_to_phys(pfn) PFN_PHYS(pfn)
+>>>>>>> v4.9.227
 
 #define pfn_valid(pfn) ((pfn) < max_mapnr)
 #define virt_addr_valid(v) pfn_valid(phys_to_pfn(__pa(v)))

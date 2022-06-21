@@ -60,7 +60,11 @@ SECTIONS
 		EXIT_DATA
 	}
 	PERCPU_SECTION(8)
+<<<<<<< HEAD
 	. = ALIGN(PAGE_SIZE);
+=======
+	. = ALIGN(HUGEPAGE_SIZE);
+>>>>>>> v4.9.227
 	__init_end = .;
 	/* freed after init ends here */
 
@@ -69,9 +73,17 @@ SECTIONS
 	.text ALIGN(PAGE_SIZE) : {
 		TEXT_TEXT
 		SCHED_TEXT
+<<<<<<< HEAD
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
+=======
+		CPUIDLE_TEXT
+		LOCK_TEXT
+		KPROBES_TEXT
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+>>>>>>> v4.9.227
 		*(.text.do_softirq)
 		*(.text.sys_exit)
 		*(.text.do_sigaltstack)
@@ -88,8 +100,14 @@ SECTIONS
 	/* Start of data section */
 	_sdata = .;
 
+<<<<<<< HEAD
 	RO_DATA_SECTION(8)
 
+=======
+	/* Architecturally we need to keep __gp below 0x1000000 and thus
+	 * in front of RO_DATA_SECTION() which stores lots of tracepoint
+	 * and ftrace symbols. */
+>>>>>>> v4.9.227
 #ifdef CONFIG_64BIT
 	. = ALIGN(16);
 	/* Linkage tables */
@@ -104,6 +122,15 @@ SECTIONS
 	}
 #endif
 
+<<<<<<< HEAD
+=======
+	RO_DATA_SECTION(8)
+
+	/* RO because of BUILDTIME_EXTABLE_SORT */
+	EXCEPTION_TABLE(8)
+	NOTES
+
+>>>>>>> v4.9.227
 	/* unwind info */
 	.PARISC.unwind : {
 		__start___unwind = .;
@@ -116,12 +143,18 @@ SECTIONS
 	 * that we can properly leave these
 	 * as writable
 	 */
+<<<<<<< HEAD
 	. = ALIGN(PAGE_SIZE);
 	data_start = .;
 
 	EXCEPTION_TABLE(8)
 	NOTES
 
+=======
+	. = ALIGN(HUGEPAGE_SIZE);
+	data_start = .;
+
+>>>>>>> v4.9.227
 	/* Data */
 	RW_DATA_SECTION(L1_CACHE_BYTES, PAGE_SIZE, PAGE_SIZE)
 
@@ -135,8 +168,14 @@ SECTIONS
 	_edata = .;
 
 	/* BSS */
+<<<<<<< HEAD
 	BSS_SECTION(PAGE_SIZE, PAGE_SIZE, 8)
 
+=======
+	BSS_SECTION(PAGE_SIZE, PAGE_SIZE, PAGE_SIZE)
+
+	. = ALIGN(HUGEPAGE_SIZE);
+>>>>>>> v4.9.227
 	_end = . ;
 
 	STABS_DEBUG

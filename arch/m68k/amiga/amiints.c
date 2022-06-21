@@ -46,7 +46,11 @@ static struct irq_chip amiga_irq_chip = {
  * The builtin Amiga hardware interrupt handlers.
  */
 
+<<<<<<< HEAD
 static void ami_int1(unsigned int irq, struct irq_desc *desc)
+=======
+static void ami_int1(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	unsigned short ints = amiga_custom.intreqr & amiga_custom.intenar;
 
@@ -69,7 +73,11 @@ static void ami_int1(unsigned int irq, struct irq_desc *desc)
 	}
 }
 
+<<<<<<< HEAD
 static void ami_int3(unsigned int irq, struct irq_desc *desc)
+=======
+static void ami_int3(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	unsigned short ints = amiga_custom.intreqr & amiga_custom.intenar;
 
@@ -92,7 +100,11 @@ static void ami_int3(unsigned int irq, struct irq_desc *desc)
 	}
 }
 
+<<<<<<< HEAD
 static void ami_int4(unsigned int irq, struct irq_desc *desc)
+=======
+static void ami_int4(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	unsigned short ints = amiga_custom.intreqr & amiga_custom.intenar;
 
@@ -121,7 +133,11 @@ static void ami_int4(unsigned int irq, struct irq_desc *desc)
 	}
 }
 
+<<<<<<< HEAD
 static void ami_int5(unsigned int irq, struct irq_desc *desc)
+=======
+static void ami_int5(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	unsigned short ints = amiga_custom.intreqr & amiga_custom.intenar;
 

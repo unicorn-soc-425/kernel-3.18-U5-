@@ -9,15 +9,36 @@
 #include <linux/cpuidle.h>
 #include <linux/cpu_pm.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/cpuidle.h>
 #include <asm/proc-fns.h>
+=======
+#include <asm/cacheflush.h>
+#include <asm/cpuidle.h>
+>>>>>>> v4.9.227
 #include <asm/suspend.h>
 
 #include "common.h"
 #include "cpuidle.h"
+<<<<<<< HEAD
 
 static int imx6sx_idle_finish(unsigned long val)
 {
+=======
+#include "hardware.h"
+
+static int imx6sx_idle_finish(unsigned long val)
+{
+	/*
+	 * for Cortex-A7 which has an internal L2
+	 * cache, need to flush it before powering
+	 * down ARM platform, since flushing L1 cache
+	 * here again has very small overhead, compared
+	 * to adding conditional code for L2 cache type,
+	 * just call flush_cache_all() is fine.
+	 */
+	flush_cache_all();
+>>>>>>> v4.9.227
 	cpu_do_idle();
 
 	return 0;
@@ -26,7 +47,11 @@ static int imx6sx_idle_finish(unsigned long val)
 static int imx6sx_enter_wait(struct cpuidle_device *dev,
 			    struct cpuidle_driver *drv, int index)
 {
+<<<<<<< HEAD
 	imx6q_set_lpm(WAIT_UNCLOCKED);
+=======
+	imx6_set_lpm(WAIT_UNCLOCKED);
+>>>>>>> v4.9.227
 
 	switch (index) {
 	case 1:
@@ -51,7 +76,11 @@ static int imx6sx_enter_wait(struct cpuidle_device *dev,
 		break;
 	}
 
+<<<<<<< HEAD
 	imx6q_set_lpm(WAIT_CLOCKED);
+=======
+	imx6_set_lpm(WAIT_CLOCKED);
+>>>>>>> v4.9.227
 
 	return index;
 }
@@ -66,8 +95,12 @@ static struct cpuidle_driver imx6sx_cpuidle_driver = {
 		{
 			.exit_latency = 50,
 			.target_residency = 75,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID |
 				CPUIDLE_FLAG_TIMER_STOP,
+=======
+			.flags = CPUIDLE_FLAG_TIMER_STOP,
+>>>>>>> v4.9.227
 			.enter = imx6sx_enter_wait,
 			.name = "WAIT",
 			.desc = "Clock off",
@@ -81,7 +114,10 @@ static struct cpuidle_driver imx6sx_cpuidle_driver = {
 			 */
 			.exit_latency = 300,
 			.target_residency = 500,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.enter = imx6sx_enter_wait,
 			.name = "LOW-POWER-IDLE",
 			.desc = "ARM power off",
@@ -93,6 +129,10 @@ static struct cpuidle_driver imx6sx_cpuidle_driver = {
 
 int __init imx6sx_cpuidle_init(void)
 {
+<<<<<<< HEAD
+=======
+	imx6_set_int_mem_clk_lpm(true);
+>>>>>>> v4.9.227
 	imx6_enable_rbc(false);
 	/*
 	 * set ARM power up/down timing to the fastest,
@@ -100,7 +140,11 @@ int __init imx6sx_cpuidle_init(void)
 	 * except for power up sw2iso which need to be
 	 * larger than LDO ramp up time.
 	 */
+<<<<<<< HEAD
 	imx_gpc_set_arm_power_up_timing(2, 1);
+=======
+	imx_gpc_set_arm_power_up_timing(cpu_is_imx6sx() ? 0xf : 0x2, 1);
+>>>>>>> v4.9.227
 	imx_gpc_set_arm_power_down_timing(1, 1);
 
 	return cpuidle_register(&imx6sx_cpuidle_driver, NULL);

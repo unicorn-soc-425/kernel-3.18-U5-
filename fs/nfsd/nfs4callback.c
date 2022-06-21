@@ -224,7 +224,11 @@ static int nfs_cb_stat_to_errno(int status)
 }
 
 static int decode_cb_op_status(struct xdr_stream *xdr, enum nfs_opnum4 expected,
+<<<<<<< HEAD
 			       enum nfsstat4 *status)
+=======
+			       int *status)
+>>>>>>> v4.9.227
 {
 	__be32 *p;
 	u32 op;
@@ -235,7 +239,11 @@ static int decode_cb_op_status(struct xdr_stream *xdr, enum nfs_opnum4 expected,
 	op = be32_to_cpup(p++);
 	if (unlikely(op != expected))
 		goto out_unexpected;
+<<<<<<< HEAD
 	*status = be32_to_cpup(p);
+=======
+	*status = nfs_cb_stat_to_errno(be32_to_cpup(p));
+>>>>>>> v4.9.227
 	return 0;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
@@ -435,17 +443,27 @@ static int decode_cb_sequence4resok(struct xdr_stream *xdr,
 	 */
 	status = 0;
 out:
+<<<<<<< HEAD
 	if (status)
 		nfsd4_mark_cb_fault(cb->cb_clp, status);
 	return status;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+	cb->cb_seq_status = status;
+	return status;
+out_overflow:
+	print_overflow_msg(__func__, xdr);
+	status = -EIO;
+	goto out;
+>>>>>>> v4.9.227
 }
 
 static int decode_cb_sequence4res(struct xdr_stream *xdr,
 				  struct nfsd4_callback *cb)
 {
+<<<<<<< HEAD
 	enum nfsstat4 nfserr;
 	int status;
 
@@ -462,6 +480,18 @@ out:
 	return status;
 out_default:
 	return nfs_cb_stat_to_errno(nfserr);
+=======
+	int status;
+
+	if (cb->cb_clp->cl_minorversion == 0)
+		return 0;
+
+	status = decode_cb_op_status(xdr, OP_CB_SEQUENCE, &cb->cb_seq_status);
+	if (unlikely(status || cb->cb_seq_status))
+		return status;
+
+	return decode_cb_sequence4resok(xdr, cb);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -491,7 +521,11 @@ static void nfs4_xdr_enc_cb_recall(struct rpc_rqst *req, struct xdr_stream *xdr,
 	const struct nfs4_delegation *dp = cb_to_delegation(cb);
 	struct nfs4_cb_compound_hdr hdr = {
 		.ident = cb->cb_clp->cl_cb_ident,
+<<<<<<< HEAD
 		.minorversion = cb->cb_minorversion,
+=======
+		.minorversion = cb->cb_clp->cl_minorversion,
+>>>>>>> v4.9.227
 	};
 
 	encode_cb_compound4args(xdr, &hdr);
@@ -524,11 +558,15 @@ static int nfs4_xdr_dec_cb_recall(struct rpc_rqst *rqstp,
 				  struct nfsd4_callback *cb)
 {
 	struct nfs4_cb_compound_hdr hdr;
+<<<<<<< HEAD
 	enum nfsstat4 nfserr;
+=======
+>>>>>>> v4.9.227
 	int status;
 
 	status = decode_cb_compound4res(xdr, &hdr);
 	if (unlikely(status))
+<<<<<<< HEAD
 		goto out;
 
 	if (cb != NULL) {
@@ -544,6 +582,163 @@ static int nfs4_xdr_dec_cb_recall(struct rpc_rqst *rqstp,
 		status = nfs_cb_stat_to_errno(nfserr);
 out:
 	return status;
+=======
+		return status;
+
+	if (cb != NULL) {
+		status = decode_cb_sequence4res(xdr, cb);
+		if (unlikely(status || cb->cb_seq_status))
+			return status;
+	}
+
+	return decode_cb_op_status(xdr, OP_CB_RECALL, &cb->cb_status);
+}
+
+#ifdef CONFIG_NFSD_PNFS
+/*
+ * CB_LAYOUTRECALL4args
+ *
+ *	struct layoutrecall_file4 {
+ *		nfs_fh4         lor_fh;
+ *		offset4         lor_offset;
+ *		length4         lor_length;
+ *		stateid4        lor_stateid;
+ *	};
+ *
+ *	union layoutrecall4 switch(layoutrecall_type4 lor_recalltype) {
+ *	case LAYOUTRECALL4_FILE:
+ *		layoutrecall_file4 lor_layout;
+ *	case LAYOUTRECALL4_FSID:
+ *		fsid4              lor_fsid;
+ *	case LAYOUTRECALL4_ALL:
+ *		void;
+ *	};
+ *
+ *	struct CB_LAYOUTRECALL4args {
+ *		layouttype4             clora_type;
+ *		layoutiomode4           clora_iomode;
+ *		bool                    clora_changed;
+ *		layoutrecall4           clora_recall;
+ *	};
+ */
+static void encode_cb_layout4args(struct xdr_stream *xdr,
+				  const struct nfs4_layout_stateid *ls,
+				  struct nfs4_cb_compound_hdr *hdr)
+{
+	__be32 *p;
+
+	BUG_ON(hdr->minorversion == 0);
+
+	p = xdr_reserve_space(xdr, 5 * 4);
+	*p++ = cpu_to_be32(OP_CB_LAYOUTRECALL);
+	*p++ = cpu_to_be32(ls->ls_layout_type);
+	*p++ = cpu_to_be32(IOMODE_ANY);
+	*p++ = cpu_to_be32(1);
+	*p = cpu_to_be32(RETURN_FILE);
+
+	encode_nfs_fh4(xdr, &ls->ls_stid.sc_file->fi_fhandle);
+
+	p = xdr_reserve_space(xdr, 2 * 8);
+	p = xdr_encode_hyper(p, 0);
+	xdr_encode_hyper(p, NFS4_MAX_UINT64);
+
+	encode_stateid4(xdr, &ls->ls_recall_sid);
+
+	hdr->nops++;
+}
+
+static void nfs4_xdr_enc_cb_layout(struct rpc_rqst *req,
+				   struct xdr_stream *xdr,
+				   const struct nfsd4_callback *cb)
+{
+	const struct nfs4_layout_stateid *ls =
+		container_of(cb, struct nfs4_layout_stateid, ls_recall);
+	struct nfs4_cb_compound_hdr hdr = {
+		.ident = 0,
+		.minorversion = cb->cb_clp->cl_minorversion,
+	};
+
+	encode_cb_compound4args(xdr, &hdr);
+	encode_cb_sequence4args(xdr, cb, &hdr);
+	encode_cb_layout4args(xdr, ls, &hdr);
+	encode_cb_nops(&hdr);
+}
+
+static int nfs4_xdr_dec_cb_layout(struct rpc_rqst *rqstp,
+				  struct xdr_stream *xdr,
+				  struct nfsd4_callback *cb)
+{
+	struct nfs4_cb_compound_hdr hdr;
+	int status;
+
+	status = decode_cb_compound4res(xdr, &hdr);
+	if (unlikely(status))
+		return status;
+
+	if (cb) {
+		status = decode_cb_sequence4res(xdr, cb);
+		if (unlikely(status || cb->cb_seq_status))
+			return status;
+	}
+	return decode_cb_op_status(xdr, OP_CB_LAYOUTRECALL, &cb->cb_status);
+}
+#endif /* CONFIG_NFSD_PNFS */
+
+static void encode_stateowner(struct xdr_stream *xdr, struct nfs4_stateowner *so)
+{
+	__be32	*p;
+
+	p = xdr_reserve_space(xdr, 8 + 4 + so->so_owner.len);
+	p = xdr_encode_opaque_fixed(p, &so->so_client->cl_clientid, 8);
+	xdr_encode_opaque(p, so->so_owner.data, so->so_owner.len);
+}
+
+static void nfs4_xdr_enc_cb_notify_lock(struct rpc_rqst *req,
+					struct xdr_stream *xdr,
+					const struct nfsd4_callback *cb)
+{
+	const struct nfsd4_blocked_lock *nbl =
+		container_of(cb, struct nfsd4_blocked_lock, nbl_cb);
+	struct nfs4_lockowner *lo = (struct nfs4_lockowner *)nbl->nbl_lock.fl_owner;
+	struct nfs4_cb_compound_hdr hdr = {
+		.ident = 0,
+		.minorversion = cb->cb_clp->cl_minorversion,
+	};
+
+	__be32 *p;
+
+	BUG_ON(hdr.minorversion == 0);
+
+	encode_cb_compound4args(xdr, &hdr);
+	encode_cb_sequence4args(xdr, cb, &hdr);
+
+	p = xdr_reserve_space(xdr, 4);
+	*p = cpu_to_be32(OP_CB_NOTIFY_LOCK);
+	encode_nfs_fh4(xdr, &nbl->nbl_fh);
+	encode_stateowner(xdr, &lo->lo_owner);
+	hdr.nops++;
+
+	encode_cb_nops(&hdr);
+}
+
+static int nfs4_xdr_dec_cb_notify_lock(struct rpc_rqst *rqstp,
+					struct xdr_stream *xdr,
+					struct nfsd4_callback *cb)
+{
+	struct nfs4_cb_compound_hdr hdr;
+	int status;
+
+	status = decode_cb_compound4res(xdr, &hdr);
+	if (unlikely(status))
+		return status;
+
+	if (cb) {
+		status = decode_cb_sequence4res(xdr, cb);
+		if (unlikely(status || cb->cb_seq_status))
+			return status;
+	}
+	return decode_cb_op_status(xdr, OP_CB_NOTIFY_LOCK, &cb->cb_status);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -563,6 +758,13 @@ out:
 static struct rpc_procinfo nfs4_cb_procedures[] = {
 	PROC(CB_NULL,	NULL,		cb_null,	cb_null),
 	PROC(CB_RECALL,	COMPOUND,	cb_recall,	cb_recall),
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NFSD_PNFS
+	PROC(CB_LAYOUT,	COMPOUND,	cb_layout,	cb_layout),
+#endif
+	PROC(CB_NOTIFY_LOCK,	COMPOUND,	cb_notify_lock,	cb_notify_lock),
+>>>>>>> v4.9.227
 };
 
 static struct rpc_version nfs_cb_version4 = {
@@ -616,6 +818,17 @@ int set_callback_cred(void)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+void cleanup_callback_cred(void)
+{
+	if (callback_cred) {
+		put_rpccred(callback_cred);
+		callback_cred = NULL;
+	}
+}
+
+>>>>>>> v4.9.227
 static struct rpc_cred *get_backchannel_cred(struct nfs4_client *clp, struct rpc_clnt *client, struct nfsd4_session *ses)
 {
 	if (clp->cl_minorversion == 0) {
@@ -696,12 +909,22 @@ static void warn_no_callback_path(struct nfs4_client *clp, int reason)
 
 static void nfsd4_mark_cb_down(struct nfs4_client *clp, int reason)
 {
+<<<<<<< HEAD
+=======
+	if (test_bit(NFSD4_CLIENT_CB_UPDATE, &clp->cl_flags))
+		return;
+>>>>>>> v4.9.227
 	clp->cl_cb_state = NFSD4_CB_DOWN;
 	warn_no_callback_path(clp, reason);
 }
 
 static void nfsd4_mark_cb_fault(struct nfs4_client *clp, int reason)
 {
+<<<<<<< HEAD
+=======
+	if (test_bit(NFSD4_CLIENT_CB_UPDATE, &clp->cl_flags))
+		return;
+>>>>>>> v4.9.227
 	clp->cl_cb_state = NFSD4_CB_FAULT;
 	warn_no_callback_path(clp, reason);
 }
@@ -778,6 +1001,7 @@ static void nfsd4_cb_prepare(struct rpc_task *task, void *calldata)
 	struct nfs4_client *clp = cb->cb_clp;
 	u32 minorversion = clp->cl_minorversion;
 
+<<<<<<< HEAD
 	cb->cb_minorversion = minorversion;
 	if (minorversion) {
 		if (!nfsd41_cb_get_slot(clp, task))
@@ -793,6 +1017,104 @@ static void nfsd4_cb_prepare(struct rpc_task *task, void *calldata)
 	rpc_call_start(task);
 }
 
+=======
+	/*
+	 * cb_seq_status is only set in decode_cb_sequence4res,
+	 * and so will remain 1 if an rpc level failure occurs.
+	 */
+	cb->cb_seq_status = 1;
+	cb->cb_status = 0;
+	if (minorversion) {
+		if (!cb->cb_holds_slot && !nfsd41_cb_get_slot(clp, task))
+			return;
+		cb->cb_holds_slot = true;
+	}
+	rpc_call_start(task);
+}
+
+static bool nfsd4_cb_sequence_done(struct rpc_task *task, struct nfsd4_callback *cb)
+{
+	struct nfs4_client *clp = cb->cb_clp;
+	struct nfsd4_session *session = clp->cl_cb_session;
+	bool ret = true;
+
+	if (!clp->cl_minorversion) {
+		/*
+		 * If the backchannel connection was shut down while this
+		 * task was queued, we need to resubmit it after setting up
+		 * a new backchannel connection.
+		 *
+		 * Note that if we lost our callback connection permanently
+		 * the submission code will error out, so we don't need to
+		 * handle that case here.
+		 */
+		if (task->tk_flags & RPC_TASK_KILLED)
+			goto need_restart;
+
+		return true;
+	}
+
+	if (!cb->cb_holds_slot)
+		goto need_restart;
+
+	switch (cb->cb_seq_status) {
+	case 0:
+		/*
+		 * No need for lock, access serialized in nfsd4_cb_prepare
+		 *
+		 * RFC5661 20.9.3
+		 * If CB_SEQUENCE returns an error, then the state of the slot
+		 * (sequence ID, cached reply) MUST NOT change.
+		 */
+		++session->se_cb_seq_nr;
+		break;
+	case -ESERVERFAULT:
+		++session->se_cb_seq_nr;
+	case 1:
+	case -NFS4ERR_BADSESSION:
+		nfsd4_mark_cb_fault(cb->cb_clp, cb->cb_seq_status);
+		ret = false;
+		break;
+	case -NFS4ERR_DELAY:
+		if (!rpc_restart_call(task))
+			goto out;
+
+		rpc_delay(task, 2 * HZ);
+		return false;
+	case -NFS4ERR_BADSLOT:
+		goto retry_nowait;
+	case -NFS4ERR_SEQ_MISORDERED:
+		if (session->se_cb_seq_nr != 1) {
+			session->se_cb_seq_nr = 1;
+			goto retry_nowait;
+		}
+		break;
+	default:
+		dprintk("%s: unprocessed error %d\n", __func__,
+			cb->cb_seq_status);
+	}
+
+	cb->cb_holds_slot = false;
+	clear_bit(0, &clp->cl_cb_slot_busy);
+	rpc_wake_up_next(&clp->cl_cb_waitq);
+	dprintk("%s: freed slot, new seqid=%d\n", __func__,
+		clp->cl_cb_session->se_cb_seq_nr);
+
+	if (task->tk_flags & RPC_TASK_KILLED)
+		goto need_restart;
+out:
+	return ret;
+retry_nowait:
+	if (rpc_restart_call_prepare(task))
+		ret = false;
+	goto out;
+need_restart:
+	task->tk_status = 0;
+	cb->cb_need_restart = true;
+	return false;
+}
+
+>>>>>>> v4.9.227
 static void nfsd4_cb_done(struct rpc_task *task, void *calldata)
 {
 	struct nfsd4_callback *cb = calldata;
@@ -801,6 +1123,7 @@ static void nfsd4_cb_done(struct rpc_task *task, void *calldata)
 	dprintk("%s: minorversion=%d\n", __func__,
 		clp->cl_minorversion);
 
+<<<<<<< HEAD
 	if (clp->cl_minorversion) {
 		/* No need for lock, access serialized in nfsd4_cb_prepare */
 		++clp->cl_cb_session->se_cb_seq_nr;
@@ -819,6 +1142,15 @@ static void nfsd4_cb_done(struct rpc_task *task, void *calldata)
 
 	if (cb->cb_done)
 		return;
+=======
+	if (!nfsd4_cb_sequence_done(task, cb))
+		return;
+
+	if (cb->cb_status) {
+		WARN_ON_ONCE(task->tk_status);
+		task->tk_status = cb->cb_status;
+	}
+>>>>>>> v4.9.227
 
 	switch (cb->cb_ops->done(cb, task)) {
 	case 0:
@@ -834,12 +1166,16 @@ static void nfsd4_cb_done(struct rpc_task *task, void *calldata)
 	default:
 		BUG();
 	}
+<<<<<<< HEAD
 	cb->cb_done = true;
+=======
+>>>>>>> v4.9.227
 }
 
 static void nfsd4_cb_release(void *calldata)
 {
 	struct nfsd4_callback *cb = calldata;
+<<<<<<< HEAD
 	struct nfs4_client *clp = cb->cb_clp;
 
 	if (cb->cb_done) {
@@ -849,6 +1185,14 @@ static void nfsd4_cb_release(void *calldata)
 
 		cb->cb_ops->release(cb);
 	}
+=======
+
+	if (cb->cb_need_restart)
+		nfsd4_run_cb(cb);
+	else
+		cb->cb_ops->release(cb);
+
+>>>>>>> v4.9.227
 }
 
 static const struct rpc_call_ops nfsd4_cb_ops = {
@@ -943,9 +1287,12 @@ static void nfsd4_process_cb_update(struct nfsd4_callback *cb)
 		nfsd4_mark_cb_down(clp, err);
 		return;
 	}
+<<<<<<< HEAD
 	/* Yay, the callback channel's back! Restart any callbacks: */
 	list_for_each_entry(cb, &clp->cl_callbacks, cb_per_client)
 		queue_work(callback_wq, &cb->cb_work);
+=======
+>>>>>>> v4.9.227
 }
 
 static void
@@ -956,8 +1303,17 @@ nfsd4_run_cb_work(struct work_struct *work)
 	struct nfs4_client *clp = cb->cb_clp;
 	struct rpc_clnt *clnt;
 
+<<<<<<< HEAD
 	if (cb->cb_ops && cb->cb_ops->prepare)
 		cb->cb_ops->prepare(cb);
+=======
+	if (cb->cb_need_restart) {
+		cb->cb_need_restart = false;
+	} else {
+		if (cb->cb_ops && cb->cb_ops->prepare)
+			cb->cb_ops->prepare(cb);
+	}
+>>>>>>> v4.9.227
 
 	if (clp->cl_flags & NFSD4_CLIENT_CB_FLAG_MASK)
 		nfsd4_process_cb_update(cb);
@@ -969,13 +1325,29 @@ nfsd4_run_cb_work(struct work_struct *work)
 			cb->cb_ops->release(cb);
 		return;
 	}
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Don't send probe messages for 4.1 or later.
+	 */
+	if (!cb->cb_ops && clp->cl_minorversion) {
+		clp->cl_cb_state = NFSD4_CB_UP;
+		return;
+	}
+
+>>>>>>> v4.9.227
 	cb->cb_msg.rpc_cred = clp->cl_cb_cred;
 	rpc_call_async(clnt, &cb->cb_msg, RPC_TASK_SOFT | RPC_TASK_SOFTCONN,
 			cb->cb_ops ? &nfsd4_cb_ops : &nfsd4_cb_probe_ops, cb);
 }
 
 void nfsd4_init_cb(struct nfsd4_callback *cb, struct nfs4_client *clp,
+<<<<<<< HEAD
 		struct nfsd4_callback_ops *ops, enum nfsd4_cb_op op)
+=======
+		const struct nfsd4_callback_ops *ops, enum nfsd4_cb_op op)
+>>>>>>> v4.9.227
 {
 	cb->cb_clp = clp;
 	cb->cb_msg.rpc_proc = &nfs4_cb_procedures[op];
@@ -983,8 +1355,15 @@ void nfsd4_init_cb(struct nfsd4_callback *cb, struct nfs4_client *clp,
 	cb->cb_msg.rpc_resp = cb;
 	cb->cb_ops = ops;
 	INIT_WORK(&cb->cb_work, nfsd4_run_cb_work);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&cb->cb_per_client);
 	cb->cb_done = true;
+=======
+	cb->cb_seq_status = 1;
+	cb->cb_status = 0;
+	cb->cb_need_restart = false;
+	cb->cb_holds_slot = false;
+>>>>>>> v4.9.227
 }
 
 void nfsd4_run_cb(struct nfsd4_callback *cb)

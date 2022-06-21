@@ -11,11 +11,17 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/reboot.h>
 #include <linux/serial_reg.h>
 #include <linux/serial_8250.h>
 #include <linux/reboot.h>
+=======
+#include <linux/reboot.h>
+#include <linux/serial_reg.h>
+#include <linux/serial_8250.h>
+>>>>>>> v4.9.227
 
 #include <asm/ce4100.h>
 #include <asm/prom.h>

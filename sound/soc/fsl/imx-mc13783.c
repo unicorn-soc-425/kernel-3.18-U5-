@@ -37,8 +37,12 @@ static int imx_mc13783_hifi_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	int ret;
 
+<<<<<<< HEAD
 	ret = snd_soc_dai_set_tdm_slot(codec_dai, 0xfffffffc, 0xfffffffc,
 					4, 16);
+=======
+	ret = snd_soc_dai_set_tdm_slot(codec_dai, 0x3, 0x3, 4, 16);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -46,11 +50,15 @@ static int imx_mc13783_hifi_hw_params(struct snd_pcm_substream *substream,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0x0, 0xfffffffc, 2, 16);
 	if (ret)
 		return ret;
 
 	return 0;
+=======
+	return snd_soc_dai_set_tdm_slot(cpu_dai, 0x3, 0x3, 2, 16);
+>>>>>>> v4.9.227
 }
 
 static struct snd_soc_ops imx_mc13783_hifi_ops = {
@@ -159,7 +167,10 @@ static int imx_mc13783_remove(struct platform_device *pdev)
 static struct platform_driver imx_mc13783_audio_driver = {
 	.driver = {
 		.name = "imx_mc13783",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = imx_mc13783_probe,
 	.remove = imx_mc13783_remove

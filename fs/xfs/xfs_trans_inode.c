@@ -21,8 +21,11 @@
 #include "xfs_format.h"
 #include "xfs_log_format.h"
 #include "xfs_trans_resv.h"
+<<<<<<< HEAD
 #include "xfs_sb.h"
 #include "xfs_ag.h"
+=======
+>>>>>>> v4.9.227
 #include "xfs_mount.h"
 #include "xfs_inode.h"
 #include "xfs_trans.h"
@@ -75,6 +78,7 @@ xfs_trans_ichgtime(
 	ASSERT(tp);
 	ASSERT(xfs_isilocked(ip, XFS_ILOCK_EXCL));
 
+<<<<<<< HEAD
 	tv = current_fs_time(inode->i_sb);
 
 	if ((flags & XFS_ICHGTIME_MOD) &&
@@ -89,6 +93,14 @@ xfs_trans_ichgtime(
 		ip->i_d.di_ctime.t_sec = tv.tv_sec;
 		ip->i_d.di_ctime.t_nsec = tv.tv_nsec;
 	}
+=======
+	tv = current_time(inode);
+
+	if (flags & XFS_ICHGTIME_MOD)
+		inode->i_mtime = tv;
+	if (flags & XFS_ICHGTIME_CHG)
+		inode->i_ctime = tv;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -110,6 +122,18 @@ xfs_trans_log_inode(
 	ASSERT(xfs_isilocked(ip, XFS_ILOCK_EXCL));
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Record the specific change for fdatasync optimisation. This
+	 * allows fdatasync to skip log forces for inodes that are only
+	 * timestamp dirty. We do this before the change count so that
+	 * the core being logged in this case does not impact on fdatasync
+	 * behaviour.
+	 */
+	ip->i_itemp->ili_fsync_fields |= flags;
+
+	/*
+>>>>>>> v4.9.227
 	 * First time we log the inode in a transaction, bump the inode change
 	 * counter if it is configured for this to occur. We don't use
 	 * inode_inc_version() because there is no need for extra locking around
@@ -118,7 +142,11 @@ xfs_trans_log_inode(
 	 */
 	if (!(ip->i_itemp->ili_item.li_desc->lid_flags & XFS_LID_DIRTY) &&
 	    IS_I_VERSION(VFS_I(ip))) {
+<<<<<<< HEAD
 		ip->i_d.di_changecount = ++VFS_I(ip)->i_version;
+=======
+		VFS_I(ip)->i_version++;
+>>>>>>> v4.9.227
 		flags |= XFS_ILOG_CORE;
 	}
 

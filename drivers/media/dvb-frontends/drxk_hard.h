@@ -350,7 +350,11 @@ struct drxk_state {
 	bool	antenna_dvbt;
 	u16	antenna_gpio;
 
+<<<<<<< HEAD
 	fe_status_t fe_status;
+=======
+	enum fe_status fe_status;
+>>>>>>> v4.9.227
 
 	/* Firmware */
 	const char *microcode_name;

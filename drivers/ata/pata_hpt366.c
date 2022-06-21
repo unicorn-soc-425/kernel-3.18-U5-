@@ -176,6 +176,7 @@ static int hpt_dma_blacklisted(const struct ata_device *dev, char *modestr,
 			       const char * const list[])
 {
 	unsigned char model_num[ATA_ID_PROD_LEN + 1];
+<<<<<<< HEAD
 	int i = 0;
 
 	ata_id_c_string(dev->id, model_num, ATA_ID_PROD, sizeof(model_num));
@@ -187,6 +188,16 @@ static int hpt_dma_blacklisted(const struct ata_device *dev, char *modestr,
 			return 1;
 		}
 		i++;
+=======
+	int i;
+
+	ata_id_c_string(dev->id, model_num, ATA_ID_PROD, sizeof(model_num));
+
+	i = match_string(list, -1, model_num);
+	if (i >= 0) {
+		pr_warn("%s is not supported for %s\n", modestr, list[i]);
+		return 1;
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -371,7 +382,11 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 
 	/* PCI clocking determines the ATA timing values to use */
 	/* info_hpt366 is safe against re-entry so we can scribble on it */
+<<<<<<< HEAD
 	switch ((reg1 & 0x700) >> 8) {
+=======
+	switch ((reg1 & 0xf00) >> 8) {
+>>>>>>> v4.9.227
 	case 9:
 		hpriv = &hpt366_40;
 		break;

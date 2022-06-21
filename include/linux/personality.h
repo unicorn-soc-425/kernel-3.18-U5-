@@ -3,6 +3,7 @@
 
 #include <uapi/linux/personality.h>
 
+<<<<<<< HEAD
 
 /*
  * Handling of different ABIs (personalities).
@@ -39,16 +40,25 @@ struct exec_domain {
 	struct exec_domain	*next;		/* linked list (internal) */
 };
 
+=======
+>>>>>>> v4.9.227
 /*
  * Return the base personality without flags.
  */
 #define personality(pers)	(pers & PER_MASK)
 
+<<<<<<< HEAD
 
 /*
  * Change personality of the currently running process.
  */
 #define set_personality(pers) \
 	((current->personality == (pers)) ? 0 : __set_personality(pers))
+=======
+/*
+ * Change personality of the currently running process.
+ */
+#define set_personality(pers)	(current->personality = (pers))
+>>>>>>> v4.9.227
 
 #endif /* _LINUX_PERSONALITY_H */

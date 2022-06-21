@@ -625,7 +625,11 @@ static int snd_sc6000_probe(struct device *devptr, unsigned int dev)
 	if (err < 0)
 		goto err_unmap2;
 
+<<<<<<< HEAD
 	err = snd_wss_pcm(chip, 0, NULL);
+=======
+	err = snd_wss_pcm(chip, 0);
+>>>>>>> v4.9.227
 	if (err < 0) {
 		snd_printk(KERN_ERR PFX
 			   "error creating new WSS PCM device\n");
@@ -711,6 +715,7 @@ static struct isa_driver snd_sc6000_driver = {
 };
 
 
+<<<<<<< HEAD
 static int __init alsa_card_sc6000_init(void)
 {
 	return isa_register_driver(&snd_sc6000_driver, SNDRV_CARDS);
@@ -723,3 +728,6 @@ static void __exit alsa_card_sc6000_exit(void)
 
 module_init(alsa_card_sc6000_init)
 module_exit(alsa_card_sc6000_exit)
+=======
+module_isa_driver(snd_sc6000_driver, SNDRV_CARDS);
+>>>>>>> v4.9.227

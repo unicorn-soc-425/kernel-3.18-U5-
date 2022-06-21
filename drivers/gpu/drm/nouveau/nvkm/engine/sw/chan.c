@@ -53,9 +53,15 @@ nvkm_sw_chan_event_ctor(struct nvkm_object *object, void *data, u32 size,
 	union {
 		struct nvif_notify_uevent_req none;
 	} *req = data;
+<<<<<<< HEAD
 	int ret;
 
 	if (nvif_unvers(req->none)) {
+=======
+	int ret = -ENOSYS;
+
+	if (!(ret = nvif_unvers(ret, &data, &size, req->none))) {
+>>>>>>> v4.9.227
 		notify->size  = sizeof(struct nvif_notify_uevent_rep);
 		notify->types = 1;
 		notify->index = 0;

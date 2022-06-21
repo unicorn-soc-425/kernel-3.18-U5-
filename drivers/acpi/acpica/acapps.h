@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,10 +48,21 @@
 #ifndef _ACAPPS
 #define _ACAPPS
 
+<<<<<<< HEAD
 /* Common info for tool signons */
 
 #define ACPICA_NAME                 "Intel ACPI Component Architecture"
 #define ACPICA_COPYRIGHT            "Copyright (c) 2000 - 2014 Intel Corporation"
+=======
+#ifdef ACPI_USE_STANDARD_HEADERS
+#include <sys/stat.h>
+#endif				/* ACPI_USE_STANDARD_HEADERS */
+
+/* Common info for tool signons */
+
+#define ACPICA_NAME                 "Intel ACPI Component Architecture"
+#define ACPICA_COPYRIGHT            "Copyright (c) 2000 - 2016 Intel Corporation"
+>>>>>>> v4.9.227
 
 #if ACPI_MACHINE_WIDTH == 64
 #define ACPI_WIDTH          "-64"
@@ -64,6 +79,7 @@
 /* Macros for signons and file headers */
 
 #define ACPI_COMMON_SIGNON(utility_name) \
+<<<<<<< HEAD
 	"\n%s\n%s version %8.8X%s [%s]\n%s\n\n", \
 	ACPICA_NAME, \
 	utility_name, ((u32) ACPI_CA_VERSION), ACPI_WIDTH, __DATE__, \
@@ -73,12 +89,24 @@
 	"%s%s\n%s%s version %8.8X%s [%s]\n%s%s\n%s\n", \
 	prefix, ACPICA_NAME, \
 	prefix, utility_name, ((u32) ACPI_CA_VERSION), ACPI_WIDTH, __DATE__, \
+=======
+	"\n%s\n%s version %8.8X%s\n%s\n\n", \
+	ACPICA_NAME, \
+	utility_name, ((u32) ACPI_CA_VERSION), ACPI_WIDTH, \
+	ACPICA_COPYRIGHT
+
+#define ACPI_COMMON_HEADER(utility_name, prefix) \
+	"%s%s\n%s%s version %8.8X%s\n%s%s\n%s\n", \
+	prefix, ACPICA_NAME, \
+	prefix, utility_name, ((u32) ACPI_CA_VERSION), ACPI_WIDTH, \
+>>>>>>> v4.9.227
 	prefix, ACPICA_COPYRIGHT, \
 	prefix
 
 /* Macros for usage messages */
 
 #define ACPI_USAGE_HEADER(usage) \
+<<<<<<< HEAD
 	acpi_os_printf ("Usage: %s\nOptions:\n", usage);
 
 #define ACPI_USAGE_TEXT(description) \
@@ -89,6 +117,47 @@
 
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
 #define ACPI_TABLE_FILE_SUFFIX      ".dat"
+=======
+	printf ("Usage: %s\nOptions:\n", usage);
+
+#define ACPI_USAGE_TEXT(description) \
+	printf (description);
+
+#define ACPI_OPTION(name, description) \
+	printf ("  %-20s%s\n", name, description);
+
+/* Check for unexpected exceptions */
+
+#define ACPI_CHECK_STATUS(name, status, expected) \
+	if (status != expected) \
+	{ \
+		acpi_os_printf ("Unexpected %s from %s (%s-%d)\n", \
+			acpi_format_exception (status), #name, _acpi_module_name, __LINE__); \
+	}
+
+/* Check for unexpected non-AE_OK errors */
+
+#define ACPI_CHECK_OK(name, status)   ACPI_CHECK_STATUS (name, status, AE_OK);
+
+#define FILE_SUFFIX_DISASSEMBLY     "dsl"
+#define FILE_SUFFIX_BINARY_TABLE    ".dat"	/* Needs the dot */
+
+/* acfileio */
+
+acpi_status
+ac_get_all_tables_from_file(char *filename,
+			    u8 get_only_aml_tables,
+			    struct acpi_new_table_desc **return_list_head);
+
+u8 ac_is_file_binary(FILE * file);
+
+acpi_status ac_validate_table_header(FILE * file, long table_offset);
+
+/* Values for get_only_aml_tables */
+
+#define ACPI_GET_ONLY_AML_TABLES    TRUE
+#define ACPI_GET_ALL_TABLES         FALSE
+>>>>>>> v4.9.227
 
 /*
  * getopt
@@ -107,6 +176,7 @@ extern char *acpi_gbl_optarg;
  */
 u32 cm_get_file_size(ACPI_FILE file);
 
+<<<<<<< HEAD
 #ifndef ACPI_DUMP_APP
 /*
  * adisasm
@@ -131,6 +201,8 @@ acpi_status ad_display_tables(char *filename, struct acpi_table_header *table);
 
 acpi_status ad_display_statistics(void);
 
+=======
+>>>>>>> v4.9.227
 /*
  * adwalk
  */
@@ -168,6 +240,9 @@ char *ad_generate_filename(char *prefix, char *table_id);
 void
 ad_write_table(struct acpi_table_header *table,
 	       u32 length, char *table_name, char *oem_table_id);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 #endif				/* _ACAPPS */

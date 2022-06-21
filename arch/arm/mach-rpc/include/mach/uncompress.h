@@ -76,7 +76,11 @@ int white;
 /*
  * This does not append a newline
  */
+<<<<<<< HEAD
 static void putc(int c)
+=======
+static inline void putc(int c)
+>>>>>>> v4.9.227
 {
 	extern void ll_write_char(char *, char c, char white);
 	int x,y;

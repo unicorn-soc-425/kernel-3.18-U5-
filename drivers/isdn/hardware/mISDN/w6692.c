@@ -848,7 +848,11 @@ dbusy_timer_handler(struct dchannel *dch)
 	}
 }
 
+<<<<<<< HEAD
 void initW6692(struct w6692_hw *card)
+=======
+static void initW6692(struct w6692_hw *card)
+>>>>>>> v4.9.227
 {
 	u8	val;
 

@@ -14,13 +14,20 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <crypto/aead.h>
+>>>>>>> v4.9.227
 #include <crypto/internal/skcipher.h>
 #include <crypto/scatterwalk.h>
 #include <linux/errno.h>
 #include <linux/hardirq.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/scatterlist.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -324,12 +331,19 @@ static int blkcipher_walk_first(struct blkcipher_desc *desc,
 	if (WARN_ON_ONCE(in_irq()))
 		return -EDEADLK;
 
+<<<<<<< HEAD
+=======
+	walk->iv = desc->info;
+>>>>>>> v4.9.227
 	walk->nbytes = walk->total;
 	if (unlikely(!walk->total))
 		return 0;
 
 	walk->buffer = NULL;
+<<<<<<< HEAD
 	walk->iv = desc->info;
+=======
+>>>>>>> v4.9.227
 	if (unlikely(((unsigned long)walk->iv & walk->alignmask))) {
 		int err = blkcipher_copy_iv(walk);
 		if (err)
@@ -464,10 +478,13 @@ static int crypto_init_blkcipher_ops_async(struct crypto_tfm *tfm)
 	crt->setkey = async_setkey;
 	crt->encrypt = async_encrypt;
 	crt->decrypt = async_decrypt;
+<<<<<<< HEAD
 	if (!alg->ivsize) {
 		crt->givencrypt = skcipher_null_givencrypt;
 		crt->givdecrypt = skcipher_null_givdecrypt;
 	}
+=======
+>>>>>>> v4.9.227
 	crt->base = __crypto_ablkcipher_cast(tfm);
 	crt->ivsize = alg->ivsize;
 
@@ -559,6 +576,7 @@ const struct crypto_type crypto_blkcipher_type = {
 };
 EXPORT_SYMBOL_GPL(crypto_blkcipher_type);
 
+<<<<<<< HEAD
 static int crypto_grab_nivcipher(struct crypto_skcipher_spawn *spawn,
 				const char *name, u32 type, u32 mask)
 {
@@ -739,5 +757,7 @@ void skcipher_geniv_exit(struct crypto_tfm *tfm)
 }
 EXPORT_SYMBOL_GPL(skcipher_geniv_exit);
 
+=======
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Generic block chaining cipher type");

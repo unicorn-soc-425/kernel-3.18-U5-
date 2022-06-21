@@ -450,6 +450,7 @@ static struct snd_soc_platform_driver bf5xx_ac97_soc_platform = {
 
 static int bf5xx_soc_platform_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_platform(&pdev->dev, &bf5xx_ac97_soc_platform);
 }
 
@@ -457,16 +458,26 @@ static int bf5xx_soc_platform_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_platform(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_platform(&pdev->dev,
+					      &bf5xx_ac97_soc_platform);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver bf5xx_pcm_driver = {
 	.driver = {
 			.name = "bfin-ac97-pcm-audio",
+<<<<<<< HEAD
 			.owner = THIS_MODULE,
 	},
 
 	.probe = bf5xx_soc_platform_probe,
 	.remove = bf5xx_soc_platform_remove,
+=======
+	},
+
+	.probe = bf5xx_soc_platform_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(bf5xx_pcm_driver);

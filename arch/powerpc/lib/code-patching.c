@@ -14,12 +14,26 @@
 #include <asm/page.h>
 #include <asm/code-patching.h>
 #include <asm/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <asm/setup.h>
+#include <asm/sections.h>
+>>>>>>> v4.9.227
 
 
 int patch_instruction(unsigned int *addr, unsigned int instr)
 {
 	int err;
 
+<<<<<<< HEAD
+=======
+	/* Make sure we aren't patching a freed init section */
+	if (*PTRRELOC(&init_mem_is_free) && init_section_contains(addr, 4)) {
+		pr_debug("Skipping init section patching addr: 0x%px\n", addr);
+		return 0;
+	}
+
+>>>>>>> v4.9.227
 	__put_user_size(instr, addr, 4, err);
 	if (err)
 		return err;
@@ -32,6 +46,25 @@ int patch_branch(unsigned int *addr, unsigned long target, int flags)
 	return patch_instruction(addr, create_branch(addr, target, flags));
 }
 
+<<<<<<< HEAD
+=======
+int patch_branch_site(s32 *site, unsigned long target, int flags)
+{
+	unsigned int *addr;
+
+	addr = (unsigned int *)((unsigned long)site + *site);
+	return patch_instruction(addr, create_branch(addr, target, flags));
+}
+
+int patch_instruction_site(s32 *site, unsigned int instr)
+{
+	unsigned int *addr;
+
+	addr = (unsigned int *)((unsigned long)site + *site);
+	return patch_instruction(addr, instr);
+}
+
+>>>>>>> v4.9.227
 unsigned int create_branch(const unsigned int *addr,
 			   unsigned long target, int flags)
 {
@@ -95,6 +128,14 @@ int instr_is_relative_branch(unsigned int instr)
 	return instr_is_branch_iform(instr) || instr_is_branch_bform(instr);
 }
 
+<<<<<<< HEAD
+=======
+int instr_is_relative_link_branch(unsigned int instr)
+{
+	return instr_is_relative_branch(instr) && (instr & BRANCH_SET_LINK);
+}
+
+>>>>>>> v4.9.227
 static unsigned long branch_iform_target(const unsigned int *instr)
 {
 	signed long imm;

@@ -39,10 +39,17 @@ extern resource_size_t isa_mem_base;
 extern void iounmap(void __iomem *addr);
 
 extern void __iomem *ioremap(phys_addr_t address, unsigned long size);
+<<<<<<< HEAD
 #define ioremap_writethrough(addr, size)	ioremap((addr), (size))
 #define ioremap_nocache(addr, size)		ioremap((addr), (size))
 #define ioremap_fullcache(addr, size)		ioremap((addr), (size))
 #define ioremap_wc(addr, size)			ioremap((addr), (size))
+=======
+#define ioremap_nocache(addr, size)		ioremap((addr), (size))
+#define ioremap_fullcache(addr, size)		ioremap((addr), (size))
+#define ioremap_wc(addr, size)			ioremap((addr), (size))
+#define ioremap_wt(addr, size)			ioremap((addr), (size))
+>>>>>>> v4.9.227
 
 #endif /* CONFIG_MMU */
 
@@ -69,6 +76,7 @@ extern void __iomem *ioremap(phys_addr_t address, unsigned long size);
 
 #include <asm-generic/io.h>
 
+<<<<<<< HEAD
 #define readb_relaxed	readb
 #define readw_relaxed	readw
 #define readl_relaxed	readl
@@ -77,4 +85,6 @@ extern void __iomem *ioremap(phys_addr_t address, unsigned long size);
 #define writew_relaxed	writew
 #define writel_relaxed	writel
 
+=======
+>>>>>>> v4.9.227
 #endif /* _ASM_MICROBLAZE_IO_H */

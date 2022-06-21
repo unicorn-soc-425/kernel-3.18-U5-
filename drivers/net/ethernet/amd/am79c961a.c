@@ -50,8 +50,13 @@ static const char version[] =
 static void write_rreg(u_long base, u_int reg, u_int val)
 {
 	asm volatile(
+<<<<<<< HEAD
 	"str%?h	%1, [%2]	@ NET_RAP\n\t"
 	"str%?h	%0, [%2, #-4]	@ NET_RDP"
+=======
+	"strh	%1, [%2]	@ NET_RAP\n\t"
+	"strh	%0, [%2, #-4]	@ NET_RDP"
+>>>>>>> v4.9.227
 	:
 	: "r" (val), "r" (reg), "r" (ISAIO_BASE + 0x0464));
 }
@@ -60,8 +65,13 @@ static inline unsigned short read_rreg(u_long base_addr, u_int reg)
 {
 	unsigned short v;
 	asm volatile(
+<<<<<<< HEAD
 	"str%?h	%1, [%2]	@ NET_RAP\n\t"
 	"ldr%?h	%0, [%2, #-4]	@ NET_RDP"
+=======
+	"strh	%1, [%2]	@ NET_RAP\n\t"
+	"ldrh	%0, [%2, #-4]	@ NET_RDP"
+>>>>>>> v4.9.227
 	: "=r" (v)
 	: "r" (reg), "r" (ISAIO_BASE + 0x0464));
 	return v;
@@ -70,8 +80,13 @@ static inline unsigned short read_rreg(u_long base_addr, u_int reg)
 static inline void write_ireg(u_long base, u_int reg, u_int val)
 {
 	asm volatile(
+<<<<<<< HEAD
 	"str%?h	%1, [%2]	@ NET_RAP\n\t"
 	"str%?h	%0, [%2, #8]	@ NET_IDP"
+=======
+	"strh	%1, [%2]	@ NET_RAP\n\t"
+	"strh	%0, [%2, #8]	@ NET_IDP"
+>>>>>>> v4.9.227
 	:
 	: "r" (val), "r" (reg), "r" (ISAIO_BASE + 0x0464));
 }
@@ -80,8 +95,13 @@ static inline unsigned short read_ireg(u_long base_addr, u_int reg)
 {
 	u_short v;
 	asm volatile(
+<<<<<<< HEAD
 	"str%?h	%1, [%2]	@ NAT_RAP\n\t"
 	"ldr%?h	%0, [%2, #8]	@ NET_IDP\n\t"
+=======
+	"strh	%1, [%2]	@ NAT_RAP\n\t"
+	"ldrh	%0, [%2, #8]	@ NET_IDP\n\t"
+>>>>>>> v4.9.227
 	: "=r" (v)
 	: "r" (reg), "r" (ISAIO_BASE + 0x0464));
 	return v;
@@ -96,7 +116,11 @@ am_writebuffer(struct net_device *dev, u_int offset, unsigned char *buf, unsigne
 	offset = ISAMEM_BASE + (offset << 1);
 	length = (length + 1) & ~1;
 	if ((int)buf & 2) {
+<<<<<<< HEAD
 		asm volatile("str%?h	%2, [%0], #4"
+=======
+		asm volatile("strh	%2, [%0], #4"
+>>>>>>> v4.9.227
 		 : "=&r" (offset) : "0" (offset), "r" (buf[0] | (buf[1] << 8)));
 		buf += 2;
 		length -= 2;
@@ -104,6 +128,7 @@ am_writebuffer(struct net_device *dev, u_int offset, unsigned char *buf, unsigne
 	while (length > 8) {
 		register unsigned int tmp asm("r2"), tmp2 asm("r3");
 		asm volatile(
+<<<<<<< HEAD
 			"ldm%?ia	%0!, {%1, %2}"
 			: "+r" (buf), "=&r" (tmp), "=&r" (tmp2));
 		length -= 8;
@@ -118,6 +143,22 @@ am_writebuffer(struct net_device *dev, u_int offset, unsigned char *buf, unsigne
 	}
 	while (length > 0) {
 		asm volatile("str%?h	%2, [%0], #4"
+=======
+			"ldmia	%0!, {%1, %2}"
+			: "+r" (buf), "=&r" (tmp), "=&r" (tmp2));
+		length -= 8;
+		asm volatile(
+			"strh	%1, [%0], #4\n\t"
+			"mov	%1, %1, lsr #16\n\t"
+			"strh	%1, [%0], #4\n\t"
+			"strh	%2, [%0], #4\n\t"
+			"mov	%2, %2, lsr #16\n\t"
+			"strh	%2, [%0], #4"
+		: "+r" (offset), "=&r" (tmp), "=&r" (tmp2));
+	}
+	while (length > 0) {
+		asm volatile("strh	%2, [%0], #4"
+>>>>>>> v4.9.227
 		 : "=&r" (offset) : "0" (offset), "r" (buf[0] | (buf[1] << 8)));
 		buf += 2;
 		length -= 2;
@@ -132,16 +173,24 @@ am_readbuffer(struct net_device *dev, u_int offset, unsigned char *buf, unsigned
 	if ((int)buf & 2) {
 		unsigned int tmp;
 		asm volatile(
+<<<<<<< HEAD
 			"ldr%?h	%2, [%0], #4\n\t"
 			"str%?b	%2, [%1], #1\n\t"
 			"mov%?	%2, %2, lsr #8\n\t"
 			"str%?b	%2, [%1], #1"
+=======
+			"ldrh	%2, [%0], #4\n\t"
+			"strb	%2, [%1], #1\n\t"
+			"mov	%2, %2, lsr #8\n\t"
+			"strb	%2, [%1], #1"
+>>>>>>> v4.9.227
 		: "=&r" (offset), "=&r" (buf), "=r" (tmp): "0" (offset), "1" (buf));
 		length -= 2;
 	}
 	while (length > 8) {
 		register unsigned int tmp asm("r2"), tmp2 asm("r3"), tmp3;
 		asm volatile(
+<<<<<<< HEAD
 			"ldr%?h	%2, [%0], #4\n\t"
 			"ldr%?h	%4, [%0], #4\n\t"
 			"ldr%?h	%3, [%0], #4\n\t"
@@ -149,6 +198,15 @@ am_readbuffer(struct net_device *dev, u_int offset, unsigned char *buf, unsigned
 			"ldr%?h	%4, [%0], #4\n\t"
 			"orr%?	%3, %3, %4, lsl #16\n\t"
 			"stm%?ia	%1!, {%2, %3}"
+=======
+			"ldrh	%2, [%0], #4\n\t"
+			"ldrh	%4, [%0], #4\n\t"
+			"ldrh	%3, [%0], #4\n\t"
+			"orr	%2, %2, %4, lsl #16\n\t"
+			"ldrh	%4, [%0], #4\n\t"
+			"orr	%3, %3, %4, lsl #16\n\t"
+			"stmia	%1!, {%2, %3}"
+>>>>>>> v4.9.227
 		: "=&r" (offset), "=&r" (buf), "=r" (tmp), "=r" (tmp2), "=r" (tmp3)
 		: "0" (offset), "1" (buf));
 		length -= 8;
@@ -156,10 +214,17 @@ am_readbuffer(struct net_device *dev, u_int offset, unsigned char *buf, unsigned
 	while (length > 0) {
 		unsigned int tmp;
 		asm volatile(
+<<<<<<< HEAD
 			"ldr%?h	%2, [%0], #4\n\t"
 			"str%?b	%2, [%1], #1\n\t"
 			"mov%?	%2, %2, lsr #8\n\t"
 			"str%?b	%2, [%1], #1"
+=======
+			"ldrh	%2, [%0], #4\n\t"
+			"strb	%2, [%1], #1\n\t"
+			"mov	%2, %2, lsr #8\n\t"
+			"strb	%2, [%1], #1"
+>>>>>>> v4.9.227
 		: "=&r" (offset), "=&r" (buf), "=r" (tmp) : "0" (offset), "1" (buf));
 		length -= 2;
 	}
@@ -440,7 +505,11 @@ static void am79c961_timeout(struct net_device *dev)
 /*
  * Transmit a packet
  */
+<<<<<<< HEAD
 static int
+=======
+static netdev_tx_t
+>>>>>>> v4.9.227
 am79c961_sendpacket(struct sk_buff *skb, struct net_device *dev)
 {
 	struct dev_priv *priv = netdev_priv(dev);

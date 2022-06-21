@@ -24,6 +24,11 @@
 #include "priv.h"
 #include "ram.h"
 
+<<<<<<< HEAD
+=======
+#include <core/memory.h>
+#include <core/option.h>
+>>>>>>> v4.9.227
 #include <subdev/bios.h>
 #include <subdev/bios/M0203.h>
 #include <engine/gr.h>
@@ -98,6 +103,10 @@ static int
 nvkm_fb_oneinit(struct nvkm_subdev *subdev)
 {
 	struct nvkm_fb *fb = nvkm_fb(subdev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	if (fb->func->ram_new) {
 		int ret = fb->func->ram_new(fb, &fb->ram);
 		if (ret) {
@@ -105,6 +114,16 @@ nvkm_fb_oneinit(struct nvkm_subdev *subdev)
 			return ret;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	if (fb->func->oneinit) {
+		int ret = fb->func->oneinit(fb);
+		if (ret)
+			return ret;
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -125,6 +144,13 @@ nvkm_fb_init(struct nvkm_subdev *subdev)
 
 	if (fb->func->init)
 		fb->func->init(fb);
+<<<<<<< HEAD
+=======
+	if (fb->func->init_page)
+		fb->func->init_page(fb);
+	if (fb->func->init_unkn)
+		fb->func->init_unkn(fb);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -134,6 +160,12 @@ nvkm_fb_dtor(struct nvkm_subdev *subdev)
 	struct nvkm_fb *fb = nvkm_fb(subdev);
 	int i;
 
+<<<<<<< HEAD
+=======
+	nvkm_memory_del(&fb->mmu_wr);
+	nvkm_memory_del(&fb->mmu_rd);
+
+>>>>>>> v4.9.227
 	for (i = 0; i < fb->tile.regions; i++)
 		fb->func->tile.fini(fb, i, &fb->tile.region[i]);
 
@@ -156,9 +188,16 @@ void
 nvkm_fb_ctor(const struct nvkm_fb_func *func, struct nvkm_device *device,
 	     int index, struct nvkm_fb *fb)
 {
+<<<<<<< HEAD
 	nvkm_subdev_ctor(&nvkm_fb, device, index, 0, &fb->subdev);
 	fb->func = func;
 	fb->tile.regions = fb->func->tile.regions;
+=======
+	nvkm_subdev_ctor(&nvkm_fb, device, index, &fb->subdev);
+	fb->func = func;
+	fb->tile.regions = fb->func->tile.regions;
+	fb->page = nvkm_longopt(device->cfgopt, "NvFbBigPage", 0);
+>>>>>>> v4.9.227
 }
 
 int

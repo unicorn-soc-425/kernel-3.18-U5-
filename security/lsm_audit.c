@@ -99,7 +99,11 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
 	}
 	return ret;
 }
+<<<<<<< HEAD
 #if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+>>>>>>> v4.9.227
 /**
  * ipv6_skb_to_auditdata : fill auditdata from skb
  * @skb : the skb
@@ -211,7 +215,11 @@ static inline void print_ipv4_addr(struct audit_buffer *ab, __be32 addr,
 static void dump_common_audit_data(struct audit_buffer *ab,
 				   struct common_audit_data *a)
 {
+<<<<<<< HEAD
 	struct task_struct *tsk = current;
+=======
+	char comm[sizeof(current->comm)];
+>>>>>>> v4.9.227
 
 	/*
 	 * To keep stack sizes in check force programers to notice if they
@@ -221,7 +229,11 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 	BUILD_BUG_ON(sizeof(a->u) > sizeof(void *)*2);
 
 	audit_log_format(ab, " pid=%d comm=", task_tgid_nr(current));
+<<<<<<< HEAD
 	audit_log_untrustedstring(ab, tsk->comm);
+=======
+	audit_log_untrustedstring(ab, memcpy(comm, current->comm, sizeof(comm)));
+>>>>>>> v4.9.227
 
 	switch (a->type) {
 	case LSM_AUDIT_DATA_NONE:
@@ -237,7 +249,24 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 
 		audit_log_d_path(ab, " path=", &a->u.path);
 
+<<<<<<< HEAD
 		inode = a->u.path.dentry->d_inode;
+=======
+		inode = d_backing_inode(a->u.path.dentry);
+		if (inode) {
+			audit_log_format(ab, " dev=");
+			audit_log_untrustedstring(ab, inode->i_sb->s_id);
+			audit_log_format(ab, " ino=%lu", inode->i_ino);
+		}
+		break;
+	}
+	case LSM_AUDIT_DATA_FILE: {
+		struct inode *inode;
+
+		audit_log_d_path(ab, " path=", &a->u.file->f_path);
+
+		inode = file_inode(a->u.file);
+>>>>>>> v4.9.227
 		if (inode) {
 			audit_log_format(ab, " dev=");
 			audit_log_untrustedstring(ab, inode->i_sb->s_id);
@@ -257,7 +286,11 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 			audit_log_format(ab, " ino=%lu", inode->i_ino);
 		}
 
+<<<<<<< HEAD
 		audit_log_format(ab, " ioctlcmd=%hx", a->u.op->cmd);
+=======
+		audit_log_format(ab, " ioctlcmd=0x%hx", a->u.op->cmd);
+>>>>>>> v4.9.227
 		break;
 	}
 	case LSM_AUDIT_DATA_DENTRY: {
@@ -266,7 +299,11 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 		audit_log_format(ab, " name=");
 		audit_log_untrustedstring(ab, a->u.dentry->d_name.name);
 
+<<<<<<< HEAD
 		inode = a->u.dentry->d_inode;
+=======
+		inode = d_backing_inode(a->u.dentry);
+>>>>>>> v4.9.227
 		if (inode) {
 			audit_log_format(ab, " dev=");
 			audit_log_untrustedstring(ab, inode->i_sb->s_id);
@@ -291,6 +328,7 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 		audit_log_format(ab, " ino=%lu", inode->i_ino);
 		break;
 	}
+<<<<<<< HEAD
 	case LSM_AUDIT_DATA_TASK:
 		tsk = a->u.tsk;
 		if (tsk) {
@@ -301,10 +339,29 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 			}
 		}
 		break;
+=======
+	case LSM_AUDIT_DATA_TASK: {
+		struct task_struct *tsk = a->u.tsk;
+		if (tsk) {
+			pid_t pid = task_tgid_nr(tsk);
+			if (pid) {
+				char comm[sizeof(tsk->comm)];
+				audit_log_format(ab, " opid=%d ocomm=", pid);
+				audit_log_untrustedstring(ab,
+				    memcpy(comm, tsk->comm, sizeof(comm)));
+			}
+		}
+		break;
+	}
+>>>>>>> v4.9.227
 	case LSM_AUDIT_DATA_NET:
 		if (a->u.net->sk) {
 			struct sock *sk = a->u.net->sk;
 			struct unix_sock *u;
+<<<<<<< HEAD
+=======
+			struct unix_address *addr;
+>>>>>>> v4.9.227
 			int len = 0;
 			char *p = NULL;
 
@@ -335,14 +392,25 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 #endif
 			case AF_UNIX:
 				u = unix_sk(sk);
+<<<<<<< HEAD
+=======
+				addr = smp_load_acquire(&u->addr);
+				if (!addr)
+					break;
+>>>>>>> v4.9.227
 				if (u->path.dentry) {
 					audit_log_d_path(ab, " path=", &u->path);
 					break;
 				}
+<<<<<<< HEAD
 				if (!u->addr)
 					break;
 				len = u->addr->len-sizeof(short);
 				p = &u->addr->name->sun_path[0];
+=======
+				len = addr->len-sizeof(short);
+				p = &addr->name->sun_path[0];
+>>>>>>> v4.9.227
 				audit_log_format(ab, " path=");
 				if (*p)
 					audit_log_untrustedstring(ab, p);

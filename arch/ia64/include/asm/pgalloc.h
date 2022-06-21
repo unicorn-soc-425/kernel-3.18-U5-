@@ -32,7 +32,11 @@ static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
 	quicklist_free(0, NULL, pgd);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PGTABLE_4
+=======
+#if CONFIG_PGTABLE_LEVELS == 4
+>>>>>>> v4.9.227
 static inline void
 pgd_populate(struct mm_struct *mm, pgd_t * pgd_entry, pud_t * pud)
 {
@@ -49,7 +53,11 @@ static inline void pud_free(struct mm_struct *mm, pud_t *pud)
 	quicklist_free(0, NULL, pud);
 }
 #define __pud_free_tlb(tlb, pud, address)	pud_free((tlb)->mm, pud)
+<<<<<<< HEAD
 #endif /* CONFIG_PGTABLE_4 */
+=======
+#endif /* CONFIG_PGTABLE_LEVELS == 4 */
+>>>>>>> v4.9.227
 
 static inline void
 pud_populate(struct mm_struct *mm, pud_t * pud_entry, pmd_t * pmd)

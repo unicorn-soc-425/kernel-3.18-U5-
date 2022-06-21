@@ -11,6 +11,7 @@
 
 #include <linux/kvm_host.h>
 
+<<<<<<< HEAD
 char *kvm_mips_exit_types_str[MAX_KVM_MIPS_EXIT_TYPES] = {
 	"WAIT",
 	"CACHE",
@@ -28,6 +29,8 @@ char *kvm_mips_exit_types_str[MAX_KVM_MIPS_EXIT_TYPES] = {
 	"D-Cache Flushes",
 };
 
+=======
+>>>>>>> v4.9.227
 char *kvm_cop0_str[N_MIPS_COPROC_REGS] = {
 	"Index",
 	"Random",

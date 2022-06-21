@@ -175,12 +175,33 @@ int wlcore_set_partition(struct wl1271 *wl,
 	if (ret < 0)
 		goto out;
 
+<<<<<<< HEAD
 	/*
 	 * We don't need the size of the last partition, as it is
 	 * automatically calculated based on the total memory size and
 	 * the sizes of the previous partitions.
 	 */
 	ret = wlcore_raw_write32(wl, HW_PART3_START_ADDR, p->mem3.start);
+=======
+	/* wl12xx only: We don't need the size of the last partition,
+	 * as it is automatically calculated based on the total memory
+	 * size and the sizes of the previous partitions.
+	 *
+	 * wl18xx re-defines the HW_PART3 addresses for logger over
+	 * SDIO support. wl12xx is expecting the write to
+	 * HW_PART3_START_ADDR at offset 24. This creates conflict
+	 * between the addresses.
+	 * In order to fix this the expected value is written to
+	 * HW_PART3_SIZE_ADDR instead which is at offset 24 after changes.
+	 */
+	ret = wlcore_raw_write32(wl, HW_PART3_START_ADDR, p->mem3.start);
+	if (ret < 0)
+		goto out;
+
+	ret = wlcore_raw_write32(wl, HW_PART3_SIZE_ADDR, p->mem3.size);
+	if (ret < 0)
+		goto out;
+>>>>>>> v4.9.227
 
 out:
 	return ret;

@@ -551,8 +551,12 @@ static void ecard_check_lockup(struct irq_desc *desc)
 	}
 }
 
+<<<<<<< HEAD
 static void
 ecard_irq_handler(unsigned int irq, struct irq_desc *desc)
+=======
+static void ecard_irq_handler(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	ecard_t *ec;
 	int called = 0;
@@ -946,7 +950,11 @@ static int __init ecard_probe(int slot, unsigned irq, card_type_t type)
 		irq_set_chip_and_handler(ec->irq, &ecard_chip,
 					 handle_level_irq);
 		irq_set_chip_data(ec->irq, ec);
+<<<<<<< HEAD
 		set_irq_flags(ec->irq, IRQF_VALID);
+=======
+		irq_clear_status_flags(ec->irq, IRQ_NOREQUEST);
+>>>>>>> v4.9.227
 	}
 
 #ifdef CONFIG_ARCH_RPC

@@ -17,6 +17,7 @@
 #include "internal.h"
 #include "afs_cm.h"
 
+<<<<<<< HEAD
 #if 0
 struct workqueue_struct *afs_cm_workqueue;
 #endif  /*  0  */
@@ -30,6 +31,14 @@ static int afs_deliver_cb_callback(struct afs_call *, struct sk_buff *, bool);
 static int afs_deliver_cb_probe_uuid(struct afs_call *, struct sk_buff *, bool);
 static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *,
 						 struct sk_buff *, bool);
+=======
+static int afs_deliver_cb_init_call_back_state(struct afs_call *);
+static int afs_deliver_cb_init_call_back_state3(struct afs_call *);
+static int afs_deliver_cb_probe(struct afs_call *);
+static int afs_deliver_cb_callback(struct afs_call *);
+static int afs_deliver_cb_probe_uuid(struct afs_call *);
+static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *);
+>>>>>>> v4.9.227
 static void afs_cm_destructor(struct afs_call *);
 
 /*
@@ -98,11 +107,17 @@ static const struct afs_call_type afs_SRXCBTellMeAboutYourself = {
  */
 bool afs_cm_incoming_call(struct afs_call *call)
 {
+<<<<<<< HEAD
 	u32 operation_id = ntohl(call->operation_ID);
 
 	_enter("{CB.OP %u}", operation_id);
 
 	switch (operation_id) {
+=======
+	_enter("{CB.OP %u}", call->operation_ID);
+
+	switch (call->operation_ID) {
+>>>>>>> v4.9.227
 	case CBCallBack:
 		call->type = &afs_SRXCBCallBack;
 		return true;
@@ -137,7 +152,11 @@ static void afs_cm_destructor(struct afs_call *call)
 	 * received.  The step number here must match the final number in
 	 * afs_deliver_cb_callback().
 	 */
+<<<<<<< HEAD
 	if (call->unmarshall == 6) {
+=======
+	if (call->unmarshall == 5) {
+>>>>>>> v4.9.227
 		ASSERT(call->server && call->count && call->request);
 		afs_break_callbacks(call->server, call->count, call->request);
 	}
@@ -171,6 +190,7 @@ static void SRXAFSCB_CallBack(struct work_struct *work)
 /*
  * deliver request data to a CB.CallBack call
  */
+<<<<<<< HEAD
 static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 				   bool last)
 {
@@ -185,18 +205,39 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 
 	switch (call->unmarshall) {
 	case 0:
+=======
+static int afs_deliver_cb_callback(struct afs_call *call)
+{
+	struct sockaddr_rxrpc srx;
+	struct afs_callback *cb;
+	struct afs_server *server;
+	__be32 *bp;
+	int ret, loop;
+
+	_enter("{%u}", call->unmarshall);
+
+	switch (call->unmarshall) {
+	case 0:
+		rxrpc_kernel_get_peer(afs_socket, call->rxcall, &srx);
+>>>>>>> v4.9.227
 		call->offset = 0;
 		call->unmarshall++;
 
 		/* extract the FID array and its count in two steps */
 	case 1:
 		_debug("extract FID count");
+<<<<<<< HEAD
 		ret = afs_extract_data(call, skb, last, &call->tmp, 4);
 		switch (ret) {
 		case 0:		break;
 		case -EAGAIN:	return 0;
 		default:	return ret;
 		}
+=======
+		ret = afs_extract_data(call, &call->tmp, 4, true);
+		if (ret < 0)
+			return ret;
+>>>>>>> v4.9.227
 
 		call->count = ntohl(call->tmp);
 		_debug("FID count: %u", call->count);
@@ -211,6 +252,7 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 
 	case 2:
 		_debug("extract FID array");
+<<<<<<< HEAD
 		ret = afs_extract_data(call, skb, last, call->buffer,
 				       call->count * 3 * 4);
 		switch (ret) {
@@ -218,6 +260,12 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 		case -EAGAIN:	return 0;
 		default:	return ret;
 		}
+=======
+		ret = afs_extract_data(call, call->buffer,
+				       call->count * 3 * 4, true);
+		if (ret < 0)
+			return ret;
+>>>>>>> v4.9.227
 
 		_debug("unmarshall FID array");
 		call->request = kcalloc(call->count,
@@ -241,6 +289,7 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 		/* extract the callback array and its count in two steps */
 	case 3:
 		_debug("extract CB count");
+<<<<<<< HEAD
 		ret = afs_extract_data(call, skb, last, &call->tmp, 4);
 		switch (ret) {
 		case 0:		break;
@@ -266,16 +315,40 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 		case -EAGAIN:	return 0;
 		default:	return ret;
 		}
+=======
+		ret = afs_extract_data(call, &call->tmp, 4, true);
+		if (ret < 0)
+			return ret;
+
+		call->count2 = ntohl(call->tmp);
+		_debug("CB count: %u", call->count2);
+		if (call->count2 != call->count && call->count2 != 0)
+			return -EBADMSG;
+		call->offset = 0;
+		call->unmarshall++;
+
+	case 4:
+		_debug("extract CB array");
+		ret = afs_extract_data(call, call->buffer,
+				       call->count2 * 3 * 4, false);
+		if (ret < 0)
+			return ret;
+>>>>>>> v4.9.227
 
 		_debug("unmarshall CB array");
 		cb = call->request;
 		bp = call->buffer;
+<<<<<<< HEAD
 		for (loop = call->count; loop > 0; loop--, cb++) {
+=======
+		for (loop = call->count2; loop > 0; loop--, cb++) {
+>>>>>>> v4.9.227
 			cb->version	= ntohl(*bp++);
 			cb->expiry	= ntohl(*bp++);
 			cb->type	= ntohl(*bp++);
 		}
 
+<<<<<<< HEAD
 	empty_cb_array:
 		call->offset = 0;
 		call->unmarshall++;
@@ -285,6 +358,11 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 		if (skb->len != 0)
 			return -EBADMSG;
 
+=======
+		call->offset = 0;
+		call->unmarshall++;
+
+>>>>>>> v4.9.227
 		/* Record that the message was unmarshalled successfully so
 		 * that the call destructor can know do the callback breaking
 		 * work, even if the final ACK isn't received.
@@ -293,6 +371,7 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 		 * updated also.
 		 */
 		call->unmarshall++;
+<<<<<<< HEAD
 	case 6:
 		break;
 	}
@@ -300,12 +379,22 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 	if (!last)
 		return 0;
 
+=======
+	case 5:
+		break;
+	}
+
+>>>>>>> v4.9.227
 	call->state = AFS_CALL_REPLYING;
 
 	/* we'll need the file server record as that tells us which set of
 	 * vnodes to operate upon */
+<<<<<<< HEAD
 	memcpy(&addr, &ip_hdr(skb)->saddr, 4);
 	server = afs_find_server(&addr);
+=======
+	server = afs_find_server(&srx);
+>>>>>>> v4.9.227
 	if (!server)
 		return -ENOTCONN;
 	call->server = server;
@@ -332,6 +421,7 @@ static void SRXAFSCB_InitCallBackState(struct work_struct *work)
 /*
  * deliver request data to a CB.InitCallBackState call
  */
+<<<<<<< HEAD
 static int afs_deliver_cb_init_call_back_state(struct afs_call *call,
 					       struct sk_buff *skb,
 					       bool last)
@@ -345,14 +435,33 @@ static int afs_deliver_cb_init_call_back_state(struct afs_call *call,
 		return -EBADMSG;
 	if (!last)
 		return 0;
+=======
+static int afs_deliver_cb_init_call_back_state(struct afs_call *call)
+{
+	struct sockaddr_rxrpc srx;
+	struct afs_server *server;
+	int ret;
+
+	_enter("");
+
+	rxrpc_kernel_get_peer(afs_socket, call->rxcall, &srx);
+
+	ret = afs_extract_data(call, NULL, 0, false);
+	if (ret < 0)
+		return ret;
+>>>>>>> v4.9.227
 
 	/* no unmarshalling required */
 	call->state = AFS_CALL_REPLYING;
 
 	/* we'll need the file server record as that tells us which set of
 	 * vnodes to operate upon */
+<<<<<<< HEAD
 	memcpy(&addr, &ip_hdr(skb)->saddr, 4);
 	server = afs_find_server(&addr);
+=======
+	server = afs_find_server(&srx);
+>>>>>>> v4.9.227
 	if (!server)
 		return -ENOTCONN;
 	call->server = server;
@@ -365,6 +474,7 @@ static int afs_deliver_cb_init_call_back_state(struct afs_call *call,
 /*
  * deliver request data to a CB.InitCallBackState3 call
  */
+<<<<<<< HEAD
 static int afs_deliver_cb_init_call_back_state3(struct afs_call *call,
 						struct sk_buff *skb,
 						bool last)
@@ -456,17 +566,31 @@ static void SRXAFSCB_ProbeUuid(struct work_struct *work)
 static int afs_deliver_cb_probe_uuid(struct afs_call *call, struct sk_buff *skb,
 				     bool last)
 {
+=======
+static int afs_deliver_cb_init_call_back_state3(struct afs_call *call)
+{
+	struct sockaddr_rxrpc srx;
+	struct afs_server *server;
+>>>>>>> v4.9.227
 	struct afs_uuid *r;
 	unsigned loop;
 	__be32 *b;
 	int ret;
 
+<<<<<<< HEAD
 	_enter("{%u},{%u},%d", call->unmarshall, skb->len, last);
 
 	if (skb->len > 0)
 		return -EBADMSG;
 	if (!last)
 		return 0;
+=======
+	_enter("");
+
+	rxrpc_kernel_get_peer(afs_socket, call->rxcall, &srx);
+
+	_enter("{%u}", call->unmarshall);
+>>>>>>> v4.9.227
 
 	switch (call->unmarshall) {
 	case 0:
@@ -478,8 +602,13 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *call, struct sk_buff *skb,
 
 	case 1:
 		_debug("extract UUID");
+<<<<<<< HEAD
 		ret = afs_extract_data(call, skb, last, call->buffer,
 				       11 * sizeof(__be32));
+=======
+		ret = afs_extract_data(call, call->buffer,
+				       11 * sizeof(__be32), false);
+>>>>>>> v4.9.227
 		switch (ret) {
 		case 0:		break;
 		case -EAGAIN:	return 0;
@@ -506,6 +635,7 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *call, struct sk_buff *skb,
 		call->unmarshall++;
 
 	case 2:
+<<<<<<< HEAD
 		_debug("trailer");
 		if (skb->len != 0)
 			return -EBADMSG;
@@ -514,6 +644,134 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *call, struct sk_buff *skb,
 
 	if (!last)
 		return 0;
+=======
+		break;
+	}
+
+	/* no unmarshalling required */
+	call->state = AFS_CALL_REPLYING;
+
+	/* we'll need the file server record as that tells us which set of
+	 * vnodes to operate upon */
+	server = afs_find_server(&srx);
+	if (!server)
+		return -ENOTCONN;
+	call->server = server;
+
+	INIT_WORK(&call->work, SRXAFSCB_InitCallBackState);
+	queue_work(afs_wq, &call->work);
+	return 0;
+}
+
+/*
+ * allow the fileserver to see if the cache manager is still alive
+ */
+static void SRXAFSCB_Probe(struct work_struct *work)
+{
+	struct afs_call *call = container_of(work, struct afs_call, work);
+
+	_enter("");
+	afs_send_empty_reply(call);
+	_leave("");
+}
+
+/*
+ * deliver request data to a CB.Probe call
+ */
+static int afs_deliver_cb_probe(struct afs_call *call)
+{
+	int ret;
+
+	_enter("");
+
+	ret = afs_extract_data(call, NULL, 0, false);
+	if (ret < 0)
+		return ret;
+
+	/* no unmarshalling required */
+	call->state = AFS_CALL_REPLYING;
+
+	INIT_WORK(&call->work, SRXAFSCB_Probe);
+	queue_work(afs_wq, &call->work);
+	return 0;
+}
+
+/*
+ * allow the fileserver to quickly find out if the fileserver has been rebooted
+ */
+static void SRXAFSCB_ProbeUuid(struct work_struct *work)
+{
+	struct afs_call *call = container_of(work, struct afs_call, work);
+	struct afs_uuid *r = call->request;
+
+	struct {
+		__be32	match;
+	} reply;
+
+	_enter("");
+
+	if (memcmp(r, &afs_uuid, sizeof(afs_uuid)) == 0)
+		reply.match = htonl(0);
+	else
+		reply.match = htonl(1);
+
+	afs_send_simple_reply(call, &reply, sizeof(reply));
+	_leave("");
+}
+
+/*
+ * deliver request data to a CB.ProbeUuid call
+ */
+static int afs_deliver_cb_probe_uuid(struct afs_call *call)
+{
+	struct afs_uuid *r;
+	unsigned loop;
+	__be32 *b;
+	int ret;
+
+	_enter("{%u}", call->unmarshall);
+
+	switch (call->unmarshall) {
+	case 0:
+		call->offset = 0;
+		call->buffer = kmalloc(11 * sizeof(__be32), GFP_KERNEL);
+		if (!call->buffer)
+			return -ENOMEM;
+		call->unmarshall++;
+
+	case 1:
+		_debug("extract UUID");
+		ret = afs_extract_data(call, call->buffer,
+				       11 * sizeof(__be32), false);
+		switch (ret) {
+		case 0:		break;
+		case -EAGAIN:	return 0;
+		default:	return ret;
+		}
+
+		_debug("unmarshall UUID");
+		call->request = kmalloc(sizeof(struct afs_uuid), GFP_KERNEL);
+		if (!call->request)
+			return -ENOMEM;
+
+		b = call->buffer;
+		r = call->request;
+		r->time_low			= ntohl(b[0]);
+		r->time_mid			= ntohl(b[1]);
+		r->time_hi_and_version		= ntohl(b[2]);
+		r->clock_seq_hi_and_reserved 	= ntohl(b[3]);
+		r->clock_seq_low		= ntohl(b[4]);
+
+		for (loop = 0; loop < 6; loop++)
+			r->node[loop] = ntohl(b[loop + 5]);
+
+		call->offset = 0;
+		call->unmarshall++;
+
+	case 2:
+		break;
+	}
+>>>>>>> v4.9.227
 
 	call->state = AFS_CALL_REPLYING;
 
@@ -588,6 +846,7 @@ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
 /*
  * deliver request data to a CB.TellMeAboutYourself call
  */
+<<<<<<< HEAD
 static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *call,
 						 struct sk_buff *skb, bool last)
 {
@@ -597,6 +856,17 @@ static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *call,
 		return -EBADMSG;
 	if (!last)
 		return 0;
+=======
+static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *call)
+{
+	int ret;
+
+	_enter("");
+
+	ret = afs_extract_data(call, NULL, 0, false);
+	if (ret < 0)
+		return ret;
+>>>>>>> v4.9.227
 
 	/* no unmarshalling required */
 	call->state = AFS_CALL_REPLYING;

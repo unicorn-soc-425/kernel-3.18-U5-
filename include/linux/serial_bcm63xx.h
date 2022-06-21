@@ -116,6 +116,9 @@
 					UART_FIFO_PARERR_MASK |		\
 					UART_FIFO_BRKDET_MASK)
 
+<<<<<<< HEAD
 #define UART_REG_SIZE			24
 
+=======
+>>>>>>> v4.9.227
 #endif /* _LINUX_SERIAL_BCM63XX_H */

@@ -111,6 +111,10 @@ static void tm6000_urb_received(struct urb *urb)
 			printk(KERN_ERR "tm6000:  error %s\n", __func__);
 			kfree(urb->transfer_buffer);
 			usb_free_urb(urb);
+<<<<<<< HEAD
+=======
+			dev->dvb->bulk_urb = NULL;
+>>>>>>> v4.9.227
 		}
 	}
 }
@@ -129,10 +133,15 @@ static int tm6000_start_stream(struct tm6000_core *dev)
 	}
 
 	dvb->bulk_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (dvb->bulk_urb == NULL) {
 		printk(KERN_ERR "tm6000: couldn't allocate urb\n");
 		return -ENOMEM;
 	}
+=======
+	if (dvb->bulk_urb == NULL)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	pipe = usb_rcvbulkpipe(dev->udev, dev->bulk_in.endp->desc.bEndpointAddress
 							  & USB_ENDPOINT_NUMBER_MASK);
@@ -143,6 +152,10 @@ static int tm6000_start_stream(struct tm6000_core *dev)
 	dvb->bulk_urb->transfer_buffer = kzalloc(size, GFP_KERNEL);
 	if (dvb->bulk_urb->transfer_buffer == NULL) {
 		usb_free_urb(dvb->bulk_urb);
+<<<<<<< HEAD
+=======
+		dvb->bulk_urb = NULL;
+>>>>>>> v4.9.227
 		printk(KERN_ERR "tm6000: couldn't allocate transfer buffer!\n");
 		return -ENOMEM;
 	}
@@ -170,6 +183,10 @@ static int tm6000_start_stream(struct tm6000_core *dev)
 
 		kfree(dvb->bulk_urb->transfer_buffer);
 		usb_free_urb(dvb->bulk_urb);
+<<<<<<< HEAD
+=======
+		dvb->bulk_urb = NULL;
+>>>>>>> v4.9.227
 		return ret;
 	}
 

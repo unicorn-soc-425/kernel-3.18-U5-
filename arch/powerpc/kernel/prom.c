@@ -34,6 +34,10 @@
 #include <linux/of.h>
 #include <linux/of_fdt.h>
 #include <linux/libfdt.h>
+<<<<<<< HEAD
+=======
+#include <linux/cpu.h>
+>>>>>>> v4.9.227
 
 #include <asm/prom.h>
 #include <asm/rtas.h>
@@ -46,7 +50,10 @@
 #include <asm/mmu.h>
 #include <asm/paca.h>
 #include <asm/pgtable.h>
+<<<<<<< HEAD
 #include <asm/pci.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/iommu.h>
 #include <asm/btext.h>
 #include <asm/sections.h>
@@ -56,6 +63,11 @@
 #include <asm/opal.h>
 #include <asm/fadump.h>
 #include <asm/debug.h>
+<<<<<<< HEAD
+=======
+#include <asm/epapr_hcalls.h>
+#include <asm/firmware.h>
+>>>>>>> v4.9.227
 
 #include <mm/mmu_decl.h>
 
@@ -126,7 +138,11 @@ static void __init move_device_tree(void)
 		p = __va(memblock_alloc(size, PAGE_SIZE));
 		memcpy(p, initial_boot_params, size);
 		initial_boot_params = p;
+<<<<<<< HEAD
 		DBG("Moved device tree to 0x%p\n", p);
+=======
+		DBG("Moved device tree to 0x%px\n", p);
+>>>>>>> v4.9.227
 	}
 
 	DBG("<- move_device_tree\n");
@@ -166,7 +182,13 @@ static struct ibm_pa_feature {
 	 * we don't want to turn on TM here, so we use the *_COMP versions
 	 * which are 0 if the kernel doesn't support TM.
 	 */
+<<<<<<< HEAD
 	{CPU_FTR_TM_COMP, 0, 0, PPC_FEATURE2_HTM_COMP, 22, 0, 0},
+=======
+	{CPU_FTR_TM_COMP, 0, 0,
+	 PPC_FEATURE2_HTM_COMP|PPC_FEATURE2_HTM_NOSC_COMP, 22, 0, 0},
+	{0, MMU_FTR_TYPE_RADIX, 0, 0,		40, 0, 0},
+>>>>>>> v4.9.227
 };
 
 static void __init scan_features(unsigned long node, const unsigned char *ftrs,
@@ -222,6 +244,7 @@ static void __init check_cpu_pa_features(unsigned long node)
 }
 
 #ifdef CONFIG_PPC_STD_MMU_64
+<<<<<<< HEAD
 static void __init check_cpu_slb_size(unsigned long node)
 {
 	const __be32 *slb_size_ptr;
@@ -238,6 +261,20 @@ static void __init check_cpu_slb_size(unsigned long node)
 }
 #else
 #define check_cpu_slb_size(node) do { } while(0)
+=======
+static void __init init_mmu_slb_size(unsigned long node)
+{
+	const __be32 *slb_size_ptr;
+
+	slb_size_ptr = of_get_flat_dt_prop(node, "slb-size", NULL) ? :
+			of_get_flat_dt_prop(node, "ibm,slb-size", NULL);
+
+	if (slb_size_ptr)
+		mmu_slb_size = be32_to_cpup(slb_size_ptr);
+}
+#else
+#define init_mmu_slb_size(node) do { } while(0)
+>>>>>>> v4.9.227
 #endif
 
 static struct feature_property {
@@ -384,7 +421,11 @@ static int __init early_init_dt_scan_cpus(unsigned long node,
 
 	check_cpu_feature_properties(node);
 	check_cpu_pa_features(node);
+<<<<<<< HEAD
 	check_cpu_slb_size(node);
+=======
+	init_mmu_slb_size(node);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_PPC64
 	if (nthreads > 1)
@@ -480,9 +521,16 @@ static int __init early_init_dt_scan_drconf_memory(unsigned long node)
 		flags = of_read_number(&dm[3], 1);
 		/* skip DRC index, pad, assoc. list index, flags */
 		dm += 4;
+<<<<<<< HEAD
 		/* skip this block if the reserved bit is set in flags (0x80)
 		   or if the block is not assigned to this partition (0x8) */
 		if ((flags & 0x80) || !(flags & 0x8))
+=======
+		/* skip this block if the reserved bit is set in flags
+		   or if the block is not assigned to this partition */
+		if ((flags & DRCONF_MEM_RESERVED) ||
+				!(flags & DRCONF_MEM_ASSIGNED))
+>>>>>>> v4.9.227
 			continue;
 		size = memblock_size;
 		rngs = 1;
@@ -576,6 +624,10 @@ static void __init early_reserve_mem_dt(void)
 	int len;
 	const __be32 *prop;
 
+<<<<<<< HEAD
+=======
+	early_init_fdt_reserve_self();
+>>>>>>> v4.9.227
 	early_init_fdt_scan_reserved_mem();
 
 	dt_root = of_get_flat_dt_root();
@@ -649,15 +701,22 @@ void __init early_init_devtree(void *params)
 {
 	phys_addr_t limit;
 
+<<<<<<< HEAD
 	DBG(" -> early_init_devtree(%p)\n", params);
+=======
+	DBG(" -> early_init_devtree(%px)\n", params);
+>>>>>>> v4.9.227
 
 	/* Too early to BUG_ON(), do it by hand */
 	if (!early_init_dt_verify(params))
 		panic("BUG: Failed verifying flat device tree, bad version?");
 
+<<<<<<< HEAD
 	/* Setup flat device-tree pointer */
 	initial_boot_params = params;
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC_RTAS
 	/* Some machines might need RTAS info for debugging, grab it now. */
 	of_scan_flat_dt(early_init_dt_scan_rtas, NULL);
@@ -705,17 +764,25 @@ void __init early_init_devtree(void *params)
 		reserve_crashkernel();
 	early_reserve_mem();
 
+<<<<<<< HEAD
 	/*
 	 * Ensure that total memory size is page-aligned, because otherwise
 	 * mark_bootmem() gets upset.
 	 */
+=======
+	/* Ensure that total memory size is page-aligned. */
+>>>>>>> v4.9.227
 	limit = ALIGN(memory_limit ?: memblock_phys_mem_size(), PAGE_SIZE);
 	memblock_enforce_memory_limit(limit);
 
 	memblock_allow_resize();
 	memblock_dump_all();
 
+<<<<<<< HEAD
 	DBG("Phys. mem: %llx\n", memblock_phys_mem_size());
+=======
+	DBG("Phys. mem: %llx\n", (unsigned long long)memblock_phys_mem_size());
+>>>>>>> v4.9.227
 
 	/* We may need to relocate the flat tree, do it now.
 	 * FIXME .. and the initrd too? */
@@ -730,7 +797,11 @@ void __init early_init_devtree(void *params)
 	 */
 	of_scan_flat_dt(early_init_dt_scan_cpus, NULL);
 	if (boot_cpuid < 0) {
+<<<<<<< HEAD
 		printk("Failed to indentify boot CPU !\n");
+=======
+		printk("Failed to identify boot CPU !\n");
+>>>>>>> v4.9.227
 		BUG();
 	}
 
@@ -741,10 +812,28 @@ void __init early_init_devtree(void *params)
 	spinning_secondaries = boot_cpu_count - 1;
 #endif
 
+<<<<<<< HEAD
+=======
+	mmu_early_init_devtree();
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC_POWERNV
 	/* Scan and build the list of machine check recoverable ranges */
 	of_scan_flat_dt(early_init_dt_scan_recoverable_ranges, NULL);
 #endif
+<<<<<<< HEAD
+=======
+	epapr_paravirt_early_init();
+
+	/* Now try to figure out if we are running on LPAR and so on */
+	pseries_probe_fw_features();
+
+#ifdef CONFIG_PPC_PS3
+	/* Identify PS3 firmware */
+	if (of_flat_dt_is_compatible(of_get_flat_dt_root(), "sony,ps3"))
+		powerpc_firmware_features |= FW_FEATURE_PS3_POSSIBLE;
+#endif
+>>>>>>> v4.9.227
 
 	DBG(" <- early_init_devtree()\n");
 }
@@ -795,6 +884,7 @@ void __init early_get_first_memblock_info(void *params, phys_addr_t *size)
 int of_get_ibm_chip_id(struct device_node *np)
 {
 	of_node_get(np);
+<<<<<<< HEAD
 	while(np) {
 		struct device_node *old = np;
 		const __be32 *prop;
@@ -809,6 +899,25 @@ int of_get_ibm_chip_id(struct device_node *np)
 	}
 	return -1;
 }
+=======
+	while (np) {
+		u32 chip_id;
+
+		/*
+		 * Skiboot may produce memory nodes that contain more than one
+		 * cell in chip-id, we only read the first one here.
+		 */
+		if (!of_property_read_u32(np, "ibm,chip-id", &chip_id)) {
+			of_node_put(np);
+			return chip_id;
+		}
+
+		np = of_get_next_parent(np);
+	}
+	return -1;
+}
+EXPORT_SYMBOL(of_get_ibm_chip_id);
+>>>>>>> v4.9.227
 
 /**
  * cpu_to_chip_id - Return the cpus chip-id

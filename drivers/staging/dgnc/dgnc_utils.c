@@ -1,7 +1,10 @@
 #include <linux/tty.h>
 #include <linux/sched.h>
 #include "dgnc_utils.h"
+<<<<<<< HEAD
 #include "digi.h"
+=======
+>>>>>>> v4.9.227
 
 /*
  * dgnc_ms_sleep()
@@ -12,6 +15,7 @@
  */
 int dgnc_ms_sleep(ulong ms)
 {
+<<<<<<< HEAD
 	current->state = TASK_INTERRUPTIBLE;
 	schedule_timeout((ms * HZ) / 1000);
 	return signal_pending(current);
@@ -68,3 +72,9 @@ char *dgnc_ioctl_name(int cmd)
 	default:		return "unknown";
 	}
 }
+=======
+	__set_current_state(TASK_INTERRUPTIBLE);
+	schedule_timeout((ms * HZ) / 1000);
+	return signal_pending(current);
+}
+>>>>>>> v4.9.227

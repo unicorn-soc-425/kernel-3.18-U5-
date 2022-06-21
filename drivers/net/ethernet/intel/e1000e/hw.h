@@ -1,5 +1,9 @@
 /* Intel PRO/1000 Linux driver
+<<<<<<< HEAD
  * Copyright(c) 1999 - 2014 Intel Corporation.
+=======
+ * Copyright(c) 1999 - 2015 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -87,6 +91,18 @@ struct e1000_hw;
 #define E1000_DEV_ID_PCH_I218_V2		0x15A1
 #define E1000_DEV_ID_PCH_I218_LM3		0x15A2	/* Wildcat Point PCH */
 #define E1000_DEV_ID_PCH_I218_V3		0x15A3	/* Wildcat Point PCH */
+<<<<<<< HEAD
+=======
+#define E1000_DEV_ID_PCH_SPT_I219_LM		0x156F	/* SPT PCH */
+#define E1000_DEV_ID_PCH_SPT_I219_V		0x1570	/* SPT PCH */
+#define E1000_DEV_ID_PCH_SPT_I219_LM2		0x15B7	/* SPT-H PCH */
+#define E1000_DEV_ID_PCH_SPT_I219_V2		0x15B8	/* SPT-H PCH */
+#define E1000_DEV_ID_PCH_LBG_I219_LM3		0x15B9	/* LBG PCH */
+#define E1000_DEV_ID_PCH_SPT_I219_LM4		0x15D7
+#define E1000_DEV_ID_PCH_SPT_I219_V4		0x15D8
+#define E1000_DEV_ID_PCH_SPT_I219_LM5		0x15E3
+#define E1000_DEV_ID_PCH_SPT_I219_V5		0x15D6
+>>>>>>> v4.9.227
 
 #define E1000_REVISION_4	4
 
@@ -108,6 +124,10 @@ enum e1000_mac_type {
 	e1000_pchlan,
 	e1000_pch2lan,
 	e1000_pch_lpt,
+<<<<<<< HEAD
+=======
+	e1000_pch_spt,
+>>>>>>> v4.9.227
 };
 
 enum e1000_media_type {
@@ -153,6 +173,10 @@ enum e1000_bus_width {
 	e1000_bus_width_pcie_x1,
 	e1000_bus_width_pcie_x2,
 	e1000_bus_width_pcie_x4 = 4,
+<<<<<<< HEAD
+=======
+	e1000_bus_width_pcie_x8 = 8,
+>>>>>>> v4.9.227
 	e1000_bus_width_32,
 	e1000_bus_width_64,
 	e1000_bus_width_reserved

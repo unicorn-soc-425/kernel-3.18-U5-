@@ -20,6 +20,10 @@ along with this file; see the file COPYING.  If not, write to the Free
 Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #include <asm/cputable.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu_has_feature.h>
+>>>>>>> v4.9.227
 #include "nonstdio.h"
 #include "ansidecl.h"
 #include "ppc.h"

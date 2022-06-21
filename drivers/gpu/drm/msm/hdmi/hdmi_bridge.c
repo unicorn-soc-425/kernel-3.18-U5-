@@ -23,11 +23,19 @@ struct hdmi_bridge {
 };
 #define to_hdmi_bridge(x) container_of(x, struct hdmi_bridge, base)
 
+<<<<<<< HEAD
 void hdmi_bridge_destroy(struct drm_bridge *bridge)
 {
 }
 
 static void power_on(struct drm_bridge *bridge)
+=======
+void msm_hdmi_bridge_destroy(struct drm_bridge *bridge)
+{
+}
+
+static void msm_hdmi_power_on(struct drm_bridge *bridge)
+>>>>>>> v4.9.227
 {
 	struct drm_device *dev = bridge->dev;
 	struct hdmi_bridge *hdmi_bridge = to_hdmi_bridge(bridge);
@@ -86,7 +94,11 @@ static void power_off(struct drm_bridge *bridge)
 	}
 }
 
+<<<<<<< HEAD
 static void hdmi_bridge_pre_enable(struct drm_bridge *bridge)
+=======
+static void msm_hdmi_bridge_pre_enable(struct drm_bridge *bridge)
+>>>>>>> v4.9.227
 {
 	struct hdmi_bridge *hdmi_bridge = to_hdmi_bridge(bridge);
 	struct hdmi *hdmi = hdmi_bridge->hdmi;
@@ -95,6 +107,7 @@ static void hdmi_bridge_pre_enable(struct drm_bridge *bridge)
 	DBG("power up");
 
 	if (!hdmi->power_on) {
+<<<<<<< HEAD
 		power_on(bridge);
 		hdmi->power_on = true;
 		hdmi_audio_update(hdmi);
@@ -120,11 +133,37 @@ static void hdmi_bridge_disable(struct drm_bridge *bridge)
 }
 
 static void hdmi_bridge_post_disable(struct drm_bridge *bridge)
+=======
+		msm_hdmi_phy_resource_enable(phy);
+		msm_hdmi_power_on(bridge);
+		hdmi->power_on = true;
+		msm_hdmi_audio_update(hdmi);
+	}
+
+	msm_hdmi_phy_powerup(phy, hdmi->pixclock);
+
+	msm_hdmi_set_mode(hdmi, true);
+
+	if (hdmi->hdcp_ctrl)
+		msm_hdmi_hdcp_on(hdmi->hdcp_ctrl);
+}
+
+static void msm_hdmi_bridge_enable(struct drm_bridge *bridge)
+{
+}
+
+static void msm_hdmi_bridge_disable(struct drm_bridge *bridge)
+{
+}
+
+static void msm_hdmi_bridge_post_disable(struct drm_bridge *bridge)
+>>>>>>> v4.9.227
 {
 	struct hdmi_bridge *hdmi_bridge = to_hdmi_bridge(bridge);
 	struct hdmi *hdmi = hdmi_bridge->hdmi;
 	struct hdmi_phy *phy = hdmi->phy;
 
+<<<<<<< HEAD
 #ifdef CONFIG_DRM_MSM_HDCP
 	if (hdmi->hdcp_ctrl)
 		hdmi_hdcp_ctrl_off(hdmi->hdcp_ctrl);
@@ -135,15 +174,33 @@ static void hdmi_bridge_post_disable(struct drm_bridge *bridge)
 
 	if (phy)
 		phy->funcs->powerdown(phy);
+=======
+	if (hdmi->hdcp_ctrl)
+		msm_hdmi_hdcp_off(hdmi->hdcp_ctrl);
+
+	DBG("power down");
+	msm_hdmi_set_mode(hdmi, false);
+
+	msm_hdmi_phy_powerdown(phy);
+>>>>>>> v4.9.227
 
 	if (hdmi->power_on) {
 		power_off(bridge);
 		hdmi->power_on = false;
+<<<<<<< HEAD
 		hdmi_audio_update(hdmi);
 	}
 }
 
 static void hdmi_bridge_mode_set(struct drm_bridge *bridge,
+=======
+		msm_hdmi_audio_update(hdmi);
+		msm_hdmi_phy_resource_disable(phy);
+	}
+}
+
+static void msm_hdmi_bridge_mode_set(struct drm_bridge *bridge,
+>>>>>>> v4.9.227
 		 struct drm_display_mode *mode,
 		 struct drm_display_mode *adjusted_mode)
 {
@@ -200,6 +257,7 @@ static void hdmi_bridge_mode_set(struct drm_bridge *bridge,
 	DBG("frame_ctrl=%08x", frame_ctrl);
 	hdmi_write(hdmi, REG_HDMI_FRAME_CTRL, frame_ctrl);
 
+<<<<<<< HEAD
 	hdmi_audio_update(hdmi);
 }
 
@@ -209,11 +267,26 @@ static const struct drm_bridge_funcs hdmi_bridge_funcs = {
 		.disable = hdmi_bridge_disable,
 		.post_disable = hdmi_bridge_post_disable,
 		.mode_set = hdmi_bridge_mode_set,
+=======
+	msm_hdmi_audio_update(hdmi);
+}
+
+static const struct drm_bridge_funcs msm_hdmi_bridge_funcs = {
+		.pre_enable = msm_hdmi_bridge_pre_enable,
+		.enable = msm_hdmi_bridge_enable,
+		.disable = msm_hdmi_bridge_disable,
+		.post_disable = msm_hdmi_bridge_post_disable,
+		.mode_set = msm_hdmi_bridge_mode_set,
+>>>>>>> v4.9.227
 };
 
 
 /* initialize bridge */
+<<<<<<< HEAD
 struct drm_bridge *hdmi_bridge_init(struct hdmi *hdmi)
+=======
+struct drm_bridge *msm_hdmi_bridge_init(struct hdmi *hdmi)
+>>>>>>> v4.9.227
 {
 	struct drm_bridge *bridge = NULL;
 	struct hdmi_bridge *hdmi_bridge;
@@ -229,7 +302,11 @@ struct drm_bridge *hdmi_bridge_init(struct hdmi *hdmi)
 	hdmi_bridge->hdmi = hdmi;
 
 	bridge = &hdmi_bridge->base;
+<<<<<<< HEAD
 	bridge->funcs = &hdmi_bridge_funcs;
+=======
+	bridge->funcs = &msm_hdmi_bridge_funcs;
+>>>>>>> v4.9.227
 
 	ret = drm_bridge_attach(hdmi->dev, bridge);
 	if (ret)
@@ -239,7 +316,11 @@ struct drm_bridge *hdmi_bridge_init(struct hdmi *hdmi)
 
 fail:
 	if (bridge)
+<<<<<<< HEAD
 		hdmi_bridge_destroy(bridge);
+=======
+		msm_hdmi_bridge_destroy(bridge);
+>>>>>>> v4.9.227
 
 	return ERR_PTR(ret);
 }

@@ -37,7 +37,10 @@
 #define I40E_FILTER_CONTEXT_DESC(R, i)  \
 	(&(((struct i40e_fcoe_filter_context_desc *)((R)->desc))[i]))
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /* receive queue descriptor filter status for FCoE */
 #define I40E_RX_DESC_FLTSTAT_FCMASK	0x3
 #define I40E_RX_DESC_FLTSTAT_NOMTCH	0x0	/* no ddp context match */
@@ -60,9 +63,15 @@
 	(((e) >> I40E_RX_PROG_STATUS_DESC_FCOE_CONFLICT_SHIFT) & 0x1)
 
 #define I40E_RX_PROG_FCOE_ERROR_TBL_FULL_BIT	\
+<<<<<<< HEAD
 	(1 << I40E_RX_PROG_STATUS_DESC_FCOE_TBL_FULL_SHIFT)
 #define I40E_RX_PROG_FCOE_ERROR_CONFLICT_BIT	\
 	(1 << I40E_RX_PROG_STATUS_DESC_FCOE_CONFLICT_SHIFT)
+=======
+	BIT(I40E_RX_PROG_STATUS_DESC_FCOE_TBL_FULL_SHIFT)
+#define I40E_RX_PROG_FCOE_ERROR_CONFLICT_BIT	\
+	BIT(I40E_RX_PROG_STATUS_DESC_FCOE_CONFLICT_SHIFT)
+>>>>>>> v4.9.227
 
 #define I40E_RX_PROG_FCOE_ERROR_INVLFAIL(e)	\
 	I40E_RX_PROG_FCOE_ERROR_CONFLICT(e)

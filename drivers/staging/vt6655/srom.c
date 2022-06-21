@@ -44,7 +44,10 @@
 
 #include "upc.h"
 #include "tmacro.h"
+<<<<<<< HEAD
 #include "tether.h"
+=======
+>>>>>>> v4.9.227
 #include "mac.h"
 #include "srom.h"
 
@@ -73,7 +76,12 @@
  * Return Value: data read
  *
  */
+<<<<<<< HEAD
 unsigned char SROMbyReadEmbedded(void __iomem *dwIoBase, unsigned char byContntOffset)
+=======
+unsigned char SROMbyReadEmbedded(void __iomem *dwIoBase,
+				 unsigned char byContntOffset)
+>>>>>>> v4.9.227
 {
 	unsigned short wDelay, wNoACK;
 	unsigned char byWait;
@@ -108,6 +116,7 @@ unsigned char SROMbyReadEmbedded(void __iomem *dwIoBase, unsigned char byContntO
 }
 
 /*
+<<<<<<< HEAD
  * Description: Write a byte to EEPROM, by MAC I2C
  *
  * Parameters:
@@ -246,6 +255,8 @@ bool SROMbIsRegBitsOff(void __iomem *dwIoBase, unsigned char byContntOffset, uns
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Description: Read all contents of eeprom to buffer
  *
  * Parameters:
@@ -263,6 +274,7 @@ void SROMvReadAllContents(void __iomem *dwIoBase, unsigned char *pbyEepromRegs)
 
 	/* ii = Rom Address */
 	for (ii = 0; ii < EEP_MAX_CONTEXT_SIZE; ii++) {
+<<<<<<< HEAD
 		*pbyEepromRegs = SROMbyReadEmbedded(dwIoBase, (unsigned char)ii);
 		pbyEepromRegs++;
 	}
@@ -288,6 +300,10 @@ void SROMvWriteAllContents(void __iomem *dwIoBase, unsigned char *pbyEepromRegs)
 	/* ii = Rom Address */
 	for (ii = 0; ii < EEP_MAX_CONTEXT_SIZE; ii++) {
 		SROMbWriteEmbedded(dwIoBase, (unsigned char)ii, *pbyEepromRegs);
+=======
+		*pbyEepromRegs = SROMbyReadEmbedded(dwIoBase,
+						    (unsigned char)ii);
+>>>>>>> v4.9.227
 		pbyEepromRegs++;
 	}
 }
@@ -304,7 +320,12 @@ void SROMvWriteAllContents(void __iomem *dwIoBase, unsigned char *pbyEepromRegs)
  * Return Value: none
  *
  */
+<<<<<<< HEAD
 void SROMvReadEtherAddress(void __iomem *dwIoBase, unsigned char *pbyEtherAddress)
+=======
+void SROMvReadEtherAddress(void __iomem *dwIoBase,
+			   unsigned char *pbyEtherAddress)
+>>>>>>> v4.9.227
 {
 	unsigned char ii;
 
@@ -314,6 +335,7 @@ void SROMvReadEtherAddress(void __iomem *dwIoBase, unsigned char *pbyEtherAddres
 		pbyEtherAddress++;
 	}
 }
+<<<<<<< HEAD
 
 /*
  * Description: Write Ethernet Address from buffer to eeprom
@@ -403,3 +425,5 @@ bool SROMbAutoLoad(void __iomem *dwIoBase)
 		return false;
 	return true;
 }
+=======
+>>>>>>> v4.9.227

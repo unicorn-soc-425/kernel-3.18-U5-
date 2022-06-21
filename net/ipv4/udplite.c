@@ -50,18 +50,28 @@ struct proto 	udplite_prot = {
 	.sendmsg	   = udp_sendmsg,
 	.recvmsg	   = udp_recvmsg,
 	.sendpage	   = udp_sendpage,
+<<<<<<< HEAD
 	.backlog_rcv	   = udp_queue_rcv_skb,
+=======
+	.backlog_rcv	   = __udp_queue_rcv_skb,
+>>>>>>> v4.9.227
 	.hash		   = udp_lib_hash,
 	.unhash		   = udp_lib_unhash,
 	.get_port	   = udp_v4_get_port,
 	.obj_size	   = sizeof(struct udp_sock),
+<<<<<<< HEAD
 	.slab_flags	   = SLAB_DESTROY_BY_RCU,
+=======
+>>>>>>> v4.9.227
 	.h.udp_table	   = &udplite_table,
 #ifdef CONFIG_COMPAT
 	.compat_setsockopt = compat_udp_setsockopt,
 	.compat_getsockopt = compat_udp_getsockopt,
 #endif
+<<<<<<< HEAD
 	.clear_sk	   = sk_prot_clear_portaddr_nulls,
+=======
+>>>>>>> v4.9.227
 };
 EXPORT_SYMBOL(udplite_prot);
 

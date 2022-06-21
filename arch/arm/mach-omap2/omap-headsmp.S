@@ -17,6 +17,10 @@
 
 #include <linux/linkage.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <asm/assembler.h>
+>>>>>>> v4.9.227
 
 #include "omap44xx.h"
 
@@ -24,6 +28,19 @@
 #define AUX_CORE_BOOT0_PA			0x48281800
 #define API_HYP_ENTRY				0x102
 
+<<<<<<< HEAD
+=======
+ENTRY(omap_secondary_startup)
+#ifdef CONFIG_SMP
+	b	secondary_startup
+#else
+/* Should never get here */
+again:	wfi
+	b	again
+#endif
+#ENDPROC(omap_secondary_startup)
+
+>>>>>>> v4.9.227
 /*
  * OMAP5 specific entry point for secondary CPU to jump from ROM
  * code.  This routine also provides a holding flag into which
@@ -39,7 +56,11 @@ wait:	ldr	r2, =AUX_CORE_BOOT0_PA	@ read from AuxCoreBoot0
 	and	r4, r4, #0x0f
 	cmp	r0, r4
 	bne	wait
+<<<<<<< HEAD
 	b	secondary_startup
+=======
+	b	omap_secondary_startup
+>>>>>>> v4.9.227
 ENDPROC(omap5_secondary_startup)
 /*
  * Same as omap5_secondary_startup except we call into the ROM to
@@ -56,10 +77,17 @@ wait_2:	ldr	r2, =AUX_CORE_BOOT0_PA	@ read from AuxCoreBoot0
 	cmp	r0, r4
 	bne	wait_2
 	ldr	r12, =API_HYP_ENTRY
+<<<<<<< HEAD
 	adr	r0, hyp_boot
 	smc	#0
 hyp_boot:
 	b	secondary_startup
+=======
+	badr	r0, hyp_boot
+	smc	#0
+hyp_boot:
+	b	omap_secondary_startup
+>>>>>>> v4.9.227
 ENDPROC(omap5_secondary_hyp_startup)
 /*
  * OMAP4 specific entry point for secondary CPU to jump from ROM
@@ -82,7 +110,11 @@ hold:	ldr	r12,=0x103
 	 * we've been released from the wait loop,secondary_stack
 	 * should now contain the SVC stack for this core
 	 */
+<<<<<<< HEAD
 	b	secondary_startup
+=======
+	b	omap_secondary_startup
+>>>>>>> v4.9.227
 ENDPROC(omap4_secondary_startup)
 
 ENTRY(omap4460_secondary_startup)
@@ -119,5 +151,9 @@ hold_2:	ldr	r12,=0x103
 	 * we've been released from the wait loop,secondary_stack
 	 * should now contain the SVC stack for this core
 	 */
+<<<<<<< HEAD
 	b	secondary_startup
+=======
+	b	omap_secondary_startup
+>>>>>>> v4.9.227
 ENDPROC(omap4460_secondary_startup)

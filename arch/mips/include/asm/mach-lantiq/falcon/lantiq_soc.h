@@ -3,7 +3,11 @@
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
  *
+<<<<<<< HEAD
  * Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+ * Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  */
 
 #ifndef _LTQ_FALCON_H__
@@ -22,7 +26,11 @@
 
 /*
  * during early_printk no ioremap possible at this early stage
+<<<<<<< HEAD
  * lets use KSEG1 instead
+=======
+ * let's use KSEG1 instead
+>>>>>>> v4.9.227
  */
 #define LTQ_ASC0_BASE_ADDR	0x1E100C00
 #define LTQ_EARLY_ASC		KSEG1ADDR(LTQ_ASC0_BASE_ADDR)

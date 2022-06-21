@@ -11,6 +11,7 @@
 #ifndef __ASM_ARCH_SETUP_H
 #define __ASM_ARCH_SETUP_H
 
+<<<<<<< HEAD
 #include <asm/mach/arch.h>
 #include <asm/mach/time.h>
 #include <linux/init.h>
@@ -41,6 +42,8 @@ extern void ux500_timer_init(void);
 }
 
 extern struct smp_operations ux500_smp_ops;
+=======
+>>>>>>> v4.9.227
 extern void ux500_cpu_die(unsigned int cpu);
 
 #endif /*  __ASM_ARCH_SETUP_H */

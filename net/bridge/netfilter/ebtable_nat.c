@@ -12,7 +12,11 @@
 #include <linux/module.h>
 
 #define NAT_VALID_HOOKS ((1 << NF_BR_PRE_ROUTING) | (1 << NF_BR_LOCAL_OUT) | \
+<<<<<<< HEAD
    (1 << NF_BR_POST_ROUTING))
+=======
+			 (1 << NF_BR_POST_ROUTING))
+>>>>>>> v4.9.227
 
 static struct ebt_entries initial_chains[] = {
 	{
@@ -57,6 +61,7 @@ static struct ebt_table frame_nat = {
 };
 
 static unsigned int
+<<<<<<< HEAD
 ebt_nat_in(const struct nf_hook_ops *ops, struct sk_buff *skb,
 	   const struct net_device *in, const struct net_device *out,
 	   int (*okfn)(struct sk_buff *))
@@ -72,26 +77,48 @@ ebt_nat_out(const struct nf_hook_ops *ops, struct sk_buff *skb,
 {
 	return ebt_do_table(ops->hooknum, skb, in, out,
 			    dev_net(out)->xt.frame_nat);
+=======
+ebt_nat_in(void *priv, struct sk_buff *skb,
+	   const struct nf_hook_state *state)
+{
+	return ebt_do_table(skb, state, state->net->xt.frame_nat);
+}
+
+static unsigned int
+ebt_nat_out(void *priv, struct sk_buff *skb,
+	    const struct nf_hook_state *state)
+{
+	return ebt_do_table(skb, state, state->net->xt.frame_nat);
+>>>>>>> v4.9.227
 }
 
 static struct nf_hook_ops ebt_ops_nat[] __read_mostly = {
 	{
 		.hook		= ebt_nat_out,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf		= NFPROTO_BRIDGE,
 		.hooknum	= NF_BR_LOCAL_OUT,
 		.priority	= NF_BR_PRI_NAT_DST_OTHER,
 	},
 	{
 		.hook		= ebt_nat_out,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf		= NFPROTO_BRIDGE,
 		.hooknum	= NF_BR_POST_ROUTING,
 		.priority	= NF_BR_PRI_NAT_SRC,
 	},
 	{
 		.hook		= ebt_nat_in,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf		= NFPROTO_BRIDGE,
 		.hooknum	= NF_BR_PRE_ROUTING,
 		.priority	= NF_BR_PRI_NAT_DST_BRIDGED,

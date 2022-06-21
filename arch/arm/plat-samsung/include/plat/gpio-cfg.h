@@ -35,7 +35,11 @@ struct samsung_gpio_chip;
  * struct samsung_gpio_cfg GPIO configuration
  * @cfg_eint: Configuration setting when used for external interrupt source
  * @get_pull: Read the current pull configuration for the GPIO
+<<<<<<< HEAD
  * @set_pull: Set the current pull configuraiton for the GPIO
+=======
+ * @set_pull: Set the current pull configuration for the GPIO
+>>>>>>> v4.9.227
  * @set_config: Set the current configuration for the GPIO
  * @get_config: Read the current configuration for the GPIO
  *

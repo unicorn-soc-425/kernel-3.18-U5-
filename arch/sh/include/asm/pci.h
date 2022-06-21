@@ -86,6 +86,7 @@ extern void pcibios_set_master(struct pci_dev *dev);
  * direct memory write.
  */
 #define PCI_DISABLE_MWI
+<<<<<<< HEAD
 
 static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 					enum pci_dma_burst_strategy *strat,
@@ -104,6 +105,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 	*strat = PCI_DMA_BURST_MULTIPLE;
 	*strategy_parameter = cacheline_size;
 }
+=======
+>>>>>>> v4.9.227
 #endif
 
 /* Board-specific fixup routines. */
@@ -123,9 +126,12 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 	return channel ? 15 : 14;
 }
 
+<<<<<<< HEAD
 /* generic DMA-mapping stuff */
 #include <asm-generic/pci-dma-compat.h>
 
+=======
+>>>>>>> v4.9.227
 #endif /* __KERNEL__ */
 #endif /* __ASM_SH_PCI_H */
 

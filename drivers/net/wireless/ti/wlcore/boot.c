@@ -130,7 +130,11 @@ fail:
 	wl1271_error("Your WiFi FW version (%u.%u.%u.%u.%u) is invalid.\n"
 		     "Please use at least FW %s\n"
 		     "You can get the latest firmwares at:\n"
+<<<<<<< HEAD
 		     "git://github.com/TI-OpenLink/firmwares.git",
+=======
+		     "git://git.ti.com/wilink8-wlan/wl18xx_fw.git",
+>>>>>>> v4.9.227
 		     fw_ver[FW_VER_CHIP], fw_ver[FW_VER_IF_TYPE],
 		     fw_ver[FW_VER_MAJOR], fw_ver[FW_VER_SUBTYPE],
 		     fw_ver[FW_VER_MINOR], min_fw_str);
@@ -282,6 +286,12 @@ EXPORT_SYMBOL_GPL(wlcore_boot_upload_firmware);
 
 int wlcore_boot_upload_nvs(struct wl1271 *wl)
 {
+<<<<<<< HEAD
+=======
+	struct platform_device *pdev = wl->pdev;
+	struct wlcore_platdev_data *pdev_data = dev_get_platdata(&pdev->dev);
+	const char *nvs_name = "unknown";
+>>>>>>> v4.9.227
 	size_t nvs_len, burst_len;
 	int i;
 	u32 dest_addr, val;
@@ -293,6 +303,12 @@ int wlcore_boot_upload_nvs(struct wl1271 *wl)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
+=======
+	if (pdev_data && pdev_data->family)
+		nvs_name = pdev_data->family->nvs_name;
+
+>>>>>>> v4.9.227
 	if (wl->quirks & WLCORE_QUIRK_LEGACY_NVS) {
 		struct wl1271_nvs_file *nvs =
 			(struct wl1271_nvs_file *)wl->nvs;
@@ -310,8 +326,14 @@ int wlcore_boot_upload_nvs(struct wl1271 *wl)
 		if (wl->nvs_len != sizeof(struct wl1271_nvs_file) &&
 		    (wl->nvs_len != WL1271_INI_LEGACY_NVS_FILE_SIZE ||
 		     wl->enable_11a)) {
+<<<<<<< HEAD
 			wl1271_error("nvs size is not as expected: %zu != %zu",
 				wl->nvs_len, sizeof(struct wl1271_nvs_file));
+=======
+			wl1271_error("%s size is not as expected: %zu != %zu",
+				     nvs_name, wl->nvs_len,
+				     sizeof(struct wl1271_nvs_file));
+>>>>>>> v4.9.227
 			kfree(wl->nvs);
 			wl->nvs = NULL;
 			wl->nvs_len = 0;
@@ -328,8 +350,13 @@ int wlcore_boot_upload_nvs(struct wl1271 *wl)
 			if (nvs->general_params.dual_mode_select)
 				wl->enable_11a = true;
 		} else {
+<<<<<<< HEAD
 			wl1271_error("nvs size is not as expected: %zu != %zu",
 				     wl->nvs_len,
+=======
+			wl1271_error("%s size is not as expected: %zu != %zu",
+				     nvs_name, wl->nvs_len,
+>>>>>>> v4.9.227
 				     sizeof(struct wl128x_nvs_file));
 			kfree(wl->nvs);
 			wl->nvs = NULL;

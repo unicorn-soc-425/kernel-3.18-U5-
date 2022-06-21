@@ -97,7 +97,11 @@ static int pxa_ssp_startup(struct snd_pcm_substream *substream,
 	int ret = 0;
 
 	if (!cpu_dai->active) {
+<<<<<<< HEAD
 		clk_enable(ssp->clk);
+=======
+		clk_prepare_enable(ssp->clk);
+>>>>>>> v4.9.227
 		pxa_ssp_disable(ssp);
 	}
 
@@ -121,7 +125,11 @@ static void pxa_ssp_shutdown(struct snd_pcm_substream *substream,
 
 	if (!cpu_dai->active) {
 		pxa_ssp_disable(ssp);
+<<<<<<< HEAD
 		clk_disable(ssp->clk);
+=======
+		clk_disable_unprepare(ssp->clk);
+>>>>>>> v4.9.227
 	}
 
 	kfree(snd_soc_dai_get_dma_data(cpu_dai, substream));
@@ -136,7 +144,11 @@ static int pxa_ssp_suspend(struct snd_soc_dai *cpu_dai)
 	struct ssp_device *ssp = priv->ssp;
 
 	if (!cpu_dai->active)
+<<<<<<< HEAD
 		clk_enable(ssp->clk);
+=======
+		clk_prepare_enable(ssp->clk);
+>>>>>>> v4.9.227
 
 	priv->cr0 = __raw_readl(ssp->mmio_base + SSCR0);
 	priv->cr1 = __raw_readl(ssp->mmio_base + SSCR1);
@@ -144,7 +156,11 @@ static int pxa_ssp_suspend(struct snd_soc_dai *cpu_dai)
 	priv->psp = __raw_readl(ssp->mmio_base + SSPSP);
 
 	pxa_ssp_disable(ssp);
+<<<<<<< HEAD
 	clk_disable(ssp->clk);
+=======
+	clk_disable_unprepare(ssp->clk);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -154,7 +170,11 @@ static int pxa_ssp_resume(struct snd_soc_dai *cpu_dai)
 	struct ssp_device *ssp = priv->ssp;
 	uint32_t sssr = SSSR_ROR | SSSR_TUR | SSSR_BCE;
 
+<<<<<<< HEAD
 	clk_enable(ssp->clk);
+=======
+	clk_prepare_enable(ssp->clk);
+>>>>>>> v4.9.227
 
 	__raw_writel(sssr, ssp->mmio_base + SSSR);
 	__raw_writel(priv->cr0 & ~SSCR0_SSE, ssp->mmio_base + SSCR0);
@@ -165,7 +185,11 @@ static int pxa_ssp_resume(struct snd_soc_dai *cpu_dai)
 	if (cpu_dai->active)
 		pxa_ssp_enable(ssp);
 	else
+<<<<<<< HEAD
 		clk_disable(ssp->clk);
+=======
+		clk_disable_unprepare(ssp->clk);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -256,11 +280,19 @@ static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 	/* The SSP clock must be disabled when changing SSP clock mode
 	 * on PXA2xx.  On PXA3xx it must be enabled when doing so. */
 	if (ssp->type != PXA3xx_SSP)
+<<<<<<< HEAD
 		clk_disable(ssp->clk);
 	val = pxa_ssp_read_reg(ssp, SSCR0) | sscr0;
 	pxa_ssp_write_reg(ssp, SSCR0, val);
 	if (ssp->type != PXA3xx_SSP)
 		clk_enable(ssp->clk);
+=======
+		clk_disable_unprepare(ssp->clk);
+	val = pxa_ssp_read_reg(ssp, SSCR0) | sscr0;
+	pxa_ssp_write_reg(ssp, SSCR0, val);
+	if (ssp->type != PXA3xx_SSP)
+		clk_prepare_enable(ssp->clk);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -809,10 +841,15 @@ static const struct of_device_id pxa_ssp_of_ids[] = {
 	{ .compatible = "mrvl,pxa-ssp-dai" },
 	{}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, pxa_ssp_of_ids);
+>>>>>>> v4.9.227
 #endif
 
 static int asoc_ssp_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_component(&pdev->dev, &pxa_ssp_component,
 					  &pxa_ssp_dai, 1);
 }
@@ -821,17 +858,27 @@ static int asoc_ssp_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_component(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_component(&pdev->dev, &pxa_ssp_component,
+					       &pxa_ssp_dai, 1);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver asoc_ssp_driver = {
 	.driver = {
 		.name = "pxa-ssp-dai",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(pxa_ssp_of_ids),
 	},
 
 	.probe = asoc_ssp_probe,
+<<<<<<< HEAD
 	.remove = asoc_ssp_remove,
+=======
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(asoc_ssp_driver);
@@ -840,3 +887,7 @@ module_platform_driver(asoc_ssp_driver);
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("PXA SSP/PCM SoC Interface");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:pxa-ssp-dai");
+>>>>>>> v4.9.227

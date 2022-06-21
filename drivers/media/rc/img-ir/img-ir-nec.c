@@ -13,8 +13,13 @@
 #include <linux/bitrev.h>
 
 /* Convert NEC data to a scancode */
+<<<<<<< HEAD
 static int img_ir_nec_scancode(int len, u64 raw, enum rc_type *protocol,
 			       u32 *scancode, u64 enabled_protocols)
+=======
+static int img_ir_nec_scancode(int len, u64 raw, u64 enabled_protocols,
+			       struct img_ir_scancode_req *request)
+>>>>>>> v4.9.227
 {
 	unsigned int addr, addr_inv, data, data_inv;
 	/* a repeat code has no data */
@@ -30,6 +35,7 @@ static int img_ir_nec_scancode(int len, u64 raw, enum rc_type *protocol,
 	if ((data_inv ^ data) != 0xff) {
 		/* 32-bit NEC (used by Apple and TiVo remotes) */
 		/* scan encoding: as transmitted, MSBit = first received bit */
+<<<<<<< HEAD
 		*scancode = bitrev8(addr)     << 24 |
 			    bitrev8(addr_inv) << 16 |
 			    bitrev8(data)     <<  8 |
@@ -47,6 +53,27 @@ static int img_ir_nec_scancode(int len, u64 raw, enum rc_type *protocol,
 			    data;
 	}
 	*protocol = RC_TYPE_NEC;
+=======
+		request->scancode = bitrev8(addr)     << 24 |
+				bitrev8(addr_inv) << 16 |
+				bitrev8(data)     <<  8 |
+				bitrev8(data_inv);
+		request->protocol = RC_TYPE_NEC32;
+	} else if ((addr_inv ^ addr) != 0xff) {
+		/* Extended NEC */
+		/* scan encoding: AAaaDD */
+		request->scancode = addr     << 16 |
+				addr_inv <<  8 |
+				data;
+		request->protocol = RC_TYPE_NECX;
+	} else {
+		/* Normal NEC */
+		/* scan encoding: AADD */
+		request->scancode = addr << 8 |
+				data;
+		request->protocol = RC_TYPE_NEC;
+	}
+>>>>>>> v4.9.227
 	return IMG_IR_SCANCODE;
 }
 
@@ -109,7 +136,11 @@ static int img_ir_nec_filter(const struct rc_scancode_filter *in,
  *        http://wiki.altium.com/display/ADOH/NEC+Infrared+Transmission+Protocol
  */
 struct img_ir_decoder img_ir_nec = {
+<<<<<<< HEAD
 	.type = RC_BIT_NEC,
+=======
+	.type = RC_BIT_NEC | RC_BIT_NECX | RC_BIT_NEC32,
+>>>>>>> v4.9.227
 	.control = {
 		.decoden = 1,
 		.code_type = IMG_IR_CODETYPE_PULSEDIST,

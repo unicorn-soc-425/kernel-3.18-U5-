@@ -22,6 +22,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> v4.9.227
 #include <sound/asound.h>
 
 #define snd_kcontrol_chip(kcontrol) ((kcontrol)->private_data)
@@ -93,12 +97,25 @@ struct snd_kctl_event {
 
 struct pid;
 
+<<<<<<< HEAD
+=======
+enum {
+	SND_CTL_SUBDEV_PCM,
+	SND_CTL_SUBDEV_RAWMIDI,
+	SND_CTL_SUBDEV_ITEMS,
+};
+
+>>>>>>> v4.9.227
 struct snd_ctl_file {
 	struct list_head list;		/* list of all control files */
 	struct snd_card *card;
 	struct pid *pid;
+<<<<<<< HEAD
 	int prefer_pcm_subdevice;
 	int prefer_rawmidi_subdevice;
+=======
+	int preferred_subdevice[SND_CTL_SUBDEV_ITEMS];
+>>>>>>> v4.9.227
 	wait_queue_head_t change_sleep;
 	spinlock_t read_lock;
 	struct fasync_struct *fasync;
@@ -138,14 +155,28 @@ int snd_ctl_unregister_ioctl_compat(snd_kctl_ioctl_func_t fcn);
 #define snd_ctl_unregister_ioctl_compat(fcn)
 #endif
 
+<<<<<<< HEAD
 static inline unsigned int snd_ctl_get_ioffnum(struct snd_kcontrol *kctl, struct snd_ctl_elem_id *id)
 {
 	return id->numid - kctl->id.numid;
+=======
+int snd_ctl_get_preferred_subdevice(struct snd_card *card, int type);
+
+static inline unsigned int snd_ctl_get_ioffnum(struct snd_kcontrol *kctl, struct snd_ctl_elem_id *id)
+{
+	unsigned int ioff = id->numid - kctl->id.numid;
+	return array_index_nospec(ioff, kctl->count);
+>>>>>>> v4.9.227
 }
 
 static inline unsigned int snd_ctl_get_ioffidx(struct snd_kcontrol *kctl, struct snd_ctl_elem_id *id)
 {
+<<<<<<< HEAD
 	return id->index - kctl->id.index;
+=======
+	unsigned int ioff = id->index - kctl->id.index;
+	return array_index_nospec(ioff, kctl->count);
+>>>>>>> v4.9.227
 }
 
 static inline unsigned int snd_ctl_get_ioff(struct snd_kcontrol *kctl, struct snd_ctl_elem_id *id)
@@ -220,7 +251,11 @@ snd_ctl_add_slave(struct snd_kcontrol *master, struct snd_kcontrol *slave)
  * Add a virtual slave control to the given master.
  * Unlike snd_ctl_add_slave(), the element added via this function
  * is supposed to have volatile values, and get callback is called
+<<<<<<< HEAD
  * at each time quried from the master.
+=======
+ * at each time queried from the master.
+>>>>>>> v4.9.227
  *
  * When the control peeks the hardware values directly and the value
  * can be changed by other means than the put callback of the element,
@@ -245,7 +280,11 @@ void snd_ctl_sync_vmaster(struct snd_kcontrol *kctl, bool hook_only);
  * Helper functions for jack-detection controls
  */
 struct snd_kcontrol *
+<<<<<<< HEAD
 snd_kctl_jack_new(const char *name, int idx, void *private_data);
+=======
+snd_kctl_jack_new(const char *name, struct snd_card *card);
+>>>>>>> v4.9.227
 void snd_kctl_jack_report(struct snd_card *card,
 			  struct snd_kcontrol *kctl, bool status);
 

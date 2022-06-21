@@ -39,6 +39,11 @@
 
 static struct page **vdso_text_pagelist;
 
+<<<<<<< HEAD
+=======
+extern char vdso_start[], vdso_end[];
+
+>>>>>>> v4.9.227
 /* Total number of pages needed for the data and text portions of the VDSO. */
 unsigned int vdso_total_pages __ro_after_init;
 
@@ -84,6 +89,11 @@ static bool __init cntvct_functional(void)
 	 */
 	np = of_find_compatible_node(NULL, NULL, "arm,armv7-timer");
 	if (!np)
+<<<<<<< HEAD
+=======
+		np = of_find_compatible_node(NULL, NULL, "arm,armv8-timer");
+	if (!np)
+>>>>>>> v4.9.227
 		goto out_put;
 
 	if (of_property_read_bool(np, "arm,cpu-registers-not-fw-configured"))
@@ -179,13 +189,22 @@ static int __init vdso_init(void)
 	unsigned int text_pages;
 	int i;
 
+<<<<<<< HEAD
 	if (memcmp(&vdso_start, "\177ELF", 4)) {
+=======
+	if (memcmp(vdso_start, "\177ELF", 4)) {
+>>>>>>> v4.9.227
 		pr_err("VDSO is not a valid ELF object!\n");
 		return -ENOEXEC;
 	}
 
+<<<<<<< HEAD
 	text_pages = (&vdso_end - &vdso_start) >> PAGE_SHIFT;
 	pr_debug("vdso: %i text pages at base %p\n", text_pages, &vdso_start);
+=======
+	text_pages = (vdso_end - vdso_start) >> PAGE_SHIFT;
+	pr_debug("vdso: %i text pages at base %p\n", text_pages, vdso_start);
+>>>>>>> v4.9.227
 
 	/* Allocate the VDSO text pagelist */
 	vdso_text_pagelist = kcalloc(text_pages, sizeof(struct page *),
@@ -200,7 +219,11 @@ static int __init vdso_init(void)
 	for (i = 0; i < text_pages; i++) {
 		struct page *page;
 
+<<<<<<< HEAD
 		page = virt_to_page(&vdso_start + i * PAGE_SIZE);
+=======
+		page = virt_to_page(vdso_start + i * PAGE_SIZE);
+>>>>>>> v4.9.227
 		vdso_text_pagelist[i] = page;
 	}
 
@@ -211,7 +234,11 @@ static int __init vdso_init(void)
 
 	cntvct_ok = cntvct_functional();
 
+<<<<<<< HEAD
 	patch_vdso(&vdso_start);
+=======
+	patch_vdso(vdso_start);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -271,7 +298,11 @@ static bool tk_is_cntvct(const struct timekeeper *tk)
 	if (!IS_ENABLED(CONFIG_ARM_ARCH_TIMER))
 		return false;
 
+<<<<<<< HEAD
 	if (strcmp(tk->tkr_mono.clock->name, "arch_sys_counter") != 0)
+=======
+	if (!tk->tkr_mono.clock->archdata.vdso_direct)
+>>>>>>> v4.9.227
 		return false;
 
 	return true;

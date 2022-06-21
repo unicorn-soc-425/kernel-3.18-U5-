@@ -75,6 +75,7 @@ static int ivtv_yuv_prep_user_dma(struct ivtv *itv, struct ivtv_user_dma *dma,
 	ivtv_udma_get_page_info (&uv_dma, (unsigned long)args->uv_source, 360 * uv_decode_height);
 
 	/* Get user pages for DMA Xfer */
+<<<<<<< HEAD
 	down_read(&current->mm->mmap_sem);
 	y_pages = get_user_pages(current, current->mm, y_dma.uaddr, y_dma.page_count, 0, 1, &dma->map[0], NULL);
 	uv_pages = 0; /* silence gcc. value is set and consumed only if: */
@@ -84,6 +85,16 @@ static int ivtv_yuv_prep_user_dma(struct ivtv *itv, struct ivtv_user_dma *dma,
 					  &dma->map[y_pages], NULL);
 	}
 	up_read(&current->mm->mmap_sem);
+=======
+	y_pages = get_user_pages_unlocked(y_dma.uaddr,
+			y_dma.page_count, &dma->map[0], FOLL_FORCE);
+	uv_pages = 0; /* silence gcc. value is set and consumed only if: */
+	if (y_pages == y_dma.page_count) {
+		uv_pages = get_user_pages_unlocked(uv_dma.uaddr,
+				uv_dma.page_count, &dma->map[y_pages],
+				FOLL_FORCE);
+	}
+>>>>>>> v4.9.227
 
 	if (y_pages != y_dma.page_count || uv_pages != uv_dma.page_count) {
 		int rc = -EFAULT;
@@ -936,7 +947,11 @@ static void ivtv_yuv_init(struct ivtv *itv)
 	}
 
 	/* We need a buffer for blanking when Y plane is offset - non-fatal if we can't get one */
+<<<<<<< HEAD
 	yi->blanking_ptr = kzalloc(720 * 16, GFP_KERNEL|__GFP_NOWARN);
+=======
+	yi->blanking_ptr = kzalloc(720 * 16, GFP_ATOMIC|__GFP_NOWARN);
+>>>>>>> v4.9.227
 	if (yi->blanking_ptr) {
 		yi->blanking_dmaptr = pci_map_single(itv->pdev, yi->blanking_ptr, 720*16, PCI_DMA_TODEVICE);
 	} else {

@@ -1,7 +1,17 @@
 #ifndef MMC_QUEUE_H
 #define MMC_QUEUE_H
 
+<<<<<<< HEAD
 #define MMC_REQ_SPECIAL_MASK	(REQ_DISCARD | REQ_FLUSH)
+=======
+static inline bool mmc_req_is_special(struct request *req)
+{
+	return req &&
+		(req_op(req) == REQ_OP_FLUSH ||
+		 req_op(req) == REQ_OP_DISCARD ||
+		 req_op(req) == REQ_OP_SECURE_ERASE);
+}
+>>>>>>> v4.9.227
 
 struct request;
 struct task_struct;
@@ -12,6 +22,10 @@ struct mmc_blk_request {
 	struct mmc_command	cmd;
 	struct mmc_command	stop;
 	struct mmc_data		data;
+<<<<<<< HEAD
+=======
+	int			retune_retry_done;
+>>>>>>> v4.9.227
 };
 
 enum mmc_packed_type {
@@ -41,13 +55,17 @@ struct mmc_queue_req {
 	struct mmc_async_req	mmc_active;
 	enum mmc_packed_type	cmd_type;
 	struct mmc_packed	*packed;
+<<<<<<< HEAD
 	struct mmc_cmdq_req	cmdq_req;
+=======
+>>>>>>> v4.9.227
 };
 
 struct mmc_queue {
 	struct mmc_card		*card;
 	struct task_struct	*thread;
 	struct semaphore	thread_sem;
+<<<<<<< HEAD
 	unsigned long		flags;
 #define MMC_QUEUE_SUSPENDED		0
 #define MMC_QUEUE_NEW_REQUEST		1
@@ -58,11 +76,17 @@ struct mmc_queue {
 	void (*cmdq_complete_fn)(struct request *);
 	void (*cmdq_error_fn)(struct mmc_queue *);
 	enum blk_eh_timer_return (*cmdq_req_timed_out)(struct request *);
+=======
+	unsigned int		flags;
+#define MMC_QUEUE_SUSPENDED	(1 << 0)
+#define MMC_QUEUE_NEW_REQUEST	(1 << 1)
+>>>>>>> v4.9.227
 	void			*data;
 	struct request_queue	*queue;
 	struct mmc_queue_req	mqrq[2];
 	struct mmc_queue_req	*mqrq_cur;
 	struct mmc_queue_req	*mqrq_prev;
+<<<<<<< HEAD
 	struct mmc_queue_req	*mqrq_cmdq;
 	bool			wr_packing_enabled;
 	int			num_of_potential_packed_wr_reqs;
@@ -82,6 +106,14 @@ extern int mmc_init_queue(struct mmc_queue *, struct mmc_card *, spinlock_t *,
 			  const char *, int);
 extern void mmc_cleanup_queue(struct mmc_queue *);
 extern int mmc_queue_suspend(struct mmc_queue *, int);
+=======
+};
+
+extern int mmc_init_queue(struct mmc_queue *, struct mmc_card *, spinlock_t *,
+			  const char *);
+extern void mmc_cleanup_queue(struct mmc_queue *);
+extern void mmc_queue_suspend(struct mmc_queue *);
+>>>>>>> v4.9.227
 extern void mmc_queue_resume(struct mmc_queue *);
 
 extern unsigned int mmc_queue_map_sg(struct mmc_queue *,
@@ -94,9 +126,12 @@ extern void mmc_packed_clean(struct mmc_queue *);
 
 extern int mmc_access_rpmb(struct mmc_queue *);
 
+<<<<<<< HEAD
 extern void print_mmc_packing_stats(struct mmc_card *card);
 
 extern int mmc_cmdq_init(struct mmc_queue *mq, struct mmc_card *card);
 extern void mmc_cmdq_clean(struct mmc_queue *mq, struct mmc_card *card);
 
+=======
+>>>>>>> v4.9.227
 #endif

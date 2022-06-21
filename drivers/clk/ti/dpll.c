@@ -15,12 +15,20 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
 #include <linux/err.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/clk/ti.h>
+<<<<<<< HEAD
+=======
+#include "clock.h"
+>>>>>>> v4.9.227
 
 #undef pr_fmt
 #define pr_fmt(fmt) "%s: " fmt, __func__
@@ -33,6 +41,12 @@ static const struct clk_ops dpll_m4xen_ck_ops = {
 	.recalc_rate	= &omap4_dpll_regm4xen_recalc,
 	.round_rate	= &omap4_dpll_regm4xen_round_rate,
 	.set_rate	= &omap3_noncore_dpll_set_rate,
+<<<<<<< HEAD
+=======
+	.set_parent	= &omap3_noncore_dpll_set_parent,
+	.set_rate_and_parent	= &omap3_noncore_dpll_set_rate_and_parent,
+	.determine_rate	= &omap4_dpll_regm4xen_determine_rate,
+>>>>>>> v4.9.227
 	.get_parent	= &omap2_init_dpll_parent,
 };
 #else
@@ -53,6 +67,12 @@ static const struct clk_ops dpll_ck_ops = {
 	.recalc_rate	= &omap3_dpll_recalc,
 	.round_rate	= &omap2_dpll_round_rate,
 	.set_rate	= &omap3_noncore_dpll_set_rate,
+<<<<<<< HEAD
+=======
+	.set_parent	= &omap3_noncore_dpll_set_parent,
+	.set_rate_and_parent	= &omap3_noncore_dpll_set_rate_and_parent,
+	.determine_rate	= &omap3_noncore_dpll_determine_rate,
+>>>>>>> v4.9.227
 	.get_parent	= &omap2_init_dpll_parent,
 };
 
@@ -61,6 +81,12 @@ static const struct clk_ops dpll_no_gate_ck_ops = {
 	.get_parent	= &omap2_init_dpll_parent,
 	.round_rate	= &omap2_dpll_round_rate,
 	.set_rate	= &omap3_noncore_dpll_set_rate,
+<<<<<<< HEAD
+=======
+	.set_parent	= &omap3_noncore_dpll_set_parent,
+	.set_rate_and_parent	= &omap3_noncore_dpll_set_rate_and_parent,
+	.determine_rate	= &omap3_noncore_dpll_determine_rate,
+>>>>>>> v4.9.227
 };
 #else
 static const struct clk_ops dpll_core_ck_ops = {};
@@ -97,6 +123,24 @@ static const struct clk_ops omap3_dpll_ck_ops = {
 	.get_parent	= &omap2_init_dpll_parent,
 	.recalc_rate	= &omap3_dpll_recalc,
 	.set_rate	= &omap3_noncore_dpll_set_rate,
+<<<<<<< HEAD
+=======
+	.set_parent	= &omap3_noncore_dpll_set_parent,
+	.set_rate_and_parent	= &omap3_noncore_dpll_set_rate_and_parent,
+	.determine_rate	= &omap3_noncore_dpll_determine_rate,
+	.round_rate	= &omap2_dpll_round_rate,
+};
+
+static const struct clk_ops omap3_dpll5_ck_ops = {
+	.enable		= &omap3_noncore_dpll_enable,
+	.disable	= &omap3_noncore_dpll_disable,
+	.get_parent	= &omap2_init_dpll_parent,
+	.recalc_rate	= &omap3_dpll_recalc,
+	.set_rate	= &omap3_dpll5_set_rate,
+	.set_parent	= &omap3_noncore_dpll_set_parent,
+	.set_rate_and_parent	= &omap3_noncore_dpll_set_rate_and_parent,
+	.determine_rate	= &omap3_noncore_dpll_determine_rate,
+>>>>>>> v4.9.227
 	.round_rate	= &omap2_dpll_round_rate,
 };
 
@@ -106,6 +150,12 @@ static const struct clk_ops omap3_dpll_per_ck_ops = {
 	.get_parent	= &omap2_init_dpll_parent,
 	.recalc_rate	= &omap3_dpll_recalc,
 	.set_rate	= &omap3_dpll4_set_rate,
+<<<<<<< HEAD
+=======
+	.set_parent	= &omap3_noncore_dpll_set_parent,
+	.set_rate_and_parent	= &omap3_dpll4_set_rate_and_parent,
+	.determine_rate	= &omap3_noncore_dpll_determine_rate,
+>>>>>>> v4.9.227
 	.round_rate	= &omap2_dpll_round_rate,
 };
 #endif
@@ -115,7 +165,11 @@ static const struct clk_ops dpll_x2_ck_ops = {
 };
 
 /**
+<<<<<<< HEAD
  * ti_clk_register_dpll - low level registration of a DPLL clock
+=======
+ * _register_dpll - low level registration of a DPLL clock
+>>>>>>> v4.9.227
  * @hw: hardware clock definition for the clock
  * @node: device node for the clock
  *
@@ -123,13 +177,19 @@ static const struct clk_ops dpll_x2_ck_ops = {
  * clk-bypass is missing), the clock is added to retry list and
  * the initialization is retried on later stage.
  */
+<<<<<<< HEAD
 static void __init ti_clk_register_dpll(struct clk_hw *hw,
 					struct device_node *node)
+=======
+static void __init _register_dpll(struct clk_hw *hw,
+				  struct device_node *node)
+>>>>>>> v4.9.227
 {
 	struct clk_hw_omap *clk_hw = to_clk_hw_omap(hw);
 	struct dpll_data *dd = clk_hw->dpll_data;
 	struct clk *clk;
 
+<<<<<<< HEAD
 	dd->clk_ref = of_clk_get(node, 0);
 	dd->clk_bypass = of_clk_get(node, 1);
 
@@ -137,16 +197,45 @@ static void __init ti_clk_register_dpll(struct clk_hw *hw,
 		pr_debug("clk-ref or clk-bypass missing for %s, retry later\n",
 			 node->name);
 		if (!ti_clk_retry_init(node, hw, ti_clk_register_dpll))
+=======
+	clk = of_clk_get(node, 0);
+	if (IS_ERR(clk)) {
+		pr_debug("clk-ref missing for %s, retry later\n",
+			 node->name);
+		if (!ti_clk_retry_init(node, hw, _register_dpll))
+>>>>>>> v4.9.227
 			return;
 
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
+=======
+	dd->clk_ref = __clk_get_hw(clk);
+
+	clk = of_clk_get(node, 1);
+
+	if (IS_ERR(clk)) {
+		pr_debug("clk-bypass missing for %s, retry later\n",
+			 node->name);
+		if (!ti_clk_retry_init(node, hw, _register_dpll))
+			return;
+
+		goto cleanup;
+	}
+
+	dd->clk_bypass = __clk_get_hw(clk);
+
+>>>>>>> v4.9.227
 	/* register the clock */
 	clk = clk_register(NULL, &clk_hw->hw);
 
 	if (!IS_ERR(clk)) {
+<<<<<<< HEAD
 		omap2_init_clk_hw_omap_clocks(clk);
+=======
+		omap2_init_clk_hw_omap_clocks(&clk_hw->hw);
+>>>>>>> v4.9.227
 		of_clk_add_provider(node, of_clk_src_simple_get, clk);
 		kfree(clk_hw->hw.init->parent_names);
 		kfree(clk_hw->hw.init);
@@ -160,20 +249,131 @@ cleanup:
 	kfree(clk_hw);
 }
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_ARCH_OMAP3) && defined(CONFIG_ATAGS)
+static void __iomem *_get_reg(u8 module, u16 offset)
+{
+	u32 reg;
+	struct clk_omap_reg *reg_setup;
+
+	reg_setup = (struct clk_omap_reg *)&reg;
+
+	reg_setup->index = module;
+	reg_setup->offset = offset;
+
+	return (void __iomem *)reg;
+}
+
+struct clk *ti_clk_register_dpll(struct ti_clk *setup)
+{
+	struct clk_hw_omap *clk_hw;
+	struct clk_init_data init = { NULL };
+	struct dpll_data *dd;
+	struct clk *clk;
+	struct ti_clk_dpll *dpll;
+	const struct clk_ops *ops = &omap3_dpll_ck_ops;
+	struct clk *clk_ref;
+	struct clk *clk_bypass;
+
+	dpll = setup->data;
+
+	if (dpll->num_parents < 2)
+		return ERR_PTR(-EINVAL);
+
+	clk_ref = clk_get_sys(NULL, dpll->parents[0]);
+	clk_bypass = clk_get_sys(NULL, dpll->parents[1]);
+
+	if (IS_ERR_OR_NULL(clk_ref) || IS_ERR_OR_NULL(clk_bypass))
+		return ERR_PTR(-EAGAIN);
+
+	dd = kzalloc(sizeof(*dd), GFP_KERNEL);
+	clk_hw = kzalloc(sizeof(*clk_hw), GFP_KERNEL);
+	if (!dd || !clk_hw) {
+		clk = ERR_PTR(-ENOMEM);
+		goto cleanup;
+	}
+
+	clk_hw->dpll_data = dd;
+	clk_hw->ops = &clkhwops_omap3_dpll;
+	clk_hw->hw.init = &init;
+	clk_hw->flags = MEMMAP_ADDRESSING;
+
+	init.name = setup->name;
+	init.ops = ops;
+
+	init.num_parents = dpll->num_parents;
+	init.parent_names = dpll->parents;
+
+	dd->control_reg = _get_reg(dpll->module, dpll->control_reg);
+	dd->idlest_reg = _get_reg(dpll->module, dpll->idlest_reg);
+	dd->mult_div1_reg = _get_reg(dpll->module, dpll->mult_div1_reg);
+	dd->autoidle_reg = _get_reg(dpll->module, dpll->autoidle_reg);
+
+	dd->modes = dpll->modes;
+	dd->div1_mask = dpll->div1_mask;
+	dd->idlest_mask = dpll->idlest_mask;
+	dd->mult_mask = dpll->mult_mask;
+	dd->autoidle_mask = dpll->autoidle_mask;
+	dd->enable_mask = dpll->enable_mask;
+	dd->sddiv_mask = dpll->sddiv_mask;
+	dd->dco_mask = dpll->dco_mask;
+	dd->max_divider = dpll->max_divider;
+	dd->min_divider = dpll->min_divider;
+	dd->max_multiplier = dpll->max_multiplier;
+	dd->auto_recal_bit = dpll->auto_recal_bit;
+	dd->recal_en_bit = dpll->recal_en_bit;
+	dd->recal_st_bit = dpll->recal_st_bit;
+
+	dd->clk_ref = __clk_get_hw(clk_ref);
+	dd->clk_bypass = __clk_get_hw(clk_bypass);
+
+	if (dpll->flags & CLKF_CORE)
+		ops = &omap3_dpll_core_ck_ops;
+
+	if (dpll->flags & CLKF_PER)
+		ops = &omap3_dpll_per_ck_ops;
+
+	if (dpll->flags & CLKF_J_TYPE)
+		dd->flags |= DPLL_J_TYPE;
+
+	clk = clk_register(NULL, &clk_hw->hw);
+
+	if (!IS_ERR(clk))
+		return clk;
+
+cleanup:
+	kfree(dd);
+	kfree(clk_hw);
+	return clk;
+}
+#endif
+
+>>>>>>> v4.9.227
 #if defined(CONFIG_ARCH_OMAP4) || defined(CONFIG_SOC_OMAP5) || \
 	defined(CONFIG_SOC_DRA7XX) || defined(CONFIG_SOC_AM33XX) || \
 	defined(CONFIG_SOC_AM43XX)
 /**
+<<<<<<< HEAD
  * ti_clk_register_dpll_x2 - Registers a DPLLx2 clock
+=======
+ * _register_dpll_x2 - Registers a DPLLx2 clock
+>>>>>>> v4.9.227
  * @node: device node for this clock
  * @ops: clk_ops for this clock
  * @hw_ops: clk_hw_ops for this clock
  *
  * Initializes a DPLL x 2 clock from device tree data.
  */
+<<<<<<< HEAD
 static void ti_clk_register_dpll_x2(struct device_node *node,
 				    const struct clk_ops *ops,
 				    const struct clk_hw_omap_ops *hw_ops)
+=======
+static void _register_dpll_x2(struct device_node *node,
+			      const struct clk_ops *ops,
+			      const struct clk_hw_omap_ops *hw_ops)
+>>>>>>> v4.9.227
 {
 	struct clk *clk;
 	struct clk_init_data init = { NULL };
@@ -205,7 +405,11 @@ static void ti_clk_register_dpll_x2(struct device_node *node,
 	if (IS_ERR(clk)) {
 		kfree(clk_hw);
 	} else {
+<<<<<<< HEAD
 		omap2_init_clk_hw_omap_clocks(clk);
+=======
+		omap2_init_clk_hw_omap_clocks(&clk_hw->hw);
+>>>>>>> v4.9.227
 		of_clk_add_provider(node, of_clk_src_simple_get, clk);
 	}
 }
@@ -227,7 +431,10 @@ static void __init of_ti_dpll_setup(struct device_node *node,
 	struct clk_init_data *init = NULL;
 	const char **parent_names = NULL;
 	struct dpll_data *dd = NULL;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> v4.9.227
 	u8 dpll_mode = 0;
 
 	dd = kzalloc(sizeof(*dd), GFP_KERNEL);
@@ -247,7 +454,11 @@ static void __init of_ti_dpll_setup(struct device_node *node,
 	init->ops = ops;
 
 	init->num_parents = of_clk_get_parent_count(node);
+<<<<<<< HEAD
 	if (init->num_parents < 1) {
+=======
+	if (!init->num_parents) {
+>>>>>>> v4.9.227
 		pr_err("%s must have parent(s)\n", node->name);
 		goto cleanup;
 	}
@@ -256,8 +467,12 @@ static void __init of_ti_dpll_setup(struct device_node *node,
 	if (!parent_names)
 		goto cleanup;
 
+<<<<<<< HEAD
 	for (i = 0; i < init->num_parents; i++)
 		parent_names[i] = of_clk_get_parent_name(node, i);
+=======
+	of_clk_parent_fill(node, parent_names, init->num_parents);
+>>>>>>> v4.9.227
 
 	init->parent_names = parent_names;
 
@@ -276,18 +491,30 @@ static void __init of_ti_dpll_setup(struct device_node *node,
 #endif
 	} else {
 		dd->idlest_reg = ti_clk_get_reg_addr(node, 1);
+<<<<<<< HEAD
 		if (!dd->idlest_reg)
+=======
+		if (IS_ERR(dd->idlest_reg))
+>>>>>>> v4.9.227
 			goto cleanup;
 
 		dd->mult_div1_reg = ti_clk_get_reg_addr(node, 2);
 	}
 
+<<<<<<< HEAD
 	if (!dd->control_reg || !dd->mult_div1_reg)
+=======
+	if (IS_ERR(dd->control_reg) || IS_ERR(dd->mult_div1_reg))
+>>>>>>> v4.9.227
 		goto cleanup;
 
 	if (dd->autoidle_mask) {
 		dd->autoidle_reg = ti_clk_get_reg_addr(node, 3);
+<<<<<<< HEAD
 		if (!dd->autoidle_reg)
+=======
+		if (IS_ERR(dd->autoidle_reg))
+>>>>>>> v4.9.227
 			goto cleanup;
 	}
 
@@ -303,7 +530,11 @@ static void __init of_ti_dpll_setup(struct device_node *node,
 	if (dpll_mode)
 		dd->modes = dpll_mode;
 
+<<<<<<< HEAD
 	ti_clk_register_dpll(&clk_hw->hw, node);
+=======
+	_register_dpll(&clk_hw->hw, node);
+>>>>>>> v4.9.227
 	return;
 
 cleanup:
@@ -317,7 +548,11 @@ cleanup:
 	defined(CONFIG_SOC_DRA7XX)
 static void __init of_ti_omap4_dpll_x2_setup(struct device_node *node)
 {
+<<<<<<< HEAD
 	ti_clk_register_dpll_x2(node, &dpll_x2_ck_ops, &clkhwops_omap4_dpllmx);
+=======
+	_register_dpll_x2(node, &dpll_x2_ck_ops, &clkhwops_omap4_dpllmx);
+>>>>>>> v4.9.227
 }
 CLK_OF_DECLARE(ti_omap4_dpll_x2_clock, "ti,omap4-dpll-x2-clock",
 	       of_ti_omap4_dpll_x2_setup);
@@ -326,7 +561,11 @@ CLK_OF_DECLARE(ti_omap4_dpll_x2_clock, "ti,omap4-dpll-x2-clock",
 #if defined(CONFIG_SOC_AM33XX) || defined(CONFIG_SOC_AM43XX)
 static void __init of_ti_am3_dpll_x2_setup(struct device_node *node)
 {
+<<<<<<< HEAD
 	ti_clk_register_dpll_x2(node, &dpll_x2_ck_ops, NULL);
+=======
+	_register_dpll_x2(node, &dpll_x2_ck_ops, NULL);
+>>>>>>> v4.9.227
 }
 CLK_OF_DECLARE(ti_am3_dpll_x2_clock, "ti,am3-dpll-x2-clock",
 	       of_ti_am3_dpll_x2_setup);
@@ -348,7 +587,16 @@ static void __init of_ti_omap3_dpll_setup(struct device_node *node)
 		.modes = (1 << DPLL_LOW_POWER_BYPASS) | (1 << DPLL_LOCKED),
 	};
 
+<<<<<<< HEAD
 	of_ti_dpll_setup(node, &omap3_dpll_ck_ops, &dd);
+=======
+	if ((of_machine_is_compatible("ti,omap3630") ||
+	     of_machine_is_compatible("ti,omap36xx")) &&
+	    !strcmp(node->name, "dpll5_ck"))
+		of_ti_dpll_setup(node, &omap3_dpll5_ck_ops, &dd);
+	else
+		of_ti_dpll_setup(node, &omap3_dpll_ck_ops, &dd);
+>>>>>>> v4.9.227
 }
 CLK_OF_DECLARE(ti_omap3_dpll_clock, "ti,omap3-dpll-clock",
 	       of_ti_omap3_dpll_setup);
@@ -529,6 +777,10 @@ static void __init of_ti_am3_no_gate_dpll_setup(struct device_node *node)
 		.max_multiplier = 2047,
 		.max_divider = 128,
 		.min_divider = 1,
+<<<<<<< HEAD
+=======
+		.max_rate = 1000000000,
+>>>>>>> v4.9.227
 		.modes = (1 << DPLL_LOW_POWER_BYPASS) | (1 << DPLL_LOCKED),
 	};
 
@@ -548,6 +800,10 @@ static void __init of_ti_am3_jtype_dpll_setup(struct device_node *node)
 		.max_divider = 256,
 		.min_divider = 2,
 		.flags = DPLL_J_TYPE,
+<<<<<<< HEAD
+=======
+		.max_rate = 2000000000,
+>>>>>>> v4.9.227
 		.modes = (1 << DPLL_LOW_POWER_BYPASS) | (1 << DPLL_LOCKED),
 	};
 
@@ -566,6 +822,10 @@ static void __init of_ti_am3_no_gate_jtype_dpll_setup(struct device_node *node)
 		.max_multiplier = 2047,
 		.max_divider = 128,
 		.min_divider = 1,
+<<<<<<< HEAD
+=======
+		.max_rate = 2000000000,
+>>>>>>> v4.9.227
 		.flags = DPLL_J_TYPE,
 		.modes = (1 << DPLL_LOW_POWER_BYPASS) | (1 << DPLL_LOCKED),
 	};
@@ -586,6 +846,10 @@ static void __init of_ti_am3_dpll_setup(struct device_node *node)
 		.max_multiplier = 2047,
 		.max_divider = 128,
 		.min_divider = 1,
+<<<<<<< HEAD
+=======
+		.max_rate = 1000000000,
+>>>>>>> v4.9.227
 		.modes = (1 << DPLL_LOW_POWER_BYPASS) | (1 << DPLL_LOCKED),
 	};
 
@@ -603,6 +867,10 @@ static void __init of_ti_am3_core_dpll_setup(struct device_node *node)
 		.max_multiplier = 2047,
 		.max_divider = 128,
 		.min_divider = 1,
+<<<<<<< HEAD
+=======
+		.max_rate = 1000000000,
+>>>>>>> v4.9.227
 		.modes = (1 << DPLL_LOW_POWER_BYPASS) | (1 << DPLL_LOCKED),
 	};
 

@@ -154,7 +154,11 @@ ENTRY(___udivsi3)
        CC = R7 < 0;               /* Check quotient(AQ) */
                                   /* If AQ==0, we'll sub divisor */
        IF CC R5 = R1;             /* and if AQ==1, we'll add it. */
+<<<<<<< HEAD
        R3 = R3 + R5;              /* Add/sub divsor to partial remainder */
+=======
+       R3 = R3 + R5;              /* Add/sub divisor to partial remainder */
+>>>>>>> v4.9.227
        R7 = R3 ^ R1;              /* Generate next quotient bit */
 
        R5 = R7 >> 31;             /* Get AQ */

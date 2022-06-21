@@ -109,6 +109,10 @@ static inline u64 __cmpxchg64_local(volatile u64 *ptr, u64 old, u64 new)
 
 #endif
 
+<<<<<<< HEAD
 #define system_has_cmpxchg_double() cpu_has_cx8
+=======
+#define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX8)
+>>>>>>> v4.9.227
 
 #endif /* _ASM_X86_CMPXCHG_32_H */

@@ -16,10 +16,17 @@ struct timerqueue_head {
 };
 
 
+<<<<<<< HEAD
 extern void timerqueue_add(struct timerqueue_head *head,
 				struct timerqueue_node *node);
 extern void timerqueue_del(struct timerqueue_head *head,
 				struct timerqueue_node *node);
+=======
+extern bool timerqueue_add(struct timerqueue_head *head,
+			   struct timerqueue_node *node);
+extern bool timerqueue_del(struct timerqueue_head *head,
+			   struct timerqueue_node *node);
+>>>>>>> v4.9.227
 extern struct timerqueue_node *timerqueue_iterate_next(
 						struct timerqueue_node *node);
 

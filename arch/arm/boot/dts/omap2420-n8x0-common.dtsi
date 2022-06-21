@@ -1,17 +1,29 @@
 #include "omap2420.dtsi"
 
 / {
+<<<<<<< HEAD
 	memory {
+=======
+	memory@80000000 {
+>>>>>>> v4.9.227
 		device_type = "memory";
 		reg = <0x80000000 0x8000000>; /* 128 MB */
 	};
 
 	ocp {
+<<<<<<< HEAD
 		i2c@0 {
 			compatible = "i2c-cbus-gpio";
 			gpios = <&gpio3 2 0 /* gpio66 clk */
 				 &gpio3 1 0 /* gpio65 dat */
 				 &gpio3 0 0 /* gpio64 sel */
+=======
+		i2c0 {
+			compatible = "i2c-cbus-gpio";
+			gpios = <&gpio3 2 GPIO_ACTIVE_HIGH /* gpio66 clk */
+				 &gpio3 1 GPIO_ACTIVE_HIGH /* gpio65 dat */
+				 &gpio3 0 GPIO_ACTIVE_HIGH /* gpio64 sel */
+>>>>>>> v4.9.227
 				>;
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -40,14 +52,22 @@
 };
 
 &gpmc {
+<<<<<<< HEAD
 	ranges = <0 0 0x04000000 0x10000000>;
+=======
+	ranges = <0 0 0x04000000 0x1000000>;	/* CS0: 16MB for OneNAND */
+>>>>>>> v4.9.227
 
 	/* gpio-irq for dma: 26 */
 
 	onenand@0,0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
+<<<<<<< HEAD
 		reg = <0 0 0x10000000>;
+=======
+		reg = <0 0 0x20000>;	/* CS0, offset 0, IO size 128K */
+>>>>>>> v4.9.227
 
 		gpmc,sync-read;
 		gpmc,burst-length = <16>;

@@ -97,7 +97,11 @@
  * New xmit() return, do_div and misc clean up by Stephen Hemminger
  * <shemminger@osdl.org> 040923
  *
+<<<<<<< HEAD
  * Randy Dunlap fixed u64 printk compiler waring
+=======
+ * Randy Dunlap fixed u64 printk compiler warning
+>>>>>>> v4.9.227
  *
  * Remove FCS from BW calculation.  Lennert Buytenhek <buytenh@wantstofly.org>
  * New time handling. Lennert Buytenhek <buytenh@wantstofly.org> 041213
@@ -177,7 +181,11 @@
 #include <asm/dma.h>
 #include <asm/div64.h>		/* do_div */
 
+<<<<<<< HEAD
 #define VERSION	"2.74"
+=======
+#define VERSION	"2.75"
+>>>>>>> v4.9.227
 #define IP_NAME_SZ 32
 #define MAX_MPLS_LABELS 16 /* This is the max label stack depth */
 #define MPLS_STACK_BOTTOM htonl(0x00000100)
@@ -210,6 +218,14 @@
 #define T_REMDEVALL   (1<<2)	/* Remove all devs */
 #define T_REMDEV      (1<<3)	/* Remove one dev */
 
+<<<<<<< HEAD
+=======
+/* Xmit modes */
+#define M_START_XMIT		0	/* Default normal TX */
+#define M_NETIF_RECEIVE 	1	/* Inject packets into stack */
+#define M_QUEUE_XMIT		2	/* Inject packet into qdisc */
+
+>>>>>>> v4.9.227
 /* If lock -- protects updating of if_list */
 #define   if_lock(t)           mutex_lock(&(t->if_lock));
 #define   if_unlock(t)           mutex_unlock(&(t->if_lock));
@@ -251,13 +267,23 @@ struct pktgen_dev {
 	 * we will do a random selection from within the range.
 	 */
 	__u32 flags;
+<<<<<<< HEAD
 	int removal_mark;	/* non-zero => the device is marked for
 				 * removal by worker thread */
 
+=======
+	int xmit_mode;
+>>>>>>> v4.9.227
 	int min_pkt_size;
 	int max_pkt_size;
 	int pkt_overhead;	/* overhead for MPLS, VLANs, IPSEC etc */
 	int nfrags;
+<<<<<<< HEAD
+=======
+	int removal_mark;	/* non-zero => the device is marked for
+				 * removal by worker thread */
+
+>>>>>>> v4.9.227
 	struct page *page;
 	u64 delay;		/* nano-seconds */
 
@@ -268,7 +294,10 @@ struct pktgen_dev {
 
 	/* runtime counters relating to clone_skb */
 
+<<<<<<< HEAD
 	__u64 allocated_skbs;
+=======
+>>>>>>> v4.9.227
 	__u32 clone_count;
 	int last_ok;		/* Was last skb sent?
 				 * Or a failed transmit of some sort?
@@ -507,7 +536,11 @@ static ssize_t pgctrl_write(struct file *file, const char __user *buf,
 		pktgen_reset_all_threads(pn);
 
 	else
+<<<<<<< HEAD
 		pr_warn("Unknown command: %s\n", data);
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 
 	return count;
 }
@@ -567,7 +600,11 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 			   "     dst_min: %s  dst_max: %s\n",
 			   pkt_dev->dst_min, pkt_dev->dst_max);
 		seq_printf(seq,
+<<<<<<< HEAD
 			   "        src_min: %s  src_max: %s\n",
+=======
+			   "     src_min: %s  src_max: %s\n",
+>>>>>>> v4.9.227
 			   pkt_dev->src_min, pkt_dev->src_max);
 	}
 
@@ -620,6 +657,14 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 	if (pkt_dev->node >= 0)
 		seq_printf(seq, "     node: %d\n", pkt_dev->node);
 
+<<<<<<< HEAD
+=======
+	if (pkt_dev->xmit_mode == M_NETIF_RECEIVE)
+		seq_puts(seq, "     xmit_mode: netif_receive\n");
+	else if (pkt_dev->xmit_mode == M_QUEUE_XMIT)
+		seq_puts(seq, "     xmit_mode: xmit_queue\n");
+
+>>>>>>> v4.9.227
 	seq_puts(seq, "     Flags: ");
 
 	if (pkt_dev->flags & F_IPV6)
@@ -1081,7 +1126,12 @@ static ssize_t pktgen_if_write(struct file *file,
 		if (len < 0)
 			return len;
 		if ((value > 0) &&
+<<<<<<< HEAD
 		    (!(pkt_dev->odev->priv_flags & IFF_TX_SKB_SHARING)))
+=======
+		    ((pkt_dev->xmit_mode == M_NETIF_RECEIVE) ||
+		     !(pkt_dev->odev->priv_flags & IFF_TX_SKB_SHARING)))
+>>>>>>> v4.9.227
 			return -ENOTSUPP;
 		i += len;
 		pkt_dev->clone_skb = value;
@@ -1135,7 +1185,13 @@ static ssize_t pktgen_if_write(struct file *file,
 
 		i += len;
 		if ((value > 1) &&
+<<<<<<< HEAD
 		    (!(pkt_dev->odev->priv_flags & IFF_TX_SKB_SHARING)))
+=======
+		    ((pkt_dev->xmit_mode == M_QUEUE_XMIT) ||
+		     ((pkt_dev->xmit_mode == M_START_XMIT) &&
+		     (!(pkt_dev->odev->priv_flags & IFF_TX_SKB_SHARING)))))
+>>>>>>> v4.9.227
 			return -ENOTSUPP;
 		pkt_dev->burst = value < 1 ? 1 : value;
 		sprintf(pg_result, "OK: burst=%d", pkt_dev->burst);
@@ -1160,6 +1216,51 @@ static ssize_t pktgen_if_write(struct file *file,
 			sprintf(pg_result, "ERROR: node not possible");
 		return count;
 	}
+<<<<<<< HEAD
+=======
+	if (!strcmp(name, "xmit_mode")) {
+		char f[32];
+
+		memset(f, 0, 32);
+		len = strn_len(&user_buffer[i], sizeof(f) - 1);
+		if (len < 0)
+			return len;
+
+		if (copy_from_user(f, &user_buffer[i], len))
+			return -EFAULT;
+		i += len;
+
+		if (strcmp(f, "start_xmit") == 0) {
+			pkt_dev->xmit_mode = M_START_XMIT;
+		} else if (strcmp(f, "netif_receive") == 0) {
+			/* clone_skb set earlier, not supported in this mode */
+			if (pkt_dev->clone_skb > 0)
+				return -ENOTSUPP;
+
+			pkt_dev->xmit_mode = M_NETIF_RECEIVE;
+
+			/* make sure new packet is allocated every time
+			 * pktgen_xmit() is called
+			 */
+			pkt_dev->last_ok = 1;
+
+			/* override clone_skb if user passed default value
+			 * at module loading time
+			 */
+			pkt_dev->clone_skb = 0;
+		} else if (strcmp(f, "queue_xmit") == 0) {
+			pkt_dev->xmit_mode = M_QUEUE_XMIT;
+			pkt_dev->last_ok = 1;
+		} else {
+			sprintf(pg_result,
+				"xmit_mode -:%s:- unknown\nAvailable modes: %s",
+				f, "start_xmit, netif_receive\n");
+			return count;
+		}
+		sprintf(pg_result, "OK: xmit_mode=%s", f);
+		return count;
+	}
+>>>>>>> v4.9.227
 	if (!strcmp(name, "flag")) {
 		char f[32];
 		memset(f, 0, 32);
@@ -1267,6 +1368,12 @@ static ssize_t pktgen_if_write(struct file *file,
 		else if (strcmp(f, "NO_TIMESTAMP") == 0)
 			pkt_dev->flags |= F_NO_TIMESTAMP;
 
+<<<<<<< HEAD
+=======
+		else if (strcmp(f, "!NO_TIMESTAMP") == 0)
+			pkt_dev->flags &= ~F_NO_TIMESTAMP;
+
+>>>>>>> v4.9.227
 		else {
 			sprintf(pg_result,
 				"Flag -:%s:- unknown\nAvailable flags, (prepend ! to un-set flag):\n%s",
@@ -2198,10 +2305,15 @@ static void spin(struct pktgen_dev *pkt_dev, ktime_t spin_until)
 	hrtimer_set_expires(&t.timer, spin_until);
 
 	remaining = ktime_to_ns(hrtimer_expires_remaining(&t.timer));
+<<<<<<< HEAD
 	if (remaining <= 0) {
 		pkt_dev->next_tx = ktime_add_ns(spin_until, pkt_dev->delay);
 		return;
 	}
+=======
+	if (remaining <= 0)
+		goto out;
+>>>>>>> v4.9.227
 
 	start_time = ktime_get();
 	if (remaining < 100000) {
@@ -2215,8 +2327,11 @@ static void spin(struct pktgen_dev *pkt_dev, ktime_t spin_until)
 		do {
 			set_current_state(TASK_INTERRUPTIBLE);
 			hrtimer_start_expires(&t.timer, HRTIMER_MODE_ABS);
+<<<<<<< HEAD
 			if (!hrtimer_active(&t.timer))
 				t.task = NULL;
+=======
+>>>>>>> v4.9.227
 
 			if (likely(t.task))
 				schedule();
@@ -2228,7 +2343,13 @@ static void spin(struct pktgen_dev *pkt_dev, ktime_t spin_until)
 	}
 
 	pkt_dev->idle_acc += ktime_to_ns(ktime_sub(end_time, start_time));
+<<<<<<< HEAD
 	pkt_dev->next_tx = ktime_add_ns(spin_until, pkt_dev->delay);
+=======
+out:
+	pkt_dev->next_tx = ktime_add_ns(spin_until, pkt_dev->delay);
+	destroy_hrtimer_on_stack(&t.timer);
+>>>>>>> v4.9.227
 }
 
 static inline void set_pkt_overhead(struct pktgen_dev *pkt_dev)
@@ -2597,9 +2718,15 @@ static int process_ipsec(struct pktgen_dev *pkt_dev,
 		struct xfrm_state *x = pkt_dev->flows[pkt_dev->curfl].x;
 		int nhead = 0;
 		if (x) {
+<<<<<<< HEAD
 			int ret;
 			__u8 *eth;
 			struct iphdr *iph;
+=======
+			struct ethhdr *eth;
+			struct iphdr *iph;
+			int ret;
+>>>>>>> v4.9.227
 
 			nhead = x->props.header_len - skb_headroom(skb);
 			if (nhead > 0) {
@@ -2619,9 +2746,15 @@ static int process_ipsec(struct pktgen_dev *pkt_dev,
 				goto err;
 			}
 			/* restore ll */
+<<<<<<< HEAD
 			eth = (__u8 *) skb_push(skb, ETH_HLEN);
 			memcpy(eth, pkt_dev->hh, 12);
 			*(u16 *) &eth[12] = protocol;
+=======
+			eth = (struct ethhdr *)skb_push(skb, ETH_HLEN);
+			memcpy(eth, pkt_dev->hh, 2 * ETH_ALEN);
+			eth->h_proto = protocol;
+>>>>>>> v4.9.227
 
 			/* Update IPv4 header len as well as checksum value */
 			iph = ip_hdr(skb);
@@ -2724,6 +2857,7 @@ static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
 }
 
 static struct sk_buff *pktgen_alloc_skb(struct net_device *dev,
+<<<<<<< HEAD
 					struct pktgen_dev *pkt_dev,
 					unsigned int extralen)
 {
@@ -2731,6 +2865,15 @@ static struct sk_buff *pktgen_alloc_skb(struct net_device *dev,
 	unsigned int size = pkt_dev->cur_pkt_size + 64 + extralen +
 			    pkt_dev->pkt_overhead;
 
+=======
+					struct pktgen_dev *pkt_dev)
+{
+	unsigned int extralen = LL_RESERVED_SPACE(dev);
+	struct sk_buff *skb = NULL;
+	unsigned int size;
+
+	size = pkt_dev->cur_pkt_size + 64 + extralen + pkt_dev->pkt_overhead;
+>>>>>>> v4.9.227
 	if (pkt_dev->flags & F_NODE) {
 		int node = pkt_dev->node >= 0 ? pkt_dev->node : numa_node_id();
 
@@ -2743,6 +2886,13 @@ static struct sk_buff *pktgen_alloc_skb(struct net_device *dev,
 		 skb = __netdev_alloc_skb(dev, size, GFP_NOWAIT);
 	}
 
+<<<<<<< HEAD
+=======
+	/* the caller pre-fetches from skb->data and reserves for the mac hdr */
+	if (likely(skb))
+		skb_reserve(skb, extralen - 16);
+
+>>>>>>> v4.9.227
 	return skb;
 }
 
@@ -2774,16 +2924,24 @@ static struct sk_buff *fill_packet_ipv4(struct net_device *odev,
 	mod_cur_headers(pkt_dev);
 	queue_map = pkt_dev->cur_queue_map;
 
+<<<<<<< HEAD
 	datalen = (odev->hard_header_len + 16) & ~0xf;
 
 	skb = pktgen_alloc_skb(odev, pkt_dev, datalen);
+=======
+	skb = pktgen_alloc_skb(odev, pkt_dev);
+>>>>>>> v4.9.227
 	if (!skb) {
 		sprintf(pkt_dev->result, "No memory");
 		return NULL;
 	}
 
 	prefetchw(skb->data);
+<<<<<<< HEAD
 	skb_reserve(skb, datalen);
+=======
+	skb_reserve(skb, 16);
+>>>>>>> v4.9.227
 
 	/*  Reserve for ethernet and IP header  */
 	eth = (__u8 *) skb_push(skb, 14);
@@ -2808,7 +2966,11 @@ static struct sk_buff *fill_packet_ipv4(struct net_device *odev,
 		*vlan_encapsulated_proto = htons(ETH_P_IP);
 	}
 
+<<<<<<< HEAD
 	skb_set_mac_header(skb, 0);
+=======
+	skb_reset_mac_header(skb);
+>>>>>>> v4.9.227
 	skb_set_network_header(skb, skb->len);
 	iph = (struct iphdr *) skb_put(skb, sizeof(struct iphdr));
 
@@ -2852,7 +3014,11 @@ static struct sk_buff *fill_packet_ipv4(struct net_device *odev,
 
 	if (!(pkt_dev->flags & F_UDPCSUM)) {
 		skb->ip_summed = CHECKSUM_NONE;
+<<<<<<< HEAD
 	} else if (odev->features & NETIF_F_V4_CSUM) {
+=======
+	} else if (odev->features & (NETIF_F_HW_CSUM | NETIF_F_IP_CSUM)) {
+>>>>>>> v4.9.227
 		skb->ip_summed = CHECKSUM_PARTIAL;
 		skb->csum = 0;
 		udp4_hwcsum(skb, iph->saddr, iph->daddr);
@@ -2903,7 +3069,11 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 	mod_cur_headers(pkt_dev);
 	queue_map = pkt_dev->cur_queue_map;
 
+<<<<<<< HEAD
 	skb = pktgen_alloc_skb(odev, pkt_dev, 16);
+=======
+	skb = pktgen_alloc_skb(odev, pkt_dev);
+>>>>>>> v4.9.227
 	if (!skb) {
 		sprintf(pkt_dev->result, "No memory");
 		return NULL;
@@ -2935,7 +3105,11 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 		*vlan_encapsulated_proto = htons(ETH_P_IPV6);
 	}
 
+<<<<<<< HEAD
 	skb_set_mac_header(skb, 0);
+=======
+	skb_reset_mac_header(skb);
+>>>>>>> v4.9.227
 	skb_set_network_header(skb, skb->len);
 	iph = (struct ipv6hdr *) skb_put(skb, sizeof(struct ipv6hdr));
 
@@ -2986,7 +3160,11 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 
 	if (!(pkt_dev->flags & F_UDPCSUM)) {
 		skb->ip_summed = CHECKSUM_NONE;
+<<<<<<< HEAD
 	} else if (odev->features & NETIF_F_V6_CSUM) {
+=======
+	} else if (odev->features & (NETIF_F_HW_CSUM | NETIF_F_IPV6_CSUM)) {
+>>>>>>> v4.9.227
 		skb->ip_summed = CHECKSUM_PARTIAL;
 		skb->csum_start = skb_transport_header(skb) - skb->head;
 		skb->csum_offset = offsetof(struct udphdr, check);
@@ -3089,7 +3267,17 @@ static int pktgen_wait_thread_run(struct pktgen_thread *t)
 {
 	while (thread_is_running(t)) {
 
+<<<<<<< HEAD
 		msleep_interruptible(100);
+=======
+		/* note: 't' will still be around even after the unlock/lock
+		 * cycle because pktgen_thread threads are only cleared at
+		 * net exit
+		 */
+		mutex_unlock(&pktgen_thread_lock);
+		msleep_interruptible(100);
+		mutex_lock(&pktgen_thread_lock);
+>>>>>>> v4.9.227
 
 		if (signal_pending(current))
 			goto signal;
@@ -3104,6 +3292,13 @@ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
 	struct pktgen_thread *t;
 	int sig = 1;
 
+<<<<<<< HEAD
+=======
+	/* prevent from racing with rmmod */
+	if (!try_module_get(THIS_MODULE))
+		return sig;
+
+>>>>>>> v4.9.227
 	mutex_lock(&pktgen_thread_lock);
 
 	list_for_each_entry(t, &pn->pktgen_threads, th_list) {
@@ -3117,6 +3312,10 @@ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
 			t->control |= (T_STOP);
 
 	mutex_unlock(&pktgen_thread_lock);
+<<<<<<< HEAD
+=======
+	module_put(THIS_MODULE);
+>>>>>>> v4.9.227
 	return sig;
 }
 
@@ -3320,6 +3519,10 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
 	unsigned int burst = ACCESS_ONCE(pkt_dev->burst);
 	struct net_device *odev = pkt_dev->odev;
 	struct netdev_queue *txq;
+<<<<<<< HEAD
+=======
+	struct sk_buff *skb;
+>>>>>>> v4.9.227
 	int ret;
 
 	/* If device is offline, then don't send */
@@ -3350,13 +3553,80 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
 			return;
 		}
 		pkt_dev->last_pkt_size = pkt_dev->skb->len;
+<<<<<<< HEAD
 		pkt_dev->allocated_skbs++;
+=======
+>>>>>>> v4.9.227
 		pkt_dev->clone_count = 0;	/* reset counter */
 	}
 
 	if (pkt_dev->delay && pkt_dev->last_ok)
 		spin(pkt_dev, pkt_dev->next_tx);
 
+<<<<<<< HEAD
+=======
+	if (pkt_dev->xmit_mode == M_NETIF_RECEIVE) {
+		skb = pkt_dev->skb;
+		skb->protocol = eth_type_trans(skb, skb->dev);
+		atomic_add(burst, &skb->users);
+		local_bh_disable();
+		do {
+			ret = netif_receive_skb(skb);
+			if (ret == NET_RX_DROP)
+				pkt_dev->errors++;
+			pkt_dev->sofar++;
+			pkt_dev->seq_num++;
+			if (atomic_read(&skb->users) != burst) {
+				/* skb was queued by rps/rfs or taps,
+				 * so cannot reuse this skb
+				 */
+				atomic_sub(burst - 1, &skb->users);
+				/* get out of the loop and wait
+				 * until skb is consumed
+				 */
+				break;
+			}
+			/* skb was 'freed' by stack, so clean few
+			 * bits and reuse it
+			 */
+#ifdef CONFIG_NET_CLS_ACT
+			skb->tc_verd = 0; /* reset reclass/redir ttl */
+#endif
+		} while (--burst > 0);
+		goto out; /* Skips xmit_mode M_START_XMIT */
+	} else if (pkt_dev->xmit_mode == M_QUEUE_XMIT) {
+		local_bh_disable();
+		atomic_inc(&pkt_dev->skb->users);
+
+		ret = dev_queue_xmit(pkt_dev->skb);
+		switch (ret) {
+		case NET_XMIT_SUCCESS:
+			pkt_dev->sofar++;
+			pkt_dev->seq_num++;
+			pkt_dev->tx_bytes += pkt_dev->last_pkt_size;
+			break;
+		case NET_XMIT_DROP:
+		case NET_XMIT_CN:
+		/* These are all valid return codes for a qdisc but
+		 * indicate packets are being dropped or will likely
+		 * be dropped soon.
+		 */
+		case NETDEV_TX_BUSY:
+		/* qdisc may call dev_hard_start_xmit directly in cases
+		 * where no queues exist e.g. loopback device, virtual
+		 * devices, etc. In this case we need to handle
+		 * NETDEV_TX_ codes.
+		 */
+		default:
+			pkt_dev->errors++;
+			net_info_ratelimited("%s xmit error: %d\n",
+					     pkt_dev->odevname, ret);
+			break;
+		}
+		goto out;
+	}
+
+>>>>>>> v4.9.227
 	txq = skb_get_tx_queue(odev, pkt_dev->skb);
 
 	local_bh_disable();
@@ -3384,7 +3654,10 @@ xmit_more:
 		break;
 	case NET_XMIT_DROP:
 	case NET_XMIT_CN:
+<<<<<<< HEAD
 	case NET_XMIT_POLICED:
+=======
+>>>>>>> v4.9.227
 		/* skb has been consumed */
 		pkt_dev->errors++;
 		break;
@@ -3393,7 +3666,10 @@ xmit_more:
 				     pkt_dev->odevname, ret);
 		pkt_dev->errors++;
 		/* fallthru */
+<<<<<<< HEAD
 	case NETDEV_TX_LOCKED:
+=======
+>>>>>>> v4.9.227
 	case NETDEV_TX_BUSY:
 		/* Retry it next time */
 		atomic_dec(&(pkt_dev->skb->users));
@@ -3404,6 +3680,10 @@ xmit_more:
 unlock:
 	HARD_TX_UNLOCK(odev, txq);
 
+<<<<<<< HEAD
+=======
+out:
+>>>>>>> v4.9.227
 	local_bh_enable();
 
 	/* If pkt_dev->count is zero, then run forever */
@@ -3435,8 +3715,11 @@ static int pktgen_thread_worker(void *arg)
 
 	set_freezable();
 
+<<<<<<< HEAD
 	__set_current_state(TASK_RUNNING);
 
+=======
+>>>>>>> v4.9.227
 	while (!kthread_should_stop()) {
 		pkt_dev = next_to_run(t);
 
@@ -3481,7 +3764,10 @@ static int pktgen_thread_worker(void *arg)
 
 		try_to_freeze();
 	}
+<<<<<<< HEAD
 	set_current_state(TASK_INTERRUPTIBLE);
+=======
+>>>>>>> v4.9.227
 
 	pr_debug("%s stopping all device\n", t->tsk->comm);
 	pktgen_stop(t);
@@ -3492,6 +3778,7 @@ static int pktgen_thread_worker(void *arg)
 	pr_debug("%s removing thread\n", t->tsk->comm);
 	pktgen_rem_thread(t);
 
+<<<<<<< HEAD
 	/* Wait for kthread_stop */
 	for (;;) {
 		set_current_state(TASK_INTERRUPTIBLE);
@@ -3501,6 +3788,8 @@ static int pktgen_thread_worker(void *arg)
 	}
 	__set_current_state(TASK_RUNNING);
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -3692,6 +3981,10 @@ static int __net_init pktgen_create_thread(int cpu, struct pktgen_net *pn)
 	}
 
 	t->net = pn;
+<<<<<<< HEAD
+=======
+	get_task_struct(p);
+>>>>>>> v4.9.227
 	wake_up_process(p);
 	wait_for_completion(&t->start_done);
 
@@ -3736,8 +4029,12 @@ static int pktgen_remove_device(struct pktgen_thread *t,
 	/* Remove proc before if_list entry, because add_device uses
 	 * list to determine if interface already exist, avoid race
 	 * with proc_create_data() */
+<<<<<<< HEAD
 	if (pkt_dev->entry)
 		proc_remove(pkt_dev->entry);
+=======
+	proc_remove(pkt_dev->entry);
+>>>>>>> v4.9.227
 
 	/* And update the thread if_list */
 	_rem_dev_from_if_list(t, pkt_dev);
@@ -3815,6 +4112,10 @@ static void __net_exit pg_net_exit(struct net *net)
 		t = list_entry(q, struct pktgen_thread, th_list);
 		list_del(&t->th_list);
 		kthread_stop(t->tsk);
+<<<<<<< HEAD
+=======
+		put_task_struct(t->tsk);
+>>>>>>> v4.9.227
 		kfree(t);
 	}
 

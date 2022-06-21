@@ -118,11 +118,15 @@
 #endif
 
 #if defined(CONFIG_CPU_V7M)
+<<<<<<< HEAD
 # ifdef _CACHE
 #  define MULTI_CACHE 1
 # else
 #  define _CACHE nop
 # endif
+=======
+#  define MULTI_CACHE 1
+>>>>>>> v4.9.227
 #endif
 
 #if !defined(_CACHE) && !defined(MULTI_CACHE)
@@ -158,11 +162,15 @@ static inline void nop_dma_unmap_area(const void *s, size_t l, int f) { }
 #define __cpuc_coherent_user_range	__glue(_CACHE,_coherent_user_range)
 #define __cpuc_flush_dcache_area	__glue(_CACHE,_flush_kern_dcache_area)
 
+<<<<<<< HEAD
 #define dmac_map_area			__glue(_CACHE,_dma_map_area)
 #define dmac_unmap_area			__glue(_CACHE,_dma_unmap_area)
 #define dmac_flush_range		__glue(_CACHE,_dma_flush_range)
 #define dmac_inv_range			__glue(_CACHE,_dma_inv_range)
 #define dmac_clean_range		__glue(_CACHE,_dma_clean_range)
+=======
+#define dmac_flush_range		__glue(_CACHE,_dma_flush_range)
+>>>>>>> v4.9.227
 #endif
 
 #endif

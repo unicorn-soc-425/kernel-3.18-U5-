@@ -1053,7 +1053,11 @@ static void __init omap_mux_init_list(struct omap_mux_partition *partition,
 		struct omap_mux *entry;
 
 #ifdef CONFIG_OMAP_MUX
+<<<<<<< HEAD
 		if (!superset->muxnames || !superset->muxnames[0]) {
+=======
+		if (!superset->muxnames[0]) {
+>>>>>>> v4.9.227
 			superset++;
 			continue;
 		}

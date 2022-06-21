@@ -6,6 +6,10 @@
 #define COMMAND_LINE_SIZE 2048
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/page_types.h>
+>>>>>>> v4.9.227
 
 #ifdef __i386__
 
@@ -60,11 +64,29 @@ static inline void x86_ce4100_early_setup(void) { }
 #ifndef _SETUP
 
 #include <asm/espfix.h>
+<<<<<<< HEAD
+=======
+#include <linux/kernel.h>
+>>>>>>> v4.9.227
 
 /*
  * This is set up by the setup-routine at boot-time
  */
 extern struct boot_params boot_params;
+<<<<<<< HEAD
+=======
+extern char _text[];
+
+static inline bool kaslr_enabled(void)
+{
+	return !!(boot_params.hdr.loadflags & KASLR_FLAG);
+}
+
+static inline unsigned long kaslr_offset(void)
+{
+	return (unsigned long)&_text - __START_KERNEL;
+}
+>>>>>>> v4.9.227
 
 /*
  * Do NOT EVER look at the BIOS memory size location.

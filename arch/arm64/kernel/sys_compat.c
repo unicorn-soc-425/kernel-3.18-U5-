@@ -28,6 +28,7 @@
 #include <asm/cacheflush.h>
 #include <asm/unistd.h>
 
+<<<<<<< HEAD
 static inline void
 do_compat_cache_op(unsigned long start, unsigned long end, int flags)
 {
@@ -51,6 +52,41 @@ do_compat_cache_op(unsigned long start, unsigned long end, int flags)
 	up_read(&mm->mmap_sem);
 }
 
+=======
+static long
+__do_compat_cache_op(unsigned long start, unsigned long end)
+{
+	long ret;
+
+	do {
+		unsigned long chunk = min(PAGE_SIZE, end - start);
+
+		if (fatal_signal_pending(current))
+			return 0;
+
+		ret = __flush_cache_user_range(start, start + chunk);
+		if (ret)
+			return ret;
+
+		cond_resched();
+		start += chunk;
+	} while (start < end);
+
+	return 0;
+}
+
+static inline long
+do_compat_cache_op(unsigned long start, unsigned long end, int flags)
+{
+	if (end < start || flags)
+		return -EINVAL;
+
+	if (!access_ok(VERIFY_READ, start, end - start))
+		return -EFAULT;
+
+	return __do_compat_cache_op(start, end);
+}
+>>>>>>> v4.9.227
 /*
  * Handle all unrecognised system calls.
  */
@@ -74,8 +110,12 @@ long compat_arm_syscall(struct pt_regs *regs)
 	 * the specified region).
 	 */
 	case __ARM_NR_compat_cacheflush:
+<<<<<<< HEAD
 		do_compat_cache_op(regs->regs[0], regs->regs[1], regs->regs[2]);
 		return 0;
+=======
+		return do_compat_cache_op(regs->regs[0], regs->regs[1], regs->regs[2]);
+>>>>>>> v4.9.227
 
 	case __ARM_NR_compat_set_tls:
 		current->thread.tp_value = regs->regs[0];
@@ -85,7 +125,11 @@ long compat_arm_syscall(struct pt_regs *regs)
 		 * See comment in tls_thread_flush.
 		 */
 		barrier();
+<<<<<<< HEAD
 		asm ("msr tpidrro_el0, %0" : : "r" (regs->regs[0]));
+=======
+		write_sysreg(regs->regs[0], tpidrro_el0);
+>>>>>>> v4.9.227
 		return 0;
 
 	default:

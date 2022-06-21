@@ -32,6 +32,11 @@
 #include <asm/platform.h>
 #include <asm/bootparam.h>
 
+<<<<<<< HEAD
+=======
+#include <platform/simcall.h>
+
+>>>>>>> v4.9.227
 
 void __init platform_init(bp_tag_t* bootparam)
 {
@@ -41,18 +46,27 @@ void __init platform_init(bp_tag_t* bootparam)
 void platform_halt(void)
 {
 	pr_info(" ** Called platform_halt() **\n");
+<<<<<<< HEAD
 	__asm__ __volatile__("movi a2, 1\nsimcall\n");
+=======
+	simc_exit(0);
+>>>>>>> v4.9.227
 }
 
 void platform_power_off(void)
 {
 	pr_info(" ** Called platform_power_off() **\n");
+<<<<<<< HEAD
 	__asm__ __volatile__("movi a2, 1\nsimcall\n");
+=======
+	simc_exit(0);
+>>>>>>> v4.9.227
 }
 void platform_restart(void)
 {
 	/* Flush and reset the mmu, simulate a processor reset, and
 	 * jump to the reset vector. */
+<<<<<<< HEAD
 
 	__asm__ __volatile__("movi	a2, 15\n\t"
 			     "wsr	a2, icountlevel\n\t"
@@ -70,6 +84,9 @@ void platform_restart(void)
 			     : "a" (XCHAL_RESET_VECTOR_VADDR)
 			     : "a2");
 
+=======
+	cpu_reset();
+>>>>>>> v4.9.227
 	/* control never gets here */
 }
 
@@ -96,7 +113,11 @@ void platform_heartbeat(void)
 static int
 iss_panic_event(struct notifier_block *this, unsigned long event, void *ptr)
 {
+<<<<<<< HEAD
 	__asm__ __volatile__("movi a2, -1; simcall\n");
+=======
+	simc_exit(1);
+>>>>>>> v4.9.227
 	return NOTIFY_DONE;
 }
 

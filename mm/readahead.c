@@ -8,6 +8,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/dax.h>
+>>>>>>> v4.9.227
 #include <linux/gfp.h>
 #include <linux/export.h>
 #include <linux/blkdev.h>
@@ -17,6 +21,10 @@
 #include <linux/pagemap.h>
 #include <linux/syscalls.h>
 #include <linux/file.h>
+<<<<<<< HEAD
+=======
+#include <linux/mm_inline.h>
+>>>>>>> v4.9.227
 
 #include "internal.h"
 
@@ -27,13 +35,20 @@
 void
 file_ra_state_init(struct file_ra_state *ra, struct address_space *mapping)
 {
+<<<<<<< HEAD
 	ra->ra_pages = mapping->backing_dev_info->ra_pages;
+=======
+	ra->ra_pages = inode_to_bdi(mapping->host)->ra_pages;
+>>>>>>> v4.9.227
 	ra->prev_pos = -1;
 }
 EXPORT_SYMBOL_GPL(file_ra_state_init);
 
+<<<<<<< HEAD
 #define list_to_page(head) (list_entry((head)->prev, struct page, lru))
 
+=======
+>>>>>>> v4.9.227
 /*
  * see if a page needs releasing upon read_cache_pages() failure
  * - the caller of read_cache_pages() may have set PG_private or PG_fscache
@@ -48,11 +63,19 @@ static void read_cache_pages_invalidate_page(struct address_space *mapping,
 		if (!trylock_page(page))
 			BUG();
 		page->mapping = mapping;
+<<<<<<< HEAD
 		do_invalidatepage(page, 0, PAGE_CACHE_SIZE);
 		page->mapping = NULL;
 		unlock_page(page);
 	}
 	page_cache_release(page);
+=======
+		do_invalidatepage(page, 0, PAGE_SIZE);
+		page->mapping = NULL;
+		unlock_page(page);
+	}
+	put_page(page);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -64,7 +87,11 @@ static void read_cache_pages_invalidate_pages(struct address_space *mapping,
 	struct page *victim;
 
 	while (!list_empty(pages)) {
+<<<<<<< HEAD
 		victim = list_to_page(pages);
+=======
+		victim = lru_to_page(pages);
+>>>>>>> v4.9.227
 		list_del(&victim->lru);
 		read_cache_pages_invalidate_page(mapping, victim);
 	}
@@ -87,6 +114,7 @@ int read_cache_pages(struct address_space *mapping, struct list_head *pages,
 	int ret = 0;
 
 	while (!list_empty(pages)) {
+<<<<<<< HEAD
 		page = list_to_page(pages);
 		list_del(&page->lru);
 		if (add_to_page_cache_lru(page, mapping,
@@ -95,13 +123,27 @@ int read_cache_pages(struct address_space *mapping, struct list_head *pages,
 			continue;
 		}
 		page_cache_release(page);
+=======
+		page = lru_to_page(pages);
+		list_del(&page->lru);
+		if (add_to_page_cache_lru(page, mapping, page->index,
+				readahead_gfp_mask(mapping))) {
+			read_cache_pages_invalidate_page(mapping, page);
+			continue;
+		}
+		put_page(page);
+>>>>>>> v4.9.227
 
 		ret = filler(data, page);
 		if (unlikely(ret)) {
 			read_cache_pages_invalidate_pages(mapping, pages);
 			break;
 		}
+<<<<<<< HEAD
 		task_io_account_read(PAGE_CACHE_SIZE);
+=======
+		task_io_account_read(PAGE_SIZE);
+>>>>>>> v4.9.227
 	}
 	return ret;
 }
@@ -109,7 +151,11 @@ int read_cache_pages(struct address_space *mapping, struct list_head *pages,
 EXPORT_SYMBOL(read_cache_pages);
 
 static int read_pages(struct address_space *mapping, struct file *filp,
+<<<<<<< HEAD
 		struct list_head *pages, unsigned nr_pages)
+=======
+		struct list_head *pages, unsigned int nr_pages, gfp_t gfp)
+>>>>>>> v4.9.227
 {
 	struct blk_plug plug;
 	unsigned page_idx;
@@ -125,6 +171,7 @@ static int read_pages(struct address_space *mapping, struct file *filp,
 	}
 
 	for (page_idx = 0; page_idx < nr_pages; page_idx++) {
+<<<<<<< HEAD
 		struct page *page = list_to_page(pages);
 		list_del(&page->lru);
 		if (!add_to_page_cache_lru(page, mapping,
@@ -132,6 +179,13 @@ static int read_pages(struct address_space *mapping, struct file *filp,
 			mapping->a_ops->readpage(filp, page);
 		}
 		page_cache_release(page);
+=======
+		struct page *page = lru_to_page(pages);
+		list_del(&page->lru);
+		if (!add_to_page_cache_lru(page, mapping, page->index, gfp))
+			mapping->a_ops->readpage(filp, page);
+		put_page(page);
+>>>>>>> v4.9.227
 	}
 	ret = 0;
 
@@ -160,11 +214,19 @@ int __do_page_cache_readahead(struct address_space *mapping, struct file *filp,
 	int page_idx;
 	int ret = 0;
 	loff_t isize = i_size_read(inode);
+<<<<<<< HEAD
+=======
+	gfp_t gfp_mask = readahead_gfp_mask(mapping);
+>>>>>>> v4.9.227
 
 	if (isize == 0)
 		goto out;
 
+<<<<<<< HEAD
 	end_index = ((isize - 1) >> PAGE_CACHE_SHIFT);
+=======
+	end_index = ((isize - 1) >> PAGE_SHIFT);
+>>>>>>> v4.9.227
 
 	/*
 	 * Preallocate as many pages as we will need.
@@ -181,7 +243,11 @@ int __do_page_cache_readahead(struct address_space *mapping, struct file *filp,
 		if (page && !radix_tree_exceptional_entry(page))
 			continue;
 
+<<<<<<< HEAD
 		page = page_cache_alloc_readahead(mapping);
+=======
+		page = __page_cache_alloc(gfp_mask);
+>>>>>>> v4.9.227
 		if (!page)
 			break;
 		page->index = page_offset;
@@ -197,7 +263,11 @@ int __do_page_cache_readahead(struct address_space *mapping, struct file *filp,
 	 * will then handle the error.
 	 */
 	if (ret)
+<<<<<<< HEAD
 		read_pages(mapping, filp, &page_pool, ret);
+=======
+		read_pages(mapping, filp, &page_pool, ret, gfp_mask);
+>>>>>>> v4.9.227
 	BUG_ON(!list_empty(&page_pool));
 out:
 	return ret;
@@ -213,11 +283,19 @@ int force_page_cache_readahead(struct address_space *mapping, struct file *filp,
 	if (unlikely(!mapping->a_ops->readpage && !mapping->a_ops->readpages))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	nr_to_read = max_sane_readahead(nr_to_read);
 	while (nr_to_read) {
 		int err;
 
 		unsigned long this_chunk = (2 * 1024 * 1024) / PAGE_CACHE_SIZE;
+=======
+	nr_to_read = min(nr_to_read, inode_to_bdi(mapping->host)->ra_pages);
+	while (nr_to_read) {
+		int err;
+
+		unsigned long this_chunk = (2 * 1024 * 1024) / PAGE_SIZE;
+>>>>>>> v4.9.227
 
 		if (this_chunk > nr_to_read)
 			this_chunk = nr_to_read;
@@ -232,6 +310,7 @@ int force_page_cache_readahead(struct address_space *mapping, struct file *filp,
 	return 0;
 }
 
+<<<<<<< HEAD
 #define MAX_READAHEAD   ((512*4096)/PAGE_CACHE_SIZE)
 /*
  * Given a desired number of PAGE_CACHE_SIZE readahead pages, return a
@@ -246,6 +325,10 @@ unsigned long max_sane_readahead(unsigned long nr)
  * Set the initial window size, round to next power of 2 and square
  * Small size is not dependant on max value - only a one-page read is regarded
  * as small.
+=======
+/*
+ * Set the initial window size, round to next power of 2 and square
+>>>>>>> v4.9.227
  * for small size, x 4 for medium, and x 2 for large
  * for 128k (32 page) max ra
  * 1-8 page = 32k initial, > 8 page = 128k initial
@@ -254,7 +337,11 @@ static unsigned long get_init_ra_size(unsigned long size, unsigned long max)
 {
 	unsigned long newsize = roundup_pow_of_two(size);
 
+<<<<<<< HEAD
 	if (newsize <= 1)
+=======
+	if (newsize <= max / 32)
+>>>>>>> v4.9.227
 		newsize = newsize * 4;
 	else if (newsize <= max / 4)
 		newsize = newsize * 2;
@@ -382,7 +469,11 @@ ondemand_readahead(struct address_space *mapping,
 		   bool hit_readahead_marker, pgoff_t offset,
 		   unsigned long req_size)
 {
+<<<<<<< HEAD
 	unsigned long max = max_sane_readahead(ra->ra_pages);
+=======
+	unsigned long max = ra->ra_pages;
+>>>>>>> v4.9.227
 	pgoff_t prev_offset;
 
 	/*
@@ -438,7 +529,11 @@ ondemand_readahead(struct address_space *mapping,
 	 * trivial case: (offset - prev_offset) == 1
 	 * unaligned reads: (offset - prev_offset) == 0
 	 */
+<<<<<<< HEAD
 	prev_offset = (unsigned long long)ra->prev_pos >> PAGE_CACHE_SHIFT;
+=======
+	prev_offset = (unsigned long long)ra->prev_pos >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 	if (offset - prev_offset <= 1UL)
 		goto initial_readahead;
 
@@ -543,7 +638,11 @@ page_cache_async_readahead(struct address_space *mapping,
 	/*
 	 * Defer asynchronous read-ahead on IO congestion.
 	 */
+<<<<<<< HEAD
 	if (bdi_read_congested(mapping->backing_dev_info))
+=======
+	if (inode_read_congested(mapping->host))
+>>>>>>> v4.9.227
 		return;
 
 	/* do read-ahead */
@@ -558,6 +657,17 @@ do_readahead(struct address_space *mapping, struct file *filp,
 	if (!mapping || !mapping->a_ops)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Readahead doesn't make sense for DAX inodes, but we don't want it
+	 * to report a failure either.  Instead, we just return success and
+	 * don't do any work.
+	 */
+	if (dax_mapping(mapping))
+		return 0;
+
+>>>>>>> v4.9.227
 	return force_page_cache_readahead(mapping, filp, index, nr);
 }
 
@@ -571,8 +681,13 @@ SYSCALL_DEFINE3(readahead, int, fd, loff_t, offset, size_t, count)
 	if (f.file) {
 		if (f.file->f_mode & FMODE_READ) {
 			struct address_space *mapping = f.file->f_mapping;
+<<<<<<< HEAD
 			pgoff_t start = offset >> PAGE_CACHE_SHIFT;
 			pgoff_t end = (offset + count - 1) >> PAGE_CACHE_SHIFT;
+=======
+			pgoff_t start = offset >> PAGE_SHIFT;
+			pgoff_t end = (offset + count - 1) >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 			unsigned long len = end - start + 1;
 			ret = do_readahead(mapping, f.file, start, len);
 		}

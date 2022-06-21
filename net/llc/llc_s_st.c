@@ -29,7 +29,11 @@ static struct llc_sap_state_trans llc_sap_state_trans_end;
 /* state LLC_SAP_STATE_INACTIVE transition for
  * LLC_SAP_EV_ACTIVATION_REQ event
  */
+<<<<<<< HEAD
 static llc_sap_action_t llc_sap_inactive_state_actions_1[] = {
+=======
+static const llc_sap_action_t llc_sap_inactive_state_actions_1[] = {
+>>>>>>> v4.9.227
 	[0] = llc_sap_action_report_status,
 	[1] = NULL,
 };
@@ -47,7 +51,11 @@ static struct llc_sap_state_trans *llc_sap_inactive_state_transitions[] = {
 };
 
 /* state LLC_SAP_STATE_ACTIVE transition for LLC_SAP_EV_RX_UI event */
+<<<<<<< HEAD
 static llc_sap_action_t llc_sap_active_state_actions_1[] = {
+=======
+static const llc_sap_action_t llc_sap_active_state_actions_1[] = {
+>>>>>>> v4.9.227
 	[0] = llc_sap_action_unitdata_ind,
 	[1] = NULL,
 };
@@ -59,7 +67,11 @@ static struct llc_sap_state_trans llc_sap_active_state_trans_1 = {
 };
 
 /* state LLC_SAP_STATE_ACTIVE transition for LLC_SAP_EV_UNITDATA_REQ event */
+<<<<<<< HEAD
 static llc_sap_action_t llc_sap_active_state_actions_2[] = {
+=======
+static const llc_sap_action_t llc_sap_active_state_actions_2[] = {
+>>>>>>> v4.9.227
 	[0] = llc_sap_action_send_ui,
 	[1] = NULL,
 };
@@ -71,7 +83,11 @@ static struct llc_sap_state_trans llc_sap_active_state_trans_2 = {
 };
 
 /* state LLC_SAP_STATE_ACTIVE transition for LLC_SAP_EV_XID_REQ event */
+<<<<<<< HEAD
 static llc_sap_action_t llc_sap_active_state_actions_3[] = {
+=======
+static const llc_sap_action_t llc_sap_active_state_actions_3[] = {
+>>>>>>> v4.9.227
 	[0] = llc_sap_action_send_xid_c,
 	[1] = NULL,
 };
@@ -83,7 +99,11 @@ static struct llc_sap_state_trans llc_sap_active_state_trans_3 = {
 };
 
 /* state LLC_SAP_STATE_ACTIVE transition for LLC_SAP_EV_RX_XID_C event */
+<<<<<<< HEAD
 static llc_sap_action_t llc_sap_active_state_actions_4[] = {
+=======
+static const llc_sap_action_t llc_sap_active_state_actions_4[] = {
+>>>>>>> v4.9.227
 	[0] = llc_sap_action_send_xid_r,
 	[1] = NULL,
 };
@@ -95,7 +115,11 @@ static struct llc_sap_state_trans llc_sap_active_state_trans_4 = {
 };
 
 /* state LLC_SAP_STATE_ACTIVE transition for LLC_SAP_EV_RX_XID_R event */
+<<<<<<< HEAD
 static llc_sap_action_t llc_sap_active_state_actions_5[] = {
+=======
+static const llc_sap_action_t llc_sap_active_state_actions_5[] = {
+>>>>>>> v4.9.227
 	[0] = llc_sap_action_xid_ind,
 	[1] = NULL,
 };
@@ -107,7 +131,11 @@ static struct llc_sap_state_trans llc_sap_active_state_trans_5 = {
 };
 
 /* state LLC_SAP_STATE_ACTIVE transition for LLC_SAP_EV_TEST_REQ event */
+<<<<<<< HEAD
 static llc_sap_action_t llc_sap_active_state_actions_6[] = {
+=======
+static const llc_sap_action_t llc_sap_active_state_actions_6[] = {
+>>>>>>> v4.9.227
 	[0] = llc_sap_action_send_test_c,
 	[1] = NULL,
 };
@@ -119,7 +147,11 @@ static struct llc_sap_state_trans llc_sap_active_state_trans_6 = {
 };
 
 /* state LLC_SAP_STATE_ACTIVE transition for LLC_SAP_EV_RX_TEST_C event */
+<<<<<<< HEAD
 static llc_sap_action_t llc_sap_active_state_actions_7[] = {
+=======
+static const llc_sap_action_t llc_sap_active_state_actions_7[] = {
+>>>>>>> v4.9.227
 	[0] = llc_sap_action_send_test_r,
 	[1] = NULL,
 };
@@ -131,7 +163,11 @@ static struct llc_sap_state_trans llc_sap_active_state_trans_7 = {
 };
 
 /* state LLC_SAP_STATE_ACTIVE transition for LLC_SAP_EV_RX_TEST_R event */
+<<<<<<< HEAD
 static llc_sap_action_t llc_sap_active_state_actions_8[] = {
+=======
+static const llc_sap_action_t llc_sap_active_state_actions_8[] = {
+>>>>>>> v4.9.227
 	[0] = llc_sap_action_test_ind,
 	[1] = NULL,
 };
@@ -145,7 +181,11 @@ static struct llc_sap_state_trans llc_sap_active_state_trans_8 = {
 /* state LLC_SAP_STATE_ACTIVE transition for
  * LLC_SAP_EV_DEACTIVATION_REQ event
  */
+<<<<<<< HEAD
 static llc_sap_action_t llc_sap_active_state_actions_9[] = {
+=======
+static const llc_sap_action_t llc_sap_active_state_actions_9[] = {
+>>>>>>> v4.9.227
 	[0] = llc_sap_action_report_status,
 	[1] = NULL,
 };

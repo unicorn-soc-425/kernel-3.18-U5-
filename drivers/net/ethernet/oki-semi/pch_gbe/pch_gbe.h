@@ -481,7 +481,10 @@ struct pch_gbe_buffer {
 
 /**
  * struct pch_gbe_tx_ring - tx ring information
+<<<<<<< HEAD
  * @tx_lock:	spinlock structs
+=======
+>>>>>>> v4.9.227
  * @desc:	pointer to the descriptor ring memory
  * @dma:	physical address of the descriptor ring
  * @size:	length of descriptor ring in bytes
@@ -491,7 +494,10 @@ struct pch_gbe_buffer {
  * @buffer_info:	array of buffer information structs
  */
 struct pch_gbe_tx_ring {
+<<<<<<< HEAD
 	spinlock_t tx_lock;
+=======
+>>>>>>> v4.9.227
 	struct pch_gbe_tx_desc *desc;
 	dma_addr_t dma;
 	unsigned int size;

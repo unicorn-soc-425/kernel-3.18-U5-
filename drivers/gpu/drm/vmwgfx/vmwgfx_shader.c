@@ -988,7 +988,11 @@ int vmw_compat_shader_add(struct vmw_private *dev_priv,
 	if (unlikely(ret != 0))
 		goto out;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(&buf->base, false, true, false, NULL);
+=======
+	ret = ttm_bo_reserve(&buf->base, false, true, NULL);
+>>>>>>> v4.9.227
 	if (unlikely(ret != 0))
 		goto no_reserve;
 

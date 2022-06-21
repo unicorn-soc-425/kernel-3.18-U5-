@@ -294,7 +294,10 @@ static struct platform_driver acquirewdt_driver = {
 	.remove		= acq_remove,
 	.shutdown	= acq_shutdown,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DRV_NAME,
 	},
 };

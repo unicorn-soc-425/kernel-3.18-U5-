@@ -412,12 +412,19 @@ static int ide_gd_probe(ide_drive_t *drive)
 	set_capacity(g, ide_gd_capacity(drive));
 
 	g->minors = IDE_DISK_MINORS;
+<<<<<<< HEAD
 	g->driverfs_dev = &drive->gendev;
+=======
+>>>>>>> v4.9.227
 	g->flags |= GENHD_FL_EXT_DEVT;
 	if (drive->dev_flags & IDE_DFLAG_REMOVABLE)
 		g->flags = GENHD_FL_REMOVABLE;
 	g->fops = &ide_gd_ops;
+<<<<<<< HEAD
 	add_disk(g);
+=======
+	device_add_disk(&drive->gendev, g);
+>>>>>>> v4.9.227
 	return 0;
 
 out_free_disk:

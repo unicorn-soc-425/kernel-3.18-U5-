@@ -9,6 +9,10 @@
  * or implied.
  */
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/clk.h>
 #include <linux/serial_8250.h>
@@ -20,7 +24,11 @@
 
 #include <mach/cputype.h>
 #include <mach/irqs.h>
+<<<<<<< HEAD
 #include <mach/psc.h>
+=======
+#include "psc.h"
+>>>>>>> v4.9.227
 #include <mach/mux.h>
 #include <mach/time.h>
 #include <mach/serial.h>
@@ -493,7 +501,10 @@ static u8 dm646x_default_priorities[DAVINCI_N_AINTC_IRQ] = {
 	[IRQ_DM646X_EMACMISCINT]        = 7,
 	[IRQ_DM646X_MCASP0TXINT]        = 7,
 	[IRQ_DM646X_MCASP0RXINT]        = 7,
+<<<<<<< HEAD
 	[IRQ_AEMIFINT]                  = 7,
+=======
+>>>>>>> v4.9.227
 	[IRQ_DM646X_RESERVED_3]         = 7,
 	[IRQ_DM646X_MCASP1TXINT]        = 7,    /* clockevent */
 	[IRQ_TINT0_TINT34]              = 7,    /* clocksource */
@@ -532,8 +543,12 @@ static u8 dm646x_default_priorities[DAVINCI_N_AINTC_IRQ] = {
 /*----------------------------------------------------------------------*/
 
 /* Four Transfer Controllers on DM646x */
+<<<<<<< HEAD
 static s8
 dm646x_queue_priority_mapping[][2] = {
+=======
+static s8 dm646x_queue_priority_mapping[][2] = {
+>>>>>>> v4.9.227
 	/* {event queue no, Priority} */
 	{0, 4},
 	{1, 0},
@@ -542,6 +557,7 @@ dm646x_queue_priority_mapping[][2] = {
 	{-1, -1},
 };
 
+<<<<<<< HEAD
 static struct edma_soc_info edma_cc0_info = {
 	.queue_priority_mapping	= dm646x_queue_priority_mapping,
 	.default_queue		= EVENTQ_1,
@@ -549,58 +565,112 @@ static struct edma_soc_info edma_cc0_info = {
 
 static struct edma_soc_info *dm646x_edma_info[EDMA_MAX_CC] = {
 	&edma_cc0_info,
+=======
+static const struct dma_slave_map dm646x_edma_map[] = {
+	{ "davinci-mcasp.0", "tx", EDMA_FILTER_PARAM(0, 6) },
+	{ "davinci-mcasp.0", "rx", EDMA_FILTER_PARAM(0, 9) },
+	{ "davinci-mcasp.1", "tx", EDMA_FILTER_PARAM(0, 12) },
+	{ "spi_davinci", "tx", EDMA_FILTER_PARAM(0, 16) },
+	{ "spi_davinci", "rx", EDMA_FILTER_PARAM(0, 17) },
+};
+
+static struct edma_soc_info dm646x_edma_pdata = {
+	.queue_priority_mapping	= dm646x_queue_priority_mapping,
+	.default_queue		= EVENTQ_1,
+	.slave_map		= dm646x_edma_map,
+	.slavecnt		= ARRAY_SIZE(dm646x_edma_map),
+>>>>>>> v4.9.227
 };
 
 static struct resource edma_resources[] = {
 	{
+<<<<<<< HEAD
 		.name	= "edma_cc0",
+=======
+		.name	= "edma3_cc",
+>>>>>>> v4.9.227
 		.start	= 0x01c00000,
 		.end	= 0x01c00000 + SZ_64K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma_tc0",
+=======
+		.name	= "edma3_tc0",
+>>>>>>> v4.9.227
 		.start	= 0x01c10000,
 		.end	= 0x01c10000 + SZ_1K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma_tc1",
+=======
+		.name	= "edma3_tc1",
+>>>>>>> v4.9.227
 		.start	= 0x01c10400,
 		.end	= 0x01c10400 + SZ_1K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma_tc2",
+=======
+		.name	= "edma3_tc2",
+>>>>>>> v4.9.227
 		.start	= 0x01c10800,
 		.end	= 0x01c10800 + SZ_1K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma_tc3",
+=======
+		.name	= "edma3_tc3",
+>>>>>>> v4.9.227
 		.start	= 0x01c10c00,
 		.end	= 0x01c10c00 + SZ_1K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma0",
+=======
+		.name	= "edma3_ccint",
+>>>>>>> v4.9.227
 		.start	= IRQ_CCINT0,
 		.flags	= IORESOURCE_IRQ,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma0_err",
+=======
+		.name	= "edma3_ccerrint",
+>>>>>>> v4.9.227
 		.start	= IRQ_CCERRINT,
 		.flags	= IORESOURCE_IRQ,
 	},
 	/* not using TC*_ERR */
 };
 
+<<<<<<< HEAD
 static struct platform_device dm646x_edma_device = {
 	.name			= "edma",
 	.id			= 0,
 	.dev.platform_data	= dm646x_edma_info,
 	.num_resources		= ARRAY_SIZE(edma_resources),
 	.resource		= edma_resources,
+=======
+static const struct platform_device_info dm646x_edma_device __initconst = {
+	.name		= "edma",
+	.id		= 0,
+	.dma_mask	= DMA_BIT_MASK(32),
+	.res		= edma_resources,
+	.num_res	= ARRAY_SIZE(edma_resources),
+	.data		= &dm646x_edma_pdata,
+	.size_data	= sizeof(dm646x_edma_pdata),
+>>>>>>> v4.9.227
 };
 
 static struct resource dm646x_mcasp0_resources[] = {
@@ -610,19 +680,44 @@ static struct resource dm646x_mcasp0_resources[] = {
 		.end 	= DAVINCI_DM646X_MCASP0_REG_BASE + (SZ_1K << 1) - 1,
 		.flags 	= IORESOURCE_MEM,
 	},
+<<<<<<< HEAD
 	/* first TX, then RX */
 	{
+=======
+	{
+		.name	= "tx",
+>>>>>>> v4.9.227
 		.start	= DAVINCI_DM646X_DMA_MCASP0_AXEVT0,
 		.end	= DAVINCI_DM646X_DMA_MCASP0_AXEVT0,
 		.flags	= IORESOURCE_DMA,
 	},
 	{
+<<<<<<< HEAD
+=======
+		.name	= "rx",
+>>>>>>> v4.9.227
 		.start	= DAVINCI_DM646X_DMA_MCASP0_AREVT0,
 		.end	= DAVINCI_DM646X_DMA_MCASP0_AREVT0,
 		.flags	= IORESOURCE_DMA,
 	},
+<<<<<<< HEAD
 };
 
+=======
+	{
+		.name	= "tx",
+		.start	= IRQ_DM646X_MCASP0TXINT,
+		.flags	= IORESOURCE_IRQ,
+	},
+	{
+		.name	= "rx",
+		.start	= IRQ_DM646X_MCASP0RXINT,
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+/* DIT mode only, rx is not supported */
+>>>>>>> v4.9.227
 static struct resource dm646x_mcasp1_resources[] = {
 	{
 		.name	= "mpu",
@@ -630,17 +725,29 @@ static struct resource dm646x_mcasp1_resources[] = {
 		.end	= DAVINCI_DM646X_MCASP1_REG_BASE + (SZ_1K << 1) - 1,
 		.flags	= IORESOURCE_MEM,
 	},
+<<<<<<< HEAD
 	/* DIT mode, only TX event */
 	{
+=======
+	{
+		.name	= "tx",
+>>>>>>> v4.9.227
 		.start	= DAVINCI_DM646X_DMA_MCASP1_AXEVT1,
 		.end	= DAVINCI_DM646X_DMA_MCASP1_AXEVT1,
 		.flags	= IORESOURCE_DMA,
 	},
+<<<<<<< HEAD
 	/* DIT mode, dummy entry */
 	{
 		.start	= -1,
 		.end	= -1,
 		.flags	= IORESOURCE_DMA,
+=======
+	{
+		.name	= "tx",
+		.start	= IRQ_DM646X_MCASP1TXINT,
+		.flags	= IORESOURCE_IRQ,
+>>>>>>> v4.9.227
 	},
 };
 
@@ -926,15 +1033,28 @@ void dm646x_setup_vpif(struct vpif_display_config *display_config,
 
 int __init dm646x_init_edma(struct edma_rsv_info *rsv)
 {
+<<<<<<< HEAD
 	edma_cc0_info.rsv = rsv;
 
 	return platform_device_register(&dm646x_edma_device);
+=======
+	struct platform_device *edma_pdev;
+
+	dm646x_edma_pdata.rsv = rsv;
+
+	edma_pdev = platform_device_register_full(&dm646x_edma_device);
+	return IS_ERR(edma_pdev) ? PTR_ERR(edma_pdev) : 0;
+>>>>>>> v4.9.227
 }
 
 void __init dm646x_init(void)
 {
 	davinci_common_init(&davinci_soc_info_dm646x);
 	davinci_map_sysmod();
+<<<<<<< HEAD
+=======
+	davinci_clk_init(davinci_soc_info_dm646x.cpu_clks);
+>>>>>>> v4.9.227
 }
 
 static int __init dm646x_init_devices(void)

@@ -212,11 +212,16 @@ static int puv3_i2c_probe(struct platform_device *pdev)
 
 	adapter->nr = pdev->id;
 	rc = i2c_add_numbered_adapter(adapter);
+<<<<<<< HEAD
 	if (rc) {
 		dev_err(&pdev->dev, "Adapter '%s' registration failed\n",
 				adapter->name);
 		goto fail_add_adapter;
 	}
+=======
+	if (rc)
+		goto fail_add_adapter;
+>>>>>>> v4.9.227
 
 	dev_info(&pdev->dev, "PKUnity v3 i2c bus adapter.\n");
 	return 0;
@@ -270,7 +275,10 @@ static struct platform_driver puv3_i2c_driver = {
 	.remove		= puv3_i2c_remove,
 	.driver		= {
 		.name	= "PKUnity-v3-I2C",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= PUV3_I2C_PM,
 	}
 };

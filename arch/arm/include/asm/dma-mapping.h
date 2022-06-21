@@ -5,16 +5,25 @@
 
 #include <linux/mm_types.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 #include <linux/dma-attrs.h>
 #include <linux/dma-debug.h>
 
 #include <asm-generic/dma-coherent.h>
+=======
+#include <linux/dma-debug.h>
+
+>>>>>>> v4.9.227
 #include <asm/memory.h>
 
 #include <xen/xen.h>
 #include <asm/xen/hypervisor.h>
 
+<<<<<<< HEAD
 #define DMA_ERROR_CODE	(~0)
+=======
+#define DMA_ERROR_CODE	(~(dma_addr_t)0x0)
+>>>>>>> v4.9.227
 extern struct dma_map_ops arm_dma_ops;
 extern struct dma_map_ops arm_coherent_dma_ops;
 
@@ -39,12 +48,17 @@ static inline void set_dma_ops(struct device *dev, struct dma_map_ops *ops)
 	dev->archdata.dma_ops = ops;
 }
 
+<<<<<<< HEAD
 #include <asm-generic/dma-mapping-common.h>
 
 static inline int dma_set_mask(struct device *dev, u64 mask)
 {
 	return get_dma_ops(dev)->set_dma_mask(dev, mask);
 }
+=======
+#define HAVE_ARCH_DMA_SUPPORTED 1
+extern int dma_supported(struct device *dev, u64 mask);
+>>>>>>> v4.9.227
 
 #ifdef __arch_page_to_dma
 #error Please update to __arch_pfn_to_dma
@@ -121,6 +135,7 @@ static inline unsigned long dma_max_pfn(struct device *dev)
 }
 #define dma_max_pfn(dev) dma_max_pfn(dev)
 
+<<<<<<< HEAD
 static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
 				      u64 size, struct iommu_ops *iommu,
 				      bool coherent)
@@ -129,6 +144,20 @@ static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
 		set_dma_ops(dev, &arm_coherent_dma_ops);
 }
 #define arch_setup_dma_ops arch_setup_dma_ops
+=======
+#define arch_setup_dma_ops arch_setup_dma_ops
+extern void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+			       const struct iommu_ops *iommu, bool coherent);
+
+#define arch_teardown_dma_ops arch_teardown_dma_ops
+extern void arch_teardown_dma_ops(struct device *dev);
+
+/* do not use this function in a driver */
+static inline bool is_device_dma_coherent(struct device *dev)
+{
+	return dev->archdata.dma_coherent;
+}
+>>>>>>> v4.9.227
 
 static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
 {
@@ -163,6 +192,7 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
 
 static inline void dma_mark_clean(void *addr, size_t size) { }
 
+<<<<<<< HEAD
 /*
  * DMA errors are defined by all-bits-set in the DMA address.
  */
@@ -191,6 +221,8 @@ extern int dma_supported(struct device *dev, u64 mask);
 
 extern int arm_dma_set_mask(struct device *dev, u64 dma_mask);
 
+=======
+>>>>>>> v4.9.227
 /**
  * arm_dma_alloc - allocate consistent memory for DMA
  * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
@@ -203,6 +235,7 @@ extern int arm_dma_set_mask(struct device *dev, u64 dma_mask);
  * to be the device-viewed address.
  */
 extern void *arm_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+<<<<<<< HEAD
 			   gfp_t gfp, struct dma_attrs *attrs);
 
 #define dma_alloc_coherent(d, s, h, f) dma_alloc_attrs(d, s, h, f, NULL)
@@ -219,6 +252,9 @@ static inline void *dma_alloc_attrs(struct device *dev, size_t size,
 	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr);
 	return cpu_addr;
 }
+=======
+			   gfp_t gfp, unsigned long attrs);
+>>>>>>> v4.9.227
 
 /**
  * arm_dma_free - free memory allocated by arm_dma_alloc
@@ -235,6 +271,7 @@ static inline void *dma_alloc_attrs(struct device *dev, size_t size,
  * during and after this call executing are illegal.
  */
 extern void arm_dma_free(struct device *dev, size_t size, void *cpu_addr,
+<<<<<<< HEAD
 			 dma_addr_t handle, struct dma_attrs *attrs);
 
 #define dma_free_coherent(d, s, c, h) dma_free_attrs(d, s, c, h, NULL)
@@ -249,6 +286,9 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
 	debug_dma_free_coherent(dev, size, cpu_addr, dma_handle);
 	ops->free(dev, size, cpu_addr, dma_handle, attrs);
 }
+=======
+			 dma_addr_t handle, unsigned long attrs);
+>>>>>>> v4.9.227
 
 /**
  * arm_dma_mmap - map a coherent DMA allocation into user space
@@ -265,6 +305,7 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
  */
 extern int arm_dma_mmap(struct device *dev, struct vm_area_struct *vma,
 			void *cpu_addr, dma_addr_t dma_addr, size_t size,
+<<<<<<< HEAD
 			struct dma_attrs *attrs);
 
 static inline void *dma_alloc_stronglyordered(struct device *dev, size_t size,
@@ -316,6 +357,9 @@ static inline int dma_mmap_nonconsistent(struct device *dev,
 	dma_set_attr(DMA_ATTR_NON_CONSISTENT, &attrs);
 	return dma_mmap_attrs(dev, vma, cpu_addr, dma_addr, size, &attrs);
 }
+=======
+			unsigned long attrs);
+>>>>>>> v4.9.227
 
 /*
  * This can be called during early boot to increase the size of the atomic
@@ -369,16 +413,26 @@ extern void dmabounce_unregister_dev(struct device *);
  * The scatter list versions of the above methods.
  */
 extern int arm_dma_map_sg(struct device *, struct scatterlist *, int,
+<<<<<<< HEAD
 		enum dma_data_direction, struct dma_attrs *attrs);
 extern void arm_dma_unmap_sg(struct device *, struct scatterlist *, int,
 		enum dma_data_direction, struct dma_attrs *attrs);
+=======
+		enum dma_data_direction, unsigned long attrs);
+extern void arm_dma_unmap_sg(struct device *, struct scatterlist *, int,
+		enum dma_data_direction, unsigned long attrs);
+>>>>>>> v4.9.227
 extern void arm_dma_sync_sg_for_cpu(struct device *, struct scatterlist *, int,
 		enum dma_data_direction);
 extern void arm_dma_sync_sg_for_device(struct device *, struct scatterlist *, int,
 		enum dma_data_direction);
 extern int arm_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+<<<<<<< HEAD
 		struct dma_attrs *attrs);
+=======
+		unsigned long attrs);
+>>>>>>> v4.9.227
 
 #endif /* __KERNEL__ */
 #endif

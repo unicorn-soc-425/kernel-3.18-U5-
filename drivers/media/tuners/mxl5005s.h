@@ -23,8 +23,11 @@
 #ifndef __MXL5005S_H
 #define __MXL5005S_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> v4.9.227
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 

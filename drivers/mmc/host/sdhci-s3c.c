@@ -12,6 +12,10 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/spinlock.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
 #include <linux/platform_device.h>
@@ -300,6 +304,10 @@ static void sdhci_cmu_set_clock(struct sdhci_host *host, unsigned int clock)
 	struct device *dev = &ourhost->pdev->dev;
 	unsigned long timeout;
 	u16 clk = 0;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	host->mmc->actual_clock = 0;
 
@@ -311,7 +319,23 @@ static void sdhci_cmu_set_clock(struct sdhci_host *host, unsigned int clock)
 
 	sdhci_s3c_set_clock(host, clock);
 
+<<<<<<< HEAD
 	clk_set_rate(ourhost->clk_bus[ourhost->cur_clk], clock);
+=======
+	/* Reset SD Clock Enable */
+	clk = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
+	clk &= ~SDHCI_CLOCK_CARD_EN;
+	sdhci_writew(host, clk, SDHCI_CLOCK_CONTROL);
+
+	spin_unlock_irq(&host->lock);
+	ret = clk_set_rate(ourhost->clk_bus[ourhost->cur_clk], clock);
+	spin_lock_irq(&host->lock);
+	if (ret != 0) {
+		dev_err(dev, "%s: failed to set clock rate %uHz\n",
+			mmc_hostname(host->mmc), clock);
+		return;
+	}
+>>>>>>> v4.9.227
 
 	clk = SDHCI_CLOCK_INT_EN;
 	sdhci_writew(host, clk, SDHCI_CLOCK_CONTROL);
@@ -601,7 +625,13 @@ static int sdhci_s3c_probe(struct platform_device *pdev)
 	pm_runtime_use_autosuspend(&pdev->dev);
 	pm_suspend_ignore_children(&pdev->dev, 1);
 
+<<<<<<< HEAD
 	mmc_of_parse(host->mmc);
+=======
+	ret = mmc_of_parse(host->mmc);
+	if (ret)
+		goto err_req_regs;
+>>>>>>> v4.9.227
 
 	ret = sdhci_add_host(host);
 	if (ret) {
@@ -609,7 +639,11 @@ static int sdhci_s3c_probe(struct platform_device *pdev)
 		goto err_req_regs;
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 	if (pdata->cd_type != S3C_SDHCI_CD_INTERNAL)
 		clk_disable_unprepare(sc->clk_io);
 #endif
@@ -635,7 +669,11 @@ static int sdhci_s3c_remove(struct platform_device *pdev)
 	if (sc->ext_cd_irq)
 		free_irq(sc->ext_cd_irq, sc);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 	if (sc->pdata->cd_type != S3C_SDHCI_CD_INTERNAL)
 		clk_prepare_enable(sc->clk_io);
 #endif
@@ -667,7 +705,11 @@ static int sdhci_s3c_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 static int sdhci_s3c_runtime_suspend(struct device *dev)
 {
 	struct sdhci_host *host = dev_get_drvdata(dev);
@@ -698,19 +740,25 @@ static int sdhci_s3c_runtime_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+>>>>>>> v4.9.227
 static const struct dev_pm_ops sdhci_s3c_pmops = {
 	SET_SYSTEM_SLEEP_PM_OPS(sdhci_s3c_suspend, sdhci_s3c_resume)
 	SET_RUNTIME_PM_OPS(sdhci_s3c_runtime_suspend, sdhci_s3c_runtime_resume,
 			   NULL)
 };
 
+<<<<<<< HEAD
 #define SDHCI_S3C_PMOPS (&sdhci_s3c_pmops)
 
 #else
 #define SDHCI_S3C_PMOPS NULL
 #endif
 
+=======
+>>>>>>> v4.9.227
 #if defined(CONFIG_CPU_EXYNOS4210) || defined(CONFIG_SOC_EXYNOS4212)
 static struct sdhci_s3c_drv_data exynos4_sdhci_drv_data = {
 	.no_divider = true,
@@ -720,7 +768,11 @@ static struct sdhci_s3c_drv_data exynos4_sdhci_drv_data = {
 #define EXYNOS4_SDHCI_DRV_DATA ((kernel_ulong_t)NULL)
 #endif
 
+<<<<<<< HEAD
 static struct platform_device_id sdhci_s3c_driver_ids[] = {
+=======
+static const struct platform_device_id sdhci_s3c_driver_ids[] = {
+>>>>>>> v4.9.227
 	{
 		.name		= "s3c-sdhci",
 		.driver_data	= (kernel_ulong_t)NULL,
@@ -749,7 +801,11 @@ static struct platform_driver sdhci_s3c_driver = {
 	.driver		= {
 		.name	= "s3c-sdhci",
 		.of_match_table = of_match_ptr(sdhci_s3c_dt_match),
+<<<<<<< HEAD
 		.pm	= SDHCI_S3C_PMOPS,
+=======
+		.pm	= &sdhci_s3c_pmops,
+>>>>>>> v4.9.227
 	},
 };
 

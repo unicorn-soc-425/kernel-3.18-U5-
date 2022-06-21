@@ -18,4 +18,13 @@ static inline int xen_irqs_disabled(struct pt_regs *regs)
 
 #define xchg_xen_ulong(ptr, val) xchg((ptr), (val))
 
+<<<<<<< HEAD
+=======
+/* Rebind event channel is supported by default */
+static inline bool xen_support_evtchn_rebind(void)
+{
+	return true;
+}
+
+>>>>>>> v4.9.227
 #endif /* _ASM_ARM64_XEN_EVENTS_H */

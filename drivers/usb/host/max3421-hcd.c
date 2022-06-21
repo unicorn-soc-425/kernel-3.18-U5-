@@ -55,6 +55,10 @@
  * single thread (max3421_spi_thread).
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/spi/spi.h>
 #include <linux/usb.h>
@@ -796,19 +800,31 @@ max3421_check_unlink(struct usb_hcd *hcd)
 {
 	struct spi_device *spi = to_spi_device(hcd->self.controller);
 	struct max3421_hcd *max3421_hcd = hcd_to_max3421(hcd);
+<<<<<<< HEAD
 	struct list_head *pos, *upos, *next_upos;
 	struct max3421_ep *max3421_ep;
 	struct usb_host_endpoint *ep;
 	struct urb *urb;
+=======
+	struct max3421_ep *max3421_ep;
+	struct usb_host_endpoint *ep;
+	struct urb *urb, *next;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	int retval = 0;
 
 	spin_lock_irqsave(&max3421_hcd->lock, flags);
+<<<<<<< HEAD
 	list_for_each(pos, &max3421_hcd->ep_list) {
 		max3421_ep = container_of(pos, struct max3421_ep, ep_list);
 		ep = max3421_ep->ep;
 		list_for_each_safe(upos, next_upos, &ep->urb_list) {
 			urb = container_of(upos, struct urb, urb_list);
+=======
+	list_for_each_entry(max3421_ep, &max3421_hcd->ep_list, ep_list) {
+		ep = max3421_ep->ep;
+		list_for_each_entry_safe(urb, next, &ep->urb_list, urb_list) {
+>>>>>>> v4.9.227
 			if (urb->unlinked) {
 				retval = 1;
 				dev_dbg(&spi->dev, "%s: URB %p unlinked=%d",
@@ -1183,22 +1199,33 @@ dump_eps(struct usb_hcd *hcd)
 	struct max3421_hcd *max3421_hcd = hcd_to_max3421(hcd);
 	struct max3421_ep *max3421_ep;
 	struct usb_host_endpoint *ep;
+<<<<<<< HEAD
 	struct list_head *pos, *upos;
+=======
+>>>>>>> v4.9.227
 	char ubuf[512], *dp, *end;
 	unsigned long flags;
 	struct urb *urb;
 	int epnum, ret;
 
 	spin_lock_irqsave(&max3421_hcd->lock, flags);
+<<<<<<< HEAD
 	list_for_each(pos, &max3421_hcd->ep_list) {
 		max3421_ep = container_of(pos, struct max3421_ep, ep_list);
+=======
+	list_for_each_entry(max3421_ep, &max3421_hcd->ep_list, ep_list) {
+>>>>>>> v4.9.227
 		ep = max3421_ep->ep;
 
 		dp = ubuf;
 		end = dp + sizeof(ubuf);
 		*dp = '\0';
+<<<<<<< HEAD
 		list_for_each(upos, &ep->urb_list) {
 			urb = container_of(upos, struct urb, urb_list);
+=======
+		list_for_each_entry(urb, &ep->urb_list, urb_list) {
+>>>>>>> v4.9.227
 			ret = snprintf(dp, end - dp, " %p(%d.%s %d/%d)", urb,
 				       usb_pipetype(urb->pipe),
 				       usb_urb_dir_in(urb) ? "IN" : "OUT",
@@ -1291,7 +1318,11 @@ max3421_handle_irqs(struct usb_hcd *hcd)
 		char sbuf[16 * 16], *dp, *end;
 		int i;
 
+<<<<<<< HEAD
 		if (jiffies - last_time > 5*HZ) {
+=======
+		if (time_after(jiffies, last_time + 5*HZ)) {
+>>>>>>> v4.9.227
 			dp = sbuf;
 			end = sbuf + sizeof(sbuf);
 			*dp = '\0';
@@ -1658,9 +1689,16 @@ hub_descriptor(struct usb_hub_descriptor *desc)
 	/*
 	 * See Table 11-13: Hub Descriptor in USB 2.0 spec.
 	 */
+<<<<<<< HEAD
 	desc->bDescriptorType = 0x29;	/* hub descriptor */
 	desc->bDescLength = 9;
 	desc->wHubCharacteristics = cpu_to_le16(0x0001);
+=======
+	desc->bDescriptorType = USB_DT_HUB; /* hub descriptor */
+	desc->bDescLength = 9;
+	desc->wHubCharacteristics = cpu_to_le16(HUB_CHAR_INDV_PORT_LPSM |
+						HUB_CHAR_COMMON_OCPM);
+>>>>>>> v4.9.227
 	desc->bNbrPorts = 1;
 }
 
@@ -1679,7 +1717,11 @@ max3421_gpout_set_value(struct usb_hcd *hcd, u8 pin_number, u8 value)
 	if (pin_number > 7)
 		return;
 
+<<<<<<< HEAD
 	mask = 1u << pin_number;
+=======
+	mask = 1u << (pin_number % 4);
+>>>>>>> v4.9.227
 	idx = pin_number / 4;
 
 	if (value)
@@ -1860,6 +1902,7 @@ max3421_probe(struct spi_device *spi)
 	INIT_LIST_HEAD(&max3421_hcd->ep_list);
 
 	max3421_hcd->tx = kmalloc(sizeof(*max3421_hcd->tx), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!max3421_hcd->tx) {
 		dev_err(&spi->dev, "failed to kmalloc tx buffer\n");
 		goto error;
@@ -1869,6 +1912,13 @@ max3421_probe(struct spi_device *spi)
 		dev_err(&spi->dev, "failed to kmalloc rx buffer\n");
 		goto error;
 	}
+=======
+	if (!max3421_hcd->tx)
+		goto error;
+	max3421_hcd->rx = kmalloc(sizeof(*max3421_hcd->rx), GFP_KERNEL);
+	if (!max3421_hcd->rx)
+		goto error;
+>>>>>>> v4.9.227
 
 	max3421_hcd->spi_thread = kthread_run(max3421_spi_thread, hcd,
 					      "max3421_spi_thread");
@@ -1942,7 +1992,10 @@ static struct spi_driver max3421_driver = {
 	.remove		= max3421_remove,
 	.driver		= {
 		.name	= "max3421-hcd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

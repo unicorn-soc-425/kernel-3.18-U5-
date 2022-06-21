@@ -385,7 +385,11 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
 		if (len < copybreak) {
 			struct sk_buff *nskb;
 
+<<<<<<< HEAD
 			nskb = netdev_alloc_skb_ip_align(dev, len);
+=======
+			nskb = napi_alloc_skb(&priv->napi, len);
+>>>>>>> v4.9.227
 			if (!nskb) {
 				/* forget packet, just rearm desc */
 				dev->stats.rx_dropped++;
@@ -486,7 +490,11 @@ static int bcm_enet_poll(struct napi_struct *napi, int budget)
 {
 	struct bcm_enet_priv *priv;
 	struct net_device *dev;
+<<<<<<< HEAD
 	int tx_work_done, rx_work_done;
+=======
+	int rx_work_done;
+>>>>>>> v4.9.227
 
 	priv = container_of(napi, struct bcm_enet_priv, napi);
 	dev = priv->net_dev;
@@ -498,14 +506,23 @@ static int bcm_enet_poll(struct napi_struct *napi, int budget)
 			 ENETDMAC_IR, priv->tx_chan);
 
 	/* reclaim sent skb */
+<<<<<<< HEAD
 	tx_work_done = bcm_enet_tx_reclaim(dev, 0);
+=======
+	bcm_enet_tx_reclaim(dev, 0);
+>>>>>>> v4.9.227
 
 	spin_lock(&priv->rx_lock);
 	rx_work_done = bcm_enet_receive_queue(dev, budget);
 	spin_unlock(&priv->rx_lock);
 
+<<<<<<< HEAD
 	if (rx_work_done >= budget || tx_work_done > 0) {
 		/* rx/tx queue is not yet empty/clean */
+=======
+	if (rx_work_done >= budget) {
+		/* rx queue is not yet empty/clean */
+>>>>>>> v4.9.227
 		return rx_work_done;
 	}
 
@@ -571,12 +588,21 @@ static irqreturn_t bcm_enet_isr_dma(int irq, void *dev_id)
 /*
  * tx request callback
  */
+<<<<<<< HEAD
 static int bcm_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+bcm_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct bcm_enet_priv *priv;
 	struct bcm_enet_desc *desc;
 	u32 len_stat;
+<<<<<<< HEAD
 	int ret;
+=======
+	netdev_tx_t ret;
+>>>>>>> v4.9.227
 
 	priv = netdev_priv(dev);
 
@@ -791,7 +817,11 @@ static void bcm_enet_adjust_phy_link(struct net_device *dev)
 	int status_changed;
 
 	priv = netdev_priv(dev);
+<<<<<<< HEAD
 	phydev = priv->phydev;
+=======
+	phydev = dev->phydev;
+>>>>>>> v4.9.227
 	status_changed = 0;
 
 	if (priv->old_link != phydev->link) {
@@ -908,13 +938,22 @@ static int bcm_enet_open(struct net_device *dev)
 		else
 			phydev->advertising &= ~SUPPORTED_Pause;
 
+<<<<<<< HEAD
 		dev_info(kdev, "attached PHY at address %d [%s]\n",
 			 phydev->addr, phydev->drv->name);
+=======
+		phy_attached_info(phydev);
+>>>>>>> v4.9.227
 
 		priv->old_link = 0;
 		priv->old_duplex = -1;
 		priv->old_pause = -1;
+<<<<<<< HEAD
 		priv->phydev = phydev;
+=======
+	} else {
+		phydev = NULL;
+>>>>>>> v4.9.227
 	}
 
 	/* mask all interrupts and request them */
@@ -1086,8 +1125,13 @@ static int bcm_enet_open(struct net_device *dev)
 	enet_dmac_writel(priv, priv->dma_chan_int_mask,
 			 ENETDMAC_IRMASK, priv->tx_chan);
 
+<<<<<<< HEAD
 	if (priv->has_phy)
 		phy_start(priv->phydev);
+=======
+	if (phydev)
+		phy_start(phydev);
+>>>>>>> v4.9.227
 	else
 		bcm_enet_adjust_link(dev);
 
@@ -1129,7 +1173,12 @@ out_freeirq:
 	free_irq(dev->irq, dev);
 
 out_phy_disconnect:
+<<<<<<< HEAD
 	phy_disconnect(priv->phydev);
+=======
+	if (phydev)
+		phy_disconnect(phydev);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -1192,7 +1241,11 @@ static int bcm_enet_stop(struct net_device *dev)
 	netif_stop_queue(dev);
 	napi_disable(&priv->napi);
 	if (priv->has_phy)
+<<<<<<< HEAD
 		phy_stop(priv->phydev);
+=======
+		phy_stop(dev->phydev);
+>>>>>>> v4.9.227
 	del_timer_sync(&priv->rx_timeout);
 
 	/* mask all interrupts */
@@ -1236,10 +1289,15 @@ static int bcm_enet_stop(struct net_device *dev)
 	free_irq(dev->irq, dev);
 
 	/* release phy */
+<<<<<<< HEAD
 	if (priv->has_phy) {
 		phy_disconnect(priv->phydev);
 		priv->phydev = NULL;
 	}
+=======
+	if (priv->has_phy)
+		phy_disconnect(dev->phydev);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1334,7 +1392,10 @@ static void bcm_enet_get_drvinfo(struct net_device *netdev,
 		sizeof(drvinfo->version));
 	strlcpy(drvinfo->fw_version, "N/A", sizeof(drvinfo->fw_version));
 	strlcpy(drvinfo->bus_info, "bcm63xx", sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->n_stats = BCM_ENET_STATS_LEN;
+=======
+>>>>>>> v4.9.227
 }
 
 static int bcm_enet_get_sset_count(struct net_device *netdev,
@@ -1440,14 +1501,21 @@ static int bcm_enet_nway_reset(struct net_device *dev)
 
 	priv = netdev_priv(dev);
 	if (priv->has_phy) {
+<<<<<<< HEAD
 		if (!priv->phydev)
 			return -ENODEV;
 		return genphy_restart_aneg(priv->phydev);
+=======
+		if (!dev->phydev)
+			return -ENODEV;
+		return genphy_restart_aneg(dev->phydev);
+>>>>>>> v4.9.227
 	}
 
 	return -EOPNOTSUPP;
 }
 
+<<<<<<< HEAD
 static int bcm_enet_get_settings(struct net_device *dev,
 				 struct ethtool_cmd *cmd)
 {
@@ -1475,17 +1543,53 @@ static int bcm_enet_get_settings(struct net_device *dev,
 		cmd->advertising = 0;
 		cmd->port = PORT_MII;
 		cmd->transceiver = XCVR_EXTERNAL;
+=======
+static int bcm_enet_get_link_ksettings(struct net_device *dev,
+				       struct ethtool_link_ksettings *cmd)
+{
+	struct bcm_enet_priv *priv;
+	u32 supported, advertising;
+
+	priv = netdev_priv(dev);
+
+	if (priv->has_phy) {
+		if (!dev->phydev)
+			return -ENODEV;
+		return phy_ethtool_ksettings_get(dev->phydev, cmd);
+	} else {
+		cmd->base.autoneg = 0;
+		cmd->base.speed = (priv->force_speed_100) ?
+			SPEED_100 : SPEED_10;
+		cmd->base.duplex = (priv->force_duplex_full) ?
+			DUPLEX_FULL : DUPLEX_HALF;
+		supported = ADVERTISED_10baseT_Half |
+			ADVERTISED_10baseT_Full |
+			ADVERTISED_100baseT_Half |
+			ADVERTISED_100baseT_Full;
+		advertising = 0;
+		ethtool_convert_legacy_u32_to_link_mode(
+			cmd->link_modes.supported, supported);
+		ethtool_convert_legacy_u32_to_link_mode(
+			cmd->link_modes.advertising, advertising);
+		cmd->base.port = PORT_MII;
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static int bcm_enet_set_settings(struct net_device *dev,
 				 struct ethtool_cmd *cmd)
+=======
+static int bcm_enet_set_link_ksettings(struct net_device *dev,
+				       const struct ethtool_link_ksettings *cmd)
+>>>>>>> v4.9.227
 {
 	struct bcm_enet_priv *priv;
 
 	priv = netdev_priv(dev);
 	if (priv->has_phy) {
+<<<<<<< HEAD
 		if (!priv->phydev)
 			return -ENODEV;
 		return phy_ethtool_sset(priv->phydev, cmd);
@@ -1498,6 +1602,23 @@ static int bcm_enet_set_settings(struct net_device *dev,
 
 		priv->force_speed_100 = (cmd->speed == SPEED_100) ? 1 : 0;
 		priv->force_duplex_full = (cmd->duplex == DUPLEX_FULL) ? 1 : 0;
+=======
+		if (!dev->phydev)
+			return -ENODEV;
+		return phy_ethtool_ksettings_set(dev->phydev, cmd);
+	} else {
+
+		if (cmd->base.autoneg ||
+		    (cmd->base.speed != SPEED_100 &&
+		     cmd->base.speed != SPEED_10) ||
+		    cmd->base.port != PORT_MII)
+			return -EINVAL;
+
+		priv->force_speed_100 =
+			(cmd->base.speed == SPEED_100) ? 1 : 0;
+		priv->force_duplex_full =
+			(cmd->base.duplex == DUPLEX_FULL) ? 1 : 0;
+>>>>>>> v4.9.227
 
 		if (netif_running(dev))
 			bcm_enet_adjust_link(dev);
@@ -1591,14 +1712,22 @@ static const struct ethtool_ops bcm_enet_ethtool_ops = {
 	.get_sset_count		= bcm_enet_get_sset_count,
 	.get_ethtool_stats      = bcm_enet_get_ethtool_stats,
 	.nway_reset		= bcm_enet_nway_reset,
+<<<<<<< HEAD
 	.get_settings		= bcm_enet_get_settings,
 	.set_settings		= bcm_enet_set_settings,
+=======
+>>>>>>> v4.9.227
 	.get_drvinfo		= bcm_enet_get_drvinfo,
 	.get_link		= ethtool_op_get_link,
 	.get_ringparam		= bcm_enet_get_ringparam,
 	.set_ringparam		= bcm_enet_set_ringparam,
 	.get_pauseparam		= bcm_enet_get_pauseparam,
 	.set_pauseparam		= bcm_enet_set_pauseparam,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings	= bcm_enet_get_link_ksettings,
+	.set_link_ksettings	= bcm_enet_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 static int bcm_enet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
@@ -1607,9 +1736,15 @@ static int bcm_enet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 
 	priv = netdev_priv(dev);
 	if (priv->has_phy) {
+<<<<<<< HEAD
 		if (!priv->phydev)
 			return -ENODEV;
 		return phy_mii_ioctl(priv->phydev, rq, cmd);
+=======
+		if (!dev->phydev)
+			return -ENODEV;
+		return phy_mii_ioctl(dev->phydev, rq, cmd);
+>>>>>>> v4.9.227
 	} else {
 		struct mii_if_info mii;
 
@@ -1855,6 +1990,7 @@ static int bcm_enet_probe(struct platform_device *pdev)
 		 * if a slave is not present on hw */
 		bus->phy_mask = ~(1 << priv->phy_id);
 
+<<<<<<< HEAD
 		bus->irq = devm_kzalloc(&pdev->dev, sizeof(int) * PHY_MAX_ADDR,
 					GFP_KERNEL);
 		if (!bus->irq) {
@@ -1866,6 +2002,10 @@ static int bcm_enet_probe(struct platform_device *pdev)
 			bus->irq[priv->phy_id] = priv->phy_interrupt;
 		else
 			bus->irq[priv->phy_id] = PHY_POLL;
+=======
+		if (priv->has_phy_interrupt)
+			bus->irq[priv->phy_id] = priv->phy_interrupt;
+>>>>>>> v4.9.227
 
 		ret = mdiobus_register(bus);
 		if (ret) {
@@ -1875,7 +2015,11 @@ static int bcm_enet_probe(struct platform_device *pdev)
 	} else {
 
 		/* run platform code to initialize PHY device */
+<<<<<<< HEAD
 		if (pd->mii_config &&
+=======
+		if (pd && pd->mii_config &&
+>>>>>>> v4.9.227
 		    pd->mii_config(dev, 1, bcm_enet_mdio_read_mii,
 				   bcm_enet_mdio_write_mii)) {
 			dev_err(&pdev->dev, "unable to configure mdio bus\n");
@@ -2057,7 +2201,11 @@ static void swphy_poll_timer(unsigned long data)
 
 	for (i = 0; i < priv->num_ports; i++) {
 		struct bcm63xx_enetsw_port *port;
+<<<<<<< HEAD
 		int val, j, up, advertise, lpa, lpa2, speed, duplex, media;
+=======
+		int val, j, up, advertise, lpa, speed, duplex, media;
+>>>>>>> v4.9.227
 		int external_phy = bcm_enet_port_is_rgmii(i);
 		u8 override;
 
@@ -2100,6 +2248,7 @@ static void swphy_poll_timer(unsigned long data)
 		lpa = bcmenet_sw_mdio_read(priv, external_phy, port->phy_id,
 					   MII_LPA);
 
+<<<<<<< HEAD
 		lpa2 = bcmenet_sw_mdio_read(priv, external_phy, port->phy_id,
 					    MII_STAT1000);
 
@@ -2116,6 +2265,29 @@ static void swphy_poll_timer(unsigned long data)
 				speed = 100;
 			else
 				speed = 10;
+=======
+		/* figure out media and duplex from advertise and LPA values */
+		media = mii_nway_result(lpa & advertise);
+		duplex = (media & ADVERTISE_FULL) ? 1 : 0;
+
+		if (media & (ADVERTISE_100FULL | ADVERTISE_100HALF))
+			speed = 100;
+		else
+			speed = 10;
+
+		if (val & BMSR_ESTATEN) {
+			advertise = bcmenet_sw_mdio_read(priv, external_phy,
+						port->phy_id, MII_CTRL1000);
+
+			lpa = bcmenet_sw_mdio_read(priv, external_phy,
+						port->phy_id, MII_STAT1000);
+
+			if (advertise & (ADVERTISE_1000FULL | ADVERTISE_1000HALF)
+					&& lpa & (LPA_1000FULL | LPA_1000HALF)) {
+				speed = 1000;
+				duplex = (lpa & LPA_1000FULL);
+			}
+>>>>>>> v4.9.227
 		}
 
 		dev_info(&priv->pdev->dev,
@@ -2605,7 +2777,10 @@ static void bcm_enetsw_get_drvinfo(struct net_device *netdev,
 	strncpy(drvinfo->version, bcm_enet_driver_version, 32);
 	strncpy(drvinfo->fw_version, "N/A", 32);
 	strncpy(drvinfo->bus_info, "bcm63xx", 32);
+<<<<<<< HEAD
 	drvinfo->n_stats = BCM_ENETSW_STATS_LEN;
+=======
+>>>>>>> v4.9.227
 }
 
 static void bcm_enetsw_get_ethtool_stats(struct net_device *netdev,
@@ -2897,6 +3072,7 @@ struct platform_driver bcm63xx_enet_shared_driver = {
 	},
 };
 
+<<<<<<< HEAD
 /* entry point */
 static int __init bcm_enet_init(void)
 {
@@ -2917,13 +3093,29 @@ static int __init bcm_enet_init(void)
 	}
 
 	return ret;
+=======
+static struct platform_driver * const drivers[] = {
+	&bcm63xx_enet_shared_driver,
+	&bcm63xx_enet_driver,
+	&bcm63xx_enetsw_driver,
+};
+
+/* entry point */
+static int __init bcm_enet_init(void)
+{
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 
 static void __exit bcm_enet_exit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&bcm63xx_enet_driver);
 	platform_driver_unregister(&bcm63xx_enetsw_driver);
 	platform_driver_unregister(&bcm63xx_enet_shared_driver);
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 
 

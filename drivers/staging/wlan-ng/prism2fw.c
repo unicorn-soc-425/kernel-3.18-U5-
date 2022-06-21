@@ -96,16 +96,27 @@ struct s3inforec {
 	u16 len;
 	u16 type;
 	union {
+<<<<<<< HEAD
 		hfa384x_compident_t version;
 		hfa384x_caplevel_t compat;
 		u16 buildseq;
 		hfa384x_compident_t platform;
+=======
+		struct hfa384x_compident version;
+		struct hfa384x_caplevel compat;
+		u16 buildseq;
+		struct hfa384x_compident platform;
+>>>>>>> v4.9.227
 	} info;
 };
 
 struct pda {
 	u8 buf[HFA384x_PDA_LEN_MAX];
+<<<<<<< HEAD
 	hfa384x_pdrec_t *rec[HFA384x_PDA_RECS_MAX];
+=======
+	struct hfa384x_pdrec *rec[HFA384x_PDA_RECS_MAX];
+>>>>>>> v4.9.227
 	unsigned int nrec;
 };
 
@@ -152,22 +163,37 @@ static struct imgchunk fchunk[CHUNKS_MAX];
 /* PDA, built from [card|newfile]+[addfile1+addfile2...] */
 
 static struct pda pda;
+<<<<<<< HEAD
 static hfa384x_compident_t nicid;
 static hfa384x_caplevel_t rfid;
 static hfa384x_caplevel_t macid;
 static hfa384x_caplevel_t priid;
+=======
+static struct hfa384x_compident nicid;
+static struct hfa384x_caplevel rfid;
+static struct hfa384x_caplevel macid;
+static struct hfa384x_caplevel priid;
+>>>>>>> v4.9.227
 
 /*================================================================*/
 /* Local Function Declarations */
 
 static int prism2_fwapply(const struct ihex_binrec *rfptr,
+<<<<<<< HEAD
 wlandevice_t *wlandev);
+=======
+struct wlandevice *wlandev);
+>>>>>>> v4.9.227
 
 static int read_fwfile(const struct ihex_binrec *rfptr);
 
 static int mkimage(struct imgchunk *clist, unsigned int *ccnt);
 
+<<<<<<< HEAD
 static int read_cardpda(struct pda *pda, wlandevice_t *wlandev);
+=======
+static int read_cardpda(struct pda *pda, struct wlandevice *wlandev);
+>>>>>>> v4.9.227
 
 static int mkpdrlist(struct pda *pda);
 
@@ -177,7 +203,11 @@ static int plugimage(struct imgchunk *fchunk, unsigned int nfchunks,
 static int crcimage(struct imgchunk *fchunk, unsigned int nfchunks,
 	     struct s3crcrec *s3crc, unsigned int ns3crc);
 
+<<<<<<< HEAD
 static int writeimage(wlandevice_t *wlandev, struct imgchunk *fchunk,
+=======
+static int writeimage(struct wlandevice *wlandev, struct imgchunk *fchunk,
+>>>>>>> v4.9.227
 	       unsigned int nfchunks);
 static void free_chunks(struct imgchunk *fchunk, unsigned int *nfchunks);
 
@@ -201,7 +231,11 @@ static int validate_identity(void);
 *	0	- success
 *	~0	- failure
 ----------------------------------------------------------------*/
+<<<<<<< HEAD
 static int prism2_fwtry(struct usb_device *udev, wlandevice_t *wlandev)
+=======
+static int prism2_fwtry(struct usb_device *udev, struct wlandevice *wlandev)
+>>>>>>> v4.9.227
 {
 	const struct firmware *fw_entry = NULL;
 
@@ -238,11 +272,20 @@ static int prism2_fwtry(struct usb_device *udev, wlandevice_t *wlandev)
 *	0	- success
 *	~0	- failure
 ----------------------------------------------------------------*/
+<<<<<<< HEAD
 static int prism2_fwapply(const struct ihex_binrec *rfptr, wlandevice_t *wlandev)
 {
 	signed int result = 0;
 	struct p80211msg_dot11req_mibget getmsg;
 	p80211itemd_t *item;
+=======
+static int prism2_fwapply(const struct ihex_binrec *rfptr,
+			  struct wlandevice *wlandev)
+{
+	signed int result = 0;
+	struct p80211msg_dot11req_mibget getmsg;
+	struct p80211itemd *item;
+>>>>>>> v4.9.227
 	u32 *data;
 
 	/* Initialize the data structures */
@@ -265,7 +308,11 @@ static int prism2_fwapply(const struct ihex_binrec *rfptr, wlandevice_t *wlandev
 
 	/* clear the pda and add an initial END record */
 	memset(&pda, 0, sizeof(pda));
+<<<<<<< HEAD
 	pda.rec[0] = (hfa384x_pdrec_t *) pda.buf;
+=======
+	pda.rec[0] = (struct hfa384x_pdrec *)pda.buf;
+>>>>>>> v4.9.227
 	pda.rec[0]->len = cpu_to_le16(2);	/* len in words */
 	pda.rec[0]->code = cpu_to_le16(HFA384x_PDR_END_OF_PDA);
 	pda.nrec = 1;
@@ -277,7 +324,12 @@ static int prism2_fwapply(const struct ihex_binrec *rfptr, wlandevice_t *wlandev
 	/* Build the PDA we're going to use. */
 	if (read_cardpda(&pda, wlandev)) {
 		netdev_err(wlandev->netdev, "load_cardpda failed, exiting.\n");
+<<<<<<< HEAD
 		return 1;
+=======
+		result = 1;
+		goto out;
+>>>>>>> v4.9.227
 	}
 
 	/* read the card's PRI-SUP */
@@ -291,11 +343,19 @@ static int prism2_fwapply(const struct ihex_binrec *rfptr, wlandevice_t *wlandev
 	getmsg.resultcode.did = DIDmsg_dot11req_mibget_resultcode;
 	getmsg.resultcode.status = P80211ENUM_msgitem_status_no_value;
 
+<<<<<<< HEAD
 	item = (p80211itemd_t *) getmsg.mibattribute.data;
 	item->did = DIDmib_p2_p2NIC_p2PRISupRange;
 	item->status = P80211ENUM_msgitem_status_no_value;
 
 	data = (u32 *) item->data;
+=======
+	item = (struct p80211itemd *)getmsg.mibattribute.data;
+	item->did = DIDmib_p2_p2NIC_p2PRISupRange;
+	item->status = P80211ENUM_msgitem_status_no_value;
+
+	data = (u32 *)item->data;
+>>>>>>> v4.9.227
 
 	/* DIDmsg_dot11req_mibget */
 	prism2mgmt_mibset_mibget(wlandev, &getmsg);
@@ -314,6 +374,7 @@ static int prism2_fwapply(const struct ihex_binrec *rfptr, wlandevice_t *wlandev
 	if (result) {
 		netdev_err(wlandev->netdev,
 			   "Failed to read the data exiting.\n");
+<<<<<<< HEAD
 		return 1;
 	}
 
@@ -322,21 +383,43 @@ static int prism2_fwapply(const struct ihex_binrec *rfptr, wlandevice_t *wlandev
 	if (result) {
 		netdev_err(wlandev->netdev, "Incompatible firmware image.\n");
 		return 1;
+=======
+		goto out;
+	}
+
+	result = validate_identity();
+	if (result) {
+		netdev_err(wlandev->netdev, "Incompatible firmware image.\n");
+		goto out;
+>>>>>>> v4.9.227
 	}
 
 	if (startaddr == 0x00000000) {
 		netdev_err(wlandev->netdev,
 			   "Can't RAM download a Flash image!\n");
+<<<<<<< HEAD
 		return 1;
+=======
+		result = 1;
+		goto out;
+>>>>>>> v4.9.227
 	}
 
 	/* Make the image chunks */
 	result = mkimage(fchunk, &nfchunks);
+<<<<<<< HEAD
+=======
+	if (result) {
+		netdev_err(wlandev->netdev, "Failed to make image chunk.\n");
+		goto free_chunks;
+	}
+>>>>>>> v4.9.227
 
 	/* Do any plugging */
 	result = plugimage(fchunk, nfchunks, s3plug, ns3plug, &pda);
 	if (result) {
 		netdev_err(wlandev->netdev, "Failed to plug data.\n");
+<<<<<<< HEAD
 		return 1;
 	}
 
@@ -344,21 +427,44 @@ static int prism2_fwapply(const struct ihex_binrec *rfptr, wlandevice_t *wlandev
 	if (crcimage(fchunk, nfchunks, s3crc, ns3crc)) {
 		netdev_err(wlandev->netdev, "Failed to insert all CRCs\n");
 		return 1;
+=======
+		goto free_chunks;
+	}
+
+	/* Insert any CRCs */
+	result = crcimage(fchunk, nfchunks, s3crc, ns3crc);
+	if (result) {
+		netdev_err(wlandev->netdev, "Failed to insert all CRCs\n");
+		goto free_chunks;
+>>>>>>> v4.9.227
 	}
 
 	/* Write the image */
 	result = writeimage(wlandev, fchunk, nfchunks);
 	if (result) {
 		netdev_err(wlandev->netdev, "Failed to ramwrite image data.\n");
+<<<<<<< HEAD
 		return 1;
 	}
 
+=======
+		goto free_chunks;
+	}
+
+	netdev_info(wlandev->netdev, "prism2_usb: firmware loading finished.\n");
+
+free_chunks:
+>>>>>>> v4.9.227
 	/* clear any allocated memory */
 	free_chunks(fchunk, &nfchunks);
 	free_srecs();
 
+<<<<<<< HEAD
 	netdev_info(wlandev->netdev, "prism2_usb: firmware loading finished.\n");
 
+=======
+out:
+>>>>>>> v4.9.227
 	return result;
 }
 
@@ -537,7 +643,11 @@ static int mkimage(struct imgchunk *clist, unsigned int *ccnt)
 	/* Allocate buffer space for chunks */
 	for (i = 0; i < *ccnt; i++) {
 		clist[i].data = kzalloc(clist[i].len, GFP_KERNEL);
+<<<<<<< HEAD
 		if (clist[i].data == NULL) {
+=======
+		if (!clist[i].data) {
+>>>>>>> v4.9.227
 			pr_err("failed to allocate image space, exitting.\n");
 			return 1;
 		}
@@ -583,15 +693,25 @@ static int mkimage(struct imgchunk *clist, unsigned int *ccnt)
 ----------------------------------------------------------------*/
 static int mkpdrlist(struct pda *pda)
 {
+<<<<<<< HEAD
 	int result = 0;
 	u16 *pda16 = (u16 *) pda->buf;
+=======
+	u16 *pda16 = (u16 *)pda->buf;
+>>>>>>> v4.9.227
 	int curroff;		/* in 'words' */
 
 	pda->nrec = 0;
 	curroff = 0;
+<<<<<<< HEAD
 	while (curroff < (HFA384x_PDA_LEN_MAX / 2) &&
 	       le16_to_cpu(pda16[curroff + 1]) != HFA384x_PDR_END_OF_PDA) {
 		pda->rec[pda->nrec] = (hfa384x_pdrec_t *) &(pda16[curroff]);
+=======
+	while (curroff < (HFA384x_PDA_LEN_MAX / 2 - 1) &&
+	       le16_to_cpu(pda16[curroff + 1]) != HFA384x_PDR_END_OF_PDA) {
+		pda->rec[pda->nrec] = (struct hfa384x_pdrec *)&(pda16[curroff]);
+>>>>>>> v4.9.227
 
 		if (le16_to_cpu(pda->rec[pda->nrec]->code) ==
 		    HFA384x_PDR_NICID) {
@@ -625,16 +745,26 @@ static int mkpdrlist(struct pda *pda)
 		curroff += le16_to_cpu(pda16[curroff]) + 1;
 
 	}
+<<<<<<< HEAD
 	if (curroff >= (HFA384x_PDA_LEN_MAX / 2)) {
+=======
+	if (curroff >= (HFA384x_PDA_LEN_MAX / 2 - 1)) {
+>>>>>>> v4.9.227
 		pr_err("no end record found or invalid lengths in PDR data, exiting. %x %d\n",
 		       curroff, pda->nrec);
 		return 1;
 	}
+<<<<<<< HEAD
 	if (le16_to_cpu(pda16[curroff + 1]) == HFA384x_PDR_END_OF_PDA) {
 		pda->rec[pda->nrec] = (hfa384x_pdrec_t *) &(pda16[curroff]);
 		(pda->nrec)++;
 	}
 	return result;
+=======
+	pda->rec[pda->nrec] = (struct hfa384x_pdrec *)&(pda16[curroff]);
+	(pda->nrec)++;
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /*----------------------------------------------------------------
@@ -707,7 +837,14 @@ static int plugimage(struct imgchunk *fchunk, unsigned int nfchunks,
 			continue;
 		}
 
+<<<<<<< HEAD
 		/* Validate plug address against chunk data and identify chunk */
+=======
+		/*
+		 * Validate plug address against
+		 * chunk data and identify chunk
+		 */
+>>>>>>> v4.9.227
 		for (c = 0; c < nfchunks; c++) {
 			cstart = fchunk[c].addr;
 			cend = fchunk[c].addr + fchunk[c].len;
@@ -757,7 +894,11 @@ static int plugimage(struct imgchunk *fchunk, unsigned int nfchunks,
 *	0	- success
 *	~0	- failure (probably an errno)
 ----------------------------------------------------------------*/
+<<<<<<< HEAD
 static int read_cardpda(struct pda *pda, wlandevice_t *wlandev)
+=======
+static int read_cardpda(struct pda *pda, struct wlandevice *wlandev)
+>>>>>>> v4.9.227
 {
 	int result = 0;
 	struct p80211msg_p2req_readpda *msg;
@@ -870,8 +1011,13 @@ static int read_fwfile(const struct ihex_binrec *record)
 		addr = be32_to_cpu(record->addr);
 
 		/* Point into data for different word lengths */
+<<<<<<< HEAD
 		ptr32 = (u32 *) record->data;
 		ptr16 = (u16 *) record->data;
+=======
+		ptr32 = (u32 *)record->data;
+		ptr16 = (u16 *)record->data;
+>>>>>>> v4.9.227
 
 		/* parse what was an S3 srec and put it in the right array */
 		switch (addr) {
@@ -922,7 +1068,12 @@ static int read_fwfile(const struct ihex_binrec *record)
 				      rcnt,
 				      s3info[ns3info].len,
 				      s3info[ns3info].type);
+<<<<<<< HEAD
 			if (((s3info[ns3info].len - 1) * sizeof(u16)) > sizeof(s3info[ns3info].info)) {
+=======
+			if (((s3info[ns3info].len - 1) * sizeof(u16)) >
+			   sizeof(s3info[ns3info].info)) {
+>>>>>>> v4.9.227
 				pr_err("S3 inforec length too long - aborting\n");
 				return 1;
 			}
@@ -944,7 +1095,11 @@ static int read_fwfile(const struct ihex_binrec *record)
 		default:	/* Data record */
 			s3data[ns3data].addr = addr;
 			s3data[ns3data].len = len;
+<<<<<<< HEAD
 			s3data[ns3data].data = (uint8_t *) record->data;
+=======
+			s3data[ns3data].data = (uint8_t *)record->data;
+>>>>>>> v4.9.227
 			ns3data++;
 			if (ns3data == S3DATA_MAX) {
 				pr_err("S3 datarec limit reached - aborting\n");
@@ -972,7 +1127,11 @@ static int read_fwfile(const struct ihex_binrec *record)
 *	0	success
 *	~0	failure
 ----------------------------------------------------------------*/
+<<<<<<< HEAD
 static int writeimage(wlandevice_t *wlandev, struct imgchunk *fchunk,
+=======
+static int writeimage(struct wlandevice *wlandev, struct imgchunk *fchunk,
+>>>>>>> v4.9.227
 	       unsigned int nfchunks)
 {
 	int result = 0;
@@ -986,8 +1145,13 @@ static int writeimage(wlandevice_t *wlandev, struct imgchunk *fchunk,
 	u32 currlen;
 	u32 currdaddr;
 
+<<<<<<< HEAD
 	rstmsg = kmalloc(sizeof(*rstmsg), GFP_KERNEL);
 	rwrmsg = kmalloc(sizeof(*rwrmsg), GFP_KERNEL);
+=======
+	rstmsg = kzalloc(sizeof(*rstmsg), GFP_KERNEL);
+	rwrmsg = kzalloc(sizeof(*rwrmsg), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!rstmsg || !rwrmsg) {
 		kfree(rstmsg);
 		kfree(rwrmsg);
@@ -997,7 +1161,10 @@ static int writeimage(wlandevice_t *wlandev, struct imgchunk *fchunk,
 	}
 
 	/* Initialize the messages */
+<<<<<<< HEAD
 	memset(rstmsg, 0, sizeof(*rstmsg));
+=======
+>>>>>>> v4.9.227
 	strcpy(rstmsg->devname, wlandev->name);
 	rstmsg->msgcode = DIDmsg_p2req_ramdl_state;
 	rstmsg->msglen = sizeof(*rstmsg);
@@ -1011,7 +1178,10 @@ static int writeimage(wlandevice_t *wlandev, struct imgchunk *fchunk,
 	rstmsg->exeaddr.len = sizeof(u32);
 	rstmsg->resultcode.len = sizeof(u32);
 
+<<<<<<< HEAD
 	memset(rwrmsg, 0, sizeof(*rwrmsg));
+=======
+>>>>>>> v4.9.227
 	strcpy(rwrmsg->devname, wlandev->name);
 	rwrmsg->msgcode = DIDmsg_p2req_ramdl_write;
 	rwrmsg->msglen = sizeof(*rwrmsg);

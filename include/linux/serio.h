@@ -18,6 +18,11 @@
 #include <linux/mod_devicetable.h>
 #include <uapi/linux/serio.h>
 
+<<<<<<< HEAD
+=======
+extern struct bus_type serio_bus;
+
+>>>>>>> v4.9.227
 struct serio {
 	void *port_data;
 

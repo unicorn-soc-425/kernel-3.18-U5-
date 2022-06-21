@@ -779,4 +779,8 @@ Monitoring tool
 ---------------
 
 Bartek Kania submitted this, it can be used to measure how much time your disk
+<<<<<<< HEAD
 spends spun up/down.  See Documentation/laptops/dslm.c
+=======
+spends spun up/down.  See tools/laptop/dslm/dslm.c
+>>>>>>> v4.9.227

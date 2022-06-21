@@ -50,10 +50,15 @@ int snd_device_new(struct snd_card *card, enum snd_device_type type,
 	if (snd_BUG_ON(!card || !device_data || !ops))
 		return -ENXIO;
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+<<<<<<< HEAD
 	if (dev == NULL) {
 		dev_err(card->dev, "Cannot allocate device, type=%d\n", type);
 		return -ENOMEM;
 	}
+=======
+	if (!dev)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	INIT_LIST_HEAD(&dev->list);
 	dev->card = card;
 	dev->type = type;
@@ -73,7 +78,11 @@ int snd_device_new(struct snd_card *card, enum snd_device_type type,
 }
 EXPORT_SYMBOL(snd_device_new);
 
+<<<<<<< HEAD
 static int __snd_device_disconnect(struct snd_device *dev)
+=======
+static void __snd_device_disconnect(struct snd_device *dev)
+>>>>>>> v4.9.227
 {
 	if (dev->state == SNDRV_DEV_REGISTERED) {
 		if (dev->ops->dev_disconnect &&
@@ -81,7 +90,10 @@ static int __snd_device_disconnect(struct snd_device *dev)
 			dev_err(dev->card->dev, "device disconnect failure\n");
 		dev->state = SNDRV_DEV_DISCONNECTED;
 	}
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> v4.9.227
 }
 
 static void __snd_device_free(struct snd_device *dev)
@@ -109,6 +121,37 @@ static struct snd_device *look_for_dev(struct snd_card *card, void *device_data)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * snd_device_disconnect - disconnect the device
+ * @card: the card instance
+ * @device_data: the data pointer to disconnect
+ *
+ * Turns the device into the disconnection state, invoking
+ * dev_disconnect callback, if the device was already registered.
+ *
+ * Usually called from snd_card_disconnect().
+ *
+ * Return: Zero if successful, or a negative error code on failure or if the
+ * device not found.
+ */
+void snd_device_disconnect(struct snd_card *card, void *device_data)
+{
+	struct snd_device *dev;
+
+	if (snd_BUG_ON(!card || !device_data))
+		return;
+	dev = look_for_dev(card, device_data);
+	if (dev)
+		__snd_device_disconnect(dev);
+	else
+		dev_dbg(card->dev, "device disconnect %p (from %pF), not found\n",
+			device_data, __builtin_return_address(0));
+}
+EXPORT_SYMBOL_GPL(snd_device_disconnect);
+
+/**
+>>>>>>> v4.9.227
  * snd_device_free - release the device from the card
  * @card: the card instance
  * @device_data: the data pointer to release
@@ -195,6 +238,7 @@ int snd_device_register_all(struct snd_card *card)
  * disconnect all the devices on the card.
  * called from init.c
  */
+<<<<<<< HEAD
 int snd_device_disconnect_all(struct snd_card *card)
 {
 	struct snd_device *dev;
@@ -207,6 +251,16 @@ int snd_device_disconnect_all(struct snd_card *card)
 			err = -ENXIO;
 	}
 	return err;
+=======
+void snd_device_disconnect_all(struct snd_card *card)
+{
+	struct snd_device *dev;
+
+	if (snd_BUG_ON(!card))
+		return;
+	list_for_each_entry_reverse(dev, &card->devices, list)
+		__snd_device_disconnect(dev);
+>>>>>>> v4.9.227
 }
 
 /*

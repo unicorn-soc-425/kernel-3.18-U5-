@@ -15,6 +15,11 @@
 #include <linux/key.h>
 #include <linux/rcupdate.h>
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_KEYS
+
+>>>>>>> v4.9.227
 /*****************************************************************************/
 /*
  * the payload for a key of type "user" or "logon"
@@ -29,7 +34,11 @@
 struct user_key_payload {
 	struct rcu_head	rcu;		/* RCU destructor */
 	unsigned short	datalen;	/* length of this data */
+<<<<<<< HEAD
 	char		data[0];	/* actual data */
+=======
+	char		data[0] __aligned(__alignof__(u64)); /* actual data */
+>>>>>>> v4.9.227
 };
 
 extern struct key_type key_type_user;
@@ -46,5 +55,14 @@ extern void user_describe(const struct key *user, struct seq_file *m);
 extern long user_read(const struct key *key,
 		      char __user *buffer, size_t buflen);
 
+<<<<<<< HEAD
+=======
+static inline const struct user_key_payload *user_key_payload(const struct key *key)
+{
+	return (struct user_key_payload *)rcu_dereference_key(key);
+}
+
+#endif /* CONFIG_KEYS */
+>>>>>>> v4.9.227
 
 #endif /* _KEYS_USER_TYPE_H */

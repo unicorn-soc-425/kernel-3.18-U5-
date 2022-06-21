@@ -13,28 +13,44 @@
 */
 
 &adc {
+<<<<<<< HEAD
 	ncp15wb473@3 {
+=======
+	thermistor3 {
+>>>>>>> v4.9.227
 		compatible = "murata,ncp15wb473";
 		pullup-uv = <1800000>;
 		pullup-ohm = <47000>;
 		pulldown-ohm = <0>;
 		io-channels = <&adc 3>;
 	};
+<<<<<<< HEAD
 	ncp15wb473@4 {
+=======
+	thermistor4 {
+>>>>>>> v4.9.227
 		compatible = "murata,ncp15wb473";
 		pullup-uv = <1800000>;
 		pullup-ohm = <47000>;
 		pulldown-ohm = <0>;
 		io-channels = <&adc 4>;
 	};
+<<<<<<< HEAD
 	ncp15wb473@5 {
+=======
+	thermistor5 {
+>>>>>>> v4.9.227
 		compatible = "murata,ncp15wb473";
 		pullup-uv = <1800000>;
 		pullup-ohm = <47000>;
 		pulldown-ohm = <0>;
 		io-channels = <&adc 5>;
 	};
+<<<<<<< HEAD
 	ncp15wb473@6 {
+=======
+	thermistor6 {
+>>>>>>> v4.9.227
 		compatible = "murata,ncp15wb473";
 		pullup-uv = <1800000>;
 		pullup-ohm = <47000>;

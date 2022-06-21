@@ -53,6 +53,7 @@ extern unsigned long get_switch_to_pc(void);
  * Kernel threads can check to see if they need to migrate their
  * stack whenever they return from a context switch; for user
  * threads, we defer until they are returning to user-space.
+<<<<<<< HEAD
  */
 #define finish_arch_switch(prev) do {                                     \
 	if (unlikely((prev)->state == TASK_DEAD))                         \
@@ -62,6 +63,15 @@ extern unsigned long get_switch_to_pc(void);
 		(current->pid << _SIM_CONTROL_OPERATOR_BITS));            \
 	if (current->mm == NULL && !kstack_hash &&                        \
 	    current_thread_info()->homecache_cpu != smp_processor_id())   \
+=======
+ * We defer homecache migration until the runqueue lock is released.
+ */
+#define finish_arch_post_lock_switch() do {                               \
+	__insn_mtspr(SPR_SIM_CONTROL, SIM_CONTROL_OS_SWITCH |             \
+		(current->pid << _SIM_CONTROL_OPERATOR_BITS));            \
+	if (current->mm == NULL && !kstack_hash &&                        \
+	    current_thread_info()->homecache_cpu != raw_smp_processor_id()) \
+>>>>>>> v4.9.227
 		homecache_migrate_kthread();                              \
 } while (0)
 

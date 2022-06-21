@@ -30,25 +30,58 @@ const struct kfd2kgd_calls *kfd2kgd;
 const struct kgd2kfd_calls *kgd2kfd;
 bool (*kgd2kfd_init_p)(unsigned, const struct kgd2kfd_calls**);
 
+<<<<<<< HEAD
 bool amdgpu_amdkfd_init(void)
 {
 #if defined(CONFIG_HSA_AMD_MODULE)
 	bool (*kgd2kfd_init_p)(unsigned, const struct kgd2kfd_calls**);
+=======
+int amdgpu_amdkfd_init(void)
+{
+	int ret;
+
+#if defined(CONFIG_HSA_AMD_MODULE)
+	int (*kgd2kfd_init_p)(unsigned, const struct kgd2kfd_calls**);
+>>>>>>> v4.9.227
 
 	kgd2kfd_init_p = symbol_request(kgd2kfd_init);
 
 	if (kgd2kfd_init_p == NULL)
+<<<<<<< HEAD
 		return false;
 #endif
 	return true;
+=======
+		return -ENOENT;
+
+	ret = kgd2kfd_init_p(KFD_INTERFACE_VERSION, &kgd2kfd);
+	if (ret) {
+		symbol_put(kgd2kfd_init);
+		kgd2kfd = NULL;
+	}
+
+#elif defined(CONFIG_HSA_AMD)
+	ret = kgd2kfd_init(KFD_INTERFACE_VERSION, &kgd2kfd);
+	if (ret)
+		kgd2kfd = NULL;
+
+#else
+	ret = -ENOENT;
+#endif
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 bool amdgpu_amdkfd_load_interface(struct amdgpu_device *rdev)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_HSA_AMD_MODULE)
 	bool (*kgd2kfd_init_p)(unsigned, const struct kgd2kfd_calls**);
 #endif
 
+=======
+>>>>>>> v4.9.227
 	switch (rdev->asic_type) {
 #ifdef CONFIG_DRM_AMDGPU_CIK
 	case CHIP_KAVERI:
@@ -62,6 +95,7 @@ bool amdgpu_amdkfd_load_interface(struct amdgpu_device *rdev)
 		return false;
 	}
 
+<<<<<<< HEAD
 #if defined(CONFIG_HSA_AMD_MODULE)
 	kgd2kfd_init_p = symbol_request(kgd2kfd_init);
 
@@ -91,6 +125,9 @@ bool amdgpu_amdkfd_load_interface(struct amdgpu_device *rdev)
 	kfd2kgd = NULL;
 	return false;
 #endif
+=======
+	return true;
+>>>>>>> v4.9.227
 }
 
 void amdgpu_amdkfd_fini(void)
@@ -158,6 +195,7 @@ int amdgpu_amdkfd_resume(struct amdgpu_device *rdev)
 	return r;
 }
 
+<<<<<<< HEAD
 u32 pool_to_domain(enum kgd_memory_pool p)
 {
 	switch (p) {
@@ -166,6 +204,8 @@ u32 pool_to_domain(enum kgd_memory_pool p)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 int alloc_gtt_mem(struct kgd_dev *kgd, size_t size,
 			void **mem_obj, uint64_t *gpu_addr,
 			void **cpu_ptr)
@@ -255,8 +295,13 @@ uint64_t get_gpu_clock_counter(struct kgd_dev *kgd)
 {
 	struct amdgpu_device *rdev = (struct amdgpu_device *)kgd;
 
+<<<<<<< HEAD
 	if (rdev->asic_funcs->get_gpu_clock_counter)
 		return rdev->asic_funcs->get_gpu_clock_counter(rdev);
+=======
+	if (rdev->gfx.funcs->get_gpu_clock_counter)
+		return rdev->gfx.funcs->get_gpu_clock_counter(rdev);
+>>>>>>> v4.9.227
 	return 0;
 }
 

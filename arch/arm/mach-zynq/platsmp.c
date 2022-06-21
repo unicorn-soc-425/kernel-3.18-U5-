@@ -65,7 +65,11 @@ int zynq_cpun_start(u32 address, int cpu)
 			* 0x4: Jump by mov instruction
 			* 0x8: Jumping address
 			*/
+<<<<<<< HEAD
 			memcpy((__force void *)zero, &zynq_secondary_trampoline,
+=======
+			memcpy_toio(zero, &zynq_secondary_trampoline,
+>>>>>>> v4.9.227
 							trampoline_size);
 			writel(address, zero + trampoline_size);
 
@@ -87,10 +91,16 @@ int zynq_cpun_start(u32 address, int cpu)
 }
 EXPORT_SYMBOL(zynq_cpun_start);
 
+<<<<<<< HEAD
 static int zynq_boot_secondary(unsigned int cpu,
 						struct task_struct *idle)
 {
 	return zynq_cpun_start(virt_to_phys(zynq_secondary_startup), cpu);
+=======
+static int zynq_boot_secondary(unsigned int cpu, struct task_struct *idle)
+{
+	return zynq_cpun_start(virt_to_phys(secondary_startup), cpu);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -158,7 +168,11 @@ static void zynq_cpu_die(unsigned int cpu)
 }
 #endif
 
+<<<<<<< HEAD
 struct smp_operations zynq_smp_ops __initdata = {
+=======
+const struct smp_operations zynq_smp_ops __initconst = {
+>>>>>>> v4.9.227
 	.smp_init_cpus		= zynq_smp_init_cpus,
 	.smp_prepare_cpus	= zynq_smp_prepare_cpus,
 	.smp_boot_secondary	= zynq_boot_secondary,

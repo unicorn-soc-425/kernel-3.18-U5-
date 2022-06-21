@@ -92,6 +92,11 @@ struct usb_hub {
  * @status_lock: synchronize port_event() vs usb_port_{suspend|resume}
  * @portnum: port index num based one
  * @is_superspeed cache super-speed status
+<<<<<<< HEAD
+=======
+ * @usb3_lpm_u1_permit: whether USB3 U1 LPM is permitted.
+ * @usb3_lpm_u2_permit: whether USB3 U2 LPM is permitted.
+>>>>>>> v4.9.227
  */
 struct usb_port {
 	struct usb_device *child;
@@ -104,6 +109,11 @@ struct usb_port {
 	struct mutex status_lock;
 	u8 portnum;
 	unsigned int is_superspeed:1;
+<<<<<<< HEAD
+=======
+	unsigned int usb3_lpm_u1_permit:1;
+	unsigned int usb3_lpm_u2_permit:1;
+>>>>>>> v4.9.227
 };
 
 #define to_usb_port(_dev) \
@@ -136,6 +146,16 @@ static inline int hub_is_superspeed(struct usb_device *hdev)
 	return hdev->descriptor.bDeviceProtocol == USB_HUB_PR_SS;
 }
 
+<<<<<<< HEAD
+=======
+static inline int hub_is_superspeedplus(struct usb_device *hdev)
+{
+	return (hdev->descriptor.bDeviceProtocol == USB_HUB_PR_SS &&
+		le16_to_cpu(hdev->descriptor.bcdUSB) >= 0x0310 &&
+		hdev->bos->ssp_cap);
+}
+
+>>>>>>> v4.9.227
 static inline unsigned hub_power_on_good_delay(struct usb_hub *hub)
 {
 	unsigned delay = hub->descriptor->bPwrOn2PwrGood * 2;
@@ -155,4 +175,7 @@ static inline int hub_port_debounce_be_stable(struct usb_hub *hub,
 {
 	return hub_port_debounce(hub, port1, false);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227

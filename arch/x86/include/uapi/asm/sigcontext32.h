@@ -1,6 +1,7 @@
 #ifndef _ASM_X86_SIGCONTEXT32_H
 #define _ASM_X86_SIGCONTEXT32_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 
 /* signal context for 32bit programs. */
@@ -73,5 +74,10 @@ struct sigcontext_ia32 {
        unsigned int oldmask;
        unsigned int cr2;
 };
+=======
+/* This is a legacy file - all the type definitions are in sigcontext.h: */
+
+#include <asm/sigcontext.h>
+>>>>>>> v4.9.227
 
 #endif /* _ASM_X86_SIGCONTEXT32_H */

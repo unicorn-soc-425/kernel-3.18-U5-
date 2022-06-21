@@ -31,7 +31,11 @@
 static struct hlist_head	nlm_files[FILE_NRHASH];
 static DEFINE_MUTEX(nlm_file_mutex);
 
+<<<<<<< HEAD
 #ifdef NFSD_DEBUG
+=======
+#ifdef CONFIG_SUNRPC_DEBUG
+>>>>>>> v4.9.227
 static inline void nlm_debug_print_fh(char *msg, struct nfs_fh *f)
 {
 	u32 *fhp = (u32*)f->data;
@@ -164,12 +168,24 @@ nlm_traverse_locks(struct nlm_host *host, struct nlm_file *file,
 {
 	struct inode	 *inode = nlmsvc_file_inode(file);
 	struct file_lock *fl;
+<<<<<<< HEAD
 	struct nlm_host	 *lockhost;
 
 again:
 	file->f_locks = 0;
 	spin_lock(&inode->i_lock);
 	for (fl = inode->i_flock; fl; fl = fl->fl_next) {
+=======
+	struct file_lock_context *flctx = inode->i_flctx;
+	struct nlm_host	 *lockhost;
+
+	if (!flctx || list_empty_careful(&flctx->flc_posix))
+		return 0;
+again:
+	file->f_locks = 0;
+	spin_lock(&flctx->flc_lock);
+	list_for_each_entry(fl, &flctx->flc_posix, fl_list) {
+>>>>>>> v4.9.227
 		if (fl->fl_lmops != &nlmsvc_lock_operations)
 			continue;
 
@@ -180,7 +196,11 @@ again:
 		if (match(lockhost, host)) {
 			struct file_lock lock = *fl;
 
+<<<<<<< HEAD
 			spin_unlock(&inode->i_lock);
+=======
+			spin_unlock(&flctx->flc_lock);
+>>>>>>> v4.9.227
 			lock.fl_type  = F_UNLCK;
 			lock.fl_start = 0;
 			lock.fl_end   = OFFSET_MAX;
@@ -192,7 +212,11 @@ again:
 			goto again;
 		}
 	}
+<<<<<<< HEAD
 	spin_unlock(&inode->i_lock);
+=======
+	spin_unlock(&flctx->flc_lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -223,10 +247,15 @@ nlm_file_inuse(struct nlm_file *file)
 {
 	struct inode	 *inode = nlmsvc_file_inode(file);
 	struct file_lock *fl;
+<<<<<<< HEAD
+=======
+	struct file_lock_context *flctx = inode->i_flctx;
+>>>>>>> v4.9.227
 
 	if (file->f_count || !list_empty(&file->f_blocks) || file->f_shares)
 		return 1;
 
+<<<<<<< HEAD
 	spin_lock(&inode->i_lock);
 	for (fl = inode->i_flock; fl; fl = fl->fl_next) {
 		if (fl->fl_lmops == &nlmsvc_lock_operations) {
@@ -235,6 +264,18 @@ nlm_file_inuse(struct nlm_file *file)
 		}
 	}
 	spin_unlock(&inode->i_lock);
+=======
+	if (flctx && !list_empty_careful(&flctx->flc_posix)) {
+		spin_lock(&flctx->flc_lock);
+		list_for_each_entry(fl, &flctx->flc_posix, fl_list) {
+			if (fl->fl_lmops == &nlmsvc_lock_operations) {
+				spin_unlock(&flctx->flc_lock);
+				return 1;
+			}
+		}
+		spin_unlock(&flctx->flc_lock);
+	}
+>>>>>>> v4.9.227
 	file->f_locks = 0;
 	return 0;
 }
@@ -408,7 +449,11 @@ nlmsvc_match_sb(void *datap, struct nlm_file *file)
 {
 	struct super_block *sb = datap;
 
+<<<<<<< HEAD
 	return sb == file->f_file->f_path.dentry->d_sb;
+=======
+	return sb == file_inode(file->f_file)->i_sb;
+>>>>>>> v4.9.227
 }
 
 /**

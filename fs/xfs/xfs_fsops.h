@@ -25,6 +25,12 @@ extern int xfs_fs_counts(xfs_mount_t *mp, xfs_fsop_counts_t *cnt);
 extern int xfs_reserve_blocks(xfs_mount_t *mp, __uint64_t *inval,
 				xfs_fsop_resblks_t *outval);
 extern int xfs_fs_goingdown(xfs_mount_t *mp, __uint32_t inflags);
+<<<<<<< HEAD
 extern int xfs_fs_log_dummy(struct xfs_mount *mp);
+=======
+
+extern int xfs_fs_reserve_ag_blocks(struct xfs_mount *mp);
+extern int xfs_fs_unreserve_ag_blocks(struct xfs_mount *mp);
+>>>>>>> v4.9.227
 
 #endif	/* __XFS_FSOPS_H__ */

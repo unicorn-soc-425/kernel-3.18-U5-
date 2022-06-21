@@ -16,6 +16,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -155,7 +159,11 @@ static int atl_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 	return 0;
 }
 
+<<<<<<< HEAD
 const struct clk_ops atl_clk_ops = {
+=======
+static const struct clk_ops atl_clk_ops = {
+>>>>>>> v4.9.227
 	.enable		= atl_clk_enable,
 	.disable	= atl_clk_disable,
 	.is_enabled	= atl_clk_is_enabled,
@@ -167,7 +175,11 @@ const struct clk_ops atl_clk_ops = {
 static void __init of_dra7_atl_clock_setup(struct device_node *node)
 {
 	struct dra7_atl_desc *clk_hw = NULL;
+<<<<<<< HEAD
 	struct clk_init_data init = { 0 };
+=======
+	struct clk_init_data init = { NULL };
+>>>>>>> v4.9.227
 	const char **parent_names = NULL;
 	struct clk *clk;
 
@@ -252,6 +264,14 @@ static int of_dra7_atl_clk_probe(struct platform_device *pdev)
 		}
 
 		clk = of_clk_get_from_provider(&clkspec);
+<<<<<<< HEAD
+=======
+		if (IS_ERR(clk)) {
+			pr_err("%s: failed to get atl clock %d from provider\n",
+			       __func__, i);
+			return PTR_ERR(clk);
+		}
+>>>>>>> v4.9.227
 
 		cdesc = to_atl_desc(__clk_get_hw(clk));
 		cdesc->cinfo = cinfo;
@@ -295,7 +315,11 @@ static int of_dra7_atl_clk_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id of_dra7_atl_clk_match_tbl[] = {
+=======
+static const struct of_device_id of_dra7_atl_clk_match_tbl[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "ti,dra7-atl", },
 	{},
 };

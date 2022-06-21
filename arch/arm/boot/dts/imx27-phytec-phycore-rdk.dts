@@ -283,14 +283,22 @@
 };
 
 &uart1 {
+<<<<<<< HEAD
 	fsl,uart-has-rtscts;
+=======
+	uart-has-rtscts;
+>>>>>>> v4.9.227
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
 
 &uart2 {
+<<<<<<< HEAD
 	fsl,uart-has-rtscts;
+=======
+	uart-has-rtscts;
+>>>>>>> v4.9.227
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";

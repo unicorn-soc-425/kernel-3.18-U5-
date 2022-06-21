@@ -40,6 +40,10 @@
 	status = "okay";
 };
 
+<<<<<<< HEAD
 &pcie2 {
+=======
+&pcie1 {
+>>>>>>> v4.9.227
 	status = "okay";
 };

@@ -89,7 +89,11 @@ sint _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 	*/
 	pxmitpriv->pallocated_frame_buf = kmalloc(NR_XMITFRAME * sizeof(struct xmit_frame) + 4,
 						  GFP_ATOMIC);
+<<<<<<< HEAD
 	if (pxmitpriv->pallocated_frame_buf == NULL) {
+=======
+	if (!pxmitpriv->pallocated_frame_buf) {
+>>>>>>> v4.9.227
 		pxmitpriv->pxmit_frame_buf = NULL;
 		return _FAIL;
 	}
@@ -128,7 +132,11 @@ sint _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 	_init_queue(&pxmitpriv->pending_xmitbuf_queue);
 	pxmitpriv->pallocated_xmitbuf = kmalloc(NR_XMITBUFF * sizeof(struct xmit_buf) + 4,
 						GFP_ATOMIC);
+<<<<<<< HEAD
 	if (pxmitpriv->pallocated_xmitbuf  == NULL)
+=======
+	if (!pxmitpriv->pallocated_xmitbuf)
+>>>>>>> v4.9.227
 		return _FAIL;
 	pxmitpriv->pxmitbuf = pxmitpriv->pallocated_xmitbuf + 4 -
 			      ((addr_t)(pxmitpriv->pallocated_xmitbuf) & 3);
@@ -137,7 +145,11 @@ sint _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 		INIT_LIST_HEAD(&pxmitbuf->list);
 		pxmitbuf->pallocated_buf = kmalloc(MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ,
 						   GFP_ATOMIC);
+<<<<<<< HEAD
 		if (pxmitbuf->pallocated_buf == NULL)
+=======
+		if (!pxmitbuf->pallocated_buf)
+>>>>>>> v4.9.227
 			return _FAIL;
 		pxmitbuf->pbuf = pxmitbuf->pallocated_buf + XMITBUF_ALIGN_SZ -
 				 ((addr_t) (pxmitbuf->pallocated_buf) &
@@ -184,7 +196,10 @@ void _free_xmit_priv(struct xmit_priv *pxmitpriv)
 sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 		   struct pkt_attrib *pattrib)
 {
+<<<<<<< HEAD
 	uint i;
+=======
+>>>>>>> v4.9.227
 	struct pkt_file pktfile;
 	struct sta_info *psta = NULL;
 	struct ethhdr etherhdr;
@@ -199,11 +214,16 @@ sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 
 	_r8712_open_pktfile(pkt, &pktfile);
 
+<<<<<<< HEAD
 	i = _r8712_pktfile_read(&pktfile, (unsigned char *)&etherhdr, ETH_HLEN);
+=======
+	_r8712_pktfile_read(&pktfile, (unsigned char *)&etherhdr, ETH_HLEN);
+>>>>>>> v4.9.227
 
 	pattrib->ether_type = ntohs(etherhdr.h_proto);
 
 {
+<<<<<<< HEAD
 	u8 bool;
 	/*If driver xmit ARP packet, driver can set ps mode to initial
 	 * setting. It stands for getting DHCP or fix IP.*/
@@ -211,6 +231,15 @@ sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 		if (padapter->pwrctrlpriv.pwr_mode !=
 		    padapter->registrypriv.power_mgnt) {
 			_cancel_timer(&(pmlmepriv->dhcp_timer), &bool);
+=======
+	/*If driver xmit ARP packet, driver can set ps mode to initial
+	 * setting. It stands for getting DHCP or fix IP.
+	 */
+	if (pattrib->ether_type == 0x0806) {
+		if (padapter->pwrctrlpriv.pwr_mode !=
+		    padapter->registrypriv.power_mgnt) {
+			del_timer_sync(&pmlmepriv->dhcp_timer);
+>>>>>>> v4.9.227
 			r8712_set_ps_mode(padapter, padapter->registrypriv.
 				power_mgnt, padapter->registrypriv.smart_ps);
 		}
@@ -219,8 +248,13 @@ sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 	memcpy(pattrib->dst, &etherhdr.h_dest, ETH_ALEN);
 	memcpy(pattrib->src, &etherhdr.h_source, ETH_ALEN);
 	pattrib->pctrl = 0;
+<<<<<<< HEAD
 	if ((check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true) ||
 	    (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true)) {
+=======
+	if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) ||
+	    check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)) {
+>>>>>>> v4.9.227
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 	} else if (check_fwstate(pmlmepriv, WIFI_STATION_STATE)) {
@@ -229,35 +263,63 @@ sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 	} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, get_bssid(pmlmepriv), ETH_ALEN);
+<<<<<<< HEAD
 	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
+=======
+	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
+>>>>>>> v4.9.227
 		/*firstly, filter packet not belongs to mp*/
 		if (pattrib->ether_type != 0x8712)
 			return _FAIL;
 		/* for mp storing the txcmd per packet,
+<<<<<<< HEAD
 		 * according to the info of txcmd to update pattrib */
 		/*get MP_TXDESC_SIZE bytes txcmd per packet*/
 		i = _r8712_pktfile_read(&pktfile, (u8 *)&txdesc, TXDESC_SIZE);
+=======
+		 * according to the info of txcmd to update pattrib
+		 */
+		/*get MP_TXDESC_SIZE bytes txcmd per packet*/
+		_r8712_pktfile_read(&pktfile, (u8 *)&txdesc, TXDESC_SIZE);
+>>>>>>> v4.9.227
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 		pattrib->pctrl = 1;
 	}
 	/* r8712_xmitframe_coalesce() overwrite this!*/
 	pattrib->pktlen = pktfile.pkt_len;
+<<<<<<< HEAD
 	if (ETH_P_IP == pattrib->ether_type) {
 		/* The following is for DHCP and ARP packet, we use cck1M to
 		 * tx these packets and let LPS awake some time
 		 * to prevent DHCP protocol fail */
+=======
+	if (pattrib->ether_type == ETH_P_IP) {
+		/* The following is for DHCP and ARP packet, we use cck1M to
+		 * tx these packets and let LPS awake some time
+		 * to prevent DHCP protocol fail
+		 */
+>>>>>>> v4.9.227
 		u8 tmp[24];
 
 		_r8712_pktfile_read(&pktfile, &tmp[0], 24);
 		pattrib->dhcp_pkt = 0;
 		if (pktfile.pkt_len > 282) {/*MINIMUM_DHCP_PACKET_SIZE)*/
+<<<<<<< HEAD
 			if (ETH_P_IP == pattrib->ether_type) {/* IP header*/
+=======
+			if (pattrib->ether_type == ETH_P_IP) {/* IP header*/
+>>>>>>> v4.9.227
 				if (((tmp[21] == 68) && (tmp[23] == 67)) ||
 					((tmp[21] == 67) && (tmp[23] == 68))) {
 					/* 68 : UDP BOOTP client
 					 * 67 : UDP BOOTP server
+<<<<<<< HEAD
 					 * Use low rate to send DHCP packet.*/
+=======
+					 * Use low rate to send DHCP packet.
+					 */
+>>>>>>> v4.9.227
 					pattrib->dhcp_pkt = 1;
 				}
 			}
@@ -269,7 +331,11 @@ sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 		psta = r8712_get_bcmc_stainfo(padapter);
 		pattrib->mac_id = 4;
 	} else {
+<<<<<<< HEAD
 		if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
+=======
+		if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
+>>>>>>> v4.9.227
 			psta = r8712_get_stainfo(pstapriv,
 						 get_bssid(pmlmepriv));
 			pattrib->mac_id = 5;
@@ -295,13 +361,20 @@ sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 	/* get ether_hdr_len */
 	pattrib->pkt_hdrlen = ETH_HLEN;
 
+<<<<<<< HEAD
 	if (pqospriv->qos_option)
 		r8712_set_qos(&pktfile, pattrib);
 	else {
+=======
+	if (pqospriv->qos_option) {
+		r8712_set_qos(&pktfile, pattrib);
+	} else {
+>>>>>>> v4.9.227
 		pattrib->hdrlen = WLAN_HDR_A3_LEN;
 		pattrib->subtype = WIFI_DATA_TYPE;
 		pattrib->priority = 0;
 	}
+<<<<<<< HEAD
 	if (psta->ieee8021x_blocked == true) {
 		pattrib->encrypt = 0;
 		if ((pattrib->ether_type != 0x888e) &&
@@ -309,6 +382,16 @@ sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 			return _FAIL;
 	} else
 		GET_ENCRY_ALGO(psecuritypriv, psta, pattrib->encrypt, bmcast);
+=======
+	if (psta->ieee8021x_blocked) {
+		pattrib->encrypt = 0;
+		if ((pattrib->ether_type != 0x888e) &&
+		    !check_fwstate(pmlmepriv, WIFI_MP_STATE))
+			return _FAIL;
+	} else {
+		GET_ENCRY_ALGO(psecuritypriv, psta, pattrib->encrypt, bmcast);
+	}
+>>>>>>> v4.9.227
 	switch (pattrib->encrypt) {
 	case _WEP40_:
 	case _WEP104_:
@@ -332,14 +415,25 @@ sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 	}
 
 	if (pattrib->encrypt &&
+<<<<<<< HEAD
 	    ((padapter->securitypriv.sw_encrypt == true) ||
 	     (psecuritypriv->hw_decrypted == false)))
+=======
+	    (padapter->securitypriv.sw_encrypt ||
+	    !psecuritypriv->hw_decrypted))
+>>>>>>> v4.9.227
 		pattrib->bswenc = true;
 	else
 		pattrib->bswenc = false;
 	/* if in MP_STATE, update pkt_attrib from mp_txcmd, and overwrite
+<<<<<<< HEAD
 	 * some settings above.*/
 	if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)
+=======
+	 * some settings above.
+	 */
+	if (check_fwstate(pmlmepriv, WIFI_MP_STATE))
+>>>>>>> v4.9.227
 		pattrib->priority =
 		    (le32_to_cpu(txdesc.txdw1) >> QSEL_SHT) & 0x1f;
 	return _SUCCESS;
@@ -348,7 +442,11 @@ sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 static sint xmitframe_addmic(struct _adapter *padapter,
 			     struct xmit_frame *pxmitframe)
 {
+<<<<<<< HEAD
 	u32	curfragnum, length, datalen;
+=======
+	u32	curfragnum, length;
+>>>>>>> v4.9.227
 	u8	*pframe, *payload, mic[8];
 	struct	mic_data micdata;
 	struct	sta_info *stainfo;
@@ -370,7 +468,10 @@ static sint xmitframe_addmic(struct _adapter *padapter,
 			u8 null_key[16] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
 					   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
 					   0x0, 0x0};
+<<<<<<< HEAD
 			datalen = pattrib->pktlen - pattrib->hdrlen;
+=======
+>>>>>>> v4.9.227
 			pframe = pxmitframe->buf_addr + TXDESC_OFFSET;
 			if (bmcst) {
 				if (!memcmp(psecuritypriv->XGrptxmickey
@@ -393,7 +494,11 @@ static sint xmitframe_addmic(struct _adapter *padapter,
 			if (pframe[1] & 1) {   /* ToDS==1 */
 				r8712_secmicappend(&micdata,
 						   &pframe[16], 6); /*DA*/
+<<<<<<< HEAD
 				if (pframe[1]&2)  /* From Ds==1 */
+=======
+				if (pframe[1] & 2)  /* From Ds==1 */
+>>>>>>> v4.9.227
 					r8712_secmicappend(&micdata,
 							   &pframe[24], 6);
 				else
@@ -402,7 +507,11 @@ static sint xmitframe_addmic(struct _adapter *padapter,
 			} else {	/* ToDS==0 */
 				r8712_secmicappend(&micdata,
 						   &pframe[4], 6); /* DA */
+<<<<<<< HEAD
 				if (pframe[1]&2)  /* From Ds==1 */
+=======
+				if (pframe[1] & 2)  /* From Ds==1 */
+>>>>>>> v4.9.227
 					r8712_secmicappend(&micdata,
 							   &pframe[16], 6);
 				else
@@ -417,8 +526,13 @@ static sint xmitframe_addmic(struct _adapter *padapter,
 			for (curfragnum = 0; curfragnum < pattrib->nr_frags;
 			     curfragnum++) {
 				payload = (u8 *)RND4((addr_t)(payload));
+<<<<<<< HEAD
 				payload = payload+pattrib->
 					  hdrlen+pattrib->iv_len;
+=======
+				payload = payload + pattrib->
+					  hdrlen + pattrib->iv_len;
+>>>>>>> v4.9.227
 				if ((curfragnum + 1) == pattrib->nr_frags) {
 					length = pattrib->last_txcmdsz -
 						  pattrib->hdrlen -
@@ -427,10 +541,17 @@ static sint xmitframe_addmic(struct _adapter *padapter,
 						  ? pattrib->icv_len : 0);
 					r8712_secmicappend(&micdata, payload,
 							   length);
+<<<<<<< HEAD
 					payload = payload+length;
 				} else{
 					length = pxmitpriv->frag_len -
 					    pattrib->hdrlen-pattrib->iv_len -
+=======
+					payload = payload + length;
+				} else{
+					length = pxmitpriv->frag_len -
+					    pattrib->hdrlen - pattrib->iv_len -
+>>>>>>> v4.9.227
 					    ((psecuritypriv->sw_encrypt) ?
 					    pattrib->icv_len : 0);
 					r8712_secmicappend(&micdata, payload,
@@ -441,10 +562,18 @@ static sint xmitframe_addmic(struct _adapter *padapter,
 			}
 			r8712_secgetmic(&micdata, &(mic[0]));
 			/* add mic code  and add the mic code length in
+<<<<<<< HEAD
 			 * last_txcmdsz */
 			memcpy(payload, &(mic[0]), 8);
 			pattrib->last_txcmdsz += 8;
 			payload = payload-pattrib->last_txcmdsz + 8;
+=======
+			 * last_txcmdsz
+			 */
+			memcpy(payload, &(mic[0]), 8);
+			pattrib->last_txcmdsz += 8;
+			payload = payload - pattrib->last_txcmdsz + 8;
+>>>>>>> v4.9.227
 		}
 	}
 	return _SUCCESS;
@@ -474,7 +603,11 @@ static sint xmitframe_swencrypt(struct _adapter *padapter,
 	return _SUCCESS;
 }
 
+<<<<<<< HEAD
 static sint make_wlanhdr(struct _adapter *padapter , u8 *hdr,
+=======
+static sint make_wlanhdr(struct _adapter *padapter, u8 *hdr,
+>>>>>>> v4.9.227
 			 struct pkt_attrib *pattrib)
 {
 	u16 *qc;
@@ -487,34 +620,58 @@ static sint make_wlanhdr(struct _adapter *padapter , u8 *hdr,
 	memset(hdr, 0, WLANHDR_OFFSET);
 	SetFrameSubType(fctrl, pattrib->subtype);
 	if (pattrib->subtype & WIFI_DATA_TYPE) {
+<<<<<<< HEAD
 		if ((check_fwstate(pmlmepriv,  WIFI_STATION_STATE) == true)) {
+=======
+		if (check_fwstate(pmlmepriv,  WIFI_STATION_STATE)) {
+>>>>>>> v4.9.227
 			/* to_ds = 1, fr_ds = 0; */
 			SetToDs(fctrl);
 			memcpy(pwlanhdr->addr1, get_bssid(pmlmepriv),
 				ETH_ALEN);
 			memcpy(pwlanhdr->addr2, pattrib->src, ETH_ALEN);
 			memcpy(pwlanhdr->addr3, pattrib->dst, ETH_ALEN);
+<<<<<<< HEAD
 		} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) {
+=======
+		} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
+>>>>>>> v4.9.227
 			/* to_ds = 0, fr_ds = 1; */
 			SetFrDs(fctrl);
 			memcpy(pwlanhdr->addr1, pattrib->dst, ETH_ALEN);
 			memcpy(pwlanhdr->addr2, get_bssid(pmlmepriv),
 				ETH_ALEN);
 			memcpy(pwlanhdr->addr3, pattrib->src, ETH_ALEN);
+<<<<<<< HEAD
 		} else if ((check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true)
 			   || (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)
 			   == true)) {
+=======
+		} else if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) ||
+			   check_fwstate(pmlmepriv,
+					 WIFI_ADHOC_MASTER_STATE)) {
+>>>>>>> v4.9.227
 			memcpy(pwlanhdr->addr1, pattrib->dst, ETH_ALEN);
 			memcpy(pwlanhdr->addr2, pattrib->src, ETH_ALEN);
 			memcpy(pwlanhdr->addr3, get_bssid(pmlmepriv),
 				ETH_ALEN);
+<<<<<<< HEAD
 		} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
+=======
+		} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
+>>>>>>> v4.9.227
 			memcpy(pwlanhdr->addr1, pattrib->dst, ETH_ALEN);
 			memcpy(pwlanhdr->addr2, pattrib->src, ETH_ALEN);
 			memcpy(pwlanhdr->addr3, get_bssid(pmlmepriv),
 				ETH_ALEN);
+<<<<<<< HEAD
 		} else
 			return _FAIL;
+=======
+		} else {
+			return _FAIL;
+		}
+>>>>>>> v4.9.227
 
 		if (pattrib->encrypt)
 			SetPrivacy(fctrl);
@@ -530,9 +687,15 @@ static sint make_wlanhdr(struct _adapter *padapter , u8 *hdr,
 			struct sta_info *psta;
 			sint bmcst = IS_MCAST(pattrib->ra);
 
+<<<<<<< HEAD
 			if (pattrib->psta)
 				psta = pattrib->psta;
 			else {
+=======
+			if (pattrib->psta) {
+				psta = pattrib->psta;
+			} else {
+>>>>>>> v4.9.227
 				if (bmcst)
 					psta = r8712_get_bcmc_stainfo(padapter);
 				else
@@ -613,7 +776,11 @@ sint r8712_xmitframe_coalesce(struct _adapter *padapter, _pkt *pkt,
 		return _FAIL;
 	_r8712_open_pktfile(pkt, &pktfile);
 	_r8712_pktfile_read(&pktfile, NULL, (uint) pattrib->pkt_hdrlen);
+<<<<<<< HEAD
 	if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
+=======
+	if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
+>>>>>>> v4.9.227
 		/* truncate TXDESC_SIZE bytes txcmd if at mp mode for 871x */
 		if (pattrib->ether_type == 0x8712) {
 			/* take care -  update_txdesc overwrite this */
@@ -684,7 +851,11 @@ sint r8712_xmitframe_coalesce(struct _adapter *padapter, _pkt *pkt,
 			pframe += pattrib->icv_len;
 		}
 		frg_inx++;
+<<<<<<< HEAD
 		if (bmcst || (r8712_endofpktfile(&pktfile) == true)) {
+=======
+		if (bmcst || r8712_endofpktfile(&pktfile)) {
+>>>>>>> v4.9.227
 			pattrib->nr_frags = frg_inx;
 			pattrib->last_txcmdsz = pattrib->hdrlen +
 						pattrib->iv_len +
@@ -723,17 +894,29 @@ void r8712_update_protection(struct _adapter *padapter, u8 *ie, uint ie_len)
 	case AUTO_VCS:
 	default:
 		perp = r8712_get_ie(ie, _ERPINFO_IE_, &erp_len, ie_len);
+<<<<<<< HEAD
 		if (perp == NULL)
 			pxmitpriv->vcs = NONE_VCS;
 		else {
+=======
+		if (perp == NULL) {
+			pxmitpriv->vcs = NONE_VCS;
+		} else {
+>>>>>>> v4.9.227
 			protection = (*(perp + 2)) & BIT(1);
 			if (protection) {
 				if (pregistrypriv->vcs_type == RTS_CTS)
 					pxmitpriv->vcs = RTS_CTS;
 				else
 					pxmitpriv->vcs = CTS_TO_SELF;
+<<<<<<< HEAD
 			} else
 				pxmitpriv->vcs = NONE_VCS;
+=======
+			} else {
+				pxmitpriv->vcs = NONE_VCS;
+			}
+>>>>>>> v4.9.227
 		}
 		break;
 	}
@@ -742,6 +925,7 @@ void r8712_update_protection(struct _adapter *padapter, u8 *ie, uint ie_len)
 struct xmit_buf *r8712_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 {
 	unsigned long irqL;
+<<<<<<< HEAD
 	struct xmit_buf *pxmitbuf =  NULL;
 	struct list_head *plist, *phead;
 	struct  __queue *pfree_xmitbuf_queue = &pxmitpriv->free_xmitbuf_queue;
@@ -757,6 +941,18 @@ struct xmit_buf *r8712_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 	}
 	if (pxmitbuf !=  NULL)
 		pxmitpriv->free_xmitbuf_cnt--;
+=======
+	struct xmit_buf *pxmitbuf;
+	struct  __queue *pfree_xmitbuf_queue = &pxmitpriv->free_xmitbuf_queue;
+
+	spin_lock_irqsave(&pfree_xmitbuf_queue->lock, irqL);
+	pxmitbuf = list_first_entry_or_null(&pfree_xmitbuf_queue->queue,
+					    struct xmit_buf, list);
+	if (pxmitbuf) {
+		list_del_init(&pxmitbuf->list);
+		pxmitpriv->free_xmitbuf_cnt--;
+	}
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&pfree_xmitbuf_queue->lock, irqL);
 	return pxmitbuf;
 }
@@ -796,6 +992,7 @@ struct xmit_frame *r8712_alloc_xmitframe(struct xmit_priv *pxmitpriv)
 		pfree_xmit_queue
 	*/
 	unsigned long irqL;
+<<<<<<< HEAD
 	struct xmit_frame *pxframe = NULL;
 	struct list_head *plist, *phead;
 	struct  __queue *pfree_xmit_queue = &pxmitpriv->free_xmit_queue;
@@ -810,6 +1007,16 @@ struct xmit_frame *r8712_alloc_xmitframe(struct xmit_priv *pxmitpriv)
 		list_del_init(&(pxframe->list));
 	}
 	if (pxframe !=  NULL) {
+=======
+	struct xmit_frame *pxframe;
+	struct  __queue *pfree_xmit_queue = &pxmitpriv->free_xmit_queue;
+
+	spin_lock_irqsave(&pfree_xmit_queue->lock, irqL);
+	pxframe = list_first_entry_or_null(&pfree_xmit_queue->queue,
+					   struct xmit_frame, list);
+	if (pxframe) {
+		list_del_init(&pxframe->list);
+>>>>>>> v4.9.227
 		pxmitpriv->free_xmitframe_cnt--;
 		pxframe->buf_addr = NULL;
 		pxframe->pxmitbuf = NULL;
@@ -826,16 +1033,24 @@ void r8712_free_xmitframe(struct xmit_priv *pxmitpriv,
 	unsigned long irqL;
 	struct  __queue *pfree_xmit_queue = &pxmitpriv->free_xmit_queue;
 	struct _adapter *padapter = pxmitpriv->adapter;
+<<<<<<< HEAD
 	struct sk_buff *pndis_pkt = NULL;
+=======
+>>>>>>> v4.9.227
 
 	if (pxmitframe == NULL)
 		return;
 	spin_lock_irqsave(&pfree_xmit_queue->lock, irqL);
 	list_del_init(&pxmitframe->list);
+<<<<<<< HEAD
 	if (pxmitframe->pkt) {
 		pndis_pkt = pxmitframe->pkt;
 		pxmitframe->pkt = NULL;
 	}
+=======
+	if (pxmitframe->pkt)
+		pxmitframe->pkt = NULL;
+>>>>>>> v4.9.227
 	list_add_tail(&pxmitframe->list, &pfree_xmit_queue->queue);
 	pxmitpriv->free_xmitframe_cnt++;
 	spin_unlock_irqrestore(&pfree_xmit_queue->lock, irqL);
@@ -862,8 +1077,13 @@ void r8712_free_xmitframe_queue(struct xmit_priv *pxmitpriv,
 	spin_lock_irqsave(&(pframequeue->lock), irqL);
 	phead = &pframequeue->queue;
 	plist = phead->next;
+<<<<<<< HEAD
 	while (end_of_queue_search(phead, plist) == false) {
 		pxmitframe = LIST_CONTAINOR(plist, struct xmit_frame, list);
+=======
+	while (!end_of_queue_search(phead, plist)) {
+		pxmitframe = container_of(plist, struct xmit_frame, list);
+>>>>>>> v4.9.227
 		plist = plist->next;
 		r8712_free_xmitframe(pxmitpriv, pxmitframe);
 	}
@@ -883,19 +1103,31 @@ static inline struct tx_servq *get_sta_pending(struct _adapter *padapter,
 	case 2:
 		ptxservq = &(psta->sta_xmitpriv.bk_q);
 		*ppstapending = &padapter->xmitpriv.bk_pending;
+<<<<<<< HEAD
 		(phwxmits+3)->accnt++;
+=======
+		(phwxmits + 3)->accnt++;
+>>>>>>> v4.9.227
 		break;
 	case 4:
 	case 5:
 		ptxservq = &(psta->sta_xmitpriv.vi_q);
 		*ppstapending = &padapter->xmitpriv.vi_pending;
+<<<<<<< HEAD
 		(phwxmits+1)->accnt++;
+=======
+		(phwxmits + 1)->accnt++;
+>>>>>>> v4.9.227
 		break;
 	case 6:
 	case 7:
 		ptxservq = &(psta->sta_xmitpriv.vo_q);
 		*ppstapending = &padapter->xmitpriv.vo_pending;
+<<<<<<< HEAD
 		(phwxmits+0)->accnt++;
+=======
+		(phwxmits + 0)->accnt++;
+>>>>>>> v4.9.227
 		break;
 	case 0:
 	case 3:
@@ -924,6 +1156,7 @@ sint r8712_xmit_classifier(struct _adapter *padapter,
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	sint bmcst = IS_MCAST(pattrib->ra);
 
+<<<<<<< HEAD
 	if (pattrib->psta)
 		psta = pattrib->psta;
 	else {
@@ -931,6 +1164,15 @@ sint r8712_xmit_classifier(struct _adapter *padapter,
 			psta = r8712_get_bcmc_stainfo(padapter);
 		else {
 			if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)
+=======
+	if (pattrib->psta) {
+		psta = pattrib->psta;
+	} else {
+		if (bmcst) {
+			psta = r8712_get_bcmc_stainfo(padapter);
+		} else {
+			if (check_fwstate(pmlmepriv, WIFI_MP_STATE))
+>>>>>>> v4.9.227
 				psta = r8712_get_stainfo(pstapriv,
 				       get_bssid(pmlmepriv));
 			else
@@ -958,7 +1200,11 @@ static void alloc_hwxmits(struct _adapter *padapter)
 	pxmitpriv->hwxmit_entry = HWXMIT_ENTRY;
 	pxmitpriv->hwxmits = kmalloc_array(pxmitpriv->hwxmit_entry,
 				sizeof(struct hw_xmit), GFP_ATOMIC);
+<<<<<<< HEAD
 	if (pxmitpriv->hwxmits == NULL)
+=======
+	if (!pxmitpriv->hwxmits)
+>>>>>>> v4.9.227
 		return;
 	hwxmits = pxmitpriv->hwxmits;
 	if (pxmitpriv->hwxmit_entry == 5) {

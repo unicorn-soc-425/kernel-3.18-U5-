@@ -5,15 +5,20 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/signal.h>
 #include <linux/ioport.h>
 #include <linux/delay.h>
+=======
+#include <linux/ioport.h>
+>>>>>>> v4.9.227
 #include <linux/blkdev.h>
 #include <linux/init.h>
 
 #include <asm/ecard.h>
 #include <asm/io.h>
 
+<<<<<<< HEAD
 #include "../scsi.h"
 #include <scsi/scsi_host.h>
 
@@ -33,6 +38,24 @@
 #define NCR5380_queue_command		oakscsi_queue_command
 #define NCR5380_show_info		oakscsi_show_info
 #define NCR5380_write_info		oakscsi_write_info
+=======
+#include <scsi/scsi_host.h>
+
+#define priv(host)			((struct NCR5380_hostdata *)(host)->hostdata)
+
+#define NCR5380_read(reg) \
+	readb(priv(instance)->base + ((reg) << 2))
+#define NCR5380_write(reg, value) \
+	writeb(value, priv(instance)->base + ((reg) << 2))
+
+#define NCR5380_dma_xfer_len(instance, cmd, phase)	(0)
+#define NCR5380_dma_recv_setup		oakscsi_pread
+#define NCR5380_dma_send_setup		oakscsi_pwrite
+#define NCR5380_dma_residual(instance)	(0)
+
+#define NCR5380_queue_command		oakscsi_queue_command
+#define NCR5380_info			oakscsi_info
+>>>>>>> v4.9.227
 
 #define NCR5380_implementation_fields	\
 	void __iomem *base
@@ -42,6 +65,7 @@
 #undef START_DMA_INITIATOR_RECEIVE_REG
 #define START_DMA_INITIATOR_RECEIVE_REG	(128 + 7)
 
+<<<<<<< HEAD
 const char * oakscsi_info (struct Scsi_Host *spnt)
 {
 	return "";
@@ -52,21 +76,39 @@ const char * oakscsi_info (struct Scsi_Host *spnt)
 
 static inline int NCR5380_pwrite(struct Scsi_Host *instance, unsigned char *addr,
               int len)
+=======
+#define STAT	((128 + 16) << 2)
+#define DATA	((128 + 8) << 2)
+
+static inline int oakscsi_pwrite(struct Scsi_Host *instance,
+                                 unsigned char *addr, int len)
+>>>>>>> v4.9.227
 {
   void __iomem *base = priv(instance)->base;
 
 printk("writing %p len %d\n",addr, len);
+<<<<<<< HEAD
   if(!len) return -1;
+=======
+>>>>>>> v4.9.227
 
   while(1)
   {
     int status;
     while (((status = readw(base + STAT)) & 0x100)==0);
   }
+<<<<<<< HEAD
 }
 
 static inline int NCR5380_pread(struct Scsi_Host *instance, unsigned char *addr,
               int len)
+=======
+  return 0;
+}
+
+static inline int oakscsi_pread(struct Scsi_Host *instance,
+                                unsigned char *addr, int len)
+>>>>>>> v4.9.227
 {
   void __iomem *base = priv(instance)->base;
 printk("reading %p len %d\n", addr, len);
@@ -83,7 +125,11 @@ printk("reading %p len %d\n", addr, len);
       if(status & 0x200 || !timeout)
       {
         printk("status = %08X\n", status);
+<<<<<<< HEAD
         return 1;
+=======
+        return -1;
+>>>>>>> v4.9.227
       }
     }
 
@@ -113,8 +159,11 @@ printk("reading %p len %d\n", addr, len);
 
 static struct scsi_host_template oakscsi_template = {
 	.module			= THIS_MODULE,
+<<<<<<< HEAD
 	.show_info		= oakscsi_show_info,
 	.write_info		= oakscsi_write_info,
+=======
+>>>>>>> v4.9.227
 	.name			= "Oak 16-bit SCSI",
 	.info			= oakscsi_info,
 	.queuecommand		= oakscsi_queue_command,
@@ -126,6 +175,11 @@ static struct scsi_host_template oakscsi_template = {
 	.cmd_per_lun		= 2,
 	.use_clustering		= DISABLE_CLUSTERING,
 	.proc_name		= "oakscsi",
+<<<<<<< HEAD
+=======
+	.cmd_size		= NCR5380_CMD_SIZE,
+	.max_sectors		= 128,
+>>>>>>> v4.9.227
 };
 
 static int oakscsi_probe(struct expansion_card *ec, const struct ecard_id *id)
@@ -150,6 +204,7 @@ static int oakscsi_probe(struct expansion_card *ec, const struct ecard_id *id)
 		goto unreg;
 	}
 
+<<<<<<< HEAD
 	host->irq = IRQ_NONE;
 	host->n_io_port = 255;
 
@@ -166,10 +221,29 @@ static int oakscsi_probe(struct expansion_card *ec, const struct ecard_id *id)
 	ret = scsi_add_host(host, &ec->dev);
 	if (ret)
 		goto out_unmap;
+=======
+	host->irq = NO_IRQ;
+	host->n_io_port = 255;
+
+	ret = NCR5380_init(host, FLAG_DMA_FIXUP | FLAG_LATE_DMA_SETUP);
+	if (ret)
+		goto out_unmap;
+
+	NCR5380_maybe_reset_bus(host);
+
+	ret = scsi_add_host(host, &ec->dev);
+	if (ret)
+		goto out_exit;
+>>>>>>> v4.9.227
 
 	scsi_scan_host(host);
 	goto out;
 
+<<<<<<< HEAD
+=======
+ out_exit:
+	NCR5380_exit(host);
+>>>>>>> v4.9.227
  out_unmap:
 	iounmap(priv(host)->base);
  unreg:

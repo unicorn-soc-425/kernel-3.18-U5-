@@ -7,6 +7,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License.
  */
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -36,11 +37,27 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/map.h>
 #include <asm/mach/time.h>
+=======
+#include <linux/kernel.h>
+#include <linux/amba/mmci.h>
+#include <linux/io.h>
+#include <linux/irqchip.h>
+#include <linux/of_irq.h>
+#include <linux/of_address.h>
+#include <linux/of_platform.h>
+#include <linux/sched_clock.h>
+#include <linux/regmap.h>
+#include <linux/mfd/syscon.h>
+
+#include <asm/mach/arch.h>
+#include <asm/mach/map.h>
+>>>>>>> v4.9.227
 
 #include "hardware.h"
 #include "cm.h"
 #include "common.h"
 
+<<<<<<< HEAD
 /* Base address to the CP controller */
 static void __iomem *intcp_con_base;
 
@@ -61,11 +78,25 @@ static void __iomem *intcp_con_base;
  * f1700000	17000000	UART 1
  * f1a00000	1a000000	Debug LEDs
  * fc900000	c9000000	GPIO
+=======
+/* Base address to the core module header */
+static struct regmap *cm_map;
+/* Base address to the CP controller */
+static void __iomem *intcp_con_base;
+
+#define CM_COUNTER_OFFSET 0x28
+
+/*
+ * Logical      Physical
+ * f1400000	14000000	Interrupt controller
+ * f1600000	16000000	UART 0
+>>>>>>> v4.9.227
  * fca00000	ca000000	SIC
  */
 
 static struct map_desc intcp_io_desc[] __initdata __maybe_unused = {
 	{
+<<<<<<< HEAD
 		.virtual	= IO_ADDRESS(INTEGRATOR_HDR_BASE),
 		.pfn		= __phys_to_pfn(INTEGRATOR_HDR_BASE),
 		.length		= SZ_4K,
@@ -76,6 +107,8 @@ static struct map_desc intcp_io_desc[] __initdata __maybe_unused = {
 		.length		= SZ_4K,
 		.type		= MT_DEVICE
 	}, {
+=======
+>>>>>>> v4.9.227
 		.virtual	= IO_ADDRESS(INTEGRATOR_IC_BASE),
 		.pfn		= __phys_to_pfn(INTEGRATOR_IC_BASE),
 		.length		= SZ_4K,
@@ -86,6 +119,7 @@ static struct map_desc intcp_io_desc[] __initdata __maybe_unused = {
 		.length		= SZ_4K,
 		.type		= MT_DEVICE
 	}, {
+<<<<<<< HEAD
 		.virtual	= IO_ADDRESS(INTEGRATOR_DBG_BASE),
 		.pfn		= __phys_to_pfn(INTEGRATOR_DBG_BASE),
 		.length		= SZ_4K,
@@ -96,6 +130,8 @@ static struct map_desc intcp_io_desc[] __initdata __maybe_unused = {
 		.length		= SZ_4K,
 		.type		= MT_DEVICE
 	}, {
+=======
+>>>>>>> v4.9.227
 		.virtual	= IO_ADDRESS(INTEGRATOR_CP_SIC_BASE),
 		.pfn		= __phys_to_pfn(INTEGRATOR_CP_SIC_BASE),
 		.length		= SZ_4K,
@@ -109,6 +145,7 @@ static void __init intcp_map_io(void)
 }
 
 /*
+<<<<<<< HEAD
  * Flash handling.
  */
 static int intcp_flash_init(struct platform_device *dev)
@@ -151,6 +188,8 @@ static struct physmap_flash_data intcp_flash_data = {
 };
 
 /*
+=======
+>>>>>>> v4.9.227
  * It seems that the card insertion interrupt remains active after
  * we've acknowledged it.  We therefore ignore the interrupt, and
  * rely on reading it from the SIC.  This also means that we must
@@ -171,6 +210,7 @@ static struct mmci_platform_data mmc_data = {
 	.gpio_cd	= -1,
 };
 
+<<<<<<< HEAD
 /*
  * CLCD support
  */
@@ -227,10 +267,25 @@ static struct clcd_board clcd_data = {
 static u64 notrace intcp_read_sched_clock(void)
 {
 	return readl(REFCOUNTER);
+=======
+static u64 notrace intcp_read_sched_clock(void)
+{
+	unsigned int val;
+
+	/* MMIO so discard return code */
+	regmap_read(cm_map, CM_COUNTER_OFFSET, &val);
+	return val;
+>>>>>>> v4.9.227
 }
 
 static void __init intcp_init_early(void)
 {
+<<<<<<< HEAD
+=======
+	cm_map = syscon_regmap_lookup_by_compatible("arm,core-module-integrator");
+	if (IS_ERR(cm_map))
+		return;
+>>>>>>> v4.9.227
 	sched_clock_register(intcp_read_sched_clock, 32, 24000000);
 }
 
@@ -245,6 +300,7 @@ static void __init intcp_init_irq_of(void)
  * and enforce the bus names since these are used for clock lookups.
  */
 static struct of_dev_auxdata intcp_auxdata_lookup[] __initdata = {
+<<<<<<< HEAD
 	OF_DEV_AUXDATA("arm,primecell", INTEGRATOR_RTC_BASE,
 		"rtc", NULL),
 	OF_DEV_AUXDATA("arm,primecell", INTEGRATOR_UART0_BASE,
@@ -263,6 +319,10 @@ static struct of_dev_auxdata intcp_auxdata_lookup[] __initdata = {
 		"clcd", &clcd_data),
 	OF_DEV_AUXDATA("cfi-flash", INTCP_PA_FLASH_BASE,
 		"physmap-flash", &intcp_flash_data),
+=======
+	OF_DEV_AUXDATA("arm,primecell", INTEGRATOR_CP_MMC_BASE,
+		"mmci", &mmc_data),
+>>>>>>> v4.9.227
 	{ /* sentinel */ },
 };
 
@@ -274,10 +334,13 @@ static const struct of_device_id intcp_syscon_match[] = {
 static void __init intcp_init_of(void)
 {
 	struct device_node *cpcon;
+<<<<<<< HEAD
 	struct device *parent;
 	struct soc_device *soc_dev;
 	struct soc_device_attribute *soc_dev_attr;
 	u32 intcp_sc_id;
+=======
+>>>>>>> v4.9.227
 
 	cpcon = of_find_matching_node(NULL, intcp_syscon_match);
 	if (!cpcon)
@@ -287,6 +350,7 @@ static void __init intcp_init_of(void)
 	if (!intcp_con_base)
 		return;
 
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table,
 			     intcp_auxdata_lookup, NULL);
 
@@ -311,6 +375,9 @@ static void __init intcp_init_of(void)
 
 	parent = soc_device_to_device(soc_dev);
 	integrator_init_sysfs(parent, intcp_sc_id);
+=======
+	of_platform_default_populate(NULL, intcp_auxdata_lookup, NULL);
+>>>>>>> v4.9.227
 }
 
 static const char * intcp_dt_board_compat[] = {
@@ -324,6 +391,9 @@ DT_MACHINE_START(INTEGRATOR_CP_DT, "ARM Integrator/CP (Device Tree)")
 	.init_early	= intcp_init_early,
 	.init_irq	= intcp_init_irq_of,
 	.init_machine	= intcp_init_of,
+<<<<<<< HEAD
 	.restart	= integrator_restart,
+=======
+>>>>>>> v4.9.227
 	.dt_compat      = intcp_dt_board_compat,
 MACHINE_END

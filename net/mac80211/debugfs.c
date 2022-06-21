@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  * mac80211 debugfs for wireless PHYs
  *
@@ -11,6 +14,10 @@
 
 #include <linux/debugfs.h>
 #include <linux/rtnetlink.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+>>>>>>> v4.9.227
 #include "ieee80211_i.h"
 #include "driver-ops.h"
 #include "rate.h"
@@ -18,6 +25,7 @@
 
 #define DEBUGFS_FORMAT_BUFFER_SIZE 100
 
+<<<<<<< HEAD
 #define TX_LATENCY_BIN_DELIMTER_C ','
 #define TX_LATENCY_BIN_DELIMTER_S ","
 #define TX_LATENCY_BINS_DISABLED "enable(bins disabled)\n"
@@ -184,6 +192,8 @@ static const struct file_operations stats_tx_latency_ops = {
 	.llseek = generic_file_llseek,
 };
 
+=======
+>>>>>>> v4.9.227
 int mac80211_format_buffer(char __user *userbuf, size_t count,
 				  loff_t *ppos, char *fmt, ...)
 {
@@ -237,6 +247,87 @@ DEBUGFS_READONLY_FILE(wep_iv, "%#08x",
 DEBUGFS_READONLY_FILE(rate_ctrl_alg, "%s",
 	local->rate_ctrl ? local->rate_ctrl->ops->name : "hw/driver");
 
+<<<<<<< HEAD
+=======
+static ssize_t aqm_read(struct file *file,
+			char __user *user_buf,
+			size_t count,
+			loff_t *ppos)
+{
+	struct ieee80211_local *local = file->private_data;
+	struct fq *fq = &local->fq;
+	char buf[200];
+	int len = 0;
+
+	spin_lock_bh(&local->fq.lock);
+	rcu_read_lock();
+
+	len = scnprintf(buf, sizeof(buf),
+			"access name value\n"
+			"R fq_flows_cnt %u\n"
+			"R fq_backlog %u\n"
+			"R fq_overlimit %u\n"
+			"R fq_overmemory %u\n"
+			"R fq_collisions %u\n"
+			"R fq_memory_usage %u\n"
+			"RW fq_memory_limit %u\n"
+			"RW fq_limit %u\n"
+			"RW fq_quantum %u\n",
+			fq->flows_cnt,
+			fq->backlog,
+			fq->overmemory,
+			fq->overlimit,
+			fq->collisions,
+			fq->memory_usage,
+			fq->memory_limit,
+			fq->limit,
+			fq->quantum);
+
+	rcu_read_unlock();
+	spin_unlock_bh(&local->fq.lock);
+
+	return simple_read_from_buffer(user_buf, count, ppos,
+				       buf, len);
+}
+
+static ssize_t aqm_write(struct file *file,
+			 const char __user *user_buf,
+			 size_t count,
+			 loff_t *ppos)
+{
+	struct ieee80211_local *local = file->private_data;
+	char buf[100];
+	size_t len;
+
+	if (count > sizeof(buf))
+		return -EINVAL;
+
+	if (copy_from_user(buf, user_buf, count))
+		return -EFAULT;
+
+	buf[sizeof(buf) - 1] = '\0';
+	len = strlen(buf);
+	if (len > 0 && buf[len-1] == '\n')
+		buf[len-1] = 0;
+
+	if (sscanf(buf, "fq_limit %u", &local->fq.limit) == 1)
+		return count;
+	else if (sscanf(buf, "fq_memory_limit %u", &local->fq.memory_limit) == 1)
+		return count;
+	else if (sscanf(buf, "fq_quantum %u", &local->fq.quantum) == 1)
+		return count;
+
+	return -EINVAL;
+}
+
+static const struct file_operations aqm_ops = {
+	.write = aqm_write,
+	.read = aqm_read,
+	.open = simple_open,
+	.llseek = default_llseek,
+};
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 static ssize_t reset_write(struct file *file, const char __user *user_buf,
 			   size_t count, loff_t *ppos)
@@ -258,10 +349,57 @@ static const struct file_operations reset_ops = {
 };
 #endif
 
+<<<<<<< HEAD
+=======
+static const char *hw_flag_names[] = {
+#define FLAG(F)	[IEEE80211_HW_##F] = #F
+	FLAG(HAS_RATE_CONTROL),
+	FLAG(RX_INCLUDES_FCS),
+	FLAG(HOST_BROADCAST_PS_BUFFERING),
+	FLAG(SIGNAL_UNSPEC),
+	FLAG(SIGNAL_DBM),
+	FLAG(NEED_DTIM_BEFORE_ASSOC),
+	FLAG(SPECTRUM_MGMT),
+	FLAG(AMPDU_AGGREGATION),
+	FLAG(SUPPORTS_PS),
+	FLAG(PS_NULLFUNC_STACK),
+	FLAG(SUPPORTS_DYNAMIC_PS),
+	FLAG(MFP_CAPABLE),
+	FLAG(WANT_MONITOR_VIF),
+	FLAG(NO_AUTO_VIF),
+	FLAG(SW_CRYPTO_CONTROL),
+	FLAG(SUPPORT_FAST_XMIT),
+	FLAG(REPORTS_TX_ACK_STATUS),
+	FLAG(CONNECTION_MONITOR),
+	FLAG(QUEUE_CONTROL),
+	FLAG(SUPPORTS_PER_STA_GTK),
+	FLAG(AP_LINK_PS),
+	FLAG(TX_AMPDU_SETUP_IN_HW),
+	FLAG(SUPPORTS_RC_TABLE),
+	FLAG(P2P_DEV_ADDR_FOR_INTF),
+	FLAG(TIMING_BEACON_ONLY),
+	FLAG(SUPPORTS_HT_CCK_RATES),
+	FLAG(CHANCTX_STA_CSA),
+	FLAG(SUPPORTS_CLONED_SKBS),
+	FLAG(SINGLE_SCAN_ON_ALL_BANDS),
+	FLAG(TDLS_WIDER_BW),
+	FLAG(SUPPORTS_AMSDU_IN_AMPDU),
+	FLAG(BEACON_TX_STATUS),
+	FLAG(NEEDS_UNIQUE_STA_ADDR),
+	FLAG(SUPPORTS_REORDERING_BUFFER),
+	FLAG(USES_RSS),
+	FLAG(TX_AMSDU),
+	FLAG(TX_FRAG_LIST),
+	FLAG(REPORTS_LOW_ACK),
+#undef FLAG
+};
+
+>>>>>>> v4.9.227
 static ssize_t hwflags_read(struct file *file, char __user *user_buf,
 			    size_t count, loff_t *ppos)
 {
 	struct ieee80211_local *local = file->private_data;
+<<<<<<< HEAD
 	int mxln = 500;
 	ssize_t rv;
 	char *buf = kzalloc(mxln, GFP_KERNEL);
@@ -316,6 +454,27 @@ static ssize_t hwflags_read(struct file *file, char __user *user_buf,
 		sf += scnprintf(buf + sf, mxln - sf, "AP_LINK_PS\n");
 	if (local->hw.flags & IEEE80211_HW_TX_AMPDU_SETUP_IN_HW)
 		sf += scnprintf(buf + sf, mxln - sf, "TX_AMPDU_SETUP_IN_HW\n");
+=======
+	size_t bufsz = 30 * NUM_IEEE80211_HW_FLAGS;
+	char *buf = kzalloc(bufsz, GFP_KERNEL);
+	char *pos = buf, *end = buf + bufsz - 1;
+	ssize_t rv;
+	int i;
+
+	if (!buf)
+		return -ENOMEM;
+
+	/* fail compilation if somebody adds or removes
+	 * a flag without updating the name array above
+	 */
+	BUILD_BUG_ON(ARRAY_SIZE(hw_flag_names) != NUM_IEEE80211_HW_FLAGS);
+
+	for (i = 0; i < NUM_IEEE80211_HW_FLAGS; i++) {
+		if (test_bit(i, local->hw.flags))
+			pos += scnprintf(pos, end - pos, "%s\n",
+					 hw_flag_names[i]);
+	}
+>>>>>>> v4.9.227
 
 	rv = simple_read_from_buffer(user_buf, count, ppos, buf, strlen(buf));
 	kfree(buf);
@@ -387,8 +546,13 @@ static const struct file_operations stats_ ##name## _ops = {		\
 	.llseek = generic_file_llseek,					\
 };
 
+<<<<<<< HEAD
 #define DEBUGFS_STATS_ADD(name, field)					\
 	debugfs_create_u32(#name, 0400, statsd, (u32 *) &field);
+=======
+#define DEBUGFS_STATS_ADD(name)					\
+	debugfs_create_u32(#name, 0400, statsd, &local->name);
+>>>>>>> v4.9.227
 #define DEBUGFS_DEVSTATS_ADD(name)					\
 	debugfs_create_file(#name, 0400, statsd, local, &stats_ ##name## _ops);
 
@@ -417,12 +581,19 @@ void debugfs_hw_add(struct ieee80211_local *local)
 	DEBUGFS_ADD(user_power);
 	DEBUGFS_ADD(power);
 
+<<<<<<< HEAD
+=======
+	if (local->ops->wake_tx_queue)
+		DEBUGFS_ADD_MODE(aqm, 0600);
+
+>>>>>>> v4.9.227
 	statsd = debugfs_create_dir("statistics", phyd);
 
 	/* if the dir failed, don't put all the other things into the root! */
 	if (!statsd)
 		return;
 
+<<<<<<< HEAD
 	DEBUGFS_STATS_ADD(transmitted_fragment_count,
 		local->dot11TransmittedFragmentCount);
 	DEBUGFS_STATS_ADD(multicast_transmitted_frame_count,
@@ -472,11 +643,40 @@ void debugfs_hw_add(struct ieee80211_local *local)
 		local->rx_handlers_fragments);
 	DEBUGFS_STATS_ADD(tx_status_drop,
 		local->tx_status_drop);
+=======
+#ifdef CONFIG_MAC80211_DEBUG_COUNTERS
+	DEBUGFS_STATS_ADD(dot11TransmittedFragmentCount);
+	DEBUGFS_STATS_ADD(dot11MulticastTransmittedFrameCount);
+	DEBUGFS_STATS_ADD(dot11FailedCount);
+	DEBUGFS_STATS_ADD(dot11RetryCount);
+	DEBUGFS_STATS_ADD(dot11MultipleRetryCount);
+	DEBUGFS_STATS_ADD(dot11FrameDuplicateCount);
+	DEBUGFS_STATS_ADD(dot11ReceivedFragmentCount);
+	DEBUGFS_STATS_ADD(dot11MulticastReceivedFrameCount);
+	DEBUGFS_STATS_ADD(dot11TransmittedFrameCount);
+	DEBUGFS_STATS_ADD(tx_handlers_drop);
+	DEBUGFS_STATS_ADD(tx_handlers_queued);
+	DEBUGFS_STATS_ADD(tx_handlers_drop_wep);
+	DEBUGFS_STATS_ADD(tx_handlers_drop_not_assoc);
+	DEBUGFS_STATS_ADD(tx_handlers_drop_unauth_port);
+	DEBUGFS_STATS_ADD(rx_handlers_drop);
+	DEBUGFS_STATS_ADD(rx_handlers_queued);
+	DEBUGFS_STATS_ADD(rx_handlers_drop_nullfunc);
+	DEBUGFS_STATS_ADD(rx_handlers_drop_defrag);
+	DEBUGFS_STATS_ADD(tx_expand_skb_head);
+	DEBUGFS_STATS_ADD(tx_expand_skb_head_cloned);
+	DEBUGFS_STATS_ADD(rx_expand_skb_head_defrag);
+	DEBUGFS_STATS_ADD(rx_handlers_fragments);
+	DEBUGFS_STATS_ADD(tx_status_drop);
+>>>>>>> v4.9.227
 #endif
 	DEBUGFS_DEVSTATS_ADD(dot11ACKFailureCount);
 	DEBUGFS_DEVSTATS_ADD(dot11RTSFailureCount);
 	DEBUGFS_DEVSTATS_ADD(dot11FCSErrorCount);
 	DEBUGFS_DEVSTATS_ADD(dot11RTSSuccessCount);
+<<<<<<< HEAD
 
 	DEBUGFS_DEVSTATS_ADD(tx_latency);
+=======
+>>>>>>> v4.9.227
 }

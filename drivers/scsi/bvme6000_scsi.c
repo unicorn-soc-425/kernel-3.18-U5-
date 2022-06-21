@@ -105,7 +105,10 @@ bvme6000_device_remove(struct platform_device *dev)
 static struct platform_driver bvme6000_scsi_driver = {
 	.driver = {
 		.name		= "bvme6000-scsi",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= bvme6000_probe,
 	.remove		= bvme6000_device_remove,

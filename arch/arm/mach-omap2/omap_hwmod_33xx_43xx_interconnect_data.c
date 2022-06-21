@@ -152,6 +152,7 @@ struct omap_hwmod_ocp_if am33xx_cpgmac0__mdio = {
 	.user		= OCP_USER_MPU,
 };
 
+<<<<<<< HEAD
 static struct omap_hwmod_addr_space am33xx_elm_addr_space[] = {
 	{
 		.pa_start	= 0x48080000,
@@ -161,11 +162,16 @@ static struct omap_hwmod_addr_space am33xx_elm_addr_space[] = {
 	{ }
 };
 
+=======
+>>>>>>> v4.9.227
 struct omap_hwmod_ocp_if am33xx_l4_ls__elm = {
 	.master		= &am33xx_l4_ls_hwmod,
 	.slave		= &am33xx_elm_hwmod,
 	.clk		= "l4ls_gclk",
+<<<<<<< HEAD
 	.addr		= am33xx_elm_addr_space,
+=======
+>>>>>>> v4.9.227
 	.user		= OCP_USER_MPU,
 };
 
@@ -186,6 +192,7 @@ struct omap_hwmod_ocp_if am33xx_l4_ls__epwmss0 = {
 	.user		= OCP_USER_MPU,
 };
 
+<<<<<<< HEAD
 struct omap_hwmod_ocp_if am33xx_epwmss0__ecap0 = {
 	.master		= &am33xx_epwmss0_hwmod,
 	.slave		= &am33xx_ecap0_hwmod,
@@ -208,6 +215,8 @@ struct omap_hwmod_ocp_if am33xx_epwmss0__ehrpwm0 = {
 };
 
 
+=======
+>>>>>>> v4.9.227
 static struct omap_hwmod_addr_space am33xx_epwmss1_addr_space[] = {
 	{
 		.pa_start	= 0x48302000,
@@ -225,6 +234,7 @@ struct omap_hwmod_ocp_if am33xx_l4_ls__epwmss1 = {
 	.user		= OCP_USER_MPU,
 };
 
+<<<<<<< HEAD
 struct omap_hwmod_ocp_if am33xx_epwmss1__ecap1 = {
 	.master		= &am33xx_epwmss1_hwmod,
 	.slave		= &am33xx_ecap1_hwmod,
@@ -246,6 +256,8 @@ struct omap_hwmod_ocp_if am33xx_epwmss1__ehrpwm1 = {
 	.user		= OCP_USER_MPU,
 };
 
+=======
+>>>>>>> v4.9.227
 static struct omap_hwmod_addr_space am33xx_epwmss2_addr_space[] = {
 	{
 		.pa_start	= 0x48304000,
@@ -263,6 +275,7 @@ struct omap_hwmod_ocp_if am33xx_l4_ls__epwmss2 = {
 	.user		= OCP_USER_MPU,
 };
 
+<<<<<<< HEAD
 struct omap_hwmod_ocp_if am33xx_epwmss2__ecap2 = {
 	.master		= &am33xx_epwmss2_hwmod,
 	.slave		= &am33xx_ecap2_hwmod,
@@ -294,11 +307,17 @@ static struct omap_hwmod_addr_space am33xx_gpmc_addr_space[] = {
 	{ }
 };
 
+=======
+/* l3s cfg -> gpmc */
+>>>>>>> v4.9.227
 struct omap_hwmod_ocp_if am33xx_l3_s__gpmc = {
 	.master		= &am33xx_l3_s_hwmod,
 	.slave		= &am33xx_gpmc_hwmod,
 	.clk		= "l3s_gclk",
+<<<<<<< HEAD
 	.addr		= am33xx_gpmc_addr_space,
+=======
+>>>>>>> v4.9.227
 	.user		= OCP_USER_MPU,
 };
 

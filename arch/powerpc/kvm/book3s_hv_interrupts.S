@@ -52,10 +52,15 @@ _GLOBAL(__kvmppc_vcore_entry)
 	std	r3, _CCR(r1)
 
 	/* Save host DSCR */
+<<<<<<< HEAD
 BEGIN_FTR_SECTION
 	mfspr	r3, SPRN_DSCR
 	std	r3, HSTATE_DSCR(r13)
 END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
+=======
+	mfspr	r3, SPRN_DSCR
+	std	r3, HSTATE_DSCR(r13)
+>>>>>>> v4.9.227
 
 BEGIN_FTR_SECTION
 	/* Save host DABR */
@@ -84,11 +89,17 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 	mfspr	r7, SPRN_MMCR0		/* save MMCR0 */
 	mtspr	SPRN_MMCR0, r3		/* freeze all counters, disable interrupts */
 	mfspr	r6, SPRN_MMCRA
+<<<<<<< HEAD
 BEGIN_FTR_SECTION
 	/* On P7, clear MMCRA in order to disable SDAR updates */
 	li	r5, 0
 	mtspr	SPRN_MMCRA, r5
 END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
+=======
+	/* Clear MMCRA in order to disable SDAR updates */
+	li	r5, 0
+	mtspr	SPRN_MMCRA, r5
+>>>>>>> v4.9.227
 	isync
 	ld	r3, PACALPPACAPTR(r13)	/* is the host using the PMU? */
 	lbz	r5, LPPACA_PMCINUSE(r3)
@@ -97,6 +108,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
 	mfspr	r5, SPRN_MMCR1
 	mfspr	r9, SPRN_SIAR
 	mfspr	r10, SPRN_SDAR
+<<<<<<< HEAD
 	std	r7, HSTATE_MMCR(r13)
 	std	r5, HSTATE_MMCR + 8(r13)
 	std	r6, HSTATE_MMCR + 16(r13)
@@ -106,6 +118,17 @@ BEGIN_FTR_SECTION
 	mfspr	r9, SPRN_SIER
 	std	r8, HSTATE_MMCR + 40(r13)
 	std	r9, HSTATE_MMCR + 48(r13)
+=======
+	std	r7, HSTATE_MMCR0(r13)
+	std	r5, HSTATE_MMCR1(r13)
+	std	r6, HSTATE_MMCRA(r13)
+	std	r9, HSTATE_SIAR(r13)
+	std	r10, HSTATE_SDAR(r13)
+BEGIN_FTR_SECTION
+	mfspr	r9, SPRN_SIER
+	std	r8, HSTATE_MMCR2(r13)
+	std	r9, HSTATE_SIER(r13)
+>>>>>>> v4.9.227
 END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 	mfspr	r3, SPRN_PMC1
 	mfspr	r5, SPRN_PMC2
@@ -113,6 +136,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 	mfspr	r7, SPRN_PMC4
 	mfspr	r8, SPRN_PMC5
 	mfspr	r9, SPRN_PMC6
+<<<<<<< HEAD
 BEGIN_FTR_SECTION
 	mfspr	r10, SPRN_PMC7
 	mfspr	r11, SPRN_PMC8
@@ -127,6 +151,14 @@ BEGIN_FTR_SECTION
 	stw	r10, HSTATE_PMC + 24(r13)
 	stw	r11, HSTATE_PMC + 28(r13)
 END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
+=======
+	stw	r3, HSTATE_PMC1(r13)
+	stw	r5, HSTATE_PMC2(r13)
+	stw	r6, HSTATE_PMC3(r13)
+	stw	r7, HSTATE_PMC4(r13)
+	stw	r8, HSTATE_PMC5(r13)
+	stw	r9, HSTATE_PMC6(r13)
+>>>>>>> v4.9.227
 31:
 
 	/*
@@ -140,6 +172,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
 	add	r8,r8,r7
 	std	r8,HSTATE_DECEXP(r13)
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	/*
 	 * On PPC970, if the guest vcpu has an external interrupt pending,
@@ -165,6 +198,8 @@ BEGIN_FTR_SECTION
 END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
 #endif /* CONFIG_SMP */
 
+=======
+>>>>>>> v4.9.227
 	/* Jump to partition switch code */
 	bl	kvmppc_hv_entry_trampoline
 	nop

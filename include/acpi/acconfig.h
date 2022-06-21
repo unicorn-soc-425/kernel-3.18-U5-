@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -122,7 +126,11 @@
 
 /* Maximum object reference count (detects object deletion issues) */
 
+<<<<<<< HEAD
 #define ACPI_MAX_REFERENCE_COUNT        0x1000
+=======
+#define ACPI_MAX_REFERENCE_COUNT        0x4000
+>>>>>>> v4.9.227
 
 /* Default page size for use in mapping memory for operation regions */
 
@@ -136,10 +144,13 @@
 
 #define ACPI_ROOT_TABLE_SIZE_INCREMENT  4
 
+<<<<<<< HEAD
 /* Maximum number of While() loop iterations before forced abort */
 
 #define ACPI_MAX_LOOP_ITERATIONS        0xFFFF
 
+=======
+>>>>>>> v4.9.227
 /* Maximum sleep allowed via Sleep() operator */
 
 #define ACPI_MAX_SLEEP                  2000	/* 2000 millisec == two seconds */
@@ -148,6 +159,13 @@
 
 #define ACPI_ADDRESS_RANGE_MAX          2
 
+<<<<<<< HEAD
+=======
+/* Maximum number of While() loops before abort */
+
+#define ACPI_MAX_LOOP_COUNT             0xFFFF
+
+>>>>>>> v4.9.227
 /******************************************************************************
  *
  * ACPI Specification constants (Do not change unless the specification changes)

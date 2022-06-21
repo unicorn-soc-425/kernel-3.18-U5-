@@ -170,6 +170,7 @@ static int cyttsp_spi_probe(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int cyttsp_spi_remove(struct spi_device *spi)
 {
 	struct cyttsp *ts = spi_get_drvdata(spi);
@@ -187,6 +188,14 @@ static struct spi_driver cyttsp_spi_driver = {
 	},
 	.probe  = cyttsp_spi_probe,
 	.remove = cyttsp_spi_remove,
+=======
+static struct spi_driver cyttsp_spi_driver = {
+	.driver = {
+		.name	= CY_SPI_NAME,
+		.pm	= &cyttsp_pm_ops,
+	},
+	.probe  = cyttsp_spi_probe,
+>>>>>>> v4.9.227
 };
 
 module_spi_driver(cyttsp_spi_driver);

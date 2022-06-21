@@ -53,10 +53,13 @@ static inline int prepare_hugepage_range(struct file *file,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void hugetlb_prefault_arch_hook(struct mm_struct *mm)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int huge_pte_none(pte_t pte)
 {
 	return pte_none(pte);
@@ -67,6 +70,7 @@ static inline pte_t huge_pte_wrprotect(pte_t pte)
 	return pte_wrprotect(pte);
 }
 
+<<<<<<< HEAD
 static inline int arch_prepare_hugepage(struct page *page)
 {
 	return 0;
@@ -76,6 +80,8 @@ static inline void arch_release_hugepage(struct page *page)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void arch_clear_hugepage_flags(struct page *page)
 {
 	clear_bit(PG_dcache_clean, &page->flags);

@@ -816,6 +816,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		.data = (const struct snd_usb_audio_quirk[]) {
 			{
 				.ifnum = 0,
+<<<<<<< HEAD
 				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
 				.data = & (const struct audioformat) {
 					.formats = SNDRV_PCM_FMTBIT_S24_3LE,
@@ -847,6 +848,13 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 					.rate_min = 44100,
 					.rate_max = 44100,
 				}
+=======
+				.type = QUIRK_AUDIO_STANDARD_INTERFACE
+			},
+			{
+				.ifnum = 1,
+				.type = QUIRK_AUDIO_STANDARD_INTERFACE
+>>>>>>> v4.9.227
 			},
 			{
 				.ifnum = 2,
@@ -2516,6 +2524,31 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
+<<<<<<< HEAD
+=======
+{
+	/* Akai MPC Element */
+	USB_DEVICE(0x09e8, 0x0021),
+	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
+		.ifnum = QUIRK_ANY_INTERFACE,
+		.type = QUIRK_COMPOSITE,
+		.data = & (const struct snd_usb_audio_quirk[]) {
+			{
+				.ifnum = 0,
+				.type = QUIRK_IGNORE_INTERFACE
+			},
+			{
+				.ifnum = 1,
+				.type = QUIRK_MIDI_STANDARD_INTERFACE
+			},
+			{
+				.ifnum = -1
+			}
+		}
+	}
+},
+
+>>>>>>> v4.9.227
 /* Steinberg devices */
 {
 	/* Steinberg MI2 */
@@ -2668,6 +2701,18 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
+<<<<<<< HEAD
+=======
+	USB_DEVICE(0x1235, 0x000a),
+	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
+		/* .vendor_name = "Novation", */
+		/* .product_name = "Nocturn", */
+		.ifnum = 0,
+		.type = QUIRK_MIDI_RAW_BYTES
+	}
+},
+{
+>>>>>>> v4.9.227
 	USB_DEVICE(0x1235, 0x000e),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		/* .vendor_name = "Novation", */
@@ -2765,6 +2810,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		.type = QUIRK_MIDI_NOVATION
 	}
 },
+<<<<<<< HEAD
 {
 	/*
 	 * Focusrite Scarlett 18i6
@@ -2816,6 +2862,8 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		}
 	}
 },
+=======
+>>>>>>> v4.9.227
 
 /* Access Music devices */
 {
@@ -2875,6 +2923,20 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	.idProduct = 0x1020,
 },
 
+<<<<<<< HEAD
+=======
+/* QinHeng devices */
+{
+	USB_DEVICE(0x1a86, 0x752d),
+	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
+		.vendor_name = "QinHeng",
+		.product_name = "CH345",
+		.ifnum = 1,
+		.type = QUIRK_MIDI_CH345
+	}
+},
+
+>>>>>>> v4.9.227
 /* KeithMcMillen Stringport */
 {
 	USB_DEVICE(0x1f38, 0x0001),
@@ -2943,6 +3005,26 @@ AU0828_DEVICE(0x2040, 0x7260, "Hauppauge", "HVR-950Q"),
 AU0828_DEVICE(0x2040, 0x7213, "Hauppauge", "HVR-950Q"),
 AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 
+<<<<<<< HEAD
+=======
+/* Syntek STK1160 */
+{
+	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
+		       USB_DEVICE_ID_MATCH_INT_CLASS |
+		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
+	.idVendor = 0x05e1,
+	.idProduct = 0x0408,
+	.bInterfaceClass = USB_CLASS_AUDIO,
+	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
+	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
+		.vendor_name = "Syntek",
+		.product_name = "STK1160",
+		.ifnum = QUIRK_ANY_INTERFACE,
+		.type = QUIRK_AUDIO_ALIGN_TRANSFER
+	}
+},
+
+>>>>>>> v4.9.227
 /* Digidesign Mbox */
 {
 	/* Thanks to Clemens Ladisch <clemens@ladisch.de> */
@@ -2955,7 +3037,11 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 		.data = (const struct snd_usb_audio_quirk[]){
 			{
 				.ifnum = 0,
+<<<<<<< HEAD
 				.type = QUIRK_IGNORE_INTERFACE,
+=======
+				.type = QUIRK_AUDIO_STANDARD_MIXER,
+>>>>>>> v4.9.227
 			},
 			{
 				.ifnum = 1,
@@ -2966,6 +3052,7 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 					.iface = 1,
 					.altsetting = 1,
 					.altset_idx = 1,
+<<<<<<< HEAD
 					.attributes = UAC_EP_CS_ATTR_SAMPLE_RATE,
 					.endpoint = 0x02,
 					.ep_attr = 0x01,
@@ -2976,6 +3063,42 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 					.nr_rates = 2,
 					.rate_table = (unsigned int[]) {
 						44100, 48000
+=======
+					.attributes = 0x4,
+					.endpoint = 0x02,
+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
+						USB_ENDPOINT_SYNC_SYNC,
+					.maxpacksize = 0x130,
+					.rates = SNDRV_PCM_RATE_48000,
+					.rate_min = 48000,
+					.rate_max = 48000,
+					.nr_rates = 1,
+					.rate_table = (unsigned int[]) {
+						48000
+					}
+				}
+			},
+			{
+				.ifnum = 1,
+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
+				.data = &(const struct audioformat) {
+					.formats = SNDRV_PCM_FMTBIT_S24_3BE,
+					.channels = 2,
+					.iface = 1,
+					.altsetting = 1,
+					.altset_idx = 1,
+					.attributes = 0x4,
+					.endpoint = 0x81,
+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
+						USB_ENDPOINT_SYNC_ASYNC,
+					.maxpacksize = 0x130,
+					.rates = SNDRV_PCM_RATE_48000,
+					.rate_min = 48000,
+					.rate_max = 48000,
+					.nr_rates = 1,
+					.rate_table = (unsigned int[]) {
+						48000
+>>>>>>> v4.9.227
 					}
 				}
 			},
@@ -2983,7 +3106,10 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 				.ifnum = -1
 			}
 		}
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	}
 },
 
@@ -3215,10 +3341,16 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 {
 	/*
 	 * ZOOM R16/24 in audio interface mode.
+<<<<<<< HEAD
 	 * Mixer descriptors are garbage, further quirks will be needed
 	 * to make any of it functional, thus disabled for now.
 	 * Playback stream appears to start and run fine but no sound
 	 * is produced, so also disabled for now.
+=======
+	 * Playback requires an extra four byte LE length indicator
+	 * at the start of each isochronous packet. This quirk is
+	 * enabled in create_standard_audio_quirk().
+>>>>>>> v4.9.227
 	 */
 	USB_DEVICE(0x1686, 0x00dd),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
@@ -3226,6 +3358,7 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 		.type = QUIRK_COMPOSITE,
 		.data = (const struct snd_usb_audio_quirk[]) {
 			{
+<<<<<<< HEAD
 				/* Mixer */
 				.ifnum = 0,
 				.type = QUIRK_IGNORE_INTERFACE,
@@ -3234,6 +3367,11 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 				/* Playback  */
 				.ifnum = 1,
 				.type = QUIRK_IGNORE_INTERFACE,
+=======
+				/* Playback  */
+				.ifnum = 1,
+				.type = QUIRK_AUDIO_STANDARD_INTERFACE,
+>>>>>>> v4.9.227
 			},
 			{
 				/* Capture */
@@ -3294,6 +3432,7 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 				.ifnum = 0,
 				.type = QUIRK_AUDIO_STANDARD_MIXER,
 			},
+<<<<<<< HEAD
 			/* Capture */
 			{
 				.ifnum = 1,
@@ -3302,11 +3441,20 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 			/* Playback */
 			{
 				.ifnum = 2,
+=======
+			/* Playback */
+			{
+				.ifnum = 1,
+>>>>>>> v4.9.227
 				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
 				.data = &(const struct audioformat) {
 					.formats = SNDRV_PCM_FMTBIT_S16_LE,
 					.channels = 2,
+<<<<<<< HEAD
 					.iface = 2,
+=======
+					.iface = 1,
+>>>>>>> v4.9.227
 					.altsetting = 1,
 					.altset_idx = 1,
 					.attributes = UAC_EP_CS_ATTR_FILL_MAX |
@@ -3322,6 +3470,12 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
 					}
 				}
 			},
+<<<<<<< HEAD
+=======
+			{
+				.ifnum = -1
+			},
+>>>>>>> v4.9.227
 		}
 	}
 },

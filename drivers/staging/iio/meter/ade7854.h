@@ -168,7 +168,12 @@ struct ade7854_state {
 
 };
 
+<<<<<<< HEAD
 extern int ade7854_probe(struct iio_dev *indio_dev, struct device *dev);
 extern int ade7854_remove(struct iio_dev *indio_dev);
+=======
+int ade7854_probe(struct iio_dev *indio_dev, struct device *dev);
+int ade7854_remove(struct iio_dev *indio_dev);
+>>>>>>> v4.9.227
 
 #endif

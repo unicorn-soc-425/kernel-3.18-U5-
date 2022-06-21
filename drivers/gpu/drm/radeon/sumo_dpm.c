@@ -787,8 +787,13 @@ static void sumo_program_acpi_power_level(struct radeon_device *rdev)
 	struct atom_clock_dividers dividers;
 	int ret;
 
+<<<<<<< HEAD
         ret = radeon_atom_get_clock_dividers(rdev, COMPUTE_ENGINE_PLL_PARAM,
                                              pi->acpi_pl.sclk,
+=======
+	ret = radeon_atom_get_clock_dividers(rdev, COMPUTE_ENGINE_PLL_PARAM,
+					     pi->acpi_pl.sclk,
+>>>>>>> v4.9.227
 					     false, &dividers);
 	if (ret)
 		return;
@@ -1462,7 +1467,11 @@ static int sumo_parse_power_table(struct radeon_device *rdev)
 	struct _NonClockInfoArray *non_clock_info_array;
 	union power_info *power_info;
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
+<<<<<<< HEAD
         u16 data_offset;
+=======
+	u16 data_offset;
+>>>>>>> v4.9.227
 	u8 frev, crev;
 	u8 *power_state_offset;
 	struct sumo_ps *ps;

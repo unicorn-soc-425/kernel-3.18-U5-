@@ -18,7 +18,11 @@
  */
 static inline long atomic64_read(const atomic64_t *v)
 {
+<<<<<<< HEAD
 	return ACCESS_ONCE((v)->counter);
+=======
+	return READ_ONCE((v)->counter);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -30,7 +34,11 @@ static inline long atomic64_read(const atomic64_t *v)
  */
 static inline void atomic64_set(atomic64_t *v, long i)
 {
+<<<<<<< HEAD
 	v->counter = i;
+=======
+	WRITE_ONCE(v->counter, i);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -40,11 +48,19 @@ static inline void atomic64_set(atomic64_t *v, long i)
  *
  * Atomically adds @i to @v.
  */
+<<<<<<< HEAD
 static inline void atomic64_add(long i, atomic64_t *v)
 {
 	asm volatile(LOCK_PREFIX "addq %1,%0"
 		     : "=m" (v->counter)
 		     : "er" (i), "m" (v->counter));
+=======
+static __always_inline void atomic64_add(long i, atomic64_t *v)
+{
+	asm volatile(LOCK_PREFIX "addq %1,%0"
+		     : "=m" (v->counter)
+		     : "er" (i), "m" (v->counter) : "memory");
+>>>>>>> v4.9.227
 }
 
 /**
@@ -58,7 +74,11 @@ static inline void atomic64_sub(long i, atomic64_t *v)
 {
 	asm volatile(LOCK_PREFIX "subq %1,%0"
 		     : "=m" (v->counter)
+<<<<<<< HEAD
 		     : "er" (i), "m" (v->counter));
+=======
+		     : "er" (i), "m" (v->counter) : "memory");
+>>>>>>> v4.9.227
 }
 
 /**
@@ -70,9 +90,15 @@ static inline void atomic64_sub(long i, atomic64_t *v)
  * true if the result is zero, or false for all
  * other cases.
  */
+<<<<<<< HEAD
 static inline int atomic64_sub_and_test(long i, atomic64_t *v)
 {
 	GEN_BINARY_RMWcc(LOCK_PREFIX "subq", v->counter, "er", i, "%0", "e");
+=======
+static inline bool atomic64_sub_and_test(long i, atomic64_t *v)
+{
+	GEN_BINARY_RMWcc(LOCK_PREFIX "subq", v->counter, "er", i, "%0", e);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -81,11 +107,19 @@ static inline int atomic64_sub_and_test(long i, atomic64_t *v)
  *
  * Atomically increments @v by 1.
  */
+<<<<<<< HEAD
 static inline void atomic64_inc(atomic64_t *v)
 {
 	asm volatile(LOCK_PREFIX "incq %0"
 		     : "=m" (v->counter)
 		     : "m" (v->counter));
+=======
+static __always_inline void atomic64_inc(atomic64_t *v)
+{
+	asm volatile(LOCK_PREFIX "incq %0"
+		     : "=m" (v->counter)
+		     : "m" (v->counter) : "memory");
+>>>>>>> v4.9.227
 }
 
 /**
@@ -94,11 +128,19 @@ static inline void atomic64_inc(atomic64_t *v)
  *
  * Atomically decrements @v by 1.
  */
+<<<<<<< HEAD
 static inline void atomic64_dec(atomic64_t *v)
 {
 	asm volatile(LOCK_PREFIX "decq %0"
 		     : "=m" (v->counter)
 		     : "m" (v->counter));
+=======
+static __always_inline void atomic64_dec(atomic64_t *v)
+{
+	asm volatile(LOCK_PREFIX "decq %0"
+		     : "=m" (v->counter)
+		     : "m" (v->counter) : "memory");
+>>>>>>> v4.9.227
 }
 
 /**
@@ -109,9 +151,15 @@ static inline void atomic64_dec(atomic64_t *v)
  * returns true if the result is 0, or false for all other
  * cases.
  */
+<<<<<<< HEAD
 static inline int atomic64_dec_and_test(atomic64_t *v)
 {
 	GEN_UNARY_RMWcc(LOCK_PREFIX "decq", v->counter, "%0", "e");
+=======
+static inline bool atomic64_dec_and_test(atomic64_t *v)
+{
+	GEN_UNARY_RMWcc(LOCK_PREFIX "decq", v->counter, "%0", e);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -122,9 +170,15 @@ static inline int atomic64_dec_and_test(atomic64_t *v)
  * and returns true if the result is zero, or false for all
  * other cases.
  */
+<<<<<<< HEAD
 static inline int atomic64_inc_and_test(atomic64_t *v)
 {
 	GEN_UNARY_RMWcc(LOCK_PREFIX "incq", v->counter, "%0", "e");
+=======
+static inline bool atomic64_inc_and_test(atomic64_t *v)
+{
+	GEN_UNARY_RMWcc(LOCK_PREFIX "incq", v->counter, "%0", e);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -136,9 +190,15 @@ static inline int atomic64_inc_and_test(atomic64_t *v)
  * if the result is negative, or false when
  * result is greater than or equal to zero.
  */
+<<<<<<< HEAD
 static inline int atomic64_add_negative(long i, atomic64_t *v)
 {
 	GEN_BINARY_RMWcc(LOCK_PREFIX "addq", v->counter, "er", i, "%0", "s");
+=======
+static inline bool atomic64_add_negative(long i, atomic64_t *v)
+{
+	GEN_BINARY_RMWcc(LOCK_PREFIX "addq", v->counter, "er", i, "%0", s);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -148,7 +208,11 @@ static inline int atomic64_add_negative(long i, atomic64_t *v)
  *
  * Atomically adds @i to @v and returns @i + @v
  */
+<<<<<<< HEAD
 static inline long atomic64_add_return(long i, atomic64_t *v)
+=======
+static __always_inline long atomic64_add_return(long i, atomic64_t *v)
+>>>>>>> v4.9.227
 {
 	return i + xadd(&v->counter, i);
 }
@@ -158,6 +222,19 @@ static inline long atomic64_sub_return(long i, atomic64_t *v)
 	return atomic64_add_return(-i, v);
 }
 
+<<<<<<< HEAD
+=======
+static inline long atomic64_fetch_add(long i, atomic64_t *v)
+{
+	return xadd(&v->counter, i);
+}
+
+static inline long atomic64_fetch_sub(long i, atomic64_t *v)
+{
+	return xadd(&v->counter, -i);
+}
+
+>>>>>>> v4.9.227
 #define atomic64_inc_return(v)  (atomic64_add_return(1, (v)))
 #define atomic64_dec_return(v)  (atomic64_sub_return(1, (v)))
 
@@ -180,7 +257,11 @@ static inline long atomic64_xchg(atomic64_t *v, long new)
  * Atomically adds @a to @v, so long as it was not @u.
  * Returns the old value of @v.
  */
+<<<<<<< HEAD
 static inline int atomic64_add_unless(atomic64_t *v, long a, long u)
+=======
+static inline bool atomic64_add_unless(atomic64_t *v, long a, long u)
+>>>>>>> v4.9.227
 {
 	long c, old;
 	c = atomic64_read(v);
@@ -220,4 +301,41 @@ static inline long atomic64_dec_if_positive(atomic64_t *v)
 	return dec;
 }
 
+<<<<<<< HEAD
+=======
+#define ATOMIC64_OP(op)							\
+static inline void atomic64_##op(long i, atomic64_t *v)			\
+{									\
+	asm volatile(LOCK_PREFIX #op"q %1,%0"				\
+			: "+m" (v->counter)				\
+			: "er" (i)					\
+			: "memory");					\
+}
+
+#define ATOMIC64_FETCH_OP(op, c_op)					\
+static inline long atomic64_fetch_##op(long i, atomic64_t *v)		\
+{									\
+	long old, val = atomic64_read(v);				\
+	for (;;) {							\
+		old = atomic64_cmpxchg(v, val, val c_op i);		\
+		if (old == val)						\
+			break;						\
+		val = old;						\
+	}								\
+	return old;							\
+}
+
+#define ATOMIC64_OPS(op, c_op)						\
+	ATOMIC64_OP(op)							\
+	ATOMIC64_FETCH_OP(op, c_op)
+
+ATOMIC64_OPS(and, &)
+ATOMIC64_OPS(or, |)
+ATOMIC64_OPS(xor, ^)
+
+#undef ATOMIC64_OPS
+#undef ATOMIC64_FETCH_OP
+#undef ATOMIC64_OP
+
+>>>>>>> v4.9.227
 #endif /* _ASM_X86_ATOMIC64_64_H */

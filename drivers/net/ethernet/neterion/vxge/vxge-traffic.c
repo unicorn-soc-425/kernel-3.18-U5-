@@ -1004,8 +1004,11 @@ void vxge_hw_device_clear_tx_rx(struct __vxge_hw_device *hldev)
 static enum vxge_hw_status
 vxge_hw_channel_dtr_alloc(struct __vxge_hw_channel *channel, void **dtrh)
 {
+<<<<<<< HEAD
 	void **tmp_arr;
 
+=======
+>>>>>>> v4.9.227
 	if (channel->reserve_ptr - channel->reserve_top > 0) {
 _alloc_after_swap:
 		*dtrh =	channel->reserve_arr[--channel->reserve_ptr];
@@ -1020,10 +1023,14 @@ _alloc_after_swap:
 	 * i.e.	no additional lock need	to be done when	we free	a resource */
 
 	if (channel->length - channel->free_ptr > 0) {
+<<<<<<< HEAD
 
 		tmp_arr	= channel->reserve_arr;
 		channel->reserve_arr = channel->free_arr;
 		channel->free_arr = tmp_arr;
+=======
+		swap(channel->reserve_arr, channel->free_arr);
+>>>>>>> v4.9.227
 		channel->reserve_ptr = channel->length;
 		channel->reserve_top = channel->free_ptr;
 		channel->free_ptr = channel->length;

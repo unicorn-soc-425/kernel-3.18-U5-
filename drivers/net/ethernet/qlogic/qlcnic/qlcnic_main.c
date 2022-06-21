@@ -7,11 +7,14 @@
 
 #include <linux/vmalloc.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 
 #include "qlcnic.h"
 #include "qlcnic_sriov.h"
 #include "qlcnic_hw.h"
 
+=======
+>>>>>>> v4.9.227
 #include <linux/swab.h>
 #include <linux/dma-mapping.h>
 #include <linux/if_vlan.h>
@@ -21,9 +24,17 @@
 #include <linux/aer.h>
 #include <linux/log2.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #ifdef CONFIG_QLCNIC_VXLAN
 #include <net/vxlan.h>
 #endif
+=======
+#include <net/vxlan.h>
+
+#include "qlcnic.h"
+#include "qlcnic_sriov.h"
+#include "qlcnic_hw.h"
+>>>>>>> v4.9.227
 
 MODULE_DESCRIPTION("QLogic 1/10 GbE Converged/Intelligent Ethernet Driver");
 MODULE_LICENSE("GPL");
@@ -111,8 +122,14 @@ static u32 qlcnic_vlan_tx_check(struct qlcnic_adapter *adapter)
 static const struct pci_device_id qlcnic_pci_tbl[] = {
 	ENTRY(PCI_DEVICE_ID_QLOGIC_QLE824X),
 	ENTRY(PCI_DEVICE_ID_QLOGIC_QLE834X),
+<<<<<<< HEAD
 	ENTRY(PCI_DEVICE_ID_QLOGIC_QLE8830),
 	ENTRY(PCI_DEVICE_ID_QLOGIC_VF_QLE834X),
+=======
+	ENTRY(PCI_DEVICE_ID_QLOGIC_VF_QLE834X),
+	ENTRY(PCI_DEVICE_ID_QLOGIC_QLE8830),
+	ENTRY(PCI_DEVICE_ID_QLOGIC_VF_QLE8C30),
+>>>>>>> v4.9.227
 	ENTRY(PCI_DEVICE_ID_QLOGIC_QLE844X),
 	ENTRY(PCI_DEVICE_ID_QLOGIC_VF_QLE844X),
 	{0,}
@@ -294,9 +311,13 @@ int qlcnic_alloc_sds_rings(struct qlcnic_recv_context *recv_ctx, int count)
 
 void qlcnic_free_sds_rings(struct qlcnic_recv_context *recv_ctx)
 {
+<<<<<<< HEAD
 	if (recv_ctx->sds_rings != NULL)
 		kfree(recv_ctx->sds_rings);
 
+=======
+	kfree(recv_ctx->sds_rings);
+>>>>>>> v4.9.227
 	recv_ctx->sds_rings = NULL;
 }
 
@@ -355,7 +376,12 @@ static int qlcnic_set_mac(struct net_device *netdev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (ether_addr_equal_unaligned(adapter->mac_addr, addr->sa_data))
+=======
+	if (ether_addr_equal_unaligned(adapter->mac_addr, addr->sa_data) &&
+	    ether_addr_equal_unaligned(netdev->dev_addr, addr->sa_data))
+>>>>>>> v4.9.227
 		return 0;
 
 	if (test_bit(__QLCNIC_DEV_UP, &adapter->state)) {
@@ -376,13 +402,22 @@ static int qlcnic_set_mac(struct net_device *netdev, void *p)
 }
 
 static int qlcnic_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
+<<<<<<< HEAD
 			struct net_device *netdev, const unsigned char *addr)
+=======
+			struct net_device *netdev,
+			const unsigned char *addr, u16 vid)
+>>>>>>> v4.9.227
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 	int err = -EOPNOTSUPP;
 
 	if (!adapter->fdb_mac_learn)
+<<<<<<< HEAD
 		return ndo_dflt_fdb_del(ndm, tb, netdev, addr);
+=======
+		return ndo_dflt_fdb_del(ndm, tb, netdev, addr, vid);
+>>>>>>> v4.9.227
 
 	if ((adapter->flags & QLCNIC_ESWITCH_ENABLED) ||
 	    qlcnic_sriov_check(adapter)) {
@@ -401,13 +436,21 @@ static int qlcnic_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
 
 static int qlcnic_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
 			struct net_device *netdev,
+<<<<<<< HEAD
 			const unsigned char *addr, u16 flags)
+=======
+			const unsigned char *addr, u16 vid, u16 flags)
+>>>>>>> v4.9.227
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 	int err = 0;
 
 	if (!adapter->fdb_mac_learn)
+<<<<<<< HEAD
 		return ndo_dflt_fdb_add(ndm, tb, netdev, addr, flags);
+=======
+		return ndo_dflt_fdb_add(ndm, tb, netdev, addr, vid, flags);
+>>>>>>> v4.9.227
 
 	if (!(adapter->flags & QLCNIC_ESWITCH_ENABLED) &&
 	    !qlcnic_sriov_check(adapter)) {
@@ -434,18 +477,31 @@ static int qlcnic_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
 
 static int qlcnic_fdb_dump(struct sk_buff *skb, struct netlink_callback *ncb,
 			struct net_device *netdev,
+<<<<<<< HEAD
 			struct net_device *filter_dev, int idx)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
+=======
+			struct net_device *filter_dev, int *idx)
+{
+	struct qlcnic_adapter *adapter = netdev_priv(netdev);
+	int err = 0;
+>>>>>>> v4.9.227
 
 	if (!adapter->fdb_mac_learn)
 		return ndo_dflt_fdb_dump(skb, ncb, netdev, filter_dev, idx);
 
 	if ((adapter->flags & QLCNIC_ESWITCH_ENABLED) ||
 	    qlcnic_sriov_check(adapter))
+<<<<<<< HEAD
 		idx = ndo_dflt_fdb_dump(skb, ncb, netdev, filter_dev, idx);
 
 	return idx;
+=======
+		err = ndo_dflt_fdb_dump(skb, ncb, netdev, filter_dev, idx);
+
+	return err;
+>>>>>>> v4.9.227
 }
 
 static void qlcnic_82xx_cancel_idc_work(struct qlcnic_adapter *adapter)
@@ -460,7 +516,11 @@ static void qlcnic_82xx_cancel_idc_work(struct qlcnic_adapter *adapter)
 }
 
 static int qlcnic_get_phys_port_id(struct net_device *netdev,
+<<<<<<< HEAD
 				   struct netdev_phys_port_id *ppid)
+=======
+				   struct netdev_phys_item_id *ppid)
+>>>>>>> v4.9.227
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 	struct qlcnic_hardware_context *ahw = adapter->ahw;
@@ -474,13 +534,19 @@ static int qlcnic_get_phys_port_id(struct net_device *netdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_QLCNIC_VXLAN
 static void qlcnic_add_vxlan_port(struct net_device *netdev,
 				  sa_family_t sa_family, __be16 port)
+=======
+static void qlcnic_add_vxlan_port(struct net_device *netdev,
+				  struct udp_tunnel_info *ti)
+>>>>>>> v4.9.227
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 	struct qlcnic_hardware_context *ahw = adapter->ahw;
 
+<<<<<<< HEAD
 	/* Adapter supports only one VXLAN port. Use very first port
 	 * for enabling offload
 	 */
@@ -493,24 +559,66 @@ static void qlcnic_add_vxlan_port(struct net_device *netdev,
 
 static void qlcnic_del_vxlan_port(struct net_device *netdev,
 				  sa_family_t sa_family, __be16 port)
+=======
+	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
+		return;
+
+	/* Adapter supports only one VXLAN port. Use very first port
+	 * for enabling offload
+	 */
+	if (!qlcnic_encap_rx_offload(adapter))
+		return;
+	if (!ahw->vxlan_port_count) {
+		ahw->vxlan_port_count = 1;
+		ahw->vxlan_port = ntohs(ti->port);
+		adapter->flags |= QLCNIC_ADD_VXLAN_PORT;
+		return;
+	}
+	if (ahw->vxlan_port == ntohs(ti->port))
+		ahw->vxlan_port_count++;
+
+}
+
+static void qlcnic_del_vxlan_port(struct net_device *netdev,
+				  struct udp_tunnel_info *ti)
+>>>>>>> v4.9.227
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 	struct qlcnic_hardware_context *ahw = adapter->ahw;
 
+<<<<<<< HEAD
 	if (!qlcnic_encap_rx_offload(adapter) || !ahw->vxlan_port ||
 	    (ahw->vxlan_port != ntohs(port)))
 		return;
 
 	adapter->flags |= QLCNIC_DEL_VXLAN_PORT;
+=======
+	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
+		return;
+
+	if (!qlcnic_encap_rx_offload(adapter) || !ahw->vxlan_port_count ||
+	    (ahw->vxlan_port != ntohs(ti->port)))
+		return;
+
+	ahw->vxlan_port_count--;
+	if (!ahw->vxlan_port_count)
+		adapter->flags |= QLCNIC_DEL_VXLAN_PORT;
+>>>>>>> v4.9.227
 }
 
 static netdev_features_t qlcnic_features_check(struct sk_buff *skb,
 					       struct net_device *dev,
 					       netdev_features_t features)
 {
+<<<<<<< HEAD
 	return vxlan_features_check(skb, features);
 }
 #endif
+=======
+	features = vlan_features_check(skb, features);
+	return vxlan_features_check(skb, features);
+}
+>>>>>>> v4.9.227
 
 static const struct net_device_ops qlcnic_netdev_ops = {
 	.ndo_open	   = qlcnic_open,
@@ -530,11 +638,17 @@ static const struct net_device_ops qlcnic_netdev_ops = {
 	.ndo_fdb_del		= qlcnic_fdb_del,
 	.ndo_fdb_dump		= qlcnic_fdb_dump,
 	.ndo_get_phys_port_id	= qlcnic_get_phys_port_id,
+<<<<<<< HEAD
 #ifdef CONFIG_QLCNIC_VXLAN
 	.ndo_add_vxlan_port	= qlcnic_add_vxlan_port,
 	.ndo_del_vxlan_port	= qlcnic_del_vxlan_port,
 	.ndo_features_check	= qlcnic_features_check,
 #endif
+=======
+	.ndo_udp_tunnel_add	= qlcnic_add_vxlan_port,
+	.ndo_udp_tunnel_del	= qlcnic_del_vxlan_port,
+	.ndo_features_check	= qlcnic_features_check,
+>>>>>>> v4.9.227
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller = qlcnic_poll_controller,
 #endif
@@ -622,6 +736,11 @@ static struct qlcnic_hardware_ops qlcnic_hw_ops = {
 	.get_cap_size			= qlcnic_82xx_get_cap_size,
 	.set_sys_info			= qlcnic_82xx_set_sys_info,
 	.store_cap_mask			= qlcnic_82xx_store_cap_mask,
+<<<<<<< HEAD
+=======
+	.encap_rx_offload               = qlcnic_82xx_encap_rx_offload,
+	.encap_tx_offload               = qlcnic_82xx_encap_tx_offload,
+>>>>>>> v4.9.227
 };
 
 static int qlcnic_check_multi_tx_capability(struct qlcnic_adapter *adapter)
@@ -1031,7 +1150,11 @@ int qlcnic_init_pci_info(struct qlcnic_adapter *adapter)
 		pfn = pci_info[i].id;
 
 		if (pfn >= ahw->max_vnic_func) {
+<<<<<<< HEAD
 			ret = QL_STATUS_INVALID_PARAM;
+=======
+			ret = -EINVAL;
+>>>>>>> v4.9.227
 			dev_err(&adapter->pdev->dev, "%s: Invalid function 0x%x, max 0x%x\n",
 				__func__, pfn, ahw->max_vnic_func);
 			goto err_eswitch;
@@ -1149,6 +1272,10 @@ static void qlcnic_get_bar_length(u32 dev_id, ulong *bar)
 	case PCI_DEVICE_ID_QLOGIC_QLE844X:
 	case PCI_DEVICE_ID_QLOGIC_VF_QLE834X:
 	case PCI_DEVICE_ID_QLOGIC_VF_QLE844X:
+<<<<<<< HEAD
+=======
+	case PCI_DEVICE_ID_QLOGIC_VF_QLE8C30:
+>>>>>>> v4.9.227
 		*bar = QLCNIC_83XX_BAR0_LENGTH;
 		break;
 	default:
@@ -1256,8 +1383,12 @@ qlcnic_check_options(struct qlcnic_adapter *adapter)
 	if (ahw->op_mode != QLCNIC_NON_PRIV_FUNC) {
 		if (fw_dump->tmpl_hdr == NULL ||
 				adapter->fw_version > prev_fw_version) {
+<<<<<<< HEAD
 			if (fw_dump->tmpl_hdr)
 				vfree(fw_dump->tmpl_hdr);
+=======
+			vfree(fw_dump->tmpl_hdr);
+>>>>>>> v4.9.227
 			if (!qlcnic_fw_cmd_get_minidump_temp(adapter))
 				dev_info(&pdev->dev,
 					"Supports FW dump capability\n");
@@ -2006,10 +2137,15 @@ qlcnic_attach(struct qlcnic_adapter *adapter)
 
 	qlcnic_create_sysfs_entries(adapter);
 
+<<<<<<< HEAD
 #ifdef CONFIG_QLCNIC_VXLAN
 	if (qlcnic_encap_rx_offload(adapter))
 		vxlan_get_rx_port(netdev);
 #endif
+=======
+	if (qlcnic_encap_rx_offload(adapter))
+		udp_tunnel_get_rx_info(netdev);
+>>>>>>> v4.9.227
 
 	adapter->is_up = QLCNIC_ADAPTER_UP_MAGIC;
 	return 0;
@@ -2373,13 +2509,21 @@ void qlcnic_free_tx_rings(struct qlcnic_adapter *adapter)
 
 	for (ring = 0; ring < adapter->drv_tx_rings; ring++) {
 		tx_ring = &adapter->tx_ring[ring];
+<<<<<<< HEAD
 		if (tx_ring && tx_ring->cmd_buf_arr != NULL) {
+=======
+		if (tx_ring) {
+>>>>>>> v4.9.227
 			vfree(tx_ring->cmd_buf_arr);
 			tx_ring->cmd_buf_arr = NULL;
 		}
 	}
+<<<<<<< HEAD
 	if (adapter->tx_ring != NULL)
 		kfree(adapter->tx_ring);
+=======
+	kfree(adapter->tx_ring);
+>>>>>>> v4.9.227
 }
 
 int qlcnic_alloc_tx_rings(struct qlcnic_adapter *adapter,
@@ -2405,7 +2549,10 @@ int qlcnic_alloc_tx_rings(struct qlcnic_adapter *adapter,
 			qlcnic_free_tx_rings(adapter);
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 		memset(cmd_buf_arr, 0, TX_BUFF_RINGSIZE(tx_ring));
+=======
+>>>>>>> v4.9.227
 		tx_ring->cmd_buf_arr = cmd_buf_arr;
 		spin_lock_init(&tx_ring->tx_clean_lock);
 	}
@@ -2494,6 +2641,10 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		qlcnic_83xx_register_map(ahw);
 		break;
 	case PCI_DEVICE_ID_QLOGIC_VF_QLE834X:
+<<<<<<< HEAD
+=======
+	case PCI_DEVICE_ID_QLOGIC_VF_QLE8C30:
+>>>>>>> v4.9.227
 	case PCI_DEVICE_ID_QLOGIC_VF_QLE844X:
 		qlcnic_sriov_vf_register_map(ahw);
 		break;
@@ -2604,6 +2755,10 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	} else {
 		dev_err(&pdev->dev,
 			"%s: failed. Please Reboot\n", __func__);
+<<<<<<< HEAD
+=======
+		err = -ENODEV;
+>>>>>>> v4.9.227
 		goto err_out_free_hw;
 	}
 
@@ -2756,6 +2911,7 @@ static void qlcnic_remove(struct pci_dev *pdev)
 	}
 
 	qlcnic_dcb_free(adapter->dcb);
+<<<<<<< HEAD
 
 	qlcnic_detach(adapter);
 
@@ -2763,6 +2919,11 @@ static void qlcnic_remove(struct pci_dev *pdev)
 		kfree(adapter->npars);
 	if (adapter->eswitch != NULL)
 		kfree(adapter->eswitch);
+=======
+	qlcnic_detach(adapter);
+	kfree(adapter->npars);
+	kfree(adapter->eswitch);
+>>>>>>> v4.9.227
 
 	if (qlcnic_82xx_check(adapter))
 		qlcnic_clr_all_drv_state(adapter, 0);
@@ -2930,13 +3091,21 @@ void qlcnic_alloc_lb_filters_mem(struct qlcnic_adapter *adapter)
 
 static void qlcnic_free_lb_filters_mem(struct qlcnic_adapter *adapter)
 {
+<<<<<<< HEAD
 	if (adapter->fhash.fmax && adapter->fhash.fhead)
+=======
+	if (adapter->fhash.fmax)
+>>>>>>> v4.9.227
 		kfree(adapter->fhash.fhead);
 
 	adapter->fhash.fhead = NULL;
 	adapter->fhash.fmax = 0;
 
+<<<<<<< HEAD
 	if (adapter->rx_fhash.fmax && adapter->rx_fhash.fhead)
+=======
+	if (adapter->rx_fhash.fmax)
+>>>>>>> v4.9.227
 		kfree(adapter->rx_fhash.fhead);
 
 	adapter->rx_fhash.fmax = 0;
@@ -3947,8 +4116,19 @@ static pci_ers_result_t qlcnic_82xx_io_error_detected(struct pci_dev *pdev,
 
 static pci_ers_result_t qlcnic_82xx_io_slot_reset(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	return qlcnic_attach_func(pdev) ? PCI_ERS_RESULT_DISCONNECT :
 				PCI_ERS_RESULT_RECOVERED;
+=======
+	pci_ers_result_t res;
+
+	rtnl_lock();
+	res = qlcnic_attach_func(pdev) ? PCI_ERS_RESULT_DISCONNECT :
+					 PCI_ERS_RESULT_RECOVERED;
+	rtnl_unlock();
+
+	return res;
+>>>>>>> v4.9.227
 }
 
 static void qlcnic_82xx_io_resume(struct pci_dev *pdev)

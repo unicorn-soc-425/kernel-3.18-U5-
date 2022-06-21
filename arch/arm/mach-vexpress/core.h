@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* 2MB large area for motherboard's peripherals static mapping */
 #define V2M_PERIPH 0xf8000000
 
@@ -8,5 +9,10 @@ bool vexpress_smp_init_ops(void);
 
 extern struct smp_operations	vexpress_smp_ops;
 extern struct smp_operations	vexpress_smp_dt_ops;
+=======
+bool vexpress_smp_init_ops(void);
+
+extern const struct smp_operations vexpress_smp_dt_ops;
+>>>>>>> v4.9.227
 
 extern void vexpress_cpu_die(unsigned int cpu);

@@ -18,6 +18,13 @@
 #ifndef __ASM_EXEC_H
 #define __ASM_EXEC_H
 
+<<<<<<< HEAD
 extern unsigned long arch_align_stack(unsigned long sp);
+=======
+#include <linux/sched.h>
+
+extern unsigned long arch_align_stack(unsigned long sp);
+void uao_thread_switch(struct task_struct *next);
+>>>>>>> v4.9.227
 
 #endif	/* __ASM_EXEC_H */

@@ -66,6 +66,14 @@
 		};
 	};
 
+<<<<<<< HEAD
+=======
+	sram: sram@00200000 {
+		compatible = "mmio-sram";
+		reg = <0x00200000 0x4000>;
+	};
+
+>>>>>>> v4.9.227
 	ahb {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -87,12 +95,20 @@
 			};
 
 			ramc0: ramc@ffffff00 {
+<<<<<<< HEAD
 				compatible = "atmel,at91rm9200-sdramc";
+=======
+				compatible = "atmel,at91rm9200-sdramc", "syscon";
+>>>>>>> v4.9.227
 				reg = <0xffffff00 0x100>;
 			};
 
 			pmc: pmc@fffffc00 {
+<<<<<<< HEAD
 				compatible = "atmel,at91rm9200-pmc";
+=======
+				compatible = "atmel,at91rm9200-pmc", "syscon";
+>>>>>>> v4.9.227
 				reg = <0xfffffc00 0x100>;
 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
 				interrupt-controller;
@@ -351,9 +367,28 @@
 			};
 
 			st: timer@fffffd00 {
+<<<<<<< HEAD
 				compatible = "atmel,at91rm9200-st";
 				reg = <0xfffffd00 0x100>;
 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
+=======
+				compatible = "atmel,at91rm9200-st", "syscon", "simple-mfd";
+				reg = <0xfffffd00 0x100>;
+				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
+				clocks = <&slow_xtal>;
+
+				watchdog {
+					compatible = "atmel,at91rm9200-wdt";
+				};
+			};
+
+			rtc: rtc@fffffe00 {
+				compatible = "atmel,at91rm9200-rtc";
+				reg = <0xfffffe00 0x40>;
+				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
+				clocks = <&slow_xtal>;
+				status = "disabled";
+>>>>>>> v4.9.227
 			};
 
 			tcb0: timer@fffa0000 {
@@ -362,8 +397,13 @@
 				interrupts = <17 IRQ_TYPE_LEVEL_HIGH 0
 					      18 IRQ_TYPE_LEVEL_HIGH 0
 					      19 IRQ_TYPE_LEVEL_HIGH 0>;
+<<<<<<< HEAD
 				clocks = <&tc0_clk>, <&tc1_clk>, <&tc2_clk>;
 				clock-names = "t0_clk", "t1_clk", "t2_clk";
+=======
+				clocks = <&tc0_clk>, <&tc1_clk>, <&tc2_clk>, <&slow_xtal>;
+				clock-names = "t0_clk", "t1_clk", "t2_clk", "slow_clk";
+>>>>>>> v4.9.227
 			};
 
 			tcb1: timer@fffa4000 {
@@ -372,8 +412,13 @@
 				interrupts = <20 IRQ_TYPE_LEVEL_HIGH 0
 					      21 IRQ_TYPE_LEVEL_HIGH 0
 					      22 IRQ_TYPE_LEVEL_HIGH 0>;
+<<<<<<< HEAD
 				clocks = <&tc3_clk>, <&tc4_clk>, <&tc5_clk>;
 				clock-names = "t0_clk", "t1_clk", "t2_clk";
+=======
+				clocks = <&tc3_clk>, <&tc4_clk>, <&tc5_clk>, <&slow_xtal>;
+				clock-names = "t0_clk", "t1_clk", "t2_clk", "slow_clk";
+>>>>>>> v4.9.227
 			};
 
 			i2c0: i2c@fffb8000 {
@@ -408,7 +453,11 @@
 				pinctrl-0 = <&pinctrl_ssc0_tx &pinctrl_ssc0_rx>;
 				clocks = <&ssc0_clk>;
 				clock-names = "pclk";
+<<<<<<< HEAD
 				status = "disable";
+=======
+				status = "disabled";
+>>>>>>> v4.9.227
 			};
 
 			ssc1: ssc@fffd4000 {
@@ -419,7 +468,11 @@
 				pinctrl-0 = <&pinctrl_ssc1_tx &pinctrl_ssc1_rx>;
 				clocks = <&ssc1_clk>;
 				clock-names = "pclk";
+<<<<<<< HEAD
 				status = "disable";
+=======
+				status = "disabled";
+>>>>>>> v4.9.227
 			};
 
 			ssc2: ssc@fffd8000 {
@@ -430,7 +483,11 @@
 				pinctrl-0 = <&pinctrl_ssc2_tx &pinctrl_ssc2_rx>;
 				clocks = <&ssc2_clk>;
 				clock-names = "pclk";
+<<<<<<< HEAD
 				status = "disable";
+=======
+				status = "disabled";
+>>>>>>> v4.9.227
 			};
 
 			macb0: ethernet@fffbc000 {
@@ -818,7 +875,11 @@
 			};
 
 			dbgu: serial@fffff200 {
+<<<<<<< HEAD
 				compatible = "atmel,at91rm9200-usart";
+=======
+				compatible = "atmel,at91rm9200-dbgu", "atmel,at91rm9200-usart";
+>>>>>>> v4.9.227
 				reg = <0xfffff200 0x200>;
 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
 				pinctrl-names = "default";
@@ -924,13 +985,22 @@
 			compatible = "atmel,at91rm9200-ohci", "usb-ohci";
 			reg = <0x00300000 0x100000>;
 			interrupts = <23 IRQ_TYPE_LEVEL_HIGH 2>;
+<<<<<<< HEAD
 			clocks = <&usb>, <&ohci_clk>, <&ohci_clk>, <&uhpck>;
 			clock-names = "usb_clk", "ohci_clk", "hclk", "uhpck";
+=======
+			clocks = <&ohci_clk>, <&ohci_clk>, <&uhpck>;
+			clock-names = "ohci_clk", "hclk", "uhpck";
+>>>>>>> v4.9.227
 			status = "disabled";
 		};
 	};
 
+<<<<<<< HEAD
 	i2c@0 {
+=======
+	i2c-gpio-0 {
+>>>>>>> v4.9.227
 		compatible = "i2c-gpio";
 		gpios = <&pioA 25 GPIO_ACTIVE_HIGH /* sda */
 			 &pioA 26 GPIO_ACTIVE_HIGH /* scl */

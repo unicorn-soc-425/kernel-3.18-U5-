@@ -66,8 +66,11 @@
 static __iomem void *gpt_base;
 static struct clk *gpt_clk;
 
+<<<<<<< HEAD
 static void clockevent_set_mode(enum clock_event_mode mode,
 				struct clock_event_device *clk_event_dev);
+=======
+>>>>>>> v4.9.227
 static int clockevent_next_event(unsigned long evt,
 				 struct clock_event_device *clk_event_dev);
 
@@ -95,6 +98,7 @@ static void __init spear_clocksource_init(void)
 		200, 16, clocksource_mmio_readw_up);
 }
 
+<<<<<<< HEAD
 static struct clock_event_device clkevt = {
 	.name = "tmr0",
 	.features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
@@ -105,11 +109,45 @@ static struct clock_event_device clkevt = {
 
 static void clockevent_set_mode(enum clock_event_mode mode,
 				struct clock_event_device *clk_event_dev)
+=======
+static inline void timer_shutdown(struct clock_event_device *evt)
+{
+	u16 val = readw(gpt_base + CR(CLKEVT));
+
+	/* stop the timer */
+	val &= ~CTRL_ENABLE;
+	writew(val, gpt_base + CR(CLKEVT));
+}
+
+static int spear_shutdown(struct clock_event_device *evt)
+{
+	timer_shutdown(evt);
+
+	return 0;
+}
+
+static int spear_set_oneshot(struct clock_event_device *evt)
+{
+	u16 val;
+
+	/* stop the timer */
+	timer_shutdown(evt);
+
+	val = readw(gpt_base + CR(CLKEVT));
+	val |= CTRL_ONE_SHOT;
+	writew(val, gpt_base + CR(CLKEVT));
+
+	return 0;
+}
+
+static int spear_set_periodic(struct clock_event_device *evt)
+>>>>>>> v4.9.227
 {
 	u32 period;
 	u16 val;
 
 	/* stop the timer */
+<<<<<<< HEAD
 	val = readw(gpt_base + CR(CLKEVT));
 	val &= ~CTRL_ENABLE;
 	writew(val, gpt_base + CR(CLKEVT));
@@ -143,6 +181,33 @@ static void clockevent_set_mode(enum clock_event_mode mode,
 	}
 }
 
+=======
+	timer_shutdown(evt);
+
+	period = clk_get_rate(gpt_clk) / HZ;
+	period >>= CTRL_PRESCALER16;
+	writew(period, gpt_base + LOAD(CLKEVT));
+
+	val = readw(gpt_base + CR(CLKEVT));
+	val &= ~CTRL_ONE_SHOT;
+	val |= CTRL_ENABLE | CTRL_INT_ENABLE;
+	writew(val, gpt_base + CR(CLKEVT));
+
+	return 0;
+}
+
+static struct clock_event_device clkevt = {
+	.name = "tmr0",
+	.features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
+	.set_state_shutdown = spear_shutdown,
+	.set_state_periodic = spear_set_periodic,
+	.set_state_oneshot = spear_set_oneshot,
+	.tick_resume = spear_shutdown,
+	.set_next_event = clockevent_next_event,
+	.shift = 0,	/* to be computed */
+};
+
+>>>>>>> v4.9.227
 static int clockevent_next_event(unsigned long cycles,
 				 struct clock_event_device *clk_event_dev)
 {
@@ -193,7 +258,11 @@ static void __init spear_clockevent_init(int irq)
 	setup_irq(irq, &spear_timer_irq);
 }
 
+<<<<<<< HEAD
 const static struct of_device_id timer_of_match[] __initconst = {
+=======
+static const struct of_device_id timer_of_match[] __initconst = {
+>>>>>>> v4.9.227
 	{ .compatible = "st,spear-timer", },
 	{ },
 };

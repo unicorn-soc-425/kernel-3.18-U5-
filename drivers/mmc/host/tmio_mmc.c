@@ -85,6 +85,7 @@ static int tmio_mmc_probe(struct platform_device *pdev)
 	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res)
 		return -EINVAL;
 
@@ -97,6 +98,28 @@ static int tmio_mmc_probe(struct platform_device *pdev)
 		goto cell_disable;
 
 	ret = request_irq(irq, tmio_mmc_irq, IRQF_TRIGGER_FALLING,
+=======
+	if (!res) {
+		ret = -EINVAL;
+		goto cell_disable;
+	}
+
+	pdata->flags |= TMIO_MMC_HAVE_HIGH_REG;
+
+	host = tmio_mmc_host_alloc(pdev);
+	if (!host)
+		goto cell_disable;
+
+	/* SD control register space size is 0x200, 0x400 for bus_shift=1 */
+	host->bus_shift = resource_size(res) >> 10;
+
+	ret = tmio_mmc_host_probe(host, pdata);
+	if (ret)
+		goto host_free;
+
+	ret = devm_request_irq(&pdev->dev, irq, tmio_mmc_irq,
+				IRQF_TRIGGER_FALLING,
+>>>>>>> v4.9.227
 				dev_name(&pdev->dev), host);
 	if (ret)
 		goto host_remove;
@@ -108,6 +131,11 @@ static int tmio_mmc_probe(struct platform_device *pdev)
 
 host_remove:
 	tmio_mmc_host_remove(host);
+<<<<<<< HEAD
+=======
+host_free:
+	tmio_mmc_host_free(host);
+>>>>>>> v4.9.227
 cell_disable:
 	if (cell->disable)
 		cell->disable(pdev);
@@ -122,7 +150,10 @@ static int tmio_mmc_remove(struct platform_device *pdev)
 
 	if (mmc) {
 		struct tmio_mmc_host *host = mmc_priv(mmc);
+<<<<<<< HEAD
 		free_irq(platform_get_irq(pdev, 0), host);
+=======
+>>>>>>> v4.9.227
 		tmio_mmc_host_remove(host);
 		if (cell->disable)
 			cell->disable(pdev);
@@ -135,7 +166,11 @@ static int tmio_mmc_remove(struct platform_device *pdev)
 
 static const struct dev_pm_ops tmio_mmc_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(tmio_mmc_suspend, tmio_mmc_resume)
+<<<<<<< HEAD
 	SET_PM_RUNTIME_PM_OPS(tmio_mmc_host_runtime_suspend,
+=======
+	SET_RUNTIME_PM_OPS(tmio_mmc_host_runtime_suspend,
+>>>>>>> v4.9.227
 			tmio_mmc_host_runtime_resume,
 			NULL)
 };
@@ -143,7 +178,10 @@ static const struct dev_pm_ops tmio_mmc_dev_pm_ops = {
 static struct platform_driver tmio_mmc_driver = {
 	.driver = {
 		.name = "tmio-mmc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &tmio_mmc_dev_pm_ops,
 	},
 	.probe = tmio_mmc_probe,

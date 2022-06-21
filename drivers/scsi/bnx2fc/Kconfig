@@ -1,5 +1,9 @@
 config SCSI_BNX2X_FCOE
+<<<<<<< HEAD
 	tristate "QLogic NetXtreme II FCoE support"
+=======
+	tristate "QLogic FCoE offload support"
+>>>>>>> v4.9.227
 	depends on PCI
 	depends on (IPV6 || IPV6=n)
 	depends on LIBFC
@@ -9,5 +13,9 @@ config SCSI_BNX2X_FCOE
 	select NET_VENDOR_BROADCOM
 	select CNIC
 	---help---
+<<<<<<< HEAD
 	This driver supports FCoE offload for the QLogic NetXtreme II
 	devices.
+=======
+	This driver supports FCoE offload for the QLogic devices.
+>>>>>>> v4.9.227

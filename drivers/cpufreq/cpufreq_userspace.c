@@ -17,6 +17,10 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> v4.9.227
 
 static DEFINE_PER_CPU(unsigned int, cpu_is_managed);
 static DEFINE_MUTEX(userspace_mutex);
@@ -31,6 +35,10 @@ static DEFINE_MUTEX(userspace_mutex);
 static int cpufreq_set(struct cpufreq_policy *policy, unsigned int freq)
 {
 	int ret = -EINVAL;
+<<<<<<< HEAD
+=======
+	unsigned int *setspeed = policy->governor_data;
+>>>>>>> v4.9.227
 
 	pr_debug("cpufreq_set for cpu %u, freq %u kHz\n", policy->cpu, freq);
 
@@ -38,6 +46,11 @@ static int cpufreq_set(struct cpufreq_policy *policy, unsigned int freq)
 	if (!per_cpu(cpu_is_managed, policy->cpu))
 		goto err;
 
+<<<<<<< HEAD
+=======
+	*setspeed = freq;
+
+>>>>>>> v4.9.227
 	ret = __cpufreq_driver_target(policy, freq, CPUFREQ_RELATION_L);
  err:
 	mutex_unlock(&userspace_mutex);
@@ -49,6 +62,7 @@ static ssize_t show_speed(struct cpufreq_policy *policy, char *buf)
 	return sprintf(buf, "%u\n", policy->cur);
 }
 
+<<<<<<< HEAD
 static int cpufreq_governor_userspace(struct cpufreq_policy *policy,
 				   unsigned int event)
 {
@@ -95,6 +109,80 @@ static
 struct cpufreq_governor cpufreq_gov_userspace = {
 	.name		= "userspace",
 	.governor	= cpufreq_governor_userspace,
+=======
+static int cpufreq_userspace_policy_init(struct cpufreq_policy *policy)
+{
+	unsigned int *setspeed;
+
+	setspeed = kzalloc(sizeof(*setspeed), GFP_KERNEL);
+	if (!setspeed)
+		return -ENOMEM;
+
+	policy->governor_data = setspeed;
+	return 0;
+}
+
+static void cpufreq_userspace_policy_exit(struct cpufreq_policy *policy)
+{
+	mutex_lock(&userspace_mutex);
+	kfree(policy->governor_data);
+	policy->governor_data = NULL;
+	mutex_unlock(&userspace_mutex);
+}
+
+static int cpufreq_userspace_policy_start(struct cpufreq_policy *policy)
+{
+	unsigned int *setspeed = policy->governor_data;
+
+	BUG_ON(!policy->cur);
+	pr_debug("started managing cpu %u\n", policy->cpu);
+
+	mutex_lock(&userspace_mutex);
+	per_cpu(cpu_is_managed, policy->cpu) = 1;
+	*setspeed = policy->cur;
+	mutex_unlock(&userspace_mutex);
+	return 0;
+}
+
+static void cpufreq_userspace_policy_stop(struct cpufreq_policy *policy)
+{
+	unsigned int *setspeed = policy->governor_data;
+
+	pr_debug("managing cpu %u stopped\n", policy->cpu);
+
+	mutex_lock(&userspace_mutex);
+	per_cpu(cpu_is_managed, policy->cpu) = 0;
+	*setspeed = 0;
+	mutex_unlock(&userspace_mutex);
+}
+
+static void cpufreq_userspace_policy_limits(struct cpufreq_policy *policy)
+{
+	unsigned int *setspeed = policy->governor_data;
+
+	mutex_lock(&userspace_mutex);
+
+	pr_debug("limit event for cpu %u: %u - %u kHz, currently %u kHz, last set to %u kHz\n",
+		 policy->cpu, policy->min, policy->max, policy->cur, *setspeed);
+
+	if (policy->max < *setspeed)
+		__cpufreq_driver_target(policy, policy->max, CPUFREQ_RELATION_H);
+	else if (policy->min > *setspeed)
+		__cpufreq_driver_target(policy, policy->min, CPUFREQ_RELATION_L);
+	else
+		__cpufreq_driver_target(policy, *setspeed, CPUFREQ_RELATION_L);
+
+	mutex_unlock(&userspace_mutex);
+}
+
+static struct cpufreq_governor cpufreq_gov_userspace = {
+	.name		= "userspace",
+	.init		= cpufreq_userspace_policy_init,
+	.exit		= cpufreq_userspace_policy_exit,
+	.start		= cpufreq_userspace_policy_start,
+	.stop		= cpufreq_userspace_policy_stop,
+	.limits		= cpufreq_userspace_policy_limits,
+>>>>>>> v4.9.227
 	.store_setspeed	= cpufreq_set,
 	.show_setspeed	= show_speed,
 	.owner		= THIS_MODULE,
@@ -116,6 +204,14 @@ MODULE_DESCRIPTION("CPUfreq policy governor 'userspace'");
 MODULE_LICENSE("GPL");
 
 #ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE
+<<<<<<< HEAD
+=======
+struct cpufreq_governor *cpufreq_default_governor(void)
+{
+	return &cpufreq_gov_userspace;
+}
+
+>>>>>>> v4.9.227
 fs_initcall(cpufreq_gov_userspace_init);
 #else
 module_init(cpufreq_gov_userspace_init);

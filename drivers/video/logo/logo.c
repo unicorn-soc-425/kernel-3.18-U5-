@@ -36,11 +36,19 @@ static int __init fb_logo_late_init(void)
 
 late_initcall(fb_logo_late_init);
 
+<<<<<<< HEAD
 /* logo's are marked __initdata. Use __init_refok to tell
  * modpost that it is intended that this function uses data
  * marked __initdata.
  */
 const struct linux_logo * __init_refok fb_find_logo(int depth)
+=======
+/* logo's are marked __initdata. Use __ref to tell
+ * modpost that it is intended that this function uses data
+ * marked __initdata.
+ */
+const struct linux_logo * __ref fb_find_logo(int depth)
+>>>>>>> v4.9.227
 {
 	const struct linux_logo *logo = NULL;
 

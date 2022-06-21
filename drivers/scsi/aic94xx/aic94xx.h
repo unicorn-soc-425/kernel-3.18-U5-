@@ -78,7 +78,11 @@ void asd_dev_gone(struct domain_device *dev);
 
 void asd_invalidate_edb(struct asd_ascb *ascb, int edb_id);
 
+<<<<<<< HEAD
 int  asd_execute_task(struct sas_task *, int num, gfp_t gfp_flags);
+=======
+int  asd_execute_task(struct sas_task *task, gfp_t gfp_flags);
+>>>>>>> v4.9.227
 
 void asd_set_dmamode(struct domain_device *dev);
 

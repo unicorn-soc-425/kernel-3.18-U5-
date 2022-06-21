@@ -710,7 +710,11 @@ static int qpti_map_regs(struct qlogicpti *qpti)
 				 "PTI Qlogic/ISP");
 	if (!qpti->qregs) {
 		printk("PTI: Qlogic/ISP registers are unmappable\n");
+<<<<<<< HEAD
 		return -1;
+=======
+		return -ENODEV;
+>>>>>>> v4.9.227
 	}
 	if (qpti->is_pti) {
 		qpti->sreg = of_ioremap(&op->resource[0], (16 * 4096),
@@ -718,7 +722,11 @@ static int qpti_map_regs(struct qlogicpti *qpti)
 					"PTI Qlogic/ISP statreg");
 		if (!qpti->sreg) {
 			printk("PTI: Qlogic/ISP status register is unmappable\n");
+<<<<<<< HEAD
 			return -1;
+=======
+			return -ENODEV;
+>>>>>>> v4.9.227
 		}
 	}
 	return 0;
@@ -1287,7 +1295,10 @@ static struct scsi_host_template qpti_template = {
 	.can_queue		= QLOGICPTI_REQ_QUEUE_LEN,
 	.this_id		= 7,
 	.sg_tablesize		= QLOGICPTI_MAX_SG(QLOGICPTI_REQ_QUEUE_LEN),
+<<<<<<< HEAD
 	.cmd_per_lun		= 1,
+=======
+>>>>>>> v4.9.227
 	.use_clustering		= ENABLE_CLUSTERING,
 };
 
@@ -1455,7 +1466,10 @@ MODULE_DEVICE_TABLE(of, qpti_match);
 static struct platform_driver qpti_sbus_driver = {
 	.driver = {
 		.name = "qpti",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = qpti_match,
 	},
 	.probe		= qpti_sbus_probe,

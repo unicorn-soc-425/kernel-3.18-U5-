@@ -9,9 +9,13 @@
 #include <linux/io.h>
 #include <linux/personality.h>
 #include <linux/random.h>
+<<<<<<< HEAD
 #include <linux/security.h>
 #include <asm/cachetype.h>
 #include <linux/ratelimit.h>
+=======
+#include <asm/cachetype.h>
+>>>>>>> v4.9.227
 
 #define COLOUR_ALIGN(addr,pgoff)		\
 	((((addr)+SHMLBA-1)&~(SHMLBA-1)) +	\
@@ -62,8 +66,11 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 	int do_align = 0;
 	int aliasing = cache_is_vipt_aliasing();
 	struct vm_unmapped_area_info info;
+<<<<<<< HEAD
 	static DEFINE_RATELIMIT_STATE(mmap_rs, DEFAULT_RATELIMIT_INTERVAL,
 						DEFAULT_RATELIMIT_BURST);
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * We only need to do colour alignment if either the I or D
@@ -82,6 +89,7 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 		return addr;
 	}
 
+<<<<<<< HEAD
 	if (len > TASK_SIZE - mmap_min_addr) {
 		if (__ratelimit(&mmap_rs)) {
 			printk(KERN_ERR "%s %d - (len > TASK_SIZE - mmap_min_addr) len=0x%lx "
@@ -92,6 +100,10 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 		}
 		return -ENOMEM;
 	}
+=======
+	if (len > TASK_SIZE)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	if (addr) {
 		if (do_align)
@@ -100,13 +112,18 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 			addr = PAGE_ALIGN(addr);
 
 		vma = find_vma(mm, addr);
+<<<<<<< HEAD
 		if (TASK_SIZE - len >= addr && addr >= mmap_min_addr &&
+=======
+		if (TASK_SIZE - len >= addr &&
+>>>>>>> v4.9.227
 		    (!vma || addr + len <= vm_start_gap(vma)))
 			return addr;
 	}
 
 	info.flags = 0;
 	info.length = len;
+<<<<<<< HEAD
 	info.low_limit = max(mm->mmap_base, mmap_min_addr);
 	info.high_limit = TASK_SIZE;
 	info.align_mask = do_align ? (PAGE_MASK & (SHMLBA - 1)) : 0;
@@ -125,6 +142,13 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 		}
 	}
 	return addr;
+=======
+	info.low_limit = mm->mmap_base;
+	info.high_limit = TASK_SIZE;
+	info.align_mask = do_align ? (PAGE_MASK & (SHMLBA - 1)) : 0;
+	info.align_offset = pgoff << PAGE_SHIFT;
+	return vm_unmapped_area(&info);
+>>>>>>> v4.9.227
 }
 
 unsigned long
@@ -138,8 +162,11 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	int do_align = 0;
 	int aliasing = cache_is_vipt_aliasing();
 	struct vm_unmapped_area_info info;
+<<<<<<< HEAD
 	static DEFINE_RATELIMIT_STATE(mmap_rs, DEFAULT_RATELIMIT_INTERVAL,
 						DEFAULT_RATELIMIT_BURST);
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * We only need to do colour alignment if either the I or D
@@ -149,6 +176,7 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 		do_align = filp || (flags & MAP_SHARED);
 
 	/* requested length too big for entire address space */
+<<<<<<< HEAD
 	if (len > TASK_SIZE - mmap_min_addr) {
 		if (__ratelimit(&mmap_rs)) {
 			printk(KERN_ERR "%s %d - (len > TASK_SIZE - mmap_min_addr) len=%lx "
@@ -159,6 +187,10 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 		}
 		return -ENOMEM;
 	}
+=======
+	if (len > TASK_SIZE)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	if (flags & MAP_FIXED) {
 		if (aliasing && flags & MAP_SHARED &&
@@ -174,14 +206,22 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 		else
 			addr = PAGE_ALIGN(addr);
 		vma = find_vma(mm, addr);
+<<<<<<< HEAD
 		if (TASK_SIZE - len >= addr && addr >= mmap_min_addr &&
+=======
+		if (TASK_SIZE - len >= addr &&
+>>>>>>> v4.9.227
 				(!vma || addr + len <= vm_start_gap(vma)))
 			return addr;
 	}
 
 	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
 	info.length = len;
+<<<<<<< HEAD
 	info.low_limit = max(FIRST_USER_ADDRESS, mmap_min_addr);
+=======
+	info.low_limit = FIRST_USER_ADDRESS;
+>>>>>>> v4.9.227
 	info.high_limit = mm->mmap_base;
 	info.align_mask = do_align ? (PAGE_MASK & (SHMLBA - 1)) : 0;
 	info.align_offset = pgoff << PAGE_SHIFT;
@@ -200,6 +240,7 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 		info.high_limit = TASK_SIZE;
 		addr = vm_unmapped_area(&info);
 	}
+<<<<<<< HEAD
 	if (addr == -ENOMEM) {
 		if (__ratelimit(&mmap_rs)) {
 			printk(KERN_ERR "%s %d - NOMEM from vm_unmapped_area "
@@ -212,6 +253,8 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 				info.align_offset);
 		}
 	}
+=======
+>>>>>>> v4.9.227
 
 	return addr;
 }
@@ -220,7 +263,11 @@ unsigned long arch_mmap_rnd(void)
 {
 	unsigned long rnd;
 
+<<<<<<< HEAD
 	rnd = (unsigned long)get_random_int() & ((1 << mmap_rnd_bits) - 1);
+=======
+	rnd = get_random_long() & ((1UL << mmap_rnd_bits) - 1);
+>>>>>>> v4.9.227
 
 	return rnd << PAGE_SHIFT;
 }

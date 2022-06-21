@@ -519,7 +519,11 @@ static void ax_encaps(struct net_device *dev, unsigned char *icp, int len)
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += actual;
 
+<<<<<<< HEAD
 	ax->dev->trans_start = jiffies;
+=======
+	netif_trans_update(ax->dev);
+>>>>>>> v4.9.227
 	ax->xleft = count - actual;
 	ax->xhead = ax->xbuff + actual;
 }
@@ -529,6 +533,12 @@ static netdev_tx_t ax_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct mkiss *ax = netdev_priv(dev);
 
+<<<<<<< HEAD
+=======
+	if (skb->protocol == htons(ETH_P_IP))
+		return ax25_ip_xmit(skb);
+
+>>>>>>> v4.9.227
 	if (!netif_running(dev))  {
 		printk(KERN_ERR "mkiss: %s: xmit call when iface is down\n", dev->name);
 		return NETDEV_TX_BUSY;
@@ -539,7 +549,11 @@ static netdev_tx_t ax_xmit(struct sk_buff *skb, struct net_device *dev)
 		 * May be we must check transmitter timeout here ?
 		 *      14 Oct 1994 Dmitry Gorodchanin.
 		 */
+<<<<<<< HEAD
 		if (time_before(jiffies, dev->trans_start + 20 * HZ)) {
+=======
+		if (time_before(jiffies, dev_trans_start(dev) + 20 * HZ)) {
+>>>>>>> v4.9.227
 			/* 20 sec timeout not reached */
 			return NETDEV_TX_BUSY;
 		}
@@ -554,11 +568,17 @@ static netdev_tx_t ax_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	/* We were not busy, so we are now... :-) */
+<<<<<<< HEAD
 	if (skb != NULL) {
 		netif_stop_queue(dev);
 		ax_encaps(dev, skb->data, skb->len);
 		kfree_skb(skb);
 	}
+=======
+	netif_stop_queue(dev);
+	ax_encaps(dev, skb->data, skb->len);
+	kfree_skb(skb);
+>>>>>>> v4.9.227
 
 	return NETDEV_TX_OK;
 }
@@ -573,6 +593,7 @@ static int ax_open_dev(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_AX25) || defined(CONFIG_AX25_MODULE)
 
 /* Return the frame type ID */
@@ -599,6 +620,8 @@ static int ax_rebuild_header(struct sk_buff *skb)
 
 #endif	/* CONFIG_{AX25,AX25_MODULE} */
 
+=======
+>>>>>>> v4.9.227
 /* Open the low-level part of the AX25 channel. Easy! */
 static int ax_open(struct net_device *dev)
 {
@@ -662,11 +685,14 @@ static int ax_close(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct header_ops ax_header_ops = {
 	.create    = ax_header,
 	.rebuild   = ax_rebuild_header,
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct net_device_ops ax_netdev_ops = {
 	.ndo_open            = ax_open_dev,
 	.ndo_stop            = ax_close,
@@ -678,11 +704,19 @@ static void ax_setup(struct net_device *dev)
 {
 	/* Finish setting up the DEVICE info. */
 	dev->mtu             = AX_MTU;
+<<<<<<< HEAD
 	dev->hard_header_len = 0;
 	dev->addr_len        = 0;
 	dev->type            = ARPHRD_AX25;
 	dev->tx_queue_len    = 10;
 	dev->header_ops      = &ax_header_ops;
+=======
+	dev->hard_header_len = AX25_MAX_HEADER_LEN;
+	dev->addr_len        = AX25_ADDR_LEN;
+	dev->type            = ARPHRD_AX25;
+	dev->tx_queue_len    = 10;
+	dev->header_ops      = &ax25_header_ops;
+>>>>>>> v4.9.227
 	dev->netdev_ops	     = &ax_netdev_ops;
 
 
@@ -758,11 +792,20 @@ static int mkiss_open(struct tty_struct *tty)
 	dev->type = ARPHRD_AX25;
 
 	/* Perform the low-level AX25 initialization. */
+<<<<<<< HEAD
 	if ((err = ax_open(ax->dev))) {
 		goto out_free_netdev;
 	}
 
 	if (register_netdev(dev))
+=======
+	err = ax_open(ax->dev);
+	if (err)
+		goto out_free_netdev;
+
+	err = register_netdev(dev);
+	if (err)
+>>>>>>> v4.9.227
 		goto out_free_buffers;
 
 	/* after register_netdev() - because else printk smashes the kernel */
@@ -812,10 +855,17 @@ static void mkiss_close(struct tty_struct *tty)
 {
 	struct mkiss *ax;
 
+<<<<<<< HEAD
 	write_lock_bh(&disc_data_lock);
 	ax = tty->disc_data;
 	tty->disc_data = NULL;
 	write_unlock_bh(&disc_data_lock);
+=======
+	write_lock_irq(&disc_data_lock);
+	ax = tty->disc_data;
+	tty->disc_data = NULL;
+	write_unlock_irq(&disc_data_lock);
+>>>>>>> v4.9.227
 
 	if (!ax)
 		return;
@@ -826,14 +876,27 @@ static void mkiss_close(struct tty_struct *tty)
 	 */
 	if (!atomic_dec_and_test(&ax->refcnt))
 		down(&ax->dead_sem);
+<<<<<<< HEAD
 
 	unregister_netdev(ax->dev);
+=======
+	/*
+	 * Halt the transmit queue so that a new transmit cannot scribble
+	 * on our buffers
+	 */
+	netif_stop_queue(ax->dev);
+>>>>>>> v4.9.227
 
 	/* Free all AX25 frame buffers. */
 	kfree(ax->rbuff);
 	kfree(ax->xbuff);
 
 	ax->tty = NULL;
+<<<<<<< HEAD
+=======
+
+	unregister_netdev(ax->dev);
+>>>>>>> v4.9.227
 }
 
 /* Perform I/O control on an active ax25 channel. */

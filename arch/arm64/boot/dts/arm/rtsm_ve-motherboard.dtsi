@@ -55,7 +55,11 @@
 		};
 
 		iofpga@3,00000000 {
+<<<<<<< HEAD
 			compatible = "arm,amba-bus", "simple-bus";
+=======
+			compatible = "simple-bus";
+>>>>>>> v4.9.227
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 3 0 0x200000>;
@@ -74,6 +78,11 @@
 				clock-names = "refclk", "timclk", "apb_pclk";
 				#clock-cells = <1>;
 				clock-output-names = "timerclken0", "timerclken1", "timerclken2", "timerclken3";
+<<<<<<< HEAD
+=======
+				assigned-clocks = <&v2m_sysctl 0>, <&v2m_sysctl 1>, <&v2m_sysctl 3>, <&v2m_sysctl 3>;
+				assigned-clock-parents = <&v2m_refclk1mhz>, <&v2m_refclk1mhz>, <&v2m_refclk1mhz>, <&v2m_refclk1mhz>;
+>>>>>>> v4.9.227
 			};
 
 			aaci@040000 {
@@ -224,7 +233,11 @@
 			};
 		};
 
+<<<<<<< HEAD
 		v2m_fixed_3v3: fixedregulator@0 {
+=======
+		v2m_fixed_3v3: v2m-3v3 {
+>>>>>>> v4.9.227
 			compatible = "regulator-fixed";
 			regulator-name = "3V3";
 			regulator-min-microvolt = <3300000>;
@@ -236,7 +249,11 @@
 			compatible = "arm,vexpress,config-bus";
 			arm,vexpress,config-bridge = <&v2m_sysreg>;
 
+<<<<<<< HEAD
 			v2m_oscclk1: osc@1 {
+=======
+			v2m_oscclk1: oscclk1 {
+>>>>>>> v4.9.227
 				/* CLCD clock */
 				compatible = "arm,vexpress-osc";
 				arm,vexpress-sysreg,func = <1 1>;
@@ -245,27 +262,47 @@
 				clock-output-names = "v2m:oscclk1";
 			};
 
+<<<<<<< HEAD
 			reset@0 {
+=======
+			reset {
+>>>>>>> v4.9.227
 				compatible = "arm,vexpress-reset";
 				arm,vexpress-sysreg,func = <5 0>;
 			};
 
+<<<<<<< HEAD
 			muxfpga@0 {
+=======
+			muxfpga {
+>>>>>>> v4.9.227
 				compatible = "arm,vexpress-muxfpga";
 				arm,vexpress-sysreg,func = <7 0>;
 			};
 
+<<<<<<< HEAD
 			shutdown@0 {
+=======
+			shutdown {
+>>>>>>> v4.9.227
 				compatible = "arm,vexpress-shutdown";
 				arm,vexpress-sysreg,func = <8 0>;
 			};
 
+<<<<<<< HEAD
 			reboot@0 {
+=======
+			reboot {
+>>>>>>> v4.9.227
 				compatible = "arm,vexpress-reboot";
 				arm,vexpress-sysreg,func = <9 0>;
 			};
 
+<<<<<<< HEAD
 			dvimode@0 {
+=======
+			dvimode {
+>>>>>>> v4.9.227
 				compatible = "arm,vexpress-dvimode";
 				arm,vexpress-sysreg,func = <11 0>;
 			};

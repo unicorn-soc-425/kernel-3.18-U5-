@@ -16,6 +16,7 @@
 #include <linux/kmod.h>
 #include <linux/ctype.h>
 #include <linux/genhd.h>
+<<<<<<< HEAD
 #include <linux/blktrace_api.h>
 
 #ifdef CONFIG_BLOCK_SUPPORT_STLOG
@@ -24,6 +25,11 @@
 #define ST_LOG(fmt,...)
 #endif
 
+=======
+#include <linux/dax.h>
+#include <linux/blktrace_api.h>
+
+>>>>>>> v4.9.227
 #include "partitions/check.h"
 
 #ifdef CONFIG_BLK_DEV_MD
@@ -218,8 +224,12 @@ static void part_release(struct device *dev)
 {
 	struct hd_struct *p = dev_to_part(dev);
 	blk_free_devt(dev->devt);
+<<<<<<< HEAD
 	free_part_stats(p);
 	free_part_info(p);
+=======
+	hd_free_part(p);
+>>>>>>> v4.9.227
 	kfree(p);
 }
 
@@ -250,8 +260,14 @@ static void delete_partition_rcu_cb(struct rcu_head *head)
 	put_device(part_to_dev(part));
 }
 
+<<<<<<< HEAD
 void __delete_partition(struct hd_struct *part)
 {
+=======
+void __delete_partition(struct percpu_ref *ref)
+{
+	struct hd_struct *part = container_of(ref, struct hd_struct, ref);
+>>>>>>> v4.9.227
 	call_rcu(&part->rcu_head, delete_partition_rcu_cb);
 }
 
@@ -260,10 +276,13 @@ void delete_partition(struct gendisk *disk, int partno)
 	struct disk_part_tbl *ptbl = disk->part_tbl;
 	struct hd_struct *part;
 
+<<<<<<< HEAD
 #ifdef CONFIG_BLOCK_SUPPORT_STLOG
 	struct device *dev;
 #endif
 
+=======
+>>>>>>> v4.9.227
 	if (partno >= ptbl->len)
 		return;
 
@@ -274,6 +293,7 @@ void delete_partition(struct gendisk *disk, int partno)
 	rcu_assign_pointer(ptbl->part[partno], NULL);
 	rcu_assign_pointer(ptbl->last_lookup, NULL);
 	kobject_put(part->holder_dir);
+<<<<<<< HEAD
 #ifdef CONFIG_BLOCK_SUPPORT_STLOG
 	dev = part_to_dev(part);
 	ST_LOG("<%s> KOBJ_REMOVE %d:%d %s",
@@ -282,6 +302,11 @@ void delete_partition(struct gendisk *disk, int partno)
 	device_del(part_to_dev(part));
 
 	hd_struct_put(part);
+=======
+	device_del(part_to_dev(part));
+
+	hd_struct_kill(part);
+>>>>>>> v4.9.227
 }
 
 static ssize_t whole_disk_show(struct device *dev,
@@ -377,14 +402,27 @@ struct hd_struct *add_partition(struct gendisk *disk, int partno,
 			goto out_del;
 	}
 
+<<<<<<< HEAD
+=======
+	err = hd_ref_init(p);
+	if (err) {
+		if (flags & ADDPART_FLAG_WHOLEDISK)
+			goto out_remove_file;
+		goto out_del;
+	}
+
+>>>>>>> v4.9.227
 	/* everything is up and running, commence */
 	rcu_assign_pointer(ptbl->part[partno], p);
 
 	/* suppress uevent if the disk suppresses it */
 	if (!dev_get_uevent_suppress(ddev))
 		kobject_uevent(&pdev->kobj, KOBJ_ADD);
+<<<<<<< HEAD
 
 	hd_ref_init(p);
+=======
+>>>>>>> v4.9.227
 	return p;
 
 out_free_info:
@@ -394,6 +432,11 @@ out_free_stats:
 out_free:
 	kfree(p);
 	return ERR_PTR(err);
+<<<<<<< HEAD
+=======
+out_remove_file:
+	device_remove_file(pdev, &dev_attr_whole_disk);
+>>>>>>> v4.9.227
 out_del:
 	kobject_put(p->holder_dir);
 	device_del(pdev);
@@ -425,7 +468,11 @@ static int drop_partitions(struct gendisk *disk, struct block_device *bdev)
 	struct hd_struct *part;
 	int res;
 
+<<<<<<< HEAD
 	if (bdev->bd_part_count)
+=======
+	if (bdev->bd_part_count || bdev->bd_super)
+>>>>>>> v4.9.227
 		return -EBUSY;
 	res = invalidate_partition(disk, 0);
 	if (res)
@@ -503,7 +550,10 @@ rescan:
 	/* add partitions */
 	for (p = 1; p < state->limit; p++) {
 		sector_t size, from;
+<<<<<<< HEAD
 		struct partition_meta_info *info = NULL;
+=======
+>>>>>>> v4.9.227
 
 		size = state->parts[p].size;
 		if (!size)
@@ -538,8 +588,11 @@ rescan:
 			}
 		}
 
+<<<<<<< HEAD
 		if (state->parts[p].has_info)
 			info = &state->parts[p].info;
+=======
+>>>>>>> v4.9.227
 		part = add_partition(disk, p, from, size,
 				     state->parts[p].flags,
 				     &state->parts[p].info);
@@ -577,6 +630,7 @@ int invalidate_partitions(struct gendisk *disk, struct block_device *bdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 unsigned char *read_dev_sector(struct block_device *bdev, sector_t n, Sector *p)
 {
 	struct address_space *mapping = bdev->bd_inode->i_mapping;
@@ -584,13 +638,39 @@ unsigned char *read_dev_sector(struct block_device *bdev, sector_t n, Sector *p)
 
 	page = read_mapping_page(mapping, (pgoff_t)(n >> (PAGE_CACHE_SHIFT-9)),
 				 NULL);
+=======
+static struct page *read_pagecache_sector(struct block_device *bdev, sector_t n)
+{
+	struct address_space *mapping = bdev->bd_inode->i_mapping;
+
+	return read_mapping_page(mapping, (pgoff_t)(n >> (PAGE_SHIFT-9)),
+				 NULL);
+}
+
+unsigned char *read_dev_sector(struct block_device *bdev, sector_t n, Sector *p)
+{
+	struct page *page;
+
+	/* don't populate page cache for dax capable devices */
+	if (IS_DAX(bdev->bd_inode))
+		page = read_dax_sector(bdev, n);
+	else
+		page = read_pagecache_sector(bdev, n);
+
+>>>>>>> v4.9.227
 	if (!IS_ERR(page)) {
 		if (PageError(page))
 			goto fail;
 		p->v = page;
+<<<<<<< HEAD
 		return (unsigned char *)page_address(page) +  ((n & ((1 << (PAGE_CACHE_SHIFT - 9)) - 1)) << 9);
 fail:
 		page_cache_release(page);
+=======
+		return (unsigned char *)page_address(page) +  ((n & ((1 << (PAGE_SHIFT - 9)) - 1)) << 9);
+fail:
+		put_page(page);
+>>>>>>> v4.9.227
 	}
 	p->v = NULL;
 	return NULL;

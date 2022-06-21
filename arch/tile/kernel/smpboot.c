@@ -127,8 +127,12 @@ static __init int reset_init_affinity(void)
 {
 	long rc = sched_setaffinity(current->pid, &init_affinity);
 	if (rc != 0)
+<<<<<<< HEAD
 		pr_warning("couldn't reset init affinity (%ld)\n",
 		       rc);
+=======
+		pr_warn("couldn't reset init affinity (%ld)\n", rc);
+>>>>>>> v4.9.227
 	return 0;
 }
 late_initcall(reset_init_affinity);
@@ -174,7 +178,11 @@ static void start_secondary(void)
 	/* Indicate that we're ready to come up. */
 	/* Must not do this before we're ready to receive messages */
 	if (cpumask_test_and_set_cpu(cpuid, &cpu_started)) {
+<<<<<<< HEAD
 		pr_warning("CPU#%d already started!\n", cpuid);
+=======
+		pr_warn("CPU#%d already started!\n", cpuid);
+>>>>>>> v4.9.227
 		for (;;)
 			local_irq_enable();
 	}
@@ -209,7 +217,11 @@ void online_secondary(void)
 	/* Set up tile-timer clock-event device on this cpu */
 	setup_tile_timer();
 
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> v4.9.227
 }
 
 int __cpu_up(unsigned int cpu, struct task_struct *tidle)

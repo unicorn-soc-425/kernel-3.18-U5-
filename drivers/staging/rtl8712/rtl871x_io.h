@@ -232,6 +232,7 @@ struct io_queue {
 	struct	intf_hdl intf;
 };
 
+<<<<<<< HEAD
 static inline u32 _RND4(u32 sz)
 {
 	u32	val;
@@ -240,6 +241,8 @@ static inline u32 _RND4(u32 sz)
 	return val;
 }
 
+=======
+>>>>>>> v4.9.227
 u8 r8712_read8(struct _adapter *adapter, u32 addr);
 u16 r8712_read16(struct _adapter *adapter, u32 addr);
 u32 r8712_read32(struct _adapter *adapter, u32 addr);

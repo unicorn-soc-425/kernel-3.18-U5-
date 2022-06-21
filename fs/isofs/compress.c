@@ -26,7 +26,11 @@
 #include "zisofs.h"
 
 /* This should probably be global. */
+<<<<<<< HEAD
 static char zisofs_sink_page[PAGE_CACHE_SIZE];
+=======
+static char zisofs_sink_page[PAGE_SIZE];
+>>>>>>> v4.9.227
 
 /*
  * This contains the zlib memory allocation and the mutex for the
@@ -70,18 +74,30 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
 		for ( i = 0 ; i < pcount ; i++ ) {
 			if (!pages[i])
 				continue;
+<<<<<<< HEAD
 			memset(page_address(pages[i]), 0, PAGE_CACHE_SIZE);
 			flush_dcache_page(pages[i]);
 			SetPageUptodate(pages[i]);
 		}
 		return ((loff_t)pcount) << PAGE_CACHE_SHIFT;
+=======
+			memset(page_address(pages[i]), 0, PAGE_SIZE);
+			flush_dcache_page(pages[i]);
+			SetPageUptodate(pages[i]);
+		}
+		return ((loff_t)pcount) << PAGE_SHIFT;
+>>>>>>> v4.9.227
 	}
 
 	/* Because zlib is not thread-safe, do all the I/O at the top. */
 	blocknum = block_start >> bufshift;
 	memset(bhs, 0, (needblocks + 1) * sizeof(struct buffer_head *));
 	haveblocks = isofs_get_blocks(inode, blocknum, bhs, needblocks);
+<<<<<<< HEAD
 	ll_rw_block(READ, haveblocks, bhs);
+=======
+	ll_rw_block(REQ_OP_READ, 0, haveblocks, bhs);
+>>>>>>> v4.9.227
 
 	curbh = 0;
 	curpage = 0;
@@ -121,11 +137,19 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
 			if (pages[curpage]) {
 				stream.next_out = page_address(pages[curpage])
 						+ poffset;
+<<<<<<< HEAD
 				stream.avail_out = PAGE_CACHE_SIZE - poffset;
 				poffset = 0;
 			} else {
 				stream.next_out = (void *)&zisofs_sink_page;
 				stream.avail_out = PAGE_CACHE_SIZE;
+=======
+				stream.avail_out = PAGE_SIZE - poffset;
+				poffset = 0;
+			} else {
+				stream.next_out = (void *)&zisofs_sink_page;
+				stream.avail_out = PAGE_SIZE;
+>>>>>>> v4.9.227
 			}
 		}
 		if (!stream.avail_in) {
@@ -220,14 +244,23 @@ static int zisofs_fill_pages(struct inode *inode, int full_page, int pcount,
 	 * pages with the data we have anyway...
 	 */
 	start_off = page_offset(pages[full_page]);
+<<<<<<< HEAD
 	end_off = min_t(loff_t, start_off + PAGE_CACHE_SIZE, inode->i_size);
+=======
+	end_off = min_t(loff_t, start_off + PAGE_SIZE, inode->i_size);
+>>>>>>> v4.9.227
 
 	cstart_block = start_off >> zisofs_block_shift;
 	cend_block = (end_off + (1 << zisofs_block_shift) - 1)
 			>> zisofs_block_shift;
 
+<<<<<<< HEAD
 	WARN_ON(start_off - (full_page << PAGE_CACHE_SHIFT) !=
 		((cstart_block << zisofs_block_shift) & PAGE_CACHE_MASK));
+=======
+	WARN_ON(start_off - (full_page << PAGE_SHIFT) !=
+		((cstart_block << zisofs_block_shift) & PAGE_MASK));
+>>>>>>> v4.9.227
 
 	/* Find the pointer to this specific chunk */
 	/* Note: we're not using isonum_731() here because the data is known aligned */
@@ -260,10 +293,17 @@ static int zisofs_fill_pages(struct inode *inode, int full_page, int pcount,
 		ret = zisofs_uncompress_block(inode, block_start, block_end,
 					      pcount, pages, poffset, &err);
 		poffset += ret;
+<<<<<<< HEAD
 		pages += poffset >> PAGE_CACHE_SHIFT;
 		pcount -= poffset >> PAGE_CACHE_SHIFT;
 		full_page -= poffset >> PAGE_CACHE_SHIFT;
 		poffset &= ~PAGE_CACHE_MASK;
+=======
+		pages += poffset >> PAGE_SHIFT;
+		pcount -= poffset >> PAGE_SHIFT;
+		full_page -= poffset >> PAGE_SHIFT;
+		poffset &= ~PAGE_MASK;
+>>>>>>> v4.9.227
 
 		if (err) {
 			brelse(bh);
@@ -282,7 +322,11 @@ static int zisofs_fill_pages(struct inode *inode, int full_page, int pcount,
 
 	if (poffset && *pages) {
 		memset(page_address(*pages) + poffset, 0,
+<<<<<<< HEAD
 		       PAGE_CACHE_SIZE - poffset);
+=======
+		       PAGE_SIZE - poffset);
+>>>>>>> v4.9.227
 		flush_dcache_page(*pages);
 		SetPageUptodate(*pages);
 	}
@@ -302,12 +346,21 @@ static int zisofs_readpage(struct file *file, struct page *page)
 	int i, pcount, full_page;
 	unsigned int zisofs_block_shift = ISOFS_I(inode)->i_format_parm[1];
 	unsigned int zisofs_pages_per_cblock =
+<<<<<<< HEAD
 		PAGE_CACHE_SHIFT <= zisofs_block_shift ?
 		(1 << (zisofs_block_shift - PAGE_CACHE_SHIFT)) : 0;
 	struct page *pages[max_t(unsigned, zisofs_pages_per_cblock, 1)];
 	pgoff_t index = page->index, end_index;
 
 	end_index = (inode->i_size + PAGE_CACHE_SIZE - 1) >> PAGE_CACHE_SHIFT;
+=======
+		PAGE_SHIFT <= zisofs_block_shift ?
+		(1 << (zisofs_block_shift - PAGE_SHIFT)) : 0;
+	struct page *pages[max_t(unsigned, zisofs_pages_per_cblock, 1)];
+	pgoff_t index = page->index, end_index;
+
+	end_index = (inode->i_size + PAGE_SIZE - 1) >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 	/*
 	 * If this page is wholly outside i_size we just return zero;
 	 * do_generic_file_read() will handle this for us
@@ -318,7 +371,11 @@ static int zisofs_readpage(struct file *file, struct page *page)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (PAGE_CACHE_SHIFT <= zisofs_block_shift) {
+=======
+	if (PAGE_SHIFT <= zisofs_block_shift) {
+>>>>>>> v4.9.227
 		/* We have already been given one page, this is the one
 		   we must do. */
 		full_page = index & (zisofs_pages_per_cblock - 1);
@@ -351,7 +408,11 @@ static int zisofs_readpage(struct file *file, struct page *page)
 			kunmap(pages[i]);
 			unlock_page(pages[i]);
 			if (i != full_page)
+<<<<<<< HEAD
 				page_cache_release(pages[i]);
+=======
+				put_page(pages[i]);
+>>>>>>> v4.9.227
 		}
 	}			
 
@@ -361,7 +422,10 @@ static int zisofs_readpage(struct file *file, struct page *page)
 
 const struct address_space_operations zisofs_aops = {
 	.readpage = zisofs_readpage,
+<<<<<<< HEAD
 	/* No sync_page operation supported? */
+=======
+>>>>>>> v4.9.227
 	/* No bmap operation supported */
 };
 

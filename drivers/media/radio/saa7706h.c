@@ -336,6 +336,7 @@ static const struct v4l2_ctrl_ops saa7706h_ctrl_ops = {
 	.s_ctrl = saa7706h_s_ctrl,
 };
 
+<<<<<<< HEAD
 static const struct v4l2_subdev_core_ops saa7706h_core_ops = {
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
@@ -349,6 +350,9 @@ static const struct v4l2_subdev_core_ops saa7706h_core_ops = {
 static const struct v4l2_subdev_ops saa7706h_ops = {
 	.core = &saa7706h_core_ops,
 };
+=======
+static const struct v4l2_subdev_ops empty_ops = {};
+>>>>>>> v4.9.227
 
 /*
  * Generic i2c probe
@@ -373,7 +377,11 @@ static int saa7706h_probe(struct i2c_client *client,
 	if (state == NULL)
 		return -ENOMEM;
 	sd = &state->sd;
+<<<<<<< HEAD
 	v4l2_i2c_subdev_init(sd, client, &saa7706h_ops);
+=======
+	v4l2_i2c_subdev_init(sd, client, &empty_ops);
+>>>>>>> v4.9.227
 
 	v4l2_ctrl_handler_init(&state->hdl, 4);
 	v4l2_ctrl_new_std(&state->hdl, &saa7706h_ctrl_ops,
@@ -429,7 +437,10 @@ MODULE_DEVICE_TABLE(i2c, saa7706h_id);
 
 static struct i2c_driver saa7706h_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DRIVER_NAME,
 	},
 	.probe		= saa7706h_probe,

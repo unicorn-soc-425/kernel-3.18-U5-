@@ -20,6 +20,7 @@
 #include <linux/rwsem.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 #include <linux/sysctl.h>
 #include "internal.h"
 
@@ -61,6 +62,10 @@ static void crypto_proc_fips_exit(void)
 #define crypto_proc_fips_exit()
 #endif
 
+=======
+#include "internal.h"
+
+>>>>>>> v4.9.227
 static void *c_start(struct seq_file *m, loff_t *pos)
 {
 	down_read(&crypto_alg_sem);
@@ -89,6 +94,12 @@ static int c_show(struct seq_file *m, void *p)
 	seq_printf(m, "selftest     : %s\n",
 		   (alg->cra_flags & CRYPTO_ALG_TESTED) ?
 		   "passed" : "unknown");
+<<<<<<< HEAD
+=======
+	seq_printf(m, "internal     : %s\n",
+		   (alg->cra_flags & CRYPTO_ALG_INTERNAL) ?
+		   "yes" : "no");
+>>>>>>> v4.9.227
 
 	if (alg->cra_flags & CRYPTO_ALG_LARVAL) {
 		seq_printf(m, "type         : larval\n");
@@ -145,11 +156,17 @@ static const struct file_operations proc_crypto_ops = {
 void __init crypto_init_proc(void)
 {
 	proc_create("crypto", 0, NULL, &proc_crypto_ops);
+<<<<<<< HEAD
 	crypto_proc_fips_init();
+=======
+>>>>>>> v4.9.227
 }
 
 void __exit crypto_exit_proc(void)
 {
+<<<<<<< HEAD
 	crypto_proc_fips_exit();
+=======
+>>>>>>> v4.9.227
 	remove_proc_entry("crypto", NULL);
 }

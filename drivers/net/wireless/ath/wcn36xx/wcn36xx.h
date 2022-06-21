@@ -32,6 +32,12 @@
 #define WLAN_NV_FILE               "wlan/prima/WCNSS_qcom_wlan_nv.bin"
 #define WCN36XX_AGGR_BUFFER_SIZE 64
 
+<<<<<<< HEAD
+=======
+/* How many frames until we start a-mpdu TX session */
+#define WCN36XX_AMPDU_START_THRESH	20
+
+>>>>>>> v4.9.227
 extern unsigned int wcn36xx_dbg_mask;
 
 enum wcn36xx_debug_mask {
@@ -74,6 +80,16 @@ enum wcn36xx_debug_mask {
 			       buf, len, false);		\
 } while (0)
 
+<<<<<<< HEAD
+=======
+enum wcn36xx_ampdu_state {
+	WCN36XX_AMPDU_NONE,
+	WCN36XX_AMPDU_INIT,
+	WCN36XX_AMPDU_START,
+	WCN36XX_AMPDU_OPERATIONAL,
+};
+
+>>>>>>> v4.9.227
 #define WCN36XX_HW_CHANNEL(__wcn) (__wcn->hw->conf.chandef.chan->hw_value)
 #define WCN36XX_BAND(__wcn) (__wcn->hw->conf.chandef.chan->band)
 #define WCN36XX_CENTER_FREQ(__wcn) (__wcn->hw->conf.chandef.chan->center_freq)
@@ -115,10 +131,17 @@ struct wcn36xx_platform_ctrl_ops {
  */
 struct wcn36xx_vif {
 	struct list_head list;
+<<<<<<< HEAD
 	struct wcn36xx_sta *sta;
 	u8 dtim_period;
 	enum ani_ed_type encrypt_type;
 	bool is_joining;
+=======
+	u8 dtim_period;
+	enum ani_ed_type encrypt_type;
+	bool is_joining;
+	bool sta_assoc;
+>>>>>>> v4.9.227
 	struct wcn36xx_hal_mac_ssid ssid;
 
 	/* Power management */
@@ -165,6 +188,13 @@ struct wcn36xx_sta {
 	bool is_data_encrypted;
 	/* Rates */
 	struct wcn36xx_hal_supported_rates supported_rates;
+<<<<<<< HEAD
+=======
+
+	spinlock_t ampdu_lock;		/* protects next two fields */
+	enum wcn36xx_ampdu_state ampdu_state[16];
+	int non_agg_frame_ct;
+>>>>>>> v4.9.227
 };
 struct wcn36xx_dxe_ch;
 struct wcn36xx {
@@ -179,7 +209,11 @@ struct wcn36xx {
 	u8			fw_minor;
 	u8			fw_major;
 	u32			fw_feat_caps[WCN36XX_HAL_CAPS_SIZE];
+<<<<<<< HEAD
 	u32			chip_version;
+=======
+	bool			is_pronto;
+>>>>>>> v4.9.227
 
 	/* extra byte for the NULL termination */
 	u8			crm_version[WCN36XX_HAL_VERSION_LENGTH + 1];
@@ -188,7 +222,12 @@ struct wcn36xx {
 	/* IRQs */
 	int			tx_irq;
 	int			rx_irq;
+<<<<<<< HEAD
 	void __iomem		*mmio;
+=======
+	void __iomem		*ccu_base;
+	void __iomem		*dxe_base;
+>>>>>>> v4.9.227
 
 	struct wcn36xx_platform_ctrl_ops *ctrl_ops;
 	/*
@@ -201,7 +240,11 @@ struct wcn36xx {
 	struct completion	hal_rsp_compl;
 	struct workqueue_struct	*hal_ind_wq;
 	struct work_struct	hal_ind_work;
+<<<<<<< HEAD
 	struct mutex		hal_ind_mutex;
+=======
+	spinlock_t		hal_ind_lock;
+>>>>>>> v4.9.227
 	struct list_head	hal_ind_queue;
 
 	/* DXE channels */
@@ -227,9 +270,12 @@ struct wcn36xx {
 
 };
 
+<<<<<<< HEAD
 #define WCN36XX_CHIP_3660	0
 #define WCN36XX_CHIP_3680	1
 
+=======
+>>>>>>> v4.9.227
 static inline bool wcn36xx_is_fw_version(struct wcn36xx *wcn,
 					 u8 major,
 					 u8 minor,
@@ -243,4 +289,31 @@ static inline bool wcn36xx_is_fw_version(struct wcn36xx *wcn,
 }
 void wcn36xx_set_default_rates(struct wcn36xx_hal_supported_rates *rates);
 
+<<<<<<< HEAD
+=======
+static inline
+struct ieee80211_sta *wcn36xx_priv_to_sta(struct wcn36xx_sta *sta_priv)
+{
+	return container_of((void *)sta_priv, struct ieee80211_sta, drv_priv);
+}
+
+static inline
+struct wcn36xx_vif *wcn36xx_vif_to_priv(struct ieee80211_vif *vif)
+{
+	return (struct wcn36xx_vif *) vif->drv_priv;
+}
+
+static inline
+struct ieee80211_vif *wcn36xx_priv_to_vif(struct wcn36xx_vif *vif_priv)
+{
+	return container_of((void *) vif_priv, struct ieee80211_vif, drv_priv);
+}
+
+static inline
+struct wcn36xx_sta *wcn36xx_sta_to_priv(struct ieee80211_sta *sta)
+{
+	return (struct wcn36xx_sta *)sta->drv_priv;
+}
+
+>>>>>>> v4.9.227
 #endif	/* _WCN36XX_H_ */

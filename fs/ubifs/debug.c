@@ -260,7 +260,11 @@ void ubifs_dump_inode(struct ubifs_info *c, const struct inode *inode)
 	pr_err("\txattr_names    %u\n", ui->xattr_names);
 	pr_err("\tdirty          %u\n", ui->dirty);
 	pr_err("\txattr          %u\n", ui->xattr);
+<<<<<<< HEAD
 	pr_err("\tbulk_read      %u\n", ui->xattr);
+=======
+	pr_err("\tbulk_read      %u\n", ui->bulk_read);
+>>>>>>> v4.9.227
 	pr_err("\tsynced_i_size  %llu\n",
 	       (unsigned long long)ui->synced_i_size);
 	pr_err("\tui_size        %llu\n",

@@ -33,7 +33,11 @@
 	flash: m25p32@1 {
 		#address-cells = <1>;
 		#size-cells = <1>;
+<<<<<<< HEAD
 		compatible = "m25p32", "m25p80";
+=======
+		compatible = "m25p32", "jedec,spi-nor";
+>>>>>>> v4.9.227
 		spi-max-frequency = <25000000>;
 		reg = <1>;
 

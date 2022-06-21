@@ -16,6 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> v4.9.227
 #include <linux/dw_apb_timer.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -108,7 +112,11 @@ static void __init add_clocksource(struct device_node *source_timer)
 
 static u64 notrace read_sched_clock(void)
 {
+<<<<<<< HEAD
 	return ~__raw_readl(sched_io_base);
+=======
+	return ~readl_relaxed(sched_io_base);
+>>>>>>> v4.9.227
 }
 
 static const struct of_device_id sptimer_ids[] __initconst = {
@@ -130,8 +138,24 @@ static void __init init_sched_clock(void)
 	sched_clock_register(read_sched_clock, 32, sched_rate);
 }
 
+<<<<<<< HEAD
 static int num_called;
 static void __init dw_apb_timer_init(struct device_node *timer)
+=======
+#ifdef CONFIG_ARM
+static unsigned long dw_apb_delay_timer_read(void)
+{
+	return ~readl_relaxed(sched_io_base);
+}
+
+static struct delay_timer dw_apb_delay_timer = {
+	.read_current_timer	= dw_apb_delay_timer_read,
+};
+#endif
+
+static int num_called;
+static int __init dw_apb_timer_init(struct device_node *timer)
+>>>>>>> v4.9.227
 {
 	switch (num_called) {
 	case 0:
@@ -142,12 +166,24 @@ static void __init dw_apb_timer_init(struct device_node *timer)
 		pr_debug("%s: found clocksource timer\n", __func__);
 		add_clocksource(timer);
 		init_sched_clock();
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARM
+		dw_apb_delay_timer.freq = sched_rate;
+		register_current_timer_delay(&dw_apb_delay_timer);
+#endif
+>>>>>>> v4.9.227
 		break;
 	default:
 		break;
 	}
 
 	num_called++;
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> v4.9.227
 }
 CLOCKSOURCE_OF_DECLARE(pc3x2_timer, "picochip,pc3x2-timer", dw_apb_timer_init);
 CLOCKSOURCE_OF_DECLARE(apb_timer_osc, "snps,dw-apb-timer-osc", dw_apb_timer_init);

@@ -2,6 +2,10 @@
 #define _XT_RATEEST_MATCH_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/if.h>
+>>>>>>> v4.9.227
 
 enum xt_rateest_match_flags {
 	XT_RATEEST_MATCH_INVERT	= 1<<0,

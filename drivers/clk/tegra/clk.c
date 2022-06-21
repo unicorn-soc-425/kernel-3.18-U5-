@@ -14,6 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clkdev.h>
+>>>>>>> v4.9.227
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/of.h>
@@ -30,6 +34,10 @@
 #define CLK_OUT_ENB_V			0x360
 #define CLK_OUT_ENB_W			0x364
 #define CLK_OUT_ENB_X			0x280
+<<<<<<< HEAD
+=======
+#define CLK_OUT_ENB_Y			0x298
+>>>>>>> v4.9.227
 #define CLK_OUT_ENB_SET_L		0x320
 #define CLK_OUT_ENB_CLR_L		0x324
 #define CLK_OUT_ENB_SET_H		0x328
@@ -42,14 +50,26 @@
 #define CLK_OUT_ENB_CLR_W		0x44c
 #define CLK_OUT_ENB_SET_X		0x284
 #define CLK_OUT_ENB_CLR_X		0x288
+<<<<<<< HEAD
+=======
+#define CLK_OUT_ENB_SET_Y		0x29c
+#define CLK_OUT_ENB_CLR_Y		0x2a0
+>>>>>>> v4.9.227
 
 #define RST_DEVICES_L			0x004
 #define RST_DEVICES_H			0x008
 #define RST_DEVICES_U			0x00C
+<<<<<<< HEAD
 #define RST_DFLL_DVCO			0x2F4
 #define RST_DEVICES_V			0x358
 #define RST_DEVICES_W			0x35C
 #define RST_DEVICES_X			0x28C
+=======
+#define RST_DEVICES_V			0x358
+#define RST_DEVICES_W			0x35C
+#define RST_DEVICES_X			0x28C
+#define RST_DEVICES_Y			0x2a4
+>>>>>>> v4.9.227
 #define RST_DEVICES_SET_L		0x300
 #define RST_DEVICES_CLR_L		0x304
 #define RST_DEVICES_SET_H		0x308
@@ -62,6 +82,11 @@
 #define RST_DEVICES_CLR_W		0x43c
 #define RST_DEVICES_SET_X		0x290
 #define RST_DEVICES_CLR_X		0x294
+<<<<<<< HEAD
+=======
+#define RST_DEVICES_SET_Y		0x2a8
+#define RST_DEVICES_CLR_Y		0x2ac
+>>>>>>> v4.9.227
 
 /* Global data of Tegra CPU CAR ops */
 static struct tegra_cpu_car_ops dummy_car_ops;
@@ -73,7 +98,16 @@ static struct clk **clks;
 static int clk_num;
 static struct clk_onecell_data clk_data;
 
+<<<<<<< HEAD
 static struct tegra_clk_periph_regs periph_regs[] = {
+=======
+/* Handlers for SoC-specific reset lines */
+static int (*special_reset_assert)(unsigned long);
+static int (*special_reset_deassert)(unsigned long);
+static unsigned int num_special_reset;
+
+static const struct tegra_clk_periph_regs periph_regs[] = {
+>>>>>>> v4.9.227
 	[0] = {
 		.enb_reg = CLK_OUT_ENB_L,
 		.enb_set_reg = CLK_OUT_ENB_SET_L,
@@ -122,6 +156,17 @@ static struct tegra_clk_periph_regs periph_regs[] = {
 		.rst_set_reg = RST_DEVICES_SET_X,
 		.rst_clr_reg = RST_DEVICES_CLR_X,
 	},
+<<<<<<< HEAD
+=======
+	[6] = {
+		.enb_reg = CLK_OUT_ENB_Y,
+		.enb_set_reg = CLK_OUT_ENB_SET_Y,
+		.enb_clr_reg = CLK_OUT_ENB_CLR_Y,
+		.rst_reg = RST_DEVICES_Y,
+		.rst_set_reg = RST_DEVICES_SET_Y,
+		.rst_clr_reg = RST_DEVICES_CLR_Y,
+	},
+>>>>>>> v4.9.227
 };
 
 static void __iomem *clk_base;
@@ -138,15 +183,28 @@ static int tegra_clk_rst_assert(struct reset_controller_dev *rcdev,
 	 */
 	tegra_read_chipid();
 
+<<<<<<< HEAD
 	writel_relaxed(BIT(id % 32),
 			clk_base + periph_regs[id / 32].rst_set_reg);
 
 	return 0;
+=======
+	if (id < periph_banks * 32) {
+		writel_relaxed(BIT(id % 32),
+			       clk_base + periph_regs[id / 32].rst_set_reg);
+		return 0;
+	} else if (id < periph_banks * 32 + num_special_reset) {
+		return special_reset_assert(id);
+	}
+
+	return -EINVAL;
+>>>>>>> v4.9.227
 }
 
 static int tegra_clk_rst_deassert(struct reset_controller_dev *rcdev,
 		unsigned long id)
 {
+<<<<<<< HEAD
 	writel_relaxed(BIT(id % 32),
 			clk_base + periph_regs[id / 32].rst_clr_reg);
 
@@ -154,6 +212,20 @@ static int tegra_clk_rst_deassert(struct reset_controller_dev *rcdev,
 }
 
 struct tegra_clk_periph_regs *get_reg_bank(int clkid)
+=======
+	if (id < periph_banks * 32) {
+		writel_relaxed(BIT(id % 32),
+			       clk_base + periph_regs[id / 32].rst_clr_reg);
+		return 0;
+	} else if (id < periph_banks * 32 + num_special_reset) {
+		return special_reset_deassert(id);
+	}
+
+	return -EINVAL;
+}
+
+const struct tegra_clk_periph_regs *get_reg_bank(int clkid)
+>>>>>>> v4.9.227
 {
 	int reg_bank = clkid / 32;
 
@@ -242,7 +314,11 @@ void __init tegra_init_from_table(struct tegra_clk_init_table *tbl,
 	}
 }
 
+<<<<<<< HEAD
 static struct reset_control_ops rst_ops = {
+=======
+static const struct reset_control_ops rst_ops = {
+>>>>>>> v4.9.227
 	.assert = tegra_clk_rst_assert,
 	.deassert = tegra_clk_rst_deassert,
 };
@@ -272,10 +348,26 @@ void __init tegra_add_of_provider(struct device_node *np)
 	of_clk_add_provider(np, of_clk_src_onecell_get, &clk_data);
 
 	rst_ctlr.of_node = np;
+<<<<<<< HEAD
 	rst_ctlr.nr_resets = periph_banks * 32;
 	reset_controller_register(&rst_ctlr);
 }
 
+=======
+	rst_ctlr.nr_resets = periph_banks * 32 + num_special_reset;
+	reset_controller_register(&rst_ctlr);
+}
+
+void __init tegra_init_special_resets(unsigned int num,
+				      int (*assert)(unsigned long),
+				      int (*deassert)(unsigned long))
+{
+	num_special_reset = num;
+	special_reset_assert = assert;
+	special_reset_deassert = deassert;
+}
+
+>>>>>>> v4.9.227
 void __init tegra_register_devclks(struct tegra_devclk *dev_clks, int num)
 {
 	int i;
@@ -302,6 +394,7 @@ struct clk ** __init tegra_lookup_dt_id(int clk_id,
 
 tegra_clk_apply_init_table_func tegra_clk_apply_init_table;
 
+<<<<<<< HEAD
 void __init tegra_clocks_apply_init_table(void)
 {
 	if (!tegra_clk_apply_init_table)
@@ -309,3 +402,15 @@ void __init tegra_clocks_apply_init_table(void)
 
 	tegra_clk_apply_init_table();
 }
+=======
+static int __init tegra_clocks_apply_init_table(void)
+{
+	if (!tegra_clk_apply_init_table)
+		return 0;
+
+	tegra_clk_apply_init_table();
+
+	return 0;
+}
+arch_initcall(tegra_clocks_apply_init_table);
+>>>>>>> v4.9.227

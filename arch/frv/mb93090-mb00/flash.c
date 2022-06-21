@@ -9,7 +9,11 @@
  * 2 of the Licence, or (at your option) any later version.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+#include <linux/module.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/physmap.h>

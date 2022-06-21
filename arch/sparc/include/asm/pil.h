@@ -20,7 +20,10 @@
 #define PIL_SMP_CALL_FUNC	1
 #define PIL_SMP_RECEIVE_SIGNAL	2
 #define PIL_SMP_CAPTURE		3
+<<<<<<< HEAD
 #define PIL_SMP_CTX_NEW_VERSION	4
+=======
+>>>>>>> v4.9.227
 #define PIL_DEVICE_IRQ		5
 #define PIL_SMP_CALL_FUNC_SNGL	6
 #define PIL_DEFERRED_PCR_WORK	7

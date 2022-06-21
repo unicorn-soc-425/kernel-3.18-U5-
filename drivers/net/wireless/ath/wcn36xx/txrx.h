@@ -32,6 +32,15 @@
 #define WCN36XX_BD_RATE_MGMT 2
 #define WCN36XX_BD_RATE_CTRL 3
 
+<<<<<<< HEAD
+=======
+enum wcn36xx_txbd_ssn_type {
+	WCN36XX_TXBD_SSN_FILL_HOST = 0,
+	WCN36XX_TXBD_SSN_FILL_DPU_NON_QOS = 1,
+	WCN36XX_TXBD_SSN_FILL_DPU_QOS = 2,
+};
+
+>>>>>>> v4.9.227
 struct wcn36xx_pdu {
 	u32	dpu_fb:8;
 	u32	adu_fb:8;
@@ -50,7 +59,12 @@ struct wcn36xx_pdu {
 	/* 0x0c*/
 	u32	reserved4:8;
 	u32	tid:4;
+<<<<<<< HEAD
 	u32	reserved3:4;
+=======
+	u32	bd_ssn:2;
+	u32	reserved3:2;
+>>>>>>> v4.9.227
 	u32	mpdu_len:16;
 };
 

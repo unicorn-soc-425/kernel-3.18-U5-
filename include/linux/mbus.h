@@ -11,6 +11,11 @@
 #ifndef __LINUX_MBUS_H
 #define __LINUX_MBUS_H
 
+<<<<<<< HEAD
+=======
+#include <linux/errno.h>
+
+>>>>>>> v4.9.227
 struct resource;
 
 struct mbus_dram_target_info
@@ -54,15 +59,46 @@ struct mbus_dram_target_info
  */
 #ifdef CONFIG_PLAT_ORION
 extern const struct mbus_dram_target_info *mv_mbus_dram_info(void);
+<<<<<<< HEAD
+=======
+extern const struct mbus_dram_target_info *mv_mbus_dram_info_nooverlap(void);
+int mvebu_mbus_get_io_win_info(phys_addr_t phyaddr, u32 *size, u8 *target,
+			       u8 *attr);
+>>>>>>> v4.9.227
 #else
 static inline const struct mbus_dram_target_info *mv_mbus_dram_info(void)
 {
 	return NULL;
 }
+<<<<<<< HEAD
 #endif
 
 void mvebu_mbus_get_pcie_mem_aperture(struct resource *res);
 void mvebu_mbus_get_pcie_io_aperture(struct resource *res);
+=======
+static inline const struct mbus_dram_target_info *mv_mbus_dram_info_nooverlap(void)
+{
+	return NULL;
+}
+static inline int mvebu_mbus_get_io_win_info(phys_addr_t phyaddr, u32 *size,
+					     u8 *target, u8 *attr)
+{
+	/*
+	 * On all ARM32 MVEBU platforms with MBus support, this stub
+	 * function will not get called. The real function from the
+	 * MBus driver is called instead. ARM64 MVEBU platforms like
+	 * the Armada 3700 could use the mv_xor device driver which calls
+	 * into this function
+	 */
+	return -EINVAL;
+}
+#endif
+
+int mvebu_mbus_save_cpu_target(u32 __iomem *store_addr);
+void mvebu_mbus_get_pcie_mem_aperture(struct resource *res);
+void mvebu_mbus_get_pcie_io_aperture(struct resource *res);
+int mvebu_mbus_get_dram_win_info(phys_addr_t phyaddr, u8 *target, u8 *attr);
+>>>>>>> v4.9.227
 int mvebu_mbus_add_window_remap_by_id(unsigned int target,
 				      unsigned int attribute,
 				      phys_addr_t base, size_t size,

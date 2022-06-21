@@ -17,7 +17,11 @@
 
 		cpu {
 			device_type = "cpu";
+<<<<<<< HEAD
 			compatible = "arm,arm1176ej-s";
+=======
+			compatible = "arm,arm1176jzf";
+>>>>>>> v4.9.227
 		};
 	};
 

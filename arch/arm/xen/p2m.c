@@ -10,10 +10,17 @@
 
 #include <xen/xen.h>
 #include <xen/interface/memory.h>
+<<<<<<< HEAD
 #include <xen/swiotlb-xen.h>
 
 #include <asm/cacheflush.h>
 #include <asm/xen/page.h>
+=======
+#include <xen/page.h>
+#include <xen/swiotlb-xen.h>
+
+#include <asm/cacheflush.h>
+>>>>>>> v4.9.227
 #include <asm/xen/hypercall.h>
 #include <asm/xen/interface.h>
 
@@ -93,8 +100,13 @@ int set_foreign_p2m_mapping(struct gnttab_map_grant_ref *map_ops,
 	for (i = 0; i < count; i++) {
 		if (map_ops[i].status)
 			continue;
+<<<<<<< HEAD
 		set_phys_to_machine(map_ops[i].host_addr >> PAGE_SHIFT,
 				    map_ops[i].dev_bus_addr >> PAGE_SHIFT);
+=======
+		set_phys_to_machine(map_ops[i].host_addr >> XEN_PAGE_SHIFT,
+				    map_ops[i].dev_bus_addr >> XEN_PAGE_SHIFT);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -102,13 +114,21 @@ int set_foreign_p2m_mapping(struct gnttab_map_grant_ref *map_ops,
 EXPORT_SYMBOL_GPL(set_foreign_p2m_mapping);
 
 int clear_foreign_p2m_mapping(struct gnttab_unmap_grant_ref *unmap_ops,
+<<<<<<< HEAD
 			      struct gnttab_map_grant_ref *kmap_ops,
+=======
+			      struct gnttab_unmap_grant_ref *kunmap_ops,
+>>>>>>> v4.9.227
 			      struct page **pages, unsigned int count)
 {
 	int i;
 
 	for (i = 0; i < count; i++) {
+<<<<<<< HEAD
 		set_phys_to_machine(unmap_ops[i].host_addr >> PAGE_SHIFT,
+=======
+		set_phys_to_machine(unmap_ops[i].host_addr >> XEN_PAGE_SHIFT,
+>>>>>>> v4.9.227
 				    INVALID_P2M_ENTRY);
 	}
 

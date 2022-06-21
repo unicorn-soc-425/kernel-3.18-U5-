@@ -2,7 +2,13 @@ MOXA ART timer
 
 Required properties:
 
+<<<<<<< HEAD
 - compatible : Must be "moxa,moxart-timer"
+=======
+- compatible : Must be one of:
+ 	- "moxa,moxart-timer"
+ 	- "aspeed,ast2400-timer"
+>>>>>>> v4.9.227
 - reg : Should contain registers location and length
 - interrupts : Should contain the timer interrupt number
 - clocks : Should contain phandle for the clock that drives the counter

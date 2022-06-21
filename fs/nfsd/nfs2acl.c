@@ -42,15 +42,25 @@ static __be32 nfsacld_proc_getacl(struct svc_rqst * rqstp,
 	if (nfserr)
 		RETURN_STATUS(nfserr);
 
+<<<<<<< HEAD
 	inode = fh->fh_dentry->d_inode;
 
 	if (argp->mask & ~(NFS_ACL|NFS_ACLCNT|NFS_DFACL|NFS_DFACLCNT))
+=======
+	inode = d_inode(fh->fh_dentry);
+
+	if (argp->mask & ~NFS_ACL_MASK)
+>>>>>>> v4.9.227
 		RETURN_STATUS(nfserr_inval);
 	resp->mask = argp->mask;
 
 	nfserr = fh_getattr(fh, &resp->stat);
 	if (nfserr)
+<<<<<<< HEAD
 		goto fail;
+=======
+		RETURN_STATUS(nfserr);
+>>>>>>> v4.9.227
 
 	if (resp->mask & (NFS_ACL|NFS_ACLCNT)) {
 		acl = get_acl(inode, ACL_TYPE_ACCESS);
@@ -103,7 +113,11 @@ static __be32 nfsacld_proc_setacl(struct svc_rqst * rqstp,
 	if (nfserr)
 		goto out;
 
+<<<<<<< HEAD
 	inode = fh->fh_dentry->d_inode;
+=======
+	inode = d_inode(fh->fh_dentry);
+>>>>>>> v4.9.227
 
 	error = fh_want_write(fh);
 	if (error)
@@ -202,7 +216,11 @@ static int nfsaclsvc_decode_setaclargs(struct svc_rqst *rqstp, __be32 *p,
 	if (!p)
 		return 0;
 	argp->mask = ntohl(*p++);
+<<<<<<< HEAD
 	if (argp->mask & ~(NFS_ACL|NFS_ACLCNT|NFS_DFACL|NFS_DFACLCNT) ||
+=======
+	if (argp->mask & ~NFS_ACL_MASK ||
+>>>>>>> v4.9.227
 	    !xdr_argsize_check(rqstp, p))
 		return 0;
 
@@ -266,9 +284,15 @@ static int nfsaclsvc_encode_getaclres(struct svc_rqst *rqstp, __be32 *p,
 	 * nfsd_dispatch actually ensures the following cannot happen.
 	 * However, it seems fragile to depend on that.
 	 */
+<<<<<<< HEAD
 	if (dentry == NULL || dentry->d_inode == NULL)
 		return 0;
 	inode = dentry->d_inode;
+=======
+	if (dentry == NULL || d_really_is_negative(dentry))
+		return 0;
+	inode = d_inode(dentry);
+>>>>>>> v4.9.227
 
 	p = nfs2svc_encode_fattr(rqstp, p, &resp->fh, &resp->stat);
 	*p++ = htonl(resp->mask);
@@ -293,9 +317,13 @@ static int nfsaclsvc_encode_getaclres(struct svc_rqst *rqstp, __be32 *p,
 				  resp->acl_default,
 				  resp->mask & NFS_DFACL,
 				  NFS_ACL_DEFAULT);
+<<<<<<< HEAD
 	if (n <= 0)
 		return 0;
 	return 1;
+=======
+	return (n > 0);
+>>>>>>> v4.9.227
 }
 
 static int nfsaclsvc_encode_attrstatres(struct svc_rqst *rqstp, __be32 *p,

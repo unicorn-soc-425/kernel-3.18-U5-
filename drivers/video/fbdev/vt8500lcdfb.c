@@ -113,10 +113,15 @@ static int vt8500lcd_set_par(struct fb_info *info)
 	}
 
 	for (i = 0; i < 8; i++) {
+<<<<<<< HEAD
 		if (bpp_values[i] == info->var.bits_per_pixel) {
 			reg_bpp = i;
 			continue;
 		}
+=======
+		if (bpp_values[i] == info->var.bits_per_pixel)
+			reg_bpp = i;
+>>>>>>> v4.9.227
 	}
 
 	control0 = readl(fbi->regbase) & ~0xf;
@@ -486,7 +491,10 @@ static struct platform_driver vt8500lcd_driver = {
 	.probe		= vt8500lcd_probe,
 	.remove		= vt8500lcd_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "vt8500-lcd",
 		.of_match_table = of_match_ptr(via_dt_ids),
 	},

@@ -1,6 +1,9 @@
 #include <as-layout.h>
 
+<<<<<<< HEAD
 	.globl syscall_stub
+=======
+>>>>>>> v4.9.227
 .section .__syscall_stub, "ax"
 
 	.globl batch_syscall_stub

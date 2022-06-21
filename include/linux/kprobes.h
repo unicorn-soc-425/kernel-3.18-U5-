@@ -197,6 +197,10 @@ struct kretprobe_instance {
 	struct kretprobe *rp;
 	kprobe_opcode_t *ret_addr;
 	struct task_struct *task;
+<<<<<<< HEAD
+=======
+	void *fp;
+>>>>>>> v4.9.227
 	char data[0];
 };
 
@@ -267,6 +271,11 @@ extern void show_registers(struct pt_regs *regs);
 extern void kprobes_inc_nmissed_count(struct kprobe *p);
 extern bool arch_within_kprobe_blacklist(unsigned long addr);
 
+<<<<<<< HEAD
+=======
+extern bool within_kprobe_blacklist(unsigned long addr);
+
+>>>>>>> v4.9.227
 struct kprobe_insn_cache {
 	struct mutex mutex;
 	void *(*alloc)(void);	/* allocate insn page */
@@ -308,7 +317,12 @@ struct optimized_kprobe {
 /* Architecture dependent functions for direct jump optimization */
 extern int arch_prepared_optinsn(struct arch_optimized_insn *optinsn);
 extern int arch_check_optimized_kprobe(struct optimized_kprobe *op);
+<<<<<<< HEAD
 extern int arch_prepare_optimized_kprobe(struct optimized_kprobe *op);
+=======
+extern int arch_prepare_optimized_kprobe(struct optimized_kprobe *op,
+					 struct kprobe *orig);
+>>>>>>> v4.9.227
 extern void arch_remove_optimized_kprobe(struct optimized_kprobe *op);
 extern void arch_optimize_kprobes(struct list_head *oplist);
 extern void arch_unoptimize_kprobes(struct list_head *oplist,
@@ -337,6 +351,10 @@ extern void kprobe_ftrace_handler(unsigned long ip, unsigned long parent_ip,
 extern int arch_prepare_kprobe_ftrace(struct kprobe *p);
 #endif
 
+<<<<<<< HEAD
+=======
+int arch_check_ftrace_location(struct kprobe *p);
+>>>>>>> v4.9.227
 
 /* Get the kprobe at this addr (if any) - called with preemption disabled */
 struct kprobe *get_kprobe(void *addr);

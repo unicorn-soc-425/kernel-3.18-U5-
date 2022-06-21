@@ -27,11 +27,14 @@
  */
 #define OMAP_UART_INFO_OFS	0x3ffc
 
+<<<<<<< HEAD
 /* OMAP1 serial ports */
 #define OMAP1_UART1_BASE	0xfffb0000
 #define OMAP1_UART2_BASE	0xfffb0800
 #define OMAP1_UART3_BASE	0xfffb9800
 
+=======
+>>>>>>> v4.9.227
 #define OMAP_PORT_SHIFT		2
 #define OMAP7XX_PORT_SHIFT	0
 

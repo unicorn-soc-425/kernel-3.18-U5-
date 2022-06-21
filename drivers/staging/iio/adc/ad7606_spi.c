@@ -22,15 +22,25 @@ static int ad7606_spi_read_block(struct device *dev,
 	struct spi_device *spi = to_spi_device(dev);
 	int i, ret;
 	unsigned short *data = buf;
+<<<<<<< HEAD
 
 	ret = spi_read(spi, (u8 *)buf, count * 2);
+=======
+	__be16 *bdata = buf;
+
+	ret = spi_read(spi, buf, count * 2);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(&spi->dev, "SPI read error\n");
 		return ret;
 	}
 
 	for (i = 0; i < count; i++)
+<<<<<<< HEAD
 		data[i] = be16_to_cpu(data[i]);
+=======
+		data[i] = be16_to_cpu(bdata[i]);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -44,8 +54,13 @@ static int ad7606_spi_probe(struct spi_device *spi)
 	struct iio_dev *indio_dev;
 
 	indio_dev = ad7606_probe(&spi->dev, spi->irq, NULL,
+<<<<<<< HEAD
 			   spi_get_device_id(spi)->driver_data,
 			   &ad7606_spi_bops);
+=======
+				 spi_get_device_id(spi)->driver_data,
+				 &ad7606_spi_bops);
+>>>>>>> v4.9.227
 
 	if (IS_ERR(indio_dev))
 		return PTR_ERR(indio_dev);
@@ -62,6 +77,7 @@ static int ad7606_spi_remove(struct spi_device *spi)
 	return ad7606_remove(indio_dev, spi->irq);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int ad7606_spi_suspend(struct device *dev)
 {
@@ -91,6 +107,8 @@ static const struct dev_pm_ops ad7606_pm_ops = {
 #define AD7606_SPI_PM_OPS NULL
 #endif
 
+=======
+>>>>>>> v4.9.227
 static const struct spi_device_id ad7606_id[] = {
 	{"ad7606-8", ID_AD7606_8},
 	{"ad7606-6", ID_AD7606_6},
@@ -102,8 +120,12 @@ MODULE_DEVICE_TABLE(spi, ad7606_id);
 static struct spi_driver ad7606_driver = {
 	.driver = {
 		.name = "ad7606",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.pm    = AD7606_SPI_PM_OPS,
+=======
+		.pm = AD7606_PM_OPS,
+>>>>>>> v4.9.227
 	},
 	.probe = ad7606_spi_probe,
 	.remove = ad7606_spi_remove,

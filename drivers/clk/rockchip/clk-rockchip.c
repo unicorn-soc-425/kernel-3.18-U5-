@@ -49,14 +49,29 @@ static void __init rk2928_gate_clk_init(struct device_node *node)
 	}
 
 	reg = of_iomap(node, 0);
+<<<<<<< HEAD
 
 	clk_data = kzalloc(sizeof(struct clk_onecell_data), GFP_KERNEL);
 	if (!clk_data)
 		return;
+=======
+	if (!reg)
+		return;
+
+	clk_data = kzalloc(sizeof(struct clk_onecell_data), GFP_KERNEL);
+	if (!clk_data) {
+		iounmap(reg);
+		return;
+	}
+>>>>>>> v4.9.227
 
 	clk_data->clks = kzalloc(qty * sizeof(struct clk *), GFP_KERNEL);
 	if (!clk_data->clks) {
 		kfree(clk_data);
+<<<<<<< HEAD
+=======
+		iounmap(reg);
+>>>>>>> v4.9.227
 		return;
 	}
 

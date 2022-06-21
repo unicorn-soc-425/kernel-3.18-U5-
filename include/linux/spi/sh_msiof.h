@@ -7,6 +7,11 @@ struct sh_msiof_spi_info {
 	u16 num_chipselect;
 	unsigned int dma_tx_id;
 	unsigned int dma_rx_id;
+<<<<<<< HEAD
+=======
+	u32 dtdl;
+	u32 syncdl;
+>>>>>>> v4.9.227
 };
 
 #endif /* __SPI_SH_MSIOF_H__ */

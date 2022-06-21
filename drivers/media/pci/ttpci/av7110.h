@@ -32,7 +32,11 @@
 #include "stv0297.h"
 #include "l64781.h"
 
+<<<<<<< HEAD
 #include <media/saa7146_vv.h>
+=======
+#include <media/drv-intf/saa7146_vv.h>
+>>>>>>> v4.9.227
 
 
 #define ANALOG_TUNER_VES1820 1
@@ -102,8 +106,13 @@ struct av7110 {
 	struct dvb_device	dvb_dev;
 	struct dvb_net		dvb_net;
 
+<<<<<<< HEAD
 	struct video_device	*v4l_dev;
 	struct video_device	*vbi_dev;
+=======
+	struct video_device	v4l_dev;
+	struct video_device	vbi_dev;
+>>>>>>> v4.9.227
 
 	struct saa7146_dev	*dev;
 
@@ -269,12 +278,17 @@ struct av7110 {
 	unsigned long size_root;
 
 	struct dvb_frontend* fe;
+<<<<<<< HEAD
 	fe_status_t fe_status;
+=======
+	enum fe_status fe_status;
+>>>>>>> v4.9.227
 
 	struct mutex ioctl_mutex;
 
 	/* crash recovery */
 	void				(*recover)(struct av7110* av7110);
+<<<<<<< HEAD
 	fe_sec_voltage_t		saved_voltage;
 	fe_sec_tone_mode_t		saved_tone;
 	struct dvb_diseqc_master_cmd	saved_master_cmd;
@@ -288,6 +302,26 @@ struct av7110 {
 	int (*fe_set_tone)(struct dvb_frontend* fe, fe_sec_tone_mode_t tone);
 	int (*fe_set_voltage)(struct dvb_frontend* fe, fe_sec_voltage_t voltage);
 	int (*fe_dishnetwork_send_legacy_command)(struct dvb_frontend* fe, unsigned long cmd);
+=======
+	enum fe_sec_voltage		saved_voltage;
+	enum fe_sec_tone_mode		saved_tone;
+	struct dvb_diseqc_master_cmd	saved_master_cmd;
+	enum fe_sec_mini_cmd		saved_minicmd;
+
+	int (*fe_init)(struct dvb_frontend* fe);
+	int (*fe_read_status)(struct dvb_frontend *fe, enum fe_status *status);
+	int (*fe_diseqc_reset_overload)(struct dvb_frontend *fe);
+	int (*fe_diseqc_send_master_cmd)(struct dvb_frontend *fe,
+					 struct dvb_diseqc_master_cmd *cmd);
+	int (*fe_diseqc_send_burst)(struct dvb_frontend *fe,
+				    enum fe_sec_mini_cmd minicmd);
+	int (*fe_set_tone)(struct dvb_frontend *fe,
+			   enum fe_sec_tone_mode tone);
+	int (*fe_set_voltage)(struct dvb_frontend *fe,
+			      enum fe_sec_voltage voltage);
+	int (*fe_dishnetwork_send_legacy_command)(struct dvb_frontend *fe,
+						  unsigned long cmd);
+>>>>>>> v4.9.227
 	int (*fe_set_frontend)(struct dvb_frontend *fe);
 };
 

@@ -15,12 +15,20 @@
 #include <linux/device.h>
 #include <linux/err.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/kernel.h>
+>>>>>>> v4.9.227
 #include <linux/list.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
 #include <linux/ioport.h>
 #include <linux/acpi.h>
 #include <linux/acpi_dma.h>
+<<<<<<< HEAD
+=======
+#include <linux/property.h>
+>>>>>>> v4.9.227
 
 static LIST_HEAD(acpi_dma_list);
 static DEFINE_MUTEX(acpi_dma_lock);
@@ -43,7 +51,11 @@ static int acpi_dma_parse_resource_group(const struct acpi_csrt_group *grp,
 {
 	const struct acpi_csrt_shared_info *si;
 	struct list_head resource_list;
+<<<<<<< HEAD
 	struct resource_list_entry *rentry;
+=======
+	struct resource_entry *rentry;
+>>>>>>> v4.9.227
 	resource_size_t mem = 0, irq = 0;
 	int ret;
 
@@ -56,10 +68,17 @@ static int acpi_dma_parse_resource_group(const struct acpi_csrt_group *grp,
 		return 0;
 
 	list_for_each_entry(rentry, &resource_list, node) {
+<<<<<<< HEAD
 		if (resource_type(&rentry->res) == IORESOURCE_MEM)
 			mem = rentry->res.start;
 		else if (resource_type(&rentry->res) == IORESOURCE_IRQ)
 			irq = rentry->res.start;
+=======
+		if (resource_type(rentry->res) == IORESOURCE_MEM)
+			mem = rentry->res->start;
+		else if (resource_type(rentry->res) == IORESOURCE_IRQ)
+			irq = rentry->res->start;
+>>>>>>> v4.9.227
 	}
 
 	acpi_dev_free_resource_list(&resource_list);
@@ -71,7 +90,13 @@ static int acpi_dma_parse_resource_group(const struct acpi_csrt_group *grp,
 	si = (const struct acpi_csrt_shared_info *)&grp[1];
 
 	/* Match device by MMIO and IRQ */
+<<<<<<< HEAD
 	if (si->mmio_base_low != mem || si->gsi_interrupt != irq)
+=======
+	if (si->mmio_base_low != lower_32_bits(mem) ||
+	    si->mmio_base_high != upper_32_bits(mem) ||
+	    si->gsi_interrupt != irq)
+>>>>>>> v4.9.227
 		return 0;
 
 	dev_dbg(&adev->dev, "matches with %.4s%04X (rev %u)\n",
@@ -160,10 +185,15 @@ int acpi_dma_controller_register(struct device *dev,
 		return -EINVAL;
 
 	/* Check if the device was enumerated by ACPI */
+<<<<<<< HEAD
 	if (!ACPI_HANDLE(dev))
 		return -EINVAL;
 
 	if (acpi_bus_get_device(ACPI_HANDLE(dev), &adev))
+=======
+	adev = ACPI_COMPANION(dev);
+	if (!adev)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	adma = kzalloc(sizeof(*adma), GFP_KERNEL);
@@ -358,10 +388,18 @@ struct dma_chan *acpi_dma_request_slave_chan_by_index(struct device *dev,
 	int found;
 
 	/* Check if the device was enumerated by ACPI */
+<<<<<<< HEAD
 	if (!dev || !ACPI_HANDLE(dev))
 		return ERR_PTR(-ENODEV);
 
 	if (acpi_bus_get_device(ACPI_HANDLE(dev), &adev))
+=======
+	if (!dev)
+		return ERR_PTR(-ENODEV);
+
+	adev = ACPI_COMPANION(dev);
+	if (!adev)
+>>>>>>> v4.9.227
 		return ERR_PTR(-ENODEV);
 
 	memset(&pdata, 0, sizeof(pdata));
@@ -413,12 +451,20 @@ EXPORT_SYMBOL_GPL(acpi_dma_request_slave_chan_by_index);
  * translate the names "tx" and "rx" here based on the most common case where
  * the first FixedDMA descriptor is TX and second is RX.
  *
+<<<<<<< HEAD
+=======
+ * If the device has "dma-names" property the FixedDMA descriptor indices
+ * are retrieved based on those. Otherwise the function falls back using
+ * hardcoded indices.
+ *
+>>>>>>> v4.9.227
  * Return:
  * Pointer to appropriate dma channel on success or an error pointer.
  */
 struct dma_chan *acpi_dma_request_slave_chan_by_name(struct device *dev,
 		const char *name)
 {
+<<<<<<< HEAD
 	size_t index;
 
 	if (!strcmp(name, "tx"))
@@ -428,6 +474,21 @@ struct dma_chan *acpi_dma_request_slave_chan_by_name(struct device *dev,
 	else
 		return ERR_PTR(-ENODEV);
 
+=======
+	int index;
+
+	index = device_property_match_string(dev, "dma-names", name);
+	if (index < 0) {
+		if (!strcmp(name, "tx"))
+			index = 0;
+		else if (!strcmp(name, "rx"))
+			index = 1;
+		else
+			return ERR_PTR(-ENODEV);
+	}
+
+	dev_dbg(dev, "Looking for DMA channel \"%s\" at index %d...\n", name, index);
+>>>>>>> v4.9.227
 	return acpi_dma_request_slave_chan_by_index(dev, index);
 }
 EXPORT_SYMBOL_GPL(acpi_dma_request_slave_chan_by_name);

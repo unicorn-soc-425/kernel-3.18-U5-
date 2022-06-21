@@ -20,7 +20,11 @@
  */
 
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <asm/nvram.h>
 #include <linux/init.h>
 #include <linux/delay.h>

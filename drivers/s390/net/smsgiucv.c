@@ -49,7 +49,11 @@ static DEFINE_SPINLOCK(smsg_list_lock);
 static LIST_HEAD(smsg_list);
 static int iucv_path_connected;
 
+<<<<<<< HEAD
 static int smsg_path_pending(struct iucv_path *, u8 ipvmid[8], u8 ipuser[16]);
+=======
+static int smsg_path_pending(struct iucv_path *, u8 *, u8 *);
+>>>>>>> v4.9.227
 static void smsg_message_pending(struct iucv_path *, struct iucv_message *);
 
 static struct iucv_handler smsg_handler = {
@@ -57,8 +61,12 @@ static struct iucv_handler smsg_handler = {
 	.message_pending = smsg_message_pending,
 };
 
+<<<<<<< HEAD
 static int smsg_path_pending(struct iucv_path *path, u8 ipvmid[8],
 			     u8 ipuser[16])
+=======
+static int smsg_path_pending(struct iucv_path *path, u8 *ipvmid, u8 *ipuser)
+>>>>>>> v4.9.227
 {
 	if (strncmp(ipvmid, "*MSG    ", 8) != 0)
 		return -EINVAL;
@@ -190,7 +198,11 @@ static struct device_driver smsg_driver = {
 
 static void __exit smsg_exit(void)
 {
+<<<<<<< HEAD
 	cpcmd("SET SMSG OFF", NULL, 0, NULL);
+=======
+	cpcmd("SET SMSG IUCV", NULL, 0, NULL);
+>>>>>>> v4.9.227
 	device_unregister(smsg_dev);
 	iucv_unregister(&smsg_handler, 1);
 	driver_unregister(&smsg_driver);

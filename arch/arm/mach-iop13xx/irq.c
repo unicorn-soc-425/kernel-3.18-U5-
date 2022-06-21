@@ -25,7 +25,11 @@
 #include <asm/irq.h>
 #include <mach/hardware.h>
 #include <mach/irqs.h>
+<<<<<<< HEAD
 #include <mach/msi.h>
+=======
+#include "msi.h"
+>>>>>>> v4.9.227
 
 /* INTCTL0 CP6 R0 Page 4
  */
@@ -233,7 +237,11 @@ void __init iop13xx_init_irq(void)
 			irq_set_chip(i, &iop13xx_irqchip4);
 
 		irq_set_handler(i, handle_level_irq);
+<<<<<<< HEAD
 		set_irq_flags(i, IRQF_VALID | IRQF_PROBE);
+=======
+		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> v4.9.227
 	}
 
 	iop13xx_msi_init();

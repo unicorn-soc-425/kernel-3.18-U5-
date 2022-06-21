@@ -339,7 +339,10 @@ static struct platform_driver ibwdt_driver = {
 	.remove		= ibwdt_remove,
 	.shutdown	= ibwdt_shutdown,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DRV_NAME,
 	},
 };

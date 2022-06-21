@@ -1298,7 +1298,11 @@ rescan_fifos:
 
 	/*
 	 * Wait for any inprogress DMA to complete and clear DMA state
+<<<<<<< HEAD
 	 * if this if for an SCB in the qinfifo.
+=======
+	 * if this is for an SCB in the qinfifo.
+>>>>>>> v4.9.227
 	 */
 	while (((ccscbctl = ahd_inb(ahd, CCSCBCTL)) & (CCARREN|CCSCBEN)) != 0) {
 
@@ -10437,14 +10441,21 @@ ahd_handle_en_lun(struct ahd_softc *ahd, struct cam_sim *sim, union ccb *ccb)
 				return;
 			}
 		}
+<<<<<<< HEAD
 		lstate = kmalloc(sizeof(*lstate), GFP_ATOMIC);
+=======
+		lstate = kzalloc(sizeof(*lstate), GFP_ATOMIC);
+>>>>>>> v4.9.227
 		if (lstate == NULL) {
 			xpt_print_path(ccb->ccb_h.path);
 			printk("Couldn't allocate lstate\n");
 			ccb->ccb_h.status = CAM_RESRC_UNAVAIL;
 			return;
 		}
+<<<<<<< HEAD
 		memset(lstate, 0, sizeof(*lstate));
+=======
+>>>>>>> v4.9.227
 		status = xpt_create_path(&lstate->path, /*periph*/NULL,
 					 xpt_path_path_id(ccb->ccb_h.path),
 					 xpt_path_target_id(ccb->ccb_h.path),

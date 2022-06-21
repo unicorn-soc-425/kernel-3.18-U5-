@@ -102,7 +102,11 @@ struct vpfe_config {
 struct vpfe_device {
 	/* V4l2 specific parameters */
 	/* Identifies video device for this channel */
+<<<<<<< HEAD
 	struct video_device *video_dev;
+=======
+	struct video_device video_dev;
+>>>>>>> v4.9.227
 	/* sub devices */
 	struct v4l2_subdev **sd;
 	/* vpfe cfg */

@@ -209,7 +209,10 @@ static int ct82c710_remove(struct platform_device *dev)
 static struct platform_driver ct82c710_driver = {
 	.driver		= {
 		.name	= "ct82c710",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ct82c710_probe,
 	.remove		= ct82c710_remove,

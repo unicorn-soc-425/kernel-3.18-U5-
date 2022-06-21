@@ -58,6 +58,7 @@ static void cpuid_smp_cpuid(void *cmd_block)
 		    &cmd->eax, &cmd->ebx, &cmd->ecx, &cmd->edx);
 }
 
+<<<<<<< HEAD
 static loff_t cpuid_seek(struct file *file, loff_t offset, int orig)
 {
 	loff_t ret;
@@ -80,6 +81,8 @@ static loff_t cpuid_seek(struct file *file, loff_t offset, int orig)
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static ssize_t cpuid_read(struct file *file, char __user *buf,
 			  size_t count, loff_t *ppos)
 {
@@ -132,7 +135,11 @@ static int cpuid_open(struct inode *inode, struct file *file)
  */
 static const struct file_operations cpuid_fops = {
 	.owner = THIS_MODULE,
+<<<<<<< HEAD
 	.llseek = cpuid_seek,
+=======
+	.llseek = no_seek_end_llseek,
+>>>>>>> v4.9.227
 	.read = cpuid_read,
 	.open = cpuid_open,
 };
@@ -143,7 +150,11 @@ static int cpuid_device_create(int cpu)
 
 	dev = device_create(cpuid_class, NULL, MKDEV(CPUID_MAJOR, cpu), NULL,
 			    "cpu%d", cpu);
+<<<<<<< HEAD
 	return IS_ERR(dev) ? PTR_ERR(dev) : 0;
+=======
+	return PTR_ERR_OR_ZERO(dev);
+>>>>>>> v4.9.227
 }
 
 static void cpuid_device_destroy(int cpu)
@@ -170,7 +181,11 @@ static int cpuid_class_cpu_callback(struct notifier_block *nfb,
 	return notifier_from_errno(err);
 }
 
+<<<<<<< HEAD
 static struct notifier_block __refdata cpuid_class_cpu_notifier =
+=======
+static struct notifier_block cpuid_class_cpu_notifier =
+>>>>>>> v4.9.227
 {
 	.notifier_call = cpuid_class_cpu_callback,
 };

@@ -17,7 +17,11 @@
 /*
  * Driver: ni_labpc_pci
  * Description: National Instruments Lab-PC PCI-1200
+<<<<<<< HEAD
  * Devices: (National Instruments) PCI-1200 [ni_pci-1200]
+=======
+ * Devices: [National Instruments] PCI-1200 (ni_pci-1200)
+>>>>>>> v4.9.227
  * Author: Frank Mori Hess <fmhess@users.sourceforge.net>
  * Status: works
  *
@@ -31,9 +35,14 @@
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 
 #include "../comedidev.h"
+=======
+
+#include "../comedi_pci.h"
+>>>>>>> v4.9.227
 
 #include "ni_labpc.h"
 
@@ -51,9 +60,15 @@ static const struct labpc_boardinfo labpc_pci_boards[] = {
 	},
 };
 
+<<<<<<< HEAD
 /* ripped from mite.h and mite_setup2() to avoid mite dependancy */
 #define MITE_IODWBSR	0xc0	 /* IO Device Window Base Size Register */
 #define WENAB		(1 << 7) /* window enable */
+=======
+/* ripped from mite.h and mite_setup2() to avoid mite dependency */
+#define MITE_IODWBSR	0xc0	/* IO Device Window Base Size Register */
+#define WENAB		BIT(7)	/* window enable */
+>>>>>>> v4.9.227
 
 static int labpc_pci_mite_init(struct pci_dev *pcidev)
 {
@@ -79,7 +94,10 @@ static int labpc_pci_auto_attach(struct comedi_device *dev,
 {
 	struct pci_dev *pcidev = comedi_to_pci_dev(dev);
 	const struct labpc_boardinfo *board = NULL;
+<<<<<<< HEAD
 	struct labpc_private *devpriv;
+=======
+>>>>>>> v4.9.227
 	int ret;
 
 	if (context < ARRAY_SIZE(labpc_pci_boards))
@@ -101,6 +119,7 @@ static int labpc_pci_auto_attach(struct comedi_device *dev,
 	if (!dev->mmio)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	devpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));
 	if (!devpriv)
 		return -ENOMEM;
@@ -108,11 +127,26 @@ static int labpc_pci_auto_attach(struct comedi_device *dev,
 	return labpc_common_attach(dev, pcidev->irq, IRQF_SHARED);
 }
 
+=======
+	return labpc_common_attach(dev, pcidev->irq, IRQF_SHARED);
+}
+
+static void labpc_pci_detach(struct comedi_device *dev)
+{
+	labpc_common_detach(dev);
+	comedi_pci_detach(dev);
+}
+
+>>>>>>> v4.9.227
 static struct comedi_driver labpc_pci_comedi_driver = {
 	.driver_name	= "labpc_pci",
 	.module		= THIS_MODULE,
 	.auto_attach	= labpc_pci_auto_attach,
+<<<<<<< HEAD
 	.detach		= comedi_pci_detach,
+=======
+	.detach		= labpc_pci_detach,
+>>>>>>> v4.9.227
 };
 
 static const struct pci_device_id labpc_pci_table[] = {

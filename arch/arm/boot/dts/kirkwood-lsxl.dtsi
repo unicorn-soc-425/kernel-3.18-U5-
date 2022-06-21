@@ -74,7 +74,11 @@
 			m25p40@0 {
 				#address-cells = <1>;
 				#size-cells = <1>;
+<<<<<<< HEAD
 				compatible = "m25p40";
+=======
+				compatible = "m25p40", "jedec,spi-nor";
+>>>>>>> v4.9.227
 				reg = <0>;
 				spi-max-frequency = <25000000>;
 				mode = <0>;
@@ -107,18 +111,30 @@
 			     &pmx_power_auto_switch>;
 		pinctrl-names = "default";
 
+<<<<<<< HEAD
 		button@1 {
+=======
+		option {
+>>>>>>> v4.9.227
 			label = "Function Button";
 			linux,code = <KEY_OPTION>;
 			gpios = <&gpio1 9 GPIO_ACTIVE_LOW>;
 		};
+<<<<<<< HEAD
 		button@2 {
+=======
+		reserved {
+>>>>>>> v4.9.227
 			label = "Power-on Switch";
 			linux,code = <KEY_RESERVED>;
 			linux,input-type = <5>;
 			gpios = <&gpio1 10 GPIO_ACTIVE_LOW>;
 		};
+<<<<<<< HEAD
 		button@3 {
+=======
+		power {
+>>>>>>> v4.9.227
 			label = "Power-auto Switch";
 			linux,code = <KEY_ESC>;
 			linux,input-type = <5>;
@@ -133,28 +149,48 @@
 			     &pmx_led_function_blue>;
 		pinctrl-names = "default";
 
+<<<<<<< HEAD
 		led@1 {
+=======
+		func_blue {
+>>>>>>> v4.9.227
 			label = "lsxl:blue:func";
 			gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
 		};
 
+<<<<<<< HEAD
 		led@2 {
+=======
+		alarm {
+>>>>>>> v4.9.227
 			label = "lsxl:red:alarm";
 			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
 		};
 
+<<<<<<< HEAD
 		led@3 {
+=======
+		info {
+>>>>>>> v4.9.227
 			label = "lsxl:amber:info";
 			gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
 		};
 
+<<<<<<< HEAD
 		led@4 {
+=======
+		power {
+>>>>>>> v4.9.227
 			label = "lsxl:blue:power";
 			gpios = <&gpio1 7 GPIO_ACTIVE_LOW>;
 			default-state = "keep";
 		};
 
+<<<<<<< HEAD
 		led@5 {
+=======
+		func_red {
+>>>>>>> v4.9.227
 			label = "lsxl:red:func";
 			gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
 		};

@@ -147,7 +147,10 @@ int ux500_pcm_register_platform(struct platform_device *pdev)
 		pcm_config = &ux500_dmaengine_pcm_config;
 
 	ret = snd_dmaengine_pcm_register(&pdev->dev, pcm_config,
+<<<<<<< HEAD
 					 SND_DMAENGINE_PCM_FLAG_NO_RESIDUE |
+=======
+>>>>>>> v4.9.227
 					 SND_DMAENGINE_PCM_FLAG_COMPAT);
 	if (ret < 0) {
 		dev_err(&pdev->dev,

@@ -61,9 +61,12 @@ module_param(distrust_firmware, bool, 0);
 MODULE_PARM_DESC(distrust_firmware,
 		 "true to distrust firmware power/overcurrent setup");
 extern struct platform_driver u132_platform_driver;
+<<<<<<< HEAD
 static struct workqueue_struct *status_queue;
 static struct workqueue_struct *command_queue;
 static struct workqueue_struct *respond_queue;
+=======
+>>>>>>> v4.9.227
 /*
  * ftdi_module_lock exists to protect access to global variables
  *
@@ -228,56 +231,92 @@ static void ftdi_elan_init_kref(struct usb_ftdi *ftdi)
 
 static void ftdi_status_requeue_work(struct usb_ftdi *ftdi, unsigned int delta)
 {
+<<<<<<< HEAD
 	if (!queue_delayed_work(status_queue, &ftdi->status_work, delta))
+=======
+	if (!schedule_delayed_work(&ftdi->status_work, delta))
+>>>>>>> v4.9.227
 		kref_put(&ftdi->kref, ftdi_elan_delete);
 }
 
 static void ftdi_status_queue_work(struct usb_ftdi *ftdi, unsigned int delta)
 {
+<<<<<<< HEAD
 	if (queue_delayed_work(status_queue, &ftdi->status_work, delta))
+=======
+	if (schedule_delayed_work(&ftdi->status_work, delta))
+>>>>>>> v4.9.227
 		kref_get(&ftdi->kref);
 }
 
 static void ftdi_status_cancel_work(struct usb_ftdi *ftdi)
 {
+<<<<<<< HEAD
 	if (cancel_delayed_work(&ftdi->status_work))
+=======
+	if (cancel_delayed_work_sync(&ftdi->status_work))
+>>>>>>> v4.9.227
 		kref_put(&ftdi->kref, ftdi_elan_delete);
 }
 
 static void ftdi_command_requeue_work(struct usb_ftdi *ftdi, unsigned int delta)
 {
+<<<<<<< HEAD
 	if (!queue_delayed_work(command_queue, &ftdi->command_work, delta))
+=======
+	if (!schedule_delayed_work(&ftdi->command_work, delta))
+>>>>>>> v4.9.227
 		kref_put(&ftdi->kref, ftdi_elan_delete);
 }
 
 static void ftdi_command_queue_work(struct usb_ftdi *ftdi, unsigned int delta)
 {
+<<<<<<< HEAD
 	if (queue_delayed_work(command_queue, &ftdi->command_work, delta))
+=======
+	if (schedule_delayed_work(&ftdi->command_work, delta))
+>>>>>>> v4.9.227
 		kref_get(&ftdi->kref);
 }
 
 static void ftdi_command_cancel_work(struct usb_ftdi *ftdi)
 {
+<<<<<<< HEAD
 	if (cancel_delayed_work(&ftdi->command_work))
+=======
+	if (cancel_delayed_work_sync(&ftdi->command_work))
+>>>>>>> v4.9.227
 		kref_put(&ftdi->kref, ftdi_elan_delete);
 }
 
 static void ftdi_response_requeue_work(struct usb_ftdi *ftdi,
 				       unsigned int delta)
 {
+<<<<<<< HEAD
 	if (!queue_delayed_work(respond_queue, &ftdi->respond_work, delta))
+=======
+	if (!schedule_delayed_work(&ftdi->respond_work, delta))
+>>>>>>> v4.9.227
 		kref_put(&ftdi->kref, ftdi_elan_delete);
 }
 
 static void ftdi_respond_queue_work(struct usb_ftdi *ftdi, unsigned int delta)
 {
+<<<<<<< HEAD
 	if (queue_delayed_work(respond_queue, &ftdi->respond_work, delta))
+=======
+	if (schedule_delayed_work(&ftdi->respond_work, delta))
+>>>>>>> v4.9.227
 		kref_get(&ftdi->kref);
 }
 
 static void ftdi_response_cancel_work(struct usb_ftdi *ftdi)
 {
+<<<<<<< HEAD
 	if (cancel_delayed_work(&ftdi->respond_work))
+=======
+	if (cancel_delayed_work_sync(&ftdi->respond_work))
+>>>>>>> v4.9.227
 		kref_put(&ftdi->kref, ftdi_elan_delete);
 }
 
@@ -665,7 +704,11 @@ static ssize_t ftdi_elan_read(struct file *file, char __user *buffer,
 {
 	char data[30 *3 + 4];
 	char *d = data;
+<<<<<<< HEAD
 	int m = (sizeof(data) - 1) / 3;
+=======
+	int m = (sizeof(data) - 1) / 3 - 1;
+>>>>>>> v4.9.227
 	int bytes_read = 0;
 	int retry_on_empty = 10;
 	int retry_on_timeout = 5;
@@ -785,11 +828,16 @@ static int ftdi_elan_command_engine(struct usb_ftdi *ftdi)
 		return 0;
 	total_size = ftdi_elan_total_command_size(ftdi, command_size);
 	urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!urb) {
 		dev_err(&ftdi->udev->dev, "could not get a urb to write %d commands totaling %d bytes to the Uxxx\n",
 			command_size, total_size);
 		return -ENOMEM;
 	}
+=======
+	if (!urb)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	buf = usb_alloc_coherent(ftdi->udev, total_size, GFP_KERNEL,
 				 &urb->transfer_dma);
 	if (!buf) {
@@ -1684,7 +1732,11 @@ wait:if (ftdi->disconnected > 0) {
 			int i = 0;
 			char data[30 *3 + 4];
 			char *d = data;
+<<<<<<< HEAD
 			int m = (sizeof(data) - 1) / 3;
+=======
+			int m = (sizeof(data) - 1) / 3 - 1;
+>>>>>>> v4.9.227
 			int l = 0;
 			struct u132_target *target = &ftdi->target[ed];
 			struct u132_command *command = &ftdi->command[
@@ -1876,7 +1928,11 @@ more:{
 		if (packet_bytes > 2) {
 			char diag[30 *3 + 4];
 			char *d = diag;
+<<<<<<< HEAD
 			int m = (sizeof(diag) - 1) / 3;
+=======
+			int m = (sizeof(diag) - 1) / 3 - 1;
+>>>>>>> v4.9.227
 			char *b = ftdi->bulk_in_buffer;
 			int bytes_read = 0;
 			diag[0] = 0;
@@ -1948,10 +2004,15 @@ static int ftdi_elan_synchronize_flush(struct usb_ftdi *ftdi)
 	int I = 257;
 	int i = 0;
 	urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!urb) {
 		dev_err(&ftdi->udev->dev, "could not alloc a urb for flush sequence\n");
 		return -ENOMEM;
 	}
+=======
+	if (!urb)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	buf = usb_alloc_coherent(ftdi->udev, I, GFP_KERNEL, &urb->transfer_dma);
 	if (!buf) {
 		dev_err(&ftdi->udev->dev, "could not get a buffer for flush sequence\n");
@@ -1988,10 +2049,15 @@ static int ftdi_elan_synchronize_reset(struct usb_ftdi *ftdi)
 	int I = 4;
 	int i = 0;
 	urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!urb) {
 		dev_err(&ftdi->udev->dev, "could not get a urb for the reset sequence\n");
 		return -ENOMEM;
 	}
+=======
+	if (!urb)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	buf = usb_alloc_coherent(ftdi->udev, I, GFP_KERNEL, &urb->transfer_dma);
 	if (!buf) {
 		dev_err(&ftdi->udev->dev, "could not get a buffer for the reset sequence\n");
@@ -2053,7 +2119,11 @@ static int ftdi_elan_synchronize(struct usb_ftdi *ftdi)
 			if (packet_bytes > 2) {
 				char diag[30 *3 + 4];
 				char *d = diag;
+<<<<<<< HEAD
 				int m = (sizeof(diag) - 1) / 3;
+=======
+				int m = (sizeof(diag) - 1) / 3 - 1;
+>>>>>>> v4.9.227
 				char *b = ftdi->bulk_in_buffer;
 				int bytes_read = 0;
 				unsigned char c = 0;
@@ -2155,7 +2225,11 @@ more:{
 		if (packet_bytes > 2) {
 			char diag[30 *3 + 4];
 			char *d = diag;
+<<<<<<< HEAD
 			int m = (sizeof(diag) - 1) / 3;
+=======
+			int m = (sizeof(diag) - 1) / 3 - 1;
+>>>>>>> v4.9.227
 			char *b = ftdi->bulk_in_buffer;
 			int bytes_read = 0;
 			diag[0] = 0;
@@ -2568,11 +2642,15 @@ static int ftdi_elan_close_controller(struct usb_ftdi *ftdi, int fn)
 					    0x00);
 	if (UxxxStatus)
 		return UxxxStatus;
+<<<<<<< HEAD
 	UxxxStatus = ftdi_elan_read_config(ftdi, activePCIfn | reg, 0,
 					   &pcidata);
 	if (UxxxStatus)
 		return UxxxStatus;
 	return 0;
+=======
+	return ftdi_elan_read_config(ftdi, activePCIfn | reg, 0, &pcidata);
+>>>>>>> v4.9.227
 }
 
 static int ftdi_elan_found_controller(struct usb_ftdi *ftdi, int fn, int quirk)
@@ -2695,11 +2773,15 @@ static int ftdi_elan_setupOHCI(struct usb_ftdi *ftdi)
 		}
 	}
 	if (ftdi->function > 0) {
+<<<<<<< HEAD
 		UxxxStatus = ftdi_elan_setup_controller(ftdi,
 							ftdi->function - 1);
 		if (UxxxStatus)
 			return UxxxStatus;
 		return 0;
+=======
+		return ftdi_elan_setup_controller(ftdi,	ftdi->function - 1);
+>>>>>>> v4.9.227
 	} else if (controllers > 0) {
 		return -ENXIO;
 	} else if (unrecognized > 0) {
@@ -2748,7 +2830,10 @@ static int ftdi_elan_probe(struct usb_interface *interface,
 			ftdi->bulk_in_endpointAddr = endpoint->bEndpointAddress;
 			ftdi->bulk_in_buffer = kmalloc(buffer_size, GFP_KERNEL);
 			if (!ftdi->bulk_in_buffer) {
+<<<<<<< HEAD
 				dev_err(&ftdi->udev->dev, "Could not allocate bulk_in_buffer\n");
+=======
+>>>>>>> v4.9.227
 				retval = -ENOMEM;
 				goto error;
 			}
@@ -2831,9 +2916,12 @@ static void ftdi_elan_disconnect(struct usb_interface *interface)
 			ftdi->initialized = 0;
 			ftdi->registered = 0;
 		}
+<<<<<<< HEAD
 		flush_workqueue(status_queue);
 		flush_workqueue(command_queue);
 		flush_workqueue(respond_queue);
+=======
+>>>>>>> v4.9.227
 		ftdi->disconnected += 1;
 		usb_set_intfdata(interface, NULL);
 		dev_info(&ftdi->udev->dev, "USB FTDI U132 host controller interface now disconnected\n");
@@ -2853,6 +2941,7 @@ static int __init ftdi_elan_init(void)
 	pr_info("driver %s\n", ftdi_elan_driver.name);
 	mutex_init(&ftdi_module_lock);
 	INIT_LIST_HEAD(&ftdi_static_list);
+<<<<<<< HEAD
 	status_queue = create_singlethread_workqueue("ftdi-status-control");
 	if (!status_queue)
 		goto err_status_queue;
@@ -2867,10 +2956,15 @@ static int __init ftdi_elan_init(void)
 		destroy_workqueue(status_queue);
 		destroy_workqueue(command_queue);
 		destroy_workqueue(respond_queue);
+=======
+	result = usb_register(&ftdi_elan_driver);
+	if (result) {
+>>>>>>> v4.9.227
 		pr_err("usb_register failed. Error number %d\n", result);
 	}
 	return result;
 
+<<<<<<< HEAD
 err_respond_queue:
 	destroy_workqueue(command_queue);
 err_command_queue:
@@ -2878,6 +2972,8 @@ err_command_queue:
 err_status_queue:
 	pr_err("%s couldn't create workqueue\n", ftdi_elan_driver.name);
 	return -ENOMEM;
+=======
+>>>>>>> v4.9.227
 }
 
 static void __exit ftdi_elan_exit(void)
@@ -2890,6 +2986,7 @@ static void __exit ftdi_elan_exit(void)
 		ftdi_status_cancel_work(ftdi);
 		ftdi_command_cancel_work(ftdi);
 		ftdi_response_cancel_work(ftdi);
+<<<<<<< HEAD
 	} flush_workqueue(status_queue);
 	destroy_workqueue(status_queue);
 	status_queue = NULL;
@@ -2899,6 +2996,9 @@ static void __exit ftdi_elan_exit(void)
 	flush_workqueue(respond_queue);
 	destroy_workqueue(respond_queue);
 	respond_queue = NULL;
+=======
+	}
+>>>>>>> v4.9.227
 }
 
 

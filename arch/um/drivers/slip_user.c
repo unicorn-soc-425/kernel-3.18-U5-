@@ -55,8 +55,13 @@ static int set_up_tty(int fd)
 }
 
 struct slip_pre_exec_data {
+<<<<<<< HEAD
 	int stdin;
 	int stdout;
+=======
+	int stdin_fd;
+	int stdout_fd;
+>>>>>>> v4.9.227
 	int close_me;
 };
 
@@ -64,9 +69,15 @@ static void slip_pre_exec(void *arg)
 {
 	struct slip_pre_exec_data *data = arg;
 
+<<<<<<< HEAD
 	if (data->stdin >= 0)
 		dup2(data->stdin, 0);
 	dup2(data->stdout, 1);
+=======
+	if (data->stdin_fd >= 0)
+		dup2(data->stdin_fd, 0);
+	dup2(data->stdout_fd, 1);
+>>>>>>> v4.9.227
 	if (data->close_me >= 0)
 		close(data->close_me);
 }
@@ -85,8 +96,13 @@ static int slip_tramp(char **argv, int fd)
 	}
 
 	err = 0;
+<<<<<<< HEAD
 	pe_data.stdin = fd;
 	pe_data.stdout = fds[1];
+=======
+	pe_data.stdin_fd = fd;
+	pe_data.stdout_fd = fds[1];
+>>>>>>> v4.9.227
 	pe_data.close_me = fds[0];
 	err = run_helper(slip_pre_exec, &pe_data, argv);
 	if (err < 0)

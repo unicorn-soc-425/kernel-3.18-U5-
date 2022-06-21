@@ -121,7 +121,10 @@
 	 *   q2        : third in/output block (_3x version only)
 	 *   q8        : first round key
 	 *   q9        : secound round key
+<<<<<<< HEAD
 	 *   ip        : address of 3rd round key
+=======
+>>>>>>> v4.9.227
 	 *   q14       : final round key
 	 *   r2        : address of round key array
 	 *   r3        : number of rounds

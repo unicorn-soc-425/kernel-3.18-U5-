@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,9 +93,15 @@ acpi_ut_get_mutex_object(acpi_handle handle,
 
 	mutex_node = handle;
 	if (pathname != NULL) {
+<<<<<<< HEAD
 		status = acpi_get_handle(handle, pathname,
 					 ACPI_CAST_PTR(acpi_handle,
 						       &mutex_node));
+=======
+		status =
+		    acpi_get_handle(handle, pathname,
+				    ACPI_CAST_PTR(acpi_handle, &mutex_node));
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			return (status);
 		}

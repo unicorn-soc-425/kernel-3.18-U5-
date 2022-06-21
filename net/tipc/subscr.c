@@ -40,6 +40,7 @@
 
 /**
  * struct tipc_subscriber - TIPC network topology subscriber
+<<<<<<< HEAD
  * @conid: connection identifier to server connecting to subscriber
  * @lock: control access to subscriber
  * @subscription_list: list of subscription objects for this subscriber
@@ -76,6 +77,24 @@ static struct tipc_server topsrv __read_mostly = {
 	.tipc_conn_new		= subscr_named_msg_event,
 	.tipc_conn_shutdown	= subscr_conn_shutdown_event,
 };
+=======
+ * @kref: reference counter to tipc_subscription object
+ * @conid: connection identifier to server connecting to subscriber
+ * @lock: control access to subscriber
+ * @subscrp_list: list of subscription objects for this subscriber
+ */
+struct tipc_subscriber {
+	struct kref kref;
+	int conid;
+	spinlock_t lock;
+	struct list_head subscrp_list;
+};
+
+static void tipc_subscrp_delete(struct tipc_subscription *sub);
+static void tipc_subscrb_put(struct tipc_subscriber *subscriber);
+static void tipc_subscrp_put(struct tipc_subscription *subscription);
+static void tipc_subscrp_get(struct tipc_subscription *subscription);
+>>>>>>> v4.9.227
 
 /**
  * htohl - convert value to endianness used by destination
@@ -89,10 +108,18 @@ static u32 htohl(u32 in, int swap)
 	return swap ? swab32(in) : in;
 }
 
+<<<<<<< HEAD
 static void subscr_send_event(struct tipc_subscription *sub, u32 found_lower,
 			      u32 found_upper, u32 event, u32 port_ref,
 			      u32 node)
 {
+=======
+static void tipc_subscrp_send_event(struct tipc_subscription *sub,
+				    u32 found_lower, u32 found_upper,
+				    u32 event, u32 port_ref, u32 node)
+{
+	struct tipc_net *tn = net_generic(sub->net, tipc_net_id);
+>>>>>>> v4.9.227
 	struct tipc_subscriber *subscriber = sub->subscriber;
 	struct kvec msg_sect;
 
@@ -103,6 +130,7 @@ static void subscr_send_event(struct tipc_subscription *sub, u32 found_lower,
 	sub->evt.found_upper = htohl(found_upper, sub->swap);
 	sub->evt.port.ref = htohl(port_ref, sub->swap);
 	sub->evt.port.node = htohl(node, sub->swap);
+<<<<<<< HEAD
 	tipc_conn_sendmsg(&topsrv, subscriber->conid, NULL, msg_sect.iov_base,
 			  msg_sect.iov_len);
 }
@@ -119,11 +147,31 @@ int tipc_subscr_overlap(struct tipc_subscription *sub, u32 found_lower,
 		found_lower = sub->seq.lower;
 	if (found_upper > sub->seq.upper)
 		found_upper = sub->seq.upper;
+=======
+	tipc_conn_sendmsg(tn->topsrv, subscriber->conid, NULL,
+			  msg_sect.iov_base, msg_sect.iov_len);
+}
+
+/**
+ * tipc_subscrp_check_overlap - test for subscription overlap with the
+ * given values
+ *
+ * Returns 1 if there is overlap, otherwise 0.
+ */
+int tipc_subscrp_check_overlap(struct tipc_name_seq *seq, u32 found_lower,
+			       u32 found_upper)
+{
+	if (found_lower < seq->lower)
+		found_lower = seq->lower;
+	if (found_upper > seq->upper)
+		found_upper = seq->upper;
+>>>>>>> v4.9.227
 	if (found_lower > found_upper)
 		return 0;
 	return 1;
 }
 
+<<<<<<< HEAD
 /**
  * tipc_subscr_report_overlap - issue event if there is subscription overlap
  *
@@ -283,12 +331,183 @@ static int subscr_subscribe(struct tipc_subscr *s,
 		pr_warn("Subscription rejected, limit reached (%u)\n",
 			TIPC_MAX_SUBSCRIPTIONS);
 		return -EINVAL;
+=======
+u32 tipc_subscrp_convert_seq_type(u32 type, int swap)
+{
+	return htohl(type, swap);
+}
+
+void tipc_subscrp_convert_seq(struct tipc_name_seq *in, int swap,
+			      struct tipc_name_seq *out)
+{
+	out->type = htohl(in->type, swap);
+	out->lower = htohl(in->lower, swap);
+	out->upper = htohl(in->upper, swap);
+}
+
+void tipc_subscrp_report_overlap(struct tipc_subscription *sub, u32 found_lower,
+				 u32 found_upper, u32 event, u32 port_ref,
+				 u32 node, int must)
+{
+	struct tipc_name_seq seq;
+
+	tipc_subscrp_get(sub);
+	tipc_subscrp_convert_seq(&sub->evt.s.seq, sub->swap, &seq);
+	if (!tipc_subscrp_check_overlap(&seq, found_lower, found_upper))
+		return;
+	if (!must &&
+	    !(htohl(sub->evt.s.filter, sub->swap) & TIPC_SUB_PORTS))
+		return;
+
+	tipc_subscrp_send_event(sub, found_lower, found_upper, event, port_ref,
+				node);
+	tipc_subscrp_put(sub);
+}
+
+static void tipc_subscrp_timeout(unsigned long data)
+{
+	struct tipc_subscription *sub = (struct tipc_subscription *)data;
+	struct tipc_subscriber *subscriber = sub->subscriber;
+
+	spin_lock_bh(&subscriber->lock);
+	tipc_nametbl_unsubscribe(sub);
+	spin_unlock_bh(&subscriber->lock);
+
+	/* Notify subscriber of timeout */
+	tipc_subscrp_send_event(sub, sub->evt.s.seq.lower, sub->evt.s.seq.upper,
+				TIPC_SUBSCR_TIMEOUT, 0, 0);
+
+	tipc_subscrp_put(sub);
+}
+
+static void tipc_subscrb_kref_release(struct kref *kref)
+{
+	kfree(container_of(kref,struct tipc_subscriber, kref));
+}
+
+static void tipc_subscrb_put(struct tipc_subscriber *subscriber)
+{
+	kref_put(&subscriber->kref, tipc_subscrb_kref_release);
+}
+
+static void tipc_subscrb_get(struct tipc_subscriber *subscriber)
+{
+	kref_get(&subscriber->kref);
+}
+
+static void tipc_subscrp_kref_release(struct kref *kref)
+{
+	struct tipc_subscription *sub = container_of(kref,
+						     struct tipc_subscription,
+						     kref);
+	struct tipc_net *tn = net_generic(sub->net, tipc_net_id);
+	struct tipc_subscriber *subscriber = sub->subscriber;
+
+	spin_lock_bh(&subscriber->lock);
+	list_del(&sub->subscrp_list);
+	atomic_dec(&tn->subscription_count);
+	spin_unlock_bh(&subscriber->lock);
+	kfree(sub);
+	tipc_subscrb_put(subscriber);
+}
+
+static void tipc_subscrp_put(struct tipc_subscription *subscription)
+{
+	kref_put(&subscription->kref, tipc_subscrp_kref_release);
+}
+
+static void tipc_subscrp_get(struct tipc_subscription *subscription)
+{
+	kref_get(&subscription->kref);
+}
+
+/* tipc_subscrb_subscrp_delete - delete a specific subscription or all
+ * subscriptions for a given subscriber.
+ */
+static void tipc_subscrb_subscrp_delete(struct tipc_subscriber *subscriber,
+					struct tipc_subscr *s)
+{
+	struct list_head *subscription_list = &subscriber->subscrp_list;
+	struct tipc_subscription *sub, *temp;
+
+	spin_lock_bh(&subscriber->lock);
+	list_for_each_entry_safe(sub, temp, subscription_list,  subscrp_list) {
+		if (s && memcmp(s, &sub->evt.s, sizeof(struct tipc_subscr)))
+			continue;
+
+		tipc_nametbl_unsubscribe(sub);
+		tipc_subscrp_get(sub);
+		spin_unlock_bh(&subscriber->lock);
+		tipc_subscrp_delete(sub);
+		tipc_subscrp_put(sub);
+		spin_lock_bh(&subscriber->lock);
+
+		if (s)
+			break;
+	}
+	spin_unlock_bh(&subscriber->lock);
+}
+
+static struct tipc_subscriber *tipc_subscrb_create(int conid)
+{
+	struct tipc_subscriber *subscriber;
+
+	subscriber = kzalloc(sizeof(*subscriber), GFP_ATOMIC);
+	if (!subscriber) {
+		pr_warn("Subscriber rejected, no memory\n");
+		return NULL;
+	}
+	INIT_LIST_HEAD(&subscriber->subscrp_list);
+	kref_init(&subscriber->kref);
+	subscriber->conid = conid;
+	spin_lock_init(&subscriber->lock);
+
+	return subscriber;
+}
+
+static void tipc_subscrb_delete(struct tipc_subscriber *subscriber)
+{
+	tipc_subscrb_subscrp_delete(subscriber, NULL);
+	tipc_subscrb_put(subscriber);
+}
+
+static void tipc_subscrp_delete(struct tipc_subscription *sub)
+{
+	u32 timeout = htohl(sub->evt.s.timeout, sub->swap);
+
+	if (timeout == TIPC_WAIT_FOREVER || del_timer(&sub->timer))
+		tipc_subscrp_put(sub);
+}
+
+static void tipc_subscrp_cancel(struct tipc_subscr *s,
+				struct tipc_subscriber *subscriber)
+{
+	tipc_subscrb_get(subscriber);
+	tipc_subscrb_subscrp_delete(subscriber, s);
+	tipc_subscrb_put(subscriber);
+}
+
+static struct tipc_subscription *tipc_subscrp_create(struct net *net,
+						     struct tipc_subscr *s,
+						     int swap)
+{
+	struct tipc_net *tn = net_generic(net, tipc_net_id);
+	struct tipc_subscription *sub;
+	u32 filter = htohl(s->filter, swap);
+
+	/* Refuse subscription if global limit exceeded */
+	if (atomic_read(&tn->subscription_count) >= TIPC_MAX_SUBSCRIPTIONS) {
+		pr_warn("Subscription rejected, limit reached (%u)\n",
+			TIPC_MAX_SUBSCRIPTIONS);
+		return NULL;
+>>>>>>> v4.9.227
 	}
 
 	/* Allocate subscription object */
 	sub = kmalloc(sizeof(*sub), GFP_ATOMIC);
 	if (!sub) {
 		pr_warn("Subscription rejected, no memory\n");
+<<<<<<< HEAD
 		return -ENOMEM;
 	}
 
@@ -371,4 +590,140 @@ int tipc_subscr_start(void)
 void tipc_subscr_stop(void)
 {
 	tipc_server_stop(&topsrv);
+=======
+		return NULL;
+	}
+
+	/* Initialize subscription object */
+	sub->net = net;
+	if (((filter & TIPC_SUB_PORTS) && (filter & TIPC_SUB_SERVICE)) ||
+	    (htohl(s->seq.lower, swap) > htohl(s->seq.upper, swap))) {
+		pr_warn("Subscription rejected, illegal request\n");
+		kfree(sub);
+		return NULL;
+	}
+
+	sub->swap = swap;
+	memcpy(&sub->evt.s, s, sizeof(*s));
+	atomic_inc(&tn->subscription_count);
+	kref_init(&sub->kref);
+	return sub;
+}
+
+static void tipc_subscrp_subscribe(struct net *net, struct tipc_subscr *s,
+				   struct tipc_subscriber *subscriber, int swap)
+{
+	struct tipc_net *tn = net_generic(net, tipc_net_id);
+	struct tipc_subscription *sub = NULL;
+	u32 timeout;
+
+	sub = tipc_subscrp_create(net, s, swap);
+	if (!sub)
+		return tipc_conn_terminate(tn->topsrv, subscriber->conid);
+
+	spin_lock_bh(&subscriber->lock);
+	list_add(&sub->subscrp_list, &subscriber->subscrp_list);
+	sub->subscriber = subscriber;
+	tipc_nametbl_subscribe(sub);
+	tipc_subscrb_get(subscriber);
+	spin_unlock_bh(&subscriber->lock);
+
+	setup_timer(&sub->timer, tipc_subscrp_timeout, (unsigned long)sub);
+	timeout = htohl(sub->evt.s.timeout, swap);
+
+	if (timeout != TIPC_WAIT_FOREVER)
+		mod_timer(&sub->timer, jiffies + msecs_to_jiffies(timeout));
+}
+
+/* Handle one termination request for the subscriber */
+static void tipc_subscrb_release_cb(int conid, void *usr_data)
+{
+	tipc_subscrb_delete((struct tipc_subscriber *)usr_data);
+}
+
+/* Handle one request to create a new subscription for the subscriber */
+static void tipc_subscrb_rcv_cb(struct net *net, int conid,
+				struct sockaddr_tipc *addr, void *usr_data,
+				void *buf, size_t len)
+{
+	struct tipc_subscriber *subscriber = usr_data;
+	struct tipc_subscr *s = (struct tipc_subscr *)buf;
+	int swap;
+
+	/* Determine subscriber's endianness */
+	swap = !(s->filter & (TIPC_SUB_PORTS | TIPC_SUB_SERVICE |
+			      TIPC_SUB_CANCEL));
+
+	/* Detect & process a subscription cancellation request */
+	if (s->filter & htohl(TIPC_SUB_CANCEL, swap)) {
+		s->filter &= ~htohl(TIPC_SUB_CANCEL, swap);
+		return tipc_subscrp_cancel(s, subscriber);
+	}
+
+	tipc_subscrp_subscribe(net, s, subscriber, swap);
+}
+
+/* Handle one request to establish a new subscriber */
+static void *tipc_subscrb_connect_cb(int conid)
+{
+	return (void *)tipc_subscrb_create(conid);
+}
+
+static int tipc_topsrv_start(struct net *net)
+{
+	struct tipc_net *tn = net_generic(net, tipc_net_id);
+	const char name[] = "topology_server";
+	struct tipc_server *topsrv;
+	struct sockaddr_tipc *saddr;
+
+	saddr = kzalloc(sizeof(*saddr), GFP_ATOMIC);
+	if (!saddr)
+		return -ENOMEM;
+	saddr->family			= AF_TIPC;
+	saddr->addrtype			= TIPC_ADDR_NAMESEQ;
+	saddr->addr.nameseq.type	= TIPC_TOP_SRV;
+	saddr->addr.nameseq.lower	= TIPC_TOP_SRV;
+	saddr->addr.nameseq.upper	= TIPC_TOP_SRV;
+	saddr->scope			= TIPC_NODE_SCOPE;
+
+	topsrv = kzalloc(sizeof(*topsrv), GFP_ATOMIC);
+	if (!topsrv) {
+		kfree(saddr);
+		return -ENOMEM;
+	}
+	topsrv->net			= net;
+	topsrv->saddr			= saddr;
+	topsrv->imp			= TIPC_CRITICAL_IMPORTANCE;
+	topsrv->type			= SOCK_SEQPACKET;
+	topsrv->max_rcvbuf_size		= sizeof(struct tipc_subscr);
+	topsrv->tipc_conn_recvmsg	= tipc_subscrb_rcv_cb;
+	topsrv->tipc_conn_new		= tipc_subscrb_connect_cb;
+	topsrv->tipc_conn_release	= tipc_subscrb_release_cb;
+
+	strscpy(topsrv->name, name, sizeof(topsrv->name));
+	tn->topsrv = topsrv;
+	atomic_set(&tn->subscription_count, 0);
+
+	return tipc_server_start(topsrv);
+}
+
+static void tipc_topsrv_stop(struct net *net)
+{
+	struct tipc_net *tn = net_generic(net, tipc_net_id);
+	struct tipc_server *topsrv = tn->topsrv;
+
+	tipc_server_stop(topsrv);
+	kfree(topsrv->saddr);
+	kfree(topsrv);
+}
+
+int __net_init tipc_topsrv_init_net(struct net *net)
+{
+	return tipc_topsrv_start(net);
+}
+
+void __net_exit tipc_topsrv_exit_net(struct net *net)
+{
+	tipc_topsrv_stop(net);
+>>>>>>> v4.9.227
 }

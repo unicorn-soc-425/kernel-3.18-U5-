@@ -28,6 +28,13 @@
 #define MIN_800_MV		800000
 #define MIN_750_MV		750000
 #define MIN_600_MV		600000
+<<<<<<< HEAD
+=======
+#define MIN_500_MV		500000
+
+/* Ramp delay in uV/us */
+#define RAMP_DELAY_12_MVUS	12000
+>>>>>>> v4.9.227
 
 /* Macros to represent steps for LDO/BUCK */
 #define STEP_50_MV		50000
@@ -41,7 +48,13 @@ enum sec_device_type {
 	S5M8767X,
 	S2MPA01,
 	S2MPS11X,
+<<<<<<< HEAD
 	S2MPS14X,
+=======
+	S2MPS13X,
+	S2MPS14X,
+	S2MPS15X,
+>>>>>>> v4.9.227
 	S2MPU02,
 };
 
@@ -56,6 +69,7 @@ enum sec_device_type {
  * @irq_base:		Base IRQ number for device, required for IRQs
  * @irq:		Generic IRQ number for device
  * @irq_data:		Runtime data structure for IRQ controller
+<<<<<<< HEAD
  * @ono:		Power onoff IRQ number for s5m87xx
  * @wakeup:		Whether or not this is a wakeup device
  * @wtsr_smpl:		Whether or not to enable in RTC driver the Watchdog
@@ -63,6 +77,9 @@ enum sec_device_type {
  *			after PWRHOLD falling) and Sudden Momentary Power Loss
  *			(PMIC will enter power on sequence after short drop in
  *			VBATT voltage).
+=======
+ * @wakeup:		Whether or not this is a wakeup device
+>>>>>>> v4.9.227
  */
 struct sec_pmic_dev {
 	struct device *dev;
@@ -75,9 +92,13 @@ struct sec_pmic_dev {
 	int irq;
 	struct regmap_irq_chip_data *irq_data;
 
+<<<<<<< HEAD
 	int ono;
 	bool wakeup;
 	bool wtsr_smpl;
+=======
+	bool wakeup;
+>>>>>>> v4.9.227
 };
 
 int sec_irq_init(struct sec_pmic_dev *sec_pmic);
@@ -93,7 +114,10 @@ struct sec_platform_data {
 	int				irq_base;
 	int				(*cfg_pmic_irq)(void);
 
+<<<<<<< HEAD
 	int				ono;
+=======
+>>>>>>> v4.9.227
 	bool				wakeup;
 	bool				buck_voltage_lock;
 
@@ -139,6 +163,13 @@ struct sec_platform_data {
 	int				buck2_init;
 	int				buck3_init;
 	int				buck4_init;
+<<<<<<< HEAD
+=======
+	/* Whether or not manually set PWRHOLD to low during shutdown. */
+	bool				manual_poweroff;
+	/* Disable the WRSTBI (buck voltage warm reset) when probing? */
+	bool				disable_wrstbi;
+>>>>>>> v4.9.227
 };
 
 /**

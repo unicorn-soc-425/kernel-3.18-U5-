@@ -35,7 +35,10 @@ static inline void byte0_out(unsigned char data);
 static inline void byte1_out(unsigned char data);
 static inline void xl_cclk_b(int32_t i);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /* Assert and Deassert CCLK */
 void xl_shift_cclk(int count)
 {
@@ -79,6 +82,7 @@ void xl_shift_bytes_out(enum wbus bus_byte, unsigned char *pdata)
 /*
  * generic bit swap for xilinx SYSTEMMAP FPGA programming
  */
+<<<<<<< HEAD
 static inline unsigned char bitswap(unsigned char s)
 {
 	unsigned char d;
@@ -88,6 +92,8 @@ static inline unsigned char bitswap(unsigned char s)
 	return d;
 }
 
+=======
+>>>>>>> v4.9.227
 void xl_program_b(int32_t i)
 {
 }

@@ -188,8 +188,11 @@ struct soundbus_driver {
 	int	(*probe)(struct soundbus_dev* dev);
 	int	(*remove)(struct soundbus_dev* dev);
 
+<<<<<<< HEAD
 	int	(*suspend)(struct soundbus_dev* dev, pm_message_t state);
 	int	(*resume)(struct soundbus_dev* dev);
+=======
+>>>>>>> v4.9.227
 	int	(*shutdown)(struct soundbus_dev* dev);
 
 	struct device_driver driver;
@@ -199,6 +202,10 @@ struct soundbus_driver {
 extern int soundbus_register_driver(struct soundbus_driver *drv);
 extern void soundbus_unregister_driver(struct soundbus_driver *drv);
 
+<<<<<<< HEAD
 extern struct device_attribute soundbus_dev_attrs[];
+=======
+extern struct attribute *soundbus_dev_attrs[];
+>>>>>>> v4.9.227
 
 #endif /* __SOUNDBUS_H */

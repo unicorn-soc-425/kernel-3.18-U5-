@@ -663,6 +663,7 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 	/* assign mpp modes to groups */
 	for (n = 0; n < soc->nmodes; n++) {
 		struct mvebu_mpp_mode *mode = &soc->modes[n];
+<<<<<<< HEAD
 		struct mvebu_pinctrl_group *grp =
 			mvebu_pinctrl_find_group_by_pid(pctl, mode->pid);
 		unsigned num_settings;
@@ -679,12 +680,28 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 
 			if (!set->name)
 				break;
+=======
+		struct mvebu_mpp_ctrl_setting *set = &mode->settings[0];
+		struct mvebu_pinctrl_group *grp;
+		unsigned num_settings;
+		unsigned supp_settings;
+
+		for (num_settings = 0, supp_settings = 0; ; set++) {
+			if (!set->name)
+				break;
+
+>>>>>>> v4.9.227
 			num_settings++;
 
 			/* skip unsupported settings for this variant */
 			if (pctl->variant && !(pctl->variant & set->variant))
 				continue;
 
+<<<<<<< HEAD
+=======
+			supp_settings++;
+
+>>>>>>> v4.9.227
 			/* find gpio/gpo/gpi settings */
 			if (strcmp(set->name, "gpio") == 0)
 				set->flags = MVEBU_SETTING_GPI |
@@ -695,6 +712,20 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 				set->flags = MVEBU_SETTING_GPI;
 		}
 
+<<<<<<< HEAD
+=======
+		/* skip modes with no settings for this variant */
+		if (!supp_settings)
+			continue;
+
+		grp = mvebu_pinctrl_find_group_by_pid(pctl, mode->pid);
+		if (!grp) {
+			dev_warn(&pdev->dev, "unknown pinctrl group %d\n",
+				mode->pid);
+			continue;
+		}
+
+>>>>>>> v4.9.227
 		grp->settings = mode->settings;
 		grp->num_settings = num_settings;
 	}
@@ -705,10 +736,17 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	pctl->pctldev = pinctrl_register(&pctl->desc, &pdev->dev, pctl);
 	if (!pctl->pctldev) {
 		dev_err(&pdev->dev, "unable to register pinctrl driver\n");
 		return -EINVAL;
+=======
+	pctl->pctldev = devm_pinctrl_register(&pdev->dev, &pctl->desc, pctl);
+	if (IS_ERR(pctl->pctldev)) {
+		dev_err(&pdev->dev, "unable to register pinctrl driver\n");
+		return PTR_ERR(pctl->pctldev);
+>>>>>>> v4.9.227
 	}
 
 	dev_info(&pdev->dev, "registered pinctrl driver\n");
@@ -719,6 +757,7 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 int mvebu_pinctrl_remove(struct platform_device *pdev)
 {
@@ -726,3 +765,5 @@ int mvebu_pinctrl_remove(struct platform_device *pdev)
 	pinctrl_unregister(pctl->pctldev);
 	return 0;
 }
+=======
+>>>>>>> v4.9.227

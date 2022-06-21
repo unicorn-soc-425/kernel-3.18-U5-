@@ -113,6 +113,10 @@ extern void s3c_init_cpu(unsigned long idcode,
 extern void s3c24xx_init_io(struct map_desc *mach_desc, int size);
 
 extern void s3c64xx_init_cpu(void);
+<<<<<<< HEAD
+=======
+extern void s5p_init_cpu(const void __iomem *cpuid_addr);
+>>>>>>> v4.9.227
 
 extern unsigned int samsung_rev(void);
 

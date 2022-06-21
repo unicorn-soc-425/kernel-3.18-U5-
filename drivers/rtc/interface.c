@@ -30,6 +30,18 @@ static int __rtc_read_time(struct rtc_device *rtc, struct rtc_time *tm)
 	else {
 		memset(tm, 0, sizeof(struct rtc_time));
 		err = rtc->ops->read_time(rtc->dev.parent, tm);
+<<<<<<< HEAD
+=======
+		if (err < 0) {
+			dev_dbg(&rtc->dev, "read_time: fail to read: %d\n",
+				err);
+			return err;
+		}
+
+		err = rtc_valid_tm(tm);
+		if (err < 0)
+			dev_dbg(&rtc->dev, "read_time: rtc_time isn't valid\n");
+>>>>>>> v4.9.227
 	}
 	return err;
 }
@@ -64,11 +76,21 @@ int rtc_set_time(struct rtc_device *rtc, struct rtc_time *tm)
 		err = -ENODEV;
 	else if (rtc->ops->set_time)
 		err = rtc->ops->set_time(rtc->dev.parent, tm);
+<<<<<<< HEAD
 	else if (rtc->ops->set_mmss) {
 		unsigned long secs;
 		err = rtc_tm_to_time(tm, &secs);
 		if (err == 0)
 			err = rtc->ops->set_mmss(rtc->dev.parent, secs);
+=======
+	else if (rtc->ops->set_mmss64) {
+		time64_t secs64 = rtc_tm_to_time64(tm);
+
+		err = rtc->ops->set_mmss64(rtc->dev.parent, secs64);
+	} else if (rtc->ops->set_mmss) {
+		time64_t secs64 = rtc_tm_to_time64(tm);
+		err = rtc->ops->set_mmss(rtc->dev.parent, secs64);
+>>>>>>> v4.9.227
 	} else
 		err = -EINVAL;
 
@@ -80,6 +102,7 @@ int rtc_set_time(struct rtc_device *rtc, struct rtc_time *tm)
 }
 EXPORT_SYMBOL_GPL(rtc_set_time);
 
+<<<<<<< HEAD
 int rtc_set_mmss(struct rtc_device *rtc, unsigned long secs)
 {
 	int err;
@@ -123,6 +146,8 @@ int rtc_set_mmss(struct rtc_device *rtc, unsigned long secs)
 }
 EXPORT_SYMBOL_GPL(rtc_set_mmss);
 
+=======
+>>>>>>> v4.9.227
 static int rtc_read_alarm_internal(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 {
 	int err;
@@ -136,7 +161,21 @@ static int rtc_read_alarm_internal(struct rtc_device *rtc, struct rtc_wkalrm *al
 	else if (!rtc->ops->read_alarm)
 		err = -EINVAL;
 	else {
+<<<<<<< HEAD
 		memset(alarm, 0, sizeof(struct rtc_wkalrm));
+=======
+		alarm->enabled = 0;
+		alarm->pending = 0;
+		alarm->time.tm_sec = -1;
+		alarm->time.tm_min = -1;
+		alarm->time.tm_hour = -1;
+		alarm->time.tm_mday = -1;
+		alarm->time.tm_mon = -1;
+		alarm->time.tm_year = -1;
+		alarm->time.tm_wday = -1;
+		alarm->time.tm_yday = -1;
+		alarm->time.tm_isdst = -1;
+>>>>>>> v4.9.227
 		err = rtc->ops->read_alarm(rtc->dev.parent, alarm);
 	}
 
@@ -149,7 +188,11 @@ int __rtc_read_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 	int err;
 	struct rtc_time before, now;
 	int first_time = 1;
+<<<<<<< HEAD
 	unsigned long t_now, t_alm;
+=======
+	time64_t t_now, t_alm;
+>>>>>>> v4.9.227
 	enum { none, day, month, year } missing = none;
 	unsigned days;
 
@@ -257,8 +300,13 @@ int __rtc_read_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 		goto done;
 
 	/* with luck, no rollover is needed */
+<<<<<<< HEAD
 	rtc_tm_to_time(&now, &t_now);
 	rtc_tm_to_time(&alarm->time, &t_alm);
+=======
+	t_now = rtc_tm_to_time64(&now);
+	t_alm = rtc_tm_to_time64(&alarm->time);
+>>>>>>> v4.9.227
 	if (t_now < t_alm)
 		goto done;
 
@@ -272,7 +320,11 @@ int __rtc_read_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 	case day:
 		dev_dbg(&rtc->dev, "alarm rollover: %s\n", "day");
 		t_alm += 24 * 60 * 60;
+<<<<<<< HEAD
 		rtc_time_to_tm(t_alm, &alarm->time);
+=======
+		rtc_time64_to_tm(t_alm, &alarm->time);
+>>>>>>> v4.9.227
 		break;
 
 	/* Month rollover ... if it's the 31th, an alarm on the 3rd will
@@ -345,19 +397,31 @@ EXPORT_SYMBOL_GPL(rtc_read_alarm);
 static int __rtc_set_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 {
 	struct rtc_time tm;
+<<<<<<< HEAD
 	long now, scheduled;
+=======
+	time64_t now, scheduled;
+>>>>>>> v4.9.227
 	int err;
 
 	err = rtc_valid_tm(&alarm->time);
 	if (err)
 		return err;
+<<<<<<< HEAD
 	rtc_tm_to_time(&alarm->time, &scheduled);
+=======
+	scheduled = rtc_tm_to_time64(&alarm->time);
+>>>>>>> v4.9.227
 
 	/* Make sure we're not setting alarms in the past */
 	err = __rtc_read_time(rtc, &tm);
 	if (err)
 		return err;
+<<<<<<< HEAD
 	rtc_tm_to_time(&tm, &now);
+=======
+	now = rtc_tm_to_time64(&tm);
+>>>>>>> v4.9.227
 	if (scheduled <= now)
 		return -ETIME;
 	/*
@@ -406,6 +470,7 @@ int rtc_set_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 }
 EXPORT_SYMBOL_GPL(rtc_set_alarm);
 
+<<<<<<< HEAD
 static void rtc_alarm_disable(struct rtc_device *rtc)
 {
 	if (!rtc->ops || !rtc->ops->alarm_irq_enable)
@@ -414,6 +479,8 @@ static void rtc_alarm_disable(struct rtc_device *rtc)
 	rtc->ops->alarm_irq_enable(rtc->dev.parent, false);
 }
 
+=======
+>>>>>>> v4.9.227
 /* Called once per device from rtc_device_register */
 int rtc_initialize_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 {
@@ -435,22 +502,31 @@ int rtc_initialize_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 	rtc->aie_timer.node.expires = rtc_tm_to_ktime(alarm->time);
 	rtc->aie_timer.period = ktime_set(0, 0);
 
+<<<<<<< HEAD
 	/* Alarm has to be enabled & in the futrure for us to enqueue it */
+=======
+	/* Alarm has to be enabled & in the future for us to enqueue it */
+>>>>>>> v4.9.227
 	if (alarm->enabled && (rtc_tm_to_ktime(now).tv64 <
 			 rtc->aie_timer.node.expires.tv64)) {
 
 		rtc->aie_timer.enabled = 1;
 		timerqueue_add(&rtc->timerqueue, &rtc->aie_timer.node);
+<<<<<<< HEAD
 	} else if (alarm->enabled && (rtc_tm_to_ktime(now).tv64 >=
 			rtc->aie_timer.node.expires.tv64)){
 		rtc_alarm_disable(rtc);
 	}
 
+=======
+	}
+>>>>>>> v4.9.227
 	mutex_unlock(&rtc->ops_lock);
 	return err;
 }
 EXPORT_SYMBOL_GPL(rtc_initialize_alarm);
 
+<<<<<<< HEAD
 #ifdef CONFIG_RTC_AUTO_PWRON
 int rtc_set_bootalarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 {
@@ -487,6 +563,8 @@ int rtc_get_bootalarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 EXPORT_SYMBOL_GPL(rtc_get_bootalarm);
 #endif /* CONFIG_AUTO_PWRON */
 
+=======
+>>>>>>> v4.9.227
 int rtc_alarm_irq_enable(struct rtc_device *rtc, unsigned int enabled)
 {
 	int err = mutex_lock_interruptible(&rtc->ops_lock);
@@ -654,7 +732,11 @@ enum hrtimer_restart rtc_pie_update_irq(struct hrtimer *timer)
 void rtc_update_irq(struct rtc_device *rtc,
 		unsigned long num, unsigned long events)
 {
+<<<<<<< HEAD
 	if (unlikely(IS_ERR_OR_NULL(rtc)))
+=======
+	if (IS_ERR_OR_NULL(rtc))
+>>>>>>> v4.9.227
 		return;
 
 	pm_stay_awake(rtc->dev.parent);
@@ -838,9 +920,29 @@ EXPORT_SYMBOL_GPL(rtc_irq_set_freq);
  */
 static int rtc_timer_enqueue(struct rtc_device *rtc, struct rtc_timer *timer)
 {
+<<<<<<< HEAD
 	timer->enabled = 1;
 	timerqueue_add(&rtc->timerqueue, &timer->node);
 	if (&timer->node == timerqueue_getnext(&rtc->timerqueue)) {
+=======
+	struct timerqueue_node *next = timerqueue_getnext(&rtc->timerqueue);
+	struct rtc_time tm;
+	ktime_t now;
+
+	timer->enabled = 1;
+	__rtc_read_time(rtc, &tm);
+	now = rtc_tm_to_ktime(tm);
+
+	/* Skip over expired timers */
+	while (next) {
+		if (next->expires.tv64 >= now.tv64)
+			break;
+		next = timerqueue_iterate_next(next);
+	}
+
+	timerqueue_add(&rtc->timerqueue, &timer->node);
+	if (!next || ktime_before(timer->node.expires, next->expires)) {
+>>>>>>> v4.9.227
 		struct rtc_wkalrm alarm;
 		int err;
 		alarm.time = rtc_ktime_to_tm(timer->node.expires);
@@ -858,6 +960,17 @@ static int rtc_timer_enqueue(struct rtc_device *rtc, struct rtc_timer *timer)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void rtc_alarm_disable(struct rtc_device *rtc)
+{
+	if (!rtc->ops || !rtc->ops->alarm_irq_enable)
+		return;
+
+	rtc->ops->alarm_irq_enable(rtc->dev.parent, false);
+}
+
+>>>>>>> v4.9.227
 /**
  * rtc_timer_remove - Removes a rtc_timer from the rtc_device timerqueue
  * @rtc rtc device
@@ -941,11 +1054,32 @@ again:
 	if (next) {
 		struct rtc_wkalrm alarm;
 		int err;
+<<<<<<< HEAD
 		alarm.time = rtc_ktime_to_tm(next->expires);
 		alarm.enabled = 1;
 		err = __rtc_set_alarm(rtc, &alarm);
 		if (err == -ETIME)
 			goto again;
+=======
+		int retry = 3;
+
+		alarm.time = rtc_ktime_to_tm(next->expires);
+		alarm.enabled = 1;
+reprogram:
+		err = __rtc_set_alarm(rtc, &alarm);
+		if (err == -ETIME)
+			goto again;
+		else if (err) {
+			if (retry-- > 0)
+				goto reprogram;
+
+			timer = container_of(next, struct rtc_timer, node);
+			timerqueue_del(&rtc->timerqueue, &timer->node);
+			timer->enabled = 0;
+			dev_err(&rtc->dev, "__rtc_set_alarm: err=%d\n", err);
+			goto again;
+		}
+>>>>>>> v4.9.227
 	} else
 		rtc_alarm_disable(rtc);
 
@@ -1000,14 +1134,79 @@ int rtc_timer_start(struct rtc_device *rtc, struct rtc_timer *timer,
  *
  * Kernel interface to cancel an rtc_timer
  */
+<<<<<<< HEAD
 int rtc_timer_cancel(struct rtc_device *rtc, struct rtc_timer *timer)
 {
 	int ret = 0;
+=======
+void rtc_timer_cancel(struct rtc_device *rtc, struct rtc_timer *timer)
+{
+>>>>>>> v4.9.227
 	mutex_lock(&rtc->ops_lock);
 	if (timer->enabled)
 		rtc_timer_remove(rtc, timer);
 	mutex_unlock(&rtc->ops_lock);
+<<<<<<< HEAD
 	return ret;
 }
 
 
+=======
+}
+
+/**
+ * rtc_read_offset - Read the amount of rtc offset in parts per billion
+ * @ rtc: rtc device to be used
+ * @ offset: the offset in parts per billion
+ *
+ * see below for details.
+ *
+ * Kernel interface to read rtc clock offset
+ * Returns 0 on success, or a negative number on error.
+ * If read_offset() is not implemented for the rtc, return -EINVAL
+ */
+int rtc_read_offset(struct rtc_device *rtc, long *offset)
+{
+	int ret;
+
+	if (!rtc->ops)
+		return -ENODEV;
+
+	if (!rtc->ops->read_offset)
+		return -EINVAL;
+
+	mutex_lock(&rtc->ops_lock);
+	ret = rtc->ops->read_offset(rtc->dev.parent, offset);
+	mutex_unlock(&rtc->ops_lock);
+	return ret;
+}
+
+/**
+ * rtc_set_offset - Adjusts the duration of the average second
+ * @ rtc: rtc device to be used
+ * @ offset: the offset in parts per billion
+ *
+ * Some rtc's allow an adjustment to the average duration of a second
+ * to compensate for differences in the actual clock rate due to temperature,
+ * the crystal, capacitor, etc.
+ *
+ * Kernel interface to adjust an rtc clock offset.
+ * Return 0 on success, or a negative number on error.
+ * If the rtc offset is not setable (or not implemented), return -EINVAL
+ */
+int rtc_set_offset(struct rtc_device *rtc, long offset)
+{
+	int ret;
+
+	if (!rtc->ops)
+		return -ENODEV;
+
+	if (!rtc->ops->set_offset)
+		return -EINVAL;
+
+	mutex_lock(&rtc->ops_lock);
+	ret = rtc->ops->set_offset(rtc->dev.parent, offset);
+	mutex_unlock(&rtc->ops_lock);
+	return ret;
+}
+>>>>>>> v4.9.227

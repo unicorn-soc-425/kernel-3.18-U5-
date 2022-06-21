@@ -44,6 +44,10 @@
 #include <linux/ip.h>
 #include <linux/tcp.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/kernel.h>
+>>>>>>> v4.9.227
 
 #include <asm/io.h>
 #include <asm/irq.h>
@@ -727,7 +731,11 @@ int nes_arp_table(struct nes_device *nesdev, u32 ip_addr, u8 *mac_addr, u32 acti
 	if (action == NES_ARP_DELETE) {
 		nes_debug(NES_DBG_NETDEV, "DELETE, arp_index=%d\n", arp_index);
 		nesadapter->arp_table[arp_index].ip_addr = 0;
+<<<<<<< HEAD
 		memset(nesadapter->arp_table[arp_index].mac_addr, 0x00, ETH_ALEN);
+=======
+		eth_zero_addr(nesadapter->arp_table[arp_index].mac_addr);
+>>>>>>> v4.9.227
 		nes_free_resource(nesadapter, nesadapter->allocated_arps, arp_index);
 		return arp_index;
 	}
@@ -903,6 +911,7 @@ void nes_clc(unsigned long parm)
  */
 void nes_dump_mem(unsigned int dump_debug_level, void *addr, int length)
 {
+<<<<<<< HEAD
 	char  xlate[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		'a', 'b', 'c', 'd', 'e', 'f'};
 	char  *ptr;
@@ -912,15 +921,21 @@ void nes_dump_mem(unsigned int dump_debug_level, void *addr, int length)
 	int   num_ascii;
 	int   num_hex;
 
+=======
+>>>>>>> v4.9.227
 	if (!(nes_debug_level & dump_debug_level)) {
 		return;
 	}
 
+<<<<<<< HEAD
 	ptr = addr;
+=======
+>>>>>>> v4.9.227
 	if (length > 0x100) {
 		nes_debug(dump_debug_level, "Length truncated from %x to %x\n", length, 0x100);
 		length = 0x100;
 	}
+<<<<<<< HEAD
 	nes_debug(dump_debug_level, "Address=0x%p, length=0x%x (%d)\n", ptr, length, length);
 
 	memset(ascii_buf, 0, 20);
@@ -969,4 +984,9 @@ void nes_dump_mem(unsigned int dump_debug_level, void *addr, int length)
 
 		nes_debug(dump_debug_level, "   %s |  %s\n", hex_buf, ascii_buf);
 	}
+=======
+	nes_debug(dump_debug_level, "Address=0x%p, length=0x%x (%d)\n", addr, length, length);
+
+	print_hex_dump(KERN_ERR, PFX, DUMP_PREFIX_NONE, 16, 1, addr, length, true);
+>>>>>>> v4.9.227
 }

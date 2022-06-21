@@ -20,6 +20,10 @@
 #include <linux/spi/spi.h>
 #include <linux/bcd.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 
 #define DS1390_REG_100THS		0x00
 #define DS1390_REG_SECONDS		0x01
@@ -40,11 +44,37 @@
 #define DS1390_REG_STATUS		0x0E
 #define DS1390_REG_TRICKLE		0x0F
 
+<<<<<<< HEAD
+=======
+#define DS1390_TRICKLE_CHARGER_ENABLE	0xA0
+#define DS1390_TRICKLE_CHARGER_250_OHM	0x01
+#define DS1390_TRICKLE_CHARGER_2K_OHM	0x02
+#define DS1390_TRICKLE_CHARGER_4K_OHM	0x03
+#define DS1390_TRICKLE_CHARGER_NO_DIODE	0x04
+#define DS1390_TRICKLE_CHARGER_DIODE	0x08
+
+>>>>>>> v4.9.227
 struct ds1390 {
 	struct rtc_device *rtc;
 	u8 txrx_buf[9];	/* cmd + 8 registers */
 };
 
+<<<<<<< HEAD
+=======
+static void ds1390_set_reg(struct device *dev, unsigned char address,
+			   unsigned char data)
+{
+	struct spi_device *spi = to_spi_device(dev);
+	unsigned char buf[2];
+
+	/* MSB must be '1' to write */
+	buf[0] = address | 0x80;
+	buf[1] = data;
+
+	spi_write(spi, buf, 2);
+}
+
+>>>>>>> v4.9.227
 static int ds1390_get_reg(struct device *dev, unsigned char address,
 				unsigned char *data)
 {
@@ -62,11 +92,57 @@ static int ds1390_get_reg(struct device *dev, unsigned char address,
 	if (status != 0)
 		return status;
 
+<<<<<<< HEAD
 	*data = chip->txrx_buf[1];
+=======
+	*data = chip->txrx_buf[0];
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void ds1390_trickle_of_init(struct spi_device *spi)
+{
+	u32 ohms = 0;
+	u8 value;
+
+	if (of_property_read_u32(spi->dev.of_node, "trickle-resistor-ohms",
+				 &ohms))
+		goto out;
+
+	/* Enable charger */
+	value = DS1390_TRICKLE_CHARGER_ENABLE;
+	if (of_property_read_bool(spi->dev.of_node, "trickle-diode-disable"))
+		value |= DS1390_TRICKLE_CHARGER_NO_DIODE;
+	else
+		value |= DS1390_TRICKLE_CHARGER_DIODE;
+
+	/* Resistor select */
+	switch (ohms) {
+	case 250:
+		value |= DS1390_TRICKLE_CHARGER_250_OHM;
+		break;
+	case 2000:
+		value |= DS1390_TRICKLE_CHARGER_2K_OHM;
+		break;
+	case 4000:
+		value |= DS1390_TRICKLE_CHARGER_4K_OHM;
+		break;
+	default:
+		dev_warn(&spi->dev,
+			 "Unsupported ohm value %02ux in dt\n", ohms);
+		return;
+	}
+
+	ds1390_set_reg(&spi->dev, DS1390_REG_TRICKLE, value);
+
+out:
+	return;
+}
+
+>>>>>>> v4.9.227
 static int ds1390_read_time(struct device *dev, struct rtc_time *dt)
 {
 	struct spi_device *spi = to_spi_device(dev);
@@ -143,6 +219,12 @@ static int ds1390_probe(struct spi_device *spi)
 		return res;
 	}
 
+<<<<<<< HEAD
+=======
+	if (spi->dev.of_node)
+		ds1390_trickle_of_init(spi);
+
+>>>>>>> v4.9.227
 	chip->rtc = devm_rtc_device_register(&spi->dev, "ds1390",
 					&ds1390_rtc_ops, THIS_MODULE);
 	if (IS_ERR(chip->rtc)) {
@@ -156,7 +238,10 @@ static int ds1390_probe(struct spi_device *spi)
 static struct spi_driver ds1390_driver = {
 	.driver = {
 		.name	= "rtc-ds1390",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe	= ds1390_probe,
 };

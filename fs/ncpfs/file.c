@@ -98,6 +98,7 @@ out:
 }
 
 static ssize_t
+<<<<<<< HEAD
 ncp_file_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 {
 	struct dentry *dentry = file->f_path.dentry;
@@ -123,6 +124,26 @@ ncp_file_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 	if (pos + count > inode->i_sb->s_maxbytes) {
 		count = inode->i_sb->s_maxbytes - pos;
 	}
+=======
+ncp_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+{
+	struct file *file = iocb->ki_filp;
+	struct inode *inode = file_inode(file);
+	size_t already_read = 0;
+	off_t pos = iocb->ki_pos;
+	size_t bufsize;
+	int error;
+	void *freepage;
+	size_t freelen;
+
+	ncp_dbg(1, "enter %pD2\n", file);
+
+	if (!iov_iter_count(to))
+		return 0;
+	if (pos > inode->i_sb->s_maxbytes)
+		return 0;
+	iov_iter_truncate(to, inode->i_sb->s_maxbytes - pos);
+>>>>>>> v4.9.227
 
 	error = ncp_make_open(inode, O_RDONLY);
 	if (error) {
@@ -139,6 +160,7 @@ ncp_file_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 		goto outrel;
 	error = 0;
 	/* First read in as much as possible for each bufsize. */
+<<<<<<< HEAD
 	while (already_read < count) {
 		int read_this_time;
 		size_t to_read = min_t(unsigned int,
@@ -148,12 +170,24 @@ ncp_file_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 		error = ncp_read_bounce(NCP_SERVER(inode),
 			 	NCP_FINFO(inode)->file_handle,
 				pos, to_read, buf, &read_this_time, 
+=======
+	while (iov_iter_count(to)) {
+		int read_this_time;
+		size_t to_read = min_t(size_t,
+				     bufsize - (pos % bufsize),
+				     iov_iter_count(to));
+
+		error = ncp_read_bounce(NCP_SERVER(inode),
+			 	NCP_FINFO(inode)->file_handle,
+				pos, to_read, to, &read_this_time, 
+>>>>>>> v4.9.227
 				freepage, freelen);
 		if (error) {
 			error = -EIO;	/* NW errno -> Linux errno */
 			break;
 		}
 		pos += read_this_time;
+<<<<<<< HEAD
 		buf += read_this_time;
 		already_read += read_this_time;
 
@@ -168,12 +202,27 @@ ncp_file_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 	file_accessed(file);
 
 	ncp_dbg(1, "exit %pd2\n", dentry);
+=======
+		already_read += read_this_time;
+
+		if (read_this_time != to_read)
+			break;
+	}
+	vfree(freepage);
+
+	iocb->ki_pos = pos;
+
+	file_accessed(file);
+
+	ncp_dbg(1, "exit %pD2\n", file);
+>>>>>>> v4.9.227
 outrel:
 	ncp_inode_close(inode);		
 	return already_read ? already_read : error;
 }
 
 static ssize_t
+<<<<<<< HEAD
 ncp_file_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 {
 	struct dentry *dentry = file->f_path.dentry;
@@ -211,6 +260,23 @@ ncp_file_write(struct file *file, const char __user *buf, size_t count, loff_t *
 	
 	if (!count)
 		return 0;
+=======
+ncp_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
+{
+	struct file *file = iocb->ki_filp;
+	struct inode *inode = file_inode(file);
+	size_t already_written = 0;
+	size_t bufsize;
+	int errno;
+	void *bouncebuffer;
+	off_t pos;
+
+	ncp_dbg(1, "enter %pD2\n", file);
+	errno = generic_write_checks(iocb, from);
+	if (errno <= 0)
+		return errno;
+
+>>>>>>> v4.9.227
 	errno = ncp_make_open(inode, O_WRONLY);
 	if (errno) {
 		ncp_dbg(1, "open failed, error=%d\n", errno);
@@ -218,8 +284,11 @@ ncp_file_write(struct file *file, const char __user *buf, size_t count, loff_t *
 	}
 	bufsize = NCP_SERVER(inode)->buffer_size;
 
+<<<<<<< HEAD
 	already_written = 0;
 
+=======
+>>>>>>> v4.9.227
 	errno = file_update_time(file);
 	if (errno)
 		goto outrel;
@@ -229,6 +298,7 @@ ncp_file_write(struct file *file, const char __user *buf, size_t count, loff_t *
 		errno = -EIO;	/* -ENOMEM */
 		goto outrel;
 	}
+<<<<<<< HEAD
 	while (already_written < count) {
 		int written_this_time;
 		size_t to_write = min_t(unsigned int,
@@ -236,6 +306,16 @@ ncp_file_write(struct file *file, const char __user *buf, size_t count, loff_t *
 				      count - already_written);
 
 		if (copy_from_user(bouncebuffer, buf, to_write)) {
+=======
+	pos = iocb->ki_pos;
+	while (iov_iter_count(from)) {
+		int written_this_time;
+		size_t to_write = min_t(size_t,
+				      bufsize - (pos % bufsize),
+				      iov_iter_count(from));
+
+		if (copy_from_iter(bouncebuffer, to_write, from) != to_write) {
+>>>>>>> v4.9.227
 			errno = -EFAULT;
 			break;
 		}
@@ -246,6 +326,7 @@ ncp_file_write(struct file *file, const char __user *buf, size_t count, loff_t *
 			break;
 		}
 		pos += written_this_time;
+<<<<<<< HEAD
 		buf += written_this_time;
 		already_written += written_this_time;
 
@@ -264,6 +345,24 @@ ncp_file_write(struct file *file, const char __user *buf, size_t count, loff_t *
 		mutex_unlock(&inode->i_mutex);
 	}
 	ncp_dbg(1, "exit %pd2\n", dentry);
+=======
+		already_written += written_this_time;
+
+		if (written_this_time != to_write)
+			break;
+	}
+	vfree(bouncebuffer);
+
+	iocb->ki_pos = pos;
+
+	if (pos > i_size_read(inode)) {
+		inode_lock(inode);
+		if (pos > i_size_read(inode))
+			i_size_write(inode, pos);
+		inode_unlock(inode);
+	}
+	ncp_dbg(1, "exit %pD2\n", file);
+>>>>>>> v4.9.227
 outrel:
 	ncp_inode_close(inode);		
 	return already_written ? already_written : errno;
@@ -279,8 +378,13 @@ static int ncp_release(struct inode *inode, struct file *file) {
 const struct file_operations ncp_file_operations =
 {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.read		= ncp_file_read,
 	.write		= ncp_file_write,
+=======
+	.read_iter	= ncp_file_read_iter,
+	.write_iter	= ncp_file_write_iter,
+>>>>>>> v4.9.227
 	.unlocked_ioctl	= ncp_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= ncp_compat_ioctl,

@@ -554,10 +554,20 @@ struct hpi_pci {
 	struct pci_dev *pci_dev;
 };
 
+<<<<<<< HEAD
+=======
+/** Adapter specification resource */
+struct hpi_adapter_specification {
+	u32 type;
+	u8 modules[4];
+};
+
+>>>>>>> v4.9.227
 struct hpi_resource {
 	union {
 		const struct hpi_pci *pci;
 		const char *net_if;
+<<<<<<< HEAD
 	} r;
 #ifndef HPI64BIT		/* keep structure size constant */
 	u32 pad_to64;
@@ -565,6 +575,13 @@ struct hpi_resource {
 	u16 bus_type;		/* HPI_BUS_PNPISA, _PCI, _USB etc */
 	u16 padding;
 
+=======
+		struct hpi_adapter_specification adapter_spec;
+		const void *sw_if;
+	} r;
+	u16 bus_type;		/* HPI_BUS_PNPISA, _PCI, _USB etc */
+	u16 padding;
+>>>>>>> v4.9.227
 };
 
 /** Format info used inside struct hpi_message
@@ -582,7 +599,11 @@ struct hpi_msg_format {
 struct hpi_msg_data {
 	struct hpi_msg_format format;
 	u8 *pb_data;
+<<<<<<< HEAD
 #ifndef HPI64BIT
+=======
+#ifndef CONFIG_64BIT
+>>>>>>> v4.9.227
 	u32 padding;
 #endif
 	u32 data_size;
@@ -595,7 +616,11 @@ struct hpi_data_legacy32 {
 	u32 data_size;
 };
 
+<<<<<<< HEAD
 #ifdef HPI64BIT
+=======
+#ifdef CONFIG_64BIT
+>>>>>>> v4.9.227
 /* Compatibility version of struct hpi_data*/
 struct hpi_data_compat32 {
 	struct hpi_msg_format format;
@@ -682,8 +707,13 @@ union hpi_adapterx_msg {
 		u16 value;
 	} test_assert;
 	struct {
+<<<<<<< HEAD
 		u32 yes;
 	} irq_query;
+=======
+		u32 message;
+	} irq;
+>>>>>>> v4.9.227
 	u32 pad[3];
 };
 
@@ -1363,9 +1393,15 @@ struct hpi_control_cache_single {
 struct hpi_control_cache_pad {
 	struct hpi_control_cache_info i;
 	u32 field_valid_flags;
+<<<<<<< HEAD
 	u8 c_channel[8];
 	u8 c_artist[40];
 	u8 c_title[40];
+=======
+	u8 c_channel[40];
+	u8 c_artist[100];
+	u8 c_title[100];
+>>>>>>> v4.9.227
 	u8 c_comment[200];
 	u32 pTY;
 	u32 pI;

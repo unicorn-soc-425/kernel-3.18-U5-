@@ -87,12 +87,26 @@ int validate_cpu(void)
 		return -1;
 	}
 
+<<<<<<< HEAD
+=======
+	if (CONFIG_X86_MINIMUM_CPU_FAMILY <= 4 && !IS_ENABLED(CONFIG_M486) &&
+	    !has_eflag(X86_EFLAGS_ID)) {
+		printf("This kernel requires a CPU with the CPUID instruction.  Build with CONFIG_M486=y to run on this CPU.\n");
+		return -1;
+	}
+
+>>>>>>> v4.9.227
 	if (err_flags) {
 		puts("This kernel requires the following features "
 		     "not present on the CPU:\n");
 		show_cap_strs(err_flags);
 		putchar('\n');
 		return -1;
+<<<<<<< HEAD
+=======
+	} else if (check_knl_erratum()) {
+		return -1;
+>>>>>>> v4.9.227
 	} else {
 		return 0;
 	}

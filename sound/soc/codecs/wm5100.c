@@ -17,6 +17,10 @@
 #include <linux/export.h>
 #include <linux/pm.h>
 #include <linux/gcd.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/gpio.h>
 #include <linux/i2c.h>
 #include <linux/pm_runtime.h>
@@ -775,7 +779,12 @@ static int wm5100_out_ev(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol,
 			 int event)
 {
+<<<<<<< HEAD
 	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(w->codec);
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
+>>>>>>> v4.9.227
 
 	switch (w->reg) {
 	case WM5100_CHANNEL_ENABLES_1:
@@ -839,7 +848,11 @@ static int wm5100_post_ev(struct snd_soc_dapm_widget *w,
 			  struct snd_kcontrol *kcontrol,
 			  int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
 	int ret;
 
@@ -1246,7 +1259,11 @@ static const struct snd_soc_dapm_route wm5100_dapm_routes[] = {
 	{ "PWM2", NULL, "PWM2 Driver" },
 };
 
+<<<<<<< HEAD
 static const struct reg_default wm5100_reva_patches[] = {
+=======
+static const struct reg_sequence wm5100_reva_patches[] = {
+>>>>>>> v4.9.227
 	{ WM5100_AUDIO_IF_1_10, 0 },
 	{ WM5100_AUDIO_IF_1_11, 1 },
 	{ WM5100_AUDIO_IF_1_12, 2 },
@@ -1407,7 +1424,11 @@ static int wm5100_hw_params(struct snd_pcm_substream *substream,
 	base = dai->driver->base;
 
 	/* Data sizes if not using TDM */
+<<<<<<< HEAD
 	wl = snd_pcm_format_width(params_format(params));
+=======
+	wl = params_width(params);
+>>>>>>> v4.9.227
 	if (wl < 0)
 		return wl;
 	fl = snd_soc_params_to_frame_size(params);
@@ -1761,6 +1782,10 @@ static int wm5100_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 	struct _fll_div factors;
 	struct wm5100_fll *fll;
 	int ret, base, lock, i, timeout;
+<<<<<<< HEAD
+=======
+	unsigned long time_left;
+>>>>>>> v4.9.227
 
 	switch (fll_id) {
 	case WM5100_FLL1:
@@ -1841,9 +1866,15 @@ static int wm5100_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 	/* Poll for the lock; will use interrupt when we can test */
 	for (i = 0; i < timeout; i++) {
 		if (i2c->irq) {
+<<<<<<< HEAD
 			ret = wait_for_completion_timeout(&fll->lock,
 							  msecs_to_jiffies(25));
 			if (ret > 0)
+=======
+			time_left = wait_for_completion_timeout(&fll->lock,
+							msecs_to_jiffies(25));
+			if (time_left > 0)
+>>>>>>> v4.9.227
 				break;
 		} else {
 			msleep(1);
@@ -2099,7 +2130,11 @@ static void wm5100_micd_irq(struct wm5100_priv *wm5100)
 int wm5100_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack)
 {
 	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 
 	if (jack) {
 		wm5100->jack = jack;
@@ -2234,6 +2269,7 @@ static irqreturn_t wm5100_edge_irq(int irq, void *data)
 }
 
 #ifdef CONFIG_GPIOLIB
+<<<<<<< HEAD
 static inline struct wm5100_priv *gpio_to_wm5100(struct gpio_chip *chip)
 {
 	return container_of(chip, struct wm5100_priv, gpio_chip);
@@ -2242,6 +2278,11 @@ static inline struct wm5100_priv *gpio_to_wm5100(struct gpio_chip *chip)
 static void wm5100_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
 	struct wm5100_priv *wm5100 = gpio_to_wm5100(chip);
+=======
+static void wm5100_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
+{
+	struct wm5100_priv *wm5100 = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	regmap_update_bits(wm5100->regmap, WM5100_GPIO_CTRL_1 + offset,
 			   WM5100_GP1_LVL, !!value << WM5100_GP1_LVL_SHIFT);
@@ -2250,7 +2291,11 @@ static void wm5100_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 static int wm5100_gpio_direction_out(struct gpio_chip *chip,
 				     unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct wm5100_priv *wm5100 = gpio_to_wm5100(chip);
+=======
+	struct wm5100_priv *wm5100 = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	int val, ret;
 
 	val = (1 << WM5100_GP1_FN_SHIFT) | (!!value << WM5100_GP1_LVL_SHIFT);
@@ -2266,7 +2311,11 @@ static int wm5100_gpio_direction_out(struct gpio_chip *chip,
 
 static int wm5100_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct wm5100_priv *wm5100 = gpio_to_wm5100(chip);
+=======
+	struct wm5100_priv *wm5100 = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned int reg;
 	int ret;
 
@@ -2279,7 +2328,11 @@ static int wm5100_gpio_get(struct gpio_chip *chip, unsigned offset)
 
 static int wm5100_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct wm5100_priv *wm5100 = gpio_to_wm5100(chip);
+=======
+	struct wm5100_priv *wm5100 = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	return regmap_update_bits(wm5100->regmap, WM5100_GPIO_CTRL_1 + offset,
 				  WM5100_GP1_FN_MASK | WM5100_GP1_DIR,
@@ -2287,7 +2340,11 @@ static int wm5100_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 				  (1 << WM5100_GP1_DIR_SHIFT));
 }
 
+<<<<<<< HEAD
 static struct gpio_chip wm5100_template_chip = {
+=======
+static const struct gpio_chip wm5100_template_chip = {
+>>>>>>> v4.9.227
 	.label			= "wm5100",
 	.owner			= THIS_MODULE,
 	.direction_output	= wm5100_gpio_direction_out,
@@ -2304,14 +2361,22 @@ static void wm5100_init_gpio(struct i2c_client *i2c)
 
 	wm5100->gpio_chip = wm5100_template_chip;
 	wm5100->gpio_chip.ngpio = 6;
+<<<<<<< HEAD
 	wm5100->gpio_chip.dev = &i2c->dev;
+=======
+	wm5100->gpio_chip.parent = &i2c->dev;
+>>>>>>> v4.9.227
 
 	if (wm5100->pdata.gpio_base)
 		wm5100->gpio_chip.base = wm5100->pdata.gpio_base;
 	else
 		wm5100->gpio_chip.base = -1;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&wm5100->gpio_chip);
+=======
+	ret = gpiochip_add_data(&wm5100->gpio_chip, wm5100);
+>>>>>>> v4.9.227
 	if (ret != 0)
 		dev_err(&i2c->dev, "Failed to add GPIOs: %d\n", ret);
 }
@@ -2334,6 +2399,10 @@ static void wm5100_free_gpio(struct i2c_client *i2c)
 
 static int wm5100_probe(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 	struct i2c_client *i2c = to_i2c_client(codec->dev);
 	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
 	int ret, i;
@@ -2351,8 +2420,12 @@ static int wm5100_probe(struct snd_soc_codec *codec)
 	/* TODO: check if we're symmetric */
 
 	if (i2c->irq)
+<<<<<<< HEAD
 		snd_soc_dapm_new_controls(&codec->dapm,
 					  wm5100_dapm_widgets_noirq,
+=======
+		snd_soc_dapm_new_controls(dapm, wm5100_dapm_widgets_noirq,
+>>>>>>> v4.9.227
 					  ARRAY_SIZE(wm5100_dapm_widgets_noirq));
 
 	if (wm5100->pdata.hp_pol) {
@@ -2383,7 +2456,11 @@ static int wm5100_remove(struct snd_soc_codec *codec)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_wm5100 = {
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm5100 = {
+>>>>>>> v4.9.227
 	.probe =	wm5100_probe,
 	.remove =	wm5100_remove,
 
@@ -2392,12 +2469,23 @@ static struct snd_soc_codec_driver soc_codec_dev_wm5100 = {
 	.idle_bias_off = 1,
 
 	.seq_notifier = wm5100_seq_notifier,
+<<<<<<< HEAD
 	.controls = wm5100_snd_controls,
 	.num_controls = ARRAY_SIZE(wm5100_snd_controls),
 	.dapm_widgets = wm5100_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(wm5100_dapm_widgets),
 	.dapm_routes = wm5100_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm5100_dapm_routes),
+=======
+	.component_driver = {
+		.controls		= wm5100_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm5100_snd_controls),
+		.dapm_widgets		= wm5100_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm5100_dapm_widgets),
+		.dapm_routes		= wm5100_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm5100_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config wm5100_regmap = {
@@ -2664,7 +2752,11 @@ static int wm5100_i2c_remove(struct i2c_client *i2c)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 static int wm5100_runtime_suspend(struct device *dev)
 {
 	struct wm5100_priv *wm5100 = dev_get_drvdata(dev);
@@ -2704,7 +2796,11 @@ static int wm5100_runtime_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 static struct dev_pm_ops wm5100_pm = {
+=======
+static const struct dev_pm_ops wm5100_pm = {
+>>>>>>> v4.9.227
 	SET_RUNTIME_PM_OPS(wm5100_runtime_suspend, wm5100_runtime_resume,
 			   NULL)
 };
@@ -2718,7 +2814,10 @@ MODULE_DEVICE_TABLE(i2c, wm5100_i2c_id);
 static struct i2c_driver wm5100_i2c_driver = {
 	.driver = {
 		.name = "wm5100",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &wm5100_pm,
 	},
 	.probe =    wm5100_i2c_probe,

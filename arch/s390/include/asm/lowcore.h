@@ -13,6 +13,7 @@
 #include <asm/cpu.h>
 #include <asm/types.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_32BIT
 
 #define LC_ORDER 0
@@ -195,6 +196,12 @@ struct save_area_ext {
 };
 
 struct _lowcore {
+=======
+#define LC_ORDER 1
+#define LC_PAGES 2
+
+struct lowcore {
+>>>>>>> v4.9.227
 	__u8	pad_0x0000[0x0014-0x0000];	/* 0x0000 */
 	__u32	ipl_parmblock_ptr;		/* 0x0014 */
 	__u8	pad_0x0018[0x0080-0x0018];	/* 0x0018 */
@@ -224,7 +231,11 @@ struct _lowcore {
 	__u8	pad_0x00c4[0x00c8-0x00c4];	/* 0x00c4 */
 	__u32	stfl_fac_list;			/* 0x00c8 */
 	__u8	pad_0x00cc[0x00e8-0x00cc];	/* 0x00cc */
+<<<<<<< HEAD
 	__u32	mcck_interruption_code[2];	/* 0x00e8 */
+=======
+	__u64	mcck_interruption_code;		/* 0x00e8 */
+>>>>>>> v4.9.227
 	__u8	pad_0x00f0[0x00f4-0x00f0];	/* 0x00f0 */
 	__u32	external_damage_code;		/* 0x00f4 */
 	__u64	failing_storage_address;	/* 0x00f8 */
@@ -289,7 +300,18 @@ struct _lowcore {
 	/* Address space pointer. */
 	__u64	kernel_asce;			/* 0x0358 */
 	__u64	user_asce;			/* 0x0360 */
+<<<<<<< HEAD
 	__u64	current_pid;			/* 0x0368 */
+=======
+
+	/*
+	 * The lpp and current_pid fields form a
+	 * 64-bit value that is set as program
+	 * parameter with the LPP instruction.
+	 */
+	__u32	lpp;				/* 0x0368 */
+	__u32	current_pid;			/* 0x036c */
+>>>>>>> v4.9.227
 
 	/* SMP info area */
 	__u32	cpu_nr;				/* 0x0370 */
@@ -297,15 +319,29 @@ struct _lowcore {
 	__u64	percpu_offset;			/* 0x0378 */
 	__u64	vdso_per_cpu_data;		/* 0x0380 */
 	__u64	machine_flags;			/* 0x0388 */
+<<<<<<< HEAD
 	__u64	ftrace_func;			/* 0x0390 */
 	__u64	gmap;				/* 0x0398 */
 	__u32	spinlock_lockval;		/* 0x03a0 */
 	__u8	pad_0x03a0[0x0400-0x03a4];	/* 0x03a4 */
+=======
+	__u8	pad_0x0390[0x0398-0x0390];	/* 0x0390 */
+	__u64	gmap;				/* 0x0398 */
+	__u32	spinlock_lockval;		/* 0x03a0 */
+	__u32	fpu_flags;			/* 0x03a4 */
+	__u8	pad_0x03a8[0x0400-0x03a8];	/* 0x03a8 */
+>>>>>>> v4.9.227
 
 	/* Per cpu primary space access list */
 	__u32	paste[16];			/* 0x0400 */
 
+<<<<<<< HEAD
 	__u8	pad_0x04c0[0x0e00-0x0440];	/* 0x0440 */
+=======
+	/* br %r1 trampoline */
+	__u16	br_r1_trampoline;		/* 0x0440 */
+	__u8	pad_0x0442[0x0e00-0x0442];	/* 0x0442 */
+>>>>>>> v4.9.227
 
 	/*
 	 * 0xe00 contains the address of the IPL Parameter Information
@@ -320,7 +356,12 @@ struct _lowcore {
 	__u8	pad_0x0e20[0x0f00-0x0e20];	/* 0x0e20 */
 
 	/* Extended facility list */
+<<<<<<< HEAD
 	__u64	stfle_fac_list[32];		/* 0x0f00 */
+=======
+	__u64	stfle_fac_list[16];		/* 0x0f00 */
+	__u64	alt_stfle_fac_list[16];		/* 0x0f80 */
+>>>>>>> v4.9.227
 	__u8	pad_0x1000[0x11b0-0x1000];	/* 0x1000 */
 
 	/* Pointer to vector register save area */
@@ -354,11 +395,17 @@ struct _lowcore {
 	__u8	vector_save_area[1024];		/* 0x1c00 */
 } __packed;
 
+<<<<<<< HEAD
 #endif /* CONFIG_32BIT */
 
 #define S390_lowcore (*((struct _lowcore *) 0))
 
 extern struct _lowcore *lowcore_ptr[];
+=======
+#define S390_lowcore (*((struct lowcore *) 0))
+
+extern struct lowcore *lowcore_ptr[];
+>>>>>>> v4.9.227
 
 static inline void set_prefix(__u32 address)
 {

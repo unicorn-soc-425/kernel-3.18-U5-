@@ -22,7 +22,10 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
   *
   */
+<<<<<<< HEAD
 #define SERIAL_DO_RESTART
+=======
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -1504,7 +1507,12 @@ static int icom_probe(struct pci_dev *dev,
 		return retval;
 	}
 
+<<<<<<< HEAD
 	if ( (retval = pci_request_regions(dev, "icom"))) {
+=======
+	retval = pci_request_regions(dev, "icom");
+	if (retval) {
+>>>>>>> v4.9.227
 		 dev_err(&dev->dev, "pci_request_regions FAILED\n");
 		 pci_disable_device(dev);
 		 return retval;
@@ -1512,7 +1520,12 @@ static int icom_probe(struct pci_dev *dev,
 
 	pci_set_master(dev);
 
+<<<<<<< HEAD
 	if ( (retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg))) {
+=======
+	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+	if (retval) {
+>>>>>>> v4.9.227
 		dev_err(&dev->dev, "PCI Config read FAILED\n");
 		return retval;
 	}
@@ -1550,6 +1563,7 @@ static int icom_probe(struct pci_dev *dev,
 
 	icom_adapter->base_addr = pci_ioremap_bar(dev, 0);
 
+<<<<<<< HEAD
 	if (!icom_adapter->base_addr)
 		goto probe_exit1;
 
@@ -1557,6 +1571,16 @@ static int icom_probe(struct pci_dev *dev,
 	 if ( (retval = request_irq(dev->irq, icom_interrupt,
 				   IRQF_SHARED, ICOM_DRIVER_NAME,
 				   (void *) icom_adapter))) {
+=======
+	if (!icom_adapter->base_addr) {
+		retval = -ENOMEM;
+		goto probe_exit1;
+	}
+
+	 /* save off irq and request irq line */
+	 retval = request_irq(dev->irq, icom_interrupt, IRQF_SHARED, ICOM_DRIVER_NAME, (void *)icom_adapter);
+	 if (retval) {
+>>>>>>> v4.9.227
 		  goto probe_exit2;
 	 }
 

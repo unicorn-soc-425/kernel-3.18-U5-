@@ -110,8 +110,11 @@ static int irlan_eth_open(struct net_device *dev)
 {
 	struct irlan_cb *self = netdev_priv(dev);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	/* Ready to play! */
 	netif_stop_queue(dev); /* Wait until data link is ready */
 
@@ -137,8 +140,11 @@ static int irlan_eth_close(struct net_device *dev)
 {
 	struct irlan_cb *self = netdev_priv(dev);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	/* Stop device */
 	netif_stop_queue(dev);
 
@@ -185,7 +191,11 @@ static netdev_tx_t irlan_eth_xmit(struct sk_buff *skb,
 		skb = new_skb;
 	}
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> v4.9.227
 
 	len = skb->len;
 	/* Now queue the packet in the transport layer */
@@ -231,8 +241,13 @@ int irlan_eth_receive(void *instance, void *sap, struct sk_buff *skb)
 		return 0;
 	}
 	if (skb->len < ETH_HLEN) {
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%s() : IrLAN frame too short (%d)\n",
 			   __func__, skb->len);
+=======
+		pr_debug("%s() : IrLAN frame too short (%d)\n",
+			 __func__, skb->len);
+>>>>>>> v4.9.227
 		dev->stats.rx_dropped++;
 		dev_kfree_skb(skb);
 		return 0;
@@ -281,9 +296,15 @@ void irlan_eth_flow_indication(void *instance, void *sap, LOCAL_FLOW flow)
 
 	IRDA_ASSERT(dev != NULL, return;);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s() : flow %s ; running %d\n", __func__,
 		   flow == FLOW_STOP ? "FLOW_STOP" : "FLOW_START",
 		   netif_running(dev));
+=======
+	pr_debug("%s() : flow %s ; running %d\n", __func__,
+		 flow == FLOW_STOP ? "FLOW_STOP" : "FLOW_START",
+		 netif_running(dev));
+>>>>>>> v4.9.227
 
 	switch (flow) {
 	case FLOW_STOP:
@@ -310,32 +331,54 @@ static void irlan_eth_set_multicast_list(struct net_device *dev)
 {
 	struct irlan_cb *self = netdev_priv(dev);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
 	/* Check if data channel has been connected yet */
 	if (self->client.state != IRLAN_DATA) {
 		IRDA_DEBUG(1, "%s(), delaying!\n", __func__);
+=======
+	/* Check if data channel has been connected yet */
+	if (self->client.state != IRLAN_DATA) {
+		pr_debug("%s(), delaying!\n", __func__);
+>>>>>>> v4.9.227
 		return;
 	}
 
 	if (dev->flags & IFF_PROMISC) {
 		/* Enable promiscuous mode */
+<<<<<<< HEAD
 		IRDA_WARNING("Promiscuous mode not implemented by IrLAN!\n");
 	} else if ((dev->flags & IFF_ALLMULTI) ||
 		 netdev_mc_count(dev) > HW_MAX_ADDRS) {
 		/* Disable promiscuous mode, use normal mode. */
 		IRDA_DEBUG(4, "%s(), Setting multicast filter\n", __func__);
+=======
+		net_warn_ratelimited("Promiscuous mode not implemented by IrLAN!\n");
+	} else if ((dev->flags & IFF_ALLMULTI) ||
+		 netdev_mc_count(dev) > HW_MAX_ADDRS) {
+		/* Disable promiscuous mode, use normal mode. */
+		pr_debug("%s(), Setting multicast filter\n", __func__);
+>>>>>>> v4.9.227
 		/* hardware_set_filter(NULL); */
 
 		irlan_set_multicast_filter(self, TRUE);
 	} else if (!netdev_mc_empty(dev)) {
+<<<<<<< HEAD
 		IRDA_DEBUG(4, "%s(), Setting multicast filter\n", __func__);
+=======
+		pr_debug("%s(), Setting multicast filter\n", __func__);
+>>>>>>> v4.9.227
 		/* Walk the address list, and load the filter */
 		/* hardware_set_filter(dev->mc_list); */
 
 		irlan_set_multicast_filter(self, TRUE);
 	} else {
+<<<<<<< HEAD
 		IRDA_DEBUG(4, "%s(), Clearing multicast filter\n", __func__);
+=======
+		pr_debug("%s(), Clearing multicast filter\n", __func__);
+>>>>>>> v4.9.227
 		irlan_set_multicast_filter(self, FALSE);
 	}
 

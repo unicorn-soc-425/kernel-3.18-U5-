@@ -1,7 +1,11 @@
 * Cirrus Logic CLPS711X Universal Asynchronous Receiver/Transmitter (UART)
 
 Required properties:
+<<<<<<< HEAD
 - compatible: Should be "cirrus,clps711x-uart".
+=======
+- compatible: Should be "cirrus,ep7209-uart".
+>>>>>>> v4.9.227
 - reg: Address and length of the register set for the device.
 - interrupts: Should contain UART TX and RX interrupt.
 - clocks: Should contain UART core clock number.
@@ -20,7 +24,11 @@ Example:
 	};
 
 	uart1: uart@80000480 {
+<<<<<<< HEAD
 		compatible = "cirrus,clps711x-uart";
+=======
+		compatible = "cirrus,ep7312-uart","cirrus,ep7209-uart";
+>>>>>>> v4.9.227
 		reg = <0x80000480 0x80>;
 		interrupts = <12 13>;
 		clocks = <&clks 11>;

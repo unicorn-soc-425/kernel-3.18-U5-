@@ -112,9 +112,14 @@ static int fec_ptp_enable_pps(struct fec_enet_private *fep, uint enable)
 	unsigned long flags;
 	u32 val, tempval;
 	int inc;
+<<<<<<< HEAD
 	struct timespec ts;
 	u64 ns;
 	u32 remainder;
+=======
+	struct timespec64 ts;
+	u64 ns;
+>>>>>>> v4.9.227
 	val = 0;
 
 	if (!(fep->hwts_tx_en || fep->hwts_rx_en)) {
@@ -136,7 +141,11 @@ static int fec_ptp_enable_pps(struct fec_enet_private *fep, uint enable)
 		 */
 		writel(FEC_T_TF_MASK, fep->hwp + FEC_TCSR(fep->pps_channel));
 
+<<<<<<< HEAD
 		/* It is recommended to doulbe check the TMODE field in the
+=======
+		/* It is recommended to double check the TMODE field in the
+>>>>>>> v4.9.227
 		 * TCSR register to be cleared before the first compare counter
 		 * is written into TCCR register. Just add a double check.
 		 */
@@ -163,8 +172,12 @@ static int fec_ptp_enable_pps(struct fec_enet_private *fep, uint enable)
 		tempval = readl(fep->hwp + FEC_ATIME);
 		/* Convert the ptp local counter to 1588 timestamp */
 		ns = timecounter_cyc2time(&fep->tc, tempval);
+<<<<<<< HEAD
 		ts.tv_sec = div_u64_rem(ns, 1000000000ULL, &remainder);
 		ts.tv_nsec = remainder;
+=======
+		ts = ns_to_timespec64(ns);
+>>>>>>> v4.9.227
 
 		/* The tempval is  less than 3 seconds, and  so val is less than
 		 * 4 seconds. No overflow for 32bit calculation.
@@ -353,6 +366,10 @@ static int fec_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
 	tmp = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_MASK;
 	tmp |= corr_ns << FEC_T_INC_CORR_OFFSET;
 	writel(tmp, fep->hwp + FEC_ATIME_INC);
+<<<<<<< HEAD
+=======
+	corr_period = corr_period > 1 ? corr_period - 1 : corr_period;
+>>>>>>> v4.9.227
 	writel(corr_period, fep->hwp + FEC_ATIME_CORR);
 	/* dummy read to update the timer. */
 	timecounter_read(&fep->tc);
@@ -374,6 +391,7 @@ static int fec_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	struct fec_enet_private *fep =
 	    container_of(ptp, struct fec_enet_private, ptp_caps);
 	unsigned long flags;
+<<<<<<< HEAD
 	u64 now;
 	u32 counter;
 
@@ -391,6 +409,11 @@ static int fec_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	/* reset the timecounter */
 	timecounter_init(&fep->tc, &fep->cc, now);
 
+=======
+
+	spin_lock_irqsave(&fep->tmreg_lock, flags);
+	timecounter_adjtime(&fep->tc, delta);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
 
 	return 0;
@@ -404,20 +427,31 @@ static int fec_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
  * read the timecounter and return the correct value on ns,
  * after converting it into a struct timespec.
  */
+<<<<<<< HEAD
 static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
+=======
+static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	struct fec_enet_private *adapter =
 	    container_of(ptp, struct fec_enet_private, ptp_caps);
 	u64 ns;
+<<<<<<< HEAD
 	u32 remainder;
+=======
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
 	ns = timecounter_read(&adapter->tc);
 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
 
+<<<<<<< HEAD
 	ts->tv_sec = div_u64_rem(ns, 1000000000ULL, &remainder);
 	ts->tv_nsec = remainder;
+=======
+	*ts = ns_to_timespec64(ns);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -431,7 +465,11 @@ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
  * wall timer value.
  */
 static int fec_ptp_settime(struct ptp_clock_info *ptp,
+<<<<<<< HEAD
 			   const struct timespec *ts)
+=======
+			   const struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	struct fec_enet_private *fep =
 	    container_of(ptp, struct fec_enet_private, ptp_caps);
@@ -447,8 +485,12 @@ static int fec_ptp_settime(struct ptp_clock_info *ptp,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	ns = ts->tv_sec * 1000000000ULL;
 	ns += ts->tv_nsec;
+=======
+	ns = timespec64_to_ns(ts);
+>>>>>>> v4.9.227
 	/* Get the timer value based on timestamp.
 	 * Update the counter with the masked value.
 	 */
@@ -522,12 +564,15 @@ int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr)
 		break;
 
 	default:
+<<<<<<< HEAD
 		/*
 		 * register RXMTRL must be set in order to do V1 packets,
 		 * therefore it is not possible to time stamp both V1 Sync and
 		 * Delay_Req messages and hardware does not support
 		 * timestamping all packets => return error
 		 */
+=======
+>>>>>>> v4.9.227
 		fep->hwts_rx_en = 1;
 		config.rx_filter = HWTSTAMP_FILTER_ALL;
 		break;
@@ -598,8 +643,13 @@ void fec_ptp_init(struct platform_device *pdev)
 	fep->ptp_caps.pps = 1;
 	fep->ptp_caps.adjfreq = fec_ptp_adjfreq;
 	fep->ptp_caps.adjtime = fec_ptp_adjtime;
+<<<<<<< HEAD
 	fep->ptp_caps.gettime = fec_ptp_gettime;
 	fep->ptp_caps.settime = fec_ptp_settime;
+=======
+	fep->ptp_caps.gettime64 = fec_ptp_gettime;
+	fep->ptp_caps.settime64 = fec_ptp_settime;
+>>>>>>> v4.9.227
 	fep->ptp_caps.enable = fec_ptp_enable;
 
 	fep->cycle_speed = clk_get_rate(fep->clk_ptp);

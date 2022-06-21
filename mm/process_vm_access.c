@@ -16,7 +16,10 @@
 #include <linux/ptrace.h>
 #include <linux/slab.h>
 #include <linux/syscalls.h>
+<<<<<<< HEAD
 #include <linux/task_integrity.h>
+=======
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_COMPAT
 #include <linux/compat.h>
@@ -89,22 +92,42 @@ static int process_vm_rw_single_vec(unsigned long addr,
 	ssize_t rc = 0;
 	unsigned long max_pages_per_loop = PVM_MAX_KMALLOC_PAGES
 		/ sizeof(struct pages *);
+<<<<<<< HEAD
+=======
+	unsigned int flags = FOLL_REMOTE;
+>>>>>>> v4.9.227
 
 	/* Work out address and page range required */
 	if (len == 0)
 		return 0;
 	nr_pages = (addr + len - 1) / PAGE_SIZE - addr / PAGE_SIZE + 1;
 
+<<<<<<< HEAD
+=======
+	if (vm_write)
+		flags |= FOLL_WRITE;
+
+>>>>>>> v4.9.227
 	while (!rc && nr_pages && iov_iter_count(iter)) {
 		int pages = min(nr_pages, max_pages_per_loop);
 		size_t bytes;
 
+<<<<<<< HEAD
 		/* Get the pages we're interested in */
 		down_read(&mm->mmap_sem);
 		pages = get_user_pages(task, mm, pa, pages,
 				      vm_write, 0, process_pages, NULL);
 		up_read(&mm->mmap_sem);
 
+=======
+		/*
+		 * Get the pages we're interested in.  We must
+		 * add FOLL_REMOTE because task/mm might not
+		 * current/current->mm
+		 */
+		pages = __get_user_pages_unlocked(task, mm, pa, pages,
+						  process_pages, flags);
+>>>>>>> v4.9.227
 		if (pages <= 0)
 			return -EFAULT;
 
@@ -210,10 +233,13 @@ static ssize_t process_vm_rw_core(pid_t pid, struct iov_iter *iter,
 		goto put_task_struct;
 	}
 
+<<<<<<< HEAD
 	rc = five_process_vm_rw(task, vm_write);
 	if (rc)
 		goto put_task_struct;
 
+=======
+>>>>>>> v4.9.227
 	for (i = 0; i < riovcnt && iov_iter_count(iter) && !rc; i++)
 		rc = process_vm_rw_single_vec(
 			(unsigned long)rvec[i].iov_base, rvec[i].iov_len,
@@ -265,11 +291,16 @@ static ssize_t process_vm_rw(pid_t pid,
 	struct iovec *iov_r = iovstack_r;
 	struct iov_iter iter;
 	ssize_t rc;
+<<<<<<< HEAD
+=======
+	int dir = vm_write ? WRITE : READ;
+>>>>>>> v4.9.227
 
 	if (flags != 0)
 		return -EINVAL;
 
 	/* Check iovecs */
+<<<<<<< HEAD
 	if (vm_write)
 		rc = rw_copy_check_uvector(WRITE, lvec, liovcnt, UIO_FASTIOV,
 					   iovstack_l, &iov_l);
@@ -281,6 +312,14 @@ static ssize_t process_vm_rw(pid_t pid,
 
 	iov_iter_init(&iter, vm_write ? WRITE : READ, iov_l, liovcnt, rc);
 
+=======
+	rc = import_iovec(dir, lvec, liovcnt, UIO_FASTIOV, &iov_l, &iter);
+	if (rc < 0)
+		return rc;
+	if (!iov_iter_count(&iter))
+		goto free_iovecs;
+
+>>>>>>> v4.9.227
 	rc = rw_copy_check_uvector(CHECK_IOVEC_ONLY, rvec, riovcnt, UIO_FASTIOV,
 				   iovstack_r, &iov_r);
 	if (rc <= 0)
@@ -291,8 +330,12 @@ static ssize_t process_vm_rw(pid_t pid,
 free_iovecs:
 	if (iov_r != iovstack_r)
 		kfree(iov_r);
+<<<<<<< HEAD
 	if (iov_l != iovstack_l)
 		kfree(iov_l);
+=======
+	kfree(iov_l);
+>>>>>>> v4.9.227
 
 	return rc;
 }
@@ -328,10 +371,15 @@ compat_process_vm_rw(compat_pid_t pid,
 	struct iovec *iov_r = iovstack_r;
 	struct iov_iter iter;
 	ssize_t rc = -EFAULT;
+<<<<<<< HEAD
+=======
+	int dir = vm_write ? WRITE : READ;
+>>>>>>> v4.9.227
 
 	if (flags != 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (vm_write)
 		rc = compat_rw_copy_check_uvector(WRITE, lvec, liovcnt,
 						  UIO_FASTIOV, iovstack_l,
@@ -343,6 +391,13 @@ compat_process_vm_rw(compat_pid_t pid,
 	if (rc <= 0)
 		goto free_iovecs;
 	iov_iter_init(&iter, vm_write ? WRITE : READ, iov_l, liovcnt, rc);
+=======
+	rc = compat_import_iovec(dir, lvec, liovcnt, UIO_FASTIOV, &iov_l, &iter);
+	if (rc < 0)
+		return rc;
+	if (!iov_iter_count(&iter))
+		goto free_iovecs;
+>>>>>>> v4.9.227
 	rc = compat_rw_copy_check_uvector(CHECK_IOVEC_ONLY, rvec, riovcnt,
 					  UIO_FASTIOV, iovstack_r,
 					  &iov_r);
@@ -354,8 +409,12 @@ compat_process_vm_rw(compat_pid_t pid,
 free_iovecs:
 	if (iov_r != iovstack_r)
 		kfree(iov_r);
+<<<<<<< HEAD
 	if (iov_l != iovstack_l)
 		kfree(iov_l);
+=======
+	kfree(iov_l);
+>>>>>>> v4.9.227
 	return rc;
 }
 

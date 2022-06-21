@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -189,9 +193,15 @@ acpi_status acpi_ex_create_event(struct acpi_walk_state *walk_state)
 
 	/* Attach object to the Node */
 
+<<<<<<< HEAD
 	status =
 	    acpi_ns_attach_object((struct acpi_namespace_node *)walk_state->
 				  operands[0], obj_desc, ACPI_TYPE_EVENT);
+=======
+	status = acpi_ns_attach_object((struct acpi_namespace_node *)
+				       walk_state->operands[0], obj_desc,
+				       ACPI_TYPE_EVENT);
+>>>>>>> v4.9.227
 
 cleanup:
 	/*
@@ -326,9 +336,16 @@ acpi_ex_create_region(u8 * aml_start,
 	 * Remember location in AML stream of address & length
 	 * operands since they need to be evaluated at run time.
 	 */
+<<<<<<< HEAD
 	region_obj2 = obj_desc->common.next_object;
 	region_obj2->extra.aml_start = aml_start;
 	region_obj2->extra.aml_length = aml_length;
+=======
+	region_obj2 = acpi_ns_get_secondary_object(obj_desc);
+	region_obj2->extra.aml_start = aml_start;
+	region_obj2->extra.aml_length = aml_length;
+	region_obj2->extra.method_REG = NULL;
+>>>>>>> v4.9.227
 	if (walk_state->scope_info) {
 		region_obj2->extra.scope_node =
 		    walk_state->scope_info->scope.node;
@@ -342,6 +359,13 @@ acpi_ex_create_region(u8 * aml_start,
 	obj_desc->region.address = 0;
 	obj_desc->region.length = 0;
 	obj_desc->region.node = node;
+<<<<<<< HEAD
+=======
+	obj_desc->region.handler = NULL;
+	obj_desc->common.flags &=
+	    ~(AOPOBJ_SETUP_COMPLETE | AOPOBJ_REG_CONNECTED |
+	      AOPOBJ_OBJECT_INITIALIZED);
+>>>>>>> v4.9.227
 
 	/* Install the new region object in the parent Node */
 
@@ -389,7 +413,11 @@ acpi_status acpi_ex_create_processor(struct acpi_walk_state *walk_state)
 	obj_desc->processor.proc_id = (u8) operand[1]->integer.value;
 	obj_desc->processor.length = (u8) operand[3]->integer.value;
 	obj_desc->processor.address =
+<<<<<<< HEAD
 	    (acpi_io_address) operand[2]->integer.value;
+=======
+	    (acpi_io_address)operand[2]->integer.value;
+>>>>>>> v4.9.227
 
 	/* Install the processor object in the parent Node */
 
@@ -486,15 +514,25 @@ acpi_ex_create_method(u8 * aml_start,
 
 	obj_desc->method.aml_start = aml_start;
 	obj_desc->method.aml_length = aml_length;
+<<<<<<< HEAD
+=======
+	obj_desc->method.node = operand[0];
+>>>>>>> v4.9.227
 
 	/*
 	 * Disassemble the method flags. Split off the arg_count, Serialized
 	 * flag, and sync_level for efficiency.
 	 */
+<<<<<<< HEAD
 	method_flags = (u8) operand[1]->integer.value;
 
 	obj_desc->method.param_count =
 	    (u8) (method_flags & AML_METHOD_ARG_COUNT);
+=======
+	method_flags = (u8)operand[1]->integer.value;
+	obj_desc->method.param_count = (u8)
+	    (method_flags & AML_METHOD_ARG_COUNT);
+>>>>>>> v4.9.227
 
 	/*
 	 * Get the sync_level. If method is serialized, a mutex will be

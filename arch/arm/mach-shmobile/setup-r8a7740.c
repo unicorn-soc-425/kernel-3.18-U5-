@@ -12,6 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -19,11 +20,15 @@
  */
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
+=======
+ */
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/irqchip.h>
 #include <linux/irqchip/arm-gic.h>
+<<<<<<< HEAD
 #include <linux/platform_data/irq-renesas-intc-irqpin.h>
 #include <linux/platform_device.h>
 #include <linux/of_platform.h>
@@ -674,6 +679,14 @@ static struct platform_device *r8a7740_late_devices[] __initdata = {
 	&usb_dma_device,
 	&pmu_device,
 };
+=======
+
+#include <asm/mach/map.h>
+#include <asm/mach/arch.h>
+#include <asm/mach/time.h>
+
+#include "common.h"
+>>>>>>> v4.9.227
 
 /*
  * r8a7740 chip has lasting errata on MERAM buffer.
@@ -682,7 +695,11 @@ static struct platform_device *r8a7740_late_devices[] __initdata = {
  *	"Media RAM (MERAM)" on r8a7740 documentation
  */
 #define MEBUFCNTR	0xFE950098
+<<<<<<< HEAD
 void __init r8a7740_meram_workaround(void)
+=======
+static void __init r8a7740_meram_workaround(void)
+>>>>>>> v4.9.227
 {
 	void __iomem *reg;
 
@@ -693,6 +710,7 @@ void __init r8a7740_meram_workaround(void)
 	}
 }
 
+<<<<<<< HEAD
 #define ICCR	0x0004
 #define ICSTART	0x0070
 
@@ -787,6 +805,9 @@ void __init r8a7740_add_early_devices(void)
 #ifdef CONFIG_USE_OF
 
 void __init r8a7740_init_irq_of(void)
+=======
+static void __init r8a7740_init_irq_of(void)
+>>>>>>> v4.9.227
 {
 	void __iomem *intc_prio_base = ioremap_nocache(0xe6900010, 0x10);
 	void __iomem *intc_msk_base = ioremap_nocache(0xe6900040, 0x10);
@@ -819,6 +840,7 @@ void __init r8a7740_init_irq_of(void)
 static void __init r8a7740_generic_init(void)
 {
 	r8a7740_meram_workaround();
+<<<<<<< HEAD
 
 #ifdef CONFIG_CACHE_L2X0
 	/* Shared attribute override enable, 32K*8way */
@@ -835,18 +857,32 @@ static void r8a7740_restart(enum reboot_mode mode, const char *cmd)
 }
 
 static const char *r8a7740_boards_compat_dt[] __initdata = {
+=======
+}
+
+static const char *const r8a7740_boards_compat_dt[] __initconst = {
+>>>>>>> v4.9.227
 	"renesas,r8a7740",
 	NULL,
 };
 
 DT_MACHINE_START(R8A7740_DT, "Generic R8A7740 (Flattened Device Tree)")
+<<<<<<< HEAD
 	.map_io		= r8a7740_map_io,
+=======
+	.l2c_aux_val	= 0,
+	.l2c_aux_mask	= ~0,
+>>>>>>> v4.9.227
 	.init_early	= shmobile_init_delay,
 	.init_irq	= r8a7740_init_irq_of,
 	.init_machine	= r8a7740_generic_init,
 	.init_late	= shmobile_init_late,
 	.dt_compat	= r8a7740_boards_compat_dt,
+<<<<<<< HEAD
 	.restart	= r8a7740_restart,
 MACHINE_END
 
 #endif /* CONFIG_USE_OF */
+=======
+MACHINE_END
+>>>>>>> v4.9.227

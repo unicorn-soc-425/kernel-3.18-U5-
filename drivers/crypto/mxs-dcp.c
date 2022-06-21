@@ -11,7 +11,10 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -25,12 +28,38 @@
 #include <crypto/aes.h>
 #include <crypto/sha.h>
 #include <crypto/internal/hash.h>
+<<<<<<< HEAD
 
 #define DCP_MAX_CHANS	4
 #define DCP_BUF_SZ	PAGE_SIZE
 
 #define DCP_ALIGNMENT	64
 
+=======
+#include <crypto/internal/skcipher.h>
+#include <crypto/scatterwalk.h>
+
+#define DCP_MAX_CHANS	4
+#define DCP_BUF_SZ	PAGE_SIZE
+#define DCP_SHA_PAY_SZ  64
+
+#define DCP_ALIGNMENT	64
+
+/*
+ * Null hashes to align with hw behavior on imx6sl and ull
+ * these are flipped for consistency with hw output
+ */
+static const uint8_t sha1_null_hash[] =
+	"\x09\x07\xd8\xaf\x90\x18\x60\x95\xef\xbf"
+	"\x55\x32\x0d\x4b\x6b\x5e\xee\xa3\x39\xda";
+
+static const uint8_t sha256_null_hash[] =
+	"\x55\xb8\x52\x78\x1b\x99\x95\xa4"
+	"\x4c\x93\x9b\x64\xe4\x41\xae\x27"
+	"\x24\xb9\x6f\x99\xc8\xf4\xfb\x9a"
+	"\x14\x1c\xfc\x98\x42\xc4\xb0\xe3";
+
+>>>>>>> v4.9.227
 /* DCP DMA descriptor. */
 struct dcp_dma_desc {
 	uint32_t	next_cmd_addr;
@@ -48,6 +77,10 @@ struct dcp_coherent_block {
 	uint8_t			aes_in_buf[DCP_BUF_SZ];
 	uint8_t			aes_out_buf[DCP_BUF_SZ];
 	uint8_t			sha_in_buf[DCP_BUF_SZ];
+<<<<<<< HEAD
+=======
+	uint8_t			sha_out_buf[DCP_SHA_PAY_SZ];
+>>>>>>> v4.9.227
 
 	uint8_t			aes_key[2 * AES_KEYSIZE_128];
 
@@ -84,7 +117,11 @@ struct dcp_async_ctx {
 	unsigned int			hot:1;
 
 	/* Crypto-specific context */
+<<<<<<< HEAD
 	struct crypto_ablkcipher	*fallback;
+=======
+	struct crypto_skcipher		*fallback;
+>>>>>>> v4.9.227
 	unsigned int			key_len;
 	uint8_t				key[AES_KEYSIZE_128];
 };
@@ -153,7 +190,11 @@ static int mxs_dcp_start_dma(struct dcp_async_ctx *actx)
 	struct dcp *sdcp = global_sdcp;
 	const int chan = actx->chan;
 	uint32_t stat;
+<<<<<<< HEAD
 	int ret;
+=======
+	unsigned long ret;
+>>>>>>> v4.9.227
 	struct dcp_dma_desc *desc = &sdcp->coh->desc[actx->chan];
 
 	dma_addr_t desc_phys = dma_map_single(sdcp->dev, desc, sizeof(*desc),
@@ -209,6 +250,15 @@ static int mxs_dcp_run_aes(struct dcp_async_ctx *actx,
 	dma_addr_t dst_phys = dma_map_single(sdcp->dev, sdcp->coh->aes_out_buf,
 					     DCP_BUF_SZ, DMA_FROM_DEVICE);
 
+<<<<<<< HEAD
+=======
+	if (actx->fill % AES_BLOCK_SIZE) {
+		dev_err(sdcp->dev, "Invalid block size!\n");
+		ret = -EINVAL;
+		goto aes_done_run;
+	}
+
+>>>>>>> v4.9.227
 	/* Fill in the DMA descriptor. */
 	desc->control0 = MXS_DCP_CONTROL0_DECR_SEMAPHORE |
 		    MXS_DCP_CONTROL0_INTERRUPT |
@@ -238,6 +288,10 @@ static int mxs_dcp_run_aes(struct dcp_async_ctx *actx,
 
 	ret = mxs_dcp_start_dma(actx);
 
+<<<<<<< HEAD
+=======
+aes_done_run:
+>>>>>>> v4.9.227
 	dma_unmap_single(sdcp->dev, key_phys, 2 * AES_KEYSIZE_128,
 			 DMA_TO_DEVICE);
 	dma_unmap_single(sdcp->dev, src_phys, DCP_BUF_SZ, DMA_TO_DEVICE);
@@ -264,13 +318,23 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
 
 	uint8_t *out_tmp, *src_buf, *dst_buf = NULL;
 	uint32_t dst_off = 0;
+<<<<<<< HEAD
+=======
+	uint32_t last_out_len = 0;
+>>>>>>> v4.9.227
 
 	uint8_t *key = sdcp->coh->aes_key;
 
 	int ret = 0;
 	int split = 0;
+<<<<<<< HEAD
 	unsigned int i, len, clen, rem = 0;
 	int init = 0;
+=======
+	unsigned int i, len, clen, rem = 0, tlen = 0;
+	int init = 0;
+	bool limit_hit = false;
+>>>>>>> v4.9.227
 
 	actx->fill = 0;
 
@@ -289,6 +353,14 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
 	for_each_sg(req->src, src, nents, i) {
 		src_buf = sg_virt(src);
 		len = sg_dma_len(src);
+<<<<<<< HEAD
+=======
+		tlen += len;
+		limit_hit = tlen > req->nbytes;
+
+		if (limit_hit)
+			len = req->nbytes - (tlen - len);
+>>>>>>> v4.9.227
 
 		do {
 			if (actx->fill + len > out_off)
@@ -305,13 +377,22 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
 			 * If we filled the buffer or this is the last SG,
 			 * submit the buffer.
 			 */
+<<<<<<< HEAD
 			if (actx->fill == out_off || sg_is_last(src)) {
+=======
+			if (actx->fill == out_off || sg_is_last(src) ||
+				limit_hit) {
+>>>>>>> v4.9.227
 				ret = mxs_dcp_run_aes(actx, req, init);
 				if (ret)
 					return ret;
 				init = 0;
 
 				out_tmp = out_buf;
+<<<<<<< HEAD
+=======
+				last_out_len = actx->fill;
+>>>>>>> v4.9.227
 				while (dst && actx->fill) {
 					if (!split) {
 						dst_buf = sg_virt(dst);
@@ -334,6 +415,22 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
 				}
 			}
 		} while (len);
+<<<<<<< HEAD
+=======
+
+		if (limit_hit)
+			break;
+	}
+
+	/* Copy the IV for CBC for chaining */
+	if (!rctx->ecb) {
+		if (rctx->enc)
+			memcpy(req->info, out_buf+(last_out_len-AES_BLOCK_SIZE),
+				AES_BLOCK_SIZE);
+		else
+			memcpy(req->info, in_buf+(last_out_len-AES_BLOCK_SIZE),
+				AES_BLOCK_SIZE);
+>>>>>>> v4.9.227
 	}
 
 	return ret;
@@ -378,6 +475,7 @@ static int dcp_chan_thread_aes(void *data)
 
 static int mxs_dcp_block_fallback(struct ablkcipher_request *req, int enc)
 {
+<<<<<<< HEAD
 	struct crypto_tfm *tfm =
 		crypto_ablkcipher_tfm(crypto_ablkcipher_reqtfm(req));
 	struct dcp_async_ctx *ctx = crypto_ablkcipher_ctx(
@@ -392,6 +490,24 @@ static int mxs_dcp_block_fallback(struct ablkcipher_request *req, int enc)
 		ret = crypto_ablkcipher_decrypt(req);
 
 	ablkcipher_request_set_tfm(req, __crypto_ablkcipher_cast(tfm));
+=======
+	struct crypto_ablkcipher *tfm = crypto_ablkcipher_reqtfm(req);
+	struct dcp_async_ctx *ctx = crypto_ablkcipher_ctx(tfm);
+	SKCIPHER_REQUEST_ON_STACK(subreq, ctx->fallback);
+	int ret;
+
+	skcipher_request_set_tfm(subreq, ctx->fallback);
+	skcipher_request_set_callback(subreq, req->base.flags, NULL, NULL);
+	skcipher_request_set_crypt(subreq, req->src, req->dst,
+				   req->nbytes, req->info);
+
+	if (enc)
+		ret = crypto_skcipher_encrypt(subreq);
+	else
+		ret = crypto_skcipher_decrypt(subreq);
+
+	skcipher_request_zero(subreq);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -457,28 +573,44 @@ static int mxs_dcp_aes_setkey(struct crypto_ablkcipher *tfm, const u8 *key,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	/* Check if the key size is supported by kernel at all. */
 	if (len != AES_KEYSIZE_192 && len != AES_KEYSIZE_256) {
 		tfm->base.crt_flags |= CRYPTO_TFM_RES_BAD_KEY_LEN;
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * If the requested AES key size is not supported by the hardware,
 	 * but is supported by in-kernel software implementation, we use
 	 * software fallback.
 	 */
+<<<<<<< HEAD
 	actx->fallback->base.crt_flags &= ~CRYPTO_TFM_REQ_MASK;
 	actx->fallback->base.crt_flags |=
 		tfm->base.crt_flags & CRYPTO_TFM_REQ_MASK;
 
 	ret = crypto_ablkcipher_setkey(actx->fallback, key, len);
+=======
+	crypto_skcipher_clear_flags(actx->fallback, CRYPTO_TFM_REQ_MASK);
+	crypto_skcipher_set_flags(actx->fallback,
+				  tfm->base.crt_flags & CRYPTO_TFM_REQ_MASK);
+
+	ret = crypto_skcipher_setkey(actx->fallback, key, len);
+>>>>>>> v4.9.227
 	if (!ret)
 		return 0;
 
 	tfm->base.crt_flags &= ~CRYPTO_TFM_RES_MASK;
+<<<<<<< HEAD
 	tfm->base.crt_flags |=
 		actx->fallback->base.crt_flags & CRYPTO_TFM_RES_MASK;
+=======
+	tfm->base.crt_flags |= crypto_skcipher_get_flags(actx->fallback) &
+			       CRYPTO_TFM_RES_MASK;
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -488,9 +620,15 @@ static int mxs_dcp_aes_fallback_init(struct crypto_tfm *tfm)
 	const char *name = crypto_tfm_alg_name(tfm);
 	const uint32_t flags = CRYPTO_ALG_ASYNC | CRYPTO_ALG_NEED_FALLBACK;
 	struct dcp_async_ctx *actx = crypto_tfm_ctx(tfm);
+<<<<<<< HEAD
 	struct crypto_ablkcipher *blk;
 
 	blk = crypto_alloc_ablkcipher(name, 0, flags);
+=======
+	struct crypto_skcipher *blk;
+
+	blk = crypto_alloc_skcipher(name, 0, flags);
+>>>>>>> v4.9.227
 	if (IS_ERR(blk))
 		return PTR_ERR(blk);
 
@@ -503,8 +641,12 @@ static void mxs_dcp_aes_fallback_exit(struct crypto_tfm *tfm)
 {
 	struct dcp_async_ctx *actx = crypto_tfm_ctx(tfm);
 
+<<<<<<< HEAD
 	crypto_free_ablkcipher(actx->fallback);
 	actx->fallback = NULL;
+=======
+	crypto_free_skcipher(actx->fallback);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -518,8 +660,11 @@ static int mxs_dcp_run_sha(struct ahash_request *req)
 	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
 	struct dcp_async_ctx *actx = crypto_ahash_ctx(tfm);
 	struct dcp_sha_req_ctx *rctx = ahash_request_ctx(req);
+<<<<<<< HEAD
 	struct hash_alg_common *halg = crypto_hash_alg_common(tfm);
 
+=======
+>>>>>>> v4.9.227
 	struct dcp_dma_desc *desc = &sdcp->coh->desc[actx->chan];
 
 	dma_addr_t digest_phys = 0;
@@ -541,10 +686,30 @@ static int mxs_dcp_run_sha(struct ahash_request *req)
 	desc->payload = 0;
 	desc->status = 0;
 
+<<<<<<< HEAD
 	/* Set HASH_TERM bit for last transfer block. */
 	if (rctx->fini) {
 		digest_phys = dma_map_single(sdcp->dev, req->result,
 					     halg->digestsize, DMA_FROM_DEVICE);
+=======
+	/*
+	 * Align driver with hw behavior when generating null hashes
+	 */
+	if (rctx->init && rctx->fini && desc->size == 0) {
+		struct hash_alg_common *halg = crypto_hash_alg_common(tfm);
+		const uint8_t *sha_buf =
+			(actx->alg == MXS_DCP_CONTROL1_HASH_SELECT_SHA1) ?
+			sha1_null_hash : sha256_null_hash;
+		memcpy(sdcp->coh->sha_out_buf, sha_buf, halg->digestsize);
+		ret = 0;
+		goto done_run;
+	}
+
+	/* Set HASH_TERM bit for last transfer block. */
+	if (rctx->fini) {
+		digest_phys = dma_map_single(sdcp->dev, sdcp->coh->sha_out_buf,
+					     DCP_SHA_PAY_SZ, DMA_FROM_DEVICE);
+>>>>>>> v4.9.227
 		desc->control0 |= MXS_DCP_CONTROL0_HASH_TERM;
 		desc->payload = digest_phys;
 	}
@@ -552,9 +717,16 @@ static int mxs_dcp_run_sha(struct ahash_request *req)
 	ret = mxs_dcp_start_dma(actx);
 
 	if (rctx->fini)
+<<<<<<< HEAD
 		dma_unmap_single(sdcp->dev, digest_phys, halg->digestsize,
 				 DMA_FROM_DEVICE);
 
+=======
+		dma_unmap_single(sdcp->dev, digest_phys, DCP_SHA_PAY_SZ,
+				 DMA_FROM_DEVICE);
+
+done_run:
+>>>>>>> v4.9.227
 	dma_unmap_single(sdcp->dev, buf_phys, DCP_BUF_SZ, DMA_TO_DEVICE);
 
 	return ret;
@@ -569,6 +741,7 @@ static int dcp_sha_req_to_buf(struct crypto_async_request *arq)
 	struct dcp_async_ctx *actx = crypto_ahash_ctx(tfm);
 	struct dcp_sha_req_ctx *rctx = ahash_request_ctx(req);
 	struct hash_alg_common *halg = crypto_hash_alg_common(tfm);
+<<<<<<< HEAD
 	const int nents = sg_nents(req->src);
 
 	uint8_t *in_buf = sdcp->coh->sha_in_buf;
@@ -578,12 +751,22 @@ static int dcp_sha_req_to_buf(struct crypto_async_request *arq)
 	struct scatterlist *src;
 
 	unsigned int i, len, clen;
+=======
+
+	uint8_t *in_buf = sdcp->coh->sha_in_buf;
+	uint8_t *out_buf = sdcp->coh->sha_out_buf;
+
+	struct scatterlist *src;
+
+	unsigned int i, len, clen, oft = 0;
+>>>>>>> v4.9.227
 	int ret;
 
 	int fin = rctx->fini;
 	if (fin)
 		rctx->fini = 0;
 
+<<<<<<< HEAD
 	for_each_sg(req->src, src, nents, i) {
 		src_buf = sg_virt(src);
 		len = sg_dma_len(src);
@@ -611,6 +794,35 @@ static int dcp_sha_req_to_buf(struct crypto_async_request *arq)
 				rctx->init = 0;
 			}
 		} while (len);
+=======
+	src = req->src;
+	len = req->nbytes;
+
+	while (len) {
+		if (actx->fill + len > DCP_BUF_SZ)
+			clen = DCP_BUF_SZ - actx->fill;
+		else
+			clen = len;
+
+		scatterwalk_map_and_copy(in_buf + actx->fill, src, oft, clen,
+					 0);
+
+		len -= clen;
+		oft += clen;
+		actx->fill += clen;
+
+		/*
+		 * If we filled the buffer and still have some
+		 * more data, submit the buffer.
+		 */
+		if (len && actx->fill == DCP_BUF_SZ) {
+			ret = mxs_dcp_run_sha(req);
+			if (ret)
+				return ret;
+			actx->fill = 0;
+			rctx->init = 0;
+		}
+>>>>>>> v4.9.227
 	}
 
 	if (fin) {
@@ -626,11 +838,17 @@ static int dcp_sha_req_to_buf(struct crypto_async_request *arq)
 
 		actx->fill = 0;
 
+<<<<<<< HEAD
 		/* For some reason, the result is flipped. */
 		for (i = 0; i < halg->digestsize / 2; i++) {
 			swap(req->result[i],
 			     req->result[halg->digestsize - i - 1]);
 		}
+=======
+		/* For some reason the result is flipped */
+		for (i = 0; i < halg->digestsize; i++)
+			req->result[i] = out_buf[halg->digestsize - i - 1];
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -1097,7 +1315,10 @@ static struct platform_driver mxs_dcp_driver = {
 	.remove	= mxs_dcp_remove,
 	.driver	= {
 		.name		= "mxs-dcp",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= mxs_dcp_dt_ids,
 	},
 };

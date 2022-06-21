@@ -23,7 +23,10 @@
 
 #include <asm/sections.h>
 #include <asm/uaccess.h>
+<<<<<<< HEAD
 #include <asm/cacheflush.h>
+=======
+>>>>>>> v4.9.227
 
 /*
  * mutex protecting text section modification (dynamic code patching).
@@ -43,6 +46,7 @@ u32 __initdata __visible main_extable_sort_needed = 1;
 void __init sort_main_extable(void)
 {
 	if (main_extable_sort_needed && __stop___ex_table > __start___ex_table) {
+<<<<<<< HEAD
 #ifdef CONFIG_KERNEL_TEXT_RDONLY
 		unsigned long start = PFN_DOWN((unsigned long)__start___ex_table);
 		unsigned long end = PFN_UP((unsigned long)__stop___ex_table);
@@ -54,6 +58,10 @@ void __init sort_main_extable(void)
 #ifdef CONFIG_KERNEL_TEXT_RDONLY
 		set_kernel_text_ro();
 #endif
+=======
+		pr_notice("Sorting __ex_table...\n");
+		sort_extable(__start___ex_table, __stop___ex_table);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -112,6 +120,11 @@ int __kernel_text_address(unsigned long addr)
 		return 1;
 	if (is_module_text_address(addr))
 		return 1;
+<<<<<<< HEAD
+=======
+	if (is_ftrace_trampoline(addr))
+		return 1;
+>>>>>>> v4.9.227
 	/*
 	 * There might be init symbols in saved stacktraces.
 	 * Give those symbols a chance to be printed in
@@ -129,7 +142,13 @@ int kernel_text_address(unsigned long addr)
 {
 	if (core_kernel_text(addr))
 		return 1;
+<<<<<<< HEAD
 	return is_module_text_address(addr);
+=======
+	if (is_module_text_address(addr))
+		return 1;
+	return is_ftrace_trampoline(addr);
+>>>>>>> v4.9.227
 }
 
 /*

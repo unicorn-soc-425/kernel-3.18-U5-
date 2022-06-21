@@ -18,8 +18,13 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/pci.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
 #include "common.h"
+=======
+#include "common.h"
+#include "orion5x.h"
+>>>>>>> v4.9.227
 
 /*****************************************************************************
  * RD-88F5182 Info

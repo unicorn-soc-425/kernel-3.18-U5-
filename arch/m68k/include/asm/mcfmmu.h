@@ -38,7 +38,11 @@
 /*
  *	MMU Operation register.
  */
+<<<<<<< HEAD
 #define	MMUOR_UAA	0x00000001		/* Update allocatiom address */
+=======
+#define	MMUOR_UAA	0x00000001		/* Update allocation address */
+>>>>>>> v4.9.227
 #define	MMUOR_ACC	0x00000002		/* TLB access */
 #define	MMUOR_RD	0x00000004		/* TLB access read */
 #define	MMUOR_WR	0x00000000		/* TLB access write */
@@ -105,6 +109,10 @@ static inline void mmu_write(u32 a, u32 v)
 	__asm__ __volatile__ ("nop");
 }
 
+<<<<<<< HEAD
+=======
+void cf_bootmem_alloc(void);
+>>>>>>> v4.9.227
 int cf_tlb_miss(struct pt_regs *regs, int write, int dtlb, int extension_word);
 
 #endif

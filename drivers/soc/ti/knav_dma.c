@@ -389,7 +389,11 @@ static int of_channel_match_helper(struct device_node *np, const char *name,
 	*dma_instance = dma_node->name;
 	index = of_property_match_string(np, "ti,navigator-dma-names", name);
 	if (index < 0) {
+<<<<<<< HEAD
 		dev_err(kdev->dev, "No 'ti,navigator-dma-names' propery\n");
+=======
+		dev_err(kdev->dev, "No 'ti,navigator-dma-names' property\n");
+>>>>>>> v4.9.227
 		return -ENODEV;
 	}
 
@@ -803,7 +807,10 @@ static struct platform_driver knav_dma_driver = {
 	.remove	= knav_dma_remove,
 	.driver = {
 		.name		= "keystone-navigator-dma",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= of_match,
 	},
 };

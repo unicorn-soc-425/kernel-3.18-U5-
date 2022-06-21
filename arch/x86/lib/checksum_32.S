@@ -26,10 +26,18 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/dwarf2.h>
 #include <asm/errno.h>
 #include <asm/asm.h>
 				
+=======
+#include <asm/errno.h>
+#include <asm/asm.h>
+#include <asm/export.h>
+#include <asm/nospec-branch.h>
+
+>>>>>>> v4.9.227
 /*
  * computes a partial checksum, e.g. for TCP/UDP fragments
  */
@@ -50,11 +58,16 @@ unsigned int csum_partial(const unsigned char * buff, int len, unsigned int sum)
 	   * alignment for the unrolled loop.
 	   */		
 ENTRY(csum_partial)
+<<<<<<< HEAD
 	CFI_STARTPROC
 	pushl_cfi %esi
 	CFI_REL_OFFSET esi, 0
 	pushl_cfi %ebx
 	CFI_REL_OFFSET ebx, 0
+=======
+	pushl %esi
+	pushl %ebx
+>>>>>>> v4.9.227
 	movl 20(%esp),%eax	# Function arg: unsigned int sum
 	movl 16(%esp),%ecx	# Function arg: int len
 	movl 12(%esp),%esi	# Function arg: unsigned char *buff
@@ -127,6 +140,7 @@ ENTRY(csum_partial)
 6:	addl %ecx,%eax
 	adcl $0, %eax 
 7:	
+<<<<<<< HEAD
 	testl $1, 12(%esp)
 	jz 8f
 	roll $8, %eax
@@ -137,6 +151,15 @@ ENTRY(csum_partial)
 	CFI_RESTORE esi
 	ret
 	CFI_ENDPROC
+=======
+	testb $1, 12(%esp)
+	jz 8f
+	roll $8, %eax
+8:
+	popl %ebx
+	popl %esi
+	ret
+>>>>>>> v4.9.227
 ENDPROC(csum_partial)
 
 #else
@@ -144,11 +167,16 @@ ENDPROC(csum_partial)
 /* Version for PentiumII/PPro */
 
 ENTRY(csum_partial)
+<<<<<<< HEAD
 	CFI_STARTPROC
 	pushl_cfi %esi
 	CFI_REL_OFFSET esi, 0
 	pushl_cfi %ebx
 	CFI_REL_OFFSET ebx, 0
+=======
+	pushl %esi
+	pushl %ebx
+>>>>>>> v4.9.227
 	movl 20(%esp),%eax	# Function arg: unsigned int sum
 	movl 16(%esp),%ecx	# Function arg: int len
 	movl 12(%esp),%esi	# Function arg:	const unsigned char *buf
@@ -165,7 +193,11 @@ ENTRY(csum_partial)
 	negl %ebx
 	lea 45f(%ebx,%ebx,2), %ebx
 	testl %esi, %esi
+<<<<<<< HEAD
 	jmp *%ebx
+=======
+	JMP_NOSPEC %ebx
+>>>>>>> v4.9.227
 
 	# Handle 2-byte-aligned regions
 20:	addw (%esi), %ax
@@ -251,6 +283,7 @@ ENTRY(csum_partial)
 	addl %ebx,%eax
 	adcl $0,%eax
 80: 
+<<<<<<< HEAD
 	testl $1, 12(%esp)
 	jz 90f
 	roll $8, %eax
@@ -264,6 +297,19 @@ ENTRY(csum_partial)
 ENDPROC(csum_partial)
 				
 #endif
+=======
+	testb $1, 12(%esp)
+	jz 90f
+	roll $8, %eax
+90: 
+	popl %ebx
+	popl %esi
+	ret
+ENDPROC(csum_partial)
+				
+#endif
+EXPORT_SYMBOL(csum_partial)
+>>>>>>> v4.9.227
 
 /*
 unsigned int csum_partial_copy_generic (const char *src, char *dst,
@@ -295,6 +341,7 @@ unsigned int csum_partial_copy_generic (const char *src, char *dst,
 #define FP		12
 		
 ENTRY(csum_partial_copy_generic)
+<<<<<<< HEAD
 	CFI_STARTPROC
 	subl  $4,%esp	
 	CFI_ADJUST_CFA_OFFSET 4
@@ -304,6 +351,12 @@ ENTRY(csum_partial_copy_generic)
 	CFI_REL_OFFSET esi, 0
 	pushl_cfi %ebx
 	CFI_REL_OFFSET ebx, 0
+=======
+	subl  $4,%esp	
+	pushl %edi
+	pushl %esi
+	pushl %ebx
+>>>>>>> v4.9.227
 	movl ARGBASE+16(%esp),%eax	# sum
 	movl ARGBASE+12(%esp),%ecx	# len
 	movl ARGBASE+4(%esp),%esi	# src
@@ -412,6 +465,7 @@ DST(	movb %cl, (%edi)	)
 
 .previous
 
+<<<<<<< HEAD
 	popl_cfi %ebx
 	CFI_RESTORE ebx
 	popl_cfi %esi
@@ -421,6 +475,13 @@ DST(	movb %cl, (%edi)	)
 	popl_cfi %ecx			# equivalent to addl $4,%esp
 	ret	
 	CFI_ENDPROC
+=======
+	popl %ebx
+	popl %esi
+	popl %edi
+	popl %ecx			# equivalent to addl $4,%esp
+	ret	
+>>>>>>> v4.9.227
 ENDPROC(csum_partial_copy_generic)
 
 #else
@@ -440,6 +501,7 @@ ENDPROC(csum_partial_copy_generic)
 #define ARGBASE 12
 		
 ENTRY(csum_partial_copy_generic)
+<<<<<<< HEAD
 	CFI_STARTPROC
 	pushl_cfi %ebx
 	CFI_REL_OFFSET ebx, 0
@@ -447,6 +509,11 @@ ENTRY(csum_partial_copy_generic)
 	CFI_REL_OFFSET edi, 0
 	pushl_cfi %esi
 	CFI_REL_OFFSET esi, 0
+=======
+	pushl %ebx
+	pushl %edi
+	pushl %esi
+>>>>>>> v4.9.227
 	movl ARGBASE+4(%esp),%esi	#src
 	movl ARGBASE+8(%esp),%edi	#dst	
 	movl ARGBASE+12(%esp),%ecx	#len
@@ -463,7 +530,11 @@ ENTRY(csum_partial_copy_generic)
 	andl $-32,%edx
 	lea 3f(%ebx,%ebx), %ebx
 	testl %esi, %esi 
+<<<<<<< HEAD
 	jmp *%ebx
+=======
+	JMP_NOSPEC %ebx
+>>>>>>> v4.9.227
 1:	addl $64,%esi
 	addl $64,%edi 
 	SRC(movb -32(%edx),%bl)	; SRC(movb (%edx),%bl)
@@ -506,6 +577,7 @@ DST(	movb %dl, (%edi)         )
 	jmp  7b			
 .previous				
 
+<<<<<<< HEAD
 	popl_cfi %esi
 	CFI_RESTORE esi
 	popl_cfi %edi
@@ -514,9 +586,19 @@ DST(	movb %dl, (%edi)         )
 	CFI_RESTORE ebx
 	ret
 	CFI_ENDPROC
+=======
+	popl %esi
+	popl %edi
+	popl %ebx
+	ret
+>>>>>>> v4.9.227
 ENDPROC(csum_partial_copy_generic)
 				
 #undef ROUND
 #undef ROUND1		
 		
 #endif
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(csum_partial_copy_generic)
+>>>>>>> v4.9.227

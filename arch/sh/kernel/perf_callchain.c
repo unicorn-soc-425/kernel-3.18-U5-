@@ -21,7 +21,11 @@ static int callchain_stack(void *data, char *name)
 
 static void callchain_address(void *data, unsigned long addr, int reliable)
 {
+<<<<<<< HEAD
 	struct perf_callchain_entry *entry = data;
+=======
+	struct perf_callchain_entry_ctx *entry = data;
+>>>>>>> v4.9.227
 
 	if (reliable)
 		perf_callchain_store(entry, addr);
@@ -33,7 +37,11 @@ static const struct stacktrace_ops callchain_ops = {
 };
 
 void
+<<<<<<< HEAD
 perf_callchain_kernel(struct perf_callchain_entry *entry, struct pt_regs *regs)
+=======
+perf_callchain_kernel(struct perf_callchain_entry_ctx *entry, struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	perf_callchain_store(entry, regs->pc);
 

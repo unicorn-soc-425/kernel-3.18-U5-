@@ -83,11 +83,14 @@ struct atmel_pcm_dma_params {
 #define ssc_readx(base, reg)            (__raw_readl((base) + (reg)))
 #define ssc_writex(base, reg, value)    __raw_writel((value), (base) + (reg))
 
+<<<<<<< HEAD
 int atmel_pcm_new(struct snd_soc_pcm_runtime *rtd);
 void atmel_pcm_free(struct snd_pcm *pcm);
 int atmel_pcm_mmap(struct snd_pcm_substream *substream,
 		struct vm_area_struct *vma);
 
+=======
+>>>>>>> v4.9.227
 #if defined(CONFIG_SND_ATMEL_SOC_PDC) || \
 	defined(CONFIG_SND_ATMEL_SOC_PDC_MODULE)
 int atmel_pcm_pdc_platform_register(struct device *dev);

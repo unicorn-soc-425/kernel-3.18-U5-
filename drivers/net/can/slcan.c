@@ -56,9 +56,12 @@
 #include <linux/can.h>
 #include <linux/can/skb.h>
 
+<<<<<<< HEAD
 static __initconst const char banner[] =
 	KERN_INFO "slcan: serial line CAN interface driver\n";
 
+=======
+>>>>>>> v4.9.227
 MODULE_ALIAS_LDISC(N_SLCAN);
 MODULE_DESCRIPTION("serial line CAN interface");
 MODULE_LICENSE("GPL");
@@ -150,7 +153,11 @@ static void slc_bump(struct slcan *sl)
 	u32 tmpid;
 	char *cmd = sl->rbuff;
 
+<<<<<<< HEAD
 	cf.can_id = 0;
+=======
+	memset(&cf, 0, sizeof(cf));
+>>>>>>> v4.9.227
 
 	switch (*cmd) {
 	case 'r':
@@ -189,8 +196,11 @@ static void slc_bump(struct slcan *sl)
 	else
 		return;
 
+<<<<<<< HEAD
 	*(u64 *) (&cf.data) = 0; /* clear payload */
 
+=======
+>>>>>>> v4.9.227
 	/* RTR frames may have a dlc > 0 but they never have any data bytes */
 	if (!(cf.can_id & CAN_RTR_FLAG)) {
 		for (i = 0; i < cf.can_dlc; i++) {
@@ -217,6 +227,7 @@ static void slc_bump(struct slcan *sl)
 
 	can_skb_reserve(skb);
 	can_skb_prv(skb)->ifindex = sl->dev->ifindex;
+<<<<<<< HEAD
 
 	memcpy(skb_put(skb, sizeof(struct can_frame)),
 	       &cf, sizeof(struct can_frame));
@@ -224,6 +235,16 @@ static void slc_bump(struct slcan *sl)
 
 	sl->dev->stats.rx_packets++;
 	sl->dev->stats.rx_bytes += cf.can_dlc;
+=======
+	can_skb_prv(skb)->skbcnt = 0;
+
+	memcpy(skb_put(skb, sizeof(struct can_frame)),
+	       &cf, sizeof(struct can_frame));
+
+	sl->dev->stats.rx_packets++;
+	sl->dev->stats.rx_bytes += cf.can_dlc;
+	netif_rx_ni(skb);
+>>>>>>> v4.9.227
 }
 
 /* parse tty input stream */
@@ -346,9 +367,22 @@ static void slcan_transmit(struct work_struct *work)
  */
 static void slcan_write_wakeup(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	struct slcan *sl = tty->disc_data;
 
 	schedule_work(&sl->tx_work);
+=======
+	struct slcan *sl;
+
+	rcu_read_lock();
+	sl = rcu_dereference(tty->disc_data);
+	if (!sl)
+		goto out;
+
+	schedule_work(&sl->tx_work);
+out:
+	rcu_read_unlock();
+>>>>>>> v4.9.227
 }
 
 /* Send a can_frame to a TTY queue. */
@@ -356,7 +390,11 @@ static netdev_tx_t slc_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct slcan *sl = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if (skb->len != sizeof(struct can_frame))
+=======
+	if (skb->len != CAN_MTU)
+>>>>>>> v4.9.227
 		goto out;
 
 	spin_lock(&sl->lock);
@@ -444,7 +482,11 @@ static void slc_setup(struct net_device *dev)
 	dev->addr_len		= 0;
 	dev->tx_queue_len	= 10;
 
+<<<<<<< HEAD
 	dev->mtu		= sizeof(struct can_frame);
+=======
+	dev->mtu		= CAN_MTU;
+>>>>>>> v4.9.227
 	dev->type		= ARPHRD_CAN;
 
 	/* New-style flags. */
@@ -615,6 +657,13 @@ err_free_chan:
 	sl->tty = NULL;
 	tty->disc_data = NULL;
 	clear_bit(SLF_INUSE, &sl->flags);
+<<<<<<< HEAD
+=======
+	/* do not call free_netdev before rtnl_unlock */
+	rtnl_unlock();
+	slc_free_netdev(sl->dev);
+	return err;
+>>>>>>> v4.9.227
 
 err_exit:
 	rtnl_unlock();
@@ -640,10 +689,18 @@ static void slcan_close(struct tty_struct *tty)
 		return;
 
 	spin_lock_bh(&sl->lock);
+<<<<<<< HEAD
 	tty->disc_data = NULL;
 	sl->tty = NULL;
 	spin_unlock_bh(&sl->lock);
 
+=======
+	rcu_assign_pointer(tty->disc_data, NULL);
+	sl->tty = NULL;
+	spin_unlock_bh(&sl->lock);
+
+	synchronize_rcu();
+>>>>>>> v4.9.227
 	flush_work(&sl->tx_work);
 
 	/* Flush network side */
@@ -702,8 +759,13 @@ static int __init slcan_init(void)
 	if (maxdev < 4)
 		maxdev = 4; /* Sanity */
 
+<<<<<<< HEAD
 	printk(banner);
 	printk(KERN_INFO "slcan: %d dynamic interface channels.\n", maxdev);
+=======
+	pr_info("slcan: serial line CAN interface driver\n");
+	pr_info("slcan: %d dynamic interface channels.\n", maxdev);
+>>>>>>> v4.9.227
 
 	slcan_devs = kzalloc(sizeof(struct net_device *)*maxdev, GFP_KERNEL);
 	if (!slcan_devs)

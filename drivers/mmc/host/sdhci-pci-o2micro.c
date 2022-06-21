@@ -60,7 +60,11 @@ static void o2_pci_led_enable(struct sdhci_pci_chip *chip)
 
 }
 
+<<<<<<< HEAD
 void sdhci_pci_o2_fujin2_pci_init(struct sdhci_pci_chip *chip)
+=======
+static void sdhci_pci_o2_fujin2_pci_init(struct sdhci_pci_chip *chip)
+>>>>>>> v4.9.227
 {
 	u32 scratch_32;
 	int ret;
@@ -145,7 +149,10 @@ void sdhci_pci_o2_fujin2_pci_init(struct sdhci_pci_chip *chip)
 	scratch_32 |= 0x00080000;
 	pci_write_config_dword(chip->pdev, O2_SD_MISC_CTRL4, scratch_32);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(sdhci_pci_o2_fujin2_pci_init);
+=======
+>>>>>>> v4.9.227
 
 int sdhci_pci_o2_probe_slot(struct sdhci_pci_slot *slot)
 {
@@ -179,7 +186,10 @@ int sdhci_pci_o2_probe_slot(struct sdhci_pci_slot *slot)
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(sdhci_pci_o2_probe_slot);
+=======
+>>>>>>> v4.9.227
 
 int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 {
@@ -336,6 +346,12 @@ int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 		pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch);
 		break;
 	case PCI_DEVICE_ID_O2_SEABIRD0:
+<<<<<<< HEAD
+=======
+		if (chip->pdev->revision == 0x01)
+			chip->quirks |= SDHCI_QUIRK_DELAY_AFTER_POWER;
+		/* fall through */
+>>>>>>> v4.9.227
 	case PCI_DEVICE_ID_O2_SEABIRD1:
 		/* UnLock WP */
 		ret = pci_read_config_byte(chip->pdev,
@@ -385,11 +401,17 @@ int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(sdhci_pci_o2_probe);
+=======
+>>>>>>> v4.9.227
 
 int sdhci_pci_o2_resume(struct sdhci_pci_chip *chip)
 {
 	sdhci_pci_o2_probe(chip);
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(sdhci_pci_o2_resume);
+=======
+>>>>>>> v4.9.227

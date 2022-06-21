@@ -3,8 +3,13 @@
  *
  * Copyright 2012 Dialog Semiconductor Ltd.
  *
+<<<<<<< HEAD
  * Author: Michal Hajduk <michal.hajduk@diasemi.com>
  *	   Krystian Garbaciak <krystian.garbaciak@diasemi.com>
+=======
+ * Author: Michal Hajduk, Dialog Semiconductor
+ * Author: Krystian Garbaciak, Dialog Semiconductor
+>>>>>>> v4.9.227
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
@@ -36,6 +41,10 @@ enum da9063_models {
 enum da9063_variant_codes {
 	PMIC_DA9063_AD = 0x3,
 	PMIC_DA9063_BB = 0x5,
+<<<<<<< HEAD
+=======
+	PMIC_DA9063_CA = 0x6,
+>>>>>>> v4.9.227
 };
 
 /* Interrupts */
@@ -50,6 +59,10 @@ enum da9063_irqs {
 	DA9063_IRQ_COMP_1V2,
 	DA9063_IRQ_LDO_LIM,
 	DA9063_IRQ_REG_UVOV,
+<<<<<<< HEAD
+=======
+	DA9063_IRQ_DVC_RDY,
+>>>>>>> v4.9.227
 	DA9063_IRQ_VDD_MON,
 	DA9063_IRQ_WARN,
 	DA9063_IRQ_GPI0,

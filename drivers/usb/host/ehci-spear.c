@@ -99,6 +99,7 @@ static int spear_ehci_hcd_drv_probe(struct platform_device *pdev)
 	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res) {
 		retval = -ENODEV;
 		goto err_put_hcd;
@@ -106,11 +107,18 @@ static int spear_ehci_hcd_drv_probe(struct platform_device *pdev)
 
 	hcd->rsrc_start = res->start;
 	hcd->rsrc_len = resource_size(res);
+=======
+>>>>>>> v4.9.227
 	hcd->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(hcd->regs)) {
 		retval = PTR_ERR(hcd->regs);
 		goto err_put_hcd;
 	}
+<<<<<<< HEAD
+=======
+	hcd->rsrc_start = res->start;
+	hcd->rsrc_len = resource_size(res);
+>>>>>>> v4.9.227
 
 	sehci = to_spear_ehci(hcd);
 	sehci->clk = usbh_clk;
@@ -154,6 +162,10 @@ static const struct of_device_id spear_ehci_id_table[] = {
 	{ .compatible = "st,spear600-ehci", },
 	{ },
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, spear_ehci_id_table);
+>>>>>>> v4.9.227
 
 static struct platform_driver spear_ehci_hcd_driver = {
 	.probe		= spear_ehci_hcd_drv_probe,
@@ -167,7 +179,11 @@ static struct platform_driver spear_ehci_hcd_driver = {
 	}
 };
 
+<<<<<<< HEAD
 static const struct ehci_driver_overrides spear_overrides __initdata = {
+=======
+static const struct ehci_driver_overrides spear_overrides __initconst = {
+>>>>>>> v4.9.227
 	.extra_priv_size = sizeof(struct spear_ehci),
 };
 

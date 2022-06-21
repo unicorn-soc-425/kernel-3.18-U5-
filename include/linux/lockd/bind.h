@@ -29,7 +29,11 @@ struct nlmsvc_binding {
 	void			(*fclose)(struct file *);
 };
 
+<<<<<<< HEAD
 extern struct nlmsvc_binding *	nlmsvc_ops;
+=======
+extern const struct nlmsvc_binding *nlmsvc_ops;
+>>>>>>> v4.9.227
 
 /*
  * Similar to nfs_client_initdata, but without the NFS-specific

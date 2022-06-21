@@ -34,7 +34,10 @@
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
 #include <asm/mca.h>
+<<<<<<< HEAD
 #include <asm/paravirt.h>
+=======
+>>>>>>> v4.9.227
 
 extern void ia64_tlb_init (void);
 
@@ -216,10 +219,13 @@ put_kernel_page (struct page *page, unsigned long address, pgprot_t pgprot)
 	pmd_t *pmd;
 	pte_t *pte;
 
+<<<<<<< HEAD
 	if (!PageReserved(page))
 		printk(KERN_ERR "put_kernel_page: page at 0x%p not in reserved memory\n",
 		       page_address(page));
 
+=======
+>>>>>>> v4.9.227
 	pgd = pgd_offset_k(address);		/* note: this is NOT pgd_offset()! */
 
 	{
@@ -244,7 +250,10 @@ put_kernel_page (struct page *page, unsigned long address, pgprot_t pgprot)
 static void __init
 setup_gate (void)
 {
+<<<<<<< HEAD
 	void *gate_section;
+=======
+>>>>>>> v4.9.227
 	struct page *page;
 
 	/*
@@ -252,11 +261,18 @@ setup_gate (void)
 	 * headers etc. and once execute-only page to enable
 	 * privilege-promotion via "epc":
 	 */
+<<<<<<< HEAD
 	gate_section = paravirt_get_gate_section();
 	page = virt_to_page(ia64_imva(gate_section));
 	put_kernel_page(page, GATE_ADDR, PAGE_READONLY);
 #ifdef HAVE_BUGGY_SEGREL
 	page = virt_to_page(ia64_imva(gate_section + PAGE_SIZE));
+=======
+	page = virt_to_page(ia64_imva(__start_gate_section));
+	put_kernel_page(page, GATE_ADDR, PAGE_READONLY);
+#ifdef HAVE_BUGGY_SEGREL
+	page = virt_to_page(ia64_imva(__start_gate_section + PAGE_SIZE));
+>>>>>>> v4.9.227
 	put_kernel_page(page, GATE_ADDR + PAGE_SIZE, PAGE_GATE);
 #else
 	put_kernel_page(page, GATE_ADDR + PERCPU_PAGE_SIZE, PAGE_GATE);
@@ -642,8 +658,13 @@ mem_init (void)
 	 * code can tell them apart.
 	 */
 	for (i = 0; i < NR_syscalls; ++i) {
+<<<<<<< HEAD
 		extern unsigned long sys_call_table[NR_syscalls];
 		unsigned long *fsyscall_table = paravirt_get_fsyscall_table();
+=======
+		extern unsigned long fsyscall_table[NR_syscalls];
+		extern unsigned long sys_call_table[NR_syscalls];
+>>>>>>> v4.9.227
 
 		if (!fsyscall_table[i] || nolwsys)
 			fsyscall_table[i] = sys_call_table[i] | 1;
@@ -652,7 +673,11 @@ mem_init (void)
 }
 
 #ifdef CONFIG_MEMORY_HOTPLUG
+<<<<<<< HEAD
 int arch_add_memory(int nid, u64 start, u64 size)
+=======
+int arch_add_memory(int nid, u64 start, u64 size, bool for_device)
+>>>>>>> v4.9.227
 {
 	pg_data_t *pgdat;
 	struct zone *zone;
@@ -663,7 +688,11 @@ int arch_add_memory(int nid, u64 start, u64 size)
 	pgdat = NODE_DATA(nid);
 
 	zone = pgdat->node_zones +
+<<<<<<< HEAD
 		zone_for_memory(nid, start, size, ZONE_NORMAL);
+=======
+		zone_for_memory(nid, start, size, ZONE_NORMAL, for_device);
+>>>>>>> v4.9.227
 	ret = __add_pages(nid, zone, start_pfn, nr_pages);
 
 	if (ret)
@@ -692,6 +721,7 @@ int arch_remove_memory(u64 start, u64 size)
 #endif
 #endif
 
+<<<<<<< HEAD
 /*
  * Even when CONFIG_IA32_SUPPORT is not enabled it is
  * useful to have the Linux/x86 domain registered to
@@ -717,6 +747,8 @@ per_linux32_init(void)
 
 __initcall(per_linux32_init);
 
+=======
+>>>>>>> v4.9.227
 /**
  * show_mem - give short summary of memory stats
  *

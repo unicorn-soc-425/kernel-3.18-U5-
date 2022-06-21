@@ -96,7 +96,11 @@ retry:
 			return 0;
 
 		if (have_drawable_releases && sc > 300) {
+<<<<<<< HEAD
 			FENCE_WARN(fence, "failed to wait on release %d "
+=======
+			FENCE_WARN(fence, "failed to wait on release %llu "
+>>>>>>> v4.9.227
 					  "after spincount %d\n",
 					  fence->context & ~0xf0000000, sc);
 			goto signaled;
@@ -203,12 +207,18 @@ qxl_release_free(struct qxl_device *qdev,
 static int qxl_release_bo_alloc(struct qxl_device *qdev,
 				struct qxl_bo **bo)
 {
+<<<<<<< HEAD
 	int ret;
 	/* pin releases bo's they are too messy to evict */
 	ret = qxl_bo_create(qdev, PAGE_SIZE, false, true,
 			    QXL_GEM_DOMAIN_VRAM, NULL,
 			    bo);
 	return ret;
+=======
+	/* pin releases bo's they are too messy to evict */
+	return qxl_bo_create(qdev, PAGE_SIZE, false, true,
+			     QXL_GEM_DOMAIN_VRAM, NULL, bo);
+>>>>>>> v4.9.227
 }
 
 int qxl_release_list_add(struct qxl_release *release, struct qxl_bo *bo)

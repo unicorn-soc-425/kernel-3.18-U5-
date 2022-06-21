@@ -24,7 +24,10 @@
  *     David Airlie
  */
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
+=======
+>>>>>>> v4.9.227
 
 #include "drmP.h"
 #include "drm/drm.h"
@@ -40,13 +43,17 @@
 struct qxl_fbdev {
 	struct drm_fb_helper helper;
 	struct qxl_framebuffer	qfb;
+<<<<<<< HEAD
 	struct list_head	fbdev_list;
+=======
+>>>>>>> v4.9.227
 	struct qxl_device	*qdev;
 
 	spinlock_t delayed_ops_lock;
 	struct list_head delayed_ops;
 	void *shadow;
 	int size;
+<<<<<<< HEAD
 
 	/* dirty memory logging */
 	struct {
@@ -56,6 +63,8 @@ struct qxl_fbdev {
 		unsigned x2;
 		unsigned y2;
 	} dirty;
+=======
+>>>>>>> v4.9.227
 };
 
 static void qxl_fb_image_init(struct qxl_fb_image *qxl_fb_image,
@@ -83,6 +92,7 @@ static void qxl_fb_image_init(struct qxl_fb_image *qxl_fb_image,
 	}
 }
 
+<<<<<<< HEAD
 static void qxl_fb_dirty_flush(struct fb_info *info)
 {
 	struct qxl_fbdev *qfbdev = info->par;
@@ -238,14 +248,28 @@ int qxl_fb_init(struct qxl_device *qdev)
 	INIT_WORK(&qdev->fb_work, qxl_fb_work);
 	return 0;
 }
+=======
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+static struct fb_deferred_io qxl_defio = {
+	.delay		= QXL_DIRTY_DELAY,
+	.deferred_io	= drm_fb_helper_deferred_io,
+};
+#endif
+>>>>>>> v4.9.227
 
 static struct fb_ops qxlfb_ops = {
 	.owner = THIS_MODULE,
 	.fb_check_var = drm_fb_helper_check_var,
 	.fb_set_par = drm_fb_helper_set_par, /* TODO: copy vmwgfx */
+<<<<<<< HEAD
 	.fb_fillrect = qxl_fb_fillrect,
 	.fb_copyarea = qxl_fb_copyarea,
 	.fb_imageblit = qxl_fb_imageblit,
+=======
+	.fb_fillrect = drm_fb_helper_sys_fillrect,
+	.fb_copyarea = drm_fb_helper_sys_copyarea,
+	.fb_imageblit = drm_fb_helper_sys_imageblit,
+>>>>>>> v4.9.227
 	.fb_pan_display = drm_fb_helper_pan_display,
 	.fb_blank = drm_fb_helper_blank,
 	.fb_setcmap = drm_fb_helper_setcmap,
@@ -283,7 +307,11 @@ int qxl_get_handle_for_primary_fb(struct qxl_device *qdev,
 }
 
 static int qxlfb_create_pinned_object(struct qxl_fbdev *qfbdev,
+<<<<<<< HEAD
 				      struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+				      const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 				      struct drm_gem_object **gobj_p)
 {
 	struct qxl_device *qdev = qfbdev->qdev;
@@ -292,10 +320,13 @@ static int qxlfb_create_pinned_object(struct qxl_fbdev *qfbdev,
 	int ret;
 	int aligned_size, size;
 	int height = mode_cmd->height;
+<<<<<<< HEAD
 	int bpp;
 	int depth;
 
 	drm_fb_get_bpp_depth(mode_cmd->pixel_format, &bpp, &depth);
+=======
+>>>>>>> v4.9.227
 
 	size = mode_cmd->pitches[0] * height;
 	aligned_size = ALIGN(size, PAGE_SIZE);
@@ -339,6 +370,60 @@ out_unref:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * FIXME
+ * It should not be necessary to have a special dirty() callback for fbdev.
+ */
+static int qxlfb_framebuffer_dirty(struct drm_framebuffer *fb,
+				   struct drm_file *file_priv,
+				   unsigned flags, unsigned color,
+				   struct drm_clip_rect *clips,
+				   unsigned num_clips)
+{
+	struct qxl_device *qdev = fb->dev->dev_private;
+	struct fb_info *info = qdev->fbdev_info;
+	struct qxl_fbdev *qfbdev = info->par;
+	struct qxl_fb_image qxl_fb_image;
+	struct fb_image *image = &qxl_fb_image.fb_image;
+
+	/* TODO: hard coding 32 bpp */
+	int stride = qfbdev->qfb.base.pitches[0];
+
+	/*
+	 * we are using a shadow draw buffer, at qdev->surface0_shadow
+	 */
+	qxl_io_log(qdev, "dirty x[%d, %d], y[%d, %d]", clips->x1, clips->x2,
+		   clips->y1, clips->y2);
+	image->dx = clips->x1;
+	image->dy = clips->y1;
+	image->width = clips->x2 - clips->x1;
+	image->height = clips->y2 - clips->y1;
+	image->fg_color = 0xffffffff; /* unused, just to avoid uninitialized
+					 warnings */
+	image->bg_color = 0;
+	image->depth = 32;	     /* TODO: take from somewhere? */
+	image->cmap.start = 0;
+	image->cmap.len = 0;
+	image->cmap.red = NULL;
+	image->cmap.green = NULL;
+	image->cmap.blue = NULL;
+	image->cmap.transp = NULL;
+	image->data = qfbdev->shadow + (clips->x1 * 4) + (stride * clips->y1);
+
+	qxl_fb_image_init(&qxl_fb_image, qdev, info, NULL);
+	qxl_draw_opaque_fb(&qxl_fb_image, stride);
+
+	return 0;
+}
+
+static const struct drm_framebuffer_funcs qxlfb_fb_funcs = {
+	.destroy = qxl_user_framebuffer_destroy,
+	.dirty = qxlfb_framebuffer_dirty,
+};
+
+>>>>>>> v4.9.227
 static int qxlfb_create(struct qxl_fbdev *qfbdev,
 			struct drm_fb_helper_surface_size *sizes)
 {
@@ -361,6 +446,12 @@ static int qxlfb_create(struct qxl_fbdev *qfbdev,
 	mode_cmd.pixel_format = drm_mode_legacy_fb_format(bpp, depth);
 
 	ret = qxlfb_create_pinned_object(qfbdev, &mode_cmd, &gobj);
+<<<<<<< HEAD
+=======
+	if (ret < 0)
+		return ret;
+
+>>>>>>> v4.9.227
 	qbo = gem_to_qxl_bo(gobj);
 	QXL_INFO(qdev, "%s: %dx%d %d\n", __func__, mode_cmd.width,
 		 mode_cmd.height, mode_cmd.pitches[0]);
@@ -384,7 +475,12 @@ static int qxlfb_create(struct qxl_fbdev *qfbdev,
 
 	info->par = qfbdev;
 
+<<<<<<< HEAD
 	qxl_framebuffer_init(qdev->ddev, &qfbdev->qfb, &mode_cmd, gobj);
+=======
+	qxl_framebuffer_init(qdev->ddev, &qfbdev->qfb, &mode_cmd, gobj,
+			     &qxlfb_fb_funcs);
+>>>>>>> v4.9.227
 
 	fb = &qfbdev->qfb.base;
 
@@ -423,8 +519,15 @@ static int qxlfb_create(struct qxl_fbdev *qfbdev,
 		goto out_destroy_fbi;
 	}
 
+<<<<<<< HEAD
 	info->fbdefio = &qxl_defio;
 	fb_deferred_io_init(info);
+=======
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+	info->fbdefio = &qxl_defio;
+	fb_deferred_io_init(info);
+#endif
+>>>>>>> v4.9.227
 
 	qdev->fbdev_info = info;
 	qdev->fbdev_qfb = &qfbdev->qfb;
@@ -444,11 +547,19 @@ out_unref:
 		}
 	}
 	if (fb && ret) {
+<<<<<<< HEAD
 		drm_gem_object_unreference(gobj);
 		drm_framebuffer_cleanup(fb);
 		kfree(fb);
 	}
 	drm_gem_object_unreference(gobj);
+=======
+		drm_gem_object_unreference_unlocked(gobj);
+		drm_framebuffer_cleanup(fb);
+		kfree(fb);
+	}
+	drm_gem_object_unreference_unlocked(gobj);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -494,9 +605,17 @@ static const struct drm_fb_helper_funcs qxl_fb_helper_funcs = {
 
 int qxl_fbdev_init(struct qxl_device *qdev)
 {
+<<<<<<< HEAD
 	struct qxl_fbdev *qfbdev;
 	int bpp_sel = 32; /* TODO: parameter from somewhere? */
 	int ret;
+=======
+	int ret = 0;
+
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+	struct qxl_fbdev *qfbdev;
+	int bpp_sel = 32; /* TODO: parameter from somewhere? */
+>>>>>>> v4.9.227
 
 	qfbdev = kzalloc(sizeof(struct qxl_fbdev), GFP_KERNEL);
 	if (!qfbdev)
@@ -505,7 +624,10 @@ int qxl_fbdev_init(struct qxl_device *qdev)
 	qfbdev->qdev = qdev;
 	qdev->mode_info.qfbdev = qfbdev;
 	spin_lock_init(&qfbdev->delayed_ops_lock);
+<<<<<<< HEAD
 	spin_lock_init(&qfbdev->dirty.lock);
+=======
+>>>>>>> v4.9.227
 	INIT_LIST_HEAD(&qfbdev->delayed_ops);
 
 	drm_fb_helper_prepare(qdev->ddev, &qfbdev->helper,
@@ -531,6 +653,11 @@ fini:
 	drm_fb_helper_fini(&qfbdev->helper);
 free:
 	kfree(qfbdev);
+<<<<<<< HEAD
+=======
+#endif
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -546,6 +673,12 @@ void qxl_fbdev_fini(struct qxl_device *qdev)
 
 void qxl_fbdev_set_suspend(struct qxl_device *qdev, int state)
 {
+<<<<<<< HEAD
+=======
+	if (!qdev->mode_info.qfbdev)
+		return;
+
+>>>>>>> v4.9.227
 	drm_fb_helper_set_suspend(&qdev->mode_info.qfbdev->helper, state);
 }
 

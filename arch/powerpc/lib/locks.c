@@ -41,6 +41,10 @@ void __spin_yield(arch_spinlock_t *lock)
 	plpar_hcall_norets(H_CONFER,
 		get_hard_smp_processor_id(holder_cpu), yield_count);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(__spin_yield);
+>>>>>>> v4.9.227
 
 /*
  * Waiting for a read lock or a write lock on a rwlock...
@@ -67,6 +71,7 @@ void __rw_yield(arch_rwlock_t *rw)
 		get_hard_smp_processor_id(holder_cpu), yield_count);
 }
 #endif
+<<<<<<< HEAD
 
 void arch_spin_unlock_wait(arch_spinlock_t *lock)
 {
@@ -83,3 +88,5 @@ void arch_spin_unlock_wait(arch_spinlock_t *lock)
 }
 
 EXPORT_SYMBOL(arch_spin_unlock_wait);
+=======
+>>>>>>> v4.9.227

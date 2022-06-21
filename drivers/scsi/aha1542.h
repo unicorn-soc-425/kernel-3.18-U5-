@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _AHA1542_H
 
 /* $Id: aha1542.h,v 1.1 1992/07/24 06:27:38 root Exp root $
@@ -30,12 +31,17 @@
  * *** empty log message ***
  *
  */
+=======
+#ifndef _AHA1542_H_
+#define _AHA1542_H_
+>>>>>>> v4.9.227
 
 #include <linux/types.h>
 
 /* I/O Port interface 4.2 */
 /* READ */
 #define STATUS(base) base
+<<<<<<< HEAD
 #define STST	0x80		/* Self Test in Progress */
 #define DIAGF	0x40		/* Internal Diagnostic Failure */
 #define INIT	0x20		/* Mailbox Initialization Required */
@@ -59,6 +65,32 @@
 #define SRST	0x40		/* Soft Reset */
 #define IRST	0x20		/* Interrupt Reset */
 #define SCRST	0x10		/* SCSI Bus Reset */
+=======
+#define STST	BIT(7)		/* Self Test in Progress */
+#define DIAGF	BIT(6)		/* Internal Diagnostic Failure */
+#define INIT	BIT(5)		/* Mailbox Initialization Required */
+#define IDLE	BIT(4)		/* SCSI Host Adapter Idle */
+#define CDF	BIT(3)		/* Command/Data Out Port Full */
+#define DF	BIT(2)		/* Data In Port Full */
+/* BIT(1) is reserved */
+#define INVDCMD	BIT(0)		/* Invalid H A Command */
+#define STATMASK (STST | DIAGF | INIT | IDLE | CDF | DF | INVDCMD)
+
+#define INTRFLAGS(base) (STATUS(base)+2)
+#define ANYINTR	BIT(7)		/* Any Interrupt */
+#define SCRD	BIT(3)		/* SCSI Reset Detected */
+#define HACC	BIT(2)		/* HA Command Complete */
+#define MBOA	BIT(1)		/* MBO Empty */
+#define MBIF	BIT(0)		/* MBI Full */
+#define INTRMASK (ANYINTR | SCRD | HACC | MBOA | MBIF)
+
+/* WRITE */
+#define CONTROL(base) STATUS(base)
+#define HRST	BIT(7)		/* Hard Reset */
+#define SRST	BIT(6)		/* Soft Reset */
+#define IRST	BIT(5)		/* Interrupt Reset */
+#define SCRST	BIT(4)		/* SCSI Bus Reset */
+>>>>>>> v4.9.227
 
 /* READ/WRITE */
 #define DATA(base) (STATUS(base)+1)
@@ -80,14 +112,24 @@
 
 /* Mailbox Definition 5.2.1 and 5.2.2 */
 struct mailbox {
+<<<<<<< HEAD
   unchar status;		/* Command/Status */
   unchar ccbptr[3];		/* msb, .., lsb */
+=======
+	u8 status;	/* Command/Status */
+	u8 ccbptr[3];	/* msb, .., lsb */
+>>>>>>> v4.9.227
 };
 
 /* This is used with scatter-gather */
 struct chain {
+<<<<<<< HEAD
   unchar datalen[3];		/* Size of this part of chain */
   unchar dataptr[3];		/* Location of data */
+=======
+	u8 datalen[3];	/* Size of this part of chain */
+	u8 dataptr[3];	/* Location of data */
+>>>>>>> v4.9.227
 };
 
 /* These belong in scsi.h also */
@@ -100,18 +142,22 @@ static inline void any2scsi(u8 *p, u32 v)
 
 #define scsi2int(up) ( (((long)*(up)) << 16) + (((long)(up)[1]) << 8) + ((long)(up)[2]) )
 
+<<<<<<< HEAD
 #define xany2scsi(up, p)	\
 (up)[0] = ((long)(p)) >> 24;	\
 (up)[1] = ((long)(p)) >> 16;	\
 (up)[2] = ((long)(p)) >> 8;	\
 (up)[3] = ((long)(p));
 
+=======
+>>>>>>> v4.9.227
 #define xscsi2int(up) ( (((long)(up)[0]) << 24) + (((long)(up)[1]) << 16) \
 		      + (((long)(up)[2]) <<  8) +  ((long)(up)[3]) )
 
 #define MAX_CDB 12
 #define MAX_SENSE 14
 
+<<<<<<< HEAD
 struct ccb {			/* Command Control Block 5.3 */
   unchar op;			/* Command Control Block Operation Code */
   unchar idlun;			/* op=0,2:Target Id, op=1:Initiator Id */
@@ -148,3 +194,28 @@ static int aha1542_biosparam(struct scsi_device *, struct block_device *,
 #define AHA1542_CMDLUN 1
 
 #endif
+=======
+struct ccb {		/* Command Control Block 5.3 */
+	u8 op;		/* Command Control Block Operation Code */
+	u8 idlun;	/* op=0,2:Target Id, op=1:Initiator Id */
+			/* Outbound data transfer, length is checked*/
+			/* Inbound data transfer, length is checked */
+			/* Logical Unit Number */
+	u8 cdblen;	/* SCSI Command Length */
+	u8 rsalen;	/* Request Sense Allocation Length/Disable */
+	u8 datalen[3];	/* Data Length (msb, .., lsb) */
+	u8 dataptr[3];	/* Data Pointer */
+	u8 linkptr[3];	/* Link Pointer */
+	u8 commlinkid;	/* Command Linking Identifier */
+	u8 hastat;	/* Host Adapter Status (HASTAT) */
+	u8 tarstat;	/* Target Device Status */
+	u8 reserved[2];
+	u8 cdb[MAX_CDB+MAX_SENSE];	/* SCSI Command Descriptor Block */
+					/* REQUEST SENSE */
+};
+
+#define AHA1542_REGION_SIZE 4
+#define AHA1542_MAILBOXES 8
+
+#endif /* _AHA1542_H_ */
+>>>>>>> v4.9.227

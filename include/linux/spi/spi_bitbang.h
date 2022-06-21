@@ -4,7 +4,11 @@
 #include <linux/workqueue.h>
 
 struct spi_bitbang {
+<<<<<<< HEAD
 	spinlock_t		lock;
+=======
+	struct mutex		lock;
+>>>>>>> v4.9.227
 	u8			busy;
 	u8			use_dma;
 	u8			flags;		/* extra spi->mode support */

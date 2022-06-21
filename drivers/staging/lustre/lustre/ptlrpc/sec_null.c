@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -40,13 +44,21 @@
 
 #define DEBUG_SUBSYSTEM S_SEC
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #include "../include/obd_support.h"
 #include "../include/obd_cksum.h"
 #include "../include/obd_class.h"
 #include "../include/lustre_net.h"
 #include "../include/lustre_sec.h"
 
+<<<<<<< HEAD
+=======
+#include "ptlrpc_internal.h"
+
+>>>>>>> v4.9.227
 static struct ptlrpc_sec_policy null_policy;
 static struct ptlrpc_sec	null_sec;
 static struct ptlrpc_cli_ctx    null_cli_ctx;
@@ -59,7 +71,11 @@ static struct ptlrpc_svc_ctx    null_svc_ctx;
 static inline
 void null_encode_sec_part(struct lustre_msg *msg, enum lustre_sec_part sp)
 {
+<<<<<<< HEAD
 	msg->lm_secflvr |= (((__u32) sp) & 0xFF) << 24;
+=======
+	msg->lm_secflvr |= (((__u32)sp) & 0xFF) << 24;
+>>>>>>> v4.9.227
 }
 
 static inline
@@ -82,6 +98,10 @@ int null_ctx_sign(struct ptlrpc_cli_ctx *ctx, struct ptlrpc_request *req)
 
 	if (!req->rq_import->imp_dlm_fake) {
 		struct obd_device *obd = req->rq_import->imp_obd;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		null_encode_sec_part(req->rq_reqbuf,
 				     obd->u.cli.cl_sp_me);
 	}
@@ -92,7 +112,11 @@ int null_ctx_sign(struct ptlrpc_cli_ctx *ctx, struct ptlrpc_request *req)
 static
 int null_ctx_verify(struct ptlrpc_cli_ctx *ctx, struct ptlrpc_request *req)
 {
+<<<<<<< HEAD
 	__u32   cksums, cksumc;
+=======
+	__u32 cksums, cksumc;
+>>>>>>> v4.9.227
 
 	LASSERT(req->rq_repdata);
 
@@ -101,6 +125,7 @@ int null_ctx_verify(struct ptlrpc_cli_ctx *ctx, struct ptlrpc_request *req)
 
 	if (req->rq_early) {
 		cksums = lustre_msg_get_cksum(req->rq_repdata);
+<<<<<<< HEAD
 #if LUSTRE_VERSION_CODE < OBD_OCD_VERSION(2, 7, 50, 0)
 		if (lustre_msghdr_get_flags(req->rq_reqmsg) &
 		    MSGHDR_CKSUM_INCOMPAT18)
@@ -111,6 +136,9 @@ int null_ctx_verify(struct ptlrpc_cli_ctx *ctx, struct ptlrpc_request *req)
 # warning "remove checksum compatibility support for b1_8"
 		cksumc = lustre_msg_calc_cksum(req->rq_repmsg);
 #endif
+=======
+		cksumc = lustre_msg_calc_cksum(req->rq_repmsg);
+>>>>>>> v4.9.227
 		if (cksumc != cksums) {
 			CDEBUG(D_SEC,
 			       "early reply checksum mismatch: %08x != %08x\n",
@@ -168,7 +196,11 @@ int null_alloc_reqbuf(struct ptlrpc_sec *sec,
 		int alloc_size = size_roundup_power2(msgsize);
 
 		LASSERT(!req->rq_pool);
+<<<<<<< HEAD
 		OBD_ALLOC_LARGE(req->rq_reqbuf, alloc_size);
+=======
+		req->rq_reqbuf = libcfs_kvzalloc(alloc_size, GFP_NOFS);
+>>>>>>> v4.9.227
 		if (!req->rq_reqbuf)
 			return -ENOMEM;
 
@@ -195,7 +227,11 @@ void null_free_reqbuf(struct ptlrpc_sec *sec,
 			 "req %p: reqlen %d should smaller than buflen %d\n",
 			 req, req->rq_reqlen, req->rq_reqbuf_len);
 
+<<<<<<< HEAD
 		OBD_FREE_LARGE(req->rq_reqbuf, req->rq_reqbuf_len);
+=======
+		kvfree(req->rq_reqbuf);
+>>>>>>> v4.9.227
 		req->rq_reqbuf = NULL;
 		req->rq_reqbuf_len = 0;
 	}
@@ -211,7 +247,11 @@ int null_alloc_repbuf(struct ptlrpc_sec *sec,
 
 	msgsize = size_roundup_power2(msgsize);
 
+<<<<<<< HEAD
 	OBD_ALLOC_LARGE(req->rq_repbuf, msgsize);
+=======
+	req->rq_repbuf = libcfs_kvzalloc(msgsize, GFP_NOFS);
+>>>>>>> v4.9.227
 	if (!req->rq_repbuf)
 		return -ENOMEM;
 
@@ -225,7 +265,11 @@ void null_free_repbuf(struct ptlrpc_sec *sec,
 {
 	LASSERT(req->rq_repbuf);
 
+<<<<<<< HEAD
 	OBD_FREE_LARGE(req->rq_repbuf, req->rq_repbuf_len);
+=======
+	kvfree(req->rq_repbuf);
+>>>>>>> v4.9.227
 	req->rq_repbuf = NULL;
 	req->rq_repbuf_len = 0;
 }
@@ -235,9 +279,15 @@ int null_enlarge_reqbuf(struct ptlrpc_sec *sec,
 			struct ptlrpc_request *req,
 			int segment, int newsize)
 {
+<<<<<<< HEAD
 	struct lustre_msg      *newbuf;
 	struct lustre_msg      *oldbuf = req->rq_reqmsg;
 	int		     oldsize, newmsg_size, alloc_size;
+=======
+	struct lustre_msg *newbuf;
+	struct lustre_msg *oldbuf = req->rq_reqmsg;
+	int oldsize, newmsg_size, alloc_size;
+>>>>>>> v4.9.227
 
 	LASSERT(req->rq_reqbuf);
 	LASSERT(req->rq_reqbuf == req->rq_reqmsg);
@@ -256,8 +306,13 @@ int null_enlarge_reqbuf(struct ptlrpc_sec *sec,
 	if (req->rq_reqbuf_len < newmsg_size) {
 		alloc_size = size_roundup_power2(newmsg_size);
 
+<<<<<<< HEAD
 		OBD_ALLOC_LARGE(newbuf, alloc_size);
 		if (newbuf == NULL)
+=======
+		newbuf = libcfs_kvzalloc(alloc_size, GFP_NOFS);
+		if (!newbuf)
+>>>>>>> v4.9.227
 			return -ENOMEM;
 
 		/* Must lock this, so that otherwise unprotected change of
@@ -265,13 +320,24 @@ int null_enlarge_reqbuf(struct ptlrpc_sec *sec,
 		 * imp_replay_list traversing threads. See LU-3333
 		 * This is a bandaid at best, we really need to deal with this
 		 * in request enlarging code before unpacking that's already
+<<<<<<< HEAD
 		 * there */
+=======
+		 * there
+		 */
+>>>>>>> v4.9.227
 		if (req->rq_import)
 			spin_lock(&req->rq_import->imp_lock);
 		memcpy(newbuf, req->rq_reqbuf, req->rq_reqlen);
 
+<<<<<<< HEAD
 		OBD_FREE_LARGE(req->rq_reqbuf, req->rq_reqbuf_len);
 		req->rq_reqbuf = req->rq_reqmsg = newbuf;
+=======
+		kvfree(req->rq_reqbuf);
+		req->rq_reqbuf = newbuf;
+		req->rq_reqmsg = newbuf;
+>>>>>>> v4.9.227
 		req->rq_reqbuf_len = alloc_size;
 
 		if (req->rq_import)
@@ -325,8 +391,13 @@ int null_alloc_rs(struct ptlrpc_request *req, int msgsize)
 		/* pre-allocated */
 		LASSERT(rs->rs_size >= rs_size);
 	} else {
+<<<<<<< HEAD
 		OBD_ALLOC_LARGE(rs, rs_size);
 		if (rs == NULL)
+=======
+		rs = libcfs_kvzalloc(rs_size, GFP_NOFS);
+		if (!rs)
+>>>>>>> v4.9.227
 			return -ENOMEM;
 
 		rs->rs_size = rs_size;
@@ -335,7 +406,11 @@ int null_alloc_rs(struct ptlrpc_request *req, int msgsize)
 	rs->rs_svc_ctx = req->rq_svc_ctx;
 	atomic_inc(&req->rq_svc_ctx->sc_refcount);
 
+<<<<<<< HEAD
 	rs->rs_repbuf = (struct lustre_msg *) (rs + 1);
+=======
+	rs->rs_repbuf = (struct lustre_msg *)(rs + 1);
+>>>>>>> v4.9.227
 	rs->rs_repbuf_len = rs_size - sizeof(*rs);
 	rs->rs_msg = rs->rs_repbuf;
 
@@ -350,7 +425,11 @@ void null_free_rs(struct ptlrpc_reply_state *rs)
 	atomic_dec(&rs->rs_svc_ctx->sc_refcount);
 
 	if (!rs->rs_prealloc)
+<<<<<<< HEAD
 		OBD_FREE_LARGE(rs, rs->rs_size);
+=======
+		kvfree(rs);
+>>>>>>> v4.9.227
 }
 
 static
@@ -371,6 +450,7 @@ int null_authorize(struct ptlrpc_request *req)
 	} else {
 		__u32 cksum;
 
+<<<<<<< HEAD
 #if LUSTRE_VERSION_CODE < OBD_OCD_VERSION(2, 7, 50, 0)
 		if (lustre_msghdr_get_flags(req->rq_reqmsg) &
 		    MSGHDR_CKSUM_INCOMPAT18)
@@ -381,6 +461,9 @@ int null_authorize(struct ptlrpc_request *req)
 # warning "remove checksum compatibility support for b1_8"
 		cksum = lustre_msg_calc_cksum(rs->rs_repbuf);
 #endif
+=======
+		cksum = lustre_msg_calc_cksum(rs->rs_repbuf);
+>>>>>>> v4.9.227
 		lustre_msg_set_cksum(rs->rs_repbuf, cksum);
 		req->rq_reply_off = 0;
 	}

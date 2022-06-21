@@ -56,7 +56,11 @@ static char *state_string[] = {
 
 static int mv_otg_set_vbus(struct usb_otg *otg, bool on)
 {
+<<<<<<< HEAD
 	struct mv_otg *mvotg = container_of(otg->phy, struct mv_otg, phy);
+=======
+	struct mv_otg *mvotg = container_of(otg->usb_phy, struct mv_otg, phy);
+>>>>>>> v4.9.227
 	if (mvotg->pdata->set_vbus == NULL)
 		return -ENODEV;
 
@@ -338,6 +342,7 @@ static void mv_otg_update_inputs(struct mv_otg *mvotg)
 static void mv_otg_update_state(struct mv_otg *mvotg)
 {
 	struct mv_otg_ctrl *otg_ctrl = &mvotg->otg_ctrl;
+<<<<<<< HEAD
 	struct usb_phy *phy = &mvotg->phy;
 	int old_state = phy->state;
 
@@ -365,42 +370,96 @@ static void mv_otg_update_state(struct mv_otg *mvotg)
 	case OTG_STATE_A_WAIT_VRISE:
 		if (otg_ctrl->a_vbus_vld)
 			phy->state = OTG_STATE_A_WAIT_BCON;
+=======
+	int old_state = mvotg->phy.otg->state;
+
+	switch (old_state) {
+	case OTG_STATE_UNDEFINED:
+		mvotg->phy.otg->state = OTG_STATE_B_IDLE;
+		/* FALL THROUGH */
+	case OTG_STATE_B_IDLE:
+		if (otg_ctrl->id == 0)
+			mvotg->phy.otg->state = OTG_STATE_A_IDLE;
+		else if (otg_ctrl->b_sess_vld)
+			mvotg->phy.otg->state = OTG_STATE_B_PERIPHERAL;
+		break;
+	case OTG_STATE_B_PERIPHERAL:
+		if (!otg_ctrl->b_sess_vld || otg_ctrl->id == 0)
+			mvotg->phy.otg->state = OTG_STATE_B_IDLE;
+		break;
+	case OTG_STATE_A_IDLE:
+		if (otg_ctrl->id)
+			mvotg->phy.otg->state = OTG_STATE_B_IDLE;
+		else if (!(otg_ctrl->a_bus_drop) &&
+			 (otg_ctrl->a_bus_req || otg_ctrl->a_srp_det))
+			mvotg->phy.otg->state = OTG_STATE_A_WAIT_VRISE;
+		break;
+	case OTG_STATE_A_WAIT_VRISE:
+		if (otg_ctrl->a_vbus_vld)
+			mvotg->phy.otg->state = OTG_STATE_A_WAIT_BCON;
+>>>>>>> v4.9.227
 		break;
 	case OTG_STATE_A_WAIT_BCON:
 		if (otg_ctrl->id || otg_ctrl->a_bus_drop
 		    || otg_ctrl->a_wait_bcon_timeout) {
 			mv_otg_cancel_timer(mvotg, A_WAIT_BCON_TIMER);
 			mvotg->otg_ctrl.a_wait_bcon_timeout = 0;
+<<<<<<< HEAD
 			phy->state = OTG_STATE_A_WAIT_VFALL;
+=======
+			mvotg->phy.otg->state = OTG_STATE_A_WAIT_VFALL;
+>>>>>>> v4.9.227
 			otg_ctrl->a_bus_req = 0;
 		} else if (!otg_ctrl->a_vbus_vld) {
 			mv_otg_cancel_timer(mvotg, A_WAIT_BCON_TIMER);
 			mvotg->otg_ctrl.a_wait_bcon_timeout = 0;
+<<<<<<< HEAD
 			phy->state = OTG_STATE_A_VBUS_ERR;
 		} else if (otg_ctrl->b_conn) {
 			mv_otg_cancel_timer(mvotg, A_WAIT_BCON_TIMER);
 			mvotg->otg_ctrl.a_wait_bcon_timeout = 0;
 			phy->state = OTG_STATE_A_HOST;
+=======
+			mvotg->phy.otg->state = OTG_STATE_A_VBUS_ERR;
+		} else if (otg_ctrl->b_conn) {
+			mv_otg_cancel_timer(mvotg, A_WAIT_BCON_TIMER);
+			mvotg->otg_ctrl.a_wait_bcon_timeout = 0;
+			mvotg->phy.otg->state = OTG_STATE_A_HOST;
+>>>>>>> v4.9.227
 		}
 		break;
 	case OTG_STATE_A_HOST:
 		if (otg_ctrl->id || !otg_ctrl->b_conn
 		    || otg_ctrl->a_bus_drop)
+<<<<<<< HEAD
 			phy->state = OTG_STATE_A_WAIT_BCON;
 		else if (!otg_ctrl->a_vbus_vld)
 			phy->state = OTG_STATE_A_VBUS_ERR;
+=======
+			mvotg->phy.otg->state = OTG_STATE_A_WAIT_BCON;
+		else if (!otg_ctrl->a_vbus_vld)
+			mvotg->phy.otg->state = OTG_STATE_A_VBUS_ERR;
+>>>>>>> v4.9.227
 		break;
 	case OTG_STATE_A_WAIT_VFALL:
 		if (otg_ctrl->id
 		    || (!otg_ctrl->b_conn && otg_ctrl->a_sess_vld)
 		    || otg_ctrl->a_bus_req)
+<<<<<<< HEAD
 			phy->state = OTG_STATE_A_IDLE;
+=======
+			mvotg->phy.otg->state = OTG_STATE_A_IDLE;
+>>>>>>> v4.9.227
 		break;
 	case OTG_STATE_A_VBUS_ERR:
 		if (otg_ctrl->id || otg_ctrl->a_clr_err
 		    || otg_ctrl->a_bus_drop) {
 			otg_ctrl->a_clr_err = 0;
+<<<<<<< HEAD
 			phy->state = OTG_STATE_A_WAIT_VFALL;
+=======
+			mvotg->phy.otg->state = OTG_STATE_A_WAIT_VFALL;
+>>>>>>> v4.9.227
 		}
 		break;
 	default:
@@ -420,8 +479,13 @@ static void mv_otg_work(struct work_struct *work)
 run:
 	/* work queue is single thread, or we need spin_lock to protect */
 	phy = &mvotg->phy;
+<<<<<<< HEAD
 	otg = phy->otg;
 	old_state = phy->state;
+=======
+	otg = mvotg->phy.otg;
+	old_state = otg->state;
+>>>>>>> v4.9.227
 
 	if (!mvotg->active)
 		return;
@@ -429,22 +493,39 @@ run:
 	mv_otg_update_inputs(mvotg);
 	mv_otg_update_state(mvotg);
 
+<<<<<<< HEAD
 	if (old_state != phy->state) {
 		dev_info(&mvotg->pdev->dev, "change from state %s to %s\n",
 			 state_string[old_state],
 			 state_string[phy->state]);
 
 		switch (phy->state) {
+=======
+	if (old_state != mvotg->phy.otg->state) {
+		dev_info(&mvotg->pdev->dev, "change from state %s to %s\n",
+			 state_string[old_state],
+			 state_string[mvotg->phy.otg->state]);
+
+		switch (mvotg->phy.otg->state) {
+>>>>>>> v4.9.227
 		case OTG_STATE_B_IDLE:
 			otg->default_a = 0;
 			if (old_state == OTG_STATE_B_PERIPHERAL)
 				mv_otg_start_periphrals(mvotg, 0);
 			mv_otg_reset(mvotg);
 			mv_otg_disable(mvotg);
+<<<<<<< HEAD
+=======
+			usb_phy_set_event(&mvotg->phy, USB_EVENT_NONE);
+>>>>>>> v4.9.227
 			break;
 		case OTG_STATE_B_PERIPHERAL:
 			mv_otg_enable(mvotg);
 			mv_otg_start_periphrals(mvotg, 1);
+<<<<<<< HEAD
+=======
+			usb_phy_set_event(&mvotg->phy, USB_EVENT_ENUMERATED);
+>>>>>>> v4.9.227
 			break;
 		case OTG_STATE_A_IDLE:
 			otg->default_a = 1;
@@ -545,8 +626,13 @@ set_a_bus_req(struct device *dev, struct device_attribute *attr,
 		return -1;
 
 	/* We will use this interface to change to A device */
+<<<<<<< HEAD
 	if (mvotg->phy.state != OTG_STATE_B_IDLE
 	    && mvotg->phy.state != OTG_STATE_A_IDLE)
+=======
+	if (mvotg->phy.otg->state != OTG_STATE_B_IDLE
+	    && mvotg->phy.otg->state != OTG_STATE_A_IDLE)
+>>>>>>> v4.9.227
 		return -1;
 
 	/* The clock may disabled and we need to set irq for ID detected */
@@ -686,10 +772,15 @@ static int mv_otg_probe(struct platform_device *pdev)
 	}
 
 	mvotg = devm_kzalloc(&pdev->dev, sizeof(*mvotg), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!mvotg) {
 		dev_err(&pdev->dev, "failed to allocate memory!\n");
 		return -ENOMEM;
 	}
+=======
+	if (!mvotg)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	otg = devm_kzalloc(&pdev->dev, sizeof(*otg), GFP_KERNEL);
 	if (!otg)
@@ -717,9 +808,15 @@ static int mv_otg_probe(struct platform_device *pdev)
 	mvotg->phy.dev = &pdev->dev;
 	mvotg->phy.otg = otg;
 	mvotg->phy.label = driver_name;
+<<<<<<< HEAD
 	mvotg->phy.state = OTG_STATE_UNDEFINED;
 
 	otg->phy = &mvotg->phy;
+=======
+
+	otg->state = OTG_STATE_UNDEFINED;
+	otg->usb_phy = &mvotg->phy;
+>>>>>>> v4.9.227
 	otg->set_host = mv_otg_set_host;
 	otg->set_peripheral = mv_otg_set_peripheral;
 	otg->set_vbus = mv_otg_set_vbus;
@@ -858,10 +955,17 @@ static int mv_otg_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct mv_otg *mvotg = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	if (mvotg->phy.state != OTG_STATE_B_IDLE) {
 		dev_info(&pdev->dev,
 			 "OTG state is not B_IDLE, it is %d!\n",
 			 mvotg->phy.state);
+=======
+	if (mvotg->phy.otg->state != OTG_STATE_B_IDLE) {
+		dev_info(&pdev->dev,
+			 "OTG state is not B_IDLE, it is %d!\n",
+			 mvotg->phy.otg->state);
+>>>>>>> v4.9.227
 		return -EAGAIN;
 	}
 
@@ -896,7 +1000,10 @@ static struct platform_driver mv_otg_driver = {
 	.probe = mv_otg_probe,
 	.remove = mv_otg_remove,
 	.driver = {
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   .name = driver_name,
 		   },
 #ifdef CONFIG_PM

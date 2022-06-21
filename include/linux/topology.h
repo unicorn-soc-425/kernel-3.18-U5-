@@ -34,10 +34,13 @@
 #include <linux/percpu.h>
 #include <asm/topology.h>
 
+<<<<<<< HEAD
 #ifndef node_has_online_mem
 #define node_has_online_mem(nid) (1)
 #endif
 
+=======
+>>>>>>> v4.9.227
 #ifndef nr_cpus_node
 #define nr_cpus_node(node) cpumask_weight(cpumask_of_node(node))
 #endif
@@ -58,7 +61,11 @@ int arch_update_cpu_topology(void);
 /*
  * If the distance between nodes in a system is larger than RECLAIM_DISTANCE
  * (in whatever arch specific measurement units returned by node_distance())
+<<<<<<< HEAD
  * and zone_reclaim_mode is enabled then the VM will only call zone_reclaim()
+=======
+ * and node_reclaim_mode is enabled then the VM will only call node_reclaim()
+>>>>>>> v4.9.227
  * on nodes within this distance.
  */
 #define RECLAIM_DISTANCE 30
@@ -191,8 +198,13 @@ static inline int cpu_to_mem(int cpu)
 #ifndef topology_core_id
 #define topology_core_id(cpu)			((void)(cpu), 0)
 #endif
+<<<<<<< HEAD
 #ifndef topology_thread_cpumask
 #define topology_thread_cpumask(cpu)		cpumask_of(cpu)
+=======
+#ifndef topology_sibling_cpumask
+#define topology_sibling_cpumask(cpu)		cpumask_of(cpu)
+>>>>>>> v4.9.227
 #endif
 #ifndef topology_core_cpumask
 #define topology_core_cpumask(cpu)		cpumask_of(cpu)
@@ -201,7 +213,11 @@ static inline int cpu_to_mem(int cpu)
 #ifdef CONFIG_SCHED_SMT
 static inline const struct cpumask *cpu_smt_mask(int cpu)
 {
+<<<<<<< HEAD
 	return topology_thread_cpumask(cpu);
+=======
+	return topology_sibling_cpumask(cpu);
+>>>>>>> v4.9.227
 }
 #endif
 

@@ -26,7 +26,11 @@
 #include <linux/fs.h> /* struct inode */
 #include <linux/fsnotify_backend.h>
 #include <linux/idr.h>
+<<<<<<< HEAD
 #include <linux/init.h> /* module_init */
+=======
+#include <linux/init.h> /* fs_initcall */
+>>>>>>> v4.9.227
 #include <linux/inotify.h>
 #include <linux/kernel.h> /* roundup() */
 #include <linux/namei.h> /* LOOKUP_FOLLOW */
@@ -115,10 +119,17 @@ static unsigned int inotify_poll(struct file *file, poll_table *wait)
 	int ret = 0;
 
 	poll_wait(file, &group->notification_waitq, wait);
+<<<<<<< HEAD
 	mutex_lock(&group->notification_mutex);
 	if (!fsnotify_notify_queue_is_empty(group))
 		ret = POLLIN | POLLRDNORM;
 	mutex_unlock(&group->notification_mutex);
+=======
+	spin_lock(&group->notification_lock);
+	if (!fsnotify_notify_queue_is_empty(group))
+		ret = POLLIN | POLLRDNORM;
+	spin_unlock(&group->notification_lock);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -138,7 +149,11 @@ static int round_event_name_len(struct fsnotify_event *fsn_event)
  * enough to fit in "count". Return an error pointer if
  * not large enough.
  *
+<<<<<<< HEAD
  * Called with the group->notification_mutex held.
+=======
+ * Called with the group->notification_lock held.
+>>>>>>> v4.9.227
  */
 static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
 					    size_t count)
@@ -157,7 +172,11 @@ static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
 	if (event_size > count)
 		return ERR_PTR(-EINVAL);
 
+<<<<<<< HEAD
 	/* held the notification_mutex the whole time, so this is the
+=======
+	/* held the notification_lock the whole time, so this is the
+>>>>>>> v4.9.227
 	 * same event we peeked above */
 	fsnotify_remove_first_event(group);
 
@@ -227,17 +246,29 @@ static ssize_t inotify_read(struct file *file, char __user *buf,
 	struct fsnotify_event *kevent;
 	char __user *start;
 	int ret;
+<<<<<<< HEAD
 	DEFINE_WAIT(wait);
+=======
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>>>>>> v4.9.227
 
 	start = buf;
 	group = file->private_data;
 
+<<<<<<< HEAD
 	while (1) {
 		prepare_to_wait(&group->notification_waitq, &wait, TASK_INTERRUPTIBLE);
 
 		mutex_lock(&group->notification_mutex);
 		kevent = get_one_event(group, count);
 		mutex_unlock(&group->notification_mutex);
+=======
+	add_wait_queue(&group->notification_waitq, &wait);
+	while (1) {
+		spin_lock(&group->notification_lock);
+		kevent = get_one_event(group, count);
+		spin_unlock(&group->notification_lock);
+>>>>>>> v4.9.227
 
 		pr_debug("%s: group=%p kevent=%p\n", __func__, group, kevent);
 
@@ -264,10 +295,17 @@ static ssize_t inotify_read(struct file *file, char __user *buf,
 		if (start != buf)
 			break;
 
+<<<<<<< HEAD
 		schedule();
 	}
 
 	finish_wait(&group->notification_waitq, &wait);
+=======
+		wait_woken(&wait, TASK_INTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
+	}
+	remove_wait_queue(&group->notification_waitq, &wait);
+
+>>>>>>> v4.9.227
 	if (start != buf && ret != -EFAULT)
 		ret = buf - start;
 	return ret;
@@ -301,13 +339,21 @@ static long inotify_ioctl(struct file *file, unsigned int cmd,
 
 	switch (cmd) {
 	case FIONREAD:
+<<<<<<< HEAD
 		mutex_lock(&group->notification_mutex);
+=======
+		spin_lock(&group->notification_lock);
+>>>>>>> v4.9.227
 		list_for_each_entry(fsn_event, &group->notification_list,
 				    list) {
 			send_len += sizeof(struct inotify_event);
 			send_len += round_event_name_len(fsn_event);
 		}
+<<<<<<< HEAD
 		mutex_unlock(&group->notification_mutex);
+=======
+		spin_unlock(&group->notification_lock);
+>>>>>>> v4.9.227
 		ret = put_user(send_len, (int __user *) p);
 		break;
 	}
@@ -338,7 +384,11 @@ static int inotify_find_inode(const char __user *dirname, struct path *path, uns
 	if (error)
 		return error;
 	/* you can only watch an inode if you have read permissions on it */
+<<<<<<< HEAD
 	error = inode_permission2(path->mnt, path->dentry->d_inode, MAY_READ);
+=======
+	error = inode_permission(path->dentry->d_inode, MAY_READ);
+>>>>>>> v4.9.227
 	if (error)
 		path_put(path);
 	return error;
@@ -434,7 +484,11 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 	if (wd == -1) {
 		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p"
 			" i_mark->inode=%p\n", __func__, i_mark, i_mark->wd,
+<<<<<<< HEAD
 			i_mark->fsn_mark.group, i_mark->fsn_mark.i.inode);
+=======
+			i_mark->fsn_mark.group, i_mark->fsn_mark.inode);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -443,7 +497,11 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 	if (unlikely(!found_i_mark)) {
 		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p"
 			" i_mark->inode=%p\n", __func__, i_mark, i_mark->wd,
+<<<<<<< HEAD
 			i_mark->fsn_mark.group, i_mark->fsn_mark.i.inode);
+=======
+			i_mark->fsn_mark.group, i_mark->fsn_mark.inode);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -457,9 +515,15 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 			"mark->inode=%p found_i_mark=%p found_i_mark->wd=%d "
 			"found_i_mark->group=%p found_i_mark->inode=%p\n",
 			__func__, i_mark, i_mark->wd, i_mark->fsn_mark.group,
+<<<<<<< HEAD
 			i_mark->fsn_mark.i.inode, found_i_mark, found_i_mark->wd,
 			found_i_mark->fsn_mark.group,
 			found_i_mark->fsn_mark.i.inode);
+=======
+			i_mark->fsn_mark.inode, found_i_mark, found_i_mark->wd,
+			found_i_mark->fsn_mark.group,
+			found_i_mark->fsn_mark.inode);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -471,7 +535,11 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 	if (unlikely(atomic_read(&i_mark->fsn_mark.refcnt) < 3)) {
 		printk(KERN_ERR "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p"
 			" i_mark->inode=%p\n", __func__, i_mark, i_mark->wd,
+<<<<<<< HEAD
 			i_mark->fsn_mark.group, i_mark->fsn_mark.i.inode);
+=======
+			i_mark->fsn_mark.group, i_mark->fsn_mark.inode);
+>>>>>>> v4.9.227
 		/* we can't really recover with bad ref cnting.. */
 		BUG();
 	}
@@ -703,13 +771,32 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 	struct fsnotify_group *group;
 	struct inode *inode;
 	struct path path;
+<<<<<<< HEAD
 	struct path alteredpath;
 	struct path *canonical_path = &path;
+=======
+>>>>>>> v4.9.227
 	struct fd f;
 	int ret;
 	unsigned flags = 0;
 
+<<<<<<< HEAD
 	/* don't allow invalid bits: we don't want flags set */
+=======
+	/*
+	 * We share a lot of code with fs/dnotify.  We also share
+	 * the bit layout between inotify's IN_* and the fsnotify
+	 * FS_*.  This check ensures that only the inotify IN_*
+	 * bits get passed in and set in watches/events.
+	 */
+	if (unlikely(mask & ~ALL_INOTIFY_BITS))
+		return -EINVAL;
+	/*
+	 * Require at least one valid bit set in the mask.
+	 * Without _something_ set, we would have no events to
+	 * watch for.
+	 */
+>>>>>>> v4.9.227
 	if (unlikely(!(mask & ALL_INOTIFY_BITS)))
 		return -EINVAL;
 
@@ -732,6 +819,7 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 	if (ret)
 		goto fput_and_out;
 
+<<<<<<< HEAD
 	/* support stacked filesystems */
 	if(path.dentry && path.dentry->d_op) {
 		if (path.dentry->d_op->d_canonical_path) {
@@ -743,11 +831,19 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 
 	/* inode held in place by reference to path; group by fget on fd */
 	inode = canonical_path->dentry->d_inode;
+=======
+	/* inode held in place by reference to path; group by fget on fd */
+	inode = path.dentry->d_inode;
+>>>>>>> v4.9.227
 	group = f.file->private_data;
 
 	/* create/update an inode mark */
 	ret = inotify_update_watch(group, inode, mask);
+<<<<<<< HEAD
 	path_put(canonical_path);
+=======
+	path_put(&path);
+>>>>>>> v4.9.227
 fput_and_out:
 	fdput(f);
 	return ret;
@@ -824,4 +920,8 @@ static int __init inotify_user_setup(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 module_init(inotify_user_setup);
+=======
+fs_initcall(inotify_user_setup);
+>>>>>>> v4.9.227

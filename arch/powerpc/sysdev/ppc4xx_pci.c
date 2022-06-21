@@ -22,7 +22,10 @@
 #include <linux/pci.h>
 #include <linux/init.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/slab.h>
 

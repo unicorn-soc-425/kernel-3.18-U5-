@@ -99,7 +99,11 @@ static inline int init_new_context(struct task_struct *tsk,
 {
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < num_online_cpus(); i++)
+=======
+	for_each_online_cpu(i)
+>>>>>>> v4.9.227
 		cpu_context(i, mm) = NO_CONTEXT;
 
 	return 0;

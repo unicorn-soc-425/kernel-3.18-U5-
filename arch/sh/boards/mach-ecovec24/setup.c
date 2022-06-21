@@ -13,7 +13,10 @@
 #include <linux/platform_device.h>
 #include <linux/mmc/host.h>
 #include <linux/mmc/sh_mmcif.h>
+<<<<<<< HEAD
 #include <linux/mmc/sh_mobile_sdhi.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/mtd/physmap.h>
 #include <linux/mfd/tmio.h>
 #include <linux/gpio.h>
@@ -38,10 +41,17 @@
 #include <video/sh_mobile_lcdc.h>
 #include <sound/sh_fsi.h>
 #include <sound/simple_card.h>
+<<<<<<< HEAD
 #include <media/sh_mobile_ceu.h>
 #include <media/soc_camera.h>
 #include <media/tw9910.h>
 #include <media/mt9t112.h>
+=======
+#include <media/drv-intf/sh_mobile_ceu.h>
+#include <media/soc_camera.h>
+#include <media/i2c/tw9910.h>
+#include <media/i2c/mt9t112.h>
+>>>>>>> v4.9.227
 #include <asm/heartbeat.h>
 #include <asm/clock.h>
 #include <asm/suspend.h>
@@ -601,12 +611,21 @@ static struct platform_device sdhi0_power = {
 	},
 };
 
+<<<<<<< HEAD
 static struct sh_mobile_sdhi_info sdhi0_info = {
 	.dma_slave_tx	= SHDMA_SLAVE_SDHI0_TX,
 	.dma_slave_rx	= SHDMA_SLAVE_SDHI0_RX,
 	.tmio_caps      = MMC_CAP_SDIO_IRQ | MMC_CAP_POWER_OFF_CARD |
 			  MMC_CAP_NEEDS_POLL,
 	.tmio_flags	= TMIO_MMC_USE_GPIO_CD,
+=======
+static struct tmio_mmc_data sdhi0_info = {
+	.chan_priv_tx	= (void *)SHDMA_SLAVE_SDHI0_TX,
+	.chan_priv_rx	= (void *)SHDMA_SLAVE_SDHI0_RX,
+	.capabilities	= MMC_CAP_SDIO_IRQ | MMC_CAP_POWER_OFF_CARD |
+			  MMC_CAP_NEEDS_POLL,
+	.flags		= TMIO_MMC_USE_GPIO_CD,
+>>>>>>> v4.9.227
 	.cd_gpio	= GPIO_PTY7,
 };
 
@@ -635,12 +654,21 @@ static struct platform_device sdhi0_device = {
 
 #if !defined(CONFIG_MMC_SH_MMCIF) && !defined(CONFIG_MMC_SH_MMCIF_MODULE)
 /* SDHI1 */
+<<<<<<< HEAD
 static struct sh_mobile_sdhi_info sdhi1_info = {
 	.dma_slave_tx	= SHDMA_SLAVE_SDHI1_TX,
 	.dma_slave_rx	= SHDMA_SLAVE_SDHI1_RX,
 	.tmio_caps      = MMC_CAP_SDIO_IRQ | MMC_CAP_POWER_OFF_CARD |
 			  MMC_CAP_NEEDS_POLL,
 	.tmio_flags	= TMIO_MMC_USE_GPIO_CD,
+=======
+static struct tmio_mmc_data sdhi1_info = {
+	.chan_priv_tx	= (void *)SHDMA_SLAVE_SDHI1_TX,
+	.chan_priv_rx	= (void *)SHDMA_SLAVE_SDHI1_RX,
+	.capabilities	= MMC_CAP_SDIO_IRQ | MMC_CAP_POWER_OFF_CARD |
+			  MMC_CAP_NEEDS_POLL,
+	.flags		= TMIO_MMC_USE_GPIO_CD,
+>>>>>>> v4.9.227
 	.cd_gpio	= GPIO_PTW7,
 };
 
@@ -900,8 +928,13 @@ static struct platform_device irda_device = {
 	.resource       = irda_resources,
 };
 
+<<<<<<< HEAD
 #include <media/ak881x.h>
 #include <media/sh_vou.h>
+=======
+#include <media/i2c/ak881x.h>
+#include <media/drv-intf/sh_vou.h>
+>>>>>>> v4.9.227
 
 static struct ak881x_pdata ak881x_pdata = {
 	.flags = AK881X_IF_MODE_SLAVE,

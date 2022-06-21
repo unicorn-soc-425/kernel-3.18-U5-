@@ -19,8 +19,12 @@
 /*
  * Driver: pcmad
  * Description: Winsystems PCM-A/D12, PCM-A/D16
+<<<<<<< HEAD
  * Devices: (Winsystems) PCM-A/D12 [pcmad12]
  *	    (Winsystems) PCM-A/D16 [pcmad16]
+=======
+ * Devices: [Winsystems] PCM-A/D12 (pcmad12), PCM-A/D16 (pcmad16)
+>>>>>>> v4.9.227
  * Author: ds
  * Status: untested
  *

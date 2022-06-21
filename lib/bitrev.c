@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_HAVE_ARCH_BITREVERSE
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/module.h>
 #include <linux/bitrev.h>
@@ -42,6 +46,7 @@ const u8 byte_rev_table[256] = {
 };
 EXPORT_SYMBOL_GPL(byte_rev_table);
 
+<<<<<<< HEAD
 u16 bitrev16(u16 x)
 {
 	return (bitrev8(x & 0xff) << 8) | bitrev8(x >> 8);
@@ -57,3 +62,6 @@ u32 bitrev32(u32 x)
 	return (bitrev16(x & 0xffff) << 16) | bitrev16(x >> 16);
 }
 EXPORT_SYMBOL(bitrev32);
+=======
+#endif /* CONFIG_HAVE_ARCH_BITREVERSE */
+>>>>>>> v4.9.227

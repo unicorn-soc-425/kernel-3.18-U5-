@@ -588,7 +588,11 @@ static bool tile_net_lepp_free_comps(struct net_device *dev, bool all)
 static void tile_net_schedule_egress_timer(struct tile_net_cpu *info)
 {
 	if (!info->egress_timer_scheduled) {
+<<<<<<< HEAD
 		mod_timer_pinned(&info->egress_timer, jiffies + 1);
+=======
+		mod_timer(&info->egress_timer, jiffies + 1);
+>>>>>>> v4.9.227
 		info->egress_timer_scheduled = true;
 	}
 }
@@ -721,9 +725,12 @@ static bool tile_net_poll_aux(struct tile_net_cpu *info, int index)
 	if (!hash_default)
 		__inv_buffer(buf, len);
 
+<<<<<<< HEAD
 	/* ISSUE: Is this needed? */
 	dev->last_rx = jiffies;
 
+=======
+>>>>>>> v4.9.227
 #ifdef TILE_NET_DUMP_PACKETS
 	dump_packet(buf, len, "rx");
 #endif /* TILE_NET_DUMP_PACKETS */
@@ -1007,7 +1014,11 @@ static void tile_net_register(void *dev_ptr)
 		BUG();
 
 	/* Initialize the egress timer. */
+<<<<<<< HEAD
 	init_timer(&info->egress_timer);
+=======
+	init_timer_pinned(&info->egress_timer);
+>>>>>>> v4.9.227
 	info->egress_timer.data = (long)info;
 	info->egress_timer.function = tile_net_handle_egress_timer;
 
@@ -1352,8 +1363,12 @@ static int tile_net_open_inner(struct net_device *dev)
  */
 static void tile_net_open_retry(struct work_struct *w)
 {
+<<<<<<< HEAD
 	struct delayed_work *dw =
 		container_of(w, struct delayed_work, work);
+=======
+	struct delayed_work *dw = to_delayed_work(w);
+>>>>>>> v4.9.227
 
 	struct tile_net_priv *priv =
 		container_of(dw, struct tile_net_priv, retry_work);
@@ -1887,7 +1902,11 @@ static int tile_net_tx(struct sk_buff *skb, struct net_device *dev)
 
 
 	/* Save the timestamp. */
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> v4.9.227
 
 
 #ifdef TILE_NET_PARANOIA
@@ -2030,7 +2049,11 @@ static void tile_net_tx_timeout(struct net_device *dev)
 {
 	PDEBUG("tile_net_tx_timeout()\n");
 	PDEBUG("Transmit timeout at %ld, latency %ld\n", jiffies,
+<<<<<<< HEAD
 	       jiffies - dev->trans_start);
+=======
+	       jiffies - dev_trans_start(dev));
+>>>>>>> v4.9.227
 
 	/* XXX: ISSUE: This doesn't seem useful for us. */
 	netif_wake_queue(dev);
@@ -2410,9 +2433,14 @@ static int __init network_cpus_setup(char *str)
 		if (cpumask_empty(&network_cpus_map)) {
 			pr_warn("Ignoring network_cpus='%s'\n", str);
 		} else {
+<<<<<<< HEAD
 			char buf[1024];
 			cpulist_scnprintf(buf, sizeof(buf), &network_cpus_map);
 			pr_info("Linux network CPUs: %s\n", buf);
+=======
+			pr_info("Linux network CPUs: %*pbl\n",
+				cpumask_pr_args(&network_cpus_map));
+>>>>>>> v4.9.227
 			network_cpus_used = true;
 		}
 	}

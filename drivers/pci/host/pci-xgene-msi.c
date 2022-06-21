@@ -223,7 +223,10 @@ static int xgene_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
 	irq_domain_set_info(domain, virq, msi_irq,
 			    &xgene_msi_bottom_irq_chip, domain->host_data,
 			    handle_simple_irq, NULL, NULL);
+<<<<<<< HEAD
 	set_irq_flags(virq, IRQF_VALID);
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -257,7 +260,11 @@ static int xgene_allocate_domains(struct xgene_msi *msi)
 	if (!msi->inner_domain)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	msi->msi_domain = pci_msi_create_irq_domain(msi->node,
+=======
+	msi->msi_domain = pci_msi_create_irq_domain(of_node_to_fwnode(msi->node),
+>>>>>>> v4.9.227
 						    &xgene_msi_domain_info,
 						    msi->inner_domain);
 
@@ -296,7 +303,11 @@ static int xgene_msi_init_allocator(struct xgene_msi *xgene_msi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void xgene_msi_isr(unsigned int irq, struct irq_desc *desc)
+=======
+static void xgene_msi_isr(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	struct xgene_msi_group *msi_groups;
@@ -368,10 +379,15 @@ static int xgene_msi_remove(struct platform_device *pdev)
 
 	for (i = 0; i < NR_HW_IRQS; i++) {
 		virq = msi->msi_groups[i].gic_irq;
+<<<<<<< HEAD
 		if (virq != 0) {
 			irq_set_chained_handler(virq, NULL);
 			irq_set_handler_data(virq, NULL);
 		}
+=======
+		if (virq != 0)
+			irq_set_chained_handler_and_data(virq, NULL, NULL);
+>>>>>>> v4.9.227
 	}
 	kfree(msi->msi_groups);
 
@@ -421,8 +437,13 @@ static int xgene_msi_hwirq_alloc(unsigned int cpu)
 		}
 
 		if (err) {
+<<<<<<< HEAD
 			irq_set_chained_handler(msi_group->gic_irq, NULL);
 			irq_set_handler_data(msi_group->gic_irq, NULL);
+=======
+			irq_set_chained_handler_and_data(msi_group->gic_irq,
+							 NULL, NULL);
+>>>>>>> v4.9.227
 			return err;
 		}
 	}
@@ -441,8 +462,13 @@ static void xgene_msi_hwirq_free(unsigned int cpu)
 		if (!msi_group->gic_irq)
 			continue;
 
+<<<<<<< HEAD
 		irq_set_chained_handler(msi_group->gic_irq, NULL);
 		irq_set_handler_data(msi_group->gic_irq, NULL);
+=======
+		irq_set_chained_handler_and_data(msi_group->gic_irq, NULL,
+						 NULL);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -573,7 +599,10 @@ error:
 static struct platform_driver xgene_msi_driver = {
 	.driver = {
 		.name = "xgene-msi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = xgene_msi_match_table,
 	},
 	.probe = xgene_msi_probe,

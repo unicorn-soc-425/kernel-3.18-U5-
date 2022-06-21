@@ -76,7 +76,11 @@ mic_is_system_addr(struct mic_device *mdev, dma_addr_t pa)
 
 /* Populate an SMPT entry and update the reference counts. */
 static void mic_add_smpt_entry(int spt, s64 *ref, u64 addr,
+<<<<<<< HEAD
 		int entries, struct mic_device *mdev)
+=======
+			       int entries, struct mic_device *mdev)
+>>>>>>> v4.9.227
 {
 	struct mic_smpt_info *smpt_info = mdev->smpt;
 	int i;
@@ -97,7 +101,11 @@ static void mic_add_smpt_entry(int spt, s64 *ref, u64 addr,
  * for a given DMA address and size.
  */
 static dma_addr_t mic_smpt_op(struct mic_device *mdev, u64 dma_addr,
+<<<<<<< HEAD
 				int entries, s64 *ref, size_t size)
+=======
+			      int entries, s64 *ref, size_t size)
+>>>>>>> v4.9.227
 {
 	int spt;
 	int ae = 0;
@@ -148,7 +156,11 @@ found:
  * and the starting smpt address
  */
 static int mic_get_smpt_ref_count(struct mic_device *mdev, dma_addr_t dma_addr,
+<<<<<<< HEAD
 				size_t size, s64 *ref,  u64 *smpt_start)
+=======
+				  size_t size, s64 *ref,  u64 *smpt_start)
+>>>>>>> v4.9.227
 {
 	u64 start =  dma_addr;
 	u64 end = dma_addr + size;
@@ -174,15 +186,23 @@ static int mic_get_smpt_ref_count(struct mic_device *mdev, dma_addr_t dma_addr,
  *
  * returns a DMA address.
  */
+<<<<<<< HEAD
 static dma_addr_t
 mic_to_dma_addr(struct mic_device *mdev, dma_addr_t mic_addr)
+=======
+dma_addr_t mic_to_dma_addr(struct mic_device *mdev, dma_addr_t mic_addr)
+>>>>>>> v4.9.227
 {
 	struct mic_smpt_info *smpt_info = mdev->smpt;
 	int spt;
 	dma_addr_t dma_addr;
 
 	if (!mic_is_system_addr(mdev, mic_addr)) {
+<<<<<<< HEAD
 		dev_err(mdev->sdev->parent,
+=======
+		dev_err(&mdev->pdev->dev,
+>>>>>>> v4.9.227
 			"mic_addr is invalid. mic_addr = 0x%llx\n", mic_addr);
 		return -EINVAL;
 	}
@@ -214,12 +234,20 @@ dma_addr_t mic_map(struct mic_device *mdev, dma_addr_t dma_addr, size_t size)
 	if (!size || size > mic_max_system_memory(mdev))
 		return mic_addr;
 
+<<<<<<< HEAD
 	ref = kmalloc(mdev->smpt->info.num_reg * sizeof(s64), GFP_KERNEL);
+=======
+	ref = kmalloc_array(mdev->smpt->info.num_reg, sizeof(s64), GFP_ATOMIC);
+>>>>>>> v4.9.227
 	if (!ref)
 		return mic_addr;
 
 	num_entries = mic_get_smpt_ref_count(mdev, dma_addr, size,
+<<<<<<< HEAD
 		ref, &smpt_start);
+=======
+					     ref, &smpt_start);
+>>>>>>> v4.9.227
 
 	/* Set the smpt table appropriately and get 16G aligned mic address */
 	mic_addr = mic_smpt_op(mdev, smpt_start, num_entries, ref, size);
@@ -232,7 +260,11 @@ dma_addr_t mic_map(struct mic_device *mdev, dma_addr_t dma_addr, size_t size)
 	 * else generate mic_addr by adding the 16G offset in dma_addr
 	 */
 	if (!mic_addr && MIC_FAMILY_X100 == mdev->family) {
+<<<<<<< HEAD
 		dev_err(mdev->sdev->parent,
+=======
+		dev_err(&mdev->pdev->dev,
+>>>>>>> v4.9.227
 			"mic_map failed dma_addr 0x%llx size 0x%lx\n",
 			dma_addr, size);
 		return mic_addr;
@@ -265,13 +297,21 @@ void mic_unmap(struct mic_device *mdev, dma_addr_t mic_addr, size_t size)
 		return;
 
 	if (!mic_is_system_addr(mdev, mic_addr)) {
+<<<<<<< HEAD
 		dev_err(mdev->sdev->parent,
+=======
+		dev_err(&mdev->pdev->dev,
+>>>>>>> v4.9.227
 			"invalid address: 0x%llx\n", mic_addr);
 		return;
 	}
 
 	spt = mic_sys_addr_to_smpt(mdev, mic_addr);
+<<<<<<< HEAD
 	ref = kmalloc(mdev->smpt->info.num_reg * sizeof(s64), GFP_KERNEL);
+=======
+	ref = kmalloc_array(mdev->smpt->info.num_reg, sizeof(s64), GFP_ATOMIC);
+>>>>>>> v4.9.227
 	if (!ref)
 		return;
 
@@ -285,7 +325,11 @@ void mic_unmap(struct mic_device *mdev, dma_addr_t mic_addr, size_t size)
 	for (i = spt; i < spt + num_smpt; i++) {
 		smpt_info->entry[i].ref_count -= ref[i - spt];
 		if (smpt_info->entry[i].ref_count < 0)
+<<<<<<< HEAD
 			dev_warn(mdev->sdev->parent,
+=======
+			dev_warn(&mdev->pdev->dev,
+>>>>>>> v4.9.227
 				 "ref count for entry %d is negative\n", i);
 	}
 	spin_unlock_irqrestore(&smpt_info->smpt_lock, flags);
@@ -308,15 +352,23 @@ void mic_unmap(struct mic_device *mdev, dma_addr_t mic_addr, size_t size)
 dma_addr_t mic_map_single(struct mic_device *mdev, void *va, size_t size)
 {
 	dma_addr_t mic_addr = 0;
+<<<<<<< HEAD
 	struct pci_dev *pdev = container_of(mdev->sdev->parent,
 		struct pci_dev, dev);
+=======
+	struct pci_dev *pdev = mdev->pdev;
+>>>>>>> v4.9.227
 	dma_addr_t dma_addr =
 		pci_map_single(pdev, va, size, PCI_DMA_BIDIRECTIONAL);
 
 	if (!pci_dma_mapping_error(pdev, dma_addr)) {
 		mic_addr = mic_map(mdev, dma_addr, size);
 		if (!mic_addr) {
+<<<<<<< HEAD
 			dev_err(mdev->sdev->parent,
+=======
+			dev_err(&mdev->pdev->dev,
+>>>>>>> v4.9.227
 				"mic_map failed dma_addr 0x%llx size 0x%lx\n",
 				dma_addr, size);
 			pci_unmap_single(pdev, dma_addr,
@@ -340,8 +392,12 @@ dma_addr_t mic_map_single(struct mic_device *mdev, void *va, size_t size)
 void
 mic_unmap_single(struct mic_device *mdev, dma_addr_t mic_addr, size_t size)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = container_of(mdev->sdev->parent,
 		struct pci_dev, dev);
+=======
+	struct pci_dev *pdev = mdev->pdev;
+>>>>>>> v4.9.227
 	dma_addr_t dma_addr = mic_to_dma_addr(mdev, mic_addr);
 	mic_unmap(mdev, mic_addr, size);
 	pci_unmap_single(pdev, dma_addr, size, PCI_DMA_BIDIRECTIONAL);
@@ -400,18 +456,30 @@ void mic_smpt_uninit(struct mic_device *mdev)
 	struct mic_smpt_info *smpt_info = mdev->smpt;
 	int i;
 
+<<<<<<< HEAD
 	dev_dbg(mdev->sdev->parent,
+=======
+	dev_dbg(&mdev->pdev->dev,
+>>>>>>> v4.9.227
 		"nodeid %d SMPT ref count %lld map %lld unmap %lld\n",
 		mdev->id, smpt_info->ref_count,
 		smpt_info->map_count, smpt_info->unmap_count);
 
 	for (i = 0; i < smpt_info->info.num_reg; i++) {
+<<<<<<< HEAD
 		dev_dbg(mdev->sdev->parent,
+=======
+		dev_dbg(&mdev->pdev->dev,
+>>>>>>> v4.9.227
 			"SMPT entry[%d] dma_addr = 0x%llx ref_count = %lld\n",
 			i, smpt_info->entry[i].dma_addr,
 			smpt_info->entry[i].ref_count);
 		if (smpt_info->entry[i].ref_count)
+<<<<<<< HEAD
 			dev_warn(mdev->sdev->parent,
+=======
+			dev_warn(&mdev->pdev->dev,
+>>>>>>> v4.9.227
 				 "ref count for entry %d is not zero\n", i);
 	}
 	kfree(smpt_info->entry);

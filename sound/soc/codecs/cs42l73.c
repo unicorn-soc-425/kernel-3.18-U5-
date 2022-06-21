@@ -153,6 +153,7 @@ static bool cs42l73_volatile_register(struct device *dev, unsigned int reg)
 static bool cs42l73_readable_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
+<<<<<<< HEAD
 	case CS42L73_DEVID_AB:
 	case CS42L73_DEVID_CD:
 	case CS42L73_DEVID_E:
@@ -247,17 +248,28 @@ static bool cs42l73_readable_register(struct device *dev, unsigned int reg)
 	case CS42L73_ESLMVSPMA:
 	case CS42L73_IM1:
 	case CS42L73_IM2:
+=======
+	case CS42L73_DEVID_AB ... CS42L73_DEVID_E:
+	case CS42L73_REVID ... CS42L73_IM2:
+>>>>>>> v4.9.227
 		return true;
 	default:
 		return false;
 	}
 }
 
+<<<<<<< HEAD
 static const unsigned int hpaloa_tlv[] = {
 	TLV_DB_RANGE_HEAD(2),
 	0, 13, TLV_DB_SCALE_ITEM(-7600, 200, 0),
 	14, 75, TLV_DB_SCALE_ITEM(-4900, 100, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(hpaloa_tlv,
+	0, 13, TLV_DB_SCALE_ITEM(-7600, 200, 0),
+	14, 75, TLV_DB_SCALE_ITEM(-4900, 100, 0)
+);
+>>>>>>> v4.9.227
 
 static DECLARE_TLV_DB_SCALE(adc_boost_tlv, 0, 2500, 0);
 
@@ -267,11 +279,18 @@ static DECLARE_TLV_DB_SCALE(ipd_tlv, -9600, 100, 0);
 
 static DECLARE_TLV_DB_SCALE(micpga_tlv, -600, 50, 0);
 
+<<<<<<< HEAD
 static const unsigned int limiter_tlv[] = {
 	TLV_DB_RANGE_HEAD(2),
 	0, 2, TLV_DB_SCALE_ITEM(-3000, 600, 0),
 	3, 7, TLV_DB_SCALE_ITEM(-1200, 300, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(limiter_tlv,
+	0, 2, TLV_DB_SCALE_ITEM(-3000, 600, 0),
+	3, 7, TLV_DB_SCALE_ITEM(-1200, 300, 0)
+);
+>>>>>>> v4.9.227
 
 static const DECLARE_TLV_DB_SCALE(attn_tlv, -6300, 100, 1);
 
@@ -584,7 +603,11 @@ static const struct snd_kcontrol_new cs42l73_snd_controls[] = {
 static int cs42l73_spklo_spk_amp_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	struct cs42l73_private *priv = snd_soc_codec_get_drvdata(codec);
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMD:
@@ -600,7 +623,11 @@ static int cs42l73_spklo_spk_amp_event(struct snd_soc_dapm_widget *w,
 static int cs42l73_ear_amp_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	struct cs42l73_private *priv = snd_soc_codec_get_drvdata(codec);
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMD:
@@ -618,7 +645,11 @@ static int cs42l73_ear_amp_event(struct snd_soc_dapm_widget *w,
 static int cs42l73_hp_amp_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	struct cs42l73_private *priv = snd_soc_codec_get_drvdata(codec);
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMD:
@@ -888,7 +919,11 @@ struct cs42l73_mclk_div {
 	u8 mmcc;
 };
 
+<<<<<<< HEAD
 static struct cs42l73_mclk_div cs42l73_mclk_coeffs[] = {
+=======
+static const struct cs42l73_mclk_div cs42l73_mclk_coeffs[] = {
+>>>>>>> v4.9.227
 	/* MCLK, Sample Rate, xMMCC[5:0] */
 	{5644800, 11025, 0x30},
 	{5644800, 22050, 0x20},
@@ -938,7 +973,11 @@ struct cs42l73_mclkx_div {
 	u8 mclkdiv;
 };
 
+<<<<<<< HEAD
 static struct cs42l73_mclkx_div cs42l73_mclkx_coeffs[] = {
+=======
+static const struct cs42l73_mclkx_div cs42l73_mclkx_coeffs[] = {
+>>>>>>> v4.9.227
 	{5644800,  1, 0},	/* 5644800 */
 	{6000000,  1, 0},	/* 6000000 */
 	{6144000,  1, 0},	/* 6144000 */
@@ -1208,7 +1247,11 @@ static int cs42l73_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			regcache_cache_only(cs42l73->regmap, false);
 			regcache_sync(cs42l73->regmap);
 		}
@@ -1228,7 +1271,10 @@ static int cs42l73_set_bias_level(struct snd_soc_codec *codec,
 		snd_soc_update_bits(codec, CS42L73_DMMCC, CS42L73_MCLKDIS, 1);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1237,8 +1283,13 @@ static int cs42l73_set_tristate(struct snd_soc_dai *dai, int tristate)
 	struct snd_soc_codec *codec = dai->codec;
 	int id = dai->id;
 
+<<<<<<< HEAD
 	return snd_soc_update_bits(codec, CS42L73_SPC(id),
 					0x7F, tristate << 7);
+=======
+	return snd_soc_update_bits(codec, CS42L73_SPC(id), CS42L73_SP_3ST,
+				   tristate << 7);
+>>>>>>> v4.9.227
 }
 
 static const struct snd_pcm_hw_constraint_list constraints_12_24 = {
@@ -1347,11 +1398,16 @@ static int cs42l73_probe(struct snd_soc_codec *codec)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_cs42l73 = {
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_cs42l73 = {
+>>>>>>> v4.9.227
 	.probe = cs42l73_probe,
 	.set_bias_level = cs42l73_set_bias_level,
 	.suspend_bias_off = true,
 
+<<<<<<< HEAD
 	.dapm_widgets = cs42l73_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(cs42l73_dapm_widgets),
 	.dapm_routes = cs42l73_audio_map,
@@ -1362,6 +1418,19 @@ static struct snd_soc_codec_driver soc_codec_dev_cs42l73 = {
 };
 
 static struct regmap_config cs42l73_regmap = {
+=======
+	.component_driver = {
+		.controls		= cs42l73_snd_controls,
+		.num_controls		= ARRAY_SIZE(cs42l73_snd_controls),
+		.dapm_widgets		= cs42l73_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(cs42l73_dapm_widgets),
+		.dapm_routes		= cs42l73_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(cs42l73_audio_map),
+	},
+};
+
+static const struct regmap_config cs42l73_regmap = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 
@@ -1492,7 +1561,10 @@ MODULE_DEVICE_TABLE(i2c, cs42l73_id);
 static struct i2c_driver cs42l73_i2c_driver = {
 	.driver = {
 		   .name = "cs42l73",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   .of_match_table = cs42l73_of_match,
 		   },
 	.id_table = cs42l73_id,

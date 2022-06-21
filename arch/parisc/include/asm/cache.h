@@ -7,6 +7,7 @@
 
 
 /*
+<<<<<<< HEAD
  * PA 2.0 processors have 64-byte cachelines; PA 1.1 processors have
  * 32-byte cachelines.  The default configuration is not for SMP anyway,
  * so if you're building for SMP, you should select the appropriate
@@ -21,6 +22,14 @@
 #define L1_CACHE_BYTES 32
 #define L1_CACHE_SHIFT 5
 #endif
+=======
+ * PA 2.0 processors have 64 and 128-byte L2 cachelines; PA 1.1 processors
+ * have 32-byte cachelines.  The L1 length appears to be 16 bytes but this
+ * is not clearly documented.
+ */
+#define L1_CACHE_BYTES 16
+#define L1_CACHE_SHIFT 4
+>>>>>>> v4.9.227
 
 #ifndef __ASSEMBLY__
 

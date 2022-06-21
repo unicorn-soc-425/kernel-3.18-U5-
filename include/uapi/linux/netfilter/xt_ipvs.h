@@ -2,6 +2,10 @@
 #define _XT_IPVS_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/netfilter.h>
+>>>>>>> v4.9.227
 
 enum {
 	XT_IPVS_IPVS_PROPERTY =	1 << 0, /* all other options imply this one */

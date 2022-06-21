@@ -82,8 +82,13 @@ static int bcm590xx_i2c_probe(struct i2c_client *i2c_pri,
 		goto err;
 	}
 
+<<<<<<< HEAD
 	ret = mfd_add_devices(&i2c_pri->dev, -1, bcm590xx_devs,
 			      ARRAY_SIZE(bcm590xx_devs), NULL, 0, NULL);
+=======
+	ret = devm_mfd_add_devices(&i2c_pri->dev, -1, bcm590xx_devs,
+				   ARRAY_SIZE(bcm590xx_devs), NULL, 0, NULL);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(&i2c_pri->dev, "failed to add sub-devices: %d\n", ret);
 		goto err;
@@ -96,12 +101,15 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int bcm590xx_i2c_remove(struct i2c_client *i2c)
 {
 	mfd_remove_devices(&i2c->dev);
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id bcm590xx_of_match[] = {
 	{ .compatible = "brcm,bcm59056" },
 	{ }
@@ -117,11 +125,17 @@ MODULE_DEVICE_TABLE(i2c, bcm590xx_i2c_id);
 static struct i2c_driver bcm590xx_i2c_driver = {
 	.driver = {
 		   .name = "bcm590xx",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
 		   .of_match_table = of_match_ptr(bcm590xx_of_match),
 	},
 	.probe = bcm590xx_i2c_probe,
 	.remove = bcm590xx_i2c_remove,
+=======
+		   .of_match_table = of_match_ptr(bcm590xx_of_match),
+	},
+	.probe = bcm590xx_i2c_probe,
+>>>>>>> v4.9.227
 	.id_table = bcm590xx_i2c_id,
 };
 module_i2c_driver(bcm590xx_i2c_driver);
@@ -129,4 +143,7 @@ module_i2c_driver(bcm590xx_i2c_driver);
 MODULE_AUTHOR("Matt Porter <mporter@linaro.org>");
 MODULE_DESCRIPTION("BCM590xx multi-function driver");
 MODULE_LICENSE("GPL v2");
+<<<<<<< HEAD
 MODULE_ALIAS("i2c:bcm590xx");
+=======
+>>>>>>> v4.9.227

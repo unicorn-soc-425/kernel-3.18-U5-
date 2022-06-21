@@ -32,6 +32,10 @@
 #include <drm/drmP.h>
 #include <drm/vmwgfx_drm.h>
 #include <drm/drm_hashtab.h>
+<<<<<<< HEAD
+=======
+#include <drm/drm_auth.h>
+>>>>>>> v4.9.227
 #include <linux/suspend.h>
 #include <drm/ttm/ttm_bo_driver.h>
 #include <drm/ttm/ttm_object.h>
@@ -40,9 +44,15 @@
 #include <drm/ttm/ttm_module.h>
 #include "vmwgfx_fence.h"
 
+<<<<<<< HEAD
 #define VMWGFX_DRIVER_DATE "20150810"
 #define VMWGFX_DRIVER_MAJOR 2
 #define VMWGFX_DRIVER_MINOR 9
+=======
+#define VMWGFX_DRIVER_DATE "20170221"
+#define VMWGFX_DRIVER_MAJOR 2
+#define VMWGFX_DRIVER_MINOR 12
+>>>>>>> v4.9.227
 #define VMWGFX_DRIVER_PATCHLEVEL 0
 #define VMWGFX_FILE_PAGE_OFFSET 0x00100000
 #define VMWGFX_FIFO_STATIC_SIZE (1024*1024)
@@ -66,10 +76,17 @@
 			VMWGFX_NUM_GB_SURFACE +\
 			VMWGFX_NUM_GB_SCREEN_TARGET)
 
+<<<<<<< HEAD
 #define VMW_PL_GMR TTM_PL_PRIV0
 #define VMW_PL_FLAG_GMR TTM_PL_FLAG_PRIV0
 #define VMW_PL_MOB TTM_PL_PRIV1
 #define VMW_PL_FLAG_MOB TTM_PL_FLAG_PRIV1
+=======
+#define VMW_PL_GMR (TTM_PL_PRIV + 0)
+#define VMW_PL_FLAG_GMR (TTM_PL_FLAG_PRIV << 0)
+#define VMW_PL_MOB (TTM_PL_PRIV + 1)
+#define VMW_PL_FLAG_MOB (TTM_PL_FLAG_PRIV << 1)
+>>>>>>> v4.9.227
 
 #define VMW_RES_CONTEXT ttm_driver_type0
 #define VMW_RES_SURFACE ttm_driver_type1
@@ -80,7 +97,10 @@
 struct vmw_fpriv {
 	struct drm_master *locked_master;
 	struct ttm_object_file *tfile;
+<<<<<<< HEAD
 	struct list_head fence_events;
+=======
+>>>>>>> v4.9.227
 	bool gb_aware;
 };
 
@@ -409,8 +429,17 @@ struct vmw_private {
 	void *fb_info;
 	enum vmw_display_unit_type active_display_unit;
 	struct vmw_legacy_display *ldu_priv;
+<<<<<<< HEAD
 	struct vmw_screen_object_display *sou_priv;
 	struct vmw_overlay *overlay_priv;
+=======
+	struct vmw_overlay *overlay_priv;
+	struct drm_property *hotplug_mode_update_property;
+	struct drm_property *implicit_placement_property;
+	unsigned num_implicit;
+	struct vmw_framebuffer *implicit_fb;
+	struct mutex global_kms_state_mutex;
+>>>>>>> v4.9.227
 
 	/*
 	 * Context and surface management.
@@ -1233,4 +1262,13 @@ static inline void vmw_mmio_write(u32 value, u32 *addr)
 {
 	WRITE_ONCE(*addr, value);
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * Add vmw_msg module function
+ */
+extern int vmw_host_log(const char *log);
+
+>>>>>>> v4.9.227
 #endif

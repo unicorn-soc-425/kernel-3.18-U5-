@@ -27,7 +27,11 @@ static const char *const usbphy_modes[] = {
  * @np:	Pointer to the given device_node
  *
  * The function gets phy interface string from property 'phy_type',
+<<<<<<< HEAD
  * and returns the correspondig enum usb_phy_interface
+=======
+ * and returns the corresponding enum usb_phy_interface
+>>>>>>> v4.9.227
  */
 enum usb_phy_interface of_usb_get_phy_mode(struct device_node *np)
 {

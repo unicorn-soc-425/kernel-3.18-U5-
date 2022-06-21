@@ -329,7 +329,11 @@ void dlm_print_one_mle(struct dlm_master_list_entry *mle)
 {
 	char *buf;
 
+<<<<<<< HEAD
 	buf = (char *) get_zeroed_page(GFP_NOFS);
+=======
+	buf = (char *) get_zeroed_page(GFP_ATOMIC);
+>>>>>>> v4.9.227
 	if (buf) {
 		dump_mle(mle, buf, PAGE_SIZE - 1);
 		free_page((unsigned long)buf);
@@ -347,6 +351,7 @@ static struct dentry *dlm_debugfs_root;
 #define DLM_DEBUGFS_PURGE_LIST			"purge_list"
 
 /* begin - utils funcs */
+<<<<<<< HEAD
 static void dlm_debug_free(struct kref *kref)
 {
 	struct dlm_debug_ctxt *dc;
@@ -367,6 +372,8 @@ static void dlm_debug_get(struct dlm_debug_ctxt *dc)
 	kref_get(&dc->debug_refcnt);
 }
 
+=======
+>>>>>>> v4.9.227
 static int debug_release(struct inode *inode, struct file *file)
 {
 	free_page((unsigned long)file->private_data);
@@ -406,7 +413,11 @@ static int debug_purgelist_print(struct dlm_ctxt *dlm, char *buf, int len)
 	}
 	spin_unlock(&dlm->spinlock);
 
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out, "Total on list: %ld\n", total);
+=======
+	out += snprintf(buf + out, len - out, "Total on list: %lu\n", total);
+>>>>>>> v4.9.227
 
 	return out;
 }
@@ -464,7 +475,11 @@ static int debug_mle_print(struct dlm_ctxt *dlm, char *buf, int len)
 	spin_unlock(&dlm->master_lock);
 
 	out += snprintf(buf + out, len - out,
+<<<<<<< HEAD
 			"Total: %ld, Longest: %ld\n", total, longest);
+=======
+			"Total: %lu, Longest: %lu\n", total, longest);
+>>>>>>> v4.9.227
 	return out;
 }
 
@@ -932,11 +947,17 @@ int dlm_debug_init(struct dlm_ctxt *dlm)
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	dlm_debug_get(dc);
 	return 0;
 
 bail:
 	dlm_debug_shutdown(dlm);
+=======
+	return 0;
+
+bail:
+>>>>>>> v4.9.227
 	return -ENOMEM;
 }
 
@@ -949,7 +970,12 @@ void dlm_debug_shutdown(struct dlm_ctxt *dlm)
 		debugfs_remove(dc->debug_mle_dentry);
 		debugfs_remove(dc->debug_lockres_dentry);
 		debugfs_remove(dc->debug_state_dentry);
+<<<<<<< HEAD
 		dlm_debug_put(dc);
+=======
+		kfree(dc);
+		dc = NULL;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -969,7 +995,10 @@ int dlm_create_debugfs_subroot(struct dlm_ctxt *dlm)
 		mlog_errno(-ENOMEM);
 		goto bail;
 	}
+<<<<<<< HEAD
 	kref_init(&dlm->dlm_debug_ctxt->debug_refcnt);
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 bail:

@@ -148,6 +148,10 @@ struct moxart_chan {
 struct moxart_dmadev {
 	struct dma_device		dma_slave;
 	struct moxart_chan		slave_chans[APB_DMA_MAX_CHANNEL];
+<<<<<<< HEAD
+=======
+	unsigned int			irq;
+>>>>>>> v4.9.227
 };
 
 struct moxart_filter_data {
@@ -193,8 +197,15 @@ static int moxart_terminate_all(struct dma_chan *chan)
 
 	spin_lock_irqsave(&ch->vc.lock, flags);
 
+<<<<<<< HEAD
 	if (ch->desc)
 		ch->desc = NULL;
+=======
+	if (ch->desc) {
+		moxart_dma_desc_free(&ch->desc->vd);
+		ch->desc = NULL;
+	}
+>>>>>>> v4.9.227
 
 	ctrl = readl(ch->base + REG_OFF_CTRL);
 	ctrl &= ~(APB_DMA_ENABLE | APB_DMA_FIN_INT_EN | APB_DMA_ERR_INT_EN);
@@ -263,6 +274,7 @@ static int moxart_slave_config(struct dma_chan *chan,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int moxart_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 			  unsigned long arg)
 {
@@ -285,6 +297,8 @@ static int moxart_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static struct dma_async_tx_descriptor *moxart_prep_slave_sg(
 	struct dma_chan *chan, struct scatterlist *sgl,
 	unsigned int sg_len, enum dma_transfer_direction dir,
@@ -531,7 +545,12 @@ static void moxart_dma_init(struct dma_device *dma, struct device *dev)
 	dma->device_free_chan_resources		= moxart_free_chan_resources;
 	dma->device_issue_pending		= moxart_issue_pending;
 	dma->device_tx_status			= moxart_tx_status;
+<<<<<<< HEAD
 	dma->device_control			= moxart_control;
+=======
+	dma->device_config			= moxart_slave_config;
+	dma->device_terminate_all		= moxart_terminate_all;
+>>>>>>> v4.9.227
 	dma->dev				= dev;
 
 	INIT_LIST_HEAD(&dma->channels);
@@ -593,6 +612,7 @@ static int moxart_probe(struct platform_device *pdev)
 	struct moxart_dmadev *mdc;
 
 	mdc = devm_kzalloc(dev, sizeof(*mdc), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!mdc) {
 		dev_err(dev, "can't allocate DMA container\n");
 		return -ENOMEM;
@@ -600,6 +620,13 @@ static int moxart_probe(struct platform_device *pdev)
 
 	irq = irq_of_parse_and_map(node, 0);
 	if (irq == NO_IRQ) {
+=======
+	if (!mdc)
+		return -ENOMEM;
+
+	irq = irq_of_parse_and_map(node, 0);
+	if (!irq) {
+>>>>>>> v4.9.227
 		dev_err(dev, "no IRQ resource\n");
 		return -EINVAL;
 	}
@@ -636,6 +663,10 @@ static int moxart_probe(struct platform_device *pdev)
 		dev_err(dev, "devm_request_irq failed\n");
 		return ret;
 	}
+<<<<<<< HEAD
+=======
+	mdc->irq = irq;
+>>>>>>> v4.9.227
 
 	ret = dma_async_device_register(&mdc->dma_slave);
 	if (ret) {
@@ -659,6 +690,11 @@ static int moxart_remove(struct platform_device *pdev)
 {
 	struct moxart_dmadev *m = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
+=======
+	devm_free_irq(&pdev->dev, m->irq, m);
+
+>>>>>>> v4.9.227
 	dma_async_device_unregister(&m->dma_slave);
 
 	if (pdev->dev.of_node)
@@ -671,13 +707,20 @@ static const struct of_device_id moxart_dma_match[] = {
 	{ .compatible = "moxa,moxart-dma" },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, moxart_dma_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver moxart_driver = {
 	.probe	= moxart_probe,
 	.remove	= moxart_remove,
 	.driver = {
 		.name		= "moxart-dma-engine",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= moxart_dma_match,
 	},
 };

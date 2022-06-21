@@ -5,6 +5,10 @@
 #ifndef _METAG_PGTABLE_H
 #define _METAG_PGTABLE_H
 
+<<<<<<< HEAD
+=======
+#include <asm/pgtable-bits.h>
+>>>>>>> v4.9.227
 #include <asm-generic/pgtable-nopmd.h>
 
 /* Invalid regions on Meta: 0x00000000-0x001FFFFF and 0xFFFF0000-0xFFFFFFFF */
@@ -21,6 +25,7 @@
 #endif
 
 /*
+<<<<<<< HEAD
  * Definitions for MMU descriptors
  *
  * These are the hardware bits in the MMCU pte entries.
@@ -116,6 +121,8 @@
 #endif
 
 /*
+=======
+>>>>>>> v4.9.227
  * The Linux memory management assumes a three-level page table setup. On
  * Meta, we use that, but "fold" the mid level into the top-level page
  * table.
@@ -219,7 +226,10 @@ extern unsigned long empty_zero_page;
 static inline int pte_write(pte_t pte)   { return pte_val(pte) & _PAGE_WRITE; }
 static inline int pte_dirty(pte_t pte)   { return pte_val(pte) & _PAGE_DIRTY; }
 static inline int pte_young(pte_t pte)   { return pte_val(pte) & _PAGE_ACCESSED; }
+<<<<<<< HEAD
 static inline int pte_file(pte_t pte)    { return pte_val(pte) & _PAGE_FILE; }
+=======
+>>>>>>> v4.9.227
 static inline int pte_special(pte_t pte) { return 0; }
 
 static inline pte_t pte_wrprotect(pte_t pte) { pte_val(pte) &= (~_PAGE_WRITE); return pte; }
@@ -327,10 +337,13 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 #define __pte_to_swp_entry(pte)		((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)		((pte_t) { (x).val })
 
+<<<<<<< HEAD
 #define PTE_FILE_MAX_BITS	22
 #define pte_to_pgoff(x)		(pte_val(x) >> 10)
 #define pgoff_to_pte(x)		__pte(((x) << 10) | _PAGE_FILE)
 
+=======
+>>>>>>> v4.9.227
 #define kern_addr_valid(addr)	(1)
 
 /*

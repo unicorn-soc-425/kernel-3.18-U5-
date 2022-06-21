@@ -2,6 +2,10 @@
 #define __LINUX_ATMEL_MCI_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+>>>>>>> v4.9.227
 
 #define ATMCI_MAX_NR_SLOTS	2
 
@@ -11,6 +15,10 @@
  * @detect_pin: GPIO pin wired to the card detect switch
  * @wp_pin: GPIO pin wired to the write protect sensor
  * @detect_is_active_high: The state of the detect pin when it is active
+<<<<<<< HEAD
+=======
+ * @non_removable: The slot is not removable, only detect once
+>>>>>>> v4.9.227
  *
  * If a given slot is not present on the board, @bus_width should be
  * set to 0. The other fields are ignored in this case.
@@ -26,6 +34,10 @@ struct mci_slot_pdata {
 	int			detect_pin;
 	int			wp_pin;
 	bool			detect_is_active_high;
+<<<<<<< HEAD
+=======
+	bool			non_removable;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -34,7 +46,12 @@ struct mci_slot_pdata {
  * @slot: Per-slot configuration data.
  */
 struct mci_platform_data {
+<<<<<<< HEAD
 	struct mci_dma_data	*dma_slave;
+=======
+	void			*dma_slave;
+	dma_filter_fn		dma_filter;
+>>>>>>> v4.9.227
 	struct mci_slot_pdata	slot[ATMCI_MAX_NR_SLOTS];
 };
 

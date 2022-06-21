@@ -83,7 +83,11 @@ static void battery_status_changed(void)
 
 	if (psy) {
 		power_supply_changed(psy);
+<<<<<<< HEAD
 		put_device(psy->dev);
+=======
+		power_supply_put(psy);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -93,7 +97,11 @@ static void ac_status_changed(void)
 
 	if (psy) {
 		power_supply_changed(psy);
+<<<<<<< HEAD
 		put_device(psy->dev);
+=======
+		power_supply_put(psy);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -196,6 +204,10 @@ static int xo15_sci_remove(struct acpi_device *device)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 static int xo15_sci_resume(struct device *dev)
 {
 	/* Enable all EC events */
@@ -207,6 +219,10 @@ static int xo15_sci_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(xo15_sci_pm, NULL, xo15_sci_resume);
 

@@ -26,7 +26,11 @@
 #include <linux/dma-mapping.h>
 #include <linux/console.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/static_key.h>
+=======
+#include <linux/jump_label.h>
+>>>>>>> v4.9.227
 #include <asm/processor.h>
 #include <asm/mmu.h>
 #include <asm/page.h>
@@ -43,7 +47,13 @@
 #include <asm/trace.h>
 #include <asm/firmware.h>
 #include <asm/plpar_wrappers.h>
+<<<<<<< HEAD
 #include <asm/fadump.h>
+=======
+#include <asm/kexec.h>
+#include <asm/fadump.h>
+#include <asm/asm-prototypes.h>
+>>>>>>> v4.9.227
 
 #include "pseries.h"
 
@@ -88,18 +98,32 @@ void vpa_init(int cpu)
 		       "%lx failed with %ld\n", cpu, hwcpu, addr, ret);
 		return;
 	}
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_PPC_STD_MMU_64
+>>>>>>> v4.9.227
 	/*
 	 * PAPR says this feature is SLB-Buffer but firmware never
 	 * reports that.  All SPLPAR support SLB shadow buffer.
 	 */
+<<<<<<< HEAD
 	addr = __pa(paca[cpu].slb_shadow_ptr);
 	if (firmware_has_feature(FW_FEATURE_SPLPAR)) {
+=======
+	if (!radix_enabled() && firmware_has_feature(FW_FEATURE_SPLPAR)) {
+		addr = __pa(paca[cpu].slb_shadow_ptr);
+>>>>>>> v4.9.227
 		ret = register_slb_shadow(hwcpu, addr);
 		if (ret)
 			pr_err("WARNING: SLB shadow buffer registration for "
 			       "cpu %d (hw %d) of area %lx failed with %ld\n",
 			       cpu, hwcpu, addr, ret);
 	}
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_PPC_STD_MMU_64 */
+>>>>>>> v4.9.227
 
 	/*
 	 * Register dispatch trace log, if one has been allocated.
@@ -122,6 +146,11 @@ void vpa_init(int cpu)
 	}
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_STD_MMU_64
+
+>>>>>>> v4.9.227
 static long pSeries_lpar_hpte_insert(unsigned long hpte_group,
 				     unsigned long vpn, unsigned long pa,
 				     unsigned long rflags, unsigned long vflags,
@@ -151,10 +180,13 @@ static long pSeries_lpar_hpte_insert(unsigned long hpte_group,
 	/* Exact = 0                   */
 	flags = 0;
 
+<<<<<<< HEAD
 	/* Make pHyp happy */
 	if ((rflags & _PAGE_NO_CACHE) && !(rflags & _PAGE_WRITETHRU))
 		hpte_r &= ~HPTE_R_M;
 
+=======
+>>>>>>> v4.9.227
 	if (firmware_has_feature(FW_FEATURE_XCMO) && !(hpte_r & HPTE_R_N))
 		flags |= H_COALESCE_CAND;
 
@@ -258,6 +290,7 @@ static void pSeries_lpar_hptab_clear(void)
 	 * This is also called on boot when a fadump happens. In that case we
 	 * must not change the exception endian mode.
 	 */
+<<<<<<< HEAD
 	if (firmware_has_feature(FW_FEATURE_SET_MODE) && !is_fadump_active()) {
 		long rc;
 
@@ -271,6 +304,10 @@ static void pSeries_lpar_hptab_clear(void)
 		if (rc)
 			panic("Could not enable big endian exceptions");
 	}
+=======
+	if (firmware_has_feature(FW_FEATURE_SET_MODE) && !is_fadump_active())
+		pseries_big_endian_exceptions();
+>>>>>>> v4.9.227
 #endif
 }
 
@@ -284,10 +321,17 @@ static long pSeries_lpar_hpte_updatepp(unsigned long slot,
 				       unsigned long newpp,
 				       unsigned long vpn,
 				       int psize, int apsize,
+<<<<<<< HEAD
 				       int ssize, int local)
 {
 	unsigned long lpar_rc;
 	unsigned long flags = (newpp & 7) | H_AVPN;
+=======
+				       int ssize, unsigned long inv_flags)
+{
+	unsigned long lpar_rc;
+	unsigned long flags;
+>>>>>>> v4.9.227
 	unsigned long want_v;
 
 	want_v = hpte_encode_avpn(vpn, psize, ssize);
@@ -295,6 +339,14 @@ static long pSeries_lpar_hpte_updatepp(unsigned long slot,
 	pr_devel("    update: avpnv=%016lx, hash=%016lx, f=%lx, psize: %d ...",
 		 want_v, slot, flags, psize);
 
+<<<<<<< HEAD
+=======
+	flags = (newpp & 7) | H_AVPN;
+	if (mmu_has_feature(MMU_FTR_KERNEL_RO))
+		/* Move pp0 into bit 8 (IBM 55) */
+		flags |= (newpp & HPTE_R_PP0) >> 55;
+
+>>>>>>> v4.9.227
 	lpar_rc = plpar_pte_protect(flags, slot, want_v);
 
 	if (lpar_rc == H_NOT_FOUND) {
@@ -309,6 +361,7 @@ static long pSeries_lpar_hpte_updatepp(unsigned long slot,
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned long pSeries_lpar_hpte_getword0(unsigned long slot)
 {
 	unsigned long dword0;
@@ -326,19 +379,52 @@ static unsigned long pSeries_lpar_hpte_getword0(unsigned long slot)
 	BUG_ON(lpar_rc != H_SUCCESS);
 
 	return dword0;
+=======
+static long __pSeries_lpar_hpte_find(unsigned long want_v, unsigned long hpte_group)
+{
+	long lpar_rc;
+	unsigned long i, j;
+	struct {
+		unsigned long pteh;
+		unsigned long ptel;
+	} ptes[4];
+
+	for (i = 0; i < HPTES_PER_GROUP; i += 4, hpte_group += 4) {
+
+		lpar_rc = plpar_pte_read_4(0, hpte_group, (void *)ptes);
+		if (lpar_rc != H_SUCCESS)
+			continue;
+
+		for (j = 0; j < 4; j++) {
+			if (HPTE_V_COMPARE(ptes[j].pteh, want_v) &&
+			    (ptes[j].pteh & HPTE_V_VALID))
+				return i + j;
+		}
+	}
+
+	return -1;
+>>>>>>> v4.9.227
 }
 
 static long pSeries_lpar_hpte_find(unsigned long vpn, int psize, int ssize)
 {
+<<<<<<< HEAD
 	unsigned long hash;
 	unsigned long i;
 	long slot;
 	unsigned long want_v, hpte_v;
+=======
+	long slot;
+	unsigned long hash;
+	unsigned long want_v;
+	unsigned long hpte_group;
+>>>>>>> v4.9.227
 
 	hash = hpt_hash(vpn, mmu_psize_defs[psize].shift, ssize);
 	want_v = hpte_encode_avpn(vpn, psize, ssize);
 
 	/* Bolted entries are always in the primary group */
+<<<<<<< HEAD
 	slot = (hash & htab_hash_mask) * HPTES_PER_GROUP;
 	for (i = 0; i < HPTES_PER_GROUP; i++) {
 		hpte_v = pSeries_lpar_hpte_getword0(slot);
@@ -351,6 +437,14 @@ static long pSeries_lpar_hpte_find(unsigned long vpn, int psize, int ssize)
 
 	return -1;
 } 
+=======
+	hpte_group = (hash & htab_hash_mask) * HPTES_PER_GROUP;
+	slot = __pSeries_lpar_hpte_find(want_v, hpte_group);
+	if (slot < 0)
+		return -1;
+	return hpte_group + slot;
+}
+>>>>>>> v4.9.227
 
 static void pSeries_lpar_hpte_updateboltedpp(unsigned long newpp,
 					     unsigned long ea,
@@ -366,6 +460,13 @@ static void pSeries_lpar_hpte_updateboltedpp(unsigned long newpp,
 	BUG_ON(slot == -1);
 
 	flags = newpp & 7;
+<<<<<<< HEAD
+=======
+	if (mmu_has_feature(MMU_FTR_KERNEL_RO))
+		/* Move pp0 into bit 8 (IBM 55) */
+		flags |= (newpp & HPTE_R_PP0) >> 55;
+
+>>>>>>> v4.9.227
 	lpar_rc = plpar_pte_protect(flags, slot, 0);
 
 	BUG_ON(lpar_rc != H_SUCCESS);
@@ -390,6 +491,10 @@ static void pSeries_lpar_hpte_invalidate(unsigned long slot, unsigned long vpn,
 	BUG_ON(lpar_rc != H_SUCCESS);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+>>>>>>> v4.9.227
 /*
  * Limit iterations holding pSeries_lpar_tlbie_lock to 3. We also need
  * to make sure that we avoid bouncing the hypervisor tlbie lock.
@@ -400,7 +505,11 @@ static void __pSeries_lpar_hugepage_invalidate(unsigned long *slot,
 					     unsigned long *vpn, int count,
 					     int psize, int ssize)
 {
+<<<<<<< HEAD
 	unsigned long param[8];
+=======
+	unsigned long param[PLPAR_HCALL9_BUFSIZE];
+>>>>>>> v4.9.227
 	int i = 0, pix = 0, rc;
 	unsigned long flags = 0;
 	int lock_tlbie = !mmu_has_feature(MMU_FTR_LOCKLESS_TLBIE);
@@ -442,7 +551,11 @@ static void __pSeries_lpar_hugepage_invalidate(unsigned long *slot,
 static void pSeries_lpar_hugepage_invalidate(unsigned long vsid,
 					     unsigned long addr,
 					     unsigned char *hpte_slot_array,
+<<<<<<< HEAD
 					     int psize, int ssize)
+=======
+					     int psize, int ssize, int local)
+>>>>>>> v4.9.227
 {
 	int i, index = 0;
 	unsigned long s_addr = addr;
@@ -488,9 +601,24 @@ static void pSeries_lpar_hugepage_invalidate(unsigned long vsid,
 		__pSeries_lpar_hugepage_invalidate(slot_array, vpn_array,
 						   index, psize, ssize);
 }
+<<<<<<< HEAD
 
 static void pSeries_lpar_hpte_removebolted(unsigned long ea,
 					   int psize, int ssize)
+=======
+#else
+static void pSeries_lpar_hugepage_invalidate(unsigned long vsid,
+					     unsigned long addr,
+					     unsigned char *hpte_slot_array,
+					     int psize, int ssize, int local)
+{
+	WARN(1, "%s called without THP support\n", __func__);
+}
+#endif
+
+static int pSeries_lpar_hpte_removebolted(unsigned long ea,
+					  int psize, int ssize)
+>>>>>>> v4.9.227
 {
 	unsigned long vpn;
 	unsigned long slot, vsid;
@@ -499,11 +627,21 @@ static void pSeries_lpar_hpte_removebolted(unsigned long ea,
 	vpn = hpt_vpn(ea, vsid, ssize);
 
 	slot = pSeries_lpar_hpte_find(vpn, psize, ssize);
+<<<<<<< HEAD
 	BUG_ON(slot == -1);
+=======
+	if (slot == -1)
+		return -ENOENT;
+
+>>>>>>> v4.9.227
 	/*
 	 * lpar doesn't use the passed actual page size
 	 */
 	pSeries_lpar_hpte_invalidate(slot, vpn, psize, 0, ssize, 0);
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -515,9 +653,15 @@ static void pSeries_lpar_flush_hash_range(unsigned long number, int local)
 	unsigned long vpn;
 	unsigned long i, pix, rc;
 	unsigned long flags = 0;
+<<<<<<< HEAD
 	struct ppc64_tlb_batch *batch = &__get_cpu_var(ppc64_tlb_batch);
 	int lock_tlbie = !mmu_has_feature(MMU_FTR_LOCKLESS_TLBIE);
 	unsigned long param[9];
+=======
+	struct ppc64_tlb_batch *batch = this_cpu_ptr(&ppc64_tlb_batch);
+	int lock_tlbie = !mmu_has_feature(MMU_FTR_LOCKLESS_TLBIE);
+	unsigned long param[PLPAR_HCALL9_BUFSIZE];
+>>>>>>> v4.9.227
 	unsigned long hash, index, shift, hidx, slot;
 	real_pte_t pte;
 	int psize, ssize;
@@ -584,6 +728,7 @@ static int __init disable_bulk_remove(char *str)
 
 __setup("bulk_remove=", disable_bulk_remove);
 
+<<<<<<< HEAD
 void __init hpte_init_lpar(void)
 {
 	ppc_md.hpte_invalidate	= pSeries_lpar_hpte_invalidate;
@@ -595,6 +740,19 @@ void __init hpte_init_lpar(void)
 	ppc_md.flush_hash_range	= pSeries_lpar_flush_hash_range;
 	ppc_md.hpte_clear_all   = pSeries_lpar_hptab_clear;
 	ppc_md.hugepage_invalidate = pSeries_lpar_hugepage_invalidate;
+=======
+void __init hpte_init_pseries(void)
+{
+	mmu_hash_ops.hpte_invalidate	 = pSeries_lpar_hpte_invalidate;
+	mmu_hash_ops.hpte_updatepp	 = pSeries_lpar_hpte_updatepp;
+	mmu_hash_ops.hpte_updateboltedpp = pSeries_lpar_hpte_updateboltedpp;
+	mmu_hash_ops.hpte_insert	 = pSeries_lpar_hpte_insert;
+	mmu_hash_ops.hpte_remove	 = pSeries_lpar_hpte_remove;
+	mmu_hash_ops.hpte_removebolted   = pSeries_lpar_hpte_removebolted;
+	mmu_hash_ops.flush_hash_range	 = pSeries_lpar_flush_hash_range;
+	mmu_hash_ops.hpte_clear_all      = pSeries_lpar_hptab_clear;
+	mmu_hash_ops.hugepage_invalidate = pSeries_lpar_hugepage_invalidate;
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_PPC_SMLPAR
@@ -640,6 +798,11 @@ static void pSeries_set_page_state(struct page *page, int order,
 
 void arch_free_page(struct page *page, int order)
 {
+<<<<<<< HEAD
+=======
+	if (radix_enabled())
+		return;
+>>>>>>> v4.9.227
 	if (!cmo_free_hint_flag || !firmware_has_feature(FW_FEATURE_CMO))
 		return;
 
@@ -647,7 +810,12 @@ void arch_free_page(struct page *page, int order)
 }
 EXPORT_SYMBOL(arch_free_page);
 
+<<<<<<< HEAD
 #endif
+=======
+#endif /* CONFIG_PPC_SMLPAR */
+#endif /* CONFIG_PPC_STD_MMU_64 */
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_TRACEPOINTS
 #ifdef HAVE_JUMP_LABEL
@@ -705,7 +873,11 @@ void __trace_hcall_entry(unsigned long opcode, unsigned long *args)
 
 	local_irq_save(flags);
 
+<<<<<<< HEAD
 	depth = &__get_cpu_var(hcall_trace_depth);
+=======
+	depth = this_cpu_ptr(&hcall_trace_depth);
+>>>>>>> v4.9.227
 
 	if (*depth)
 		goto out;
@@ -730,7 +902,11 @@ void __trace_hcall_exit(long opcode, unsigned long retval,
 
 	local_irq_save(flags);
 
+<<<<<<< HEAD
 	depth = &__get_cpu_var(hcall_trace_depth);
+=======
+	depth = this_cpu_ptr(&hcall_trace_depth);
+>>>>>>> v4.9.227
 
 	if (*depth)
 		goto out;

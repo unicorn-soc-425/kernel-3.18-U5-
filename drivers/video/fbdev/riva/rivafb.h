@@ -61,9 +61,13 @@ struct riva_par {
 	int FlatPanel;
 	struct pci_dev *pdev;
 	int cursor_reset;
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	struct { int vram; int vram_valid; } mtrr;
 #endif
+=======
+	int wc_cookie;
+>>>>>>> v4.9.227
 	struct riva_i2c_chan chan[3];
 };
 

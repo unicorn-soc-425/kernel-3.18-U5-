@@ -36,11 +36,18 @@
 #define REMOTEPROC_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/klist.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/mutex.h>
 #include <linux/virtio.h>
 #include <linux/completion.h>
 #include <linux/idr.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 
 /**
  * struct resource_table - firmware resource table header
@@ -118,7 +125,11 @@ enum fw_resource_type {
 	RSC_LAST	= 4,
 };
 
+<<<<<<< HEAD
 #define FW_RSC_ADDR_ANY (0xFFFFFFFFFFFFFFFF)
+=======
+#define FW_RSC_ADDR_ANY (-1)
+>>>>>>> v4.9.227
 
 /**
  * struct fw_rsc_carveout - physically contiguous memory request
@@ -241,7 +252,11 @@ struct fw_rsc_trace {
  * @notifyid is a unique rproc-wide notify index for this vring. This notify
  * index is used when kicking a remote processor, to let it know that this
  * vring is triggered.
+<<<<<<< HEAD
  * @reserved: reserved (must be zero)
+=======
+ * @pa: physical address
+>>>>>>> v4.9.227
  *
  * This descriptor is not a resource entry by itself; it is part of the
  * vdev resource type (see below).
@@ -255,7 +270,11 @@ struct fw_rsc_vdev_vring {
 	u32 align;
 	u32 num;
 	u32 notifyid;
+<<<<<<< HEAD
 	u32 reserved;
+=======
+	u32 pa;
+>>>>>>> v4.9.227
 } __packed;
 
 /**
@@ -330,11 +349,19 @@ struct rproc;
  * @start:	power on the device and boot it
  * @stop:	power off the device
  * @kick:	kick a virtqueue (virtqueue id given as a parameter)
+<<<<<<< HEAD
+=======
+ * @da_to_va:	optional platform hook to perform address translations
+>>>>>>> v4.9.227
  */
 struct rproc_ops {
 	int (*start)(struct rproc *rproc);
 	int (*stop)(struct rproc *rproc);
 	void (*kick)(struct rproc *rproc, int vqid);
+<<<<<<< HEAD
+=======
+	void * (*da_to_va)(struct rproc *rproc, u64 da, int len);
+>>>>>>> v4.9.227
 };
 
 /**
@@ -363,6 +390,11 @@ enum rproc_state {
 /**
  * enum rproc_crash_type - remote processor crash types
  * @RPROC_MMUFAULT:	iommu fault
+<<<<<<< HEAD
+=======
+ * @RPROC_WATCHDOG:	watchdog bite
+ * @RPROC_FATAL_ERROR	fatal error
+>>>>>>> v4.9.227
  *
  * Each element of the enum is used as an array index. So that, the value of
  * the elements should be always something sane.
@@ -371,11 +403,20 @@ enum rproc_state {
  */
 enum rproc_crash_type {
 	RPROC_MMUFAULT,
+<<<<<<< HEAD
+=======
+	RPROC_WATCHDOG,
+	RPROC_FATAL_ERROR,
+>>>>>>> v4.9.227
 };
 
 /**
  * struct rproc - represents a physical remote processor device
+<<<<<<< HEAD
  * @node: klist node of this rproc object
+=======
+ * @node: list node of this rproc object
+>>>>>>> v4.9.227
  * @domain: iommu domain
  * @name: human readable name of the rproc
  * @firmware: name of firmware file to be loaded
@@ -403,10 +444,17 @@ enum rproc_crash_type {
  * @max_notifyid: largest allocated notify id.
  * @table_ptr: pointer to the resource table in effect
  * @cached_table: copy of the resource table
+<<<<<<< HEAD
  * @table_csum: checksum of the resource table
  */
 struct rproc {
 	struct klist_node node;
+=======
+ * @has_iommu: flag to indicate if remote processor is behind an MMU
+ */
+struct rproc {
+	struct list_head node;
+>>>>>>> v4.9.227
 	struct iommu_domain *domain;
 	const char *name;
 	const char *firmware;
@@ -428,13 +476,22 @@ struct rproc {
 	struct idr notifyids;
 	int index;
 	struct work_struct crash_handler;
+<<<<<<< HEAD
 	unsigned crash_cnt;
+=======
+	unsigned int crash_cnt;
+>>>>>>> v4.9.227
 	struct completion crash_comp;
 	bool recovery_disabled;
 	int max_notifyid;
 	struct resource_table *table_ptr;
 	struct resource_table *cached_table;
+<<<<<<< HEAD
 	u32 table_csum;
+=======
+	bool has_iommu;
+	bool auto_boot;
+>>>>>>> v4.9.227
 };
 
 /* we currently support only two vrings per rvdev */
@@ -479,12 +536,23 @@ struct rproc_vdev {
 	u32 rsc_offset;
 };
 
+<<<<<<< HEAD
 struct rproc *rproc_alloc(struct device *dev, const char *name,
 				const struct rproc_ops *ops,
 				const char *firmware, int len);
 void rproc_put(struct rproc *rproc);
 int rproc_add(struct rproc *rproc);
 int rproc_del(struct rproc *rproc);
+=======
+struct rproc *rproc_get_by_phandle(phandle phandle);
+struct rproc *rproc_alloc(struct device *dev, const char *name,
+			  const struct rproc_ops *ops,
+			  const char *firmware, int len);
+void rproc_put(struct rproc *rproc);
+int rproc_add(struct rproc *rproc);
+int rproc_del(struct rproc *rproc);
+void rproc_free(struct rproc *rproc);
+>>>>>>> v4.9.227
 
 int rproc_boot(struct rproc *rproc);
 void rproc_shutdown(struct rproc *rproc);

@@ -1198,7 +1198,11 @@ int ps3_repository_delete_highmem_info(unsigned int region_index)
 	return result ? -1 : 0;
 }
 
+<<<<<<< HEAD
 #endif /* defined(CONFIG_PS3_WRITE_REPOSITORY) */
+=======
+#endif /* defined(CONFIG_PS3_REPOSITORY_WRITE) */
+>>>>>>> v4.9.227
 
 #if defined(DEBUG)
 

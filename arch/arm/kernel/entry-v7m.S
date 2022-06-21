@@ -22,10 +22,18 @@
 
 __invalid_entry:
 	v7m_exception_entry
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PRINTK
+>>>>>>> v4.9.227
 	adr	r0, strerr
 	mrs	r1, ipsr
 	mov	r2, lr
 	bl	printk
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 	mov	r0, sp
 	bl	show_regs
 1:	b	1b
@@ -71,7 +79,11 @@ __irq_entry:
 	@ correctness they don't need to be restored. So only r8-r11 must be
 	@ restored here. The easiest way to do so is to restore r0-r7, too.
 	ldmia	sp!, {r0-r11}
+<<<<<<< HEAD
 	add	sp, #S_FRAME_SIZE-S_IP
+=======
+	add	sp, #PT_REGS_SIZE-S_IP
+>>>>>>> v4.9.227
 	cpsie	i
 	bx	lr
 ENDPROC(__irq_entry)
@@ -86,7 +98,11 @@ __pendsv_entry:
 	@ execute the pending work, including reschedule
 	get_thread_info tsk
 	mov	why, #0
+<<<<<<< HEAD
 	b	ret_to_user
+=======
+	b	ret_to_user_from_irq
+>>>>>>> v4.9.227
 ENDPROC(__pendsv_entry)
 
 /*
@@ -115,9 +131,20 @@ ENTRY(__switch_to)
 ENDPROC(__switch_to)
 
 	.data
+<<<<<<< HEAD
 	.align	8
 /*
  * Vector table (64 words => 256 bytes natural alignment)
+=======
+#if CONFIG_CPU_V7M_NUM_IRQ <= 112
+	.align	9
+#else
+	.align	10
+#endif
+
+/*
+ * Vector table (Natural alignment need to be ensured)
+>>>>>>> v4.9.227
  */
 ENTRY(vector_table)
 	.long	0			@ 0 - Reset stack pointer
@@ -136,6 +163,11 @@ ENTRY(vector_table)
 	.long	__invalid_entry		@ 13 - Reserved
 	.long	__pendsv_entry		@ 14 - PendSV
 	.long	__invalid_entry		@ 15 - SysTick
+<<<<<<< HEAD
 	.rept	64 - 16
 	.long	__irq_entry		@ 16..64 - External Interrupts
+=======
+	.rept	CONFIG_CPU_V7M_NUM_IRQ
+	.long	__irq_entry		@ External Interrupts
+>>>>>>> v4.9.227
 	.endr

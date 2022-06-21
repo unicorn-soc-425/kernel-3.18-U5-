@@ -12,6 +12,10 @@
  */
 struct arch_hw_breakpoint {
 	unsigned long	address;
+<<<<<<< HEAD
+=======
+	unsigned long	mask;
+>>>>>>> v4.9.227
 	u8		len;
 	u8		type;
 };

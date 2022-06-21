@@ -34,6 +34,7 @@ static unsigned int
 reject_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ipt_reject_info *reject = par->targinfo;
+<<<<<<< HEAD
 
 	switch (reject->with) {
 	case IPT_ICMP_NET_UNREACHABLE:
@@ -59,6 +60,34 @@ reject_tg(struct sk_buff *skb, const struct xt_action_param *par)
 		break;
 	case IPT_TCP_RESET:
 		nf_send_reset(skb, par->hooknum);
+=======
+	int hook = par->hooknum;
+
+	switch (reject->with) {
+	case IPT_ICMP_NET_UNREACHABLE:
+		nf_send_unreach(skb, ICMP_NET_UNREACH, hook);
+		break;
+	case IPT_ICMP_HOST_UNREACHABLE:
+		nf_send_unreach(skb, ICMP_HOST_UNREACH, hook);
+		break;
+	case IPT_ICMP_PROT_UNREACHABLE:
+		nf_send_unreach(skb, ICMP_PROT_UNREACH, hook);
+		break;
+	case IPT_ICMP_PORT_UNREACHABLE:
+		nf_send_unreach(skb, ICMP_PORT_UNREACH, hook);
+		break;
+	case IPT_ICMP_NET_PROHIBITED:
+		nf_send_unreach(skb, ICMP_NET_ANO, hook);
+		break;
+	case IPT_ICMP_HOST_PROHIBITED:
+		nf_send_unreach(skb, ICMP_HOST_ANO, hook);
+		break;
+	case IPT_ICMP_ADMIN_PROHIBITED:
+		nf_send_unreach(skb, ICMP_PKT_FILTERED, hook);
+		break;
+	case IPT_TCP_RESET:
+		nf_send_reset(par->net, skb, hook);
+>>>>>>> v4.9.227
 	case IPT_ICMP_ECHOREPLY:
 		/* Doesn't happen. */
 		break;

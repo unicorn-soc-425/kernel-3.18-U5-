@@ -74,7 +74,11 @@ void mvs_tag_init(struct mvs_info *mvi)
 		mvs_tag_clear(mvi, i);
 }
 
+<<<<<<< HEAD
 struct mvs_info *mvs_find_dev_mvi(struct domain_device *dev)
+=======
+static struct mvs_info *mvs_find_dev_mvi(struct domain_device *dev)
+>>>>>>> v4.9.227
 {
 	unsigned long i = 0, j = 0, hi = 0;
 	struct sas_ha_struct *sha = dev->port->ha;
@@ -102,7 +106,11 @@ struct mvs_info *mvs_find_dev_mvi(struct domain_device *dev)
 
 }
 
+<<<<<<< HEAD
 int mvs_find_dev_phyno(struct domain_device *dev, int *phyno)
+=======
+static int mvs_find_dev_phyno(struct domain_device *dev, int *phyno)
+>>>>>>> v4.9.227
 {
 	unsigned long i = 0, j = 0, n = 0, num = 0;
 	struct mvs_device *mvi_dev = (struct mvs_device *)dev->lldd_dev;
@@ -429,7 +437,14 @@ static u32 mvs_get_ncq_tag(struct sas_task *task, u32 *tag)
 
 	if (qc) {
 		if (qc->tf.command == ATA_CMD_FPDMA_WRITE ||
+<<<<<<< HEAD
 			qc->tf.command == ATA_CMD_FPDMA_READ) {
+=======
+		    qc->tf.command == ATA_CMD_FPDMA_READ ||
+		    qc->tf.command == ATA_CMD_FPDMA_RECV ||
+		    qc->tf.command == ATA_CMD_FPDMA_SEND ||
+		    qc->tf.command == ATA_CMD_NCQ_NON_DATA) {
+>>>>>>> v4.9.227
 			*tag = qc->tag;
 			return 1;
 		}
@@ -476,7 +491,11 @@ static int mvs_task_prep_ata(struct mvs_info *mvi,
 
 	if (task->ata_task.use_ncq)
 		flags |= MCH_FPDMA;
+<<<<<<< HEAD
 	if (dev->sata_dev.command_set == ATAPI_COMMAND_SET) {
+=======
+	if (dev->sata_dev.class == ATA_DEV_ATAPI) {
+>>>>>>> v4.9.227
 		if (task->ata_task.fis.command != ATA_CMD_ID_ATAPI)
 			flags |= MCH_ATAPI;
 	}
@@ -543,7 +562,11 @@ static int mvs_task_prep_ata(struct mvs_info *mvi,
 		task->ata_task.fis.flags |= 0x80; /* C=1: update ATA cmd reg */
 	/* fill in command FIS and ATAPI CDB */
 	memcpy(buf_cmd, &task->ata_task.fis, sizeof(struct host_to_dev_fis));
+<<<<<<< HEAD
 	if (dev->sata_dev.command_set == ATAPI_COMMAND_SET)
+=======
+	if (dev->sata_dev.class == ATA_DEV_ATAPI)
+>>>>>>> v4.9.227
 		memcpy(buf_cmd + STP_ATAPI_CMD,
 			task->ata_task.atapi_packet, 16);
 
@@ -788,8 +811,15 @@ static int mvs_task_prep(struct sas_task *task, struct mvs_info *mvi, int is_tmf
 	slot->slot_tag = tag;
 
 	slot->buf = pci_pool_alloc(mvi->dma_pool, GFP_ATOMIC, &slot->buf_dma);
+<<<<<<< HEAD
 	if (!slot->buf)
 		goto err_out_tag;
+=======
+	if (!slot->buf) {
+		rc = -ENOMEM;
+		goto err_out_tag;
+	}
+>>>>>>> v4.9.227
 	memset(slot->buf, 0, MVS_SLOT_BUF_SZ);
 
 	tei.task = task;
@@ -849,6 +879,7 @@ prep_out:
 	return rc;
 }
 
+<<<<<<< HEAD
 static struct mvs_task_list *mvs_task_alloc_list(int *num, gfp_t gfp_flags)
 {
 	struct mvs_task_list *first = NULL;
@@ -886,6 +917,9 @@ static inline void mvs_task_free_list(struct mvs_task_list *mvs_list)
 }
 
 static int mvs_task_exec(struct sas_task *task, const int num, gfp_t gfp_flags,
+=======
+static int mvs_task_exec(struct sas_task *task, gfp_t gfp_flags,
+>>>>>>> v4.9.227
 				struct completion *completion, int is_tmf,
 				struct mvs_tmf_task *tmf)
 {
@@ -909,6 +943,7 @@ static int mvs_task_exec(struct sas_task *task, const int num, gfp_t gfp_flags,
 	return rc;
 }
 
+<<<<<<< HEAD
 static int mvs_collector_task_exec(struct sas_task *task, const int num, gfp_t gfp_flags,
 				struct completion *completion, int is_tmf,
 				struct mvs_tmf_task *tmf)
@@ -977,6 +1012,11 @@ int mvs_queue_command(struct sas_task *task, const int num,
 		return mvs_task_exec(task, num, gfp_flags, NULL, 0, NULL);
 	else
 		return mvs_collector_task_exec(task, num, gfp_flags, NULL, 0, NULL);
+=======
+int mvs_queue_command(struct sas_task *task, gfp_t gfp_flags)
+{
+	return mvs_task_exec(task, gfp_flags, NULL, 0, NULL);
+>>>>>>> v4.9.227
 }
 
 static void mvs_slot_free(struct mvs_info *mvi, u32 rx_desc)
@@ -1256,7 +1296,11 @@ void mvs_port_deformed(struct asd_sas_phy *sas_phy)
 	mvs_port_notify_deformed(sas_phy, 1);
 }
 
+<<<<<<< HEAD
 struct mvs_device *mvs_alloc_dev(struct mvs_info *mvi)
+=======
+static struct mvs_device *mvs_alloc_dev(struct mvs_info *mvi)
+>>>>>>> v4.9.227
 {
 	u32 dev;
 	for (dev = 0; dev < MVS_MAX_DEVICES; dev++) {
@@ -1273,7 +1317,11 @@ struct mvs_device *mvs_alloc_dev(struct mvs_info *mvi)
 	return NULL;
 }
 
+<<<<<<< HEAD
 void mvs_free_dev(struct mvs_device *mvi_dev)
+=======
+static void mvs_free_dev(struct mvs_device *mvi_dev)
+>>>>>>> v4.9.227
 {
 	u32 id = mvi_dev->device_id;
 	memset(mvi_dev, 0, sizeof(*mvi_dev));
@@ -1283,7 +1331,11 @@ void mvs_free_dev(struct mvs_device *mvi_dev)
 	mvi_dev->taskfileset = MVS_ID_NOT_MAPPED;
 }
 
+<<<<<<< HEAD
 int mvs_dev_found_notify(struct domain_device *dev, int lock)
+=======
+static int mvs_dev_found_notify(struct domain_device *dev, int lock)
+>>>>>>> v4.9.227
 {
 	unsigned long flags = 0;
 	int res = 0;
@@ -1339,7 +1391,11 @@ int mvs_dev_found(struct domain_device *dev)
 	return mvs_dev_found_notify(dev, 1);
 }
 
+<<<<<<< HEAD
 void mvs_dev_gone_notify(struct domain_device *dev)
+=======
+static void mvs_dev_gone_notify(struct domain_device *dev)
+>>>>>>> v4.9.227
 {
 	unsigned long flags = 0;
 	struct mvs_device *mvi_dev = dev->lldd_dev;
@@ -1410,7 +1466,11 @@ static int mvs_exec_internal_tmf_task(struct domain_device *dev,
 		task->slow_task->timer.expires = jiffies + MVS_TASK_TIMEOUT*HZ;
 		add_timer(&task->slow_task->timer);
 
+<<<<<<< HEAD
 		res = mvs_task_exec(task, 1, GFP_KERNEL, NULL, 1, tmf);
+=======
+		res = mvs_task_exec(task, GFP_KERNEL, NULL, 1, tmf);
+>>>>>>> v4.9.227
 
 		if (res) {
 			del_timer(&task->slow_task->timer);
@@ -1709,7 +1769,11 @@ static int mvs_sata_done(struct mvs_info *mvi, struct sas_task *task,
 	return stat;
 }
 
+<<<<<<< HEAD
 void mvs_set_sense(u8 *buffer, int len, int d_sense,
+=======
+static void mvs_set_sense(u8 *buffer, int len, int d_sense,
+>>>>>>> v4.9.227
 		int key, int asc, int ascq)
 {
 	memset(buffer, 0, len);
@@ -1748,7 +1812,11 @@ void mvs_set_sense(u8 *buffer, int len, int d_sense,
 	return;
 }
 
+<<<<<<< HEAD
 void mvs_fill_ssp_resp_iu(struct ssp_response_iu *iu,
+=======
+static void mvs_fill_ssp_resp_iu(struct ssp_response_iu *iu,
+>>>>>>> v4.9.227
 				u8 key, u8 asc, u8 asc_q)
 {
 	iu->datapres = 2;
@@ -2206,3 +2274,19 @@ int mvs_int_rx(struct mvs_info *mvi, bool self_clear)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int mvs_gpio_write(struct sas_ha_struct *sha, u8 reg_type, u8 reg_index,
+			u8 reg_count, u8 *write_data)
+{
+	struct mvs_prv_info *mvs_prv = sha->lldd_ha;
+	struct mvs_info *mvi = mvs_prv->mvi[0];
+
+	if (MVS_CHIP_DISP->gpio_write) {
+		return MVS_CHIP_DISP->gpio_write(mvs_prv, reg_type,
+			reg_index, reg_count, write_data);
+	}
+
+	return -ENOSYS;
+}
+>>>>>>> v4.9.227

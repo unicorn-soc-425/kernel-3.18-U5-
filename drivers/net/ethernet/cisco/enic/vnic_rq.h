@@ -21,6 +21,10 @@
 #define _VNIC_RQ_H_
 
 #include <linux/pci.h>
+<<<<<<< HEAD
+=======
+#include <linux/netdevice.h>
+>>>>>>> v4.9.227
 
 #include "vnic_dev.h"
 #include "vnic_cq.h"
@@ -75,6 +79,15 @@ struct vnic_rq_buf {
 	uint64_t wr_id;
 };
 
+<<<<<<< HEAD
+=======
+enum enic_poll_state {
+	ENIC_POLL_STATE_IDLE,
+	ENIC_POLL_STATE_NAPI,
+	ENIC_POLL_STATE_POLL
+};
+
+>>>>>>> v4.9.227
 struct vnic_rq {
 	unsigned int index;
 	struct vnic_dev *vdev;
@@ -86,6 +99,7 @@ struct vnic_rq {
 	void *os_buf_head;
 	unsigned int pkts_outstanding;
 #ifdef CONFIG_NET_RX_BUSY_POLL
+<<<<<<< HEAD
 #define ENIC_POLL_STATE_IDLE		0
 #define ENIC_POLL_STATE_NAPI		(1 << 0) /* NAPI owns this poll */
 #define ENIC_POLL_STATE_POLL		(1 << 1) /* poll owns this poll */
@@ -99,6 +113,9 @@ struct vnic_rq {
 					 ENIC_POLL_STATE_POLL_YIELD)
 	unsigned int bpoll_state;
 	spinlock_t bpoll_lock;
+=======
+	atomic_t bpoll_state;
+>>>>>>> v4.9.227
 #endif /* CONFIG_NET_RX_BUSY_POLL */
 };
 
@@ -215,12 +232,17 @@ static inline int vnic_rq_fill(struct vnic_rq *rq,
 #ifdef CONFIG_NET_RX_BUSY_POLL
 static inline void enic_busy_poll_init_lock(struct vnic_rq *rq)
 {
+<<<<<<< HEAD
 	spin_lock_init(&rq->bpoll_lock);
 	rq->bpoll_state = ENIC_POLL_STATE_IDLE;
+=======
+	atomic_set(&rq->bpoll_state, ENIC_POLL_STATE_IDLE);
+>>>>>>> v4.9.227
 }
 
 static inline bool enic_poll_lock_napi(struct vnic_rq *rq)
 {
+<<<<<<< HEAD
 	bool rc = true;
 
 	spin_lock(&rq->bpoll_lock);
@@ -249,10 +271,25 @@ static inline bool enic_poll_unlock_napi(struct vnic_rq *rq)
 	spin_unlock(&rq->bpoll_lock);
 
 	return rc;
+=======
+	int rc = atomic_cmpxchg(&rq->bpoll_state, ENIC_POLL_STATE_IDLE,
+				ENIC_POLL_STATE_NAPI);
+
+	return (rc == ENIC_POLL_STATE_IDLE);
+}
+
+static inline void enic_poll_unlock_napi(struct vnic_rq *rq,
+					 struct napi_struct *napi)
+{
+	WARN_ON(atomic_read(&rq->bpoll_state) != ENIC_POLL_STATE_NAPI);
+	napi_gro_flush(napi, false);
+	atomic_set(&rq->bpoll_state, ENIC_POLL_STATE_IDLE);
+>>>>>>> v4.9.227
 }
 
 static inline bool enic_poll_lock_poll(struct vnic_rq *rq)
 {
+<<<<<<< HEAD
 	bool rc = true;
 
 	spin_lock_bh(&rq->bpoll_lock);
@@ -279,12 +316,29 @@ static inline bool enic_poll_unlock_poll(struct vnic_rq *rq)
 	spin_unlock_bh(&rq->bpoll_lock);
 
 	return rc;
+=======
+	int rc = atomic_cmpxchg(&rq->bpoll_state, ENIC_POLL_STATE_IDLE,
+				ENIC_POLL_STATE_POLL);
+
+	return (rc == ENIC_POLL_STATE_IDLE);
+}
+
+
+static inline void enic_poll_unlock_poll(struct vnic_rq *rq)
+{
+	WARN_ON(atomic_read(&rq->bpoll_state) != ENIC_POLL_STATE_POLL);
+	atomic_set(&rq->bpoll_state, ENIC_POLL_STATE_IDLE);
+>>>>>>> v4.9.227
 }
 
 static inline bool enic_poll_busy_polling(struct vnic_rq *rq)
 {
+<<<<<<< HEAD
 	WARN_ON(!(rq->bpoll_state & ENIC_POLL_LOCKED));
 	return rq->bpoll_state & ENIC_POLL_USER_PEND;
+=======
+	return atomic_read(&rq->bpoll_state) & ENIC_POLL_STATE_POLL;
+>>>>>>> v4.9.227
 }
 
 #else
@@ -298,7 +352,12 @@ static inline bool enic_poll_lock_napi(struct vnic_rq *rq)
 	return true;
 }
 
+<<<<<<< HEAD
 static inline bool enic_poll_unlock_napi(struct vnic_rq *rq)
+=======
+static inline bool enic_poll_unlock_napi(struct vnic_rq *rq,
+					 struct napi_struct *napi)
+>>>>>>> v4.9.227
 {
 	return false;
 }

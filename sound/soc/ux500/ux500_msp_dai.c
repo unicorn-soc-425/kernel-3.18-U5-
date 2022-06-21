@@ -187,7 +187,11 @@ static int setup_clocking(struct snd_soc_dai *dai,
 
 	default:
 		dev_err(dai->dev,
+<<<<<<< HEAD
 			"%s: Error: Unsopported inversion (fmt = 0x%x)!\n",
+=======
+			"%s: Error: Unsupported inversion (fmt = 0x%x)!\n",
+>>>>>>> v4.9.227
 			__func__, fmt);
 
 		return -EINVAL;
@@ -218,7 +222,11 @@ static int setup_clocking(struct snd_soc_dai *dai,
 		break;
 
 	default:
+<<<<<<< HEAD
 		dev_err(dai->dev, "%s: Error: Unsopported master (fmt = 0x%x)!\n",
+=======
+		dev_err(dai->dev, "%s: Error: Unsupported master (fmt = 0x%x)!\n",
+>>>>>>> v4.9.227
 			__func__, fmt);
 
 		return -EINVAL;
@@ -374,7 +382,11 @@ static int setup_msp_config(struct snd_pcm_substream *substream,
 		break;
 
 	default:
+<<<<<<< HEAD
 		dev_err(dai->dev, "%s: Error: Unsopported format (%d)!\n",
+=======
+		dev_err(dai->dev, "%s: Error: Unsupported format (%d)!\n",
+>>>>>>> v4.9.227
 			__func__, fmt);
 		return -EINVAL;
 	}
@@ -522,9 +534,15 @@ static int ux500_msp_dai_hw_params(struct snd_pcm_substream *substream,
 		slots_active = hweight32(mask);
 		dev_dbg(dai->dev, "TDM-slots active: %d", slots_active);
 
+<<<<<<< HEAD
 		snd_pcm_hw_constraint_minmax(runtime,
 				SNDRV_PCM_HW_PARAM_CHANNELS,
 				slots_active, slots_active);
+=======
+		snd_pcm_hw_constraint_single(runtime,
+				SNDRV_PCM_HW_PARAM_CHANNELS,
+				slots_active);
+>>>>>>> v4.9.227
 		break;
 
 	default:
@@ -773,6 +791,7 @@ static int ux500_msp_drv_probe(struct platform_device *pdev)
 	}
 	prcmu_qos_add_requirement(PRCMU_QOS_APE_OPP, (char *)pdev->name, 50);
 
+<<<<<<< HEAD
 	drvdata->pclk = clk_get(&pdev->dev, "apb_pclk");
 	if (IS_ERR(drvdata->pclk)) {
 		ret = (int)PTR_ERR(drvdata->pclk);
@@ -787,6 +806,24 @@ static int ux500_msp_drv_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "%s: ERROR: clk_get failed (%d)!\n",
 			__func__, ret);
 		goto err_clk;
+=======
+	drvdata->pclk = devm_clk_get(&pdev->dev, "apb_pclk");
+	if (IS_ERR(drvdata->pclk)) {
+		ret = (int)PTR_ERR(drvdata->pclk);
+		dev_err(&pdev->dev,
+			"%s: ERROR: devm_clk_get of pclk failed (%d)!\n",
+			__func__, ret);
+		return ret;
+	}
+
+	drvdata->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(drvdata->clk)) {
+		ret = (int)PTR_ERR(drvdata->clk);
+		dev_err(&pdev->dev,
+			"%s: ERROR: devm_clk_get failed (%d)!\n",
+			__func__, ret);
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	ret = ux500_msp_i2s_init_msp(pdev, &drvdata->msp,
@@ -795,7 +832,11 @@ static int ux500_msp_drv_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev,
 			"%s: ERROR: Failed to init MSP-struct (%d)!",
 			__func__, ret);
+<<<<<<< HEAD
 		goto err_init_msp;
+=======
+		return ret;
+>>>>>>> v4.9.227
 	}
 	dev_set_drvdata(&pdev->dev, drvdata);
 
@@ -804,7 +845,11 @@ static int ux500_msp_drv_probe(struct platform_device *pdev)
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Error: %s: Failed to register MSP%d!\n",
 			__func__, drvdata->msp->id);
+<<<<<<< HEAD
 		goto err_init_msp;
+=======
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	ret = ux500_pcm_register_platform(pdev);
@@ -819,6 +864,7 @@ static int ux500_msp_drv_probe(struct platform_device *pdev)
 
 err_reg_plat:
 	snd_soc_unregister_component(&pdev->dev);
+<<<<<<< HEAD
 err_init_msp:
 	clk_put(drvdata->clk);
 err_clk:
@@ -826,6 +872,8 @@ err_clk:
 err_pclk:
 	devm_regulator_put(drvdata->reg_vape);
 
+=======
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -837,12 +885,17 @@ static int ux500_msp_drv_remove(struct platform_device *pdev)
 
 	snd_soc_unregister_component(&pdev->dev);
 
+<<<<<<< HEAD
 	devm_regulator_put(drvdata->reg_vape);
 	prcmu_qos_remove_requirement(PRCMU_QOS_APE_OPP, "ux500_msp_i2s");
 
 	clk_put(drvdata->clk);
 	clk_put(drvdata->pclk);
 
+=======
+	prcmu_qos_remove_requirement(PRCMU_QOS_APE_OPP, "ux500_msp_i2s");
+
+>>>>>>> v4.9.227
 	ux500_msp_i2s_cleanup_msp(pdev, drvdata->msp);
 
 	return 0;
@@ -852,11 +905,18 @@ static const struct of_device_id ux500_msp_i2s_match[] = {
 	{ .compatible = "stericsson,ux500-msp-i2s", },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, ux500_msp_i2s_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver msp_i2s_driver = {
 	.driver = {
 		.name = "ux500-msp-i2s",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ux500_msp_i2s_match,
 	},
 	.probe = ux500_msp_drv_probe,

@@ -13,6 +13,11 @@
  *	2005-03-30: - initial revision
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -30,8 +35,11 @@
 
 static __u8 __iomem *cpuctl;
 
+<<<<<<< HEAD
 #define PFX "sc520_freq: "
 
+=======
+>>>>>>> v4.9.227
 static struct cpufreq_frequency_table sc520_freq_table[] = {
 	{0, 0x01,	100000},
 	{0, 0x02,	133000},
@@ -44,8 +52,13 @@ static unsigned int sc520_freq_get_cpu_frequency(unsigned int cpu)
 
 	switch (clockspeed_reg & 0x03) {
 	default:
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "error: cpuctl register has unexpected "
 				"value %02x\n", clockspeed_reg);
+=======
+		pr_err("error: cpuctl register has unexpected value %02x\n",
+		       clockspeed_reg);
+>>>>>>> v4.9.227
 	case 0x01:
 		return 100000;
 	case 0x02:
@@ -112,7 +125,11 @@ static int __init sc520_freq_init(void)
 
 	cpuctl = ioremap((unsigned long)(MMCR_BASE + OFFS_CPUCTL), 1);
 	if (!cpuctl) {
+<<<<<<< HEAD
 		printk(KERN_ERR "sc520_freq: error: failed to remap memory\n");
+=======
+		pr_err("sc520_freq: error: failed to remap memory\n");
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	}
 

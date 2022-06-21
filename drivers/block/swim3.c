@@ -440,9 +440,15 @@ static inline void seek_track(struct floppy_state *fs, int n)
 static inline void init_dma(struct dbdma_cmd *cp, int cmd,
 			    void *buf, int count)
 {
+<<<<<<< HEAD
 	st_le16(&cp->req_count, count);
 	st_le16(&cp->command, cmd);
 	st_le32(&cp->phy_addr, virt_to_bus(buf));
+=======
+	cp->req_count = cpu_to_le16(count);
+	cp->command = cpu_to_le16(cmd);
+	cp->phy_addr = cpu_to_le32(virt_to_bus(buf));
+>>>>>>> v4.9.227
 	cp->xfer_status = 0;
 }
 
@@ -771,8 +777,13 @@ static irqreturn_t swim3_interrupt(int irq, void *dev_id)
 		}
 		/* turn off DMA */
 		out_le32(&dr->control, (RUN | PAUSE) << 16);
+<<<<<<< HEAD
 		stat = ld_le16(&cp->xfer_status);
 		resid = ld_le16(&cp->res_count);
+=======
+		stat = le16_to_cpu(cp->xfer_status);
+		resid = le16_to_cpu(cp->res_count);
+>>>>>>> v4.9.227
 		if (intr & ERROR_INTR) {
 			n = fs->scount - 1 - resid / 512;
 			if (n > 0) {
@@ -1027,7 +1038,15 @@ static void floppy_release(struct gendisk *disk, fmode_t mode)
 	struct swim3 __iomem *sw = fs->swim3;
 
 	mutex_lock(&swim3_mutex);
+<<<<<<< HEAD
 	if (fs->ref_count > 0 && --fs->ref_count == 0) {
+=======
+	if (fs->ref_count > 0)
+		--fs->ref_count;
+	else if (fs->ref_count == -1)
+		fs->ref_count = 0;
+	if (fs->ref_count == 0) {
+>>>>>>> v4.9.227
 		swim3_action(fs, MOTOR_OFF);
 		out_8(&sw->control_bic, 0xff);
 		swim3_select(fs, RELAX);
@@ -1170,7 +1189,11 @@ static int swim3_add_device(struct macio_dev *mdev, int index)
 
 	fs->dma_cmd = (struct dbdma_cmd *) DBDMA_ALIGN(fs->dbdma_cmd_space);
 	memset(fs->dma_cmd, 0, 2 * sizeof(struct dbdma_cmd));
+<<<<<<< HEAD
 	st_le16(&fs->dma_cmd[1].command, DBDMA_STOP);
+=======
+	fs->dma_cmd[1].command = cpu_to_le16(DBDMA_STOP);
+>>>>>>> v4.9.227
 
 	if (mdev->media_bay == NULL || check_media_bay(mdev->media_bay) == MB_FD)
 		swim3_mb_event(mdev, MB_FD);

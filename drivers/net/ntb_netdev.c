@@ -5,6 +5,10 @@
  *   GPL LICENSE SUMMARY
  *
  *   Copyright(c) 2012 Intel Corporation. All rights reserved.
+<<<<<<< HEAD
+=======
+ *   Copyright (C) 2015 EMC Corporation. All Rights Reserved.
+>>>>>>> v4.9.227
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of version 2 of the GNU General Public License as
@@ -13,6 +17,10 @@
  *   BSD LICENSE
  *
  *   Copyright(c) 2012 Intel Corporation. All rights reserved.
+<<<<<<< HEAD
+=======
+ *   Copyright (C) 2015 EMC Corporation. All Rights Reserved.
+>>>>>>> v4.9.227
  *
  *   Redistribution and use in source and binary forms, with or without
  *   modification, are permitted provided that the following conditions
@@ -40,7 +48,11 @@
  *   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
+<<<<<<< HEAD
  * Intel PCIe NTB Network Linux driver
+=======
+ * PCIe NTB Network Linux driver
+>>>>>>> v4.9.227
  *
  * Contact Information:
  * Jon Mason <jon.mason@intel.com>
@@ -50,6 +62,10 @@
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/ntb.h>
+<<<<<<< HEAD
+=======
+#include <linux/ntb_transport.h>
+>>>>>>> v4.9.227
 
 #define NTB_NETDEV_VER	"0.7"
 
@@ -58,11 +74,27 @@ MODULE_VERSION(NTB_NETDEV_VER);
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Intel Corporation");
 
+<<<<<<< HEAD
+=======
+/* Time in usecs for tx resource reaper */
+static unsigned int tx_time = 1;
+
+/* Number of descriptors to free before resuming tx */
+static unsigned int tx_start = 10;
+
+/* Number of descriptors still available before stop upper layer tx */
+static unsigned int tx_stop = 5;
+
+>>>>>>> v4.9.227
 struct ntb_netdev {
 	struct list_head list;
 	struct pci_dev *pdev;
 	struct net_device *ndev;
 	struct ntb_transport_qp *qp;
+<<<<<<< HEAD
+=======
+	struct timer_list tx_timer;
+>>>>>>> v4.9.227
 };
 
 #define	NTB_TX_TIMEOUT_MS	1000
@@ -70,11 +102,16 @@ struct ntb_netdev {
 
 static LIST_HEAD(dev_list);
 
+<<<<<<< HEAD
 static void ntb_netdev_event_handler(void *data, int status)
+=======
+static void ntb_netdev_event_handler(void *data, int link_is_up)
+>>>>>>> v4.9.227
 {
 	struct net_device *ndev = data;
 	struct ntb_netdev *dev = netdev_priv(ndev);
 
+<<<<<<< HEAD
 	netdev_dbg(ndev, "Event %x, Link %x\n", status,
 		   ntb_transport_link_query(dev->qp));
 
@@ -90,6 +127,16 @@ static void ntb_netdev_event_handler(void *data, int status)
 		break;
 	default:
 		netdev_warn(ndev, "Unsupported event type %d\n", status);
+=======
+	netdev_dbg(ndev, "Event %x, Link %x\n", link_is_up,
+		   ntb_transport_link_query(dev->qp));
+
+	if (link_is_up) {
+		if (ntb_transport_link_query(dev->qp))
+			netif_carrier_on(ndev);
+	} else {
+		netif_carrier_off(ndev);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -106,6 +153,15 @@ static void ntb_netdev_rx_handler(struct ntb_transport_qp *qp, void *qp_data,
 
 	netdev_dbg(ndev, "%s: %d byte payload received\n", __func__, len);
 
+<<<<<<< HEAD
+=======
+	if (len < 0) {
+		ndev->stats.rx_errors++;
+		ndev->stats.rx_length_errors++;
+		goto enqueue_again;
+	}
+
+>>>>>>> v4.9.227
 	skb_put(skb, len);
 	skb->protocol = eth_type_trans(skb, ndev);
 	skb->ip_summed = CHECKSUM_NONE;
@@ -125,6 +181,10 @@ static void ntb_netdev_rx_handler(struct ntb_transport_qp *qp, void *qp_data,
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+enqueue_again:
+>>>>>>> v4.9.227
 	rc = ntb_transport_rx_enqueue(qp, skb, skb->data, ndev->mtu + ETH_HLEN);
 	if (rc) {
 		dev_kfree_skb(skb);
@@ -133,11 +193,48 @@ static void ntb_netdev_rx_handler(struct ntb_transport_qp *qp, void *qp_data,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int __ntb_netdev_maybe_stop_tx(struct net_device *netdev,
+				      struct ntb_transport_qp *qp, int size)
+{
+	struct ntb_netdev *dev = netdev_priv(netdev);
+
+	netif_stop_queue(netdev);
+	/* Make sure to see the latest value of ntb_transport_tx_free_entry()
+	 * since the queue was last started.
+	 */
+	smp_mb();
+
+	if (likely(ntb_transport_tx_free_entry(qp) < size)) {
+		mod_timer(&dev->tx_timer, jiffies + usecs_to_jiffies(tx_time));
+		return -EBUSY;
+	}
+
+	netif_start_queue(netdev);
+	return 0;
+}
+
+static int ntb_netdev_maybe_stop_tx(struct net_device *ndev,
+				    struct ntb_transport_qp *qp, int size)
+{
+	if (netif_queue_stopped(ndev) ||
+	    (ntb_transport_tx_free_entry(qp) >= size))
+		return 0;
+
+	return __ntb_netdev_maybe_stop_tx(ndev, qp, size);
+}
+
+>>>>>>> v4.9.227
 static void ntb_netdev_tx_handler(struct ntb_transport_qp *qp, void *qp_data,
 				  void *data, int len)
 {
 	struct net_device *ndev = qp_data;
 	struct sk_buff *skb;
+<<<<<<< HEAD
+=======
+	struct ntb_netdev *dev = netdev_priv(ndev);
+>>>>>>> v4.9.227
 
 	skb = data;
 	if (!skb || !ndev)
@@ -152,6 +249,18 @@ static void ntb_netdev_tx_handler(struct ntb_transport_qp *qp, void *qp_data,
 	}
 
 	dev_kfree_skb(skb);
+<<<<<<< HEAD
+=======
+
+	if (ntb_transport_tx_free_entry(dev->qp) >= tx_start) {
+		/* Make sure anybody stopping the queue after this sees the new
+		 * value of ntb_transport_tx_free_entry()
+		 */
+		smp_mb();
+		if (netif_queue_stopped(ndev))
+			netif_wake_queue(ndev);
+	}
+>>>>>>> v4.9.227
 }
 
 static netdev_tx_t ntb_netdev_start_xmit(struct sk_buff *skb,
@@ -160,12 +269,22 @@ static netdev_tx_t ntb_netdev_start_xmit(struct sk_buff *skb,
 	struct ntb_netdev *dev = netdev_priv(ndev);
 	int rc;
 
+<<<<<<< HEAD
 	netdev_dbg(ndev, "%s: skb len %d\n", __func__, skb->len);
+=======
+	ntb_netdev_maybe_stop_tx(ndev, dev->qp, tx_stop);
+>>>>>>> v4.9.227
 
 	rc = ntb_transport_tx_enqueue(dev->qp, skb, skb->data, skb->len);
 	if (rc)
 		goto err;
 
+<<<<<<< HEAD
+=======
+	/* check for next submit */
+	ntb_netdev_maybe_stop_tx(ndev, dev->qp, tx_stop);
+
+>>>>>>> v4.9.227
 	return NETDEV_TX_OK;
 
 err:
@@ -174,6 +293,26 @@ err:
 	return NETDEV_TX_BUSY;
 }
 
+<<<<<<< HEAD
+=======
+static void ntb_netdev_tx_timer(unsigned long data)
+{
+	struct net_device *ndev = (struct net_device *)data;
+	struct ntb_netdev *dev = netdev_priv(ndev);
+
+	if (ntb_transport_tx_free_entry(dev->qp) < tx_stop) {
+		mod_timer(&dev->tx_timer, jiffies + usecs_to_jiffies(tx_time));
+	} else {
+		/* Make sure anybody stopping the queue after this sees the new
+		 * value of ntb_transport_tx_free_entry()
+		 */
+		smp_mb();
+		if (netif_queue_stopped(ndev))
+			netif_wake_queue(ndev);
+	}
+}
+
+>>>>>>> v4.9.227
 static int ntb_netdev_open(struct net_device *ndev)
 {
 	struct ntb_netdev *dev = netdev_priv(ndev);
@@ -190,14 +329,26 @@ static int ntb_netdev_open(struct net_device *ndev)
 
 		rc = ntb_transport_rx_enqueue(dev->qp, skb, skb->data,
 					      ndev->mtu + ETH_HLEN);
+<<<<<<< HEAD
 		if (rc == -EINVAL) {
+=======
+		if (rc) {
+>>>>>>> v4.9.227
 			dev_kfree_skb(skb);
 			goto err;
 		}
 	}
 
+<<<<<<< HEAD
 	netif_carrier_off(ndev);
 	ntb_transport_link_up(dev->qp);
+=======
+	setup_timer(&dev->tx_timer, ntb_netdev_tx_timer, (unsigned long)ndev);
+
+	netif_carrier_off(ndev);
+	ntb_transport_link_up(dev->qp);
+	netif_start_queue(ndev);
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -218,6 +369,11 @@ static int ntb_netdev_close(struct net_device *ndev)
 	while ((skb = ntb_transport_rx_remove(dev->qp, &len)))
 		dev_kfree_skb(skb);
 
+<<<<<<< HEAD
+=======
+	del_timer_sync(&dev->tx_timer);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -322,6 +478,7 @@ static const struct ntb_queue_handlers ntb_netdev_handlers = {
 	.event_handler = ntb_netdev_event_handler,
 };
 
+<<<<<<< HEAD
 static int ntb_netdev_probe(struct pci_dev *pdev)
 {
 	struct net_device *ndev;
@@ -329,13 +486,32 @@ static int ntb_netdev_probe(struct pci_dev *pdev)
 	int rc;
 
 	ndev = alloc_etherdev(sizeof(struct ntb_netdev));
+=======
+static int ntb_netdev_probe(struct device *client_dev)
+{
+	struct ntb_dev *ntb;
+	struct net_device *ndev;
+	struct pci_dev *pdev;
+	struct ntb_netdev *dev;
+	int rc;
+
+	ntb = dev_ntb(client_dev->parent);
+	pdev = ntb->pdev;
+	if (!pdev)
+		return -ENODEV;
+
+	ndev = alloc_etherdev(sizeof(*dev));
+>>>>>>> v4.9.227
 	if (!ndev)
 		return -ENOMEM;
 
 	dev = netdev_priv(ndev);
 	dev->ndev = ndev;
 	dev->pdev = pdev;
+<<<<<<< HEAD
 	BUG_ON(!dev->pdev);
+=======
+>>>>>>> v4.9.227
 	ndev->features = NETIF_F_HIGHDMA;
 
 	ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
@@ -349,7 +525,12 @@ static int ntb_netdev_probe(struct pci_dev *pdev)
 	ndev->netdev_ops = &ntb_netdev_ops;
 	ndev->ethtool_ops = &ntb_ethtool_ops;
 
+<<<<<<< HEAD
 	dev->qp = ntb_transport_create_queue(ndev, pdev, &ntb_netdev_handlers);
+=======
+	dev->qp = ntb_transport_create_queue(ndev, client_dev,
+					     &ntb_netdev_handlers);
+>>>>>>> v4.9.227
 	if (!dev->qp) {
 		rc = -EIO;
 		goto err;
@@ -372,12 +553,26 @@ err:
 	return rc;
 }
 
+<<<<<<< HEAD
 static void ntb_netdev_remove(struct pci_dev *pdev)
 {
 	struct net_device *ndev;
 	struct ntb_netdev *dev;
 	bool found = false;
 
+=======
+static void ntb_netdev_remove(struct device *client_dev)
+{
+	struct ntb_dev *ntb;
+	struct net_device *ndev;
+	struct pci_dev *pdev;
+	struct ntb_netdev *dev;
+	bool found = false;
+
+	ntb = dev_ntb(client_dev->parent);
+	pdev = ntb->pdev;
+
+>>>>>>> v4.9.227
 	list_for_each_entry(dev, &dev_list, list) {
 		if (dev->pdev == pdev) {
 			found = true;
@@ -396,7 +591,11 @@ static void ntb_netdev_remove(struct pci_dev *pdev)
 	free_netdev(ndev);
 }
 
+<<<<<<< HEAD
 static struct ntb_client ntb_netdev_client = {
+=======
+static struct ntb_transport_client ntb_netdev_client = {
+>>>>>>> v4.9.227
 	.driver.name = KBUILD_MODNAME,
 	.driver.owner = THIS_MODULE,
 	.probe = ntb_netdev_probe,
@@ -407,16 +606,28 @@ static int __init ntb_netdev_init_module(void)
 {
 	int rc;
 
+<<<<<<< HEAD
 	rc = ntb_register_client_dev(KBUILD_MODNAME);
 	if (rc)
 		return rc;
 	return ntb_register_client(&ntb_netdev_client);
+=======
+	rc = ntb_transport_register_client_dev(KBUILD_MODNAME);
+	if (rc)
+		return rc;
+	return ntb_transport_register_client(&ntb_netdev_client);
+>>>>>>> v4.9.227
 }
 module_init(ntb_netdev_init_module);
 
 static void __exit ntb_netdev_exit_module(void)
 {
+<<<<<<< HEAD
 	ntb_unregister_client(&ntb_netdev_client);
 	ntb_unregister_client_dev(KBUILD_MODNAME);
+=======
+	ntb_transport_unregister_client(&ntb_netdev_client);
+	ntb_transport_unregister_client_dev(KBUILD_MODNAME);
+>>>>>>> v4.9.227
 }
 module_exit(ntb_netdev_exit_module);

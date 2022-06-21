@@ -24,6 +24,10 @@
 #include <asm/thread_info.h>	/* TI_UWINMASK */
 #include <asm/errno.h>
 #include <asm/pgtsrmmu.h>	/* SRMMU_PGDIR_SHIFT */
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	.data
 /* The following are used with the prom_vector node-ops to figure out
@@ -60,6 +64,10 @@ sun4e_notsup:
  */
 	.globl empty_zero_page
 empty_zero_page:	.skip PAGE_SIZE
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(empty_zero_page)
+>>>>>>> v4.9.227
 
 	.global root_flags
 	.global ram_flags
@@ -813,3 +821,7 @@ lvl14_save:
 __ret_efault:
         ret
          restore %g0, -EFAULT, %o0
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__ret_efault)
+>>>>>>> v4.9.227

@@ -25,7 +25,11 @@
 #include <linux/rtc.h>
 #include <linux/types.h>
 #include <linux/bcd.h>
+<<<<<<< HEAD
 #include <linux/rtc-v3020.h>
+=======
+#include <linux/platform_data/rtc-v3020.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/gpio.h>
 #include <linux/slab.h>
@@ -49,20 +53,29 @@ struct v3020_chip_ops {
 #define V3020_RD	2
 #define V3020_IO	3
 
+<<<<<<< HEAD
 struct v3020_gpio {
 	const char *name;
 	unsigned int gpio;
 };
 
+=======
+>>>>>>> v4.9.227
 struct v3020 {
 	/* MMIO access */
 	void __iomem *ioaddress;
 	int leftshift;
 
 	/* GPIO access */
+<<<<<<< HEAD
 	struct v3020_gpio *gpio;
 
 	struct v3020_chip_ops *ops;
+=======
+	struct gpio *gpio;
+
+	const struct v3020_chip_ops *ops;
+>>>>>>> v4.9.227
 
 	struct rtc_device *rtc;
 };
@@ -100,30 +113,47 @@ static unsigned char v3020_mmio_read_bit(struct v3020 *chip)
 	return !!(readl(chip->ioaddress) & (1 << chip->leftshift));
 }
 
+<<<<<<< HEAD
 static struct v3020_chip_ops v3020_mmio_ops = {
+=======
+static const struct v3020_chip_ops v3020_mmio_ops = {
+>>>>>>> v4.9.227
 	.map_io		= v3020_mmio_map,
 	.unmap_io	= v3020_mmio_unmap,
 	.read_bit	= v3020_mmio_read_bit,
 	.write_bit	= v3020_mmio_write_bit,
 };
 
+<<<<<<< HEAD
 static struct v3020_gpio v3020_gpio[] = {
 	{ "RTC CS", 0 },
 	{ "RTC WR", 0 },
 	{ "RTC RD", 0 },
 	{ "RTC IO", 0 },
+=======
+static struct gpio v3020_gpio[] = {
+	{ 0, GPIOF_OUT_INIT_HIGH, "RTC CS"},
+	{ 0, GPIOF_OUT_INIT_HIGH, "RTC WR"},
+	{ 0, GPIOF_OUT_INIT_HIGH, "RTC RD"},
+	{ 0, GPIOF_OUT_INIT_HIGH, "RTC IO"},
+>>>>>>> v4.9.227
 };
 
 static int v3020_gpio_map(struct v3020 *chip, struct platform_device *pdev,
 			  struct v3020_platform_data *pdata)
 {
+<<<<<<< HEAD
 	int i, err;
+=======
+	int err;
+>>>>>>> v4.9.227
 
 	v3020_gpio[V3020_CS].gpio = pdata->gpio_cs;
 	v3020_gpio[V3020_WR].gpio = pdata->gpio_wr;
 	v3020_gpio[V3020_RD].gpio = pdata->gpio_rd;
 	v3020_gpio[V3020_IO].gpio = pdata->gpio_io;
 
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(v3020_gpio); i++) {
 		err = gpio_request(v3020_gpio[i].gpio, v3020_gpio[i].name);
 		if (err)
@@ -139,16 +169,26 @@ static int v3020_gpio_map(struct v3020 *chip, struct platform_device *pdev,
 err_request:
 	while (--i >= 0)
 		gpio_free(v3020_gpio[i].gpio);
+=======
+	err = gpio_request_array(v3020_gpio, ARRAY_SIZE(v3020_gpio));
+
+	if (!err)
+		chip->gpio = v3020_gpio;
+>>>>>>> v4.9.227
 
 	return err;
 }
 
 static void v3020_gpio_unmap(struct v3020 *chip)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(v3020_gpio); i++)
 		gpio_free(v3020_gpio[i].gpio);
+=======
+	gpio_free_array(v3020_gpio, ARRAY_SIZE(v3020_gpio));
+>>>>>>> v4.9.227
 }
 
 static void v3020_gpio_write_bit(struct v3020 *chip, unsigned char bit)
@@ -177,7 +217,11 @@ static unsigned char v3020_gpio_read_bit(struct v3020 *chip)
 	return bit;
 }
 
+<<<<<<< HEAD
 static struct v3020_chip_ops v3020_gpio_ops = {
+=======
+static const struct v3020_chip_ops v3020_gpio_ops = {
+>>>>>>> v4.9.227
 	.map_io		= v3020_gpio_map,
 	.unmap_io	= v3020_gpio_unmap,
 	.read_bit	= v3020_gpio_read_bit,
@@ -382,7 +426,10 @@ static struct platform_driver rtc_device_driver = {
 	.remove = rtc_remove,
 	.driver = {
 		.name	= "v3020",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

@@ -306,6 +306,14 @@ enum {
 	MV5_PHY_CTL		= 0x0C,
 	SATA_IFCFG		= 0x050,
 	LP_PHY_CTL		= 0x058,
+<<<<<<< HEAD
+=======
+	LP_PHY_CTL_PIN_PU_PLL   = (1 << 0),
+	LP_PHY_CTL_PIN_PU_RX    = (1 << 1),
+	LP_PHY_CTL_PIN_PU_TX    = (1 << 2),
+	LP_PHY_CTL_GEN_TX_3G    = (1 << 5),
+	LP_PHY_CTL_GEN_RX_3G    = (1 << 9),
+>>>>>>> v4.9.227
 
 	MV_M2_PREAMP_MASK	= 0x7e0,
 
@@ -981,7 +989,11 @@ static inline void mv_write_cached_reg(void __iomem *addr, u32 *old, u32 new)
 		 * Looks like a lot of fuss, but it avoids an unnecessary
 		 * +1 usec read-after-write delay for unaffected registers.
 		 */
+<<<<<<< HEAD
 		laddr = (long)addr & 0xffff;
+=======
+		laddr = (unsigned long)addr & 0xffff;
+>>>>>>> v4.9.227
 		if (laddr >= 0x300 && laddr <= 0x33c) {
 			laddr &= 0x000f;
 			if (laddr == 0x4 || laddr == 0xc) {
@@ -1391,10 +1403,24 @@ static int mv_scr_write(struct ata_link *link, unsigned int sc_reg_in, u32 val)
 				/*
 				 * Set PHY speed according to SControl speed.
 				 */
+<<<<<<< HEAD
 				if ((val & 0xf0) == 0x10)
 					writelfl(0x7, lp_phy_addr);
 				else
 					writelfl(0x227, lp_phy_addr);
+=======
+				u32 lp_phy_val =
+					LP_PHY_CTL_PIN_PU_PLL |
+					LP_PHY_CTL_PIN_PU_RX  |
+					LP_PHY_CTL_PIN_PU_TX;
+
+				if ((val & 0xf0) != 0x10)
+					lp_phy_val |=
+						LP_PHY_CTL_GEN_TX_3G |
+						LP_PHY_CTL_GEN_RX_3G;
+
+				writelfl(lp_phy_val, lp_phy_addr);
+>>>>>>> v4.9.227
 			}
 		}
 		writelfl(val, addr);
@@ -1715,6 +1741,7 @@ static int mv_port_start(struct ata_port *ap)
 		return -ENOMEM;
 	ap->private_data = pp;
 
+<<<<<<< HEAD
 	pp->crqb = dma_pool_alloc(hpriv->crqb_pool, GFP_KERNEL, &pp->crqb_dma);
 	if (!pp->crqb)
 		return -ENOMEM;
@@ -1724,6 +1751,15 @@ static int mv_port_start(struct ata_port *ap)
 	if (!pp->crpb)
 		goto out_port_free_dma_mem;
 	memset(pp->crpb, 0, MV_CRPB_Q_SZ);
+=======
+	pp->crqb = dma_pool_zalloc(hpriv->crqb_pool, GFP_KERNEL, &pp->crqb_dma);
+	if (!pp->crqb)
+		return -ENOMEM;
+
+	pp->crpb = dma_pool_zalloc(hpriv->crpb_pool, GFP_KERNEL, &pp->crpb_dma);
+	if (!pp->crpb)
+		goto out_port_free_dma_mem;
+>>>>>>> v4.9.227
 
 	/* 6041/6081 Rev. "C0" (and newer) are okay with async notify */
 	if (hpriv->hp_flags & MV_HP_ERRATA_60X1C0)
@@ -4080,7 +4116,24 @@ static int mv_platform_probe(struct platform_device *pdev)
 
 	/* allocate host */
 	if (pdev->dev.of_node) {
+<<<<<<< HEAD
 		of_property_read_u32(pdev->dev.of_node, "nr-ports", &n_ports);
+=======
+		rc = of_property_read_u32(pdev->dev.of_node, "nr-ports",
+					   &n_ports);
+		if (rc) {
+			dev_err(&pdev->dev,
+				"error parsing nr-ports property: %d\n", rc);
+			return rc;
+		}
+
+		if (n_ports <= 0) {
+			dev_err(&pdev->dev, "nr-ports must be positive: %d\n",
+				n_ports);
+			return -EINVAL;
+		}
+
+>>>>>>> v4.9.227
 		irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
 	} else {
 		mv_platform_data = dev_get_platdata(&pdev->dev);
@@ -4109,6 +4162,12 @@ static int mv_platform_probe(struct platform_device *pdev)
 	host->iomap = NULL;
 	hpriv->base = devm_ioremap(&pdev->dev, res->start,
 				   resource_size(res));
+<<<<<<< HEAD
+=======
+	if (!hpriv->base)
+		return -ENOMEM;
+
+>>>>>>> v4.9.227
 	hpriv->base -= SATAHC0_REG_BASE;
 
 	hpriv->clk = clk_get(&pdev->dev, NULL);
@@ -4185,8 +4244,12 @@ err:
 			clk_disable_unprepare(hpriv->port_clks[port]);
 			clk_put(hpriv->port_clks[port]);
 		}
+<<<<<<< HEAD
 		if (hpriv->port_phys[port])
 			phy_power_off(hpriv->port_phys[port]);
+=======
+		phy_power_off(hpriv->port_phys[port]);
+>>>>>>> v4.9.227
 	}
 
 	return rc;
@@ -4216,8 +4279,12 @@ static int mv_platform_remove(struct platform_device *pdev)
 			clk_disable_unprepare(hpriv->port_clks[port]);
 			clk_put(hpriv->port_clks[port]);
 		}
+<<<<<<< HEAD
 		if (hpriv->port_phys[port])
 			phy_power_off(hpriv->port_phys[port]);
+=======
+		phy_power_off(hpriv->port_phys[port]);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -4280,7 +4347,10 @@ static struct platform_driver mv_platform_driver = {
 	.resume		= mv_platform_resume,
 	.driver		= {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(mv_sata_dt_ids),
 	},
 };
@@ -4311,10 +4381,17 @@ static int pci_go_64(struct pci_dev *pdev)
 {
 	int rc;
 
+<<<<<<< HEAD
 	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
 		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
 		if (rc) {
 			rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
+		rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+		if (rc) {
+			rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> v4.9.227
 			if (rc) {
 				dev_err(&pdev->dev,
 					"64-bit DMA enable failed\n");
@@ -4322,12 +4399,20 @@ static int pci_go_64(struct pci_dev *pdev)
 			}
 		}
 	} else {
+<<<<<<< HEAD
 		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+		rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> v4.9.227
 		if (rc) {
 			dev_err(&pdev->dev, "32-bit DMA enable failed\n");
 			return rc;
 		}
+<<<<<<< HEAD
 		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+		rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> v4.9.227
 		if (rc) {
 			dev_err(&pdev->dev,
 				"32-bit consistent DMA enable failed\n");

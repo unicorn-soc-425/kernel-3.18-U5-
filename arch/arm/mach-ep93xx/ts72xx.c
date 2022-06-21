@@ -16,7 +16,11 @@
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/m48t86.h>
+=======
+#include <linux/platform_data/rtc-m48t86.h>
+>>>>>>> v4.9.227
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
 
@@ -74,7 +78,11 @@ static void __init ts72xx_map_io(void)
 static void ts72xx_nand_hwcontrol(struct mtd_info *mtd,
 				  int cmd, unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 
 	if (ctrl & NAND_CTRL_CHANGE) {
 		void __iomem *addr = chip->IO_ADDR_R;
@@ -96,7 +104,11 @@ static void ts72xx_nand_hwcontrol(struct mtd_info *mtd,
 
 static int ts72xx_nand_device_ready(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	void __iomem *addr = chip->IO_ADDR_R;
 
 	addr += (1 << TS72XX_NAND_BUSY_ADDR_LINE);

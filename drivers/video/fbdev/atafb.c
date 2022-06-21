@@ -313,9 +313,12 @@ extern unsigned char fontdata_8x16[];
  *	* Draws cursor *
  *	int (*fb_cursor) (struct fb_info *info, struct fb_cursor *cursor);
  *
+<<<<<<< HEAD
  *	* Rotates the display *
  *	void (*fb_rotate)(struct fb_info *info, int angle);
  *
+=======
+>>>>>>> v4.9.227
  *	* wait for blit idle, optional *
  *	int (*fb_sync)(struct fb_info *info);
  *
@@ -3118,8 +3121,12 @@ int __init atafb_init(void)
 			printk("atafb_init: initializing Falcon hw\n");
 			fbhw = &falcon_switch;
 			atafb_ops.fb_setcolreg = &falcon_setcolreg;
+<<<<<<< HEAD
 			error = request_irq(IRQ_AUTO_4, falcon_vbl_switcher,
 					    IRQ_TYPE_PRIO,
+=======
+			error = request_irq(IRQ_AUTO_4, falcon_vbl_switcher, 0,
+>>>>>>> v4.9.227
 					    "framebuffer:modeswitch",
 					    falcon_vbl_switcher);
 			if (error)
@@ -3186,8 +3193,12 @@ int __init atafb_init(void)
 		/* Map the video memory (physical address given) to somewhere
 		 * in the kernel address space.
 		 */
+<<<<<<< HEAD
 		external_screen_base = ioremap_writethrough(external_addr,
 						     external_len);
+=======
+		external_screen_base = ioremap_wt(external_addr, external_len);
+>>>>>>> v4.9.227
 		if (external_vgaiobase)
 			external_vgaiobase =
 			  (unsigned long)ioremap(external_vgaiobase, 0x10000);

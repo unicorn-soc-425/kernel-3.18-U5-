@@ -3,6 +3,10 @@
 
 #include <linux/jiffies.h>
 #include <linux/ktime.h>
+<<<<<<< HEAD
+=======
+#include <linux/if_vlan.h>
+>>>>>>> v4.9.227
 #include <net/sch_generic.h>
 
 struct qdisc_walker {
@@ -60,17 +64,29 @@ psched_tdiff_bounded(psched_time_t tv1, psched_time_t tv2, psched_time_t bound)
 }
 
 struct qdisc_watchdog {
+<<<<<<< HEAD
+=======
+	u64		last_expires;
+>>>>>>> v4.9.227
 	struct hrtimer	timer;
 	struct Qdisc	*qdisc;
 };
 
 void qdisc_watchdog_init(struct qdisc_watchdog *wd, struct Qdisc *qdisc);
+<<<<<<< HEAD
 void qdisc_watchdog_schedule_ns(struct qdisc_watchdog *wd, u64 expires, bool throttle);
+=======
+void qdisc_watchdog_schedule_ns(struct qdisc_watchdog *wd, u64 expires);
+>>>>>>> v4.9.227
 
 static inline void qdisc_watchdog_schedule(struct qdisc_watchdog *wd,
 					   psched_time_t expires)
 {
+<<<<<<< HEAD
 	qdisc_watchdog_schedule_ns(wd, PSCHED_TICKS2NS(expires), true);
+=======
+	qdisc_watchdog_schedule_ns(wd, PSCHED_TICKS2NS(expires));
+>>>>>>> v4.9.227
 }
 
 void qdisc_watchdog_cancel(struct qdisc_watchdog *wd);
@@ -88,8 +104,13 @@ int unregister_qdisc(struct Qdisc_ops *qops);
 void qdisc_get_default(char *id, size_t len);
 int qdisc_set_default(const char *id);
 
+<<<<<<< HEAD
 void qdisc_list_add(struct Qdisc *q);
 void qdisc_list_del(struct Qdisc *q);
+=======
+void qdisc_hash_add(struct Qdisc *q);
+void qdisc_hash_del(struct Qdisc *q);
+>>>>>>> v4.9.227
 struct Qdisc *qdisc_lookup(struct net_device *dev, u32 handle);
 struct Qdisc *qdisc_lookup_class(struct net_device *dev, u32 handle);
 struct qdisc_rate_table *qdisc_get_rtab(struct tc_ratespec *r,
@@ -109,12 +130,29 @@ static inline void qdisc_run(struct Qdisc *q)
 		__qdisc_run(q);
 }
 
+<<<<<<< HEAD
 int tc_classify_compat(struct sk_buff *skb, const struct tcf_proto *tp,
 		       struct tcf_result *res);
 int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 		struct tcf_result *res);
 int tc_qdisc_flow_control(struct net_device *dev, u32 tcm_handle,
 			  int flow_enable);
+=======
+int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+		struct tcf_result *res, bool compat_mode);
+
+static inline __be16 tc_skb_protocol(const struct sk_buff *skb)
+{
+	/* We need to take extra care in case the skb came via
+	 * vlan accelerated path. In that case, use skb->vlan_proto
+	 * as the original vlan header was already stripped.
+	 */
+	if (skb_vlan_tag_present(skb))
+		return skb->vlan_proto;
+	return skb->protocol;
+}
+
+>>>>>>> v4.9.227
 /* Calculate maximal size of packet seen by hard_start_xmit
    routine of this device.
  */

@@ -11,15 +11,26 @@
  * Note: Quantum tunneling is not supported.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
 #include <net/pkt_sched.h>
 
+<<<<<<< HEAD
 static int blackhole_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 {
 	qdisc_drop(skb, sch);
+=======
+static int blackhole_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+			     struct sk_buff **to_free)
+{
+	qdisc_drop(skb, sch, to_free);
+>>>>>>> v4.9.227
 	return NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
 }
 
@@ -37,6 +48,7 @@ static struct Qdisc_ops blackhole_qdisc_ops __read_mostly = {
 	.owner		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static int __init blackhole_module_init(void)
 {
 	return register_qdisc(&blackhole_qdisc_ops);
@@ -51,3 +63,10 @@ module_init(blackhole_module_init)
 module_exit(blackhole_module_exit)
 
 MODULE_LICENSE("GPL");
+=======
+static int __init blackhole_init(void)
+{
+	return register_qdisc(&blackhole_qdisc_ops);
+}
+device_initcall(blackhole_init)
+>>>>>>> v4.9.227

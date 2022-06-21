@@ -26,6 +26,10 @@
 #include <linux/mutex.h>
 #include <linux/aer.h>
 #include <linux/bsg-lib.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+>>>>>>> v4.9.227
 
 #include <net/tcp.h>
 #include <scsi/scsi.h>

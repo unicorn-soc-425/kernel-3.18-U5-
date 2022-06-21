@@ -25,8 +25,11 @@ struct gio_driver {
 
 	int  (*probe)(struct gio_device *, const struct gio_device_id *);
 	void (*remove)(struct gio_device *);
+<<<<<<< HEAD
 	int  (*suspend)(struct gio_device *, pm_message_t);
 	int  (*resume)(struct gio_device *);
+=======
+>>>>>>> v4.9.227
 	void (*shutdown)(struct gio_device *);
 
 	struct device_driver driver;

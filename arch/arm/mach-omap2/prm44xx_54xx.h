@@ -23,6 +23,7 @@
 #ifndef __ARCH_ARM_MACH_OMAP2_PRM44XX_54XX_H
 #define __ARCH_ARM_MACH_OMAP2_PRM44XX_54XX_H
 
+<<<<<<< HEAD
 /* Function prototypes */
 #ifndef __ASSEMBLER__
 
@@ -34,6 +35,13 @@ extern u32 omap4_prm_rmw_inst_reg_bits(u32 mask, u32 bits, s16 inst, s16 idx);
 u32 omap4_prm_vp_check_txdone(u8 vp_id);
 void omap4_prm_vp_clear_txdone(u8 vp_id);
 
+=======
+#include "prcm-common.h"
+
+/* Function prototypes */
+#ifndef __ASSEMBLER__
+
+>>>>>>> v4.9.227
 /*
  * OMAP4/OMAP5 access functions for voltage controller (VC) and
  * voltage proccessor (VP) in the PRM.
@@ -42,6 +50,7 @@ extern u32 omap4_prm_vcvp_read(u8 offset);
 extern void omap4_prm_vcvp_write(u32 val, u8 offset);
 extern u32 omap4_prm_vcvp_rmw(u32 mask, u32 bits, u8 offset);
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_OMAP4) || defined(CONFIG_SOC_OMAP5) || \
 	defined(CONFIG_SOC_DRA7XX) || defined(CONFIG_SOC_AM43XX)
 void omap44xx_prm_reconfigure_io_chain(void);
@@ -59,6 +68,9 @@ extern void omap44xx_prm_restore_irqen(u32 *saved_mask);
 
 extern int __init omap44xx_prm_init(void);
 extern u32 omap44xx_prm_get_reset_sources(void);
+=======
+int __init omap44xx_prm_init(const struct omap_prcm_init_data *data);
+>>>>>>> v4.9.227
 
 #endif
 

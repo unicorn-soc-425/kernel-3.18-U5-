@@ -33,5 +33,9 @@ g84_disp_oimm_oclass = {
 	.base.maxver = 0,
 	.ctor = nv50_disp_oimm_new,
 	.func = &nv50_disp_pioc_func,
+<<<<<<< HEAD
 	.chid = 5,
+=======
+	.chid = { 5, 5 },
+>>>>>>> v4.9.227
 };

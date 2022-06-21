@@ -120,13 +120,18 @@ static void nf_nat_ipv4_csum_update(struct sk_buff *skb,
 		oldip = iph->daddr;
 		newip = t->dst.u3.ip;
 	}
+<<<<<<< HEAD
 	inet_proto_csum_replace4(check, skb, oldip, newip, 1);
+=======
+	inet_proto_csum_replace4(check, skb, oldip, newip, true);
+>>>>>>> v4.9.227
 }
 
 static void nf_nat_ipv4_csum_recalc(struct sk_buff *skb,
 				    u8 proto, void *data, __sum16 *check,
 				    int datalen, int oldlen)
 {
+<<<<<<< HEAD
 	const struct iphdr *iph = ip_hdr(skb);
 	struct rtable *rt = skb_rtable(skb);
 
@@ -152,6 +157,20 @@ static void nf_nat_ipv4_csum_recalc(struct sk_buff *skb,
 	} else
 		inet_proto_csum_replace2(check, skb,
 					 htons(oldlen), htons(datalen), 1);
+=======
+	if (skb->ip_summed != CHECKSUM_PARTIAL) {
+		const struct iphdr *iph = ip_hdr(skb);
+
+		skb->ip_summed = CHECKSUM_PARTIAL;
+		skb->csum_start = skb_headroom(skb) + skb_network_offset(skb) +
+			ip_hdrlen(skb);
+		skb->csum_offset = (void *)check - data;
+		*check = ~csum_tcpudp_magic(iph->saddr, iph->daddr, datalen,
+					    proto, 0);
+	} else
+		inet_proto_csum_replace2(check, skb,
+					 htons(oldlen), htons(datalen), true);
+>>>>>>> v4.9.227
 }
 
 #if IS_ENABLED(CONFIG_NF_CT_NETLINK)
@@ -255,24 +274,36 @@ int nf_nat_icmp_reply_translation(struct sk_buff *skb,
 EXPORT_SYMBOL_GPL(nf_nat_icmp_reply_translation);
 
 unsigned int
+<<<<<<< HEAD
 nf_nat_ipv4_fn(const struct nf_hook_ops *ops, struct sk_buff *skb,
 	       const struct net_device *in, const struct net_device *out,
 	       unsigned int (*do_chain)(const struct nf_hook_ops *ops,
 					struct sk_buff *skb,
 					const struct net_device *in,
 					const struct net_device *out,
+=======
+nf_nat_ipv4_fn(void *priv, struct sk_buff *skb,
+	       const struct nf_hook_state *state,
+	       unsigned int (*do_chain)(void *priv,
+					struct sk_buff *skb,
+					const struct nf_hook_state *state,
+>>>>>>> v4.9.227
 					struct nf_conn *ct))
 {
 	struct nf_conn *ct;
 	enum ip_conntrack_info ctinfo;
 	struct nf_conn_nat *nat;
 	/* maniptype == SRC for postrouting. */
+<<<<<<< HEAD
 	enum nf_nat_manip_type maniptype = HOOK2MANIP(ops->hooknum);
 
 	/* We never see fragments: conntrack defrags on pre-routing
 	 * and local-out, and nf_nat_out protects post-routing.
 	 */
 	NF_CT_ASSERT(!ip_is_fragment(ip_hdr(skb)));
+=======
+	enum nf_nat_manip_type maniptype = HOOK2MANIP(state->hook);
+>>>>>>> v4.9.227
 
 	ct = nf_ct_get(skb, &ctinfo);
 	/* Can't track?  It's not due to stress, or conntrack would
@@ -296,7 +327,11 @@ nf_nat_ipv4_fn(const struct nf_hook_ops *ops, struct sk_buff *skb,
 	case IP_CT_RELATED_REPLY:
 		if (ip_hdr(skb)->protocol == IPPROTO_ICMP) {
 			if (!nf_nat_icmp_reply_translation(skb, ct, ctinfo,
+<<<<<<< HEAD
 							   ops->hooknum))
+=======
+							   state->hook))
+>>>>>>> v4.9.227
 				return NF_DROP;
 			else
 				return NF_ACCEPT;
@@ -309,6 +344,7 @@ nf_nat_ipv4_fn(const struct nf_hook_ops *ops, struct sk_buff *skb,
 		if (!nf_nat_initialized(ct, maniptype)) {
 			unsigned int ret;
 
+<<<<<<< HEAD
 			ret = do_chain(ops, skb, in, out, ct);
 			if (ret != NF_ACCEPT)
 				return ret;
@@ -317,13 +353,28 @@ nf_nat_ipv4_fn(const struct nf_hook_ops *ops, struct sk_buff *skb,
 				break;
 
 			ret = nf_nat_alloc_null_binding(ct, ops->hooknum);
+=======
+			ret = do_chain(priv, skb, state, ct);
+			if (ret != NF_ACCEPT)
+				return ret;
+
+			if (nf_nat_initialized(ct, HOOK2MANIP(state->hook)))
+				break;
+
+			ret = nf_nat_alloc_null_binding(ct, state->hook);
+>>>>>>> v4.9.227
 			if (ret != NF_ACCEPT)
 				return ret;
 		} else {
 			pr_debug("Already setup manip %s for ct %p\n",
 				 maniptype == NF_NAT_MANIP_SRC ? "SRC" : "DST",
 				 ct);
+<<<<<<< HEAD
 			if (nf_nat_oif_changed(ops->hooknum, ctinfo, nat, out))
+=======
+			if (nf_nat_oif_changed(state->hook, ctinfo, nat,
+					       state->out))
+>>>>>>> v4.9.227
 				goto oif_changed;
 		}
 		break;
@@ -332,11 +383,19 @@ nf_nat_ipv4_fn(const struct nf_hook_ops *ops, struct sk_buff *skb,
 		/* ESTABLISHED */
 		NF_CT_ASSERT(ctinfo == IP_CT_ESTABLISHED ||
 			     ctinfo == IP_CT_ESTABLISHED_REPLY);
+<<<<<<< HEAD
 		if (nf_nat_oif_changed(ops->hooknum, ctinfo, nat, out))
 			goto oif_changed;
 	}
 
 	return nf_nat_packet(ct, ctinfo, ops->hooknum, skb);
+=======
+		if (nf_nat_oif_changed(state->hook, ctinfo, nat, state->out))
+			goto oif_changed;
+	}
+
+	return nf_nat_packet(ct, ctinfo, state->hook, skb);
+>>>>>>> v4.9.227
 
 oif_changed:
 	nf_ct_kill_acct(ct, ctinfo, skb);
@@ -345,18 +404,30 @@ oif_changed:
 EXPORT_SYMBOL_GPL(nf_nat_ipv4_fn);
 
 unsigned int
+<<<<<<< HEAD
 nf_nat_ipv4_in(const struct nf_hook_ops *ops, struct sk_buff *skb,
 	       const struct net_device *in, const struct net_device *out,
 	       unsigned int (*do_chain)(const struct nf_hook_ops *ops,
 					 struct sk_buff *skb,
 					 const struct net_device *in,
 					 const struct net_device *out,
+=======
+nf_nat_ipv4_in(void *priv, struct sk_buff *skb,
+	       const struct nf_hook_state *state,
+	       unsigned int (*do_chain)(void *priv,
+					 struct sk_buff *skb,
+					 const struct nf_hook_state *state,
+>>>>>>> v4.9.227
 					 struct nf_conn *ct))
 {
 	unsigned int ret;
 	__be32 daddr = ip_hdr(skb)->daddr;
 
+<<<<<<< HEAD
 	ret = nf_nat_ipv4_fn(ops, skb, in, out, do_chain);
+=======
+	ret = nf_nat_ipv4_fn(priv, skb, state, do_chain);
+>>>>>>> v4.9.227
 	if (ret != NF_DROP && ret != NF_STOLEN &&
 	    daddr != ip_hdr(skb)->daddr)
 		skb_dst_drop(skb);
@@ -366,12 +437,20 @@ nf_nat_ipv4_in(const struct nf_hook_ops *ops, struct sk_buff *skb,
 EXPORT_SYMBOL_GPL(nf_nat_ipv4_in);
 
 unsigned int
+<<<<<<< HEAD
 nf_nat_ipv4_out(const struct nf_hook_ops *ops, struct sk_buff *skb,
 		const struct net_device *in, const struct net_device *out,
 		unsigned int (*do_chain)(const struct nf_hook_ops *ops,
 					  struct sk_buff *skb,
 					  const struct net_device *in,
 					  const struct net_device *out,
+=======
+nf_nat_ipv4_out(void *priv, struct sk_buff *skb,
+		const struct nf_hook_state *state,
+		unsigned int (*do_chain)(void *priv,
+					  struct sk_buff *skb,
+					  const struct nf_hook_state *state,
+>>>>>>> v4.9.227
 					  struct nf_conn *ct))
 {
 #ifdef CONFIG_XFRM
@@ -386,7 +465,11 @@ nf_nat_ipv4_out(const struct nf_hook_ops *ops, struct sk_buff *skb,
 	    ip_hdrlen(skb) < sizeof(struct iphdr))
 		return NF_ACCEPT;
 
+<<<<<<< HEAD
 	ret = nf_nat_ipv4_fn(ops, skb, in, out, do_chain);
+=======
+	ret = nf_nat_ipv4_fn(priv, skb, state, do_chain);
+>>>>>>> v4.9.227
 #ifdef CONFIG_XFRM
 	if (ret != NF_DROP && ret != NF_STOLEN &&
 	    !(IPCB(skb)->flags & IPSKB_XFRM_TRANSFORMED) &&
@@ -398,7 +481,11 @@ nf_nat_ipv4_out(const struct nf_hook_ops *ops, struct sk_buff *skb,
 		    (ct->tuplehash[dir].tuple.dst.protonum != IPPROTO_ICMP &&
 		     ct->tuplehash[dir].tuple.src.u.all !=
 		     ct->tuplehash[!dir].tuple.dst.u.all)) {
+<<<<<<< HEAD
 			err = nf_xfrm_me_harder(skb, AF_INET);
+=======
+			err = nf_xfrm_me_harder(state->net, skb, AF_INET);
+>>>>>>> v4.9.227
 			if (err < 0)
 				ret = NF_DROP_ERR(err);
 		}
@@ -409,12 +496,20 @@ nf_nat_ipv4_out(const struct nf_hook_ops *ops, struct sk_buff *skb,
 EXPORT_SYMBOL_GPL(nf_nat_ipv4_out);
 
 unsigned int
+<<<<<<< HEAD
 nf_nat_ipv4_local_fn(const struct nf_hook_ops *ops, struct sk_buff *skb,
 		     const struct net_device *in, const struct net_device *out,
 		     unsigned int (*do_chain)(const struct nf_hook_ops *ops,
 					       struct sk_buff *skb,
 					       const struct net_device *in,
 					       const struct net_device *out,
+=======
+nf_nat_ipv4_local_fn(void *priv, struct sk_buff *skb,
+		     const struct nf_hook_state *state,
+		     unsigned int (*do_chain)(void *priv,
+					       struct sk_buff *skb,
+					       const struct nf_hook_state *state,
+>>>>>>> v4.9.227
 					       struct nf_conn *ct))
 {
 	const struct nf_conn *ct;
@@ -427,14 +522,22 @@ nf_nat_ipv4_local_fn(const struct nf_hook_ops *ops, struct sk_buff *skb,
 	    ip_hdrlen(skb) < sizeof(struct iphdr))
 		return NF_ACCEPT;
 
+<<<<<<< HEAD
 	ret = nf_nat_ipv4_fn(ops, skb, in, out, do_chain);
+=======
+	ret = nf_nat_ipv4_fn(priv, skb, state, do_chain);
+>>>>>>> v4.9.227
 	if (ret != NF_DROP && ret != NF_STOLEN &&
 	    (ct = nf_ct_get(skb, &ctinfo)) != NULL) {
 		enum ip_conntrack_dir dir = CTINFO2DIR(ctinfo);
 
 		if (ct->tuplehash[dir].tuple.dst.u3.ip !=
 		    ct->tuplehash[!dir].tuple.src.u3.ip) {
+<<<<<<< HEAD
 			err = ip_route_me_harder(skb, RTN_UNSPEC);
+=======
+			err = ip_route_me_harder(state->net, skb, RTN_UNSPEC);
+>>>>>>> v4.9.227
 			if (err < 0)
 				ret = NF_DROP_ERR(err);
 		}
@@ -443,7 +546,11 @@ nf_nat_ipv4_local_fn(const struct nf_hook_ops *ops, struct sk_buff *skb,
 			 ct->tuplehash[dir].tuple.dst.protonum != IPPROTO_ICMP &&
 			 ct->tuplehash[dir].tuple.dst.u.all !=
 			 ct->tuplehash[!dir].tuple.src.u.all) {
+<<<<<<< HEAD
 			err = nf_xfrm_me_harder(skb, AF_INET);
+=======
+			err = nf_xfrm_me_harder(state->net, skb, AF_INET);
+>>>>>>> v4.9.227
 			if (err < 0)
 				ret = NF_DROP_ERR(err);
 		}

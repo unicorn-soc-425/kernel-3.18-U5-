@@ -422,7 +422,10 @@ static struct platform_driver at32_wdt_driver = {
 	.resume		= at32_wdt_resume,
 	.driver		= {
 		.name	= "at32_wdt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.shutdown	= at32_wdt_shutdown,
 };

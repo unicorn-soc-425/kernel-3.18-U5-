@@ -6,9 +6,15 @@
 #include <linux/spinlock.h>
 #include <linux/string.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+
+#include <asm/io.h>
+>>>>>>> v4.9.227
 #include <asm/hw_irq.h>
 
 struct pci_vector_struct {
@@ -50,6 +56,7 @@ struct pci_dev;
 extern unsigned long ia64_max_iommu_merge_mask;
 #define PCI_DMA_BUS_IS_PHYS	(ia64_max_iommu_merge_mask == ~0UL)
 
+<<<<<<< HEAD
 #include <asm-generic/pci-dma-compat.h>
 
 #ifdef CONFIG_PCI
@@ -71,6 +78,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 #define HAVE_PCI_MMAP
 extern int pci_mmap_page_range (struct pci_dev *dev, struct vm_area_struct *vma,
 				enum pci_mmap_state mmap_state, int write_combine);
@@ -83,11 +92,14 @@ extern int pci_mmap_legacy_page_range(struct pci_bus *bus,
 #define pci_legacy_read platform_pci_legacy_read
 #define pci_legacy_write platform_pci_legacy_write
 
+<<<<<<< HEAD
 struct iospace_resource {
 	struct list_head list;
 	struct resource res;
 };
 
+=======
+>>>>>>> v4.9.227
 struct pci_controller {
 	struct acpi_device *companion;
 	void *iommu;
@@ -108,6 +120,7 @@ static inline int pci_proc_domain(struct pci_bus *bus)
 	return (pci_domain_nr(bus) != 0);
 }
 
+<<<<<<< HEAD
 static inline struct resource *
 pcibios_select_root(struct pci_dev *pdev, struct resource *res)
 {
@@ -121,6 +134,8 @@ pcibios_select_root(struct pci_dev *pdev, struct resource *res)
 	return root;
 }
 
+=======
+>>>>>>> v4.9.227
 #define HAVE_ARCH_PCI_GET_LEGACY_IDE_IRQ
 static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 {

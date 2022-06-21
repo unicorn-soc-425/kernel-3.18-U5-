@@ -670,8 +670,12 @@
 /*
  *	Generic format for most parameters that fit in an int
  */
+<<<<<<< HEAD
 struct	iw_param
 {
+=======
+struct iw_param {
+>>>>>>> v4.9.227
   __s32		value;		/* The value of the parameter itself */
   __u8		fixed;		/* Hardware should not use auto select */
   __u8		disabled;	/* Disable the feature */
@@ -682,8 +686,12 @@ struct	iw_param
  *	For all data larger than 16 octets, we need to use a
  *	pointer to memory allocated in user space.
  */
+<<<<<<< HEAD
 struct	iw_point
 {
+=======
+struct iw_point {
+>>>>>>> v4.9.227
   void __user	*pointer;	/* Pointer to the data  (in user space) */
   __u16		length;		/* number of fields or size in bytes */
   __u16		flags;		/* Optional params */
@@ -698,8 +706,12 @@ struct	iw_point
  *	of 10 to get 'm' lower than 10^9, with 'm'= f / (10^'e')...
  *	The power of 10 is in 'e', the result of the division is in 'm'.
  */
+<<<<<<< HEAD
 struct	iw_freq
 {
+=======
+struct iw_freq {
+>>>>>>> v4.9.227
 	__s32		m;		/* Mantissa */
 	__s16		e;		/* Exponent */
 	__u8		i;		/* List index (when in range struct) */
@@ -709,8 +721,12 @@ struct	iw_freq
 /*
  *	Quality of the link
  */
+<<<<<<< HEAD
 struct	iw_quality
 {
+=======
+struct iw_quality {
+>>>>>>> v4.9.227
 	__u8		qual;		/* link quality (%retries, SNR,
 					   %missed beacons or better...) */
 	__u8		level;		/* signal level (dBm) */
@@ -725,8 +741,12 @@ struct	iw_quality
  *	is already pretty exhaustive, and you should use that first.
  *	This is only additional stats...
  */
+<<<<<<< HEAD
 struct	iw_discarded
 {
+=======
+struct iw_discarded {
+>>>>>>> v4.9.227
 	__u32		nwid;		/* Rx : Wrong nwid/essid */
 	__u32		code;		/* Rx : Unable to code/decode (WEP) */
 	__u32		fragment;	/* Rx : Can't perform MAC reassembly */
@@ -738,16 +758,24 @@ struct	iw_discarded
  *	Packet/Time period missed in the wireless adapter due to
  *	"wireless" specific problems...
  */
+<<<<<<< HEAD
 struct	iw_missed
 {
+=======
+struct iw_missed {
+>>>>>>> v4.9.227
 	__u32		beacon;		/* Missed beacons/superframe */
 };
 
 /*
  *	Quality range (for spy threshold)
  */
+<<<<<<< HEAD
 struct	iw_thrspy
 {
+=======
+struct iw_thrspy {
+>>>>>>> v4.9.227
 	struct sockaddr		addr;		/* Source address (hw/mac) */
 	struct iw_quality	qual;		/* Quality of the link */
 	struct iw_quality	low;		/* Low threshold */
@@ -765,8 +793,12 @@ struct	iw_thrspy
  *	Especially, scan results are required to include an entry for the
  *	current BSS if the driver is in Managed mode and associated with an AP.
  */
+<<<<<<< HEAD
 struct	iw_scan_req
 {
+=======
+struct iw_scan_req {
+>>>>>>> v4.9.227
 	__u8		scan_type; /* IW_SCAN_TYPE_{ACTIVE,PASSIVE} */
 	__u8		essid_len;
 	__u8		num_channels; /* num entries in channel_list;
@@ -827,8 +859,12 @@ struct	iw_scan_req
  *	RX_SEQ_VALID for SIOCGIWENCODEEXT are optional, but can be useful for
  *	debugging/testing.
  */
+<<<<<<< HEAD
 struct	iw_encode_ext
 {
+=======
+struct iw_encode_ext {
+>>>>>>> v4.9.227
 	__u32		ext_flags; /* IW_ENCODE_EXT_* */
 	__u8		tx_seq[IW_ENCODE_SEQ_MAX_SIZE]; /* LSB first */
 	__u8		rx_seq[IW_ENCODE_SEQ_MAX_SIZE]; /* LSB first */
@@ -841,8 +877,12 @@ struct	iw_encode_ext
 };
 
 /* SIOCSIWMLME data */
+<<<<<<< HEAD
 struct	iw_mlme
 {
+=======
+struct iw_mlme {
+>>>>>>> v4.9.227
 	__u16		cmd; /* IW_MLME_* */
 	__u16		reason_code;
 	struct sockaddr	addr;
@@ -855,16 +895,24 @@ struct	iw_mlme
 
 #define IW_PMKID_LEN	16
 
+<<<<<<< HEAD
 struct	iw_pmksa
 {
+=======
+struct iw_pmksa {
+>>>>>>> v4.9.227
 	__u32		cmd; /* IW_PMKSA_* */
 	struct sockaddr	bssid;
 	__u8		pmkid[IW_PMKID_LEN];
 };
 
 /* IWEVMICHAELMICFAILURE data */
+<<<<<<< HEAD
 struct	iw_michaelmicfailure
 {
+=======
+struct iw_michaelmicfailure {
+>>>>>>> v4.9.227
 	__u32		flags;
 	struct sockaddr	src_addr;
 	__u8		tsc[IW_ENCODE_SEQ_MAX_SIZE]; /* LSB first */
@@ -872,8 +920,12 @@ struct	iw_michaelmicfailure
 
 /* IWEVPMKIDCAND data */
 #define IW_PMKID_CAND_PREAUTH	0x00000001 /* RNS pre-authentication enabled */
+<<<<<<< HEAD
 struct	iw_pmkid_cand
 {
+=======
+struct iw_pmkid_cand {
+>>>>>>> v4.9.227
 	__u32		flags; /* IW_PMKID_CAND_* */
 	__u32		index; /* the smaller the index, the higher the
 				* priority */
@@ -884,8 +936,12 @@ struct	iw_pmkid_cand
 /*
  * Wireless statistics (used for /proc/net/wireless)
  */
+<<<<<<< HEAD
 struct	iw_statistics
 {
+=======
+struct iw_statistics {
+>>>>>>> v4.9.227
 	__u16		status;		/* Status
 					 * - device dependent for now */
 
@@ -897,7 +953,11 @@ struct	iw_statistics
 
 /* ------------------------ IOCTL REQUEST ------------------------ */
 /*
+<<<<<<< HEAD
  * This structure defines the payload of an ioctl, and is used 
+=======
+ * This structure defines the payload of an ioctl, and is used
+>>>>>>> v4.9.227
  * below.
  *
  * Note that this structure should fit on the memory footprint
@@ -906,8 +966,12 @@ struct	iw_statistics
  * You should check this when increasing the structures defined
  * above in this file...
  */
+<<<<<<< HEAD
 union	iwreq_data
 {
+=======
+union iwreq_data {
+>>>>>>> v4.9.227
 	/* Config - generic */
 	char		name[IFNAMSIZ];
 	/* Name : used to verify the presence of  wireless extensions.
@@ -944,15 +1008,23 @@ union	iwreq_data
  * convenience...
  * Do I need to remind you about structure size (32 octets) ?
  */
+<<<<<<< HEAD
 struct	iwreq 
 {
+=======
+struct iwreq {
+>>>>>>> v4.9.227
 	union
 	{
 		char	ifrn_name[IFNAMSIZ];	/* if name, e.g. "eth0" */
 	} ifr_ifrn;
 
 	/* Data part (defined just above) */
+<<<<<<< HEAD
 	union	iwreq_data	u;
+=======
+	union iwreq_data	u;
+>>>>>>> v4.9.227
 };
 
 /* -------------------------- IOCTL DATA -------------------------- */
@@ -965,8 +1037,12 @@ struct	iwreq
  *	Range of parameters
  */
 
+<<<<<<< HEAD
 struct	iw_range
 {
+=======
+struct iw_range {
+>>>>>>> v4.9.227
 	/* Informative stuff (to choose between different interface) */
 	__u32		throughput;	/* To give an idea... */
 	/* In theory this value should be the maximum benchmarked
@@ -1069,9 +1145,14 @@ struct	iw_range
 /*
  * Private ioctl interface information
  */
+<<<<<<< HEAD
  
 struct	iw_priv_args
 {
+=======
+
+struct iw_priv_args {
+>>>>>>> v4.9.227
 	__u32		cmd;		/* Number of the ioctl to issue */
 	__u16		set_args;	/* Type and number of args */
 	__u16		get_args;	/* Type and number of args */
@@ -1088,8 +1169,12 @@ struct	iw_priv_args
 /*
  * A Wireless Event. Contains basically the same data as the ioctl...
  */
+<<<<<<< HEAD
 struct iw_event
 {
+=======
+struct iw_event {
+>>>>>>> v4.9.227
 	__u16		len;			/* Real length of this stuff */
 	__u16		cmd;			/* Wireless IOCTL */
 	union iwreq_data	u;		/* IOCTL fixed payload */

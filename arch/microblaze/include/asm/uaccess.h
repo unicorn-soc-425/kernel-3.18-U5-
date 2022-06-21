@@ -71,9 +71,12 @@ struct exception_table_entry {
 	unsigned long insn, fixup;
 };
 
+<<<<<<< HEAD
 /* Returns 0 if exception not found and fixup otherwise.  */
 extern unsigned long search_exception_table(unsigned long);
 
+=======
+>>>>>>> v4.9.227
 #ifndef CONFIG_MMU
 
 /* Check against bounds of physical memory */
@@ -178,7 +181,12 @@ extern long __user_bad(void);
  * @x:   Variable to store result.
  * @ptr: Source address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -220,7 +228,11 @@ extern long __user_bad(void);
 	} else {							\
 		__gu_err = -EFAULT;					\
 	}								\
+<<<<<<< HEAD
 	x = (typeof(*(ptr)))__gu_val;					\
+=======
+	x = (__force typeof(*(ptr)))__gu_val;				\
+>>>>>>> v4.9.227
 	__gu_err;							\
 })
 
@@ -242,7 +254,11 @@ extern long __user_bad(void);
 	default:							\
 		/* __gu_val = 0; __gu_err = -EINVAL;*/ __gu_err = __user_bad();\
 	}								\
+<<<<<<< HEAD
 	x = (__typeof__(*(ptr))) __gu_val;				\
+=======
+	x = (__force __typeof__(*(ptr))) __gu_val;			\
+>>>>>>> v4.9.227
 	__gu_err;							\
 })
 
@@ -290,7 +306,12 @@ extern long __user_bad(void);
  * @x:   Value to copy to user space.
  * @ptr: Destination address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -306,7 +327,11 @@ extern long __user_bad(void);
 
 #define __put_user_check(x, ptr, size)					\
 ({									\
+<<<<<<< HEAD
 	typeof(*(ptr)) volatile __pu_val = x;					\
+=======
+	typeof(*(ptr)) volatile __pu_val = x;				\
+>>>>>>> v4.9.227
 	typeof(*(ptr)) __user *__pu_addr = (ptr);			\
 	int __pu_err = 0;						\
 									\

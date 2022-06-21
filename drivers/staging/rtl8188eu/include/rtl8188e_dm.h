@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __RTL8188E_DM_H__
 #define __RTL8188E_DM_H__
@@ -50,6 +53,7 @@ struct	dm_priv {
 	u8	PowerIndex_backup[6];
 };
 
+<<<<<<< HEAD
 void rtl8188e_init_dm_priv(struct adapter *adapt);
 void rtl8188e_InitHalDm(struct adapter *adapt);
 void rtl8188e_HalDmWatchDog(struct adapter *adapt);
@@ -57,5 +61,11 @@ void rtl8188e_HalDmWatchDog(struct adapter *adapt);
 void AntDivCompare8188E(struct adapter *adapt, struct wlan_bssid_ex *dst,
 			struct wlan_bssid_ex *src);
 u8 AntDivBeforeLink8188E(struct adapter *adapt);
+=======
+void rtl8188e_InitHalDm(struct adapter *adapt);
+
+void AntDivCompare8188E(struct adapter *adapt, struct wlan_bssid_ex *dst,
+			struct wlan_bssid_ex *src);
+>>>>>>> v4.9.227
 
 #endif

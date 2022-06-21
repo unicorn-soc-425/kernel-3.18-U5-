@@ -210,7 +210,11 @@ static void fsl_emb_pmu_disable(struct pmu *pmu)
 	unsigned long flags;
 
 	local_irq_save(flags);
+<<<<<<< HEAD
 	cpuhw = &__get_cpu_var(cpu_hw_events);
+=======
+	cpuhw = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> v4.9.227
 
 	if (!cpuhw->disabled) {
 		cpuhw->disabled = 1;
@@ -249,7 +253,11 @@ static void fsl_emb_pmu_enable(struct pmu *pmu)
 	unsigned long flags;
 
 	local_irq_save(flags);
+<<<<<<< HEAD
 	cpuhw = &__get_cpu_var(cpu_hw_events);
+=======
+	cpuhw = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> v4.9.227
 	if (!cpuhw->disabled)
 		goto out;
 
@@ -330,9 +338,17 @@ static int fsl_emb_pmu_add(struct perf_event *event, int flags)
 	}
 	local64_set(&event->hw.prev_count, val);
 
+<<<<<<< HEAD
 	if (!(flags & PERF_EF_START)) {
 		event->hw.state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
 		val = 0;
+=======
+	if (unlikely(!(flags & PERF_EF_START))) {
+		event->hw.state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
+		val = 0;
+	} else {
+		event->hw.state &= ~(PERF_HES_STOPPED | PERF_HES_UPTODATE);
+>>>>>>> v4.9.227
 	}
 
 	write_pmc(i, val);
@@ -389,6 +405,10 @@ static void fsl_emb_pmu_del(struct perf_event *event, int flags)
 static void fsl_emb_pmu_start(struct perf_event *event, int ef_flags)
 {
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	unsigned long val;
+>>>>>>> v4.9.227
 	s64 left;
 
 	if (event->hw.idx < 0 || !event->hw.sample_period)
@@ -405,7 +425,14 @@ static void fsl_emb_pmu_start(struct perf_event *event, int ef_flags)
 
 	event->hw.state = 0;
 	left = local64_read(&event->hw.period_left);
+<<<<<<< HEAD
 	write_pmc(event->hw.idx, left);
+=======
+	val = 0;
+	if (left < 0x80000000L)
+		val = 0x80000000L - left;
+	write_pmc(event->hw.idx, val);
+>>>>>>> v4.9.227
 
 	perf_event_update_userpage(event);
 	perf_pmu_enable(event->pmu);
@@ -653,7 +680,11 @@ static void record_and_restart(struct perf_event *event, unsigned long val,
 static void perf_event_interrupt(struct pt_regs *regs)
 {
 	int i;
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuhw = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> v4.9.227
 	struct perf_event *event;
 	unsigned long val;
 	int found = 0;

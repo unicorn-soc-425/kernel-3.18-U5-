@@ -312,12 +312,19 @@ static const struct of_device_id moxart_rtc_match[] = {
 	{ .compatible = "moxa,moxart-rtc" },
 	{ },
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, moxart_rtc_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver moxart_rtc_driver = {
 	.probe	= moxart_rtc_probe,
 	.driver	= {
 		.name		= "moxart-rtc",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= moxart_rtc_match,
 	},
 };

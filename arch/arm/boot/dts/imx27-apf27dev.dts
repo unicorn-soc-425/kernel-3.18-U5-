@@ -59,6 +59,24 @@
 			linux,default-trigger = "heartbeat";
 		};
 	};
+<<<<<<< HEAD
+=======
+
+	regulators {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		reg_max5821: regulator@0 {
+			compatible = "regulator-fixed";
+			reg = <0>;
+			regulator-name = "max5821-reg";
+			regulator-min-microvolt = <2500000>;
+			regulator-max-microvolt = <2500000>;
+			regulator-always-on;
+		};
+	};
+>>>>>>> v4.9.227
 };
 
 &cspi1 {
@@ -107,6 +125,15 @@
 		compatible = "dallas,ds1374";
 		reg = <0x68>;
 	};
+<<<<<<< HEAD
+=======
+
+	max5821@38 {
+		compatible = "maxim,max5821";
+		reg = <0x38>;
+		vref-supply = <&reg_max5821>;
+	};
+>>>>>>> v4.9.227
 };
 
 &i2c2 {

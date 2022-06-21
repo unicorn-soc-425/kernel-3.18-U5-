@@ -12,7 +12,12 @@ static void show_cpuinfo_core(struct seq_file *m, struct cpuinfo_x86 *c,
 {
 #ifdef CONFIG_SMP
 	seq_printf(m, "physical id\t: %d\n", c->phys_proc_id);
+<<<<<<< HEAD
 	seq_printf(m, "siblings\t: %d\n", cpumask_weight(cpu_core_mask(cpu)));
+=======
+	seq_printf(m, "siblings\t: %d\n",
+		   cpumask_weight(topology_core_cpumask(cpu)));
+>>>>>>> v4.9.227
 	seq_printf(m, "core id\t\t: %d\n", c->cpu_core_id);
 	seq_printf(m, "cpu cores\t: %d\n", c->booted_cores);
 	seq_printf(m, "apicid\t\t: %d\n", c->apicid);
@@ -69,10 +74,17 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 		   c->x86_model,
 		   c->x86_model_id[0] ? c->x86_model_id : "unknown");
 
+<<<<<<< HEAD
 	if (c->x86_mask || c->cpuid_level >= 0)
 		seq_printf(m, "stepping\t: %d\n", c->x86_mask);
 	else
 		seq_printf(m, "stepping\t: unknown\n");
+=======
+	if (c->x86_stepping || c->cpuid_level >= 0)
+		seq_printf(m, "stepping\t: %d\n", c->x86_stepping);
+	else
+		seq_puts(m, "stepping\t: unknown\n");
+>>>>>>> v4.9.227
 	if (c->microcode)
 		seq_printf(m, "microcode\t: 0x%x\n", c->microcode);
 
@@ -86,18 +98,31 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 	}
 
 	/* Cache size */
+<<<<<<< HEAD
 	if (c->x86_cache_size >= 0)
 		seq_printf(m, "cache size\t: %d KB\n", c->x86_cache_size);
+=======
+	if (c->x86_cache_size)
+		seq_printf(m, "cache size\t: %u KB\n", c->x86_cache_size);
+>>>>>>> v4.9.227
 
 	show_cpuinfo_core(m, c, cpu);
 	show_cpuinfo_misc(m, c);
 
+<<<<<<< HEAD
 	seq_printf(m, "flags\t\t:");
+=======
+	seq_puts(m, "flags\t\t:");
+>>>>>>> v4.9.227
 	for (i = 0; i < 32*NCAPINTS; i++)
 		if (cpu_has(c, i) && x86_cap_flags[i] != NULL)
 			seq_printf(m, " %s", x86_cap_flags[i]);
 
+<<<<<<< HEAD
 	seq_printf(m, "\nbugs\t\t:");
+=======
+	seq_puts(m, "\nbugs\t\t:");
+>>>>>>> v4.9.227
 	for (i = 0; i < 32*NBUGINTS; i++) {
 		unsigned int bug_bit = 32*NCAPINTS + i;
 
@@ -118,7 +143,11 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 	seq_printf(m, "address sizes\t: %u bits physical, %u bits virtual\n",
 		   c->x86_phys_bits, c->x86_virt_bits);
 
+<<<<<<< HEAD
 	seq_printf(m, "power management:");
+=======
+	seq_puts(m, "power management:");
+>>>>>>> v4.9.227
 	for (i = 0; i < 32; i++) {
 		if (c->x86_power & (1 << i)) {
 			if (i < ARRAY_SIZE(x86_power_flags) &&
@@ -131,7 +160,11 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 		}
 	}
 
+<<<<<<< HEAD
 	seq_printf(m, "\n\n");
+=======
+	seq_puts(m, "\n\n");
+>>>>>>> v4.9.227
 
 	return 0;
 }

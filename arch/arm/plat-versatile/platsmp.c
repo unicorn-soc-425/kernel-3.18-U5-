@@ -18,6 +18,11 @@
 #include <asm/cacheflush.h>
 #include <asm/smp_plat.h>
 
+<<<<<<< HEAD
+=======
+#include <plat/platsmp.h>
+
+>>>>>>> v4.9.227
 /*
  * Write pen_release in a way that is guaranteed to be visible to all
  * observers, irrespective of whether they're taking part in coherency

@@ -382,7 +382,11 @@ ret_from_fork:
 		R26.L = #LO(do_work_pending);
 		R0 = #VM_INT_DISABLE;
 	}
+<<<<<<< HEAD
 	if P0 jump check_work_pending
+=======
+	if (P0) jump check_work_pending
+>>>>>>> v4.9.227
 	{
 		R0 = R25;
 		callr R24

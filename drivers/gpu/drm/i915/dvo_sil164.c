@@ -267,7 +267,11 @@ static void sil164_destroy(struct intel_dvo_device *dvo)
 	}
 }
 
+<<<<<<< HEAD
 struct intel_dvo_dev_ops sil164_ops = {
+=======
+const struct intel_dvo_dev_ops sil164_ops = {
+>>>>>>> v4.9.227
 	.init = sil164_init,
 	.detect = sil164_detect,
 	.mode_valid = sil164_mode_valid,

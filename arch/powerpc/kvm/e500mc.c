@@ -144,9 +144,15 @@ static void kvmppc_core_vcpu_load_e500mc(struct kvm_vcpu *vcpu, int cpu)
 	mtspr(SPRN_GESR, vcpu->arch.shared->esr);
 
 	if (vcpu->arch.oldpir != mfspr(SPRN_PIR) ||
+<<<<<<< HEAD
 	    __get_cpu_var(last_vcpu_of_lpid)[get_lpid(vcpu)] != vcpu) {
 		kvmppc_e500_tlbil_all(vcpu_e500);
 		__get_cpu_var(last_vcpu_of_lpid)[get_lpid(vcpu)] = vcpu;
+=======
+	    __this_cpu_read(last_vcpu_of_lpid[get_lpid(vcpu)]) != vcpu) {
+		kvmppc_e500_tlbil_all(vcpu_e500);
+		__this_cpu_write(last_vcpu_of_lpid[get_lpid(vcpu)], vcpu);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -182,7 +188,11 @@ int kvmppc_core_check_processor_compat(void)
 		r = 0;
 #ifdef CONFIG_ALTIVEC
 	/*
+<<<<<<< HEAD
 	 * Since guests have the priviledge to enable AltiVec, we need AltiVec
+=======
+	 * Since guests have the privilege to enable AltiVec, we need AltiVec
+>>>>>>> v4.9.227
 	 * support in the host to save/restore their context.
 	 * Don't use CPU_FTR_ALTIVEC to identify cores with AltiVec unit
 	 * because it's cleared in the absence of CONFIG_ALTIVEC!

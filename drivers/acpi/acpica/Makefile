@@ -11,6 +11,10 @@ obj-y	+= acpi.o
 acpi-y :=		\
 	dsargs.o	\
 	dscontrol.o	\
+<<<<<<< HEAD
+=======
+	dsdebug.o	\
+>>>>>>> v4.9.227
 	dsfield.o	\
 	dsinit.o	\
 	dsmethod.o	\
@@ -42,6 +46,10 @@ acpi-y +=		\
 	evxfregn.o
 
 acpi-y +=		\
+<<<<<<< HEAD
+=======
+	exconcat.o	\
+>>>>>>> v4.9.227
 	exconfig.o	\
 	exconvrt.o	\
 	excreate.o	\
@@ -49,6 +57,10 @@ acpi-y +=		\
 	exdump.o	\
 	exfield.o	\
 	exfldio.o	\
+<<<<<<< HEAD
+=======
+	exmisc.o	\
+>>>>>>> v4.9.227
 	exmutex.o	\
 	exnames.o	\
 	exoparg1.o	\
@@ -56,7 +68,10 @@ acpi-y +=		\
 	exoparg3.o	\
 	exoparg6.o	\
 	exprep.o	\
+<<<<<<< HEAD
 	exmisc.o	\
+=======
+>>>>>>> v4.9.227
 	exregion.o	\
 	exresnte.o	\
 	exresolv.o	\
@@ -65,6 +80,10 @@ acpi-y +=		\
 	exstoren.o	\
 	exstorob.o	\
 	exsystem.o	\
+<<<<<<< HEAD
+=======
+	extrace.o	\
+>>>>>>> v4.9.227
 	exutils.o
 
 acpi-y +=		\
@@ -122,7 +141,10 @@ acpi-y +=		\
 	rsaddr.o	\
 	rscalc.o	\
 	rscreate.o	\
+<<<<<<< HEAD
 	rsdump.o	\
+=======
+>>>>>>> v4.9.227
 	rsdumpinfo.o	\
 	rsinfo.o	\
 	rsio.o		\
@@ -148,6 +170,10 @@ acpi-y +=		\
 acpi-y +=		\
 	utaddress.o	\
 	utalloc.o	\
+<<<<<<< HEAD
+=======
+	utascii.o	\
+>>>>>>> v4.9.227
 	utbuffer.o	\
 	utcopy.o	\
 	utexcep.o	\
@@ -164,6 +190,10 @@ acpi-y +=		\
 	utmath.o	\
 	utmisc.o	\
 	utmutex.o	\
+<<<<<<< HEAD
+=======
+	utnonansi.o	\
+>>>>>>> v4.9.227
 	utobject.o	\
 	utosi.o		\
 	utownerid.o	\
@@ -171,14 +201,40 @@ acpi-y +=		\
 	utresrc.o	\
 	utstate.o	\
 	utstring.o	\
+<<<<<<< HEAD
+=======
+	utstrtoul64.o	\
+>>>>>>> v4.9.227
 	utxface.o	\
 	utxfinit.o	\
 	utxferror.o	\
 	utxfmutex.o
 
+<<<<<<< HEAD
 acpi-$(ACPI_FUTURE_USAGE) +=	\
 	utcache.o		\
 	utfileio.o		\
+=======
+acpi-$(CONFIG_ACPI_DEBUGGER) +=	\
+	dbcmds.o		\
+	dbconvert.o		\
+	dbdisply.o		\
+	dbexec.o		\
+	dbhistry.o		\
+	dbinput.o		\
+	dbmethod.o		\
+	dbnames.o		\
+	dbobject.o		\
+	dbstats.o		\
+	dbutils.o		\
+	dbxface.o		\
+	rsdump.o		\
+
+acpi-$(ACPI_FUTURE_USAGE) +=	\
+	dbfileio.o		\
+	dbtest.o		\
+	utcache.o		\
+>>>>>>> v4.9.227
 	utprint.o		\
 	uttrack.o		\
 	utuuid.o

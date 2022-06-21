@@ -3,6 +3,11 @@
 #
 
 obj-y				+= pci.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_PCI_DRIVERS_LEGACY)+= pci-legacy.o
+obj-$(CONFIG_PCI_DRIVERS_GENERIC)+= pci-generic.o
+>>>>>>> v4.9.227
 
 #
 # PCI bus host bridge specific code
@@ -19,6 +24,10 @@ obj-$(CONFIG_BCM47XX)		+= pci-bcm47xx.o
 obj-$(CONFIG_BCM63XX)		+= pci-bcm63xx.o fixup-bcm63xx.o \
 					ops-bcm63xx.o
 obj-$(CONFIG_MIPS_ALCHEMY)	+= pci-alchemy.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_PCI_AR2315)	+= pci-ar2315.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_SOC_AR71XX)	+= pci-ar71xx.o
 obj-$(CONFIG_PCI_AR724X)	+= pci-ar724x.o
 obj-$(CONFIG_MIPS_PCI_VIRTIO)	+= pci-virtio-guest.o
@@ -42,6 +51,11 @@ obj-$(CONFIG_SIBYTE_BCM1x80)	+= pci-bcm1480.o pci-bcm1480ht.o
 obj-$(CONFIG_SNI_RM)		+= fixup-sni.o ops-sni.o
 obj-$(CONFIG_LANTIQ)		+= fixup-lantiq.o
 obj-$(CONFIG_PCI_LANTIQ)	+= pci-lantiq.o ops-lantiq.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_SOC_MT7620)	+= pci-mt7620.o
+obj-$(CONFIG_SOC_RT288X)	+= pci-rt2880.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_SOC_RT3883)	+= pci-rt3883.o
 obj-$(CONFIG_TANBAC_TB0219)	+= fixup-tb0219.o
 obj-$(CONFIG_TANBAC_TB0226)	+= fixup-tb0226.o

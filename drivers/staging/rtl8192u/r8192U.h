@@ -40,6 +40,7 @@
 #define RTL8192U
 #define RTL819xU_MODULE_NAME "rtl819xU"
 /* HW security */
+<<<<<<< HEAD
 #define FALSE 0
 #define TRUE 1
 #define MAX_KEY_LEN     61
@@ -78,6 +79,11 @@
 #define BIT30           0x40000000
 #define BIT31           0x80000000
 
+=======
+#define MAX_KEY_LEN     61
+#define KEY_BUF_SIZE    5
+
+>>>>>>> v4.9.227
 #define	Rx_Smooth_Factor		20
 #define DMESG(x, a...)
 #define DMESGW(x, a...)
@@ -89,6 +95,7 @@ extern u32 rt_global_debug_component;
 			pr_debug("RTL8192U: " x "\n", ##args);	\
 	} while (0)
 
+<<<<<<< HEAD
 #define COMP_TRACE              BIT0  /* Function call tracing. */
 #define COMP_DBG                BIT1
 #define COMP_INIT               BIT2  /* Driver initialization/halt/reset. */
@@ -127,6 +134,46 @@ extern u32 rt_global_debug_component;
 #define COMP_DOWN               BIT29 /* rm driver module */
 #define COMP_RESET              BIT30 /* Silent reset */
 #define COMP_ERR                BIT31 /* Error out, always on */
+=======
+#define COMP_TRACE              BIT(0)  /* Function call tracing. */
+#define COMP_DBG                BIT(1)
+#define COMP_INIT               BIT(2)  /* Driver initialization/halt/reset. */
+
+
+#define COMP_RECV               BIT(3)  /* Receive data path. */
+#define COMP_SEND               BIT(4)  /* Send data path. */
+#define COMP_IO                 BIT(5)
+/* 802.11 Power Save mode or System/Device Power state. */
+#define COMP_POWER              BIT(6)
+/* 802.11 link related: join/start BSS, leave BSS. */
+#define COMP_EPROM              BIT(7)
+#define COMP_SWBW               BIT(8)  /* Bandwidth switch. */
+#define COMP_POWER_TRACKING     BIT(9)  /* 8190 TX Power Tracking */
+#define COMP_TURBO              BIT(10) /* Turbo Mode */
+#define COMP_QOS                BIT(11)
+#define COMP_RATE               BIT(12) /* Rate Adaptive mechanism */
+#define COMP_RM                 BIT(13) /* Radio Measurement */
+#define COMP_DIG                BIT(14)
+#define COMP_PHY                BIT(15)
+#define COMP_CH                 BIT(16) /* Channel setting debug */
+#define COMP_TXAGC              BIT(17) /* Tx power */
+#define COMP_HIPWR              BIT(18) /* High Power Mechanism */
+#define COMP_HALDM              BIT(19) /* HW Dynamic Mechanism */
+#define COMP_SEC                BIT(20) /* Event handling */
+#define COMP_LED                BIT(21)
+#define COMP_RF                 BIT(22)
+#define COMP_RXDESC             BIT(23) /* Rx desc information for SD3 debug */
+
+/* 11n or 8190 specific code */
+
+#define COMP_FIRMWARE           BIT(24) /* Firmware downloading */
+#define COMP_HT                 BIT(25) /* 802.11n HT related information */
+#define COMP_AMSDU              BIT(26) /* A-MSDU Debugging */
+#define COMP_SCAN               BIT(27)
+#define COMP_DOWN               BIT(29) /* rm driver module */
+#define COMP_RESET              BIT(30) /* Silent reset */
+#define COMP_ERR                BIT(31) /* Error out, always on */
+>>>>>>> v4.9.227
 
 #define RTL819x_DEBUG
 #ifdef RTL819x_DEBUG
@@ -337,11 +384,19 @@ typedef struct _tx_fwinfo_819x_usb {
 	u32	PacketID:13;
 } tx_fwinfo_819x_usb, *ptx_fwinfo_819x_usb;
 
+<<<<<<< HEAD
 typedef struct rtl8192_rx_info {
 	struct urb *urb;
 	struct net_device *dev;
 	u8 out_pipe;
 } rtl8192_rx_info ;
+=======
+struct rtl8192_rx_info {
+	struct urb *urb;
+	struct net_device *dev;
+	u8 out_pipe;
+};
+>>>>>>> v4.9.227
 
 typedef struct rx_desc_819x_usb {
 	/* DOWRD 0 */
@@ -568,7 +623,11 @@ typedef struct _rt_9x_tx_rate_history {
 	u32             ht_mcs[4][16];
 } rt_tx_rahis_t, *prt_tx_rahis_t;
 typedef struct _RT_SMOOTH_DATA_4RF {
+<<<<<<< HEAD
 	char    elements[4][100]; /* array to store values */
+=======
+	s8    elements[4][100]; /* array to store values */
+>>>>>>> v4.9.227
 	u32     index;            /* index to current array to store */
 	u32     TotalNum;         /* num of valid elements */
 	u32     TotalVal[4];      /* sum of valid elements */
@@ -914,8 +973,12 @@ typedef struct r8192_priv {
 	/* If 1, allow bad crc frame, reception in monitor mode */
 	short crcmon;
 
+<<<<<<< HEAD
 	struct semaphore wx_sem;
 	struct semaphore rf_sem;	/* Used to lock rf write operation */
+=======
+	struct mutex wx_mutex;
+>>>>>>> v4.9.227
 
 	u8 rf_type;			/* 0: 1T2R, 1: 2T4R */
 	RT_RF_TYPE_819xU rf_chip;
@@ -1067,7 +1130,11 @@ typedef struct r8192_priv {
 	s8 cck_present_attentuation;
 	u8 cck_present_attentuation_20Mdefault;
 	u8 cck_present_attentuation_40Mdefault;
+<<<<<<< HEAD
 	char cck_present_attentuation_difference;
+=======
+	s8 cck_present_attentuation_difference;
+>>>>>>> v4.9.227
 	bool btxpower_tracking;
 	bool bcck_in_ch14;
 	bool btxpowerdata_readfromEEPORM;
@@ -1164,10 +1231,17 @@ int read_nic_byte(struct net_device *dev, int x, u8 *data);
 int read_nic_byte_E(struct net_device *dev, int x, u8 *data);
 int read_nic_dword(struct net_device *dev, int x, u32 *data);
 int read_nic_word(struct net_device *dev, int x, u16 *data);
+<<<<<<< HEAD
 void write_nic_byte(struct net_device *dev, int x, u8 y);
 void write_nic_byte_E(struct net_device *dev, int x, u8 y);
 void write_nic_word(struct net_device *dev, int x, u16 y);
 void write_nic_dword(struct net_device *dev, int x, u32 y);
+=======
+int write_nic_byte(struct net_device *dev, int x, u8 y);
+int write_nic_byte_E(struct net_device *dev, int x, u8 y);
+int write_nic_word(struct net_device *dev, int x, u16 y);
+int write_nic_dword(struct net_device *dev, int x, u32 y);
+>>>>>>> v4.9.227
 void force_pci_posting(struct net_device *dev);
 
 void rtl8192_rtx_disable(struct net_device *);
@@ -1189,7 +1263,11 @@ void write_phy_cck(struct net_device *dev, u8 adr, u32 data);
 void write_phy_ofdm(struct net_device *dev, u8 adr, u32 data);
 void rtl8185_tx_antenna(struct net_device *dev, u8 ant);
 void rtl8192_set_rxconf(struct net_device *dev);
+<<<<<<< HEAD
 extern void rtl819xusb_beacon_tx(struct net_device *dev, u16 tx_rate);
+=======
+void rtl819xusb_beacon_tx(struct net_device *dev, u16 tx_rate);
+>>>>>>> v4.9.227
 
 void EnableHWSecurityConfig8192(struct net_device *dev);
 void setKey(struct net_device *dev, u8 EntryNo, u8 KeyIndex, u16 KeyType, u8 *MacAddr, u8 DefaultKey, u32 *KeyContent);

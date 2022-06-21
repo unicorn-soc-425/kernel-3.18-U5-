@@ -31,6 +31,7 @@
 #include "../internal.h"
 
 /*
+<<<<<<< HEAD
  * Recalculate the mask of events relevant to a given inode locked.
  */
 static void fsnotify_recalc_inode_mask_locked(struct inode *inode)
@@ -46,13 +47,19 @@ static void fsnotify_recalc_inode_mask_locked(struct inode *inode)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Recalculate the inode->i_fsnotify_mask, or the mask of all FS_* event types
  * any notifier is interested in hearing for this inode.
  */
 void fsnotify_recalc_inode_mask(struct inode *inode)
 {
 	spin_lock(&inode->i_lock);
+<<<<<<< HEAD
 	fsnotify_recalc_inode_mask_locked(inode);
+=======
+	inode->i_fsnotify_mask = fsnotify_recalc_mask(&inode->i_fsnotify_marks);
+>>>>>>> v4.9.227
 	spin_unlock(&inode->i_lock);
 
 	__fsnotify_update_child_dentry_flags(inode);
@@ -60,27 +67,41 @@ void fsnotify_recalc_inode_mask(struct inode *inode)
 
 void fsnotify_destroy_inode_mark(struct fsnotify_mark *mark)
 {
+<<<<<<< HEAD
 	struct inode *inode = mark->i.inode;
+=======
+	struct inode *inode = mark->inode;
+>>>>>>> v4.9.227
 
 	BUG_ON(!mutex_is_locked(&mark->group->mark_mutex));
 	assert_spin_locked(&mark->lock);
 
 	spin_lock(&inode->i_lock);
 
+<<<<<<< HEAD
 	hlist_del_init_rcu(&mark->i.i_list);
 	mark->i.inode = NULL;
+=======
+	hlist_del_init_rcu(&mark->obj_list);
+	mark->inode = NULL;
+>>>>>>> v4.9.227
 
 	/*
 	 * this mark is now off the inode->i_fsnotify_marks list and we
 	 * hold the inode->i_lock, so this is the perfect time to update the
 	 * inode->i_fsnotify_mask
 	 */
+<<<<<<< HEAD
 	fsnotify_recalc_inode_mask_locked(inode);
 
+=======
+	inode->i_fsnotify_mask = fsnotify_recalc_mask(&inode->i_fsnotify_marks);
+>>>>>>> v4.9.227
 	spin_unlock(&inode->i_lock);
 }
 
 /*
+<<<<<<< HEAD
  * Given an inode, destroy all of the marks associated with that inode.
  */
 void fsnotify_clear_marks_by_inode(struct inode *inode)
@@ -112,6 +133,8 @@ void fsnotify_clear_marks_by_inode(struct inode *inode)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Given a group clear all of the inode marks associated with that group.
  */
 void fsnotify_clear_inode_marks_by_group(struct fsnotify_group *group)
@@ -123,6 +146,7 @@ void fsnotify_clear_inode_marks_by_group(struct fsnotify_group *group)
  * given a group and inode, find the mark associated with that combination.
  * if found take a reference to that mark and return it, else return NULL
  */
+<<<<<<< HEAD
 static struct fsnotify_mark *fsnotify_find_inode_mark_locked(
 		struct fsnotify_group *group,
 		struct inode *inode)
@@ -144,13 +168,19 @@ static struct fsnotify_mark *fsnotify_find_inode_mark_locked(
  * given a group and inode, find the mark associated with that combination.
  * if found take a reference to that mark and return it, else return NULL
  */
+=======
+>>>>>>> v4.9.227
 struct fsnotify_mark *fsnotify_find_inode_mark(struct fsnotify_group *group,
 					       struct inode *inode)
 {
 	struct fsnotify_mark *mark;
 
 	spin_lock(&inode->i_lock);
+<<<<<<< HEAD
 	mark = fsnotify_find_inode_mark_locked(group, inode);
+=======
+	mark = fsnotify_find_mark(&inode->i_fsnotify_marks, group);
+>>>>>>> v4.9.227
 	spin_unlock(&inode->i_lock);
 
 	return mark;
@@ -168,10 +198,17 @@ void fsnotify_set_inode_mark_mask_locked(struct fsnotify_mark *mark,
 	assert_spin_locked(&mark->lock);
 
 	if (mask &&
+<<<<<<< HEAD
 	    mark->i.inode &&
 	    !(mark->flags & FSNOTIFY_MARK_FLAG_OBJECT_PINNED)) {
 		mark->flags |= FSNOTIFY_MARK_FLAG_OBJECT_PINNED;
 		inode = igrab(mark->i.inode);
+=======
+	    mark->inode &&
+	    !(mark->flags & FSNOTIFY_MARK_FLAG_OBJECT_PINNED)) {
+		mark->flags |= FSNOTIFY_MARK_FLAG_OBJECT_PINNED;
+		inode = igrab(mark->inode);
+>>>>>>> v4.9.227
 		/*
 		 * we shouldn't be able to get here if the inode wasn't
 		 * already safely held in memory.  But bug in case it
@@ -192,9 +229,13 @@ int fsnotify_add_inode_mark(struct fsnotify_mark *mark,
 			    struct fsnotify_group *group, struct inode *inode,
 			    int allow_dups)
 {
+<<<<<<< HEAD
 	struct fsnotify_mark *lmark, *last = NULL;
 	int ret = 0;
 	int cmp;
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	mark->flags |= FSNOTIFY_MARK_FLAG_INODE;
 
@@ -202,6 +243,7 @@ int fsnotify_add_inode_mark(struct fsnotify_mark *mark,
 	assert_spin_locked(&mark->lock);
 
 	spin_lock(&inode->i_lock);
+<<<<<<< HEAD
 
 	mark->i.inode = inode;
 
@@ -233,6 +275,12 @@ int fsnotify_add_inode_mark(struct fsnotify_mark *mark,
 	hlist_add_behind_rcu(&mark->i.i_list, &last->i.i_list);
 out:
 	fsnotify_recalc_inode_mask_locked(inode);
+=======
+	mark->inode = inode;
+	ret = fsnotify_add_mark_list(&inode->i_fsnotify_marks, mark,
+				     allow_dups);
+	inode->i_fsnotify_mask = fsnotify_recalc_mask(&inode->i_fsnotify_marks);
+>>>>>>> v4.9.227
 	spin_unlock(&inode->i_lock);
 
 	return ret;
@@ -240,6 +288,7 @@ out:
 
 /**
  * fsnotify_unmount_inodes - an sb is unmounting.  handle any watched inodes.
+<<<<<<< HEAD
  * @list: list of inodes being unmounted (sb->s_inodes)
  *
  * Called during unmount with no locks held, so needs to be safe against
@@ -253,6 +302,19 @@ void fsnotify_unmount_inodes(struct list_head *list)
 	list_for_each_entry_safe(inode, next_i, list, i_sb_list) {
 		struct inode *need_iput_tmp;
 
+=======
+ * @sb: superblock being unmounted.
+ *
+ * Called during unmount with no locks held, so needs to be safe against
+ * concurrent modifiers. We temporarily drop sb->s_inode_list_lock and CAN block.
+ */
+void fsnotify_unmount_inodes(struct super_block *sb)
+{
+	struct inode *inode, *iput_inode = NULL;
+
+	spin_lock(&sb->s_inode_list_lock);
+	list_for_each_entry(inode, &sb->s_inodes, i_sb_list) {
+>>>>>>> v4.9.227
 		/*
 		 * We cannot __iget() an inode in state I_FREEING,
 		 * I_WILL_FREE, or I_NEW which is fine because by that point
@@ -275,6 +337,7 @@ void fsnotify_unmount_inodes(struct list_head *list)
 			continue;
 		}
 
+<<<<<<< HEAD
 		need_iput_tmp = need_iput;
 		need_iput = NULL;
 
@@ -310,15 +373,34 @@ void fsnotify_unmount_inodes(struct list_head *list)
 
 		if (need_iput_tmp)
 			iput(need_iput_tmp);
+=======
+		__iget(inode);
+		spin_unlock(&inode->i_lock);
+		spin_unlock(&sb->s_inode_list_lock);
+
+		if (iput_inode)
+			iput(iput_inode);
+>>>>>>> v4.9.227
 
 		/* for each watch, send FS_UNMOUNT and then remove it */
 		fsnotify(inode, FS_UNMOUNT, inode, FSNOTIFY_EVENT_INODE, NULL, 0);
 
 		fsnotify_inode_delete(inode);
 
+<<<<<<< HEAD
 		iput(inode);
 
 		spin_lock(&inode_sb_list_lock);
 	}
 	spin_unlock(&inode_sb_list_lock);
+=======
+		iput_inode = inode;
+
+		spin_lock(&sb->s_inode_list_lock);
+	}
+	spin_unlock(&sb->s_inode_list_lock);
+
+	if (iput_inode)
+		iput(iput_inode);
+>>>>>>> v4.9.227
 }

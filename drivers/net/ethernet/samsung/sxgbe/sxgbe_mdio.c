@@ -180,7 +180,11 @@ int sxgbe_mdio_register(struct net_device *ndev)
 	}
 
 	for (phy_addr = 0; phy_addr < PHY_MAX_ADDR; phy_addr++) {
+<<<<<<< HEAD
 		struct phy_device *phy = mdio_bus->phy_map[phy_addr];
+=======
+		struct phy_device *phy = mdiobus_get_phy(mdio_bus, phy_addr);
+>>>>>>> v4.9.227
 
 		if (phy) {
 			char irq_num[4];
@@ -216,7 +220,11 @@ int sxgbe_mdio_register(struct net_device *ndev)
 			}
 			netdev_info(ndev, "PHY ID %08x at %d IRQ %s (%s)%s\n",
 				    phy->phy_id, phy_addr, irq_str,
+<<<<<<< HEAD
 				    dev_name(&phy->dev), act ? " active" : "");
+=======
+				    phydev_name(phy), act ? " active" : "");
+>>>>>>> v4.9.227
 			phy_found = true;
 		}
 	}

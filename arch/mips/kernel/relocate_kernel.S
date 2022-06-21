@@ -24,7 +24,11 @@ LEAF(relocate_new_kernel)
 
 process_entry:
 	PTR_L		s2, (s0)
+<<<<<<< HEAD
 	PTR_ADD		s0, s0, SZREG
+=======
+	PTR_ADDIU	s0, s0, SZREG
+>>>>>>> v4.9.227
 
 	/*
 	 * In case of a kdump/crash kernel, the indirection page is not
@@ -61,9 +65,15 @@ copy_word:
 	/* copy page word by word */
 	REG_L		s5, (s2)
 	REG_S		s5, (s4)
+<<<<<<< HEAD
 	PTR_ADD		s4, s4, SZREG
 	PTR_ADD		s2, s2, SZREG
 	LONG_SUB	s6, s6, 1
+=======
+	PTR_ADDIU	s4, s4, SZREG
+	PTR_ADDIU	s2, s2, SZREG
+	LONG_ADDIU	s6, s6, -1
+>>>>>>> v4.9.227
 	beq		s6, zero, process_entry
 	b		copy_word
 	b		process_entry

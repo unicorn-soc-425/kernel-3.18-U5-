@@ -7,8 +7,14 @@
 #include <linux/compiler.h>
 #include <linux/errno.h>
 #include <linux/lockdep.h>
+<<<<<<< HEAD
 #include <asm/alternative.h>
 #include <asm/cpufeature.h>
+=======
+#include <linux/kasan-checks.h>
+#include <asm/alternative.h>
+#include <asm/cpufeatures.h>
+>>>>>>> v4.9.227
 #include <asm/page.h>
 
 /*
@@ -58,31 +64,51 @@ int __copy_from_user_nocheck(void *dst, const void __user *src, unsigned size)
 		return copy_user_generic(dst, (__force void *)src, size);
 	switch (size) {
 	case 1:
+<<<<<<< HEAD
 		__uaccess_begin();
+=======
+		__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 		__get_user_asm(*(u8 *)dst, (u8 __user *)src,
 			      ret, "b", "b", "=q", 1);
 		__uaccess_end();
 		return ret;
 	case 2:
+<<<<<<< HEAD
 		__uaccess_begin();
+=======
+		__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 		__get_user_asm(*(u16 *)dst, (u16 __user *)src,
 			      ret, "w", "w", "=r", 2);
 		__uaccess_end();
 		return ret;
 	case 4:
+<<<<<<< HEAD
 		__uaccess_begin();
+=======
+		__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 		__get_user_asm(*(u32 *)dst, (u32 __user *)src,
 			      ret, "l", "k", "=r", 4);
 		__uaccess_end();
 		return ret;
 	case 8:
+<<<<<<< HEAD
 		__uaccess_begin();
+=======
+		__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 		__get_user_asm(*(u64 *)dst, (u64 __user *)src,
 			      ret, "q", "", "=r", 8);
 		__uaccess_end();
 		return ret;
 	case 10:
+<<<<<<< HEAD
 		__uaccess_begin();
+=======
+		__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 		__get_user_asm(*(u64 *)dst, (u64 __user *)src,
 			       ret, "q", "", "=r", 10);
 		if (likely(!ret))
@@ -92,7 +118,11 @@ int __copy_from_user_nocheck(void *dst, const void __user *src, unsigned size)
 		__uaccess_end();
 		return ret;
 	case 16:
+<<<<<<< HEAD
 		__uaccess_begin();
+=======
+		__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 		__get_user_asm(*(u64 *)dst, (u64 __user *)src,
 			       ret, "q", "", "=r", 16);
 		if (likely(!ret))
@@ -110,6 +140,10 @@ static __always_inline __must_check
 int __copy_from_user(void *dst, const void __user *src, unsigned size)
 {
 	might_fault();
+<<<<<<< HEAD
+=======
+	kasan_check_write(dst, size);
+>>>>>>> v4.9.227
 	return __copy_from_user_nocheck(dst, src, size);
 }
 
@@ -177,6 +211,10 @@ static __always_inline __must_check
 int __copy_to_user(void __user *dst, const void *src, unsigned size)
 {
 	might_fault();
+<<<<<<< HEAD
+=======
+	kasan_check_read(src, size);
+>>>>>>> v4.9.227
 	return __copy_to_user_nocheck(dst, src, size);
 }
 
@@ -244,12 +282,20 @@ int __copy_in_user(void __user *dst, const void __user *src, unsigned size)
 static __must_check __always_inline int
 __copy_from_user_inatomic(void *dst, const void __user *src, unsigned size)
 {
+<<<<<<< HEAD
+=======
+	kasan_check_write(dst, size);
+>>>>>>> v4.9.227
 	return __copy_from_user_nocheck(dst, src, size);
 }
 
 static __must_check __always_inline int
 __copy_to_user_inatomic(void __user *dst, const void *src, unsigned size)
 {
+<<<<<<< HEAD
+=======
+	kasan_check_read(src, size);
+>>>>>>> v4.9.227
 	return __copy_to_user_nocheck(dst, src, size);
 }
 
@@ -260,6 +306,10 @@ static inline int
 __copy_from_user_nocache(void *dst, const void __user *src, unsigned size)
 {
 	might_fault();
+<<<<<<< HEAD
+=======
+	kasan_check_write(dst, size);
+>>>>>>> v4.9.227
 	return __copy_user_nocache(dst, src, size, 1);
 }
 
@@ -267,10 +317,18 @@ static inline int
 __copy_from_user_inatomic_nocache(void *dst, const void __user *src,
 				  unsigned size)
 {
+<<<<<<< HEAD
+=======
+	kasan_check_write(dst, size);
+>>>>>>> v4.9.227
 	return __copy_user_nocache(dst, src, size, 0);
 }
 
 unsigned long
+<<<<<<< HEAD
 copy_user_handle_tail(char *to, char *from, unsigned len, unsigned zerorest);
+=======
+copy_user_handle_tail(char *to, char *from, unsigned len);
+>>>>>>> v4.9.227
 
 #endif /* _ASM_X86_UACCESS_64_H */

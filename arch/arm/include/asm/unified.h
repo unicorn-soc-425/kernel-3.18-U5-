@@ -24,6 +24,17 @@
 	.syntax unified
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_V7M
+#define AR_CLASS(x...)
+#define M_CLASS(x...)	x
+#else
+#define AR_CLASS(x...)	x
+#define M_CLASS(x...)
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_THUMB2_KERNEL
 
 #if __GNUC__ < 4
@@ -37,7 +48,10 @@
 #define THUMB(x...)	x
 #ifdef __ASSEMBLY__
 #define W(instr)	instr.w
+<<<<<<< HEAD
 #define BSYM(sym)	sym + 1
+=======
+>>>>>>> v4.9.227
 #else
 #define WASM(instr)	#instr ".w"
 #endif
@@ -51,7 +65,10 @@
 #define THUMB(x...)
 #ifdef __ASSEMBLY__
 #define W(instr)	instr
+<<<<<<< HEAD
 #define BSYM(sym)	sym
+=======
+>>>>>>> v4.9.227
 #else
 #define WASM(instr)	#instr
 #endif

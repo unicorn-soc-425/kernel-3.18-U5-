@@ -10,6 +10,10 @@
 #define  BCMA_CLKCTLST_HAVEALPREQ	0x00000008 /* ALP available request */
 #define  BCMA_CLKCTLST_HAVEHTREQ	0x00000010 /* HT available request */
 #define  BCMA_CLKCTLST_HWCROFF		0x00000020 /* Force HW clock request off */
+<<<<<<< HEAD
+=======
+#define  BCMA_CLKCTLST_HQCLKREQ		0x00000040 /* HQ Clock */
+>>>>>>> v4.9.227
 #define  BCMA_CLKCTLST_EXTRESREQ	0x00000700 /* Mask of external resource requests */
 #define  BCMA_CLKCTLST_EXTRESREQ_SHIFT	8
 #define  BCMA_CLKCTLST_HAVEALP		0x00010000 /* ALP available */
@@ -23,6 +27,10 @@
 #define  BCMA_CLKCTLST_4328A0_HAVEALP	0x00020000 /* 4328a0 has reversed bits */
 
 /* Agent registers (common for every core) */
+<<<<<<< HEAD
+=======
+#define BCMA_OOB_SEL_OUT_A30		0x0100
+>>>>>>> v4.9.227
 #define BCMA_IOCTL			0x0408 /* IO control */
 #define  BCMA_IOCTL_CLK			0x0001
 #define  BCMA_IOCTL_FGC			0x0002
@@ -64,6 +72,11 @@
 #define  BCMA_PCI_GPIO_XTAL		0x40	/* PCI config space GPIO 14 for Xtal powerup */
 #define  BCMA_PCI_GPIO_PLL		0x80	/* PCI config space GPIO 15 for PLL powerdown */
 
+<<<<<<< HEAD
+=======
+#define BCMA_PCIE2_BAR0_WIN2		0x70
+
+>>>>>>> v4.9.227
 /* SiliconBackplane Address Map.
  * All regions may not exist on all chips.
  */

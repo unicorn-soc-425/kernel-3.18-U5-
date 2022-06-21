@@ -80,10 +80,13 @@
 #define SRMMU_PRIV         0x1c
 #define SRMMU_PRIV_RDONLY  0x18
 
+<<<<<<< HEAD
 #define SRMMU_FILE         0x40	/* Implemented in software */
 
 #define SRMMU_PTE_FILE_SHIFT     8	/* == 32-PTE_FILE_MAX_BITS */
 
+=======
+>>>>>>> v4.9.227
 #define SRMMU_CHG_MASK    (0xffffff00 | SRMMU_REF | SRMMU_DIRTY)
 
 /* SRMMU swap entry encoding
@@ -94,6 +97,7 @@
  * oooooooooooooooooootttttRRRRRRRR
  * fedcba9876543210fedcba9876543210
  *
+<<<<<<< HEAD
  * The bottom 8 bits are reserved for protection and status bits, especially
  * FILE and PRESENT.
  */
@@ -101,6 +105,15 @@
 #define SRMMU_SWP_TYPE_SHIFT	SRMMU_PTE_FILE_SHIFT
 #define SRMMU_SWP_OFF_MASK	0x7ffff
 #define SRMMU_SWP_OFF_SHIFT	(SRMMU_PTE_FILE_SHIFT + 5)
+=======
+ * The bottom 7 bits are reserved for protection and status bits, especially
+ * PRESENT.
+ */
+#define SRMMU_SWP_TYPE_MASK	0x1f
+#define SRMMU_SWP_TYPE_SHIFT	7
+#define SRMMU_SWP_OFF_MASK	0xfffff
+#define SRMMU_SWP_OFF_SHIFT	(SRMMU_SWP_TYPE_SHIFT + 5)
+>>>>>>> v4.9.227
 
 /* Some day I will implement true fine grained access bits for
  * user pages because the SRMMU gives us the capabilities to

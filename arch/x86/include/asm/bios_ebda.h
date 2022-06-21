@@ -17,6 +17,7 @@ static inline unsigned int get_bios_ebda(void)
 	return address;	/* 0 means none */
 }
 
+<<<<<<< HEAD
 /*
  * Return the sanitized length of the EBDA in bytes, if it exists.
  */
@@ -39,6 +40,9 @@ static inline unsigned int get_bios_ebda_length(void)
 }
 
 void reserve_ebda_region(void);
+=======
+void reserve_bios_regions(void);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_X86_CHECK_BIOS_CORRUPTION
 /*

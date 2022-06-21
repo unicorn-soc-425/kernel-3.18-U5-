@@ -333,7 +333,11 @@ static int wm8955_configure_clocking(struct snd_soc_codec *codec)
 static int wm8955_sysclk(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	int ret = 0;
 
 	/* Always disable the clocks - if we're doing reconfiguration this
@@ -402,7 +406,11 @@ static int wm8955_put_deemph(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
 	struct wm8955_priv *wm8955 = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	int deemph = ucontrol->value.integer.value[0];
+=======
+	unsigned int deemph = ucontrol->value.integer.value[0];
+>>>>>>> v4.9.227
 
 	if (deemph > 1)
 		return -EINVAL;
@@ -785,7 +793,11 @@ static int wm8955_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			ret = regulator_bulk_enable(ARRAY_SIZE(wm8955->supplies),
 						    wm8955->supplies);
 			if (ret != 0) {
@@ -838,7 +850,10 @@ static int wm8955_set_bias_level(struct snd_soc_codec *codec,
 				       wm8955->supplies);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -866,6 +881,7 @@ static struct snd_soc_dai_driver wm8955_dai = {
 	.ops = &wm8955_dai_ops,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int wm8955_suspend(struct snd_soc_codec *codec)
 {
@@ -889,6 +905,8 @@ static int wm8955_resume(struct snd_soc_codec *codec)
 #define wm8955_resume NULL
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int wm8955_probe(struct snd_soc_codec *codec)
 {
 	struct wm8955_priv *wm8955 = snd_soc_codec_get_drvdata(codec);
@@ -952,7 +970,11 @@ static int wm8955_probe(struct snd_soc_codec *codec)
 					    WM8955_DMEN, WM8955_DMEN);
 	}
 
+<<<<<<< HEAD
 	wm8955_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
+=======
+	snd_soc_codec_force_bias_level(codec, SND_SOC_BIAS_STANDBY);
+>>>>>>> v4.9.227
 
 	/* Bias level configuration will have done an extra enable */
 	regulator_bulk_disable(ARRAY_SIZE(wm8955->supplies), wm8955->supplies);
@@ -964,6 +986,7 @@ err_enable:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int wm8955_remove(struct snd_soc_codec *codec)
 {
 	wm8955_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -983,6 +1006,21 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8955 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8955_dapm_widgets),
 	.dapm_routes =	wm8955_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm8955_dapm_routes),
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8955 = {
+	.probe =	wm8955_probe,
+	.set_bias_level = wm8955_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8955_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8955_snd_controls),
+		.dapm_widgets		= wm8955_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8955_dapm_widgets),
+		.dapm_routes		= wm8955_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm8955_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config wm8955_regmap = {
@@ -1041,7 +1079,10 @@ MODULE_DEVICE_TABLE(i2c, wm8955_i2c_id);
 static struct i2c_driver wm8955_i2c_driver = {
 	.driver = {
 		.name = "wm8955",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe =    wm8955_i2c_probe,
 	.remove =   wm8955_i2c_remove,

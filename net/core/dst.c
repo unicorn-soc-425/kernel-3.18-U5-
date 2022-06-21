@@ -20,8 +20,15 @@
 #include <net/net_namespace.h>
 #include <linux/sched.h>
 #include <linux/prefetch.h>
+<<<<<<< HEAD
 
 #include <net/dst.h>
+=======
+#include <net/lwtunnel.h>
+
+#include <net/dst.h>
+#include <net/dst_metadata.h>
+>>>>>>> v4.9.227
 
 /*
  * Theory of operations:
@@ -142,22 +149,74 @@ loop:
 	mutex_unlock(&dst_gc_mutex);
 }
 
+<<<<<<< HEAD
 int dst_discard_sk(struct sock *sk, struct sk_buff *skb)
+=======
+int dst_discard_out(struct net *net, struct sock *sk, struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	kfree_skb(skb);
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(dst_discard_sk);
 
 const u32 dst_default_metrics[RTAX_MAX + 1] = {
+=======
+EXPORT_SYMBOL(dst_discard_out);
+
+const struct dst_metrics dst_default_metrics = {
+>>>>>>> v4.9.227
 	/* This initializer is needed to force linker to place this variable
 	 * into const section. Otherwise it might end into bss section.
 	 * We really want to avoid false sharing on this variable, and catch
 	 * any writes on it.
 	 */
+<<<<<<< HEAD
 	[RTAX_MAX] = 0xdeadbeef,
 };
 
+=======
+	.refcnt = ATOMIC_INIT(1),
+};
+
+void dst_init(struct dst_entry *dst, struct dst_ops *ops,
+	      struct net_device *dev, int initial_ref, int initial_obsolete,
+	      unsigned short flags)
+{
+	dst->child = NULL;
+	dst->dev = dev;
+	if (dev)
+		dev_hold(dev);
+	dst->ops = ops;
+	dst_init_metrics(dst, dst_default_metrics.metrics, true);
+	dst->expires = 0UL;
+	dst->path = dst;
+	dst->from = NULL;
+#ifdef CONFIG_XFRM
+	dst->xfrm = NULL;
+#endif
+	dst->input = dst_discard;
+	dst->output = dst_discard_out;
+	dst->error = 0;
+	dst->obsolete = initial_obsolete;
+	dst->header_len = 0;
+	dst->trailer_len = 0;
+#ifdef CONFIG_IP_ROUTE_CLASSID
+	dst->tclassid = 0;
+#endif
+	dst->lwtstate = NULL;
+	atomic_set(&dst->__refcnt, initial_ref);
+	dst->__use = 0;
+	dst->lastuse = jiffies;
+	dst->flags = flags;
+	dst->pending_confirm = 0;
+	dst->next = NULL;
+	if (!(flags & DST_NOCOUNT))
+		dst_entries_add(ops, 1);
+}
+EXPORT_SYMBOL(dst_init);
+>>>>>>> v4.9.227
 
 void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
 		int initial_ref, int initial_obsolete, unsigned short flags)
@@ -168,6 +227,7 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
 		if (ops->gc(ops))
 			return NULL;
 	}
+<<<<<<< HEAD
 	dst = kmem_cache_alloc(ops->kmem_cachep, GFP_ATOMIC);
 	if (!dst)
 		return NULL;
@@ -200,6 +260,15 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
 	dst->next = NULL;
 	if (!(flags & DST_NOCOUNT))
 		dst_entries_add(ops, 1);
+=======
+
+	dst = kmem_cache_alloc(ops->kmem_cachep, GFP_ATOMIC);
+	if (!dst)
+		return NULL;
+
+	dst_init(dst, ops, dev, initial_ref, initial_obsolete, flags);
+
+>>>>>>> v4.9.227
 	return dst;
 }
 EXPORT_SYMBOL(dst_alloc);
@@ -211,7 +280,11 @@ static void ___dst_free(struct dst_entry *dst)
 	 */
 	if (dst->dev == NULL || !(dst->dev->flags&IFF_UP)) {
 		dst->input = dst_discard;
+<<<<<<< HEAD
 		dst->output = dst_discard_sk;
+=======
+		dst->output = dst_discard_out;
+>>>>>>> v4.9.227
 	}
 	dst->obsolete = DST_OBSOLETE_DEAD;
 }
@@ -248,7 +321,17 @@ again:
 		dst->ops->destroy(dst);
 	if (dst->dev)
 		dev_put(dst->dev);
+<<<<<<< HEAD
 	kmem_cache_free(dst->ops->kmem_cachep, dst);
+=======
+
+	lwtstate_put(dst->lwtstate);
+
+	if (dst->flags & DST_METADATA)
+		metadata_dst_free((struct metadata_dst *)dst);
+	else
+		kmem_cache_free(dst->ops->kmem_cachep, dst);
+>>>>>>> v4.9.227
 
 	dst = child;
 	if (dst) {
@@ -285,7 +368,13 @@ void dst_release(struct dst_entry *dst)
 		unsigned short nocache = dst->flags & DST_NOCACHE;
 
 		newrefcnt = atomic_dec_return(&dst->__refcnt);
+<<<<<<< HEAD
 		WARN_ON(newrefcnt < 0);
+=======
+		if (unlikely(newrefcnt < 0))
+			net_warn_ratelimited("%s: dst:%p refcnt:%d\n",
+					     __func__, dst, newrefcnt);
+>>>>>>> v4.9.227
 		if (!newrefcnt && unlikely(nocache))
 			call_rcu(&dst->rcu_head, dst_destroy_rcu);
 	}
@@ -294,6 +383,7 @@ EXPORT_SYMBOL(dst_release);
 
 u32 *dst_cow_metrics_generic(struct dst_entry *dst, unsigned long old)
 {
+<<<<<<< HEAD
 	u32 *p = kmalloc(sizeof(u32) * RTAX_MAX, GFP_ATOMIC);
 
 	if (p) {
@@ -301,18 +391,41 @@ u32 *dst_cow_metrics_generic(struct dst_entry *dst, unsigned long old)
 		unsigned long prev, new;
 
 		memcpy(p, old_p, sizeof(u32) * RTAX_MAX);
+=======
+	struct dst_metrics *p = kmalloc(sizeof(*p), GFP_ATOMIC);
+
+	if (p) {
+		struct dst_metrics *old_p = (struct dst_metrics *)__DST_METRICS_PTR(old);
+		unsigned long prev, new;
+
+		atomic_set(&p->refcnt, 1);
+		memcpy(p->metrics, old_p->metrics, sizeof(p->metrics));
+>>>>>>> v4.9.227
 
 		new = (unsigned long) p;
 		prev = cmpxchg(&dst->_metrics, old, new);
 
 		if (prev != old) {
 			kfree(p);
+<<<<<<< HEAD
 			p = __DST_METRICS_PTR(prev);
 			if (prev & DST_METRICS_READ_ONLY)
 				p = NULL;
 		}
 	}
 	return p;
+=======
+			p = (struct dst_metrics *)__DST_METRICS_PTR(prev);
+			if (prev & DST_METRICS_READ_ONLY)
+				p = NULL;
+		} else if (prev & DST_METRICS_REFCOUNTED) {
+			if (atomic_dec_and_test(&old_p->refcnt))
+				kfree(old_p);
+		}
+	}
+	BUILD_BUG_ON(offsetof(struct dst_metrics, metrics) != 0);
+	return (u32 *)p;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(dst_cow_metrics_generic);
 
@@ -321,13 +434,18 @@ void __dst_destroy_metrics_generic(struct dst_entry *dst, unsigned long old)
 {
 	unsigned long prev, new;
 
+<<<<<<< HEAD
 	new = ((unsigned long) dst_default_metrics) | DST_METRICS_READ_ONLY;
+=======
+	new = ((unsigned long) &dst_default_metrics) | DST_METRICS_READ_ONLY;
+>>>>>>> v4.9.227
 	prev = cmpxchg(&dst->_metrics, old, new);
 	if (prev == old)
 		kfree(__DST_METRICS_PTR(old));
 }
 EXPORT_SYMBOL(__dst_destroy_metrics_generic);
 
+<<<<<<< HEAD
 /**
  * __skb_dst_set_noref - sets skb dst, without a reference
  * @skb: buffer
@@ -351,6 +469,78 @@ void __skb_dst_set_noref(struct sk_buff *skb, struct dst_entry *dst, bool force)
 	}
 }
 EXPORT_SYMBOL(__skb_dst_set_noref);
+=======
+static struct dst_ops md_dst_ops = {
+	.family =		AF_UNSPEC,
+};
+
+static int dst_md_discard_out(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	WARN_ONCE(1, "Attempting to call output on metadata dst\n");
+	kfree_skb(skb);
+	return 0;
+}
+
+static int dst_md_discard(struct sk_buff *skb)
+{
+	WARN_ONCE(1, "Attempting to call input on metadata dst\n");
+	kfree_skb(skb);
+	return 0;
+}
+
+static void __metadata_dst_init(struct metadata_dst *md_dst, u8 optslen)
+{
+	struct dst_entry *dst;
+
+	dst = &md_dst->dst;
+	dst_init(dst, &md_dst_ops, NULL, 1, DST_OBSOLETE_NONE,
+		 DST_METADATA | DST_NOCACHE | DST_NOCOUNT);
+
+	dst->input = dst_md_discard;
+	dst->output = dst_md_discard_out;
+
+	memset(dst + 1, 0, sizeof(*md_dst) + optslen - sizeof(*dst));
+}
+
+struct metadata_dst *metadata_dst_alloc(u8 optslen, gfp_t flags)
+{
+	struct metadata_dst *md_dst;
+
+	md_dst = kmalloc(sizeof(*md_dst) + optslen, flags);
+	if (!md_dst)
+		return NULL;
+
+	__metadata_dst_init(md_dst, optslen);
+
+	return md_dst;
+}
+EXPORT_SYMBOL_GPL(metadata_dst_alloc);
+
+void metadata_dst_free(struct metadata_dst *md_dst)
+{
+#ifdef CONFIG_DST_CACHE
+	dst_cache_destroy(&md_dst->u.tun_info.dst_cache);
+#endif
+	kfree(md_dst);
+}
+
+struct metadata_dst __percpu *metadata_dst_alloc_percpu(u8 optslen, gfp_t flags)
+{
+	int cpu;
+	struct metadata_dst __percpu *md_dst;
+
+	md_dst = __alloc_percpu_gfp(sizeof(struct metadata_dst) + optslen,
+				    __alignof__(struct metadata_dst), flags);
+	if (!md_dst)
+		return NULL;
+
+	for_each_possible_cpu(cpu)
+		__metadata_dst_init(per_cpu_ptr(md_dst, cpu), optslen);
+
+	return md_dst;
+}
+EXPORT_SYMBOL_GPL(metadata_dst_alloc_percpu);
+>>>>>>> v4.9.227
 
 /* Dirty hack. We did it in 2.2 (in __dst_free),
  * we have _very_ good reasons not to repeat
@@ -371,7 +561,11 @@ static void dst_ifdown(struct dst_entry *dst, struct net_device *dev,
 
 	if (!unregister) {
 		dst->input = dst_discard;
+<<<<<<< HEAD
 		dst->output = dst_discard_sk;
+=======
+		dst->output = dst_discard_out;
+>>>>>>> v4.9.227
 	} else {
 		dst->dev = dev_net(dst->dev)->loopback_dev;
 		dev_hold(dst->dev);
@@ -430,7 +624,11 @@ static struct notifier_block dst_dev_notifier = {
 	.priority = -10, /* must be called after other network notifiers */
 };
 
+<<<<<<< HEAD
 void __init dst_init(void)
+=======
+void __init dst_subsys_init(void)
+>>>>>>> v4.9.227
 {
 	register_netdevice_notifier(&dst_dev_notifier);
 }

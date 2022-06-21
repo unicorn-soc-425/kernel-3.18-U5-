@@ -20,7 +20,15 @@ expression E;
 position p1;
 @@
 
+<<<<<<< HEAD
 kfree@p1(E)
+=======
+(
+* kfree@p1(E)
+|
+* kzfree@p1(E)
+)
+>>>>>>> v4.9.227
 
 @print expression@
 constant char [] c;
@@ -60,7 +68,15 @@ position ok;
 @@
 
 while (1) { ...
+<<<<<<< HEAD
   kfree@ok(E)
+=======
+(
+* kfree@ok(E)
+|
+* kzfree@ok(E)
+)
+>>>>>>> v4.9.227
   ... when != break;
       when != goto l;
       when forall
@@ -74,7 +90,15 @@ statement S;
 position free.p1!=loop.ok,p2!={print.p,sz.p};
 @@
 
+<<<<<<< HEAD
 kfree@p1(E,...)
+=======
+(
+* kfree@p1(E,...)
+|
+* kzfree@p1(E,...)
+)
+>>>>>>> v4.9.227
 ...
 (
  iter(...,subE,...) S // no use

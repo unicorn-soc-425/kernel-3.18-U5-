@@ -149,7 +149,11 @@ static void ath9k_htc_set_mac_bssid_mask(struct ath9k_htc_priv *priv,
 	 * when matching addresses.
 	 */
 	iter_data.hw_macaddr = NULL;
+<<<<<<< HEAD
 	memset(&iter_data.mask, 0xff, ETH_ALEN);
+=======
+	eth_broadcast_addr(iter_data.mask);
+>>>>>>> v4.9.227
 
 	if (vif)
 		ath9k_htc_bssid_iter(&iter_data, vif->addr, vif);
@@ -246,7 +250,11 @@ static int ath9k_htc_set_channel(struct ath9k_htc_priv *priv,
 	struct ieee80211_conf *conf = &common->hw->conf;
 	bool fastcc;
 	struct ieee80211_channel *channel = hw->conf.chandef.chan;
+<<<<<<< HEAD
 	struct ath9k_hw_cal_data *caldata = NULL;
+=======
+	struct ath9k_hw_cal_data *caldata;
+>>>>>>> v4.9.227
 	enum htc_phymode mode;
 	__be16 htc_mode;
 	u8 cmd_rsp;
@@ -274,10 +282,14 @@ static int ath9k_htc_set_channel(struct ath9k_htc_priv *priv,
 		priv->ah->curchan->channel,
 		channel->center_freq, conf_is_ht(conf), conf_is_ht40(conf),
 		fastcc);
+<<<<<<< HEAD
 
 	if (!fastcc)
 		caldata = &priv->caldata;
 
+=======
+	caldata = fastcc ? NULL : &priv->caldata;
+>>>>>>> v4.9.227
 	ret = ath9k_hw_reset(ah, hchan, caldata, fastcc);
 	if (ret) {
 		ath_err(common,
@@ -314,6 +326,13 @@ static int ath9k_htc_set_channel(struct ath9k_htc_priv *priv,
 	mod_timer(&priv->tx.cleanup_timer,
 		  jiffies + msecs_to_jiffies(ATH9K_HTC_TX_CLEANUP_INTERVAL));
 
+<<<<<<< HEAD
+=======
+	/* perform spectral scan if requested. */
+	if (test_bit(ATH_OP_SCANNING, &common->op_flags) &&
+		     priv->spec_priv.spectral_mode == SPECTRAL_CHANSCAN)
+		ath9k_cmn_spectral_scan_trigger(common, &priv->spec_priv);
+>>>>>>> v4.9.227
 err:
 	ath9k_htc_ps_restore(priv);
 	return ret;
@@ -790,8 +809,16 @@ void ath9k_htc_ani_work(struct work_struct *work)
 		common->ani.longcal_timer = timestamp;
 	}
 
+<<<<<<< HEAD
 	/* Short calibration applies only while caldone is false */
 	if (!common->ani.caldone) {
+=======
+	/*
+	 * Short calibration applies only while caldone
+	 * is false or -ETIMEDOUT
+	 */
+	if (common->ani.caldone <= 0) {
+>>>>>>> v4.9.227
 		if ((timestamp - common->ani.shortcal_timer) >=
 		    short_cal_interval) {
 			shortcal = true;
@@ -827,7 +854,11 @@ void ath9k_htc_ani_work(struct work_struct *work)
 		if (longcal || shortcal)
 			common->ani.caldone =
 				ath9k_hw_calibrate(ah, ah->curchan,
+<<<<<<< HEAD
 						   ah->rxchainmask, longcal);
+=======
+						ah->rxchainmask, longcal) > 0;
+>>>>>>> v4.9.227
 
 		ath9k_htc_ps_restore(priv);
 	}
@@ -840,7 +871,15 @@ set_timer:
 	*/
 	cal_interval = ATH_LONG_CALINTERVAL;
 	cal_interval = min(cal_interval, (u32)ATH_ANI_POLLINTERVAL);
+<<<<<<< HEAD
 	if (!common->ani.caldone)
+=======
+	/*
+	 * Short calibration applies only while caldone
+	 * is false or -ETIMEDOUT
+	 */
+	if (common->ani.caldone <= 0)
+>>>>>>> v4.9.227
 		cal_interval = min(cal_interval, (u32)short_cal_interval);
 
 	ieee80211_queue_delayed_work(common->hw, &priv->ani_work,
@@ -1130,6 +1169,12 @@ static void ath9k_htc_remove_interface(struct ieee80211_hw *hw,
 	priv->nvifs--;
 	priv->vif_slot &= ~(1 << avp->index);
 
+<<<<<<< HEAD
+=======
+	if (priv->csa_vif == vif)
+		priv->csa_vif = NULL;
+
+>>>>>>> v4.9.227
 	ath9k_htc_remove_station(priv, vif, NULL);
 
 	DEC_VIF(priv, vif->type);
@@ -1234,8 +1279,12 @@ out:
 }
 
 #define SUPPORTED_FILTERS			\
+<<<<<<< HEAD
 	(FIF_PROMISC_IN_BSS |			\
 	FIF_ALLMULTI |				\
+=======
+	(FIF_ALLMULTI |				\
+>>>>>>> v4.9.227
 	FIF_CONTROL |				\
 	FIF_PSPOLL |				\
 	FIF_OTHER_BSS |				\
@@ -1443,7 +1492,11 @@ static int ath9k_htc_set_key(struct ieee80211_hw *hw,
 			key->flags |= IEEE80211_KEY_FLAG_GENERATE_IV;
 			if (key->cipher == WLAN_CIPHER_SUITE_TKIP)
 				key->flags |= IEEE80211_KEY_FLAG_GENERATE_MMIC;
+<<<<<<< HEAD
 			if (priv->ah->sw_mgmt_crypto &&
+=======
+			if (priv->ah->sw_mgmt_crypto_tx &&
+>>>>>>> v4.9.227
 			    key->cipher == WLAN_CIPHER_SUITE_CCMP)
 				key->flags |= IEEE80211_KEY_FLAG_SW_MGMT_TX;
 			ret = 0;
@@ -1644,13 +1697,23 @@ static void ath9k_htc_reset_tsf(struct ieee80211_hw *hw,
 
 static int ath9k_htc_ampdu_action(struct ieee80211_hw *hw,
 				  struct ieee80211_vif *vif,
+<<<<<<< HEAD
 				  enum ieee80211_ampdu_mlme_action action,
 				  struct ieee80211_sta *sta,
 				  u16 tid, u16 *ssn, u8 buf_size)
+=======
+				  struct ieee80211_ampdu_params *params)
+>>>>>>> v4.9.227
 {
 	struct ath9k_htc_priv *priv = hw->priv;
 	struct ath9k_htc_sta *ista;
 	int ret = 0;
+<<<<<<< HEAD
+=======
+	struct ieee80211_sta *sta = params->sta;
+	enum ieee80211_ampdu_mlme_action action = params->action;
+	u16 tid = params->tid;
+>>>>>>> v4.9.227
 
 	mutex_lock(&priv->mutex);
 	ath9k_htc_ps_wakeup(priv);
@@ -1687,7 +1750,13 @@ static int ath9k_htc_ampdu_action(struct ieee80211_hw *hw,
 	return ret;
 }
 
+<<<<<<< HEAD
 static void ath9k_htc_sw_scan_start(struct ieee80211_hw *hw)
+=======
+static void ath9k_htc_sw_scan_start(struct ieee80211_hw *hw,
+				    struct ieee80211_vif *vif,
+				    const u8 *mac_addr)
+>>>>>>> v4.9.227
 {
 	struct ath9k_htc_priv *priv = hw->priv;
 	struct ath_common *common = ath9k_hw_common(priv->ah);
@@ -1701,7 +1770,12 @@ static void ath9k_htc_sw_scan_start(struct ieee80211_hw *hw)
 	mutex_unlock(&priv->mutex);
 }
 
+<<<<<<< HEAD
 static void ath9k_htc_sw_scan_complete(struct ieee80211_hw *hw)
+=======
+static void ath9k_htc_sw_scan_complete(struct ieee80211_hw *hw,
+				       struct ieee80211_vif *vif)
+>>>>>>> v4.9.227
 {
 	struct ath9k_htc_priv *priv = hw->priv;
 	struct ath_common *common = ath9k_hw_common(priv->ah);
@@ -1753,8 +1827,13 @@ static int ath9k_htc_set_bitrate_mask(struct ieee80211_hw *hw,
 	memset(&tmask, 0, sizeof(struct ath9k_htc_target_rate_mask));
 
 	tmask.vif_index = avp->index;
+<<<<<<< HEAD
 	tmask.band = IEEE80211_BAND_2GHZ;
 	tmask.mask = cpu_to_be32(mask->control[IEEE80211_BAND_2GHZ].legacy);
+=======
+	tmask.band = NL80211_BAND_2GHZ;
+	tmask.mask = cpu_to_be32(mask->control[NL80211_BAND_2GHZ].legacy);
+>>>>>>> v4.9.227
 
 	WMI_CMD_BUF(WMI_BITRATE_MASK_CMDID, &tmask);
 	if (ret) {
@@ -1764,8 +1843,13 @@ static int ath9k_htc_set_bitrate_mask(struct ieee80211_hw *hw,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	tmask.band = IEEE80211_BAND_5GHZ;
 	tmask.mask = cpu_to_be32(mask->control[IEEE80211_BAND_5GHZ].legacy);
+=======
+	tmask.band = NL80211_BAND_5GHZ;
+	tmask.mask = cpu_to_be32(mask->control[NL80211_BAND_5GHZ].legacy);
+>>>>>>> v4.9.227
 
 	WMI_CMD_BUF(WMI_BITRATE_MASK_CMDID, &tmask);
 	if (ret) {
@@ -1776,8 +1860,13 @@ static int ath9k_htc_set_bitrate_mask(struct ieee80211_hw *hw,
 	}
 
 	ath_dbg(common, CONFIG, "Set bitrate masks: 0x%x, 0x%x\n",
+<<<<<<< HEAD
 		mask->control[IEEE80211_BAND_2GHZ].legacy,
 		mask->control[IEEE80211_BAND_5GHZ].legacy);
+=======
+		mask->control[NL80211_BAND_2GHZ].legacy,
+		mask->control[NL80211_BAND_5GHZ].legacy);
+>>>>>>> v4.9.227
 out:
 	return ret;
 }
@@ -1835,6 +1924,22 @@ static int ath9k_htc_get_antenna(struct ieee80211_hw *hw, u32 *tx_ant,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void ath9k_htc_channel_switch_beacon(struct ieee80211_hw *hw,
+					    struct ieee80211_vif *vif,
+					    struct cfg80211_chan_def *chandef)
+{
+	struct ath9k_htc_priv *priv = hw->priv;
+
+	/* mac80211 does not support CSA in multi-if cases (yet) */
+	if (WARN_ON(priv->csa_vif))
+		return;
+
+	priv->csa_vif = vif;
+}
+
+>>>>>>> v4.9.227
 struct ieee80211_ops ath9k_htc_ops = {
 	.tx                 = ath9k_htc_tx,
 	.start              = ath9k_htc_start,
@@ -1861,6 +1966,10 @@ struct ieee80211_ops ath9k_htc_ops = {
 	.set_bitrate_mask   = ath9k_htc_set_bitrate_mask,
 	.get_stats	    = ath9k_htc_get_stats,
 	.get_antenna	    = ath9k_htc_get_antenna,
+<<<<<<< HEAD
+=======
+	.channel_switch_beacon	= ath9k_htc_channel_switch_beacon,
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_ATH9K_HTC_DEBUGFS
 	.get_et_sset_count  = ath9k_htc_get_et_sset_count,

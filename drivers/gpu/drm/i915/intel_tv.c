@@ -326,24 +326,30 @@ static const struct color_conversion sdtv_csc_yprpb = {
 	.rv = 0x0100, .gv = 0x03ad, .bv = 0x074d, .av = 0x0200,
 };
 
+<<<<<<< HEAD
 static const struct color_conversion sdtv_csc_rgb = {
 	.ry = 0x0000, .gy = 0x0f00, .by = 0x0000, .ay = 0x0166,
 	.ru = 0x0000, .gu = 0x0000, .bu = 0x0f00, .au = 0x0166,
 	.rv = 0x0f00, .gv = 0x0000, .bv = 0x0000, .av = 0x0166,
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct color_conversion hdtv_csc_yprpb = {
 	.ry = 0x05b3, .gy = 0x016e, .by = 0x0728, .ay = 0x0145,
 	.ru = 0x07d5, .gu = 0x038b, .bu = 0x0100, .au = 0x0200,
 	.rv = 0x0100, .gv = 0x03d1, .bv = 0x06bc, .av = 0x0200,
 };
 
+<<<<<<< HEAD
 static const struct color_conversion hdtv_csc_rgb = {
 	.ry = 0x0000, .gy = 0x0f00, .by = 0x0000, .ay = 0x0166,
 	.ru = 0x0000, .gu = 0x0000, .bu = 0x0f00, .au = 0x0166,
 	.rv = 0x0f00, .gv = 0x0000, .bv = 0x0000, .av = 0x0166,
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct video_levels component_levels = {
 	.blank = 279, .black = 279, .burst = 0,
 };
@@ -838,7 +844,11 @@ static bool
 intel_tv_get_hw_state(struct intel_encoder *encoder, enum pipe *pipe)
 {
 	struct drm_device *dev = encoder->base.dev;
+<<<<<<< HEAD
 	struct drm_i915_private *dev_priv = dev->dev_private;
+=======
+	struct drm_i915_private *dev_priv = to_i915(dev);
+>>>>>>> v4.9.227
 	u32 tmp = I915_READ(TV_CTL);
 
 	if (!(tmp & TV_ENC_ENABLE))
@@ -850,10 +860,19 @@ intel_tv_get_hw_state(struct intel_encoder *encoder, enum pipe *pipe)
 }
 
 static void
+<<<<<<< HEAD
 intel_enable_tv(struct intel_encoder *encoder)
 {
 	struct drm_device *dev = encoder->base.dev;
 	struct drm_i915_private *dev_priv = dev->dev_private;
+=======
+intel_enable_tv(struct intel_encoder *encoder,
+		struct intel_crtc_state *pipe_config,
+		struct drm_connector_state *conn_state)
+{
+	struct drm_device *dev = encoder->base.dev;
+	struct drm_i915_private *dev_priv = to_i915(dev);
+>>>>>>> v4.9.227
 
 	/* Prevents vblank waits from timing out in intel_tv_detect_type() */
 	intel_wait_for_vblank(encoder->base.dev,
@@ -863,10 +882,19 @@ intel_enable_tv(struct intel_encoder *encoder)
 }
 
 static void
+<<<<<<< HEAD
 intel_disable_tv(struct intel_encoder *encoder)
 {
 	struct drm_device *dev = encoder->base.dev;
 	struct drm_i915_private *dev_priv = dev->dev_private;
+=======
+intel_disable_tv(struct intel_encoder *encoder,
+		 struct intel_crtc_state *old_crtc_state,
+		 struct drm_connector_state *old_conn_state)
+{
+	struct drm_device *dev = encoder->base.dev;
+	struct drm_i915_private *dev_priv = to_i915(dev);
+>>>>>>> v4.9.227
 
 	I915_WRITE(TV_CTL, I915_READ(TV_CTL) & ~TV_ENC_ENABLE);
 }
@@ -897,6 +925,13 @@ intel_tv_mode_valid(struct drm_connector *connector,
 {
 	struct intel_tv *intel_tv = intel_attached_tv(connector);
 	const struct tv_mode *tv_mode = intel_tv_mode_find(intel_tv);
+<<<<<<< HEAD
+=======
+	int max_dotclk = to_i915(connector->dev)->max_dotclk_freq;
+
+	if (mode->clock > max_dotclk)
+		return MODE_CLOCK_HIGH;
+>>>>>>> v4.9.227
 
 	/* Ensure TV refresh is close to desired refresh */
 	if (tv_mode && abs(tv_mode->refresh - drm_mode_vrefresh(mode) * 1000)
@@ -916,7 +951,12 @@ intel_tv_get_config(struct intel_encoder *encoder,
 
 static bool
 intel_tv_compute_config(struct intel_encoder *encoder,
+<<<<<<< HEAD
 			struct intel_crtc_state *pipe_config)
+=======
+			struct intel_crtc_state *pipe_config,
+			struct drm_connector_state *conn_state)
+>>>>>>> v4.9.227
 {
 	struct intel_tv *intel_tv = enc_to_tv(encoder);
 	const struct tv_mode *tv_mode = intel_tv_mode_find(intel_tv);
@@ -1018,10 +1058,19 @@ static void set_color_conversion(struct drm_i915_private *dev_priv,
 		   color_conversion->av);
 }
 
+<<<<<<< HEAD
 static void intel_tv_pre_enable(struct intel_encoder *encoder)
 {
 	struct drm_device *dev = encoder->base.dev;
 	struct drm_i915_private *dev_priv = dev->dev_private;
+=======
+static void intel_tv_pre_enable(struct intel_encoder *encoder,
+				struct intel_crtc_state *pipe_config,
+				struct drm_connector_state *conn_state)
+{
+	struct drm_device *dev = encoder->base.dev;
+	struct drm_i915_private *dev_priv = to_i915(dev);
+>>>>>>> v4.9.227
 	struct intel_crtc *intel_crtc = to_intel_crtc(encoder->base.crtc);
 	struct intel_tv *intel_tv = enc_to_tv(encoder);
 	const struct tv_mode *tv_mode = intel_tv_mode_find(intel_tv);
@@ -1178,11 +1227,18 @@ static int
 intel_tv_detect_type(struct intel_tv *intel_tv,
 		      struct drm_connector *connector)
 {
+<<<<<<< HEAD
 	struct drm_encoder *encoder = &intel_tv->base.base;
 	struct drm_crtc *crtc = encoder->crtc;
 	struct intel_crtc *intel_crtc = to_intel_crtc(crtc);
 	struct drm_device *dev = encoder->dev;
 	struct drm_i915_private *dev_priv = dev->dev_private;
+=======
+	struct drm_crtc *crtc = connector->state->crtc;
+	struct intel_crtc *intel_crtc = to_intel_crtc(crtc);
+	struct drm_device *dev = connector->dev;
+	struct drm_i915_private *dev_priv = to_i915(dev);
+>>>>>>> v4.9.227
 	u32 tv_ctl, save_tv_ctl;
 	u32 tv_dac, save_tv_dac;
 	int type;
@@ -1230,8 +1286,12 @@ intel_tv_detect_type(struct intel_tv *intel_tv,
 	I915_WRITE(TV_DAC, tv_dac);
 	POSTING_READ(TV_DAC);
 
+<<<<<<< HEAD
 	intel_wait_for_vblank(intel_tv->base.base.dev,
 			      to_intel_crtc(intel_tv->base.base.crtc)->pipe);
+=======
+	intel_wait_for_vblank(dev, intel_crtc->pipe);
+>>>>>>> v4.9.227
 
 	type = -1;
 	tv_dac = I915_READ(TV_DAC);
@@ -1261,8 +1321,12 @@ intel_tv_detect_type(struct intel_tv *intel_tv,
 	POSTING_READ(TV_CTL);
 
 	/* For unknown reasons the hw barfs if we don't do this vblank wait. */
+<<<<<<< HEAD
 	intel_wait_for_vblank(intel_tv->base.base.dev,
 			      to_intel_crtc(intel_tv->base.base.crtc)->pipe);
+=======
+	intel_wait_for_vblank(dev, intel_crtc->pipe);
+>>>>>>> v4.9.227
 
 	/* Restore interrupt config */
 	if (connector->polled & DRM_CONNECTOR_POLL_HPD) {
@@ -1420,6 +1484,10 @@ intel_tv_get_modes(struct drm_connector *connector)
 		if (!mode_ptr)
 			continue;
 		strncpy(mode_ptr->name, input->name, DRM_DISPLAY_MODE_LEN);
+<<<<<<< HEAD
+=======
+		mode_ptr->name[DRM_DISPLAY_MODE_LEN - 1] = '\0';
+>>>>>>> v4.9.227
 
 		mode_ptr->hdisplay = hactive_s;
 		mode_ptr->hsync_start = hactive_s + 1;
@@ -1511,6 +1579,11 @@ out:
 static const struct drm_connector_funcs intel_tv_connector_funcs = {
 	.dpms = drm_atomic_helper_connector_dpms,
 	.detect = intel_tv_detect,
+<<<<<<< HEAD
+=======
+	.late_register = intel_connector_register,
+	.early_unregister = intel_connector_unregister,
+>>>>>>> v4.9.227
 	.destroy = intel_tv_destroy,
 	.set_property = intel_tv_set_property,
 	.atomic_get_property = intel_connector_atomic_get_property,
@@ -1522,13 +1595,17 @@ static const struct drm_connector_funcs intel_tv_connector_funcs = {
 static const struct drm_connector_helper_funcs intel_tv_connector_helper_funcs = {
 	.mode_valid = intel_tv_mode_valid,
 	.get_modes = intel_tv_get_modes,
+<<<<<<< HEAD
 	.best_encoder = intel_best_encoder,
+=======
+>>>>>>> v4.9.227
 };
 
 static const struct drm_encoder_funcs intel_tv_enc_funcs = {
 	.destroy = intel_encoder_destroy,
 };
 
+<<<<<<< HEAD
 /*
  * Enumerate the child dev array parsed from VBT to check whether
  * the integrated TV is present.
@@ -1574,6 +1651,12 @@ void
 intel_tv_init(struct drm_device *dev)
 {
 	struct drm_i915_private *dev_priv = dev->dev_private;
+=======
+void
+intel_tv_init(struct drm_device *dev)
+{
+	struct drm_i915_private *dev_priv = to_i915(dev);
+>>>>>>> v4.9.227
 	struct drm_connector *connector;
 	struct intel_tv *intel_tv;
 	struct intel_encoder *intel_encoder;
@@ -1585,6 +1668,7 @@ intel_tv_init(struct drm_device *dev)
 	if ((I915_READ(TV_CTL) & TV_FUSE_STATE_MASK) == TV_FUSE_STATE_DISABLED)
 		return;
 
+<<<<<<< HEAD
 	if (!tv_is_present_in_vbt(dev)) {
 		DRM_DEBUG_KMS("Integrated TV is not present.\n");
 		return;
@@ -1592,6 +1676,12 @@ intel_tv_init(struct drm_device *dev)
 	/* Even if we have an encoder we may not have a connector */
 	if (!dev_priv->vbt.int_tv_support)
 		return;
+=======
+	if (!intel_bios_is_tv_present(dev_priv)) {
+		DRM_DEBUG_KMS("Integrated TV is not present.\n");
+		return;
+	}
+>>>>>>> v4.9.227
 
 	/*
 	 * Sanity check the TV output by checking to see if the
@@ -1645,7 +1735,11 @@ intel_tv_init(struct drm_device *dev)
 			   DRM_MODE_CONNECTOR_SVIDEO);
 
 	drm_encoder_init(dev, &intel_encoder->base, &intel_tv_enc_funcs,
+<<<<<<< HEAD
 			 DRM_MODE_ENCODER_TVDAC);
+=======
+			 DRM_MODE_ENCODER_TVDAC, "TV");
+>>>>>>> v4.9.227
 
 	intel_encoder->compute_config = intel_tv_compute_config;
 	intel_encoder->get_config = intel_tv_get_config;
@@ -1654,7 +1748,10 @@ intel_tv_init(struct drm_device *dev)
 	intel_encoder->disable = intel_disable_tv;
 	intel_encoder->get_hw_state = intel_tv_get_hw_state;
 	intel_connector->get_hw_state = intel_connector_get_hw_state;
+<<<<<<< HEAD
 	intel_connector->unregister = intel_connector_unregister;
+=======
+>>>>>>> v4.9.227
 
 	intel_connector_attach_encoder(intel_connector, intel_encoder);
 	intel_encoder->type = INTEL_OUTPUT_TVOUT;
@@ -1696,5 +1793,8 @@ intel_tv_init(struct drm_device *dev)
 	drm_object_attach_property(&connector->base,
 				   dev->mode_config.tv_bottom_margin_property,
 				   intel_tv->margin[TV_MARGIN_BOTTOM]);
+<<<<<<< HEAD
 	drm_connector_register(connector);
+=======
+>>>>>>> v4.9.227
 }

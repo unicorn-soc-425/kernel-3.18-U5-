@@ -20,7 +20,10 @@
 #include <linux/platform_device.h>
 #include <linux/leds.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/mfd/mc13xxx.h>
 
 struct mc13xxx_led_devtype {
@@ -32,8 +35,11 @@ struct mc13xxx_led_devtype {
 
 struct mc13xxx_led {
 	struct led_classdev	cdev;
+<<<<<<< HEAD
 	struct work_struct	work;
 	enum led_brightness	new_brightness;
+=======
+>>>>>>> v4.9.227
 	int			id;
 	struct mc13xxx_leds	*leds;
 };
@@ -55,9 +61,17 @@ static unsigned int mc13xxx_max_brightness(int id)
 	return 0x3f;
 }
 
+<<<<<<< HEAD
 static void mc13xxx_led_work(struct work_struct *work)
 {
 	struct mc13xxx_led *led = container_of(work, struct mc13xxx_led, work);
+=======
+static int mc13xxx_led_set(struct led_classdev *led_cdev,
+			    enum led_brightness value)
+{
+	struct mc13xxx_led *led =
+		container_of(led_cdev, struct mc13xxx_led, cdev);
+>>>>>>> v4.9.227
 	struct mc13xxx_leds *leds = led->leds;
 	unsigned int reg, bank, off, shift;
 
@@ -105,6 +119,7 @@ static void mc13xxx_led_work(struct work_struct *work)
 		BUG();
 	}
 
+<<<<<<< HEAD
 	mc13xxx_reg_rmw(leds->master, leds->devtype->ledctrl_base + reg,
 			mc13xxx_max_brightness(led->id) << shift,
 			led->new_brightness << shift);
@@ -118,6 +133,11 @@ static void mc13xxx_led_set(struct led_classdev *led_cdev,
 
 	led->new_brightness = value;
 	schedule_work(&led->work);
+=======
+	return mc13xxx_reg_rmw(leds->master, leds->devtype->ledctrl_base + reg,
+			mc13xxx_max_brightness(led->id) << shift,
+			value << shift);
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_OF
@@ -134,9 +154,13 @@ static struct mc13xxx_leds_platform_data __init *mc13xxx_led_probe_dt(
 	if (!pdata)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
 	of_node_get(dev->parent->of_node);
 
 	parent = of_find_node_by_name(dev->parent->of_node, "leds");
+=======
+	parent = of_get_child_by_name(dev->parent->of_node, "leds");
+>>>>>>> v4.9.227
 	if (!parent)
 		goto out_node_put;
 
@@ -259,11 +283,17 @@ static int __init mc13xxx_led_probe(struct platform_device *pdev)
 		leds->led[i].cdev.name = name;
 		leds->led[i].cdev.default_trigger = trig;
 		leds->led[i].cdev.flags = LED_CORE_SUSPENDRESUME;
+<<<<<<< HEAD
 		leds->led[i].cdev.brightness_set = mc13xxx_led_set;
 		leds->led[i].cdev.max_brightness = mc13xxx_max_brightness(id);
 
 		INIT_WORK(&leds->led[i].work, mc13xxx_led_work);
 
+=======
+		leds->led[i].cdev.brightness_set_blocking = mc13xxx_led_set;
+		leds->led[i].cdev.max_brightness = mc13xxx_max_brightness(id);
+
+>>>>>>> v4.9.227
 		ret = led_classdev_register(dev->parent, &leds->led[i].cdev);
 		if (ret) {
 			dev_err(dev, "Failed to register LED %i\n", id);
@@ -272,10 +302,15 @@ static int __init mc13xxx_led_probe(struct platform_device *pdev)
 	}
 
 	if (ret)
+<<<<<<< HEAD
 		while (--i >= 0) {
 			led_classdev_unregister(&leds->led[i].cdev);
 			cancel_work_sync(&leds->led[i].work);
 		}
+=======
+		while (--i >= 0)
+			led_classdev_unregister(&leds->led[i].cdev);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -285,10 +320,15 @@ static int mc13xxx_led_remove(struct platform_device *pdev)
 	struct mc13xxx_leds *leds = platform_get_drvdata(pdev);
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < leds->num_leds; i++) {
 		led_classdev_unregister(&leds->led[i].cdev);
 		cancel_work_sync(&leds->led[i].work);
 	}
+=======
+	for (i = 0; i < leds->num_leds; i++)
+		led_classdev_unregister(&leds->led[i].cdev);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -325,7 +365,10 @@ MODULE_DEVICE_TABLE(platform, mc13xxx_led_id_table);
 static struct platform_driver mc13xxx_led_driver = {
 	.driver	= {
 		.name	= "mc13xxx-led",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.remove		= mc13xxx_led_remove,
 	.id_table	= mc13xxx_led_id_table,

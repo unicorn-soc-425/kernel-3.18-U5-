@@ -26,7 +26,11 @@
 #include <linux/linkage.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> v4.9.227
 #include <linux/string.h>
 #include <linux/bootmem.h>
 #include <linux/slab.h>
@@ -39,12 +43,20 @@
 #include <asm/irq.h>
 #include <asm/idle.h>
 #include <asm/io_apic.h>
+<<<<<<< HEAD
 #include <asm/xen/page.h>
+=======
+#include <asm/i8259.h>
+>>>>>>> v4.9.227
 #include <asm/xen/pci.h>
 #endif
 #include <asm/sync_bitops.h>
 #include <asm/xen/hypercall.h>
 #include <asm/xen/hypervisor.h>
+<<<<<<< HEAD
+=======
+#include <xen/page.h>
+>>>>>>> v4.9.227
 
 #include <xen/xen.h>
 #include <xen/hvm.h>
@@ -336,7 +348,11 @@ static void bind_evtchn_to_cpu(unsigned int chn, unsigned int cpu)
 
 	BUG_ON(irq == -1);
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 	cpumask_copy(irq_get_irq_data(irq)->affinity, cpumask_of(cpu));
+=======
+	cpumask_copy(irq_get_affinity_mask(irq), cpumask_of(cpu));
+>>>>>>> v4.9.227
 #endif
 	xen_evtchn_port_bind_to_cpu(info, cpu);
 
@@ -373,7 +389,11 @@ static void xen_irq_init(unsigned irq)
 	struct irq_info *info;
 #ifdef CONFIG_SMP
 	/* By default all event channels notify CPU#0. */
+<<<<<<< HEAD
 	cpumask_copy(irq_get_irq_data(irq)->affinity, cpumask_of(0));
+=======
+	cpumask_copy(irq_get_affinity_mask(irq), cpumask_of(0));
+>>>>>>> v4.9.227
 #endif
 
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
@@ -420,7 +440,11 @@ static int __must_check xen_allocate_irq_gsi(unsigned gsi)
 		return xen_allocate_irq_dynamic();
 
 	/* Legacy IRQ descriptors are already allocated by the arch. */
+<<<<<<< HEAD
 	if (gsi < NR_IRQS_LEGACY)
+=======
+	if (gsi < nr_legacy_irqs())
+>>>>>>> v4.9.227
 		irq = gsi;
 	else
 		irq = irq_alloc_desc_at(gsi, -1);
@@ -446,7 +470,11 @@ static void xen_free_irq(unsigned irq)
 	kfree(info);
 
 	/* Legacy IRQ descriptors are managed by the arch. */
+<<<<<<< HEAD
 	if (irq < NR_IRQS_LEGACY)
+=======
+	if (irq < nr_legacy_irqs())
+>>>>>>> v4.9.227
 		return;
 
 	irq_free_desc(irq);
@@ -892,7 +920,11 @@ static int bind_ipi_to_irq(unsigned int ipi, unsigned int cpu)
 		irq_set_chip_and_handler_name(irq, &xen_percpu_chip,
 					      handle_percpu_irq, "ipi");
 
+<<<<<<< HEAD
 		bind_ipi.vcpu = cpu;
+=======
+		bind_ipi.vcpu = xen_vcpu_nr(cpu);
+>>>>>>> v4.9.227
 		if (HYPERVISOR_event_channel_op(EVTCHNOP_bind_ipi,
 						&bind_ipi) != 0)
 			BUG();
@@ -988,7 +1020,11 @@ int bind_virq_to_irq(unsigned int virq, unsigned int cpu, bool percpu)
 						      handle_edge_irq, "virq");
 
 		bind_virq.virq = virq;
+<<<<<<< HEAD
 		bind_virq.vcpu = cpu;
+=======
+		bind_virq.vcpu = xen_vcpu_nr(cpu);
+>>>>>>> v4.9.227
 		ret = HYPERVISOR_event_channel_op(EVTCHNOP_bind_virq,
 						&bind_virq);
 		if (ret == 0)
@@ -1208,7 +1244,12 @@ void xen_send_IPI_one(unsigned int cpu, enum ipi_vector vector)
 
 #ifdef CONFIG_X86
 	if (unlikely(vector == XEN_NMI_VECTOR)) {
+<<<<<<< HEAD
 		int rc =  HYPERVISOR_vcpu_op(VCPUOP_send_nmi, cpu, NULL);
+=======
+		int rc =  HYPERVISOR_vcpu_op(VCPUOP_send_nmi, xen_vcpu_nr(cpu),
+					     NULL);
+>>>>>>> v4.9.227
 		if (rc < 0)
 			printk(KERN_WARNING "Sending nmi to CPU%d failed (rc:%d)\n", cpu, rc);
 		return;
@@ -1310,16 +1351,24 @@ static int rebind_irq_to_cpu(unsigned irq, unsigned tcpu)
 	if (!VALID_EVTCHN(evtchn))
 		return -1;
 
+<<<<<<< HEAD
 	/*
 	 * Events delivered via platform PCI interrupts are always
 	 * routed to vcpu 0 and hence cannot be rebound.
 	 */
 	if (xen_hvm_domain() && !xen_have_vector_callback)
+=======
+	if (!xen_support_evtchn_rebind())
+>>>>>>> v4.9.227
 		return -1;
 
 	/* Send future instances of this interrupt to other vcpu. */
 	bind_vcpu.port = evtchn;
+<<<<<<< HEAD
 	bind_vcpu.vcpu = tcpu;
+=======
+	bind_vcpu.vcpu = xen_vcpu_nr(tcpu);
+>>>>>>> v4.9.227
 
 	/*
 	 * Mask the event while changing the VCPU binding to prevent
@@ -1459,7 +1508,11 @@ static void restore_cpu_virqs(unsigned int cpu)
 
 		/* Get a new binding from Xen. */
 		bind_virq.virq = virq;
+<<<<<<< HEAD
 		bind_virq.vcpu = cpu;
+=======
+		bind_virq.vcpu = xen_vcpu_nr(cpu);
+>>>>>>> v4.9.227
 		if (HYPERVISOR_event_channel_op(EVTCHNOP_bind_virq,
 						&bind_virq) != 0)
 			BUG();
@@ -1483,7 +1536,11 @@ static void restore_cpu_ipis(unsigned int cpu)
 		BUG_ON(ipi_from_irq(irq) != ipi);
 
 		/* Get a new binding from Xen. */
+<<<<<<< HEAD
 		bind_ipi.vcpu = cpu;
+=======
+		bind_ipi.vcpu = xen_vcpu_nr(cpu);
+>>>>>>> v4.9.227
 		if (HYPERVISOR_event_channel_op(EVTCHNOP_bind_ipi,
 						&bind_ipi) != 0)
 			BUG();
@@ -1712,7 +1769,11 @@ void __init xen_init_IRQ(void)
 		struct physdev_pirq_eoi_gmfn eoi_gmfn;
 
 		pirq_eoi_map = (void *)__get_free_page(GFP_KERNEL|__GFP_ZERO);
+<<<<<<< HEAD
 		eoi_gmfn.gmfn = virt_to_mfn(pirq_eoi_map);
+=======
+		eoi_gmfn.gmfn = virt_to_gfn(pirq_eoi_map);
+>>>>>>> v4.9.227
 		rc = HYPERVISOR_physdev_op(PHYSDEVOP_pirq_eoi_gmfn_v2, &eoi_gmfn);
 		/* TODO: No PVH support for PIRQ EOI */
 		if (rc != 0) {

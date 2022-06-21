@@ -126,13 +126,20 @@ struct ab8500_codec_drvdata_dbg {
 /* Private data for AB8500 device-driver */
 struct ab8500_codec_drvdata {
 	struct regmap *regmap;
+<<<<<<< HEAD
+=======
+	struct mutex ctrl_lock;
+>>>>>>> v4.9.227
 
 	/* Sidetone */
 	long *sid_fir_values;
 	enum sid_state sid_status;
 
 	/* ANC */
+<<<<<<< HEAD
 	struct mutex anc_lock;
+=======
+>>>>>>> v4.9.227
 	long *anc_fir_values;
 	long *anc_iir_values;
 	enum anc_state anc_status;
@@ -1129,9 +1136,15 @@ static int sid_status_control_get(struct snd_kcontrol *kcontrol,
 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
 	struct ab8500_codec_drvdata *drvdata = dev_get_drvdata(codec->dev);
 
+<<<<<<< HEAD
 	mutex_lock(&codec->mutex);
 	ucontrol->value.integer.value[0] = drvdata->sid_status;
 	mutex_unlock(&codec->mutex);
+=======
+	mutex_lock(&drvdata->ctrl_lock);
+	ucontrol->value.enumerated.item[0] = drvdata->sid_status;
+	mutex_unlock(&drvdata->ctrl_lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1147,14 +1160,22 @@ static int sid_status_control_put(struct snd_kcontrol *kcontrol,
 
 	dev_dbg(codec->dev, "%s: Enter\n", __func__);
 
+<<<<<<< HEAD
 	if (ucontrol->value.integer.value[0] != SID_APPLY_FIR) {
+=======
+	if (ucontrol->value.enumerated.item[0] != SID_APPLY_FIR) {
+>>>>>>> v4.9.227
 		dev_err(codec->dev,
 			"%s: ERROR: This control supports '%s' only!\n",
 			__func__, enum_sid_state[SID_APPLY_FIR]);
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&codec->mutex);
+=======
+	mutex_lock(&drvdata->ctrl_lock);
+>>>>>>> v4.9.227
 
 	sidconf = snd_soc_read(codec, AB8500_SIDFIRCONF);
 	if (((sidconf & BIT(AB8500_SIDFIRCONF_FIRSIDBUSY)) != 0)) {
@@ -1185,7 +1206,11 @@ static int sid_status_control_put(struct snd_kcontrol *kcontrol,
 	drvdata->sid_status = SID_FIR_CONFIGURED;
 
 out:
+<<<<<<< HEAD
 	mutex_unlock(&codec->mutex);
+=======
+	mutex_unlock(&drvdata->ctrl_lock);
+>>>>>>> v4.9.227
 
 	dev_dbg(codec->dev, "%s: Exit\n", __func__);
 
@@ -1198,9 +1223,15 @@ static int anc_status_control_get(struct snd_kcontrol *kcontrol,
 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
 	struct ab8500_codec_drvdata *drvdata = dev_get_drvdata(codec->dev);
 
+<<<<<<< HEAD
 	mutex_lock(&codec->mutex);
 	ucontrol->value.integer.value[0] = drvdata->anc_status;
 	mutex_unlock(&codec->mutex);
+=======
+	mutex_lock(&drvdata->ctrl_lock);
+	ucontrol->value.enumerated.item[0] = drvdata->anc_status;
+	mutex_unlock(&drvdata->ctrl_lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1209,6 +1240,10 @@ static int anc_status_control_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+<<<<<<< HEAD
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 	struct ab8500_codec_drvdata *drvdata = dev_get_drvdata(codec->dev);
 	struct device *dev = codec->dev;
 	bool apply_fir, apply_iir;
@@ -1217,9 +1252,15 @@ static int anc_status_control_put(struct snd_kcontrol *kcontrol,
 
 	dev_dbg(dev, "%s: Enter.\n", __func__);
 
+<<<<<<< HEAD
 	mutex_lock(&drvdata->anc_lock);
 
 	req = ucontrol->value.integer.value[0];
+=======
+	mutex_lock(&drvdata->ctrl_lock);
+
+	req = ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 	if (req >= ARRAY_SIZE(enum_anc_state)) {
 		status = -EINVAL;
 		goto cleanup;
@@ -1234,19 +1275,29 @@ static int anc_status_control_put(struct snd_kcontrol *kcontrol,
 	apply_fir = req == ANC_APPLY_FIR || req == ANC_APPLY_FIR_IIR;
 	apply_iir = req == ANC_APPLY_IIR || req == ANC_APPLY_FIR_IIR;
 
+<<<<<<< HEAD
 	status = snd_soc_dapm_force_enable_pin(&codec->dapm,
 					"ANC Configure Input");
+=======
+	status = snd_soc_dapm_force_enable_pin(dapm, "ANC Configure Input");
+>>>>>>> v4.9.227
 	if (status < 0) {
 		dev_err(dev,
 			"%s: ERROR: Failed to enable power (status = %d)!\n",
 			__func__, status);
 		goto cleanup;
 	}
+<<<<<<< HEAD
 	snd_soc_dapm_sync(&codec->dapm);
 
 	mutex_lock(&codec->mutex);
 	anc_configure(codec, apply_fir, apply_iir);
 	mutex_unlock(&codec->mutex);
+=======
+	snd_soc_dapm_sync(dapm);
+
+	anc_configure(codec, apply_fir, apply_iir);
+>>>>>>> v4.9.227
 
 	if (apply_fir) {
 		if (drvdata->anc_status == ANC_IIR_CONFIGURED)
@@ -1261,11 +1312,19 @@ static int anc_status_control_put(struct snd_kcontrol *kcontrol,
 			drvdata->anc_status =  ANC_IIR_CONFIGURED;
 	}
 
+<<<<<<< HEAD
 	status = snd_soc_dapm_disable_pin(&codec->dapm, "ANC Configure Input");
 	snd_soc_dapm_sync(&codec->dapm);
 
 cleanup:
 	mutex_unlock(&drvdata->anc_lock);
+=======
+	status = snd_soc_dapm_disable_pin(dapm, "ANC Configure Input");
+	snd_soc_dapm_sync(dapm);
+
+cleanup:
+	mutex_unlock(&drvdata->ctrl_lock);
+>>>>>>> v4.9.227
 
 	if (status < 0)
 		dev_err(dev, "%s: Unable to configure ANC! (status = %d)\n",
@@ -1294,14 +1353,25 @@ static int filter_control_get(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+<<<<<<< HEAD
+=======
+	struct ab8500_codec_drvdata *drvdata = snd_soc_codec_get_drvdata(codec);
+>>>>>>> v4.9.227
 	struct filter_control *fc =
 			(struct filter_control *)kcontrol->private_value;
 	unsigned int i;
 
+<<<<<<< HEAD
 	mutex_lock(&codec->mutex);
 	for (i = 0; i < fc->count; i++)
 		ucontrol->value.integer.value[i] = fc->value[i];
 	mutex_unlock(&codec->mutex);
+=======
+	mutex_lock(&drvdata->ctrl_lock);
+	for (i = 0; i < fc->count; i++)
+		ucontrol->value.integer.value[i] = fc->value[i];
+	mutex_unlock(&drvdata->ctrl_lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1310,14 +1380,25 @@ static int filter_control_put(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+<<<<<<< HEAD
+=======
+	struct ab8500_codec_drvdata *drvdata = snd_soc_codec_get_drvdata(codec);
+>>>>>>> v4.9.227
 	struct filter_control *fc =
 			(struct filter_control *)kcontrol->private_value;
 	unsigned int i;
 
+<<<<<<< HEAD
 	mutex_lock(&codec->mutex);
 	for (i = 0; i < fc->count; i++)
 		fc->value[i] = ucontrol->value.integer.value[i];
 	mutex_unlock(&codec->mutex);
+=======
+	mutex_lock(&drvdata->ctrl_lock);
+	for (i = 0; i < fc->count; i++)
+		fc->value[i] = ucontrol->value.integer.value[i];
+	mutex_unlock(&drvdata->ctrl_lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1335,11 +1416,18 @@ static DECLARE_TLV_DB_SCALE(dax_dig_gain_tlv, -6300, 100, 1);
 static DECLARE_TLV_DB_SCALE(hs_ear_dig_gain_tlv, -100, 100, 1);
 /* -1dB = Mute */
 
+<<<<<<< HEAD
 static const unsigned int hs_gain_tlv[] = {
 	TLV_DB_RANGE_HEAD(2),
 	0, 3, TLV_DB_SCALE_ITEM(-3200, 400, 0),
 	4, 15, TLV_DB_SCALE_ITEM(-1800, 200, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(hs_gain_tlv,
+	0, 3, TLV_DB_SCALE_ITEM(-3200, 400, 0),
+	4, 15, TLV_DB_SCALE_ITEM(-1800, 200, 0)
+);
+>>>>>>> v4.9.227
 
 static DECLARE_TLV_DB_SCALE(mic_gain_tlv, 0, 100, 0);
 
@@ -1947,6 +2035,10 @@ static int ab8500_audio_init_audioblock(struct snd_soc_codec *codec)
 static int ab8500_audio_setup_mics(struct snd_soc_codec *codec,
 			struct amic_settings *amics)
 {
+<<<<<<< HEAD
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 	u8 value8;
 	unsigned int value;
 	int status;
@@ -1973,6 +2065,7 @@ static int ab8500_audio_setup_mics(struct snd_soc_codec *codec,
 	dev_dbg(codec->dev, "%s: Mic 1a regulator: %s\n", __func__,
 		amic_micbias_str(amics->mic1a_micbias));
 	route = &ab8500_dapm_routes_mic1a_vamicx[amics->mic1a_micbias];
+<<<<<<< HEAD
 	status = snd_soc_dapm_add_routes(&codec->dapm, route, 1);
 	dev_dbg(codec->dev, "%s: Mic 1b regulator: %s\n", __func__,
 		amic_micbias_str(amics->mic1b_micbias));
@@ -1982,6 +2075,17 @@ static int ab8500_audio_setup_mics(struct snd_soc_codec *codec,
 		amic_micbias_str(amics->mic2_micbias));
 	route = &ab8500_dapm_routes_mic2_vamicx[amics->mic2_micbias];
 	status |= snd_soc_dapm_add_routes(&codec->dapm, route, 1);
+=======
+	status = snd_soc_dapm_add_routes(dapm, route, 1);
+	dev_dbg(codec->dev, "%s: Mic 1b regulator: %s\n", __func__,
+		amic_micbias_str(amics->mic1b_micbias));
+	route = &ab8500_dapm_routes_mic1b_vamicx[amics->mic1b_micbias];
+	status |= snd_soc_dapm_add_routes(dapm, route, 1);
+	dev_dbg(codec->dev, "%s: Mic 2 regulator: %s\n", __func__,
+		amic_micbias_str(amics->mic2_micbias));
+	route = &ab8500_dapm_routes_mic2_vamicx[amics->mic2_micbias];
+	status |= snd_soc_dapm_add_routes(dapm, route, 1);
+>>>>>>> v4.9.227
 	if (status < 0) {
 		dev_err(codec->dev,
 			"%s: Failed to add AMic-regulator DAPM-routes (%d).\n",
@@ -2003,7 +2107,10 @@ static int ab8500_audio_setup_mics(struct snd_soc_codec *codec,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(ab8500_audio_setup_mics);
+=======
+>>>>>>> v4.9.227
 
 static int ab8500_audio_set_ear_cmv(struct snd_soc_codec *codec,
 				enum ear_cm_voltage ear_cmv)
@@ -2036,7 +2143,10 @@ static int ab8500_audio_set_ear_cmv(struct snd_soc_codec *codec,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(ab8500_audio_set_ear_cmv);
+=======
+>>>>>>> v4.9.227
 
 static int ab8500_audio_set_bit_delay(struct snd_soc_dai *dai,
 				unsigned int delay)
@@ -2136,7 +2246,10 @@ static int ab8500_codec_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 			"%s: ERROR: Unsupporter master mask 0x%x\n",
 			__func__, fmt & SND_SOC_DAIFMT_MASTER_MASK);
 		return -EINVAL;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> v4.9.227
 	}
 
 	snd_soc_update_bits(codec, AB8500_DIGIFCONF3, mask, val);
@@ -2411,28 +2524,48 @@ static void ab8500_codec_of_probe(struct device *dev, struct device_node *np,
 {
 	u32 value;
 
+<<<<<<< HEAD
 	if (of_get_property(np, "stericsson,amic1-type-single-ended", NULL))
+=======
+	if (of_property_read_bool(np, "stericsson,amic1-type-single-ended"))
+>>>>>>> v4.9.227
 		codec->amics.mic1_type = AMIC_TYPE_SINGLE_ENDED;
 	else
 		codec->amics.mic1_type = AMIC_TYPE_DIFFERENTIAL;
 
+<<<<<<< HEAD
 	if (of_get_property(np, "stericsson,amic2-type-single-ended", NULL))
+=======
+	if (of_property_read_bool(np, "stericsson,amic2-type-single-ended"))
+>>>>>>> v4.9.227
 		codec->amics.mic2_type = AMIC_TYPE_SINGLE_ENDED;
 	else
 		codec->amics.mic2_type = AMIC_TYPE_DIFFERENTIAL;
 
 	/* Has a non-standard Vamic been requested? */
+<<<<<<< HEAD
 	if (of_get_property(np, "stericsson,amic1a-bias-vamic2", NULL))
+=======
+	if (of_property_read_bool(np, "stericsson,amic1a-bias-vamic2"))
+>>>>>>> v4.9.227
 		codec->amics.mic1a_micbias = AMIC_MICBIAS_VAMIC2;
 	else
 		codec->amics.mic1a_micbias = AMIC_MICBIAS_VAMIC1;
 
+<<<<<<< HEAD
 	if (of_get_property(np, "stericsson,amic1b-bias-vamic2", NULL))
+=======
+	if (of_property_read_bool(np, "stericsson,amic1b-bias-vamic2"))
+>>>>>>> v4.9.227
 		codec->amics.mic1b_micbias = AMIC_MICBIAS_VAMIC2;
 	else
 		codec->amics.mic1b_micbias = AMIC_MICBIAS_VAMIC1;
 
+<<<<<<< HEAD
 	if (of_get_property(np, "stericsson,amic2-bias-vamic1", NULL))
+=======
+	if (of_property_read_bool(np, "stericsson,amic2-bias-vamic1"))
+>>>>>>> v4.9.227
 		codec->amics.mic2_micbias = AMIC_MICBIAS_VAMIC1;
 	else
 		codec->amics.mic2_micbias = AMIC_MICBIAS_VAMIC2;
@@ -2463,15 +2596,24 @@ static void ab8500_codec_of_probe(struct device *dev, struct device_node *np,
 
 static int ab8500_codec_probe(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	struct device *dev = codec->dev;
 	struct device_node *np = dev->of_node;
 	struct ab8500_codec_drvdata *drvdata = dev_get_drvdata(dev);
 	struct ab8500_platform_data *pdata;
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+	struct device *dev = codec->dev;
+	struct device_node *np = dev->of_node;
+	struct ab8500_codec_drvdata *drvdata = dev_get_drvdata(dev);
+	struct ab8500_codec_platform_data codec_pdata;
+>>>>>>> v4.9.227
 	struct filter_control *fc;
 	int status;
 
 	dev_dbg(dev, "%s: Enter.\n", __func__);
 
+<<<<<<< HEAD
 	/* Setup AB8500 according to board-settings */
 	pdata = dev_get_platdata(dev->parent);
 
@@ -2500,11 +2642,20 @@ static int ab8500_codec_probe(struct snd_soc_codec *codec)
 	}
 
 	status = ab8500_audio_setup_mics(codec, &pdata->codec->amics);
+=======
+	ab8500_codec_of_probe(dev, np, &codec_pdata);
+
+	status = ab8500_audio_setup_mics(codec, &codec_pdata.amics);
+>>>>>>> v4.9.227
 	if (status < 0) {
 		pr_err("%s: Failed to setup mics (%d)!\n", __func__, status);
 		return status;
 	}
+<<<<<<< HEAD
 	status = ab8500_audio_set_ear_cmv(codec, pdata->codec->ear_cmv);
+=======
+	status = ab8500_audio_set_ear_cmv(codec, codec_pdata.ear_cmv);
+>>>>>>> v4.9.227
 	if (status < 0) {
 		pr_err("%s: Failed to set earpiece CM-voltage (%d)!\n",
 			__func__, status);
@@ -2543,21 +2694,38 @@ static int ab8500_codec_probe(struct snd_soc_codec *codec)
 		&ab8500_filter_controls[AB8500_FILTER_SID_FIR].private_value;
 	drvdata->sid_fir_values = (long *)fc->value;
 
+<<<<<<< HEAD
 	(void)snd_soc_dapm_disable_pin(&codec->dapm, "ANC Configure Input");
 
 	mutex_init(&drvdata->anc_lock);
+=======
+	snd_soc_dapm_disable_pin(dapm, "ANC Configure Input");
+
+	mutex_init(&drvdata->ctrl_lock);
+>>>>>>> v4.9.227
 
 	return status;
 }
 
 static struct snd_soc_codec_driver ab8500_codec_driver = {
 	.probe =		ab8500_codec_probe,
+<<<<<<< HEAD
 	.controls =		ab8500_ctrls,
 	.num_controls =		ARRAY_SIZE(ab8500_ctrls),
 	.dapm_widgets =		ab8500_dapm_widgets,
 	.num_dapm_widgets =	ARRAY_SIZE(ab8500_dapm_widgets),
 	.dapm_routes =		ab8500_dapm_routes,
 	.num_dapm_routes =	ARRAY_SIZE(ab8500_dapm_routes),
+=======
+	.component_driver = {
+		.controls =		ab8500_ctrls,
+		.num_controls =		ARRAY_SIZE(ab8500_ctrls),
+		.dapm_widgets =		ab8500_dapm_widgets,
+		.num_dapm_widgets =	ARRAY_SIZE(ab8500_dapm_widgets),
+		.dapm_routes =		ab8500_dapm_routes,
+		.num_dapm_routes =	ARRAY_SIZE(ab8500_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static int ab8500_codec_driver_probe(struct platform_device *pdev)
@@ -2609,7 +2777,10 @@ static int ab8500_codec_driver_remove(struct platform_device *pdev)
 static struct platform_driver ab8500_codec_platform_driver = {
 	.driver	= {
 		.name	= "ab8500-codec",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ab8500_codec_driver_probe,
 	.remove		= ab8500_codec_driver_remove,

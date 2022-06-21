@@ -13,7 +13,11 @@ BEGIN {
 	for (i = 0; i < rep; ++i) {
 		tmp = $0
 		gsub(/\$\$/, i, tmp)
+<<<<<<< HEAD
 		gsub(/\$\#/, n, tmp)
+=======
+		gsub(/\$#/, n, tmp)
+>>>>>>> v4.9.227
 		gsub(/\$\*/, "$", tmp)
 		print tmp
 	}

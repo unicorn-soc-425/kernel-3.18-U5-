@@ -18,6 +18,7 @@
 
 static int debug_pci;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI_MSI
 struct msi_controller *pcibios_msi_controller(struct pci_dev *dev)
 {
@@ -27,6 +28,8 @@ struct msi_controller *pcibios_msi_controller(struct pci_dev *dev)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * We can't use pci_get_device() here since we are
  * called from interrupt context.
@@ -364,7 +367,11 @@ void pcibios_fixup_bus(struct pci_bus *bus)
 	/*
 	 * Report what we did for this bus
 	 */
+<<<<<<< HEAD
 	printk(KERN_INFO "PCI: bus%d: Fast back to back transfers %sabled\n",
+=======
+	pr_info("PCI: bus%d: Fast back to back transfers %sabled\n",
+>>>>>>> v4.9.227
 		bus->number, (features & PCI_COMMAND_FAST_BACK) ? "en" : "dis");
 }
 EXPORT_SYMBOL(pcibios_fixup_bus);
@@ -419,20 +426,42 @@ static int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return irq;
 }
 
+<<<<<<< HEAD
 static int pcibios_init_resources(int busnr, struct pci_sys_data *sys)
 {
 	int ret;
 	struct pci_host_bridge_window *window;
+=======
+static int pcibios_init_resource(int busnr, struct pci_sys_data *sys,
+				 int io_optional)
+{
+	int ret;
+	struct resource_entry *window;
+>>>>>>> v4.9.227
 
 	if (list_empty(&sys->resources)) {
 		pci_add_resource_offset(&sys->resources,
 			 &iomem_resource, sys->mem_offset);
 	}
 
+<<<<<<< HEAD
 	list_for_each_entry(window, &sys->resources, list) {
 		if (resource_type(window->res) == IORESOURCE_IO)
 			return 0;
 	}
+=======
+	/*
+	 * If a platform says I/O port support is optional, we don't add
+	 * the default I/O space.  The platform is responsible for adding
+	 * any I/O space it needs.
+	 */
+	if (io_optional)
+		return 0;
+
+	resource_list_for_each_entry(window, &sys->resources)
+		if (resource_type(window->res) == IORESOURCE_IO)
+			return 0;
+>>>>>>> v4.9.227
 
 	sys->io_res.start = (busnr * SZ_64K) ?  : pcibios_min_io;
 	sys->io_res.end = (busnr + 1) * SZ_64K - 1;
@@ -460,6 +489,7 @@ static void pcibios_init_hw(struct device *parent, struct hw_pci *hw,
 
 	for (nr = busnr = 0; nr < hw->nr_controllers; nr++) {
 		sys = kzalloc(sizeof(struct pci_sys_data), GFP_KERNEL);
+<<<<<<< HEAD
 		if (!sys)
 			panic("PCI: unable to allocate sys data!");
 
@@ -473,6 +503,14 @@ static void pcibios_init_hw(struct device *parent, struct hw_pci *hw,
 		sys->swizzle = hw->swizzle;
 		sys->map_irq = hw->map_irq;
 		sys->align_resource = hw->align_resource;
+=======
+		if (WARN(!sys, "PCI: unable to allocate sys data!"))
+			break;
+
+		sys->busnr   = busnr;
+		sys->swizzle = hw->swizzle;
+		sys->map_irq = hw->map_irq;
+>>>>>>> v4.9.227
 		INIT_LIST_HEAD(&sys->resources);
 
 		if (hw->private_data)
@@ -481,7 +519,13 @@ static void pcibios_init_hw(struct device *parent, struct hw_pci *hw,
 		ret = hw->setup(nr, sys);
 
 		if (ret > 0) {
+<<<<<<< HEAD
 			ret = pcibios_init_resources(nr, sys);
+=======
+			struct pci_host_bridge *host_bridge;
+
+			ret = pcibios_init_resource(nr, sys, hw->io_optional);
+>>>>>>> v4.9.227
 			if (ret)  {
 				kfree(sys);
 				break;
@@ -490,15 +534,32 @@ static void pcibios_init_hw(struct device *parent, struct hw_pci *hw,
 			if (hw->scan)
 				sys->bus = hw->scan(nr, sys);
 			else
+<<<<<<< HEAD
 				sys->bus = pci_scan_root_bus(parent, sys->busnr,
 						hw->ops, sys, &sys->resources);
 
 			if (!sys->bus)
 				panic("PCI: unable to scan bus!");
+=======
+				sys->bus = pci_scan_root_bus_msi(parent,
+					sys->busnr, hw->ops, sys,
+					&sys->resources, hw->msi_ctrl);
+
+			if (WARN(!sys->bus, "PCI: unable to scan bus!")) {
+				kfree(sys);
+				break;
+			}
+>>>>>>> v4.9.227
 
 			busnr = sys->bus->busn_res.end + 1;
 
 			list_add(&sys->node, head);
+<<<<<<< HEAD
+=======
+
+			host_bridge = pci_find_host_bridge(sys->bus);
+			host_bridge->align_resource = hw->align_resource;
+>>>>>>> v4.9.227
 		} else {
 			kfree(sys);
 			if (ret < 0)
@@ -524,6 +585,7 @@ void pci_common_init_dev(struct device *parent, struct hw_pci *hw)
 	list_for_each_entry(sys, &head, node) {
 		struct pci_bus *bus = sys->bus;
 
+<<<<<<< HEAD
 		if (!pci_has_flag(PCI_PROBE_ONLY)) {
 			/*
 			 * Size the bridge windows.
@@ -552,6 +614,26 @@ void pci_common_init_dev(struct device *parent, struct hw_pci *hw)
 			list_for_each_entry(child, &bus->children, node)
 				pcie_bus_configure_settings(child);
 		}
+=======
+		/*
+		 * We insert PCI resources into the iomem_resource and
+		 * ioport_resource trees in either pci_bus_claim_resources()
+		 * or pci_bus_assign_resources().
+		 */
+		if (pci_has_flag(PCI_PROBE_ONLY)) {
+			pci_bus_claim_resources(bus);
+		} else {
+			struct pci_bus *child;
+
+			pci_bus_size_bridges(bus);
+			pci_bus_assign_resources(bus);
+
+			list_for_each_entry(child, &bus->children, node)
+				pcie_bus_configure_settings(child);
+		}
+
+		pci_bus_add_devices(bus);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -567,9 +649,12 @@ char * __init pcibios_setup(char *str)
 	if (!strcmp(str, "debug")) {
 		debug_pci = 1;
 		return NULL;
+<<<<<<< HEAD
 	} else if (!strcmp(str, "firmware")) {
 		pci_add_flags(PCI_PROBE_ONLY);
 		return NULL;
+=======
+>>>>>>> v4.9.227
 	}
 	return str;
 }
@@ -593,20 +678,34 @@ resource_size_t pcibios_align_resource(void *data, const struct resource *res,
 				resource_size_t size, resource_size_t align)
 {
 	struct pci_dev *dev = data;
+<<<<<<< HEAD
 	struct pci_sys_data *sys = dev->sysdata;
 	resource_size_t start = res->start;
+=======
+	resource_size_t start = res->start;
+	struct pci_host_bridge *host_bridge;
+>>>>>>> v4.9.227
 
 	if (res->flags & IORESOURCE_IO && start & 0x300)
 		start = (start + 0x3ff) & ~0x3ff;
 
 	start = (start + align - 1) & ~(align - 1);
 
+<<<<<<< HEAD
 	if (sys->align_resource)
 		return sys->align_resource(dev, res, start, size, align);
+=======
+	host_bridge = pci_find_host_bridge(dev->bus);
+
+	if (host_bridge->align_resource)
+		return host_bridge->align_resource(dev, res,
+				start, size, align);
+>>>>>>> v4.9.227
 
 	return start;
 }
 
+<<<<<<< HEAD
 /**
  * pcibios_enable_device - Enable I/O and memory.
  * @dev: PCI device to be enabled
@@ -630,13 +729,24 @@ int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 	} else {
 		phys = vma->vm_pgoff + (root->mem_offset >> PAGE_SHIFT);
 	}
+=======
+int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
+			enum pci_mmap_state mmap_state, int write_combine)
+{
+	if (mmap_state == pci_mmap_io)
+		return -EINVAL;
+>>>>>>> v4.9.227
 
 	/*
 	 * Mark this as IO
 	 */
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
+<<<<<<< HEAD
 	if (remap_pfn_range(vma, vma->vm_start, phys,
+=======
+	if (remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
+>>>>>>> v4.9.227
 			     vma->vm_end - vma->vm_start,
 			     vma->vm_page_prot))
 		return -EAGAIN;

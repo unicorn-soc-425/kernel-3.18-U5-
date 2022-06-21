@@ -161,7 +161,11 @@ static struct i2c_board_info vpr200_i2c_devices[] = {
 	}
 };
 
+<<<<<<< HEAD
 static iomux_v3_cfg_t vpr200_pads[] = {
+=======
+static const iomux_v3_cfg_t vpr200_pads[] __initconst = {
+>>>>>>> v4.9.227
 	/* UART1 */
 	MX35_PAD_TXD1__UART1_TXD_MUX,
 	MX35_PAD_RXD1__UART1_RXD_MUX,
@@ -268,6 +272,25 @@ static void __init vpr200_board_init(void)
 
 	imx35_add_fec(NULL);
 	imx35_add_imx2_wdt();
+<<<<<<< HEAD
+=======
+
+	imx35_add_imx_uart0(NULL);
+	imx35_add_imx_uart2(NULL);
+
+	imx35_add_ipu_core();
+	imx35_add_mx3_sdc_fb(&mx3fb_pdata);
+
+	imx35_add_fsl_usb2_udc(&otg_device_pdata);
+	imx35_add_mxc_ehci_hs(&usb_host_pdata);
+
+	imx35_add_mxc_nand(&vpr200_nand_board_info);
+	imx35_add_sdhci_esdhc_imx(0, NULL);
+}
+
+static void __init vpr200_late_init(void)
+{
+>>>>>>> v4.9.227
 	imx_add_gpio_keys(&vpr200_gpio_keys_data);
 
 	platform_add_devices(devices, ARRAY_SIZE(devices));
@@ -282,6 +305,7 @@ static void __init vpr200_board_init(void)
 	else
 		gpio_direction_input(GPIO_PMIC_INT);
 
+<<<<<<< HEAD
 	imx35_add_imx_uart0(NULL);
 	imx35_add_imx_uart2(NULL);
 
@@ -294,6 +318,8 @@ static void __init vpr200_board_init(void)
 	imx35_add_mxc_nand(&vpr200_nand_board_info);
 	imx35_add_sdhci_esdhc_imx(0, NULL);
 
+=======
+>>>>>>> v4.9.227
 	vpr200_i2c_devices[1].irq = gpio_to_irq(GPIO_PMIC_INT);
 	i2c_register_board_info(0, vpr200_i2c_devices,
 			ARRAY_SIZE(vpr200_i2c_devices));
@@ -313,5 +339,9 @@ MACHINE_START(VPR200, "VPR200")
 	.init_irq = mx35_init_irq,
 	.init_time = vpr200_timer_init,
 	.init_machine = vpr200_board_init,
+<<<<<<< HEAD
+=======
+	.init_late	= vpr200_late_init,
+>>>>>>> v4.9.227
 	.restart	= mxc_restart,
 MACHINE_END

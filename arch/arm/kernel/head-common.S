@@ -122,6 +122,12 @@ __mmap_switched_data:
 	.long	init_thread_union + THREAD_START_SP @ sp
 	.size	__mmap_switched_data, . - __mmap_switched_data
 
+<<<<<<< HEAD
+=======
+	__FINIT
+	.text
+
+>>>>>>> v4.9.227
 /*
  * This provides a C-API version of __lookup_processor_type
  */
@@ -133,9 +139,12 @@ ENTRY(lookup_processor_type)
 	ldmfd	sp!, {r4 - r6, r9, pc}
 ENDPROC(lookup_processor_type)
 
+<<<<<<< HEAD
 	__FINIT
 	.text
 
+=======
+>>>>>>> v4.9.227
 /*
  * Read processor ID register (CP#15, CR0), and look up in the linker-built
  * supported processor list.  Note that we can't use the absolute addresses

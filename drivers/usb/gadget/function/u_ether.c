@@ -18,6 +18,7 @@
 #include <linux/gfp.h>
 #include <linux/device.h>
 #include <linux/ctype.h>
+<<<<<<< HEAD
 #include <linux/if_arp.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -27,6 +28,12 @@
 #include <linux/seq_file.h>
 #include <linux/notifier.h>
 #include <linux/cpufreq.h>
+=======
+#include <linux/etherdevice.h>
+#include <linux/ethtool.h>
+#include <linux/if_vlan.h>
+
+>>>>>>> v4.9.227
 #include "u_ether.h"
 
 
@@ -53,6 +60,7 @@
 
 #define UETH__VERSION	"29-May-2008"
 
+<<<<<<< HEAD
 static struct workqueue_struct	*uether_wq;
 static struct workqueue_struct	*uether_tx_wq;
 
@@ -89,6 +97,12 @@ enum ifc_state {
 	ETH_STOP,
 	ETH_START,
 };
+=======
+/* Experiments show that both Linux and Windows hosts allow up to 16k
+ * frame sizes. Set the max size to 15k+52 to prevent allocating 32k
+ * blocks and still have efficient handling. */
+#define GETHER_MAX_ETH_FRAME_LEN 15412
+>>>>>>> v4.9.227
 
 struct eth_dev {
 	/* lock is held while accessing port_usb
@@ -101,6 +115,7 @@ struct eth_dev {
 
 	spinlock_t		req_lock;	/* guard {rx,tx}_reqs */
 	struct list_head	tx_reqs, rx_reqs;
+<<<<<<< HEAD
 	unsigned		tx_qlen;
 /* Minimum number of TX USB request queued to UDC */
 #define MAX_TX_REQ_WITH_NO_INT	5
@@ -108,22 +123,29 @@ struct eth_dev {
 	int			tx_skb_hold_count;
 	u32			tx_req_bufsize;
 	struct sk_buff_head	tx_skb_q;
+=======
+	atomic_t		tx_qlen;
+>>>>>>> v4.9.227
 
 	struct sk_buff_head	rx_frames;
 
 	unsigned		qmult;
 
 	unsigned		header_len;
+<<<<<<< HEAD
 	unsigned int		ul_max_pkts_per_xfer;
 	unsigned int		dl_max_pkts_per_xfer;
 	uint32_t		dl_max_xfer_size;
 	bool			rx_trigger_enabled;
+=======
+>>>>>>> v4.9.227
 	struct sk_buff		*(*wrap)(struct gether *, struct sk_buff *skb);
 	int			(*unwrap)(struct gether *,
 						struct sk_buff *skb,
 						struct sk_buff_head *list);
 
 	struct work_struct	work;
+<<<<<<< HEAD
 	struct work_struct	rx_work;
 	struct work_struct	tx_work;
 
@@ -167,10 +189,25 @@ static void uether_debugfs_exit(struct eth_dev *dev);
 /*-------------------------------------------------------------------------*/
 
 
+=======
+
+	unsigned long		todo;
+#define	WORK_RX_MEMORY		0
+
+	bool			zlp;
+	bool			no_skb_reserve;
+	u8			host_mac[ETH_ALEN];
+	u8			dev_mac[ETH_ALEN];
+};
+
+/*-------------------------------------------------------------------------*/
+
+>>>>>>> v4.9.227
 #define RX_EXTRA	20	/* bytes guarding against rx overflows */
 
 #define DEFAULT_QLEN	2	/* double buffering by default */
 
+<<<<<<< HEAD
 /*
  * Usually downlink rates are higher than uplink rates and it
  * deserve higher number of requests. For CAT-6 data rates of
@@ -183,6 +220,8 @@ static unsigned tx_qmult = 2;
 module_param(tx_qmult, uint, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(tx_qmult, "Additional queue length multiplier for tx");
 
+=======
+>>>>>>> v4.9.227
 /* for dual-speed hardware, use deeper queues at high/super speed */
 static inline int qlen(struct usb_gadget *gadget, unsigned qmult)
 {
@@ -194,11 +233,14 @@ static inline int qlen(struct usb_gadget *gadget, unsigned qmult)
 }
 
 /*-------------------------------------------------------------------------*/
+<<<<<<< HEAD
 #define U_ETHER_RX_PENDING_TSHOLD 500
 
 static unsigned int u_ether_rx_pending_thld = U_ETHER_RX_PENDING_TSHOLD;
 module_param(u_ether_rx_pending_thld, uint, S_IRUGO | S_IWUSR);
 
+=======
+>>>>>>> v4.9.227
 
 /* REVISIT there must be a better way than having two sets
  * of debug calls ...
@@ -239,6 +281,7 @@ module_param(u_ether_rx_pending_thld, uint, S_IRUGO | S_IWUSR);
 
 static int ueth_change_mtu(struct net_device *net, int new_mtu)
 {
+<<<<<<< HEAD
 	struct eth_dev	*dev = netdev_priv(net);
 	unsigned long	flags;
 	int		status = 0;
@@ -273,6 +316,13 @@ static int ueth_change_mtu_ip(struct net_device *net, int new_mtu)
 	spin_unlock_irqrestore(&dev->lock, flags);
 
 	return status;
+=======
+	if (new_mtu <= ETH_HLEN || new_mtu > GETHER_MAX_ETH_FRAME_LEN)
+		return -ERANGE;
+	net->mtu = new_mtu;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void eth_get_drvinfo(struct net_device *net, struct ethtool_drvinfo *p)
@@ -307,7 +357,10 @@ static void defer_kevent(struct eth_dev *dev, int flag)
 }
 
 static void rx_complete(struct usb_ep *ep, struct usb_request *req);
+<<<<<<< HEAD
 static void tx_complete(struct usb_ep *ep, struct usb_request *req);
+=======
+>>>>>>> v4.9.227
 
 static int
 rx_submit(struct eth_dev *dev, struct usb_request *req, gfp_t gfp_flags)
@@ -317,7 +370,10 @@ rx_submit(struct eth_dev *dev, struct usb_request *req, gfp_t gfp_flags)
 	size_t		size = 0;
 	struct usb_ep	*out;
 	unsigned long	flags;
+<<<<<<< HEAD
 	unsigned short reserve_headroom = 0;
+=======
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&dev->lock, flags);
 	if (dev->port_usb)
@@ -325,12 +381,20 @@ rx_submit(struct eth_dev *dev, struct usb_request *req, gfp_t gfp_flags)
 	else
 		out = NULL;
 
+<<<<<<< HEAD
 	if (!out) {
+=======
+	if (!out)
+	{
+>>>>>>> v4.9.227
 		spin_unlock_irqrestore(&dev->lock, flags);
 		return -ENOTCONN;
 	}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	/* Padding up to RX_EXTRA handles minor disagreements with host.
 	 * Normally we use the USB "terminate on short read" convention;
 	 * so allow up to (N*maxpacket), since that memory is normally
@@ -348,19 +412,26 @@ rx_submit(struct eth_dev *dev, struct usb_request *req, gfp_t gfp_flags)
 	size += out->maxpacket - 1;
 	size -= size % out->maxpacket;
 
+<<<<<<< HEAD
 	if (dev->ul_max_pkts_per_xfer)
 		size *= dev->ul_max_pkts_per_xfer;
 
+=======
+>>>>>>> v4.9.227
 	if (dev->port_usb->is_fixed)
 		size = max_t(size_t, size, dev->port_usb->fixed_out_len);
 	spin_unlock_irqrestore(&dev->lock, flags);
 
+<<<<<<< HEAD
 	if (dev->rx_needed_headroom)
 		reserve_headroom = ALIGN(dev->rx_needed_headroom, 4);
 
 	pr_debug("%s: size: %zu + %d(hr)", __func__, size, reserve_headroom);
 
 	skb = alloc_skb(size + reserve_headroom, gfp_flags);
+=======
+	skb = alloc_skb(size + NET_IP_ALIGN, gfp_flags);
+>>>>>>> v4.9.227
 	if (skb == NULL) {
 		DBG(dev, "no rx skb\n");
 		goto enomem;
@@ -370,10 +441,19 @@ rx_submit(struct eth_dev *dev, struct usb_request *req, gfp_t gfp_flags)
 	 * but on at least one, checksumming fails otherwise.  Note:
 	 * RNDIS headers involve variable numbers of LE32 values.
 	 */
+<<<<<<< HEAD
 	skb_reserve(skb, reserve_headroom);
 
 	req->buf = skb->data;
 	req->length = size;
+=======
+	if (likely(!dev->no_skb_reserve))
+		skb_reserve(skb, NET_IP_ALIGN);
+
+	req->buf = skb->data;
+	req->length = size;
+	req->complete = rx_complete;
+>>>>>>> v4.9.227
 	req->context = skb;
 
 	retval = usb_ep_queue(out, req, gfp_flags);
@@ -384,22 +464,38 @@ enomem:
 		DBG(dev, "rx submit --> %d\n", retval);
 		if (skb)
 			dev_kfree_skb_any(skb);
+<<<<<<< HEAD
+=======
+		spin_lock_irqsave(&dev->req_lock, flags);
+		list_add(&req->list, &dev->rx_reqs);
+		spin_unlock_irqrestore(&dev->req_lock, flags);
+>>>>>>> v4.9.227
 	}
 	return retval;
 }
 
 static void rx_complete(struct usb_ep *ep, struct usb_request *req)
 {
+<<<<<<< HEAD
 	struct sk_buff	*skb = req->context;
 	struct eth_dev	*dev = ep->driver_data;
 	int		status = req->status;
 	bool		queue = 0;
+=======
+	struct sk_buff	*skb = req->context, *skb2;
+	struct eth_dev	*dev = ep->driver_data;
+	int		status = req->status;
+>>>>>>> v4.9.227
 
 	switch (status) {
 
 	/* normal completion */
 	case 0:
 		skb_put(skb, req->actual);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		if (dev->unwrap) {
 			unsigned long	flags;
 
@@ -408,10 +504,13 @@ static void rx_complete(struct usb_ep *ep, struct usb_request *req)
 				status = dev->unwrap(dev->port_usb,
 							skb,
 							&dev->rx_frames);
+<<<<<<< HEAD
 				if (status == -EINVAL)
 					dev->net->stats.rx_errors++;
 				else if (status == -EOVERFLOW)
 					dev->net->stats.rx_over_errors++;
+=======
+>>>>>>> v4.9.227
 			} else {
 				dev_kfree_skb_any(skb);
 				status = -ENOTCONN;
@@ -420,9 +519,36 @@ static void rx_complete(struct usb_ep *ep, struct usb_request *req)
 		} else {
 			skb_queue_tail(&dev->rx_frames, skb);
 		}
+<<<<<<< HEAD
 
 		if (!status)
 			queue = 1;
+=======
+		skb = NULL;
+
+		skb2 = skb_dequeue(&dev->rx_frames);
+		while (skb2) {
+			if (status < 0
+					|| ETH_HLEN > skb2->len
+					|| skb2->len > GETHER_MAX_ETH_FRAME_LEN) {
+				dev->net->stats.rx_errors++;
+				dev->net->stats.rx_length_errors++;
+				DBG(dev, "rx length %d\n", skb2->len);
+				dev_kfree_skb_any(skb2);
+				goto next_frame;
+			}
+			skb2->protocol = eth_type_trans(skb2, dev->net);
+			dev->net->stats.rx_packets++;
+			dev->net->stats.rx_bytes += skb2->len;
+
+			/* no buffer copies needed, unless hardware can't
+			 * use skb buffers.
+			 */
+			status = netif_rx(skb2);
+next_frame:
+			skb2 = skb_dequeue(&dev->rx_frames);
+		}
+>>>>>>> v4.9.227
 		break;
 
 	/* software-driven interface shutdown */
@@ -445,13 +571,17 @@ quiesce:
 		/* FALLTHROUGH */
 
 	default:
+<<<<<<< HEAD
 		queue = 1;
 		dev_kfree_skb_any(skb);
+=======
+>>>>>>> v4.9.227
 		dev->net->stats.rx_errors++;
 		DBG(dev, "rx status %d\n", status);
 		break;
 	}
 
+<<<<<<< HEAD
 clean:
 	if (queue && dev->rx_frames.qlen <= u_ether_rx_pending_thld) {
 		if (rx_submit(dev, req, GFP_ATOMIC) < 0) {
@@ -480,6 +610,25 @@ static int prealloc(struct list_head *list,
 	struct usb_request	*req;
 	bool			usb_in;
 	struct sg_ctx		*sg_ctx;
+=======
+	if (skb)
+		dev_kfree_skb_any(skb);
+	if (!netif_running(dev->net)) {
+clean:
+		spin_lock(&dev->req_lock);
+		list_add(&req->list, &dev->rx_reqs);
+		spin_unlock(&dev->req_lock);
+		req = NULL;
+	}
+	if (req)
+		rx_submit(dev, req, GFP_ATOMIC);
+}
+
+static int prealloc(struct list_head *list, struct usb_ep *ep, unsigned n)
+{
+	unsigned		i;
+	struct usb_request	*req;
+>>>>>>> v4.9.227
 
 	if (!n)
 		return -ENOMEM;
@@ -490,16 +639,20 @@ static int prealloc(struct list_head *list,
 		if (i-- == 0)
 			goto extra;
 	}
+<<<<<<< HEAD
 
 	if (ep->desc->bEndpointAddress & USB_DIR_IN)
 		usb_in = true;
 	else
 		usb_in = false;
 
+=======
+>>>>>>> v4.9.227
 	while (i--) {
 		req = usb_ep_alloc_request(ep, GFP_ATOMIC);
 		if (!req)
 			return list_empty(list) ? -ENOMEM : 0;
+<<<<<<< HEAD
 		/* update completion handler */
 		if (usb_in) {
 			req->complete = tx_complete;
@@ -521,6 +674,8 @@ static int prealloc(struct list_head *list,
 			req->complete = rx_complete;
 		}
 add_list:
+=======
+>>>>>>> v4.9.227
 		list_add(&req->list, list);
 	}
 	return 0;
@@ -532,6 +687,7 @@ extra:
 
 		next = req->list.next;
 		list_del(&req->list);
+<<<<<<< HEAD
 
 		if (sg_supported) {
 			kfree(req->sg);
@@ -539,6 +695,8 @@ extra:
 			kfree(req->buf);
 		}
 
+=======
+>>>>>>> v4.9.227
 		usb_ep_free_request(ep, req);
 
 		if (next == list)
@@ -554,6 +712,7 @@ static int alloc_requests(struct eth_dev *dev, struct gether *link, unsigned n)
 	int	status;
 
 	spin_lock(&dev->req_lock);
+<<<<<<< HEAD
 	/*
 	 * u_ether driver always assumes that it has both in and out endpoints
 	 * and calls alloc_requests on both the endpoints, without checking if
@@ -577,6 +736,14 @@ static int alloc_requests(struct eth_dev *dev, struct gether *link, unsigned n)
 		if (status < 0)
 			goto fail;
 	}
+=======
+	status = prealloc(&dev->tx_reqs, link->in_ep, n);
+	if (status < 0)
+		goto fail;
+	status = prealloc(&dev->rx_reqs, link->out_ep, n);
+	if (status < 0)
+		goto fail;
+>>>>>>> v4.9.227
 	goto done;
 fail:
 	DBG(dev, "can't alloc requests\n");
@@ -589,6 +756,7 @@ static void rx_fill(struct eth_dev *dev, gfp_t gfp_flags)
 {
 	struct usb_request	*req;
 	unsigned long		flags;
+<<<<<<< HEAD
 	int			req_cnt = 0;
 
 	if (!dev)
@@ -606,12 +774,19 @@ static void rx_fill(struct eth_dev *dev, gfp_t gfp_flags)
 		if (++req_cnt > qlen(dev->gadget, dev->qmult))
 			break;
 
+=======
+
+	/* fill unused rxq slots with some skb */
+	spin_lock_irqsave(&dev->req_lock, flags);
+	while (!list_empty(&dev->rx_reqs)) {
+>>>>>>> v4.9.227
 		req = container_of(dev->rx_reqs.next,
 				struct usb_request, list);
 		list_del_init(&req->list);
 		spin_unlock_irqrestore(&dev->req_lock, flags);
 
 		if (rx_submit(dev, req, gfp_flags) < 0) {
+<<<<<<< HEAD
 			spin_lock_irqsave(&dev->req_lock, flags);
 			list_add(&req->list, &dev->rx_reqs);
 			if (!dev->port_usb) {
@@ -619,6 +794,8 @@ static void rx_fill(struct eth_dev *dev, gfp_t gfp_flags)
 				return;
 			}
 			spin_unlock_irqrestore(&dev->req_lock, flags);
+=======
+>>>>>>> v4.9.227
 			defer_kevent(dev, WORK_RX_MEMORY);
 			return;
 		}
@@ -628,6 +805,7 @@ static void rx_fill(struct eth_dev *dev, gfp_t gfp_flags)
 	spin_unlock_irqrestore(&dev->req_lock, flags);
 }
 
+<<<<<<< HEAD
 static __be16 ether_ip_type_trans(struct sk_buff *skb,
 	struct net_device *dev)
 {
@@ -714,6 +892,8 @@ process_frame:
 		rx_fill(dev, GFP_KERNEL);
 }
 
+=======
+>>>>>>> v4.9.227
 static void eth_work(struct work_struct *work)
 {
 	struct eth_dev	*dev = container_of(work, struct eth_dev, work);
@@ -729,6 +909,7 @@ static void eth_work(struct work_struct *work)
 
 static void tx_complete(struct usb_ep *ep, struct usb_request *req)
 {
+<<<<<<< HEAD
 	struct sk_buff	*skb;
 	struct eth_dev	*dev;
 	struct net_device *net;
@@ -750,6 +931,10 @@ static void tx_complete(struct usb_ep *ep, struct usb_request *req)
 		usb_ep_free_request(ep, req);
 		return;
 	}
+=======
+	struct sk_buff	*skb = req->context;
+	struct eth_dev	*dev = ep->driver_data;
+>>>>>>> v4.9.227
 
 	switch (req->status) {
 	default:
@@ -760,6 +945,7 @@ static void tx_complete(struct usb_ep *ep, struct usb_request *req)
 	case -ESHUTDOWN:		/* disconnect etc */
 		break;
 	case 0:
+<<<<<<< HEAD
 		/*
 		 * Remove the header length, before updating tx_bytes in
 		 * net->stats, since when packet is received from network layer
@@ -899,6 +1085,18 @@ static void tx_complete(struct usb_ep *ep, struct usb_request *req)
 	list_add_tail(&req->list, &dev->tx_reqs);
 	spin_unlock(&dev->req_lock);
 
+=======
+		dev->net->stats.tx_bytes += skb->len;
+	}
+	dev->net->stats.tx_packets++;
+
+	spin_lock(&dev->req_lock);
+	list_add(&req->list, &dev->tx_reqs);
+	spin_unlock(&dev->req_lock);
+	dev_kfree_skb_any(skb);
+
+	atomic_dec(&dev->tx_qlen);
+>>>>>>> v4.9.227
 	if (netif_carrier_ok(dev->net))
 		netif_wake_queue(dev->net);
 }
@@ -908,6 +1106,7 @@ static inline int is_promisc(u16 cdc_filter)
 	return cdc_filter & USB_CDC_PACKET_TYPE_PROMISCUOUS;
 }
 
+<<<<<<< HEAD
 static int alloc_tx_buffer(struct eth_dev *dev)
 {
 	struct list_head	*act;
@@ -1089,11 +1288,14 @@ static void process_tx_w(struct work_struct *w)
 	spin_unlock_irqrestore(&dev->req_lock, flags);
 }
 
+=======
+>>>>>>> v4.9.227
 static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 					struct net_device *net)
 {
 	struct eth_dev		*dev = netdev_priv(net);
 	int			length = 0;
+<<<<<<< HEAD
 	int			tail_room = 0;
 	int			extra_alloc = 0;
 	int			retval;
@@ -1106,11 +1308,19 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 	u32			fixed_in_len;
 	bool			is_fixed;
 	struct skb_shared_hwtstamps hwtstamps;
+=======
+	int			retval;
+	struct usb_request	*req = NULL;
+	unsigned long		flags;
+	struct usb_ep		*in;
+	u16			cdc_filter;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&dev->lock, flags);
 	if (dev->port_usb) {
 		in = dev->port_usb->in_ep;
 		cdc_filter = dev->port_usb->cdc_filter;
+<<<<<<< HEAD
 		is_fixed = dev->port_usb->is_fixed;
 		fixed_in_len = dev->port_usb->fixed_in_len;
 		multi_pkt_xfer = dev->port_usb->multi_pkt_xfer;
@@ -1118,13 +1328,27 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 	spin_unlock_irqrestore(&dev->lock, flags);
 
 	if (!in) {
+=======
+	} else {
+		in = NULL;
+		cdc_filter = 0;
+	}
+	spin_unlock_irqrestore(&dev->lock, flags);
+
+	if (skb && !in) {
+>>>>>>> v4.9.227
 		dev_kfree_skb_any(skb);
 		return NETDEV_TX_OK;
 	}
 
+<<<<<<< HEAD
 	/* apply outgoing CDC or RNDIS filters only for ETH packets */
 	if (!test_bit(RMNET_MODE_LLP_IP, &dev->flags) &&
 						!is_promisc(cdc_filter)) {
+=======
+	/* apply outgoing CDC or RNDIS filters */
+	if (skb && !is_promisc(cdc_filter)) {
+>>>>>>> v4.9.227
 		u8		*dest = skb->data;
 
 		if (is_multicast_ether_addr(dest)) {
@@ -1145,6 +1369,7 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 		/* ignores USB_CDC_PACKET_TYPE_DIRECTED */
 	}
 
+<<<<<<< HEAD
 	dev->tx_pkts_rcvd++;
 	dev->tx_bytes_rcvd += skb->len;
 	if (dev->sg_enabled) {
@@ -1185,6 +1410,9 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 		}
 	}
 
+=======
+	spin_lock_irqsave(&dev->req_lock, flags);
+>>>>>>> v4.9.227
 	/*
 	 * this freelist can be empty if an interrupt triggered disconnect()
 	 * and reconfigured the gadget (shutting down this queue) after the
@@ -1199,6 +1427,7 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 	list_del(&req->list);
 
 	/* temporarily stop TX queue when the freelist empties */
+<<<<<<< HEAD
 	if (list_empty(&dev->tx_reqs)) {
 		/*
 		 * tx_throttle gives info about number of times u_ether
@@ -1286,6 +1515,43 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 
 	/* NCM requires no zlp if transfer is dwNtbInMaxSize */
 	if (is_fixed && length == fixed_in_len &&
+=======
+	if (list_empty(&dev->tx_reqs))
+		netif_stop_queue(net);
+	spin_unlock_irqrestore(&dev->req_lock, flags);
+
+	/* no buffer copies needed, unless the network stack did it
+	 * or the hardware can't use skb buffers.
+	 * or there's not enough space for extra headers we need
+	 */
+	if (dev->wrap) {
+		unsigned long	flags;
+
+		spin_lock_irqsave(&dev->lock, flags);
+		if (dev->port_usb)
+			skb = dev->wrap(dev->port_usb, skb);
+		spin_unlock_irqrestore(&dev->lock, flags);
+		if (!skb) {
+			/* Multi frame CDC protocols may store the frame for
+			 * later which is not a dropped frame.
+			 */
+			if (dev->port_usb &&
+					dev->port_usb->supports_multi_frame)
+				goto multiframe;
+			goto drop;
+		}
+	}
+
+	length = skb->len;
+	req->buf = skb->data;
+	req->context = skb;
+	req->complete = tx_complete;
+
+	/* NCM requires no zlp if transfer is dwNtbInMaxSize */
+	if (dev->port_usb &&
+	    dev->port_usb->is_fixed &&
+	    length == dev->port_usb->fixed_in_len &&
+>>>>>>> v4.9.227
 	    (length % in->maxpacket) == 0)
 		req->zero = 0;
 	else
@@ -1295,6 +1561,7 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 	 * though any robust network rx path ignores extra padding.
 	 * and some hardware doesn't like to write zlps.
 	 */
+<<<<<<< HEAD
 	if (req->zero && !dev->zlp && (length % in->maxpacket) == 0) {
 		req->zero = 0;
 		length++;
@@ -1329,12 +1596,20 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 		}
 	}
 
+=======
+	if (req->zero && !dev->zlp && (length % in->maxpacket) == 0)
+		length++;
+
+	req->length = length;
+
+>>>>>>> v4.9.227
 	retval = usb_ep_queue(in, req, GFP_ATOMIC);
 	switch (retval) {
 	default:
 		DBG(dev, "tx queue err %d\n", retval);
 		break;
 	case 0:
+<<<<<<< HEAD
 		net->trans_start = jiffies;
 	}
 
@@ -1351,6 +1626,23 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 		spin_unlock_irqrestore(&dev->req_lock, flags);
 	}
 success:
+=======
+		netif_trans_update(net);
+		atomic_inc(&dev->tx_qlen);
+	}
+
+	if (retval) {
+		dev_kfree_skb_any(skb);
+drop:
+		dev->net->stats.tx_dropped++;
+multiframe:
+		spin_lock_irqsave(&dev->req_lock, flags);
+		if (list_empty(&dev->tx_reqs))
+			netif_start_queue(net);
+		list_add(&req->list, &dev->tx_reqs);
+		spin_unlock_irqrestore(&dev->req_lock, flags);
+	}
+>>>>>>> v4.9.227
 	return NETDEV_TX_OK;
 }
 
@@ -1364,7 +1656,11 @@ static void eth_start(struct eth_dev *dev, gfp_t gfp_flags)
 	rx_fill(dev, gfp_flags);
 
 	/* and open the tx floodgates */
+<<<<<<< HEAD
 	dev->tx_qlen = 0;
+=======
+	atomic_set(&dev->tx_qlen, 0);
+>>>>>>> v4.9.227
 	netif_wake_queue(dev->net);
 }
 
@@ -1372,6 +1668,7 @@ static int eth_open(struct net_device *net)
 {
 	struct eth_dev	*dev = netdev_priv(net);
 	struct gether	*link;
+<<<<<<< HEAD
 	int i;
 	bool wait_for_rx_trigger;
 
@@ -1392,6 +1689,15 @@ static int eth_open(struct net_device *net)
 		eth_start(dev, GFP_KERNEL);
 
 	spin_lock_irq(&dev->lock);
+=======
+
+	DBG(dev, "%s\n", __func__);
+	if (netif_carrier_ok(dev->net))
+		eth_start(dev, GFP_KERNEL);
+
+	spin_lock_irq(&dev->lock);
+	link = dev->port_usb;
+>>>>>>> v4.9.227
 	if (link && link->open)
 		link->open(link);
 	spin_unlock_irq(&dev->lock);
@@ -1403,11 +1709,16 @@ static int eth_stop(struct net_device *net)
 {
 	struct eth_dev	*dev = netdev_priv(net);
 	unsigned long	flags;
+<<<<<<< HEAD
 	int i;
 	enum ifc_state prev_state;
 
 	VDBG(dev, "%s\n", __func__);
 
+=======
+
+	VDBG(dev, "%s\n", __func__);
+>>>>>>> v4.9.227
 	netif_stop_queue(net);
 
 	DBG(dev, "stop stats: rx/tx %ld/%ld, errs %ld/%ld\n",
@@ -1434,6 +1745,7 @@ static int eth_stop(struct net_device *net)
 		 * their own pace; the network stack can handle old packets.
 		 * For the moment we leave this here, since it works.
 		 */
+<<<<<<< HEAD
 		if (link->in_ep) {
 			in = link->in_ep->desc;
 			usb_ep_disable(link->in_ep);
@@ -1459,11 +1771,23 @@ static int eth_stop(struct net_device *net)
 			}
 			DBG(dev, "host still using out endpoint\n");
 			link->out_ep->desc = out;
+=======
+		in = link->in_ep->desc;
+		out = link->out_ep->desc;
+		usb_ep_disable(link->in_ep);
+		usb_ep_disable(link->out_ep);
+		if (netif_carrier_ok(net)) {
+			DBG(dev, "host still using in/out endpoints\n");
+			link->in_ep->desc = in;
+			link->out_ep->desc = out;
+			usb_ep_enable(link->in_ep);
+>>>>>>> v4.9.227
 			usb_ep_enable(link->out_ep);
 		}
 	}
 	spin_unlock_irqrestore(&dev->lock, flags);
 
+<<<<<<< HEAD
 	prev_state = dev->state;
 	dev->state = ETH_STOP;
 
@@ -1472,13 +1796,18 @@ static int eth_stop(struct net_device *net)
 		for_each_online_cpu(i)
 			cpufreq_update_policy(i);
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 /*-------------------------------------------------------------------------*/
+<<<<<<< HEAD
 #ifndef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 static u8 host_ethaddr[ETH_ALEN];
 #endif
+=======
+>>>>>>> v4.9.227
 
 static int get_ether_addr(const char *str, u8 *dev_addr)
 {
@@ -1506,6 +1835,7 @@ static int get_ether_addr_str(u8 dev_addr[ETH_ALEN], char *str, int len)
 	if (len < 18)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	snprintf(str, len, "%02x:%02x:%02x:%02x:%02x:%02x",
 		 dev_addr[0], dev_addr[1], dev_addr[2],
 		 dev_addr[3], dev_addr[4], dev_addr[5]);
@@ -1525,17 +1855,26 @@ static int get_host_ether_addr(u8 *str, u8 *dev_addr)
 #endif
 
 static int ether_ioctl(struct net_device *, struct ifreq *, int);
+=======
+	snprintf(str, len, "%pM", dev_addr);
+	return 18;
+}
+>>>>>>> v4.9.227
 
 static const struct net_device_ops eth_netdev_ops = {
 	.ndo_open		= eth_open,
 	.ndo_stop		= eth_stop,
 	.ndo_start_xmit		= eth_start_xmit,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= ether_ioctl,
+=======
+>>>>>>> v4.9.227
 	.ndo_change_mtu		= ueth_change_mtu,
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
+<<<<<<< HEAD
 static const struct net_device_ops eth_netdev_ops_ip = {
 	.ndo_open		= eth_open,
 	.ndo_stop		= eth_stop,
@@ -1694,10 +2033,13 @@ static int ether_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	return rc;
 }
 
+=======
+>>>>>>> v4.9.227
 static struct device_type gadget_type = {
 	.name	= "gadget",
 };
 
+<<<<<<< HEAD
 static int gether_cpufreq_notifier_cb(struct notifier_block *nfb,
 		unsigned long event, void *data)
 {
@@ -1731,6 +2073,8 @@ static void update_cpu_policy_w(struct work_struct *work)
 		cpufreq_update_policy(i);
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * gether_setup_name - initialize one ethernet-over-usb link
  * @g: gadget to associated with these links
@@ -1761,6 +2105,7 @@ struct eth_dev *gether_setup_name(struct usb_gadget *g,
 	spin_lock_init(&dev->lock);
 	spin_lock_init(&dev->req_lock);
 	INIT_WORK(&dev->work, eth_work);
+<<<<<<< HEAD
 	INIT_WORK(&dev->rx_work, process_rx_w);
 	INIT_WORK(&dev->tx_work, process_tx_w);
 	INIT_LIST_HEAD(&dev->tx_reqs);
@@ -1769,6 +2114,12 @@ struct eth_dev *gether_setup_name(struct usb_gadget *g,
 
 	skb_queue_head_init(&dev->rx_frames);
 	skb_queue_head_init(&dev->tx_skb_q);
+=======
+	INIT_LIST_HEAD(&dev->tx_reqs);
+	INIT_LIST_HEAD(&dev->rx_reqs);
+
+	skb_queue_head_init(&dev->rx_frames);
+>>>>>>> v4.9.227
 
 	/* network device setup */
 	dev->net = net;
@@ -1778,6 +2129,7 @@ struct eth_dev *gether_setup_name(struct usb_gadget *g,
 	if (get_ether_addr(dev_addr, net->dev_addr))
 		dev_warn(&g->dev,
 			"using random %s ethernet address\n", "self");
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 	if (ethaddr != NULL) {
 		memcpy(dev->host_mac, ethaddr, ETH_ALEN);
@@ -1792,14 +2144,25 @@ struct eth_dev *gether_setup_name(struct usb_gadget *g,
 	if (ethaddr)
 		memcpy(ethaddr, dev->host_mac, ETH_ALEN);
 #endif
+=======
+	if (get_ether_addr(host_addr, dev->host_mac))
+		dev_warn(&g->dev,
+			"using random %s ethernet address\n", "host");
+
+	if (ethaddr)
+		memcpy(ethaddr, dev->host_mac, ETH_ALEN);
+>>>>>>> v4.9.227
 
 	net->netdev_ops = &eth_netdev_ops;
 
 	net->ethtool_ops = &ops;
 
+<<<<<<< HEAD
 	/* set operation mode to eth by default */
 	set_bit(RMNET_MODE_LLP_ETH, &dev->flags);
 
+=======
+>>>>>>> v4.9.227
 	dev->gadget = g;
 	SET_NETDEV_DEV(net, &g->dev);
 	SET_NETDEV_DEVTYPE(net, &gadget_type);
@@ -1819,12 +2182,15 @@ struct eth_dev *gether_setup_name(struct usb_gadget *g,
 		 *  - tx queueing enabled if open *and* carrier is "on"
 		 */
 		netif_carrier_off(net);
+<<<<<<< HEAD
 		uether_debugfs_init(dev, netname);
 
 		dev->cpufreq_notifier.notifier_call =
 					gether_cpufreq_notifier_cb;
 		cpufreq_register_notifier(&dev->cpufreq_notifier,
 				CPUFREQ_POLICY_NOTIFIER);
+=======
+>>>>>>> v4.9.227
 	}
 
 	return dev;
@@ -1844,6 +2210,7 @@ struct net_device *gether_setup_name_default(const char *netname)
 	spin_lock_init(&dev->lock);
 	spin_lock_init(&dev->req_lock);
 	INIT_WORK(&dev->work, eth_work);
+<<<<<<< HEAD
 	INIT_WORK(&dev->rx_work, process_rx_w);
 	INIT_WORK(&dev->tx_work, process_tx_w);
 	INIT_LIST_HEAD(&dev->tx_reqs);
@@ -1852,6 +2219,12 @@ struct net_device *gether_setup_name_default(const char *netname)
 
 	skb_queue_head_init(&dev->rx_frames);
 	skb_queue_head_init(&dev->tx_skb_q);
+=======
+	INIT_LIST_HEAD(&dev->tx_reqs);
+	INIT_LIST_HEAD(&dev->rx_reqs);
+
+	skb_queue_head_init(&dev->rx_frames);
+>>>>>>> v4.9.227
 
 	/* network device setup */
 	dev->net = net;
@@ -1866,10 +2239,13 @@ struct net_device *gether_setup_name_default(const char *netname)
 	net->netdev_ops = &eth_netdev_ops;
 
 	net->ethtool_ops = &ops;
+<<<<<<< HEAD
 
 	/* set operation mode to eth by default */
 	set_bit(RMNET_MODE_LLP_ETH, &dev->flags);
 
+=======
+>>>>>>> v4.9.227
 	SET_NETDEV_DEVTYPE(net, &gadget_type);
 
 	return net;
@@ -2026,6 +2402,7 @@ EXPORT_SYMBOL_GPL(gether_get_ifname);
  */
 void gether_cleanup(struct eth_dev *dev)
 {
+<<<<<<< HEAD
 	int i;
 
 	if (!dev)
@@ -2045,10 +2422,18 @@ void gether_cleanup(struct eth_dev *dev)
 	flush_work(&dev->work);
 	cancel_work_sync(&dev->rx_work);
 	cancel_work_sync(&dev->tx_work);
+=======
+	if (!dev)
+		return;
+
+	unregister_netdev(dev->net);
+	flush_work(&dev->work);
+>>>>>>> v4.9.227
 	free_netdev(dev->net);
 }
 EXPORT_SYMBOL_GPL(gether_cleanup);
 
+<<<<<<< HEAD
 void gether_update_dl_max_xfer_size(struct gether *link, uint32_t s)
 {
 	struct eth_dev		*dev = link->ioport;
@@ -2079,6 +2464,8 @@ void gether_update_dl_max_pkts_per_xfer(struct gether *link, uint32_t n)
 	spin_unlock_irqrestore(&dev->lock, flags);
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * gether_connect - notify network layer that USB link is active
  * @link: the USB link, set up with endpoints, descriptors matching
@@ -2099,11 +2486,15 @@ struct net_device *gether_connect(struct gether *link)
 {
 	struct eth_dev		*dev = link->ioport;
 	int			result = 0;
+<<<<<<< HEAD
 	bool wait_for_rx_trigger;
+=======
+>>>>>>> v4.9.227
 
 	if (!dev)
 		return ERR_PTR(-EINVAL);
 
+<<<<<<< HEAD
 	/* if scatter/gather or sg is supported then headers can be part of
 	 * req->buf which is allocated later
 	 */
@@ -2150,11 +2541,30 @@ struct net_device *gether_connect(struct gether *link)
 	dev->dl_max_pkts_per_xfer = link->dl_max_pkts_per_xfer;
 	dev->dl_max_xfer_size = link->dl_max_xfer_size;
 
+=======
+	link->in_ep->driver_data = dev;
+	result = usb_ep_enable(link->in_ep);
+	if (result != 0) {
+		DBG(dev, "enable %s --> %d\n",
+			link->in_ep->name, result);
+		goto fail0;
+	}
+
+	link->out_ep->driver_data = dev;
+	result = usb_ep_enable(link->out_ep);
+	if (result != 0) {
+		DBG(dev, "enable %s --> %d\n",
+			link->out_ep->name, result);
+		goto fail1;
+	}
+
+>>>>>>> v4.9.227
 	if (result == 0)
 		result = alloc_requests(dev, link, qlen(dev->gadget,
 					dev->qmult));
 
 	if (result == 0) {
+<<<<<<< HEAD
 
 		dev->zlp = link->is_zlp_ok;
 		DBG(dev, "qlen %d\n", qlen(dev->gadget, dev->qmult));
@@ -2164,6 +2574,17 @@ struct net_device *gether_connect(struct gether *link)
 		dev->tx_skb_hold_count = 0;
 		dev->no_tx_req_used = 0;
 		dev->tx_req_bufsize = 0;
+=======
+		dev->zlp = link->is_zlp_ok;
+		dev->no_skb_reserve = link->no_skb_reserve;
+		DBG(dev, "qlen %d\n", qlen(dev->gadget, dev->qmult));
+
+		dev->header_len = link->header_len;
+		dev->unwrap = link->unwrap;
+		dev->wrap = link->wrap;
+
+		spin_lock(&dev->lock);
+>>>>>>> v4.9.227
 		dev->port_usb = link;
 		if (netif_running(dev->net)) {
 			if (link->open)
@@ -2175,15 +2596,20 @@ struct net_device *gether_connect(struct gether *link)
 		spin_unlock(&dev->lock);
 
 		netif_carrier_on(dev->net);
+<<<<<<< HEAD
 
 		wait_for_rx_trigger = dev->rx_trigger_enabled &&
 			!link->rx_triggered;
 
 		if (netif_running(dev->net) && !wait_for_rx_trigger)
+=======
+		if (netif_running(dev->net))
+>>>>>>> v4.9.227
 			eth_start(dev, GFP_ATOMIC);
 
 	/* on error, disable any endpoints  */
 	} else {
+<<<<<<< HEAD
 		if (link->out_ep)
 			(void) usb_ep_disable(link->out_ep);
 fail1:
@@ -2199,6 +2625,16 @@ fail:
 		return ERR_PTR(result);
 	}
 
+=======
+		(void) usb_ep_disable(link->out_ep);
+fail1:
+		(void) usb_ep_disable(link->in_ep);
+	}
+fail0:
+	/* caller is responsible for cleanup on error */
+	if (result < 0)
+		return ERR_PTR(result);
+>>>>>>> v4.9.227
 	return dev->net;
 }
 EXPORT_SYMBOL_GPL(gether_connect);
@@ -2219,16 +2655,24 @@ void gether_disconnect(struct gether *link)
 {
 	struct eth_dev		*dev = link->ioport;
 	struct usb_request	*req;
+<<<<<<< HEAD
 	struct sk_buff		*skb;
 
+=======
+
+	WARN_ON(!dev);
+>>>>>>> v4.9.227
 	if (!dev)
 		return;
 
 	DBG(dev, "%s\n", __func__);
 
+<<<<<<< HEAD
 	dev->state = ETH_UNDEFINED;
 	queue_work(uether_wq, &dev->cpu_policy_w);
 
+=======
+>>>>>>> v4.9.227
 	netif_stop_queue(dev->net);
 	netif_carrier_off(dev->net);
 
@@ -2236,6 +2680,7 @@ void gether_disconnect(struct gether *link)
 	 * of all pending i/o.  then free the request objects
 	 * and forget about the endpoints.
 	 */
+<<<<<<< HEAD
 	if (link->in_ep) {
 		usb_ep_disable(link->in_ep);
 		spin_lock(&dev->req_lock);
@@ -2299,12 +2744,44 @@ void gether_disconnect(struct gether *link)
 	/* reset tx_throttle count */
 	dev->tx_throttle = 0;
 	dev->rx_throttle = 0;
+=======
+	usb_ep_disable(link->in_ep);
+	spin_lock(&dev->req_lock);
+	while (!list_empty(&dev->tx_reqs)) {
+		req = container_of(dev->tx_reqs.next,
+					struct usb_request, list);
+		list_del(&req->list);
+
+		spin_unlock(&dev->req_lock);
+		usb_ep_free_request(link->in_ep, req);
+		spin_lock(&dev->req_lock);
+	}
+	spin_unlock(&dev->req_lock);
+	link->in_ep->desc = NULL;
+
+	usb_ep_disable(link->out_ep);
+	spin_lock(&dev->req_lock);
+	while (!list_empty(&dev->rx_reqs)) {
+		req = container_of(dev->rx_reqs.next,
+					struct usb_request, list);
+		list_del(&req->list);
+
+		spin_unlock(&dev->req_lock);
+		usb_ep_free_request(link->out_ep, req);
+		spin_lock(&dev->req_lock);
+	}
+	spin_unlock(&dev->req_lock);
+	link->out_ep->desc = NULL;
+>>>>>>> v4.9.227
 
 	/* finish forgetting about this USB link episode */
 	dev->header_len = 0;
 	dev->unwrap = NULL;
 	dev->wrap = NULL;
+<<<<<<< HEAD
 	dev->rx_trigger_enabled = 0;
+=======
+>>>>>>> v4.9.227
 
 	spin_lock(&dev->lock);
 	dev->port_usb = NULL;
@@ -2312,6 +2789,7 @@ void gether_disconnect(struct gether *link)
 }
 EXPORT_SYMBOL_GPL(gether_disconnect);
 
+<<<<<<< HEAD
 
 static int uether_stat_show(struct seq_file *s, void *unused)
 {
@@ -2463,3 +2941,7 @@ module_exit(gether_exit);
 MODULE_AUTHOR("David Brownell");
 MODULE_DESCRIPTION("ethernet over USB driver");
 MODULE_LICENSE("GPL v2");
+=======
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("David Brownell");
+>>>>>>> v4.9.227

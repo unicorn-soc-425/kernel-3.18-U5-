@@ -1220,7 +1220,11 @@ static int msb_read_boot_blocks(struct msb_data *msb)
 		}
 
 		if (extra.management_flag & MEMSTICK_MANAGEMENT_SYSFLG) {
+<<<<<<< HEAD
 			dbg("managment flag doesn't indicate boot block %d",
+=======
+			dbg("management flag doesn't indicate boot block %d",
+>>>>>>> v4.9.227
 									pba);
 			continue;
 		}
@@ -1367,7 +1371,11 @@ static int msb_ftl_initialize(struct msb_data *msb)
 static int msb_ftl_scan(struct msb_data *msb)
 {
 	u16 pba, lba, other_block;
+<<<<<<< HEAD
 	u8 overwrite_flag, managment_flag, other_overwrite_flag;
+=======
+	u8 overwrite_flag, management_flag, other_overwrite_flag;
+>>>>>>> v4.9.227
 	int error;
 	struct ms_extra_data_register extra;
 	u8 *overwrite_flags = kzalloc(msb->block_count, GFP_KERNEL);
@@ -1409,7 +1417,11 @@ static int msb_ftl_scan(struct msb_data *msb)
 		}
 
 		lba = be16_to_cpu(extra.logical_address);
+<<<<<<< HEAD
 		managment_flag = extra.management_flag;
+=======
+		management_flag = extra.management_flag;
+>>>>>>> v4.9.227
 		overwrite_flag = extra.overwrite_flag;
 		overwrite_flags[pba] = overwrite_flag;
 
@@ -1421,16 +1433,27 @@ static int msb_ftl_scan(struct msb_data *msb)
 		}
 
 		/* Skip system/drm blocks */
+<<<<<<< HEAD
 		if ((managment_flag & MEMSTICK_MANAGMENT_FLAG_NORMAL) !=
 			MEMSTICK_MANAGMENT_FLAG_NORMAL) {
 			dbg("pba %05d -> [reserved managment flag %02x]",
 							pba, managment_flag);
+=======
+		if ((management_flag & MEMSTICK_MANAGEMENT_FLAG_NORMAL) !=
+			MEMSTICK_MANAGEMENT_FLAG_NORMAL) {
+			dbg("pba %05d -> [reserved management flag %02x]",
+							pba, management_flag);
+>>>>>>> v4.9.227
 			msb_mark_block_used(msb, pba);
 			continue;
 		}
 
 		/* Erase temporary tables */
+<<<<<<< HEAD
 		if (!(managment_flag & MEMSTICK_MANAGEMENT_ATFLG)) {
+=======
+		if (!(management_flag & MEMSTICK_MANAGEMENT_ATFLG)) {
+>>>>>>> v4.9.227
 			dbg("pba %05d -> [temp table] - will erase", pba);
 
 			msb_mark_block_used(msb, pba);
@@ -1909,7 +1932,11 @@ static void msb_io_work(struct work_struct *work)
 		lba = blk_rq_pos(msb->req);
 
 		sector_div(lba, msb->page_size / 512);
+<<<<<<< HEAD
 		page = do_div(lba, msb->pages_in_block);
+=======
+		page = sector_div(lba, msb->pages_in_block);
+>>>>>>> v4.9.227
 
 		if (rq_data_dir(msb->req) == READ)
 			error = msb_do_read_request(msb, lba, page, sg,
@@ -2002,8 +2029,12 @@ static int msb_bd_getgeo(struct block_device *bdev,
 
 static int msb_prepare_req(struct request_queue *q, struct request *req)
 {
+<<<<<<< HEAD
 	if (req->cmd_type != REQ_TYPE_FS &&
 				req->cmd_type != REQ_TYPE_BLOCK_PC) {
+=======
+	if (req->cmd_type != REQ_TYPE_FS) {
+>>>>>>> v4.9.227
 		blk_dump_rq_flags(req, "MS unsupported request");
 		return BLKPREP_KILL;
 	}
@@ -2146,7 +2177,10 @@ static int msb_init_disk(struct memstick_dev *card)
 	msb->disk->fops = &msb_bdops;
 	msb->disk->private_data = msb;
 	msb->disk->queue = msb->queue;
+<<<<<<< HEAD
 	msb->disk->driverfs_dev = &card->dev;
+=======
+>>>>>>> v4.9.227
 	msb->disk->flags |= GENHD_FL_EXT_DEVT;
 
 	capacity = msb->pages_in_block * msb->logical_block_count;
@@ -2163,7 +2197,11 @@ static int msb_init_disk(struct memstick_dev *card)
 		set_disk_ro(msb->disk, 1);
 
 	msb_start(card);
+<<<<<<< HEAD
 	add_disk(msb->disk);
+=======
+	device_add_disk(&card->dev, msb->disk);
+>>>>>>> v4.9.227
 	dbg("Disk added");
 	return 0;
 
@@ -2340,6 +2378,7 @@ static struct memstick_driver msb_driver = {
 	.resume   = msb_resume
 };
 
+<<<<<<< HEAD
 static int major;
 
 static int __init msb_init(void)
@@ -2357,6 +2396,13 @@ static int __init msb_init(void)
 		unregister_blkdev(major, DRIVER_NAME);
 		pr_err("failed to register memstick driver (error %d)\n", rc);
 	}
+=======
+static int __init msb_init(void)
+{
+	int rc = memstick_register_driver(&msb_driver);
+	if (rc)
+		pr_err("failed to register memstick driver (error %d)\n", rc);
+>>>>>>> v4.9.227
 
 	return rc;
 }
@@ -2364,7 +2410,10 @@ static int __init msb_init(void)
 static void __exit msb_exit(void)
 {
 	memstick_unregister_driver(&msb_driver);
+<<<<<<< HEAD
 	unregister_blkdev(major, DRIVER_NAME);
+=======
+>>>>>>> v4.9.227
 	idr_destroy(&msb_disk_idr);
 }
 

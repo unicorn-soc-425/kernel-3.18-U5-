@@ -46,11 +46,21 @@ MODULE_AUTHOR("Evgeniy Polyakov <zbr@ioremap.net>");
 MODULE_DESCRIPTION("Driver for 1-wire Dallas network protocol.");
 
 static int w1_timeout = 10;
+<<<<<<< HEAD
+=======
+static int w1_timeout_us = 0;
+>>>>>>> v4.9.227
 int w1_max_slave_count = 64;
 int w1_max_slave_ttl = 10;
 
 module_param_named(timeout, w1_timeout, int, 0);
 MODULE_PARM_DESC(timeout, "time in seconds between automatic slave searches");
+<<<<<<< HEAD
+=======
+module_param_named(timeout_us, w1_timeout_us, int, 0);
+MODULE_PARM_DESC(timeout_us,
+		 "time in microseconds between automatic slave searches");
+>>>>>>> v4.9.227
 /* A search stops when w1_max_slave_count devices have been found in that
  * search.  The next search will start over and detect the same set of devices
  * on a static 1-wire bus.  Memory is not allocated based on this number, just
@@ -317,13 +327,28 @@ static ssize_t w1_master_attribute_show_timeout(struct device *dev, struct devic
 	return count;
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t w1_master_attribute_show_timeout_us(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	ssize_t count;
+	count = sprintf(buf, "%d\n", w1_timeout_us);
+	return count;
+}
+
+>>>>>>> v4.9.227
 static ssize_t w1_master_attribute_store_max_slave_count(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
 	int tmp;
 	struct w1_master *md = dev_to_w1_master(dev);
 
+<<<<<<< HEAD
 	if (kstrtoint(buf, 0, &tmp) == -EINVAL || tmp < 1)
+=======
+	if (kstrtoint(buf, 0, &tmp) || tmp < 1)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	mutex_lock(&md->mutex);
@@ -543,6 +568,10 @@ static W1_MASTER_ATTR_RO(slave_count, S_IRUGO);
 static W1_MASTER_ATTR_RW(max_slave_count, S_IRUGO | S_IWUSR | S_IWGRP);
 static W1_MASTER_ATTR_RO(attempts, S_IRUGO);
 static W1_MASTER_ATTR_RO(timeout, S_IRUGO);
+<<<<<<< HEAD
+=======
+static W1_MASTER_ATTR_RO(timeout_us, S_IRUGO);
+>>>>>>> v4.9.227
 static W1_MASTER_ATTR_RO(pointer, S_IRUGO);
 static W1_MASTER_ATTR_RW(search, S_IRUGO | S_IWUSR | S_IWGRP);
 static W1_MASTER_ATTR_RW(pullup, S_IRUGO | S_IWUSR | S_IWGRP);
@@ -556,6 +585,10 @@ static struct attribute *w1_master_default_attrs[] = {
 	&w1_master_attribute_max_slave_count.attr,
 	&w1_master_attribute_attempts.attr,
 	&w1_master_attribute_timeout.attr,
+<<<<<<< HEAD
+=======
+	&w1_master_attribute_timeout_us.attr,
+>>>>>>> v4.9.227
 	&w1_master_attribute_pointer.attr,
 	&w1_master_attribute_search.attr,
 	&w1_master_attribute_pullup.attr,
@@ -727,7 +760,11 @@ int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
 
 	/* slave modules need to be loaded in a context with unlocked mutex */
 	mutex_unlock(&dev->mutex);
+<<<<<<< HEAD
 	request_module("w1-family-0x%0x", rn->family);
+=======
+	request_module("w1-family-0x%02X", rn->family);
+>>>>>>> v4.9.227
 	mutex_lock(&dev->mutex);
 
 	spin_lock(&w1_flock);
@@ -749,6 +786,10 @@ int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
 		dev_err(&dev->dev, "%s: Attaching %s failed.\n", __func__,
 			 sl->name);
 		w1_family_put(sl->family);
+<<<<<<< HEAD
+=======
+		atomic_dec(&sl->master->refcnt);
+>>>>>>> v4.9.227
 		kfree(sl);
 		return err;
 	}
@@ -1108,7 +1149,12 @@ int w1_process(void *data)
 	/* As long as w1_timeout is only set by a module parameter the sleep
 	 * time can be calculated in jiffies once.
 	 */
+<<<<<<< HEAD
 	const unsigned long jtime = msecs_to_jiffies(w1_timeout * 1000);
+=======
+	const unsigned long jtime =
+	  usecs_to_jiffies(w1_timeout * 1000000 + w1_timeout_us);
+>>>>>>> v4.9.227
 	/* remainder if it woke up early */
 	unsigned long jremain = 0;
 
@@ -1132,7 +1178,10 @@ int w1_process(void *data)
 			jremain = 1;
 		}
 
+<<<<<<< HEAD
 		try_to_freeze();
+=======
+>>>>>>> v4.9.227
 		__set_current_state(TASK_INTERRUPTIBLE);
 
 		/* hold list_mutex until after interruptible to prevent loosing

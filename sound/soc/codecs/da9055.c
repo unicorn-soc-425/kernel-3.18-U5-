@@ -289,6 +289,7 @@ enum clk_src {
 
 /* Gain and Volume */
 
+<<<<<<< HEAD
 static const unsigned int aux_vol_tlv[] = {
 	TLV_DB_RANGE_HEAD(2),
 	0x0, 0x10, TLV_DB_SCALE_ITEM(-5400, 0, 0),
@@ -309,6 +310,25 @@ static const unsigned int alc_analog_gain_tlv[] = {
 	/* 0dB to 36dB */
 	0x01, 0x07, TLV_DB_SCALE_ITEM(0, 600, 0)
 };
+=======
+static const DECLARE_TLV_DB_RANGE(aux_vol_tlv,
+	0x0, 0x10, TLV_DB_SCALE_ITEM(-5400, 0, 0),
+	/* -54dB to 15dB */
+	0x11, 0x3f, TLV_DB_SCALE_ITEM(-5400, 150, 0)
+);
+
+static const DECLARE_TLV_DB_RANGE(digital_gain_tlv,
+	0x0, 0x07, TLV_DB_SCALE_ITEM(TLV_DB_GAIN_MUTE, 0, 1),
+	/* -78dB to 12dB */
+	0x08, 0x7f, TLV_DB_SCALE_ITEM(-7800, 75, 0)
+);
+
+static const DECLARE_TLV_DB_RANGE(alc_analog_gain_tlv,
+	0x0, 0x0, TLV_DB_SCALE_ITEM(TLV_DB_GAIN_MUTE, 0, 1),
+	/* 0dB to 36dB */
+	0x01, 0x07, TLV_DB_SCALE_ITEM(0, 600, 0)
+);
+>>>>>>> v4.9.227
 
 static const DECLARE_TLV_DB_SCALE(mic_vol_tlv, -600, 600, 0);
 static const DECLARE_TLV_DB_SCALE(mixin_gain_tlv, -450, 150, 0);
@@ -948,7 +968,11 @@ struct da9055_priv {
 	struct da9055_platform_data *pdata;
 };
 
+<<<<<<< HEAD
 static struct reg_default da9055_reg_defaults[] = {
+=======
+static const struct reg_default da9055_reg_defaults[] = {
+>>>>>>> v4.9.227
 	{ 0x21, 0x10 },
 	{ 0x22, 0x0A },
 	{ 0x23, 0x00 },
@@ -1364,7 +1388,11 @@ static int da9055_set_bias_level(struct snd_soc_codec *codec,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			/* Enable VMID reference & master bias */
 			snd_soc_update_bits(codec, DA9055_REFERENCES,
 					    DA9055_VMID_EN | DA9055_BIAS_EN,
@@ -1377,7 +1405,10 @@ static int da9055_set_bias_level(struct snd_soc_codec *codec,
 				    DA9055_VMID_EN | DA9055_BIAS_EN, 0);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1459,6 +1490,7 @@ static struct snd_soc_codec_driver soc_codec_dev_da9055 = {
 	.probe			= da9055_probe,
 	.set_bias_level		= da9055_set_bias_level,
 
+<<<<<<< HEAD
 	.controls		= da9055_snd_controls,
 	.num_controls		= ARRAY_SIZE(da9055_snd_controls),
 
@@ -1466,6 +1498,16 @@ static struct snd_soc_codec_driver soc_codec_dev_da9055 = {
 	.num_dapm_widgets	= ARRAY_SIZE(da9055_dapm_widgets),
 	.dapm_routes		= da9055_audio_map,
 	.num_dapm_routes	= ARRAY_SIZE(da9055_audio_map),
+=======
+	.component_driver = {
+		.controls		= da9055_snd_controls,
+		.num_controls		= ARRAY_SIZE(da9055_snd_controls),
+		.dapm_widgets		= da9055_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(da9055_dapm_widgets),
+		.dapm_routes		= da9055_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(da9055_audio_map),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config da9055_regmap_config = {
@@ -1534,12 +1576,19 @@ static const struct of_device_id da9055_of_match[] = {
 	{ .compatible = "dlg,da9055-codec", },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, da9055_of_match);
+>>>>>>> v4.9.227
 
 /* I2C codec control layer */
 static struct i2c_driver da9055_i2c_driver = {
 	.driver = {
 		.name = "da9055-codec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(da9055_of_match),
 	},
 	.probe		= da9055_i2c_probe,

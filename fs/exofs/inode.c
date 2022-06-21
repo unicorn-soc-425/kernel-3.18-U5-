@@ -317,7 +317,11 @@ static int read_exec(struct page_collect *pcol)
 
 	if (!pcol->ios) {
 		int ret = ore_get_rw_state(&pcol->sbi->layout, &oi->oc, true,
+<<<<<<< HEAD
 					     pcol->pg_first << PAGE_CACHE_SHIFT,
+=======
+					     pcol->pg_first << PAGE_SHIFT,
+>>>>>>> v4.9.227
 					     pcol->length, &pcol->ios);
 
 		if (ret)
@@ -383,7 +387,11 @@ static int readpage_strip(void *data, struct page *page)
 	struct inode *inode = pcol->inode;
 	struct exofs_i_info *oi = exofs_i(inode);
 	loff_t i_size = i_size_read(inode);
+<<<<<<< HEAD
 	pgoff_t end_index = i_size >> PAGE_CACHE_SHIFT;
+=======
+	pgoff_t end_index = i_size >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 	size_t len;
 	int ret;
 
@@ -397,9 +405,15 @@ static int readpage_strip(void *data, struct page *page)
 	pcol->that_locked_page = page;
 
 	if (page->index < end_index)
+<<<<<<< HEAD
 		len = PAGE_CACHE_SIZE;
 	else if (page->index == end_index)
 		len = i_size & ~PAGE_CACHE_MASK;
+=======
+		len = PAGE_SIZE;
+	else if (page->index == end_index)
+		len = i_size & ~PAGE_MASK;
+>>>>>>> v4.9.227
 	else
 		len = 0;
 
@@ -442,8 +456,13 @@ try_again:
 			goto fail;
 	}
 
+<<<<<<< HEAD
 	if (len != PAGE_CACHE_SIZE)
 		zero_user(page, len, PAGE_CACHE_SIZE - len);
+=======
+	if (len != PAGE_SIZE)
+		zero_user(page, len, PAGE_SIZE - len);
+>>>>>>> v4.9.227
 
 	EXOFS_DBGMSG2("    readpage_strip(0x%lx, 0x%lx) len=0x%zx\n",
 		     inode->i_ino, page->index, len);
@@ -592,10 +611,14 @@ static struct page *__r4w_get_page(void *priv, u64 offset, bool *uptodate)
 			}
 			unlock_page(page);
 		}
+<<<<<<< HEAD
 		if (PageDirty(page) || PageWriteback(page))
 			*uptodate = true;
 		else
 			*uptodate = PageUptodate(page);
+=======
+		*uptodate = PageUptodate(page);
+>>>>>>> v4.9.227
 		EXOFS_DBGMSG2("index=0x%lx uptodate=%d\n", index, *uptodate);
 		return page;
 	} else {
@@ -612,7 +635,11 @@ static void __r4w_put_page(void *priv, struct page *page)
 
 	if ((pcol->that_locked_page != page) && (ZERO_PAGE(0) != page)) {
 		EXOFS_DBGMSG2("index=0x%lx\n", page->index);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> v4.9.227
 		return;
 	}
 	EXOFS_DBGMSG2("that_locked_page index=0x%lx\n",
@@ -636,7 +663,11 @@ static int write_exec(struct page_collect *pcol)
 
 	BUG_ON(pcol->ios);
 	ret = ore_get_rw_state(&pcol->sbi->layout, &oi->oc, false,
+<<<<<<< HEAD
 				 pcol->pg_first << PAGE_CACHE_SHIFT,
+=======
+				 pcol->pg_first << PAGE_SHIFT,
+>>>>>>> v4.9.227
 				 pcol->length, &pcol->ios);
 	if (unlikely(ret))
 		goto err;
@@ -699,7 +730,11 @@ static int writepage_strip(struct page *page,
 	struct inode *inode = pcol->inode;
 	struct exofs_i_info *oi = exofs_i(inode);
 	loff_t i_size = i_size_read(inode);
+<<<<<<< HEAD
 	pgoff_t end_index = i_size >> PAGE_CACHE_SHIFT;
+=======
+	pgoff_t end_index = i_size >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 	size_t len;
 	int ret;
 
@@ -711,9 +746,15 @@ static int writepage_strip(struct page *page,
 
 	if (page->index < end_index)
 		/* in this case, the page is within the limits of the file */
+<<<<<<< HEAD
 		len = PAGE_CACHE_SIZE;
 	else {
 		len = i_size & ~PAGE_CACHE_MASK;
+=======
+		len = PAGE_SIZE;
+	else {
+		len = i_size & ~PAGE_MASK;
+>>>>>>> v4.9.227
 
 		if (page->index > end_index || !len) {
 			/* in this case, the page is outside the limits
@@ -781,7 +822,11 @@ try_again:
 fail:
 	EXOFS_DBGMSG("Error: writepage_strip(0x%lx, 0x%lx)=>%d\n",
 		     inode->i_ino, page->index, ret);
+<<<<<<< HEAD
 	set_bit(AS_EIO, &page->mapping->flags);
+=======
+	mapping_set_error(page->mapping, -EIO);
+>>>>>>> v4.9.227
 	unlock_page(page);
 	return ret;
 }
@@ -793,10 +838,17 @@ static int exofs_writepages(struct address_space *mapping,
 	long start, end, expected_pages;
 	int ret;
 
+<<<<<<< HEAD
 	start = wbc->range_start >> PAGE_CACHE_SHIFT;
 	end = (wbc->range_end == LLONG_MAX) ?
 			start + mapping->nrpages :
 			wbc->range_end >> PAGE_CACHE_SHIFT;
+=======
+	start = wbc->range_start >> PAGE_SHIFT;
+	end = (wbc->range_end == LLONG_MAX) ?
+			start + mapping->nrpages :
+			wbc->range_end >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 
 	if (start || end)
 		expected_pages = end - start + 1;
@@ -884,6 +936,7 @@ int exofs_write_begin(struct file *file, struct address_space *mapping,
 	}
 
 	 /* read modify write */
+<<<<<<< HEAD
 	if (!PageUptodate(page) && (len != PAGE_CACHE_SIZE)) {
 		loff_t i_size = i_size_read(mapping->host);
 		pgoff_t end_index = i_size >> PAGE_CACHE_SHIFT;
@@ -893,6 +946,17 @@ int exofs_write_begin(struct file *file, struct address_space *mapping,
 			rlen = PAGE_CACHE_SIZE;
 		else if (page->index == end_index)
 			rlen = i_size & ~PAGE_CACHE_MASK;
+=======
+	if (!PageUptodate(page) && (len != PAGE_SIZE)) {
+		loff_t i_size = i_size_read(mapping->host);
+		pgoff_t end_index = i_size >> PAGE_SHIFT;
+		size_t rlen;
+
+		if (page->index < end_index)
+			rlen = PAGE_SIZE;
+		else if (page->index == end_index)
+			rlen = i_size & ~PAGE_MASK;
+>>>>>>> v4.9.227
 		else
 			rlen = 0;
 
@@ -963,8 +1027,12 @@ static void exofs_invalidatepage(struct page *page, unsigned int offset,
 
 
  /* TODO: Should be easy enough to do proprly */
+<<<<<<< HEAD
 static ssize_t exofs_direct_IO(int rw, struct kiocb *iocb,
 		struct iov_iter *iter, loff_t offset)
+=======
+static ssize_t exofs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+>>>>>>> v4.9.227
 {
 	return 0;
 }
@@ -985,7 +1053,10 @@ const struct address_space_operations exofs_aops = {
 	.direct_IO	= exofs_direct_IO,
 
 	/* With these NULL has special meaning or default is not exported */
+<<<<<<< HEAD
 	.get_xip_mem	= NULL,
+=======
+>>>>>>> v4.9.227
 	.migratepage	= NULL,
 	.launder_page	= NULL,
 	.is_partially_uptodate = NULL,
@@ -1012,7 +1083,11 @@ static int _do_truncate(struct inode *inode, loff_t newsize)
 	struct exofs_sb_info *sbi = inode->i_sb->s_fs_info;
 	int ret;
 
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+	inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 
 	ret = ore_truncate(&sbi->layout, &oi->oc, (u64)newsize);
 	if (likely(!ret))
@@ -1029,7 +1104,11 @@ static int _do_truncate(struct inode *inode, loff_t newsize)
  */
 int exofs_setattr(struct dentry *dentry, struct iattr *iattr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	int error;
 
 	/* if we are about to modify an object, and it hasn't been
@@ -1039,7 +1118,11 @@ int exofs_setattr(struct dentry *dentry, struct iattr *iattr)
 	if (unlikely(error))
 		return error;
 
+<<<<<<< HEAD
 	error = inode_change_ok(inode, iattr);
+=======
+	error = setattr_prepare(dentry, iattr);
+>>>>>>> v4.9.227
 	if (unlikely(error))
 		return error;
 
@@ -1214,7 +1297,10 @@ struct inode *exofs_iget(struct super_block *sb, unsigned long ino)
 		memcpy(oi->i_data, fcb.i_data, sizeof(fcb.i_data));
 	}
 
+<<<<<<< HEAD
 	inode->i_mapping->backing_dev_info = sb->s_bdi;
+=======
+>>>>>>> v4.9.227
 	if (S_ISREG(inode->i_mode)) {
 		inode->i_op = &exofs_file_inode_operations;
 		inode->i_fop = &exofs_file_operations;
@@ -1224,10 +1310,19 @@ struct inode *exofs_iget(struct super_block *sb, unsigned long ino)
 		inode->i_fop = &exofs_dir_operations;
 		inode->i_mapping->a_ops = &exofs_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
+<<<<<<< HEAD
 		if (exofs_inode_is_fast_symlink(inode))
 			inode->i_op = &exofs_fast_symlink_inode_operations;
 		else {
 			inode->i_op = &exofs_symlink_inode_operations;
+=======
+		if (exofs_inode_is_fast_symlink(inode)) {
+			inode->i_op = &simple_symlink_inode_operations;
+			inode->i_link = (char *)oi->i_data;
+		} else {
+			inode->i_op = &page_symlink_inode_operations;
+			inode_nohighmem(inode);
+>>>>>>> v4.9.227
 			inode->i_mapping->a_ops = &exofs_aops;
 		}
 	} else {
@@ -1314,11 +1409,18 @@ struct inode *exofs_new_inode(struct inode *dir, umode_t mode)
 
 	set_obj_2bcreated(oi);
 
+<<<<<<< HEAD
 	inode->i_mapping->backing_dev_info = sb->s_bdi;
 	inode_init_owner(inode, dir, mode);
 	inode->i_ino = sbi->s_nextid++;
 	inode->i_blkbits = EXOFS_BLKSHIFT;
 	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME;
+=======
+	inode_init_owner(inode, dir, mode);
+	inode->i_ino = sbi->s_nextid++;
+	inode->i_blkbits = EXOFS_BLKSHIFT;
+	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 	oi->i_commit_size = inode->i_size = 0;
 	spin_lock(&sbi->s_next_gen_lock);
 	inode->i_generation = sbi->s_next_generation++;

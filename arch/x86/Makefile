@@ -11,6 +11,19 @@ else
         KBUILD_DEFCONFIG := $(ARCH)_defconfig
 endif
 
+<<<<<<< HEAD
+=======
+# For gcc stack alignment is specified with -mpreferred-stack-boundary,
+# clang has the option -mstack-alignment for that purpose.
+ifneq ($(call cc-option, -mpreferred-stack-boundary=4),)
+      cc_stack_align4 := -mpreferred-stack-boundary=2
+      cc_stack_align8 := -mpreferred-stack-boundary=3
+else ifneq ($(call cc-option, -mstack-alignment=16),)
+      cc_stack_align4 := -mstack-alignment=4
+      cc_stack_align8 := -mstack-alignment=8
+endif
+
+>>>>>>> v4.9.227
 # How to compile the 16-bit code.  Note we always compile for -march=i386;
 # that way we can complain to the user if the CPU is insufficient.
 #
@@ -24,10 +37,19 @@ REALMODE_CFLAGS	:= $(M16_CFLAGS) -g -Os -D__KERNEL__ \
 		   -DDISABLE_BRANCH_PROFILING \
 		   -Wall -Wstrict-prototypes -march=i386 -mregparm=3 \
 		   -fno-strict-aliasing -fomit-frame-pointer -fno-pic \
+<<<<<<< HEAD
 		   -mno-mmx -mno-sse \
 		   $(call cc-option, -ffreestanding) \
 		   $(call cc-option, -fno-stack-protector) \
 		   $(call cc-option, -mpreferred-stack-boundary=2)
+=======
+		   -mno-mmx -mno-sse
+
+REALMODE_CFLAGS += $(call __cc-option, $(CC), $(REALMODE_CFLAGS), -ffreestanding)
+REALMODE_CFLAGS += $(call __cc-option, $(CC), $(REALMODE_CFLAGS), -fno-stack-protector)
+REALMODE_CFLAGS += $(call __cc-option, $(CC), $(REALMODE_CFLAGS), -Wno-address-of-packed-member)
+REALMODE_CFLAGS += $(call __cc-option, $(CC), $(REALMODE_CFLAGS), $(cc_stack_align4))
+>>>>>>> v4.9.227
 export REALMODE_CFLAGS
 
 # BITS is used as extension for files which are available in a 32 bit
@@ -36,9 +58,25 @@ export REALMODE_CFLAGS
 export BITS
 
 ifdef CONFIG_X86_NEED_RELOCS
+<<<<<<< HEAD
         LDFLAGS_vmlinux := --emit-relocs
 endif
 
+=======
+        LDFLAGS_vmlinux := --emit-relocs --discard-none
+endif
+
+#
+# Prevent GCC from generating any FP code by mistake.
+#
+# This must happen before we try the -mpreferred-stack-boundary, see:
+#
+#    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53383
+#
+KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow
+KBUILD_CFLAGS += $(call cc-option,-mno-avx,)
+
+>>>>>>> v4.9.227
 ifeq ($(CONFIG_X86_32),y)
         BITS := 32
         UTS_MACHINE := i386
@@ -54,8 +92,15 @@ ifeq ($(CONFIG_X86_32),y)
         # with nonstandard options
         KBUILD_CFLAGS += -fno-pic
 
+<<<<<<< HEAD
         # prevent gcc from keeping the stack 16 byte aligned
         KBUILD_CFLAGS += $(call cc-option,-mpreferred-stack-boundary=2)
+=======
+        # Align the stack to the register width instead of using the default
+        # alignment of 16 bytes. This reduces stack usage and the number of
+        # alignment instructions.
+        KBUILD_CFLAGS += $(call cc-option,$(cc_stack_align4))
+>>>>>>> v4.9.227
 
         # Disable unit-at-a-time mode on pre-gcc-4.0 compilers, it makes gcc use
         # a lot more stack due to the lack of sharing of stacklots:
@@ -63,7 +108,11 @@ ifeq ($(CONFIG_X86_32),y)
 				$(call cc-option,-fno-unit-at-a-time))
 
         # CPU-specific tuning. Anything which can be shared with UML should go here.
+<<<<<<< HEAD
         include $(srctree)/arch/x86/Makefile_32.cpu
+=======
+        include arch/x86/Makefile_32.cpu
+>>>>>>> v4.9.227
         KBUILD_CFLAGS += $(cflags-y)
 
         # temporary until string.h is fixed
@@ -77,12 +126,35 @@ else
         KBUILD_AFLAGS += -m64
         KBUILD_CFLAGS += -m64
 
+<<<<<<< HEAD
+=======
+        # Align jump targets to 1 byte, not the default 16 bytes:
+        KBUILD_CFLAGS += $(call cc-option,-falign-jumps=1)
+
+        # Pack loops tightly as well:
+        KBUILD_CFLAGS += $(call cc-option,-falign-loops=1)
+
+>>>>>>> v4.9.227
         # Don't autogenerate traditional x87 instructions
         KBUILD_CFLAGS += $(call cc-option,-mno-80387)
         KBUILD_CFLAGS += $(call cc-option,-mno-fp-ret-in-387)
 
+<<<<<<< HEAD
 	# Use -mpreferred-stack-boundary=3 if supported.
 	KBUILD_CFLAGS += $(call cc-option,-mpreferred-stack-boundary=3)
+=======
+        # By default gcc and clang use a stack alignment of 16 bytes for x86.
+        # However the standard kernel entry on x86-64 leaves the stack on an
+        # 8-byte boundary. If the compiler isn't informed about the actual
+        # alignment it will generate extra alignment instructions for the
+        # default alignment which keep the stack *mis*aligned.
+        # Furthermore an alignment to the register width reduces stack usage
+        # and the number of alignment instructions.
+        KBUILD_CFLAGS += $(call cc-option,$(cc_stack_align8))
+
+	# Use -mskip-rax-setup if supported.
+	KBUILD_CFLAGS += $(call cc-option,-mskip-rax-setup)
+>>>>>>> v4.9.227
 
         # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
         cflags-$(CONFIG_MK8) += $(call cc-option,-march=k8)
@@ -107,6 +179,7 @@ else
         KBUILD_CFLAGS += $(call cc-option,-maccumulate-outgoing-args)
 endif
 
+<<<<<<< HEAD
 # Make sure compiler does not have buggy stack-protector support.
 ifdef CONFIG_CC_STACKPROTECTOR
 	cc_has_sp := $(srctree)/scripts/gcc-x86_$(BITS)-has-stack-protector.sh
@@ -115,6 +188,8 @@ ifdef CONFIG_CC_STACKPROTECTOR
         endif
 endif
 
+=======
+>>>>>>> v4.9.227
 ifdef CONFIG_X86_X32
 	x32_ld_ok := $(call try-run,\
 			/bin/echo -e '1: .quad 1b' | \
@@ -148,6 +223,7 @@ cfi-sections := $(call as-instr,.cfi_sections .debug_frame,-DCONFIG_AS_CFI_SECTI
 
 # does binutils support specific instructions?
 asinstr := $(call as-instr,fxsaveq (%rax),-DCONFIG_AS_FXSAVEQ=1)
+<<<<<<< HEAD
 asinstr += $(call as-instr,crc32l %eax$(comma)%eax,-DCONFIG_AS_CRC32=1)
 avx_instr := $(call as-instr,vxorps %ymm0$(comma)%ymm1$(comma)%ymm2,-DCONFIG_AS_AVX=1)
 avx2_instr :=$(call as-instr,vpbroadcastb %xmm0$(comma)%ymm1,-DCONFIG_AS_AVX2=1)
@@ -157,19 +233,60 @@ KBUILD_CFLAGS += $(cfi) $(cfi-sigframe) $(cfi-sections) $(asinstr) $(avx_instr) 
 
 LDFLAGS := -m elf_$(UTS_MACHINE)
 
+=======
+asinstr += $(call as-instr,pshufb %xmm0$(comma)%xmm0,-DCONFIG_AS_SSSE3=1)
+asinstr += $(call as-instr,crc32l %eax$(comma)%eax,-DCONFIG_AS_CRC32=1)
+avx_instr := $(call as-instr,vxorps %ymm0$(comma)%ymm1$(comma)%ymm2,-DCONFIG_AS_AVX=1)
+avx2_instr :=$(call as-instr,vpbroadcastb %xmm0$(comma)%ymm1,-DCONFIG_AS_AVX2=1)
+avx512_instr :=$(call as-instr,vpmovm2b %k1$(comma)%zmm5,-DCONFIG_AS_AVX512=1)
+sha1_ni_instr :=$(call as-instr,sha1msg1 %xmm0$(comma)%xmm1,-DCONFIG_AS_SHA1_NI=1)
+sha256_ni_instr :=$(call as-instr,sha256msg1 %xmm0$(comma)%xmm1,-DCONFIG_AS_SHA256_NI=1)
+
+KBUILD_AFLAGS += $(cfi) $(cfi-sigframe) $(cfi-sections) $(asinstr) $(avx_instr) $(avx2_instr) $(avx512_instr) $(sha1_ni_instr) $(sha256_ni_instr)
+KBUILD_CFLAGS += $(cfi) $(cfi-sigframe) $(cfi-sections) $(asinstr) $(avx_instr) $(avx2_instr) $(avx512_instr) $(sha1_ni_instr) $(sha256_ni_instr)
+
+LDFLAGS := -m elf_$(UTS_MACHINE)
+
+#
+# The 64-bit kernel must be aligned to 2MB.  Pass -z max-page-size=0x200000 to
+# the linker to force 2MB page size regardless of the default page size used
+# by the linker.
+#
+ifdef CONFIG_X86_64
+LDFLAGS += $(call ld-option, -z max-page-size=0x200000)
+endif
+
+>>>>>>> v4.9.227
 # Speed up the build
 KBUILD_CFLAGS += -pipe
 # Workaround for a gcc prelease that unfortunately was shipped in a suse release
 KBUILD_CFLAGS += -Wno-sign-compare
 #
 KBUILD_CFLAGS += -fno-asynchronous-unwind-tables
+<<<<<<< HEAD
 # prevent gcc from generating any FP code by mistake
 KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow
 KBUILD_CFLAGS += $(call cc-option,-mno-avx,)
+=======
+>>>>>>> v4.9.227
 
 KBUILD_CFLAGS += $(mflags-y)
 KBUILD_AFLAGS += $(mflags-y)
 
+<<<<<<< HEAD
+=======
+# Avoid indirect branches in kernel to deal with Spectre
+ifdef CONFIG_RETPOLINE
+    RETPOLINE_CFLAGS_GCC := -mindirect-branch=thunk-extern -mindirect-branch-register
+    RETPOLINE_CFLAGS_CLANG := -mretpoline-external-thunk
+
+    RETPOLINE_CFLAGS += $(call cc-option,$(RETPOLINE_CFLAGS_GCC),$(call cc-option,$(RETPOLINE_CFLAGS_CLANG)))
+    ifneq ($(RETPOLINE_CFLAGS),)
+        KBUILD_CFLAGS += $(RETPOLINE_CFLAGS) -DRETPOLINE
+    endif
+endif
+
+>>>>>>> v4.9.227
 archscripts: scripts_basic
 	$(Q)$(MAKE) $(build)=arch/x86/tools relocs
 
@@ -177,7 +294,11 @@ archscripts: scripts_basic
 # Syscall table generation
 
 archheaders:
+<<<<<<< HEAD
 	$(Q)$(MAKE) $(build)=arch/x86/syscalls all
+=======
+	$(Q)$(MAKE) $(build)=arch/x86/entry/syscalls all
+>>>>>>> v4.9.227
 
 archprepare:
 ifeq ($(CONFIG_KEXEC_FILE),y)
@@ -189,7 +310,12 @@ endif
 
 head-y := arch/x86/kernel/head_$(BITS).o
 head-y += arch/x86/kernel/head$(BITS).o
+<<<<<<< HEAD
 head-y += arch/x86/kernel/head.o
+=======
+head-y += arch/x86/kernel/ebda.o
+head-y += arch/x86/kernel/platform-quirks.o
+>>>>>>> v4.9.227
 
 libs-y  += arch/x86/lib/
 
@@ -208,6 +334,11 @@ drivers-$(CONFIG_PM) += arch/x86/power/
 
 drivers-$(CONFIG_FB) += arch/x86/video/
 
+<<<<<<< HEAD
+=======
+drivers-$(CONFIG_RAS) += arch/x86/ras/
+
+>>>>>>> v4.9.227
 ####
 # boot loader support. Several targets are kept for legacy purposes
 
@@ -240,7 +371,11 @@ install:
 
 PHONY += vdso_install
 vdso_install:
+<<<<<<< HEAD
 	$(Q)$(MAKE) $(build)=arch/x86/vdso $@
+=======
+	$(Q)$(MAKE) $(build)=arch/x86/entry/vdso $@
+>>>>>>> v4.9.227
 
 archclean:
 	$(Q)rm -rf $(objtree)/arch/i386

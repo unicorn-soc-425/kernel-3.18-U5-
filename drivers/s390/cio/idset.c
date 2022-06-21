@@ -38,11 +38,14 @@ void idset_free(struct idset *set)
 	vfree(set);
 }
 
+<<<<<<< HEAD
 void idset_clear(struct idset *set)
 {
 	memset(set->bitmap, 0, bitmap_size(set->num_ssid, set->num_id));
 }
 
+=======
+>>>>>>> v4.9.227
 void idset_fill(struct idset *set)
 {
 	memset(set->bitmap, 0xff, bitmap_size(set->num_ssid, set->num_id));
@@ -103,6 +106,7 @@ int idset_sch_contains(struct idset *set, struct subchannel_id schid)
 	return idset_contains(set, schid.ssid, schid.sch_no);
 }
 
+<<<<<<< HEAD
 int idset_sch_get_first(struct idset *set, struct subchannel_id *schid)
 {
 	int ssid = 0;
@@ -118,6 +122,8 @@ int idset_sch_get_first(struct idset *set, struct subchannel_id *schid)
 	return rc;
 }
 
+=======
+>>>>>>> v4.9.227
 int idset_is_empty(struct idset *set)
 {
 	return bitmap_empty(set->bitmap, set->num_ssid * set->num_id);

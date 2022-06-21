@@ -96,7 +96,12 @@ static int allocate_minors(struct usb_serial *serial, int num_ports)
 	mutex_lock(&table_lock);
 	for (i = 0; i < num_ports; ++i) {
 		port = serial->port[i];
+<<<<<<< HEAD
 		minor = idr_alloc(&serial_minors, port, 0, 0, GFP_KERNEL);
+=======
+		minor = idr_alloc(&serial_minors, port, 0,
+					USB_SERIAL_TTY_MINORS, GFP_KERNEL);
+>>>>>>> v4.9.227
 		if (minor < 0)
 			goto error;
 		port->minor = minor;
@@ -254,7 +259,11 @@ static int serial_open(struct tty_struct *tty, struct file *filp)
  *
  * Shut down a USB serial port. Serialized against activate by the
  * tport mutex and kept to matching open/close pairs
+<<<<<<< HEAD
  * of calls by the ASYNCB_INITIALIZED flag.
+=======
+ * of calls by the initialized flag.
+>>>>>>> v4.9.227
  *
  * Not called if tty is console.
  */
@@ -314,10 +323,14 @@ static void serial_cleanup(struct tty_struct *tty)
 	serial = port->serial;
 	owner = serial->type->driver.owner;
 
+<<<<<<< HEAD
 	mutex_lock(&serial->disc_mutex);
 	if (!serial->disconnected)
 		usb_autopm_put_interface(serial->interface);
 	mutex_unlock(&serial->disc_mutex);
+=======
+	usb_autopm_put_interface(serial->interface);
+>>>>>>> v4.9.227
 
 	usb_serial_put(serial);
 	module_put(owner);
@@ -687,6 +700,24 @@ static void serial_port_dtr_rts(struct tty_port *port, int on)
 		drv->dtr_rts(p, on);
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t port_number_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct usb_serial_port *port = to_usb_serial_port(dev);
+
+	return sprintf(buf, "%u\n", port->port_number);
+}
+static DEVICE_ATTR_RO(port_number);
+
+static struct attribute *usb_serial_port_attrs[] = {
+	&dev_attr_port_number.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(usb_serial_port);
+
+>>>>>>> v4.9.227
 static const struct tty_port_operations serial_port_ops = {
 	.carrier_raised		= serial_port_carrier_raised,
 	.dtr_rts		= serial_port_dtr_rts,
@@ -800,7 +831,11 @@ static int usb_serial_probe(struct usb_interface *interface,
 		}
 	}
 
+<<<<<<< HEAD
 #if defined(CONFIG_USB_SERIAL_PL2303) || defined(CONFIG_USB_SERIAL_PL2303_MODULE)
+=======
+#if IS_ENABLED(CONFIG_USB_SERIAL_PL2303)
+>>>>>>> v4.9.227
 	/* BEGIN HORRIBLE HACK FOR PL2303 */
 	/* this is needed due to the looney way its endpoints are set up */
 	if (((le16_to_cpu(dev->descriptor.idVendor) == PL2303_VENDOR_ID) &&
@@ -902,6 +937,10 @@ static int usb_serial_probe(struct usb_interface *interface,
 		port->dev.driver = NULL;
 		port->dev.bus = &usb_serial_bus_type;
 		port->dev.release = &usb_serial_port_release;
+<<<<<<< HEAD
+=======
+		port->dev.groups = usb_serial_port_groups;
+>>>>>>> v4.9.227
 		device_initialize(&port->dev);
 	}
 
@@ -1061,7 +1100,12 @@ static int usb_serial_probe(struct usb_interface *interface,
 
 	serial->disconnected = 0;
 
+<<<<<<< HEAD
 	usb_serial_console_init(serial->port[0]->minor);
+=======
+	if (num_ports > 0)
+		usb_serial_console_init(serial->port[0]->minor);
+>>>>>>> v4.9.227
 exit:
 	module_put(type->driver.owner);
 	return 0;
@@ -1336,6 +1380,12 @@ static int usb_serial_register(struct usb_serial_driver *driver)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Prevent individual ports from being unbound. */
+	driver->driver.suppress_bind_attrs = true;
+
+>>>>>>> v4.9.227
 	usb_serial_operations_init(driver);
 
 	/* Add this device to our list of devices */
@@ -1416,7 +1466,11 @@ int usb_serial_register_drivers(struct usb_serial_driver *const serial_drivers[]
 
 	rc = usb_register(udriver);
 	if (rc)
+<<<<<<< HEAD
 		return rc;
+=======
+		goto failed_usb_register;
+>>>>>>> v4.9.227
 
 	for (sd = serial_drivers; *sd; ++sd) {
 		(*sd)->usb_driver = udriver;
@@ -1434,6 +1488,11 @@ int usb_serial_register_drivers(struct usb_serial_driver *const serial_drivers[]
 	while (sd-- > serial_drivers)
 		usb_serial_deregister(*sd);
 	usb_deregister(udriver);
+<<<<<<< HEAD
+=======
+failed_usb_register:
+	kfree(udriver);
+>>>>>>> v4.9.227
 	return rc;
 }
 EXPORT_SYMBOL_GPL(usb_serial_register_drivers);

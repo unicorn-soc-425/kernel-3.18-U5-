@@ -17,6 +17,10 @@ config SCSI
 	tristate "SCSI device support"
 	depends on BLOCK
 	select SCSI_DMA if HAS_DMA
+<<<<<<< HEAD
+=======
+	select SG_POOL
+>>>>>>> v4.9.227
 	---help---
 	  If you want to use a SCSI hard disk, SCSI tape drive, SCSI CD-ROM or
 	  any other SCSI device under Linux, say Y and make sure that you know
@@ -52,7 +56,11 @@ config SCSI_MQ_DEFAULT
 	  This option enables the new blk-mq based I/O path for SCSI
 	  devices by default.  With the option the scsi_mod.use_blk_mq
 	  module/boot option defaults to Y, without it to N, but it can
+<<<<<<< HEAD
 	  still be overriden either way.
+=======
+	  still be overridden either way.
+>>>>>>> v4.9.227
 
 	  If unsure say N.
 
@@ -194,6 +202,10 @@ config CHR_DEV_SCH
 config SCSI_ENCLOSURE
 	tristate "SCSI Enclosure Support"
 	depends on SCSI && ENCLOSURE_SERVICES
+<<<<<<< HEAD
+=======
+	depends on m || SCSI_SAS_ATTRS != m
+>>>>>>> v4.9.227
 	help
 	  Enclosures are devices sitting on or in SCSI backplanes that
 	  manage devices.  If you have a disk cage, the chances are that
@@ -201,12 +213,20 @@ config SCSI_ENCLOSURE
 	  certain enclosure conditions to be reported and is not required.
 
 config SCSI_CONSTANTS
+<<<<<<< HEAD
 	bool "Verbose SCSI error reporting (kernel size +=12K)"
+=======
+	bool "Verbose SCSI error reporting (kernel size += 36K)"
+>>>>>>> v4.9.227
 	depends on SCSI
 	help
 	  The error messages regarding your SCSI hardware will be easier to
 	  understand if you say Y here; it will enlarge your kernel by about
+<<<<<<< HEAD
 	  12 KB. If in doubt, say Y.
+=======
+	  36 KB. If in doubt, say Y.
+>>>>>>> v4.9.227
 
 config SCSI_LOGGING
 	bool "SCSI logging facility"
@@ -242,6 +262,7 @@ config SCSI_SCAN_ASYNC
 	  system continues booting, and even probe devices on different
 	  busses in parallel, leading to a significant speed-up.
 
+<<<<<<< HEAD
 	  If you have built SCSI as modules, enabling this option can
 	  be a problem as the devices may not have been found by the
 	  time your system expects them to have been.  You can load the
@@ -249,6 +270,8 @@ config SCSI_SCAN_ASYNC
 	  If you build your SCSI drivers into the kernel, then everything
 	  will work fine if you say Y here.
 
+=======
+>>>>>>> v4.9.227
 	  You can override this choice by specifying "scsi_mod.scan=sync"
 	  or async on the kernel's command line.
 
@@ -345,6 +368,10 @@ source "drivers/scsi/cxgbi/Kconfig"
 source "drivers/scsi/bnx2i/Kconfig"
 source "drivers/scsi/bnx2fc/Kconfig"
 source "drivers/scsi/be2iscsi/Kconfig"
+<<<<<<< HEAD
+=======
+source "drivers/scsi/cxlflash/Kconfig"
+>>>>>>> v4.9.227
 
 config SGIWD93_SCSI
 	tristate "SGI WD93C93 SCSI Driver"
@@ -370,6 +397,10 @@ config SCSI_HPSA
 	tristate "HP Smart Array SCSI driver"
 	depends on PCI && SCSI
 	select CHECK_SIGNATURE
+<<<<<<< HEAD
+=======
+	select SCSI_SAS_ATTRS
+>>>>>>> v4.9.227
 	help
 	  This driver supports HP Smart Array Controllers (circa 2009).
 	  It is a SCSI alternative to the cciss driver, which is a block
@@ -399,6 +430,7 @@ config SCSI_3W_SAS
 	  Please read the comments at the top of
 	  <file:drivers/scsi/3w-sas.c>.
 
+<<<<<<< HEAD
 config SCSI_7000FASST
 	tristate "7000FASST SCSI support"
 	depends on ISA && SCSI && ISA_DMA_API
@@ -411,6 +443,8 @@ config SCSI_7000FASST
 	  To compile this driver as a module, choose M here: the
 	  module will be called wd7000.
 
+=======
+>>>>>>> v4.9.227
 config SCSI_ACARD
 	tristate "ACARD SCSI support"
 	depends on PCI && SCSI
@@ -479,6 +513,10 @@ config SCSI_AACRAID
 source "drivers/scsi/aic7xxx/Kconfig.aic7xxx"
 source "drivers/scsi/aic7xxx/Kconfig.aic79xx"
 source "drivers/scsi/aic94xx/Kconfig"
+<<<<<<< HEAD
+=======
+source "drivers/scsi/hisi_sas/Kconfig"
+>>>>>>> v4.9.227
 source "drivers/scsi/mvsas/Kconfig"
 
 config SCSI_MVUMI
@@ -503,8 +541,14 @@ config SCSI_DPT_I2O
 
 config SCSI_ADVANSYS
 	tristate "AdvanSys SCSI support"
+<<<<<<< HEAD
 	depends on SCSI && VIRT_TO_BUS && !ARM
 	depends on ISA || EISA || PCI
+=======
+	depends on SCSI
+	depends on ISA || EISA || PCI
+	depends on ISA_DMA_API || !ISA
+>>>>>>> v4.9.227
 	help
 	  This is a driver for all SCSI host adapters manufactured by
 	  AdvanSys. It is documented in the kernel source in
@@ -513,6 +557,7 @@ config SCSI_ADVANSYS
 	  To compile this driver as a module, choose M here: the
 	  module will be called advansys.
 
+<<<<<<< HEAD
 config SCSI_IN2000
 	tristate "Always IN2000 SCSI support"
 	depends on ISA && SCSI
@@ -525,6 +570,8 @@ config SCSI_IN2000
 	  To compile this driver as a module, choose M here: the
 	  module will be called in2000.
 
+=======
+>>>>>>> v4.9.227
 config SCSI_ARCMSR
 	tristate "ARECA (ARC11xx/12xx/13xx/16xx) SATA/SAS RAID Host Adapter"
 	depends on PCI && SCSI
@@ -540,8 +587,13 @@ config SCSI_ARCMSR
 
 source "drivers/scsi/esas2r/Kconfig"
 source "drivers/scsi/megaraid/Kconfig.megaraid"
+<<<<<<< HEAD
 source "drivers/scsi/mpt2sas/Kconfig"
 source "drivers/scsi/mpt3sas/Kconfig"
+=======
+source "drivers/scsi/mpt3sas/Kconfig"
+source "drivers/scsi/smartpqi/Kconfig"
+>>>>>>> v4.9.227
 source "drivers/scsi/ufs/Kconfig"
 
 config SCSI_HPTIOP
@@ -599,6 +651,10 @@ config XEN_SCSI_FRONTEND
 config HYPERV_STORAGE
 	tristate "Microsoft Hyper-V virtual storage driver"
 	depends on SCSI && HYPERV
+<<<<<<< HEAD
+=======
+	depends on m || SCSI_FC_ATTRS != m
+>>>>>>> v4.9.227
 	default HYPERV
 	help
 	  Select this option to enable the Hyper-V virtual storage driver.
@@ -634,6 +690,26 @@ config FCOE_FNIC
 	  <file:Documentation/scsi/scsi.txt>.
 	  The module will be called fnic.
 
+<<<<<<< HEAD
+=======
+config SCSI_SNIC
+	tristate "Cisco SNIC Driver"
+	depends on PCI && SCSI
+	help
+	  This is support for the Cisco PCI-Express SCSI HBA.
+
+	  To compile this driver as a module, choose M here and read
+	  <file:Documentation/scsi/scsi.txt>.
+	  The module will be called snic.
+
+config SCSI_SNIC_DEBUG_FS
+	bool "Cisco SNIC Driver Debugfs Support"
+	depends on SCSI_SNIC && DEBUG_FS
+	help
+	  This enables to list debugging information from SNIC Driver
+	  available via debugfs file system
+
+>>>>>>> v4.9.227
 config SCSI_DMX3191D
 	tristate "DMX3191D SCSI support"
 	depends on PCI && SCSI
@@ -644,6 +720,7 @@ config SCSI_DMX3191D
 	  To compile this driver as a module, choose M here: the
 	  module will be called dmx3191d.
 
+<<<<<<< HEAD
 config SCSI_DTC3280
 	tristate "DTC3180/3280 SCSI support"
 	depends on ISA && SCSI
@@ -658,6 +735,8 @@ config SCSI_DTC3280
 	  To compile this driver as a module, choose M here: the
 	  module will be called dtc.
 
+=======
+>>>>>>> v4.9.227
 config SCSI_EATA
 	tristate "EATA ISA/EISA/PCI (DPT and generic EATA/DMA-compliant boards) support"
 	depends on (ISA || EISA || PCI) && SCSI && ISA_DMA_API
@@ -798,6 +877,7 @@ config SCSI_GENERIC_NCR5380_MMIO
 	  To compile this driver as a module, choose M here: the
 	  module will be called g_NCR5380_mmio.
 
+<<<<<<< HEAD
 config SCSI_GENERIC_NCR53C400
 	bool "Enable NCR53c400 extensions"
 	depends on SCSI_GENERIC_NCR5380
@@ -809,6 +889,8 @@ config SCSI_GENERIC_NCR53C400
 	  not detect your card.  See the file
 	  <file:Documentation/scsi/g_NCR5380.txt> for details.
 
+=======
+>>>>>>> v4.9.227
 config SCSI_IPS
 	tristate "IBM ServeRAID support"
 	depends on PCI && SCSI
@@ -833,6 +915,26 @@ config SCSI_IBMVSCSI
 	  To compile this driver as a module, choose M here: the
 	  module will be called ibmvscsi.
 
+<<<<<<< HEAD
+=======
+config SCSI_IBMVSCSIS
+	tristate "IBM Virtual SCSI Server support"
+	depends on PPC_PSERIES && TARGET_CORE && SCSI && PCI
+	help
+	  This is the IBM POWER Virtual SCSI Target Server
+	  This driver uses the SRP protocol for communication betwen servers
+	  guest and/or the host that run on the same server.
+	  More information on VSCSI protocol can be found at www.power.org
+
+	  The userspace configuration needed to initialize the driver can be
+	  be found here:
+
+	  https://github.com/powervm/ibmvscsis/wiki/Configuration
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called ibmvscsis.
+
+>>>>>>> v4.9.227
 config SCSI_IBMVFC
 	tristate "IBM Virtual FC support"
 	depends on PPC_PSERIES && SCSI
@@ -1001,7 +1103,11 @@ config SCSI_SNI_53C710
 
 config 53C700_LE_ON_BE
 	bool
+<<<<<<< HEAD
 	depends on SCSI_LASI700
+=======
+	depends on SCSI_LASI700 || SCSI_SNI_53C710
+>>>>>>> v4.9.227
 	default y
 
 config SCSI_STEX
@@ -1092,6 +1198,10 @@ config SCSI_IPR
 	tristate "IBM Power Linux RAID adapter support"
 	depends on PCI && SCSI && ATA
 	select FW_LOADER
+<<<<<<< HEAD
+=======
+	select IRQ_POLL
+>>>>>>> v4.9.227
 	---help---
 	  This driver supports the IBM Power Linux family RAID adapters.
 	  This includes IBM pSeries 5712, 5703, 5709, and 570A, as well
@@ -1225,6 +1335,7 @@ config SCSI_NCR53C8XX_NO_DISCONNECT
 	  not allow targets to disconnect is not reasonable if there is more
 	  than 1 device on a SCSI bus. The normal answer therefore is N.
 
+<<<<<<< HEAD
 config SCSI_PAS16
 	tristate "PAS16 SCSI support"
 	depends on ISA && SCSI
@@ -1239,6 +1350,8 @@ config SCSI_PAS16
 	  To compile this driver as a module, choose M here: the
 	  module will be called pas16.
 
+=======
+>>>>>>> v4.9.227
 config SCSI_QLOGIC_FAS
 	tristate "Qlogic FAS SCSI support"
 	depends on ISA && SCSI
@@ -1341,13 +1454,24 @@ config SCSI_DC395x
 	  To compile this driver as a module, choose M here: the
 	  module will be called dc395x.
 
+<<<<<<< HEAD
 config SCSI_DC390T
 	tristate "Tekram DC390(T) and Am53/79C974 SCSI support"
 	depends on PCI && SCSI
+=======
+config SCSI_AM53C974
+	tristate "Tekram DC390(T) and Am53/79C974 SCSI support (new driver)"
+	depends on PCI && SCSI
+	select SCSI_SPI_ATTRS
+>>>>>>> v4.9.227
 	---help---
 	  This driver supports PCI SCSI host adapters based on the Am53C974A
 	  chip, e.g. Tekram DC390(T), DawiControl 2974 and some onboard
 	  PCscsi/PCnet (Am53/79C974) solutions.
+<<<<<<< HEAD
+=======
+	  This is a new implementation base on the generic esp_scsi driver.
+>>>>>>> v4.9.227
 
 	  Documentation can be found in <file:Documentation/scsi/tmscsim.txt>.
 
@@ -1355,6 +1479,7 @@ config SCSI_DC390T
 	  based on NCR/Symbios chips. Use "NCR53C8XX SCSI support" for those.
 
 	  To compile this driver as a module, choose M here: the
+<<<<<<< HEAD
 	  module will be called tmscsim.
 
 config SCSI_T128
@@ -1439,6 +1564,9 @@ config SCSI_ULTRASTOR
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called ultrastor.
+=======
+	  module will be called am53c974.
+>>>>>>> v4.9.227
 
 config SCSI_NSP32
 	tristate "Workbit NinjaSCSI-32Bi/UDE support"
@@ -1451,6 +1579,7 @@ config SCSI_NSP32
 	  To compile this driver as a module, choose M here: the
 	  module will be called nsp32.
 
+<<<<<<< HEAD
 config SCSI_DEBUG
 	tristate "SCSI debugging host simulator"
 	depends on SCSI
@@ -1464,6 +1593,28 @@ config SCSI_DEBUG
 	  their storage. See <http://sg.danny.cz/sg/sdebug26.html> for more
 	  information. This driver is primarily of use to those testing the
 	  SCSI and block subsystems. If unsure, say N.
+=======
+config SCSI_WD719X
+	tristate "Western Digital WD7193/7197/7296 support"
+	depends on PCI && SCSI
+	select EEPROM_93CX6
+	---help---
+	  This is a driver for Western Digital WD7193, WD7197 and WD7296 PCI
+	  SCSI controllers (based on WD33C296A chip).
+
+config SCSI_DEBUG
+	tristate "SCSI debugging host and device simulator"
+	depends on SCSI
+	select CRC_T10DIF
+	help
+	  This pseudo driver simulates one or more hosts (SCSI initiators),
+	  each with one or more targets, each with one or more logical units.
+	  Defaults to one of each, creating a small RAM disk device. Many
+	  parameters found in the /sys/bus/pseudo/drivers/scsi_debug
+	  directory can be tweaked at run time.
+	  See <http://sg.danny.cz/sg/sdebug26.html> for more information.
+	  Mainly used for testing and best as a module. If unsure, say N.
+>>>>>>> v4.9.227
 
 config SCSI_MESH
 	tristate "MESH (Power Mac internal SCSI) support"
@@ -1597,6 +1748,7 @@ config ATARI_SCSI
 	  ST-DMA, replacing ACSI).  It does NOT support other schemes, like
 	  in the Hades (without DMA).
 
+<<<<<<< HEAD
 config ATARI_SCSI_TOSHIBA_DELAY
 	bool "Long delays for Toshiba CD-ROMs"
 	depends on ATARI_SCSI
@@ -1617,6 +1769,11 @@ config ATARI_SCSI_RESET_BOOT
 config MAC_SCSI
 	bool "Macintosh NCR5380 SCSI"
 	depends on MAC && SCSI=y
+=======
+config MAC_SCSI
+	tristate "Macintosh NCR5380 SCSI"
+	depends on MAC && SCSI
+>>>>>>> v4.9.227
 	select SCSI_SPI_ATTRS
 	help
 	  This is the NCR 5380 SCSI controller included on most of the 68030
@@ -1734,7 +1891,10 @@ config SCSI_BFA_FC
 config SCSI_VIRTIO
 	tristate "virtio-scsi support"
 	depends on VIRTIO
+<<<<<<< HEAD
 	select BLK_DEV_INTEGRITY
+=======
+>>>>>>> v4.9.227
 	help
           This is the virtual HBA driver for virtio.  If the kernel will
           be used in a virtual machine, say Y or M.

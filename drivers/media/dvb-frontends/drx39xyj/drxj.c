@@ -210,7 +210,11 @@ DEFINES
 
 /**
 * \def DRXJ_DEF_I2C_ADDR
+<<<<<<< HEAD
 * \brief Default I2C addres of a demodulator instance.
+=======
+* \brief Default I2C address of a demodulator instance.
+>>>>>>> v4.9.227
 */
 #define DRXJ_DEF_I2C_ADDR (0x52)
 
@@ -336,7 +340,11 @@ DEFINES
  * MICROCODE RELATED DEFINES
  */
 
+<<<<<<< HEAD
 /* Magic word for checking correct Endianess of microcode data */
+=======
+/* Magic word for checking correct Endianness of microcode data */
+>>>>>>> v4.9.227
 #define DRX_UCODE_MAGIC_WORD         ((((u16)'H')<<8)+((u16)'L'))
 
 /* CRC flag in ucode header, flags field. */
@@ -847,9 +855,15 @@ static struct drx_common_attr drxj_default_comm_attr_g = {
 				   static clockrate is selected */
 	 DRX_MPEG_STR_WIDTH_1	/* MPEG Start width in clock cycles */
 	 },
+<<<<<<< HEAD
 	/* Initilisations below can be ommited, they require no user input and
 	   are initialy 0, NULL or false. The compiler will initialize them to these
 	   values when ommited.  */
+=======
+	/* Initilisations below can be omitted, they require no user input and
+	   are initialy 0, NULL or false. The compiler will initialize them to these
+	   values when omitted.  */
+>>>>>>> v4.9.227
 	false,			/* is_opened */
 
 	/* SCAN */
@@ -1175,7 +1189,11 @@ static u32 log1_times100(u32 x)
 	   Now x has binary point between bit[scale] and bit[scale-1]
 	   and 1.0 <= x < 2.0 */
 
+<<<<<<< HEAD
 	/* correction for divison: log(x) = log(x/y)+log(y) */
+=======
+	/* correction for division: log(x) = log(x/y)+log(y) */
+>>>>>>> v4.9.227
 	y = k * ((((u32) 1) << scale) * 200);
 
 	/* remove integer part */
@@ -1240,12 +1258,21 @@ static u32 frac_times1e6(u32 N, u32 D)
 *        and rounded. For calc used formula: 16*10^(prescaleGain[dB]/20).
 *
 */
+<<<<<<< HEAD
+=======
+#if 0
+/* Currently, unused as we lack support for analog TV */
+>>>>>>> v4.9.227
 static const u16 nicam_presc_table_val[43] = {
 	1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4,
 	5, 5, 6, 6, 7, 8, 9, 10, 11, 13, 14, 16,
 	18, 20, 23, 25, 28, 32, 36, 40, 45,
 	51, 57, 64, 71, 80, 90, 101, 113, 127
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 /*============================================================================*/
 /*==                        END HELPER FUNCTIONS                            ==*/
@@ -1653,7 +1680,11 @@ static int drxdap_fasi_write_block(struct i2c_device_addr *dev_addr,
 		   sequense will be visible: (1) write address {i2c addr,
 		   4 bytes chip address} (2) write data {i2c addr, 4 bytes data }
 		   (3) write address (4) write data etc...
+<<<<<<< HEAD
 		   Addres must be rewriten because HI is reset after data transport and
+=======
+		   Address must be rewriten because HI is reset after data transport and
+>>>>>>> v4.9.227
 		   expects an address.
 		 */
 		todo = (block_size < datasize ? block_size : datasize);
@@ -2971,7 +3002,11 @@ ctrl_set_cfg_mpeg_output(struct drx_demod_instance *demod, struct drx_cfg_mpeg_o
 			}	/* ext_attr->standard */
 		}
 
+<<<<<<< HEAD
 		if (cfg_data->enable_parallel == true) {	/* MPEG data output is paralel -> clear ipr_mode[0] */
+=======
+		if (cfg_data->enable_parallel == true) {	/* MPEG data output is parallel -> clear ipr_mode[0] */
+>>>>>>> v4.9.227
 			fec_oc_reg_ipr_mode &= (~(FEC_OC_IPR_MODE_SERIAL__M));
 		} else {	/* MPEG data output is serial -> set ipr_mode[0] */
 			fec_oc_reg_ipr_mode |= FEC_OC_IPR_MODE_SERIAL__M;
@@ -3157,7 +3192,11 @@ ctrl_set_cfg_mpeg_output(struct drx_demod_instance *demod, struct drx_cfg_mpeg_o
 			pr_err("error %d\n", rc);
 			goto rw_error;
 		}
+<<<<<<< HEAD
 		if (cfg_data->enable_parallel == true) {	/* MPEG data output is paralel -> set MD1 to MD7 to output mode */
+=======
+		if (cfg_data->enable_parallel == true) {	/* MPEG data output is parallel -> set MD1 to MD7 to output mode */
+>>>>>>> v4.9.227
 			sio_pdr_md_cfg =
 			    MPEG_PARALLEL_OUTPUT_PIN_DRIVE_STRENGTH <<
 			    SIO_PDR_MD0_CFG_DRIVE__B | 0x03 <<
@@ -4131,7 +4170,11 @@ int drxj_dap_scu_atomic_read_write_block(struct i2c_device_addr *dev_addr, u32 a
 {
 	struct drxjscu_cmd scu_cmd;
 	int rc;
+<<<<<<< HEAD
 	u16 set_param_parameters[15];
+=======
+	u16 set_param_parameters[18];
+>>>>>>> v4.9.227
 	u16 cmd_result[15];
 
 	/* Parameter check */
@@ -4320,7 +4363,11 @@ static int adc_synchronization(struct drx_demod_instance *demod)
 	}
 
 	if (count == 1) {
+<<<<<<< HEAD
 		/* Try sampling on a diffrent edge */
+=======
+		/* Try sampling on a different edge */
+>>>>>>> v4.9.227
 		u16 clk_neg = 0;
 
 		rc = drxj_dap_read_reg16(dev_addr, IQM_AF_CLKNEG__A, &clk_neg, 0);
@@ -6461,7 +6508,11 @@ set_qam_measurement(struct drx_demod_instance *demod,
 		    enum drx_modulation constellation, u32 symbol_rate)
 {
 	struct i2c_device_addr *dev_addr = NULL;	/* device address for I2C writes */
+<<<<<<< HEAD
 	struct drxj_data *ext_attr = NULL;	/* Global data container for DRXJ specif data */
+=======
+	struct drxj_data *ext_attr = NULL;	/* Global data container for DRXJ specific data */
+>>>>>>> v4.9.227
 	int rc;
 	u32 fec_bits_desired = 0;	/* BER accounting period */
 	u16 fec_rs_plen = 0;	/* defines RS BER measurement period */
@@ -8864,7 +8915,11 @@ qam64auto(struct drx_demod_instance *demod,
 	u32 timeout_ofs = 0;
 	u16 data = 0;
 
+<<<<<<< HEAD
 	/* external attributes for storing aquired channel constellation */
+=======
+	/* external attributes for storing acquired channel constellation */
+>>>>>>> v4.9.227
 	*lock_status = DRX_NOT_LOCKED;
 	start_time = jiffies_to_msecs(jiffies);
 	lck_state = NO_LOCK;
@@ -9011,7 +9066,11 @@ qam256auto(struct drx_demod_instance *demod,
 	u32 d_locked_time = 0;
 	u32 timeout_ofs = DRXJ_QAM_DEMOD_LOCK_EXT_WAITTIME;
 
+<<<<<<< HEAD
 	/* external attributes for storing aquired channel constellation */
+=======
+	/* external attributes for storing acquired channel constellation */
+>>>>>>> v4.9.227
 	*lock_status = DRX_NOT_LOCKED;
 	start_time = jiffies_to_msecs(jiffies);
 	lck_state = NO_LOCK;
@@ -9087,7 +9146,11 @@ set_qam_channel(struct drx_demod_instance *demod,
 	enum drx_lock_status lock_status = DRX_NOT_LOCKED;
 	bool auto_flag = false;
 
+<<<<<<< HEAD
 	/* external attributes for storing aquired channel constellation */
+=======
+	/* external attributes for storing acquired channel constellation */
+>>>>>>> v4.9.227
 	ext_attr = (struct drxj_data *) demod->my_ext_attr;
 
 	/* set QAM channel constellation */
@@ -9431,7 +9494,11 @@ rw_error:
 
 /**
 * \fn int ctrl_get_qam_sig_quality()
+<<<<<<< HEAD
 * \brief Retreive QAM signal quality from device.
+=======
+* \brief Retrieve QAM signal quality from device.
+>>>>>>> v4.9.227
 * \param devmod Pointer to demodulator instance.
 * \param sig_quality Pointer to signal quality data.
 * \return int.
@@ -9541,7 +9608,11 @@ ctrl_get_qam_sig_quality(struct drx_demod_instance *demod)
 	/* ----------------------------------------- */
 	/* Pre Viterbi Symbol Error Rate Calculation */
 	/* ----------------------------------------- */
+<<<<<<< HEAD
 	/* pre viterbi SER is good if it is bellow 0.025 */
+=======
+	/* pre viterbi SER is good if it is below 0.025 */
+>>>>>>> v4.9.227
 
 	/* get the register value */
 	/*   no of quadrature symbol errors */
@@ -9597,12 +9668,22 @@ ctrl_get_qam_sig_quality(struct drx_demod_instance *demod)
 
 	   Precision errors still possible.
 	 */
+<<<<<<< HEAD
 	e = post_bit_err_rs * 742686;
 	m = fec_oc_period * 100;
 	if (fec_oc_period == 0)
 		qam_post_rs_ber = 0xFFFFFFFF;
 	else
 		qam_post_rs_ber = e / m;
+=======
+	if (!fec_oc_period) {
+		qam_post_rs_ber = 0xFFFFFFFF;
+	} else {
+		e = post_bit_err_rs * 742686;
+		m = fec_oc_period * 100;
+		qam_post_rs_ber = e / m;
+	}
+>>>>>>> v4.9.227
 
 	/* fill signal quality data structure */
 	p->pre_bit_count.stat[0].scale = FE_SCALE_COUNTER;
@@ -10647,7 +10728,11 @@ rw_error:
 
 /**
 * \fn int ctrl_sig_quality()
+<<<<<<< HEAD
 * \brief Retreive signal quality form device.
+=======
+* \brief Retrieve signal quality form device.
+>>>>>>> v4.9.227
 * \param devmod Pointer to demodulator instance.
 * \param sig_quality Pointer to signal quality data.
 * \return int.
@@ -10763,7 +10848,11 @@ rw_error:
 
 /**
 * \fn int ctrl_lock_status()
+<<<<<<< HEAD
 * \brief Retreive lock status .
+=======
+* \brief Retrieve lock status .
+>>>>>>> v4.9.227
 * \param dev_addr Pointer to demodulator device address.
 * \param lock_stat Pointer to lock status structure.
 * \return int.
@@ -10815,7 +10904,11 @@ ctrl_lock_status(struct drx_demod_instance *demod, enum drx_lock_status *lock_st
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	/* define the SCU command paramters and execute the command */
+=======
+	/* define the SCU command parameters and execute the command */
+>>>>>>> v4.9.227
 	cmd_scu.parameter_len = 0;
 	cmd_scu.result_len = 2;
 	cmd_scu.parameter = NULL;
@@ -11489,7 +11582,11 @@ static int drxj_open(struct drx_demod_instance *demod)
 	}
 
 	/* Stamp driver version number in SCU data RAM in BCD code
+<<<<<<< HEAD
 	   Done to enable field application engineers to retreive drxdriver version
+=======
+	   Done to enable field application engineers to retrieve drxdriver version
+>>>>>>> v4.9.227
 	   via I2C from SCU RAM
 	 */
 	driver_version = (VERSION_MAJOR / 100) % 10;
@@ -11892,7 +11989,11 @@ release:
 	return rc;
 }
 
+<<<<<<< HEAD
 /* caller is expeced to check if lna is supported before enabling */
+=======
+/* caller is expected to check if lna is supported before enabling */
+>>>>>>> v4.9.227
 static int drxj_set_lna_state(struct drx_demod_instance *demod, bool state)
 {
 	struct drxuio_cfg uio_cfg;
@@ -11946,7 +12047,11 @@ static int drx39xxj_set_powerstate(struct dvb_frontend *fe, int enable)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int drx39xxj_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int drx39xxj_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct drx39xxj_state *state = fe->demodulator_priv;
 	struct drx_demod_instance *demod = state->demod;
@@ -12255,8 +12360,12 @@ static void drx39xxj_release(struct dvb_frontend *fe)
 	kfree(demod->my_ext_attr);
 	kfree(demod->my_common_attr);
 	kfree(demod->my_i2c_dev_addr);
+<<<<<<< HEAD
 	if (demod->firmware)
 		release_firmware(demod->firmware);
+=======
+	release_firmware(demod->firmware);
+>>>>>>> v4.9.227
 	kfree(demod);
 	kfree(state);
 }

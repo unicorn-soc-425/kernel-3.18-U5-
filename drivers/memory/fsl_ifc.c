@@ -22,6 +22,10 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched.h>
+>>>>>>> v4.9.227
 #include <linux/spinlock.h>
 #include <linux/types.h>
 #include <linux/slab.h>
@@ -30,7 +34,13 @@
 #include <linux/of_device.h>
 #include <linux/platform_device.h>
 #include <linux/fsl_ifc.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+#include <linux/irqdomain.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> v4.9.227
 
 struct fsl_ifc_ctrl *fsl_ifc_ctrl_dev;
 EXPORT_SYMBOL(fsl_ifc_ctrl_dev);
@@ -58,11 +68,19 @@ int fsl_ifc_find(phys_addr_t addr_base)
 {
 	int i = 0;
 
+<<<<<<< HEAD
 	if (!fsl_ifc_ctrl_dev || !fsl_ifc_ctrl_dev->regs)
 		return -ENODEV;
 
 	for (i = 0; i < ARRAY_SIZE(fsl_ifc_ctrl_dev->regs->cspr_cs); i++) {
 		u32 cspr = in_be32(&fsl_ifc_ctrl_dev->regs->cspr_cs[i].cspr);
+=======
+	if (!fsl_ifc_ctrl_dev || !fsl_ifc_ctrl_dev->gregs)
+		return -ENODEV;
+
+	for (i = 0; i < fsl_ifc_ctrl_dev->banks; i++) {
+		u32 cspr = ifc_in32(&fsl_ifc_ctrl_dev->gregs->cspr_cs[i].cspr);
+>>>>>>> v4.9.227
 		if (cspr & CSPR_V && (cspr & CSPR_BA) ==
 				convert_ifc_address(addr_base))
 			return i;
@@ -74,11 +92,16 @@ EXPORT_SYMBOL(fsl_ifc_find);
 
 static int fsl_ifc_ctrl_init(struct fsl_ifc_ctrl *ctrl)
 {
+<<<<<<< HEAD
 	struct fsl_ifc_regs __iomem *ifc = ctrl->regs;
+=======
+	struct fsl_ifc_global __iomem *ifc = ctrl->gregs;
+>>>>>>> v4.9.227
 
 	/*
 	 * Clear all the common status and event registers
 	 */
+<<<<<<< HEAD
 	if (in_be32(&ifc->cm_evter_stat) & IFC_CM_EVTER_STAT_CSER)
 		out_be32(&ifc->cm_evter_stat, IFC_CM_EVTER_STAT_CSER);
 
@@ -89,6 +112,18 @@ static int fsl_ifc_ctrl_init(struct fsl_ifc_ctrl *ctrl)
 	out_be32(&ifc->cm_evter_intr_en, IFC_CM_EVTER_INTR_EN_CSERIREN);
 	out_be32(&ifc->cm_erattr0, 0x0);
 	out_be32(&ifc->cm_erattr1, 0x0);
+=======
+	if (ifc_in32(&ifc->cm_evter_stat) & IFC_CM_EVTER_STAT_CSER)
+		ifc_out32(IFC_CM_EVTER_STAT_CSER, &ifc->cm_evter_stat);
+
+	/* enable all error and events */
+	ifc_out32(IFC_CM_EVTER_EN_CSEREN, &ifc->cm_evter_en);
+
+	/* enable all error and event interrupts */
+	ifc_out32(IFC_CM_EVTER_INTR_EN_CSERIREN, &ifc->cm_evter_intr_en);
+	ifc_out32(0x0, &ifc->cm_erattr0);
+	ifc_out32(0x0, &ifc->cm_erattr1);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -103,7 +138,11 @@ static int fsl_ifc_ctrl_remove(struct platform_device *dev)
 	irq_dispose_mapping(ctrl->nand_irq);
 	irq_dispose_mapping(ctrl->irq);
 
+<<<<<<< HEAD
 	iounmap(ctrl->regs);
+=======
+	iounmap(ctrl->gregs);
+>>>>>>> v4.9.227
 
 	dev_set_drvdata(&dev->dev, NULL);
 	kfree(ctrl);
@@ -121,15 +160,25 @@ static DEFINE_SPINLOCK(nand_irq_lock);
 
 static u32 check_nand_stat(struct fsl_ifc_ctrl *ctrl)
 {
+<<<<<<< HEAD
 	struct fsl_ifc_regs __iomem *ifc = ctrl->regs;
+=======
+	struct fsl_ifc_runtime __iomem *ifc = ctrl->rregs;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	u32 stat;
 
 	spin_lock_irqsave(&nand_irq_lock, flags);
 
+<<<<<<< HEAD
 	stat = in_be32(&ifc->ifc_nand.nand_evter_stat);
 	if (stat) {
 		out_be32(&ifc->ifc_nand.nand_evter_stat, stat);
+=======
+	stat = ifc_in32(&ifc->ifc_nand.nand_evter_stat);
+	if (stat) {
+		ifc_out32(stat, &ifc->ifc_nand.nand_evter_stat);
+>>>>>>> v4.9.227
 		ctrl->nand_stat = stat;
 		wake_up(&ctrl->nand_wait);
 	}
@@ -156,21 +205,37 @@ static irqreturn_t fsl_ifc_nand_irq(int irqno, void *data)
 static irqreturn_t fsl_ifc_ctrl_irq(int irqno, void *data)
 {
 	struct fsl_ifc_ctrl *ctrl = data;
+<<<<<<< HEAD
 	struct fsl_ifc_regs __iomem *ifc = ctrl->regs;
+=======
+	struct fsl_ifc_global __iomem *ifc = ctrl->gregs;
+>>>>>>> v4.9.227
 	u32 err_axiid, err_srcid, status, cs_err, err_addr;
 	irqreturn_t ret = IRQ_NONE;
 
 	/* read for chip select error */
+<<<<<<< HEAD
 	cs_err = in_be32(&ifc->cm_evter_stat);
+=======
+	cs_err = ifc_in32(&ifc->cm_evter_stat);
+>>>>>>> v4.9.227
 	if (cs_err) {
 		dev_err(ctrl->dev, "transaction sent to IFC is not mapped to"
 				"any memory bank 0x%08X\n", cs_err);
 		/* clear the chip select error */
+<<<<<<< HEAD
 		out_be32(&ifc->cm_evter_stat, IFC_CM_EVTER_STAT_CSER);
 
 		/* read error attribute registers print the error information */
 		status = in_be32(&ifc->cm_erattr0);
 		err_addr = in_be32(&ifc->cm_erattr1);
+=======
+		ifc_out32(IFC_CM_EVTER_STAT_CSER, &ifc->cm_evter_stat);
+
+		/* read error attribute registers print the error information */
+		status = ifc_in32(&ifc->cm_erattr0);
+		err_addr = ifc_in32(&ifc->cm_erattr1);
+>>>>>>> v4.9.227
 
 		if (status & IFC_CM_ERATTR0_ERTYP_READ)
 			dev_err(ctrl->dev, "Read transaction error"
@@ -213,7 +278,12 @@ static irqreturn_t fsl_ifc_ctrl_irq(int irqno, void *data)
 static int fsl_ifc_ctrl_probe(struct platform_device *dev)
 {
 	int ret = 0;
+<<<<<<< HEAD
 
+=======
+	int version, banks;
+	void __iomem *addr;
+>>>>>>> v4.9.227
 
 	dev_info(&dev->dev, "Freescale Integrated Flash Controller\n");
 
@@ -224,16 +294,52 @@ static int fsl_ifc_ctrl_probe(struct platform_device *dev)
 	dev_set_drvdata(&dev->dev, fsl_ifc_ctrl_dev);
 
 	/* IOMAP the entire IFC region */
+<<<<<<< HEAD
 	fsl_ifc_ctrl_dev->regs = of_iomap(dev->dev.of_node, 0);
 	if (!fsl_ifc_ctrl_dev->regs) {
+=======
+	fsl_ifc_ctrl_dev->gregs = of_iomap(dev->dev.of_node, 0);
+	if (!fsl_ifc_ctrl_dev->gregs) {
+>>>>>>> v4.9.227
 		dev_err(&dev->dev, "failed to get memory region\n");
 		ret = -ENODEV;
 		goto err;
 	}
 
+<<<<<<< HEAD
 	/* get the Controller level irq */
 	fsl_ifc_ctrl_dev->irq = irq_of_parse_and_map(dev->dev.of_node, 0);
 	if (fsl_ifc_ctrl_dev->irq == NO_IRQ) {
+=======
+	if (of_property_read_bool(dev->dev.of_node, "little-endian")) {
+		fsl_ifc_ctrl_dev->little_endian = true;
+		dev_dbg(&dev->dev, "IFC REGISTERS are LITTLE endian\n");
+	} else {
+		fsl_ifc_ctrl_dev->little_endian = false;
+		dev_dbg(&dev->dev, "IFC REGISTERS are BIG endian\n");
+	}
+
+	version = ifc_in32(&fsl_ifc_ctrl_dev->gregs->ifc_rev) &
+			FSL_IFC_VERSION_MASK;
+
+	banks = (version == FSL_IFC_VERSION_1_0_0) ? 4 : 8;
+	dev_info(&dev->dev, "IFC version %d.%d, %d banks\n",
+		version >> 24, (version >> 16) & 0xf, banks);
+
+	fsl_ifc_ctrl_dev->version = version;
+	fsl_ifc_ctrl_dev->banks = banks;
+
+	addr = fsl_ifc_ctrl_dev->gregs;
+	if (version >= FSL_IFC_VERSION_2_0_0)
+		addr += PGOFFSET_64K;
+	else
+		addr += PGOFFSET_4K;
+	fsl_ifc_ctrl_dev->rregs = addr;
+
+	/* get the Controller level irq */
+	fsl_ifc_ctrl_dev->irq = irq_of_parse_and_map(dev->dev.of_node, 0);
+	if (fsl_ifc_ctrl_dev->irq == 0) {
+>>>>>>> v4.9.227
 		dev_err(&dev->dev, "failed to get irq resource "
 							"for IFC\n");
 		ret = -ENODEV;

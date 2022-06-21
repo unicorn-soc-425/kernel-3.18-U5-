@@ -96,9 +96,15 @@
 		display0 = &lcd0;
 	};
 
+<<<<<<< HEAD
 	lcd0: display@0 {
 		compatible = "samsung,lte430wq-f0c", "panel-dpi";
 		label = "lcd";
+=======
+	lcd0: display {
+		compatible = "samsung,lte430wq-f0c", "panel-dpi";
+		label = "lcd43";
+>>>>>>> v4.9.227
 
 		pinctrl-names = "default";
 		pinctrl-0 = <&lte430_pins>;
@@ -163,7 +169,11 @@
 
 		interrupt-parent = <&gpio4>;
 		interrupts = <18 0>;			/* gpio_114 */
+<<<<<<< HEAD
 		pendown-gpio = <&gpio4 18 0>;
+=======
+		pendown-gpio = <&gpio4 18 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 
 		ti,x-min = /bits/ 16 <0x0>;
 		ti,x-max = /bits/ 16 <0x0fff>;
@@ -172,7 +182,11 @@
 		ti,x-plate-ohms = /bits/ 16 <180>;
 		ti,pressure-max = /bits/ 16 <255>;
 
+<<<<<<< HEAD
 		linux,wakeup;
+=======
+		wakeup-source;
+>>>>>>> v4.9.227
 	};
 };
 

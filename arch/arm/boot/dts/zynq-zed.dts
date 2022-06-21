@@ -18,15 +18,38 @@
 	model = "Zynq Zed Development Board";
 	compatible = "xlnx,zynq-zed", "xlnx,zynq-7000";
 
+<<<<<<< HEAD
+=======
+	aliases {
+		ethernet0 = &gem0;
+		serial0 = &uart1;
+	};
+
+>>>>>>> v4.9.227
 	memory {
 		device_type = "memory";
 		reg = <0x0 0x20000000>;
 	};
 
 	chosen {
+<<<<<<< HEAD
 		bootargs = "console=ttyPS0,115200 earlyprintk";
 	};
 
+=======
+		bootargs = "earlycon";
+		stdout-path = "serial0:115200n8";
+	};
+
+	usb_phy0: phy0 {
+		compatible = "usb-nop-xceiv";
+		#phy-cells = <0>;
+	};
+};
+
+&clkc {
+	ps-clk-frequency = <33333333>;
+>>>>>>> v4.9.227
 };
 
 &gem0 {
@@ -46,3 +69,12 @@
 &uart1 {
 	status = "okay";
 };
+<<<<<<< HEAD
+=======
+
+&usb0 {
+	status = "okay";
+	dr_mode = "host";
+	usb-phy = <&usb_phy0>;
+};
+>>>>>>> v4.9.227

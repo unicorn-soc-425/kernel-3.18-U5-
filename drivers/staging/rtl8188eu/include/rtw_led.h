@@ -11,10 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  *
  ******************************************************************************/
 #ifndef __RTW_LED_H_
@@ -27,14 +30,22 @@
 #define LED_BLINK_LINK_INTERVAL_ALPHA		500	/* 500 */
 #define LED_BLINK_SCAN_INTERVAL_ALPHA		180	/* 150 */
 #define LED_BLINK_FASTER_INTERVAL_ALPHA		50
+<<<<<<< HEAD
 #define LED_BLINK_WPS_SUCESS_INTERVAL_ALPHA	5000
+=======
+#define LED_BLINK_WPS_SUCCESS_INTERVAL_ALPHA	5000
+>>>>>>> v4.9.227
 
 enum LED_CTL_MODE {
 	LED_CTL_POWER_ON,
 	LED_CTL_LINK,
 	LED_CTL_NO_LINK,
 	LED_CTL_TX,
+<<<<<<< HEAD
 	LED_CTL_RX ,
+=======
+	LED_CTL_RX,
+>>>>>>> v4.9.227
 	LED_CTL_SITE_SURVEY,
 	LED_CTL_POWER_OFF,
 	LED_CTL_START_TO_LINK,
@@ -92,7 +103,11 @@ struct LED_871x {
 
 void LedControl8188eu(struct adapter *padapter, enum LED_CTL_MODE	LedAction);
 
+<<<<<<< HEAD
 struct led_priv{
+=======
+struct led_priv {
+>>>>>>> v4.9.227
 	/* add for led control */
 	struct LED_871x			SwLed0;
 	u8	bRegUseLed;
@@ -107,7 +122,11 @@ struct led_priv{
 			(adapt)->ledpriv.LedControlHandler((adapt), (action)); \
 	} while (0)
 
+<<<<<<< HEAD
 void BlinkTimerCallback(void *data);
+=======
+void BlinkTimerCallback(unsigned long data);
+>>>>>>> v4.9.227
 void BlinkWorkItemCallback(struct work_struct *work);
 
 void ResetLedStatus(struct LED_871x *pLed);

@@ -14,6 +14,11 @@
 #ifndef __AMS_DELTA_FIQ_H
 #define __AMS_DELTA_FIQ_H
 
+<<<<<<< HEAD
+=======
+#include <mach/irqs.h>
+
+>>>>>>> v4.9.227
 /*
  * Interrupt number used for passing control from FIQ to IRQ.
  * IRQ12, described as reserved, has been selected.

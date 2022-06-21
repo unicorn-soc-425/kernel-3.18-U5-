@@ -7,6 +7,7 @@ vt6655_stage-y +=	device_main.o \
 	channel.o \
 	mac.o \
 	baseband.o \
+<<<<<<< HEAD
 	wctl.o \
 	80211mgr.o \
 	wcmd.o \
@@ -35,5 +36,13 @@ vt6655_stage-y +=	device_main.o \
 	aes_ccmp.o \
 	vntwifi.o \
 	IEEE11h.o
+=======
+	rxtx.o \
+	dpc.o \
+	power.o \
+	srom.o \
+	key.o \
+	rf.o
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_VT6655) +=	vt6655_stage.o

@@ -17,11 +17,17 @@
 #include <asm/types.h>
 
 struct task_struct;
+<<<<<<< HEAD
 struct exec_domain;
 
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+
+struct thread_info {
+	struct task_struct	*task;		/* main task structure */
+>>>>>>> v4.9.227
 	unsigned long		flags;		/* low level flags */
 	__u32			cpu;
 	__s32			preempt_count;	/* 0 => preemptable, <0 => BUG */
@@ -36,7 +42,10 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)						\
 {									\
 	.task		= &tsk,						\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,				\
+=======
+>>>>>>> v4.9.227
 	.flags		= 0,						\
 	.cpu		= 0,						\
 	.preempt_count	= INIT_PREEMPT_COUNT,				\

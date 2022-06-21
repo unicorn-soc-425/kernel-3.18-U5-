@@ -5,7 +5,11 @@
 
 #include <linux/kernel.h>
 #include <linux/kprobes.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/extable.h>
+>>>>>>> v4.9.227
 #include <linux/kdebug.h>
 #include <linux/slab.h>
 #include <linux/context_tracking.h>

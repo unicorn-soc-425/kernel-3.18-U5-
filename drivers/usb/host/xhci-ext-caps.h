@@ -91,6 +91,7 @@
 #include <linux/io.h>
 
 /**
+<<<<<<< HEAD
  * Return the next extended capability pointer register.
  *
  * @base	PCI register base address.
@@ -152,5 +153,45 @@ static inline int xhci_find_ext_cap_by_id(void __iomem *base, int ext_offset, in
 	}
 	if (limit > 0)
 		return ext_offset;
+=======
+ * Find the offset of the extended capabilities with capability ID id.
+ *
+ * @base	PCI MMIO registers base address.
+ * @start	address at which to start looking, (0 or HCC_PARAMS to start at
+ *		beginning of list)
+ * @id		Extended capability ID to search for.
+ *
+ * Returns the offset of the next matching extended capability structure.
+ * Some capabilities can occur several times, e.g., the XHCI_EXT_CAPS_PROTOCOL,
+ * and this provides a way to find them all.
+ */
+
+static inline int xhci_find_next_ext_cap(void __iomem *base, u32 start, int id)
+{
+	u32 val;
+	u32 next;
+	u32 offset;
+
+	offset = start;
+	if (!start || start == XHCI_HCC_PARAMS_OFFSET) {
+		val = readl(base + XHCI_HCC_PARAMS_OFFSET);
+		if (val == ~0)
+			return 0;
+		offset = XHCI_HCC_EXT_CAPS(val) << 2;
+		if (!offset)
+			return 0;
+	};
+	do {
+		val = readl(base + offset);
+		if (val == ~0)
+			return 0;
+		if (XHCI_EXT_CAPS_ID(val) == id && offset != start)
+			return offset;
+
+		next = XHCI_EXT_CAPS_NEXT(val);
+		offset += next << 2;
+	} while (next);
+
+>>>>>>> v4.9.227
 	return 0;
 }

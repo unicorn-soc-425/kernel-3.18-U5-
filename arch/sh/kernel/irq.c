@@ -124,7 +124,10 @@ void irq_ctx_init(int cpu)
 
 	irqctx = (union irq_ctx *)&hardirq_stack[cpu * THREAD_SIZE];
 	irqctx->tinfo.task		= NULL;
+<<<<<<< HEAD
 	irqctx->tinfo.exec_domain	= NULL;
+=======
+>>>>>>> v4.9.227
 	irqctx->tinfo.cpu		= cpu;
 	irqctx->tinfo.preempt_count	= HARDIRQ_OFFSET;
 	irqctx->tinfo.addr_limit	= MAKE_MM_SEG(0);
@@ -133,7 +136,10 @@ void irq_ctx_init(int cpu)
 
 	irqctx = (union irq_ctx *)&softirq_stack[cpu * THREAD_SIZE];
 	irqctx->tinfo.task		= NULL;
+<<<<<<< HEAD
 	irqctx->tinfo.exec_domain	= NULL;
+=======
+>>>>>>> v4.9.227
 	irqctx->tinfo.cpu		= cpu;
 	irqctx->tinfo.preempt_count	= 0;
 	irqctx->tinfo.addr_limit	= MAKE_MM_SEG(0);
@@ -229,16 +235,28 @@ void migrate_irqs(void)
 	for_each_active_irq(irq) {
 		struct irq_data *data = irq_get_irq_data(irq);
 
+<<<<<<< HEAD
 		if (data->node == cpu) {
 			unsigned int newcpu = cpumask_any_and(data->affinity,
+=======
+		if (irq_data_get_node(data) == cpu) {
+			struct cpumask *mask = irq_data_get_affinity_mask(data);
+			unsigned int newcpu = cpumask_any_and(mask,
+>>>>>>> v4.9.227
 							      cpu_online_mask);
 			if (newcpu >= nr_cpu_ids) {
 				pr_info_ratelimited("IRQ%u no longer affine to CPU%u\n",
 						    irq, cpu);
 
+<<<<<<< HEAD
 				cpumask_setall(data->affinity);
 			}
 			irq_set_affinity(irq, data->affinity);
+=======
+				cpumask_setall(mask);
+			}
+			irq_set_affinity(irq, mask);
+>>>>>>> v4.9.227
 		}
 	}
 }

@@ -99,12 +99,15 @@ struct davinci_vcif {
 	dma_addr_t dma_rx_addr;
 };
 
+<<<<<<< HEAD
 struct cq93vc {
 	struct platform_device *pdev;
 	struct snd_soc_codec *codec;
 	u32 sysclk;
 };
 
+=======
+>>>>>>> v4.9.227
 struct davinci_vc;
 
 struct davinci_vc {
@@ -122,7 +125,10 @@ struct davinci_vc {
 
 	/* Client devices */
 	struct davinci_vcif davinci_vcif;
+<<<<<<< HEAD
 	struct cq93vc cq93vc;
+=======
+>>>>>>> v4.9.227
 };
 
 #endif

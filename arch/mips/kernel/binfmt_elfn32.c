@@ -1,5 +1,9 @@
 /*
  * Support for n32 Linux/MIPS ELF binaries.
+<<<<<<< HEAD
+=======
+ * Author: Ralf Baechle (ralf@linux-mips.org)
+>>>>>>> v4.9.227
  *
  * Copyright (C) 1999, 2001 Ralf Baechle
  * Copyright (C) 1999, 2001 Silicon Graphics, Inc.
@@ -30,6 +34,7 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 /*
  * This is used to ensure we don't load something for the wrong architecture.
  */
+<<<<<<< HEAD
 #define elf_check_arch(hdr)						\
 ({									\
 	int __res = 1;							\
@@ -45,13 +50,19 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 									\
 	__res;								\
 })
+=======
+#define elf_check_arch elfn32_check_arch
+>>>>>>> v4.9.227
 
 #define TASK32_SIZE		0x7fff8000UL
 #undef ELF_ET_DYN_BASE
 #define ELF_ET_DYN_BASE		(TASK32_SIZE / 3 * 2)
 
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/elfcore.h>
 #include <linux/compat.h>
 #include <linux/math64.h>
@@ -110,12 +121,15 @@ jiffies_to_compat_timeval(unsigned long jiffies, struct compat_timeval *value)
 
 #define ELF_CORE_EFLAGS EF_MIPS_ABI2
 
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Binary format loader for compatibility with n32 Linux/MIPS binaries");
 MODULE_AUTHOR("Ralf Baechle (ralf@linux-mips.org)");
 
 #undef MODULE_DESCRIPTION
 #undef MODULE_AUTHOR
 
+=======
+>>>>>>> v4.9.227
 #undef TASK_SIZE
 #define TASK_SIZE TASK_SIZE32
 

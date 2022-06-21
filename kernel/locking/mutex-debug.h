@@ -20,21 +20,35 @@ extern void debug_mutex_wake_waiter(struct mutex *lock,
 extern void debug_mutex_free_waiter(struct mutex_waiter *waiter);
 extern void debug_mutex_add_waiter(struct mutex *lock,
 				   struct mutex_waiter *waiter,
+<<<<<<< HEAD
 				   struct thread_info *ti);
 extern void mutex_remove_waiter(struct mutex *lock, struct mutex_waiter *waiter,
 				struct thread_info *ti);
+=======
+				   struct task_struct *task);
+extern void mutex_remove_waiter(struct mutex *lock, struct mutex_waiter *waiter,
+				struct task_struct *task);
+>>>>>>> v4.9.227
 extern void debug_mutex_unlock(struct mutex *lock);
 extern void debug_mutex_init(struct mutex *lock, const char *name,
 			     struct lock_class_key *key);
 
 static inline void mutex_set_owner(struct mutex *lock)
 {
+<<<<<<< HEAD
 	lock->owner = current;
+=======
+	WRITE_ONCE(lock->owner, current);
+>>>>>>> v4.9.227
 }
 
 static inline void mutex_clear_owner(struct mutex *lock)
 {
+<<<<<<< HEAD
 	lock->owner = NULL;
+=======
+	WRITE_ONCE(lock->owner, NULL);
+>>>>>>> v4.9.227
 }
 
 #define spin_lock_mutex(lock, flags)			\

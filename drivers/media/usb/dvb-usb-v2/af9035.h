@@ -62,6 +62,10 @@ struct state {
 	u8 chip_version;
 	u16 chip_type;
 	u8 dual_mode:1;
+<<<<<<< HEAD
+=======
+	u8 no_read:1;
+>>>>>>> v4.9.227
 	u16 eeprom_addr;
 	u8 af9033_i2c_addr[2];
 	struct af9033_config af9033_config[2];
@@ -112,6 +116,7 @@ static const u32 clock_lut_it9135[] = {
  * 0  TS
  * 1  DCA + PIP
  * 3  PIP
+<<<<<<< HEAD
  * n  DCA
  *
  * Values 0 and 3 are seen to this day. 0 for single TS and 3 for dual TS.
@@ -131,6 +136,28 @@ static const u32 clock_lut_it9135[] = {
 #define EEPROM_2_IF_L               0x40
 #define EEPROM_2_IF_H               0x41
 #define EEPROM_2_TUNER_ID           0x44
+=======
+ * 5  DCA + PIP (AF9035 only)
+ * n  DCA
+ *
+ * Values 0, 3 and 5 are seen to this day. 0 for single TS and 3/5 for dual TS.
+ */
+
+#define EEPROM_BASE_AF9035        0x42f5
+#define EEPROM_BASE_IT9135        0x4994
+#define EEPROM_SHIFT                0x10
+
+#define EEPROM_IR_MODE              0x18
+#define EEPROM_TS_MODE              0x31
+#define EEPROM_2ND_DEMOD_ADDR       0x32
+#define EEPROM_IR_TYPE              0x34
+#define EEPROM_1_IF_L               0x38
+#define EEPROM_1_IF_H               0x39
+#define EEPROM_1_TUNER_ID           0x3c
+#define EEPROM_2_IF_L               0x48
+#define EEPROM_2_IF_H               0x49
+#define EEPROM_2_TUNER_ID           0x4c
+>>>>>>> v4.9.227
 
 /* USB commands */
 #define CMD_MEM_RD                  0x00

@@ -12,6 +12,10 @@ enum {
 	TCA_DEF_TM,
 	TCA_DEF_PARMS,
 	TCA_DEF_DATA,
+<<<<<<< HEAD
+=======
+	TCA_DEF_PAD,
+>>>>>>> v4.9.227
 	__TCA_DEF_MAX
 };
 #define TCA_DEF_MAX (__TCA_DEF_MAX - 1)

@@ -130,7 +130,11 @@ nvkm_therm_update(struct nvkm_therm *therm, int mode)
 		poll = false;
 	}
 
+<<<<<<< HEAD
 	if (list_empty(&therm->alarm.head) && poll)
+=======
+	if (poll)
+>>>>>>> v4.9.227
 		nvkm_timer_alarm(tmr, 1000000000ULL, &therm->alarm);
 	spin_unlock_irqrestore(&therm->lock, flags);
 
@@ -366,7 +370,11 @@ nvkm_therm_new_(const struct nvkm_therm_func *func, struct nvkm_device *device,
 	if (!(therm = *ptherm = kzalloc(sizeof(*therm), GFP_KERNEL)))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	nvkm_subdev_ctor(&nvkm_therm, device, index, 0, &therm->subdev);
+=======
+	nvkm_subdev_ctor(&nvkm_therm, device, index, &therm->subdev);
+>>>>>>> v4.9.227
 	therm->func = func;
 
 	nvkm_alarm_init(&therm->alarm, nvkm_therm_alarm);

@@ -2,8 +2,13 @@
  * Renesas R-Car SATA driver
  *
  * Author: Vladimir Barinov <source@cogentembedded.com>
+<<<<<<< HEAD
  * Copyright (C) 2013 Cogent Embedded, Inc.
  * Copyright (C) 2013 Renesas Solutions Corp.
+=======
+ * Copyright (C) 2013-2015 Cogent Embedded, Inc.
+ * Copyright (C) 2013-2015 Renesas Solutions Corp.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
@@ -854,10 +859,18 @@ static struct of_device_id sata_rcar_match[] = {
 		.compatible = "renesas,sata-r8a7793",
 		.data = (void *)RCAR_GEN2_SATA
 	},
+<<<<<<< HEAD
+=======
+	{
+		.compatible = "renesas,sata-r8a7795",
+		.data = (void *)RCAR_GEN2_SATA
+	},
+>>>>>>> v4.9.227
 	{ },
 };
 MODULE_DEVICE_TABLE(of, sata_rcar_match);
 
+<<<<<<< HEAD
 static const struct platform_device_id sata_rcar_id_table[] = {
 	{ "sata_rcar", RCAR_GEN1_SATA }, /* Deprecated by "sata-r8a7779" */
 	{ "sata-r8a7779", RCAR_GEN1_SATA },
@@ -869,6 +882,8 @@ static const struct platform_device_id sata_rcar_id_table[] = {
 };
 MODULE_DEVICE_TABLE(platform, sata_rcar_id_table);
 
+=======
+>>>>>>> v4.9.227
 static int sata_rcar_probe(struct platform_device *pdev)
 {
 	const struct of_device_id *of_id;
@@ -879,7 +894,13 @@ static int sata_rcar_probe(struct platform_device *pdev)
 	int ret = 0;
 
 	irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (irq <= 0)
+=======
+	if (irq < 0)
+		return irq;
+	if (!irq)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	priv = devm_kzalloc(&pdev->dev, sizeof(struct sata_rcar_priv),
@@ -888,17 +909,31 @@ static int sata_rcar_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	of_id = of_match_device(sata_rcar_match, &pdev->dev);
+<<<<<<< HEAD
 	if (of_id)
 		priv->type = (enum sata_rcar_type)of_id->data;
 	else
 		priv->type = platform_get_device_id(pdev)->driver_data;
 
+=======
+	if (!of_id)
+		return -ENODEV;
+
+	priv->type = (enum sata_rcar_type)of_id->data;
+>>>>>>> v4.9.227
 	priv->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(priv->clk)) {
 		dev_err(&pdev->dev, "failed to get access to sata clock\n");
 		return PTR_ERR(priv->clk);
 	}
+<<<<<<< HEAD
 	clk_prepare_enable(priv->clk);
+=======
+
+	ret = clk_prepare_enable(priv->clk);
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host) {
@@ -978,8 +1013,16 @@ static int sata_rcar_resume(struct device *dev)
 	struct ata_host *host = dev_get_drvdata(dev);
 	struct sata_rcar_priv *priv = host->private_data;
 	void __iomem *base = priv->base;
+<<<<<<< HEAD
 
 	clk_prepare_enable(priv->clk);
+=======
+	int ret;
+
+	ret = clk_prepare_enable(priv->clk);
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 
 	/* ack and mask */
 	iowrite32(0, base + SATAINTSTAT_REG);
@@ -992,19 +1035,54 @@ static int sata_rcar_resume(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct dev_pm_ops sata_rcar_pm_ops = {
 	.suspend	= sata_rcar_suspend,
 	.resume		= sata_rcar_resume,
+=======
+static int sata_rcar_restore(struct device *dev)
+{
+	struct ata_host *host = dev_get_drvdata(dev);
+	struct sata_rcar_priv *priv = host->private_data;
+	int ret;
+
+	ret = clk_prepare_enable(priv->clk);
+	if (ret)
+		return ret;
+
+	sata_rcar_setup_port(host);
+
+	/* initialize host controller */
+	sata_rcar_init_controller(host);
+
+	ata_host_resume(host);
+
+	return 0;
+}
+
+static const struct dev_pm_ops sata_rcar_pm_ops = {
+	.suspend	= sata_rcar_suspend,
+	.resume		= sata_rcar_resume,
+	.freeze		= sata_rcar_suspend,
+	.thaw		= sata_rcar_resume,
+	.poweroff	= sata_rcar_suspend,
+	.restore	= sata_rcar_restore,
+>>>>>>> v4.9.227
 };
 #endif
 
 static struct platform_driver sata_rcar_driver = {
 	.probe		= sata_rcar_probe,
 	.remove		= sata_rcar_remove,
+<<<<<<< HEAD
 	.id_table	= sata_rcar_id_table,
 	.driver = {
 		.name		= DRV_NAME,
 		.owner		= THIS_MODULE,
+=======
+	.driver = {
+		.name		= DRV_NAME,
+>>>>>>> v4.9.227
 		.of_match_table	= sata_rcar_match,
 #ifdef CONFIG_PM_SLEEP
 		.pm		= &sata_rcar_pm_ops,

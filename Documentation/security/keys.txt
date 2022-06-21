@@ -323,8 +323,11 @@ about the status of the key service:
 	U	Under construction by callback to userspace
 	N	Negative key
 
+<<<<<<< HEAD
      This file must be enabled at kernel configuration time as it allows anyone
      to list the keys database.
+=======
+>>>>>>> v4.9.227
 
  (*) /proc/key-users
 
@@ -825,6 +828,42 @@ The keyctl syscall functions are:
      A process must have search permission on the key for this function to be
      successful.
 
+<<<<<<< HEAD
+=======
+ (*) Compute a Diffie-Hellman shared secret or public key
+
+       long keyctl(KEYCTL_DH_COMPUTE, struct keyctl_dh_params *params,
+		   char *buffer, size_t buflen,
+		   void *reserved);
+
+     The params struct contains serial numbers for three keys:
+
+	 - The prime, p, known to both parties
+	 - The local private key
+	 - The base integer, which is either a shared generator or the
+	   remote public key
+
+     The value computed is:
+
+	result = base ^ private (mod prime)
+
+     If the base is the shared generator, the result is the local
+     public key.  If the base is the remote public key, the result is
+     the shared secret.
+
+     The reserved argument must be set to NULL.
+
+     The buffer length must be at least the length of the prime, or zero.
+
+     If the buffer length is nonzero, the length of the result is
+     returned when it is successfully calculated and copied in to the
+     buffer. When the buffer length is zero, the minimum required
+     buffer length is returned.
+
+     This function will return error EOPNOTSUPP if the key type is not
+     supported, error ENOKEY if the key could not be found, or error
+     EACCES if the key is not readable by the caller.
+>>>>>>> v4.9.227
 
 ===============
 KERNEL SERVICES
@@ -1001,6 +1040,13 @@ payload contents" for more information.
 	struct key *keyring_alloc(const char *description, uid_t uid, gid_t gid,
 				  const struct cred *cred,
 				  key_perm_t perm,
+<<<<<<< HEAD
+=======
+				  int (*restrict_link)(struct key *,
+						       const struct key_type *,
+						       unsigned long,
+						       const union key_payload *),
+>>>>>>> v4.9.227
 				  unsigned long flags,
 				  struct key *dest);
 
@@ -1012,6 +1058,27 @@ payload contents" for more information.
     KEY_ALLOC_NOT_IN_QUOTA in flags if the keyring shouldn't be accounted
     towards the user's quota).  Error ENOMEM can also be returned.
 
+<<<<<<< HEAD
+=======
+    If restrict_link not NULL, it should point to a function that will be
+    called each time an attempt is made to link a key into the new keyring.
+    This function is called to check whether a key may be added into the keying
+    or not.  Callers of key_create_or_update() within the kernel can pass
+    KEY_ALLOC_BYPASS_RESTRICTION to suppress the check.  An example of using
+    this is to manage rings of cryptographic keys that are set up when the
+    kernel boots where userspace is also permitted to add keys - provided they
+    can be verified by a key the kernel already has.
+
+    When called, the restriction function will be passed the keyring being
+    added to, the key flags value and the type and payload of the key being
+    added.  Note that when a new key is being created, this is called between
+    payload preparsing and actual key creation.  The function should return 0
+    to allow the link or an error to reject it.
+
+    A convenience function, restrict_link_reject, exists to always return
+    -EPERM to in this case.
+
+>>>>>>> v4.9.227
 
 (*) To check the validity of a key, this function can be called:
 
@@ -1051,12 +1118,21 @@ search a specific keyring, so using keyrings in this way is of limited utility.
 NOTES ON ACCESSING PAYLOAD CONTENTS
 ===================================
 
+<<<<<<< HEAD
 The simplest payload is just a number in key->payload.value. In this case,
 there's no need to indulge in RCU or locking when accessing the payload.
 
 More complex payload contents must be allocated and a pointer to them set in
 key->payload.data. One of the following ways must be selected to access the
 data:
+=======
+The simplest payload is just data stored in key->payload directly.  In this
+case, there's no need to indulge in RCU or locking when accessing the payload.
+
+More complex payload contents must be allocated and pointers to them set in the
+key->payload.data[] array.  One of the following ways must be selected to
+access the data:
+>>>>>>> v4.9.227
 
  (1) Unmodifiable key type.
 
@@ -1094,6 +1170,16 @@ data:
      the payload. key->datalen cannot be relied upon to be consistent with the
      payload just dereferenced if the key's semaphore is not held.
 
+<<<<<<< HEAD
+=======
+     Note that key->payload.data[0] has a shadow that is marked for __rcu
+     usage.  This is called key->payload.rcu_data0.  The following accessors
+     wrap the RCU calls to this element:
+
+	rcu_assign_keypointer(struct key *key, void *data);
+	void *rcu_dereference_key(struct key *key);
+
+>>>>>>> v4.9.227
 
 ===================
 DEFINING A KEY TYPE
@@ -1145,8 +1231,12 @@ The structure has a number of fields, some of which are mandatory:
 
 	struct key_preparsed_payload {
 		char		*description;
+<<<<<<< HEAD
 		void		*type_data[2];
 		void		*payload;
+=======
+		union key_payload payload;
+>>>>>>> v4.9.227
 		const void	*data;
 		size_t		datalen;
 		size_t		quotalen;
@@ -1162,10 +1252,16 @@ The structure has a number of fields, some of which are mandatory:
      attached as a string to the description field.  This will be used for the
      key description if the caller of add_key() passes NULL or "".
 
+<<<<<<< HEAD
      The method can attach anything it likes to type_data[] and payload.  These
      are merely passed along to the instantiate() or update() operations.  If
      set, the expiry time will be applied to the key if it is instantiated from
      this data.
+=======
+     The method can attach anything it likes to payload.  This is merely passed
+     along to the instantiate() or update() operations.  If set, the expiry
+     time will be applied to the key if it is instantiated from this data.
+>>>>>>> v4.9.227
 
      The method should return 0 if successful or a negative error code
      otherwise.
@@ -1174,11 +1270,18 @@ The structure has a number of fields, some of which are mandatory:
  (*) void (*free_preparse)(struct key_preparsed_payload *prep);
 
      This method is only required if the preparse() method is provided,
+<<<<<<< HEAD
      otherwise it is unused.  It cleans up anything attached to the
      description, type_data and payload fields of the key_preparsed_payload
      struct as filled in by the preparse() method.  It will always be called
      after preparse() returns successfully, even if instantiate() or update()
      succeed.
+=======
+     otherwise it is unused.  It cleans up anything attached to the description
+     and payload fields of the key_preparsed_payload struct as filled in by the
+     preparse() method.  It will always be called after preparse() returns
+     successfully, even if instantiate() or update() succeed.
+>>>>>>> v4.9.227
 
 
  (*) int (*instantiate)(struct key *key, struct key_preparsed_payload *prep);
@@ -1199,6 +1302,14 @@ The structure has a number of fields, some of which are mandatory:
 
      It is safe to sleep in this method.
 
+<<<<<<< HEAD
+=======
+     generic_key_instantiate() is provided to simply copy the data from
+     prep->payload.data[] to key->payload.data[], with RCU-safe assignment on
+     the first element.  It will then clear prep->payload.data[] so that the
+     free_preparse method doesn't release the data.
+
+>>>>>>> v4.9.227
 
  (*) int (*update)(struct key *key, const void *data, size_t datalen);
 

@@ -26,6 +26,10 @@
 #include <asm/ppc_asm.h>
 #include <asm/thread_info.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_SMP
 	.section .bss
@@ -33,6 +37,10 @@
 	.globl mmu_hash_lock
 mmu_hash_lock:
 	.space	4
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(mmu_hash_lock)
+>>>>>>> v4.9.227
 #endif /* CONFIG_SMP */
 
 /*
@@ -575,6 +583,10 @@ _GLOBAL(flush_hash_pages)
 	rlwinm	r8,r8,0,31,29		/* clear HASHPTE bit */
 	stwcx.	r8,0,r5			/* update the pte */
 	bne-	33b
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(flush_hash_pages)
+>>>>>>> v4.9.227
 
 	/* Get the address of the primary PTE group in the hash table (r3) */
 _GLOBAL(flush_hash_patch_A)

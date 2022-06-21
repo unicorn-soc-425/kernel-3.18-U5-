@@ -269,7 +269,11 @@ static int qlcnic_83xx_idc_clear_registers(struct qlcnic_adapter *adapter,
 	}
 
 	QLCWRX(adapter->ahw, QLC_83XX_IDC_DRV_ACK, 0);
+<<<<<<< HEAD
 	/* Clear gracefull reset bit */
+=======
+	/* Clear graceful reset bit */
+>>>>>>> v4.9.227
 	val = QLCRDX(adapter->ahw, QLC_83XX_IDC_CTRL);
 	val &= ~QLC_83XX_IDC_GRACEFULL_RESET;
 	QLCWRX(adapter->ahw, QLC_83XX_IDC_CTRL, val);
@@ -889,7 +893,11 @@ static int qlcnic_83xx_idc_ready_state(struct qlcnic_adapter *adapter)
  * @adapter: adapter structure
  *
  * Device will remain in this state until:
+<<<<<<< HEAD
  *	Reset request ACK's are recieved from all the functions
+=======
+ *	Reset request ACK's are received from all the functions
+>>>>>>> v4.9.227
  *	Wait time exceeds max time limit
  *
  * Returns: Error code or Success(0)
@@ -1020,7 +1028,10 @@ static int qlcnic_83xx_idc_check_state_validity(struct qlcnic_adapter *adapter,
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_QLCNIC_VXLAN
+=======
+>>>>>>> v4.9.227
 #define QLC_83XX_ENCAP_TYPE_VXLAN	BIT_1
 #define QLC_83XX_MATCH_ENCAP_ID		BIT_2
 #define QLC_83XX_SET_VXLAN_UDP_DPORT	BIT_3
@@ -1089,14 +1100,20 @@ static int qlcnic_set_vxlan_parsing(struct qlcnic_adapter *adapter,
 
 	return ret;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static void qlcnic_83xx_periodic_tasks(struct qlcnic_adapter *adapter)
 {
 	if (adapter->fhash.fnum)
 		qlcnic_prune_lb_filters(adapter);
 
+<<<<<<< HEAD
 #ifdef CONFIG_QLCNIC_VXLAN
+=======
+>>>>>>> v4.9.227
 	if (adapter->flags & QLCNIC_ADD_VXLAN_PORT) {
 		if (qlcnic_set_vxlan_port(adapter))
 			return;
@@ -1112,7 +1129,10 @@ static void qlcnic_83xx_periodic_tasks(struct qlcnic_adapter *adapter)
 		adapter->ahw->vxlan_port = 0;
 		adapter->flags &= ~QLCNIC_DEL_VXLAN_PORT;
 	}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 }
 
 /**
@@ -1384,7 +1404,11 @@ static int qlcnic_83xx_copy_fw_file(struct qlcnic_adapter *adapter)
 	size_t size;
 	u64 addr;
 
+<<<<<<< HEAD
 	temp = kzalloc(fw->size, GFP_KERNEL);
+=======
+	temp = vzalloc(fw->size);
+>>>>>>> v4.9.227
 	if (!temp) {
 		release_firmware(fw);
 		fw_info->fw = NULL;
@@ -1415,7 +1439,11 @@ static int qlcnic_83xx_copy_fw_file(struct qlcnic_adapter *adapter)
 	if (fw->size & 0xF) {
 		addr = dest + size;
 		for (i = 0; i < (fw->size & 0xF); i++)
+<<<<<<< HEAD
 			data[i] = temp[size + i];
+=======
+			data[i] = ((u8 *)temp)[size + i];
+>>>>>>> v4.9.227
 		for (; i < 16; i++)
 			data[i] = 0;
 		ret = qlcnic_ms_mem_write128(adapter, addr,
@@ -1430,7 +1458,11 @@ static int qlcnic_83xx_copy_fw_file(struct qlcnic_adapter *adapter)
 exit:
 	release_firmware(fw);
 	fw_info->fw = NULL;
+<<<<<<< HEAD
 	kfree(temp);
+=======
+	vfree(temp);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -1724,7 +1756,11 @@ static int qlcnic_83xx_get_reset_instruction_template(struct qlcnic_adapter *p_d
 
 	ahw->reset.seq_error = 0;
 	ahw->reset.buff = kzalloc(QLC_83XX_RESTART_TEMPLATE_SIZE, GFP_KERNEL);
+<<<<<<< HEAD
 	if (p_dev->ahw->reset.buff == NULL)
+=======
+	if (ahw->reset.buff == NULL)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	p_buff = p_dev->ahw->reset.buff;
@@ -2047,6 +2083,10 @@ static void qlcnic_83xx_exec_template_cmd(struct qlcnic_adapter *p_dev,
 			break;
 		}
 		entry += p_hdr->size;
+<<<<<<< HEAD
+=======
+		cond_resched();
+>>>>>>> v4.9.227
 	}
 	p_dev->ahw->reset.seq_index = index;
 }

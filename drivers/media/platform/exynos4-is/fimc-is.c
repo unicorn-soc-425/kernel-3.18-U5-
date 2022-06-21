@@ -52,6 +52,12 @@ static char *fimc_is_clocks[ISS_CLKS_MAX] = {
 	[ISS_CLK_DRC]			= "drc",
 	[ISS_CLK_FD]			= "fd",
 	[ISS_CLK_MCUISP]		= "mcuisp",
+<<<<<<< HEAD
+=======
+	[ISS_CLK_GICISP]		= "gicisp",
+	[ISS_CLK_PWM_ISP]		= "pwm_isp",
+	[ISS_CLK_MCUCTL_ISP]		= "mcuctl_isp",
+>>>>>>> v4.9.227
 	[ISS_CLK_UART]			= "uart",
 	[ISS_CLK_ISP_DIV0]		= "ispdiv0",
 	[ISS_CLK_ISP_DIV1]		= "ispdiv1",
@@ -165,6 +171,10 @@ static int fimc_is_parse_sensor_config(struct fimc_is *is, unsigned int index,
 						struct device_node *node)
 {
 	struct fimc_is_sensor *sensor = &is->sensor[index];
+<<<<<<< HEAD
+=======
+	struct device_node *ep, *port;
+>>>>>>> v4.9.227
 	u32 tmp = 0;
 	int ret;
 
@@ -175,6 +185,7 @@ static int fimc_is_parse_sensor_config(struct fimc_is *is, unsigned int index,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	node = of_graph_get_next_endpoint(node, NULL);
 	if (!node)
 		return -ENXIO;
@@ -191,6 +202,27 @@ static int fimc_is_parse_sensor_config(struct fimc_is *is, unsigned int index,
 		return ret;
 	}
 
+=======
+	ep = of_graph_get_next_endpoint(node, NULL);
+	if (!ep)
+		return -ENXIO;
+
+	port = of_graph_get_remote_port(ep);
+	of_node_put(ep);
+	if (!port)
+		return -ENXIO;
+
+	/* Use MIPI-CSIS channel id to determine the ISP I2C bus index. */
+	ret = of_property_read_u32(port, "reg", &tmp);
+	if (ret < 0) {
+		dev_err(&is->pdev->dev, "reg property not found at: %s\n",
+							 port->full_name);
+		of_node_put(port);
+		return ret;
+	}
+
+	of_node_put(port);
+>>>>>>> v4.9.227
 	sensor->i2c_bus = tmp - FIMC_INPUT_MIPI_CSI2_0;
 	return 0;
 }
@@ -204,9 +236,12 @@ static int fimc_is_register_subdevs(struct fimc_is *is)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	/* Initialize memory allocator context for the ISP DMA. */
 	is->isp.alloc_ctx = is->alloc_ctx;
 
+=======
+>>>>>>> v4.9.227
 	for_each_compatible_node(i2c_bus, NULL, FIMC_IS_I2C_COMPATIBLE) {
 		for_each_available_child_of_node(i2c_bus, child) {
 			ret = fimc_is_parse_sensor_config(is, index, child);
@@ -428,8 +463,12 @@ static void fimc_is_load_firmware(const struct firmware *fw, void *context)
 	 * needed around for copying to the IS working memory every
 	 * time before the Cortex-A5 is restarted.
 	 */
+<<<<<<< HEAD
 	if (is->fw.f_w)
 		release_firmware(is->fw.f_w);
+=======
+	release_firmware(is->fw.f_w);
+>>>>>>> v4.9.227
 	is->fw.f_w = fw;
 done:
 	mutex_unlock(&is->lock);
@@ -632,6 +671,15 @@ static int fimc_is_hw_open_sensor(struct fimc_is *is,
 
 	fimc_is_mem_barrier();
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Some user space use cases hang up here without this
+	 * empirically chosen delay.
+	 */
+	udelay(100);
+
+>>>>>>> v4.9.227
 	mcuctl_write(HIC_OPEN_SENSOR, is, MCUCTL_REG_ISSR(0));
 	mcuctl_write(is->sensor_index, is, MCUCTL_REG_ISSR(1));
 	mcuctl_write(sensor->drvdata->id, is, MCUCTL_REG_ISSR(2));
@@ -810,18 +858,33 @@ static int fimc_is_probe(struct platform_device *pdev)
 		return -ENODEV;
 
 	is->pmu_regs = of_iomap(node, 0);
+<<<<<<< HEAD
+=======
+	of_node_put(node);
+>>>>>>> v4.9.227
 	if (!is->pmu_regs)
 		return -ENOMEM;
 
 	is->irq = irq_of_parse_and_map(dev->of_node, 0);
+<<<<<<< HEAD
 	if (is->irq < 0) {
 		dev_err(dev, "no irq found\n");
 		return is->irq;
+=======
+	if (!is->irq) {
+		dev_err(dev, "no irq found\n");
+		ret = -EINVAL;
+		goto err_iounmap;
+>>>>>>> v4.9.227
 	}
 
 	ret = fimc_is_get_clocks(is);
 	if (ret < 0)
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_iounmap;
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, is);
 
@@ -842,18 +905,31 @@ static int fimc_is_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_pm;
 
+<<<<<<< HEAD
 	is->alloc_ctx = vb2_dma_contig_init_ctx(dev);
 	if (IS_ERR(is->alloc_ctx)) {
 		ret = PTR_ERR(is->alloc_ctx);
 		goto err_pm;
 	}
+=======
+	vb2_dma_contig_set_max_seg_size(dev, DMA_BIT_MASK(32));
+
+	ret = of_platform_populate(dev->of_node, NULL, NULL, dev);
+	if (ret < 0)
+		goto err_pm;
+
+>>>>>>> v4.9.227
 	/*
 	 * Register FIMC-IS V4L2 subdevs to this driver. The video nodes
 	 * will be created within the subdev's registered() callback.
 	 */
 	ret = fimc_is_register_subdevs(is);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto err_vb;
+=======
+		goto err_of_dep;
+>>>>>>> v4.9.227
 
 	ret = fimc_is_debugfs_create(is);
 	if (ret < 0)
@@ -872,8 +948,13 @@ err_dfs:
 	fimc_is_debugfs_remove(is);
 err_sd:
 	fimc_is_unregister_subdevs(is);
+<<<<<<< HEAD
 err_vb:
 	vb2_dma_contig_cleanup_ctx(is->alloc_ctx);
+=======
+err_of_dep:
+	of_platform_depopulate(dev);
+>>>>>>> v4.9.227
 err_pm:
 	if (!pm_runtime_enabled(dev))
 		fimc_is_runtime_suspend(dev);
@@ -881,6 +962,11 @@ err_irq:
 	free_irq(is->irq, is);
 err_clk:
 	fimc_is_put_clocks(is);
+<<<<<<< HEAD
+=======
+err_iounmap:
+	iounmap(is->pmu_regs);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -933,12 +1019,22 @@ static int fimc_is_remove(struct platform_device *pdev)
 	if (!pm_runtime_status_suspended(dev))
 		fimc_is_runtime_suspend(dev);
 	free_irq(is->irq, is);
+<<<<<<< HEAD
 	fimc_is_unregister_subdevs(is);
 	vb2_dma_contig_cleanup_ctx(is->alloc_ctx);
 	fimc_is_put_clocks(is);
 	fimc_is_debugfs_remove(is);
 	if (is->fw.f_w)
 		release_firmware(is->fw.f_w);
+=======
+	of_platform_depopulate(dev);
+	fimc_is_unregister_subdevs(is);
+	vb2_dma_contig_clear_max_seg_size(dev);
+	fimc_is_put_clocks(is);
+	iounmap(is->pmu_regs);
+	fimc_is_debugfs_remove(is);
+	release_firmware(is->fw.f_w);
+>>>>>>> v4.9.227
 	fimc_is_free_cpu_memory(is);
 
 	return 0;
@@ -962,7 +1058,10 @@ static struct platform_driver fimc_is_driver = {
 	.driver = {
 		.of_match_table	= fimc_is_of_match,
 		.name		= FIMC_IS_DRV_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm		= &fimc_is_pm_ops,
 	}
 };

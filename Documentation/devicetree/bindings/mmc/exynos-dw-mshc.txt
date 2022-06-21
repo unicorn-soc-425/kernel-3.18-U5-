@@ -18,6 +18,13 @@ Required Properties:
 	  specific extensions.
 	- "samsung,exynos5420-dw-mshc": for controllers with Samsung Exynos5420
 	  specific extensions.
+<<<<<<< HEAD
+=======
+	- "samsung,exynos7-dw-mshc": for controllers with Samsung Exynos7
+	  specific extensions.
+	- "samsung,exynos7-dw-mshc-smu": for controllers with Samsung Exynos7
+	  specific extensions having an SMU.
+>>>>>>> v4.9.227
 
 * samsung,dw-mshc-ciu-div: Specifies the divider value for the card interface
   unit (ciu) clock. This property is applicable only for Exynos5 SoC's and
@@ -32,6 +39,11 @@ Required Properties:
   in transmit mode and CIU clock phase shift value in receive mode for double
   data rate mode operation. Refer notes below for the order of the cells and the
   valid values.
+<<<<<<< HEAD
+=======
+* samsung,dw-mshc-hs400-timing: Specifies the value of CIU TX and RX clock phase
+  shift value for hs400 mode operation.
+>>>>>>> v4.9.227
 
   Notes for the sdr-timing and ddr-timing values:
 
@@ -46,6 +58,12 @@ Required Properties:
       - if CIU clock divider value is 0 (that is divide by 1), both tx and rx
         phase shift clocks should be 0.
 
+<<<<<<< HEAD
+=======
+* samsung,read-strobe-delay: RCLK (Data strobe) delay to control HS400 mode
+  (Latency value for delay line in Read path)
+
+>>>>>>> v4.9.227
 Required properties for a slot (Deprecated - Recommend to use one slot per host):
 
 * gpios: specifies a list of gpios used for command, clock and data bus. The
@@ -78,5 +96,10 @@ Example:
 		samsung,dw-mshc-ciu-div = <3>;
 		samsung,dw-mshc-sdr-timing = <2 3>;
 		samsung,dw-mshc-ddr-timing = <1 2>;
+<<<<<<< HEAD
+=======
+		samsung,dw-mshc-hs400-timing = <0 2>;
+		samsung,read-strobe-delay = <90>;
+>>>>>>> v4.9.227
 		bus-width = <8>;
 	};

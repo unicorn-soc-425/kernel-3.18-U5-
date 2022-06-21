@@ -5,7 +5,11 @@
 #include <linux/debugfs.h>
 #include <linux/export.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 
+=======
+#include <asm/debug.h>
+>>>>>>> v4.9.227
 
 static int ss_get(void *data, u64 *val)
 {
@@ -115,8 +119,11 @@ static int multi_get(void *data, u64 *val)
 
 DEFINE_SIMPLE_ATTRIBUTE(fops_multi, multi_get, NULL, "%llu\n");
 
+<<<<<<< HEAD
 
 extern struct dentry *mips_debugfs_dir;
+=======
+>>>>>>> v4.9.227
 static int __init spinlock_test(void)
 {
 	struct dentry *d;

@@ -13,6 +13,10 @@
  */
 
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 GLOBAL_ENTRY(__strnlen_user)
 	.prologue
@@ -43,3 +47,7 @@ GLOBAL_ENTRY(__strnlen_user)
 	mov ar.lc=r16			// restore ar.lc
 	br.ret.sptk.many rp
 END(__strnlen_user)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__strnlen_user)
+>>>>>>> v4.9.227

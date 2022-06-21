@@ -1094,8 +1094,12 @@ static int snd_ml403_ac97cr_free(struct snd_ml403_ac97cr *ml403_ac97cr)
 	if (ml403_ac97cr->capture_irq >= 0)
 		free_irq(ml403_ac97cr->capture_irq, ml403_ac97cr);
 	/* give back "port" */
+<<<<<<< HEAD
 	if (ml403_ac97cr->port != NULL)
 		iounmap(ml403_ac97cr->port);
+=======
+	iounmap(ml403_ac97cr->port);
+>>>>>>> v4.9.227
 	kfree(ml403_ac97cr);
 	PDEBUG(INIT_INFO, "free(): (done)\n");
 	return 0;
@@ -1238,14 +1242,21 @@ snd_ml403_ac97cr_mixer(struct snd_ml403_ac97cr *ml403_ac97cr)
 }
 
 static int
+<<<<<<< HEAD
 snd_ml403_ac97cr_pcm(struct snd_ml403_ac97cr *ml403_ac97cr, int device,
 		     struct snd_pcm **rpcm)
+=======
+snd_ml403_ac97cr_pcm(struct snd_ml403_ac97cr *ml403_ac97cr, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
+=======
+>>>>>>> v4.9.227
 	err = snd_pcm_new(ml403_ac97cr->card, "ML403AC97CR/1", device, 1, 1,
 			  &pcm);
 	if (err < 0)
@@ -1263,8 +1274,11 @@ snd_ml403_ac97cr_pcm(struct snd_ml403_ac97cr *ml403_ac97cr, int device,
 					  snd_dma_continuous_data(GFP_KERNEL),
 					  64 * 1024,
 					  128 * 1024);
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1298,7 +1312,11 @@ static int snd_ml403_ac97cr_probe(struct platform_device *pfdev)
 		return err;
 	}
 	PDEBUG(INIT_INFO, "probe(): mixer done\n");
+<<<<<<< HEAD
 	err = snd_ml403_ac97cr_pcm(ml403_ac97cr, 0, NULL);
+=======
+	err = snd_ml403_ac97cr_pcm(ml403_ac97cr, 0);
+>>>>>>> v4.9.227
 	if (err < 0) {
 		snd_card_free(card);
 		return err;
@@ -1335,7 +1353,10 @@ static struct platform_driver snd_ml403_ac97cr_driver = {
 	.remove = snd_ml403_ac97cr_remove,
 	.driver = {
 		.name = SND_ML403_AC97CR_DRIVER,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

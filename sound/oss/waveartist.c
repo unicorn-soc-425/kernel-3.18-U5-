@@ -1414,11 +1414,17 @@ attach_waveartist(struct address_info *hw, const struct waveartist_mixer_info *m
 	else {
 #ifdef CONFIG_ARCH_NETWINDER
 		if (machine_is_netwinder()) {
+<<<<<<< HEAD
 			init_timer(&vnc_timer);
 			vnc_timer.function = vnc_slider_tick;
 			vnc_timer.expires  = jiffies;
 			vnc_timer.data     = nr_waveartist_devs;
 			add_timer(&vnc_timer);
+=======
+			setup_timer(&vnc_timer, vnc_slider_tick,
+				    nr_waveartist_devs);
+			mod_timer(&vnc_timer, jiffies);
+>>>>>>> v4.9.227
 
 			vnc_configure_mixer(devc, 0);
 

@@ -7,18 +7,29 @@
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  */
+<<<<<<< HEAD
+=======
+#include <linux/jump_label.h>
+>>>>>>> v4.9.227
 #include <asm/hvcall.h>
 #include <asm/processor.h>
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
 #include <asm/jump_label.h>
+=======
+>>>>>>> v4.9.227
 
 	.section	".text"
 	
 #ifdef CONFIG_TRACEPOINTS
 
+<<<<<<< HEAD
 #ifndef CONFIG_JUMP_LABEL
+=======
+#ifndef HAVE_JUMP_LABEL
+>>>>>>> v4.9.227
 	.section	".toc","aw"
 
 	.globl hcall_tracepoint_refcount
@@ -78,7 +89,11 @@ hcall_tracepoint_refcount:
 	mr	r5,BUFREG;					\
 	__HCALL_INST_POSTCALL
 
+<<<<<<< HEAD
 #ifdef CONFIG_JUMP_LABEL
+=======
+#ifdef HAVE_JUMP_LABEL
+>>>>>>> v4.9.227
 #define HCALL_BRANCH(LABEL)					\
 	ARCH_STATIC_BRANCH(LABEL, hcall_tracepoint_key)
 #else

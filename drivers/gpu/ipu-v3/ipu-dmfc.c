@@ -45,6 +45,7 @@
 #define DMFC_DP_CHAN_6B_24		16
 #define DMFC_DP_CHAN_6F_29		24
 
+<<<<<<< HEAD
 #define DMFC_FIFO_SIZE_64		(3 << 3)
 #define DMFC_FIFO_SIZE_128		(2 << 3)
 #define DMFC_FIFO_SIZE_256		(1 << 3)
@@ -56,6 +57,8 @@
 #define DMFC_BURSTSIZE_32		(2 << 6)
 #define DMFC_BURSTSIZE_16		(3 << 6)
 
+=======
+>>>>>>> v4.9.227
 struct dmfc_channel_data {
 	int		ipu_channel;
 	unsigned long	channel_reg;
@@ -104,9 +107,12 @@ struct ipu_dmfc_priv;
 
 struct dmfc_channel {
 	unsigned			slots;
+<<<<<<< HEAD
 	unsigned			slotmask;
 	unsigned			segment;
 	int				burstsize;
+=======
+>>>>>>> v4.9.227
 	struct ipu_soc			*ipu;
 	struct ipu_dmfc_priv		*priv;
 	const struct dmfc_channel_data	*data;
@@ -117,7 +123,10 @@ struct ipu_dmfc_priv {
 	struct device *dev;
 	struct dmfc_channel channels[DMFC_NUM_CHANNELS];
 	struct mutex mutex;
+<<<<<<< HEAD
 	unsigned long bandwidth_per_slot;
+=======
+>>>>>>> v4.9.227
 	void __iomem *base;
 	int use_count;
 };
@@ -138,6 +147,7 @@ int ipu_dmfc_enable_channel(struct dmfc_channel *dmfc)
 }
 EXPORT_SYMBOL_GPL(ipu_dmfc_enable_channel);
 
+<<<<<<< HEAD
 static void ipu_dmfc_wait_fifos(struct ipu_dmfc_priv *priv)
 {
 	unsigned long timeout = jiffies + msecs_to_jiffies(1000);
@@ -152,6 +162,8 @@ static void ipu_dmfc_wait_fifos(struct ipu_dmfc_priv *priv)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 void ipu_dmfc_disable_channel(struct dmfc_channel *dmfc)
 {
 	struct ipu_dmfc_priv *priv = dmfc->priv;
@@ -160,10 +172,15 @@ void ipu_dmfc_disable_channel(struct dmfc_channel *dmfc)
 
 	priv->use_count--;
 
+<<<<<<< HEAD
 	if (!priv->use_count) {
 		ipu_dmfc_wait_fifos(priv);
 		ipu_module_disable(priv->ipu, IPU_CONF_DMFC_EN);
 	}
+=======
+	if (!priv->use_count)
+		ipu_module_disable(priv->ipu, IPU_CONF_DMFC_EN);
+>>>>>>> v4.9.227
 
 	if (priv->use_count < 0)
 		priv->use_count = 0;
@@ -172,6 +189,7 @@ void ipu_dmfc_disable_channel(struct dmfc_channel *dmfc)
 }
 EXPORT_SYMBOL_GPL(ipu_dmfc_disable_channel);
 
+<<<<<<< HEAD
 static int ipu_dmfc_setup_channel(struct dmfc_channel *dmfc, int slots,
 		int segment, int burstsize)
 {
@@ -351,10 +369,18 @@ out:
 EXPORT_SYMBOL_GPL(ipu_dmfc_alloc_bandwidth);
 
 int ipu_dmfc_init_channel(struct dmfc_channel *dmfc, int width)
+=======
+void ipu_dmfc_config_wait4eot(struct dmfc_channel *dmfc, int width)
+>>>>>>> v4.9.227
 {
 	struct ipu_dmfc_priv *priv = dmfc->priv;
 	u32 dmfc_gen1;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&priv->mutex);
+
+>>>>>>> v4.9.227
 	dmfc_gen1 = readl(priv->base + DMFC_GENERAL1);
 
 	if ((dmfc->slots * 64 * 4) / width > dmfc->data->max_fifo_lines)
@@ -364,9 +390,15 @@ int ipu_dmfc_init_channel(struct dmfc_channel *dmfc, int width)
 
 	writel(dmfc_gen1, priv->base + DMFC_GENERAL1);
 
+<<<<<<< HEAD
 	return 0;
 }
 EXPORT_SYMBOL_GPL(ipu_dmfc_init_channel);
+=======
+	mutex_unlock(&priv->mutex);
+}
+EXPORT_SYMBOL_GPL(ipu_dmfc_config_wait4eot);
+>>>>>>> v4.9.227
 
 struct dmfc_channel *ipu_dmfc_get(struct ipu_soc *ipu, int ipu_channel)
 {
@@ -382,7 +414,10 @@ EXPORT_SYMBOL_GPL(ipu_dmfc_get);
 
 void ipu_dmfc_put(struct dmfc_channel *dmfc)
 {
+<<<<<<< HEAD
 	ipu_dmfc_free_bandwidth(dmfc);
+=======
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(ipu_dmfc_put);
 
@@ -410,6 +445,7 @@ int ipu_dmfc_init(struct ipu_soc *ipu, struct device *dev, unsigned long base,
 		priv->channels[i].priv = priv;
 		priv->channels[i].ipu = ipu;
 		priv->channels[i].data = &dmfcdata[i];
+<<<<<<< HEAD
 	}
 
 	writel(0x0, priv->base + DMFC_WR_CHAN);
@@ -424,6 +460,17 @@ int ipu_dmfc_init(struct ipu_soc *ipu, struct device *dev, unsigned long base,
 	dev_dbg(dev, "dmfc: 8 slots with %ldMpixel/s bandwidth each\n",
 			priv->bandwidth_per_slot / 1000000);
 
+=======
+
+		if (dmfcdata[i].ipu_channel == IPUV3_CHANNEL_MEM_BG_SYNC ||
+		    dmfcdata[i].ipu_channel == IPUV3_CHANNEL_MEM_FG_SYNC ||
+		    dmfcdata[i].ipu_channel == IPUV3_CHANNEL_MEM_DC_SYNC)
+			priv->channels[i].slots = 2;
+	}
+
+	writel(0x00000050, priv->base + DMFC_WR_CHAN);
+	writel(0x00005654, priv->base + DMFC_DP_CHAN);
+>>>>>>> v4.9.227
 	writel(0x202020f6, priv->base + DMFC_WR_CHAN_DEF);
 	writel(0x2020f6f6, priv->base + DMFC_DP_CHAN_DEF);
 	writel(0x00000003, priv->base + DMFC_GENERAL1);

@@ -25,7 +25,11 @@
 #include <linux/firmware.h>
 #include <linux/pci.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/hwdep.h>
 #include "pcxhr.h"

@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,18 +57,30 @@ ACPI_MODULE_NAME("rsxface")
 
 /* Local macros for 16,32-bit to 64-bit conversion */
 #define ACPI_COPY_FIELD(out, in, field)  ((out)->field = (in)->field)
+<<<<<<< HEAD
 #define ACPI_COPY_ADDRESS(out, in)                      \
+=======
+#define ACPI_COPY_ADDRESS(out, in)                       \
+>>>>>>> v4.9.227
 	ACPI_COPY_FIELD(out, in, resource_type);             \
 	ACPI_COPY_FIELD(out, in, producer_consumer);         \
 	ACPI_COPY_FIELD(out, in, decode);                    \
 	ACPI_COPY_FIELD(out, in, min_address_fixed);         \
 	ACPI_COPY_FIELD(out, in, max_address_fixed);         \
 	ACPI_COPY_FIELD(out, in, info);                      \
+<<<<<<< HEAD
 	ACPI_COPY_FIELD(out, in, granularity);               \
 	ACPI_COPY_FIELD(out, in, minimum);                   \
 	ACPI_COPY_FIELD(out, in, maximum);                   \
 	ACPI_COPY_FIELD(out, in, translation_offset);        \
 	ACPI_COPY_FIELD(out, in, address_length);            \
+=======
+	ACPI_COPY_FIELD(out, in, address.granularity);       \
+	ACPI_COPY_FIELD(out, in, address.minimum);           \
+	ACPI_COPY_FIELD(out, in, address.maximum);           \
+	ACPI_COPY_FIELD(out, in, address.translation_offset); \
+	ACPI_COPY_FIELD(out, in, address.address_length);    \
+>>>>>>> v4.9.227
 	ACPI_COPY_FIELD(out, in, resource_source);
 /* Local prototypes */
 static acpi_status
@@ -220,7 +236,11 @@ acpi_get_current_resources(acpi_handle device_handle,
 }
 
 ACPI_EXPORT_SYMBOL(acpi_get_current_resources)
+<<<<<<< HEAD
 #ifdef ACPI_FUTURE_USAGE
+=======
+
+>>>>>>> v4.9.227
 /*******************************************************************************
  *
  * FUNCTION:    acpi_get_possible_resources
@@ -262,7 +282,11 @@ acpi_get_possible_resources(acpi_handle device_handle,
 }
 
 ACPI_EXPORT_SYMBOL(acpi_get_possible_resources)
+<<<<<<< HEAD
 #endif				/*  ACPI_FUTURE_USAGE  */
+=======
+
+>>>>>>> v4.9.227
 /*******************************************************************************
  *
  * FUNCTION:    acpi_set_current_resources
@@ -398,8 +422,13 @@ acpi_resource_to_address64(struct acpi_resource *resource,
 
 		/* Simple copy for 64 bit source */
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(out, &resource->data,
 			    sizeof(struct acpi_resource_address64));
+=======
+		memcpy(out, &resource->data,
+		       sizeof(struct acpi_resource_address64));
+>>>>>>> v4.9.227
 		break;
 
 	default:
@@ -433,8 +462,13 @@ ACPI_EXPORT_SYMBOL(acpi_resource_to_address64)
 acpi_status
 acpi_get_vendor_resource(acpi_handle device_handle,
 			 char *name,
+<<<<<<< HEAD
 			 struct acpi_vendor_uuid * uuid,
 			 struct acpi_buffer * ret_buffer)
+=======
+			 struct acpi_vendor_uuid *uuid,
+			 struct acpi_buffer *ret_buffer)
+>>>>>>> v4.9.227
 {
 	struct acpi_vendor_walk_info info;
 	acpi_status status;
@@ -499,7 +533,11 @@ acpi_rs_match_vendor_resource(struct acpi_resource *resource, void *context)
 	 */
 	if ((vendor->byte_length < (ACPI_UUID_LENGTH + 1)) ||
 	    (vendor->uuid_subtype != info->uuid->subtype) ||
+<<<<<<< HEAD
 	    (ACPI_MEMCMP(vendor->uuid, info->uuid->data, ACPI_UUID_LENGTH))) {
+=======
+	    (memcmp(vendor->uuid, info->uuid->data, ACPI_UUID_LENGTH))) {
+>>>>>>> v4.9.227
 		return (AE_OK);
 	}
 
@@ -513,7 +551,11 @@ acpi_rs_match_vendor_resource(struct acpi_resource *resource, void *context)
 
 	/* Found the correct resource, copy and return it */
 
+<<<<<<< HEAD
 	ACPI_MEMCPY(buffer->pointer, resource, resource->length);
+=======
+	memcpy(buffer->pointer, resource, resource->length);
+>>>>>>> v4.9.227
 	buffer->length = resource->length;
 
 	/* Found the desired descriptor, terminate resource walk */
@@ -539,7 +581,11 @@ acpi_rs_match_vendor_resource(struct acpi_resource *resource, void *context)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_walk_resource_buffer(struct acpi_buffer * buffer,
+=======
+acpi_walk_resource_buffer(struct acpi_buffer *buffer,
+>>>>>>> v4.9.227
 			  acpi_walk_resource_callback user_function,
 			  void *context)
 {

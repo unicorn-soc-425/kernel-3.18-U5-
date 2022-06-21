@@ -63,6 +63,7 @@ enum {
  * the initial inode list, the fileset header or the device configuration.
  */
 struct vxfs_olt {
+<<<<<<< HEAD
 	u_int32_t	olt_magic;	/* magic number			*/
 	u_int32_t	olt_size;	/* size of this entry		*/
 	u_int32_t	olt_checksum;	/* checksum of extent		*/
@@ -75,71 +76,129 @@ struct vxfs_olt {
 	vx_daddr_t	olt_next[2];    /* addr of next extent, replica	*/
 	u_int32_t	olt_nsize;	/* size of next extent		*/
 	u_int32_t	__unused2;	/* align to 8 byte boundary	*/
+=======
+	__fs32		olt_magic;	/* magic number			*/
+	__fs32		olt_size;	/* size of this entry		*/
+	__fs32		olt_checksum;	/* checksum of extent		*/
+	__u32		__unused1;	/* ???				*/
+	__fs32		olt_mtime;	/* time of last mod. (sec)	*/
+	__fs32		olt_mutime;	/* time of last mod. (usec)	*/
+	__fs32		olt_totfree;	/* free space in OLT extent	*/
+	__fs32		olt_extents[2];	/* addr of this extent, replica	*/
+	__fs32		olt_esize;	/* size of this extent		*/
+	__fs32		olt_next[2];    /* addr of next extent, replica	*/
+	__fs32		olt_nsize;	/* size of next extent		*/
+	__u32		__unused2;	/* align to 8 byte boundary	*/
+>>>>>>> v4.9.227
 };
 
 /*
  * VxFS common OLT entry (on disk).
  */
 struct vxfs_oltcommon {
+<<<<<<< HEAD
 	u_int32_t	olt_type;	/* type of this record		*/
 	u_int32_t	olt_size;	/* size of this record		*/
+=======
+	__fs32		olt_type;	/* type of this record		*/
+	__fs32		olt_size;	/* size of this record		*/
+>>>>>>> v4.9.227
 };
 
 /*
  * VxFS free OLT entry (on disk).
  */
 struct vxfs_oltfree {
+<<<<<<< HEAD
 	u_int32_t	olt_type;	/* type of this record		*/
 	u_int32_t	olt_fsize;	/* size of this free record	*/
+=======
+	__fs32		olt_type;	/* type of this record		*/
+	__fs32		olt_fsize;	/* size of this free record	*/
+>>>>>>> v4.9.227
 };
 
 /*
  * VxFS initial-inode list (on disk).
  */
 struct vxfs_oltilist {
+<<<<<<< HEAD
 	u_int32_t	olt_type;	/* type of this record		*/
 	u_int32_t	olt_size;	/* size of this record		*/
 	vx_ino_t	olt_iext[2];	/* initial inode list, replica	*/
+=======
+	__fs32	olt_type;	/* type of this record		*/
+	__fs32	olt_size;	/* size of this record		*/
+	__fs32		olt_iext[2];	/* initial inode list, replica	*/
+>>>>>>> v4.9.227
 };
 
 /*
  * Current Usage Table 
  */
 struct vxfs_oltcut {
+<<<<<<< HEAD
 	u_int32_t	olt_type;	/* type of this record		*/
 	u_int32_t	olt_size;	/* size of this record		*/
 	vx_ino_t	olt_cutino;	/* inode of current usage table	*/
 	u_int32_t	__pad;		/* unused, 8 byte align		*/
+=======
+	__fs32		olt_type;	/* type of this record		*/
+	__fs32		olt_size;	/* size of this record		*/
+	__fs32		olt_cutino;	/* inode of current usage table	*/
+	__u8		__pad;		/* unused, 8 byte align		*/
+>>>>>>> v4.9.227
 };
 
 /*
  * Inodes containing Superblock, Intent log and OLTs 
  */
 struct vxfs_oltsb {
+<<<<<<< HEAD
 	u_int32_t	olt_type;	/* type of this record		*/
 	u_int32_t	olt_size;	/* size of this record		*/
 	vx_ino_t	olt_sbino;	/* inode of superblock file	*/
 	u_int32_t	__unused1;	/* ???				*/
 	vx_ino_t	olt_logino[2];	/* inode of log file,replica	*/
 	vx_ino_t	olt_oltino[2];	/* inode of OLT, replica	*/
+=======
+	__fs32		olt_type;	/* type of this record		*/
+	__fs32		olt_size;	/* size of this record		*/
+	__fs32		olt_sbino;	/* inode of superblock file	*/
+	__u32		__unused1;	/* ???				*/
+	__fs32		olt_logino[2];	/* inode of log file,replica	*/
+	__fs32		olt_oltino[2];	/* inode of OLT, replica	*/
+>>>>>>> v4.9.227
 };
 
 /*
  * Inode containing device configuration + it's replica 
  */
 struct vxfs_oltdev {
+<<<<<<< HEAD
 	u_int32_t	olt_type;	/* type of this record		*/
 	u_int32_t	olt_size;	/* size of this record		*/
 	vx_ino_t	olt_devino[2];	/* inode of device config files	*/
+=======
+	__fs32		olt_type;	/* type of this record		*/
+	__fs32		olt_size;	/* size of this record		*/
+	__fs32		olt_devino[2];	/* inode of device config files	*/
+>>>>>>> v4.9.227
 };
 
 /*
  * Fileset header 
  */
 struct vxfs_oltfshead {
+<<<<<<< HEAD
 	u_int32_t	olt_type;	/* type number			*/
 	u_int32_t	olt_size;	/* size of this record		*/
 	vx_ino_t	olt_fsino[2];   /* inodes of fileset header	*/
+=======
+	__fs32		olt_type;	/* type number			*/
+	__fs32		olt_size;	/* size of this record		*/
+	__fs32		olt_fsino[2];   /* inodes of fileset header	*/
+>>>>>>> v4.9.227
 };
 
 #endif /* _VXFS_OLT_H_ */

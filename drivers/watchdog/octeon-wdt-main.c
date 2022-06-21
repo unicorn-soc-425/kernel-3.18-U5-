@@ -3,6 +3,11 @@
  *
  * Copyright (C) 2007, 2008, 2009, 2010 Cavium Networks
  *
+<<<<<<< HEAD
+=======
+ * Converted to use WATCHDOG_CORE by Aaro Koskinen <aaro.koskinen@iki.fi>.
+ *
+>>>>>>> v4.9.227
  * Some parts derived from wdt.c
  *
  *	(c) Copyright 1996-1997 Alan Cox <alan@lxorguk.ukuu.org.uk>,
@@ -103,6 +108,7 @@ MODULE_PARM_DESC(nowayout,
 	"Watchdog cannot be stopped once started (default="
 				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
+<<<<<<< HEAD
 static unsigned long octeon_wdt_is_open;
 static char expect_close;
 
@@ -110,6 +116,12 @@ static u32 __initdata nmi_stage1_insns[64];
 /* We need one branch and therefore one relocation per target label. */
 static struct uasm_label __initdata labels[5];
 static struct uasm_reloc __initdata relocs[5];
+=======
+static u32 nmi_stage1_insns[64] __initdata;
+/* We need one branch and therefore one relocation per target label. */
+static struct uasm_label labels[5] __initdata;
+static struct uasm_reloc relocs[5] __initdata;
+>>>>>>> v4.9.227
 
 enum lable_id {
 	label_enter_bootloader = 1
@@ -218,7 +230,12 @@ static void __init octeon_wdt_build_stage1(void)
 	pr_debug("\t.set pop\n");
 
 	if (len > 32)
+<<<<<<< HEAD
 		panic("NMI stage 1 handler exceeds 32 instructions, was %d\n", len);
+=======
+		panic("NMI stage 1 handler exceeds 32 instructions, was %d\n",
+		      len);
+>>>>>>> v4.9.227
 }
 
 static int cpu2core(int cpu)
@@ -294,6 +311,10 @@ static void octeon_wdt_write_hex(u64 value, int digits)
 {
 	int d;
 	int v;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	for (d = 0; d < digits; d++) {
 		v = (value >> ((digits - d - 1) * 4)) & 0xf;
 		if (v >= 10)
@@ -303,7 +324,11 @@ static void octeon_wdt_write_hex(u64 value, int digits)
 	}
 }
 
+<<<<<<< HEAD
 const char *reg_name[] = {
+=======
+static const char reg_name[][3] = {
+>>>>>>> v4.9.227
 	"$0", "at", "v0", "v1", "a0", "a1", "a2", "a3",
 	"a4", "a5", "a6", "a7", "t0", "t1", "t2", "t3",
 	"s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7",
@@ -430,7 +455,11 @@ static int octeon_wdt_cpu_callback(struct notifier_block *nfb,
 {
 	unsigned int cpu = (unsigned long)hcpu;
 
+<<<<<<< HEAD
 	switch (action) {
+=======
+	switch (action & ~CPU_TASKS_FROZEN) {
+>>>>>>> v4.9.227
 	case CPU_DOWN_PREPARE:
 		octeon_wdt_disable_interrupt(cpu);
 		break;
@@ -444,7 +473,11 @@ static int octeon_wdt_cpu_callback(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static void octeon_wdt_ping(void)
+=======
+static int octeon_wdt_ping(struct watchdog_device __always_unused *wdog)
+>>>>>>> v4.9.227
 {
 	int cpu;
 	int coreid;
@@ -457,10 +490,18 @@ static void octeon_wdt_ping(void)
 		    !cpumask_test_cpu(cpu, &irq_enabled_cpus)) {
 			/* We have to enable the irq */
 			int irq = OCTEON_IRQ_WDOG0 + coreid;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			enable_irq(irq);
 			cpumask_set_cpu(cpu, &irq_enabled_cpus);
 		}
 	}
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void octeon_wdt_calc_parameters(int t)
@@ -489,7 +530,12 @@ static void octeon_wdt_calc_parameters(int t)
 	timeout_cnt = ((octeon_get_io_clock_rate() >> 8) * timeout_sec) >> 8;
 }
 
+<<<<<<< HEAD
 static int octeon_wdt_set_heartbeat(int t)
+=======
+static int octeon_wdt_set_timeout(struct watchdog_device *wdog,
+				  unsigned int t)
+>>>>>>> v4.9.227
 {
 	int cpu;
 	int coreid;
@@ -509,6 +555,7 @@ static int octeon_wdt_set_heartbeat(int t)
 		cvmx_write_csr(CVMX_CIU_WDOGX(coreid), ciu_wdog.u64);
 		cvmx_write_csr(CVMX_CIU_PP_POKEX(coreid), 1);
 	}
+<<<<<<< HEAD
 	octeon_wdt_ping(); /* Get the irqs back on. */
 	return 0;
 }
@@ -656,11 +703,50 @@ static struct miscdevice octeon_wdt_miscdev = {
 	.name	= "watchdog",
 	.fops	= &octeon_wdt_fops,
 };
+=======
+	octeon_wdt_ping(wdog); /* Get the irqs back on. */
+	return 0;
+}
+
+static int octeon_wdt_start(struct watchdog_device *wdog)
+{
+	octeon_wdt_ping(wdog);
+	do_coundown = 1;
+	return 0;
+}
+
+static int octeon_wdt_stop(struct watchdog_device *wdog)
+{
+	do_coundown = 0;
+	octeon_wdt_ping(wdog);
+	return 0;
+}
+>>>>>>> v4.9.227
 
 static struct notifier_block octeon_wdt_cpu_notifier = {
 	.notifier_call = octeon_wdt_cpu_callback,
 };
 
+<<<<<<< HEAD
+=======
+static const struct watchdog_info octeon_wdt_info = {
+	.options = WDIOF_SETTIMEOUT | WDIOF_MAGICCLOSE | WDIOF_KEEPALIVEPING,
+	.identity = "OCTEON",
+};
+
+static const struct watchdog_ops octeon_wdt_ops = {
+	.owner		= THIS_MODULE,
+	.start		= octeon_wdt_start,
+	.stop		= octeon_wdt_stop,
+	.ping		= octeon_wdt_ping,
+	.set_timeout	= octeon_wdt_set_timeout,
+};
+
+static struct watchdog_device octeon_wdt = {
+	.info	= &octeon_wdt_info,
+	.ops	= &octeon_wdt_ops,
+};
+>>>>>>> v4.9.227
 
 /**
  * Module/ driver initialization.
@@ -685,7 +771,12 @@ static int __init octeon_wdt_init(void)
 	max_timeout_sec = 6;
 	do {
 		max_timeout_sec--;
+<<<<<<< HEAD
 		timeout_cnt = ((octeon_get_io_clock_rate() >> 8) * max_timeout_sec) >> 8;
+=======
+		timeout_cnt = ((octeon_get_io_clock_rate() >> 8) *
+			      max_timeout_sec) >> 8;
+>>>>>>> v4.9.227
 	} while (timeout_cnt > 65535);
 
 	BUG_ON(timeout_cnt == 0);
@@ -694,11 +785,23 @@ static int __init octeon_wdt_init(void)
 
 	pr_info("Initial granularity %d Sec\n", timeout_sec);
 
+<<<<<<< HEAD
 	ret = misc_register(&octeon_wdt_miscdev);
 	if (ret) {
 		pr_err("cannot register miscdev on minor=%d (err=%d)\n",
 		       WATCHDOG_MINOR, ret);
 		goto out;
+=======
+	octeon_wdt.timeout	= timeout_sec;
+	octeon_wdt.max_timeout	= UINT_MAX;
+
+	watchdog_set_nowayout(&octeon_wdt, nowayout);
+
+	ret = watchdog_register_device(&octeon_wdt);
+	if (ret) {
+		pr_err("watchdog_register_device() failed: %d\n", ret);
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	/* Build the NMI handler ... */
@@ -721,8 +824,12 @@ static int __init octeon_wdt_init(void)
 	__register_hotcpu_notifier(&octeon_wdt_cpu_notifier);
 	cpu_notifier_register_done();
 
+<<<<<<< HEAD
 out:
 	return ret;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -732,7 +839,11 @@ static void __exit octeon_wdt_cleanup(void)
 {
 	int cpu;
 
+<<<<<<< HEAD
 	misc_deregister(&octeon_wdt_miscdev);
+=======
+	watchdog_unregister_device(&octeon_wdt);
+>>>>>>> v4.9.227
 
 	cpu_notifier_register_begin();
 	__unregister_hotcpu_notifier(&octeon_wdt_cpu_notifier);

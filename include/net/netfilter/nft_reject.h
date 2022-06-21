@@ -8,6 +8,13 @@ struct nft_reject {
 
 extern const struct nla_policy nft_reject_policy[];
 
+<<<<<<< HEAD
+=======
+int nft_reject_validate(const struct nft_ctx *ctx,
+			const struct nft_expr *expr,
+			const struct nft_data **data);
+
+>>>>>>> v4.9.227
 int nft_reject_init(const struct nft_ctx *ctx,
 		    const struct nft_expr *expr,
 		    const struct nlattr * const tb[]);

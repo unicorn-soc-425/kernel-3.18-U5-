@@ -15,12 +15,19 @@
 #include <linux/io.h>
 #include <linux/platform_device.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_device.h>
+>>>>>>> v4.9.227
 #include <linux/pm_runtime.h>
 
 #include <drm/drmP.h>
 #include <drm/exynos_drm.h>
 #include "regs-rotator.h"
+<<<<<<< HEAD
 #include "exynos_drm.h"
+=======
+>>>>>>> v4.9.227
 #include "exynos_drm_drv.h"
 #include "exynos_drm_ipp.h"
 
@@ -697,7 +704,10 @@ static int rotator_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct rot_context *rot;
 	struct exynos_drm_ippdrv *ippdrv;
+<<<<<<< HEAD
 	const struct of_device_id *match;
+=======
+>>>>>>> v4.9.227
 	int ret;
 
 	if (!dev->of_node) {
@@ -709,6 +719,7 @@ static int rotator_probe(struct platform_device *pdev)
 	if (!rot)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	match = of_match_node(exynos_rotator_match, dev->of_node);
 	if (!match) {
 		dev_err(dev, "failed to match node\n");
@@ -716,6 +727,10 @@ static int rotator_probe(struct platform_device *pdev)
 	}
 	rot->limit_tbl = (struct rot_limit_table *)match->data;
 
+=======
+	rot->limit_tbl = (struct rot_limit_table *)
+				of_device_get_match_data(dev);
+>>>>>>> v4.9.227
 	rot->regs_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	rot->regs = devm_ioremap_resource(dev, rot->regs_res);
 	if (IS_ERR(rot->regs))
@@ -754,7 +769,11 @@ static int rotator_probe(struct platform_device *pdev)
 		goto err_ippdrv_register;
 	}
 
+<<<<<<< HEAD
 	DRM_DEBUG_KMS("ippdrv[0x%x]\n", (int)ippdrv);
+=======
+	DRM_DEBUG_KMS("ippdrv[%p]\n", ippdrv);
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, rot);
 
@@ -790,16 +809,24 @@ static int rotator_remove(struct platform_device *pdev)
 static int rotator_clk_crtl(struct rot_context *rot, bool enable)
 {
 	if (enable) {
+<<<<<<< HEAD
 		clk_enable(rot->clock);
 		rot->suspended = false;
 	} else {
 		clk_disable(rot->clock);
+=======
+		clk_prepare_enable(rot->clock);
+		rot->suspended = false;
+	} else {
+		clk_disable_unprepare(rot->clock);
+>>>>>>> v4.9.227
 		rot->suspended = true;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 
 #ifdef CONFIG_PM_SLEEP
 static int rotator_suspend(struct device *dev)
@@ -823,6 +850,8 @@ static int rotator_resume(struct device *dev)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int rotator_runtime_suspend(struct device *dev)
 {
 	struct rot_context *rot = dev_get_drvdata(dev);
@@ -839,7 +868,12 @@ static int rotator_runtime_resume(struct device *dev)
 #endif
 
 static const struct dev_pm_ops rotator_pm_ops = {
+<<<<<<< HEAD
 	SET_SYSTEM_SLEEP_PM_OPS(rotator_suspend, rotator_resume)
+=======
+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+				pm_runtime_force_resume)
+>>>>>>> v4.9.227
 	SET_RUNTIME_PM_OPS(rotator_runtime_suspend, rotator_runtime_resume,
 									NULL)
 };

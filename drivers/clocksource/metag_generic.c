@@ -56,6 +56,7 @@ static int metag_timer_set_next_event(unsigned long delta,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void metag_timer_set_mode(enum clock_event_mode mode,
 				 struct clock_event_device *evt)
 {
@@ -75,6 +76,8 @@ static void metag_timer_set_mode(enum clock_event_mode mode,
 	};
 }
 
+=======
+>>>>>>> v4.9.227
 static cycle_t metag_clocksource_read(struct clocksource *cs)
 {
 	return __core_reg_get(TXTIMER);
@@ -109,7 +112,11 @@ unsigned long long sched_clock(void)
 	return ticks << HARDWARE_TO_NS_SHIFT;
 }
 
+<<<<<<< HEAD
 static void arch_timer_setup(unsigned int cpu)
+=======
+static int arch_timer_starting_cpu(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 	unsigned int txdivtime;
 	struct clock_event_device *clk = &per_cpu(local_clockevent, cpu);
@@ -129,7 +136,10 @@ static void arch_timer_setup(unsigned int cpu)
 	clk->rating = 200,
 	clk->shift = 12,
 	clk->irq = tbisig_map(TBID_SIGNUM_TRT),
+<<<<<<< HEAD
 	clk->set_mode = metag_timer_set_mode,
+=======
+>>>>>>> v4.9.227
 	clk->set_next_event = metag_timer_set_next_event,
 
 	clk->mult = div_sc(hwtimer_freq, NSEC_PER_SEC, clk->shift);
@@ -152,6 +162,7 @@ static void arch_timer_setup(unsigned int cpu)
 		val = core_reg_read(TXUCT_ID, TXTIMER_REGNUM, thread0);
 		__core_reg_set(TXTIMER, val);
 	}
+<<<<<<< HEAD
 }
 
 static int arch_timer_cpu_notify(struct notifier_block *self,
@@ -173,6 +184,11 @@ static struct notifier_block arch_timer_cpu_nb = {
 	.notifier_call = arch_timer_cpu_notify,
 };
 
+=======
+	return 0;
+}
+
+>>>>>>> v4.9.227
 int __init metag_generic_timer_init(void)
 {
 	/*
@@ -190,6 +206,7 @@ int __init metag_generic_timer_init(void)
 
 	setup_irq(tbisig_map(TBID_SIGNUM_TRT), &metag_timer_irq);
 
+<<<<<<< HEAD
 	/* Configure timer on boot CPU */
 	arch_timer_setup(smp_processor_id());
 
@@ -197,4 +214,10 @@ int __init metag_generic_timer_init(void)
 	register_cpu_notifier(&arch_timer_cpu_nb);
 
 	return 0;
+=======
+	/* Hook cpu boot to configure the CPU's timers */
+	return cpuhp_setup_state(CPUHP_AP_METAG_TIMER_STARTING,
+				 "AP_METAG_TIMER_STARTING",
+				 arch_timer_starting_cpu, NULL);
+>>>>>>> v4.9.227
 }

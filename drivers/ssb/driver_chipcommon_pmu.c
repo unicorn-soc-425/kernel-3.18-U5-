@@ -14,7 +14,11 @@
 #include <linux/delay.h>
 #include <linux/export.h>
 #ifdef CONFIG_BCM47XX
+<<<<<<< HEAD
 #include <bcm47xx_nvram.h>
+=======
+#include <linux/bcm47xx_nvram.h>
+>>>>>>> v4.9.227
 #endif
 
 #include "ssb_private.h"
@@ -621,8 +625,13 @@ static u32 ssb_pmu_get_alp_clock_clk0(struct ssb_chipcommon *cc)
 	u32 crystalfreq;
 	const struct pmu0_plltab_entry *e = NULL;
 
+<<<<<<< HEAD
 	crystalfreq = chipco_read32(cc, SSB_CHIPCO_PMU_CTL) &
 		      SSB_CHIPCO_PMU_CTL_XTALFREQ >> SSB_CHIPCO_PMU_CTL_XTALFREQ_SHIFT;
+=======
+	crystalfreq = (chipco_read32(cc, SSB_CHIPCO_PMU_CTL) &
+		       SSB_CHIPCO_PMU_CTL_XTALFREQ)  >> SSB_CHIPCO_PMU_CTL_XTALFREQ_SHIFT;
+>>>>>>> v4.9.227
 	e = pmu0_plltab_find_entry(crystalfreq);
 	BUG_ON(!e);
 	return e->freq * 1000;
@@ -634,7 +643,11 @@ u32 ssb_pmu_get_alp_clock(struct ssb_chipcommon *cc)
 
 	switch (bus->chip_id) {
 	case 0x5354:
+<<<<<<< HEAD
 		ssb_pmu_get_alp_clock_clk0(cc);
+=======
+		return ssb_pmu_get_alp_clock_clk0(cc);
+>>>>>>> v4.9.227
 	default:
 		ssb_err("ERROR: PMU alp clock unknown for device %04X\n",
 			bus->chip_id);

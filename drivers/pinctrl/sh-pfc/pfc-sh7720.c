@@ -1201,6 +1201,11 @@ const struct sh_pfc_soc_info sh7720_pinmux_info = {
 	.cfg_regs = pinmux_config_regs,
 	.data_regs = pinmux_data_regs,
 
+<<<<<<< HEAD
 	.gpio_data = pinmux_data,
 	.gpio_data_size = ARRAY_SIZE(pinmux_data),
+=======
+	.pinmux_data = pinmux_data,
+	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+>>>>>>> v4.9.227
 };

@@ -9,6 +9,11 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/rtc.h>
 
 /* IMPORTANT: the RTC only stores whole seconds. It is arbitrary
@@ -26,14 +31,23 @@ static int __init rtc_hctosys(void)
 {
 	int err = -ENODEV;
 	struct rtc_time tm;
+<<<<<<< HEAD
 	struct timespec tv = {
+=======
+	struct timespec64 tv64 = {
+>>>>>>> v4.9.227
 		.tv_nsec = NSEC_PER_SEC >> 1,
 	};
 	struct rtc_device *rtc = rtc_class_open(CONFIG_RTC_HCTOSYS_DEVICE);
 
 	if (rtc == NULL) {
+<<<<<<< HEAD
 		pr_err("%s: unable to open rtc device (%s)\n",
 			__FILE__, CONFIG_RTC_HCTOSYS_DEVICE);
+=======
+		pr_info("unable to open rtc device (%s)\n",
+			CONFIG_RTC_HCTOSYS_DEVICE);
+>>>>>>> v4.9.227
 		goto err_open;
 	}
 
@@ -44,6 +58,7 @@ static int __init rtc_hctosys(void)
 		goto err_read;
 
 	}
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_SDM450)
 	/*
 	 * Force update rtc year time to 2018
@@ -74,6 +89,27 @@ static int __init rtc_hctosys(void)
 		tm.tm_hour, tm.tm_min, tm.tm_sec,
 		(unsigned int) tv.tv_sec);
 err_invalid:
+=======
+
+	tv64.tv_sec = rtc_tm_to_time64(&tm);
+
+#if BITS_PER_LONG == 32
+	if (tv64.tv_sec > INT_MAX) {
+		err = -ERANGE;
+		goto err_read;
+	}
+#endif
+
+	err = do_settimeofday64(&tv64);
+
+	dev_info(rtc->dev.parent,
+		"setting system clock to "
+		"%d-%02d-%02d %02d:%02d:%02d UTC (%lld)\n",
+		tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+		tm.tm_hour, tm.tm_min, tm.tm_sec,
+		(long long) tv64.tv_sec);
+
+>>>>>>> v4.9.227
 err_read:
 	rtc_class_close(rtc);
 

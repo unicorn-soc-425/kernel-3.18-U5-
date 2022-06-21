@@ -67,7 +67,11 @@ struct lgdt330x_state
 	struct dvb_frontend frontend;
 
 	/* Demodulator private data */
+<<<<<<< HEAD
 	fe_modulation_t current_modulation;
+=======
+	enum fe_modulation current_modulation;
+>>>>>>> v4.9.227
 	u32 snr; /* Result of last SNR calculation */
 
 	/* Tuner private data */
@@ -439,15 +443,28 @@ static int lgdt330x_set_parameters(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lgdt330x_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
 	struct lgdt330x_state *state = fe->demodulator_priv;
+=======
+static int lgdt330x_get_frontend(struct dvb_frontend *fe,
+				 struct dtv_frontend_properties *p)
+{
+	struct lgdt330x_state *state = fe->demodulator_priv;
+
+>>>>>>> v4.9.227
 	p->frequency = state->current_frequency;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lgdt3302_read_status(struct dvb_frontend* fe, fe_status_t* status)
+=======
+static int lgdt3302_read_status(struct dvb_frontend *fe,
+				enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct lgdt330x_state* state = fe->demodulator_priv;
 	u8 buf[3];
@@ -505,7 +522,12 @@ static int lgdt3302_read_status(struct dvb_frontend* fe, fe_status_t* status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lgdt3303_read_status(struct dvb_frontend* fe, fe_status_t* status)
+=======
+static int lgdt3303_read_status(struct dvb_frontend *fe,
+				enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct lgdt330x_state* state = fe->demodulator_priv;
 	int err;
@@ -823,9 +845,12 @@ MODULE_AUTHOR("Wilson Michaels");
 MODULE_LICENSE("GPL");
 
 EXPORT_SYMBOL(lgdt330x_attach);
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

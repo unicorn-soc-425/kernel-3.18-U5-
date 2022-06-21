@@ -62,7 +62,11 @@ static void discard_old_kernel_data(void *kto)
 	__asm__("mcrr	p15, 0, %1, %0, c6	@ 0xec401f06"
 	   :
 	   : "r" (kto),
+<<<<<<< HEAD
 	     "r" ((unsigned long)kto + PAGE_SIZE - L1_CACHE_BYTES)
+=======
+	     "r" ((unsigned long)kto + PAGE_SIZE - 1)
+>>>>>>> v4.9.227
 	   : "cc");
 }
 

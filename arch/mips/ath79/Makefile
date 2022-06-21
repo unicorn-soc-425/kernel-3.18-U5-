@@ -8,7 +8,11 @@
 # under the terms of the GNU General Public License version 2 as published
 # by the Free Software Foundation.
 
+<<<<<<< HEAD
 obj-y	:= prom.o setup.o irq.o common.o clock.o gpio.o
+=======
+obj-y	:= prom.o setup.o irq.o common.o clock.o
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_EARLY_PRINTK)		+= early_printk.o
 obj-$(CONFIG_PCI)			+= pci.o

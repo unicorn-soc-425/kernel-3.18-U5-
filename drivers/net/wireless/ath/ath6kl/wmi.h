@@ -1527,8 +1527,13 @@ struct wmi_connect_event {
 			__le32 nw_type;
 		} sta;
 		struct {
+<<<<<<< HEAD
 			u8 phymode;
 			u8 aid;
+=======
+			u8 aid;
+			u8 phymode;
+>>>>>>> v4.9.227
 			u8 mac_addr[ETH_ALEN];
 			u8 auth;
 			u8 keymgmt;
@@ -2628,7 +2633,11 @@ int ath6kl_wmi_set_wmm_txop(struct wmi *wmi, u8 if_idx, enum wmi_txop_cfg cfg);
 int ath6kl_wmi_set_keepalive_cmd(struct wmi *wmi, u8 if_idx,
 				 u8 keep_alive_intvl);
 int ath6kl_wmi_set_htcap_cmd(struct wmi *wmi, u8 if_idx,
+<<<<<<< HEAD
 			     enum ieee80211_band band,
+=======
+			     enum nl80211_band band,
+>>>>>>> v4.9.227
 			     struct ath6kl_htcap *htcap);
 int ath6kl_wmi_test_cmd(struct wmi *wmi, void *buf, size_t len);
 

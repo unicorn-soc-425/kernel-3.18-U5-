@@ -12,11 +12,18 @@
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/fsl/guts.h>
+>>>>>>> v4.9.227
 #include <linux/of_address.h>
 #include <linux/of_device.h>
 #include <linux/slab.h>
 #include <sound/soc.h>
+<<<<<<< HEAD
 #include <asm/fsl_guts.h>
+=======
+>>>>>>> v4.9.227
 
 #include "fsl_dma.h"
 #include "fsl_ssi.h"
@@ -189,8 +196,12 @@ static int mpc8610_hpcd_probe(struct platform_device *pdev)
 {
 	struct device *dev = pdev->dev.parent;
 	/* ssi_pdev is the platform device for the SSI node that probed us */
+<<<<<<< HEAD
 	struct platform_device *ssi_pdev =
 		container_of(dev, struct platform_device, dev);
+=======
+	struct platform_device *ssi_pdev = to_platform_device(dev);
+>>>>>>> v4.9.227
 	struct device_node *np = ssi_pdev->dev.of_node;
 	struct device_node *codec_np = NULL;
 	struct mpc8610_hpcd_data *machine_data;
@@ -389,7 +400,10 @@ static struct platform_driver mpc8610_hpcd_driver = {
 		 * in lowercase letters.
 		 */
 		.name = "snd-soc-mpc8610hpcd",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

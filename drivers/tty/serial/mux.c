@@ -412,6 +412,7 @@ static int mux_console_setup(struct console *co, char *options)
         return 0;
 }
 
+<<<<<<< HEAD
 struct tty_driver *mux_console_device(struct console *co, int *index)
 {
         *index = co->index;
@@ -425,6 +426,16 @@ static struct console mux_console = {
 	.setup =	mux_console_setup,
 	.flags =	CON_ENABLED | CON_PRINTBUFFER,
 	.index =	0,
+=======
+static struct console mux_console = {
+	.name =		"ttyB",
+	.write =	mux_console_write,
+	.device =	uart_console_device,
+	.setup =	mux_console_setup,
+	.flags =	CON_ENABLED | CON_PRINTBUFFER,
+	.index =	0,
+	.data =		&mux_driver,
+>>>>>>> v4.9.227
 };
 
 #define MUX_CONSOLE	&mux_console

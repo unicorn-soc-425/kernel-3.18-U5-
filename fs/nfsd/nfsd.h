@@ -24,7 +24,11 @@
 #include "export.h"
 
 #undef ifdebug
+<<<<<<< HEAD
 #ifdef NFSD_DEBUG
+=======
+#ifdef CONFIG_SUNRPC_DEBUG
+>>>>>>> v4.9.227
 # define ifdebug(flag)		if (nfsd_debug & NFSDDBG_##flag)
 #else
 # define ifdebug(flag)		if (0)
@@ -124,6 +128,10 @@ void nfs4_state_shutdown_net(struct net *net);
 void nfs4_reset_lease(time_t leasetime);
 int nfs4_reset_recoverydir(char *recdir);
 char * nfs4_recoverydir(void);
+<<<<<<< HEAD
+=======
+bool nfsd4_spo_must_allow(struct svc_rqst *rqstp);
+>>>>>>> v4.9.227
 #else
 static inline int nfsd4_init_slabs(void) { return 0; }
 static inline void nfsd4_free_slabs(void) { }
@@ -134,6 +142,13 @@ static inline void nfs4_state_shutdown_net(struct net *net) { }
 static inline void nfs4_reset_lease(time_t leasetime) { }
 static inline int nfs4_reset_recoverydir(char *recdir) { return 0; }
 static inline char * nfs4_recoverydir(void) {return NULL; }
+<<<<<<< HEAD
+=======
+static inline bool nfsd4_spo_must_allow(struct svc_rqst *rqstp)
+{
+	return false;
+}
+>>>>>>> v4.9.227
 #endif
 
 /*
@@ -325,15 +340,38 @@ void		nfsd_lockd_shutdown(void);
 
 #define NFSD4_SUPPORTED_ATTRS_WORD2 0
 
+<<<<<<< HEAD
+=======
+/* 4.1 */
+#ifdef CONFIG_NFSD_PNFS
+#define PNFSD_SUPPORTED_ATTRS_WORD1	FATTR4_WORD1_FS_LAYOUT_TYPES
+#define PNFSD_SUPPORTED_ATTRS_WORD2 \
+(FATTR4_WORD2_LAYOUT_BLKSIZE	| FATTR4_WORD2_LAYOUT_TYPES)
+#else
+#define PNFSD_SUPPORTED_ATTRS_WORD1	0
+#define PNFSD_SUPPORTED_ATTRS_WORD2	0
+#endif /* CONFIG_NFSD_PNFS */
+
+>>>>>>> v4.9.227
 #define NFSD4_1_SUPPORTED_ATTRS_WORD0 \
 	NFSD4_SUPPORTED_ATTRS_WORD0
 
 #define NFSD4_1_SUPPORTED_ATTRS_WORD1 \
+<<<<<<< HEAD
 	NFSD4_SUPPORTED_ATTRS_WORD1
 
 #define NFSD4_1_SUPPORTED_ATTRS_WORD2 \
 	(NFSD4_SUPPORTED_ATTRS_WORD2 | FATTR4_WORD2_SUPPATTR_EXCLCREAT)
 
+=======
+	(NFSD4_SUPPORTED_ATTRS_WORD1	| PNFSD_SUPPORTED_ATTRS_WORD1)
+
+#define NFSD4_1_SUPPORTED_ATTRS_WORD2 \
+	(NFSD4_SUPPORTED_ATTRS_WORD2	| PNFSD_SUPPORTED_ATTRS_WORD2 | \
+	 FATTR4_WORD2_SUPPATTR_EXCLCREAT)
+
+/* 4.2 */
+>>>>>>> v4.9.227
 #ifdef CONFIG_NFSD_V4_SECURITY_LABEL
 #define NFSD4_2_SECURITY_ATTRS		FATTR4_WORD2_SECURITY_LABEL
 #else

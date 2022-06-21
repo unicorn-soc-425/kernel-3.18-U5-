@@ -12,7 +12,11 @@
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 
+<<<<<<< HEAD
 #include "bonding.h"
+=======
+#include <net/bonding.h>
+>>>>>>> v4.9.227
 
 struct slave_attribute {
 	struct attribute attr;
@@ -55,7 +59,13 @@ static SLAVE_ATTR_RO(link_failure_count);
 
 static ssize_t perm_hwaddr_show(struct slave *slave, char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "%pM\n", slave->perm_hwaddr);
+=======
+	return sprintf(buf, "%*phC\n",
+		       slave->dev->addr_len,
+		       slave->perm_hwaddr);
+>>>>>>> v4.9.227
 }
 static SLAVE_ATTR_RO(perm_hwaddr);
 
@@ -80,6 +90,39 @@ static ssize_t ad_aggregator_id_show(struct slave *slave, char *buf)
 }
 static SLAVE_ATTR_RO(ad_aggregator_id);
 
+<<<<<<< HEAD
+=======
+static ssize_t ad_actor_oper_port_state_show(struct slave *slave, char *buf)
+{
+	const struct port *ad_port;
+
+	if (BOND_MODE(slave->bond) == BOND_MODE_8023AD) {
+		ad_port = &SLAVE_AD_INFO(slave)->port;
+		if (ad_port->aggregator)
+			return sprintf(buf, "%u\n",
+				       ad_port->actor_oper_port_state);
+	}
+
+	return sprintf(buf, "N/A\n");
+}
+static SLAVE_ATTR_RO(ad_actor_oper_port_state);
+
+static ssize_t ad_partner_oper_port_state_show(struct slave *slave, char *buf)
+{
+	const struct port *ad_port;
+
+	if (BOND_MODE(slave->bond) == BOND_MODE_8023AD) {
+		ad_port = &SLAVE_AD_INFO(slave)->port;
+		if (ad_port->aggregator)
+			return sprintf(buf, "%u\n",
+				       ad_port->partner_oper.port_state);
+	}
+
+	return sprintf(buf, "N/A\n");
+}
+static SLAVE_ATTR_RO(ad_partner_oper_port_state);
+
+>>>>>>> v4.9.227
 static const struct slave_attribute *slave_attrs[] = {
 	&slave_attr_state,
 	&slave_attr_mii_status,
@@ -87,6 +130,11 @@ static const struct slave_attribute *slave_attrs[] = {
 	&slave_attr_perm_hwaddr,
 	&slave_attr_queue_id,
 	&slave_attr_ad_aggregator_id,
+<<<<<<< HEAD
+=======
+	&slave_attr_ad_actor_oper_port_state,
+	&slave_attr_ad_partner_oper_port_state,
+>>>>>>> v4.9.227
 	NULL
 };
 
@@ -119,8 +167,15 @@ int bond_sysfs_slave_add(struct slave *slave)
 
 	err = kobject_init_and_add(&slave->kobj, &slave_ktype,
 				   &(slave->dev->dev.kobj), "bonding_slave");
+<<<<<<< HEAD
 	if (err)
 		return err;
+=======
+	if (err) {
+		kobject_put(&slave->kobj);
+		return err;
+	}
+>>>>>>> v4.9.227
 
 	for (a = slave_attrs; *a; ++a) {
 		err = sysfs_create_file(&slave->kobj, &((*a)->attr));

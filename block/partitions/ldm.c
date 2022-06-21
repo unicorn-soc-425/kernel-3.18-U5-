@@ -27,6 +27,11 @@
 #include <linux/pagemap.h>
 #include <linux/stringify.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/uuid.h>
+
+>>>>>>> v4.9.227
 #include "ldm.h"
 #include "check.h"
 #include "msdos.h"
@@ -66,6 +71,7 @@ void _ldm_printk(const char *level, const char *function, const char *fmt, ...)
 }
 
 /**
+<<<<<<< HEAD
  * ldm_parse_hexbyte - Convert a ASCII hex number to a byte
  * @src:  Pointer to at least 2 characters to convert.
  *
@@ -120,6 +126,8 @@ static bool ldm_parse_guid (const u8 *src, u8 *dest)
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * ldm_parse_privhead - Read the LDM Database PRIVHEAD structure
  * @data:  Raw database PRIVHEAD structure loaded from the device
  * @ph:    In-memory privhead structure in which to return parsed information
@@ -167,7 +175,11 @@ static bool ldm_parse_privhead(const u8 *data, struct privhead *ph)
 		ldm_error("PRIVHEAD disk size doesn't match real disk size");
 		return false;
 	}
+<<<<<<< HEAD
 	if (!ldm_parse_guid(data + 0x0030, ph->disk_id)) {
+=======
+	if (uuid_be_to_bin(data + 0x0030, (uuid_be *)ph->disk_id)) {
+>>>>>>> v4.9.227
 		ldm_error("PRIVHEAD contains an invalid GUID.");
 		return false;
 	}
@@ -944,7 +956,11 @@ static bool ldm_parse_dsk3 (const u8 *buffer, int buflen, struct vblk *vb)
 	disk = &vb->vblk.disk;
 	ldm_get_vstr (buffer + 0x18 + r_diskid, disk->alt_name,
 		sizeof (disk->alt_name));
+<<<<<<< HEAD
 	if (!ldm_parse_guid (buffer + 0x19 + r_name, disk->disk_id))
+=======
+	if (uuid_be_to_bin(buffer + 0x19 + r_name, (uuid_be *)disk->disk_id))
+>>>>>>> v4.9.227
 		return false;
 
 	return true;

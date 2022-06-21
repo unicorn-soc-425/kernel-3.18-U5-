@@ -20,6 +20,7 @@
 #include <linux/types.h>
 #include <linux/fs_struct.h>
 
+<<<<<<< HEAD
 
 static void default_handler(int, struct pt_regs *);
 
@@ -166,6 +167,12 @@ static int execdomains_proc_show(struct seq_file *m, void *v)
 			       ep->pers_low, ep->pers_high, ep->name,
 			       module_name(ep->module));
 	read_unlock(&exec_domains_lock);
+=======
+#ifdef CONFIG_PROC_FS
+static int execdomains_proc_show(struct seq_file *m, void *v)
+{
+	seq_puts(m, "0-0\tLinux           \t[kernel]\n");
+>>>>>>> v4.9.227
 	return 0;
 }
 

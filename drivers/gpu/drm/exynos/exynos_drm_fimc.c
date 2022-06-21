@@ -163,7 +163,10 @@ struct fimc_context {
 	u32		clk_frequency;
 	struct regmap	*sysreg;
 	struct fimc_scaler	sc;
+<<<<<<< HEAD
 	struct exynos_drm_ipp_pol	pol;
+=======
+>>>>>>> v4.9.227
 	int	id;
 	int	irq;
 	bool	suspended;
@@ -260,6 +263,7 @@ static void fimc_set_type_ctrl(struct fimc_context *ctx, enum fimc_wb wb)
 	fimc_write(ctx, cfg, EXYNOS_CIGCTRL);
 }
 
+<<<<<<< HEAD
 static void fimc_set_polarity(struct fimc_context *ctx,
 		struct exynos_drm_ipp_pol *pol)
 {
@@ -286,6 +290,8 @@ static void fimc_set_polarity(struct fimc_context *ctx,
 	fimc_write(ctx, cfg, EXYNOS_CIGCTRL);
 }
 
+=======
+>>>>>>> v4.9.227
 static void fimc_handle_jpeg(struct fimc_context *ctx, bool enable)
 {
 	u32 cfg;
@@ -1467,7 +1473,10 @@ static int fimc_ippdrv_start(struct device *dev, enum drm_exynos_ipp_cmd cmd)
 	/* If set ture, we can save jpeg about screen */
 	fimc_handle_jpeg(ctx, false);
 	fimc_set_scaler(ctx, &ctx->sc);
+<<<<<<< HEAD
 	fimc_set_polarity(ctx, &ctx->pol);
+=======
+>>>>>>> v4.9.227
 
 	switch (cmd) {
 	case IPP_CMD_M2M:
@@ -1723,7 +1732,11 @@ static int fimc_probe(struct platform_device *pdev)
 		goto err_put_clk;
 	}
 
+<<<<<<< HEAD
 	DRM_DEBUG_KMS("id[%d]ippdrv[0x%x]\n", ctx->id, (int)ippdrv);
+=======
+	DRM_DEBUG_KMS("id[%d]ippdrv[%p]\n", ctx->id, ippdrv);
+>>>>>>> v4.9.227
 
 	spin_lock_init(&ctx->lock);
 	platform_set_drvdata(pdev, ctx);
@@ -1781,6 +1794,7 @@ static int fimc_clk_ctrl(struct fimc_context *ctx, bool enable)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int fimc_suspend(struct device *dev)
 {
@@ -1807,6 +1821,8 @@ static int fimc_resume(struct device *dev)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int fimc_runtime_suspend(struct device *dev)
 {
 	struct fimc_context *ctx = get_fimc_context(dev);
@@ -1827,7 +1843,12 @@ static int fimc_runtime_resume(struct device *dev)
 #endif
 
 static const struct dev_pm_ops fimc_pm_ops = {
+<<<<<<< HEAD
 	SET_SYSTEM_SLEEP_PM_OPS(fimc_suspend, fimc_resume)
+=======
+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+				pm_runtime_force_resume)
+>>>>>>> v4.9.227
 	SET_RUNTIME_PM_OPS(fimc_runtime_suspend, fimc_runtime_resume, NULL)
 };
 

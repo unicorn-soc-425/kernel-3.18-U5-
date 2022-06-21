@@ -30,7 +30,11 @@ static LIST_HEAD(regmap_debugfs_early_list);
 static DEFINE_MUTEX(regmap_debugfs_early_lock);
 
 /* Calculate the length of a fixed format  */
+<<<<<<< HEAD
 static size_t regmap_calc_reg_len(int max_val, char *buf, size_t buf_size)
+=======
+static size_t regmap_calc_reg_len(int max_val)
+>>>>>>> v4.9.227
 {
 	return snprintf(NULL, 0, "%x", max_val);
 }
@@ -77,6 +81,20 @@ static void regmap_debugfs_free_dump_cache(struct regmap *map)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static bool regmap_printable(struct regmap *map, unsigned int reg)
+{
+	if (regmap_precious(map, reg))
+		return false;
+
+	if (!regmap_readable(map, reg) && !regmap_cached(map, reg))
+		return false;
+
+	return true;
+}
+
+>>>>>>> v4.9.227
 /*
  * Work out where the start offset maps into register numbers, bearing
  * in mind that we suppress hidden registers.
@@ -105,8 +123,12 @@ static unsigned int regmap_debugfs_get_dump_start(struct regmap *map,
 	if (list_empty(&map->debugfs_off_cache)) {
 		for (; i <= map->max_register; i += map->reg_stride) {
 			/* Skip unprinted registers, closing off cache entry */
+<<<<<<< HEAD
 			if (!regmap_readable(map, i) ||
 			    regmap_precious(map, i)) {
+=======
+			if (!regmap_printable(map, i)) {
+>>>>>>> v4.9.227
 				if (c) {
 					c->max = p - 1;
 					c->max_reg = i - map->reg_stride;
@@ -173,8 +195,12 @@ static inline void regmap_calc_tot_len(struct regmap *map,
 {
 	/* Calculate the length of a fixed format  */
 	if (!map->debugfs_tot_len) {
+<<<<<<< HEAD
 		map->debugfs_reg_len = regmap_calc_reg_len(map->max_register,
 							   buf, count);
+=======
+		map->debugfs_reg_len = regmap_calc_reg_len(map->max_register),
+>>>>>>> v4.9.227
 		map->debugfs_val_len = 2 * map->format.val_bytes;
 		map->debugfs_tot_len = map->debugfs_reg_len +
 			map->debugfs_val_len + 3;      /* : \n */
@@ -205,7 +231,11 @@ static ssize_t regmap_read_debugfs(struct regmap *map, unsigned int from,
 	start_reg = regmap_debugfs_get_dump_start(map, from, *ppos, &p);
 
 	for (i = start_reg; i <= to; i += map->reg_stride) {
+<<<<<<< HEAD
 		if (!regmap_readable(map, i))
+=======
+		if (!regmap_readable(map, i) && !regmap_cached(map, i))
+>>>>>>> v4.9.227
 			continue;
 
 		if (regmap_precious(map, i))
@@ -260,7 +290,12 @@ static ssize_t regmap_map_read_file(struct file *file, char __user *user_buf,
 				   count, ppos);
 }
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_REGMAP_ALLOW_WRITE_DEBUGFS)
+=======
+#undef REGMAP_ALLOW_WRITE_DEBUGFS
+#ifdef REGMAP_ALLOW_WRITE_DEBUGFS
+>>>>>>> v4.9.227
 /*
  * This can be dangerous especially when we have clients such as
  * PMICs, therefore don't provide any real compile time configuration option
@@ -337,6 +372,10 @@ static ssize_t regmap_reg_ranges_read_file(struct file *file,
 	char *buf;
 	char *entry;
 	int ret;
+<<<<<<< HEAD
+=======
+	unsigned entry_len;
+>>>>>>> v4.9.227
 
 	if (*ppos < 0 || !count)
 		return -EINVAL;
@@ -364,6 +403,7 @@ static ssize_t regmap_reg_ranges_read_file(struct file *file,
 	p = 0;
 	mutex_lock(&map->cache_lock);
 	list_for_each_entry(c, &map->debugfs_off_cache, list) {
+<<<<<<< HEAD
 		snprintf(entry, PAGE_SIZE, "%x-%x",
 			 c->base_reg, c->max_reg);
 		if (p >= *ppos) {
@@ -376,6 +416,17 @@ static ssize_t regmap_reg_ranges_read_file(struct file *file,
 			buf_pos++;
 		}
 		p += strlen(entry) + 1;
+=======
+		entry_len = snprintf(entry, PAGE_SIZE, "%x-%x\n",
+				     c->base_reg, c->max_reg);
+		if (p >= *ppos) {
+			if (buf_pos + entry_len > count)
+				break;
+			memcpy(buf + buf_pos, entry, entry_len);
+			buf_pos += entry_len;
+		}
+		p += entry_len;
+>>>>>>> v4.9.227
 	}
 	mutex_unlock(&map->cache_lock);
 
@@ -399,6 +450,7 @@ static const struct file_operations regmap_reg_ranges_fops = {
 	.llseek = default_llseek,
 };
 
+<<<<<<< HEAD
 static ssize_t regmap_access_read_file(struct file *file,
 				       char __user *user_buf, size_t count,
 				       loff_t *ppos)
@@ -421,12 +473,21 @@ static ssize_t regmap_access_read_file(struct file *file,
 	/* Calculate the length of a fixed format  */
 	reg_len = regmap_calc_reg_len(map->max_register, buf, count);
 	tot_len = reg_len + 10; /* ': R W V P\n' */
+=======
+static int regmap_access_show(struct seq_file *s, void *ignored)
+{
+	struct regmap *map = s->private;
+	int i, reg_len;
+
+	reg_len = regmap_calc_reg_len(map->max_register);
+>>>>>>> v4.9.227
 
 	for (i = 0; i <= map->max_register; i += map->reg_stride) {
 		/* Ignore registers which are neither readable nor writable */
 		if (!regmap_readable(map, i) && !regmap_writeable(map, i))
 			continue;
 
+<<<<<<< HEAD
 		/* If we're in the region the user is trying to read */
 		if (p >= *ppos) {
 			/* ...but not beyond it */
@@ -465,6 +526,110 @@ static const struct file_operations regmap_access_fops = {
 	.open = simple_open,
 	.read = regmap_access_read_file,
 	.llseek = default_llseek,
+=======
+		/* Format the register */
+		seq_printf(s, "%.*x: %c %c %c %c\n", reg_len, i,
+			   regmap_readable(map, i) ? 'y' : 'n',
+			   regmap_writeable(map, i) ? 'y' : 'n',
+			   regmap_volatile(map, i) ? 'y' : 'n',
+			   regmap_precious(map, i) ? 'y' : 'n');
+	}
+
+	return 0;
+}
+
+static int access_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, regmap_access_show, inode->i_private);
+}
+
+static const struct file_operations regmap_access_fops = {
+	.open		= access_open,
+	.read		= seq_read,
+	.llseek		= seq_lseek,
+	.release	= single_release,
+};
+
+static ssize_t regmap_cache_only_write_file(struct file *file,
+					    const char __user *user_buf,
+					    size_t count, loff_t *ppos)
+{
+	struct regmap *map = container_of(file->private_data,
+					  struct regmap, cache_only);
+	ssize_t result;
+	bool was_enabled, require_sync = false;
+	int err;
+
+	map->lock(map->lock_arg);
+
+	was_enabled = map->cache_only;
+
+	result = debugfs_write_file_bool(file, user_buf, count, ppos);
+	if (result < 0) {
+		map->unlock(map->lock_arg);
+		return result;
+	}
+
+	if (map->cache_only && !was_enabled) {
+		dev_warn(map->dev, "debugfs cache_only=Y forced\n");
+		add_taint(TAINT_USER, LOCKDEP_STILL_OK);
+	} else if (!map->cache_only && was_enabled) {
+		dev_warn(map->dev, "debugfs cache_only=N forced: syncing cache\n");
+		require_sync = true;
+	}
+
+	map->unlock(map->lock_arg);
+
+	if (require_sync) {
+		err = regcache_sync(map);
+		if (err)
+			dev_err(map->dev, "Failed to sync cache %d\n", err);
+	}
+
+	return result;
+}
+
+static const struct file_operations regmap_cache_only_fops = {
+	.open = simple_open,
+	.read = debugfs_read_file_bool,
+	.write = regmap_cache_only_write_file,
+};
+
+static ssize_t regmap_cache_bypass_write_file(struct file *file,
+					      const char __user *user_buf,
+					      size_t count, loff_t *ppos)
+{
+	struct regmap *map = container_of(file->private_data,
+					  struct regmap, cache_bypass);
+	ssize_t result;
+	bool was_enabled;
+
+	map->lock(map->lock_arg);
+
+	was_enabled = map->cache_bypass;
+
+	result = debugfs_write_file_bool(file, user_buf, count, ppos);
+	if (result < 0)
+		goto out;
+
+	if (map->cache_bypass && !was_enabled) {
+		dev_warn(map->dev, "debugfs cache_bypass=Y forced\n");
+		add_taint(TAINT_USER, LOCKDEP_STILL_OK);
+	} else if (!map->cache_bypass && was_enabled) {
+		dev_warn(map->dev, "debugfs cache_bypass=N forced\n");
+	}
+
+out:
+	map->unlock(map->lock_arg);
+
+	return result;
+}
+
+static const struct file_operations regmap_cache_bypass_fops = {
+	.open = simple_open,
+	.read = debugfs_read_file_bool,
+	.write = regmap_cache_bypass_write_file,
+>>>>>>> v4.9.227
 };
 
 void regmap_debugfs_init(struct regmap *map, const char *name)
@@ -516,10 +681,18 @@ void regmap_debugfs_init(struct regmap *map, const char *name)
 	if (map->max_register || regmap_readable(map, 0)) {
 		umode_t registers_mode;
 
+<<<<<<< HEAD
 		if (IS_ENABLED(CONFIG_REGMAP_ALLOW_WRITE_DEBUGFS))
 			registers_mode = 0600;
 		else
 			registers_mode = 0400;
+=======
+#if defined(REGMAP_ALLOW_WRITE_DEBUGFS)
+		registers_mode = 0600;
+#else
+		registers_mode = 0400;
+#endif
+>>>>>>> v4.9.227
 
 		debugfs_create_file("registers", registers_mode, map->debugfs,
 				    map, &regmap_map_fops);
@@ -528,12 +701,22 @@ void regmap_debugfs_init(struct regmap *map, const char *name)
 	}
 
 	if (map->cache_type) {
+<<<<<<< HEAD
 		debugfs_create_bool("cache_only", 0400, map->debugfs,
 				    &map->cache_only);
 		debugfs_create_bool("cache_dirty", 0400, map->debugfs,
 				    &map->cache_dirty);
 		debugfs_create_bool("cache_bypass", 0400, map->debugfs,
 				    &map->cache_bypass);
+=======
+		debugfs_create_file("cache_only", 0600, map->debugfs,
+				    &map->cache_only, &regmap_cache_only_fops);
+		debugfs_create_bool("cache_dirty", 0400, map->debugfs,
+				    &map->cache_dirty);
+		debugfs_create_file("cache_bypass", 0600, map->debugfs,
+				    &map->cache_bypass,
+				    &regmap_cache_bypass_fops);
+>>>>>>> v4.9.227
 	}
 
 	next = rb_first(&map->range_tree);

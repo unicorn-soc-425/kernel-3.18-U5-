@@ -356,7 +356,11 @@ static void ch7xxx_destroy(struct intel_dvo_device *dvo)
 	}
 }
 
+<<<<<<< HEAD
 struct intel_dvo_dev_ops ch7xxx_ops = {
+=======
+const struct intel_dvo_dev_ops ch7xxx_ops = {
+>>>>>>> v4.9.227
 	.init = ch7xxx_init,
 	.detect = ch7xxx_detect,
 	.mode_valid = ch7xxx_mode_valid,

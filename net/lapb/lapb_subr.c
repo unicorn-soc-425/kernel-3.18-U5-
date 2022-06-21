@@ -113,9 +113,13 @@ int lapb_decode(struct lapb_cb *lapb, struct sk_buff *skb,
 {
 	frame->type = LAPB_ILLEGAL;
 
+<<<<<<< HEAD
 	lapb_dbg(2, "(%p) S%d RX %02X %02X %02X\n",
 		 lapb->dev, lapb->state,
 		 skb->data[0], skb->data[1], skb->data[2]);
+=======
+	lapb_dbg(2, "(%p) S%d RX %3ph\n", lapb->dev, lapb->state, skb->data);
+>>>>>>> v4.9.227
 
 	/* We always need to look at 2 bytes, sometimes we need
 	 * to look at 3 and those cases are handled below.
@@ -284,10 +288,16 @@ void lapb_transmit_frmr(struct lapb_cb *lapb)
 		dptr++;
 		*dptr++ = lapb->frmr_type;
 
+<<<<<<< HEAD
 		lapb_dbg(1, "(%p) S%d TX FRMR %02X %02X %02X %02X %02X\n",
 			 lapb->dev, lapb->state,
 			 skb->data[1], skb->data[2], skb->data[3],
 			 skb->data[4], skb->data[5]);
+=======
+		lapb_dbg(1, "(%p) S%d TX FRMR %5ph\n",
+			 lapb->dev, lapb->state,
+			 &skb->data[1]);
+>>>>>>> v4.9.227
 	} else {
 		dptr    = skb_put(skb, 4);
 		*dptr++ = LAPB_FRMR;
@@ -299,9 +309,14 @@ void lapb_transmit_frmr(struct lapb_cb *lapb)
 		dptr++;
 		*dptr++ = lapb->frmr_type;
 
+<<<<<<< HEAD
 		lapb_dbg(1, "(%p) S%d TX FRMR %02X %02X %02X\n",
 			 lapb->dev, lapb->state, skb->data[1],
 			 skb->data[2], skb->data[3]);
+=======
+		lapb_dbg(1, "(%p) S%d TX FRMR %3ph\n",
+			 lapb->dev, lapb->state, &skb->data[1]);
+>>>>>>> v4.9.227
 	}
 
 	lapb_transmit_buffer(lapb, skb, LAPB_RESPONSE);

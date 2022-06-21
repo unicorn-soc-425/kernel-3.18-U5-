@@ -20,6 +20,7 @@
 
 struct dir_context;
 
+<<<<<<< HEAD
 /*
  * Directory offset/block conversion functions.
  *
@@ -154,6 +155,8 @@ xfs_dir2_leaf_tail_p(struct xfs_da_geometry *geo, struct xfs_dir2_leaf *lp)
 		  sizeof(struct xfs_dir2_leaf_tail));
 }
 
+=======
+>>>>>>> v4.9.227
 /* xfs_dir2.c */
 extern int xfs_dir_ino_validate(struct xfs_mount *mp, xfs_ino_t ino);
 extern int xfs_dir2_grow_inode(struct xfs_da_args *args, int space,
@@ -161,12 +164,15 @@ extern int xfs_dir2_grow_inode(struct xfs_da_args *args, int space,
 extern int xfs_dir_cilookup_result(struct xfs_da_args *args,
 				const unsigned char *name, int len);
 
+<<<<<<< HEAD
 #define S_SHIFT 12
 extern const unsigned char xfs_mode_to_ftype[];
 
 extern unsigned char xfs_dir3_get_dtype(struct xfs_mount *mp,
 					__uint8_t filetype);
 
+=======
+>>>>>>> v4.9.227
 
 /* xfs_dir2_block.c */
 extern int xfs_dir3_block_read(struct xfs_trans *tp, struct xfs_inode *dp,
@@ -266,6 +272,10 @@ extern int xfs_dir2_sf_create(struct xfs_da_args *args, xfs_ino_t pino);
 extern int xfs_dir2_sf_lookup(struct xfs_da_args *args);
 extern int xfs_dir2_sf_removename(struct xfs_da_args *args);
 extern int xfs_dir2_sf_replace(struct xfs_da_args *args);
+<<<<<<< HEAD
+=======
+extern int xfs_dir2_sf_verify(struct xfs_inode *ip);
+>>>>>>> v4.9.227
 
 /* xfs_dir2_readdir.c */
 extern int xfs_readdir(struct xfs_inode *dp, struct dir_context *ctx,

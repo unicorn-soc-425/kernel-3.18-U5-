@@ -31,11 +31,19 @@
 
 #define	WM8971_REG_COUNT		43
 
+<<<<<<< HEAD
 static struct workqueue_struct *wm8971_workq = NULL;
 
 /* codec private data */
 struct wm8971_priv {
 	unsigned int sysclk;
+=======
+/* codec private data */
+struct wm8971_priv {
+	unsigned int sysclk;
+	struct delayed_work charge_work;
+	struct regmap *regmap;
+>>>>>>> v4.9.227
 };
 
 /*
@@ -552,9 +560,25 @@ static int wm8971_mute(struct snd_soc_dai *dai, int mute)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8971_set_bias_level(struct snd_soc_codec *codec,
 	enum snd_soc_bias_level level)
 {
+=======
+static void wm8971_charge_work(struct work_struct *work)
+{
+	struct wm8971_priv *wm8971 =
+		container_of(work, struct wm8971_priv, charge_work.work);
+
+	/* Set to 500k */
+	regmap_update_bits(wm8971->regmap, WM8971_PWR1, 0x0180, 0x0100);
+}
+
+static int wm8971_set_bias_level(struct snd_soc_codec *codec,
+	enum snd_soc_bias_level level)
+{
+	struct wm8971_priv *wm8971 = snd_soc_codec_get_drvdata(codec);
+>>>>>>> v4.9.227
 	u16 pwr_reg = snd_soc_read(codec, WM8971_PWR1) & 0xfe3e;
 
 	switch (level) {
@@ -563,6 +587,7 @@ static int wm8971_set_bias_level(struct snd_soc_codec *codec,
 		snd_soc_write(codec, WM8971_PWR1, pwr_reg | 0x00c1);
 		break;
 	case SND_SOC_BIAS_PREPARE:
+<<<<<<< HEAD
 		break;
 	case SND_SOC_BIAS_STANDBY:
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF)
@@ -576,6 +601,29 @@ static int wm8971_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 	codec->dapm.bias_level = level;
+=======
+		/* Wait until fully charged */
+		flush_delayed_work(&wm8971->charge_work);
+		break;
+	case SND_SOC_BIAS_STANDBY:
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+			snd_soc_cache_sync(codec);
+			/* charge output caps - set vmid to 5k for quick power up */
+			snd_soc_write(codec, WM8971_PWR1, pwr_reg | 0x01c0);
+			queue_delayed_work(system_power_efficient_wq,
+				&wm8971->charge_work, msecs_to_jiffies(1000));
+		} else {
+			/* mute dac and set vmid to 500k, enable VREF */
+			snd_soc_write(codec, WM8971_PWR1, pwr_reg | 0x0140);
+		}
+
+		break;
+	case SND_SOC_BIAS_OFF:
+		cancel_delayed_work_sync(&wm8971->charge_work);
+		snd_soc_write(codec, WM8971_PWR1, 0x0001);
+		break;
+	}
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -610,6 +658,7 @@ static struct snd_soc_dai_driver wm8971_dai = {
 	.ops = &wm8971_dai_ops,
 };
 
+<<<<<<< HEAD
 static void wm8971_work(struct work_struct *work)
 {
 	struct snd_soc_dapm_context *dapm =
@@ -662,6 +711,16 @@ static int wm8971_probe(struct snd_soc_codec *codec)
 	queue_delayed_work(wm8971_workq, &codec->dapm.delayed_work,
 		msecs_to_jiffies(1000));
 
+=======
+static int wm8971_probe(struct snd_soc_codec *codec)
+{
+	struct wm8971_priv *wm8971 = snd_soc_codec_get_drvdata(codec);
+
+	INIT_DELAYED_WORK(&wm8971->charge_work, wm8971_charge_work);
+
+	wm8971_reset(codec);
+
+>>>>>>> v4.9.227
 	/* set the update bits */
 	snd_soc_update_bits(codec, WM8971_LDAC, 0x0100, 0x0100);
 	snd_soc_update_bits(codec, WM8971_RDAC, 0x0100, 0x0100);
@@ -672,6 +731,7 @@ static int wm8971_probe(struct snd_soc_codec *codec)
 	snd_soc_update_bits(codec, WM8971_LINVOL, 0x0100, 0x0100);
 	snd_soc_update_bits(codec, WM8971_RINVOL, 0x0100, 0x0100);
 
+<<<<<<< HEAD
 	return ret;
 }
 
@@ -699,6 +759,24 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8971 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8971_dapm_widgets),
 	.dapm_routes = wm8971_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm8971_dapm_routes),
+=======
+	return 0;
+}
+
+static const struct snd_soc_codec_driver soc_codec_dev_wm8971 = {
+	.probe =	wm8971_probe,
+	.set_bias_level = wm8971_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8971_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8971_snd_controls),
+		.dapm_widgets		= wm8971_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8971_dapm_widgets),
+		.dapm_routes		= wm8971_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm8971_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config wm8971_regmap = {
@@ -715,7 +793,10 @@ static int wm8971_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
 {
 	struct wm8971_priv *wm8971;
+<<<<<<< HEAD
 	struct regmap *regmap;
+=======
+>>>>>>> v4.9.227
 	int ret;
 
 	wm8971 = devm_kzalloc(&i2c->dev, sizeof(struct wm8971_priv),
@@ -723,9 +804,15 @@ static int wm8971_i2c_probe(struct i2c_client *i2c,
 	if (wm8971 == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	regmap = devm_regmap_init_i2c(i2c, &wm8971_regmap);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
+=======
+	wm8971->regmap = devm_regmap_init_i2c(i2c, &wm8971_regmap);
+	if (IS_ERR(wm8971->regmap))
+		return PTR_ERR(wm8971->regmap);
+>>>>>>> v4.9.227
 
 	i2c_set_clientdata(i2c, wm8971);
 
@@ -750,7 +837,10 @@ MODULE_DEVICE_TABLE(i2c, wm8971_i2c_id);
 static struct i2c_driver wm8971_i2c_driver = {
 	.driver = {
 		.name = "wm8971",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe =    wm8971_i2c_probe,
 	.remove =   wm8971_i2c_remove,

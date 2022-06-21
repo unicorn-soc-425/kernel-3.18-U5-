@@ -510,6 +510,10 @@ u32 systime(void)
 }
 EXPORT_SYMBOL(systime);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Patrick Boettcher <pboettcher@dibcom.fr>");
+=======
+MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@posteo.de>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Common function the DiBcom demodulator family");
 MODULE_LICENSE("GPL");

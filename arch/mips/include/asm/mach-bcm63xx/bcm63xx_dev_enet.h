@@ -22,7 +22,11 @@ struct bcm63xx_enet_platform_data {
 	int has_phy_interrupt;
 	int phy_interrupt;
 
+<<<<<<< HEAD
 	/* if has_phy, use autonegociated pause parameters or force
+=======
+	/* if has_phy, use autonegotiated pause parameters or force
+>>>>>>> v4.9.227
 	 * them */
 	int pause_auto;
 	int pause_rx;

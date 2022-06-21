@@ -75,6 +75,10 @@
 #define hv_get_ipi_pte _hv_get_ipi_pte
 #define hv_set_pte_super_shift _hv_set_pte_super_shift
 #define hv_console_set_ipi _hv_console_set_ipi
+<<<<<<< HEAD
+=======
+#define hv_send_nmi _hv_send_nmi
+>>>>>>> v4.9.227
 #include <hv/hypervisor.h>
 #undef hv_init
 #undef hv_install_context
@@ -134,6 +138,10 @@
 #undef hv_get_ipi_pte
 #undef hv_set_pte_super_shift
 #undef hv_console_set_ipi
+<<<<<<< HEAD
+=======
+#undef hv_send_nmi
+>>>>>>> v4.9.227
 
 /*
  * Provide macros based on <linux/syscalls.h> to provide a wrapper
@@ -264,3 +272,8 @@ HV_WRAP9(int, hv_flush_remote, HV_PhysAddr, cache_pa,
 	 HV_VirtAddr, tlb_va, unsigned long, tlb_length,
 	 unsigned long, tlb_pgsize, unsigned long*, tlb_cpumask,
 	 HV_Remote_ASID*, asids, int, asidcount)
+<<<<<<< HEAD
+=======
+HV_WRAP3(HV_NMI_Info, hv_send_nmi, HV_Coord, tile, unsigned long, info,
+	 __hv64, flags)
+>>>>>>> v4.9.227

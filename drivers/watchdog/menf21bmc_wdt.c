@@ -130,6 +130,10 @@ static int menf21bmc_wdt_probe(struct platform_device *pdev)
 	drv_data->wdt.info = &menf21bmc_wdt_info;
 	drv_data->wdt.min_timeout = BMC_WD_TIMEOUT_MIN;
 	drv_data->wdt.max_timeout = BMC_WD_TIMEOUT_MAX;
+<<<<<<< HEAD
+=======
+	drv_data->wdt.parent = &pdev->dev;
+>>>>>>> v4.9.227
 	drv_data->i2c_client = i2c_client;
 
 	/*
@@ -187,7 +191,10 @@ static void menf21bmc_wdt_shutdown(struct platform_device *pdev)
 
 static struct  platform_driver menf21bmc_wdt = {
 	.driver		= {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DEVNAME,
 	},
 	.probe		= menf21bmc_wdt_probe,

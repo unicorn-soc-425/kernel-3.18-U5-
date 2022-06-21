@@ -20,6 +20,10 @@
 #include "rockchip_drm_drv.h"
 #include "rockchip_drm_gem.h"
 #include "rockchip_drm_fb.h"
+<<<<<<< HEAD
+=======
+#include "rockchip_drm_fbdev.h"
+>>>>>>> v4.9.227
 
 #define PREFERRED_BPP		32
 #define to_drm_private(x) \
@@ -108,7 +112,11 @@ static int rockchip_drm_fbdev_create(struct drm_fb_helper *helper,
 	fbi->screen_size = rk_obj->base.size;
 	fbi->fix.smem_len = rk_obj->base.size;
 
+<<<<<<< HEAD
 	DRM_DEBUG_KMS("FB [%dx%d]-%d kvaddr=%p offset=%ld size=%d\n",
+=======
+	DRM_DEBUG_KMS("FB [%dx%d]-%d kvaddr=%p offset=%ld size=%zu\n",
+>>>>>>> v4.9.227
 		      fb->width, fb->height, fb->depth, rk_obj->kvaddr,
 		      offset, size);
 
@@ -156,9 +164,12 @@ int rockchip_drm_fbdev_init(struct drm_device *dev)
 		goto err_drm_fb_helper_fini;
 	}
 
+<<<<<<< HEAD
 	/* disable all the possible outputs/crtcs before entering KMS mode */
 	drm_helper_disable_unused_functions(dev);
 
+=======
+>>>>>>> v4.9.227
 	ret = drm_fb_helper_initial_config(helper, PREFERRED_BPP);
 	if (ret < 0) {
 		dev_err(dev->dev, "Failed to set initial hw config - %d.\n",

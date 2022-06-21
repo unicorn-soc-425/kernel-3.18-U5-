@@ -125,7 +125,11 @@ static struct i2c_algorithm osif_algorithm = {
 #define USB_OSIF_VENDOR_ID	0x1964
 #define USB_OSIF_PRODUCT_ID	0x0001
 
+<<<<<<< HEAD
 static struct usb_device_id osif_table[] = {
+=======
+static const struct usb_device_id osif_table[] = {
+>>>>>>> v4.9.227
 	{ USB_DEVICE(USB_OSIF_VENDOR_ID, USB_OSIF_PRODUCT_ID) },
 	{ }
 };

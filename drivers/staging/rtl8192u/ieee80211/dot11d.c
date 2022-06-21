@@ -6,7 +6,11 @@ void Dot11d_Init(struct ieee80211_device *ieee)
 {
 	PRT_DOT11D_INFO pDot11dInfo = GET_DOT11D_INFO(ieee);
 
+<<<<<<< HEAD
 	pDot11dInfo->bEnabled = 0;
+=======
+	pDot11dInfo->bEnabled = false;
+>>>>>>> v4.9.227
 
 	pDot11dInfo->State = DOT11D_STATE_NONE;
 	pDot11dInfo->CountryIeLen = 0;
@@ -103,7 +107,11 @@ u8 DOT11D_GetMaxTxPwrInDbm(struct ieee80211_device *dev, u8 Channel)
 	PRT_DOT11D_INFO pDot11dInfo = GET_DOT11D_INFO(dev);
 	u8 MaxTxPwrInDbm = 255;
 
+<<<<<<< HEAD
 	if (MAX_CHANNEL_NUMBER < Channel) {
+=======
+	if (Channel > MAX_CHANNEL_NUMBER) {
+>>>>>>> v4.9.227
 		netdev_err(dev->dev, "DOT11D_GetMaxTxPwrInDbm(): Invalid Channel\n");
 		return MaxTxPwrInDbm;
 	}
@@ -139,7 +147,11 @@ int IsLegalChannel(struct ieee80211_device *dev, u8 channel)
 {
 	PRT_DOT11D_INFO pDot11dInfo = GET_DOT11D_INFO(dev);
 
+<<<<<<< HEAD
 	if (MAX_CHANNEL_NUMBER < channel) {
+=======
+	if (channel > MAX_CHANNEL_NUMBER) {
+>>>>>>> v4.9.227
 		netdev_err(dev->dev, "IsLegalChannel(): Invalid Channel\n");
 		return 0;
 	}
@@ -162,7 +174,11 @@ int ToLegalChannel(struct ieee80211_device *dev, u8 channel)
 		}
 	}
 
+<<<<<<< HEAD
 	if (MAX_CHANNEL_NUMBER < channel) {
+=======
+	if (channel > MAX_CHANNEL_NUMBER) {
+>>>>>>> v4.9.227
 		netdev_err(dev->dev, "IsLegalChannel(): Invalid Channel\n");
 		return default_chn;
 	}

@@ -19,11 +19,15 @@
 #include <asm/cio.h>
 #include <asm/uaccess.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 #define IDA_SIZE_LOG 12 /* 11 for 2k , 12 for 4k */
 #else
 #define IDA_SIZE_LOG 11 /* 11 for 2k , 12 for 4k */
 #endif
+=======
+#define IDA_SIZE_LOG 12 /* 11 for 2k , 12 for 4k */
+>>>>>>> v4.9.227
 #define IDA_BLOCK_SIZE (1L<<IDA_SIZE_LOG)
 
 /*
@@ -32,11 +36,15 @@
 static inline int
 idal_is_needed(void *vaddr, unsigned int length)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 	return ((__pa(vaddr) + length - 1) >> 31) != 0;
 #else
 	return 0;
 #endif
+=======
+	return ((__pa(vaddr) + length - 1) >> 31) != 0;
+>>>>>>> v4.9.227
 }
 
 
@@ -77,7 +85,10 @@ static inline unsigned long *idal_create_words(unsigned long *idaws,
 static inline int
 set_normalized_cda(struct ccw1 * ccw, void *vaddr)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	unsigned int nridaws;
 	unsigned long *idal;
 
@@ -93,7 +104,10 @@ set_normalized_cda(struct ccw1 * ccw, void *vaddr)
 		ccw->flags |= CCW_FLAG_IDA;
 		vaddr = idal;
 	}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	ccw->cda = (__u32)(unsigned long) vaddr;
 	return 0;
 }
@@ -104,12 +118,18 @@ set_normalized_cda(struct ccw1 * ccw, void *vaddr)
 static inline void
 clear_normalized_cda(struct ccw1 * ccw)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	if (ccw->flags & CCW_FLAG_IDA) {
 		kfree((void *)(unsigned long) ccw->cda);
 		ccw->flags &= ~CCW_FLAG_IDA;
 	}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	ccw->cda = 0;
 }
 
@@ -181,12 +201,17 @@ idal_buffer_free(struct idal_buffer *ib)
 static inline int
 __idal_buffer_is_needed(struct idal_buffer *ib)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 	return ib->size > (4096ul << ib->page_order) ||
 		idal_is_needed(ib->data[0], ib->size);
 #else
 	return ib->size > (4096ul << ib->page_order);
 #endif
+=======
+	return ib->size > (4096ul << ib->page_order) ||
+		idal_is_needed(ib->data[0], ib->size);
+>>>>>>> v4.9.227
 }
 
 /*

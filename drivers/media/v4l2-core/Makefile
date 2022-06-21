@@ -13,6 +13,13 @@ endif
 ifeq ($(CONFIG_OF),y)
   videodev-objs += v4l2-of.o
 endif
+<<<<<<< HEAD
+=======
+ifeq ($(CONFIG_TRACEPOINTS),y)
+  videodev-objs += vb2-trace.o v4l2-trace.o
+endif
+videodev-$(CONFIG_MEDIA_CONTROLLER) += v4l2-mc.o
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_VIDEO_V4L2) += videodev.o
 obj-$(CONFIG_VIDEO_V4L2) += v4l2-common.o
@@ -22,13 +29,22 @@ obj-$(CONFIG_VIDEO_TUNER) += tuner.o
 
 obj-$(CONFIG_V4L2_MEM2MEM_DEV) += v4l2-mem2mem.o
 
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_V4L2_FLASH_LED_CLASS) += v4l2-flash-led-class.o
+
+>>>>>>> v4.9.227
 obj-$(CONFIG_VIDEOBUF_GEN) += videobuf-core.o
 obj-$(CONFIG_VIDEOBUF_DMA_SG) += videobuf-dma-sg.o
 obj-$(CONFIG_VIDEOBUF_DMA_CONTIG) += videobuf-dma-contig.o
 obj-$(CONFIG_VIDEOBUF_VMALLOC) += videobuf-vmalloc.o
 obj-$(CONFIG_VIDEOBUF_DVB) += videobuf-dvb.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_VIDEOBUF2_CORE) += videobuf2-core.o
+=======
+obj-$(CONFIG_VIDEOBUF2_CORE) += videobuf2-core.o videobuf2-v4l2.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_VIDEOBUF2_MEMOPS) += videobuf2-memops.o
 obj-$(CONFIG_VIDEOBUF2_VMALLOC) += videobuf2-vmalloc.o
 obj-$(CONFIG_VIDEOBUF2_DMA_CONTIG) += videobuf2-dma-contig.o

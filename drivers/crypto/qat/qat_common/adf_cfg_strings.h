@@ -57,10 +57,15 @@
 #define ADF_RING_DC_SIZE "NumConcurrentRequests"
 #define ADF_RING_ASYM_TX "RingAsymTx"
 #define ADF_RING_SYM_TX "RingSymTx"
+<<<<<<< HEAD
 #define ADF_RING_RND_TX "RingNrbgTx"
 #define ADF_RING_ASYM_RX "RingAsymRx"
 #define ADF_RING_SYM_RX "RinSymRx"
 #define ADF_RING_RND_RX "RingNrbgRx"
+=======
+#define ADF_RING_ASYM_RX "RingAsymRx"
+#define ADF_RING_SYM_RX "RingSymRx"
+>>>>>>> v4.9.227
 #define ADF_RING_DC_TX "RingTx"
 #define ADF_RING_DC_RX "RingRx"
 #define ADF_ETRMGR_BANK "Bank"
@@ -69,6 +74,7 @@
 #define ADF_DC "Dc"
 #define ADF_ETRMGR_COALESCING_ENABLED "InterruptCoalescingEnabled"
 #define ADF_ETRMGR_COALESCING_ENABLED_FORMAT \
+<<<<<<< HEAD
 	ADF_ETRMGR_BANK"%d"ADF_ETRMGR_COALESCING_ENABLED
 #define ADF_ETRMGR_COALESCE_TIMER "InterruptCoalescingTimerNs"
 #define ADF_ETRMGR_COALESCE_TIMER_FORMAT \
@@ -79,5 +85,17 @@
 #define ADF_ETRMGR_CORE_AFFINITY "CoreAffinity"
 #define ADF_ETRMGR_CORE_AFFINITY_FORMAT \
 	ADF_ETRMGR_BANK"%d"ADF_ETRMGR_CORE_AFFINITY
+=======
+	ADF_ETRMGR_BANK "%d" ADF_ETRMGR_COALESCING_ENABLED
+#define ADF_ETRMGR_COALESCE_TIMER "InterruptCoalescingTimerNs"
+#define ADF_ETRMGR_COALESCE_TIMER_FORMAT \
+	ADF_ETRMGR_BANK "%d" ADF_ETRMGR_COALESCE_TIMER
+#define ADF_ETRMGR_COALESCING_MSG_ENABLED "InterruptCoalescingNumResponses"
+#define ADF_ETRMGR_COALESCING_MSG_ENABLED_FORMAT \
+	ADF_ETRMGR_BANK "%d" ADF_ETRMGR_COALESCING_MSG_ENABLED
+#define ADF_ETRMGR_CORE_AFFINITY "CoreAffinity"
+#define ADF_ETRMGR_CORE_AFFINITY_FORMAT \
+	ADF_ETRMGR_BANK "%d" ADF_ETRMGR_CORE_AFFINITY
+>>>>>>> v4.9.227
 #define ADF_ACCEL_STR "Accelerator%d"
 #endif

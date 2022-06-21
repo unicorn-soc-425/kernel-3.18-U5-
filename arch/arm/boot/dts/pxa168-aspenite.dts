@@ -8,7 +8,11 @@
  */
 
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "pxa168.dtsi"
+=======
+#include "pxa168.dtsi"
+>>>>>>> v4.9.227
 
 / {
 	model = "Marvell PXA168 Aspenite Development Board";

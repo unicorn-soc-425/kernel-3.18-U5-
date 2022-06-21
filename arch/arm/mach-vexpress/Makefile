@@ -1,11 +1,18 @@
 #
 # Makefile for the linux kernel.
 #
+<<<<<<< HEAD
 ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/$(src)/include \
 	-I$(srctree)/arch/arm/plat-versatile/include
 
 obj-y					:= v2m.o
 obj-$(CONFIG_ARCH_VEXPRESS_CA9X4)	+= ct-ca9x4.o
+=======
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := \
+	-I$(srctree)/arch/arm/plat-versatile/include
+
+obj-$(CONFIG_ARCH_VEXPRESS)		:= v2m.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_ARCH_VEXPRESS_DCSCB)	+= dcscb.o	dcscb_setup.o
 CFLAGS_dcscb.o				+= -march=armv7-a
 CFLAGS_REMOVE_dcscb.o			= -pg
@@ -16,3 +23,8 @@ CFLAGS_tc2_pm.o				+= -march=armv7-a
 CFLAGS_REMOVE_tc2_pm.o			= -pg
 obj-$(CONFIG_SMP)			+= platsmp.o
 obj-$(CONFIG_HOTPLUG_CPU)		+= hotplug.o
+<<<<<<< HEAD
+=======
+
+obj-$(CONFIG_ARCH_MPS2)			+= v2m-mps2.o
+>>>>>>> v4.9.227

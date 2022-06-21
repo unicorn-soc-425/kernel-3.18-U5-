@@ -478,7 +478,11 @@ static struct dccp_feat_entry *
  * @fn_list: feature-negotiation list to update
  * @feat: one of %dccp_feature_numbers
  * @local: whether local (1) or remote (0) @feat_num is meant
+<<<<<<< HEAD
  * @needs_mandatory: whether to use Mandatory feature negotiation options
+=======
+ * @mandatory: whether to use Mandatory feature negotiation options
+>>>>>>> v4.9.227
  * @fval: pointer to NN/SP value to be inserted (will be copied)
  */
 static int dccp_feat_push_change(struct list_head *fn_list, u8 feat, u8 local,
@@ -738,7 +742,16 @@ static int __feat_register_sp(struct list_head *fn, u8 feat, u8 is_local,
 	if (dccp_feat_clone_sp_val(&fval, sp_val, sp_len))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	return dccp_feat_push_change(fn, feat, is_local, mandatory, &fval);
+=======
+	if (dccp_feat_push_change(fn, feat, is_local, mandatory, &fval)) {
+		kfree(fval.sp.vec);
+		return -ENOMEM;
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -1050,7 +1063,11 @@ static u8 dccp_feat_prefer(u8 preferred_value, u8 *array, u8 array_len)
 
 /**
  * dccp_feat_reconcile  -  Reconcile SP preference lists
+<<<<<<< HEAD
  *  @fval: SP list to reconcile into
+=======
+ *  @fv: SP list to reconcile into
+>>>>>>> v4.9.227
  *  @arr: received SP preference list
  *  @len: length of @arr in bytes
  *  @is_server: whether this side is the server (and @fv is the server's list)

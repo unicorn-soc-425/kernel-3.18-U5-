@@ -22,7 +22,11 @@
 #ifdef FWTTY_PROFILING
 #define DISTRIBUTION_MAX_SIZE     8192
 #define DISTRIBUTION_MAX_INDEX    (ilog2(DISTRIBUTION_MAX_SIZE) + 1)
+<<<<<<< HEAD
 static inline void fwtty_profile_data(unsigned stat[], unsigned val)
+=======
+static inline void fwtty_profile_data(unsigned int stat[], unsigned int val)
+>>>>>>> v4.9.227
 {
 	int n = (val) ? min(ilog2(val) + 1, DISTRIBUTION_MAX_INDEX) : 0;
 	++stat[n];
@@ -78,7 +82,11 @@ struct fwtty_peer {
 	u64			guid;
 	int			generation;
 	int			node_id;
+<<<<<<< HEAD
 	unsigned		speed;
+=======
+	unsigned int		speed;
+>>>>>>> v4.9.227
 	int			max_payload;
 	u64			mgmt_addr;
 
@@ -160,6 +168,7 @@ struct fwserial_mgmt_pkt {
 #define VIRT_CABLE_PLUG_TIMEOUT		(60 * HZ)
 
 struct stats {
+<<<<<<< HEAD
 	unsigned	xchars;
 	unsigned	dropped;
 	unsigned	tx_stall;
@@ -171,6 +180,19 @@ struct stats {
 	unsigned	writes[DISTRIBUTION_MAX_INDEX + 1];
 	unsigned	txns[DISTRIBUTION_MAX_INDEX + 1];
 	unsigned	unthrottle[DISTRIBUTION_MAX_INDEX + 1];
+=======
+	unsigned int	xchars;
+	unsigned int	dropped;
+	unsigned int	tx_stall;
+	unsigned int	fifo_errs;
+	unsigned int	sent;
+	unsigned int	lost;
+	unsigned int	throttled;
+	unsigned int	reads[DISTRIBUTION_MAX_INDEX + 1];
+	unsigned int	writes[DISTRIBUTION_MAX_INDEX + 1];
+	unsigned int	txns[DISTRIBUTION_MAX_INDEX + 1];
+	unsigned int	unthrottle[DISTRIBUTION_MAX_INDEX + 1];
+>>>>>>> v4.9.227
 };
 
 struct fwconsole_ops {
@@ -218,7 +240,11 @@ struct fwconsole_ops {
  *         prevented with the IN_TX flag. Scheduled under lock to
  *         limit scheduling when fifo has just been drained.
  * @tx_fifo: fifo used to store & block-up writes for dma to remote
+<<<<<<< HEAD
  * @max_payload: max bytes transmissable per dma (based on peer's max_payload)
+=======
+ * @max_payload: max bytes transmissible per dma (based on peer's max_payload)
+>>>>>>> v4.9.227
  * @status_mask: UART_LSR_* bitmask significant to rx (based on termios)
  * @ignore_mask: UART_LSR_* bitmask of states to ignore (also based on termios)
  * @break_ctl: if set, port is 'sending break' to remote
@@ -237,7 +263,11 @@ struct fwconsole_ops {
 struct fwtty_port {
 	struct tty_port		   port;
 	struct device		   *device;
+<<<<<<< HEAD
 	unsigned		   index;
+=======
+	unsigned int		   index;
+>>>>>>> v4.9.227
 	struct fw_serial	   *serial;
 	struct fw_address_handler  rx_handler;
 
@@ -246,11 +276,16 @@ struct fwtty_port {
 
 	wait_queue_head_t	   wait_tx;
 	struct delayed_work	   emit_breaks;
+<<<<<<< HEAD
 	unsigned		   cps;
+=======
+	unsigned int		   cps;
+>>>>>>> v4.9.227
 	unsigned long		   break_last;
 
 	struct work_struct	   hangup;
 
+<<<<<<< HEAD
 	unsigned		   mstatus;
 
 	spinlock_t		   lock;
@@ -261,6 +296,18 @@ struct fwtty_port {
 	unsigned		   status_mask;
 	unsigned		   ignore_mask;
 	unsigned		   break_ctl:1,
+=======
+	unsigned int		   mstatus;
+
+	spinlock_t		   lock;
+	unsigned int		   mctrl;
+	struct delayed_work	   drain;
+	struct dma_fifo		   tx_fifo;
+	int			   max_payload;
+	unsigned int		   status_mask;
+	unsigned int		   ignore_mask;
+	unsigned int		   break_ctl:1,
+>>>>>>> v4.9.227
 				   write_only:1,
 				   overrun:1,
 				   loopback:1;
@@ -341,6 +388,7 @@ static const char loop_dev_name[] = "fwloop";
 
 extern struct tty_driver *fwtty_driver;
 
+<<<<<<< HEAD
 struct fwtty_port *fwtty_port_get(unsigned index);
 void fwtty_port_put(struct fwtty_port *port);
 
@@ -352,6 +400,8 @@ static inline void fwtty_bind_console(struct fwtty_port *port,
 	port->fwcon_ops = fwcon_ops;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Returns the max send async payload size in bytes based on the unit device
  * link speed. Self-limiting asynchronous bandwidth (via reducing the payload)
@@ -360,7 +410,11 @@ static inline void fwtty_bind_console(struct fwtty_port *port,
  *	being used for isochronous traffic)
  *   2) isochronous arbitration always wins.
  */
+<<<<<<< HEAD
 static inline int link_speed_to_max_payload(unsigned speed)
+=======
+static inline int link_speed_to_max_payload(unsigned int speed)
+>>>>>>> v4.9.227
 {
 	/* Max async payload is 4096 - see IEEE 1394-2008 tables 6-4, 16-18 */
 	return min(512 << speed, 4096);

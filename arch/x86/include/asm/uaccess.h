@@ -5,11 +5,19 @@
  */
 #include <linux/errno.h>
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/kasan-checks.h>
+>>>>>>> v4.9.227
 #include <linux/thread_info.h>
 #include <linux/string.h>
 #include <asm/asm.h>
 #include <asm/page.h>
 #include <asm/smap.h>
+<<<<<<< HEAD
+=======
+#include <asm/extable.h>
+>>>>>>> v4.9.227
 
 #define VERIFY_READ 0
 #define VERIFY_WRITE 1
@@ -28,6 +36,7 @@
 #define USER_DS 	MAKE_MM_SEG(TASK_SIZE_MAX)
 
 #define get_ds()	(KERNEL_DS)
+<<<<<<< HEAD
 #define get_fs()	(current_thread_info()->addr_limit)
 static inline void set_fs(mm_segment_t fs)
 {
@@ -39,6 +48,14 @@ static inline void set_fs(mm_segment_t fs)
 #define segment_eq(a, b)	((a).seg == (b).seg)
 
 #define user_addr_max() (current_thread_info()->addr_limit.seg)
+=======
+#define get_fs()	(current->thread.addr_limit)
+#define set_fs(x)	(current->thread.addr_limit = (x))
+
+#define segment_eq(a, b)	((a).seg == (b).seg)
+
+#define user_addr_max() (current->thread.addr_limit.seg)
+>>>>>>> v4.9.227
 #define __addr_ok(addr) 	\
 	((unsigned long __force)(addr) < user_addr_max())
 
@@ -56,6 +73,7 @@ static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, un
 	 * limit, not add it to the address).
 	 */
 	if (__builtin_constant_p(size))
+<<<<<<< HEAD
 		return addr > limit - size;
 
 	/* Arbitrary sizes? Be careful about overflow */
@@ -63,6 +81,15 @@ static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, un
 	if (addr < size)
 		return true;
 	return addr > limit;
+=======
+		return unlikely(addr > limit - size);
+
+	/* Arbitrary sizes? Be careful about overflow */
+	addr += size;
+	if (unlikely(addr < size))
+		return true;
+	return unlikely(addr > limit);
+>>>>>>> v4.9.227
 }
 
 #define __range_not_ok(addr, size, limit)				\
@@ -71,6 +98,15 @@ static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, un
 	__chk_range_not_ok((unsigned long __force)(addr), size, limit); \
 })
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DEBUG_ATOMIC_SLEEP
+# define WARN_ON_IN_IRQ()	WARN_ON_ONCE(!in_task())
+#else
+# define WARN_ON_IN_IRQ()
+#endif
+
+>>>>>>> v4.9.227
 /**
  * access_ok: - Checks if a user space pointer is valid
  * @type: Type of access: %VERIFY_READ or %VERIFY_WRITE.  Note that
@@ -79,7 +115,12 @@ static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, un
  * @addr: User space pointer to start of block to check
  * @size: Size of block to check
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Checks if a pointer to a block of memory in user space is valid.
  *
@@ -90,6 +131,7 @@ static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, un
  * checks that the pointer is in the user space range - after calling
  * this function, memory access functions may still return -EFAULT.
  */
+<<<<<<< HEAD
 #define access_ok(type, addr, size) \
 	likely(!__range_not_ok(addr, size, user_addr_max()))
 
@@ -116,6 +158,13 @@ struct exception_table_entry {
 
 extern int fixup_exception(struct pt_regs *regs);
 extern int early_fixup_exception(unsigned long *ip);
+=======
+#define access_ok(type, addr, size)					\
+({									\
+	WARN_ON_IN_IRQ();						\
+	likely(!__range_not_ok(addr, size, user_addr_max()));		\
+})
+>>>>>>> v4.9.227
 
 /*
  * These are the main single-value transfer routines.  They automatically
@@ -140,6 +189,14 @@ extern int __get_user_bad(void);
 
 #define __uaccess_begin() stac()
 #define __uaccess_end()   clac()
+<<<<<<< HEAD
+=======
+#define __uaccess_begin_nospec()	\
+({					\
+	stac();				\
+	barrier_nospec();		\
+})
+>>>>>>> v4.9.227
 
 /*
  * This is a type: either unsigned long, if the argument fits into
@@ -153,7 +210,12 @@ __typeof__(__builtin_choose_expr(sizeof(x) > sizeof(0UL), 0ULL, 0UL))
  * @x:   Variable to store result.
  * @ptr: Source address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -182,10 +244,18 @@ __typeof__(__builtin_choose_expr(sizeof(x) > sizeof(0UL), 0ULL, 0UL))
 ({									\
 	int __ret_gu;							\
 	register __inttype(*(ptr)) __val_gu asm("%"_ASM_DX);		\
+<<<<<<< HEAD
 	__chk_user_ptr(ptr);						\
 	might_fault();							\
 	asm volatile("call __get_user_%P3"				\
 		     : "=a" (__ret_gu), "=r" (__val_gu)			\
+=======
+	register void *__sp asm(_ASM_SP);				\
+	__chk_user_ptr(ptr);						\
+	might_fault();							\
+	asm volatile("call __get_user_%P4"				\
+		     : "=a" (__ret_gu), "=r" (__val_gu), "+r" (__sp)	\
+>>>>>>> v4.9.227
 		     : "0" (ptr), "i" (sizeof(*(ptr))));		\
 	(x) = (__force __typeof__(*(ptr))) __val_gu;			\
 	__builtin_expect(__ret_gu, 0);					\
@@ -248,7 +318,12 @@ extern void __put_user_8(void);
  * @x:   Value to copy to user space.
  * @ptr: Destination address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -301,8 +376,12 @@ do {									\
 		__put_user_asm(x, ptr, retval, "l", "k", "ir", errret);	\
 		break;							\
 	case 8:								\
+<<<<<<< HEAD
 		__put_user_asm_u64((__typeof__(*ptr))(x), ptr, retval,	\
 				   errret);				\
+=======
+		__put_user_asm_u64(x, ptr, retval, errret);		\
+>>>>>>> v4.9.227
 		break;							\
 	default:							\
 		__put_user_bad();					\
@@ -335,13 +414,40 @@ do {									\
 } while (0)
 
 #ifdef CONFIG_X86_32
+<<<<<<< HEAD
 #define __get_user_asm_u64(x, ptr, retval, errret)	(x) = __get_user_bad()
+=======
+#define __get_user_asm_u64(x, ptr, retval, errret)			\
+({									\
+	__typeof__(ptr) __ptr = (ptr);					\
+	asm volatile("\n"					\
+		     "1:	movl %2,%%eax\n"			\
+		     "2:	movl %3,%%edx\n"			\
+		     "3:\n"				\
+		     ".section .fixup,\"ax\"\n"				\
+		     "4:	mov %4,%0\n"				\
+		     "	xorl %%eax,%%eax\n"				\
+		     "	xorl %%edx,%%edx\n"				\
+		     "	jmp 3b\n"					\
+		     ".previous\n"					\
+		     _ASM_EXTABLE(1b, 4b)				\
+		     _ASM_EXTABLE(2b, 4b)				\
+		     : "=r" (retval), "=&A"(x)				\
+		     : "m" (__m(__ptr)), "m" __m(((u32 *)(__ptr)) + 1),	\
+		       "i" (errret), "0" (retval));			\
+})
+
+>>>>>>> v4.9.227
 #define __get_user_asm_ex_u64(x, ptr)			(x) = __get_user_bad()
 #else
 #define __get_user_asm_u64(x, ptr, retval, errret) \
 	 __get_user_asm(x, ptr, retval, "q", "", "=r", errret)
 #define __get_user_asm_ex_u64(x, ptr) \
+<<<<<<< HEAD
 	 __get_user_asm_ex(x, ptr, "q", "", "=&r")
+=======
+	 __get_user_asm_ex(x, ptr, "q", "", "=r")
+>>>>>>> v4.9.227
 #endif
 
 #define __get_user_size(x, ptr, size, retval, errret)			\
@@ -388,6 +494,7 @@ do {									\
 	__chk_user_ptr(ptr);						\
 	switch (size) {							\
 	case 1:								\
+<<<<<<< HEAD
 		__get_user_asm_ex(x, ptr, "b", "b", "=&q");		\
 		break;							\
 	case 2:								\
@@ -395,6 +502,15 @@ do {									\
 		break;							\
 	case 4:								\
 		__get_user_asm_ex(x, ptr, "l", "k", "=&r");		\
+=======
+		__get_user_asm_ex(x, ptr, "b", "b", "=q");		\
+		break;							\
+	case 2:								\
+		__get_user_asm_ex(x, ptr, "w", "w", "=r");		\
+		break;							\
+	case 4:								\
+		__get_user_asm_ex(x, ptr, "l", "k", "=r");		\
+>>>>>>> v4.9.227
 		break;							\
 	case 8:								\
 		__get_user_asm_ex_u64(x, ptr);				\
@@ -412,13 +528,24 @@ do {									\
 		     "  jmp 2b\n"					\
 		     ".previous\n"					\
 		     _ASM_EXTABLE_EX(1b, 3b)				\
+<<<<<<< HEAD
 		     : ltype(x) : "m" (__m(addr)), "0" (0))
+=======
+		     : ltype(x) : "m" (__m(addr)))
+>>>>>>> v4.9.227
 
 #define __put_user_nocheck(x, ptr, size)			\
 ({								\
 	int __pu_err;						\
+<<<<<<< HEAD
 	__uaccess_begin();					\
 	__put_user_size((x), (ptr), (size), __pu_err, -EFAULT);	\
+=======
+	__typeof__(*(ptr)) __pu_val;				\
+	__pu_val = x;						\
+	__uaccess_begin();					\
+	__put_user_size(__pu_val, (ptr), (size), __pu_err, -EFAULT);\
+>>>>>>> v4.9.227
 	__uaccess_end();					\
 	__builtin_expect(__pu_err, 0);				\
 })
@@ -426,9 +553,17 @@ do {									\
 #define __get_user_nocheck(x, ptr, size)				\
 ({									\
 	int __gu_err;							\
+<<<<<<< HEAD
 	unsigned long __gu_val;						\
 	__uaccess_begin();						\
 	__get_user_size(__gu_val, (ptr), (size), __gu_err, -EFAULT);	\
+=======
+	__inttype(*(ptr)) __gu_val;					\
+	__typeof__(ptr) __gu_ptr = (ptr);				\
+	__typeof__(size) __gu_size = (size);				\
+	__uaccess_begin_nospec();					\
+	__get_user_size(__gu_val, __gu_ptr, __gu_size, __gu_err, -EFAULT);	\
+>>>>>>> v4.9.227
 	__uaccess_end();						\
 	(x) = (__force __typeof__(*(ptr)))__gu_val;			\
 	__builtin_expect(__gu_err, 0);					\
@@ -465,6 +600,7 @@ struct __large_struct { unsigned long buf[100]; };
  * uaccess_try and catch
  */
 #define uaccess_try	do {						\
+<<<<<<< HEAD
 	current_thread_info()->uaccess_err = 0;				\
 	__uaccess_begin();						\
 	barrier();
@@ -472,6 +608,19 @@ struct __large_struct { unsigned long buf[100]; };
 #define uaccess_catch(err)						\
 	__uaccess_end();						\
 	(err) |= (current_thread_info()->uaccess_err ? -EFAULT : 0);	\
+=======
+	current->thread.uaccess_err = 0;				\
+	__uaccess_begin();						\
+	barrier();
+
+#define uaccess_try_nospec do {						\
+	current->thread.uaccess_err = 0;				\
+	__uaccess_begin_nospec();					\
+
+#define uaccess_catch(err)						\
+	__uaccess_end();						\
+	(err) |= (current->thread.uaccess_err ? -EFAULT : 0);		\
+>>>>>>> v4.9.227
 } while (0)
 
 /**
@@ -479,7 +628,12 @@ struct __large_struct { unsigned long buf[100]; };
  * @x:   Variable to store result.
  * @ptr: Source address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -503,7 +657,12 @@ struct __large_struct { unsigned long buf[100]; };
  * @x:   Value to copy to user space.
  * @ptr: Destination address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -531,7 +690,11 @@ struct __large_struct { unsigned long buf[100]; };
  *	get_user_ex(...);
  * } get_user_catch(err)
  */
+<<<<<<< HEAD
 #define get_user_try		uaccess_try
+=======
+#define get_user_try		uaccess_try_nospec
+>>>>>>> v4.9.227
 #define get_user_catch(err)	uaccess_catch(err)
 
 #define get_user_ex(x, ptr)	do {					\
@@ -566,7 +729,11 @@ extern void __cmpxchg_wrong_size(void)
 	__typeof__(ptr) __uval = (uval);				\
 	__typeof__(*(ptr)) __old = (old);				\
 	__typeof__(*(ptr)) __new = (new);				\
+<<<<<<< HEAD
 	__uaccess_begin();						\
+=======
+	__uaccess_begin_nospec();					\
+>>>>>>> v4.9.227
 	switch (size) {							\
 	case 1:								\
 	{								\
@@ -673,6 +840,7 @@ unsigned long __must_check _copy_from_user(void *to, const void __user *from,
 unsigned long __must_check _copy_to_user(void __user *to, const void *from,
 					 unsigned n);
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_STRICT_USER_COPY_CHECKS
 # define copy_user_diag __compiletime_error
 #else
@@ -702,14 +870,23 @@ __copy_to_user_overflow(void) __asm__("copy_from_user_overflow");
 
 static inline void
 __copy_from_user_overflow(int size, unsigned long count)
+=======
+extern void __compiletime_error("usercopy buffer size is too small")
+__bad_copy_user(void);
+
+static inline void copy_user_overflow(int size, unsigned long count)
+>>>>>>> v4.9.227
 {
 	WARN(1, "Buffer overflow detected (%d < %lu)!\n", size, count);
 }
 
+<<<<<<< HEAD
 #define __copy_to_user_overflow __copy_from_user_overflow
 
 #endif
 
+=======
+>>>>>>> v4.9.227
 static __always_inline unsigned long __must_check
 copy_from_user(void *to, const void __user *from, unsigned long n)
 {
@@ -717,6 +894,7 @@ copy_from_user(void *to, const void __user *from, unsigned long n)
 
 	might_fault();
 
+<<<<<<< HEAD
 	/*
 	 * While we would like to have the compiler do the checking for us
 	 * even in the non-constant size case, any false positives there are
@@ -734,14 +912,24 @@ copy_from_user(void *to, const void __user *from, unsigned long n)
 	 * Therefore limit the compile time checking to the constant size
 	 * case, and do only runtime checking for non-constant sizes.
 	 */
+=======
+	kasan_check_write(to, n);
+>>>>>>> v4.9.227
 
 	if (likely(sz < 0 || sz >= n)) {
 		check_object_size(to, n, false);
 		n = _copy_from_user(to, from, n);
+<<<<<<< HEAD
 	} else if (__builtin_constant_p(n))
 		copy_from_user_overflow();
 	else
 		__copy_from_user_overflow(sz, n);
+=======
+	} else if (!__builtin_constant_p(n))
+		copy_user_overflow(sz, n);
+	else
+		__bad_copy_user();
+>>>>>>> v4.9.227
 
 	return n;
 }
@@ -751,6 +939,7 @@ copy_to_user(void __user *to, const void *from, unsigned long n)
 {
 	int sz = __compiletime_object_size(from);
 
+<<<<<<< HEAD
 	might_fault();
 
 	/* See the comment in copy_from_user() above. */
@@ -761,12 +950,36 @@ copy_to_user(void __user *to, const void *from, unsigned long n)
 		copy_to_user_overflow();
 	else
 		__copy_to_user_overflow(sz, n);
+=======
+	kasan_check_read(from, n);
+
+	might_fault();
+
+	if (likely(sz < 0 || sz >= n)) {
+		check_object_size(from, n, true);
+		n = _copy_to_user(to, from, n);
+	} else if (!__builtin_constant_p(n))
+		copy_user_overflow(sz, n);
+	else
+		__bad_copy_user();
+>>>>>>> v4.9.227
 
 	return n;
 }
 
+<<<<<<< HEAD
 #undef __copy_from_user_overflow
 #undef __copy_to_user_overflow
+=======
+/*
+ * We rely on the nested NMI work to allow atomic faults from the NMI path; the
+ * nested NMI paths are careful to preserve CR2.
+ *
+ * Caller must use pagefault_enable/disable, or run in interrupt context,
+ * and also do a uaccess_ok() check
+ */
+#define __copy_from_user_nmi __copy_from_user_inatomic
+>>>>>>> v4.9.227
 
 /*
  * The "unsafe" user accesses aren't really "unsafe", but the naming

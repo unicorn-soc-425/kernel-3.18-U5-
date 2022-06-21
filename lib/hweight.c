@@ -9,6 +9,10 @@
  * The Hamming Weight of a number is the total number of bits set in it.
  */
 
+<<<<<<< HEAD
+=======
+#ifndef __HAVE_ARCH_SW_HWEIGHT
+>>>>>>> v4.9.227
 unsigned int __sw_hweight32(unsigned int w)
 {
 #ifdef CONFIG_ARCH_HAS_FAST_MULTIPLIER
@@ -25,6 +29,10 @@ unsigned int __sw_hweight32(unsigned int w)
 #endif
 }
 EXPORT_SYMBOL(__sw_hweight32);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 unsigned int __sw_hweight16(unsigned int w)
 {
@@ -43,6 +51,10 @@ unsigned int __sw_hweight8(unsigned int w)
 }
 EXPORT_SYMBOL(__sw_hweight8);
 
+<<<<<<< HEAD
+=======
+#ifndef __HAVE_ARCH_SW_HWEIGHT
+>>>>>>> v4.9.227
 unsigned long __sw_hweight64(__u64 w)
 {
 #if BITS_PER_LONG == 32
@@ -65,3 +77,7 @@ unsigned long __sw_hweight64(__u64 w)
 #endif
 }
 EXPORT_SYMBOL(__sw_hweight64);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227

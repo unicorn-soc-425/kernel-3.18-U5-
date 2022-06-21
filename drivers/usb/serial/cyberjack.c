@@ -50,6 +50,10 @@
 #define CYBERJACK_PRODUCT_ID	0x0100
 
 /* Function prototypes */
+<<<<<<< HEAD
+=======
+static int cyberjack_attach(struct usb_serial *serial);
+>>>>>>> v4.9.227
 static int cyberjack_port_probe(struct usb_serial_port *port);
 static int cyberjack_port_remove(struct usb_serial_port *port);
 static int  cyberjack_open(struct tty_struct *tty,
@@ -77,6 +81,10 @@ static struct usb_serial_driver cyberjack_device = {
 	.description =		"Reiner SCT Cyberjack USB card reader",
 	.id_table =		id_table,
 	.num_ports =		1,
+<<<<<<< HEAD
+=======
+	.attach =		cyberjack_attach,
+>>>>>>> v4.9.227
 	.port_probe =		cyberjack_port_probe,
 	.port_remove =		cyberjack_port_remove,
 	.open =			cyberjack_open,
@@ -100,6 +108,17 @@ struct cyberjack_private {
 	short		wrsent;		/* Data already sent */
 };
 
+<<<<<<< HEAD
+=======
+static int cyberjack_attach(struct usb_serial *serial)
+{
+	if (serial->num_bulk_out < serial->num_ports)
+		return -ENODEV;
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int cyberjack_port_probe(struct usb_serial_port *port)
 {
 	struct cyberjack_private *priv;
@@ -140,7 +159,10 @@ static int  cyberjack_open(struct tty_struct *tty,
 {
 	struct cyberjack_private *priv;
 	unsigned long flags;
+<<<<<<< HEAD
 	int result = 0;
+=======
+>>>>>>> v4.9.227
 
 	dev_dbg(&port->dev, "%s - usb_clear_halt\n", __func__);
 	usb_clear_halt(port->serial->dev, port->write_urb->pipe);
@@ -152,7 +174,11 @@ static int  cyberjack_open(struct tty_struct *tty,
 	priv->wrsent = 0;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
+<<<<<<< HEAD
 	return result;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void cyberjack_close(struct usb_serial_port *port)

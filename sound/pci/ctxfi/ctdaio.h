@@ -51,7 +51,11 @@ struct daio {
 
 struct dao {
 	struct daio daio;
+<<<<<<< HEAD
 	struct dao_rsc_ops *ops;	/* DAO specific operations */
+=======
+	const struct dao_rsc_ops *ops;	/* DAO specific operations */
+>>>>>>> v4.9.227
 	struct imapper **imappers;
 	struct daio_mgr *mgr;
 	struct hw *hw;
@@ -60,7 +64,11 @@ struct dao {
 
 struct dai {
 	struct daio daio;
+<<<<<<< HEAD
 	struct dai_rsc_ops *ops;	/* DAI specific operations */
+=======
+	const struct dai_rsc_ops *ops;	/* DAI specific operations */
+>>>>>>> v4.9.227
 	struct hw *hw;
 	void *ctrl_blk;
 };

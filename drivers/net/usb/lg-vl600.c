@@ -201,7 +201,11 @@ static int vl600_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 					&buf->data[sizeof(*ethhdr) + 0x12],
 					ETH_ALEN);
 		} else {
+<<<<<<< HEAD
 			memset(ethhdr->h_source, 0, ETH_ALEN);
+=======
+			eth_zero_addr(ethhdr->h_source);
+>>>>>>> v4.9.227
 			memcpy(ethhdr->h_dest, dev->net->dev_addr, ETH_ALEN);
 
 			/* Inbound IPv6 packets have an IPv4 ethertype (0x800)

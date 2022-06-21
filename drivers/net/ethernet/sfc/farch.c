@@ -20,6 +20,11 @@
 #include "efx.h"
 #include "nic.h"
 #include "farch_regs.h"
+<<<<<<< HEAD
+=======
+#include "sriov.h"
+#include "siena_sriov.h"
+>>>>>>> v4.9.227
 #include "io.h"
 #include "workarounds.h"
 
@@ -102,7 +107,12 @@ int efx_farch_test_registers(struct efx_nic *efx,
 			     const struct efx_farch_register_test *regs,
 			     size_t n_regs)
 {
+<<<<<<< HEAD
 	unsigned address = 0, i, j;
+=======
+	unsigned address = 0;
+	int i, j;
+>>>>>>> v4.9.227
 	efx_oword_t mask, imask, original, reg, buf;
 
 	for (i = 0; i < n_regs; ++i) {
@@ -226,6 +236,12 @@ static int efx_alloc_special_buffer(struct efx_nic *efx,
 				    struct efx_special_buffer *buffer,
 				    unsigned int len)
 {
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SFC_SRIOV
+	struct siena_nic_data *nic_data = efx->nic_data;
+#endif
+>>>>>>> v4.9.227
 	len = ALIGN(len, EFX_BUF_SIZE);
 
 	if (efx_nic_alloc_buffer(efx, &buffer->buf, len, GFP_KERNEL))
@@ -237,8 +253,13 @@ static int efx_alloc_special_buffer(struct efx_nic *efx,
 	buffer->index = efx->next_buffer_table;
 	efx->next_buffer_table += buffer->entries;
 #ifdef CONFIG_SFC_SRIOV
+<<<<<<< HEAD
 	BUG_ON(efx_sriov_enabled(efx) &&
 	       efx->vf_buftbl_base < efx->next_buffer_table);
+=======
+	BUG_ON(efx_siena_sriov_enabled(efx) &&
+	       nic_data->vf_buftbl_base < efx->next_buffer_table);
+>>>>>>> v4.9.227
 #endif
 
 	netif_dbg(efx, probe, efx->net_dev,
@@ -644,7 +665,11 @@ static bool efx_check_tx_flush_complete(struct efx_nic *efx)
 }
 
 /* Flush all the transmit queues, and continue flushing receive queues until
+<<<<<<< HEAD
  * they're all flushed. Wait for the DRAIN events to be recieved so that there
+=======
+ * they're all flushed. Wait for the DRAIN events to be received so that there
+>>>>>>> v4.9.227
  * are no more RX and TX events left on any channel. */
 static int efx_farch_do_flush(struct efx_nic *efx)
 {
@@ -669,7 +694,11 @@ static int efx_farch_do_flush(struct efx_nic *efx)
 		 * the firmware (though we will still have to poll for
 		 * completion). If that fails, fall back to the old scheme.
 		 */
+<<<<<<< HEAD
 		if (efx_sriov_enabled(efx)) {
+=======
+		if (efx_siena_sriov_enabled(efx)) {
+>>>>>>> v4.9.227
 			rc = efx_mcdi_flush_rxqs(efx);
 			if (!rc)
 				goto wait;
@@ -1107,7 +1136,11 @@ efx_farch_handle_tx_flush_done(struct efx_nic *efx, efx_qword_t *event)
 }
 
 /* If this flush done event corresponds to a &struct efx_rx_queue: If the flush
+<<<<<<< HEAD
  * was succesful then send an %EFX_CHANNEL_MAGIC_RX_DRAIN, otherwise add
+=======
+ * was successful then send an %EFX_CHANNEL_MAGIC_RX_DRAIN, otherwise add
+>>>>>>> v4.9.227
  * the RX queue back to the mask of RX queues in need of flushing.
  */
 static void
@@ -1197,13 +1230,25 @@ efx_farch_handle_driver_event(struct efx_channel *channel, efx_qword_t *event)
 		netif_vdbg(efx, hw, efx->net_dev, "channel %d TXQ %d flushed\n",
 			   channel->channel, ev_sub_data);
 		efx_farch_handle_tx_flush_done(efx, event);
+<<<<<<< HEAD
 		efx_sriov_tx_flush_done(efx, event);
+=======
+#ifdef CONFIG_SFC_SRIOV
+		efx_siena_sriov_tx_flush_done(efx, event);
+#endif
+>>>>>>> v4.9.227
 		break;
 	case FSE_AZ_RX_DESCQ_FLS_DONE_EV:
 		netif_vdbg(efx, hw, efx->net_dev, "channel %d RXQ %d flushed\n",
 			   channel->channel, ev_sub_data);
 		efx_farch_handle_rx_flush_done(efx, event);
+<<<<<<< HEAD
 		efx_sriov_rx_flush_done(efx, event);
+=======
+#ifdef CONFIG_SFC_SRIOV
+		efx_siena_sriov_rx_flush_done(efx, event);
+#endif
+>>>>>>> v4.9.227
 		break;
 	case FSE_AZ_EVQ_INIT_DONE_EV:
 		netif_dbg(efx, hw, efx->net_dev,
@@ -1241,8 +1286,16 @@ efx_farch_handle_driver_event(struct efx_channel *channel, efx_qword_t *event)
 				  " RX Q %d is disabled.\n", ev_sub_data,
 				  ev_sub_data);
 			efx_schedule_reset(efx, RESET_TYPE_DMA_ERROR);
+<<<<<<< HEAD
 		} else
 			efx_sriov_desc_fetch_err(efx, ev_sub_data);
+=======
+		}
+#ifdef CONFIG_SFC_SRIOV
+		else
+			efx_siena_sriov_desc_fetch_err(efx, ev_sub_data);
+#endif
+>>>>>>> v4.9.227
 		break;
 	case FSE_BZ_TX_DSC_ERROR_EV:
 		if (ev_sub_data < EFX_VI_BASE) {
@@ -1251,8 +1304,16 @@ efx_farch_handle_driver_event(struct efx_channel *channel, efx_qword_t *event)
 				  " TX Q %d is disabled.\n", ev_sub_data,
 				  ev_sub_data);
 			efx_schedule_reset(efx, RESET_TYPE_DMA_ERROR);
+<<<<<<< HEAD
 		} else
 			efx_sriov_desc_fetch_err(efx, ev_sub_data);
+=======
+		}
+#ifdef CONFIG_SFC_SRIOV
+		else
+			efx_siena_sriov_desc_fetch_err(efx, ev_sub_data);
+#endif
+>>>>>>> v4.9.227
 		break;
 	default:
 		netif_vdbg(efx, hw, efx->net_dev,
@@ -1316,9 +1377,17 @@ int efx_farch_ev_process(struct efx_channel *channel, int budget)
 		case FSE_AZ_EV_CODE_DRIVER_EV:
 			efx_farch_handle_driver_event(channel, &event);
 			break;
+<<<<<<< HEAD
 		case FSE_CZ_EV_CODE_USER_EV:
 			efx_sriov_event(channel, &event);
 			break;
+=======
+#ifdef CONFIG_SFC_SRIOV
+		case FSE_CZ_EV_CODE_USER_EV:
+			efx_siena_sriov_event(channel, &event);
+			break;
+#endif
+>>>>>>> v4.9.227
 		case FSE_CZ_EV_CODE_MCDI_EV:
 			efx_mcdi_process_event(channel, &event);
 			break;
@@ -1459,9 +1528,16 @@ void efx_farch_irq_disable_master(struct efx_nic *efx)
  * Interrupt must already have been enabled, otherwise nasty things
  * may happen.
  */
+<<<<<<< HEAD
 void efx_farch_irq_test_generate(struct efx_nic *efx)
 {
 	efx_farch_interrupts(efx, true, true);
+=======
+int efx_farch_irq_test_generate(struct efx_nic *efx)
+{
+	efx_farch_interrupts(efx, true, true);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /* Process a fatal interrupt
@@ -1670,6 +1746,13 @@ void efx_farch_dimension_resources(struct efx_nic *efx, unsigned sram_lim_qw)
 {
 	unsigned vi_count, buftbl_min;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SFC_SRIOV
+	struct siena_nic_data *nic_data = efx->nic_data;
+#endif
+
+>>>>>>> v4.9.227
 	/* Account for the buffer table entries backing the datapath channels
 	 * and the descriptor caches for those channels.
 	 */
@@ -1680,6 +1763,7 @@ void efx_farch_dimension_resources(struct efx_nic *efx, unsigned sram_lim_qw)
 	vi_count = max(efx->n_channels, efx->n_tx_channels * EFX_TXQ_TYPES);
 
 #ifdef CONFIG_SFC_SRIOV
+<<<<<<< HEAD
 	if (efx_sriov_wanted(efx)) {
 		unsigned vi_dc_entries, buftbl_free, entries_per_vf, vf_limit;
 
@@ -1702,6 +1786,34 @@ void efx_farch_dimension_resources(struct efx_nic *efx, unsigned sram_lim_qw)
 			efx->vf_count = vf_limit;
 		}
 		vi_count += efx->vf_count * efx_vf_size(efx);
+=======
+	if (efx->type->sriov_wanted) {
+		if (efx->type->sriov_wanted(efx)) {
+			unsigned vi_dc_entries, buftbl_free;
+			unsigned entries_per_vf, vf_limit;
+
+			nic_data->vf_buftbl_base = buftbl_min;
+
+			vi_dc_entries = RX_DC_ENTRIES + TX_DC_ENTRIES;
+			vi_count = max(vi_count, EFX_VI_BASE);
+			buftbl_free = (sram_lim_qw - buftbl_min -
+				       vi_count * vi_dc_entries);
+
+			entries_per_vf = ((vi_dc_entries +
+					   EFX_VF_BUFTBL_PER_VI) *
+					  efx_vf_size(efx));
+			vf_limit = min(buftbl_free / entries_per_vf,
+				       (1024U - EFX_VI_BASE) >> efx->vi_scale);
+
+			if (efx->vf_count > vf_limit) {
+				netif_err(efx, probe, efx->net_dev,
+					  "Reducing VF count from from %d to %d\n",
+					  efx->vf_count, vf_limit);
+				efx->vf_count = vf_limit;
+			}
+			vi_count += efx->vf_count * efx_vf_size(efx);
+		}
+>>>>>>> v4.9.227
 	}
 #endif
 
@@ -2217,7 +2329,11 @@ efx_farch_filter_init_rx_auto(struct efx_nic *efx,
 	 */
 	spec->priority = EFX_FILTER_PRI_AUTO;
 	spec->flags = (EFX_FILTER_FLAG_RX |
+<<<<<<< HEAD
 		       (efx->n_rx_channels > 1 ? EFX_FILTER_FLAG_RX_RSS : 0) |
+=======
+		       (efx_rss_enabled(efx) ? EFX_FILTER_FLAG_RX_RSS : 0) |
+>>>>>>> v4.9.227
 		       (efx->rx_scatter ? EFX_FILTER_FLAG_RX_SCATTER : 0));
 	spec->dmaq_id = 0;
 }

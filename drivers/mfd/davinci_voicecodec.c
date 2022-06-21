@@ -33,7 +33,11 @@
 
 #include <linux/mfd/davinci_voicecodec.h>
 
+<<<<<<< HEAD
 static struct regmap_config davinci_vc_regmap = {
+=======
+static const struct regmap_config davinci_vc_regmap = {
+>>>>>>> v4.9.227
 	.reg_bits = 32,
 	.val_bits = 32,
 };
@@ -47,11 +51,16 @@ static int __init davinci_vc_probe(struct platform_device *pdev)
 
 	davinci_vc = devm_kzalloc(&pdev->dev,
 				  sizeof(struct davinci_vc), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!davinci_vc) {
 		dev_dbg(&pdev->dev,
 			    "could not allocate memory for private data\n");
 		return -ENOMEM;
 	}
+=======
+	if (!davinci_vc)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	davinci_vc->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(davinci_vc->clk)) {
@@ -143,7 +152,10 @@ static int davinci_vc_remove(struct platform_device *pdev)
 static struct platform_driver davinci_vc_driver = {
 	.driver	= {
 		.name = "davinci_voicecodec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.remove	= davinci_vc_remove,
 };

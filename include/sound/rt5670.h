@@ -14,6 +14,10 @@
 struct rt5670_platform_data {
 	int jd_mode;
 	bool in2_diff;
+<<<<<<< HEAD
+=======
+	bool dev_gpio;
+>>>>>>> v4.9.227
 
 	bool dmic_en;
 	unsigned int dmic1_data_pin;

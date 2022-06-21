@@ -35,7 +35,11 @@
 #include <linux/time.h>
 #include <linux/cpu.h>
 #include <linux/prefetch.h>
+<<<<<<< HEAD
 #include <linux/ftrace_event.h>
+=======
+#include <linux/trace_events.h>
+>>>>>>> v4.9.227
 
 #include "rcu.h"
 
@@ -44,6 +48,7 @@ struct rcu_ctrlblk;
 static void __rcu_process_callbacks(struct rcu_ctrlblk *rcp);
 static void rcu_process_callbacks(struct softirq_action *unused);
 static void __call_rcu(struct rcu_head *head,
+<<<<<<< HEAD
 		       void (*func)(struct rcu_head *rcu),
 		       struct rcu_ctrlblk *rcp);
 
@@ -172,6 +177,13 @@ void rcu_irq_enter(void)
 }
 EXPORT_SYMBOL_GPL(rcu_irq_enter);
 
+=======
+		       rcu_callback_t func,
+		       struct rcu_ctrlblk *rcp);
+
+#include "tiny_plugin.h"
+
+>>>>>>> v4.9.227
 #if defined(CONFIG_DEBUG_LOCK_ALLOC) || defined(CONFIG_RCU_TRACE)
 
 /*
@@ -179,13 +191,18 @@ EXPORT_SYMBOL_GPL(rcu_irq_enter);
  */
 bool notrace __rcu_is_watching(void)
 {
+<<<<<<< HEAD
 	return rcu_dynticks_nesting;
+=======
+	return true;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(__rcu_is_watching);
 
 #endif /* defined(CONFIG_DEBUG_LOCK_ALLOC) || defined(CONFIG_RCU_TRACE) */
 
 /*
+<<<<<<< HEAD
  * Test whether the current CPU was interrupted from idle.  Nested
  * interrupts don't count, we must be running at the first interrupt
  * level.
@@ -196,6 +213,8 @@ static int rcu_is_cpu_rrupt_from_idle(void)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Helper function for rcu_sched_qs() and rcu_bh_qs().
  * Also irqs are disabled to avoid confusion due to interrupt handlers
  * invoking call_rcu().
@@ -203,8 +222,12 @@ static int rcu_is_cpu_rrupt_from_idle(void)
 static int rcu_qsctr_help(struct rcu_ctrlblk *rcp)
 {
 	RCU_TRACE(reset_cpu_stall_ticks(rcp));
+<<<<<<< HEAD
 	if (rcp->rcucblist != NULL &&
 	    rcp->donetail != rcp->curtail) {
+=======
+	if (rcp->donetail != rcp->curtail) {
+>>>>>>> v4.9.227
 		rcp->donetail = rcp->curtail;
 		return 1;
 	}
@@ -247,10 +270,17 @@ void rcu_bh_qs(void)
  * be called from hardirq context.  It is normally called from the
  * scheduling-clock interrupt.
  */
+<<<<<<< HEAD
 void rcu_check_callbacks(int cpu, int user)
 {
 	RCU_TRACE(check_cpu_stalls());
 	if (user || rcu_is_cpu_rrupt_from_idle())
+=======
+void rcu_check_callbacks(int user)
+{
+	RCU_TRACE(check_cpu_stalls());
+	if (user)
+>>>>>>> v4.9.227
 		rcu_sched_qs();
 	else if (!in_softirq())
 		rcu_bh_qs();
@@ -269,6 +299,7 @@ static void __rcu_process_callbacks(struct rcu_ctrlblk *rcp)
 	unsigned long flags;
 	RCU_TRACE(int cb_count = 0);
 
+<<<<<<< HEAD
 	/* If no RCU callbacks ready to invoke, just return. */
 	if (&rcp->rcucblist == rcp->donetail) {
 		RCU_TRACE(trace_rcu_batch_start(rcp->name, 0, 0, -1));
@@ -280,6 +311,8 @@ static void __rcu_process_callbacks(struct rcu_ctrlblk *rcp)
 		return;
 	}
 
+=======
+>>>>>>> v4.9.227
 	/* Move the ready-to-invoke callbacks to a local list. */
 	local_irq_save(flags);
 	if (rcp->donetail == &rcp->rcucblist) {
@@ -315,7 +348,11 @@ static void __rcu_process_callbacks(struct rcu_ctrlblk *rcp)
 				      false));
 }
 
+<<<<<<< HEAD
 static void rcu_process_callbacks(struct softirq_action *unused)
+=======
+static __latent_entropy void rcu_process_callbacks(struct softirq_action *unused)
+>>>>>>> v4.9.227
 {
 	__rcu_process_callbacks(&rcu_sched_ctrlblk);
 	__rcu_process_callbacks(&rcu_bh_ctrlblk);
@@ -330,6 +367,7 @@ static void rcu_process_callbacks(struct softirq_action *unused)
  * benefits of doing might_sleep() to reduce latency.)
  *
  * Cool, huh?  (Due to Josh Triplett.)
+<<<<<<< HEAD
  *
  * But we want to make this a static inline later.  The cond_resched()
  * currently makes this problematic.
@@ -341,6 +379,15 @@ void synchronize_sched(void)
 			   !lock_is_held(&rcu_sched_lock_map),
 			   "Illegal synchronize_sched() in RCU read-side critical section");
 	cond_resched();
+=======
+ */
+void synchronize_sched(void)
+{
+	RCU_LOCKDEP_WARN(lock_is_held(&rcu_bh_lock_map) ||
+			 lock_is_held(&rcu_lock_map) ||
+			 lock_is_held(&rcu_sched_lock_map),
+			 "Illegal synchronize_sched() in RCU read-side critical section");
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(synchronize_sched);
 
@@ -348,7 +395,11 @@ EXPORT_SYMBOL_GPL(synchronize_sched);
  * Helper function for call_rcu() and call_rcu_bh().
  */
 static void __call_rcu(struct rcu_head *head,
+<<<<<<< HEAD
 		       void (*func)(struct rcu_head *rcu),
+=======
+		       rcu_callback_t func,
+>>>>>>> v4.9.227
 		       struct rcu_ctrlblk *rcp)
 {
 	unsigned long flags;
@@ -362,6 +413,14 @@ static void __call_rcu(struct rcu_head *head,
 	rcp->curtail = &head->next;
 	RCU_TRACE(rcp->qlen++);
 	local_irq_restore(flags);
+<<<<<<< HEAD
+=======
+
+	if (unlikely(is_idle_task(current))) {
+		/* force scheduling for rcu_sched_qs() */
+		resched_cpu(0);
+	}
+>>>>>>> v4.9.227
 }
 
 /*
@@ -369,7 +428,11 @@ static void __call_rcu(struct rcu_head *head,
  * period.  But since we have but one CPU, that would be after any
  * quiescent state.
  */
+<<<<<<< HEAD
 void call_rcu_sched(struct rcu_head *head, void (*func)(struct rcu_head *rcu))
+=======
+void call_rcu_sched(struct rcu_head *head, rcu_callback_t func)
+>>>>>>> v4.9.227
 {
 	__call_rcu(head, func, &rcu_sched_ctrlblk);
 }
@@ -379,13 +442,27 @@ EXPORT_SYMBOL_GPL(call_rcu_sched);
  * Post an RCU bottom-half callback to be invoked after any subsequent
  * quiescent state.
  */
+<<<<<<< HEAD
 void call_rcu_bh(struct rcu_head *head, void (*func)(struct rcu_head *rcu))
+=======
+void call_rcu_bh(struct rcu_head *head, rcu_callback_t func)
+>>>>>>> v4.9.227
 {
 	__call_rcu(head, func, &rcu_bh_ctrlblk);
 }
 EXPORT_SYMBOL_GPL(call_rcu_bh);
 
+<<<<<<< HEAD
 void rcu_init(void)
 {
 	open_softirq(RCU_SOFTIRQ, rcu_process_callbacks);
+=======
+void __init rcu_init(void)
+{
+	open_softirq(RCU_SOFTIRQ, rcu_process_callbacks);
+	RCU_TRACE(reset_cpu_stall_ticks(&rcu_sched_ctrlblk));
+	RCU_TRACE(reset_cpu_stall_ticks(&rcu_bh_ctrlblk));
+
+	rcu_early_boot_tests();
+>>>>>>> v4.9.227
 }

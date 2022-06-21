@@ -210,12 +210,20 @@ static int spi_ppc4xx_setupxfer(struct spi_device *spi, struct spi_transfer *t)
 	if (in_8(&hw->regs->cdm) != cdm)
 		out_8(&hw->regs->cdm, cdm);
 
+<<<<<<< HEAD
 	spin_lock(&hw->bitbang.lock);
+=======
+	mutex_lock(&hw->bitbang.lock);
+>>>>>>> v4.9.227
 	if (!hw->bitbang.busy) {
 		hw->bitbang.chipselect(spi, BITBANG_CS_INACTIVE);
 		/* Need to ndelay here? */
 	}
+<<<<<<< HEAD
 	spin_unlock(&hw->bitbang.lock);
+=======
+	mutex_unlock(&hw->bitbang.lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -575,7 +583,10 @@ static struct platform_driver spi_ppc4xx_of_driver = {
 	.remove = spi_ppc4xx_of_remove,
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = spi_ppc4xx_of_match,
 	},
 };

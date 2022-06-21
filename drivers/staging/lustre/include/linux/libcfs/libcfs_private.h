@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -42,14 +46,20 @@
 #ifndef __LIBCFS_PRIVATE_H__
 #define __LIBCFS_PRIVATE_H__
 
+<<<<<<< HEAD
 /* XXX this layering violation is for nidstrings */
 #include "../lnet/types.h"
 
+=======
+>>>>>>> v4.9.227
 #ifndef DEBUG_SUBSYSTEM
 # define DEBUG_SUBSYSTEM S_UNDEFINED
 #endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  * When this is on, LASSERT macro includes check for assignment used instead
  * of equality check, but doesn't have unlikely(). Turn this on from time to
@@ -83,7 +93,11 @@ do {									\
 
 #define KLASSERT(e) LASSERT(e)
 
+<<<<<<< HEAD
 void lbug_with_loc(struct libcfs_debug_msg_data *)__attribute__((noreturn));
+=======
+void __noreturn lbug_with_loc(struct libcfs_debug_msg_data *);
+>>>>>>> v4.9.227
 
 #define LBUG()							  \
 do {								    \
@@ -91,6 +105,7 @@ do {								    \
 	lbug_with_loc(&msgdata);					\
 } while (0)
 
+<<<<<<< HEAD
 extern atomic_t libcfs_kmemory;
 /*
  * Memory
@@ -111,13 +126,21 @@ do {						\
 
 #ifndef LIBCFS_VMALLOC_SIZE
 #define LIBCFS_VMALLOC_SIZE	(2 << PAGE_CACHE_SHIFT) /* 2 pages */
+=======
+#ifndef LIBCFS_VMALLOC_SIZE
+#define LIBCFS_VMALLOC_SIZE	(2 << PAGE_SHIFT) /* 2 pages */
+>>>>>>> v4.9.227
 #endif
 
 #define LIBCFS_ALLOC_PRE(size, mask)					    \
 do {									    \
 	LASSERT(!in_interrupt() ||					    \
 		((size) <= LIBCFS_VMALLOC_SIZE &&			    \
+<<<<<<< HEAD
 		 ((mask) & __GFP_WAIT) == 0));				    \
+=======
+		 !gfpflags_allow_blocking(mask)));			    \
+>>>>>>> v4.9.227
 } while (0)
 
 #define LIBCFS_ALLOC_POST(ptr, size)					    \
@@ -125,6 +148,7 @@ do {									    \
 	if (unlikely((ptr) == NULL)) {					    \
 		CERROR("LNET: out of memory at %s:%d (tried to alloc '"	    \
 		       #ptr "' = %d)\n", __FILE__, __LINE__, (int)(size));  \
+<<<<<<< HEAD
 		CERROR("LNET: %d total bytes allocated by lnet\n",	    \
 		       libcfs_kmem_read());				    \
 	} else {							    \
@@ -133,6 +157,11 @@ do {									    \
 		CDEBUG(D_MALLOC, "alloc '" #ptr "': %d at %p (tot %d).\n",  \
 		       (int)(size), (ptr), libcfs_kmem_read());		    \
 	}								   \
+=======
+	} else {							    \
+		memset((ptr), 0, (size));				    \
+	}								    \
+>>>>>>> v4.9.227
 } while (0)
 
 /**
@@ -178,6 +207,7 @@ do {									    \
 
 #define LIBCFS_FREE(ptr, size)					  \
 do {								    \
+<<<<<<< HEAD
 	int s = (size);						 \
 	if (unlikely((ptr) == NULL)) {				  \
 		CERROR("LIBCFS: free NULL '" #ptr "' (%d bytes) at "    \
@@ -191,6 +221,14 @@ do {								    \
 		vfree(ptr);				    \
 	else							    \
 		kfree(ptr);					  \
+=======
+	if (unlikely((ptr) == NULL)) {				  \
+		CERROR("LIBCFS: free NULL '" #ptr "' (%d bytes) at "    \
+		       "%s:%d\n", (int)(size), __FILE__, __LINE__);	\
+		break;						  \
+	}							       \
+	kvfree(ptr);					  \
+>>>>>>> v4.9.227
 } while (0)
 
 /******************************************************************************/
@@ -215,6 +253,7 @@ int libcfs_debug_cleanup(void);
 int libcfs_debug_clear_buffer(void);
 int libcfs_debug_mark_buffer(const char *text);
 
+<<<<<<< HEAD
 void libcfs_debug_set_level(unsigned int debug_level);
 
 /*
@@ -236,6 +275,8 @@ void *cfs_percpt_index(void *vars, int idx);
 	for (i = 0; i < cfs_percpt_number(vars) &&	\
 		    ((var) = (vars)[i]) != NULL; i++)
 
+=======
+>>>>>>> v4.9.227
 /*
  * allocate a variable array, returned value is an array of pointers.
  * Caller can specify length of array by count.
@@ -335,6 +376,7 @@ do {							    \
 #define LASSERT_ATOMIC_ZERO(a)		  LASSERT_ATOMIC_EQ(a, 0)
 #define LASSERT_ATOMIC_POS(a)		   LASSERT_ATOMIC_GT(a, 0)
 
+<<<<<<< HEAD
 #define CFS_ALLOC_PTR(ptr)      LIBCFS_ALLOC(ptr, sizeof(*(ptr)));
 #define CFS_FREE_PTR(ptr)       LIBCFS_FREE(ptr, sizeof(*(ptr)));
 
@@ -393,6 +435,10 @@ atomic_t **cfs_percpt_atomic_alloc(struct cfs_cpt_table *cptab, int val);
 void cfs_percpt_atomic_free(atomic_t **refs);
 /* return sum of all percpu refs */
 int cfs_percpt_atomic_summary(atomic_t **refs);
+=======
+#define CFS_ALLOC_PTR(ptr)      LIBCFS_ALLOC(ptr, sizeof(*(ptr)))
+#define CFS_FREE_PTR(ptr)       LIBCFS_FREE(ptr, sizeof(*(ptr)))
+>>>>>>> v4.9.227
 
 /** Compile-time assertion.
 
@@ -410,6 +456,7 @@ int cfs_percpt_atomic_summary(atomic_t **refs);
  */
 #define CLASSERT(cond) do {switch (42) {case (cond): case 0: break; } } while (0)
 
+<<<<<<< HEAD
 /* support decl needed both by kernel and liblustre */
 int	 libcfs_isknown_lnd(int type);
 char       *libcfs_lnd2modname(int type);
@@ -440,6 +487,8 @@ int	 cfs_match_nid(lnet_nid_t nid, struct list_head *list);
 #define LNET_MKNET(typ, num)    ((((__u32)(typ))<<16)|((__u32)(num)))
 /** @} lnet_addr */
 
+=======
+>>>>>>> v4.9.227
 /* max value for numeric network address */
 #define MAX_NUMERIC_VALUE 0xffffffff
 
@@ -453,6 +502,7 @@ int	 cfs_match_nid(lnet_nid_t nid, struct list_head *list);
  * Support for temporary event tracing with minimal Heisenberg effect.
  * -------------------------------------------------------------------- */
 
+<<<<<<< HEAD
 struct libcfs_device_userstate {
 	int	   ldu_memhog_pages;
 	struct page   *ldu_memhog_root_page;
@@ -469,12 +519,21 @@ struct libcfs_device_userstate {
 #define MKSTR(ptr) ((ptr)) ? (ptr) : ""
 
 static inline int cfs_size_round4(int val)
+=======
+#define MKSTR(ptr) ((ptr)) ? (ptr) : ""
+
+static inline size_t cfs_size_round4(int val)
+>>>>>>> v4.9.227
 {
 	return (val + 3) & (~0x3);
 }
 
 #ifndef HAVE_CFS_SIZE_ROUND
+<<<<<<< HEAD
 static inline int cfs_size_round(int val)
+=======
+static inline size_t cfs_size_round(int val)
+>>>>>>> v4.9.227
 {
 	return (val + 7) & (~0x7);
 }
@@ -482,17 +541,29 @@ static inline int cfs_size_round(int val)
 #define HAVE_CFS_SIZE_ROUND
 #endif
 
+<<<<<<< HEAD
 static inline int cfs_size_round16(int val)
+=======
+static inline size_t cfs_size_round16(int val)
+>>>>>>> v4.9.227
 {
 	return (val + 0xf) & (~0xf);
 }
 
+<<<<<<< HEAD
 static inline int cfs_size_round32(int val)
+=======
+static inline size_t cfs_size_round32(int val)
+>>>>>>> v4.9.227
 {
 	return (val + 0x1f) & (~0x1f);
 }
 
+<<<<<<< HEAD
 static inline int cfs_size_round0(int val)
+=======
+static inline size_t cfs_size_round0(int val)
+>>>>>>> v4.9.227
 {
 	if (!val)
 		return 0;
@@ -501,6 +572,7 @@ static inline int cfs_size_round0(int val)
 
 static inline size_t cfs_round_strlen(char *fset)
 {
+<<<<<<< HEAD
 	return (size_t)cfs_size_round((int)strlen(fset) + 1);
 }
 
@@ -515,6 +587,9 @@ static inline unsigned int cfs_power2_roundup(unsigned int val)
 		val <<= 1;
 	}
 	return val;
+=======
+	return cfs_size_round((int)strlen(fset) + 1);
+>>>>>>> v4.9.227
 }
 
 #define LOGL(var, len, ptr)				       \
@@ -531,6 +606,7 @@ do {							    \
 	ptr += cfs_size_round(len);			     \
 } while (0)
 
+<<<<<<< HEAD
 #define LOGL0(var, len, ptr)			      \
 do {						    \
 	if (!len)				       \
@@ -561,4 +637,6 @@ enum {
 	GNILND    = 13,
 };
 
+=======
+>>>>>>> v4.9.227
 #endif

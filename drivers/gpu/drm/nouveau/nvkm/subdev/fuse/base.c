@@ -47,7 +47,11 @@ nvkm_fuse_new_(const struct nvkm_fuse_func *func, struct nvkm_device *device,
 	struct nvkm_fuse *fuse;
 	if (!(fuse = *pfuse = kzalloc(sizeof(*fuse), GFP_KERNEL)))
 		return -ENOMEM;
+<<<<<<< HEAD
 	nvkm_subdev_ctor(&nvkm_fuse, device, index, 0, &fuse->subdev);
+=======
+	nvkm_subdev_ctor(&nvkm_fuse, device, index, &fuse->subdev);
+>>>>>>> v4.9.227
 	fuse->func = func;
 	spin_lock_init(&fuse->lock);
 	return 0;

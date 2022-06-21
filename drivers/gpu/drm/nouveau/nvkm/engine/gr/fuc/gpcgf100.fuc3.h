@@ -370,9 +370,16 @@ uint32_t gf100_grgpc_code[] = {
 	0xf11f29f0,
 	0xf0080007,
 	0x02d00203,
+<<<<<<< HEAD
 /* 0x04bb: main */
 	0xf404bd00,
 	0x28f40031,
+=======
+/* 0x04bb: wait */
+	0xf404bd00,
+	0x31f40028,
+/* 0x04c1: main */
+>>>>>>> v4.9.227
 	0x1cd7f000,
 	0xf43921f4,
 	0xe4b0f401,
@@ -382,6 +389,7 @@ uint32_t gf100_grgpc_code[] = {
 	0xb60412fd,
 	0x1efd01e4,
 	0x0018fe05,
+<<<<<<< HEAD
 	0x05b021f5,
 /* 0x04eb: main_not_ctx_xfer */
 	0x94d30ef4,
@@ -419,19 +427,67 @@ uint32_t gf100_grgpc_code[] = {
 	0xfc0088fe,
 	0x0032f480,
 /* 0x056a: hub_barrier_done */
+=======
+	0x05b421f5,
+/* 0x04eb: main_not_ctx_xfer */
+	0x94d90ef4,
+	0xf5f010ef,
+	0x7e21f501,
+	0xcc0ef403,
+/* 0x04f8: ih */
+	0x80f900f9,
+	0xf90188fe,
+	0xf990f980,
+	0xf9b0f9a0,
+	0xf9e0f9d0,
+	0xf104bdf0,
+	0xf00200a7,
+	0xaacf00a3,
+	0x04abc400,
+	0xf02c0bf4,
+	0xe7f11cd7,
+	0xe3f01a00,
+	0x00eecf00,
+	0x1900f7f1,
+	0xcf00f3f0,
+	0x21f400ff,
+	0x01e7f004,
+	0x1d0007f1,
+	0xd00003f0,
+	0x04bd000e,
+/* 0x0548: ih_no_fifo */
+	0x010007f1,
+	0xd00003f0,
+	0x04bd000a,
+	0xe0fcf0fc,
+	0xb0fcd0fc,
+	0x90fca0fc,
+	0x88fe80fc,
+	0xfc80fc00,
+	0x0032f400,
+/* 0x056e: hub_barrier_done */
+>>>>>>> v4.9.227
 	0xf7f001f8,
 	0x040e9801,
 	0xb904febb,
 	0xe7f102ff,
 	0xe3f09418,
 	0x9d21f440,
+<<<<<<< HEAD
 /* 0x0582: ctx_redswitch */
+=======
+/* 0x0586: ctx_redswitch */
+>>>>>>> v4.9.227
 	0xf7f000f8,
 	0x0007f120,
 	0x0103f085,
 	0xbd000fd0,
 	0x08e7f004,
+<<<<<<< HEAD
 /* 0x0594: ctx_redswitch_delay */
+=======
+/* 0x0598: ctx_redswitch_delay */
+>>>>>>> v4.9.227
 	0xf401e2b6,
 	0xf5f1fd1b,
 	0xf5f10800,
@@ -439,13 +495,22 @@ uint32_t gf100_grgpc_code[] = {
 	0x03f08500,
 	0x000fd001,
 	0x00f804bd,
+<<<<<<< HEAD
 /* 0x05b0: ctx_xfer */
+=======
+/* 0x05b4: ctx_xfer */
+>>>>>>> v4.9.227
 	0x810007f1,
 	0xd00203f0,
 	0x04bd000f,
 	0xf50711f4,
+<<<<<<< HEAD
 /* 0x05c3: ctx_xfer_not_load */
 	0xf5058221,
+=======
+/* 0x05c7: ctx_xfer_not_load */
+	0xf5058621,
+>>>>>>> v4.9.227
 	0xbd026a21,
 	0xfc07f124,
 	0x0203f047,
@@ -475,12 +540,20 @@ uint32_t gf100_grgpc_code[] = {
 	0x6f21f508,
 	0x5e21f501,
 	0x0601f402,
+<<<<<<< HEAD
 /* 0x063b: ctx_xfer_post */
 	0xf50712f4,
 /* 0x063f: ctx_xfer_done */
 	0xf5027f21,
 	0xf8056a21,
 	0x00000000,
+=======
+/* 0x063f: ctx_xfer_post */
+	0xf50712f4,
+/* 0x0643: ctx_xfer_done */
+	0xf5027f21,
+	0xf8056e21,
+>>>>>>> v4.9.227
 	0x00000000,
 	0x00000000,
 	0x00000000,

@@ -168,7 +168,11 @@ void __jbd2_log_wait_for_space(journal_t *journal)
 				       "journal space in %s\n", __func__,
 				       journal->j_devname);
 				WARN_ON(1);
+<<<<<<< HEAD
 				jbd2_journal_abort(journal, 0);
+=======
+				jbd2_journal_abort(journal, -EIO);
+>>>>>>> v4.9.227
 			}
 			write_lock(&journal->j_state_lock);
 		} else {
@@ -254,8 +258,13 @@ restart:
 		bh = jh2bh(jh);
 
 		if (buffer_locked(bh)) {
+<<<<<<< HEAD
 			spin_unlock(&journal->j_list_lock);
 			get_bh(bh);
+=======
+			get_bh(bh);
+			spin_unlock(&journal->j_list_lock);
+>>>>>>> v4.9.227
 			wait_on_buffer(bh);
 			/* the journal_head may have gone by now */
 			BUFFER_TRACE(bh, "brelse");
@@ -336,8 +345,13 @@ restart2:
 		jh = transaction->t_checkpoint_io_list;
 		bh = jh2bh(jh);
 		if (buffer_locked(bh)) {
+<<<<<<< HEAD
 			spin_unlock(&journal->j_list_lock);
 			get_bh(bh);
+=======
+			get_bh(bh);
+			spin_unlock(&journal->j_list_lock);
+>>>>>>> v4.9.227
 			wait_on_buffer(bh);
 			/* the journal_head may have gone by now */
 			BUFFER_TRACE(bh, "brelse");
@@ -427,7 +441,10 @@ static int journal_clean_one_cp_list(struct journal_head *jh, bool destroy)
 	struct journal_head *last_jh;
 	struct journal_head *next_jh = jh;
 	int ret;
+<<<<<<< HEAD
 	int freed = 0;
+=======
+>>>>>>> v4.9.227
 
 	if (!jh)
 		return 0;
@@ -441,10 +458,16 @@ static int journal_clean_one_cp_list(struct journal_head *jh, bool destroy)
 		else
 			ret = __jbd2_journal_remove_checkpoint(jh) + 1;
 		if (!ret)
+<<<<<<< HEAD
 			return freed;
 		if (ret == 2)
 			return 1;
 		freed = 1;
+=======
+			return 0;
+		if (ret == 2)
+			return 1;
+>>>>>>> v4.9.227
 		/*
 		 * This function only frees up some memory
 		 * if possible so we dont have an obligation
@@ -452,10 +475,17 @@ static int journal_clean_one_cp_list(struct journal_head *jh, bool destroy)
 		 * requested:
 		 */
 		if (need_resched())
+<<<<<<< HEAD
 			return freed;
 	} while (jh != last_jh);
 
 	return freed;
+=======
+			return 0;
+	} while (jh != last_jh);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /*

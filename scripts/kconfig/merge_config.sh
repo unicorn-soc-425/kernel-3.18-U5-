@@ -32,7 +32,11 @@ usage() {
 	echo "  -m    only merge the fragments, do not execute the make command"
 	echo "  -n    use allnoconfig instead of alldefconfig"
 	echo "  -r    list redundant entries when merging fragments"
+<<<<<<< HEAD
 	echo "  -O    dir to put generated output files"
+=======
+	echo "  -O    dir to put generated output files.  Consider setting \$KCONFIG_CONFIG instead."
+>>>>>>> v4.9.227
 }
 
 RUNMAKE=true
@@ -77,6 +81,22 @@ while true; do
 	esac
 done
 
+<<<<<<< HEAD
+=======
+if [ "$#" -lt 1 ] ; then
+	usage
+	exit
+fi
+
+if [ -z "$KCONFIG_CONFIG" ]; then
+	if [ "$OUTPUT" != . ]; then
+		KCONFIG_CONFIG=$(readlink -m -- "$OUTPUT/.config")
+	else
+		KCONFIG_CONFIG=.config
+	fi
+fi
+
+>>>>>>> v4.9.227
 INITFILE=$1
 shift;
 
@@ -92,9 +112,19 @@ TMP_FILE=$(mktemp ./.tmp.config.XXXXXXXXXX)
 echo "Using $INITFILE as base"
 cat $INITFILE > $TMP_FILE
 
+<<<<<<< HEAD
 # Merge files, printing warnings on overrided values
 for MERGE_FILE in $MERGE_LIST ; do
 	echo "Merging $MERGE_FILE"
+=======
+# Merge files, printing warnings on overridden values
+for MERGE_FILE in $MERGE_LIST ; do
+	echo "Merging $MERGE_FILE"
+	if [ ! -r "$MERGE_FILE" ]; then
+		echo "The merge file '$MERGE_FILE' does not exist.  Exit." >&2
+		exit 1
+	fi
+>>>>>>> v4.9.227
 	CFG_LIST=$(sed -n "$SED_CONFIG_EXP" $MERGE_FILE)
 
 	for CFG in $CFG_LIST ; do
@@ -115,9 +145,15 @@ for MERGE_FILE in $MERGE_LIST ; do
 done
 
 if [ "$RUNMAKE" = "false" ]; then
+<<<<<<< HEAD
 	cp $TMP_FILE $OUTPUT/.config
 	echo "#"
 	echo "# merged configuration written to $OUTPUT/.config (needs make)"
+=======
+	cp -T -- "$TMP_FILE" "$KCONFIG_CONFIG"
+	echo "#"
+	echo "# merged configuration written to $KCONFIG_CONFIG (needs make)"
+>>>>>>> v4.9.227
 	echo "#"
 	clean_up
 	exit
@@ -141,7 +177,11 @@ make KCONFIG_ALLCONFIG=$TMP_FILE $OUTPUT_ARG $ALLTARGET
 for CFG in $(sed -n "$SED_CONFIG_EXP" $TMP_FILE); do
 
 	REQUESTED_VAL=$(grep -w -e "$CFG" $TMP_FILE)
+<<<<<<< HEAD
 	ACTUAL_VAL=$(grep -w -e "$CFG" $OUTPUT/.config)
+=======
+	ACTUAL_VAL=$(grep -w -e "$CFG" "$KCONFIG_CONFIG")
+>>>>>>> v4.9.227
 	if [ "x$REQUESTED_VAL" != "x$ACTUAL_VAL" ] ; then
 		echo "Value requested for $CFG not in final .config"
 		echo "Requested value:  $REQUESTED_VAL"

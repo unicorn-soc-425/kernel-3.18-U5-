@@ -87,7 +87,11 @@ static u8 DROPING_NECESSARY[RATESIZE] = {
 
 static u8 PendingForRateUpFail[5] = {2, 10, 24, 40, 60};
 static u16 DynamicTxRPTTiming[6] = {
+<<<<<<< HEAD
 	0x186a, 0x30d4, 0x493e, 0x61a8, 0x7a12 , 0x927c}; /*  200ms-1200ms */
+=======
+	0x186a, 0x30d4, 0x493e, 0x61a8, 0x7a12, 0x927c}; /*  200ms-1200ms */
+>>>>>>> v4.9.227
 
 /*  End Rate adaptive parameters */
 
@@ -115,17 +119,34 @@ static void odm_SetTxRPTTiming_8188E(
 	}
 	pRaInfo->RptTime = DynamicTxRPTTiming[idx];
 
+<<<<<<< HEAD
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD, ("pRaInfo->RptTime = 0x%x\n", pRaInfo->RptTime));
 }
 
 static int odm_RateDown_8188E(struct odm_dm_struct *dm_odm, struct odm_ra_info *pRaInfo)
+=======
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD,
+			("pRaInfo->RptTime = 0x%x\n", pRaInfo->RptTime));
+}
+
+static int odm_RateDown_8188E(struct odm_dm_struct *dm_odm,
+				struct odm_ra_info *pRaInfo)
+>>>>>>> v4.9.227
 {
 	u8 RateID, LowestRate, HighestRate;
 	u8 i;
 
+<<<<<<< HEAD
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE, ("=====>odm_RateDown_8188E()\n"));
 	if (NULL == pRaInfo) {
 		ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD, ("odm_RateDown_8188E(): pRaInfo is NULL\n"));
+=======
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE,
+			ODM_DBG_TRACE, ("=====>odm_RateDown_8188E()\n"));
+	if (!pRaInfo) {
+		ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD,
+				("odm_RateDown_8188E(): pRaInfo is NULL\n"));
+>>>>>>> v4.9.227
 		return -1;
 	}
 	RateID = pRaInfo->PreRate;
@@ -167,10 +188,22 @@ RateDownFinish:
 
 	pRaInfo->DecisionRate = RateID;
 	odm_SetTxRPTTiming_8188E(dm_odm, pRaInfo, 2);
+<<<<<<< HEAD
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD, ("Rate down, RPT Timing default\n"));
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE, ("RAWaitingCounter %d, RAPendingCounter %d", pRaInfo->RAWaitingCounter, pRaInfo->RAPendingCounter));
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD, ("Rate down to RateID %d RateSGI %d\n", RateID, pRaInfo->RateSGI));
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE, ("<===== odm_RateDown_8188E()\n"));
+=======
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE,
+			ODM_DBG_LOUD, ("Rate down, RPT Timing default\n"));
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
+			("RAWaitingCounter %d, RAPendingCounter %d",
+			 pRaInfo->RAWaitingCounter, pRaInfo->RAPendingCounter));
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD,
+			("Rate down to RateID %d RateSGI %d\n", RateID, pRaInfo->RateSGI));
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
+			("<===== odm_RateDown_8188E()\n"));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -182,9 +215,17 @@ static int odm_RateUp_8188E(
 	u8 RateID, HighestRate;
 	u8 i;
 
+<<<<<<< HEAD
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE, ("=====>odm_RateUp_8188E()\n"));
 	if (NULL == pRaInfo) {
 		ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD, ("odm_RateUp_8188E(): pRaInfo is NULL\n"));
+=======
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE,
+			ODM_DBG_TRACE, ("=====>odm_RateUp_8188E()\n"));
+	if (!pRaInfo) {
+		ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD,
+				("odm_RateUp_8188E(): pRaInfo is NULL\n"));
+>>>>>>> v4.9.227
 		return -1;
 	}
 	RateID = pRaInfo->PreRate;
@@ -200,7 +241,12 @@ static int odm_RateUp_8188E(
 		goto RateUpfinish;
 	}
 	odm_SetTxRPTTiming_8188E(dm_odm, pRaInfo, 0);
+<<<<<<< HEAD
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD, ("odm_RateUp_8188E():Decrease RPT Timing\n"));
+=======
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD,
+			("odm_RateUp_8188E():Decrease RPT Timing\n"));
+>>>>>>> v4.9.227
 
 	if (RateID < HighestRate) {
 		for (i = RateID+1; i <= HighestRate; i++) {
@@ -218,15 +264,30 @@ static int odm_RateUp_8188E(
 		RateID = HighestRate;
 	}
 RateUpfinish:
+<<<<<<< HEAD
 	if (pRaInfo->RAWaitingCounter == (4+PendingForRateUpFail[pRaInfo->RAPendingCounter]))
+=======
+	if (pRaInfo->RAWaitingCounter ==
+		(4+PendingForRateUpFail[pRaInfo->RAPendingCounter]))
+>>>>>>> v4.9.227
 		pRaInfo->RAWaitingCounter = 0;
 	else
 		pRaInfo->RAWaitingCounter++;
 
 	pRaInfo->DecisionRate = RateID;
+<<<<<<< HEAD
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD, ("Rate up to RateID %d\n", RateID));
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE, ("RAWaitingCounter %d, RAPendingCounter %d", pRaInfo->RAWaitingCounter, pRaInfo->RAPendingCounter));
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE, ("<===== odm_RateUp_8188E()\n"));
+=======
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD,
+			("Rate up to RateID %d\n", RateID));
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
+			("RAWaitingCounter %d, RAPendingCounter %d",
+			 pRaInfo->RAWaitingCounter, pRaInfo->RAPendingCounter));
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE,
+			ODM_DBG_TRACE, ("<===== odm_RateUp_8188E()\n"));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -243,11 +304,20 @@ static void odm_RateDecision_8188E(struct odm_dm_struct *dm_odm,
 		struct odm_ra_info *pRaInfo
 	)
 {
+<<<<<<< HEAD
 	u8 RateID = 0, RtyPtID = 0, PenaltyID1 = 0, PenaltyID2 = 0;
 	/* u32 pool_retry; */
 	static u8 DynamicTxRPTTimingCounter;
 
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE, ("=====>odm_RateDecision_8188E()\n"));
+=======
+	u8 RateID = 0, RtyPtID = 0, PenaltyID1 = 0, PenaltyID2 = 0, i = 0;
+	/* u32 pool_retry; */
+	static u8 DynamicTxRPTTimingCounter;
+
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
+			("=====>odm_RateDecision_8188E()\n"));
+>>>>>>> v4.9.227
 
 	if (pRaInfo->Active && (pRaInfo->TOTAL > 0)) { /*  STA used and data packet exits */
 		if ((pRaInfo->RssiStaRA < (pRaInfo->PreRssiStaRA - 3)) ||
@@ -268,6 +338,7 @@ static void odm_RateDecision_8188E(struct odm_dm_struct *dm_odm,
 
 		ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
 			     (" NscDown init is %d\n", pRaInfo->NscDown));
+<<<<<<< HEAD
 		pRaInfo->NscDown += pRaInfo->RTY[0] * RETRY_PENALTY[PenaltyID1][0];
 		pRaInfo->NscDown += pRaInfo->RTY[1] * RETRY_PENALTY[PenaltyID1][1];
 		pRaInfo->NscDown += pRaInfo->RTY[2] * RETRY_PENALTY[PenaltyID1][2];
@@ -276,6 +347,16 @@ static void odm_RateDecision_8188E(struct odm_dm_struct *dm_odm,
 		ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
 			     (" NscDown is %d, total*penalty[5] is %d\n",
 			     pRaInfo->NscDown, (pRaInfo->TOTAL * RETRY_PENALTY[PenaltyID1][5])));
+=======
+
+		for (i = 0 ; i <= 4 ; i++)
+			pRaInfo->NscDown += pRaInfo->RTY[i] * RETRY_PENALTY[PenaltyID1][i];
+
+		ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
+			     (" NscDown is %d, total*penalty[5] is %d\n", pRaInfo->NscDown,
+			      (pRaInfo->TOTAL * RETRY_PENALTY[PenaltyID1][5])));
+
+>>>>>>> v4.9.227
 		if (pRaInfo->NscDown > (pRaInfo->TOTAL * RETRY_PENALTY[PenaltyID1][5]))
 			pRaInfo->NscDown -= pRaInfo->TOTAL * RETRY_PENALTY[PenaltyID1][5];
 		else
@@ -285,6 +366,7 @@ static void odm_RateDecision_8188E(struct odm_dm_struct *dm_odm,
 		PenaltyID2 = RETRY_PENALTY_UP_IDX[RateID];
 		ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
 			     (" NscUp init is %d\n", pRaInfo->NscUp));
+<<<<<<< HEAD
 		pRaInfo->NscUp += pRaInfo->RTY[0] * RETRY_PENALTY[PenaltyID2][0];
 		pRaInfo->NscUp += pRaInfo->RTY[1] * RETRY_PENALTY[PenaltyID2][1];
 		pRaInfo->NscUp += pRaInfo->RTY[2] * RETRY_PENALTY[PenaltyID2][2];
@@ -293,6 +375,16 @@ static void odm_RateDecision_8188E(struct odm_dm_struct *dm_odm,
 		ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
 			     ("NscUp is %d, total*up[5] is %d\n",
 			     pRaInfo->NscUp, (pRaInfo->TOTAL * RETRY_PENALTY[PenaltyID2][5])));
+=======
+
+		for (i = 0 ; i <= 4 ; i++)
+			pRaInfo->NscUp += pRaInfo->RTY[i] * RETRY_PENALTY[PenaltyID2][i];
+
+		ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
+			     ("NscUp is %d, total*up[5] is %d\n",
+			     pRaInfo->NscUp, (pRaInfo->TOTAL * RETRY_PENALTY[PenaltyID2][5])));
+
+>>>>>>> v4.9.227
 		if (pRaInfo->NscUp > (pRaInfo->TOTAL * RETRY_PENALTY[PenaltyID2][5]))
 			pRaInfo->NscUp -= pRaInfo->TOTAL * RETRY_PENALTY[PenaltyID2][5];
 		else
@@ -487,7 +579,11 @@ static void odm_PTDecision_8188E(struct odm_ra_info *pRaInfo)
 			break;
 	}
 
+<<<<<<< HEAD
 	j = j >> 1;
+=======
+	j >>= 1;
+>>>>>>> v4.9.227
 	temp_stage = (pRaInfo->PTStage + 1) >> 1;
 	if (temp_stage > j)
 		stage_id = temp_stage-j;
@@ -538,7 +634,12 @@ int ODM_RAInfo_Init(struct odm_dm_struct *dm_odm, u8 macid)
 	struct odm_ra_info *pRaInfo = &dm_odm->RAInfo[macid];
 	u8 WirelessMode = 0xFF; /* invalid value */
 	u8 max_rate_idx = 0x13; /* MCS7 */
+<<<<<<< HEAD
 	if (dm_odm->pWirelessMode != NULL)
+=======
+
+	if (dm_odm->pWirelessMode)
+>>>>>>> v4.9.227
 		WirelessMode = *(dm_odm->pWirelessMode);
 
 	if (WirelessMode != 0xFF) {
@@ -605,7 +706,11 @@ int ODM_RAInfo_Init_all(struct odm_dm_struct *dm_odm)
 
 u8 ODM_RA_GetShortGI_8188E(struct odm_dm_struct *dm_odm, u8 macid)
 {
+<<<<<<< HEAD
 	if ((NULL == dm_odm) || (macid >= ASSOCIATE_ENTRY_NUM))
+=======
+	if ((!dm_odm) || (macid >= ASSOCIATE_ENTRY_NUM))
+>>>>>>> v4.9.227
 		return 0;
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
 		     ("macid =%d SGI =%d\n", macid, dm_odm->RAInfo[macid].RateSGI));
@@ -616,9 +721,15 @@ u8 ODM_RA_GetDecisionRate_8188E(struct odm_dm_struct *dm_odm, u8 macid)
 {
 	u8 DecisionRate = 0;
 
+<<<<<<< HEAD
 	if ((NULL == dm_odm) || (macid >= ASSOCIATE_ENTRY_NUM))
 		return 0;
 	DecisionRate = (dm_odm->RAInfo[macid].DecisionRate);
+=======
+	if ((!dm_odm) || (macid >= ASSOCIATE_ENTRY_NUM))
+		return 0;
+	DecisionRate = dm_odm->RAInfo[macid].DecisionRate;
+>>>>>>> v4.9.227
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
 		(" macid =%d DecisionRate = 0x%x\n", macid, DecisionRate));
 	return DecisionRate;
@@ -628,9 +739,15 @@ u8 ODM_RA_GetHwPwrStatus_8188E(struct odm_dm_struct *dm_odm, u8 macid)
 {
 	u8 PTStage = 5;
 
+<<<<<<< HEAD
 	if ((NULL == dm_odm) || (macid >= ASSOCIATE_ENTRY_NUM))
 		return 0;
 	PTStage = (dm_odm->RAInfo[macid].PTStage);
+=======
+	if ((!dm_odm) || (macid >= ASSOCIATE_ENTRY_NUM))
+		return 0;
+	PTStage = dm_odm->RAInfo[macid].PTStage;
+>>>>>>> v4.9.227
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
 		     ("macid =%d PTStage = 0x%x\n", macid, PTStage));
 	return PTStage;
@@ -640,11 +757,19 @@ void ODM_RA_UpdateRateInfo_8188E(struct odm_dm_struct *dm_odm, u8 macid, u8 Rate
 {
 	struct odm_ra_info *pRaInfo = NULL;
 
+<<<<<<< HEAD
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD,
 		     ("macid =%d RateID = 0x%x RateMask = 0x%x SGIEnable =%d\n",
 		     macid, RateID, RateMask, SGIEnable));
 	if ((NULL == dm_odm) || (macid >= ASSOCIATE_ENTRY_NUM))
 		return;
+=======
+	if ((!dm_odm) || (macid >= ASSOCIATE_ENTRY_NUM))
+		return;
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_LOUD,
+		     ("macid =%d RateID = 0x%x RateMask = 0x%x SGIEnable =%d\n",
+		     macid, RateID, RateMask, SGIEnable));
+>>>>>>> v4.9.227
 
 	pRaInfo = &(dm_odm->RAInfo[macid]);
 	pRaInfo->RateID = RateID;
@@ -657,10 +782,17 @@ void ODM_RA_SetRSSI_8188E(struct odm_dm_struct *dm_odm, u8 macid, u8 Rssi)
 {
 	struct odm_ra_info *pRaInfo = NULL;
 
+<<<<<<< HEAD
 	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
 		     (" macid =%d Rssi =%d\n", macid, Rssi));
 	if ((NULL == dm_odm) || (macid >= ASSOCIATE_ENTRY_NUM))
 		return;
+=======
+	if ((!dm_odm) || (macid >= ASSOCIATE_ENTRY_NUM))
+		return;
+	ODM_RT_TRACE(dm_odm, ODM_COMP_RATE_ADAPTIVE, ODM_DBG_TRACE,
+		     (" macid =%d Rssi =%d\n", macid, Rssi));
+>>>>>>> v4.9.227
 
 	pRaInfo = &(dm_odm->RAInfo[macid]);
 	pRaInfo->RssiStaRA = Rssi;

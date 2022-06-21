@@ -22,10 +22,17 @@
 #include <linux/module.h>
 #include <linux/vmalloc.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <asm/cputype.h>
 #include <asm/uaccess.h>
 #include <asm/kvm.h>
 #include <asm/kvm_asm.h>
+=======
+#include <kvm/arm_psci.h>
+#include <asm/cputype.h>
+#include <asm/uaccess.h>
+#include <asm/kvm.h>
+>>>>>>> v4.9.227
 #include <asm/kvm_emulate.h>
 #include <asm/kvm_coproc.h>
 
@@ -33,6 +40,15 @@
 #define VCPU_STAT(x) { #x, offsetof(struct kvm_vcpu, stat.x), KVM_STAT_VCPU }
 
 struct kvm_stats_debugfs_item debugfs_entries[] = {
+<<<<<<< HEAD
+=======
+	VCPU_STAT(hvc_exit_stat),
+	VCPU_STAT(wfe_exit_stat),
+	VCPU_STAT(wfi_exit_stat),
+	VCPU_STAT(mmio_exit_user),
+	VCPU_STAT(mmio_exit_kernel),
+	VCPU_STAT(exits),
+>>>>>>> v4.9.227
 	{ NULL }
 };
 
@@ -49,7 +65,11 @@ static u64 core_reg_offset_from_id(u64 id)
 static int get_core_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 {
 	u32 __user *uaddr = (u32 __user *)(long)reg->addr;
+<<<<<<< HEAD
 	struct kvm_regs *regs = &vcpu->arch.regs;
+=======
+	struct kvm_regs *regs = &vcpu->arch.ctxt.gp_regs;
+>>>>>>> v4.9.227
 	u64 off;
 
 	if (KVM_REG_SIZE(reg->id) != 4)
@@ -66,7 +86,11 @@ static int get_core_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 static int set_core_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 {
 	u32 __user *uaddr = (u32 __user *)(long)reg->addr;
+<<<<<<< HEAD
 	struct kvm_regs *regs = &vcpu->arch.regs;
+=======
+	struct kvm_regs *regs = &vcpu->arch.ctxt.gp_regs;
+>>>>>>> v4.9.227
 	u64 off, val;
 
 	if (KVM_REG_SIZE(reg->id) != 4)
@@ -109,6 +133,7 @@ int kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_KVM_ARM_TIMER
 
 #define NUM_TIMER_REGS 0
@@ -125,6 +150,8 @@ static bool is_timer_reg(u64 index)
 
 #else
 
+=======
+>>>>>>> v4.9.227
 #define NUM_TIMER_REGS 3
 
 static bool is_timer_reg(u64 index)
@@ -152,8 +179,11 @@ static int copy_timer_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
 	return 0;
 }
 
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int set_timer_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 {
 	void __user *uaddr = (void __user *)(long)reg->addr;
@@ -189,13 +219,21 @@ static unsigned long num_core_regs(void)
 unsigned long kvm_arm_num_regs(struct kvm_vcpu *vcpu)
 {
 	return num_core_regs() + kvm_arm_num_coproc_regs(vcpu)
+<<<<<<< HEAD
+=======
+		+ kvm_arm_get_fw_num_regs(vcpu)
+>>>>>>> v4.9.227
 		+ NUM_TIMER_REGS;
 }
 
 /**
  * kvm_arm_copy_reg_indices - get indices of all registers.
  *
+<<<<<<< HEAD
  * We do core registers right here, then we apppend coproc regs.
+=======
+ * We do core registers right here, then we append coproc regs.
+>>>>>>> v4.9.227
  */
 int kvm_arm_copy_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
 {
@@ -209,6 +247,14 @@ int kvm_arm_copy_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
 		uindices++;
 	}
 
+<<<<<<< HEAD
+=======
+	ret = kvm_arm_copy_fw_reg_indices(vcpu, uindices);
+	if (ret)
+		return ret;
+	uindices += kvm_arm_get_fw_num_regs(vcpu);
+
+>>>>>>> v4.9.227
 	ret = copy_timer_indices(vcpu, uindices);
 	if (ret)
 		return ret;
@@ -227,6 +273,12 @@ int kvm_arm_get_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 	if ((reg->id & KVM_REG_ARM_COPROC_MASK) == KVM_REG_ARM_CORE)
 		return get_core_reg(vcpu, reg);
 
+<<<<<<< HEAD
+=======
+	if ((reg->id & KVM_REG_ARM_COPROC_MASK) == KVM_REG_ARM_FW)
+		return kvm_arm_get_fw_reg(vcpu, reg);
+
+>>>>>>> v4.9.227
 	if (is_timer_reg(reg->id))
 		return get_timer_reg(vcpu, reg);
 
@@ -243,6 +295,12 @@ int kvm_arm_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 	if ((reg->id & KVM_REG_ARM_COPROC_MASK) == KVM_REG_ARM_CORE)
 		return set_core_reg(vcpu, reg);
 
+<<<<<<< HEAD
+=======
+	if ((reg->id & KVM_REG_ARM_COPROC_MASK) == KVM_REG_ARM_FW)
+		return kvm_arm_set_fw_reg(vcpu, reg);
+
+>>>>>>> v4.9.227
 	if (is_timer_reg(reg->id))
 		return set_timer_reg(vcpu, reg);
 
@@ -273,6 +331,7 @@ int __attribute_const__ kvm_target_cpu(void)
 	}
 }
 
+<<<<<<< HEAD
 int kvm_vcpu_set_target(struct kvm_vcpu *vcpu,
 			const struct kvm_vcpu_init *init)
 {
@@ -298,6 +357,8 @@ int kvm_vcpu_set_target(struct kvm_vcpu *vcpu,
 	return kvm_reset_vcpu(vcpu);
 }
 
+=======
+>>>>>>> v4.9.227
 int kvm_vcpu_preferred_target(struct kvm_vcpu_init *init)
 {
 	int target = kvm_target_cpu();
@@ -333,3 +394,12 @@ int kvm_arch_vcpu_ioctl_translate(struct kvm_vcpu *vcpu,
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
+=======
+
+int kvm_arch_vcpu_ioctl_set_guest_debug(struct kvm_vcpu *vcpu,
+					struct kvm_guest_debug *dbg)
+{
+	return -EINVAL;
+}
+>>>>>>> v4.9.227

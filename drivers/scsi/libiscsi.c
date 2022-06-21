@@ -797,9 +797,15 @@ __iscsi_conn_send_pdu(struct iscsi_conn *conn, struct iscsi_hdr *hdr,
 
 free_task:
 	/* regular RX path uses back_lock */
+<<<<<<< HEAD
 	spin_lock_bh(&session->back_lock);
 	__iscsi_put_task(task);
 	spin_unlock_bh(&session->back_lock);
+=======
+	spin_lock(&session->back_lock);
+	__iscsi_put_task(task);
+	spin_unlock(&session->back_lock);
+>>>>>>> v4.9.227
 	return NULL;
 }
 
@@ -859,12 +865,18 @@ static void iscsi_scsi_cmd_rsp(struct iscsi_conn *conn, struct iscsi_hdr *hdr,
 				     SAM_STAT_CHECK_CONDITION;
 			scsi_build_sense_buffer(1, sc->sense_buffer,
 						ILLEGAL_REQUEST, 0x10, ascq);
+<<<<<<< HEAD
 			sc->sense_buffer[7] = 0xc; /* Additional sense length */
 			sc->sense_buffer[8] = 0;   /* Information desc type */
 			sc->sense_buffer[9] = 0xa; /* Additional desc length */
 			sc->sense_buffer[10] = 0x80; /* Validity bit */
 
 			put_unaligned_be64(sector, &sc->sense_buffer[12]);
+=======
+			scsi_set_sense_information(sc->sense_buffer,
+						   SCSI_SENSE_BUFFERSIZE,
+						   sector);
+>>>>>>> v4.9.227
 			goto out;
 		}
 	}
@@ -985,13 +997,21 @@ static void iscsi_tmf_rsp(struct iscsi_conn *conn, struct iscsi_hdr *hdr)
 	wake_up(&conn->ehwait);
 }
 
+<<<<<<< HEAD
 static void iscsi_send_nopout(struct iscsi_conn *conn, struct iscsi_nopin *rhdr)
+=======
+static int iscsi_send_nopout(struct iscsi_conn *conn, struct iscsi_nopin *rhdr)
+>>>>>>> v4.9.227
 {
         struct iscsi_nopout hdr;
 	struct iscsi_task *task;
 
 	if (!rhdr && conn->ping_task)
+<<<<<<< HEAD
 		return;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 
 	memset(&hdr, 0, sizeof(struct iscsi_nopout));
 	hdr.opcode = ISCSI_OP_NOOP_OUT | ISCSI_OP_IMMEDIATE;
@@ -1005,13 +1025,25 @@ static void iscsi_send_nopout(struct iscsi_conn *conn, struct iscsi_nopin *rhdr)
 		hdr.ttt = RESERVED_ITT;
 
 	task = __iscsi_conn_send_pdu(conn, (struct iscsi_hdr *)&hdr, NULL, 0);
+<<<<<<< HEAD
 	if (!task)
 		iscsi_conn_printk(KERN_ERR, conn, "Could not send nopout\n");
 	else if (!rhdr) {
+=======
+	if (!task) {
+		iscsi_conn_printk(KERN_ERR, conn, "Could not send nopout\n");
+		return -EIO;
+	} else if (!rhdr) {
+>>>>>>> v4.9.227
 		/* only track our nops */
 		conn->ping_task = task;
 		conn->last_ping = jiffies;
 	}
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int iscsi_nop_out_rsp(struct iscsi_task *task,
@@ -1448,7 +1480,17 @@ static int iscsi_xmit_task(struct iscsi_conn *conn)
 	if (test_bit(ISCSI_SUSPEND_BIT, &conn->suspend_tx))
 		return -ENODATA;
 
+<<<<<<< HEAD
 	__iscsi_get_task(task);
+=======
+	spin_lock_bh(&conn->session->back_lock);
+	if (conn->task == NULL) {
+		spin_unlock_bh(&conn->session->back_lock);
+		return -ENODATA;
+	}
+	__iscsi_get_task(task);
+	spin_unlock_bh(&conn->session->back_lock);
+>>>>>>> v4.9.227
 	spin_unlock_bh(&conn->session->frwd_lock);
 	rc = conn->session->tt->xmit_task(task);
 	spin_lock_bh(&conn->session->frwd_lock);
@@ -1803,6 +1845,7 @@ fault:
 }
 EXPORT_SYMBOL_GPL(iscsi_queuecommand);
 
+<<<<<<< HEAD
 int iscsi_change_queue_depth(struct scsi_device *sdev, int depth, int reason)
 {
 	switch (reason) {
@@ -1822,6 +1865,8 @@ int iscsi_change_queue_depth(struct scsi_device *sdev, int depth, int reason)
 }
 EXPORT_SYMBOL_GPL(iscsi_change_queue_depth);
 
+=======
+>>>>>>> v4.9.227
 int iscsi_target_alloc(struct scsi_target *starget)
 {
 	struct iscsi_cls_session *cls_session = starget_to_session(starget);
@@ -1995,7 +2040,11 @@ static enum blk_eh_timer_return iscsi_eh_cmd_timed_out(struct scsi_cmnd *sc)
 
 	ISCSI_DBG_EH(session, "scsi cmd %p timedout\n", sc);
 
+<<<<<<< HEAD
 	spin_lock(&session->frwd_lock);
+=======
+	spin_lock_bh(&session->frwd_lock);
+>>>>>>> v4.9.227
 	task = (struct iscsi_task *)sc->SCp.ptr;
 	if (!task) {
 		/*
@@ -2122,7 +2171,11 @@ static enum blk_eh_timer_return iscsi_eh_cmd_timed_out(struct scsi_cmnd *sc)
 done:
 	if (task)
 		task->last_timeout = jiffies;
+<<<<<<< HEAD
 	spin_unlock(&session->frwd_lock);
+=======
+	spin_unlock_bh(&session->frwd_lock);
+>>>>>>> v4.9.227
 	ISCSI_DBG_EH(session, "return %s\n", rc == BLK_EH_RESET_TIMER ?
 		     "timer reset" : "shutdown or nh");
 	return rc;
@@ -2159,8 +2212,15 @@ static void iscsi_check_transport_timeouts(unsigned long data)
 	if (time_before_eq(last_recv + recv_timeout, jiffies)) {
 		/* send a ping to try to provoke some traffic */
 		ISCSI_DBG_CONN(conn, "Sending nopout as ping\n");
+<<<<<<< HEAD
 		iscsi_send_nopout(conn, NULL);
 		next_timeout = conn->last_ping + (conn->ping_timeout * HZ);
+=======
+		if (iscsi_send_nopout(conn, NULL))
+			next_timeout = jiffies + (1 * HZ);
+		else
+			next_timeout = conn->last_ping + (conn->ping_timeout * HZ);
+>>>>>>> v4.9.227
 	} else
 		next_timeout = last_recv + recv_timeout;
 
@@ -2189,7 +2249,11 @@ int iscsi_eh_abort(struct scsi_cmnd *sc)
 	struct iscsi_conn *conn;
 	struct iscsi_task *task;
 	struct iscsi_tm *hdr;
+<<<<<<< HEAD
 	int rc, age;
+=======
+	int age;
+>>>>>>> v4.9.227
 
 	cls_session = starget_to_session(scsi_target(sc->device));
 	session = cls_session->dd_data;
@@ -2250,10 +2314,15 @@ int iscsi_eh_abort(struct scsi_cmnd *sc)
 	hdr = &conn->tmhdr;
 	iscsi_prep_abort_task_pdu(task, hdr);
 
+<<<<<<< HEAD
 	if (iscsi_exec_task_mgmt_fn(conn, hdr, age, session->abort_timeout)) {
 		rc = FAILED;
 		goto failed;
 	}
+=======
+	if (iscsi_exec_task_mgmt_fn(conn, hdr, age, session->abort_timeout))
+		goto failed;
+>>>>>>> v4.9.227
 
 	switch (conn->tmf_state) {
 	case TMF_SUCCESS:
@@ -2433,8 +2502,13 @@ int iscsi_eh_session_reset(struct scsi_cmnd *sc)
 failed:
 		ISCSI_DBG_EH(session,
 			     "failing session reset: Could not log back into "
+<<<<<<< HEAD
 			     "%s, %s [age %d]\n", session->targetname,
 			     conn->persistent_address, session->age);
+=======
+			     "%s [age %d]\n", session->targetname,
+			     session->age);
+>>>>>>> v4.9.227
 		spin_unlock_bh(&session->frwd_lock);
 		mutex_unlock(&session->eh_mutex);
 		return FAILED;
@@ -2485,7 +2559,11 @@ static void iscsi_prep_tgt_reset_pdu(struct scsi_cmnd *sc, struct iscsi_tm *hdr)
  *
  * This will attempt to send a warm target reset.
  */
+<<<<<<< HEAD
 int iscsi_eh_target_reset(struct scsi_cmnd *sc)
+=======
+static int iscsi_eh_target_reset(struct scsi_cmnd *sc)
+>>>>>>> v4.9.227
 {
 	struct iscsi_cls_session *cls_session;
 	struct iscsi_session *session;
@@ -2557,7 +2635,10 @@ done:
 	mutex_unlock(&session->eh_mutex);
 	return rc;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(iscsi_eh_target_reset);
+=======
+>>>>>>> v4.9.227
 
 /**
  * iscsi_eh_recover_target - reset target and possibly the session

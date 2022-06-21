@@ -106,5 +106,9 @@ nvkm_sw_new_(const struct nvkm_sw_func *func, struct nvkm_device *device,
 	INIT_LIST_HEAD(&sw->chan);
 	sw->func = func;
 
+<<<<<<< HEAD
 	return nvkm_engine_ctor(&nvkm_sw, device, index, 0, true, &sw->engine);
+=======
+	return nvkm_engine_ctor(&nvkm_sw, device, index, true, &sw->engine);
+>>>>>>> v4.9.227
 }

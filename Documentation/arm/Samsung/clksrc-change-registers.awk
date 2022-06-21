@@ -41,7 +41,11 @@ function find_length(f)
     else if (f ~ /0xf/)
 	return 4
 
+<<<<<<< HEAD
     printf "unknown legnth " f "\n" > "/dev/stderr"
+=======
+    printf "unknown length " f "\n" > "/dev/stderr"
+>>>>>>> v4.9.227
     exit
 }
 

@@ -20,7 +20,11 @@ static int affs_readdir(struct file *, struct dir_context *);
 const struct file_operations affs_dir_operations = {
 	.read		= generic_read_dir,
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.iterate	= affs_readdir,
+=======
+	.iterate_shared	= affs_readdir,
+>>>>>>> v4.9.227
 	.fsync		= affs_file_fsync,
 };
 
@@ -54,8 +58,12 @@ affs_readdir(struct file *file, struct dir_context *ctx)
 	u32			 ino;
 	int			 error = 0;
 
+<<<<<<< HEAD
 	pr_debug("%s(ino=%lu,f_pos=%lx)\n",
 		 __func__, inode->i_ino, (unsigned long)ctx->pos);
+=======
+	pr_debug("%s(ino=%lu,f_pos=%llx)\n", __func__, inode->i_ino, ctx->pos);
+>>>>>>> v4.9.227
 
 	if (ctx->pos < 2) {
 		file->private_data = (void *)0;
@@ -115,11 +123,19 @@ inside:
 				break;
 			}
 
+<<<<<<< HEAD
 			namelen = min(AFFS_TAIL(sb, fh_bh)->name[0], (u8)30);
 			name = AFFS_TAIL(sb, fh_bh)->name + 1;
 			pr_debug("readdir(): dir_emit(\"%.*s\", "
 				 "ino=%u), hash=%d, f_pos=%x\n",
 				 namelen, name, ino, hash_pos, (u32)ctx->pos);
+=======
+			namelen = min(AFFS_TAIL(sb, fh_bh)->name[0],
+				      (u8)AFFSNAMEMAX);
+			name = AFFS_TAIL(sb, fh_bh)->name + 1;
+			pr_debug("readdir(): dir_emit(\"%.*s\", ino=%u), hash=%d, f_pos=%llx\n",
+				 namelen, name, ino, hash_pos, ctx->pos);
+>>>>>>> v4.9.227
 
 			if (!dir_emit(ctx, name, namelen, ino, DT_UNKNOWN))
 				goto done;

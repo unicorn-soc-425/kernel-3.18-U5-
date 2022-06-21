@@ -29,6 +29,10 @@ struct virt_dma_chan {
 	spinlock_t lock;
 
 	/* protected by vc.lock */
+<<<<<<< HEAD
+=======
+	struct list_head desc_allocated;
+>>>>>>> v4.9.227
 	struct list_head desc_submitted;
 	struct list_head desc_issued;
 	struct list_head desc_completed;
@@ -44,28 +48,55 @@ static inline struct virt_dma_chan *to_virt_chan(struct dma_chan *chan)
 void vchan_dma_desc_free_list(struct virt_dma_chan *vc, struct list_head *head);
 void vchan_init(struct virt_dma_chan *vc, struct dma_device *dmadev);
 struct virt_dma_desc *vchan_find_desc(struct virt_dma_chan *, dma_cookie_t);
+<<<<<<< HEAD
 
 /**
  * vchan_tx_prep - prepare a descriptor
  * vc: virtual channel allocating this descriptor
  * vd: virtual descriptor to prepare
  * tx_flags: flags argument passed in to prepare function
+=======
+extern dma_cookie_t vchan_tx_submit(struct dma_async_tx_descriptor *);
+extern int vchan_tx_desc_free(struct dma_async_tx_descriptor *);
+
+/**
+ * vchan_tx_prep - prepare a descriptor
+ * @vc: virtual channel allocating this descriptor
+ * @vd: virtual descriptor to prepare
+ * @tx_flags: flags argument passed in to prepare function
+>>>>>>> v4.9.227
  */
 static inline struct dma_async_tx_descriptor *vchan_tx_prep(struct virt_dma_chan *vc,
 	struct virt_dma_desc *vd, unsigned long tx_flags)
 {
+<<<<<<< HEAD
 	extern dma_cookie_t vchan_tx_submit(struct dma_async_tx_descriptor *);
+=======
+	unsigned long flags;
+>>>>>>> v4.9.227
 
 	dma_async_tx_descriptor_init(&vd->tx, &vc->chan);
 	vd->tx.flags = tx_flags;
 	vd->tx.tx_submit = vchan_tx_submit;
+<<<<<<< HEAD
+=======
+	vd->tx.desc_free = vchan_tx_desc_free;
+
+	spin_lock_irqsave(&vc->lock, flags);
+	list_add_tail(&vd->node, &vc->desc_allocated);
+	spin_unlock_irqrestore(&vc->lock, flags);
+>>>>>>> v4.9.227
 
 	return &vd->tx;
 }
 
 /**
  * vchan_issue_pending - move submitted descriptors to issued list
+<<<<<<< HEAD
  * vc: virtual channel to update
+=======
+ * @vc: virtual channel to update
+>>>>>>> v4.9.227
  *
  * vc.lock must be held by caller
  */
@@ -77,7 +108,11 @@ static inline bool vchan_issue_pending(struct virt_dma_chan *vc)
 
 /**
  * vchan_cookie_complete - report completion of a descriptor
+<<<<<<< HEAD
  * vd: virtual descriptor to update
+=======
+ * @vd: virtual descriptor to update
+>>>>>>> v4.9.227
  *
  * vc.lock must be held by caller
  */
@@ -97,7 +132,11 @@ static inline void vchan_cookie_complete(struct virt_dma_desc *vd)
 
 /**
  * vchan_cyclic_callback - report the completion of a period
+<<<<<<< HEAD
  * vd: virtual descriptor
+=======
+ * @vd: virtual descriptor
+>>>>>>> v4.9.227
  */
 static inline void vchan_cyclic_callback(struct virt_dma_desc *vd)
 {
@@ -109,22 +148,36 @@ static inline void vchan_cyclic_callback(struct virt_dma_desc *vd)
 
 /**
  * vchan_next_desc - peek at the next descriptor to be processed
+<<<<<<< HEAD
  * vc: virtual channel to obtain descriptor from
+=======
+ * @vc: virtual channel to obtain descriptor from
+>>>>>>> v4.9.227
  *
  * vc.lock must be held by caller
  */
 static inline struct virt_dma_desc *vchan_next_desc(struct virt_dma_chan *vc)
 {
+<<<<<<< HEAD
 	if (list_empty(&vc->desc_issued))
 		return NULL;
 
 	return list_first_entry(&vc->desc_issued, struct virt_dma_desc, node);
+=======
+	return list_first_entry_or_null(&vc->desc_issued,
+					struct virt_dma_desc, node);
+>>>>>>> v4.9.227
 }
 
 /**
  * vchan_get_all_descriptors - obtain all submitted and issued descriptors
+<<<<<<< HEAD
  * vc: virtual channel to get descriptors from
  * head: list of descriptors found
+=======
+ * @vc: virtual channel to get descriptors from
+ * @head: list of descriptors found
+>>>>>>> v4.9.227
  *
  * vc.lock must be held by caller
  *
@@ -134,6 +187,10 @@ static inline struct virt_dma_desc *vchan_next_desc(struct virt_dma_chan *vc)
 static inline void vchan_get_all_descriptors(struct virt_dma_chan *vc,
 	struct list_head *head)
 {
+<<<<<<< HEAD
+=======
+	list_splice_tail_init(&vc->desc_allocated, head);
+>>>>>>> v4.9.227
 	list_splice_tail_init(&vc->desc_submitted, head);
 	list_splice_tail_init(&vc->desc_issued, head);
 	list_splice_tail_init(&vc->desc_completed, head);
@@ -141,14 +198,39 @@ static inline void vchan_get_all_descriptors(struct virt_dma_chan *vc,
 
 static inline void vchan_free_chan_resources(struct virt_dma_chan *vc)
 {
+<<<<<<< HEAD
+=======
+	struct virt_dma_desc *vd;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	LIST_HEAD(head);
 
 	spin_lock_irqsave(&vc->lock, flags);
 	vchan_get_all_descriptors(vc, &head);
+<<<<<<< HEAD
+=======
+	list_for_each_entry(vd, &head, node)
+		dmaengine_desc_clear_reuse(&vd->tx);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&vc->lock, flags);
 
 	vchan_dma_desc_free_list(vc, &head);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * vchan_synchronize() - synchronize callback execution to the current context
+ * @vc: virtual channel to synchronize
+ *
+ * Makes sure that all scheduled or active callbacks have finished running. For
+ * proper operation the caller has to ensure that no new callbacks are scheduled
+ * after the invocation of this function started.
+ */
+static inline void vchan_synchronize(struct virt_dma_chan *vc)
+{
+	tasklet_kill(&vc->task);
+}
+
+>>>>>>> v4.9.227
 #endif

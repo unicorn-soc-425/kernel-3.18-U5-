@@ -297,7 +297,11 @@ static int __init apanel_init(void)
 
 		if (slave != i2c_addr) {
 			pr_notice(APANEL ": only one SMBus slave "
+<<<<<<< HEAD
 				  "address supported, skiping device...\n");
+=======
+				  "address supported, skipping device...\n");
+>>>>>>> v4.9.227
 			continue;
 		}
 

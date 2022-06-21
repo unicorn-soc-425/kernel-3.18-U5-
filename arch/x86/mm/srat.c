@@ -13,10 +13,15 @@
 #include <linux/acpi.h>
 #include <linux/mmzone.h>
 #include <linux/bitmap.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/topology.h>
 #include <linux/bootmem.h>
 #include <linux/memblock.h>
+=======
+#include <linux/init.h>
+#include <linux/topology.h>
+>>>>>>> v4.9.227
 #include <linux/mm.h>
 #include <asm/proto.h>
 #include <asm/numa.h>
@@ -24,6 +29,7 @@
 #include <asm/apic.h>
 #include <asm/uv/uv.h>
 
+<<<<<<< HEAD
 int acpi_numa __initdata;
 
 static __init int setup_node(int pxm)
@@ -69,6 +75,8 @@ void __init acpi_numa_slit_init(struct acpi_table_slit *slit)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 /* Callback for Proximity Domain -> x2APIC mapping */
 void __init
 acpi_numa_x2apic_affinity_init(struct acpi_srat_x2apic_cpu_affinity *pa)
@@ -91,7 +99,11 @@ acpi_numa_x2apic_affinity_init(struct acpi_srat_x2apic_cpu_affinity *pa)
 			 pxm, apic_id);
 		return;
 	}
+<<<<<<< HEAD
 	node = setup_node(pxm);
+=======
+	node = acpi_map_pxm_to_node(pxm);
+>>>>>>> v4.9.227
 	if (node < 0) {
 		printk(KERN_ERR "SRAT: Too many proximity domains %x\n", pxm);
 		bad_srat();
@@ -104,7 +116,10 @@ acpi_numa_x2apic_affinity_init(struct acpi_srat_x2apic_cpu_affinity *pa)
 	}
 	set_apicid_to_node(apic_id, node);
 	node_set(node, numa_nodes_parsed);
+<<<<<<< HEAD
 	acpi_numa = 1;
+=======
+>>>>>>> v4.9.227
 	printk(KERN_INFO "SRAT: PXM %u -> APIC 0x%04x -> Node %u\n",
 	       pxm, apic_id, node);
 }
@@ -127,7 +142,11 @@ acpi_numa_processor_affinity_init(struct acpi_srat_cpu_affinity *pa)
 	pxm = pa->proximity_domain_lo;
 	if (acpi_srat_revision >= 2)
 		pxm |= *((unsigned int*)pa->proximity_domain_hi) << 8;
+<<<<<<< HEAD
 	node = setup_node(pxm);
+=======
+	node = acpi_map_pxm_to_node(pxm);
+>>>>>>> v4.9.227
 	if (node < 0) {
 		printk(KERN_ERR "SRAT: Too many proximity domains %x\n", pxm);
 		bad_srat();
@@ -146,11 +165,15 @@ acpi_numa_processor_affinity_init(struct acpi_srat_cpu_affinity *pa)
 
 	set_apicid_to_node(apic_id, node);
 	node_set(node, numa_nodes_parsed);
+<<<<<<< HEAD
 	acpi_numa = 1;
+=======
+>>>>>>> v4.9.227
 	printk(KERN_INFO "SRAT: PXM %u -> APIC 0x%02x -> Node %u\n",
 	       pxm, apic_id, node);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MEMORY_HOTPLUG
 static inline int save_add_info(void) {return 1;}
 #else
@@ -211,6 +234,8 @@ out_err:
 
 void __init acpi_numa_arch_fixup(void) {}
 
+=======
+>>>>>>> v4.9.227
 int __init x86_acpi_numa_init(void)
 {
 	int ret;

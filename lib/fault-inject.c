@@ -40,10 +40,23 @@ EXPORT_SYMBOL_GPL(setup_fault_attr);
 
 static void fail_dump(struct fault_attr *attr)
 {
+<<<<<<< HEAD
 	if (attr->verbose > 0)
 		printk(KERN_NOTICE "FAULT_INJECTION: forcing a failure\n");
 	if (attr->verbose > 1)
 		dump_stack();
+=======
+	if (attr->verbose > 0 && __ratelimit(&attr->ratelimit_state)) {
+		printk(KERN_NOTICE "FAULT_INJECTION: forcing a failure.\n"
+		       "name %pd, interval %lu, probability %lu, "
+		       "space %d, times %d\n", attr->dname,
+		       attr->interval, attr->probability,
+		       atomic_read(&attr->space),
+		       atomic_read(&attr->times));
+		if (attr->verbose > 1)
+			dump_stack();
+	}
+>>>>>>> v4.9.227
 }
 
 #define atomic_dec_not_zero(v)		atomic_add_unless((v), -1, 0)
@@ -202,6 +215,15 @@ struct dentry *fault_create_debugfs_attr(const char *name,
 		goto fail;
 	if (!debugfs_create_ul("verbose", mode, dir, &attr->verbose))
 		goto fail;
+<<<<<<< HEAD
+=======
+	if (!debugfs_create_u32("verbose_ratelimit_interval_ms", mode, dir,
+				&attr->ratelimit_state.interval))
+		goto fail;
+	if (!debugfs_create_u32("verbose_ratelimit_burst", mode, dir,
+				&attr->ratelimit_state.burst))
+		goto fail;
+>>>>>>> v4.9.227
 	if (!debugfs_create_bool("task-filter", mode, dir, &attr->task_filter))
 		goto fail;
 
@@ -222,6 +244,10 @@ struct dentry *fault_create_debugfs_attr(const char *name,
 
 #endif /* CONFIG_FAULT_INJECTION_STACKTRACE_FILTER */
 
+<<<<<<< HEAD
+=======
+	attr->dname = dget(dir);
+>>>>>>> v4.9.227
 	return dir;
 fail:
 	debugfs_remove_recursive(dir);

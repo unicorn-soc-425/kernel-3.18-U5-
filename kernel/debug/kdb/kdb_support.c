@@ -129,13 +129,21 @@ int kdbnearsym(unsigned long addr, kdb_symtab_t *symtab)
 		}
 		if (i >= ARRAY_SIZE(kdb_name_table)) {
 			debug_kfree(kdb_name_table[0]);
+<<<<<<< HEAD
 			memcpy(kdb_name_table, kdb_name_table+1,
+=======
+			memmove(kdb_name_table, kdb_name_table+1,
+>>>>>>> v4.9.227
 			       sizeof(kdb_name_table[0]) *
 			       (ARRAY_SIZE(kdb_name_table)-1));
 		} else {
 			debug_kfree(knt1);
 			knt1 = kdb_name_table[i];
+<<<<<<< HEAD
 			memcpy(kdb_name_table+i, kdb_name_table+i+1,
+=======
+			memmove(kdb_name_table+i, kdb_name_table+i+1,
+>>>>>>> v4.9.227
 			       sizeof(kdb_name_table[0]) *
 			       (ARRAY_SIZE(kdb_name_table)-i-1));
 		}
@@ -221,11 +229,20 @@ int kallsyms_symbol_complete(char *prefix_name, int max_len)
  * Parameters:
  *	prefix_name	prefix of a symbol name to lookup
  *	flag	0 means search from the head, 1 means continue search.
+<<<<<<< HEAD
+=======
+ *	buf_size	maximum length that can be written to prefix_name
+ *			buffer
+>>>>>>> v4.9.227
  * Returns:
  *	1 if a symbol matches the given prefix.
  *	0 if no string found
  */
+<<<<<<< HEAD
 int kallsyms_symbol_next(char *prefix_name, int flag)
+=======
+int kallsyms_symbol_next(char *prefix_name, int flag, int buf_size)
+>>>>>>> v4.9.227
 {
 	int prefix_len = strlen(prefix_name);
 	static loff_t pos;
@@ -235,10 +252,15 @@ int kallsyms_symbol_next(char *prefix_name, int flag)
 		pos = 0;
 
 	while ((name = kdb_walk_kallsyms(&pos))) {
+<<<<<<< HEAD
 		if (strncmp(name, prefix_name, prefix_len) == 0) {
 			strncpy(prefix_name, name, strlen(name)+1);
 			return 1;
 		}
+=======
+		if (!strncmp(name, prefix_name, prefix_len))
+			return strscpy(prefix_name, name, buf_size);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }

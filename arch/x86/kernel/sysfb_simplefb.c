@@ -66,6 +66,7 @@ __init int create_simplefb(const struct screen_info *si,
 {
 	struct platform_device *pd;
 	struct resource res;
+<<<<<<< HEAD
 	unsigned long len;
 
 	/* don't use lfb_size as it may contain the whole VMEM instead of only
@@ -76,20 +77,64 @@ __init int create_simplefb(const struct screen_info *si,
 		printk(KERN_WARNING "sysfb: VRAM smaller than advertised\n");
 		return -EINVAL;
 	}
+=======
+	u64 base, size;
+	u32 length;
+
+	/*
+	 * If the 64BIT_BASE capability is set, ext_lfb_base will contain the
+	 * upper half of the base address. Assemble the address, then make sure
+	 * it is valid and we can actually access it.
+	 */
+	base = si->lfb_base;
+	if (si->capabilities & VIDEO_CAPABILITY_64BIT_BASE)
+		base |= (u64)si->ext_lfb_base << 32;
+	if (!base || (u64)(resource_size_t)base != base) {
+		printk(KERN_DEBUG "sysfb: inaccessible VRAM base\n");
+		return -EINVAL;
+	}
+
+	/*
+	 * Don't use lfb_size as IORESOURCE size, since it may contain the
+	 * entire VMEM, and thus require huge mappings. Use just the part we
+	 * need, that is, the part where the framebuffer is located. But verify
+	 * that it does not exceed the advertised VMEM.
+	 * Note that in case of VBE, the lfb_size is shifted by 16 bits for
+	 * historical reasons.
+	 */
+	size = si->lfb_size;
+	if (si->orig_video_isVGA == VIDEO_TYPE_VLFB)
+		size <<= 16;
+	length = mode->height * mode->stride;
+	if (length > size) {
+		printk(KERN_WARNING "sysfb: VRAM smaller than advertised\n");
+		return -EINVAL;
+	}
+	length = PAGE_ALIGN(length);
+>>>>>>> v4.9.227
 
 	/* setup IORESOURCE_MEM as framebuffer memory */
 	memset(&res, 0, sizeof(res));
 	res.flags = IORESOURCE_MEM | IORESOURCE_BUSY;
 	res.name = simplefb_resname;
+<<<<<<< HEAD
 	res.start = si->lfb_base;
 	res.end = si->lfb_base + len - 1;
+=======
+	res.start = base;
+	res.end = res.start + length - 1;
+>>>>>>> v4.9.227
 	if (res.end <= res.start)
 		return -EINVAL;
 
 	pd = platform_device_register_resndata(NULL, "simple-framebuffer", 0,
 					       &res, 1, mode, sizeof(*mode));
+<<<<<<< HEAD
 	if (IS_ERR(pd))
 		return PTR_ERR(pd);
 
 	return 0;
+=======
+	return PTR_ERR_OR_ZERO(pd);
+>>>>>>> v4.9.227
 }

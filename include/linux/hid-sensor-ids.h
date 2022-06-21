@@ -21,6 +21,11 @@
 
 #define HID_MAX_PHY_DEVICES					0xFF
 
+<<<<<<< HEAD
+=======
+#define HID_USAGE_SENSOR_COLLECTION				0x200001
+
+>>>>>>> v4.9.227
 /* Accel 3D (200073) */
 #define HID_USAGE_SENSOR_ACCEL_3D				0x200073
 #define HID_USAGE_SENSOR_DATA_ACCELERATION			0x200452

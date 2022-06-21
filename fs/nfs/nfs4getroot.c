@@ -35,6 +35,7 @@ int nfs4_get_rootfh(struct nfs_server *server, struct nfs_fh *mntfh, bool auth_p
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (fsinfo.fattr->valid & NFS_ATTR_FATTR_V4_REFERRAL) {
 		printk(KERN_ERR "nfs4_get_rootfh:"
 		       " getroot obtained referral\n");
@@ -42,6 +43,8 @@ int nfs4_get_rootfh(struct nfs_server *server, struct nfs_fh *mntfh, bool auth_p
 		goto out;
 	}
 
+=======
+>>>>>>> v4.9.227
 	memcpy(&server->fsid, &fsinfo.fattr->fsid, sizeof(server->fsid));
 out:
 	nfs_free_fattr(fsinfo.fattr);

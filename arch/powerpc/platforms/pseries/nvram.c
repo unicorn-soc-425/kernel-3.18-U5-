@@ -17,10 +17,14 @@
 #include <linux/init.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/kmsg_dump.h>
 #include <linux/pstore.h>
 #include <linux/ctype.h>
 #include <linux/zlib.h>
+=======
+#include <linux/ctype.h>
+>>>>>>> v4.9.227
 #include <asm/uaccess.h>
 #include <asm/nvram.h>
 #include <asm/rtas.h>
@@ -30,6 +34,7 @@
 /* Max bytes to read/write in one go */
 #define NVRW_CNT 0x20
 
+<<<<<<< HEAD
 /*
  * Set oops header version to distinguish between old and new format header.
  * lnx,oops-log partition max size is 4000, header version > 4000 will
@@ -37,11 +42,14 @@
  */
 #define OOPS_HDR_VERSION 5000
 
+=======
+>>>>>>> v4.9.227
 static unsigned int nvram_size;
 static int nvram_fetch, nvram_store;
 static char nvram_buf[NVRW_CNT];	/* assume this is in the first 4GB */
 static DEFINE_SPINLOCK(nvram_lock);
 
+<<<<<<< HEAD
 struct err_log_info {
 	__be32 error_type;
 	__be32 seq_num;
@@ -153,6 +161,14 @@ static enum pstore_type_id nvram_type_ids[] = {
 };
 static int read_type;
 static unsigned long last_rtas_event;
+=======
+/* See clobbering_unread_rtas_event() */
+#define NVRAM_RTAS_READ_TIMEOUT 5		/* seconds */
+static time64_t last_unread_rtas_event;		/* timestamp */
+
+#ifdef CONFIG_PSTORE
+time64_t last_rtas_event;
+>>>>>>> v4.9.227
 #endif
 
 static ssize_t pSeries_nvram_read(char *buf, size_t count, loff_t *index)
@@ -246,6 +262,7 @@ static ssize_t pSeries_nvram_get_size(void)
 	return nvram_size ? nvram_size : -ENODEV;
 }
 
+<<<<<<< HEAD
 
 /* nvram_write_os_partition, nvram_write_error_log
  *
@@ -313,21 +330,35 @@ static int nvram_write_os_partition(struct nvram_os_partition *part,
 	return 0;
 }
 
+=======
+/* nvram_write_error_log
+ *
+ * We need to buffer the error logs into nvram to ensure that we have
+ * the failure information to decode.
+ */
+>>>>>>> v4.9.227
 int nvram_write_error_log(char * buff, int length,
                           unsigned int err_type, unsigned int error_log_cnt)
 {
 	int rc = nvram_write_os_partition(&rtas_log_partition, buff, length,
 						err_type, error_log_cnt);
 	if (!rc) {
+<<<<<<< HEAD
 		last_unread_rtas_event = get_seconds();
 #ifdef CONFIG_PSTORE
 		last_rtas_event = get_seconds();
+=======
+		last_unread_rtas_event = ktime_get_real_seconds();
+#ifdef CONFIG_PSTORE
+		last_rtas_event = ktime_get_real_seconds();
+>>>>>>> v4.9.227
 #endif
 	}
 
 	return rc;
 }
 
+<<<<<<< HEAD
 /* nvram_read_partition
  *
  * Reads nvram partition for at most 'length'
@@ -372,6 +403,8 @@ static int nvram_read_partition(struct nvram_os_partition *part, char *buff,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /* nvram_read_error_log
  *
  * Reads nvram for error log for at most 'length'
@@ -407,6 +440,7 @@ int nvram_clear_error_log(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* pseries_nvram_init_os_partition
  *
  * This sets up a partition with an "OS" signature.
@@ -468,6 +502,8 @@ static int __init pseries_nvram_init_os_partition(struct nvram_os_partition
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Are we using the ibm,rtas-log for oops/panic reports?  And if so,
  * would logging this oops/panic overwrite an RTAS event that rtas_errd
@@ -476,6 +512,7 @@ static int __init pseries_nvram_init_os_partition(struct nvram_os_partition
  * We assume that if rtas_errd hasn't read the RTAS event in
  * NVRAM_RTAS_READ_TIMEOUT seconds, it's probably not going to.
  */
+<<<<<<< HEAD
 static int clobbering_unread_rtas_event(void)
 {
 	return (oops_log_partition.index == rtas_log_partition.index
@@ -789,6 +826,16 @@ static void __init nvram_init_oops_partition(int rtas_partition_exists)
 	}
 }
 
+=======
+int clobbering_unread_rtas_event(void)
+{
+	return (oops_log_partition.index == rtas_log_partition.index
+		&& last_unread_rtas_event
+		&& ktime_get_real_seconds() - last_unread_rtas_event <=
+						NVRAM_RTAS_READ_TIMEOUT);
+}
+
+>>>>>>> v4.9.227
 static int __init pseries_nvram_init_log_partitions(void)
 {
 	int rc;
@@ -796,7 +843,11 @@ static int __init pseries_nvram_init_log_partitions(void)
 	/* Scan nvram for partitions */
 	nvram_scan_partitions();
 
+<<<<<<< HEAD
 	rc = pseries_nvram_init_os_partition(&rtas_log_partition);
+=======
+	rc = nvram_init_os_partition(&rtas_log_partition);
+>>>>>>> v4.9.227
 	nvram_init_oops_partition(rc == 0);
 	return 0;
 }
@@ -832,6 +883,7 @@ int __init pSeries_nvram_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 /*
  * This is our kmsg_dump callback, called after an oops or panic report
@@ -901,3 +953,5 @@ static void oops_to_nvram(struct kmsg_dumper *dumper,
 
 	spin_unlock_irqrestore(&lock, flags);
 }
+=======
+>>>>>>> v4.9.227

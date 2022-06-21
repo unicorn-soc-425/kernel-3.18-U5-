@@ -5,6 +5,11 @@
  * Copyright (C) 1998 David S. Miller (davem@redhat.com)
  */
 
+<<<<<<< HEAD
+=======
+	#include <asm/export.h>
+
+>>>>>>> v4.9.227
 #define HI_MAGIC	0x8080808080808080
 #define LO_MAGIC	0x0101010101010101
 #define ASI_PL		0x88
@@ -13,6 +18,11 @@
 	.align	32
 	.globl		__memscan_zero, __memscan_generic
 	.globl		memscan
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(__memscan_zero)
+	EXPORT_SYMBOL(__memscan_generic)
+>>>>>>> v4.9.227
 
 __memscan_zero:
 	/* %o0 = bufp, %o1 = size */

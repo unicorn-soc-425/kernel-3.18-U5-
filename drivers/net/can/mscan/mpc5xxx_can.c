@@ -43,7 +43,11 @@ struct mpc5xxx_can_data {
 };
 
 #ifdef CONFIG_PPC_MPC52xx
+<<<<<<< HEAD
 static struct of_device_id mpc52xx_cdm_ids[] = {
+=======
+static const struct of_device_id mpc52xx_cdm_ids[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "fsl,mpc5200-cdm", },
 	{}
 };
@@ -446,7 +450,10 @@ MODULE_DEVICE_TABLE(of, mpc5xxx_can_table);
 static struct platform_driver mpc5xxx_can_driver = {
 	.driver = {
 		.name = "mpc5xxx_can",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = mpc5xxx_can_table,
 	},
 	.probe = mpc5xxx_can_probe,

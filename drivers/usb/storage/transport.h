@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage compliant devices
+=======
+/*
+ * Driver for USB Mass Storage compliant devices
+>>>>>>> v4.9.227
  * Transport Functions Header File
  *
  * Current development and maintenance by:

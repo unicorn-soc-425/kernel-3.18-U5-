@@ -54,15 +54,25 @@ static void xgene_get_drvinfo(struct net_device *ndev,
 	sprintf(info->bus_info, "%s", pdev->name);
 }
 
+<<<<<<< HEAD
 static int xgene_get_settings(struct net_device *ndev, struct ethtool_cmd *cmd)
 {
 	struct xgene_enet_pdata *pdata = netdev_priv(ndev);
 	struct phy_device *phydev = pdata->phy_dev;
+=======
+static int xgene_get_link_ksettings(struct net_device *ndev,
+				    struct ethtool_link_ksettings *cmd)
+{
+	struct xgene_enet_pdata *pdata = netdev_priv(ndev);
+	struct phy_device *phydev = ndev->phydev;
+	u32 supported;
+>>>>>>> v4.9.227
 
 	if (pdata->phy_mode == PHY_INTERFACE_MODE_RGMII) {
 		if (phydev == NULL)
 			return -ENODEV;
 
+<<<<<<< HEAD
 		return phy_ethtool_gset(phydev, cmd);
 	} else if (pdata->phy_mode == PHY_INTERFACE_MODE_SGMII) {
 		cmd->supported = SUPPORTED_1000baseT_Full |
@@ -81,11 +91,49 @@ static int xgene_get_settings(struct net_device *ndev, struct ethtool_cmd *cmd)
 		cmd->port = PORT_FIBRE;
 		cmd->transceiver = XCVR_INTERNAL;
 		cmd->autoneg = AUTONEG_DISABLE;
+=======
+		return phy_ethtool_ksettings_get(phydev, cmd);
+	} else if (pdata->phy_mode == PHY_INTERFACE_MODE_SGMII) {
+		if (pdata->mdio_driver) {
+			if (!phydev)
+				return -ENODEV;
+
+			return phy_ethtool_ksettings_get(phydev, cmd);
+		}
+
+		supported = SUPPORTED_1000baseT_Full | SUPPORTED_Autoneg |
+			SUPPORTED_MII;
+		ethtool_convert_legacy_u32_to_link_mode(
+			cmd->link_modes.supported,
+			supported);
+		ethtool_convert_legacy_u32_to_link_mode(
+			cmd->link_modes.advertising,
+			supported);
+
+		cmd->base.speed = SPEED_1000;
+		cmd->base.duplex = DUPLEX_FULL;
+		cmd->base.port = PORT_MII;
+		cmd->base.autoneg = AUTONEG_ENABLE;
+	} else {
+		supported = SUPPORTED_10000baseT_Full | SUPPORTED_FIBRE;
+		ethtool_convert_legacy_u32_to_link_mode(
+			cmd->link_modes.supported,
+			supported);
+		ethtool_convert_legacy_u32_to_link_mode(
+			cmd->link_modes.advertising,
+			supported);
+
+		cmd->base.speed = SPEED_10000;
+		cmd->base.duplex = DUPLEX_FULL;
+		cmd->base.port = PORT_FIBRE;
+		cmd->base.autoneg = AUTONEG_DISABLE;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int xgene_set_settings(struct net_device *ndev, struct ethtool_cmd *cmd)
 {
 	struct xgene_enet_pdata *pdata = netdev_priv(ndev);
@@ -96,6 +144,28 @@ static int xgene_set_settings(struct net_device *ndev, struct ethtool_cmd *cmd)
 			return -ENODEV;
 
 		return phy_ethtool_sset(phydev, cmd);
+=======
+static int xgene_set_link_ksettings(struct net_device *ndev,
+				    const struct ethtool_link_ksettings *cmd)
+{
+	struct xgene_enet_pdata *pdata = netdev_priv(ndev);
+	struct phy_device *phydev = ndev->phydev;
+
+	if (pdata->phy_mode == PHY_INTERFACE_MODE_RGMII) {
+		if (!phydev)
+			return -ENODEV;
+
+		return phy_ethtool_ksettings_set(phydev, cmd);
+	}
+
+	if (pdata->phy_mode == PHY_INTERFACE_MODE_SGMII) {
+		if (pdata->mdio_driver) {
+			if (!phydev)
+				return -ENODEV;
+
+			return phy_ethtool_ksettings_set(phydev, cmd);
+		}
+>>>>>>> v4.9.227
 	}
 
 	return -EINVAL;
@@ -136,12 +206,21 @@ static void xgene_get_ethtool_stats(struct net_device *ndev,
 
 static const struct ethtool_ops xgene_ethtool_ops = {
 	.get_drvinfo = xgene_get_drvinfo,
+<<<<<<< HEAD
 	.get_settings = xgene_get_settings,
 	.set_settings = xgene_set_settings,
 	.get_link = ethtool_op_get_link,
 	.get_strings = xgene_get_strings,
 	.get_sset_count = xgene_get_sset_count,
 	.get_ethtool_stats = xgene_get_ethtool_stats
+=======
+	.get_link = ethtool_op_get_link,
+	.get_strings = xgene_get_strings,
+	.get_sset_count = xgene_get_sset_count,
+	.get_ethtool_stats = xgene_get_ethtool_stats,
+	.get_link_ksettings = xgene_get_link_ksettings,
+	.set_link_ksettings = xgene_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 void xgene_enet_set_ethtool_ops(struct net_device *ndev)

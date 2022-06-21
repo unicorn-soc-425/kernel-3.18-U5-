@@ -29,7 +29,11 @@ void mdp4_set_irqmask(struct mdp_kms *mdp_kms, uint32_t irqmask,
 
 static void mdp4_irq_error_handler(struct mdp_irq *irq, uint32_t irqstatus)
 {
+<<<<<<< HEAD
 	DRM_ERROR("errors: %08x\n", irqstatus);
+=======
+	DRM_ERROR_RATELIMITED("errors: %08x\n", irqstatus);
+>>>>>>> v4.9.227
 }
 
 void mdp4_irq_preinstall(struct msm_kms *kms)

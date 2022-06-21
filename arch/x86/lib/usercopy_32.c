@@ -8,7 +8,11 @@
 #include <linux/mm.h>
 #include <linux/highmem.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/backing-dev.h>
 #include <linux/interrupt.h>
 #include <asm/uaccess.h>
@@ -570,12 +574,20 @@ do {									\
 unsigned long __copy_to_user_ll(void __user *to, const void *from,
 				unsigned long n)
 {
+<<<<<<< HEAD
 	stac();
+=======
+	__uaccess_begin_nospec();
+>>>>>>> v4.9.227
 	if (movsl_is_ok(to, from, n))
 		__copy_user(to, from, n);
 	else
 		n = __copy_user_intel(to, from, n);
+<<<<<<< HEAD
 	clac();
+=======
+	__uaccess_end();
+>>>>>>> v4.9.227
 	return n;
 }
 EXPORT_SYMBOL(__copy_to_user_ll);
@@ -612,7 +624,11 @@ unsigned long __copy_from_user_ll_nocache(void *to, const void __user *from,
 {
 	stac();
 #ifdef CONFIG_X86_INTEL_USERCOPY
+<<<<<<< HEAD
 	if (n > 64 && cpu_has_xmm2)
+=======
+	if (n > 64 && static_cpu_has(X86_FEATURE_XMM2))
+>>>>>>> v4.9.227
 		n = __copy_user_zeroing_intel_nocache(to, from, n);
 	else
 		__copy_user_zeroing(to, from, n);
@@ -627,16 +643,26 @@ EXPORT_SYMBOL(__copy_from_user_ll_nocache);
 unsigned long __copy_from_user_ll_nocache_nozero(void *to, const void __user *from,
 					unsigned long n)
 {
+<<<<<<< HEAD
 	stac();
 #ifdef CONFIG_X86_INTEL_USERCOPY
 	if (n > 64 && cpu_has_xmm2)
+=======
+	__uaccess_begin_nospec();
+#ifdef CONFIG_X86_INTEL_USERCOPY
+	if (n > 64 && static_cpu_has(X86_FEATURE_XMM2))
+>>>>>>> v4.9.227
 		n = __copy_user_intel_nocache(to, from, n);
 	else
 		__copy_user(to, from, n);
 #else
 	__copy_user(to, from, n);
 #endif
+<<<<<<< HEAD
 	clac();
+=======
+	__uaccess_end();
+>>>>>>> v4.9.227
 	return n;
 }
 EXPORT_SYMBOL(__copy_from_user_ll_nocache_nozero);
@@ -647,7 +673,12 @@ EXPORT_SYMBOL(__copy_from_user_ll_nocache_nozero);
  * @from: Source address, in kernel space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Copy data from kernel space to user space.
  *
@@ -668,7 +699,12 @@ EXPORT_SYMBOL(_copy_to_user);
  * @from: Source address, in user space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Copy data from user space to kernel space.
  *

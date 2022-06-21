@@ -35,6 +35,7 @@ void sk_stream_write_space(struct sock *sk)
 
 		rcu_read_lock();
 		wq = rcu_dereference(sk->sk_wq);
+<<<<<<< HEAD
 		if (wq_has_sleeper(wq))
 			wake_up_interruptible_poll(&wq->wait, POLLOUT |
 						POLLWRNORM | POLLWRBAND);
@@ -44,6 +45,16 @@ void sk_stream_write_space(struct sock *sk)
 	}
 }
 EXPORT_SYMBOL(sk_stream_write_space);
+=======
+		if (skwq_has_sleeper(wq))
+			wake_up_interruptible_poll(&wq->wait, POLLOUT |
+						POLLWRNORM | POLLWRBAND);
+		if (wq && wq->fasync_list && !(sk->sk_shutdown & SEND_SHUTDOWN))
+			sock_wake_async(wq, SOCK_WAKE_SPACE, POLL_OUT);
+		rcu_read_unlock();
+	}
+}
+>>>>>>> v4.9.227
 
 /**
  * sk_stream_wait_connect - Wait for a socket to get into the connected state
@@ -125,17 +136,28 @@ int sk_stream_wait_memory(struct sock *sk, long *timeo_p)
 		current_timeo = vm_wait = (prandom_u32() % (HZ / 5)) + 2;
 
 	while (1) {
+<<<<<<< HEAD
 		set_bit(SOCK_ASYNC_NOSPACE, &sk->sk_socket->flags);
+=======
+		sk_set_bit(SOCKWQ_ASYNC_NOSPACE, sk);
+>>>>>>> v4.9.227
 
 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 
 		if (sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN))
 			goto do_error;
 		if (!*timeo_p)
+<<<<<<< HEAD
 			goto do_nonblock;
 		if (signal_pending(current))
 			goto do_interrupted;
 		clear_bit(SOCK_ASYNC_NOSPACE, &sk->sk_socket->flags);
+=======
+			goto do_eagain;
+		if (signal_pending(current))
+			goto do_interrupted;
+		sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
+>>>>>>> v4.9.227
 		if (sk_stream_memory_free(sk) && !vm_wait)
 			break;
 
@@ -164,7 +186,17 @@ out:
 do_error:
 	err = -EPIPE;
 	goto out;
+<<<<<<< HEAD
 do_nonblock:
+=======
+do_eagain:
+	/* Make sure that whenever EAGAIN is returned, EPOLLOUT event can
+	 * be generated later.
+	 * When TCP receives ACK packets that make room, tcp_check_space()
+	 * only calls tcp_new_space() if SOCK_NOSPACE is set.
+	 */
+	set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
+>>>>>>> v4.9.227
 	err = -EAGAIN;
 	goto out;
 do_interrupted:

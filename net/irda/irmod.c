@@ -42,6 +42,7 @@
 #include <net/irda/irttp.h>		/* irttp_init */
 #include <net/irda/irda_device.h>	/* irda_device_init */
 
+<<<<<<< HEAD
 /*
  * Module parameters
  */
@@ -52,6 +53,8 @@ MODULE_PARM_DESC(debug, "IRDA debugging level");
 EXPORT_SYMBOL(irda_debug);
 #endif
 
+=======
+>>>>>>> v4.9.227
 /* Packet type handler.
  * Tell the kernel how IrDA packets should be handled.
  */
@@ -90,8 +93,11 @@ static int __init irda_init(void)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	/* Lower layer of the stack */
 	irlmp_init();
 	irlap_init();

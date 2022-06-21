@@ -19,6 +19,10 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -393,7 +397,11 @@ static bool si570_regmap_is_writeable(struct device *dev, unsigned int reg)
 	}
 }
 
+<<<<<<< HEAD
 static struct regmap_config si570_regmap_config = {
+=======
+static const struct regmap_config si570_regmap_config = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 	.cache_type = REGCACHE_RBTREE,
@@ -407,7 +415,10 @@ static int si570_probe(struct i2c_client *client,
 {
 	struct clk_si570 *data;
 	struct clk_init_data init;
+<<<<<<< HEAD
 	struct clk *clk;
+=======
+>>>>>>> v4.9.227
 	u32 initial_fout, factory_fout, stability;
 	int err;
 	enum clk_si570_variant variant = id->driver_data;
@@ -417,7 +428,11 @@ static int si570_probe(struct i2c_client *client,
 		return -ENOMEM;
 
 	init.ops = &si570_clk_ops;
+<<<<<<< HEAD
 	init.flags = CLK_IS_ROOT;
+=======
+	init.flags = 0;
+>>>>>>> v4.9.227
 	init.num_parents = 0;
 	data->hw.init = &init;
 	data->i2c_client = client;
@@ -461,6 +476,7 @@ static int si570_probe(struct i2c_client *client,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	clk = devm_clk_register(&client->dev, &data->hw);
 	if (IS_ERR(clk)) {
 		dev_err(&client->dev, "clock registration failed\n");
@@ -468,6 +484,15 @@ static int si570_probe(struct i2c_client *client,
 	}
 	err = of_clk_add_provider(client->dev.of_node, of_clk_src_simple_get,
 			clk);
+=======
+	err = devm_clk_hw_register(&client->dev, &data->hw);
+	if (err) {
+		dev_err(&client->dev, "clock registration failed\n");
+		return err;
+	}
+	err = of_clk_add_hw_provider(client->dev.of_node, of_clk_hw_simple_get,
+				     &data->hw);
+>>>>>>> v4.9.227
 	if (err) {
 		dev_err(&client->dev, "unable to add clk provider\n");
 		return err;
@@ -476,7 +501,11 @@ static int si570_probe(struct i2c_client *client,
 	/* Read the requested initial output frequency from device tree */
 	if (!of_property_read_u32(client->dev.of_node, "clock-frequency",
 				&initial_fout)) {
+<<<<<<< HEAD
 		err = clk_set_rate(clk, initial_fout);
+=======
+		err = clk_set_rate(data->hw.clk, initial_fout);
+>>>>>>> v4.9.227
 		if (err) {
 			of_clk_del_provider(client->dev.of_node);
 			return err;

@@ -8,7 +8,11 @@
  */
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/stat.h>

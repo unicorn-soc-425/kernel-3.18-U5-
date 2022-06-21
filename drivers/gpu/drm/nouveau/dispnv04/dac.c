@@ -27,7 +27,11 @@
 #include <drm/drmP.h>
 #include <drm/drm_crtc_helper.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_encoder.h"
 #include "nouveau_connector.h"
 #include "nouveau_crtc.h"
@@ -504,8 +508,11 @@ static void nv04_dac_destroy(struct drm_encoder *encoder)
 
 static const struct drm_encoder_helper_funcs nv04_dac_helper_funcs = {
 	.dpms = nv04_dac_dpms,
+<<<<<<< HEAD
 	.save = nv04_dac_save,
 	.restore = nv04_dac_restore,
+=======
+>>>>>>> v4.9.227
 	.mode_fixup = nv04_dac_mode_fixup,
 	.prepare = nv04_dac_prepare,
 	.commit = nv04_dac_commit,
@@ -515,8 +522,11 @@ static const struct drm_encoder_helper_funcs nv04_dac_helper_funcs = {
 
 static const struct drm_encoder_helper_funcs nv17_dac_helper_funcs = {
 	.dpms = nv04_dac_dpms,
+<<<<<<< HEAD
 	.save = nv04_dac_save,
 	.restore = nv04_dac_restore,
+=======
+>>>>>>> v4.9.227
 	.mode_fixup = nv04_dac_mode_fixup,
 	.prepare = nv04_dac_prepare,
 	.commit = nv04_dac_commit,
@@ -545,12 +555,23 @@ nv04_dac_create(struct drm_connector *connector, struct dcb_output *entry)
 	nv_encoder->dcb = entry;
 	nv_encoder->or = ffs(entry->or) - 1;
 
+<<<<<<< HEAD
+=======
+	nv_encoder->enc_save = nv04_dac_save;
+	nv_encoder->enc_restore = nv04_dac_restore;
+
+>>>>>>> v4.9.227
 	if (nv_gf4_disp_arch(dev))
 		helper = &nv17_dac_helper_funcs;
 	else
 		helper = &nv04_dac_helper_funcs;
 
+<<<<<<< HEAD
 	drm_encoder_init(dev, encoder, &nv04_dac_funcs, DRM_MODE_ENCODER_DAC);
+=======
+	drm_encoder_init(dev, encoder, &nv04_dac_funcs, DRM_MODE_ENCODER_DAC,
+			 NULL);
+>>>>>>> v4.9.227
 	drm_encoder_helper_add(encoder, helper);
 
 	encoder->possible_crtcs = entry->heads;

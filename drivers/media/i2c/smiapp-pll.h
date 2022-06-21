@@ -14,19 +14,25 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
  *
+=======
+>>>>>>> v4.9.227
  */
 
 #ifndef SMIAPP_PLL_H
 #define SMIAPP_PLL_H
 
+<<<<<<< HEAD
 #include <linux/device.h>
 
+=======
+>>>>>>> v4.9.227
 /* CSI-2 or CCP-2 */
 #define SMIAPP_PLL_BUS_TYPE_CSI2				0x00
 #define SMIAPP_PLL_BUS_TYPE_PARALLEL				0x01
@@ -35,6 +41,16 @@
 #define SMIAPP_PLL_FLAG_OP_PIX_CLOCK_PER_LANE			(1 << 0)
 #define SMIAPP_PLL_FLAG_NO_OP_CLOCKS				(1 << 1)
 
+<<<<<<< HEAD
+=======
+struct smiapp_pll_branch {
+	uint16_t sys_clk_div;
+	uint16_t pix_clk_div;
+	uint32_t sys_clk_freq_hz;
+	uint32_t pix_clk_freq_hz;
+};
+
+>>>>>>> v4.9.227
 struct smiapp_pll {
 	/* input values */
 	uint8_t bus_type;
@@ -53,10 +69,15 @@ struct smiapp_pll {
 	uint8_t scale_n;
 	uint8_t bits_per_pixel;
 	uint32_t link_freq;
+<<<<<<< HEAD
+=======
+	uint32_t ext_clk_freq_hz;
+>>>>>>> v4.9.227
 
 	/* output values */
 	uint16_t pre_pll_clk_div;
 	uint16_t pll_multiplier;
+<<<<<<< HEAD
 	uint16_t op_sys_clk_div;
 	uint16_t op_pix_clk_div;
 	uint16_t vt_sys_clk_div;
@@ -71,6 +92,15 @@ struct smiapp_pll {
 	uint32_t vt_pix_clk_freq_hz;
 
 	uint32_t pixel_rate_csi;
+=======
+	uint32_t pll_ip_clk_freq_hz;
+	uint32_t pll_op_clk_freq_hz;
+	struct smiapp_pll_branch vt;
+	struct smiapp_pll_branch op;
+
+	uint32_t pixel_rate_csi;
+	uint32_t pixel_rate_pixel_array;
+>>>>>>> v4.9.227
 };
 
 struct smiapp_pll_branch_limits {

@@ -20,7 +20,11 @@
 #include <linux/slab.h>
 #include <linux/random.h>
 
+<<<<<<< HEAD
 #include "iscsi_target_core.h"
+=======
+#include <target/iscsi/iscsi_target_core.h>
+>>>>>>> v4.9.227
 #include "iscsi_target_util.h"
 #include "iscsi_target_tpg.h"
 #include "iscsi_target_seq_pdu_list.h"

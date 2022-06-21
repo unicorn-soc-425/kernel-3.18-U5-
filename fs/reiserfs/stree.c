@@ -551,7 +551,11 @@ static int search_by_key_reada(struct super_block *s,
 		if (!buffer_uptodate(bh[j])) {
 			if (depth == -1)
 				depth = reiserfs_write_unlock_nested(s);
+<<<<<<< HEAD
 			ll_rw_block(READA, 1, bh + j);
+=======
+			ll_rw_block(REQ_OP_READ, REQ_RAHEAD, 1, bh + j);
+>>>>>>> v4.9.227
 		}
 		brelse(bh[j]);
 	}
@@ -660,7 +664,11 @@ int search_by_key(struct super_block *sb, const struct cpu_key *key,
 			if (!buffer_uptodate(bh) && depth == -1)
 				depth = reiserfs_write_unlock_nested(sb);
 
+<<<<<<< HEAD
 			ll_rw_block(READ, 1, &bh);
+=======
+			ll_rw_block(REQ_OP_READ, 0, 1, &bh);
+>>>>>>> v4.9.227
 			wait_on_buffer(bh);
 
 			if (depth != -1)
@@ -1342,7 +1350,11 @@ int reiserfs_delete_item(struct reiserfs_transaction_handle *th,
 		 */
 
 		data = kmap_atomic(un_bh->b_page);
+<<<<<<< HEAD
 		off = ((le_ih_k_offset(&s_ih) - 1) & (PAGE_CACHE_SIZE - 1));
+=======
+		off = ((le_ih_k_offset(&s_ih) - 1) & (PAGE_SIZE - 1));
+>>>>>>> v4.9.227
 		memcpy(data + off,
 		       ih_item_body(PATH_PLAST_BUFFER(path), &s_ih),
 		       ret_value);
@@ -1511,7 +1523,11 @@ static void unmap_buffers(struct page *page, loff_t pos)
 
 	if (page) {
 		if (page_has_buffers(page)) {
+<<<<<<< HEAD
 			tail_index = pos & (PAGE_CACHE_SIZE - 1);
+=======
+			tail_index = pos & (PAGE_SIZE - 1);
+>>>>>>> v4.9.227
 			cur_index = 0;
 			head = page_buffers(page);
 			bh = head;
@@ -1987,8 +2003,13 @@ int reiserfs_do_truncate(struct reiserfs_transaction_handle *th,
 			pathrelse(&s_search_path);
 
 			if (update_timestamps) {
+<<<<<<< HEAD
 				inode->i_mtime = CURRENT_TIME_SEC;
 				inode->i_ctime = CURRENT_TIME_SEC;
+=======
+				inode->i_mtime = current_time(inode);
+				inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 			}
 			reiserfs_update_sd(th, inode);
 
@@ -2012,8 +2033,13 @@ int reiserfs_do_truncate(struct reiserfs_transaction_handle *th,
 update_and_out:
 	if (update_timestamps) {
 		/* this is truncate, not file closing */
+<<<<<<< HEAD
 		inode->i_mtime = CURRENT_TIME_SEC;
 		inode->i_ctime = CURRENT_TIME_SEC;
+=======
+		inode->i_mtime = current_time(inode);
+		inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 	}
 	reiserfs_update_sd(th, inode);
 
@@ -2249,7 +2275,12 @@ error_out:
 	/* also releases the path */
 	unfix_nodes(&s_ins_balance);
 #ifdef REISERQUOTA_DEBUG
+<<<<<<< HEAD
 	reiserfs_debug(th->t_super, REISERFS_DEBUG_CODE,
+=======
+	if (inode)
+		reiserfs_debug(th->t_super, REISERFS_DEBUG_CODE,
+>>>>>>> v4.9.227
 		       "reiserquota insert_item(): freeing %u id=%u type=%c",
 		       quota_bytes, inode->i_uid, head2type(ih));
 #endif

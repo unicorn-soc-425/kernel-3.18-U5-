@@ -8,7 +8,11 @@
  * LGPL2
  */
 
+<<<<<<< HEAD
 #include <linux/crush/crush.h>
+=======
+#include "crush.h"
+>>>>>>> v4.9.227
 
 extern int crush_find_rule(const struct crush_map *map, int ruleset, int type, int size);
 extern int crush_do_rule(const struct crush_map *map,

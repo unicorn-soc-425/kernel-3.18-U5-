@@ -3,7 +3,11 @@
 
 #include <drm/drmP.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_bo.h"
 
 #define nouveau_bo_tile_layout(nvbo)				\

@@ -1,5 +1,8 @@
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/kasan.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/sched.h>
 #include <linux/stacktrace.h>
 
@@ -36,15 +39,21 @@ int notrace unwind_frame(struct stackframe *frame)
 	if (fp < low + 12 || fp > high - 4)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	kasan_disable_current();
 
+=======
+>>>>>>> v4.9.227
 	/* restore the registers from the stack frame */
 	frame->fp = *(unsigned long *)(fp - 12);
 	frame->sp = *(unsigned long *)(fp - 8);
 	frame->pc = *(unsigned long *)(fp - 4);
 
+<<<<<<< HEAD
 	kasan_enable_current();
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 #endif
@@ -139,12 +148,19 @@ static noinline void __save_stack_trace(struct task_struct *tsk,
 		frame.pc = thread_saved_pc(tsk);
 #endif
 	} else {
+<<<<<<< HEAD
 		register unsigned long current_sp asm ("sp");
 
 		/* We don't want this function nor the caller */
 		data.skip += 2;
 		frame.fp = (unsigned long)__builtin_frame_address(0);
 		frame.sp = current_sp;
+=======
+		/* We don't want this function nor the caller */
+		data.skip += 2;
+		frame.fp = (unsigned long)__builtin_frame_address(0);
+		frame.sp = current_stack_pointer;
+>>>>>>> v4.9.227
 		frame.lr = (unsigned long)__builtin_return_address(0);
 		frame.pc = (unsigned long)__save_stack_trace;
 	}
@@ -177,7 +193,10 @@ void save_stack_trace_tsk(struct task_struct *tsk, struct stack_trace *trace)
 {
 	__save_stack_trace(tsk, trace, 1);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(save_stack_trace_tsk);
+=======
+>>>>>>> v4.9.227
 
 void save_stack_trace(struct stack_trace *trace)
 {

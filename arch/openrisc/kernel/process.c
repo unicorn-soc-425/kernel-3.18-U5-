@@ -195,7 +195,10 @@ void start_thread(struct pt_regs *regs, unsigned long pc, unsigned long sp)
 {
 	unsigned long sr = mfspr(SPR_SR) & ~SPR_SR_SM;
 
+<<<<<<< HEAD
 	set_fs(USER_DS);
+=======
+>>>>>>> v4.9.227
 	memset(regs, 0, sizeof(struct pt_regs));
 
 	regs->pc = pc;

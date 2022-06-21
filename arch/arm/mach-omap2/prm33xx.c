@@ -23,20 +23,37 @@
 #include "prm33xx.h"
 #include "prm-regbits-33xx.h"
 
+<<<<<<< HEAD
 /* Read a register in a PRM instance */
 u32 am33xx_prm_read_reg(s16 inst, u16 idx)
+=======
+#define AM33XX_PRM_RSTCTRL_OFFSET		0x0000
+
+#define AM33XX_RST_GLOBAL_WARM_SW_MASK		(1 << 0)
+
+/* Read a register in a PRM instance */
+static u32 am33xx_prm_read_reg(s16 inst, u16 idx)
+>>>>>>> v4.9.227
 {
 	return readl_relaxed(prm_base + inst + idx);
 }
 
 /* Write into a register in a PRM instance */
+<<<<<<< HEAD
 void am33xx_prm_write_reg(u32 val, s16 inst, u16 idx)
+=======
+static void am33xx_prm_write_reg(u32 val, s16 inst, u16 idx)
+>>>>>>> v4.9.227
 {
 	writel_relaxed(val, prm_base + inst + idx);
 }
 
 /* Read-modify-write a register in PRM. Caller must lock */
+<<<<<<< HEAD
 u32 am33xx_prm_rmw_reg_bits(u32 mask, u32 bits, s16 inst, s16 idx)
+=======
+static u32 am33xx_prm_rmw_reg_bits(u32 mask, u32 bits, s16 inst, s16 idx)
+>>>>>>> v4.9.227
 {
 	u32 v;
 
@@ -52,6 +69,10 @@ u32 am33xx_prm_rmw_reg_bits(u32 mask, u32 bits, s16 inst, s16 idx)
  * am33xx_prm_is_hardreset_asserted - read the HW reset line state of
  * submodules contained in the hwmod module
  * @shift: register bit shift corresponding to the reset line to check
+<<<<<<< HEAD
+=======
+ * @part: PRM partition, ignored for AM33xx
+>>>>>>> v4.9.227
  * @inst: CM instance register offset (*_INST macro)
  * @rstctrl_offs: RM_RSTCTRL register address offset for this module
  *
@@ -59,7 +80,12 @@ u32 am33xx_prm_rmw_reg_bits(u32 mask, u32 bits, s16 inst, s16 idx)
  * 0 if the (sub)module hardreset line is not currently asserted, or
  * -EINVAL upon parameter error.
  */
+<<<<<<< HEAD
 int am33xx_prm_is_hardreset_asserted(u8 shift, s16 inst, u16 rstctrl_offs)
+=======
+static int am33xx_prm_is_hardreset_asserted(u8 shift, u8 part, s16 inst,
+					    u16 rstctrl_offs)
+>>>>>>> v4.9.227
 {
 	u32 v;
 
@@ -73,6 +99,10 @@ int am33xx_prm_is_hardreset_asserted(u8 shift, s16 inst, u16 rstctrl_offs)
 /**
  * am33xx_prm_assert_hardreset - assert the HW reset line of a submodule
  * @shift: register bit shift corresponding to the reset line to assert
+<<<<<<< HEAD
+=======
+ * @part: CM partition, ignored for AM33xx
+>>>>>>> v4.9.227
  * @inst: CM instance register offset (*_INST macro)
  * @rstctrl_reg: RM_RSTCTRL register address for this module
  *
@@ -83,7 +113,12 @@ int am33xx_prm_is_hardreset_asserted(u8 shift, s16 inst, u16 rstctrl_offs)
  * place the submodule into reset.  Returns 0 upon success or -EINVAL
  * upon an argument error.
  */
+<<<<<<< HEAD
 int am33xx_prm_assert_hardreset(u8 shift, s16 inst, u16 rstctrl_offs)
+=======
+static int am33xx_prm_assert_hardreset(u8 shift, u8 part, s16 inst,
+				       u16 rstctrl_offs)
+>>>>>>> v4.9.227
 {
 	u32 mask = 1 << shift;
 
@@ -96,6 +131,11 @@ int am33xx_prm_assert_hardreset(u8 shift, s16 inst, u16 rstctrl_offs)
  * am33xx_prm_deassert_hardreset - deassert a submodule hardreset line and
  * wait
  * @shift: register bit shift corresponding to the reset line to deassert
+<<<<<<< HEAD
+=======
+ * @st_shift: reset status register bit shift corresponding to the reset line
+ * @part: PRM partition, not used for AM33xx
+>>>>>>> v4.9.227
  * @inst: CM instance register offset (*_INST macro)
  * @rstctrl_reg: RM_RSTCTRL register address for this module
  * @rstst_reg: RM_RSTST register address for this module
@@ -109,14 +149,24 @@ int am33xx_prm_assert_hardreset(u8 shift, s16 inst, u16 rstctrl_offs)
  * -EINVAL upon an argument error, -EEXIST if the submodule was already out
  * of reset, or -EBUSY if the submodule did not exit reset promptly.
  */
+<<<<<<< HEAD
 int am33xx_prm_deassert_hardreset(u8 shift, u8 st_shift, s16 inst,
 		u16 rstctrl_offs, u16 rstst_offs)
+=======
+static int am33xx_prm_deassert_hardreset(u8 shift, u8 st_shift, u8 part,
+					 s16 inst, u16 rstctrl_offs,
+					 u16 rstst_offs)
+>>>>>>> v4.9.227
 {
 	int c;
 	u32 mask = 1 << st_shift;
 
 	/* Check the current status to avoid  de-asserting the line twice */
+<<<<<<< HEAD
 	if (am33xx_prm_is_hardreset_asserted(shift, inst, rstctrl_offs) == 0)
+=======
+	if (am33xx_prm_is_hardreset_asserted(shift, 0, inst, rstctrl_offs) == 0)
+>>>>>>> v4.9.227
 		return -EEXIST;
 
 	/* Clear the reset status by writing 1 to the status bit */
@@ -128,7 +178,11 @@ int am33xx_prm_deassert_hardreset(u8 shift, u8 st_shift, s16 inst,
 	am33xx_prm_rmw_reg_bits(mask, 0, inst, rstctrl_offs);
 
 	/* wait the status to be set */
+<<<<<<< HEAD
 	omap_test_timeout(am33xx_prm_is_hardreset_asserted(st_shift, inst,
+=======
+	omap_test_timeout(am33xx_prm_is_hardreset_asserted(st_shift, 0, inst,
+>>>>>>> v4.9.227
 							   rstst_offs),
 			  MAX_MODULE_HARDRESET_WAIT, c);
 
@@ -314,6 +368,26 @@ static int am33xx_check_vcvp(void)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * am33xx_prm_global_warm_sw_reset - reboot the device via warm reset
+ *
+ * Immediately reboots the device through warm reset.
+ */
+static void am33xx_prm_global_warm_sw_reset(void)
+{
+	am33xx_prm_rmw_reg_bits(AM33XX_RST_GLOBAL_WARM_SW_MASK,
+				AM33XX_RST_GLOBAL_WARM_SW_MASK,
+				AM33XX_PRM_DEVICE_MOD,
+				AM33XX_PRM_RSTCTRL_OFFSET);
+
+	/* OCP barrier */
+	(void)am33xx_prm_read_reg(AM33XX_PRM_DEVICE_MOD,
+				  AM33XX_PRM_RSTCTRL_OFFSET);
+}
+
+>>>>>>> v4.9.227
 struct pwrdm_ops am33xx_pwrdm_operations = {
 	.pwrdm_set_next_pwrst		= am33xx_pwrdm_set_next_pwrst,
 	.pwrdm_read_next_pwrst		= am33xx_pwrdm_read_next_pwrst,
@@ -330,3 +404,24 @@ struct pwrdm_ops am33xx_pwrdm_operations = {
 	.pwrdm_wait_transition		= am33xx_pwrdm_wait_transition,
 	.pwrdm_has_voltdm		= am33xx_check_vcvp,
 };
+<<<<<<< HEAD
+=======
+
+static struct prm_ll_data am33xx_prm_ll_data = {
+	.assert_hardreset		= am33xx_prm_assert_hardreset,
+	.deassert_hardreset		= am33xx_prm_deassert_hardreset,
+	.is_hardreset_asserted		= am33xx_prm_is_hardreset_asserted,
+	.reset_system			= am33xx_prm_global_warm_sw_reset,
+};
+
+int __init am33xx_prm_init(const struct omap_prcm_init_data *data)
+{
+	return prm_register(&am33xx_prm_ll_data);
+}
+
+static void __exit am33xx_prm_exit(void)
+{
+	prm_unregister(&am33xx_prm_ll_data);
+}
+__exitcall(am33xx_prm_exit);
+>>>>>>> v4.9.227

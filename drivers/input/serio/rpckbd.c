@@ -168,7 +168,10 @@ static struct platform_driver rpckbd_driver = {
 	.remove		= rpckbd_remove,
 	.driver		= {
 		.name	= "kart",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(rpckbd_driver);

@@ -34,7 +34,11 @@ static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
 static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm,
 					  unsigned long address)
 {
+<<<<<<< HEAD
 	return quicklist_alloc(QUICK_PT, GFP_KERNEL | __GFP_REPEAT, NULL);
+=======
+	return quicklist_alloc(QUICK_PT, GFP_KERNEL, NULL);
+>>>>>>> v4.9.227
 }
 
 static inline pgtable_t pte_alloc_one(struct mm_struct *mm,
@@ -43,7 +47,11 @@ static inline pgtable_t pte_alloc_one(struct mm_struct *mm,
 	struct page *page;
 	void *pg;
 
+<<<<<<< HEAD
 	pg = quicklist_alloc(QUICK_PT, GFP_KERNEL | __GFP_REPEAT, NULL);
+=======
+	pg = quicklist_alloc(QUICK_PT, GFP_KERNEL, NULL);
+>>>>>>> v4.9.227
 	if (!pg)
 		return NULL;
 	page = virt_to_page(pg);

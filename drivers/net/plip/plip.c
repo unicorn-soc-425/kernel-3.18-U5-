@@ -1249,6 +1249,10 @@ static void plip_attach (struct parport *port)
 	struct net_device *dev;
 	struct net_local *nl;
 	char name[IFNAMSIZ];
+<<<<<<< HEAD
+=======
+	struct pardev_cb plip_cb;
+>>>>>>> v4.9.227
 
 	if ((parport[0] == -1 && (!timid || !port->devices)) ||
 	    plip_searchfor(parport, port->number)) {
@@ -1273,9 +1277,21 @@ static void plip_attach (struct parport *port)
 
 		nl = netdev_priv(dev);
 		nl->dev = dev;
+<<<<<<< HEAD
 		nl->pardev = parport_register_device(port, dev->name, plip_preempt,
 						 plip_wakeup, plip_interrupt,
 						 0, dev);
+=======
+
+		memset(&plip_cb, 0, sizeof(plip_cb));
+		plip_cb.private = dev;
+		plip_cb.preempt = plip_preempt;
+		plip_cb.wakeup = plip_wakeup;
+		plip_cb.irq_func = plip_interrupt;
+
+		nl->pardev = parport_register_dev_model(port, dev->name,
+							&plip_cb, unit);
+>>>>>>> v4.9.227
 
 		if (!nl->pardev) {
 			printk(KERN_ERR "%s: parport_register failed\n", name);
@@ -1315,10 +1331,30 @@ static void plip_detach (struct parport *port)
 	/* Nothing to do */
 }
 
+<<<<<<< HEAD
 static struct parport_driver plip_driver = {
 	.name	= "plip",
 	.attach = plip_attach,
 	.detach = plip_detach
+=======
+static int plip_probe(struct pardevice *par_dev)
+{
+	struct device_driver *drv = par_dev->dev.driver;
+	int len = strlen(drv->name);
+
+	if (strncmp(par_dev->name, drv->name, len))
+		return -ENODEV;
+
+	return 0;
+}
+
+static struct parport_driver plip_driver = {
+	.name		= "plip",
+	.probe		= plip_probe,
+	.match_port	= plip_attach,
+	.detach		= plip_detach,
+	.devmodel	= true,
+>>>>>>> v4.9.227
 };
 
 static void __exit plip_cleanup_module (void)
@@ -1326,8 +1362,11 @@ static void __exit plip_cleanup_module (void)
 	struct net_device *dev;
 	int i;
 
+<<<<<<< HEAD
 	parport_unregister_driver (&plip_driver);
 
+=======
+>>>>>>> v4.9.227
 	for (i=0; i < PLIP_MAX; i++) {
 		if ((dev = dev_plip[i])) {
 			struct net_local *nl = netdev_priv(dev);
@@ -1339,6 +1378,11 @@ static void __exit plip_cleanup_module (void)
 			dev_plip[i] = NULL;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	parport_unregister_driver(&plip_driver);
+>>>>>>> v4.9.227
 }
 
 #ifndef MODULE

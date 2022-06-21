@@ -20,6 +20,7 @@
 #define ASMARM_ARCH_UART_H
 
 #define IMXUART_HAVE_RTSCTS (1<<0)
+<<<<<<< HEAD
 #define IMXUART_IRDA        (1<<1)
 
 struct imxuart_platform_data {
@@ -28,6 +29,11 @@ struct imxuart_platform_data {
 	unsigned int irda_inv_rx:1;
 	unsigned int irda_inv_tx:1;
 	unsigned short transceiver_delay;
+=======
+
+struct imxuart_platform_data {
+	unsigned int flags;
+>>>>>>> v4.9.227
 };
 
 #endif

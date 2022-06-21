@@ -106,7 +106,11 @@ static void *kernfs_seq_start(struct seq_file *sf, loff_t *ppos)
 	const struct kernfs_ops *ops;
 
 	/*
+<<<<<<< HEAD
 	 * @of->mutex nests outside active ref and is just to ensure that
+=======
+	 * @of->mutex nests outside active ref and is primarily to ensure that
+>>>>>>> v4.9.227
 	 * the ops aren't called concurrently for the same open file.
 	 */
 	mutex_lock(&of->mutex);
@@ -189,12 +193,24 @@ static ssize_t kernfs_file_direct_read(struct kernfs_open_file *of,
 	const struct kernfs_ops *ops;
 	char *buf;
 
+<<<<<<< HEAD
 	buf = kmalloc(len, GFP_KERNEL);
+=======
+	buf = of->prealloc_buf;
+	if (buf)
+		mutex_lock(&of->prealloc_mutex);
+	else
+		buf = kmalloc(len, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!buf)
 		return -ENOMEM;
 
 	/*
+<<<<<<< HEAD
 	 * @of->mutex nests outside active ref and is just to ensure that
+=======
+	 * @of->mutex nests outside active ref and is used both to ensure that
+>>>>>>> v4.9.227
 	 * the ops aren't called concurrently for the same open file.
 	 */
 	mutex_lock(&of->mutex);
@@ -204,6 +220,10 @@ static ssize_t kernfs_file_direct_read(struct kernfs_open_file *of,
 		goto out_free;
 	}
 
+<<<<<<< HEAD
+=======
+	of->event = atomic_read(&of->kn->attr.open->event);
+>>>>>>> v4.9.227
 	ops = kernfs_ops(of->kn);
 	if (ops->read)
 		len = ops->read(of, buf, len, *ppos);
@@ -224,7 +244,14 @@ static ssize_t kernfs_file_direct_read(struct kernfs_open_file *of,
 	*ppos += len;
 
  out_free:
+<<<<<<< HEAD
 	kfree(buf);
+=======
+	if (buf == of->prealloc_buf)
+		mutex_unlock(&of->prealloc_mutex);
+	else
+		kfree(buf);
+>>>>>>> v4.9.227
 	return len;
 }
 
@@ -278,7 +305,15 @@ static ssize_t kernfs_fop_write(struct file *file, const char __user *user_buf,
 		len = min_t(size_t, count, PAGE_SIZE);
 	}
 
+<<<<<<< HEAD
 	buf = kmalloc(len + 1, GFP_KERNEL);
+=======
+	buf = of->prealloc_buf;
+	if (buf)
+		mutex_lock(&of->prealloc_mutex);
+	else
+		buf = kmalloc(len + 1, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!buf)
 		return -ENOMEM;
 
@@ -289,7 +324,11 @@ static ssize_t kernfs_fop_write(struct file *file, const char __user *user_buf,
 	buf[len] = '\0';	/* guarantee string termination */
 
 	/*
+<<<<<<< HEAD
 	 * @of->mutex nests outside active ref and is just to ensure that
+=======
+	 * @of->mutex nests outside active ref and is used both to ensure that
+>>>>>>> v4.9.227
 	 * the ops aren't called concurrently for the same open file.
 	 */
 	mutex_lock(&of->mutex);
@@ -310,8 +349,17 @@ static ssize_t kernfs_fop_write(struct file *file, const char __user *user_buf,
 
 	if (len > 0)
 		*ppos += len;
+<<<<<<< HEAD
 out_free:
 	kfree(buf);
+=======
+
+out_free:
+	if (buf == of->prealloc_buf)
+		mutex_unlock(&of->prealloc_mutex);
+	else
+		kfree(buf);
+>>>>>>> v4.9.227
 	return len;
 }
 
@@ -439,6 +487,7 @@ static struct mempolicy *kernfs_vma_get_policy(struct vm_area_struct *vma,
 	return pol;
 }
 
+<<<<<<< HEAD
 static int kernfs_vma_migrate(struct vm_area_struct *vma,
 			      const nodemask_t *from, const nodemask_t *to,
 			      unsigned long flags)
@@ -460,6 +509,8 @@ static int kernfs_vma_migrate(struct vm_area_struct *vma,
 	kernfs_put_active(of->kn);
 	return ret;
 }
+=======
+>>>>>>> v4.9.227
 #endif
 
 static const struct vm_operations_struct kernfs_vm_ops = {
@@ -470,7 +521,10 @@ static const struct vm_operations_struct kernfs_vm_ops = {
 #ifdef CONFIG_NUMA
 	.set_policy	= kernfs_vma_set_policy,
 	.get_policy	= kernfs_vma_get_policy,
+<<<<<<< HEAD
 	.migrate	= kernfs_vma_migrate,
+=======
+>>>>>>> v4.9.227
 #endif
 };
 
@@ -685,6 +739,26 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
 	 */
 	of->atomic_write_len = ops->atomic_write_len;
 
+<<<<<<< HEAD
+=======
+	error = -EINVAL;
+	/*
+	 * ->seq_show is incompatible with ->prealloc,
+	 * as seq_read does its own allocation.
+	 * ->read must be used instead.
+	 */
+	if (ops->prealloc && ops->seq_show)
+		goto err_free;
+	if (ops->prealloc) {
+		int len = of->atomic_write_len ?: PAGE_SIZE;
+		of->prealloc_buf = kmalloc(len + 1, GFP_KERNEL);
+		error = -ENOMEM;
+		if (!of->prealloc_buf)
+			goto err_free;
+		mutex_init(&of->prealloc_mutex);
+	}
+
+>>>>>>> v4.9.227
 	/*
 	 * Always instantiate seq_file even if read access doesn't use
 	 * seq_file or is not requested.  This unifies private data access
@@ -715,6 +789,10 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
 err_close:
 	seq_release(inode, file);
 err_free:
+<<<<<<< HEAD
+=======
+	kfree(of->prealloc_buf);
+>>>>>>> v4.9.227
 	kfree(of);
 err_out:
 	kernfs_put_active(kn);
@@ -728,6 +806,10 @@ static int kernfs_fop_release(struct inode *inode, struct file *filp)
 
 	kernfs_put_open_node(kn, of);
 	seq_release(inode, filp);
+<<<<<<< HEAD
+=======
+	kfree(of->prealloc_buf);
+>>>>>>> v4.9.227
 	kfree(of);
 
 	return 0;
@@ -779,7 +861,10 @@ static unsigned int kernfs_fop_poll(struct file *filp, poll_table *wait)
 	struct kernfs_node *kn = filp->f_path.dentry->d_fsdata;
 	struct kernfs_open_node *on = kn->attr.open;
 
+<<<<<<< HEAD
 	/* need parent for the kobj, grab both */
+=======
+>>>>>>> v4.9.227
 	if (!kernfs_get_active(kn))
 		goto trigger;
 
@@ -899,6 +984,10 @@ const struct file_operations kernfs_file_fops = {
 	.open		= kernfs_fop_open,
 	.release	= kernfs_fop_release,
 	.poll		= kernfs_fop_poll,
+<<<<<<< HEAD
+=======
+	.fsync		= noop_fsync,
+>>>>>>> v4.9.227
 };
 
 /**
@@ -910,7 +999,10 @@ const struct file_operations kernfs_file_fops = {
  * @ops: kernfs operations for the file
  * @priv: private data for the file
  * @ns: optional namespace tag of the file
+<<<<<<< HEAD
  * @name_is_static: don't copy file name
+=======
+>>>>>>> v4.9.227
  * @key: lockdep key for the file's active_ref, %NULL to disable lockdep
  *
  * Returns the created node on success, ERR_PTR() value on error.
@@ -920,7 +1012,10 @@ struct kernfs_node *__kernfs_create_file(struct kernfs_node *parent,
 					 umode_t mode, loff_t size,
 					 const struct kernfs_ops *ops,
 					 void *priv, const void *ns,
+<<<<<<< HEAD
 					 bool name_is_static,
+=======
+>>>>>>> v4.9.227
 					 struct lock_class_key *key)
 {
 	struct kernfs_node *kn;
@@ -928,8 +1023,11 @@ struct kernfs_node *__kernfs_create_file(struct kernfs_node *parent,
 	int rc;
 
 	flags = KERNFS_FILE;
+<<<<<<< HEAD
 	if (name_is_static)
 		flags |= KERNFS_STATIC_NAME;
+=======
+>>>>>>> v4.9.227
 
 	kn = kernfs_new_node(parent, name, (mode & S_IALLUGO) | S_IFREG, flags);
 	if (!kn)

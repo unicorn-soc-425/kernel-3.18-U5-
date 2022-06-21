@@ -2126,8 +2126,13 @@ exit_done:
 	return status;
 }
 
+<<<<<<< HEAD
 static int altera_get_note(u8 *p, s32 program_size,
 			s32 *offset, char *key, char *value, int length)
+=======
+static int altera_get_note(u8 *p, s32 program_size, s32 *offset,
+			   char *key, char *value, int keylen, int vallen)
+>>>>>>> v4.9.227
 /*
  * Gets key and value of NOTE fields in the JBC file.
  * Can be called in two modes:  if offset pointer is NULL,
@@ -2176,8 +2181,12 @@ static int altera_get_note(u8 *p, s32 program_size,
 			key_ptr = &p[note_strings +
 					get_unaligned_be32(
 					&p[note_table + (8 * i)])];
+<<<<<<< HEAD
 			if ((strncasecmp(key, key_ptr, strlen(key_ptr)) == 0) &&
 						(key != NULL)) {
+=======
+			if (key && !strncasecmp(key, key_ptr, strlen(key_ptr))) {
+>>>>>>> v4.9.227
 				status = 0;
 
 				value_ptr = &p[note_strings +
@@ -2185,7 +2194,11 @@ static int altera_get_note(u8 *p, s32 program_size,
 						&p[note_table + (8 * i) + 4])];
 
 				if (value != NULL)
+<<<<<<< HEAD
 					strlcpy(value, value_ptr, length);
+=======
+					strlcpy(value, value_ptr, vallen);
+>>>>>>> v4.9.227
 
 			}
 		}
@@ -2204,13 +2217,21 @@ static int altera_get_note(u8 *p, s32 program_size,
 				strlcpy(key, &p[note_strings +
 						get_unaligned_be32(
 						&p[note_table + (8 * i)])],
+<<<<<<< HEAD
 					length);
+=======
+					keylen);
+>>>>>>> v4.9.227
 
 			if (value != NULL)
 				strlcpy(value, &p[note_strings +
 						get_unaligned_be32(
 						&p[note_table + (8 * i) + 4])],
+<<<<<<< HEAD
 					length);
+=======
+					vallen);
+>>>>>>> v4.9.227
 
 			*offset = i + 1;
 		}
@@ -2451,7 +2472,11 @@ int altera_init(struct altera_config *config, const struct firmware *fw)
 
 	astate->config = config;
 	if (!astate->config->jtag_io) {
+<<<<<<< HEAD
 		dprintk(KERN_INFO "%s: using byteblaster!\n", __func__);
+=======
+		dprintk("%s: using byteblaster!\n", __func__);
+>>>>>>> v4.9.227
 		astate->config->jtag_io = netup_jtag_io_lpt;
 	}
 
@@ -2464,7 +2489,11 @@ int altera_init(struct altera_config *config, const struct firmware *fw)
 			__func__, (format_version == 2) ? "Jam STAPL" :
 						"pre-standardized Jam 1.1");
 		while (altera_get_note((u8 *)fw->data, fw->size,
+<<<<<<< HEAD
 					&offset, key, value, 256) == 0)
+=======
+					&offset, key, value, 32, 256) == 0)
+>>>>>>> v4.9.227
 			printk(KERN_INFO "%s: NOTE \"%s\" = \"%s\"\n",
 					__func__, key, value);
 	}

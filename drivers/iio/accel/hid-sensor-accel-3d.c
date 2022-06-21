@@ -111,12 +111,16 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
 	int report_id = -1;
 	u32 address;
 	int ret_type;
+<<<<<<< HEAD
 	s32 poll_value;
+=======
+>>>>>>> v4.9.227
 
 	*val = 0;
 	*val2 = 0;
 	switch (mask) {
 	case 0:
+<<<<<<< HEAD
 		poll_value = hid_sensor_read_poll_value(
 					&accel_state->common_attributes);
 		if (poll_value < 0)
@@ -124,13 +128,21 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
 
 		hid_sensor_power_state(&accel_state->common_attributes, true);
 		msleep_interruptible(poll_value * 2);
+=======
+		hid_sensor_power_state(&accel_state->common_attributes, true);
+>>>>>>> v4.9.227
 		report_id = accel_state->accel[chan->scan_index].report_id;
 		address = accel_3d_addresses[chan->scan_index];
 		if (report_id >= 0)
 			*val = sensor_hub_input_attr_get_raw_value(
 					accel_state->common_attributes.hsdev,
 					HID_USAGE_SENSOR_ACCEL_3D, address,
+<<<<<<< HEAD
 					report_id);
+=======
+					report_id,
+					SENSOR_HUB_SYNC);
+>>>>>>> v4.9.227
 		else {
 			*val = 0;
 			hid_sensor_power_state(&accel_state->common_attributes,
@@ -405,7 +417,11 @@ static int hid_accel_3d_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_device_id hid_accel_3d_ids[] = {
+=======
+static const struct platform_device_id hid_accel_3d_ids[] = {
+>>>>>>> v4.9.227
 	{
 		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
 		.name = "HID-SENSOR-200073",
@@ -418,6 +434,10 @@ static struct platform_driver hid_accel_3d_platform_driver = {
 	.id_table = hid_accel_3d_ids,
 	.driver = {
 		.name	= KBUILD_MODNAME,
+<<<<<<< HEAD
+=======
+		.pm	= &hid_sensor_pm_ops,
+>>>>>>> v4.9.227
 	},
 	.probe		= hid_accel_3d_probe,
 	.remove		= hid_accel_3d_remove,

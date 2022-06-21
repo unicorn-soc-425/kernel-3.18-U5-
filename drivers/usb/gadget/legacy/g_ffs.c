@@ -69,7 +69,11 @@ static struct usb_device_descriptor gfs_dev_desc = {
 	.bLength		= sizeof gfs_dev_desc,
 	.bDescriptorType	= USB_DT_DEVICE,
 
+<<<<<<< HEAD
 	.bcdUSB			= cpu_to_le16(0x0200),
+=======
+	/* .bcdUSB = DYNAMIC */
+>>>>>>> v4.9.227
 	.bDeviceClass		= USB_CLASS_PER_INTERFACE,
 
 	.idVendor		= cpu_to_le16(GFS_VENDOR_ID),
@@ -88,6 +92,7 @@ MODULE_PARM_DESC(bDeviceProtocol, "USB Device protocol");
 module_param_array_named(functions, func_names, charp, &func_num, 0);
 MODULE_PARM_DESC(functions, "USB Functions list");
 
+<<<<<<< HEAD
 static const struct usb_descriptor_header *gfs_otg_desc[] = {
 	(const struct usb_descriptor_header *)
 	&(const struct usb_otg_descriptor) {
@@ -103,6 +108,9 @@ static const struct usb_descriptor_header *gfs_otg_desc[] = {
 
 	NULL
 };
+=======
+static const struct usb_descriptor_header *gfs_otg_desc[2];
+>>>>>>> v4.9.227
 
 /* String IDs are assigned dynamically */
 static struct usb_string gfs_strings[] = {
@@ -133,7 +141,13 @@ struct gfs_configuration {
 	struct usb_configuration c;
 	int (*eth)(struct usb_configuration *c);
 	int num;
+<<<<<<< HEAD
 } gfs_configurations[] = {
+=======
+};
+
+static struct gfs_configuration gfs_configurations[] = {
+>>>>>>> v4.9.227
 #ifdef CONFIG_USB_FUNCTIONFS_RNDIS
 	{
 		.eth		= bind_rndis_config,
@@ -161,11 +175,19 @@ static int gfs_unbind(struct usb_composite_dev *cdev);
 static int gfs_do_config(struct usb_configuration *c);
 
 
+<<<<<<< HEAD
 static __refdata struct usb_composite_driver gfs_driver = {
 	.name		= DRIVER_NAME,
 	.dev		= &gfs_dev_desc,
 	.strings	= gfs_dev_strings,
 	.max_speed	= USB_SPEED_HIGH,
+=======
+static struct usb_composite_driver gfs_driver = {
+	.name		= DRIVER_NAME,
+	.dev		= &gfs_dev_desc,
+	.strings	= gfs_dev_strings,
+	.max_speed	= USB_SPEED_SUPER,
+>>>>>>> v4.9.227
 	.bind		= gfs_bind,
 	.unbind		= gfs_unbind,
 };
@@ -277,8 +299,13 @@ static void *functionfs_acquire_dev(struct ffs_dev *dev)
 {
 	if (!try_module_get(THIS_MODULE))
 		return ERR_PTR(-ENOENT);
+<<<<<<< HEAD
 	
 	return 0;
+=======
+
+	return NULL;
+>>>>>>> v4.9.227
 }
 
 static void functionfs_release_dev(struct ffs_dev *dev)
@@ -287,7 +314,11 @@ static void functionfs_release_dev(struct ffs_dev *dev)
 }
 
 /*
+<<<<<<< HEAD
  * The caller of this function takes ffs_lock 
+=======
+ * The caller of this function takes ffs_lock
+>>>>>>> v4.9.227
  */
 static int functionfs_ready_callback(struct ffs_data *ffs)
 {
@@ -302,14 +333,26 @@ static int functionfs_ready_callback(struct ffs_data *ffs)
 	gfs_registered = true;
 
 	ret = usb_composite_probe(&gfs_driver);
+<<<<<<< HEAD
 	if (unlikely(ret < 0))
 		gfs_registered = false;
 	
+=======
+	if (unlikely(ret < 0)) {
+		++missing_funcs;
+		gfs_registered = false;
+	}
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
 /*
+<<<<<<< HEAD
  * The caller of this function takes ffs_lock 
+=======
+ * The caller of this function takes ffs_lock
+>>>>>>> v4.9.227
  */
 static void functionfs_closed_callback(struct ffs_data *ffs)
 {
@@ -357,17 +400,26 @@ static int gfs_bind(struct usb_composite_dev *cdev)
 
 #ifdef CONFIG_USB_FUNCTIONFS_RNDIS
 	{
+<<<<<<< HEAD
 		struct f_rndis_opts *rndis_opts;
 
+=======
+>>>>>>> v4.9.227
 		fi_rndis = usb_get_function_instance("rndis");
 		if (IS_ERR(fi_rndis)) {
 			ret = PTR_ERR(fi_rndis);
 			goto error;
 		}
+<<<<<<< HEAD
 		rndis_opts = container_of(fi_rndis, struct f_rndis_opts,
 					  func_inst);
 #ifndef CONFIG_USB_FUNCTIONFS_ETH
 		net = rndis_opts->net;
+=======
+#ifndef CONFIG_USB_FUNCTIONFS_ETH
+		net = container_of(fi_rndis, struct f_rndis_opts,
+				   func_inst)->net;
+>>>>>>> v4.9.227
 #endif
 	}
 #endif
@@ -408,6 +460,20 @@ static int gfs_bind(struct usb_composite_dev *cdev)
 		goto error_rndis;
 	gfs_dev_desc.iProduct = gfs_strings[USB_GADGET_PRODUCT_IDX].id;
 
+<<<<<<< HEAD
+=======
+	if (gadget_is_otg(cdev->gadget) && !gfs_otg_desc[0]) {
+		struct usb_descriptor_header *usb_desc;
+
+		usb_desc = usb_otg_descriptor_alloc(cdev->gadget);
+		if (!usb_desc)
+			goto error_rndis;
+		usb_otg_descriptor_init(cdev->gadget, usb_desc);
+		gfs_otg_desc[0] = usb_desc;
+		gfs_otg_desc[1] = NULL;
+	}
+
+>>>>>>> v4.9.227
 	for (i = 0; i < ARRAY_SIZE(gfs_configurations); ++i) {
 		struct gfs_configuration *c = gfs_configurations + i;
 		int sid = USB_GADGET_FIRST_AVAIL_IDX + i;
@@ -428,6 +494,11 @@ static int gfs_bind(struct usb_composite_dev *cdev)
 
 /* TODO */
 error_unbind:
+<<<<<<< HEAD
+=======
+	kfree(gfs_otg_desc[0]);
+	gfs_otg_desc[0] = NULL;
+>>>>>>> v4.9.227
 error_rndis:
 #ifdef CONFIG_USB_FUNCTIONFS_RNDIS
 	usb_put_function_instance(fi_rndis);
@@ -469,6 +540,12 @@ static int gfs_unbind(struct usb_composite_dev *cdev)
 	for (i = 0; i < N_CONF * func_num; ++i)
 		usb_put_function(*(f_ffs[0] + i));
 
+<<<<<<< HEAD
+=======
+	kfree(gfs_otg_desc[0]);
+	gfs_otg_desc[0] = NULL;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 

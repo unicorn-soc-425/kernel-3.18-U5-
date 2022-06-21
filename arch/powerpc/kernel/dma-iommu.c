@@ -18,7 +18,11 @@
  */
 static void *dma_iommu_alloc_coherent(struct device *dev, size_t size,
 				      dma_addr_t *dma_handle, gfp_t flag,
+<<<<<<< HEAD
 				      struct dma_attrs *attrs)
+=======
+				      unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	return iommu_alloc_coherent(dev, get_iommu_table_base(dev), size,
 				    dma_handle, dev->coherent_dma_mask, flag,
@@ -27,7 +31,11 @@ static void *dma_iommu_alloc_coherent(struct device *dev, size_t size,
 
 static void dma_iommu_free_coherent(struct device *dev, size_t size,
 				    void *vaddr, dma_addr_t dma_handle,
+<<<<<<< HEAD
 				    struct dma_attrs *attrs)
+=======
+				    unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	iommu_free_coherent(get_iommu_table_base(dev), size, vaddr, dma_handle);
 }
@@ -40,7 +48,11 @@ static void dma_iommu_free_coherent(struct device *dev, size_t size,
 static dma_addr_t dma_iommu_map_page(struct device *dev, struct page *page,
 				     unsigned long offset, size_t size,
 				     enum dma_data_direction direction,
+<<<<<<< HEAD
 				     struct dma_attrs *attrs)
+=======
+				     unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	return iommu_map_page(dev, get_iommu_table_base(dev), page, offset,
 			      size, device_to_mask(dev), direction, attrs);
@@ -49,7 +61,11 @@ static dma_addr_t dma_iommu_map_page(struct device *dev, struct page *page,
 
 static void dma_iommu_unmap_page(struct device *dev, dma_addr_t dma_handle,
 				 size_t size, enum dma_data_direction direction,
+<<<<<<< HEAD
 				 struct dma_attrs *attrs)
+=======
+				 unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	iommu_unmap_page(get_iommu_table_base(dev), dma_handle, size, direction,
 			 attrs);
@@ -58,14 +74,22 @@ static void dma_iommu_unmap_page(struct device *dev, dma_addr_t dma_handle,
 
 static int dma_iommu_map_sg(struct device *dev, struct scatterlist *sglist,
 			    int nelems, enum dma_data_direction direction,
+<<<<<<< HEAD
 			    struct dma_attrs *attrs)
 {
 	return iommu_map_sg(dev, get_iommu_table_base(dev), sglist, nelems,
 			    device_to_mask(dev), direction, attrs);
+=======
+			    unsigned long attrs)
+{
+	return ppc_iommu_map_sg(dev, get_iommu_table_base(dev), sglist, nelems,
+				device_to_mask(dev), direction, attrs);
+>>>>>>> v4.9.227
 }
 
 static void dma_iommu_unmap_sg(struct device *dev, struct scatterlist *sglist,
 		int nelems, enum dma_data_direction direction,
+<<<<<<< HEAD
 		struct dma_attrs *attrs)
 {
 	iommu_unmap_sg(get_iommu_table_base(dev), sglist, nelems, direction,
@@ -74,6 +98,16 @@ static void dma_iommu_unmap_sg(struct device *dev, struct scatterlist *sglist,
 
 /* We support DMA to/from any memory page via the iommu */
 static int dma_iommu_dma_supported(struct device *dev, u64 mask)
+=======
+		unsigned long attrs)
+{
+	ppc_iommu_unmap_sg(get_iommu_table_base(dev), sglist, nelems,
+			   direction, attrs);
+}
+
+/* We support DMA to/from any memory page via the iommu */
+int dma_iommu_dma_supported(struct device *dev, u64 mask)
+>>>>>>> v4.9.227
 {
 	struct iommu_table *tbl = get_iommu_table_base(dev);
 

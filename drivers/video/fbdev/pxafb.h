@@ -167,6 +167,11 @@ struct pxafb_info {
 
 	void (*lcd_power)(int, struct fb_var_screeninfo *);
 	void (*backlight_power)(int);
+<<<<<<< HEAD
+=======
+
+	struct pxafb_mach_info	*inf;
+>>>>>>> v4.9.227
 };
 
 #define TO_INF(ptr,member) container_of(ptr,struct pxafb_info,member)

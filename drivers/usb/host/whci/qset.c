@@ -30,10 +30,16 @@ struct whc_qset *qset_alloc(struct whc *whc, gfp_t mem_flags)
 	struct whc_qset *qset;
 	dma_addr_t dma;
 
+<<<<<<< HEAD
 	qset = dma_pool_alloc(whc->qset_pool, mem_flags, &dma);
 	if (qset == NULL)
 		return NULL;
 	memset(qset, 0, sizeof(struct whc_qset));
+=======
+	qset = dma_pool_zalloc(whc->qset_pool, mem_flags, &dma);
+	if (qset == NULL)
+		return NULL;
+>>>>>>> v4.9.227
 
 	qset->qset_dma = dma;
 	qset->whc = whc;
@@ -315,7 +321,11 @@ void qset_free_std(struct whc *whc, struct whc_std *std)
 		kfree(std->bounce_buf);
 	}
 	if (std->pl_virt) {
+<<<<<<< HEAD
 		if (std->dma_addr)
+=======
+		if (!dma_mapping_error(whc->wusbhc.dev, std->dma_addr))
+>>>>>>> v4.9.227
 			dma_unmap_single(whc->wusbhc.dev, std->dma_addr,
 					 std->num_pointers * sizeof(struct whc_page_list_entry),
 					 DMA_TO_DEVICE);
@@ -377,6 +387,13 @@ static int qset_fill_page_list(struct whc *whc, struct whc_std *std, gfp_t mem_f
 	if (std->pl_virt == NULL)
 		return -ENOMEM;
 	std->dma_addr = dma_map_single(whc->wusbhc.dev, std->pl_virt, pl_len, DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+	if (dma_mapping_error(whc->wusbhc.dev, std->dma_addr)) {
+		kfree(std->pl_virt);
+		return -EFAULT;
+	}
+>>>>>>> v4.9.227
 
 	for (p = 0; p < std->num_pointers; p++) {
 		std->pl_virt[p].buf_ptr = cpu_to_le64(dma_addr);
@@ -396,7 +413,11 @@ static void urb_dequeue_work(struct work_struct *work)
 	struct whc *whc = qset->whc;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (wurb->is_async == true)
+=======
+	if (wurb->is_async)
+>>>>>>> v4.9.227
 		asl_update(whc, WUSBCMD_ASYNC_UPDATED
 			   | WUSBCMD_ASYNC_SYNCED_DB
 			   | WUSBCMD_ASYNC_QSET_RM);
@@ -532,9 +553,17 @@ static int qset_add_urb_sg(struct whc *whc, struct whc_qset *qset, struct urb *u
 	list_for_each_entry(std, &qset->stds, list_node) {
 		if (std->ntds_remaining == -1) {
 			pl_len = std->num_pointers * sizeof(struct whc_page_list_entry);
+<<<<<<< HEAD
 			std->ntds_remaining = ntds--;
 			std->dma_addr = dma_map_single(whc->wusbhc.dev, std->pl_virt,
 						       pl_len, DMA_TO_DEVICE);
+=======
+			std->dma_addr = dma_map_single(whc->wusbhc.dev, std->pl_virt,
+						       pl_len, DMA_TO_DEVICE);
+			if (dma_mapping_error(whc->wusbhc.dev, std->dma_addr))
+				return -EFAULT;
+			std->ntds_remaining = ntds--;
+>>>>>>> v4.9.227
 		}
 	}
 	return 0;
@@ -615,6 +644,11 @@ static int qset_add_urb_sg_linearize(struct whc *whc, struct whc_qset *qset,
 
 		std->dma_addr = dma_map_single(&whc->umc->dev, std->bounce_buf, std->len,
 					       is_out ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
+<<<<<<< HEAD
+=======
+		if (dma_mapping_error(&whc->umc->dev, std->dma_addr))
+			return -EFAULT;
+>>>>>>> v4.9.227
 
 		if (qset_fill_page_list(whc, std, mem_flags) < 0)
 			return -ENOMEM;

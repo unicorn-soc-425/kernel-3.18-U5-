@@ -178,6 +178,11 @@
 
 #define REVISION				0x370
 #define     REVISION__VALUE				0xffff
+<<<<<<< HEAD
+=======
+#define MAKE_COMPARABLE_REVISION(x)		swab16((x) & REVISION__VALUE)
+#define REVISION_5_1				0x00000501
+>>>>>>> v4.9.227
 
 #define ONFI_DEVICE_FEATURES			0x380
 #define     ONFI_DEVICE_FEATURES__VALUE			0x003f
@@ -448,7 +453,10 @@ struct nand_buf {
 #define DT		3
 
 struct denali_nand_info {
+<<<<<<< HEAD
 	struct mtd_info mtd;
+=======
+>>>>>>> v4.9.227
 	struct nand_chip nand;
 	int flash_bank; /* currently selected chip */
 	int status;

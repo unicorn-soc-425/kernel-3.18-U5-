@@ -137,39 +137,67 @@ qla27xx_insertbuf(void *mem, ulong size, void *buf, ulong *len)
 }
 
 static inline void
+<<<<<<< HEAD
 qla27xx_read8(void *window, void *buf, ulong *len)
+=======
+qla27xx_read8(void __iomem *window, void *buf, ulong *len)
+>>>>>>> v4.9.227
 {
 	uint8_t value = ~0;
 
 	if (buf) {
+<<<<<<< HEAD
 		value = RD_REG_BYTE((__iomem void *)window);
+=======
+		value = RD_REG_BYTE(window);
+>>>>>>> v4.9.227
 	}
 	qla27xx_insert32(value, buf, len);
 }
 
 static inline void
+<<<<<<< HEAD
 qla27xx_read16(void *window, void *buf, ulong *len)
+=======
+qla27xx_read16(void __iomem *window, void *buf, ulong *len)
+>>>>>>> v4.9.227
 {
 	uint16_t value = ~0;
 
 	if (buf) {
+<<<<<<< HEAD
 		value = RD_REG_WORD((__iomem void *)window);
+=======
+		value = RD_REG_WORD(window);
+>>>>>>> v4.9.227
 	}
 	qla27xx_insert32(value, buf, len);
 }
 
 static inline void
+<<<<<<< HEAD
 qla27xx_read32(void *window, void *buf, ulong *len)
+=======
+qla27xx_read32(void __iomem *window, void *buf, ulong *len)
+>>>>>>> v4.9.227
 {
 	uint32_t value = ~0;
 
 	if (buf) {
+<<<<<<< HEAD
 		value = RD_REG_DWORD((__iomem void *)window);
+=======
+		value = RD_REG_DWORD(window);
+>>>>>>> v4.9.227
 	}
 	qla27xx_insert32(value, buf, len);
 }
 
+<<<<<<< HEAD
 static inline void (*qla27xx_read_vector(uint width))(void *, void *, ulong *)
+=======
+static inline void (*qla27xx_read_vector(uint width))(void __iomem*, void *, ulong *)
+>>>>>>> v4.9.227
 {
 	return
 	    (width == 1) ? qla27xx_read8 :
@@ -181,7 +209,11 @@ static inline void
 qla27xx_read_reg(__iomem struct device_reg_24xx *reg,
 	uint offset, void *buf, ulong *len)
 {
+<<<<<<< HEAD
 	void *window = (void *)reg + offset;
+=======
+	void __iomem *window = (void __iomem *)reg + offset;
+>>>>>>> v4.9.227
 
 	qla27xx_read32(window, buf, len);
 }
@@ -190,7 +222,11 @@ static inline void
 qla27xx_write_reg(__iomem struct device_reg_24xx *reg,
 	uint offset, uint32_t data, void *buf)
 {
+<<<<<<< HEAD
 	__iomem void *window = reg + offset;
+=======
+	__iomem void *window = (void __iomem *)reg + offset;
+>>>>>>> v4.9.227
 
 	if (buf) {
 		WRT_REG_DWORD(window, data);
@@ -202,8 +238,13 @@ qla27xx_read_window(__iomem struct device_reg_24xx *reg,
 	uint32_t addr, uint offset, uint count, uint width, void *buf,
 	ulong *len)
 {
+<<<<<<< HEAD
 	void *window = (void *)reg + offset;
 	void (*readn)(void *, void *, ulong *) = qla27xx_read_vector(width);
+=======
+	void __iomem *window = (void __iomem *)reg + offset;
+	void (*readn)(void __iomem*, void *, ulong *) = qla27xx_read_vector(width);
+>>>>>>> v4.9.227
 
 	qla27xx_write_reg(reg, IOBASE_ADDR, addr, buf);
 	while (count--) {
@@ -219,6 +260,11 @@ qla27xx_skip_entry(struct qla27xx_fwdt_entry *ent, void *buf)
 {
 	if (buf)
 		ent->hdr.driver_flags |= DRIVER_FLAG_SKIP_ENTRY;
+<<<<<<< HEAD
+=======
+	ql_dbg(ql_dbg_misc + ql_dbg_verbose, NULL, 0xd011,
+	    "Skipping entry %d\n", ent->hdr.entry_type);
+>>>>>>> v4.9.227
 }
 
 static int
@@ -355,6 +401,16 @@ qla27xx_fwdt_entry_t262(struct scsi_qla_host *vha,
 			ent->t262.start_addr = start;
 			ent->t262.end_addr = end;
 		}
+<<<<<<< HEAD
+=======
+	} else if (ent->t262.ram_area == T262_RAM_AREA_DDR_RAM) {
+		start = vha->hw->fw_ddr_ram_start;
+		end = vha->hw->fw_ddr_ram_end;
+		if (buf) {
+			ent->t262.start_addr = start;
+			ent->t262.end_addr = end;
+		}
+>>>>>>> v4.9.227
 	} else {
 		ql_dbg(ql_dbg_misc, vha, 0xd022,
 		    "%s: unknown area %x\n", __func__, ent->t262.ram_area);
@@ -362,7 +418,11 @@ qla27xx_fwdt_entry_t262(struct scsi_qla_host *vha,
 		goto done;
 	}
 
+<<<<<<< HEAD
 	if (end < start || end == 0) {
+=======
+	if (end < start || start == 0 || end == 0) {
+>>>>>>> v4.9.227
 		ql_dbg(ql_dbg_misc, vha, 0xd023,
 		    "%s: unusable range (start=%x end=%x)\n", __func__,
 		    ent->t262.end_addr, ent->t262.start_addr);
@@ -800,6 +860,16 @@ qla27xx_walk_template(struct scsi_qla_host *vha,
 
 	ql_dbg(ql_dbg_misc, vha, 0xd01b,
 	    "%s: len=%lx\n", __func__, *len);
+<<<<<<< HEAD
+=======
+
+	if (buf) {
+		ql_log(ql_log_warn, vha, 0xd015,
+		    "Firmware dump saved to temp buffer (%ld/%p)\n",
+		    vha->host_no, vha->hw->fw_dump);
+		qla2x00_post_uevent_work(vha, QLA_UEVENT_CODE_FW_DUMP);
+	}
+>>>>>>> v4.9.227
 }
 
 static void
@@ -812,9 +882,14 @@ static void
 qla27xx_driver_info(struct qla27xx_fwdt_template *tmp)
 {
 	uint8_t v[] = { 0, 0, 0, 0, 0, 0 };
+<<<<<<< HEAD
 	int rval = 0;
 
 	rval = sscanf(qla2x00_version_str, "%hhu.%hhu.%hhu.%hhu.%hhu.%hhu",
+=======
+
+	sscanf(qla2x00_version_str, "%hhu.%hhu.%hhu.%hhu.%hhu.%hhu",
+>>>>>>> v4.9.227
 	    v+0, v+1, v+2, v+3, v+4, v+5);
 
 	tmp->driver_info[0] = v[3] << 24 | v[2] << 16 | v[1] << 8 | v[0];
@@ -947,16 +1022,37 @@ qla27xx_fwdump(scsi_qla_host_t *vha, int hardware_locked)
 {
 	ulong flags = 0;
 
+<<<<<<< HEAD
 	if (!hardware_locked)
 		spin_lock_irqsave(&vha->hw->hardware_lock, flags);
+=======
+#ifndef __CHECKER__
+	if (!hardware_locked)
+		spin_lock_irqsave(&vha->hw->hardware_lock, flags);
+#endif
+>>>>>>> v4.9.227
 
 	if (!vha->hw->fw_dump)
 		ql_log(ql_log_warn, vha, 0xd01e, "fwdump buffer missing.\n");
 	else if (!vha->hw->fw_dump_template)
 		ql_log(ql_log_warn, vha, 0xd01f, "fwdump template missing.\n");
+<<<<<<< HEAD
 	else
 		qla27xx_execute_fwdt_template(vha);
 
 	if (!hardware_locked)
 		spin_unlock_irqrestore(&vha->hw->hardware_lock, flags);
+=======
+	else if (vha->hw->fw_dumped)
+		ql_log(ql_log_warn, vha, 0xd300,
+		    "Firmware has been previously dumped (%p),"
+		    " -- ignoring request\n", vha->hw->fw_dump);
+	else
+		qla27xx_execute_fwdt_template(vha);
+
+#ifndef __CHECKER__
+	if (!hardware_locked)
+		spin_unlock_irqrestore(&vha->hw->hardware_lock, flags);
+#endif
+>>>>>>> v4.9.227
 }

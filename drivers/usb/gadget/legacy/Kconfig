@@ -40,7 +40,11 @@ config USB_ZERO
 	  dynamically linked module called "g_zero".
 
 config USB_ZERO_HNPTEST
+<<<<<<< HEAD
 	boolean "HNP Test Device"
+=======
+	bool "HNP Test Device"
+>>>>>>> v4.9.227
 	depends on USB_ZERO && USB_OTG
 	help
 	  You can configure this device to enumerate using the device
@@ -103,8 +107,12 @@ config USB_ETH
 	   - CDC Ethernet Emulation Model (EEM) is a newer standard that has
 	     a simpler interface that can be used by more USB hardware.
 
+<<<<<<< HEAD
 	  RNDIS support is an additional option, more demanding than than
 	  subset.
+=======
+	  RNDIS support is an additional option, more demanding than subset.
+>>>>>>> v4.9.227
 
 	  Within the USB device, this gadget driver exposes a network device
 	  "usbX", where X depends on what other networking devices you have.
@@ -250,6 +258,10 @@ config USB_GADGET_TARGET
 	tristate "USB Gadget Target Fabric Module"
 	depends on TARGET_CORE
 	select USB_LIBCOMPOSITE
+<<<<<<< HEAD
+=======
+	select USB_F_TCM
+>>>>>>> v4.9.227
 	help
 	  This fabric is an USB gadget. Two USB protocols are supported that is
 	  BBB or BOT (Bulk Only Transport) and UAS (USB Attached SCSI). BOT is
@@ -287,6 +299,10 @@ config USB_MIDI_GADGET
 	depends on SND
 	select USB_LIBCOMPOSITE
 	select SND_RAWMIDI
+<<<<<<< HEAD
+=======
+	select USB_F_MIDI
+>>>>>>> v4.9.227
 	help
 	  The MIDI Gadget acts as a USB Audio device, with one MIDI
 	  input and one MIDI output. These MIDI jacks appear as
@@ -300,6 +316,10 @@ config USB_MIDI_GADGET
 config USB_G_PRINTER
 	tristate "Printer Gadget"
 	select USB_LIBCOMPOSITE
+<<<<<<< HEAD
+=======
+	select USB_F_PRINTER
+>>>>>>> v4.9.227
 	help
 	  The Printer Gadget channels data between the USB host and a
 	  userspace program driving the print engine. The user space
@@ -337,6 +357,10 @@ config USB_CDC_COMPOSITE
 config USB_G_NOKIA
 	tristate "Nokia composite gadget"
 	depends on PHONET
+<<<<<<< HEAD
+=======
+	depends on BLOCK
+>>>>>>> v4.9.227
 	select USB_LIBCOMPOSITE
 	select USB_U_SERIAL
 	select USB_U_ETHER
@@ -344,6 +368,10 @@ config USB_G_NOKIA
 	select USB_F_OBEX
 	select USB_F_PHONET
 	select USB_F_ECM
+<<<<<<< HEAD
+=======
+	select USB_F_MASS_STORAGE
+>>>>>>> v4.9.227
 	help
 	  The Nokia composite gadget provides support for acm, obex
 	  and phonet in only one composite gadget driver.
@@ -419,6 +447,10 @@ endif # TTY
 config USB_G_HID
 	tristate "HID Gadget"
 	select USB_LIBCOMPOSITE
+<<<<<<< HEAD
+=======
+	select USB_F_HID
+>>>>>>> v4.9.227
 	help
 	  The HID gadget driver provides generic emulation of USB
 	  Human Interface Devices (HID).

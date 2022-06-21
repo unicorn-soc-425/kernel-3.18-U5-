@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * platform_max7315.c: max7315 platform data initilization file
+=======
+ * platform_max7315.c: max7315 platform data initialization file
+>>>>>>> v4.9.227
  *
  * (C) Copyright 2013 Intel Corporation
  * Author: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@intel.com>

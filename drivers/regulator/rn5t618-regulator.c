@@ -31,6 +31,11 @@ static struct regulator_ops rn5t618_reg_ops = {
 #define REG(rid, ereg, emask, vreg, vmask, min, max, step)		\
 	[RN5T618_##rid] = {						\
 		.name		= #rid,					\
+<<<<<<< HEAD
+=======
+		.of_match	= of_match_ptr(#rid),			\
+		.regulators_node = of_match_ptr("regulators"),		\
+>>>>>>> v4.9.227
 		.id		= RN5T618_##rid,			\
 		.type		= REGULATOR_VOLTAGE,			\
 		.owner		= THIS_MODULE,				\
@@ -44,6 +49,26 @@ static struct regulator_ops rn5t618_reg_ops = {
 		.vsel_mask	= (vmask),				\
 	}
 
+<<<<<<< HEAD
+=======
+static struct regulator_desc rn5t567_regulators[] = {
+	/* DCDC */
+	REG(DCDC1, DC1CTL, BIT(0), DC1DAC, 0xff, 600000, 3500000, 12500),
+	REG(DCDC2, DC2CTL, BIT(0), DC2DAC, 0xff, 600000, 3500000, 12500),
+	REG(DCDC3, DC3CTL, BIT(0), DC3DAC, 0xff, 600000, 3500000, 12500),
+	REG(DCDC4, DC4CTL, BIT(0), DC4DAC, 0xff, 600000, 3500000, 12500),
+	/* LDO */
+	REG(LDO1, LDOEN1, BIT(0), LDO1DAC, 0x7f, 900000, 3500000, 25000),
+	REG(LDO2, LDOEN1, BIT(1), LDO2DAC, 0x7f, 900000, 3500000, 25000),
+	REG(LDO3, LDOEN1, BIT(2), LDO3DAC, 0x7f, 600000, 3500000, 25000),
+	REG(LDO4, LDOEN1, BIT(3), LDO4DAC, 0x7f, 900000, 3500000, 25000),
+	REG(LDO5, LDOEN1, BIT(4), LDO5DAC, 0x7f, 900000, 3500000, 25000),
+	/* LDO RTC */
+	REG(LDORTC1, LDOEN2, BIT(4), LDORTCDAC, 0x7f, 1200000, 3500000, 25000),
+	REG(LDORTC2, LDOEN2, BIT(5), LDORTC2DAC, 0x7f, 900000, 3500000, 25000),
+};
+
+>>>>>>> v4.9.227
 static struct regulator_desc rn5t618_regulators[] = {
 	/* DCDC */
 	REG(DCDC1, DC1CTL, BIT(0), DC1DAC, 0xff, 600000, 3500000, 12500),
@@ -60,6 +85,7 @@ static struct regulator_desc rn5t618_regulators[] = {
 	REG(LDORTC2, LDOEN2, BIT(5), LDORTC2DAC, 0x7f, 900000, 3500000, 25000),
 };
 
+<<<<<<< HEAD
 static struct of_regulator_match rn5t618_matches[] = {
 	[RN5T618_DCDC1]		= { .name = "DCDC1" },
 	[RN5T618_DCDC2]		= { .name = "DCDC2" },
@@ -99,11 +125,14 @@ static int rn5t618_regulator_parse_dt(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int rn5t618_regulator_probe(struct platform_device *pdev)
 {
 	struct rn5t618 *rn5t618 = dev_get_drvdata(pdev->dev.parent);
 	struct regulator_config config = { };
 	struct regulator_dev *rdev;
+<<<<<<< HEAD
 	int ret, i;
 
 	ret = rn5t618_regulator_parse_dt(pdev);
@@ -122,6 +151,35 @@ static int rn5t618_regulator_probe(struct platform_device *pdev)
 		if (IS_ERR(rdev)) {
 			dev_err(&pdev->dev, "failed to register %s regulator\n",
 				rn5t618_regulators[i].name);
+=======
+	struct regulator_desc *regulators;
+	int i;
+
+	switch (rn5t618->variant) {
+	case RN5T567:
+		regulators = rn5t567_regulators;
+		break;
+	case RN5T618:
+		regulators = rn5t618_regulators;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	config.dev = pdev->dev.parent;
+	config.regmap = rn5t618->regmap;
+
+	for (i = 0; i < RN5T618_REG_NUM; i++) {
+		if (!regulators[i].name)
+			continue;
+
+		rdev = devm_regulator_register(&pdev->dev,
+					       &regulators[i],
+					       &config);
+		if (IS_ERR(rdev)) {
+			dev_err(&pdev->dev, "failed to register %s regulator\n",
+				regulators[i].name);
+>>>>>>> v4.9.227
 			return PTR_ERR(rdev);
 		}
 	}
@@ -138,6 +196,10 @@ static struct platform_driver rn5t618_regulator_driver = {
 
 module_platform_driver(rn5t618_regulator_driver);
 
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:rn5t618-regulator");
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Beniamino Galvani <b.galvani@gmail.com>");
 MODULE_DESCRIPTION("RN5T618 regulator driver");
 MODULE_LICENSE("GPL v2");

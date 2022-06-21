@@ -123,6 +123,7 @@ comment "ISDN4Linux hardware drivers"
 
 source "drivers/isdn/hisax/Kconfig"
 
+<<<<<<< HEAD
 
 menu "Active cards"
 
@@ -135,6 +136,8 @@ source "drivers/isdn/sc/Kconfig"
 source "drivers/isdn/act2000/Kconfig"
 
 endmenu
+=======
+>>>>>>> v4.9.227
 # end ISDN_I4L
 endif
 

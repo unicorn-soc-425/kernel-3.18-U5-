@@ -26,6 +26,7 @@
 #include "dw_mmc.h"
 #include "dw_mmc-pltfm.h"
 
+<<<<<<< HEAD
 static void dw_mci_pltfm_prepare_command(struct dw_mci *host, u32 *cmdr)
 {
 	*cmdr |= SDMMC_CMD_USE_HOLD_REG;
@@ -35,6 +36,8 @@ static const struct dw_mci_drv_data socfpga_drv_data = {
 	.prepare_command	= dw_mci_pltfm_prepare_command,
 };
 
+=======
+>>>>>>> v4.9.227
 int dw_mci_pltfm_register(struct platform_device *pdev,
 			  const struct dw_mci_drv_data *drv_data)
 {
@@ -59,6 +62,12 @@ int dw_mci_pltfm_register(struct platform_device *pdev,
 	if (IS_ERR(host->regs))
 		return PTR_ERR(host->regs);
 
+<<<<<<< HEAD
+=======
+	/* Get registers' physical base address */
+	host->phy_regs = regs->start;
+
+>>>>>>> v4.9.227
 	platform_set_drvdata(pdev, host);
 	return dw_mci_probe(host);
 }
@@ -88,8 +97,13 @@ EXPORT_SYMBOL_GPL(dw_mci_pltfm_pmops);
 
 static const struct of_device_id dw_mci_pltfm_match[] = {
 	{ .compatible = "snps,dw-mshc", },
+<<<<<<< HEAD
 	{ .compatible = "altr,socfpga-dw-mshc",
 		.data = &socfpga_drv_data },
+=======
+	{ .compatible = "altr,socfpga-dw-mshc", },
+	{ .compatible = "img,pistachio-dw-mshc", },
+>>>>>>> v4.9.227
 	{},
 };
 MODULE_DEVICE_TABLE(of, dw_mci_pltfm_match);

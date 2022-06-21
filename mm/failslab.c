@@ -1,5 +1,6 @@
 #include <linux/fault-inject.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 static struct {
 	struct fault_attr attr;
@@ -23,6 +24,37 @@ bool should_failslab(size_t size, gfp_t gfpflags, unsigned long cache_flags)
 		return false;
 
 	return should_fail(&failslab.attr, size);
+=======
+#include <linux/mm.h>
+#include "slab.h"
+
+static struct {
+	struct fault_attr attr;
+	bool ignore_gfp_reclaim;
+	bool cache_filter;
+} failslab = {
+	.attr = FAULT_ATTR_INITIALIZER,
+	.ignore_gfp_reclaim = true,
+	.cache_filter = false,
+};
+
+bool should_failslab(struct kmem_cache *s, gfp_t gfpflags)
+{
+	/* No fault-injection for bootstrap cache */
+	if (unlikely(s == kmem_cache))
+		return false;
+
+	if (gfpflags & __GFP_NOFAIL)
+		return false;
+
+	if (failslab.ignore_gfp_reclaim && (gfpflags & __GFP_RECLAIM))
+		return false;
+
+	if (failslab.cache_filter && !(s->flags & SLAB_FAILSLAB))
+		return false;
+
+	return should_fail(&failslab.attr, s->object_size);
+>>>>>>> v4.9.227
 }
 
 static int __init setup_failslab(char *str)
@@ -42,7 +74,11 @@ static int __init failslab_debugfs_init(void)
 		return PTR_ERR(dir);
 
 	if (!debugfs_create_bool("ignore-gfp-wait", mode, dir,
+<<<<<<< HEAD
 				&failslab.ignore_gfp_wait))
+=======
+				&failslab.ignore_gfp_reclaim))
+>>>>>>> v4.9.227
 		goto fail;
 	if (!debugfs_create_bool("cache-filter", mode, dir,
 				&failslab.cache_filter))

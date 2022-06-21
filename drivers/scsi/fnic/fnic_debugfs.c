@@ -18,6 +18,10 @@
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/debugfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+>>>>>>> v4.9.227
 #include "fnic.h"
 
 static struct dentry *fnic_trace_debugfs_root;

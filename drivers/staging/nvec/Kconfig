@@ -6,6 +6,12 @@ config MFD_NVEC
 	    Say Y here to enable support for a nVidia compliant embedded
 	    controller.
 
+<<<<<<< HEAD
+=======
+	    To compile this driver as a module, say M here: the module will be
+            called mfd-nvec
+
+>>>>>>> v4.9.227
 config KEYBOARD_NVEC
 	tristate "Keyboard on nVidia compliant EC"
 	depends on MFD_NVEC && INPUT
@@ -13,6 +19,12 @@ config KEYBOARD_NVEC
 	  Say Y here to enable support for a keyboard connected to
 	  a nVidia compliant embedded controller.
 
+<<<<<<< HEAD
+=======
+	  To compile this driver as a module, say M here: the module will be
+          called keyboard-nvec
+
+>>>>>>> v4.9.227
 config SERIO_NVEC_PS2
 	tristate "PS2 on nVidia EC"
 	depends on MFD_NVEC && SERIO
@@ -20,6 +32,13 @@ config SERIO_NVEC_PS2
 	  Say Y here to enable support for a Touchpad / Mouse connected
 	  to a nVidia compliant embedded controller.
 
+<<<<<<< HEAD
+=======
+	  To compile this driver as a module, say M here: the module will be
+          called serio-nvec-ps2
+
+
+>>>>>>> v4.9.227
 config NVEC_POWER
 	tristate "NVEC charger and battery"
 	depends on MFD_NVEC && POWER_SUPPLY
@@ -27,9 +46,23 @@ config NVEC_POWER
 	  Say Y to enable support for battery and charger interface for
 	  nVidia compliant embedded controllers.
 
+<<<<<<< HEAD
+=======
+	  To compile this driver as a module, say M here: the module will be
+          called nvec-power
+
+
+>>>>>>> v4.9.227
 config NVEC_PAZ00
 	tristate "Support for OEM specific functions on Compal PAZ00 based devices"
 	depends on MFD_NVEC && LEDS_CLASS
 	help
 	  Say Y to enable control of the yellow side leds on Compal PAZ00 based
 	  devices, e.g. Toshbia AC100 and Dynabooks AZ netbooks.
+<<<<<<< HEAD
+=======
+
+	  To compile this driver as a module, say M here: the module will be
+          called nvec-paz00
+
+>>>>>>> v4.9.227

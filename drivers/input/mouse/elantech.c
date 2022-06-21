@@ -222,12 +222,17 @@ static int elantech_write_reg(struct psmouse *psmouse, unsigned char reg,
  */
 static void elantech_packet_dump(struct psmouse *psmouse)
 {
+<<<<<<< HEAD
 	int	i;
 
 	psmouse_printk(KERN_DEBUG, psmouse, "PS/2 packet [");
 	for (i = 0; i < psmouse->pktsize; i++)
 		printk("%s0x%02x ", i ? ", " : " ", psmouse->packet[i]);
 	printk("]\n");
+=======
+	psmouse_printk(KERN_DEBUG, psmouse, "PS/2 packet [%*ph]\n",
+		       psmouse->pktsize, psmouse->packet);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -315,7 +320,11 @@ static void elantech_report_semi_mt_data(struct input_dev *dev,
 					 unsigned int x2, unsigned int y2)
 {
 	elantech_set_slot(dev, 0, num_fingers != 0, x1, y1);
+<<<<<<< HEAD
 	elantech_set_slot(dev, 1, num_fingers == 2, x2, y2);
+=======
+	elantech_set_slot(dev, 1, num_fingers >= 2, x2, y2);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -783,11 +792,16 @@ static int elantech_packet_check_v4(struct psmouse *psmouse)
 	struct elantech_data *etd = psmouse->private;
 	unsigned char *packet = psmouse->packet;
 	unsigned char packet_type = packet[3] & 0x03;
+<<<<<<< HEAD
+=======
+	unsigned int ic_version;
+>>>>>>> v4.9.227
 	bool sanity_check;
 
 	if (etd->tp_dev && (packet[3] & 0x0f) == 0x06)
 		return PACKET_TRACKPOINT;
 
+<<<<<<< HEAD
 	/*
 	 * Sanity check based on the constant bits of a packet.
 	 * The constant bits change depending on the value of
@@ -798,6 +812,24 @@ static int elantech_packet_check_v4(struct psmouse *psmouse)
 		sanity_check = ((packet[3] & 0x08) == 0x00);
 	else
 		sanity_check = ((packet[0] & 0x0c) == 0x04 &&
+=======
+	/* This represents the version of IC body. */
+	ic_version = (etd->fw_version & 0x0f0000) >> 16;
+
+	/*
+	 * Sanity check based on the constant bits of a packet.
+	 * The constant bits change depending on the value of
+	 * the hardware flag 'crc_enabled' and the version of
+	 * the IC body, but are the same for every packet,
+	 * regardless of the type.
+	 */
+	if (etd->crc_enabled)
+		sanity_check = ((packet[3] & 0x08) == 0x00);
+	else if (ic_version == 7 && etd->samples[1] == 0x2A)
+		sanity_check = ((packet[3] & 0x1c) == 0x10);
+	else
+		sanity_check = ((packet[0] & 0x08) == 0x00 &&
+>>>>>>> v4.9.227
 				(packet[3] & 0x1c) == 0x10);
 
 	if (!sanity_check)
@@ -1114,9 +1146,20 @@ static int elantech_get_resolution_v4(struct psmouse *psmouse,
  * Asus UX31               0x361f00        20, 15, 0e      clickpad
  * Asus UX32VD             0x361f02        00, 15, 0e      clickpad
  * Avatar AVIU-145A2       0x361f00        ?               clickpad
+<<<<<<< HEAD
  * Fujitsu LIFEBOOK E544   0x470f00        d0, 12, 09      2 hw buttons
  * Fujitsu LIFEBOOK E547   0x470f00        50, 12, 09      2 hw buttons
  * Fujitsu LIFEBOOK E554   0x570f01        40, 14, 0c      2 hw buttons
+=======
+ * Fujitsu CELSIUS H760    0x570f02        40, 14, 0c      3 hw buttons (**)
+ * Fujitsu CELSIUS H780    0x5d0f02        41, 16, 0d      3 hw buttons (**)
+ * Fujitsu LIFEBOOK E544   0x470f00        d0, 12, 09      2 hw buttons
+ * Fujitsu LIFEBOOK E546   0x470f00        50, 12, 09      2 hw buttons
+ * Fujitsu LIFEBOOK E547   0x470f00        50, 12, 09      2 hw buttons
+ * Fujitsu LIFEBOOK E554   0x570f01        40, 14, 0c      2 hw buttons
+ * Fujitsu LIFEBOOK E557   0x570f01        40, 14, 0c      2 hw buttons
+ * Fujitsu T725            0x470f01        05, 12, 09      2 hw buttons
+>>>>>>> v4.9.227
  * Fujitsu H730            0x570f00        c0, 14, 0c      3 hw buttons (**)
  * Gigabyte U2442          0x450f01        58, 17, 0c      2 hw buttons
  * Lenovo L430             0x350f02        b9, 15, 0c      2 hw buttons (*)
@@ -1131,7 +1174,11 @@ static int elantech_get_resolution_v4(struct psmouse *psmouse,
  * System76 Pangolin       0x250f01        ?               2 hw buttons
  * (*) + 3 trackpoint buttons
  * (**) + 0 trackpoint buttons
+<<<<<<< HEAD
  * Note: Lenovo L430 and Lenovo L430 have the same fw_version/caps
+=======
+ * Note: Lenovo L430 and Lenovo L530 have the same fw_version/caps
+>>>>>>> v4.9.227
  */
 static void elantech_set_buttonpad_prop(struct psmouse *psmouse)
 {
@@ -1156,10 +1203,40 @@ static const struct dmi_system_id elantech_dmi_has_middle_button[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "CELSIUS H730"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{
+		/* Fujitsu H760 also has a middle button */
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "CELSIUS H760"),
+		},
+	},
+	{
+		/* Fujitsu H780 also has a middle button */
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "CELSIUS H780"),
+		},
+	},
+>>>>>>> v4.9.227
 #endif
 	{ }
 };
 
+<<<<<<< HEAD
+=======
+static const char * const middle_button_pnp_ids[] = {
+	"LEN2131", /* ThinkPad P52 w/ NFC */
+	"LEN2132", /* ThinkPad P52 */
+	"LEN2133", /* ThinkPad P72 w/ NFC */
+	"LEN2134", /* ThinkPad P72 */
+	"LEN0407",
+	"LEN0408",
+	NULL
+};
+
+>>>>>>> v4.9.227
 /*
  * Set the appropriate event bits for the input subsystem
  */
@@ -1168,7 +1245,11 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 	struct input_dev *dev = psmouse->dev;
 	struct elantech_data *etd = psmouse->private;
 	unsigned int x_min = 0, y_min = 0, x_max = 0, y_max = 0, width = 0;
+<<<<<<< HEAD
 	unsigned int x_res = 0, y_res = 0;
+=======
+	unsigned int x_res = 31, y_res = 31;
+>>>>>>> v4.9.227
 
 	if (elantech_set_range(psmouse, &x_min, &y_min, &x_max, &y_max, &width))
 		return -1;
@@ -1179,7 +1260,12 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 	__clear_bit(EV_REL, dev->evbit);
 
 	__set_bit(BTN_LEFT, dev->keybit);
+<<<<<<< HEAD
 	if (dmi_check_system(elantech_dmi_has_middle_button))
+=======
+	if (dmi_check_system(elantech_dmi_has_middle_button) ||
+			psmouse_matches_pnp_id(psmouse, middle_button_pnp_ids))
+>>>>>>> v4.9.227
 		__set_bit(BTN_MIDDLE, dev->keybit);
 	__set_bit(BTN_RIGHT, dev->keybit);
 
@@ -1233,8 +1319,11 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 		/* For X to recognize me as touchpad. */
 		input_set_abs_params(dev, ABS_X, x_min, x_max, 0, 0);
 		input_set_abs_params(dev, ABS_Y, y_min, y_max, 0, 0);
+<<<<<<< HEAD
 		input_abs_set_res(dev, ABS_X, x_res);
 		input_abs_set_res(dev, ABS_Y, y_res);
+=======
+>>>>>>> v4.9.227
 		/*
 		 * range of pressure and width is the same as v2,
 		 * report ABS_PRESSURE, ABS_TOOL_WIDTH for compatibility.
@@ -1247,8 +1336,11 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 		input_mt_init_slots(dev, ETP_MAX_FINGERS, 0);
 		input_set_abs_params(dev, ABS_MT_POSITION_X, x_min, x_max, 0, 0);
 		input_set_abs_params(dev, ABS_MT_POSITION_Y, y_min, y_max, 0, 0);
+<<<<<<< HEAD
 		input_abs_set_res(dev, ABS_MT_POSITION_X, x_res);
 		input_abs_set_res(dev, ABS_MT_POSITION_Y, y_res);
+=======
+>>>>>>> v4.9.227
 		input_set_abs_params(dev, ABS_MT_PRESSURE, ETP_PMIN_V2,
 				     ETP_PMAX_V2, 0, 0);
 		/*
@@ -1260,6 +1352,16 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	input_abs_set_res(dev, ABS_X, x_res);
+	input_abs_set_res(dev, ABS_Y, y_res);
+	if (etd->hw_version > 1) {
+		input_abs_set_res(dev, ABS_MT_POSITION_X, x_res);
+		input_abs_set_res(dev, ABS_MT_POSITION_Y, y_res);
+	}
+
+>>>>>>> v4.9.227
 	etd->y_max = y_max;
 	etd->width = width;
 
@@ -1497,6 +1599,30 @@ static const struct dmi_system_id elantech_dmi_force_crc_enabled[] = {
 		},
 	},
 	{
+<<<<<<< HEAD
+=======
+		/* Fujitsu H760 does not work with crc_enabled == 0 */
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "CELSIUS H760"),
+		},
+	},
+	{
+		/* Fujitsu LIFEBOOK E544  does not work with crc_enabled == 0 */
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK E544"),
+		},
+	},
+	{
+		/* Fujitsu LIFEBOOK E546  does not work with crc_enabled == 0 */
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK E546"),
+		},
+	},
+	{
+>>>>>>> v4.9.227
 		/* Fujitsu LIFEBOOK E547 does not work with crc_enabled == 0 */
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
@@ -1511,10 +1637,31 @@ static const struct dmi_system_id elantech_dmi_force_crc_enabled[] = {
 		},
 	},
 	{
+<<<<<<< HEAD
 		/* Fujitsu LIFEBOOK E544  does not work with crc_enabled == 0 */
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK E544"),
+=======
+		/* Fujitsu LIFEBOOK E556 does not work with crc_enabled == 0 */
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK E556"),
+		},
+	},
+	{
+		/* Fujitsu LIFEBOOK E557 does not work with crc_enabled == 0 */
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK E557"),
+		},
+	},
+	{
+		/* Fujitsu LIFEBOOK U745 does not work with crc_enabled == 0 */
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK U745"),
+>>>>>>> v4.9.227
 		},
 	},
 #endif
@@ -1650,6 +1797,30 @@ int elantech_init(struct psmouse *psmouse)
 		     etd->capabilities[0], etd->capabilities[1],
 		     etd->capabilities[2]);
 
+<<<<<<< HEAD
+=======
+	if (etd->hw_version != 1) {
+		if (etd->send_cmd(psmouse, ETP_SAMPLE_QUERY, etd->samples)) {
+			psmouse_err(psmouse, "failed to query sample data\n");
+			goto init_fail;
+		}
+		psmouse_info(psmouse,
+			     "Elan sample query result %02x, %02x, %02x\n",
+			     etd->samples[0], etd->samples[1], etd->samples[2]);
+	}
+
+	if (etd->samples[1] == 0x74 && etd->hw_version == 0x03) {
+		/*
+		 * This module has a bug which makes absolute mode
+		 * unusable, so let's abort so we'll be using standard
+		 * PS/2 protocol.
+		 */
+		psmouse_info(psmouse,
+			     "absolute mode broken, forcing standard PS/2 protocol\n");
+		goto init_fail;
+	}
+
+>>>>>>> v4.9.227
 	if (elantech_set_absolute_mode(psmouse)) {
 		psmouse_err(psmouse,
 			    "failed to put touchpad into absolute mode.\n");
@@ -1688,7 +1859,11 @@ int elantech_init(struct psmouse *psmouse)
 		snprintf(etd->tp_phys, sizeof(etd->tp_phys), "%s/input1",
 			psmouse->ps2dev.serio->phys);
 		tp_dev->phys = etd->tp_phys;
+<<<<<<< HEAD
 		tp_dev->name = "Elantech PS/2 TrackPoint";
+=======
+		tp_dev->name = "ETPS/2 Elantech TrackPoint";
+>>>>>>> v4.9.227
 		tp_dev->id.bustype = BUS_I8042;
 		tp_dev->id.vendor  = 0x0002;
 		tp_dev->id.product = PSMOUSE_ELANTECH;

@@ -30,9 +30,15 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/falloc.h>
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
+=======
+#include <linux/vmalloc.h>
+#include <linux/falloc.h>
+#include <scsi/scsi_proto.h>
+>>>>>>> v4.9.227
 #include <asm/unaligned.h>
 
 #include <target/target_core_base.h>
@@ -45,10 +51,13 @@ static inline struct fd_dev *FD_DEV(struct se_device *dev)
 	return container_of(dev, struct fd_dev, dev);
 }
 
+<<<<<<< HEAD
 /*	fd_attach_hba(): (Part of se_subsystem_api_t template)
  *
  *
  */
+=======
+>>>>>>> v4.9.227
 static int fd_attach_hba(struct se_hba *hba, u32 host_id)
 {
 	struct fd_host *fd_host;
@@ -65,7 +74,11 @@ static int fd_attach_hba(struct se_hba *hba, u32 host_id)
 
 	pr_debug("CORE_HBA[%d] - TCM FILEIO HBA Driver %s on Generic"
 		" Target Core Stack %s\n", hba->hba_id, FD_VERSION,
+<<<<<<< HEAD
 		TARGET_CORE_MOD_VERSION);
+=======
+		TARGET_CORE_VERSION);
+>>>>>>> v4.9.227
 	pr_debug("CORE_HBA[%d] - Attached FILEIO HBA: %u to Generic\n",
 		hba->hba_id, fd_host->fd_host_id);
 
@@ -164,6 +177,7 @@ static int fd_configure_device(struct se_device *dev)
 			" block_device blocks: %llu logical_block_size: %d\n",
 			dev_size, div_u64(dev_size, fd_dev->fd_block_size),
 			fd_dev->fd_block_size);
+<<<<<<< HEAD
 		/*
 		 * Check if the underlying struct block_device request_queue supports
 		 * the QUEUE_FLAG_DISCARD bit for UNMAP/WRITE_SAME in SCSI + TRIM
@@ -183,6 +197,12 @@ static int fd_configure_device(struct se_device *dev)
 			pr_debug("IFILE: BLOCK Discard support available,"
 					" disabled by default\n");
 		}
+=======
+
+		if (target_configure_unmap_from_queue(&dev->dev_attrib, q))
+			pr_debug("IFILE: BLOCK Discard support available,"
+				 " disabled by default\n");
+>>>>>>> v4.9.227
 		/*
 		 * Enable write same emulation for IBLOCK and use 0xFFFF as
 		 * the smaller WRITE_SAME(10) only has a two-byte block count.
@@ -245,6 +265,17 @@ fail:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static void fd_dev_call_rcu(struct rcu_head *p)
+{
+	struct se_device *dev = container_of(p, struct se_device, rcu_head);
+	struct fd_dev *fd_dev = FD_DEV(dev);
+
+	kfree(fd_dev);
+}
+
+>>>>>>> v4.9.227
 static void fd_free_device(struct se_device *dev)
 {
 	struct fd_dev *fd_dev = FD_DEV(dev);
@@ -253,6 +284,7 @@ static void fd_free_device(struct se_device *dev)
 		filp_close(fd_dev->fd_file, NULL);
 		fd_dev->fd_file = NULL;
 	}
+<<<<<<< HEAD
 
 	kfree(fd_dev);
 }
@@ -329,11 +361,30 @@ static int fd_do_rw(struct se_cmd *cmd, struct scatterlist *sgl,
 
 	iov = kzalloc(sizeof(struct iovec) * sgl_nents, GFP_KERNEL);
 	if (!iov) {
+=======
+	call_rcu(&dev->rcu_head, fd_dev_call_rcu);
+}
+
+static int fd_do_rw(struct se_cmd *cmd, struct file *fd,
+		    u32 block_size, struct scatterlist *sgl,
+		    u32 sgl_nents, u32 data_length, int is_write)
+{
+	struct scatterlist *sg;
+	struct iov_iter iter;
+	struct bio_vec *bvec;
+	ssize_t len = 0;
+	loff_t pos = (cmd->t_task_lba * block_size);
+	int ret = 0, i;
+
+	bvec = kcalloc(sgl_nents, sizeof(struct bio_vec), GFP_KERNEL);
+	if (!bvec) {
+>>>>>>> v4.9.227
 		pr_err("Unable to allocate fd_do_readv iov[]\n");
 		return -ENOMEM;
 	}
 
 	for_each_sg(sgl, sg, sgl_nents, i) {
+<<<<<<< HEAD
 		iov[i].iov_len = sg->length;
 		iov[i].iov_base = kmap(sg_page(sg)) + sg->offset;
 	}
@@ -357,6 +408,26 @@ static int fd_do_rw(struct se_cmd *cmd, struct scatterlist *sgl,
 		if (ret < 0 || ret != cmd->data_length) {
 			pr_err("%s() write returned %d\n", __func__, ret);
 			return (ret < 0 ? ret : -EINVAL);
+=======
+		bvec[i].bv_page = sg_page(sg);
+		bvec[i].bv_len = sg->length;
+		bvec[i].bv_offset = sg->offset;
+
+		len += sg->length;
+	}
+
+	iov_iter_bvec(&iter, ITER_BVEC, bvec, sgl_nents, len);
+	if (is_write)
+		ret = vfs_iter_write(fd, &iter, &pos);
+	else
+		ret = vfs_iter_read(fd, &iter, &pos);
+
+	if (is_write) {
+		if (ret < 0 || ret != data_length) {
+			pr_err("%s() write returned %d\n", __func__, ret);
+			if (ret >= 0)
+				ret = -EINVAL;
+>>>>>>> v4.9.227
 		}
 	} else {
 		/*
@@ -365,21 +436,49 @@ static int fd_do_rw(struct se_cmd *cmd, struct scatterlist *sgl,
 		 * block_device.
 		 */
 		if (S_ISBLK(file_inode(fd)->i_mode)) {
+<<<<<<< HEAD
 			if (ret < 0 || ret != cmd->data_length) {
 				pr_err("%s() returned %d, expecting %u for "
 						"S_ISBLK\n", __func__, ret,
 						cmd->data_length);
 				return (ret < 0 ? ret : -EINVAL);
+=======
+			if (ret < 0 || ret != data_length) {
+				pr_err("%s() returned %d, expecting %u for "
+						"S_ISBLK\n", __func__, ret,
+						data_length);
+				if (ret >= 0)
+					ret = -EINVAL;
+>>>>>>> v4.9.227
 			}
 		} else {
 			if (ret < 0) {
 				pr_err("%s() returned %d for non S_ISBLK\n",
 						__func__, ret);
+<<<<<<< HEAD
 				return ret;
 			}
 		}
 	}
 	return 1;
+=======
+			} else if (ret != data_length) {
+				/*
+				 * Short read case:
+				 * Probably some one truncate file under us.
+				 * We must explicitly zero sg-pages to prevent
+				 * expose uninizialized pages to userspace.
+				 */
+				if (ret < data_length)
+					ret += iov_iter_zero(data_length - ret, &iter);
+				else
+					ret = -EINVAL;
+			}
+		}
+	}
+	kfree(bvec);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static sense_reason_t
@@ -427,6 +526,7 @@ fd_execute_sync_cache(struct se_cmd *cmd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned char *
 fd_setup_write_same_buf(struct se_cmd *cmd, struct scatterlist *sg,
 		    unsigned int len)
@@ -466,11 +566,14 @@ fd_setup_write_same_buf(struct se_cmd *cmd, struct scatterlist *sg,
 	return buf;
 }
 
+=======
+>>>>>>> v4.9.227
 static sense_reason_t
 fd_execute_write_same(struct se_cmd *cmd)
 {
 	struct se_device *se_dev = cmd->se_dev;
 	struct fd_dev *fd_dev = FD_DEV(se_dev);
+<<<<<<< HEAD
 	struct file *f = fd_dev->fd_file;
 	struct scatterlist *sg;
 	struct iovec *iov;
@@ -480,21 +583,45 @@ fd_execute_write_same(struct se_cmd *cmd)
 	unsigned int len, len_tmp, iov_num;
 	int i, rc;
 	unsigned char *buf;
+=======
+	loff_t pos = cmd->t_task_lba * se_dev->dev_attrib.block_size;
+	sector_t nolb = sbc_get_write_same_sectors(cmd);
+	struct iov_iter iter;
+	struct bio_vec *bvec;
+	unsigned int len = 0, i;
+	ssize_t ret;
+>>>>>>> v4.9.227
 
 	if (!nolb) {
 		target_complete_cmd(cmd, SAM_STAT_GOOD);
 		return 0;
 	}
+<<<<<<< HEAD
 	sg = &cmd->t_data_sg[0];
 
 	if (cmd->t_data_nents > 1 ||
 	    sg->length != cmd->se_dev->dev_attrib.block_size) {
 		pr_err("WRITE_SAME: Illegal SGL t_data_nents: %u length: %u"
 			" block_size: %u\n", cmd->t_data_nents, sg->length,
+=======
+	if (cmd->prot_op) {
+		pr_err("WRITE_SAME: Protection information with FILEIO"
+		       " backends not supported\n");
+		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+	}
+
+	if (cmd->t_data_nents > 1 ||
+	    cmd->t_data_sg[0].length != cmd->se_dev->dev_attrib.block_size) {
+		pr_err("WRITE_SAME: Illegal SGL t_data_nents: %u length: %u"
+			" block_size: %u\n",
+			cmd->t_data_nents,
+			cmd->t_data_sg[0].length,
+>>>>>>> v4.9.227
 			cmd->se_dev->dev_attrib.block_size);
 		return TCM_INVALID_CDB_FIELD;
 	}
 
+<<<<<<< HEAD
 	len = len_tmp = nolb * se_dev->dev_attrib.block_size;
 	iov_num = DIV_ROUND_UP(len, PAGE_SIZE);
 
@@ -528,6 +655,26 @@ fd_execute_write_same(struct se_cmd *cmd)
 
 	if (rc < 0 || rc != len) {
 		pr_err("vfs_writev() returned %d for write same\n", rc);
+=======
+	bvec = kcalloc(nolb, sizeof(struct bio_vec), GFP_KERNEL);
+	if (!bvec)
+		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+
+	for (i = 0; i < nolb; i++) {
+		bvec[i].bv_page = sg_page(&cmd->t_data_sg[0]);
+		bvec[i].bv_len = cmd->t_data_sg[0].length;
+		bvec[i].bv_offset = cmd->t_data_sg[0].offset;
+
+		len += se_dev->dev_attrib.block_size;
+	}
+
+	iov_iter_bvec(&iter, ITER_BVEC, bvec, nolb, len);
+	ret = vfs_iter_write(fd_dev->fd_file, &iter, &pos);
+
+	kfree(bvec);
+	if (ret < 0 || ret != len) {
+		pr_err("vfs_iter_write() returned %zd for write same\n", ret);
+>>>>>>> v4.9.227
 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 	}
 
@@ -586,9 +733,15 @@ fd_do_prot_unmap(struct se_cmd *cmd, sector_t lba, sector_t nolb)
 }
 
 static sense_reason_t
+<<<<<<< HEAD
 fd_do_unmap(struct se_cmd *cmd, void *priv, sector_t lba, sector_t nolb)
 {
 	struct file *file = priv;
+=======
+fd_execute_unmap(struct se_cmd *cmd, sector_t lba, sector_t nolb)
+{
+	struct file *file = FD_DEV(cmd->se_dev)->fd_file;
+>>>>>>> v4.9.227
 	struct inode *inode = file->f_mapping->host;
 	int ret;
 
@@ -605,9 +758,18 @@ fd_do_unmap(struct se_cmd *cmd, void *priv, sector_t lba, sector_t nolb)
 	if (S_ISBLK(inode->i_mode)) {
 		/* The backend is block device, use discard */
 		struct block_device *bdev = inode->i_bdev;
+<<<<<<< HEAD
 
 		ret = blkdev_issue_discard(bdev, lba,
 				nolb, GFP_KERNEL, 0);
+=======
+		struct se_device *dev = cmd->se_dev;
+
+		ret = blkdev_issue_discard(bdev,
+					   target_to_linux_sector(dev, lba),
+					   target_to_linux_sector(dev,  nolb),
+					   GFP_KERNEL, 0);
+>>>>>>> v4.9.227
 		if (ret < 0) {
 			pr_warn("FILEIO: blkdev_issue_discard() failed: %d\n",
 				ret);
@@ -634,6 +796,7 @@ fd_do_unmap(struct se_cmd *cmd, void *priv, sector_t lba, sector_t nolb)
 }
 
 static sense_reason_t
+<<<<<<< HEAD
 fd_execute_write_same_unmap(struct se_cmd *cmd)
 {
 	struct se_device *se_dev = cmd->se_dev;
@@ -665,11 +828,19 @@ fd_execute_unmap(struct se_cmd *cmd)
 }
 
 static sense_reason_t
+=======
+>>>>>>> v4.9.227
 fd_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 	      enum dma_data_direction data_direction)
 {
 	struct se_device *dev = cmd->se_dev;
+<<<<<<< HEAD
 	struct fd_prot fd_prot;
+=======
+	struct fd_dev *fd_dev = FD_DEV(dev);
+	struct file *file = fd_dev->fd_file;
+	struct file *pfile = fd_dev->fd_prot_file;
+>>>>>>> v4.9.227
 	sense_reason_t rc;
 	int ret = 0;
 	/*
@@ -678,7 +849,11 @@ fd_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 	 */
 	if (cmd->data_length > FD_MAX_BYTES) {
 		pr_err("FILEIO: Not able to process I/O of %u bytes due to"
+<<<<<<< HEAD
 		       "FD_MAX_BYTES: %u iovec count limitiation\n",
+=======
+		       "FD_MAX_BYTES: %u iovec count limitation\n",
+>>>>>>> v4.9.227
 			cmd->data_length, FD_MAX_BYTES);
 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 	}
@@ -687,14 +862,22 @@ fd_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 	 * physical memory addresses to struct iovec virtual memory.
 	 */
 	if (data_direction == DMA_FROM_DEVICE) {
+<<<<<<< HEAD
 		memset(&fd_prot, 0, sizeof(struct fd_prot));
 
 		if (cmd->prot_type) {
 			ret = fd_do_prot_rw(cmd, &fd_prot, false);
+=======
+		if (cmd->prot_type && dev->dev_attrib.pi_prot_type) {
+			ret = fd_do_rw(cmd, pfile, dev->prot_length,
+				       cmd->t_prot_sg, cmd->t_prot_nents,
+				       cmd->prot_length, 0);
+>>>>>>> v4.9.227
 			if (ret < 0)
 				return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 		}
 
+<<<<<<< HEAD
 		ret = fd_do_rw(cmd, sgl, sgl_nents, 0);
 
 		if (ret > 0 && cmd->prot_type) {
@@ -730,15 +913,46 @@ fd_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 		}
 
 		ret = fd_do_rw(cmd, sgl, sgl_nents, 1);
+=======
+		ret = fd_do_rw(cmd, file, dev->dev_attrib.block_size,
+			       sgl, sgl_nents, cmd->data_length, 0);
+
+		if (ret > 0 && cmd->prot_type && dev->dev_attrib.pi_prot_type) {
+			u32 sectors = cmd->data_length >>
+					ilog2(dev->dev_attrib.block_size);
+
+			rc = sbc_dif_verify(cmd, cmd->t_task_lba, sectors,
+					    0, cmd->t_prot_sg, 0);
+			if (rc)
+				return rc;
+		}
+	} else {
+		if (cmd->prot_type && dev->dev_attrib.pi_prot_type) {
+			u32 sectors = cmd->data_length >>
+					ilog2(dev->dev_attrib.block_size);
+
+			rc = sbc_dif_verify(cmd, cmd->t_task_lba, sectors,
+					    0, cmd->t_prot_sg, 0);
+			if (rc)
+				return rc;
+		}
+
+		ret = fd_do_rw(cmd, file, dev->dev_attrib.block_size,
+			       sgl, sgl_nents, cmd->data_length, 1);
+>>>>>>> v4.9.227
 		/*
 		 * Perform implicit vfs_fsync_range() for fd_do_writev() ops
 		 * for SCSI WRITEs with Forced Unit Access (FUA) set.
 		 * Allow this to happen independent of WCE=0 setting.
 		 */
+<<<<<<< HEAD
 		if (ret > 0 &&
 		    dev->dev_attrib.emulate_fua_write > 0 &&
 		    (cmd->se_cmd_flags & SCF_FUA)) {
 			struct fd_dev *fd_dev = FD_DEV(dev);
+=======
+		if (ret > 0 && (cmd->se_cmd_flags & SCF_FUA)) {
+>>>>>>> v4.9.227
 			loff_t start = cmd->t_task_lba *
 				dev->dev_attrib.block_size;
 			loff_t end;
@@ -751,18 +965,30 @@ fd_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 			vfs_fsync_range(fd_dev->fd_file, start, end, 1);
 		}
 
+<<<<<<< HEAD
 		if (ret > 0 && cmd->prot_type) {
 			ret = fd_do_prot_rw(cmd, &fd_prot, true);
+=======
+		if (ret > 0 && cmd->prot_type && dev->dev_attrib.pi_prot_type) {
+			ret = fd_do_rw(cmd, pfile, dev->prot_length,
+				       cmd->t_prot_sg, cmd->t_prot_nents,
+				       cmd->prot_length, 1);
+>>>>>>> v4.9.227
 			if (ret < 0)
 				return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 		}
 	}
 
+<<<<<<< HEAD
 	if (ret < 0) {
 		kfree(fd_prot.prot_sg);
 		kfree(fd_prot.prot_buf);
 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 	}
+=======
+	if (ret < 0)
+		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+>>>>>>> v4.9.227
 
 	target_complete_cmd(cmd, SAM_STAT_GOOD);
 	return 0;
@@ -964,7 +1190,10 @@ static struct sbc_ops fd_sbc_ops = {
 	.execute_rw		= fd_execute_rw,
 	.execute_sync_cache	= fd_execute_sync_cache,
 	.execute_write_same	= fd_execute_write_same,
+<<<<<<< HEAD
 	.execute_write_same_unmap = fd_execute_write_same_unmap,
+=======
+>>>>>>> v4.9.227
 	.execute_unmap		= fd_execute_unmap,
 };
 
@@ -974,12 +1203,19 @@ fd_parse_cdb(struct se_cmd *cmd)
 	return sbc_parse_cdb(cmd, &fd_sbc_ops);
 }
 
+<<<<<<< HEAD
 static struct se_subsystem_api fileio_template = {
+=======
+static const struct target_backend_ops fileio_ops = {
+>>>>>>> v4.9.227
 	.name			= "fileio",
 	.inquiry_prod		= "FILEIO",
 	.inquiry_rev		= FD_VERSION,
 	.owner			= THIS_MODULE,
+<<<<<<< HEAD
 	.transport_type		= TRANSPORT_PLUGIN_VHBA_PDEV,
+=======
+>>>>>>> v4.9.227
 	.attach_hba		= fd_attach_hba,
 	.detach_hba		= fd_detach_hba,
 	.alloc_device		= fd_alloc_device,
@@ -993,16 +1229,28 @@ static struct se_subsystem_api fileio_template = {
 	.init_prot		= fd_init_prot,
 	.format_prot		= fd_format_prot,
 	.free_prot		= fd_free_prot,
+<<<<<<< HEAD
+=======
+	.tb_dev_attrib_attrs	= sbc_attrib_attrs,
+>>>>>>> v4.9.227
 };
 
 static int __init fileio_module_init(void)
 {
+<<<<<<< HEAD
 	return transport_subsystem_register(&fileio_template);
+=======
+	return transport_backend_register(&fileio_ops);
+>>>>>>> v4.9.227
 }
 
 static void __exit fileio_module_exit(void)
 {
+<<<<<<< HEAD
 	transport_subsystem_release(&fileio_template);
+=======
+	target_backend_unregister(&fileio_ops);
+>>>>>>> v4.9.227
 }
 
 MODULE_DESCRIPTION("TCM FILEIO subsystem plugin");

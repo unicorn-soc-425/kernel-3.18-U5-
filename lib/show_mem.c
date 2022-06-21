@@ -6,8 +6,13 @@
  */
 
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/nmi.h>
 #include <linux/quicklist.h>
+=======
+#include <linux/quicklist.h>
+#include <linux/cma.h>
+>>>>>>> v4.9.227
 
 void show_mem(unsigned int filter)
 {
@@ -15,7 +20,10 @@ void show_mem(unsigned int filter)
 	unsigned long total = 0, reserved = 0, highmem = 0;
 
 	printk("Mem-Info:\n");
+<<<<<<< HEAD
 	show_mem_extra_call_notifiers();
+=======
+>>>>>>> v4.9.227
 	show_free_areas(filter);
 
 	for_each_online_pgdat(pgdat) {
@@ -40,6 +48,12 @@ void show_mem(unsigned int filter)
 	printk("%lu pages RAM\n", total);
 	printk("%lu pages HighMem/MovableOnly\n", highmem);
 	printk("%lu pages reserved\n", reserved);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CMA
+	printk("%lu pages cma reserved\n", totalcma_pages);
+#endif
+>>>>>>> v4.9.227
 #ifdef CONFIG_QUICKLIST
 	printk("%lu pages in pagetable cache\n",
 		quicklist_total_size());

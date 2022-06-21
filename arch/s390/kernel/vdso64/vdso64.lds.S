@@ -132,6 +132,10 @@ VERSION
 		__kernel_gettimeofday;
 		__kernel_clock_gettime;
 		__kernel_clock_getres;
+<<<<<<< HEAD
+=======
+		__kernel_getcpu;
+>>>>>>> v4.9.227
 
 	local: *;
 	};

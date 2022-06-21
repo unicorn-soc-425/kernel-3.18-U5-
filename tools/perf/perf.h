@@ -14,6 +14,7 @@ void test_attr__open(struct perf_event_attr *attr, pid_t pid, int cpu,
 #define HAVE_ATTR_TEST
 #include "perf-sys.h"
 
+<<<<<<< HEAD
 #ifndef NSEC_PER_SEC
 # define NSEC_PER_SEC			1000000000ULL
 #endif
@@ -21,6 +22,8 @@ void test_attr__open(struct perf_event_attr *attr, pid_t pid, int cpu,
 # define NSEC_PER_USEC			1000ULL
 #endif
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned long long rdclock(void)
 {
 	struct timespec ts;
@@ -29,7 +32,13 @@ static inline unsigned long long rdclock(void)
 	return ts.tv_sec * 1000000000ULL + ts.tv_nsec;
 }
 
+<<<<<<< HEAD
 #define MAX_NR_CPUS			256
+=======
+#ifndef MAX_NR_CPUS
+#define MAX_NR_CPUS			2048
+#endif
+>>>>>>> v4.9.227
 
 extern const char *input_name;
 extern bool perf_host, perf_guest;
@@ -51,6 +60,7 @@ struct record_opts {
 	bool	     sample_address;
 	bool	     sample_weight;
 	bool	     sample_time;
+<<<<<<< HEAD
 	bool	     period;
 	unsigned int freq;
 	unsigned int mmap_pages;
@@ -62,4 +72,37 @@ struct record_opts {
 	unsigned     initial_delay;
 };
 
+=======
+	bool	     sample_time_set;
+	bool	     sample_cpu;
+	bool	     period;
+	bool	     running_time;
+	bool	     full_auxtrace;
+	bool	     auxtrace_snapshot_mode;
+	bool	     record_switch_events;
+	bool	     all_kernel;
+	bool	     all_user;
+	bool	     tail_synthesize;
+	bool	     overwrite;
+	unsigned int freq;
+	unsigned int mmap_pages;
+	unsigned int auxtrace_mmap_pages;
+	unsigned int user_freq;
+	u64          branch_stack;
+	u64	     sample_intr_regs;
+	u64	     default_interval;
+	u64	     user_interval;
+	size_t	     auxtrace_snapshot_size;
+	const char   *auxtrace_snapshot_opts;
+	bool	     sample_transaction;
+	unsigned     initial_delay;
+	bool         use_clockid;
+	clockid_t    clockid;
+	unsigned int proc_map_timeout;
+};
+
+struct option;
+extern const char * const *record_usage;
+extern struct option *record_options;
+>>>>>>> v4.9.227
 #endif

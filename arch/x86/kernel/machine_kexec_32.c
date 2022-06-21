@@ -20,6 +20,10 @@
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
 #include <asm/apic.h>
+<<<<<<< HEAD
+=======
+#include <asm/io_apic.h>
+>>>>>>> v4.9.227
 #include <asm/cpufeature.h>
 #include <asm/desc.h>
 #include <asm/cacheflush.h>

@@ -25,9 +25,17 @@
 #include <linux/rcupdate.h>
 #include <linux/wait.h>
 #include <linux/rbtree.h>
+<<<<<<< HEAD
 #include <uapi/linux/sysctl.h>
 
 /* For the /proc/sys support */
+=======
+#include <linux/uidgid.h>
+#include <uapi/linux/sysctl.h>
+
+/* For the /proc/sys support */
+struct completion;
+>>>>>>> v4.9.227
 struct ctl_table;
 struct nsproxy;
 struct ctl_table_root;
@@ -41,6 +49,11 @@ extern int proc_dostring(struct ctl_table *, int,
 			 void __user *, size_t *, loff_t *);
 extern int proc_dointvec(struct ctl_table *, int,
 			 void __user *, size_t *, loff_t *);
+<<<<<<< HEAD
+=======
+extern int proc_douintvec(struct ctl_table *, int,
+			 void __user *, size_t *, loff_t *);
+>>>>>>> v4.9.227
 extern int proc_dointvec_minmax(struct ctl_table *, int,
 				void __user *, size_t *, loff_t *);
 extern int proc_dointvec_jiffies(struct ctl_table *, int,
@@ -139,6 +152,10 @@ struct ctl_table_header
 	struct ctl_table_set *set;
 	struct ctl_dir *parent;
 	struct ctl_node *node;
+<<<<<<< HEAD
+=======
+	struct hlist_head inodes; /* head for proc_inode->sysctl_inodes */
+>>>>>>> v4.9.227
 };
 
 struct ctl_dir {
@@ -154,8 +171,15 @@ struct ctl_table_set {
 
 struct ctl_table_root {
 	struct ctl_table_set default_set;
+<<<<<<< HEAD
 	struct ctl_table_set *(*lookup)(struct ctl_table_root *root,
 					   struct nsproxy *namespaces);
+=======
+	struct ctl_table_set *(*lookup)(struct ctl_table_root *root);
+	void (*set_ownership)(struct ctl_table_header *head,
+			      struct ctl_table *table,
+			      kuid_t *uid, kgid_t *gid);
+>>>>>>> v4.9.227
 	int (*permissions)(struct ctl_table_header *head, struct ctl_table *table);
 };
 
@@ -188,6 +212,12 @@ struct ctl_table_header *register_sysctl_paths(const struct ctl_path *path,
 void unregister_sysctl_table(struct ctl_table_header * table);
 
 extern int sysctl_init(void);
+<<<<<<< HEAD
+=======
+
+extern struct ctl_table sysctl_mount_point[];
+
+>>>>>>> v4.9.227
 #else /* CONFIG_SYSCTL */
 static inline struct ctl_table_header *register_sysctl_table(struct ctl_table * table)
 {
@@ -212,4 +242,10 @@ static inline void setup_sysctl_set(struct ctl_table_set *p,
 
 #endif /* CONFIG_SYSCTL */
 
+<<<<<<< HEAD
+=======
+int sysctl_max_threads(struct ctl_table *table, int write,
+		       void __user *buffer, size_t *lenp, loff_t *ppos);
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_SYSCTL_H */

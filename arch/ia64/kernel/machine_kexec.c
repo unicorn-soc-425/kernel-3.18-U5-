@@ -156,14 +156,24 @@ void arch_crash_save_vmcoreinfo(void)
 	VMCOREINFO_OFFSET(node_memblk_s, start_paddr);
 	VMCOREINFO_OFFSET(node_memblk_s, size);
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_PGTABLE_3
 	VMCOREINFO_CONFIG(PGTABLE_3);
 #elif defined(CONFIG_PGTABLE_4)
+=======
+#if CONFIG_PGTABLE_LEVELS == 3
+	VMCOREINFO_CONFIG(PGTABLE_3);
+#elif CONFIG_PGTABLE_LEVELS == 4
+>>>>>>> v4.9.227
 	VMCOREINFO_CONFIG(PGTABLE_4);
 #endif
 }
 
+<<<<<<< HEAD
 unsigned long paddr_vmcoreinfo_note(void)
+=======
+phys_addr_t paddr_vmcoreinfo_note(void)
+>>>>>>> v4.9.227
 {
 	return ia64_tpa((unsigned long)(char *)&vmcoreinfo_note);
 }

@@ -31,7 +31,11 @@ $(obj)/uImage: $(obj)/zImage FORCE
 	$(call if_changed,uimage)
 	@echo '  Image $@ is ready'
 
+<<<<<<< HEAD
 PHONY += initrd FORCE
+=======
+PHONY += initrd
+>>>>>>> v4.9.227
 initrd:
 	@test "$(INITRD)" != "" || \
 	(echo You must specify INITRD; exit -1)

@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2008, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -36,6 +44,10 @@
  * Implementation of cl_object for OSC layer.
  *
  *   Author: Nikita Danilov <nikita.danilov@sun.com>
+<<<<<<< HEAD
+=======
+ *   Author: Jinshan Xiong <jinshan.xiong@intel.com>
+>>>>>>> v4.9.227
  */
 
 #define DEBUG_SUBSYSTEM S_OSC
@@ -72,7 +84,11 @@ static struct osc_object *lu2osc(const struct lu_object *obj)
 static int osc_object_init(const struct lu_env *env, struct lu_object *obj,
 			   const struct lu_object_conf *conf)
 {
+<<<<<<< HEAD
 	struct osc_object	   *osc   = lu2osc(obj);
+=======
+	struct osc_object *osc = lu2osc(obj);
+>>>>>>> v4.9.227
 	const struct cl_object_conf *cconf = lu2cl_conf(conf);
 	int i;
 
@@ -94,6 +110,12 @@ static int osc_object_init(const struct lu_env *env, struct lu_object *obj,
 	atomic_set(&osc->oo_nr_reads, 0);
 	atomic_set(&osc->oo_nr_writes, 0);
 	spin_lock_init(&osc->oo_lock);
+<<<<<<< HEAD
+=======
+	spin_lock_init(&osc->oo_tree_lock);
+	spin_lock_init(&osc->oo_ol_spin);
+	INIT_LIST_HEAD(&osc->oo_ol_list);
+>>>>>>> v4.9.227
 
 	cl_object_page_init(lu2cl(obj), sizeof(struct osc_page));
 
@@ -113,16 +135,27 @@ static void osc_object_free(const struct lu_env *env, struct lu_object *obj)
 	LASSERT(list_empty(&osc->oo_write_item));
 	LASSERT(list_empty(&osc->oo_read_item));
 
+<<<<<<< HEAD
 	LASSERT(osc->oo_root.rb_node == NULL);
+=======
+	LASSERT(!osc->oo_root.rb_node);
+>>>>>>> v4.9.227
 	LASSERT(list_empty(&osc->oo_hp_exts));
 	LASSERT(list_empty(&osc->oo_urgent_exts));
 	LASSERT(list_empty(&osc->oo_rpc_exts));
 	LASSERT(list_empty(&osc->oo_reading_exts));
 	LASSERT(atomic_read(&osc->oo_nr_reads) == 0);
 	LASSERT(atomic_read(&osc->oo_nr_writes) == 0);
+<<<<<<< HEAD
 
 	lu_object_fini(obj);
 	OBD_SLAB_FREE_PTR(osc, osc_object_kmem);
+=======
+	LASSERT(list_empty(&osc->oo_ol_list));
+
+	lu_object_fini(obj);
+	kmem_cache_free(osc_object_kmem, osc);
+>>>>>>> v4.9.227
 }
 
 int osc_lvb_print(const struct lu_env *env, void *cookie,
@@ -136,12 +169,20 @@ int osc_lvb_print(const struct lu_env *env, void *cookie,
 static int osc_object_print(const struct lu_env *env, void *cookie,
 			    lu_printer_t p, const struct lu_object *obj)
 {
+<<<<<<< HEAD
 	struct osc_object   *osc   = lu2osc(obj);
 	struct lov_oinfo    *oinfo = osc->oo_oinfo;
 	struct osc_async_rc *ar    = &oinfo->loi_ar;
 
 	(*p)(env, cookie, "id: "DOSTID" "
 	     "idx: %d gen: %d kms_valid: %u kms %llu rc: %d force_sync: %d min_xid: %llu ",
+=======
+	struct osc_object *osc = lu2osc(obj);
+	struct lov_oinfo *oinfo = osc->oo_oinfo;
+	struct osc_async_rc *ar = &oinfo->loi_ar;
+
+	(*p)(env, cookie, "id: " DOSTID " idx: %d gen: %d kms_valid: %u kms %llu rc: %d force_sync: %d min_xid: %llu ",
+>>>>>>> v4.9.227
 	     POSTID(&oinfo->loi_oi), oinfo->loi_ost_idx,
 	     oinfo->loi_ost_gen, oinfo->loi_kms_valid, oinfo->loi_kms,
 	     ar->ar_rc, ar->ar_force_sync, ar->ar_min_xid);
@@ -149,7 +190,10 @@ static int osc_object_print(const struct lu_env *env, void *cookie,
 	return 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static int osc_attr_get(const struct lu_env *env, struct cl_object *obj,
 			struct cl_attr *attr)
 {
@@ -160,11 +204,19 @@ static int osc_attr_get(const struct lu_env *env, struct cl_object *obj,
 	return 0;
 }
 
+<<<<<<< HEAD
 int osc_attr_set(const struct lu_env *env, struct cl_object *obj,
 		 const struct cl_attr *attr, unsigned valid)
 {
 	struct lov_oinfo *oinfo = cl2osc(obj)->oo_oinfo;
 	struct ost_lvb   *lvb   = &oinfo->loi_lvb;
+=======
+static int osc_attr_update(const struct lu_env *env, struct cl_object *obj,
+			   const struct cl_attr *attr, unsigned int valid)
+{
+	struct lov_oinfo *oinfo = cl2osc(obj)->oo_oinfo;
+	struct ost_lvb *lvb = &oinfo->loi_lvb;
+>>>>>>> v4.9.227
 
 	if (valid & CAT_SIZE)
 		lvb->lvb_size = attr->cat_size;
@@ -189,11 +241,42 @@ static int osc_object_glimpse(const struct lu_env *env,
 {
 	struct lov_oinfo *oinfo = cl2osc(obj)->oo_oinfo;
 
+<<<<<<< HEAD
 	lvb->lvb_size   = oinfo->loi_kms;
+=======
+	lvb->lvb_size = oinfo->loi_kms;
+>>>>>>> v4.9.227
 	lvb->lvb_blocks = oinfo->loi_lvb.lvb_blocks;
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int osc_object_ast_clear(struct ldlm_lock *lock, void *data)
+{
+	if (lock->l_ast_data == data)
+		lock->l_ast_data = NULL;
+	return LDLM_ITER_CONTINUE;
+}
+
+static int osc_object_prune(const struct lu_env *env, struct cl_object *obj)
+{
+	struct osc_object       *osc = cl2osc(obj);
+	struct ldlm_res_id      *resname = &osc_env_info(env)->oti_resname;
+
+	LASSERTF(osc->oo_npages == 0,
+		 DFID "still have %lu pages, obj: %p, osc: %p\n",
+		 PFID(lu_object_fid(&obj->co_lu)), osc->oo_npages, obj, osc);
+
+	/* DLM locks don't hold a reference of osc_object so we have to
+	 * clear it before the object is being destroyed.
+	 */
+	ostid_build_res_name(&osc->oo_oinfo->loi_oi, resname);
+	ldlm_resource_iterate(osc_export(osc)->exp_obd->obd_namespace, resname,
+			      osc_object_ast_clear, osc);
+	return 0;
+}
+>>>>>>> v4.9.227
 
 void osc_object_set_contended(struct osc_object *obj)
 {
@@ -209,9 +292,15 @@ void osc_object_clear_contended(struct osc_object *obj)
 
 int osc_object_is_contended(struct osc_object *obj)
 {
+<<<<<<< HEAD
 	struct osc_device *dev  = lu2osc_dev(obj->oo_cl.co_lu.lo_dev);
 	int osc_contention_time = dev->od_contention_time;
 	unsigned long cur_time     = cfs_time_current();
+=======
+	struct osc_device *dev = lu2osc_dev(obj->oo_cl.co_lu.lo_dev);
+	int osc_contention_time = dev->od_contention_time;
+	unsigned long cur_time = cfs_time_current();
+>>>>>>> v4.9.227
 	unsigned long retry_time;
 
 	if (OBD_FAIL_CHECK(OBD_FAIL_OSC_OBJECT_CONTENTION))
@@ -238,13 +327,22 @@ static const struct cl_object_operations osc_ops = {
 	.coo_lock_init = osc_lock_init,
 	.coo_io_init   = osc_io_init,
 	.coo_attr_get  = osc_attr_get,
+<<<<<<< HEAD
 	.coo_attr_set  = osc_attr_set,
 	.coo_glimpse   = osc_object_glimpse
+=======
+	.coo_attr_update = osc_attr_update,
+	.coo_glimpse   = osc_object_glimpse,
+	.coo_prune     = osc_object_prune
+>>>>>>> v4.9.227
 };
 
 static const struct lu_object_operations osc_lu_obj_ops = {
 	.loo_object_init      = osc_object_init,
+<<<<<<< HEAD
 	.loo_object_delete    = NULL,
+=======
+>>>>>>> v4.9.227
 	.loo_object_release   = NULL,
 	.loo_object_free      = osc_object_free,
 	.loo_object_print     = osc_object_print,
@@ -256,16 +354,29 @@ struct lu_object *osc_object_alloc(const struct lu_env *env,
 				   struct lu_device *dev)
 {
 	struct osc_object *osc;
+<<<<<<< HEAD
 	struct lu_object  *obj;
 
 	OBD_SLAB_ALLOC_PTR_GFP(osc, osc_object_kmem, GFP_NOFS);
 	if (osc != NULL) {
+=======
+	struct lu_object *obj;
+
+	osc = kmem_cache_zalloc(osc_object_kmem, GFP_NOFS);
+	if (osc) {
+>>>>>>> v4.9.227
 		obj = osc2lu(osc);
 		lu_object_init(obj, NULL, dev);
 		osc->oo_cl.co_ops = &osc_ops;
 		obj->lo_ops = &osc_lu_obj_ops;
+<<<<<<< HEAD
 	} else
 		obj = NULL;
+=======
+	} else {
+		obj = NULL;
+	}
+>>>>>>> v4.9.227
 	return obj;
 }
 

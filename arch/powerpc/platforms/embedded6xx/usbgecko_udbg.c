@@ -247,7 +247,11 @@ void __init ug_udbg_init(void)
 	np = of_find_compatible_node(NULL, NULL, "nintendo,flipper-exi");
 	if (!np) {
 		udbg_printf("%s: EXI node not found\n", __func__);
+<<<<<<< HEAD
 		goto done;
+=======
+		goto out;
+>>>>>>> v4.9.227
 	}
 
 	exi_io_base = ug_udbg_setup_exi_io_base(np);
@@ -267,8 +271,13 @@ void __init ug_udbg_init(void)
 	}
 
 done:
+<<<<<<< HEAD
 	if (np)
 		of_node_put(np);
+=======
+	of_node_put(np);
+out:
+>>>>>>> v4.9.227
 	return;
 }
 

@@ -94,7 +94,10 @@ static int tile_rtc_probe(struct platform_device *dev)
 static struct platform_driver tile_rtc_platform_driver = {
 	.driver		= {
 		.name	= "rtc-tile",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= tile_rtc_probe,
 };

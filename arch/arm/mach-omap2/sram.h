@@ -15,12 +15,15 @@ extern void omap2_sram_reprogram_sdrc(u32 perf_level, u32 dll_val,
 				      u32 mem_type);
 extern u32 omap2_set_prcm(u32 dpll_ctrl_val, u32 sdrc_rfr_val, int bypass);
 
+<<<<<<< HEAD
 extern u32 omap3_configure_core_dpll(
 			u32 m2, u32 unlock_dll, u32 f, u32 inc,
 			u32 sdrc_rfr_ctrl_0, u32 sdrc_actim_ctrl_a_0,
 			u32 sdrc_actim_ctrl_b_0, u32 sdrc_mr_0,
 			u32 sdrc_rfr_ctrl_1, u32 sdrc_actim_ctrl_a_1,
 			u32 sdrc_actim_ctrl_b_1, u32 sdrc_mr_1);
+=======
+>>>>>>> v4.9.227
 extern void omap3_sram_restore_context(void);
 
 /* Do not use these */
@@ -52,6 +55,7 @@ extern void omap243x_sram_reprogram_sdrc(u32 perf_level, u32 dll_val,
 						u32 mem_type);
 extern unsigned long omap243x_sram_reprogram_sdrc_sz;
 
+<<<<<<< HEAD
 extern u32 omap3_sram_configure_core_dpll(
 			u32 m2, u32 unlock_dll, u32 f, u32 inc,
 			u32 sdrc_rfr_ctrl_0, u32 sdrc_actim_ctrl_a_0,
@@ -60,6 +64,8 @@ extern u32 omap3_sram_configure_core_dpll(
 			u32 sdrc_actim_ctrl_b_1, u32 sdrc_mr_1);
 extern unsigned long omap3_sram_configure_core_dpll_sz;
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 extern void omap_push_sram_idle(void);
 #else

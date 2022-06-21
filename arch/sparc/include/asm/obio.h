@@ -117,9 +117,15 @@ static inline void bw_clear_intr_mask(int sbus_level, int mask)
 			      "i" (ASI_M_CTL));
 }
 
+<<<<<<< HEAD
 static inline unsigned bw_get_prof_limit(int cpu)
 {
 	unsigned limit;
+=======
+static inline unsigned int bw_get_prof_limit(int cpu)
+{
+	unsigned int limit;
+>>>>>>> v4.9.227
 	
 	__asm__ __volatile__ ("lda [%1] %2, %0" :
 			      "=r" (limit) :
@@ -128,7 +134,11 @@ static inline unsigned bw_get_prof_limit(int cpu)
 	return limit;
 }
 
+<<<<<<< HEAD
 static inline void bw_set_prof_limit(int cpu, unsigned limit)
+=======
+static inline void bw_set_prof_limit(int cpu, unsigned int limit)
+>>>>>>> v4.9.227
 {
 	__asm__ __volatile__ ("sta %0, [%1] %2" : :
 			      "r" (limit),
@@ -136,9 +146,15 @@ static inline void bw_set_prof_limit(int cpu, unsigned limit)
 			      "i" (ASI_M_CTL));
 }
 
+<<<<<<< HEAD
 static inline unsigned bw_get_ctrl(int cpu)
 {
 	unsigned ctrl;
+=======
+static inline unsigned int bw_get_ctrl(int cpu)
+{
+	unsigned int ctrl;
+>>>>>>> v4.9.227
 	
 	__asm__ __volatile__ ("lda [%1] %2, %0" :
 			      "=r" (ctrl) :
@@ -147,7 +163,11 @@ static inline unsigned bw_get_ctrl(int cpu)
 	return ctrl;
 }
 
+<<<<<<< HEAD
 static inline void bw_set_ctrl(int cpu, unsigned ctrl)
+=======
+static inline void bw_set_ctrl(int cpu, unsigned int ctrl)
+>>>>>>> v4.9.227
 {
 	__asm__ __volatile__ ("sta %0, [%1] %2" : :
 			      "r" (ctrl),
@@ -155,9 +175,15 @@ static inline void bw_set_ctrl(int cpu, unsigned ctrl)
 			      "i" (ASI_M_CTL));
 }
 
+<<<<<<< HEAD
 static inline unsigned cc_get_ipen(void)
 {
 	unsigned pending;
+=======
+static inline unsigned int cc_get_ipen(void)
+{
+	unsigned int pending;
+>>>>>>> v4.9.227
 	
 	__asm__ __volatile__ ("lduha [%1] %2, %0" :
 			      "=r" (pending) :
@@ -166,7 +192,11 @@ static inline unsigned cc_get_ipen(void)
 	return pending;
 }
 
+<<<<<<< HEAD
 static inline void cc_set_iclr(unsigned clear)
+=======
+static inline void cc_set_iclr(unsigned int clear)
+>>>>>>> v4.9.227
 {
 	__asm__ __volatile__ ("stha %0, [%1] %2" : :
 			      "r" (clear),
@@ -174,9 +204,15 @@ static inline void cc_set_iclr(unsigned clear)
 			      "i" (ASI_M_MXCC));
 }
 
+<<<<<<< HEAD
 static inline unsigned cc_get_imsk(void)
 {
 	unsigned mask;
+=======
+static inline unsigned int cc_get_imsk(void)
+{
+	unsigned int mask;
+>>>>>>> v4.9.227
 	
 	__asm__ __volatile__ ("lduha [%1] %2, %0" :
 			      "=r" (mask) :
@@ -185,7 +221,11 @@ static inline unsigned cc_get_imsk(void)
 	return mask;
 }
 
+<<<<<<< HEAD
 static inline void cc_set_imsk(unsigned mask)
+=======
+static inline void cc_set_imsk(unsigned int mask)
+>>>>>>> v4.9.227
 {
 	__asm__ __volatile__ ("stha %0, [%1] %2" : :
 			      "r" (mask),
@@ -193,9 +233,15 @@ static inline void cc_set_imsk(unsigned mask)
 			      "i" (ASI_M_MXCC));
 }
 
+<<<<<<< HEAD
 static inline unsigned cc_get_imsk_other(int cpuid)
 {
 	unsigned mask;
+=======
+static inline unsigned int cc_get_imsk_other(int cpuid)
+{
+	unsigned int mask;
+>>>>>>> v4.9.227
 	
 	__asm__ __volatile__ ("lduha [%1] %2, %0" :
 			      "=r" (mask) :
@@ -204,7 +250,11 @@ static inline unsigned cc_get_imsk_other(int cpuid)
 	return mask;
 }
 
+<<<<<<< HEAD
 static inline void cc_set_imsk_other(int cpuid, unsigned mask)
+=======
+static inline void cc_set_imsk_other(int cpuid, unsigned int mask)
+>>>>>>> v4.9.227
 {
 	__asm__ __volatile__ ("stha %0, [%1] %2" : :
 			      "r" (mask),
@@ -212,7 +262,11 @@ static inline void cc_set_imsk_other(int cpuid, unsigned mask)
 			      "i" (ASI_M_CTL));
 }
 
+<<<<<<< HEAD
 static inline void cc_set_igen(unsigned gen)
+=======
+static inline void cc_set_igen(unsigned int gen)
+>>>>>>> v4.9.227
 {
 	__asm__ __volatile__ ("sta %0, [%1] %2" : :
 			      "r" (gen),

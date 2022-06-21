@@ -189,27 +189,51 @@ static int _ctx_stats_seq_show(struct seq_file *s, void *v)
 DEBUGFS_FILE(ctx_stats)
 
 static void *_qp_stats_seq_start(struct seq_file *s, loff_t *pos)
+<<<<<<< HEAD
+=======
+	__acquires(RCU)
+>>>>>>> v4.9.227
 {
 	struct qib_qp_iter *iter;
 	loff_t n = *pos;
 
+<<<<<<< HEAD
 	rcu_read_lock();
 	iter = qib_qp_iter_init(s->private);
 	if (!iter)
 		return NULL;
 
 	while (n--) {
+=======
+	iter = qib_qp_iter_init(s->private);
+
+	/* stop calls rcu_read_unlock */
+	rcu_read_lock();
+
+	if (!iter)
+		return NULL;
+
+	do {
+>>>>>>> v4.9.227
 		if (qib_qp_iter_next(iter)) {
 			kfree(iter);
 			return NULL;
 		}
+<<<<<<< HEAD
 	}
+=======
+	} while (n--);
+>>>>>>> v4.9.227
 
 	return iter;
 }
 
 static void *_qp_stats_seq_next(struct seq_file *s, void *iter_ptr,
 				   loff_t *pos)
+<<<<<<< HEAD
+=======
+	__must_hold(RCU)
+>>>>>>> v4.9.227
 {
 	struct qib_qp_iter *iter = iter_ptr;
 
@@ -224,6 +248,10 @@ static void *_qp_stats_seq_next(struct seq_file *s, void *iter_ptr,
 }
 
 static void _qp_stats_seq_stop(struct seq_file *s, void *iter_ptr)
+<<<<<<< HEAD
+=======
+	__releases(RCU)
+>>>>>>> v4.9.227
 {
 	rcu_read_unlock();
 }
@@ -255,7 +283,10 @@ void qib_dbg_ibdev_init(struct qib_ibdev *ibd)
 	DEBUGFS_FILE_CREATE(opcode_stats);
 	DEBUGFS_FILE_CREATE(ctx_stats);
 	DEBUGFS_FILE_CREATE(qp_stats);
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> v4.9.227
 }
 
 void qib_dbg_ibdev_exit(struct qib_ibdev *ibd)

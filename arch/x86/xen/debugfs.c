@@ -1,7 +1,10 @@
 #include <linux/init.h>
 #include <linux/debugfs.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 
 #include "debugfs.h"
 

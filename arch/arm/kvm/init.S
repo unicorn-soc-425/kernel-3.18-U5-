@@ -32,6 +32,7 @@
  *       r2,r3 = Hypervisor pgd pointer
  *
  * The init scenario is:
+<<<<<<< HEAD
  * - We jump in HYP with four parameters: boot HYP pgd, runtime HYP pgd,
  *   runtime stack, runtime vectors
  * - Enable the MMU with the boot pgd
@@ -49,6 +50,15 @@
  *   Provides the basic HYP init, and enable the MMU.
  * - Phase 2: r0 = ToS, r1 = vectors, r2,r3 contain the runtime PGD.
  *   Switches to the runtime PGD, set stack and vectors.
+=======
+ * - We jump in HYP with 3 parameters: runtime HYP pgd, runtime stack,
+ *   runtime vectors
+ * - Invalidate TLBs
+ * - Set stack and vectors
+ * - Setup the page tables
+ * - Enable the MMU
+ * - Profit! (or eret, if you only care about the code).
+>>>>>>> v4.9.227
  */
 
 	.text
@@ -68,8 +78,16 @@ __kvm_hyp_init:
 	W(b)	.
 
 __do_hyp_init:
+<<<<<<< HEAD
 	cmp	r0, #0			@ We have a SP?
 	bne	phase2			@ Yes, second stage init
+=======
+	@ Set stack pointer
+	mov	sp, r0
+
+	@ Set HVBAR to point to the HYP vectors
+	mcr	p15, 4, r1, c12, c0, 0	@ HVBAR
+>>>>>>> v4.9.227
 
 	@ Set the HTTBR to point to the hypervisor PGD pointer passed
 	mcrr	p15, 4, rr_lo_hi(r2, r3), c2
@@ -84,6 +102,7 @@ __do_hyp_init:
 	orr	r0, r0, r1
 	mcr	p15, 4, r0, c2, c0, 2	@ HTCR
 
+<<<<<<< HEAD
 	mrc	p15, 4, r1, c2, c1, 2	@ VTCR
 	ldr	r2, =VTCR_MASK
 	bic	r1, r1, r2
@@ -92,6 +111,8 @@ __do_hyp_init:
 	orr	r1, r1, #(KVM_VTCR_SL0 | KVM_VTCR_T0SZ | KVM_VTCR_S)
 	mcr	p15, 4, r1, c2, c1, 2	@ VTCR
 
+=======
+>>>>>>> v4.9.227
 	@ Use the same memory attributes for hyp. accesses as the kernel
 	@ (copy MAIRx ro HMAIRx).
 	mrc	p15, 0, r0, c10, c2, 0
@@ -121,6 +142,7 @@ __do_hyp_init:
  THUMB(	ldr	r2, =(HSCTLR_M | HSCTLR_TE)			)
 	orr	r1, r1, r2
 	orr	r0, r0, r1
+<<<<<<< HEAD
 	isb
 	mcr	p15, 4, r0, c1, c0, 0	@ HSCR
 
@@ -149,6 +171,27 @@ target:	@ We're now in the trampoline code, switch page tables
 	dsb	ish
 
 	eret
+=======
+	mcr	p15, 4, r0, c1, c0, 0	@ HSCR
+	isb
+
+	eret
+
+	@ r0 : stub vectors address
+ENTRY(__kvm_hyp_reset)
+	/* We're now in idmap, disable MMU */
+	mrc	p15, 4, r1, c1, c0, 0	@ HSCTLR
+	ldr	r2, =(HSCTLR_M | HSCTLR_A | HSCTLR_C | HSCTLR_I)
+	bic	r1, r1, r2
+	mcr	p15, 4, r1, c1, c0, 0	@ HSCTLR
+
+	/* Install stub vectors */
+	mcr	p15, 4, r0, c12, c0, 0	@ HVBAR
+	isb
+
+	eret
+ENDPROC(__kvm_hyp_reset)
+>>>>>>> v4.9.227
 
 	.ltorg
 

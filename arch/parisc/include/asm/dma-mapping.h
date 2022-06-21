@@ -1,6 +1,7 @@
 #ifndef _PARISC_DMA_MAPPING_H
 #define _PARISC_DMA_MAPPING_H
 
+<<<<<<< HEAD
 #include <linux/mm.h>
 #include <asm/cacheflush.h>
 #include <asm/scatterlist.h>
@@ -25,6 +26,13 @@ struct hppa_dma_ops {
 ** We could live without the hppa_dma_ops indirection if we didn't want
 ** to support 4 different coherent dma models with one binary (they will
 ** someday be loadable modules):
+=======
+#include <asm/cacheflush.h>
+
+/*
+** We need to support 4 different coherent dma models with one binary:
+**
+>>>>>>> v4.9.227
 **     I/O MMU        consistent method           dma_sync behavior
 **  =============   ======================       =======================
 **  a) PA-7x00LC    uncachable host memory          flush/purge
@@ -42,6 +50,7 @@ struct hppa_dma_ops {
 #define DMA_ERROR_CODE	(~(dma_addr_t)0)
 
 #ifdef CONFIG_PA11
+<<<<<<< HEAD
 extern struct hppa_dma_ops pcxl_dma_ops;
 extern struct hppa_dma_ops pcx_dma_ops;
 #endif
@@ -187,13 +196,28 @@ dma_set_mask(struct device *dev, u64 mask)
 	*dev->dma_mask = mask;
 
 	return 0;
+=======
+extern struct dma_map_ops pcxl_dma_ops;
+extern struct dma_map_ops pcx_dma_ops;
+#endif
+
+extern struct dma_map_ops *hppa_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	return hppa_dma_ops;
+>>>>>>> v4.9.227
 }
 
 static inline void
 dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 	       enum dma_data_direction direction)
 {
+<<<<<<< HEAD
 	if(hppa_dma_ops->dma_sync_single_for_cpu)
+=======
+	if (hppa_dma_ops->sync_single_for_cpu)
+>>>>>>> v4.9.227
 		flush_kernel_dcache_range((unsigned long)vaddr, size);
 }
 
@@ -241,6 +265,7 @@ struct parisc_device;
 void * sba_get_iommu(struct parisc_device *dev);
 #endif
 
+<<<<<<< HEAD
 /* At the moment, we panic on error for IOMMU resource exaustion */
 #define dma_mapping_error(dev, x)	0
 
@@ -259,4 +284,6 @@ static inline int dma_get_sgtable(struct device *dev, struct sg_table *sgt,
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 #endif

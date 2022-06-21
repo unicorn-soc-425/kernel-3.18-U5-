@@ -19,7 +19,10 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/leds.h>
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
@@ -120,9 +123,13 @@ static int __init geos_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(geos_init);
 
 MODULE_AUTHOR("Philip Prindeville <philipp@redfish-solutions.com>");
 MODULE_DESCRIPTION("Traverse Technologies Geos System Setup");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(geos_init);
+>>>>>>> v4.9.227

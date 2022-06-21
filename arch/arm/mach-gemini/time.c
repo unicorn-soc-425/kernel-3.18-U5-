@@ -15,10 +15,15 @@
 #include <asm/mach/time.h>
 #include <linux/clockchips.h>
 #include <linux/clocksource.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched_clock.h>
+>>>>>>> v4.9.227
 
 /*
  * Register definitions for the timers
  */
+<<<<<<< HEAD
 #define TIMER_COUNT(BASE_ADDR)		(BASE_ADDR  + 0x00)
 #define TIMER_LOAD(BASE_ADDR)		(BASE_ADDR  + 0x04)
 #define TIMER_MATCH1(BASE_ADDR)		(BASE_ADDR  + 0x08)
@@ -37,11 +42,62 @@
 
 static unsigned int tick_rate;
 
+=======
+
+#define TIMER1_BASE		GEMINI_TIMER_BASE
+#define TIMER2_BASE		(GEMINI_TIMER_BASE + 0x10)
+#define TIMER3_BASE		(GEMINI_TIMER_BASE + 0x20)
+
+#define TIMER_COUNT(BASE)	(IO_ADDRESS(BASE) + 0x00)
+#define TIMER_LOAD(BASE)	(IO_ADDRESS(BASE) + 0x04)
+#define TIMER_MATCH1(BASE)	(IO_ADDRESS(BASE) + 0x08)
+#define TIMER_MATCH2(BASE)	(IO_ADDRESS(BASE) + 0x0C)
+#define TIMER_CR		(IO_ADDRESS(GEMINI_TIMER_BASE) + 0x30)
+#define TIMER_INTR_STATE	(IO_ADDRESS(GEMINI_TIMER_BASE) + 0x34)
+#define TIMER_INTR_MASK		(IO_ADDRESS(GEMINI_TIMER_BASE) + 0x38)
+
+#define TIMER_1_CR_ENABLE	(1 << 0)
+#define TIMER_1_CR_CLOCK	(1 << 1)
+#define TIMER_1_CR_INT		(1 << 2)
+#define TIMER_2_CR_ENABLE	(1 << 3)
+#define TIMER_2_CR_CLOCK	(1 << 4)
+#define TIMER_2_CR_INT		(1 << 5)
+#define TIMER_3_CR_ENABLE	(1 << 6)
+#define TIMER_3_CR_CLOCK	(1 << 7)
+#define TIMER_3_CR_INT		(1 << 8)
+#define TIMER_1_CR_UPDOWN	(1 << 9)
+#define TIMER_2_CR_UPDOWN	(1 << 10)
+#define TIMER_3_CR_UPDOWN	(1 << 11)
+#define TIMER_DEFAULT_FLAGS	(TIMER_1_CR_UPDOWN | \
+				 TIMER_3_CR_ENABLE | \
+				 TIMER_3_CR_UPDOWN)
+
+#define TIMER_1_INT_MATCH1	(1 << 0)
+#define TIMER_1_INT_MATCH2	(1 << 1)
+#define TIMER_1_INT_OVERFLOW	(1 << 2)
+#define TIMER_2_INT_MATCH1	(1 << 3)
+#define TIMER_2_INT_MATCH2	(1 << 4)
+#define TIMER_2_INT_OVERFLOW	(1 << 5)
+#define TIMER_3_INT_MATCH1	(1 << 6)
+#define TIMER_3_INT_MATCH2	(1 << 7)
+#define TIMER_3_INT_OVERFLOW	(1 << 8)
+#define TIMER_INT_ALL_MASK	0x1ff
+
+
+static unsigned int tick_rate;
+
+static u64 notrace gemini_read_sched_clock(void)
+{
+	return readl(TIMER_COUNT(TIMER3_BASE));
+}
+
+>>>>>>> v4.9.227
 static int gemini_timer_set_next_event(unsigned long cycles,
 				       struct clock_event_device *evt)
 {
 	u32 cr;
 
+<<<<<<< HEAD
 	cr = readl(TIMER_CR(IO_ADDRESS(GEMINI_TIMER_BASE)));
 
 	/* This may be overdoing it, feel free to test without this */
@@ -55,16 +111,59 @@ static int gemini_timer_set_next_event(unsigned long cycles,
 	cr |= TIMER_2_CR_ENABLE;
 	cr |= TIMER_2_CR_INT;
 	writel(cr, TIMER_CR(IO_ADDRESS(GEMINI_TIMER_BASE)));
+=======
+	/* Setup the match register */
+	cr = readl(TIMER_COUNT(TIMER1_BASE));
+	writel(cr + cycles, TIMER_MATCH1(TIMER1_BASE));
+	if (readl(TIMER_COUNT(TIMER1_BASE)) - cr > cycles)
+		return -ETIME;
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void gemini_timer_set_mode(enum clock_event_mode mode,
 				  struct clock_event_device *evt)
+=======
+static int gemini_timer_shutdown(struct clock_event_device *evt)
+{
+	u32 cr;
+
+	/*
+	 * Disable also for oneshot: the set_next() call will arm the timer
+	 * instead.
+	 */
+	/* Stop timer and interrupt. */
+	cr = readl(TIMER_CR);
+	cr &= ~(TIMER_1_CR_ENABLE | TIMER_1_CR_INT);
+	writel(cr, TIMER_CR);
+
+	/* Setup counter start from 0 */
+	writel(0, TIMER_COUNT(TIMER1_BASE));
+	writel(0, TIMER_LOAD(TIMER1_BASE));
+
+	/* enable interrupt */
+	cr = readl(TIMER_INTR_MASK);
+	cr &= ~(TIMER_1_INT_OVERFLOW | TIMER_1_INT_MATCH2);
+	cr |= TIMER_1_INT_MATCH1;
+	writel(cr, TIMER_INTR_MASK);
+
+	/* start the timer */
+	cr = readl(TIMER_CR);
+	cr |= TIMER_1_CR_ENABLE;
+	writel(cr, TIMER_CR);
+
+	return 0;
+}
+
+static int gemini_timer_set_periodic(struct clock_event_device *evt)
+>>>>>>> v4.9.227
 {
 	u32 period = DIV_ROUND_CLOSEST(tick_rate, HZ);
 	u32 cr;
 
+<<<<<<< HEAD
 	switch (mode) {
         case CLOCK_EVT_MODE_PERIODIC:
 		/* Start the timer */
@@ -102,6 +201,46 @@ static struct clock_event_device gemini_clockevent = {
 	.features	= CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
 	.set_next_event	= gemini_timer_set_next_event,
 	.set_mode	= gemini_timer_set_mode,
+=======
+	/* Stop timer and interrupt */
+	cr = readl(TIMER_CR);
+	cr &= ~(TIMER_1_CR_ENABLE | TIMER_1_CR_INT);
+	writel(cr, TIMER_CR);
+
+	/* Setup timer to fire at 1/HT intervals. */
+	cr = 0xffffffff - (period - 1);
+	writel(cr, TIMER_COUNT(TIMER1_BASE));
+	writel(cr, TIMER_LOAD(TIMER1_BASE));
+
+	/* enable interrupt on overflow */
+	cr = readl(TIMER_INTR_MASK);
+	cr &= ~(TIMER_1_INT_MATCH1 | TIMER_1_INT_MATCH2);
+	cr |= TIMER_1_INT_OVERFLOW;
+	writel(cr, TIMER_INTR_MASK);
+
+	/* Start the timer */
+	cr = readl(TIMER_CR);
+	cr |= TIMER_1_CR_ENABLE;
+	cr |= TIMER_1_CR_INT;
+	writel(cr, TIMER_CR);
+
+	return 0;
+}
+
+/* Use TIMER1 as clock event */
+static struct clock_event_device gemini_clockevent = {
+	.name			= "TIMER1",
+	/* Reasonably fast and accurate clock event */
+	.rating			= 300,
+	.shift                  = 32,
+	.features		= CLOCK_EVT_FEAT_PERIODIC |
+				  CLOCK_EVT_FEAT_ONESHOT,
+	.set_next_event		= gemini_timer_set_next_event,
+	.set_state_shutdown	= gemini_timer_shutdown,
+	.set_state_periodic	= gemini_timer_set_periodic,
+	.set_state_oneshot	= gemini_timer_shutdown,
+	.tick_resume		= gemini_timer_shutdown,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -151,6 +290,7 @@ void __init gemini_timer_init(void)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Make irqs happen for the system timer
 	 */
 	setup_irq(IRQ_TIMER2, &gemini_timer_irq);
@@ -167,4 +307,37 @@ void __init gemini_timer_init(void)
 	/* Configure and register the clockevent */
 	clockevents_config_and_register(&gemini_clockevent, tick_rate,
 					1, 0xffffffff);
+=======
+	 * Reset the interrupt mask and status
+	 */
+	writel(TIMER_INT_ALL_MASK, TIMER_INTR_MASK);
+	writel(0, TIMER_INTR_STATE);
+	writel(TIMER_DEFAULT_FLAGS, TIMER_CR);
+
+	/*
+	 * Setup free-running clocksource timer (interrupts
+	 * disabled.)
+	 */
+	writel(0, TIMER_COUNT(TIMER3_BASE));
+	writel(0, TIMER_LOAD(TIMER3_BASE));
+	writel(0, TIMER_MATCH1(TIMER3_BASE));
+	writel(0, TIMER_MATCH2(TIMER3_BASE));
+	clocksource_mmio_init(TIMER_COUNT(TIMER3_BASE),
+			      "gemini_clocksource", tick_rate,
+			      300, 32, clocksource_mmio_readl_up);
+	sched_clock_register(gemini_read_sched_clock, 32, tick_rate);
+
+	/*
+	 * Setup clockevent timer (interrupt-driven.)
+	*/
+	writel(0, TIMER_COUNT(TIMER1_BASE));
+	writel(0, TIMER_LOAD(TIMER1_BASE));
+	writel(0, TIMER_MATCH1(TIMER1_BASE));
+	writel(0, TIMER_MATCH2(TIMER1_BASE));
+	setup_irq(IRQ_TIMER1, &gemini_timer_irq);
+	gemini_clockevent.cpumask = cpumask_of(0);
+	clockevents_config_and_register(&gemini_clockevent, tick_rate,
+					1, 0xffffffff);
+
+>>>>>>> v4.9.227
 }

@@ -1,9 +1,12 @@
 #ifndef _LINUX_ECRYPTFS_H
 #define _LINUX_ECRYPTFS_H
 
+<<<<<<< HEAD
 struct inode;
 struct page;
 
+=======
+>>>>>>> v4.9.227
 /* Version verification for shared data structures w/ userspace */
 #define ECRYPTFS_VERSION_MAJOR 0x00
 #define ECRYPTFS_VERSION_MINOR 0x04
@@ -44,7 +47,10 @@ struct page;
 #define RFC2440_CIPHER_AES_256 0x09
 #define RFC2440_CIPHER_TWOFISH 0x0a
 #define RFC2440_CIPHER_CAST_6 0x0b
+<<<<<<< HEAD
 #define RFC2440_CIPHER_AES_XTS_256 0x0c
+=======
+>>>>>>> v4.9.227
 
 #define RFC2440_CIPHER_RSA 0x01
 
@@ -106,6 +112,7 @@ struct ecryptfs_auth_tok {
 	} token;
 } __attribute__ ((packed));
 
+<<<<<<< HEAD
 #define ECRYPTFS_INVALID_EVENTS_HANDLE -1
 
 /**
@@ -151,4 +158,6 @@ bool ecryptfs_is_page_in_metadata(const void *ecrytpfs_data, pgoff_t offset);
 bool ecryptfs_is_data_equal(const void *ecrytpfs_data1,
 		const void *ecrytpfs_data2);
 
+=======
+>>>>>>> v4.9.227
 #endif /* _LINUX_ECRYPTFS_H */

@@ -6,6 +6,7 @@
 #include <linux/mm.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/unistd.h>
 #include <os.h>
 #include <proc_mm.h>
@@ -14,11 +15,25 @@
 #include <sysdep/tls.h>
 
 extern int modify_ldt(int func, void *ptr, unsigned long bytecount);
+=======
+#include <linux/syscalls.h>
+#include <linux/uaccess.h>
+#include <asm/unistd.h>
+#include <os.h>
+#include <skas.h>
+#include <sysdep/tls.h>
+
+static inline int modify_ldt (int func, void *ptr, unsigned long bytecount)
+{
+	return syscall(__NR_modify_ldt, func, ptr, bytecount);
+}
+>>>>>>> v4.9.227
 
 static long write_ldt_entry(struct mm_id *mm_idp, int func,
 		     struct user_desc *desc, void **addr, int done)
 {
 	long res;
+<<<<<<< HEAD
 
 	if (proc_mm) {
 		/*
@@ -118,6 +133,22 @@ static long read_ldt_from_host(void __user * ptr, unsigned long bytecount)
   out:
 	kfree(ptrace_ldt.ptr);
 
+=======
+	void *stub_addr;
+	res = syscall_stub_data(mm_idp, (unsigned long *)desc,
+				(sizeof(*desc) + sizeof(long) - 1) &
+				    ~(sizeof(long) - 1),
+				addr, &stub_addr);
+	if (!res) {
+		unsigned long args[] = { func,
+					 (unsigned long)stub_addr,
+					 sizeof(*desc),
+					 0, 0, 0 };
+		res = run_syscall_stub(mm_idp, __NR_modify_ldt, args,
+				       0, addr, done);
+	}
+
+>>>>>>> v4.9.227
 	return res;
 }
 
@@ -145,9 +176,12 @@ static int read_ldt(void __user * ptr, unsigned long bytecount)
 		bytecount = LDT_ENTRY_SIZE*LDT_ENTRIES;
 	err = bytecount;
 
+<<<<<<< HEAD
 	if (ptrace_ldt)
 		return read_ldt_from_host(ptr, bytecount);
 
+=======
+>>>>>>> v4.9.227
 	mutex_lock(&ldt->lock);
 	if (ldt->entry_count <= LDT_DIRECT_ENTRIES) {
 		size = LDT_ENTRY_SIZE*LDT_DIRECT_ENTRIES;
@@ -229,17 +263,24 @@ static int write_ldt(void __user * ptr, unsigned long bytecount, int func)
 			goto out;
 	}
 
+<<<<<<< HEAD
 	if (!ptrace_ldt)
 		mutex_lock(&ldt->lock);
+=======
+	mutex_lock(&ldt->lock);
+>>>>>>> v4.9.227
 
 	err = write_ldt_entry(mm_idp, func, &ldt_info, &addr, 1);
 	if (err)
 		goto out_unlock;
+<<<<<<< HEAD
 	else if (ptrace_ldt) {
 		/* With PTRACE_LDT available, this is used as a flag only */
 		ldt->entry_count = 1;
 		goto out;
 	}
+=======
+>>>>>>> v4.9.227
 
 	if (ldt_info.entry_number >= ldt->entry_count &&
 	    ldt_info.entry_number >= LDT_DIRECT_ENTRIES) {
@@ -393,15 +434,22 @@ long init_new_ldt(struct mm_context *new_mm, struct mm_context *from_mm)
 	int i;
 	long page, err=0;
 	void *addr = NULL;
+<<<<<<< HEAD
 	struct proc_mm_op copy;
 
 
 	if (!ptrace_ldt)
 		mutex_init(&new_mm->arch.ldt.lock);
+=======
+
+
+	mutex_init(&new_mm->arch.ldt.lock);
+>>>>>>> v4.9.227
 
 	if (!from_mm) {
 		memset(&desc, 0, sizeof(desc));
 		/*
+<<<<<<< HEAD
 		 * We have to initialize a clean ldt.
 		 */
 		if (proc_mm) {
@@ -428,12 +476,26 @@ long init_new_ldt(struct mm_context *new_mm, struct mm_context *from_mm)
 				if (err)
 					break;
 			}
+=======
+		 * Now we try to retrieve info about the ldt, we
+		 * inherited from the host. All ldt-entries found
+		 * will be reset in the following loop
+		 */
+		ldt_get_host_info();
+		for (num_p=host_ldt_entries; *num_p != -1; num_p++) {
+			desc.entry_number = *num_p;
+			err = write_ldt_entry(&new_mm->id, 1, &desc,
+					      &addr, *(num_p + 1) == -1);
+			if (err)
+				break;
+>>>>>>> v4.9.227
 		}
 		new_mm->arch.ldt.entry_count = 0;
 
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (proc_mm) {
 		/*
 		 * We have a valid from_mm, so we now have to copy the LDT of
@@ -478,6 +540,34 @@ long init_new_ldt(struct mm_context *new_mm, struct mm_context *from_mm)
 		new_mm->arch.ldt.entry_count = from_mm->arch.ldt.entry_count;
 		mutex_unlock(&from_mm->arch.ldt.lock);
 	}
+=======
+	/*
+	 * Our local LDT is used to supply the data for
+	 * modify_ldt(READLDT), if PTRACE_LDT isn't available,
+	 * i.e., we have to use the stub for modify_ldt, which
+	 * can't handle the big read buffer of up to 64kB.
+	 */
+	mutex_lock(&from_mm->arch.ldt.lock);
+	if (from_mm->arch.ldt.entry_count <= LDT_DIRECT_ENTRIES)
+		memcpy(new_mm->arch.ldt.u.entries, from_mm->arch.ldt.u.entries,
+		       sizeof(new_mm->arch.ldt.u.entries));
+	else {
+		i = from_mm->arch.ldt.entry_count / LDT_ENTRIES_PER_PAGE;
+		while (i-->0) {
+			page = __get_free_page(GFP_KERNEL|__GFP_ZERO);
+			if (!page) {
+				err = -ENOMEM;
+				break;
+			}
+			new_mm->arch.ldt.u.pages[i] =
+				(struct ldt_entry *) page;
+			memcpy(new_mm->arch.ldt.u.pages[i],
+			       from_mm->arch.ldt.u.pages[i], PAGE_SIZE);
+		}
+	}
+	new_mm->arch.ldt.entry_count = from_mm->arch.ldt.entry_count;
+	mutex_unlock(&from_mm->arch.ldt.lock);
+>>>>>>> v4.9.227
 
     out:
 	return err;
@@ -488,7 +578,11 @@ void free_ldt(struct mm_context *mm)
 {
 	int i;
 
+<<<<<<< HEAD
 	if (!ptrace_ldt && mm->arch.ldt.entry_count > LDT_DIRECT_ENTRIES) {
+=======
+	if (mm->arch.ldt.entry_count > LDT_DIRECT_ENTRIES) {
+>>>>>>> v4.9.227
 		i = mm->arch.ldt.entry_count / LDT_ENTRIES_PER_PAGE;
 		while (i-- > 0)
 			free_page((long) mm->arch.ldt.u.pages[i]);
@@ -496,7 +590,15 @@ void free_ldt(struct mm_context *mm)
 	mm->arch.ldt.entry_count = 0;
 }
 
+<<<<<<< HEAD
 int sys_modify_ldt(int func, void __user *ptr, unsigned long bytecount)
 {
 	return do_modify_ldt_skas(func, ptr, bytecount);
+=======
+SYSCALL_DEFINE3(modify_ldt, int , func , void __user * , ptr ,
+		unsigned long , bytecount)
+{
+	/* See non-um modify_ldt() for why we do this cast */
+	return (unsigned int)do_modify_ldt_skas(func, ptr, bytecount);
+>>>>>>> v4.9.227
 }

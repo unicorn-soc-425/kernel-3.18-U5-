@@ -4,7 +4,11 @@
  * SPEAr1340 machine source file
  *
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -19,7 +23,10 @@
 
 static void __init spear1340_dt_init(void)
 {
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+=======
+>>>>>>> v4.9.227
 	platform_device_register_simple("spear-cpufreq", -1, NULL, 0);
 }
 

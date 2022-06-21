@@ -20,10 +20,13 @@
 #define FSL_UTMI_PHY_DLY	10	/*As per P1010RM, delay for UTMI
 				PHY CLK to become stable - 10ms*/
 #define FSL_USB_PHY_CLK_TIMEOUT	10000	/* uSec */
+<<<<<<< HEAD
 #define FSL_USB_VER_OLD		0
 #define FSL_USB_VER_1_6		1
 #define FSL_USB_VER_2_2		2
 #define FSL_USB_VER_2_4		3
+=======
+>>>>>>> v4.9.227
 
 #include <linux/types.h>
 
@@ -51,6 +54,18 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+enum fsl_usb2_controller_ver {
+	FSL_USB_VER_NONE = -1,
+	FSL_USB_VER_OLD = 0,
+	FSL_USB_VER_1_6 = 1,
+	FSL_USB_VER_2_2 = 2,
+	FSL_USB_VER_2_4 = 3,
+	FSL_USB_VER_2_5 = 4,
+};
+
+>>>>>>> v4.9.227
 enum fsl_usb2_operating_modes {
 	FSL_USB2_MPH_HOST,
 	FSL_USB2_DR_HOST,
@@ -64,6 +79,10 @@ enum fsl_usb2_phy_modes {
 	FSL_USB2_PHY_UTMI,
 	FSL_USB2_PHY_UTMI_WIDE,
 	FSL_USB2_PHY_SERIAL,
+<<<<<<< HEAD
+=======
+	FSL_USB2_PHY_UTMI_DUAL,
+>>>>>>> v4.9.227
 };
 
 struct clk;
@@ -71,7 +90,11 @@ struct platform_device;
 
 struct fsl_usb2_platform_data {
 	/* board specific information */
+<<<<<<< HEAD
 	int				controller_ver;
+=======
+	enum fsl_usb2_controller_ver	controller_ver;
+>>>>>>> v4.9.227
 	enum fsl_usb2_operating_modes	operating_mode;
 	enum fsl_usb2_phy_modes		phy_mode;
 	unsigned int			port_enables;
@@ -92,6 +115,12 @@ struct fsl_usb2_platform_data {
 
 	unsigned	suspended:1;
 	unsigned	already_suspended:1;
+<<<<<<< HEAD
+=======
+	unsigned        has_fsl_erratum_a007792:1;
+	unsigned        has_fsl_erratum_a005275:1;
+	unsigned        check_phy_clk_valid:1;
+>>>>>>> v4.9.227
 
 	/* register save area for suspend/resume */
 	u32		pm_command;

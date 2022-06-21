@@ -13,8 +13,21 @@ config RAID6_PQ
 config BITREVERSE
 	tristate
 
+<<<<<<< HEAD
 config RATIONAL
 	boolean
+=======
+config HAVE_ARCH_BITREVERSE
+	bool
+	default n
+	depends on BITREVERSE
+	help
+	  This option enables the use of hardware bit-reversal instructions on
+	  architectures which support such operations.
+
+config RATIONAL
+	bool
+>>>>>>> v4.9.227
 
 config GENERIC_STRNCPY_FROM_USER
 	bool
@@ -39,15 +52,22 @@ config GENERIC_IOMAP
 	select GENERIC_PCI_IOMAP
 
 config GENERIC_IO
+<<<<<<< HEAD
 	boolean
+=======
+	bool
+>>>>>>> v4.9.227
 	default n
 
 config STMP_DEVICE
 	bool
 
+<<<<<<< HEAD
 config PERCPU_RWSEM
 	boolean
 
+=======
+>>>>>>> v4.9.227
 config ARCH_USE_CMPXCHG_LOCKREF
 	bool
 
@@ -204,11 +224,26 @@ config RANDOM32_SELFTEST
 #
 # compression support is select'ed if needed
 #
+<<<<<<< HEAD
+=======
+config 842_COMPRESS
+	select CRC32
+	tristate
+
+config 842_DECOMPRESS
+	select CRC32
+	tristate
+
+>>>>>>> v4.9.227
 config ZLIB_INFLATE
 	tristate
 
 config ZLIB_DEFLATE
 	tristate
+<<<<<<< HEAD
+=======
+	select BITREVERSE
+>>>>>>> v4.9.227
 
 config LZO_COMPRESS
 	tristate
@@ -257,7 +292,11 @@ config DECOMPRESS_LZ4
 # Generic allocator support is selected if needed
 #
 config GENERIC_ALLOCATOR
+<<<<<<< HEAD
 	boolean
+=======
+	bool
+>>>>>>> v4.9.227
 
 #
 # reed solomon support is select'ed if needed
@@ -266,6 +305,7 @@ config REED_SOLOMON
 	tristate
 	
 config REED_SOLOMON_ENC8
+<<<<<<< HEAD
 	boolean
 
 config REED_SOLOMON_DEC8
@@ -276,6 +316,18 @@ config REED_SOLOMON_ENC16
 
 config REED_SOLOMON_DEC16
 	boolean
+=======
+	bool
+
+config REED_SOLOMON_DEC8
+	bool
+
+config REED_SOLOMON_ENC16
+	bool
+
+config REED_SOLOMON_DEC16
+	bool
+>>>>>>> v4.9.227
 
 #
 # BCH support is selected if needed
@@ -284,7 +336,11 @@ config BCH
 	tristate
 
 config BCH_CONST_PARAMS
+<<<<<<< HEAD
 	boolean
+=======
+	bool
+>>>>>>> v4.9.227
 	help
 	  Drivers may select this option to force specific constant
 	  values for parameters 'm' (Galois field order) and 't'
@@ -320,7 +376,11 @@ config BCH_CONST_T
 # Textsearch support is select'ed if needed
 #
 config TEXTSEARCH
+<<<<<<< HEAD
 	boolean
+=======
+	bool
+>>>>>>> v4.9.227
 
 config TEXTSEARCH_KMP
 	tristate
@@ -332,10 +392,17 @@ config TEXTSEARCH_FSM
 	tristate
 
 config BTREE
+<<<<<<< HEAD
 	boolean
 
 config INTERVAL_TREE
 	boolean
+=======
+	bool
+
+config INTERVAL_TREE
+	bool
+>>>>>>> v4.9.227
 	help
 	  Simple, embeddable, interval-tree. Can find the start of an
 	  overlapping range in log(n) time and then iterate over all
@@ -348,6 +415,12 @@ config INTERVAL_TREE
 
 	  for more information.
 
+<<<<<<< HEAD
+=======
+config RADIX_TREE_MULTIORDER
+	bool
+
+>>>>>>> v4.9.227
 config ASSOCIATIVE_ARRAY
 	bool
 	help
@@ -363,18 +436,30 @@ config ASSOCIATIVE_ARRAY
 	  for more information.
 
 config HAS_IOMEM
+<<<<<<< HEAD
 	boolean
+=======
+	bool
+>>>>>>> v4.9.227
 	depends on !NO_IOMEM
 	select GENERIC_IO
 	default y
 
 config HAS_IOPORT_MAP
+<<<<<<< HEAD
 	boolean
+=======
+	bool
+>>>>>>> v4.9.227
 	depends on HAS_IOMEM && !NO_IOPORT_MAP
 	default y
 
 config HAS_DMA
+<<<<<<< HEAD
 	boolean
+=======
+	bool
+>>>>>>> v4.9.227
 	depends on !NO_DMA
 	default y
 
@@ -388,10 +473,13 @@ config CPUMASK_OFFSTACK
 	  them on the stack.  This is a bit more expensive, but avoids
 	  stack overflow.
 
+<<<<<<< HEAD
 config DISABLE_OBSOLETE_CPUMASK_FUNCTIONS
        bool "Disable obsolete cpumask functions" if DEBUG_PER_CPU_MAPS
        depends on BROKEN
 
+=======
+>>>>>>> v4.9.227
 config CPU_RMAP
 	bool
 	depends on SMP
@@ -444,6 +532,7 @@ config NLATTR
 config GENERIC_ATOMIC64
        bool
 
+<<<<<<< HEAD
 config ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
 	def_bool y if GENERIC_ATOMIC64
 
@@ -460,6 +549,11 @@ config AVERAGE
 
 	  If unsure, say N.
 
+=======
+config LRU_CACHE
+	tristate
+
+>>>>>>> v4.9.227
 config CLZ_TAB
 	bool
 
@@ -477,6 +571,14 @@ config DDR
 	  information. This data is useful for drivers handling
 	  DDR SDRAM controllers.
 
+<<<<<<< HEAD
+=======
+config IRQ_POLL
+	bool "IRQ polling library"
+	help
+	  Helper library to poll interrupt mitigation using polling.
+
+>>>>>>> v4.9.227
 config MPILIB
 	tristate
 	select CLZ_TAB
@@ -511,6 +613,23 @@ config UCS2_STRING
 
 source "lib/fonts/Kconfig"
 
+<<<<<<< HEAD
+=======
+config SG_SPLIT
+	def_bool n
+	help
+	 Provides a helper to split scatterlists into chunks, each chunk being
+	 a scatterlist. This should be selected by a driver or an API which
+	 whishes to split a scatterlist amongst multiple DMA channels.
+
+config SG_POOL
+	def_bool n
+	help
+	 Provides a helper to allocate chained scatterlists. This should be
+	 selected by a driver or an API which whishes to allocate chained
+	 scatterlist.
+
+>>>>>>> v4.9.227
 #
 # sg chaining option
 #
@@ -518,6 +637,7 @@ source "lib/fonts/Kconfig"
 config ARCH_HAS_SG_CHAIN
 	def_bool n
 
+<<<<<<< HEAD
 config QMI_ENCDEC
 	bool "QMI Encode/Decode Library"
 	help
@@ -533,5 +653,19 @@ config QMI_ENCDEC_DEBUG
 	  Kernel config option to enable debugging QMI Encode/Decode
 	  library. This will log the information regarding the element
 	  and message being encoded & decoded.
+=======
+config ARCH_HAS_PMEM_API
+	bool
+
+config ARCH_HAS_MMIO_FLUSH
+	bool
+
+config STACKDEPOT
+	bool
+	select STACKTRACE
+
+config SBITMAP
+	bool
+>>>>>>> v4.9.227
 
 endmenu

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013, Mellanox Technologies inc.  All rights reserved.
+=======
+ * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
+>>>>>>> v4.9.227
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -50,6 +54,12 @@
 #define MLX5_BSF_APPTAG_ESCAPE	0x1
 #define MLX5_BSF_APPREF_ESCAPE	0x2
 
+<<<<<<< HEAD
+=======
+#define MLX5_QPN_BITS		24
+#define MLX5_QPN_MASK		((1 << MLX5_QPN_BITS) - 1)
+
+>>>>>>> v4.9.227
 enum mlx5_qp_optpar {
 	MLX5_QP_OPTPAR_ALT_ADDR_PATH		= 1 << 0,
 	MLX5_QP_OPTPAR_RRE			= 1 << 1,
@@ -82,7 +92,20 @@ enum mlx5_qp_state {
 	MLX5_QP_STATE_ERR			= 6,
 	MLX5_QP_STATE_SQ_DRAINING		= 7,
 	MLX5_QP_STATE_SUSPENDED			= 9,
+<<<<<<< HEAD
 	MLX5_QP_NUM_STATE
+=======
+	MLX5_QP_NUM_STATE,
+	MLX5_QP_STATE,
+	MLX5_QP_STATE_BAD,
+};
+
+enum {
+	MLX5_SQ_STATE_NA	= MLX5_SQC_STATE_ERR + 1,
+	MLX5_SQ_NUM_STATE	= MLX5_SQ_STATE_NA + 1,
+	MLX5_RQ_STATE_NA	= MLX5_RQC_STATE_ERR + 1,
+	MLX5_RQ_NUM_STATE	= MLX5_RQ_STATE_NA + 1,
+>>>>>>> v4.9.227
 };
 
 enum {
@@ -111,12 +134,22 @@ enum {
 };
 
 enum {
+<<<<<<< HEAD
 	MLX5_NON_ZERO_RQ	= 0 << 24,
 	MLX5_SRQ_RQ		= 1 << 24,
 	MLX5_CRQ_RQ		= 2 << 24,
 	MLX5_ZERO_LEN_RQ	= 3 << 24
 };
 
+=======
+	MLX5_NON_ZERO_RQ	= 0x0,
+	MLX5_SRQ_RQ		= 0x1,
+	MLX5_CRQ_RQ		= 0x2,
+	MLX5_ZERO_LEN_RQ	= 0x3
+};
+
+/* TODO REM */
+>>>>>>> v4.9.227
 enum {
 	/* params1 */
 	MLX5_QP_BIT_SRE				= 1 << 15,
@@ -127,17 +160,40 @@ enum {
 	MLX5_QP_BIT_RWE				= 1 << 14,
 	MLX5_QP_BIT_RAE				= 1 << 13,
 	MLX5_QP_BIT_RIC				= 1 <<	4,
+<<<<<<< HEAD
+=======
+	MLX5_QP_BIT_CC_SLAVE_RECV		= 1 <<  2,
+	MLX5_QP_BIT_CC_SLAVE_SEND		= 1 <<  1,
+	MLX5_QP_BIT_CC_MASTER			= 1 <<  0
+>>>>>>> v4.9.227
 };
 
 enum {
 	MLX5_WQE_CTRL_CQ_UPDATE		= 2 << 2,
+<<<<<<< HEAD
+=======
+	MLX5_WQE_CTRL_CQ_UPDATE_AND_EQE	= 3 << 2,
+>>>>>>> v4.9.227
 	MLX5_WQE_CTRL_SOLICITED		= 1 << 1,
 };
 
 enum {
+<<<<<<< HEAD
 	MLX5_SEND_WQE_BB	= 64,
 };
 
+=======
+	MLX5_SEND_WQE_DS	= 16,
+	MLX5_SEND_WQE_BB	= 64,
+};
+
+#define MLX5_SEND_WQEBB_NUM_DS	(MLX5_SEND_WQE_BB / MLX5_SEND_WQE_DS)
+
+enum {
+	MLX5_SEND_WQE_MAX_WQEBBS	= 16,
+};
+
+>>>>>>> v4.9.227
 enum {
 	MLX5_WQE_FMR_PERM_LOCAL_READ	= 1 << 27,
 	MLX5_WQE_FMR_PERM_LOCAL_WRITE	= 1 << 28,
@@ -149,17 +205,24 @@ enum {
 enum {
 	MLX5_FENCE_MODE_NONE			= 0 << 5,
 	MLX5_FENCE_MODE_INITIATOR_SMALL		= 1 << 5,
+<<<<<<< HEAD
+=======
+	MLX5_FENCE_MODE_FENCE			= 2 << 5,
+>>>>>>> v4.9.227
 	MLX5_FENCE_MODE_STRONG_ORDERING		= 3 << 5,
 	MLX5_FENCE_MODE_SMALL_AND_FENCE		= 4 << 5,
 };
 
 enum {
+<<<<<<< HEAD
 	MLX5_QP_LAT_SENSITIVE	= 1 << 28,
 	MLX5_QP_BLOCK_MCAST	= 1 << 30,
 	MLX5_QP_ENABLE_SIG	= 1 << 31,
 };
 
 enum {
+=======
+>>>>>>> v4.9.227
 	MLX5_RCV_DBR	= 0,
 	MLX5_SND_DBR	= 1,
 };
@@ -189,6 +252,34 @@ struct mlx5_wqe_ctrl_seg {
 	__be32			imm;
 };
 
+<<<<<<< HEAD
+=======
+#define MLX5_WQE_CTRL_DS_MASK 0x3f
+#define MLX5_WQE_CTRL_QPN_MASK 0xffffff00
+#define MLX5_WQE_CTRL_QPN_SHIFT 8
+#define MLX5_WQE_DS_UNITS 16
+#define MLX5_WQE_CTRL_OPCODE_MASK 0xff
+#define MLX5_WQE_CTRL_WQE_INDEX_MASK 0x00ffff00
+#define MLX5_WQE_CTRL_WQE_INDEX_SHIFT 8
+
+enum {
+	MLX5_ETH_WQE_L3_INNER_CSUM      = 1 << 4,
+	MLX5_ETH_WQE_L4_INNER_CSUM      = 1 << 5,
+	MLX5_ETH_WQE_L3_CSUM            = 1 << 6,
+	MLX5_ETH_WQE_L4_CSUM            = 1 << 7,
+};
+
+struct mlx5_wqe_eth_seg {
+	u8              rsvd0[4];
+	u8              cs_flags;
+	u8              rsvd1;
+	__be16          mss;
+	__be32          rsvd2;
+	__be16          inline_hdr_sz;
+	u8              inline_hdr_start[2];
+};
+
+>>>>>>> v4.9.227
 struct mlx5_wqe_xrc_seg {
 	__be32			xrc_srqn;
 	u8			rsvd[12];
@@ -212,8 +303,17 @@ struct mlx5_av {
 	__be32	dqp_dct;
 	u8	stat_rate_sl;
 	u8	fl_mlid;
+<<<<<<< HEAD
 	__be16	rlid;
 	u8	reserved0[10];
+=======
+	union {
+		__be16	rlid;
+		__be16  udp_sport;
+	};
+	u8	reserved0[4];
+	u8	rmac[6];
+>>>>>>> v4.9.227
 	u8	tclass;
 	u8	hop_limit;
 	__be32	grh_gid_fl;
@@ -292,6 +392,11 @@ struct mlx5_wqe_signature_seg {
 	u8	rsvd1[11];
 };
 
+<<<<<<< HEAD
+=======
+#define MLX5_WQE_INLINE_SEG_BYTE_COUNT_MASK 0x3ff
+
+>>>>>>> v4.9.227
 struct mlx5_wqe_inline_seg {
 	__be32	byte_count;
 };
@@ -360,19 +465,68 @@ struct mlx5_stride_block_ctrl_seg {
 	__be16		num_entries;
 };
 
+<<<<<<< HEAD
 struct mlx5_core_qp {
 	struct mlx5_core_rsc_common	common; /* must be first */
 	void (*event)		(struct mlx5_core_qp *, int);
+=======
+enum mlx5_pagefault_flags {
+	MLX5_PFAULT_REQUESTOR = 1 << 0,
+	MLX5_PFAULT_WRITE     = 1 << 1,
+	MLX5_PFAULT_RDMA      = 1 << 2,
+};
+
+/* Contains the details of a pagefault. */
+struct mlx5_pagefault {
+	u32			bytes_committed;
+	u8			event_subtype;
+	enum mlx5_pagefault_flags flags;
+	union {
+		/* Initiator or send message responder pagefault details. */
+		struct {
+			/* Received packet size, only valid for responders. */
+			u32	packet_size;
+			/*
+			 * WQE index. Refers to either the send queue or
+			 * receive queue, according to event_subtype.
+			 */
+			u16	wqe_index;
+		} wqe;
+		/* RDMA responder pagefault details */
+		struct {
+			u32	r_key;
+			/*
+			 * Received packet size, minimal size page fault
+			 * resolution required for forward progress.
+			 */
+			u32	packet_size;
+			u32	rdma_op_len;
+			u64	rdma_va;
+		} rdma;
+	};
+};
+
+struct mlx5_core_qp {
+	struct mlx5_core_rsc_common	common; /* must be first */
+	void (*event)		(struct mlx5_core_qp *, int);
+	void (*pfault_handler)(struct mlx5_core_qp *, struct mlx5_pagefault *);
+>>>>>>> v4.9.227
 	int			qpn;
 	struct mlx5_rsc_debug	*dbg;
 	int			pid;
 };
 
 struct mlx5_qp_path {
+<<<<<<< HEAD
 	u8			fl;
 	u8			rsvd3;
 	u8			free_ar;
 	u8			pkey_index;
+=======
+	u8			fl_free_ar;
+	u8			rsvd3;
+	__be16			pkey_index;
+>>>>>>> v4.9.227
 	u8			rsvd0;
 	u8			grh_mlid;
 	__be16			rlid;
@@ -381,6 +535,7 @@ struct mlx5_qp_path {
 	u8			static_rate;
 	u8			hop_limit;
 	__be32			tclass_flowlabel;
+<<<<<<< HEAD
 	u8			rgid[16];
 	u8			rsvd1[4];
 	u8			sl;
@@ -388,6 +543,21 @@ struct mlx5_qp_path {
 	u8			rsvd2[6];
 };
 
+=======
+	union {
+		u8		rgid[16];
+		u8		rip[16];
+	};
+	u8			f_dscp_ecn_prio;
+	u8			ecn_dscp;
+	__be16			udp_sport;
+	u8			dci_cfi_prio_sl;
+	u8			port;
+	u8			rmac[6];
+};
+
+/* FIXME: use mlx5_ifc.h qpc */
+>>>>>>> v4.9.227
 struct mlx5_qp_context {
 	__be32			flags;
 	__be32			flags_pd;
@@ -403,7 +573,12 @@ struct mlx5_qp_context {
 	u8			reserved2[4];
 	__be32			next_send_psn;
 	__be32			cqn_send;
+<<<<<<< HEAD
 	u8			reserved3[8];
+=======
+	__be32			deth_sqpn;
+	u8			reserved3[4];
+>>>>>>> v4.9.227
 	__be32			last_acked_psn;
 	__be32			ssn;
 	__be32			params2;
@@ -428,6 +603,7 @@ struct mlx5_qp_context {
 	u8			rsvd1[24];
 };
 
+<<<<<<< HEAD
 struct mlx5_create_qp_mbox_in {
 	struct mlx5_inbox_hdr	hdr;
 	__be32			input_qpn;
@@ -520,28 +696,47 @@ struct mlx5_dealloc_xrcd_mbox_out {
 	u8			rsvd[8];
 };
 
+=======
+>>>>>>> v4.9.227
 static inline struct mlx5_core_qp *__mlx5_qp_lookup(struct mlx5_core_dev *dev, u32 qpn)
 {
 	return radix_tree_lookup(&dev->priv.qp_table.tree, qpn);
 }
 
+<<<<<<< HEAD
 static inline struct mlx5_core_mr *__mlx5_mr_lookup(struct mlx5_core_dev *dev, u32 key)
 {
 	return radix_tree_lookup(&dev->priv.mr_table.tree, key);
+=======
+static inline struct mlx5_core_mkey *__mlx5_mr_lookup(struct mlx5_core_dev *dev, u32 key)
+{
+	return radix_tree_lookup(&dev->priv.mkey_table.tree, key);
+>>>>>>> v4.9.227
 }
 
 int mlx5_core_create_qp(struct mlx5_core_dev *dev,
 			struct mlx5_core_qp *qp,
+<<<<<<< HEAD
 			struct mlx5_create_qp_mbox_in *in,
 			int inlen);
 int mlx5_core_qp_modify(struct mlx5_core_dev *dev, enum mlx5_qp_state cur_state,
 			enum mlx5_qp_state new_state,
 			struct mlx5_modify_qp_mbox_in *in, int sqd_event,
+=======
+			u32 *in,
+			int inlen);
+int mlx5_core_qp_modify(struct mlx5_core_dev *dev, u16 opcode,
+			u32 opt_param_mask, void *qpc,
+>>>>>>> v4.9.227
 			struct mlx5_core_qp *qp);
 int mlx5_core_destroy_qp(struct mlx5_core_dev *dev,
 			 struct mlx5_core_qp *qp);
 int mlx5_core_qp_query(struct mlx5_core_dev *dev, struct mlx5_core_qp *qp,
+<<<<<<< HEAD
 		       struct mlx5_query_qp_mbox_out *out, int outlen);
+=======
+		       u32 *out, int outlen);
+>>>>>>> v4.9.227
 
 int mlx5_core_xrcd_alloc(struct mlx5_core_dev *dev, u32 *xrcdn);
 int mlx5_core_xrcd_dealloc(struct mlx5_core_dev *dev, u32 xrcdn);
@@ -549,6 +744,27 @@ void mlx5_init_qp_table(struct mlx5_core_dev *dev);
 void mlx5_cleanup_qp_table(struct mlx5_core_dev *dev);
 int mlx5_debug_qp_add(struct mlx5_core_dev *dev, struct mlx5_core_qp *qp);
 void mlx5_debug_qp_remove(struct mlx5_core_dev *dev, struct mlx5_core_qp *qp);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_INFINIBAND_ON_DEMAND_PAGING
+int mlx5_core_page_fault_resume(struct mlx5_core_dev *dev, u32 qpn,
+				u8 context, int error);
+#endif
+int mlx5_core_create_rq_tracked(struct mlx5_core_dev *dev, u32 *in, int inlen,
+				struct mlx5_core_qp *rq);
+void mlx5_core_destroy_rq_tracked(struct mlx5_core_dev *dev,
+				  struct mlx5_core_qp *rq);
+int mlx5_core_create_sq_tracked(struct mlx5_core_dev *dev, u32 *in, int inlen,
+				struct mlx5_core_qp *sq);
+void mlx5_core_destroy_sq_tracked(struct mlx5_core_dev *dev,
+				  struct mlx5_core_qp *sq);
+int mlx5_core_alloc_q_counter(struct mlx5_core_dev *dev, u16 *counter_id);
+int mlx5_core_dealloc_q_counter(struct mlx5_core_dev *dev, u16 counter_id);
+int mlx5_core_query_q_counter(struct mlx5_core_dev *dev, u16 counter_id,
+			      int reset, void *out, int out_size);
+int mlx5_core_query_out_of_buffer(struct mlx5_core_dev *dev, u16 counter_id,
+				  u32 *out_of_buffer);
+>>>>>>> v4.9.227
 
 static inline const char *mlx5_qp_type_str(int type)
 {

@@ -27,7 +27,10 @@
 
 #include <linux/slab.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include <linux/freezer.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/hash.h>
 #include <linux/kthread.h>
 #include <linux/prefetch.h>
@@ -278,7 +281,11 @@ err:
 	goto out;
 }
 
+<<<<<<< HEAD
 static void btree_node_read_endio(struct bio *bio, int error)
+=======
+static void btree_node_read_endio(struct bio *bio)
+>>>>>>> v4.9.227
 {
 	struct closure *cl = bio->bi_private;
 	closure_put(cl);
@@ -295,17 +302,28 @@ static void bch_btree_node_read(struct btree *b)
 	closure_init_stack(&cl);
 
 	bio = bch_bbio_alloc(b->c);
+<<<<<<< HEAD
 	bio->bi_rw	= REQ_META|READ_SYNC;
 	bio->bi_iter.bi_size = KEY_SIZE(&b->key) << 9;
 	bio->bi_end_io	= btree_node_read_endio;
 	bio->bi_private	= &cl;
+=======
+	bio->bi_iter.bi_size = KEY_SIZE(&b->key) << 9;
+	bio->bi_end_io	= btree_node_read_endio;
+	bio->bi_private	= &cl;
+	bio_set_op_attrs(bio, REQ_OP_READ, REQ_META|READ_SYNC);
+>>>>>>> v4.9.227
 
 	bch_bio_map(bio, b->keys.set[0].data);
 
 	bch_submit_bbio(bio, b->c, &b->key, 0);
 	closure_sync(&cl);
 
+<<<<<<< HEAD
 	if (!test_bit(BIO_UPTODATE, &bio->bi_flags))
+=======
+	if (bio->bi_error)
+>>>>>>> v4.9.227
 		set_btree_node_io_error(b);
 
 	bch_bbio_free(bio, b->c);
@@ -362,6 +380,7 @@ static void __btree_node_write_done(struct closure *cl)
 static void btree_node_write_done(struct closure *cl)
 {
 	struct btree *b = container_of(cl, struct btree, io);
+<<<<<<< HEAD
 	struct bio_vec *bv;
 	int n;
 
@@ -372,14 +391,29 @@ static void btree_node_write_done(struct closure *cl)
 }
 
 static void btree_node_write_endio(struct bio *bio, int error)
+=======
+
+	bio_free_pages(b->bio);
+	__btree_node_write_done(cl);
+}
+
+static void btree_node_write_endio(struct bio *bio)
+>>>>>>> v4.9.227
 {
 	struct closure *cl = bio->bi_private;
 	struct btree *b = container_of(cl, struct btree, io);
 
+<<<<<<< HEAD
 	if (error)
 		set_btree_node_io_error(b);
 
 	bch_bbio_count_io_errors(b->c, bio, error, "writing btree");
+=======
+	if (bio->bi_error)
+		set_btree_node_io_error(b);
+
+	bch_bbio_count_io_errors(b->c, bio, bio->bi_error, "writing btree");
+>>>>>>> v4.9.227
 	closure_put(cl);
 }
 
@@ -397,8 +431,13 @@ static void do_btree_node_write(struct btree *b)
 
 	b->bio->bi_end_io	= btree_node_write_endio;
 	b->bio->bi_private	= cl;
+<<<<<<< HEAD
 	b->bio->bi_rw		= REQ_META|WRITE_SYNC|REQ_FUA;
 	b->bio->bi_iter.bi_size	= roundup(set_bytes(i), block_bytes(b->c));
+=======
+	b->bio->bi_iter.bi_size	= roundup(set_bytes(i), block_bytes(b->c));
+	bio_set_op_attrs(b->bio, REQ_OP_WRITE, REQ_META|WRITE_SYNC|REQ_FUA);
+>>>>>>> v4.9.227
 	bch_bio_map(b->bio, i);
 
 	/*
@@ -686,6 +725,11 @@ static unsigned long bch_mca_scan(struct shrinker *shrink,
 	 * IO can always make forward progress:
 	 */
 	nr /= c->btree_pages;
+<<<<<<< HEAD
+=======
+	if (nr == 0)
+		nr = 1;
+>>>>>>> v4.9.227
 	nr = min_t(unsigned long, nr, mca_can_free(c));
 
 	i = 0;
@@ -1765,6 +1809,7 @@ static void bch_btree_gc(struct cache_set *c)
 	bch_moving_gc(c);
 }
 
+<<<<<<< HEAD
 static int bch_gc_thread(void *arg)
 {
 	struct cache_set *c = arg;
@@ -1792,6 +1837,36 @@ again:
 
 		try_to_freeze();
 		schedule();
+=======
+static bool gc_should_run(struct cache_set *c)
+{
+	struct cache *ca;
+	unsigned i;
+
+	for_each_cache(ca, c, i)
+		if (ca->invalidate_needs_gc)
+			return true;
+
+	if (atomic_read(&c->sectors_to_gc) < 0)
+		return true;
+
+	return false;
+}
+
+static int bch_gc_thread(void *arg)
+{
+	struct cache_set *c = arg;
+
+	while (1) {
+		wait_event_interruptible(c->gc_wait,
+			   kthread_should_stop() || gc_should_run(c));
+
+		if (kthread_should_stop())
+			break;
+
+		set_gc_sectors(c);
+		bch_btree_gc(c);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -1799,11 +1874,18 @@ again:
 
 int bch_gc_thread_start(struct cache_set *c)
 {
+<<<<<<< HEAD
 	c->gc_thread = kthread_create(bch_gc_thread, c, "bcache_gc");
 	if (IS_ERR(c->gc_thread))
 		return PTR_ERR(c->gc_thread);
 
 	set_task_state(c->gc_thread, TASK_INTERRUPTIBLE);
+=======
+	c->gc_thread = kthread_run(bch_gc_thread, c, "bcache_gc");
+	if (IS_ERR(c->gc_thread))
+		return PTR_ERR(c->gc_thread);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -2372,7 +2454,11 @@ static int refill_keybuf_fn(struct btree_op *op, struct btree *b,
 	struct keybuf *buf = refill->buf;
 	int ret = MAP_CONTINUE;
 
+<<<<<<< HEAD
 	if (bkey_cmp(k, refill->end) >= 0) {
+=======
+	if (bkey_cmp(k, refill->end) > 0) {
+>>>>>>> v4.9.227
 		ret = MAP_DONE;
 		goto out;
 	}

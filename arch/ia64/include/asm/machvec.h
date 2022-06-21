@@ -22,7 +22,10 @@ struct pci_bus;
 struct task_struct;
 struct pci_dev;
 struct msi_desc;
+<<<<<<< HEAD
 struct dma_attrs;
+=======
+>>>>>>> v4.9.227
 
 typedef void ia64_mv_setup_t (char **);
 typedef void ia64_mv_cpu_init_t (void);

@@ -7,6 +7,10 @@
 #include <linux/types.h>
 
 #include <asm/processor.h>
+<<<<<<< HEAD
+=======
+#include <asm/traps.h>
+>>>>>>> v4.9.227
 #include <asm/tlbflush.h>
 #include <asm/mce.h>
 #include <asm/msr.h>
@@ -14,8 +18,17 @@
 /* Machine check handler for WinChip C6: */
 static void winchip_machine_check(struct pt_regs *regs, long error_code)
 {
+<<<<<<< HEAD
 	printk(KERN_EMERG "CPU0: Machine Check Exception.\n");
 	add_taint(TAINT_MACHINE_CHECK, LOCKDEP_NOW_UNRELIABLE);
+=======
+	ist_enter(regs);
+
+	pr_emerg("CPU0: Machine Check Exception.\n");
+	add_taint(TAINT_MACHINE_CHECK, LOCKDEP_NOW_UNRELIABLE);
+
+	ist_exit(regs);
+>>>>>>> v4.9.227
 }
 
 /* Set up machine check reporting on the Winchip C6 series */
@@ -34,6 +47,10 @@ void winchip_mcheck_init(struct cpuinfo_x86 *c)
 
 	cr4_set_bits(X86_CR4_MCE);
 
+<<<<<<< HEAD
 	printk(KERN_INFO
 	       "Winchip machine check reporting enabled on CPU#0.\n");
+=======
+	pr_info("Winchip machine check reporting enabled on CPU#0.\n");
+>>>>>>> v4.9.227
 }

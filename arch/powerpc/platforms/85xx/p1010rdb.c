@@ -62,11 +62,17 @@ machine_arch_initcall(p1010_rdb, swiotlb_setup_bus_notifier);
  */
 static int __init p1010_rdb_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (of_flat_dt_is_compatible(root, "fsl,P1010RDB"))
 		return 1;
 	if (of_flat_dt_is_compatible(root, "fsl,P1010RDB-PB"))
+=======
+	if (of_machine_is_compatible("fsl,P1010RDB"))
+		return 1;
+	if (of_machine_is_compatible("fsl,P1010RDB-PB"))
+>>>>>>> v4.9.227
 		return 1;
 	return 0;
 }
@@ -81,7 +87,10 @@ define_machine(p1010_rdb) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };

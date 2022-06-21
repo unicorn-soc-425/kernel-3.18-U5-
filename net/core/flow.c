@@ -92,8 +92,15 @@ static void flow_cache_gc_task(struct work_struct *work)
 	list_splice_tail_init(&xfrm->flow_cache_gc_list, &gc_list);
 	spin_unlock_bh(&xfrm->flow_cache_gc_lock);
 
+<<<<<<< HEAD
 	list_for_each_entry_safe(fce, n, &gc_list, u.gc_list)
 		flow_entry_kill(fce, xfrm);
+=======
+	list_for_each_entry_safe(fce, n, &gc_list, u.gc_list) {
+		flow_entry_kill(fce, xfrm);
+		atomic_dec(&xfrm->flow_cache_gc_count);
+	}
+>>>>>>> v4.9.227
 }
 
 static void flow_cache_queue_garbage(struct flow_cache_percpu *fcp,
@@ -101,6 +108,10 @@ static void flow_cache_queue_garbage(struct flow_cache_percpu *fcp,
 				     struct netns_xfrm *xfrm)
 {
 	if (deleted) {
+<<<<<<< HEAD
+=======
+		atomic_add(deleted, &xfrm->flow_cache_gc_count);
+>>>>>>> v4.9.227
 		fcp->hash_count -= deleted;
 		spin_lock_bh(&xfrm->flow_cache_gc_lock);
 		list_splice_tail(gc_list, &xfrm->flow_cache_gc_list);
@@ -232,6 +243,15 @@ flow_cache_lookup(struct net *net, const struct flowi *key, u16 family, u8 dir,
 		if (fcp->hash_count > fc->high_watermark)
 			flow_cache_shrink(fc, fcp);
 
+<<<<<<< HEAD
+=======
+		if (atomic_read(&net->xfrm.flow_cache_gc_count) >
+		    2 * num_online_cpus() * fc->high_watermark) {
+			flo = ERR_PTR(-ENOBUFS);
+			goto ret_object;
+		}
+
+>>>>>>> v4.9.227
 		fle = kmem_cache_alloc(flow_cachep, GFP_ATOMIC);
 		if (fle) {
 			fle->net = net;
@@ -446,6 +466,10 @@ int flow_cache_init(struct net *net)
 	INIT_WORK(&net->xfrm.flow_cache_gc_work, flow_cache_gc_task);
 	INIT_WORK(&net->xfrm.flow_cache_flush_work, flow_cache_flush_task);
 	mutex_init(&net->xfrm.flow_flush_sem);
+<<<<<<< HEAD
+=======
+	atomic_set(&net->xfrm.flow_cache_gc_count, 0);
+>>>>>>> v4.9.227
 
 	fc->hash_shift = 10;
 	fc->low_watermark = 2 * flow_cache_hash_size(fc);

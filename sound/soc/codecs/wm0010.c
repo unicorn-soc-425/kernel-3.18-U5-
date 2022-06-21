@@ -577,7 +577,10 @@ static int wm0010_boot(struct snd_soc_codec *codec)
 	struct wm0010_priv *wm0010 = snd_soc_codec_get_drvdata(codec);
 	unsigned long flags;
 	int ret;
+<<<<<<< HEAD
 	const struct firmware *fw;
+=======
+>>>>>>> v4.9.227
 	struct spi_message m;
 	struct spi_transfer t;
 	struct dfw_pllrec pll_rec;
@@ -623,6 +626,7 @@ static int wm0010_boot(struct snd_soc_codec *codec)
 	wm0010->state = WM0010_OUT_OF_RESET;
 	spin_unlock_irqrestore(&wm0010->irq_lock, flags);
 
+<<<<<<< HEAD
 	/* First the bootloader */
 	ret = request_firmware(&fw, "wm0010_stage2.bin", codec->dev);
 	if (ret != 0) {
@@ -631,6 +635,8 @@ static int wm0010_boot(struct snd_soc_codec *codec)
 		goto abort;
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (!wait_for_completion_timeout(&wm0010->boot_completion,
 					 msecs_to_jiffies(20)))
 		dev_err(codec->dev, "Failed to get interrupt from DSP\n");
@@ -673,7 +679,11 @@ static int wm0010_boot(struct snd_soc_codec *codec)
 
 		img_swap = kzalloc(len, GFP_KERNEL | GFP_DMA);
 		if (!img_swap)
+<<<<<<< HEAD
 			goto abort;
+=======
+			goto abort_out;
+>>>>>>> v4.9.227
 
 		/* We need to re-order for 0010 */
 		byte_swap_64((u64 *)&pll_rec, img_swap, len);
@@ -688,16 +698,28 @@ static int wm0010_boot(struct snd_soc_codec *codec)
 		spi_message_add_tail(&t, &m);
 
 		ret = spi_sync(spi, &m);
+<<<<<<< HEAD
 		if (ret != 0) {
 			dev_err(codec->dev, "First PLL write failed: %d\n", ret);
 			goto abort;
+=======
+		if (ret) {
+			dev_err(codec->dev, "First PLL write failed: %d\n", ret);
+			goto abort_swap;
+>>>>>>> v4.9.227
 		}
 
 		/* Use a second send of the message to get the return status */
 		ret = spi_sync(spi, &m);
+<<<<<<< HEAD
 		if (ret != 0) {
 			dev_err(codec->dev, "Second PLL write failed: %d\n", ret);
 			goto abort;
+=======
+		if (ret) {
+			dev_err(codec->dev, "Second PLL write failed: %d\n", ret);
+			goto abort_swap;
+>>>>>>> v4.9.227
 		}
 
 		p = (u32 *)out;
@@ -730,6 +752,13 @@ static int wm0010_boot(struct snd_soc_codec *codec)
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+abort_swap:
+	kfree(img_swap);
+abort_out:
+	kfree(out);
+>>>>>>> v4.9.227
 abort:
 	/* Put the chip back into reset */
 	wm0010_halt(codec);
@@ -751,13 +780,21 @@ static int wm0010_set_bias_level(struct snd_soc_codec *codec,
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_PREPARE)
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_PREPARE)
+>>>>>>> v4.9.227
 			wm0010_boot(codec);
 		break;
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_PREPARE) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_PREPARE) {
+>>>>>>> v4.9.227
 			mutex_lock(&wm0010->lock);
 			wm0010_halt(codec);
 			mutex_unlock(&wm0010->lock);
@@ -767,8 +804,11 @@ static int wm0010_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -796,16 +836,29 @@ static int wm0010_set_sysclk(struct snd_soc_codec *codec, int source,
 
 static int wm0010_probe(struct snd_soc_codec *codec);
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_wm0010 = {
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm0010 = {
+>>>>>>> v4.9.227
 	.probe = wm0010_probe,
 	.set_bias_level = wm0010_set_bias_level,
 	.set_sysclk = wm0010_set_sysclk,
 	.idle_bias_off = true,
 
+<<<<<<< HEAD
 	.dapm_widgets = wm0010_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(wm0010_dapm_widgets),
 	.dapm_routes = wm0010_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm0010_dapm_routes),
+=======
+	.component_driver = {
+		.dapm_widgets		= wm0010_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm0010_dapm_widgets),
+		.dapm_routes		= wm0010_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm0010_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 #define WM0010_RATES (SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000)
@@ -955,7 +1008,11 @@ static int wm0010_spi_probe(struct spi_device *spi)
 		trigger = IRQF_TRIGGER_FALLING;
 	trigger |= IRQF_ONESHOT;
 
+<<<<<<< HEAD
 	ret = request_threaded_irq(irq, NULL, wm0010_irq, trigger | IRQF_ONESHOT,
+=======
+	ret = request_threaded_irq(irq, NULL, wm0010_irq, trigger,
+>>>>>>> v4.9.227
 				   "wm0010", wm0010);
 	if (ret) {
 		dev_err(wm0010->dev, "Failed to request IRQ %d: %d\n",
@@ -1005,8 +1062,11 @@ static int wm0010_spi_remove(struct spi_device *spi)
 static struct spi_driver wm0010_spi_driver = {
 	.driver = {
 		.name	= "wm0010",
+<<<<<<< HEAD
 		.bus 	= &spi_bus_type,
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= wm0010_spi_probe,
 	.remove		= wm0010_spi_remove,

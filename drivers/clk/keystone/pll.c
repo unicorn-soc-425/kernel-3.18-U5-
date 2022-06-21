@@ -10,7 +10,10 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -158,7 +161,11 @@ out:
  * _of_clk_init - PLL initialisation via DT
  * @node: device tree node for this clock
  * @pllctrl: If true, lower 6 bits of multiplier is in pllm register of
+<<<<<<< HEAD
  *		pll controller, else it is in the control regsiter0(bit 11-6)
+=======
+ *		pll controller, else it is in the control register0(bit 11-6)
+>>>>>>> v4.9.227
  */
 static void __init _of_pll_clk_init(struct device_node *node, bool pllctrl)
 {
@@ -309,8 +316,12 @@ static void __init of_pll_mux_clk_init(struct device_node *node)
 		return;
 	}
 
+<<<<<<< HEAD
 	parents[0] = of_clk_get_parent_name(node, 0);
 	parents[1] = of_clk_get_parent_name(node, 1);
+=======
+	of_clk_parent_fill(node, parents, 2);
+>>>>>>> v4.9.227
 	if (!parents[0] || !parents[1]) {
 		pr_err("%s: missing parent clocks\n", __func__);
 		return;

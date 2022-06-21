@@ -1,6 +1,10 @@
 /* Header file for all dibusb-based-receivers.
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  *
  *	This program is free software; you can redistribute it and/or modify it
  *	under the terms of the GNU General Public License as published by the Free
@@ -96,6 +100,12 @@
 #define DIBUSB_IOCTL_CMD_ENABLE_STREAM	0x01
 #define DIBUSB_IOCTL_CMD_DISABLE_STREAM	0x02
 
+<<<<<<< HEAD
+=======
+/* Max transfer size done by I2C transfer functions */
+#define MAX_XFER_SIZE  64
+
+>>>>>>> v4.9.227
 struct dibusb_state {
 	struct dib_fe_xfer_ops ops;
 	int mt2060_present;

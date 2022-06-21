@@ -313,7 +313,11 @@ static void __init disable_l2_prefetch(void)
 	 */
 	u = read_extra_features();
 	if (!(u & 0x01000000)) {
+<<<<<<< HEAD
 		printk(KERN_INFO "Feroceon L2: Disabling L2 prefetch.\n");
+=======
+		pr_info("Feroceon L2: Disabling L2 prefetch.\n");
+>>>>>>> v4.9.227
 		write_extra_features(u | 0x01000000);
 	}
 }
@@ -326,7 +330,11 @@ static void __init enable_l2(void)
 	if (!(u & 0x00400000)) {
 		int i, d;
 
+<<<<<<< HEAD
 		printk(KERN_INFO "Feroceon L2: Enabling L2\n");
+=======
+		pr_info("Feroceon L2: Enabling L2\n");
+>>>>>>> v4.9.227
 
 		d = flush_and_disable_dcache();
 		i = invalidate_and_disable_icache();
@@ -353,7 +361,11 @@ void __init feroceon_l2_init(int __l2_wt_override)
 
 	enable_l2();
 
+<<<<<<< HEAD
 	printk(KERN_INFO "Feroceon L2: Cache support initialised%s.\n",
+=======
+	pr_info("Feroceon L2: Cache support initialised%s.\n",
+>>>>>>> v4.9.227
 			 l2_wt_override ? ", in WT override mode" : "");
 }
 #ifdef CONFIG_OF
@@ -368,7 +380,10 @@ int __init feroceon_of_init(void)
 	struct device_node *node;
 	void __iomem *base;
 	bool l2_wt_override = false;
+<<<<<<< HEAD
 	struct resource res;
+=======
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_CACHE_FEROCEON_L2_WRITETHROUGH)
 	l2_wt_override = true;
@@ -376,10 +391,14 @@ int __init feroceon_of_init(void)
 
 	node = of_find_matching_node(NULL, feroceon_ids);
 	if (node && of_device_is_compatible(node, "marvell,kirkwood-cache")) {
+<<<<<<< HEAD
 		if (of_address_to_resource(node, 0, &res))
 			return -ENODEV;
 
 		base = ioremap(res.start, resource_size(&res));
+=======
+		base = of_iomap(node, 0);
+>>>>>>> v4.9.227
 		if (!base)
 			return -ENOMEM;
 

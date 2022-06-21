@@ -91,6 +91,14 @@
 
 #define ELF_NGREG	48	/* includes nip, msr, lr, etc. */
 #define ELF_NFPREG	33	/* includes fpscr */
+<<<<<<< HEAD
+=======
+#define ELF_NVMX	34	/* includes all vector registers */
+#define ELF_NVSX	32	/* includes all VSX registers */
+#define ELF_NTMSPRREG	3	/* include tfhar, tfiar, texasr */
+#define ELF_NEBB	3	/* includes ebbrr, ebbhr, bescr */
+#define ELF_NPMU	5	/* includes siar, sdar, sier, mmcr2, mmcr0 */
+>>>>>>> v4.9.227
 
 typedef unsigned long elf_greg_t64;
 typedef elf_greg_t64 elf_gregset_t64[ELF_NGREG];
@@ -295,6 +303,11 @@ do {									\
 #define R_PPC64_TLSLD		108
 #define R_PPC64_TOCSAVE		109
 
+<<<<<<< HEAD
+=======
+#define R_PPC64_ENTRY		118
+
+>>>>>>> v4.9.227
 #define R_PPC64_REL16		249
 #define R_PPC64_REL16_LO	250
 #define R_PPC64_REL16_HI	251

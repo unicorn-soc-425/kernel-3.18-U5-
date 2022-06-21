@@ -13,7 +13,14 @@ enum severity_level {
 	MCE_PANIC_SEVERITY,
 };
 
+<<<<<<< HEAD
 #define ATTR_LEN		16
+=======
+extern struct blocking_notifier_head x86_mce_decoder_chain;
+
+#define ATTR_LEN		16
+#define INITIAL_CHECK_INTERVAL	5 * 60 /* 5 minutes */
+>>>>>>> v4.9.227
 
 /* One object for each MCE bank, shared by all CPUs */
 struct mce_bank {
@@ -23,13 +30,29 @@ struct mce_bank {
 	char			attrname[ATTR_LEN];	/* attribute name */
 };
 
+<<<<<<< HEAD
 int mce_severity(struct mce *a, int tolerant, char **msg, bool is_excp);
+=======
+struct mce_evt_llist {
+	struct llist_node llnode;
+	struct mce mce;
+};
+
+void mce_gen_pool_process(void);
+bool mce_gen_pool_empty(void);
+int mce_gen_pool_add(struct mce *mce);
+int mce_gen_pool_init(void);
+struct llist_node *mce_gen_pool_prepare_records(void);
+
+extern int (*mce_severity)(struct mce *a, int tolerant, char **msg, bool is_excp);
+>>>>>>> v4.9.227
 struct dentry *mce_get_debugfs_dir(void);
 
 extern struct mce_bank *mce_banks;
 extern mce_banks_t mce_banks_ce_disabled;
 
 #ifdef CONFIG_X86_MCE_INTEL
+<<<<<<< HEAD
 unsigned long mce_intel_adjust_timer(unsigned long interval);
 void mce_intel_cmci_poll(void);
 void mce_intel_hcpu_update(unsigned long cpu);
@@ -37,6 +60,15 @@ void cmci_disable_bank(int bank);
 #else
 # define mce_intel_adjust_timer mce_adjust_timer_default
 static inline void mce_intel_cmci_poll(void) { }
+=======
+unsigned long cmci_intel_adjust_timer(unsigned long interval);
+bool mce_intel_cmci_poll(void);
+void mce_intel_hcpu_update(unsigned long cpu);
+void cmci_disable_bank(int bank);
+#else
+# define cmci_intel_adjust_timer mce_adjust_timer_default
+static inline bool mce_intel_cmci_poll(void) { return false; }
+>>>>>>> v4.9.227
 static inline void mce_intel_hcpu_update(unsigned long cpu) { }
 static inline void cmci_disable_bank(int bank) { }
 #endif
@@ -66,3 +98,22 @@ static inline int apei_clear_mce(u64 record_id)
 	return -EINVAL;
 }
 #endif
+<<<<<<< HEAD
+=======
+
+void mce_inject_log(struct mce *m);
+
+/*
+ * We consider records to be equivalent if bank+status+addr+misc all match.
+ * This is only used when the system is going down because of a fatal error
+ * to avoid cluttering the console log with essentially repeated information.
+ * In normal processing all errors seen are logged.
+ */
+static inline bool mce_cmp(struct mce *m1, struct mce *m2)
+{
+	return m1->bank != m2->bank ||
+		m1->status != m2->status ||
+		m1->addr != m2->addr ||
+		m1->misc != m2->misc;
+}
+>>>>>>> v4.9.227

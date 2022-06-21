@@ -33,16 +33,28 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
 #include <mach/audio.h>
 #include <mach/palmt5.h>
+=======
+#include "pxa27x.h"
+#include <mach/audio.h>
+#include "palmt5.h"
+>>>>>>> v4.9.227
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/irda-pxaficp.h>
 #include <linux/platform_data/keypad-pxa27x.h>
+<<<<<<< HEAD
 #include <mach/udc.h>
 #include <linux/platform_data/asoc-palm27x.h>
 #include <mach/palm27x.h>
+=======
+#include "udc.h"
+#include <linux/platform_data/asoc-palm27x.h>
+#include "palm27x.h"
+>>>>>>> v4.9.227
 
 #include "generic.h"
 #include "devices.h"

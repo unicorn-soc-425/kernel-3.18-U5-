@@ -2,6 +2,10 @@
 #define _ASM_METAG_IO_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <asm/pgtable-bits.h>
+>>>>>>> v4.9.227
 
 #define IO_SPACE_LIMIT  0
 
@@ -159,6 +163,12 @@ extern void __iounmap(void __iomem *addr);
 #define ioremap_wc(offset, size)                \
 	__ioremap((offset), (size), _PAGE_WR_COMBINE)
 
+<<<<<<< HEAD
+=======
+#define ioremap_wt(offset, size)                \
+	__ioremap((offset), (size), 0)
+
+>>>>>>> v4.9.227
 #define iounmap(addr)                           \
 	__iounmap(addr)
 

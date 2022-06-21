@@ -46,9 +46,15 @@ static int loffs_mtd_write(struct super_block *sb, loff_t ofs, size_t len,
 
 	BUG_ON((ofs >= mtd->size) || (len > mtd->size - ofs));
 	BUG_ON(ofs != (ofs >> super->s_writeshift) << super->s_writeshift);
+<<<<<<< HEAD
 	BUG_ON(len > PAGE_CACHE_SIZE);
 	page_start = ofs & PAGE_CACHE_MASK;
 	page_end = PAGE_CACHE_ALIGN(ofs + len) - 1;
+=======
+	BUG_ON(len > PAGE_SIZE);
+	page_start = ofs & PAGE_MASK;
+	page_end = PAGE_ALIGN(ofs + len) - 1;
+>>>>>>> v4.9.227
 	ret = mtd_write(mtd, ofs, len, &retlen, buf);
 	if (ret || (retlen != len))
 		return -EIO;
@@ -82,7 +88,11 @@ static int logfs_mtd_erase_mapping(struct super_block *sb, loff_t ofs,
 		if (!page)
 			continue;
 		memset(page_address(page), 0xFF, PAGE_SIZE);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -195,7 +205,11 @@ static int __logfs_mtd_writeseg(struct super_block *sb, u64 ofs, pgoff_t index,
 		err = loffs_mtd_write(sb, page->index << PAGE_SHIFT, PAGE_SIZE,
 					page_address(page));
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> v4.9.227
 		if (err)
 			return err;
 	}

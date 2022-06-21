@@ -39,9 +39,15 @@ static __be32 nfsd3_proc_getacl(struct svc_rqst * rqstp,
 	if (nfserr)
 		RETURN_STATUS(nfserr);
 
+<<<<<<< HEAD
 	inode = fh->fh_dentry->d_inode;
 
 	if (argp->mask & ~(NFS_ACL|NFS_ACLCNT|NFS_DFACL|NFS_DFACLCNT))
+=======
+	inode = d_inode(fh->fh_dentry);
+
+	if (argp->mask & ~NFS_ACL_MASK)
+>>>>>>> v4.9.227
 		RETURN_STATUS(nfserr_inval);
 	resp->mask = argp->mask;
 
@@ -94,7 +100,11 @@ static __be32 nfsd3_proc_setacl(struct svc_rqst * rqstp,
 	if (nfserr)
 		goto out;
 
+<<<<<<< HEAD
 	inode = fh->fh_dentry->d_inode;
+=======
+	inode = d_inode(fh->fh_dentry);
+>>>>>>> v4.9.227
 
 	error = fh_want_write(fh);
 	if (error)
@@ -146,7 +156,11 @@ static int nfs3svc_decode_setaclargs(struct svc_rqst *rqstp, __be32 *p,
 	if (!p)
 		return 0;
 	args->mask = ntohl(*p++);
+<<<<<<< HEAD
 	if (args->mask & ~(NFS_ACL|NFS_ACLCNT|NFS_DFACL|NFS_DFACLCNT) ||
+=======
+	if (args->mask & ~NFS_ACL_MASK ||
+>>>>>>> v4.9.227
 	    !xdr_argsize_check(rqstp, p))
 		return 0;
 
@@ -172,8 +186,13 @@ static int nfs3svc_encode_getaclres(struct svc_rqst *rqstp, __be32 *p,
 	struct dentry *dentry = resp->fh.fh_dentry;
 
 	p = nfs3svc_encode_post_op_attr(rqstp, p, &resp->fh);
+<<<<<<< HEAD
 	if (resp->status == 0 && dentry && dentry->d_inode) {
 		struct inode *inode = dentry->d_inode;
+=======
+	if (resp->status == 0 && dentry && d_really_is_positive(dentry)) {
+		struct inode *inode = d_inode(dentry);
+>>>>>>> v4.9.227
 		struct kvec *head = rqstp->rq_res.head;
 		unsigned int base;
 		int n;

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,8 +25,11 @@
 #include "edp.h"
 #include "edp.xml.h"
 
+<<<<<<< HEAD
 #define VDDA_MIN_UV		1800000	/* uV units */
 #define VDDA_MAX_UV		1800000	/* uV units */
+=======
+>>>>>>> v4.9.227
 #define VDDA_UA_ON_LOAD		100000	/* uA units */
 #define VDDA_UA_OFF_LOAD	100	/* uA units */
 
@@ -67,7 +74,11 @@ struct edp_ctrl {
 	void __iomem *base;
 
 	/* regulators */
+<<<<<<< HEAD
 	struct regulator *vdda_vreg;
+=======
+	struct regulator *vdda_vreg;	/* 1.8 V */
+>>>>>>> v4.9.227
 	struct regulator *lvl_vreg;
 
 	/* clocks */
@@ -302,6 +313,7 @@ static void edp_clk_disable(struct edp_ctrl *ctrl, u32 clk_mask)
 static int edp_regulator_init(struct edp_ctrl *ctrl)
 {
 	struct device *dev = &ctrl->pdev->dev;
+<<<<<<< HEAD
 
 	DBG("");
 	ctrl->vdda_vreg = devm_regulator_get(dev, "vdda");
@@ -317,6 +329,26 @@ static int edp_regulator_init(struct edp_ctrl *ctrl)
 				PTR_ERR(ctrl->lvl_vreg));
 		ctrl->lvl_vreg = NULL;
 		return PTR_ERR(ctrl->lvl_vreg);
+=======
+	int ret;
+
+	DBG("");
+	ctrl->vdda_vreg = devm_regulator_get(dev, "vdda");
+	ret = PTR_ERR_OR_ZERO(ctrl->vdda_vreg);
+	if (ret) {
+		pr_err("%s: Could not get vdda reg, ret = %d\n", __func__,
+				ret);
+		ctrl->vdda_vreg = NULL;
+		return ret;
+	}
+	ctrl->lvl_vreg = devm_regulator_get(dev, "lvl-vdd");
+	ret = PTR_ERR_OR_ZERO(ctrl->lvl_vreg);
+	if (ret) {
+		pr_err("%s: Could not get lvl-vdd reg, ret = %d\n", __func__,
+				ret);
+		ctrl->lvl_vreg = NULL;
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -326,6 +358,7 @@ static int edp_regulator_enable(struct edp_ctrl *ctrl)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = regulator_set_voltage(ctrl->vdda_vreg, VDDA_MIN_UV, VDDA_MAX_UV);
 	if (ret) {
 		pr_err("%s:vdda_vreg set_voltage failed, %d\n", __func__, ret);
@@ -333,6 +366,9 @@ static int edp_regulator_enable(struct edp_ctrl *ctrl)
 	}
 
 	ret = regulator_set_optimum_mode(ctrl->vdda_vreg, VDDA_UA_ON_LOAD);
+=======
+	ret = regulator_set_load(ctrl->vdda_vreg, VDDA_UA_ON_LOAD);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		pr_err("%s: vdda_vreg set regulator mode failed.\n", __func__);
 		goto vdda_set_fail;
@@ -356,7 +392,11 @@ static int edp_regulator_enable(struct edp_ctrl *ctrl)
 lvl_enable_fail:
 	regulator_disable(ctrl->vdda_vreg);
 vdda_enable_fail:
+<<<<<<< HEAD
 	regulator_set_optimum_mode(ctrl->vdda_vreg, VDDA_UA_OFF_LOAD);
+=======
+	regulator_set_load(ctrl->vdda_vreg, VDDA_UA_OFF_LOAD);
+>>>>>>> v4.9.227
 vdda_set_fail:
 	return ret;
 }
@@ -365,7 +405,11 @@ static void edp_regulator_disable(struct edp_ctrl *ctrl)
 {
 	regulator_disable(ctrl->lvl_vreg);
 	regulator_disable(ctrl->vdda_vreg);
+<<<<<<< HEAD
 	regulator_set_optimum_mode(ctrl->vdda_vreg, VDDA_UA_OFF_LOAD);
+=======
+	regulator_set_load(ctrl->vdda_vreg, VDDA_UA_OFF_LOAD);
+>>>>>>> v4.9.227
 }
 
 static int edp_gpio_config(struct edp_ctrl *ctrl)

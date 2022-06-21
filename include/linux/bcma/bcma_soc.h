@@ -5,8 +5,11 @@
 
 struct bcma_soc {
 	struct bcma_bus bus;
+<<<<<<< HEAD
 	struct bcma_device core_cc;
 	struct bcma_device core_mips;
+=======
+>>>>>>> v4.9.227
 };
 
 int __init bcma_host_soc_register(struct bcma_soc *soc);

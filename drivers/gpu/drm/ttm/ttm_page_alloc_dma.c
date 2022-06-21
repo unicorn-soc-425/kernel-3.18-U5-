@@ -50,7 +50,11 @@
 #include <linux/kthread.h>
 #include <drm/ttm/ttm_bo_driver.h>
 #include <drm/ttm/ttm_page_alloc.h>
+<<<<<<< HEAD
 #ifdef TTM_HAS_AGP
+=======
+#if IS_ENABLED(CONFIG_AGP)
+>>>>>>> v4.9.227
 #include <asm/agp.h>
 #endif
 
@@ -271,7 +275,11 @@ static struct kobj_type ttm_pool_kobj_type = {
 #ifndef CONFIG_X86
 static int set_pages_array_wb(struct page **pages, int addrinarray)
 {
+<<<<<<< HEAD
 #ifdef TTM_HAS_AGP
+=======
+#if IS_ENABLED(CONFIG_AGP)
+>>>>>>> v4.9.227
 	int i;
 
 	for (i = 0; i < addrinarray; i++)
@@ -282,7 +290,11 @@ static int set_pages_array_wb(struct page **pages, int addrinarray)
 
 static int set_pages_array_wc(struct page **pages, int addrinarray)
 {
+<<<<<<< HEAD
 #ifdef TTM_HAS_AGP
+=======
+#if IS_ENABLED(CONFIG_AGP)
+>>>>>>> v4.9.227
 	int i;
 
 	for (i = 0; i < addrinarray; i++)
@@ -293,7 +305,11 @@ static int set_pages_array_wc(struct page **pages, int addrinarray)
 
 static int set_pages_array_uc(struct page **pages, int addrinarray)
 {
+<<<<<<< HEAD
 #ifdef TTM_HAS_AGP
+=======
+#if IS_ENABLED(CONFIG_AGP)
+>>>>>>> v4.9.227
 	int i;
 
 	for (i = 0; i < addrinarray; i++)
@@ -858,7 +874,10 @@ static int ttm_dma_pool_get_pages(struct dma_pool *pool,
 	if (count) {
 		d_page = list_first_entry(&pool->free_list, struct dma_page, page_list);
 		ttm->pages[index] = d_page->p;
+<<<<<<< HEAD
 		ttm_dma->cpu_address[index] = d_page->vaddr;
+=======
+>>>>>>> v4.9.227
 		ttm_dma->dma_address[index] = d_page->dma;
 		list_move_tail(&d_page->page_list, &ttm_dma->pages_list);
 		r = 0;
@@ -989,7 +1008,10 @@ void ttm_dma_unpopulate(struct ttm_dma_tt *ttm_dma, struct device *dev)
 	INIT_LIST_HEAD(&ttm_dma->pages_list);
 	for (i = 0; i < ttm->num_pages; i++) {
 		ttm->pages[i] = NULL;
+<<<<<<< HEAD
 		ttm_dma->cpu_address[i] = 0;
+=======
+>>>>>>> v4.9.227
 		ttm_dma->dma_address[i] = 0;
 	}
 

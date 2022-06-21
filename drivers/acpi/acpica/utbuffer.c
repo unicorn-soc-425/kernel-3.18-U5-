@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -106,31 +110,51 @@ void acpi_ut_dump_buffer(u8 *buffer, u32 count, u32 display, u32 base_offset)
 			default:	/* Default is BYTE display */
 
 				acpi_os_printf("%02X ",
+<<<<<<< HEAD
 					       buffer[(acpi_size) i + j]);
+=======
+					       buffer[(acpi_size)i + j]);
+>>>>>>> v4.9.227
 				break;
 
 			case DB_WORD_DISPLAY:
 
 				ACPI_MOVE_16_TO_32(&temp32,
+<<<<<<< HEAD
 						   &buffer[(acpi_size) i + j]);
+=======
+						   &buffer[(acpi_size)i + j]);
+>>>>>>> v4.9.227
 				acpi_os_printf("%04X ", temp32);
 				break;
 
 			case DB_DWORD_DISPLAY:
 
 				ACPI_MOVE_32_TO_32(&temp32,
+<<<<<<< HEAD
 						   &buffer[(acpi_size) i + j]);
+=======
+						   &buffer[(acpi_size)i + j]);
+>>>>>>> v4.9.227
 				acpi_os_printf("%08X ", temp32);
 				break;
 
 			case DB_QWORD_DISPLAY:
 
 				ACPI_MOVE_32_TO_32(&temp32,
+<<<<<<< HEAD
 						   &buffer[(acpi_size) i + j]);
 				acpi_os_printf("%08X", temp32);
 
 				ACPI_MOVE_32_TO_32(&temp32,
 						   &buffer[(acpi_size) i + j +
+=======
+						   &buffer[(acpi_size)i + j]);
+				acpi_os_printf("%08X", temp32);
+
+				ACPI_MOVE_32_TO_32(&temp32,
+						   &buffer[(acpi_size)i + j +
+>>>>>>> v4.9.227
 							   4]);
 				acpi_os_printf("%08X ", temp32);
 				break;
@@ -150,8 +174,21 @@ void acpi_ut_dump_buffer(u8 *buffer, u32 count, u32 display, u32 base_offset)
 				return;
 			}
 
+<<<<<<< HEAD
 			buf_char = buffer[(acpi_size) i + j];
 			if (ACPI_IS_PRINT(buf_char)) {
+=======
+			/*
+			 * Add comment characters so rest of line is ignored when
+			 * compiled
+			 */
+			if (j == 0) {
+				acpi_os_printf("// ");
+			}
+
+			buf_char = buffer[(acpi_size)i + j];
+			if (isprint(buf_char)) {
+>>>>>>> v4.9.227
 				acpi_os_printf("%c", buf_char);
 			} else {
 				acpi_os_printf(".");
@@ -231,8 +268,12 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 	u8 buf_char;
 
 	if (!buffer) {
+<<<<<<< HEAD
 		acpi_ut_file_printf(file,
 				    "Null Buffer Pointer in DumpBuffer!\n");
+=======
+		fprintf(file, "Null Buffer Pointer in DumpBuffer!\n");
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -246,7 +287,11 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 
 		/* Print current offset */
 
+<<<<<<< HEAD
 		acpi_ut_file_printf(file, "%6.4X: ", (base_offset + i));
+=======
+		fprintf(file, "%6.4X: ", (base_offset + i));
+>>>>>>> v4.9.227
 
 		/* Print 16 hex chars */
 
@@ -255,8 +300,12 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 
 				/* Dump fill spaces */
 
+<<<<<<< HEAD
 				acpi_ut_file_printf(file, "%*s",
 						    ((display * 2) + 1), " ");
+=======
+				fprintf(file, "%*s", ((display * 2) + 1), " ");
+>>>>>>> v4.9.227
 				j += display;
 				continue;
 			}
@@ -265,27 +314,43 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 			case DB_BYTE_DISPLAY:
 			default:	/* Default is BYTE display */
 
+<<<<<<< HEAD
 				acpi_ut_file_printf(file, "%02X ",
 						    buffer[(acpi_size) i + j]);
+=======
+				fprintf(file, "%02X ",
+					buffer[(acpi_size)i + j]);
+>>>>>>> v4.9.227
 				break;
 
 			case DB_WORD_DISPLAY:
 
 				ACPI_MOVE_16_TO_32(&temp32,
+<<<<<<< HEAD
 						   &buffer[(acpi_size) i + j]);
 				acpi_ut_file_printf(file, "%04X ", temp32);
+=======
+						   &buffer[(acpi_size)i + j]);
+				fprintf(file, "%04X ", temp32);
+>>>>>>> v4.9.227
 				break;
 
 			case DB_DWORD_DISPLAY:
 
 				ACPI_MOVE_32_TO_32(&temp32,
+<<<<<<< HEAD
 						   &buffer[(acpi_size) i + j]);
 				acpi_ut_file_printf(file, "%08X ", temp32);
+=======
+						   &buffer[(acpi_size)i + j]);
+				fprintf(file, "%08X ", temp32);
+>>>>>>> v4.9.227
 				break;
 
 			case DB_QWORD_DISPLAY:
 
 				ACPI_MOVE_32_TO_32(&temp32,
+<<<<<<< HEAD
 						   &buffer[(acpi_size) i + j]);
 				acpi_ut_file_printf(file, "%08X", temp32);
 
@@ -293,6 +358,15 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 						   &buffer[(acpi_size) i + j +
 							   4]);
 				acpi_ut_file_printf(file, "%08X ", temp32);
+=======
+						   &buffer[(acpi_size)i + j]);
+				fprintf(file, "%08X", temp32);
+
+				ACPI_MOVE_32_TO_32(&temp32,
+						   &buffer[(acpi_size)i + j +
+							   4]);
+				fprintf(file, "%08X ", temp32);
+>>>>>>> v4.9.227
 				break;
 			}
 
@@ -303,6 +377,7 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 		 * Print the ASCII equivalent characters but watch out for the bad
 		 * unprintable ones (printable chars are 0x20 through 0x7E)
 		 */
+<<<<<<< HEAD
 		acpi_ut_file_printf(file, " ");
 		for (j = 0; j < 16; j++) {
 			if (i + j >= count) {
@@ -315,12 +390,30 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 				acpi_ut_file_printf(file, "%c", buf_char);
 			} else {
 				acpi_ut_file_printf(file, ".");
+=======
+		fprintf(file, " ");
+		for (j = 0; j < 16; j++) {
+			if (i + j >= count) {
+				fprintf(file, "\n");
+				return;
+			}
+
+			buf_char = buffer[(acpi_size)i + j];
+			if (isprint(buf_char)) {
+				fprintf(file, "%c", buf_char);
+			} else {
+				fprintf(file, ".");
+>>>>>>> v4.9.227
 			}
 		}
 
 		/* Done with that line. */
 
+<<<<<<< HEAD
 		acpi_ut_file_printf(file, "\n");
+=======
+		fprintf(file, "\n");
+>>>>>>> v4.9.227
 		i += 16;
 	}
 

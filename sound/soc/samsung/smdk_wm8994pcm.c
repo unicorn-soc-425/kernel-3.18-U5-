@@ -15,7 +15,10 @@
 #include <sound/pcm_params.h>
 
 #include "../codecs/wm8994.h"
+<<<<<<< HEAD
 #include "dma.h"
+=======
+>>>>>>> v4.9.227
 #include "pcm.h"
 
 /*
@@ -68,6 +71,7 @@ static int smdk_wm8994_pcm_hw_params(struct snd_pcm_substream *substream,
 
 	mclk_freq = params_rate(params) * rfs;
 
+<<<<<<< HEAD
 	/* Set the codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_DSP_B
 				| SND_SOC_DAIFMT_IB_NF
@@ -82,6 +86,8 @@ static int smdk_wm8994_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_FLL1,
 					mclk_freq, SND_SOC_CLOCK_IN);
 	if (ret < 0)
@@ -118,6 +124,11 @@ static struct snd_soc_dai_link smdk_dai[] = {
 		.codec_dai_name = "wm8994-aif1",
 		.platform_name = "samsung-pcm.0",
 		.codec_name = "wm8994-codec",
+<<<<<<< HEAD
+=======
+		.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_IB_NF |
+			   SND_SOC_DAIFMT_CBS_CFS,
+>>>>>>> v4.9.227
 		.ops = &smdk_wm8994_pcm_ops,
 	},
 };
@@ -143,7 +154,10 @@ static int snd_smdk_probe(struct platform_device *pdev)
 
 static struct platform_driver snd_smdk_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "samsung-smdk-pcm",
 	},
 	.probe = snd_smdk_probe,

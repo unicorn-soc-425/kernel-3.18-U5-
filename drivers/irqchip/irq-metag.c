@@ -220,7 +220,11 @@ static int metag_internal_irq_set_affinity(struct irq_data *data,
  *	occurred. It is this function's job to demux this irq and
  *	figure out exactly which trigger needs servicing.
  */
+<<<<<<< HEAD
 static void metag_internal_irq_demux(unsigned int irq, struct irq_desc *desc)
+=======
+static void metag_internal_irq_demux(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct metag_internal_irq_priv *priv = irq_desc_get_handler_data(desc);
 	irq_hw_number_t hw;
@@ -286,8 +290,12 @@ static void metag_internal_irq_init_cpu(struct metag_internal_irq_priv *priv,
 	int irq = tbisig_map(signum);
 
 	/* Register the multiplexed IRQ handler */
+<<<<<<< HEAD
 	irq_set_handler_data(irq, priv);
 	irq_set_chained_handler(irq, metag_internal_irq_demux);
+=======
+	irq_set_chained_handler_and_data(irq, metag_internal_irq_demux, priv);
+>>>>>>> v4.9.227
 	irq_set_irq_type(irq, IRQ_TYPE_LEVEL_LOW);
 }
 

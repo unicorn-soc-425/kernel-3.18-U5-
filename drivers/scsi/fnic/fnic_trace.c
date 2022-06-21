@@ -21,6 +21,10 @@
 #include <linux/spinlock.h>
 #include <linux/kallsyms.h>
 #include <linux/time.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+>>>>>>> v4.9.227
 #include "fnic_io.h"
 #include "fnic.h"
 
@@ -624,12 +628,20 @@ int fnic_fc_trace_set_data(u32 host_no, u8 frame_type,
 	if (frame_type == FNIC_FC_RECV) {
 		eth_fcoe_hdr_len = sizeof(struct ethhdr) +
 					sizeof(struct fcoe_hdr);
+<<<<<<< HEAD
 		fc_trc_frame_len = fc_trc_frame_len + eth_fcoe_hdr_len;
+=======
+>>>>>>> v4.9.227
 		memset((char *)fc_trace, 0xff, eth_fcoe_hdr_len);
 		/* Copy the rest of data frame */
 		memcpy((char *)(fc_trace + eth_fcoe_hdr_len), (void *)frame,
 		min_t(u8, fc_trc_frame_len,
+<<<<<<< HEAD
 			(u8)(FC_TRC_SIZE_BYTES - FC_TRC_HEADER_SIZE)));
+=======
+			(u8)(FC_TRC_SIZE_BYTES - FC_TRC_HEADER_SIZE
+						- eth_fcoe_hdr_len)));
+>>>>>>> v4.9.227
 	} else {
 		memcpy((char *)fc_trace, (void *)frame,
 		min_t(u8, fc_trc_frame_len,

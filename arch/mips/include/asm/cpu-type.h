@@ -24,7 +24,12 @@ static inline int __pure __get_cpu_type(const int cpu_type)
 	case CPU_LOONGSON3:
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SYS_HAS_CPU_LOONGSON1B
+=======
+#if defined(CONFIG_SYS_HAS_CPU_LOONGSON1B) || \
+    defined(CONFIG_SYS_HAS_CPU_LOONGSON1C)
+>>>>>>> v4.9.227
 	case CPU_LOONGSON1:
 #endif
 
@@ -32,12 +37,19 @@ static inline int __pure __get_cpu_type(const int cpu_type)
 	case CPU_4KC:
 	case CPU_ALCHEMY:
 	case CPU_PR4450:
+<<<<<<< HEAD
 	case CPU_JZRISC:
+=======
+>>>>>>> v4.9.227
 #endif
 
 #if defined(CONFIG_SYS_HAS_CPU_MIPS32_R1) || \
     defined(CONFIG_SYS_HAS_CPU_MIPS32_R2)
 	case CPU_4KEC:
+<<<<<<< HEAD
+=======
+	case CPU_JZRISC:
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_SYS_HAS_CPU_MIPS32_R2
@@ -54,6 +66,16 @@ static inline int __pure __get_cpu_type(const int cpu_type)
 	case CPU_M5150:
 #endif
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_SYS_HAS_CPU_MIPS32_R2) || \
+    defined(CONFIG_SYS_HAS_CPU_MIPS32_R6) || \
+    defined(CONFIG_SYS_HAS_CPU_MIPS64_R2) || \
+    defined(CONFIG_SYS_HAS_CPU_MIPS64_R6)
+	case CPU_QEMU_GENERIC:
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_SYS_HAS_CPU_MIPS64_R1
 	case CPU_5KC:
 	case CPU_5KE:
@@ -70,6 +92,18 @@ static inline int __pure __get_cpu_type(const int cpu_type)
 	 */
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SYS_HAS_CPU_MIPS32_R6
+	case CPU_M6250:
+#endif
+
+#ifdef CONFIG_SYS_HAS_CPU_MIPS64_R6
+	case CPU_I6400:
+	case CPU_P6600:
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_SYS_HAS_CPU_R3000
 	case CPU_R2000:
 	case CPU_R3000:
@@ -150,6 +184,10 @@ static inline int __pure __get_cpu_type(const int cpu_type)
 	case CPU_R10000:
 	case CPU_R12000:
 	case CPU_R14000:
+<<<<<<< HEAD
+=======
+	case CPU_R16000:
+>>>>>>> v4.9.227
 #endif
 #ifdef CONFIG_SYS_HAS_CPU_RM7000
 	case CPU_RM7000:

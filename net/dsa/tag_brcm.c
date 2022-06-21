@@ -58,14 +58,21 @@
 #define BRCM_EG_TC_MASK		0x7
 #define BRCM_EG_PID_MASK	0x1f
 
+<<<<<<< HEAD
 static netdev_tx_t brcm_tag_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static struct sk_buff *brcm_tag_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct dsa_slave_priv *p = netdev_priv(dev);
 	u8 *brcm_tag;
 
+<<<<<<< HEAD
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += skb->len;
 
+=======
+>>>>>>> v4.9.227
 	if (skb_cow_head(skb, BRCM_TAG_LEN) < 0)
 		goto out_free;
 
@@ -87,6 +94,7 @@ static netdev_tx_t brcm_tag_xmit(struct sk_buff *skb, struct net_device *dev)
 		brcm_tag[2] = BRCM_IG_DSTMAP2_MASK;
 	brcm_tag[3] = (1 << p->port) & BRCM_IG_DSTMAP1_MASK;
 
+<<<<<<< HEAD
 	/* Queue the SKB for transmission on the parent interface, but
 	 * do not modify its EtherType
 	 */
@@ -98,6 +106,13 @@ static netdev_tx_t brcm_tag_xmit(struct sk_buff *skb, struct net_device *dev)
 out_free:
 	kfree_skb(skb);
 	return NETDEV_TX_OK;
+=======
+	return skb;
+
+out_free:
+	kfree_skb(skb);
+	return NULL;
+>>>>>>> v4.9.227
 }
 
 static int brcm_tag_rcv(struct sk_buff *skb, struct net_device *dev,
@@ -136,7 +151,11 @@ static int brcm_tag_rcv(struct sk_buff *skb, struct net_device *dev,
 	source_port = brcm_tag[3] & BRCM_EG_PID_MASK;
 
 	/* Validate port against switch setup, either the port is totally */
+<<<<<<< HEAD
 	if (source_port >= DSA_MAX_PORTS || ds->ports[source_port] == NULL)
+=======
+	if (source_port >= DSA_MAX_PORTS || !ds->ports[source_port].netdev)
+>>>>>>> v4.9.227
 		goto out_drop;
 
 	/* Remove Broadcom tag and update checksum */
@@ -149,12 +168,21 @@ static int brcm_tag_rcv(struct sk_buff *skb, struct net_device *dev,
 
 	skb_push(skb, ETH_HLEN);
 	skb->pkt_type = PACKET_HOST;
+<<<<<<< HEAD
 	skb->dev = ds->ports[source_port];
+=======
+	skb->dev = ds->ports[source_port].netdev;
+>>>>>>> v4.9.227
 	skb->protocol = eth_type_trans(skb, skb->dev);
 
 	skb->dev->stats.rx_packets++;
 	skb->dev->stats.rx_bytes += skb->len;
 
+<<<<<<< HEAD
+=======
+	skb->offload_fwd_mark = 1;
+
+>>>>>>> v4.9.227
 	netif_receive_skb(skb);
 
 	return 0;

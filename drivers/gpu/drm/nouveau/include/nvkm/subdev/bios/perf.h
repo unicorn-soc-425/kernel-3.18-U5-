@@ -13,6 +13,11 @@ struct nvbios_perfE {
 	u32 vdec;
 	u32 disp;
 	u32 script;
+<<<<<<< HEAD
+=======
+	u8  pcie_speed;
+	u8  pcie_width;
+>>>>>>> v4.9.227
 };
 
 u16 nvbios_perf_entry(struct nvkm_bios *, int idx,

@@ -90,6 +90,7 @@ int pvr2_buffer_get_id(struct pvr2_buffer *);
 int pvr2_buffer_queue(struct pvr2_buffer *);
 
 #endif /* __PVRUSB2_IO_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -100,3 +101,5 @@ int pvr2_buffer_queue(struct pvr2_buffer *);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

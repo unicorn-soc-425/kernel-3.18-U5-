@@ -9,5 +9,9 @@ int btrfs_save_ino_cache(struct btrfs_root *root,
 			 struct btrfs_trans_handle *trans);
 
 int btrfs_find_free_objectid(struct btrfs_root *root, u64 *objectid);
+<<<<<<< HEAD
+=======
+int btrfs_find_highest_objectid(struct btrfs_root *root, u64 *objectid);
+>>>>>>> v4.9.227
 
 #endif

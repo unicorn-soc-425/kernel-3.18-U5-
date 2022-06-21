@@ -7,6 +7,10 @@
 #include <linux/sys.h>
 #include <linux/cache.h>
 #include <generated/user_constants.h>
+<<<<<<< HEAD
+=======
+#include <asm/syscall.h>
+>>>>>>> v4.9.227
 
 #define __NO_STUBS
 
@@ -16,7 +20,11 @@
  */
 
 /* Not going to be implemented by UML, since we have no hardware. */
+<<<<<<< HEAD
 #define stub_iopl sys_ni_syscall
+=======
+#define sys_iopl sys_ni_syscall
+>>>>>>> v4.9.227
 #define sys_ioperm sys_ni_syscall
 
 /*
@@ -31,6 +39,7 @@
 #define stub_fork sys_fork
 #define stub_vfork sys_vfork
 #define stub_execve sys_execve
+<<<<<<< HEAD
 #define stub_rt_sigreturn sys_rt_sigreturn
 
 #define __SYSCALL_COMMON(nr, sym, compat) __SYSCALL_64(nr, sym, compat)
@@ -45,6 +54,18 @@
 typedef void (*sys_call_ptr_t)(void);
 
 extern void sys_ni_syscall(void);
+=======
+#define stub_execveat sys_execveat
+#define stub_rt_sigreturn sys_rt_sigreturn
+
+#define __SYSCALL_64(nr, sym, qual) extern asmlinkage long sym(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long) ;
+#include <asm/syscalls_64.h>
+
+#undef __SYSCALL_64
+#define __SYSCALL_64(nr, sym, qual) [ nr ] = sym,
+
+extern asmlinkage long sys_ni_syscall(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
+>>>>>>> v4.9.227
 
 const sys_call_ptr_t sys_call_table[] ____cacheline_aligned = {
 	/*

@@ -61,8 +61,11 @@ static int wm1250_ev1_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -143,12 +146,22 @@ static struct snd_soc_dai_driver wm1250_ev1_dai = {
 	.ops = &wm1250_ev1_ops,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_wm1250_ev1 = {
 	.dapm_widgets = wm1250_ev1_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(wm1250_ev1_dapm_widgets),
 	.dapm_routes = wm1250_ev1_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm1250_ev1_dapm_routes),
 
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm1250_ev1 = {
+	.component_driver = {
+		.dapm_widgets		= wm1250_ev1_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm1250_ev1_dapm_widgets),
+		.dapm_routes		= wm1250_ev1_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm1250_ev1_dapm_routes),
+	},
+>>>>>>> v4.9.227
 	.set_bias_level = wm1250_ev1_set_bias_level,
 	.idle_bias_off = true,
 };
@@ -253,7 +266,10 @@ MODULE_DEVICE_TABLE(i2c, wm1250_ev1_i2c_id);
 static struct i2c_driver wm1250_ev1_i2c_driver = {
 	.driver = {
 		.name = "wm1250-ev1",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe =    wm1250_ev1_probe,
 	.remove =   wm1250_ev1_remove,

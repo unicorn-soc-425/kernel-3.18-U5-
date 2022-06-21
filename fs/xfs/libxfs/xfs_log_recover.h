@@ -60,6 +60,10 @@ typedef struct xlog_recover {
  */
 #define	XLOG_BC_TABLE_SIZE	64
 
+<<<<<<< HEAD
+=======
+#define	XLOG_RECOVER_CRCPASS	0
+>>>>>>> v4.9.227
 #define	XLOG_RECOVER_PASS1	1
 #define	XLOG_RECOVER_PASS2	2
 

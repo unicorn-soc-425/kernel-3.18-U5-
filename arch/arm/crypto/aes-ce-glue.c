@@ -15,6 +15,10 @@
 #include <crypto/ablk_helper.h>
 #include <crypto/algapi.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <crypto/xts.h>
+>>>>>>> v4.9.227
 
 MODULE_DESCRIPTION("AES-ECB/CBC/CTR/XTS using ARMv8 Crypto Extensions");
 MODULE_AUTHOR("Ard Biesheuvel <ard.biesheuvel@linaro.org>");
@@ -157,6 +161,13 @@ static int xts_set_key(struct crypto_tfm *tfm, const u8 *in_key,
 	struct crypto_aes_xts_ctx *ctx = crypto_tfm_ctx(tfm);
 	int ret;
 
+<<<<<<< HEAD
+=======
+	ret = xts_check_key(tfm, in_key, key_len);
+	if (ret)
+		return ret;
+
+>>>>>>> v4.9.227
 	ret = ce_aes_expandkey(&ctx->key1, in_key, key_len / 2);
 	if (!ret)
 		ret = ce_aes_expandkey(&ctx->key2, &in_key[key_len / 2],
@@ -359,7 +370,12 @@ static struct crypto_alg aes_algs[] = { {
 	.cra_name		= "__ecb-aes-ce",
 	.cra_driver_name	= "__driver-ecb-aes-ce",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= AES_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct crypto_aes_ctx),
 	.cra_alignmask		= 7,
@@ -368,7 +384,11 @@ static struct crypto_alg aes_algs[] = { {
 	.cra_blkcipher = {
 		.min_keysize	= AES_MIN_KEY_SIZE,
 		.max_keysize	= AES_MAX_KEY_SIZE,
+<<<<<<< HEAD
 		.ivsize		= AES_BLOCK_SIZE,
+=======
+		.ivsize		= 0,
+>>>>>>> v4.9.227
 		.setkey		= ce_aes_setkey,
 		.encrypt	= ecb_encrypt,
 		.decrypt	= ecb_decrypt,
@@ -377,7 +397,12 @@ static struct crypto_alg aes_algs[] = { {
 	.cra_name		= "__cbc-aes-ce",
 	.cra_driver_name	= "__driver-cbc-aes-ce",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= AES_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct crypto_aes_ctx),
 	.cra_alignmask		= 7,
@@ -395,7 +420,12 @@ static struct crypto_alg aes_algs[] = { {
 	.cra_name		= "__ctr-aes-ce",
 	.cra_driver_name	= "__driver-ctr-aes-ce",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= 1,
 	.cra_ctxsize		= sizeof(struct crypto_aes_ctx),
 	.cra_alignmask		= 7,
@@ -413,7 +443,12 @@ static struct crypto_alg aes_algs[] = { {
 	.cra_name		= "__xts-aes-ce",
 	.cra_driver_name	= "__driver-xts-aes-ce",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= AES_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct crypto_aes_xts_ctx),
 	.cra_alignmask		= 7,
@@ -442,7 +477,11 @@ static struct crypto_alg aes_algs[] = { {
 	.cra_ablkcipher = {
 		.min_keysize	= AES_MIN_KEY_SIZE,
 		.max_keysize	= AES_MAX_KEY_SIZE,
+<<<<<<< HEAD
 		.ivsize		= AES_BLOCK_SIZE,
+=======
+		.ivsize		= 0,
+>>>>>>> v4.9.227
 		.setkey		= ablk_set_key,
 		.encrypt	= ablk_encrypt,
 		.decrypt	= ablk_decrypt,

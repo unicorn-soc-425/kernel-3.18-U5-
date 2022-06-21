@@ -23,7 +23,11 @@
 #include "u_ether.h"
 #include "u_phonet.h"
 #include "u_ecm.h"
+<<<<<<< HEAD
 #include "gadget_chips.h"
+=======
+#include "f_mass_storage.h"
+>>>>>>> v4.9.227
 
 /* Defines */
 
@@ -34,6 +38,32 @@ USB_GADGET_COMPOSITE_OPTIONS();
 
 USB_ETHERNET_MODULE_PARAMETERS();
 
+<<<<<<< HEAD
+=======
+static struct fsg_module_parameters fsg_mod_data = {
+	.stall = 0,
+	.luns = 2,
+	.removable_count = 2,
+	.removable = { 1, 1, },
+};
+
+#ifdef CONFIG_USB_GADGET_DEBUG_FILES
+
+static unsigned int fsg_num_buffers = CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS;
+
+#else
+
+/*
+ * Number of buffers we will use.
+ * 2 is usually enough for good buffering pipeline
+ */
+#define fsg_num_buffers	CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS
+
+#endif /* CONFIG_USB_DEBUG */
+
+FSG_MODULE_PARAMETERS(/* no prefix */, fsg_mod_data);
+
+>>>>>>> v4.9.227
 #define NOKIA_VENDOR_ID			0x0421	/* Nokia */
 #define NOKIA_PRODUCT_ID		0x01c8	/* Nokia Gadget */
 
@@ -66,10 +96,17 @@ static struct usb_gadget_strings *dev_strings[] = {
 static struct usb_device_descriptor device_desc = {
 	.bLength		= USB_DT_DEVICE_SIZE,
 	.bDescriptorType	= USB_DT_DEVICE,
+<<<<<<< HEAD
 	.bcdUSB			= __constant_cpu_to_le16(0x0200),
 	.bDeviceClass		= USB_CLASS_COMM,
 	.idVendor		= __constant_cpu_to_le16(NOKIA_VENDOR_ID),
 	.idProduct		= __constant_cpu_to_le16(NOKIA_PRODUCT_ID),
+=======
+	/* .bcdUSB = DYNAMIC */
+	.bDeviceClass		= USB_CLASS_COMM,
+	.idVendor		= cpu_to_le16(NOKIA_VENDOR_ID),
+	.idProduct		= cpu_to_le16(NOKIA_PRODUCT_ID),
+>>>>>>> v4.9.227
 	.bcdDevice		= cpu_to_le16(NOKIA_VERSION_NUM),
 	/* .iManufacturer = DYNAMIC */
 	/* .iProduct = DYNAMIC */
@@ -94,6 +131,11 @@ static struct usb_function *f_obex1_cfg2;
 static struct usb_function *f_obex2_cfg2;
 static struct usb_function *f_phonet_cfg1;
 static struct usb_function *f_phonet_cfg2;
+<<<<<<< HEAD
+=======
+static struct usb_function *f_msg_cfg1;
+static struct usb_function *f_msg_cfg2;
+>>>>>>> v4.9.227
 
 
 static struct usb_configuration nokia_config_500ma_driver = {
@@ -117,14 +159,24 @@ static struct usb_function_instance *fi_ecm;
 static struct usb_function_instance *fi_obex1;
 static struct usb_function_instance *fi_obex2;
 static struct usb_function_instance *fi_phonet;
+<<<<<<< HEAD
 
 static int __init nokia_bind_config(struct usb_configuration *c)
+=======
+static struct usb_function_instance *fi_msg;
+
+static int nokia_bind_config(struct usb_configuration *c)
+>>>>>>> v4.9.227
 {
 	struct usb_function *f_acm;
 	struct usb_function *f_phonet = NULL;
 	struct usb_function *f_obex1 = NULL;
 	struct usb_function *f_ecm;
 	struct usb_function *f_obex2 = NULL;
+<<<<<<< HEAD
+=======
+	struct usb_function *f_msg;
+>>>>>>> v4.9.227
 	int status = 0;
 	int obex1_stat = -1;
 	int obex2_stat = -1;
@@ -160,6 +212,15 @@ static int __init nokia_bind_config(struct usb_configuration *c)
 		goto err_get_ecm;
 	}
 
+<<<<<<< HEAD
+=======
+	f_msg = usb_get_function(fi_msg);
+	if (IS_ERR(f_msg)) {
+		status = PTR_ERR(f_msg);
+		goto err_get_msg;
+	}
+
+>>>>>>> v4.9.227
 	if (!IS_ERR_OR_NULL(f_phonet)) {
 		phonet_stat = usb_add_function(c, f_phonet);
 		if (phonet_stat)
@@ -187,21 +248,42 @@ static int __init nokia_bind_config(struct usb_configuration *c)
 		pr_debug("could not bind ecm config %d\n", status);
 		goto err_ecm;
 	}
+<<<<<<< HEAD
+=======
+
+	status = usb_add_function(c, f_msg);
+	if (status)
+		goto err_msg;
+
+>>>>>>> v4.9.227
 	if (c == &nokia_config_500ma_driver) {
 		f_acm_cfg1 = f_acm;
 		f_ecm_cfg1 = f_ecm;
 		f_phonet_cfg1 = f_phonet;
 		f_obex1_cfg1 = f_obex1;
 		f_obex2_cfg1 = f_obex2;
+<<<<<<< HEAD
+=======
+		f_msg_cfg1 = f_msg;
+>>>>>>> v4.9.227
 	} else {
 		f_acm_cfg2 = f_acm;
 		f_ecm_cfg2 = f_ecm;
 		f_phonet_cfg2 = f_phonet;
 		f_obex1_cfg2 = f_obex1;
 		f_obex2_cfg2 = f_obex2;
+<<<<<<< HEAD
 	}
 
 	return status;
+=======
+		f_msg_cfg2 = f_msg;
+	}
+
+	return status;
+err_msg:
+	usb_remove_function(c, f_ecm);
+>>>>>>> v4.9.227
 err_ecm:
 	usb_remove_function(c, f_acm);
 err_conf:
@@ -211,6 +293,11 @@ err_conf:
 		usb_remove_function(c, f_obex1);
 	if (!phonet_stat)
 		usb_remove_function(c, f_phonet);
+<<<<<<< HEAD
+=======
+	usb_put_function(f_msg);
+err_get_msg:
+>>>>>>> v4.9.227
 	usb_put_function(f_ecm);
 err_get_ecm:
 	usb_put_function(f_acm);
@@ -224,9 +311,17 @@ err_get_acm:
 	return status;
 }
 
+<<<<<<< HEAD
 static int __init nokia_bind(struct usb_composite_dev *cdev)
 {
 	struct usb_gadget	*gadget = cdev->gadget;
+=======
+static int nokia_bind(struct usb_composite_dev *cdev)
+{
+	struct usb_gadget	*gadget = cdev->gadget;
+	struct fsg_opts		*fsg_opts;
+	struct fsg_config	fsg_config;
+>>>>>>> v4.9.227
 	int			status;
 
 	status = usb_string_ids_tab(cdev, strings_dev);
@@ -238,7 +333,11 @@ static int __init nokia_bind(struct usb_composite_dev *cdev)
 	nokia_config_500ma_driver.iConfiguration = status;
 	nokia_config_100ma_driver.iConfiguration = status;
 
+<<<<<<< HEAD
 	if (!gadget_supports_altsettings(gadget)) {
+=======
+	if (!gadget_is_altset_supported(gadget)) {
+>>>>>>> v4.9.227
 		status = -ENODEV;
 		goto err_usb;
 	}
@@ -267,11 +366,49 @@ static int __init nokia_bind(struct usb_composite_dev *cdev)
 		goto err_acm_inst;
 	}
 
+<<<<<<< HEAD
+=======
+	fi_msg = usb_get_function_instance("mass_storage");
+	if (IS_ERR(fi_msg)) {
+		status = PTR_ERR(fi_msg);
+		goto err_ecm_inst;
+	}
+
+	/* set up mass storage function */
+	fsg_config_from_params(&fsg_config, &fsg_mod_data, fsg_num_buffers);
+	fsg_config.vendor_name = "Nokia";
+	fsg_config.product_name = "N900";
+
+	fsg_opts = fsg_opts_from_func_inst(fi_msg);
+	fsg_opts->no_configfs = true;
+
+	status = fsg_common_set_num_buffers(fsg_opts->common, fsg_num_buffers);
+	if (status)
+		goto err_msg_inst;
+
+	status = fsg_common_set_cdev(fsg_opts->common, cdev, fsg_config.can_stall);
+	if (status)
+		goto err_msg_buf;
+
+	fsg_common_set_sysfs(fsg_opts->common, true);
+
+	status = fsg_common_create_luns(fsg_opts->common, &fsg_config);
+	if (status)
+		goto err_msg_buf;
+
+	fsg_common_set_inquiry_string(fsg_opts->common, fsg_config.vendor_name,
+				      fsg_config.product_name);
+
+>>>>>>> v4.9.227
 	/* finally register the configuration */
 	status = usb_add_config(cdev, &nokia_config_500ma_driver,
 			nokia_bind_config);
 	if (status < 0)
+<<<<<<< HEAD
 		goto err_ecm_inst;
+=======
+		goto err_msg_luns;
+>>>>>>> v4.9.227
 
 	status = usb_add_config(cdev, &nokia_config_100ma_driver,
 			nokia_bind_config);
@@ -292,6 +429,15 @@ err_put_cfg1:
 	if (!IS_ERR_OR_NULL(f_phonet_cfg1))
 		usb_put_function(f_phonet_cfg1);
 	usb_put_function(f_ecm_cfg1);
+<<<<<<< HEAD
+=======
+err_msg_luns:
+	fsg_common_remove_luns(fsg_opts->common);
+err_msg_buf:
+	fsg_common_free_buffers(fsg_opts->common);
+err_msg_inst:
+	usb_put_function_instance(fi_msg);
+>>>>>>> v4.9.227
 err_ecm_inst:
 	usb_put_function_instance(fi_ecm);
 err_acm_inst:
@@ -307,7 +453,11 @@ err_usb:
 	return status;
 }
 
+<<<<<<< HEAD
 static int __exit nokia_unbind(struct usb_composite_dev *cdev)
+=======
+static int nokia_unbind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 	if (!IS_ERR_OR_NULL(f_obex1_cfg2))
 		usb_put_function(f_obex1_cfg2);
@@ -325,7 +475,14 @@ static int __exit nokia_unbind(struct usb_composite_dev *cdev)
 	usb_put_function(f_acm_cfg2);
 	usb_put_function(f_ecm_cfg1);
 	usb_put_function(f_ecm_cfg2);
+<<<<<<< HEAD
 
+=======
+	usb_put_function(f_msg_cfg1);
+	usb_put_function(f_msg_cfg2);
+
+	usb_put_function_instance(fi_msg);
+>>>>>>> v4.9.227
 	usb_put_function_instance(fi_ecm);
 	if (!IS_ERR(fi_obex2))
 		usb_put_function_instance(fi_obex2);
@@ -338,13 +495,21 @@ static int __exit nokia_unbind(struct usb_composite_dev *cdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static __refdata struct usb_composite_driver nokia_driver = {
+=======
+static struct usb_composite_driver nokia_driver = {
+>>>>>>> v4.9.227
 	.name		= "g_nokia",
 	.dev		= &device_desc,
 	.strings	= dev_strings,
 	.max_speed	= USB_SPEED_HIGH,
 	.bind		= nokia_bind,
+<<<<<<< HEAD
 	.unbind		= __exit_p(nokia_unbind),
+=======
+	.unbind		= nokia_unbind,
+>>>>>>> v4.9.227
 };
 
 module_usb_composite_driver(nokia_driver);

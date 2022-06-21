@@ -12,6 +12,10 @@ Required properties:
 - interrupt-parent: The parent interrupt controller
 - gpio-controller:
 - #gpio-cells = <1>: twl6040 provides GPO lines.
+<<<<<<< HEAD
+=======
+- #clock-cells = <0>; twl6040 is a provider of pdmclk which is used by McPDM
+>>>>>>> v4.9.227
 - twl6040,audpwron-gpio: Power on GPIO line for the twl6040
 
 - vio-supply: Regulator for the twl6040 VIO supply
@@ -19,8 +23,13 @@ Required properties:
 
 Optional properties, nodes:
 - enable-active-high: To power on the twl6040 during boot.
+<<<<<<< HEAD
 - clocks: phandle to the clk32k clock provider
 - clock-names: Must be "clk32k"
+=======
+- clocks: phandle to the clk32k and/or to mclk clock provider
+- clock-names: Must be "clk32k" for the 32K clock and "mclk" for the MCLK.
+>>>>>>> v4.9.227
 
 Vibra functionality
 Required properties:

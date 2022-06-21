@@ -19,7 +19,10 @@
 #define __ARM64_KVM_MMIO_H__
 
 #include <linux/kvm_host.h>
+<<<<<<< HEAD
 #include <asm/kvm_asm.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/kvm_arm.h>
 
 /*
@@ -31,6 +34,7 @@ struct kvm_decode {
 	bool sign_extend;
 };
 
+<<<<<<< HEAD
 /*
  * The in-kernel MMIO emulation code wants to use a copy of run->mmio,
  * which is an anonymous type. Use our own type instead.
@@ -51,6 +55,10 @@ static inline void kvm_prepare_mmio(struct kvm_run *run,
 	memcpy(run->mmio.data, mmio->data, mmio->len);
 	run->exit_reason	= KVM_EXIT_MMIO;
 }
+=======
+void kvm_mmio_write_buf(void *buf, unsigned int len, unsigned long data);
+unsigned long kvm_mmio_read_buf(const void *buf, unsigned int len);
+>>>>>>> v4.9.227
 
 int kvm_handle_mmio_return(struct kvm_vcpu *vcpu, struct kvm_run *run);
 int io_mem_abort(struct kvm_vcpu *vcpu, struct kvm_run *run,

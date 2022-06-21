@@ -174,6 +174,10 @@ struct sbp2_target {
 	unsigned int mgt_orb_timeout;
 	unsigned int max_payload;
 
+<<<<<<< HEAD
+=======
+	spinlock_t lock;
+>>>>>>> v4.9.227
 	int dont_block;	/* counter for each logical unit */
 	int blocked;	/* ditto */
 };
@@ -270,6 +274,10 @@ struct sbp2_orb {
 	dma_addr_t request_bus;
 	int rcode;
 	void (*callback)(struct sbp2_orb * orb, struct sbp2_status * status);
+<<<<<<< HEAD
+=======
+	struct sbp2_logical_unit *lu;
+>>>>>>> v4.9.227
 	struct list_head link;
 };
 
@@ -321,7 +329,10 @@ struct sbp2_command_orb {
 		u8 command_block[SBP2_MAX_CDB_SIZE];
 	} request;
 	struct scsi_cmnd *cmd;
+<<<<<<< HEAD
 	struct sbp2_logical_unit *lu;
+=======
+>>>>>>> v4.9.227
 
 	struct sbp2_pointer page_table[SG_ALL] __attribute__((aligned(8)));
 	dma_addr_t page_table_bus;
@@ -444,7 +455,11 @@ static void sbp2_status_write(struct fw_card *card, struct fw_request *request,
 	}
 
 	/* Lookup the orb corresponding to this status write. */
+<<<<<<< HEAD
 	spin_lock_irqsave(&card->lock, flags);
+=======
+	spin_lock_irqsave(&lu->tgt->lock, flags);
+>>>>>>> v4.9.227
 	list_for_each_entry(orb, &lu->orb_list, link) {
 		if (STATUS_GET_ORB_HIGH(status) == 0 &&
 		    STATUS_GET_ORB_LOW(status) == orb->request_bus) {
@@ -453,7 +468,11 @@ static void sbp2_status_write(struct fw_card *card, struct fw_request *request,
 			break;
 		}
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&card->lock, flags);
+=======
+	spin_unlock_irqrestore(&lu->tgt->lock, flags);
+>>>>>>> v4.9.227
 
 	if (&orb->link != &lu->orb_list) {
 		orb->callback(orb, &status);
@@ -480,18 +499,30 @@ static void complete_transaction(struct fw_card *card, int rcode,
 	 * been set and only does the cleanup if the transaction
 	 * failed and we didn't already get a status write.
 	 */
+<<<<<<< HEAD
 	spin_lock_irqsave(&card->lock, flags);
+=======
+	spin_lock_irqsave(&orb->lu->tgt->lock, flags);
+>>>>>>> v4.9.227
 
 	if (orb->rcode == -1)
 		orb->rcode = rcode;
 	if (orb->rcode != RCODE_COMPLETE) {
 		list_del(&orb->link);
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&card->lock, flags);
+=======
+		spin_unlock_irqrestore(&orb->lu->tgt->lock, flags);
+>>>>>>> v4.9.227
 
 		orb->callback(orb, NULL);
 		kref_put(&orb->kref, free_orb); /* orb callback reference */
 	} else {
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&card->lock, flags);
+=======
+		spin_unlock_irqrestore(&orb->lu->tgt->lock, flags);
+>>>>>>> v4.9.227
 	}
 
 	kref_put(&orb->kref, free_orb); /* transaction callback reference */
@@ -507,9 +538,16 @@ static void sbp2_send_orb(struct sbp2_orb *orb, struct sbp2_logical_unit *lu,
 	orb_pointer.high = 0;
 	orb_pointer.low = cpu_to_be32(orb->request_bus);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&device->card->lock, flags);
 	list_add_tail(&orb->link, &lu->orb_list);
 	spin_unlock_irqrestore(&device->card->lock, flags);
+=======
+	orb->lu = lu;
+	spin_lock_irqsave(&lu->tgt->lock, flags);
+	list_add_tail(&orb->link, &lu->orb_list);
+	spin_unlock_irqrestore(&lu->tgt->lock, flags);
+>>>>>>> v4.9.227
 
 	kref_get(&orb->kref); /* transaction callback reference */
 	kref_get(&orb->kref); /* orb callback reference */
@@ -524,6 +562,7 @@ static int sbp2_cancel_orbs(struct sbp2_logical_unit *lu)
 	struct fw_device *device = target_parent_device(lu->tgt);
 	struct sbp2_orb *orb, *next;
 	struct list_head list;
+<<<<<<< HEAD
 	unsigned long flags;
 	int retval = -ENOENT;
 
@@ -531,6 +570,14 @@ static int sbp2_cancel_orbs(struct sbp2_logical_unit *lu)
 	spin_lock_irqsave(&device->card->lock, flags);
 	list_splice_init(&lu->orb_list, &list);
 	spin_unlock_irqrestore(&device->card->lock, flags);
+=======
+	int retval = -ENOENT;
+
+	INIT_LIST_HEAD(&list);
+	spin_lock_irq(&lu->tgt->lock);
+	list_splice_init(&lu->orb_list, &list);
+	spin_unlock_irq(&lu->tgt->lock);
+>>>>>>> v4.9.227
 
 	list_for_each_entry_safe(orb, next, &list, link) {
 		retval = 0;
@@ -687,6 +734,7 @@ static void sbp2_agent_reset_no_wait(struct sbp2_logical_unit *lu)
 			&d, 4, complete_agent_reset_write_no_wait, t);
 }
 
+<<<<<<< HEAD
 static inline void sbp2_allow_block(struct sbp2_logical_unit *lu)
 {
 	/*
@@ -697,6 +745,13 @@ static inline void sbp2_allow_block(struct sbp2_logical_unit *lu)
 	 * dont_block is rather harmless, it simply misses its first chance.
 	 */
 	--lu->tgt->dont_block;
+=======
+static inline void sbp2_allow_block(struct sbp2_target *tgt)
+{
+	spin_lock_irq(&tgt->lock);
+	--tgt->dont_block;
+	spin_unlock_irq(&tgt->lock);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -705,7 +760,11 @@ static inline void sbp2_allow_block(struct sbp2_logical_unit *lu)
  *     logical units have been finished (indicated by dont_block == 0).
  *   - lu->generation is stale.
  *
+<<<<<<< HEAD
  * Note, scsi_block_requests() must be called while holding card->lock,
+=======
+ * Note, scsi_block_requests() must be called while holding tgt->lock,
+>>>>>>> v4.9.227
  * otherwise it might foil sbp2_[conditionally_]unblock()'s attempt to
  * unblock the target.
  */
@@ -717,20 +776,32 @@ static void sbp2_conditionally_block(struct sbp2_logical_unit *lu)
 		container_of((void *)tgt, struct Scsi_Host, hostdata[0]);
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&card->lock, flags);
+=======
+	spin_lock_irqsave(&tgt->lock, flags);
+>>>>>>> v4.9.227
 	if (!tgt->dont_block && !lu->blocked &&
 	    lu->generation != card->generation) {
 		lu->blocked = true;
 		if (++tgt->blocked == 1)
 			scsi_block_requests(shost);
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&card->lock, flags);
+=======
+	spin_unlock_irqrestore(&tgt->lock, flags);
+>>>>>>> v4.9.227
 }
 
 /*
  * Unblocks lu->tgt as soon as all its logical units can be unblocked.
  * Note, it is harmless to run scsi_unblock_requests() outside the
+<<<<<<< HEAD
  * card->lock protected section.  On the other hand, running it inside
+=======
+ * tgt->lock protected section.  On the other hand, running it inside
+>>>>>>> v4.9.227
  * the section might clash with shost->host_lock.
  */
 static void sbp2_conditionally_unblock(struct sbp2_logical_unit *lu)
@@ -739,15 +810,25 @@ static void sbp2_conditionally_unblock(struct sbp2_logical_unit *lu)
 	struct fw_card *card = target_parent_device(tgt)->card;
 	struct Scsi_Host *shost =
 		container_of((void *)tgt, struct Scsi_Host, hostdata[0]);
+<<<<<<< HEAD
 	unsigned long flags;
 	bool unblock = false;
 
 	spin_lock_irqsave(&card->lock, flags);
+=======
+	bool unblock = false;
+
+	spin_lock_irq(&tgt->lock);
+>>>>>>> v4.9.227
 	if (lu->blocked && lu->generation == card->generation) {
 		lu->blocked = false;
 		unblock = --tgt->blocked == 0;
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&card->lock, flags);
+=======
+	spin_unlock_irq(&tgt->lock);
+>>>>>>> v4.9.227
 
 	if (unblock)
 		scsi_unblock_requests(shost);
@@ -756,11 +837,16 @@ static void sbp2_conditionally_unblock(struct sbp2_logical_unit *lu)
 /*
  * Prevents future blocking of tgt and unblocks it.
  * Note, it is harmless to run scsi_unblock_requests() outside the
+<<<<<<< HEAD
  * card->lock protected section.  On the other hand, running it inside
+=======
+ * tgt->lock protected section.  On the other hand, running it inside
+>>>>>>> v4.9.227
  * the section might clash with shost->host_lock.
  */
 static void sbp2_unblock(struct sbp2_target *tgt)
 {
+<<<<<<< HEAD
 	struct fw_card *card = target_parent_device(tgt)->card;
 	struct Scsi_Host *shost =
 		container_of((void *)tgt, struct Scsi_Host, hostdata[0]);
@@ -769,6 +855,14 @@ static void sbp2_unblock(struct sbp2_target *tgt)
 	spin_lock_irqsave(&card->lock, flags);
 	++tgt->dont_block;
 	spin_unlock_irqrestore(&card->lock, flags);
+=======
+	struct Scsi_Host *shost =
+		container_of((void *)tgt, struct Scsi_Host, hostdata[0]);
+
+	spin_lock_irq(&tgt->lock);
+	++tgt->dont_block;
+	spin_unlock_irq(&tgt->lock);
+>>>>>>> v4.9.227
 
 	scsi_unblock_requests(shost);
 }
@@ -904,7 +998,11 @@ static void sbp2_login(struct work_struct *work)
 	/* No error during __scsi_add_device() */
 	lu->has_sdev = true;
 	scsi_device_put(sdev);
+<<<<<<< HEAD
 	sbp2_allow_block(lu);
+=======
+	sbp2_allow_block(tgt);
+>>>>>>> v4.9.227
 
 	return;
 
@@ -1163,6 +1261,10 @@ static int sbp2_probe(struct fw_unit *unit, const struct ieee1394_device_id *id)
 	dev_set_drvdata(&unit->device, tgt);
 	tgt->unit = unit;
 	INIT_LIST_HEAD(&tgt->lu_list);
+<<<<<<< HEAD
+=======
+	spin_lock_init(&tgt->lock);
+>>>>>>> v4.9.227
 	tgt->guid = (u64)device->config_rom[3] << 32 | device->config_rom[4];
 
 	if (fw_device_enable_phys_dma(device) < 0)
@@ -1359,12 +1461,20 @@ static void complete_command_orb(struct sbp2_orb *base_orb,
 {
 	struct sbp2_command_orb *orb =
 		container_of(base_orb, struct sbp2_command_orb, base);
+<<<<<<< HEAD
 	struct fw_device *device = target_parent_device(orb->lu->tgt);
+=======
+	struct fw_device *device = target_parent_device(base_orb->lu->tgt);
+>>>>>>> v4.9.227
 	int result;
 
 	if (status != NULL) {
 		if (STATUS_GET_DEAD(*status))
+<<<<<<< HEAD
 			sbp2_agent_reset_no_wait(orb->lu);
+=======
+			sbp2_agent_reset_no_wait(base_orb->lu);
+>>>>>>> v4.9.227
 
 		switch (STATUS_GET_RESPONSE(*status)) {
 		case SBP2_STATUS_REQUEST_COMPLETE:
@@ -1390,7 +1500,11 @@ static void complete_command_orb(struct sbp2_orb *base_orb,
 		 * or when sending the write (less likely).
 		 */
 		result = DID_BUS_BUSY << 16;
+<<<<<<< HEAD
 		sbp2_conditionally_block(orb->lu);
+=======
+		sbp2_conditionally_block(base_orb->lu);
+>>>>>>> v4.9.227
 	}
 
 	dma_unmap_single(device->card->device, orb->base.request_bus,
@@ -1469,6 +1583,7 @@ static int sbp2_scsi_queuecommand(struct Scsi_Host *shost,
 	struct sbp2_command_orb *orb;
 	int generation, retval = SCSI_MLQUEUE_HOST_BUSY;
 
+<<<<<<< HEAD
 	/*
 	 * Bidirectional commands are not yet implemented, and unknown
 	 * transfer direction not handled.
@@ -1480,6 +1595,8 @@ static int sbp2_scsi_queuecommand(struct Scsi_Host *shost,
 		return 0;
 	}
 
+=======
+>>>>>>> v4.9.227
 	orb = kzalloc(sizeof(*orb), GFP_ATOMIC);
 	if (orb == NULL)
 		return SCSI_MLQUEUE_HOST_BUSY;
@@ -1487,7 +1604,10 @@ static int sbp2_scsi_queuecommand(struct Scsi_Host *shost,
 	/* Initialize rcode to something not RCODE_COMPLETE. */
 	orb->base.rcode = -1;
 	kref_init(&orb->base.kref);
+<<<<<<< HEAD
 	orb->lu = lu;
+=======
+>>>>>>> v4.9.227
 	orb->cmd = cmd;
 	orb->request.next.high = cpu_to_be32(SBP2_ORB_NULL);
 	orb->request.misc = cpu_to_be32(
@@ -1629,7 +1749,10 @@ static struct scsi_host_template scsi_driver_template = {
 	.this_id		= -1,
 	.sg_tablesize		= SG_ALL,
 	.use_clustering		= ENABLE_CLUSTERING,
+<<<<<<< HEAD
 	.cmd_per_lun		= 1,
+=======
+>>>>>>> v4.9.227
 	.can_queue		= 1,
 	.sdev_attrs		= sbp2_scsi_sysfs_attrs,
 };

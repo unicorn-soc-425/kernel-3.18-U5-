@@ -686,8 +686,14 @@ static int max8998_pmic_dt_parse_pdata(struct max8998_dev *iodev,
 			continue;
 
 		rdata->id = regulators[i].id;
+<<<<<<< HEAD
 		rdata->initdata = of_get_regulator_init_data(
 							iodev->dev, reg_np);
+=======
+		rdata->initdata = of_get_regulator_init_data(iodev->dev,
+							     reg_np,
+							     &regulators[i]);
+>>>>>>> v4.9.227
 		rdata->reg_node = reg_np;
 		++rdata;
 	}
@@ -894,7 +900,10 @@ MODULE_DEVICE_TABLE(platform, max8998_pmic_id);
 static struct platform_driver max8998_pmic_driver = {
 	.driver = {
 		.name = "max8998-pmic",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = max8998_pmic_probe,
 	.id_table = max8998_pmic_id,

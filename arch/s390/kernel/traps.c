@@ -14,11 +14,16 @@
  */
 #include <linux/kprobes.h>
 #include <linux/kdebug.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/extable.h>
+>>>>>>> v4.9.227
 #include <linux/ptrace.h>
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/switch_to.h>
 #include "entry.h"
 
@@ -27,12 +32,21 @@ int show_unhandled_signals = 1;
 static inline void __user *get_trap_ip(struct pt_regs *regs)
 {
 #ifdef CONFIG_64BIT
+=======
+#include <asm/uaccess.h>
+#include <asm/fpu/api.h>
+#include "entry.h"
+
+static inline void __user *get_trap_ip(struct pt_regs *regs)
+{
+>>>>>>> v4.9.227
 	unsigned long address;
 
 	if (regs->int_code & 0x200)
 		address = *(unsigned long *)(current->thread.trap_tdb + 24);
 	else
 		address = regs->psw.addr;
+<<<<<<< HEAD
 	return (void __user *)
 		((address - (regs->int_code >> 16)) & PSW_ADDR_INSN);
 #else
@@ -53,6 +67,9 @@ static inline void report_user_fault(struct pt_regs *regs, int signr)
 	print_vma_addr("in ", regs->psw.addr & PSW_ADDR_INSN);
 	printk("\n");
 	show_regs(regs);
+=======
+	return (void __user *) (address - (regs->int_code >> 16));
+>>>>>>> v4.9.227
 }
 
 int is_valid_bugaddr(unsigned long addr)
@@ -70,6 +87,7 @@ void do_report_trap(struct pt_regs *regs, int si_signo, int si_code, char *str)
 		info.si_code = si_code;
 		info.si_addr = get_trap_ip(regs);
 		force_sig_info(si_signo, &info, current);
+<<<<<<< HEAD
 		report_user_fault(regs, si_signo);
         } else {
                 const struct exception_table_entry *fixup;
@@ -80,6 +98,18 @@ void do_report_trap(struct pt_regs *regs, int si_signo, int si_code, char *str)
 			enum bug_trap_type btt;
 
 			btt = report_bug(regs->psw.addr & PSW_ADDR_INSN, regs);
+=======
+		report_user_fault(regs, si_signo, 0);
+        } else {
+                const struct exception_table_entry *fixup;
+		fixup = search_exception_tables(regs->psw.addr);
+                if (fixup)
+			regs->psw.addr = extable_fixup(fixup);
+		else {
+			enum bug_trap_type btt;
+
+			btt = report_bug(regs->psw.addr, regs);
+>>>>>>> v4.9.227
 			if (btt == BUG_TRAP_TYPE_WARN)
 				return;
 			die(regs, str);
@@ -87,16 +117,26 @@ void do_report_trap(struct pt_regs *regs, int si_signo, int si_code, char *str)
         }
 }
 
+<<<<<<< HEAD
 static void __kprobes do_trap(struct pt_regs *regs, int si_signo, int si_code,
 			      char *str)
+=======
+static void do_trap(struct pt_regs *regs, int si_signo, int si_code, char *str)
+>>>>>>> v4.9.227
 {
 	if (notify_die(DIE_TRAP, str, regs, 0,
 		       regs->int_code, si_signo) == NOTIFY_STOP)
 		return;
 	do_report_trap(regs, si_signo, si_code, str);
 }
+<<<<<<< HEAD
 
 void __kprobes do_per_trap(struct pt_regs *regs)
+=======
+NOKPROBE_SYMBOL(do_trap);
+
+void do_per_trap(struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	siginfo_t info;
 
@@ -111,11 +151,19 @@ void __kprobes do_per_trap(struct pt_regs *regs)
 		(void __force __user *) current->thread.per_event.address;
 	force_sig_info(SIGTRAP, &info, current);
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(do_per_trap);
+>>>>>>> v4.9.227
 
 void default_trap_handler(struct pt_regs *regs)
 {
 	if (user_mode(regs)) {
+<<<<<<< HEAD
 		report_user_fault(regs, SIGSEGV);
+=======
+		report_user_fault(regs, SIGSEGV, 0);
+>>>>>>> v4.9.227
 		do_exit(SIGSEGV);
 	} else
 		die(regs, "Unknown program exception");
@@ -151,6 +199,7 @@ DO_ERROR_INFO(privileged_op, SIGILL, ILL_PRVOPC,
 	      "privileged operation")
 DO_ERROR_INFO(special_op_exception, SIGILL, ILL_ILLOPN,
 	      "special operation exception")
+<<<<<<< HEAD
 DO_ERROR_INFO(translation_exception, SIGILL, ILL_ILLOPN,
 	      "translation exception")
 
@@ -160,6 +209,12 @@ DO_ERROR_INFO(transaction_exception, SIGILL, ILL_ILLOPN,
 #endif
 
 static inline void do_fp_trap(struct pt_regs *regs, int fpc)
+=======
+DO_ERROR_INFO(transaction_exception, SIGILL, ILL_ILLOPN,
+	      "transaction constraint exception")
+
+static inline void do_fp_trap(struct pt_regs *regs, __u32 fpc)
+>>>>>>> v4.9.227
 {
 	int si_code = 0;
 	/* FPC[2] is Data Exception Code */
@@ -179,7 +234,17 @@ static inline void do_fp_trap(struct pt_regs *regs, int fpc)
 	do_trap(regs, SIGFPE, si_code, "floating point exception");
 }
 
+<<<<<<< HEAD
 void __kprobes illegal_op(struct pt_regs *regs)
+=======
+void translation_exception(struct pt_regs *regs)
+{
+	/* May never happen. */
+	panic("Translation exception");
+}
+
+void illegal_op(struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	siginfo_t info;
         __u8 opcode[6];
@@ -205,6 +270,7 @@ void __kprobes illegal_op(struct pt_regs *regs)
 		} else if (*((__u16 *) opcode) == UPROBE_SWBP_INSN) {
 			is_uprobe_insn = 1;
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_MATHEMU
 		} else if (opcode[0] == 0xb3) {
 			if (get_user(*((__u16 *) (opcode+2)), location+1))
@@ -228,6 +294,8 @@ void __kprobes illegal_op(struct pt_regs *regs)
 				return;
 			signal = math_emu_lfpc(opcode, regs);
 #endif
+=======
+>>>>>>> v4.9.227
 		} else
 			signal = SIGILL;
 	}
@@ -241,6 +309,7 @@ void __kprobes illegal_op(struct pt_regs *regs)
 			       3, SIGTRAP) != NOTIFY_STOP)
 			signal = SIGILL;
 	}
+<<<<<<< HEAD
 
 #ifdef CONFIG_MATHEMU
         if (signal == SIGFPE)
@@ -330,6 +399,15 @@ int alloc_vector_registers(struct task_struct *tsk)
 	preempt_enable();
 	return 0;
 }
+=======
+	if (signal)
+		do_trap(regs, signal, ILL_ILLOPC, "illegal operation");
+}
+NOKPROBE_SYMBOL(illegal_op);
+
+DO_ERROR_INFO(specification_exception, SIGILL, ILL_ILLOPN,
+	      "specification exception");
+>>>>>>> v4.9.227
 
 void vector_exception(struct pt_regs *regs)
 {
@@ -341,8 +419,13 @@ void vector_exception(struct pt_regs *regs)
 	}
 
 	/* get vector interrupt code from fpc */
+<<<<<<< HEAD
 	asm volatile("stfpc %0" : "=m" (current->thread.fp_regs.fpc));
 	vic = (current->thread.fp_regs.fpc & 0xf00) >> 8;
+=======
+	save_fpu_regs();
+	vic = (current->thread.fpu.fpc & 0xf00) >> 8;
+>>>>>>> v4.9.227
 	switch (vic) {
 	case 1: /* invalid vector operation */
 		si_code = FPE_FLTINV;
@@ -365,6 +448,7 @@ void vector_exception(struct pt_regs *regs)
 	do_trap(regs, SIGFPE, si_code, "vector exception");
 }
 
+<<<<<<< HEAD
 static int __init disable_vector_extension(char *str)
 {
 	S390_lowcore.machine_flags &= ~MACHINE_FLAG_VX;
@@ -456,6 +540,19 @@ void data_exception(struct pt_regs *regs)
 		signal = SIGILL;
         if (signal == SIGFPE)
 		do_fp_trap(regs, current->thread.fp_regs.fpc);
+=======
+void data_exception(struct pt_regs *regs)
+{
+	int signal = 0;
+
+	save_fpu_regs();
+	if (current->thread.fpu.fpc & FPC_DXC_MASK)
+		signal = SIGFPE;
+	else
+		signal = SIGILL;
+	if (signal == SIGFPE)
+		do_fp_trap(regs, current->thread.fpu.fpc);
+>>>>>>> v4.9.227
 	else if (signal)
 		do_trap(regs, signal, ILL_ILLOPN, "data exception");
 }
@@ -469,7 +566,11 @@ void space_switch_exception(struct pt_regs *regs)
 	do_trap(regs, SIGILL, ILL_PRVOPC, "space switch event");
 }
 
+<<<<<<< HEAD
 void __kprobes kernel_stack_overflow(struct pt_regs * regs)
+=======
+void kernel_stack_overflow(struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	bust_spinlocks(1);
 	printk("Kernel stack overflow.\n");
@@ -477,6 +578,10 @@ void __kprobes kernel_stack_overflow(struct pt_regs * regs)
 	bust_spinlocks(0);
 	panic("Corrupt kernel stack, can't continue.");
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(kernel_stack_overflow);
+>>>>>>> v4.9.227
 
 void __init trap_init(void)
 {

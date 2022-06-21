@@ -37,6 +37,7 @@ static int bigsmp_early_logical_apicid(int cpu)
 	return early_per_cpu(x86_cpu_to_apicid, cpu);
 }
 
+<<<<<<< HEAD
 static inline unsigned long calculate_ldr(int cpu)
 {
 	unsigned long val, id;
@@ -63,6 +64,14 @@ static void bigsmp_init_apic_ldr(void)
 	apic_write(APIC_DFR, APIC_DFR_FLAT);
 	val = calculate_ldr(cpu);
 	apic_write(APIC_LDR, val);
+=======
+/*
+ * bigsmp enables physical destination mode
+ * and doesn't use LDR and DFR
+ */
+static void bigsmp_init_apic_ldr(void)
+{
+>>>>>>> v4.9.227
 }
 
 static void bigsmp_setup_apic_routing(void)
@@ -96,11 +105,14 @@ static int bigsmp_phys_pkg_id(int cpuid_apic, int index_msb)
 	return cpuid_apic >> index_msb;
 }
 
+<<<<<<< HEAD
 static inline void bigsmp_send_IPI_mask(const struct cpumask *mask, int vector)
 {
 	default_send_IPI_mask_sequence_phys(mask, vector);
 }
 
+=======
+>>>>>>> v4.9.227
 static void bigsmp_send_IPI_allbutself(int vector)
 {
 	default_send_IPI_mask_allbutself_phys(cpu_online_mask, vector);
@@ -108,7 +120,11 @@ static void bigsmp_send_IPI_allbutself(int vector)
 
 static void bigsmp_send_IPI_all(int vector)
 {
+<<<<<<< HEAD
 	bigsmp_send_IPI_mask(cpu_online_mask, vector);
+=======
+	default_send_IPI_mask_sequence_phys(cpu_online_mask, vector);
+>>>>>>> v4.9.227
 }
 
 static int dmi_bigsmp; /* can be set by dmi scanners */
@@ -147,7 +163,11 @@ static int probe_bigsmp(void)
 	return dmi_bigsmp;
 }
 
+<<<<<<< HEAD
 static struct apic apic_bigsmp = {
+=======
+static struct apic apic_bigsmp __ro_after_init = {
+>>>>>>> v4.9.227
 
 	.name				= "bigsmp",
 	.probe				= probe_bigsmp,
@@ -176,17 +196,28 @@ static struct apic apic_bigsmp = {
 
 	.get_apic_id			= bigsmp_get_apic_id,
 	.set_apic_id			= NULL,
+<<<<<<< HEAD
 	.apic_id_mask			= 0xFF << 24,
 
 	.cpu_mask_to_apicid_and		= default_cpu_mask_to_apicid_and,
 
 	.send_IPI_mask			= bigsmp_send_IPI_mask,
+=======
+
+	.cpu_mask_to_apicid_and		= default_cpu_mask_to_apicid_and,
+
+	.send_IPI			= default_send_IPI_single_phys,
+	.send_IPI_mask			= default_send_IPI_mask_sequence_phys,
+>>>>>>> v4.9.227
 	.send_IPI_mask_allbutself	= NULL,
 	.send_IPI_allbutself		= bigsmp_send_IPI_allbutself,
 	.send_IPI_all			= bigsmp_send_IPI_all,
 	.send_IPI_self			= default_send_IPI_self,
 
+<<<<<<< HEAD
 	.wait_for_init_deassert		= true,
+=======
+>>>>>>> v4.9.227
 	.inquire_remote_apic		= default_inquire_remote_apic,
 
 	.read				= native_apic_mem_read,

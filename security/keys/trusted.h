@@ -2,7 +2,10 @@
 #define __TRUSTED_KEY_H
 
 /* implementation specific TPM constants */
+<<<<<<< HEAD
 #define MAX_PCRINFO_SIZE		64
+=======
+>>>>>>> v4.9.227
 #define MAX_BUF_SIZE			512
 #define TPM_GETRANDOM_SIZE		14
 #define TPM_OSAP_SIZE			36
@@ -36,6 +39,7 @@ enum {
 	SRK_keytype = 4
 };
 
+<<<<<<< HEAD
 struct trusted_key_options {
 	uint16_t keytype;
 	uint32_t keyhandle;
@@ -46,6 +50,8 @@ struct trusted_key_options {
 	int pcrlock;
 };
 
+=======
+>>>>>>> v4.9.227
 #define TPM_DEBUG 0
 
 #if TPM_DEBUG

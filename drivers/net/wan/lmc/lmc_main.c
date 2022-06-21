@@ -826,7 +826,11 @@ static int lmc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* lmc_trace(dev, "lmc_init_one in"); */
 
+<<<<<<< HEAD
 	err = pci_enable_device(pdev);
+=======
+	err = pcim_enable_device(pdev);
+>>>>>>> v4.9.227
 	if (err) {
 		printk(KERN_ERR "lmc: pci enable failed: %d\n", err);
 		return err;
@@ -835,22 +839,36 @@ static int lmc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	err = pci_request_regions(pdev, "lmc");
 	if (err) {
 		printk(KERN_ERR "lmc: pci_request_region failed\n");
+<<<<<<< HEAD
 		goto err_req_io;
+=======
+		return err;
+>>>>>>> v4.9.227
 	}
 
 	/*
 	 * Allocate our own device structure
 	 */
+<<<<<<< HEAD
 	sc = kzalloc(sizeof(lmc_softc_t), GFP_KERNEL);
 	if (!sc) {
 		err = -ENOMEM;
 		goto err_kzalloc;
 	}
+=======
+	sc = devm_kzalloc(&pdev->dev, sizeof(lmc_softc_t), GFP_KERNEL);
+	if (!sc)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	dev = alloc_hdlcdev(sc);
 	if (!dev) {
 		printk(KERN_ERR "lmc:alloc_netdev for device failed\n");
+<<<<<<< HEAD
 		goto err_hdlcdev;
+=======
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	}
 
 
@@ -887,7 +905,11 @@ static int lmc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err) {
 		printk(KERN_ERR "%s: register_netdev failed.\n", dev->name);
 		free_netdev(dev);
+<<<<<<< HEAD
 		goto err_hdlcdev;
+=======
+		return err;
+>>>>>>> v4.9.227
 	}
 
     sc->lmc_cardtype = LMC_CARDTYPE_UNKNOWN;
@@ -970,6 +992,7 @@ static int lmc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
     lmc_trace(dev, "lmc_init_one out");
     return 0;
+<<<<<<< HEAD
 
 err_hdlcdev:
 	kfree(sc);
@@ -978,6 +1001,8 @@ err_kzalloc:
 err_req_io:
 	pci_disable_device(pdev);
 	return err;
+=======
+>>>>>>> v4.9.227
 }
 
 /*
@@ -991,8 +1016,11 @@ static void lmc_remove_one(struct pci_dev *pdev)
 		printk(KERN_DEBUG "%s: removing...\n", dev->name);
 		unregister_hdlc_device(dev);
 		free_netdev(dev);
+<<<<<<< HEAD
 		pci_release_regions(pdev);
 		pci_disable_device(pdev);
+=======
+>>>>>>> v4.9.227
 	}
 }
 
@@ -2117,7 +2145,11 @@ static void lmc_driver_timeout(struct net_device *dev)
     sc->lmc_device->stats.tx_errors++;
     sc->extra_stats.tx_ProcTimeout++; /* -baz */
 
+<<<<<<< HEAD
     dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+    netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 
 bug_out:
 

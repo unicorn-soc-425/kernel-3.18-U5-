@@ -43,6 +43,10 @@
 #include <linux/ctype.h>
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 
 #include <asm/mach-au1x00/au1000.h>
 #include <asm/mach-au1x00/au1200fb.h>	/* platform_data */
@@ -1844,7 +1848,10 @@ static const struct dev_pm_ops au1200fb_pmops = {
 static struct platform_driver au1200fb_driver = {
 	.driver = {
 		.name	= "au1200-lcd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= AU1200FB_PMOPS,
 	},
 	.probe		= au1200fb_drv_probe,

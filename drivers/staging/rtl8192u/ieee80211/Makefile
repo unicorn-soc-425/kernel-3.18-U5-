@@ -1,7 +1,11 @@
 NIC_SELECT = RTL8192U
 
+<<<<<<< HEAD
 ccflags-y := -I$(TOPDIR)/drivers/net/wireless
 ccflags-y += -O2
+=======
+ccflags-y := -O2
+>>>>>>> v4.9.227
 ccflags-y += -DJACKSON_NEW_8187 -DJACKSON_NEW_RX
 
 ieee80211-rsl-objs := ieee80211_rx.o \

@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /* Intel Ethernet Switch Host Interface Driver
  * Copyright(c) 2013 - 2014 Intel Corporation.
+=======
+/* Intel(R) Ethernet Switch Host Interface Driver
+ * Copyright(c) 2013 - 2016 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -51,28 +56,56 @@ static s32 fm10k_reset_hw_pf(struct fm10k_hw *hw)
 
 	/* shut down all rings */
 	err = fm10k_disable_queues_generic(hw, FM10K_MAX_QUEUES);
+<<<<<<< HEAD
 	if (err)
 		return err;
+=======
+	if (err == FM10K_ERR_REQUESTS_PENDING) {
+		hw->mac.reset_while_pending++;
+		goto force_reset;
+	} else if (err) {
+		return err;
+	}
+>>>>>>> v4.9.227
 
 	/* Verify that DMA is no longer active */
 	reg = fm10k_read_reg(hw, FM10K_DMA_CTRL);
 	if (reg & (FM10K_DMA_CTRL_TX_ACTIVE | FM10K_DMA_CTRL_RX_ACTIVE))
 		return FM10K_ERR_DMA_PENDING;
 
+<<<<<<< HEAD
 	/* Inititate data path reset */
 	reg |= FM10K_DMA_CTRL_DATAPATH_RESET;
+=======
+force_reset:
+	/* Inititate data path reset */
+	reg = FM10K_DMA_CTRL_DATAPATH_RESET;
+>>>>>>> v4.9.227
 	fm10k_write_reg(hw, FM10K_DMA_CTRL, reg);
 
 	/* Flush write and allow 100us for reset to complete */
 	fm10k_write_flush(hw);
 	udelay(FM10K_RESET_TIMEOUT);
 
+<<<<<<< HEAD
 	/* Verify we made it out of reset */
 	reg = fm10k_read_reg(hw, FM10K_IP);
 	if (!(reg & FM10K_IP_NOTINRESET))
 		err = FM10K_ERR_RESET_FAILED;
 
 	return err;
+=======
+	/* Reset mailbox global interrupts */
+	reg = FM10K_MBX_GLOBAL_REQ_INTERRUPT | FM10K_MBX_GLOBAL_ACK_INTERRUPT;
+	fm10k_write_reg(hw, FM10K_GMBX, reg);
+
+	/* Verify we made it out of reset */
+	reg = fm10k_read_reg(hw, FM10K_IP);
+	if (!(reg & FM10K_IP_NOTINRESET))
+		return FM10K_ERR_RESET_FAILED;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -144,6 +177,7 @@ static s32 fm10k_init_hw_pf(struct fm10k_hw *hw)
 				FM10K_TPH_RXCTRL_HDR_WROEN);
 	}
 
+<<<<<<< HEAD
 	/* set max hold interval to align with 1.024 usec in all modes */
 	switch (hw->bus.speed) {
 	case fm10k_bus_speed_2500:
@@ -157,6 +191,28 @@ static s32 fm10k_init_hw_pf(struct fm10k_hw *hw)
 		break;
 	default:
 		dma_ctrl = 0;
+=======
+	/* set max hold interval to align with 1.024 usec in all modes and
+	 * store ITR scale
+	 */
+	switch (hw->bus.speed) {
+	case fm10k_bus_speed_2500:
+		dma_ctrl = FM10K_DMA_CTRL_MAX_HOLD_1US_GEN1;
+		hw->mac.itr_scale = FM10K_TDLEN_ITR_SCALE_GEN1;
+		break;
+	case fm10k_bus_speed_5000:
+		dma_ctrl = FM10K_DMA_CTRL_MAX_HOLD_1US_GEN2;
+		hw->mac.itr_scale = FM10K_TDLEN_ITR_SCALE_GEN2;
+		break;
+	case fm10k_bus_speed_8000:
+		dma_ctrl = FM10K_DMA_CTRL_MAX_HOLD_1US_GEN3;
+		hw->mac.itr_scale = FM10K_TDLEN_ITR_SCALE_GEN3;
+		break;
+	default:
+		dma_ctrl = 0;
+		/* just in case, assume Gen3 ITR scale */
+		hw->mac.itr_scale = FM10K_TDLEN_ITR_SCALE_GEN3;
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -185,6 +241,7 @@ static s32 fm10k_init_hw_pf(struct fm10k_hw *hw)
 }
 
 /**
+<<<<<<< HEAD
  *  fm10k_is_slot_appropriate_pf - Indicate appropriate slot for this SKU
  *  @hw: pointer to hardware structure
  *
@@ -198,6 +255,8 @@ static bool fm10k_is_slot_appropriate_pf(struct fm10k_hw *hw)
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  *  fm10k_update_vlan_pf - Update status of VLAN ID in VLAN filter table
  *  @hw: pointer to hardware structure
  *  @vid: VLAN ID to add to table
@@ -219,8 +278,13 @@ static s32 fm10k_update_vlan_pf(struct fm10k_hw *hw, u32 vid, u8 vsi, bool set)
 
 	/* VLAN multi-bit write:
 	 * The multi-bit write has several parts to it.
+<<<<<<< HEAD
 	 *    3			  2		      1			  0
 	 *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
+=======
+	 *               24              16               8               0
+	 *  7 6 5 4 3 2 1 0 7 6 5 4 3 2 1 0 7 6 5 4 3 2 1 0 7 6 5 4 3 2 1 0
+>>>>>>> v4.9.227
 	 * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	 * | RSVD0 |         Length        |C|RSVD0|        VLAN ID        |
 	 * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -234,8 +298,12 @@ static s32 fm10k_update_vlan_pf(struct fm10k_hw *hw, u32 vid, u8 vsi, bool set)
 	vid = (vid << 17) >> 17;
 
 	/* verify the reserved 0 fields are 0 */
+<<<<<<< HEAD
 	if (len >= FM10K_VLAN_TABLE_VID_MAX ||
 	    vid >= FM10K_VLAN_TABLE_VID_MAX)
+=======
+	if (len >= FM10K_VLAN_TABLE_VID_MAX || vid >= FM10K_VLAN_TABLE_VID_MAX)
+>>>>>>> v4.9.227
 		return FM10K_ERR_PARAM;
 
 	/* Loop through the table updating all required VLANs */
@@ -267,7 +335,10 @@ static s32 fm10k_read_mac_addr_pf(struct fm10k_hw *hw)
 {
 	u8 perm_addr[ETH_ALEN];
 	u32 serial_num;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> v4.9.227
 
 	serial_num = fm10k_read_reg(hw, FM10K_SM_AREA(1));
 
@@ -289,10 +360,15 @@ static s32 fm10k_read_mac_addr_pf(struct fm10k_hw *hw)
 	perm_addr[4] = (u8)(serial_num >> 8);
 	perm_addr[5] = (u8)(serial_num);
 
+<<<<<<< HEAD
 	for (i = 0; i < ETH_ALEN; i++) {
 		hw->mac.perm_addr[i] = perm_addr[i];
 		hw->mac.addr[i] = perm_addr[i];
 	}
+=======
+	ether_addr_copy(hw->mac.perm_addr, perm_addr);
+	ether_addr_copy(hw->mac.addr, perm_addr);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -312,7 +388,11 @@ bool fm10k_glort_valid_pf(struct fm10k_hw *hw, u16 glort)
 }
 
 /**
+<<<<<<< HEAD
  *  fm10k_update_uc_addr_pf - Update device unicast addresss
+=======
+ *  fm10k_update_xc_addr_pf - Update device addresses
+>>>>>>> v4.9.227
  *  @hw: pointer to the HW structure
  *  @glort: base resource tag for this request
  *  @mac: MAC address to add/remove from table
@@ -330,20 +410,34 @@ static s32 fm10k_update_xc_addr_pf(struct fm10k_hw *hw, u16 glort,
 	struct fm10k_mac_update mac_update;
 	u32 msg[5];
 
+<<<<<<< HEAD
 	/* if glort is not valid return error */
 	if (!fm10k_glort_valid_pf(hw, glort))
 		return FM10K_ERR_PARAM;
 
 	/* drop upper 4 bits of VLAN ID */
 	vid = (vid << 4) >> 4;
+=======
+	/* clear set bit from VLAN ID */
+	vid &= ~FM10K_VLAN_CLEAR;
+
+	/* if glort or VLAN are not valid return error */
+	if (!fm10k_glort_valid_pf(hw, glort) || vid >= FM10K_VLAN_TABLE_VID_MAX)
+		return FM10K_ERR_PARAM;
+>>>>>>> v4.9.227
 
 	/* record fields */
 	mac_update.mac_lower = cpu_to_le32(((u32)mac[2] << 24) |
 						 ((u32)mac[3] << 16) |
 						 ((u32)mac[4] << 8) |
 						 ((u32)mac[5]));
+<<<<<<< HEAD
 	mac_update.mac_upper = cpu_to_le16(((u32)mac[0] << 8) |
 						 ((u32)mac[1]));
+=======
+	mac_update.mac_upper = cpu_to_le16(((u16)mac[0] << 8) |
+					   ((u16)mac[1]));
+>>>>>>> v4.9.227
 	mac_update.vlan = cpu_to_le16(vid);
 	mac_update.glort = cpu_to_le16(glort);
 	mac_update.action = add ? 0 : 1;
@@ -359,7 +453,11 @@ static s32 fm10k_update_xc_addr_pf(struct fm10k_hw *hw, u16 glort,
 }
 
 /**
+<<<<<<< HEAD
  *  fm10k_update_uc_addr_pf - Update device unicast addresss
+=======
+ *  fm10k_update_uc_addr_pf - Update device unicast addresses
+>>>>>>> v4.9.227
  *  @hw: pointer to the HW structure
  *  @glort: base resource tag for this request
  *  @mac: MAC address to add/remove from table
@@ -418,6 +516,10 @@ static s32 fm10k_update_xcast_mode_pf(struct fm10k_hw *hw, u16 glort, u8 mode)
 
 	if (mode > FM10K_XCAST_MODE_NONE)
 		return FM10K_ERR_PARAM;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	/* if glort is not valid return error */
 	if (!fm10k_glort_valid_pf(hw, glort))
 		return FM10K_ERR_PARAM;
@@ -457,7 +559,11 @@ static void fm10k_update_int_moderator_pf(struct fm10k_hw *hw)
 			break;
 	}
 
+<<<<<<< HEAD
 	/* always reset VFITR2[0] to point to last enabled PF vector*/
+=======
+	/* always reset VFITR2[0] to point to last enabled PF vector */
+>>>>>>> v4.9.227
 	fm10k_write_reg(hw, FM10K_ITR2(FM10K_ITR_REG_COUNT_PF), i);
 
 	/* reset ITR2[0] to point to last enabled PF vector */
@@ -491,6 +597,13 @@ static s32 fm10k_update_lport_state_pf(struct fm10k_hw *hw, u16 glort,
 	if (!fm10k_glort_valid_pf(hw, glort))
 		return FM10K_ERR_PARAM;
 
+<<<<<<< HEAD
+=======
+	/* reset multicast mode if deleting lport */
+	if (!enable)
+		fm10k_update_xcast_mode_pf(hw, glort, FM10K_XCAST_MODE_NONE);
+
+>>>>>>> v4.9.227
 	/* construct the lport message from the 2 pieces of data we have */
 	lport_msg = ((u32)count << 16) | glort;
 
@@ -530,8 +643,13 @@ static s32 fm10k_configure_dglort_map_pf(struct fm10k_hw *hw,
 		return FM10K_ERR_PARAM;
 
 	/* determine count of VSIs and queues */
+<<<<<<< HEAD
 	queue_count = 1 << (dglort->rss_l + dglort->pc_l);
 	vsi_count = 1 << (dglort->vsi_l + dglort->queue_l);
+=======
+	queue_count = BIT(dglort->rss_l + dglort->pc_l);
+	vsi_count = BIT(dglort->vsi_l + dglort->queue_l);
+>>>>>>> v4.9.227
 	glort = dglort->glort;
 	q_idx = dglort->queue_b;
 
@@ -547,8 +665,13 @@ static s32 fm10k_configure_dglort_map_pf(struct fm10k_hw *hw,
 	}
 
 	/* determine count of PCs and queues */
+<<<<<<< HEAD
 	queue_count = 1 << (dglort->queue_l + dglort->rss_l + dglort->vsi_l);
 	pc_count = 1 << dglort->pc_l;
+=======
+	queue_count = BIT(dglort->queue_l + dglort->rss_l + dglort->vsi_l);
+	pc_count = BIT(dglort->pc_l);
+>>>>>>> v4.9.227
 
 	/* configure PC for Tx queues */
 	for (pc = 0; pc < pc_count; pc++) {
@@ -680,7 +803,12 @@ static s32 fm10k_iov_assign_resources_pf(struct fm10k_hw *hw, u16 num_vfs,
 	/* loop through unallocated rings assigning them back to PF */
 	for (i = FM10K_MAX_QUEUES_PF; i < vf_q_idx; i++) {
 		fm10k_write_reg(hw, FM10K_TXDCTL(i), 0);
+<<<<<<< HEAD
 		fm10k_write_reg(hw, FM10K_TXQCTL(i), FM10K_TXQCTL_PF | vid);
+=======
+		fm10k_write_reg(hw, FM10K_TXQCTL(i), FM10K_TXQCTL_PF |
+				FM10K_TXQCTL_UNLIMITED_BW | vid);
+>>>>>>> v4.9.227
 		fm10k_write_reg(hw, FM10K_RXQCTL(i), FM10K_RXQCTL_PF);
 	}
 
@@ -713,8 +841,13 @@ static s32 fm10k_iov_assign_resources_pf(struct fm10k_hw *hw, u16 num_vfs,
 					FM10K_RXDCTL_WRITE_BACK_MIN_DELAY |
 					FM10K_RXDCTL_DROP_ON_EMPTY);
 			fm10k_write_reg(hw, FM10K_RXQCTL(vf_q_idx),
+<<<<<<< HEAD
 					FM10K_RXQCTL_VF |
 					(i << FM10K_RXQCTL_VF_SHIFT));
+=======
+					(i << FM10K_RXQCTL_VF_SHIFT) |
+					FM10K_RXQCTL_VF);
+>>>>>>> v4.9.227
 
 			/* map queue pair to VF */
 			fm10k_write_reg(hw, FM10K_TQMAP(qmap_idx), vf_q_idx);
@@ -815,7 +948,11 @@ static s32 fm10k_iov_assign_int_moderator_pf(struct fm10k_hw *hw, u16 vf_idx)
 	if (vf_idx >= hw->iov.num_vfs)
 		return FM10K_ERR_PARAM;
 
+<<<<<<< HEAD
 	/* determine vector offset and count*/
+=======
+	/* determine vector offset and count */
+>>>>>>> v4.9.227
 	vf_v_idx = fm10k_vf_vector_index(hw, vf_idx);
 	vf_v_limit = vf_v_idx + fm10k_vectors_per_pool(hw);
 
@@ -862,6 +999,7 @@ static s32 fm10k_iov_assign_default_mac_vlan_pf(struct fm10k_hw *hw,
 	vf_q_idx = fm10k_vf_queue_index(hw, vf_idx);
 	qmap_idx = qmap_stride * vf_idx;
 
+<<<<<<< HEAD
 	/* MAP Tx queue back to 0 temporarily, and disable it */
 	fm10k_write_reg(hw, FM10K_TQMAP(qmap_idx), 0);
 	fm10k_write_reg(hw, FM10K_TXDCTL(vf_q_idx), 0);
@@ -869,6 +1007,15 @@ static s32 fm10k_iov_assign_default_mac_vlan_pf(struct fm10k_hw *hw,
 	/* determine correct default VLAN ID */
 	if (vf_info->pf_vid)
 		vf_vid = vf_info->pf_vid | FM10K_VLAN_CLEAR;
+=======
+	/* Determine correct default VLAN ID. The FM10K_VLAN_OVERRIDE bit is
+	 * used here to indicate to the VF that it will not have privilege to
+	 * write VLAN_TABLE. All policy is enforced on the PF but this allows
+	 * the VF to correctly report errors to userspace rqeuests.
+	 */
+	if (vf_info->pf_vid)
+		vf_vid = vf_info->pf_vid | FM10K_VLAN_OVERRIDE;
+>>>>>>> v4.9.227
 	else
 		vf_vid = vf_info->sw_vid;
 
@@ -877,9 +1024,41 @@ static s32 fm10k_iov_assign_default_mac_vlan_pf(struct fm10k_hw *hw,
 	fm10k_tlv_attr_put_mac_vlan(msg, FM10K_MAC_VLAN_MSG_DEFAULT_MAC,
 				    vf_info->mac, vf_vid);
 
+<<<<<<< HEAD
 	/* load onto outgoing mailbox, ignore any errors on enqueue */
 	if (vf_info->mbx.ops.enqueue_tx)
 		vf_info->mbx.ops.enqueue_tx(hw, &vf_info->mbx, msg);
+=======
+	/* Configure Queue control register with new VLAN ID. The TXQCTL
+	 * register is RO from the VF, so the PF must do this even in the
+	 * case of notifying the VF of a new VID via the mailbox.
+	 */
+	txqctl = ((u32)vf_vid << FM10K_TXQCTL_VID_SHIFT) &
+		 FM10K_TXQCTL_VID_MASK;
+	txqctl |= (vf_idx << FM10K_TXQCTL_TC_SHIFT) |
+		  FM10K_TXQCTL_VF | vf_idx;
+
+	for (i = 0; i < queues_per_pool; i++)
+		fm10k_write_reg(hw, FM10K_TXQCTL(vf_q_idx + i), txqctl);
+
+	/* try loading a message onto outgoing mailbox first */
+	if (vf_info->mbx.ops.enqueue_tx) {
+		err = vf_info->mbx.ops.enqueue_tx(hw, &vf_info->mbx, msg);
+		if (err != FM10K_MBX_ERR_NO_MBX)
+			return err;
+		err = 0;
+	}
+
+	/* If we aren't connected to a mailbox, this is most likely because
+	 * the VF driver is not running. It should thus be safe to re-map
+	 * queues and use the registers to pass the MAC address so that the VF
+	 * driver gets correct information during its initialization.
+	 */
+
+	/* MAP Tx queue back to 0 temporarily, and disable it */
+	fm10k_write_reg(hw, FM10K_TQMAP(qmap_idx), 0);
+	fm10k_write_reg(hw, FM10K_TXDCTL(vf_q_idx), 0);
+>>>>>>> v4.9.227
 
 	/* verify ring has disabled before modifying base address registers */
 	txdctl = fm10k_read_reg(hw, FM10K_TXDCTL(vf_q_idx));
@@ -910,6 +1089,7 @@ static s32 fm10k_iov_assign_default_mac_vlan_pf(struct fm10k_hw *hw,
 	fm10k_write_reg(hw, FM10K_TDBAL(vf_q_idx), tdbal);
 	fm10k_write_reg(hw, FM10K_TDBAH(vf_q_idx), tdbah);
 
+<<<<<<< HEAD
 err_out:
 	/* configure Queue control register */
 	txqctl = ((u32)vf_vid << FM10K_TXQCTL_VID_SHIFT) &
@@ -921,6 +1101,16 @@ err_out:
 	for (i = 0; i < queues_per_pool; i++)
 		fm10k_write_reg(hw, FM10K_TXQCTL(vf_q_idx + i), txqctl);
 
+=======
+	/* Provide the VF the ITR scale, using software-defined fields in TDLEN
+	 * to pass the information during VF initialization. See definition of
+	 * FM10K_TDLEN_ITR_SCALE_SHIFT for more details.
+	 */
+	fm10k_write_reg(hw, FM10K_TDLEN(vf_q_idx), hw->mac.itr_scale <<
+						   FM10K_TDLEN_ITR_SCALE_SHIFT);
+
+err_out:
+>>>>>>> v4.9.227
 	/* restore the queue back to VF ownership */
 	fm10k_write_reg(hw, FM10K_TQMAP(qmap_idx), vf_q_idx);
 	return err;
@@ -947,14 +1137,22 @@ static s32 fm10k_iov_reset_resources_pf(struct fm10k_hw *hw,
 		return FM10K_ERR_PARAM;
 
 	/* clear event notification of VF FLR */
+<<<<<<< HEAD
 	fm10k_write_reg(hw, FM10K_PFVFLREC(vf_idx / 32), 1 << (vf_idx % 32));
+=======
+	fm10k_write_reg(hw, FM10K_PFVFLREC(vf_idx / 32), BIT(vf_idx % 32));
+>>>>>>> v4.9.227
 
 	/* force timeout and then disconnect the mailbox */
 	vf_info->mbx.timeout = 0;
 	if (vf_info->mbx.ops.disconnect)
 		vf_info->mbx.ops.disconnect(hw, &vf_info->mbx);
 
+<<<<<<< HEAD
 	/* determine vector offset and count*/
+=======
+	/* determine vector offset and count */
+>>>>>>> v4.9.227
 	vf_v_idx = fm10k_vf_vector_index(hw, vf_idx);
 	vf_v_limit = vf_v_idx + fm10k_vectors_per_pool(hw);
 
@@ -982,7 +1180,11 @@ static s32 fm10k_iov_reset_resources_pf(struct fm10k_hw *hw,
 	txqctl = ((u32)vf_vid << FM10K_TXQCTL_VID_SHIFT) |
 		 (vf_idx << FM10K_TXQCTL_TC_SHIFT) |
 		 FM10K_TXQCTL_VF | vf_idx;
+<<<<<<< HEAD
 	rxqctl = FM10K_RXQCTL_VF | (vf_idx << FM10K_RXQCTL_VF_SHIFT);
+=======
+	rxqctl = (vf_idx << FM10K_RXQCTL_VF_SHIFT) | FM10K_RXQCTL_VF;
+>>>>>>> v4.9.227
 
 	/* stop further DMA and reset queue ownership back to VF */
 	for (i = vf_q_idx; i < (queues_per_pool + vf_q_idx); i++) {
@@ -1038,14 +1240,36 @@ static s32 fm10k_iov_reset_resources_pf(struct fm10k_hw *hw,
 			((u32)vf_info->mac[2]);
 	}
 
+<<<<<<< HEAD
 	/* map queue pairs back to VF from last to first*/
 	for (i = queues_per_pool; i--;) {
 		fm10k_write_reg(hw, FM10K_TDBAL(vf_q_idx + i), tdbal);
 		fm10k_write_reg(hw, FM10K_TDBAH(vf_q_idx + i), tdbah);
+=======
+	/* map queue pairs back to VF from last to first */
+	for (i = queues_per_pool; i--;) {
+		fm10k_write_reg(hw, FM10K_TDBAL(vf_q_idx + i), tdbal);
+		fm10k_write_reg(hw, FM10K_TDBAH(vf_q_idx + i), tdbah);
+		/* See definition of FM10K_TDLEN_ITR_SCALE_SHIFT for an
+		 * explanation of how TDLEN is used.
+		 */
+		fm10k_write_reg(hw, FM10K_TDLEN(vf_q_idx + i),
+				hw->mac.itr_scale <<
+				FM10K_TDLEN_ITR_SCALE_SHIFT);
+>>>>>>> v4.9.227
 		fm10k_write_reg(hw, FM10K_TQMAP(qmap_idx + i), vf_q_idx + i);
 		fm10k_write_reg(hw, FM10K_RQMAP(qmap_idx + i), vf_q_idx + i);
 	}
 
+<<<<<<< HEAD
+=======
+	/* repeat the first ring for all the remaining VF rings */
+	for (i = queues_per_pool; i < qmap_stride; i++) {
+		fm10k_write_reg(hw, FM10K_TQMAP(qmap_idx + i), vf_q_idx);
+		fm10k_write_reg(hw, FM10K_RQMAP(qmap_idx + i), vf_q_idx);
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1123,6 +1347,7 @@ static void fm10k_iov_update_stats_pf(struct fm10k_hw *hw,
 	fm10k_update_hw_stats_q(hw, q, idx, qpp);
 }
 
+<<<<<<< HEAD
 static s32 fm10k_iov_report_timestamp_pf(struct fm10k_hw *hw,
 					 struct fm10k_vf_info *vf_info,
 					 u64 timestamp)
@@ -1136,6 +1361,8 @@ static s32 fm10k_iov_report_timestamp_pf(struct fm10k_hw *hw,
 	return vf_info->mbx.ops.enqueue_tx(hw, &vf_info->mbx, msg);
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  *  fm10k_iov_msg_msix_pf - Message handler for MSI-X request from VF
  *  @hw: Pointer to hardware structure
@@ -1144,7 +1371,11 @@ static s32 fm10k_iov_report_timestamp_pf(struct fm10k_hw *hw,
  *
  *  This function is a default handler for MSI-X requests from the VF.  The
  *  assumption is that in this case it is acceptable to just directly
+<<<<<<< HEAD
  *  hand off the message form the VF to the underlying shared code.
+=======
+ *  hand off the message from the VF to the underlying shared code.
+>>>>>>> v4.9.227
  **/
 s32 fm10k_iov_msg_msix_pf(struct fm10k_hw *hw, u32 **results,
 			  struct fm10k_mbx_info *mbx)
@@ -1156,6 +1387,27 @@ s32 fm10k_iov_msg_msix_pf(struct fm10k_hw *hw, u32 **results,
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * fm10k_iov_select_vid - Select correct default VLAN ID
+ * @hw: Pointer to hardware structure
+ * @vid: VLAN ID to correct
+ *
+ * Will report an error if the VLAN ID is out of range. For VID = 0, it will
+ * return either the pf_vid or sw_vid depending on which one is set.
+ */
+static s32 fm10k_iov_select_vid(struct fm10k_vf_info *vf_info, u16 vid)
+{
+	if (!vid)
+		return vf_info->pf_vid ? vf_info->pf_vid : vf_info->sw_vid;
+	else if (vf_info->pf_vid && vid != vf_info->pf_vid)
+		return FM10K_ERR_PARAM;
+	else
+		return vid;
+}
+
+/**
+>>>>>>> v4.9.227
  *  fm10k_iov_msg_mac_vlan_pf - Message handler for MAC/VLAN request from VF
  *  @hw: Pointer to hardware structure
  *  @results: Pointer array to message, results[0] is pointer to message
@@ -1163,15 +1415,26 @@ s32 fm10k_iov_msg_msix_pf(struct fm10k_hw *hw, u32 **results,
  *
  *  This function is a default handler for MAC/VLAN requests from the VF.
  *  The assumption is that in this case it is acceptable to just directly
+<<<<<<< HEAD
  *  hand off the message form the VF to the underlying shared code.
+=======
+ *  hand off the message from the VF to the underlying shared code.
+>>>>>>> v4.9.227
  **/
 s32 fm10k_iov_msg_mac_vlan_pf(struct fm10k_hw *hw, u32 **results,
 			      struct fm10k_mbx_info *mbx)
 {
 	struct fm10k_vf_info *vf_info = (struct fm10k_vf_info *)mbx;
+<<<<<<< HEAD
 	int err = 0;
 	u8 mac[ETH_ALEN];
 	u32 *result;
+=======
+	u8 mac[ETH_ALEN];
+	u32 *result;
+	int err = 0;
+	bool set;
+>>>>>>> v4.9.227
 	u16 vlan;
 	u32 vid;
 
@@ -1187,6 +1450,7 @@ s32 fm10k_iov_msg_mac_vlan_pf(struct fm10k_hw *hw, u32 **results,
 		if (err)
 			return err;
 
+<<<<<<< HEAD
 		/* if VLAN ID is 0, set the default VLAN ID instead of 0 */
 		if (!vid || (vid == FM10K_VLAN_CLEAR)) {
 			if (vf_info->pf_vid)
@@ -1200,6 +1464,37 @@ s32 fm10k_iov_msg_mac_vlan_pf(struct fm10k_hw *hw, u32 **results,
 		/* update VSI info for VF in regards to VLAN table */
 		err = hw->mac.ops.update_vlan(hw, vid, vf_info->vsi,
 					      !(vid & FM10K_VLAN_CLEAR));
+=======
+		set = !(vid & FM10K_VLAN_CLEAR);
+		vid &= ~FM10K_VLAN_CLEAR;
+
+		/* if the length field has been set, this is a multi-bit
+		 * update request. For multi-bit requests, simply disallow
+		 * them when the pf_vid has been set. In this case, the PF
+		 * should have already cleared the VLAN_TABLE, and if we
+		 * allowed them, it could allow a rogue VF to receive traffic
+		 * on a VLAN it was not assigned. In the single-bit case, we
+		 * need to modify requests for VLAN 0 to use the default PF or
+		 * SW vid when assigned.
+		 */
+
+		if (vid >> 16) {
+			/* prevent multi-bit requests when PF has
+			 * administratively set the VLAN for this VF
+			 */
+			if (vf_info->pf_vid)
+				return FM10K_ERR_PARAM;
+		} else {
+			err = fm10k_iov_select_vid(vf_info, (u16)vid);
+			if (err < 0)
+				return err;
+
+			vid = err;
+		}
+
+		/* update VSI info for VF in regards to VLAN table */
+		err = hw->mac.ops.update_vlan(hw, vid, vf_info->vsi, set);
+>>>>>>> v4.9.227
 	}
 
 	if (!err && !!results[FM10K_MAC_VLAN_MSG_MAC]) {
@@ -1212,6 +1507,7 @@ s32 fm10k_iov_msg_mac_vlan_pf(struct fm10k_hw *hw, u32 **results,
 
 		/* block attempts to set MAC for a locked device */
 		if (is_valid_ether_addr(vf_info->mac) &&
+<<<<<<< HEAD
 		    memcmp(mac, vf_info->mac, ETH_ALEN))
 			return FM10K_ERR_PARAM;
 
@@ -1228,6 +1524,23 @@ s32 fm10k_iov_msg_mac_vlan_pf(struct fm10k_hw *hw, u32 **results,
 		/* notify switch of request for new unicast address */
 		err = hw->mac.ops.update_uc_addr(hw, vf_info->glort, mac, vlan,
 						 !(vlan & FM10K_VLAN_CLEAR), 0);
+=======
+		    !ether_addr_equal(mac, vf_info->mac))
+			return FM10K_ERR_PARAM;
+
+		set = !(vlan & FM10K_VLAN_CLEAR);
+		vlan &= ~FM10K_VLAN_CLEAR;
+
+		err = fm10k_iov_select_vid(vf_info, vlan);
+		if (err < 0)
+			return err;
+
+		vlan = (u16)err;
+
+		/* notify switch of request for new unicast address */
+		err = hw->mac.ops.update_uc_addr(hw, vf_info->glort,
+						 mac, vlan, set, 0);
+>>>>>>> v4.9.227
 	}
 
 	if (!err && !!results[FM10K_MAC_VLAN_MSG_MULTICAST]) {
@@ -1242,6 +1555,7 @@ s32 fm10k_iov_msg_mac_vlan_pf(struct fm10k_hw *hw, u32 **results,
 		if (!(vf_info->vf_flags & FM10K_VF_FLAG_MULTI_ENABLED))
 			return FM10K_ERR_PARAM;
 
+<<<<<<< HEAD
 		/* if VLAN ID is 0, set the default VLAN ID instead of 0 */
 		if (!vlan || (vlan == FM10K_VLAN_CLEAR)) {
 			if (vf_info->pf_vid)
@@ -1255,6 +1569,20 @@ s32 fm10k_iov_msg_mac_vlan_pf(struct fm10k_hw *hw, u32 **results,
 		/* notify switch of request for new multicast address */
 		err = hw->mac.ops.update_mc_addr(hw, vf_info->glort, mac,
 						 !(vlan & FM10K_VLAN_CLEAR), 0);
+=======
+		set = !(vlan & FM10K_VLAN_CLEAR);
+		vlan &= ~FM10K_VLAN_CLEAR;
+
+		err = fm10k_iov_select_vid(vf_info, vlan);
+		if (err < 0)
+			return err;
+
+		vlan = (u16)err;
+
+		/* notify switch of request for new multicast address */
+		err = hw->mac.ops.update_mc_addr(hw, vf_info->glort,
+						 mac, vlan, set);
+>>>>>>> v4.9.227
 	}
 
 	return err;
@@ -1334,7 +1662,11 @@ s32 fm10k_iov_msg_lport_state_pf(struct fm10k_hw *hw, u32 **results,
 		mode = fm10k_iov_supported_xcast_mode_pf(vf_info, mode);
 
 		/* if mode is not currently enabled, enable it */
+<<<<<<< HEAD
 		if (!(FM10K_VF_FLAG_ENABLED(vf_info) & (1 << mode)))
+=======
+		if (!(FM10K_VF_FLAG_ENABLED(vf_info) & BIT(mode)))
+>>>>>>> v4.9.227
 			fm10k_update_xcast_mode_pf(hw, vf_info->glort, mode);
 
 		/* swap mode back to a bit flag */
@@ -1345,6 +1677,17 @@ s32 fm10k_iov_msg_lport_state_pf(struct fm10k_hw *hw, u32 **results,
 			err = fm10k_update_lport_state_pf(hw, vf_info->glort,
 							  1, false);
 
+<<<<<<< HEAD
+=======
+		/* we need to clear VF_FLAG_ENABLED flags in order to ensure
+		 * that we actually re-enable the LPORT state below. Note that
+		 * this has no impact if the VF is already disabled, as the
+		 * flags are already cleared.
+		 */
+		if (!err)
+			vf_info->vf_flags = FM10K_VF_FLAG_CAPABLE(vf_info);
+
+>>>>>>> v4.9.227
 		/* when enabling the port we should reset the rate limiters */
 		hw->iov.ops.configure_tc(hw, vf_info->vf_idx, vf_info->rate);
 
@@ -1370,6 +1713,7 @@ s32 fm10k_iov_msg_lport_state_pf(struct fm10k_hw *hw, u32 **results,
 	return err;
 }
 
+<<<<<<< HEAD
 const struct fm10k_msg_data fm10k_iov_msg_data_pf[] = {
 	FM10K_TLV_MSG_TEST_HANDLER(fm10k_tlv_msg_test),
 	FM10K_VF_MSG_MSIX_HANDLER(fm10k_iov_msg_msix_pf),
@@ -1378,6 +1722,8 @@ const struct fm10k_msg_data fm10k_iov_msg_data_pf[] = {
 	FM10K_TLV_MSG_ERROR_HANDLER(fm10k_tlv_msg_error),
 };
 
+=======
+>>>>>>> v4.9.227
 /**
  *  fm10k_update_stats_hw_pf - Updates hardware related statistics of PF
  *  @hw: pointer to hardware structure
@@ -1405,9 +1751,16 @@ static void fm10k_update_hw_stats_pf(struct fm10k_hw *hw,
 		xec = fm10k_read_hw_stats_32b(hw, FM10K_STATS_XEC, &stats->xec);
 		vlan_drop = fm10k_read_hw_stats_32b(hw, FM10K_STATS_VLAN_DROP,
 						    &stats->vlan_drop);
+<<<<<<< HEAD
 		loopback_drop = fm10k_read_hw_stats_32b(hw,
 							FM10K_STATS_LOOPBACK_DROP,
 						     &stats->loopback_drop);
+=======
+		loopback_drop =
+			fm10k_read_hw_stats_32b(hw,
+						FM10K_STATS_LOOPBACK_DROP,
+						&stats->loopback_drop);
+>>>>>>> v4.9.227
 		nodesc_drop = fm10k_read_hw_stats_32b(hw,
 						      FM10K_STATS_NODESC_DROP,
 						      &stats->nodesc_drop);
@@ -1567,12 +1920,17 @@ static s32 fm10k_request_lport_map_pf(struct fm10k_hw *hw)
  *  @hw: pointer to hardware structure
  *  @switch_ready: pointer to boolean value that will record switch state
  *
+<<<<<<< HEAD
  *  This funciton will check the DMA_CTRL2 register and mailbox in order
+=======
+ *  This function will check the DMA_CTRL2 register and mailbox in order
+>>>>>>> v4.9.227
  *  to determine if the switch is ready for the PF to begin requesting
  *  addresses and mapping traffic to the local interface.
  **/
 static s32 fm10k_get_host_state_pf(struct fm10k_hw *hw, bool *switch_ready)
 {
+<<<<<<< HEAD
 	s32 ret_val = 0;
 	u32 dma_ctrl2;
 
@@ -1592,10 +1950,26 @@ static s32 fm10k_get_host_state_pf(struct fm10k_hw *hw, bool *switch_ready)
 
 out:
 	return ret_val;
+=======
+	u32 dma_ctrl2;
+
+	/* verify the switch is ready for interaction */
+	dma_ctrl2 = fm10k_read_reg(hw, FM10K_DMA_CTRL2);
+	if (!(dma_ctrl2 & FM10K_DMA_CTRL2_SWITCH_READY))
+		return 0;
+
+	/* retrieve generic host state info */
+	return fm10k_get_host_state_generic(hw, switch_ready);
+>>>>>>> v4.9.227
 }
 
 /* This structure defines the attibutes to be parsed below */
 const struct fm10k_tlv_attr fm10k_lport_map_msg_attr[] = {
+<<<<<<< HEAD
+=======
+	FM10K_TLV_ATTR_LE_STRUCT(FM10K_PF_ATTR_ID_ERR,
+				 sizeof(struct fm10k_swapi_error)),
+>>>>>>> v4.9.227
 	FM10K_TLV_ATTR_U32(FM10K_PF_ATTR_ID_LPORT_MAP),
 	FM10K_TLV_ATTR_LAST
 };
@@ -1652,8 +2026,13 @@ const struct fm10k_tlv_attr fm10k_update_pvid_msg_attr[] = {
  *
  *  This handler configures the default VLAN for the PF
  **/
+<<<<<<< HEAD
 s32 fm10k_msg_update_pvid_pf(struct fm10k_hw *hw, u32 **results,
 			     struct fm10k_mbx_info *mbx)
+=======
+static s32 fm10k_msg_update_pvid_pf(struct fm10k_hw *hw, u32 **results,
+				    struct fm10k_mbx_info *mbx)
+>>>>>>> v4.9.227
 {
 	u16 glort, pvid;
 	u32 pvid_update;
@@ -1672,7 +2051,11 @@ s32 fm10k_msg_update_pvid_pf(struct fm10k_hw *hw, u32 **results,
 	if (!fm10k_glort_valid_pf(hw, glort))
 		return FM10K_ERR_PARAM;
 
+<<<<<<< HEAD
 	/* verify VID is valid */
+=======
+	/* verify VLAN ID is valid */
+>>>>>>> v4.9.227
 	if (pvid >= FM10K_VLAN_TABLE_VID_MAX)
 		return FM10K_ERR_PARAM;
 
@@ -1736,6 +2119,7 @@ s32 fm10k_msg_err_pf(struct fm10k_hw *hw, u32 **results,
 	return 0;
 }
 
+<<<<<<< HEAD
 const struct fm10k_tlv_attr fm10k_1588_timestamp_msg_attr[] = {
 	FM10K_TLV_ATTR_LE_STRUCT(FM10K_PF_ATTR_ID_1588_TIMESTAMP,
 				 sizeof(struct fm10k_swapi_1588_timestamp)),
@@ -1819,6 +2203,8 @@ static u64 fm10k_read_systime_pf(struct fm10k_hw *hw)
 	return ((u64)systime_h << 32) | systime_l;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct fm10k_msg_data fm10k_msg_data_pf[] = {
 	FM10K_PF_MSG_ERR_HANDLER(XCAST_MODES, fm10k_msg_err_pf),
 	FM10K_PF_MSG_ERR_HANDLER(UPDATE_MAC_FWD_RULE, fm10k_msg_err_pf),
@@ -1829,6 +2215,7 @@ static const struct fm10k_msg_data fm10k_msg_data_pf[] = {
 	FM10K_TLV_MSG_ERROR_HANDLER(fm10k_tlv_msg_error),
 };
 
+<<<<<<< HEAD
 static struct fm10k_mac_ops mac_ops_pf = {
 	.get_bus_info		= &fm10k_get_bus_info_generic,
 	.reset_hw		= &fm10k_reset_hw_pf,
@@ -1863,6 +2250,39 @@ static struct fm10k_iov_ops iov_ops_pf = {
 	.reset_lport			= &fm10k_iov_reset_lport_pf,
 	.update_stats			= &fm10k_iov_update_stats_pf,
 	.report_timestamp		= &fm10k_iov_report_timestamp_pf,
+=======
+static const struct fm10k_mac_ops mac_ops_pf = {
+	.get_bus_info		= fm10k_get_bus_info_generic,
+	.reset_hw		= fm10k_reset_hw_pf,
+	.init_hw		= fm10k_init_hw_pf,
+	.start_hw		= fm10k_start_hw_generic,
+	.stop_hw		= fm10k_stop_hw_generic,
+	.update_vlan		= fm10k_update_vlan_pf,
+	.read_mac_addr		= fm10k_read_mac_addr_pf,
+	.update_uc_addr		= fm10k_update_uc_addr_pf,
+	.update_mc_addr		= fm10k_update_mc_addr_pf,
+	.update_xcast_mode	= fm10k_update_xcast_mode_pf,
+	.update_int_moderator	= fm10k_update_int_moderator_pf,
+	.update_lport_state	= fm10k_update_lport_state_pf,
+	.update_hw_stats	= fm10k_update_hw_stats_pf,
+	.rebind_hw_stats	= fm10k_rebind_hw_stats_pf,
+	.configure_dglort_map	= fm10k_configure_dglort_map_pf,
+	.set_dma_mask		= fm10k_set_dma_mask_pf,
+	.get_fault		= fm10k_get_fault_pf,
+	.get_host_state		= fm10k_get_host_state_pf,
+	.request_lport_map	= fm10k_request_lport_map_pf,
+};
+
+static const struct fm10k_iov_ops iov_ops_pf = {
+	.assign_resources		= fm10k_iov_assign_resources_pf,
+	.configure_tc			= fm10k_iov_configure_tc_pf,
+	.assign_int_moderator		= fm10k_iov_assign_int_moderator_pf,
+	.assign_default_mac_vlan	= fm10k_iov_assign_default_mac_vlan_pf,
+	.reset_resources		= fm10k_iov_reset_resources_pf,
+	.set_lport			= fm10k_iov_set_lport_pf,
+	.reset_lport			= fm10k_iov_reset_lport_pf,
+	.update_stats			= fm10k_iov_update_stats_pf,
+>>>>>>> v4.9.227
 };
 
 static s32 fm10k_get_invariants_pf(struct fm10k_hw *hw)
@@ -1872,9 +2292,15 @@ static s32 fm10k_get_invariants_pf(struct fm10k_hw *hw)
 	return fm10k_sm_mbx_init(hw, &hw->mbx, fm10k_msg_data_pf);
 }
 
+<<<<<<< HEAD
 struct fm10k_info fm10k_pf_info = {
 	.mac		= fm10k_mac_pf,
 	.get_invariants	= &fm10k_get_invariants_pf,
+=======
+const struct fm10k_info fm10k_pf_info = {
+	.mac		= fm10k_mac_pf,
+	.get_invariants	= fm10k_get_invariants_pf,
+>>>>>>> v4.9.227
 	.mac_ops	= &mac_ops_pf,
 	.iov_ops	= &iov_ops_pf,
 };

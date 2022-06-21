@@ -15,7 +15,10 @@
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/pinctrl/pinctrl.h>
@@ -781,11 +784,17 @@ static int imx51_pinctrl_probe(struct platform_device *pdev)
 static struct platform_driver imx51_pinctrl_driver = {
 	.driver = {
 		.name = "imx51-pinctrl",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = imx51_pinctrl_of_match,
 	},
 	.probe = imx51_pinctrl_probe,
 	.remove = imx_pinctrl_remove,
+=======
+		.of_match_table = imx51_pinctrl_of_match,
+	},
+	.probe = imx51_pinctrl_probe,
+>>>>>>> v4.9.227
 };
 
 static int __init imx51_pinctrl_init(void)
@@ -793,6 +802,7 @@ static int __init imx51_pinctrl_init(void)
 	return platform_driver_register(&imx51_pinctrl_driver);
 }
 arch_initcall(imx51_pinctrl_init);
+<<<<<<< HEAD
 
 static void __exit imx51_pinctrl_exit(void)
 {
@@ -802,3 +812,5 @@ module_exit(imx51_pinctrl_exit);
 MODULE_AUTHOR("Dong Aisheng <dong.aisheng@linaro.org>");
 MODULE_DESCRIPTION("Freescale IMX51 pinctrl driver");
 MODULE_LICENSE("GPL v2");
+=======
+>>>>>>> v4.9.227

@@ -516,6 +516,22 @@ static struct axxia_clk *axmclk_clocks[] = {
 	[AXXIA_CLK_MMC]      = &clk_mmc_mux.aclk,
 };
 
+<<<<<<< HEAD
+=======
+static struct clk_hw *
+of_clk_axmclk_get(struct of_phandle_args *clkspec, void *unused)
+{
+	unsigned int idx = clkspec->args[0];
+
+	if (idx >= ARRAY_SIZE(axmclk_clocks)) {
+		pr_err("%s: invalid index %u\n", __func__, idx);
+		return ERR_PTR(-EINVAL);
+	}
+
+	return &axmclk_clocks[idx]->hw;
+}
+
+>>>>>>> v4.9.227
 static const struct regmap_config axmclk_regmap_config = {
 	.reg_bits	= 32,
 	.reg_stride	= 4,
@@ -530,21 +546,29 @@ static const struct of_device_id axmclk_match_table[] = {
 };
 MODULE_DEVICE_TABLE(of, axmclk_match_table);
 
+<<<<<<< HEAD
 struct axmclk_priv {
 	struct clk_onecell_data onecell;
 	struct clk *clks[];
 };
 
+=======
+>>>>>>> v4.9.227
 static int axmclk_probe(struct platform_device *pdev)
 {
 	void __iomem *base;
 	struct resource *res;
 	int i, ret;
 	struct device *dev = &pdev->dev;
+<<<<<<< HEAD
 	struct clk *clk;
 	struct regmap *regmap;
 	size_t num_clks;
 	struct axmclk_priv *priv;
+=======
+	struct regmap *regmap;
+	size_t num_clks;
+>>>>>>> v4.9.227
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	base = devm_ioremap_resource(dev, res);
@@ -556,6 +580,7 @@ static int axmclk_probe(struct platform_device *pdev)
 		return PTR_ERR(regmap);
 
 	num_clks = ARRAY_SIZE(axmclk_clocks);
+<<<<<<< HEAD
 	pr_info("axmclk: supporting %u clocks\n", num_clks);
 	priv = devm_kzalloc(dev, sizeof(*priv) + sizeof(*priv->clks) * num_clks,
 			    GFP_KERNEL);
@@ -564,12 +589,16 @@ static int axmclk_probe(struct platform_device *pdev)
 
 	priv->onecell.clks = priv->clks;
 	priv->onecell.clk_num = num_clks;
+=======
+	pr_info("axmclk: supporting %zu clocks\n", num_clks);
+>>>>>>> v4.9.227
 
 	/* Update each entry with the allocated regmap and register the clock
 	 * with the common clock framework
 	 */
 	for (i = 0; i < num_clks; i++) {
 		axmclk_clocks[i]->regmap = regmap;
+<<<<<<< HEAD
 		clk = devm_clk_register(dev, &axmclk_clocks[i]->hw);
 		if (IS_ERR(clk))
 			return PTR_ERR(clk);
@@ -580,6 +609,14 @@ static int axmclk_probe(struct platform_device *pdev)
 				  of_clk_src_onecell_get, &priv->onecell);
 
 	return ret;
+=======
+		ret = devm_clk_hw_register(dev, &axmclk_clocks[i]->hw);
+		if (ret)
+			return ret;
+	}
+
+	return of_clk_add_hw_provider(dev->of_node, of_clk_axmclk_get, NULL);
+>>>>>>> v4.9.227
 }
 
 static int axmclk_remove(struct platform_device *pdev)
@@ -593,7 +630,10 @@ static struct platform_driver axmclk_driver = {
 	.remove		= axmclk_remove,
 	.driver		= {
 		.name	= "clk-axm5516",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = axmclk_match_table,
 	},
 };

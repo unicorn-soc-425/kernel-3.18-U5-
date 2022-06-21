@@ -8,7 +8,10 @@
  * Author: Linus Walleij <triad@df.lth.se>
  */
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
@@ -328,6 +331,7 @@ out_no_resource:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __exit charlcd_remove(struct platform_device *pdev)
 {
 	struct charlcd *lcd = platform_get_drvdata(pdev);
@@ -342,6 +346,8 @@ static int __exit charlcd_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int charlcd_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -375,6 +381,7 @@ static const struct of_device_id charlcd_match[] = {
 static struct platform_driver charlcd_driver = {
 	.driver = {
 		.name = DRIVERNAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.pm = &charlcd_pm_ops,
 		.of_match_table = of_match_ptr(charlcd_match),
@@ -387,3 +394,11 @@ module_platform_driver_probe(charlcd_driver, charlcd_probe);
 MODULE_AUTHOR("Linus Walleij <triad@df.lth.se>");
 MODULE_DESCRIPTION("ARM Character LCD Driver");
 MODULE_LICENSE("GPL v2");
+=======
+		.pm = &charlcd_pm_ops,
+		.suppress_bind_attrs = true,
+		.of_match_table = of_match_ptr(charlcd_match),
+	},
+};
+builtin_platform_driver_probe(charlcd_driver, charlcd_probe);
+>>>>>>> v4.9.227

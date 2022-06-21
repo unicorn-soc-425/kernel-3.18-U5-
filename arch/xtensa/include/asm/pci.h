@@ -33,7 +33,11 @@ extern struct pci_controller* pcibios_alloc_controller(void);
 
 #include <linux/types.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+>>>>>>> v4.9.227
 #include <linux/string.h>
 #include <asm/io.h>
 
@@ -55,9 +59,12 @@ int pci_mmap_page_range(struct pci_dev *pdev, struct vm_area_struct *vma,
 
 #endif /* __KERNEL__ */
 
+<<<<<<< HEAD
 /* Implement the pci_ DMA API in terms of the generic device dma_ one */
 #include <asm-generic/pci-dma-compat.h>
 
+=======
+>>>>>>> v4.9.227
 /* Generic PCI */
 #include <asm-generic/pci.h>
 

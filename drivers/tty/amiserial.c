@@ -32,7 +32,10 @@
 #include <linux/delay.h>
 
 #undef SERIAL_PARANOIA_CHECK
+<<<<<<< HEAD
 #define SERIAL_DO_RESTART
+=======
+>>>>>>> v4.9.227
 
 /* Set of debugging defines */
 
@@ -399,7 +402,11 @@ static void check_modem_status(struct serial_state *info)
 		wake_up_interruptible(&port->delta_msr_wait);
 	}
 
+<<<<<<< HEAD
 	if ((port->flags & ASYNC_CHECK_CD) && (dstatus & SER_DCD)) {
+=======
+	if (tty_port_check_carrier(port) && (dstatus & SER_DCD)) {
+>>>>>>> v4.9.227
 #if (defined(SERIAL_DEBUG_OPEN) || defined(SERIAL_DEBUG_INTR))
 		printk("ttyS%d CD now %s...", info->line,
 		       (!(status & SER_DCD)) ? "on" : "off");
@@ -526,7 +533,11 @@ static int startup(struct tty_struct *tty, struct serial_state *info)
 
 	local_irq_save(flags);
 
+<<<<<<< HEAD
 	if (port->flags & ASYNC_INITIALIZED) {
+=======
+	if (tty_port_initialized(port)) {
+>>>>>>> v4.9.227
 		free_page(page);
 		goto errout;
 	}
@@ -587,7 +598,11 @@ static int startup(struct tty_struct *tty, struct serial_state *info)
 	 */
 	change_speed(tty, info, NULL);
 
+<<<<<<< HEAD
 	port->flags |= ASYNC_INITIALIZED;
+=======
+	tty_port_set_initialized(port, 1);
+>>>>>>> v4.9.227
 	local_irq_restore(flags);
 	return 0;
 
@@ -605,7 +620,11 @@ static void shutdown(struct tty_struct *tty, struct serial_state *info)
 	unsigned long	flags;
 	struct serial_state *state;
 
+<<<<<<< HEAD
 	if (!(info->tport.flags & ASYNC_INITIALIZED))
+=======
+	if (!tty_port_initialized(&info->tport))
+>>>>>>> v4.9.227
 		return;
 
 	state = info;
@@ -640,13 +659,21 @@ static void shutdown(struct tty_struct *tty, struct serial_state *info)
 	custom.adkcon = AC_UARTBRK;
 	mb();
 
+<<<<<<< HEAD
 	if (tty->termios.c_cflag & HUPCL)
+=======
+	if (C_HUPCL(tty))
+>>>>>>> v4.9.227
 		info->MCR &= ~(SER_DTR|SER_RTS);
 	rtsdtr_ctrl(info->MCR);
 
 	set_bit(TTY_IO_ERROR, &tty->flags);
 
+<<<<<<< HEAD
 	info->tport.flags &= ~ASYNC_INITIALIZED;
+=======
+	tty_port_set_initialized(&info->tport, 0);
+>>>>>>> v4.9.227
 	local_irq_restore(flags);
 }
 
@@ -728,6 +755,7 @@ static void change_speed(struct tty_struct *tty, struct serial_state *info,
 	info->IER &= ~UART_IER_MSI;
 	if (port->flags & ASYNC_HARDPPS_CD)
 		info->IER |= UART_IER_MSI;
+<<<<<<< HEAD
 	if (cflag & CRTSCTS) {
 		port->flags |= ASYNC_CTS_FLOW;
 		info->IER |= UART_IER_MSI;
@@ -739,6 +767,14 @@ static void change_speed(struct tty_struct *tty, struct serial_state *info,
 		port->flags |= ASYNC_CHECK_CD;
 		info->IER |= UART_IER_MSI;
 	}
+=======
+	tty_port_set_cts_flow(port, cflag & CRTSCTS);
+	if (cflag & CRTSCTS)
+		info->IER |= UART_IER_MSI;
+	tty_port_set_check_carrier(port, ~cflag & CLOCAL);
+	if (~cflag & CLOCAL)
+		info->IER |= UART_IER_MSI;
+>>>>>>> v4.9.227
 	/* TBD:
 	 * Does clearing IER_MSI imply that we should disable the VBL interrupt ?
 	 */
@@ -931,7 +967,11 @@ static void rs_send_xchar(struct tty_struct *tty, char ch)
 	struct serial_state *info = tty->driver_data;
         unsigned long flags;
 
+<<<<<<< HEAD
 	if (serial_paranoia_check(info, tty->name, "rs_send_char"))
+=======
+	if (serial_paranoia_check(info, tty->name, "rs_send_xchar"))
+>>>>>>> v4.9.227
 		return;
 
 	info->x_char = ch;
@@ -966,10 +1006,14 @@ static void rs_throttle(struct tty_struct * tty)
 	struct serial_state *info = tty->driver_data;
 	unsigned long flags;
 #ifdef SERIAL_DEBUG_THROTTLE
+<<<<<<< HEAD
 	char	buf[64];
 
 	printk("throttle %s: %d....\n", tty_name(tty, buf),
 	       tty->ldisc.chars_in_buffer(tty));
+=======
+	printk("throttle %s ....\n", tty_name(tty));
+>>>>>>> v4.9.227
 #endif
 
 	if (serial_paranoia_check(info, tty->name, "rs_throttle"))
@@ -978,7 +1022,11 @@ static void rs_throttle(struct tty_struct * tty)
 	if (I_IXOFF(tty))
 		rs_send_xchar(tty, STOP_CHAR(tty));
 
+<<<<<<< HEAD
 	if (tty->termios.c_cflag & CRTSCTS)
+=======
+	if (C_CRTSCTS(tty))
+>>>>>>> v4.9.227
 		info->MCR &= ~SER_RTS;
 
 	local_irq_save(flags);
@@ -991,10 +1039,14 @@ static void rs_unthrottle(struct tty_struct * tty)
 	struct serial_state *info = tty->driver_data;
 	unsigned long flags;
 #ifdef SERIAL_DEBUG_THROTTLE
+<<<<<<< HEAD
 	char	buf[64];
 
 	printk("unthrottle %s: %d....\n", tty_name(tty, buf),
 	       tty->ldisc.chars_in_buffer(tty));
+=======
+	printk("unthrottle %s ....\n", tty_name(tty));
+>>>>>>> v4.9.227
 #endif
 
 	if (serial_paranoia_check(info, tty->name, "rs_unthrottle"))
@@ -1006,7 +1058,11 @@ static void rs_unthrottle(struct tty_struct * tty)
 		else
 			rs_send_xchar(tty, START_CHAR(tty));
 	}
+<<<<<<< HEAD
 	if (tty->termios.c_cflag & CRTSCTS)
+=======
+	if (C_CRTSCTS(tty))
+>>>>>>> v4.9.227
 		info->MCR |= SER_RTS;
 	local_irq_save(flags);
 	rtsdtr_ctrl(info->MCR);
@@ -1096,7 +1152,11 @@ static int set_serial_info(struct tty_struct *tty, struct serial_state *state,
 	port->low_latency = (port->flags & ASYNC_LOW_LATENCY) ? 1 : 0;
 
 check_and_exit:
+<<<<<<< HEAD
 	if (port->flags & ASYNC_INITIALIZED) {
+=======
+	if (tty_port_initialized(port)) {
+>>>>>>> v4.9.227
 		if (change_spd) {
 			if ((port->flags & ASYNC_SPD_MASK) == ASYNC_SPD_HI)
 				tty->alt_speed = 57600;
@@ -1150,7 +1210,11 @@ static int rs_tiocmget(struct tty_struct *tty)
 
 	if (serial_paranoia_check(info, tty->name, "rs_ioctl"))
 		return -ENODEV;
+<<<<<<< HEAD
 	if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+	if (tty_io_error(tty))
+>>>>>>> v4.9.227
 		return -EIO;
 
 	control = info->MCR;
@@ -1172,7 +1236,11 @@ static int rs_tiocmset(struct tty_struct *tty, unsigned int set,
 
 	if (serial_paranoia_check(info, tty->name, "rs_ioctl"))
 		return -ENODEV;
+<<<<<<< HEAD
 	if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+	if (tty_io_error(tty))
+>>>>>>> v4.9.227
 		return -EIO;
 
 	local_irq_save(flags);
@@ -1257,7 +1325,11 @@ static int rs_ioctl(struct tty_struct *tty,
 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
 	    (cmd != TIOCSERCONFIG) && (cmd != TIOCSERGSTRUCT) &&
 	    (cmd != TIOCMIWAIT) && (cmd != TIOCGICOUNT)) {
+<<<<<<< HEAD
 		if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+		if (tty_io_error(tty))
+>>>>>>> v4.9.227
 		    return -EIO;
 	}
 
@@ -1339,8 +1411,12 @@ static void rs_set_termios(struct tty_struct *tty, struct ktermios *old_termios)
 	change_speed(tty, info, old_termios);
 
 	/* Handle transition to B0 status */
+<<<<<<< HEAD
 	if ((old_termios->c_cflag & CBAUD) &&
 	    !(cflag & CBAUD)) {
+=======
+	if ((old_termios->c_cflag & CBAUD) && !(cflag & CBAUD)) {
+>>>>>>> v4.9.227
 		info->MCR &= ~(SER_DTR|SER_RTS);
 		local_irq_save(flags);
 		rtsdtr_ctrl(info->MCR);
@@ -1348,6 +1424,7 @@ static void rs_set_termios(struct tty_struct *tty, struct ktermios *old_termios)
 	}
 
 	/* Handle transition away from B0 status */
+<<<<<<< HEAD
 	if (!(old_termios->c_cflag & CBAUD) &&
 	    (cflag & CBAUD)) {
 		info->MCR |= SER_DTR;
@@ -1355,14 +1432,24 @@ static void rs_set_termios(struct tty_struct *tty, struct ktermios *old_termios)
 		    !test_bit(TTY_THROTTLED, &tty->flags)) {
 			info->MCR |= SER_RTS;
 		}
+=======
+	if (!(old_termios->c_cflag & CBAUD) && (cflag & CBAUD)) {
+		info->MCR |= SER_DTR;
+		if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+			info->MCR |= SER_RTS;
+>>>>>>> v4.9.227
 		local_irq_save(flags);
 		rtsdtr_ctrl(info->MCR);
 		local_irq_restore(flags);
 	}
 
 	/* Handle turning off CRTSCTS */
+<<<<<<< HEAD
 	if ((old_termios->c_cflag & CRTSCTS) &&
 	    !(tty->termios.c_cflag & CRTSCTS)) {
+=======
+	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty)) {
+>>>>>>> v4.9.227
 		tty->hw_stopped = 0;
 		rs_start(tty);
 	}
@@ -1374,8 +1461,12 @@ static void rs_set_termios(struct tty_struct *tty, struct ktermios *old_termios)
 	 * XXX  It's not clear whether the current behavior is correct
 	 * or not.  Hence, this may change.....
 	 */
+<<<<<<< HEAD
 	if (!(old_termios->c_cflag & CLOCAL) &&
 	    (tty->termios.c_cflag & CLOCAL))
+=======
+	if (!(old_termios->c_cflag & CLOCAL) && C_CLOCAL(tty))
+>>>>>>> v4.9.227
 		wake_up_interruptible(&info->open_wait);
 #endif
 }
@@ -1408,7 +1499,11 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
 	 * line status register.
 	 */
 	state->read_status_mask &= ~UART_LSR_DR;
+<<<<<<< HEAD
 	if (port->flags & ASYNC_INITIALIZED) {
+=======
+	if (tty_port_initialized(port)) {
+>>>>>>> v4.9.227
 	        /* disable receive interrupts */
 	        custom.intena = IF_RBF;
 		mb();
@@ -1508,7 +1603,11 @@ static void rs_hangup(struct tty_struct *tty)
 	rs_flush_buffer(tty);
 	shutdown(tty, info);
 	info->tport.count = 0;
+<<<<<<< HEAD
 	info->tport.flags &= ~ASYNC_NORMAL_ACTIVE;
+=======
+	tty_port_set_active(&info->tport, 0);
+>>>>>>> v4.9.227
 	info->tport.tty = NULL;
 	wake_up_interruptible(&info->tport.open_wait);
 }
@@ -1556,7 +1655,11 @@ static inline void line_info(struct seq_file *m, int line,
 
 	local_irq_save(flags);
 	status = ciab.pra;
+<<<<<<< HEAD
 	control = (state->tport.flags & ASYNC_INITIALIZED) ? state->MCR : status;
+=======
+	control = tty_port_initialized(&state->tport) ? state->MCR : status;
+>>>>>>> v4.9.227
 	local_irq_restore(flags);
 
 	stat_buf[0] = 0;
@@ -1786,7 +1889,12 @@ static int __exit amiga_serial_remove(struct platform_device *pdev)
 	struct serial_state *state = platform_get_drvdata(pdev);
 
 	/* printk("Unloading %s: version %s\n", serial_name, serial_version); */
+<<<<<<< HEAD
 	if ((error = tty_unregister_driver(serial_driver)))
+=======
+	error = tty_unregister_driver(serial_driver);
+	if (error)
+>>>>>>> v4.9.227
 		printk("SERIAL: failed to unregister serial driver (%d)\n",
 		       error);
 	put_tty_driver(serial_driver);
@@ -1802,7 +1910,10 @@ static struct platform_driver amiga_serial_driver = {
 	.remove = __exit_p(amiga_serial_remove),
 	.driver   = {
 		.name	= "amiga-serial",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

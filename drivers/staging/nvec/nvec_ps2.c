@@ -78,7 +78,11 @@ static int nvec_ps2_notifier(struct notifier_block *nb,
 			     unsigned long event_type, void *data)
 {
 	int i;
+<<<<<<< HEAD
 	unsigned char *msg = (unsigned char *)data;
+=======
+	unsigned char *msg = data;
+>>>>>>> v4.9.227
 
 	switch (event_type) {
 	case NVEC_PS2_EVT:
@@ -107,8 +111,13 @@ static int nvec_mouse_probe(struct platform_device *pdev)
 	struct nvec_chip *nvec = dev_get_drvdata(pdev->dev.parent);
 	struct serio *ser_dev;
 
+<<<<<<< HEAD
 	ser_dev = devm_kzalloc(&pdev->dev, sizeof(struct serio), GFP_KERNEL);
 	if (ser_dev == NULL)
+=======
+	ser_dev = kzalloc(sizeof(struct serio), GFP_KERNEL);
+	if (!ser_dev)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	ser_dev->id.type = SERIO_8042;
@@ -173,7 +182,10 @@ static struct platform_driver nvec_mouse_driver = {
 	.remove = nvec_mouse_remove,
 	.driver = {
 		.name = "nvec-mouse",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &nvec_mouse_pm_ops,
 	},
 };

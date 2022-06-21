@@ -142,6 +142,7 @@ int kfd_doorbell_mmap(struct kfd_process *process, struct vm_area_struct *vma)
 
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
+<<<<<<< HEAD
 	pr_debug("mapping doorbell page:\n");
 	pr_debug("     target user address == 0x%08llX\n",
 			(unsigned long long) vma->vm_start);
@@ -149,6 +150,17 @@ int kfd_doorbell_mmap(struct kfd_process *process, struct vm_area_struct *vma)
 	pr_debug("     vm_flags            == 0x%04lX\n", vma->vm_flags);
 	pr_debug("     size                == 0x%04lX\n",
 			 doorbell_process_allocation());
+=======
+	pr_debug("kfd: mapping doorbell page in %s\n"
+		 "     target user address == 0x%08llX\n"
+		 "     physical address    == 0x%08llX\n"
+		 "     vm_flags            == 0x%04lX\n"
+		 "     size                == 0x%04lX\n",
+		 __func__,
+		 (unsigned long long) vma->vm_start, address, vma->vm_flags,
+		 doorbell_process_allocation());
+
+>>>>>>> v4.9.227
 
 	return io_remap_pfn_range(vma,
 				vma->vm_start,
@@ -184,7 +196,11 @@ u32 __iomem *kfd_get_kernel_doorbell(struct kfd_dev *kfd,
 							sizeof(u32)) + inx;
 
 	pr_debug("kfd: get kernel queue doorbell\n"
+<<<<<<< HEAD
 			 "     doorbell offset   == 0x%08d\n"
+=======
+			 "     doorbell offset   == 0x%08X\n"
+>>>>>>> v4.9.227
 			 "     kernel address    == 0x%08lX\n",
 		*doorbell_off, (uintptr_t)(kfd->doorbell_kernel_ptr + inx));
 

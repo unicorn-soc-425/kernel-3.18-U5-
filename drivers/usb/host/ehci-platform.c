@@ -19,6 +19,10 @@
  *
  * Licensed under the GNU/GPL. See COPYING for details.
  */
+<<<<<<< HEAD
+=======
+#include <linux/acpi.h>
+>>>>>>> v4.9.227
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
 #include <linux/err.h>
@@ -37,13 +41,25 @@
 #include "ehci.h"
 
 #define DRIVER_DESC "EHCI generic platform driver"
+<<<<<<< HEAD
 #define EHCI_MAX_CLKS 3
+=======
+#define EHCI_MAX_CLKS 4
+#define EHCI_MAX_RSTS 4
+>>>>>>> v4.9.227
 #define hcd_to_ehci_priv(h) ((struct ehci_platform_priv *)hcd_to_ehci(h)->priv)
 
 struct ehci_platform_priv {
 	struct clk *clks[EHCI_MAX_CLKS];
+<<<<<<< HEAD
 	struct reset_control *rst;
 	struct phy *phy;
+=======
+	struct reset_control *rsts[EHCI_MAX_RSTS];
+	struct phy **phys;
+	int num_phys;
+	bool reset_on_resume;
+>>>>>>> v4.9.227
 };
 
 static const char hcd_name[] = "ehci-platform";
@@ -55,9 +71,13 @@ static int ehci_platform_reset(struct usb_hcd *hcd)
 	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
 	int retval;
 
+<<<<<<< HEAD
 	hcd->has_tt = pdata->has_tt;
 	ehci->has_synopsys_hc_bug = pdata->has_synopsys_hc_bug;
 	ehci->pool_64_bit_align = pdata->pool_64_bit_align;
+=======
+	ehci->has_synopsys_hc_bug = pdata->has_synopsys_hc_bug;
+>>>>>>> v4.9.227
 
 	if (pdata->pre_setup) {
 		retval = pdata->pre_setup(hcd);
@@ -79,7 +99,11 @@ static int ehci_platform_power_on(struct platform_device *dev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(dev);
 	struct ehci_platform_priv *priv = hcd_to_ehci_priv(hcd);
+<<<<<<< HEAD
 	int clk, ret;
+=======
+	int clk, ret, phy_num;
+>>>>>>> v4.9.227
 
 	for (clk = 0; clk < EHCI_MAX_CLKS && priv->clks[clk]; clk++) {
 		ret = clk_prepare_enable(priv->clks[clk]);
@@ -87,6 +111,7 @@ static int ehci_platform_power_on(struct platform_device *dev)
 			goto err_disable_clks;
 	}
 
+<<<<<<< HEAD
 	if (priv->phy) {
 		ret = phy_init(priv->phy);
 		if (ret)
@@ -95,12 +120,30 @@ static int ehci_platform_power_on(struct platform_device *dev)
 		ret = phy_power_on(priv->phy);
 		if (ret)
 			goto err_exit_phy;
+=======
+	for (phy_num = 0; phy_num < priv->num_phys; phy_num++) {
+		ret = phy_init(priv->phys[phy_num]);
+		if (ret)
+			goto err_exit_phy;
+		ret = phy_power_on(priv->phys[phy_num]);
+		if (ret) {
+			phy_exit(priv->phys[phy_num]);
+			goto err_exit_phy;
+		}
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 
 err_exit_phy:
+<<<<<<< HEAD
 	phy_exit(priv->phy);
+=======
+	while (--phy_num >= 0) {
+		phy_power_off(priv->phys[phy_num]);
+		phy_exit(priv->phys[phy_num]);
+	}
+>>>>>>> v4.9.227
 err_disable_clks:
 	while (--clk >= 0)
 		clk_disable_unprepare(priv->clks[clk]);
@@ -112,11 +155,19 @@ static void ehci_platform_power_off(struct platform_device *dev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(dev);
 	struct ehci_platform_priv *priv = hcd_to_ehci_priv(hcd);
+<<<<<<< HEAD
 	int clk;
 
 	if (priv->phy) {
 		phy_power_off(priv->phy);
 		phy_exit(priv->phy);
+=======
+	int clk, phy_num;
+
+	for (phy_num = 0; phy_num < priv->num_phys; phy_num++) {
+		phy_power_off(priv->phys[phy_num]);
+		phy_exit(priv->phys[phy_num]);
+>>>>>>> v4.9.227
 	}
 
 	for (clk = EHCI_MAX_CLKS - 1; clk >= 0; clk--)
@@ -144,7 +195,11 @@ static int ehci_platform_probe(struct platform_device *dev)
 	struct usb_ehci_pdata *pdata = dev_get_platdata(&dev->dev);
 	struct ehci_platform_priv *priv;
 	struct ehci_hcd *ehci;
+<<<<<<< HEAD
 	int err, irq, clk = 0;
+=======
+	int err, irq, phy_num, clk = 0, rst;
+>>>>>>> v4.9.227
 
 	if (usb_disabled())
 		return -ENODEV;
@@ -156,20 +211,32 @@ static int ehci_platform_probe(struct platform_device *dev)
 	if (!pdata)
 		pdata = &ehci_platform_defaults;
 
+<<<<<<< HEAD
 	err = dma_coerce_mask_and_coherent(&dev->dev, DMA_BIT_MASK(32));
 	if (err)
 		return err;
+=======
+	err = dma_coerce_mask_and_coherent(&dev->dev,
+		pdata->dma_mask_64 ? DMA_BIT_MASK(64) : DMA_BIT_MASK(32));
+	if (err) {
+		dev_err(&dev->dev, "Error: DMA mask configuration failed\n");
+		return err;
+	}
+>>>>>>> v4.9.227
 
 	irq = platform_get_irq(dev, 0);
 	if (irq < 0) {
 		dev_err(&dev->dev, "no irq provided");
 		return irq;
 	}
+<<<<<<< HEAD
 	res_mem = platform_get_resource(dev, IORESOURCE_MEM, 0);
 	if (!res_mem) {
 		dev_err(&dev->dev, "no memory resource provided");
 		return -ENXIO;
 	}
+=======
+>>>>>>> v4.9.227
 
 	hcd = usb_create_hcd(&ehci_platform_hc_driver, &dev->dev,
 			     dev_name(&dev->dev));
@@ -191,12 +258,41 @@ static int ehci_platform_probe(struct platform_device *dev)
 		if (of_property_read_bool(dev->dev.of_node, "big-endian"))
 			ehci->big_endian_mmio = ehci->big_endian_desc = 1;
 
+<<<<<<< HEAD
 		priv->phy = devm_phy_get(&dev->dev, "usb");
 		if (IS_ERR(priv->phy)) {
 			err = PTR_ERR(priv->phy);
 			if (err == -EPROBE_DEFER)
 				goto err_put_hcd;
 			priv->phy = NULL;
+=======
+		if (of_property_read_bool(dev->dev.of_node,
+					  "needs-reset-on-resume"))
+			priv->reset_on_resume = true;
+
+		if (of_property_read_bool(dev->dev.of_node,
+					  "has-transaction-translator"))
+			hcd->has_tt = 1;
+
+		priv->num_phys = of_count_phandle_with_args(dev->dev.of_node,
+				"phys", "#phy-cells");
+
+		if (priv->num_phys > 0) {
+			priv->phys = devm_kcalloc(&dev->dev, priv->num_phys,
+					    sizeof(struct phy *), GFP_KERNEL);
+			if (!priv->phys)
+				return -ENOMEM;
+		} else
+			priv->num_phys = 0;
+
+		for (phy_num = 0; phy_num < priv->num_phys; phy_num++) {
+			priv->phys[phy_num] = devm_of_phy_get_by_index(
+					&dev->dev, dev->dev.of_node, phy_num);
+			if (IS_ERR(priv->phys[phy_num])) {
+				err = PTR_ERR(priv->phys[phy_num]);
+					goto err_put_hcd;
+			}
+>>>>>>> v4.9.227
 		}
 
 		for (clk = 0; clk < EHCI_MAX_CLKS; clk++) {
@@ -211,6 +307,7 @@ static int ehci_platform_probe(struct platform_device *dev)
 		}
 	}
 
+<<<<<<< HEAD
 	priv->rst = devm_reset_control_get_optional(&dev->dev, NULL);
 	if (IS_ERR(priv->rst)) {
 		err = PTR_ERR(priv->rst);
@@ -221,12 +318,35 @@ static int ehci_platform_probe(struct platform_device *dev)
 		err = reset_control_deassert(priv->rst);
 		if (err)
 			goto err_put_clks;
+=======
+	for (rst = 0; rst < EHCI_MAX_RSTS; rst++) {
+		priv->rsts[rst] = devm_reset_control_get_shared_by_index(
+					&dev->dev, rst);
+		if (IS_ERR(priv->rsts[rst])) {
+			err = PTR_ERR(priv->rsts[rst]);
+			if (err == -EPROBE_DEFER)
+				goto err_reset;
+			priv->rsts[rst] = NULL;
+			break;
+		}
+
+		err = reset_control_deassert(priv->rsts[rst]);
+		if (err)
+			goto err_reset;
+>>>>>>> v4.9.227
 	}
 
 	if (pdata->big_endian_desc)
 		ehci->big_endian_desc = 1;
 	if (pdata->big_endian_mmio)
 		ehci->big_endian_mmio = 1;
+<<<<<<< HEAD
+=======
+	if (pdata->has_tt)
+		hcd->has_tt = 1;
+	if (pdata->reset_on_resume)
+		priv->reset_on_resume = true;
+>>>>>>> v4.9.227
 
 #ifndef CONFIG_USB_EHCI_BIG_ENDIAN_MMIO
 	if (ehci->big_endian_mmio) {
@@ -251,14 +371,24 @@ static int ehci_platform_probe(struct platform_device *dev)
 			goto err_reset;
 	}
 
+<<<<<<< HEAD
 	hcd->rsrc_start = res_mem->start;
 	hcd->rsrc_len = resource_size(res_mem);
 
+=======
+	res_mem = platform_get_resource(dev, IORESOURCE_MEM, 0);
+>>>>>>> v4.9.227
 	hcd->regs = devm_ioremap_resource(&dev->dev, res_mem);
 	if (IS_ERR(hcd->regs)) {
 		err = PTR_ERR(hcd->regs);
 		goto err_power;
 	}
+<<<<<<< HEAD
+=======
+	hcd->rsrc_start = res_mem->start;
+	hcd->rsrc_len = resource_size(res_mem);
+
+>>>>>>> v4.9.227
 	err = usb_add_hcd(hcd, irq, IRQF_SHARED);
 	if (err)
 		goto err_power;
@@ -272,8 +402,13 @@ err_power:
 	if (pdata->power_off)
 		pdata->power_off(dev);
 err_reset:
+<<<<<<< HEAD
 	if (priv->rst)
 		reset_control_assert(priv->rst);
+=======
+	while (--rst >= 0)
+		reset_control_assert(priv->rsts[rst]);
+>>>>>>> v4.9.227
 err_put_clks:
 	while (--clk >= 0)
 		clk_put(priv->clks[clk]);
@@ -291,15 +426,24 @@ static int ehci_platform_remove(struct platform_device *dev)
 	struct usb_hcd *hcd = platform_get_drvdata(dev);
 	struct usb_ehci_pdata *pdata = dev_get_platdata(&dev->dev);
 	struct ehci_platform_priv *priv = hcd_to_ehci_priv(hcd);
+<<<<<<< HEAD
 	int clk;
+=======
+	int clk, rst;
+>>>>>>> v4.9.227
 
 	usb_remove_hcd(hcd);
 
 	if (pdata->power_off)
 		pdata->power_off(dev);
 
+<<<<<<< HEAD
 	if (priv->rst)
 		reset_control_assert(priv->rst);
+=======
+	for (rst = 0; rst < EHCI_MAX_RSTS && priv->rsts[rst]; rst++)
+		reset_control_assert(priv->rsts[rst]);
+>>>>>>> v4.9.227
 
 	for (clk = 0; clk < EHCI_MAX_CLKS && priv->clks[clk]; clk++)
 		clk_put(priv->clks[clk]);
@@ -312,14 +456,22 @@ static int ehci_platform_remove(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 static int ehci_platform_suspend(struct device *dev)
 {
 	struct usb_hcd *hcd = dev_get_drvdata(dev);
 	struct usb_ehci_pdata *pdata = dev_get_platdata(dev);
+<<<<<<< HEAD
 	struct platform_device *pdev =
 		container_of(dev, struct platform_device, dev);
+=======
+	struct platform_device *pdev = to_platform_device(dev);
+>>>>>>> v4.9.227
 	bool do_wakeup = device_may_wakeup(dev);
 	int ret;
 
@@ -337,8 +489,13 @@ static int ehci_platform_resume(struct device *dev)
 {
 	struct usb_hcd *hcd = dev_get_drvdata(dev);
 	struct usb_ehci_pdata *pdata = dev_get_platdata(dev);
+<<<<<<< HEAD
 	struct platform_device *pdev =
 		container_of(dev, struct platform_device, dev);
+=======
+	struct platform_device *pdev = to_platform_device(dev);
+	struct ehci_platform_priv *priv = hcd_to_ehci_priv(hcd);
+>>>>>>> v4.9.227
 
 	if (pdata->power_on) {
 		int err = pdata->power_on(pdev);
@@ -346,6 +503,7 @@ static int ehci_platform_resume(struct device *dev)
 			return err;
 	}
 
+<<<<<<< HEAD
 	ehci_resume(hcd, false);
 	return 0;
 }
@@ -354,25 +512,49 @@ static int ehci_platform_resume(struct device *dev)
 #define ehci_platform_suspend	NULL
 #define ehci_platform_resume	NULL
 #endif /* CONFIG_PM */
+=======
+	ehci_resume(hcd, priv->reset_on_resume);
+	return 0;
+}
+#endif /* CONFIG_PM_SLEEP */
+>>>>>>> v4.9.227
 
 static const struct of_device_id vt8500_ehci_ids[] = {
 	{ .compatible = "via,vt8500-ehci", },
 	{ .compatible = "wm,prizm-ehci", },
 	{ .compatible = "generic-ehci", },
+<<<<<<< HEAD
+=======
+	{ .compatible = "cavium,octeon-6335-ehci", },
+>>>>>>> v4.9.227
 	{}
 };
 MODULE_DEVICE_TABLE(of, vt8500_ehci_ids);
 
+<<<<<<< HEAD
+=======
+static const struct acpi_device_id ehci_acpi_match[] = {
+	{ "PNP0D20", 0 }, /* EHCI controller without debug */
+	{ }
+};
+MODULE_DEVICE_TABLE(acpi, ehci_acpi_match);
+
+>>>>>>> v4.9.227
 static const struct platform_device_id ehci_platform_table[] = {
 	{ "ehci-platform", 0 },
 	{ }
 };
 MODULE_DEVICE_TABLE(platform, ehci_platform_table);
 
+<<<<<<< HEAD
 static const struct dev_pm_ops ehci_platform_pm_ops = {
 	.suspend	= ehci_platform_suspend,
 	.resume		= ehci_platform_resume,
 };
+=======
+static SIMPLE_DEV_PM_OPS(ehci_platform_pm_ops, ehci_platform_suspend,
+	ehci_platform_resume);
+>>>>>>> v4.9.227
 
 static struct platform_driver ehci_platform_driver = {
 	.id_table	= ehci_platform_table,
@@ -380,10 +562,17 @@ static struct platform_driver ehci_platform_driver = {
 	.remove		= ehci_platform_remove,
 	.shutdown	= usb_hcd_platform_shutdown,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.name	= "ehci-platform",
 		.pm	= &ehci_platform_pm_ops,
 		.of_match_table = vt8500_ehci_ids,
+=======
+		.name	= "ehci-platform",
+		.pm	= &ehci_platform_pm_ops,
+		.of_match_table = vt8500_ehci_ids,
+		.acpi_match_table = ACPI_PTR(ehci_acpi_match),
+>>>>>>> v4.9.227
 	}
 };
 

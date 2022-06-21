@@ -10,7 +10,10 @@
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/serial.h>
+<<<<<<< HEAD
 #include <linux/serial_core.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/serial_8250.h>
 #include <linux/delay.h>
 #include <linux/dio.h>
@@ -25,8 +28,12 @@
 #endif
 
 #ifdef CONFIG_HPAPCI
+<<<<<<< HEAD
 struct hp300_port
 {
+=======
+struct hp300_port {
+>>>>>>> v4.9.227
 	struct hp300_port *next;	/* next port */
 	int line;			/* line (tty) number */
 };
@@ -88,10 +95,13 @@ extern int hp300_uart_scode;
 /*
  * Parse the bootinfo to find descriptions for headless console and
  * debug serial ports and register them with the 8250 driver.
+<<<<<<< HEAD
  * This function should be called before serial_console_init() is called
  * to make sure the serial console will be available for use. IA-64 kernel
  * calls this function from setup_arch() after the EFI and ACPI tables have
  * been parsed.
+=======
+>>>>>>> v4.9.227
  */
 int __init hp300_setup_serial_console(void)
 {
@@ -116,7 +126,11 @@ int __init hp300_setup_serial_console(void)
 	/* Check for APCI console */
 	if (scode == 256) {
 #ifdef CONFIG_HPAPCI
+<<<<<<< HEAD
 		printk(KERN_INFO "Serial console is HP APCI 1\n");
+=======
+		pr_info("Serial console is HP APCI 1\n");
+>>>>>>> v4.9.227
 
 		port.uartclk = HPAPCI_BAUD_BASE * 16;
 		port.mapbase = (FRODO_BASE + FRODO_APCI_OFFSET(1));
@@ -124,7 +138,11 @@ int __init hp300_setup_serial_console(void)
 		port.regshift = 2;
 		add_preferred_console("ttyS", port.line, "9600n8");
 #else
+<<<<<<< HEAD
 		printk(KERN_WARNING "Serial console is APCI but support is disabled (CONFIG_HPAPCI)!\n");
+=======
+		pr_warn("Serial console is APCI but support is disabled (CONFIG_HPAPCI)!\n");
+>>>>>>> v4.9.227
 		return 0;
 #endif
 	} else {
@@ -133,7 +151,11 @@ int __init hp300_setup_serial_console(void)
 		if (!pa)
 			return 0;
 
+<<<<<<< HEAD
 		printk(KERN_INFO "Serial console is HP DCA at select code %d\n", scode);
+=======
+		pr_info("Serial console is HP DCA at select code %d\n", scode);
+>>>>>>> v4.9.227
 
 		port.uartclk = HPDCA_BAUD_BASE * 16;
 		port.mapbase = (pa + UART_OFFSET);
@@ -147,13 +169,21 @@ int __init hp300_setup_serial_console(void)
 		if (DIO_ID(pa + DIO_VIRADDRBASE) & 0x80)
 			add_preferred_console("ttyS", port.line, "9600n8");
 #else
+<<<<<<< HEAD
 		printk(KERN_WARNING "Serial console is DCA but support is disabled (CONFIG_HPDCA)!\n");
+=======
+		pr_warn("Serial console is DCA but support is disabled (CONFIG_HPDCA)!\n");
+>>>>>>> v4.9.227
 		return 0;
 #endif
 	}
 
 	if (early_serial_setup(&port) < 0)
+<<<<<<< HEAD
 		printk(KERN_WARNING "hp300_setup_serial_console(): early_serial_setup() failed.\n");
+=======
+		pr_warn("%s: early_serial_setup() failed.\n", __func__);
+>>>>>>> v4.9.227
 	return 0;
 }
 #endif /* CONFIG_SERIAL_8250_CONSOLE */
@@ -185,8 +215,14 @@ static int hpdca_init_one(struct dio_dev *d,
 	line = serial8250_register_8250_port(&uart);
 
 	if (line < 0) {
+<<<<<<< HEAD
 		printk(KERN_NOTICE "8250_hp300: register_serial() DCA scode %d"
 		       " irq %d failed\n", d->scode, uart.port.irq);
+=======
+		dev_notice(&d->dev,
+			  "8250_hp300: register_serial() DCA scode %d irq %d failed\n",
+			  d->scode, uart.port.irq);
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	}
 
@@ -254,8 +290,13 @@ static int __init hp300_8250_init(void)
 
 		/* Memory mapped I/O */
 		uart.port.iotype = UPIO_MEM;
+<<<<<<< HEAD
 		uart.port.flags = UPF_SKIP_TEST | UPF_SHARE_IRQ \
 			      | UPF_BOOT_AUTOCONF;
+=======
+		uart.port.flags = UPF_SKIP_TEST | UPF_SHARE_IRQ
+				| UPF_BOOT_AUTOCONF;
+>>>>>>> v4.9.227
 		/* XXX - no interrupt support yet */
 		uart.port.irq = 0;
 		uart.port.uartclk = HPAPCI_BAUD_BASE * 16;
@@ -266,8 +307,14 @@ static int __init hp300_8250_init(void)
 		line = serial8250_register_8250_port(&uart);
 
 		if (line < 0) {
+<<<<<<< HEAD
 			printk(KERN_NOTICE "8250_hp300: register_serial() APCI"
 			       " %d irq %d failed\n", i, uart.port.irq);
+=======
+			dev_notice(uart.port.dev,
+				   "8250_hp300: register_serial() APCI %d irq %d failed\n",
+				   i, uart.port.irq);
+>>>>>>> v4.9.227
 			kfree(port);
 			continue;
 		}

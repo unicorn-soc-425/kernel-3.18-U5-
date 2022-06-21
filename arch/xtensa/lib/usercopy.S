@@ -222,8 +222,13 @@ __xtensa_copy_user:
 	loopnez	a7, .Loop2done
 #else /* !XCHAL_HAVE_LOOPS */
 	beqz	a7, .Loop2done
+<<<<<<< HEAD
 	slli	a10, a7, 4
 	add	a10, a10, a3	# a10 = end of last 16B source chunk
+=======
+	slli	a12, a7, 4
+	add	a12, a12, a3	# a12 = end of last 16B source chunk
+>>>>>>> v4.9.227
 #endif /* !XCHAL_HAVE_LOOPS */
 .Loop2:
 	EX(l32i, a7, a3,  4, l_fixup)
@@ -241,7 +246,11 @@ __xtensa_copy_user:
 	EX(s32i, a9, a5, 12, s_fixup)
 	addi	a5, a5, 16
 #if !XCHAL_HAVE_LOOPS
+<<<<<<< HEAD
 	blt	a3, a10, .Loop2
+=======
+	blt	a3, a12, .Loop2
+>>>>>>> v4.9.227
 #endif /* !XCHAL_HAVE_LOOPS */
 .Loop2done:
 	bbci.l	a4, 3, .L12

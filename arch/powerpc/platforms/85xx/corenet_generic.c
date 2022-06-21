@@ -27,7 +27,11 @@
 #include <asm/udbg.h>
 #include <asm/mpic.h>
 #include <asm/ehv_pic.h>
+<<<<<<< HEAD
 #include <asm/qe_ic.h>
+=======
+#include <soc/fsl/qe/qe_ic.h>
+>>>>>>> v4.9.227
 
 #include <linux/of_platform.h>
 #include <sysdev/fsl_soc.h>
@@ -88,6 +92,18 @@ static const struct of_device_id of_device_ids[] = {
 		.compatible	= "simple-bus"
 	},
 	{
+<<<<<<< HEAD
+=======
+		.compatible	= "mdio-mux-gpio"
+	},
+	{
+		.compatible	= "fsl,fpga-ngpixis"
+	},
+	{
+		.compatible	= "fsl,fpga-qixis"
+	},
+	{
+>>>>>>> v4.9.227
 		.compatible	= "fsl,srio",
 	},
 	{
@@ -108,6 +124,12 @@ static const struct of_device_id of_device_ids[] = {
 	{
 		.compatible	= "fsl,qe",
 	},
+<<<<<<< HEAD
+=======
+	{
+		.compatible    = "fsl,fman",
+	},
+>>>>>>> v4.9.227
 	/* The following two are for the Freescale hypervisor */
 	{
 		.name		= "hypervisor",
@@ -138,12 +160,24 @@ static const char * const boards[] __initconst = {
 	"fsl,B4860QDS",
 	"fsl,B4420QDS",
 	"fsl,B4220QDS",
+<<<<<<< HEAD
+=======
+	"fsl,T1023RDB",
+	"fsl,T1024QDS",
+	"fsl,T1024RDB",
+	"fsl,T1040D4RDB",
+	"fsl,T1042D4RDB",
+>>>>>>> v4.9.227
 	"fsl,T1040QDS",
 	"fsl,T1042QDS",
 	"fsl,T1040RDB",
 	"fsl,T1042RDB",
 	"fsl,T1042RDB_PI",
 	"keymile,kmcoge4",
+<<<<<<< HEAD
+=======
+	"varisys,CYRUS",
+>>>>>>> v4.9.227
 	NULL
 };
 
@@ -152,25 +186,40 @@ static const char * const boards[] __initconst = {
  */
 static int __init corenet_generic_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
+=======
+>>>>>>> v4.9.227
 	char hv_compat[24];
 	int i;
 #ifdef CONFIG_SMP
 	extern struct smp_ops_t smp_85xx_ops;
 #endif
 
+<<<<<<< HEAD
 	if (of_flat_dt_match(root, boards))
+=======
+	if (of_device_compatible_match(of_root, boards))
+>>>>>>> v4.9.227
 		return 1;
 
 	/* Check if we're running under the Freescale hypervisor */
 	for (i = 0; boards[i]; i++) {
 		snprintf(hv_compat, sizeof(hv_compat), "%s-hv", boards[i]);
+<<<<<<< HEAD
 		if (of_flat_dt_is_compatible(root, hv_compat)) {
+=======
+		if (of_machine_is_compatible(hv_compat)) {
+>>>>>>> v4.9.227
 			ppc_md.init_IRQ = ehv_pic_init;
 
 			ppc_md.get_irq = ehv_pic_get_irq;
 			ppc_md.restart = fsl_hv_restart;
+<<<<<<< HEAD
 			ppc_md.power_off = fsl_hv_halt;
+=======
+			pm_power_off = fsl_hv_halt;
+>>>>>>> v4.9.227
 			ppc_md.halt = fsl_hv_halt;
 #ifdef CONFIG_SMP
 			/*
@@ -197,8 +246,22 @@ define_machine(corenet_generic) {
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
+<<<<<<< HEAD
 	.get_irq		= mpic_get_coreint_irq,
 	.restart		= fsl_rstcr_restart,
+=======
+/*
+ * Core reset may cause issues if using the proxy mode of MPIC.
+ * So, use the mixed mode of MPIC if enabling CPU hotplug.
+ *
+ * Likewise, problems have been seen with kexec when coreint is enabled.
+ */
+#if defined(CONFIG_HOTPLUG_CPU) || defined(CONFIG_KEXEC)
+	.get_irq		= mpic_get_irq,
+#else
+	.get_irq		= mpic_get_coreint_irq,
+#endif
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 #ifdef CONFIG_PPC64

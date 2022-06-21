@@ -12,7 +12,11 @@
 #include <linux/err.h>
 #include <linux/gpio.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/types.h>
@@ -62,8 +66,12 @@ static int spics_get_value(struct gpio_chip *chip, unsigned offset)
 
 static void spics_set_value(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct spear_spics *spics = container_of(chip, struct spear_spics,
 			chip);
+=======
+	struct spear_spics *spics = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 tmp;
 
 	/* select chip select from register */
@@ -94,8 +102,12 @@ static int spics_direction_output(struct gpio_chip *chip, unsigned offset,
 
 static int spics_request(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct spear_spics *spics = container_of(chip, struct spear_spics,
 			chip);
+=======
+	struct spear_spics *spics = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 tmp;
 
 	if (!spics->use_count++) {
@@ -110,8 +122,12 @@ static int spics_request(struct gpio_chip *chip, unsigned offset)
 
 static void spics_free(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct spear_spics *spics = container_of(chip, struct spear_spics,
 			chip);
+=======
+	struct spear_spics *spics = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 tmp;
 
 	if (!--spics->use_count) {
@@ -164,11 +180,19 @@ static int spics_gpio_probe(struct platform_device *pdev)
 	spics->chip.get = spics_get_value;
 	spics->chip.set = spics_set_value;
 	spics->chip.label = dev_name(&pdev->dev);
+<<<<<<< HEAD
 	spics->chip.dev = &pdev->dev;
 	spics->chip.owner = THIS_MODULE;
 	spics->last_off = -1;
 
 	ret = gpiochip_add(&spics->chip);
+=======
+	spics->chip.parent = &pdev->dev;
+	spics->chip.owner = THIS_MODULE;
+	spics->last_off = -1;
+
+	ret = devm_gpiochip_add_data(&pdev->dev, &spics->chip, spics);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(&pdev->dev, "unable to add gpio chip\n");
 		return ret;
@@ -186,12 +210,18 @@ static const struct of_device_id spics_gpio_of_match[] = {
 	{ .compatible = "st,spear-spics-gpio" },
 	{}
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, spics_gpio_of_match);
+=======
+>>>>>>> v4.9.227
 
 static struct platform_driver spics_gpio_driver = {
 	.probe = spics_gpio_probe,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "spear-spics-gpio",
 		.of_match_table = spics_gpio_of_match,
 	},
@@ -202,7 +232,10 @@ static int __init spics_gpio_init(void)
 	return platform_driver_register(&spics_gpio_driver);
 }
 subsys_initcall(spics_gpio_init);
+<<<<<<< HEAD
 
 MODULE_AUTHOR("Shiraz Hashim <shiraz.linux.kernel@gmail.com>");
 MODULE_DESCRIPTION("ST Microlectronics SPEAr SPI Chip Select Abstraction");
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> v4.9.227

@@ -52,10 +52,16 @@ static inline int zref_in_nodemask(struct zoneref *zref, nodemask_t *nodes)
 }
 
 /* Returns the next zone at or below highest_zoneidx in a zonelist */
+<<<<<<< HEAD
 struct zoneref *next_zones_zonelist(struct zoneref *z,
 					enum zone_type highest_zoneidx,
 					nodemask_t *nodes,
 					struct zone **zone)
+=======
+struct zoneref *__next_zones_zonelist(struct zoneref *z,
+					enum zone_type highest_zoneidx,
+					nodemask_t *nodes)
+>>>>>>> v4.9.227
 {
 	/*
 	 * Find the next suitable zone to use for the allocation.
@@ -69,11 +75,15 @@ struct zoneref *next_zones_zonelist(struct zoneref *z,
 				(z->zone && !zref_in_nodemask(z, nodes)))
 			z++;
 
+<<<<<<< HEAD
 	*zone = zonelist_zone(z);
+=======
+>>>>>>> v4.9.227
 	return z;
 }
 
 #ifdef CONFIG_ARCH_HAS_HOLES_MEMORYMODEL
+<<<<<<< HEAD
 int memmap_valid_within(unsigned long pfn,
 					struct page *page, struct zone *zone)
 {
@@ -84,6 +94,18 @@ int memmap_valid_within(unsigned long pfn,
 		return 0;
 
 	return 1;
+=======
+bool memmap_valid_within(unsigned long pfn,
+					struct page *page, struct zone *zone)
+{
+	if (page_to_pfn(page) != pfn)
+		return false;
+
+	if (page_zone(page) != zone)
+		return false;
+
+	return true;
+>>>>>>> v4.9.227
 }
 #endif /* CONFIG_ARCH_HAS_HOLES_MEMORYMODEL */
 

@@ -496,7 +496,11 @@
 
 		hdd {
 			gpios = <&mcu_pio 1 0>;
+<<<<<<< HEAD
 			linux,default-trigger = "ide-disk";
+=======
+			linux,default-trigger = "disk-activity";
+>>>>>>> v4.9.227
 		};
 	};
 };

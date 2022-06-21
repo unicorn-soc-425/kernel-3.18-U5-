@@ -20,6 +20,7 @@
 #include <linux/usb/ch9.h>
 #include <linux/usb/gadget.h>
 
+<<<<<<< HEAD
 #include "gadget_chips.h"
 
 /*
@@ -200,6 +201,8 @@ find_ep (struct usb_gadget *gadget, const char *name)
 	return NULL;
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * usb_ep_autoconfig_ss() - choose an endpoint matching the ep
  * descriptor and ep companion descriptor
@@ -233,14 +236,23 @@ find_ep (struct usb_gadget *gadget, const char *name)
  * the restrictions that may apply. Some combinations of driver
  * and hardware won't be able to autoconfigure.
  *
+<<<<<<< HEAD
  * On success, this returns an un-claimed usb_ep, and modifies the endpoint
+=======
+ * On success, this returns an claimed usb_ep, and modifies the endpoint
+>>>>>>> v4.9.227
  * descriptor bEndpointAddress.  For bulk endpoints, the wMaxPacket value
  * is initialized as if the endpoint were used at full speed and
  * the bmAttribute field in the ep companion descriptor is
  * updated with the assigned number of streams if it is
  * different from the original value. To prevent the endpoint
+<<<<<<< HEAD
  * from being returned by a later autoconfig call, claim it by
  * assigning ep->driver_data to some non-null value.
+=======
+ * from being returned by a later autoconfig call, claims it by
+ * assigning ep->claimed to true.
+>>>>>>> v4.9.227
  *
  * On failure, this returns a null endpoint descriptor.
  */
@@ -255,6 +267,7 @@ struct usb_ep *usb_ep_autoconfig_ss(
 
 	type = desc->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK;
 
+<<<<<<< HEAD
 	/* First, apply chip-specific "best usage" knowledge.
 	 * This might make a good usb_gadget_ops hook ...
 	 */
@@ -300,19 +313,69 @@ struct usb_ep *usb_ep_autoconfig_ss(
 		if (ep && ep_matches(gadget, ep, desc, ep_comp))
 			goto found_ep;
 #endif
+=======
+	if (gadget->ops->match_ep) {
+		ep = gadget->ops->match_ep(gadget, desc, ep_comp);
+		if (ep)
+			goto found_ep;
+>>>>>>> v4.9.227
 	}
 
 	/* Second, look at endpoints until an unclaimed one looks usable */
 	list_for_each_entry (ep, &gadget->ep_list, ep_list) {
+<<<<<<< HEAD
 		if (ep_matches(gadget, ep, desc, ep_comp))
+=======
+		if (usb_gadget_ep_match_desc(gadget, ep, desc, ep_comp))
+>>>>>>> v4.9.227
 			goto found_ep;
 	}
 
 	/* Fail */
 	return NULL;
 found_ep:
+<<<<<<< HEAD
 	ep->desc = NULL;
 	ep->comp_desc = NULL;
+=======
+
+	/*
+	 * If the protocol driver hasn't yet decided on wMaxPacketSize
+	 * and wants to know the maximum possible, provide the info.
+	 */
+	if (desc->wMaxPacketSize == 0)
+		desc->wMaxPacketSize = cpu_to_le16(ep->maxpacket_limit);
+
+	/* report address */
+	desc->bEndpointAddress &= USB_DIR_IN;
+	if (isdigit(ep->name[2])) {
+		u8 num = simple_strtoul(&ep->name[2], NULL, 10);
+		desc->bEndpointAddress |= num;
+	} else if (desc->bEndpointAddress & USB_DIR_IN) {
+		if (++gadget->in_epnum > 15)
+			return NULL;
+		desc->bEndpointAddress = USB_DIR_IN | gadget->in_epnum;
+	} else {
+		if (++gadget->out_epnum > 15)
+			return NULL;
+		desc->bEndpointAddress |= gadget->out_epnum;
+	}
+
+	/* report (variable) full speed bulk maxpacket */
+	if ((type == USB_ENDPOINT_XFER_BULK) && !ep_comp) {
+		int size = ep->maxpacket_limit;
+
+		/* min() doesn't work on bitfields with gcc-3.5 */
+		if (size > 64)
+			size = 64;
+		desc->wMaxPacketSize = cpu_to_le16(size);
+	}
+
+	ep->address = desc->bEndpointAddress;
+	ep->desc = NULL;
+	ep->comp_desc = NULL;
+	ep->claimed = true;
+>>>>>>> v4.9.227
 	return ep;
 }
 EXPORT_SYMBOL_GPL(usb_ep_autoconfig_ss);
@@ -340,11 +403,19 @@ EXPORT_SYMBOL_GPL(usb_ep_autoconfig_ss);
  * USB controller, and it can't know all the restrictions that may apply.
  * Some combinations of driver and hardware won't be able to autoconfigure.
  *
+<<<<<<< HEAD
  * On success, this returns an un-claimed usb_ep, and modifies the endpoint
  * descriptor bEndpointAddress.  For bulk endpoints, the wMaxPacket value
  * is initialized as if the endpoint were used at full speed.  To prevent
  * the endpoint from being returned by a later autoconfig call, claim it
  * by assigning ep->driver_data to some non-null value.
+=======
+ * On success, this returns an claimed usb_ep, and modifies the endpoint
+ * descriptor bEndpointAddress.  For bulk endpoints, the wMaxPacket value
+ * is initialized as if the endpoint were used at full speed.  To prevent
+ * the endpoint from being returned by a later autoconfig call, claims it
+ * by assigning ep->claimed to true.
+>>>>>>> v4.9.227
  *
  * On failure, this returns a null endpoint descriptor.
  */
@@ -358,12 +429,36 @@ struct usb_ep *usb_ep_autoconfig(
 EXPORT_SYMBOL_GPL(usb_ep_autoconfig);
 
 /**
+<<<<<<< HEAD
+=======
+ * usb_ep_autoconfig_release - releases endpoint and set it to initial state
+ * @ep: endpoint which should be released
+ *
+ * This function can be used during function bind for endpoints obtained
+ * from usb_ep_autoconfig(). It unclaims endpoint claimed by
+ * usb_ep_autoconfig() to make it available for other functions. Endpoint
+ * which was released is no longer invalid and shouldn't be used in
+ * context of function which released it.
+ */
+void usb_ep_autoconfig_release(struct usb_ep *ep)
+{
+	ep->claimed = false;
+	ep->driver_data = NULL;
+}
+EXPORT_SYMBOL_GPL(usb_ep_autoconfig_release);
+
+/**
+>>>>>>> v4.9.227
  * usb_ep_autoconfig_reset - reset endpoint autoconfig state
  * @gadget: device for which autoconfig state will be reset
  *
  * Use this for devices where one configuration may need to assign
  * endpoint resources very differently from the next one.  It clears
+<<<<<<< HEAD
  * state such as ep->driver_data and the record of assigned endpoints
+=======
+ * state such as ep->claimed and the record of assigned endpoints
+>>>>>>> v4.9.227
  * used by usb_ep_autoconfig().
  */
 void usb_ep_autoconfig_reset (struct usb_gadget *gadget)
@@ -371,12 +466,17 @@ void usb_ep_autoconfig_reset (struct usb_gadget *gadget)
 	struct usb_ep	*ep;
 
 	list_for_each_entry (ep, &gadget->ep_list, ep_list) {
+<<<<<<< HEAD
+=======
+		ep->claimed = false;
+>>>>>>> v4.9.227
 		ep->driver_data = NULL;
 	}
 	gadget->in_epnum = 0;
 	gadget->out_epnum = 0;
 }
 EXPORT_SYMBOL_GPL(usb_ep_autoconfig_reset);
+<<<<<<< HEAD
 
 /**
  * usb_ep_autoconfig_by_name - Used to pick the endpoint by name. eg ep1in-gsi
@@ -416,3 +516,5 @@ struct usb_ep *usb_ep_autoconfig_by_name(
 	return NULL;
 }
 EXPORT_SYMBOL(usb_ep_autoconfig_by_name);
+=======
+>>>>>>> v4.9.227

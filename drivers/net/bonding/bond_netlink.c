@@ -17,7 +17,11 @@
 #include <linux/if_ether.h>
 #include <net/netlink.h>
 #include <net/rtnetlink.h>
+<<<<<<< HEAD
 #include "bonding.h"
+=======
+#include <net/bonding.h>
+>>>>>>> v4.9.227
 
 static size_t bond_get_slave_size(const struct net_device *bond_dev,
 				  const struct net_device *slave_dev)
@@ -28,6 +32,11 @@ static size_t bond_get_slave_size(const struct net_device *bond_dev,
 		nla_total_size(MAX_ADDR_LEN) +	/* IFLA_BOND_SLAVE_PERM_HWADDR */
 		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_QUEUE_ID */
 		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_AD_AGGREGATOR_ID */
+<<<<<<< HEAD
+=======
+		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_SLAVE_AD_ACTOR_OPER_PORT_STATE */
+		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_AD_PARTNER_OPER_PORT_STATE */
+>>>>>>> v4.9.227
 		0;
 }
 
@@ -56,12 +65,32 @@ static int bond_fill_slave_info(struct sk_buff *skb,
 
 	if (BOND_MODE(slave->bond) == BOND_MODE_8023AD) {
 		const struct aggregator *agg;
+<<<<<<< HEAD
 
 		agg = SLAVE_AD_INFO(slave)->port.aggregator;
 		if (agg)
 			if (nla_put_u16(skb, IFLA_BOND_SLAVE_AD_AGGREGATOR_ID,
 					agg->aggregator_identifier))
 				goto nla_put_failure;
+=======
+		const struct port *ad_port;
+
+		ad_port = &SLAVE_AD_INFO(slave)->port;
+		agg = SLAVE_AD_INFO(slave)->port.aggregator;
+		if (agg) {
+			if (nla_put_u16(skb, IFLA_BOND_SLAVE_AD_AGGREGATOR_ID,
+					agg->aggregator_identifier))
+				goto nla_put_failure;
+			if (nla_put_u8(skb,
+				       IFLA_BOND_SLAVE_AD_ACTOR_OPER_PORT_STATE,
+				       ad_port->actor_oper_port_state))
+				goto nla_put_failure;
+			if (nla_put_u16(skb,
+					IFLA_BOND_SLAVE_AD_PARTNER_OPER_PORT_STATE,
+					ad_port->partner_oper.port_state))
+				goto nla_put_failure;
+		}
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -94,6 +123,14 @@ static const struct nla_policy bond_policy[IFLA_BOND_MAX + 1] = {
 	[IFLA_BOND_AD_LACP_RATE]	= { .type = NLA_U8 },
 	[IFLA_BOND_AD_SELECT]		= { .type = NLA_U8 },
 	[IFLA_BOND_AD_INFO]		= { .type = NLA_NESTED },
+<<<<<<< HEAD
+=======
+	[IFLA_BOND_AD_ACTOR_SYS_PRIO]	= { .type = NLA_U16 },
+	[IFLA_BOND_AD_USER_PORT_KEY]	= { .type = NLA_U16 },
+	[IFLA_BOND_AD_ACTOR_SYSTEM]	= { .type = NLA_BINARY,
+					    .len  = ETH_ALEN },
+	[IFLA_BOND_TLB_DYNAMIC_LB]	= { .type = NLA_U8 },
+>>>>>>> v4.9.227
 };
 
 static const struct nla_policy bond_slave_policy[IFLA_BOND_SLAVE_MAX + 1] = {
@@ -379,6 +416,46 @@ static int bond_changelink(struct net_device *bond_dev,
 		if (err)
 			return err;
 	}
+<<<<<<< HEAD
+=======
+	if (data[IFLA_BOND_AD_ACTOR_SYS_PRIO]) {
+		int actor_sys_prio =
+			nla_get_u16(data[IFLA_BOND_AD_ACTOR_SYS_PRIO]);
+
+		bond_opt_initval(&newval, actor_sys_prio);
+		err = __bond_opt_set(bond, BOND_OPT_AD_ACTOR_SYS_PRIO, &newval);
+		if (err)
+			return err;
+	}
+	if (data[IFLA_BOND_AD_USER_PORT_KEY]) {
+		int port_key =
+			nla_get_u16(data[IFLA_BOND_AD_USER_PORT_KEY]);
+
+		bond_opt_initval(&newval, port_key);
+		err = __bond_opt_set(bond, BOND_OPT_AD_USER_PORT_KEY, &newval);
+		if (err)
+			return err;
+	}
+	if (data[IFLA_BOND_AD_ACTOR_SYSTEM]) {
+		if (nla_len(data[IFLA_BOND_AD_ACTOR_SYSTEM]) != ETH_ALEN)
+			return -EINVAL;
+
+		bond_opt_initval(&newval,
+				 nla_get_be64(data[IFLA_BOND_AD_ACTOR_SYSTEM]));
+		err = __bond_opt_set(bond, BOND_OPT_AD_ACTOR_SYSTEM, &newval);
+		if (err)
+			return err;
+	}
+	if (data[IFLA_BOND_TLB_DYNAMIC_LB]) {
+		int dynamic_lb = nla_get_u8(data[IFLA_BOND_TLB_DYNAMIC_LB]);
+
+		bond_opt_initval(&newval, dynamic_lb);
+		err = __bond_opt_set(bond, BOND_OPT_TLB_DYNAMIC_LB, &newval);
+		if (err)
+			return err;
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -391,7 +468,15 @@ static int bond_newlink(struct net *src_net, struct net_device *bond_dev,
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	return register_netdevice(bond_dev);
+=======
+	err = register_netdevice(bond_dev);
+
+	netif_carrier_off(bond_dev);
+
+	return err;
+>>>>>>> v4.9.227
 }
 
 static size_t bond_get_size(const struct net_device *bond_dev)
@@ -426,6 +511,13 @@ static size_t bond_get_size(const struct net_device *bond_dev)
 		nla_total_size(sizeof(u16)) + /* IFLA_BOND_AD_INFO_ACTOR_KEY */
 		nla_total_size(sizeof(u16)) + /* IFLA_BOND_AD_INFO_PARTNER_KEY*/
 		nla_total_size(ETH_ALEN) +    /* IFLA_BOND_AD_INFO_PARTNER_MAC*/
+<<<<<<< HEAD
+=======
+		nla_total_size(sizeof(u16)) + /* IFLA_BOND_AD_ACTOR_SYS_PRIO */
+		nla_total_size(sizeof(u16)) + /* IFLA_BOND_AD_USER_PORT_KEY */
+		nla_total_size(ETH_ALEN) + /* IFLA_BOND_AD_ACTOR_SYSTEM */
+		nla_total_size(sizeof(u8)) + /* IFLA_BOND_TLB_DYNAMIC_LB */
+>>>>>>> v4.9.227
 		0;
 }
 
@@ -548,9 +640,32 @@ static int bond_fill_info(struct sk_buff *skb,
 		       bond->params.ad_select))
 		goto nla_put_failure;
 
+<<<<<<< HEAD
 	if (BOND_MODE(bond) == BOND_MODE_8023AD) {
 		struct ad_info info;
 
+=======
+	if (nla_put_u8(skb, IFLA_BOND_TLB_DYNAMIC_LB,
+		       bond->params.tlb_dynamic_lb))
+		goto nla_put_failure;
+
+	if (BOND_MODE(bond) == BOND_MODE_8023AD) {
+		struct ad_info info;
+
+		if (capable(CAP_NET_ADMIN)) {
+			if (nla_put_u16(skb, IFLA_BOND_AD_ACTOR_SYS_PRIO,
+					bond->params.ad_actor_sys_prio))
+				goto nla_put_failure;
+
+			if (nla_put_u16(skb, IFLA_BOND_AD_USER_PORT_KEY,
+					bond->params.ad_user_port_key))
+				goto nla_put_failure;
+
+			if (nla_put(skb, IFLA_BOND_AD_ACTOR_SYSTEM,
+				    ETH_ALEN, &bond->params.ad_actor_system))
+				goto nla_put_failure;
+		}
+>>>>>>> v4.9.227
 		if (!bond_3ad_get_active_agg_info(bond, &info)) {
 			struct nlattr *nest;
 

@@ -479,7 +479,14 @@ static enum fsl_diu_monitor_port fsl_diu_name_to_port(const char *s)
 			port = FSL_DIU_PORT_DLVDS;
 	}
 
+<<<<<<< HEAD
 	return diu_ops.valid_monitor_port(port);
+=======
+	if (diu_ops.valid_monitor_port)
+		port = diu_ops.valid_monitor_port(port);
+
+	return port;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1628,9 +1635,22 @@ static int fsl_diu_suspend(struct platform_device *ofdev, pm_message_t state)
 static int fsl_diu_resume(struct platform_device *ofdev)
 {
 	struct fsl_diu_data *data;
+<<<<<<< HEAD
 
 	data = dev_get_drvdata(&ofdev->dev);
 	enable_lcdc(data->fsl_diu_info);
+=======
+	unsigned int i;
+
+	data = dev_get_drvdata(&ofdev->dev);
+
+	fsl_diu_enable_interrupts(data);
+	update_lcdc(data->fsl_diu_info);
+	for (i = 0; i < NUM_AOIS; i++) {
+		if (data->mfb[i].count)
+			fsl_diu_enable_panel(&data->fsl_diu_info[i]);
+	}
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1881,7 +1901,10 @@ MODULE_DEVICE_TABLE(of, fsl_diu_match);
 static struct platform_driver fsl_diu_driver = {
 	.driver = {
 		.name = "fsl-diu-fb",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = fsl_diu_match,
 	},
 	.probe  	= fsl_diu_probe,
@@ -1909,6 +1932,17 @@ static int __init fsl_diu_init(void)
 #else
 	monitor_port = fsl_diu_name_to_port(monitor_string);
 #endif
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Must to verify set_pixel_clock. If not implement on platform,
+	 * then that means that there is no platform support for the DIU.
+	 */
+	if (!diu_ops.set_pixel_clock)
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	pr_info("Freescale Display Interface Unit (DIU) framebuffer driver\n");
 
 #ifdef CONFIG_NOT_COHERENT_CACHE

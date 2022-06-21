@@ -211,8 +211,13 @@ static int lp3972_set_bits(struct lp3972 *lp3972, u8 reg, u16 mask, u16 val)
 	mutex_lock(&lp3972->io_lock);
 
 	ret = lp3972_i2c_read(lp3972->i2c, reg, 1, &tmp);
+<<<<<<< HEAD
 	tmp = (tmp & ~mask) | val;
 	if (ret == 0) {
+=======
+	if (ret == 0) {
+		tmp = (tmp & ~mask) | val;
+>>>>>>> v4.9.227
 		ret = lp3972_i2c_write(lp3972->i2c, reg, 1, &tmp);
 		dev_dbg(lp3972->dev, "reg write 0x%02x -> 0x%02x\n", (int)reg,
 			(unsigned)val & 0xff);
@@ -550,7 +555,10 @@ MODULE_DEVICE_TABLE(i2c, lp3972_i2c_id);
 static struct i2c_driver lp3972_i2c_driver = {
 	.driver = {
 		.name = "lp3972",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe    = lp3972_i2c_probe,
 	.id_table = lp3972_i2c_id,

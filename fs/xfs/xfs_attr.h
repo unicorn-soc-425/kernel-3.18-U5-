@@ -112,8 +112,14 @@ typedef struct attrlist_cursor_kern {
  *========================================================================*/
 
 
+<<<<<<< HEAD
 typedef int (*put_listent_func_t)(struct xfs_attr_list_context *, int,
 			      unsigned char *, int, int, unsigned char *);
+=======
+/* Return 0 on success, or -errno; other state communicated via *context */
+typedef int (*put_listent_func_t)(struct xfs_attr_list_context *, int,
+			      unsigned char *, int, int);
+>>>>>>> v4.9.227
 
 typedef struct xfs_attr_list_context {
 	struct xfs_inode		*dp;		/* inode */
@@ -126,7 +132,10 @@ typedef struct xfs_attr_list_context {
 	int				firstu;		/* first used byte in buffer */
 	int				flags;		/* from VOP call */
 	int				resynch;	/* T/F: resynch with cursor */
+<<<<<<< HEAD
 	int				put_value;	/* T/F: need value for listent */
+=======
+>>>>>>> v4.9.227
 	put_listent_func_t		put_listent;	/* list output fmt function */
 	int				index;		/* index into output buffer */
 } xfs_attr_list_context_t;

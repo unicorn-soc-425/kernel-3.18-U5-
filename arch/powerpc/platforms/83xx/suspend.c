@@ -352,7 +352,11 @@ static int pmc_probe(struct platform_device *ofdev)
 		return -ENODEV;
 
 	pmc_irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (pmc_irq != NO_IRQ) {
+=======
+	if (pmc_irq) {
+>>>>>>> v4.9.227
 		ret = request_irq(pmc_irq, pmc_irq_handler, IRQF_SHARED,
 		                  "pmc", ofdev);
 
@@ -400,7 +404,11 @@ out_syscr:
 out_pmc:
 	iounmap(pmc_regs);
 out:
+<<<<<<< HEAD
 	if (pmc_irq != NO_IRQ)
+=======
+	if (pmc_irq)
+>>>>>>> v4.9.227
 		free_irq(pmc_irq, ofdev);
 
 	return ret;
@@ -435,7 +443,10 @@ static const struct of_device_id pmc_match[] = {
 static struct platform_driver pmc_driver = {
 	.driver = {
 		.name = "mpc83xx-pmc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = pmc_match,
 	},
 	.probe = pmc_probe,
@@ -446,5 +457,9 @@ static int pmc_init(void)
 {
 	return platform_driver_register(&pmc_driver);
 }
+<<<<<<< HEAD
 
 module_init(pmc_init);
+=======
+device_initcall(pmc_init);
+>>>>>>> v4.9.227

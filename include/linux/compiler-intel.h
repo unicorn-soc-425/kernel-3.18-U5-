@@ -13,10 +13,18 @@
 /* Intel ECC compiler doesn't support gcc specific asm stmts.
  * It uses intrinsics to do the equivalent things.
  */
+<<<<<<< HEAD
+=======
+#undef barrier
+>>>>>>> v4.9.227
 #undef barrier_data
 #undef RELOC_HIDE
 #undef OPTIMIZER_HIDE_VAR
 
+<<<<<<< HEAD
+=======
+#define barrier() __memory_barrier()
+>>>>>>> v4.9.227
 #define barrier_data(ptr) barrier()
 
 #define RELOC_HIDE(ptr, off)					\
@@ -41,3 +49,10 @@
 #define __builtin_bswap16 _bswap16
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * icc defines __GNUC__, but does not implement the builtin overflow checkers.
+ */
+#undef COMPILER_HAS_GENERIC_BUILTIN_OVERFLOW
+>>>>>>> v4.9.227

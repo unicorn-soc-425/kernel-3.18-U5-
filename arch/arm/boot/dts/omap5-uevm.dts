@@ -7,14 +7,19 @@
  */
 /dts-v1/;
 
+<<<<<<< HEAD
 #include "omap5.dtsi"
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
+=======
+#include "omap5-board-common.dtsi"
+>>>>>>> v4.9.227
 
 / {
 	model = "TI OMAP5 uEVM board";
 	compatible = "ti,omap5-uevm", "ti,omap5";
 
+<<<<<<< HEAD
 	memory {
 		device_type = "memory";
 		reg = <0x80000000 0x7F000000>; /* 2032 MB */
@@ -44,17 +49,31 @@
 	hsusb3_phy: hsusb3_phy {
 		compatible = "usb-nop-xceiv";
 		reset-gpios = <&gpio3 15 GPIO_ACTIVE_LOW>; /* gpio3_79 ETH_NRESET */
+=======
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0 0x80000000 0 0x7f000000>; /* 2032 MB */
+	};
+
+	aliases {
+		ethernet = &ethernet;
+>>>>>>> v4.9.227
 	};
 
 	leds {
 		compatible = "gpio-leds";
+<<<<<<< HEAD
 		led@1 {
+=======
+		led1 {
+>>>>>>> v4.9.227
 			label = "omap5:blue:usr1";
 			gpios = <&gpio5 25 GPIO_ACTIVE_HIGH>; /* gpio5_153 D1 LED */
 			linux,default-trigger = "heartbeat";
 			default-state = "off";
 		};
 	};
+<<<<<<< HEAD
 
 	tpd12s015: encoder@0 {
 		compatible = "ti,tpd12s015";
@@ -531,6 +550,12 @@
 		clocks = <&clk32kgaudio>;
 		clock-names = "clk32k";
 	};
+=======
+};
+
+&hdmi {
+	vdda-supply = <&ldo4_reg>;
+>>>>>>> v4.9.227
 };
 
 &i2c5 {
@@ -547,6 +572,7 @@
 	};
 };
 
+<<<<<<< HEAD
 &mcpdm {
 	pinctrl-names = "default";
 	pinctrl-0 = <&mcpdm_pins>;
@@ -634,3 +660,50 @@
 		};
 	};
 };
+=======
+&omap5_pmx_core {
+	i2c5_pins: pinmux_i2c5_pins {
+		pinctrl-single,pins = <
+			OMAP5_IOPAD(0x1c6, PIN_INPUT | MUX_MODE0)		/* i2c5_scl */
+			OMAP5_IOPAD(0x1c8, PIN_INPUT | MUX_MODE0)		/* i2c5_sda */
+		>;
+	};
+};
+
+&tpd12s015 {
+	gpios = <&gpio9 0 GPIO_ACTIVE_HIGH>,	/* TCA6424A P01, CT CP HPD */
+		<&gpio9 1 GPIO_ACTIVE_HIGH>,	/* TCA6424A P00, LS OE */
+		<&gpio7 1 GPIO_ACTIVE_HIGH>;	/* GPIO 193, HPD */
+};
+
+&twl6040 {
+	ti,audpwron-gpio = <&gpio5 13 GPIO_ACTIVE_HIGH>;  /* gpio line 141 */
+};
+
+&twl6040_pins {
+	pinctrl-single,pins = <
+		OMAP5_IOPAD(0x1be, PIN_OUTPUT | MUX_MODE6)	/* mcspi1_somi.gpio5_141 */
+	>;
+};
+
+&usbhsehci {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	hub@2 {
+		compatible = "usb424,3503";
+		reg = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+	ethernet: usbether@3 {
+		compatible = "usb424,9730";
+		reg = <3>;
+	};
+};
+
+&wlcore {
+	compatible = "ti,wl1837";
+};
+>>>>>>> v4.9.227

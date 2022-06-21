@@ -15,8 +15,16 @@
 #include <linux/io.h>
 #include <linux/suspend.h>
 #include <linux/platform_data/arm-ux500-pm.h>
+<<<<<<< HEAD
 
 #include "db8500-regs.h"
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+
+#include "db8500-regs.h"
+#include "pm_domains.h"
+>>>>>>> v4.9.227
 
 /* ARM WFI Standby signal register */
 #define PRCM_ARM_WFI_STANDBY    (prcmu_base + 0x130)
@@ -41,6 +49,10 @@
 #define PRCM_ARMITVAL127TO96	(prcmu_base + 0x26C)
 
 static void __iomem *prcmu_base;
+<<<<<<< HEAD
+=======
+static void __iomem *dist_base;
+>>>>>>> v4.9.227
 
 /* This function decouple the gic from the prcmu */
 int prcmu_gic_decouple(void)
@@ -87,7 +99,10 @@ bool prcmu_gic_pending_irq(void)
 {
 	u32 pr; /* Pending register */
 	u32 er; /* Enable register */
+<<<<<<< HEAD
 	void __iomem *dist_base = __io_address(U8500_GIC_DIST_BASE);
+=======
+>>>>>>> v4.9.227
 	int i;
 
 	/* 5 registers. STI & PPI not skipped */
@@ -131,8 +146,13 @@ bool prcmu_pending_irq(void)
  */
 bool prcmu_is_cpu_in_wfi(int cpu)
 {
+<<<<<<< HEAD
 	return readl(PRCM_ARM_WFI_STANDBY) & cpu ? PRCM_ARM_WFI_STANDBY_WFI1 :
 		     PRCM_ARM_WFI_STANDBY_WFI0;
+=======
+	return readl(PRCM_ARM_WFI_STANDBY) &
+		(cpu ? PRCM_ARM_WFI_STANDBY_WFI1 : PRCM_ARM_WFI_STANDBY_WFI0);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -142,7 +162,10 @@ bool prcmu_is_cpu_in_wfi(int cpu)
 int prcmu_copy_gic_settings(void)
 {
 	u32 er; /* Enable register */
+<<<<<<< HEAD
 	void __iomem *dist_base = __io_address(U8500_GIC_DIST_BASE);
+=======
+>>>>>>> v4.9.227
 	int i;
 
 	/* We skip the STI and PPI */
@@ -178,11 +201,27 @@ static const struct platform_suspend_ops ux500_suspend_ops = {
 
 void __init ux500_pm_init(u32 phy_base, u32 size)
 {
+<<<<<<< HEAD
+=======
+	struct device_node *np;
+
+>>>>>>> v4.9.227
 	prcmu_base = ioremap(phy_base, size);
 	if (!prcmu_base) {
 		pr_err("could not remap PRCMU for PM functions\n");
 		return;
 	}
+<<<<<<< HEAD
+=======
+	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-gic");
+	dist_base = of_iomap(np, 0);
+	of_node_put(np);
+	if (!dist_base) {
+		pr_err("could not remap GIC dist base for PM functions\n");
+		return;
+	}
+
+>>>>>>> v4.9.227
 	/*
 	 * On watchdog reboot the GIC is in some cases decoupled.
 	 * This will make sure that the GIC is correctly configured.
@@ -191,4 +230,10 @@ void __init ux500_pm_init(u32 phy_base, u32 size)
 
 	/* Set up ux500 suspend callbacks. */
 	suspend_set_ops(UX500_SUSPEND_OPS);
+<<<<<<< HEAD
+=======
+
+	/* Initialize ux500 power domains */
+	ux500_pm_domains_init();
+>>>>>>> v4.9.227
 }

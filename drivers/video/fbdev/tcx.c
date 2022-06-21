@@ -512,7 +512,10 @@ MODULE_DEVICE_TABLE(of, tcx_match);
 static struct platform_driver tcx_driver = {
 	.driver = {
 		.name = "tcx",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = tcx_match,
 	},
 	.probe		= tcx_probe,

@@ -30,6 +30,10 @@ struct platform_ops {
 	void *	(*realloc)(void *ptr, unsigned long size);
 	void	(*exit)(void);
 	void *	(*vmlinux_alloc)(unsigned long size);
+<<<<<<< HEAD
+=======
+	void  	(*kentry)(unsigned long fdt_addr, void *vmlinux_addr);
+>>>>>>> v4.9.227
 };
 extern struct platform_ops platform_ops;
 
@@ -58,7 +62,11 @@ extern struct dt_ops dt_ops;
 struct console_ops {
 	int	(*open)(void);
 	void	(*write)(const char *buf, int len);
+<<<<<<< HEAD
 	void	(*edit_cmdline)(char *buf, int len);
+=======
+	void	(*edit_cmdline)(char *buf, int len, unsigned int getline_timeout);
+>>>>>>> v4.9.227
 	void	(*close)(void);
 	void	*data;
 };
@@ -89,6 +97,10 @@ int mpsc_console_init(void *devp, struct serial_console_data *scdp);
 int cpm_console_init(void *devp, struct serial_console_data *scdp);
 int mpc5200_psc_console_init(void *devp, struct serial_console_data *scdp);
 int uartlite_console_init(void *devp, struct serial_console_data *scdp);
+<<<<<<< HEAD
+=======
+int opal_console_init(void *devp, struct serial_console_data *scdp);
+>>>>>>> v4.9.227
 void *simple_alloc_init(char *base, unsigned long heap_size,
 			unsigned long granularity, unsigned long max_allocs);
 extern void flush_cache(void *, unsigned long);
@@ -259,4 +271,10 @@ int __ilog2_u32(u32 n)
 	return 31 - bit;
 }
 
+<<<<<<< HEAD
+=======
+long partial_decompress(void *inbuf, unsigned long input_size, void *outbuf,
+	unsigned long output_size, unsigned long skip);
+
+>>>>>>> v4.9.227
 #endif /* _PPC_BOOT_OPS_H_ */

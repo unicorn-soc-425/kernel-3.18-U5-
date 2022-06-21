@@ -219,7 +219,10 @@ static struct platform_driver menf21bmc_hwmon = {
 	.probe		= menf21bmc_hwmon_probe,
 	.driver		= {
 		.name		= DRV_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

@@ -18,6 +18,10 @@
 #include <linux/delay.h>
 #include <linux/gpio.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> v4.9.227
 
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
@@ -30,7 +34,11 @@
 /* input clock on serial interface */
 #define AD2S1200_HZ	8192000
 /* clock period in nano second */
+<<<<<<< HEAD
 #define AD2S1200_TSCLK	(1000000000/AD2S1200_HZ)
+=======
+#define AD2S1200_TSCLK	(1000000000 / AD2S1200_HZ)
+>>>>>>> v4.9.227
 
 struct ad2s1200_state {
 	struct mutex lock;
@@ -41,10 +49,17 @@ struct ad2s1200_state {
 };
 
 static int ad2s1200_read_raw(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 			   struct iio_chan_spec const *chan,
 			   int *val,
 			   int *val2,
 			   long m)
+=======
+			     struct iio_chan_spec const *chan,
+			     int *val,
+			     int *val2,
+			     long m)
+>>>>>>> v4.9.227
 {
 	int ret = 0;
 	s16 vel;
@@ -68,7 +83,11 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
 		break;
 	case IIO_ANGL_VEL:
 		vel = (((s16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
+<<<<<<< HEAD
 		vel = (vel << 4) >> 4;
+=======
+		vel = sign_extend32(vel, 11);
+>>>>>>> v4.9.227
 		*val = vel;
 		break;
 	default:
@@ -112,7 +131,11 @@ static int ad2s1200_probe(struct spi_device *spi)
 					    DRV_NAME);
 		if (ret) {
 			dev_err(&spi->dev, "request gpio pin %d failed\n",
+<<<<<<< HEAD
 							pins[pn]);
+=======
+				pins[pn]);
+>>>>>>> v4.9.227
 			return ret;
 		}
 	}
@@ -154,7 +177,10 @@ MODULE_DEVICE_TABLE(spi, ad2s1200_id);
 static struct spi_driver ad2s1200_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = ad2s1200_probe,
 	.id_table = ad2s1200_id,

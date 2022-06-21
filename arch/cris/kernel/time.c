@@ -39,6 +39,7 @@
 extern unsigned long loops_per_jiffy; /* init/main.c */
 unsigned long loops_per_usec;
 
+<<<<<<< HEAD
 int set_rtc_mmss(unsigned long nowtime)
 {
 	D(printk(KERN_DEBUG "set_rtc_mmss(%lu)\n", nowtime));
@@ -64,6 +65,8 @@ void read_persistent_clock(struct timespec *ts)
 }
 
 
+=======
+>>>>>>> v4.9.227
 extern void cris_profile_sample(struct pt_regs* regs);
 
 void
@@ -79,11 +82,19 @@ cris_do_profile(struct pt_regs* regs)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_GENERIC_SCHED_CLOCK
+>>>>>>> v4.9.227
 unsigned long long sched_clock(void)
 {
 	return (unsigned long long)jiffies * (NSEC_PER_SEC / HZ) +
 		get_ns_in_jiffie();
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 static int
 __init init_udelay(void)

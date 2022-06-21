@@ -53,6 +53,7 @@ int proc_dolasatstring(struct ctl_table *table, int write,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* proc function to write EEPROM after changing int entry */
 int proc_dolasatint(struct ctl_table *table, int write,
 		       void *buffer, size_t *lenp, loff_t *ppos)
@@ -68,6 +69,8 @@ int proc_dolasatint(struct ctl_table *table, int write,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_DS1603
 static int rtctmp;
 
@@ -75,11 +78,19 @@ static int rtctmp;
 int proc_dolasatrtc(struct ctl_table *table, int write,
 		       void *buffer, size_t *lenp, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct timespec ts;
 	int r;
 
 	if (!write) {
 		read_persistent_clock(&ts);
+=======
+	struct timespec64 ts;
+	int r;
+
+	if (!write) {
+		read_persistent_clock64(&ts);
+>>>>>>> v4.9.227
 		rtctmp = ts.tv_sec;
 		/* check for time < 0 and set to 0 */
 		if (rtctmp < 0)
@@ -285,4 +296,8 @@ static int __init lasat_register_sysctl(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 __initcall(lasat_register_sysctl);
+=======
+arch_initcall(lasat_register_sysctl);
+>>>>>>> v4.9.227

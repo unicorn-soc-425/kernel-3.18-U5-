@@ -251,7 +251,11 @@ static int ad1836_resume(struct snd_soc_codec *codec)
 static int ad1836_probe(struct snd_soc_codec *codec)
 {
 	struct ad1836_priv *ad1836 = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 	int num_dacs, num_adcs;
 	int ret = 0;
 	int i;
@@ -327,12 +331,23 @@ static struct snd_soc_codec_driver soc_codec_dev_ad1836 = {
 	.suspend = ad1836_suspend,
 	.resume = ad1836_resume,
 
+<<<<<<< HEAD
 	.controls = ad183x_controls,
 	.num_controls = ARRAY_SIZE(ad183x_controls),
 	.dapm_widgets = ad183x_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(ad183x_dapm_widgets),
 	.dapm_routes = ad183x_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(ad183x_dapm_routes),
+=======
+	.component_driver = {
+		.controls		= ad183x_controls,
+		.num_controls		= ARRAY_SIZE(ad183x_controls),
+		.dapm_widgets		= ad183x_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(ad183x_dapm_widgets),
+		.dapm_routes		= ad183x_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(ad183x_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct reg_default ad1836_reg_defaults[] = {
@@ -404,7 +419,10 @@ MODULE_DEVICE_TABLE(spi, ad1836_ids);
 static struct spi_driver ad1836_spi_driver = {
 	.driver = {
 		.name	= "ad1836",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ad1836_spi_probe,
 	.remove		= ad1836_spi_remove,

@@ -35,7 +35,11 @@ pte_t *huge_pte_alloc(struct mm_struct *mm,
 		if (pud) {
 			pmd = pmd_alloc(mm, pud, addr);
 			if (pmd)
+<<<<<<< HEAD
 				pte = pte_alloc_map(mm, NULL, pmd, addr);
+=======
+				pte = pte_alloc_map(mm, pmd, addr);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -62,11 +66,14 @@ pte_t *huge_pte_offset(struct mm_struct *mm, unsigned long addr)
 	return pte;
 }
 
+<<<<<<< HEAD
 int huge_pmd_unshare(struct mm_struct *mm, unsigned long *addr, pte_t *ptep)
 {
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 int pmd_huge(pmd_t pmd)
 {
 	return 0;

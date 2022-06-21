@@ -315,12 +315,16 @@
 			ab3100-regulators {
 				compatible = "stericsson,ab3100-regulators";
 				ab3100_ldo_a_reg: ab3100_ldo_a {
+<<<<<<< HEAD
 					regulator-compatible = "ab3100_ldo_a";
+=======
+>>>>>>> v4.9.227
 					startup-delay-us = <200>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
 				ab3100_ldo_c_reg: ab3100_ldo_c {
+<<<<<<< HEAD
 					regulator-compatible = "ab3100_ldo_c";
 					startup-delay-us = <200>;
 				};
@@ -330,6 +334,14 @@
 				};
 				ab3100_ldo_e_reg: ab3100_ldo_e {
 					regulator-compatible = "ab3100_ldo_e";
+=======
+					startup-delay-us = <200>;
+				};
+				ab3100_ldo_d_reg: ab3100_ldo_d {
+					startup-delay-us = <200>;
+				};
+				ab3100_ldo_e_reg: ab3100_ldo_e {
+>>>>>>> v4.9.227
 					regulator-min-microvolt = <1800000>;
 					regulator-max-microvolt = <1800000>;
 					startup-delay-us = <200>;
@@ -337,7 +349,10 @@
 					regulator-boot-on;
 				};
 				ab3100_ldo_f_reg: ab3100_ldo_f {
+<<<<<<< HEAD
 					regulator-compatible = "ab3100_ldo_f";
+=======
+>>>>>>> v4.9.227
 					regulator-min-microvolt = <2500000>;
 					regulator-max-microvolt = <2500000>;
 					startup-delay-us = <600>;
@@ -345,28 +360,42 @@
 					regulator-boot-on;
 				};
 				ab3100_ldo_g_reg: ab3100_ldo_g {
+<<<<<<< HEAD
 					regulator-compatible = "ab3100_ldo_g";
+=======
+>>>>>>> v4.9.227
 					regulator-min-microvolt = <1500000>;
 					regulator-max-microvolt = <2850000>;
 					startup-delay-us = <400>;
 				};
 				ab3100_ldo_h_reg: ab3100_ldo_h {
+<<<<<<< HEAD
 					regulator-compatible = "ab3100_ldo_h";
+=======
+>>>>>>> v4.9.227
 					regulator-min-microvolt = <1200000>;
 					regulator-max-microvolt = <2750000>;
 					startup-delay-us = <200>;
 				};
 				ab3100_ldo_k_reg: ab3100_ldo_k {
+<<<<<<< HEAD
 					regulator-compatible = "ab3100_ldo_k";
+=======
+>>>>>>> v4.9.227
 					regulator-min-microvolt = <1800000>;
 					regulator-max-microvolt = <2750000>;
 					startup-delay-us = <200>;
 				};
 				ab3100_ext_reg: ab3100_ext {
+<<<<<<< HEAD
 					regulator-compatible = "ab3100_ext";
 				};
 				ab3100_buck_reg: ab3100_buck {
 					regulator-compatible = "ab3100_buck";
+=======
+				};
+				ab3100_buck_reg: ab3100_buck {
+>>>>>>> v4.9.227
 					regulator-min-microvolt = <1200000>;
 					regulator-max-microvolt = <1800000>;
 					startup-delay-us = <1000>;
@@ -394,7 +423,11 @@
 	};
 
 	amba {
+<<<<<<< HEAD
 		compatible = "arm,amba-bus";
+=======
+		compatible = "simple-bus";
+>>>>>>> v4.9.227
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
@@ -451,7 +484,11 @@
 			dma-names = "rx";
 		};
 
+<<<<<<< HEAD
 		spi: ssp@c0006000 {
+=======
+		spi: spi@c0006000 {
+>>>>>>> v4.9.227
 			compatible = "arm,pl022", "arm,primecell";
 			reg = <0xc0006000 0x1000>;
 			interrupt-parent = <&vica>;

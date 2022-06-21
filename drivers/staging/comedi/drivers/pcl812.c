@@ -111,6 +111,7 @@
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include "../comedidev.h"
 
 #include <linux/delay.h>
@@ -130,6 +131,15 @@
 #define boardACL8112	      7 /* ACL-8112DG/HG, A-822PGL/PGH, A-823PGL/PGH */
 #define boardACL8216	      8	/* and ICP DAS A-826PG */
 #define boardA821	      9	/* PGH, PGL, PGL/NDA versions */
+=======
+#include <linux/delay.h>
+#include <linux/io.h>
+
+#include "../comedidev.h"
+
+#include "comedi_isadma.h"
+#include "comedi_8254.h"
+>>>>>>> v4.9.227
 
 /*
  * Register I/O map
@@ -137,12 +147,17 @@
 #define PCL812_TIMER_BASE			0x00
 #define PCL812_AI_LSB_REG			0x04
 #define PCL812_AI_MSB_REG			0x05
+<<<<<<< HEAD
 #define PCL812_AI_MSB_DRDY			(1 << 4)
+=======
+#define PCL812_AI_MSB_DRDY			BIT(4)
+>>>>>>> v4.9.227
 #define PCL812_AO_LSB_REG(x)			(0x04 + ((x) * 2))
 #define PCL812_AO_MSB_REG(x)			(0x05 + ((x) * 2))
 #define PCL812_DI_LSB_REG			0x06
 #define PCL812_DI_MSB_REG			0x07
 #define PCL812_STATUS_REG			0x08
+<<<<<<< HEAD
 #define PCL812_STATUS_DRDY			(1 << 5)
 #define PCL812_RANGE_REG			0x09
 #define PCL812_MUX_REG				0x0a
@@ -154,6 +169,20 @@
 #define PCL812_CTRL_SOFT_TRIG			(1 << 0)
 #define PCL812_CTRL_PACER_DMA_TRIG		(2 << 0)
 #define PCL812_CTRL_PACER_EOC_TRIG		(6 << 0)
+=======
+#define PCL812_STATUS_DRDY			BIT(5)
+#define PCL812_RANGE_REG			0x09
+#define PCL812_MUX_REG				0x0a
+#define PCL812_MUX_CHAN(x)			((x) << 0)
+#define PCL812_MUX_CS0				BIT(4)
+#define PCL812_MUX_CS1				BIT(5)
+#define PCL812_CTRL_REG				0x0b
+#define PCL812_CTRL_TRIG(x)			(((x) & 0x7) << 0)
+#define PCL812_CTRL_DISABLE_TRIG		PCL812_CTRL_TRIG(0)
+#define PCL812_CTRL_SOFT_TRIG			PCL812_CTRL_TRIG(1)
+#define PCL812_CTRL_PACER_DMA_TRIG		PCL812_CTRL_TRIG(2)
+#define PCL812_CTRL_PACER_EOC_TRIG		PCL812_CTRL_TRIG(6)
+>>>>>>> v4.9.227
 #define PCL812_SOFTTRIG_REG			0x0c
 #define PCL812_DO_LSB_REG			0x0d
 #define PCL812_DO_MSB_REG			0x0e
@@ -328,14 +357,36 @@ static const struct comedi_lrange range_a821pgh_ai = {
 	}
 };
 
+<<<<<<< HEAD
 struct pcl812_board {
 	const char *name;
 	int board_type;
+=======
+enum pcl812_boardtype {
+	BOARD_PCL812PG	= 0,	/* and ACL-8112PG */
+	BOARD_PCL813B	= 1,
+	BOARD_PCL812	= 2,
+	BOARD_PCL813	= 3,
+	BOARD_ISO813	= 5,
+	BOARD_ACL8113	= 6,
+	BOARD_ACL8112	= 7,	/* ACL-8112DG/HG, A-822PGL/PGH, A-823PGL/PGH */
+	BOARD_ACL8216	= 8,	/* and ICP DAS A-826PG */
+	BOARD_A821	= 9,	/* PGH, PGL, PGL/NDA versions */
+};
+
+struct pcl812_board {
+	const char *name;
+	enum pcl812_boardtype board_type;
+>>>>>>> v4.9.227
 	int n_aichan;
 	int n_aochan;
 	unsigned int ai_ns_min;
 	const struct comedi_lrange *rangelist_ai;
+<<<<<<< HEAD
 	unsigned int IRQbits;
+=======
+	unsigned int irq_bits;
+>>>>>>> v4.9.227
 	unsigned int has_dma:1;
 	unsigned int has_16bit_ai:1;
 	unsigned int has_mpc508_mux:1;
@@ -345,63 +396,108 @@ struct pcl812_board {
 static const struct pcl812_board boardtypes[] = {
 	{
 		.name		= "pcl812",
+<<<<<<< HEAD
 		.board_type	= boardPCL812,
+=======
+		.board_type	= BOARD_PCL812,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,
 		.n_aochan	= 2,
 		.ai_ns_min	= 33000,
 		.rangelist_ai	= &range_bipolar10,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_dio	= 1,
 	}, {
 		.name		= "pcl812pg",
+<<<<<<< HEAD
 		.board_type	= boardPCL812PG,
+=======
+		.board_type	= BOARD_PCL812PG,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,
 		.n_aochan	= 2,
 		.ai_ns_min	= 33000,
 		.rangelist_ai	= &range_pcl812pg_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_dio	= 1,
 	}, {
 		.name		= "acl8112pg",
+<<<<<<< HEAD
 		.board_type	= boardPCL812PG,
+=======
+		.board_type	= BOARD_PCL812PG,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_pcl812pg_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_dio	= 1,
 	}, {
 		.name		= "acl8112dg",
+<<<<<<< HEAD
 		.board_type	= boardACL8112,
+=======
+		.board_type	= BOARD_ACL8112,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,	/* 8 differential */
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_acl8112dg_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_mpc508_mux	= 1,
 		.has_dio	= 1,
 	}, {
 		.name		= "acl8112hg",
+<<<<<<< HEAD
 		.board_type	= boardACL8112,
+=======
+		.board_type	= BOARD_ACL8112,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,	/* 8 differential */
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_acl8112hg_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_mpc508_mux	= 1,
 		.has_dio	= 1,
 	}, {
 		.name		= "a821pgl",
+<<<<<<< HEAD
 		.board_type	= boardA821,
+=======
+		.board_type	= BOARD_A821,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,	/* 8 differential */
 		.n_aochan	= 1,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_pcl813b_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0x000c,
 		.has_dio	= 1,
 	}, {
@@ -414,92 +510,174 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "a821pgh",
 		.board_type	= boardA821,
+=======
+		.irq_bits	= 0x000c,
+		.has_dio	= 1,
+	}, {
+		.name		= "a821pglnda",
+		.board_type	= BOARD_A821,
+		.n_aichan	= 16,	/* 8 differential */
+		.ai_ns_min	= 10000,
+		.rangelist_ai	= &range_pcl813b_ai,
+		.irq_bits	= 0x000c,
+	}, {
+		.name		= "a821pgh",
+		.board_type	= BOARD_A821,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,	/* 8 differential */
 		.n_aochan	= 1,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_a821pgh_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0x000c,
 		.has_dio	= 1,
 	}, {
 		.name		= "a822pgl",
 		.board_type	= boardACL8112,
+=======
+		.irq_bits	= 0x000c,
+		.has_dio	= 1,
+	}, {
+		.name		= "a822pgl",
+		.board_type	= BOARD_ACL8112,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,	/* 8 differential */
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_acl8112dg_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_dio	= 1,
 	}, {
 		.name		= "a822pgh",
+<<<<<<< HEAD
 		.board_type	= boardACL8112,
+=======
+		.board_type	= BOARD_ACL8112,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,	/* 8 differential */
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_acl8112hg_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_dio	= 1,
 	}, {
 		.name		= "a823pgl",
+<<<<<<< HEAD
 		.board_type	= boardACL8112,
+=======
+		.board_type	= BOARD_ACL8112,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,	/* 8 differential */
 		.n_aochan	= 2,
 		.ai_ns_min	= 8000,
 		.rangelist_ai	= &range_acl8112dg_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_dio	= 1,
 	}, {
 		.name		= "a823pgh",
+<<<<<<< HEAD
 		.board_type	= boardACL8112,
+=======
+		.board_type	= BOARD_ACL8112,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,	/* 8 differential */
 		.n_aochan	= 2,
 		.ai_ns_min	= 8000,
 		.rangelist_ai	= &range_acl8112hg_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_dio	= 1,
 	}, {
 		.name		= "pcl813",
+<<<<<<< HEAD
 		.board_type	= boardPCL813,
+=======
+		.board_type	= BOARD_PCL813,
+>>>>>>> v4.9.227
 		.n_aichan	= 32,
 		.rangelist_ai	= &range_pcl813b_ai,
 	}, {
 		.name		= "pcl813b",
+<<<<<<< HEAD
 		.board_type	= boardPCL813B,
+=======
+		.board_type	= BOARD_PCL813B,
+>>>>>>> v4.9.227
 		.n_aichan	= 32,
 		.rangelist_ai	= &range_pcl813b_ai,
 	}, {
 		.name		= "acl8113",
+<<<<<<< HEAD
 		.board_type	= boardACL8113,
+=======
+		.board_type	= BOARD_ACL8113,
+>>>>>>> v4.9.227
 		.n_aichan	= 32,
 		.rangelist_ai	= &range_acl8113_1_ai,
 	}, {
 		.name		= "iso813",
+<<<<<<< HEAD
 		.board_type	= boardISO813,
+=======
+		.board_type	= BOARD_ISO813,
+>>>>>>> v4.9.227
 		.n_aichan	= 32,
 		.rangelist_ai	= &range_iso813_1_ai,
 	}, {
 		.name		= "acl8216",
+<<<<<<< HEAD
 		.board_type	= boardACL8216,
+=======
+		.board_type	= BOARD_ACL8216,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,	/* 8 differential */
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_pcl813b2_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_16bit_ai	= 1,
 		.has_mpc508_mux	= 1,
 		.has_dio	= 1,
 	}, {
 		.name		= "a826pg",
+<<<<<<< HEAD
 		.board_type	= boardACL8216,
+=======
+		.board_type	= BOARD_ACL8216,
+>>>>>>> v4.9.227
 		.n_aichan	= 16,	/* 8 differential */
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_pcl813b2_ai,
+<<<<<<< HEAD
 		.IRQbits	= 0xdcfc,
+=======
+		.irq_bits	= 0xdcfc,
+>>>>>>> v4.9.227
 		.has_dma	= 1,
 		.has_16bit_ai	= 1,
 		.has_dio	= 1,
@@ -507,6 +685,7 @@ static const struct pcl812_board boardtypes[] = {
 };
 
 struct pcl812_private {
+<<<<<<< HEAD
 	unsigned char dma;	/*  >0 use dma ( usedDMA channel) */
 	unsigned char range_correction;	/*  =1 we must add 1 to range number */
 	unsigned int last_ai_chanspec;
@@ -524,6 +703,14 @@ struct pcl812_private {
 	unsigned int max_812_ai_mode0_rangewait;	/*  setling time for gain */
 	unsigned int divisor1;
 	unsigned int divisor2;
+=======
+	struct comedi_isadma *dma;
+	unsigned char range_correction;	/* =1 we must add 1 to range number */
+	unsigned int last_ai_chanspec;
+	unsigned char mode_reg_int; /* stored INT number for some cards */
+	unsigned int ai_poll_ptr; /* how many samples transfer poll */
+	unsigned int max_812_ai_mode0_rangewait; /* settling time for gain */
+>>>>>>> v4.9.227
 	unsigned int use_diff:1;
 	unsigned int use_mpc508:1;
 	unsigned int use_ext_trg:1;
@@ -531,6 +718,7 @@ struct pcl812_private {
 	unsigned int ai_eos:1;
 };
 
+<<<<<<< HEAD
 static void pcl812_start_pacer(struct comedi_device *dev, bool load_timers)
 {
 	struct pcl812_private *devpriv = dev->private;
@@ -631,6 +819,35 @@ static void pcl812_ai_setup_next_dma(struct comedi_device *dev,
 	}
 	release_dma_lock(dma_flags);
 	enable_dma(devpriv->dma);
+=======
+static void pcl812_ai_setup_dma(struct comedi_device *dev,
+				struct comedi_subdevice *s,
+				unsigned int unread_samples)
+{
+	struct pcl812_private *devpriv = dev->private;
+	struct comedi_isadma *dma = devpriv->dma;
+	struct comedi_isadma_desc *desc = &dma->desc[dma->cur_dma];
+	unsigned int bytes;
+	unsigned int max_samples;
+	unsigned int nsamples;
+
+	comedi_isadma_disable(dma->chan);
+
+	/* if using EOS, adapt DMA buffer to one scan */
+	bytes = devpriv->ai_eos ? comedi_bytes_per_scan(s) : desc->maxsize;
+	max_samples = comedi_bytes_to_samples(s, bytes);
+
+	/*
+	 * Determine dma size based on the buffer size plus the number of
+	 * unread samples and the number of samples remaining in the command.
+	 */
+	nsamples = comedi_nsamples_left(s, max_samples + unread_samples);
+	if (nsamples > unread_samples) {
+		nsamples -= unread_samples;
+		desc->size = comedi_samples_to_bytes(s, nsamples);
+		comedi_isadma_program(desc);
+	}
+>>>>>>> v4.9.227
 }
 
 static void pcl812_ai_set_chan_range(struct comedi_device *dev,
@@ -717,28 +934,47 @@ static int pcl812_ai_cmdtest(struct comedi_device *dev,
 	struct pcl812_private *devpriv = dev->private;
 	int err = 0;
 	unsigned int flags;
+<<<<<<< HEAD
 	unsigned int arg;
 
 	/* Step 1 : check if triggers are trivially valid */
 
 	err |= cfc_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= cfc_check_trigger_src(&cmd->scan_begin_src, TRIG_FOLLOW);
+=======
+
+	/* Step 1 : check if triggers are trivially valid */
+
+	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
+	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_FOLLOW);
+>>>>>>> v4.9.227
 
 	if (devpriv->use_ext_trg)
 		flags = TRIG_EXT;
 	else
 		flags = TRIG_TIMER;
+<<<<<<< HEAD
 	err |= cfc_check_trigger_src(&cmd->convert_src, flags);
 
 	err |= cfc_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
 	err |= cfc_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+=======
+	err |= comedi_check_trigger_src(&cmd->convert_src, flags);
+
+	err |= comedi_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
+	err |= comedi_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 1;
 
 	/* Step 2a : make sure trigger sources are unique */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_is_unique(cmd->stop_src);
+=======
+	err |= comedi_check_trigger_is_unique(cmd->stop_src);
+>>>>>>> v4.9.227
 
 	/* Step 2b : and mutually compatible */
 
@@ -747,6 +983,7 @@ static int pcl812_ai_cmdtest(struct comedi_device *dev,
 
 	/* Step 3: check if arguments are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= cfc_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
 
@@ -763,6 +1000,26 @@ static int pcl812_ai_cmdtest(struct comedi_device *dev,
 		err |= cfc_check_trigger_arg_min(&cmd->stop_arg, 1);
 	else	/* TRIG_NONE */
 		err |= cfc_check_trigger_arg_is(&cmd->stop_arg, 0);
+=======
+	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
+
+	if (cmd->convert_src == TRIG_TIMER) {
+		err |= comedi_check_trigger_arg_min(&cmd->convert_arg,
+						    board->ai_ns_min);
+	} else {	/* TRIG_EXT */
+		err |= comedi_check_trigger_arg_is(&cmd->convert_arg, 0);
+	}
+
+	err |= comedi_check_trigger_arg_min(&cmd->chanlist_len, 1);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_end_arg,
+					   cmd->chanlist_len);
+
+	if (cmd->stop_src == TRIG_COUNT)
+		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
+	else	/* TRIG_NONE */
+		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 3;
@@ -770,12 +1027,19 @@ static int pcl812_ai_cmdtest(struct comedi_device *dev,
 	/* step 4: fix up any arguments */
 
 	if (cmd->convert_src == TRIG_TIMER) {
+<<<<<<< HEAD
 		arg = cmd->convert_arg;
 		i8253_cascade_ns_to_timer(I8254_OSC_BASE_2MHZ,
 					  &devpriv->divisor1,
 					  &devpriv->divisor2,
 					  &arg, cmd->flags);
 		err |= cfc_check_trigger_arg_is(&cmd->convert_arg, arg);
+=======
+		unsigned int arg = cmd->convert_arg;
+
+		comedi_8254_cascade_ns_to_timer(dev->pacer, &arg, cmd->flags);
+		err |= comedi_check_trigger_arg_is(&cmd->convert_arg, arg);
+>>>>>>> v4.9.227
 	}
 
 	if (err)
@@ -787,15 +1051,25 @@ static int pcl812_ai_cmdtest(struct comedi_device *dev,
 static int pcl812_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 {
 	struct pcl812_private *devpriv = dev->private;
+<<<<<<< HEAD
+=======
+	struct comedi_isadma *dma = devpriv->dma;
+>>>>>>> v4.9.227
 	struct comedi_cmd *cmd = &s->async->cmd;
 	unsigned int ctrl = 0;
 	unsigned int i;
 
+<<<<<<< HEAD
 	pcl812_start_pacer(dev, false);
 
 	pcl812_ai_set_chan_range(dev, cmd->chanlist[0], 1);
 
 	if (devpriv->dma) {	/*  check if we can use DMA transfer */
+=======
+	pcl812_ai_set_chan_range(dev, cmd->chanlist[0], 1);
+
+	if (dma) {	/*  check if we can use DMA transfer */
+>>>>>>> v4.9.227
 		devpriv->ai_dma = 1;
 		for (i = 1; i < cmd->chanlist_len; i++)
 			if (cmd->chanlist[0] != cmd->chanlist[i]) {
@@ -807,9 +1081,13 @@ static int pcl812_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 		devpriv->ai_dma = 0;
 	}
 
+<<<<<<< HEAD
 	devpriv->ai_act_scan = 0;
 	devpriv->ai_poll_ptr = 0;
 	s->async->cur_chan = 0;
+=======
+	devpriv->ai_poll_ptr = 0;
+>>>>>>> v4.9.227
 
 	/*  don't we want wake up every scan? */
 	if (cmd->flags & CMDF_WAKE_EOS) {
@@ -820,12 +1098,25 @@ static int pcl812_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 			devpriv->ai_dma = 0;
 	}
 
+<<<<<<< HEAD
 	if (devpriv->ai_dma)
 		pcl812_ai_setup_dma(dev, s);
 
 	switch (cmd->convert_src) {
 	case TRIG_TIMER:
 		pcl812_start_pacer(dev, true);
+=======
+	if (devpriv->ai_dma) {
+		/* setup and enable dma for the first buffer */
+		dma->cur_dma = 0;
+		pcl812_ai_setup_dma(dev, s, 0);
+	}
+
+	switch (cmd->convert_src) {
+	case TRIG_TIMER:
+		comedi_8254_update_divisors(dev->pacer);
+		comedi_8254_pacer_enable(dev->pacer, 1, 2, true);
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -841,6 +1132,7 @@ static int pcl812_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 static bool pcl812_ai_next_chan(struct comedi_device *dev,
 				struct comedi_subdevice *s)
 {
+<<<<<<< HEAD
 	struct pcl812_private *devpriv = dev->private;
 	struct comedi_cmd *cmd = &s->async->cmd;
 
@@ -856,6 +1148,12 @@ static bool pcl812_ai_next_chan(struct comedi_device *dev,
 	if (cmd->stop_src == TRIG_COUNT &&
 	    devpriv->ai_act_scan >= cmd->stop_arg) {
 		/* all data sampled */
+=======
+	struct comedi_cmd *cmd = &s->async->cmd;
+
+	if (cmd->stop_src == TRIG_COUNT &&
+	    s->async->scans_done >= cmd->stop_arg) {
+>>>>>>> v4.9.227
 		s->async->events |= COMEDI_CB_EOA;
 		return false;
 	}
@@ -867,6 +1165,7 @@ static void pcl812_handle_eoc(struct comedi_device *dev,
 			      struct comedi_subdevice *s)
 {
 	struct comedi_cmd *cmd = &s->async->cmd;
+<<<<<<< HEAD
 	unsigned int next_chan;
 
 	if (pcl812_ai_eoc(dev, s, NULL, 0)) {
@@ -882,6 +1181,24 @@ static void pcl812_handle_eoc(struct comedi_device *dev,
 	if (next_chan >= cmd->chanlist_len)
 		next_chan = 0;
 	if (cmd->chanlist[s->async->cur_chan] != cmd->chanlist[next_chan])
+=======
+	unsigned int chan = s->async->cur_chan;
+	unsigned int next_chan;
+	unsigned short val;
+
+	if (pcl812_ai_eoc(dev, s, NULL, 0)) {
+		dev_dbg(dev->class_dev, "A/D cmd IRQ without DRDY!\n");
+		s->async->events |= COMEDI_CB_ERROR;
+		return;
+	}
+
+	val = pcl812_ai_get_sample(dev, s);
+	comedi_buf_write_samples(s, &val, 1);
+
+	/* Set up next channel. Added by abbotti 2010-01-20, but untested. */
+	next_chan = s->async->cur_chan;
+	if (cmd->chanlist[chan] != cmd->chanlist[next_chan])
+>>>>>>> v4.9.227
 		pcl812_ai_set_chan_range(dev, cmd->chanlist[next_chan], 0);
 
 	pcl812_ai_next_chan(dev, s);
@@ -893,9 +1210,17 @@ static void transfer_from_dma_buf(struct comedi_device *dev,
 				  unsigned int bufptr, unsigned int len)
 {
 	unsigned int i;
+<<<<<<< HEAD
 
 	for (i = len; i; i--) {
 		comedi_buf_put(s, ptr[bufptr++]);
+=======
+	unsigned short val;
+
+	for (i = len; i; i--) {
+		val = ptr[bufptr++];
+		comedi_buf_write_samples(s, &val, 1);
+>>>>>>> v4.9.227
 
 		if (!pcl812_ai_next_chan(dev, s))
 			break;
@@ -906,6 +1231,7 @@ static void pcl812_handle_dma(struct comedi_device *dev,
 			      struct comedi_subdevice *s)
 {
 	struct pcl812_private *devpriv = dev->private;
+<<<<<<< HEAD
 	int len, bufptr;
 	unsigned short *ptr;
 
@@ -919,6 +1245,23 @@ static void pcl812_handle_dma(struct comedi_device *dev,
 	devpriv->ai_poll_ptr = 0;
 
 	transfer_from_dma_buf(dev, s, ptr, bufptr, len);
+=======
+	struct comedi_isadma *dma = devpriv->dma;
+	struct comedi_isadma_desc *desc = &dma->desc[dma->cur_dma];
+	unsigned int nsamples;
+	int bufptr;
+
+	nsamples = comedi_bytes_to_samples(s, desc->size) -
+		   devpriv->ai_poll_ptr;
+	bufptr = devpriv->ai_poll_ptr;
+	devpriv->ai_poll_ptr = 0;
+
+	/* restart dma with the next buffer */
+	dma->cur_dma = 1 - dma->cur_dma;
+	pcl812_ai_setup_dma(dev, s, nsamples);
+
+	transfer_from_dma_buf(dev, s, desc->virt_addr, bufptr, nsamples);
+>>>>>>> v4.9.227
 }
 
 static irqreturn_t pcl812_interrupt(int irq, void *d)
@@ -939,13 +1282,18 @@ static irqreturn_t pcl812_interrupt(int irq, void *d)
 
 	pcl812_ai_clear_eoc(dev);
 
+<<<<<<< HEAD
 	cfc_handle_events(dev, s);
+=======
+	comedi_handle_events(dev, s);
+>>>>>>> v4.9.227
 	return IRQ_HANDLED;
 }
 
 static int pcl812_ai_poll(struct comedi_device *dev, struct comedi_subdevice *s)
 {
 	struct pcl812_private *devpriv = dev->private;
+<<<<<<< HEAD
 	unsigned long flags;
 	unsigned int top1, top2, i;
 
@@ -985,6 +1333,39 @@ static int pcl812_ai_poll(struct comedi_device *dev, struct comedi_subdevice *s)
 	spin_unlock_irqrestore(&dev->spinlock, flags);
 
 	return comedi_buf_n_bytes_ready(s);
+=======
+	struct comedi_isadma *dma = devpriv->dma;
+	struct comedi_isadma_desc *desc;
+	unsigned long flags;
+	unsigned int poll;
+	int ret;
+
+	/* poll is valid only for DMA transfer */
+	if (!devpriv->ai_dma)
+		return 0;
+
+	spin_lock_irqsave(&dev->spinlock, flags);
+
+	poll = comedi_isadma_poll(dma);
+	poll = comedi_bytes_to_samples(s, poll);
+	if (poll > devpriv->ai_poll_ptr) {
+		desc = &dma->desc[dma->cur_dma];
+		transfer_from_dma_buf(dev, s, desc->virt_addr,
+				      devpriv->ai_poll_ptr,
+				      poll - devpriv->ai_poll_ptr);
+		/* new buffer position */
+		devpriv->ai_poll_ptr = poll;
+
+		ret = comedi_buf_n_bytes_ready(s);
+	} else {
+		/* no new samples */
+		ret = 0;
+	}
+
+	spin_unlock_irqrestore(&dev->spinlock, flags);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int pcl812_ai_cancel(struct comedi_device *dev,
@@ -993,11 +1374,19 @@ static int pcl812_ai_cancel(struct comedi_device *dev,
 	struct pcl812_private *devpriv = dev->private;
 
 	if (devpriv->ai_dma)
+<<<<<<< HEAD
 		disable_dma(devpriv->dma);
 
 	outb(devpriv->mode_reg_int | PCL812_CTRL_DISABLE_TRIG,
 	     dev->iobase + PCL812_CTRL_REG);
 	pcl812_start_pacer(dev, false);
+=======
+		comedi_isadma_disable(devpriv->dma->chan);
+
+	outb(devpriv->mode_reg_int | PCL812_CTRL_DISABLE_TRIG,
+	     dev->iobase + PCL812_CTRL_REG);
+	comedi_8254_pacer_enable(dev->pacer, 1, 2, false);
+>>>>>>> v4.9.227
 	pcl812_ai_clear_eoc(dev);
 	return 0;
 }
@@ -1089,10 +1478,13 @@ static void pcl812_reset(struct comedi_device *dev)
 	     dev->iobase + PCL812_CTRL_REG);
 	pcl812_ai_clear_eoc(dev);
 
+<<<<<<< HEAD
 	/* stop pacer */
 	if (board->IRQbits)
 		pcl812_start_pacer(dev, false);
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * Invalidate last_ai_chanspec then set analog input to
 	 * known channel/range.
@@ -1120,6 +1512,7 @@ static void pcl812_set_ai_range_table(struct comedi_device *dev,
 	const struct pcl812_board *board = dev->board_ptr;
 	struct pcl812_private *devpriv = dev->private;
 
+<<<<<<< HEAD
 	/* default to the range table from the boardinfo */
 	s->range_table = board->rangelist_ai;
 
@@ -1130,6 +1523,16 @@ static void pcl812_set_ai_range_table(struct comedi_device *dev,
 			s->range_table = &range_pcl812pg2_ai;
 		break;
 	case boardPCL812:
+=======
+	switch (board->board_type) {
+	case BOARD_PCL812PG:
+		if (it->options[4] == 1)
+			s->range_table = &range_pcl812pg2_ai;
+		else
+			s->range_table = board->rangelist_ai;
+		break;
+	case BOARD_PCL812:
+>>>>>>> v4.9.227
 		switch (it->options[4]) {
 		case 0:
 			s->range_table = &range_bipolar10;
@@ -1154,11 +1557,21 @@ static void pcl812_set_ai_range_table(struct comedi_device *dev,
 			break;
 		}
 		break;
+<<<<<<< HEAD
 	case boardPCL813B:
 		if (it->options[1] == 1)
 			s->range_table = &range_pcl813b2_ai;
 		break;
 	case boardISO813:
+=======
+	case BOARD_PCL813B:
+		if (it->options[1] == 1)
+			s->range_table = &range_pcl813b2_ai;
+		else
+			s->range_table = board->rangelist_ai;
+		break;
+	case BOARD_ISO813:
+>>>>>>> v4.9.227
 		switch (it->options[1]) {
 		case 0:
 			s->range_table = &range_iso813_1_ai;
@@ -1179,7 +1592,11 @@ static void pcl812_set_ai_range_table(struct comedi_device *dev,
 			break;
 		}
 		break;
+<<<<<<< HEAD
 	case boardACL8113:
+=======
+	case BOARD_ACL8113:
+>>>>>>> v4.9.227
 		switch (it->options[1]) {
 		case 0:
 			s->range_table = &range_acl8113_1_ai;
@@ -1200,9 +1617,39 @@ static void pcl812_set_ai_range_table(struct comedi_device *dev,
 			break;
 		}
 		break;
+<<<<<<< HEAD
 	}
 }
 
+=======
+	default:
+		s->range_table = board->rangelist_ai;
+		break;
+	}
+}
+
+static void pcl812_alloc_dma(struct comedi_device *dev, unsigned int dma_chan)
+{
+	struct pcl812_private *devpriv = dev->private;
+
+	/* only DMA channels 3 and 1 are valid */
+	if (!(dma_chan == 3 || dma_chan == 1))
+		return;
+
+	/* DMA uses two 8K buffers */
+	devpriv->dma = comedi_isadma_alloc(dev, 2, dma_chan, dma_chan,
+					   PAGE_SIZE * 2, COMEDI_ISADMA_READ);
+}
+
+static void pcl812_free_dma(struct comedi_device *dev)
+{
+	struct pcl812_private *devpriv = dev->private;
+
+	if (devpriv)
+		comedi_isadma_free(devpriv->dma);
+}
+
+>>>>>>> v4.9.227
 static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 {
 	const struct pcl812_board *board = dev->board_ptr;
@@ -1211,7 +1658,10 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	int n_subdevices;
 	int subdev;
 	int ret;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> v4.9.227
 
 	devpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));
 	if (!devpriv)
@@ -1221,6 +1671,7 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if ((1 << it->options[1]) & board->IRQbits) {
 		ret = request_irq(it->options[1], pcl812_interrupt, 0,
 				  dev->board_name, dev);
@@ -1266,6 +1717,40 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		if (it->options[4] == 1)
 			devpriv->use_diff = 1;
 		break;
+=======
+	if (board->irq_bits) {
+		dev->pacer = comedi_8254_init(dev->iobase + PCL812_TIMER_BASE,
+					      I8254_OSC_BASE_2MHZ,
+					      I8254_IO8, 0);
+		if (!dev->pacer)
+			return -ENOMEM;
+
+		if ((1 << it->options[1]) & board->irq_bits) {
+			ret = request_irq(it->options[1], pcl812_interrupt, 0,
+					  dev->board_name, dev);
+			if (ret == 0)
+				dev->irq = it->options[1];
+		}
+	}
+
+	/* we need an IRQ to do DMA on channel 3 or 1 */
+	if (dev->irq && board->has_dma)
+		pcl812_alloc_dma(dev, it->options[2]);
+
+	/* differential analog inputs? */
+	switch (board->board_type) {
+	case BOARD_A821:
+		if (it->options[2] == 1)
+			devpriv->use_diff = 1;
+		break;
+	case BOARD_ACL8112:
+	case BOARD_ACL8216:
+		if (it->options[4] == 1)
+			devpriv->use_diff = 1;
+		break;
+	default:
+		break;
+>>>>>>> v4.9.227
 	}
 
 	n_subdevices = 1;		/* all boardtypes have analog inputs */
@@ -1318,6 +1803,7 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		s->subdev_flags	= SDF_WRITABLE | SDF_GROUND;
 		s->n_chan	= board->n_aochan;
 		s->maxdata	= 0xfff;
+<<<<<<< HEAD
 		s->range_table	= &range_unipolar5;
 		switch (board->board_type) {
 		case boardA821:
@@ -1336,6 +1822,36 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		}
 		s->insn_write	= pcl812_ao_insn_write;
 		s->insn_read	= comedi_readback_insn_read;
+=======
+		switch (board->board_type) {
+		case BOARD_A821:
+			if (it->options[3] == 1)
+				s->range_table = &range_unipolar10;
+			else
+				s->range_table = &range_unipolar5;
+			break;
+		case BOARD_PCL812:
+		case BOARD_ACL8112:
+		case BOARD_PCL812PG:
+		case BOARD_ACL8216:
+			switch (it->options[5]) {
+			case 1:
+				s->range_table = &range_unipolar10;
+				break;
+			case 2:
+				s->range_table = &range_unknown;
+				break;
+			default:
+				s->range_table = &range_unipolar5;
+				break;
+			}
+			break;
+		default:
+			s->range_table = &range_unipolar5;
+			break;
+		}
+		s->insn_write	= pcl812_ao_insn_write;
+>>>>>>> v4.9.227
 
 		ret = comedi_alloc_subdev_readback(s);
 		if (ret)
@@ -1367,15 +1883,23 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	}
 
 	switch (board->board_type) {
+<<<<<<< HEAD
 	case boardACL8216:
 	case boardPCL812PG:
 	case boardPCL812:
 	case boardACL8112:
+=======
+	case BOARD_ACL8216:
+	case BOARD_PCL812PG:
+	case BOARD_PCL812:
+	case BOARD_ACL8112:
+>>>>>>> v4.9.227
 		devpriv->max_812_ai_mode0_rangewait = 1;
 		if (it->options[3] > 0)
 						/*  we use external trigger */
 			devpriv->use_ext_trg = 1;
 		break;
+<<<<<<< HEAD
 	case boardA821:
 		devpriv->max_812_ai_mode0_rangewait = 1;
 		devpriv->mode_reg_int = (dev->irq << 4) & 0xf0;
@@ -1384,6 +1908,16 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	case boardPCL813:
 	case boardISO813:
 	case boardACL8113:
+=======
+	case BOARD_A821:
+		devpriv->max_812_ai_mode0_rangewait = 1;
+		devpriv->mode_reg_int = (dev->irq << 4) & 0xf0;
+		break;
+	case BOARD_PCL813B:
+	case BOARD_PCL813:
+	case BOARD_ISO813:
+	case BOARD_ACL8113:
+>>>>>>> v4.9.227
 		/* maybe there must by greatest timeout */
 		devpriv->max_812_ai_mode0_rangewait = 5;
 		break;
@@ -1396,6 +1930,7 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 
 static void pcl812_detach(struct comedi_device *dev)
 {
+<<<<<<< HEAD
 	struct pcl812_private *devpriv = dev->private;
 
 	if (devpriv) {
@@ -1406,6 +1941,9 @@ static void pcl812_detach(struct comedi_device *dev)
 		if (devpriv->dma)
 			free_dma(devpriv->dma);
 	}
+=======
+	pcl812_free_dma(dev);
+>>>>>>> v4.9.227
 	comedi_legacy_detach(dev);
 }
 

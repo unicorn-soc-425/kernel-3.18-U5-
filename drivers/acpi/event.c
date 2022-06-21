@@ -100,7 +100,10 @@ int acpi_bus_generate_netlink_event(const char *device_class,
 	struct acpi_genl_event *event;
 	void *msg_header;
 	int size;
+<<<<<<< HEAD
 	int result;
+=======
+>>>>>>> v4.9.227
 
 	/* allocate memory */
 	size = nla_total_size(sizeof(struct acpi_genl_event)) +
@@ -137,11 +140,15 @@ int acpi_bus_generate_netlink_event(const char *device_class,
 	event->data = data;
 
 	/* send multicast genetlink message */
+<<<<<<< HEAD
 	result = genlmsg_end(skb, msg_header);
 	if (result < 0) {
 		nlmsg_free(skb);
 		return result;
 	}
+=======
+	genlmsg_end(skb, msg_header);
+>>>>>>> v4.9.227
 
 	genlmsg_multicast(&acpi_event_genl_family, skb, 0, 0, GFP_ATOMIC);
 	return 0;

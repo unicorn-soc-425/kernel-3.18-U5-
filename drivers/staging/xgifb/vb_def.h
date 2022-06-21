@@ -7,7 +7,10 @@
 #define SupportCRT2in301C       0x0100  /* for 301C */
 #define SetCHTVOverScan         0x8000
 
+<<<<<<< HEAD
 #define Panel_320x480            0x07 /*fstn*/
+=======
+>>>>>>> v4.9.227
 #define PanelResInfo            0x1F /* CR36 Panel Type/LCDResInfo */
 #define Panel_1024x768x75        0x22
 #define Panel_1280x1024x75       0x23
@@ -229,7 +232,10 @@
 #define RES1280x960x85       0x46
 #define RES1280x960x120      0x47
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #define XG27_CR8F 0x0C
 #define XG27_SR36 0x30
 #define XG27_SR40 0x04

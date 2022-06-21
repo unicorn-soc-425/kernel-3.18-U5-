@@ -12,11 +12,19 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
 #include <linux/export.h>
 #include <linux/rwsem.h>
+=======
+#include <linux/export.h>
+#include <linux/i2c.h>
+#include <linux/kernel.h>
+#include <linux/rwsem.h>
+#include <linux/slab.h>
+>>>>>>> v4.9.227
 
 #include "i2c-core.h"
 
@@ -56,9 +64,13 @@ EXPORT_SYMBOL_GPL(__i2c_first_dynamic_bus_num);
  * The board info passed can safely be __initdata, but be careful of embedded
  * pointers (for platform_data, functions, etc) since that won't be copied.
  */
+<<<<<<< HEAD
 int __init
 i2c_register_board_info(int busnum,
 	struct i2c_board_info const *info, unsigned len)
+=======
+int i2c_register_board_info(int busnum, struct i2c_board_info const *info, unsigned len)
+>>>>>>> v4.9.227
 {
 	int status;
 

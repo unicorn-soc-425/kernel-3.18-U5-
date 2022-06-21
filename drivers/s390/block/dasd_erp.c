@@ -169,12 +169,20 @@ dasd_log_sense(struct dasd_ccw_req *cqr, struct irb *irb)
 	device = cqr->startdev;
 	if (cqr->intrc == -ETIMEDOUT) {
 		dev_err(&device->cdev->dev,
+<<<<<<< HEAD
 			"A timeout error occurred for cqr %p", cqr);
+=======
+			"A timeout error occurred for cqr %p\n", cqr);
+>>>>>>> v4.9.227
 		return;
 	}
 	if (cqr->intrc == -ENOLINK) {
 		dev_err(&device->cdev->dev,
+<<<<<<< HEAD
 			"A transport error occurred for cqr %p", cqr);
+=======
+			"A transport error occurred for cqr %p\n", cqr);
+>>>>>>> v4.9.227
 		return;
 	}
 	/* dump sense data */

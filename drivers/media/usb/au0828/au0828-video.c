@@ -22,19 +22,30 @@
 
 /* Developer Notes:
  *
+<<<<<<< HEAD
  * VBI support is not yet working
+=======
+>>>>>>> v4.9.227
  * The hardware scaler supported is unimplemented
  * AC97 audio support is unimplemented (only i2s audio mode)
  *
  */
 
 #include "au0828.h"
+<<<<<<< HEAD
+=======
+#include "au8522.h"
+>>>>>>> v4.9.227
 
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/device.h>
 #include <media/v4l2-common.h>
+<<<<<<< HEAD
+=======
+#include <media/v4l2-mc.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-event.h>
 #include <media/tuner.h>
@@ -105,14 +116,23 @@ static inline void print_err_status(struct au0828_dev *dev,
 
 static int check_dev(struct au0828_dev *dev)
 {
+<<<<<<< HEAD
 	if (dev->dev_state & DEV_DISCONNECTED) {
+=======
+	if (test_bit(DEV_DISCONNECTED, &dev->dev_state)) {
+>>>>>>> v4.9.227
 		pr_info("v4l2 ioctl: device not present\n");
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if (dev->dev_state & DEV_MISCONFIGURED) {
 		pr_info("v4l2 ioctl: device is misconfigured; "
 		       "close and open it again\n");
+=======
+	if (test_bit(DEV_MISCONFIGURED, &dev->dev_state)) {
+		pr_info("v4l2 ioctl: device is misconfigured; close and open it again\n");
+>>>>>>> v4.9.227
 		return -EIO;
 	}
 	return 0;
@@ -219,9 +239,12 @@ static int au0828_init_isoc(struct au0828_dev *dev, int max_packets,
 
 	au0828_isocdbg("au0828: called au0828_prepare_isoc\n");
 
+<<<<<<< HEAD
 	/* De-allocates all pending stuff */
 	au0828_uninit_isoc(dev);
 
+=======
+>>>>>>> v4.9.227
 	dev->isoc_ctl.isoc_copy = isoc_copy;
 	dev->isoc_ctl.num_bufs = num_bufs;
 
@@ -248,7 +271,10 @@ static int au0828_init_isoc(struct au0828_dev *dev, int max_packets,
 	for (i = 0; i < dev->isoc_ctl.num_bufs; i++) {
 		urb = usb_alloc_urb(max_packets, GFP_KERNEL);
 		if (!urb) {
+<<<<<<< HEAD
 			au0828_isocdbg("cannot alloc isoc_ctl.urb %i\n", i);
+=======
+>>>>>>> v4.9.227
 			au0828_uninit_isoc(dev);
 			return -ENOMEM;
 		}
@@ -285,8 +311,11 @@ static int au0828_init_isoc(struct au0828_dev *dev, int max_packets,
 		}
 	}
 
+<<<<<<< HEAD
 	init_waitqueue_head(&dma_q->wq);
 
+=======
+>>>>>>> v4.9.227
 	/* submit urbs and enables IRQ */
 	for (i = 0; i < dev->isoc_ctl.num_bufs; i++) {
 		rc = usb_submit_urb(dev->isoc_ctl.urb[i], GFP_ATOMIC);
@@ -305,6 +334,7 @@ static int au0828_init_isoc(struct au0828_dev *dev, int max_packets,
  * Announces that a buffer were filled and request the next
  */
 static inline void buffer_filled(struct au0828_dev *dev,
+<<<<<<< HEAD
 				  struct au0828_dmaqueue *dma_q,
 				  struct au0828_buffer *buf)
 {
@@ -336,6 +366,25 @@ static inline void vbi_buffer_filled(struct au0828_dev *dev,
 
 	list_del(&buf->vb.queue);
 	wake_up(&buf->vb.done);
+=======
+				 struct au0828_dmaqueue *dma_q,
+				 struct au0828_buffer *buf)
+{
+	struct vb2_v4l2_buffer *vb = &buf->vb;
+	struct vb2_queue *q = vb->vb2_buf.vb2_queue;
+
+	/* Advice that buffer was filled */
+	au0828_isocdbg("[%p/%d] wakeup\n", buf, buf->top_field);
+
+	if (q->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
+		vb->sequence = dev->frame_count++;
+	else
+		vb->sequence = dev->vbi_frame_count++;
+
+	vb->field = V4L2_FIELD_INTERLACED;
+	vb->vb2_buf.timestamp = ktime_get_ns();
+	vb2_buffer_done(&vb->vb2_buf, VB2_BUF_STATE_DONE);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -354,8 +403,13 @@ static void au0828_copy_video(struct au0828_dev *dev,
 	if (len == 0)
 		return;
 
+<<<<<<< HEAD
 	if (dma_q->pos + len > buf->vb.size)
 		len = buf->vb.size - dma_q->pos;
+=======
+	if (dma_q->pos + len > buf->length)
+		len = buf->length - dma_q->pos;
+>>>>>>> v4.9.227
 
 	startread = p;
 	remain = len;
@@ -373,11 +427,19 @@ static void au0828_copy_video(struct au0828_dev *dev,
 	lencopy = bytesperline - currlinedone;
 	lencopy = lencopy > remain ? remain : lencopy;
 
+<<<<<<< HEAD
 	if ((char *)startwrite + lencopy > (char *)outp + buf->vb.size) {
 		au0828_isocdbg("Overflow of %zi bytes past buffer end (1)\n",
 			       ((char *)startwrite + lencopy) -
 			       ((char *)outp + buf->vb.size));
 		remain = (char *)outp + buf->vb.size - (char *)startwrite;
+=======
+	if ((char *)startwrite + lencopy > (char *)outp + buf->length) {
+		au0828_isocdbg("Overflow of %zi bytes past buffer end (1)\n",
+			       ((char *)startwrite + lencopy) -
+			       ((char *)outp + buf->length));
+		remain = (char *)outp + buf->length - (char *)startwrite;
+>>>>>>> v4.9.227
 		lencopy = remain;
 	}
 	if (lencopy <= 0)
@@ -395,11 +457,19 @@ static void au0828_copy_video(struct au0828_dev *dev,
 			lencopy = bytesperline;
 
 		if ((char *)startwrite + lencopy > (char *)outp +
+<<<<<<< HEAD
 		    buf->vb.size) {
 			au0828_isocdbg("Overflow %zi bytes past buf end (2)\n",
 				       ((char *)startwrite + lencopy) -
 				       ((char *)outp + buf->vb.size));
 			lencopy = remain = (char *)outp + buf->vb.size -
+=======
+		    buf->length) {
+			au0828_isocdbg("Overflow %zi bytes past buf end (2)\n",
+				       ((char *)startwrite + lencopy) -
+				       ((char *)outp + buf->length));
+			lencopy = remain = (char *)outp + buf->length -
+>>>>>>> v4.9.227
 					   (char *)startwrite;
 		}
 		if (lencopy <= 0)
@@ -435,7 +505,15 @@ static inline void get_next_buf(struct au0828_dmaqueue *dma_q,
 	}
 
 	/* Get the next buffer */
+<<<<<<< HEAD
 	*buf = list_entry(dma_q->active.next, struct au0828_buffer, vb.queue);
+=======
+	*buf = list_entry(dma_q->active.next, struct au0828_buffer, list);
+	/* Cleans up buffer - Useful for testing for frame/URB loss */
+	list_del(&(*buf)->list);
+	dma_q->pos = 0;
+	(*buf)->vb_buf = (*buf)->mem;
+>>>>>>> v4.9.227
 	dev->isoc_ctl.buf = *buf;
 
 	return;
@@ -473,8 +551,13 @@ static void au0828_copy_vbi(struct au0828_dev *dev,
 
 	bytesperline = dev->vbi_width;
 
+<<<<<<< HEAD
 	if (dma_q->pos + len > buf->vb.size)
 		len = buf->vb.size - dma_q->pos;
+=======
+	if (dma_q->pos + len > buf->length)
+		len = buf->length - dma_q->pos;
+>>>>>>> v4.9.227
 
 	startread = p;
 	startwrite = outp + (dma_q->pos / 2);
@@ -497,7 +580,10 @@ static inline void vbi_get_next_buf(struct au0828_dmaqueue *dma_q,
 				    struct au0828_buffer **buf)
 {
 	struct au0828_dev *dev = container_of(dma_q, struct au0828_dev, vbiq);
+<<<<<<< HEAD
 	char *outp;
+=======
+>>>>>>> v4.9.227
 
 	if (list_empty(&dma_q->active)) {
 		au0828_isocdbg("No active queue to serve\n");
@@ -507,6 +593,7 @@ static inline void vbi_get_next_buf(struct au0828_dmaqueue *dma_q,
 	}
 
 	/* Get the next buffer */
+<<<<<<< HEAD
 	*buf = list_entry(dma_q->active.next, struct au0828_buffer, vb.queue);
 	/* Cleans up buffer - Useful for testing for frame/URB loss */
 	outp = videobuf_to_vmalloc(&(*buf)->vb);
@@ -514,6 +601,14 @@ static inline void vbi_get_next_buf(struct au0828_dmaqueue *dma_q,
 
 	dev->isoc_ctl.vbi_buf = *buf;
 
+=======
+	*buf = list_entry(dma_q->active.next, struct au0828_buffer, list);
+	/* Cleans up buffer - Useful for testing for frame/URB loss */
+	list_del(&(*buf)->list);
+	dma_q->pos = 0;
+	(*buf)->vb_buf = (*buf)->mem;
+	dev->isoc_ctl.vbi_buf = *buf;
+>>>>>>> v4.9.227
 	return;
 }
 
@@ -537,8 +632,13 @@ static inline int au0828_isoc_copy(struct au0828_dev *dev, struct urb *urb)
 	if (!dev)
 		return 0;
 
+<<<<<<< HEAD
 	if ((dev->dev_state & DEV_DISCONNECTED) ||
 	    (dev->dev_state & DEV_MISCONFIGURED))
+=======
+	if (test_bit(DEV_DISCONNECTED, &dev->dev_state) ||
+	    test_bit(DEV_MISCONFIGURED, &dev->dev_state))
+>>>>>>> v4.9.227
 		return 0;
 
 	if (urb->status < 0) {
@@ -549,11 +649,19 @@ static inline int au0828_isoc_copy(struct au0828_dev *dev, struct urb *urb)
 
 	buf = dev->isoc_ctl.buf;
 	if (buf != NULL)
+<<<<<<< HEAD
 		outp = videobuf_to_vmalloc(&buf->vb);
 
 	vbi_buf = dev->isoc_ctl.vbi_buf;
 	if (vbi_buf != NULL)
 		vbioutp = videobuf_to_vmalloc(&vbi_buf->vb);
+=======
+		outp = vb2_plane_vaddr(&buf->vb.vb2_buf, 0);
+
+	vbi_buf = dev->isoc_ctl.vbi_buf;
+	if (vbi_buf != NULL)
+		vbioutp = vb2_plane_vaddr(&vbi_buf->vb.vb2_buf, 0);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < urb->number_of_packets; i++) {
 		int status = urb->iso_frame_desc[i].status;
@@ -586,15 +694,24 @@ static inline int au0828_isoc_copy(struct au0828_dev *dev, struct urb *urb)
 			if (fbyte & 0x40) {
 				/* VBI */
 				if (vbi_buf != NULL)
+<<<<<<< HEAD
 					vbi_buffer_filled(dev,
 							  vbi_dma_q,
 							  vbi_buf);
+=======
+					buffer_filled(dev, vbi_dma_q, vbi_buf);
+>>>>>>> v4.9.227
 				vbi_get_next_buf(vbi_dma_q, &vbi_buf);
 				if (vbi_buf == NULL)
 					vbioutp = NULL;
 				else
+<<<<<<< HEAD
 					vbioutp = videobuf_to_vmalloc(
 						&vbi_buf->vb);
+=======
+					vbioutp = vb2_plane_vaddr(
+						&vbi_buf->vb.vb2_buf, 0);
+>>>>>>> v4.9.227
 
 				/* Video */
 				if (buf != NULL)
@@ -603,7 +720,12 @@ static inline int au0828_isoc_copy(struct au0828_dev *dev, struct urb *urb)
 				if (buf == NULL)
 					outp = NULL;
 				else
+<<<<<<< HEAD
 					outp = videobuf_to_vmalloc(&buf->vb);
+=======
+					outp = vb2_plane_vaddr(
+						&buf->vb.vb2_buf, 0);
+>>>>>>> v4.9.227
 
 				/* As long as isoc traffic is arriving, keep
 				   resetting the timer */
@@ -657,6 +779,7 @@ static inline int au0828_isoc_copy(struct au0828_dev *dev, struct urb *urb)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int
 buffer_setup(struct videobuf_queue *vq, unsigned int *count,
 	     unsigned int *size)
@@ -781,6 +904,117 @@ static struct videobuf_queue_ops au0828_video_qops = {
    V4L2 interface
    ------------------------------------------------------------------*/
 
+=======
+void au0828_usb_v4l2_media_release(struct au0828_dev *dev)
+{
+#ifdef CONFIG_MEDIA_CONTROLLER
+	int i;
+
+	for (i = 0; i < AU0828_MAX_INPUT; i++) {
+		if (AUVI_INPUT(i).type == AU0828_VMUX_UNDEFINED)
+			return;
+		media_device_unregister_entity(&dev->input_ent[i]);
+	}
+#endif
+}
+
+static void au0828_usb_v4l2_release(struct v4l2_device *v4l2_dev)
+{
+	struct au0828_dev *dev =
+		container_of(v4l2_dev, struct au0828_dev, v4l2_dev);
+
+	v4l2_ctrl_handler_free(&dev->v4l2_ctrl_hdl);
+	v4l2_device_unregister(&dev->v4l2_dev);
+	au0828_usb_v4l2_media_release(dev);
+	au0828_usb_release(dev);
+}
+
+int au0828_v4l2_device_register(struct usb_interface *interface,
+				struct au0828_dev *dev)
+{
+	int retval;
+
+	if (AUVI_INPUT(0).type == AU0828_VMUX_UNDEFINED)
+		return 0;
+
+	/* Create the v4l2_device */
+#ifdef CONFIG_MEDIA_CONTROLLER
+	dev->v4l2_dev.mdev = dev->media_dev;
+#endif
+	retval = v4l2_device_register(&interface->dev, &dev->v4l2_dev);
+	if (retval) {
+		pr_err("%s() v4l2_device_register failed\n",
+		       __func__);
+		return retval;
+	}
+
+	dev->v4l2_dev.release = au0828_usb_v4l2_release;
+
+	/* This control handler will inherit the controls from au8522 */
+	retval = v4l2_ctrl_handler_init(&dev->v4l2_ctrl_hdl, 4);
+	if (retval) {
+		pr_err("%s() v4l2_ctrl_handler_init failed\n",
+		       __func__);
+		return retval;
+	}
+	dev->v4l2_dev.ctrl_handler = &dev->v4l2_ctrl_hdl;
+
+	return 0;
+}
+
+static int queue_setup(struct vb2_queue *vq,
+		       unsigned int *nbuffers, unsigned int *nplanes,
+		       unsigned int sizes[], struct device *alloc_devs[])
+{
+	struct au0828_dev *dev = vb2_get_drv_priv(vq);
+	unsigned long size = dev->height * dev->bytesperline;
+
+	if (*nplanes)
+		return sizes[0] < size ? -EINVAL : 0;
+	*nplanes = 1;
+	sizes[0] = size;
+	return 0;
+}
+
+static int
+buffer_prepare(struct vb2_buffer *vb)
+{
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct au0828_buffer *buf = container_of(vbuf,
+				struct au0828_buffer, vb);
+	struct au0828_dev    *dev = vb2_get_drv_priv(vb->vb2_queue);
+
+	buf->length = dev->height * dev->bytesperline;
+
+	if (vb2_plane_size(vb, 0) < buf->length) {
+		pr_err("%s data will not fit into plane (%lu < %lu)\n",
+			__func__, vb2_plane_size(vb, 0), buf->length);
+		return -EINVAL;
+	}
+	vb2_set_plane_payload(&buf->vb.vb2_buf, 0, buf->length);
+	return 0;
+}
+
+static void
+buffer_queue(struct vb2_buffer *vb)
+{
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct au0828_buffer    *buf     = container_of(vbuf,
+							struct au0828_buffer,
+							vb);
+	struct au0828_dev       *dev     = vb2_get_drv_priv(vb->vb2_queue);
+	struct au0828_dmaqueue  *vidq    = &dev->vidq;
+	unsigned long flags = 0;
+
+	buf->mem = vb2_plane_vaddr(vb, 0);
+	buf->length = vb2_plane_size(vb, 0);
+
+	spin_lock_irqsave(&dev->slock, flags);
+	list_add_tail(&buf->list, &vidq->active);
+	spin_unlock_irqrestore(&dev->slock, flags);
+}
+
+>>>>>>> v4.9.227
 static int au0828_i2s_init(struct au0828_dev *dev)
 {
 	/* Enable i2s mode */
@@ -798,6 +1032,12 @@ static int au0828_analog_stream_enable(struct au0828_dev *d)
 
 	dprintk(1, "au0828_analog_stream_enable called\n");
 
+<<<<<<< HEAD
+=======
+	if (test_bit(DEV_DISCONNECTED, &d->dev_state))
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	iface = usb_ifnum_to_if(d->usbdev, 0);
 	if (iface && iface->cur_altsetting->desc.bAlternateSetting != 5) {
 		dprintk(1, "Changing intf#0 to alt 5\n");
@@ -829,7 +1069,11 @@ static int au0828_analog_stream_enable(struct au0828_dev *d)
 	return 0;
 }
 
+<<<<<<< HEAD
 int au0828_analog_stream_disable(struct au0828_dev *d)
+=======
+static int au0828_analog_stream_disable(struct au0828_dev *d)
+>>>>>>> v4.9.227
 {
 	dprintk(1, "au0828_analog_stream_disable called\n");
 	au0828_writereg(d, AU0828_SENSORCTRL_100, 0x0);
@@ -852,16 +1096,24 @@ static int au0828_stream_interrupt(struct au0828_dev *dev)
 	int ret = 0;
 
 	dev->stream_state = STREAM_INTERRUPT;
+<<<<<<< HEAD
 	if (dev->dev_state == DEV_DISCONNECTED)
 		return -ENODEV;
 	else if (ret) {
 		dev->dev_state = DEV_MISCONFIGURED;
+=======
+	if (test_bit(DEV_DISCONNECTED, &dev->dev_state))
+		return -ENODEV;
+	else if (ret) {
+		set_bit(DEV_MISCONFIGURED, &dev->dev_state);
+>>>>>>> v4.9.227
 		dprintk(1, "%s device is misconfigured!\n", __func__);
 		return ret;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * au0828_release_resources
  * unregister v4l2 devices
@@ -898,10 +1150,148 @@ static int res_get(struct au0828_fh *fh, unsigned int bit)
 	fh->resources  |= bit;
 	dev->resources |= bit;
 	dprintk(1, "res: get %d\n", bit);
+=======
+int au0828_start_analog_streaming(struct vb2_queue *vq, unsigned int count)
+{
+	struct au0828_dev *dev = vb2_get_drv_priv(vq);
+	int rc = 0;
+
+	dprintk(1, "au0828_start_analog_streaming called %d\n",
+		dev->streaming_users);
+
+	if (vq->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
+		dev->frame_count = 0;
+	else
+		dev->vbi_frame_count = 0;
+
+	if (dev->streaming_users == 0) {
+		/* If we were doing ac97 instead of i2s, it would go here...*/
+		au0828_i2s_init(dev);
+		rc = au0828_init_isoc(dev, AU0828_ISO_PACKETS_PER_URB,
+				   AU0828_MAX_ISO_BUFS, dev->max_pkt_size,
+				   au0828_isoc_copy);
+		if (rc < 0) {
+			pr_info("au0828_init_isoc failed\n");
+			return rc;
+		}
+
+		v4l2_device_call_all(&dev->v4l2_dev, 0, video, s_stream, 1);
+
+		if (vq->type == V4L2_BUF_TYPE_VIDEO_CAPTURE) {
+			dev->vid_timeout_running = 1;
+			mod_timer(&dev->vid_timeout, jiffies + (HZ / 10));
+		} else if (vq->type == V4L2_BUF_TYPE_VBI_CAPTURE) {
+			dev->vbi_timeout_running = 1;
+			mod_timer(&dev->vbi_timeout, jiffies + (HZ / 10));
+		}
+	}
+	dev->streaming_users++;
+	return rc;
+}
+
+static void au0828_stop_streaming(struct vb2_queue *vq)
+{
+	struct au0828_dev *dev = vb2_get_drv_priv(vq);
+	struct au0828_dmaqueue *vidq = &dev->vidq;
+	unsigned long flags = 0;
+
+	dprintk(1, "au0828_stop_streaming called %d\n", dev->streaming_users);
+
+	if (dev->streaming_users-- == 1) {
+		au0828_uninit_isoc(dev);
+		v4l2_device_call_all(&dev->v4l2_dev, 0, video, s_stream, 0);
+	}
+
+	dev->vid_timeout_running = 0;
+	del_timer_sync(&dev->vid_timeout);
+
+	spin_lock_irqsave(&dev->slock, flags);
+	if (dev->isoc_ctl.buf != NULL) {
+		vb2_buffer_done(&dev->isoc_ctl.buf->vb.vb2_buf,
+				VB2_BUF_STATE_ERROR);
+		dev->isoc_ctl.buf = NULL;
+	}
+	while (!list_empty(&vidq->active)) {
+		struct au0828_buffer *buf;
+
+		buf = list_entry(vidq->active.next, struct au0828_buffer, list);
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+		list_del(&buf->list);
+	}
+	spin_unlock_irqrestore(&dev->slock, flags);
+}
+
+void au0828_stop_vbi_streaming(struct vb2_queue *vq)
+{
+	struct au0828_dev *dev = vb2_get_drv_priv(vq);
+	struct au0828_dmaqueue *vbiq = &dev->vbiq;
+	unsigned long flags = 0;
+
+	dprintk(1, "au0828_stop_vbi_streaming called %d\n",
+		dev->streaming_users);
+
+	if (dev->streaming_users-- == 1) {
+		au0828_uninit_isoc(dev);
+		v4l2_device_call_all(&dev->v4l2_dev, 0, video, s_stream, 0);
+	}
+
+	spin_lock_irqsave(&dev->slock, flags);
+	if (dev->isoc_ctl.vbi_buf != NULL) {
+		vb2_buffer_done(&dev->isoc_ctl.vbi_buf->vb.vb2_buf,
+				VB2_BUF_STATE_ERROR);
+		dev->isoc_ctl.vbi_buf = NULL;
+	}
+	while (!list_empty(&vbiq->active)) {
+		struct au0828_buffer *buf;
+
+		buf = list_entry(vbiq->active.next, struct au0828_buffer, list);
+		list_del(&buf->list);
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+	}
+	spin_unlock_irqrestore(&dev->slock, flags);
+
+	dev->vbi_timeout_running = 0;
+	del_timer_sync(&dev->vbi_timeout);
+}
+
+static const struct vb2_ops au0828_video_qops = {
+	.queue_setup     = queue_setup,
+	.buf_prepare     = buffer_prepare,
+	.buf_queue       = buffer_queue,
+	.start_streaming = au0828_start_analog_streaming,
+	.stop_streaming  = au0828_stop_streaming,
+	.wait_prepare    = vb2_ops_wait_prepare,
+	.wait_finish     = vb2_ops_wait_finish,
+};
+
+/* ------------------------------------------------------------------
+   V4L2 interface
+   ------------------------------------------------------------------*/
+/*
+ * au0828_analog_unregister
+ * unregister v4l2 devices
+ */
+int au0828_analog_unregister(struct au0828_dev *dev)
+{
+	dprintk(1, "au0828_analog_unregister called\n");
+
+	/* No analog TV */
+	if (AUVI_INPUT(0).type == AU0828_VMUX_UNDEFINED)
+		return 0;
+
+	mutex_lock(&au0828_sysfs_lock);
+	video_unregister_device(&dev->vdev);
+	video_unregister_device(&dev->vbi_dev);
+	mutex_unlock(&au0828_sysfs_lock);
+
+	v4l2_device_disconnect(&dev->v4l2_dev);
+	v4l2_device_put(&dev->v4l2_dev);
+>>>>>>> v4.9.227
 
 	return 1;
 }
 
+<<<<<<< HEAD
 static int res_check(struct au0828_fh *fh, unsigned int bit)
 {
 	return fh->resources & bit;
@@ -936,6 +1326,8 @@ static int get_ressource(struct au0828_fh *fh)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 /* This function ensures that video frames continue to be delivered even if
    the ITU-656 input isn't receiving any data (thereby preventing applications
    such as tvtime from hanging) */
@@ -951,8 +1343,13 @@ static void au0828_vid_buffer_timeout(unsigned long data)
 
 	buf = dev->isoc_ctl.buf;
 	if (buf != NULL) {
+<<<<<<< HEAD
 		vid_data = videobuf_to_vmalloc(&buf->vb);
 		memset(vid_data, 0x00, buf->vb.size); /* Blank green frame */
+=======
+		vid_data = vb2_plane_vaddr(&buf->vb.vb2_buf, 0);
+		memset(vid_data, 0x00, buf->length); /* Blank green frame */
+>>>>>>> v4.9.227
 		buffer_filled(dev, dma_q, buf);
 	}
 	get_next_buf(dma_q, &buf);
@@ -975,9 +1372,15 @@ static void au0828_vbi_buffer_timeout(unsigned long data)
 
 	buf = dev->isoc_ctl.vbi_buf;
 	if (buf != NULL) {
+<<<<<<< HEAD
 		vbi_data = videobuf_to_vmalloc(&buf->vb);
 		memset(vbi_data, 0x00, buf->vb.size);
 		vbi_buffer_filled(dev, dma_q, buf);
+=======
+		vbi_data = vb2_plane_vaddr(&buf->vb.vb2_buf, 0);
+		memset(vbi_data, 0x00, buf->length);
+		buffer_filled(dev, dma_q, buf);
+>>>>>>> v4.9.227
 	}
 	vbi_get_next_buf(dma_q, &buf);
 
@@ -986,6 +1389,7 @@ static void au0828_vbi_buffer_timeout(unsigned long data)
 	spin_unlock_irqrestore(&dev->slock, flags);
 }
 
+<<<<<<< HEAD
 
 static int au0828_v4l2_open(struct file *filp)
 {
@@ -1050,12 +1454,44 @@ static int au0828_v4l2_open(struct file *filp)
 				    sizeof(struct au0828_buffer), fh,
 				    &dev->lock);
 	v4l2_fh_add(&fh->fh);
+=======
+static int au0828_v4l2_open(struct file *filp)
+{
+	struct au0828_dev *dev = video_drvdata(filp);
+	int ret;
+
+	dprintk(1,
+		"%s called std_set %d dev_state %ld stream users %d users %d\n",
+		__func__, dev->std_set_in_tuner_core, dev->dev_state,
+		dev->streaming_users, dev->users);
+
+	if (mutex_lock_interruptible(&dev->lock))
+		return -ERESTARTSYS;
+
+	ret = v4l2_fh_open(filp);
+	if (ret) {
+		au0828_isocdbg("%s: v4l2_fh_open() returned error %d\n",
+				__func__, ret);
+		mutex_unlock(&dev->lock);
+		return ret;
+	}
+
+	if (dev->users == 0) {
+		au0828_analog_stream_enable(dev);
+		au0828_analog_stream_reset(dev);
+		dev->stream_state = STREAM_OFF;
+		set_bit(DEV_INITIALIZED, &dev->dev_state);
+	}
+	dev->users++;
+	mutex_unlock(&dev->lock);
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static int au0828_v4l2_close(struct file *filp)
 {
 	int ret;
+<<<<<<< HEAD
 	struct au0828_fh *fh = filp->private_data;
 	struct au0828_dev *dev = fh->dev;
 
@@ -1087,6 +1523,65 @@ static int au0828_v4l2_close(struct file *filp)
 
 		/* Save some power by putting tuner to sleep */
 		v4l2_device_call_all(&dev->v4l2_dev, 0, core, s_power, 0);
+=======
+	struct au0828_dev *dev = video_drvdata(filp);
+	struct video_device *vdev = video_devdata(filp);
+
+	dprintk(1,
+		"%s called std_set %d dev_state %ld stream users %d users %d\n",
+		__func__, dev->std_set_in_tuner_core, dev->dev_state,
+		dev->streaming_users, dev->users);
+
+	mutex_lock(&dev->lock);
+	if (vdev->vfl_type == VFL_TYPE_GRABBER && dev->vid_timeout_running) {
+		/* Cancel timeout thread in case they didn't call streamoff */
+		dev->vid_timeout_running = 0;
+		del_timer_sync(&dev->vid_timeout);
+	} else if (vdev->vfl_type == VFL_TYPE_VBI &&
+			dev->vbi_timeout_running) {
+		/* Cancel timeout thread in case they didn't call streamoff */
+		dev->vbi_timeout_running = 0;
+		del_timer_sync(&dev->vbi_timeout);
+	}
+
+	if (test_bit(DEV_DISCONNECTED, &dev->dev_state))
+		goto end;
+
+	if (dev->users == 1) {
+		/*
+		 * Avoid putting tuner in sleep if DVB or ALSA are
+		 * streaming.
+		 *
+		 * On most USB devices  like au0828 the tuner can
+		 * be safely put in sleep stare here if ALSA isn't
+		 * streaming. Exceptions are some very old USB tuner
+		 * models such as em28xx-based WinTV USB2 which have
+		 * a separate audio output jack. The devices that have
+		 * a separate audio output jack have analog tuners,
+		 * like Philips FM1236. Those devices are always on,
+		 * so the s_power callback are silently ignored.
+		 * So, the current logic here does the following:
+		 * Disable (put tuner to sleep) when
+		 * - ALSA and DVB aren't not streaming;
+		 * - the last V4L2 file handler is closed.
+		 *
+		 * FIXME:
+		 *
+		 * Additionally, this logic could be improved to
+		 * disable the media source if the above conditions
+		 * are met and if the device:
+		 * - doesn't have a separate audio out plug (or
+		 * - doesn't use a silicon tuner like xc2028/3028/4000/5000).
+		 *
+		 * Once this additional logic is in place, a callback
+		 * is needed to enable the media source and power on
+		 * the tuner, for radio to work.
+		*/
+		ret = v4l_enable_media_source(vdev);
+		if (ret == 0)
+			v4l2_device_call_all(&dev->v4l2_dev, 0, core,
+					     s_power, 0);
+>>>>>>> v4.9.227
 		dev->std_set_in_tuner_core = 0;
 
 		/* When close the device, set the usb intf0 into alt0 to free
@@ -1095,6 +1590,7 @@ static int au0828_v4l2_close(struct file *filp)
 		if (ret < 0)
 			pr_info("Au0828 can't set alternate to 0!\n");
 	}
+<<<<<<< HEAD
 	mutex_unlock(&dev->lock);
 
 	videobuf_mmap_free(&fh->vb_vidq);
@@ -1102,6 +1598,12 @@ static int au0828_v4l2_close(struct file *filp)
 	kfree(fh);
 	dev->users--;
 	wake_up_interruptible_nr(&dev->open, 1);
+=======
+end:
+	_vb2_fop_release(filp, NULL);
+	dev->users--;
+	mutex_unlock(&dev->lock);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1113,6 +1615,12 @@ static void au0828_init_tuner(struct au0828_dev *dev)
 		.type = V4L2_TUNER_ANALOG_TV,
 	};
 
+<<<<<<< HEAD
+=======
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+
+>>>>>>> v4.9.227
 	if (dev->std_set_in_tuner_core)
 		return;
 	dev->std_set_in_tuner_core = 1;
@@ -1125,6 +1633,7 @@ static void au0828_init_tuner(struct au0828_dev *dev)
 	i2c_gate_ctrl(dev, 0);
 }
 
+<<<<<<< HEAD
 static ssize_t au0828_v4l2_read(struct file *filp, char __user *buf,
 				size_t count, loff_t *pos)
 {
@@ -1217,6 +1726,8 @@ static int au0828_v4l2_mmap(struct file *filp, struct vm_area_struct *vma)
 	return rc;
 }
 
+=======
+>>>>>>> v4.9.227
 static int au0828_set_format(struct au0828_dev *dev, unsigned int cmd,
 			     struct v4l2_format *format)
 {
@@ -1268,13 +1779,23 @@ static int au0828_set_format(struct au0828_dev *dev, unsigned int cmd,
 	return 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static int vidioc_querycap(struct file *file, void  *priv,
 			   struct v4l2_capability *cap)
 {
 	struct video_device *vdev = video_devdata(file);
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+>>>>>>> v4.9.227
 
 	strlcpy(cap->driver, "au0828", sizeof(cap->driver));
 	strlcpy(cap->card, dev->board.name, sizeof(cap->card));
@@ -1300,6 +1821,11 @@ static int vidioc_enum_fmt_vid_cap(struct file *file, void  *priv,
 	if (f->index)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	dprintk(1, "%s called\n", __func__);
+
+>>>>>>> v4.9.227
 	f->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	strcpy(f->description, "Packed YUV2");
 
@@ -1312,8 +1838,15 @@ static int vidioc_enum_fmt_vid_cap(struct file *file, void  *priv,
 static int vidioc_g_fmt_vid_cap(struct file *file, void *priv,
 					struct v4l2_format *f)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh  = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+>>>>>>> v4.9.227
 
 	f->fmt.pix.width = dev->width;
 	f->fmt.pix.height = dev->height;
@@ -1329,8 +1862,15 @@ static int vidioc_g_fmt_vid_cap(struct file *file, void *priv,
 static int vidioc_try_fmt_vid_cap(struct file *file, void *priv,
 				  struct v4l2_format *f)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh  = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+>>>>>>> v4.9.227
 
 	return au0828_set_format(dev, VIDIOC_TRY_FMT, f);
 }
@@ -1338,15 +1878,28 @@ static int vidioc_try_fmt_vid_cap(struct file *file, void *priv,
 static int vidioc_s_fmt_vid_cap(struct file *file, void *priv,
 				struct v4l2_format *f)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh  = priv;
 	struct au0828_dev *dev = fh->dev;
 	int rc;
 
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+	int rc;
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+
+>>>>>>> v4.9.227
 	rc = check_dev(dev);
 	if (rc < 0)
 		return rc;
 
+<<<<<<< HEAD
 	if (videobuf_queue_is_busy(&fh->vb_vidq)) {
+=======
+	if (vb2_is_busy(&dev->vb_vidq)) {
+>>>>>>> v4.9.227
 		pr_info("%s queue busy\n", __func__);
 		rc = -EBUSY;
 		goto out;
@@ -1359,8 +1912,21 @@ out:
 
 static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id norm)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+
+	if (norm == dev->std)
+		return 0;
+
+	if (dev->streaming_users > 0)
+		return -EBUSY;
+>>>>>>> v4.9.227
 
 	dev->std = norm;
 
@@ -1383,8 +1949,15 @@ static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id norm)
 
 static int vidioc_g_std(struct file *file, void *priv, v4l2_std_id *norm)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+>>>>>>> v4.9.227
 
 	*norm = dev->std;
 	return 0;
@@ -1393,8 +1966,12 @@ static int vidioc_g_std(struct file *file, void *priv, v4l2_std_id *norm)
 static int vidioc_enum_input(struct file *file, void *priv,
 				struct v4l2_input *input)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+>>>>>>> v4.9.227
 	unsigned int tmp;
 
 	static const char *inames[] = {
@@ -1404,9 +1981,17 @@ static int vidioc_enum_input(struct file *file, void *priv,
 		[AU0828_VMUX_CABLE] = "Cable TV",
 		[AU0828_VMUX_TELEVISION] = "Television",
 		[AU0828_VMUX_DVB] = "DVB",
+<<<<<<< HEAD
 		[AU0828_VMUX_DEBUG] = "tv debug"
 	};
 
+=======
+	};
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+
+>>>>>>> v4.9.227
 	tmp = input->index;
 
 	if (tmp >= AU0828_MAX_INPUT)
@@ -1425,15 +2010,27 @@ static int vidioc_enum_input(struct file *file, void *priv,
 		input->audioset = 2;
 	}
 
+<<<<<<< HEAD
 	input->std = dev->vdev->tvnorms;
+=======
+	input->std = dev->vdev.tvnorms;
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static int vidioc_g_input(struct file *file, void *priv, unsigned int *i)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+
+>>>>>>> v4.9.227
 	*i = dev->ctrl_input;
 	return 0;
 }
@@ -1442,6 +2039,12 @@ static void au0828_s_input(struct au0828_dev *dev, int index)
 {
 	int i;
 
+<<<<<<< HEAD
+=======
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+
+>>>>>>> v4.9.227
 	switch (AUVI_INPUT(index).type) {
 	case AU0828_VMUX_SVIDEO:
 		dev->input_type = AU0828_VMUX_SVIDEO;
@@ -1458,9 +2061,17 @@ static void au0828_s_input(struct au0828_dev *dev, int index)
 	default:
 		dprintk(1, "unknown input type set [%d]\n",
 			AUVI_INPUT(index).type);
+<<<<<<< HEAD
 		break;
 	}
 
+=======
+		return;
+	}
+
+	dev->ctrl_input = index;
+
+>>>>>>> v4.9.227
 	v4l2_device_call_all(&dev->v4l2_dev, 0, video, s_routing,
 			AUVI_INPUT(index).vmux, 0, 0);
 
@@ -1491,8 +2102,13 @@ static void au0828_s_input(struct au0828_dev *dev, int index)
 
 static int vidioc_s_input(struct file *file, void *priv, unsigned int index)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+	struct video_device *vfd = video_devdata(file);
+>>>>>>> v4.9.227
 
 	dprintk(1, "VIDIOC_S_INPUT in function %s, input=%d\n", __func__,
 		index);
@@ -1500,9 +2116,25 @@ static int vidioc_s_input(struct file *file, void *priv, unsigned int index)
 		return -EINVAL;
 	if (AUVI_INPUT(index).type == 0)
 		return -EINVAL;
+<<<<<<< HEAD
 	dev->ctrl_input = index;
 	au0828_s_input(dev, index);
 	return 0;
+=======
+
+	if (dev->ctrl_input == index)
+		return 0;
+
+	au0828_s_input(dev, index);
+
+	/*
+	 * Input has been changed. Disable the media source
+	 * associated with the old input and enable source
+	 * for the newly set input
+	 */
+	v4l_disable_media_source(vfd);
+	return v4l_enable_media_source(vfd);
+>>>>>>> v4.9.227
 }
 
 static int vidioc_enumaudio(struct file *file, void *priv, struct v4l2_audio *a)
@@ -1510,6 +2142,11 @@ static int vidioc_enumaudio(struct file *file, void *priv, struct v4l2_audio *a)
 	if (a->index > 1)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	dprintk(1, "%s called\n", __func__);
+
+>>>>>>> v4.9.227
 	if (a->index == 0)
 		strcpy(a->name, "Television");
 	else
@@ -1521,8 +2158,15 @@ static int vidioc_enumaudio(struct file *file, void *priv, struct v4l2_audio *a)
 
 static int vidioc_g_audio(struct file *file, void *priv, struct v4l2_audio *a)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+>>>>>>> v4.9.227
 
 	a->index = dev->ctrl_ainput;
 	if (a->index == 0)
@@ -1536,22 +2180,48 @@ static int vidioc_g_audio(struct file *file, void *priv, struct v4l2_audio *a)
 
 static int vidioc_s_audio(struct file *file, void *priv, const struct v4l2_audio *a)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
 
 	if (a->index != dev->ctrl_ainput)
 		return -EINVAL;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	if (a->index != dev->ctrl_ainput)
+		return -EINVAL;
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int vidioc_g_tuner(struct file *file, void *priv, struct v4l2_tuner *t)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+	struct video_device *vfd = video_devdata(file);
+	int ret;
+>>>>>>> v4.9.227
 
 	if (t->index != 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	ret = v4l_enable_media_source(vfd);
+	if (ret)
+		return ret;
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+
+>>>>>>> v4.9.227
 	strcpy(t->name, "Auvitek tuner");
 
 	au0828_init_tuner(dev);
@@ -1564,12 +2234,22 @@ static int vidioc_g_tuner(struct file *file, void *priv, struct v4l2_tuner *t)
 static int vidioc_s_tuner(struct file *file, void *priv,
 				const struct v4l2_tuner *t)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+>>>>>>> v4.9.227
 
 	if (t->index != 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+
+>>>>>>> v4.9.227
 	au0828_init_tuner(dev);
 	i2c_gate_ctrl(dev, 1);
 	v4l2_device_call_all(&dev->v4l2_dev, 0, tuner, s_tuner, t);
@@ -1585,11 +2265,20 @@ static int vidioc_s_tuner(struct file *file, void *priv,
 static int vidioc_g_frequency(struct file *file, void *priv,
 				struct v4l2_frequency *freq)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
 
 	if (freq->tuner != 0)
 		return -EINVAL;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	if (freq->tuner != 0)
+		return -EINVAL;
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+>>>>>>> v4.9.227
 	freq->frequency = dev->ctrl_freq;
 	return 0;
 }
@@ -1597,13 +2286,23 @@ static int vidioc_g_frequency(struct file *file, void *priv,
 static int vidioc_s_frequency(struct file *file, void *priv,
 				const struct v4l2_frequency *freq)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+>>>>>>> v4.9.227
 	struct v4l2_frequency new_freq = *freq;
 
 	if (freq->tuner != 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+
+>>>>>>> v4.9.227
 	au0828_init_tuner(dev);
 	i2c_gate_ctrl(dev, 1);
 
@@ -1625,8 +2324,15 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 static int vidioc_g_fmt_vbi_cap(struct file *file, void *priv,
 				struct v4l2_format *format)
 {
+<<<<<<< HEAD
 	struct au0828_fh      *fh  = priv;
 	struct au0828_dev     *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+>>>>>>> v4.9.227
 
 	format->fmt.vbi.samples_per_line = dev->vbi_width;
 	format->fmt.vbi.sample_format = V4L2_PIX_FMT_GREY;
@@ -1646,12 +2352,22 @@ static int vidioc_g_fmt_vbi_cap(struct file *file, void *priv,
 static int vidioc_cropcap(struct file *file, void *priv,
 			  struct v4l2_cropcap *cc)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+>>>>>>> v4.9.227
 
 	if (cc->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+
+>>>>>>> v4.9.227
 	cc->bounds.left = 0;
 	cc->bounds.top = 0;
 	cc->bounds.width = dev->width;
@@ -1665,6 +2381,7 @@ static int vidioc_cropcap(struct file *file, void *priv,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_streamon(struct file *file, void *priv,
 			   enum v4l2_buf_type type)
 {
@@ -1758,12 +2475,21 @@ static int vidioc_streamoff(struct file *file, void *priv,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 static int vidioc_g_register(struct file *file, void *priv,
 			     struct v4l2_dbg_register *reg)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+>>>>>>> v4.9.227
 
 	reg->val = au0828_read(dev, reg->reg);
 	reg->size = 1;
@@ -1773,8 +2499,15 @@ static int vidioc_g_register(struct file *file, void *priv,
 static int vidioc_s_register(struct file *file, void *priv,
 			     const struct v4l2_dbg_register *reg)
 {
+<<<<<<< HEAD
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
+=======
+	struct au0828_dev *dev = video_drvdata(file);
+
+	dprintk(1, "%s called std_set %d dev_state %ld\n", __func__,
+		dev->std_set_in_tuner_core, dev->dev_state);
+>>>>>>> v4.9.227
 
 	return au0828_writereg(dev, reg->reg, reg->val);
 }
@@ -1784,11 +2517,17 @@ static int vidioc_log_status(struct file *file, void *fh)
 {
 	struct video_device *vdev = video_devdata(file);
 
+<<<<<<< HEAD
+=======
+	dprintk(1, "%s called\n", __func__);
+
+>>>>>>> v4.9.227
 	v4l2_ctrl_log_status(file, fh);
 	v4l2_device_call_all(vdev->v4l2_dev, 0, core, log_status);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_reqbufs(struct file *file, void *priv,
 			  struct v4l2_requestbuffers *rb)
 {
@@ -1871,6 +2610,8 @@ static int vidioc_dqbuf(struct file *file, void *priv, struct v4l2_buffer *b)
 	return rc;
 }
 
+=======
+>>>>>>> v4.9.227
 void au0828_v4l2_suspend(struct au0828_dev *dev)
 {
 	struct urb *urb;
@@ -1938,9 +2679,15 @@ static struct v4l2_file_operations au0828_v4l_fops = {
 	.owner      = THIS_MODULE,
 	.open       = au0828_v4l2_open,
 	.release    = au0828_v4l2_close,
+<<<<<<< HEAD
 	.read       = au0828_v4l2_read,
 	.poll       = au0828_v4l2_poll,
 	.mmap       = au0828_v4l2_mmap,
+=======
+	.read       = vb2_fop_read,
+	.poll       = vb2_fop_poll,
+	.mmap       = vb2_fop_mmap,
+>>>>>>> v4.9.227
 	.unlocked_ioctl = video_ioctl2,
 };
 
@@ -1957,17 +2704,36 @@ static const struct v4l2_ioctl_ops video_ioctl_ops = {
 	.vidioc_g_audio             = vidioc_g_audio,
 	.vidioc_s_audio             = vidioc_s_audio,
 	.vidioc_cropcap             = vidioc_cropcap,
+<<<<<<< HEAD
 	.vidioc_reqbufs             = vidioc_reqbufs,
 	.vidioc_querybuf            = vidioc_querybuf,
 	.vidioc_qbuf                = vidioc_qbuf,
 	.vidioc_dqbuf               = vidioc_dqbuf,
+=======
+
+	.vidioc_reqbufs             = vb2_ioctl_reqbufs,
+	.vidioc_create_bufs         = vb2_ioctl_create_bufs,
+	.vidioc_prepare_buf         = vb2_ioctl_prepare_buf,
+	.vidioc_querybuf            = vb2_ioctl_querybuf,
+	.vidioc_qbuf                = vb2_ioctl_qbuf,
+	.vidioc_dqbuf               = vb2_ioctl_dqbuf,
+	.vidioc_expbuf               = vb2_ioctl_expbuf,
+
+>>>>>>> v4.9.227
 	.vidioc_s_std               = vidioc_s_std,
 	.vidioc_g_std               = vidioc_g_std,
 	.vidioc_enum_input          = vidioc_enum_input,
 	.vidioc_g_input             = vidioc_g_input,
 	.vidioc_s_input             = vidioc_s_input,
+<<<<<<< HEAD
 	.vidioc_streamon            = vidioc_streamon,
 	.vidioc_streamoff           = vidioc_streamoff,
+=======
+
+	.vidioc_streamon            = vb2_ioctl_streamon,
+	.vidioc_streamoff           = vb2_ioctl_streamoff,
+
+>>>>>>> v4.9.227
 	.vidioc_g_tuner             = vidioc_g_tuner,
 	.vidioc_s_tuner             = vidioc_s_tuner,
 	.vidioc_g_frequency         = vidioc_g_frequency,
@@ -1983,11 +2749,114 @@ static const struct v4l2_ioctl_ops video_ioctl_ops = {
 
 static const struct video_device au0828_video_template = {
 	.fops                       = &au0828_v4l_fops,
+<<<<<<< HEAD
 	.release                    = video_device_release,
+=======
+	.release                    = video_device_release_empty,
+>>>>>>> v4.9.227
 	.ioctl_ops 		    = &video_ioctl_ops,
 	.tvnorms                    = V4L2_STD_NTSC_M | V4L2_STD_PAL_M,
 };
 
+<<<<<<< HEAD
+=======
+static int au0828_vb2_setup(struct au0828_dev *dev)
+{
+	int rc;
+	struct vb2_queue *q;
+
+	/* Setup Videobuf2 for Video capture */
+	q = &dev->vb_vidq;
+	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	q->io_modes = VB2_READ | VB2_MMAP | VB2_USERPTR | VB2_DMABUF;
+	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+	q->drv_priv = dev;
+	q->buf_struct_size = sizeof(struct au0828_buffer);
+	q->ops = &au0828_video_qops;
+	q->mem_ops = &vb2_vmalloc_memops;
+
+	rc = vb2_queue_init(q);
+	if (rc < 0)
+		return rc;
+
+	/* Setup Videobuf2 for VBI capture */
+	q = &dev->vb_vbiq;
+	q->type = V4L2_BUF_TYPE_VBI_CAPTURE;
+	q->io_modes = VB2_READ | VB2_MMAP | VB2_USERPTR | VB2_DMABUF;
+	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+	q->drv_priv = dev;
+	q->buf_struct_size = sizeof(struct au0828_buffer);
+	q->ops = &au0828_vbi_qops;
+	q->mem_ops = &vb2_vmalloc_memops;
+
+	rc = vb2_queue_init(q);
+	if (rc < 0)
+		return rc;
+
+	return 0;
+}
+
+static void au0828_analog_create_entities(struct au0828_dev *dev)
+{
+#if defined(CONFIG_MEDIA_CONTROLLER)
+	static const char * const inames[] = {
+		[AU0828_VMUX_COMPOSITE] = "Composite",
+		[AU0828_VMUX_SVIDEO] = "S-Video",
+		[AU0828_VMUX_CABLE] = "Cable TV",
+		[AU0828_VMUX_TELEVISION] = "Television",
+		[AU0828_VMUX_DVB] = "DVB",
+	};
+	int ret, i;
+
+	/* Initialize Video and VBI pads */
+	dev->video_pad.flags = MEDIA_PAD_FL_SINK;
+	ret = media_entity_pads_init(&dev->vdev.entity, 1, &dev->video_pad);
+	if (ret < 0)
+		pr_err("failed to initialize video media entity!\n");
+
+	dev->vbi_pad.flags = MEDIA_PAD_FL_SINK;
+	ret = media_entity_pads_init(&dev->vbi_dev.entity, 1, &dev->vbi_pad);
+	if (ret < 0)
+		pr_err("failed to initialize vbi media entity!\n");
+
+	/* Create entities for each input connector */
+	for (i = 0; i < AU0828_MAX_INPUT; i++) {
+		struct media_entity *ent = &dev->input_ent[i];
+
+		if (AUVI_INPUT(i).type == AU0828_VMUX_UNDEFINED)
+			break;
+
+		ent->name = inames[AUVI_INPUT(i).type];
+		ent->flags = MEDIA_ENT_FL_CONNECTOR;
+		dev->input_pad[i].flags = MEDIA_PAD_FL_SOURCE;
+
+		switch (AUVI_INPUT(i).type) {
+		case AU0828_VMUX_COMPOSITE:
+			ent->function = MEDIA_ENT_F_CONN_COMPOSITE;
+			break;
+		case AU0828_VMUX_SVIDEO:
+			ent->function = MEDIA_ENT_F_CONN_SVIDEO;
+			break;
+		case AU0828_VMUX_CABLE:
+		case AU0828_VMUX_TELEVISION:
+		case AU0828_VMUX_DVB:
+		default: /* Just to shut up a warning */
+			ent->function = MEDIA_ENT_F_CONN_RF;
+			break;
+		}
+
+		ret = media_entity_pads_init(ent, 1, &dev->input_pad[i]);
+		if (ret < 0)
+			pr_err("failed to initialize input pad[%d]!\n", i);
+
+		ret = media_device_register_entity(dev->media_dev, ent);
+		if (ret < 0)
+			pr_err("failed to register input entity %d!\n", i);
+	}
+#endif
+}
+
+>>>>>>> v4.9.227
 /**************************************************************************/
 
 int au0828_analog_register(struct au0828_dev *dev,
@@ -2001,6 +2870,13 @@ int au0828_analog_register(struct au0828_dev *dev,
 	dprintk(1, "au0828_analog_register called for intf#%d!\n",
 		interface->cur_altsetting->desc.bInterfaceNumber);
 
+<<<<<<< HEAD
+=======
+	/* No analog TV */
+	if (AUVI_INPUT(0).type == AU0828_VMUX_UNDEFINED)
+		return 0;
+
+>>>>>>> v4.9.227
 	/* set au0828 usb interface0 to as5 */
 	retval = usb_set_interface(dev->usbdev,
 			interface->cur_altsetting->desc.bInterfaceNumber, 5);
@@ -2030,7 +2906,10 @@ int au0828_analog_register(struct au0828_dev *dev,
 	}
 	if (!(dev->isoc_in_endpointaddr)) {
 		pr_info("Could not locate isoc endpoint\n");
+<<<<<<< HEAD
 		kfree(dev);
+=======
+>>>>>>> v4.9.227
 		return -ENODEV;
 	}
 
@@ -2039,6 +2918,7 @@ int au0828_analog_register(struct au0828_dev *dev,
 
 	/* init video dma queues */
 	INIT_LIST_HEAD(&dev->vidq.active);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&dev->vidq.queued);
 	INIT_LIST_HEAD(&dev->vbiq.active);
 	INIT_LIST_HEAD(&dev->vbiq.queued);
@@ -2050,6 +2930,14 @@ int au0828_analog_register(struct au0828_dev *dev,
 	dev->vbi_timeout.function = au0828_vbi_buffer_timeout;
 	dev->vbi_timeout.data = (unsigned long) dev;
 	init_timer(&dev->vbi_timeout);
+=======
+	INIT_LIST_HEAD(&dev->vbiq.active);
+
+	setup_timer(&dev->vid_timeout, au0828_vid_buffer_timeout,
+		    (unsigned long)dev);
+	setup_timer(&dev->vbi_timeout, au0828_vbi_buffer_timeout,
+		    (unsigned long)dev);
+>>>>>>> v4.9.227
 
 	dev->width = NTSC_STD_W;
 	dev->height = NTSC_STD_H;
@@ -2061,6 +2949,7 @@ int au0828_analog_register(struct au0828_dev *dev,
 	dev->ctrl_ainput = 0;
 	dev->ctrl_freq = 960;
 	dev->std = V4L2_STD_NTSC_M;
+<<<<<<< HEAD
 	au0828_s_input(dev, 0);
 
 	/* allocate and fill v4l2 video struct */
@@ -2093,31 +2982,102 @@ int au0828_analog_register(struct au0828_dev *dev,
 	/* Register the v4l2 device */
 	video_set_drvdata(dev->vdev, dev);
 	retval = video_register_device(dev->vdev, VFL_TYPE_GRABBER, -1);
+=======
+	/* Default input is TV Tuner */
+	au0828_s_input(dev, 0);
+
+	mutex_init(&dev->vb_queue_lock);
+	mutex_init(&dev->vb_vbi_queue_lock);
+
+	/* Fill the video capture device struct */
+	dev->vdev = au0828_video_template;
+	dev->vdev.v4l2_dev = &dev->v4l2_dev;
+	dev->vdev.lock = &dev->lock;
+	dev->vdev.queue = &dev->vb_vidq;
+	dev->vdev.queue->lock = &dev->vb_queue_lock;
+	strcpy(dev->vdev.name, "au0828a video");
+
+	/* Setup the VBI device */
+	dev->vbi_dev = au0828_video_template;
+	dev->vbi_dev.v4l2_dev = &dev->v4l2_dev;
+	dev->vbi_dev.lock = &dev->lock;
+	dev->vbi_dev.queue = &dev->vb_vbiq;
+	dev->vbi_dev.queue->lock = &dev->vb_vbi_queue_lock;
+	strcpy(dev->vbi_dev.name, "au0828a vbi");
+
+	/* Init entities at the Media Controller */
+	au0828_analog_create_entities(dev);
+
+	/* initialize videobuf2 stuff */
+	retval = au0828_vb2_setup(dev);
+	if (retval != 0) {
+		dprintk(1, "unable to setup videobuf2 queues (error = %d).\n",
+			retval);
+		return -ENODEV;
+	}
+
+	/* Register the v4l2 device */
+	video_set_drvdata(&dev->vdev, dev);
+	retval = video_register_device(&dev->vdev, VFL_TYPE_GRABBER, -1);
+>>>>>>> v4.9.227
 	if (retval != 0) {
 		dprintk(1, "unable to register video device (error = %d).\n",
 			retval);
 		ret = -ENODEV;
+<<<<<<< HEAD
 		goto err_vbi_dev;
 	}
 
 	/* Register the vbi device */
 	video_set_drvdata(dev->vbi_dev, dev);
 	retval = video_register_device(dev->vbi_dev, VFL_TYPE_VBI, -1);
+=======
+		goto err_reg_vdev;
+	}
+
+	/* Register the vbi device */
+	video_set_drvdata(&dev->vbi_dev, dev);
+	retval = video_register_device(&dev->vbi_dev, VFL_TYPE_VBI, -1);
+>>>>>>> v4.9.227
 	if (retval != 0) {
 		dprintk(1, "unable to register vbi device (error = %d).\n",
 			retval);
 		ret = -ENODEV;
+<<<<<<< HEAD
 		goto err_vbi_dev;
 	}
 
+=======
+		goto err_reg_vbi_dev;
+	}
+
+#ifdef CONFIG_MEDIA_CONTROLLER
+	retval = v4l2_mc_create_media_graph(dev->media_dev);
+	if (retval) {
+		pr_err("%s() au0282_dev_register failed to create graph\n",
+			__func__);
+		ret = -ENODEV;
+		goto err_reg_vbi_dev;
+	}
+#endif
+
+>>>>>>> v4.9.227
 	dprintk(1, "%s completed!\n", __func__);
 
 	return 0;
 
+<<<<<<< HEAD
 err_vbi_dev:
 	video_device_release(dev->vbi_dev);
 err_vdev:
 	video_device_release(dev->vdev);
+=======
+err_reg_vbi_dev:
+	video_unregister_device(&dev->vdev);
+err_reg_vdev:
+	vb2_queue_release(&dev->vb_vidq);
+	vb2_queue_release(&dev->vb_vbiq);
+>>>>>>> v4.9.227
 	return ret;
 }
 

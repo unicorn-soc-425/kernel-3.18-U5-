@@ -180,17 +180,29 @@ static const struct sunxi_desc_pin sun8i_a23_pins[] = {
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 14),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+<<<<<<< HEAD
 		  SUNXI_FUNCTION(0x2, "nand"),		/* DQ6 */
+=======
+		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQ6 */
+>>>>>>> v4.9.227
 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* D6 */
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 15),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+<<<<<<< HEAD
 		  SUNXI_FUNCTION(0x2, "nand"),		/* DQ7 */
+=======
+		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQ7 */
+>>>>>>> v4.9.227
 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* D7 */
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 16),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+<<<<<<< HEAD
 		  SUNXI_FUNCTION(0x2, "nand"),		/* DQS */
+=======
+		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQS */
+>>>>>>> v4.9.227
 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* RST */
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 17),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
@@ -485,12 +497,20 @@ static const struct sunxi_desc_pin sun8i_a23_pins[] = {
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(G, 8),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+<<<<<<< HEAD
 		  SUNXI_FUNCTION(0x2, "uart2"),		/* RTS */
+=======
+		  SUNXI_FUNCTION(0x2, "uart1"),		/* RTS */
+>>>>>>> v4.9.227
 		  SUNXI_FUNCTION_IRQ_BANK(0x4, 2, 8)),	/* PG_EINT8 */
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(G, 9),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+<<<<<<< HEAD
 		  SUNXI_FUNCTION(0x2, "uart2"),		/* CTS */
+=======
+		  SUNXI_FUNCTION(0x2, "uart1"),		/* CTS */
+>>>>>>> v4.9.227
 		  SUNXI_FUNCTION_IRQ_BANK(0x4, 2, 9)),	/* PG_EINT9 */
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(G, 10),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
@@ -571,7 +591,11 @@ static int sun8i_a23_pinctrl_probe(struct platform_device *pdev)
 				  &sun8i_a23_pinctrl_data);
 }
 
+<<<<<<< HEAD
 static struct of_device_id sun8i_a23_pinctrl_match[] = {
+=======
+static const struct of_device_id sun8i_a23_pinctrl_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "allwinner,sun8i-a23-pinctrl", },
 	{}
 };
@@ -581,7 +605,10 @@ static struct platform_driver sun8i_a23_pinctrl_driver = {
 	.probe	= sun8i_a23_pinctrl_probe,
 	.driver	= {
 		.name		= "sun8i-a23-pinctrl",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= sun8i_a23_pinctrl_match,
 	},
 };

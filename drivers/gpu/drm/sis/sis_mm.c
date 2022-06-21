@@ -316,7 +316,11 @@ void sis_reclaim_buffers_locked(struct drm_device *dev,
 	struct sis_file_private *file_priv = file->driver_priv;
 	struct sis_memblock *entry, *next;
 
+<<<<<<< HEAD
 	if (!(file->minor->master && file->master->lock.hw_lock))
+=======
+	if (!(dev->master && file->master->lock.hw_lock))
+>>>>>>> v4.9.227
 		return;
 
 	drm_legacy_idlelock_take(&file->master->lock);

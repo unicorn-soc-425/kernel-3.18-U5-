@@ -18,7 +18,11 @@
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/onenand.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 /*
  * Note: Driver name and platform data format have been updated!
@@ -60,9 +64,14 @@ static int generic_onenand_probe(struct platform_device *pdev)
 	info->onenand.mmcontrol = pdata ? pdata->mmcontrol : NULL;
 	info->onenand.irq = platform_get_irq(pdev, 0);
 
+<<<<<<< HEAD
 	info->mtd.name = dev_name(&pdev->dev);
 	info->mtd.priv = &info->onenand;
 	info->mtd.owner = THIS_MODULE;
+=======
+	info->mtd.dev.parent = &pdev->dev;
+	info->mtd.priv = &info->onenand;
+>>>>>>> v4.9.227
 
 	if (onenand_scan(&info->mtd, 1)) {
 		err = -ENXIO;
@@ -106,7 +115,10 @@ static int generic_onenand_remove(struct platform_device *pdev)
 static struct platform_driver generic_onenand_driver = {
 	.driver = {
 		.name		= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= generic_onenand_probe,
 	.remove		= generic_onenand_remove,

@@ -13,6 +13,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -26,10 +27,16 @@
 #include <linux/platform_data/irq-renesas-irqc.h>
 #include <linux/serial_sci.h>
 #include <linux/sh_timer.h>
+=======
+ */
+
+#include <linux/init.h>
+>>>>>>> v4.9.227
 
 #include <asm/mach/arch.h>
 
 #include "common.h"
+<<<<<<< HEAD
 #include "irqs.h"
 #include "r8a7791.h"
 #include "rcar-gen2.h"
@@ -206,11 +213,21 @@ void __init r8a7791_add_standard_devices(void)
 
 #ifdef CONFIG_USE_OF
 static const char *r8a7791_boards_compat_dt[] __initdata = {
+=======
+#include "r8a7791.h"
+#include "rcar-gen2.h"
+
+static const char *const r8a7791_boards_compat_dt[] __initconst = {
+>>>>>>> v4.9.227
 	"renesas,r8a7791",
 	NULL,
 };
 
 DT_MACHINE_START(R8A7791_DT, "Generic R8A7791 (Flattened Device Tree)")
+<<<<<<< HEAD
+=======
+	.smp_init	= smp_init_ops(shmobile_smp_init_fallback_ops),
+>>>>>>> v4.9.227
 	.smp		= smp_ops(r8a7791_smp_ops),
 	.init_early	= shmobile_init_delay,
 	.init_time	= rcar_gen2_timer_init,
@@ -218,4 +235,7 @@ DT_MACHINE_START(R8A7791_DT, "Generic R8A7791 (Flattened Device Tree)")
 	.reserve	= rcar_gen2_reserve,
 	.dt_compat	= r8a7791_boards_compat_dt,
 MACHINE_END
+<<<<<<< HEAD
 #endif /* CONFIG_USE_OF */
+=======
+>>>>>>> v4.9.227

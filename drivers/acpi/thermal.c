@@ -16,10 +16,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+>>>>>>> v4.9.227
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  *  This driver fully implements the ACPI thermal policy as described in the
@@ -319,7 +322,11 @@ static int acpi_thermal_trips_update(struct acpi_thermal *tz, int flag)
 			if (crt == -1) {
 				tz->trips.critical.flags.valid = 0;
 			} else if (crt > 0) {
+<<<<<<< HEAD
 				unsigned long crt_k = CELSIUS_TO_KELVIN(crt);
+=======
+				unsigned long crt_k = CELSIUS_TO_DECI_KELVIN(crt);
+>>>>>>> v4.9.227
 				/*
 				 * Allow override critical threshold
 				 */
@@ -355,7 +362,11 @@ static int acpi_thermal_trips_update(struct acpi_thermal *tz, int flag)
 		if (psv == -1) {
 			status = AE_SUPPORT;
 		} else if (psv > 0) {
+<<<<<<< HEAD
 			tmp = CELSIUS_TO_KELVIN(psv);
+=======
+			tmp = CELSIUS_TO_DECI_KELVIN(psv);
+>>>>>>> v4.9.227
 			status = AE_OK;
 		} else {
 			status = acpi_evaluate_integer(tz->device->handle,
@@ -435,7 +446,11 @@ static int acpi_thermal_trips_update(struct acpi_thermal *tz, int flag)
 					break;
 				if (i == 1)
 					tz->trips.active[0].temperature =
+<<<<<<< HEAD
 						CELSIUS_TO_KELVIN(act);
+=======
+						CELSIUS_TO_DECI_KELVIN(act);
+>>>>>>> v4.9.227
 				else
 					/*
 					 * Don't allow override higher than
@@ -443,9 +458,15 @@ static int acpi_thermal_trips_update(struct acpi_thermal *tz, int flag)
 					 */
 					tz->trips.active[i - 1].temperature =
 						(tz->trips.active[i - 2].temperature <
+<<<<<<< HEAD
 						CELSIUS_TO_KELVIN(act) ?
 						tz->trips.active[i - 2].temperature :
 						CELSIUS_TO_KELVIN(act));
+=======
+						CELSIUS_TO_DECI_KELVIN(act) ?
+						tz->trips.active[i - 2].temperature :
+						CELSIUS_TO_DECI_KELVIN(act));
+>>>>>>> v4.9.227
 				break;
 			} else {
 				tz->trips.active[i].temperature = tmp;
@@ -524,13 +545,22 @@ static void acpi_thermal_check(void *data)
 	if (!tz->tz_enabled)
 		return;
 
+<<<<<<< HEAD
 	thermal_zone_device_update(tz->thermal_zone);
+=======
+	thermal_zone_device_update(tz->thermal_zone,
+				   THERMAL_EVENT_UNSPECIFIED);
+>>>>>>> v4.9.227
 }
 
 /* sys I/F for generic thermal sysfs support */
 
+<<<<<<< HEAD
 static int thermal_get_temp(struct thermal_zone_device *thermal,
 			    unsigned long *temp)
+=======
+static int thermal_get_temp(struct thermal_zone_device *thermal, int *temp)
+>>>>>>> v4.9.227
 {
 	struct acpi_thermal *tz = thermal->devdata;
 	int result;
@@ -637,7 +667,11 @@ static int thermal_get_trip_type(struct thermal_zone_device *thermal,
 }
 
 static int thermal_get_trip_temp(struct thermal_zone_device *thermal,
+<<<<<<< HEAD
 				 int trip, unsigned long *temp)
+=======
+				 int trip, int *temp)
+>>>>>>> v4.9.227
 {
 	struct acpi_thermal *tz = thermal->devdata;
 	int i;
@@ -690,7 +724,12 @@ static int thermal_get_trip_temp(struct thermal_zone_device *thermal,
 }
 
 static int thermal_get_crit_temp(struct thermal_zone_device *thermal,
+<<<<<<< HEAD
 				unsigned long *temperature) {
+=======
+				int *temperature)
+{
+>>>>>>> v4.9.227
 	struct acpi_thermal *tz = thermal->devdata;
 
 	if (tz->trips.critical.flags.valid) {
@@ -713,8 +752,13 @@ static int thermal_get_trend(struct thermal_zone_device *thermal,
 		return -EINVAL;
 
 	if (type == THERMAL_TRIP_ACTIVE) {
+<<<<<<< HEAD
 		unsigned long trip_temp;
 		unsigned long temp = DECI_KELVIN_TO_MILLICELSIUS_WITH_OFFSET(
+=======
+		int trip_temp;
+		int temp = DECI_KELVIN_TO_MILLICELSIUS_WITH_OFFSET(
+>>>>>>> v4.9.227
 					tz->temperature, tz->kelvin_offset);
 		if (thermal_get_trip_temp(thermal, trip, &trip_temp))
 			return -EINVAL;
@@ -1109,7 +1153,11 @@ static int acpi_thermal_add(struct acpi_device *device)
 	INIT_WORK(&tz->thermal_check_work, acpi_thermal_check_fn);
 
 	pr_info(PREFIX "%s [%s] (%ld C)\n", acpi_device_name(device),
+<<<<<<< HEAD
 		acpi_device_bid(device), KELVIN_TO_CELSIUS(tz->temperature));
+=======
+		acpi_device_bid(device), DECI_KELVIN_TO_CELSIUS(tz->temperature));
+>>>>>>> v4.9.227
 	goto end;
 
 free_memory:
@@ -1263,7 +1311,12 @@ static int __init acpi_thermal_init(void)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	acpi_thermal_pm_queue = create_workqueue("acpi_thermal_pm");
+=======
+	acpi_thermal_pm_queue = alloc_workqueue("acpi_thermal_pm",
+						WQ_HIGHPRI | WQ_MEM_RECLAIM, 0);
+>>>>>>> v4.9.227
 	if (!acpi_thermal_pm_queue)
 		return -ENODEV;
 

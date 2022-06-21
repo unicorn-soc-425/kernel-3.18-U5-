@@ -126,7 +126,10 @@ static int mvme16x_device_remove(struct platform_device *dev)
 static struct platform_driver mvme16x_scsi_driver = {
 	.driver = {
 		.name           = "mvme16x-scsi",
+<<<<<<< HEAD
 		.owner          = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe          = mvme16x_probe,
 	.remove         = mvme16x_device_remove,

@@ -32,7 +32,10 @@
 struct virtio_gpu_fbdev {
 	struct drm_fb_helper           helper;
 	struct virtio_gpu_framebuffer  vgfb;
+<<<<<<< HEAD
 	struct list_head	       fbdev_list;
+=======
+>>>>>>> v4.9.227
 	struct virtio_gpu_device       *vgdev;
 	struct delayed_work            work;
 };
@@ -338,7 +341,11 @@ static int virtio_gpufb_create(struct drm_fb_helper *helper,
 	info->fbops = &virtio_gpufb_ops;
 	info->pixmap.flags = FB_PIXMAP_SYSTEM;
 
+<<<<<<< HEAD
 	info->screen_base = obj->vmap;
+=======
+	info->screen_buffer = obj->vmap;
+>>>>>>> v4.9.227
 	info->screen_size = obj->gem_base.size;
 	drm_fb_helper_fill_fix(info, fb->pitches[0], fb->depth);
 	drm_fb_helper_fill_var(info, &vfbdev->helper,

@@ -52,6 +52,10 @@ struct udl_device {
 	struct device *dev;
 	struct drm_device *ddev;
 	struct usb_device *udev;
+<<<<<<< HEAD
+=======
+	struct drm_crtc *crtc;
+>>>>>>> v4.9.227
 
 	int sku_pixel_limit;
 
@@ -81,14 +85,21 @@ struct udl_framebuffer {
 	struct drm_framebuffer base;
 	struct udl_gem_object *obj;
 	bool active_16; /* active on the 16-bit channel */
+<<<<<<< HEAD
 	int x1, y1, x2, y2; /* dirty rect */
 	spinlock_t dirty_lock;
+=======
+>>>>>>> v4.9.227
 };
 
 #define to_udl_fb(x) container_of(x, struct udl_framebuffer, base)
 
 /* modeset */
 int udl_modeset_init(struct drm_device *dev);
+<<<<<<< HEAD
+=======
+void udl_modeset_restore(struct drm_device *dev);
+>>>>>>> v4.9.227
 void udl_modeset_cleanup(struct drm_device *dev);
 int udl_connector_init(struct drm_device *dev, struct drm_encoder *encoder);
 
@@ -108,7 +119,11 @@ void udl_fbdev_unplug(struct drm_device *dev);
 struct drm_framebuffer *
 udl_fb_user_fb_create(struct drm_device *dev,
 		      struct drm_file *file,
+<<<<<<< HEAD
 		      struct drm_mode_fb_cmd2 *mode_cmd);
+=======
+		      const struct drm_mode_fb_cmd2 *mode_cmd);
+>>>>>>> v4.9.227
 
 int udl_render_hline(struct drm_device *dev, int bpp, struct urb **urb_ptr,
 		     const char *front, char **urb_buf_ptr,

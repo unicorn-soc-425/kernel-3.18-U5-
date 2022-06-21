@@ -439,7 +439,12 @@ int dialog_inputbox(WINDOW *main_window,
 		case KEY_F(F_EXIT):
 		case KEY_F(F_BACK):
 			break;
+<<<<<<< HEAD
 		case 127:
+=======
+		case 8:   /* ^H */
+		case 127: /* ^? */
+>>>>>>> v4.9.227
 		case KEY_BACKSPACE:
 			if (cursor_position > 0) {
 				memmove(&result[cursor_position-1],

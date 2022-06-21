@@ -134,6 +134,7 @@ int jffs2_garbage_collect_pass(struct jffs2_sb_info *c)
 	if (mutex_lock_interruptible(&c->alloc_sem))
 		return -EINTR;
 
+<<<<<<< HEAD
 	for (;;) {
 		spin_lock(&c->erase_completion_lock);
 		if (!c->unchecked_size)
@@ -152,12 +153,24 @@ int jffs2_garbage_collect_pass(struct jffs2_sb_info *c)
 			return -ENOSPC;
 		}
 
+=======
+
+	for (;;) {
+		/* We can't start doing GC until we've finished checking
+		   the node CRCs etc. */
+		int bucket, want_ino;
+
+		spin_lock(&c->erase_completion_lock);
+		if (!c->unchecked_size)
+			break;
+>>>>>>> v4.9.227
 		spin_unlock(&c->erase_completion_lock);
 
 		if (!xattr)
 			xattr = jffs2_verify_xattr(c);
 
 		spin_lock(&c->inocache_lock);
+<<<<<<< HEAD
 
 		ic = jffs2_get_ino_cache(c, c->checked_ino++);
 
@@ -166,6 +179,47 @@ int jffs2_garbage_collect_pass(struct jffs2_sb_info *c)
 			continue;
 		}
 
+=======
+		/* Instead of doing the inodes in numeric order, doing a lookup
+		 * in the hash for each possible number, just walk the hash
+		 * buckets of *existing* inodes. This means that we process
+		 * them out-of-order, but it can be a lot faster if there's
+		 * a sparse inode# space. Which there often is. */
+		want_ino = c->check_ino;
+		for (bucket = c->check_ino % c->inocache_hashsize ; bucket < c->inocache_hashsize; bucket++) {
+			for (ic = c->inocache_list[bucket]; ic; ic = ic->next) {
+				if (ic->ino < want_ino)
+					continue;
+
+				if (ic->state != INO_STATE_CHECKEDABSENT &&
+				    ic->state != INO_STATE_PRESENT)
+					goto got_next; /* with inocache_lock held */
+
+				jffs2_dbg(1, "Skipping ino #%u already checked\n",
+					  ic->ino);
+			}
+			want_ino = 0;
+		}
+
+		/* Point c->check_ino past the end of the last bucket. */
+		c->check_ino = ((c->highest_ino + c->inocache_hashsize + 1) &
+				~c->inocache_hashsize) - 1;
+
+		spin_unlock(&c->inocache_lock);
+
+		pr_crit("Checked all inodes but still 0x%x bytes of unchecked space?\n",
+			c->unchecked_size);
+		jffs2_dbg_dump_block_lists_nolock(c);
+		mutex_unlock(&c->alloc_sem);
+		return -ENOSPC;
+
+	got_next:
+		/* For next time round the loop, we want c->checked_ino to indicate
+		 * the *next* one we want to check. And since we're walking the
+		 * buckets rather than doing it sequentially, it's: */
+		c->check_ino = ic->ino + c->inocache_hashsize;
+
+>>>>>>> v4.9.227
 		if (!ic->pino_nlink) {
 			jffs2_dbg(1, "Skipping check of ino #%d with nlink/pino zero\n",
 				  ic->ino);
@@ -176,8 +230,11 @@ int jffs2_garbage_collect_pass(struct jffs2_sb_info *c)
 		switch(ic->state) {
 		case INO_STATE_CHECKEDABSENT:
 		case INO_STATE_PRESENT:
+<<<<<<< HEAD
 			jffs2_dbg(1, "Skipping ino #%u already checked\n",
 				  ic->ino);
+=======
+>>>>>>> v4.9.227
 			spin_unlock(&c->inocache_lock);
 			continue;
 
@@ -196,7 +253,11 @@ int jffs2_garbage_collect_pass(struct jffs2_sb_info *c)
 				  ic->ino);
 			/* We need to come back again for the _same_ inode. We've
 			 made no progress in this case, but that should be OK */
+<<<<<<< HEAD
 			c->checked_ino--;
+=======
+			c->check_ino = ic->ino;
+>>>>>>> v4.9.227
 
 			mutex_unlock(&c->alloc_sem);
 			sleep_on_spinunlock(&c->inocache_wq, &c->inocache_lock);
@@ -532,7 +593,11 @@ static int jffs2_garbage_collect_live(struct jffs2_sb_info *c,  struct jffs2_era
 				goto upnout;
 		}
 		/* We found a datanode. Do the GC */
+<<<<<<< HEAD
 		if((start >> PAGE_CACHE_SHIFT) < ((end-1) >> PAGE_CACHE_SHIFT)) {
+=======
+		if((start >> PAGE_SHIFT) < ((end-1) >> PAGE_SHIFT)) {
+>>>>>>> v4.9.227
 			/* It crosses a page boundary. Therefore, it must be a hole. */
 			ret = jffs2_garbage_collect_hole(c, jeb, f, fn, start, end);
 		} else {
@@ -1172,8 +1237,13 @@ static int jffs2_garbage_collect_dnode(struct jffs2_sb_info *c, struct jffs2_era
 		struct jffs2_node_frag *frag;
 		uint32_t min, max;
 
+<<<<<<< HEAD
 		min = start & ~(PAGE_CACHE_SIZE-1);
 		max = min + PAGE_CACHE_SIZE;
+=======
+		min = start & ~(PAGE_SIZE-1);
+		max = min + PAGE_SIZE;
+>>>>>>> v4.9.227
 
 		frag = jffs2_lookup_node_frag(&f->fragtree, start);
 
@@ -1331,7 +1401,11 @@ static int jffs2_garbage_collect_dnode(struct jffs2_sb_info *c, struct jffs2_era
 		cdatalen = min_t(uint32_t, alloclen - sizeof(ri), end - offset);
 		datalen = end - offset;
 
+<<<<<<< HEAD
 		writebuf = pg_ptr + (offset & (PAGE_CACHE_SIZE -1));
+=======
+		writebuf = pg_ptr + (offset & (PAGE_SIZE -1));
+>>>>>>> v4.9.227
 
 		comprtype = jffs2_compress(c, f, writebuf, &comprbuf, &datalen, &cdatalen);
 

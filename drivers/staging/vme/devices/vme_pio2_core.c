@@ -13,7 +13,10 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/moduleparam.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -25,7 +28,10 @@
 
 #include "vme_pio2.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static const char driver_name[] = "pio2";
 
 static int bus[PIO2_CARDS_MAX];
@@ -92,7 +98,11 @@ static void pio2_int(int level, int vector, void *ptr)
 	case 4:
 		/* Channels 0 to 7 */
 		retval = vme_master_read(card->window, &reg, 1,
+<<<<<<< HEAD
 			PIO2_REGS_INT_STAT[vec - 1]);
+=======
+					 PIO2_REGS_INT_STAT[vec - 1]);
+>>>>>>> v4.9.227
 		if (retval < 0) {
 			dev_err(&card->vdev->dev,
 				"Unable to read IRQ status register\n");
@@ -102,8 +112,13 @@ static void pio2_int(int level, int vector, void *ptr)
 			channel = ((vec - 1) * 8) + i;
 			if (reg & PIO2_CHANNEL_BIT[channel])
 				dev_info(&card->vdev->dev,
+<<<<<<< HEAD
 					"Interrupt on I/O channel %d\n",
 					channel);
+=======
+					 "Interrupt on I/O channel %d\n",
+					 channel);
+>>>>>>> v4.9.227
 		}
 		break;
 	case 5:
@@ -119,7 +134,10 @@ static void pio2_int(int level, int vector, void *ptr)
 	}
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  * We return whether this has been successful - this is used in the probe to
  * ensure we have a valid card.
@@ -159,7 +177,10 @@ static struct vme_driver pio2_driver = {
 	.remove = pio2_remove,
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static int __init pio2_init(void)
 {
 	if (bus_num == 0) {
@@ -179,7 +200,10 @@ static int __init pio2_init(void)
 
 static int pio2_match(struct vme_dev *vdev)
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	if (vdev->num >= bus_num) {
 		dev_err(&vdev->dev,
 			"The enumeration of the VMEbus to which the board is connected must be specified\n");
@@ -220,11 +244,17 @@ static int pio2_probe(struct vme_dev *vdev)
 	u8 reg;
 	int vec;
 
+<<<<<<< HEAD
 	card = kzalloc(sizeof(struct pio2_card), GFP_KERNEL);
 	if (card == NULL) {
 		retval = -ENOMEM;
 		goto err_struct;
 	}
+=======
+	card = devm_kzalloc(&vdev->dev, sizeof(*card), GFP_KERNEL);
+	if (!card)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	card->id = vdev->num;
 	card->bus = bus[card->id];
@@ -235,11 +265,17 @@ static int pio2_probe(struct vme_dev *vdev)
 	card->vdev = vdev;
 
 	for (i = 0; i < PIO2_VARIANT_LENGTH; i++) {
+<<<<<<< HEAD
 
 		if (isdigit(card->variant[i]) == 0) {
 			dev_err(&card->vdev->dev, "Variant invalid\n");
 			retval = -EINVAL;
 			goto err_variant;
+=======
+		if (!isdigit(card->variant[i])) {
+			dev_err(&card->vdev->dev, "Variant invalid\n");
+			return -EINVAL;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -250,8 +286,12 @@ static int pio2_probe(struct vme_dev *vdev)
 	if (card->irq_vector & ~PIO2_VME_VECTOR_MASK) {
 		dev_err(&card->vdev->dev,
 			"Invalid VME IRQ Vector, vector must not use lower 4 bits\n");
+<<<<<<< HEAD
 		retval = -EINVAL;
 		goto err_vector;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -265,28 +305,44 @@ static int pio2_probe(struct vme_dev *vdev)
 	for (i = 1; i < PIO2_VARIANT_LENGTH; i++) {
 		switch (card->variant[i]) {
 		case '0':
+<<<<<<< HEAD
 			card->bank[i-1].config = NOFIT;
+=======
+			card->bank[i - 1].config = NOFIT;
+>>>>>>> v4.9.227
 			break;
 		case '1':
 		case '2':
 		case '3':
 		case '4':
+<<<<<<< HEAD
 			card->bank[i-1].config = INPUT;
 			break;
 		case '5':
 			card->bank[i-1].config = OUTPUT;
+=======
+			card->bank[i - 1].config = INPUT;
+			break;
+		case '5':
+			card->bank[i - 1].config = OUTPUT;
+>>>>>>> v4.9.227
 			break;
 		case '6':
 		case '7':
 		case '8':
 		case '9':
+<<<<<<< HEAD
 			card->bank[i-1].config = BOTH;
+=======
+			card->bank[i - 1].config = BOTH;
+>>>>>>> v4.9.227
 			break;
 		}
 	}
 
 	/* Get a master window and position over regs */
 	card->window = vme_master_request(vdev, VME_A24, VME_SCT, VME_D16);
+<<<<<<< HEAD
 	if (card->window == NULL) {
 		dev_err(&card->vdev->dev,
 			"Unable to assign VME master resource\n");
@@ -296,6 +352,16 @@ static int pio2_probe(struct vme_dev *vdev)
 
 	retval = vme_master_set(card->window, 1, card->base, 0x10000, VME_A24,
 		(VME_SCT | VME_USER | VME_DATA), VME_D16);
+=======
+	if (!card->window) {
+		dev_err(&card->vdev->dev,
+			"Unable to assign VME master resource\n");
+		return -EIO;
+	}
+
+	retval = vme_master_set(card->window, 1, card->base, 0x10000, VME_A24,
+				VME_SCT | VME_USER | VME_DATA, VME_D16);
+>>>>>>> v4.9.227
 	if (retval) {
 		dev_err(&card->vdev->dev,
 			"Unable to configure VME master resource\n");
@@ -341,7 +407,11 @@ static int pio2_probe(struct vme_dev *vdev)
 
 	/* Set VME vector */
 	retval = vme_master_write(card->window, &card->irq_vector, 1,
+<<<<<<< HEAD
 		PIO2_REGS_VME_VECTOR);
+=======
+				  PIO2_REGS_VME_VECTOR);
+>>>>>>> v4.9.227
 	if (retval < 0)
 		return retval;
 
@@ -349,7 +419,11 @@ static int pio2_probe(struct vme_dev *vdev)
 	vec = card->irq_vector | PIO2_VME_VECTOR_SPUR;
 
 	retval = vme_irq_request(vdev, card->irq_level, vec,
+<<<<<<< HEAD
 		&pio2_int, (void *)card);
+=======
+				 &pio2_int, card);
+>>>>>>> v4.9.227
 	if (retval < 0) {
 		dev_err(&card->vdev->dev,
 			"Unable to attach VME interrupt vector0x%x, level 0x%x\n",
@@ -362,7 +436,11 @@ static int pio2_probe(struct vme_dev *vdev)
 		vec = card->irq_vector | PIO2_VECTOR_BANK[i];
 
 		retval = vme_irq_request(vdev, card->irq_level, vec,
+<<<<<<< HEAD
 			&pio2_int, (void *)card);
+=======
+					 &pio2_int, card);
+>>>>>>> v4.9.227
 		if (retval < 0) {
 			dev_err(&card->vdev->dev,
 				"Unable to attach VME interrupt vector0x%x, level 0x%x\n",
@@ -376,7 +454,11 @@ static int pio2_probe(struct vme_dev *vdev)
 		vec = card->irq_vector | PIO2_VECTOR_CNTR[i];
 
 		retval = vme_irq_request(vdev, card->irq_level, vec,
+<<<<<<< HEAD
 			&pio2_int, (void *)card);
+=======
+			&pio2_int, card);
+>>>>>>> v4.9.227
 		if (retval < 0) {
 			dev_err(&card->vdev->dev,
 				"Unable to attach VME interrupt vector0x%x, level 0x%x\n",
@@ -403,7 +485,11 @@ static int pio2_probe(struct vme_dev *vdev)
 	dev_set_drvdata(&card->vdev->dev, card);
 
 	dev_info(&card->vdev->dev,
+<<<<<<< HEAD
 		"PIO2 (variant %s) configured at 0x%lx\n", card->variant,
+=======
+		 "PIO2 (variant %s) configured at 0x%lx\n", card->variant,
+>>>>>>> v4.9.227
 		card->base);
 
 	return 0;
@@ -436,11 +522,14 @@ err_read:
 	vme_master_set(card->window, 0, 0, 0, VME_A16, 0, VME_D16);
 err_set:
 	vme_master_free(card->window);
+<<<<<<< HEAD
 err_window:
 err_vector:
 err_variant:
 	kfree(card);
 err_struct:
+=======
+>>>>>>> v4.9.227
 	return retval;
 }
 
@@ -472,8 +561,11 @@ static int pio2_remove(struct vme_dev *vdev)
 
 	vme_master_free(card->window);
 
+<<<<<<< HEAD
 	kfree(card);
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -482,6 +574,7 @@ static void __exit pio2_exit(void)
 	vme_unregister_driver(&pio2_driver);
 }
 
+<<<<<<< HEAD
 
 /* These are required for each board */
 MODULE_PARM_DESC(bus, "Enumeration of VMEbus to which the board is connected");
@@ -502,6 +595,27 @@ module_param_array(variant, charp, &variant_num, S_IRUGO);
 /* This is for debugging */
 MODULE_PARM_DESC(loopback, "Enable loopback mode on all cards");
 module_param(loopback, bool, S_IRUGO);
+=======
+/* These are required for each board */
+MODULE_PARM_DESC(bus, "Enumeration of VMEbus to which the board is connected");
+module_param_array(bus, int, &bus_num, 0444);
+
+MODULE_PARM_DESC(base, "Base VME address for PIO2 Registers");
+module_param_array(base, long, &base_num, 0444);
+
+MODULE_PARM_DESC(vector, "VME IRQ Vector (Lower 4 bits masked)");
+module_param_array(vector, int, &vector_num, 0444);
+
+MODULE_PARM_DESC(level, "VME IRQ Level");
+module_param_array(level, int, &level_num, 0444);
+
+MODULE_PARM_DESC(variant, "Last 4 characters of PIO2 board variant");
+module_param_array(variant, charp, &variant_num, 0444);
+
+/* This is for debugging */
+MODULE_PARM_DESC(loopback, "Enable loopback mode on all cards");
+module_param(loopback, bool, 0444);
+>>>>>>> v4.9.227
 
 MODULE_DESCRIPTION("GE PIO2 6U VME I/O Driver");
 MODULE_AUTHOR("Martyn Welch <martyn.welch@ge.com");

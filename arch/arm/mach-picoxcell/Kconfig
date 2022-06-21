@@ -1,7 +1,15 @@
 config ARCH_PICOXCELL
+<<<<<<< HEAD
 	bool "Picochip PicoXcell" if ARCH_MULTI_V6
 	select ARCH_REQUIRE_GPIOLIB
 	select ARM_VIC
 	select DW_APB_TIMER_OF
+=======
+	bool "Picochip PicoXcell"
+	depends on ARCH_MULTI_V6
+	select ARM_VIC
+	select DW_APB_TIMER_OF
+	select GPIOLIB
+>>>>>>> v4.9.227
 	select HAVE_TCM
 	select NO_IOPORT_MAP

@@ -28,7 +28,11 @@
 
 #include <linux/delay.h>
 
+<<<<<<< HEAD
 static struct regmap_irq wm8994_irqs[] = {
+=======
+static const struct regmap_irq wm8994_irqs[] = {
+>>>>>>> v4.9.227
 	[WM8994_IRQ_TEMP_SHUT] = {
 		.reg_offset = 1,
 		.mask = WM8994_TEMP_SHUT_EINT,
@@ -128,7 +132,11 @@ static struct regmap_irq wm8994_irqs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct regmap_irq_chip wm8994_irq_chip = {
+=======
+static const struct regmap_irq_chip wm8994_irq_chip = {
+>>>>>>> v4.9.227
 	.name = "wm8994",
 	.irqs = wm8994_irqs,
 	.num_irqs = ARRAY_SIZE(wm8994_irqs),
@@ -172,6 +180,7 @@ static int wm8994_edge_irq_map(struct irq_domain *h, unsigned int virq,
 	irq_set_chip_data(virq, wm8994);
 	irq_set_chip_and_handler(virq, &wm8994_edge_irq_chip, handle_edge_irq);
 	irq_set_nested_thread(virq, 1);
+<<<<<<< HEAD
 
 	/* ARM needs us to explicitly flag the IRQ as valid
 	 * and will set them noprobe when we do so. */
@@ -180,11 +189,18 @@ static int wm8994_edge_irq_map(struct irq_domain *h, unsigned int virq,
 #else
 	irq_set_noprobe(virq);
 #endif
+=======
+	irq_set_noprobe(virq);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops wm8994_edge_irq_ops = {
+=======
+static const struct irq_domain_ops wm8994_edge_irq_ops = {
+>>>>>>> v4.9.227
 	.map	= wm8994_edge_irq_map,
 	.xlate	= irq_domain_xlate_twocell,
 };
@@ -193,7 +209,11 @@ int wm8994_irq_init(struct wm8994 *wm8994)
 {
 	int ret;
 	unsigned long irqflags;
+<<<<<<< HEAD
 	struct wm8994_pdata *pdata = dev_get_platdata(wm8994->dev);
+=======
+	struct wm8994_pdata *pdata = &wm8994->pdata;
+>>>>>>> v4.9.227
 
 	if (!wm8994->irq) {
 		dev_warn(wm8994->dev,

@@ -52,7 +52,11 @@ struct video_obj {
 };
 
 struct vpif_cap_buffer {
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head list;
 };
 
@@ -65,8 +69,11 @@ struct common_obj {
 	struct v4l2_format fmt;
 	/* Buffer queue used in video-buf */
 	struct vb2_queue buffer_queue;
+<<<<<<< HEAD
 	/* allocator-specific contexts for each plane */
 	struct vb2_alloc_ctx *alloc_ctx;
+=======
+>>>>>>> v4.9.227
 	/* Queue of filled frames */
 	struct list_head dma_queue;
 	/* Used in video-buf */
@@ -92,7 +99,11 @@ struct common_obj {
 
 struct channel_obj {
 	/* Identifies video device for this channel */
+<<<<<<< HEAD
 	struct video_device *video_dev;
+=======
+	struct video_device video_dev;
+>>>>>>> v4.9.227
 	/* Indicates id of the field which is being displayed */
 	u32 field_id;
 	/* flag to indicate whether decoder is initialized */

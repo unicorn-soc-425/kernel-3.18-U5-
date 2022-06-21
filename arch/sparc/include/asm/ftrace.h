@@ -2,13 +2,24 @@
 #define _ASM_SPARC64_FTRACE
 
 #ifdef CONFIG_MCOUNT
+<<<<<<< HEAD
 #define MCOUNT_ADDR		((long)(_mcount))
+=======
+#define MCOUNT_ADDR		((unsigned long)(_mcount))
+>>>>>>> v4.9.227
 #define MCOUNT_INSN_SIZE	4 /* sizeof mcount call */
 
 #ifndef __ASSEMBLY__
 void _mcount(void);
 #endif
 
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_MCOUNT */
+
+#if defined(CONFIG_SPARC64) && !defined(CC_USE_FENTRY)
+#define HAVE_FUNCTION_GRAPH_FP_TEST
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_DYNAMIC_FTRACE

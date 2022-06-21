@@ -35,7 +35,11 @@ static const struct drm_framebuffer_funcs armada_fb_funcs = {
 };
 
 struct armada_framebuffer *armada_framebuffer_create(struct drm_device *dev,
+<<<<<<< HEAD
 	struct drm_mode_fb_cmd2 *mode, struct armada_gem_object *obj)
+=======
+	const struct drm_mode_fb_cmd2 *mode, struct armada_gem_object *obj)
+>>>>>>> v4.9.227
 {
 	struct armada_framebuffer *dfb;
 	uint8_t format, config;
@@ -101,7 +105,11 @@ struct armada_framebuffer *armada_framebuffer_create(struct drm_device *dev,
 }
 
 static struct drm_framebuffer *armada_fb_create(struct drm_device *dev,
+<<<<<<< HEAD
 	struct drm_file *dfile, struct drm_mode_fb_cmd2 *mode)
+=======
+	struct drm_file *dfile, const struct drm_mode_fb_cmd2 *mode)
+>>>>>>> v4.9.227
 {
 	struct armada_gem_object *obj;
 	struct armada_framebuffer *dfb;
@@ -120,7 +128,11 @@ static struct drm_framebuffer *armada_fb_create(struct drm_device *dev,
 		goto err;
 	}
 
+<<<<<<< HEAD
 	obj = armada_gem_object_lookup(dev, dfile, mode->handles[0]);
+=======
+	obj = armada_gem_object_lookup(dfile, mode->handles[0]);
+>>>>>>> v4.9.227
 	if (!obj) {
 		ret = -ENOENT;
 		goto err;

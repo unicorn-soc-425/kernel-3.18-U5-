@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * at91sama5d3_uart.dtsi - Device Tree Include file for AT91SAM9x5 SoC with
+=======
+ * sama5d3_uart.dtsi - Device Tree Include file for SAMA5D3 SoC with
+>>>>>>> v4.9.227
  * UART support
  *
  * Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>
@@ -42,13 +46,21 @@
 					uart0_clk: uart0_clk {
 						#clock-cells = <0>;
 						reg = <16>;
+<<<<<<< HEAD
 						atmel,clk-output-range = <0 66000000>;
+=======
+						atmel,clk-output-range = <0 83000000>;
+>>>>>>> v4.9.227
 					};
 
 					uart1_clk: uart1_clk {
 						#clock-cells = <0>;
 						reg = <17>;
+<<<<<<< HEAD
 						atmel,clk-output-range = <0 66000000>;
+=======
+						atmel,clk-output-range = <0 83000000>;
+>>>>>>> v4.9.227
 					};
 				};
 			};

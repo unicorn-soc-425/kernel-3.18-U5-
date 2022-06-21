@@ -129,7 +129,11 @@
 		disk {
 			label = "topkick:yellow:disk";
 			gpios = <&gpio0 21 GPIO_ACTIVE_LOW>;
+<<<<<<< HEAD
 			linux,default-trigger = "ide-disk";
+=======
+			linux,default-trigger = "disk-activity";
+>>>>>>> v4.9.227
 		};
 		system2 {
 			label = "topkick:red:system";

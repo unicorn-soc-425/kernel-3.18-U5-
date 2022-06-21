@@ -45,6 +45,7 @@ int rtc_year_days(unsigned int day, unsigned int month, unsigned int year)
 }
 EXPORT_SYMBOL(rtc_year_days);
 
+<<<<<<< HEAD
 /*
  * Convert seconds since 01-01-1970 00:00:00 to Gregorian date.
  */
@@ -55,6 +56,20 @@ void rtc_time_to_tm(unsigned long time, struct rtc_time *tm)
 
 	days = time / 86400;
 	time -= (unsigned int) days * 86400;
+=======
+
+/*
+ * rtc_time_to_tm64 - Converts time64_t to rtc_time.
+ * Convert seconds since 01-01-1970 00:00:00 to Gregorian date.
+ */
+void rtc_time64_to_tm(time64_t time, struct rtc_time *tm)
+{
+	unsigned int month, year, secs;
+	int days;
+
+	/* time must be positive */
+	days = div_s64_rem(time, 86400, &secs);
+>>>>>>> v4.9.227
 
 	/* day of the week, 1970-01-01 was a Thursday */
 	tm->tm_wday = (days + 4) % 7;
@@ -81,6 +96,7 @@ void rtc_time_to_tm(unsigned long time, struct rtc_time *tm)
 	tm->tm_mon = month;
 	tm->tm_mday = days + 1;
 
+<<<<<<< HEAD
 	tm->tm_hour = time / 3600;
 	time -= tm->tm_hour * 3600;
 	tm->tm_min = time / 60;
@@ -89,6 +105,16 @@ void rtc_time_to_tm(unsigned long time, struct rtc_time *tm)
 	tm->tm_isdst = 0;
 }
 EXPORT_SYMBOL(rtc_time_to_tm);
+=======
+	tm->tm_hour = secs / 3600;
+	secs -= tm->tm_hour * 3600;
+	tm->tm_min = secs / 60;
+	tm->tm_sec = secs - tm->tm_min * 60;
+
+	tm->tm_isdst = 0;
+}
+EXPORT_SYMBOL(rtc_time64_to_tm);
+>>>>>>> v4.9.227
 
 /*
  * Does the rtc_time represent a valid date/time?
@@ -109,6 +135,7 @@ int rtc_valid_tm(struct rtc_time *tm)
 EXPORT_SYMBOL(rtc_valid_tm);
 
 /*
+<<<<<<< HEAD
  * Convert Gregorian date to seconds since 01-01-1970 00:00:00.
  */
 int rtc_tm_to_time(struct rtc_time *tm, unsigned long *time)
@@ -118,15 +145,30 @@ int rtc_tm_to_time(struct rtc_time *tm, unsigned long *time)
 	return 0;
 }
 EXPORT_SYMBOL(rtc_tm_to_time);
+=======
+ * rtc_tm_to_time64 - Converts rtc_time to time64_t.
+ * Convert Gregorian date to seconds since 01-01-1970 00:00:00.
+ */
+time64_t rtc_tm_to_time64(struct rtc_time *tm)
+{
+	return mktime64(tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
+			tm->tm_hour, tm->tm_min, tm->tm_sec);
+}
+EXPORT_SYMBOL(rtc_tm_to_time64);
+>>>>>>> v4.9.227
 
 /*
  * Convert rtc_time to ktime
  */
 ktime_t rtc_tm_to_ktime(struct rtc_time tm)
 {
+<<<<<<< HEAD
 	time_t time;
 	rtc_tm_to_time(&tm, &time);
 	return ktime_set(time, 0);
+=======
+	return ktime_set(rtc_tm_to_time64(&tm), 0);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(rtc_tm_to_ktime);
 
@@ -135,6 +177,7 @@ EXPORT_SYMBOL_GPL(rtc_tm_to_ktime);
  */
 struct rtc_time rtc_ktime_to_tm(ktime_t kt)
 {
+<<<<<<< HEAD
 	struct timespec ts;
 	struct rtc_time ret;
 
@@ -143,6 +186,16 @@ struct rtc_time rtc_ktime_to_tm(ktime_t kt)
 	if (ts.tv_nsec)
 		ts.tv_sec++;
 	rtc_time_to_tm(ts.tv_sec, &ret);
+=======
+	struct timespec64 ts;
+	struct rtc_time ret;
+
+	ts = ktime_to_timespec64(kt);
+	/* Round up any ns */
+	if (ts.tv_nsec)
+		ts.tv_sec++;
+	rtc_time64_to_tm(ts.tv_sec, &ret);
+>>>>>>> v4.9.227
 	return ret;
 }
 EXPORT_SYMBOL_GPL(rtc_ktime_to_tm);

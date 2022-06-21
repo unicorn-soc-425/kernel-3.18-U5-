@@ -155,12 +155,19 @@ static void freezer_css_free(struct cgroup_subsys_state *css)
  * @freezer->lock.  freezer_attach() makes the new tasks conform to the
  * current state and all following state changes can see the new tasks.
  */
+<<<<<<< HEAD
 static void freezer_attach(struct cgroup_subsys_state *new_css,
 			   struct cgroup_taskset *tset)
 {
 	struct freezer *freezer = css_freezer(new_css);
 	struct task_struct *task;
 	bool clear_frozen = false;
+=======
+static void freezer_attach(struct cgroup_taskset *tset)
+{
+	struct task_struct *task;
+	struct cgroup_subsys_state *new_css;
+>>>>>>> v4.9.227
 
 	mutex_lock(&freezer_mutex);
 
@@ -174,11 +181,18 @@ static void freezer_attach(struct cgroup_subsys_state *new_css,
 	 * current state before executing the following - !frozen tasks may
 	 * be visible in a FROZEN cgroup and frozen tasks in a THAWED one.
 	 */
+<<<<<<< HEAD
 	cgroup_taskset_for_each(task, tset) {
+=======
+	cgroup_taskset_for_each(task, new_css, tset) {
+		struct freezer *freezer = css_freezer(new_css);
+
+>>>>>>> v4.9.227
 		if (!(freezer->state & CGROUP_FREEZING)) {
 			__thaw_task(task);
 		} else {
 			freeze_task(task);
+<<<<<<< HEAD
 			freezer->state &= ~CGROUP_FROZEN;
 			clear_frozen = true;
 		}
@@ -190,6 +204,16 @@ static void freezer_attach(struct cgroup_subsys_state *new_css,
 		clear_frozen = freezer->state & CGROUP_FREEZING;
 	}
 
+=======
+			/* clear FROZEN and propagate upwards */
+			while (freezer && (freezer->state & CGROUP_FROZEN)) {
+				freezer->state &= ~CGROUP_FROZEN;
+				freezer = parent_freezer(freezer);
+			}
+		}
+	}
+
+>>>>>>> v4.9.227
 	mutex_unlock(&freezer_mutex);
 }
 
@@ -453,6 +477,7 @@ static u64 freezer_parent_freezing_read(struct cgroup_subsys_state *css,
 	return (bool)(freezer->state & CGROUP_FREEZING_PARENT);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SAMSUNG_FREECESS
 /**
  * Check if the task is allowed to be added to the freezer group
@@ -488,6 +513,8 @@ static void freezer_cancel_attach(struct cgroup_subsys_state *css,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 static struct cftype files[] = {
 	{
 		.name = "state",
@@ -516,8 +543,11 @@ struct cgroup_subsys freezer_cgrp_subsys = {
 	.attach		= freezer_attach,
 	.fork		= freezer_fork,
 	.legacy_cftypes	= files,
+<<<<<<< HEAD
 #ifdef CONFIG_SAMSUNG_FREECESS
 	.can_attach   = freezer_can_attach,
 	.cancel_attach  = freezer_cancel_attach,
 #endif
+=======
+>>>>>>> v4.9.227
 };

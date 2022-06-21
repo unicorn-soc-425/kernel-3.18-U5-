@@ -1323,7 +1323,11 @@ static int bh1770_remove(struct i2c_client *client)
 #ifdef CONFIG_PM_SLEEP
 static int bh1770_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 
 	bh1770_chip_off(chip);
@@ -1333,7 +1337,11 @@ static int bh1770_suspend(struct device *dev)
 
 static int bh1770_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 	int ret = 0;
 
@@ -1358,10 +1366,17 @@ static int bh1770_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 static int bh1770_runtime_suspend(struct device *dev)
 {
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+#ifdef CONFIG_PM
+static int bh1770_runtime_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 
 	bh1770_chip_off(chip);
@@ -1371,7 +1386,11 @@ static int bh1770_runtime_suspend(struct device *dev)
 
 static int bh1770_runtime_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 
 	bh1770_chip_on(chip);
@@ -1396,7 +1415,10 @@ static const struct dev_pm_ops bh1770_pm_ops = {
 static struct i2c_driver bh1770_driver = {
 	.driver	 = {
 		.name	= "bh1770glc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &bh1770_pm_ops,
 	},
 	.probe	  = bh1770_probe,

@@ -20,14 +20,23 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
+=======
+#include "saa7134.h"
+#include "saa7134-reg.h"
+
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/list.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 
+<<<<<<< HEAD
 #include "saa7134-reg.h"
 #include "saa7134.h"
 
+=======
+>>>>>>> v4.9.227
 /* ------------------------------------------------------------------ */
 
 static unsigned int vbi_debug;
@@ -38,8 +47,15 @@ static unsigned int vbibufs = 4;
 module_param(vbibufs, int, 0444);
 MODULE_PARM_DESC(vbibufs,"number of vbi buffers, range 2-32");
 
+<<<<<<< HEAD
 #define dprintk(fmt, arg...)	if (vbi_debug) \
 	printk(KERN_DEBUG "%s/vbi: " fmt, dev->name , ## arg)
+=======
+#define vbi_dbg(fmt, arg...) do { \
+	if (vbi_debug) \
+		printk(KERN_DEBUG pr_fmt("vbi: " fmt), ## arg); \
+	} while (0)
+>>>>>>> v4.9.227
 
 /* ------------------------------------------------------------------ */
 
@@ -81,10 +97,17 @@ static int buffer_activate(struct saa7134_dev *dev,
 			   struct saa7134_buf *buf,
 			   struct saa7134_buf *next)
 {
+<<<<<<< HEAD
 	struct saa7134_dmaqueue *dmaq = buf->vb2.vb2_queue->drv_priv;
 	unsigned long control, base;
 
 	dprintk("buffer_activate [%p]\n", buf);
+=======
+	struct saa7134_dmaqueue *dmaq = buf->vb2.vb2_buf.vb2_queue->drv_priv;
+	unsigned long control, base;
+
+	vbi_dbg("buffer_activate [%p]\n", buf);
+>>>>>>> v4.9.227
 	buf->top_seen = 0;
 
 	task_init(dev, buf, TASK_A);
@@ -117,10 +140,17 @@ static int buffer_prepare(struct vb2_buffer *vb2)
 {
 	struct saa7134_dmaqueue *dmaq = vb2->vb2_queue->drv_priv;
 	struct saa7134_dev *dev = dmaq->dev;
+<<<<<<< HEAD
 	struct saa7134_buf *buf = container_of(vb2, struct saa7134_buf, vb2);
 	struct sg_table *dma = vb2_dma_sg_plane_desc(&buf->vb2, 0);
 	unsigned int size;
 	int ret;
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb2);
+	struct saa7134_buf *buf = container_of(vbuf, struct saa7134_buf, vb2);
+	struct sg_table *dma = vb2_dma_sg_plane_desc(vb2, 0);
+	unsigned int size;
+>>>>>>> v4.9.227
 
 	if (dma->sgl->offset) {
 		pr_err("The buffer is not page-aligned\n");
@@ -132,16 +162,25 @@ static int buffer_prepare(struct vb2_buffer *vb2)
 
 	vb2_set_plane_payload(vb2, 0, size);
 
+<<<<<<< HEAD
 	ret = dma_map_sg(&dev->pci->dev, dma->sgl, dma->nents, DMA_FROM_DEVICE);
 	if (!ret)
 		return -EIO;
+=======
+>>>>>>> v4.9.227
 	return saa7134_pgtable_build(dev->pci, &dmaq->pt, dma->sgl, dma->nents,
 				    saa7134_buffer_startpage(buf));
 }
 
+<<<<<<< HEAD
 static int queue_setup(struct vb2_queue *q, const struct v4l2_format *fmt,
 			   unsigned int *nbuffers, unsigned int *nplanes,
 			   unsigned int sizes[], void *alloc_ctxs[])
+=======
+static int queue_setup(struct vb2_queue *q,
+			   unsigned int *nbuffers, unsigned int *nplanes,
+			   unsigned int sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	struct saa7134_dmaqueue *dmaq = q->drv_priv;
 	struct saa7134_dev *dev = dmaq->dev;
@@ -162,13 +201,19 @@ static int queue_setup(struct vb2_queue *q, const struct v4l2_format *fmt,
 static int buffer_init(struct vb2_buffer *vb2)
 {
 	struct saa7134_dmaqueue *dmaq = vb2->vb2_queue->drv_priv;
+<<<<<<< HEAD
 	struct saa7134_buf *buf = container_of(vb2, struct saa7134_buf, vb2);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb2);
+	struct saa7134_buf *buf = container_of(vbuf, struct saa7134_buf, vb2);
+>>>>>>> v4.9.227
 
 	dmaq->curr = NULL;
 	buf->activate = buffer_activate;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void buffer_finish(struct vb2_buffer *vb2)
 {
 	struct saa7134_dmaqueue *dmaq = vb2->vb2_queue->drv_priv;
@@ -179,11 +224,16 @@ static void buffer_finish(struct vb2_buffer *vb2)
 	dma_unmap_sg(&dev->pci->dev, dma->sgl, dma->nents, DMA_FROM_DEVICE);
 }
 
+=======
+>>>>>>> v4.9.227
 struct vb2_ops saa7134_vbi_qops = {
 	.queue_setup	= queue_setup,
 	.buf_init	= buffer_init,
 	.buf_prepare	= buffer_prepare,
+<<<<<<< HEAD
 	.buf_finish	= buffer_finish,
+=======
+>>>>>>> v4.9.227
 	.buf_queue	= saa7134_vb2_buffer_queue,
 	.wait_prepare	= vb2_ops_wait_prepare,
 	.wait_finish	= vb2_ops_wait_finish,
@@ -203,8 +253,13 @@ int saa7134_vbi_init1(struct saa7134_dev *dev)
 
 	if (vbibufs < 2)
 		vbibufs = 2;
+<<<<<<< HEAD
 	if (vbibufs > VB2_MAX_FRAME)
 		vbibufs = VB2_MAX_FRAME;
+=======
+	if (vbibufs > VIDEO_MAX_FRAME)
+		vbibufs = VIDEO_MAX_FRAME;
+>>>>>>> v4.9.227
 	return 0;
 }
 

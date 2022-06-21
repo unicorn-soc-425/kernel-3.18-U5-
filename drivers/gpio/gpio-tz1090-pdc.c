@@ -49,7 +49,10 @@ struct tz1090_pdc_gpio {
 	void __iomem *reg;
 	int irq[GPIO_PDC_NIRQ];
 };
+<<<<<<< HEAD
 #define to_pdc(c)	container_of(c, struct tz1090_pdc_gpio, chip)
+=======
+>>>>>>> v4.9.227
 
 /* Register accesses into the PDC MMIO area */
 
@@ -70,7 +73,11 @@ static inline unsigned int pdc_read(struct tz1090_pdc_gpio *priv,
 static int tz1090_pdc_gpio_direction_input(struct gpio_chip *chip,
 					   unsigned int offset)
 {
+<<<<<<< HEAD
 	struct tz1090_pdc_gpio *priv = to_pdc(chip);
+=======
+	struct tz1090_pdc_gpio *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 value;
 	int lstat;
 
@@ -87,7 +94,11 @@ static int tz1090_pdc_gpio_direction_output(struct gpio_chip *chip,
 					    unsigned int offset,
 					    int output_value)
 {
+<<<<<<< HEAD
 	struct tz1090_pdc_gpio *priv = to_pdc(chip);
+=======
+	struct tz1090_pdc_gpio *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 value;
 	int lstat;
 
@@ -112,14 +123,23 @@ static int tz1090_pdc_gpio_direction_output(struct gpio_chip *chip,
 
 static int tz1090_pdc_gpio_get(struct gpio_chip *chip, unsigned int offset)
 {
+<<<<<<< HEAD
 	struct tz1090_pdc_gpio *priv = to_pdc(chip);
 	return pdc_read(priv, REG_SOC_GPIO_STATUS) & BIT(offset);
+=======
+	struct tz1090_pdc_gpio *priv = gpiochip_get_data(chip);
+	return !!(pdc_read(priv, REG_SOC_GPIO_STATUS) & BIT(offset));
+>>>>>>> v4.9.227
 }
 
 static void tz1090_pdc_gpio_set(struct gpio_chip *chip, unsigned int offset,
 				int output_value)
 {
+<<<<<<< HEAD
 	struct tz1090_pdc_gpio *priv = to_pdc(chip);
+=======
+	struct tz1090_pdc_gpio *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 value;
 	int lstat;
 
@@ -137,6 +157,7 @@ static void tz1090_pdc_gpio_set(struct gpio_chip *chip, unsigned int offset,
 	__global_unlock2(lstat);
 }
 
+<<<<<<< HEAD
 static int tz1090_pdc_gpio_request(struct gpio_chip *chip, unsigned int offset)
 {
 	return pinctrl_request_gpio(chip->base + offset);
@@ -150,6 +171,11 @@ static void tz1090_pdc_gpio_free(struct gpio_chip *chip, unsigned int offset)
 static int tz1090_pdc_gpio_to_irq(struct gpio_chip *chip, unsigned int offset)
 {
 	struct tz1090_pdc_gpio *priv = to_pdc(chip);
+=======
+static int tz1090_pdc_gpio_to_irq(struct gpio_chip *chip, unsigned int offset)
+{
+	struct tz1090_pdc_gpio *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned int syswake = offset - GPIO_PDC_IRQ_FIRST;
 	int irq;
 
@@ -190,7 +216,11 @@ static int tz1090_pdc_gpio_probe(struct platform_device *pdev)
 
 	/* Ioremap the registers */
 	priv->reg = devm_ioremap(&pdev->dev, res_regs->start,
+<<<<<<< HEAD
 				 res_regs->end - res_regs->start);
+=======
+				 resource_size(res_regs));
+>>>>>>> v4.9.227
 	if (!priv->reg) {
 		dev_err(&pdev->dev, "unable to ioremap registers\n");
 		return -ENOMEM;
@@ -198,13 +228,22 @@ static int tz1090_pdc_gpio_probe(struct platform_device *pdev)
 
 	/* Set up GPIO chip */
 	priv->chip.label		= "tz1090-pdc-gpio";
+<<<<<<< HEAD
 	priv->chip.dev			= &pdev->dev;
+=======
+	priv->chip.parent		= &pdev->dev;
+>>>>>>> v4.9.227
 	priv->chip.direction_input	= tz1090_pdc_gpio_direction_input;
 	priv->chip.direction_output	= tz1090_pdc_gpio_direction_output;
 	priv->chip.get			= tz1090_pdc_gpio_get;
 	priv->chip.set			= tz1090_pdc_gpio_set;
+<<<<<<< HEAD
 	priv->chip.free			= tz1090_pdc_gpio_free;
 	priv->chip.request		= tz1090_pdc_gpio_request;
+=======
+	priv->chip.free			= gpiochip_generic_free;
+	priv->chip.request		= gpiochip_generic_request;
+>>>>>>> v4.9.227
 	priv->chip.to_irq		= tz1090_pdc_gpio_to_irq;
 	priv->chip.of_node		= np;
 
@@ -217,7 +256,11 @@ static int tz1090_pdc_gpio_probe(struct platform_device *pdev)
 		priv->irq[i] = irq_of_parse_and_map(np, i);
 
 	/* Add the GPIO bank */
+<<<<<<< HEAD
 	gpiochip_add(&priv->chip);
+=======
+	gpiochip_add_data(&priv->chip, priv);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -230,7 +273,10 @@ static struct of_device_id tz1090_pdc_gpio_of_match[] = {
 static struct platform_driver tz1090_pdc_gpio_driver = {
 	.driver = {
 		.name		= "tz1090-pdc-gpio",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= tz1090_pdc_gpio_of_match,
 	},
 	.probe		= tz1090_pdc_gpio_probe,

@@ -11,7 +11,11 @@
 #ifndef FIMC_ISP_VIDEO__
 #define FIMC_ISP_VIDEO__
 
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include "fimc-isp.h"
 
 #ifdef CONFIG_VIDEO_EXYNOS4_ISP_DMA_CAPTURE

@@ -70,7 +70,11 @@ struct s3c_ide_info {
 	struct clk *clk;
 	void __iomem *ide_addr;
 	void __iomem *sfr_addr;
+<<<<<<< HEAD
 	unsigned int irq;
+=======
+	int irq;
+>>>>>>> v4.9.227
 	enum s3c_cpu_type cpu_type;
 	unsigned int fifo_status_reg;
 };
@@ -638,7 +642,11 @@ static const struct dev_pm_ops pata_s3c_pm_ops = {
 #endif
 
 /* driver device registration */
+<<<<<<< HEAD
 static struct platform_device_id pata_s3c_driver_ids[] = {
+=======
+static const struct platform_device_id pata_s3c_driver_ids[] = {
+>>>>>>> v4.9.227
 	{
 		.name		= "s3c64xx-pata",
 		.driver_data	= TYPE_S3C64XX,
@@ -656,7 +664,10 @@ static struct platform_driver pata_s3c_driver = {
 	.id_table	= pata_s3c_driver_ids,
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM_SLEEP
 		.pm	= &pata_s3c_pm_ops,
 #endif

@@ -31,6 +31,10 @@
 #include <linux/dmi.h>
 #include <linux/nmi.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 
 #include <linux/debugfs.h>
 #include <linux/dmaengine.h>
@@ -251,6 +255,10 @@ struct eg20t_port {
 	struct dma_chan			*chan_rx;
 	struct scatterlist		*sg_tx_p;
 	int				nent;
+<<<<<<< HEAD
+=======
+	int				orig_nent;
+>>>>>>> v4.9.227
 	struct scatterlist		sg_rx;
 	int				tx_dma_use;
 	void				*rx_buf_virt;
@@ -418,6 +426,10 @@ static struct dmi_system_id pch_uart_dmi_table[] = {
 		},
 		(void *)MINNOW_UARTCLK,
 	},
+<<<<<<< HEAD
+=======
+	{ }
+>>>>>>> v4.9.227
 };
 
 /* Return UART clock, checking for board specific clocks. */
@@ -804,9 +816,16 @@ static void pch_dma_tx_complete(void *arg)
 	}
 	xmit->tail &= UART_XMIT_SIZE - 1;
 	async_tx_ack(priv->desc_tx);
+<<<<<<< HEAD
 	dma_unmap_sg(port->dev, sg, priv->nent, DMA_TO_DEVICE);
 	priv->tx_dma_use = 0;
 	priv->nent = 0;
+=======
+	dma_unmap_sg(port->dev, sg, priv->orig_nent, DMA_TO_DEVICE);
+	priv->tx_dma_use = 0;
+	priv->nent = 0;
+	priv->orig_nent = 0;
+>>>>>>> v4.9.227
 	kfree(priv->sg_tx_p);
 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_TX_INT);
 }
@@ -1031,6 +1050,10 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 		dev_err(priv->port.dev, "%s:dma_map_sg Failed\n", __func__);
 		return 0;
 	}
+<<<<<<< HEAD
+=======
+	priv->orig_nent = num;
+>>>>>>> v4.9.227
 	priv->nent = nent;
 
 	for (i = 0; i < nent; i++, sg++) {
@@ -1603,7 +1626,11 @@ static void pch_uart_put_poll_char(struct uart_port *port,
 }
 #endif /* CONFIG_CONSOLE_POLL */
 
+<<<<<<< HEAD
 static struct uart_ops pch_uart_ops = {
+=======
+static const struct uart_ops pch_uart_ops = {
+>>>>>>> v4.9.227
 	.tx_empty = pch_uart_tx_empty,
 	.set_mctrl = pch_uart_set_mctrl,
 	.get_mctrl = pch_uart_get_mctrl,
@@ -1826,6 +1853,13 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
 	priv->trigger_level = 1;
 	priv->fcr = 0;
 
+<<<<<<< HEAD
+=======
+	if (pdev->dev.of_node)
+		of_property_read_u32(pdev->dev.of_node, "clock-frequency"
+					 , &user_uartclk);
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_SERIAL_PCH_UART_CONSOLE
 	pch_uart_ports[board->line_no] = priv;
 #endif

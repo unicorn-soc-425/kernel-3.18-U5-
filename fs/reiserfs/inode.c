@@ -18,7 +18,11 @@
 #include <linux/writeback.h>
 #include <linux/quotaops.h>
 #include <linux/swap.h>
+<<<<<<< HEAD
 #include <linux/aio.h>
+=======
+#include <linux/uio.h>
+>>>>>>> v4.9.227
 
 int reiserfs_commit_write(struct file *f, struct page *page,
 			  unsigned from, unsigned to);
@@ -386,7 +390,11 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 		goto finished;
 	}
 	/* read file tail into part of page */
+<<<<<<< HEAD
 	offset = (cpu_key_k_offset(&key) - 1) & (PAGE_CACHE_SIZE - 1);
+=======
+	offset = (cpu_key_k_offset(&key) - 1) & (PAGE_SIZE - 1);
+>>>>>>> v4.9.227
 	copy_item_head(&tmp_ih, ih);
 
 	/*
@@ -524,7 +532,11 @@ static int reiserfs_get_blocks_direct_io(struct inode *inode,
 	 * referenced in convert_tail_for_hole() that may be called from
 	 * reiserfs_get_block()
 	 */
+<<<<<<< HEAD
 	bh_result->b_size = (1 << inode->i_blkbits);
+=======
+	bh_result->b_size = i_blocksize(inode);
+>>>>>>> v4.9.227
 
 	ret = reiserfs_get_block(inode, iblock, bh_result,
 				 create | GET_BLOCK_NO_DANGLE);
@@ -587,10 +599,17 @@ static int convert_tail_for_hole(struct inode *inode,
 		return -EIO;
 
 	/* always try to read until the end of the block */
+<<<<<<< HEAD
 	tail_start = tail_offset & (PAGE_CACHE_SIZE - 1);
 	tail_end = (tail_start | (bh_result->b_size - 1)) + 1;
 
 	index = tail_offset >> PAGE_CACHE_SHIFT;
+=======
+	tail_start = tail_offset & (PAGE_SIZE - 1);
+	tail_end = (tail_start | (bh_result->b_size - 1)) + 1;
+
+	index = tail_offset >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 	/*
 	 * hole_page can be zero in case of direct_io, we are sure
 	 * that we cannot get here if we write with O_DIRECT into tail page
@@ -629,7 +648,11 @@ static int convert_tail_for_hole(struct inode *inode,
 unlock:
 	if (tail_page != hole_page) {
 		unlock_page(tail_page);
+<<<<<<< HEAD
 		page_cache_release(tail_page);
+=======
+		put_page(tail_page);
+>>>>>>> v4.9.227
 	}
 out:
 	return retval;
@@ -1361,6 +1384,10 @@ static void init_inode(struct inode *inode, struct treepath *path)
 		inode->i_fop = &reiserfs_dir_operations;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &reiserfs_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> v4.9.227
 		inode->i_mapping->a_ops = &reiserfs_address_space_operations;
 	} else {
 		inode->i_blocks = 0;
@@ -2004,7 +2031,11 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 	if (S_ISLNK(inode->i_mode))
 		inode->i_flags &= ~(S_IMMUTABLE | S_APPEND);
 
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 	inode->i_size = i_size;
 	inode->i_blocks = 0;
 	inode->i_bytes = 0;
@@ -2101,6 +2132,18 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 		goto out_inserted_sd;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Mark it private if we're creating the privroot
+	 * or something under it.
+	 */
+	if (IS_PRIVATE(dir) || dentry == REISERFS_SB(sb)->priv_root) {
+		inode->i_flags |= S_PRIVATE;
+		inode->i_opflags &= ~IOP_XATTR;
+	}
+
+>>>>>>> v4.9.227
 	if (reiserfs_posixacl(inode->i_sb)) {
 		reiserfs_write_unlock(inode->i_sb);
 		retval = reiserfs_inherit_default_acl(th, dir, dentry, inode);
@@ -2115,8 +2158,12 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 		reiserfs_warning(inode->i_sb, "jdm-13090",
 				 "ACLs aren't enabled in the fs, "
 				 "but vfs thinks they are!");
+<<<<<<< HEAD
 	} else if (IS_PRIVATE(dir))
 		inode->i_flags |= S_PRIVATE;
+=======
+	}
+>>>>>>> v4.9.227
 
 	if (security->name) {
 		reiserfs_write_unlock(inode->i_sb);
@@ -2188,11 +2235,19 @@ static int grab_tail_page(struct inode *inode,
 	 * we want the page with the last byte in the file,
 	 * not the page that will hold the next byte for appending
 	 */
+<<<<<<< HEAD
 	unsigned long index = (inode->i_size - 1) >> PAGE_CACHE_SHIFT;
 	unsigned long pos = 0;
 	unsigned long start = 0;
 	unsigned long blocksize = inode->i_sb->s_blocksize;
 	unsigned long offset = (inode->i_size) & (PAGE_CACHE_SIZE - 1);
+=======
+	unsigned long index = (inode->i_size - 1) >> PAGE_SHIFT;
+	unsigned long pos = 0;
+	unsigned long start = 0;
+	unsigned long blocksize = inode->i_sb->s_blocksize;
+	unsigned long offset = (inode->i_size) & (PAGE_SIZE - 1);
+>>>>>>> v4.9.227
 	struct buffer_head *bh;
 	struct buffer_head *head;
 	struct page *page;
@@ -2250,7 +2305,11 @@ out:
 
 unlock:
 	unlock_page(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> v4.9.227
 	return error;
 }
 
@@ -2264,7 +2323,11 @@ int reiserfs_truncate_file(struct inode *inode, int update_timestamps)
 {
 	struct reiserfs_transaction_handle th;
 	/* we want the offset for the first byte after the end of the file */
+<<<<<<< HEAD
 	unsigned long offset = inode->i_size & (PAGE_CACHE_SIZE - 1);
+=======
+	unsigned long offset = inode->i_size & (PAGE_SIZE - 1);
+>>>>>>> v4.9.227
 	unsigned blocksize = inode->i_sb->s_blocksize;
 	unsigned length;
 	struct page *page = NULL;
@@ -2344,7 +2407,11 @@ int reiserfs_truncate_file(struct inode *inode, int update_timestamps)
 			}
 		}
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> v4.9.227
 	}
 
 	reiserfs_write_unlock(inode->i_sb);
@@ -2353,7 +2420,11 @@ int reiserfs_truncate_file(struct inode *inode, int update_timestamps)
 out:
 	if (page) {
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> v4.9.227
 	}
 
 	reiserfs_write_unlock(inode->i_sb);
@@ -2425,7 +2496,11 @@ research:
 	} else if (is_direct_le_ih(ih)) {
 		char *p;
 		p = page_address(bh_result->b_page);
+<<<<<<< HEAD
 		p += (byte_offset - 1) & (PAGE_CACHE_SIZE - 1);
+=======
+		p += (byte_offset - 1) & (PAGE_SIZE - 1);
+>>>>>>> v4.9.227
 		copy_size = ih_item_len(ih) - pos_in_item;
 
 		fs_gen = get_generation(inode->i_sb);
@@ -2524,7 +2599,11 @@ static int reiserfs_write_full_page(struct page *page,
 				    struct writeback_control *wbc)
 {
 	struct inode *inode = page->mapping->host;
+<<<<<<< HEAD
 	unsigned long end_index = inode->i_size >> PAGE_CACHE_SHIFT;
+=======
+	unsigned long end_index = inode->i_size >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 	int error = 0;
 	unsigned long block;
 	sector_t last_block;
@@ -2534,7 +2613,11 @@ static int reiserfs_write_full_page(struct page *page,
 	int checked = PageChecked(page);
 	struct reiserfs_transaction_handle th;
 	struct super_block *s = inode->i_sb;
+<<<<<<< HEAD
 	int bh_per_page = PAGE_CACHE_SIZE / s->s_blocksize;
+=======
+	int bh_per_page = PAGE_SIZE / s->s_blocksize;
+>>>>>>> v4.9.227
 	th.t_trans_id = 0;
 
 	/* no logging allowed when nonblocking or from PF_MEMALLOC */
@@ -2563,16 +2646,27 @@ static int reiserfs_write_full_page(struct page *page,
 	if (page->index >= end_index) {
 		unsigned last_offset;
 
+<<<<<<< HEAD
 		last_offset = inode->i_size & (PAGE_CACHE_SIZE - 1);
+=======
+		last_offset = inode->i_size & (PAGE_SIZE - 1);
+>>>>>>> v4.9.227
 		/* no file contents in this page */
 		if (page->index >= end_index + 1 || !last_offset) {
 			unlock_page(page);
 			return 0;
 		}
+<<<<<<< HEAD
 		zero_user_segment(page, last_offset, PAGE_CACHE_SIZE);
 	}
 	bh = head;
 	block = page->index << (PAGE_CACHE_SHIFT - s->s_blocksize_bits);
+=======
+		zero_user_segment(page, last_offset, PAGE_SIZE);
+	}
+	bh = head;
+	block = page->index << (PAGE_SHIFT - s->s_blocksize_bits);
+>>>>>>> v4.9.227
 	last_block = (i_size_read(inode) - 1) >> inode->i_blkbits;
 	/* first map all the buffers, logging any direct items we find */
 	do {
@@ -2667,7 +2761,11 @@ static int reiserfs_write_full_page(struct page *page,
 	do {
 		struct buffer_head *next = bh->b_this_page;
 		if (buffer_async_write(bh)) {
+<<<<<<< HEAD
 			submit_bh(WRITE, bh);
+=======
+			submit_bh(REQ_OP_WRITE, 0, bh);
+>>>>>>> v4.9.227
 			nr++;
 		}
 		put_bh(bh);
@@ -2727,7 +2825,11 @@ fail:
 		struct buffer_head *next = bh->b_this_page;
 		if (buffer_async_write(bh)) {
 			clear_buffer_dirty(bh);
+<<<<<<< HEAD
 			submit_bh(WRITE, bh);
+=======
+			submit_bh(REQ_OP_WRITE, 0, bh);
+>>>>>>> v4.9.227
 			nr++;
 		}
 		put_bh(bh);
@@ -2766,14 +2868,22 @@ static int reiserfs_write_begin(struct file *file,
 	int old_ref = 0;
 
  	inode = mapping->host;
+<<<<<<< HEAD
 	*fsdata = 0;
+=======
+	*fsdata = NULL;
+>>>>>>> v4.9.227
  	if (flags & AOP_FLAG_CONT_EXPAND &&
  	    (pos & (inode->i_sb->s_blocksize - 1)) == 0) {
  		pos ++;
 		*fsdata = (void *)(unsigned long)flags;
 	}
 
+<<<<<<< HEAD
 	index = pos >> PAGE_CACHE_SHIFT;
+=======
+	index = pos >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 	page = grab_cache_page_write_begin(mapping, index, flags);
 	if (!page)
 		return -ENOMEM;
@@ -2821,7 +2931,11 @@ static int reiserfs_write_begin(struct file *file,
 	}
 	if (ret) {
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> v4.9.227
 		/* Truncate allocated blocks */
 		reiserfs_truncate_failed_write(inode);
 	}
@@ -2908,7 +3022,11 @@ static int reiserfs_write_end(struct file *file, struct address_space *mapping,
 	else
 		th = NULL;
 
+<<<<<<< HEAD
 	start = pos & (PAGE_CACHE_SIZE - 1);
+=======
+	start = pos & (PAGE_SIZE - 1);
+>>>>>>> v4.9.227
 	if (unlikely(copied < len)) {
 		if (!PageUptodate(page))
 			copied = 0;
@@ -2973,7 +3091,11 @@ out:
 	if (locked)
 		reiserfs_write_unlock(inode->i_sb);
 	unlock_page(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> v4.9.227
 
 	if (pos + len > inode->i_size)
 		reiserfs_truncate_failed_write(inode);
@@ -2995,7 +3117,11 @@ int reiserfs_commit_write(struct file *f, struct page *page,
 			  unsigned from, unsigned to)
 {
 	struct inode *inode = page->mapping->host;
+<<<<<<< HEAD
 	loff_t pos = ((loff_t) page->index << PAGE_CACHE_SHIFT) + to;
+=======
+	loff_t pos = ((loff_t) page->index << PAGE_SHIFT) + to;
+>>>>>>> v4.9.227
 	int ret = 0;
 	int update_sd = 0;
 	struct reiserfs_transaction_handle *th = NULL;
@@ -3180,7 +3306,11 @@ static void reiserfs_invalidatepage(struct page *page, unsigned int offset,
 	struct inode *inode = page->mapping->host;
 	unsigned int curr_off = 0;
 	unsigned int stop = offset + length;
+<<<<<<< HEAD
 	int partial_page = (offset || length < PAGE_CACHE_SIZE);
+=======
+	int partial_page = (offset || length < PAGE_SIZE);
+>>>>>>> v4.9.227
 	int ret = 1;
 
 	BUG_ON(!PageLocked(page));
@@ -3278,24 +3408,38 @@ static int reiserfs_releasepage(struct page *page, gfp_t unused_gfp_flags)
  * We thank Mingming Cao for helping us understand in great detail what
  * to do in this section of the code.
  */
+<<<<<<< HEAD
 static ssize_t reiserfs_direct_IO(int rw, struct kiocb *iocb,
 				  struct iov_iter *iter, loff_t offset)
+=======
+static ssize_t reiserfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+>>>>>>> v4.9.227
 {
 	struct file *file = iocb->ki_filp;
 	struct inode *inode = file->f_mapping->host;
 	size_t count = iov_iter_count(iter);
 	ssize_t ret;
 
+<<<<<<< HEAD
 	ret = blockdev_direct_IO(rw, iocb, inode, iter, offset,
+=======
+	ret = blockdev_direct_IO(iocb, inode, iter,
+>>>>>>> v4.9.227
 				 reiserfs_get_blocks_direct_io);
 
 	/*
 	 * In case of error extending write may have instantiated a few
 	 * blocks outside i_size. Trim these off again.
 	 */
+<<<<<<< HEAD
 	if (unlikely((rw & WRITE) && ret < 0)) {
 		loff_t isize = i_size_read(inode);
 		loff_t end = offset + count;
+=======
+	if (unlikely(iov_iter_rw(iter) == WRITE && ret < 0)) {
+		loff_t isize = i_size_read(inode);
+		loff_t end = iocb->ki_pos + count;
+>>>>>>> v4.9.227
 
 		if ((end > isize) && inode_newsize_ok(inode, isize) == 0) {
 			truncate_setsize(inode, isize);
@@ -3308,19 +3452,35 @@ static ssize_t reiserfs_direct_IO(int rw, struct kiocb *iocb,
 
 int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	unsigned int ia_valid;
 	int error;
 
 	error = inode_change_ok(inode, attr);
+=======
+	struct inode *inode = d_inode(dentry);
+	unsigned int ia_valid;
+	int error;
+
+	error = setattr_prepare(dentry, attr);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 
 	/* must be turned off for recursive notify_change calls */
 	ia_valid = attr->ia_valid &= ~(ATTR_KILL_SUID|ATTR_KILL_SGID);
 
+<<<<<<< HEAD
 	if (is_quota_modification(inode, attr))
 		dquot_initialize(inode);
+=======
+	if (is_quota_modification(inode, attr)) {
+		error = dquot_initialize(inode);
+		if (error)
+			return error;
+	}
+>>>>>>> v4.9.227
 	reiserfs_write_lock(inode->i_sb);
 	if (attr->ia_valid & ATTR_SIZE) {
 		/*

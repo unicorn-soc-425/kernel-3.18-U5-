@@ -1,6 +1,10 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <media/saa7146_vv.h>
+=======
+#include <media/drv-intf/saa7146_vv.h>
+>>>>>>> v4.9.227
 
 static u32 saa7146_i2c_func(struct i2c_adapter *adapter)
 {

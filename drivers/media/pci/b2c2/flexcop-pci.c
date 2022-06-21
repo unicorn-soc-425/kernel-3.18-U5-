@@ -39,7 +39,11 @@ MODULE_PARM_DESC(debug,
 
 #define DRIVER_VERSION "0.1"
 #define DRIVER_NAME "flexcop-pci"
+<<<<<<< HEAD
 #define DRIVER_AUTHOR "Patrick Boettcher <patrick.boettcher@desy.de>"
+=======
+#define DRIVER_AUTHOR "Patrick Boettcher <patrick.boettcher@posteo.de>"
+>>>>>>> v4.9.227
 
 struct flexcop_pci {
 	struct pci_dev *pdev;

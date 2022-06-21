@@ -378,8 +378,11 @@ extern void bttv_input_fini(struct bttv *dev);
 extern void bttv_input_irq(struct bttv *dev);
 
 #endif /* _BTTV_H_ */
+<<<<<<< HEAD
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

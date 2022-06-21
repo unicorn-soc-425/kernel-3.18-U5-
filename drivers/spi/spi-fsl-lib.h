@@ -23,13 +23,23 @@
 /* SPI/eSPI Controller driver's private data. */
 struct mpc8xxx_spi {
 	struct device *dev;
+<<<<<<< HEAD
 	void *reg_base;
+=======
+	void __iomem *reg_base;
+>>>>>>> v4.9.227
 
 	/* rx & tx bufs from the spi_transfer */
 	const void *tx;
 	void *rx;
+<<<<<<< HEAD
 #ifdef CONFIG_SPI_FSL_ESPI
 	int len;
+=======
+#if IS_ENABLED(CONFIG_SPI_FSL_ESPI)
+	int len;
+	u8 *local_buf;
+>>>>>>> v4.9.227
 #endif
 
 	int subblock;
@@ -54,10 +64,13 @@ struct mpc8xxx_spi {
 	void (*get_rx) (u32 rx_data, struct mpc8xxx_spi *);
 	u32(*get_tx) (struct mpc8xxx_spi *);
 
+<<<<<<< HEAD
 	/* hooks for different controller driver */
 	void (*spi_do_one_msg) (struct spi_message *m);
 	void (*spi_remove) (struct mpc8xxx_spi *mspi);
 
+=======
+>>>>>>> v4.9.227
 	unsigned int count;
 	unsigned int irq;
 
@@ -69,7 +82,11 @@ struct mpc8xxx_spi {
 
 	unsigned int flags;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SPI_FSL_SPI
+=======
+#if IS_ENABLED(CONFIG_SPI_FSL_SPI)
+>>>>>>> v4.9.227
 	int type;
 	int native_chipselects;
 	u8 max_bits_per_word;
@@ -78,12 +95,15 @@ struct mpc8xxx_spi {
 			   int bits_per_word, int msb_first);
 #endif
 
+<<<<<<< HEAD
 	struct workqueue_struct *workqueue;
 	struct work_struct work;
 
 	struct list_head queue;
 	spinlock_t lock;
 
+=======
+>>>>>>> v4.9.227
 	struct completion done;
 };
 
@@ -123,9 +143,14 @@ extern struct mpc8xxx_spi_probe_info *to_of_pinfo(
 		struct fsl_spi_platform_data *pdata);
 extern int mpc8xxx_spi_bufs(struct mpc8xxx_spi *mspi,
 		struct spi_transfer *t, unsigned int len);
+<<<<<<< HEAD
 extern int mpc8xxx_spi_transfer(struct spi_device *spi, struct spi_message *m);
 extern const char *mpc8xxx_spi_strmode(unsigned int flags);
 extern int mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
+=======
+extern const char *mpc8xxx_spi_strmode(unsigned int flags);
+extern void mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
+>>>>>>> v4.9.227
 		unsigned int irq);
 extern int mpc8xxx_spi_remove(struct device *dev);
 extern int of_mpc8xxx_spi_probe(struct platform_device *ofdev);

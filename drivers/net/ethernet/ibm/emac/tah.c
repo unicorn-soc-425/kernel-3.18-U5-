@@ -148,7 +148,11 @@ static int tah_remove(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id tah_match[] =
+=======
+static const struct of_device_id tah_match[] =
+>>>>>>> v4.9.227
 {
 	{
 		.compatible	= "ibm,tah",
@@ -163,7 +167,10 @@ static struct of_device_id tah_match[] =
 static struct platform_driver tah_driver = {
 	.driver = {
 		.name = "emac-tah",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = tah_match,
 	},
 	.probe = tah_probe,

@@ -748,6 +748,7 @@ static ssize_t mconsole_proc_write(struct file *file,
 {
 	char *buf;
 
+<<<<<<< HEAD
 	buf = kmalloc(count + 1, GFP_KERNEL);
 	if (buf == NULL)
 		return -ENOMEM;
@@ -761,6 +762,13 @@ static ssize_t mconsole_proc_write(struct file *file,
 
 	mconsole_notify(notify_socket, MCONSOLE_USER_NOTIFY, buf, count);
  out:
+=======
+	buf = memdup_user_nul(buffer, count);
+	if (IS_ERR(buf))
+		return PTR_ERR(buf);
+
+	mconsole_notify(notify_socket, MCONSOLE_USER_NOTIFY, buf, count);
+>>>>>>> v4.9.227
 	kfree(buf);
 	return count;
 }

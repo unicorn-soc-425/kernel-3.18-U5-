@@ -97,6 +97,7 @@ extern asmlinkage void *restore_user_regs(const struct user_context *target, ...
 #define forget_segments()		do { } while (0)
 
 /*
+<<<<<<< HEAD
  * Free current thread data structures etc..
  */
 static inline void exit_thread(void)
@@ -104,6 +105,8 @@ static inline void exit_thread(void)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Return saved PC of a blocked thread.
  */
 extern unsigned long thread_saved_pc(struct task_struct *tsk);

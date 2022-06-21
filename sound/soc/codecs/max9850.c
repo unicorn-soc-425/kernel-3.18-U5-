@@ -67,6 +67,7 @@ static const struct regmap_config max9850_regmap = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
+<<<<<<< HEAD
 static const unsigned int max9850_tlv[] = {
 	TLV_DB_RANGE_HEAD(4),
 	0x18, 0x1f, TLV_DB_SCALE_ITEM(-7450, 400, 0),
@@ -74,6 +75,14 @@ static const unsigned int max9850_tlv[] = {
 	0x34, 0x37, TLV_DB_SCALE_ITEM(-150, 100, 0),
 	0x38, 0x3f, TLV_DB_SCALE_ITEM(250, 50, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(max9850_tlv,
+	0x18, 0x1f, TLV_DB_SCALE_ITEM(-7450, 400, 0),
+	0x20, 0x33, TLV_DB_SCALE_ITEM(-4150, 200, 0),
+	0x34, 0x37, TLV_DB_SCALE_ITEM(-150, 100, 0),
+	0x38, 0x3f, TLV_DB_SCALE_ITEM(250, 50, 0)
+);
+>>>>>>> v4.9.227
 
 static const struct snd_kcontrol_new max9850_controls[] = {
 SOC_SINGLE_TLV("Headphone Volume", MAX9850_VOLUME, 0, 0x3f, 1, max9850_tlv),
@@ -252,7 +261,11 @@ static int max9850_set_bias_level(struct snd_soc_codec *codec,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			ret = regcache_sync(max9850->regmap);
 			if (ret) {
 				dev_err(codec->dev,
@@ -264,7 +277,10 @@ static int max9850_set_bias_level(struct snd_soc_codec *codec,
 	case SND_SOC_BIAS_OFF:
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -291,6 +307,7 @@ static struct snd_soc_dai_driver max9850_dai = {
 	.ops = &max9850_dai_ops,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int max9850_suspend(struct snd_soc_codec *codec)
 {
@@ -310,6 +327,8 @@ static int max9850_resume(struct snd_soc_codec *codec)
 #define max9850_resume NULL
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int max9850_probe(struct snd_soc_codec *codec)
 {
 	/* enable zero-detect */
@@ -324,6 +343,7 @@ static int max9850_probe(struct snd_soc_codec *codec)
 
 static struct snd_soc_codec_driver soc_codec_dev_max9850 = {
 	.probe =	max9850_probe,
+<<<<<<< HEAD
 	.suspend =	max9850_suspend,
 	.resume =	max9850_resume,
 	.set_bias_level = max9850_set_bias_level,
@@ -334,6 +354,19 @@ static struct snd_soc_codec_driver soc_codec_dev_max9850 = {
 	.num_dapm_widgets = ARRAY_SIZE(max9850_dapm_widgets),
 	.dapm_routes = max9850_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(max9850_dapm_routes),
+=======
+	.set_bias_level = max9850_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= max9850_controls,
+		.num_controls		= ARRAY_SIZE(max9850_controls),
+		.dapm_widgets		= max9850_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(max9850_dapm_widgets),
+		.dapm_routes		= max9850_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(max9850_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static int max9850_i2c_probe(struct i2c_client *i2c,
@@ -373,7 +406,10 @@ MODULE_DEVICE_TABLE(i2c, max9850_i2c_id);
 static struct i2c_driver max9850_i2c_driver = {
 	.driver = {
 		.name = "max9850",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = max9850_i2c_probe,
 	.remove = max9850_i2c_remove,

@@ -342,7 +342,13 @@ static void quirk_amd_mmconfig_area(struct pnp_dev *dev)
 /* Device IDs of parts that have 32KB MCH space */
 static const unsigned int mch_quirk_devices[] = {
 	0x0154,	/* Ivy Bridge */
+<<<<<<< HEAD
 	0x0c00,	/* Haswell */
+=======
+	0x0a04, /* Haswell-ULT */
+	0x0c00,	/* Haswell */
+	0x1604, /* Broadwell */
+>>>>>>> v4.9.227
 };
 
 static struct pci_dev *get_intel_host(void)

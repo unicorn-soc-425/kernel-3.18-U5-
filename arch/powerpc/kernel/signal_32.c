@@ -44,6 +44,10 @@
 #include <asm/vdso.h>
 #include <asm/switch_to.h>
 #include <asm/tm.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm-prototypes.h>
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC64
 #include "ppc32.h"
 #include <asm/unistd.h>
@@ -315,7 +319,11 @@ unsigned long copy_vsx_from_user(struct task_struct *task,
 }
 
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+<<<<<<< HEAD
 unsigned long copy_transact_fpr_to_user(void __user *to,
+=======
+unsigned long copy_ckfpr_to_user(void __user *to,
+>>>>>>> v4.9.227
 				  struct task_struct *task)
 {
 	u64 buf[ELF_NFPREG];
@@ -323,12 +331,21 @@ unsigned long copy_transact_fpr_to_user(void __user *to,
 
 	/* save FPR copy to local buffer then write to the thread_struct */
 	for (i = 0; i < (ELF_NFPREG - 1) ; i++)
+<<<<<<< HEAD
 		buf[i] = task->thread.TS_TRANS_FPR(i);
 	buf[i] = task->thread.transact_fp.fpscr;
 	return __copy_to_user(to, buf, ELF_NFPREG * sizeof(double));
 }
 
 unsigned long copy_transact_fpr_from_user(struct task_struct *task,
+=======
+		buf[i] = task->thread.TS_CKFPR(i);
+	buf[i] = task->thread.ckfp_state.fpscr;
+	return __copy_to_user(to, buf, ELF_NFPREG * sizeof(double));
+}
+
+unsigned long copy_ckfpr_from_user(struct task_struct *task,
+>>>>>>> v4.9.227
 					  void __user *from)
 {
 	u64 buf[ELF_NFPREG];
@@ -337,13 +354,22 @@ unsigned long copy_transact_fpr_from_user(struct task_struct *task,
 	if (__copy_from_user(buf, from, ELF_NFPREG * sizeof(double)))
 		return 1;
 	for (i = 0; i < (ELF_NFPREG - 1) ; i++)
+<<<<<<< HEAD
 		task->thread.TS_TRANS_FPR(i) = buf[i];
 	task->thread.transact_fp.fpscr = buf[i];
+=======
+		task->thread.TS_CKFPR(i) = buf[i];
+	task->thread.ckfp_state.fpscr = buf[i];
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 unsigned long copy_transact_vsx_to_user(void __user *to,
+=======
+unsigned long copy_ckvsx_to_user(void __user *to,
+>>>>>>> v4.9.227
 				  struct task_struct *task)
 {
 	u64 buf[ELF_NVSRHALFREG];
@@ -351,11 +377,19 @@ unsigned long copy_transact_vsx_to_user(void __user *to,
 
 	/* save FPR copy to local buffer then write to the thread_struct */
 	for (i = 0; i < ELF_NVSRHALFREG; i++)
+<<<<<<< HEAD
 		buf[i] = task->thread.transact_fp.fpr[i][TS_VSRLOWOFFSET];
 	return __copy_to_user(to, buf, ELF_NVSRHALFREG * sizeof(double));
 }
 
 unsigned long copy_transact_vsx_from_user(struct task_struct *task,
+=======
+		buf[i] = task->thread.ckfp_state.fpr[i][TS_VSRLOWOFFSET];
+	return __copy_to_user(to, buf, ELF_NVSRHALFREG * sizeof(double));
+}
+
+unsigned long copy_ckvsx_from_user(struct task_struct *task,
+>>>>>>> v4.9.227
 					  void __user *from)
 {
 	u64 buf[ELF_NVSRHALFREG];
@@ -364,7 +398,11 @@ unsigned long copy_transact_vsx_from_user(struct task_struct *task,
 	if (__copy_from_user(buf, from, ELF_NVSRHALFREG * sizeof(double)))
 		return 1;
 	for (i = 0; i < ELF_NVSRHALFREG ; i++)
+<<<<<<< HEAD
 		task->thread.transact_fp.fpr[i][TS_VSRLOWOFFSET] = buf[i];
+=======
+		task->thread.ckfp_state.fpr[i][TS_VSRLOWOFFSET] = buf[i];
+>>>>>>> v4.9.227
 	return 0;
 }
 #endif /* CONFIG_PPC_TRANSACTIONAL_MEM */
@@ -384,6 +422,7 @@ inline unsigned long copy_fpr_from_user(struct task_struct *task,
 }
 
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+<<<<<<< HEAD
 inline unsigned long copy_transact_fpr_to_user(void __user *to,
 					 struct task_struct *task)
 {
@@ -395,6 +434,19 @@ inline unsigned long copy_transact_fpr_from_user(struct task_struct *task,
 						 void __user *from)
 {
 	return __copy_from_user(task->thread.transact_fp.fpr, from,
+=======
+inline unsigned long copy_ckfpr_to_user(void __user *to,
+					 struct task_struct *task)
+{
+	return __copy_to_user(to, task->thread.ckfp_state.fpr,
+			      ELF_NFPREG * sizeof(double));
+}
+
+inline unsigned long copy_ckfpr_from_user(struct task_struct *task,
+						 void __user *from)
+{
+	return __copy_from_user(task->thread.ckfp_state.fpr, from,
+>>>>>>> v4.9.227
 				ELF_NFPREG * sizeof(double));
 }
 #endif /* CONFIG_PPC_TRANSACTIONAL_MEM */
@@ -458,7 +510,11 @@ static int save_user_regs(struct pt_regs *regs, struct mcontext __user *frame,
 	 * contains valid data
 	 */
 	if (current->thread.used_vsr && ctx_has_vsx_region) {
+<<<<<<< HEAD
 		__giveup_vsx(current);
+=======
+		flush_vsx_to_thread(current);
+>>>>>>> v4.9.227
 		if (copy_vsx_to_user(&frame->mc_vsregs, current))
 			return 1;
 		msr |= MSR_VSX;
@@ -525,9 +581,12 @@ static int save_tm_user_regs(struct pt_regs *regs,
 	 */
 	regs->msr &= ~MSR_TS_MASK;
 
+<<<<<<< HEAD
 	/* Make sure floating point registers are stored in regs */
 	flush_fp_to_thread(current);
 
+=======
+>>>>>>> v4.9.227
 	/* Save both sets of general registers */
 	if (save_general_regs(&current->thread.ckpt_regs, frame)
 	    || save_general_regs(regs, tm_frame))
@@ -545,18 +604,30 @@ static int save_tm_user_regs(struct pt_regs *regs,
 #ifdef CONFIG_ALTIVEC
 	/* save altivec registers */
 	if (current->thread.used_vr) {
+<<<<<<< HEAD
 		flush_altivec_to_thread(current);
 		if (__copy_to_user(&frame->mc_vregs, &current->thread.vr_state,
+=======
+		if (__copy_to_user(&frame->mc_vregs, &current->thread.ckvr_state,
+>>>>>>> v4.9.227
 				   ELF_NVRREG * sizeof(vector128)))
 			return 1;
 		if (msr & MSR_VEC) {
 			if (__copy_to_user(&tm_frame->mc_vregs,
+<<<<<<< HEAD
 					   &current->thread.transact_vr,
+=======
+					   &current->thread.vr_state,
+>>>>>>> v4.9.227
 					   ELF_NVRREG * sizeof(vector128)))
 				return 1;
 		} else {
 			if (__copy_to_user(&tm_frame->mc_vregs,
+<<<<<<< HEAD
 					   &current->thread.vr_state,
+=======
+					   &current->thread.ckvr_state,
+>>>>>>> v4.9.227
 					   ELF_NVRREG * sizeof(vector128)))
 				return 1;
 		}
@@ -573,6 +644,7 @@ static int save_tm_user_regs(struct pt_regs *regs,
 	 * most significant bits of that same vector. --BenH
 	 */
 	if (cpu_has_feature(CPU_FTR_ALTIVEC))
+<<<<<<< HEAD
 		current->thread.vrsave = mfspr(SPRN_VRSAVE);
 	if (__put_user(current->thread.vrsave,
 		       (u32 __user *)&frame->mc_vregs[32]))
@@ -583,11 +655,24 @@ static int save_tm_user_regs(struct pt_regs *regs,
 			return 1;
 	} else {
 		if (__put_user(current->thread.vrsave,
+=======
+		current->thread.ckvrsave = mfspr(SPRN_VRSAVE);
+	if (__put_user(current->thread.ckvrsave,
+		       (u32 __user *)&frame->mc_vregs[32]))
+		return 1;
+	if (msr & MSR_VEC) {
+		if (__put_user(current->thread.vrsave,
+			       (u32 __user *)&tm_frame->mc_vregs[32]))
+			return 1;
+	} else {
+		if (__put_user(current->thread.ckvrsave,
+>>>>>>> v4.9.227
 			       (u32 __user *)&tm_frame->mc_vregs[32]))
 			return 1;
 	}
 #endif /* CONFIG_ALTIVEC */
 
+<<<<<<< HEAD
 	if (copy_fpr_to_user(&frame->mc_fregs, current))
 		return 1;
 	if (msr & MSR_FP) {
@@ -595,6 +680,15 @@ static int save_tm_user_regs(struct pt_regs *regs,
 			return 1;
 	} else {
 		if (copy_fpr_to_user(&tm_frame->mc_fregs, current))
+=======
+	if (copy_ckfpr_to_user(&frame->mc_fregs, current))
+		return 1;
+	if (msr & MSR_FP) {
+		if (copy_fpr_to_user(&tm_frame->mc_fregs, current))
+			return 1;
+	} else {
+		if (copy_ckfpr_to_user(&tm_frame->mc_fregs, current))
+>>>>>>> v4.9.227
 			return 1;
 	}
 
@@ -606,6 +700,7 @@ static int save_tm_user_regs(struct pt_regs *regs,
 	 * contains valid data
 	 */
 	if (current->thread.used_vsr) {
+<<<<<<< HEAD
 		__giveup_vsx(current);
 		if (copy_vsx_to_user(&frame->mc_vsregs, current))
 			return 1;
@@ -615,6 +710,16 @@ static int save_tm_user_regs(struct pt_regs *regs,
 				return 1;
 		} else {
 			if (copy_vsx_to_user(&tm_frame->mc_vsregs, current))
+=======
+		if (copy_ckvsx_to_user(&frame->mc_vsregs, current))
+			return 1;
+		if (msr & MSR_VSX) {
+			if (copy_vsx_to_user(&tm_frame->mc_vsregs,
+						      current))
+				return 1;
+		} else {
+			if (copy_ckvsx_to_user(&tm_frame->mc_vsregs, current))
+>>>>>>> v4.9.227
 				return 1;
 		}
 
@@ -687,6 +792,7 @@ static long restore_user_regs(struct pt_regs *regs,
 	if (sig)
 		regs->msr = (regs->msr & ~MSR_LE) | (msr & MSR_LE);
 
+<<<<<<< HEAD
 	/*
 	 * Do this before updating the thread state in
 	 * current->thread.fpr/vr/evr.  That way, if we get preempted
@@ -696,6 +802,8 @@ static long restore_user_regs(struct pt_regs *regs,
 	 */
 	discard_lazy_cpu_state();
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_ALTIVEC
 	/*
 	 * Force the process to reload the altivec registers from
@@ -707,6 +815,10 @@ static long restore_user_regs(struct pt_regs *regs,
 		if (__copy_from_user(&current->thread.vr_state, &sr->mc_vregs,
 				     sizeof(sr->mc_vregs)))
 			return 1;
+<<<<<<< HEAD
+=======
+		current->thread.used_vr = true;
+>>>>>>> v4.9.227
 	} else if (current->thread.used_vr)
 		memset(&current->thread.vr_state, 0,
 		       ELF_NVRREG * sizeof(vector128));
@@ -733,6 +845,10 @@ static long restore_user_regs(struct pt_regs *regs,
 		 */
 		if (copy_vsx_from_user(current, &sr->mc_vsregs))
 			return 1;
+<<<<<<< HEAD
+=======
+		current->thread.used_vsr = true;
+>>>>>>> v4.9.227
 	} else if (current->thread.used_vsr)
 		for (i = 0; i < 32 ; i++)
 			current->thread.fp_state.fpr[i][TS_VSRLOWOFFSET] = 0;
@@ -752,6 +868,10 @@ static long restore_user_regs(struct pt_regs *regs,
 		if (__copy_from_user(current->thread.evr, &sr->mc_vregs,
 				     ELF_NEVRREG * sizeof(u32)))
 			return 1;
+<<<<<<< HEAD
+=======
+		current->thread.used_spe = true;
+>>>>>>> v4.9.227
 	} else if (current->thread.used_spe)
 		memset(current->thread.evr, 0, ELF_NEVRREG * sizeof(u32));
 
@@ -798,6 +918,7 @@ static long restore_tm_user_regs(struct pt_regs *regs,
 	/* Restore the previous little-endian mode */
 	regs->msr = (regs->msr & ~MSR_LE) | (msr & MSR_LE);
 
+<<<<<<< HEAD
 	/*
 	 * Do this before updating the thread state in
 	 * current->thread.fpr/vr/evr.  That way, if we get preempted
@@ -807,10 +928,13 @@ static long restore_tm_user_regs(struct pt_regs *regs,
 	 */
 	discard_lazy_cpu_state();
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_ALTIVEC
 	regs->msr &= ~MSR_VEC;
 	if (msr & MSR_VEC) {
 		/* restore altivec registers from the stack */
+<<<<<<< HEAD
 		if (__copy_from_user(&current->thread.vr_state, &sr->mc_vregs,
 				     sizeof(sr->mc_vregs)) ||
 		    __copy_from_user(&current->thread.transact_vr,
@@ -821,10 +945,24 @@ static long restore_tm_user_regs(struct pt_regs *regs,
 		memset(&current->thread.vr_state, 0,
 		       ELF_NVRREG * sizeof(vector128));
 		memset(&current->thread.transact_vr, 0,
+=======
+		if (__copy_from_user(&current->thread.ckvr_state, &sr->mc_vregs,
+				     sizeof(sr->mc_vregs)) ||
+		    __copy_from_user(&current->thread.vr_state,
+				     &tm_sr->mc_vregs,
+				     sizeof(sr->mc_vregs)))
+			return 1;
+		current->thread.used_vr = true;
+	} else if (current->thread.used_vr) {
+		memset(&current->thread.vr_state, 0,
+		       ELF_NVRREG * sizeof(vector128));
+		memset(&current->thread.ckvr_state, 0,
+>>>>>>> v4.9.227
 		       ELF_NVRREG * sizeof(vector128));
 	}
 
 	/* Always get VRSAVE back */
+<<<<<<< HEAD
 	if (__get_user(current->thread.vrsave,
 		       (u32 __user *)&sr->mc_vregs[32]) ||
 	    __get_user(current->thread.transact_vrsave,
@@ -832,12 +970,25 @@ static long restore_tm_user_regs(struct pt_regs *regs,
 		return 1;
 	if (cpu_has_feature(CPU_FTR_ALTIVEC))
 		mtspr(SPRN_VRSAVE, current->thread.vrsave);
+=======
+	if (__get_user(current->thread.ckvrsave,
+		       (u32 __user *)&sr->mc_vregs[32]) ||
+	    __get_user(current->thread.vrsave,
+		       (u32 __user *)&tm_sr->mc_vregs[32]))
+		return 1;
+	if (cpu_has_feature(CPU_FTR_ALTIVEC))
+		mtspr(SPRN_VRSAVE, current->thread.ckvrsave);
+>>>>>>> v4.9.227
 #endif /* CONFIG_ALTIVEC */
 
 	regs->msr &= ~(MSR_FP | MSR_FE0 | MSR_FE1);
 
 	if (copy_fpr_from_user(current, &sr->mc_fregs) ||
+<<<<<<< HEAD
 	    copy_transact_fpr_from_user(current, &tm_sr->mc_fregs))
+=======
+	    copy_ckfpr_from_user(current, &tm_sr->mc_fregs))
+>>>>>>> v4.9.227
 		return 1;
 
 #ifdef CONFIG_VSX
@@ -847,6 +998,7 @@ static long restore_tm_user_regs(struct pt_regs *regs,
 		 * Restore altivec registers from the stack to a local
 		 * buffer, then write this out to the thread_struct
 		 */
+<<<<<<< HEAD
 		if (copy_vsx_from_user(current, &sr->mc_vsregs) ||
 		    copy_transact_vsx_from_user(current, &tm_sr->mc_vsregs))
 			return 1;
@@ -854,6 +1006,16 @@ static long restore_tm_user_regs(struct pt_regs *regs,
 		for (i = 0; i < 32 ; i++) {
 			current->thread.fp_state.fpr[i][TS_VSRLOWOFFSET] = 0;
 			current->thread.transact_fp.fpr[i][TS_VSRLOWOFFSET] = 0;
+=======
+		if (copy_vsx_from_user(current, &tm_sr->mc_vsregs) ||
+		    copy_ckvsx_from_user(current, &sr->mc_vsregs))
+			return 1;
+		current->thread.used_vsr = true;
+	} else if (current->thread.used_vsr)
+		for (i = 0; i < 32 ; i++) {
+			current->thread.fp_state.fpr[i][TS_VSRLOWOFFSET] = 0;
+			current->thread.ckfp_state.fpr[i][TS_VSRLOWOFFSET] = 0;
+>>>>>>> v4.9.227
 		}
 #endif /* CONFIG_VSX */
 
@@ -866,6 +1028,10 @@ static long restore_tm_user_regs(struct pt_regs *regs,
 		if (__copy_from_user(current->thread.evr, &sr->mc_vregs,
 				     ELF_NEVRREG * sizeof(u32)))
 			return 1;
+<<<<<<< HEAD
+=======
+		current->thread.used_spe = true;
+>>>>>>> v4.9.227
 	} else if (current->thread.used_spe)
 		memset(current->thread.evr, 0, ELF_NEVRREG * sizeof(u32));
 
@@ -875,6 +1041,34 @@ static long restore_tm_user_regs(struct pt_regs *regs,
 		return 1;
 #endif /* CONFIG_SPE */
 
+<<<<<<< HEAD
+=======
+	/* Get the top half of the MSR from the user context */
+	if (__get_user(msr_hi, &tm_sr->mc_gregs[PT_MSR]))
+		return 1;
+	msr_hi <<= 32;
+	/* If TM bits are set to the reserved value, it's an invalid context */
+	if (MSR_TM_RESV(msr_hi))
+		return 1;
+
+	/*
+	 * Disabling preemption, since it is unsafe to be preempted
+	 * with MSR[TS] set without recheckpointing.
+	 */
+	preempt_disable();
+
+	/*
+	 * CAUTION:
+	 * After regs->MSR[TS] being updated, make sure that get_user(),
+	 * put_user() or similar functions are *not* called. These
+	 * functions can generate page faults which will cause the process
+	 * to be de-scheduled with MSR[TS] set but without calling
+	 * tm_recheckpoint(). This can cause a bug.
+	 *
+	 * Pull in the MSR TM bits from the user context
+	 */
+	regs->msr = (regs->msr & ~MSR_TS_MASK) | (msr_hi & MSR_TS_MASK);
+>>>>>>> v4.9.227
 	/* Now, recheckpoint.  This loads up all of the checkpointed (older)
 	 * registers, including FP and V[S]Rs.  After recheckpointing, the
 	 * transactional versions should be loaded.
@@ -884,6 +1078,7 @@ static long restore_tm_user_regs(struct pt_regs *regs,
 	current->thread.tm_texasr |= TEXASR_FS;
 	/* This loads the checkpointed FP/VEC state, if used */
 	tm_recheckpoint(&current->thread, msr);
+<<<<<<< HEAD
 	/* Get the top half of the MSR */
 	if (__get_user(msr_hi, &tm_sr->mc_gregs[PT_MSR]))
 		return 1;
@@ -893,15 +1088,31 @@ static long restore_tm_user_regs(struct pt_regs *regs,
 	/* This loads the speculative FP/VEC state, if used */
 	if (msr & MSR_FP) {
 		do_load_up_transact_fpu(&current->thread);
+=======
+
+	/* This loads the speculative FP/VEC state, if used */
+	msr_check_and_set(msr & (MSR_FP | MSR_VEC));
+	if (msr & MSR_FP) {
+		load_fp_state(&current->thread.fp_state);
+>>>>>>> v4.9.227
 		regs->msr |= (MSR_FP | current->thread.fpexc_mode);
 	}
 #ifdef CONFIG_ALTIVEC
 	if (msr & MSR_VEC) {
+<<<<<<< HEAD
 		do_load_up_transact_altivec(&current->thread);
+=======
+		load_vr_state(&current->thread.vr_state);
+>>>>>>> v4.9.227
 		regs->msr |= MSR_VEC;
 	}
 #endif
 
+<<<<<<< HEAD
+=======
+	preempt_enable();
+
+>>>>>>> v4.9.227
 	return 0;
 }
 #endif
@@ -949,6 +1160,14 @@ int copy_siginfo_to_user32(struct compat_siginfo __user *d, const siginfo_t *s)
 		err |= __put_user(s->si_overrun, &d->si_overrun);
 		err |= __put_user(s->si_int, &d->si_int);
 		break;
+<<<<<<< HEAD
+=======
+	case __SI_SYS >> 16:
+		err |= __put_user(ptr_to_compat(s->si_call_addr), &d->si_call_addr);
+		err |= __put_user(s->si_syscall, &d->si_syscall);
+		err |= __put_user(s->si_arch, &d->si_arch);
+		break;
+>>>>>>> v4.9.227
 	case __SI_RT >> 16: /* This is not generated by the kernel as of now.  */
 	case __SI_MESGQ >> 16:
 		err |= __put_user(s->si_int, &d->si_int);
@@ -980,7 +1199,11 @@ int copy_siginfo_from_user32(siginfo_t *to, struct compat_siginfo __user *from)
  * (one which gets siginfo).
  */
 int handle_rt_signal32(struct ksignal *ksig, sigset_t *oldset,
+<<<<<<< HEAD
 		       struct pt_regs *regs)
+=======
+		       struct task_struct *tsk)
+>>>>>>> v4.9.227
 {
 	struct rt_sigframe __user *rt_sf;
 	struct mcontext __user *frame;
@@ -989,10 +1212,20 @@ int handle_rt_signal32(struct ksignal *ksig, sigset_t *oldset,
 	unsigned long newsp = 0;
 	int sigret;
 	unsigned long tramp;
+<<<<<<< HEAD
 
 	/* Set up Signal Frame */
 	/* Put a Real Time Context onto stack */
 	rt_sf = get_sigframe(ksig, get_tm_stackpointer(regs), sizeof(*rt_sf), 1);
+=======
+	struct pt_regs *regs = tsk->thread.regs;
+
+	BUG_ON(tsk != current);
+
+	/* Set up Signal Frame */
+	/* Put a Real Time Context onto stack */
+	rt_sf = get_sigframe(ksig, get_tm_stackpointer(tsk), sizeof(*rt_sf), 1);
+>>>>>>> v4.9.227
 	addr = rt_sf;
 	if (unlikely(rt_sf == NULL))
 		goto badframe;
@@ -1009,9 +1242,15 @@ int handle_rt_signal32(struct ksignal *ksig, sigset_t *oldset,
 	/* Save user registers on the stack */
 	frame = &rt_sf->uc.uc_mcontext;
 	addr = frame;
+<<<<<<< HEAD
 	if (vdso32_rt_sigtramp && current->mm->context.vdso_base) {
 		sigret = 0;
 		tramp = current->mm->context.vdso_base + vdso32_rt_sigtramp;
+=======
+	if (vdso32_rt_sigtramp && tsk->mm->context.vdso_base) {
+		sigret = 0;
+		tramp = tsk->mm->context.vdso_base + vdso32_rt_sigtramp;
+>>>>>>> v4.9.227
 	} else {
 		sigret = __NR_rt_sigreturn;
 		tramp = (unsigned long) frame->tramp;
@@ -1038,7 +1277,11 @@ int handle_rt_signal32(struct ksignal *ksig, sigset_t *oldset,
 	}
 	regs->link = tramp;
 
+<<<<<<< HEAD
 	current->thread.fp_state.fpscr = 0;	/* turn off all fp exceptions */
+=======
+	tsk->thread.fp_state.fpscr = 0;	/* turn off all fp exceptions */
+>>>>>>> v4.9.227
 
 	/* create a stack frame for the caller of the handler */
 	newsp = ((unsigned long)rt_sf) - (__SIGNAL_FRAMESIZE + 16);
@@ -1063,7 +1306,11 @@ badframe:
 		printk_ratelimited(KERN_INFO
 				   "%s[%d]: bad frame in handle_rt_signal32: "
 				   "%p nip %08lx lr %08lx\n",
+<<<<<<< HEAD
 				   current->comm, current->pid,
+=======
+				   tsk->comm, tsk->pid,
+>>>>>>> v4.9.227
 				   addr, regs->nip, regs->link);
 
 	return 1;
@@ -1235,7 +1482,25 @@ long sys_rt_sigreturn(int r3, int r4, int r5, int r6, int r7, int r8,
 		(regs->gpr[1] + __SIGNAL_FRAMESIZE + 16);
 	if (!access_ok(VERIFY_READ, rt_sf, sizeof(*rt_sf)))
 		goto bad;
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+=======
+
+#ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+	/*
+	 * If there is a transactional state then throw it away.
+	 * The purpose of a sigreturn is to destroy all traces of the
+	 * signal frame, this includes any transactional state created
+	 * within in. We only check for suspended as we can never be
+	 * active in the kernel, we are active, there is nothing better to
+	 * do than go ahead and Bad Thing later.
+	 * The cause is not important as there will never be a
+	 * recheckpoint so it's not user visible.
+	 */
+	if (MSR_TM_SUSPENDED(mfmsr()))
+		tm_reclaim_current(0);
+
+>>>>>>> v4.9.227
 	if (__get_user(tmp, &rt_sf->uc.uc_link))
 		goto bad;
 	uc_transact = (struct ucontext __user *)(uintptr_t)tmp;
@@ -1252,6 +1517,12 @@ long sys_rt_sigreturn(int r3, int r4, int r5, int r6, int r7, int r8,
 			goto bad;
 
 		if (MSR_TM_ACTIVE(msr_hi<<32)) {
+<<<<<<< HEAD
+=======
+			/* Trying to start TM on non TM system */
+			if (!cpu_has_feature(CPU_FTR_TM))
+				goto bad;
+>>>>>>> v4.9.227
 			/* We only recheckpoint on return if we're
 			 * transaction.
 			 */
@@ -1405,7 +1676,12 @@ int sys_debug_setcontext(struct ucontext __user *ctx,
 /*
  * OK, we're invoking a handler
  */
+<<<<<<< HEAD
 int handle_signal32(struct ksignal *ksig, sigset_t *oldset, struct pt_regs *regs)
+=======
+int handle_signal32(struct ksignal *ksig, sigset_t *oldset,
+		struct task_struct *tsk)
+>>>>>>> v4.9.227
 {
 	struct sigcontext __user *sc;
 	struct sigframe __user *frame;
@@ -1413,9 +1689,18 @@ int handle_signal32(struct ksignal *ksig, sigset_t *oldset, struct pt_regs *regs
 	unsigned long newsp = 0;
 	int sigret;
 	unsigned long tramp;
+<<<<<<< HEAD
 
 	/* Set up Signal Frame */
 	frame = get_sigframe(ksig, get_tm_stackpointer(regs), sizeof(*frame), 1);
+=======
+	struct pt_regs *regs = tsk->thread.regs;
+
+	BUG_ON(tsk != current);
+
+	/* Set up Signal Frame */
+	frame = get_sigframe(ksig, get_tm_stackpointer(tsk), sizeof(*frame), 1);
+>>>>>>> v4.9.227
 	if (unlikely(frame == NULL))
 		goto badframe;
 	sc = (struct sigcontext __user *) &frame->sctx;
@@ -1434,9 +1719,15 @@ int handle_signal32(struct ksignal *ksig, sigset_t *oldset, struct pt_regs *regs
 	    || __put_user(ksig->sig, &sc->signal))
 		goto badframe;
 
+<<<<<<< HEAD
 	if (vdso32_sigtramp && current->mm->context.vdso_base) {
 		sigret = 0;
 		tramp = current->mm->context.vdso_base + vdso32_sigtramp;
+=======
+	if (vdso32_sigtramp && tsk->mm->context.vdso_base) {
+		sigret = 0;
+		tramp = tsk->mm->context.vdso_base + vdso32_sigtramp;
+>>>>>>> v4.9.227
 	} else {
 		sigret = __NR_sigreturn;
 		tramp = (unsigned long) frame->mctx.tramp;
@@ -1458,7 +1749,11 @@ int handle_signal32(struct ksignal *ksig, sigset_t *oldset, struct pt_regs *regs
 
 	regs->link = tramp;
 
+<<<<<<< HEAD
 	current->thread.fp_state.fpscr = 0;	/* turn off all fp exceptions */
+=======
+	tsk->thread.fp_state.fpscr = 0;	/* turn off all fp exceptions */
+>>>>>>> v4.9.227
 
 	/* create a stack frame for the caller of the handler */
 	newsp = ((unsigned long)frame) - __SIGNAL_FRAMESIZE;
@@ -1478,7 +1773,11 @@ badframe:
 		printk_ratelimited(KERN_INFO
 				   "%s[%d]: bad frame in handle_signal32: "
 				   "%p nip %08lx lr %08lx\n",
+<<<<<<< HEAD
 				   current->comm, current->pid,
+=======
+				   tsk->comm, tsk->pid,
+>>>>>>> v4.9.227
 				   frame, regs->nip, regs->link);
 
 	return 1;

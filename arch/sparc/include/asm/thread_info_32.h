@@ -27,7 +27,10 @@
 struct thread_info {
 	unsigned long		uwinmask;
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> v4.9.227
 	unsigned long		flags;		/* low level flags */
 	int			cpu;		/* cpu we're on */
 	int			preempt_count;	/* 0 => preemptable,
@@ -35,6 +38,11 @@ struct thread_info {
 	int			softirq_count;
 	int			hardirq_count;
 
+<<<<<<< HEAD
+=======
+	u32 __unused;
+
+>>>>>>> v4.9.227
 	/* Context switch saved kernel state. */
 	unsigned long ksp;	/* ... ksp __attribute__ ((aligned (8))); */
 	unsigned long kpc;
@@ -56,7 +64,10 @@ struct thread_info {
 {							\
 	.uwinmask	=	0,			\
 	.task		=	&tsk,			\
+<<<<<<< HEAD
 	.exec_domain	=	&default_exec_domain,	\
+=======
+>>>>>>> v4.9.227
 	.flags		=	0,			\
 	.cpu		=	0,			\
 	.preempt_count	=	INIT_PREEMPT_COUNT,	\
@@ -85,12 +96,20 @@ register struct thread_info *current_thread_info_reg asm("g6");
  */
 #define TI_UWINMASK	0x00	/* uwinmask */
 #define TI_TASK		0x04
+<<<<<<< HEAD
 #define TI_EXECDOMAIN	0x08	/* exec_domain */
 #define TI_FLAGS	0x0c
 #define TI_CPU		0x10
 #define TI_PREEMPT	0x14	/* preempt_count */
 #define TI_SOFTIRQ	0x18	/* softirq_count */
 #define TI_HARDIRQ	0x1c	/* hardirq_count */
+=======
+#define TI_FLAGS	0x08
+#define TI_CPU		0x0c
+#define TI_PREEMPT	0x10	/* preempt_count */
+#define TI_SOFTIRQ	0x14	/* softirq_count */
+#define TI_HARDIRQ	0x18	/* hardirq_count */
+>>>>>>> v4.9.227
 #define TI_KSP		0x20	/* ksp */
 #define TI_KPC		0x24	/* kpc (ldd'ed with kpc) */
 #define TI_KPSR		0x28	/* kpsr */

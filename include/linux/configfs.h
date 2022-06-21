@@ -51,6 +51,10 @@ struct module;
 struct configfs_item_operations;
 struct configfs_group_operations;
 struct configfs_attribute;
+<<<<<<< HEAD
+=======
+struct configfs_bin_attribute;
+>>>>>>> v4.9.227
 struct configfs_subsystem;
 
 struct config_item {
@@ -64,14 +68,22 @@ struct config_item {
 	struct dentry		*ci_dentry;
 };
 
+<<<<<<< HEAD
 extern int config_item_set_name(struct config_item *, const char *, ...);
+=======
+extern __printf(2, 3)
+int config_item_set_name(struct config_item *, const char *, ...);
+>>>>>>> v4.9.227
 
 static inline char *config_item_name(struct config_item * item)
 {
 	return item->ci_name;
 }
 
+<<<<<<< HEAD
 extern void config_item_init(struct config_item *);
+=======
+>>>>>>> v4.9.227
 extern void config_item_init_type_name(struct config_item *item,
 				       const char *name,
 				       struct config_item_type *type);
@@ -84,6 +96,10 @@ struct config_item_type {
 	struct configfs_item_operations		*ct_item_ops;
 	struct configfs_group_operations	*ct_group_ops;
 	struct configfs_attribute		**ct_attrs;
+<<<<<<< HEAD
+=======
+	struct configfs_bin_attribute		**ct_bin_attrs;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -94,7 +110,12 @@ struct config_group {
 	struct config_item		cg_item;
 	struct list_head		cg_children;
 	struct configfs_subsystem 	*cg_subsys;
+<<<<<<< HEAD
 	struct config_group		**default_groups;
+=======
+	struct list_head		default_groups;
+	struct list_head		group_entry;
+>>>>>>> v4.9.227
 };
 
 extern void config_group_init(struct config_group *group);
@@ -121,10 +142,20 @@ extern struct config_item *config_group_find_item(struct config_group *,
 						  const char *);
 
 
+<<<<<<< HEAD
+=======
+static inline void configfs_add_default_group(struct config_group *new_group,
+		struct config_group *group)
+{
+	list_add_tail(&new_group->group_entry, &group->default_groups);
+}
+
+>>>>>>> v4.9.227
 struct configfs_attribute {
 	const char		*ca_name;
 	struct module 		*ca_owner;
 	umode_t			ca_mode;
+<<<<<<< HEAD
 };
 
 /*
@@ -205,6 +236,83 @@ static ssize_t _item##_attr_store(struct config_item *item,		\
 	if (_item##_attr->store)					\
 		ret = _item##_attr->store(_item, page, count);		\
 	return ret;							\
+=======
+	ssize_t (*show)(struct config_item *, char *);
+	ssize_t (*store)(struct config_item *, const char *, size_t);
+};
+
+#define CONFIGFS_ATTR(_pfx, _name)			\
+static struct configfs_attribute _pfx##attr_##_name = {	\
+	.ca_name	= __stringify(_name),		\
+	.ca_mode	= S_IRUGO | S_IWUSR,		\
+	.ca_owner	= THIS_MODULE,			\
+	.show		= _pfx##_name##_show,		\
+	.store		= _pfx##_name##_store,		\
+}
+
+#define CONFIGFS_ATTR_RO(_pfx, _name)			\
+static struct configfs_attribute _pfx##attr_##_name = {	\
+	.ca_name	= __stringify(_name),		\
+	.ca_mode	= S_IRUGO,			\
+	.ca_owner	= THIS_MODULE,			\
+	.show		= _pfx##_name##_show,		\
+}
+
+#define CONFIGFS_ATTR_WO(_pfx, _name)			\
+static struct configfs_attribute _pfx##attr_##_name = {	\
+	.ca_name	= __stringify(_name),		\
+	.ca_mode	= S_IWUSR,			\
+	.ca_owner	= THIS_MODULE,			\
+	.store		= _pfx##_name##_store,		\
+}
+
+struct file;
+struct vm_area_struct;
+
+struct configfs_bin_attribute {
+	struct configfs_attribute cb_attr;	/* std. attribute */
+	void *cb_private;			/* for user       */
+	size_t cb_max_size;			/* max core size  */
+	ssize_t (*read)(struct config_item *, void *, size_t);
+	ssize_t (*write)(struct config_item *, const void *, size_t);
+};
+
+#define CONFIGFS_BIN_ATTR(_pfx, _name, _priv, _maxsz)		\
+static struct configfs_bin_attribute _pfx##attr_##_name = {	\
+	.cb_attr = {						\
+		.ca_name	= __stringify(_name),		\
+		.ca_mode	= S_IRUGO | S_IWUSR,		\
+		.ca_owner	= THIS_MODULE,			\
+	},							\
+	.cb_private	= _priv,				\
+	.cb_max_size	= _maxsz,				\
+	.read		= _pfx##_name##_read,			\
+	.write		= _pfx##_name##_write,			\
+}
+
+#define CONFIGFS_BIN_ATTR_RO(_pfx, _name, _priv, _maxsz)	\
+static struct configfs_bin_attribute _pfx##attr_##_name = {	\
+	.cb_attr = {						\
+		.ca_name	= __stringify(_name),		\
+		.ca_mode	= S_IRUGO,			\
+		.ca_owner	= THIS_MODULE,			\
+	},							\
+	.cb_private	= _priv,				\
+	.cb_max_size	= _maxsz,				\
+	.read		= _pfx##_name##_read,			\
+}
+
+#define CONFIGFS_BIN_ATTR_WO(_pfx, _name, _priv, _maxsz)	\
+static struct configfs_bin_attribute _pfx##attr_##_name = {	\
+	.cb_attr = {						\
+		.ca_name	= __stringify(_name),		\
+		.ca_mode	= S_IWUSR,			\
+		.ca_owner	= THIS_MODULE,			\
+	},							\
+	.cb_private	= _priv,				\
+	.cb_max_size	= _maxsz,				\
+	.write		= _pfx##_name##_write,			\
+>>>>>>> v4.9.227
 }
 
 /*
@@ -223,8 +331,11 @@ static ssize_t _item##_attr_store(struct config_item *item,		\
  */
 struct configfs_item_operations {
 	void (*release)(struct config_item *);
+<<<<<<< HEAD
 	ssize_t	(*show_attribute)(struct config_item *, struct configfs_attribute *,char *);
 	ssize_t	(*store_attribute)(struct config_item *,struct configfs_attribute *,const char *, size_t);
+=======
+>>>>>>> v4.9.227
 	int (*allow_link)(struct config_item *src, struct config_item *target);
 	int (*drop_link)(struct config_item *src, struct config_item *target);
 };
@@ -252,9 +363,45 @@ static inline struct configfs_subsystem *to_configfs_subsystem(struct config_gro
 int configfs_register_subsystem(struct configfs_subsystem *subsys);
 void configfs_unregister_subsystem(struct configfs_subsystem *subsys);
 
+<<<<<<< HEAD
 /* These functions can sleep and can alloc with GFP_KERNEL */
 /* WARNING: These cannot be called underneath configfs callbacks!! */
 int configfs_depend_item(struct configfs_subsystem *subsys, struct config_item *target);
 void configfs_undepend_item(struct configfs_subsystem *subsys, struct config_item *target);
+=======
+int configfs_register_group(struct config_group *parent_group,
+			    struct config_group *group);
+void configfs_unregister_group(struct config_group *group);
+
+void configfs_remove_default_groups(struct config_group *group);
+
+struct config_group *
+configfs_register_default_group(struct config_group *parent_group,
+				const char *name,
+				struct config_item_type *item_type);
+void configfs_unregister_default_group(struct config_group *group);
+
+/* These functions can sleep and can alloc with GFP_KERNEL */
+/* WARNING: These cannot be called underneath configfs callbacks!! */
+int configfs_depend_item(struct configfs_subsystem *subsys,
+			 struct config_item *target);
+void configfs_undepend_item(struct config_item *target);
+
+/*
+ * These functions can sleep and can alloc with GFP_KERNEL
+ * NOTE: These should be called only underneath configfs callbacks.
+ * NOTE: First parameter is a caller's subsystem, not target's.
+ * WARNING: These cannot be called on newly created item
+ *        (in make_group()/make_item() callback)
+ */
+int configfs_depend_item_unlocked(struct configfs_subsystem *caller_subsys,
+				  struct config_item *target);
+
+
+static inline void configfs_undepend_item_unlocked(struct config_item *target)
+{
+	configfs_undepend_item(target);
+}
+>>>>>>> v4.9.227
 
 #endif /* _CONFIGFS_H_ */

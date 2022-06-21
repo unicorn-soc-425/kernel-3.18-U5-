@@ -184,7 +184,10 @@ static int adp5520_keys_remove(struct platform_device *pdev)
 static struct platform_driver adp5520_keys_driver = {
 	.driver	= {
 		.name	= "adp5520-keys",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= adp5520_keys_probe,
 	.remove		= adp5520_keys_remove,

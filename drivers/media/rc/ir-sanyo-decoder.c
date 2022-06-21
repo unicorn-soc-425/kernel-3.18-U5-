@@ -58,9 +58,12 @@ static int ir_sanyo_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	u32 scancode;
 	u8 address, command, not_command;
 
+<<<<<<< HEAD
 	if (!(dev->enabled_protocols & RC_BIT_SANYO))
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	if (!is_timing_event(ev)) {
 		if (ev.reset) {
 			IR_dprintk(1, "SANYO event reset received. reset to state 0\n");

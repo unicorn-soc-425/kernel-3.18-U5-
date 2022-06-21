@@ -76,7 +76,11 @@ struct radio_tea5777 {
 	u32 read_reg;
 	u64 write_reg;
 	struct mutex mutex;
+<<<<<<< HEAD
 	struct radio_tea5777_ops *ops;
+=======
+	const struct radio_tea5777_ops *ops;
+>>>>>>> v4.9.227
 	void *private_data;
 	u8 card[32];
 	u8 bus_info[32];

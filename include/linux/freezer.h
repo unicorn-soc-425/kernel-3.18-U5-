@@ -231,7 +231,11 @@ static inline long freezable_schedule_timeout_killable_unsafe(long timeout)
  * call this with locks held.
  */
 static inline int freezable_schedule_hrtimeout_range(ktime_t *expires,
+<<<<<<< HEAD
 		unsigned long delta, const enum hrtimer_mode mode)
+=======
+		u64 delta, const enum hrtimer_mode mode)
+>>>>>>> v4.9.227
 {
 	int __retval;
 	freezer_do_not_count();
@@ -246,6 +250,7 @@ static inline int freezable_schedule_hrtimeout_range(ktime_t *expires,
  * defined in <linux/wait.h>
  */
 
+<<<<<<< HEAD
 #define wait_event_freezekillable(wq, condition)			\
 ({									\
 	int __retval;							\
@@ -255,6 +260,8 @@ static inline int freezable_schedule_hrtimeout_range(ktime_t *expires,
 	__retval;							\
 })
 
+=======
+>>>>>>> v4.9.227
 /* DO NOT ADD ANY NEW CALLERS OF THIS FUNCTION */
 #define wait_event_freezekillable_unsafe(wq, condition)			\
 ({									\
@@ -265,6 +272,7 @@ static inline int freezable_schedule_hrtimeout_range(ktime_t *expires,
 	__retval;							\
 })
 
+<<<<<<< HEAD
 #define wait_event_freezable(wq, condition)				\
 ({									\
 	int __retval;							\
@@ -294,6 +302,8 @@ static inline int freezable_schedule_hrtimeout_range(ktime_t *expires,
 })
 
 
+=======
+>>>>>>> v4.9.227
 #else /* !CONFIG_FREEZER */
 static inline bool frozen(struct task_struct *p) { return false; }
 static inline bool freezing(struct task_struct *p) { return false; }
@@ -331,6 +341,7 @@ static inline void set_freezable(void) {}
 #define freezable_schedule_hrtimeout_range(expires, delta, mode)	\
 	schedule_hrtimeout_range(expires, delta, mode)
 
+<<<<<<< HEAD
 #define wait_event_freezable(wq, condition)				\
 		wait_event_interruptible(wq, condition)
 
@@ -343,6 +354,8 @@ static inline void set_freezable(void) {}
 #define wait_event_freezekillable(wq, condition)		\
 		wait_event_killable(wq, condition)
 
+=======
+>>>>>>> v4.9.227
 #define wait_event_freezekillable_unsafe(wq, condition)			\
 		wait_event_killable(wq, condition)
 

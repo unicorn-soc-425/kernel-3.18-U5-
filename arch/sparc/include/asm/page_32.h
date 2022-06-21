@@ -69,7 +69,10 @@ typedef struct { unsigned long iopgprot; } iopgprot_t;
 
 #define __pte(x)	((pte_t) { (x) } )
 #define __iopte(x)	((iopte_t) { (x) } )
+<<<<<<< HEAD
 /* #define __pmd(x)        ((pmd_t) { (x) } ) */ /* XXX procedure with loop */
+=======
+>>>>>>> v4.9.227
 #define __pgd(x)	((pgd_t) { (x) } )
 #define __ctxd(x)	((ctxd_t) { (x) } )
 #define __pgprot(x)	((pgprot_t) { (x) } )
@@ -97,7 +100,10 @@ typedef unsigned long iopgprot_t;
 
 #define __pte(x)	(x)
 #define __iopte(x)	(x)
+<<<<<<< HEAD
 /* #define __pmd(x)        (x) */ /* XXX later */
+=======
+>>>>>>> v4.9.227
 #define __pgd(x)	(x)
 #define __ctxd(x)	(x)
 #define __pgprot(x)	(x)

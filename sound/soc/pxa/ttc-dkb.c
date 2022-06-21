@@ -76,6 +76,7 @@ static const struct snd_soc_dapm_route ttc_audio_map[] = {
 static int ttc_pm860x_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
 	snd_soc_dapm_disable_pin(dapm, "Headset Mic 2");
@@ -91,6 +92,16 @@ static int ttc_pm860x_init(struct snd_soc_pcm_runtime *rtd)
 			 &mic_jack);
 	snd_soc_jack_add_pins(&mic_jack, ARRAY_SIZE(mic_jack_pins),
 			      mic_jack_pins);
+=======
+
+	/* Headset jack detection */
+	snd_soc_card_jack_new(rtd->card, "Headphone Jack", SND_JACK_HEADPHONE |
+			      SND_JACK_BTN_0 | SND_JACK_BTN_1 | SND_JACK_BTN_2,
+			      &hs_jack, hs_jack_pins, ARRAY_SIZE(hs_jack_pins));
+	snd_soc_card_jack_new(rtd->card, "Microphone Jack", SND_JACK_MICROPHONE,
+			      &mic_jack, mic_jack_pins,
+			      ARRAY_SIZE(mic_jack_pins));
+>>>>>>> v4.9.227
 
 	/* headphone, microphone detection & headset short detection */
 	pm860x_hs_jack_detect(codec, &hs_jack, SND_JACK_HEADPHONE,
@@ -135,7 +146,11 @@ static int ttc_dkb_probe(struct platform_device *pdev)
 
 	card->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> v4.9.227
 	if (ret)
 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
 			ret);
@@ -143,6 +158,7 @@ static int ttc_dkb_probe(struct platform_device *pdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ttc_dkb_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
@@ -160,6 +176,14 @@ static struct platform_driver ttc_dkb_driver = {
 	},
 	.probe		= ttc_dkb_probe,
 	.remove		= ttc_dkb_remove,
+=======
+static struct platform_driver ttc_dkb_driver = {
+	.driver		= {
+		.name	= "ttc-dkb-audio",
+		.pm     = &snd_soc_pm_ops,
+	},
+	.probe		= ttc_dkb_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(ttc_dkb_driver);

@@ -60,7 +60,10 @@ struct xadc {
 
 	enum xadc_external_mux_mode external_mux_mode;
 
+<<<<<<< HEAD
 	unsigned int zynq_alarm;
+=======
+>>>>>>> v4.9.227
 	unsigned int zynq_masked_alarm;
 	unsigned int zynq_intmask;
 	struct delayed_work zynq_unmask_work;
@@ -79,7 +82,10 @@ struct xadc_ops {
 	void (*update_alarm)(struct xadc *, unsigned int);
 	unsigned long (*get_dclk_rate)(struct xadc *);
 	irqreturn_t (*interrupt_handler)(int, void *);
+<<<<<<< HEAD
 	irqreturn_t (*threaded_interrupt_handler)(int, void *);
+=======
+>>>>>>> v4.9.227
 
 	unsigned int flags;
 };

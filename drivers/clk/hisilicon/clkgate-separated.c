@@ -25,10 +25,15 @@
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
 #include <linux/clkdev.h>
 #include <linux/io.h>
 #include <linux/slab.h>
 #include <linux/clk.h>
+=======
+#include <linux/io.h>
+#include <linux/slab.h>
+>>>>>>> v4.9.227
 
 #include "clk.h"
 

@@ -24,7 +24,10 @@
  * debugging, please also see the debugfs interfaces of this driver.
  */
 
+<<<<<<< HEAD
 #include <linux/version.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/module.h>
@@ -279,7 +282,11 @@ static umode_t genwqe_is_visible(struct kobject *kobj,
 				 struct attribute *attr, int n)
 {
 	unsigned int j;
+<<<<<<< HEAD
 	struct device *dev = container_of(kobj, struct device, kobj);
+=======
+	struct device *dev = kobj_to_dev(kobj);
+>>>>>>> v4.9.227
 	struct genwqe_dev *cd = dev_get_drvdata(dev);
 	umode_t mode = attr->mode;
 

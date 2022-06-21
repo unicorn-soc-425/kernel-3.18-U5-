@@ -40,6 +40,10 @@ typedef s32		compat_long_t;
 typedef s64 __attribute__((aligned(4))) compat_s64;
 typedef u32		compat_uint_t;
 typedef u32		compat_ulong_t;
+<<<<<<< HEAD
+=======
+typedef u32		compat_u32;
+>>>>>>> v4.9.227
 typedef u64 __attribute__((aligned(4))) compat_u64;
 typedef u32		compat_uptr_t;
 
@@ -181,6 +185,19 @@ typedef struct compat_siginfo {
 		/* SIGILL, SIGFPE, SIGSEGV, SIGBUS */
 		struct {
 			unsigned int _addr;	/* faulting insn/memory ref. */
+<<<<<<< HEAD
+=======
+			short int _addr_lsb;	/* Valid LSB of the reported address. */
+			union {
+				/* used when si_code=SEGV_BNDERR */
+				struct {
+					compat_uptr_t _lower;
+					compat_uptr_t _upper;
+				} _addr_bnd;
+				/* used when si_code=SEGV_PKUERR */
+				compat_u32 _pkey;
+			};
+>>>>>>> v4.9.227
 		} _sigfault;
 
 		/* SIGPOLL */
@@ -261,6 +278,7 @@ struct compat_shmid64_ds {
 /*
  * The type of struct elf_prstatus.pr_reg in compatible core dumps.
  */
+<<<<<<< HEAD
 #ifdef CONFIG_X86_X32_ABI
 typedef struct user_regs_struct compat_elf_gregset_t;
 
@@ -274,6 +292,19 @@ typedef struct user_regs_struct compat_elf_gregset_t;
 	(!!(task_pt_regs(current)->orig_ax & __X32_SYSCALL_BIT))
 #else
 typedef struct user_regs_struct32 compat_elf_gregset_t;
+=======
+typedef struct user_regs_struct compat_elf_gregset_t;
+
+/* Full regset -- prstatus on x32, otherwise on ia32 */
+#define PRSTATUS_SIZE(S, R) (R != sizeof(S.pr_reg) ? 144 : 296)
+#define SET_PR_FPVALID(S, V, R) \
+  do { *(int *) (((void *) &((S)->pr_reg)) + R) = (V); } \
+  while (0)
+
+#ifdef CONFIG_X86_X32_ABI
+#define COMPAT_USE_64BIT_TIME \
+	(!!(task_pt_regs(current)->orig_ax & __X32_SYSCALL_BIT))
+>>>>>>> v4.9.227
 #endif
 
 /*
@@ -301,13 +332,21 @@ static inline void __user *arch_compat_alloc_user_space(long len)
 		sp = task_pt_regs(current)->sp;
 	} else {
 		/* -128 for the x32 ABI redzone */
+<<<<<<< HEAD
 		sp = this_cpu_read(old_rsp) - 128;
+=======
+		sp = task_pt_regs(current)->sp - 128;
+>>>>>>> v4.9.227
 	}
 
 	return (void __user *)round_down(sp - len, 16);
 }
 
+<<<<<<< HEAD
 static inline bool is_x32_task(void)
+=======
+static inline bool in_x32_syscall(void)
+>>>>>>> v4.9.227
 {
 #ifdef CONFIG_X86_X32_ABI
 	if (task_pt_regs(current)->orig_ax & __X32_SYSCALL_BIT)
@@ -316,9 +355,17 @@ static inline bool is_x32_task(void)
 	return false;
 }
 
+<<<<<<< HEAD
 static inline bool is_compat_task(void)
 {
 	return is_ia32_task() || is_x32_task();
 }
+=======
+static inline bool in_compat_syscall(void)
+{
+	return in_ia32_syscall() || in_x32_syscall();
+}
+#define in_compat_syscall in_compat_syscall	/* override the generic impl */
+>>>>>>> v4.9.227
 
 #endif /* _ASM_X86_COMPAT_H */

@@ -28,7 +28,11 @@
 #include <core/ramht.h>
 #include <engine/dma.h>
 
+<<<<<<< HEAD
 #include <nvif/class.h>
+=======
+#include <nvif/cl507d.h>
+>>>>>>> v4.9.227
 #include <nvif/event.h>
 #include <nvif/unpack.h>
 
@@ -72,6 +76,11 @@ nv50_disp_chan_mthd(struct nv50_disp_chan *chan, int debug)
 
 	if (debug > subdev->debug)
 		return;
+<<<<<<< HEAD
+=======
+	if (!mthd)
+		return;
+>>>>>>> v4.9.227
 
 	for (i = 0; (list = mthd->data[i].mthd) != NULL; i++) {
 		u32 base = chan->head * mthd->addr;
@@ -82,7 +91,11 @@ nv50_disp_chan_mthd(struct nv50_disp_chan *chan, int debug)
 
 			if (mthd->addr) {
 				snprintf(cname_, sizeof(cname_), "%s %d",
+<<<<<<< HEAD
 					 mthd->name, chan->chid);
+=======
+					 mthd->name, chan->chid.user);
+>>>>>>> v4.9.227
 				cname = cname_;
 			}
 
@@ -134,12 +147,21 @@ nv50_disp_chan_uevent_ctor(struct nvkm_object *object, void *data, u32 size,
 	union {
 		struct nvif_notify_uevent_req none;
 	} *args = data;
+<<<<<<< HEAD
 	int ret;
 
 	if (nvif_unvers(args->none)) {
 		notify->size  = sizeof(struct nvif_notify_uevent_rep);
 		notify->types = 1;
 		notify->index = chan->chid;
+=======
+	int ret = -ENOSYS;
+
+	if (!(ret = nvif_unvers(ret, &data, &size, args->none))) {
+		notify->size  = sizeof(struct nvif_notify_uevent_rep);
+		notify->types = 1;
+		notify->index = chan->chid.user;
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -159,7 +181,11 @@ nv50_disp_chan_rd32(struct nvkm_object *object, u64 addr, u32 *data)
 	struct nv50_disp_chan *chan = nv50_disp_chan(object);
 	struct nv50_disp *disp = chan->root->disp;
 	struct nvkm_device *device = disp->base.engine.subdev.device;
+<<<<<<< HEAD
 	*data = nvkm_rd32(device, 0x640000 + (chan->chid * 0x1000) + addr);
+=======
+	*data = nvkm_rd32(device, 0x640000 + (chan->chid.user * 0x1000) + addr);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -169,7 +195,11 @@ nv50_disp_chan_wr32(struct nvkm_object *object, u64 addr, u32 data)
 	struct nv50_disp_chan *chan = nv50_disp_chan(object);
 	struct nv50_disp *disp = chan->root->disp;
 	struct nvkm_device *device = disp->base.engine.subdev.device;
+<<<<<<< HEAD
 	nvkm_wr32(device, 0x640000 + (chan->chid * 0x1000) + addr, data);
+=======
+	nvkm_wr32(device, 0x640000 + (chan->chid.user * 0x1000) + addr, data);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -196,7 +226,11 @@ nv50_disp_chan_map(struct nvkm_object *object, u64 *addr, u32 *size)
 	struct nv50_disp *disp = chan->root->disp;
 	struct nvkm_device *device = disp->base.engine.subdev.device;
 	*addr = device->func->resource_addr(device, 0) +
+<<<<<<< HEAD
 		0x640000 + (chan->chid * 0x1000);
+=======
+		0x640000 + (chan->chid.user * 0x1000);
+>>>>>>> v4.9.227
 	*size = 0x001000;
 	return 0;
 }
@@ -243,8 +277,13 @@ nv50_disp_chan_dtor(struct nvkm_object *object)
 {
 	struct nv50_disp_chan *chan = nv50_disp_chan(object);
 	struct nv50_disp *disp = chan->root->disp;
+<<<<<<< HEAD
 	if (chan->chid >= 0)
 		disp->chan[chan->chid] = NULL;
+=======
+	if (chan->chid.user >= 0)
+		disp->chan[chan->chid.user] = NULL;
+>>>>>>> v4.9.227
 	return chan->func->dtor ? chan->func->dtor(chan) : chan;
 }
 
@@ -263,7 +302,11 @@ nv50_disp_chan = {
 int
 nv50_disp_chan_ctor(const struct nv50_disp_chan_func *func,
 		    const struct nv50_disp_chan_mthd *mthd,
+<<<<<<< HEAD
 		    struct nv50_disp_root *root, int chid, int head,
+=======
+		    struct nv50_disp_root *root, int ctrl, int user, int head,
+>>>>>>> v4.9.227
 		    const struct nvkm_oclass *oclass,
 		    struct nv50_disp_chan *chan)
 {
@@ -273,6 +316,7 @@ nv50_disp_chan_ctor(const struct nv50_disp_chan_func *func,
 	chan->func = func;
 	chan->mthd = mthd;
 	chan->root = root;
+<<<<<<< HEAD
 	chan->chid = chid;
 	chan->head = head;
 
@@ -281,13 +325,28 @@ nv50_disp_chan_ctor(const struct nv50_disp_chan_func *func,
 		return -EBUSY;
 	}
 	disp->chan[chan->chid] = chan;
+=======
+	chan->chid.ctrl = ctrl;
+	chan->chid.user = user;
+	chan->head = head;
+
+	if (disp->chan[chan->chid.user]) {
+		chan->chid.user = -1;
+		return -EBUSY;
+	}
+	disp->chan[chan->chid.user] = chan;
+>>>>>>> v4.9.227
 	return 0;
 }
 
 int
 nv50_disp_chan_new_(const struct nv50_disp_chan_func *func,
 		    const struct nv50_disp_chan_mthd *mthd,
+<<<<<<< HEAD
 		    struct nv50_disp_root *root, int chid, int head,
+=======
+		    struct nv50_disp_root *root, int ctrl, int user, int head,
+>>>>>>> v4.9.227
 		    const struct nvkm_oclass *oclass,
 		    struct nvkm_object **pobject)
 {
@@ -297,5 +356,10 @@ nv50_disp_chan_new_(const struct nv50_disp_chan_func *func,
 		return -ENOMEM;
 	*pobject = &chan->object;
 
+<<<<<<< HEAD
 	return nv50_disp_chan_ctor(func, mthd, root, chid, head, oclass, chan);
+=======
+	return nv50_disp_chan_ctor(func, mthd, root, ctrl, user,
+				   head, oclass, chan);
+>>>>>>> v4.9.227
 }

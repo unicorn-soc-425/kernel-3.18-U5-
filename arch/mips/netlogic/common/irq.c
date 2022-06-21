@@ -87,7 +87,11 @@ struct nlm_pic_irq {
 static void xlp_pic_enable(struct irq_data *d)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	struct nlm_pic_irq *pd = irq_data_get_irq_handler_data(d);
+=======
+	struct nlm_pic_irq *pd = irq_data_get_irq_chip_data(d);
+>>>>>>> v4.9.227
 
 	BUG_ON(!pd);
 	spin_lock_irqsave(&pd->node->piclock, flags);
@@ -97,7 +101,11 @@ static void xlp_pic_enable(struct irq_data *d)
 
 static void xlp_pic_disable(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct nlm_pic_irq *pd = irq_data_get_irq_handler_data(d);
+=======
+	struct nlm_pic_irq *pd = irq_data_get_irq_chip_data(d);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	BUG_ON(!pd);
@@ -108,7 +116,11 @@ static void xlp_pic_disable(struct irq_data *d)
 
 static void xlp_pic_mask_ack(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct nlm_pic_irq *pd = irq_data_get_irq_handler_data(d);
+=======
+	struct nlm_pic_irq *pd = irq_data_get_irq_chip_data(d);
+>>>>>>> v4.9.227
 
 	clear_c0_eimr(pd->picirq);
 	ack_c0_eirr(pd->picirq);
@@ -116,7 +128,11 @@ static void xlp_pic_mask_ack(struct irq_data *d)
 
 static void xlp_pic_unmask(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct nlm_pic_irq *pd = irq_data_get_irq_handler_data(d);
+=======
+	struct nlm_pic_irq *pd = irq_data_get_irq_chip_data(d);
+>>>>>>> v4.9.227
 
 	BUG_ON(!pd);
 
@@ -193,7 +209,11 @@ void nlm_setup_pic_irq(int node, int picirq, int irq, int irt)
 	pic_data->picirq = picirq;
 	pic_data->node = nlm_get_node(node);
 	irq_set_chip_and_handler(xirq, &xlp_pic, handle_level_irq);
+<<<<<<< HEAD
 	irq_set_handler_data(xirq, pic_data);
+=======
+	irq_set_chip_data(xirq, pic_data);
+>>>>>>> v4.9.227
 }
 
 void nlm_set_pic_extra_ack(int node, int irq, void (*xack)(struct irq_data *))
@@ -202,7 +222,11 @@ void nlm_set_pic_extra_ack(int node, int irq, void (*xack)(struct irq_data *))
 	int xirq;
 
 	xirq = nlm_irq_to_xirq(node, irq);
+<<<<<<< HEAD
 	pic_data = irq_get_handler_data(xirq);
+=======
+	pic_data = irq_get_chip_data(xirq);
+>>>>>>> v4.9.227
 	if (WARN_ON(!pic_data))
 		return;
 	pic_data->extra_ack = xack;
@@ -230,6 +254,7 @@ static void nlm_init_node_irqs(int node)
 	}
 }
 
+<<<<<<< HEAD
 void nlm_smp_irq_init(int hwcpuid)
 {
 	int node, cpu;
@@ -240,6 +265,18 @@ void nlm_smp_irq_init(int hwcpuid)
 	if (cpu == 0 && node != 0)
 		nlm_init_node_irqs(node);
 	write_c0_eimr(nlm_current_node()->irqmask);
+=======
+void nlm_smp_irq_init(int hwtid)
+{
+	int cpu, node;
+
+	cpu = hwtid % nlm_threads_per_node();
+	node = hwtid / nlm_threads_per_node();
+
+	if (cpu == 0 && node != 0)
+		nlm_init_node_irqs(node);
+	write_c0_eimr(nlm_get_node(node)->irqmask);
+>>>>>>> v4.9.227
 }
 
 asmlinkage void plat_irq_dispatch(void)

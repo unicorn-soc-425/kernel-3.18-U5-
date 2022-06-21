@@ -38,14 +38,24 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/fb.h>
 #include <linux/ivtvfb.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 #include <asm/mtrr.h>
+=======
+#ifdef CONFIG_X86_64
+#include <asm/pat.h>
+>>>>>>> v4.9.227
 #endif
 
 #include "ivtv-driver.h"
@@ -155,12 +165,19 @@ struct osd_info {
 	/* Buffer size */
 	u32 video_buffer_size;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
+=======
+>>>>>>> v4.9.227
 	/* video_base rounded down as required by hardware MTRRs */
 	unsigned long fb_start_aligned_physaddr;
 	/* video_base rounded up as required by hardware MTRRs */
 	unsigned long fb_end_aligned_physaddr;
+<<<<<<< HEAD
 #endif
+=======
+	int wc_cookie;
+>>>>>>> v4.9.227
 
 	/* Store the buffer offset */
 	int set_osd_coords_x;
@@ -1099,6 +1116,11 @@ static int ivtvfb_init_vidmode(struct ivtv *itv)
 static int ivtvfb_init_io(struct ivtv *itv)
 {
 	struct osd_info *oi = itv->osd_info;
+<<<<<<< HEAD
+=======
+	/* Find the largest power of two that maps the whole buffer */
+	int size_shift = 31;
+>>>>>>> v4.9.227
 
 	mutex_lock(&itv->serialize_lock);
 	if (ivtv_init_on_first_open(itv)) {
@@ -1132,6 +1154,7 @@ static int ivtvfb_init_io(struct ivtv *itv)
 			oi->video_pbase, oi->video_vbase,
 			oi->video_buffer_size / 1024);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	{
 		/* Find the largest power of two that maps the whole buffer */
@@ -1155,6 +1178,18 @@ static int ivtvfb_init_io(struct ivtv *itv)
 	}
 #endif
 
+=======
+	while (!(oi->video_buffer_size & (1 << size_shift)))
+		size_shift--;
+	size_shift++;
+	oi->fb_start_aligned_physaddr = oi->video_pbase & ~((1 << size_shift) - 1);
+	oi->fb_end_aligned_physaddr = oi->video_pbase + oi->video_buffer_size;
+	oi->fb_end_aligned_physaddr += (1 << size_shift) - 1;
+	oi->fb_end_aligned_physaddr &= ~((1 << size_shift) - 1);
+	oi->wc_cookie = arch_phys_wc_add(oi->fb_start_aligned_physaddr,
+					 oi->fb_end_aligned_physaddr -
+					 oi->fb_start_aligned_physaddr);
+>>>>>>> v4.9.227
 	/* Blank the entire osd. */
 	memset_io(oi->video_vbase, 0, oi->video_buffer_size);
 
@@ -1172,6 +1207,7 @@ static void ivtvfb_release_buffers (struct ivtv *itv)
 
 	/* Release pseudo palette */
 	kfree(oi->ivtvfb_info.pseudo_palette);
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTRR
 	if (oi->fb_end_aligned_physaddr) {
@@ -1180,6 +1216,9 @@ static void ivtvfb_release_buffers (struct ivtv *itv)
 	}
 #endif
 
+=======
+	arch_phys_wc_del(oi->wc_cookie);
+>>>>>>> v4.9.227
 	kfree(oi);
 	itv->osd_info = NULL;
 }
@@ -1190,6 +1229,16 @@ static int ivtvfb_init_card(struct ivtv *itv)
 {
 	int rc;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_64
+	if (pat_enabled()) {
+		pr_warn("ivtvfb needs PAT disabled, boot with nopat kernel parameter\n");
+		return -ENODEV;
+	}
+#endif
+
+>>>>>>> v4.9.227
 	if (itv->osd_info) {
 		IVTVFB_ERR("Card %d already initialised\n", ivtvfb_card_id);
 		return -EBUSY;
@@ -1284,6 +1333,10 @@ static int __init ivtvfb_init(void)
 	int registered = 0;
 	int err;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	if (ivtvfb_card_id < -1 || ivtvfb_card_id >= IVTV_MAX_CARDS) {
 		printk(KERN_ERR "ivtvfb:  ivtvfb_card_id parameter is out of range (valid range: -1 - %d)\n",
 		     IVTV_MAX_CARDS - 1);

@@ -497,7 +497,10 @@ MODULE_DEVICE_TABLE(i2c, qt2160_idtable);
 static struct i2c_driver qt2160_driver = {
 	.driver = {
 		.name	= "qt2160",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 
 	.id_table	= qt2160_idtable,

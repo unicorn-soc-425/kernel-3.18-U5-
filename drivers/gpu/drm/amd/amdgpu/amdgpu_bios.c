@@ -35,6 +35,16 @@
  * BIOS.
  */
 
+<<<<<<< HEAD
+=======
+#define AMD_VBIOS_SIGNATURE " 761295520"
+#define AMD_VBIOS_SIGNATURE_OFFSET 0x30
+#define AMD_VBIOS_SIGNATURE_SIZE sizeof(AMD_VBIOS_SIGNATURE)
+#define AMD_VBIOS_SIGNATURE_END (AMD_VBIOS_SIGNATURE_OFFSET + AMD_VBIOS_SIGNATURE_SIZE)
+#define AMD_IS_VALID_VBIOS(p) ((p)[0] == 0x55 && (p)[1] == 0xAA)
+#define AMD_VBIOS_LENGTH(p) ((p)[2] << 9)
+
+>>>>>>> v4.9.227
 /* If you boot an IGP board with a discrete card as the primary,
  * the IGP rom is not accessible via the rom bar as the IGP rom is
  * part of the system bios.  On boot, the system bios puts a
@@ -58,7 +68,11 @@ static bool igp_read_bios_from_vram(struct amdgpu_device *adev)
 		return false;
 	}
 
+<<<<<<< HEAD
 	if (size == 0 || bios[0] != 0x55 || bios[1] != 0xaa) {
+=======
+	if (size == 0 || !AMD_IS_VALID_VBIOS(bios)) {
+>>>>>>> v4.9.227
 		iounmap(bios);
 		return false;
 	}
@@ -74,7 +88,11 @@ static bool igp_read_bios_from_vram(struct amdgpu_device *adev)
 
 bool amdgpu_read_bios(struct amdgpu_device *adev)
 {
+<<<<<<< HEAD
 	uint8_t __iomem *bios, val1, val2;
+=======
+	uint8_t __iomem *bios, val[2];
+>>>>>>> v4.9.227
 	size_t size;
 
 	adev->bios = NULL;
@@ -84,10 +102,17 @@ bool amdgpu_read_bios(struct amdgpu_device *adev)
 		return false;
 	}
 
+<<<<<<< HEAD
 	val1 = readb(&bios[0]);
 	val2 = readb(&bios[1]);
 
 	if (size == 0 || val1 != 0x55 || val2 != 0xaa) {
+=======
+	val[0] = readb(&bios[0]);
+	val[1] = readb(&bios[1]);
+
+	if (size == 0 || !AMD_IS_VALID_VBIOS(val)) {
+>>>>>>> v4.9.227
 		pci_unmap_rom(adev->pdev, bios);
 		return false;
 	}
@@ -101,6 +126,41 @@ bool amdgpu_read_bios(struct amdgpu_device *adev)
 	return true;
 }
 
+<<<<<<< HEAD
+=======
+static bool amdgpu_read_bios_from_rom(struct amdgpu_device *adev)
+{
+	u8 header[AMD_VBIOS_SIGNATURE_END+1] = {0};
+	int len;
+
+	if (!adev->asic_funcs->read_bios_from_rom)
+		return false;
+
+	/* validate VBIOS signature */
+	if (amdgpu_asic_read_bios_from_rom(adev, &header[0], sizeof(header)) == false)
+		return false;
+	header[AMD_VBIOS_SIGNATURE_END] = 0;
+
+	if ((!AMD_IS_VALID_VBIOS(header)) ||
+	    0 != memcmp((char *)&header[AMD_VBIOS_SIGNATURE_OFFSET],
+			AMD_VBIOS_SIGNATURE,
+			strlen(AMD_VBIOS_SIGNATURE)))
+		return false;
+
+	/* valid vbios, go on */
+	len = AMD_VBIOS_LENGTH(header);
+	len = ALIGN(len, 4);
+	adev->bios = kmalloc(len, GFP_KERNEL);
+	if (!adev->bios) {
+		DRM_ERROR("no memory to allocate for BIOS\n");
+		return false;
+	}
+
+	/* read complete BIOS */
+	return amdgpu_asic_read_bios_from_rom(adev, adev->bios, len);
+}
+
+>>>>>>> v4.9.227
 static bool amdgpu_read_platform_bios(struct amdgpu_device *adev)
 {
 	uint8_t __iomem *bios;
@@ -113,7 +173,11 @@ static bool amdgpu_read_platform_bios(struct amdgpu_device *adev)
 		return false;
 	}
 
+<<<<<<< HEAD
 	if (size == 0 || bios[0] != 0x55 || bios[1] != 0xaa) {
+=======
+	if (size == 0 || !AMD_IS_VALID_VBIOS(bios)) {
+>>>>>>> v4.9.227
 		return false;
 	}
 	adev->bios = kmemdup(bios, size, GFP_KERNEL);
@@ -230,7 +294,11 @@ static bool amdgpu_atrm_get_bios(struct amdgpu_device *adev)
 			break;
 	}
 
+<<<<<<< HEAD
 	if (i == 0 || adev->bios[0] != 0x55 || adev->bios[1] != 0xaa) {
+=======
+	if (i == 0 || !AMD_IS_VALID_VBIOS(adev->bios)) {
+>>>>>>> v4.9.227
 		kfree(adev->bios);
 		return false;
 	}
@@ -310,6 +378,7 @@ static inline bool amdgpu_acpi_vfct_bios(struct amdgpu_device *adev)
 bool amdgpu_get_bios(struct amdgpu_device *adev)
 {
 	bool r;
+<<<<<<< HEAD
 	uint16_t tmp;
 
 	r = amdgpu_atrm_get_bios(adev);
@@ -326,11 +395,36 @@ bool amdgpu_get_bios(struct amdgpu_device *adev)
 		r = amdgpu_read_platform_bios(adev);
 	}
 	if (r == false || adev->bios == NULL) {
+=======
+	uint16_t tmp, bios_header_start;
+
+	r = amdgpu_atrm_get_bios(adev);
+	if (!r)
+		r = amdgpu_acpi_vfct_bios(adev);
+	if (!r)
+		r = igp_read_bios_from_vram(adev);
+	if (!r)
+		r = amdgpu_read_bios(adev);
+	if (!r) {
+		r = amdgpu_read_bios_from_rom(adev);
+	}
+	if (!r) {
+		r = amdgpu_read_disabled_bios(adev);
+	}
+	if (!r) {
+		r = amdgpu_read_platform_bios(adev);
+	}
+	if (!r || adev->bios == NULL) {
+>>>>>>> v4.9.227
 		DRM_ERROR("Unable to locate a BIOS ROM\n");
 		adev->bios = NULL;
 		return false;
 	}
+<<<<<<< HEAD
 	if (adev->bios[0] != 0x55 || adev->bios[1] != 0xaa) {
+=======
+	if (!AMD_IS_VALID_VBIOS(adev->bios)) {
+>>>>>>> v4.9.227
 		printk("BIOS signature incorrect %x %x\n", adev->bios[0], adev->bios[1]);
 		goto free_bios;
 	}
@@ -341,11 +435,19 @@ bool amdgpu_get_bios(struct amdgpu_device *adev)
 		goto free_bios;
 	}
 
+<<<<<<< HEAD
 	adev->bios_header_start = RBIOS16(0x48);
 	if (!adev->bios_header_start) {
 		goto free_bios;
 	}
 	tmp = adev->bios_header_start + 4;
+=======
+	bios_header_start = RBIOS16(0x48);
+	if (!bios_header_start) {
+		goto free_bios;
+	}
+	tmp = bios_header_start + 4;
+>>>>>>> v4.9.227
 	if (!memcmp(adev->bios + tmp, "ATOM", 4) ||
 	    !memcmp(adev->bios + tmp, "MOTA", 4)) {
 		adev->is_atom_bios = true;

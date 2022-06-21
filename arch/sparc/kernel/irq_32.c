@@ -165,7 +165,11 @@ void irq_link(unsigned int irq)
 
 	p = &irq_table[irq];
 	pil = p->pil;
+<<<<<<< HEAD
 	BUG_ON(pil > SUN4D_MAX_IRQ);
+=======
+	BUG_ON(pil >= SUN4D_MAX_IRQ);
+>>>>>>> v4.9.227
 	p->next = irq_map[pil];
 	irq_map[pil] = p;
 
@@ -182,7 +186,11 @@ void irq_unlink(unsigned int irq)
 	spin_lock_irqsave(&irq_map_lock, flags);
 
 	p = &irq_table[irq];
+<<<<<<< HEAD
 	BUG_ON(p->pil > SUN4D_MAX_IRQ);
+=======
+	BUG_ON(p->pil >= SUN4D_MAX_IRQ);
+>>>>>>> v4.9.227
 	pnext = &irq_map[p->pil];
 	while (*pnext != p)
 		pnext = &(*pnext)->next;

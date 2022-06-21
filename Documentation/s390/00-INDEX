@@ -16,8 +16,11 @@ Debugging390.txt
 	- hints for debugging on s390 systems.
 driver-model.txt
 	- information on s390 devices and the driver model.
+<<<<<<< HEAD
 kvm.txt
 	- ioctl calls to /dev/kvm on s390.
+=======
+>>>>>>> v4.9.227
 monreader.txt
 	- information on accessing the z/VM monitor stream from Linux.
 qeth.txt

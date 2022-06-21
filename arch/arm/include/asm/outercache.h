@@ -23,6 +23,11 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
+=======
+struct l2x0_regs;
+
+>>>>>>> v4.9.227
 struct outer_cache_fns {
 	void (*inv_range)(unsigned long, unsigned long);
 	void (*clean_range)(unsigned long, unsigned long);
@@ -36,6 +41,10 @@ struct outer_cache_fns {
 
 	/* This is an ARM L2C thing */
 	void (*write_sec)(unsigned long, unsigned);
+<<<<<<< HEAD
+=======
+	void (*configure)(const struct l2x0_regs *);
+>>>>>>> v4.9.227
 };
 
 extern struct outer_cache_fns outer_cache;
@@ -126,6 +135,7 @@ static inline void outer_resume(void) { }
 
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_OUTER_CACHE_SYNC
 /**
  * outer_sync - perform a sync point for outer cache
@@ -143,4 +153,6 @@ static inline void outer_sync(void)
 { }
 #endif
 
+=======
+>>>>>>> v4.9.227
 #endif	/* __ASM_OUTERCACHE_H */

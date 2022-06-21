@@ -11,6 +11,7 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
@@ -26,6 +27,20 @@ bool rtw_IOL_applied(struct adapter  *adapter)
 		return true;
 
 	if ((2 == adapter->registrypriv.fw_iol) && (!adapter_to_dvobj(adapter)->ishighspeed))
+=======
+ *
+ ******************************************************************************/
+
+#include <rtw_iol.h>
+
+bool rtw_IOL_applied(struct adapter *adapter)
+{
+	if (adapter->registrypriv.fw_iol == 1)
+		return true;
+
+	if ((adapter->registrypriv.fw_iol == 2) &&
+	    (!adapter_to_dvobj(adapter)->ishighspeed))
+>>>>>>> v4.9.227
 		return true;
 	return false;
 }

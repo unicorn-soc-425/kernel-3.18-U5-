@@ -1,6 +1,15 @@
 #ifndef CEPH_CRUSH_HASH_H
 #define CEPH_CRUSH_HASH_H
 
+<<<<<<< HEAD
+=======
+#ifdef __KERNEL__
+# include <linux/types.h>
+#else
+# include "crush_compat.h"
+#endif
+
+>>>>>>> v4.9.227
 #define CRUSH_HASH_RJENKINS1   0
 
 #define CRUSH_HASH_DEFAULT CRUSH_HASH_RJENKINS1

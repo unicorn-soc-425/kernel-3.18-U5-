@@ -59,9 +59,13 @@ static DEFINE_MUTEX(misc_mtx);
 /*
  * Assigned numbers, used for dynamic minors
  */
+<<<<<<< HEAD
 //#define DYNAMIC_MINORS 64 /* like dynamic majors */
 // W/A code sysfs: cannot create duplicate filename '/dev/char/10:1'
 #define DYNAMIC_MINORS 96 /* like dynamic majors */
+=======
+#define DYNAMIC_MINORS 64 /* like dynamic majors */
+>>>>>>> v4.9.227
 static DECLARE_BITMAP(misc_minors, DYNAMIC_MINORS);
 
 #ifdef CONFIG_PROC_FS
@@ -119,6 +123,7 @@ static int misc_open(struct inode * inode, struct file * file)
 	const struct file_operations *new_fops = NULL;
 
 	mutex_lock(&misc_mtx);
+<<<<<<< HEAD
 	
 	list_for_each_entry(c, &misc_list, list) {
 		if (c->minor == minor) {
@@ -127,6 +132,16 @@ static int misc_open(struct inode * inode, struct file * file)
 		}
 	}
 		
+=======
+
+	list_for_each_entry(c, &misc_list, list) {
+		if (c->minor == minor) {
+			new_fops = fops_get(c->fops);
+			break;
+		}
+	}
+
+>>>>>>> v4.9.227
 	if (!new_fops) {
 		mutex_unlock(&misc_mtx);
 		request_module("char-major-%d-%d", MISC_MAJOR, minor);
@@ -142,12 +157,26 @@ static int misc_open(struct inode * inode, struct file * file)
 			goto fail;
 	}
 
+<<<<<<< HEAD
 	err = 0;
 	replace_fops(file, new_fops);
 	if (file->f_op->open) {
 		file->private_data = c;
 		err = file->f_op->open(inode,file);
 	}
+=======
+	/*
+	 * Place the miscdevice in the file's
+	 * private_data so it can be used by the
+	 * file operations, including f_op->open below
+	 */
+	file->private_data = c;
+
+	err = 0;
+	replace_fops(file, new_fops);
+	if (file->f_op->open)
+		err = file->f_op->open(inode,file);
+>>>>>>> v4.9.227
 fail:
 	mutex_unlock(&misc_mtx);
 	return err;
@@ -164,29 +193,51 @@ static const struct file_operations misc_fops = {
 /**
  *	misc_register	-	register a miscellaneous device
  *	@misc: device structure
+<<<<<<< HEAD
  *	
+=======
+ *
+>>>>>>> v4.9.227
  *	Register a miscellaneous device with the kernel. If the minor
  *	number is set to %MISC_DYNAMIC_MINOR a minor number is assigned
  *	and placed in the minor field of the structure. For other cases
  *	the minor number requested is used.
  *
  *	The structure passed is linked into the kernel and may not be
+<<<<<<< HEAD
  *	destroyed until it has been unregistered.
+=======
+ *	destroyed until it has been unregistered. By default, an open()
+ *	syscall to the device sets file->private_data to point to the
+ *	structure. Drivers don't need open in fops for this.
+>>>>>>> v4.9.227
  *
  *	A zero is returned on success and a negative errno code for
  *	failure.
  */
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> v4.9.227
 int misc_register(struct miscdevice * misc)
 {
 	dev_t dev;
 	int err = 0;
+<<<<<<< HEAD
+=======
+	bool is_dynamic = (misc->minor == MISC_DYNAMIC_MINOR);
+>>>>>>> v4.9.227
 
 	INIT_LIST_HEAD(&misc->list);
 
 	mutex_lock(&misc_mtx);
 
+<<<<<<< HEAD
 	if (misc->minor == MISC_DYNAMIC_MINOR) {
+=======
+	if (is_dynamic) {
+>>>>>>> v4.9.227
 		int i = find_first_zero_bit(misc_minors, DYNAMIC_MINORS);
 		if (i >= DYNAMIC_MINORS) {
 			err = -EBUSY;
@@ -207,12 +258,26 @@ int misc_register(struct miscdevice * misc)
 
 	dev = MKDEV(MISC_MAJOR, misc->minor);
 
+<<<<<<< HEAD
 	misc->this_device = device_create(misc_class, misc->parent, dev,
 					  misc, "%s", misc->name);
 	if (IS_ERR(misc->this_device)) {
 		int i = DYNAMIC_MINORS - misc->minor - 1;
 		if (i < DYNAMIC_MINORS && i >= 0)
 			clear_bit(i, misc_minors);
+=======
+	misc->this_device =
+		device_create_with_groups(misc_class, misc->parent, dev,
+					  misc, misc->groups, "%s", misc->name);
+	if (IS_ERR(misc->this_device)) {
+		if (is_dynamic) {
+			int i = DYNAMIC_MINORS - misc->minor - 1;
+
+			if (i < DYNAMIC_MINORS && i >= 0)
+				clear_bit(i, misc_minors);
+			misc->minor = MISC_DYNAMIC_MINOR;
+		}
+>>>>>>> v4.9.227
 		err = PTR_ERR(misc->this_device);
 		goto out;
 	}
@@ -232,17 +297,28 @@ int misc_register(struct miscdevice * misc)
  *	@misc: device to unregister
  *
  *	Unregister a miscellaneous device that was previously
+<<<<<<< HEAD
  *	successfully registered with misc_register(). Success
  *	is indicated by a zero return, a negative errno code
  *	indicates an error.
  */
 
 int misc_deregister(struct miscdevice *misc)
+=======
+ *	successfully registered with misc_register().
+ */
+
+void misc_deregister(struct miscdevice *misc)
+>>>>>>> v4.9.227
 {
 	int i = DYNAMIC_MINORS - misc->minor - 1;
 
 	if (WARN_ON(list_empty(&misc->list)))
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return;
+>>>>>>> v4.9.227
 
 	mutex_lock(&misc_mtx);
 	list_del(&misc->list);
@@ -250,7 +326,10 @@ int misc_deregister(struct miscdevice *misc)
 	if (i < DYNAMIC_MINORS && i >= 0)
 		clear_bit(i, misc_minors);
 	mutex_unlock(&misc_mtx);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> v4.9.227
 }
 
 EXPORT_SYMBOL(misc_register);
@@ -270,10 +349,16 @@ static char *misc_devnode(struct device *dev, umode_t *mode)
 static int __init misc_init(void)
 {
 	int err;
+<<<<<<< HEAD
 
 #ifdef CONFIG_PROC_FS
 	proc_create("misc", 0, NULL, &misc_proc_fops);
 #endif
+=======
+	struct proc_dir_entry *ret;
+
+	ret = proc_create("misc", 0, NULL, &misc_proc_fops);
+>>>>>>> v4.9.227
 	misc_class = class_create(THIS_MODULE, "misc");
 	err = PTR_ERR(misc_class);
 	if (IS_ERR(misc_class))
@@ -289,7 +374,12 @@ fail_printk:
 	printk("unable to get major %d for misc devices\n", MISC_MAJOR);
 	class_destroy(misc_class);
 fail_remove:
+<<<<<<< HEAD
 	remove_proc_entry("misc", NULL);
+=======
+	if (ret)
+		remove_proc_entry("misc", NULL);
+>>>>>>> v4.9.227
 	return err;
 }
 subsys_initcall(misc_init);

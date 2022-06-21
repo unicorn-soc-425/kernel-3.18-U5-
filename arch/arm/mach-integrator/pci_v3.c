@@ -356,7 +356,10 @@ static u64 pre_mem_pci_sz;
  *	 7:2	register number
  *
  */
+<<<<<<< HEAD
 static DEFINE_RAW_SPINLOCK(v3_lock);
+=======
+>>>>>>> v4.9.227
 
 #undef V3_LB_BASE_PREFETCH
 #define V3_LB_BASE_PREFETCH 0
@@ -457,6 +460,7 @@ static void v3_close_config_window(void)
 static int v3_read_config(struct pci_bus *bus, unsigned int devfn, int where,
 			  int size, u32 *val)
 {
+<<<<<<< HEAD
 	void __iomem *addr;
 	unsigned long flags;
 	u32 v;
@@ -483,11 +487,17 @@ static int v3_read_config(struct pci_bus *bus, unsigned int devfn, int where,
 
 	*val = v;
 	return PCIBIOS_SUCCESSFUL;
+=======
+	int ret = pci_generic_config_read(bus, devfn, where, size, val);
+	v3_close_config_window();
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int v3_write_config(struct pci_bus *bus, unsigned int devfn, int where,
 			   int size, u32 val)
 {
+<<<<<<< HEAD
 	void __iomem *addr;
 	unsigned long flags;
 
@@ -518,6 +528,15 @@ static int v3_write_config(struct pci_bus *bus, unsigned int devfn, int where,
 }
 
 static struct pci_ops pci_v3_ops = {
+=======
+	int ret = pci_generic_config_write(bus, devfn, where, size, val);
+	v3_close_config_window();
+	return ret;
+}
+
+static struct pci_ops pci_v3_ops = {
+	.map_bus = v3_open_config_window,
+>>>>>>> v4.9.227
 	.read	= v3_read_config,
 	.write	= v3_write_config,
 };
@@ -658,7 +677,10 @@ static int __init pci_v3_setup(int nr, struct pci_sys_data *sys)
  */
 static void __init pci_v3_preinit(void)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> v4.9.227
 	unsigned int temp;
 	phys_addr_t io_address = pci_pio_to_address(io_mem.start);
 
@@ -672,8 +694,11 @@ static void __init pci_v3_preinit(void)
 	hook_fault_code(8, v3_pci_fault, SIGBUS, 0, "external abort on non-linefetch");
 	hook_fault_code(10, v3_pci_fault, SIGBUS, 0, "external abort on non-linefetch");
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&v3_lock, flags);
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * Unlock V3 registers, but only if they were previously locked.
 	 */
@@ -736,8 +761,11 @@ static void __init pci_v3_preinit(void)
 	v3_writew(V3_LB_CFG, v3_readw(V3_LB_CFG) | (1 << 10));
 	v3_writeb(V3_LB_IMASK, 0x28);
 	__raw_writel(3, ap_syscon_base + INTEGRATOR_SC_PCIENABLE_OFFSET);
+<<<<<<< HEAD
 
 	raw_spin_unlock_irqrestore(&v3_lock, flags);
+=======
+>>>>>>> v4.9.227
 }
 
 static void __init pci_v3_postinit(void)

@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+OBJECT_FILES_NON_STANDARD := y
+
+>>>>>>> v4.9.227
 hostprogs-y	:= modpost mk_elfconfig
 always		:= $(hostprogs-y) empty.o
 
@@ -5,6 +10,7 @@ modpost-objs	:= modpost.o file2alias.o sumversion.o
 
 devicetable-offsets-file := devicetable-offsets.h
 
+<<<<<<< HEAD
 define sed-y
 	"/^->/{s:->#\(.*\):/* \1 */:; \
 	s:^->\([^ ]*\) [\$$#]*\([-0-9]*\) \(.*\):#define \1 \2 /* \3 */:; \
@@ -31,6 +37,10 @@ endef
 
 $(obj)/$(devicetable-offsets-file): $(obj)/devicetable-offsets.s
 	$(call if_changed,offsets)
+=======
+$(obj)/$(devicetable-offsets-file): $(obj)/devicetable-offsets.s FORCE
+	$(call filechk,offsets,__DEVICETABLE_OFFSETS_H__)
+>>>>>>> v4.9.227
 
 targets += $(devicetable-offsets-file) devicetable-offsets.s
 

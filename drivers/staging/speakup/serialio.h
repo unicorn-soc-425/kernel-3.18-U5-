@@ -6,6 +6,10 @@
 #ifndef __sparc__
 #include <linux/serial.h>
 #endif
+<<<<<<< HEAD
+=======
+#include <linux/serial_core.h>
+>>>>>>> v4.9.227
 
 /*
  * this is cut&paste from 8250.h. Get rid of the structure, the definitions
@@ -16,7 +20,11 @@ struct old_serial_port {
 	unsigned int baud_base;
 	unsigned int port;
 	unsigned int irq;
+<<<<<<< HEAD
 	unsigned int flags; /* unused */
+=======
+	upf_t flags; /* unused */
+>>>>>>> v4.9.227
 };
 
 /* countdown values for serial timeouts in us */
@@ -34,6 +42,11 @@ struct old_serial_port {
 #define SPK_TIMEOUT 100
 #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
 
+<<<<<<< HEAD
 #define spk_serial_tx_busy() ((inb(speakup_info.port_tts + UART_LSR) & BOTH_EMPTY) != BOTH_EMPTY)
+=======
+#define spk_serial_tx_busy() \
+	((inb(speakup_info.port_tts + UART_LSR) & BOTH_EMPTY) != BOTH_EMPTY)
+>>>>>>> v4.9.227
 
 #endif

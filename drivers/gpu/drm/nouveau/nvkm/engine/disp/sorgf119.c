@@ -64,7 +64,11 @@ gf119_sor_dp_lnk_ctl(struct nvkm_output_dp *outp, int nr, int bw, bool ef)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
+=======
+int
+>>>>>>> v4.9.227
 gf119_sor_dp_drv_ctl(struct nvkm_output_dp *outp,
 		     int ln, int vs, int pe, int pc)
 {

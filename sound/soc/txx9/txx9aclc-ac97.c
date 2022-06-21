@@ -152,7 +152,11 @@ static int txx9aclc_ac97_remove(struct snd_soc_dai *dai)
 }
 
 static struct snd_soc_dai_driver txx9aclc_ac97_dai = {
+<<<<<<< HEAD
 	.ac97_control		= 1,
+=======
+	.bus_control		= true,
+>>>>>>> v4.9.227
 	.probe			= txx9aclc_ac97_probe,
 	.remove			= txx9aclc_ac97_remove,
 	.playback = {
@@ -224,7 +228,10 @@ static struct platform_driver txx9aclc_ac97_driver = {
 	.remove		= txx9aclc_ac97_dev_remove,
 	.driver		= {
 		.name	= "txx9aclc-ac97",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

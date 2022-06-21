@@ -60,6 +60,7 @@
  * instruction, so the lower 16 bits must be zero.  Should be true on
  * on any sane architecture; generic code does not use this assumption.
  */
+<<<<<<< HEAD
 extern const unsigned long mips_io_port_base;
 
 /*
@@ -75,6 +76,13 @@ static inline void set_io_port_base(unsigned long base)
 {
 	* (unsigned long *) &mips_io_port_base = base;
 	barrier();
+=======
+extern unsigned long mips_io_port_base;
+
+static inline void set_io_port_base(unsigned long base)
+{
+	mips_io_port_base = base;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -167,7 +175,11 @@ static inline void *isa_bus_to_virt(unsigned long address)
  */
 #define page_to_phys(page)	((dma_addr_t)page_to_pfn(page) << PAGE_SHIFT)
 
+<<<<<<< HEAD
 extern void __iomem * __ioremap(phys_t offset, phys_t size, unsigned long flags);
+=======
+extern void __iomem * __ioremap(phys_addr_t offset, phys_addr_t size, unsigned long flags);
+>>>>>>> v4.9.227
 extern void __iounmap(const volatile void __iomem *addr);
 
 #ifndef CONFIG_PCI
@@ -175,7 +187,11 @@ struct pci_dev;
 static inline void pci_iounmap(struct pci_dev *dev, void __iomem *addr) {}
 #endif
 
+<<<<<<< HEAD
 static inline void __iomem * __ioremap_mode(phys_t offset, unsigned long size,
+=======
+static inline void __iomem * __ioremap_mode(phys_addr_t offset, unsigned long size,
+>>>>>>> v4.9.227
 	unsigned long flags)
 {
 	void __iomem *addr = plat_ioremap(offset, size, flags);
@@ -183,7 +199,11 @@ static inline void __iomem * __ioremap_mode(phys_t offset, unsigned long size,
 	if (addr)
 		return addr;
 
+<<<<<<< HEAD
 #define __IS_LOW512(addr) (!((phys_t)(addr) & (phys_t) ~0x1fffffffULL))
+=======
+#define __IS_LOW512(addr) (!((phys_addr_t)(addr) & (phys_addr_t) ~0x1fffffffULL))
+>>>>>>> v4.9.227
 
 	if (cpu_has_64bit_addresses) {
 		u64 base = UNCAC_BASE;
@@ -197,7 +217,11 @@ static inline void __iomem * __ioremap_mode(phys_t offset, unsigned long size,
 		return (void __iomem *) (unsigned long) (base + offset);
 	} else if (__builtin_constant_p(offset) &&
 		   __builtin_constant_p(size) && __builtin_constant_p(flags)) {
+<<<<<<< HEAD
 		phys_t phys_addr, last_addr;
+=======
+		phys_addr_t phys_addr, last_addr;
+>>>>>>> v4.9.227
 
 		phys_addr = fixup_bigphys_addr(offset, size);
 
@@ -256,6 +280,10 @@ static inline void __iomem * __ioremap_mode(phys_t offset, unsigned long size,
  */
 #define ioremap_nocache(offset, size)					\
 	__ioremap_mode((offset), (size), _CACHE_UNCACHED)
+<<<<<<< HEAD
+=======
+#define ioremap_uc ioremap_nocache
+>>>>>>> v4.9.227
 
 /*
  * ioremap_cachable -	map bus memory into CPU space
@@ -274,6 +302,10 @@ static inline void __iomem * __ioremap_mode(phys_t offset, unsigned long size,
  */
 #define ioremap_cachable(offset, size)					\
 	__ioremap_mode((offset), (size), _page_cachable_default)
+<<<<<<< HEAD
+=======
+#define ioremap_cache ioremap_cachable
+>>>>>>> v4.9.227
 
 /*
  * These two are MIPS specific ioremap variant.	 ioremap_cacheable_cow
@@ -302,10 +334,17 @@ static inline void iounmap(const volatile void __iomem *addr)
 #undef __IS_KSEG1
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
 #define war_octeon_io_reorder_wmb()		wmb()
 #else
 #define war_octeon_io_reorder_wmb()		do { } while (0)
+=======
+#if defined(CONFIG_CPU_CAVIUM_OCTEON) || defined(CONFIG_LOONGSON3_ENHANCEMENT)
+#define war_io_reorder_wmb()		wmb()
+#else
+#define war_io_reorder_wmb()		do { } while (0)
+>>>>>>> v4.9.227
 #endif
 
 #define __BUILD_MEMORY_SINGLE(pfx, bwlq, type, irq)			\
@@ -316,7 +355,11 @@ static inline void pfx##write##bwlq(type val,				\
 	volatile type *__mem;						\
 	type __val;							\
 									\
+<<<<<<< HEAD
 	war_octeon_io_reorder_wmb();					\
+=======
+	war_io_reorder_wmb();					\
+>>>>>>> v4.9.227
 									\
 	__mem = (void *)__swizzle_addr_##bwlq((unsigned long)(mem));	\
 									\
@@ -375,8 +418,11 @@ static inline type pfx##read##bwlq(const volatile void __iomem *mem)	\
 		BUG();							\
 	}								\
 									\
+<<<<<<< HEAD
 	/* prevent prefetching of coherent DMA data prematurely */	\
 	rmb();								\
+=======
+>>>>>>> v4.9.227
 	return pfx##ioswab##bwlq(__mem, __val);				\
 }
 
@@ -387,7 +433,11 @@ static inline void pfx##out##bwlq##p(type val, unsigned long port)	\
 	volatile type *__addr;						\
 	type __val;							\
 									\
+<<<<<<< HEAD
 	war_octeon_io_reorder_wmb();					\
+=======
+	war_io_reorder_wmb();					\
+>>>>>>> v4.9.227
 									\
 	__addr = (void *)__swizzle_addr_##bwlq(mips_io_port_base + port); \
 									\

@@ -73,6 +73,10 @@
 #define TPS65217_PPATH_AC_CURRENT_MASK	0x0C
 #define TPS65217_PPATH_USB_CURRENT_MASK	0x03
 
+<<<<<<< HEAD
+=======
+#define TPS65217_INT_RESERVEDM		BIT(7)
+>>>>>>> v4.9.227
 #define TPS65217_INT_PBM		BIT(6)
 #define TPS65217_INT_ACM		BIT(5)
 #define TPS65217_INT_USBM		BIT(4)
@@ -233,6 +237,16 @@ struct tps65217_bl_pdata {
 	int dft_brightness;
 };
 
+<<<<<<< HEAD
+=======
+enum tps65217_irq_type {
+	TPS65217_IRQ_PB,
+	TPS65217_IRQ_AC,
+	TPS65217_IRQ_USB,
+	TPS65217_NUM_IRQ
+};
+
+>>>>>>> v4.9.227
 /**
  * struct tps65217_board - packages regulator init data
  * @tps65217_regulator_data: regulator initialization values
@@ -257,6 +271,14 @@ struct tps65217 {
 	unsigned long id;
 	struct regulator_desc desc[TPS65217_NUM_REGULATOR];
 	struct regmap *regmap;
+<<<<<<< HEAD
+=======
+	u8 *strobes;
+	struct irq_domain *irq_domain;
+	struct mutex irq_lock;
+	u8 irq_mask;
+	int irq;
+>>>>>>> v4.9.227
 };
 
 static inline struct tps65217 *dev_to_tps65217(struct device *dev)

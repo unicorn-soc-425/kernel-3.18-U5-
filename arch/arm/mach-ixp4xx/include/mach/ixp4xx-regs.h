@@ -395,6 +395,7 @@
 #define CRP_AD_CBE_BESL         20
 #define CRP_AD_CBE_WRITE	0x00010000
 
+<<<<<<< HEAD
 
 /*
  * USB Device Controller
@@ -593,6 +594,8 @@
 #define USIR1_IR14	(1 << 6)	/* Interrupt request ep 14 */
 #define USIR1_IR15	(1 << 7)	/* Interrupt request ep 15 */
 
+=======
+>>>>>>> v4.9.227
 #define DCMD_LENGTH	0x01fff		/* length mask (max = 8K - 1) */
 
 /* "fuse" bits of IXP_EXP_CFG2 */

@@ -206,8 +206,13 @@ static int stw481x_probe(struct i2c_client *client,
 		stw481x_cells[i].pdata_size = sizeof(*stw481x);
 	}
 
+<<<<<<< HEAD
 	ret = mfd_add_devices(&client->dev, 0, stw481x_cells,
 			ARRAY_SIZE(stw481x_cells), NULL, 0, NULL);
+=======
+	ret = devm_mfd_add_devices(&client->dev, 0, stw481x_cells,
+				   ARRAY_SIZE(stw481x_cells), NULL, 0, NULL);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -216,12 +221,15 @@ static int stw481x_probe(struct i2c_client *client,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int stw481x_remove(struct i2c_client *client)
 {
 	mfd_remove_devices(&client->dev);
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * This ID table is completely unused, as this is a pure
  * device-tree probed driver, but it has to be here due to
@@ -231,6 +239,10 @@ static const struct i2c_device_id stw481x_id[] = {
 	{ "stw481x", 0 },
 	{ },
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, stw481x_id);
+>>>>>>> v4.9.227
 
 static const struct of_device_id stw481x_match[] = {
 	{ .compatible = "st,stw4810", },
@@ -245,7 +257,10 @@ static struct i2c_driver stw481x_driver = {
 		.of_match_table = stw481x_match,
 	},
 	.probe		= stw481x_probe,
+<<<<<<< HEAD
 	.remove		= stw481x_remove,
+=======
+>>>>>>> v4.9.227
 	.id_table	= stw481x_id,
 };
 

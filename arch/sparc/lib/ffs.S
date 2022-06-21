@@ -1,4 +1,8 @@
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	.register	%g2,#scratch
 
@@ -65,6 +69,11 @@ ENTRY(__ffs)
 	 add	%o2, %g1, %o0
 ENDPROC(ffs)
 ENDPROC(__ffs)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__ffs)
+EXPORT_SYMBOL(ffs)
+>>>>>>> v4.9.227
 
 	.section	.popc_6insn_patch, "ax"
 	.word		ffs

@@ -4,7 +4,11 @@
  * Watchdog driver for ARM SP805 watchdog module
  *
  * Copyright (C) 2010 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2 or later. This program is licensed "as is" without any
@@ -139,12 +143,20 @@ static int wdt_config(struct watchdog_device *wdd, bool ping)
 
 	writel_relaxed(UNLOCK, wdt->base + WDTLOCK);
 	writel_relaxed(wdt->load_val, wdt->base + WDTLOAD);
+<<<<<<< HEAD
 
 	if (!ping) {
 		writel_relaxed(INT_MASK, wdt->base + WDTINTCLR);
 		writel_relaxed(INT_ENABLE | RESET_ENABLE, wdt->base +
 				WDTCONTROL);
 	}
+=======
+	writel_relaxed(INT_MASK, wdt->base + WDTINTCLR);
+
+	if (!ping)
+		writel_relaxed(INT_ENABLE | RESET_ENABLE, wdt->base +
+				WDTCONTROL);
+>>>>>>> v4.9.227
 
 	writel_relaxed(LOCK, wdt->base + WDTLOCK);
 
@@ -226,6 +238,10 @@ sp805_wdt_probe(struct amba_device *adev, const struct amba_id *id)
 	wdt->adev = adev;
 	wdt->wdd.info = &wdt_info;
 	wdt->wdd.ops = &wdt_ops;
+<<<<<<< HEAD
+=======
+	wdt->wdd.parent = &adev->dev;
+>>>>>>> v4.9.227
 
 	spin_lock_init(&wdt->lock);
 	watchdog_set_nowayout(&wdt->wdd, nowayout);
@@ -303,6 +319,10 @@ static struct amba_driver sp805_wdt_driver = {
 
 module_amba_driver(sp805_wdt_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Viresh Kumar <viresh.linux@gmail.com>");
+=======
+MODULE_AUTHOR("Viresh Kumar <vireshk@kernel.org>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("ARM SP805 Watchdog Driver");
 MODULE_LICENSE("GPL");

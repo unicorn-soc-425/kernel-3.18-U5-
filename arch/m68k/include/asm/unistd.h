@@ -4,7 +4,11 @@
 #include <uapi/asm/unistd.h>
 
 
+<<<<<<< HEAD
 #define NR_syscalls		355
+=======
+#define NR_syscalls		379
+>>>>>>> v4.9.227
 
 #define __ARCH_WANT_OLD_READDIR
 #define __ARCH_WANT_OLD_STAT

@@ -142,7 +142,11 @@ static inline struct pinctrl * __must_check pinctrl_get_select(
 	s = pinctrl_lookup_state(p, name);
 	if (IS_ERR(s)) {
 		pinctrl_put(p);
+<<<<<<< HEAD
 		return ERR_PTR(PTR_ERR(s));
+=======
+		return ERR_CAST(s);
+>>>>>>> v4.9.227
 	}
 
 	ret = pinctrl_select_state(p, s);

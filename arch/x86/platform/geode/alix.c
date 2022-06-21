@@ -21,7 +21,11 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> v4.9.227
 #include <linux/leds.h>
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
@@ -35,6 +39,14 @@
 #define BIOS_SIGNATURE_COREBOOT		0x500
 #define BIOS_REGION_SIZE		0x10000
 
+<<<<<<< HEAD
+=======
+/*
+ * This driver is not modular, but to keep back compatibility
+ * with existing use cases, continuing with module_param is
+ * the easiest way forward.
+ */
+>>>>>>> v4.9.227
 static bool force = 0;
 module_param(force, bool, 0444);
 /* FIXME: Award bios is not automatically detected as Alix platform */
@@ -192,9 +204,13 @@ static int __init alix_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(alix_init);
 
 MODULE_AUTHOR("Ed Wildgoose <kernel@wildgooses.com>");
 MODULE_DESCRIPTION("PCEngines ALIX System Setup");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(alix_init);
+>>>>>>> v4.9.227

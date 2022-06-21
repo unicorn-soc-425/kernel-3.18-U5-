@@ -29,9 +29,17 @@
 #ifndef __RXTX_H__
 #define __RXTX_H__
 
+<<<<<<< HEAD
 #include "ttype.h"
 #include "device.h"
 #include "wcmd.h"
+=======
+#include "device.h"
+
+#define DEFAULT_MSDU_LIFETIME_RES_64us	8000 /* 64us */
+#define DEFAULT_MGN_LIFETIME_RES_64us	125  /* 64us */
+
+>>>>>>> v4.9.227
 
 /*---------------------  Export Definitions -------------------------*/
 
@@ -173,6 +181,17 @@ struct vnt_cts_fb {
 	u16 reserved2;
 } __packed;
 
+<<<<<<< HEAD
+=======
+struct vnt_tx_fifo_head {
+	u8 tx_key[WLAN_KEY_LEN_CCMP];
+	__le16 fifo_ctl;
+	__le16 time_stamp;
+	__le16 frag_ctl;
+	__le16 current_rate;
+} __packed;
+
+>>>>>>> v4.9.227
 struct vnt_tx_short_buf_head {
 	__le16 fifo_ctl;
 	u16 time_stamp;
@@ -181,6 +200,7 @@ struct vnt_tx_short_buf_head {
 	__le16 time_stamp_off;
 } __packed;
 
+<<<<<<< HEAD
 void
 vGenerateMACHeader(
 	struct vnt_private *,
@@ -216,3 +236,12 @@ CMD_STATUS csMgmt_xmit(struct vnt_private *, PSTxMgmtPacket pPacket);
 CMD_STATUS csBeacon_xmit(struct vnt_private *, PSTxMgmtPacket pPacket);
 
 #endif // __RXTX_H__
+=======
+int vnt_generate_fifo_header(struct vnt_private *, u32,
+			     struct vnt_tx_desc *head_td, struct sk_buff *);
+int vnt_beacon_make(struct vnt_private *, struct ieee80211_vif *);
+int vnt_beacon_enable(struct vnt_private *, struct ieee80211_vif *,
+		      struct ieee80211_bss_conf *);
+
+#endif /* __RXTX_H__ */
+>>>>>>> v4.9.227

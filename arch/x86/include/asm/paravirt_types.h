@@ -42,6 +42,10 @@
 #include <asm/desc_defs.h>
 #include <asm/kmap_types.h>
 #include <asm/pgtable_types.h>
+<<<<<<< HEAD
+=======
+#include <asm/nospec-branch.h>
+>>>>>>> v4.9.227
 
 struct page;
 struct thread_struct;
@@ -69,7 +73,10 @@ struct pv_info {
 	u16 extra_user_64bit_cs;  /* __USER_CS if none */
 #endif
 
+<<<<<<< HEAD
 	int paravirt_enabled;
+=======
+>>>>>>> v4.9.227
 	const char *name;
 };
 
@@ -97,7 +104,10 @@ struct pv_lazy_ops {
 struct pv_time_ops {
 	unsigned long long (*sched_clock)(void);
 	unsigned long long (*steal_clock)(int cpu);
+<<<<<<< HEAD
 	unsigned long (*get_tsc_khz)(void);
+=======
+>>>>>>> v4.9.227
 };
 
 struct pv_cpu_ops {
@@ -110,7 +120,10 @@ struct pv_cpu_ops {
 	unsigned long (*read_cr0)(void);
 	void (*write_cr0)(unsigned long);
 
+<<<<<<< HEAD
 	unsigned long (*read_cr4_safe)(void);
+=======
+>>>>>>> v4.9.227
 	unsigned long (*read_cr4)(void);
 	void (*write_cr4)(unsigned long);
 
@@ -151,6 +164,7 @@ struct pv_cpu_ops {
 	void (*cpuid)(unsigned int *eax, unsigned int *ebx,
 		      unsigned int *ecx, unsigned int *edx);
 
+<<<<<<< HEAD
 	/* MSR, PMC and TSR operations.
 	   err = 0/-EFAULT.  wrmsr returns 0/-EFAULT. */
 	u64 (*read_msr)(unsigned int msr, int *err);
@@ -167,6 +181,20 @@ struct pv_cpu_ops {
 	 * never native 64-bit processes.  (Jump, not call.)
 	 */
 	void (*irq_enable_sysexit)(void);
+=======
+	/* Unsafe MSR operations.  These will warn or panic on failure. */
+	u64 (*read_msr)(unsigned int msr);
+	void (*write_msr)(unsigned int msr, unsigned low, unsigned high);
+
+	/*
+	 * Safe MSR operations.
+	 * read sets err to 0 or -EIO.  write returns 0 or -EIO.
+	 */
+	u64 (*read_msr_safe)(unsigned int msr, int *err);
+	int (*write_msr_safe)(unsigned int msr, unsigned low, unsigned high);
+
+	u64 (*read_pmc)(int counter);
+>>>>>>> v4.9.227
 
 	/*
 	 * Switch to usermode gs and return to 64-bit usermode using
@@ -176,6 +204,7 @@ struct pv_cpu_ops {
 	 */
 	void (*usergs_sysret64)(void);
 
+<<<<<<< HEAD
 	/*
 	 * Switch to usermode gs and return to 32-bit usermode using
 	 * sysret.  Used to return to 32-on-64 compat processes.
@@ -184,6 +213,8 @@ struct pv_cpu_ops {
 	 */
 	void (*usergs_sysret32)(void);
 
+=======
+>>>>>>> v4.9.227
 	/* Normal iret.  Jump to this with the standard iret stack
 	   frame set up. */
 	void (*iret)(void);
@@ -217,6 +248,7 @@ struct pv_irq_ops {
 #endif
 };
 
+<<<<<<< HEAD
 struct pv_apic_ops {
 #ifdef CONFIG_X86_LOCAL_APIC
 	void (*startup_ipi_hook)(int phys_apicid,
@@ -225,6 +257,8 @@ struct pv_apic_ops {
 #endif
 };
 
+=======
+>>>>>>> v4.9.227
 struct pv_mmu_ops {
 	unsigned long (*read_cr2)(void);
 	void (*write_cr2)(unsigned long);
@@ -276,12 +310,15 @@ struct pv_mmu_ops {
 			   pmd_t *pmdp, pmd_t pmdval);
 	void (*pte_update)(struct mm_struct *mm, unsigned long addr,
 			   pte_t *ptep);
+<<<<<<< HEAD
 	void (*pte_update_defer)(struct mm_struct *mm,
 				 unsigned long addr, pte_t *ptep);
 	void (*pmd_update)(struct mm_struct *mm, unsigned long addr,
 			   pmd_t *pmdp);
 	void (*pmd_update_defer)(struct mm_struct *mm,
 				 unsigned long addr, pmd_t *pmdp);
+=======
+>>>>>>> v4.9.227
 
 	pte_t (*ptep_modify_prot_start)(struct mm_struct *mm, unsigned long addr,
 					pte_t *ptep);
@@ -294,7 +331,11 @@ struct pv_mmu_ops {
 	struct paravirt_callee_save pgd_val;
 	struct paravirt_callee_save make_pgd;
 
+<<<<<<< HEAD
 #if PAGETABLE_LEVELS >= 3
+=======
+#if CONFIG_PGTABLE_LEVELS >= 3
+>>>>>>> v4.9.227
 #ifdef CONFIG_X86_PAE
 	void (*set_pte_atomic)(pte_t *ptep, pte_t pteval);
 	void (*pte_clear)(struct mm_struct *mm, unsigned long addr,
@@ -308,13 +349,22 @@ struct pv_mmu_ops {
 	struct paravirt_callee_save pmd_val;
 	struct paravirt_callee_save make_pmd;
 
+<<<<<<< HEAD
 #if PAGETABLE_LEVELS == 4
+=======
+#if CONFIG_PGTABLE_LEVELS == 4
+>>>>>>> v4.9.227
 	struct paravirt_callee_save pud_val;
 	struct paravirt_callee_save make_pud;
 
 	void (*set_pgd)(pgd_t *pudp, pgd_t pgdval);
+<<<<<<< HEAD
 #endif	/* PAGETABLE_LEVELS == 4 */
 #endif	/* PAGETABLE_LEVELS >= 3 */
+=======
+#endif	/* CONFIG_PGTABLE_LEVELS == 4 */
+#endif	/* CONFIG_PGTABLE_LEVELS >= 3 */
+>>>>>>> v4.9.227
 
 	struct pv_lazy_ops lazy_mode;
 
@@ -329,6 +379,7 @@ struct pv_mmu_ops {
 struct arch_spinlock;
 #ifdef CONFIG_SMP
 #include <asm/spinlock_types.h>
+<<<<<<< HEAD
 #else
 typedef u16 __ticket_t;
 #endif
@@ -336,6 +387,18 @@ typedef u16 __ticket_t;
 struct pv_lock_ops {
 	struct paravirt_callee_save lock_spinning;
 	void (*unlock_kick)(struct arch_spinlock *lock, __ticket_t ticket);
+=======
+#endif
+
+struct qspinlock;
+
+struct pv_lock_ops {
+	void (*queued_spin_lock_slowpath)(struct qspinlock *lock, u32 val);
+	struct paravirt_callee_save queued_spin_unlock;
+
+	void (*wait)(u8 *ptr, u8 val);
+	void (*kick)(int cpu);
+>>>>>>> v4.9.227
 };
 
 /* This contains all the paravirt structures: we get a convenient
@@ -346,7 +409,10 @@ struct paravirt_patch_template {
 	struct pv_time_ops pv_time_ops;
 	struct pv_cpu_ops pv_cpu_ops;
 	struct pv_irq_ops pv_irq_ops;
+<<<<<<< HEAD
 	struct pv_apic_ops pv_apic_ops;
+=======
+>>>>>>> v4.9.227
 	struct pv_mmu_ops pv_mmu_ops;
 	struct pv_lock_ops pv_lock_ops;
 };
@@ -356,7 +422,10 @@ extern struct pv_init_ops pv_init_ops;
 extern struct pv_time_ops pv_time_ops;
 extern struct pv_cpu_ops pv_cpu_ops;
 extern struct pv_irq_ops pv_irq_ops;
+<<<<<<< HEAD
 extern struct pv_apic_ops pv_apic_ops;
+=======
+>>>>>>> v4.9.227
 extern struct pv_mmu_ops pv_mmu_ops;
 extern struct pv_lock_ops pv_lock_ops;
 
@@ -394,10 +463,15 @@ extern struct pv_lock_ops pv_lock_ops;
 	__visible extern const char start_##ops##_##name[], end_##ops##_##name[];	\
 	asm(NATIVE_LABEL("start_", ops, name) code NATIVE_LABEL("end_", ops, name))
 
+<<<<<<< HEAD
 unsigned paravirt_patch_nop(void);
 unsigned paravirt_patch_ident_32(void *insnbuf, unsigned len);
 unsigned paravirt_patch_ident_64(void *insnbuf, unsigned len);
 unsigned paravirt_patch_ignore(unsigned len);
+=======
+unsigned paravirt_patch_ident_32(void *insnbuf, unsigned len);
+unsigned paravirt_patch_ident_64(void *insnbuf, unsigned len);
+>>>>>>> v4.9.227
 unsigned paravirt_patch_call(void *insnbuf,
 			     const void *target, u16 tgt_clobbers,
 			     unsigned long addr, u16 site_clobbers,
@@ -421,7 +495,13 @@ int paravirt_disable_iospace(void);
  * offset into the paravirt_patch_template structure, and can therefore be
  * freely converted back into a structure offset.
  */
+<<<<<<< HEAD
 #define PARAVIRT_CALL	"call *%c[paravirt_opptr];"
+=======
+#define PARAVIRT_CALL					\
+	ANNOTATE_RETPOLINE_SAFE				\
+	"call *%c[paravirt_opptr];"
+>>>>>>> v4.9.227
 
 /*
  * These macros are intended to wrap calls through one of the paravirt
@@ -488,8 +568,14 @@ int paravirt_disable_iospace(void);
  * makes sure the incoming and outgoing types are always correct.
  */
 #ifdef CONFIG_X86_32
+<<<<<<< HEAD
 #define PVOP_VCALL_ARGS				\
 	unsigned long __eax = __eax, __edx = __edx, __ecx = __ecx
+=======
+#define PVOP_VCALL_ARGS							\
+	unsigned long __eax = __eax, __edx = __edx, __ecx = __ecx;	\
+	register void *__sp asm("esp")
+>>>>>>> v4.9.227
 #define PVOP_CALL_ARGS			PVOP_VCALL_ARGS
 
 #define PVOP_CALL_ARG1(x)		"a" ((unsigned long)(x))
@@ -507,9 +593,16 @@ int paravirt_disable_iospace(void);
 #define VEXTRA_CLOBBERS
 #else  /* CONFIG_X86_64 */
 /* [re]ax isn't an arg, but the return val */
+<<<<<<< HEAD
 #define PVOP_VCALL_ARGS					\
 	unsigned long __edi = __edi, __esi = __esi,	\
 		__edx = __edx, __ecx = __ecx, __eax = __eax
+=======
+#define PVOP_VCALL_ARGS						\
+	unsigned long __edi = __edi, __esi = __esi,		\
+		__edx = __edx, __ecx = __ecx, __eax = __eax;	\
+	register void *__sp asm("rsp")
+>>>>>>> v4.9.227
 #define PVOP_CALL_ARGS		PVOP_VCALL_ARGS
 
 #define PVOP_CALL_ARG1(x)		"D" ((unsigned long)(x))
@@ -548,7 +641,11 @@ int paravirt_disable_iospace(void);
 			asm volatile(pre				\
 				     paravirt_alt(PARAVIRT_CALL)	\
 				     post				\
+<<<<<<< HEAD
 				     : call_clbr			\
+=======
+				     : call_clbr, "+r" (__sp)		\
+>>>>>>> v4.9.227
 				     : paravirt_type(op),		\
 				       paravirt_clobber(clbr),		\
 				       ##__VA_ARGS__			\
@@ -558,7 +655,11 @@ int paravirt_disable_iospace(void);
 			asm volatile(pre				\
 				     paravirt_alt(PARAVIRT_CALL)	\
 				     post				\
+<<<<<<< HEAD
 				     : call_clbr			\
+=======
+				     : call_clbr, "+r" (__sp)		\
+>>>>>>> v4.9.227
 				     : paravirt_type(op),		\
 				       paravirt_clobber(clbr),		\
 				       ##__VA_ARGS__			\
@@ -585,7 +686,11 @@ int paravirt_disable_iospace(void);
 		asm volatile(pre					\
 			     paravirt_alt(PARAVIRT_CALL)		\
 			     post					\
+<<<<<<< HEAD
 			     : call_clbr				\
+=======
+			     : call_clbr, "+r" (__sp)			\
+>>>>>>> v4.9.227
 			     : paravirt_type(op),			\
 			       paravirt_clobber(clbr),			\
 			       ##__VA_ARGS__				\

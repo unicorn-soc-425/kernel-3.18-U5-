@@ -19,6 +19,10 @@
 
 #include "cm.h"
 #include "cm-regbits-33xx.h"
+<<<<<<< HEAD
+=======
+#include "prcm-common.h"
+>>>>>>> v4.9.227
 
 /* CM base address */
 #define AM33XX_CM_BASE		0x44e00000
@@ -374,6 +378,7 @@
 
 
 #ifndef __ASSEMBLER__
+<<<<<<< HEAD
 bool am33xx_cm_is_clkdm_in_hwsup(u16 inst, u16 cdoffs);
 void am33xx_cm_clkdm_enable_hwsup(u16 inst, u16 cdoffs);
 void am33xx_cm_clkdm_disable_hwsup(u16 inst, u16 cdoffs);
@@ -410,5 +415,8 @@ static inline int am33xx_cm_wait_module_ready(u16 inst, s16 cdoffs,
 }
 #endif
 
+=======
+int am33xx_cm_init(const struct omap_prcm_init_data *data);
+>>>>>>> v4.9.227
 #endif /* ASSEMBLER */
 #endif

@@ -15,7 +15,11 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 #define NFS4_BITMAP_SIZE	2
+=======
+#define NFS4_BITMAP_SIZE	3
+>>>>>>> v4.9.227
 #define NFS4_VERIFIER_SIZE	8
 #define NFS4_STATEID_SEQID_SIZE 4
 #define NFS4_STATEID_OTHER_SIZE 12
@@ -39,8 +43,14 @@
 #define NFS4_FH_VOL_MIGRATION		0x0004
 #define NFS4_FH_VOL_RENAME		0x0008
 
+<<<<<<< HEAD
 #define NFS4_OPEN_RESULT_CONFIRM 0x0002
 #define NFS4_OPEN_RESULT_LOCKTYPE_POSIX 0x0004
+=======
+#define NFS4_OPEN_RESULT_CONFIRM		0x0002
+#define NFS4_OPEN_RESULT_LOCKTYPE_POSIX		0x0004
+#define NFS4_OPEN_RESULT_MAY_NOTIFY_LOCK	0x0020
+>>>>>>> v4.9.227
 
 #define NFS4_SHARE_ACCESS_MASK	0x000F
 #define NFS4_SHARE_ACCESS_READ	0x0001
@@ -86,6 +96,13 @@
 #define ACL4_SUPPORT_AUDIT_ACL 0x04
 #define ACL4_SUPPORT_ALARM_ACL 0x08
 
+<<<<<<< HEAD
+=======
+#define NFS4_ACL_AUTO_INHERIT 0x00000001
+#define NFS4_ACL_PROTECTED    0x00000002
+#define NFS4_ACL_DEFAULTED    0x00000004
+
+>>>>>>> v4.9.227
 #define NFS4_ACE_FILE_INHERIT_ACE             0x00000001
 #define NFS4_ACE_DIRECTORY_INHERIT_ACE        0x00000002
 #define NFS4_ACE_NO_PROPAGATE_INHERIT_ACE     0x00000004
@@ -93,6 +110,10 @@
 #define NFS4_ACE_SUCCESSFUL_ACCESS_ACE_FLAG   0x00000010
 #define NFS4_ACE_FAILED_ACCESS_ACE_FLAG       0x00000020
 #define NFS4_ACE_IDENTIFIER_GROUP             0x00000040
+<<<<<<< HEAD
+=======
+#define NFS4_ACE_INHERITED_ACE                0x00000080
+>>>>>>> v4.9.227
 
 #define NFS4_ACE_READ_DATA                    0x00000001
 #define NFS4_ACE_LIST_DIRECTORY               0x00000001
@@ -106,6 +127,11 @@
 #define NFS4_ACE_DELETE_CHILD                 0x00000040
 #define NFS4_ACE_READ_ATTRIBUTES              0x00000080
 #define NFS4_ACE_WRITE_ATTRIBUTES             0x00000100
+<<<<<<< HEAD
+=======
+#define NFS4_ACE_WRITE_RETENTION              0x00000200
+#define NFS4_ACE_WRITE_RETENTION_HOLD         0x00000400
+>>>>>>> v4.9.227
 #define NFS4_ACE_DELETE                       0x00010000
 #define NFS4_ACE_READ_ACL                     0x00020000
 #define NFS4_ACE_WRITE_ACL                    0x00040000
@@ -162,6 +188,7 @@
  */
 #define NFS4_MAX_BACK_CHANNEL_OPS 2
 
+<<<<<<< HEAD
 enum nfs4_acl_whotype {
 	NFS4_ACL_WHO_NAMED = 0,
 	NFS4_ACL_WHO_OWNER,
@@ -169,6 +196,8 @@ enum nfs4_acl_whotype {
 	NFS4_ACL_WHO_EVERYONE,
 };
 
+=======
+>>>>>>> v4.9.227
 #endif /* _UAPI_LINUX_NFS4_H */
 
 /*

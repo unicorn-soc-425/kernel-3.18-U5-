@@ -378,6 +378,7 @@ enum {
 
 /**
  * struct siena_nic_data - Siena NIC state
+<<<<<<< HEAD
  * @wol_filter_id: Wake-on-LAN packet filter id
  * @stats: Hardware statistics
  */
@@ -440,6 +441,108 @@ enum {
 	EF10_STAT_rx_dp_streaming_packets,
 	EF10_STAT_rx_dp_hlb_fetch,
 	EF10_STAT_rx_dp_hlb_wait,
+=======
+ * @efx: Pointer back to main interface structure
+ * @wol_filter_id: Wake-on-LAN packet filter id
+ * @stats: Hardware statistics
+ * @vf: Array of &struct siena_vf objects
+ * @vf_buftbl_base: The zeroth buffer table index used to back VF queues.
+ * @vfdi_status: Common VFDI status page to be dmad to VF address space.
+ * @local_addr_list: List of local addresses. Protected by %local_lock.
+ * @local_page_list: List of DMA addressable pages used to broadcast
+ *	%local_addr_list. Protected by %local_lock.
+ * @local_lock: Mutex protecting %local_addr_list and %local_page_list.
+ * @peer_work: Work item to broadcast peer addresses to VMs.
+ */
+struct siena_nic_data {
+	struct efx_nic *efx;
+	int wol_filter_id;
+	u64 stats[SIENA_STAT_COUNT];
+#ifdef CONFIG_SFC_SRIOV
+	struct siena_vf *vf;
+	struct efx_channel *vfdi_channel;
+	unsigned vf_buftbl_base;
+	struct efx_buffer vfdi_status;
+	struct list_head local_addr_list;
+	struct list_head local_page_list;
+	struct mutex local_lock;
+	struct work_struct peer_work;
+#endif
+};
+
+enum {
+	EF10_STAT_port_tx_bytes = GENERIC_STAT_COUNT,
+	EF10_STAT_port_tx_packets,
+	EF10_STAT_port_tx_pause,
+	EF10_STAT_port_tx_control,
+	EF10_STAT_port_tx_unicast,
+	EF10_STAT_port_tx_multicast,
+	EF10_STAT_port_tx_broadcast,
+	EF10_STAT_port_tx_lt64,
+	EF10_STAT_port_tx_64,
+	EF10_STAT_port_tx_65_to_127,
+	EF10_STAT_port_tx_128_to_255,
+	EF10_STAT_port_tx_256_to_511,
+	EF10_STAT_port_tx_512_to_1023,
+	EF10_STAT_port_tx_1024_to_15xx,
+	EF10_STAT_port_tx_15xx_to_jumbo,
+	EF10_STAT_port_rx_bytes,
+	EF10_STAT_port_rx_bytes_minus_good_bytes,
+	EF10_STAT_port_rx_good_bytes,
+	EF10_STAT_port_rx_bad_bytes,
+	EF10_STAT_port_rx_packets,
+	EF10_STAT_port_rx_good,
+	EF10_STAT_port_rx_bad,
+	EF10_STAT_port_rx_pause,
+	EF10_STAT_port_rx_control,
+	EF10_STAT_port_rx_unicast,
+	EF10_STAT_port_rx_multicast,
+	EF10_STAT_port_rx_broadcast,
+	EF10_STAT_port_rx_lt64,
+	EF10_STAT_port_rx_64,
+	EF10_STAT_port_rx_65_to_127,
+	EF10_STAT_port_rx_128_to_255,
+	EF10_STAT_port_rx_256_to_511,
+	EF10_STAT_port_rx_512_to_1023,
+	EF10_STAT_port_rx_1024_to_15xx,
+	EF10_STAT_port_rx_15xx_to_jumbo,
+	EF10_STAT_port_rx_gtjumbo,
+	EF10_STAT_port_rx_bad_gtjumbo,
+	EF10_STAT_port_rx_overflow,
+	EF10_STAT_port_rx_align_error,
+	EF10_STAT_port_rx_length_error,
+	EF10_STAT_port_rx_nodesc_drops,
+	EF10_STAT_port_rx_pm_trunc_bb_overflow,
+	EF10_STAT_port_rx_pm_discard_bb_overflow,
+	EF10_STAT_port_rx_pm_trunc_vfifo_full,
+	EF10_STAT_port_rx_pm_discard_vfifo_full,
+	EF10_STAT_port_rx_pm_trunc_qbb,
+	EF10_STAT_port_rx_pm_discard_qbb,
+	EF10_STAT_port_rx_pm_discard_mapping,
+	EF10_STAT_port_rx_dp_q_disabled_packets,
+	EF10_STAT_port_rx_dp_di_dropped_packets,
+	EF10_STAT_port_rx_dp_streaming_packets,
+	EF10_STAT_port_rx_dp_hlb_fetch,
+	EF10_STAT_port_rx_dp_hlb_wait,
+	EF10_STAT_rx_unicast,
+	EF10_STAT_rx_unicast_bytes,
+	EF10_STAT_rx_multicast,
+	EF10_STAT_rx_multicast_bytes,
+	EF10_STAT_rx_broadcast,
+	EF10_STAT_rx_broadcast_bytes,
+	EF10_STAT_rx_bad,
+	EF10_STAT_rx_bad_bytes,
+	EF10_STAT_rx_overflow,
+	EF10_STAT_tx_unicast,
+	EF10_STAT_tx_unicast_bytes,
+	EF10_STAT_tx_multicast,
+	EF10_STAT_tx_multicast_bytes,
+	EF10_STAT_tx_broadcast,
+	EF10_STAT_tx_broadcast_bytes,
+	EF10_STAT_tx_bad,
+	EF10_STAT_tx_bad_bytes,
+	EF10_STAT_tx_overflow,
+>>>>>>> v4.9.227
 	EF10_STAT_COUNT
 };
 
@@ -462,15 +565,43 @@ enum {
  * @pio_write_base: Base address for writing PIO buffers
  * @pio_write_vi_base: Relative VI number for @pio_write_base
  * @piobuf_handle: Handle of each PIO buffer allocated
+<<<<<<< HEAD
  * @must_restore_piobufs: Flag: PIO buffers have yet to be restored after MC
  *	reboot
  * @rx_rss_context: Firmware handle for our RSS context
  * @stats: Hardware statistics
  * @workaround_35388: Flag: firmware supports workaround for bug 35388
+=======
+ * @piobuf_size: size of a single PIO buffer
+ * @must_restore_piobufs: Flag: PIO buffers have yet to be restored after MC
+ *	reboot
+ * @rx_rss_context: Firmware handle for our RSS context
+ * @rx_rss_context_exclusive: Whether our RSS context is exclusive or shared
+ * @stats: Hardware statistics
+ * @workaround_35388: Flag: firmware supports workaround for bug 35388
+ * @workaround_26807: Flag: firmware supports workaround for bug 26807
+ * @workaround_61265: Flag: firmware supports workaround for bug 61265
+>>>>>>> v4.9.227
  * @must_check_datapath_caps: Flag: @datapath_caps needs to be revalidated
  *	after MC reboot
  * @datapath_caps: Capabilities of datapath firmware (FLAGS1 field of
  *	%MC_CMD_GET_CAPABILITIES response)
+<<<<<<< HEAD
+=======
+ * @datapath_caps2: Further Capabilities of datapath firmware (FLAGS2 field of
+ * %MC_CMD_GET_CAPABILITIES response)
+ * @rx_dpcpu_fw_id: Firmware ID of the RxDPCPU
+ * @tx_dpcpu_fw_id: Firmware ID of the TxDPCPU
+ * @vport_id: The function's vport ID, only relevant for PFs
+ * @must_probe_vswitching: Flag: vswitching has yet to be setup after MC reboot
+ * @pf_index: The number for this PF, or the parent PF if this is a VF
+#ifdef CONFIG_SFC_SRIOV
+ * @vf: Pointer to VF data structure
+#endif
+ * @vport_mac: The MAC address on the vport, only for PFs; VFs will be zero
+ * @vlan_list: List of VLANs added over the interface. Serialised by vlan_lock.
+ * @vlan_lock: Lock to serialize access to vlan_list.
+>>>>>>> v4.9.227
  */
 struct efx_ef10_nic_data {
 	struct efx_buffer mcdi_buf;
@@ -483,6 +614,7 @@ struct efx_ef10_nic_data {
 	void __iomem *wc_membase, *pio_write_base;
 	unsigned int pio_write_vi_base;
 	unsigned int piobuf_handle[EF10_TX_PIOBUF_COUNT];
+<<<<<<< HEAD
 	bool must_restore_piobufs;
 	u32 rx_rss_context;
 	u64 stats[EF10_STAT_COUNT];
@@ -579,6 +711,37 @@ int efx_sriov_get_vf_config(struct net_device *dev, int vf,
 int efx_sriov_set_vf_spoofchk(struct net_device *net_dev, int vf,
 			      bool spoofchk);
 
+=======
+	u16 piobuf_size;
+	bool must_restore_piobufs;
+	u32 rx_rss_context;
+	bool rx_rss_context_exclusive;
+	u64 stats[EF10_STAT_COUNT];
+	bool workaround_35388;
+	bool workaround_26807;
+	bool workaround_61265;
+	bool must_check_datapath_caps;
+	u32 datapath_caps;
+	u32 datapath_caps2;
+	unsigned int rx_dpcpu_fw_id;
+	unsigned int tx_dpcpu_fw_id;
+	unsigned int vport_id;
+	bool must_probe_vswitching;
+	unsigned int pf_index;
+	u8 port_id[ETH_ALEN];
+#ifdef CONFIG_SFC_SRIOV
+	unsigned int vf_index;
+	struct ef10_vf *vf;
+#endif
+	u8 vport_mac[ETH_ALEN];
+	struct list_head vlan_list;
+	struct mutex vlan_lock;
+};
+
+int efx_init_sriov(void);
+void efx_fini_sriov(void);
+
+>>>>>>> v4.9.227
 struct ethtool_ts_info;
 int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel);
 void efx_ptp_defer_probe_with_channel(struct efx_nic *efx);
@@ -610,6 +773,10 @@ extern const struct efx_nic_type falcon_a1_nic_type;
 extern const struct efx_nic_type falcon_b0_nic_type;
 extern const struct efx_nic_type siena_a0_nic_type;
 extern const struct efx_nic_type efx_hunt_a0_nic_type;
+<<<<<<< HEAD
+=======
+extern const struct efx_nic_type efx_hunt_a0_vf_nic_type;
+>>>>>>> v4.9.227
 
 /**************************************************************************
  *
@@ -759,12 +926,20 @@ static inline void efx_update_diff_stat(u64 *stat, u64 diff)
 
 /* Interrupts */
 int efx_nic_init_interrupt(struct efx_nic *efx);
+<<<<<<< HEAD
 void efx_nic_irq_test_start(struct efx_nic *efx);
+=======
+int efx_nic_irq_test_start(struct efx_nic *efx);
+>>>>>>> v4.9.227
 void efx_nic_fini_interrupt(struct efx_nic *efx);
 
 /* Falcon/Siena interrupts */
 void efx_farch_irq_enable_master(struct efx_nic *efx);
+<<<<<<< HEAD
 void efx_farch_irq_test_generate(struct efx_nic *efx);
+=======
+int efx_farch_irq_test_generate(struct efx_nic *efx);
+>>>>>>> v4.9.227
 void efx_farch_irq_disable_master(struct efx_nic *efx);
 irqreturn_t efx_farch_msi_interrupt(int irq, void *dev_id);
 irqreturn_t efx_farch_legacy_interrupt(int irq, void *dev_id);

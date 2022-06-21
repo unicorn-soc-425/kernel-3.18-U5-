@@ -18,6 +18,11 @@
 #include <asm/ppc-pci.h>
 #include <asm/machdep.h>
 
+<<<<<<< HEAD
+=======
+#include "pseries.h"
+
+>>>>>>> v4.9.227
 static int query_token, change_token;
 
 #define RTAS_QUERY_FN		0
@@ -116,8 +121,13 @@ static void rtas_teardown_msi_irqs(struct pci_dev *pdev)
 {
 	struct msi_desc *entry;
 
+<<<<<<< HEAD
 	list_for_each_entry(entry, &pdev->msi_list, list) {
 		if (entry->irq == NO_IRQ)
+=======
+	for_each_pci_msi_entry(entry, pdev) {
+		if (!entry->irq)
+>>>>>>> v4.9.227
 			continue;
 
 		irq_set_msi_desc(entry->irq, NULL);
@@ -195,6 +205,10 @@ static struct device_node *find_pe_total_msi(struct pci_dev *dev, int *total)
 static struct device_node *find_pe_dn(struct pci_dev *dev, int *total)
 {
 	struct device_node *dn;
+<<<<<<< HEAD
+=======
+	struct pci_dn *pdn;
+>>>>>>> v4.9.227
 	struct eeh_dev *edev;
 
 	/* Found our PE and assume 8 at that point. */
@@ -204,10 +218,18 @@ static struct device_node *find_pe_dn(struct pci_dev *dev, int *total)
 		return NULL;
 
 	/* Get the top level device in the PE */
+<<<<<<< HEAD
 	edev = of_node_to_eeh_dev(dn);
 	if (edev->pe)
 		edev = list_first_entry(&edev->pe->edevs, struct eeh_dev, list);
 	dn = eeh_dev_to_of_node(edev);
+=======
+	edev = pdn_to_eeh_dev(PCI_DN(dn));
+	if (edev->pe)
+		edev = list_first_entry(&edev->pe->edevs, struct eeh_dev, list);
+	pdn = eeh_dev_to_pdn(edev);
+	dn = pdn ? pdn->node : NULL;
+>>>>>>> v4.9.227
 	if (!dn)
 		return NULL;
 
@@ -301,7 +323,11 @@ static int msi_quota_for_device(struct pci_dev *dev, int request)
 	memset(&counts, 0, sizeof(struct msi_counts));
 
 	/* Work out how many devices we have below this PE */
+<<<<<<< HEAD
 	traverse_pci_devices(pe_dn, count_non_bridge_devices, &counts);
+=======
+	pci_traverse_device_nodes(pe_dn, count_non_bridge_devices, &counts);
+>>>>>>> v4.9.227
 
 	if (counts.num_devices == 0) {
 		pr_err("rtas_msi: found 0 devices under PE for %s\n",
@@ -316,7 +342,11 @@ static int msi_quota_for_device(struct pci_dev *dev, int request)
 	/* else, we have some more calculating to do */
 	counts.requestor = pci_device_to_OF_node(dev);
 	counts.request = request;
+<<<<<<< HEAD
 	traverse_pci_devices(pe_dn, count_spare_msis, &counts);
+=======
+	pci_traverse_device_nodes(pe_dn, count_spare_msis, &counts);
+>>>>>>> v4.9.227
 
 	/* If the quota isn't an integer multiple of the total, we can
 	 * use the remainder as spare MSIs for anyone that wants them. */
@@ -346,7 +376,11 @@ static int check_msix_entries(struct pci_dev *pdev)
 	 * So we must reject such requests. */
 
 	expected = 0;
+<<<<<<< HEAD
 	list_for_each_entry(entry, &pdev->msi_list, list) {
+=======
+	for_each_pci_msi_entry(entry, pdev) {
+>>>>>>> v4.9.227
 		if (entry->msi_attrib.entry_nr != expected) {
 			pr_debug("rtas_msi: bad MSI-X entries.\n");
 			return -EINVAL;
@@ -458,7 +492,11 @@ again:
 	}
 
 	i = 0;
+<<<<<<< HEAD
 	list_for_each_entry(entry, &pdev->msi_list, list) {
+=======
+	for_each_pci_msi_entry(entry, pdev) {
+>>>>>>> v4.9.227
 		hwirq = rtas_query_irq_number(pdn, i++);
 		if (hwirq < 0) {
 			pr_debug("rtas_msi: error (%d) getting hwirq\n", rc);
@@ -467,7 +505,11 @@ again:
 
 		virq = irq_create_mapping(NULL, hwirq);
 
+<<<<<<< HEAD
 		if (virq == NO_IRQ) {
+=======
+		if (!virq) {
+>>>>>>> v4.9.227
 			pr_debug("rtas_msi: Failed mapping hwirq %d\n", hwirq);
 			return -ENOSPC;
 		}
@@ -486,7 +528,11 @@ again:
 static void rtas_msi_pci_irq_fixup(struct pci_dev *pdev)
 {
 	/* No LSI -> leave MSIs (if any) configured */
+<<<<<<< HEAD
 	if (pdev->irq == NO_IRQ) {
+=======
+	if (!pdev->irq) {
+>>>>>>> v4.9.227
 		dev_dbg(&pdev->dev, "rtas_msi: no LSI, nothing to do.\n");
 		return;
 	}
@@ -503,6 +549,11 @@ static void rtas_msi_pci_irq_fixup(struct pci_dev *pdev)
 
 static int rtas_msi_init(void)
 {
+<<<<<<< HEAD
+=======
+	struct pci_controller *phb;
+
+>>>>>>> v4.9.227
 	query_token  = rtas_token("ibm,query-interrupt-source-number");
 	change_token = rtas_token("ibm,change-msi");
 
@@ -514,9 +565,21 @@ static int rtas_msi_init(void)
 
 	pr_debug("rtas_msi: Registering RTAS MSI callbacks.\n");
 
+<<<<<<< HEAD
 	WARN_ON(ppc_md.setup_msi_irqs);
 	ppc_md.setup_msi_irqs = rtas_setup_msi_irqs;
 	ppc_md.teardown_msi_irqs = rtas_teardown_msi_irqs;
+=======
+	WARN_ON(pseries_pci_controller_ops.setup_msi_irqs);
+	pseries_pci_controller_ops.setup_msi_irqs = rtas_setup_msi_irqs;
+	pseries_pci_controller_ops.teardown_msi_irqs = rtas_teardown_msi_irqs;
+
+	list_for_each_entry(phb, &hose_list, list_node) {
+		WARN_ON(phb->controller_ops.setup_msi_irqs);
+		phb->controller_ops.setup_msi_irqs = rtas_setup_msi_irqs;
+		phb->controller_ops.teardown_msi_irqs = rtas_teardown_msi_irqs;
+	}
+>>>>>>> v4.9.227
 
 	WARN_ON(ppc_md.pci_irq_fixup);
 	ppc_md.pci_irq_fixup = rtas_msi_pci_irq_fixup;

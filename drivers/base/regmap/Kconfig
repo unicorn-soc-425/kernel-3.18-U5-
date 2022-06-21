@@ -3,12 +3,22 @@
 # subsystems should select the appropriate symbols.
 
 config REGMAP
+<<<<<<< HEAD
 	default y if (REGMAP_I2C || REGMAP_SPI || REGMAP_SPMI || REGMAP_MMIO || REGMAP_IRQ || REGMAP_SWR)
+=======
+	default y if (REGMAP_I2C || REGMAP_SPI || REGMAP_SPMI || REGMAP_AC97 || REGMAP_MMIO || REGMAP_IRQ)
+>>>>>>> v4.9.227
 	select LZO_COMPRESS
 	select LZO_DECOMPRESS
 	select IRQ_DOMAIN if REGMAP_IRQ
 	bool
 
+<<<<<<< HEAD
+=======
+config REGMAP_AC97
+	tristate
+
+>>>>>>> v4.9.227
 config REGMAP_I2C
 	tristate
 	depends on I2C
@@ -19,13 +29,18 @@ config REGMAP_SPI
 
 config REGMAP_SPMI
 	tristate
+<<<<<<< HEAD
 	depends on SPMI || MSM_SPMI
+=======
+	depends on SPMI
+>>>>>>> v4.9.227
 
 config REGMAP_MMIO
 	tristate
 
 config REGMAP_IRQ
 	bool
+<<<<<<< HEAD
 
 config REGMAP_SWR
 	tristate
@@ -39,3 +54,5 @@ config REGMAP_ALLOW_WRITE_DEBUGFS
 	 debugfs. Client driver can enable this config
 	 option to write registers using debugfs from
 	 regmap registers file.
+=======
+>>>>>>> v4.9.227

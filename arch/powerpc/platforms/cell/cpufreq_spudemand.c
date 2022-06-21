@@ -85,6 +85,7 @@ static void spu_gov_cancel_work(struct spu_gov_info_struct *info)
 	cancel_delayed_work_sync(&info->work);
 }
 
+<<<<<<< HEAD
 static int spu_gov_govern(struct cpufreq_policy *policy, unsigned int event)
 {
 	unsigned int cpu = policy->cpu;
@@ -135,11 +136,63 @@ static int spu_gov_govern(struct cpufreq_policy *policy, unsigned int event)
 	}
 
 	return ret;
+=======
+static int spu_gov_start(struct cpufreq_policy *policy)
+{
+	unsigned int cpu = policy->cpu;
+	struct spu_gov_info_struct *info = &per_cpu(spu_gov_info, cpu);
+	struct spu_gov_info_struct *affected_info;
+	int i;
+
+	if (!cpu_online(cpu)) {
+		printk(KERN_ERR "cpu %d is not online\n", cpu);
+		return -EINVAL;
+	}
+
+	if (!policy->cur) {
+		printk(KERN_ERR "no cpu specified in policy\n");
+		return -EINVAL;
+	}
+
+	/* initialize spu_gov_info for all affected cpus */
+	for_each_cpu(i, policy->cpus) {
+		affected_info = &per_cpu(spu_gov_info, i);
+		affected_info->policy = policy;
+	}
+
+	info->poll_int = POLL_TIME;
+
+	/* setup timer */
+	spu_gov_init_work(info);
+
+	return 0;
+}
+
+static void spu_gov_stop(struct cpufreq_policy *policy)
+{
+	unsigned int cpu = policy->cpu;
+	struct spu_gov_info_struct *info = &per_cpu(spu_gov_info, cpu);
+	int i;
+
+	/* cancel timer */
+	spu_gov_cancel_work(info);
+
+	/* clean spu_gov_info for all affected cpus */
+	for_each_cpu (i, policy->cpus) {
+		info = &per_cpu(spu_gov_info, i);
+		info->policy = NULL;
+	}
+>>>>>>> v4.9.227
 }
 
 static struct cpufreq_governor spu_governor = {
 	.name = "spudemand",
+<<<<<<< HEAD
 	.governor = spu_gov_govern,
+=======
+	.start = spu_gov_start,
+	.stop = spu_gov_stop,
+>>>>>>> v4.9.227
 	.owner = THIS_MODULE,
 };
 

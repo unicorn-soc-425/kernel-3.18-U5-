@@ -178,7 +178,11 @@ static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
 		       idev->id_vendor, idev->id_device);
 }
 
+<<<<<<< HEAD
 ipack_device_attr(id_format, "0x%hhu\n");
+=======
+ipack_device_attr(id_format, "0x%hhx\n");
+>>>>>>> v4.9.227
 
 static DEVICE_ATTR_RO(id);
 static DEVICE_ATTR_RO(id_device);

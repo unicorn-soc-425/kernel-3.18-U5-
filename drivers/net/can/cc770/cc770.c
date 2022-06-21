@@ -60,7 +60,11 @@ MODULE_DESCRIPTION(KBUILD_MODNAME "CAN netdevice driver");
  *
  * The message objects 1..14 can be used for TX and RX while the message
  * objects 15 is optimized for RX. It has a shadow register for reliable
+<<<<<<< HEAD
  * data receiption under heavy bus load. Therefore it makes sense to use
+=======
+ * data reception under heavy bus load. Therefore it makes sense to use
+>>>>>>> v4.9.227
  * this message object for the needed use case. The frame type (EFF/SFF)
  * for the message object 15 can be defined via kernel module parameter
  * "msgobj15_eff". If not equal 0, it will receive 29-bit EFF frames,
@@ -498,10 +502,17 @@ static void cc770_rx(struct net_device *dev, unsigned int mo, u8 ctrl1)
 		for (i = 0; i < cf->can_dlc; i++)
 			cf->data[i] = cc770_read_reg(priv, msgobj[mo].data[i]);
 	}
+<<<<<<< HEAD
 	netif_rx(skb);
 
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+
+	stats->rx_packets++;
+	stats->rx_bytes += cf->can_dlc;
+	netif_rx(skb);
+>>>>>>> v4.9.227
 }
 
 static int cc770_err(struct net_device *dev, u8 status)
@@ -529,6 +540,10 @@ static int cc770_err(struct net_device *dev, u8 status)
 		cc770_write_reg(priv, control, CTRL_INI);
 		cf->can_id |= CAN_ERR_BUSOFF;
 		priv->can.state = CAN_STATE_BUS_OFF;
+<<<<<<< HEAD
+=======
+		priv->can.can_stats.bus_off++;
+>>>>>>> v4.9.227
 		can_bus_off(dev);
 	} else if (status & STAT_WARN) {
 		cf->can_id |= CAN_ERR_CRTL;
@@ -571,16 +586,27 @@ static int cc770_err(struct net_device *dev, u8 status)
 				cf->data[2] |= CAN_ERR_PROT_BIT0;
 				break;
 			case STAT_LEC_CRC:
+<<<<<<< HEAD
 				cf->data[3] |= CAN_ERR_PROT_LOC_CRC_SEQ;
+=======
+				cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
+>>>>>>> v4.9.227
 				break;
 			}
 		}
 	}
 
+<<<<<<< HEAD
 	netif_rx(skb);
 
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+
+	stats->rx_packets++;
+	stats->rx_bytes += cf->can_dlc;
+	netif_rx(skb);
+>>>>>>> v4.9.227
 
 	return 0;
 }

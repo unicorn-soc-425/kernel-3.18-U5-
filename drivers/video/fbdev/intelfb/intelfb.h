@@ -285,9 +285,13 @@ struct intelfb_info {
 	/* use a gart reserved fb mem */
 	u8 fbmem_gart;
 
+<<<<<<< HEAD
 	/* mtrr support */
 	int mtrr_reg;
 	u32 has_mtrr;
+=======
+	int wc_cookie;
+>>>>>>> v4.9.227
 
 	/* heap data */
 	struct intelfb_heap_data aperture;

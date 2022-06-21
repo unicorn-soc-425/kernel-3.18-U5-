@@ -48,7 +48,11 @@ MODULE_DEVICE_TABLE(pci, atl1c_pci_tbl);
 
 MODULE_AUTHOR("Jie Yang");
 MODULE_AUTHOR("Qualcomm Atheros Inc., <nic-devel@qualcomm.com>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Qualcom Atheros 100/1000M Ethernet Network Driver");
+=======
+MODULE_DESCRIPTION("Qualcomm Atheros 100/1000M Ethernet Network Driver");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");
 MODULE_VERSION(ATL1C_DRV_VERSION);
 
@@ -65,10 +69,13 @@ static void atl1c_reset_dma_ring(struct atl1c_adapter *adapter);
 static int atl1c_configure(struct atl1c_adapter *adapter);
 static int atl1c_alloc_rx_buffer(struct atl1c_adapter *adapter);
 
+<<<<<<< HEAD
 static const u16 atl1c_pay_load_size[] = {
 	128, 256, 512, 1024, 2048, 4096,
 };
 
+=======
+>>>>>>> v4.9.227
 
 static const u32 atl1c_default_msg = NETIF_MSG_DRV | NETIF_MSG_PROBE |
 	NETIF_MSG_LINK | NETIF_MSG_TIMER | NETIF_MSG_IFDOWN | NETIF_MSG_IFUP;
@@ -752,7 +759,11 @@ static void atl1c_patch_assign(struct atl1c_hw *hw)
 
 	if (hw->device_id == PCI_DEVICE_ID_ATHEROS_L2C_B2 &&
 	    hw->revision_id == L2CB_V21) {
+<<<<<<< HEAD
 		/* config acess mode */
+=======
+		/* config access mode */
+>>>>>>> v4.9.227
 		pci_write_config_dword(pdev, REG_PCIE_IND_ACC_ADDR,
 				       REG_PCIE_DEV_MISC_CTRL);
 		pci_read_config_dword(pdev, REG_PCIE_IND_ACC_DATA, &misc_ctrl);
@@ -825,7 +836,10 @@ static int atl1c_sw_init(struct atl1c_adapter *adapter)
 	atl1c_set_rxbufsize(adapter, adapter->netdev);
 	atomic_set(&adapter->irq_sem, 1);
 	spin_lock_init(&adapter->mdio_lock);
+<<<<<<< HEAD
 	spin_lock_init(&adapter->tx_lock);
+=======
+>>>>>>> v4.9.227
 	set_bit(__AT_DOWN, &adapter->flags);
 
 	return 0;
@@ -874,6 +888,11 @@ static void atl1c_clean_tx_ring(struct atl1c_adapter *adapter,
 		atl1c_clean_buffer(pdev, buffer_info);
 	}
 
+<<<<<<< HEAD
+=======
+	netdev_reset_queue(adapter->netdev);
+
+>>>>>>> v4.9.227
 	/* Zero out Tx-buffers */
 	memset(tpd_ring->desc, 0, sizeof(struct atl1c_tpd_desc) *
 		ring_count);
@@ -1550,6 +1569,10 @@ static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
 	u16 next_to_clean = atomic_read(&tpd_ring->next_to_clean);
 	u16 hw_next_to_clean;
 	u16 reg;
+<<<<<<< HEAD
+=======
+	unsigned int total_bytes = 0, total_packets = 0;
+>>>>>>> v4.9.227
 
 	reg = type == atl1c_trans_high ? REG_TPD_PRI1_CIDX : REG_TPD_PRI0_CIDX;
 
@@ -1557,12 +1580,24 @@ static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
 
 	while (next_to_clean != hw_next_to_clean) {
 		buffer_info = &tpd_ring->buffer_info[next_to_clean];
+<<<<<<< HEAD
+=======
+		if (buffer_info->skb) {
+			total_bytes += buffer_info->skb->len;
+			total_packets++;
+		}
+>>>>>>> v4.9.227
 		atl1c_clean_buffer(pdev, buffer_info);
 		if (++next_to_clean == tpd_ring->count)
 			next_to_clean = 0;
 		atomic_set(&tpd_ring->next_to_clean, next_to_clean);
 	}
 
+<<<<<<< HEAD
+=======
+	netdev_completed_queue(adapter->netdev, total_packets, total_bytes);
+
+>>>>>>> v4.9.227
 	if (netif_queue_stopped(adapter->netdev) &&
 			netif_carrier_ok(adapter->netdev)) {
 		netif_wake_queue(adapter->netdev);
@@ -2202,7 +2237,10 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 					  struct net_device *netdev)
 {
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> v4.9.227
 	u16 tpd_req = 1;
 	struct atl1c_tpd_desc *tpd;
 	enum atl1c_trans_queue type = atl1c_trans_normal;
@@ -2213,16 +2251,22 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 	}
 
 	tpd_req = atl1c_cal_tpd_req(skb);
+<<<<<<< HEAD
 	if (!spin_trylock_irqsave(&adapter->tx_lock, flags)) {
 		if (netif_msg_pktdata(adapter))
 			dev_info(&adapter->pdev->dev, "tx locked\n");
 		return NETDEV_TX_LOCKED;
 	}
+=======
+>>>>>>> v4.9.227
 
 	if (atl1c_tpd_avail(adapter, type) < tpd_req) {
 		/* no enough descriptor, just stop queue */
 		netif_stop_queue(netdev);
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+>>>>>>> v4.9.227
 		return NETDEV_TX_BUSY;
 	}
 
@@ -2230,13 +2274,21 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 
 	/* do TSO and check sum */
 	if (atl1c_tso_csum(adapter, skb, &tpd, type) != 0) {
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+>>>>>>> v4.9.227
 		dev_kfree_skb_any(skb);
 		return NETDEV_TX_OK;
 	}
 
+<<<<<<< HEAD
 	if (unlikely(vlan_tx_tag_present(skb))) {
 		u16 vlan = vlan_tx_tag_get(skb);
+=======
+	if (unlikely(skb_vlan_tag_present(skb))) {
+		u16 vlan = skb_vlan_tag_get(skb);
+>>>>>>> v4.9.227
 		__le16 tag;
 
 		vlan = cpu_to_le16(vlan);
@@ -2253,11 +2305,18 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 			   "tx-skb droppted due to dma error\n");
 		/* roll back tpd/buffer */
 		atl1c_tx_rollback(adapter, tpd, type);
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
 		dev_kfree_skb_any(skb);
 	} else {
 		atl1c_tx_queue(adapter, skb, tpd, type);
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+		dev_kfree_skb_any(skb);
+	} else {
+		netdev_sent_queue(adapter->netdev, skb->len);
+		atl1c_tx_queue(adapter, skb, tpd, type);
+>>>>>>> v4.9.227
 	}
 
 	return NETDEV_TX_OK;

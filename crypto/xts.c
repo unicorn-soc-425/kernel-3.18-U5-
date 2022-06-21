@@ -5,7 +5,11 @@
  *
  * Copyright (c) 2007 Rik Snel <rsnel@cube.dyndns.org>
  *
+<<<<<<< HEAD
  * Based om ecb.c
+=======
+ * Based on ecb.c
+>>>>>>> v4.9.227
  * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -35,6 +39,7 @@ static int setkey(struct crypto_tfm *parent, const u8 *key,
 {
 	struct priv *ctx = crypto_tfm_ctx(parent);
 	struct crypto_cipher *child = ctx->tweak;
+<<<<<<< HEAD
 	u32 *flags = &parent->crt_flags;
 	int err;
 
@@ -45,6 +50,13 @@ static int setkey(struct crypto_tfm *parent, const u8 *key,
 		*flags |= CRYPTO_TFM_RES_BAD_KEY_LEN;
 		return -EINVAL;
 	}
+=======
+	int err;
+
+	err = xts_check_key(parent, key, keylen);
+	if (err)
+		return err;
+>>>>>>> v4.9.227
 
 	/* we need two cipher instances: one to compute the initial 'tweak'
 	 * by encrypting the IV (usually the 'plain' iv) and the other
@@ -334,7 +346,11 @@ out_put_alg:
 	return inst;
 }
 
+<<<<<<< HEAD
 static void free(struct crypto_instance *inst)
+=======
+static void free_inst(struct crypto_instance *inst)
+>>>>>>> v4.9.227
 {
 	crypto_drop_spawn(crypto_instance_ctx(inst));
 	kfree(inst);
@@ -343,7 +359,11 @@ static void free(struct crypto_instance *inst)
 static struct crypto_template crypto_tmpl = {
 	.name = "xts",
 	.alloc = alloc,
+<<<<<<< HEAD
 	.free = free,
+=======
+	.free = free_inst,
+>>>>>>> v4.9.227
 	.module = THIS_MODULE,
 };
 

@@ -36,7 +36,11 @@
 
 #if defined(CONFIG_PPC_BOOK3S_64)
 
+<<<<<<< HEAD
 #if defined(_CALL_ELF) && _CALL_ELF == 2
+=======
+#ifdef PPC64_ELF_ABI_v2
+>>>>>>> v4.9.227
 #define FUNC(name) 		name
 #else
 #define FUNC(name) 		GLUE(.,name)
@@ -46,6 +50,12 @@
 
 #define FUNC(name)		name
 
+<<<<<<< HEAD
+=======
+#define RFI_TO_KERNEL	RFI
+#define RFI_TO_GUEST	RFI
+
+>>>>>>> v4.9.227
 .macro INTERRUPT_TRAMPOLINE intno
 
 .global kvmppc_trampoline_\intno
@@ -141,7 +151,11 @@ kvmppc_handler_skip_ins:
 	GET_SCRATCH0(r13)
 
 	/* And get back into the code */
+<<<<<<< HEAD
 	RFI
+=======
+	RFI_TO_KERNEL
+>>>>>>> v4.9.227
 #endif
 
 /*
@@ -164,6 +178,10 @@ _GLOBAL_TOC(kvmppc_entry_trampoline)
 	ori	r5, r5, MSR_EE
 	mtsrr0	r7
 	mtsrr1	r6
+<<<<<<< HEAD
 	RFI
+=======
+	RFI_TO_KERNEL
+>>>>>>> v4.9.227
 
 #include "book3s_segment.S"

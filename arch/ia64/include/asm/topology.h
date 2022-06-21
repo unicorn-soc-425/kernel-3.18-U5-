@@ -53,7 +53,11 @@ void build_cpu_to_node_map(void);
 #define topology_physical_package_id(cpu)	(cpu_data(cpu)->socket_id)
 #define topology_core_id(cpu)			(cpu_data(cpu)->core_id)
 #define topology_core_cpumask(cpu)		(&cpu_core_map[cpu])
+<<<<<<< HEAD
 #define topology_thread_cpumask(cpu)		(&per_cpu(cpu_sibling_map, cpu))
+=======
+#define topology_sibling_cpumask(cpu)		(&per_cpu(cpu_sibling_map, cpu))
+>>>>>>> v4.9.227
 #endif
 
 extern void arch_fix_phys_package_id(int num, u32 slot);

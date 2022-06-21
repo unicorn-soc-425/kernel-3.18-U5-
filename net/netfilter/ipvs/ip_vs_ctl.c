@@ -97,7 +97,10 @@ static bool __ip_vs_addr_is_local_v6(struct net *net,
 static void update_defense_level(struct netns_ipvs *ipvs)
 {
 	struct sysinfo i;
+<<<<<<< HEAD
 	static int old_secure_tcp = 0;
+=======
+>>>>>>> v4.9.227
 	int availmem;
 	int nomem;
 	int to_change = -1;
@@ -178,35 +181,62 @@ static void update_defense_level(struct netns_ipvs *ipvs)
 	spin_lock(&ipvs->securetcp_lock);
 	switch (ipvs->sysctl_secure_tcp) {
 	case 0:
+<<<<<<< HEAD
 		if (old_secure_tcp >= 2)
+=======
+		if (ipvs->old_secure_tcp >= 2)
+>>>>>>> v4.9.227
 			to_change = 0;
 		break;
 	case 1:
 		if (nomem) {
+<<<<<<< HEAD
 			if (old_secure_tcp < 2)
 				to_change = 1;
 			ipvs->sysctl_secure_tcp = 2;
 		} else {
 			if (old_secure_tcp >= 2)
+=======
+			if (ipvs->old_secure_tcp < 2)
+				to_change = 1;
+			ipvs->sysctl_secure_tcp = 2;
+		} else {
+			if (ipvs->old_secure_tcp >= 2)
+>>>>>>> v4.9.227
 				to_change = 0;
 		}
 		break;
 	case 2:
 		if (nomem) {
+<<<<<<< HEAD
 			if (old_secure_tcp < 2)
 				to_change = 1;
 		} else {
 			if (old_secure_tcp >= 2)
+=======
+			if (ipvs->old_secure_tcp < 2)
+				to_change = 1;
+		} else {
+			if (ipvs->old_secure_tcp >= 2)
+>>>>>>> v4.9.227
 				to_change = 0;
 			ipvs->sysctl_secure_tcp = 1;
 		}
 		break;
 	case 3:
+<<<<<<< HEAD
 		if (old_secure_tcp < 2)
 			to_change = 1;
 		break;
 	}
 	old_secure_tcp = ipvs->sysctl_secure_tcp;
+=======
+		if (ipvs->old_secure_tcp < 2)
+			to_change = 1;
+		break;
+	}
+	ipvs->old_secure_tcp = ipvs->sysctl_secure_tcp;
+>>>>>>> v4.9.227
 	if (to_change >= 0)
 		ip_vs_protocol_timeout_change(ipvs,
 					      ipvs->sysctl_secure_tcp > 1);
@@ -228,7 +258,11 @@ static void defense_work_handler(struct work_struct *work)
 
 	update_defense_level(ipvs);
 	if (atomic_read(&ipvs->dropentry))
+<<<<<<< HEAD
 		ip_vs_random_dropentry(ipvs->net);
+=======
+		ip_vs_random_dropentry(ipvs);
+>>>>>>> v4.9.227
 	schedule_delayed_work(&ipvs->defense_work, DEFENSE_TIMER_PERIOD);
 }
 #endif
@@ -263,7 +297,11 @@ static struct hlist_head ip_vs_svc_fwm_table[IP_VS_SVC_TAB_SIZE];
  *	Returns hash value for virtual service
  */
 static inline unsigned int
+<<<<<<< HEAD
 ip_vs_svc_hashkey(struct net *net, int af, unsigned int proto,
+=======
+ip_vs_svc_hashkey(struct netns_ipvs *ipvs, int af, unsigned int proto,
+>>>>>>> v4.9.227
 		  const union nf_inet_addr *addr, __be16 port)
 {
 	register unsigned int porth = ntohs(port);
@@ -276,7 +314,11 @@ ip_vs_svc_hashkey(struct net *net, int af, unsigned int proto,
 			    addr->ip6[2]^addr->ip6[3];
 #endif
 	ahash = ntohl(addr_fold);
+<<<<<<< HEAD
 	ahash ^= ((size_t) net >> 8);
+=======
+	ahash ^= ((size_t) ipvs >> 8);
+>>>>>>> v4.9.227
 
 	return (proto ^ ahash ^ (porth >> IP_VS_SVC_TAB_BITS) ^ porth) &
 	       IP_VS_SVC_TAB_MASK;
@@ -285,9 +327,15 @@ ip_vs_svc_hashkey(struct net *net, int af, unsigned int proto,
 /*
  *	Returns hash value of fwmark for virtual service lookup
  */
+<<<<<<< HEAD
 static inline unsigned int ip_vs_svc_fwm_hashkey(struct net *net, __u32 fwmark)
 {
 	return (((size_t)net>>8) ^ fwmark) & IP_VS_SVC_TAB_MASK;
+=======
+static inline unsigned int ip_vs_svc_fwm_hashkey(struct netns_ipvs *ipvs, __u32 fwmark)
+{
+	return (((size_t)ipvs>>8) ^ fwmark) & IP_VS_SVC_TAB_MASK;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -309,14 +357,22 @@ static int ip_vs_svc_hash(struct ip_vs_service *svc)
 		/*
 		 *  Hash it by <netns,protocol,addr,port> in ip_vs_svc_table
 		 */
+<<<<<<< HEAD
 		hash = ip_vs_svc_hashkey(svc->net, svc->af, svc->protocol,
+=======
+		hash = ip_vs_svc_hashkey(svc->ipvs, svc->af, svc->protocol,
+>>>>>>> v4.9.227
 					 &svc->addr, svc->port);
 		hlist_add_head_rcu(&svc->s_list, &ip_vs_svc_table[hash]);
 	} else {
 		/*
 		 *  Hash it by fwmark in svc_fwm_table
 		 */
+<<<<<<< HEAD
 		hash = ip_vs_svc_fwm_hashkey(svc->net, svc->fwmark);
+=======
+		hash = ip_vs_svc_fwm_hashkey(svc->ipvs, svc->fwmark);
+>>>>>>> v4.9.227
 		hlist_add_head_rcu(&svc->f_list, &ip_vs_svc_fwm_table[hash]);
 	}
 
@@ -357,21 +413,33 @@ static int ip_vs_svc_unhash(struct ip_vs_service *svc)
  *	Get service by {netns, proto,addr,port} in the service table.
  */
 static inline struct ip_vs_service *
+<<<<<<< HEAD
 __ip_vs_service_find(struct net *net, int af, __u16 protocol,
+=======
+__ip_vs_service_find(struct netns_ipvs *ipvs, int af, __u16 protocol,
+>>>>>>> v4.9.227
 		     const union nf_inet_addr *vaddr, __be16 vport)
 {
 	unsigned int hash;
 	struct ip_vs_service *svc;
 
 	/* Check for "full" addressed entries */
+<<<<<<< HEAD
 	hash = ip_vs_svc_hashkey(net, af, protocol, vaddr, vport);
+=======
+	hash = ip_vs_svc_hashkey(ipvs, af, protocol, vaddr, vport);
+>>>>>>> v4.9.227
 
 	hlist_for_each_entry_rcu(svc, &ip_vs_svc_table[hash], s_list) {
 		if ((svc->af == af)
 		    && ip_vs_addr_equal(af, &svc->addr, vaddr)
 		    && (svc->port == vport)
 		    && (svc->protocol == protocol)
+<<<<<<< HEAD
 		    && net_eq(svc->net, net)) {
+=======
+		    && (svc->ipvs == ipvs)) {
+>>>>>>> v4.9.227
 			/* HIT */
 			return svc;
 		}
@@ -385,17 +453,29 @@ __ip_vs_service_find(struct net *net, int af, __u16 protocol,
  *	Get service by {fwmark} in the service table.
  */
 static inline struct ip_vs_service *
+<<<<<<< HEAD
 __ip_vs_svc_fwm_find(struct net *net, int af, __u32 fwmark)
+=======
+__ip_vs_svc_fwm_find(struct netns_ipvs *ipvs, int af, __u32 fwmark)
+>>>>>>> v4.9.227
 {
 	unsigned int hash;
 	struct ip_vs_service *svc;
 
 	/* Check for fwmark addressed entries */
+<<<<<<< HEAD
 	hash = ip_vs_svc_fwm_hashkey(net, fwmark);
 
 	hlist_for_each_entry_rcu(svc, &ip_vs_svc_fwm_table[hash], f_list) {
 		if (svc->fwmark == fwmark && svc->af == af
 		    && net_eq(svc->net, net)) {
+=======
+	hash = ip_vs_svc_fwm_hashkey(ipvs, fwmark);
+
+	hlist_for_each_entry_rcu(svc, &ip_vs_svc_fwm_table[hash], f_list) {
+		if (svc->fwmark == fwmark && svc->af == af
+		    && (svc->ipvs == ipvs)) {
+>>>>>>> v4.9.227
 			/* HIT */
 			return svc;
 		}
@@ -406,17 +486,28 @@ __ip_vs_svc_fwm_find(struct net *net, int af, __u32 fwmark)
 
 /* Find service, called under RCU lock */
 struct ip_vs_service *
+<<<<<<< HEAD
 ip_vs_service_find(struct net *net, int af, __u32 fwmark, __u16 protocol,
 		   const union nf_inet_addr *vaddr, __be16 vport)
 {
 	struct ip_vs_service *svc;
 	struct netns_ipvs *ipvs = net_ipvs(net);
+=======
+ip_vs_service_find(struct netns_ipvs *ipvs, int af, __u32 fwmark, __u16 protocol,
+		   const union nf_inet_addr *vaddr, __be16 vport)
+{
+	struct ip_vs_service *svc;
+>>>>>>> v4.9.227
 
 	/*
 	 *	Check the table hashed by fwmark first
 	 */
 	if (fwmark) {
+<<<<<<< HEAD
 		svc = __ip_vs_svc_fwm_find(net, af, fwmark);
+=======
+		svc = __ip_vs_svc_fwm_find(ipvs, af, fwmark);
+>>>>>>> v4.9.227
 		if (svc)
 			goto out;
 	}
@@ -425,7 +516,11 @@ ip_vs_service_find(struct net *net, int af, __u32 fwmark, __u16 protocol,
 	 *	Check the table hashed by <protocol,addr,port>
 	 *	for "full" addressed entries
 	 */
+<<<<<<< HEAD
 	svc = __ip_vs_service_find(net, af, protocol, vaddr, vport);
+=======
+	svc = __ip_vs_service_find(ipvs, af, protocol, vaddr, vport);
+>>>>>>> v4.9.227
 
 	if (svc == NULL
 	    && protocol == IPPROTO_TCP
@@ -435,7 +530,11 @@ ip_vs_service_find(struct net *net, int af, __u32 fwmark, __u16 protocol,
 		 * Check if ftp service entry exists, the packet
 		 * might belong to FTP data connections.
 		 */
+<<<<<<< HEAD
 		svc = __ip_vs_service_find(net, af, protocol, vaddr, FTPPORT);
+=======
+		svc = __ip_vs_service_find(ipvs, af, protocol, vaddr, FTPPORT);
+>>>>>>> v4.9.227
 	}
 
 	if (svc == NULL
@@ -443,7 +542,11 @@ ip_vs_service_find(struct net *net, int af, __u32 fwmark, __u16 protocol,
 		/*
 		 * Check if the catch-all port (port zero) exists
 		 */
+<<<<<<< HEAD
 		svc = __ip_vs_service_find(net, af, protocol, vaddr, 0);
+=======
+		svc = __ip_vs_service_find(ipvs, af, protocol, vaddr, 0);
+>>>>>>> v4.9.227
 	}
 
   out:
@@ -465,8 +568,12 @@ __ip_vs_bind_svc(struct ip_vs_dest *dest, struct ip_vs_service *svc)
 
 static void ip_vs_service_free(struct ip_vs_service *svc)
 {
+<<<<<<< HEAD
 	if (svc->stats.cpustats)
 		free_percpu(svc->stats.cpustats);
+=======
+	free_percpu(svc->stats.cpustats);
+>>>>>>> v4.9.227
 	kfree(svc);
 }
 
@@ -544,10 +651,16 @@ static void ip_vs_rs_unhash(struct ip_vs_dest *dest)
 }
 
 /* Check if real service by <proto,addr,port> is present */
+<<<<<<< HEAD
 bool ip_vs_has_real_service(struct net *net, int af, __u16 protocol,
 			    const union nf_inet_addr *daddr, __be16 dport)
 {
 	struct netns_ipvs *ipvs = net_ipvs(net);
+=======
+bool ip_vs_has_real_service(struct netns_ipvs *ipvs, int af, __u16 protocol,
+			    const union nf_inet_addr *daddr, __be16 dport)
+{
+>>>>>>> v4.9.227
 	unsigned int hash;
 	struct ip_vs_dest *dest;
 
@@ -570,6 +683,39 @@ bool ip_vs_has_real_service(struct net *net, int af, __u16 protocol,
 	return false;
 }
 
+<<<<<<< HEAD
+=======
+/* Find real service record by <proto,addr,port>.
+ * In case of multiple records with the same <proto,addr,port>, only
+ * the first found record is returned.
+ *
+ * To be called under RCU lock.
+ */
+struct ip_vs_dest *ip_vs_find_real_service(struct netns_ipvs *ipvs, int af,
+					   __u16 protocol,
+					   const union nf_inet_addr *daddr,
+					   __be16 dport)
+{
+	unsigned int hash;
+	struct ip_vs_dest *dest;
+
+	/* Check for "full" addressed entries */
+	hash = ip_vs_rs_hashkey(af, daddr, dport);
+
+	hlist_for_each_entry_rcu(dest, &ipvs->rs_table[hash], d_list) {
+		if (dest->port == dport &&
+		    dest->af == af &&
+		    ip_vs_addr_equal(af, &dest->addr, daddr) &&
+			(dest->protocol == protocol || dest->vfwmark)) {
+			/* HIT */
+			return dest;
+		}
+	}
+
+	return NULL;
+}
+
+>>>>>>> v4.9.227
 /* Lookup destination by {addr,port} in the given service
  * Called under RCU lock.
  */
@@ -602,7 +748,11 @@ ip_vs_lookup_dest(struct ip_vs_service *svc, int dest_af,
  * on the backup.
  * Called under RCU lock, no refcnt is returned.
  */
+<<<<<<< HEAD
 struct ip_vs_dest *ip_vs_find_dest(struct net  *net, int svc_af, int dest_af,
+=======
+struct ip_vs_dest *ip_vs_find_dest(struct netns_ipvs *ipvs, int svc_af, int dest_af,
+>>>>>>> v4.9.227
 				   const union nf_inet_addr *daddr,
 				   __be16 dport,
 				   const union nf_inet_addr *vaddr,
@@ -613,7 +763,11 @@ struct ip_vs_dest *ip_vs_find_dest(struct net  *net, int svc_af, int dest_af,
 	struct ip_vs_service *svc;
 	__be16 port = dport;
 
+<<<<<<< HEAD
 	svc = ip_vs_service_find(net, svc_af, fwmark, protocol, vaddr, vport);
+=======
+	svc = ip_vs_service_find(ipvs, svc_af, fwmark, protocol, vaddr, vport);
+>>>>>>> v4.9.227
 	if (!svc)
 		return NULL;
 	if (fwmark && (flags & IP_VS_CONN_F_FWD_MASK) != IP_VS_CONN_F_MASQ)
@@ -661,7 +815,11 @@ ip_vs_trash_get_dest(struct ip_vs_service *svc, int dest_af,
 		     const union nf_inet_addr *daddr, __be16 dport)
 {
 	struct ip_vs_dest *dest;
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(svc->net);
+=======
+	struct netns_ipvs *ipvs = svc->ipvs;
+>>>>>>> v4.9.227
 
 	/*
 	 * Find the destination in trash
@@ -716,10 +874,16 @@ static void ip_vs_dest_free(struct ip_vs_dest *dest)
  *  are expired, and the refcnt of each destination in the trash must
  *  be 0, so we simply release them here.
  */
+<<<<<<< HEAD
 static void ip_vs_trash_cleanup(struct net *net)
 {
 	struct ip_vs_dest *dest, *nxt;
 	struct netns_ipvs *ipvs = net_ipvs(net);
+=======
+static void ip_vs_trash_cleanup(struct netns_ipvs *ipvs)
+{
+	struct ip_vs_dest *dest, *nxt;
+>>>>>>> v4.9.227
 
 	del_timer_sync(&ipvs->dest_trash_timer);
 	/* No need to use dest_trash_lock */
@@ -730,9 +894,15 @@ static void ip_vs_trash_cleanup(struct net *net)
 }
 
 static void
+<<<<<<< HEAD
 ip_vs_copy_stats(struct ip_vs_stats_user *dst, struct ip_vs_stats *src)
 {
 #define IP_VS_SHOW_STATS_COUNTER(c) dst->c = src->ustats.c - src->ustats0.c
+=======
+ip_vs_copy_stats(struct ip_vs_kstats *dst, struct ip_vs_stats *src)
+{
+#define IP_VS_SHOW_STATS_COUNTER(c) dst->c = src->kstats.c - src->kstats0.c
+>>>>>>> v4.9.227
 
 	spin_lock_bh(&src->lock);
 
@@ -748,13 +918,35 @@ ip_vs_copy_stats(struct ip_vs_stats_user *dst, struct ip_vs_stats *src)
 }
 
 static void
+<<<<<<< HEAD
+=======
+ip_vs_export_stats_user(struct ip_vs_stats_user *dst, struct ip_vs_kstats *src)
+{
+	dst->conns = (u32)src->conns;
+	dst->inpkts = (u32)src->inpkts;
+	dst->outpkts = (u32)src->outpkts;
+	dst->inbytes = src->inbytes;
+	dst->outbytes = src->outbytes;
+	dst->cps = (u32)src->cps;
+	dst->inpps = (u32)src->inpps;
+	dst->outpps = (u32)src->outpps;
+	dst->inbps = (u32)src->inbps;
+	dst->outbps = (u32)src->outbps;
+}
+
+static void
+>>>>>>> v4.9.227
 ip_vs_zero_stats(struct ip_vs_stats *stats)
 {
 	spin_lock_bh(&stats->lock);
 
 	/* get current counters as zero point, rates are zeroed */
 
+<<<<<<< HEAD
 #define IP_VS_ZERO_STATS_COUNTER(c) stats->ustats0.c = stats->ustats.c
+=======
+#define IP_VS_ZERO_STATS_COUNTER(c) stats->kstats0.c = stats->kstats.c
+>>>>>>> v4.9.227
 
 	IP_VS_ZERO_STATS_COUNTER(conns);
 	IP_VS_ZERO_STATS_COUNTER(inpkts);
@@ -774,7 +966,11 @@ static void
 __ip_vs_update_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest,
 		    struct ip_vs_dest_user_kern *udest, int add)
 {
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(svc->net);
+=======
+	struct netns_ipvs *ipvs = svc->ipvs;
+>>>>>>> v4.9.227
 	struct ip_vs_service *old_svc;
 	struct ip_vs_scheduler *sched;
 	int conn_flags;
@@ -829,7 +1025,11 @@ __ip_vs_update_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest,
 	spin_unlock_bh(&dest->dst_lock);
 
 	if (add) {
+<<<<<<< HEAD
 		ip_vs_start_estimator(svc->net, &dest->stats);
+=======
+		ip_vs_start_estimator(svc->ipvs, &dest->stats);
+>>>>>>> v4.9.227
 		list_add_rcu(&dest->n_list, &svc->destinations);
 		svc->num_dests++;
 		sched = rcu_dereference_protected(svc->scheduler, 1);
@@ -860,12 +1060,20 @@ ip_vs_new_dest(struct ip_vs_service *svc, struct ip_vs_dest_user_kern *udest,
 		atype = ipv6_addr_type(&udest->addr.in6);
 		if ((!(atype & IPV6_ADDR_UNICAST) ||
 			atype & IPV6_ADDR_LINKLOCAL) &&
+<<<<<<< HEAD
 			!__ip_vs_addr_is_local_v6(svc->net, &udest->addr.in6))
+=======
+			!__ip_vs_addr_is_local_v6(svc->ipvs->net, &udest->addr.in6))
+>>>>>>> v4.9.227
 			return -EINVAL;
 	} else
 #endif
 	{
+<<<<<<< HEAD
 		atype = inet_addr_type(svc->net, udest->addr.ip);
+=======
+		atype = inet_addr_type(svc->ipvs->net, udest->addr.ip);
+>>>>>>> v4.9.227
 		if (atype != RTN_LOCAL && atype != RTN_UNICAST)
 			return -EINVAL;
 	}
@@ -1022,12 +1230,19 @@ ip_vs_edit_dest(struct ip_vs_service *svc, struct ip_vs_dest_user_kern *udest)
 /*
  *	Delete a destination (must be already unlinked from the service)
  */
+<<<<<<< HEAD
 static void __ip_vs_del_dest(struct net *net, struct ip_vs_dest *dest,
 			     bool cleanup)
 {
 	struct netns_ipvs *ipvs = net_ipvs(net);
 
 	ip_vs_stop_estimator(net, &dest->stats);
+=======
+static void __ip_vs_del_dest(struct netns_ipvs *ipvs, struct ip_vs_dest *dest,
+			     bool cleanup)
+{
+	ip_vs_stop_estimator(ipvs, &dest->stats);
+>>>>>>> v4.9.227
 
 	/*
 	 *  Remove it from the d-linked list with the real services.
@@ -1065,7 +1280,11 @@ static void __ip_vs_unlink_dest(struct ip_vs_service *svc,
 	svc->num_dests--;
 
 	if (dest->af != svc->af)
+<<<<<<< HEAD
 		net_ipvs(svc->net)->mixed_address_family_dests--;
+=======
+		svc->ipvs->mixed_address_family_dests--;
+>>>>>>> v4.9.227
 
 	if (svcupd) {
 		struct ip_vs_scheduler *sched;
@@ -1106,7 +1325,11 @@ ip_vs_del_dest(struct ip_vs_service *svc, struct ip_vs_dest_user_kern *udest)
 	/*
 	 *	Delete the destination
 	 */
+<<<<<<< HEAD
 	__ip_vs_del_dest(svc->net, dest, false);
+=======
+	__ip_vs_del_dest(svc->ipvs, dest, false);
+>>>>>>> v4.9.227
 
 	LeaveFunction(2);
 
@@ -1115,8 +1338,12 @@ ip_vs_del_dest(struct ip_vs_service *svc, struct ip_vs_dest_user_kern *udest)
 
 static void ip_vs_dest_trash_expire(unsigned long data)
 {
+<<<<<<< HEAD
 	struct net *net = (struct net *) data;
 	struct netns_ipvs *ipvs = net_ipvs(net);
+=======
+	struct netns_ipvs *ipvs = (struct netns_ipvs *)data;
+>>>>>>> v4.9.227
 	struct ip_vs_dest *dest, *next;
 	unsigned long now = jiffies;
 
@@ -1149,14 +1376,21 @@ static void ip_vs_dest_trash_expire(unsigned long data)
  *	Add a service into the service hash table
  */
 static int
+<<<<<<< HEAD
 ip_vs_add_service(struct net *net, struct ip_vs_service_user_kern *u,
+=======
+ip_vs_add_service(struct netns_ipvs *ipvs, struct ip_vs_service_user_kern *u,
+>>>>>>> v4.9.227
 		  struct ip_vs_service **svc_p)
 {
 	int ret = 0, i;
 	struct ip_vs_scheduler *sched = NULL;
 	struct ip_vs_pe *pe = NULL;
 	struct ip_vs_service *svc = NULL;
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(net);
+=======
+>>>>>>> v4.9.227
 
 	/* increase the module use count */
 	ip_vs_use_count_inc();
@@ -1223,7 +1457,11 @@ ip_vs_add_service(struct net *net, struct ip_vs_service_user_kern *u,
 	svc->flags = u->flags;
 	svc->timeout = u->timeout * HZ;
 	svc->netmask = u->netmask;
+<<<<<<< HEAD
 	svc->net = net;
+=======
+	svc->ipvs = ipvs;
+>>>>>>> v4.9.227
 
 	INIT_LIST_HEAD(&svc->destinations);
 	spin_lock_init(&svc->sched_lock);
@@ -1246,8 +1484,15 @@ ip_vs_add_service(struct net *net, struct ip_vs_service_user_kern *u,
 		atomic_inc(&ipvs->ftpsvc_counter);
 	else if (svc->port == 0)
 		atomic_inc(&ipvs->nullsvc_counter);
+<<<<<<< HEAD
 
 	ip_vs_start_estimator(net, &svc->stats);
+=======
+	if (svc->pe && svc->pe->conn_out)
+		atomic_inc(&ipvs->conn_out_counter);
+
+	ip_vs_start_estimator(ipvs, &svc->stats);
+>>>>>>> v4.9.227
 
 	/* Count only IPv4 services for old get/setsockopt interface */
 	if (svc->af == AF_INET)
@@ -1286,6 +1531,10 @@ ip_vs_edit_service(struct ip_vs_service *svc, struct ip_vs_service_user_kern *u)
 	struct ip_vs_scheduler *sched = NULL, *old_sched;
 	struct ip_vs_pe *pe = NULL, *old_pe = NULL;
 	int ret = 0;
+<<<<<<< HEAD
+=======
+	bool new_pe_conn_out, old_pe_conn_out;
+>>>>>>> v4.9.227
 
 	/*
 	 * Lookup the scheduler, by 'u->sched_name'
@@ -1348,8 +1597,21 @@ ip_vs_edit_service(struct ip_vs_service *svc, struct ip_vs_service_user_kern *u)
 	svc->netmask = u->netmask;
 
 	old_pe = rcu_dereference_protected(svc->pe, 1);
+<<<<<<< HEAD
 	if (pe != old_pe)
 		rcu_assign_pointer(svc->pe, pe);
+=======
+	if (pe != old_pe) {
+		rcu_assign_pointer(svc->pe, pe);
+		/* check for optional methods in new pe */
+		new_pe_conn_out = (pe && pe->conn_out) ? true : false;
+		old_pe_conn_out = (old_pe && old_pe->conn_out) ? true : false;
+		if (new_pe_conn_out && !old_pe_conn_out)
+			atomic_inc(&svc->ipvs->conn_out_counter);
+		if (old_pe_conn_out && !new_pe_conn_out)
+			atomic_dec(&svc->ipvs->conn_out_counter);
+	}
+>>>>>>> v4.9.227
 
 out:
 	ip_vs_scheduler_put(old_sched);
@@ -1367,15 +1629,23 @@ static void __ip_vs_del_service(struct ip_vs_service *svc, bool cleanup)
 	struct ip_vs_dest *dest, *nxt;
 	struct ip_vs_scheduler *old_sched;
 	struct ip_vs_pe *old_pe;
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(svc->net);
 
 	pr_info("%s: enter\n", __func__);
+=======
+	struct netns_ipvs *ipvs = svc->ipvs;
+>>>>>>> v4.9.227
 
 	/* Count only IPv4 services for old get/setsockopt interface */
 	if (svc->af == AF_INET)
 		ipvs->num_services--;
 
+<<<<<<< HEAD
 	ip_vs_stop_estimator(svc->net, &svc->stats);
+=======
+	ip_vs_stop_estimator(svc->ipvs, &svc->stats);
+>>>>>>> v4.9.227
 
 	/* Unbind scheduler */
 	old_sched = rcu_dereference_protected(svc->scheduler, 1);
@@ -1384,6 +1654,11 @@ static void __ip_vs_del_service(struct ip_vs_service *svc, bool cleanup)
 
 	/* Unbind persistence engine, keep svc->pe */
 	old_pe = rcu_dereference_protected(svc->pe, 1);
+<<<<<<< HEAD
+=======
+	if (old_pe && old_pe->conn_out)
+		atomic_dec(&ipvs->conn_out_counter);
+>>>>>>> v4.9.227
 	ip_vs_pe_put(old_pe);
 
 	/*
@@ -1391,7 +1666,11 @@ static void __ip_vs_del_service(struct ip_vs_service *svc, bool cleanup)
 	 */
 	list_for_each_entry_safe(dest, nxt, &svc->destinations, n_list) {
 		__ip_vs_unlink_dest(svc, dest, 0);
+<<<<<<< HEAD
 		__ip_vs_del_dest(svc->net, dest, cleanup);
+=======
+		__ip_vs_del_dest(svc->ipvs, dest, cleanup);
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -1442,7 +1721,11 @@ static int ip_vs_del_service(struct ip_vs_service *svc)
 /*
  *	Flush all the virtual services
  */
+<<<<<<< HEAD
 static int ip_vs_flush(struct net *net, bool cleanup)
+=======
+static int ip_vs_flush(struct netns_ipvs *ipvs, bool cleanup)
+>>>>>>> v4.9.227
 {
 	int idx;
 	struct ip_vs_service *svc;
@@ -1454,7 +1737,11 @@ static int ip_vs_flush(struct net *net, bool cleanup)
 	for(idx = 0; idx < IP_VS_SVC_TAB_SIZE; idx++) {
 		hlist_for_each_entry_safe(svc, n, &ip_vs_svc_table[idx],
 					  s_list) {
+<<<<<<< HEAD
 			if (net_eq(svc->net, net))
+=======
+			if (svc->ipvs == ipvs)
+>>>>>>> v4.9.227
 				ip_vs_unlink_service(svc, cleanup);
 		}
 	}
@@ -1465,7 +1752,11 @@ static int ip_vs_flush(struct net *net, bool cleanup)
 	for(idx = 0; idx < IP_VS_SVC_TAB_SIZE; idx++) {
 		hlist_for_each_entry_safe(svc, n, &ip_vs_svc_fwm_table[idx],
 					  f_list) {
+<<<<<<< HEAD
 			if (net_eq(svc->net, net))
+=======
+			if (svc->ipvs == ipvs)
+>>>>>>> v4.9.227
 				ip_vs_unlink_service(svc, cleanup);
 		}
 	}
@@ -1477,12 +1768,20 @@ static int ip_vs_flush(struct net *net, bool cleanup)
  *	Delete service by {netns} in the service table.
  *	Called by __ip_vs_cleanup()
  */
+<<<<<<< HEAD
 void ip_vs_service_net_cleanup(struct net *net)
+=======
+void ip_vs_service_net_cleanup(struct netns_ipvs *ipvs)
+>>>>>>> v4.9.227
 {
 	EnterFunction(2);
 	/* Check for "full" addressed entries */
 	mutex_lock(&__ip_vs_mutex);
+<<<<<<< HEAD
 	ip_vs_flush(net, true);
+=======
+	ip_vs_flush(ipvs, true);
+>>>>>>> v4.9.227
 	mutex_unlock(&__ip_vs_mutex);
 	LeaveFunction(2);
 }
@@ -1526,7 +1825,11 @@ static int ip_vs_dst_event(struct notifier_block *this, unsigned long event,
 	mutex_lock(&__ip_vs_mutex);
 	for (idx = 0; idx < IP_VS_SVC_TAB_SIZE; idx++) {
 		hlist_for_each_entry(svc, &ip_vs_svc_table[idx], s_list) {
+<<<<<<< HEAD
 			if (net_eq(svc->net, net)) {
+=======
+			if (svc->ipvs == ipvs) {
+>>>>>>> v4.9.227
 				list_for_each_entry(dest, &svc->destinations,
 						    n_list) {
 					ip_vs_forget_dev(dest, dev);
@@ -1535,7 +1838,11 @@ static int ip_vs_dst_event(struct notifier_block *this, unsigned long event,
 		}
 
 		hlist_for_each_entry(svc, &ip_vs_svc_fwm_table[idx], f_list) {
+<<<<<<< HEAD
 			if (net_eq(svc->net, net)) {
+=======
+			if (svc->ipvs == ipvs) {
+>>>>>>> v4.9.227
 				list_for_each_entry(dest, &svc->destinations,
 						    n_list) {
 					ip_vs_forget_dev(dest, dev);
@@ -1569,26 +1876,42 @@ static int ip_vs_zero_service(struct ip_vs_service *svc)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ip_vs_zero_all(struct net *net)
+=======
+static int ip_vs_zero_all(struct netns_ipvs *ipvs)
+>>>>>>> v4.9.227
 {
 	int idx;
 	struct ip_vs_service *svc;
 
 	for(idx = 0; idx < IP_VS_SVC_TAB_SIZE; idx++) {
 		hlist_for_each_entry(svc, &ip_vs_svc_table[idx], s_list) {
+<<<<<<< HEAD
 			if (net_eq(svc->net, net))
+=======
+			if (svc->ipvs == ipvs)
+>>>>>>> v4.9.227
 				ip_vs_zero_service(svc);
 		}
 	}
 
 	for(idx = 0; idx < IP_VS_SVC_TAB_SIZE; idx++) {
 		hlist_for_each_entry(svc, &ip_vs_svc_fwm_table[idx], f_list) {
+<<<<<<< HEAD
 			if (net_eq(svc->net, net))
+=======
+			if (svc->ipvs == ipvs)
+>>>>>>> v4.9.227
 				ip_vs_zero_service(svc);
 		}
 	}
 
+<<<<<<< HEAD
 	ip_vs_zero_stats(&net_ipvs(net)->tot_stats);
+=======
+	ip_vs_zero_stats(&ipvs->tot_stats);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1601,7 +1924,11 @@ static int
 proc_do_defense_mode(struct ctl_table *table, int write,
 		     void __user *buffer, size_t *lenp, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct net *net = current->nsproxy->net_ns;
+=======
+	struct netns_ipvs *ipvs = table->extra2;
+>>>>>>> v4.9.227
 	int *valp = table->data;
 	int val = *valp;
 	int rc;
@@ -1612,7 +1939,11 @@ proc_do_defense_mode(struct ctl_table *table, int write,
 			/* Restore the correct value */
 			*valp = val;
 		} else {
+<<<<<<< HEAD
 			update_defense_level(net_ipvs(net));
+=======
+			update_defense_level(ipvs);
+>>>>>>> v4.9.227
 		}
 	}
 	return rc;
@@ -1824,6 +2155,27 @@ static struct ctl_table vs_vars[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.procname	= "conn_reuse_mode",
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+	{
+		.procname	= "schedule_icmp",
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+	{
+		.procname	= "ignore_tunneled",
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+>>>>>>> v4.9.227
 #ifdef CONFIG_IP_VS_DEBUG
 	{
 		.procname	= "debug_level",
@@ -1869,6 +2221,10 @@ static inline const char *ip_vs_fwd_name(unsigned int flags)
 static struct ip_vs_service *ip_vs_info_array(struct seq_file *seq, loff_t pos)
 {
 	struct net *net = seq_file_net(seq);
+<<<<<<< HEAD
+=======
+	struct netns_ipvs *ipvs = net_ipvs(net);
+>>>>>>> v4.9.227
 	struct ip_vs_iter *iter = seq->private;
 	int idx;
 	struct ip_vs_service *svc;
@@ -1876,7 +2232,11 @@ static struct ip_vs_service *ip_vs_info_array(struct seq_file *seq, loff_t pos)
 	/* look in hash by protocol */
 	for (idx = 0; idx < IP_VS_SVC_TAB_SIZE; idx++) {
 		hlist_for_each_entry_rcu(svc, &ip_vs_svc_table[idx], s_list) {
+<<<<<<< HEAD
 			if (net_eq(svc->net, net) && pos-- == 0) {
+=======
+			if ((svc->ipvs == ipvs) && pos-- == 0) {
+>>>>>>> v4.9.227
 				iter->table = ip_vs_svc_table;
 				iter->bucket = idx;
 				return svc;
@@ -1888,7 +2248,11 @@ static struct ip_vs_service *ip_vs_info_array(struct seq_file *seq, loff_t pos)
 	for (idx = 0; idx < IP_VS_SVC_TAB_SIZE; idx++) {
 		hlist_for_each_entry_rcu(svc, &ip_vs_svc_fwm_table[idx],
 					 f_list) {
+<<<<<<< HEAD
 			if (net_eq(svc->net, net) && pos-- == 0) {
+=======
+			if ((svc->ipvs == ipvs) && pos-- == 0) {
+>>>>>>> v4.9.227
 				iter->table = ip_vs_svc_fwm_table;
 				iter->bucket = idx;
 				return svc;
@@ -1973,12 +2337,22 @@ static int ip_vs_info_seq_show(struct seq_file *seq, void *v)
 		seq_puts(seq,
 			 "  -> RemoteAddress:Port Forward Weight ActiveConn InActConn\n");
 	} else {
+<<<<<<< HEAD
+=======
+		struct net *net = seq_file_net(seq);
+		struct netns_ipvs *ipvs = net_ipvs(net);
+>>>>>>> v4.9.227
 		const struct ip_vs_service *svc = v;
 		const struct ip_vs_iter *iter = seq->private;
 		const struct ip_vs_dest *dest;
 		struct ip_vs_scheduler *sched = rcu_dereference(svc->scheduler);
 		char *sched_name = sched ? sched->name : "none";
 
+<<<<<<< HEAD
+=======
+		if (svc->ipvs != ipvs)
+			return 0;
+>>>>>>> v4.9.227
 		if (iter->table == ip_vs_svc_table) {
 #ifdef CONFIG_IP_VS_IPV6
 			if (svc->af == AF_INET6)
@@ -2061,7 +2435,11 @@ static const struct file_operations ip_vs_info_fops = {
 static int ip_vs_stats_show(struct seq_file *seq, void *v)
 {
 	struct net *net = seq_file_single_net(seq);
+<<<<<<< HEAD
 	struct ip_vs_stats_user show;
+=======
+	struct ip_vs_kstats show;
+>>>>>>> v4.9.227
 
 /*               01234567 01234567 01234567 0123456701234567 0123456701234567 */
 	seq_puts(seq,
@@ -2070,6 +2448,7 @@ static int ip_vs_stats_show(struct seq_file *seq, void *v)
 		   "   Conns  Packets  Packets            Bytes            Bytes\n");
 
 	ip_vs_copy_stats(&show, &net_ipvs(net)->tot_stats);
+<<<<<<< HEAD
 	seq_printf(seq, "%8X %8X %8X %16LX %16LX\n\n", show.conns,
 		   show.inpkts, show.outpkts,
 		   (unsigned long long) show.inbytes,
@@ -2081,6 +2460,24 @@ static int ip_vs_stats_show(struct seq_file *seq, void *v)
 	seq_printf(seq, "%8X %8X %8X %16X %16X\n",
 			show.cps, show.inpps, show.outpps,
 			show.inbps, show.outbps);
+=======
+	seq_printf(seq, "%8LX %8LX %8LX %16LX %16LX\n\n",
+		   (unsigned long long)show.conns,
+		   (unsigned long long)show.inpkts,
+		   (unsigned long long)show.outpkts,
+		   (unsigned long long)show.inbytes,
+		   (unsigned long long)show.outbytes);
+
+/*                01234567 01234567 01234567 0123456701234567 0123456701234567*/
+	seq_puts(seq,
+		 " Conns/s   Pkts/s   Pkts/s          Bytes/s          Bytes/s\n");
+	seq_printf(seq, "%8LX %8LX %8LX %16LX %16LX\n",
+		   (unsigned long long)show.cps,
+		   (unsigned long long)show.inpps,
+		   (unsigned long long)show.outpps,
+		   (unsigned long long)show.inbps,
+		   (unsigned long long)show.outbps);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -2103,7 +2500,11 @@ static int ip_vs_stats_percpu_show(struct seq_file *seq, void *v)
 	struct net *net = seq_file_single_net(seq);
 	struct ip_vs_stats *tot_stats = &net_ipvs(net)->tot_stats;
 	struct ip_vs_cpu_stats __percpu *cpustats = tot_stats->cpustats;
+<<<<<<< HEAD
 	struct ip_vs_stats_user rates;
+=======
+	struct ip_vs_kstats kstats;
+>>>>>>> v4.9.227
 	int i;
 
 /*               01234567 01234567 01234567 0123456701234567 0123456701234567 */
@@ -2115,6 +2516,7 @@ static int ip_vs_stats_percpu_show(struct seq_file *seq, void *v)
 	for_each_possible_cpu(i) {
 		struct ip_vs_cpu_stats *u = per_cpu_ptr(cpustats, i);
 		unsigned int start;
+<<<<<<< HEAD
 		__u64 inbytes, outbytes;
 
 		do {
@@ -2150,6 +2552,43 @@ static int ip_vs_stats_percpu_show(struct seq_file *seq, void *v)
 			rates.outpps,
 			rates.inbps,
 			rates.outbps);
+=======
+		u64 conns, inpkts, outpkts, inbytes, outbytes;
+
+		do {
+			start = u64_stats_fetch_begin_irq(&u->syncp);
+			conns = u->cnt.conns;
+			inpkts = u->cnt.inpkts;
+			outpkts = u->cnt.outpkts;
+			inbytes = u->cnt.inbytes;
+			outbytes = u->cnt.outbytes;
+		} while (u64_stats_fetch_retry_irq(&u->syncp, start));
+
+		seq_printf(seq, "%3X %8LX %8LX %8LX %16LX %16LX\n",
+			   i, (u64)conns, (u64)inpkts,
+			   (u64)outpkts, (u64)inbytes,
+			   (u64)outbytes);
+	}
+
+	ip_vs_copy_stats(&kstats, tot_stats);
+
+	seq_printf(seq, "  ~ %8LX %8LX %8LX %16LX %16LX\n\n",
+		   (unsigned long long)kstats.conns,
+		   (unsigned long long)kstats.inpkts,
+		   (unsigned long long)kstats.outpkts,
+		   (unsigned long long)kstats.inbytes,
+		   (unsigned long long)kstats.outbytes);
+
+/*                ... 01234567 01234567 01234567 0123456701234567 0123456701234567 */
+	seq_puts(seq,
+		 "     Conns/s   Pkts/s   Pkts/s          Bytes/s          Bytes/s\n");
+	seq_printf(seq, "    %8LX %8LX %8LX %16LX %16LX\n",
+		   kstats.cps,
+		   kstats.inpps,
+		   kstats.outpps,
+		   kstats.inbps,
+		   kstats.outbps);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -2171,7 +2610,11 @@ static const struct file_operations ip_vs_stats_percpu_fops = {
 /*
  *	Set timeout values for tcp tcpfin udp in the timeout_table.
  */
+<<<<<<< HEAD
 static int ip_vs_set_timeout(struct net *net, struct ip_vs_timeout_user *u)
+=======
+static int ip_vs_set_timeout(struct netns_ipvs *ipvs, struct ip_vs_timeout_user *u)
+>>>>>>> v4.9.227
 {
 #if defined(CONFIG_IP_VS_PROTO_TCP) || defined(CONFIG_IP_VS_PROTO_UDP)
 	struct ip_vs_proto_data *pd;
@@ -2183,14 +2626,35 @@ static int ip_vs_set_timeout(struct net *net, struct ip_vs_timeout_user *u)
 		  u->udp_timeout);
 
 #ifdef CONFIG_IP_VS_PROTO_TCP
+<<<<<<< HEAD
 	if (u->tcp_timeout) {
 		pd = ip_vs_proto_data_get(net, IPPROTO_TCP);
+=======
+	if (u->tcp_timeout < 0 || u->tcp_timeout > (INT_MAX / HZ) ||
+	    u->tcp_fin_timeout < 0 || u->tcp_fin_timeout > (INT_MAX / HZ)) {
+		return -EINVAL;
+	}
+#endif
+
+#ifdef CONFIG_IP_VS_PROTO_UDP
+	if (u->udp_timeout < 0 || u->udp_timeout > (INT_MAX / HZ))
+		return -EINVAL;
+#endif
+
+#ifdef CONFIG_IP_VS_PROTO_TCP
+	if (u->tcp_timeout) {
+		pd = ip_vs_proto_data_get(ipvs, IPPROTO_TCP);
+>>>>>>> v4.9.227
 		pd->timeout_table[IP_VS_TCP_S_ESTABLISHED]
 			= u->tcp_timeout * HZ;
 	}
 
 	if (u->tcp_fin_timeout) {
+<<<<<<< HEAD
 		pd = ip_vs_proto_data_get(net, IPPROTO_TCP);
+=======
+		pd = ip_vs_proto_data_get(ipvs, IPPROTO_TCP);
+>>>>>>> v4.9.227
 		pd->timeout_table[IP_VS_TCP_S_FIN_WAIT]
 			= u->tcp_fin_timeout * HZ;
 	}
@@ -2198,7 +2662,11 @@ static int ip_vs_set_timeout(struct net *net, struct ip_vs_timeout_user *u)
 
 #ifdef CONFIG_IP_VS_PROTO_UDP
 	if (u->udp_timeout) {
+<<<<<<< HEAD
 		pd = ip_vs_proto_data_get(net, IPPROTO_UDP);
+=======
+		pd = ip_vs_proto_data_get(ipvs, IPPROTO_UDP);
+>>>>>>> v4.9.227
 		pd->timeout_table[IP_VS_UDP_S_NORMAL]
 			= u->udp_timeout * HZ;
 	}
@@ -2310,6 +2778,7 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
 	    cmd == IP_VS_SO_SET_STOPDAEMON) {
 		struct ip_vs_daemon_user *dm = (struct ip_vs_daemon_user *)arg;
 
+<<<<<<< HEAD
 		mutex_lock(&ipvs->sync_mutex);
 		if (cmd == IP_VS_SO_SET_STARTDAEMON)
 			ret = start_sync_thread(net, dm->state, dm->mcast_ifn,
@@ -2317,17 +2786,42 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
 		else
 			ret = stop_sync_thread(net, dm->state);
 		mutex_unlock(&ipvs->sync_mutex);
+=======
+		if (cmd == IP_VS_SO_SET_STARTDAEMON) {
+			struct ipvs_sync_daemon_cfg cfg;
+
+			memset(&cfg, 0, sizeof(cfg));
+			ret = -EINVAL;
+			if (strscpy(cfg.mcast_ifn, dm->mcast_ifn,
+				    sizeof(cfg.mcast_ifn)) <= 0)
+				goto out_dec;
+			cfg.syncid = dm->syncid;
+			ret = start_sync_thread(ipvs, &cfg, dm->state);
+		} else {
+			mutex_lock(&ipvs->sync_mutex);
+			ret = stop_sync_thread(ipvs, dm->state);
+			mutex_unlock(&ipvs->sync_mutex);
+		}
+>>>>>>> v4.9.227
 		goto out_dec;
 	}
 
 	mutex_lock(&__ip_vs_mutex);
 	if (cmd == IP_VS_SO_SET_FLUSH) {
 		/* Flush the virtual service */
+<<<<<<< HEAD
 		ret = ip_vs_flush(net, false);
 		goto out_unlock;
 	} else if (cmd == IP_VS_SO_SET_TIMEOUT) {
 		/* Set timeout values for (tcp tcpfin udp) */
 		ret = ip_vs_set_timeout(net, (struct ip_vs_timeout_user *)arg);
+=======
+		ret = ip_vs_flush(ipvs, false);
+		goto out_unlock;
+	} else if (cmd == IP_VS_SO_SET_TIMEOUT) {
+		/* Set timeout values for (tcp tcpfin udp) */
+		ret = ip_vs_set_timeout(ipvs, (struct ip_vs_timeout_user *)arg);
+>>>>>>> v4.9.227
 		goto out_unlock;
 	}
 
@@ -2342,17 +2836,37 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
 	if (cmd == IP_VS_SO_SET_ZERO) {
 		/* if no service address is set, zero counters in all */
 		if (!usvc.fwmark && !usvc.addr.ip && !usvc.port) {
+<<<<<<< HEAD
 			ret = ip_vs_zero_all(net);
+=======
+			ret = ip_vs_zero_all(ipvs);
+>>>>>>> v4.9.227
 			goto out_unlock;
 		}
 	}
 
+<<<<<<< HEAD
 	/* Check for valid protocol: TCP or UDP or SCTP, even for fwmark!=0 */
 	if (usvc.protocol != IPPROTO_TCP && usvc.protocol != IPPROTO_UDP &&
 	    usvc.protocol != IPPROTO_SCTP) {
 		pr_err("set_ctl: invalid protocol: %d %pI4:%d %s\n",
 		       usvc.protocol, &usvc.addr.ip,
 		       ntohs(usvc.port), usvc.sched_name);
+=======
+	if ((cmd == IP_VS_SO_SET_ADD || cmd == IP_VS_SO_SET_EDIT) &&
+	    strnlen(usvc.sched_name, IP_VS_SCHEDNAME_MAXLEN) ==
+	    IP_VS_SCHEDNAME_MAXLEN) {
+		ret = -EINVAL;
+		goto out_unlock;
+	}
+
+	/* Check for valid protocol: TCP or UDP or SCTP, even for fwmark!=0 */
+	if (usvc.protocol != IPPROTO_TCP && usvc.protocol != IPPROTO_UDP &&
+	    usvc.protocol != IPPROTO_SCTP) {
+		pr_err("set_ctl: invalid protocol: %d %pI4:%d\n",
+		       usvc.protocol, &usvc.addr.ip,
+		       ntohs(usvc.port));
+>>>>>>> v4.9.227
 		ret = -EFAULT;
 		goto out_unlock;
 	}
@@ -2360,10 +2874,17 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
 	/* Lookup the exact service by <protocol, addr, port> or fwmark */
 	rcu_read_lock();
 	if (usvc.fwmark == 0)
+<<<<<<< HEAD
 		svc = __ip_vs_service_find(net, usvc.af, usvc.protocol,
 					   &usvc.addr, usvc.port);
 	else
 		svc = __ip_vs_svc_fwm_find(net, usvc.af, usvc.fwmark);
+=======
+		svc = __ip_vs_service_find(ipvs, usvc.af, usvc.protocol,
+					   &usvc.addr, usvc.port);
+	else
+		svc = __ip_vs_svc_fwm_find(ipvs, usvc.af, usvc.fwmark);
+>>>>>>> v4.9.227
 	rcu_read_unlock();
 
 	if (cmd != IP_VS_SO_SET_ADD
@@ -2377,7 +2898,11 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
 		if (svc != NULL)
 			ret = -EEXIST;
 		else
+<<<<<<< HEAD
 			ret = ip_vs_add_service(net, &usvc, &svc);
+=======
+			ret = ip_vs_add_service(ipvs, &usvc, &svc);
+>>>>>>> v4.9.227
 		break;
 	case IP_VS_SO_SET_EDIT:
 		ret = ip_vs_edit_service(svc, &usvc);
@@ -2417,6 +2942,10 @@ static void
 ip_vs_copy_service(struct ip_vs_service_entry *dst, struct ip_vs_service *src)
 {
 	struct ip_vs_scheduler *sched;
+<<<<<<< HEAD
+=======
+	struct ip_vs_kstats kstats;
+>>>>>>> v4.9.227
 	char *sched_name;
 
 	sched = rcu_dereference_protected(src->scheduler, 1);
@@ -2430,11 +2959,20 @@ ip_vs_copy_service(struct ip_vs_service_entry *dst, struct ip_vs_service *src)
 	dst->timeout = src->timeout / HZ;
 	dst->netmask = src->netmask;
 	dst->num_dests = src->num_dests;
+<<<<<<< HEAD
 	ip_vs_copy_stats(&dst->stats, &src->stats);
 }
 
 static inline int
 __ip_vs_get_service_entries(struct net *net,
+=======
+	ip_vs_copy_stats(&kstats, &src->stats);
+	ip_vs_export_stats_user(&dst->stats, &kstats);
+}
+
+static inline int
+__ip_vs_get_service_entries(struct netns_ipvs *ipvs,
+>>>>>>> v4.9.227
 			    const struct ip_vs_get_services *get,
 			    struct ip_vs_get_services __user *uptr)
 {
@@ -2446,7 +2984,11 @@ __ip_vs_get_service_entries(struct net *net,
 	for (idx = 0; idx < IP_VS_SVC_TAB_SIZE; idx++) {
 		hlist_for_each_entry(svc, &ip_vs_svc_table[idx], s_list) {
 			/* Only expose IPv4 entries to old interface */
+<<<<<<< HEAD
 			if (svc->af != AF_INET || !net_eq(svc->net, net))
+=======
+			if (svc->af != AF_INET || (svc->ipvs != ipvs))
+>>>>>>> v4.9.227
 				continue;
 
 			if (count >= get->num_services)
@@ -2465,7 +3007,11 @@ __ip_vs_get_service_entries(struct net *net,
 	for (idx = 0; idx < IP_VS_SVC_TAB_SIZE; idx++) {
 		hlist_for_each_entry(svc, &ip_vs_svc_fwm_table[idx], f_list) {
 			/* Only expose IPv4 entries to old interface */
+<<<<<<< HEAD
 			if (svc->af != AF_INET || !net_eq(svc->net, net))
+=======
+			if (svc->af != AF_INET || (svc->ipvs != ipvs))
+>>>>>>> v4.9.227
 				continue;
 
 			if (count >= get->num_services)
@@ -2485,7 +3031,11 @@ out:
 }
 
 static inline int
+<<<<<<< HEAD
 __ip_vs_get_dest_entries(struct net *net, const struct ip_vs_get_dests *get,
+=======
+__ip_vs_get_dest_entries(struct netns_ipvs *ipvs, const struct ip_vs_get_dests *get,
+>>>>>>> v4.9.227
 			 struct ip_vs_get_dests __user *uptr)
 {
 	struct ip_vs_service *svc;
@@ -2494,9 +3044,15 @@ __ip_vs_get_dest_entries(struct net *net, const struct ip_vs_get_dests *get,
 
 	rcu_read_lock();
 	if (get->fwmark)
+<<<<<<< HEAD
 		svc = __ip_vs_svc_fwm_find(net, AF_INET, get->fwmark);
 	else
 		svc = __ip_vs_service_find(net, AF_INET, get->protocol, &addr,
+=======
+		svc = __ip_vs_svc_fwm_find(ipvs, AF_INET, get->fwmark);
+	else
+		svc = __ip_vs_service_find(ipvs, AF_INET, get->protocol, &addr,
+>>>>>>> v4.9.227
 					   get->port);
 	rcu_read_unlock();
 
@@ -2504,6 +3060,10 @@ __ip_vs_get_dest_entries(struct net *net, const struct ip_vs_get_dests *get,
 		int count = 0;
 		struct ip_vs_dest *dest;
 		struct ip_vs_dest_entry entry;
+<<<<<<< HEAD
+=======
+		struct ip_vs_kstats kstats;
+>>>>>>> v4.9.227
 
 		memset(&entry, 0, sizeof(entry));
 		list_for_each_entry(dest, &svc->destinations, n_list) {
@@ -2525,7 +3085,12 @@ __ip_vs_get_dest_entries(struct net *net, const struct ip_vs_get_dests *get,
 			entry.activeconns = atomic_read(&dest->activeconns);
 			entry.inactconns = atomic_read(&dest->inactconns);
 			entry.persistconns = atomic_read(&dest->persistconns);
+<<<<<<< HEAD
 			ip_vs_copy_stats(&entry.stats, &dest->stats);
+=======
+			ip_vs_copy_stats(&kstats, &dest->stats);
+			ip_vs_export_stats_user(&entry.stats, &kstats);
+>>>>>>> v4.9.227
 			if (copy_to_user(&uptr->entrytable[count],
 					 &entry, sizeof(entry))) {
 				ret = -EFAULT;
@@ -2539,7 +3104,11 @@ __ip_vs_get_dest_entries(struct net *net, const struct ip_vs_get_dests *get,
 }
 
 static inline void
+<<<<<<< HEAD
 __ip_vs_get_timeouts(struct net *net, struct ip_vs_timeout_user *u)
+=======
+__ip_vs_get_timeouts(struct netns_ipvs *ipvs, struct ip_vs_timeout_user *u)
+>>>>>>> v4.9.227
 {
 #if defined(CONFIG_IP_VS_PROTO_TCP) || defined(CONFIG_IP_VS_PROTO_UDP)
 	struct ip_vs_proto_data *pd;
@@ -2548,12 +3117,20 @@ __ip_vs_get_timeouts(struct net *net, struct ip_vs_timeout_user *u)
 	memset(u, 0, sizeof (*u));
 
 #ifdef CONFIG_IP_VS_PROTO_TCP
+<<<<<<< HEAD
 	pd = ip_vs_proto_data_get(net, IPPROTO_TCP);
+=======
+	pd = ip_vs_proto_data_get(ipvs, IPPROTO_TCP);
+>>>>>>> v4.9.227
 	u->tcp_timeout = pd->timeout_table[IP_VS_TCP_S_ESTABLISHED] / HZ;
 	u->tcp_fin_timeout = pd->timeout_table[IP_VS_TCP_S_FIN_WAIT] / HZ;
 #endif
 #ifdef CONFIG_IP_VS_PROTO_UDP
+<<<<<<< HEAD
 	pd = ip_vs_proto_data_get(net, IPPROTO_UDP);
+=======
+	pd = ip_vs_proto_data_get(ipvs, IPPROTO_UDP);
+>>>>>>> v4.9.227
 	u->udp_timeout =
 			pd->timeout_table[IP_VS_UDP_S_NORMAL] / HZ;
 #endif
@@ -2616,6 +3193,7 @@ do_ip_vs_get_ctl(struct sock *sk, int cmd, void __user *user, int *len)
 		mutex_lock(&ipvs->sync_mutex);
 		if (ipvs->sync_state & IP_VS_STATE_MASTER) {
 			d[0].state = IP_VS_STATE_MASTER;
+<<<<<<< HEAD
 			strlcpy(d[0].mcast_ifn, ipvs->master_mcast_ifn,
 				sizeof(d[0].mcast_ifn));
 			d[0].syncid = ipvs->master_syncid;
@@ -2625,6 +3203,17 @@ do_ip_vs_get_ctl(struct sock *sk, int cmd, void __user *user, int *len)
 			strlcpy(d[1].mcast_ifn, ipvs->backup_mcast_ifn,
 				sizeof(d[1].mcast_ifn));
 			d[1].syncid = ipvs->backup_syncid;
+=======
+			strlcpy(d[0].mcast_ifn, ipvs->mcfg.mcast_ifn,
+				sizeof(d[0].mcast_ifn));
+			d[0].syncid = ipvs->mcfg.syncid;
+		}
+		if (ipvs->sync_state & IP_VS_STATE_BACKUP) {
+			d[1].state = IP_VS_STATE_BACKUP;
+			strlcpy(d[1].mcast_ifn, ipvs->bcfg.mcast_ifn,
+				sizeof(d[1].mcast_ifn));
+			d[1].syncid = ipvs->bcfg.syncid;
+>>>>>>> v4.9.227
 		}
 		if (copy_to_user(user, &d, sizeof(d)) != 0)
 			ret = -EFAULT;
@@ -2672,7 +3261,11 @@ do_ip_vs_get_ctl(struct sock *sk, int cmd, void __user *user, int *len)
 			ret = -EINVAL;
 			goto out;
 		}
+<<<<<<< HEAD
 		ret = __ip_vs_get_service_entries(net, get, user);
+=======
+		ret = __ip_vs_get_service_entries(ipvs, get, user);
+>>>>>>> v4.9.227
 	}
 	break;
 
@@ -2686,9 +3279,15 @@ do_ip_vs_get_ctl(struct sock *sk, int cmd, void __user *user, int *len)
 		addr.ip = entry->addr;
 		rcu_read_lock();
 		if (entry->fwmark)
+<<<<<<< HEAD
 			svc = __ip_vs_svc_fwm_find(net, AF_INET, entry->fwmark);
 		else
 			svc = __ip_vs_service_find(net, AF_INET,
+=======
+			svc = __ip_vs_svc_fwm_find(ipvs, AF_INET, entry->fwmark);
+		else
+			svc = __ip_vs_service_find(ipvs, AF_INET,
+>>>>>>> v4.9.227
 						   entry->protocol, &addr,
 						   entry->port);
 		rcu_read_unlock();
@@ -2714,7 +3313,11 @@ do_ip_vs_get_ctl(struct sock *sk, int cmd, void __user *user, int *len)
 			ret = -EINVAL;
 			goto out;
 		}
+<<<<<<< HEAD
 		ret = __ip_vs_get_dest_entries(net, get, user);
+=======
+		ret = __ip_vs_get_dest_entries(ipvs, get, user);
+>>>>>>> v4.9.227
 	}
 	break;
 
@@ -2722,7 +3325,11 @@ do_ip_vs_get_ctl(struct sock *sk, int cmd, void __user *user, int *len)
 	{
 		struct ip_vs_timeout_user t;
 
+<<<<<<< HEAD
 		__ip_vs_get_timeouts(net, &t);
+=======
+		__ip_vs_get_timeouts(ipvs, &t);
+>>>>>>> v4.9.227
 		if (copy_to_user(user, &t, sizeof(t)) != 0)
 			ret = -EFAULT;
 	}
@@ -2777,8 +3384,18 @@ static const struct nla_policy ip_vs_cmd_policy[IPVS_CMD_ATTR_MAX + 1] = {
 static const struct nla_policy ip_vs_daemon_policy[IPVS_DAEMON_ATTR_MAX + 1] = {
 	[IPVS_DAEMON_ATTR_STATE]	= { .type = NLA_U32 },
 	[IPVS_DAEMON_ATTR_MCAST_IFN]	= { .type = NLA_NUL_STRING,
+<<<<<<< HEAD
 					    .len = IP_VS_IFNAME_MAXLEN },
 	[IPVS_DAEMON_ATTR_SYNC_ID]	= { .type = NLA_U32 },
+=======
+					    .len = IP_VS_IFNAME_MAXLEN - 1 },
+	[IPVS_DAEMON_ATTR_SYNC_ID]	= { .type = NLA_U32 },
+	[IPVS_DAEMON_ATTR_SYNC_MAXLEN]	= { .type = NLA_U16 },
+	[IPVS_DAEMON_ATTR_MCAST_GROUP]	= { .type = NLA_U32 },
+	[IPVS_DAEMON_ATTR_MCAST_GROUP6]	= { .len = sizeof(struct in6_addr) },
+	[IPVS_DAEMON_ATTR_MCAST_PORT]	= { .type = NLA_U16 },
+	[IPVS_DAEMON_ATTR_MCAST_TTL]	= { .type = NLA_U8 },
+>>>>>>> v4.9.227
 };
 
 /* Policy used for attributes in nested attribute IPVS_CMD_ATTR_SERVICE */
@@ -2790,7 +3407,11 @@ static const struct nla_policy ip_vs_svc_policy[IPVS_SVC_ATTR_MAX + 1] = {
 	[IPVS_SVC_ATTR_PORT]		= { .type = NLA_U16 },
 	[IPVS_SVC_ATTR_FWMARK]		= { .type = NLA_U32 },
 	[IPVS_SVC_ATTR_SCHED_NAME]	= { .type = NLA_NUL_STRING,
+<<<<<<< HEAD
 					    .len = IP_VS_SCHEDNAME_MAXLEN },
+=======
+					    .len = IP_VS_SCHEDNAME_MAXLEN - 1 },
+>>>>>>> v4.9.227
 	[IPVS_SVC_ATTR_PE_NAME]		= { .type = NLA_NUL_STRING,
 					    .len = IP_VS_PENAME_MAXLEN },
 	[IPVS_SVC_ATTR_FLAGS]		= { .type = NLA_BINARY,
@@ -2817,6 +3438,7 @@ static const struct nla_policy ip_vs_dest_policy[IPVS_DEST_ATTR_MAX + 1] = {
 };
 
 static int ip_vs_genl_fill_stats(struct sk_buff *skb, int container_type,
+<<<<<<< HEAD
 				 struct ip_vs_stats *stats)
 {
 	struct ip_vs_stats_user ustats;
@@ -2836,6 +3458,65 @@ static int ip_vs_genl_fill_stats(struct sk_buff *skb, int container_type,
 	    nla_put_u32(skb, IPVS_STATS_ATTR_OUTPPS, ustats.outpps) ||
 	    nla_put_u32(skb, IPVS_STATS_ATTR_INBPS, ustats.inbps) ||
 	    nla_put_u32(skb, IPVS_STATS_ATTR_OUTBPS, ustats.outbps))
+=======
+				 struct ip_vs_kstats *kstats)
+{
+	struct nlattr *nl_stats = nla_nest_start(skb, container_type);
+
+	if (!nl_stats)
+		return -EMSGSIZE;
+
+	if (nla_put_u32(skb, IPVS_STATS_ATTR_CONNS, (u32)kstats->conns) ||
+	    nla_put_u32(skb, IPVS_STATS_ATTR_INPKTS, (u32)kstats->inpkts) ||
+	    nla_put_u32(skb, IPVS_STATS_ATTR_OUTPKTS, (u32)kstats->outpkts) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_INBYTES, kstats->inbytes,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_OUTBYTES, kstats->outbytes,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u32(skb, IPVS_STATS_ATTR_CPS, (u32)kstats->cps) ||
+	    nla_put_u32(skb, IPVS_STATS_ATTR_INPPS, (u32)kstats->inpps) ||
+	    nla_put_u32(skb, IPVS_STATS_ATTR_OUTPPS, (u32)kstats->outpps) ||
+	    nla_put_u32(skb, IPVS_STATS_ATTR_INBPS, (u32)kstats->inbps) ||
+	    nla_put_u32(skb, IPVS_STATS_ATTR_OUTBPS, (u32)kstats->outbps))
+		goto nla_put_failure;
+	nla_nest_end(skb, nl_stats);
+
+	return 0;
+
+nla_put_failure:
+	nla_nest_cancel(skb, nl_stats);
+	return -EMSGSIZE;
+}
+
+static int ip_vs_genl_fill_stats64(struct sk_buff *skb, int container_type,
+				   struct ip_vs_kstats *kstats)
+{
+	struct nlattr *nl_stats = nla_nest_start(skb, container_type);
+
+	if (!nl_stats)
+		return -EMSGSIZE;
+
+	if (nla_put_u64_64bit(skb, IPVS_STATS_ATTR_CONNS, kstats->conns,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_INPKTS, kstats->inpkts,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_OUTPKTS, kstats->outpkts,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_INBYTES, kstats->inbytes,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_OUTBYTES, kstats->outbytes,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_CPS, kstats->cps,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_INPPS, kstats->inpps,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_OUTPPS, kstats->outpps,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_INBPS, kstats->inbps,
+			      IPVS_STATS_ATTR_PAD) ||
+	    nla_put_u64_64bit(skb, IPVS_STATS_ATTR_OUTBPS, kstats->outbps,
+			      IPVS_STATS_ATTR_PAD))
+>>>>>>> v4.9.227
 		goto nla_put_failure;
 	nla_nest_end(skb, nl_stats);
 
@@ -2854,6 +3535,10 @@ static int ip_vs_genl_fill_service(struct sk_buff *skb,
 	struct nlattr *nl_service;
 	struct ip_vs_flags flags = { .flags = svc->flags,
 				     .mask = ~0 };
+<<<<<<< HEAD
+=======
+	struct ip_vs_kstats kstats;
+>>>>>>> v4.9.227
 	char *sched_name;
 
 	nl_service = nla_nest_start(skb, IPVS_CMD_ATTR_SERVICE);
@@ -2881,7 +3566,14 @@ static int ip_vs_genl_fill_service(struct sk_buff *skb,
 	    nla_put_u32(skb, IPVS_SVC_ATTR_TIMEOUT, svc->timeout / HZ) ||
 	    nla_put_be32(skb, IPVS_SVC_ATTR_NETMASK, svc->netmask))
 		goto nla_put_failure;
+<<<<<<< HEAD
 	if (ip_vs_genl_fill_stats(skb, IPVS_SVC_ATTR_STATS, &svc->stats))
+=======
+	ip_vs_copy_stats(&kstats, &svc->stats);
+	if (ip_vs_genl_fill_stats(skb, IPVS_SVC_ATTR_STATS, &kstats))
+		goto nla_put_failure;
+	if (ip_vs_genl_fill_stats64(skb, IPVS_SVC_ATTR_STATS64, &kstats))
+>>>>>>> v4.9.227
 		goto nla_put_failure;
 
 	nla_nest_end(skb, nl_service);
@@ -2908,7 +3600,12 @@ static int ip_vs_genl_dump_service(struct sk_buff *skb,
 	if (ip_vs_genl_fill_service(skb, svc) < 0)
 		goto nla_put_failure;
 
+<<<<<<< HEAD
 	return genlmsg_end(skb, hdr);
+=======
+	genlmsg_end(skb, hdr);
+	return 0;
+>>>>>>> v4.9.227
 
 nla_put_failure:
 	genlmsg_cancel(skb, hdr);
@@ -2921,12 +3618,21 @@ static int ip_vs_genl_dump_services(struct sk_buff *skb,
 	int idx = 0, i;
 	int start = cb->args[0];
 	struct ip_vs_service *svc;
+<<<<<<< HEAD
 	struct net *net = skb_sknet(skb);
+=======
+	struct net *net = sock_net(skb->sk);
+	struct netns_ipvs *ipvs = net_ipvs(net);
+>>>>>>> v4.9.227
 
 	mutex_lock(&__ip_vs_mutex);
 	for (i = 0; i < IP_VS_SVC_TAB_SIZE; i++) {
 		hlist_for_each_entry(svc, &ip_vs_svc_table[i], s_list) {
+<<<<<<< HEAD
 			if (++idx <= start || !net_eq(svc->net, net))
+=======
+			if (++idx <= start || (svc->ipvs != ipvs))
+>>>>>>> v4.9.227
 				continue;
 			if (ip_vs_genl_dump_service(skb, svc, cb) < 0) {
 				idx--;
@@ -2937,7 +3643,11 @@ static int ip_vs_genl_dump_services(struct sk_buff *skb,
 
 	for (i = 0; i < IP_VS_SVC_TAB_SIZE; i++) {
 		hlist_for_each_entry(svc, &ip_vs_svc_fwm_table[i], f_list) {
+<<<<<<< HEAD
 			if (++idx <= start || !net_eq(svc->net, net))
+=======
+			if (++idx <= start || (svc->ipvs != ipvs))
+>>>>>>> v4.9.227
 				continue;
 			if (ip_vs_genl_dump_service(skb, svc, cb) < 0) {
 				idx--;
@@ -2953,7 +3663,22 @@ nla_put_failure:
 	return skb->len;
 }
 
+<<<<<<< HEAD
 static int ip_vs_genl_parse_service(struct net *net,
+=======
+static bool ip_vs_is_af_valid(int af)
+{
+	if (af == AF_INET)
+		return true;
+#ifdef CONFIG_IP_VS_IPV6
+	if (af == AF_INET6 && ipv6_mod_enabled())
+		return true;
+#endif
+	return false;
+}
+
+static int ip_vs_genl_parse_service(struct netns_ipvs *ipvs,
+>>>>>>> v4.9.227
 				    struct ip_vs_service_user_kern *usvc,
 				    struct nlattr *nla, int full_entry,
 				    struct ip_vs_service **ret_svc)
@@ -2979,11 +3704,15 @@ static int ip_vs_genl_parse_service(struct net *net,
 	memset(usvc, 0, sizeof(*usvc));
 
 	usvc->af = nla_get_u16(nla_af);
+<<<<<<< HEAD
 #ifdef CONFIG_IP_VS_IPV6
 	if (usvc->af != AF_INET && usvc->af != AF_INET6)
 #else
 	if (usvc->af != AF_INET)
 #endif
+=======
+	if (!ip_vs_is_af_valid(usvc->af))
+>>>>>>> v4.9.227
 		return -EAFNOSUPPORT;
 
 	if (nla_fwmark) {
@@ -2998,9 +3727,15 @@ static int ip_vs_genl_parse_service(struct net *net,
 
 	rcu_read_lock();
 	if (usvc->fwmark)
+<<<<<<< HEAD
 		svc = __ip_vs_svc_fwm_find(net, usvc->af, usvc->fwmark);
 	else
 		svc = __ip_vs_service_find(net, usvc->af, usvc->protocol,
+=======
+		svc = __ip_vs_svc_fwm_find(ipvs, usvc->af, usvc->fwmark);
+	else
+		svc = __ip_vs_service_find(ipvs, usvc->af, usvc->protocol,
+>>>>>>> v4.9.227
 					   &usvc->addr, usvc->port);
 	rcu_read_unlock();
 	*ret_svc = svc;
@@ -3038,20 +3773,32 @@ static int ip_vs_genl_parse_service(struct net *net,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct ip_vs_service *ip_vs_genl_find_service(struct net *net,
+=======
+static struct ip_vs_service *ip_vs_genl_find_service(struct netns_ipvs *ipvs,
+>>>>>>> v4.9.227
 						     struct nlattr *nla)
 {
 	struct ip_vs_service_user_kern usvc;
 	struct ip_vs_service *svc;
 	int ret;
 
+<<<<<<< HEAD
 	ret = ip_vs_genl_parse_service(net, &usvc, nla, 0, &svc);
+=======
+	ret = ip_vs_genl_parse_service(ipvs, &usvc, nla, 0, &svc);
+>>>>>>> v4.9.227
 	return ret ? ERR_PTR(ret) : svc;
 }
 
 static int ip_vs_genl_fill_dest(struct sk_buff *skb, struct ip_vs_dest *dest)
 {
 	struct nlattr *nl_dest;
+<<<<<<< HEAD
+=======
+	struct ip_vs_kstats kstats;
+>>>>>>> v4.9.227
 
 	nl_dest = nla_nest_start(skb, IPVS_CMD_ATTR_DEST);
 	if (!nl_dest)
@@ -3074,7 +3821,14 @@ static int ip_vs_genl_fill_dest(struct sk_buff *skb, struct ip_vs_dest *dest)
 			atomic_read(&dest->persistconns)) ||
 	    nla_put_u16(skb, IPVS_DEST_ATTR_ADDR_FAMILY, dest->af))
 		goto nla_put_failure;
+<<<<<<< HEAD
 	if (ip_vs_genl_fill_stats(skb, IPVS_DEST_ATTR_STATS, &dest->stats))
+=======
+	ip_vs_copy_stats(&kstats, &dest->stats);
+	if (ip_vs_genl_fill_stats(skb, IPVS_DEST_ATTR_STATS, &kstats))
+		goto nla_put_failure;
+	if (ip_vs_genl_fill_stats64(skb, IPVS_DEST_ATTR_STATS64, &kstats))
+>>>>>>> v4.9.227
 		goto nla_put_failure;
 
 	nla_nest_end(skb, nl_dest);
@@ -3100,7 +3854,12 @@ static int ip_vs_genl_dump_dest(struct sk_buff *skb, struct ip_vs_dest *dest,
 	if (ip_vs_genl_fill_dest(skb, dest) < 0)
 		goto nla_put_failure;
 
+<<<<<<< HEAD
 	return genlmsg_end(skb, hdr);
+=======
+	genlmsg_end(skb, hdr);
+	return 0;
+>>>>>>> v4.9.227
 
 nla_put_failure:
 	genlmsg_cancel(skb, hdr);
@@ -3115,7 +3874,12 @@ static int ip_vs_genl_dump_dests(struct sk_buff *skb,
 	struct ip_vs_service *svc;
 	struct ip_vs_dest *dest;
 	struct nlattr *attrs[IPVS_CMD_ATTR_MAX + 1];
+<<<<<<< HEAD
 	struct net *net = skb_sknet(skb);
+=======
+	struct net *net = sock_net(skb->sk);
+	struct netns_ipvs *ipvs = net_ipvs(net);
+>>>>>>> v4.9.227
 
 	mutex_lock(&__ip_vs_mutex);
 
@@ -3125,7 +3889,11 @@ static int ip_vs_genl_dump_dests(struct sk_buff *skb,
 		goto out_err;
 
 
+<<<<<<< HEAD
 	svc = ip_vs_genl_find_service(net, attrs[IPVS_CMD_ATTR_SERVICE]);
+=======
+	svc = ip_vs_genl_find_service(ipvs, attrs[IPVS_CMD_ATTR_SERVICE]);
+>>>>>>> v4.9.227
 	if (IS_ERR(svc) || svc == NULL)
 		goto out_err;
 
@@ -3201,7 +3969,11 @@ static int ip_vs_genl_parse_dest(struct ip_vs_dest_user_kern *udest,
 }
 
 static int ip_vs_genl_fill_daemon(struct sk_buff *skb, __u32 state,
+<<<<<<< HEAD
 				  const char *mcast_ifn, __u32 syncid)
+=======
+				  struct ipvs_sync_daemon_cfg *c)
+>>>>>>> v4.9.227
 {
 	struct nlattr *nl_daemon;
 
@@ -3210,9 +3982,29 @@ static int ip_vs_genl_fill_daemon(struct sk_buff *skb, __u32 state,
 		return -EMSGSIZE;
 
 	if (nla_put_u32(skb, IPVS_DAEMON_ATTR_STATE, state) ||
+<<<<<<< HEAD
 	    nla_put_string(skb, IPVS_DAEMON_ATTR_MCAST_IFN, mcast_ifn) ||
 	    nla_put_u32(skb, IPVS_DAEMON_ATTR_SYNC_ID, syncid))
 		goto nla_put_failure;
+=======
+	    nla_put_string(skb, IPVS_DAEMON_ATTR_MCAST_IFN, c->mcast_ifn) ||
+	    nla_put_u32(skb, IPVS_DAEMON_ATTR_SYNC_ID, c->syncid) ||
+	    nla_put_u16(skb, IPVS_DAEMON_ATTR_SYNC_MAXLEN, c->sync_maxlen) ||
+	    nla_put_u16(skb, IPVS_DAEMON_ATTR_MCAST_PORT, c->mcast_port) ||
+	    nla_put_u8(skb, IPVS_DAEMON_ATTR_MCAST_TTL, c->mcast_ttl))
+		goto nla_put_failure;
+#ifdef CONFIG_IP_VS_IPV6
+	if (c->mcast_af == AF_INET6) {
+		if (nla_put_in6_addr(skb, IPVS_DAEMON_ATTR_MCAST_GROUP6,
+				     &c->mcast_group.in6))
+			goto nla_put_failure;
+	} else
+#endif
+		if (c->mcast_af == AF_INET &&
+		    nla_put_in_addr(skb, IPVS_DAEMON_ATTR_MCAST_GROUP,
+				    c->mcast_group.ip))
+			goto nla_put_failure;
+>>>>>>> v4.9.227
 	nla_nest_end(skb, nl_daemon);
 
 	return 0;
@@ -3223,7 +4015,11 @@ nla_put_failure:
 }
 
 static int ip_vs_genl_dump_daemon(struct sk_buff *skb, __u32 state,
+<<<<<<< HEAD
 				  const char *mcast_ifn, __u32 syncid,
+=======
+				  struct ipvs_sync_daemon_cfg *c,
+>>>>>>> v4.9.227
 				  struct netlink_callback *cb)
 {
 	void *hdr;
@@ -3233,10 +4029,18 @@ static int ip_vs_genl_dump_daemon(struct sk_buff *skb, __u32 state,
 	if (!hdr)
 		return -EMSGSIZE;
 
+<<<<<<< HEAD
 	if (ip_vs_genl_fill_daemon(skb, state, mcast_ifn, syncid))
 		goto nla_put_failure;
 
 	return genlmsg_end(skb, hdr);
+=======
+	if (ip_vs_genl_fill_daemon(skb, state, c))
+		goto nla_put_failure;
+
+	genlmsg_end(skb, hdr);
+	return 0;
+>>>>>>> v4.9.227
 
 nla_put_failure:
 	genlmsg_cancel(skb, hdr);
@@ -3246,14 +4050,22 @@ nla_put_failure:
 static int ip_vs_genl_dump_daemons(struct sk_buff *skb,
 				   struct netlink_callback *cb)
 {
+<<<<<<< HEAD
 	struct net *net = skb_sknet(skb);
+=======
+	struct net *net = sock_net(skb->sk);
+>>>>>>> v4.9.227
 	struct netns_ipvs *ipvs = net_ipvs(net);
 
 	mutex_lock(&ipvs->sync_mutex);
 	if ((ipvs->sync_state & IP_VS_STATE_MASTER) && !cb->args[0]) {
 		if (ip_vs_genl_dump_daemon(skb, IP_VS_STATE_MASTER,
+<<<<<<< HEAD
 					   ipvs->master_mcast_ifn,
 					   ipvs->master_syncid, cb) < 0)
+=======
+					   &ipvs->mcfg, cb) < 0)
+>>>>>>> v4.9.227
 			goto nla_put_failure;
 
 		cb->args[0] = 1;
@@ -3261,8 +4073,12 @@ static int ip_vs_genl_dump_daemons(struct sk_buff *skb,
 
 	if ((ipvs->sync_state & IP_VS_STATE_BACKUP) && !cb->args[1]) {
 		if (ip_vs_genl_dump_daemon(skb, IP_VS_STATE_BACKUP,
+<<<<<<< HEAD
 					   ipvs->backup_mcast_ifn,
 					   ipvs->backup_syncid, cb) < 0)
+=======
+					   &ipvs->bcfg, cb) < 0)
+>>>>>>> v4.9.227
 			goto nla_put_failure;
 
 		cb->args[1] = 1;
@@ -3274,16 +4090,68 @@ nla_put_failure:
 	return skb->len;
 }
 
+<<<<<<< HEAD
 static int ip_vs_genl_new_daemon(struct net *net, struct nlattr **attrs)
 {
+=======
+static int ip_vs_genl_new_daemon(struct netns_ipvs *ipvs, struct nlattr **attrs)
+{
+	struct ipvs_sync_daemon_cfg c;
+	struct nlattr *a;
+	int ret;
+
+	memset(&c, 0, sizeof(c));
+>>>>>>> v4.9.227
 	if (!(attrs[IPVS_DAEMON_ATTR_STATE] &&
 	      attrs[IPVS_DAEMON_ATTR_MCAST_IFN] &&
 	      attrs[IPVS_DAEMON_ATTR_SYNC_ID]))
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	strlcpy(c.mcast_ifn, nla_data(attrs[IPVS_DAEMON_ATTR_MCAST_IFN]),
+		sizeof(c.mcast_ifn));
+	c.syncid = nla_get_u32(attrs[IPVS_DAEMON_ATTR_SYNC_ID]);
+
+	a = attrs[IPVS_DAEMON_ATTR_SYNC_MAXLEN];
+	if (a)
+		c.sync_maxlen = nla_get_u16(a);
+
+	a = attrs[IPVS_DAEMON_ATTR_MCAST_GROUP];
+	if (a) {
+		c.mcast_af = AF_INET;
+		c.mcast_group.ip = nla_get_in_addr(a);
+		if (!ipv4_is_multicast(c.mcast_group.ip))
+			return -EINVAL;
+	} else {
+		a = attrs[IPVS_DAEMON_ATTR_MCAST_GROUP6];
+		if (a) {
+#ifdef CONFIG_IP_VS_IPV6
+			int addr_type;
+
+			c.mcast_af = AF_INET6;
+			c.mcast_group.in6 = nla_get_in6_addr(a);
+			addr_type = ipv6_addr_type(&c.mcast_group.in6);
+			if (!(addr_type & IPV6_ADDR_MULTICAST))
+				return -EINVAL;
+#else
+			return -EAFNOSUPPORT;
+#endif
+		}
+	}
+
+	a = attrs[IPVS_DAEMON_ATTR_MCAST_PORT];
+	if (a)
+		c.mcast_port = nla_get_u16(a);
+
+	a = attrs[IPVS_DAEMON_ATTR_MCAST_TTL];
+	if (a)
+		c.mcast_ttl = nla_get_u8(a);
+>>>>>>> v4.9.227
 
 	/* The synchronization protocol is incompatible with mixed family
 	 * services
 	 */
+<<<<<<< HEAD
 	if (net_ipvs(net)->mixed_address_family_dests > 0)
 		return -EINVAL;
 
@@ -3307,6 +4175,35 @@ static int ip_vs_genl_set_config(struct net *net, struct nlattr **attrs)
 	struct ip_vs_timeout_user t;
 
 	__ip_vs_get_timeouts(net, &t);
+=======
+	if (ipvs->mixed_address_family_dests > 0)
+		return -EINVAL;
+
+	ret = start_sync_thread(ipvs, &c,
+				nla_get_u32(attrs[IPVS_DAEMON_ATTR_STATE]));
+	return ret;
+}
+
+static int ip_vs_genl_del_daemon(struct netns_ipvs *ipvs, struct nlattr **attrs)
+{
+	int ret;
+
+	if (!attrs[IPVS_DAEMON_ATTR_STATE])
+		return -EINVAL;
+
+	mutex_lock(&ipvs->sync_mutex);
+	ret = stop_sync_thread(ipvs,
+			       nla_get_u32(attrs[IPVS_DAEMON_ATTR_STATE]));
+	mutex_unlock(&ipvs->sync_mutex);
+	return ret;
+}
+
+static int ip_vs_genl_set_config(struct netns_ipvs *ipvs, struct nlattr **attrs)
+{
+	struct ip_vs_timeout_user t;
+
+	__ip_vs_get_timeouts(ipvs, &t);
+>>>>>>> v4.9.227
 
 	if (attrs[IPVS_CMD_ATTR_TIMEOUT_TCP])
 		t.tcp_timeout = nla_get_u32(attrs[IPVS_CMD_ATTR_TIMEOUT_TCP]);
@@ -3318,22 +4215,34 @@ static int ip_vs_genl_set_config(struct net *net, struct nlattr **attrs)
 	if (attrs[IPVS_CMD_ATTR_TIMEOUT_UDP])
 		t.udp_timeout = nla_get_u32(attrs[IPVS_CMD_ATTR_TIMEOUT_UDP]);
 
+<<<<<<< HEAD
 	return ip_vs_set_timeout(net, &t);
+=======
+	return ip_vs_set_timeout(ipvs, &t);
+>>>>>>> v4.9.227
 }
 
 static int ip_vs_genl_set_daemon(struct sk_buff *skb, struct genl_info *info)
 {
+<<<<<<< HEAD
 	int ret = 0, cmd;
 	struct net *net;
 	struct netns_ipvs *ipvs;
 
 	net = skb_sknet(skb);
 	ipvs = net_ipvs(net);
+=======
+	int ret = -EINVAL, cmd;
+	struct net *net = sock_net(skb->sk);
+	struct netns_ipvs *ipvs = net_ipvs(net);
+
+>>>>>>> v4.9.227
 	cmd = info->genlhdr->cmd;
 
 	if (cmd == IPVS_CMD_NEW_DAEMON || cmd == IPVS_CMD_DEL_DAEMON) {
 		struct nlattr *daemon_attrs[IPVS_DAEMON_ATTR_MAX + 1];
 
+<<<<<<< HEAD
 		mutex_lock(&ipvs->sync_mutex);
 		if (!info->attrs[IPVS_CMD_ATTR_DAEMON] ||
 		    nla_parse_nested(daemon_attrs, IPVS_DAEMON_ATTR_MAX,
@@ -3350,6 +4259,21 @@ static int ip_vs_genl_set_daemon(struct sk_buff *skb, struct genl_info *info)
 out:
 		mutex_unlock(&ipvs->sync_mutex);
 	}
+=======
+		if (!info->attrs[IPVS_CMD_ATTR_DAEMON] ||
+		    nla_parse_nested(daemon_attrs, IPVS_DAEMON_ATTR_MAX,
+				     info->attrs[IPVS_CMD_ATTR_DAEMON],
+				     ip_vs_daemon_policy))
+			goto out;
+
+		if (cmd == IPVS_CMD_NEW_DAEMON)
+			ret = ip_vs_genl_new_daemon(ipvs, daemon_attrs);
+		else
+			ret = ip_vs_genl_del_daemon(ipvs, daemon_attrs);
+	}
+
+out:
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -3360,14 +4284,21 @@ static int ip_vs_genl_set_cmd(struct sk_buff *skb, struct genl_info *info)
 	struct ip_vs_dest_user_kern udest;
 	int ret = 0, cmd;
 	int need_full_svc = 0, need_full_dest = 0;
+<<<<<<< HEAD
 	struct net *net;
 
 	net = skb_sknet(skb);
+=======
+	struct net *net = sock_net(skb->sk);
+	struct netns_ipvs *ipvs = net_ipvs(net);
+
+>>>>>>> v4.9.227
 	cmd = info->genlhdr->cmd;
 
 	mutex_lock(&__ip_vs_mutex);
 
 	if (cmd == IPVS_CMD_FLUSH) {
+<<<<<<< HEAD
 		ret = ip_vs_flush(net, false);
 		goto out;
 	} else if (cmd == IPVS_CMD_SET_CONFIG) {
@@ -3376,6 +4307,16 @@ static int ip_vs_genl_set_cmd(struct sk_buff *skb, struct genl_info *info)
 	} else if (cmd == IPVS_CMD_ZERO &&
 		   !info->attrs[IPVS_CMD_ATTR_SERVICE]) {
 		ret = ip_vs_zero_all(net);
+=======
+		ret = ip_vs_flush(ipvs, false);
+		goto out;
+	} else if (cmd == IPVS_CMD_SET_CONFIG) {
+		ret = ip_vs_genl_set_config(ipvs, info->attrs);
+		goto out;
+	} else if (cmd == IPVS_CMD_ZERO &&
+		   !info->attrs[IPVS_CMD_ATTR_SERVICE]) {
+		ret = ip_vs_zero_all(ipvs);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -3385,7 +4326,11 @@ static int ip_vs_genl_set_cmd(struct sk_buff *skb, struct genl_info *info)
 	if (cmd == IPVS_CMD_NEW_SERVICE || cmd == IPVS_CMD_SET_SERVICE)
 		need_full_svc = 1;
 
+<<<<<<< HEAD
 	ret = ip_vs_genl_parse_service(net, &usvc,
+=======
+	ret = ip_vs_genl_parse_service(ipvs, &usvc,
+>>>>>>> v4.9.227
 				       info->attrs[IPVS_CMD_ATTR_SERVICE],
 				       need_full_svc, &svc);
 	if (ret)
@@ -3420,11 +4365,24 @@ static int ip_vs_genl_set_cmd(struct sk_buff *skb, struct genl_info *info)
 		if (udest.af == 0)
 			udest.af = svc->af;
 
+<<<<<<< HEAD
 		if (udest.af != svc->af) {
 			/* The synchronization protocol is incompatible
 			 * with mixed family services
 			 */
 			if (net_ipvs(net)->sync_state) {
+=======
+		if (!ip_vs_is_af_valid(udest.af)) {
+			ret = -EAFNOSUPPORT;
+			goto out;
+		}
+
+		if (udest.af != svc->af && cmd != IPVS_CMD_DEL_DEST) {
+			/* The synchronization protocol is incompatible
+			 * with mixed family services
+			 */
+			if (ipvs->sync_state) {
+>>>>>>> v4.9.227
 				ret = -EINVAL;
 				goto out;
 			}
@@ -3444,7 +4402,11 @@ static int ip_vs_genl_set_cmd(struct sk_buff *skb, struct genl_info *info)
 	switch (cmd) {
 	case IPVS_CMD_NEW_SERVICE:
 		if (svc == NULL)
+<<<<<<< HEAD
 			ret = ip_vs_add_service(net, &usvc, &svc);
+=======
+			ret = ip_vs_add_service(ipvs, &usvc, &svc);
+>>>>>>> v4.9.227
 		else
 			ret = -EEXIST;
 		break;
@@ -3482,9 +4444,15 @@ static int ip_vs_genl_get_cmd(struct sk_buff *skb, struct genl_info *info)
 	struct sk_buff *msg;
 	void *reply;
 	int ret, cmd, reply_cmd;
+<<<<<<< HEAD
 	struct net *net;
 
 	net = skb_sknet(skb);
+=======
+	struct net *net = sock_net(skb->sk);
+	struct netns_ipvs *ipvs = net_ipvs(net);
+
+>>>>>>> v4.9.227
 	cmd = info->genlhdr->cmd;
 
 	if (cmd == IPVS_CMD_GET_SERVICE)
@@ -3513,7 +4481,11 @@ static int ip_vs_genl_get_cmd(struct sk_buff *skb, struct genl_info *info)
 	{
 		struct ip_vs_service *svc;
 
+<<<<<<< HEAD
 		svc = ip_vs_genl_find_service(net,
+=======
+		svc = ip_vs_genl_find_service(ipvs,
+>>>>>>> v4.9.227
 					      info->attrs[IPVS_CMD_ATTR_SERVICE]);
 		if (IS_ERR(svc)) {
 			ret = PTR_ERR(svc);
@@ -3534,7 +4506,11 @@ static int ip_vs_genl_get_cmd(struct sk_buff *skb, struct genl_info *info)
 	{
 		struct ip_vs_timeout_user t;
 
+<<<<<<< HEAD
 		__ip_vs_get_timeouts(net, &t);
+=======
+		__ip_vs_get_timeouts(ipvs, &t);
+>>>>>>> v4.9.227
 #ifdef CONFIG_IP_VS_PROTO_TCP
 		if (nla_put_u32(msg, IPVS_CMD_ATTR_TIMEOUT_TCP,
 				t.tcp_timeout) ||
@@ -3689,10 +4665,17 @@ static void ip_vs_genl_unregister(void)
  * per netns intit/exit func.
  */
 #ifdef CONFIG_SYSCTL
+<<<<<<< HEAD
 static int __net_init ip_vs_control_net_init_sysctl(struct net *net)
 {
 	int idx;
 	struct netns_ipvs *ipvs = net_ipvs(net);
+=======
+static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
+{
+	struct net *net = ipvs->net;
+	int idx;
+>>>>>>> v4.9.227
 	struct ctl_table *tbl;
 
 	atomic_set(&ipvs->dropentry, 0);
@@ -3711,6 +4694,13 @@ static int __net_init ip_vs_control_net_init_sysctl(struct net *net)
 	} else
 		tbl = vs_vars;
 	/* Initialize sysctl defaults */
+<<<<<<< HEAD
+=======
+	for (idx = 0; idx < ARRAY_SIZE(vs_vars); idx++) {
+		if (tbl[idx].proc_handler == proc_do_defense_mode)
+			tbl[idx].extra2 = ipvs;
+	}
+>>>>>>> v4.9.227
 	idx = 0;
 	ipvs->sysctl_amemthresh = 1024;
 	tbl[idx++].data = &ipvs->sysctl_amemthresh;
@@ -3750,7 +4740,14 @@ static int __net_init ip_vs_control_net_init_sysctl(struct net *net)
 	ipvs->sysctl_pmtu_disc = 1;
 	tbl[idx++].data = &ipvs->sysctl_pmtu_disc;
 	tbl[idx++].data = &ipvs->sysctl_backup_only;
+<<<<<<< HEAD
 
+=======
+	ipvs->sysctl_conn_reuse_mode = 1;
+	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
+	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
+	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
+>>>>>>> v4.9.227
 
 	ipvs->sysctl_hdr = register_net_sysctl(net, "net/ipv4/vs", tbl);
 	if (ipvs->sysctl_hdr == NULL) {
@@ -3758,7 +4755,11 @@ static int __net_init ip_vs_control_net_init_sysctl(struct net *net)
 			kfree(tbl);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	ip_vs_start_estimator(net, &ipvs->tot_stats);
+=======
+	ip_vs_start_estimator(ipvs, &ipvs->tot_stats);
+>>>>>>> v4.9.227
 	ipvs->sysctl_tbl = tbl;
 	/* Schedule defense work */
 	INIT_DELAYED_WORK(&ipvs->defense_work, defense_work_handler);
@@ -3767,31 +4768,60 @@ static int __net_init ip_vs_control_net_init_sysctl(struct net *net)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __net_exit ip_vs_control_net_cleanup_sysctl(struct net *net)
 {
 	struct netns_ipvs *ipvs = net_ipvs(net);
+=======
+static void __net_exit ip_vs_control_net_cleanup_sysctl(struct netns_ipvs *ipvs)
+{
+	struct net *net = ipvs->net;
+>>>>>>> v4.9.227
 
 	cancel_delayed_work_sync(&ipvs->defense_work);
 	cancel_work_sync(&ipvs->defense_work.work);
 	unregister_net_sysctl_table(ipvs->sysctl_hdr);
+<<<<<<< HEAD
 	ip_vs_stop_estimator(net, &ipvs->tot_stats);
+=======
+	ip_vs_stop_estimator(ipvs, &ipvs->tot_stats);
+
+	if (!net_eq(net, &init_net))
+		kfree(ipvs->sysctl_tbl);
+>>>>>>> v4.9.227
 }
 
 #else
 
+<<<<<<< HEAD
 static int __net_init ip_vs_control_net_init_sysctl(struct net *net) { return 0; }
 static void __net_exit ip_vs_control_net_cleanup_sysctl(struct net *net) { }
+=======
+static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs) { return 0; }
+static void __net_exit ip_vs_control_net_cleanup_sysctl(struct netns_ipvs *ipvs) { }
+>>>>>>> v4.9.227
 
 #endif
 
 static struct notifier_block ip_vs_dst_notifier = {
 	.notifier_call = ip_vs_dst_event,
+<<<<<<< HEAD
 };
 
 int __net_init ip_vs_control_net_init(struct net *net)
 {
 	int i, idx;
 	struct netns_ipvs *ipvs = net_ipvs(net);
+=======
+#ifdef CONFIG_IP_VS_IPV6
+	.priority = ADDRCONF_NOTIFY_PRIORITY + 5,
+#endif
+};
+
+int __net_init ip_vs_control_net_init(struct netns_ipvs *ipvs)
+{
+	int i, idx;
+>>>>>>> v4.9.227
 
 	/* Initialize rs_table */
 	for (idx = 0; idx < IP_VS_RTAB_SIZE; idx++)
@@ -3800,9 +4830,16 @@ int __net_init ip_vs_control_net_init(struct net *net)
 	INIT_LIST_HEAD(&ipvs->dest_trash);
 	spin_lock_init(&ipvs->dest_trash_lock);
 	setup_timer(&ipvs->dest_trash_timer, ip_vs_dest_trash_expire,
+<<<<<<< HEAD
 		    (unsigned long) net);
 	atomic_set(&ipvs->ftpsvc_counter, 0);
 	atomic_set(&ipvs->nullsvc_counter, 0);
+=======
+		    (unsigned long) ipvs);
+	atomic_set(&ipvs->ftpsvc_counter, 0);
+	atomic_set(&ipvs->nullsvc_counter, 0);
+	atomic_set(&ipvs->conn_out_counter, 0);
+>>>>>>> v4.9.227
 
 	/* procfs stats */
 	ipvs->tot_stats.cpustats = alloc_percpu(struct ip_vs_cpu_stats);
@@ -3817,12 +4854,21 @@ int __net_init ip_vs_control_net_init(struct net *net)
 
 	spin_lock_init(&ipvs->tot_stats.lock);
 
+<<<<<<< HEAD
 	proc_create("ip_vs", 0, net->proc_net, &ip_vs_info_fops);
 	proc_create("ip_vs_stats", 0, net->proc_net, &ip_vs_stats_fops);
 	proc_create("ip_vs_stats_percpu", 0, net->proc_net,
 		    &ip_vs_stats_percpu_fops);
 
 	if (ip_vs_control_net_init_sysctl(net))
+=======
+	proc_create("ip_vs", 0, ipvs->net->proc_net, &ip_vs_info_fops);
+	proc_create("ip_vs_stats", 0, ipvs->net->proc_net, &ip_vs_stats_fops);
+	proc_create("ip_vs_stats_percpu", 0, ipvs->net->proc_net,
+		    &ip_vs_stats_percpu_fops);
+
+	if (ip_vs_control_net_init_sysctl(ipvs))
+>>>>>>> v4.9.227
 		goto err;
 
 	return 0;
@@ -3832,6 +4878,7 @@ err:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 void __net_exit ip_vs_control_net_cleanup(struct net *net)
 {
 	struct netns_ipvs *ipvs = net_ipvs(net);
@@ -3841,6 +4888,15 @@ void __net_exit ip_vs_control_net_cleanup(struct net *net)
 	remove_proc_entry("ip_vs_stats_percpu", net->proc_net);
 	remove_proc_entry("ip_vs_stats", net->proc_net);
 	remove_proc_entry("ip_vs", net->proc_net);
+=======
+void __net_exit ip_vs_control_net_cleanup(struct netns_ipvs *ipvs)
+{
+	ip_vs_trash_cleanup(ipvs);
+	ip_vs_control_net_cleanup_sysctl(ipvs);
+	remove_proc_entry("ip_vs_stats_percpu", ipvs->net->proc_net);
+	remove_proc_entry("ip_vs_stats", ipvs->net->proc_net);
+	remove_proc_entry("ip_vs", ipvs->net->proc_net);
+>>>>>>> v4.9.227
 	free_percpu(ipvs->tot_stats.cpustats);
 }
 

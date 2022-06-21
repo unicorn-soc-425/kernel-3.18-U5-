@@ -6,5 +6,9 @@ DRIVER_OBJS = $(addprefix ../../../drivers/oprofile/, \
 		oprofilefs.o oprofile_stats.o  \
 		timer_int.o )
 
+<<<<<<< HEAD
 oprofile-y :=	$(DRIVER_OBJS) init.o backtrace.o
 oprofile-$(CONFIG_64BIT)	+= hwsampler.o
+=======
+oprofile-y :=	$(DRIVER_OBJS) init.o
+>>>>>>> v4.9.227

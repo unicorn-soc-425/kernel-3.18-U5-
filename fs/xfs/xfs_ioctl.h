@@ -20,10 +20,14 @@
 
 extern int
 xfs_ioc_space(
+<<<<<<< HEAD
 	struct xfs_inode	*ip,
 	struct inode		*inode,
 	struct file		*filp,
 	int			ioflags,
+=======
+	struct file		*filp,
+>>>>>>> v4.9.227
 	unsigned int		cmd,
 	xfs_flock64_t		*bf);
 

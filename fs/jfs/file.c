@@ -38,17 +38,29 @@ int jfs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+>>>>>>> v4.9.227
 	if (!(inode->i_state & I_DIRTY_ALL) ||
 	    (datasync && !(inode->i_state & I_DIRTY_DATASYNC))) {
 		/* Make sure committed changes hit the disk */
 		jfs_flush_journal(JFS_SBI(inode->i_sb)->log, 1);
+<<<<<<< HEAD
 		mutex_unlock(&inode->i_mutex);
+=======
+		inode_unlock(inode);
+>>>>>>> v4.9.227
 		return rc;
 	}
 
 	rc |= jfs_commit_inode(inode, 1);
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_unlock(inode);
+>>>>>>> v4.9.227
 
 	return rc ? -EIO : 0;
 }
@@ -76,7 +88,11 @@ static int jfs_open(struct inode *inode, struct file *file)
 		if (ji->active_ag == -1) {
 			struct jfs_sb_info *jfs_sb = JFS_SBI(inode->i_sb);
 			ji->active_ag = BLKTOAG(addressPXD(&ji->ixpxd), jfs_sb);
+<<<<<<< HEAD
 			atomic_inc( &jfs_sb->bmap->db_active[ji->active_ag]);
+=======
+			atomic_inc(&jfs_sb->bmap->db_active[ji->active_ag]);
+>>>>>>> v4.9.227
 		}
 		spin_unlock_irq(&ji->ag_lock);
 	}
@@ -100,6 +116,7 @@ static int jfs_release(struct inode *inode, struct file *file)
 
 int jfs_setattr(struct dentry *dentry, struct iattr *iattr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	int rc;
 
@@ -109,6 +126,20 @@ int jfs_setattr(struct dentry *dentry, struct iattr *iattr)
 
 	if (is_quota_modification(inode, iattr))
 		dquot_initialize(inode);
+=======
+	struct inode *inode = d_inode(dentry);
+	int rc;
+
+	rc = setattr_prepare(dentry, iattr);
+	if (rc)
+		return rc;
+
+	if (is_quota_modification(inode, iattr)) {
+		rc = dquot_initialize(inode);
+		if (rc)
+			return rc;
+	}
+>>>>>>> v4.9.227
 	if ((iattr->ia_valid & ATTR_UID && !uid_eq(iattr->ia_uid, inode->i_uid)) ||
 	    (iattr->ia_valid & ATTR_GID && !gid_eq(iattr->ia_gid, inode->i_gid))) {
 		rc = dquot_transfer(inode, iattr);
@@ -137,10 +168,14 @@ int jfs_setattr(struct dentry *dentry, struct iattr *iattr)
 }
 
 const struct inode_operations jfs_file_inode_operations = {
+<<<<<<< HEAD
 	.setxattr	= jfs_setxattr,
 	.getxattr	= jfs_getxattr,
 	.listxattr	= jfs_listxattr,
 	.removexattr	= jfs_removexattr,
+=======
+	.listxattr	= jfs_listxattr,
+>>>>>>> v4.9.227
 	.setattr	= jfs_setattr,
 #ifdef CONFIG_JFS_POSIX_ACL
 	.get_acl	= jfs_get_acl,
@@ -151,8 +186,11 @@ const struct inode_operations jfs_file_inode_operations = {
 const struct file_operations jfs_file_operations = {
 	.open		= jfs_open,
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.write		= new_sync_write,
 	.read		= new_sync_read,
+=======
+>>>>>>> v4.9.227
 	.read_iter	= generic_file_read_iter,
 	.write_iter	= generic_file_write_iter,
 	.mmap		= generic_file_mmap,

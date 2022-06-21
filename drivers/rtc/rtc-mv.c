@@ -10,6 +10,10 @@
 #include <linux/kernel.h>
 #include <linux/rtc.h>
 #include <linux/bcd.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> v4.9.227
 #include <linux/io.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
@@ -24,7 +28,11 @@
 #define RTC_MINUTES_OFFS	8
 #define RTC_HOURS_OFFS		16
 #define RTC_WDAY_OFFS		24
+<<<<<<< HEAD
 #define RTC_HOURS_12H_MODE		(1 << 22) /* 12 hours mode */
+=======
+#define RTC_HOURS_12H_MODE	BIT(22) /* 12 hour mode */
+>>>>>>> v4.9.227
 
 #define RTC_DATE_REG_OFFS	4
 #define RTC_MDAY_OFFS		0
@@ -33,7 +41,11 @@
 
 #define RTC_ALARM_TIME_REG_OFFS	8
 #define RTC_ALARM_DATE_REG_OFFS	0xc
+<<<<<<< HEAD
 #define RTC_ALARM_VALID		(1 << 7)
+=======
+#define RTC_ALARM_VALID		BIT(7)
+>>>>>>> v4.9.227
 
 #define RTC_ALARM_INTERRUPT_MASK_REG_OFFS	0x10
 #define RTC_ALARM_INTERRUPT_CASUE_REG_OFFS	0x14
@@ -77,7 +89,11 @@ static int mv_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	second = rtc_time & 0x7f;
 	minute = (rtc_time >> RTC_MINUTES_OFFS) & 0x7f;
+<<<<<<< HEAD
 	hour = (rtc_time >> RTC_HOURS_OFFS) & 0x3f; /* assume 24 hours mode */
+=======
+	hour = (rtc_time >> RTC_HOURS_OFFS) & 0x3f; /* assume 24 hour mode */
+>>>>>>> v4.9.227
 	wday = (rtc_time >> RTC_WDAY_OFFS) & 0x7;
 
 	day = rtc_date & 0x3f;
@@ -108,7 +124,11 @@ static int mv_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 
 	second = rtc_time & 0x7f;
 	minute = (rtc_time >> RTC_MINUTES_OFFS) & 0x7f;
+<<<<<<< HEAD
 	hour = (rtc_time >> RTC_HOURS_OFFS) & 0x3f; /* assume 24 hours mode */
+=======
+	hour = (rtc_time >> RTC_HOURS_OFFS) & 0x3f; /* assume 24 hour mode */
+>>>>>>> v4.9.227
 	wday = (rtc_time >> RTC_WDAY_OFFS) & 0x7;
 
 	day = rtc_date & 0x3f;
@@ -239,10 +259,17 @@ static int __init mv_rtc_probe(struct platform_device *pdev)
 	if (!IS_ERR(pdata->clk))
 		clk_prepare_enable(pdata->clk);
 
+<<<<<<< HEAD
 	/* make sure the 24 hours mode is enabled */
 	rtc_time = readl(pdata->ioaddr + RTC_TIME_REG_OFFS);
 	if (rtc_time & RTC_HOURS_12H_MODE) {
 		dev_err(&pdev->dev, "24 Hours mode not supported.\n");
+=======
+	/* make sure the 24 hour mode is enabled */
+	rtc_time = readl(pdata->ioaddr + RTC_TIME_REG_OFFS);
+	if (rtc_time & RTC_HOURS_12H_MODE) {
+		dev_err(&pdev->dev, "12 Hour mode is enabled but not supported.\n");
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 		goto out;
 	}
@@ -323,13 +350,20 @@ static const struct of_device_id rtc_mv_of_match_table[] = {
 	{ .compatible = "marvell,orion-rtc", },
 	{}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, rtc_mv_of_match_table);
+>>>>>>> v4.9.227
 #endif
 
 static struct platform_driver mv_rtc_driver = {
 	.remove		= __exit_p(mv_rtc_remove),
 	.driver		= {
 		.name	= "rtc-mv",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(rtc_mv_of_match_table),
 	},
 };

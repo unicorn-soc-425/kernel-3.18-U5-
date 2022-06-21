@@ -18,7 +18,10 @@
 
 #include <asm/uaccess.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/segment.h>
 #include <asm/setup.h>
 #include <asm/macintosh.h>

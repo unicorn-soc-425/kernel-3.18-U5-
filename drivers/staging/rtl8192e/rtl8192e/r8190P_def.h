@@ -6,10 +6,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -26,8 +29,11 @@
 #define		MAX_SILENT_RESET_RX_SLOT_NUM	10
 
 #define RX_MPDU_QUEUE				0
+<<<<<<< HEAD
 #define RX_CMD_QUEUE				1
 
+=======
+>>>>>>> v4.9.227
 
 enum rtl819x_loopback {
 	RTL819X_NO_LOOPBACK = 0,
@@ -36,11 +42,14 @@ enum rtl819x_loopback {
 	RTL819X_CCK_LOOPBACK = 3,
 };
 
+<<<<<<< HEAD
 
 #define RESET_DELAY_8185			20
 
 #define RT_IBSS_INT_MASKS (IMR_BcnInt | IMR_BcnInt | IMR_TBDOK | IMR_TBDER)
 
+=======
+>>>>>>> v4.9.227
 #define DESC90_RATE1M				0x00
 #define DESC90_RATE2M				0x01
 #define DESC90_RATE5_5M				0x02
@@ -74,6 +83,7 @@ enum rtl819x_loopback {
 #define SHORT_SLOT_TIME				9
 #define NON_SHORT_SLOT_TIME		20
 
+<<<<<<< HEAD
 
 #define	MAX_LINES_HWCONFIG_TXT			1000
 #define MAX_BYTES_LINE_HWCONFIG_TXT		128
@@ -85,6 +95,8 @@ enum rtl819x_loopback {
 #define BT_QA_BOARD				1
 #define BT_FPGA					2
 
+=======
+>>>>>>> v4.9.227
 #define	RX_SMOOTH				20
 
 #define QSLT_BK					0x1
@@ -96,12 +108,16 @@ enum rtl819x_loopback {
 #define	QSLT_MGNT				0x12
 #define	QSLT_CMD				0x13
 
+<<<<<<< HEAD
 #define NUM_OF_FIRMWARE_QUEUE				10
 #define NUM_OF_PAGES_IN_FW					0x100
+=======
+>>>>>>> v4.9.227
 #define NUM_OF_PAGE_IN_FW_QUEUE_BK		0x007
 #define NUM_OF_PAGE_IN_FW_QUEUE_BE		0x0aa
 #define NUM_OF_PAGE_IN_FW_QUEUE_VI		0x024
 #define NUM_OF_PAGE_IN_FW_QUEUE_VO		0x007
+<<<<<<< HEAD
 #define NUM_OF_PAGE_IN_FW_QUEUE_HCCA		0
 #define NUM_OF_PAGE_IN_FW_QUEUE_CMD		0x2
 #define NUM_OF_PAGE_IN_FW_QUEUE_MGNT		0x10
@@ -115,6 +131,12 @@ enum rtl819x_loopback {
 #define NUM_OF_PAGE_IN_FW_QUEUE_VO_DTM	0x026
 #define NUM_OF_PAGE_IN_FW_QUEUE_PUB_DTM	0x00
 
+=======
+#define NUM_OF_PAGE_IN_FW_QUEUE_MGNT		0x10
+#define NUM_OF_PAGE_IN_FW_QUEUE_BCN		0x4
+#define NUM_OF_PAGE_IN_FW_QUEUE_PUB		0xd
+
+>>>>>>> v4.9.227
 #define APPLIED_RESERVED_QUEUE_IN_FW		0x80000000
 #define RSVD_FW_QUEUE_PAGE_BK_SHIFT		0x00
 #define RSVD_FW_QUEUE_PAGE_BE_SHIFT		0x08
@@ -144,6 +166,7 @@ enum rf_optype {
 	RF_OP_MAX
 };
 
+<<<<<<< HEAD
 
 enum power_save_mode {
 	POWER_SAVE_MODE_ACTIVE,
@@ -157,6 +180,8 @@ enum interface_select_8190pci {
 	INTF_SEL3_RSV			= 3,
 };
 
+=======
+>>>>>>> v4.9.227
 struct bb_reg_definition {
 	u32 rfintfs;
 	u32 rfintfi;
@@ -178,6 +203,7 @@ struct bb_reg_definition {
 	u32 rfLSSIReadBackPi;
 };
 
+<<<<<<< HEAD
 struct tx_fwinfo {
 	u8			TxRate:7;
 	u8			CtsEnable:1;
@@ -205,6 +231,8 @@ struct tx_fwinfo {
 	u32			PacketID:13;
 };
 
+=======
+>>>>>>> v4.9.227
 struct tx_fwinfo_8190pci {
 	u8			TxRate:7;
 	u8			CtsEnable:1;
@@ -237,6 +265,7 @@ struct tx_fwinfo_8190pci {
 
 };
 
+<<<<<<< HEAD
 
 #define TX_DESC_SIZE			32
 
@@ -254,6 +283,8 @@ struct tx_fwinfo_8190pci {
 
 #define RX_DRIVER_INFO_SIZE	8
 
+=======
+>>>>>>> v4.9.227
 struct log_int_8190 {
 	u32	nIMR_COMDOK;
 	u32	nIMR_MGNTDOK;

@@ -10,7 +10,11 @@
 #ifndef _MIPS_MALTAINT_H
 #define _MIPS_MALTAINT_H
 
+<<<<<<< HEAD
 #define MIPS_GIC_IRQ_BASE	(MIPS_CPU_IRQ_BASE + 8)
+=======
+#include <linux/irqchip/mips-gic.h>
+>>>>>>> v4.9.227
 
 /*
  * Interrupts 0..15 are used for Malta ISA compatible interrupts
@@ -22,29 +26,48 @@
 #define MIPSCPU_INT_SW1		1
 #define MIPSCPU_INT_MB0		2
 #define MIPSCPU_INT_I8259A	MIPSCPU_INT_MB0
+<<<<<<< HEAD
 #define MIPSCPU_INT_MB1		3
 #define MIPSCPU_INT_SMI		MIPSCPU_INT_MB1
 #define MIPSCPU_INT_IPI0	MIPSCPU_INT_MB1 /* GIC IPI */
 #define MIPSCPU_INT_MB2		4
 #define MIPSCPU_INT_IPI1	MIPSCPU_INT_MB2 /* GIC IPI */
+=======
+#define MIPSCPU_INT_GIC		MIPSCPU_INT_MB0 /* GIC chained interrupt */
+#define MIPSCPU_INT_MB1		3
+#define MIPSCPU_INT_SMI		MIPSCPU_INT_MB1
+#define MIPSCPU_INT_MB2		4
+>>>>>>> v4.9.227
 #define MIPSCPU_INT_MB3		5
 #define MIPSCPU_INT_COREHI	MIPSCPU_INT_MB3
 #define MIPSCPU_INT_MB4		6
 #define MIPSCPU_INT_CORELO	MIPSCPU_INT_MB4
 
 /*
+<<<<<<< HEAD
  * Interrupts 64..127 are used for Soc-it Classic interrupts
  */
 #define MSC01C_INT_BASE		64
+=======
+ * Interrupts 96..127 are used for Soc-it Classic interrupts
+ */
+#define MSC01C_INT_BASE		96
+>>>>>>> v4.9.227
 
 /* SOC-it Classic interrupt offsets */
 #define MSC01C_INT_TMR		0
 #define MSC01C_INT_PCI		1
 
 /*
+<<<<<<< HEAD
  * Interrupts 64..127 are used for Soc-it EIC interrupts
  */
 #define MSC01E_INT_BASE		64
+=======
+ * Interrupts 96..127 are used for Soc-it EIC interrupts
+ */
+#define MSC01E_INT_BASE		96
+>>>>>>> v4.9.227
 
 /* SOC-it EIC interrupt offsets */
 #define MSC01E_INT_SW0		1
@@ -63,6 +86,7 @@
 #define MSC01E_INT_PERFCTR	10
 #define MSC01E_INT_CPUCTR	11
 
+<<<<<<< HEAD
 /* External Interrupts used for IPI */
 #define GIC_IPI_EXT_INTR_RESCHED_VPE0	16
 #define GIC_IPI_EXT_INTR_CALLFNC_VPE0	17
@@ -72,5 +96,9 @@
 #define GIC_IPI_EXT_INTR_CALLFNC_VPE2	21
 #define GIC_IPI_EXT_INTR_RESCHED_VPE3	22
 #define GIC_IPI_EXT_INTR_CALLFNC_VPE3	23
+=======
+/* GIC external interrupts */
+#define GIC_INT_I8259A		GIC_SHARED_TO_HWIRQ(3)
+>>>>>>> v4.9.227
 
 #endif /* !(_MIPS_MALTAINT_H) */

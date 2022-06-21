@@ -6,9 +6,15 @@
 
 #include <linux/mm.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/wait.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/extable.h>
+#include <linux/wait.h>
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 #include <arch/system.h>
 
 extern int find_fixup_code(struct pt_regs *);
@@ -109,11 +115,19 @@ do_page_fault(unsigned long address, struct pt_regs *regs,
 	info.si_code = SEGV_MAPERR;
 
 	/*
+<<<<<<< HEAD
 	 * If we're in an interrupt or "atomic" operation or have no
 	 * user context, we must not take the fault.
 	 */
 
 	if (in_atomic() || !mm)
+=======
+	 * If we're in an interrupt, have pagefaults disabled or have no
+	 * user context, we must not take the fault.
+	 */
+
+	if (faulthandler_disabled() || !mm)
+>>>>>>> v4.9.227
 		goto no_context;
 
 	if (user_mode(regs))
@@ -168,7 +182,11 @@ retry:
 	 * the fault.
 	 */
 
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> v4.9.227
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
@@ -219,6 +237,12 @@ retry:
 	/* User mode accesses just cause a SIGSEGV */
 
 	if (user_mode(regs)) {
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NO_SEGFAULT_TERMINATION
+		DECLARE_WAIT_QUEUE_HEAD(wq);
+#endif
+>>>>>>> v4.9.227
 		printk(KERN_NOTICE "%s (pid %d) segfaults for page "
 			"address %08lx at pc %08lx\n",
 			tsk->comm, tsk->pid,
@@ -229,7 +253,10 @@ retry:
 			show_registers(regs);
 
 #ifdef CONFIG_NO_SEGFAULT_TERMINATION
+<<<<<<< HEAD
 		DECLARE_WAIT_QUEUE_HEAD(wq);
+=======
+>>>>>>> v4.9.227
 		wait_event_interruptible(wq, 0 == 1);
 #else
 		info.si_signo = SIGSEGV;

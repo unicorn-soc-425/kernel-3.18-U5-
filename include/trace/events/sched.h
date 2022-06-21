@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_QHMP
 #include "qhmp_sched.h"
 #else
+=======
+>>>>>>> v4.9.227
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sched
 
@@ -11,11 +14,14 @@
 #include <linux/tracepoint.h>
 #include <linux/binfmts.h>
 
+<<<<<<< HEAD
 struct rq;
 struct group_cpu_time;
 struct migration_sum_data;
 extern const char *task_event_names[];
 
+=======
+>>>>>>> v4.9.227
 /*
  * Tracepoint for calling kthread_stop, performed to end a kthread:
  */
@@ -59,6 +65,7 @@ TRACE_EVENT(sched_kthread_stop_ret,
 );
 
 /*
+<<<<<<< HEAD
  * Tracepoint for task enqueue/dequeue:
  */
 TRACE_EVENT(sched_enq_deq_task,
@@ -645,13 +652,21 @@ TRACE_EVENT(sched_freq_alert,
 #endif	/* CONFIG_SCHED_HMP */
 
 /*
+=======
+>>>>>>> v4.9.227
  * Tracepoint for waking up a task:
  */
 DECLARE_EVENT_CLASS(sched_wakeup_template,
 
+<<<<<<< HEAD
 	TP_PROTO(struct task_struct *p, int success),
 
 	TP_ARGS(__perf_task(p), success),
+=======
+	TP_PROTO(struct task_struct *p),
+
+	TP_ARGS(__perf_task(p)),
+>>>>>>> v4.9.227
 
 	TP_STRUCT__entry(
 		__array(	char,	comm,	TASK_COMM_LEN	)
@@ -665,6 +680,7 @@ DECLARE_EVENT_CLASS(sched_wakeup_template,
 		memcpy(__entry->comm, p->comm, TASK_COMM_LEN);
 		__entry->pid		= p->pid;
 		__entry->prio		= p->prio;
+<<<<<<< HEAD
 		__entry->success	= success;
 		__entry->target_cpu	= task_cpu(p);
 	),
@@ -677,11 +693,38 @@ DECLARE_EVENT_CLASS(sched_wakeup_template,
 DEFINE_EVENT(sched_wakeup_template, sched_wakeup,
 	     TP_PROTO(struct task_struct *p, int success),
 	     TP_ARGS(p, success));
+=======
+		__entry->success	= 1; /* rudiment, kill when possible */
+		__entry->target_cpu	= task_cpu(p);
+	),
+
+	TP_printk("comm=%s pid=%d prio=%d target_cpu=%03d",
+		  __entry->comm, __entry->pid, __entry->prio,
+		  __entry->target_cpu)
+);
+
+/*
+ * Tracepoint called when waking a task; this tracepoint is guaranteed to be
+ * called from the waking context.
+ */
+DEFINE_EVENT(sched_wakeup_template, sched_waking,
+	     TP_PROTO(struct task_struct *p),
+	     TP_ARGS(p));
+
+/*
+ * Tracepoint called when the task is actually woken; p->state == TASK_RUNNNG.
+ * It it not always called from the waking context.
+ */
+DEFINE_EVENT(sched_wakeup_template, sched_wakeup,
+	     TP_PROTO(struct task_struct *p),
+	     TP_ARGS(p));
+>>>>>>> v4.9.227
 
 /*
  * Tracepoint for waking up a new task:
  */
 DEFINE_EVENT(sched_wakeup_template, sched_wakeup_new,
+<<<<<<< HEAD
 	     TP_PROTO(struct task_struct *p, int success),
 	     TP_ARGS(p, success));
 
@@ -701,16 +744,43 @@ static inline long __trace_sched_switch_state(struct task_struct *p)
 	return state;
 }
 #endif
+=======
+	     TP_PROTO(struct task_struct *p),
+	     TP_ARGS(p));
+
+#ifdef CREATE_TRACE_POINTS
+static inline long __trace_sched_switch_state(bool preempt, struct task_struct *p)
+{
+#ifdef CONFIG_SCHED_DEBUG
+	BUG_ON(p != current);
+#endif /* CONFIG_SCHED_DEBUG */
+
+	/*
+	 * Preemption ignores task state, therefore preempted tasks are always
+	 * RUNNING (we will not have dequeued if state != RUNNING).
+	 */
+	return preempt ? TASK_RUNNING | TASK_STATE_MAX : p->state;
+}
+#endif /* CREATE_TRACE_POINTS */
+>>>>>>> v4.9.227
 
 /*
  * Tracepoint for task switches, performed by the scheduler:
  */
 TRACE_EVENT(sched_switch,
 
+<<<<<<< HEAD
 	TP_PROTO(struct task_struct *prev,
 		 struct task_struct *next),
 
 	TP_ARGS(prev, next),
+=======
+	TP_PROTO(bool preempt,
+		 struct task_struct *prev,
+		 struct task_struct *next),
+
+	TP_ARGS(preempt, prev, next),
+>>>>>>> v4.9.227
 
 	TP_STRUCT__entry(
 		__array(	char,	prev_comm,	TASK_COMM_LEN	)
@@ -726,7 +796,11 @@ TRACE_EVENT(sched_switch,
 		memcpy(__entry->next_comm, next->comm, TASK_COMM_LEN);
 		__entry->prev_pid	= prev->pid;
 		__entry->prev_prio	= prev->prio;
+<<<<<<< HEAD
 		__entry->prev_state	= __trace_sched_switch_state(prev);
+=======
+		__entry->prev_state	= __trace_sched_switch_state(preempt, prev);
+>>>>>>> v4.9.227
 		memcpy(__entry->prev_comm, prev->comm, TASK_COMM_LEN);
 		__entry->next_pid	= next->pid;
 		__entry->next_prio	= next->prio;
@@ -738,7 +812,12 @@ TRACE_EVENT(sched_switch,
 		  __print_flags(__entry->prev_state & (TASK_STATE_MAX-1), "|",
 				{ 1, "S"} , { 2, "D" }, { 4, "T" }, { 8, "t" },
 				{ 16, "Z" }, { 32, "X" }, { 64, "x" },
+<<<<<<< HEAD
 				{ 128, "K" }, { 256, "W" }, { 512, "P" }) : "R",
+=======
+				{ 128, "K" }, { 256, "W" }, { 512, "P" },
+				{ 1024, "N" }) : "R",
+>>>>>>> v4.9.227
 		__entry->prev_state & TASK_STATE_MAX ? "+" : "",
 		__entry->next_comm, __entry->next_pid, __entry->next_prio)
 );
@@ -748,16 +827,25 @@ TRACE_EVENT(sched_switch,
  */
 TRACE_EVENT(sched_migrate_task,
 
+<<<<<<< HEAD
 	TP_PROTO(struct task_struct *p, int dest_cpu,
 		 unsigned int load),
 
 	TP_ARGS(p, dest_cpu, load),
+=======
+	TP_PROTO(struct task_struct *p, int dest_cpu),
+
+	TP_ARGS(p, dest_cpu),
+>>>>>>> v4.9.227
 
 	TP_STRUCT__entry(
 		__array(	char,	comm,	TASK_COMM_LEN	)
 		__field(	pid_t,	pid			)
 		__field(	int,	prio			)
+<<<<<<< HEAD
 		__field(unsigned int,	load			)
+=======
+>>>>>>> v4.9.227
 		__field(	int,	orig_cpu		)
 		__field(	int,	dest_cpu		)
 	),
@@ -766,11 +854,15 @@ TRACE_EVENT(sched_migrate_task,
 		memcpy(__entry->comm, p->comm, TASK_COMM_LEN);
 		__entry->pid		= p->pid;
 		__entry->prio		= p->prio;
+<<<<<<< HEAD
 		__entry->load		= load;
+=======
+>>>>>>> v4.9.227
 		__entry->orig_cpu	= task_cpu(p);
 		__entry->dest_cpu	= dest_cpu;
 	),
 
+<<<<<<< HEAD
 	TP_printk("comm=%s pid=%d prio=%d load=%d orig_cpu=%d dest_cpu=%d",
 		  __entry->comm, __entry->pid, __entry->prio,  __entry->load,
 		  __entry->orig_cpu, __entry->dest_cpu)
@@ -851,6 +943,13 @@ TRACE_EVENT(sched_cpu_hotplug,
 		__entry->status ? "online" : "offline", __entry->error)
 );
 
+=======
+	TP_printk("comm=%s pid=%d prio=%d orig_cpu=%d dest_cpu=%d",
+		  __entry->comm, __entry->pid, __entry->prio,
+		  __entry->orig_cpu, __entry->dest_cpu)
+);
+
+>>>>>>> v4.9.227
 DECLARE_EVENT_CLASS(sched_process_template,
 
 	TP_PROTO(struct task_struct *p),
@@ -879,7 +978,11 @@ DECLARE_EVENT_CLASS(sched_process_template,
 DEFINE_EVENT(sched_process_template, sched_process_free,
 	     TP_PROTO(struct task_struct *p),
 	     TP_ARGS(p));
+<<<<<<< HEAD
 
+=======
+	     
+>>>>>>> v4.9.227
 
 /*
  * Tracepoint for a task exiting:
@@ -1034,6 +1137,7 @@ DEFINE_EVENT(sched_stat_template, sched_stat_blocked,
 	     TP_ARGS(tsk, delay));
 
 /*
+<<<<<<< HEAD
  * Tracepoint for recording the cause of uninterruptible sleep.
  */
 TRACE_EVENT(sched_blocked_reason,
@@ -1058,6 +1162,8 @@ TRACE_EVENT(sched_blocked_reason,
 );
 
 /*
+=======
+>>>>>>> v4.9.227
  * Tracepoint for accounting runtime (time the task is executing
  * on a CPU).
  */
@@ -1246,6 +1352,7 @@ TRACE_EVENT(sched_wake_idle_without_ipi,
 
 	TP_printk("cpu=%d", __entry->cpu)
 );
+<<<<<<< HEAD
 
 TRACE_EVENT(sched_get_nr_running_avg,
 
@@ -1312,8 +1419,13 @@ TRACE_EVENT(core_ctl_set_busy,
 		  __entry->is_busy)
 );
 
+=======
+>>>>>>> v4.9.227
 #endif /* _TRACE_SCHED_H */
 
 /* This part must be outside protection */
 #include <trace/define_trace.h>
+<<<<<<< HEAD
 #endif /* CONFIG_SCHED_QHMP */
+=======
+>>>>>>> v4.9.227

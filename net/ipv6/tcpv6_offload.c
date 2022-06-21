@@ -41,11 +41,22 @@ static int tcp6_gro_complete(struct sk_buff *skb, int thoff)
 	return tcp_gro_complete(skb);
 }
 
+<<<<<<< HEAD
 struct sk_buff *tcp6_gso_segment(struct sk_buff *skb,
 				 netdev_features_t features)
 {
 	struct tcphdr *th;
 
+=======
+static struct sk_buff *tcp6_gso_segment(struct sk_buff *skb,
+					netdev_features_t features)
+{
+	struct tcphdr *th;
+
+	if (!(skb_shinfo(skb)->gso_type & SKB_GSO_TCPV6))
+		return ERR_PTR(-EINVAL);
+
+>>>>>>> v4.9.227
 	if (!pskb_may_pull(skb, sizeof(*th)))
 		return ERR_PTR(-EINVAL);
 

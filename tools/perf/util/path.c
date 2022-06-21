@@ -11,6 +11,7 @@
  * which is what it's designed for.
  */
 #include "cache.h"
+<<<<<<< HEAD
 
 static char bad_path[] = "/bad-path/";
 /*
@@ -40,6 +41,15 @@ size_t __weak strlcpy(char *dest, const char *src, size_t size)
 	return ret;
 }
 
+=======
+#include "util.h"
+#include <limits.h>
+
+static char bad_path[] = "/bad-path/";
+/*
+ * One hack:
+ */
+>>>>>>> v4.9.227
 static char *get_pathname(void)
 {
 	static char pathname_array[4][PATH_MAX];
@@ -59,6 +69,7 @@ static char *cleanup_path(char *path)
 	return path;
 }
 
+<<<<<<< HEAD
 static char *perf_vsnpath(char *buf, size_t n, const char *fmt, va_list args)
 {
 	const char *perf_dir = get_perf_dir();
@@ -89,6 +100,8 @@ char *perf_pathdup(const char *fmt, ...)
 	return xstrdup(path);
 }
 
+=======
+>>>>>>> v4.9.227
 char *mkpath(const char *fmt, ...)
 {
 	va_list args;
@@ -102,6 +115,7 @@ char *mkpath(const char *fmt, ...)
 		return bad_path;
 	return cleanup_path(pathname);
 }
+<<<<<<< HEAD
 
 char *perf_path(const char *fmt, ...)
 {
@@ -159,3 +173,5 @@ char *strip_path_suffix(const char *path, const char *suffix)
 		return NULL;
 	return strndup(path, chomp_trailing_dir_sep(path, path_len));
 }
+=======
+>>>>>>> v4.9.227

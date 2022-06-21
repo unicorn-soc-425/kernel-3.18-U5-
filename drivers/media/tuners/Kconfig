@@ -15,7 +15,11 @@ config MEDIA_TUNER
 	select MEDIA_TUNER_MC44S803 if MEDIA_SUBDRV_AUTOSELECT
 
 menu "Customize TV tuners"
+<<<<<<< HEAD
 	visible if !MEDIA_SUBDRV_AUTOSELECT
+=======
+	visible if !MEDIA_SUBDRV_AUTOSELECT || COMPILE_TEST
+>>>>>>> v4.9.227
 	depends on MEDIA_ANALOG_TV_SUPPORT || MEDIA_DIGITAL_TV_SUPPORT || MEDIA_RADIO_SUPPORT || MEDIA_SDR_SUPPORT
 
 config MEDIA_TUNER_SIMPLE
@@ -220,21 +224,39 @@ config MEDIA_TUNER_E4000
 config MEDIA_TUNER_FC2580
 	tristate "FCI FC2580 silicon tuner"
 	depends on MEDIA_SUPPORT && I2C
+<<<<<<< HEAD
+=======
+	select REGMAP_I2C
+>>>>>>> v4.9.227
 	default m if !MEDIA_SUBDRV_AUTOSELECT
 	help
 	  FCI FC2580 silicon tuner driver.
 
+<<<<<<< HEAD
 config MEDIA_TUNER_M88TS2022
 	tristate "Montage M88TS2022 silicon tuner"
+=======
+config MEDIA_TUNER_M88RS6000T
+	tristate "Montage M88RS6000 internal tuner"
+>>>>>>> v4.9.227
 	depends on MEDIA_SUPPORT && I2C
 	select REGMAP_I2C
 	default m if !MEDIA_SUBDRV_AUTOSELECT
 	help
+<<<<<<< HEAD
 	  Montage M88TS2022 silicon tuner driver.
 
 config MEDIA_TUNER_TUA9001
 	tristate "Infineon TUA 9001 silicon tuner"
 	depends on MEDIA_SUPPORT && I2C
+=======
+	  Montage M88RS6000 internal tuner.
+
+config MEDIA_TUNER_TUA9001
+	tristate "Infineon TUA9001 silicon tuner"
+	depends on MEDIA_SUPPORT && I2C
+	select REGMAP_I2C
+>>>>>>> v4.9.227
 	default m if !MEDIA_SUBDRV_AUTOSELECT
 	help
 	  Infineon TUA 9001 silicon tuner driver.
@@ -258,6 +280,10 @@ config MEDIA_TUNER_R820T
 	tristate "Rafael Micro R820T silicon tuner"
 	depends on MEDIA_SUPPORT && I2C
 	default m if !MEDIA_SUBDRV_AUTOSELECT
+<<<<<<< HEAD
+=======
+	select BITREVERSE
+>>>>>>> v4.9.227
 	help
 	  Rafael Micro R820T silicon tuner driver.
 

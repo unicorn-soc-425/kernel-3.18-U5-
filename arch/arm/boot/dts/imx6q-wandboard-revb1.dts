@@ -13,7 +13,11 @@
 #include "imx6qdl-wandboard-revb1.dtsi"
 
 / {
+<<<<<<< HEAD
 	model = "Wandboard i.MX6 Quad Board";
+=======
+	model = "Wandboard i.MX6 Quad Board rev B1";
+>>>>>>> v4.9.227
 	compatible = "wand,imx6q-wandboard", "fsl,imx6q";
 
 	memory {

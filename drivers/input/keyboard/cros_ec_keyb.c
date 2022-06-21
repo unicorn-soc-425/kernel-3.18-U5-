@@ -27,6 +27,10 @@
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/notifier.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/input/matrix_keypad.h>
@@ -44,6 +48,10 @@
  * @dev: Device pointer
  * @idev: Input device
  * @ec: Top level ChromeOS device to use to talk to EC
+<<<<<<< HEAD
+=======
+ * @notifier: interrupt event notifier for transport devices
+>>>>>>> v4.9.227
  */
 struct cros_ec_keyb {
 	unsigned int rows;
@@ -57,6 +65,10 @@ struct cros_ec_keyb {
 	struct device *dev;
 	struct input_dev *idev;
 	struct cros_ec_device *ec;
+<<<<<<< HEAD
+=======
+	struct notifier_block notifier;
+>>>>>>> v4.9.227
 };
 
 
@@ -146,6 +158,7 @@ static void cros_ec_keyb_process(struct cros_ec_keyb *ckdev,
 	input_sync(ckdev->idev);
 }
 
+<<<<<<< HEAD
 static int cros_ec_keyb_get_state(struct cros_ec_keyb *ckdev, uint8_t *kb_state)
 {
 	struct cros_ec_command msg = {
@@ -187,14 +200,52 @@ static int cros_ec_keyb_open(struct input_dev *dev)
 	return request_threaded_irq(ec->irq, NULL, cros_ec_keyb_irq,
 					IRQF_TRIGGER_LOW | IRQF_ONESHOT,
 					"cros_ec_keyb", ckdev);
+=======
+static int cros_ec_keyb_open(struct input_dev *dev)
+{
+	struct cros_ec_keyb *ckdev = input_get_drvdata(dev);
+
+	return blocking_notifier_chain_register(&ckdev->ec->event_notifier,
+						&ckdev->notifier);
+>>>>>>> v4.9.227
 }
 
 static void cros_ec_keyb_close(struct input_dev *dev)
 {
 	struct cros_ec_keyb *ckdev = input_get_drvdata(dev);
+<<<<<<< HEAD
 	struct cros_ec_device *ec = ckdev->ec;
 
 	free_irq(ec->irq, ckdev);
+=======
+
+	blocking_notifier_chain_unregister(&ckdev->ec->event_notifier,
+					   &ckdev->notifier);
+}
+
+static int cros_ec_keyb_work(struct notifier_block *nb,
+			     unsigned long queued_during_suspend, void *_notify)
+{
+	struct cros_ec_keyb *ckdev = container_of(nb, struct cros_ec_keyb,
+						  notifier);
+
+	if (ckdev->ec->event_data.event_type != EC_MKBP_EVENT_KEY_MATRIX)
+		return NOTIFY_DONE;
+	/*
+	 * If EC is not the wake source, discard key state changes during
+	 * suspend.
+	 */
+	if (queued_during_suspend)
+		return NOTIFY_OK;
+	if (ckdev->ec->event_size != ckdev->cols) {
+		dev_err(ckdev->dev,
+			"Discarded incomplete key matrix event.\n");
+		return NOTIFY_OK;
+	}
+	cros_ec_keyb_process(ckdev, ckdev->ec->event_data.data.key_matrix,
+			     ckdev->ec->event_size);
+	return NOTIFY_OK;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -224,7 +275,11 @@ static void cros_ec_keyb_compute_valid_keys(struct cros_ec_keyb *ckdev)
 static int cros_ec_keyb_probe(struct platform_device *pdev)
 {
 	struct cros_ec_device *ec = dev_get_drvdata(pdev->dev.parent);
+<<<<<<< HEAD
 	struct device *dev = ec->dev;
+=======
+	struct device *dev = &pdev->dev;
+>>>>>>> v4.9.227
 	struct cros_ec_keyb *ckdev;
 	struct input_dev *idev;
 	struct device_node *np;
@@ -234,6 +289,7 @@ static int cros_ec_keyb_probe(struct platform_device *pdev)
 	if (!np)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	ckdev = devm_kzalloc(&pdev->dev, sizeof(*ckdev), GFP_KERNEL);
 	if (!ckdev)
 		return -ENOMEM;
@@ -264,13 +320,44 @@ static int cros_ec_keyb_probe(struct platform_device *pdev)
 	dev_set_drvdata(&pdev->dev, ckdev);
 
 	idev->name = ec->ec_name;
+=======
+	ckdev = devm_kzalloc(dev, sizeof(*ckdev), GFP_KERNEL);
+	if (!ckdev)
+		return -ENOMEM;
+	err = matrix_keypad_parse_of_params(dev, &ckdev->rows, &ckdev->cols);
+	if (err)
+		return err;
+
+	ckdev->valid_keys = devm_kzalloc(dev, ckdev->cols, GFP_KERNEL);
+	if (!ckdev->valid_keys)
+		return -ENOMEM;
+
+	ckdev->old_kb_state = devm_kzalloc(dev, ckdev->cols, GFP_KERNEL);
+	if (!ckdev->old_kb_state)
+		return -ENOMEM;
+
+	idev = devm_input_allocate_device(dev);
+	if (!idev)
+		return -ENOMEM;
+
+	ckdev->ec = ec;
+	ckdev->notifier.notifier_call = cros_ec_keyb_work;
+	ckdev->dev = dev;
+	dev_set_drvdata(dev, ckdev);
+
+	idev->name = CROS_EC_DEV_NAME;
+>>>>>>> v4.9.227
 	idev->phys = ec->phys_name;
 	__set_bit(EV_REP, idev->evbit);
 
 	idev->id.bustype = BUS_VIRTUAL;
 	idev->id.version = 1;
 	idev->id.product = 0;
+<<<<<<< HEAD
 	idev->dev.parent = &pdev->dev;
+=======
+	idev->dev.parent = dev;
+>>>>>>> v4.9.227
 	idev->open = cros_ec_keyb_open;
 	idev->close = cros_ec_keyb_close;
 
@@ -300,6 +387,7 @@ static int cros_ec_keyb_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 /* Clear any keys in the buffer */
 static void cros_ec_keyb_clear_keyboard(struct cros_ec_keyb *ckdev)
@@ -348,6 +436,8 @@ static int cros_ec_keyb_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(cros_ec_keyb_pm_ops, NULL, cros_ec_keyb_resume);
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_OF
 static const struct of_device_id cros_ec_keyb_of_match[] = {
 	{ .compatible = "google,cros-ec-keyb" },
@@ -361,7 +451,10 @@ static struct platform_driver cros_ec_keyb_driver = {
 	.driver = {
 		.name = "cros-ec-keyb",
 		.of_match_table = of_match_ptr(cros_ec_keyb_of_match),
+<<<<<<< HEAD
 		.pm	= &cros_ec_keyb_pm_ops,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

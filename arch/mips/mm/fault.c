@@ -14,6 +14,7 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/ptrace.h>
+<<<<<<< HEAD
 #include <linux/mman.h>
 #include <linux/mm.h>
 #include <linux/smp.h>
@@ -24,10 +25,27 @@
 #include <asm/branch.h>
 #include <asm/mmu_context.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/ratelimit.h>
+#include <linux/mman.h>
+#include <linux/mm.h>
+#include <linux/smp.h>
+#include <linux/kprobes.h>
+#include <linux/perf_event.h>
+#include <linux/uaccess.h>
+
+#include <asm/branch.h>
+#include <asm/mmu_context.h>
+>>>>>>> v4.9.227
 #include <asm/ptrace.h>
 #include <asm/highmem.h>		/* For VMALLOC_END */
 #include <linux/kdebug.h>
 
+<<<<<<< HEAD
+=======
+int show_unhandled_signals = 1;
+
+>>>>>>> v4.9.227
 /*
  * This routine handles page faults.  It determines the address,
  * and the problem, and then passes it off to one of the appropriate
@@ -44,6 +62,11 @@ static void __kprobes __do_page_fault(struct pt_regs *regs, unsigned long write,
 	int fault;
 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
 
+<<<<<<< HEAD
+=======
+	static DEFINE_RATELIMIT_STATE(ratelimit_state, 5 * HZ, 10);
+
+>>>>>>> v4.9.227
 #if 0
 	printk("Cpu%d[%s:%d:%0*lx:%ld:%0*lx]\n", raw_smp_processor_id(),
 	       current->comm, current->pid, field, address, write,
@@ -52,12 +75,19 @@ static void __kprobes __do_page_fault(struct pt_regs *regs, unsigned long write,
 
 #ifdef CONFIG_KPROBES
 	/*
+<<<<<<< HEAD
 	 * This is to notify the fault handler of the kprobes.	The
 	 * exception code is redundant as it is also carried in REGS,
 	 * but we pass it anyhow.
 	 */
 	if (notify_die(DIE_PAGE_FAULT, "page fault", regs, -1,
 		       (regs->cp0_cause >> 2) & 0x1f, SIGSEGV) == NOTIFY_STOP)
+=======
+	 * This is to notify the fault handler of the kprobes.
+	 */
+	if (notify_die(DIE_PAGE_FAULT, "page fault", regs, -1,
+		       current->thread.trap_nr, SIGSEGV) == NOTIFY_STOP)
+>>>>>>> v4.9.227
 		return;
 #endif
 
@@ -89,7 +119,11 @@ static void __kprobes __do_page_fault(struct pt_regs *regs, unsigned long write,
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (faulthandler_disabled() || !mm)
+>>>>>>> v4.9.227
 		goto bad_area_nosemaphore;
 
 	if (user_mode(regs))
@@ -128,7 +162,12 @@ good_area:
 #endif
 				goto bad_area;
 			}
+<<<<<<< HEAD
 			if (!(vma->vm_flags & VM_READ)) {
+=======
+			if (!(vma->vm_flags & VM_READ) &&
+			    exception_epc(regs) != address) {
+>>>>>>> v4.9.227
 #if 0
 				pr_notice("Cpu%d[%s:%d:%0*lx:%ld:%0*lx] RI violation\n",
 					  raw_smp_processor_id(),
@@ -149,7 +188,11 @@ good_area:
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> v4.9.227
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
@@ -203,6 +246,7 @@ bad_area_nosemaphore:
 	if (user_mode(regs)) {
 		tsk->thread.cp0_badvaddr = address;
 		tsk->thread.error_code = write;
+<<<<<<< HEAD
 #if 0
 		printk("do_page_fault() #2: sending SIGSEGV to %s for "
 		       "invalid %s\n%0*lx (epc == %0*lx, ra == %0*lx)\n",
@@ -212,6 +256,25 @@ bad_area_nosemaphore:
 		       field, (unsigned long) regs->cp0_epc,
 		       field, (unsigned long) regs->regs[31]);
 #endif
+=======
+		if (show_unhandled_signals &&
+		    unhandled_signal(tsk, SIGSEGV) &&
+		    __ratelimit(&ratelimit_state)) {
+			pr_info("do_page_fault(): sending SIGSEGV to %s for invalid %s %0*lx\n",
+				tsk->comm,
+				write ? "write access to" : "read access from",
+				field, address);
+			pr_info("epc = %0*lx in", field,
+				(unsigned long) regs->cp0_epc);
+			print_vma_addr(KERN_CONT " ", regs->cp0_epc);
+			pr_cont("\n");
+			pr_info("ra  = %0*lx in", field,
+				(unsigned long) regs->regs[31]);
+			print_vma_addr(KERN_CONT " ", regs->regs[31]);
+			pr_cont("\n");
+		}
+		current->thread.trap_nr = (regs->cp0_cause >> 2) & 0x1f;
+>>>>>>> v4.9.227
 		info.si_signo = SIGSEGV;
 		info.si_errno = 0;
 		/* info.si_code has been set above */
@@ -270,6 +333,10 @@ do_sigbus:
 		       field, (unsigned long) regs->cp0_epc,
 		       field, (unsigned long) regs->regs[31]);
 #endif
+<<<<<<< HEAD
+=======
+	current->thread.trap_nr = (regs->cp0_cause >> 2) & 0x1f;
+>>>>>>> v4.9.227
 	tsk->thread.cp0_badvaddr = address;
 	info.si_signo = SIGBUS;
 	info.si_errno = 0;

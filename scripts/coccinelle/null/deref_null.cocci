@@ -1,6 +1,11 @@
 ///
+<<<<<<< HEAD
 /// A variable is dereference under a NULL test.
 /// Even though it is know to be NULL.
+=======
+/// A variable is dereferenced under a NULL test.
+/// Even though it is known to be NULL.
+>>>>>>> v4.9.227
 ///
 // Confidence: Moderate
 // Copyright: (C) 2010 Nicolas Palix, DIKU.  GPLv2.

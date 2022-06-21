@@ -182,21 +182,34 @@ static int ec_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg i2c_msgs[],
 	const u16 bus_num = bus->remote_bus;
 	int request_len;
 	int response_len;
+<<<<<<< HEAD
 	u8 *request = NULL;
 	u8 *response = NULL;
 	int result;
 	struct cros_ec_command msg;
+=======
+	int alloc_size;
+	int result;
+	struct cros_ec_command *msg;
+>>>>>>> v4.9.227
 
 	request_len = ec_i2c_count_message(i2c_msgs, num);
 	if (request_len < 0) {
 		dev_warn(dev, "Error constructing message %d\n", request_len);
+<<<<<<< HEAD
 		result = request_len;
 		goto exit;
 	}
+=======
+		return request_len;
+	}
+
+>>>>>>> v4.9.227
 	response_len = ec_i2c_count_response(i2c_msgs, num);
 	if (response_len < 0) {
 		/* Unexpected; no errors should come when NULL response */
 		dev_warn(dev, "Error preparing response %d\n", response_len);
+<<<<<<< HEAD
 		result = response_len;
 		goto exit;
 	}
@@ -238,15 +251,51 @@ static int ec_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg i2c_msgs[],
 	result = ec_i2c_parse_response(response, i2c_msgs, &num);
 	if (result < 0)
 		goto exit;
+=======
+		return response_len;
+	}
+
+	alloc_size = max(request_len, response_len);
+	msg = kmalloc(sizeof(*msg) + alloc_size, GFP_KERNEL);
+	if (!msg)
+		return -ENOMEM;
+
+	result = ec_i2c_construct_message(msg->data, i2c_msgs, num, bus_num);
+	if (result) {
+		dev_err(dev, "Error constructing EC i2c message %d\n", result);
+		goto exit;
+	}
+
+	msg->version = 0;
+	msg->command = EC_CMD_I2C_PASSTHRU;
+	msg->outsize = request_len;
+	msg->insize = response_len;
+
+	result = cros_ec_cmd_xfer_status(bus->ec, msg);
+	if (result < 0) {
+		dev_err(dev, "Error transferring EC i2c message %d\n", result);
+		goto exit;
+	}
+
+	result = ec_i2c_parse_response(msg->data, i2c_msgs, &num);
+	if (result < 0) {
+		dev_err(dev, "Error parsing EC i2c message %d\n", result);
+		goto exit;
+	}
+>>>>>>> v4.9.227
 
 	/* Indicate success by saying how many messages were sent */
 	result = num;
 exit:
+<<<<<<< HEAD
 	if (request != bus->request_buf)
 		kfree(request);
 	if (response != bus->response_buf)
 		kfree(response);
 
+=======
+	kfree(msg);
+>>>>>>> v4.9.227
 	return result;
 }
 
@@ -297,10 +346,15 @@ static int ec_i2c_probe(struct platform_device *pdev)
 	bus->adap.retries = I2C_MAX_RETRIES;
 
 	err = i2c_add_adapter(&bus->adap);
+<<<<<<< HEAD
 	if (err) {
 		dev_err(dev, "cannot register i2c adapter\n");
 		return err;
 	}
+=======
+	if (err)
+		return err;
+>>>>>>> v4.9.227
 	platform_set_drvdata(pdev, bus);
 
 	return err;

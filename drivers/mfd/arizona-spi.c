@@ -27,7 +27,11 @@ static int arizona_spi_probe(struct spi_device *spi)
 {
 	const struct spi_device_id *id = spi_get_device_id(spi);
 	struct arizona *arizona;
+<<<<<<< HEAD
 	const struct regmap_config *regmap_config;
+=======
+	const struct regmap_config *regmap_config = NULL;
+>>>>>>> v4.9.227
 	unsigned long type;
 	int ret;
 
@@ -37,6 +41,7 @@ static int arizona_spi_probe(struct spi_device *spi)
 		type = id->driver_data;
 
 	switch (type) {
+<<<<<<< HEAD
 #ifdef CONFIG_MFD_WM5102
 	case WM5102:
 		regmap_config = &wm5102_spi_regmap;
@@ -50,6 +55,30 @@ static int arizona_spi_probe(struct spi_device *spi)
 	default:
 		dev_err(&spi->dev, "Unknown device type %ld\n",
 			id->driver_data);
+=======
+	case WM5102:
+		if (IS_ENABLED(CONFIG_MFD_WM5102))
+			regmap_config = &wm5102_spi_regmap;
+		break;
+	case WM5110:
+	case WM8280:
+		if (IS_ENABLED(CONFIG_MFD_WM5110))
+			regmap_config = &wm5110_spi_regmap;
+		break;
+	case WM1831:
+	case CS47L24:
+		if (IS_ENABLED(CONFIG_MFD_CS47L24))
+			regmap_config = &cs47l24_spi_regmap;
+		break;
+	default:
+		dev_err(&spi->dev, "Unknown device type %ld\n", type);
+		return -EINVAL;
+	}
+
+	if (!regmap_config) {
+		dev_err(&spi->dev,
+			"No kernel support for device type %ld\n", type);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -65,7 +94,11 @@ static int arizona_spi_probe(struct spi_device *spi)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	arizona->type = id->driver_data;
+=======
+	arizona->type = type;
+>>>>>>> v4.9.227
 	arizona->dev = &spi->dev;
 	arizona->irq = spi->irq;
 
@@ -75,13 +108,25 @@ static int arizona_spi_probe(struct spi_device *spi)
 static int arizona_spi_remove(struct spi_device *spi)
 {
 	struct arizona *arizona = spi_get_drvdata(spi);
+<<<<<<< HEAD
 	arizona_dev_exit(arizona);
+=======
+
+	arizona_dev_exit(arizona);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static const struct spi_device_id arizona_spi_ids[] = {
 	{ "wm5102", WM5102 },
 	{ "wm5110", WM5110 },
+<<<<<<< HEAD
+=======
+	{ "wm8280", WM8280 },
+	{ "wm1831", WM1831 },
+	{ "cs47l24", CS47L24 },
+>>>>>>> v4.9.227
 	{ },
 };
 MODULE_DEVICE_TABLE(spi, arizona_spi_ids);
@@ -89,7 +134,10 @@ MODULE_DEVICE_TABLE(spi, arizona_spi_ids);
 static struct spi_driver arizona_spi_driver = {
 	.driver = {
 		.name	= "arizona",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &arizona_pm_ops,
 		.of_match_table	= of_match_ptr(arizona_of_match),
 	},

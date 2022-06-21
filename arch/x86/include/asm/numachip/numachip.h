@@ -14,6 +14,10 @@
 #ifndef _ASM_X86_NUMACHIP_NUMACHIP_H
 #define _ASM_X86_NUMACHIP_NUMACHIP_H
 
+<<<<<<< HEAD
+=======
+extern u8 numachip_system;
+>>>>>>> v4.9.227
 extern int __init pci_numachip_init(void);
 
 #endif /* _ASM_X86_NUMACHIP_NUMACHIP_H */

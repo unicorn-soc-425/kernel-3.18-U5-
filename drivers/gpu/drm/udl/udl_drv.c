@@ -16,6 +16,23 @@ static int udl_driver_set_busid(struct drm_device *d, struct drm_master *m)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int udl_usb_suspend(struct usb_interface *interface,
+			   pm_message_t message)
+{
+	return 0;
+}
+
+static int udl_usb_resume(struct usb_interface *interface)
+{
+	struct drm_device *dev = usb_get_intfdata(interface);
+
+	udl_modeset_restore(dev);
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static const struct vm_operations_struct udl_gem_vm_ops = {
 	.fault = udl_gem_fault,
 	.open = drm_gem_vm_open,
@@ -72,8 +89,13 @@ static int udl_usb_probe(struct usb_interface *interface,
 	int r;
 
 	dev = drm_dev_alloc(&driver, &interface->dev);
+<<<<<<< HEAD
 	if (!dev)
 		return -ENOMEM;
+=======
+	if (IS_ERR(dev))
+		return PTR_ERR(dev);
+>>>>>>> v4.9.227
 
 	r = drm_dev_register(dev, (unsigned long)udev);
 	if (r)
@@ -94,7 +116,10 @@ static void udl_usb_disconnect(struct usb_interface *interface)
 	struct drm_device *dev = usb_get_intfdata(interface);
 
 	drm_kms_helper_poll_disable(dev);
+<<<<<<< HEAD
 	drm_connector_unplug_all(dev);
+=======
+>>>>>>> v4.9.227
 	udl_fbdev_unplug(dev);
 	udl_drop_usb(dev);
 	drm_unplug_dev(dev);
@@ -123,6 +148,7 @@ static struct usb_driver udl_driver = {
 	.name = "udl",
 	.probe = udl_usb_probe,
 	.disconnect = udl_usb_disconnect,
+<<<<<<< HEAD
 	.id_table = id_table,
 };
 
@@ -138,4 +164,11 @@ static void __exit udl_exit(void)
 
 module_init(udl_init);
 module_exit(udl_exit);
+=======
+	.suspend = udl_usb_suspend,
+	.resume = udl_usb_resume,
+	.id_table = id_table,
+};
+module_usb_driver(udl_driver);
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");

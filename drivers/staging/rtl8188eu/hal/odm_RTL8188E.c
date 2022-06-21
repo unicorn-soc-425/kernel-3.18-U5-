@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 
 #include "odm_precomp.h"
@@ -28,26 +31,45 @@ static void dm_rx_hw_antena_div_init(struct odm_dm_struct *dm_odm)
 
 	if (*(dm_odm->mp_mode) == 1) {
 		dm_odm->AntDivType = CGCS_RX_SW_ANTDIV;
+<<<<<<< HEAD
 		phy_set_bb_reg(adapter, ODM_REG_IGI_A_11N, BIT7, 0);
 		phy_set_bb_reg(adapter, ODM_REG_LNA_SWITCH_11N, BIT31, 1);
+=======
+		phy_set_bb_reg(adapter, ODM_REG_IGI_A_11N, BIT(7), 0);
+		phy_set_bb_reg(adapter, ODM_REG_LNA_SWITCH_11N, BIT(31), 1);
+>>>>>>> v4.9.227
 		return;
 	}
 
 	/* MAC Setting */
 	value32 = phy_query_bb_reg(adapter, ODM_REG_ANTSEL_PIN_11N, bMaskDWord);
 	phy_set_bb_reg(adapter, ODM_REG_ANTSEL_PIN_11N, bMaskDWord,
+<<<<<<< HEAD
 		       value32|(BIT23|BIT25));
 	/* Pin Settings */
 	phy_set_bb_reg(adapter, ODM_REG_PIN_CTRL_11N, BIT9|BIT8, 0);
 	phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N, BIT10, 0);
 	phy_set_bb_reg(adapter, ODM_REG_LNA_SWITCH_11N, BIT22, 1);
 	phy_set_bb_reg(adapter, ODM_REG_LNA_SWITCH_11N, BIT31, 1);
+=======
+		       value32|(BIT(23) | BIT(25)));
+	/* Pin Settings */
+	phy_set_bb_reg(adapter, ODM_REG_PIN_CTRL_11N, BIT(9) | BIT(8), 0);
+	phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N, BIT(10), 0);
+	phy_set_bb_reg(adapter, ODM_REG_LNA_SWITCH_11N, BIT(22), 1);
+	phy_set_bb_reg(adapter, ODM_REG_LNA_SWITCH_11N, BIT(31), 1);
+>>>>>>> v4.9.227
 	/* OFDM Settings */
 	phy_set_bb_reg(adapter, ODM_REG_ANTDIV_PARA1_11N, bMaskDWord,
 		       0x000000a0);
 	/* CCK Settings */
+<<<<<<< HEAD
 	phy_set_bb_reg(adapter, ODM_REG_BB_PWR_SAV4_11N, BIT7, 1);
 	phy_set_bb_reg(adapter, ODM_REG_CCK_ANTDIV_PARA2_11N, BIT4, 1);
+=======
+	phy_set_bb_reg(adapter, ODM_REG_BB_PWR_SAV4_11N, BIT(7), 1);
+	phy_set_bb_reg(adapter, ODM_REG_CCK_ANTDIV_PARA2_11N, BIT(4), 1);
+>>>>>>> v4.9.227
 	rtl88eu_dm_update_rx_idle_ant(dm_odm, MAIN_ANT);
 	phy_set_bb_reg(adapter, ODM_REG_ANT_MAPPING1_11N, 0xFFFF, 0x0201);
 }
@@ -59,37 +81,65 @@ static void dm_trx_hw_antenna_div_init(struct odm_dm_struct *dm_odm)
 
 	if (*(dm_odm->mp_mode) == 1) {
 		dm_odm->AntDivType = CGCS_RX_SW_ANTDIV;
+<<<<<<< HEAD
 		phy_set_bb_reg(adapter, ODM_REG_IGI_A_11N, BIT7, 0);
 		phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N,
 			       BIT5|BIT4|BIT3, 0);
+=======
+		phy_set_bb_reg(adapter, ODM_REG_IGI_A_11N, BIT(7), 0);
+		phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N,
+			       BIT(5) | BIT(4) | BIT(3), 0);
+>>>>>>> v4.9.227
 		return;
 	}
 
 	/* MAC Setting */
 	value32 = phy_query_bb_reg(adapter, ODM_REG_ANTSEL_PIN_11N, bMaskDWord);
 	phy_set_bb_reg(adapter, ODM_REG_ANTSEL_PIN_11N, bMaskDWord,
+<<<<<<< HEAD
 		       value32|(BIT23|BIT25));
 	/* Pin Settings */
 	phy_set_bb_reg(adapter, ODM_REG_PIN_CTRL_11N, BIT9|BIT8, 0);
 	phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N, BIT10, 0);
 	phy_set_bb_reg(adapter, ODM_REG_LNA_SWITCH_11N, BIT22, 0);
 	phy_set_bb_reg(adapter, ODM_REG_LNA_SWITCH_11N, BIT31, 1);
+=======
+		       value32|(BIT(23) | BIT(25)));
+	/* Pin Settings */
+	phy_set_bb_reg(adapter, ODM_REG_PIN_CTRL_11N, BIT(9) | BIT(8), 0);
+	phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N, BIT(10), 0);
+	phy_set_bb_reg(adapter, ODM_REG_LNA_SWITCH_11N, BIT(22), 0);
+	phy_set_bb_reg(adapter, ODM_REG_LNA_SWITCH_11N, BIT(31), 1);
+>>>>>>> v4.9.227
 	/* OFDM Settings */
 	phy_set_bb_reg(adapter, ODM_REG_ANTDIV_PARA1_11N, bMaskDWord,
 		       0x000000a0);
 	/* CCK Settings */
+<<<<<<< HEAD
 	phy_set_bb_reg(adapter, ODM_REG_BB_PWR_SAV4_11N, BIT7, 1);
 	phy_set_bb_reg(adapter, ODM_REG_CCK_ANTDIV_PARA2_11N, BIT4, 1);
 	/* Tx Settings */
 	phy_set_bb_reg(adapter, ODM_REG_TX_ANT_CTRL_11N, BIT21, 0);
+=======
+	phy_set_bb_reg(adapter, ODM_REG_BB_PWR_SAV4_11N, BIT(7), 1);
+	phy_set_bb_reg(adapter, ODM_REG_CCK_ANTDIV_PARA2_11N, BIT(4), 1);
+	/* Tx Settings */
+	phy_set_bb_reg(adapter, ODM_REG_TX_ANT_CTRL_11N, BIT(21), 0);
+>>>>>>> v4.9.227
 	rtl88eu_dm_update_rx_idle_ant(dm_odm, MAIN_ANT);
 
 	/* antenna mapping table */
 	if (!dm_odm->bIsMPChip) { /* testchip */
 		phy_set_bb_reg(adapter, ODM_REG_RX_DEFUALT_A_11N,
+<<<<<<< HEAD
 			       BIT10|BIT9|BIT8, 1);
 		phy_set_bb_reg(adapter, ODM_REG_RX_DEFUALT_A_11N,
 			       BIT13|BIT12|BIT11, 2);
+=======
+			       BIT(10) | BIT(9) | BIT(8), 1);
+		phy_set_bb_reg(adapter, ODM_REG_RX_DEFUALT_A_11N,
+			       BIT(13) | BIT(12) | BIT(11), 2);
+>>>>>>> v4.9.227
 	} else { /* MPchip */
 		phy_set_bb_reg(adapter, ODM_REG_ANT_MAPPING1_11N, bMaskDWord,
 			       0x0201);
@@ -118,31 +168,50 @@ static void dm_fast_training_init(struct odm_dm_struct *dm_odm)
 
 	/* MAC Setting */
 	value32 = phy_query_bb_reg(adapter, 0x4c, bMaskDWord);
+<<<<<<< HEAD
 	phy_set_bb_reg(adapter, 0x4c, bMaskDWord, value32|(BIT23|BIT25));
 	value32 = phy_query_bb_reg(adapter,  0x7B4, bMaskDWord);
 	phy_set_bb_reg(adapter, 0x7b4, bMaskDWord, value32|(BIT16|BIT17));
+=======
+	phy_set_bb_reg(adapter, 0x4c, bMaskDWord, value32|(BIT(23) | BIT(25)));
+	value32 = phy_query_bb_reg(adapter,  0x7B4, bMaskDWord);
+	phy_set_bb_reg(adapter, 0x7b4, bMaskDWord, value32|(BIT(16) | BIT(17)));
+>>>>>>> v4.9.227
 
 	/* Match MAC ADDR */
 	phy_set_bb_reg(adapter, 0x7b4, 0xFFFF, 0);
 	phy_set_bb_reg(adapter, 0x7b0, bMaskDWord, 0);
 
+<<<<<<< HEAD
 	phy_set_bb_reg(adapter, 0x870, BIT9|BIT8, 0);
 	phy_set_bb_reg(adapter, 0x864, BIT10, 0);
 	phy_set_bb_reg(adapter, 0xb2c, BIT22, 0);
 	phy_set_bb_reg(adapter, 0xb2c, BIT31, 1);
+=======
+	phy_set_bb_reg(adapter, 0x870, BIT(9) | BIT(8), 0);
+	phy_set_bb_reg(adapter, 0x864, BIT(10), 0);
+	phy_set_bb_reg(adapter, 0xb2c, BIT(22), 0);
+	phy_set_bb_reg(adapter, 0xb2c, BIT(31), 1);
+>>>>>>> v4.9.227
 	phy_set_bb_reg(adapter, 0xca4, bMaskDWord, 0x000000a0);
 
 	/* antenna mapping table */
 	if (AntCombination == 2) {
 		if (!dm_odm->bIsMPChip) { /* testchip */
+<<<<<<< HEAD
 			phy_set_bb_reg(adapter, 0x858, BIT10|BIT9|BIT8, 1);
 			phy_set_bb_reg(adapter, 0x858, BIT13|BIT12|BIT11, 2);
+=======
+			phy_set_bb_reg(adapter, 0x858, BIT(10) | BIT(9) | BIT(8), 1);
+			phy_set_bb_reg(adapter, 0x858, BIT(13) | BIT(12) | BIT(11), 2);
+>>>>>>> v4.9.227
 		} else { /* MPchip */
 			phy_set_bb_reg(adapter, 0x914, bMaskByte0, 1);
 			phy_set_bb_reg(adapter, 0x914, bMaskByte1, 2);
 		}
 	} else if (AntCombination == 7) {
 		if (!dm_odm->bIsMPChip) { /* testchip */
+<<<<<<< HEAD
 			phy_set_bb_reg(adapter, 0x858, BIT10|BIT9|BIT8, 0);
 			phy_set_bb_reg(adapter, 0x858, BIT13|BIT12|BIT11, 1);
 			phy_set_bb_reg(adapter, 0x878, BIT16, 0);
@@ -152,6 +221,17 @@ static void dm_fast_training_init(struct odm_dm_struct *dm_odm)
 			phy_set_bb_reg(adapter, 0x878, BIT25|BIT24|BIT23, 5);
 			phy_set_bb_reg(adapter, 0x878, BIT28|BIT27|BIT26, 6);
 			phy_set_bb_reg(adapter, 0x878, BIT31|BIT30|BIT29, 7);
+=======
+			phy_set_bb_reg(adapter, 0x858, BIT(10) | BIT(9) | BIT(8), 0);
+			phy_set_bb_reg(adapter, 0x858, BIT(13) | BIT(12) | BIT(11), 1);
+			phy_set_bb_reg(adapter, 0x878, BIT(16), 0);
+			phy_set_bb_reg(adapter, 0x858, BIT(15) | BIT(14), 2);
+			phy_set_bb_reg(adapter, 0x878, BIT(19) | BIT(18) | BIT(17), 3);
+			phy_set_bb_reg(adapter, 0x878, BIT(22) | BIT(21) | BIT(20), 4);
+			phy_set_bb_reg(adapter, 0x878, BIT(25) | BIT(24) | BIT(23), 5);
+			phy_set_bb_reg(adapter, 0x878, BIT(28) | BIT(27) | BIT(26), 6);
+			phy_set_bb_reg(adapter, 0x878, BIT(31) | BIT(30) | BIT(29), 7);
+>>>>>>> v4.9.227
 		} else { /* MPchip */
 			phy_set_bb_reg(adapter, 0x914, bMaskByte0, 0);
 			phy_set_bb_reg(adapter, 0x914, bMaskByte1, 1);
@@ -165,6 +245,7 @@ static void dm_fast_training_init(struct odm_dm_struct *dm_odm)
 	}
 
 	/* Default Ant Setting when no fast training */
+<<<<<<< HEAD
 	phy_set_bb_reg(adapter, 0x80c, BIT21, 1);
 	phy_set_bb_reg(adapter, 0x864, BIT5|BIT4|BIT3, 0);
 	phy_set_bb_reg(adapter, 0x864, BIT8|BIT7|BIT6, 1);
@@ -172,6 +253,15 @@ static void dm_fast_training_init(struct odm_dm_struct *dm_odm)
 	/* Enter Traing state */
 	phy_set_bb_reg(adapter, 0x864, BIT2|BIT1|BIT0, (AntCombination-1));
 	phy_set_bb_reg(adapter, 0xc50, BIT7, 1);
+=======
+	phy_set_bb_reg(adapter, 0x80c, BIT(21), 1);
+	phy_set_bb_reg(adapter, 0x864, BIT(5) | BIT(4) | BIT(3), 0);
+	phy_set_bb_reg(adapter, 0x864, BIT(8) | BIT(7) | BIT(6), 1);
+
+	/* Enter Traing state */
+	phy_set_bb_reg(adapter, 0x864, BIT(2) | BIT(1) | BIT(0), (AntCombination-1));
+	phy_set_bb_reg(adapter, 0xc50, BIT(7), 1);
+>>>>>>> v4.9.227
 }
 
 void rtl88eu_dm_antenna_div_init(struct odm_dm_struct *dm_odm)
@@ -205,6 +295,7 @@ void rtl88eu_dm_update_rx_idle_ant(struct odm_dm_struct *dm_odm, u8 ant)
 
 		if (dm_odm->AntDivType == CG_TRX_HW_ANTDIV) {
 			phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N,
+<<<<<<< HEAD
 				       BIT5|BIT4|BIT3, default_ant);
 			phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N,
 				       BIT8|BIT7|BIT6, optional_ant);
@@ -217,6 +308,20 @@ void rtl88eu_dm_update_rx_idle_ant(struct odm_dm_struct *dm_odm, u8 ant)
 				       BIT5|BIT4|BIT3, default_ant);
 			phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N,
 				       BIT8|BIT7|BIT6, optional_ant);
+=======
+				       BIT(5) | BIT(4) | BIT(3), default_ant);
+			phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N,
+				       BIT(8) | BIT(7) | BIT(6), optional_ant);
+			phy_set_bb_reg(adapter, ODM_REG_ANTSEL_CTRL_11N,
+				       BIT(14) | BIT(13) | BIT(12), default_ant);
+			phy_set_bb_reg(adapter, ODM_REG_RESP_TX_11N,
+				       BIT(6) | BIT(7), default_ant);
+		} else if (dm_odm->AntDivType == CGCS_RX_HW_ANTDIV) {
+			phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N,
+				       BIT(5) | BIT(4) | BIT(3), default_ant);
+			phy_set_bb_reg(adapter, ODM_REG_RX_ANT_CTRL_11N,
+				       BIT(8) | BIT(7) | BIT(6), optional_ant);
+>>>>>>> v4.9.227
 		}
 	}
 	dm_fat_tbl->RxIdleAnt = ant;
@@ -231,9 +336,15 @@ static void update_tx_ant_88eu(struct odm_dm_struct *dm_odm, u8 ant, u32 mac_id)
 		target_ant = MAIN_ANT_CG_TRX;
 	else
 		target_ant = AUX_ANT_CG_TRX;
+<<<<<<< HEAD
 	dm_fat_tbl->antsel_a[mac_id] = target_ant&BIT0;
 	dm_fat_tbl->antsel_b[mac_id] = (target_ant&BIT1)>>1;
 	dm_fat_tbl->antsel_c[mac_id] = (target_ant&BIT2)>>2;
+=======
+	dm_fat_tbl->antsel_a[mac_id] = target_ant & BIT(0);
+	dm_fat_tbl->antsel_b[mac_id] = (target_ant & BIT(1))>>1;
+	dm_fat_tbl->antsel_c[mac_id] = (target_ant & BIT(2))>>2;
+>>>>>>> v4.9.227
 }
 
 void rtl88eu_dm_set_tx_ant_by_tx_info(struct odm_dm_struct *dm_odm,
@@ -278,7 +389,11 @@ static void rtl88eu_dm_hw_ant_div(struct odm_dm_struct *dm_odm)
 	struct rtw_dig *dig_table = &dm_odm->DM_DigTable;
 	struct sta_info *entry;
 	u32 i, min_rssi = 0xFF, ant_div_max_rssi = 0, max_rssi = 0;
+<<<<<<< HEAD
 	u32 local_min_rssi,local_max_rssi;
+=======
+	u32 local_min_rssi, local_max_rssi;
+>>>>>>> v4.9.227
 	u32 main_rssi, aux_rssi;
 	u8 RxIdleAnt = 0, target_ant = 7;
 
@@ -292,8 +407,12 @@ static void rtl88eu_dm_hw_ant_div(struct odm_dm_struct *dm_odm)
 				    (dm_fat_tbl->AuxAnt_Sum[i]/dm_fat_tbl->AuxAnt_Cnt[i]) : 0;
 			target_ant = (main_rssi >= aux_rssi) ? MAIN_ANT : AUX_ANT;
 			/* 2 Select max_rssi for DIG */
+<<<<<<< HEAD
 			local_max_rssi = (main_rssi > aux_rssi) ?
 					  main_rssi : aux_rssi;
+=======
+			local_max_rssi = max(main_rssi, aux_rssi);
+>>>>>>> v4.9.227
 			if ((local_max_rssi > ant_div_max_rssi) &&
 			    (local_max_rssi < 40))
 				ant_div_max_rssi = local_max_rssi;
@@ -308,8 +427,12 @@ static void rtl88eu_dm_hw_ant_div(struct odm_dm_struct *dm_odm)
 				 (aux_rssi == 0))
 				aux_rssi = main_rssi;
 
+<<<<<<< HEAD
 			local_min_rssi = (main_rssi > aux_rssi) ?
 					  aux_rssi : main_rssi;
+=======
+			local_min_rssi = min(main_rssi, aux_rssi);
+>>>>>>> v4.9.227
 			if (local_min_rssi < min_rssi) {
 				min_rssi = local_min_rssi;
 				RxIdleAnt = target_ant;
@@ -344,12 +467,21 @@ void rtl88eu_dm_antenna_diversity(struct odm_dm_struct *dm_odm)
 		if (dm_fat_tbl->bBecomeLinked) {
 			ODM_RT_TRACE(dm_odm, ODM_COMP_ANT_DIV, ODM_DBG_LOUD,
 				     ("Need to Turn off HW AntDiv\n"));
+<<<<<<< HEAD
 			phy_set_bb_reg(adapter, ODM_REG_IGI_A_11N, BIT7, 0);
 			phy_set_bb_reg(adapter, ODM_REG_CCK_ANTDIV_PARA1_11N,
 				       BIT15, 0);
 			if (dm_odm->AntDivType == CG_TRX_HW_ANTDIV)
 				phy_set_bb_reg(adapter, ODM_REG_TX_ANT_CTRL_11N,
 					       BIT21, 0);
+=======
+			phy_set_bb_reg(adapter, ODM_REG_IGI_A_11N, BIT(7), 0);
+			phy_set_bb_reg(adapter, ODM_REG_CCK_ANTDIV_PARA1_11N,
+				       BIT(15), 0);
+			if (dm_odm->AntDivType == CG_TRX_HW_ANTDIV)
+				phy_set_bb_reg(adapter, ODM_REG_TX_ANT_CTRL_11N,
+					       BIT(21), 0);
+>>>>>>> v4.9.227
 			dm_fat_tbl->bBecomeLinked = dm_odm->bLinked;
 		}
 		return;
@@ -357,12 +489,21 @@ void rtl88eu_dm_antenna_diversity(struct odm_dm_struct *dm_odm)
 		if (!dm_fat_tbl->bBecomeLinked) {
 			ODM_RT_TRACE(dm_odm, ODM_COMP_ANT_DIV, ODM_DBG_LOUD,
 				     ("Need to Turn on HW AntDiv\n"));
+<<<<<<< HEAD
 			phy_set_bb_reg(adapter, ODM_REG_IGI_A_11N, BIT7, 1);
 			phy_set_bb_reg(adapter, ODM_REG_CCK_ANTDIV_PARA1_11N,
 				       BIT15, 1);
 			if (dm_odm->AntDivType == CG_TRX_HW_ANTDIV)
 				phy_set_bb_reg(adapter, ODM_REG_TX_ANT_CTRL_11N,
 					       BIT21, 1);
+=======
+			phy_set_bb_reg(adapter, ODM_REG_IGI_A_11N, BIT(7), 1);
+			phy_set_bb_reg(adapter, ODM_REG_CCK_ANTDIV_PARA1_11N,
+				       BIT(15), 1);
+			if (dm_odm->AntDivType == CG_TRX_HW_ANTDIV)
+				phy_set_bb_reg(adapter, ODM_REG_TX_ANT_CTRL_11N,
+					       BIT(21), 1);
+>>>>>>> v4.9.227
 			dm_fat_tbl->bBecomeLinked = dm_odm->bLinked;
 		}
 	}

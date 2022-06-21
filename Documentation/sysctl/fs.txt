@@ -34,7 +34,13 @@ Currently, these files are in /proc/sys/fs:
 - overflowgid
 - pipe-user-pages-hard
 - pipe-user-pages-soft
+<<<<<<< HEAD
 - protected_hardlinks
+=======
+- protected_fifos
+- protected_hardlinks
+- protected_regular
+>>>>>>> v4.9.227
 - protected_symlinks
 - suid_dumpable
 - super-max
@@ -182,6 +188,27 @@ applied.
 
 ==============================================================
 
+<<<<<<< HEAD
+=======
+protected_fifos:
+
+The intent of this protection is to avoid unintentional writes to
+an attacker-controlled FIFO, where a program expected to create a regular
+file.
+
+When set to "0", writing to FIFOs is unrestricted.
+
+When set to "1" don't allow O_CREAT open on FIFOs that we don't own
+in world writable sticky directories, unless they are owned by the
+owner of the directory.
+
+When set to "2" it also applies to group writable sticky directories.
+
+This protection is based on the restrictions in Openwall.
+
+==============================================================
+
+>>>>>>> v4.9.227
 protected_hardlinks:
 
 A long-standing class of security issues is the hardlink-based
@@ -202,6 +229,25 @@ This protection is based on the restrictions in Openwall and grsecurity.
 
 ==============================================================
 
+<<<<<<< HEAD
+=======
+protected_regular:
+
+This protection is similar to protected_fifos, but it
+avoids writes to an attacker-controlled regular file, where a program
+expected to create one.
+
+When set to "0", writing to regular files is unrestricted.
+
+When set to "1" don't allow O_CREAT open on regular files that we
+don't own in world writable sticky directories, unless they are
+owned by the owner of the directory.
+
+When set to "2" it also applies to group writable sticky directories.
+
+==============================================================
+
+>>>>>>> v4.9.227
 protected_symlinks:
 
 A long-standing class of security issues is the symlink-based
@@ -265,6 +311,16 @@ aio-nr can grow to.
 
 ==============================================================
 
+<<<<<<< HEAD
+=======
+mount-max:
+
+This denotes the maximum number of mounts that may exist
+in a mount namespace.
+
+==============================================================
+
+>>>>>>> v4.9.227
 
 2. /proc/sys/fs/binfmt_misc
 ----------------------------------------------------------

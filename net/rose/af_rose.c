@@ -521,7 +521,11 @@ static int rose_create(struct net *net, struct socket *sock, int protocol,
 	if (sock->type != SOCK_SEQPACKET || protocol != 0)
 		return -ESOCKTNOSUPPORT;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_ROSE, GFP_ATOMIC, &rose_proto);
+=======
+	sk = sk_alloc(net, PF_ROSE, GFP_ATOMIC, &rose_proto, kern);
+>>>>>>> v4.9.227
 	if (sk == NULL)
 		return -ENOMEM;
 
@@ -560,7 +564,11 @@ static struct sock *rose_make_new(struct sock *osk)
 	if (osk->sk_type != SOCK_SEQPACKET)
 		return NULL;
 
+<<<<<<< HEAD
 	sk = sk_alloc(sock_net(osk), PF_ROSE, GFP_ATOMIC, &rose_proto);
+=======
+	sk = sk_alloc(sock_net(osk), PF_ROSE, GFP_ATOMIC, &rose_proto, 0);
+>>>>>>> v4.9.227
 	if (sk == NULL)
 		return NULL;
 
@@ -1047,8 +1055,12 @@ int rose_rx_call_request(struct sk_buff *skb, struct net_device *dev, struct ros
 	return 1;
 }
 
+<<<<<<< HEAD
 static int rose_sendmsg(struct kiocb *iocb, struct socket *sock,
 			struct msghdr *msg, size_t len)
+=======
+static int rose_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+>>>>>>> v4.9.227
 {
 	struct sock *sk = sock->sk;
 	struct rose_sock *rose = rose_sk(sk);
@@ -1122,7 +1134,11 @@ static int rose_sendmsg(struct kiocb *iocb, struct socket *sock,
 	skb_reset_transport_header(skb);
 	skb_put(skb, len);
 
+<<<<<<< HEAD
 	err = memcpy_fromiovec(skb_transport_header(skb), msg->msg_iov, len);
+=======
+	err = memcpy_from_msg(skb_transport_header(skb), msg, len);
+>>>>>>> v4.9.227
 	if (err) {
 		kfree_skb(skb);
 		return err;
@@ -1212,8 +1228,13 @@ static int rose_sendmsg(struct kiocb *iocb, struct socket *sock,
 }
 
 
+<<<<<<< HEAD
 static int rose_recvmsg(struct kiocb *iocb, struct socket *sock,
 			struct msghdr *msg, size_t size, int flags)
+=======
+static int rose_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+			int flags)
+>>>>>>> v4.9.227
 {
 	struct sock *sk = sock->sk;
 	struct rose_sock *rose = rose_sk(sk);
@@ -1250,7 +1271,11 @@ static int rose_recvmsg(struct kiocb *iocb, struct socket *sock,
 		msg->msg_flags |= MSG_TRUNC;
 	}
 
+<<<<<<< HEAD
 	skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
+=======
+	skb_copy_datagram_msg(skb, 0, msg, copied);
+>>>>>>> v4.9.227
 
 	if (msg->msg_name) {
 		struct sockaddr_rose *srose;

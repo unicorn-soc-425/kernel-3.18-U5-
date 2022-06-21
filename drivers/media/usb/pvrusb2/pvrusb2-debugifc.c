@@ -322,6 +322,7 @@ int pvr2_debugifc_docmd(struct pvr2_hdw *hdw,const char *buf,
 
 	return 0;
 }
+<<<<<<< HEAD
 
 
 /*
@@ -333,3 +334,5 @@ int pvr2_debugifc_docmd(struct pvr2_hdw *hdw,const char *buf,
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

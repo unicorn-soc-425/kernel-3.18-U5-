@@ -18,7 +18,12 @@
 
 #define pr_fmt(fmt) "ashmem: " fmt
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/falloc.h>
@@ -31,8 +36,11 @@
 #include <linux/bitops.h>
 #include <linux/mutex.h>
 #include <linux/shmem_fs.h>
+<<<<<<< HEAD
 #include <linux/ashmem.h>
 
+=======
+>>>>>>> v4.9.227
 #include "ashmem.h"
 
 #define ASHMEM_NAME_PREFIX "dev/ashmem/"
@@ -45,7 +53,11 @@
  * @unpinned_list:	The list of all ashmem areas
  * @file:		The shmem-based backing file
  * @size:		The size of the mapping, in bytes
+<<<<<<< HEAD
  * @prot_masks:		The allowed protection bits, as vm_flags
+=======
+ * @prot_mask:		The allowed protection bits, as vm_flags
+>>>>>>> v4.9.227
  *
  * The lifecycle of this structure is from our parent file's open() until
  * its release(). It is also protected by 'ashmem_mutex'
@@ -53,6 +65,7 @@
  * Warning: Mappings do NOT pin this structure; It dies on close()
  */
 struct ashmem_area {
+<<<<<<< HEAD
 	char name[ASHMEM_FULL_NAME_LEN]; /* optional name in /proc/pid/maps */
 	struct list_head unpinned_list;	 /* list of all ashmem areas */
 	struct file *file;		 /* the shmem-based backing file */
@@ -60,6 +73,13 @@ struct ashmem_area {
 	unsigned long vm_start;		 /* Start address of vm_area
 					  * which maps this ashmem */
 	unsigned long prot_mask;	 /* allowed prot bits, as vm_flags */
+=======
+	char name[ASHMEM_FULL_NAME_LEN];
+	struct list_head unpinned_list;
+	struct file *file;
+	size_t size;
+	unsigned long prot_mask;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -86,14 +106,22 @@ struct ashmem_range {
 /* LRU list of unpinned pages, protected by ashmem_mutex */
 static LIST_HEAD(ashmem_lru_list);
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> v4.9.227
  * long lru_count - The count of pages on our LRU list.
  *
  * This is protected by ashmem_mutex.
  */
 static unsigned long lru_count;
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> v4.9.227
  * ashmem_mutex - protects the list of and each individual ashmem_area
  *
  * Lock Ordering: ashmex_mutex -> i_mutex -> i_alloc_sem
@@ -109,6 +137,7 @@ static struct kmem_cache *ashmem_range_cachep __read_mostly;
 #define range_on_lru(range) \
 	((range)->purged == ASHMEM_NOT_PURGED)
 
+<<<<<<< HEAD
 #define page_range_subsumes_range(range, start, end) \
 	(((range)->pgstart >= (start)) && ((range)->pgend <= (end)))
 
@@ -124,6 +153,36 @@ static struct kmem_cache *ashmem_range_cachep __read_mostly;
 
 #define range_before_page(range, page) \
 	((range)->pgend < (page))
+=======
+static inline int page_range_subsumes_range(struct ashmem_range *range,
+					    size_t start, size_t end)
+{
+	return (((range)->pgstart >= (start)) && ((range)->pgend <= (end)));
+}
+
+static inline int page_range_subsumed_by_range(struct ashmem_range *range,
+					       size_t start, size_t end)
+{
+	return (((range)->pgstart <= (start)) && ((range)->pgend >= (end)));
+}
+
+static inline int page_in_range(struct ashmem_range *range, size_t page)
+{
+	return (((range)->pgstart <= (page)) && ((range)->pgend >= (page)));
+}
+
+static inline int page_range_in_range(struct ashmem_range *range,
+				      size_t start, size_t end)
+{
+	return (page_in_range(range, start) || page_in_range(range, end) ||
+		page_range_subsumes_range(range, start, end));
+}
+
+static inline int range_before_page(struct ashmem_range *range, size_t page)
+{
+	return ((range)->pgend < (page));
+}
+>>>>>>> v4.9.227
 
 #define PROT_MASK		(PROT_EXEC | PROT_READ | PROT_WRITE)
 
@@ -314,11 +373,18 @@ static ssize_t ashmem_read(struct file *file, char __user *buf,
 	 * be destroyed until all references to the file are dropped and
 	 * ashmem_release is called.
 	 */
+<<<<<<< HEAD
 	ret = asma->file->f_op->read(asma->file, buf, len, pos);
 	if (ret >= 0) {
 		/** Update backing file pos, since f_ops->read() doesn't */
 		asma->file->f_pos = *pos;
 	}
+=======
+	ret = __vfs_read(asma->file, buf, len, pos);
+	if (ret >= 0)
+		/** Update backing file pos, since f_ops->read() doesn't */
+		asma->file->f_pos = *pos;
+>>>>>>> v4.9.227
 	return ret;
 
 out_unlock:
@@ -369,8 +435,13 @@ static int ashmem_vmfile_mmap(struct file *file, struct vm_area_struct *vma)
 
 static unsigned long
 ashmem_vmfile_get_unmapped_area(struct file *file, unsigned long addr,
+<<<<<<< HEAD
 			unsigned long len, unsigned long pgoff,
 			unsigned long flags)
+=======
+				unsigned long len, unsigned long pgoff,
+				unsigned long flags)
+>>>>>>> v4.9.227
 {
 	return current->mm->get_unmapped_area(file, addr, len, pgoff, flags);
 }
@@ -396,8 +467,13 @@ static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
 	}
 
 	/* requested protection bits must match our allowed protection mask */
+<<<<<<< HEAD
 	if (unlikely((vma->vm_flags & ~calc_vm_prot_bits(asma->prot_mask)) &
 		     calc_vm_prot_bits(PROT_MASK))) {
+=======
+	if (unlikely((vma->vm_flags & ~calc_vm_prot_bits(asma->prot_mask, 0)) &
+		     calc_vm_prot_bits(PROT_MASK, 0))) {
+>>>>>>> v4.9.227
 		ret = -EPERM;
 		goto out;
 	}
@@ -412,7 +488,11 @@ static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
 
 		/* ... and allocate the backing shmem file */
 		vmfile = shmem_file_setup(name, asma->size, vma->vm_flags);
+<<<<<<< HEAD
 		if (unlikely(IS_ERR(vmfile))) {
+=======
+		if (IS_ERR(vmfile)) {
+>>>>>>> v4.9.227
 			ret = PTR_ERR(vmfile);
 			goto out;
 		}
@@ -428,12 +508,17 @@ static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
 			vmfile_fops = *vmfile->f_op;
 			vmfile_fops.mmap = ashmem_vmfile_mmap;
 			vmfile_fops.get_unmapped_area =
+<<<<<<< HEAD
 				ashmem_vmfile_get_unmapped_area;
+=======
+					ashmem_vmfile_get_unmapped_area;
+>>>>>>> v4.9.227
 		}
 		vmfile->f_op = &vmfile_fops;
 	}
 	get_file(asma->file);
 
+<<<<<<< HEAD
 	if (vma->vm_flags & VM_SHARED)
 		shmem_set_file(vma, asma->file);
 	else {
@@ -442,6 +527,23 @@ static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
 		vma->vm_file = asma->file;
 	}
 	asma->vm_start = vma->vm_start;
+=======
+	/*
+	 * XXX - Reworked to use shmem_zero_setup() instead of
+	 * shmem_set_file while we're in staging. -jstultz
+	 */
+	if (vma->vm_flags & VM_SHARED) {
+		ret = shmem_zero_setup(vma);
+		if (ret) {
+			fput(asma->file);
+			goto out;
+		}
+	}
+
+	if (vma->vm_file)
+		fput(vma->vm_file);
+	vma->vm_file = asma->file;
+>>>>>>> v4.9.227
 
 out:
 	mutex_unlock(&ashmem_mutex);
@@ -449,7 +551,11 @@ out:
 }
 
 /*
+<<<<<<< HEAD
  * ashmem_shrink - our cache shrinker, called from mm/vmscan.c :: shrink_slab
+=======
+ * ashmem_shrink - our cache shrinker, called from mm/vmscan.c
+>>>>>>> v4.9.227
  *
  * 'nr_to_scan' is the number of objects to scan for freeing.
  *
@@ -479,9 +585,15 @@ ashmem_shrink_scan(struct shrinker *shrink, struct shrink_control *sc)
 		loff_t start = range->pgstart * PAGE_SIZE;
 		loff_t end = (range->pgend + 1) * PAGE_SIZE;
 
+<<<<<<< HEAD
 		range->asma->file->f_op->fallocate(range->asma->file,
 				FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
 				start, end - start);
+=======
+		vfs_fallocate(range->asma->file,
+			      FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
+			      start, end - start);
+>>>>>>> v4.9.227
 		range->purged = ASHMEM_WAS_PURGED;
 		lru_del(range);
 
@@ -582,7 +694,10 @@ static int get_name(struct ashmem_area *asma, void __user *name)
 
 	mutex_lock(&ashmem_mutex);
 	if (asma->name[ASHMEM_NAME_PREFIX_LEN] != '\0') {
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 		/*
 		 * Copying only `len', instead of ASHMEM_NAME_LEN, bytes
 		 * prevents us from revealing one user's stack to another.
@@ -652,7 +767,12 @@ static int ashmem_pin(struct ashmem_area *asma, size_t pgstart, size_t pgend)
 
 			/* Case #3: We overlap from the rear, so adjust it */
 			if (range->pgend <= pgend) {
+<<<<<<< HEAD
 				range_shrink(range, range->pgstart, pgstart-1);
+=======
+				range_shrink(range, range->pgstart,
+					     pgstart - 1);
+>>>>>>> v4.9.227
 				continue;
 			}
 
@@ -694,8 +814,13 @@ restart:
 		if (page_range_subsumed_by_range(range, pgstart, pgend))
 			return 0;
 		if (page_range_in_range(range, pgstart, pgend)) {
+<<<<<<< HEAD
 			pgstart = min_t(size_t, range->pgstart, pgstart),
 			pgend = max_t(size_t, range->pgend, pgend);
+=======
+			pgstart = min(range->pgstart, pgstart);
+			pgend = max(range->pgend, pgend);
+>>>>>>> v4.9.227
 			purged |= range->purged;
 			range_del(range);
 			goto restart;
@@ -736,17 +861,29 @@ static int ashmem_pin_unpin(struct ashmem_area *asma, unsigned long cmd,
 	size_t pgstart, pgend;
 	int ret = -EINVAL;
 
+<<<<<<< HEAD
 	if (unlikely(!asma->file))
 		return -EINVAL;
 
 	if (unlikely(copy_from_user(&pin, p, sizeof(pin))))
 		return -EFAULT;
 
+=======
+	if (unlikely(copy_from_user(&pin, p, sizeof(pin))))
+		return -EFAULT;
+
+	mutex_lock(&ashmem_mutex);
+
+	if (unlikely(!asma->file))
+		goto out_unlock;
+
+>>>>>>> v4.9.227
 	/* per custom, you can pass zero for len to mean "everything onward" */
 	if (!pin.len)
 		pin.len = PAGE_ALIGN(asma->size) - pin.offset;
 
 	if (unlikely((pin.offset | pin.len) & ~PAGE_MASK))
+<<<<<<< HEAD
 		return -EINVAL;
 
 	if (unlikely(((__u32) -1) - pin.offset < pin.len))
@@ -754,12 +891,24 @@ static int ashmem_pin_unpin(struct ashmem_area *asma, unsigned long cmd,
 
 	if (unlikely(PAGE_ALIGN(asma->size) < pin.offset + pin.len))
 		return -EINVAL;
+=======
+		goto out_unlock;
+
+	if (unlikely(((__u32)-1) - pin.offset < pin.len))
+		goto out_unlock;
+
+	if (unlikely(PAGE_ALIGN(asma->size) < pin.offset + pin.len))
+		goto out_unlock;
+>>>>>>> v4.9.227
 
 	pgstart = pin.offset / PAGE_SIZE;
 	pgend = pgstart + (pin.len / PAGE_SIZE) - 1;
 
+<<<<<<< HEAD
 	mutex_lock(&ashmem_mutex);
 
+=======
+>>>>>>> v4.9.227
 	switch (cmd) {
 	case ASHMEM_PIN:
 		ret = ashmem_pin(asma, pgstart, pgend);
@@ -772,6 +921,10 @@ static int ashmem_pin_unpin(struct ashmem_area *asma, unsigned long cmd,
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+out_unlock:
+>>>>>>> v4.9.227
 	mutex_unlock(&ashmem_mutex);
 
 	return ret;
@@ -784,17 +937,28 @@ static long ashmem_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 	switch (cmd) {
 	case ASHMEM_SET_NAME:
+<<<<<<< HEAD
 		ret = set_name(asma, (void __user *) arg);
 		break;
 	case ASHMEM_GET_NAME:
 		ret = get_name(asma, (void __user *) arg);
+=======
+		ret = set_name(asma, (void __user *)arg);
+		break;
+	case ASHMEM_GET_NAME:
+		ret = get_name(asma, (void __user *)arg);
+>>>>>>> v4.9.227
 		break;
 	case ASHMEM_SET_SIZE:
 		ret = -EINVAL;
 		mutex_lock(&ashmem_mutex);
 		if (!asma->file) {
 			ret = 0;
+<<<<<<< HEAD
 			asma->size = (size_t) arg;
+=======
+			asma->size = (size_t)arg;
+>>>>>>> v4.9.227
 		}
 		mutex_unlock(&ashmem_mutex);
 		break;
@@ -810,7 +974,11 @@ static long ashmem_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case ASHMEM_PIN:
 	case ASHMEM_UNPIN:
 	case ASHMEM_GET_PIN_STATUS:
+<<<<<<< HEAD
 		ret = ashmem_pin_unpin(asma, cmd, (void __user *) arg);
+=======
+		ret = ashmem_pin_unpin(asma, cmd, (void __user *)arg);
+>>>>>>> v4.9.227
 		break;
 	case ASHMEM_PURGE_ALL_CACHES:
 		ret = -EPERM;
@@ -820,7 +988,10 @@ static long ashmem_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				.nr_to_scan = LONG_MAX,
 			};
 			ret = ashmem_shrink_count(&ashmem_shrinker, &sc);
+<<<<<<< HEAD
 			nodes_setall(sc.nodes_to_scan);
+=======
+>>>>>>> v4.9.227
 			ashmem_shrink_scan(&ashmem_shrinker, &sc);
 		}
 		break;
@@ -834,7 +1005,10 @@ static long ashmem_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 static long compat_ashmem_ioctl(struct file *file, unsigned int cmd,
 				unsigned long arg)
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	switch (cmd) {
 	case COMPAT_ASHMEM_SET_SIZE:
 		cmd = ASHMEM_SET_SIZE;
@@ -868,6 +1042,7 @@ static struct miscdevice ashmem_misc = {
 
 static int __init ashmem_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ashmem_area_cachep = kmem_cache_create("ashmem_area_cache",
@@ -884,12 +1059,34 @@ static int __init ashmem_init(void)
 	if (unlikely(!ashmem_range_cachep)) {
 		pr_err("failed to create slab cache\n");
 		return -ENOMEM;
+=======
+	int ret = -ENOMEM;
+
+	ashmem_area_cachep = kmem_cache_create("ashmem_area_cache",
+					       sizeof(struct ashmem_area),
+					       0, 0, NULL);
+	if (unlikely(!ashmem_area_cachep)) {
+		pr_err("failed to create slab cache\n");
+		goto out;
+	}
+
+	ashmem_range_cachep = kmem_cache_create("ashmem_range_cache",
+						sizeof(struct ashmem_range),
+						0, 0, NULL);
+	if (unlikely(!ashmem_range_cachep)) {
+		pr_err("failed to create slab cache\n");
+		goto out_free1;
+>>>>>>> v4.9.227
 	}
 
 	ret = misc_register(&ashmem_misc);
 	if (unlikely(ret)) {
 		pr_err("failed to register misc device!\n");
+<<<<<<< HEAD
 		return ret;
+=======
+		goto out_free2;
+>>>>>>> v4.9.227
 	}
 
 	register_shrinker(&ashmem_shrinker);
@@ -897,6 +1094,7 @@ static int __init ashmem_init(void)
 	pr_info("initialized\n");
 
 	return 0;
+<<<<<<< HEAD
 }
 
 static void __exit ashmem_exit(void)
@@ -919,3 +1117,14 @@ module_init(ashmem_init);
 module_exit(ashmem_exit);
 
 MODULE_LICENSE("GPL");
+=======
+
+out_free2:
+	kmem_cache_destroy(ashmem_range_cachep);
+out_free1:
+	kmem_cache_destroy(ashmem_area_cachep);
+out:
+	return ret;
+}
+device_initcall(ashmem_init);
+>>>>>>> v4.9.227

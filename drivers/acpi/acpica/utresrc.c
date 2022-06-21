@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -263,7 +267,11 @@ const char *acpi_gbl_bpb_decode[] = {
 /* UART serial bus stop bits */
 
 const char *acpi_gbl_sb_decode[] = {
+<<<<<<< HEAD
 	"StopBitsNone",
+=======
+	"StopBitsZero",
+>>>>>>> v4.9.227
 	"StopBitsOne",
 	"StopBitsOnePlusHalf",
 	"StopBitsTwo"
@@ -441,8 +449,13 @@ acpi_ut_walk_aml_resources(struct acpi_walk_state *walk_state,
 		    acpi_ut_validate_resource(walk_state, aml, &resource_index);
 		if (ACPI_FAILURE(status)) {
 			/*
+<<<<<<< HEAD
 			 * Exit on failure. Cannot continue because the descriptor length
 			 * may be bogus also.
+=======
+			 * Exit on failure. Cannot continue because the descriptor
+			 * length may be bogus also.
+>>>>>>> v4.9.227
 			 */
 			return_ACPI_STATUS(status);
 		}
@@ -568,8 +581,13 @@ acpi_ut_validate_resource(struct acpi_walk_state *walk_state,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Check validity of the resource type, via acpi_gbl_resource_types. Zero
 	 * indicates an invalid resource.
+=======
+	 * Check validity of the resource type, via acpi_gbl_resource_types.
+	 * Zero indicates an invalid resource.
+>>>>>>> v4.9.227
 	 */
 	if (!acpi_gbl_resource_types[resource_index]) {
 		goto invalid_resource;

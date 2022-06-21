@@ -11,8 +11,13 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <plat/mpp.h>
+=======
+#include <plat/mpp.h>
+#include "orion5x.h"
+>>>>>>> v4.9.227
 #include "mpp.h"
 #include "common.h"
 

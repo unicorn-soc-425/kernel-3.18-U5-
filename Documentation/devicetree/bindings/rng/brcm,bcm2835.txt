@@ -2,7 +2,12 @@ BCM2835 Random number generator
 
 Required properties:
 
+<<<<<<< HEAD
 - compatible : should be "brcm,bcm2835-rng"
+=======
+- compatible : should be "brcm,bcm2835-rng"  or "brcm,bcm-nsp-rng" or
+  "brcm,bcm5301x-rng"
+>>>>>>> v4.9.227
 - reg : Specifies base physical address and size of the registers.
 
 Example:
@@ -11,3 +16,11 @@ rng {
         compatible = "brcm,bcm2835-rng";
         reg = <0x7e104000 0x10>;
 };
+<<<<<<< HEAD
+=======
+
+rng@18033000 {
+	compatible = "brcm,bcm-nsp-rng";
+	reg = <0x18033000 0x14>;
+};
+>>>>>>> v4.9.227

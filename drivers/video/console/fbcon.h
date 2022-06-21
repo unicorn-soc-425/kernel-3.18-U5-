@@ -70,6 +70,10 @@ struct fbcon_ops {
 	struct fb_cursor cursor_state;
 	struct display *p;
         int    currcon;	                /* Current VC. */
+<<<<<<< HEAD
+=======
+	int    cur_blink_jiffies;
+>>>>>>> v4.9.227
 	int    cursor_flash;
 	int    cursor_reset;
 	int    blank_state;

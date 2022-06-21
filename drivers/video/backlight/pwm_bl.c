@@ -34,6 +34,10 @@ struct pwm_bl_data {
 	struct regulator	*power_supply;
 	struct gpio_desc	*enable_gpio;
 	unsigned int		scale;
+<<<<<<< HEAD
+=======
+	bool			legacy;
+>>>>>>> v4.9.227
 	int			(*notify)(struct device *,
 					  int brightness);
 	void			(*notify_after)(struct device *,
@@ -53,10 +57,18 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
 	if (err < 0)
 		dev_err(pb->dev, "failed to enable power supply\n");
 
+<<<<<<< HEAD
 	if (pb->enable_gpio)
 		gpiod_set_value(pb->enable_gpio, 1);
 
 	pwm_enable(pb->pwm);
+=======
+	pwm_enable(pb->pwm);
+
+	if (pb->enable_gpio)
+		gpiod_set_value_cansleep(pb->enable_gpio, 1);
+
+>>>>>>> v4.9.227
 	pb->enabled = true;
 }
 
@@ -65,12 +77,21 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
 	if (!pb->enabled)
 		return;
 
+<<<<<<< HEAD
 	pwm_config(pb->pwm, 0, pb->period);
 	pwm_disable(pb->pwm);
 
 	if (pb->enable_gpio)
 		gpiod_set_value(pb->enable_gpio, 0);
 
+=======
+	if (pb->enable_gpio)
+		gpiod_set_value_cansleep(pb->enable_gpio, 0);
+
+	pwm_config(pb->pwm, 0, pb->period);
+	pwm_disable(pb->pwm);
+
+>>>>>>> v4.9.227
 	regulator_disable(pb->power_supply);
 	pb->enabled = false;
 }
@@ -200,7 +221,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 	struct platform_pwm_backlight_data defdata;
 	struct backlight_properties props;
 	struct backlight_device *bl;
+<<<<<<< HEAD
 	struct pwm_bl_data *pb;
+=======
+	struct device_node *node = pdev->dev.of_node;
+	struct pwm_bl_data *pb;
+	int initial_blank = FB_BLANK_UNBLANK;
+	struct pwm_args pargs;
+>>>>>>> v4.9.227
 	int ret;
 
 	if (!data) {
@@ -243,7 +271,12 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 	pb->dev = &pdev->dev;
 	pb->enabled = false;
 
+<<<<<<< HEAD
 	pb->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable");
+=======
+	pb->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable",
+						  GPIOD_ASIS);
+>>>>>>> v4.9.227
 	if (IS_ERR(pb->enable_gpio)) {
 		ret = PTR_ERR(pb->enable_gpio);
 		goto err_alloc;
@@ -265,8 +298,25 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
 	}
 
+<<<<<<< HEAD
 	if (pb->enable_gpio)
 		gpiod_direction_output(pb->enable_gpio, 1);
+=======
+	if (pb->enable_gpio) {
+		/*
+		 * If the driver is probed from the device tree and there is a
+		 * phandle link pointing to the backlight node, it is safe to
+		 * assume that another driver will enable the backlight at the
+		 * appropriate time. Therefore, if it is disabled, keep it so.
+		 */
+		if (node && node->phandle &&
+		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
+		    gpiod_get_value(pb->enable_gpio) == 0)
+			initial_blank = FB_BLANK_POWERDOWN;
+		else
+			gpiod_direction_output(pb->enable_gpio, 1);
+	}
+>>>>>>> v4.9.227
 
 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
 	if (IS_ERR(pb->power_supply)) {
@@ -274,6 +324,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 		goto err_alloc;
 	}
 
+<<<<<<< HEAD
 	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
 	if (IS_ERR(pb->pwm)) {
 		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
@@ -284,21 +335,54 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 			ret = PTR_ERR(pb->pwm);
 			goto err_alloc;
 		}
+=======
+	if (node && node->phandle && !regulator_is_enabled(pb->power_supply))
+		initial_blank = FB_BLANK_POWERDOWN;
+
+	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
+	if (IS_ERR(pb->pwm) && PTR_ERR(pb->pwm) != -EPROBE_DEFER && !node) {
+		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
+		pb->legacy = true;
+		pb->pwm = pwm_request(data->pwm_id, "pwm-backlight");
+	}
+
+	if (IS_ERR(pb->pwm)) {
+		ret = PTR_ERR(pb->pwm);
+		if (ret != -EPROBE_DEFER)
+			dev_err(&pdev->dev, "unable to request PWM\n");
+		goto err_alloc;
+>>>>>>> v4.9.227
 	}
 
 	dev_dbg(&pdev->dev, "got pwm for backlight\n");
 
 	/*
+<<<<<<< HEAD
+=======
+	 * FIXME: pwm_apply_args() should be removed when switching to
+	 * the atomic PWM API.
+	 */
+	pwm_apply_args(pb->pwm);
+
+	/*
+>>>>>>> v4.9.227
 	 * The DT case will set the pwm_period_ns field to 0 and store the
 	 * period, parsed from the DT, in the PWM device. For the non-DT case,
 	 * set the period from platform data if it has not already been set
 	 * via the PWM lookup table.
 	 */
+<<<<<<< HEAD
 	pb->period = pwm_get_period(pb->pwm);
 	if (!pb->period && (data->pwm_period_ns > 0)) {
 		pb->period = data->pwm_period_ns;
 		pwm_set_period(pb->pwm, data->pwm_period_ns);
 	}
+=======
+	pwm_get_args(pb->pwm, &pargs);
+	pb->period = pargs.period;
+	if (!pb->period && (data->pwm_period_ns > 0))
+		pb->period = data->pwm_period_ns;
+>>>>>>> v4.9.227
 
 	pb->lth_brightness = data->lth_brightness * (pb->period / pb->scale);
 
@@ -310,6 +394,11 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 	if (IS_ERR(bl)) {
 		dev_err(&pdev->dev, "failed to register backlight\n");
 		ret = PTR_ERR(bl);
+<<<<<<< HEAD
+=======
+		if (pb->legacy)
+			pwm_free(pb->pwm);
+>>>>>>> v4.9.227
 		goto err_alloc;
 	}
 
@@ -321,6 +410,10 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 	}
 
 	bl->props.brightness = data->dft_brightness;
+<<<<<<< HEAD
+=======
+	bl->props.power = initial_blank;
+>>>>>>> v4.9.227
 	backlight_update_status(bl);
 
 	platform_set_drvdata(pdev, bl);
@@ -342,6 +435,11 @@ static int pwm_backlight_remove(struct platform_device *pdev)
 
 	if (pb->exit)
 		pb->exit(&pdev->dev);
+<<<<<<< HEAD
+=======
+	if (pb->legacy)
+		pwm_free(pb->pwm);
+>>>>>>> v4.9.227
 
 	return 0;
 }

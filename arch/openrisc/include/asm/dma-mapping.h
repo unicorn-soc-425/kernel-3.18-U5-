@@ -23,7 +23,10 @@
  */
 
 #include <linux/dma-debug.h>
+<<<<<<< HEAD
 #include <asm-generic/dma-coherent.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kmemcheck.h>
 #include <linux/dma-mapping.h>
 
@@ -36,6 +39,7 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 	return &or1k_dma_map_ops;
 }
 
+<<<<<<< HEAD
 #include <asm-generic/dma-mapping-common.h>
 
 #define dma_alloc_coherent(d,s,h,f) dma_alloc_attrs(d,s,h,f,NULL) 
@@ -87,12 +91,16 @@ static inline void dma_free_noncoherent(struct device *dev, size_t size,
 	dma_free_attrs(dev, size, cpu_addr, dma_handle, &attrs);
 }
 
+=======
+#define HAVE_ARCH_DMA_SUPPORTED 1
+>>>>>>> v4.9.227
 static inline int dma_supported(struct device *dev, u64 dma_mask)
 {
 	/* Support 32 bit DMA mask exclusively */
 	return dma_mask == DMA_BIT_MASK(32);
 }
 
+<<<<<<< HEAD
 static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 {
 	return 0;
@@ -107,4 +115,6 @@ static inline int dma_set_mask(struct device *dev, u64 dma_mask)
 
 	return 0;
 }
+=======
+>>>>>>> v4.9.227
 #endif	/* __ASM_OPENRISC_DMA_MAPPING_H */

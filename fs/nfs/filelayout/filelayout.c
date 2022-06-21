@@ -32,6 +32,10 @@
 #include <linux/nfs_fs.h>
 #include <linux/nfs_page.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/backing-dev.h>
+>>>>>>> v4.9.227
 
 #include <linux/sunrpc/metrics.h>
 
@@ -118,6 +122,7 @@ static void filelayout_reset_read(struct nfs_pgio_header *hdr)
 	}
 }
 
+<<<<<<< HEAD
 static void filelayout_fenceme(struct inode *inode, struct pnfs_layout_hdr *lo)
 {
 	if (!test_and_clear_bit(NFS_LAYOUT_RETURN, &lo->plh_flags))
@@ -125,6 +130,8 @@ static void filelayout_fenceme(struct inode *inode, struct pnfs_layout_hdr *lo)
 	pnfs_return_layout(inode);
 }
 
+=======
+>>>>>>> v4.9.227
 static int filelayout_async_handle_error(struct rpc_task *task,
 					 struct nfs4_state *state,
 					 struct nfs_client *clp,
@@ -207,7 +214,12 @@ static int filelayout_async_handle_error(struct rpc_task *task,
 		dprintk("%s DS connection error %d\n", __func__,
 			task->tk_status);
 		nfs4_mark_deviceid_unavailable(devid);
+<<<<<<< HEAD
 		set_bit(NFS_LAYOUT_RETURN, &lo->plh_flags);
+=======
+		pnfs_error_mark_layout_for_return(inode, lseg);
+		pnfs_set_lo_fail(lseg);
+>>>>>>> v4.9.227
 		rpc_wake_up(&tbl->slot_tbl_waitq);
 		/* fall through */
 	default:
@@ -260,12 +272,25 @@ static int filelayout_read_done_cb(struct rpc_task *task,
 static void
 filelayout_set_layoutcommit(struct nfs_pgio_header *hdr)
 {
+<<<<<<< HEAD
 
 	if (FILELAYOUT_LSEG(hdr->lseg)->commit_through_mds ||
 	    hdr->res.verf->committed != NFS_DATA_SYNC)
 		return;
 
 	pnfs_set_layoutcommit(hdr);
+=======
+	loff_t end_offs = 0;
+
+	if (FILELAYOUT_LSEG(hdr->lseg)->commit_through_mds ||
+	    hdr->res.verf->committed == NFS_FILE_SYNC)
+		return;
+	if (hdr->res.verf->committed == NFS_DATA_SYNC)
+		end_offs = hdr->mds_offset + (loff_t)hdr->res.count;
+
+	/* Note: if the write is unstable, don't set end_offs until commit */
+	pnfs_set_layoutcommit(hdr->inode, hdr->lseg, end_offs);
+>>>>>>> v4.9.227
 	dprintk("%s inode %lu pls_end_pos %lu\n", __func__, hdr->inode->i_ino,
 		(unsigned long) NFS_I(hdr->inode)->layout->plh_lwb);
 }
@@ -339,6 +364,7 @@ static void filelayout_read_count_stats(struct rpc_task *task, void *data)
 	rpc_count_iostats(task, NFS_SERVER(hdr->inode)->client->cl_metrics);
 }
 
+<<<<<<< HEAD
 static void filelayout_read_release(void *data)
 {
 	struct nfs_pgio_header *hdr = data;
@@ -349,6 +375,8 @@ static void filelayout_read_release(void *data)
 	hdr->mds_ops->rpc_release(data);
 }
 
+=======
+>>>>>>> v4.9.227
 static int filelayout_write_done_cb(struct rpc_task *task,
 				struct nfs_pgio_header *hdr)
 {
@@ -368,6 +396,7 @@ static int filelayout_write_done_cb(struct rpc_task *task,
 	}
 
 	filelayout_set_layoutcommit(hdr);
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -382,6 +411,17 @@ static void prepare_to_resend_writes(struct nfs_commit_data *data)
 	data->verf.verifier.data[0]++; /* ensure verifier mismatch */
 }
 
+=======
+
+	/* zero out the fattr */
+	hdr->fattr.valid = 0;
+	if (task->tk_status >= 0)
+		nfs_writeback_update_inode(hdr);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int filelayout_commit_done_cb(struct rpc_task *task,
 				     struct nfs_commit_data *data)
 {
@@ -393,15 +433,23 @@ static int filelayout_commit_done_cb(struct rpc_task *task,
 
 	switch (err) {
 	case -NFS4ERR_RESET_TO_MDS:
+<<<<<<< HEAD
 		prepare_to_resend_writes(data);
+=======
+		pnfs_generic_prepare_to_resend_writes(data);
+>>>>>>> v4.9.227
 		return -EAGAIN;
 	case -EAGAIN:
 		rpc_restart_call_prepare(task);
 		return -EAGAIN;
 	}
 
+<<<<<<< HEAD
 	if (data->verf.committed == NFS_UNSTABLE)
 		pnfs_commit_set_layoutcommit(data);
+=======
+	pnfs_set_layoutcommit(data->inode, data->lseg, data->lwb);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -451,6 +499,7 @@ static void filelayout_write_count_stats(struct rpc_task *task, void *data)
 	rpc_count_iostats(task, NFS_SERVER(hdr->inode)->client->cl_metrics);
 }
 
+<<<<<<< HEAD
 static void filelayout_write_release(void *data)
 {
 	struct nfs_pgio_header *hdr = data;
@@ -461,6 +510,8 @@ static void filelayout_write_release(void *data)
 	hdr->mds_ops->rpc_release(data);
 }
 
+=======
+>>>>>>> v4.9.227
 static void filelayout_commit_prepare(struct rpc_task *task, void *data)
 {
 	struct nfs_commit_data *wdata = data;
@@ -471,6 +522,7 @@ static void filelayout_commit_prepare(struct rpc_task *task, void *data)
 			task);
 }
 
+<<<<<<< HEAD
 static void filelayout_write_commit_done(struct rpc_task *task, void *data)
 {
 	struct nfs_commit_data *wdata = data;
@@ -479,6 +531,8 @@ static void filelayout_write_commit_done(struct rpc_task *task, void *data)
 	wdata->mds_ops->rpc_call_done(task, data);
 }
 
+=======
+>>>>>>> v4.9.227
 static void filelayout_commit_count_stats(struct rpc_task *task, void *data)
 {
 	struct nfs_commit_data *cdata = data;
@@ -486,6 +540,7 @@ static void filelayout_commit_count_stats(struct rpc_task *task, void *data)
 	rpc_count_iostats(task, NFS_SERVER(cdata->inode)->client->cl_metrics);
 }
 
+<<<<<<< HEAD
 static void filelayout_commit_release(void *calldata)
 {
 	struct nfs_commit_data *data = calldata;
@@ -496,25 +551,41 @@ static void filelayout_commit_release(void *calldata)
 	nfs_commitdata_release(data);
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct rpc_call_ops filelayout_read_call_ops = {
 	.rpc_call_prepare = filelayout_read_prepare,
 	.rpc_call_done = filelayout_read_call_done,
 	.rpc_count_stats = filelayout_read_count_stats,
+<<<<<<< HEAD
 	.rpc_release = filelayout_read_release,
+=======
+	.rpc_release = pnfs_generic_rw_release,
+>>>>>>> v4.9.227
 };
 
 static const struct rpc_call_ops filelayout_write_call_ops = {
 	.rpc_call_prepare = filelayout_write_prepare,
 	.rpc_call_done = filelayout_write_call_done,
 	.rpc_count_stats = filelayout_write_count_stats,
+<<<<<<< HEAD
 	.rpc_release = filelayout_write_release,
+=======
+	.rpc_release = pnfs_generic_rw_release,
+>>>>>>> v4.9.227
 };
 
 static const struct rpc_call_ops filelayout_commit_call_ops = {
 	.rpc_call_prepare = filelayout_commit_prepare,
+<<<<<<< HEAD
 	.rpc_call_done = filelayout_write_commit_done,
 	.rpc_count_stats = filelayout_commit_count_stats,
 	.rpc_release = filelayout_commit_release,
+=======
+	.rpc_call_done = pnfs_generic_write_commit_done,
+	.rpc_count_stats = filelayout_commit_count_stats,
+	.rpc_release = pnfs_generic_commit_release,
+>>>>>>> v4.9.227
 };
 
 static enum pnfs_try_status
@@ -548,7 +619,11 @@ filelayout_read_pagelist(struct nfs_pgio_header *hdr)
 	/* No multipath support. Use first DS */
 	atomic_inc(&ds->ds_clp->cl_count);
 	hdr->ds_clp = ds->ds_clp;
+<<<<<<< HEAD
 	hdr->ds_idx = idx;
+=======
+	hdr->ds_commit_idx = idx;
+>>>>>>> v4.9.227
 	fh = nfs4_fl_select_ds_fh(lseg, j);
 	if (fh)
 		hdr->args.fh = fh;
@@ -557,8 +632,14 @@ filelayout_read_pagelist(struct nfs_pgio_header *hdr)
 	hdr->mds_offset = offset;
 
 	/* Perform an asynchronous read to ds */
+<<<<<<< HEAD
 	nfs_initiate_pgio(ds_clnt, hdr,
 			    &filelayout_read_call_ops, 0, RPC_TASK_SOFTCONN);
+=======
+	nfs_initiate_pgio(ds_clnt, hdr, hdr->cred,
+			  NFS_PROTO(hdr->inode), &filelayout_read_call_ops,
+			  0, RPC_TASK_SOFTCONN);
+>>>>>>> v4.9.227
 	return PNFS_ATTEMPTED;
 }
 
@@ -591,16 +672,26 @@ filelayout_write_pagelist(struct nfs_pgio_header *hdr, int sync)
 	hdr->pgio_done_cb = filelayout_write_done_cb;
 	atomic_inc(&ds->ds_clp->cl_count);
 	hdr->ds_clp = ds->ds_clp;
+<<<<<<< HEAD
 	hdr->ds_idx = idx;
+=======
+	hdr->ds_commit_idx = idx;
+>>>>>>> v4.9.227
 	fh = nfs4_fl_select_ds_fh(lseg, j);
 	if (fh)
 		hdr->args.fh = fh;
 	hdr->args.offset = filelayout_get_dserver_offset(lseg, offset);
 
 	/* Perform an asynchronous write */
+<<<<<<< HEAD
 	nfs_initiate_pgio(ds_clnt, hdr,
 				    &filelayout_write_call_ops, sync,
 				    RPC_TASK_SOFTCONN);
+=======
+	nfs_initiate_pgio(ds_clnt, hdr, hdr->cred,
+			  NFS_PROTO(hdr->inode), &filelayout_write_call_ops,
+			  sync, RPC_TASK_SOFTCONN);
+>>>>>>> v4.9.227
 	return PNFS_ATTEMPTED;
 }
 
@@ -847,7 +938,11 @@ filelayout_alloc_commit_info(struct pnfs_layout_segment *lseg,
 		buckets[i].direct_verf.committed = NFS_INVALID_STABLE_HOW;
 	}
 
+<<<<<<< HEAD
 	spin_lock(cinfo->lock);
+=======
+	spin_lock(&cinfo->inode->i_lock);
+>>>>>>> v4.9.227
 	if (cinfo->ds->nbuckets >= size)
 		goto out;
 	for (i = 0; i < cinfo->ds->nbuckets; i++) {
@@ -863,7 +958,11 @@ filelayout_alloc_commit_info(struct pnfs_layout_segment *lseg,
 	swap(cinfo->ds->buckets, buckets);
 	cinfo->ds->nbuckets = size;
 out:
+<<<<<<< HEAD
 	spin_unlock(cinfo->lock);
+=======
+	spin_unlock(&cinfo->inode->i_lock);
+>>>>>>> v4.9.227
 	kfree(buckets);
 	return 0;
 }
@@ -936,13 +1035,28 @@ static void
 filelayout_pg_init_read(struct nfs_pageio_descriptor *pgio,
 			struct nfs_page *req)
 {
+<<<<<<< HEAD
 	if (!pgio->pg_lseg)
+=======
+	if (!pgio->pg_lseg) {
+>>>>>>> v4.9.227
 		pgio->pg_lseg = pnfs_update_layout(pgio->pg_inode,
 					   req->wb_context,
 					   0,
 					   NFS4_MAX_UINT64,
 					   IOMODE_READ,
+<<<<<<< HEAD
 					   GFP_KERNEL);
+=======
+					   false,
+					   GFP_KERNEL);
+		if (IS_ERR(pgio->pg_lseg)) {
+			pgio->pg_error = PTR_ERR(pgio->pg_lseg);
+			pgio->pg_lseg = NULL;
+			return;
+		}
+	}
+>>>>>>> v4.9.227
 	/* If no lseg, fall back to read through mds */
 	if (pgio->pg_lseg == NULL)
 		nfs_pageio_reset_read_mds(pgio);
@@ -955,13 +1069,29 @@ filelayout_pg_init_write(struct nfs_pageio_descriptor *pgio,
 	struct nfs_commit_info cinfo;
 	int status;
 
+<<<<<<< HEAD
 	if (!pgio->pg_lseg)
+=======
+	if (!pgio->pg_lseg) {
+>>>>>>> v4.9.227
 		pgio->pg_lseg = pnfs_update_layout(pgio->pg_inode,
 					   req->wb_context,
 					   0,
 					   NFS4_MAX_UINT64,
 					   IOMODE_RW,
+<<<<<<< HEAD
 					   GFP_NOFS);
+=======
+					   false,
+					   GFP_NOFS);
+		if (IS_ERR(pgio->pg_lseg)) {
+			pgio->pg_error = PTR_ERR(pgio->pg_lseg);
+			pgio->pg_lseg = NULL;
+			return;
+		}
+	}
+
+>>>>>>> v4.9.227
 	/* If no lseg, fall back to write through mds */
 	if (pgio->pg_lseg == NULL)
 		goto out_mds;
@@ -981,12 +1111,20 @@ static const struct nfs_pageio_ops filelayout_pg_read_ops = {
 	.pg_init = filelayout_pg_init_read,
 	.pg_test = filelayout_pg_test,
 	.pg_doio = pnfs_generic_pg_readpages,
+<<<<<<< HEAD
+=======
+	.pg_cleanup = pnfs_generic_pg_cleanup,
+>>>>>>> v4.9.227
 };
 
 static const struct nfs_pageio_ops filelayout_pg_write_ops = {
 	.pg_init = filelayout_pg_init_write,
 	.pg_test = filelayout_pg_test,
 	.pg_doio = pnfs_generic_pg_writepages,
+<<<<<<< HEAD
+=======
+	.pg_cleanup = pnfs_generic_pg_cleanup,
+>>>>>>> v4.9.227
 };
 
 static u32 select_bucket_index(struct nfs4_filelayout_segment *fl, u32 j)
@@ -997,6 +1135,7 @@ static u32 select_bucket_index(struct nfs4_filelayout_segment *fl, u32 j)
 		return j;
 }
 
+<<<<<<< HEAD
 /* The generic layer is about to remove the req from the commit list.
  * If this will make the bucket empty, it will need to put the lseg reference.
  * Note this is must be called holding the inode (/cinfo) lock
@@ -1028,10 +1167,18 @@ static void
 filelayout_mark_request_commit(struct nfs_page *req,
 			       struct pnfs_layout_segment *lseg,
 			       struct nfs_commit_info *cinfo)
+=======
+static void
+filelayout_mark_request_commit(struct nfs_page *req,
+			       struct pnfs_layout_segment *lseg,
+			       struct nfs_commit_info *cinfo,
+			       u32 ds_commit_idx)
+>>>>>>> v4.9.227
 
 {
 	struct nfs4_filelayout_segment *fl = FILELAYOUT_LSEG(lseg);
 	u32 i, j;
+<<<<<<< HEAD
 	struct list_head *list;
 	struct pnfs_commit_bucket *buckets;
 
@@ -1078,6 +1225,21 @@ mds_commit:
 			     BDI_RECLAIMABLE);
 		__mark_inode_dirty(req->wb_context->dentry->d_inode,
 				   I_DIRTY_DATASYNC);
+=======
+
+	if (fl->commit_through_mds) {
+		nfs_request_add_commit_list(req, cinfo);
+	} else {
+		/* Note that we are calling nfs4_fl_calc_j_index on each page
+		 * that ends up being committed to a data server.  An attractive
+		 * alternative is to add a field to nfs_write_data and nfs_page
+		 * to store the value calculated in filelayout_write_pagelist
+		 * and just use that here.
+		 */
+		j = nfs4_fl_calc_j_index(lseg, req_offset(req));
+		i = select_bucket_index(fl, j);
+		pnfs_layout_mark_request_commit(req, lseg, cinfo, i);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -1131,6 +1293,7 @@ static int filelayout_initiate_commit(struct nfs_commit_data *data, int how)
 	fh = select_ds_fh_from_commit(lseg, data->ds_commit_index);
 	if (fh)
 		data->args.fh = fh;
+<<<<<<< HEAD
 	return nfs_initiate_commit(ds_clnt, data,
 				   &filelayout_commit_call_ops, how,
 				   RPC_TASK_SOFTCONN);
@@ -1226,6 +1389,17 @@ restart:
 	spin_unlock(cinfo->lock);
 }
 
+=======
+	return nfs_initiate_commit(ds_clnt, data, NFS_PROTO(data->inode),
+				   &filelayout_commit_call_ops, how,
+				   RPC_TASK_SOFTCONN);
+out_err:
+	pnfs_generic_prepare_to_resend_writes(data);
+	pnfs_generic_commit_release(data);
+	return -EAGAIN;
+}
+
+>>>>>>> v4.9.227
 /* filelayout_search_commit_reqs - Search lists in @cinfo for the head reqest
  *				   for @page
  * @cinfo - commit info for current inode
@@ -1256,6 +1430,7 @@ filelayout_search_commit_reqs(struct nfs_commit_info *cinfo, struct page *page)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void filelayout_retry_commit(struct nfs_commit_info *cinfo, int idx)
 {
 	struct pnfs_ds_commit_info *fl_cinfo = cinfo->ds;
@@ -1309,10 +1484,13 @@ alloc_ds_commits(struct nfs_commit_info *cinfo, struct list_head *list)
 }
 
 /* This follows nfs_commit_list pretty closely */
+=======
+>>>>>>> v4.9.227
 static int
 filelayout_commit_pagelist(struct inode *inode, struct list_head *mds_pages,
 			   int how, struct nfs_commit_info *cinfo)
 {
+<<<<<<< HEAD
 	struct nfs_commit_data *data, *tmp;
 	LIST_HEAD(list);
 	unsigned int nreq = 0;
@@ -1358,6 +1536,12 @@ out:
 	cinfo->ds->ncommitting = 0;
 	return PNFS_ATTEMPTED;
 }
+=======
+	return pnfs_generic_commit_pagelist(inode, mds_pages, how, cinfo,
+					    filelayout_initiate_commit);
+}
+
+>>>>>>> v4.9.227
 static struct nfs4_deviceid_node *
 filelayout_alloc_deviceid_node(struct nfs_server *server,
 		struct pnfs_device *pdev, gfp_t gfp_flags)
@@ -1371,7 +1555,11 @@ filelayout_alloc_deviceid_node(struct nfs_server *server,
 }
 
 static void
+<<<<<<< HEAD
 filelayout_free_deveiceid_node(struct nfs4_deviceid_node *d)
+=======
+filelayout_free_deviceid_node(struct nfs4_deviceid_node *d)
+>>>>>>> v4.9.227
 {
 	nfs4_fl_free_deviceid(container_of(d, struct nfs4_file_layout_dsaddr, id_node));
 }
@@ -1414,15 +1602,26 @@ static struct pnfs_layoutdriver_type filelayout_type = {
 	.pg_write_ops		= &filelayout_pg_write_ops,
 	.get_ds_info		= &filelayout_get_ds_info,
 	.mark_request_commit	= filelayout_mark_request_commit,
+<<<<<<< HEAD
 	.clear_request_commit	= filelayout_clear_request_commit,
 	.scan_commit_lists	= filelayout_scan_commit_lists,
 	.recover_commit_reqs	= filelayout_recover_commit_reqs,
+=======
+	.clear_request_commit	= pnfs_generic_clear_request_commit,
+	.scan_commit_lists	= pnfs_generic_scan_commit_lists,
+	.recover_commit_reqs	= pnfs_generic_recover_commit_reqs,
+>>>>>>> v4.9.227
 	.search_commit_reqs	= filelayout_search_commit_reqs,
 	.commit_pagelist	= filelayout_commit_pagelist,
 	.read_pagelist		= filelayout_read_pagelist,
 	.write_pagelist		= filelayout_write_pagelist,
 	.alloc_deviceid_node	= filelayout_alloc_deviceid_node,
+<<<<<<< HEAD
 	.free_deviceid_node	= filelayout_free_deveiceid_node,
+=======
+	.free_deviceid_node	= filelayout_free_deviceid_node,
+	.sync			= pnfs_nfs_generic_sync,
+>>>>>>> v4.9.227
 };
 
 static int __init nfs4filelayout_init(void)

@@ -83,12 +83,20 @@ EXPORT_SYMBOL_GPL(intc_irq_lookup);
 
 static int add_virq_to_pirq(unsigned int irq, unsigned int virq)
 {
+<<<<<<< HEAD
 	struct intc_virq_list **last, *entry;
 	struct irq_data *data = irq_get_irq_data(irq);
 
 	/* scan for duplicates */
 	last = (struct intc_virq_list **)&data->handler_data;
 	for_each_virq(entry, data->handler_data) {
+=======
+	struct intc_virq_list *entry;
+	struct intc_virq_list **last = NULL;
+
+	/* scan for duplicates */
+	for_each_virq(entry, irq_get_handler_data(irq)) {
+>>>>>>> v4.9.227
 		if (entry->irq == virq)
 			return 0;
 		last = &entry->next;
@@ -102,14 +110,28 @@ static int add_virq_to_pirq(unsigned int irq, unsigned int virq)
 
 	entry->irq = virq;
 
+<<<<<<< HEAD
 	*last = entry;
+=======
+	if (last)
+		*last = entry;
+	else
+		irq_set_handler_data(irq, entry);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void intc_virq_handler(unsigned int irq, struct irq_desc *desc)
 {
 	struct irq_data *data = irq_get_irq_data(irq);
+=======
+static void intc_virq_handler(struct irq_desc *desc)
+{
+	unsigned int irq = irq_desc_get_irq(desc);
+	struct irq_data *data = irq_desc_get_irq_data(desc);
+>>>>>>> v4.9.227
 	struct irq_chip *chip = irq_data_get_irq_chip(data);
 	struct intc_virq_list *entry, *vlist = irq_data_get_irq_handler_data(data);
 	struct intc_desc_int *d = get_intc_desc(irq);
@@ -118,12 +140,23 @@ static void intc_virq_handler(unsigned int irq, struct irq_desc *desc)
 
 	for_each_virq(entry, vlist) {
 		unsigned long addr, handle;
+<<<<<<< HEAD
 
 		handle = (unsigned long)irq_get_handler_data(entry->irq);
 		addr = INTC_REG(d, _INTC_ADDR_E(handle), 0);
 
 		if (intc_reg_fns[_INTC_FN(handle)](addr, handle, 0))
 			generic_handle_irq(entry->irq);
+=======
+		struct irq_desc *vdesc = irq_to_desc(entry->irq);
+
+		if (vdesc) {
+			handle = (unsigned long)irq_desc_get_handler_data(vdesc);
+			addr = INTC_REG(d, _INTC_ADDR_E(handle), 0);
+			if (intc_reg_fns[_INTC_FN(handle)](addr, handle, 0))
+				generic_handle_irq_desc(vdesc);
+		}
+>>>>>>> v4.9.227
 	}
 
 	chip->irq_unmask(data);
@@ -243,8 +276,14 @@ restart:
 		 */
 		irq_set_nothread(irq);
 
+<<<<<<< HEAD
 		irq_set_chained_handler(entry->pirq, intc_virq_handler);
 		add_virq_to_pirq(entry->pirq, irq);
+=======
+		/* Set handler data before installing the handler */
+		add_virq_to_pirq(entry->pirq, irq);
+		irq_set_chained_handler(entry->pirq, intc_virq_handler);
+>>>>>>> v4.9.227
 
 		radix_tree_tag_clear(&d->tree, entry->enum_id,
 				     INTC_TAG_VIRQ_NEEDS_ALLOC);

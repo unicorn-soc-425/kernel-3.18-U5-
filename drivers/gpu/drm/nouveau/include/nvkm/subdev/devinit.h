@@ -7,6 +7,10 @@ struct nvkm_devinit {
 	const struct nvkm_devinit_func *func;
 	struct nvkm_subdev subdev;
 	bool post;
+<<<<<<< HEAD
+=======
+	bool force_post;
+>>>>>>> v4.9.227
 };
 
 u32 nvkm_devinit_mmio(struct nvkm_devinit *, u32 addr);
@@ -27,5 +31,9 @@ int gt215_devinit_new(struct nvkm_device *, int, struct nvkm_devinit **);
 int mcp89_devinit_new(struct nvkm_device *, int, struct nvkm_devinit **);
 int gf100_devinit_new(struct nvkm_device *, int, struct nvkm_devinit **);
 int gm107_devinit_new(struct nvkm_device *, int, struct nvkm_devinit **);
+<<<<<<< HEAD
 int gm204_devinit_new(struct nvkm_device *, int, struct nvkm_devinit **);
+=======
+int gm200_devinit_new(struct nvkm_device *, int, struct nvkm_devinit **);
+>>>>>>> v4.9.227
 #endif

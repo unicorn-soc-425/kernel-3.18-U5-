@@ -175,12 +175,19 @@ tsi57x_em_init(struct rio_dev *rdev)
 
 		/* Clear all pending interrupts */
 		rio_read_config_32(rdev,
+<<<<<<< HEAD
 				rdev->phys_efptr +
 					RIO_PORT_N_ERR_STS_CSR(portnum),
 				&regval);
 		rio_write_config_32(rdev,
 				rdev->phys_efptr +
 					RIO_PORT_N_ERR_STS_CSR(portnum),
+=======
+				RIO_DEV_PORT_N_ERR_STS_CSR(rdev, portnum),
+				&regval);
+		rio_write_config_32(rdev,
+				RIO_DEV_PORT_N_ERR_STS_CSR(rdev, portnum),
+>>>>>>> v4.9.227
 				regval & 0x07120214);
 
 		rio_read_config_32(rdev,
@@ -198,7 +205,11 @@ tsi57x_em_init(struct rio_dev *rdev)
 
 		/* Skip next (odd) port if the current port is in x4 mode */
 		rio_read_config_32(rdev,
+<<<<<<< HEAD
 				rdev->phys_efptr + RIO_PORT_N_CTL_CSR(portnum),
+=======
+				RIO_DEV_PORT_N_CTL_CSR(rdev, portnum),
+>>>>>>> v4.9.227
 				&regval);
 		if ((regval & RIO_PORT_N_CTL_PWIDTH) == RIO_PORT_N_CTL_PWIDTH_4)
 			portnum++;
@@ -221,6 +232,7 @@ tsi57x_em_handler(struct rio_dev *rdev, u8 portnum)
 	u32 regval;
 
 	rio_read_config_32(rdev,
+<<<<<<< HEAD
 			rdev->phys_efptr + RIO_PORT_N_ERR_STS_CSR(portnum),
 			&err_status);
 
@@ -238,6 +250,25 @@ tsi57x_em_handler(struct rio_dev *rdev, u8 portnum)
 			udelay(50);
 			rio_write_config_32(rdev,
 				rdev->phys_efptr + RIO_PORT_N_CTL_CSR(portnum),
+=======
+			RIO_DEV_PORT_N_ERR_STS_CSR(rdev, portnum),
+			&err_status);
+
+	if ((err_status & RIO_PORT_N_ERR_STS_PORT_OK) &&
+	    (err_status & (RIO_PORT_N_ERR_STS_OUT_ES |
+			  RIO_PORT_N_ERR_STS_INP_ES))) {
+		/* Remove any queued packets by locking/unlocking port */
+		rio_read_config_32(rdev,
+			RIO_DEV_PORT_N_CTL_CSR(rdev, portnum),
+			&regval);
+		if (!(regval & RIO_PORT_N_CTL_LOCKOUT)) {
+			rio_write_config_32(rdev,
+				RIO_DEV_PORT_N_CTL_CSR(rdev, portnum),
+				regval | RIO_PORT_N_CTL_LOCKOUT);
+			udelay(50);
+			rio_write_config_32(rdev,
+				RIO_DEV_PORT_N_CTL_CSR(rdev, portnum),
+>>>>>>> v4.9.227
 				regval);
 		}
 
@@ -245,7 +276,11 @@ tsi57x_em_handler(struct rio_dev *rdev, u8 portnum)
 		 * valid bit
 		 */
 		rio_read_config_32(rdev,
+<<<<<<< HEAD
 			rdev->phys_efptr + RIO_PORT_N_MNT_RSP_CSR(portnum),
+=======
+			RIO_DEV_PORT_N_MNT_RSP_CSR(rdev, portnum),
+>>>>>>> v4.9.227
 			&regval);
 
 		/* Send a Packet-Not-Accepted/Link-Request-Input-Status control
@@ -259,8 +294,13 @@ tsi57x_em_handler(struct rio_dev *rdev, u8 portnum)
 			while (checkcount--) {
 				udelay(50);
 				rio_read_config_32(rdev,
+<<<<<<< HEAD
 					rdev->phys_efptr +
 						RIO_PORT_N_MNT_RSP_CSR(portnum),
+=======
+					RIO_DEV_PORT_N_MNT_RSP_CSR(rdev,
+								   portnum),
+>>>>>>> v4.9.227
 					&regval);
 				if (regval & RIO_PORT_N_MNT_RSP_RVAL)
 					goto exit_es;

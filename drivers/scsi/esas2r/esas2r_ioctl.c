@@ -117,9 +117,14 @@ static void do_fm_api(struct esas2r_adapter *a, struct esas2r_flash_img *fi)
 
 	rq = esas2r_alloc_request(a);
 	if (rq == NULL) {
+<<<<<<< HEAD
 		up(&a->fm_api_semaphore);
 		fi->status = FI_STAT_BUSY;
 		return;
+=======
+		fi->status = FI_STAT_BUSY;
+		goto free_sem;
+>>>>>>> v4.9.227
 	}
 
 	if (fi == &a->firmware.header) {
@@ -135,7 +140,11 @@ static void do_fm_api(struct esas2r_adapter *a, struct esas2r_flash_img *fi)
 		if (a->firmware.header_buff == NULL) {
 			esas2r_debug("failed to allocate header buffer!");
 			fi->status = FI_STAT_BUSY;
+<<<<<<< HEAD
 			return;
+=======
+			goto free_req;
+>>>>>>> v4.9.227
 		}
 
 		memcpy(a->firmware.header_buff, fi,
@@ -171,9 +180,16 @@ all_done:
 				  a->firmware.header_buff,
 				  (dma_addr_t)a->firmware.header_buff_phys);
 	}
+<<<<<<< HEAD
 
 	up(&a->fm_api_semaphore);
 	esas2r_free_request(a, (struct esas2r_request *)rq);
+=======
+free_req:
+	esas2r_free_request(a, (struct esas2r_request *)rq);
+free_sem:
+	up(&a->fm_api_semaphore);
+>>>>>>> v4.9.227
 	return;
 
 }
@@ -1360,14 +1376,23 @@ int esas2r_ioctl_handler(void *hostdata, int cmd, void __user *arg)
 	if (ioctl->header.channel == 0xFF) {
 		a = (struct esas2r_adapter *)hostdata;
 	} else {
+<<<<<<< HEAD
 		a = esas2r_adapters[ioctl->header.channel];
 		if (ioctl->header.channel >= MAX_ADAPTERS || (a == NULL)) {
+=======
+		if (ioctl->header.channel >= MAX_ADAPTERS ||
+			esas2r_adapters[ioctl->header.channel] == NULL) {
+>>>>>>> v4.9.227
 			ioctl->header.return_code = IOCTL_BAD_CHANNEL;
 			esas2r_log(ESAS2R_LOG_WARN, "bad channel value");
 			kfree(ioctl);
 
 			return -ENOTSUPP;
 		}
+<<<<<<< HEAD
+=======
+		a = esas2r_adapters[ioctl->header.channel];
+>>>>>>> v4.9.227
 	}
 
 	switch (cmd) {
@@ -1420,9 +1445,16 @@ int esas2r_ioctl_handler(void *hostdata, int cmd, void __user *arg)
 
 		rq = esas2r_alloc_request(a);
 		if (rq == NULL) {
+<<<<<<< HEAD
 			up(&a->nvram_semaphore);
 			ioctl->data.prw.code = 0;
 			break;
+=======
+			kfree(ioctl);
+			esas2r_log(ESAS2R_LOG_WARN,
+			   "could not allocate an internal request");
+			return -ENOMEM;
+>>>>>>> v4.9.227
 		}
 
 		code = esas2r_write_params(a, rq,
@@ -1523,9 +1555,18 @@ ioctl_done:
 		case -EINVAL:
 			ioctl->header.return_code = IOCTL_INVALID_PARAM;
 			break;
+<<<<<<< HEAD
 		}
 
 		ioctl->header.return_code = IOCTL_GENERAL_ERROR;
+=======
+
+		default:
+			ioctl->header.return_code = IOCTL_GENERAL_ERROR;
+			break;
+		}
+
+>>>>>>> v4.9.227
 	}
 
 	/* Always copy the buffer back, if only to pick up the status */

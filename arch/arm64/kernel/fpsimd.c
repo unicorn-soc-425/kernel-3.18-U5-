@@ -20,7 +20,10 @@
 #include <linux/cpu.h>
 #include <linux/cpu_pm.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/sched.h>
 #include <linux/signal.h>
@@ -28,7 +31,10 @@
 
 #include <asm/fpsimd.h>
 #include <asm/cputype.h>
+<<<<<<< HEAD
 #include <asm/app_api.h>
+=======
+>>>>>>> v4.9.227
 
 #define FPEXC_IOF	(1 << 0)
 #define FPEXC_DZF	(1 << 1)
@@ -37,8 +43,11 @@
 #define FPEXC_IXF	(1 << 4)
 #define FPEXC_IDF	(1 << 7)
 
+<<<<<<< HEAD
 #define FP_SIMD_BIT	31
 
+=======
+>>>>>>> v4.9.227
 /*
  * In order to reduce the number of times the FPSIMD state is needlessly saved
  * and restored, we need to keep track of two things:
@@ -49,7 +58,11 @@
  *     been used to perform kernel mode NEON in the meantime.
  *
  * For (a), we add a 'cpu' field to struct fpsimd_state, which gets updated to
+<<<<<<< HEAD
  * the id of the current CPU everytime the state is loaded onto a CPU. For (b),
+=======
+ * the id of the current CPU every time the state is loaded onto a CPU. For (b),
+>>>>>>> v4.9.227
  * we add the per-cpu variable 'fpsimd_last_state' (below), which contains the
  * address of the userland FPSIMD state of the task that was loaded onto the CPU
  * the most recently, or NULL if kernel mode NEON has been performed after that.
@@ -92,6 +105,7 @@
  *   whatever is in the FPSIMD registers is not saved to memory, but discarded.
  */
 static DEFINE_PER_CPU(struct fpsimd_state *, fpsimd_last_state);
+<<<<<<< HEAD
 static DEFINE_PER_CPU(int, fpsimd_stg_enable);
 
 static int fpsimd_settings = 0x1; /* default = 0x1 */
@@ -106,12 +120,15 @@ void fpsimd_settings_disable(void)
 {
 	clear_app_setting_bit(FP_SIMD_BIT);
 }
+=======
+>>>>>>> v4.9.227
 
 /*
  * Trapped FP/ASIMD access.
  */
 void do_fpsimd_acc(unsigned int esr, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	if (!fpsimd_settings)
 		return;
 
@@ -128,6 +145,10 @@ void do_fpsimd_acc_compat(unsigned int esr, struct pt_regs *regs)
 	fpsimd_disable_trap();
 	fpsimd_settings_enable();
 	this_cpu_write(fpsimd_stg_enable, 1);
+=======
+	/* TODO: implement lazy context saving/restoring */
+	WARN_ON(1);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -167,11 +188,14 @@ void fpsimd_thread_switch(struct task_struct *next)
 	if (current->mm && !test_thread_flag(TIF_FOREIGN_FPSTATE))
 		fpsimd_save_state(&current->thread.fpsimd_state);
 
+<<<<<<< HEAD
 	if (fpsimd_settings && __this_cpu_read(fpsimd_stg_enable)) {
 		fpsimd_settings_disable();
 		this_cpu_write(fpsimd_stg_enable, 0);
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (next->mm) {
 		/*
 		 * If we are switching to a task whose most recent userland
@@ -189,6 +213,7 @@ void fpsimd_thread_switch(struct task_struct *next)
 		else
 			set_ti_thread_flag(task_thread_info(next),
 					   TIF_FOREIGN_FPSTATE);
+<<<<<<< HEAD
 
 		if (!fpsimd_settings)
 			return;
@@ -197,6 +222,8 @@ void fpsimd_thread_switch(struct task_struct *next)
 			fpsimd_enable_trap();
 		else
 			fpsimd_disable_trap();
+=======
+>>>>>>> v4.9.227
 	}
 }
 
@@ -346,6 +373,7 @@ static inline void fpsimd_pm_init(void) { }
 #endif /* CONFIG_CPU_PM */
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 static int fpsimd_cpu_hotplug_notifier(struct notifier_block *nfb,
 				       unsigned long action,
 				       void *hcpu)
@@ -368,6 +396,18 @@ static struct notifier_block fpsimd_cpu_hotplug_notifier_block = {
 static inline void fpsimd_hotplug_init(void)
 {
 	register_cpu_notifier(&fpsimd_cpu_hotplug_notifier_block);
+=======
+static int fpsimd_cpu_dead(unsigned int cpu)
+{
+	per_cpu(fpsimd_last_state, cpu) = NULL;
+	return 0;
+}
+
+static inline void fpsimd_hotplug_init(void)
+{
+	cpuhp_setup_state_nocalls(CPUHP_ARM64_FPSIMD_DEAD, "arm64/fpsimd:dead",
+				  NULL, fpsimd_cpu_dead);
+>>>>>>> v4.9.227
 }
 
 #else

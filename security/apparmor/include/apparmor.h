@@ -37,6 +37,10 @@
 extern enum audit_mode aa_g_audit;
 extern bool aa_g_audit_header;
 extern bool aa_g_debug;
+<<<<<<< HEAD
+=======
+extern bool aa_g_hash_policy;
+>>>>>>> v4.9.227
 extern bool aa_g_lock_policy;
 extern bool aa_g_logsyscall;
 extern bool aa_g_paranoid_load;
@@ -112,9 +116,15 @@ static inline unsigned int aa_dfa_null_transition(struct aa_dfa *dfa,
 	return aa_dfa_next(dfa, start, 0);
 }
 
+<<<<<<< HEAD
 static inline bool mediated_filesystem(struct inode *inode)
 {
 	return !(inode->i_sb->s_flags & MS_NOUSER);
+=======
+static inline bool mediated_filesystem(struct dentry *dentry)
+{
+	return !(dentry->d_sb->s_flags & MS_NOUSER);
+>>>>>>> v4.9.227
 }
 
 #endif /* __APPARMOR_H */

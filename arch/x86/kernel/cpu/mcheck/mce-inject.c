@@ -115,7 +115,11 @@ static int raise_local(void)
 	int cpu = m->extcpu;
 
 	if (m->inject_flags & MCJ_EXCEPTION) {
+<<<<<<< HEAD
 		printk(KERN_INFO "Triggering MCE exception on CPU %d\n", cpu);
+=======
+		pr_info("Triggering MCE exception on CPU %d\n", cpu);
+>>>>>>> v4.9.227
 		switch (context) {
 		case MCJ_CTX_IRQ:
 			/*
@@ -128,6 +132,7 @@ static int raise_local(void)
 			raise_exception(m, NULL);
 			break;
 		default:
+<<<<<<< HEAD
 			printk(KERN_INFO "Invalid MCE context\n");
 			ret = -EINVAL;
 		}
@@ -137,6 +142,17 @@ static int raise_local(void)
 		raise_poll(m);
 		mce_notify_irq();
 		printk(KERN_INFO "Machine check poll done on CPU %d\n", cpu);
+=======
+			pr_info("Invalid MCE context\n");
+			ret = -EINVAL;
+		}
+		pr_info("MCE exception done on CPU %d\n", cpu);
+	} else if (m->status) {
+		pr_info("Starting machine check poll CPU %d\n", cpu);
+		raise_poll(m);
+		mce_notify_irq();
+		pr_info("Machine check poll done on CPU %d\n", cpu);
+>>>>>>> v4.9.227
 	} else
 		m->finished = 0;
 
@@ -152,7 +168,10 @@ static void raise_mce(struct mce *m)
 	if (context == MCJ_CTX_RANDOM)
 		return;
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_LOCAL_APIC
+=======
+>>>>>>> v4.9.227
 	if (m->inject_flags & (MCJ_IRQ_BROADCAST | MCJ_NMI_BROADCAST)) {
 		unsigned long start;
 		int cpu;
@@ -183,8 +202,12 @@ static void raise_mce(struct mce *m)
 		start = jiffies;
 		while (!cpumask_empty(mce_inject_cpumask)) {
 			if (!time_before(jiffies, start + 2*HZ)) {
+<<<<<<< HEAD
 				printk(KERN_ERR
 				"Timeout waiting for mce inject %lx\n",
+=======
+				pr_err("Timeout waiting for mce inject %lx\n",
+>>>>>>> v4.9.227
 					*cpumask_bits(mce_inject_cpumask));
 				break;
 			}
@@ -193,9 +216,13 @@ static void raise_mce(struct mce *m)
 		raise_local();
 		put_cpu();
 		put_online_cpus();
+<<<<<<< HEAD
 	} else
 #endif
 	{
+=======
+	} else {
+>>>>>>> v4.9.227
 		preempt_disable();
 		raise_local();
 		preempt_enable();
@@ -241,7 +268,11 @@ static int inject_init(void)
 {
 	if (!alloc_cpumask_var(&mce_inject_cpumask, GFP_KERNEL))
 		return -ENOMEM;
+<<<<<<< HEAD
 	printk(KERN_INFO "Machine check injector initialized\n");
+=======
+	pr_info("Machine check injector initialized\n");
+>>>>>>> v4.9.227
 	register_mce_write_callback(mce_write);
 	register_nmi_handler(NMI_LOCAL, mce_raise_notify, 0,
 				"mce_notify");

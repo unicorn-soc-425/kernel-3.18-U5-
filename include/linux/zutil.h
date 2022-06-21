@@ -68,10 +68,17 @@ typedef uLong (*check_func) (uLong check, const Byte *buf,
    An Adler-32 checksum is almost as reliable as a CRC32 but can be computed
    much faster. Usage example:
 
+<<<<<<< HEAD
      uLong adler = adler32(0L, NULL, 0);
 
      while (read_buffer(buffer, length) != EOF) {
        adler = adler32(adler, buffer, length);
+=======
+     uLong adler = zlib_adler32(0L, NULL, 0);
+
+     while (read_buffer(buffer, length) != EOF) {
+       adler = zlib_adler32(adler, buffer, length);
+>>>>>>> v4.9.227
      }
      if (adler != original_adler) error();
 */

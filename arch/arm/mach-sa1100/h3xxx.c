@@ -14,9 +14,15 @@
 #include <linux/gpio.h>
 #include <linux/gpio_keys.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/mfd/htc-egpio.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
+=======
+#include <linux/mtd/mtd.h>
+#include <linux/mtd/partitions.h>
+#include <linux/platform_data/gpio-htc-egpio.h>
+>>>>>>> v4.9.227
 #include <linux/platform_data/sa11x0-serial.h>
 #include <linux/platform_device.h>
 #include <linux/serial_core.h>

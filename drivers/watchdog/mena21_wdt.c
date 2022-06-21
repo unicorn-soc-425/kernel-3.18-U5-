@@ -100,12 +100,20 @@ static int a21_wdt_set_timeout(struct watchdog_device *wdt,
 	struct a21_wdt_drv *drv = watchdog_get_drvdata(wdt);
 
 	if (timeout != 1 && timeout != 30) {
+<<<<<<< HEAD
 		dev_err(wdt->dev, "Only 1 and 30 allowed as timeout\n");
+=======
+		dev_err(wdt->parent, "Only 1 and 30 allowed as timeout\n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
 	if (timeout == 30 && wdt->timeout == 1) {
+<<<<<<< HEAD
 		dev_err(wdt->dev,
+=======
+		dev_err(wdt->parent,
+>>>>>>> v4.9.227
 			"Transition from fast to slow mode not allowed\n");
 		return -EINVAL;
 	}
@@ -197,6 +205,10 @@ static int a21_wdt_probe(struct platform_device *pdev)
 	watchdog_init_timeout(&a21_wdt, 30, &pdev->dev);
 	watchdog_set_nowayout(&a21_wdt, nowayout);
 	watchdog_set_drvdata(&a21_wdt, drv);
+<<<<<<< HEAD
+=======
+	a21_wdt.parent = &pdev->dev;
+>>>>>>> v4.9.227
 
 	reset = a21_wdt_get_bootstatus(drv);
 	if (reset == 2)
@@ -208,14 +220,23 @@ static int a21_wdt_probe(struct platform_device *pdev)
 	else if (reset == 7)
 		a21_wdt.bootstatus |= WDIOF_EXTERN2;
 
+<<<<<<< HEAD
+=======
+	drv->wdt = a21_wdt;
+	dev_set_drvdata(&pdev->dev, drv);
+
+>>>>>>> v4.9.227
 	ret = watchdog_register_device(&a21_wdt);
 	if (ret) {
 		dev_err(&pdev->dev, "Cannot register watchdog device\n");
 		goto err_register_wd;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, drv);
 
+=======
+>>>>>>> v4.9.227
 	dev_info(&pdev->dev, "MEN A21 watchdog timer driver enabled\n");
 
 	return 0;
@@ -251,6 +272,10 @@ static const struct of_device_id a21_wdt_ids[] = {
 	{ .compatible = "men,a021-wdt" },
 	{ },
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, a21_wdt_ids);
+>>>>>>> v4.9.227
 
 static struct platform_driver a21_wdt_driver = {
 	.probe = a21_wdt_probe,

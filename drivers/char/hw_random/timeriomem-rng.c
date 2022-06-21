@@ -200,7 +200,10 @@ MODULE_DEVICE_TABLE(of, timeriomem_rng_match);
 static struct platform_driver timeriomem_rng_driver = {
 	.driver = {
 		.name		= "timeriomem_rng",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= timeriomem_rng_match,
 	},
 	.probe		= timeriomem_rng_probe,

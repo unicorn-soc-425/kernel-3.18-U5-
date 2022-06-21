@@ -268,7 +268,11 @@ static int tps65910_rtc_probe(struct platform_device *pdev)
 	}
 
 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+<<<<<<< HEAD
 		tps65910_rtc_interrupt, IRQF_TRIGGER_LOW | IRQF_EARLY_RESUME,
+=======
+		tps65910_rtc_interrupt, IRQF_TRIGGER_LOW,
+>>>>>>> v4.9.227
 		dev_name(&pdev->dev), &pdev->dev);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "IRQ is not free.\n");
@@ -326,7 +330,10 @@ static struct platform_driver tps65910_rtc_driver = {
 	.probe		= tps65910_rtc_probe,
 	.remove		= tps65910_rtc_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "tps65910-rtc",
 		.pm	= &tps65910_rtc_pm_ops,
 	},

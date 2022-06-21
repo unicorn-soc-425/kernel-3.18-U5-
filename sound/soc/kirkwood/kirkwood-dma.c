@@ -148,10 +148,20 @@ static int kirkwood_dma_open(struct snd_pcm_substream *substream)
 	dram = mv_mbus_dram_info();
 	addr = substream->dma_buffer.addr;
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+<<<<<<< HEAD
+=======
+		if (priv->substream_play)
+			return -EBUSY;
+>>>>>>> v4.9.227
 		priv->substream_play = substream;
 		kirkwood_dma_conf_mbus_windows(priv->io,
 			KIRKWOOD_PLAYBACK_WIN, addr, dram);
 	} else {
+<<<<<<< HEAD
+=======
+		if (priv->substream_rec)
+			return -EBUSY;
+>>>>>>> v4.9.227
 		priv->substream_rec = substream;
 		kirkwood_dma_conf_mbus_windows(priv->io,
 			KIRKWOOD_RECORD_WIN, addr, dram);
@@ -238,7 +248,11 @@ static snd_pcm_uframes_t kirkwood_dma_pointer(struct snd_pcm_substream
 	return count;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops kirkwood_dma_ops = {
+=======
+static const struct snd_pcm_ops kirkwood_dma_ops = {
+>>>>>>> v4.9.227
 	.open =		kirkwood_dma_open,
 	.close =        kirkwood_dma_close,
 	.ioctl =	snd_pcm_lib_ioctl,

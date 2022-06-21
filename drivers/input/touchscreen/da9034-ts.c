@@ -357,7 +357,10 @@ static int da9034_touch_probe(struct platform_device *pdev)
 static struct platform_driver da9034_touch_driver = {
 	.driver	= {
 		.name	= "da9034-touch",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= da9034_touch_probe,
 };

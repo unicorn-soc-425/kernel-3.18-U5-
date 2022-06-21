@@ -109,7 +109,12 @@ void __init ams_delta_init_fiq(void)
 	 * Since no set_type() method is provided by OMAP irq chip,
 	 * switch to edge triggered interrupt type manually.
 	 */
+<<<<<<< HEAD
 	offset = IRQ_ILR0_REG_OFFSET + INT_DEFERRED_FIQ * 0x4;
+=======
+	offset = IRQ_ILR0_REG_OFFSET +
+			((INT_DEFERRED_FIQ - NR_IRQS_LEGACY) & 0x1f) * 0x4;
+>>>>>>> v4.9.227
 	val = omap_readl(DEFERRED_FIQ_IH_BASE + offset) & ~(1 << 1);
 	omap_writel(val, DEFERRED_FIQ_IH_BASE + offset);
 
@@ -136,7 +141,11 @@ void __init ams_delta_init_fiq(void)
 		fiq_buffer[i] = 0;
 
 	/*
+<<<<<<< HEAD
 	 * FIQ mode r9 always points to the fiq_buffer, becauses the FIQ isr
+=======
+	 * FIQ mode r9 always points to the fiq_buffer, because the FIQ isr
+>>>>>>> v4.9.227
 	 * will run in an unpredictable context. The fiq_buffer is the FIQ isr's
 	 * only means of communication with the IRQ level and other kernel
 	 * context code.
@@ -149,7 +158,11 @@ void __init ams_delta_init_fiq(void)
 	/*
 	 * Redirect GPIO interrupts to FIQ
 	 */
+<<<<<<< HEAD
 	offset = IRQ_ILR0_REG_OFFSET + INT_GPIO_BANK1 * 0x4;
+=======
+	offset = IRQ_ILR0_REG_OFFSET + (INT_GPIO_BANK1 - NR_IRQS_LEGACY) * 0x4;
+>>>>>>> v4.9.227
 	val = omap_readl(OMAP_IH1_BASE + offset) | 1;
 	omap_writel(val, OMAP_IH1_BASE + offset);
 }

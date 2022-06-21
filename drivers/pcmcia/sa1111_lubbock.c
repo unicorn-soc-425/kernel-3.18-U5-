@@ -210,6 +210,7 @@ static struct pcmcia_low_level lubbock_pcmcia_ops = {
 
 int pcmcia_lubbock_init(struct sa1111_dev *sadev)
 {
+<<<<<<< HEAD
 	int ret = -ENODEV;
 
 	if (machine_is_lubbock()) {
@@ -231,6 +232,23 @@ int pcmcia_lubbock_init(struct sa1111_dev *sadev)
 	}
 
 	return ret;
+=======
+	/*
+	 * Set GPIO_A<3:0> to be outputs for the MAX1600,
+	 * and switch to standby mode.
+	 */
+	sa1111_set_io_dir(sadev, GPIO_A0|GPIO_A1|GPIO_A2|GPIO_A3, 0, 0);
+	sa1111_set_io(sadev, GPIO_A0|GPIO_A1|GPIO_A2|GPIO_A3, 0);
+	sa1111_set_sleep_io(sadev, GPIO_A0|GPIO_A1|GPIO_A2|GPIO_A3, 0);
+
+	/* Set CF Socket 1 power to standby mode. */
+	lubbock_set_misc_wr((1 << 15) | (1 << 14), 0);
+
+	pxa2xx_drv_pcmcia_ops(&lubbock_pcmcia_ops);
+	pxa2xx_configure_sockets(&sadev->dev, &lubbock_pcmcia_ops);
+	return sa1111_pcmcia_add(sadev, &lubbock_pcmcia_ops,
+				 pxa2xx_drv_pcmcia_add_one);
+>>>>>>> v4.9.227
 }
 
 MODULE_LICENSE("GPL");

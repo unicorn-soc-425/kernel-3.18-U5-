@@ -1,7 +1,11 @@
 /*
  * sched_clock for unstable cpu clocks
  *
+<<<<<<< HEAD
  *  Copyright (C) 2008 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ *  Copyright (C) 2008 Red Hat, Inc., Peter Zijlstra
+>>>>>>> v4.9.227
  *
  *  Updates and enhancements:
  *    Copyright (C) 2008 Red Hat, Inc. Steven Rostedt <srostedt@redhat.com>
@@ -61,6 +65,10 @@
 #include <linux/static_key.h>
 #include <linux/workqueue.h>
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/tick.h>
+>>>>>>> v4.9.227
 
 /*
  * Scheduler clock - returns current time in nanosec units.
@@ -89,6 +97,11 @@ static void __set_sched_clock_stable(void)
 {
 	if (!sched_clock_stable())
 		static_key_slow_inc(&__sched_clock_stable);
+<<<<<<< HEAD
+=======
+
+	tick_dep_clear(TICK_DEP_BIT_CLOCK_UNSTABLE);
+>>>>>>> v4.9.227
 }
 
 void set_sched_clock_stable(void)
@@ -108,6 +121,11 @@ static void __clear_sched_clock_stable(struct work_struct *work)
 	/* XXX worry about clock continuity */
 	if (sched_clock_stable())
 		static_key_slow_dec(&__sched_clock_stable);
+<<<<<<< HEAD
+=======
+
+	tick_dep_set(TICK_DEP_BIT_CLOCK_UNSTABLE);
+>>>>>>> v4.9.227
 }
 
 static DECLARE_WORK(sched_clock_work, __clear_sched_clock_stable);
@@ -313,6 +331,10 @@ u64 sched_clock_cpu(int cpu)
 
 	return clock;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(sched_clock_cpu);
+>>>>>>> v4.9.227
 
 void sched_clock_tick(void)
 {
@@ -354,6 +376,7 @@ void sched_clock_idle_wakeup_event(u64 delta_ns)
 		return;
 
 	sched_clock_tick();
+<<<<<<< HEAD
 	touch_softlockup_watchdog();
 }
 EXPORT_SYMBOL_GPL(sched_clock_idle_wakeup_event);
@@ -391,6 +414,12 @@ u64 local_clock(void)
 	return sched_clock();
 }
 
+=======
+	touch_softlockup_watchdog_sched();
+}
+EXPORT_SYMBOL_GPL(sched_clock_idle_wakeup_event);
+
+>>>>>>> v4.9.227
 #else /* CONFIG_HAVE_UNSTABLE_SCHED_CLOCK */
 
 void sched_clock_init(void)
@@ -405,6 +434,7 @@ u64 sched_clock_cpu(int cpu)
 
 	return sched_clock();
 }
+<<<<<<< HEAD
 
 u64 cpu_clock(int cpu)
 {
@@ -420,3 +450,19 @@ u64 local_clock(void)
 
 EXPORT_SYMBOL_GPL(cpu_clock);
 EXPORT_SYMBOL_GPL(local_clock);
+=======
+#endif /* CONFIG_HAVE_UNSTABLE_SCHED_CLOCK */
+
+/*
+ * Running clock - returns the time that has elapsed while a guest has been
+ * running.
+ * On a guest this value should be local_clock minus the time the guest was
+ * suspended by the hypervisor (for any reason).
+ * On bare metal this function should return the same as local_clock.
+ * Architectures and sub-architectures can override this.
+ */
+u64 __weak running_clock(void)
+{
+	return local_clock();
+}
+>>>>>>> v4.9.227

@@ -101,7 +101,11 @@ static ssize_t wusb_ck_store(struct device *dev,
 	if (wusbhc == NULL)
 		return -ENODEV;
 	result = wusb_dev_4way_handshake(wusbhc, usb_dev->wusb_dev, &ck);
+<<<<<<< HEAD
 	memset(&ck, 0, sizeof(ck));
+=======
+	memzero_explicit(&ck, sizeof(ck));
+>>>>>>> v4.9.227
 	wusbhc_put(wusbhc);
 	return result < 0 ? result : size;
 }

@@ -150,8 +150,13 @@ static void ib_fmr_batch_release(struct ib_fmr_pool *pool)
 
 #ifdef DEBUG
 		if (fmr->ref_count !=0) {
+<<<<<<< HEAD
 			printk(KERN_WARNING PFX "Unmapping FMR 0x%08x with ref count %d\n",
 			       fmr, fmr->ref_count);
+=======
+			pr_warn(PFX "Unmapping FMR 0x%08x with ref count %d\n",
+				fmr, fmr->ref_count);
+>>>>>>> v4.9.227
 		}
 #endif
 	}
@@ -167,7 +172,11 @@ static void ib_fmr_batch_release(struct ib_fmr_pool *pool)
 
 	ret = ib_unmap_fmr(&fmr_list);
 	if (ret)
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "ib_unmap_fmr returned %d\n", ret);
+=======
+		pr_warn(PFX "ib_unmap_fmr returned %d\n", ret);
+>>>>>>> v4.9.227
 
 	spin_lock_irq(&pool->pool_lock);
 	list_splice(&unmap_list, &pool->free_list);
@@ -212,7 +221,10 @@ struct ib_fmr_pool *ib_create_fmr_pool(struct ib_pd             *pd,
 {
 	struct ib_device   *device;
 	struct ib_fmr_pool *pool;
+<<<<<<< HEAD
 	struct ib_device_attr *attr;
+=======
+>>>>>>> v4.9.227
 	int i;
 	int ret;
 	int max_remaps;
@@ -223,6 +235,7 @@ struct ib_fmr_pool *ib_create_fmr_pool(struct ib_pd             *pd,
 	device = pd->device;
 	if (!device->alloc_fmr    || !device->dealloc_fmr  ||
 	    !device->map_phys_fmr || !device->unmap_fmr) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "Device %s does not support FMRs\n",
 		       device->name);
 		return ERR_PTR(-ENOSYS);
@@ -256,6 +269,22 @@ struct ib_fmr_pool *ib_create_fmr_pool(struct ib_pd             *pd,
 
 	pool->cache_bucket   = NULL;
 
+=======
+		pr_info(PFX "Device %s does not support FMRs\n", device->name);
+		return ERR_PTR(-ENOSYS);
+	}
+
+	if (!device->attrs.max_map_per_fmr)
+		max_remaps = IB_FMR_MAX_REMAPS;
+	else
+		max_remaps = device->attrs.max_map_per_fmr;
+
+	pool = kmalloc(sizeof *pool, GFP_KERNEL);
+	if (!pool)
+		return ERR_PTR(-ENOMEM);
+
+	pool->cache_bucket   = NULL;
+>>>>>>> v4.9.227
 	pool->flush_function = params->flush_function;
 	pool->flush_arg      = params->flush_arg;
 
@@ -267,7 +296,11 @@ struct ib_fmr_pool *ib_create_fmr_pool(struct ib_pd             *pd,
 			kmalloc(IB_FMR_HASH_SIZE * sizeof *pool->cache_bucket,
 				GFP_KERNEL);
 		if (!pool->cache_bucket) {
+<<<<<<< HEAD
 			printk(KERN_WARNING PFX "Failed to allocate cache in pool\n");
+=======
+			pr_warn(PFX "Failed to allocate cache in pool\n");
+>>>>>>> v4.9.227
 			ret = -ENOMEM;
 			goto out_free_pool;
 		}
@@ -291,7 +324,11 @@ struct ib_fmr_pool *ib_create_fmr_pool(struct ib_pd             *pd,
 				   "ib_fmr(%s)",
 				   device->name);
 	if (IS_ERR(pool->thread)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "couldn't start cleanup thread\n");
+=======
+		pr_warn(PFX "couldn't start cleanup thread\n");
+>>>>>>> v4.9.227
 		ret = PTR_ERR(pool->thread);
 		goto out_free_pool;
 	}
@@ -310,11 +347,16 @@ struct ib_fmr_pool *ib_create_fmr_pool(struct ib_pd             *pd,
 
 		for (i = 0; i < params->pool_size; ++i) {
 			fmr = kmalloc(bytes_per_fmr, GFP_KERNEL);
+<<<<<<< HEAD
 			if (!fmr) {
 				printk(KERN_WARNING PFX "failed to allocate fmr "
 				       "struct for FMR %d\n", i);
 				goto out_fail;
 			}
+=======
+			if (!fmr)
+				goto out_fail;
+>>>>>>> v4.9.227
 
 			fmr->pool             = pool;
 			fmr->remap_count      = 0;
@@ -323,8 +365,13 @@ struct ib_fmr_pool *ib_create_fmr_pool(struct ib_pd             *pd,
 
 			fmr->fmr = ib_alloc_fmr(pd, params->access, &fmr_attr);
 			if (IS_ERR(fmr->fmr)) {
+<<<<<<< HEAD
 				printk(KERN_WARNING PFX "fmr_create failed "
 				       "for FMR %d\n", i);
+=======
+				pr_warn(PFX "fmr_create failed for FMR %d\n",
+					i);
+>>>>>>> v4.9.227
 				kfree(fmr);
 				goto out_fail;
 			}
@@ -379,8 +426,13 @@ void ib_destroy_fmr_pool(struct ib_fmr_pool *pool)
 	}
 
 	if (i < pool->pool_size)
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "pool still has %d regions registered\n",
 		       pool->pool_size - i);
+=======
+		pr_warn(PFX "pool still has %d regions registered\n",
+			pool->pool_size - i);
+>>>>>>> v4.9.227
 
 	kfree(pool->cache_bucket);
 	kfree(pool);
@@ -479,7 +531,11 @@ struct ib_pool_fmr *ib_fmr_pool_map_phys(struct ib_fmr_pool *pool_handle,
 		list_add(&fmr->list, &pool->free_list);
 		spin_unlock_irqrestore(&pool->pool_lock, flags);
 
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "fmr_map returns %d\n", result);
+=======
+		pr_warn(PFX "fmr_map returns %d\n", result);
+>>>>>>> v4.9.227
 
 		return ERR_PTR(result);
 	}
@@ -533,8 +589,13 @@ int ib_fmr_pool_unmap(struct ib_pool_fmr *fmr)
 
 #ifdef DEBUG
 	if (fmr->ref_count < 0)
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "FMR %p has ref count %d < 0\n",
 		       fmr, fmr->ref_count);
+=======
+		pr_warn(PFX "FMR %p has ref count %d < 0\n",
+			fmr, fmr->ref_count);
+>>>>>>> v4.9.227
 #endif
 
 	spin_unlock_irqrestore(&pool->pool_lock, flags);

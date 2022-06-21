@@ -10,8 +10,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/clkdev.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/module.h>
@@ -30,7 +33,11 @@ static int lpt_clk_probe(struct platform_device *pdev)
 	/* LPSS free running clock */
 	drvdata->name = "lpss_clk";
 	clk = clk_register_fixed_rate(&pdev->dev, drvdata->name, NULL,
+<<<<<<< HEAD
 				      CLK_IS_ROOT, 100000000);
+=======
+				      0, 100000000);
+>>>>>>> v4.9.227
 	if (IS_ERR(clk))
 		return PTR_ERR(clk);
 
@@ -42,7 +49,10 @@ static int lpt_clk_probe(struct platform_device *pdev)
 static struct platform_driver lpt_clk_driver = {
 	.driver = {
 		.name = "clk-lpt",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = lpt_clk_probe,
 };

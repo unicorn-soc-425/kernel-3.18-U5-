@@ -49,6 +49,10 @@ paddr_to_nid(unsigned long paddr)
 
 	return (i < num_node_memblks) ? node_memblk[i].nid : (num_node_memblks ? -1 : 0);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(paddr_to_nid);
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_SPARSEMEM) && defined(CONFIG_NUMA)
 /*
@@ -58,6 +62,7 @@ paddr_to_nid(unsigned long paddr)
  * SPARSEMEM to allocate the SPARSEMEM sectionmap on the NUMA node where
  * the section resides.
  */
+<<<<<<< HEAD
 int __meminit __early_pfn_to_nid(unsigned long pfn)
 {
 	int i, section = pfn >> PFN_SECTION_SHIFT, ssec, esec;
@@ -70,15 +75,30 @@ int __meminit __early_pfn_to_nid(unsigned long pfn)
 
 	if (section >= last_ssec && section < last_esec)
 		return last_nid;
+=======
+int __meminit __early_pfn_to_nid(unsigned long pfn,
+					struct mminit_pfnnid_cache *state)
+{
+	int i, section = pfn >> PFN_SECTION_SHIFT, ssec, esec;
+
+	if (section >= state->last_start && section < state->last_end)
+		return state->last_nid;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < num_node_memblks; i++) {
 		ssec = node_memblk[i].start_paddr >> PA_SECTION_SHIFT;
 		esec = (node_memblk[i].start_paddr + node_memblk[i].size +
 			((1L << PA_SECTION_SHIFT) - 1)) >> PA_SECTION_SHIFT;
 		if (section >= ssec && section < esec) {
+<<<<<<< HEAD
 			last_ssec = ssec;
 			last_esec = esec;
 			last_nid = node_memblk[i].nid;
+=======
+			state->last_start = ssec;
+			state->last_end = esec;
+			state->last_nid = node_memblk[i].nid;
+>>>>>>> v4.9.227
 			return node_memblk[i].nid;
 		}
 	}

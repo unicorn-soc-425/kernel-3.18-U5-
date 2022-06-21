@@ -90,6 +90,11 @@ struct snd_timer {
 	struct list_head ack_list_head;
 	struct list_head sack_list_head; /* slow ack list head */
 	struct tasklet_struct task_queue;
+<<<<<<< HEAD
+=======
+	int max_instances;	/* upper limit of timer instances */
+	int num_instances;	/* current number of timer instances */
+>>>>>>> v4.9.227
 };
 
 struct snd_timer_instance {
@@ -104,6 +109,10 @@ struct snd_timer_instance {
 			   int event,
 			   struct timespec * tstamp,
 			   unsigned long resolution);
+<<<<<<< HEAD
+=======
+	void (*disconnect)(struct snd_timer_instance *timeri);
+>>>>>>> v4.9.227
 	void *callback_data;
 	unsigned long ticks;		/* auto-load ticks when expired */
 	unsigned long cticks;		/* current ticks */

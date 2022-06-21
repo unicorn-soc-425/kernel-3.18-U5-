@@ -1,2 +1,6 @@
 # UAPI Header export list
+<<<<<<< HEAD
 header-y += hsi_char.h
+=======
+header-y += hsi_char.h cs-protocol.h
+>>>>>>> v4.9.227

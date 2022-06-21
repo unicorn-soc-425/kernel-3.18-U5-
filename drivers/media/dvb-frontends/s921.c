@@ -348,7 +348,11 @@ static int s921_initfe(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s921_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int s921_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct s921_state *state = fe->demodulator_priv;
 	int regstatus, rc;
@@ -389,7 +393,11 @@ static int s921_read_status(struct dvb_frontend *fe, fe_status_t *status)
 
 static int s921_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 {
+<<<<<<< HEAD
 	fe_status_t	status;
+=======
+	enum fe_status	status;
+>>>>>>> v4.9.227
 	struct s921_state *state = fe->demodulator_priv;
 	int rc;
 
@@ -433,9 +441,15 @@ static int s921_set_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s921_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+=======
+static int s921_get_frontend(struct dvb_frontend *fe,
+			     struct dtv_frontend_properties *p)
+{
+>>>>>>> v4.9.227
 	struct s921_state *state = fe->demodulator_priv;
 
 	/* FIXME: Probably it is possible to get it from regs f1 and f2 */
@@ -449,7 +463,11 @@ static int s921_tune(struct dvb_frontend *fe,
 			bool re_tune,
 			unsigned int mode_flags,
 			unsigned int *delay,
+<<<<<<< HEAD
 			fe_status_t *status)
+=======
+			enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	int rc = 0;
 
@@ -466,7 +484,11 @@ static int s921_tune(struct dvb_frontend *fe,
 
 static int s921_get_algo(struct dvb_frontend *fe)
 {
+<<<<<<< HEAD
 	return 1; /* FE_ALGO_HW */
+=======
+	return DVBFE_ALGO_HW;
+>>>>>>> v4.9.227
 }
 
 static void s921_release(struct dvb_frontend *fe)

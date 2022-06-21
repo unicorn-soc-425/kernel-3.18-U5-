@@ -509,11 +509,14 @@ static int stk7700ph_tuner_attach(struct dvb_usb_adapter *adap)
 
 #define DEFAULT_RC_INTERVAL 50
 
+<<<<<<< HEAD
 static u8 rc_request[] = { REQUEST_POLL_RC, 0 };
 
 /* Number of keypresses to ignore before start repeating */
 #define RC_REPEAT_DELAY 6
 
+=======
+>>>>>>> v4.9.227
 /*
  * This function is used only when firmware is < 1.20 version. Newer
  * firmwares use bulk mode, with functions implemented at dib0700_core,
@@ -521,7 +524,10 @@ static u8 rc_request[] = { REQUEST_POLL_RC, 0 };
  */
 static int dib0700_rc_query_old_firmware(struct dvb_usb_device *d)
 {
+<<<<<<< HEAD
 	u8 key[4];
+=======
+>>>>>>> v4.9.227
 	enum rc_type protocol;
 	u32 scancode;
 	u8 toggle;
@@ -536,6 +542,7 @@ static int dib0700_rc_query_old_firmware(struct dvb_usb_device *d)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	i = dib0700_ctrl_rd(d, rc_request, 2, key, 4);
 	if (i <= 0) {
 		err("RC Query Failed");
@@ -547,28 +554,59 @@ static int dib0700_rc_query_old_firmware(struct dvb_usb_device *d)
 		return 0;
 
 	/* info("%d: %2X %2X %2X %2X",dvb_usb_dib0700_ir_proto,(int)key[3-2],(int)key[3-3],(int)key[3-1],(int)key[3]);  */
+=======
+	st->buf[0] = REQUEST_POLL_RC;
+	st->buf[1] = 0;
+
+	i = dib0700_ctrl_rd(d, st->buf, 2, st->buf, 4);
+	if (i <= 0) {
+		err("RC Query Failed");
+		return -EIO;
+	}
+
+	/* losing half of KEY_0 events from Philipps rc5 remotes.. */
+	if (st->buf[0] == 0 && st->buf[1] == 0
+	    && st->buf[2] == 0 && st->buf[3] == 0)
+		return 0;
+
+	/* info("%d: %2X %2X %2X %2X",dvb_usb_dib0700_ir_proto,(int)st->buf[3 - 2],(int)st->buf[3 - 3],(int)st->buf[3 - 1],(int)st->buf[3]);  */
+>>>>>>> v4.9.227
 
 	dib0700_rc_setup(d, NULL); /* reset ir sensor data to prevent false events */
 
 	switch (d->props.rc.core.protocol) {
 	case RC_BIT_NEC:
 		/* NEC protocol sends repeat code as 0 0 0 FF */
+<<<<<<< HEAD
 		if ((key[3-2] == 0x00) && (key[3-3] == 0x00) &&
 		    (key[3] == 0xff)) {
+=======
+		if ((st->buf[3 - 2] == 0x00) && (st->buf[3 - 3] == 0x00) &&
+		    (st->buf[3] == 0xff)) {
+>>>>>>> v4.9.227
 			rc_repeat(d->rc_dev);
 			return 0;
 		}
 
 		protocol = RC_TYPE_NEC;
+<<<<<<< HEAD
 		scancode = RC_SCANCODE_NEC(key[3-2], key[3-3]);
+=======
+		scancode = RC_SCANCODE_NEC(st->buf[3 - 2], st->buf[3 - 3]);
+>>>>>>> v4.9.227
 		toggle = 0;
 		break;
 
 	default:
 		/* RC-5 protocol changes toggle bit on new keypress */
 		protocol = RC_TYPE_RC5;
+<<<<<<< HEAD
 		scancode = RC_SCANCODE_RC5(key[3-2], key[3-3]);
 		toggle = key[3-1];
+=======
+		scancode = RC_SCANCODE_RC5(st->buf[3 - 2], st->buf[3 - 3]);
+		toggle = st->buf[3 - 1];
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -865,6 +903,7 @@ static int dib7770_set_param_override(struct dvb_frontend *fe)
 	struct dvb_usb_adapter *adap = fe->dvb->priv;
 	struct dib0700_adapter_state *state = adap->priv;
 
+<<<<<<< HEAD
 	 u16 offset;
 	 u8 band = BAND_OF_FREQUENCY(p->frequency/1000);
 	 switch (band) {
@@ -881,6 +920,24 @@ static int dib7770_set_param_override(struct dvb_frontend *fe)
 	 deb_info("WBD for DiB7000P: %d\n", offset + dib0070_wbd_offset(fe));
 	 state->dib7000p_ops.set_wbd_ref(fe, offset + dib0070_wbd_offset(fe));
 	 return state->set_param_save(fe);
+=======
+	u16 offset;
+	u8 band = BAND_OF_FREQUENCY(p->frequency/1000);
+	switch (band) {
+	case BAND_VHF:
+		state->dib7000p_ops.set_gpio(fe, 0, 0, 1);
+		offset = 850;
+		break;
+	case BAND_UHF:
+	default:
+		state->dib7000p_ops.set_gpio(fe, 0, 0, 0);
+		offset = 250;
+		break;
+	}
+	deb_info("WBD for DiB7000P: %d\n", offset + dib0070_wbd_offset(fe));
+	state->dib7000p_ops.set_wbd_ref(fe, offset + dib0070_wbd_offset(fe));
+	return state->set_param_save(fe);
+>>>>>>> v4.9.227
 }
 
 static int dib7770p_tuner_attach(struct dvb_usb_adapter *adap)
@@ -1740,8 +1797,18 @@ static int dib809x_tuner_attach(struct dvb_usb_adapter *adap)
 	struct dib0700_adapter_state *st = adap->priv;
 	struct i2c_adapter *tun_i2c = st->dib8000_ops.get_i2c_master(adap->fe_adap[0].fe, DIBX000_I2C_INTERFACE_TUNER, 1);
 
+<<<<<<< HEAD
 	if (dvb_attach(dib0090_register, adap->fe_adap[0].fe, tun_i2c, &dib809x_dib0090_config) == NULL)
 		return -ENODEV;
+=======
+	if (adap->id == 0) {
+		if (dvb_attach(dib0090_register, adap->fe_adap[0].fe, tun_i2c, &dib809x_dib0090_config) == NULL)
+			return -ENODEV;
+	} else {
+		if (dvb_attach(dib0090_register, adap->fe_adap[0].fe, tun_i2c, &dib809x_dib0090_config) == NULL)
+			return -ENODEV;
+	}
+>>>>>>> v4.9.227
 
 	st->set_param_save = adap->fe_adap[0].fe->ops.tuner_ops.set_params;
 	adap->fe_adap[0].fe->ops.tuner_ops.set_params = dib8096_set_param_override;
@@ -1777,6 +1844,23 @@ static int stk809x_frontend_attach(struct dvb_usb_adapter *adap)
 	return adap->fe_adap[0].fe == NULL ?  -ENODEV : 0;
 }
 
+<<<<<<< HEAD
+=======
+static int stk809x_frontend1_attach(struct dvb_usb_adapter *adap)
+{
+	struct dib0700_adapter_state *state = adap->priv;
+
+	if (!dvb_attach(dib8000_attach, &state->dib8000_ops))
+		return -ENODEV;
+
+	state->dib8000_ops.i2c_enumeration(&adap->dev->i2c_adap, 1, 0x10, 0x82, 0);
+
+	adap->fe_adap[0].fe = state->dib8000_ops.init(&adap->dev->i2c_adap, 0x82, &dib809x_dib8000_config[1]);
+
+	return adap->fe_adap[0].fe == NULL ?  -ENODEV : 0;
+}
+
+>>>>>>> v4.9.227
 static int nim8096md_tuner_attach(struct dvb_usb_adapter *adap)
 {
 	struct dib0700_adapter_state *st = adap->priv;
@@ -2421,9 +2505,19 @@ static int dib9090_tuner_attach(struct dvb_usb_adapter *adap)
 		8, 0x0486,
 	};
 
+<<<<<<< HEAD
 	if (dvb_attach(dib0090_fw_register, adap->fe_adap[0].fe, i2c, &dib9090_dib0090_config) == NULL)
 		return -ENODEV;
 	i2c = dib9000_get_i2c_master(adap->fe_adap[0].fe, DIBX000_I2C_INTERFACE_GPIO_1_2, 0);
+=======
+	if (!IS_ENABLED(CONFIG_DVB_DIB9000))
+		return -ENODEV;
+	if (dvb_attach(dib0090_fw_register, adap->fe_adap[0].fe, i2c, &dib9090_dib0090_config) == NULL)
+		return -ENODEV;
+	i2c = dib9000_get_i2c_master(adap->fe_adap[0].fe, DIBX000_I2C_INTERFACE_GPIO_1_2, 0);
+	if (!i2c)
+		return -ENODEV;
+>>>>>>> v4.9.227
 	if (dib01x0_pmu_update(i2c, data_dib190, 10) != 0)
 		return -ENODEV;
 	dib0700_set_i2c_speed(adap->dev, 1500);
@@ -2499,10 +2593,20 @@ static int nim9090md_tuner_attach(struct dvb_usb_adapter *adap)
 		0, 0x00ef,
 		8, 0x0406,
 	};
+<<<<<<< HEAD
+=======
+	if (!IS_ENABLED(CONFIG_DVB_DIB9000))
+		return -ENODEV;
+>>>>>>> v4.9.227
 	i2c = dib9000_get_tuner_interface(adap->fe_adap[0].fe);
 	if (dvb_attach(dib0090_fw_register, adap->fe_adap[0].fe, i2c, &nim9090md_dib0090_config[0]) == NULL)
 		return -ENODEV;
 	i2c = dib9000_get_i2c_master(adap->fe_adap[0].fe, DIBX000_I2C_INTERFACE_GPIO_1_2, 0);
+<<<<<<< HEAD
+=======
+	if (!i2c)
+		return -ENODEV;
+>>>>>>> v4.9.227
 	if (dib01x0_pmu_update(i2c, data_dib190, 10) < 0)
 		return -ENODEV;
 
@@ -3313,7 +3417,11 @@ static int stk7070pd_frontend_attach1(struct dvb_usb_adapter *adap)
 }
 
 static int novatd_read_status_override(struct dvb_frontend *fe,
+<<<<<<< HEAD
 		fe_status_t *stat)
+=======
+				       enum fe_status *stat)
+>>>>>>> v4.9.227
 {
 	struct dvb_usb_adapter *adap = fe->dvb->priv;
 	struct dvb_usb_device *dev = adap->dev;
@@ -3798,6 +3906,11 @@ struct usb_device_id dib0700_usb_id_table[] = {
 /* 80 */{ USB_DEVICE(USB_VID_ELGATO,	USB_PID_ELGATO_EYETV_DTT_2) },
 	{ USB_DEVICE(USB_VID_PCTV,      USB_PID_PCTV_2002E) },
 	{ USB_DEVICE(USB_VID_PCTV,      USB_PID_PCTV_2002E_SE) },
+<<<<<<< HEAD
+=======
+	{ USB_DEVICE(USB_VID_PCTV,      USB_PID_DIBCOM_STK8096PVR) },
+	{ USB_DEVICE(USB_VID_DIBCOM,    USB_PID_DIBCOM_STK8096PVR) },
+>>>>>>> v4.9.227
 	{ 0 }		/* Terminating entry */
 };
 MODULE_DEVICE_TABLE(usb, dib0700_usb_id_table);
@@ -3825,6 +3938,13 @@ MODULE_DEVICE_TABLE(usb, dib0700_usb_id_table);
 		} \
 	}
 
+<<<<<<< HEAD
+=======
+#define DIB0700_NUM_FRONTENDS(n) \
+	.num_frontends = n, \
+	.size_of_priv     = sizeof(struct dib0700_adapter_state)
+
+>>>>>>> v4.9.227
 struct dvb_usb_device_properties dib0700_devices[] = {
 	{
 		DIB0700_DEFAULT_DEVICE_PROPERTIES,
@@ -3832,7 +3952,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -3843,7 +3967,10 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv     = sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -3897,7 +4024,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 2,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.frontend_attach  = bristol_frontend_attach,
 				.tuner_attach     = bristol_tuner_attach,
@@ -3905,7 +4036,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
 			}, {
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.frontend_attach  = bristol_frontend_attach,
 				.tuner_attach     = bristol_tuner_attach,
@@ -3937,7 +4072,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 2,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -3948,10 +4087,15 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv = sizeof(struct
 						dib0700_adapter_state),
 			}, {
 			.num_frontends = 1,
+=======
+			}, {
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -3962,8 +4106,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x03),
 			}},
+<<<<<<< HEAD
 				.size_of_priv = sizeof(struct
 						dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			}
 		},
 
@@ -4006,7 +4153,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4017,8 +4168,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv = sizeof(struct
 						dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4053,7 +4207,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4064,7 +4222,10 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv     = sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4135,7 +4296,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4146,7 +4311,10 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv     = sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4181,7 +4349,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 2,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4192,9 +4364,14 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv     = sizeof(struct dib0700_adapter_state),
 			}, {
 			.num_frontends = 1,
+=======
+			}, {
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4205,7 +4382,10 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x03),
 			}},
+<<<<<<< HEAD
 				.size_of_priv     = sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			}
 		},
 
@@ -4240,7 +4420,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 2,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4251,9 +4435,14 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv     = sizeof(struct dib0700_adapter_state),
 			}, {
 			.num_frontends = 1,
+=======
+			}, {
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4264,7 +4453,10 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x03),
 			}},
+<<<<<<< HEAD
 				.size_of_priv     = sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			}
 		},
 
@@ -4308,7 +4500,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 2,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4319,9 +4515,14 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv     = sizeof(struct dib0700_adapter_state),
 			}, {
 			.num_frontends = 1,
+=======
+			}, {
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4332,7 +4533,10 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x03),
 			}},
+<<<<<<< HEAD
 				.size_of_priv     = sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			}
 		},
 
@@ -4359,7 +4563,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4370,8 +4578,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv = sizeof(struct
 						dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4429,15 +4640,22 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.frontend_attach  = s5h1411_frontend_attach,
 				.tuner_attach     = xc5000_tuner_attach,
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv = sizeof(struct
 						dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4467,15 +4685,22 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.frontend_attach  = lgdt3305_frontend_attach,
 				.tuner_attach     = mxl5007t_tuner_attach,
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv = sizeof(struct
 						dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4495,7 +4720,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4506,8 +4735,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4547,7 +4779,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps  = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4558,8 +4794,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4593,7 +4832,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 2,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps  = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4604,11 +4847,17 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
 			},
 			{
 			.num_frontends = 1,
+=======
+			},
+			{
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps  = DVB_USB_ADAP_HAS_PID_FILTER | DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
 				.pid_filter_count = 32,
@@ -4619,8 +4868,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x03),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4646,7 +4898,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
 					DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
@@ -4658,8 +4914,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4685,7 +4944,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
 					DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
@@ -4697,8 +4960,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4724,7 +4990,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
 					DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
@@ -4736,8 +5006,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4763,7 +5036,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
 					DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
@@ -4775,8 +5052,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4802,7 +5082,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
 					DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
@@ -4814,8 +5098,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4841,7 +5128,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 2,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
 					DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
@@ -4853,11 +5144,17 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x03),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
 			},
 			{
 			.num_frontends = 1,
+=======
+			},
+			{
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
 					DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
@@ -4869,8 +5166,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4896,15 +5196,22 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 			.num_frontends = 1,
+=======
+			DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 			.fe = {{
 				.frontend_attach  = pctv340e_frontend_attach,
 				.tuner_attach     = xc4000_tuner_attach,
 
 				DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 			}},
+<<<<<<< HEAD
 				.size_of_priv = sizeof(struct
 						dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4933,7 +5240,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 				.num_frontends = 1,
+=======
+				DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 				.fe = {{
 					.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
 						DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
@@ -4945,9 +5256,12 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 
 					DIB0700_DEFAULT_STREAMING_CONFIG(0x03),
 				} },
+<<<<<<< HEAD
 
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -4973,7 +5287,11 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 		.num_adapters = 1,
 		.adapter = {
 			{
+<<<<<<< HEAD
 				.num_frontends = 1,
+=======
+				DIB0700_NUM_FRONTENDS(1),
+>>>>>>> v4.9.227
 				.fe = {{
 					.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
 						DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
@@ -4986,9 +5304,12 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 					DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
 
 				} },
+<<<<<<< HEAD
 
 				.size_of_priv =
 					sizeof(struct dib0700_adapter_state),
+=======
+>>>>>>> v4.9.227
 			},
 		},
 
@@ -5010,6 +5331,63 @@ struct dvb_usb_device_properties dib0700_devices[] = {
 					    RC_BIT_NEC,
 			.change_protocol  = dib0700_change_protocol,
 		},
+<<<<<<< HEAD
+=======
+	}, { DIB0700_DEFAULT_DEVICE_PROPERTIES,
+		.num_adapters = 2,
+		.adapter = {
+			{
+				.num_frontends = 1,
+				.fe = {{
+					.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
+						DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
+					.pid_filter_count = 32,
+					.pid_filter = stk80xx_pid_filter,
+					.pid_filter_ctrl = stk80xx_pid_filter_ctrl,
+					.frontend_attach  = stk809x_frontend_attach,
+					.tuner_attach     = dib809x_tuner_attach,
+
+					DIB0700_DEFAULT_STREAMING_CONFIG(0x02),
+				} },
+				.size_of_priv =
+					sizeof(struct dib0700_adapter_state),
+			}, {
+				.num_frontends = 1,
+				.fe = { {
+					.caps  = DVB_USB_ADAP_HAS_PID_FILTER |
+						DVB_USB_ADAP_PID_FILTER_CAN_BE_TURNED_OFF,
+					.pid_filter_count = 32,
+					.pid_filter = stk80xx_pid_filter,
+					.pid_filter_ctrl = stk80xx_pid_filter_ctrl,
+					.frontend_attach  = stk809x_frontend1_attach,
+					.tuner_attach     = dib809x_tuner_attach,
+
+					DIB0700_DEFAULT_STREAMING_CONFIG(0x03),
+				} },
+				.size_of_priv =
+					sizeof(struct dib0700_adapter_state),
+			},
+		},
+		.num_device_descs = 1,
+		.devices = {
+			{   "DiBcom STK8096-PVR reference design",
+				{ &dib0700_usb_id_table[83],
+					&dib0700_usb_id_table[84], NULL},
+				{ NULL },
+			},
+		},
+
+		.rc.core = {
+			.rc_interval      = DEFAULT_RC_INTERVAL,
+			.rc_codes         = RC_MAP_DIB0700_RC5_TABLE,
+			.module_name  = "dib0700",
+			.rc_query         = dib0700_rc_query_old_firmware,
+			.allowed_protos   = RC_BIT_RC5 |
+				RC_BIT_RC6_MCE |
+				RC_BIT_NEC,
+			.change_protocol  = dib0700_change_protocol,
+		},
+>>>>>>> v4.9.227
 	},
 };
 

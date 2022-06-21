@@ -11,6 +11,10 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/pm.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> v4.9.227
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/pcieport_if.h>
@@ -254,14 +258,19 @@ static void cleanup_service_irqs(struct pci_dev *dev)
 static int get_port_device_capability(struct pci_dev *dev)
 {
 	int services = 0;
+<<<<<<< HEAD
 	u32 reg32;
 	int cap_mask = 0;
 	int err;
+=======
+	int cap_mask = 0;
+>>>>>>> v4.9.227
 
 	if (pcie_ports_disabled)
 		return 0;
 
 	cap_mask = PCIE_PORT_SERVICE_PME | PCIE_PORT_SERVICE_HP
+<<<<<<< HEAD
 			| PCIE_PORT_SERVICE_VC;
 	if (pci_aer_available())
 		cap_mask |= PCIE_PORT_SERVICE_AER;
@@ -286,6 +295,24 @@ static int get_port_device_capability(struct pci_dev *dev)
 			pcie_capability_clear_word(dev, PCI_EXP_SLTCTL,
 				PCI_EXP_SLTCTL_CCIE | PCI_EXP_SLTCTL_HPIE);
 		}
+=======
+			| PCIE_PORT_SERVICE_VC | PCIE_PORT_SERVICE_DPC;
+	if (pci_aer_available())
+		cap_mask |= PCIE_PORT_SERVICE_AER;
+
+	if (pcie_ports_auto)
+		pcie_port_platform_notify(dev, &cap_mask);
+
+	/* Hot-Plug Capable */
+	if ((cap_mask & PCIE_PORT_SERVICE_HP) && dev->is_hotplug_bridge) {
+		services |= PCIE_PORT_SERVICE_HP;
+		/*
+		 * Disable hot-plug interrupts in case they have been enabled
+		 * by the BIOS and the hot-plug service driver is not loaded.
+		 */
+		pcie_capability_clear_word(dev, PCI_EXP_SLTCTL,
+			  PCI_EXP_SLTCTL_CCIE | PCI_EXP_SLTCTL_HPIE);
+>>>>>>> v4.9.227
 	}
 	/* AER capable */
 	if ((cap_mask & PCIE_PORT_SERVICE_AER)
@@ -311,6 +338,11 @@ static int get_port_device_capability(struct pci_dev *dev)
 		 */
 		pcie_pme_interrupt_enable(dev, false);
 	}
+<<<<<<< HEAD
+=======
+	if (pci_find_ext_capability(dev, PCI_EXT_CAP_ID_DPC))
+		services |= PCIE_PORT_SERVICE_DPC;
+>>>>>>> v4.9.227
 
 	return services;
 }
@@ -338,7 +370,11 @@ static int pcie_device_init(struct pci_dev *pdev, int service, int irq)
 	device = &pcie->device;
 	device->bus = &pcie_port_bus_type;
 	device->release = release_pcie_device;	/* callback to free pcie dev */
+<<<<<<< HEAD
 	dev_set_name(device, "%s:pcie%02x",
+=======
+	dev_set_name(device, "%s:pcie%03x",
+>>>>>>> v4.9.227
 		     pci_name(pdev),
 		     get_descriptor_id(pci_pcie_type(pdev), service));
 	device->parent = &pdev->dev;
@@ -350,6 +386,11 @@ static int pcie_device_init(struct pci_dev *pdev, int service, int irq)
 		return retval;
 	}
 
+<<<<<<< HEAD
+=======
+	pm_runtime_no_callbacks(device);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -448,7 +489,11 @@ static int resume_iter(struct device *dev, void *data)
 }
 
 /**
+<<<<<<< HEAD
  * pcie_port_device_suspend - resume port services associated with a PCIe port
+=======
+ * pcie_port_device_resume - resume port services associated with a PCIe port
+>>>>>>> v4.9.227
  * @dev: PCI Express port to handle
  */
 int pcie_port_device_resume(struct device *dev)

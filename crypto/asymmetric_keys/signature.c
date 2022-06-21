@@ -13,11 +13,37 @@
 
 #define pr_fmt(fmt) "SIG: "fmt
 #include <keys/asymmetric-subtype.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/err.h>
 #include <crypto/public_key.h>
 #include "asymmetric_keys.h"
 
+=======
+#include <linux/export.h>
+#include <linux/err.h>
+#include <linux/slab.h>
+#include <crypto/public_key.h>
+#include "asymmetric_keys.h"
+
+/*
+ * Destroy a public key signature.
+ */
+void public_key_signature_free(struct public_key_signature *sig)
+{
+	int i;
+
+	if (sig) {
+		for (i = 0; i < ARRAY_SIZE(sig->auth_ids); i++)
+			kfree(sig->auth_ids[i]);
+		kfree(sig->s);
+		kfree(sig->digest);
+		kfree(sig);
+	}
+}
+EXPORT_SYMBOL_GPL(public_key_signature_free);
+
+>>>>>>> v4.9.227
 /**
  * verify_signature - Initiate the use of an asymmetric key to verify a signature
  * @key: The asymmetric key to verify against
@@ -37,7 +63,11 @@ int verify_signature(const struct key *key,
 		return -EINVAL;
 	subtype = asymmetric_key_subtype(key);
 	if (!subtype ||
+<<<<<<< HEAD
 	    !key->payload.data)
+=======
+	    !key->payload.data[0])
+>>>>>>> v4.9.227
 		return -EINVAL;
 	if (!subtype->verify_signature)
 		return -ENOTSUPP;

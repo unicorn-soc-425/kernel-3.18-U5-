@@ -36,11 +36,20 @@
 #include <linux/errno.h>
 #include <linux/types.h>
 
+<<<<<<< HEAD
 #define __DQUOT_VERSION__	"dquot_6.5.2"
 
 #define MAXQUOTAS 2
 #define USRQUOTA  0		/* element used for user quotas */
 #define GRPQUOTA  1		/* element used for group quotas */
+=======
+#define __DQUOT_VERSION__	"dquot_6.6.0"
+
+#define MAXQUOTAS 3
+#define USRQUOTA  0		/* element used for user quotas */
+#define GRPQUOTA  1		/* element used for group quotas */
+#define PRJQUOTA  2		/* element used for project quotas */
+>>>>>>> v4.9.227
 
 /*
  * Definitions for the default names of the quotas files.
@@ -48,6 +57,10 @@
 #define INITQFNAMES { \
 	"user",    /* USRQUOTA */ \
 	"group",   /* GRPQUOTA */ \
+<<<<<<< HEAD
+=======
+	"project", /* PRJQUOTA */ \
+>>>>>>> v4.9.227
 	"undefined", \
 };
 
@@ -140,10 +153,29 @@ struct if_nextdqblk {
 #define IIF_FLAGS	4
 #define IIF_ALL		(IIF_BGRACE | IIF_IGRACE | IIF_FLAGS)
 
+<<<<<<< HEAD
 struct if_dqinfo {
 	__u64 dqi_bgrace;
 	__u64 dqi_igrace;
 	__u32 dqi_flags;
+=======
+enum {
+	DQF_ROOT_SQUASH_B = 0,
+	DQF_SYS_FILE_B = 16,
+	/* Kernel internal flags invisible to userspace */
+	DQF_PRIVATE
+};
+
+/* Root squash enabled (for v1 quota format) */
+#define DQF_ROOT_SQUASH	(1 << DQF_ROOT_SQUASH_B)
+/* Quota stored in a system file */
+#define DQF_SYS_FILE	(1 << DQF_SYS_FILE_B)
+
+struct if_dqinfo {
+	__u64 dqi_bgrace;
+	__u64 dqi_igrace;
+	__u32 dqi_flags;	/* DFQ_* */
+>>>>>>> v4.9.227
 	__u32 dqi_valid;
 };
 
@@ -177,6 +209,10 @@ enum {
 	QUOTA_NL_A_DEV_MAJOR,
 	QUOTA_NL_A_DEV_MINOR,
 	QUOTA_NL_A_CAUSED_ID,
+<<<<<<< HEAD
+=======
+	QUOTA_NL_A_PAD,
+>>>>>>> v4.9.227
 	__QUOTA_NL_A_MAX,
 };
 #define QUOTA_NL_A_MAX (__QUOTA_NL_A_MAX - 1)

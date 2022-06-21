@@ -20,6 +20,7 @@
 };
 
 &iomuxc {
+<<<<<<< HEAD
 	i2c1 {
 		/* open drain */
 		pinctrl_i2c1_qsrb: i2c1grp-1 {
@@ -32,23 +33,36 @@
 		pinctrl_pmic: pmicgrp {
 			fsl,pins = <
 				MX53_PAD_CSI0_DAT5__GPIO5_23	0x1e4 /* IRQ */
+=======
+	imx53-qsrb {
+		pinctrl_pmic: pmicgrp {
+			fsl,pins = <
+				MX53_PAD_CSI0_DAT5__GPIO5_23	0x1c4 /* IRQ */
+>>>>>>> v4.9.227
 			>;
 		};
 	};
 };
 
 &i2c1 {
+<<<<<<< HEAD
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1_qsrb>;
 	status = "okay";
 
+=======
+>>>>>>> v4.9.227
 	pmic: mc34708@8 {
 		compatible = "fsl,mc34708";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_pmic>;
 		reg = <0x08>;
 		interrupt-parent = <&gpio5>;
+<<<<<<< HEAD
 		interrupts = <23 0x8>;
+=======
+		interrupts = <23 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>> v4.9.227
 		regulators {
 			sw1_reg: sw1a {
 				regulator-name = "SW1";

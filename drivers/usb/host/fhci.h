@@ -27,8 +27,13 @@
 #include <linux/io.h>
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
+<<<<<<< HEAD
 #include <asm/qe.h>
 #include <asm/immap_qe.h>
+=======
+#include <soc/fsl/qe/qe.h>
+#include <soc/fsl/qe/immap_qe.h>
+>>>>>>> v4.9.227
 
 #define USB_CLOCK	48000000
 

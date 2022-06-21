@@ -68,7 +68,10 @@ extern void kunmap(struct page *page);
 extern void *kmap_atomic(struct page *page);
 extern void __kunmap_atomic(void *kvaddr);
 extern void *kmap_atomic_pfn(unsigned long pfn);
+<<<<<<< HEAD
 extern struct page *kmap_atomic_to_page(const void *ptr);
+=======
+>>>>>>> v4.9.227
 #endif
 
 #endif

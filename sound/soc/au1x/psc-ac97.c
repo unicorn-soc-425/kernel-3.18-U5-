@@ -343,7 +343,11 @@ static const struct snd_soc_dai_ops au1xpsc_ac97_dai_ops = {
 };
 
 static const struct snd_soc_dai_driver au1xpsc_ac97_dai_template = {
+<<<<<<< HEAD
 	.ac97_control		= 1,
+=======
+	.bus_control		= true,
+>>>>>>> v4.9.227
 	.probe			= au1xpsc_ac97_probe,
 	.playback = {
 		.rates		= AC97_RATES,
@@ -490,7 +494,10 @@ static struct dev_pm_ops au1xpscac97_pmops = {
 static struct platform_driver au1xpsc_ac97_driver = {
 	.driver	= {
 		.name	= "au1xpsc_ac97",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= AU1XPSCAC97_PMOPS,
 	},
 	.probe		= au1xpsc_ac97_drvprobe,

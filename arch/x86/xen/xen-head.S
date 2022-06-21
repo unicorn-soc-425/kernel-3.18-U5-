@@ -12,6 +12,11 @@
 
 #include <xen/interface/elfnote.h>
 #include <xen/interface/features.h>
+<<<<<<< HEAD
+=======
+#include <xen/interface/xen.h>
+#include <xen/interface/xen-mca.h>
+>>>>>>> v4.9.227
 #include <asm/xen/interface.h>
 
 #ifdef CONFIG_XEN_PVH
@@ -24,7 +29,11 @@
 		      (1 << XENFEAT_auto_translated_physmap) | \
 		      (1 << XENFEAT_supervisor_mode_kernel) | \
 		      (1 << XENFEAT_hvm_callback_vector))
+<<<<<<< HEAD
 /* The XENFEAT_writable_page_tables is not stricly neccessary as we set that
+=======
+/* The XENFEAT_writable_page_tables is not stricly necessary as we set that
+>>>>>>> v4.9.227
  * up regardless whether this CONFIG option is enabled or not, but it
  * clarifies what the right flags need to be.
  */
@@ -36,6 +45,7 @@
 	__INIT
 ENTRY(startup_xen)
 	cld
+<<<<<<< HEAD
 #ifdef CONFIG_X86_32
 	mov %esi,xen_start_info
 	mov $init_thread_union+THREAD_SIZE,%esp
@@ -43,6 +53,20 @@ ENTRY(startup_xen)
 	mov %rsi,xen_start_info
 	mov $init_thread_union+THREAD_SIZE,%rsp
 #endif
+=======
+
+	/* Clear .bss */
+	xor %eax,%eax
+	mov $__bss_start, %_ASM_DI
+	mov $__bss_stop, %_ASM_CX
+	sub %_ASM_DI, %_ASM_CX
+	shr $__ASM_SEL(2, 3), %_ASM_CX
+	rep __ASM_SIZE(stos)
+
+	mov %_ASM_SI, xen_start_info
+	mov $init_thread_union+THREAD_SIZE, %_ASM_SP
+
+>>>>>>> v4.9.227
 	jmp xen_start_kernel
 
 	__FINIT
@@ -85,6 +109,7 @@ ENTRY(xen_pvh_early_cpu_init)
 .pushsection .text
 	.balign PAGE_SIZE
 ENTRY(hypercall_page)
+<<<<<<< HEAD
 #define NEXT_HYPERCALL(x) \
 	ENTRY(xen_hypercall_##x) \
 	.skip 32
@@ -138,6 +163,16 @@ NEXT_HYPERCALL(arch_4)
 NEXT_HYPERCALL(arch_5)
 NEXT_HYPERCALL(arch_6)
 	.balign PAGE_SIZE
+=======
+	.skip PAGE_SIZE
+
+#define HYPERCALL(n) \
+	.equ xen_hypercall_##n, hypercall_page + __HYPERVISOR_##n * 32; \
+	.type xen_hypercall_##n, @function; .size xen_hypercall_##n, 32
+#include <asm/xen-hypercalls.h>
+#undef HYPERCALL
+
+>>>>>>> v4.9.227
 .popsection
 
 	ELFNOTE(Xen, XEN_ELFNOTE_GUEST_OS,       .asciz "linux")
@@ -147,6 +182,11 @@ NEXT_HYPERCALL(arch_6)
 	ELFNOTE(Xen, XEN_ELFNOTE_VIRT_BASE,      _ASM_PTR __PAGE_OFFSET)
 #else
 	ELFNOTE(Xen, XEN_ELFNOTE_VIRT_BASE,      _ASM_PTR __START_KERNEL_map)
+<<<<<<< HEAD
+=======
+	/* Map the p2m table to a 512GB-aligned user address. */
+	ELFNOTE(Xen, XEN_ELFNOTE_INIT_P2M,       .quad PGDIR_SIZE)
+>>>>>>> v4.9.227
 #endif
 	ELFNOTE(Xen, XEN_ELFNOTE_ENTRY,          _ASM_PTR startup_xen)
 	ELFNOTE(Xen, XEN_ELFNOTE_HYPERCALL_PAGE, _ASM_PTR hypercall_page)

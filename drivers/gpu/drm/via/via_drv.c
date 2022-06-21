@@ -72,7 +72,11 @@ static const struct file_operations via_driver_fops = {
 
 static struct drm_driver driver = {
 	.driver_features =
+<<<<<<< HEAD
 	    DRIVER_USE_AGP | DRIVER_HAVE_IRQ |
+=======
+	    DRIVER_USE_AGP | DRIVER_HAVE_IRQ | DRIVER_LEGACY |
+>>>>>>> v4.9.227
 	    DRIVER_IRQ_SHARED,
 	.load = via_driver_load,
 	.unload = via_driver_unload,

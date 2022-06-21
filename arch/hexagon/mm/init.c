@@ -93,7 +93,11 @@ void __init mem_init(void)
  * Todo:  free pages between __init_begin and __init_end; possibly
  * some devtree related stuff as well.
  */
+<<<<<<< HEAD
 void __init_refok free_initmem(void)
+=======
+void __ref free_initmem(void)
+>>>>>>> v4.9.227
 {
 }
 

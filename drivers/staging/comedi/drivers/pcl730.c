@@ -7,6 +7,7 @@
 /*
  * Driver: pcl730
  * Description: Advantech PCL-730 (& compatibles)
+<<<<<<< HEAD
  * Devices: (Advantech) PCL-730 [pcl730]
  *	    (ICP) ISO-730 [iso730]
  *	    (Adlink) ACL-7130 [acl7130]
@@ -20,6 +21,14 @@
  *	    (Diamond Systems) OPMM-1616-XT [opmm-1616-xt]
  *	    (Diamond Systems) PEARL-MM-P [prearl-mm-p]
  *	    (Diamond Systems) IR104-PBF [ir104-pbf]
+=======
+ * Devices: [Advantech] PCL-730 (pcl730), PCM-3730 (pcm3730), PCL-725 (pcl725),
+ *   PCL-733 (pcl733), PCL-734 (pcl734),
+ *   [ADLink] ACL-7130 (acl7130), ACL-7225b (acl7225b),
+ *   [ICP] ISO-730 (iso730), P8R8-DIO (p8r8dio), P16R16-DIO (p16r16dio),
+ *   [Diamond Systems] OPMM-1616-XT (opmm-1616-xt), PEARL-MM-P (pearl-mm-p),
+ *   IR104-PBF (ir104-pbf),
+>>>>>>> v4.9.227
  * Author: José Luis Sánchez (jsanchezv@teleline.es)
  * Status: untested
  *

@@ -653,7 +653,11 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
 		goto err_free_dma;
 	}
 
+<<<<<<< HEAD
 	ret = clk_enable(priv->clk);
+=======
+	ret = clk_prepare_enable(priv->clk);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(dev, "failed to enable clock\n");
 		goto err_misc_deregister;
@@ -685,7 +689,11 @@ err_misc_deregister:
 	misc_deregister(&priv->misc_dev);
 
 err_disable_clk:
+<<<<<<< HEAD
 	clk_disable(priv->clk);
+=======
+	clk_disable_unprepare(priv->clk);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -707,7 +715,10 @@ static struct platform_driver pxa3xx_gcu_driver = {
 	.probe	  = pxa3xx_gcu_probe,
 	.remove	 = pxa3xx_gcu_remove,
 	.driver	 = {
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name   = DRV_NAME,
 	},
 };

@@ -2,6 +2,12 @@
  * platform-pci.c
  *
  * Xen platform PCI device driver
+<<<<<<< HEAD
+=======
+ *
+ * Authors: ssmith@xensource.com and stefano.stabellini@eu.citrix.com
+ *
+>>>>>>> v4.9.227
  * Copyright (c) 2005, Intel Corporation.
  * Copyright (c) 2007, XenSource Inc.
  * Copyright (c) 2010, Citrix
@@ -24,7 +30,11 @@
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/pci.h>
 
 #include <xen/platform_pci.h>
@@ -36,10 +46,13 @@
 
 #define DRV_NAME    "xen-platform-pci"
 
+<<<<<<< HEAD
 MODULE_AUTHOR("ssmith@xensource.com and stefano.stabellini@eu.citrix.com");
 MODULE_DESCRIPTION("Xen platform PCI device");
 MODULE_LICENSE("GPL");
 
+=======
+>>>>>>> v4.9.227
 static unsigned long platform_mmio;
 static unsigned long platform_mmio_alloc;
 static unsigned long platform_mmiolen;
@@ -101,8 +114,13 @@ static int platform_pci_resume(struct pci_dev *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int platform_pci_init(struct pci_dev *pdev,
 			     const struct pci_device_id *ent)
+=======
+static int platform_pci_probe(struct pci_dev *pdev,
+			      const struct pci_device_id *ent)
+>>>>>>> v4.9.227
 {
 	int i, ret;
 	long ioaddr;
@@ -181,20 +199,34 @@ static struct pci_device_id platform_pci_tbl[] = {
 	{0,}
 };
 
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(pci, platform_pci_tbl);
 
 static struct pci_driver platform_driver = {
 	.name =           DRV_NAME,
 	.probe =          platform_pci_init,
+=======
+static struct pci_driver platform_driver = {
+	.name =           DRV_NAME,
+	.probe =          platform_pci_probe,
+>>>>>>> v4.9.227
 	.id_table =       platform_pci_tbl,
 #ifdef CONFIG_PM
 	.resume_early =   platform_pci_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init platform_pci_module_init(void)
 {
 	return pci_register_driver(&platform_driver);
 }
 
 module_init(platform_pci_module_init);
+=======
+static int __init platform_pci_init(void)
+{
+	return pci_register_driver(&platform_driver);
+}
+device_initcall(platform_pci_init);
+>>>>>>> v4.9.227

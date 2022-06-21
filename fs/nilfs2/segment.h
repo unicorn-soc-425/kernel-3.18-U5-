@@ -13,11 +13,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Ryusuke Konishi <ryusuke@osrg.net>
+=======
+ * Written by Ryusuke Konishi.
+>>>>>>> v4.9.227
  *
  */
 #ifndef _NILFS_SEGMENT_H
@@ -27,7 +31,10 @@
 #include <linux/fs.h>
 #include <linux/buffer_head.h>
 #include <linux/workqueue.h>
+<<<<<<< HEAD
 #include <linux/nilfs2_fs.h>
+=======
+>>>>>>> v4.9.227
 #include "nilfs.h"
 
 struct nilfs_root;
@@ -67,14 +74,23 @@ struct nilfs_recovery_info {
 
 /**
  * struct nilfs_cstage - Context of collection stage
+<<<<<<< HEAD
  * @scnt: Stage count
+=======
+ * @scnt: Stage count, must be accessed via wrappers:
+ *        nilfs_sc_cstage_inc(), nilfs_sc_cstage_set(), nilfs_sc_cstage_get()
+>>>>>>> v4.9.227
  * @flags: State flags
  * @dirty_file_ptr: Pointer on dirty_files list, or inode of a target file
  * @gc_inode_ptr: Pointer on the list of gc-inodes
  */
 struct nilfs_cstage {
 	int			scnt;
+<<<<<<< HEAD
 	unsigned		flags;
+=======
+	unsigned int		flags;
+>>>>>>> v4.9.227
 	struct nilfs_inode_info *dirty_file_ptr;
 	struct nilfs_inode_info *gc_inode_ptr;
 };
@@ -83,7 +99,11 @@ struct nilfs_segment_buffer;
 
 struct nilfs_segsum_pointer {
 	struct buffer_head     *bh;
+<<<<<<< HEAD
 	unsigned		offset; /* offset in bytes */
+=======
+	unsigned int		offset; /* offset in bytes */
+>>>>>>> v4.9.227
 };
 
 /**
@@ -192,11 +212,23 @@ enum {
 	NILFS_SC_DIRTY,		/* One or more dirty meta-data blocks exist */
 	NILFS_SC_UNCLOSED,	/* Logical segment is not closed */
 	NILFS_SC_SUPER_ROOT,	/* The latest segment has a super root */
+<<<<<<< HEAD
 	NILFS_SC_PRIOR_FLUSH,	/* Requesting immediate flush without making a
 				   checkpoint */
 	NILFS_SC_HAVE_DELTA,	/* Next checkpoint will have update of files
 				   other than DAT, cpfile, sufile, or files
 				   moved by GC */
+=======
+	NILFS_SC_PRIOR_FLUSH,	/*
+				 * Requesting immediate flush without making a
+				 * checkpoint
+				 */
+	NILFS_SC_HAVE_DELTA,	/*
+				 * Next checkpoint will have update of files
+				 * other than DAT, cpfile, sufile, or files
+				 * moved by GC.
+				 */
+>>>>>>> v4.9.227
 };
 
 /* sc_state */
@@ -206,17 +238,36 @@ enum {
 /*
  * Constant parameters
  */
+<<<<<<< HEAD
 #define NILFS_SC_CLEANUP_RETRY	    3  /* Retry count of construction when
 					  destroying segctord */
+=======
+#define NILFS_SC_CLEANUP_RETRY	    3  /*
+					* Retry count of construction when
+					* destroying segctord
+					*/
+>>>>>>> v4.9.227
 
 /*
  * Default values of timeout, in seconds.
  */
+<<<<<<< HEAD
 #define NILFS_SC_DEFAULT_TIMEOUT    5   /* Timeout value of dirty blocks.
 					   It triggers construction of a
 					   logical segment with a super root */
 #define NILFS_SC_DEFAULT_SR_FREQ    30  /* Maximum frequency of super root
 					   creation */
+=======
+#define NILFS_SC_DEFAULT_TIMEOUT    5   /*
+					 * Timeout value of dirty blocks.
+					 * It triggers construction of a
+					 * logical segment with a super root.
+					 */
+#define NILFS_SC_DEFAULT_SR_FREQ    30  /*
+					 * Maximum frequency of super root
+					 * creation
+					 */
+>>>>>>> v4.9.227
 
 /*
  * The default threshold amount of data, in block counts.

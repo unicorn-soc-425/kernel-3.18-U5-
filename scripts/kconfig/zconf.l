@@ -66,9 +66,22 @@ static void alloc_string(const char *str, int size)
 	memcpy(text, str, size);
 	text[size] = 0;
 }
+<<<<<<< HEAD
 %}
 
 n	[A-Za-z0-9_]
+=======
+
+static void warn_ignored_character(char chr)
+{
+	fprintf(stderr,
+	        "%s:%d:warning: ignoring unsupported character '%c'\n",
+	        current_file->name, yylineno, chr);
+}
+%}
+
+n	[A-Za-z0-9_-]
+>>>>>>> v4.9.227
 
 %%
 	int str = 0;
@@ -106,7 +119,11 @@ n	[A-Za-z0-9_]
 		zconflval.string = text;
 		return T_WORD;
 	}
+<<<<<<< HEAD
 	.
+=======
+	.	warn_ignored_character(*yytext);
+>>>>>>> v4.9.227
 	\n	{
 		BEGIN(INITIAL);
 		current_file->lineno++;
@@ -122,14 +139,25 @@ n	[A-Za-z0-9_]
 	"!"	return T_NOT;
 	"="	return T_EQUAL;
 	"!="	return T_UNEQUAL;
+<<<<<<< HEAD
+=======
+	"<="	return T_LESS_EQUAL;
+	">="	return T_GREATER_EQUAL;
+	"<"	return T_LESS;
+	">"	return T_GREATER;
+>>>>>>> v4.9.227
 	\"|\'	{
 		str = yytext[0];
 		new_string();
 		BEGIN(STRING);
 	}
 	\n	BEGIN(INITIAL); current_file->lineno++; return T_EOL;
+<<<<<<< HEAD
 	---	/* ignore */
 	({n}|[-/.])+	{
+=======
+	({n}|[/.])+	{
+>>>>>>> v4.9.227
 		const struct kconf_id *id = kconf_id_lookup(yytext, yyleng);
 		if (id && id->flags & TF_PARAM) {
 			zconflval.id = id;
@@ -141,7 +169,12 @@ n	[A-Za-z0-9_]
 	}
 	#.*	/* comment */
 	\\\n	current_file->lineno++;
+<<<<<<< HEAD
 	.
+=======
+	[[:blank:]]+
+	.	warn_ignored_character(*yytext);
+>>>>>>> v4.9.227
 	<<EOF>> {
 		BEGIN(INITIAL);
 	}
@@ -180,6 +213,11 @@ n	[A-Za-z0-9_]
 	}
 	<<EOF>>	{
 		BEGIN(INITIAL);
+<<<<<<< HEAD
+=======
+		yylval.string = text;
+		return T_WORD_QUOTE;
+>>>>>>> v4.9.227
 	}
 }
 

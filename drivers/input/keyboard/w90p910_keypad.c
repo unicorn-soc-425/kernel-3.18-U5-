@@ -258,7 +258,10 @@ static struct platform_driver w90p910_keypad_driver = {
 	.remove		= w90p910_keypad_remove,
 	.driver		= {
 		.name	= "nuc900-kpi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(w90p910_keypad_driver);

@@ -35,12 +35,20 @@
 #include "conf.h"
 #include "ini.h"
 
+<<<<<<< HEAD
 /*
  * wl127x and wl128x are using the same NVS file name. However, the
  * ini parameters between them are different.  The driver validates
  * the correct NVS size in wl1271_boot_upload_nvs().
  */
 #define WL12XX_NVS_NAME "ti-connectivity/wl1271-nvs.bin"
+=======
+struct wilink_family_data {
+	const char *name;
+	const char *nvs_name;	/* wl12xx nvs file */
+	const char *cfg_name;	/* wl18xx cfg file */
+};
+>>>>>>> v4.9.227
 
 #define WL1271_TX_SECURITY_LO16(s) ((u16)((s) & 0xffff))
 #define WL1271_TX_SECURITY_HI32(s) ((u32)(((s) >> 16) & 0xffffffff))
@@ -171,6 +179,15 @@ struct wl_fw_status {
 
 		/* Tx rate of the last transmitted packet */
 		u8 tx_last_rate;
+<<<<<<< HEAD
+=======
+
+		/* Tx rate or Tx rate estimate pre calculated by fw in mbps */
+		u8 tx_last_rate_mbps;
+
+		/* hlid for which the rates were reported */
+		u8 hlid;
+>>>>>>> v4.9.227
 	} counters;
 
 	u32 log_start_addr;
@@ -202,6 +219,10 @@ struct wl1271_if_operations {
 
 struct wlcore_platdev_data {
 	struct wl1271_if_operations *if_ops;
+<<<<<<< HEAD
+=======
+	const struct wilink_family_data *family;
+>>>>>>> v4.9.227
 
 	bool ref_clock_xtal;	/* specify whether the clock is XTAL or not */
 	u32 ref_clock_freq;	/* in Hertz */
@@ -255,6 +276,10 @@ enum wl12xx_vif_flags {
 	WLVIF_FLAG_AP_PROBE_RESP_SET,
 	WLVIF_FLAG_IN_USE,
 	WLVIF_FLAG_ACTIVE,
+<<<<<<< HEAD
+=======
+	WLVIF_FLAG_BEACON_DISABLED,
+>>>>>>> v4.9.227
 };
 
 struct wl12xx_vif;
@@ -272,6 +297,15 @@ struct wl1271_link {
 	/* bitmap of TIDs where RX BA sessions are active for this link */
 	u8 ba_bitmap;
 
+<<<<<<< HEAD
+=======
+	/* the last fw rate index we used for this link */
+	u8 fw_rate_idx;
+
+	/* the last fw rate [Mbps] we used for this link */
+	u8 fw_rate_mbps;
+
+>>>>>>> v4.9.227
 	/* The wlvif this link belongs to. Might be null for global links */
 	struct wl12xx_vif *wlvif;
 
@@ -391,7 +425,11 @@ struct wl12xx_vif {
 	u8 ssid_len;
 
 	/* The current band */
+<<<<<<< HEAD
 	enum ieee80211_band band;
+=======
+	enum nl80211_band band;
+>>>>>>> v4.9.227
 	int channel;
 	enum nl80211_channel_type channel_type;
 
@@ -469,6 +507,14 @@ struct wl12xx_vif {
 	/* work for canceling ROC after pending auth reply */
 	struct delayed_work pending_auth_complete_work;
 
+<<<<<<< HEAD
+=======
+	/* update rate conrol */
+	enum ieee80211_sta_rx_bandwidth rc_update_bw;
+	struct ieee80211_sta_ht_cap rc_ht_cap;
+	struct work_struct rc_update_work;
+
+>>>>>>> v4.9.227
 	/*
 	 * total freed FW packets on the link.
 	 * For STA this holds the PN of the link to the AP.

@@ -103,7 +103,11 @@ static int rsi_find_bulk_in_and_out_endpoints(struct usb_interface *interface,
 	__le16 buffer_size;
 	int ii, bep_found = 0;
 
+<<<<<<< HEAD
 	iface_desc = &(interface->altsetting[0]);
+=======
+	iface_desc = interface->cur_altsetting;
+>>>>>>> v4.9.227
 
 	for (ii = 0; ii < iface_desc->desc.bNumEndpoints; ++ii) {
 		endpoint = &(iface_desc->endpoint[ii].desc);

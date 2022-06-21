@@ -3,6 +3,10 @@ TODO:
 	- Lindent
 	- remove all wrappers
 	- audit userspace interface
+<<<<<<< HEAD
+=======
+		- Fix coverity 1195261
+>>>>>>> v4.9.227
 	- cleanup the individual comedi drivers as well
 
 Please send patches to Greg Kroah-Hartman <greg@kroah.com> and

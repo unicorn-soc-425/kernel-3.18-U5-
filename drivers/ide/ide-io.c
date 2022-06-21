@@ -135,7 +135,11 @@ EXPORT_SYMBOL(ide_complete_rq);
 
 void ide_kill_rq(ide_drive_t *drive, struct request *rq)
 {
+<<<<<<< HEAD
 	u8 drv_req = (rq->cmd_type == REQ_TYPE_SPECIAL) && rq->rq_disk;
+=======
+	u8 drv_req = (rq->cmd_type == REQ_TYPE_DRV_PRIV) && rq->rq_disk;
+>>>>>>> v4.9.227
 	u8 media = drive->media;
 
 	drive->failed_pc = NULL;
@@ -320,7 +324,11 @@ static ide_startstop_t start_request (ide_drive_t *drive, struct request *rq)
 		goto kill_rq;
 	}
 
+<<<<<<< HEAD
 	if (blk_pm_request(rq))
+=======
+	if (ata_pm_request(rq))
+>>>>>>> v4.9.227
 		ide_check_pm_state(drive, rq);
 
 	drive->hwif->tp_ops->dev_select(drive);
@@ -342,8 +350,13 @@ static ide_startstop_t start_request (ide_drive_t *drive, struct request *rq)
 
 		if (rq->cmd_type == REQ_TYPE_ATA_TASKFILE)
 			return execute_drive_cmd(drive, rq);
+<<<<<<< HEAD
 		else if (blk_pm_request(rq)) {
 			struct request_pm_state *pm = rq->special;
+=======
+		else if (ata_pm_request(rq)) {
+			struct ide_pm_state *pm = rq->special;
+>>>>>>> v4.9.227
 #ifdef DEBUG_PM
 			printk("%s: start_power_step(step: %d)\n",
 				drive->name, pm->pm_step);
@@ -353,7 +366,11 @@ static ide_startstop_t start_request (ide_drive_t *drive, struct request *rq)
 			    pm->pm_step == IDE_PM_COMPLETED)
 				ide_complete_pm_rq(drive, rq);
 			return startstop;
+<<<<<<< HEAD
 		} else if (!rq->rq_disk && rq->cmd_type == REQ_TYPE_SPECIAL)
+=======
+		} else if (!rq->rq_disk && rq->cmd_type == REQ_TYPE_DRV_PRIV)
+>>>>>>> v4.9.227
 			/*
 			 * TODO: Once all ULDs have been modified to
 			 * check for specific op codes rather than
@@ -538,7 +555,11 @@ repeat:
 		 * state machine.
 		 */
 		if ((drive->dev_flags & IDE_DFLAG_BLOCKED) &&
+<<<<<<< HEAD
 		    blk_pm_request(rq) == 0 &&
+=======
+		    ata_pm_request(rq) == 0 &&
+>>>>>>> v4.9.227
 		    (rq->cmd_flags & REQ_PREEMPT) == 0) {
 			/* there should be no pending command at this point */
 			ide_unlock_port(hwif);

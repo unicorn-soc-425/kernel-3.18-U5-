@@ -27,6 +27,11 @@
 #define FSL_PIC_IP_IPIC   0x00000002
 #define FSL_PIC_IP_VMPIC  0x00000003
 
+<<<<<<< HEAD
+=======
+#define MSI_HW_ERRATA_ENDIAN 0x00000010
+
+>>>>>>> v4.9.227
 struct fsl_msi_cascade_data;
 
 struct fsl_msi {

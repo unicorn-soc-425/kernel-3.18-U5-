@@ -54,12 +54,20 @@ static inline u32 kvmppc_get_cr(struct kvm_vcpu *vcpu)
 	return vcpu->arch.cr;
 }
 
+<<<<<<< HEAD
 static inline void kvmppc_set_xer(struct kvm_vcpu *vcpu, u32 val)
+=======
+static inline void kvmppc_set_xer(struct kvm_vcpu *vcpu, ulong val)
+>>>>>>> v4.9.227
 {
 	vcpu->arch.xer = val;
 }
 
+<<<<<<< HEAD
 static inline u32 kvmppc_get_xer(struct kvm_vcpu *vcpu)
+=======
+static inline ulong kvmppc_get_xer(struct kvm_vcpu *vcpu)
+>>>>>>> v4.9.227
 {
 	return vcpu->arch.xer;
 }

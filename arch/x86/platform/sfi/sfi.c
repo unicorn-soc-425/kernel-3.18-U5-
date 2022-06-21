@@ -25,8 +25,13 @@
 #include <linux/init.h>
 #include <linux/sfi.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/irqdomain.h>
 
+=======
+
+#include <asm/irqdomain.h>
+>>>>>>> v4.9.227
 #include <asm/io_apic.h>
 #include <asm/mpspec.h>
 #include <asm/setup.h>
@@ -71,9 +76,12 @@ static int __init sfi_parse_cpus(struct sfi_table_header *table)
 #endif /* CONFIG_X86_LOCAL_APIC */
 
 #ifdef CONFIG_X86_IO_APIC
+<<<<<<< HEAD
 static struct irq_domain_ops sfi_ioapic_irqdomain_ops = {
 	.map = mp_irqdomain_map,
 };
+=======
+>>>>>>> v4.9.227
 
 static int __init sfi_parse_ioapic(struct sfi_table_header *table)
 {
@@ -82,7 +90,11 @@ static int __init sfi_parse_ioapic(struct sfi_table_header *table)
 	int i, num;
 	struct ioapic_domain_cfg cfg = {
 		.type = IOAPIC_DOMAIN_STRICT,
+<<<<<<< HEAD
 		.ops = &sfi_ioapic_irqdomain_ops,
+=======
+		.ops = &mp_ioapic_irqdomain_ops,
+>>>>>>> v4.9.227
 	};
 
 	sb = (struct sfi_table_simple *)table;

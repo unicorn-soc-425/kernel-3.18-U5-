@@ -65,7 +65,11 @@ static void *ibmebus_alloc_coherent(struct device *dev,
 				    size_t size,
 				    dma_addr_t *dma_handle,
 				    gfp_t flag,
+<<<<<<< HEAD
 				    struct dma_attrs *attrs)
+=======
+				    unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	void *mem;
 
@@ -78,7 +82,11 @@ static void *ibmebus_alloc_coherent(struct device *dev,
 static void ibmebus_free_coherent(struct device *dev,
 				  size_t size, void *vaddr,
 				  dma_addr_t dma_handle,
+<<<<<<< HEAD
 				  struct dma_attrs *attrs)
+=======
+				  unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	kfree(vaddr);
 }
@@ -88,7 +96,11 @@ static dma_addr_t ibmebus_map_page(struct device *dev,
 				   unsigned long offset,
 				   size_t size,
 				   enum dma_data_direction direction,
+<<<<<<< HEAD
 				   struct dma_attrs *attrs)
+=======
+				   unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	return (dma_addr_t)(page_address(page) + offset);
 }
@@ -97,7 +109,11 @@ static void ibmebus_unmap_page(struct device *dev,
 			       dma_addr_t dma_addr,
 			       size_t size,
 			       enum dma_data_direction direction,
+<<<<<<< HEAD
 			       struct dma_attrs *attrs)
+=======
+			       unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	return;
 }
@@ -105,7 +121,11 @@ static void ibmebus_unmap_page(struct device *dev,
 static int ibmebus_map_sg(struct device *dev,
 			  struct scatterlist *sgl,
 			  int nents, enum dma_data_direction direction,
+<<<<<<< HEAD
 			  struct dma_attrs *attrs)
+=======
+			  unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	struct scatterlist *sg;
 	int i;
@@ -121,7 +141,11 @@ static int ibmebus_map_sg(struct device *dev,
 static void ibmebus_unmap_sg(struct device *dev,
 			     struct scatterlist *sg,
 			     int nents, enum dma_data_direction direction,
+<<<<<<< HEAD
 			     struct dma_attrs *attrs)
+=======
+			     unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	return;
 }
@@ -180,6 +204,10 @@ static int ibmebus_create_device(struct device_node *dn)
 static int ibmebus_create_devices(const struct of_device_id *matches)
 {
 	struct device_node *root, *child;
+<<<<<<< HEAD
+=======
+	struct device *dev;
+>>>>>>> v4.9.227
 	int ret = 0;
 
 	root = of_find_node_by_path("/");
@@ -188,9 +216,18 @@ static int ibmebus_create_devices(const struct of_device_id *matches)
 		if (!of_match_node(matches, child))
 			continue;
 
+<<<<<<< HEAD
 		if (bus_find_device(&ibmebus_bus_type, NULL, child,
 				    ibmebus_match_node))
 			continue;
+=======
+		dev = bus_find_device(&ibmebus_bus_type, NULL, child,
+				      ibmebus_match_node);
+		if (dev) {
+			put_device(dev);
+			continue;
+		}
+>>>>>>> v4.9.227
 
 		ret = ibmebus_create_device(child);
 		if (ret) {
@@ -227,7 +264,11 @@ int ibmebus_request_irq(u32 ist, irq_handler_t handler,
 {
 	unsigned int irq = irq_create_mapping(NULL, ist);
 
+<<<<<<< HEAD
 	if (irq == NO_IRQ)
+=======
+	if (!irq)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	return request_irq(irq, handler, irq_flags, devname, dev_id);
@@ -262,6 +303,10 @@ static ssize_t ibmebus_store_probe(struct bus_type *bus,
 				   const char *buf, size_t count)
 {
 	struct device_node *dn = NULL;
+<<<<<<< HEAD
+=======
+	struct device *dev;
+>>>>>>> v4.9.227
 	char *path;
 	ssize_t rc = 0;
 
@@ -269,8 +314,15 @@ static ssize_t ibmebus_store_probe(struct bus_type *bus,
 	if (!path)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (bus_find_device(&ibmebus_bus_type, NULL, path,
 			    ibmebus_match_path)) {
+=======
+	dev = bus_find_device(&ibmebus_bus_type, NULL, path,
+			      ibmebus_match_path);
+	if (dev) {
+		put_device(dev);
+>>>>>>> v4.9.227
 		printk(KERN_WARNING "%s: %s has already been probed\n",
 		       __func__, path);
 		rc = -EEXIST;
@@ -307,6 +359,10 @@ static ssize_t ibmebus_store_remove(struct bus_type *bus,
 	if ((dev = bus_find_device(&ibmebus_bus_type, NULL, path,
 				   ibmebus_match_path))) {
 		of_device_unregister(to_platform_device(dev));
+<<<<<<< HEAD
+=======
+		put_device(dev);
+>>>>>>> v4.9.227
 
 		kfree(path);
 		return count;
@@ -408,7 +464,11 @@ static ssize_t modalias_show(struct device *dev,
 	return len+1;
 }
 
+<<<<<<< HEAD
 struct device_attribute ibmebus_bus_device_attrs[] = {
+=======
+static struct device_attribute ibmebus_bus_device_attrs[] = {
+>>>>>>> v4.9.227
 	__ATTR_RO(devspec),
 	__ATTR_RO(name),
 	__ATTR_RO(modalias),

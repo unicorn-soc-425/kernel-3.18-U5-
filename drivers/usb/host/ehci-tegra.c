@@ -81,15 +81,33 @@ static int tegra_reset_usb_controller(struct platform_device *pdev)
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
 	struct tegra_ehci_hcd *tegra =
 		(struct tegra_ehci_hcd *)hcd_to_ehci(hcd)->priv;
+<<<<<<< HEAD
+=======
+	bool has_utmi_pad_registers = false;
+>>>>>>> v4.9.227
 
 	phy_np = of_parse_phandle(pdev->dev.of_node, "nvidia,phy", 0);
 	if (!phy_np)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	if (!usb1_reset_attempted) {
 		struct reset_control *usb1_reset;
 
 		usb1_reset = of_reset_control_get(phy_np, "usb");
+=======
+	if (of_property_read_bool(phy_np, "nvidia,has-utmi-pad-registers"))
+		has_utmi_pad_registers = true;
+
+	if (!usb1_reset_attempted) {
+		struct reset_control *usb1_reset;
+
+		if (!has_utmi_pad_registers)
+			usb1_reset = of_reset_control_get(phy_np, "utmi-pads");
+		else
+			usb1_reset = tegra->rst;
+
+>>>>>>> v4.9.227
 		if (IS_ERR(usb1_reset)) {
 			dev_warn(&pdev->dev,
 				 "can't get utmi-pads reset from the PHY\n");
@@ -99,6 +117,7 @@ static int tegra_reset_usb_controller(struct platform_device *pdev)
 			reset_control_assert(usb1_reset);
 			udelay(1);
 			reset_control_deassert(usb1_reset);
+<<<<<<< HEAD
 		}
 
 		reset_control_put(usb1_reset);
@@ -106,6 +125,17 @@ static int tegra_reset_usb_controller(struct platform_device *pdev)
 	}
 
 	if (!of_property_read_bool(phy_np, "nvidia,has-utmi-pad-registers")) {
+=======
+
+			if (!has_utmi_pad_registers)
+				reset_control_put(usb1_reset);
+		}
+
+		usb1_reset_attempted = true;
+	}
+
+	if (!has_utmi_pad_registers) {
+>>>>>>> v4.9.227
 		reset_control_assert(tegra->rst);
 		udelay(1);
 		reset_control_deassert(tegra->rst);
@@ -304,6 +334,10 @@ struct dma_aligned_buffer {
 static void free_dma_aligned_buffer(struct urb *urb)
 {
 	struct dma_aligned_buffer *temp;
+<<<<<<< HEAD
+=======
+	size_t length;
+>>>>>>> v4.9.227
 
 	if (!(urb->transfer_flags & URB_ALIGNED_TEMP_BUFFER))
 		return;
@@ -311,9 +345,20 @@ static void free_dma_aligned_buffer(struct urb *urb)
 	temp = container_of(urb->transfer_buffer,
 		struct dma_aligned_buffer, data);
 
+<<<<<<< HEAD
 	if (usb_urb_dir_in(urb))
 		memcpy(temp->old_xfer_buffer, temp->data,
 		       urb->transfer_buffer_length);
+=======
+	if (usb_urb_dir_in(urb)) {
+		if (usb_pipeisoc(urb->pipe))
+			length = urb->transfer_buffer_length;
+		else
+			length = urb->actual_length;
+
+		memcpy(temp->old_xfer_buffer, temp->data, length);
+	}
+>>>>>>> v4.9.227
 	urb->transfer_buffer = temp->old_xfer_buffer;
 	kfree(temp->kmalloc_ptr);
 
@@ -451,7 +496,11 @@ static int tegra_ehci_probe(struct platform_device *pdev)
 
 	u_phy = devm_usb_get_phy_by_phandle(&pdev->dev, "nvidia,phy", 0);
 	if (IS_ERR(u_phy)) {
+<<<<<<< HEAD
 		err = PTR_ERR(u_phy);
+=======
+		err = -EPROBE_DEFER;
+>>>>>>> v4.9.227
 		goto cleanup_clk_en;
 	}
 	hcd->usb_phy = u_phy;
@@ -460,6 +509,7 @@ static int tegra_ehci_probe(struct platform_device *pdev)
 		"nvidia,needs-double-reset");
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res) {
 		dev_err(&pdev->dev, "Failed to get I/O memory\n");
 		err = -ENXIO;
@@ -467,11 +517,19 @@ static int tegra_ehci_probe(struct platform_device *pdev)
 	}
 	hcd->rsrc_start = res->start;
 	hcd->rsrc_len = resource_size(res);
+=======
+>>>>>>> v4.9.227
 	hcd->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(hcd->regs)) {
 		err = PTR_ERR(hcd->regs);
 		goto cleanup_clk_en;
 	}
+<<<<<<< HEAD
+=======
+	hcd->rsrc_start = res->start;
+	hcd->rsrc_len = resource_size(res);
+
+>>>>>>> v4.9.227
 	ehci->caps = hcd->regs + 0x100;
 	ehci->has_hostpc = soc_config->has_hostpc;
 
@@ -484,7 +542,10 @@ static int tegra_ehci_probe(struct platform_device *pdev)
 	u_phy->otg = devm_kzalloc(&pdev->dev, sizeof(struct usb_otg),
 			     GFP_KERNEL);
 	if (!u_phy->otg) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Failed to alloc memory for otg\n");
+=======
+>>>>>>> v4.9.227
 		err = -ENOMEM;
 		goto cleanup_phy;
 	}

@@ -31,7 +31,11 @@ struct ad8366_state {
 };
 
 static int ad8366_write(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 			unsigned char ch_a, char unsigned ch_b)
+=======
+			unsigned char ch_a, unsigned char ch_b)
+>>>>>>> v4.9.227
 {
 	struct ad8366_state *st = iio_priv(indio_dev);
 	int ret;
@@ -166,7 +170,11 @@ static int ad8366_probe(struct spi_device *spi)
 	if (ret)
 		goto error_disable_reg;
 
+<<<<<<< HEAD
 	ad8366_write(indio_dev, 0 , 0);
+=======
+	ad8366_write(indio_dev, 0, 0);
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -195,11 +203,18 @@ static const struct spi_device_id ad8366_id[] = {
 	{"ad8366", 0},
 	{}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(spi, ad8366_id);
+>>>>>>> v4.9.227
 
 static struct spi_driver ad8366_driver = {
 	.driver = {
 		.name	= KBUILD_MODNAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ad8366_probe,
 	.remove		= ad8366_remove,

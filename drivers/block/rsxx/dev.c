@@ -112,6 +112,7 @@ static const struct block_device_operations rsxx_fops = {
 
 static void disk_stats_start(struct rsxx_cardinfo *card, struct bio *bio)
 {
+<<<<<<< HEAD
 	struct hd_struct *part0 = &card->gendisk->part0;
 	int rw = bio_data_dir(bio);
 	int cpu;
@@ -122,12 +123,17 @@ static void disk_stats_start(struct rsxx_cardinfo *card, struct bio *bio)
 	part_inc_in_flight(part0, rw);
 
 	part_stat_unlock();
+=======
+	generic_start_io_acct(bio_data_dir(bio), bio_sectors(bio),
+			     &card->gendisk->part0);
+>>>>>>> v4.9.227
 }
 
 static void disk_stats_complete(struct rsxx_cardinfo *card,
 				struct bio *bio,
 				unsigned long start_time)
 {
+<<<<<<< HEAD
 	struct hd_struct *part0 = &card->gendisk->part0;
 	unsigned long duration = jiffies - start_time;
 	int rw = bio_data_dir(bio);
@@ -143,6 +149,10 @@ static void disk_stats_complete(struct rsxx_cardinfo *card,
 	part_dec_in_flight(part0, rw);
 
 	part_stat_unlock();
+=======
+	generic_end_io_acct(bio_data_dir(bio), &card->gendisk->part0,
+			   start_time);
+>>>>>>> v4.9.227
 }
 
 static void bio_dma_done_cb(struct rsxx_cardinfo *card,
@@ -158,17 +168,33 @@ static void bio_dma_done_cb(struct rsxx_cardinfo *card,
 		if (!card->eeh_state && card->gendisk)
 			disk_stats_complete(card, meta->bio, meta->start_time);
 
+<<<<<<< HEAD
 		bio_endio(meta->bio, atomic_read(&meta->error) ? -EIO : 0);
+=======
+		if (atomic_read(&meta->error))
+			bio_io_error(meta->bio);
+		else
+			bio_endio(meta->bio);
+>>>>>>> v4.9.227
 		kmem_cache_free(bio_meta_pool, meta);
 	}
 }
 
+<<<<<<< HEAD
 static void rsxx_make_request(struct request_queue *q, struct bio *bio)
+=======
+static blk_qc_t rsxx_make_request(struct request_queue *q, struct bio *bio)
+>>>>>>> v4.9.227
 {
 	struct rsxx_cardinfo *card = q->queuedata;
 	struct rsxx_bio_meta *bio_meta;
 	int st = -EINVAL;
 
+<<<<<<< HEAD
+=======
+	blk_queue_split(q, &bio, q->bio_split);
+
+>>>>>>> v4.9.227
 	might_sleep();
 
 	if (!card)
@@ -215,12 +241,23 @@ static void rsxx_make_request(struct request_queue *q, struct bio *bio)
 	if (st)
 		goto queue_err;
 
+<<<<<<< HEAD
 	return;
+=======
+	return BLK_QC_T_NONE;
+>>>>>>> v4.9.227
 
 queue_err:
 	kmem_cache_free(bio_meta_pool, bio_meta);
 req_err:
+<<<<<<< HEAD
 	bio_endio(bio, st);
+=======
+	if (st)
+		bio->bi_error = st;
+	bio_endio(bio);
+	return BLK_QC_T_NONE;
+>>>>>>> v4.9.227
 }
 
 /*----------------- Device Setup -------------------*/
@@ -243,8 +280,12 @@ int rsxx_attach_dev(struct rsxx_cardinfo *card)
 			set_capacity(card->gendisk, card->size8 >> 9);
 		else
 			set_capacity(card->gendisk, 0);
+<<<<<<< HEAD
 		add_disk(card->gendisk);
 
+=======
+		device_add_disk(CARD_TO_DEV(card), card->gendisk);
+>>>>>>> v4.9.227
 		card->bdev_attached = 1;
 	}
 
@@ -321,7 +362,10 @@ int rsxx_setup_dev(struct rsxx_cardinfo *card)
 
 	snprintf(card->gendisk->disk_name, sizeof(card->gendisk->disk_name),
 		 "rsxx%d", card->disk_id);
+<<<<<<< HEAD
 	card->gendisk->driverfs_dev = &card->dev->dev;
+=======
+>>>>>>> v4.9.227
 	card->gendisk->major = card->major;
 	card->gendisk->first_minor = 0;
 	card->gendisk->fops = &rsxx_fops;

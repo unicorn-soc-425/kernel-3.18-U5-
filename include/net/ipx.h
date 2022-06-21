@@ -42,6 +42,12 @@ struct ipxhdr {
 	struct ipx_address	ipx_source __packed;
 };
 
+<<<<<<< HEAD
+=======
+/* From af_ipx.c */
+extern int sysctl_ipx_pprop_broadcasting;
+
+>>>>>>> v4.9.227
 static __inline__ struct ipxhdr *ipx_hdr(struct sk_buff *skb)
 {
 	return (struct ipxhdr *)skb_transport_header(skb);
@@ -147,7 +153,11 @@ int ipxrtr_add_route(__be32 network, struct ipx_interface *intrfc,
 		     unsigned char *node);
 void ipxrtr_del_routes(struct ipx_interface *intrfc);
 int ipxrtr_route_packet(struct sock *sk, struct sockaddr_ipx *usipx,
+<<<<<<< HEAD
 			struct iovec *iov, size_t len, int noblock);
+=======
+			struct msghdr *msg, size_t len, int noblock);
+>>>>>>> v4.9.227
 int ipxrtr_route_skb(struct sk_buff *skb);
 struct ipx_route *ipxrtr_lookup(__be32 net);
 int ipxrtr_ioctl(unsigned int cmd, void __user *arg);

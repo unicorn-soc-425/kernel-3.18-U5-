@@ -24,7 +24,10 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/completion.h>
+=======
+>>>>>>> v4.9.227
 #include "internal.h"
 
 LIST_HEAD(crypto_alg_list);
@@ -216,7 +219,11 @@ struct crypto_alg *crypto_larval_lookup(const char *name, u32 type, u32 mask)
 	type &= mask;
 
 	alg = crypto_alg_lookup(name, type, mask);
+<<<<<<< HEAD
 	if (!alg) {
+=======
+	if (!alg && !(mask & CRYPTO_NOLOAD)) {
+>>>>>>> v4.9.227
 		request_module("crypto-%s", name);
 
 		if (!((type ^ CRYPTO_ALG_NEED_FALLBACK) & mask &
@@ -258,6 +265,19 @@ struct crypto_alg *crypto_alg_mod_lookup(const char *name, u32 type, u32 mask)
 		mask |= CRYPTO_ALG_TESTED;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If the internal flag is set for a cipher, require a caller to
+	 * to invoke the cipher with the internal flag to use that cipher.
+	 * Also, if a caller wants to allocate a cipher that may or may
+	 * not be an internal cipher, use type | CRYPTO_ALG_INTERNAL and
+	 * !(mask & CRYPTO_ALG_INTERNAL).
+	 */
+	if (!((type | mask) & CRYPTO_ALG_INTERNAL))
+		mask |= CRYPTO_ALG_INTERNAL;
+
+>>>>>>> v4.9.227
 	larval = crypto_larval_lookup(name, type, mask);
 	if (IS_ERR(larval) || !crypto_is_larval(larval))
 		return larval;
@@ -346,13 +366,20 @@ static unsigned int crypto_ctxsize(struct crypto_alg *alg, u32 type, u32 mask)
 	return len;
 }
 
+<<<<<<< HEAD
 void crypto_shoot_alg(struct crypto_alg *alg)
+=======
+static void crypto_shoot_alg(struct crypto_alg *alg)
+>>>>>>> v4.9.227
 {
 	down_write(&crypto_alg_sem);
 	alg->cra_flags |= CRYPTO_ALG_DYING;
 	up_write(&crypto_alg_sem);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(crypto_shoot_alg);
+=======
+>>>>>>> v4.9.227
 
 struct crypto_tfm *__crypto_alloc_tfm(struct crypto_alg *alg, u32 type,
 				      u32 mask)
@@ -602,6 +629,7 @@ int crypto_has_alg(const char *name, u32 type, u32 mask)
 }
 EXPORT_SYMBOL_GPL(crypto_has_alg);
 
+<<<<<<< HEAD
 void crypto_req_done(struct crypto_async_request *req, int err)
 {
 	struct crypto_wait *wait = req->data;
@@ -614,5 +642,7 @@ void crypto_req_done(struct crypto_async_request *req, int err)
 }
 EXPORT_SYMBOL_GPL(crypto_req_done);
 
+=======
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Cryptographic core API");
 MODULE_LICENSE("GPL");

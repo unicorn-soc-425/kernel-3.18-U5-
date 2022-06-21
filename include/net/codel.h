@@ -7,7 +7,11 @@
  *  Copyright (C) 2011-2012 Kathleen Nichols <nichols@pollere.com>
  *  Copyright (C) 2011-2012 Van Jacobson <van@pollere.net>
  *  Copyright (C) 2012 Michael D. Taht <dave.taht@bufferbloat.net>
+<<<<<<< HEAD
  *  Copyright (C) 2012 Eric Dumazet <edumazet@google.com>
+=======
+ *  Copyright (C) 2012,2015 Eric Dumazet <edumazet@google.com>
+>>>>>>> v4.9.227
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -87,6 +91,7 @@ static inline codel_time_t codel_get_time(void)
 	 ((s32)((a) - (b)) >= 0))
 #define codel_time_before_eq(a, b)	codel_time_after_eq(b, a)
 
+<<<<<<< HEAD
 /* Qdiscs using codel plugin must use codel_skb_cb in their own cb[] */
 struct codel_skb_cb {
 	codel_time_t enqueue_time;
@@ -108,6 +113,8 @@ static void codel_set_enqueue_time(struct sk_buff *skb)
 	get_codel_cb(skb)->enqueue_time = codel_get_time();
 }
 
+=======
+>>>>>>> v4.9.227
 static inline u32 codel_time_to_us(codel_time_t val)
 {
 	u64 valns = ((u64)val << CODEL_SHIFT);
@@ -119,12 +126,24 @@ static inline u32 codel_time_to_us(codel_time_t val)
 /**
  * struct codel_params - contains codel parameters
  * @target:	target queue size (in time units)
+<<<<<<< HEAD
  * @interval:	width of moving time window
+=======
+ * @ce_threshold:  threshold for marking packets with ECN CE
+ * @interval:	width of moving time window
+ * @mtu:	device mtu, or minimal queue backlog in bytes.
+>>>>>>> v4.9.227
  * @ecn:	is Explicit Congestion Notification enabled
  */
 struct codel_params {
 	codel_time_t	target;
+<<<<<<< HEAD
 	codel_time_t	interval;
+=======
+	codel_time_t	ce_threshold;
+	codel_time_t	interval;
+	u32		mtu;
+>>>>>>> v4.9.227
 	bool		ecn;
 };
 
@@ -160,12 +179,17 @@ struct codel_vars {
  * @drop_count:	temp count of dropped packets in dequeue()
  * @drop_len:	bytes of dropped packets in dequeue()
  * ecn_mark:	number of packets we ECN marked instead of dropping
+<<<<<<< HEAD
+=======
+ * ce_mark:	number of packets CE marked because sojourn time was above ce_threshold
+>>>>>>> v4.9.227
  */
 struct codel_stats {
 	u32		maxpacket;
 	u32		drop_count;
 	u32		drop_len;
 	u32		ecn_mark;
+<<<<<<< HEAD
 };
 
 static void codel_params_init(struct codel_params *params)
@@ -356,4 +380,17 @@ static struct sk_buff *codel_dequeue(struct Qdisc *sch,
 end:
 	return skb;
 }
+=======
+	u32		ce_mark;
+};
+
+#define CODEL_DISABLED_THRESHOLD INT_MAX
+
+typedef u32 (*codel_skb_len_t)(const struct sk_buff *skb);
+typedef codel_time_t (*codel_skb_time_t)(const struct sk_buff *skb);
+typedef void (*codel_skb_drop_t)(struct sk_buff *skb, void *ctx);
+typedef struct sk_buff * (*codel_skb_dequeue_t)(struct codel_vars *vars,
+						void *ctx);
+
+>>>>>>> v4.9.227
 #endif

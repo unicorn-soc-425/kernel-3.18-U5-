@@ -18,7 +18,11 @@
 #include <linux/dirent.h>
 #include <linux/syscalls.h>
 #include <linux/utime.h>
+<<<<<<< HEAD
 #include <linux/initramfs.h>
+=======
+#include <linux/file.h>
+>>>>>>> v4.9.227
 
 static ssize_t __init xwrite(int fd, const char *p, size_t count)
 {
@@ -527,14 +531,22 @@ extern unsigned long __initramfs_size;
 
 static void __init free_initrd(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> v4.9.227
 	unsigned long crashk_start = (unsigned long)__va(crashk_res.start);
 	unsigned long crashk_end   = (unsigned long)__va(crashk_res.end);
 #endif
 	if (do_retain_initrd)
 		goto skip;
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> v4.9.227
 	/*
 	 * If the initrd region is overlapped with crashkernel reserved region,
 	 * free only memory that is not part of crashkernel region.
@@ -606,6 +618,7 @@ static void __init clean_rootfs(void)
 }
 #endif
 
+<<<<<<< HEAD
 static int __initdata do_skip_initramfs;
 
 static int __init skip_initramfs_param(char *str)
@@ -628,6 +641,11 @@ static int __init populate_rootfs(void)
 	}
 
 	err = unpack_to_rootfs(__initramfs_start, __initramfs_size);
+=======
+static int __init populate_rootfs(void)
+{
+	char *err = unpack_to_rootfs(__initramfs_start, __initramfs_size);
+>>>>>>> v4.9.227
 	if (err)
 		panic("%s", err); /* Failed to decompress INTERNAL initramfs */
 	if (initrd_start) {
@@ -667,6 +685,10 @@ static int __init populate_rootfs(void)
 			printk(KERN_EMERG "Initramfs unpacking failed: %s\n", err);
 		free_initrd();
 #endif
+<<<<<<< HEAD
+=======
+		flush_delayed_fput();
+>>>>>>> v4.9.227
 		/*
 		 * Try loading default modules from initramfs.  This gives
 		 * us a chance to load before device_initcalls.

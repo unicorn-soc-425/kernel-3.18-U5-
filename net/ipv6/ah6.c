@@ -272,10 +272,16 @@ static int ipv6_clear_mutable_options(struct ipv6hdr *iph, int len, int dir)
 				ipv6_rearrange_destopt(iph, exthdr.opth);
 		case NEXTHDR_HOP:
 			if (!zero_out_mutable_opts(exthdr.opth)) {
+<<<<<<< HEAD
 				LIMIT_NETDEBUG(
 					KERN_WARNING "overrun %sopts\n",
 					nexthdr == NEXTHDR_HOP ?
 						"hop" : "dest");
+=======
+				net_dbg_ratelimited("overrun %sopts\n",
+						    nexthdr == NEXTHDR_HOP ?
+						    "hop" : "dest");
+>>>>>>> v4.9.227
 				return -EINVAL;
 			}
 			break;
@@ -354,7 +360,12 @@ static int ah6_output(struct xfrm_state *x, struct sk_buff *skb)
 	ahp = x->data;
 	ahash = ahp->ahash;
 
+<<<<<<< HEAD
 	if ((err = skb_cow_data(skb, 0, &trailer)) < 0)
+=======
+	err = skb_cow_data(skb, 0, &trailer);
+	if (err < 0)
+>>>>>>> v4.9.227
 		goto out;
 	nfrags = err;
 
@@ -562,8 +573,13 @@ static int ah6_input(struct xfrm_state *x, struct sk_buff *skb)
 	if (!pskb_may_pull(skb, ah_hlen))
 		goto out;
 
+<<<<<<< HEAD
 
 	if ((err = skb_cow_data(skb, 0, &trailer)) < 0)
+=======
+	err = skb_cow_data(skb, 0, &trailer);
+	if (err < 0)
+>>>>>>> v4.9.227
 		goto out;
 	nfrags = err;
 
@@ -579,8 +595,15 @@ static int ah6_input(struct xfrm_state *x, struct sk_buff *skb)
 
 	work_iph = ah_alloc_tmp(ahash, nfrags + sglists, hdr_len +
 				ahp->icv_trunc_len + seqhi_len);
+<<<<<<< HEAD
 	if (!work_iph)
 		goto out;
+=======
+	if (!work_iph) {
+		err = -ENOMEM;
+		goto out;
+	}
+>>>>>>> v4.9.227
 
 	auth_data = ah_tmp_auth((u8 *)work_iph, hdr_len);
 	seqhi = (__be32 *)(auth_data + ahp->icv_trunc_len);
@@ -664,10 +687,16 @@ static int ah6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 		return 0;
 
 	if (type == NDISC_REDIRECT)
+<<<<<<< HEAD
 		ip6_redirect(skb, net, skb->dev->ifindex, 0,
 			     sock_net_uid(net, NULL));
 	else
 		ip6_update_pmtu(skb, net, info, 0, 0, sock_net_uid(net, NULL));
+=======
+		ip6_redirect(skb, net, skb->dev->ifindex, 0);
+	else
+		ip6_update_pmtu(skb, net, info, 0, 0);
+>>>>>>> v4.9.227
 	xfrm_state_put(x);
 
 	return 0;
@@ -686,7 +715,11 @@ static int ah6_init_state(struct xfrm_state *x)
 		goto error;
 
 	ahp = kzalloc(sizeof(*ahp), GFP_KERNEL);
+<<<<<<< HEAD
 	if (ahp == NULL)
+=======
+	if (!ahp)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	ahash = crypto_alloc_ahash(x->aalg->alg_name, 0, 0);

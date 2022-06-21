@@ -12,6 +12,7 @@ endif
 dtb-$(CONFIG_METAG_BUILTIN_DTB)	+= $(builtindtb-y).dtb
 obj-$(CONFIG_METAG_BUILTIN_DTB)	+= $(builtindtb-y).dtb.o
 
+<<<<<<< HEAD
 targets	+= dtbs
 targets	+= $(dtb-y)
 
@@ -19,4 +20,12 @@ targets	+= $(dtb-y)
 
 dtbs: $(addprefix $(obj)/, $(dtb-y))
 
+=======
+dtstree		:= $(srctree)/$(src)
+dtb-$(CONFIG_OF_ALL_DTBS) := $(patsubst $(dtstree)/%.dts,%.dtb, $(wildcard $(dtstree)/*.dts))
+
+.SECONDARY: $(obj)/$(builtindtb-y).dtb.S
+
+always += $(dtb-y)
+>>>>>>> v4.9.227
 clean-files += *.dtb *.dtb.S

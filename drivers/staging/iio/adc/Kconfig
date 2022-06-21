@@ -5,7 +5,12 @@ menu "Analog to digital converters"
 
 config AD7606
 	tristate "Analog Devices AD7606 ADC driver"
+<<<<<<< HEAD
 	depends on GPIOLIB
+=======
+	depends on GPIOLIB || COMPILE_TEST
+	depends on HAS_IOMEM
+>>>>>>> v4.9.227
 	select IIO_BUFFER
 	select IIO_TRIGGERED_BUFFER
 	help
@@ -23,7 +28,11 @@ config AD7606_IFACE_PARALLEL
 	  ADC driver.
 
 	  To compile this driver as a module, choose M here: the
+<<<<<<< HEAD
 	  module will be called ad7606_iface_parallel.
+=======
+	  module will be called ad7606_parallel.
+>>>>>>> v4.9.227
 
 config AD7606_IFACE_SPI
 	tristate "spi interface support"
@@ -34,12 +43,20 @@ config AD7606_IFACE_SPI
 	  ADC driver.
 
 	  To compile this driver as a module, choose M here: the
+<<<<<<< HEAD
 	  module will be called ad7606_iface_spi.
+=======
+	  module will be called ad7606_spi.
+>>>>>>> v4.9.227
 
 config AD7780
 	tristate "Analog Devices AD7780 and similar ADCs driver"
 	depends on SPI
+<<<<<<< HEAD
 	depends on GPIOLIB
+=======
+	depends on GPIOLIB || COMPILE_TEST
+>>>>>>> v4.9.227
 	select AD_SIGMA_DELTA
 	help
 	  Say yes here to build support for Analog Devices AD7170, AD7171,
@@ -52,18 +69,30 @@ config AD7780
 config AD7816
 	tristate "Analog Devices AD7816/7/8 temperature sensor and ADC driver"
 	depends on SPI
+<<<<<<< HEAD
 	depends on GPIOLIB
+=======
+	depends on GPIOLIB || COMPILE_TEST
+>>>>>>> v4.9.227
 	help
 	  Say yes here to build support for Analog Devices AD7816/7/8
 	  temperature sensors and ADC.
 
 config AD7192
+<<<<<<< HEAD
 	tristate "Analog Devices AD7190 AD7192 AD7195 ADC driver"
+=======
+	tristate "Analog Devices AD7190 AD7192 AD7193 AD7195 ADC driver"
+>>>>>>> v4.9.227
 	depends on SPI
 	select AD_SIGMA_DELTA
 	help
 	  Say yes here to build support for Analog Devices AD7190,
+<<<<<<< HEAD
 	  AD7192 or AD7195 SPI analog to digital converters (ADC).
+=======
+	  AD7192, AD7193 or AD7195 SPI analog to digital converters (ADC).
+>>>>>>> v4.9.227
 	  If unsure, say N (but it's safe to say "Y").
 
 	  To compile this driver as a module, choose M here: the
@@ -91,6 +120,7 @@ config LPC32XX_ADC
 	  activate only one via device tree selection.  Provides direct access
 	  via sysfs.
 
+<<<<<<< HEAD
 config MXS_LRADC
 	tristate "Freescale i.MX23/i.MX28 LRADC"
 	depends on (ARCH_MXS || COMPILE_TEST) && HAS_IOMEM
@@ -105,6 +135,8 @@ config MXS_LRADC
 	  To compile this driver as a module, choose M here: the
 	  module will be called mxs-lradc.
 
+=======
+>>>>>>> v4.9.227
 config SPEAR_ADC
 	tristate "ST SPEAr ADC"
 	depends on PLAT_SPEAR || COMPILE_TEST

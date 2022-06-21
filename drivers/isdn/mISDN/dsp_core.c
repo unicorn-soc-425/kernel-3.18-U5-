@@ -460,7 +460,11 @@ dsp_control_req(struct dsp *dsp, struct mISDNhead *hh, struct sk_buff *skb)
 		}
 		if (dsp_debug & DEBUG_DSP_CORE)
 			printk(KERN_DEBUG "%s: enable mixing of "
+<<<<<<< HEAD
 			       "tx-data with conf mebers\n", __func__);
+=======
+			       "tx-data with conf members\n", __func__);
+>>>>>>> v4.9.227
 		dsp->tx_mix = 1;
 		dsp_cmx_hardware(dsp->conf, dsp);
 		dsp_rx_off(dsp);
@@ -474,7 +478,11 @@ dsp_control_req(struct dsp *dsp, struct mISDNhead *hh, struct sk_buff *skb)
 		}
 		if (dsp_debug & DEBUG_DSP_CORE)
 			printk(KERN_DEBUG "%s: disable mixing of "
+<<<<<<< HEAD
 			       "tx-data with conf mebers\n", __func__);
+=======
+			       "tx-data with conf members\n", __func__);
+>>>>>>> v4.9.227
 		dsp->tx_mix = 0;
 		dsp_cmx_hardware(dsp->conf, dsp);
 		dsp_rx_off(dsp);

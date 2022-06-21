@@ -104,8 +104,12 @@ static struct ip_vs_scheduler *ip_vs_sched_getbyname(const char *sched_name)
 			mutex_unlock(&ip_vs_sched_mutex);
 			return sched;
 		}
+<<<<<<< HEAD
 		if (sched->module)
 			module_put(sched->module);
+=======
+		module_put(sched->module);
+>>>>>>> v4.9.227
 	}
 
 	mutex_unlock(&ip_vs_sched_mutex);
@@ -138,7 +142,11 @@ struct ip_vs_scheduler *ip_vs_scheduler_get(const char *sched_name)
 
 void ip_vs_scheduler_put(struct ip_vs_scheduler *scheduler)
 {
+<<<<<<< HEAD
 	if (scheduler && scheduler->module)
+=======
+	if (scheduler)
+>>>>>>> v4.9.227
 		module_put(scheduler->module);
 }
 

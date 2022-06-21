@@ -3,6 +3,10 @@
  *
  * Copyright (C) 2013  Renesas Solutions Corp.
  * Copyright (C) 2013  Magnus Damm
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2014  Ulrich Hecht
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,6 +16,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -19,11 +24,21 @@
  */
 
 #include <linux/clk/shmobile.h>
+=======
+ */
+
+#include <linux/clk/renesas.h>
+>>>>>>> v4.9.227
 #include <linux/clocksource.h>
 #include <linux/device.h>
 #include <linux/dma-contiguous.h>
 #include <linux/io.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/memblock.h>
+#include <linux/of.h>
+>>>>>>> v4.9.227
 #include <linux/of_fdt.h>
 #include <asm/mach/arch.h>
 #include "common.h"
@@ -47,11 +62,35 @@ u32 rcar_gen2_read_mode_pins(void)
 	return mode;
 }
 
+<<<<<<< HEAD
+=======
+static unsigned int __init get_extal_freq(void)
+{
+	struct device_node *cpg, *extal;
+	u32 freq = 20000000;
+
+	cpg = of_find_compatible_node(NULL, NULL,
+				      "renesas,rcar-gen2-cpg-clocks");
+	if (!cpg)
+		return freq;
+
+	extal = of_parse_phandle(cpg, "clocks", 0);
+	of_node_put(cpg);
+	if (!extal)
+		return freq;
+
+	of_property_read_u32(extal, "clock-frequency", &freq);
+	of_node_put(extal);
+	return freq;
+}
+
+>>>>>>> v4.9.227
 #define CNTCR 0
 #define CNTFID0 0x20
 
 void __init rcar_gen2_timer_init(void)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_ARM_ARCH_TIMER) || defined(CONFIG_COMMON_CLK)
 	u32 mode = rcar_gen2_read_mode_pins();
 #endif
@@ -85,6 +124,44 @@ void __init rcar_gen2_timer_init(void)
 	/* The arch timer frequency equals EXTAL / 2 */
 	freq = extal_mhz * (1000000 / 2);
 
+=======
+	u32 mode = rcar_gen2_read_mode_pins();
+#ifdef CONFIG_ARM_ARCH_TIMER
+	void __iomem *base;
+	u32 freq;
+
+	if (of_machine_is_compatible("renesas,r8a7792") ||
+	    of_machine_is_compatible("renesas,r8a7794")) {
+		freq = 260000000 / 8;	/* ZS / 8 */
+		/* CNTVOFF has to be initialized either from non-secure
+		 * Hypervisor mode or secure Monitor mode with SCR.NS==1.
+		 * If TrustZone is enabled then it should be handled by the
+		 * secure code.
+		 */
+		asm volatile(
+		"	cps	0x16\n"
+		"	mrc	p15, 0, r1, c1, c1, 0\n"
+		"	orr	r0, r1, #1\n"
+		"	mcr	p15, 0, r0, c1, c1, 0\n"
+		"	isb\n"
+		"	mov	r0, #0\n"
+		"	mcrr	p15, 4, r0, r0, c14\n"
+		"	isb\n"
+		"	mcr	p15, 0, r1, c1, c1, 0\n"
+		"	isb\n"
+		"	cps	0x13\n"
+			: : : "r0", "r1");
+	} else {
+		/* At Linux boot time the r8a7790 arch timer comes up
+		 * with the counter disabled. Moreover, it may also report
+		 * a potentially incorrect fixed 13 MHz frequency. To be
+		 * correct these registers need to be updated to use the
+		 * frequency EXTAL / 2.
+		 */
+		freq = get_extal_freq() / 2;
+	}
+
+>>>>>>> v4.9.227
 	/* Remap "armgcnt address map" space */
 	base = ioremap(0xe6080000, PAGE_SIZE);
 
@@ -108,10 +185,15 @@ void __init rcar_gen2_timer_init(void)
 	iounmap(base);
 #endif /* CONFIG_ARM_ARCH_TIMER */
 
+<<<<<<< HEAD
 #ifdef CONFIG_COMMON_CLK
 	rcar_gen2_clocks_init(mode);
 #endif
 	clocksource_of_init();
+=======
+	rcar_gen2_clocks_init(mode);
+	clocksource_probe();
+>>>>>>> v4.9.227
 }
 
 struct memory_reserve_config {
@@ -165,8 +247,11 @@ static int __init rcar_gen2_scan_mem(unsigned long node, const char *uname,
 	return 0;
 }
 
+<<<<<<< HEAD
 struct cma *rcar_gen2_dma_contiguous;
 
+=======
+>>>>>>> v4.9.227
 void __init rcar_gen2_reserve(void)
 {
 	struct memory_reserve_config mrc;
@@ -177,8 +262,17 @@ void __init rcar_gen2_reserve(void)
 
 	of_scan_flat_dt(rcar_gen2_scan_mem, &mrc);
 #ifdef CONFIG_DMA_CMA
+<<<<<<< HEAD
 	if (mrc.size)
 		dma_contiguous_reserve_area(mrc.size, mrc.base, 0,
 					    &rcar_gen2_dma_contiguous, true);
+=======
+	if (mrc.size && memblock_is_region_memory(mrc.base, mrc.size)) {
+		static struct cma *rcar_gen2_dma_contiguous;
+
+		dma_contiguous_reserve_area(mrc.size, mrc.base, 0,
+					    &rcar_gen2_dma_contiguous, true);
+	}
+>>>>>>> v4.9.227
 #endif
 }

@@ -37,6 +37,10 @@
 struct exynos_drm_fb {
 	struct drm_framebuffer	fb;
 	struct exynos_drm_gem	*exynos_gem[MAX_FB_BUFFER];
+<<<<<<< HEAD
+=======
+	dma_addr_t			dma_addr[MAX_FB_BUFFER];
+>>>>>>> v4.9.227
 };
 
 static int check_fb_gem_memory_type(struct drm_device *drm_dev,
@@ -54,11 +58,19 @@ static int check_fb_gem_memory_type(struct drm_device *drm_dev,
 	flags = exynos_gem->flags;
 
 	/*
+<<<<<<< HEAD
 	 * without iommu support, not support physically non-continuous memory
 	 * for framebuffer.
 	 */
 	if (IS_NONCONTIG_BUFFER(flags)) {
 		DRM_ERROR("cannot use this gem memory type for fb.\n");
+=======
+	 * Physically non-contiguous memory type for framebuffer is not
+	 * supported without IOMMU.
+	 */
+	if (IS_NONCONTIG_BUFFER(flags)) {
+		DRM_ERROR("Non-contiguous GEM memory is not supported.\n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -70,9 +82,12 @@ static void exynos_drm_fb_destroy(struct drm_framebuffer *fb)
 	struct exynos_drm_fb *exynos_fb = to_exynos_fb(fb);
 	unsigned int i;
 
+<<<<<<< HEAD
 	/* make sure that overlay data are updated before relesing fb. */
 	exynos_drm_crtc_complete_scanout(fb);
 
+=======
+>>>>>>> v4.9.227
 	drm_framebuffer_cleanup(fb);
 
 	for (i = 0; i < ARRAY_SIZE(exynos_fb->exynos_gem); i++) {
@@ -99,6 +114,7 @@ static int exynos_drm_fb_create_handle(struct drm_framebuffer *fb,
 				     &exynos_fb->exynos_gem[0]->base, handle);
 }
 
+<<<<<<< HEAD
 static int exynos_drm_fb_dirty(struct drm_framebuffer *fb,
 				struct drm_file *file_priv, unsigned flags,
 				unsigned color, struct drm_clip_rect *clips,
@@ -113,11 +129,20 @@ static struct drm_framebuffer_funcs exynos_drm_fb_funcs = {
 	.destroy	= exynos_drm_fb_destroy,
 	.create_handle	= exynos_drm_fb_create_handle,
 	.dirty		= exynos_drm_fb_dirty,
+=======
+static const struct drm_framebuffer_funcs exynos_drm_fb_funcs = {
+	.destroy	= exynos_drm_fb_destroy,
+	.create_handle	= exynos_drm_fb_create_handle,
+>>>>>>> v4.9.227
 };
 
 struct drm_framebuffer *
 exynos_drm_framebuffer_init(struct drm_device *dev,
+<<<<<<< HEAD
 			    struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+			    const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 			    struct exynos_drm_gem **exynos_gem,
 			    int count)
 {
@@ -135,6 +160,11 @@ exynos_drm_framebuffer_init(struct drm_device *dev,
 			goto err;
 
 		exynos_fb->exynos_gem[i] = exynos_gem[i];
+<<<<<<< HEAD
+=======
+		exynos_fb->dma_addr[i] = exynos_gem[i]->dma_addr
+						+ mode_cmd->offsets[i];
+>>>>>>> v4.9.227
 	}
 
 	drm_helper_mode_fill_fb_struct(&exynos_fb->fb, mode_cmd);
@@ -154,7 +184,11 @@ err:
 
 static struct drm_framebuffer *
 exynos_user_fb_create(struct drm_device *dev, struct drm_file *file_priv,
+<<<<<<< HEAD
 		      struct drm_mode_fb_cmd2 *mode_cmd)
+=======
+		      const struct drm_mode_fb_cmd2 *mode_cmd)
+>>>>>>> v4.9.227
 {
 	struct exynos_drm_gem *exynos_gem[MAX_FB_BUFFER];
 	struct drm_gem_object *obj;
@@ -163,8 +197,12 @@ exynos_user_fb_create(struct drm_device *dev, struct drm_file *file_priv,
 	int ret;
 
 	for (i = 0; i < drm_format_num_planes(mode_cmd->pixel_format); i++) {
+<<<<<<< HEAD
 		obj = drm_gem_object_lookup(dev, file_priv,
 					    mode_cmd->handles[i]);
+=======
+		obj = drm_gem_object_lookup(file_priv, mode_cmd->handles[i]);
+>>>>>>> v4.9.227
 		if (!obj) {
 			DRM_ERROR("failed to lookup gem object\n");
 			ret = -ENOENT;
@@ -189,6 +227,7 @@ err:
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 struct exynos_drm_gem *exynos_drm_fb_gem(struct drm_framebuffer *fb, int index)
 {
 	struct exynos_drm_fb *exynos_fb = to_exynos_fb(fb);
@@ -215,12 +254,26 @@ static void exynos_drm_output_poll_changed(struct drm_device *dev)
 		drm_fb_helper_hotplug_event(fb_helper);
 	else
 		exynos_drm_fbdev_init(dev);
+=======
+dma_addr_t exynos_drm_fb_dma_addr(struct drm_framebuffer *fb, int index)
+{
+	struct exynos_drm_fb *exynos_fb = to_exynos_fb(fb);
+
+	if (index >= MAX_FB_BUFFER)
+		return DMA_ERROR_CODE;
+
+	return exynos_fb->dma_addr[index];
+>>>>>>> v4.9.227
 }
 
 static const struct drm_mode_config_funcs exynos_drm_mode_config_funcs = {
 	.fb_create = exynos_user_fb_create,
 	.output_poll_changed = exynos_drm_output_poll_changed,
+<<<<<<< HEAD
 	.atomic_check = drm_atomic_helper_check,
+=======
+	.atomic_check = exynos_atomic_check,
+>>>>>>> v4.9.227
 	.atomic_commit = exynos_atomic_commit,
 };
 

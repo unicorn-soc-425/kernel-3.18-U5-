@@ -240,7 +240,11 @@ static irqreturn_t sh_tmu_interrupt(int irq, void *dev_id)
 	struct sh_tmu_channel *ch = dev_id;
 
 	/* disable or acknowledge interrupt */
+<<<<<<< HEAD
 	if (ch->ced.mode == CLOCK_EVT_MODE_ONESHOT)
+=======
+	if (clockevent_state_oneshot(&ch->ced))
+>>>>>>> v4.9.227
 		sh_tmu_write(ch, TCR, TCR_TPSC_CLK4);
 	else
 		sh_tmu_write(ch, TCR, TCR_UNIE | TCR_TPSC_CLK4);
@@ -272,7 +276,11 @@ static int sh_tmu_clocksource_enable(struct clocksource *cs)
 
 	ret = sh_tmu_enable(ch);
 	if (!ret) {
+<<<<<<< HEAD
 		__clocksource_updatefreq_hz(cs, ch->rate);
+=======
+		__clocksource_update_freq_hz(cs, ch->rate);
+>>>>>>> v4.9.227
 		ch->cs_enabled = true;
 	}
 
@@ -358,6 +366,7 @@ static void sh_tmu_clock_event_start(struct sh_tmu_channel *ch, int periodic)
 	}
 }
 
+<<<<<<< HEAD
 static void sh_tmu_clock_event_mode(enum clock_event_mode mode,
 				    struct clock_event_device *ced)
 {
@@ -394,6 +403,40 @@ static void sh_tmu_clock_event_mode(enum clock_event_mode mode,
 	default:
 		break;
 	}
+=======
+static int sh_tmu_clock_event_shutdown(struct clock_event_device *ced)
+{
+	struct sh_tmu_channel *ch = ced_to_sh_tmu(ced);
+
+	if (clockevent_state_oneshot(ced) || clockevent_state_periodic(ced))
+		sh_tmu_disable(ch);
+	return 0;
+}
+
+static int sh_tmu_clock_event_set_state(struct clock_event_device *ced,
+					int periodic)
+{
+	struct sh_tmu_channel *ch = ced_to_sh_tmu(ced);
+
+	/* deal with old setting first */
+	if (clockevent_state_oneshot(ced) || clockevent_state_periodic(ced))
+		sh_tmu_disable(ch);
+
+	dev_info(&ch->tmu->pdev->dev, "ch%u: used for %s clock events\n",
+		 ch->index, periodic ? "periodic" : "oneshot");
+	sh_tmu_clock_event_start(ch, periodic);
+	return 0;
+}
+
+static int sh_tmu_clock_event_set_oneshot(struct clock_event_device *ced)
+{
+	return sh_tmu_clock_event_set_state(ced, 0);
+}
+
+static int sh_tmu_clock_event_set_periodic(struct clock_event_device *ced)
+{
+	return sh_tmu_clock_event_set_state(ced, 1);
+>>>>>>> v4.9.227
 }
 
 static int sh_tmu_clock_event_next(unsigned long delta,
@@ -401,7 +444,11 @@ static int sh_tmu_clock_event_next(unsigned long delta,
 {
 	struct sh_tmu_channel *ch = ced_to_sh_tmu(ced);
 
+<<<<<<< HEAD
 	BUG_ON(ced->mode != CLOCK_EVT_MODE_ONESHOT);
+=======
+	BUG_ON(!clockevent_state_oneshot(ced));
+>>>>>>> v4.9.227
 
 	/* program new delta value */
 	sh_tmu_set_next(ch, delta, 0);
@@ -428,9 +475,17 @@ static void sh_tmu_register_clockevent(struct sh_tmu_channel *ch,
 	ced->features = CLOCK_EVT_FEAT_PERIODIC;
 	ced->features |= CLOCK_EVT_FEAT_ONESHOT;
 	ced->rating = 200;
+<<<<<<< HEAD
 	ced->cpumask = cpumask_of(0);
 	ced->set_next_event = sh_tmu_clock_event_next;
 	ced->set_mode = sh_tmu_clock_event_mode;
+=======
+	ced->cpumask = cpu_possible_mask;
+	ced->set_next_event = sh_tmu_clock_event_next;
+	ced->set_state_shutdown = sh_tmu_clock_event_shutdown;
+	ced->set_state_periodic = sh_tmu_clock_event_set_periodic;
+	ced->set_state_oneshot = sh_tmu_clock_event_set_oneshot;
+>>>>>>> v4.9.227
 	ced->suspend = sh_tmu_clock_event_suspend;
 	ced->resume = sh_tmu_clock_event_resume;
 

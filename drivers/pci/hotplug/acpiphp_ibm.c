@@ -138,6 +138,11 @@ static union apci_descriptor *ibm_slot_from_id(int id)
 	char *table;
 
 	size = ibm_get_table_from_acpi(&table);
+<<<<<<< HEAD
+=======
+	if (size < 0)
+		return NULL;
+>>>>>>> v4.9.227
 	des = (union apci_descriptor *)table;
 	if (memcmp(des->header.sig, "aPCI", 4) != 0)
 		goto ibm_slot_done;
@@ -154,7 +159,12 @@ static union apci_descriptor *ibm_slot_from_id(int id)
 ibm_slot_done:
 	if (ret) {
 		ret = kmalloc(sizeof(union apci_descriptor), GFP_KERNEL);
+<<<<<<< HEAD
 		memcpy(ret, des, sizeof(union apci_descriptor));
+=======
+		if (ret)
+			memcpy(ret, des, sizeof(union apci_descriptor));
+>>>>>>> v4.9.227
 	}
 	kfree(table);
 	return ret;
@@ -175,8 +185,18 @@ static int ibm_set_attention_status(struct hotplug_slot *slot, u8 status)
 	acpi_status stat;
 	unsigned long long rc;
 	union apci_descriptor *ibm_slot;
+<<<<<<< HEAD
 
 	ibm_slot = ibm_slot_from_id(hpslot_to_sun(slot));
+=======
+	int id = hpslot_to_sun(slot);
+
+	ibm_slot = ibm_slot_from_id(id);
+	if (!ibm_slot) {
+		pr_err("APLS null ACPI descriptor for slot %d\n", id);
+		return -ENODEV;
+	}
+>>>>>>> v4.9.227
 
 	pr_debug("%s: set slot %d (%d) attention status to %d\n", __func__,
 			ibm_slot->slot.slot_num, ibm_slot->slot.slot_id,
@@ -215,8 +235,18 @@ static int ibm_set_attention_status(struct hotplug_slot *slot, u8 status)
 static int ibm_get_attention_status(struct hotplug_slot *slot, u8 *status)
 {
 	union apci_descriptor *ibm_slot;
+<<<<<<< HEAD
 
 	ibm_slot = ibm_slot_from_id(hpslot_to_sun(slot));
+=======
+	int id = hpslot_to_sun(slot);
+
+	ibm_slot = ibm_slot_from_id(id);
+	if (!ibm_slot) {
+		pr_err("APLS null ACPI descriptor for slot %d\n", id);
+		return -ENODEV;
+	}
+>>>>>>> v4.9.227
 
 	if (ibm_slot->slot.attn & 0xa0 || ibm_slot->slot.status[1] & 0x08)
 		*status = 1;
@@ -325,7 +355,11 @@ static int ibm_get_table_from_acpi(char **bufp)
 	}
 
 	size = 0;
+<<<<<<< HEAD
 	for (i=0; i<package->package.count; i++) {
+=======
+	for (i = 0; i < package->package.count; i++) {
+>>>>>>> v4.9.227
 		memcpy(&lbuf[size],
 				package->package.elements[i].buffer.pointer,
 				package->package.elements[i].buffer.length);

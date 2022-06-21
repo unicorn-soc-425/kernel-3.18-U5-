@@ -10,6 +10,16 @@
 #ifndef _TLV320AIC32X4_H
 #define _TLV320AIC32X4_H
 
+<<<<<<< HEAD
+=======
+struct device;
+struct regmap_config;
+
+extern const struct regmap_config aic32x4_regmap_config;
+int aic32x4_probe(struct device *dev, struct regmap *regmap);
+int aic32x4_remove(struct device *dev);
+
+>>>>>>> v4.9.227
 /* tlv320aic32x4 register space (in decimal to match datasheet) */
 
 #define AIC32X4_PAGE1		128

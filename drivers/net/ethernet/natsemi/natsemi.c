@@ -1904,7 +1904,11 @@ static void ns_tx_timeout(struct net_device *dev)
 	spin_unlock_irq(&np->lock);
 	enable_irq(irq);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	dev->stats.tx_errors++;
 	netif_wake_queue(dev);
 }
@@ -1937,6 +1941,15 @@ static void refill_rx(struct net_device *dev)
 				break; /* Better luck next round. */
 			np->rx_dma[entry] = pci_map_single(np->pci_dev,
 				skb->data, buflen, PCI_DMA_FROMDEVICE);
+<<<<<<< HEAD
+=======
+			if (pci_dma_mapping_error(np->pci_dev,
+						  np->rx_dma[entry])) {
+				dev_kfree_skb_any(skb);
+				np->rx_skbuff[entry] = NULL;
+				break; /* Better luck next round. */
+			}
+>>>>>>> v4.9.227
 			np->rx_ring[entry].addr = cpu_to_le32(np->rx_dma[entry]);
 		}
 		np->rx_ring[entry].cmd_status = cpu_to_le32(np->rx_buf_sz);
@@ -2093,6 +2106,15 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 	np->tx_skbuff[entry] = skb;
 	np->tx_dma[entry] = pci_map_single(np->pci_dev,
 				skb->data,skb->len, PCI_DMA_TODEVICE);
+<<<<<<< HEAD
+=======
+	if (pci_dma_mapping_error(np->pci_dev, np->tx_dma[entry])) {
+		np->tx_skbuff[entry] = NULL;
+		dev_kfree_skb_irq(skb);
+		dev->stats.tx_dropped++;
+		return NETDEV_TX_OK;
+	}
+>>>>>>> v4.9.227
 
 	np->tx_ring[entry].addr = cpu_to_le32(np->tx_dma[entry]);
 

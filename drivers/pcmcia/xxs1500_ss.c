@@ -11,6 +11,10 @@
 #include <linux/io.h>
 #include <linux/ioport.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/pm.h>
 #include <linux/resource.h>
@@ -314,7 +318,10 @@ static int xxs1500_pcmcia_remove(struct platform_device *pdev)
 static struct platform_driver xxs1500_pcmcia_socket_driver = {
 	.driver	= {
 		.name	= "xxs1500_pcmcia",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= xxs1500_pcmcia_probe,
 	.remove		= xxs1500_pcmcia_remove,

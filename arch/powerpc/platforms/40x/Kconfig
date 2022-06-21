@@ -137,7 +137,11 @@ config STB03xxx
 config PPC4xx_GPIO
 	bool "PPC4xx GPIO support"
 	depends on 40x
+<<<<<<< HEAD
 	select ARCH_REQUIRE_GPIOLIB
+=======
+	select GPIOLIB
+>>>>>>> v4.9.227
 	help
 	  Enable gpiolib support for ppc40x based boards
 

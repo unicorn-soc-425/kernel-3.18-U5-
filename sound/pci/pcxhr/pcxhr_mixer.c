@@ -660,6 +660,7 @@ static int pcxhr_audio_src_info(struct snd_kcontrol *kcontrol,
 		if (chip->mgr->board_has_mic)
 			i = 5;	/* Mic and MicroMix available */
 	}
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = i;
@@ -668,6 +669,9 @@ static int pcxhr_audio_src_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 		texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, i, texts);
+>>>>>>> v4.9.227
 }
 
 static int pcxhr_audio_src_get(struct snd_kcontrol *kcontrol,
@@ -756,6 +760,7 @@ static int pcxhr_clock_type_info(struct snd_kcontrol *kcontrol,
 		texts = textsPCXHR;
 		snd_BUG_ON(clock_items > (PCXHR_CLOCK_TYPE_MAX+1));
 	}
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = clock_items;
@@ -764,6 +769,9 @@ static int pcxhr_clock_type_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 		texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, clock_items, texts);
+>>>>>>> v4.9.227
 }
 
 static int pcxhr_clock_type_get(struct snd_kcontrol *kcontrol,

@@ -74,7 +74,11 @@ extern unsigned long ixp4xx_exp_bus_size;
 /*
  * Clock Speed Definitions.
  */
+<<<<<<< HEAD
 #define IXP4XX_PERIPHERAL_BUS_CLOCK 	(66) /* 66Mhzi APB BUS   */ 
+=======
+#define IXP4XX_PERIPHERAL_BUS_CLOCK 	(66) /* 66MHzi APB BUS   */ 
+>>>>>>> v4.9.227
 #define IXP4XX_UART_XTAL        	14745600
 
 /*

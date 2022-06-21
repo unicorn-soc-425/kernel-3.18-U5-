@@ -115,7 +115,11 @@ static inline int of_thermal_get_ntrips(struct thermal_zone_device *tz)
 static inline bool of_thermal_is_trip_valid(struct thermal_zone_device *tz,
 					    int trip)
 {
+<<<<<<< HEAD
 	return 0;
+=======
+	return false;
+>>>>>>> v4.9.227
 }
 static inline const struct thermal_trip *
 of_thermal_get_trip_points(struct thermal_zone_device *tz)

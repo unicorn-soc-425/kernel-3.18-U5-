@@ -121,7 +121,11 @@ static int mcfgpio_direction_input(struct gpio_chip *chip, unsigned offset)
 
 static int mcfgpio_get_value(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	return __mcfgpio_get_value(offset);
+=======
+	return !!__mcfgpio_get_value(offset);
+>>>>>>> v4.9.227
 }
 
 static int mcfgpio_direction_output(struct gpio_chip *chip, unsigned offset,
@@ -158,11 +162,14 @@ static int mcfgpio_to_irq(struct gpio_chip *chip, unsigned offset)
 		return -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct bus_type mcfgpio_subsys = {
 	.name		= "gpio",
 	.dev_name	= "gpio",
 };
 
+=======
+>>>>>>> v4.9.227
 static struct gpio_chip mcfgpio_chip = {
 	.label			= "mcfgpio",
 	.request		= mcfgpio_request,
@@ -178,8 +185,12 @@ static struct gpio_chip mcfgpio_chip = {
 
 static int __init mcfgpio_sysinit(void)
 {
+<<<<<<< HEAD
 	gpiochip_add(&mcfgpio_chip);
 	return subsys_system_register(&mcfgpio_subsys, NULL);
+=======
+	return gpiochip_add_data(&mcfgpio_chip, NULL);
+>>>>>>> v4.9.227
 }
 
 core_initcall(mcfgpio_sysinit);

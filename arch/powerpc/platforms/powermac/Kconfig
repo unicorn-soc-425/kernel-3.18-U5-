@@ -1,6 +1,10 @@
 config PPC_PMAC
 	bool "Apple PowerMac based machines"
+<<<<<<< HEAD
 	depends on PPC_BOOK3S
+=======
+	depends on PPC_BOOK3S && CPU_BIG_ENDIAN
+>>>>>>> v4.9.227
 	select MPIC
 	select PCI
 	select PPC_INDIRECT_PCI if PPC32

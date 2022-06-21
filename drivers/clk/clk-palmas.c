@@ -18,7 +18,10 @@
  */
 
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/clkdev.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/mfd/palmas.h>
 #include <linux/module.h>
@@ -42,10 +45,16 @@ struct palmas_clk32k_desc {
 
 struct palmas_clock_info {
 	struct device *dev;
+<<<<<<< HEAD
 	struct clk *clk;
 	struct clk_hw hw;
 	struct palmas *palmas;
 	struct palmas_clk32k_desc *clk_desc;
+=======
+	struct clk_hw hw;
+	struct palmas *palmas;
+	const struct palmas_clk32k_desc *clk_desc;
+>>>>>>> v4.9.227
 	int ext_control_pin;
 };
 
@@ -126,6 +135,7 @@ static struct clk_ops palmas_clks_ops = {
 
 struct palmas_clks_of_match_data {
 	struct clk_init_data init;
+<<<<<<< HEAD
 	struct palmas_clk32k_desc desc;
 };
 
@@ -134,6 +144,16 @@ static struct palmas_clks_of_match_data palmas_of_clk32kg = {
 		.name = "clk32kg",
 		.ops = &palmas_clks_ops,
 		.flags = CLK_IS_ROOT | CLK_IGNORE_UNUSED,
+=======
+	const struct palmas_clk32k_desc desc;
+};
+
+static const struct palmas_clks_of_match_data palmas_of_clk32kg = {
+	.init = {
+		.name = "clk32kg",
+		.ops = &palmas_clks_ops,
+		.flags = CLK_IGNORE_UNUSED,
+>>>>>>> v4.9.227
 	},
 	.desc = {
 		.clk_name = "clk32kg",
@@ -145,11 +165,19 @@ static struct palmas_clks_of_match_data palmas_of_clk32kg = {
 	},
 };
 
+<<<<<<< HEAD
 static struct palmas_clks_of_match_data palmas_of_clk32kgaudio = {
 	.init = {
 		.name = "clk32kgaudio",
 		.ops = &palmas_clks_ops,
 		.flags = CLK_IS_ROOT | CLK_IGNORE_UNUSED,
+=======
+static const struct palmas_clks_of_match_data palmas_of_clk32kgaudio = {
+	.init = {
+		.name = "clk32kgaudio",
+		.ops = &palmas_clks_ops,
+		.flags = CLK_IGNORE_UNUSED,
+>>>>>>> v4.9.227
 	},
 	.desc = {
 		.clk_name = "clk32kgaudio",
@@ -161,7 +189,11 @@ static struct palmas_clks_of_match_data palmas_of_clk32kgaudio = {
 	},
 };
 
+<<<<<<< HEAD
 static struct of_device_id palmas_clks_of_match[] = {
+=======
+static const struct of_device_id palmas_clks_of_match[] = {
+>>>>>>> v4.9.227
 	{
 		.compatible = "ti,palmas-clk32kg",
 		.data = &palmas_of_clk32kg,
@@ -219,7 +251,11 @@ static int palmas_clks_init_configure(struct palmas_clock_info *cinfo)
 	}
 
 	if (cinfo->ext_control_pin) {
+<<<<<<< HEAD
 		ret = clk_prepare(cinfo->clk);
+=======
+		ret = clk_prepare(cinfo->hw.clk);
+>>>>>>> v4.9.227
 		if (ret < 0) {
 			dev_err(cinfo->dev, "Clock prep failed, %d\n", ret);
 			return ret;
@@ -241,6 +277,7 @@ static int palmas_clks_probe(struct platform_device *pdev)
 {
 	struct palmas *palmas = dev_get_drvdata(pdev->dev.parent);
 	struct device_node *node = pdev->dev.of_node;
+<<<<<<< HEAD
 	struct palmas_clks_of_match_data *match_data;
 	const struct of_device_id *match;
 	struct palmas_clock_info *cinfo;
@@ -249,6 +286,15 @@ static int palmas_clks_probe(struct platform_device *pdev)
 
 	match = of_match_device(palmas_clks_of_match, &pdev->dev);
 	match_data = (struct palmas_clks_of_match_data *)match->data;
+=======
+	const struct palmas_clks_of_match_data *match_data;
+	struct palmas_clock_info *cinfo;
+	int ret;
+
+	match_data = of_device_get_match_data(&pdev->dev);
+	if (!match_data)
+		return 1;
+>>>>>>> v4.9.227
 
 	cinfo = devm_kzalloc(&pdev->dev, sizeof(*cinfo), GFP_KERNEL);
 	if (!cinfo)
@@ -262,22 +308,34 @@ static int palmas_clks_probe(struct platform_device *pdev)
 
 	cinfo->clk_desc = &match_data->desc;
 	cinfo->hw.init = &match_data->init;
+<<<<<<< HEAD
 	clk = devm_clk_register(&pdev->dev, &cinfo->hw);
 	if (IS_ERR(clk)) {
 		ret = PTR_ERR(clk);
+=======
+	ret = devm_clk_hw_register(&pdev->dev, &cinfo->hw);
+	if (ret) {
+>>>>>>> v4.9.227
 		dev_err(&pdev->dev, "Fail to register clock %s, %d\n",
 			match_data->desc.clk_name, ret);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	cinfo->clk = clk;
+=======
+>>>>>>> v4.9.227
 	ret = palmas_clks_init_configure(cinfo);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Clock config failed, %d\n", ret);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = of_clk_add_provider(node, of_clk_src_simple_get, cinfo->clk);
+=======
+	ret = of_clk_add_hw_provider(node, of_clk_hw_simple_get, &cinfo->hw);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		dev_err(&pdev->dev, "Fail to add clock driver, %d\n", ret);
 	return ret;

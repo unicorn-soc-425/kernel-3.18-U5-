@@ -38,6 +38,12 @@
  * Can probably alleviate this by reading the interrupt register on start, but
  * that is really just brushing the problem under the carpet.
  */
+<<<<<<< HEAD
+=======
+#ifndef _SCA3000
+#define _SCA3000
+
+>>>>>>> v4.9.227
 #define SCA3000_WRITE_REG(a) (((a) << 2) | 0x02)
 #define SCA3000_READ_REG(a) ((a) << 2)
 
@@ -110,6 +116,10 @@
 #define SCA3000_OUT_CTRL_BUF_X_EN		0x10
 #define SCA3000_OUT_CTRL_BUF_Y_EN		0x08
 #define SCA3000_OUT_CTRL_BUF_Z_EN		0x04
+<<<<<<< HEAD
+=======
+#define SCA3000_OUT_CTRL_BUF_DIV_MASK		0x03
+>>>>>>> v4.9.227
 #define SCA3000_OUT_CTRL_BUF_DIV_4		0x02
 #define SCA3000_OUT_CTRL_BUF_DIV_2		0x01
 
@@ -272,4 +282,8 @@ static inline void sca3000_ring_int_process(u8 val, void *ring)
 }
 
 #endif
+<<<<<<< HEAD
 
+=======
+#endif /* _SCA3000 */
+>>>>>>> v4.9.227

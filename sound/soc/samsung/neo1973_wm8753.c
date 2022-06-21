@@ -70,6 +70,7 @@ static int neo1973_hifi_hw_params(struct snd_pcm_substream *substream,
 		break;
 	}
 
+<<<<<<< HEAD
 	/* set codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai,
 		SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
@@ -84,6 +85,8 @@ static int neo1973_hifi_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	/* set the codec system clock for DAC and ADC */
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8753_MCLK, pll_out,
 		SND_SOC_CLOCK_IN);
@@ -151,6 +154,7 @@ static int neo1973_voice_hw_params(struct snd_pcm_substream *substream,
 
 	pcmdiv = WM8753_PCM_DIV_6; /* 2.048 MHz */
 
+<<<<<<< HEAD
 	/* todo: gg check mode (DSP_B) against CSR datasheet */
 	/* set codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_DSP_B |
@@ -158,6 +162,8 @@ static int neo1973_voice_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	/* set the codec system clock for DAC and ADC */
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8753_PCMCLK, 12288000,
 		SND_SOC_CLOCK_IN);
@@ -300,6 +306,11 @@ static struct snd_soc_dai_link neo1973_dai[] = {
 	.cpu_dai_name = "s3c24xx-iis",
 	.codec_dai_name = "wm8753-hifi",
 	.codec_name = "wm8753.0-001a",
+<<<<<<< HEAD
+=======
+	.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+		   SND_SOC_DAIFMT_CBM_CFM,
+>>>>>>> v4.9.227
 	.init = neo1973_wm8753_init,
 	.ops = &neo1973_hifi_ops,
 },
@@ -309,6 +320,11 @@ static struct snd_soc_dai_link neo1973_dai[] = {
 	.cpu_dai_name = "bt-sco-pcm",
 	.codec_dai_name = "wm8753-voice",
 	.codec_name = "wm8753.0-001a",
+<<<<<<< HEAD
+=======
+	.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_NB_NF |
+		   SND_SOC_DAIFMT_CBS_CFS,
+>>>>>>> v4.9.227
 	.ops = &neo1973_voice_ops,
 },
 };

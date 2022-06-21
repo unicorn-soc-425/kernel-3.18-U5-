@@ -55,9 +55,20 @@ extern void __flush_dcache_range(unsigned long, unsigned long);
 extern void __flush_invalidate_dcache_page(unsigned long);
 extern void __flush_invalidate_dcache_range(unsigned long, unsigned long);
 #else
+<<<<<<< HEAD
 # define __flush_dcache_range(p,s)		do { } while(0)
 # define __flush_dcache_page(p)			do { } while(0)
 # define __flush_invalidate_dcache_page(p) 	__invalidate_dcache_page(p)
+=======
+static inline void __flush_dcache_page(unsigned long va)
+{
+}
+static inline void __flush_dcache_range(unsigned long va, unsigned long sz)
+{
+}
+# define __flush_invalidate_dcache_all()	__invalidate_dcache_all()
+# define __flush_invalidate_dcache_page(p)	__invalidate_dcache_page(p)
+>>>>>>> v4.9.227
 # define __flush_invalidate_dcache_range(p,s)	__invalidate_dcache_range(p,s)
 #endif
 
@@ -67,6 +78,11 @@ extern void __invalidate_dcache_page_alias(unsigned long, unsigned long);
 #else
 static inline void __flush_invalidate_dcache_page_alias(unsigned long virt,
 							unsigned long phys) { }
+<<<<<<< HEAD
+=======
+static inline void __invalidate_dcache_page_alias(unsigned long virt,
+						  unsigned long phys) { }
+>>>>>>> v4.9.227
 #endif
 #if defined(CONFIG_MMU) && (ICACHE_WAY_SIZE > PAGE_SIZE)
 extern void __invalidate_icache_page_alias(unsigned long, unsigned long);
@@ -84,7 +100,12 @@ static inline void __invalidate_icache_page_alias(unsigned long virt,
  * (see also Documentation/cachetlb.txt)
  */
 
+<<<<<<< HEAD
 #if (DCACHE_WAY_SIZE > PAGE_SIZE) || defined(CONFIG_SMP)
+=======
+#if defined(CONFIG_MMU) && \
+	((DCACHE_WAY_SIZE > PAGE_SIZE) || defined(CONFIG_SMP))
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_SMP
 void flush_cache_all(void);
@@ -150,7 +171,11 @@ void local_flush_cache_page(struct vm_area_struct *vma,
 #define flush_dcache_mmap_lock(mapping)			do { } while (0)
 #define flush_dcache_mmap_unlock(mapping)		do { } while (0)
 
+<<<<<<< HEAD
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
+=======
+#if defined(CONFIG_MMU) && (DCACHE_WAY_SIZE > PAGE_SIZE)
+>>>>>>> v4.9.227
 
 extern void copy_to_user_page(struct vm_area_struct*, struct page*,
 		unsigned long, void*, const void*, unsigned long);
@@ -171,6 +196,7 @@ extern void copy_from_user_page(struct vm_area_struct*, struct page*,
 
 #endif
 
+<<<<<<< HEAD
 #define XTENSA_CACHEBLK_LOG2	29
 #define XTENSA_CACHEBLK_SIZE	(1 << XTENSA_CACHEBLK_LOG2)
 #define XTENSA_CACHEBLK_MASK	(7 << XTENSA_CACHEBLK_LOG2)
@@ -266,4 +292,6 @@ static inline void flush_invalidate_dcache_unaligned(u32 addr, u32 size)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 #endif /* _XTENSA_CACHEFLUSH_H */

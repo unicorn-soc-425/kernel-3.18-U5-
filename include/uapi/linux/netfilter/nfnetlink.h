@@ -22,6 +22,11 @@ enum nfnetlink_groups {
 #define NFNLGRP_NFTABLES                NFNLGRP_NFTABLES
 	NFNLGRP_ACCT_QUOTA,
 #define NFNLGRP_ACCT_QUOTA		NFNLGRP_ACCT_QUOTA
+<<<<<<< HEAD
+=======
+	NFNLGRP_NFTRACE,
+#define NFNLGRP_NFTRACE			NFNLGRP_NFTRACE
+>>>>>>> v4.9.227
 	__NFNLGRP_MAX,
 };
 #define NFNLGRP_MAX	(__NFNLGRP_MAX - 1)

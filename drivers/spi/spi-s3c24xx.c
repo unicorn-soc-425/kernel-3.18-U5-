@@ -198,12 +198,20 @@ static int s3c24xx_spi_setup(struct spi_device *spi)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	spin_lock(&hw->bitbang.lock);
+=======
+	mutex_lock(&hw->bitbang.lock);
+>>>>>>> v4.9.227
 	if (!hw->bitbang.busy) {
 		hw->bitbang.chipselect(spi, BITBANG_CS_INACTIVE);
 		/* need to ndelay for 0.5 clocktick ? */
 	}
+<<<<<<< HEAD
 	spin_unlock(&hw->bitbang.lock);
+=======
+	mutex_unlock(&hw->bitbang.lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -501,7 +509,10 @@ static int s3c24xx_spi_probe(struct platform_device *pdev)
 	}
 
 	hw = spi_master_get_devdata(master);
+<<<<<<< HEAD
 	memset(hw, 0, sizeof(struct s3c24xx_spi));
+=======
+>>>>>>> v4.9.227
 
 	hw->master = master;
 	hw->pdata = pdata = dev_get_platdata(&pdev->dev);
@@ -663,7 +674,10 @@ static struct platform_driver s3c24xx_spi_driver = {
 	.remove		= s3c24xx_spi_remove,
 	.driver		= {
 		.name	= "s3c2410-spi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= S3C24XX_SPI_PMOPS,
 	},
 };

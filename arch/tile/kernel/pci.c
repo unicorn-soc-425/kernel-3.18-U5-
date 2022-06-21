@@ -178,8 +178,13 @@ int __init tile_pci_init(void)
 				continue;
 			hv_cfg_fd1 = tile_pcie_open(i, 1);
 			if (hv_cfg_fd1 < 0) {
+<<<<<<< HEAD
 				pr_err("PCI: Couldn't open config fd to HV "
 				    "for controller %d\n", i);
+=======
+				pr_err("PCI: Couldn't open config fd to HV for controller %d\n",
+				       i);
+>>>>>>> v4.9.227
 				goto err_cont;
 			}
 
@@ -245,7 +250,11 @@ static void fixup_read_and_payload_sizes(void)
 {
 	struct pci_dev *dev = NULL;
 	int smallest_max_payload = 0x1; /* Tile maxes out at 256 bytes. */
+<<<<<<< HEAD
 	int max_read_size = 0x2; /* Limit to 512 byte reads. */
+=======
+	int max_read_size = PCI_EXP_DEVCTL_READRQ_512B;
+>>>>>>> v4.9.227
 	u16 new_values;
 
 	/* Scan for the smallest maximum payload size. */
@@ -258,7 +267,11 @@ static void fixup_read_and_payload_sizes(void)
 	}
 
 	/* Now, set the max_payload_size for all devices to that value. */
+<<<<<<< HEAD
 	new_values = (max_read_size << 12) | (smallest_max_payload << 5);
+=======
+	new_values = max_read_size | (smallest_max_payload << 5);
+>>>>>>> v4.9.227
 	for_each_pci_dev(dev)
 		pcie_capability_clear_and_set_word(dev, PCI_EXP_DEVCTL,
 				PCI_EXP_DEVCTL_PAYLOAD | PCI_EXP_DEVCTL_READRQ,
@@ -425,8 +438,12 @@ int pcibios_enable_device(struct pci_dev *dev, int mask)
 		for (i = 0; i < 6; i++) {
 			r = &dev->resource[i];
 			if (r->flags & IORESOURCE_UNSET) {
+<<<<<<< HEAD
 				pr_err("PCI: Device %s not available "
 				       "because of resource collisions\n",
+=======
+				pr_err("PCI: Device %s not available because of resource collisions\n",
+>>>>>>> v4.9.227
 				       pci_name(dev));
 				return -EINVAL;
 			}

@@ -15,6 +15,7 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -22,12 +23,21 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  */
+=======
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ */
+
+#define pr_fmt(fmt) "ACPI: " fmt
+
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/acpi.h>
+<<<<<<< HEAD
 #include <linux/numa.h>
 
 #define PREFIX "ACPI: "
@@ -35,6 +45,13 @@
 #define ACPI_NUMA	0x80000000
 #define _COMPONENT	ACPI_NUMA
 ACPI_MODULE_NAME("numa");
+=======
+#include <linux/bootmem.h>
+#include <linux/memblock.h>
+#include <linux/numa.h>
+#include <linux/nodemask.h>
+#include <linux/topology.h>
+>>>>>>> v4.9.227
 
 static nodemask_t nodes_found_map = NODE_MASK_NONE;
 
@@ -45,6 +62,10 @@ static int node_to_pxm_map[MAX_NUMNODES]
 			= { [0 ... MAX_NUMNODES - 1] = PXM_INVAL };
 
 unsigned char acpi_srat_revision __initdata;
+<<<<<<< HEAD
+=======
+int acpi_numa __initdata;
+>>>>>>> v4.9.227
 
 int pxm_to_node(int pxm)
 {
@@ -70,7 +91,16 @@ static void __acpi_map_pxm_to_node(int pxm, int node)
 
 int acpi_map_pxm_to_node(int pxm)
 {
+<<<<<<< HEAD
 	int node = pxm_to_node_map[pxm];
+=======
+	int node;
+
+	if (pxm < 0 || pxm >= MAX_PXM_DOMAINS)
+		return NUMA_NO_NODE;
+
+	node = pxm_to_node_map[pxm];
+>>>>>>> v4.9.227
 
 	if (node == NUMA_NO_NODE) {
 		if (nodes_weight(nodes_found_map) >= MAX_NUMNODES)
@@ -83,6 +113,7 @@ int acpi_map_pxm_to_node(int pxm)
 	return node;
 }
 
+<<<<<<< HEAD
 static void __init
 acpi_table_print_srat_entry(struct acpi_subtable_header *header)
 {
@@ -148,6 +179,109 @@ acpi_table_print_srat_entry(struct acpi_subtable_header *header)
 		printk(KERN_WARNING PREFIX
 		       "Found unsupported SRAT entry (type = 0x%x)\n",
 		       header->type);
+=======
+/**
+ * acpi_map_pxm_to_online_node - Map proximity ID to online node
+ * @pxm: ACPI proximity ID
+ *
+ * This is similar to acpi_map_pxm_to_node(), but always returns an online
+ * node.  When the mapped node from a given proximity ID is offline, it
+ * looks up the node distance table and returns the nearest online node.
+ *
+ * ACPI device drivers, which are called after the NUMA initialization has
+ * completed in the kernel, can call this interface to obtain their device
+ * NUMA topology from ACPI tables.  Such drivers do not have to deal with
+ * offline nodes.  A node may be offline when a device proximity ID is
+ * unique, SRAT memory entry does not exist, or NUMA is disabled, ex.
+ * "numa=off" on x86.
+ */
+int acpi_map_pxm_to_online_node(int pxm)
+{
+	int node, min_node;
+
+	node = acpi_map_pxm_to_node(pxm);
+
+	if (node == NUMA_NO_NODE)
+		node = 0;
+
+	min_node = node;
+	if (!node_online(node)) {
+		int min_dist = INT_MAX, dist, n;
+
+		for_each_online_node(n) {
+			dist = node_distance(node, n);
+			if (dist < min_dist) {
+				min_dist = dist;
+				min_node = n;
+			}
+		}
+	}
+
+	return min_node;
+}
+EXPORT_SYMBOL(acpi_map_pxm_to_online_node);
+
+static void __init
+acpi_table_print_srat_entry(struct acpi_subtable_header *header)
+{
+	switch (header->type) {
+	case ACPI_SRAT_TYPE_CPU_AFFINITY:
+		{
+			struct acpi_srat_cpu_affinity *p =
+			    (struct acpi_srat_cpu_affinity *)header;
+			pr_debug("SRAT Processor (id[0x%02x] eid[0x%02x]) in proximity domain %d %s\n",
+				 p->apic_id, p->local_sapic_eid,
+				 p->proximity_domain_lo,
+				 (p->flags & ACPI_SRAT_CPU_ENABLED) ?
+				 "enabled" : "disabled");
+		}
+		break;
+
+	case ACPI_SRAT_TYPE_MEMORY_AFFINITY:
+		{
+			struct acpi_srat_mem_affinity *p =
+			    (struct acpi_srat_mem_affinity *)header;
+			pr_debug("SRAT Memory (0x%llx length 0x%llx) in proximity domain %d %s%s%s\n",
+				 (unsigned long long)p->base_address,
+				 (unsigned long long)p->length,
+				 p->proximity_domain,
+				 (p->flags & ACPI_SRAT_MEM_ENABLED) ?
+				 "enabled" : "disabled",
+				 (p->flags & ACPI_SRAT_MEM_HOT_PLUGGABLE) ?
+				 " hot-pluggable" : "",
+				 (p->flags & ACPI_SRAT_MEM_NON_VOLATILE) ?
+				 " non-volatile" : "");
+		}
+		break;
+
+	case ACPI_SRAT_TYPE_X2APIC_CPU_AFFINITY:
+		{
+			struct acpi_srat_x2apic_cpu_affinity *p =
+			    (struct acpi_srat_x2apic_cpu_affinity *)header;
+			pr_debug("SRAT Processor (x2apicid[0x%08x]) in proximity domain %d %s\n",
+				 p->apic_id,
+				 p->proximity_domain,
+				 (p->flags & ACPI_SRAT_CPU_ENABLED) ?
+				 "enabled" : "disabled");
+		}
+		break;
+
+	case ACPI_SRAT_TYPE_GICC_AFFINITY:
+		{
+			struct acpi_srat_gicc_affinity *p =
+			    (struct acpi_srat_gicc_affinity *)header;
+			pr_debug("SRAT Processor (acpi id[0x%04x]) in proximity domain %d %s\n",
+				 p->acpi_processor_uid,
+				 p->proximity_domain,
+				 (p->flags & ACPI_SRAT_GICC_ENABLED) ?
+				 "enabled" : "disabled");
+		}
+		break;
+
+	default:
+		pr_warn("Found unsupported SRAT entry (type = 0x%x)\n",
+			header->type);
+>>>>>>> v4.9.227
 		break;
 	}
 }
@@ -175,6 +309,7 @@ static int __init slit_valid(struct acpi_table_slit *slit)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __init acpi_parse_slit(struct acpi_table_header *table)
 {
 	struct acpi_table_slit *slit;
@@ -186,6 +321,119 @@ static int __init acpi_parse_slit(struct acpi_table_header *table)
 
 	if (!slit_valid(slit)) {
 		printk(KERN_INFO "ACPI: SLIT table looks invalid. Not used.\n");
+=======
+void __init bad_srat(void)
+{
+	pr_err("SRAT: SRAT not used.\n");
+	acpi_numa = -1;
+}
+
+int __init srat_disabled(void)
+{
+	return acpi_numa < 0;
+}
+
+#if defined(CONFIG_X86) || defined(CONFIG_ARM64)
+/*
+ * Callback for SLIT parsing.  pxm_to_node() returns NUMA_NO_NODE for
+ * I/O localities since SRAT does not list them.  I/O localities are
+ * not supported at this point.
+ */
+void __init acpi_numa_slit_init(struct acpi_table_slit *slit)
+{
+	int i, j;
+
+	for (i = 0; i < slit->locality_count; i++) {
+		const int from_node = pxm_to_node(i);
+
+		if (from_node == NUMA_NO_NODE)
+			continue;
+
+		for (j = 0; j < slit->locality_count; j++) {
+			const int to_node = pxm_to_node(j);
+
+			if (to_node == NUMA_NO_NODE)
+				continue;
+
+			numa_set_distance(from_node, to_node,
+				slit->entry[slit->locality_count * i + j]);
+		}
+	}
+}
+
+/*
+ * Default callback for parsing of the Proximity Domain <-> Memory
+ * Area mappings
+ */
+int __init
+acpi_numa_memory_affinity_init(struct acpi_srat_mem_affinity *ma)
+{
+	u64 start, end;
+	u32 hotpluggable;
+	int node, pxm;
+
+	if (srat_disabled())
+		goto out_err;
+	if (ma->header.length < sizeof(struct acpi_srat_mem_affinity)) {
+		pr_err("SRAT: Unexpected header length: %d\n",
+		       ma->header.length);
+		goto out_err_bad_srat;
+	}
+	if ((ma->flags & ACPI_SRAT_MEM_ENABLED) == 0)
+		goto out_err;
+	hotpluggable = ma->flags & ACPI_SRAT_MEM_HOT_PLUGGABLE;
+	if (hotpluggable && !IS_ENABLED(CONFIG_MEMORY_HOTPLUG))
+		goto out_err;
+
+	start = ma->base_address;
+	end = start + ma->length;
+	pxm = ma->proximity_domain;
+	if (acpi_srat_revision <= 1)
+		pxm &= 0xff;
+
+	node = acpi_map_pxm_to_node(pxm);
+	if (node == NUMA_NO_NODE || node >= MAX_NUMNODES) {
+		pr_err("SRAT: Too many proximity domains.\n");
+		goto out_err_bad_srat;
+	}
+
+	if (numa_add_memblk(node, start, end) < 0) {
+		pr_err("SRAT: Failed to add memblk to node %u [mem %#010Lx-%#010Lx]\n",
+		       node, (unsigned long long) start,
+		       (unsigned long long) end - 1);
+		goto out_err_bad_srat;
+	}
+
+	node_set(node, numa_nodes_parsed);
+
+	pr_info("SRAT: Node %u PXM %u [mem %#010Lx-%#010Lx]%s%s\n",
+		node, pxm,
+		(unsigned long long) start, (unsigned long long) end - 1,
+		hotpluggable ? " hotplug" : "",
+		ma->flags & ACPI_SRAT_MEM_NON_VOLATILE ? " non-volatile" : "");
+
+	/* Mark hotplug range in memblock. */
+	if (hotpluggable && memblock_mark_hotplug(start, ma->length))
+		pr_warn("SRAT: Failed to mark hotplug range [mem %#010Lx-%#010Lx] in memblock\n",
+			(unsigned long long)start, (unsigned long long)end - 1);
+
+	max_possible_pfn = max(max_possible_pfn, PFN_UP(end - 1));
+
+	return 0;
+out_err_bad_srat:
+	bad_srat();
+out_err:
+	return -EINVAL;
+}
+#endif /* defined(CONFIG_X86) || defined (CONFIG_ARM64) */
+
+static int __init acpi_parse_slit(struct acpi_table_header *table)
+{
+	struct acpi_table_slit *slit = (struct acpi_table_slit *)table;
+
+	if (!slit_valid(slit)) {
+		pr_info("SLIT table looks invalid. Not used.\n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 	acpi_numa_slit_init(slit);
@@ -196,12 +444,18 @@ static int __init acpi_parse_slit(struct acpi_table_header *table)
 void __init __weak
 acpi_numa_x2apic_affinity_init(struct acpi_srat_x2apic_cpu_affinity *pa)
 {
+<<<<<<< HEAD
 	printk(KERN_WARNING PREFIX
 	       "Found unsupported x2apic [0x%08x] SRAT entry\n", pa->apic_id);
 	return;
 }
 
 
+=======
+	pr_warn("Found unsupported x2apic [0x%08x] SRAT entry\n", pa->apic_id);
+}
+
+>>>>>>> v4.9.227
 static int __init
 acpi_parse_x2apic_affinity(struct acpi_subtable_header *header,
 			   const unsigned long end)
@@ -238,6 +492,27 @@ acpi_parse_processor_affinity(struct acpi_subtable_header *header,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int __init
+acpi_parse_gicc_affinity(struct acpi_subtable_header *header,
+			 const unsigned long end)
+{
+	struct acpi_srat_gicc_affinity *processor_affinity;
+
+	processor_affinity = (struct acpi_srat_gicc_affinity *)header;
+	if (!processor_affinity)
+		return -EINVAL;
+
+	acpi_table_print_srat_entry(header);
+
+	/* let architecture-dependent part to do it */
+	acpi_numa_gicc_affinity_init(processor_affinity);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int __initdata parsed_numa_memblks;
 
 static int __init
@@ -260,11 +535,16 @@ acpi_parse_memory_affinity(struct acpi_subtable_header * header,
 
 static int __init acpi_parse_srat(struct acpi_table_header *table)
 {
+<<<<<<< HEAD
 	struct acpi_table_srat *srat;
 	if (!table)
 		return -EINVAL;
 
 	srat = (struct acpi_table_srat *)table;
+=======
+	struct acpi_table_srat *srat = (struct acpi_table_srat *)table;
+
+>>>>>>> v4.9.227
 	acpi_srat_revision = srat->header.revision;
 
 	/* Real work done in acpi_table_parse_srat below. */
@@ -285,6 +565,12 @@ int __init acpi_numa_init(void)
 {
 	int cnt = 0;
 
+<<<<<<< HEAD
+=======
+	if (acpi_disabled)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	/*
 	 * Should not limit number with cpu num that is from NR_CPUS or nr_cpus=
 	 * SRAT cpu entries could have different order with that in MADT.
@@ -293,10 +579,27 @@ int __init acpi_numa_init(void)
 
 	/* SRAT: Static Resource Affinity Table */
 	if (!acpi_table_parse(ACPI_SIG_SRAT, acpi_parse_srat)) {
+<<<<<<< HEAD
 		acpi_table_parse_srat(ACPI_SRAT_TYPE_X2APIC_CPU_AFFINITY,
 				     acpi_parse_x2apic_affinity, 0);
 		acpi_table_parse_srat(ACPI_SRAT_TYPE_CPU_AFFINITY,
 				     acpi_parse_processor_affinity, 0);
+=======
+		struct acpi_subtable_proc srat_proc[3];
+
+		memset(srat_proc, 0, sizeof(srat_proc));
+		srat_proc[0].id = ACPI_SRAT_TYPE_CPU_AFFINITY;
+		srat_proc[0].handler = acpi_parse_processor_affinity;
+		srat_proc[1].id = ACPI_SRAT_TYPE_X2APIC_CPU_AFFINITY;
+		srat_proc[1].handler = acpi_parse_x2apic_affinity;
+		srat_proc[2].id = ACPI_SRAT_TYPE_GICC_AFFINITY;
+		srat_proc[2].handler = acpi_parse_gicc_affinity;
+
+		acpi_table_parse_entries_array(ACPI_SIG_SRAT,
+					sizeof(struct acpi_table_srat),
+					srat_proc, ARRAY_SIZE(srat_proc), 0);
+
+>>>>>>> v4.9.227
 		cnt = acpi_table_parse_srat(ACPI_SRAT_TYPE_MEMORY_AFFINITY,
 					    acpi_parse_memory_affinity,
 					    NR_NODE_MEMBLKS);
@@ -305,8 +608,11 @@ int __init acpi_numa_init(void)
 	/* SLIT: System Locality Information Table */
 	acpi_table_parse(ACPI_SIG_SLIT, acpi_parse_slit);
 
+<<<<<<< HEAD
 	acpi_numa_arch_fixup();
 
+=======
+>>>>>>> v4.9.227
 	if (cnt < 0)
 		return cnt;
 	else if (!parsed_numa_memblks)
@@ -336,8 +642,11 @@ int acpi_get_node(acpi_handle handle)
 	int pxm;
 
 	pxm = acpi_get_pxm(handle);
+<<<<<<< HEAD
 	if (pxm < 0 || pxm >= MAX_PXM_DOMAINS)
 		return NUMA_NO_NODE;
+=======
+>>>>>>> v4.9.227
 
 	return acpi_map_pxm_to_node(pxm);
 }

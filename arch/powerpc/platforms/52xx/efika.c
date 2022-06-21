@@ -200,8 +200,12 @@ static void __init efika_setup_arch(void)
 
 static int __init efika_probe(void)
 {
+<<<<<<< HEAD
 	const char *model = of_get_flat_dt_prop(of_get_flat_dt_root(),
 						"model", NULL);
+=======
+	const char *model = of_get_property(of_root, "model", NULL);
+>>>>>>> v4.9.227
 
 	if (model == NULL)
 		return 0;
@@ -212,6 +216,11 @@ static int __init efika_probe(void)
 	DMA_MODE_READ = 0x44;
 	DMA_MODE_WRITE = 0x48;
 
+<<<<<<< HEAD
+=======
+	pm_power_off = rtas_power_off;
+
+>>>>>>> v4.9.227
 	return 1;
 }
 
@@ -225,7 +234,10 @@ define_machine(efika)
 	.init_IRQ		= mpc52xx_init_irq,
 	.get_irq		= mpc52xx_get_irq,
 	.restart		= rtas_restart,
+<<<<<<< HEAD
 	.power_off		= rtas_power_off,
+=======
+>>>>>>> v4.9.227
 	.halt			= rtas_halt,
 	.set_rtc_time		= rtas_set_rtc_time,
 	.get_rtc_time		= rtas_get_rtc_time,

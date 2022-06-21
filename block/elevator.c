@@ -35,11 +35,18 @@
 #include <linux/hash.h>
 #include <linux/uaccess.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
+=======
+#include <linux/blk-cgroup.h>
+>>>>>>> v4.9.227
 
 #include <trace/events/block.h>
 
 #include "blk.h"
+<<<<<<< HEAD
 #include "blk-cgroup.h"
+=======
+>>>>>>> v4.9.227
 
 static DEFINE_SPINLOCK(elv_list_lock);
 static LIST_HEAD(elv_list);
@@ -53,13 +60,22 @@ static LIST_HEAD(elv_list);
  * Query io scheduler to see if the current process issuing bio may be
  * merged with rq.
  */
+<<<<<<< HEAD
 static int elv_iosched_allow_merge(struct request *rq, struct bio *bio)
+=======
+static int elv_iosched_allow_bio_merge(struct request *rq, struct bio *bio)
+>>>>>>> v4.9.227
 {
 	struct request_queue *q = rq->q;
 	struct elevator_queue *e = q->elevator;
 
+<<<<<<< HEAD
 	if (e->type->ops.elevator_allow_merge_fn)
 		return e->type->ops.elevator_allow_merge_fn(q, rq, bio);
+=======
+	if (e->type->ops.elevator_allow_bio_merge_fn)
+		return e->type->ops.elevator_allow_bio_merge_fn(q, rq, bio);
+>>>>>>> v4.9.227
 
 	return 1;
 }
@@ -67,6 +83,7 @@ static int elv_iosched_allow_merge(struct request *rq, struct bio *bio)
 /*
  * can we safely merge with this request?
  */
+<<<<<<< HEAD
 bool elv_rq_merge_ok(struct request *rq, struct bio *bio)
 {
 	if (!blk_rq_merge_ok(rq, bio))
@@ -78,6 +95,19 @@ bool elv_rq_merge_ok(struct request *rq, struct bio *bio)
 	return 1;
 }
 EXPORT_SYMBOL(elv_rq_merge_ok);
+=======
+bool elv_bio_merge_ok(struct request *rq, struct bio *bio)
+{
+	if (!blk_rq_merge_ok(rq, bio))
+		return false;
+
+	if (!elv_iosched_allow_bio_merge(rq, bio))
+		return false;
+
+	return true;
+}
+EXPORT_SYMBOL(elv_bio_merge_ok);
+>>>>>>> v4.9.227
 
 static struct elevator_type *elevator_find(const char *name)
 {
@@ -157,7 +187,11 @@ struct elevator_queue *elevator_alloc(struct request_queue *q,
 
 	eq = kzalloc_node(sizeof(*eq), GFP_KERNEL, q->node);
 	if (unlikely(!eq))
+<<<<<<< HEAD
 		goto err;
+=======
+		return NULL;
+>>>>>>> v4.9.227
 
 	eq->type = e;
 	kobject_init(&eq->kobj, &elv_ktype);
@@ -165,10 +199,13 @@ struct elevator_queue *elevator_alloc(struct request_queue *q,
 	hash_init(eq->hash);
 
 	return eq;
+<<<<<<< HEAD
 err:
 	kfree(eq);
 	elevator_put(e);
 	return NULL;
+=======
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(elevator_alloc);
 
@@ -370,8 +407,12 @@ void elv_dispatch_sort(struct request_queue *q, struct request *rq)
 	list_for_each_prev(entry, &q->queue_head) {
 		struct request *pos = list_entry_rq(entry);
 
+<<<<<<< HEAD
 		if ((rq->cmd_flags & REQ_DISCARD) !=
 		    (pos->cmd_flags & REQ_DISCARD))
+=======
+		if (req_op(rq) != req_op(pos))
+>>>>>>> v4.9.227
 			break;
 		if (rq_data_dir(rq) != rq_data_dir(pos))
 			break;
@@ -424,13 +465,21 @@ int elv_merge(struct request_queue *q, struct request **req, struct bio *bio)
 	 * 	noxmerges: Only simple one-hit cache try
 	 * 	merges:	   All merge tries attempted
 	 */
+<<<<<<< HEAD
 	if (blk_queue_nomerges(q))
+=======
+	if (blk_queue_nomerges(q) || !bio_mergeable(bio))
+>>>>>>> v4.9.227
 		return ELEVATOR_NO_MERGE;
 
 	/*
 	 * First try one-hit cache.
 	 */
+<<<<<<< HEAD
 	if (q->last_merge && elv_rq_merge_ok(q->last_merge, bio)) {
+=======
+	if (q->last_merge && elv_bio_merge_ok(q->last_merge, bio)) {
+>>>>>>> v4.9.227
 		ret = blk_try_merge(q->last_merge, bio);
 		if (ret != ELEVATOR_NO_MERGE) {
 			*req = q->last_merge;
@@ -445,7 +494,11 @@ int elv_merge(struct request_queue *q, struct request **req, struct bio *bio)
 	 * See if our hash lookup can find a potential backmerge.
 	 */
 	__rq = elv_rqhash_find(q, bio->bi_iter.bi_sector);
+<<<<<<< HEAD
 	if (__rq && elv_rq_merge_ok(__rq, bio)) {
+=======
+	if (__rq && elv_bio_merge_ok(__rq, bio)) {
+>>>>>>> v4.9.227
 		*req = __rq;
 		return ELEVATOR_BACK_MERGE;
 	}
@@ -539,10 +592,17 @@ void elv_bio_merged(struct request_queue *q, struct request *rq,
 		e->type->ops.elevator_bio_merged_fn(q, rq, bio);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 static void blk_pm_requeue_request(struct request *rq)
 {
 	if (rq->q->dev && !(rq->cmd_flags & REQ_PM) && rq->q->nr_pending)
+=======
+#ifdef CONFIG_PM
+static void blk_pm_requeue_request(struct request *rq)
+{
+	if (rq->q->dev && !(rq->cmd_flags & REQ_PM))
+>>>>>>> v4.9.227
 		rq->q->nr_pending--;
 }
 
@@ -721,12 +781,20 @@ void elv_put_request(struct request_queue *q, struct request *rq)
 		e->type->ops.elevator_put_req_fn(rq);
 }
 
+<<<<<<< HEAD
 int elv_may_queue(struct request_queue *q, int rw)
+=======
+int elv_may_queue(struct request_queue *q, int op, int op_flags)
+>>>>>>> v4.9.227
 {
 	struct elevator_queue *e = q->elevator;
 
 	if (e->type->ops.elevator_may_queue_fn)
+<<<<<<< HEAD
 		return e->type->ops.elevator_may_queue_fn(q, rw);
+=======
+		return e->type->ops.elevator_may_queue_fn(q, op, op_flags);
+>>>>>>> v4.9.227
 
 	return ELV_MQUEUE_MAY;
 }
@@ -740,8 +808,11 @@ void elv_completed_request(struct request_queue *q, struct request *rq)
 	 */
 	if (blk_account_rq(rq)) {
 		q->in_flight[rq_is_sync(rq)]--;
+<<<<<<< HEAD
 		if (!queue_in_flight(q))
 			q->in_flight_time += ktime_us_delta(ktime_get(), q->in_flight_stamp);
+=======
+>>>>>>> v4.9.227
 		if ((rq->cmd_flags & REQ_SORTED) &&
 		    e->type->ops.elevator_completed_req_fn)
 			e->type->ops.elevator_completed_req_fn(q, rq);
@@ -812,6 +883,11 @@ int elv_register_queue(struct request_queue *q)
 		}
 		kobject_uevent(&e->kobj, KOBJ_ADD);
 		e->registered = 1;
+<<<<<<< HEAD
+=======
+		if (e->type->ops.elevator_registered_fn)
+			e->type->ops.elevator_registered_fn(q);
+>>>>>>> v4.9.227
 	}
 	return error;
 }

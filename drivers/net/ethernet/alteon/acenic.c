@@ -2429,9 +2429,15 @@ restart:
 		flagsize = (skb->len << 16) | (BD_FLG_END);
 		if (skb->ip_summed == CHECKSUM_PARTIAL)
 			flagsize |= BD_FLG_TCP_UDP_SUM;
+<<<<<<< HEAD
 		if (vlan_tx_tag_present(skb)) {
 			flagsize |= BD_FLG_VLAN_TAG;
 			vlan_tag = vlan_tx_tag_get(skb);
+=======
+		if (skb_vlan_tag_present(skb)) {
+			flagsize |= BD_FLG_VLAN_TAG;
+			vlan_tag = skb_vlan_tag_get(skb);
+>>>>>>> v4.9.227
 		}
 		desc = ap->tx_ring + idx;
 		idx = (idx + 1) % ACE_TX_RING_ENTRIES(ap);
@@ -2450,9 +2456,15 @@ restart:
 		flagsize = (skb_headlen(skb) << 16);
 		if (skb->ip_summed == CHECKSUM_PARTIAL)
 			flagsize |= BD_FLG_TCP_UDP_SUM;
+<<<<<<< HEAD
 		if (vlan_tx_tag_present(skb)) {
 			flagsize |= BD_FLG_VLAN_TAG;
 			vlan_tag = vlan_tx_tag_get(skb);
+=======
+		if (skb_vlan_tag_present(skb)) {
+			flagsize |= BD_FLG_VLAN_TAG;
+			vlan_tag = skb_vlan_tag_get(skb);
+>>>>>>> v4.9.227
 		}
 
 		ace_load_tx_bd(ap, ap->tx_ring + idx, mapping, flagsize, vlan_tag);

@@ -3,6 +3,11 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
+=======
+#include <linux/string.h>
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_CEPH_LIB_PRETTYDEBUG
 
 /*
@@ -12,12 +17,19 @@
  */
 
 # if defined(DEBUG) || defined(CONFIG_DYNAMIC_DEBUG)
+<<<<<<< HEAD
 extern const char *ceph_file_part(const char *s, int len);
 #  define dout(fmt, ...)						\
 	pr_debug("%.*s %12.12s:%-4d : " fmt,				\
 		 8 - (int)sizeof(KBUILD_MODNAME), "    ",		\
 		 ceph_file_part(__FILE__, sizeof(__FILE__)),		\
 		 __LINE__, ##__VA_ARGS__)
+=======
+#  define dout(fmt, ...)						\
+	pr_debug("%.*s %12.12s:%-4d : " fmt,				\
+		 8 - (int)sizeof(KBUILD_MODNAME), "    ",		\
+		 kbasename(__FILE__), __LINE__, ##__VA_ARGS__)
+>>>>>>> v4.9.227
 # else
 /* faux printk call just to see any compiler warnings. */
 #  define dout(fmt, ...)	do {				\

@@ -19,6 +19,10 @@
 
 
 #include <linux/skbuff.h>
+<<<<<<< HEAD
+=======
+#include <linux/win_minmax.h>
+>>>>>>> v4.9.227
 #include <net/sock.h>
 #include <net/inet_connection_sock.h>
 #include <net/inet_timewait_sock.h>
@@ -61,8 +65,19 @@ static inline unsigned int tcp_optlen(const struct sk_buff *skb)
 
 /* TCP Fast Open Cookie as stored in memory */
 struct tcp_fastopen_cookie {
+<<<<<<< HEAD
 	s8	len;
 	u8	val[TCP_FASTOPEN_COOKIE_MAX];
+=======
+	union {
+		u8	val[TCP_FASTOPEN_COOKIE_MAX];
+#if IS_ENABLED(CONFIG_IPV6)
+		struct in6_addr addr;
+#endif
+	};
+	s8	len;
+	bool	exp;	/* In RFC6994 experimental option format */
+>>>>>>> v4.9.227
 };
 
 /* This defines a selective acknowledgement block. */
@@ -116,10 +131,19 @@ struct tcp_request_sock_ops;
 struct tcp_request_sock {
 	struct inet_request_sock 	req;
 	const struct tcp_request_sock_ops *af_specific;
+<<<<<<< HEAD
 	struct sock			*listener; /* needed for TFO */
 	u32				rcv_isn;
 	u32				snt_isn;
 	u32				snt_synack; /* synack sent time */
+=======
+	struct skb_mstamp		snt_synack; /* first SYNACK sent time */
+	bool				tfo_listener;
+	u32				txhash;
+	u32				rcv_isn;
+	u32				snt_isn;
+	u32				last_oow_ack_time; /* last SYNACK */
+>>>>>>> v4.9.227
 	u32				rcv_nxt; /* the ack # by SYNACK. For
 						  * FastOpen it's the seq#
 						  * after data-in-SYN.
@@ -135,7 +159,11 @@ struct tcp_sock {
 	/* inet_connection_sock has to be the first member of tcp_sock */
 	struct inet_connection_sock	inet_conn;
 	u16	tcp_header_len;	/* Bytes of tcp header to send		*/
+<<<<<<< HEAD
 	u16	xmit_size_goal_segs; /* Goal for segmenting output packets */
+=======
+	u16	gso_segs;	/* Max number of segs per GSO packet	*/
+>>>>>>> v4.9.227
 
 /*
  *	Header prediction flags
@@ -148,15 +176,46 @@ struct tcp_sock {
  *	read the code and the spec side by side (and laugh ...)
  *	See RFC793 and RFC1122. The RFC writes these in capitals.
  */
+<<<<<<< HEAD
+=======
+	u64	bytes_received;	/* RFC4898 tcpEStatsAppHCThruOctetsReceived
+				 * sum(delta(rcv_nxt)), or how many bytes
+				 * were acked.
+				 */
+	u32	segs_in;	/* RFC4898 tcpEStatsPerfSegsIn
+				 * total number of segments in.
+				 */
+	u32	data_segs_in;	/* RFC4898 tcpEStatsPerfDataSegsIn
+				 * total number of data segments in.
+				 */
+>>>>>>> v4.9.227
  	u32	rcv_nxt;	/* What we want to receive next 	*/
 	u32	copied_seq;	/* Head of yet unread data		*/
 	u32	rcv_wup;	/* rcv_nxt on last window update sent	*/
  	u32	snd_nxt;	/* Next sequence we send		*/
+<<<<<<< HEAD
+=======
+	u32	segs_out;	/* RFC4898 tcpEStatsPerfSegsOut
+				 * The total number of segments sent.
+				 */
+	u32	data_segs_out;	/* RFC4898 tcpEStatsPerfDataSegsOut
+				 * total number of data segments sent.
+				 */
+	u64	bytes_acked;	/* RFC4898 tcpEStatsAppHCThruOctetsAcked
+				 * sum(delta(snd_una)), or how many bytes
+				 * were acked.
+				 */
+	struct u64_stats_sync syncp; /* protects 64bit vars (cf tcp_get_info()) */
+>>>>>>> v4.9.227
 
  	u32	snd_una;	/* First byte we want an ack for	*/
  	u32	snd_sml;	/* Last byte of the most recently transmitted small packet */
 	u32	rcv_tstamp;	/* timestamp of last received ACK (for keepalives) */
 	u32	lsndtime;	/* timestamp of last sent data packet (for restart window) */
+<<<<<<< HEAD
+=======
+	u32	last_oow_ack_time;  /* timestamp of last out-of-window ACK */
+>>>>>>> v4.9.227
 
 	u32	tsoffset;	/* timestamp offset */
 
@@ -167,7 +226,11 @@ struct tcp_sock {
 	struct {
 		struct sk_buff_head	prequeue;
 		struct task_struct	*task;
+<<<<<<< HEAD
 		struct iovec		*iov;
+=======
+		struct msghdr		*msg;
+>>>>>>> v4.9.227
 		int			memory;
 		int			len;
 	} ucopy;
@@ -180,8 +243,21 @@ struct tcp_sock {
 	u32	window_clamp;	/* Maximal window to advertise		*/
 	u32	rcv_ssthresh;	/* Current window clamp			*/
 
+<<<<<<< HEAD
 	u16	advmss;		/* Advertised MSS			*/
 	u8	unused;
+=======
+	/* Information of the most recently (s)acked skb */
+	struct tcp_rack {
+		struct skb_mstamp mstamp; /* (Re)sent time of the skb */
+		u8 advanced; /* mstamp advanced since last lost marking */
+		u8 reord;    /* reordering detected */
+	} rack;
+	u16	advmss;		/* Advertised MSS			*/
+	u8	rate_app_limited:1,  /* rate_{delivered,interval_us} limited? */
+		is_sack_reneg:1,    /* in recovery from loss with SACK reneg? */
+		unused:6;
+>>>>>>> v4.9.227
 	u8	nonagle     : 4,/* Disable Nagle algorithm?             */
 		thin_lto    : 1,/* Use linear timeouts for thin streams */
 		thin_dupack : 1,/* Fast retransmit on first dupack      */
@@ -191,7 +267,13 @@ struct tcp_sock {
 	u8	do_early_retrans:1,/* Enable RFC5827 early-retransmit  */
 		syn_data:1,	/* SYN includes data */
 		syn_fastopen:1,	/* SYN includes Fast Open option */
+<<<<<<< HEAD
 		syn_data_acked:1,/* data in SYN is acked by SYN-ACK */
+=======
+		syn_fastopen_exp:1,/* SYN includes Fast Open exp. option */
+		syn_data_acked:1,/* data in SYN is acked by SYN-ACK */
+		save_syn:1,	/* Save headers of SYN packet */
+>>>>>>> v4.9.227
 		is_cwnd_limited:1;/* forward progress limited by snd_cwnd? */
 	u32	tlp_high_seq;	/* snd_nxt at the time of TLP retransmit. */
 
@@ -201,6 +283,10 @@ struct tcp_sock {
 	u32	mdev_max_us;	/* maximal mdev for the last rtt period	*/
 	u32	rttvar_us;	/* smoothed mdev_max			*/
 	u32	rtt_seq;	/* sequence number to update rttvar	*/
+<<<<<<< HEAD
+=======
+	struct  minmax rtt_min;
+>>>>>>> v4.9.227
 
 	u32	packets_out;	/* Packets which are "in flight"	*/
 	u32	retrans_out;	/* Retransmitted packets out		*/
@@ -209,10 +295,17 @@ struct tcp_sock {
 
 	u16	urg_data;	/* Saved octet of OOB data and control flags */
 	u8	ecn_flags;	/* ECN status bits.			*/
+<<<<<<< HEAD
 	u8	reordering;	/* Packet reordering metric.		*/
 	u32	snd_up;		/* Urgent pointer		*/
 
 	u8	keepalive_probes; /* num of allowed keep alive probes	*/
+=======
+	u8	keepalive_probes; /* num of allowed keep alive probes	*/
+	u32	reordering;	/* Packet reordering metric.		*/
+	u32	snd_up;		/* Urgent pointer		*/
+
+>>>>>>> v4.9.227
 /*
  *      Options received (usually on last packet, some only on SYN packets).
  */
@@ -231,6 +324,16 @@ struct tcp_sock {
 	u32	prr_delivered;	/* Number of newly delivered packets to
 				 * receiver in Recovery. */
 	u32	prr_out;	/* Total number of pkts sent during Recovery. */
+<<<<<<< HEAD
+=======
+	u32	delivered;	/* Total data packets delivered incl. rexmits */
+	u32	lost;		/* Total data packets lost incl. rexmits */
+	u32	app_limited;	/* limited until "delivered" reaches this val */
+	struct skb_mstamp first_tx_mstamp;  /* start of window send phase */
+	struct skb_mstamp delivered_mstamp; /* time we reached "delivered" */
+	u32	rate_delivered;    /* saved rate sample: packets delivered */
+	u32	rate_interval_us;  /* saved rate sample: time elapsed */
+>>>>>>> v4.9.227
 
  	u32	rcv_wnd;	/* Current receiver window		*/
 	u32	write_seq;	/* Tail(+1) of data held in tcp send buffer */
@@ -239,16 +342,25 @@ struct tcp_sock {
 	u32	lost_out;	/* Lost packets			*/
 	u32	sacked_out;	/* SACK'd packets			*/
 	u32	fackets_out;	/* FACK'd packets			*/
+<<<<<<< HEAD
 	u32	tso_deferred;
+=======
+>>>>>>> v4.9.227
 
 	/* from STCP, retrans queue hinting */
 	struct sk_buff* lost_skb_hint;
 	struct sk_buff *retransmit_skb_hint;
 
+<<<<<<< HEAD
 	/* OOO segments go in this list. Note that socket lock must be held,
 	 * as we do not use sk_buff_head lock.
 	 */
 	struct sk_buff_head	out_of_order_queue;
+=======
+	/* OOO segments go in this rbtree. Socket lock must be held. */
+	struct rb_root	out_of_order_queue;
+	struct sk_buff	*ooo_last_skb; /* cache rb_last(out_of_order_queue) */
+>>>>>>> v4.9.227
 
 	/* SACKs data, these 2 need to be together (see tcp_options_write) */
 	struct tcp_sack_block duplicate_sack[1]; /* D-SACK block */
@@ -265,8 +377,11 @@ struct tcp_sock {
 	int     lost_cnt_hint;
 	u32     retransmit_high;	/* L-bits may be on up to this seqno */
 
+<<<<<<< HEAD
 	u32	lost_retrans_low;	/* Sent seq after any rxmit (lowest) */
 
+=======
+>>>>>>> v4.9.227
 	u32	prior_ssthresh; /* ssthresh saved at recovery start	*/
 	u32	high_seq;	/* snd_nxt at onset of congestion	*/
 
@@ -283,6 +398,7 @@ struct tcp_sock {
 
 	int			linger2;
 
+<<<<<<< HEAD
 /* Network Pacemaker */
 #ifdef CONFIG_NETPM
 	u8 netpm_netif;
@@ -298,6 +414,8 @@ struct tcp_sock {
 	int netpm_rmem_max_curbdp[2];
 #endif
 
+=======
+>>>>>>> v4.9.227
 /* Receiver side RTT estimation */
 	struct {
 		u32	rtt;
@@ -335,6 +453,10 @@ struct tcp_sock {
 	 * socket. Used to retransmit SYNACKs etc.
 	 */
 	struct request_sock *fastopen_rsk;
+<<<<<<< HEAD
+=======
+	u32	*saved_syn;
+>>>>>>> v4.9.227
 };
 
 enum tsq_flags {
@@ -355,11 +477,23 @@ static inline struct tcp_sock *tcp_sk(const struct sock *sk)
 
 struct tcp_timewait_sock {
 	struct inet_timewait_sock tw_sk;
+<<<<<<< HEAD
 	u32			  tw_rcv_nxt;
 	u32			  tw_snd_nxt;
 	u32			  tw_rcv_wnd;
 	u32			  tw_ts_offset;
 	u32			  tw_ts_recent;
+=======
+#define tw_rcv_nxt tw_sk.__tw_common.skc_tw_rcv_nxt
+#define tw_snd_nxt tw_sk.__tw_common.skc_tw_snd_nxt
+	u32			  tw_rcv_wnd;
+	u32			  tw_ts_offset;
+	u32			  tw_ts_recent;
+
+	/* The time we sent the last out-of-window ACK: */
+	u32			  tw_last_oow_ack_time;
+
+>>>>>>> v4.9.227
 	long			  tw_ts_recent_stamp;
 #ifdef CONFIG_TCP_MD5SIG
 	struct tcp_md5sig_key	  *tw_md5_key;
@@ -377,6 +511,7 @@ static inline bool tcp_passive_fastopen(const struct sock *sk)
 		tcp_sk(sk)->fastopen_rsk != NULL);
 }
 
+<<<<<<< HEAD
 extern void tcp_sock_destruct(struct sock *sk);
 
 static inline int fastopen_init_queue(struct sock *sk, int backlog)
@@ -398,4 +533,30 @@ static inline int fastopen_init_queue(struct sock *sk, int backlog)
 	return 0;
 }
 
+=======
+static inline void fastopen_queue_tune(struct sock *sk, int backlog)
+{
+	struct request_sock_queue *queue = &inet_csk(sk)->icsk_accept_queue;
+	int somaxconn = READ_ONCE(sock_net(sk)->core.sysctl_somaxconn);
+
+	queue->fastopenq.max_qlen = min_t(unsigned int, backlog, somaxconn);
+}
+
+static inline void tcp_move_syn(struct tcp_sock *tp,
+				struct request_sock *req)
+{
+	tp->saved_syn = req->saved_syn;
+	req->saved_syn = NULL;
+}
+
+static inline void tcp_saved_syn_free(struct tcp_sock *tp)
+{
+	kfree(tp->saved_syn);
+	tp->saved_syn = NULL;
+}
+
+int tcp_skb_shift(struct sk_buff *to, struct sk_buff *from, int pcount,
+		  int shiftlen);
+
+>>>>>>> v4.9.227
 #endif	/* _LINUX_TCP_H */

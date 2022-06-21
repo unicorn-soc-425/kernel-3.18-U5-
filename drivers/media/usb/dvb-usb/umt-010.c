@@ -1,7 +1,11 @@
 /* DVB USB framework compliant Linux driver for the HanfTek UMT-010 USB2.0
  * DVB-T receiver.
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  *
  *	This program is free software; you can redistribute it and/or modify it
  *	under the terms of the GNU General Public License as published by the Free
@@ -145,7 +149,11 @@ static struct usb_driver umt_driver = {
 
 module_usb_driver(umt_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@desy.de>");
+=======
+MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@posteo.de>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Driver for HanfTek UMT 010 USB2.0 DVB-T device");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");

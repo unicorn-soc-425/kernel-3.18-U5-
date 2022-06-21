@@ -7,7 +7,11 @@
 #include <linux/completion.h>
 #include <linux/kthread.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <asm/local.h>
 
 struct rb_page {
@@ -17,26 +21,43 @@ struct rb_page {
 };
 
 /* run time and sleep time in seconds */
+<<<<<<< HEAD
 #define RUN_TIME	10
+=======
+#define RUN_TIME	10ULL
+>>>>>>> v4.9.227
 #define SLEEP_TIME	10
 
 /* number of events for writer to wake up the reader */
 static int wakeup_interval = 100;
 
 static int reader_finish;
+<<<<<<< HEAD
 static struct completion read_start;
 static struct completion read_done;
+=======
+static DECLARE_COMPLETION(read_start);
+static DECLARE_COMPLETION(read_done);
+>>>>>>> v4.9.227
 
 static struct ring_buffer *buffer;
 static struct task_struct *producer;
 static struct task_struct *consumer;
 static unsigned long read;
 
+<<<<<<< HEAD
 static int disable_reader;
 module_param(disable_reader, uint, 0644);
 MODULE_PARM_DESC(disable_reader, "only run producer");
 
 static int write_iteration = 50;
+=======
+static unsigned int disable_reader;
+module_param(disable_reader, uint, 0644);
+MODULE_PARM_DESC(disable_reader, "only run producer");
+
+static unsigned int write_iteration = 50;
+>>>>>>> v4.9.227
 module_param(write_iteration, uint, 0644);
 MODULE_PARM_DESC(write_iteration, "# of writes between timestamp readings");
 
@@ -46,6 +67,7 @@ static int consumer_nice = MAX_NICE;
 static int producer_fifo = -1;
 static int consumer_fifo = -1;
 
+<<<<<<< HEAD
 module_param(producer_nice, uint, 0644);
 MODULE_PARM_DESC(producer_nice, "nice prio for producer");
 
@@ -56,16 +78,37 @@ module_param(producer_fifo, uint, 0644);
 MODULE_PARM_DESC(producer_fifo, "fifo prio for producer");
 
 module_param(consumer_fifo, uint, 0644);
+=======
+module_param(producer_nice, int, 0644);
+MODULE_PARM_DESC(producer_nice, "nice prio for producer");
+
+module_param(consumer_nice, int, 0644);
+MODULE_PARM_DESC(consumer_nice, "nice prio for consumer");
+
+module_param(producer_fifo, int, 0644);
+MODULE_PARM_DESC(producer_fifo, "fifo prio for producer");
+
+module_param(consumer_fifo, int, 0644);
+>>>>>>> v4.9.227
 MODULE_PARM_DESC(consumer_fifo, "fifo prio for consumer");
 
 static int read_events;
 
+<<<<<<< HEAD
 static int kill_test;
 
 #define KILL_TEST()				\
 	do {					\
 		if (!kill_test) {		\
 			kill_test = 1;		\
+=======
+static int test_error;
+
+#define TEST_ERROR()				\
+	do {					\
+		if (!test_error) {		\
+			test_error = 1;		\
+>>>>>>> v4.9.227
 			WARN_ON(1);		\
 		}				\
 	} while (0)
@@ -75,6 +118,14 @@ enum event_status {
 	EVENT_DROPPED,
 };
 
+<<<<<<< HEAD
+=======
+static bool break_test(void)
+{
+	return test_error || kthread_should_stop();
+}
+
+>>>>>>> v4.9.227
 static enum event_status read_event(int cpu)
 {
 	struct ring_buffer_event *event;
@@ -87,7 +138,11 @@ static enum event_status read_event(int cpu)
 
 	entry = ring_buffer_event_data(event);
 	if (*entry != cpu) {
+<<<<<<< HEAD
 		KILL_TEST();
+=======
+		TEST_ERROR();
+>>>>>>> v4.9.227
 		return EVENT_DROPPED;
 	}
 
@@ -115,10 +170,17 @@ static enum event_status read_page(int cpu)
 		rpage = bpage;
 		/* The commit may have missed event flags set, clear them */
 		commit = local_read(&rpage->commit) & 0xfffff;
+<<<<<<< HEAD
 		for (i = 0; i < commit && !kill_test; i += inc) {
 
 			if (i >= (PAGE_SIZE - offsetof(struct rb_page, data))) {
 				KILL_TEST();
+=======
+		for (i = 0; i < commit && !test_error ; i += inc) {
+
+			if (i >= (PAGE_SIZE - offsetof(struct rb_page, data))) {
+				TEST_ERROR();
+>>>>>>> v4.9.227
 				break;
 			}
 
@@ -128,7 +190,11 @@ static enum event_status read_page(int cpu)
 			case RINGBUF_TYPE_PADDING:
 				/* failed writes may be discarded events */
 				if (!event->time_delta)
+<<<<<<< HEAD
 					KILL_TEST();
+=======
+					TEST_ERROR();
+>>>>>>> v4.9.227
 				inc = event->array[0] + 4;
 				break;
 			case RINGBUF_TYPE_TIME_EXTEND:
@@ -137,12 +203,20 @@ static enum event_status read_page(int cpu)
 			case 0:
 				entry = ring_buffer_event_data(event);
 				if (*entry != cpu) {
+<<<<<<< HEAD
 					KILL_TEST();
+=======
+					TEST_ERROR();
+>>>>>>> v4.9.227
 					break;
 				}
 				read++;
 				if (!event->array[0]) {
+<<<<<<< HEAD
 					KILL_TEST();
+=======
+					TEST_ERROR();
+>>>>>>> v4.9.227
 					break;
 				}
 				inc = event->array[0] + 4;
@@ -150,17 +224,29 @@ static enum event_status read_page(int cpu)
 			default:
 				entry = ring_buffer_event_data(event);
 				if (*entry != cpu) {
+<<<<<<< HEAD
 					KILL_TEST();
+=======
+					TEST_ERROR();
+>>>>>>> v4.9.227
 					break;
 				}
 				read++;
 				inc = ((event->type_len + 1) * 4);
 			}
+<<<<<<< HEAD
 			if (kill_test)
 				break;
 
 			if (inc <= 0) {
 				KILL_TEST();
+=======
+			if (test_error)
+				break;
+
+			if (inc <= 0) {
+				TEST_ERROR();
+>>>>>>> v4.9.227
 				break;
 			}
 		}
@@ -178,10 +264,21 @@ static void ring_buffer_consumer(void)
 	read_events ^= 1;
 
 	read = 0;
+<<<<<<< HEAD
 	while (!reader_finish && !kill_test) {
 		int found;
 
 		do {
+=======
+	/*
+	 * Continue running until the producer specifically asks to stop
+	 * and is ready for the completion.
+	 */
+	while (!READ_ONCE(reader_finish)) {
+		int found = 1;
+
+		while (found && !test_error) {
+>>>>>>> v4.9.227
 			int cpu;
 
 			found = 0;
@@ -193,6 +290,7 @@ static void ring_buffer_consumer(void)
 				else
 					stat = read_page(cpu);
 
+<<<<<<< HEAD
 				if (kill_test)
 					break;
 				if (stat == EVENT_FOUND)
@@ -200,20 +298,42 @@ static void ring_buffer_consumer(void)
 			}
 		} while (found && !kill_test);
 
+=======
+				if (test_error)
+					break;
+
+				if (stat == EVENT_FOUND)
+					found = 1;
+
+			}
+		}
+
+		/* Wait till the producer wakes us up when there is more data
+		 * available or when the producer wants us to finish reading.
+		 */
+>>>>>>> v4.9.227
 		set_current_state(TASK_INTERRUPTIBLE);
 		if (reader_finish)
 			break;
 
 		schedule();
 	}
+<<<<<<< HEAD
+=======
+	__set_current_state(TASK_RUNNING);
+>>>>>>> v4.9.227
 	reader_finish = 0;
 	complete(&read_done);
 }
 
 static void ring_buffer_producer(void)
 {
+<<<<<<< HEAD
 	struct timeval start_tv;
 	struct timeval end_tv;
+=======
+	ktime_t start_time, end_time, timeout;
+>>>>>>> v4.9.227
 	unsigned long long time;
 	unsigned long long entries;
 	unsigned long long overruns;
@@ -227,7 +347,12 @@ static void ring_buffer_producer(void)
 	 * make the system stall)
 	 */
 	trace_printk("Starting ring buffer hammer\n");
+<<<<<<< HEAD
 	do_gettimeofday(&start_tv);
+=======
+	start_time = ktime_get();
+	timeout = ktime_add_ns(start_time, RUN_TIME * NSEC_PER_SEC);
+>>>>>>> v4.9.227
 	do {
 		struct ring_buffer_event *event;
 		int *entry;
@@ -244,7 +369,11 @@ static void ring_buffer_producer(void)
 				ring_buffer_unlock_commit(buffer, event);
 			}
 		}
+<<<<<<< HEAD
 		do_gettimeofday(&end_tv);
+=======
+		end_time = ktime_get();
+>>>>>>> v4.9.227
 
 		cnt++;
 		if (consumer && !(cnt % wakeup_interval))
@@ -263,8 +392,12 @@ static void ring_buffer_producer(void)
 		if (cnt % wakeup_interval)
 			cond_resched();
 #endif
+<<<<<<< HEAD
 
 	} while (end_tv.tv_sec < (start_tv.tv_sec + RUN_TIME) && !kill_test);
+=======
+	} while (ktime_before(end_time, timeout) && !break_test());
+>>>>>>> v4.9.227
 	trace_printk("End ring buffer hammer\n");
 
 	if (consumer) {
@@ -274,20 +407,31 @@ static void ring_buffer_producer(void)
 		/* the completions must be visible before the finish var */
 		smp_wmb();
 		reader_finish = 1;
+<<<<<<< HEAD
 		/* finish var visible before waking up the consumer */
 		smp_wmb();
+=======
+>>>>>>> v4.9.227
 		wake_up_process(consumer);
 		wait_for_completion(&read_done);
 	}
 
+<<<<<<< HEAD
 	time = end_tv.tv_sec - start_tv.tv_sec;
 	time *= USEC_PER_SEC;
 	time += (long long)((long)end_tv.tv_usec - (long)start_tv.tv_usec);
+=======
+	time = ktime_us_delta(end_time, start_time);
+>>>>>>> v4.9.227
 
 	entries = ring_buffer_entries(buffer);
 	overruns = ring_buffer_overruns(buffer);
 
+<<<<<<< HEAD
 	if (kill_test)
+=======
+	if (test_error)
+>>>>>>> v4.9.227
 		trace_printk("ERROR!\n");
 
 	if (!disable_reader) {
@@ -368,20 +512,33 @@ static void wait_to_die(void)
 
 static int ring_buffer_consumer_thread(void *arg)
 {
+<<<<<<< HEAD
 	while (!kthread_should_stop() && !kill_test) {
+=======
+	while (!break_test()) {
+>>>>>>> v4.9.227
 		complete(&read_start);
 
 		ring_buffer_consumer();
 
 		set_current_state(TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 		if (kthread_should_stop() || kill_test)
 			break;
 
+=======
+		if (break_test())
+			break;
+>>>>>>> v4.9.227
 		schedule();
 	}
 	__set_current_state(TASK_RUNNING);
 
+<<<<<<< HEAD
 	if (kill_test)
+=======
+	if (!kthread_should_stop())
+>>>>>>> v4.9.227
 		wait_to_die();
 
 	return 0;
@@ -389,6 +546,7 @@ static int ring_buffer_consumer_thread(void *arg)
 
 static int ring_buffer_producer_thread(void *arg)
 {
+<<<<<<< HEAD
 	init_completion(&read_start);
 
 	while (!kthread_should_stop() && !kill_test) {
@@ -396,11 +554,18 @@ static int ring_buffer_producer_thread(void *arg)
 
 		if (consumer) {
 			smp_wmb();
+=======
+	while (!break_test()) {
+		ring_buffer_reset(buffer);
+
+		if (consumer) {
+>>>>>>> v4.9.227
 			wake_up_process(consumer);
 			wait_for_completion(&read_start);
 		}
 
 		ring_buffer_producer();
+<<<<<<< HEAD
 
 		trace_printk("Sleeping for 10 secs\n");
 		set_current_state(TASK_INTERRUPTIBLE);
@@ -408,6 +573,21 @@ static int ring_buffer_producer_thread(void *arg)
 	}
 
 	if (kill_test)
+=======
+		if (break_test())
+			goto out_kill;
+
+		trace_printk("Sleeping for 10 secs\n");
+		set_current_state(TASK_INTERRUPTIBLE);
+		if (break_test())
+			goto out_kill;
+		schedule_timeout(HZ * SLEEP_TIME);
+	}
+
+out_kill:
+	__set_current_state(TASK_RUNNING);
+	if (!kthread_should_stop())
+>>>>>>> v4.9.227
 		wait_to_die();
 
 	return 0;

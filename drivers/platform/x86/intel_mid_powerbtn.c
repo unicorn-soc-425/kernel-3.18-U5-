@@ -24,6 +24,10 @@
 #include <linux/platform_device.h>
 #include <linux/input.h>
 #include <linux/mfd/intel_msic.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_wakeirq.h>
+>>>>>>> v4.9.227
 
 #define DRIVER_NAME "msic_power_btn"
 
@@ -76,14 +80,25 @@ static int mfld_pb_probe(struct platform_device *pdev)
 
 	input_set_capability(input, EV_KEY, KEY_POWER);
 
+<<<<<<< HEAD
 	error = request_threaded_irq(irq, NULL, mfld_pb_isr, IRQF_NO_SUSPEND,
 			DRIVER_NAME, input);
+=======
+	error = request_threaded_irq(irq, NULL, mfld_pb_isr, IRQF_ONESHOT,
+				     DRIVER_NAME, input);
+>>>>>>> v4.9.227
 	if (error) {
 		dev_err(&pdev->dev, "Unable to request irq %d for mfld power"
 				"button\n", irq);
 		goto err_free_input;
 	}
 
+<<<<<<< HEAD
+=======
+	device_init_wakeup(&pdev->dev, true);
+	dev_pm_set_wake_irq(&pdev->dev, irq);
+
+>>>>>>> v4.9.227
 	error = input_register_device(input);
 	if (error) {
 		dev_err(&pdev->dev, "Unable to register input dev, error "
@@ -124,6 +139,11 @@ static int mfld_pb_remove(struct platform_device *pdev)
 	struct input_dev *input = platform_get_drvdata(pdev);
 	int irq = platform_get_irq(pdev, 0);
 
+<<<<<<< HEAD
+=======
+	dev_pm_clear_wake_irq(&pdev->dev);
+	device_init_wakeup(&pdev->dev, false);
+>>>>>>> v4.9.227
 	free_irq(irq, input);
 	input_unregister_device(input);
 
@@ -133,7 +153,10 @@ static int mfld_pb_remove(struct platform_device *pdev)
 static struct platform_driver mfld_pb_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe	= mfld_pb_probe,
 	.remove	= mfld_pb_remove,

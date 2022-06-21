@@ -103,7 +103,11 @@ static int pci_mmcfg_write_numachip(unsigned int seg, unsigned int bus,
 	return 0;
 }
 
+<<<<<<< HEAD
 const struct pci_raw_ops pci_mmcfg_numachip = {
+=======
+static const struct pci_raw_ops pci_mmcfg_numachip = {
+>>>>>>> v4.9.227
 	.read = pci_mmcfg_read_numachip,
 	.write = pci_mmcfg_write_numachip,
 };

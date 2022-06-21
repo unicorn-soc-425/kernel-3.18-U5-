@@ -1087,7 +1087,11 @@ u8 stv0900_get_optim_carr_loop(s32 srate, enum fe_stv0900_modcode modcode,
 							s32 pilot, u8 chip_id)
 {
 	u8 aclc_value = 0x29;
+<<<<<<< HEAD
 	s32 i;
+=======
+	s32 i, cllas2_size;
+>>>>>>> v4.9.227
 	const struct stv0900_car_loop_optim *cls2, *cllqs2, *cllas2;
 
 	dprintk("%s\n", __func__);
@@ -1096,14 +1100,26 @@ u8 stv0900_get_optim_carr_loop(s32 srate, enum fe_stv0900_modcode modcode,
 		cls2 = FE_STV0900_S2CarLoop;
 		cllqs2 = FE_STV0900_S2LowQPCarLoopCut30;
 		cllas2 = FE_STV0900_S2APSKCarLoopCut30;
+<<<<<<< HEAD
+=======
+		cllas2_size = ARRAY_SIZE(FE_STV0900_S2APSKCarLoopCut30);
+>>>>>>> v4.9.227
 	} else if (chip_id == 0x20) {
 		cls2 = FE_STV0900_S2CarLoopCut20;
 		cllqs2 = FE_STV0900_S2LowQPCarLoopCut20;
 		cllas2 = FE_STV0900_S2APSKCarLoopCut20;
+<<<<<<< HEAD
+=======
+		cllas2_size = ARRAY_SIZE(FE_STV0900_S2APSKCarLoopCut20);
+>>>>>>> v4.9.227
 	} else {
 		cls2 = FE_STV0900_S2CarLoopCut30;
 		cllqs2 = FE_STV0900_S2LowQPCarLoopCut30;
 		cllas2 = FE_STV0900_S2APSKCarLoopCut30;
+<<<<<<< HEAD
+=======
+		cllas2_size = ARRAY_SIZE(FE_STV0900_S2APSKCarLoopCut30);
+>>>>>>> v4.9.227
 	}
 
 	if (modcode < STV0900_QPSK_12) {
@@ -1178,7 +1194,11 @@ u8 stv0900_get_optim_carr_loop(s32 srate, enum fe_stv0900_modcode modcode,
 				aclc_value = cls2[i].car_loop_pilots_off_30;
 		}
 
+<<<<<<< HEAD
 	} else {
+=======
+	} else if (i < cllas2_size) {
+>>>>>>> v4.9.227
 		if (srate <= 3000000)
 			aclc_value = cllas2[i].car_loop_pilots_on_2;
 		else if (srate <= 7000000)
@@ -1744,7 +1764,12 @@ static int stv0900_send_master_cmd(struct dvb_frontend *fe,
 				state->demod);
 }
 
+<<<<<<< HEAD
 static int stv0900_send_burst(struct dvb_frontend *fe, fe_sec_mini_cmd_t burst)
+=======
+static int stv0900_send_burst(struct dvb_frontend *fe,
+			      enum fe_sec_mini_cmd burst)
+>>>>>>> v4.9.227
 {
 	struct stv0900_state *state = fe->demodulator_priv;
 	struct stv0900_internal *intp = state->internal;
@@ -1793,7 +1818,12 @@ static int stv0900_recv_slave_reply(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int stv0900_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t toneoff)
+=======
+static int stv0900_set_tone(struct dvb_frontend *fe,
+			    enum fe_sec_tone_mode toneoff)
+>>>>>>> v4.9.227
 {
 	struct stv0900_state *state = fe->demodulator_priv;
 	struct stv0900_internal *intp = state->internal;
@@ -1857,9 +1887,15 @@ static int stv0900_sleep(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int stv0900_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+=======
+static int stv0900_get_frontend(struct dvb_frontend *fe,
+				struct dtv_frontend_properties *p)
+{
+>>>>>>> v4.9.227
 	struct stv0900_state *state = fe->demodulator_priv;
 	struct stv0900_internal *intp = state->internal;
 	enum fe_stv0900_demod_num demod = state->demod;

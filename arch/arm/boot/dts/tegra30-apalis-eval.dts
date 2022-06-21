@@ -17,6 +17,13 @@
 		serial3 = &uartd;
 	};
 
+<<<<<<< HEAD
+=======
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+>>>>>>> v4.9.227
 	pcie-controller@00003000 {
 		status = "okay";
 
@@ -126,6 +133,13 @@
 		};
 	};
 
+<<<<<<< HEAD
+=======
+	hda@70030000 {
+		status = "okay";
+	};
+
+>>>>>>> v4.9.227
 	sd1: sdhci@78000000 {
 		status = "okay";
 		bus-width = <4>;
@@ -149,6 +163,10 @@
 
 	usb-phy@7d000000 {
 		status = "okay";
+<<<<<<< HEAD
+=======
+		dr_mode = "otg";
+>>>>>>> v4.9.227
 		vbus-supply = <&usbo1_vbus_reg>;
 	};
 
@@ -175,7 +193,11 @@
 	backlight: backlight {
 		compatible = "pwm-backlight";
 
+<<<<<<< HEAD
 		/* PWM0 */
+=======
+		/* PWM_BKL1 */
+>>>>>>> v4.9.227
 		pwms = <&pwm 0 5000000>;
 		brightness-levels = <255 231 223 207 191 159 127 0>;
 		default-brightness-level = <6>;
@@ -186,12 +208,21 @@
 	gpio-keys {
 		compatible = "gpio-keys";
 
+<<<<<<< HEAD
 		power {
 			label = "Power";
 			gpios = <&gpio TEGRA_GPIO(V, 1) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
 			debounce-interval = <10>;
 			gpio-key,wakeup;
+=======
+		wakeup {
+			label = "WAKE1_MICO";
+			gpios = <&gpio TEGRA_GPIO(V, 1) GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_WAKEUP>;
+			debounce-interval = <10>;
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 	};
 

@@ -820,8 +820,12 @@ static int ad7877_remove(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int ad7877_suspend(struct device *dev)
+=======
+static int __maybe_unused ad7877_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct ad7877 *ts = dev_get_drvdata(dev);
 
@@ -830,7 +834,11 @@ static int ad7877_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ad7877_resume(struct device *dev)
+=======
+static int __maybe_unused ad7877_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct ad7877 *ts = dev_get_drvdata(dev);
 
@@ -838,14 +846,20 @@ static int ad7877_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(ad7877_pm, ad7877_suspend, ad7877_resume);
 
 static struct spi_driver ad7877_driver = {
 	.driver = {
 		.name	= "ad7877",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &ad7877_pm,
 	},
 	.probe		= ad7877_probe,

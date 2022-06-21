@@ -218,7 +218,10 @@ struct hix5hd2_priv {
 	struct device *dev;
 	struct net_device *netdev;
 
+<<<<<<< HEAD
 	struct phy_device *phy;
+=======
+>>>>>>> v4.9.227
 	struct device_node *phy_node;
 	phy_interface_t	phy_mode;
 
@@ -371,7 +374,11 @@ static void hix5hd2_port_enable(struct hix5hd2_priv *priv)
 
 static void hix5hd2_port_disable(struct hix5hd2_priv *priv)
 {
+<<<<<<< HEAD
 	writel_relaxed(~(BITS_RX_EN | BITS_TX_EN), priv->base + PORT_EN);
+=======
+	writel_relaxed(~(u32)(BITS_RX_EN | BITS_TX_EN), priv->base + PORT_EN);
+>>>>>>> v4.9.227
 	writel_relaxed(0, priv->base + DESC_WR_RD_ENA);
 }
 
@@ -402,7 +409,11 @@ static int hix5hd2_net_set_mac_address(struct net_device *dev, void *p)
 static void hix5hd2_adjust_link(struct net_device *dev)
 {
 	struct hix5hd2_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phy = priv->phy;
+=======
+	struct phy_device *phy = dev->phydev;
+>>>>>>> v4.9.227
 
 	if ((priv->speed != phy->speed) || (priv->duplex != phy->duplex)) {
 		hix5hd2_config_port(dev, phy->speed, phy->duplex);
@@ -500,7 +511,10 @@ static int hix5hd2_rx(struct net_device *dev, int limit)
 		napi_gro_receive(&priv->napi, skb);
 		dev->stats.rx_packets++;
 		dev->stats.rx_bytes += skb->len;
+<<<<<<< HEAD
 		dev->last_rx = jiffies;
+=======
+>>>>>>> v4.9.227
 next:
 		pos = dma_ring_incr(pos, RX_DESC_NUM);
 	}
@@ -637,7 +651,11 @@ static int hix5hd2_net_xmit(struct sk_buff *skb, struct net_device *dev)
 	pos = dma_ring_incr(pos, TX_DESC_NUM);
 	writel_relaxed(dma_byte(pos), priv->base + TX_BQ_WR_ADDR);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> v4.9.227
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += skb->len;
 	netdev_sent_queue(dev, skb->len);
@@ -680,6 +698,10 @@ static void hix5hd2_free_dma_desc_rings(struct hix5hd2_priv *priv)
 static int hix5hd2_net_open(struct net_device *dev)
 {
 	struct hix5hd2_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+	struct phy_device *phy;
+>>>>>>> v4.9.227
 	int ret;
 
 	ret = clk_prepare_enable(priv->clk);
@@ -688,12 +710,21 @@ static int hix5hd2_net_open(struct net_device *dev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	priv->phy = of_phy_connect(dev, priv->phy_node,
 				   &hix5hd2_adjust_link, 0, priv->phy_mode);
 	if (!priv->phy)
 		return -ENODEV;
 
 	phy_start(priv->phy);
+=======
+	phy = of_phy_connect(dev, priv->phy_node,
+			     &hix5hd2_adjust_link, 0, priv->phy_mode);
+	if (!phy)
+		return -ENODEV;
+
+	phy_start(phy);
+>>>>>>> v4.9.227
 	hix5hd2_hw_init(priv);
 	hix5hd2_rx_refill(priv);
 
@@ -717,9 +748,15 @@ static int hix5hd2_net_close(struct net_device *dev)
 	netif_stop_queue(dev);
 	hix5hd2_free_dma_desc_rings(priv);
 
+<<<<<<< HEAD
 	if (priv->phy) {
 		phy_stop(priv->phy);
 		phy_disconnect(priv->phy);
+=======
+	if (dev->phydev) {
+		phy_stop(dev->phydev);
+		phy_disconnect(dev->phydev);
+>>>>>>> v4.9.227
 	}
 
 	clk_disable_unprepare(priv->clk);
@@ -751,6 +788,7 @@ static const struct net_device_ops hix5hd2_netdev_ops = {
 	.ndo_set_mac_address	= hix5hd2_net_set_mac_address,
 };
 
+<<<<<<< HEAD
 static int hix5hd2_get_settings(struct net_device *net_dev,
 				struct ethtool_cmd *cmd)
 {
@@ -777,6 +815,12 @@ static struct ethtool_ops hix5hd2_ethtools_ops = {
 	.get_link		= ethtool_op_get_link,
 	.get_settings		= hix5hd2_get_settings,
 	.set_settings		= hix5hd2_set_settings,
+=======
+static const struct ethtool_ops hix5hd2_ethtools_ops = {
+	.get_link		= ethtool_op_get_link,
+	.get_link_ksettings     = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings     = phy_ethtool_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 static int hix5hd2_mdio_wait_ready(struct mii_bus *bus)
@@ -952,7 +996,11 @@ static int hix5hd2_dev_probe(struct platform_device *pdev)
 		goto err_free_mdio;
 
 	priv->phy_mode = of_get_phy_mode(node);
+<<<<<<< HEAD
 	if (priv->phy_mode < 0) {
+=======
+	if ((int)priv->phy_mode < 0) {
+>>>>>>> v4.9.227
 		netdev_err(ndev, "not find phy-mode\n");
 		ret = -EINVAL;
 		goto err_mdiobus;

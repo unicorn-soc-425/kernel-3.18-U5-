@@ -100,9 +100,13 @@ static void __init mpc85xx_rdb_pic_init(void)
 
 static int __init p1023_rdb_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,P1023RDB");
+=======
+	return of_machine_is_compatible("fsl,P1023RDB");
+>>>>>>> v4.9.227
 
 }
 
@@ -112,7 +116,10 @@ define_machine(p1023_rdb) {
 	.setup_arch		= mpc85xx_rdb_setup_arch,
 	.init_IRQ		= mpc85xx_rdb_pic_init,
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 #ifdef CONFIG_PCI

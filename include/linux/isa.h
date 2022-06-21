@@ -6,6 +6,10 @@
 #define __LINUX_ISA_H
 
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/errno.h>
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 
 struct isa_driver {
@@ -22,13 +26,21 @@ struct isa_driver {
 
 #define to_isa_driver(x) container_of((x), struct isa_driver, driver)
 
+<<<<<<< HEAD
 #ifdef CONFIG_ISA
+=======
+#ifdef CONFIG_ISA_BUS_API
+>>>>>>> v4.9.227
 int isa_register_driver(struct isa_driver *, unsigned int);
 void isa_unregister_driver(struct isa_driver *);
 #else
 static inline int isa_register_driver(struct isa_driver *d, unsigned int i)
 {
+<<<<<<< HEAD
 	return 0;
+=======
+	return -ENODEV;
+>>>>>>> v4.9.227
 }
 
 static inline void isa_unregister_driver(struct isa_driver *d)
@@ -36,4 +48,39 @@ static inline void isa_unregister_driver(struct isa_driver *d)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+/**
+ * module_isa_driver() - Helper macro for registering a ISA driver
+ * @__isa_driver: isa_driver struct
+ * @__num_isa_dev: number of devices to register
+ *
+ * Helper macro for ISA drivers which do not do anything special in module
+ * init/exit. This eliminates a lot of boilerplate code. Each module may only
+ * use this macro once, and calling it replaces module_init and module_exit.
+ */
+#define module_isa_driver(__isa_driver, __num_isa_dev) \
+static int __init __isa_driver##_init(void) \
+{ \
+	return isa_register_driver(&(__isa_driver), __num_isa_dev); \
+} \
+module_init(__isa_driver##_init); \
+static void __exit __isa_driver##_exit(void) \
+{ \
+	isa_unregister_driver(&(__isa_driver)); \
+} \
+module_exit(__isa_driver##_exit);
+
+/**
+ * max_num_isa_dev() - Maximum possible number registered of an ISA device
+ * @__ida_dev_ext: ISA device address extent
+ *
+ * The highest base address possible for an ISA device is 0x3FF; this results in
+ * 1024 possible base addresses. Dividing the number of possible base addresses
+ * by the address extent taken by each device results in the maximum number of
+ * devices on a system.
+ */
+#define max_num_isa_dev(__isa_dev_ext) (1024 / __isa_dev_ext)
+
+>>>>>>> v4.9.227
 #endif /* __LINUX_ISA_H */

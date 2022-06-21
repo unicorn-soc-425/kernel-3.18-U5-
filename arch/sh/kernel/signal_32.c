@@ -267,19 +267,25 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set,
 {
 	struct sigframe __user *frame;
 	int err = 0, sig = ksig->sig;
+<<<<<<< HEAD
 	int signal;
+=======
+>>>>>>> v4.9.227
 
 	frame = get_sigframe(&ksig->ka, regs->regs[15], sizeof(*frame));
 
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	signal = current_thread_info()->exec_domain
 		&& current_thread_info()->exec_domain->signal_invmap
 		&& sig < 32
 		? current_thread_info()->exec_domain->signal_invmap[sig]
 		: sig;
 
+=======
+>>>>>>> v4.9.227
 	err |= setup_sigcontext(&frame->sc, regs, set->sig[0]);
 
 	if (_NSIG_WORDS > 1)
@@ -313,7 +319,11 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set,
 
 	/* Set up registers for signal handler */
 	regs->regs[15] = (unsigned long) frame;
+<<<<<<< HEAD
 	regs->regs[4] = signal; /* Arg for signal handler */
+=======
+	regs->regs[4] = sig; /* Arg for signal handler */
+>>>>>>> v4.9.227
 	regs->regs[5] = 0;
 	regs->regs[6] = (unsigned long) &frame->sc;
 
@@ -329,8 +339,11 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set,
 	if (err)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	set_fs(USER_DS);
 
+=======
+>>>>>>> v4.9.227
 	pr_debug("SIG deliver (%s:%d): sp=%p pc=%08lx pr=%08lx\n",
 		 current->comm, task_pid_nr(current), frame, regs->pc, regs->pr);
 
@@ -342,19 +355,25 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 {
 	struct rt_sigframe __user *frame;
 	int err = 0, sig = ksig->sig;
+<<<<<<< HEAD
 	int signal;
+=======
+>>>>>>> v4.9.227
 
 	frame = get_sigframe(&ksig->ka, regs->regs[15], sizeof(*frame));
 
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	signal = current_thread_info()->exec_domain
 		&& current_thread_info()->exec_domain->signal_invmap
 		&& sig < 32
 		? current_thread_info()->exec_domain->signal_invmap[sig]
 		: sig;
 
+=======
+>>>>>>> v4.9.227
 	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
 
 	/* Create the ucontext.  */
@@ -392,7 +411,11 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 
 	/* Set up registers for signal handler */
 	regs->regs[15] = (unsigned long) frame;
+<<<<<<< HEAD
 	regs->regs[4] = signal; /* Arg for signal handler */
+=======
+	regs->regs[4] = sig; /* Arg for signal handler */
+>>>>>>> v4.9.227
 	regs->regs[5] = (unsigned long) &frame->info;
 	regs->regs[6] = (unsigned long) &frame->uc;
 
@@ -408,8 +431,11 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 	if (err)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	set_fs(USER_DS);
 
+=======
+>>>>>>> v4.9.227
 	pr_debug("SIG deliver (%s:%d): sp=%p pc=%08lx pr=%08lx\n",
 		 current->comm, task_pid_nr(current), frame, regs->pc, regs->pr);
 

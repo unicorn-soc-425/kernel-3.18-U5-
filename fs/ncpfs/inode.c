@@ -82,7 +82,11 @@ static int init_inodecache(void)
 	ncp_inode_cachep = kmem_cache_create("ncp_inode_cache",
 					     sizeof(struct ncp_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> v4.9.227
 					     init_once);
 	if (ncp_inode_cachep == NULL)
 		return -ENOMEM;
@@ -244,8 +248,12 @@ static void ncp_set_attr(struct inode *inode, struct ncp_entry_info *nwinfo)
 #if defined(CONFIG_NCPFS_EXTRAS) || defined(CONFIG_NCPFS_NFS_NS)
 static const struct inode_operations ncp_symlink_inode_operations = {
 	.readlink	= generic_readlink,
+<<<<<<< HEAD
 	.follow_link	= page_follow_link_light,
 	.put_link	= page_put_link,
+=======
+	.get_link	= page_get_link,
+>>>>>>> v4.9.227
 	.setattr	= ncp_notify_change,
 };
 #endif
@@ -267,7 +275,10 @@ ncp_iget(struct super_block *sb, struct ncp_entry_info *info)
 	if (inode) {
 		atomic_set(&NCP_FINFO(inode)->opened, info->opened);
 
+<<<<<<< HEAD
 		inode->i_mapping->backing_dev_info = sb->s_bdi;
+=======
+>>>>>>> v4.9.227
 		inode->i_ino = info->ino;
 		ncp_set_attr(inode, info);
 		if (S_ISREG(inode->i_mode)) {
@@ -284,6 +295,10 @@ ncp_iget(struct super_block *sb, struct ncp_entry_info *info)
 #if defined(CONFIG_NCPFS_EXTRAS) || defined(CONFIG_NCPFS_NFS_NS)
 		} else if (S_ISLNK(inode->i_mode)) {
 			inode->i_op = &ncp_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+			inode_nohighmem(inode);
+>>>>>>> v4.9.227
 			inode->i_data.a_ops = &ncp_symlink_aops;
 #endif
 		} else {
@@ -560,7 +575,11 @@ static int ncp_fill_super(struct super_block *sb, void *raw_data, int silent)
 	server = NCP_SBP(sb);
 	memset(server, 0, sizeof(*server));
 
+<<<<<<< HEAD
 	error = bdi_setup_and_register(&server->bdi, "ncpfs", BDI_CAP_MAP_COPY);
+=======
+	error = bdi_setup_and_register(&server->bdi, "ncpfs");
+>>>>>>> v4.9.227
 	if (error)
 		goto out_fput;
 
@@ -813,7 +832,11 @@ static int ncp_statfs(struct dentry *dentry, struct kstatfs *buf)
 	if (!d) {
 		goto dflt;
 	}
+<<<<<<< HEAD
 	i = d->d_inode;
+=======
+	i = d_inode(d);
+>>>>>>> v4.9.227
 	if (!i) {
 		goto dflt;
 	}
@@ -866,7 +889,11 @@ dflt:;
 
 int ncp_notify_change(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	int result = 0;
 	__le32 info_mask;
 	struct nw_modify_dos_info info;
@@ -879,13 +906,21 @@ int ncp_notify_change(struct dentry *dentry, struct iattr *attr)
 		goto out;
 
 	result = -EPERM;
+<<<<<<< HEAD
 	if (IS_DEADDIR(dentry->d_inode))
+=======
+	if (IS_DEADDIR(d_inode(dentry)))
+>>>>>>> v4.9.227
 		goto out;
 
 	/* ageing the dentry to force validation */
 	ncp_age_dentry(server, dentry);
 
+<<<<<<< HEAD
 	result = inode_change_ok(inode, attr);
+=======
+	result = setattr_prepare(dentry, attr);
+>>>>>>> v4.9.227
 	if (result < 0)
 		goto out;
 

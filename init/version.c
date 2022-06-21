@@ -35,7 +35,14 @@ struct uts_namespace init_uts_ns = {
 		.domainname	= UTS_DOMAINNAME,
 	},
 	.user_ns = &init_user_ns,
+<<<<<<< HEAD
 	.proc_inum = PROC_UTS_INIT_INO,
+=======
+	.ns.inum = PROC_UTS_INIT_INO,
+#ifdef CONFIG_UTS_NS
+	.ns.ops = &utsns_operations,
+#endif
+>>>>>>> v4.9.227
 };
 EXPORT_SYMBOL_GPL(init_uts_ns);
 

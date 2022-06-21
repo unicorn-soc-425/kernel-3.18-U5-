@@ -19,6 +19,10 @@
  */
 
 #include <linux/clk/zynq.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -85,6 +89,7 @@ static DEFINE_SPINLOCK(canmioclk_lock);
 static DEFINE_SPINLOCK(dbgclk_lock);
 static DEFINE_SPINLOCK(aperclk_lock);
 
+<<<<<<< HEAD
 static const char *armpll_parents[] __initconst = {"armpll_int", "ps_clk"};
 static const char *ddrpll_parents[] __initconst = {"ddrpll_int", "ps_clk"};
 static const char *iopll_parents[] __initconst = {"iopll_int", "ps_clk"};
@@ -101,6 +106,31 @@ static const char *dbgtrc_emio_input_names[] __initconst = {"trace_emio_clk"};
 static const char *gem0_emio_input_names[] __initconst = {"gem0_emio_clk"};
 static const char *gem1_emio_input_names[] __initconst = {"gem1_emio_clk"};
 static const char *swdt_ext_clk_input_names[] __initconst = {"swdt_ext_clk"};
+=======
+static const char *const armpll_parents[] __initconst = {"armpll_int",
+	"ps_clk"};
+static const char *const ddrpll_parents[] __initconst = {"ddrpll_int",
+	"ps_clk"};
+static const char *const iopll_parents[] __initconst = {"iopll_int",
+	"ps_clk"};
+static const char *gem0_mux_parents[] __initdata = {"gem0_div1", "dummy_name"};
+static const char *gem1_mux_parents[] __initdata = {"gem1_div1", "dummy_name"};
+static const char *const can0_mio_mux2_parents[] __initconst = {"can0_gate",
+	"can0_mio_mux"};
+static const char *const can1_mio_mux2_parents[] __initconst = {"can1_gate",
+	"can1_mio_mux"};
+static const char *dbg_emio_mux_parents[] __initdata = {"dbg_div",
+	"dummy_name"};
+
+static const char *const dbgtrc_emio_input_names[] __initconst = {
+	"trace_emio_clk"};
+static const char *const gem0_emio_input_names[] __initconst = {
+	"gem0_emio_clk"};
+static const char *const gem1_emio_input_names[] __initconst = {
+	"gem1_emio_clk"};
+static const char *const swdt_ext_clk_input_names[] __initconst = {
+	"swdt_ext_clk"};
+>>>>>>> v4.9.227
 
 static void __init zynq_clk_register_fclk(enum zynq_clk fclk,
 		const char *clk_name, void __iomem *fclk_ctrl_reg,
@@ -257,8 +287,12 @@ static void __init zynq_clk_setup(struct device_node *np)
 		pr_warn("ps_clk frequency not specified, using 33 MHz.\n");
 		tmp = 33333333;
 	}
+<<<<<<< HEAD
 	ps_clk = clk_register_fixed_rate(NULL, "ps_clk", NULL, CLK_IS_ROOT,
 			tmp);
+=======
+	ps_clk = clk_register_fixed_rate(NULL, "ps_clk", NULL, 0, tmp);
+>>>>>>> v4.9.227
 
 	/* PLLs */
 	clk = clk_register_zynq_pll("armpll_int", "ps_clk", SLCR_ARMPLL_CTRL,

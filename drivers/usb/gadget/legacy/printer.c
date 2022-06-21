@@ -12,6 +12,7 @@
 
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
 #include <linux/ioport.h>
 #include <linux/sched.h>
@@ -35,12 +36,16 @@
 #include <linux/irq.h>
 #include <linux/uaccess.h>
 #include <asm/unaligned.h>
+=======
+#include <asm/byteorder.h>
+>>>>>>> v4.9.227
 
 #include <linux/usb/ch9.h>
 #include <linux/usb/composite.h>
 #include <linux/usb/gadget.h>
 #include <linux/usb/g_printer.h>
 
+<<<<<<< HEAD
 #include "gadget_chips.h"
 
 USB_GADGET_COMPOSITE_OPTIONS();
@@ -90,6 +95,17 @@ struct printer_dev {
 };
 
 static struct printer_dev usb_printer_gadget;
+=======
+USB_GADGET_COMPOSITE_OPTIONS();
+
+#define DRIVER_DESC		"Printer Gadget"
+#define DRIVER_VERSION		"2015 FEB 17"
+
+static const char shortname [] = "printer";
+static const char driver_desc [] = DRIVER_DESC;
+
+#include "u_printer.h"
+>>>>>>> v4.9.227
 
 /*-------------------------------------------------------------------------*/
 
@@ -120,6 +136,12 @@ module_param(qlen, uint, S_IRUGO|S_IWUSR);
 
 #define QLEN	qlen
 
+<<<<<<< HEAD
+=======
+static struct usb_function_instance *fi_printer;
+static struct usb_function *f_printer;
+
+>>>>>>> v4.9.227
 /*-------------------------------------------------------------------------*/
 
 /*
@@ -127,6 +149,7 @@ module_param(qlen, uint, S_IRUGO|S_IWUSR);
  * descriptors are built on demand.
  */
 
+<<<<<<< HEAD
 /* holds our biggest descriptor */
 #define USB_DESC_BUFSIZE		256
 #define USB_BUFSIZE			8192
@@ -135,6 +158,12 @@ static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 	.bcdUSB =		cpu_to_le16(0x0200),
+=======
+static struct usb_device_descriptor device_desc = {
+	.bLength =		sizeof device_desc,
+	.bDescriptorType =	USB_DT_DEVICE,
+	/* .bcdUSB = DYNAMIC */
+>>>>>>> v4.9.227
 	.bDeviceClass =		USB_CLASS_PER_INTERFACE,
 	.bDeviceSubClass =	0,
 	.bDeviceProtocol =	0,
@@ -143,6 +172,7 @@ static struct usb_device_descriptor device_desc = {
 	.bNumConfigurations =	1
 };
 
+<<<<<<< HEAD
 static struct usb_interface_descriptor intf_desc = {
 	.bLength =		sizeof intf_desc,
 	.bDescriptorType =	USB_DT_INTERFACE,
@@ -221,6 +251,9 @@ static const struct usb_descriptor_header *otg_desc[] = {
 
 /* maxpacket and other transfer characteristics vary by speed. */
 #define ep_desc(g, hs, fs) (((g)->speed == USB_SPEED_HIGH)?(hs):(fs))
+=======
+static const struct usb_descriptor_header *otg_desc[2];
+>>>>>>> v4.9.227
 
 /*-------------------------------------------------------------------------*/
 
@@ -228,7 +261,11 @@ static const struct usb_descriptor_header *otg_desc[] = {
 
 static char				product_desc [40] = DRIVER_DESC;
 static char				serial_num [40] = "1";
+<<<<<<< HEAD
 static char				pnp_string [1024] =
+=======
+static char				pnp_string[PNP_STRING_LEN] =
+>>>>>>> v4.9.227
 	"XXMFG:linux;MDL:g_printer;CLS:PRINTER;SN:1;";
 
 /* static strings, in UTF-8 */
@@ -249,6 +286,7 @@ static struct usb_gadget_strings *dev_strings[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 /*-------------------------------------------------------------------------*/
 
 static struct usb_request *
@@ -1114,10 +1152,15 @@ static void printer_cfg_unbind(struct usb_configuration *c)
 static struct usb_configuration printer_cfg_driver = {
 	.label			= "printer",
 	.unbind			= printer_cfg_unbind,
+=======
+static struct usb_configuration printer_cfg_driver = {
+	.label			= "printer",
+>>>>>>> v4.9.227
 	.bConfigurationValue	= 1,
 	.bmAttributes		= USB_CONFIG_ATT_ONE | USB_CONFIG_ATT_SELFPOWER,
 };
 
+<<<<<<< HEAD
 static int __init printer_bind_config(struct usb_configuration *c)
 {
 	struct usb_gadget	*gadget = c->cdev->gadget;
@@ -1165,11 +1208,50 @@ static int __init printer_bind_config(struct usb_configuration *c)
 
 	if (iPNPstring)
 		strlcpy(&pnp_string[2], iPNPstring, (sizeof pnp_string)-2);
+=======
+static int printer_do_config(struct usb_configuration *c)
+{
+	struct usb_gadget	*gadget = c->cdev->gadget;
+	int			status = 0;
+
+	usb_ep_autoconfig_reset(gadget);
+
+	usb_gadget_set_selfpowered(gadget);
+
+	if (gadget_is_otg(gadget)) {
+		printer_cfg_driver.descriptors = otg_desc;
+		printer_cfg_driver.bmAttributes |= USB_CONFIG_ATT_WAKEUP;
+	}
+
+	f_printer = usb_get_function(fi_printer);
+	if (IS_ERR(f_printer))
+		return PTR_ERR(f_printer);
+
+	status = usb_add_function(c, f_printer);
+	if (status < 0)
+		usb_put_function(f_printer);
+
+	return status;
+}
+
+static int printer_bind(struct usb_composite_dev *cdev)
+{
+	struct f_printer_opts *opts;
+	int ret, len;
+
+	fi_printer = usb_get_function_instance("printer");
+	if (IS_ERR(fi_printer))
+		return PTR_ERR(fi_printer);
+
+	if (iPNPstring)
+		strlcpy(&pnp_string[2], iPNPstring, PNP_STRING_LEN - 2);
+>>>>>>> v4.9.227
 
 	len = strlen(pnp_string);
 	pnp_string[0] = (len >> 8) & 0xFF;
 	pnp_string[1] = len & 0xFF;
 
+<<<<<<< HEAD
 	usb_gadget_set_selfpowered(gadget);
 
 	if (gadget_is_otg(gadget)) {
@@ -1247,10 +1329,22 @@ static int __init printer_bind(struct usb_composite_dev *cdev)
 	ret = usb_string_ids_tab(cdev, strings);
 	if (ret < 0)
 		return ret;
+=======
+	opts = container_of(fi_printer, struct f_printer_opts, func_inst);
+	opts->minor = 0;
+	memcpy(opts->pnp_string, pnp_string, PNP_STRING_LEN);
+	opts->q_len = QLEN;
+
+	ret = usb_string_ids_tab(cdev, strings);
+	if (ret < 0)
+		goto fail_put_func_inst;
+
+>>>>>>> v4.9.227
 	device_desc.iManufacturer = strings[USB_GADGET_MANUFACTURER_IDX].id;
 	device_desc.iProduct = strings[USB_GADGET_PRODUCT_IDX].id;
 	device_desc.iSerialNumber = strings[USB_GADGET_SERIAL_IDX].id;
 
+<<<<<<< HEAD
 	ret = usb_add_config(cdev, &printer_cfg_driver, printer_bind_config);
 	if (ret)
 		return ret;
@@ -1263,10 +1357,57 @@ static __refdata struct usb_composite_driver printer_driver = {
 	.dev            = &device_desc,
 	.strings        = dev_strings,
 	.max_speed      = USB_SPEED_HIGH,
+=======
+	if (gadget_is_otg(cdev->gadget) && !otg_desc[0]) {
+		struct usb_descriptor_header *usb_desc;
+
+		usb_desc = usb_otg_descriptor_alloc(cdev->gadget);
+		if (!usb_desc) {
+			ret = -ENOMEM;
+			goto fail_put_func_inst;
+		}
+		usb_otg_descriptor_init(cdev->gadget, usb_desc);
+		otg_desc[0] = usb_desc;
+		otg_desc[1] = NULL;
+	}
+
+	ret = usb_add_config(cdev, &printer_cfg_driver, printer_do_config);
+	if (ret)
+		goto fail_free_otg_desc;
+
+	usb_composite_overwrite_options(cdev, &coverwrite);
+	return ret;
+
+fail_free_otg_desc:
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+fail_put_func_inst:
+	usb_put_function_instance(fi_printer);
+	return ret;
+}
+
+static int printer_unbind(struct usb_composite_dev *cdev)
+{
+	usb_put_function(f_printer);
+	usb_put_function_instance(fi_printer);
+
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+
+	return 0;
+}
+
+static struct usb_composite_driver printer_driver = {
+	.name           = shortname,
+	.dev            = &device_desc,
+	.strings        = dev_strings,
+	.max_speed      = USB_SPEED_SUPER,
+>>>>>>> v4.9.227
 	.bind		= printer_bind,
 	.unbind		= printer_unbind,
 };
 
+<<<<<<< HEAD
 static int __init
 init(void)
 {
@@ -1308,6 +1449,9 @@ cleanup(void)
 	mutex_unlock(&usb_printer_gadget.lock_printer_io);
 }
 module_exit(cleanup);
+=======
+module_usb_composite_driver(printer_driver);
+>>>>>>> v4.9.227
 
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_AUTHOR("Craig Nadler");

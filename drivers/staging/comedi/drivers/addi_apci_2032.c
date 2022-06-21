@@ -23,6 +23,7 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
@@ -30,12 +31,20 @@
 #include "../comedidev.h"
 #include "addi_watchdog.h"
 #include "comedi_fc.h"
+=======
+#include <linux/interrupt.h>
+#include <linux/slab.h>
+
+#include "../comedi_pci.h"
+#include "addi_watchdog.h"
+>>>>>>> v4.9.227
 
 /*
  * PCI bar 1 I/O Register map
  */
 #define APCI2032_DO_REG			0x00
 #define APCI2032_INT_CTRL_REG		0x04
+<<<<<<< HEAD
 #define APCI2032_INT_CTRL_VCC_ENA	(1 << 0)
 #define APCI2032_INT_CTRL_CC_ENA	(1 << 1)
 #define APCI2032_INT_STATUS_REG		0x08
@@ -50,6 +59,21 @@ struct apci2032_int_private {
 	unsigned int stop_count;
 	bool active;
 	unsigned char enabled_isns;
+=======
+#define APCI2032_INT_CTRL_VCC_ENA	BIT(0)
+#define APCI2032_INT_CTRL_CC_ENA	BIT(1)
+#define APCI2032_INT_STATUS_REG		0x08
+#define APCI2032_INT_STATUS_VCC		BIT(0)
+#define APCI2032_INT_STATUS_CC		BIT(1)
+#define APCI2032_STATUS_REG		0x0c
+#define APCI2032_STATUS_IRQ		BIT(0)
+#define APCI2032_WDOG_REG		0x10
+
+struct apci2032_int_private {
+	spinlock_t spinlock;		/* protects the following members */
+	bool active;			/* an async command is running */
+	unsigned char enabled_isns;	/* mask of enabled interrupt channels */
+>>>>>>> v4.9.227
 };
 
 static int apci2032_do_insn_bits(struct comedi_device *dev,
@@ -94,17 +118,29 @@ static int apci2032_int_cmdtest(struct comedi_device *dev,
 
 	/* Step 1 : check if triggers are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= cfc_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
 	err |= cfc_check_trigger_src(&cmd->convert_src, TRIG_NOW);
 	err |= cfc_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
 	err |= cfc_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+=======
+	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
+	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
+	err |= comedi_check_trigger_src(&cmd->convert_src, TRIG_NOW);
+	err |= comedi_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
+	err |= comedi_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 1;
 
 	/* Step 2a : make sure trigger sources are unique */
+<<<<<<< HEAD
 	err |= cfc_check_trigger_is_unique(cmd->stop_src);
+=======
+	err |= comedi_check_trigger_is_unique(cmd->stop_src);
+>>>>>>> v4.9.227
 
 	/* Step 2b : and mutually compatible */
 
@@ -113,6 +149,7 @@ static int apci2032_int_cmdtest(struct comedi_device *dev,
 
 	/* Step 3: check if arguments are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= cfc_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
 	err |= cfc_check_trigger_arg_is(&cmd->convert_arg, 0);
@@ -121,6 +158,17 @@ static int apci2032_int_cmdtest(struct comedi_device *dev,
 		err |= cfc_check_trigger_arg_min(&cmd->stop_arg, 1);
 	else	/* TRIG_NONE */
 		err |= cfc_check_trigger_arg_is(&cmd->stop_arg, 0);
+=======
+	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->convert_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_end_arg,
+					   cmd->chanlist_len);
+	if (cmd->stop_src == TRIG_COUNT)
+		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
+	else	/* TRIG_NONE */
+		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 3;
@@ -148,7 +196,10 @@ static int apci2032_int_cmd(struct comedi_device *dev,
 	spin_lock_irqsave(&subpriv->spinlock, flags);
 
 	subpriv->enabled_isns = enabled_isns;
+<<<<<<< HEAD
 	subpriv->stop_count = cmd->stop_arg;
+=======
+>>>>>>> v4.9.227
 	subpriv->active = true;
 	outl(enabled_isns, dev->iobase + APCI2032_INT_CTRL_REG);
 
@@ -178,7 +229,10 @@ static irqreturn_t apci2032_interrupt(int irq, void *d)
 	struct comedi_cmd *cmd = &s->async->cmd;
 	struct apci2032_int_private *subpriv;
 	unsigned int val;
+<<<<<<< HEAD
 	bool do_event = false;
+=======
+>>>>>>> v4.9.227
 
 	if (!dev->attached)
 		return IRQ_NONE;
@@ -212,6 +266,7 @@ static irqreturn_t apci2032_interrupt(int irq, void *d)
 				bits |= (1 << i);
 		}
 
+<<<<<<< HEAD
 		if (comedi_buf_put(s, bits)) {
 			s->async->events |= COMEDI_CB_BLOCK | COMEDI_CB_EOS;
 			if (cmd->stop_src == TRIG_COUNT &&
@@ -233,6 +288,18 @@ static irqreturn_t apci2032_interrupt(int irq, void *d)
 	spin_unlock(&subpriv->spinlock);
 	if (do_event)
 		comedi_event(dev, s);
+=======
+		comedi_buf_write_samples(s, &bits, 1);
+
+		if (cmd->stop_src == TRIG_COUNT &&
+		    s->async->scans_done >= cmd->stop_arg)
+			s->async->events |= COMEDI_CB_EOA;
+	}
+
+	spin_unlock(&subpriv->spinlock);
+
+	comedi_handle_events(dev, s);
+>>>>>>> v4.9.227
 
 	return IRQ_HANDLED;
 }
@@ -274,7 +341,11 @@ static int apci2032_auto_attach(struct comedi_device *dev,
 	/* Initialize the digital output subdevice */
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_DO;
+<<<<<<< HEAD
 	s->subdev_flags	= SDF_WRITEABLE;
+=======
+	s->subdev_flags	= SDF_WRITABLE;
+>>>>>>> v4.9.227
 	s->n_chan	= 32;
 	s->maxdata	= 1;
 	s->range_table	= &range_digital;
@@ -303,7 +374,11 @@ static int apci2032_auto_attach(struct comedi_device *dev,
 			return -ENOMEM;
 		spin_lock_init(&subpriv->spinlock);
 		s->private	= subpriv;
+<<<<<<< HEAD
 		s->subdev_flags	= SDF_READABLE | SDF_CMD_READ;
+=======
+		s->subdev_flags	= SDF_READABLE | SDF_CMD_READ | SDF_PACKED;
+>>>>>>> v4.9.227
 		s->len_chanlist = 2;
 		s->do_cmdtest	= apci2032_int_cmdtest;
 		s->do_cmd	= apci2032_int_cmd;

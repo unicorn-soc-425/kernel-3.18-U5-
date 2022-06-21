@@ -31,10 +31,14 @@ static ATOMIC_NOTIFIER_HEAD(netevent_notif_chain);
  */
 int register_netevent_notifier(struct notifier_block *nb)
 {
+<<<<<<< HEAD
 	int err;
 
 	err = atomic_notifier_chain_register(&netevent_notif_chain, nb);
 	return err;
+=======
+	return atomic_notifier_chain_register(&netevent_notif_chain, nb);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(register_netevent_notifier);
 

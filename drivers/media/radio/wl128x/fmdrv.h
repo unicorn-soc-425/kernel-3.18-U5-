@@ -210,7 +210,11 @@ struct fmdev {
 	spinlock_t resp_skb_lock; /* To protect access to received SKB */
 
 	long flag;		/*  FM driver state machine info */
+<<<<<<< HEAD
 	u8 streg_cbdata; /* status of ST registration */
+=======
+	int streg_cbdata; /* status of ST registration */
+>>>>>>> v4.9.227
 
 	struct sk_buff_head rx_q;	/* RX queue */
 	struct tasklet_struct rx_task;	/* RX Tasklet */

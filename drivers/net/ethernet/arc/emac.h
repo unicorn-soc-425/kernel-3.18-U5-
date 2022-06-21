@@ -14,6 +14,7 @@
 #include <linux/clk.h>
 
 /* STATUS and ENABLE Register bit masks */
+<<<<<<< HEAD
 #define TXINT_MASK	(1<<0)	/* Transmit interrupt */
 #define RXINT_MASK	(1<<1)	/* Receive interrupt */
 #define ERR_MASK	(1<<2)	/* Error interrupt */
@@ -44,6 +45,38 @@
 #define RTRY		(1<<24)
 #define LTCL		(1<<28)
 #define UFLO		(1<<29)
+=======
+#define TXINT_MASK	(1 << 0)	/* Transmit interrupt */
+#define RXINT_MASK	(1 << 1)	/* Receive interrupt */
+#define ERR_MASK	(1 << 2)	/* Error interrupt */
+#define TXCH_MASK	(1 << 3)	/* Transmit chaining error interrupt */
+#define MSER_MASK	(1 << 4)	/* Missed packet counter error */
+#define RXCR_MASK	(1 << 8)	/* RXCRCERR counter rolled over  */
+#define RXFR_MASK	(1 << 9)	/* RXFRAMEERR counter rolled over */
+#define RXFL_MASK	(1 << 10)	/* RXOFLOWERR counter rolled over */
+#define MDIO_MASK	(1 << 12)	/* MDIO complete interrupt */
+#define TXPL_MASK	(1 << 31)	/* Force polling of BD by EMAC */
+
+/* CONTROL Register bit masks */
+#define EN_MASK		(1 << 0)	/* VMAC enable */
+#define TXRN_MASK	(1 << 3)	/* TX enable */
+#define RXRN_MASK	(1 << 4)	/* RX enable */
+#define DSBC_MASK	(1 << 8)	/* Disable receive broadcast */
+#define ENFL_MASK	(1 << 10)	/* Enable Full-duplex */
+#define PROM_MASK	(1 << 11)	/* Promiscuous mode */
+
+/* Buffer descriptor INFO bit masks */
+#define OWN_MASK	(1 << 31)	/* 0-CPU or 1-EMAC owns buffer */
+#define FIRST_MASK	(1 << 16)	/* First buffer in chain */
+#define LAST_MASK	(1 << 17)	/* Last buffer in chain */
+#define LEN_MASK	0x000007FF	/* last 11 bits */
+#define CRLS		(1 << 21)
+#define DEFR		(1 << 22)
+#define DROP		(1 << 23)
+#define RTRY		(1 << 24)
+#define LTCL		(1 << 28)
+#define UFLO		(1 << 29)
+>>>>>>> v4.9.227
 
 #define FOR_EMAC	OWN_MASK
 #define FOR_CPU		0
@@ -66,7 +99,11 @@ enum {
 	R_MDIO,
 };
 
+<<<<<<< HEAD
 #define TX_TIMEOUT		(400*HZ/1000)	/* Transmission timeout */
+=======
+#define TX_TIMEOUT		(400 * HZ / 1000) /* Transmission timeout */
+>>>>>>> v4.9.227
 
 #define ARC_EMAC_NAPI_WEIGHT	40		/* Workload for NAPI */
 
@@ -102,6 +139,14 @@ struct buffer_state {
 	DEFINE_DMA_UNMAP_LEN(len);
 };
 
+<<<<<<< HEAD
+=======
+struct arc_emac_mdio_bus_data {
+	struct gpio_desc *reset_gpio;
+	int msec;
+};
+
+>>>>>>> v4.9.227
 /**
  * struct arc_emac_priv - Storage of EMAC's private information.
  * @dev:	Pointer to the current device.
@@ -129,8 +174,13 @@ struct arc_emac_priv {
 
 	/* Devices */
 	struct device *dev;
+<<<<<<< HEAD
 	struct phy_device *phy_dev;
 	struct mii_bus *bus;
+=======
+	struct mii_bus *bus;
+	struct arc_emac_mdio_bus_data bus_data;
+>>>>>>> v4.9.227
 
 	void __iomem *regs;
 	struct clk *clk;
@@ -190,6 +240,10 @@ static inline unsigned int arc_reg_get(struct arc_emac_priv *priv, int reg)
 static inline void arc_reg_or(struct arc_emac_priv *priv, int reg, int mask)
 {
 	unsigned int value = arc_reg_get(priv, reg);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	arc_reg_set(priv, reg, value | mask);
 }
 
@@ -205,6 +259,10 @@ static inline void arc_reg_or(struct arc_emac_priv *priv, int reg, int mask)
 static inline void arc_reg_clr(struct arc_emac_priv *priv, int reg, int mask)
 {
 	unsigned int value = arc_reg_get(priv, reg);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	arc_reg_set(priv, reg, value & ~mask);
 }
 

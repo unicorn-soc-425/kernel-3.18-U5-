@@ -179,7 +179,11 @@ static struct pci_driver aw2_driver = {
 module_pci_driver(aw2_driver);
 
 /* operators for playback PCM alsa interface */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_aw2_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_aw2_playback_ops = {
+>>>>>>> v4.9.227
 	.open = snd_aw2_pcm_playback_open,
 	.close = snd_aw2_pcm_playback_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -191,7 +195,11 @@ static struct snd_pcm_ops snd_aw2_playback_ops = {
 };
 
 /* operators for capture PCM alsa interface */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_aw2_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_aw2_capture_ops = {
+>>>>>>> v4.9.227
 	.open = snd_aw2_pcm_capture_open,
 	.close = snd_aw2_pcm_capture_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -229,9 +237,13 @@ static int snd_aw2_dev_free(struct snd_device *device)
 	if (chip->irq >= 0)
 		free_irq(chip->irq, (void *)chip);
 	/* release the i/o ports & memory */
+<<<<<<< HEAD
 	if (chip->iobase_virt)
 		iounmap(chip->iobase_virt);
 
+=======
+	iounmap(chip->iobase_virt);
+>>>>>>> v4.9.227
 	pci_release_regions(chip->pci);
 	/* disable the PCI entry */
 	pci_disable_device(chip->pci);
@@ -260,8 +272,13 @@ static int snd_aw2_create(struct snd_card *card,
 	pci_set_master(pci);
 
 	/* check PCI availability (32bit DMA) */
+<<<<<<< HEAD
 	if ((pci_set_dma_mask(pci, DMA_BIT_MASK(32)) < 0) ||
 	    (pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(32)) < 0)) {
+=======
+	if ((dma_set_mask(&pci->dev, DMA_BIT_MASK(32)) < 0) ||
+	    (dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(32)) < 0)) {
+>>>>>>> v4.9.227
 		dev_err(card->dev, "Impossible to set 32bit mask DMA\n");
 		pci_disable_device(pci);
 		return -ENXIO;
@@ -725,6 +742,7 @@ static int snd_aw2_new_pcm(struct aw2 *chip)
 static int snd_aw2_control_switch_capture_info(struct snd_kcontrol *kcontrol,
 					       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[2] = {
 		"Analog", "Digital"
 	};
@@ -738,6 +756,12 @@ static int snd_aw2_control_switch_capture_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[2] = {
+		"Analog", "Digital"
+	};
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_aw2_control_switch_capture_get(struct snd_kcontrol *kcontrol,

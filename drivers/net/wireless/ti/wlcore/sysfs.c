@@ -119,6 +119,7 @@ static ssize_t wl1271_sysfs_read_fwlog(struct file *filp, struct kobject *kobj,
 	if (ret < 0)
 		return -ERESTARTSYS;
 
+<<<<<<< HEAD
 	/* Let only one thread read the log at a time, blocking others */
 	while (wl->fwlog_size == 0) {
 		DEFINE_WAIT(wait);
@@ -145,6 +146,8 @@ static ssize_t wl1271_sysfs_read_fwlog(struct file *filp, struct kobject *kobj,
 			return -ERESTARTSYS;
 	}
 
+=======
+>>>>>>> v4.9.227
 	/* Check if the fwlog is still valid */
 	if (wl->fwlog_size < 0) {
 		mutex_unlock(&wl->mutex);

@@ -13,6 +13,10 @@
  *  published by the Free Software Foundation.
  */
 #include <linux/gpio.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/machine.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/syscore_ops.h>
@@ -25,6 +29,10 @@
 #include <linux/mtd/partitions.h>
 #include <linux/input.h>
 #include <linux/gpio_keys.h>
+<<<<<<< HEAD
+=======
+#include <linux/pwm.h>
+>>>>>>> v4.9.227
 #include <linux/pwm_backlight.h>
 #include <linux/smc91x.h>
 #include <linux/i2c/pxa-i2c.h>
@@ -44,7 +52,11 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/flash.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
+=======
+#include "pxa27x.h"
+>>>>>>> v4.9.227
 #include <mach/mainstone.h>
 #include <mach/audio.h>
 #include <linux/platform_data/video-pxafb.h>
@@ -122,6 +134,7 @@ static unsigned long mainstone_pin_config[] = {
 	GPIO1_GPIO | WAKEUP_ON_EDGE_BOTH,
 };
 
+<<<<<<< HEAD
 static unsigned long mainstone_irq_enabled;
 
 static void mainstone_mask_irq(struct irq_data *d)
@@ -208,6 +221,8 @@ device_initcall(mainstone_irq_device_init);
 #endif
 
 
+=======
+>>>>>>> v4.9.227
 static struct resource smc91x_resources[] = {
 	[0] = {
 		.start	= (MST_ETH_PHYS + 0x300),
@@ -333,11 +348,22 @@ static struct platform_device mst_flash_device[2] = {
 };
 
 #if defined(CONFIG_FB_PXA) || defined(CONFIG_FB_PXA_MODULE)
+<<<<<<< HEAD
 static struct platform_pwm_backlight_data mainstone_backlight_data = {
 	.pwm_id		= 0,
 	.max_brightness	= 1023,
 	.dft_brightness	= 1023,
 	.pwm_period_ns	= 78770,
+=======
+static struct pwm_lookup mainstone_pwm_lookup[] = {
+	PWM_LOOKUP("pxa27x-pwm.0", 0, "pwm-backlight.0", NULL, 78770,
+		   PWM_POLARITY_NORMAL),
+};
+
+static struct platform_pwm_backlight_data mainstone_backlight_data = {
+	.max_brightness	= 1023,
+	.dft_brightness	= 1023,
+>>>>>>> v4.9.227
 	.enable_gpio	= -1,
 };
 
@@ -351,9 +377,22 @@ static struct platform_device mainstone_backlight_device = {
 
 static void __init mainstone_backlight_register(void)
 {
+<<<<<<< HEAD
 	int ret = platform_device_register(&mainstone_backlight_device);
 	if (ret)
 		printk(KERN_ERR "mainstone: failed to register backlight device: %d\n", ret);
+=======
+	int ret;
+
+	pwm_add_table(mainstone_pwm_lookup, ARRAY_SIZE(mainstone_pwm_lookup));
+
+	ret = platform_device_register(&mainstone_backlight_device);
+	if (ret) {
+		printk(KERN_ERR "mainstone: failed to register backlight device: %d\n", ret);
+		pwm_remove_table(mainstone_pwm_lookup,
+				 ARRAY_SIZE(mainstone_pwm_lookup));
+	}
+>>>>>>> v4.9.227
 }
 #else
 #define mainstone_backlight_register()	do { } while (0)
@@ -487,11 +526,43 @@ static struct platform_device mst_gpio_keys_device = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+static struct resource mst_cplds_resources[] = {
+	[0] = {
+		.start	= MST_FPGA_PHYS + 0xc0,
+		.end	= MST_FPGA_PHYS + 0xe0 - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	[1] = {
+		.start	= PXA_GPIO_TO_IRQ(0),
+		.end	= PXA_GPIO_TO_IRQ(0),
+		.flags	= IORESOURCE_IRQ | IORESOURCE_IRQ_LOWEDGE,
+	},
+	[2] = {
+		.start	= MAINSTONE_IRQ(0),
+		.end	= MAINSTONE_IRQ(15),
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+static struct platform_device mst_cplds_device = {
+	.name		= "pxa_cplds_irqs",
+	.id		= -1,
+	.resource	= &mst_cplds_resources[0],
+	.num_resources	= 3,
+};
+
+>>>>>>> v4.9.227
 static struct platform_device *platform_devices[] __initdata = {
 	&smc91x_device,
 	&mst_flash_device[0],
 	&mst_flash_device[1],
 	&mst_gpio_keys_device,
+<<<<<<< HEAD
+=======
+	&mst_cplds_device,
+>>>>>>> v4.9.227
 };
 
 static struct pxaohci_platform_data mainstone_ohci_platform_data = {
@@ -718,7 +789,11 @@ MACHINE_START(MAINSTONE, "Intel HCDDBBVA0 Development Platform (aka Mainstone)")
 	.atag_offset	= 0x100,	/* BLOB boot parameter setting */
 	.map_io		= mainstone_map_io,
 	.nr_irqs	= MAINSTONE_NR_IRQS,
+<<<<<<< HEAD
 	.init_irq	= mainstone_init_irq,
+=======
+	.init_irq	= pxa27x_init_irq,
+>>>>>>> v4.9.227
 	.handle_irq	= pxa27x_handle_irq,
 	.init_time	= pxa_timer_init,
 	.init_machine	= mainstone_init,

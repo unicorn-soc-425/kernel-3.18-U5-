@@ -34,9 +34,15 @@
  */
 
 static int sca3000_read_data(struct sca3000_state *st,
+<<<<<<< HEAD
 			    uint8_t reg_address_high,
 			    u8 **rx_p,
 			    int len)
+=======
+			     u8 reg_address_high,
+			     u8 **rx_p,
+			     int len)
+>>>>>>> v4.9.227
 {
 	int ret;
 	struct spi_transfer xfer[2] = {
@@ -48,7 +54,11 @@ static int sca3000_read_data(struct sca3000_state *st,
 		}
 	};
 	*rx_p = kmalloc(len, GFP_KERNEL);
+<<<<<<< HEAD
 	if (*rx_p == NULL) {
+=======
+	if (!*rx_p) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto error_ret;
 	}
@@ -56,7 +66,11 @@ static int sca3000_read_data(struct sca3000_state *st,
 	st->tx[0] = SCA3000_READ_REG(reg_address_high);
 	ret = spi_sync_transfer(st->us, xfer, ARRAY_SIZE(xfer));
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(get_device(&st->us->dev), "problem reading register");
+=======
+		dev_err(&st->us->dev, "problem reading register");
+>>>>>>> v4.9.227
 		goto error_free_rx;
 	}
 
@@ -99,14 +113,22 @@ static int sca3000_read_first_n_hw_rb(struct iio_buffer *r,
 	ret = sca3000_read_data_short(st, SCA3000_REG_ADDR_BUF_COUNT, 1);
 	if (ret)
 		goto error_ret;
+<<<<<<< HEAD
 	else
 		num_available = st->rx[0];
+=======
+	num_available = st->rx[0];
+>>>>>>> v4.9.227
 	/*
 	 * num_available is the total number of samples available
 	 * i.e. number of time points * number of channels.
 	 */
 	if (count > num_available * bytes_per_sample)
+<<<<<<< HEAD
 		num_read = num_available*bytes_per_sample;
+=======
+		num_read = num_available * bytes_per_sample;
+>>>>>>> v4.9.227
 	else
 		num_read = count;
 
@@ -116,7 +138,11 @@ static int sca3000_read_first_n_hw_rb(struct iio_buffer *r,
 	if (ret)
 		goto error_ret;
 
+<<<<<<< HEAD
 	for (i = 0; i < num_read; i++)
+=======
+	for (i = 0; i < num_read / sizeof(u16); i++)
+>>>>>>> v4.9.227
 		*(((u16 *)rx) + i) = be16_to_cpup((__be16 *)rx + i);
 
 	if (copy_to_user(buf, rx, num_read))
@@ -129,6 +155,7 @@ error_ret:
 	return ret ? ret : num_read;
 }
 
+<<<<<<< HEAD
 /* This is only valid with all 3 elements enabled */
 static int sca3000_ring_get_length(struct iio_buffer *r)
 {
@@ -149,6 +176,13 @@ static bool sca3000_ring_buf_data_available(struct iio_buffer *r)
 static IIO_BUFFER_ENABLE_ATTR;
 static IIO_BUFFER_LENGTH_ATTR;
 
+=======
+static size_t sca3000_ring_buf_data_available(struct iio_buffer *r)
+{
+	return r->stufftoread ? r->watermark : 0;
+}
+
+>>>>>>> v4.9.227
 /**
  * sca3000_query_ring_int() is the hardware ring status interrupt enabled
  **/
@@ -175,9 +209,15 @@ static ssize_t sca3000_query_ring_int(struct device *dev,
  * sca3000_set_ring_int() set state of ring status interrupt
  **/
 static ssize_t sca3000_set_ring_int(struct device *dev,
+<<<<<<< HEAD
 				      struct device_attribute *attr,
 				      const char *buf,
 				      size_t len)
+=======
+				    struct device_attribute *attr,
+				    const char *buf,
+				    size_t len)
+>>>>>>> v4.9.227
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 	struct sca3000_state *st = iio_priv(indio_dev);
@@ -223,7 +263,11 @@ static ssize_t sca3000_show_buffer_scale(struct device *dev,
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 	struct sca3000_state *st = iio_priv(indio_dev);
 
+<<<<<<< HEAD
 	return sprintf(buf, "0.%06d\n", 4*st->info->scale);
+=======
+	return sprintf(buf, "0.%06d\n", 4 * st->info->scale);
+>>>>>>> v4.9.227
 }
 
 static IIO_DEVICE_ATTR(in_accel_scale,
@@ -238,20 +282,27 @@ static IIO_DEVICE_ATTR(in_accel_scale,
  * only apply to the ring buffer.  At all times full rate and accuracy
  * is available via direct reading from registers.
  */
+<<<<<<< HEAD
 static struct attribute *sca3000_ring_attributes[] = {
 	&dev_attr_length.attr,
 	&dev_attr_enable.attr,
+=======
+static const struct attribute *sca3000_ring_attributes[] = {
+>>>>>>> v4.9.227
 	&iio_dev_attr_50_percent.dev_attr.attr,
 	&iio_dev_attr_75_percent.dev_attr.attr,
 	&iio_dev_attr_in_accel_scale.dev_attr.attr,
 	NULL,
 };
 
+<<<<<<< HEAD
 static struct attribute_group sca3000_ring_attr = {
 	.attrs = sca3000_ring_attributes,
 	.name = "buffer",
 };
 
+=======
+>>>>>>> v4.9.227
 static struct iio_buffer *sca3000_rb_allocate(struct iio_dev *indio_dev)
 {
 	struct iio_buffer *buf;
@@ -264,7 +315,12 @@ static struct iio_buffer *sca3000_rb_allocate(struct iio_dev *indio_dev)
 	ring->private = indio_dev;
 	buf = &ring->buf;
 	buf->stufftoread = 0;
+<<<<<<< HEAD
 	buf->attrs = &sca3000_ring_attr;
+=======
+	buf->length = 64;
+	buf->attrs = sca3000_ring_attributes;
+>>>>>>> v4.9.227
 	iio_buffer_init(buf);
 
 	return buf;
@@ -277,10 +333,17 @@ static void sca3000_ring_release(struct iio_buffer *r)
 
 static const struct iio_buffer_access_funcs sca3000_ring_access_funcs = {
 	.read_first_n = &sca3000_read_first_n_hw_rb,
+<<<<<<< HEAD
 	.get_length = &sca3000_ring_get_length,
 	.get_bytes_per_datum = &sca3000_ring_get_bytes_per_datum,
 	.data_available = sca3000_ring_buf_data_available,
 	.release = sca3000_ring_release,
+=======
+	.data_available = sca3000_ring_buf_data_available,
+	.release = sca3000_ring_release,
+
+	.modes = INDIO_BUFFER_HARDWARE,
+>>>>>>> v4.9.227
 };
 
 int sca3000_configure_ring(struct iio_dev *indio_dev)
@@ -288,7 +351,11 @@ int sca3000_configure_ring(struct iio_dev *indio_dev)
 	struct iio_buffer *buffer;
 
 	buffer = sca3000_rb_allocate(indio_dev);
+<<<<<<< HEAD
 	if (buffer == NULL)
+=======
+	if (!buffer)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
 
@@ -328,6 +395,10 @@ error_ret:
 
 	return ret;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 /**
  * sca3000_hw_ring_preenable() hw ring buffer preenable function
  *

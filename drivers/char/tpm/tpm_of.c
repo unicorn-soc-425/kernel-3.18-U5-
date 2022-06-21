@@ -1,7 +1,11 @@
 /*
  * Copyright 2012 IBM Corporation
  *
+<<<<<<< HEAD
  * Author: Ashley Lai <adlai@us.ibm.com>
+=======
+ * Author: Ashley Lai <ashleydlai@gmail.com>
+>>>>>>> v4.9.227
  *
  * Maintained by: <tpmdd-devel@lists.sourceforge.net>
  *
@@ -24,14 +28,22 @@ int read_log(struct tpm_bios_log *log)
 {
 	struct device_node *np;
 	const u32 *sizep;
+<<<<<<< HEAD
 	const __be64 *basep;
+=======
+	const u64 *basep;
+>>>>>>> v4.9.227
 
 	if (log->bios_event_log != NULL) {
 		pr_err("%s: ERROR - Eventlog already initialized\n", __func__);
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	np = of_find_node_by_name(NULL, "ibm,vtpm");
+=======
+	np = of_find_node_by_name(NULL, "vtpm");
+>>>>>>> v4.9.227
 	if (!np) {
 		pr_err("%s: ERROR - IBMVTPM not supported\n", __func__);
 		return -ENODEV;
@@ -49,21 +61,37 @@ int read_log(struct tpm_bios_log *log)
 
 	basep = of_get_property(np, "linux,sml-base", NULL);
 	if (basep == NULL) {
+<<<<<<< HEAD
 		pr_err(KERN_ERR "%s: ERROR - SML not found\n", __func__);
 		goto cleanup_eio;
 	}
 
 	of_node_put(np);
+=======
+		pr_err("%s: ERROR - SML not found\n", __func__);
+		goto cleanup_eio;
+	}
+
+>>>>>>> v4.9.227
 	log->bios_event_log = kmalloc(*sizep, GFP_KERNEL);
 	if (!log->bios_event_log) {
 		pr_err("%s: ERROR - Not enough memory for BIOS measurements\n",
 		       __func__);
+<<<<<<< HEAD
+=======
+		of_node_put(np);
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	}
 
 	log->bios_event_log_end = log->bios_event_log + *sizep;
 
+<<<<<<< HEAD
 	memcpy(log->bios_event_log, __va(be64_to_cpup(basep)), *sizep);
+=======
+	memcpy(log->bios_event_log, __va(*basep), *sizep);
+	of_node_put(np);
+>>>>>>> v4.9.227
 
 	return 0;
 

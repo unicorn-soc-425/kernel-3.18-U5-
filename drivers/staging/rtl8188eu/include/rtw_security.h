@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __RTW_SECURITY_H_
 #define __RTW_SECURITY_H_
@@ -169,12 +172,15 @@ struct security_priv {
 	u8 bWepDefaultKeyIdxSet;
 };
 
+<<<<<<< HEAD
 struct sha256_state {
 	u64 length;
 	u32 state[8], curlen;
 	u8 buf[64];
 };
 
+=======
+>>>>>>> v4.9.227
 #define GET_ENCRY_ALGO(psecuritypriv, psta, encry_algo, bmcst)		\
 do {									\
 	switch (psecuritypriv->dot11AuthAlgrthm) {			\
@@ -245,10 +251,13 @@ struct mic_data {
 };
 
 extern const u32 Te0[256];
+<<<<<<< HEAD
 extern const u32 Te1[256];
 extern const u32 Te2[256];
 extern const u32 Te3[256];
 extern const u32 Te4[256];
+=======
+>>>>>>> v4.9.227
 extern const u32 Td0[256];
 extern const u32 Td1[256];
 extern const u32 Td2[256];
@@ -269,6 +278,7 @@ static inline u32 rotr(u32 val, int bits)
 #define TE1(i) rotr(Te0[((i) >> 16) & 0xff], 8)
 #define TE2(i) rotr(Te0[((i) >> 8) & 0xff], 16)
 #define TE3(i) rotr(Te0[(i) & 0xff], 24)
+<<<<<<< HEAD
 #define TE41(i) ((Te0[((i) >> 24) & 0xff] << 8) & 0xff000000)
 #define TE42(i) (Te0[((i) >> 16) & 0xff] & 0x00ff0000)
 #define TE43(i) (Te0[((i) >> 8) & 0xff] & 0x0000ff00)
@@ -291,6 +301,8 @@ static inline u32 rotr(u32 val, int bits)
 #define TD1_(i) rotr(Td0[(i) & 0xff], 8)
 #define TD2_(i) rotr(Td0[(i) & 0xff], 16)
 #define TD3_(i) rotr(Td0[(i) & 0xff], 24)
+=======
+>>>>>>> v4.9.227
 
 #define GETU32(pt) (((u32)(pt)[0] << 24) ^ ((u32)(pt)[1] << 16) ^ \
 			((u32)(pt)[2] <<  8) ^ ((u32)(pt)[3]))
@@ -354,7 +366,11 @@ static const unsigned long K[64] = {
 #define RORc(x, y) \
 	(((((unsigned long)(x) & 0xFFFFFFFFUL) >> (unsigned long)((y)&31)) | \
 	 ((unsigned long)(x) << (unsigned long)(32-((y)&31)))) & 0xFFFFFFFFUL)
+<<<<<<< HEAD
 #define Ch(x, y , z)       (z ^ (x & (y ^ z)))
+=======
+#define Ch(x, y, z)       (z ^ (x & (y ^ z)))
+>>>>>>> v4.9.227
 #define Maj(x, y, z)      (((x | y) & z) | (x & y))
 #define S(x, n)         RORc((x), (n))
 #define R(x, n)         (((x)&0xFFFFFFFFUL)>>(n))
@@ -362,9 +378,12 @@ static const unsigned long K[64] = {
 #define Sigma1(x)       (S(x, 6) ^ S(x, 11) ^ S(x, 25))
 #define Gamma0(x)       (S(x, 7) ^ S(x, 18) ^ R(x, 3))
 #define Gamma1(x)       (S(x, 17) ^ S(x, 19) ^ R(x, 10))
+<<<<<<< HEAD
 #ifndef MIN
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #endif
+=======
+>>>>>>> v4.9.227
 
 void rtw_secmicsetkey(struct mic_data *pmicdata, u8 *key);
 void rtw_secmicappendbyte(struct mic_data *pmicdata, u8 b);

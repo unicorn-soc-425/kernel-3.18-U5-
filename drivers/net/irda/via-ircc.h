@@ -29,7 +29,10 @@ this program; if not, see <http://www.gnu.org/licenses/>.
  ********************************************************************/
 #ifndef via_IRCC_H
 #define via_IRCC_H
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/spinlock.h>
 #include <linux/pm.h>
 #include <linux/types.h>
@@ -106,9 +109,12 @@ struct via_ircc_cb {
 
 	__u8 ier;		/* Interrupt enable register */
 
+<<<<<<< HEAD
 	struct timeval stamp;
 	struct timeval now;
 
+=======
+>>>>>>> v4.9.227
 	spinlock_t lock;	/* For serializing operations */
 
 	__u32 flags;		/* Interface flags */

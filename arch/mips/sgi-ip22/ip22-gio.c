@@ -152,6 +152,7 @@ static int gio_device_remove(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int gio_device_suspend(struct device *dev, pm_message_t state)
 {
 	struct gio_device *gio_dev = to_gio_device(dev);
@@ -174,6 +175,8 @@ static int gio_device_resume(struct device *dev)
 	return error;
 }
 
+=======
+>>>>>>> v4.9.227
 static void gio_device_shutdown(struct device *dev)
 {
 	struct gio_device *gio_dev = to_gio_device(dev);
@@ -400,8 +403,11 @@ static struct bus_type gio_bus_type = {
 	.match	   = gio_bus_match,
 	.probe	   = gio_device_probe,
 	.remove	   = gio_device_remove,
+<<<<<<< HEAD
 	.suspend   = gio_device_suspend,
 	.resume	   = gio_device_resume,
+=======
+>>>>>>> v4.9.227
 	.shutdown  = gio_device_shutdown,
 	.uevent	   = gio_device_uevent,
 };

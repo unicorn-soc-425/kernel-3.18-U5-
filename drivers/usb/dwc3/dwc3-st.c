@@ -31,6 +31,10 @@
 #include <linux/slab.h>
 #include <linux/regmap.h>
 #include <linux/reset.h>
+<<<<<<< HEAD
+=======
+#include <linux/pinctrl/consumer.h>
+>>>>>>> v4.9.227
 #include <linux/usb/of.h>
 
 #include "core.h"
@@ -129,14 +133,28 @@ static int st_dwc3_drd_init(struct st_dwc3 *dwc3_data)
 	switch (dwc3_data->dr_mode) {
 	case USB_DR_MODE_PERIPHERAL:
 
+<<<<<<< HEAD
 		val &= ~(USB3_FORCE_VBUSVALID | USB3_DELAY_VBUSVALID
+=======
+		val &= ~(USB3_DELAY_VBUSVALID
+>>>>>>> v4.9.227
 			| USB3_SEL_FORCE_OPMODE | USB3_FORCE_OPMODE(0x3)
 			| USB3_SEL_FORCE_DPPULLDOWN2 | USB3_FORCE_DPPULLDOWN2
 			| USB3_SEL_FORCE_DMPULLDOWN2 | USB3_FORCE_DMPULLDOWN2);
 
+<<<<<<< HEAD
 		val |= USB3_DEVICE_NOT_HOST;
 
 		dev_dbg(dwc3_data->dev, "Configuring as Device\n");
+=======
+		/*
+		 * USB3_PORT2_FORCE_VBUSVALID When '1' and when
+		 * USB3_PORT2_DEVICE_NOT_HOST = 1, forces VBUSVLDEXT2 input
+		 * of the pico PHY to 1.
+		 */
+
+		val |= USB3_DEVICE_NOT_HOST | USB3_FORCE_VBUSVALID;
+>>>>>>> v4.9.227
 		break;
 
 	case USB_DR_MODE_HOST:
@@ -154,8 +172,11 @@ static int st_dwc3_drd_init(struct st_dwc3 *dwc3_data)
 		 */
 
 		val |= USB3_DELAY_VBUSVALID;
+<<<<<<< HEAD
 
 		dev_dbg(dwc3_data->dev, "Configuring as Host\n");
+=======
+>>>>>>> v4.9.227
 		break;
 
 	default:
@@ -199,6 +220,10 @@ static int st_dwc3_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct device *dev = &pdev->dev;
 	struct device_node *node = dev->of_node, *child;
+<<<<<<< HEAD
+=======
+	struct platform_device *child_pdev;
+>>>>>>> v4.9.227
 	struct regmap *regmap;
 	int ret;
 
@@ -230,7 +255,12 @@ static int st_dwc3_probe(struct platform_device *pdev)
 	dev_vdbg(&pdev->dev, "glue-logic addr 0x%pK, syscfg-reg offset 0x%x\n",
 		 dwc3_data->glue_base, dwc3_data->syscfg_reg_off);
 
+<<<<<<< HEAD
 	dwc3_data->rstc_pwrdn = devm_reset_control_get(dev, "powerdown");
+=======
+	dwc3_data->rstc_pwrdn =
+		devm_reset_control_get_exclusive(dev, "powerdown");
+>>>>>>> v4.9.227
 	if (IS_ERR(dwc3_data->rstc_pwrdn)) {
 		dev_err(&pdev->dev, "could not get power controller\n");
 		ret = PTR_ERR(dwc3_data->rstc_pwrdn);
@@ -240,10 +270,18 @@ static int st_dwc3_probe(struct platform_device *pdev)
 	/* Manage PowerDown */
 	reset_control_deassert(dwc3_data->rstc_pwrdn);
 
+<<<<<<< HEAD
 	dwc3_data->rstc_rst = devm_reset_control_get(dev, "softreset");
 	if (IS_ERR(dwc3_data->rstc_rst)) {
 		dev_err(&pdev->dev, "could not get reset controller\n");
 		ret = PTR_ERR(dwc3_data->rstc_pwrdn);
+=======
+	dwc3_data->rstc_rst =
+		devm_reset_control_get_shared(dev, "softreset");
+	if (IS_ERR(dwc3_data->rstc_rst)) {
+		dev_err(&pdev->dev, "could not get reset controller\n");
+		ret = PTR_ERR(dwc3_data->rstc_rst);
+>>>>>>> v4.9.227
 		goto undo_powerdown;
 	}
 
@@ -257,8 +295,11 @@ static int st_dwc3_probe(struct platform_device *pdev)
 		goto undo_softreset;
 	}
 
+<<<<<<< HEAD
 	dwc3_data->dr_mode = of_usb_get_dr_mode(child);
 
+=======
+>>>>>>> v4.9.227
 	/* Allocate and initialize the core */
 	ret = of_platform_populate(node, NULL, NULL, dev);
 	if (ret) {
@@ -266,6 +307,18 @@ static int st_dwc3_probe(struct platform_device *pdev)
 		goto undo_softreset;
 	}
 
+<<<<<<< HEAD
+=======
+	child_pdev = of_find_device_by_node(child);
+	if (!child_pdev) {
+		dev_err(dev, "failed to find dwc3 core device\n");
+		ret = -ENODEV;
+		goto undo_softreset;
+	}
+
+	dwc3_data->dr_mode = usb_get_dr_mode(&child_pdev->dev);
+
+>>>>>>> v4.9.227
 	/*
 	 * Configure the USB port as device or host according to the static
 	 * configuration passed from DT.

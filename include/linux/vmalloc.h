@@ -4,22 +4,36 @@
 #include <linux/spinlock.h>
 #include <linux/init.h>
 #include <linux/list.h>
+<<<<<<< HEAD
+=======
+#include <linux/llist.h>
+>>>>>>> v4.9.227
 #include <asm/page.h>		/* pgprot_t */
 #include <linux/rbtree.h>
 
 struct vm_area_struct;		/* vma defining user mapping in mm_types.h */
+<<<<<<< HEAD
+=======
+struct notifier_block;		/* in notifier.h */
+>>>>>>> v4.9.227
 
 /* bits in flags of vmalloc's vm_struct below */
 #define VM_IOREMAP		0x00000001	/* ioremap() and friends */
 #define VM_ALLOC		0x00000002	/* vmalloc() */
 #define VM_MAP			0x00000004	/* vmap()ed pages */
 #define VM_USERMAP		0x00000008	/* suitable for remap_vmalloc_range */
+<<<<<<< HEAD
 #define VM_VPAGES		0x00000010	/* buffer for pages was vmalloc'ed */
 #define VM_UNINITIALIZED	0x00000020	/* vm_struct is not fully initialized */
 #define VM_NO_GUARD		0x00000040      /* don't add guard page */
 #define VM_KASAN		0x00000080      /* has allocated kasan shadow memory */
 #define VM_LOWMEM		0x00000100	/* Tracking of direct mapped lowmem */
 
+=======
+#define VM_UNINITIALIZED	0x00000020	/* vm_struct is not fully initialized */
+#define VM_NO_GUARD		0x00000040      /* don't add guard page */
+#define VM_KASAN		0x00000080      /* has allocated kasan shadow memory */
+>>>>>>> v4.9.227
 /* bits [20..32] reserved for arch specific ioremap internals */
 
 /*
@@ -47,7 +61,11 @@ struct vmap_area {
 	unsigned long flags;
 	struct rb_node rb_node;         /* address sorted rbtree */
 	struct list_head list;          /* address sorted list */
+<<<<<<< HEAD
 	struct list_head purge_list;    /* "lazy purge" list */
+=======
+	struct llist_node purge_list;    /* "lazy purge" list */
+>>>>>>> v4.9.227
 	struct vm_struct *vm;
 	struct rcu_head rcu_head;
 };
@@ -90,12 +108,22 @@ extern void vunmap(const void *addr);
 
 extern int remap_vmalloc_range_partial(struct vm_area_struct *vma,
 				       unsigned long uaddr, void *kaddr,
+<<<<<<< HEAD
 				       unsigned long size);
 
 extern int remap_vmalloc_range(struct vm_area_struct *vma, void *addr,
 							unsigned long pgoff);
 void vmalloc_sync_all(void);
  
+=======
+				       unsigned long pgoff, unsigned long size);
+
+extern int remap_vmalloc_range(struct vm_area_struct *vma, void *addr,
+							unsigned long pgoff);
+void vmalloc_sync_mappings(void);
+void vmalloc_sync_unmappings(void);
+
+>>>>>>> v4.9.227
 /*
  *	Lowlevel-APIs (not for driver use!)
  */
@@ -160,6 +188,7 @@ extern long vwrite(char *buf, char *addr, unsigned long count);
 extern struct list_head vmap_area_list;
 extern __init void vm_area_add_early(struct vm_struct *vm);
 extern __init void vm_area_register_early(struct vm_struct *vm, size_t align);
+<<<<<<< HEAD
 extern __init int vm_area_check_early(struct vm_struct *vm);
 #ifdef CONFIG_ENABLE_VMALLOC_SAVING
 extern void mark_vmalloc_reserved_area(void *addr, unsigned long size);
@@ -167,6 +196,8 @@ extern void mark_vmalloc_reserved_area(void *addr, unsigned long size);
 static inline void mark_vmalloc_reserved_area(void *addr, unsigned long size)
 { };
 #endif
+=======
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_SMP
 # ifdef CONFIG_MMU
@@ -191,6 +222,7 @@ pcpu_free_vm_areas(struct vm_struct **vms, int nr_vms)
 # endif
 #endif
 
+<<<<<<< HEAD
 struct vmalloc_info {
 	unsigned long   used;
 	unsigned long   largest_chunk;
@@ -214,4 +246,15 @@ do {						\
 } while (0)
 #endif
 
+=======
+#ifdef CONFIG_MMU
+#define VMALLOC_TOTAL (VMALLOC_END - VMALLOC_START)
+#else
+#define VMALLOC_TOTAL 0UL
+#endif
+
+int register_vmap_purge_notifier(struct notifier_block *nb);
+int unregister_vmap_purge_notifier(struct notifier_block *nb);
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_VMALLOC_H */

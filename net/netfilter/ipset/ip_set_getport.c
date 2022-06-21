@@ -30,7 +30,11 @@ get_port(const struct sk_buff *skb, int protocol, unsigned int protooff,
 		const struct tcphdr *th;
 
 		th = skb_header_pointer(skb, protooff, sizeof(_tcph), &_tcph);
+<<<<<<< HEAD
 		if (th == NULL)
+=======
+		if (!th)
+>>>>>>> v4.9.227
 			/* No choice either */
 			return false;
 
@@ -42,7 +46,11 @@ get_port(const struct sk_buff *skb, int protocol, unsigned int protooff,
 		const sctp_sctphdr_t *sh;
 
 		sh = skb_header_pointer(skb, protooff, sizeof(_sh), &_sh);
+<<<<<<< HEAD
 		if (sh == NULL)
+=======
+		if (!sh)
+>>>>>>> v4.9.227
 			/* No choice either */
 			return false;
 
@@ -55,7 +63,11 @@ get_port(const struct sk_buff *skb, int protocol, unsigned int protooff,
 		const struct udphdr *uh;
 
 		uh = skb_header_pointer(skb, protooff, sizeof(_udph), &_udph);
+<<<<<<< HEAD
 		if (uh == NULL)
+=======
+		if (!uh)
+>>>>>>> v4.9.227
 			/* No choice either */
 			return false;
 
@@ -67,7 +79,11 @@ get_port(const struct sk_buff *skb, int protocol, unsigned int protooff,
 		const struct icmphdr *ic;
 
 		ic = skb_header_pointer(skb, protooff, sizeof(_ich), &_ich);
+<<<<<<< HEAD
 		if (ic == NULL)
+=======
+		if (!ic)
+>>>>>>> v4.9.227
 			return false;
 
 		*port = (__force __be16)htons((ic->type << 8) | ic->code);
@@ -78,7 +94,11 @@ get_port(const struct sk_buff *skb, int protocol, unsigned int protooff,
 		const struct icmp6hdr *ic;
 
 		ic = skb_header_pointer(skb, protooff, sizeof(_ich), &_ich);
+<<<<<<< HEAD
 		if (ic == NULL)
+=======
+		if (!ic)
+>>>>>>> v4.9.227
 			return false;
 
 		*port = (__force __be16)
@@ -98,7 +118,11 @@ ip_set_get_ip4_port(const struct sk_buff *skb, bool src,
 		    __be16 *port, u8 *proto)
 {
 	const struct iphdr *iph = ip_hdr(skb);
+<<<<<<< HEAD
 	unsigned int protooff = ip_hdrlen(skb);
+=======
+	unsigned int protooff = skb_network_offset(skb) + ip_hdrlen(skb);
+>>>>>>> v4.9.227
 	int protocol = iph->protocol;
 
 	/* See comments at tcp_match in ip_tables.c */
@@ -116,7 +140,12 @@ ip_set_get_ip4_port(const struct sk_buff *skb, bool src,
 			return false;
 		default:
 			/* Other protocols doesn't have ports,
+<<<<<<< HEAD
 			   so we can match fragments */
+=======
+			 * so we can match fragments.
+			 */
+>>>>>>> v4.9.227
 			*proto = protocol;
 			return true;
 		}
@@ -135,7 +164,13 @@ ip_set_get_ip6_port(const struct sk_buff *skb, bool src,
 	__be16 frag_off = 0;
 
 	nexthdr = ipv6_hdr(skb)->nexthdr;
+<<<<<<< HEAD
 	protoff = ipv6_skip_exthdr(skb, sizeof(struct ipv6hdr), &nexthdr,
+=======
+	protoff = ipv6_skip_exthdr(skb,
+				   skb_network_offset(skb) +
+					sizeof(struct ipv6hdr), &nexthdr,
+>>>>>>> v4.9.227
 				   &frag_off);
 	if (protoff < 0 || (frag_off & htons(~0x7)) != 0)
 		return false;

@@ -59,7 +59,10 @@ static struct cpuidle_driver cpuidle_driver = {
 			.exit_latency = 1,
 			.target_residency = 1 * 2,
 			.power_usage = 3,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.enter = cpuidle_sleep_enter,
 			.name = "C1",
 			.desc = "SuperH Sleep Mode",
@@ -68,7 +71,10 @@ static struct cpuidle_driver cpuidle_driver = {
 			.exit_latency = 100,
 			.target_residency = 1 * 2,
 			.power_usage = 1,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.enter = cpuidle_sleep_enter,
 			.name = "C2",
 			.desc = "SuperH Sleep Mode [SF]",
@@ -78,7 +84,10 @@ static struct cpuidle_driver cpuidle_driver = {
 			.exit_latency = 2300,
 			.target_residency = 1 * 2,
 			.power_usage = 1,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.enter = cpuidle_sleep_enter,
 			.name = "C3",
 			.desc = "SuperH Mobile Standby Mode [SF]",

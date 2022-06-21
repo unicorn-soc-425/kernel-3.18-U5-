@@ -332,6 +332,7 @@ static struct device_attribute *megaraid_sdev_attrs[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 /**
  * megaraid_change_queue_depth - Change the device's queue depth
  * @sdev:	scsi device struct
@@ -353,6 +354,8 @@ static int megaraid_change_queue_depth(struct scsi_device *sdev, int qdepth,
 	return sdev->queue_depth;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Scsi host template for megaraid unified driver
  */
@@ -365,7 +368,11 @@ static struct scsi_host_template megaraid_template_g = {
 	.eh_device_reset_handler	= megaraid_reset_handler,
 	.eh_bus_reset_handler		= megaraid_reset_handler,
 	.eh_host_reset_handler		= megaraid_reset_handler,
+<<<<<<< HEAD
 	.change_queue_depth		= megaraid_change_queue_depth,
+=======
+	.change_queue_depth		= scsi_change_queue_depth,
+>>>>>>> v4.9.227
 	.use_clustering			= ENABLE_CLUSTERING,
 	.no_write_same			= 1,
 	.sdev_attrs			= megaraid_sdev_attrs,

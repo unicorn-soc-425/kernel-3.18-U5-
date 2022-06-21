@@ -24,6 +24,7 @@
 			     DUMP_PREFIX_OFFSET, 16, 1, buf, len, true)
 #define wil_dbg_ioctl(wil, fmt, arg...) wil_dbg(wil, "DBG[IOC ]" fmt, ##arg)
 
+<<<<<<< HEAD
 #define WIL_PRIV_DATA_MAX_LEN	8192
 #define CMD_SET_AP_WPS_P2P_IE	"SET_AP_WPS_P2P_IE"
 
@@ -32,6 +33,8 @@ struct wil_android_priv_data {
 	int used_len;
 	int total_len;
 };
+=======
+>>>>>>> v4.9.227
 static void __iomem *wil_ioc_addr(struct wil6210_priv *wil, uint32_t addr,
 				  uint32_t size, enum wil_memio_op op)
 {
@@ -87,12 +90,18 @@ static int wil_ioc_memio_dword(struct wil6210_priv *wil, void __user *data)
 		io.val = readl(a);
 		need_copy = true;
 		break;
+<<<<<<< HEAD
 #if defined(CONFIG_WIL6210_WRITE_IOCTL)
+=======
+>>>>>>> v4.9.227
 	case wil_mmio_write:
 		writel(io.val, a);
 		wmb(); /* make sure write propagated to HW */
 		break;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	default:
 		wil_err(wil, "Unsupported operation, op = 0x%08x\n", io.op);
 		return -EINVAL;
@@ -149,7 +158,10 @@ static int wil_ioc_memio_block(struct wil6210_priv *wil, void __user *data)
 			goto out_free;
 		}
 		break;
+<<<<<<< HEAD
 #if defined(CONFIG_WIL6210_WRITE_IOCTL)
+=======
+>>>>>>> v4.9.227
 	case wil_mmio_write:
 		if (copy_from_user(block, io.block, io.size)) {
 			rc = -EFAULT;
@@ -159,7 +171,10 @@ static int wil_ioc_memio_block(struct wil6210_priv *wil, void __user *data)
 		wmb(); /* make sure write propagated to HW */
 		wil_hex_dump_ioctl("Write ", block, io.size);
 		break;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	default:
 		wil_err(wil, "Unsupported operation, op = 0x%08x\n", io.op);
 		rc = -EINVAL;
@@ -171,6 +186,7 @@ out_free:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int wil_ioc_android(struct wil6210_priv *wil, void __user *data)
 {
 	int rc = 0;
@@ -217,6 +233,8 @@ out_free:
 	kfree(command);
 	return rc;
 }
+=======
+>>>>>>> v4.9.227
 int wil_ioctl(struct wil6210_priv *wil, void __user *data, int cmd)
 {
 	int ret;
@@ -228,9 +246,12 @@ int wil_ioctl(struct wil6210_priv *wil, void __user *data, int cmd)
 	case WIL_IOCTL_MEMIO_BLOCK:
 		ret = wil_ioc_memio_block(wil, data);
 		break;
+<<<<<<< HEAD
 	case (SIOCDEVPRIVATE + 1):
 		ret = wil_ioc_android(wil, data);
 		break;
+=======
+>>>>>>> v4.9.227
 	default:
 		wil_dbg_ioctl(wil, "Unsupported IOCTL 0x%04x\n", cmd);
 		return -ENOIOCTLCMD;

@@ -113,6 +113,11 @@ extern int radeon_bapm;
 extern int radeon_backlight;
 extern int radeon_auxch;
 extern int radeon_mst;
+<<<<<<< HEAD
+=======
+extern int radeon_uvd;
+extern int radeon_vce;
+>>>>>>> v4.9.227
 
 /*
  * Copy from radeon_drv.h so we don't have to include both and have conflicting
@@ -120,6 +125,10 @@ extern int radeon_mst;
  */
 #define RADEON_MAX_USEC_TIMEOUT			100000	/* 100 ms */
 #define RADEON_FENCE_JIFFIES_TIMEOUT		(HZ / 2)
+<<<<<<< HEAD
+=======
+#define RADEON_USEC_IB_TEST_TIMEOUT		1000000 /* 1s */
+>>>>>>> v4.9.227
 /* RADEON_IB_POOL_SIZE must be a power of 2 */
 #define RADEON_IB_POOL_SIZE			16
 #define RADEON_DEBUGFS_MAX_COMPONENTS		32
@@ -382,6 +391,10 @@ void radeon_fence_driver_force_completion(struct radeon_device *rdev, int ring);
 int radeon_fence_emit(struct radeon_device *rdev, struct radeon_fence **fence, int ring);
 void radeon_fence_process(struct radeon_device *rdev, int ring);
 bool radeon_fence_signaled(struct radeon_fence *fence);
+<<<<<<< HEAD
+=======
+long radeon_fence_wait_timeout(struct radeon_fence *fence, bool interruptible, long timeout);
+>>>>>>> v4.9.227
 int radeon_fence_wait(struct radeon_fence *fence, bool interruptible);
 int radeon_fence_wait_next(struct radeon_device *rdev, int ring);
 int radeon_fence_wait_empty(struct radeon_device *rdev, int ring);
@@ -738,10 +751,18 @@ struct radeon_flip_work {
 	struct work_struct		unpin_work;
 	struct radeon_device		*rdev;
 	int				crtc_id;
+<<<<<<< HEAD
+=======
+	u32				target_vblank;
+>>>>>>> v4.9.227
 	uint64_t			base;
 	struct drm_pending_vblank_event *event;
 	struct radeon_bo		*old_rbo;
 	struct fence			*fence;
+<<<<<<< HEAD
+=======
+	bool				async;
+>>>>>>> v4.9.227
 };
 
 struct r500_irq_stat_regs {
@@ -1669,6 +1690,7 @@ int radeon_pm_get_type_index(struct radeon_device *rdev,
 /*
  * UVD
  */
+<<<<<<< HEAD
 #define RADEON_MAX_UVD_HANDLES	10
 #define RADEON_UVD_STACK_SIZE	(1024*1024)
 #define RADEON_UVD_HEAP_SIZE	(1024*1024)
@@ -1677,6 +1699,20 @@ struct radeon_uvd {
 	struct radeon_bo	*vcpu_bo;
 	void			*cpu_addr;
 	uint64_t		gpu_addr;
+=======
+#define RADEON_DEFAULT_UVD_HANDLES	10
+#define RADEON_MAX_UVD_HANDLES		30
+#define RADEON_UVD_STACK_SIZE		(200*1024)
+#define RADEON_UVD_HEAP_SIZE		(256*1024)
+#define RADEON_UVD_SESSION_SIZE		(50*1024)
+
+struct radeon_uvd {
+	bool			fw_header_present;
+	struct radeon_bo	*vcpu_bo;
+	void			*cpu_addr;
+	uint64_t		gpu_addr;
+	unsigned		max_handles;
+>>>>>>> v4.9.227
 	atomic_t		handles[RADEON_MAX_UVD_HANDLES];
 	struct drm_file		*filp[RADEON_MAX_UVD_HANDLES];
 	unsigned		img_size[RADEON_MAX_UVD_HANDLES];
@@ -1850,7 +1886,11 @@ struct radeon_asic {
 	int (*resume)(struct radeon_device *rdev);
 	int (*suspend)(struct radeon_device *rdev);
 	void (*vga_set_state)(struct radeon_device *rdev, bool state);
+<<<<<<< HEAD
 	int (*asic_reset)(struct radeon_device *rdev);
+=======
+	int (*asic_reset)(struct radeon_device *rdev, bool hard);
+>>>>>>> v4.9.227
 	/* Flush the HDP cache via MMIO */
 	void (*mmio_hdp_flush)(struct radeon_device *rdev);
 	/* check if 3D engine is idle */
@@ -1890,7 +1930,11 @@ struct radeon_asic {
 		void (*pad_ib)(struct radeon_ib *ib);
 	} vm;
 	/* ring specific callbacks */
+<<<<<<< HEAD
 	struct radeon_asic_ring *ring[RADEON_NUM_RINGS];
+=======
+	const struct radeon_asic_ring *ring[RADEON_NUM_RINGS];
+>>>>>>> v4.9.227
 	/* irqs */
 	struct {
 		int (*set)(struct radeon_device *rdev);
@@ -1996,7 +2040,11 @@ struct radeon_asic {
 	} dpm;
 	/* pageflipping */
 	struct {
+<<<<<<< HEAD
 		void (*page_flip)(struct radeon_device *rdev, int crtc, u64 crtc_base);
+=======
+		void (*page_flip)(struct radeon_device *rdev, int crtc, u64 crtc_base, bool async);
+>>>>>>> v4.9.227
 		bool (*page_flip_pending)(struct radeon_device *rdev, int crtc);
 	} pflip;
 };
@@ -2377,7 +2425,11 @@ struct radeon_device {
 	struct radeon_mman		mman;
 	struct radeon_fence_driver	fence_drv[RADEON_NUM_RINGS];
 	wait_queue_head_t		fence_queue;
+<<<<<<< HEAD
 	unsigned			fence_context;
+=======
+	u64				fence_context;
+>>>>>>> v4.9.227
 	struct mutex			ring_lock;
 	struct radeon_ring		ring[RADEON_NUM_RINGS];
 	bool				ib_pool_ready;
@@ -2392,7 +2444,10 @@ struct radeon_device {
 	struct radeon_wb		wb;
 	struct radeon_dummy_page	dummy_page;
 	bool				shutdown;
+<<<<<<< HEAD
 	bool				suspend;
+=======
+>>>>>>> v4.9.227
 	bool				need_dma32;
 	bool				accel_working;
 	bool				fastfb_working; /* IGP feature*/
@@ -2421,6 +2476,10 @@ struct radeon_device {
 	int num_crtc; /* number of crtcs */
 	struct mutex dc_hw_i2c_mutex; /* display controller hw i2c mutex */
 	bool has_uvd;
+<<<<<<< HEAD
+=======
+	bool has_vce;
+>>>>>>> v4.9.227
 	struct r600_audio audio; /* audio stuff */
 	struct notifier_block acpi_nb;
 	/* only one userspace can use Hyperz features or CMASK at a time */
@@ -2715,7 +2774,11 @@ static inline void radeon_ring_write(struct radeon_ring *ring, uint32_t v)
 #define radeon_suspend(rdev) (rdev)->asic->suspend((rdev))
 #define radeon_cs_parse(rdev, r, p) (rdev)->asic->ring[(r)]->cs_parse((p))
 #define radeon_vga_set_state(rdev, state) (rdev)->asic->vga_set_state((rdev), (state))
+<<<<<<< HEAD
 #define radeon_asic_reset(rdev) (rdev)->asic->asic_reset((rdev))
+=======
+#define radeon_asic_reset(rdev) (rdev)->asic->asic_reset((rdev), false)
+>>>>>>> v4.9.227
 #define radeon_gart_tlb_flush(rdev) (rdev)->asic->gart.tlb_flush((rdev))
 #define radeon_gart_get_page_entry(a, f) (rdev)->asic->gart.get_page_entry((a), (f))
 #define radeon_gart_set_page(rdev, i, e) (rdev)->asic->gart.set_page((rdev), (i), (e))
@@ -2773,7 +2836,11 @@ static inline void radeon_ring_write(struct radeon_ring *ring, uint32_t v)
 #define radeon_pm_finish(rdev) (rdev)->asic->pm.finish((rdev))
 #define radeon_pm_init_profile(rdev) (rdev)->asic->pm.init_profile((rdev))
 #define radeon_pm_get_dynpm_state(rdev) (rdev)->asic->pm.get_dynpm_state((rdev))
+<<<<<<< HEAD
 #define radeon_page_flip(rdev, crtc, base) (rdev)->asic->pflip.page_flip((rdev), (crtc), (base))
+=======
+#define radeon_page_flip(rdev, crtc, base, async) (rdev)->asic->pflip.page_flip((rdev), (crtc), (base), (async))
+>>>>>>> v4.9.227
 #define radeon_page_flip_pending(rdev, crtc) (rdev)->asic->pflip.page_flip_pending((rdev), (crtc))
 #define radeon_wait_for_vblank(rdev, crtc) (rdev)->asic->display.wait_for_vblank((rdev), (crtc))
 #define radeon_mc_wait_for_idle(rdev) (rdev)->asic->mc_wait_for_idle((rdev))
@@ -2830,7 +2897,12 @@ extern bool radeon_ttm_tt_is_readonly(struct ttm_tt *ttm);
 extern void radeon_vram_location(struct radeon_device *rdev, struct radeon_mc *mc, u64 base);
 extern void radeon_gtt_location(struct radeon_device *rdev, struct radeon_mc *mc);
 extern int radeon_resume_kms(struct drm_device *dev, bool resume, bool fbcon);
+<<<<<<< HEAD
 extern int radeon_suspend_kms(struct drm_device *dev, bool suspend, bool fbcon);
+=======
+extern int radeon_suspend_kms(struct drm_device *dev, bool suspend,
+			      bool fbcon, bool freeze);
+>>>>>>> v4.9.227
 extern void radeon_ttm_set_active_vram_size(struct radeon_device *rdev, u64 size);
 extern void radeon_program_register_sequence(struct radeon_device *rdev,
 					     const u32 *registers,

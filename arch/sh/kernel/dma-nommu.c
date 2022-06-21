@@ -13,7 +13,11 @@
 static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
 				 unsigned long offset, size_t size,
 				 enum dma_data_direction dir,
+<<<<<<< HEAD
 				 struct dma_attrs *attrs)
+=======
+				 unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	dma_addr_t addr = page_to_phys(page) + offset;
 
@@ -25,7 +29,11 @@ static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
 
 static int nommu_map_sg(struct device *dev, struct scatterlist *sg,
 			int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			struct dma_attrs *attrs)
+=======
+			unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	struct scatterlist *s;
 	int i;

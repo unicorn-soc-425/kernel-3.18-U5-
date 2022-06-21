@@ -136,6 +136,7 @@ static inline struct hlist_head *bsg_dev_idx_hash(int index)
 	return &bsg_device_list[index & (BSG_LIST_ARRAY_SIZE - 1)];
 }
 
+<<<<<<< HEAD
 static int bsg_io_schedule(struct bsg_device *bd)
 {
 	DEFINE_WAIT(wait);
@@ -172,6 +173,8 @@ unlock:
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static int blk_fill_sgv4_hdr_rq(struct request_queue *q, struct request *rq,
 				struct sg_io_v4 *hdr, struct bsg_device *bd,
 				fmode_t has_write_perm)
@@ -482,6 +485,33 @@ static int blk_complete_sgv4_hdr_rq(struct request *rq, struct sg_io_v4 *hdr,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static bool bsg_complete(struct bsg_device *bd)
+{
+	bool ret = false;
+	bool spin;
+
+	do {
+		spin_lock_irq(&bd->lock);
+
+		BUG_ON(bd->done_cmds > bd->queued_cmds);
+
+		/*
+		 * All commands consumed.
+		 */
+		if (bd->done_cmds == bd->queued_cmds)
+			ret = true;
+
+		spin = !test_bit(BSG_F_BLOCK, &bd->flags);
+
+		spin_unlock_irq(&bd->lock);
+	} while (!ret && spin);
+
+	return ret;
+}
+
+>>>>>>> v4.9.227
 static int bsg_complete_all_commands(struct bsg_device *bd)
 {
 	struct bsg_command *bc;
@@ -492,6 +522,7 @@ static int bsg_complete_all_commands(struct bsg_device *bd)
 	/*
 	 * wait for all commands to complete
 	 */
+<<<<<<< HEAD
 	ret = 0;
 	do {
 		ret = bsg_io_schedule(bd);
@@ -503,6 +534,9 @@ static int bsg_complete_all_commands(struct bsg_device *bd)
 		 * the bsg_device.
 		 */
 	} while (ret != -ENODATA);
+=======
+	io_wait_event(bd->wq_done, bsg_complete(bd));
+>>>>>>> v4.9.227
 
 	/*
 	 * discard done commands

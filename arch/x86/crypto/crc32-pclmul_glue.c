@@ -33,9 +33,15 @@
 #include <linux/crc32.h>
 #include <crypto/internal/hash.h>
 
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
 #include <asm/cpu_device_id.h>
 #include <asm/i387.h>
+=======
+#include <asm/cpufeatures.h>
+#include <asm/cpu_device_id.h>
+#include <asm/fpu/api.h>
+>>>>>>> v4.9.227
 
 #define CHKSUM_BLOCK_SIZE	1
 #define CHKSUM_DIGEST_SIZE	4
@@ -162,6 +168,10 @@ static struct shash_alg alg = {
 			.cra_name		= "crc32",
 			.cra_driver_name	= "crc32-pclmul",
 			.cra_priority		= 200,
+<<<<<<< HEAD
+=======
+			.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
+>>>>>>> v4.9.227
 			.cra_blocksize		= CHKSUM_BLOCK_SIZE,
 			.cra_ctxsize		= sizeof(u32),
 			.cra_module		= THIS_MODULE,

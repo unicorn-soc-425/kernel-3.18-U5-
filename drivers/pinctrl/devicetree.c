@@ -97,6 +97,7 @@ static int dt_remember_or_free_map(struct pinctrl *p, const char *statename,
 
 struct pinctrl_dev *of_pinctrl_get(struct device_node *np)
 {
+<<<<<<< HEAD
 	struct pinctrl_dev *pctldev;
 
 	pctldev = get_pinctrl_dev_from_of_node(np);
@@ -104,6 +105,9 @@ struct pinctrl_dev *of_pinctrl_get(struct device_node *np)
 		return NULL;
 
 	return pctldev;
+=======
+	return get_pinctrl_dev_from_of_node(np);
+>>>>>>> v4.9.227
 }
 
 static int dt_to_map_one_config(struct pinctrl *p, const char *statename,
@@ -202,9 +206,15 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 		prop = of_find_property(np, propname, &size);
 		kfree(propname);
 		if (!prop) {
+<<<<<<< HEAD
 			if (!state) {
 				ret = -EINVAL;
 				goto err;
+=======
+			if (state == 0) {
+				of_node_put(np);
+				return -ENODEV;
+>>>>>>> v4.9.227
 			}
 			break;
 		}

@@ -228,8 +228,13 @@ static int pci_ampci_write_config(struct pci_bus *bus, unsigned int devfn,
 }
 
 static struct pci_ops pci_direct_ampci = {
+<<<<<<< HEAD
 	pci_ampci_read_config,
 	pci_ampci_write_config,
+=======
+	.read = pci_ampci_read_config,
+	.write = pci_ampci_write_config,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -281,6 +286,7 @@ static int __init pci_check_direct(void)
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static int is_valid_resource(struct pci_dev *dev, int idx)
 {
 	unsigned int i, type_mask = IORESOURCE_IO | IORESOURCE_MEM;
@@ -317,6 +323,39 @@ static void pcibios_fixup_device_resources(struct pci_dev *dev)
 
 		if (is_valid_resource(dev, i))
 			pci_claim_resource(dev, i);
+=======
+static void pcibios_fixup_device_resources(struct pci_dev *dev)
+{
+	int idx;
+
+	if (!dev->bus)
+		return;
+
+	for (idx = 0; idx < PCI_BRIDGE_RESOURCES; idx++) {
+		struct resource *r = &dev->resource[idx];
+
+		if (!r->flags || r->parent || !r->start)
+			continue;
+
+		pci_claim_resource(dev, idx);
+	}
+}
+
+static void pcibios_fixup_bridge_resources(struct pci_dev *dev)
+{
+	int idx;
+
+	if (!dev->bus)
+		return;
+
+	for (idx = PCI_BRIDGE_RESOURCES; idx < PCI_NUM_RESOURCES; idx++) {
+		struct resource *r = &dev->resource[idx];
+
+		if (!r->flags || r->parent || !r->start)
+			continue;
+
+		pci_claim_bridge_resource(dev, idx);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -330,7 +369,11 @@ void pcibios_fixup_bus(struct pci_bus *bus)
 
 	if (bus->self) {
 		pci_read_bridge_bases(bus);
+<<<<<<< HEAD
 		pcibios_fixup_device_resources(bus->self);
+=======
+		pcibios_fixup_bridge_resources(bus->self);
+>>>>>>> v4.9.227
 	}
 
 	list_for_each_entry(dev, &bus->devices, bus_list)

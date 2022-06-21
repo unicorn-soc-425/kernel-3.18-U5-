@@ -96,7 +96,11 @@ static void vcc_def_wakeup(struct sock *sk)
 
 	rcu_read_lock();
 	wq = rcu_dereference(sk->sk_wq);
+<<<<<<< HEAD
 	if (wq_has_sleeper(wq))
+=======
+	if (skwq_has_sleeper(wq))
+>>>>>>> v4.9.227
 		wake_up(&wq->wait);
 	rcu_read_unlock();
 }
@@ -117,7 +121,11 @@ static void vcc_write_space(struct sock *sk)
 
 	if (vcc_writable(sk)) {
 		wq = rcu_dereference(sk->sk_wq);
+<<<<<<< HEAD
 		if (wq_has_sleeper(wq))
+=======
+		if (skwq_has_sleeper(wq))
+>>>>>>> v4.9.227
 			wake_up_interruptible(&wq->wait);
 
 		sk_wake_async(sk, SOCK_WAKE_SPACE, POLL_OUT);
@@ -141,7 +149,11 @@ static struct proto vcc_proto = {
 	.release_cb = vcc_release_cb,
 };
 
+<<<<<<< HEAD
 int vcc_create(struct net *net, struct socket *sock, int protocol, int family)
+=======
+int vcc_create(struct net *net, struct socket *sock, int protocol, int family, int kern)
+>>>>>>> v4.9.227
 {
 	struct sock *sk;
 	struct atm_vcc *vcc;
@@ -149,7 +161,11 @@ int vcc_create(struct net *net, struct socket *sock, int protocol, int family)
 	sock->sk = NULL;
 	if (sock->type == SOCK_STREAM)
 		return -EINVAL;
+<<<<<<< HEAD
 	sk = sk_alloc(net, family, GFP_KERNEL, &vcc_proto);
+=======
+	sk = sk_alloc(net, family, GFP_KERNEL, &vcc_proto, kern);
+>>>>>>> v4.9.227
 	if (!sk)
 		return -ENOMEM;
 	sock_init_data(sock, sk);
@@ -523,8 +539,13 @@ int vcc_connect(struct socket *sock, int itf, short vpi, int vci)
 	return 0;
 }
 
+<<<<<<< HEAD
 int vcc_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 		size_t size, int flags)
+=======
+int vcc_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+		int flags)
+>>>>>>> v4.9.227
 {
 	struct sock *sk = sock->sk;
 	struct atm_vcc *vcc;
@@ -554,7 +575,11 @@ int vcc_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 		msg->msg_flags |= MSG_TRUNC;
 	}
 
+<<<<<<< HEAD
 	error = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
+=======
+	error = skb_copy_datagram_msg(skb, 0, msg, copied);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 	sock_recv_ts_and_drops(msg, sk, skb);
@@ -569,16 +594,23 @@ int vcc_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 	return copied;
 }
 
+<<<<<<< HEAD
 int vcc_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *m,
 		size_t total_len)
+=======
+int vcc_sendmsg(struct socket *sock, struct msghdr *m, size_t size)
+>>>>>>> v4.9.227
 {
 	struct sock *sk = sock->sk;
 	DEFINE_WAIT(wait);
 	struct atm_vcc *vcc;
 	struct sk_buff *skb;
 	int eff, error;
+<<<<<<< HEAD
 	const void __user *buff;
 	int size;
+=======
+>>>>>>> v4.9.227
 
 	lock_sock(sk);
 	if (sock->state != SS_CONNECTED) {
@@ -589,12 +621,15 @@ int vcc_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *m,
 		error = -EISCONN;
 		goto out;
 	}
+<<<<<<< HEAD
 	if (m->msg_iovlen != 1) {
 		error = -ENOSYS; /* fix this later @@@ */
 		goto out;
 	}
 	buff = m->msg_iov->iov_base;
 	size = m->msg_iov->iov_len;
+=======
+>>>>>>> v4.9.227
 	vcc = ATM_SD(sock);
 	if (test_bit(ATM_VF_RELEASED, &vcc->flags) ||
 	    test_bit(ATM_VF_CLOSE, &vcc->flags) ||
@@ -607,7 +642,11 @@ int vcc_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *m,
 		error = 0;
 		goto out;
 	}
+<<<<<<< HEAD
 	if (size < 0 || size > vcc->qos.txtp.max_sdu) {
+=======
+	if (size > vcc->qos.txtp.max_sdu) {
+>>>>>>> v4.9.227
 		error = -EMSGSIZE;
 		goto out;
 	}
@@ -639,7 +678,11 @@ int vcc_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *m,
 		goto out;
 	skb->dev = NULL; /* for paths shared with net_device interfaces */
 	ATM_SKB(skb)->atm_options = vcc->atm_options;
+<<<<<<< HEAD
 	if (copy_from_user(skb_put(skb, size), buff, size)) {
+=======
+	if (copy_from_iter(skb_put(skb, size), size, &m->msg_iter) != size) {
+>>>>>>> v4.9.227
 		kfree_skb(skb);
 		error = -EFAULT;
 		goto out;

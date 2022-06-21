@@ -27,11 +27,19 @@
 #include <linux/io.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+>>>>>>> v4.9.227
 
 #include <linux/libata.h>
 #include <scsi/scsi_host.h>
 
+<<<<<<< HEAD
 #include <asm/gpio.h>
+=======
+#include <asm/mach-rc32434/rb.h>
+>>>>>>> v4.9.227
 
 #define DRV_NAME	"pata-rb532-cf"
 #define DRV_VERSION	"0.1.0"
@@ -108,6 +116,10 @@ static int rb532_pata_driver_probe(struct platform_device *pdev)
 	int gpio;
 	struct resource *res;
 	struct ata_host *ah;
+<<<<<<< HEAD
+=======
+	struct cf_device *pdata;
+>>>>>>> v4.9.227
 	struct rb532_cf_info *info;
 	int ret;
 
@@ -123,7 +135,17 @@ static int rb532_pata_driver_probe(struct platform_device *pdev)
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	gpio = irq_to_gpio(irq);
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+	if (!pdata) {
+		dev_err(&pdev->dev, "no platform data specified\n");
+		return -EINVAL;
+	}
+
+	gpio = pdata->gpio_pin;
+>>>>>>> v4.9.227
 	if (gpio < 0) {
 		dev_err(&pdev->dev, "no GPIO found for irq%d\n", irq);
 		return -ENOENT;
@@ -193,7 +215,10 @@ static struct platform_driver rb532_pata_platform_driver = {
 	.remove		= rb532_pata_driver_remove,
 	.driver	 = {
 		.name   = DRV_NAME,
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

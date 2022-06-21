@@ -58,6 +58,7 @@ different requirements.  This one suits mid range
 frequencies (100Hz - 4kHz).
 2) Lots of testing
 
+<<<<<<< HEAD
 Periodic Timer trigger
 1) Move to a more general hardware periodic timer request
 subsystem. Current approach is abusing purpose of RTC.
@@ -66,6 +67,8 @@ is in place as yet. This topic will be reopened on lkml
 shortly. I don't really envision this patch being merged
 in anything like its current form.
 
+=======
+>>>>>>> v4.9.227
 GPIO trigger
 1) Add control over the type of interrupt etc.  This will
 necessitate a header that is also visible from arch board

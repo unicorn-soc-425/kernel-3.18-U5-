@@ -7,7 +7,11 @@
  *
  * Copyright (C) 2008-2011 Gabor Juhos <juhosg@openwrt.org>
  * Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
+<<<<<<< HEAD
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
+=======
+ * Copyright (C) 2013 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  */
 
 #ifndef _RT288X_REGS_H_

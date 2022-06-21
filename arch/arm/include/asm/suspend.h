@@ -7,10 +7,16 @@ struct sleep_save_sp {
 };
 
 extern void cpu_resume(void);
+<<<<<<< HEAD
 extern int cpu_suspend(unsigned long);
 
 extern int __cpu_suspend(unsigned long, int (*fn)(unsigned long));
 extern int __cpu_suspend_enter(unsigned long arg, int (*fn)(unsigned long),
 							unsigned int);
+=======
+extern void cpu_resume_no_hyp(void);
+extern void cpu_resume_arm(void);
+extern int cpu_suspend(unsigned long, int (*)(unsigned long));
+>>>>>>> v4.9.227
 
 #endif

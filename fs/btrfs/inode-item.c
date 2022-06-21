@@ -157,7 +157,11 @@ static int btrfs_del_inode_extref(struct btrfs_trans_handle *trans,
 	 */
 	if (!btrfs_find_name_in_ext_backref(path, ref_objectid,
 					    name, name_len, &extref)) {
+<<<<<<< HEAD
 		btrfs_std_error(root->fs_info, -ENOENT);
+=======
+		btrfs_handle_fs_error(root->fs_info, -ENOENT, NULL);
+>>>>>>> v4.9.227
 		ret = -EROFS;
 		goto out;
 	}
@@ -344,6 +348,10 @@ int btrfs_insert_inode_ref(struct btrfs_trans_handle *trans,
 		return -ENOMEM;
 
 	path->leave_spinning = 1;
+<<<<<<< HEAD
+=======
+	path->skip_release_on_error = 1;
+>>>>>>> v4.9.227
 	ret = btrfs_insert_empty_item(trans, root, path, &key,
 				      ins_len);
 	if (ret == -EEXIST) {
@@ -362,8 +370,17 @@ int btrfs_insert_inode_ref(struct btrfs_trans_handle *trans,
 		ptr = (unsigned long)(ref + 1);
 		ret = 0;
 	} else if (ret < 0) {
+<<<<<<< HEAD
 		if (ret == -EOVERFLOW)
 			ret = -EMLINK;
+=======
+		if (ret == -EOVERFLOW) {
+			if (find_name_in_backref(path, name, name_len, &ref))
+				ret = -EEXIST;
+			else
+				ret = -EMLINK;
+		}
+>>>>>>> v4.9.227
 		goto out;
 	} else {
 		ref = btrfs_item_ptr(path->nodes[0], path->slots[0],

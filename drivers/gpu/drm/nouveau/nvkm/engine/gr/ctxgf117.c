@@ -223,9 +223,16 @@ gf117_grctx_generate_main(struct gf100_gr *gr, struct gf100_grctx *info)
 {
 	struct nvkm_device *device = gr->base.engine.subdev.device;
 	const struct gf100_grctx_func *grctx = gr->func->grctx;
+<<<<<<< HEAD
 	int i;
 
 	nvkm_mc_unk260(device->mc, 0);
+=======
+	u32 idle_timeout;
+	int i;
+
+	nvkm_mc_unk260(device, 0);
+>>>>>>> v4.9.227
 
 	gf100_gr_mmio(gr, grctx->hub);
 	gf100_gr_mmio(gr, grctx->gpc);
@@ -233,7 +240,11 @@ gf117_grctx_generate_main(struct gf100_gr *gr, struct gf100_grctx *info)
 	gf100_gr_mmio(gr, grctx->tpc);
 	gf100_gr_mmio(gr, grctx->ppc);
 
+<<<<<<< HEAD
 	nvkm_wr32(device, 0x404154, 0x00000000);
+=======
+	idle_timeout = nvkm_mask(device, 0x404154, 0xffffffff, 0x00000000);
+>>>>>>> v4.9.227
 
 	grctx->bundle(info);
 	grctx->pagepool(info);
@@ -250,9 +261,15 @@ gf117_grctx_generate_main(struct gf100_gr *gr, struct gf100_grctx *info)
 		nvkm_wr32(device, 0x4064d0 + (i * 0x04), 0x00000000);
 
 	gf100_gr_icmd(gr, grctx->icmd);
+<<<<<<< HEAD
 	nvkm_wr32(device, 0x404154, 0x00000400);
 	gf100_gr_mthd(gr, grctx->mthd);
 	nvkm_mc_unk260(device->mc, 1);
+=======
+	nvkm_wr32(device, 0x404154, idle_timeout);
+	gf100_gr_mthd(gr, grctx->mthd);
+	nvkm_mc_unk260(device, 1);
+>>>>>>> v4.9.227
 }
 
 const struct gf100_grctx_func

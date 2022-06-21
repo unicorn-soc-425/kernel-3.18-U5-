@@ -41,17 +41,32 @@
 
 #include <asm/prom.h>
 
+<<<<<<< HEAD
 extern u32 __dtb_xlp_evp_begin[], __dtb_xlp_svp_begin[],
 	__dtb_xlp_fvp_begin[], __dtb_xlp_gvp_begin[];
+=======
+extern u32 __dtb_xlp_evp_begin[], __dtb_xlp_svp_begin[], __dtb_xlp_fvp_begin[],
+	__dtb_xlp_gvp_begin[], __dtb_xlp_rvp_begin[];
+>>>>>>> v4.9.227
 static void *xlp_fdt_blob;
 
 void __init *xlp_dt_init(void *fdtp)
 {
 	if (!fdtp) {
 		switch (current_cpu_data.processor_id & PRID_IMP_MASK) {
+<<<<<<< HEAD
 #ifdef CONFIG_DT_XLP_GVP
 		case PRID_IMP_NETLOGIC_XLP9XX:
 		case PRID_IMP_NETLOGIC_XLP5XX:
+=======
+#ifdef CONFIG_DT_XLP_RVP
+		case PRID_IMP_NETLOGIC_XLP5XX:
+			fdtp = __dtb_xlp_rvp_begin;
+			break;
+#endif
+#ifdef CONFIG_DT_XLP_GVP
+		case PRID_IMP_NETLOGIC_XLP9XX:
+>>>>>>> v4.9.227
 			fdtp = __dtb_xlp_gvp_begin;
 			break;
 #endif
@@ -83,7 +98,10 @@ void __init *xlp_dt_init(void *fdtp)
 void __init xlp_early_init_devtree(void)
 {
 	__dt_setup_arch(xlp_fdt_blob);
+<<<<<<< HEAD
 	strlcpy(arcs_cmdline, boot_command_line, COMMAND_LINE_SIZE);
+=======
+>>>>>>> v4.9.227
 }
 
 void __init device_tree_init(void)

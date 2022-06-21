@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #define _RTW_DEBUG_C_
 
@@ -45,7 +48,11 @@ int proc_get_write_reg(char *page, char **start,
 int proc_set_write_reg(struct file *file, const char __user *buffer,
 		unsigned long count, void *data)
 {
+<<<<<<< HEAD
 	struct net_device *dev = (struct net_device *)data;
+=======
+	struct net_device *dev = data;
+>>>>>>> v4.9.227
 	struct adapter *padapter = (struct adapter *)rtw_netdev_priv(dev);
 	char tmp[32];
 	u32 addr, val, len;
@@ -143,6 +150,7 @@ int proc_set_read_reg(struct file *file, const char __user *buffer,
 	return count;
 }
 
+<<<<<<< HEAD
 int proc_get_fwstate(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data)
@@ -280,6 +288,8 @@ int proc_get_ap_info(char *page, char **start,
 	return len;
 }
 
+=======
+>>>>>>> v4.9.227
 int proc_get_adapter_state(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data)
@@ -295,6 +305,7 @@ int proc_get_adapter_state(char *page, char **start,
 	return len;
 }
 
+<<<<<<< HEAD
 int proc_get_trx_info(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data)
@@ -888,6 +899,8 @@ int proc_get_all_sta_info(char *page, char **start,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 int proc_get_best_channel(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data)
@@ -917,7 +930,11 @@ int proc_get_best_channel(char *page, char **start,
 		/*  5G */
 		if (pmlmeext->channel_set[i].ChannelNum >= 36 &&
 		    pmlmeext->channel_set[i].ChannelNum < 140) {
+<<<<<<< HEAD
 			 /*  Find primary channel */
+=======
+			/*  Find primary channel */
+>>>>>>> v4.9.227
 			if (((pmlmeext->channel_set[i].ChannelNum - 36) % 8 == 0) &&
 			    (pmlmeext->channel_set[i].rx_count < pmlmeext->channel_set[index_5G].rx_count)) {
 				index_5G = i;
@@ -927,7 +944,11 @@ int proc_get_best_channel(char *page, char **start,
 
 		if (pmlmeext->channel_set[i].ChannelNum >= 149 &&
 		    pmlmeext->channel_set[i].ChannelNum < 165) {
+<<<<<<< HEAD
 			 /*  find primary channel */
+=======
+			/*  find primary channel */
+>>>>>>> v4.9.227
 			if (((pmlmeext->channel_set[i].ChannelNum - 149) % 8 == 0) &&
 			    (pmlmeext->channel_set[i].rx_count < pmlmeext->channel_set[index_5G].rx_count)) {
 				index_5G = i;

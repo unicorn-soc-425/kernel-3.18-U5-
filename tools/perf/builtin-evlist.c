@@ -12,7 +12,11 @@
 #include "util/evlist.h"
 #include "util/evsel.h"
 #include "util/parse-events.h"
+<<<<<<< HEAD
 #include "util/parse-options.h"
+=======
+#include <subcmd/parse-options.h>
+>>>>>>> v4.9.227
 #include "util/session.h"
 #include "util/data.h"
 #include "util/debug.h"
@@ -24,15 +28,34 @@ static int __cmd_evlist(const char *file_name, struct perf_attr_details *details
 	struct perf_data_file file = {
 		.path = file_name,
 		.mode = PERF_DATA_MODE_READ,
+<<<<<<< HEAD
 	};
+=======
+		.force = details->force,
+	};
+	bool has_tracepoint = false;
+>>>>>>> v4.9.227
 
 	session = perf_session__new(&file, 0, NULL);
 	if (session == NULL)
 		return -1;
 
+<<<<<<< HEAD
 	evlist__for_each(session->evlist, pos)
 		perf_evsel__fprintf(pos, details, stdout);
 
+=======
+	evlist__for_each_entry(session->evlist, pos) {
+		perf_evsel__fprintf(pos, details, stdout);
+
+		if (pos->attr.type == PERF_TYPE_TRACEPOINT)
+			has_tracepoint = true;
+	}
+
+	if (has_tracepoint && !details->trace_fields)
+		printf("# Tip: use 'perf evlist --trace-fields' to show fields for tracepoint events\n");
+
+>>>>>>> v4.9.227
 	perf_session__delete(session);
 	return 0;
 }
@@ -47,6 +70,11 @@ int cmd_evlist(int argc, const char **argv, const char *prefix __maybe_unused)
 		    "Show all event attr details"),
 	OPT_BOOLEAN('g', "group", &details.event_group,
 		    "Show event group information"),
+<<<<<<< HEAD
+=======
+	OPT_BOOLEAN('f', "force", &details.force, "don't complain, do it"),
+	OPT_BOOLEAN(0, "trace-fields", &details.trace_fields, "Show tracepoint fields"),
+>>>>>>> v4.9.227
 	OPT_END()
 	};
 	const char * const evlist_usage[] = {
@@ -59,8 +87,13 @@ int cmd_evlist(int argc, const char **argv, const char *prefix __maybe_unused)
 		usage_with_options(evlist_usage, options);
 
 	if (details.event_group && (details.verbose || details.freq)) {
+<<<<<<< HEAD
 		pr_err("--group option is not compatible with other options\n");
 		usage_with_options(evlist_usage, options);
+=======
+		usage_with_options_msg(evlist_usage, options,
+			"--group option is not compatible with other options\n");
+>>>>>>> v4.9.227
 	}
 
 	return __cmd_evlist(input_name, &details);

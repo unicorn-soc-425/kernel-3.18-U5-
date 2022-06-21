@@ -227,6 +227,7 @@ static u32 __init search_agp_bridge(u32 *order, int *valid_agp)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int gart_fix_e820 __initdata = 1;
 
 static int __init parse_gart_mem(char *p)
@@ -240,6 +241,13 @@ static int __init parse_gart_mem(char *p)
 		gart_fix_e820 = 1;
 
 	return 0;
+=======
+static bool gart_fix_e820 __initdata = true;
+
+static int __init parse_gart_mem(char *p)
+{
+	return kstrtobool(p, &gart_fix_e820);
+>>>>>>> v4.9.227
 }
 early_param("gart_fix_e820", parse_gart_mem);
 
@@ -262,6 +270,12 @@ void __init early_gart_iommu_check(void)
 	u64 aper_base = 0, last_aper_base = 0;
 	int aper_enabled = 0, last_aper_enabled = 0, last_valid = 0;
 
+<<<<<<< HEAD
+=======
+	if (!amd_gart_present())
+		return;
+
+>>>>>>> v4.9.227
 	if (!early_pci_allowed())
 		return;
 
@@ -355,6 +369,12 @@ int __init gart_iommu_hole_init(void)
 	int fix, slot, valid_agp = 0;
 	int i, node;
 
+<<<<<<< HEAD
+=======
+	if (!amd_gart_present())
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	if (gart_iommu_aperture_disabled || !fix_aperture ||
 	    !early_pci_allowed())
 		return -ENODEV;
@@ -452,7 +472,11 @@ out:
 		   force_iommu ||
 		   valid_agp ||
 		   fallback_aper_force) {
+<<<<<<< HEAD
 		pr_info("Your BIOS doesn't leave a aperture memory hole\n");
+=======
+		pr_info("Your BIOS doesn't leave an aperture memory hole\n");
+>>>>>>> v4.9.227
 		pr_info("Please enable the IOMMU option in the BIOS setup\n");
 		pr_info("This costs you %dMB of RAM\n",
 			32 << fallback_aper_order);

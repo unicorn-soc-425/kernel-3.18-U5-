@@ -220,10 +220,13 @@ static int ps3rom_queuecommand_lck(struct scsi_cmnd *cmd,
 	unsigned char opcode;
 	int res;
 
+<<<<<<< HEAD
 #ifdef DEBUG
 	scsi_print_command(cmd);
 #endif
 
+=======
+>>>>>>> v4.9.227
 	priv->curr_cmd = cmd;
 	cmd->scsi_done = done;
 
@@ -351,7 +354,10 @@ static struct scsi_host_template ps3rom_host_template = {
 	.can_queue =		1,
 	.this_id =		7,
 	.sg_tablesize =		SG_ALL,
+<<<<<<< HEAD
 	.cmd_per_lun =		1,
+=======
+>>>>>>> v4.9.227
 	.emulated =             1,		/* only sg driver uses this */
 	.max_sectors =		PS3ROM_MAX_SECTORS,
 	.use_clustering =	ENABLE_CLUSTERING,
@@ -387,6 +393,10 @@ static int ps3rom_probe(struct ps3_system_bus_device *_dev)
 	if (!host) {
 		dev_err(&dev->sbd.core, "%s:%u: scsi_host_alloc failed\n",
 			__func__, __LINE__);
+<<<<<<< HEAD
+=======
+		error = -ENOMEM;
+>>>>>>> v4.9.227
 		goto fail_teardown;
 	}
 

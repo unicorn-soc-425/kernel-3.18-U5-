@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -51,10 +55,13 @@
 
 #include "ptlrpc_internal.h"
 
+<<<<<<< HEAD
 
 struct proc_dir_entry *sptlrpc_proc_root = NULL;
 EXPORT_SYMBOL(sptlrpc_proc_root);
 
+=======
+>>>>>>> v4.9.227
 static char *sec_flags2str(unsigned long flags, char *buf, int bufsize)
 {
 	buf[0] = '\0';
@@ -78,7 +85,11 @@ static int sptlrpc_info_lprocfs_seq_show(struct seq_file *seq, void *v)
 	struct obd_device *dev = seq->private;
 	struct client_obd *cli = &dev->u.cli;
 	struct ptlrpc_sec *sec = NULL;
+<<<<<<< HEAD
 	char	       str[32];
+=======
+	char str[32];
+>>>>>>> v4.9.227
 
 	LASSERT(strcmp(dev->obd_type->typ_name, LUSTRE_OSC_NAME) == 0 ||
 		strcmp(dev->obd_type->typ_name, LUSTRE_MDC_NAME) == 0 ||
@@ -86,7 +97,11 @@ static int sptlrpc_info_lprocfs_seq_show(struct seq_file *seq, void *v)
 
 	if (cli->cl_import)
 		sec = sptlrpc_import_sec_ref(cli->cl_import);
+<<<<<<< HEAD
 	if (sec == NULL)
+=======
+	if (!sec)
+>>>>>>> v4.9.227
 		goto out;
 
 	sec_flags2str(sec->ps_flvr.sf_flags, str, sizeof(str));
@@ -102,14 +117,24 @@ static int sptlrpc_info_lprocfs_seq_show(struct seq_file *seq, void *v)
 		   atomic_read(&sec->ps_refcount));
 	seq_printf(seq, "nctx:	  %d\n", atomic_read(&sec->ps_nctx));
 	seq_printf(seq, "gc internal    %ld\n", sec->ps_gc_interval);
+<<<<<<< HEAD
 	seq_printf(seq, "gc next	%ld\n",
 		   sec->ps_gc_interval ?
 		   sec->ps_gc_next - get_seconds() : 0);
+=======
+	seq_printf(seq, "gc next	%lld\n",
+		   sec->ps_gc_interval ?
+		   (s64)(sec->ps_gc_next - ktime_get_real_seconds()) : 0ll);
+>>>>>>> v4.9.227
 
 	sptlrpc_sec_put(sec);
 out:
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 LPROC_SEQ_FOPS_RO(sptlrpc_info_lprocfs);
 
 static int sptlrpc_ctxs_lprocfs_seq_show(struct seq_file *seq, void *v)
@@ -124,7 +149,11 @@ static int sptlrpc_ctxs_lprocfs_seq_show(struct seq_file *seq, void *v)
 
 	if (cli->cl_import)
 		sec = sptlrpc_import_sec_ref(cli->cl_import);
+<<<<<<< HEAD
 	if (sec == NULL)
+=======
+	if (!sec)
+>>>>>>> v4.9.227
 		goto out;
 
 	if (sec->ps_policy->sp_cops->display)
@@ -134,11 +163,19 @@ static int sptlrpc_ctxs_lprocfs_seq_show(struct seq_file *seq, void *v)
 out:
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 LPROC_SEQ_FOPS_RO(sptlrpc_ctxs_lprocfs);
 
 int sptlrpc_lprocfs_cliobd_attach(struct obd_device *dev)
 {
+<<<<<<< HEAD
 	int     rc;
+=======
+	int rc;
+>>>>>>> v4.9.227
 
 	if (strcmp(dev->obd_type->typ_name, LUSTRE_OSC_NAME) != 0 &&
 	    strcmp(dev->obd_type->typ_name, LUSTRE_MDC_NAME) != 0 &&
@@ -148,16 +185,26 @@ int sptlrpc_lprocfs_cliobd_attach(struct obd_device *dev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	rc = lprocfs_obd_seq_create(dev, "srpc_info", 0444,
 				    &sptlrpc_info_lprocfs_fops, dev);
+=======
+	rc = ldebugfs_obd_seq_create(dev, "srpc_info", 0444,
+				     &sptlrpc_info_lprocfs_fops, dev);
+>>>>>>> v4.9.227
 	if (rc) {
 		CERROR("create proc entry srpc_info for %s: %d\n",
 		       dev->obd_name, rc);
 		return rc;
 	}
 
+<<<<<<< HEAD
 	rc = lprocfs_obd_seq_create(dev, "srpc_contexts", 0444,
 				    &sptlrpc_ctxs_lprocfs_fops, dev);
+=======
+	rc = ldebugfs_obd_seq_create(dev, "srpc_contexts", 0444,
+				     &sptlrpc_ctxs_lprocfs_fops, dev);
+>>>>>>> v4.9.227
 	if (rc) {
 		CERROR("create proc entry srpc_contexts for %s: %d\n",
 		       dev->obd_name, rc);
@@ -174,6 +221,7 @@ static struct lprocfs_vars sptlrpc_lprocfs_vars[] = {
 	{ NULL }
 };
 
+<<<<<<< HEAD
 int sptlrpc_lproc_init(void)
 {
 	int     rc;
@@ -185,6 +233,22 @@ int sptlrpc_lproc_init(void)
 	if (IS_ERR(sptlrpc_proc_root)) {
 		rc = PTR_ERR(sptlrpc_proc_root);
 		sptlrpc_proc_root = NULL;
+=======
+static struct dentry *sptlrpc_debugfs_dir;
+
+int sptlrpc_lproc_init(void)
+{
+	int rc;
+
+	LASSERT(!sptlrpc_debugfs_dir);
+
+	sptlrpc_debugfs_dir = ldebugfs_register("sptlrpc", debugfs_lustre_root,
+						sptlrpc_lprocfs_vars, NULL);
+	if (IS_ERR_OR_NULL(sptlrpc_debugfs_dir)) {
+		rc = sptlrpc_debugfs_dir ? PTR_ERR(sptlrpc_debugfs_dir)
+					 : -ENOMEM;
+		sptlrpc_debugfs_dir = NULL;
+>>>>>>> v4.9.227
 		return rc;
 	}
 	return 0;
@@ -192,8 +256,13 @@ int sptlrpc_lproc_init(void)
 
 void sptlrpc_lproc_fini(void)
 {
+<<<<<<< HEAD
 	if (sptlrpc_proc_root) {
 		lprocfs_remove(&sptlrpc_proc_root);
 		sptlrpc_proc_root = NULL;
 	}
+=======
+	if (!IS_ERR_OR_NULL(sptlrpc_debugfs_dir))
+		ldebugfs_remove(&sptlrpc_debugfs_dir);
+>>>>>>> v4.9.227
 }

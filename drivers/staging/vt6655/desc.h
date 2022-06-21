@@ -34,44 +34,67 @@
 #include <linux/types.h>
 #include <linux/mm.h>
 #include "linux/ieee80211.h"
+<<<<<<< HEAD
 #include "ttype.h"
 #include "tether.h"
+=======
+>>>>>>> v4.9.227
 
 #define B_OWNED_BY_CHIP     1
 #define B_OWNED_BY_HOST     0
 
+<<<<<<< HEAD
 //
 // Bits in the RSR register
 //
+=======
+/* Bits in the RSR register */
+>>>>>>> v4.9.227
 #define RSR_ADDRBROAD       0x80
 #define RSR_ADDRMULTI       0x40
 #define RSR_ADDRUNI         0x00
 #define RSR_IVLDTYP         0x20
+<<<<<<< HEAD
 #define RSR_IVLDLEN         0x10        // invalid len (> 2312 byte)
+=======
+#define RSR_IVLDLEN         0x10        /* invalid len (> 2312 byte) */
+>>>>>>> v4.9.227
 #define RSR_BSSIDOK         0x08
 #define RSR_CRCOK           0x04
 #define RSR_BCNSSIDOK       0x02
 #define RSR_ADDROK          0x01
 
+<<<<<<< HEAD
 //
 // Bits in the new RSR register
 //
+=======
+/* Bits in the new RSR register */
+>>>>>>> v4.9.227
 #define NEWRSR_DECRYPTOK    0x10
 #define NEWRSR_CFPIND       0x08
 #define NEWRSR_HWUTSF       0x04
 #define NEWRSR_BCNHITAID    0x02
 #define NEWRSR_BCNHITAID0   0x01
 
+<<<<<<< HEAD
 //
 // Bits in the TSR0 register
 //
+=======
+/* Bits in the TSR0 register */
+>>>>>>> v4.9.227
 #define TSR0_PWRSTS1_2      0xC0
 #define TSR0_PWRSTS7        0x20
 #define TSR0_NCR            0x1F
 
+<<<<<<< HEAD
 //
 // Bits in the TSR1 register
 //
+=======
+/* Bits in the TSR1 register */
+>>>>>>> v4.9.227
 #define TSR1_TERR           0x80
 #define TSR1_PWRSTS4_6      0x70
 #define TSR1_RETRYTMO       0x08
@@ -79,6 +102,7 @@
 #define TSR1_PWRSTS3        0x02
 #define ACK_DATA            0x01
 
+<<<<<<< HEAD
 //
 // Bits in the TCR register
 //
@@ -89,6 +113,16 @@
 // max transmit or receive buffer size
 #define CB_MAX_BUF_SIZE     2900U
 					// NOTE: must be multiple of 4
+=======
+/* Bits in the TCR register */
+#define EDMSDU              0x04        /* end of sdu */
+#define TCR_EDP             0x02        /* end of packet */
+#define TCR_STP             0x01        /* start of packet */
+
+/* max transmit or receive buffer size */
+#define CB_MAX_BUF_SIZE     2900U
+					/* NOTE: must be multiple of 4 */
+>>>>>>> v4.9.227
 #define CB_MAX_TX_BUF_SIZE          CB_MAX_BUF_SIZE
 #define CB_MAX_RX_BUF_SIZE_NORMAL   CB_MAX_BUF_SIZE
 
@@ -100,18 +134,34 @@
 #define CB_MIN_TX_DESC      16
 
 #define CB_MAX_RECEIVED_PACKETS     16
+<<<<<<< HEAD
 					// limit our receive routine to indicating
 					// this many at a time for 2 reasons:
 					// 1. driver flow control to protocol layer
 					// 2. limit the time used in ISR routine
+=======
+				/*
+				 * limit our receive routine to indicating
+				 * this many at a time for 2 reasons:
+				 * 1. driver flow control to protocol layer
+				 * 2. limit the time used in ISR routine
+				 */
+>>>>>>> v4.9.227
 
 #define CB_EXTRA_RD_NUM     32
 #define CB_RD_NUM           32
 #define CB_TD_NUM           32
 
+<<<<<<< HEAD
 // max number of physical segments
 // in a single NDIS packet. Above this threshold, the packet
 // is copied into a single physically contiguous buffer
+=======
+/*
+ * max number of physical segments in a single NDIS packet. Above this
+ * threshold, the packet is copied into a single physically contiguous buffer
+ */
+>>>>>>> v4.9.227
 #define CB_MAX_SEGMENT      4
 
 #define CB_MIN_MAP_REG_NUM  4
@@ -119,6 +169,7 @@
 
 #define CB_PROTOCOL_RESERVED_SECTION    16
 
+<<<<<<< HEAD
 // if retrys excess 15 times , tx will abort, and
 // if tx fifo underflow, tx will fail
 // we should try to resend it
@@ -155,6 +206,15 @@
 
 #else
 
+=======
+/*
+ * if retrys excess 15 times , tx will abort, and if tx fifo underflow,
+ * tx will fail, we should try to resend it
+ */
+#define CB_MAX_TX_ABORT_RETRY   3
+
+/* WMAC definition FIFO Control */
+>>>>>>> v4.9.227
 #define FIFOCTL_AUTO_FB_1   0x1000
 #define FIFOCTL_AUTO_FB_0   0x0800
 #define FIFOCTL_GRPACK      0x0400
@@ -171,7 +231,11 @@
 #define FIFOCTL_NEEDACK     0x0002
 #define FIFOCTL_LHEAD       0x0001
 
+<<<<<<< HEAD
 //WMAC definition Frag Control
+=======
+/* WMAC definition Frag Control */
+>>>>>>> v4.9.227
 #define FRAGCTL_AES         0x0300
 #define FRAGCTL_TKIP        0x0200
 #define FRAGCTL_LEGACY      0x0100
@@ -181,8 +245,11 @@
 #define FRAGCTL_STAFRAG     0x0001
 #define FRAGCTL_NONFRAG     0x0000
 
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> v4.9.227
 #define TYPE_TXDMA0     0
 #define TYPE_AC0DMA     1
 #define TYPE_ATIMDMA    2
@@ -195,6 +262,7 @@
 #define TYPE_RXDMA1     1
 #define TYPE_MAXRD      2
 
+<<<<<<< HEAD
 // TD_INFO flags control bit
 #define TD_FLAGS_NETIF_SKB               0x01       // check if need release skb
 #define TD_FLAGS_PRIV_SKB                0x02       // check if called from private skb(hostap)
@@ -338,6 +406,100 @@ typedef struct tagSRrvTime_atim {
 } __attribute__ ((__packed__))
 SRrvTime_atim, *PSRrvTime_atim;
 typedef const SRrvTime_atim *PCSRrvTime_atim;
+=======
+/* TD_INFO flags control bit */
+#define TD_FLAGS_NETIF_SKB      0x01    /* check if need release skb */
+/* check if called from private skb (hostap) */
+#define TD_FLAGS_PRIV_SKB       0x02
+#define TD_FLAGS_PS_RETRY       0x04    /* check if PS STA frame re-transmit */
+
+/*
+ * ref_sk_buff is used for mapping the skb structure between pre-built
+ * driver-obj & running kernel. Since different kernel version (2.4x) may
+ * change skb structure, i.e. pre-built driver-obj may link to older skb that
+ * leads error.
+ */
+
+struct vnt_rd_info {
+	struct sk_buff *skb;
+	dma_addr_t  skb_dma;
+};
+
+struct vnt_rdes0 {
+	volatile __le16 res_count;
+#ifdef __BIG_ENDIAN
+	union {
+		volatile u16 f15_reserved;
+		struct {
+			volatile u8 f8_reserved1;
+			volatile u8 owner:1;
+			volatile u8 f7_reserved:7;
+		} __packed;
+	} __packed;
+#else
+	u16 f15_reserved:15;
+	u16 owner:1;
+#endif
+} __packed;
+
+struct vnt_rdes1 {
+	__le16 req_count;
+	u16 reserved;
+} __packed;
+
+/* Rx descriptor*/
+struct vnt_rx_desc {
+	volatile struct vnt_rdes0 rd0;
+	volatile struct vnt_rdes1 rd1;
+	volatile __le32 buff_addr;
+	volatile __le32 next_desc;
+	struct vnt_rx_desc *next __aligned(8);
+	struct vnt_rd_info *rd_info __aligned(8);
+} __packed;
+
+struct vnt_tdes0 {
+	volatile u8 tsr0;
+	volatile u8 tsr1;
+#ifdef __BIG_ENDIAN
+	union {
+		volatile u16 f15_txtime;
+		struct {
+			volatile u8 f8_reserved;
+			volatile u8 owner:1;
+			volatile u8 f7_reserved:7;
+		} __packed;
+	} __packed;
+#else
+	volatile u16 f15_txtime:15;
+	volatile u16 owner:1;
+#endif
+} __packed;
+
+struct vnt_tdes1 {
+	volatile __le16 req_count;
+	volatile u8 tcr;
+	volatile u8 reserved;
+} __packed;
+
+struct vnt_td_info {
+	void *mic_hdr;
+	struct sk_buff *skb;
+	unsigned char *buf;
+	dma_addr_t buf_dma;
+	u16 req_count;
+	u8 flags;
+};
+
+/* transmit descriptor */
+struct vnt_tx_desc {
+	volatile struct vnt_tdes0 td0;
+	volatile struct vnt_tdes1 td1;
+	volatile __le32 buff_addr;
+	volatile __le32 next_desc;
+	struct vnt_tx_desc *next __aligned(8);
+	struct vnt_td_info *td_info __aligned(8);
+} __packed;
+>>>>>>> v4.9.227
 
 /* Length, Service, and Signal fields of Phy for Tx */
 struct vnt_phy_field {
@@ -352,6 +514,7 @@ union vnt_phy_field_swap {
 	u32 field_write;
 };
 
+<<<<<<< HEAD
 //
 // Tx FIFO header
 //
@@ -393,3 +556,6 @@ typedef struct tagSKeyEntry {
 SKeyEntry;
 
 #endif // __DESC_H__
+=======
+#endif /* __DESC_H__ */
+>>>>>>> v4.9.227

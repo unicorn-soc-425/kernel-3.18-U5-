@@ -18,6 +18,7 @@ struct uda134x_platform_data {
 	struct l3_pins l3;
 	void (*power) (int);
 	int model;
+<<<<<<< HEAD
 	/*
 	  ALSA SOC usually puts the device in standby mode when it's not used
 	  for sometime. If you unset is_powered_on_standby the driver will
@@ -30,6 +31,8 @@ struct uda134x_platform_data {
 	  completely take off power from the codec.
 	*/
 	int is_powered_on_standby;
+=======
+>>>>>>> v4.9.227
 #define UDA134X_UDA1340 1
 #define UDA134X_UDA1341 2
 #define UDA134X_UDA1344 3

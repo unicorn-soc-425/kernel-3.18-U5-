@@ -5,6 +5,11 @@
  * syscall compatibility layer.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_COMPAT
 
 #include <linux/stat.h>
@@ -65,6 +70,12 @@ typedef struct compat_sigaltstack {
 	compat_size_t			ss_size;
 } compat_stack_t;
 #endif
+<<<<<<< HEAD
+=======
+#ifndef COMPAT_MINSIGSTKSZ
+#define COMPAT_MINSIGSTKSZ	MINSIGSTKSZ
+#endif
+>>>>>>> v4.9.227
 
 #define compat_jiffies_to_clock_t(x)	\
 		(((unsigned long)(x) * COMPAT_USER_HZ) / HZ)
@@ -340,6 +351,15 @@ asmlinkage ssize_t compat_sys_preadv(compat_ulong_t fd,
 asmlinkage ssize_t compat_sys_pwritev(compat_ulong_t fd,
 		const struct compat_iovec __user *vec,
 		compat_ulong_t vlen, u32 pos_low, u32 pos_high);
+<<<<<<< HEAD
+=======
+asmlinkage ssize_t compat_sys_preadv2(compat_ulong_t fd,
+		const struct compat_iovec __user *vec,
+		compat_ulong_t vlen, u32 pos_low, u32 pos_high, int flags);
+asmlinkage ssize_t compat_sys_pwritev2(compat_ulong_t fd,
+		const struct compat_iovec __user *vec,
+		compat_ulong_t vlen, u32 pos_low, u32 pos_high, int flags);
+>>>>>>> v4.9.227
 
 #ifdef __ARCH_WANT_COMPAT_SYS_PREADV64
 asmlinkage long compat_sys_preadv64(unsigned long fd,
@@ -357,6 +377,12 @@ asmlinkage long compat_sys_lseek(unsigned int, compat_off_t, unsigned int);
 
 asmlinkage long compat_sys_execve(const char __user *filename, const compat_uptr_t __user *argv,
 		     const compat_uptr_t __user *envp);
+<<<<<<< HEAD
+=======
+asmlinkage long compat_sys_execveat(int dfd, const char __user *filename,
+		     const compat_uptr_t __user *argv,
+		     const compat_uptr_t __user *envp, int flags);
+>>>>>>> v4.9.227
 
 asmlinkage long compat_sys_select(int n, compat_ulong_t __user *inp,
 		compat_ulong_t __user *outp, compat_ulong_t __user *exp,
@@ -421,7 +447,10 @@ asmlinkage long compat_sys_settimeofday(struct compat_timeval __user *tv,
 
 asmlinkage long compat_sys_adjtimex(struct compat_timex __user *utp);
 
+<<<<<<< HEAD
 extern int compat_printk(const char *fmt, ...);
+=======
+>>>>>>> v4.9.227
 extern void sigset_from_compat(sigset_t *set, const compat_sigset_t *compat);
 extern void sigset_to_compat(compat_sigset_t *compat, const sigset_t *set);
 
@@ -686,14 +715,33 @@ asmlinkage long compat_sys_sendfile64(int out_fd, int in_fd,
 asmlinkage long compat_sys_sigaltstack(const compat_stack_t __user *uss_ptr,
 				       compat_stack_t __user *uoss_ptr);
 
+<<<<<<< HEAD
+=======
+#ifdef __ARCH_WANT_SYS_SIGPENDING
+asmlinkage long compat_sys_sigpending(compat_old_sigset_t __user *set);
+#endif
+
+#ifdef __ARCH_WANT_SYS_SIGPROCMASK
+asmlinkage long compat_sys_sigprocmask(int how, compat_old_sigset_t __user *nset,
+				       compat_old_sigset_t __user *oset);
+#endif
+
+>>>>>>> v4.9.227
 int compat_restore_altstack(const compat_stack_t __user *uss);
 int __compat_save_altstack(compat_stack_t __user *, unsigned long);
 #define compat_save_altstack_ex(uss, sp) do { \
 	compat_stack_t __user *__uss = uss; \
 	struct task_struct *t = current; \
 	put_user_ex(ptr_to_compat((void __user *)t->sas_ss_sp), &__uss->ss_sp); \
+<<<<<<< HEAD
 	put_user_ex(sas_ss_flags(sp), &__uss->ss_flags); \
 	put_user_ex(t->sas_ss_size, &__uss->ss_size); \
+=======
+	put_user_ex(t->sas_ss_flags, &__uss->ss_flags); \
+	put_user_ex(t->sas_ss_size, &__uss->ss_size); \
+	if (t->sas_ss_flags & SS_AUTODISARM) \
+		sas_ss_reset(t); \
+>>>>>>> v4.9.227
 } while (0);
 
 asmlinkage long compat_sys_sched_rr_get_interval(compat_pid_t pid,
@@ -701,9 +749,30 @@ asmlinkage long compat_sys_sched_rr_get_interval(compat_pid_t pid,
 
 asmlinkage long compat_sys_fanotify_mark(int, unsigned int, __u32, __u32,
 					    int, const char __user *);
+<<<<<<< HEAD
 #else
 
 #define is_compat_task() (0)
 
 #endif /* CONFIG_COMPAT */
+=======
+
+/*
+ * For most but not all architectures, "am I in a compat syscall?" and
+ * "am I a compat task?" are the same question.  For architectures on which
+ * they aren't the same question, arch code can override in_compat_syscall.
+ */
+
+#ifndef in_compat_syscall
+static inline bool in_compat_syscall(void) { return is_compat_task(); }
+#endif
+
+#else
+
+#define is_compat_task() (0)
+static inline bool in_compat_syscall(void) { return false; }
+
+#endif /* CONFIG_COMPAT */
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_COMPAT_H */

@@ -67,11 +67,15 @@ static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
 static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm,
 	unsigned long address)
 {
+<<<<<<< HEAD
 	pte_t *pte;
 
 	pte = (pte_t *) __get_free_pages(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO, PTE_ORDER);
 
 	return pte;
+=======
+	return (pte_t *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, PTE_ORDER);
+>>>>>>> v4.9.227
 }
 
 static inline struct page *pte_alloc_one(struct mm_struct *mm,
@@ -79,7 +83,11 @@ static inline struct page *pte_alloc_one(struct mm_struct *mm,
 {
 	struct page *pte;
 
+<<<<<<< HEAD
 	pte = alloc_pages(GFP_KERNEL | __GFP_REPEAT, PTE_ORDER);
+=======
+	pte = alloc_pages(GFP_KERNEL, PTE_ORDER);
+>>>>>>> v4.9.227
 	if (!pte)
 		return NULL;
 	clear_highpage(pte);
@@ -113,7 +121,11 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
 {
 	pmd_t *pmd;
 
+<<<<<<< HEAD
 	pmd = (pmd_t *) __get_free_pages(GFP_KERNEL|__GFP_REPEAT, PMD_ORDER);
+=======
+	pmd = (pmd_t *) __get_free_pages(GFP_KERNEL, PMD_ORDER);
+>>>>>>> v4.9.227
 	if (pmd)
 		pmd_init((unsigned long)pmd, (unsigned long)invalid_pte_table);
 	return pmd;

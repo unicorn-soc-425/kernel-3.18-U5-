@@ -1,8 +1,12 @@
 #
 # Makefile for code common across different PXA processor families
 #
+<<<<<<< HEAD
 
 obj-y	:= dma.o
+=======
+ccflags-$(CONFIG_ARCH_MMP) := -I$(srctree)/$(src)/include
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_PXA3xx)		+= mfp.o
 obj-$(CONFIG_ARCH_MMP)		+= mfp.o

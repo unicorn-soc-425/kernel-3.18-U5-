@@ -127,7 +127,11 @@ struct sixpack {
 
 #define AX25_6PACK_HEADER_LEN 0
 
+<<<<<<< HEAD
 static void sixpack_decode(struct sixpack *, unsigned char[], int);
+=======
+static void sixpack_decode(struct sixpack *, const unsigned char[], int);
+>>>>>>> v4.9.227
 static int encode_sixpack(unsigned char *, unsigned char *, int, unsigned char);
 
 /*
@@ -247,6 +251,12 @@ static netdev_tx_t sp_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct sixpack *sp = netdev_priv(dev);
 
+<<<<<<< HEAD
+=======
+	if (skb->protocol == htons(ETH_P_IP))
+		return ax25_ip_xmit(skb);
+
+>>>>>>> v4.9.227
 	spin_lock_bh(&sp->lock);
 	/* We were not busy, so we are now... :-) */
 	netif_stop_queue(dev);
@@ -284,6 +294,7 @@ static int sp_close(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Return the frame type ID */
 static int sp_header(struct sk_buff *skb, struct net_device *dev,
 		     unsigned short type, const void *daddr,
@@ -296,6 +307,8 @@ static int sp_header(struct sk_buff *skb, struct net_device *dev,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int sp_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct sockaddr_ax25 *sa = addr;
@@ -309,6 +322,7 @@ static int sp_set_mac_address(struct net_device *dev, void *addr)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int sp_rebuild_header(struct sk_buff *skb)
 {
 #ifdef CONFIG_INET
@@ -323,6 +337,8 @@ static const struct header_ops sp_header_ops = {
 	.rebuild	= sp_rebuild_header,
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct net_device_ops sp_netdev_ops = {
 	.ndo_open		= sp_open_dev,
 	.ndo_stop		= sp_close,
@@ -337,7 +353,11 @@ static void sp_setup(struct net_device *dev)
 	dev->destructor		= free_netdev;
 	dev->mtu		= SIXP_MTU;
 	dev->hard_header_len	= AX25_MAX_HEADER_LEN;
+<<<<<<< HEAD
 	dev->header_ops 	= &sp_header_ops;
+=======
+	dev->header_ops 	= &ax25_header_ops;
+>>>>>>> v4.9.227
 
 	dev->addr_len		= AX25_ADDR_LEN;
 	dev->type		= ARPHRD_AX25;
@@ -451,7 +471,11 @@ out:
 
 /*
  * Handle the 'receiver data ready' interrupt.
+<<<<<<< HEAD
  * This function is called by the 'tty_io' module in the kernel when
+=======
+ * This function is called by the tty module in the kernel when
+>>>>>>> v4.9.227
  * a block of 6pack data has been received, which can now be decapsulated
  * and sent on to some IP layer for further processing.
  */
@@ -459,7 +483,10 @@ static void sixpack_receive_buf(struct tty_struct *tty,
 	const unsigned char *cp, char *fp, int count)
 {
 	struct sixpack *sp;
+<<<<<<< HEAD
 	unsigned char buf[512];
+=======
+>>>>>>> v4.9.227
 	int count1;
 
 	if (!count)
@@ -469,10 +496,14 @@ static void sixpack_receive_buf(struct tty_struct *tty,
 	if (!sp)
 		return;
 
+<<<<<<< HEAD
 	memcpy(buf, cp, count < sizeof(buf) ? count : sizeof(buf));
 
 	/* Read the characters out of the buffer */
 
+=======
+	/* Read the characters out of the buffer */
+>>>>>>> v4.9.227
 	count1 = count;
 	while (count) {
 		count--;
@@ -482,7 +513,11 @@ static void sixpack_receive_buf(struct tty_struct *tty,
 			continue;
 		}
 	}
+<<<<<<< HEAD
 	sixpack_decode(sp, buf, count1);
+=======
+	sixpack_decode(sp, cp, count1);
+>>>>>>> v4.9.227
 
 	sp_put(sp);
 	tty_unthrottle(tty);
@@ -675,8 +710,12 @@ out_free:
 	kfree(xbuff);
 	kfree(rbuff);
 
+<<<<<<< HEAD
 	if (dev)
 		free_netdev(dev);
+=======
+	free_netdev(dev);
+>>>>>>> v4.9.227
 
 out:
 	return err;
@@ -693,10 +732,17 @@ static void sixpack_close(struct tty_struct *tty)
 {
 	struct sixpack *sp;
 
+<<<<<<< HEAD
 	write_lock_bh(&disc_data_lock);
 	sp = tty->disc_data;
 	tty->disc_data = NULL;
 	write_unlock_bh(&disc_data_lock);
+=======
+	write_lock_irq(&disc_data_lock);
+	sp = tty->disc_data;
+	tty->disc_data = NULL;
+	write_unlock_irq(&disc_data_lock);
+>>>>>>> v4.9.227
 	if (!sp)
 		return;
 
@@ -707,14 +753,30 @@ static void sixpack_close(struct tty_struct *tty)
 	if (!atomic_dec_and_test(&sp->refcnt))
 		down(&sp->dead_sem);
 
+<<<<<<< HEAD
 	unregister_netdev(sp->dev);
 
 	del_timer(&sp->tx_t);
 	del_timer(&sp->resync_t);
+=======
+	/* We must stop the queue to avoid potentially scribbling
+	 * on the free buffers. The sp->dead_sem is not sufficient
+	 * to protect us from sp->xbuff access.
+	 */
+	netif_stop_queue(sp->dev);
+
+	del_timer_sync(&sp->tx_t);
+	del_timer_sync(&sp->resync_t);
+>>>>>>> v4.9.227
 
 	/* Free all 6pack frame buffers. */
 	kfree(sp->rbuff);
 	kfree(sp->xbuff);
+<<<<<<< HEAD
+=======
+
+	unregister_netdev(sp->dev);
+>>>>>>> v4.9.227
 }
 
 /* Perform I/O control on an active 6pack channel. */
@@ -1010,7 +1072,11 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
 /* decode a 6pack packet */
 
 static void
+<<<<<<< HEAD
 sixpack_decode(struct sixpack *sp, unsigned char *pre_rbuff, int count)
+=======
+sixpack_decode(struct sixpack *sp, const unsigned char *pre_rbuff, int count)
+>>>>>>> v4.9.227
 {
 	unsigned char inbyte;
 	int count1;

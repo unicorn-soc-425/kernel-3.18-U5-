@@ -48,8 +48,11 @@ _SetupOCD:
 	rsync
 
 _SetupMMU:
+<<<<<<< HEAD
 	Offset = _SetupMMU - _SecondaryResetVector
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_INITIALIZE_XTENSA_MMU_INSIDE_VMLINUX
 	initialize_mmu
 #endif
@@ -62,6 +65,7 @@ _SetupMMU:
 	jx	a3
 
 	.end    no-absolute-literals
+<<<<<<< HEAD
 
 
 	.section 	.SecondaryResetVector.remapped_text, "ax"
@@ -83,3 +87,5 @@ _RemappedSetupMMU:
 #endif
 
 	.end    no-absolute-literals
+=======
+>>>>>>> v4.9.227

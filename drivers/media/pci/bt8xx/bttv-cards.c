@@ -41,7 +41,11 @@
 
 #include "bttvp.h"
 #include <media/v4l2-common.h>
+<<<<<<< HEAD
 #include <media/tvaudio.h>
+=======
+#include <media/i2c/tvaudio.h>
+>>>>>>> v4.9.227
 #include "bttv-audio-hook.h"
 
 /* fwd decl */
@@ -84,8 +88,12 @@ static void gv800s_init(struct bttv *btv);
 static void td3116_muxsel(struct bttv *btv, unsigned int input);
 
 static int terratec_active_radio_upgrade(struct bttv *btv);
+<<<<<<< HEAD
 static int tea5757_read(struct bttv *btv);
 static int tea5757_write(struct bttv *btv, int value);
+=======
+static int tea575x_init(struct bttv *btv);
+>>>>>>> v4.9.227
 static void identify_by_eeprom(struct bttv *btv,
 			       unsigned char eeprom_data[256]);
 static int pvr_boot(struct bttv *btv);
@@ -3085,12 +3093,21 @@ static void miro_pinnacle_gpio(struct bttv *btv)
 		if (0 == (gpio & 0x20)) {
 			btv->has_radio = 1;
 			if (!miro_fmtuner[id]) {
+<<<<<<< HEAD
 				btv->has_matchbox = 1;
 				btv->mbox_we    = (1<<6);
 				btv->mbox_most  = (1<<7);
 				btv->mbox_clk   = (1<<8);
 				btv->mbox_data  = (1<<9);
 				btv->mbox_mask  = (1<<6)|(1<<7)|(1<<8)|(1<<9);
+=======
+				btv->has_tea575x = 1;
+				btv->tea_gpio.wren = 6;
+				btv->tea_gpio.most = 7;
+				btv->tea_gpio.clk  = 8;
+				btv->tea_gpio.data = 9;
+				tea575x_init(btv);
+>>>>>>> v4.9.227
 			}
 		} else {
 			btv->has_radio = 0;
@@ -3104,7 +3121,11 @@ static void miro_pinnacle_gpio(struct bttv *btv)
 		pr_info("%d: miro: id=%d tuner=%d radio=%s stereo=%s\n",
 			btv->c.nr, id+1, btv->tuner_type,
 			!btv->has_radio ? "no" :
+<<<<<<< HEAD
 			(btv->has_matchbox ? "matchbox" : "fmtuner"),
+=======
+			(btv->has_tea575x ? "tea575x" : "fmtuner"),
+>>>>>>> v4.9.227
 			(-1 == msp) ? "no" : "yes");
 	} else {
 		/* new cards with microtune tuner */
@@ -3382,12 +3403,21 @@ void bttv_init_card2(struct bttv *btv)
 		break;
 	case BTTV_BOARD_VHX:
 		btv->has_radio    = 1;
+<<<<<<< HEAD
 		btv->has_matchbox = 1;
 		btv->mbox_we      = 0x20;
 		btv->mbox_most    = 0;
 		btv->mbox_clk     = 0x08;
 		btv->mbox_data    = 0x10;
 		btv->mbox_mask    = 0x38;
+=======
+		btv->has_tea575x  = 1;
+		btv->tea_gpio.wren = 5;
+		btv->tea_gpio.most = 6;
+		btv->tea_gpio.clk  = 3;
+		btv->tea_gpio.data = 4;
+		tea575x_init(btv);
+>>>>>>> v4.9.227
 		break;
 	case BTTV_BOARD_VOBIS_BOOSTAR:
 	case BTTV_BOARD_TERRATV:
@@ -3745,6 +3775,7 @@ static void hauppauge_eeprom(struct bttv *btv)
 		btv->radio_uses_msp_demodulator = 1;
 }
 
+<<<<<<< HEAD
 static int terratec_active_radio_upgrade(struct bttv *btv)
 {
 	int freq;
@@ -3756,11 +3787,110 @@ static int terratec_active_radio_upgrade(struct bttv *btv)
 	btv->mbox_clk     = 0x08;
 	btv->mbox_data    = 0x04;
 	btv->mbox_mask    = 0x3c;
+=======
+/* ----------------------------------------------------------------------- */
+
+static void bttv_tea575x_set_pins(struct snd_tea575x *tea, u8 pins)
+{
+	struct bttv *btv = tea->private_data;
+	struct bttv_tea575x_gpio gpio = btv->tea_gpio;
+	u16 val = 0;
+
+	val |= (pins & TEA575X_DATA) ? (1 << gpio.data) : 0;
+	val |= (pins & TEA575X_CLK)  ? (1 << gpio.clk)  : 0;
+	val |= (pins & TEA575X_WREN) ? (1 << gpio.wren) : 0;
+
+	gpio_bits((1 << gpio.data) | (1 << gpio.clk) | (1 << gpio.wren), val);
+	if (btv->mbox_ior) {
+		/* IOW and CSEL active */
+		gpio_bits(btv->mbox_iow | btv->mbox_csel, 0);
+		udelay(5);
+		/* all inactive */
+		gpio_bits(btv->mbox_ior | btv->mbox_iow | btv->mbox_csel,
+			  btv->mbox_ior | btv->mbox_iow | btv->mbox_csel);
+	}
+}
+
+static u8 bttv_tea575x_get_pins(struct snd_tea575x *tea)
+{
+	struct bttv *btv = tea->private_data;
+	struct bttv_tea575x_gpio gpio = btv->tea_gpio;
+	u8 ret = 0;
+	u16 val;
+
+	if (btv->mbox_ior) {
+		/* IOR and CSEL active */
+		gpio_bits(btv->mbox_ior | btv->mbox_csel, 0);
+		udelay(5);
+	}
+	val = gpio_read();
+	if (btv->mbox_ior) {
+		/* all inactive */
+		gpio_bits(btv->mbox_ior | btv->mbox_iow | btv->mbox_csel,
+			  btv->mbox_ior | btv->mbox_iow | btv->mbox_csel);
+	}
+
+	if (val & (1 << gpio.data))
+		ret |= TEA575X_DATA;
+	if (val & (1 << gpio.most))
+		ret |= TEA575X_MOST;
+
+	return ret;
+}
+
+static void bttv_tea575x_set_direction(struct snd_tea575x *tea, bool output)
+{
+	struct bttv *btv = tea->private_data;
+	struct bttv_tea575x_gpio gpio = btv->tea_gpio;
+	u32 mask = (1 << gpio.clk) | (1 << gpio.wren) | (1 << gpio.data) |
+		   (1 << gpio.most);
+
+	if (output)
+		gpio_inout(mask, (1 << gpio.data) | (1 << gpio.clk) |
+				 (1 << gpio.wren));
+	else
+		gpio_inout(mask, (1 << gpio.clk) | (1 << gpio.wren));
+}
+
+static const struct snd_tea575x_ops bttv_tea_ops = {
+	.set_pins = bttv_tea575x_set_pins,
+	.get_pins = bttv_tea575x_get_pins,
+	.set_direction = bttv_tea575x_set_direction,
+};
+
+static int tea575x_init(struct bttv *btv)
+{
+	btv->tea.private_data = btv;
+	btv->tea.ops = &bttv_tea_ops;
+	if (!snd_tea575x_hw_init(&btv->tea)) {
+		pr_info("%d: detected TEA575x radio\n", btv->c.nr);
+		btv->tea.mute = false;
+		return 0;
+	}
+
+	btv->has_tea575x = 0;
+	btv->has_radio = 0;
+
+	return -ENODEV;
+}
+
+/* ----------------------------------------------------------------------- */
+
+static int terratec_active_radio_upgrade(struct bttv *btv)
+{
+	btv->has_radio    = 1;
+	btv->has_tea575x  = 1;
+	btv->tea_gpio.wren = 4;
+	btv->tea_gpio.most = 5;
+	btv->tea_gpio.clk  = 3;
+	btv->tea_gpio.data = 2;
+>>>>>>> v4.9.227
 
 	btv->mbox_iow     = 1 <<  8;
 	btv->mbox_ior     = 1 <<  9;
 	btv->mbox_csel    = 1 << 10;
 
+<<<<<<< HEAD
 	freq=88000/62.5;
 	tea5757_write(btv, 5 * freq + 0x358); /* write 0x1ed8 */
 	if (0x1ed8 == tea5757_read(btv)) {
@@ -3772,6 +3902,13 @@ static int terratec_active_radio_upgrade(struct bttv *btv)
 		btv->has_radio    = 0;
 		btv->has_matchbox = 0;
 	}
+=======
+	if (!tea575x_init(btv)) {
+		pr_info("%d: Terratec Active Radio Upgrade found\n", btv->c.nr);
+		btv->has_saa6588 = 1;
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -3870,10 +4007,17 @@ static void osprey_eeprom(struct bttv *btv, const u8 ee[256])
 	} else {
 		unsigned short type;
 
+<<<<<<< HEAD
 		for (i = 4*16; i < 8*16; i += 16) {
 			u16 checksum = ip_compute_csum(ee + i, 16);
 
 			if ((checksum&0xff) + (checksum>>8) == 0xff)
+=======
+		for (i = 4 * 16; i < 8 * 16; i += 16) {
+			u16 checksum = (__force u16)ip_compute_csum(ee + i, 16);
+
+			if ((checksum & 0xff) + (checksum >> 8) == 0xff)
+>>>>>>> v4.9.227
 				break;
 		}
 		if (i >= 8*16)
@@ -4292,6 +4436,7 @@ init_PCI8604PW(struct bttv *btv)
 	}
 }
 
+<<<<<<< HEAD
 
 
 /* ----------------------------------------------------------------------- */
@@ -4467,6 +4612,8 @@ void tea5757_set_freq(struct bttv *btv, unsigned short freq)
 	tea5757_write(btv, 5 * freq + 0x358); /* add 10.7MHz (see docs) */
 }
 
+=======
+>>>>>>> v4.9.227
 /* RemoteVision MX (rv605) muxsel helper [Miguel Freitas]
  *
  * This is needed because rv605 don't use a normal multiplex, but a crosspoint
@@ -5048,6 +5195,7 @@ int bttv_handle_chipset(struct bttv *btv)
 		pci_write_config_byte(btv->c.pci, PCI_LATENCY_TIMER, latency);
 	return 0;
 }
+<<<<<<< HEAD
 
 
 /*
@@ -5055,3 +5203,5 @@ int bttv_handle_chipset(struct bttv *btv)
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

@@ -112,10 +112,17 @@ static unsigned int icp_hv_get_irq(void)
 	unsigned int irq;
 
 	if (vec == XICS_IRQ_SPURIOUS)
+<<<<<<< HEAD
 		return NO_IRQ;
 
 	irq = irq_find_mapping(xics_host, vec);
 	if (likely(irq != NO_IRQ)) {
+=======
+		return 0;
+
+	irq = irq_find_mapping(xics_host, vec);
+	if (likely(irq)) {
+>>>>>>> v4.9.227
 		xics_push_cppr(vec);
 		return irq;
 	}
@@ -126,7 +133,11 @@ static unsigned int icp_hv_get_irq(void)
 	/* We might learn about it later, so EOI it */
 	icp_hv_set_xirr(xirr);
 
+<<<<<<< HEAD
 	return NO_IRQ;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void icp_hv_set_cpu_priority(unsigned char cppr)

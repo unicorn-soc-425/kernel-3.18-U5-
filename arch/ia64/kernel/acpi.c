@@ -380,9 +380,12 @@ static void __init acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 
 static int __init acpi_parse_madt(struct acpi_table_header *table)
 {
+<<<<<<< HEAD
 	if (!table)
 		return -EINVAL;
 
+=======
+>>>>>>> v4.9.227
 	acpi_madt = (struct acpi_table_madt *)table;
 
 	acpi_madt_rev = acpi_madt->header.revision;
@@ -486,7 +489,11 @@ acpi_numa_processor_affinity_init(struct acpi_srat_cpu_affinity *pa)
 	    (pa->apic_id << 8) | (pa->local_sapic_eid);
 	/* nid should be overridden as logical node id later */
 	node_cpuid[srat_num_cpus].nid = pxm;
+<<<<<<< HEAD
 	cpu_set(srat_num_cpus, early_cpu_possible_map);
+=======
+	cpumask_set_cpu(srat_num_cpus, &early_cpu_possible_map);
+>>>>>>> v4.9.227
 	srat_num_cpus++;
 }
 
@@ -527,7 +534,11 @@ acpi_numa_memory_affinity_init(struct acpi_srat_mem_affinity *ma)
 	return 0;
 }
 
+<<<<<<< HEAD
 void __init acpi_numa_arch_fixup(void)
+=======
+void __init acpi_numa_fixup(void)
+>>>>>>> v4.9.227
 {
 	int i, j, node_from, node_to;
 
@@ -645,9 +656,12 @@ static int __init acpi_parse_fadt(struct acpi_table_header *table)
 	struct acpi_table_header *fadt_header;
 	struct acpi_table_fadt *fadt;
 
+<<<<<<< HEAD
 	if (!table)
 		return -EINVAL;
 
+=======
+>>>>>>> v4.9.227
 	fadt_header = (struct acpi_table_header *)table;
 	if (fadt_header->revision != 3)
 		return -ENODEV;	/* Only deal with ACPI 2.0 FADT */
@@ -802,7 +816,11 @@ int acpi_isa_irq_to_gsi(unsigned isa_irq, u32 *gsi)
  *  ACPI based hotplug CPU support
  */
 #ifdef CONFIG_ACPI_HOTPLUG_CPU
+<<<<<<< HEAD
 static int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+=======
+int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+>>>>>>> v4.9.227
 {
 #ifdef CONFIG_ACPI_NUMA
 	/*
@@ -893,6 +911,7 @@ static int _acpi_map_lsapic(acpi_handle handle, int physid, int *pcpu)
 }
 
 /* wrapper to silence section mismatch warning */
+<<<<<<< HEAD
 int __ref acpi_map_lsapic(acpi_handle handle, int physid, int *pcpu)
 {
 	return _acpi_map_lsapic(handle, physid, pcpu);
@@ -900,6 +919,15 @@ int __ref acpi_map_lsapic(acpi_handle handle, int physid, int *pcpu)
 EXPORT_SYMBOL(acpi_map_lsapic);
 
 int acpi_unmap_lsapic(int cpu)
+=======
+int __ref acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, int *pcpu)
+{
+	return _acpi_map_lsapic(handle, physid, pcpu);
+}
+EXPORT_SYMBOL(acpi_map_cpu);
+
+int acpi_unmap_cpu(int cpu)
+>>>>>>> v4.9.227
 {
 	ia64_cpu_to_sapicid[cpu] = -1;
 	set_cpu_present(cpu, false);
@@ -910,8 +938,12 @@ int acpi_unmap_lsapic(int cpu)
 
 	return (0);
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(acpi_unmap_lsapic);
+=======
+EXPORT_SYMBOL(acpi_unmap_cpu);
+>>>>>>> v4.9.227
 #endif				/* CONFIG_ACPI_HOTPLUG_CPU */
 
 #ifdef CONFIG_ACPI_NUMA

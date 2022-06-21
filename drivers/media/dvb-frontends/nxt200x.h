@@ -55,9 +55,12 @@ static inline struct dvb_frontend* nxt200x_attach(const struct nxt200x_config* c
 #endif // CONFIG_DVB_NXT200X
 
 #endif /* NXT200X_H */
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

@@ -2,6 +2,7 @@
 #define _NF_LOG_H
 
 #include <linux/netfilter.h>
+<<<<<<< HEAD
 
 /* those NF_LOG_* defines and struct nf_loginfo are legacy definitios that will
  * disappear once iptables is replaced with pkttables.  Please DO NOT use them
@@ -11,6 +12,15 @@
 #define NF_LOG_IPOPT		0x04	/* Log IP options */
 #define NF_LOG_UID		0x08	/* Log UID owning local socket */
 #define NF_LOG_MASK		0x0f
+=======
+#include <linux/netfilter/nf_log.h>
+
+/* Log tcp sequence, tcp options, ip options and uid owning local socket */
+#define NF_LOG_DEFAULT_MASK	0x0f
+
+/* This flag indicates that copy_len field in nf_loginfo is set */
+#define NF_LOG_F_COPY_LEN	0x1
+>>>>>>> v4.9.227
 
 enum nf_log_type {
 	NF_LOG_TYPE_LOG		= 0,
@@ -22,9 +32,19 @@ struct nf_loginfo {
 	u_int8_t type;
 	union {
 		struct {
+<<<<<<< HEAD
 			u_int32_t copy_len;
 			u_int16_t group;
 			u_int16_t qthreshold;
+=======
+			/* copy_len will be used iff you set
+			 * NF_LOG_F_COPY_LEN in flags
+			 */
+			u_int32_t copy_len;
+			u_int16_t group;
+			u_int16_t qthreshold;
+			u_int16_t flags;
+>>>>>>> v4.9.227
 		} ulog;
 		struct {
 			u_int8_t level;
@@ -53,8 +73,12 @@ struct nf_logger {
 int nf_log_register(u_int8_t pf, struct nf_logger *logger);
 void nf_log_unregister(struct nf_logger *logger);
 
+<<<<<<< HEAD
 void nf_log_set(struct net *net, u_int8_t pf,
 		const struct nf_logger *logger);
+=======
+int nf_log_set(struct net *net, u_int8_t pf, const struct nf_logger *logger);
+>>>>>>> v4.9.227
 void nf_log_unset(struct net *net, const struct nf_logger *logger);
 
 int nf_log_bind_pf(struct net *net, u_int8_t pf,
@@ -79,6 +103,19 @@ void nf_log_packet(struct net *net,
 		   const struct nf_loginfo *li,
 		   const char *fmt, ...);
 
+<<<<<<< HEAD
+=======
+__printf(8, 9)
+void nf_log_trace(struct net *net,
+		  u_int8_t pf,
+		  unsigned int hooknum,
+		  const struct sk_buff *skb,
+		  const struct net_device *in,
+		  const struct net_device *out,
+		  const struct nf_loginfo *li,
+		  const char *fmt, ...);
+
+>>>>>>> v4.9.227
 struct nf_log_buf;
 
 struct nf_log_buf *nf_log_buf_open(void);

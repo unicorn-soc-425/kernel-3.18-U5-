@@ -36,8 +36,12 @@ bool current_is_single_threaded(void)
 		if (unlikely(p == task->group_leader))
 			continue;
 
+<<<<<<< HEAD
 		t = p;
 		do {
+=======
+		for_each_thread(p, t) {
+>>>>>>> v4.9.227
 			if (unlikely(t->mm == mm))
 				goto found;
 			if (likely(t->mm))
@@ -48,7 +52,11 @@ bool current_is_single_threaded(void)
 			 * forked before exiting.
 			 */
 			smp_rmb();
+<<<<<<< HEAD
 		} while_each_thread(p, t);
+=======
+		}
+>>>>>>> v4.9.227
 	}
 	ret = true;
 found:

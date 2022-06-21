@@ -10,11 +10,19 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include <linux/device.h>
 #include <linux/debugfs.h>
 #include <linux/rbtree.h>
 #include <linux/seq_file.h>
+=======
+#include <linux/debugfs.h>
+#include <linux/device.h>
+#include <linux/rbtree.h>
+#include <linux/seq_file.h>
+#include <linux/slab.h>
+>>>>>>> v4.9.227
 
 #include "internal.h"
 
@@ -361,6 +369,7 @@ regcache_rbtree_node_alloc(struct regmap *map, unsigned int reg)
 		rbnode->base_reg = reg;
 	}
 
+<<<<<<< HEAD
 	rbnode->block = kmalloc(rbnode->blklen * map->cache_word_size,
 				GFP_KERNEL);
 	if (!rbnode->block)
@@ -368,6 +377,16 @@ regcache_rbtree_node_alloc(struct regmap *map, unsigned int reg)
 
 	rbnode->cache_present = kzalloc(BITS_TO_LONGS(rbnode->blklen) *
 		sizeof(*rbnode->cache_present), GFP_KERNEL);
+=======
+	rbnode->block = kmalloc_array(rbnode->blklen, map->cache_word_size,
+				      GFP_KERNEL);
+	if (!rbnode->block)
+		goto err_free;
+
+	rbnode->cache_present = kcalloc(BITS_TO_LONGS(rbnode->blklen),
+					sizeof(*rbnode->cache_present),
+					GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!rbnode->cache_present)
 		goto err_free_block;
 
@@ -403,6 +422,10 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 		unsigned int new_base_reg, new_top_reg;
 		unsigned int min, max;
 		unsigned int max_dist;
+<<<<<<< HEAD
+=======
+		unsigned int dist, best_dist = UINT_MAX;
+>>>>>>> v4.9.227
 
 		max_dist = map->reg_stride * sizeof(*rbnode_tmp) /
 			map->cache_word_size;
@@ -413,8 +436,13 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 		max = reg + max_dist;
 
 		/* look for an adjacent register to the one we are about to add */
+<<<<<<< HEAD
 		for (node = rb_first(&rbtree_ctx->root); node;
 		     node = rb_next(node)) {
+=======
+		node = rbtree_ctx->root.rb_node;
+		while (node) {
+>>>>>>> v4.9.227
 			rbnode_tmp = rb_entry(node, struct regcache_rbtree_node,
 					      node);
 
@@ -422,6 +450,7 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 				&base_reg, &top_reg);
 
 			if (base_reg <= max && top_reg >= min) {
+<<<<<<< HEAD
 				new_base_reg = min(reg, base_reg);
 				new_top_reg = max(reg, top_reg);
 			} else {
@@ -429,12 +458,47 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 			}
 
 			ret = regcache_rbtree_insert_to_block(map, rbnode_tmp,
+=======
+				if (reg < base_reg)
+					dist = base_reg - reg;
+				else if (reg > top_reg)
+					dist = reg - top_reg;
+				else
+					dist = 0;
+				if (dist < best_dist) {
+					rbnode = rbnode_tmp;
+					best_dist = dist;
+					new_base_reg = min(reg, base_reg);
+					new_top_reg = max(reg, top_reg);
+				}
+			}
+
+			/*
+			 * Keep looking, we want to choose the closest block,
+			 * otherwise we might end up creating overlapping
+			 * blocks, which breaks the rbtree.
+			 */
+			if (reg < base_reg)
+				node = node->rb_left;
+			else if (reg > top_reg)
+				node = node->rb_right;
+			else
+				break;
+		}
+
+		if (rbnode) {
+			ret = regcache_rbtree_insert_to_block(map, rbnode,
+>>>>>>> v4.9.227
 							      new_base_reg,
 							      new_top_reg, reg,
 							      value);
 			if (ret)
 				return ret;
+<<<<<<< HEAD
 			rbtree_ctx->cached_rbnode = rbnode_tmp;
+=======
+			rbtree_ctx->cached_rbnode = rbnode;
+>>>>>>> v4.9.227
 			return 0;
 		}
 

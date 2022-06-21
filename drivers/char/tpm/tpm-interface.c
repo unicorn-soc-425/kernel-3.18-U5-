@@ -1,5 +1,9 @@
 /*
  * Copyright (C) 2004 IBM Corporation
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2014 Intel Corporation
+>>>>>>> v4.9.227
  *
  * Authors:
  * Leendert van Doorn <leendert@watson.ibm.com>
@@ -47,10 +51,13 @@ module_param_named(suspend_pcr, tpm_suspend_pcr, uint, 0644);
 MODULE_PARM_DESC(suspend_pcr,
 		 "PCR to use for dummy writes to faciltate flush on suspend.");
 
+<<<<<<< HEAD
 static LIST_HEAD(tpm_chip_list);
 static DEFINE_SPINLOCK(driver_lock);
 static DECLARE_BITMAP(dev_mask, TPM_NUM_DEVICES);
 
+=======
+>>>>>>> v4.9.227
 /*
  * Array with one entry per ordinal defining the maximum amount
  * of time the chip could take to return the result.  The ordinal
@@ -313,6 +320,7 @@ unsigned long tpm_calc_ordinal_duration(struct tpm_chip *chip,
 {
 	int duration_idx = TPM_UNDEFINED;
 	int duration = 0;
+<<<<<<< HEAD
 	u8 category = (ordinal >> 24) & 0xFF;
 
 	if ((category == TPM_PROTECTED_COMMAND && ordinal < TPM_MAX_ORDINAL) ||
@@ -321,6 +329,18 @@ unsigned long tpm_calc_ordinal_duration(struct tpm_chip *chip,
 
 	if (duration_idx != TPM_UNDEFINED)
 		duration = chip->vendor.duration[duration_idx];
+=======
+
+	/*
+	 * We only have a duration table for protected commands, where the upper
+	 * 16 bits are 0. For the few other ordinals the fallback will be used.
+	 */
+	if (ordinal < TPM_MAX_ORDINAL)
+		duration_idx = tpm_ordinal_duration[ordinal];
+
+	if (duration_idx != TPM_UNDEFINED)
+		duration = chip->duration[duration_idx];
+>>>>>>> v4.9.227
 	if (duration <= 0)
 		return 2 * 60 * HZ;
 	else
@@ -331,13 +351,24 @@ EXPORT_SYMBOL_GPL(tpm_calc_ordinal_duration);
 /*
  * Internal kernel interface to transmit TPM commands
  */
+<<<<<<< HEAD
 ssize_t tpm_transmit(struct tpm_chip *chip, const char *buf,
 		     size_t bufsiz)
+=======
+ssize_t tpm_transmit(struct tpm_chip *chip, const u8 *buf, size_t bufsiz,
+		     unsigned int flags)
+>>>>>>> v4.9.227
 {
 	ssize_t rc;
 	u32 count, ordinal;
 	unsigned long stop;
 
+<<<<<<< HEAD
+=======
+	if (bufsiz < TPM_HEADER_SIZE)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	if (bufsiz > TPM_BUFSIZE)
 		bufsiz = TPM_BUFSIZE;
 
@@ -346,24 +377,47 @@ ssize_t tpm_transmit(struct tpm_chip *chip, const char *buf,
 	if (count == 0)
 		return -ENODATA;
 	if (count > bufsiz) {
+<<<<<<< HEAD
 		dev_err(chip->dev,
+=======
+		dev_err(&chip->dev,
+>>>>>>> v4.9.227
 			"invalid count value %x %zx\n", count, bufsiz);
 		return -E2BIG;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&chip->tpm_mutex);
 
 	rc = chip->ops->send(chip, (u8 *) buf, count);
 	if (rc < 0) {
 		dev_err(chip->dev,
+=======
+	if (!(flags & TPM_TRANSMIT_UNLOCKED))
+		mutex_lock(&chip->tpm_mutex);
+
+	rc = chip->ops->send(chip, (u8 *) buf, count);
+	if (rc < 0) {
+		dev_err(&chip->dev,
+>>>>>>> v4.9.227
 			"tpm_transmit: tpm_send: error %zd\n", rc);
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (chip->vendor.irq)
 		goto out_recv;
 
 	stop = jiffies + tpm_calc_ordinal_duration(chip, ordinal);
+=======
+	if (chip->flags & TPM_CHIP_FLAG_IRQ)
+		goto out_recv;
+
+	if (chip->flags & TPM_CHIP_FLAG_TPM2)
+		stop = jiffies + tpm2_calc_ordinal_duration(chip, ordinal);
+	else
+		stop = jiffies + tpm_calc_ordinal_duration(chip, ordinal);
+>>>>>>> v4.9.227
 	do {
 		u8 status = chip->ops->status(chip);
 		if ((status & chip->ops->req_complete_mask) ==
@@ -371,7 +425,11 @@ ssize_t tpm_transmit(struct tpm_chip *chip, const char *buf,
 			goto out_recv;
 
 		if (chip->ops->req_canceled(chip, status)) {
+<<<<<<< HEAD
 			dev_err(chip->dev, "Operation Canceled\n");
+=======
+			dev_err(&chip->dev, "Operation Canceled\n");
+>>>>>>> v4.9.227
 			rc = -ECANCELED;
 			goto out;
 		}
@@ -381,37 +439,69 @@ ssize_t tpm_transmit(struct tpm_chip *chip, const char *buf,
 	} while (time_before(jiffies, stop));
 
 	chip->ops->cancel(chip);
+<<<<<<< HEAD
 	dev_err(chip->dev, "Operation Timed out\n");
+=======
+	dev_err(&chip->dev, "Operation Timed out\n");
+>>>>>>> v4.9.227
 	rc = -ETIME;
 	goto out;
 
 out_recv:
 	rc = chip->ops->recv(chip, (u8 *) buf, bufsiz);
 	if (rc < 0)
+<<<<<<< HEAD
 		dev_err(chip->dev,
 			"tpm_transmit: tpm_recv: error %zd\n", rc);
 out:
 	mutex_unlock(&chip->tpm_mutex);
+=======
+		dev_err(&chip->dev,
+			"tpm_transmit: tpm_recv: error %zd\n", rc);
+out:
+	if (!(flags & TPM_TRANSMIT_UNLOCKED))
+		mutex_unlock(&chip->tpm_mutex);
+>>>>>>> v4.9.227
 	return rc;
 }
 
 #define TPM_DIGEST_SIZE 20
 #define TPM_RET_CODE_IDX 6
 
+<<<<<<< HEAD
 static ssize_t transmit_cmd(struct tpm_chip *chip, struct tpm_cmd_t *cmd,
 			    int len, const char *desc)
 {
 	int err;
 
 	len = tpm_transmit(chip, (u8 *) cmd, len);
+=======
+ssize_t tpm_transmit_cmd(struct tpm_chip *chip, const void *cmd,
+			 int len, unsigned int flags, const char *desc)
+{
+	const struct tpm_output_header *header;
+	int err;
+
+	len = tpm_transmit(chip, (const u8 *)cmd, len, flags);
+>>>>>>> v4.9.227
 	if (len <  0)
 		return len;
 	else if (len < TPM_HEADER_SIZE)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	err = be32_to_cpu(cmd->header.out.return_code);
 	if (err != 0 && desc)
 		dev_err(chip->dev, "A TPM error (%d) occurred %s\n", err, desc);
+=======
+	header = cmd;
+
+	err = be32_to_cpu(header->return_code);
+	if (err != 0 && err != TPM_ERR_DISABLED && err != TPM_ERR_DEACTIVATED
+	    && desc)
+		dev_err(&chip->dev, "A TPM error (%d) occurred %s\n", err,
+			desc);
+>>>>>>> v4.9.227
 
 	return err;
 }
@@ -426,12 +516,19 @@ static const struct tpm_input_header tpm_getcap_header = {
 	.ordinal = TPM_ORD_GET_CAP
 };
 
+<<<<<<< HEAD
 ssize_t tpm_getcap(struct device *dev, __be32 subcap_id, cap_t *cap,
+=======
+ssize_t tpm_getcap(struct tpm_chip *chip, __be32 subcap_id, cap_t *cap,
+>>>>>>> v4.9.227
 		   const char *desc)
 {
 	struct tpm_cmd_t tpm_cmd;
 	int rc;
+<<<<<<< HEAD
 	struct tpm_chip *chip = dev_get_drvdata(dev);
+=======
+>>>>>>> v4.9.227
 
 	tpm_cmd.header.in = tpm_getcap_header;
 	if (subcap_id == CAP_VERSION_1_1 || subcap_id == CAP_VERSION_1_2) {
@@ -448,11 +545,17 @@ ssize_t tpm_getcap(struct device *dev, __be32 subcap_id, cap_t *cap,
 		tpm_cmd.params.getcap_in.subcap_size = cpu_to_be32(4);
 		tpm_cmd.params.getcap_in.subcap = subcap_id;
 	}
+<<<<<<< HEAD
 	rc = transmit_cmd(chip, &tpm_cmd, TPM_INTERNAL_RESULT_SIZE, desc);
+=======
+	rc = tpm_transmit_cmd(chip, &tpm_cmd, TPM_INTERNAL_RESULT_SIZE, 0,
+			      desc);
+>>>>>>> v4.9.227
 	if (!rc)
 		*cap = tpm_cmd.params.getcap_out.cap;
 	return rc;
 }
+<<<<<<< HEAD
 
 void tpm_gen_interrupt(struct tpm_chip *chip)
 {
@@ -468,6 +571,9 @@ void tpm_gen_interrupt(struct tpm_chip *chip)
 			"attempting to determine the timeouts");
 }
 EXPORT_SYMBOL_GPL(tpm_gen_interrupt);
+=======
+EXPORT_SYMBOL_GPL(tpm_getcap);
+>>>>>>> v4.9.227
 
 #define TPM_ORD_STARTUP cpu_to_be32(153)
 #define TPM_ST_CLEAR cpu_to_be16(1)
@@ -483,29 +589,67 @@ static int tpm_startup(struct tpm_chip *chip, __be16 startup_type)
 {
 	struct tpm_cmd_t start_cmd;
 	start_cmd.header.in = tpm_startup_header;
+<<<<<<< HEAD
 	start_cmd.params.startup_in.startup_type = startup_type;
 	return transmit_cmd(chip, &start_cmd, TPM_INTERNAL_RESULT_SIZE,
 			    "attempting to start the TPM");
+=======
+
+	start_cmd.params.startup_in.startup_type = startup_type;
+	return tpm_transmit_cmd(chip, &start_cmd, TPM_INTERNAL_RESULT_SIZE, 0,
+				"attempting to start the TPM");
+>>>>>>> v4.9.227
 }
 
 int tpm_get_timeouts(struct tpm_chip *chip)
 {
 	struct tpm_cmd_t tpm_cmd;
+<<<<<<< HEAD
 	unsigned long new_timeout[4];
 	unsigned long old_timeout[4];
 	struct duration_t *duration_cap;
 	ssize_t rc;
 
+=======
+	unsigned long timeout_old[4], timeout_chip[4], timeout_eff[4];
+	struct duration_t *duration_cap;
+	ssize_t rc;
+
+	if (chip->flags & TPM_CHIP_FLAG_TPM2) {
+		/* Fixed timeouts for TPM2 */
+		chip->timeout_a = msecs_to_jiffies(TPM2_TIMEOUT_A);
+		chip->timeout_b = msecs_to_jiffies(TPM2_TIMEOUT_B);
+		chip->timeout_c = msecs_to_jiffies(TPM2_TIMEOUT_C);
+		chip->timeout_d = msecs_to_jiffies(TPM2_TIMEOUT_D);
+		chip->duration[TPM_SHORT] =
+		    msecs_to_jiffies(TPM2_DURATION_SHORT);
+		chip->duration[TPM_MEDIUM] =
+		    msecs_to_jiffies(TPM2_DURATION_MEDIUM);
+		chip->duration[TPM_LONG] =
+		    msecs_to_jiffies(TPM2_DURATION_LONG);
+		return 0;
+	}
+
+>>>>>>> v4.9.227
 	tpm_cmd.header.in = tpm_getcap_header;
 	tpm_cmd.params.getcap_in.cap = TPM_CAP_PROP;
 	tpm_cmd.params.getcap_in.subcap_size = cpu_to_be32(4);
 	tpm_cmd.params.getcap_in.subcap = TPM_CAP_PROP_TIS_TIMEOUT;
+<<<<<<< HEAD
 	rc = transmit_cmd(chip, &tpm_cmd, TPM_INTERNAL_RESULT_SIZE, NULL);
+=======
+	rc = tpm_transmit_cmd(chip, &tpm_cmd, TPM_INTERNAL_RESULT_SIZE, 0,
+			      NULL);
+>>>>>>> v4.9.227
 
 	if (rc == TPM_ERR_INVALID_POSTINIT) {
 		/* The TPM is not started, we are the first to talk to it.
 		   Execute a startup command. */
+<<<<<<< HEAD
 		dev_info(chip->dev, "Issuing TPM_STARTUP");
+=======
+		dev_info(&chip->dev, "Issuing TPM_STARTUP");
+>>>>>>> v4.9.227
 		if (tpm_startup(chip, TPM_ST_CLEAR))
 			return rc;
 
@@ -513,11 +657,19 @@ int tpm_get_timeouts(struct tpm_chip *chip)
 		tpm_cmd.params.getcap_in.cap = TPM_CAP_PROP;
 		tpm_cmd.params.getcap_in.subcap_size = cpu_to_be32(4);
 		tpm_cmd.params.getcap_in.subcap = TPM_CAP_PROP_TIS_TIMEOUT;
+<<<<<<< HEAD
 		rc = transmit_cmd(chip, &tpm_cmd, TPM_INTERNAL_RESULT_SIZE,
 				  NULL);
 	}
 	if (rc) {
 		dev_err(chip->dev,
+=======
+		rc = tpm_transmit_cmd(chip, &tpm_cmd, TPM_INTERNAL_RESULT_SIZE,
+				      0, NULL);
+	}
+	if (rc) {
+		dev_err(&chip->dev,
+>>>>>>> v4.9.227
 			"A TPM error (%zd) occurred attempting to determine the timeouts\n",
 			rc);
 		goto duration;
@@ -528,17 +680,30 @@ int tpm_get_timeouts(struct tpm_chip *chip)
 	    != sizeof(tpm_cmd.header.out) + sizeof(u32) + 4 * sizeof(u32))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	old_timeout[0] = be32_to_cpu(tpm_cmd.params.getcap_out.cap.timeout.a);
 	old_timeout[1] = be32_to_cpu(tpm_cmd.params.getcap_out.cap.timeout.b);
 	old_timeout[2] = be32_to_cpu(tpm_cmd.params.getcap_out.cap.timeout.c);
 	old_timeout[3] = be32_to_cpu(tpm_cmd.params.getcap_out.cap.timeout.d);
 	memcpy(new_timeout, old_timeout, sizeof(new_timeout));
+=======
+	timeout_old[0] = jiffies_to_usecs(chip->timeout_a);
+	timeout_old[1] = jiffies_to_usecs(chip->timeout_b);
+	timeout_old[2] = jiffies_to_usecs(chip->timeout_c);
+	timeout_old[3] = jiffies_to_usecs(chip->timeout_d);
+	timeout_chip[0] = be32_to_cpu(tpm_cmd.params.getcap_out.cap.timeout.a);
+	timeout_chip[1] = be32_to_cpu(tpm_cmd.params.getcap_out.cap.timeout.b);
+	timeout_chip[2] = be32_to_cpu(tpm_cmd.params.getcap_out.cap.timeout.c);
+	timeout_chip[3] = be32_to_cpu(tpm_cmd.params.getcap_out.cap.timeout.d);
+	memcpy(timeout_eff, timeout_chip, sizeof(timeout_eff));
+>>>>>>> v4.9.227
 
 	/*
 	 * Provide ability for vendor overrides of timeout values in case
 	 * of misreporting.
 	 */
 	if (chip->ops->update_timeouts != NULL)
+<<<<<<< HEAD
 		chip->vendor.timeout_adjusted =
 			chip->ops->update_timeouts(chip, new_timeout);
 
@@ -551,10 +716,33 @@ int tpm_get_timeouts(struct tpm_chip *chip)
 			for (i = 0; i != ARRAY_SIZE(new_timeout); i++)
 				new_timeout[i] *= 1000;
 			chip->vendor.timeout_adjusted = true;
+=======
+		chip->timeout_adjusted =
+			chip->ops->update_timeouts(chip, timeout_eff);
+
+	if (!chip->timeout_adjusted) {
+		/* Restore default if chip reported 0 */
+		int i;
+
+		for (i = 0; i < ARRAY_SIZE(timeout_eff); i++) {
+			if (timeout_eff[i])
+				continue;
+
+			timeout_eff[i] = timeout_old[i];
+			chip->timeout_adjusted = true;
+		}
+
+		if (timeout_eff[0] != 0 && timeout_eff[0] < 1000) {
+			/* timeouts in msec rather usec */
+			for (i = 0; i != ARRAY_SIZE(timeout_eff); i++)
+				timeout_eff[i] *= 1000;
+			chip->timeout_adjusted = true;
+>>>>>>> v4.9.227
 		}
 	}
 
 	/* Report adjusted timeouts */
+<<<<<<< HEAD
 	if (chip->vendor.timeout_adjusted) {
 		dev_info(chip->dev,
 			 HW_ERR "Adjusting reported timeouts: A %lu->%luus B %lu->%luus C %lu->%luus D %lu->%luus\n",
@@ -568,6 +756,21 @@ int tpm_get_timeouts(struct tpm_chip *chip)
 	chip->vendor.timeout_b = usecs_to_jiffies(new_timeout[1]);
 	chip->vendor.timeout_c = usecs_to_jiffies(new_timeout[2]);
 	chip->vendor.timeout_d = usecs_to_jiffies(new_timeout[3]);
+=======
+	if (chip->timeout_adjusted) {
+		dev_info(&chip->dev,
+			 HW_ERR "Adjusting reported timeouts: A %lu->%luus B %lu->%luus C %lu->%luus D %lu->%luus\n",
+			 timeout_chip[0], timeout_eff[0],
+			 timeout_chip[1], timeout_eff[1],
+			 timeout_chip[2], timeout_eff[2],
+			 timeout_chip[3], timeout_eff[3]);
+	}
+
+	chip->timeout_a = usecs_to_jiffies(timeout_eff[0]);
+	chip->timeout_b = usecs_to_jiffies(timeout_eff[1]);
+	chip->timeout_c = usecs_to_jiffies(timeout_eff[2]);
+	chip->timeout_d = usecs_to_jiffies(timeout_eff[3]);
+>>>>>>> v4.9.227
 
 duration:
 	tpm_cmd.header.in = tpm_getcap_header;
@@ -575,8 +778,13 @@ duration:
 	tpm_cmd.params.getcap_in.subcap_size = cpu_to_be32(4);
 	tpm_cmd.params.getcap_in.subcap = TPM_CAP_PROP_TIS_DURATION;
 
+<<<<<<< HEAD
 	rc = transmit_cmd(chip, &tpm_cmd, TPM_INTERNAL_RESULT_SIZE,
 			"attempting to determine the durations");
+=======
+	rc = tpm_transmit_cmd(chip, &tpm_cmd, TPM_INTERNAL_RESULT_SIZE, 0,
+			      "attempting to determine the durations");
+>>>>>>> v4.9.227
 	if (rc)
 		return rc;
 
@@ -586,11 +794,19 @@ duration:
 		return -EINVAL;
 
 	duration_cap = &tpm_cmd.params.getcap_out.cap.duration;
+<<<<<<< HEAD
 	chip->vendor.duration[TPM_SHORT] =
 	    usecs_to_jiffies(be32_to_cpu(duration_cap->tpm_short));
 	chip->vendor.duration[TPM_MEDIUM] =
 	    usecs_to_jiffies(be32_to_cpu(duration_cap->tpm_medium));
 	chip->vendor.duration[TPM_LONG] =
+=======
+	chip->duration[TPM_SHORT] =
+	    usecs_to_jiffies(be32_to_cpu(duration_cap->tpm_short));
+	chip->duration[TPM_MEDIUM] =
+	    usecs_to_jiffies(be32_to_cpu(duration_cap->tpm_medium));
+	chip->duration[TPM_LONG] =
+>>>>>>> v4.9.227
 	    usecs_to_jiffies(be32_to_cpu(duration_cap->tpm_long));
 
 	/* The Broadcom BCM0102 chipset in a Dell Latitude D820 gets the above
@@ -598,12 +814,21 @@ duration:
 	 * fix up the resulting too-small TPM_SHORT value to make things work.
 	 * We also scale the TPM_MEDIUM and -_LONG values by 1000.
 	 */
+<<<<<<< HEAD
 	if (chip->vendor.duration[TPM_SHORT] < (HZ / 100)) {
 		chip->vendor.duration[TPM_SHORT] = HZ;
 		chip->vendor.duration[TPM_MEDIUM] *= 1000;
 		chip->vendor.duration[TPM_LONG] *= 1000;
 		chip->vendor.duration_adjusted = true;
 		dev_info(chip->dev, "Adjusting TPM timeout parameters.");
+=======
+	if (chip->duration[TPM_SHORT] < (HZ / 100)) {
+		chip->duration[TPM_SHORT] = HZ;
+		chip->duration[TPM_MEDIUM] *= 1000;
+		chip->duration[TPM_LONG] *= 1000;
+		chip->duration_adjusted = true;
+		dev_info(&chip->dev, "Adjusting TPM timeout parameters.");
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -612,7 +837,11 @@ EXPORT_SYMBOL_GPL(tpm_get_timeouts);
 #define TPM_ORD_CONTINUE_SELFTEST 83
 #define CONTINUE_SELFTEST_RESULT_SIZE 10
 
+<<<<<<< HEAD
 static struct tpm_input_header continue_selftest_header = {
+=======
+static const struct tpm_input_header continue_selftest_header = {
+>>>>>>> v4.9.227
 	.tag = TPM_TAG_RQU_COMMAND,
 	.length = cpu_to_be32(10),
 	.ordinal = cpu_to_be32(TPM_ORD_CONTINUE_SELFTEST),
@@ -631,6 +860,7 @@ static int tpm_continue_selftest(struct tpm_chip *chip)
 	struct tpm_cmd_t cmd;
 
 	cmd.header.in = continue_selftest_header;
+<<<<<<< HEAD
 	rc = transmit_cmd(chip, &cmd, CONTINUE_SELFTEST_RESULT_SIZE,
 			  "continue selftest");
 	return rc;
@@ -660,6 +890,16 @@ static struct tpm_chip *tpm_chip_find_get(int chip_num)
 #define TPM_ORDINAL_PCRREAD cpu_to_be32(21)
 #define READ_PCR_RESULT_SIZE 30
 static struct tpm_input_header pcrread_header = {
+=======
+	rc = tpm_transmit_cmd(chip, &cmd, CONTINUE_SELFTEST_RESULT_SIZE, 0,
+			      "continue selftest");
+	return rc;
+}
+
+#define TPM_ORDINAL_PCRREAD cpu_to_be32(21)
+#define READ_PCR_RESULT_SIZE 30
+static const struct tpm_input_header pcrread_header = {
+>>>>>>> v4.9.227
 	.tag = TPM_TAG_RQU_COMMAND,
 	.length = cpu_to_be32(14),
 	.ordinal = TPM_ORDINAL_PCRREAD
@@ -672,8 +912,13 @@ int tpm_pcr_read_dev(struct tpm_chip *chip, int pcr_idx, u8 *res_buf)
 
 	cmd.header.in = pcrread_header;
 	cmd.params.pcrread_in.pcr_idx = cpu_to_be32(pcr_idx);
+<<<<<<< HEAD
 	rc = transmit_cmd(chip, &cmd, READ_PCR_RESULT_SIZE,
 			  "attempting to read a pcr value");
+=======
+	rc = tpm_transmit_cmd(chip, &cmd, READ_PCR_RESULT_SIZE, 0,
+			      "attempting to read a pcr value");
+>>>>>>> v4.9.227
 
 	if (rc == 0)
 		memcpy(res_buf, cmd.params.pcrread_out.pcr_result,
@@ -682,6 +927,33 @@ int tpm_pcr_read_dev(struct tpm_chip *chip, int pcr_idx, u8 *res_buf)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * tpm_is_tpm2 - is the chip a TPM2 chip?
+ * @chip_num:	tpm idx # or ANY
+ *
+ * Returns < 0 on error, and 1 or 0 on success depending whether the chip
+ * is a TPM2 chip.
+ */
+int tpm_is_tpm2(u32 chip_num)
+{
+	struct tpm_chip *chip;
+	int rc;
+
+	chip = tpm_chip_find_get(chip_num);
+	if (chip == NULL)
+		return -ENODEV;
+
+	rc = (chip->flags & TPM_CHIP_FLAG_TPM2) != 0;
+
+	tpm_put_ops(chip);
+
+	return rc;
+}
+EXPORT_SYMBOL_GPL(tpm_is_tpm2);
+
+/**
+>>>>>>> v4.9.227
  * tpm_pcr_read - read a pcr value
  * @chip_num:	tpm idx # or ANY
  * @pcr_idx:	pcr idx to retrieve
@@ -700,8 +972,16 @@ int tpm_pcr_read(u32 chip_num, int pcr_idx, u8 *res_buf)
 	chip = tpm_chip_find_get(chip_num);
 	if (chip == NULL)
 		return -ENODEV;
+<<<<<<< HEAD
 	rc = tpm_pcr_read_dev(chip, pcr_idx, res_buf);
 	tpm_chip_put(chip);
+=======
+	if (chip->flags & TPM_CHIP_FLAG_TPM2)
+		rc = tpm2_pcr_read(chip, pcr_idx, res_buf);
+	else
+		rc = tpm_pcr_read_dev(chip, pcr_idx, res_buf);
+	tpm_put_ops(chip);
+>>>>>>> v4.9.227
 	return rc;
 }
 EXPORT_SYMBOL_GPL(tpm_pcr_read);
@@ -718,7 +998,11 @@ EXPORT_SYMBOL_GPL(tpm_pcr_read);
  */
 #define TPM_ORD_PCR_EXTEND cpu_to_be32(20)
 #define EXTEND_PCR_RESULT_SIZE 34
+<<<<<<< HEAD
 static struct tpm_input_header pcrextend_header = {
+=======
+static const struct tpm_input_header pcrextend_header = {
+>>>>>>> v4.9.227
 	.tag = TPM_TAG_RQU_COMMAND,
 	.length = cpu_to_be32(34),
 	.ordinal = TPM_ORD_PCR_EXTEND
@@ -734,6 +1018,7 @@ int tpm_pcr_extend(u32 chip_num, int pcr_idx, const u8 *hash)
 	if (chip == NULL)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	cmd.header.in = pcrextend_header;
 	cmd.params.pcrextend_in.pcr_idx = cpu_to_be32(pcr_idx);
 	memcpy(cmd.params.pcrextend_in.hash, hash, TPM_DIGEST_SIZE);
@@ -741,6 +1026,21 @@ int tpm_pcr_extend(u32 chip_num, int pcr_idx, const u8 *hash)
 			  "attempting extend a PCR value");
 
 	tpm_chip_put(chip);
+=======
+	if (chip->flags & TPM_CHIP_FLAG_TPM2) {
+		rc = tpm2_pcr_extend(chip, pcr_idx, hash);
+		tpm_put_ops(chip);
+		return rc;
+	}
+
+	cmd.header.in = pcrextend_header;
+	cmd.params.pcrextend_in.pcr_idx = cpu_to_be32(pcr_idx);
+	memcpy(cmd.params.pcrextend_in.hash, hash, TPM_DIGEST_SIZE);
+	rc = tpm_transmit_cmd(chip, &cmd, EXTEND_PCR_RESULT_SIZE, 0,
+			      "attempting extend a PCR value");
+
+	tpm_put_ops(chip);
+>>>>>>> v4.9.227
 	return rc;
 }
 EXPORT_SYMBOL_GPL(tpm_pcr_extend);
@@ -759,13 +1059,24 @@ int tpm_do_selftest(struct tpm_chip *chip)
 	unsigned int loops;
 	unsigned int delay_msec = 100;
 	unsigned long duration;
+<<<<<<< HEAD
 	struct tpm_cmd_t cmd;
+=======
+	u8 dummy[TPM_DIGEST_SIZE];
+>>>>>>> v4.9.227
 
 	duration = tpm_calc_ordinal_duration(chip, TPM_ORD_CONTINUE_SELFTEST);
 
 	loops = jiffies_to_msecs(duration) / delay_msec;
 
 	rc = tpm_continue_selftest(chip);
+<<<<<<< HEAD
+=======
+	if (rc == TPM_ERR_INVALID_POSTINIT) {
+		chip->flags |= TPM_CHIP_FLAG_ALWAYS_POWERED;
+		dev_info(&chip->dev, "TPM not ready (%d)\n", rc);
+	}
+>>>>>>> v4.9.227
 	/* This may fail if there was no TPM driver during a suspend/resume
 	 * cycle; some may return 10 (BAD_ORDINAL), others 28 (FAILEDSELFTEST)
 	 */
@@ -774,24 +1085,40 @@ int tpm_do_selftest(struct tpm_chip *chip)
 
 	do {
 		/* Attempt to read a PCR value */
+<<<<<<< HEAD
 		cmd.header.in = pcrread_header;
 		cmd.params.pcrread_in.pcr_idx = cpu_to_be32(0);
 		rc = tpm_transmit(chip, (u8 *) &cmd, READ_PCR_RESULT_SIZE);
+=======
+		rc = tpm_pcr_read_dev(chip, 0, dummy);
+
+>>>>>>> v4.9.227
 		/* Some buggy TPMs will not respond to tpm_tis_ready() for
 		 * around 300ms while the self test is ongoing, keep trying
 		 * until the self test duration expires. */
 		if (rc == -ETIME) {
+<<<<<<< HEAD
 			dev_info(chip->dev, HW_ERR "TPM command timed out during continue self test");
+=======
+			dev_info(
+			    &chip->dev, HW_ERR
+			    "TPM command timed out during continue self test");
+>>>>>>> v4.9.227
 			msleep(delay_msec);
 			continue;
 		}
 
+<<<<<<< HEAD
 		if (rc < TPM_HEADER_SIZE)
 			return -EFAULT;
 
 		rc = be32_to_cpu(cmd.header.out.return_code);
 		if (rc == TPM_ERR_DISABLED || rc == TPM_ERR_DEACTIVATED) {
 			dev_info(chip->dev,
+=======
+		if (rc == TPM_ERR_DISABLED || rc == TPM_ERR_DEACTIVATED) {
+			dev_info(&chip->dev,
+>>>>>>> v4.9.227
 				 "TPM is disabled/deactivated (0x%X)\n", rc);
 			/* TPM is disabled and/or deactivated; driver can
 			 * proceed and TPM does handle commands for
@@ -808,6 +1135,36 @@ int tpm_do_selftest(struct tpm_chip *chip)
 }
 EXPORT_SYMBOL_GPL(tpm_do_selftest);
 
+<<<<<<< HEAD
+=======
+/**
+ * tpm1_auto_startup - Perform the standard automatic TPM initialization
+ *                     sequence
+ * @chip: TPM chip to use
+ *
+ * Returns 0 on success, < 0 in case of fatal error.
+ */
+int tpm1_auto_startup(struct tpm_chip *chip)
+{
+	int rc;
+
+	rc = tpm_get_timeouts(chip);
+	if (rc)
+		goto out;
+	rc = tpm_do_selftest(chip);
+	if (rc) {
+		dev_err(&chip->dev, "TPM self test failed\n");
+		goto out;
+	}
+
+	return rc;
+out:
+	if (rc > 0)
+		rc = -ENODEV;
+	return rc;
+}
+
+>>>>>>> v4.9.227
 int tpm_send(u32 chip_num, void *cmd, size_t buflen)
 {
 	struct tpm_chip *chip;
@@ -817,9 +1174,15 @@ int tpm_send(u32 chip_num, void *cmd, size_t buflen)
 	if (chip == NULL)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	rc = transmit_cmd(chip, cmd, buflen, "attempting tpm_cmd");
 
 	tpm_chip_put(chip);
+=======
+	rc = tpm_transmit_cmd(chip, cmd, buflen, 0, "attempting tpm_cmd");
+
+	tpm_put_ops(chip);
+>>>>>>> v4.9.227
 	return rc;
 }
 EXPORT_SYMBOL_GPL(tpm_send);
@@ -854,7 +1217,11 @@ int wait_for_tpm_stat(struct tpm_chip *chip, u8 mask, unsigned long timeout,
 
 	stop = jiffies + timeout;
 
+<<<<<<< HEAD
 	if (chip->vendor.irq) {
+=======
+	if (chip->flags & TPM_CHIP_FLAG_IRQ) {
+>>>>>>> v4.9.227
 again:
 		timeout = stop - jiffies;
 		if ((long)timeout <= 0)
@@ -884,6 +1251,7 @@ again:
 }
 EXPORT_SYMBOL_GPL(wait_for_tpm_stat);
 
+<<<<<<< HEAD
 void tpm_remove_hardware(struct device *dev)
 {
 	struct tpm_chip *chip = dev_get_drvdata(dev);
@@ -912,6 +1280,12 @@ EXPORT_SYMBOL_GPL(tpm_remove_hardware);
 #define SAVESTATE_RESULT_SIZE 10
 
 static struct tpm_input_header savestate_header = {
+=======
+#define TPM_ORD_SAVESTATE cpu_to_be32(152)
+#define SAVESTATE_RESULT_SIZE 10
+
+static const struct tpm_input_header savestate_header = {
+>>>>>>> v4.9.227
 	.tag = TPM_TAG_RQU_COMMAND,
 	.length = cpu_to_be32(10),
 	.ordinal = TPM_ORD_SAVESTATE
@@ -932,20 +1306,41 @@ int tpm_pm_suspend(struct device *dev)
 	if (chip == NULL)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (chip->flags & TPM_CHIP_FLAG_ALWAYS_POWERED)
+		return 0;
+
+	if (chip->flags & TPM_CHIP_FLAG_TPM2) {
+		tpm2_shutdown(chip, TPM2_SU_STATE);
+		return 0;
+	}
+
+>>>>>>> v4.9.227
 	/* for buggy tpm, flush pcrs with extend to selected dummy */
 	if (tpm_suspend_pcr) {
 		cmd.header.in = pcrextend_header;
 		cmd.params.pcrextend_in.pcr_idx = cpu_to_be32(tpm_suspend_pcr);
 		memcpy(cmd.params.pcrextend_in.hash, dummy_hash,
 		       TPM_DIGEST_SIZE);
+<<<<<<< HEAD
 		rc = transmit_cmd(chip, &cmd, EXTEND_PCR_RESULT_SIZE,
 				  "extending dummy pcr before suspend");
+=======
+		rc = tpm_transmit_cmd(chip, &cmd, EXTEND_PCR_RESULT_SIZE, 0,
+				      "extending dummy pcr before suspend");
+>>>>>>> v4.9.227
 	}
 
 	/* now do the actual savestate */
 	for (try = 0; try < TPM_RETRY; try++) {
 		cmd.header.in = savestate_header;
+<<<<<<< HEAD
 		rc = transmit_cmd(chip, &cmd, SAVESTATE_RESULT_SIZE, NULL);
+=======
+		rc = tpm_transmit_cmd(chip, &cmd, SAVESTATE_RESULT_SIZE, 0,
+				      NULL);
+>>>>>>> v4.9.227
 
 		/*
 		 * If the TPM indicates that it is too busy to respond to
@@ -963,10 +1358,17 @@ int tpm_pm_suspend(struct device *dev)
 	}
 
 	if (rc)
+<<<<<<< HEAD
 		dev_err(chip->dev,
 			"Error (%d) sending savestate before suspend\n", rc);
 	else if (try > 0)
 		dev_warn(chip->dev, "TPM savestate took %dms\n",
+=======
+		dev_err(&chip->dev,
+			"Error (%d) sending savestate before suspend\n", rc);
+	else if (try > 0)
+		dev_warn(&chip->dev, "TPM savestate took %dms\n",
+>>>>>>> v4.9.227
 			 try * TPM_TIMEOUT_RETRY);
 
 	return rc;
@@ -989,7 +1391,11 @@ int tpm_pm_resume(struct device *dev)
 EXPORT_SYMBOL_GPL(tpm_pm_resume);
 
 #define TPM_GETRANDOM_RESULT_SIZE	18
+<<<<<<< HEAD
 static struct tpm_input_header tpm_getrandom_header = {
+=======
+static const struct tpm_input_header tpm_getrandom_header = {
+>>>>>>> v4.9.227
 	.tag = TPM_TAG_RQU_COMMAND,
 	.length = cpu_to_be32(14),
 	.ordinal = TPM_ORD_GET_RANDOM
@@ -1018,17 +1424,40 @@ int tpm_get_random(u32 chip_num, u8 *out, size_t max)
 	if (chip == NULL)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (chip->flags & TPM_CHIP_FLAG_TPM2) {
+		err = tpm2_get_random(chip, out, max);
+		tpm_put_ops(chip);
+		return err;
+	}
+
+>>>>>>> v4.9.227
 	do {
 		tpm_cmd.header.in = tpm_getrandom_header;
 		tpm_cmd.params.getrandom_in.num_bytes = cpu_to_be32(num_bytes);
 
+<<<<<<< HEAD
 		err = transmit_cmd(chip, &tpm_cmd,
 				   TPM_GETRANDOM_RESULT_SIZE + num_bytes,
 				   "attempting get random");
+=======
+		err = tpm_transmit_cmd(chip, &tpm_cmd,
+				       TPM_GETRANDOM_RESULT_SIZE + num_bytes,
+				       0, "attempting get random");
+>>>>>>> v4.9.227
 		if (err)
 			break;
 
 		recd = be32_to_cpu(tpm_cmd.params.getrandom_out.rng_data_len);
+<<<<<<< HEAD
+=======
+		if (recd > num_bytes) {
+			total = -EFAULT;
+			break;
+		}
+
+>>>>>>> v4.9.227
 		memcpy(dest, tpm_cmd.params.getrandom_out.rng_data, recd);
 
 		dest += recd;
@@ -1036,11 +1465,16 @@ int tpm_get_random(u32 chip_num, u8 *out, size_t max)
 		num_bytes -= recd;
 	} while (retries-- && total < max);
 
+<<<<<<< HEAD
 	tpm_chip_put(chip);
+=======
+	tpm_put_ops(chip);
+>>>>>>> v4.9.227
 	return total ? total : -EIO;
 }
 EXPORT_SYMBOL_GPL(tpm_get_random);
 
+<<<<<<< HEAD
 /* In case vendor provided release function, call it too.*/
 
 void tpm_dev_vendor_release(struct tpm_chip *chip)
@@ -1138,6 +1572,90 @@ out_free:
 	return NULL;
 }
 EXPORT_SYMBOL_GPL(tpm_register_hardware);
+=======
+/**
+ * tpm_seal_trusted() - seal a trusted key
+ * @chip_num: A specific chip number for the request or TPM_ANY_NUM
+ * @options: authentication values and other options
+ * @payload: the key data in clear and encrypted form
+ *
+ * Returns < 0 on error and 0 on success. At the moment, only TPM 2.0 chips
+ * are supported.
+ */
+int tpm_seal_trusted(u32 chip_num, struct trusted_key_payload *payload,
+		     struct trusted_key_options *options)
+{
+	struct tpm_chip *chip;
+	int rc;
+
+	chip = tpm_chip_find_get(chip_num);
+	if (chip == NULL || !(chip->flags & TPM_CHIP_FLAG_TPM2))
+		return -ENODEV;
+
+	rc = tpm2_seal_trusted(chip, payload, options);
+
+	tpm_put_ops(chip);
+	return rc;
+}
+EXPORT_SYMBOL_GPL(tpm_seal_trusted);
+
+/**
+ * tpm_unseal_trusted() - unseal a trusted key
+ * @chip_num: A specific chip number for the request or TPM_ANY_NUM
+ * @options: authentication values and other options
+ * @payload: the key data in clear and encrypted form
+ *
+ * Returns < 0 on error and 0 on success. At the moment, only TPM 2.0 chips
+ * are supported.
+ */
+int tpm_unseal_trusted(u32 chip_num, struct trusted_key_payload *payload,
+		       struct trusted_key_options *options)
+{
+	struct tpm_chip *chip;
+	int rc;
+
+	chip = tpm_chip_find_get(chip_num);
+	if (chip == NULL || !(chip->flags & TPM_CHIP_FLAG_TPM2))
+		return -ENODEV;
+
+	rc = tpm2_unseal_trusted(chip, payload, options);
+
+	tpm_put_ops(chip);
+
+	return rc;
+}
+EXPORT_SYMBOL_GPL(tpm_unseal_trusted);
+
+static int __init tpm_init(void)
+{
+	int rc;
+
+	tpm_class = class_create(THIS_MODULE, "tpm");
+	if (IS_ERR(tpm_class)) {
+		pr_err("couldn't create tpm class\n");
+		return PTR_ERR(tpm_class);
+	}
+
+	rc = alloc_chrdev_region(&tpm_devt, 0, TPM_NUM_DEVICES, "tpm");
+	if (rc < 0) {
+		pr_err("tpm: failed to allocate char dev region\n");
+		class_destroy(tpm_class);
+		return rc;
+	}
+
+	return 0;
+}
+
+static void __exit tpm_exit(void)
+{
+	idr_destroy(&dev_nums_idr);
+	class_destroy(tpm_class);
+	unregister_chrdev_region(tpm_devt, TPM_NUM_DEVICES);
+}
+
+subsys_initcall(tpm_init);
+module_exit(tpm_exit);
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Leendert van Doorn (leendert@watson.ibm.com)");
 MODULE_DESCRIPTION("TPM Driver");

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /include/ "skeleton.dtsi"
 
 / {
@@ -145,11 +146,33 @@
 			reg = <0x7e980000 0x10000>;
 			interrupts = <1 9>;
 		};
+=======
+#include "bcm283x.dtsi"
+
+/ {
+	compatible = "brcm,bcm2835";
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,arm1176jzf-s";
+			reg = <0x0>;
+		};
+	};
+
+	soc {
+		ranges = <0x7e000000 0x20000000 0x02000000>;
+		dma-ranges = <0x40000000 0x00000000 0x20000000>;
+>>>>>>> v4.9.227
 
 		arm-pmu {
 			compatible = "arm,arm1176-pmu";
 		};
 	};
+<<<<<<< HEAD
 
 	clocks {
 		compatible = "simple-bus";
@@ -180,4 +203,6 @@
 			clock-frequency = <250000000>;
 		};
 	};
+=======
+>>>>>>> v4.9.227
 };

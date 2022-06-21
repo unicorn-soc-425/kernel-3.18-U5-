@@ -62,6 +62,11 @@ enum rdma_cm_event_type {
 	RDMA_CM_EVENT_TIMEWAIT_EXIT
 };
 
+<<<<<<< HEAD
+=======
+const char *__attribute_const__ rdma_event_msg(enum rdma_cm_event_type event);
+
+>>>>>>> v4.9.227
 enum rdma_port_space {
 	RDMA_PS_SDP   = 0x0001,
 	RDMA_PS_IPOIB = 0x0002,
@@ -158,13 +163,25 @@ struct rdma_cm_id {
 /**
  * rdma_create_id - Create an RDMA identifier.
  *
+<<<<<<< HEAD
+=======
+ * @net: The network namespace in which to create the new id.
+>>>>>>> v4.9.227
  * @event_handler: User callback invoked to report events associated with the
  *   returned rdma_id.
  * @context: User specified context associated with the id.
  * @ps: RDMA port space.
  * @qp_type: type of queue pair associated with the id.
+<<<<<<< HEAD
  */
 struct rdma_cm_id *rdma_create_id(rdma_cm_event_handler event_handler,
+=======
+ *
+ * The id holds a reference on the network namespace until it is destroyed.
+ */
+struct rdma_cm_id *rdma_create_id(struct net *net,
+				  rdma_cm_event_handler event_handler,
+>>>>>>> v4.9.227
 				  void *context, enum rdma_port_space ps,
 				  enum ib_qp_type qp_type);
 
@@ -327,11 +344,20 @@ int rdma_disconnect(struct rdma_cm_id *id);
  *   address.
  * @id: Communication identifier associated with the request.
  * @addr: Multicast address identifying the group to join.
+<<<<<<< HEAD
+=======
+ * @join_state: Multicast JoinState bitmap requested by port.
+ *		Bitmap is based on IB_SA_MCMEMBER_REC_JOIN_STATE bits.
+>>>>>>> v4.9.227
  * @context: User-defined context associated with the join request, returned
  * to the user through the private_data pointer in multicast events.
  */
 int rdma_join_multicast(struct rdma_cm_id *id, struct sockaddr *addr,
+<<<<<<< HEAD
 			void *context);
+=======
+			u8 join_state, void *context);
+>>>>>>> v4.9.227
 
 /**
  * rdma_leave_multicast - Leave the multicast group specified by the given

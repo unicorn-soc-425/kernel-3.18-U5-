@@ -11,8 +11,11 @@ struct mm_struct;
 
 void arm_install_vdso(struct mm_struct *mm, unsigned long addr);
 
+<<<<<<< HEAD
 extern char vdso_start, vdso_end;
 
+=======
+>>>>>>> v4.9.227
 extern unsigned int vdso_total_pages;
 
 #else /* CONFIG_VDSO */

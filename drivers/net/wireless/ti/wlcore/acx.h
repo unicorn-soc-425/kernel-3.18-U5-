@@ -105,6 +105,10 @@ enum wl12xx_role {
 	WL1271_ROLE_DEVICE,
 	WL1271_ROLE_P2P_CL,
 	WL1271_ROLE_P2P_GO,
+<<<<<<< HEAD
+=======
+	WL1271_ROLE_MESH_POINT,
+>>>>>>> v4.9.227
 
 	WL12XX_INVALID_ROLE_TYPE = 0xff
 };
@@ -300,7 +304,11 @@ struct acx_bt_wlan_coex {
 struct acx_bt_wlan_coex_param {
 	struct acx_header header;
 
+<<<<<<< HEAD
 	__le32 params[CONF_SG_PARAMS_MAX];
+=======
+	__le32 params[WLCORE_CONF_SG_PARAMS_MAX];
+>>>>>>> v4.9.227
 	u8 param_idx;
 	u8 padding[3];
 } __packed;
@@ -1112,7 +1120,12 @@ int wl1271_acx_set_ht_information(struct wl1271 *wl,
 int wl12xx_acx_set_ba_initiator_policy(struct wl1271 *wl,
 				       struct wl12xx_vif *wlvif);
 int wl12xx_acx_set_ba_receiver_session(struct wl1271 *wl, u8 tid_index,
+<<<<<<< HEAD
 				       u16 ssn, bool enable, u8 peer_hlid);
+=======
+				       u16 ssn, bool enable, u8 peer_hlid,
+				       u8 win_size);
+>>>>>>> v4.9.227
 int wl12xx_acx_tsf_info(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 			u64 *mactime);
 int wl1271_acx_ps_rx_streaming(struct wl1271 *wl, struct wl12xx_vif *wlvif,

@@ -2,6 +2,10 @@
 #define __NVKM_LTC_PRIV_H__
 #define nvkm_ltc(p) container_of((p), struct nvkm_ltc, subdev)
 #include <subdev/ltc.h>
+<<<<<<< HEAD
+=======
+#include <core/enum.h>
+>>>>>>> v4.9.227
 
 int nvkm_ltc_new_(const struct nvkm_ltc_func *, struct nvkm_device *,
 		  int index, struct nvkm_ltc **);
@@ -31,4 +35,15 @@ void gf100_ltc_zbc_clear_color(struct nvkm_ltc *, int, const u32[4]);
 void gf100_ltc_zbc_clear_depth(struct nvkm_ltc *, int, const u32);
 void gf100_ltc_invalidate(struct nvkm_ltc *);
 void gf100_ltc_flush(struct nvkm_ltc *);
+<<<<<<< HEAD
+=======
+extern const struct nvkm_bitfield gf100_ltc_lts_intr_name[];
+
+void gm107_ltc_intr(struct nvkm_ltc *);
+void gm107_ltc_intr_lts(struct nvkm_ltc *, int ltc, int lts);
+void gm107_ltc_cbc_clear(struct nvkm_ltc *, u32, u32);
+void gm107_ltc_cbc_wait(struct nvkm_ltc *);
+void gm107_ltc_zbc_clear_color(struct nvkm_ltc *, int, const u32[4]);
+void gm107_ltc_zbc_clear_depth(struct nvkm_ltc *, int, const u32);
+>>>>>>> v4.9.227
 #endif

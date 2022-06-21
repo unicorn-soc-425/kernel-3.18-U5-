@@ -23,6 +23,7 @@
 #include <linux/spinlock.h>
 #include <linux/completion.h>
 #include <asm/uaccess.h>
+<<<<<<< HEAD
 #include <linux/kmemleak.h>
 
 #include "internal.h"
@@ -34,15 +35,99 @@ static int proc_match(unsigned int len, const char *name, struct proc_dir_entry 
 	if (de->namelen != len)
 		return 0;
 	return !memcmp(name, de->name, len);
+=======
+
+#include "internal.h"
+
+static DEFINE_RWLOCK(proc_subdir_lock);
+
+static int proc_match(unsigned int len, const char *name, struct proc_dir_entry *de)
+{
+	if (len < de->namelen)
+		return -1;
+	if (len > de->namelen)
+		return 1;
+
+	return memcmp(name, de->name, len);
+}
+
+static struct proc_dir_entry *pde_subdir_first(struct proc_dir_entry *dir)
+{
+	return rb_entry_safe(rb_first(&dir->subdir), struct proc_dir_entry,
+			     subdir_node);
+}
+
+static struct proc_dir_entry *pde_subdir_next(struct proc_dir_entry *dir)
+{
+	return rb_entry_safe(rb_next(&dir->subdir_node), struct proc_dir_entry,
+			     subdir_node);
+}
+
+static struct proc_dir_entry *pde_subdir_find(struct proc_dir_entry *dir,
+					      const char *name,
+					      unsigned int len)
+{
+	struct rb_node *node = dir->subdir.rb_node;
+
+	while (node) {
+		struct proc_dir_entry *de = container_of(node,
+							 struct proc_dir_entry,
+							 subdir_node);
+		int result = proc_match(len, name, de);
+
+		if (result < 0)
+			node = node->rb_left;
+		else if (result > 0)
+			node = node->rb_right;
+		else
+			return de;
+	}
+	return NULL;
+}
+
+static bool pde_subdir_insert(struct proc_dir_entry *dir,
+			      struct proc_dir_entry *de)
+{
+	struct rb_root *root = &dir->subdir;
+	struct rb_node **new = &root->rb_node, *parent = NULL;
+
+	/* Figure out where to put new node */
+	while (*new) {
+		struct proc_dir_entry *this =
+			container_of(*new, struct proc_dir_entry, subdir_node);
+		int result = proc_match(de->namelen, de->name, this);
+
+		parent = *new;
+		if (result < 0)
+			new = &(*new)->rb_left;
+		else if (result > 0)
+			new = &(*new)->rb_right;
+		else
+			return false;
+	}
+
+	/* Add new node and rebalance tree. */
+	rb_link_node(&de->subdir_node, parent, new);
+	rb_insert_color(&de->subdir_node, root);
+	return true;
+>>>>>>> v4.9.227
 }
 
 static int proc_notify_change(struct dentry *dentry, struct iattr *iattr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	struct proc_dir_entry *de = PDE(inode);
 	int error;
 
 	error = inode_change_ok(inode, iattr);
+=======
+	struct inode *inode = d_inode(dentry);
+	struct proc_dir_entry *de = PDE(inode);
+	int error;
+
+	error = setattr_prepare(dentry, iattr);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 
@@ -57,8 +142,13 @@ static int proc_notify_change(struct dentry *dentry, struct iattr *iattr)
 static int proc_getattr(struct vfsmount *mnt, struct dentry *dentry,
 			struct kstat *stat)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	struct proc_dir_entry *de = PROC_I(inode)->pde;
+=======
+	struct inode *inode = d_inode(dentry);
+	struct proc_dir_entry *de = PDE(inode);
+>>>>>>> v4.9.227
 	if (de && de->nlink)
 		set_nlink(inode, de->nlink);
 
@@ -92,10 +182,14 @@ static int __xlate_proc_name(const char *name, struct proc_dir_entry **ret,
 			break;
 
 		len = next - cp;
+<<<<<<< HEAD
 		for (de = de->subdir; de ; de = de->next) {
 			if (proc_match(len, cp, de))
 				break;
 		}
+=======
+		de = pde_subdir_find(de, cp, len);
+>>>>>>> v4.9.227
 		if (!de) {
 			WARN(1, "name '%s'\n", name);
 			return -ENOENT;
@@ -112,9 +206,15 @@ static int xlate_proc_name(const char *name, struct proc_dir_entry **ret,
 {
 	int rv;
 
+<<<<<<< HEAD
 	spin_lock(&proc_subdir_lock);
 	rv = __xlate_proc_name(name, ret, residual);
 	spin_unlock(&proc_subdir_lock);
+=======
+	read_lock(&proc_subdir_lock);
+	rv = __xlate_proc_name(name, ret, residual);
+	read_unlock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 	return rv;
 }
 
@@ -171,6 +271,7 @@ struct dentry *proc_lookup_de(struct proc_dir_entry *de, struct inode *dir,
 {
 	struct inode *inode;
 
+<<<<<<< HEAD
 	spin_lock(&proc_subdir_lock);
 	for (de = de->subdir; de ; de = de->next) {
 		if (de->namelen != dentry->d_name.len)
@@ -187,6 +288,21 @@ struct dentry *proc_lookup_de(struct proc_dir_entry *de, struct inode *dir,
 		}
 	}
 	spin_unlock(&proc_subdir_lock);
+=======
+	read_lock(&proc_subdir_lock);
+	de = pde_subdir_find(de, dentry->d_name.name, dentry->d_name.len);
+	if (de) {
+		pde_get(de);
+		read_unlock(&proc_subdir_lock);
+		inode = proc_get_inode(dir->i_sb, de);
+		if (!inode)
+			return ERR_PTR(-ENOMEM);
+		d_set_d_op(dentry, &simple_dentry_operations);
+		d_add(dentry, inode);
+		return NULL;
+	}
+	read_unlock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 	return ERR_PTR(-ENOENT);
 }
 
@@ -213,29 +329,47 @@ int proc_readdir_de(struct proc_dir_entry *de, struct file *file,
 	if (!dir_emit_dots(file, ctx))
 		return 0;
 
+<<<<<<< HEAD
 	spin_lock(&proc_subdir_lock);
 	de = de->subdir;
 	i = ctx->pos - 2;
 	for (;;) {
 		if (!de) {
 			spin_unlock(&proc_subdir_lock);
+=======
+	read_lock(&proc_subdir_lock);
+	de = pde_subdir_first(de);
+	i = ctx->pos - 2;
+	for (;;) {
+		if (!de) {
+			read_unlock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 			return 0;
 		}
 		if (!i)
 			break;
+<<<<<<< HEAD
 		de = de->next;
+=======
+		de = pde_subdir_next(de);
+>>>>>>> v4.9.227
 		i--;
 	}
 
 	do {
 		struct proc_dir_entry *next;
 		pde_get(de);
+<<<<<<< HEAD
 		spin_unlock(&proc_subdir_lock);
+=======
+		read_unlock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 		if (!dir_emit(ctx, de->name, de->namelen,
 			    de->low_ino, de->mode >> 12)) {
 			pde_put(de);
 			return 0;
 		}
+<<<<<<< HEAD
 		spin_lock(&proc_subdir_lock);
 		ctx->pos++;
 		next = de->next;
@@ -243,6 +377,15 @@ int proc_readdir_de(struct proc_dir_entry *de, struct file *file,
 		de = next;
 	} while (de);
 	spin_unlock(&proc_subdir_lock);
+=======
+		read_lock(&proc_subdir_lock);
+		ctx->pos++;
+		next = pde_subdir_next(de);
+		pde_put(de);
+		de = next;
+	} while (de);
+	read_unlock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 	return 1;
 }
 
@@ -261,7 +404,11 @@ int proc_readdir(struct file *file, struct dir_context *ctx)
 static const struct file_operations proc_dir_operations = {
 	.llseek			= generic_file_llseek,
 	.read			= generic_read_dir,
+<<<<<<< HEAD
 	.iterate		= proc_readdir,
+=======
+	.iterate_shared		= proc_readdir,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -275,13 +422,19 @@ static const struct inode_operations proc_dir_inode_operations = {
 
 static int proc_register(struct proc_dir_entry * dir, struct proc_dir_entry * dp)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *tmp;
 	int ret;
 	
+=======
+	int ret;
+
+>>>>>>> v4.9.227
 	ret = proc_alloc_inum(&dp->low_ino);
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if (S_ISDIR(dp->mode)) {
 		dp->proc_fops = &proc_dir_operations;
 		dp->proc_iops = &proc_dir_inode_operations;
@@ -309,6 +462,18 @@ static int proc_register(struct proc_dir_entry * dir, struct proc_dir_entry * dp
 	dp->parent = dir;
 	dir->subdir = dp;
 	spin_unlock(&proc_subdir_lock);
+=======
+	write_lock(&proc_subdir_lock);
+	dp->parent = dir;
+	if (pde_subdir_insert(dir, dp) == false) {
+		WARN(1, "proc_dir_entry '%s/%s' already registered\n",
+		     dir->name, dp->name);
+		write_unlock(&proc_subdir_lock);
+		proc_free_inum(dp->low_ino);
+		return -EEXIST;
+	}
+	write_unlock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -334,19 +499,38 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
 		WARN(1, "create '/proc/%s' by hand\n", qstr.name);
 		return NULL;
 	}
+<<<<<<< HEAD
+=======
+	if (is_empty_pde(*parent)) {
+		WARN(1, "attempt to add to permanently empty directory");
+		return NULL;
+	}
+>>>>>>> v4.9.227
 
 	ent = kzalloc(sizeof(struct proc_dir_entry) + qstr.len + 1, GFP_KERNEL);
 	if (!ent)
 		goto out;
 
+<<<<<<< HEAD
 	kmemleak_not_leak(ent);
+=======
+>>>>>>> v4.9.227
 	memcpy(ent->name, fn, qstr.len + 1);
 	ent->namelen = qstr.len;
 	ent->mode = mode;
 	ent->nlink = nlink;
+<<<<<<< HEAD
 	atomic_set(&ent->count, 1);
 	spin_lock_init(&ent->pde_unload_lock);
 	INIT_LIST_HEAD(&ent->pde_openers);
+=======
+	ent->subdir = RB_ROOT;
+	atomic_set(&ent->count, 1);
+	spin_lock_init(&ent->pde_unload_lock);
+	INIT_LIST_HEAD(&ent->pde_openers);
+	proc_set_user(ent, (*parent)->uid, (*parent)->gid);
+
+>>>>>>> v4.9.227
 out:
 	return ent;
 }
@@ -363,6 +547,10 @@ struct proc_dir_entry *proc_symlink(const char *name,
 		ent->data = kmalloc((ent->size=strlen(dest))+1, GFP_KERNEL);
 		if (ent->data) {
 			strcpy((char*)ent->data,dest);
+<<<<<<< HEAD
+=======
+			ent->proc_iops = &proc_link_inode_operations;
+>>>>>>> v4.9.227
 			if (proc_register(parent, ent) < 0) {
 				kfree(ent->data);
 				kfree(ent);
@@ -388,8 +576,17 @@ struct proc_dir_entry *proc_mkdir_data(const char *name, umode_t mode,
 	ent = __proc_create(&parent, name, S_IFDIR | mode, 2);
 	if (ent) {
 		ent->data = data;
+<<<<<<< HEAD
 		if (proc_register(parent, ent) < 0) {
 			kfree(ent);
+=======
+		ent->proc_fops = &proc_dir_operations;
+		ent->proc_iops = &proc_dir_inode_operations;
+		parent->nlink++;
+		if (proc_register(parent, ent) < 0) {
+			kfree(ent);
+			parent->nlink--;
+>>>>>>> v4.9.227
 			ent = NULL;
 		}
 	}
@@ -411,6 +608,29 @@ struct proc_dir_entry *proc_mkdir(const char *name,
 }
 EXPORT_SYMBOL(proc_mkdir);
 
+<<<<<<< HEAD
+=======
+struct proc_dir_entry *proc_create_mount_point(const char *name)
+{
+	umode_t mode = S_IFDIR | S_IRUGO | S_IXUGO;
+	struct proc_dir_entry *ent, *parent = NULL;
+
+	ent = __proc_create(&parent, name, mode, 2);
+	if (ent) {
+		ent->data = NULL;
+		ent->proc_fops = NULL;
+		ent->proc_iops = NULL;
+		parent->nlink++;
+		if (proc_register(parent, ent) < 0) {
+			kfree(ent);
+			parent->nlink--;
+			ent = NULL;
+		}
+	}
+	return ent;
+}
+
+>>>>>>> v4.9.227
 struct proc_dir_entry *proc_create_data(const char *name, umode_t mode,
 					struct proc_dir_entry *parent,
 					const struct file_operations *proc_fops,
@@ -425,6 +645,11 @@ struct proc_dir_entry *proc_create_data(const char *name, umode_t mode,
 		return NULL;
 	}
 
+<<<<<<< HEAD
+=======
+	BUG_ON(proc_fops == NULL);
+
+>>>>>>> v4.9.227
 	if ((mode & S_IALLUGO) == 0)
 		mode |= S_IRUGO;
 	pde = __proc_create(&parent, name, mode, 1);
@@ -432,6 +657,10 @@ struct proc_dir_entry *proc_create_data(const char *name, umode_t mode,
 		goto out;
 	pde->proc_fops = proc_fops;
 	pde->data = data;
+<<<<<<< HEAD
+=======
+	pde->proc_iops = &proc_file_inode_operations;
+>>>>>>> v4.9.227
 	if (proc_register(parent, pde) < 0)
 		goto out_free;
 	return pde;
@@ -475,18 +704,28 @@ void pde_put(struct proc_dir_entry *pde)
  */
 void remove_proc_entry(const char *name, struct proc_dir_entry *parent)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry **p;
+=======
+>>>>>>> v4.9.227
 	struct proc_dir_entry *de = NULL;
 	const char *fn = name;
 	unsigned int len;
 
+<<<<<<< HEAD
 	spin_lock(&proc_subdir_lock);
 	if (__xlate_proc_name(name, &parent, &fn) != 0) {
 		spin_unlock(&proc_subdir_lock);
+=======
+	write_lock(&proc_subdir_lock);
+	if (__xlate_proc_name(name, &parent, &fn) != 0) {
+		write_unlock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 		return;
 	}
 	len = strlen(fn);
 
+<<<<<<< HEAD
 	for (p = &parent->subdir; *p; p=&(*p)->next ) {
 		if (proc_match(len, fn, *p)) {
 			de = *p;
@@ -496,6 +735,12 @@ void remove_proc_entry(const char *name, struct proc_dir_entry *parent)
 		}
 	}
 	spin_unlock(&proc_subdir_lock);
+=======
+	de = pde_subdir_find(parent, fn, len);
+	if (de)
+		rb_erase(&de->subdir_node, &parent->subdir);
+	write_unlock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 	if (!de) {
 		WARN(1, "name '%s'\n", name);
 		return;
@@ -506,27 +751,43 @@ void remove_proc_entry(const char *name, struct proc_dir_entry *parent)
 	if (S_ISDIR(de->mode))
 		parent->nlink--;
 	de->nlink = 0;
+<<<<<<< HEAD
 	WARN(de->subdir, "%s: removing non-empty directory "
 			 "'%s/%s', leaking at least '%s'\n", __func__,
 			 de->parent->name, de->name, de->subdir->name);
+=======
+	WARN(pde_subdir_first(de),
+	     "%s: removing non-empty directory '%s/%s', leaking at least '%s'\n",
+	     __func__, de->parent->name, de->name, pde_subdir_first(de)->name);
+>>>>>>> v4.9.227
 	pde_put(de);
 }
 EXPORT_SYMBOL(remove_proc_entry);
 
 int remove_proc_subtree(const char *name, struct proc_dir_entry *parent)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry **p;
+=======
+>>>>>>> v4.9.227
 	struct proc_dir_entry *root = NULL, *de, *next;
 	const char *fn = name;
 	unsigned int len;
 
+<<<<<<< HEAD
 	spin_lock(&proc_subdir_lock);
 	if (__xlate_proc_name(name, &parent, &fn) != 0) {
 		spin_unlock(&proc_subdir_lock);
+=======
+	write_lock(&proc_subdir_lock);
+	if (__xlate_proc_name(name, &parent, &fn) != 0) {
+		write_unlock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 		return -ENOENT;
 	}
 	len = strlen(fn);
 
+<<<<<<< HEAD
 	for (p = &parent->subdir; *p; p=&(*p)->next ) {
 		if (proc_match(len, fn, *p)) {
 			root = *p;
@@ -549,6 +810,24 @@ int remove_proc_subtree(const char *name, struct proc_dir_entry *parent)
 			continue;
 		}
 		spin_unlock(&proc_subdir_lock);
+=======
+	root = pde_subdir_find(parent, fn, len);
+	if (!root) {
+		write_unlock(&proc_subdir_lock);
+		return -ENOENT;
+	}
+	rb_erase(&root->subdir_node, &parent->subdir);
+
+	de = root;
+	while (1) {
+		next = pde_subdir_first(de);
+		if (next) {
+			rb_erase(&next->subdir_node, &de->subdir);
+			de = next;
+			continue;
+		}
+		write_unlock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 
 		proc_entry_rundown(de);
 		next = de->parent;
@@ -559,7 +838,11 @@ int remove_proc_subtree(const char *name, struct proc_dir_entry *parent)
 			break;
 		pde_put(de);
 
+<<<<<<< HEAD
 		spin_lock(&proc_subdir_lock);
+=======
+		write_lock(&proc_subdir_lock);
+>>>>>>> v4.9.227
 		de = next;
 	}
 	pde_put(root);

@@ -156,6 +156,28 @@ void *consistent_alloc(gfp_t gfp, size_t size, dma_addr_t *dma_handle)
 }
 EXPORT_SYMBOL(consistent_alloc);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+static pte_t *consistent_virt_to_pte(void *vaddr)
+{
+	unsigned long addr = (unsigned long)vaddr;
+
+	return pte_offset_kernel(pmd_offset(pgd_offset_k(addr), addr), addr);
+}
+
+unsigned long consistent_virt_to_pfn(void *vaddr)
+{
+	pte_t *ptep = consistent_virt_to_pte(vaddr);
+
+	if (pte_none(*ptep) || !pte_present(*ptep))
+		return 0;
+
+	return pte_pfn(*ptep);
+}
+#endif
+
+>>>>>>> v4.9.227
 /*
  * free page(s) as defined by the above mapping.
  */
@@ -181,6 +203,7 @@ void consistent_free(size_t size, void *vaddr)
 	} while (size -= PAGE_SIZE);
 #else
 	do {
+<<<<<<< HEAD
 		pte_t *ptep;
 		unsigned long pfn;
 
@@ -188,6 +211,11 @@ void consistent_free(size_t size, void *vaddr)
 						(unsigned int)vaddr),
 					(unsigned int)vaddr),
 				(unsigned int)vaddr);
+=======
+		pte_t *ptep = consistent_virt_to_pte(vaddr);
+		unsigned long pfn;
+
+>>>>>>> v4.9.227
 		if (!pte_none(*ptep) && pte_present(*ptep)) {
 			pfn = pte_pfn(*ptep);
 			pte_clear(&init_mm, (unsigned int)vaddr, ptep);

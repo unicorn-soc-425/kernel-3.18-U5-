@@ -21,15 +21,19 @@
 #include <linux/netfilter_bridge.h>
 #include "br_private.h"
 
+<<<<<<< HEAD
 static int deliver_clone(const struct net_bridge_port *prev,
 			 struct sk_buff *skb,
 			 void (*__packet_hook)(const struct net_bridge_port *p,
 					       struct sk_buff *skb));
 
+=======
+>>>>>>> v4.9.227
 /* Don't forward packets to originating port or forwarding disabled */
 static inline int should_deliver(const struct net_bridge_port *p,
 				 const struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	return ((p->flags & BR_HAIRPIN_MODE) || skb->dev != p->dev) &&
 		br_allowed_egress(p->br, nbp_get_vlan_info(p), skb) &&
 		p->state == BR_STATE_FORWARDING;
@@ -47,18 +51,61 @@ int br_dev_queue_push_xmit(struct sk_buff *skb)
 		dev_queue_xmit(skb);
 	}
 
+=======
+	struct net_bridge_vlan_group *vg;
+
+	vg = nbp_vlan_group_rcu(p);
+	return ((p->flags & BR_HAIRPIN_MODE) || skb->dev != p->dev) &&
+		br_allowed_egress(vg, skb) && p->state == BR_STATE_FORWARDING &&
+		nbp_switchdev_allowed_egress(p, skb);
+}
+
+int br_dev_queue_push_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	skb_push(skb, ETH_HLEN);
+	if (!is_skb_forwardable(skb->dev, skb))
+		goto drop;
+
+	br_drop_fake_rtable(skb);
+
+	if (skb->ip_summed == CHECKSUM_PARTIAL &&
+	    (skb->protocol == htons(ETH_P_8021Q) ||
+	     skb->protocol == htons(ETH_P_8021AD))) {
+		int depth;
+
+		if (!__vlan_get_protocol(skb, skb->protocol, &depth))
+			goto drop;
+
+		skb_set_network_header(skb, depth);
+	}
+
+	dev_queue_xmit(skb);
+
+	return 0;
+
+drop:
+	kfree_skb(skb);
+>>>>>>> v4.9.227
 	return 0;
 }
 EXPORT_SYMBOL_GPL(br_dev_queue_push_xmit);
 
+<<<<<<< HEAD
 int br_forward_finish(struct sk_buff *skb)
 {
 	return NF_HOOK(NFPROTO_BRIDGE, NF_BR_POST_ROUTING, skb, NULL, skb->dev,
+=======
+int br_forward_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	return NF_HOOK(NFPROTO_BRIDGE, NF_BR_POST_ROUTING,
+		       net, sk, skb, NULL, skb->dev,
+>>>>>>> v4.9.227
 		       br_dev_queue_push_xmit);
 
 }
 EXPORT_SYMBOL_GPL(br_forward_finish);
 
+<<<<<<< HEAD
 static void __br_deliver(const struct net_bridge_port *to, struct sk_buff *skb)
 {
 	skb = br_handle_vlan(to->br, nbp_get_vlan_info(to), skb);
@@ -91,11 +138,24 @@ static void __br_forward(const struct net_bridge_port *to, struct sk_buff *skb)
 	}
 
 	skb = br_handle_vlan(to->br, nbp_get_vlan_info(to), skb);
+=======
+static void __br_forward(const struct net_bridge_port *to,
+			 struct sk_buff *skb, bool local_orig)
+{
+	struct net_bridge_vlan_group *vg;
+	struct net_device *indev;
+	struct net *net;
+	int br_hook;
+
+	vg = nbp_vlan_group_rcu(to);
+	skb = br_handle_vlan(to->br, vg, skb);
+>>>>>>> v4.9.227
 	if (!skb)
 		return;
 
 	indev = skb->dev;
 	skb->dev = to->dev;
+<<<<<<< HEAD
 	skb_forward_csum(skb);
 
 	NF_HOOK(NFPROTO_BRIDGE, NF_BR_FORWARD, skb, indev, skb->dev,
@@ -133,6 +193,37 @@ static int deliver_clone(const struct net_bridge_port *prev,
 			 struct sk_buff *skb,
 			 void (*__packet_hook)(const struct net_bridge_port *p,
 					       struct sk_buff *skb))
+=======
+	if (!local_orig) {
+		if (skb_warn_if_lro(skb)) {
+			kfree_skb(skb);
+			return;
+		}
+		br_hook = NF_BR_FORWARD;
+		skb_forward_csum(skb);
+		net = dev_net(indev);
+	} else {
+		if (unlikely(netpoll_tx_running(to->br->dev))) {
+			skb_push(skb, ETH_HLEN);
+			if (!is_skb_forwardable(skb->dev, skb))
+				kfree_skb(skb);
+			else
+				br_netpoll_send_skb(to, skb);
+			return;
+		}
+		br_hook = NF_BR_LOCAL_OUT;
+		net = dev_net(skb->dev);
+		indev = NULL;
+	}
+
+	NF_HOOK(NFPROTO_BRIDGE, br_hook,
+		net, NULL, skb, indev, skb->dev,
+		br_forward_finish);
+}
+
+static int deliver_clone(const struct net_bridge_port *prev,
+			 struct sk_buff *skb, bool local_orig)
+>>>>>>> v4.9.227
 {
 	struct net_device *dev = BR_INPUT_SKB_CB(skb)->brdev;
 
@@ -142,6 +233,7 @@ static int deliver_clone(const struct net_bridge_port *prev,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	__packet_hook(prev, skb);
 	return 0;
 }
@@ -151,6 +243,40 @@ static struct net_bridge_port *maybe_deliver(
 	struct sk_buff *skb,
 	void (*__packet_hook)(const struct net_bridge_port *p,
 			      struct sk_buff *skb))
+=======
+	__br_forward(prev, skb, local_orig);
+	return 0;
+}
+
+/**
+ * br_forward - forward a packet to a specific port
+ * @to: destination port
+ * @skb: packet being forwarded
+ * @local_rcv: packet will be received locally after forwarding
+ * @local_orig: packet is locally originated
+ *
+ * Should be called with rcu_read_lock.
+ */
+void br_forward(const struct net_bridge_port *to,
+		struct sk_buff *skb, bool local_rcv, bool local_orig)
+{
+	if (to && should_deliver(to, skb)) {
+		if (local_rcv)
+			deliver_clone(to, skb, local_orig);
+		else
+			__br_forward(to, skb, local_orig);
+		return;
+	}
+
+	if (!local_rcv)
+		kfree_skb(skb);
+}
+EXPORT_SYMBOL_GPL(br_forward);
+
+static struct net_bridge_port *maybe_deliver(
+	struct net_bridge_port *prev, struct net_bridge_port *p,
+	struct sk_buff *skb, bool local_orig)
+>>>>>>> v4.9.227
 {
 	int err;
 
@@ -160,7 +286,11 @@ static struct net_bridge_port *maybe_deliver(
 	if (!prev)
 		goto out;
 
+<<<<<<< HEAD
 	err = deliver_clone(prev, skb, __packet_hook);
+=======
+	err = deliver_clone(prev, skb, local_orig);
+>>>>>>> v4.9.227
 	if (err)
 		return ERR_PTR(err);
 
@@ -168,6 +298,7 @@ out:
 	return p;
 }
 
+<<<<<<< HEAD
 /* called under bridge lock */
 static void br_flood(struct net_bridge *br, struct sk_buff *skb,
 		     struct sk_buff *skb0,
@@ -187,11 +318,44 @@ static void br_flood(struct net_bridge *br, struct sk_buff *skb,
 		prev = maybe_deliver(prev, p, skb, __packet_hook);
 		if (IS_ERR(prev))
 			goto out;
+=======
+/* called under rcu_read_lock */
+void br_flood(struct net_bridge *br, struct sk_buff *skb,
+	      enum br_pkt_type pkt_type, bool local_rcv, bool local_orig)
+{
+	u8 igmp_type = br_multicast_igmp_type(skb);
+	struct net_bridge_port *prev = NULL;
+	struct net_bridge_port *p;
+
+	list_for_each_entry_rcu(p, &br->port_list, list) {
+		/* Do not flood unicast traffic to ports that turn it off */
+		if (pkt_type == BR_PKT_UNICAST && !(p->flags & BR_FLOOD))
+			continue;
+		/* Do not flood if mc off, except for traffic we originate */
+		if (pkt_type == BR_PKT_MULTICAST &&
+		    !(p->flags & BR_MCAST_FLOOD) && skb->dev != br->dev)
+			continue;
+
+		/* Do not flood to ports that enable proxy ARP */
+		if (p->flags & BR_PROXYARP)
+			continue;
+		if ((p->flags & BR_PROXYARP_WIFI) &&
+		    BR_INPUT_SKB_CB(skb)->proxyarp_replied)
+			continue;
+
+		prev = maybe_deliver(prev, p, skb, local_orig);
+		if (IS_ERR(prev))
+			goto out;
+		if (prev == p)
+			br_multicast_count(p->br, p, skb, igmp_type,
+					   BR_MCAST_DIR_TX);
+>>>>>>> v4.9.227
 	}
 
 	if (!prev)
 		goto out;
 
+<<<<<<< HEAD
 	if (skb0)
 		deliver_clone(prev, skb, __packet_hook);
 	else
@@ -226,6 +390,27 @@ static void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
 					struct sk_buff *skb))
 {
 	struct net_device *dev = BR_INPUT_SKB_CB(skb)->brdev;
+=======
+	if (local_rcv)
+		deliver_clone(prev, skb, local_orig);
+	else
+		__br_forward(prev, skb, local_orig);
+	return;
+
+out:
+	if (!local_rcv)
+		kfree_skb(skb);
+}
+
+#ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+/* called with rcu_read_lock */
+void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
+			struct sk_buff *skb,
+			bool local_rcv, bool local_orig)
+{
+	struct net_device *dev = BR_INPUT_SKB_CB(skb)->brdev;
+	u8 igmp_type = br_multicast_igmp_type(skb);
+>>>>>>> v4.9.227
 	struct net_bridge *br = netdev_priv(dev);
 	struct net_bridge_port *prev = NULL;
 	struct net_bridge_port_group *p;
@@ -243,9 +428,18 @@ static void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
 		port = (unsigned long)lport > (unsigned long)rport ?
 		       lport : rport;
 
+<<<<<<< HEAD
 		prev = maybe_deliver(prev, port, skb, __packet_hook);
 		if (IS_ERR(prev))
 			goto out;
+=======
+		prev = maybe_deliver(prev, port, skb, local_orig);
+		if (IS_ERR(prev))
+			goto out;
+		if (prev == port)
+			br_multicast_count(port->br, port, skb, igmp_type,
+					   BR_MCAST_DIR_TX);
+>>>>>>> v4.9.227
 
 		if ((unsigned long)lport >= (unsigned long)port)
 			p = rcu_dereference(p->next);
@@ -256,6 +450,7 @@ static void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
 	if (!prev)
 		goto out;
 
+<<<<<<< HEAD
 	if (skb0)
 		deliver_clone(prev, skb, __packet_hook);
 	else
@@ -280,4 +475,16 @@ void br_multicast_forward(struct net_bridge_mdb_entry *mdst,
 {
 	br_multicast_flood(mdst, skb, skb2, __br_forward);
 }
+=======
+	if (local_rcv)
+		deliver_clone(prev, skb, local_orig);
+	else
+		__br_forward(prev, skb, local_orig);
+	return;
+
+out:
+	if (!local_rcv)
+		kfree_skb(skb);
+}
+>>>>>>> v4.9.227
 #endif

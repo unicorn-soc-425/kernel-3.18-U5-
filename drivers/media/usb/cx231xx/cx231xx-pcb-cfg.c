@@ -703,9 +703,15 @@ int initialize_cx231xx(struct cx231xx *dev)
 			_current_scenario_idx = INDEX_BUSPOWER_DIF_ONLY;
 			break;
 		default:
+<<<<<<< HEAD
 			cx231xx_info("bad config in buspower!!!!\n");
 			cx231xx_info("config_info=%x\n",
 				     (config_info & BUSPOWER_MASK));
+=======
+			dev_err(dev->dev,
+				"bad config in buspower!!!!\nconfig_info=%x\n",
+				config_info & BUSPOWER_MASK);
+>>>>>>> v4.9.227
 			return 1;
 		}
 	} else {		/* self-power */
@@ -768,9 +774,15 @@ int initialize_cx231xx(struct cx231xx *dev)
 			_current_scenario_idx = INDEX_SELFPOWER_COMPRESSOR;
 			break;
 		default:
+<<<<<<< HEAD
 			cx231xx_info("bad senario!!!!!\n");
 			cx231xx_info("config_info=%x\n",
 				     (config_info & SELFPOWER_MASK));
+=======
+			dev_err(dev->dev,
+				"bad senario!!!!!\nconfig_info=%x\n",
+				config_info & SELFPOWER_MASK);
+>>>>>>> v4.9.227
 			return -ENODEV;
 		}
 	}
@@ -781,6 +793,7 @@ int initialize_cx231xx(struct cx231xx *dev)
 		   sizeof(struct pcb_config));
 
 	if (pcb_debug) {
+<<<<<<< HEAD
 		cx231xx_info("SC(0x00) register = 0x%x\n", config_info);
 		cx231xx_info("scenario %d\n",
 			    (dev->current_pcb_config.index) + 1);
@@ -793,6 +806,31 @@ int initialize_cx231xx(struct cx231xx *dev)
 			     dev->current_pcb_config.ts2_source);
 		cx231xx_info("analog_source=%x\n",
 			     dev->current_pcb_config.analog_source);
+=======
+		dev_info(dev->dev,
+			 "SC(0x00) register = 0x%x\n", config_info);
+		dev_info(dev->dev,
+			 "scenario %d\n",
+			 (dev->current_pcb_config.index) + 1);
+		dev_info(dev->dev,
+			"type=%x\n",
+			 dev->current_pcb_config.type);
+		dev_info(dev->dev,
+			 "mode=%x\n",
+			 dev->current_pcb_config.mode);
+		dev_info(dev->dev,
+			 "speed=%x\n",
+			 dev->current_pcb_config.speed);
+		dev_info(dev->dev,
+			 "ts1_source=%x\n",
+			 dev->current_pcb_config.ts1_source);
+		dev_info(dev->dev,
+			 "ts2_source=%x\n",
+			 dev->current_pcb_config.ts2_source);
+		dev_info(dev->dev,
+			 "analog_source=%x\n",
+			 dev->current_pcb_config.analog_source);
+>>>>>>> v4.9.227
 	}
 
 	return 0;

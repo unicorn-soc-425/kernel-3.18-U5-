@@ -73,8 +73,13 @@ static void pmu_led_set(struct led_classdev *led_cdev,
 
 static struct led_classdev pmu_led = {
 	.name = "pmu-led::front",
+<<<<<<< HEAD
 #ifdef CONFIG_ADB_PMU_LED_IDE
 	.default_trigger = "ide-disk",
+=======
+#ifdef CONFIG_ADB_PMU_LED_DISK
+	.default_trigger = "disk-activity",
+>>>>>>> v4.9.227
 #endif
 	.brightness_set = pmu_led_set,
 };

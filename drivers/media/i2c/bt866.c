@@ -218,7 +218,10 @@ MODULE_DEVICE_TABLE(i2c, bt866_id);
 
 static struct i2c_driver bt866_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "bt866",
 	},
 	.probe		= bt866_probe,

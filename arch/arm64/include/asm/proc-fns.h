@@ -35,6 +35,7 @@ extern u64 cpu_do_resume(phys_addr_t ptr, u64 idmap_ttbr);
 
 #include <asm/memory.h>
 
+<<<<<<< HEAD
 #define cpu_get_pgd()					\
 ({							\
 	unsigned long pg;				\
@@ -44,6 +45,8 @@ extern u64 cpu_do_resume(phys_addr_t ptr, u64 idmap_ttbr);
 	(pgd_t *)phys_to_virt(pg);			\
 })
 
+=======
+>>>>>>> v4.9.227
 #endif /* __ASSEMBLY__ */
 #endif /* __KERNEL__ */
 #endif /* __ASM_PROCFNS_H */

@@ -25,8 +25,13 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
+<<<<<<< HEAD
 #include <media/m5mols.h>
 #include <media/exynos-fimc.h>
+=======
+#include <media/i2c/m5mols.h>
+#include <media/drv-intf/exynos-fimc.h>
+>>>>>>> v4.9.227
 
 #include "m5mols.h"
 #include "m5mols_reg.h"

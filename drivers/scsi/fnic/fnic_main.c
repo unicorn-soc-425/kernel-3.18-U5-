@@ -95,12 +95,19 @@ static int fnic_slave_alloc(struct scsi_device *sdev)
 {
 	struct fc_rport *rport = starget_to_rport(scsi_target(sdev));
 
+<<<<<<< HEAD
 	sdev->tagged_supported = 1;
 
 	if (!rport || fc_remote_port_chkready(rport))
 		return -ENXIO;
 
 	scsi_activate_tcq(sdev, fnic_max_qdepth);
+=======
+	if (!rport || fc_remote_port_chkready(rport))
+		return -ENXIO;
+
+	scsi_change_queue_depth(sdev, fnic_max_qdepth);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -112,8 +119,12 @@ static struct scsi_host_template fnic_host_template = {
 	.eh_device_reset_handler = fnic_device_reset,
 	.eh_host_reset_handler = fnic_host_reset,
 	.slave_alloc = fnic_slave_alloc,
+<<<<<<< HEAD
 	.change_queue_depth = fc_change_queue_depth,
 	.change_queue_type = fc_change_queue_type,
+=======
+	.change_queue_depth = scsi_change_queue_depth,
+>>>>>>> v4.9.227
 	.this_id = -1,
 	.cmd_per_lun = 3,
 	.can_queue = FNIC_DFLT_IO_REQ,
@@ -121,6 +132,10 @@ static struct scsi_host_template fnic_host_template = {
 	.sg_tablesize = FNIC_MAX_SG_DESC_CNT,
 	.max_sectors = 0xffff,
 	.shost_attrs = fnic_attrs,
+<<<<<<< HEAD
+=======
+	.track_queue_depth = 1,
+>>>>>>> v4.9.227
 };
 
 static void
@@ -438,21 +453,44 @@ static int fnic_dev_wait(struct vnic_dev *vdev,
 	unsigned long time;
 	int done;
 	int err;
+<<<<<<< HEAD
+=======
+	int count;
+
+	count = 0;
+>>>>>>> v4.9.227
 
 	err = start(vdev, arg);
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	/* Wait for func to complete...2 seconds max */
 	time = jiffies + (HZ * 2);
 	do {
 		err = finished(vdev, &done);
+=======
+	/* Wait for func to complete.
+	* Sometime schedule_timeout_uninterruptible take long time
+	* to wake up so we do not retry as we are only waiting for
+	* 2 seconds in while loop. By adding count, we make sure
+	* we try atleast three times before returning -ETIMEDOUT
+	*/
+	time = jiffies + (HZ * 2);
+	do {
+		err = finished(vdev, &done);
+		count++;
+>>>>>>> v4.9.227
 		if (err)
 			return err;
 		if (done)
 			return 0;
 		schedule_timeout_uninterruptible(HZ / 10);
+<<<<<<< HEAD
 	} while (time_after(time, jiffies));
+=======
+	} while (time_after(time, jiffies) || (count < 3));
+>>>>>>> v4.9.227
 
 	return -ETIMEDOUT;
 }
@@ -689,6 +727,7 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 	fnic->fnic_max_tag_id = host->can_queue;
 
+<<<<<<< HEAD
 	err = scsi_init_shared_tag_map(host, fnic->fnic_max_tag_id);
 	if (err) {
 		shost_printk(KERN_ERR, fnic->lport->host,
@@ -696,6 +735,8 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_out_dev_close;
 	}
 
+=======
+>>>>>>> v4.9.227
 	host->max_lun = fnic->config.luns_per_tgt;
 	host->max_id = FNIC_MAX_FCP_TARGET;
 	host->max_cmd_len = FCOE_MAX_CMD_LEN;

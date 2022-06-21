@@ -12,7 +12,11 @@
  * Copyright (C) 2011  MIPS Technologies, Inc.
  *
  * ... and the days got worse and worse and now you see
+<<<<<<< HEAD
  * I've gone completly out of my mind.
+=======
+ * I've gone completely out of my mind.
+>>>>>>> v4.9.227
  *
  * They're coming to take me a away haha
  * they're coming to take me a away hoho hihi haha
@@ -35,6 +39,20 @@
 #include <asm/uasm.h>
 #include <asm/setup.h>
 
+<<<<<<< HEAD
+=======
+static int mips_xpa_disabled;
+
+static int __init xpa_disable(char *s)
+{
+	mips_xpa_disabled = 1;
+
+	return 1;
+}
+
+__setup("noxpa", xpa_disable);
+
+>>>>>>> v4.9.227
 /*
  * TLB load/store/modify handlers.
  *
@@ -223,12 +241,17 @@ static void output_pgtable_bits_defines(void)
 	pr_debug("\n");
 
 	pr_define("_PAGE_PRESENT_SHIFT %d\n", _PAGE_PRESENT_SHIFT);
+<<<<<<< HEAD
 	pr_define("_PAGE_READ_SHIFT %d\n", _PAGE_READ_SHIFT);
+=======
+	pr_define("_PAGE_NO_READ_SHIFT %d\n", _PAGE_NO_READ_SHIFT);
+>>>>>>> v4.9.227
 	pr_define("_PAGE_WRITE_SHIFT %d\n", _PAGE_WRITE_SHIFT);
 	pr_define("_PAGE_ACCESSED_SHIFT %d\n", _PAGE_ACCESSED_SHIFT);
 	pr_define("_PAGE_MODIFIED_SHIFT %d\n", _PAGE_MODIFIED_SHIFT);
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
 	pr_define("_PAGE_HUGE_SHIFT %d\n", _PAGE_HUGE_SHIFT);
+<<<<<<< HEAD
 	pr_define("_PAGE_SPLITTING_SHIFT %d\n", _PAGE_SPLITTING_SHIFT);
 #endif
 	if (cpu_has_rixi) {
@@ -239,6 +262,13 @@ static void output_pgtable_bits_defines(void)
 		pr_define("_PAGE_NO_READ_SHIFT %d\n", _PAGE_NO_READ_SHIFT);
 #endif
 	}
+=======
+#endif
+#ifdef _PAGE_NO_EXEC_SHIFT
+	if (cpu_has_rixi)
+		pr_define("_PAGE_NO_EXEC_SHIFT %d\n", _PAGE_NO_EXEC_SHIFT);
+#endif
+>>>>>>> v4.9.227
 	pr_define("_PAGE_GLOBAL_SHIFT %d\n", _PAGE_GLOBAL_SHIFT);
 	pr_define("_PAGE_VALID_SHIFT %d\n", _PAGE_VALID_SHIFT);
 	pr_define("_PAGE_DIRTY_SHIFT %d\n", _PAGE_DIRTY_SHIFT);
@@ -274,7 +304,16 @@ static inline void dump_handler(const char *symbol, const u32 *handler, int coun
 #define C0_ENTRYLO1	3, 0
 #define C0_CONTEXT	4, 0
 #define C0_PAGEMASK	5, 0
+<<<<<<< HEAD
 #define C0_BADVADDR	8, 0
+=======
+#define C0_PWBASE	5, 5
+#define C0_PWFIELD	5, 6
+#define C0_PWSIZE	5, 7
+#define C0_PWCTL	6, 6
+#define C0_BADVADDR	8, 0
+#define C0_PGD		9, 7
+>>>>>>> v4.9.227
 #define C0_ENTRYHI	10, 0
 #define C0_EPC		14, 0
 #define C0_XCONTEXT	20, 0
@@ -300,6 +339,10 @@ static struct uasm_label labels[128];
 static struct uasm_reloc relocs[128];
 
 static int check_for_high_segbits;
+<<<<<<< HEAD
+=======
+static bool fill_includes_sw_bits;
+>>>>>>> v4.9.227
 
 static unsigned int kscratch_used_mask;
 
@@ -374,6 +417,10 @@ static struct work_registers build_get_work_registers(u32 **p)
 static void build_restore_work_registers(u32 **p)
 {
 	if (scratch_reg >= 0) {
+<<<<<<< HEAD
+=======
+		uasm_i_ehb(p);
+>>>>>>> v4.9.227
 		UASM_i_MFC0(p, 1, c0_kscratch(), scratch_reg);
 		return;
 	}
@@ -501,6 +548,7 @@ static void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 	case tlb_indexed: tlbw = uasm_i_tlbwi; break;
 	}
 
+<<<<<<< HEAD
 	if (cpu_has_mips_r2) {
 		/*
 		 * The architecture spec says an ehb is required here,
@@ -520,6 +568,11 @@ static void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 			uasm_i_ehb(p);
 			break;
 		}
+=======
+	if (cpu_has_mips_r2_r6) {
+		if (cpu_has_mips_r2_exec_hazard)
+			uasm_i_ehb(p);
+>>>>>>> v4.9.227
 		tlbw(p);
 		return;
 	}
@@ -568,6 +621,10 @@ static void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 	case CPU_R10000:
 	case CPU_R12000:
 	case CPU_R14000:
+<<<<<<< HEAD
+=======
+	case CPU_R16000:
+>>>>>>> v4.9.227
 	case CPU_4KC:
 	case CPU_4KEC:
 	case CPU_M14KC:
@@ -634,10 +691,28 @@ static void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
 							unsigned int reg)
 {
+<<<<<<< HEAD
 	if (cpu_has_rixi) {
 		UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
 	} else {
 #ifdef CONFIG_64BIT_PHYS_ADDR
+=======
+	if (_PAGE_GLOBAL_SHIFT == 0) {
+		/* pte_t is already in EntryLo format */
+		return;
+	}
+
+	if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
+		if (fill_includes_sw_bits) {
+			UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
+		} else {
+			UASM_i_SRL(p, reg, reg, ilog2(_PAGE_NO_EXEC));
+			UASM_i_ROTR(p, reg, reg,
+				    ilog2(_PAGE_GLOBAL) - ilog2(_PAGE_NO_EXEC));
+		}
+	} else {
+#ifdef CONFIG_PHYS_ADDR_T_64BIT
+>>>>>>> v4.9.227
 		uasm_i_dsrl_safe(p, reg, reg, ilog2(_PAGE_GLOBAL));
 #else
 		UASM_i_SRL(p, reg, reg, ilog2(_PAGE_GLOBAL));
@@ -652,6 +727,16 @@ static void build_restore_pagemask(u32 **p, struct uasm_reloc **r,
 				   int restore_scratch)
 {
 	if (restore_scratch) {
+<<<<<<< HEAD
+=======
+		/*
+		 * Ensure the MFC0 below observes the value written to the
+		 * KScratch register by the prior MTC0.
+		 */
+		if (scratch_reg >= 0)
+			uasm_i_ehb(p);
+
+>>>>>>> v4.9.227
 		/* Reset default page size */
 		if (PM_DEFAULT_MASK >> 16) {
 			uasm_i_lui(p, tmp, PM_DEFAULT_MASK >> 16);
@@ -754,7 +839,12 @@ static void build_huge_update_entries(u32 **p, unsigned int pte,
 static void build_huge_handler_tail(u32 **p, struct uasm_reloc **r,
 				    struct uasm_label **l,
 				    unsigned int pte,
+<<<<<<< HEAD
 				    unsigned int ptr)
+=======
+				    unsigned int ptr,
+				    unsigned int flush)
+>>>>>>> v4.9.227
 {
 #ifdef CONFIG_SMP
 	UASM_i_SC(p, pte, 0, ptr);
@@ -763,6 +853,25 @@ static void build_huge_handler_tail(u32 **p, struct uasm_reloc **r,
 #else
 	UASM_i_SW(p, pte, 0, ptr);
 #endif
+<<<<<<< HEAD
+=======
+	if (cpu_has_ftlb && flush) {
+		BUG_ON(!cpu_has_tlbinv);
+
+		UASM_i_MFC0(p, ptr, C0_ENTRYHI);
+		uasm_i_ori(p, ptr, ptr, MIPS_ENTRYHI_EHINV);
+		UASM_i_MTC0(p, ptr, C0_ENTRYHI);
+		build_tlb_write_entry(p, l, r, tlb_indexed);
+
+		uasm_i_xori(p, ptr, ptr, MIPS_ENTRYHI_EHINV);
+		UASM_i_MTC0(p, ptr, C0_ENTRYHI);
+		build_huge_update_entries(p, pte, ptr);
+		build_huge_tlb_write_entry(p, l, r, pte, tlb_random, 0);
+
+		return;
+	}
+
+>>>>>>> v4.9.227
 	build_huge_update_entries(p, pte, ptr);
 	build_huge_tlb_write_entry(p, l, r, pte, tlb_indexed, 0);
 }
@@ -806,7 +915,14 @@ build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 
 	if (pgd_reg != -1) {
 		/* pgd is in pgd_reg */
+<<<<<<< HEAD
 		UASM_i_MFC0(p, ptr, c0_kscratch(), pgd_reg);
+=======
+		if (cpu_has_ldpte)
+			UASM_i_MFC0(p, ptr, C0_PWBASE);
+		else
+			UASM_i_MFC0(p, ptr, c0_kscratch(), pgd_reg);
+>>>>>>> v4.9.227
 	} else {
 #if defined(CONFIG_MIPS_PGD_C0_CONTEXT)
 		/*
@@ -877,7 +993,11 @@ build_get_pgd_vmalloc64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 		}
 	}
 	if (!did_vmalloc_branch) {
+<<<<<<< HEAD
 		if (uasm_in_compat_space_p(swpd) && !uasm_rel_lo(swpd)) {
+=======
+		if (single_insn_swpd) {
+>>>>>>> v4.9.227
 			uasm_il_b(p, r, label_vmalloc_done);
 			uasm_i_lui(p, ptr, uasm_rel_hi(swpd));
 		} else {
@@ -891,6 +1011,13 @@ build_get_pgd_vmalloc64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 	}
 	if (mode != not_refill && check_for_high_segbits) {
 		uasm_l_large_segbits_fault(l, *p);
+<<<<<<< HEAD
+=======
+
+		if (mode == refill_scratch && scratch_reg >= 0)
+			uasm_i_ehb(p);
+
+>>>>>>> v4.9.227
 		/*
 		 * We get here if we are an xsseg address, or if we are
 		 * an xuseg address above (PGDIR_SHIFT+PGDIR_BITS) boundary.
@@ -1005,6 +1132,7 @@ static void build_get_ptep(u32 **p, unsigned int tmp, unsigned int ptr)
 
 static void build_update_entries(u32 **p, unsigned int tmp, unsigned int ptep)
 {
+<<<<<<< HEAD
 	/*
 	 * 64bit address support (36bit on a 32bit CPU) in a 32bit
 	 * Kernel is a special case. Only a few CPUs use it.
@@ -1057,6 +1185,54 @@ static void build_update_entries(u32 **p, unsigned int tmp, unsigned int ptep)
 		UASM_i_MTC0(p, 0, C0_ENTRYLO1);
 	UASM_i_MTC0(p, ptep, C0_ENTRYLO1); /* load it */
 #endif
+=======
+	int pte_off_even = 0;
+	int pte_off_odd = sizeof(pte_t);
+
+#if defined(CONFIG_CPU_MIPS32) && defined(CONFIG_PHYS_ADDR_T_64BIT)
+	/* The low 32 bits of EntryLo is stored in pte_high */
+	pte_off_even += offsetof(pte_t, pte_high);
+	pte_off_odd += offsetof(pte_t, pte_high);
+#endif
+
+	if (IS_ENABLED(CONFIG_XPA)) {
+		uasm_i_lw(p, tmp, pte_off_even, ptep); /* even pte */
+		UASM_i_ROTR(p, tmp, tmp, ilog2(_PAGE_GLOBAL));
+		UASM_i_MTC0(p, tmp, C0_ENTRYLO0);
+
+		if (cpu_has_xpa && !mips_xpa_disabled) {
+			uasm_i_lw(p, tmp, 0, ptep);
+			uasm_i_ext(p, tmp, tmp, 0, 24);
+			uasm_i_mthc0(p, tmp, C0_ENTRYLO0);
+		}
+
+		uasm_i_lw(p, tmp, pte_off_odd, ptep); /* odd pte */
+		UASM_i_ROTR(p, tmp, tmp, ilog2(_PAGE_GLOBAL));
+		UASM_i_MTC0(p, tmp, C0_ENTRYLO1);
+
+		if (cpu_has_xpa && !mips_xpa_disabled) {
+			uasm_i_lw(p, tmp, sizeof(pte_t), ptep);
+			uasm_i_ext(p, tmp, tmp, 0, 24);
+			uasm_i_mthc0(p, tmp, C0_ENTRYLO1);
+		}
+		return;
+	}
+
+	UASM_i_LW(p, tmp, pte_off_even, ptep); /* get even pte */
+	UASM_i_LW(p, ptep, pte_off_odd, ptep); /* get odd pte */
+	if (r45k_bvahwbug())
+		build_tlb_probe_entry(p);
+	build_convert_pte_to_entrylo(p, tmp);
+	if (r4k_250MHZhwbug())
+		UASM_i_MTC0(p, 0, C0_ENTRYLO0);
+	UASM_i_MTC0(p, tmp, C0_ENTRYLO0); /* load it */
+	build_convert_pte_to_entrylo(p, ptep);
+	if (r45k_bvahwbug())
+		uasm_i_mfc0(p, tmp, C0_INDEX);
+	if (r4k_250MHZhwbug())
+		UASM_i_MTC0(p, 0, C0_ENTRYLO1);
+	UASM_i_MTC0(p, ptep, C0_ENTRYLO1); /* load it */
+>>>>>>> v4.9.227
 }
 
 struct mips_huge_tlb_info {
@@ -1216,6 +1392,10 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 	UASM_i_MTC0(p, odd, C0_ENTRYLO1); /* load it */
 
 	if (c0_scratch_reg >= 0) {
+<<<<<<< HEAD
+=======
+		uasm_i_ehb(p);
+>>>>>>> v4.9.227
 		UASM_i_MFC0(p, scratch, c0_kscratch(), c0_scratch_reg);
 		build_tlb_write_entry(p, l, r, tlb_random);
 		uasm_l_leave(l, *p);
@@ -1426,6 +1606,111 @@ static void build_r4000_tlb_refill_handler(void)
 	dump_handler("r4000_tlb_refill", (u32 *)ebase, 64);
 }
 
+<<<<<<< HEAD
+=======
+static void setup_pw(void)
+{
+	unsigned long pgd_i, pgd_w;
+#ifndef __PAGETABLE_PMD_FOLDED
+	unsigned long pmd_i, pmd_w;
+#endif
+	unsigned long pt_i, pt_w;
+	unsigned long pte_i, pte_w;
+#ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
+	unsigned long psn;
+
+	psn = ilog2(_PAGE_HUGE);     /* bit used to indicate huge page */
+#endif
+	pgd_i = PGDIR_SHIFT;  /* 1st level PGD */
+#ifndef __PAGETABLE_PMD_FOLDED
+	pgd_w = PGDIR_SHIFT - PMD_SHIFT + PGD_ORDER;
+
+	pmd_i = PMD_SHIFT;    /* 2nd level PMD */
+	pmd_w = PMD_SHIFT - PAGE_SHIFT;
+#else
+	pgd_w = PGDIR_SHIFT - PAGE_SHIFT + PGD_ORDER;
+#endif
+
+	pt_i  = PAGE_SHIFT;    /* 3rd level PTE */
+	pt_w  = PAGE_SHIFT - 3;
+
+	pte_i = ilog2(_PAGE_GLOBAL);
+	pte_w = 0;
+
+#ifndef __PAGETABLE_PMD_FOLDED
+	write_c0_pwfield(pgd_i << 24 | pmd_i << 12 | pt_i << 6 | pte_i);
+	write_c0_pwsize(1 << 30 | pgd_w << 24 | pmd_w << 12 | pt_w << 6 | pte_w);
+#else
+	write_c0_pwfield(pgd_i << 24 | pt_i << 6 | pte_i);
+	write_c0_pwsize(1 << 30 | pgd_w << 24 | pt_w << 6 | pte_w);
+#endif
+
+#ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
+	write_c0_pwctl(1 << 6 | psn);
+#endif
+	write_c0_kpgd(swapper_pg_dir);
+	kscratch_used_mask |= (1 << 7); /* KScratch6 is used for KPGD */
+}
+
+static void build_loongson3_tlb_refill_handler(void)
+{
+	u32 *p = tlb_handler;
+	struct uasm_label *l = labels;
+	struct uasm_reloc *r = relocs;
+
+	memset(labels, 0, sizeof(labels));
+	memset(relocs, 0, sizeof(relocs));
+	memset(tlb_handler, 0, sizeof(tlb_handler));
+
+	if (check_for_high_segbits) {
+		uasm_i_dmfc0(&p, K0, C0_BADVADDR);
+		uasm_i_dsrl_safe(&p, K1, K0, PGDIR_SHIFT + PGD_ORDER + PAGE_SHIFT - 3);
+		uasm_il_beqz(&p, &r, K1, label_vmalloc);
+		uasm_i_nop(&p);
+
+		uasm_il_bgez(&p, &r, K0, label_large_segbits_fault);
+		uasm_i_nop(&p);
+		uasm_l_vmalloc(&l, p);
+	}
+
+	uasm_i_dmfc0(&p, K1, C0_PGD);
+
+	uasm_i_lddir(&p, K0, K1, 3);  /* global page dir */
+#ifndef __PAGETABLE_PMD_FOLDED
+	uasm_i_lddir(&p, K1, K0, 1);  /* middle page dir */
+#endif
+	uasm_i_ldpte(&p, K1, 0);      /* even */
+	uasm_i_ldpte(&p, K1, 1);      /* odd */
+	uasm_i_tlbwr(&p);
+
+	/* restore page mask */
+	if (PM_DEFAULT_MASK >> 16) {
+		uasm_i_lui(&p, K0, PM_DEFAULT_MASK >> 16);
+		uasm_i_ori(&p, K0, K0, PM_DEFAULT_MASK & 0xffff);
+		uasm_i_mtc0(&p, K0, C0_PAGEMASK);
+	} else if (PM_DEFAULT_MASK) {
+		uasm_i_ori(&p, K0, 0, PM_DEFAULT_MASK);
+		uasm_i_mtc0(&p, K0, C0_PAGEMASK);
+	} else {
+		uasm_i_mtc0(&p, 0, C0_PAGEMASK);
+	}
+
+	uasm_i_eret(&p);
+
+	if (check_for_high_segbits) {
+		uasm_l_large_segbits_fault(&l, p);
+		UASM_i_LA(&p, K1, (unsigned long)tlb_do_page_fault_0);
+		uasm_i_jr(&p, K1);
+		uasm_i_nop(&p);
+	}
+
+	uasm_resolve_relocs(relocs, labels);
+	memcpy((void *)(ebase + 0x80), tlb_handler, 0x80);
+	local_flush_icache_range(ebase + 0x80, ebase + 0x100);
+	dump_handler("loongson3_tlb_refill", (u32 *)(ebase + 0x80), 32);
+}
+
+>>>>>>> v4.9.227
 extern u32 handle_tlbl[], handle_tlbl_end[];
 extern u32 handle_tlbs[], handle_tlbs_end[];
 extern u32 handle_tlbm[], handle_tlbm_end[];
@@ -1468,12 +1753,26 @@ static void build_setup_pgd(void)
 		uasm_i_dinsm(&p, a0, 0, 29, 64 - 29);
 		uasm_l_tlbl_goaround1(&l, p);
 		UASM_i_SLL(&p, a0, a0, 11);
+<<<<<<< HEAD
 		uasm_i_jr(&p, 31);
 		UASM_i_MTC0(&p, a0, C0_CONTEXT);
 	} else {
 		/* PGD in c0_KScratch */
 		uasm_i_jr(&p, 31);
 		UASM_i_MTC0(&p, a0, c0_kscratch(), pgd_reg);
+=======
+		UASM_i_MTC0(&p, a0, C0_CONTEXT);
+		uasm_i_jr(&p, 31);
+		uasm_i_ehb(&p);
+	} else {
+		/* PGD in c0_KScratch */
+		if (cpu_has_ldpte)
+			UASM_i_MTC0(&p, a0, C0_PWBASE);
+		else
+			UASM_i_MTC0(&p, a0, c0_kscratch(), pgd_reg);
+		uasm_i_jr(&p, 31);
+		uasm_i_ehb(&p);
+>>>>>>> v4.9.227
 	}
 #else
 #ifdef CONFIG_SMP
@@ -1487,6 +1786,7 @@ static void build_setup_pgd(void)
 	UASM_i_LA_mostly(&p, a2, pgdc);
 	UASM_i_SW(&p, a0, uasm_rel_lo(pgdc), a2);
 #endif /* SMP */
+<<<<<<< HEAD
 	uasm_i_jr(&p, 31);
 
 	/* if pgd_reg is allocated, save PGD also to scratch register */
@@ -1494,6 +1794,18 @@ static void build_setup_pgd(void)
 		UASM_i_MTC0(&p, a0, c0_kscratch(), pgd_reg);
 	else
 		uasm_i_nop(&p);
+=======
+
+	/* if pgd_reg is allocated, save PGD also to scratch register */
+	if (pgd_reg != -1) {
+		UASM_i_MTC0(&p, a0, c0_kscratch(), pgd_reg);
+		uasm_i_jr(&p, 31);
+		uasm_i_ehb(&p);
+	} else {
+		uasm_i_jr(&p, 31);
+		uasm_i_nop(&p);
+	}
+>>>>>>> v4.9.227
 #endif
 	if (p >= tlbmiss_handler_setup_pgd_end)
 		panic("tlbmiss_handler_setup_pgd space exceeded");
@@ -1510,14 +1822,22 @@ static void
 iPTE_LW(u32 **p, unsigned int pte, unsigned int ptr)
 {
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 # ifdef CONFIG_64BIT_PHYS_ADDR
+=======
+# ifdef CONFIG_PHYS_ADDR_T_64BIT
+>>>>>>> v4.9.227
 	if (cpu_has_64bits)
 		uasm_i_lld(p, pte, 0, ptr);
 	else
 # endif
 		UASM_i_LL(p, pte, 0, ptr);
 #else
+<<<<<<< HEAD
 # ifdef CONFIG_64BIT_PHYS_ADDR
+=======
+# ifdef CONFIG_PHYS_ADDR_T_64BIT
+>>>>>>> v4.9.227
 	if (cpu_has_64bits)
 		uasm_i_ld(p, pte, 0, ptr);
 	else
@@ -1528,6 +1848,7 @@ iPTE_LW(u32 **p, unsigned int pte, unsigned int ptr)
 
 static void
 iPTE_SW(u32 **p, struct uasm_reloc **r, unsigned int pte, unsigned int ptr,
+<<<<<<< HEAD
 	unsigned int mode)
 {
 #ifdef CONFIG_64BIT_PHYS_ADDR
@@ -1537,6 +1858,23 @@ iPTE_SW(u32 **p, struct uasm_reloc **r, unsigned int pte, unsigned int ptr,
 	uasm_i_ori(p, pte, pte, mode);
 #ifdef CONFIG_SMP
 # ifdef CONFIG_64BIT_PHYS_ADDR
+=======
+	unsigned int mode, unsigned int scratch)
+{
+	unsigned int hwmode = mode & (_PAGE_VALID | _PAGE_DIRTY);
+	unsigned int swmode = mode & ~hwmode;
+
+	if (IS_ENABLED(CONFIG_XPA) && !cpu_has_64bits) {
+		uasm_i_lui(p, scratch, swmode >> 16);
+		uasm_i_or(p, pte, pte, scratch);
+		BUG_ON(swmode & 0xffff);
+	} else {
+		uasm_i_ori(p, pte, pte, mode);
+	}
+
+#ifdef CONFIG_SMP
+# ifdef CONFIG_PHYS_ADDR_T_64BIT
+>>>>>>> v4.9.227
 	if (cpu_has_64bits)
 		uasm_i_scd(p, pte, 0, ptr);
 	else
@@ -1548,11 +1886,19 @@ iPTE_SW(u32 **p, struct uasm_reloc **r, unsigned int pte, unsigned int ptr,
 	else
 		uasm_il_beqz(p, r, pte, label_smp_pgtable_change);
 
+<<<<<<< HEAD
 # ifdef CONFIG_64BIT_PHYS_ADDR
+=======
+# ifdef CONFIG_PHYS_ADDR_T_64BIT
+>>>>>>> v4.9.227
 	if (!cpu_has_64bits) {
 		/* no uasm_i_nop needed */
 		uasm_i_ll(p, pte, sizeof(pte_t) / 2, ptr);
 		uasm_i_ori(p, pte, pte, hwmode);
+<<<<<<< HEAD
+=======
+		BUG_ON(hwmode & ~0xffff);
+>>>>>>> v4.9.227
 		uasm_i_sc(p, pte, sizeof(pte_t) / 2, ptr);
 		uasm_il_beqz(p, r, pte, label_smp_pgtable_change);
 		/* no uasm_i_nop needed */
@@ -1563,17 +1909,29 @@ iPTE_SW(u32 **p, struct uasm_reloc **r, unsigned int pte, unsigned int ptr,
 	uasm_i_nop(p);
 # endif
 #else
+<<<<<<< HEAD
 # ifdef CONFIG_64BIT_PHYS_ADDR
+=======
+# ifdef CONFIG_PHYS_ADDR_T_64BIT
+>>>>>>> v4.9.227
 	if (cpu_has_64bits)
 		uasm_i_sd(p, pte, 0, ptr);
 	else
 # endif
 		UASM_i_SW(p, pte, 0, ptr);
 
+<<<<<<< HEAD
 # ifdef CONFIG_64BIT_PHYS_ADDR
 	if (!cpu_has_64bits) {
 		uasm_i_lw(p, pte, sizeof(pte_t) / 2, ptr);
 		uasm_i_ori(p, pte, pte, hwmode);
+=======
+# ifdef CONFIG_PHYS_ADDR_T_64BIT
+	if (!cpu_has_64bits) {
+		uasm_i_lw(p, pte, sizeof(pte_t) / 2, ptr);
+		uasm_i_ori(p, pte, pte, hwmode);
+		BUG_ON(hwmode & ~0xffff);
+>>>>>>> v4.9.227
 		uasm_i_sw(p, pte, sizeof(pte_t) / 2, ptr);
 		uasm_i_lw(p, pte, 0, ptr);
 	}
@@ -1591,21 +1949,43 @@ build_pte_present(u32 **p, struct uasm_reloc **r,
 		  int pte, int ptr, int scratch, enum label_id lid)
 {
 	int t = scratch >= 0 ? scratch : pte;
+<<<<<<< HEAD
+=======
+	int cur = pte;
+>>>>>>> v4.9.227
 
 	if (cpu_has_rixi) {
 		if (use_bbit_insns()) {
 			uasm_il_bbit0(p, r, pte, ilog2(_PAGE_PRESENT), lid);
 			uasm_i_nop(p);
 		} else {
+<<<<<<< HEAD
 			uasm_i_andi(p, t, pte, _PAGE_PRESENT);
+=======
+			if (_PAGE_PRESENT_SHIFT) {
+				uasm_i_srl(p, t, cur, _PAGE_PRESENT_SHIFT);
+				cur = t;
+			}
+			uasm_i_andi(p, t, cur, 1);
+>>>>>>> v4.9.227
 			uasm_il_beqz(p, r, t, lid);
 			if (pte == t)
 				/* You lose the SMP race :-(*/
 				iPTE_LW(p, pte, ptr);
 		}
 	} else {
+<<<<<<< HEAD
 		uasm_i_andi(p, t, pte, _PAGE_PRESENT | _PAGE_READ);
 		uasm_i_xori(p, t, t, _PAGE_PRESENT | _PAGE_READ);
+=======
+		if (_PAGE_PRESENT_SHIFT) {
+			uasm_i_srl(p, t, cur, _PAGE_PRESENT_SHIFT);
+			cur = t;
+		}
+		uasm_i_andi(p, t, cur,
+			(_PAGE_PRESENT | _PAGE_NO_READ) >> _PAGE_PRESENT_SHIFT);
+		uasm_i_xori(p, t, t, _PAGE_PRESENT >> _PAGE_PRESENT_SHIFT);
+>>>>>>> v4.9.227
 		uasm_il_bnez(p, r, t, lid);
 		if (pte == t)
 			/* You lose the SMP race :-(*/
@@ -1616,11 +1996,19 @@ build_pte_present(u32 **p, struct uasm_reloc **r,
 /* Make PTE valid, store result in PTR. */
 static void
 build_make_valid(u32 **p, struct uasm_reloc **r, unsigned int pte,
+<<<<<<< HEAD
 		 unsigned int ptr)
 {
 	unsigned int mode = _PAGE_VALID | _PAGE_ACCESSED;
 
 	iPTE_SW(p, r, pte, ptr, mode);
+=======
+		 unsigned int ptr, unsigned int scratch)
+{
+	unsigned int mode = _PAGE_VALID | _PAGE_ACCESSED;
+
+	iPTE_SW(p, r, pte, ptr, mode, scratch);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1633,9 +2021,22 @@ build_pte_writable(u32 **p, struct uasm_reloc **r,
 		   enum label_id lid)
 {
 	int t = scratch >= 0 ? scratch : pte;
+<<<<<<< HEAD
 
 	uasm_i_andi(p, t, pte, _PAGE_PRESENT | _PAGE_WRITE);
 	uasm_i_xori(p, t, t, _PAGE_PRESENT | _PAGE_WRITE);
+=======
+	int cur = pte;
+
+	if (_PAGE_PRESENT_SHIFT) {
+		uasm_i_srl(p, t, cur, _PAGE_PRESENT_SHIFT);
+		cur = t;
+	}
+	uasm_i_andi(p, t, cur,
+		    (_PAGE_PRESENT | _PAGE_WRITE) >> _PAGE_PRESENT_SHIFT);
+	uasm_i_xori(p, t, t,
+		    (_PAGE_PRESENT | _PAGE_WRITE) >> _PAGE_PRESENT_SHIFT);
+>>>>>>> v4.9.227
 	uasm_il_bnez(p, r, t, lid);
 	if (pte == t)
 		/* You lose the SMP race :-(*/
@@ -1649,12 +2050,20 @@ build_pte_writable(u32 **p, struct uasm_reloc **r,
  */
 static void
 build_make_write(u32 **p, struct uasm_reloc **r, unsigned int pte,
+<<<<<<< HEAD
 		 unsigned int ptr)
+=======
+		 unsigned int ptr, unsigned int scratch)
+>>>>>>> v4.9.227
 {
 	unsigned int mode = (_PAGE_ACCESSED | _PAGE_MODIFIED | _PAGE_VALID
 			     | _PAGE_DIRTY);
 
+<<<<<<< HEAD
 	iPTE_SW(p, r, pte, ptr, mode);
+=======
+	iPTE_SW(p, r, pte, ptr, mode, scratch);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1671,7 +2080,12 @@ build_pte_modifiable(u32 **p, struct uasm_reloc **r,
 		uasm_i_nop(p);
 	} else {
 		int t = scratch >= 0 ? scratch : pte;
+<<<<<<< HEAD
 		uasm_i_andi(p, t, pte, _PAGE_WRITE);
+=======
+		uasm_i_srl(p, t, pte, _PAGE_WRITE_SHIFT);
+		uasm_i_andi(p, t, t, 1);
+>>>>>>> v4.9.227
 		uasm_il_beqz(p, r, t, lid);
 		if (pte == t)
 			/* You lose the SMP race :-(*/
@@ -1758,7 +2172,11 @@ static void build_r3000_tlb_load_handler(void)
 	build_r3000_tlbchange_handler_head(&p, K0, K1);
 	build_pte_present(&p, &r, K0, K1, -1, label_nopage_tlbl);
 	uasm_i_nop(&p); /* load delay */
+<<<<<<< HEAD
 	build_make_valid(&p, &r, K0, K1);
+=======
+	build_make_valid(&p, &r, K0, K1, -1);
+>>>>>>> v4.9.227
 	build_r3000_tlb_reload_write(&p, &l, &r, K0, K1);
 
 	uasm_l_nopage_tlbl(&l, p);
@@ -1789,7 +2207,11 @@ static void build_r3000_tlb_store_handler(void)
 	build_r3000_tlbchange_handler_head(&p, K0, K1);
 	build_pte_writable(&p, &r, K0, K1, -1, label_nopage_tlbs);
 	uasm_i_nop(&p); /* load delay */
+<<<<<<< HEAD
 	build_make_write(&p, &r, K0, K1);
+=======
+	build_make_write(&p, &r, K0, K1, -1);
+>>>>>>> v4.9.227
 	build_r3000_tlb_reload_write(&p, &l, &r, K0, K1);
 
 	uasm_l_nopage_tlbs(&l, p);
@@ -1820,7 +2242,11 @@ static void build_r3000_tlb_modify_handler(void)
 	build_r3000_tlbchange_handler_head(&p, K0, K1);
 	build_pte_modifiable(&p, &r, K0, K1,  -1, label_nopage_tlbm);
 	uasm_i_nop(&p); /* load delay */
+<<<<<<< HEAD
 	build_make_write(&p, &r, K0, K1);
+=======
+	build_make_write(&p, &r, K0, K1, -1);
+>>>>>>> v4.9.227
 	build_r3000_pte_reload_tlbwi(&p, K0, K1);
 
 	uasm_l_nopage_tlbm(&l, p);
@@ -1952,7 +2378,11 @@ static void build_r4000_tlb_load_handler(void)
 
 		switch (current_cpu_type()) {
 		default:
+<<<<<<< HEAD
 			if (cpu_has_mips_r2) {
+=======
+			if (cpu_has_mips_r2_exec_hazard) {
+>>>>>>> v4.9.227
 				uasm_i_ehb(&p);
 
 		case CPU_CAVIUM_OCTEON:
@@ -1988,7 +2418,11 @@ static void build_r4000_tlb_load_handler(void)
 		}
 		uasm_l_tlbl_goaround1(&l, p);
 	}
+<<<<<<< HEAD
 	build_make_valid(&p, &r, wr.r1, wr.r2);
+=======
+	build_make_valid(&p, &r, wr.r1, wr.r2, wr.r3);
+>>>>>>> v4.9.227
 	build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
 
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
@@ -2019,7 +2453,11 @@ static void build_r4000_tlb_load_handler(void)
 
 		switch (current_cpu_type()) {
 		default:
+<<<<<<< HEAD
 			if (cpu_has_mips_r2) {
+=======
+			if (cpu_has_mips_r2_exec_hazard) {
+>>>>>>> v4.9.227
 				uasm_i_ehb(&p);
 
 		case CPU_CAVIUM_OCTEON:
@@ -2061,7 +2499,11 @@ static void build_r4000_tlb_load_handler(void)
 		uasm_l_tlbl_goaround2(&l, p);
 	}
 	uasm_i_ori(&p, wr.r1, wr.r1, (_PAGE_ACCESSED | _PAGE_VALID));
+<<<<<<< HEAD
 	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2);
+=======
+	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2, 1);
+>>>>>>> v4.9.227
 #endif
 
 	uasm_l_nopage_tlbl(&l, p);
@@ -2102,7 +2544,11 @@ static void build_r4000_tlb_store_handler(void)
 	build_pte_writable(&p, &r, wr.r1, wr.r2, wr.r3, label_nopage_tlbs);
 	if (m4kc_tlbp_war())
 		build_tlb_probe_entry(&p);
+<<<<<<< HEAD
 	build_make_write(&p, &r, wr.r1, wr.r2);
+=======
+	build_make_write(&p, &r, wr.r1, wr.r2, wr.r3);
+>>>>>>> v4.9.227
 	build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
 
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
@@ -2116,7 +2562,11 @@ static void build_r4000_tlb_store_handler(void)
 	build_tlb_probe_entry(&p);
 	uasm_i_ori(&p, wr.r1, wr.r1,
 		   _PAGE_ACCESSED | _PAGE_MODIFIED | _PAGE_VALID | _PAGE_DIRTY);
+<<<<<<< HEAD
 	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2);
+=======
+	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2, 1);
+>>>>>>> v4.9.227
 #endif
 
 	uasm_l_nopage_tlbs(&l, p);
@@ -2158,7 +2608,11 @@ static void build_r4000_tlb_modify_handler(void)
 	if (m4kc_tlbp_war())
 		build_tlb_probe_entry(&p);
 	/* Present and writable bits set, set accessed and dirty bits. */
+<<<<<<< HEAD
 	build_make_write(&p, &r, wr.r1, wr.r2);
+=======
+	build_make_write(&p, &r, wr.r1, wr.r2, wr.r3);
+>>>>>>> v4.9.227
 	build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
 
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
@@ -2172,7 +2626,11 @@ static void build_r4000_tlb_modify_handler(void)
 	build_tlb_probe_entry(&p);
 	uasm_i_ori(&p, wr.r1, wr.r1,
 		   _PAGE_ACCESSED | _PAGE_MODIFIED | _PAGE_VALID | _PAGE_DIRTY);
+<<<<<<< HEAD
 	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2);
+=======
+	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2, 0);
+>>>>>>> v4.9.227
 #endif
 
 	uasm_l_nopage_tlbm(&l, p);
@@ -2225,8 +2683,14 @@ static void print_htw_config(void)
 		(config & MIPS_PWFIELD_PTEI_MASK) >> MIPS_PWFIELD_PTEI_SHIFT);
 
 	config = read_c0_pwsize();
+<<<<<<< HEAD
 	pr_debug("PWSize  (0x%0*lx): GDW: 0x%02lx  UDW: 0x%02lx  MDW: 0x%02lx  PTW: 0x%02lx  PTEW: 0x%02lx\n",
 		field, config,
+=======
+	pr_debug("PWSize  (0x%0*lx): PS: 0x%lx  GDW: 0x%02lx  UDW: 0x%02lx  MDW: 0x%02lx  PTW: 0x%02lx  PTEW: 0x%02lx\n",
+		field, config,
+		(config & MIPS_PWSIZE_PS_MASK) >> MIPS_PWSIZE_PS_SHIFT,
+>>>>>>> v4.9.227
 		(config & MIPS_PWSIZE_GDW_MASK) >> MIPS_PWSIZE_GDW_SHIFT,
 		(config & MIPS_PWSIZE_UDW_MASK) >> MIPS_PWSIZE_UDW_SHIFT,
 		(config & MIPS_PWSIZE_MDW_MASK) >> MIPS_PWSIZE_MDW_SHIFT,
@@ -2234,9 +2698,18 @@ static void print_htw_config(void)
 		(config & MIPS_PWSIZE_PTEW_MASK) >> MIPS_PWSIZE_PTEW_SHIFT);
 
 	pwctl = read_c0_pwctl();
+<<<<<<< HEAD
 	pr_debug("PWCtl   (0x%x): PWEn: 0x%x  DPH: 0x%x  HugePg: 0x%x  Psn: 0x%x\n",
 		pwctl,
 		(pwctl & MIPS_PWCTL_PWEN_MASK) >> MIPS_PWCTL_PWEN_SHIFT,
+=======
+	pr_debug("PWCtl   (0x%x): PWEn: 0x%x  XK: 0x%x  XS: 0x%x  XU: 0x%x  DPH: 0x%x  HugePg: 0x%x  Psn: 0x%x\n",
+		pwctl,
+		(pwctl & MIPS_PWCTL_PWEN_MASK) >> MIPS_PWCTL_PWEN_SHIFT,
+		(pwctl & MIPS_PWCTL_XK_MASK) >> MIPS_PWCTL_XK_SHIFT,
+		(pwctl & MIPS_PWCTL_XS_MASK) >> MIPS_PWCTL_XS_SHIFT,
+		(pwctl & MIPS_PWCTL_XU_MASK) >> MIPS_PWCTL_XU_SHIFT,
+>>>>>>> v4.9.227
 		(pwctl & MIPS_PWCTL_DPH_MASK) >> MIPS_PWCTL_DPH_SHIFT,
 		(pwctl & MIPS_PWCTL_HUGEPG_MASK) >> MIPS_PWCTL_HUGEPG_SHIFT,
 		(pwctl & MIPS_PWCTL_PSN_MASK) >> MIPS_PWCTL_PSN_SHIFT);
@@ -2263,6 +2736,13 @@ static void config_htw_params(void)
 	/* re-initialize the PTI field including the even/odd bit */
 	pwfield &= ~MIPS_PWFIELD_PTI_MASK;
 	pwfield |= PAGE_SHIFT << MIPS_PWFIELD_PTI_SHIFT;
+<<<<<<< HEAD
+=======
+	if (CONFIG_PGTABLE_LEVELS >= 3) {
+		pwfield &= ~MIPS_PWFIELD_MDI_MASK;
+		pwfield |= PMD_SHIFT << MIPS_PWFIELD_MDI_SHIFT;
+	}
+>>>>>>> v4.9.227
 	/* Set the PTEI right shift */
 	ptei = _PAGE_GLOBAL_SHIFT << MIPS_PWFIELD_PTEI_SHIFT;
 	pwfield |= ptei;
@@ -2284,19 +2764,102 @@ static void config_htw_params(void)
 
 	pwsize = ilog2(PTRS_PER_PGD) << MIPS_PWSIZE_GDW_SHIFT;
 	pwsize |= ilog2(PTRS_PER_PTE) << MIPS_PWSIZE_PTW_SHIFT;
+<<<<<<< HEAD
+=======
+	if (CONFIG_PGTABLE_LEVELS >= 3)
+		pwsize |= ilog2(PTRS_PER_PMD) << MIPS_PWSIZE_MDW_SHIFT;
+
+	/* Set pointer size to size of directory pointers */
+	if (IS_ENABLED(CONFIG_64BIT))
+		pwsize |= MIPS_PWSIZE_PS_MASK;
+	/* PTEs may be multiple pointers long (e.g. with XPA) */
+	pwsize |= ((PTE_T_LOG2 - PGD_T_LOG2) << MIPS_PWSIZE_PTEW_SHIFT)
+			& MIPS_PWSIZE_PTEW_MASK;
+
+>>>>>>> v4.9.227
 	write_c0_pwsize(pwsize);
 
 	/* Make sure everything is set before we enable the HTW */
 	back_to_back_c0_hazard();
 
+<<<<<<< HEAD
 	/* Enable HTW and disable the rest of the pwctl fields */
 	config = 1 << MIPS_PWCTL_PWEN_SHIFT;
+=======
+	/*
+	 * Enable HTW (and only for XUSeg on 64-bit), and disable the rest of
+	 * the pwctl fields.
+	 */
+	config = 1 << MIPS_PWCTL_PWEN_SHIFT;
+	if (IS_ENABLED(CONFIG_64BIT))
+		config |= MIPS_PWCTL_XU_MASK;
+>>>>>>> v4.9.227
 	write_c0_pwctl(config);
 	pr_info("Hardware Page Table Walker enabled\n");
 
 	print_htw_config();
 }
 
+<<<<<<< HEAD
+=======
+static void config_xpa_params(void)
+{
+#ifdef CONFIG_XPA
+	unsigned int pagegrain;
+
+	if (mips_xpa_disabled) {
+		pr_info("Extended Physical Addressing (XPA) disabled\n");
+		return;
+	}
+
+	pagegrain = read_c0_pagegrain();
+	write_c0_pagegrain(pagegrain | PG_ELPA);
+	back_to_back_c0_hazard();
+	pagegrain = read_c0_pagegrain();
+
+	if (pagegrain & PG_ELPA)
+		pr_info("Extended Physical Addressing (XPA) enabled\n");
+	else
+		panic("Extended Physical Addressing (XPA) disabled");
+#endif
+}
+
+static void check_pabits(void)
+{
+	unsigned long entry;
+	unsigned pabits, fillbits;
+
+	if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
+		/*
+		 * We'll only be making use of the fact that we can rotate bits
+		 * into the fill if the CPU supports RIXI, so don't bother
+		 * probing this for CPUs which don't.
+		 */
+		return;
+	}
+
+	write_c0_entrylo0(~0ul);
+	back_to_back_c0_hazard();
+	entry = read_c0_entrylo0();
+
+	/* clear all non-PFN bits */
+	entry &= ~((1 << MIPS_ENTRYLO_PFN_SHIFT) - 1);
+	entry &= ~(MIPS_ENTRYLO_RI | MIPS_ENTRYLO_XI);
+
+	/* find a lower bound on PABITS, and upper bound on fill bits */
+	pabits = fls_long(entry) + 6;
+	fillbits = max_t(int, (int)BITS_PER_LONG - pabits, 0);
+
+	/* minus the RI & XI bits */
+	fillbits -= min_t(unsigned, fillbits, 2);
+
+	if (fillbits >= ilog2(_PAGE_NO_EXEC))
+		fill_includes_sw_bits = true;
+
+	pr_debug("Entry* registers contain %u fill bits\n", fillbits);
+}
+
+>>>>>>> v4.9.227
 void build_tlb_refill_handler(void)
 {
 	/*
@@ -2306,7 +2869,15 @@ void build_tlb_refill_handler(void)
 	 */
 	static int run_once = 0;
 
+<<<<<<< HEAD
 	output_pgtable_bits_defines();
+=======
+	if (IS_ENABLED(CONFIG_XPA) && !cpu_has_rixi)
+		panic("Kernels supporting XPA currently require CPUs with RIXI");
+
+	output_pgtable_bits_defines();
+	check_pabits();
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_64BIT
 	check_for_high_segbits = current_cpu_data.vmbits > (PGDIR_SHIFT + PGD_ORDER + PAGE_SHIFT - 3);
@@ -2348,21 +2919,40 @@ void build_tlb_refill_handler(void)
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+		if (cpu_has_ldpte)
+			setup_pw();
+
+>>>>>>> v4.9.227
 		if (!run_once) {
 			scratch_reg = allocate_kscratch();
 			build_setup_pgd();
 			build_r4000_tlb_load_handler();
 			build_r4000_tlb_store_handler();
 			build_r4000_tlb_modify_handler();
+<<<<<<< HEAD
 			if (!cpu_has_local_ebase)
+=======
+			if (cpu_has_ldpte)
+				build_loongson3_tlb_refill_handler();
+			else if (!cpu_has_local_ebase)
+>>>>>>> v4.9.227
 				build_r4000_tlb_refill_handler();
 			flush_tlb_handlers();
 			run_once++;
 		}
 		if (cpu_has_local_ebase)
 			build_r4000_tlb_refill_handler();
+<<<<<<< HEAD
 		if (cpu_has_htw)
 			config_htw_params();
 
+=======
+		if (cpu_has_xpa)
+			config_xpa_params();
+		if (cpu_has_htw)
+			config_htw_params();
+>>>>>>> v4.9.227
 	}
 }

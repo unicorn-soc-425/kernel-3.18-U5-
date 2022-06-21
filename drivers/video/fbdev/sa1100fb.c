@@ -178,6 +178,10 @@
 #include <linux/dma-mapping.h>
 #include <linux/mutex.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 
 #include <video/sa1100fb.h>
 
@@ -416,9 +420,15 @@ sa1100fb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 		var->transp.offset);
 
 #ifdef CONFIG_CPU_FREQ
+<<<<<<< HEAD
 	dev_dbg(fbi->dev, "dma period = %d ps, clock = %d kHz\n",
 		sa1100fb_display_dma_period(var),
 		cpufreq_get(smp_processor_id()));
+=======
+	dev_dbg(fbi->dev, "dma period = %d ps, clock = %ld kHz\n",
+		sa1100fb_display_dma_period(var),
+		clk_get_rate(fbi->clk) / 1000);
+>>>>>>> v4.9.227
 #endif
 
 	return 0;
@@ -566,8 +576,13 @@ static int sa1100fb_mmap(struct fb_info *info,
 
 	if (off < info->fix.smem_len) {
 		vma->vm_pgoff += 1; /* skip over the palette */
+<<<<<<< HEAD
 		return dma_mmap_writecombine(fbi->dev, vma, fbi->map_cpu,
 					     fbi->map_dma, fbi->map_size);
+=======
+		return dma_mmap_wc(fbi->dev, vma, fbi->map_cpu, fbi->map_dma,
+				   fbi->map_size);
+>>>>>>> v4.9.227
 	}
 
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
@@ -592,9 +607,16 @@ static struct fb_ops sa1100fb_ops = {
  * Calculate the PCD value from the clock rate (in picoseconds).
  * We take account of the PPCR clock setting.
  */
+<<<<<<< HEAD
 static inline unsigned int get_pcd(unsigned int pixclock, unsigned int cpuclock)
 {
 	unsigned int pcd = cpuclock / 100;
+=======
+static inline unsigned int get_pcd(struct sa1100fb_info *fbi,
+		unsigned int pixclock)
+{
+	unsigned int pcd = clk_get_rate(fbi->clk) / 100 / 1000;
+>>>>>>> v4.9.227
 
 	pcd *= pixclock;
 	pcd /= 10000000;
@@ -673,7 +695,11 @@ static int sa1100fb_activate_var(struct fb_var_screeninfo *var, struct sa1100fb_
 		LCCR2_BegFrmDel(var->upper_margin) +
 		LCCR2_EndFrmDel(var->lower_margin);
 
+<<<<<<< HEAD
 	pcd = get_pcd(var->pixclock, cpufreq_get(0));
+=======
+	pcd = get_pcd(fbi, var->pixclock);
+>>>>>>> v4.9.227
 	new_regs.lccr3 = LCCR3_PixClkDiv(pcd) | fbi->inf->lccr3 |
 		(var->sync & FB_SYNC_HOR_HIGH_ACT ? LCCR3_HorSnchH : LCCR3_HorSnchL) |
 		(var->sync & FB_SYNC_VERT_HIGH_ACT ? LCCR3_VrtSnchH : LCCR3_VrtSnchL);
@@ -787,6 +813,12 @@ static void sa1100fb_enable_controller(struct sa1100fb_info *fbi)
 	fbi->palette_cpu[0] &= 0xcfff;
 	fbi->palette_cpu[0] |= palette_pbs(&fbi->fb.var);
 
+<<<<<<< HEAD
+=======
+	/* enable LCD controller clock */
+	clk_prepare_enable(fbi->clk);
+
+>>>>>>> v4.9.227
 	/* Sequence from 11.7.10 */
 	writel_relaxed(fbi->reg_lccr3, fbi->base + LCCR3);
 	writel_relaxed(fbi->reg_lccr2, fbi->base + LCCR2);
@@ -831,6 +863,12 @@ static void sa1100fb_disable_controller(struct sa1100fb_info *fbi)
 
 	schedule_timeout(20 * HZ / 1000);
 	remove_wait_queue(&fbi->ctrlr_wait, &wait);
+<<<<<<< HEAD
+=======
+
+	/* disable LCD controller clock */
+	clk_disable_unprepare(fbi->clk);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1009,7 +1047,10 @@ sa1100fb_freq_transition(struct notifier_block *nb, unsigned long val,
 			 void *data)
 {
 	struct sa1100fb_info *fbi = TO_INF(nb, freq_transition);
+<<<<<<< HEAD
 	struct cpufreq_freqs *f = data;
+=======
+>>>>>>> v4.9.227
 	u_int pcd;
 
 	switch (val) {
@@ -1018,7 +1059,11 @@ sa1100fb_freq_transition(struct notifier_block *nb, unsigned long val,
 		break;
 
 	case CPUFREQ_POSTCHANGE:
+<<<<<<< HEAD
 		pcd = get_pcd(fbi->fb.var.pixclock, f->new);
+=======
+		pcd = get_pcd(fbi, fbi->fb.var.pixclock);
+>>>>>>> v4.9.227
 		fbi->reg_lccr3 = (fbi->reg_lccr3 & ~0xff) | LCCR3_PixClkDiv(pcd);
 		set_ctrlr_state(fbi, C_ENABLE_CLKCHANGE);
 		break;
@@ -1035,7 +1080,10 @@ sa1100fb_freq_policy(struct notifier_block *nb, unsigned long val,
 
 	switch (val) {
 	case CPUFREQ_ADJUST:
+<<<<<<< HEAD
 	case CPUFREQ_INCOMPATIBLE:
+=======
+>>>>>>> v4.9.227
 		dev_dbg(fbi->dev, "min dma period: %d ps, "
 			"new clock %d kHz\n", sa1100fb_min_dma_period(fbi),
 			policy->max);
@@ -1093,8 +1141,13 @@ static int sa1100fb_map_video_memory(struct sa1100fb_info *fbi)
 	 * of the framebuffer.
 	 */
 	fbi->map_size = PAGE_ALIGN(fbi->fb.fix.smem_len + PAGE_SIZE);
+<<<<<<< HEAD
 	fbi->map_cpu = dma_alloc_writecombine(fbi->dev, fbi->map_size,
 					      &fbi->map_dma, GFP_KERNEL);
+=======
+	fbi->map_cpu = dma_alloc_wc(fbi->dev, fbi->map_size, &fbi->map_dma,
+				    GFP_KERNEL);
+>>>>>>> v4.9.227
 
 	if (fbi->map_cpu) {
 		fbi->fb.screen_base = fbi->map_cpu + PAGE_SIZE;
@@ -1225,6 +1278,16 @@ static int sa1100fb_probe(struct platform_device *pdev)
 	if (!fbi)
 		goto failed;
 
+<<<<<<< HEAD
+=======
+	fbi->clk = clk_get(&pdev->dev, NULL);
+	if (IS_ERR(fbi->clk)) {
+		ret = PTR_ERR(fbi->clk);
+		fbi->clk = NULL;
+		goto failed;
+	}
+
+>>>>>>> v4.9.227
 	fbi->base = ioremap(res->start, resource_size(res));
 	if (!fbi->base)
 		goto failed;
@@ -1277,6 +1340,11 @@ static int sa1100fb_probe(struct platform_device *pdev)
  failed:
 	if (fbi)
 		iounmap(fbi->base);
+<<<<<<< HEAD
+=======
+	if (fbi->clk)
+		clk_put(fbi->clk);
+>>>>>>> v4.9.227
 	kfree(fbi);
 	release_mem_region(res->start, resource_size(res));
 	return ret;
@@ -1288,7 +1356,10 @@ static struct platform_driver sa1100fb_driver = {
 	.resume		= sa1100fb_resume,
 	.driver		= {
 		.name	= "sa11x0-fb",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

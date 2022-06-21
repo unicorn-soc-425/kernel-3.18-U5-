@@ -37,6 +37,10 @@
 #define ST_SENSORS_DEFAULT_AXIS_ADDR		0x20
 #define ST_SENSORS_DEFAULT_AXIS_MASK		0x07
 #define ST_SENSORS_DEFAULT_AXIS_N_BIT		3
+<<<<<<< HEAD
+=======
+#define ST_SENSORS_DEFAULT_STAT_ADDR		0x27
+>>>>>>> v4.9.227
 
 #define ST_SENSORS_MAX_NAME			17
 #define ST_SENSORS_MAX_4WAI			7
@@ -115,10 +119,31 @@ struct st_sensor_bdu {
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * struct st_sensor_das - ST sensor device data alignment selection
+ * @addr: address of the register.
+ * @mask: mask to write the das flag for left alignment.
+ */
+struct st_sensor_das {
+	u8 addr;
+	u8 mask;
+};
+
+/**
+>>>>>>> v4.9.227
  * struct st_sensor_data_ready_irq - ST sensor device data-ready interrupt
  * @addr: address of the register.
  * @mask_int1: mask to enable/disable IRQ on INT1 pin.
  * @mask_int2: mask to enable/disable IRQ on INT2 pin.
+<<<<<<< HEAD
+=======
+ * @addr_ihl: address to enable/disable active low on the INT lines.
+ * @mask_ihl: mask to enable/disable active low on the INT lines.
+ * @addr_od: address to enable/disable Open Drain on the INT lines.
+ * @mask_od: mask to enable/disable Open Drain on the INT lines.
+ * @addr_stat_drdy: address to read status of DRDY (data ready) interrupt
+>>>>>>> v4.9.227
  * struct ig1 - represents the Interrupt Generator 1 of sensors.
  * @en_addr: address of the enable ig1 register.
  * @en_mask: mask to write the on/off value for enable.
@@ -127,6 +152,14 @@ struct st_sensor_data_ready_irq {
 	u8 addr;
 	u8 mask_int1;
 	u8 mask_int2;
+<<<<<<< HEAD
+=======
+	u8 addr_ihl;
+	u8 mask_ihl;
+	u8 addr_od;
+	u8 mask_od;
+	u8 addr_stat_drdy;
+>>>>>>> v4.9.227
 	struct {
 		u8 en_addr;
 		u8 en_mask;
@@ -164,8 +197,14 @@ struct st_sensor_transfer_function {
 };
 
 /**
+<<<<<<< HEAD
  * struct st_sensors - ST sensors list
  * @wai: Contents of WhoAmI register.
+=======
+ * struct st_sensor_settings - ST specific sensor settings
+ * @wai: Contents of WhoAmI register.
+ * @wai_addr: The address of WhoAmI register.
+>>>>>>> v4.9.227
  * @sensors_supported: List of supported sensors by struct itself.
  * @ch: IIO channels for the sensor.
  * @odr: Output data rate register and ODR list available.
@@ -173,12 +212,22 @@ struct st_sensor_transfer_function {
  * @enable_axis: Enable one or more axis of the sensor.
  * @fs: Full scale register and full scale list available.
  * @bdu: Block data update register.
+<<<<<<< HEAD
+=======
+ * @das: Data Alignment Selection register.
+>>>>>>> v4.9.227
  * @drdy_irq: Data ready register of the sensor.
  * @multi_read_bit: Use or not particular bit for [I2C/SPI] multi-read.
  * @bootime: samples to discard when sensor passing from power-down to power-up.
  */
+<<<<<<< HEAD
 struct st_sensors {
 	u8 wai;
+=======
+struct st_sensor_settings {
+	u8 wai;
+	u8 wai_addr;
+>>>>>>> v4.9.227
 	char sensors_supported[ST_SENSORS_MAX_4WAI][ST_SENSORS_MAX_NAME];
 	struct iio_chan_spec *ch;
 	int num_ch;
@@ -187,6 +236,10 @@ struct st_sensors {
 	struct st_sensor_axis enable_axis;
 	struct st_sensor_fullscale fs;
 	struct st_sensor_bdu bdu;
+<<<<<<< HEAD
+=======
+	struct st_sensor_das das;
+>>>>>>> v4.9.227
 	struct st_sensor_data_ready_irq drdy_irq;
 	bool multi_read_bit;
 	unsigned int bootime;
@@ -196,7 +249,11 @@ struct st_sensors {
  * struct st_sensor_data - ST sensor device status
  * @dev: Pointer to instance of struct device (I2C or SPI).
  * @trig: The trigger in use by the core driver.
+<<<<<<< HEAD
  * @sensor: Pointer to the current sensor struct in use.
+=======
+ * @sensor_settings: Pointer to the specific sensor settings in use.
+>>>>>>> v4.9.227
  * @current_fullscale: Maximum range of measure by the sensor.
  * @vdd: Pointer to sensor's Vdd power supply
  * @vdd_io: Pointer to sensor's Vdd-IO power supply
@@ -206,14 +263,28 @@ struct st_sensors {
  * @odr: Output data rate of the sensor [Hz].
  * num_data_channels: Number of data channels used in buffer.
  * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
+<<<<<<< HEAD
  * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
  * @tf: Transfer function structure used by I/O operations.
  * @tb: Transfer buffers and mutex used by I/O operations.
+=======
+ * @int_pin_open_drain: Set the interrupt/DRDY to open drain.
+ * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
+ * @tf: Transfer function structure used by I/O operations.
+ * @tb: Transfer buffers and mutex used by I/O operations.
+ * @edge_irq: the IRQ triggers on edges and need special handling.
+ * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
+ * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
+>>>>>>> v4.9.227
  */
 struct st_sensor_data {
 	struct device *dev;
 	struct iio_trigger *trig;
+<<<<<<< HEAD
 	struct st_sensors *sensor;
+=======
+	struct st_sensor_settings *sensor_settings;
+>>>>>>> v4.9.227
 	struct st_sensor_fullscale_avl *current_fullscale;
 	struct regulator *vdd;
 	struct regulator *vdd_io;
@@ -227,17 +298,31 @@ struct st_sensor_data {
 	unsigned int num_data_channels;
 
 	u8 drdy_int_pin;
+<<<<<<< HEAD
+=======
+	bool int_pin_open_drain;
+>>>>>>> v4.9.227
 
 	unsigned int (*get_irq_data_ready) (struct iio_dev *indio_dev);
 
 	const struct st_sensor_transfer_function *tf;
 	struct st_sensor_transfer_buffer tb;
+<<<<<<< HEAD
+=======
+
+	bool edge_irq;
+	bool hw_irq_trigger;
+	s64 hw_timestamp;
+>>>>>>> v4.9.227
 };
 
 #ifdef CONFIG_IIO_BUFFER
 irqreturn_t st_sensors_trigger_handler(int irq, void *p);
+<<<<<<< HEAD
 
 int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf);
+=======
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_IIO_TRIGGER
@@ -245,7 +330,12 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
 				const struct iio_trigger_ops *trigger_ops);
 
 void st_sensors_deallocate_trigger(struct iio_dev *indio_dev);
+<<<<<<< HEAD
 
+=======
+int st_sensors_validate_device(struct iio_trigger *trig,
+			       struct iio_dev *indio_dev);
+>>>>>>> v4.9.227
 #else
 static inline int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
 				const struct iio_trigger_ops *trigger_ops)
@@ -256,6 +346,10 @@ static inline void st_sensors_deallocate_trigger(struct iio_dev *indio_dev)
 {
 	return;
 }
+<<<<<<< HEAD
+=======
+#define st_sensors_validate_device NULL
+>>>>>>> v4.9.227
 #endif
 
 int st_sensors_init_sensor(struct iio_dev *indio_dev,
@@ -265,10 +359,21 @@ int st_sensors_set_enable(struct iio_dev *indio_dev, bool enable);
 
 int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable);
 
+<<<<<<< HEAD
 void st_sensors_power_enable(struct iio_dev *indio_dev);
 
 void st_sensors_power_disable(struct iio_dev *indio_dev);
 
+=======
+int st_sensors_power_enable(struct iio_dev *indio_dev);
+
+void st_sensors_power_disable(struct iio_dev *indio_dev);
+
+int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
+				  unsigned reg, unsigned writeval,
+				  unsigned *readval);
+
+>>>>>>> v4.9.227
 int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr);
 
 int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
@@ -279,7 +384,11 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
 				struct iio_chan_spec const *ch, int *val);
 
 int st_sensors_check_device_support(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 			int num_sensors_list, const struct st_sensors *sensors);
+=======
+	int num_sensors_list, const struct st_sensor_settings *sensor_settings);
+>>>>>>> v4.9.227
 
 ssize_t st_sensors_sysfs_sampling_frequency_avail(struct device *dev,
 				struct device_attribute *attr, char *buf);

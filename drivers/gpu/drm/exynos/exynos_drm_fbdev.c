@@ -50,9 +50,15 @@ static int exynos_drm_fb_mmap(struct fb_info *info,
 	if (vm_size > exynos_gem->size)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = dma_mmap_attrs(helper->dev->dev, vma, exynos_gem->pages,
 			     exynos_gem->dma_addr, exynos_gem->size,
 			     &exynos_gem->dma_attrs);
+=======
+	ret = dma_mmap_attrs(to_dma_dev(helper->dev), vma, exynos_gem->cookie,
+			     exynos_gem->dma_addr, exynos_gem->size,
+			     exynos_gem->dma_attrs);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		DRM_ERROR("failed to mmap.\n");
 		return ret;
@@ -138,8 +144,11 @@ static int exynos_drm_fbdev_create(struct drm_fb_helper *helper,
 	mode_cmd.pixel_format = drm_mode_legacy_fb_format(sizes->surface_bpp,
 							  sizes->surface_depth);
 
+<<<<<<< HEAD
 	mutex_lock(&dev->struct_mutex);
 
+=======
+>>>>>>> v4.9.227
 	size = mode_cmd.pitches[0] * mode_cmd.height;
 
 	exynos_gem = exynos_drm_gem_create(dev, EXYNOS_BO_CONTIG, size);
@@ -154,10 +163,15 @@ static int exynos_drm_fbdev_create(struct drm_fb_helper *helper,
 						   size);
 	}
 
+<<<<<<< HEAD
 	if (IS_ERR(exynos_gem)) {
 		ret = PTR_ERR(exynos_gem);
 		goto out;
 	}
+=======
+	if (IS_ERR(exynos_gem))
+		return PTR_ERR(exynos_gem);
+>>>>>>> v4.9.227
 
 	exynos_fbdev->exynos_gem = exynos_gem;
 
@@ -173,7 +187,10 @@ static int exynos_drm_fbdev_create(struct drm_fb_helper *helper,
 	if (ret < 0)
 		goto err_destroy_framebuffer;
 
+<<<<<<< HEAD
 	mutex_unlock(&dev->struct_mutex);
+=======
+>>>>>>> v4.9.227
 	return ret;
 
 err_destroy_framebuffer:
@@ -181,6 +198,7 @@ err_destroy_framebuffer:
 err_destroy_gem:
 	exynos_drm_gem_destroy(exynos_gem);
 
+<<<<<<< HEAD
 /*
  * if failed, all resources allocated above would be released by
  * drm_mode_config_cleanup() when drm_load() had been called prior
@@ -188,6 +206,14 @@ err_destroy_gem:
  */
 out:
 	mutex_unlock(&dev->struct_mutex);
+=======
+	/*
+	 * if failed, all resources allocated above would be released by
+	 * drm_mode_config_cleanup() when drm_load() had been called prior
+	 * to any specific driver such as fimd or hdmi driver.
+	 */
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -275,8 +301,12 @@ static void exynos_drm_fbdev_destroy(struct drm_device *dev,
 	struct exynos_drm_gem *exynos_gem = exynos_fbd->exynos_gem;
 	struct drm_framebuffer *fb;
 
+<<<<<<< HEAD
 	if (exynos_gem->kvaddr)
 		vunmap(exynos_gem->kvaddr);
+=======
+	vunmap(exynos_gem->kvaddr);
+>>>>>>> v4.9.227
 
 	/* release drm framebuffer and real buffer */
 	if (fb_helper->fb && fb_helper->fb->funcs) {
@@ -317,3 +347,17 @@ void exynos_drm_fbdev_restore_mode(struct drm_device *dev)
 
 	drm_fb_helper_restore_fbdev_mode_unlocked(private->fb_helper);
 }
+<<<<<<< HEAD
+=======
+
+void exynos_drm_output_poll_changed(struct drm_device *dev)
+{
+	struct exynos_drm_private *private = dev->dev_private;
+	struct drm_fb_helper *fb_helper = private->fb_helper;
+
+	if (fb_helper)
+		drm_fb_helper_hotplug_event(fb_helper);
+	else
+		exynos_drm_fbdev_init(dev);
+}
+>>>>>>> v4.9.227

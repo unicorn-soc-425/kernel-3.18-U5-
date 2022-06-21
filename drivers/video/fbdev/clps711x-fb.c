@@ -273,7 +273,11 @@ static int clps711x_fb_probe(struct platform_device *pdev)
 	}
 
 	cfb->syscon =
+<<<<<<< HEAD
 		syscon_regmap_lookup_by_compatible("cirrus,clps711x-syscon1");
+=======
+		syscon_regmap_lookup_by_compatible("cirrus,ep7209-syscon1");
+>>>>>>> v4.9.227
 	if (IS_ERR(cfb->syscon)) {
 		ret = PTR_ERR(cfb->syscon);
 		goto out_fb_release;
@@ -287,14 +291,25 @@ static int clps711x_fb_probe(struct platform_device *pdev)
 	}
 
 	ret = of_get_fb_videomode(disp, &cfb->mode, OF_USE_NATIVE_MODE);
+<<<<<<< HEAD
 	if (ret)
 		goto out_fb_release;
+=======
+	if (ret) {
+		of_node_put(disp);
+		goto out_fb_release;
+	}
+>>>>>>> v4.9.227
 
 	of_property_read_u32(disp, "ac-prescale", &cfb->ac_prescale);
 	cfb->cmap_invert = of_property_read_bool(disp, "cmap-invert");
 
 	ret = of_property_read_u32(disp, "bits-per-pixel",
 				   &info->var.bits_per_pixel);
+<<<<<<< HEAD
+=======
+	of_node_put(disp);
+>>>>>>> v4.9.227
 	if (ret)
 		goto out_fb_release;
 
@@ -376,7 +391,11 @@ static int clps711x_fb_remove(struct platform_device *pdev)
 }
 
 static const struct of_device_id clps711x_fb_dt_ids[] = {
+<<<<<<< HEAD
 	{ .compatible = "cirrus,clps711x-fb", },
+=======
+	{ .compatible = "cirrus,ep7209-fb", },
+>>>>>>> v4.9.227
 	{ }
 };
 MODULE_DEVICE_TABLE(of, clps711x_fb_dt_ids);
@@ -384,7 +403,10 @@ MODULE_DEVICE_TABLE(of, clps711x_fb_dt_ids);
 static struct platform_driver clps711x_fb_driver = {
 	.driver	= {
 		.name		= CLPS711X_FB_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= clps711x_fb_dt_ids,
 	},
 	.probe	= clps711x_fb_probe,

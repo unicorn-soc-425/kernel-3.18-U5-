@@ -41,18 +41,29 @@ enum {
 struct inet6_ifaddr {
 	struct in6_addr		addr;
 	__u32			prefix_len;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> v4.9.227
 	/* In seconds, relative to tstamp. Expiry is at tstamp + HZ * lft. */
 	__u32			valid_lft;
 	__u32			prefered_lft;
 	atomic_t		refcnt;
 	spinlock_t		lock;
+<<<<<<< HEAD
 	spinlock_t		state_lock;
+=======
+>>>>>>> v4.9.227
 
 	int			state;
 
 	__u32			flags;
 	__u8			dad_probes;
+<<<<<<< HEAD
+=======
+	__u8			stable_privacy_retry;
+>>>>>>> v4.9.227
 
 	__u16			scope;
 
@@ -190,8 +201,13 @@ struct inet6_dev {
 	__u32			if_flags;
 	int			dead;
 
+<<<<<<< HEAD
 	u8			rndid[8];
 	struct timer_list	regen_timer;
+=======
+	u32			desync_factor;
+	u8			rndid[8];
+>>>>>>> v4.9.227
 	struct list_head	tempaddr_list;
 
 	struct in6_addr		token;

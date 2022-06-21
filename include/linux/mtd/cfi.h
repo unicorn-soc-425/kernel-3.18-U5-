@@ -296,6 +296,7 @@ struct cfi_private {
 	struct flchip chips[0];  /* per-chip data structure for each chip */
 };
 
+<<<<<<< HEAD
 /*
  * Returns the command address according to the given geometry.
  */
@@ -473,6 +474,21 @@ static inline uint32_t cfi_send_gen_cmd(u_char cmd, uint32_t cmd_addr, uint32_t 
 
 	return addr - base;
 }
+=======
+uint32_t cfi_build_cmd_addr(uint32_t cmd_ofs,
+				struct map_info *map, struct cfi_private *cfi);
+
+map_word cfi_build_cmd(u_long cmd, struct map_info *map, struct cfi_private *cfi);
+#define CMD(x)  cfi_build_cmd((x), map, cfi)
+
+unsigned long cfi_merge_status(map_word val, struct map_info *map,
+					   struct cfi_private *cfi);
+#define MERGESTATUS(x) cfi_merge_status((x), map, cfi)
+
+uint32_t cfi_send_gen_cmd(u_char cmd, uint32_t cmd_addr, uint32_t base,
+				struct map_info *map, struct cfi_private *cfi,
+				int type, map_word *prev_val);
+>>>>>>> v4.9.227
 
 static inline uint8_t cfi_read_query(struct map_info *map, uint32_t addr)
 {
@@ -506,6 +522,7 @@ static inline uint16_t cfi_read_query16(struct map_info *map, uint32_t addr)
 	}
 }
 
+<<<<<<< HEAD
 static inline void cfi_udelay(int us)
 {
 	if (us >= 1000) {
@@ -515,6 +532,9 @@ static inline void cfi_udelay(int us)
 		cond_resched();
 	}
 }
+=======
+void cfi_udelay(int us);
+>>>>>>> v4.9.227
 
 int __xipram cfi_qry_present(struct map_info *map, __u32 base,
 			     struct cfi_private *cfi);

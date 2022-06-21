@@ -120,8 +120,13 @@ struct vpfe_ipipe_device {
 	enum ipipe_input_entity input;
 	unsigned int output;
 	struct v4l2_ctrl_handler ctrls;
+<<<<<<< HEAD
 	void *__iomem base_addr;
 	void *__iomem isp5_base_addr;
+=======
+	void __iomem *base_addr;
+	void __iomem *isp5_base_addr;
+>>>>>>> v4.9.227
 	struct ipipe_module_params config;
 };
 

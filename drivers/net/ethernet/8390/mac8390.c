@@ -156,8 +156,11 @@ static void dayna_block_output(struct net_device *dev, int count,
 #define memcpy_fromio(a, b, c)	memcpy((a), (void *)(b), (c))
 #define memcpy_toio(a, b, c)	memcpy((void *)(a), (b), (c))
 
+<<<<<<< HEAD
 #define memcmp_withio(a, b, c)	memcmp((a), (void *)(b), (c))
 
+=======
+>>>>>>> v4.9.227
 /* Slow Sane (16-bit chunk memory read/write) Cabletron uses this */
 static void slow_sane_get_8390_hdr(struct net_device *dev,
 				   struct e8390_pkt_hdr *hdr, int ring_page);
@@ -237,6 +240,7 @@ static enum mac8390_type __init mac8390_ident(struct nubus_dev *dev)
 
 static enum mac8390_access __init mac8390_testio(volatile unsigned long membase)
 {
+<<<<<<< HEAD
 	unsigned long outdata = 0xA5A0B5B0;
 	unsigned long indata =  0x00000000;
 	/* Try writing 32 bits */
@@ -244,12 +248,31 @@ static enum mac8390_access __init mac8390_testio(volatile unsigned long membase)
 	/* Now compare them */
 	if (memcmp_withio(&outdata, membase, 4) == 0)
 		return ACCESS_32;
+=======
+	u32 outdata = 0xA5A0B5B0;
+	u32 indata = 0;
+
+	/* Try writing 32 bits */
+	nubus_writel(outdata, membase);
+	/* Now read it back */
+	indata = nubus_readl(membase);
+	if (outdata == indata)
+		return ACCESS_32;
+
+	outdata = 0xC5C0D5D0;
+	indata = 0;
+
+>>>>>>> v4.9.227
 	/* Write 16 bit output */
 	word_memcpy_tocard(membase, &outdata, 4);
 	/* Now read it back */
 	word_memcpy_fromcard(&indata, membase, 4);
 	if (outdata == indata)
 		return ACCESS_16;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return ACCESS_UNKNOWN;
 }
 
@@ -454,6 +477,7 @@ MODULE_AUTHOR("David Huggins-Daines <dhd@debian.org> and others");
 MODULE_DESCRIPTION("Macintosh NS8390-based Nubus Ethernet driver");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 /* overkill, of course */
 static struct net_device *dev_mac8390[15];
 int init_module(void)
@@ -468,10 +492,21 @@ int init_module(void)
 	if (!i) {
 		pr_notice("No useable cards found, driver NOT installed.\n");
 		return -ENODEV;
+=======
+static struct net_device *dev_mac8390;
+
+int __init init_module(void)
+{
+	dev_mac8390 = mac8390_probe(-1);
+	if (IS_ERR(dev_mac8390)) {
+		pr_warn("mac8390: No card found\n");
+		return PTR_ERR(dev_mac8390);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 void cleanup_module(void)
 {
 	int i;
@@ -482,6 +517,12 @@ void cleanup_module(void)
 			free_netdev(dev);
 		}
 	}
+=======
+void __exit cleanup_module(void)
+{
+	unregister_netdev(dev_mac8390);
+	free_netdev(dev_mac8390);
+>>>>>>> v4.9.227
 }
 
 #endif /* MODULE */

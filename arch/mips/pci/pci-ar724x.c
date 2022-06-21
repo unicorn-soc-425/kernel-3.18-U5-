@@ -9,10 +9,16 @@
  *  by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <linux/irq.h>
 #include <linux/pci.h>
 #include <linux/module.h>
+=======
+#include <linux/irq.h>
+#include <linux/pci.h>
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <asm/mach-ath79/ath79.h>
 #include <asm/mach-ath79/ar71xx_regs.h>
@@ -48,8 +54,11 @@ struct ar724x_pci_controller {
 	bool bar0_is_cached;
 	u32  bar0_value;
 
+<<<<<<< HEAD
 	spinlock_t lock;
 
+=======
+>>>>>>> v4.9.227
 	struct pci_controller pci_controller;
 	struct resource io_res;
 	struct resource mem_res;
@@ -75,7 +84,10 @@ pci_bus_to_ar724x_controller(struct pci_bus *bus)
 static int ar724x_pci_local_write(struct ar724x_pci_controller *apc,
 				  int where, int size, u32 value)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> v4.9.227
 	void __iomem *base;
 	u32 data;
 	int s;
@@ -86,8 +98,11 @@ static int ar724x_pci_local_write(struct ar724x_pci_controller *apc,
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
 	base = apc->crp_base;
+<<<<<<< HEAD
 
 	spin_lock_irqsave(&apc->lock, flags);
+=======
+>>>>>>> v4.9.227
 	data = __raw_readl(base + (where & ~3));
 
 	switch (size) {
@@ -105,14 +120,20 @@ static int ar724x_pci_local_write(struct ar724x_pci_controller *apc,
 		data = value;
 		break;
 	default:
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&apc->lock, flags);
+=======
+>>>>>>> v4.9.227
 		return PCIBIOS_BAD_REGISTER_NUMBER;
 	}
 
 	__raw_writel(data, base + (where & ~3));
 	/* flush write */
 	__raw_readl(base + (where & ~3));
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&apc->lock, flags);
+=======
+>>>>>>> v4.9.227
 
 	return PCIBIOS_SUCCESSFUL;
 }
@@ -121,7 +142,10 @@ static int ar724x_pci_read(struct pci_bus *bus, unsigned int devfn, int where,
 			    int size, uint32_t *value)
 {
 	struct ar724x_pci_controller *apc;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> v4.9.227
 	void __iomem *base;
 	u32 data;
 
@@ -133,8 +157,11 @@ static int ar724x_pci_read(struct pci_bus *bus, unsigned int devfn, int where,
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
 	base = apc->devcfg_base;
+<<<<<<< HEAD
 
 	spin_lock_irqsave(&apc->lock, flags);
+=======
+>>>>>>> v4.9.227
 	data = __raw_readl(base + (where & ~3));
 
 	switch (size) {
@@ -153,6 +180,7 @@ static int ar724x_pci_read(struct pci_bus *bus, unsigned int devfn, int where,
 	case 4:
 		break;
 	default:
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&apc->lock, flags);
 
 		return PCIBIOS_BAD_REGISTER_NUMBER;
@@ -160,6 +188,11 @@ static int ar724x_pci_read(struct pci_bus *bus, unsigned int devfn, int where,
 
 	spin_unlock_irqrestore(&apc->lock, flags);
 
+=======
+		return PCIBIOS_BAD_REGISTER_NUMBER;
+	}
+
+>>>>>>> v4.9.227
 	if (where == PCI_BASE_ADDRESS_0 && size == 4 &&
 	    apc->bar0_is_cached) {
 		/* use the cached value */
@@ -175,7 +208,10 @@ static int ar724x_pci_write(struct pci_bus *bus, unsigned int devfn, int where,
 			     int size, uint32_t value)
 {
 	struct ar724x_pci_controller *apc;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> v4.9.227
 	void __iomem *base;
 	u32 data;
 	int s;
@@ -209,8 +245,11 @@ static int ar724x_pci_write(struct pci_bus *bus, unsigned int devfn, int where,
 	}
 
 	base = apc->devcfg_base;
+<<<<<<< HEAD
 
 	spin_lock_irqsave(&apc->lock, flags);
+=======
+>>>>>>> v4.9.227
 	data = __raw_readl(base + (where & ~3));
 
 	switch (size) {
@@ -228,15 +267,21 @@ static int ar724x_pci_write(struct pci_bus *bus, unsigned int devfn, int where,
 		data = value;
 		break;
 	default:
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&apc->lock, flags);
 
+=======
+>>>>>>> v4.9.227
 		return PCIBIOS_BAD_REGISTER_NUMBER;
 	}
 
 	__raw_writel(data, base + (where & ~3));
 	/* flush write */
 	__raw_readl(base + (where & ~3));
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&apc->lock, flags);
+=======
+>>>>>>> v4.9.227
 
 	return PCIBIOS_SUCCESSFUL;
 }
@@ -246,13 +291,21 @@ static struct pci_ops ar724x_pci_ops = {
 	.write	= ar724x_pci_write,
 };
 
+<<<<<<< HEAD
 static void ar724x_pci_irq_handler(unsigned int irq, struct irq_desc *desc)
+=======
+static void ar724x_pci_irq_handler(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct ar724x_pci_controller *apc;
 	void __iomem *base;
 	u32 pending;
 
+<<<<<<< HEAD
 	apc = irq_get_handler_data(irq);
+=======
+	apc = irq_desc_get_handler_data(desc);
+>>>>>>> v4.9.227
 	base = apc->ctrl_base;
 
 	pending = __raw_readl(base + AR724X_PCI_REG_INT_STATUS) &
@@ -342,8 +395,13 @@ static void ar724x_pci_irq_init(struct ar724x_pci_controller *apc,
 		irq_set_chip_data(i, apc);
 	}
 
+<<<<<<< HEAD
 	irq_set_handler_data(apc->irq, apc);
 	irq_set_chained_handler(apc->irq, ar724x_pci_irq_handler);
+=======
+	irq_set_chained_handler_and_data(apc->irq, ar724x_pci_irq_handler,
+					 apc);
+>>>>>>> v4.9.227
 }
 
 static int ar724x_pci_probe(struct platform_device *pdev)
@@ -380,8 +438,11 @@ static int ar724x_pci_probe(struct platform_device *pdev)
 	if (apc->irq < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	spin_lock_init(&apc->lock);
 
+=======
+>>>>>>> v4.9.227
 	res = platform_get_resource_byname(pdev, IORESOURCE_IO, "io_base");
 	if (!res)
 		return -EINVAL;
@@ -423,7 +484,10 @@ static struct platform_driver ar724x_pci_driver = {
 	.probe = ar724x_pci_probe,
 	.driver = {
 		.name = "ar724x-pci",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

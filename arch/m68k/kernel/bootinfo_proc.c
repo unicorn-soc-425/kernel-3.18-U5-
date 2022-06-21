@@ -62,12 +62,19 @@ static int __init init_bootinfo_procfs(void)
 	if (!bootinfo_size)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	bootinfo_copy = kmalloc(bootinfo_size, GFP_KERNEL);
 	if (!bootinfo_copy)
 		return -ENOMEM;
 
 	memcpy(bootinfo_copy, bootinfo_tmp, bootinfo_size);
 
+=======
+	bootinfo_copy = kmemdup(bootinfo_tmp, bootinfo_size, GFP_KERNEL);
+	if (!bootinfo_copy)
+		return -ENOMEM;
+
+>>>>>>> v4.9.227
 	pde = proc_create_data("bootinfo", 0400, NULL, &bootinfo_fops, NULL);
 	if (!pde) {
 		kfree(bootinfo_copy);

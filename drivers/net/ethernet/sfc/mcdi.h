@@ -17,6 +17,11 @@
  * @MCDI_STATE_RUNNING_SYNC: There is a synchronous MCDI request pending.
  *	Only the thread that moved into this state is allowed to move out of it.
  * @MCDI_STATE_RUNNING_ASYNC: There is an asynchronous MCDI request pending.
+<<<<<<< HEAD
+=======
+ * @MCDI_STATE_PROXY_WAIT: An MCDI request has completed with a response that
+ *	indicates we must wait for a proxy try again message.
+>>>>>>> v4.9.227
  * @MCDI_STATE_COMPLETED: An MCDI request has completed, but the owning thread
  *	has not yet consumed the result. For all other threads, equivalent to
  *	%MCDI_STATE_RUNNING.
@@ -25,6 +30,10 @@ enum efx_mcdi_state {
 	MCDI_STATE_QUIESCENT,
 	MCDI_STATE_RUNNING_SYNC,
 	MCDI_STATE_RUNNING_ASYNC,
+<<<<<<< HEAD
+=======
+	MCDI_STATE_PROXY_WAIT,
+>>>>>>> v4.9.227
 	MCDI_STATE_COMPLETED,
 };
 
@@ -58,6 +67,14 @@ enum efx_mcdi_mode {
  *	enabled
  * @async_list: Queue of asynchronous requests
  * @async_timer: Timer for asynchronous request timeout
+<<<<<<< HEAD
+=======
+ * @logging_buffer: buffer that may be used to build MCDI tracing messages
+ * @logging_enabled: whether to trace MCDI
+ * @proxy_rx_handle: Most recently received proxy authorisation handle
+ * @proxy_rx_status: Status of most recent proxy authorisation
+ * @proxy_rx_wq: Wait queue for updates to proxy_rx_handle
+>>>>>>> v4.9.227
  */
 struct efx_mcdi_iface {
 	struct efx_nic *efx;
@@ -69,11 +86,25 @@ struct efx_mcdi_iface {
 	unsigned int credits;
 	unsigned int seqno;
 	int resprc;
+<<<<<<< HEAD
+=======
+	int resprc_raw;
+>>>>>>> v4.9.227
 	size_t resp_hdr_len;
 	size_t resp_data_len;
 	spinlock_t async_lock;
 	struct list_head async_list;
 	struct timer_list async_timer;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SFC_MCDI_LOGGING
+	char *logging_buffer;
+	bool logging_enabled;
+#endif
+	unsigned int proxy_rx_handle;
+	int proxy_rx_status;
+	wait_queue_head_t proxy_rx_wq;
+>>>>>>> v4.9.227
 };
 
 struct efx_mcdi_mon {
@@ -176,10 +207,19 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
  * 32-bit-aligned.  Also, on Siena we must copy to the MC shared
  * memory strictly 32 bits at a time, so add any necessary padding.
  */
+<<<<<<< HEAD
 #define MCDI_DECLARE_BUF(_name, _len)					\
 	efx_dword_t _name[DIV_ROUND_UP(_len, 4)]
 #define MCDI_DECLARE_BUF_OUT_OR_ERR(_name, _len)			\
 	MCDI_DECLARE_BUF(_name, max_t(size_t, _len, 8))
+=======
+#define _MCDI_DECLARE_BUF(_name, _len)					\
+	efx_dword_t _name[DIV_ROUND_UP(_len, 4)]
+#define MCDI_DECLARE_BUF(_name, _len)					\
+	_MCDI_DECLARE_BUF(_name, _len) = {{{0}}}
+#define MCDI_DECLARE_BUF_ERR(_name)					\
+	MCDI_DECLARE_BUF(_name, 8)
+>>>>>>> v4.9.227
 #define _MCDI_PTR(_buf, _offset)					\
 	((u8 *)(_buf) + (_offset))
 #define MCDI_PTR(_buf, _field)						\
@@ -338,7 +378,14 @@ void efx_mcdi_mac_pull_stats(struct efx_nic *efx);
 bool efx_mcdi_mac_check_fault(struct efx_nic *efx);
 enum reset_type efx_mcdi_map_reset_reason(enum reset_type reason);
 int efx_mcdi_reset(struct efx_nic *efx, enum reset_type method);
+<<<<<<< HEAD
 int efx_mcdi_set_workaround(struct efx_nic *efx, u32 type, bool enabled);
+=======
+int efx_mcdi_set_workaround(struct efx_nic *efx, u32 type, bool enabled,
+			    unsigned int *flags);
+int efx_mcdi_get_workarounds(struct efx_nic *efx, unsigned int *impl_out,
+			     unsigned int *enabled_out);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_SFC_MCDI_MON
 int efx_mcdi_mon_probe(struct efx_nic *efx);

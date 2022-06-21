@@ -1377,7 +1377,11 @@ static struct superio_struct *find_superio(struct parport *p)
 {
 	int i;
 	for (i = 0; i < NR_SUPERIOS; i++)
+<<<<<<< HEAD
 		if (superios[i].io != p->base)
+=======
+		if (superios[i].io == p->base)
+>>>>>>> v4.9.227
 			return &superios[i];
 	return NULL;
 }
@@ -2255,7 +2259,11 @@ out5:
 		release_region(base+0x3, 5);
 	release_region(base, 3);
 out4:
+<<<<<<< HEAD
 	parport_put_port(p);
+=======
+	parport_del_port(p);
+>>>>>>> v4.9.227
 out3:
 	kfree(priv);
 out2:
@@ -2294,7 +2302,11 @@ void parport_pc_unregister_port(struct parport *p)
 				    priv->dma_handle);
 #endif
 	kfree(p->private_data);
+<<<<<<< HEAD
 	parport_put_port(p);
+=======
+	parport_del_port(p);
+>>>>>>> v4.9.227
 	kfree(ops); /* hope no-one cached it */
 }
 EXPORT_SYMBOL(parport_pc_unregister_port);
@@ -3015,7 +3027,10 @@ static int parport_pc_platform_probe(struct platform_device *pdev)
 
 static struct platform_driver parport_pc_platform_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "parport_pc",
 	},
 	.probe		= parport_pc_platform_probe,
@@ -3344,6 +3359,7 @@ static void __exit parport_pc_exit(void)
 	while (!list_empty(&ports_list)) {
 		struct parport_pc_private *priv;
 		struct parport *port;
+<<<<<<< HEAD
 		priv = list_entry(ports_list.next,
 				  struct parport_pc_private, list);
 		port = priv->port;
@@ -3351,6 +3367,16 @@ static void __exit parport_pc_exit(void)
 			platform_device_unregister(
 				to_platform_device(port->dev));
 		parport_pc_unregister_port(port);
+=======
+		struct device *dev;
+		priv = list_entry(ports_list.next,
+				  struct parport_pc_private, list);
+		port = priv->port;
+		dev = port->dev;
+		parport_pc_unregister_port(port);
+		if (dev && dev->bus == &platform_bus_type)
+			platform_device_unregister(to_platform_device(dev));
+>>>>>>> v4.9.227
 	}
 }
 

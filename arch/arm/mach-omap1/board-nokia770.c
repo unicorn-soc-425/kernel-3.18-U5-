@@ -7,6 +7,10 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
+=======
+#include <linux/clkdev.h>
+>>>>>>> v4.9.227
 #include <linux/irq.h>
 #include <linux/gpio.h>
 #include <linux/kernel.h>
@@ -14,7 +18,10 @@
 #include <linux/mutex.h>
 #include <linux/platform_device.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/omapfb.h>
 
 #include <linux/spi/spi.h>
@@ -159,7 +166,11 @@ static struct omap_usb_config nokia770_usb_config __initdata = {
 	.extcon		= "tahvo-usb",
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MMC_OMAP)
+>>>>>>> v4.9.227
 
 #define NOKIA770_GPIO_MMC_POWER		41
 #define NOKIA770_GPIO_MMC_SWITCH	23
@@ -216,7 +227,11 @@ static inline void nokia770_mmc_init(void)
 }
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_I2C_CBUS_GPIO) || defined(CONFIG_I2C_CBUS_GPIO_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C_CBUS_GPIO)
+>>>>>>> v4.9.227
 static struct i2c_cbus_platform_data nokia770_cbus_data = {
 	.clk_gpio = OMAP_MPUIO(9),
 	.dat_gpio = OMAP_MPUIO(10),
@@ -294,6 +309,10 @@ MACHINE_START(NOKIA770, "Nokia 770")
 	.map_io		= omap16xx_map_io,
 	.init_early     = omap1_init_early,
 	.init_irq	= omap1_init_irq,
+<<<<<<< HEAD
+=======
+	.handle_irq	= omap1_handle_irq,
+>>>>>>> v4.9.227
 	.init_machine	= omap_nokia770_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,

@@ -51,8 +51,11 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 	return old;
 }
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG 1
 
+=======
+>>>>>>> v4.9.227
 #define cmpxchg(ptr, o, n)						\
 	({								\
 		__typeof__(*(ptr)) _o_ = (o);				\

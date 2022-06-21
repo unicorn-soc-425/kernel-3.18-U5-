@@ -60,6 +60,7 @@ static inline void flush_cache(void)
 #define flush_cache() do { } while(0)
 #endif 
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 
 #include <asm/mtrr.h>
@@ -86,6 +87,8 @@ static inline void unset_mtrr(struct i810fb_par *par)
 #define unset_mtrr(x) do { } while (0)
 #endif /* CONFIG_MTRR */
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_FB_I810_GTF
 #define IS_DVT (0)
 #else

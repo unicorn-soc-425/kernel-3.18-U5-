@@ -20,6 +20,10 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
+=======
+#include <linux/ioport.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/gpio.h>
@@ -173,6 +177,14 @@ static bool ichx_gpio_check_available(struct gpio_chip *gpio, unsigned nr)
 	return !!(ichx_priv.use_gpio & (1 << (nr / 32)));
 }
 
+<<<<<<< HEAD
+=======
+static int ichx_gpio_get_direction(struct gpio_chip *gpio, unsigned nr)
+{
+	return ichx_read_bit(GPIO_IO_SEL, nr) ? GPIOF_DIR_IN : GPIOF_DIR_OUT;
+}
+
+>>>>>>> v4.9.227
 static int ichx_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 {
 	/*
@@ -277,7 +289,11 @@ static void ichx_gpiolib_setup(struct gpio_chip *chip)
 {
 	chip->owner = THIS_MODULE;
 	chip->label = DRV_NAME;
+<<<<<<< HEAD
 	chip->dev = &ichx_priv.dev->dev;
+=======
+	chip->parent = &ichx_priv.dev->dev;
+>>>>>>> v4.9.227
 
 	/* Allow chip-specific overrides of request()/get() */
 	chip->request = ichx_priv.desc->request ?
@@ -286,6 +302,10 @@ static void ichx_gpiolib_setup(struct gpio_chip *chip)
 		ichx_priv.desc->get : ichx_gpio_get;
 
 	chip->set = ichx_gpio_set;
+<<<<<<< HEAD
+=======
+	chip->get_direction = ichx_gpio_get_direction;
+>>>>>>> v4.9.227
 	chip->direction_input = ichx_gpio_direction_input;
 	chip->direction_output = ichx_gpio_direction_output;
 	chip->base = modparam_gpiobase;
@@ -378,8 +398,13 @@ static struct ichx_desc avoton_desc = {
 	.use_outlvl_cache = true,
 };
 
+<<<<<<< HEAD
 static int ichx_gpio_request_regions(struct resource *res_base,
 						const char *name, u8 use_gpio)
+=======
+static int ichx_gpio_request_regions(struct device *dev,
+	struct resource *res_base, const char *name, u8 use_gpio)
+>>>>>>> v4.9.227
 {
 	int i;
 
@@ -389,6 +414,7 @@ static int ichx_gpio_request_regions(struct resource *res_base,
 	for (i = 0; i < ARRAY_SIZE(ichx_priv.desc->regs[0]); i++) {
 		if (!(use_gpio & (1 << i)))
 			continue;
+<<<<<<< HEAD
 		if (!request_region(
 				res_base->start + ichx_priv.desc->regs[0][i],
 				ichx_priv.desc->reglen[i], name))
@@ -417,6 +443,14 @@ static void ichx_gpio_release_regions(struct resource *res_base, u8 use_gpio)
 		release_region(res_base->start + ichx_priv.desc->regs[0][i],
 			       ichx_priv.desc->reglen[i]);
 	}
+=======
+		if (!devm_request_region(dev,
+				res_base->start + ichx_priv.desc->regs[0][i],
+				ichx_priv.desc->reglen[i], name))
+			return -EBUSY;
+	}
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int ichx_gpio_probe(struct platform_device *pdev)
@@ -462,7 +496,11 @@ static int ichx_gpio_probe(struct platform_device *pdev)
 	spin_lock_init(&ichx_priv.lock);
 	res_base = platform_get_resource(pdev, IORESOURCE_IO, ICH_RES_GPIO);
 	ichx_priv.use_gpio = ich_info->use_gpio;
+<<<<<<< HEAD
 	err = ichx_gpio_request_regions(res_base, pdev->name,
+=======
+	err = ichx_gpio_request_regions(&pdev->dev, res_base, pdev->name,
+>>>>>>> v4.9.227
 					ichx_priv.use_gpio);
 	if (err)
 		return err;
@@ -483,8 +521,13 @@ static int ichx_gpio_probe(struct platform_device *pdev)
 		goto init;
 	}
 
+<<<<<<< HEAD
 	if (!request_region(res_pm->start, resource_size(res_pm),
 			pdev->name)) {
+=======
+	if (!devm_request_region(&pdev->dev, res_pm->start,
+			resource_size(res_pm), pdev->name)) {
+>>>>>>> v4.9.227
 		pr_warn("ACPI BAR is busy, GPI 0 - 15 unavailable\n");
 		goto init;
 	}
@@ -493,16 +536,24 @@ static int ichx_gpio_probe(struct platform_device *pdev)
 
 init:
 	ichx_gpiolib_setup(&ichx_priv.chip);
+<<<<<<< HEAD
 	err = gpiochip_add(&ichx_priv.chip);
 	if (err) {
 		pr_err("Failed to register GPIOs\n");
 		goto add_err;
+=======
+	err = gpiochip_add_data(&ichx_priv.chip, NULL);
+	if (err) {
+		pr_err("Failed to register GPIOs\n");
+		return err;
+>>>>>>> v4.9.227
 	}
 
 	pr_info("GPIO from %d to %d on %s\n", ichx_priv.chip.base,
 	       ichx_priv.chip.base + ichx_priv.chip.ngpio - 1, DRV_NAME);
 
 	return 0;
+<<<<<<< HEAD
 
 add_err:
 	ichx_gpio_release_regions(ichx_priv.gpio_base, ichx_priv.use_gpio);
@@ -510,23 +561,31 @@ add_err:
 		release_region(ichx_priv.pm_base->start,
 				resource_size(ichx_priv.pm_base));
 	return err;
+=======
+>>>>>>> v4.9.227
 }
 
 static int ichx_gpio_remove(struct platform_device *pdev)
 {
 	gpiochip_remove(&ichx_priv.chip);
 
+<<<<<<< HEAD
 	ichx_gpio_release_regions(ichx_priv.gpio_base, ichx_priv.use_gpio);
 	if (ichx_priv.pm_base)
 		release_region(ichx_priv.pm_base->start,
 				resource_size(ichx_priv.pm_base));
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static struct platform_driver ichx_gpio_driver = {
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DRV_NAME,
 	},
 	.probe		= ichx_gpio_probe,

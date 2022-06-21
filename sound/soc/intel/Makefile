@@ -1,4 +1,5 @@
 # Core support
+<<<<<<< HEAD
 snd-soc-sst-dsp-objs := sst-dsp.o sst-firmware.o
 snd-soc-sst-acpi-objs := sst-acpi.o
 
@@ -31,3 +32,15 @@ obj-$(CONFIG_SND_SOC_INTEL_HASWELL_MACH) += snd-soc-sst-haswell.o
 obj-$(CONFIG_SND_SOC_INTEL_BYT_RT5640_MACH) += snd-soc-sst-byt-rt5640-mach.o
 obj-$(CONFIG_SND_SOC_INTEL_BYT_MAX98090_MACH) += snd-soc-sst-byt-max98090-mach.o
 obj-$(CONFIG_SND_SOC_INTEL_BROADWELL_MACH) += snd-soc-sst-broadwell.o
+=======
+obj-$(CONFIG_SND_SOC_INTEL_SST) += common/
+
+# Platform Support
+obj-$(CONFIG_SND_SOC_INTEL_HASWELL) += haswell/
+obj-$(CONFIG_SND_SOC_INTEL_BAYTRAIL) += baytrail/
+obj-$(CONFIG_SND_SST_MFLD_PLATFORM) += atom/
+obj-$(CONFIG_SND_SOC_INTEL_SKYLAKE) += skylake/
+
+# Machine support
+obj-$(CONFIG_SND_SOC) += boards/
+>>>>>>> v4.9.227

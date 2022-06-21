@@ -10,7 +10,10 @@
  * Copyright (C) 2002 David S. Miller (davem@redhat.com)
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/console.h>
 #include <linux/tty.h>
@@ -112,6 +115,10 @@ void sunserial_console_termios(struct console *con, struct device_node *uart_dp)
 		mode = of_get_property(dp, mode_prop, NULL);
 		if (!mode)
 			mode = "9600,8,n,1,-";
+<<<<<<< HEAD
+=======
+		of_node_put(dp);
+>>>>>>> v4.9.227
 	}
 
 	cflag = CREAD | HUPCL | CLOCAL;
@@ -234,6 +241,7 @@ static int __init suncore_init(void)
 {
 	return 0;
 }
+<<<<<<< HEAD
 
 static void __exit suncore_exit(void)
 {
@@ -245,3 +253,12 @@ module_exit(suncore_exit);
 MODULE_AUTHOR("Eddie C. Dost, David S. Miller");
 MODULE_DESCRIPTION("Sun serial common layer");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(suncore_init);
+
+#if 0 /* ..def MODULE ; never supported as such */
+MODULE_AUTHOR("Eddie C. Dost, David S. Miller");
+MODULE_DESCRIPTION("Sun serial common layer");
+MODULE_LICENSE("GPL");
+#endif
+>>>>>>> v4.9.227

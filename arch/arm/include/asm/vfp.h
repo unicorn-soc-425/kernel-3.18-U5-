@@ -5,6 +5,12 @@
  * First, the standard VFP set.
  */
 
+<<<<<<< HEAD
+=======
+#ifndef __ASM_VFP_H
+#define __ASM_VFP_H
+
+>>>>>>> v4.9.227
 #define FPSID			cr0
 #define FPSCR			cr1
 #define MVFR1			cr6
@@ -22,6 +28,10 @@
 #define FPSID_NODOUBLE		(1<<20)
 #define FPSID_ARCH_BIT		(16)
 #define FPSID_ARCH_MASK		(0xF  << FPSID_ARCH_BIT)
+<<<<<<< HEAD
+=======
+#define FPSID_CPUID_ARCH_MASK	(0x7F  << FPSID_ARCH_BIT)
+>>>>>>> v4.9.227
 #define FPSID_PART_BIT		(8)
 #define FPSID_PART_MASK		(0xFF << FPSID_PART_BIT)
 #define FPSID_VARIANT_BIT	(4)
@@ -75,6 +85,13 @@
 /* MVFR0 bits */
 #define MVFR0_A_SIMD_BIT	(0)
 #define MVFR0_A_SIMD_MASK	(0xf << MVFR0_A_SIMD_BIT)
+<<<<<<< HEAD
+=======
+#define MVFR0_SP_BIT		(4)
+#define MVFR0_SP_MASK		(0xf << MVFR0_SP_BIT)
+#define MVFR0_DP_BIT		(8)
+#define MVFR0_DP_MASK		(0xf << MVFR0_DP_BIT)
+>>>>>>> v4.9.227
 
 /* Bit patterns for decoding the packaged operation descriptors */
 #define VFPOPDESC_LENGTH_BIT	(9)
@@ -84,6 +101,13 @@
 #define VFPOPDESC_OPDESC_MASK	(~(VFPOPDESC_LENGTH_MASK | VFPOPDESC_UNUSED_MASK))
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
 int vfp_pm_suspend(void);
 void vfp_pm_resume(void);
 #endif
+=======
+void vfp_disable(void);
+#endif
+
+#endif /* __ASM_VFP_H */
+>>>>>>> v4.9.227

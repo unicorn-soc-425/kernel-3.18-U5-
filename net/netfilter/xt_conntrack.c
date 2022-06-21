@@ -233,10 +233,15 @@ conntrack_mt(const struct sk_buff *skb, struct xt_action_param *par,
 		return false;
 
 	if (info->match_flags & XT_CONNTRACK_EXPIRES) {
+<<<<<<< HEAD
 		unsigned long expires = 0;
 
 		if (timer_pending(&ct->timeout))
 			expires = (ct->timeout.expires - jiffies) / HZ;
+=======
+		unsigned long expires = nf_ct_expires(ct) / HZ;
+
+>>>>>>> v4.9.227
 		if ((expires >= info->expires_min &&
 		    expires <= info->expires_max) ^
 		    !(info->invert_flags & XT_CONNTRACK_EXPIRES))

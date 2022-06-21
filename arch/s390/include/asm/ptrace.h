@@ -6,13 +6,22 @@
 #ifndef _S390_PTRACE_H
 #define _S390_PTRACE_H
 
+<<<<<<< HEAD
+=======
+#include <linux/const.h>
+>>>>>>> v4.9.227
 #include <uapi/asm/ptrace.h>
 
 #define PIF_SYSCALL		0	/* inside a system call */
 #define PIF_PER_TRAP		1	/* deliver sigtrap on return to user */
 
+<<<<<<< HEAD
 #define _PIF_SYSCALL		(1<<PIF_SYSCALL)
 #define _PIF_PER_TRAP		(1<<PIF_PER_TRAP)
+=======
+#define _PIF_SYSCALL		_BITUL(PIF_SYSCALL)
+#define _PIF_PER_TRAP		_BITUL(PIF_PER_TRAP)
+>>>>>>> v4.9.227
 
 #ifndef __ASSEMBLY__
 
@@ -23,6 +32,7 @@
 			 PSW_MASK_PSTATE | PSW_ASC_PRIMARY)
 
 struct psw_bits {
+<<<<<<< HEAD
 	unsigned long long	: 1;
 	unsigned long long r	: 1; /* PER-Mask */
 	unsigned long long	: 3;
@@ -46,6 +56,27 @@ struct psw_bits {
 #else
 	unsigned long long ia	: 31;/* Instruction Address */
 #endif
+=======
+	unsigned long	   :  1;
+	unsigned long r	   :  1; /* PER-Mask */
+	unsigned long	   :  3;
+	unsigned long t	   :  1; /* DAT Mode */
+	unsigned long i	   :  1; /* Input/Output Mask */
+	unsigned long e	   :  1; /* External Mask */
+	unsigned long key  :  4; /* PSW Key */
+	unsigned long	   :  1;
+	unsigned long m	   :  1; /* Machine-Check Mask */
+	unsigned long w	   :  1; /* Wait State */
+	unsigned long p	   :  1; /* Problem State */
+	unsigned long as   :  2; /* Address Space Control */
+	unsigned long cc   :  2; /* Condition Code */
+	unsigned long pm   :  4; /* Program Mask */
+	unsigned long ri   :  1; /* Runtime Instrumentation */
+	unsigned long	   :  6;
+	unsigned long eaba :  2; /* Addressing Mode */
+	unsigned long	   : 31;
+	unsigned long ia   : 64; /* Instruction Address */
+>>>>>>> v4.9.227
 };
 
 enum {
@@ -132,17 +163,29 @@ struct per_struct_kernel {
 
 static inline void set_pt_regs_flag(struct pt_regs *regs, int flag)
 {
+<<<<<<< HEAD
 	regs->flags |= (1U << flag);
+=======
+	regs->flags |= (1UL << flag);
+>>>>>>> v4.9.227
 }
 
 static inline void clear_pt_regs_flag(struct pt_regs *regs, int flag)
 {
+<<<<<<< HEAD
 	regs->flags &= ~(1U << flag);
+=======
+	regs->flags &= ~(1UL << flag);
+>>>>>>> v4.9.227
 }
 
 static inline int test_pt_regs_flag(struct pt_regs *regs, int flag)
 {
+<<<<<<< HEAD
 	return !!(regs->flags & (1U << flag));
+=======
+	return !!(regs->flags & (1UL << flag));
+>>>>>>> v4.9.227
 }
 
 /*
@@ -152,7 +195,11 @@ static inline int test_pt_regs_flag(struct pt_regs *regs, int flag)
 #define arch_has_block_step()	(1)
 
 #define user_mode(regs) (((regs)->psw.mask & PSW_MASK_PSTATE) != 0)
+<<<<<<< HEAD
 #define instruction_pointer(regs) ((regs)->psw.addr & PSW_ADDR_INSN)
+=======
+#define instruction_pointer(regs) ((regs)->psw.addr)
+>>>>>>> v4.9.227
 #define user_stack_pointer(regs)((regs)->gprs[15])
 #define profile_pc(regs) instruction_pointer(regs)
 
@@ -164,7 +211,11 @@ static inline long regs_return_value(struct pt_regs *regs)
 static inline void instruction_pointer_set(struct pt_regs *regs,
 					   unsigned long val)
 {
+<<<<<<< HEAD
 	regs->psw.addr = val | PSW_ADDR_AMODE;
+=======
+	regs->psw.addr = val;
+>>>>>>> v4.9.227
 }
 
 int regs_query_register_offset(const char *name);
@@ -174,7 +225,11 @@ unsigned long regs_get_kernel_stack_nth(struct pt_regs *regs, unsigned int n);
 
 static inline unsigned long kernel_stack_pointer(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	return regs->gprs[15] & PSW_ADDR_INSN;
+=======
+	return regs->gprs[15];
+>>>>>>> v4.9.227
 }
 
 #endif /* __ASSEMBLY__ */

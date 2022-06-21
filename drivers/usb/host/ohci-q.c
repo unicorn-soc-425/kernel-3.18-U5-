@@ -183,7 +183,10 @@ static int ed_schedule (struct ohci_hcd *ohci, struct ed *ed)
 {
 	int	branch;
 
+<<<<<<< HEAD
 	ed->state = ED_OPER;
+=======
+>>>>>>> v4.9.227
 	ed->ed_prev = NULL;
 	ed->ed_next = NULL;
 	ed->hwNextED = 0;
@@ -259,6 +262,11 @@ static int ed_schedule (struct ohci_hcd *ohci, struct ed *ed)
 	/* the HC may not see the schedule updates yet, but if it does
 	 * then they'll be properly ordered.
 	 */
+<<<<<<< HEAD
+=======
+
+	ed->state = ED_OPER;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -407,7 +415,12 @@ static struct ed *ed_get (
 
 	spin_lock_irqsave (&ohci->lock, flags);
 
+<<<<<<< HEAD
 	if (!(ed = ep->hcpriv)) {
+=======
+	ed = ep->hcpriv;
+	if (!ed) {
+>>>>>>> v4.9.227
 		struct td	*td;
 		int		is_out;
 		u32		info;
@@ -980,10 +993,13 @@ rescan_all:
 		int			completed, modified;
 		__hc32			*prev;
 
+<<<<<<< HEAD
 		/* Is this ED already invisible to the hardware? */
 		if (ed->state == ED_IDLE)
 			goto ed_idle;
 
+=======
+>>>>>>> v4.9.227
 		/* only take off EDs that the HC isn't using, accounting for
 		 * frame counter wraps and EDs with partially retired TDs
 		 */
@@ -1011,17 +1027,28 @@ skip_ed:
 		}
 
 		/* ED's now officially unlinked, hc doesn't see */
+<<<<<<< HEAD
 		ed->state = ED_IDLE;
+=======
+>>>>>>> v4.9.227
 		ed->hwHeadP &= ~cpu_to_hc32(ohci, ED_H);
 		ed->hwNextED = 0;
 		wmb();
 		ed->hwINFO &= ~cpu_to_hc32(ohci, ED_SKIP | ED_DEQUEUE);
+<<<<<<< HEAD
 ed_idle:
+=======
+>>>>>>> v4.9.227
 
 		/* reentrancy:  if we drop the schedule lock, someone might
 		 * have modified this list.  normally it's just prepending
 		 * entries (which we'd ignore), but paranoia won't hurt.
 		 */
+<<<<<<< HEAD
+=======
+		*last = ed->ed_next;
+		ed->ed_next = NULL;
+>>>>>>> v4.9.227
 		modified = 0;
 
 		/* unlink urbs as requested, but rescan the list after
@@ -1080,6 +1107,7 @@ rescan_this:
 			goto rescan_this;
 
 		/*
+<<<<<<< HEAD
 		 * If no TDs are queued, take ED off the ed_rm_list.
 		 * Otherwise, if the HC is running, reschedule.
 		 * If not, leave it on the list for further dequeues.
@@ -1094,6 +1122,24 @@ rescan_this:
 			ed_schedule(ohci, ed);
 		} else {
 			last = &ed->ed_next;
+=======
+		 * If no TDs are queued, ED is now idle.
+		 * Otherwise, if the HC is running, reschedule.
+		 * If the HC isn't running, add ED back to the
+		 * start of the list for later processing.
+		 */
+		if (list_empty(&ed->td_list)) {
+			ed->state = ED_IDLE;
+			list_del(&ed->in_use_list);
+		} else if (ohci->rh_state == OHCI_RH_RUNNING) {
+			ed_schedule(ohci, ed);
+		} else {
+			ed->ed_next = ohci->ed_rm_list;
+			ohci->ed_rm_list = ed;
+			/* Don't loop on the same ED */
+			if (last == &ohci->ed_rm_list)
+				last = &ed->ed_next;
+>>>>>>> v4.9.227
 		}
 
 		if (modified)

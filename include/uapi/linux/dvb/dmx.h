@@ -5,8 +5,11 @@
  *                  & Ralph  Metzler <ralph@convergence.de>
  *                    for convergence integrated media GmbH
  *
+<<<<<<< HEAD
  * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
  *
+=======
+>>>>>>> v4.9.227
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -34,12 +37,16 @@
 
 #define DMX_FILTER_SIZE 16
 
+<<<<<<< HEAD
 /* Min recording chunk upon which event is generated */
 #define DMX_REC_BUFF_CHUNK_MIN_SIZE		(100*188)
 
 #define DMX_MAX_DECODER_BUFFER_NUM		(32)
 
 typedef enum
+=======
+enum dmx_output
+>>>>>>> v4.9.227
 {
 	DMX_OUT_DECODER, /* Streaming directly to decoder. */
 	DMX_OUT_TAP,     /* Output going to a memory buffer */
@@ -48,10 +55,18 @@ typedef enum
 			 /* (to be retrieved by reading from the */
 			 /* logical DVR device).                 */
 	DMX_OUT_TSDEMUX_TAP /* Like TS_TAP but retrieved from the DMX device */
+<<<<<<< HEAD
 } dmx_output_t;
 
 
 typedef enum
+=======
+};
+
+typedef enum dmx_output dmx_output_t;
+
+typedef enum dmx_input
+>>>>>>> v4.9.227
 {
 	DMX_IN_FRONTEND, /* Input from a front-end device.  */
 	DMX_IN_DVR       /* Input from the logical DVR device.  */
@@ -114,6 +129,7 @@ struct dmx_sct_filter_params
 #define DMX_KERNEL_CLIENT   0x8000
 };
 
+<<<<<<< HEAD
 enum dmx_video_codec {
 	DMX_VIDEO_CODEC_MPEG2,
 	DMX_VIDEO_CODEC_H264,
@@ -149,6 +165,8 @@ enum dmx_video_codec {
 #define DMX_IDX_VC1_FRAME_END               0x02000000
 #define DMX_IDX_H264_ACCESS_UNIT_DEL        0x04000000
 #define DMX_IDX_H264_SEI                    0x08000000
+=======
+>>>>>>> v4.9.227
 
 struct dmx_pes_filter_params
 {
@@ -157,6 +175,7 @@ struct dmx_pes_filter_params
 	dmx_output_t   output;
 	dmx_pes_type_t pes_type;
 	__u32          flags;
+<<<<<<< HEAD
 
 	/*
 	 * The following configures when the event
@@ -508,10 +527,13 @@ struct dmx_oob_command {
 	union {
 		struct dmx_marker_event_info marker;
 	} params;
+=======
+>>>>>>> v4.9.227
 };
 
 typedef struct dmx_caps {
 	__u32 caps;
+<<<<<<< HEAD
 
 /* Indicates whether demux support playback from memory in pull mode */
 #define DMX_CAP_PULL_MODE				0x01
@@ -611,6 +633,12 @@ typedef struct dmx_caps {
 } dmx_caps_t;
 
 typedef enum {
+=======
+	int num_decoders;
+} dmx_caps_t;
+
+typedef enum dmx_source {
+>>>>>>> v4.9.227
 	DMX_SOURCE_FRONT0 = 0,
 	DMX_SOURCE_FRONT1,
 	DMX_SOURCE_FRONT2,
@@ -621,6 +649,7 @@ typedef enum {
 	DMX_SOURCE_DVR3
 } dmx_source_t;
 
+<<<<<<< HEAD
 enum dmx_tsp_format_t {
 	DMX_TSP_FORMAT_188 = 0,
 	DMX_TSP_FORMAT_192_TAIL,
@@ -649,12 +678,15 @@ enum dmx_playback_mode_t {
 	DMX_PB_MODE_PULL,
 };
 
+=======
+>>>>>>> v4.9.227
 struct dmx_stc {
 	unsigned int num;	/* input : which STC? 0..N */
 	unsigned int base;	/* output: divisor for stc to get 90 kHz clock */
 	__u64 stc;		/* output: stc in 'base'*90 kHz units */
 };
 
+<<<<<<< HEAD
 enum dmx_buffer_mode {
 	/*
 	 * demux buffers are allocated internally
@@ -844,6 +876,8 @@ struct dmx_scrambling_bits {
 	__u8 value;
 };
 
+=======
+>>>>>>> v4.9.227
 #define DMX_START                _IO('o', 41)
 #define DMX_STOP                 _IO('o', 42)
 #define DMX_SET_FILTER           _IOW('o', 43, struct dmx_sct_filter_params)
@@ -855,6 +889,7 @@ struct dmx_scrambling_bits {
 #define DMX_GET_STC              _IOWR('o', 50, struct dmx_stc)
 #define DMX_ADD_PID              _IOW('o', 51, __u16)
 #define DMX_REMOVE_PID           _IOW('o', 52, __u16)
+<<<<<<< HEAD
 #define DMX_SET_TS_PACKET_FORMAT _IOW('o', 53, enum dmx_tsp_format_t)
 #define DMX_SET_TS_OUT_FORMAT	 _IOW('o', 54, enum dmx_tsp_format_t)
 #define DMX_SET_DECODER_BUFFER_SIZE	_IO('o', 55)
@@ -877,5 +912,7 @@ struct dmx_scrambling_bits {
 #define DMX_GET_SCRAMBLING_BITS _IOWR('o', 72, struct dmx_scrambling_bits)
 #define DMX_SET_CIPHER _IOW('o', 73, struct dmx_cipher_operations)
 #define DMX_FLUSH_BUFFER _IO('o', 74)
+=======
+>>>>>>> v4.9.227
 
 #endif /* _UAPI_DVBDMX_H_ */

@@ -67,7 +67,10 @@ SYSCALL_DEFINE5(add_key, const char __user *, _type,
 	char type[32], *description;
 	void *payload;
 	long ret;
+<<<<<<< HEAD
 	bool vm;
+=======
+>>>>>>> v4.9.227
 
 	ret = -EINVAL;
 	if (plen > 1024 * 1024 - 1)
@@ -98,14 +101,20 @@ SYSCALL_DEFINE5(add_key, const char __user *, _type,
 	/* pull the payload in if one was supplied */
 	payload = NULL;
 
+<<<<<<< HEAD
 	vm = false;
+=======
+>>>>>>> v4.9.227
 	if (plen) {
 		ret = -ENOMEM;
 		payload = kmalloc(plen, GFP_KERNEL | __GFP_NOWARN);
 		if (!payload) {
 			if (plen <= PAGE_SIZE)
 				goto error2;
+<<<<<<< HEAD
 			vm = true;
+=======
+>>>>>>> v4.9.227
 			payload = vmalloc(plen);
 			if (!payload)
 				goto error2;
@@ -138,10 +147,14 @@ SYSCALL_DEFINE5(add_key, const char __user *, _type,
 
 	key_ref_put(keyring_ref);
  error3:
+<<<<<<< HEAD
 	if (!vm)
 		kfree(payload);
 	else
 		vfree(payload);
+=======
+	kvfree(payload);
+>>>>>>> v4.9.227
  error2:
 	kfree(description);
  error:
@@ -369,11 +382,20 @@ error:
  * and any links to the key will be automatically garbage collected after a
  * certain amount of time (/proc/sys/kernel/keys/gc_delay).
  *
+<<<<<<< HEAD
+=======
+ * Keys with KEY_FLAG_KEEP set should not be revoked.
+ *
+>>>>>>> v4.9.227
  * If successful, 0 is returned.
  */
 long keyctl_revoke_key(key_serial_t id)
 {
 	key_ref_t key_ref;
+<<<<<<< HEAD
+=======
+	struct key *key;
+>>>>>>> v4.9.227
 	long ret;
 
 	key_ref = lookup_user_key(id, 0, KEY_NEED_WRITE);
@@ -388,8 +410,17 @@ long keyctl_revoke_key(key_serial_t id)
 		}
 	}
 
+<<<<<<< HEAD
 	key_revoke(key_ref_to_ptr(key_ref));
 	ret = 0;
+=======
+	key = key_ref_to_ptr(key_ref);
+	ret = 0;
+	if (test_bit(KEY_FLAG_KEEP, &key->flags))
+		ret = -EPERM;
+	else
+		key_revoke(key);
+>>>>>>> v4.9.227
 
 	key_ref_put(key_ref);
 error:
@@ -403,11 +434,20 @@ error:
  * The key and any links to the key will be automatically garbage collected
  * immediately.
  *
+<<<<<<< HEAD
+=======
+ * Keys with KEY_FLAG_KEEP set should not be invalidated.
+ *
+>>>>>>> v4.9.227
  * If successful, 0 is returned.
  */
 long keyctl_invalidate_key(key_serial_t id)
 {
 	key_ref_t key_ref;
+<<<<<<< HEAD
+=======
+	struct key *key;
+>>>>>>> v4.9.227
 	long ret;
 
 	kenter("%d", id);
@@ -431,8 +471,17 @@ long keyctl_invalidate_key(key_serial_t id)
 	}
 
 invalidate:
+<<<<<<< HEAD
 	key_invalidate(key_ref_to_ptr(key_ref));
 	ret = 0;
+=======
+	key = key_ref_to_ptr(key_ref);
+	ret = 0;
+	if (test_bit(KEY_FLAG_KEEP, &key->flags))
+		ret = -EPERM;
+	else
+		key_invalidate(key);
+>>>>>>> v4.9.227
 error_put:
 	key_ref_put(key_ref);
 error:
@@ -444,12 +493,21 @@ error:
  * Clear the specified keyring, creating an empty process keyring if one of the
  * special keyring IDs is used.
  *
+<<<<<<< HEAD
  * The keyring must grant the caller Write permission for this to work.  If
  * successful, 0 will be returned.
+=======
+ * The keyring must grant the caller Write permission and not have
+ * KEY_FLAG_KEEP set for this to work.  If successful, 0 will be returned.
+>>>>>>> v4.9.227
  */
 long keyctl_keyring_clear(key_serial_t ringid)
 {
 	key_ref_t keyring_ref;
+<<<<<<< HEAD
+=======
+	struct key *keyring;
+>>>>>>> v4.9.227
 	long ret;
 
 	keyring_ref = lookup_user_key(ringid, KEY_LOOKUP_CREATE, KEY_NEED_WRITE);
@@ -471,7 +529,15 @@ long keyctl_keyring_clear(key_serial_t ringid)
 	}
 
 clear:
+<<<<<<< HEAD
 	ret = keyring_clear(key_ref_to_ptr(keyring_ref));
+=======
+	keyring = key_ref_to_ptr(keyring_ref);
+	if (test_bit(KEY_FLAG_KEEP, &keyring->flags))
+		ret = -EPERM;
+	else
+		ret = keyring_clear(keyring);
+>>>>>>> v4.9.227
 error_put:
 	key_ref_put(keyring_ref);
 error:
@@ -522,11 +588,20 @@ error:
  * itself need not grant the caller anything.  If the last link to a key is
  * removed then that key will be scheduled for destruction.
  *
+<<<<<<< HEAD
+=======
+ * Keys or keyrings with KEY_FLAG_KEEP set should not be unlinked.
+ *
+>>>>>>> v4.9.227
  * If successful, 0 will be returned.
  */
 long keyctl_keyring_unlink(key_serial_t id, key_serial_t ringid)
 {
 	key_ref_t keyring_ref, key_ref;
+<<<<<<< HEAD
+=======
+	struct key *keyring, *key;
+>>>>>>> v4.9.227
 	long ret;
 
 	keyring_ref = lookup_user_key(ringid, 0, KEY_NEED_WRITE);
@@ -541,7 +616,17 @@ long keyctl_keyring_unlink(key_serial_t id, key_serial_t ringid)
 		goto error2;
 	}
 
+<<<<<<< HEAD
 	ret = key_unlink(key_ref_to_ptr(keyring_ref), key_ref_to_ptr(key_ref));
+=======
+	keyring = key_ref_to_ptr(keyring_ref);
+	key = key_ref_to_ptr(key_ref);
+	if (test_bit(KEY_FLAG_KEEP, &keyring->flags) &&
+	    test_bit(KEY_FLAG_KEEP, &key->flags))
+		ret = -EPERM;
+	else
+		ret = key_unlink(keyring, key);
+>>>>>>> v4.9.227
 
 	key_ref_put(key_ref);
 error2:
@@ -744,10 +829,16 @@ long keyctl_read_key(key_serial_t keyid, char __user *buffer, size_t buflen)
 
 	key = key_ref_to_ptr(key_ref);
 
+<<<<<<< HEAD
 	if (test_bit(KEY_FLAG_NEGATIVE, &key->flags)) {
 		ret = -ENOKEY;
 		goto error2;
 	}
+=======
+	ret = key_read_state(key);
+	if (ret < 0)
+		goto error2; /* Negatively instantiated */
+>>>>>>> v4.9.227
 
 	/* see if we can read it directly */
 	ret = key_permission(key_ref, KEY_NEED_READ);
@@ -860,8 +951,13 @@ long keyctl_chown_key(key_serial_t id, uid_t user, gid_t group)
 				key_quota_root_maxbytes : key_quota_maxbytes;
 
 			spin_lock(&newowner->lock);
+<<<<<<< HEAD
 			if (newowner->qnkeys + 1 >= maxkeys ||
 			    newowner->qnbytes + key->quotalen >= maxbytes ||
+=======
+			if (newowner->qnkeys + 1 > maxkeys ||
+			    newowner->qnbytes + key->quotalen > maxbytes ||
+>>>>>>> v4.9.227
 			    newowner->qnbytes + key->quotalen <
 			    newowner->qnbytes)
 				goto quota_overrun;
@@ -879,7 +975,11 @@ long keyctl_chown_key(key_serial_t id, uid_t user, gid_t group)
 		atomic_dec(&key->user->nkeys);
 		atomic_inc(&newowner->nkeys);
 
+<<<<<<< HEAD
 		if (test_bit(KEY_FLAG_INSTANTIATED, &key->flags)) {
+=======
+		if (key->state != KEY_IS_UNINSTANTIATED) {
+>>>>>>> v4.9.227
 			atomic_dec(&key->user->nikeys);
 			atomic_inc(&newowner->nikeys);
 		}
@@ -1008,6 +1108,7 @@ static int keyctl_change_reqkey_auth(struct key *key)
 }
 
 /*
+<<<<<<< HEAD
  * Copy the iovec data from userspace
  */
 static long copy_from_user_iovec(void *buffer, const struct iovec *iov,
@@ -1023,6 +1124,8 @@ static long copy_from_user_iovec(void *buffer, const struct iovec *iov,
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Instantiate a key with the specified payload and link the key into the
  * destination keyring if one is given.
  *
@@ -1032,20 +1135,36 @@ static long copy_from_user_iovec(void *buffer, const struct iovec *iov,
  * If successful, 0 will be returned.
  */
 long keyctl_instantiate_key_common(key_serial_t id,
+<<<<<<< HEAD
 				   const struct iovec *payload_iov,
 				   unsigned ioc,
 				   size_t plen,
+=======
+				   struct iov_iter *from,
+>>>>>>> v4.9.227
 				   key_serial_t ringid)
 {
 	const struct cred *cred = current_cred();
 	struct request_key_auth *rka;
 	struct key *instkey, *dest_keyring;
+<<<<<<< HEAD
 	void *payload;
 	long ret;
 	bool vm = false;
 
 	kenter("%d,,%zu,%d", id, plen, ringid);
 
+=======
+	size_t plen = from ? iov_iter_count(from) : 0;
+	void *payload;
+	long ret;
+
+	kenter("%d,,%zu,%d", id, plen, ringid);
+
+	if (!plen)
+		from = NULL;
+
+>>>>>>> v4.9.227
 	ret = -EINVAL;
 	if (plen > 1024 * 1024 - 1)
 		goto error;
@@ -1057,27 +1176,43 @@ long keyctl_instantiate_key_common(key_serial_t id,
 	if (!instkey)
 		goto error;
 
+<<<<<<< HEAD
 	rka = instkey->payload.data;
+=======
+	rka = instkey->payload.data[0];
+>>>>>>> v4.9.227
 	if (rka->target_key->serial != id)
 		goto error;
 
 	/* pull the payload in if one was supplied */
 	payload = NULL;
 
+<<<<<<< HEAD
 	if (payload_iov) {
+=======
+	if (from) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		payload = kmalloc(plen, GFP_KERNEL);
 		if (!payload) {
 			if (plen <= PAGE_SIZE)
 				goto error;
+<<<<<<< HEAD
 			vm = true;
+=======
+>>>>>>> v4.9.227
 			payload = vmalloc(plen);
 			if (!payload)
 				goto error;
 		}
 
+<<<<<<< HEAD
 		ret = copy_from_user_iovec(payload, payload_iov, ioc);
 		if (ret < 0)
+=======
+		ret = -EFAULT;
+		if (copy_from_iter(payload, plen, from) != plen)
+>>>>>>> v4.9.227
 			goto error2;
 	}
 
@@ -1099,10 +1234,14 @@ long keyctl_instantiate_key_common(key_serial_t id,
 		keyctl_change_reqkey_auth(NULL);
 
 error2:
+<<<<<<< HEAD
 	if (!vm)
 		kfree(payload);
 	else
 		vfree(payload);
+=======
+	kvfree(payload);
+>>>>>>> v4.9.227
 error:
 	return ret;
 }
@@ -1122,6 +1261,7 @@ long keyctl_instantiate_key(key_serial_t id,
 			    key_serial_t ringid)
 {
 	if (_payload && plen) {
+<<<<<<< HEAD
 		struct iovec iov[1] = {
 			[0].iov_base = (void __user *)_payload,
 			[0].iov_len  = plen
@@ -1131,6 +1271,21 @@ long keyctl_instantiate_key(key_serial_t id,
 	}
 
 	return keyctl_instantiate_key_common(id, NULL, 0, 0, ringid);
+=======
+		struct iovec iov;
+		struct iov_iter from;
+		int ret;
+
+		ret = import_single_range(WRITE, (void __user *)_payload, plen,
+					  &iov, &from);
+		if (unlikely(ret))
+			return ret;
+
+		return keyctl_instantiate_key_common(id, &from, ringid);
+	}
+
+	return keyctl_instantiate_key_common(id, NULL, ringid);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1148,6 +1303,7 @@ long keyctl_instantiate_key_iov(key_serial_t id,
 				key_serial_t ringid)
 {
 	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
+<<<<<<< HEAD
 	long ret;
 
 	if (!_payload_iov || !ioc)
@@ -1171,6 +1327,21 @@ no_payload_free:
 		kfree(iov);
 no_payload:
 	return keyctl_instantiate_key_common(id, NULL, 0, 0, ringid);
+=======
+	struct iov_iter from;
+	long ret;
+
+	if (!_payload_iov)
+		ioc = 0;
+
+	ret = import_iovec(WRITE, _payload_iov, ioc,
+				    ARRAY_SIZE(iovstack), &iov, &from);
+	if (ret < 0)
+		return ret;
+	ret = keyctl_instantiate_key_common(id, &from, ringid);
+	kfree(iov);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1234,7 +1405,11 @@ long keyctl_reject_key(key_serial_t id, unsigned timeout, unsigned error,
 	if (!instkey)
 		goto error;
 
+<<<<<<< HEAD
 	rka = instkey->payload.data;
+=======
+	rka = instkey->payload.data[0];
+>>>>>>> v4.9.227
 	if (rka->target_key->serial != id)
 		goto error;
 
@@ -1326,6 +1501,11 @@ error:
  * the current time.  The key and any links to the key will be automatically
  * garbage collected after the timeout expires.
  *
+<<<<<<< HEAD
+=======
+ * Keys with KEY_FLAG_KEEP set should not be timed out.
+ *
+>>>>>>> v4.9.227
  * If successful, 0 is returned.
  */
 long keyctl_set_timeout(key_serial_t id, unsigned timeout)
@@ -1357,10 +1537,20 @@ long keyctl_set_timeout(key_serial_t id, unsigned timeout)
 
 okay:
 	key = key_ref_to_ptr(key_ref);
+<<<<<<< HEAD
 	key_set_timeout(key, timeout);
 	key_put(key);
 
 	ret = 0;
+=======
+	ret = 0;
+	if (test_bit(KEY_FLAG_KEEP, &key->flags))
+		ret = -EPERM;
+	else
+		key_set_timeout(key, timeout);
+	key_put(key);
+
+>>>>>>> v4.9.227
 error:
 	return ret;
 }
@@ -1690,6 +1880,14 @@ SYSCALL_DEFINE5(keyctl, int, option, unsigned long, arg2, unsigned long, arg3,
 	case KEYCTL_GET_PERSISTENT:
 		return keyctl_get_persistent((uid_t)arg2, (key_serial_t)arg3);
 
+<<<<<<< HEAD
+=======
+	case KEYCTL_DH_COMPUTE:
+		return keyctl_dh_compute((struct keyctl_dh_params __user *) arg2,
+					 (char __user *) arg3, (size_t) arg4,
+					 (void __user *) arg5);
+
+>>>>>>> v4.9.227
 	default:
 		return -EOPNOTSUPP;
 	}

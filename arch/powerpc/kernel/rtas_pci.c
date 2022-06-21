@@ -26,7 +26,10 @@
 #include <linux/pci.h>
 #include <linux/string.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> v4.9.227
 
 #include <asm/io.h>
 #include <asm/pgtable.h>
@@ -114,7 +117,11 @@ static int rtas_pci_read_config(struct pci_bus *bus,
 
 	ret = rtas_read_config(pdn, where, size, val);
 	if (*val == EEH_IO_ERROR_VALUE(size) &&
+<<<<<<< HEAD
 	    eeh_dev_check_failure(of_node_to_eeh_dev(dn)))
+=======
+	    eeh_dev_check_failure(pdn_to_eeh_dev(pdn)))
+>>>>>>> v4.9.227
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
 	return ret;
@@ -278,6 +285,7 @@ int rtas_setup_phb(struct pci_controller *phb)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 void __init find_and_init_phbs(void)
 {
@@ -325,3 +333,5 @@ void __init find_and_init_phbs(void)
 #endif /* CONFIG_PPC32 */
 	}
 }
+=======
+>>>>>>> v4.9.227

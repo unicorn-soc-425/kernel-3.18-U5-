@@ -17,6 +17,10 @@
 
 #include <linux/types.h>
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/if.h>
+>>>>>>> v4.9.227
 #include <linux/netfilter_ipv4.h>
 
 #include <linux/netfilter/x_tables.h>

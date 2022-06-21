@@ -14,12 +14,21 @@
 #if SLANG_VERSION < 20104
 #define slsmg_printf(msg, args...) \
 	SLsmg_printf((char *)(msg), ##args)
+<<<<<<< HEAD
+=======
+#define slsmg_vprintf(msg, vargs) \
+	SLsmg_vprintf((char *)(msg), vargs)
+>>>>>>> v4.9.227
 #define slsmg_write_nstring(msg, len) \
 	SLsmg_write_nstring((char *)(msg), len)
 #define sltt_set_color(obj, name, fg, bg) \
 	SLtt_set_color(obj,(char *)(name), (char *)(fg), (char *)(bg))
 #else
 #define slsmg_printf SLsmg_printf
+<<<<<<< HEAD
+=======
+#define slsmg_vprintf SLsmg_vprintf
+>>>>>>> v4.9.227
 #define slsmg_write_nstring SLsmg_write_nstring
 #define sltt_set_color SLtt_set_color
 #endif

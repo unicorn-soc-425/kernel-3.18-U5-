@@ -18,7 +18,11 @@ struct call_single_data {
 	struct llist_node llist;
 	smp_call_func_t func;
 	void *info;
+<<<<<<< HEAD
 	u16 flags;
+=======
+	unsigned int flags;
+>>>>>>> v4.9.227
 };
 
 /* total number of cpus in this system (may exceed NR_CPUS) */
@@ -151,6 +155,16 @@ smp_call_function_any(const struct cpumask *mask, smp_call_func_t func,
 static inline void kick_all_cpus_sync(void) {  }
 static inline void wake_up_all_idle_cpus(void) {  }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_UP_LATE_INIT
+extern void __init up_late_init(void);
+static inline void smp_init(void) { up_late_init(); }
+#else
+static inline void smp_init(void) { }
+#endif
+
+>>>>>>> v4.9.227
 #endif /* !SMP */
 
 /*
@@ -189,4 +203,15 @@ extern void arch_enable_nonboot_cpus_end(void);
 
 void smp_setup_processor_id(void);
 
+<<<<<<< HEAD
+=======
+int smp_call_on_cpu(unsigned int cpu, int (*func)(void *), void *par,
+		    bool phys);
+
+/* SMP core functions */
+int smpcfd_prepare_cpu(unsigned int cpu);
+int smpcfd_dead_cpu(unsigned int cpu);
+int smpcfd_dying_cpu(unsigned int cpu);
+
+>>>>>>> v4.9.227
 #endif /* __LINUX_SMP_H */

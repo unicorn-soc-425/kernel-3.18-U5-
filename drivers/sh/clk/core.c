@@ -469,6 +469,12 @@ void clk_enable_init_clocks(void)
 
 unsigned long clk_get_rate(struct clk *clk)
 {
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> v4.9.227
 	return clk->rate;
 }
 EXPORT_SYMBOL_GPL(clk_get_rate);
@@ -478,6 +484,12 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 	int ret = -EOPNOTSUPP;
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&clock_lock, flags);
 
 	if (likely(clk->ops && clk->ops->set_rate)) {
@@ -535,12 +547,24 @@ EXPORT_SYMBOL_GPL(clk_set_parent);
 
 struct clk *clk_get_parent(struct clk *clk)
 {
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return NULL;
+
+>>>>>>> v4.9.227
 	return clk->parent;
 }
 EXPORT_SYMBOL_GPL(clk_get_parent);
 
 long clk_round_rate(struct clk *clk, unsigned long rate)
 {
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> v4.9.227
 	if (likely(clk->ops && clk->ops->round_rate)) {
 		unsigned long flags, rounded;
 
@@ -555,6 +579,7 @@ long clk_round_rate(struct clk *clk, unsigned long rate)
 }
 EXPORT_SYMBOL_GPL(clk_round_rate);
 
+<<<<<<< HEAD
 long clk_round_parent(struct clk *clk, unsigned long target,
 		      unsigned long *best_freq, unsigned long *parent_freq,
 		      unsigned int div_min, unsigned int div_max)
@@ -643,6 +668,8 @@ long clk_round_parent(struct clk *clk, unsigned long target,
 }
 EXPORT_SYMBOL_GPL(clk_round_parent);
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 static void clks_core_resume(void)
 {

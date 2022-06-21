@@ -20,7 +20,10 @@
 #ifndef DVB_IX2505V_H
 #define DVB_IX2505V_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 

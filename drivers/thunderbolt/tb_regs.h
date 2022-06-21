@@ -30,7 +30,11 @@ enum tb_cap {
 	TB_CAP_I2C		= 0x0005,
 	TB_CAP_PLUG_EVENTS	= 0x0105, /* also EEPROM */
 	TB_CAP_TIME2		= 0x0305,
+<<<<<<< HEAD
 	TB_CAL_IECS		= 0x0405,
+=======
+	TB_CAP_IECS		= 0x0405,
+>>>>>>> v4.9.227
 	TB_CAP_LINK_CONTROLLER	= 0x0605, /* also IECS */
 };
 

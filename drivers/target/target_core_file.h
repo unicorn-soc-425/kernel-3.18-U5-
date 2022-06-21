@@ -21,12 +21,15 @@
 #define FDBD_HAS_BUFFERED_IO_WCE 0x04
 #define FDBD_FORMAT_UNIT_SIZE	2048
 
+<<<<<<< HEAD
 struct fd_prot {
 	unsigned char	*prot_buf;
 	struct scatterlist *prot_sg;
 	u32 prot_sg_nents;
 };
 
+=======
+>>>>>>> v4.9.227
 struct fd_dev {
 	struct se_device dev;
 

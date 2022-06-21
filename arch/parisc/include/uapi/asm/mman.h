@@ -31,6 +31,12 @@
 
 #define MCL_CURRENT	1		/* lock all current mappings */
 #define MCL_FUTURE	2		/* lock all future mappings */
+<<<<<<< HEAD
+=======
+#define MCL_ONFAULT	4		/* lock all pages that are faulted in */
+
+#define MLOCK_ONFAULT	0x01		/* Lock pages in range after they are faulted in, do not prefault */
+>>>>>>> v4.9.227
 
 #define MADV_NORMAL     0               /* no further special treatment */
 #define MADV_RANDOM     1               /* expect random page references */
@@ -42,10 +48,15 @@
 #define MADV_VPS_INHERIT 7              /* Inherit parents page size */
 
 /* common/generic parameters */
+<<<<<<< HEAD
+=======
+#define MADV_FREE	8		/* free pages only if memory pressure */
+>>>>>>> v4.9.227
 #define MADV_REMOVE	9		/* remove these pages & resources */
 #define MADV_DONTFORK	10		/* don't inherit across fork */
 #define MADV_DOFORK	11		/* do inherit across fork */
 
+<<<<<<< HEAD
 /* The range 12-64 is reserved for page size specification. */
 #define MADV_4K_PAGES   12              /* Use 4K pages  */
 #define MADV_16K_PAGES  14              /* Use 16K pages */
@@ -56,6 +67,8 @@
 #define MADV_16M_PAGES  24              /* Use 16 Megabyte pages */
 #define MADV_64M_PAGES  26              /* Use 64 Megabyte pages */
 
+=======
+>>>>>>> v4.9.227
 #define MADV_MERGEABLE   65		/* KSM may merge identical pages */
 #define MADV_UNMERGEABLE 66		/* KSM may not merge identical pages */
 
@@ -81,4 +94,12 @@
 #define MAP_HUGE_SHIFT	26
 #define MAP_HUGE_MASK	0x3f
 
+<<<<<<< HEAD
+=======
+#define PKEY_DISABLE_ACCESS	0x1
+#define PKEY_DISABLE_WRITE	0x2
+#define PKEY_ACCESS_MASK	(PKEY_DISABLE_ACCESS |\
+				 PKEY_DISABLE_WRITE)
+
+>>>>>>> v4.9.227
 #endif /* __PARISC_MMAN_H__ */

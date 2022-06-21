@@ -3,6 +3,10 @@
  * Copyright (C) Semihalf 2009
  * Copyright (C) Ilya Yanok, Emcraft Systems 2010
  * Copyright (C) Alexander Popov, Promcontroller 2014
+<<<<<<< HEAD
+=======
+ * Copyright (C) Mario Six, Guntermann & Drunck GmbH, 2016
+>>>>>>> v4.9.227
  *
  * Written by Piotr Ziecik <kosmo@semihalf.com>. Hardware description
  * (defines, structures and comments) was taken from MPC5121 DMA driver
@@ -21,15 +25,19 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in the
  * file called COPYING.
  */
 
 /*
+<<<<<<< HEAD
  * MPC512x and MPC8308 DMA driver. It supports
  * memory to memory data transfers (tested using dmatest module) and
  * data transfers between memory and peripheral I/O memory
@@ -42,6 +50,21 @@
  *  - minimal memory <-> I/O memory transfer chunk is 4 bytes and consequently
  *     source and destination addresses must be 4-byte aligned
  *     and transfer size must be aligned on (4 * maxburst) boundary;
+=======
+ * MPC512x and MPC8308 DMA driver. It supports memory to memory data transfers
+ * (tested using dmatest module) and data transfers between memory and
+ * peripheral I/O memory by means of slave scatter/gather with these
+ * limitations:
+ *  - chunked transfers (described by s/g lists with more than one item) are
+ *     refused as long as proper support for scatter/gather is missing
+ *  - transfers on MPC8308 always start from software as this SoC does not have
+ *     external request lines for peripheral flow control
+ *  - memory <-> I/O memory transfer chunks of sizes of 1, 2, 4, 16 (for
+ *     MPC512x), and 32 bytes are supported, and, consequently, source
+ *     addresses and destination addresses must be aligned accordingly;
+ *     furthermore, for MPC512x SoCs, the transfer size must be aligned on
+ *     (chunk size * maxburst)
+>>>>>>> v4.9.227
  */
 
 #include <linux/module.h>
@@ -217,8 +240,15 @@ struct mpc_dma_chan {
 	/* Settings for access to peripheral FIFO */
 	dma_addr_t			src_per_paddr;
 	u32				src_tcd_nunits;
+<<<<<<< HEAD
 	dma_addr_t			dst_per_paddr;
 	u32				dst_tcd_nunits;
+=======
+	u8				swidth;
+	dma_addr_t			dst_per_paddr;
+	u32				dst_tcd_nunits;
+	u8				dwidth;
+>>>>>>> v4.9.227
 
 	/* Lock for this structure */
 	spinlock_t			lock;
@@ -251,6 +281,10 @@ static inline struct mpc_dma_chan *dma_chan_to_mpc_dma_chan(struct dma_chan *c)
 static inline struct mpc_dma *dma_chan_to_mpc_dma(struct dma_chan *c)
 {
 	struct mpc_dma_chan *mchan = dma_chan_to_mpc_dma_chan(c);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return container_of(mchan, struct mpc_dma, channels[c->chan_id]);
 }
 
@@ -258,9 +292,15 @@ static inline struct mpc_dma *dma_chan_to_mpc_dma(struct dma_chan *c)
  * Execute all queued DMA descriptors.
  *
  * Following requirements must be met while calling mpc_dma_execute():
+<<<<<<< HEAD
  * 	a) mchan->lock is acquired,
  * 	b) mchan->active list is empty,
  * 	c) mchan->queued list contains at least one entry.
+=======
+ *	a) mchan->lock is acquired,
+ *	b) mchan->active list is empty,
+ *	c) mchan->queued list contains at least one entry.
+>>>>>>> v4.9.227
  */
 static void mpc_dma_execute(struct mpc_dma_chan *mchan)
 {
@@ -410,8 +450,12 @@ static void mpc_dma_process_completed(struct mpc_dma *mdma)
 		list_for_each_entry(mdesc, &list, node) {
 			desc = &mdesc->desc;
 
+<<<<<<< HEAD
 			if (desc->callback)
 				desc->callback(desc->callback_param);
+=======
+			dmaengine_desc_get_callback_invoke(desc, NULL);
+>>>>>>> v4.9.227
 
 			last_cookie = desc->cookie;
 			dma_run_dependencies(desc);
@@ -450,6 +494,7 @@ static void mpc_dma_tasklet(unsigned long data)
 		if (es & MPC_DMA_DMAES_SAE)
 			dev_err(mdma->dma.dev, "- Source Address Error\n");
 		if (es & MPC_DMA_DMAES_SOE)
+<<<<<<< HEAD
 			dev_err(mdma->dma.dev, "- Source Offset"
 						" Configuration Error\n");
 		if (es & MPC_DMA_DMAES_DAE)
@@ -464,6 +509,17 @@ static void mpc_dma_tasklet(unsigned long data)
 		if (es & MPC_DMA_DMAES_SGE)
 			dev_err(mdma->dma.dev, "- Scatter/Gather"
 						" Configuration Error\n");
+=======
+			dev_err(mdma->dma.dev, "- Source Offset Configuration Error\n");
+		if (es & MPC_DMA_DMAES_DAE)
+			dev_err(mdma->dma.dev, "- Destination Address Error\n");
+		if (es & MPC_DMA_DMAES_DOE)
+			dev_err(mdma->dma.dev, "- Destination Offset Configuration Error\n");
+		if (es & MPC_DMA_DMAES_NCE)
+			dev_err(mdma->dma.dev, "- NBytes/Citter Configuration Error\n");
+		if (es & MPC_DMA_DMAES_SGE)
+			dev_err(mdma->dma.dev, "- Scatter/Gather Configuration Error\n");
+>>>>>>> v4.9.227
 		if (es & MPC_DMA_DMAES_SBE)
 			dev_err(mdma->dma.dev, "- Source Bus Error\n");
 		if (es & MPC_DMA_DMAES_DBE)
@@ -522,8 +578,13 @@ static int mpc_dma_alloc_chan_resources(struct dma_chan *chan)
 	for (i = 0; i < MPC_DMA_DESCRIPTORS; i++) {
 		mdesc = kzalloc(sizeof(struct mpc_dma_desc), GFP_KERNEL);
 		if (!mdesc) {
+<<<<<<< HEAD
 			dev_notice(mdma->dma.dev, "Memory allocation error. "
 					"Allocated only %u descriptors\n", i);
+=======
+			dev_notice(mdma->dma.dev,
+				"Memory allocation error. Allocated only %u descriptors\n", i);
+>>>>>>> v4.9.227
 			break;
 		}
 
@@ -688,6 +749,18 @@ mpc_dma_prep_memcpy(struct dma_chan *chan, dma_addr_t dst, dma_addr_t src,
 	return &mdesc->desc;
 }
 
+<<<<<<< HEAD
+=======
+inline u8 buswidth_to_dmatsize(u8 buswidth)
+{
+	u8 res;
+
+	for (res = 0; buswidth > 1; buswidth /= 2)
+		res++;
+	return res;
+}
+
+>>>>>>> v4.9.227
 static struct dma_async_tx_descriptor *
 mpc_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 		unsigned int sg_len, enum dma_transfer_direction direction,
@@ -746,6 +819,7 @@ mpc_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 
 		memset(tcd, 0, sizeof(struct mpc_dma_tcd));
 
+<<<<<<< HEAD
 		if (!IS_ALIGNED(sg_dma_address(sg), 4))
 			goto err_prep;
 
@@ -779,6 +853,56 @@ mpc_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 		tcd->biter_linkch = iter >> 9;
 		tcd->citer = tcd->biter;
 		tcd->citer_linkch = tcd->biter_linkch;
+=======
+		if (direction == DMA_DEV_TO_MEM) {
+			tcd->saddr = per_paddr;
+			tcd->daddr = sg_dma_address(sg);
+
+			if (!IS_ALIGNED(sg_dma_address(sg), mchan->dwidth))
+				goto err_prep;
+
+			tcd->soff = 0;
+			tcd->doff = mchan->dwidth;
+		} else {
+			tcd->saddr = sg_dma_address(sg);
+			tcd->daddr = per_paddr;
+
+			if (!IS_ALIGNED(sg_dma_address(sg), mchan->swidth))
+				goto err_prep;
+
+			tcd->soff = mchan->swidth;
+			tcd->doff = 0;
+		}
+
+		tcd->ssize = buswidth_to_dmatsize(mchan->swidth);
+		tcd->dsize = buswidth_to_dmatsize(mchan->dwidth);
+
+		if (mdma->is_mpc8308) {
+			tcd->nbytes = sg_dma_len(sg);
+			if (!IS_ALIGNED(tcd->nbytes, mchan->swidth))
+				goto err_prep;
+
+			/* No major loops for MPC8303 */
+			tcd->biter = 1;
+			tcd->citer = 1;
+		} else {
+			len = sg_dma_len(sg);
+			tcd->nbytes = tcd_nunits * tcd->ssize;
+			if (!IS_ALIGNED(len, tcd->nbytes))
+				goto err_prep;
+
+			iter = len / tcd->nbytes;
+			if (iter >= 1 << 15) {
+				/* len is too big */
+				goto err_prep;
+			}
+			/* citer_linkch contains the high bits of iter */
+			tcd->biter = iter & 0x1ff;
+			tcd->biter_linkch = iter >> 9;
+			tcd->citer = tcd->biter;
+			tcd->citer_linkch = tcd->biter_linkch;
+		}
+>>>>>>> v4.9.227
 
 		tcd->e_sg = 0;
 		tcd->d_req = 1;
@@ -800,6 +924,7 @@ err_prep:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int mpc_dma_device_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 							unsigned long arg)
 {
@@ -873,6 +998,93 @@ static int mpc_dma_device_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 	}
 
 	return -ENXIO;
+=======
+inline bool is_buswidth_valid(u8 buswidth, bool is_mpc8308)
+{
+	switch (buswidth) {
+	case 16:
+		if (is_mpc8308)
+			return false;
+	case 1:
+	case 2:
+	case 4:
+	case 32:
+		break;
+	default:
+		return false;
+	}
+
+	return true;
+}
+
+static int mpc_dma_device_config(struct dma_chan *chan,
+				 struct dma_slave_config *cfg)
+{
+	struct mpc_dma_chan *mchan = dma_chan_to_mpc_dma_chan(chan);
+	struct mpc_dma *mdma = dma_chan_to_mpc_dma(&mchan->chan);
+	unsigned long flags;
+
+	/*
+	 * Software constraints:
+	 *  - only transfers between a peripheral device and memory are
+	 *     supported
+	 *  - transfer chunk sizes of 1, 2, 4, 16 (for MPC512x), and 32 bytes
+	 *     are supported, and, consequently, source addresses and
+	 *     destination addresses; must be aligned accordingly; furthermore,
+	 *     for MPC512x SoCs, the transfer size must be aligned on (chunk
+	 *     size * maxburst)
+	 *  - during the transfer, the RAM address is incremented by the size
+	 *     of transfer chunk
+	 *  - the peripheral port's address is constant during the transfer.
+	 */
+
+	if (!IS_ALIGNED(cfg->src_addr, cfg->src_addr_width) ||
+	    !IS_ALIGNED(cfg->dst_addr, cfg->dst_addr_width)) {
+		return -EINVAL;
+	}
+
+	if (!is_buswidth_valid(cfg->src_addr_width, mdma->is_mpc8308) ||
+	    !is_buswidth_valid(cfg->dst_addr_width, mdma->is_mpc8308))
+		return -EINVAL;
+
+	spin_lock_irqsave(&mchan->lock, flags);
+
+	mchan->src_per_paddr = cfg->src_addr;
+	mchan->src_tcd_nunits = cfg->src_maxburst;
+	mchan->swidth = cfg->src_addr_width;
+	mchan->dst_per_paddr = cfg->dst_addr;
+	mchan->dst_tcd_nunits = cfg->dst_maxburst;
+	mchan->dwidth = cfg->dst_addr_width;
+
+	/* Apply defaults */
+	if (mchan->src_tcd_nunits == 0)
+		mchan->src_tcd_nunits = 1;
+	if (mchan->dst_tcd_nunits == 0)
+		mchan->dst_tcd_nunits = 1;
+
+	spin_unlock_irqrestore(&mchan->lock, flags);
+
+	return 0;
+}
+
+static int mpc_dma_device_terminate_all(struct dma_chan *chan)
+{
+	struct mpc_dma_chan *mchan = dma_chan_to_mpc_dma_chan(chan);
+	struct mpc_dma *mdma = dma_chan_to_mpc_dma(chan);
+	unsigned long flags;
+
+	/* Disable channel requests */
+	spin_lock_irqsave(&mchan->lock, flags);
+
+	out_8(&mdma->regs->dmacerq, chan->chan_id);
+	list_splice_tail_init(&mchan->prepared, &mchan->free);
+	list_splice_tail_init(&mchan->queued, &mchan->free);
+	list_splice_tail_init(&mchan->active, &mchan->free);
+
+	spin_unlock_irqrestore(&mchan->lock, flags);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int mpc_dma_probe(struct platform_device *op)
@@ -885,16 +1097,27 @@ static int mpc_dma_probe(struct platform_device *op)
 	struct resource res;
 	ulong regs_start, regs_size;
 	int retval, i;
+<<<<<<< HEAD
 
 	mdma = devm_kzalloc(dev, sizeof(struct mpc_dma), GFP_KERNEL);
 	if (!mdma) {
 		dev_err(dev, "Memory exhausted!\n");
+=======
+	u8 chancnt;
+
+	mdma = devm_kzalloc(dev, sizeof(struct mpc_dma), GFP_KERNEL);
+	if (!mdma) {
+>>>>>>> v4.9.227
 		retval = -ENOMEM;
 		goto err;
 	}
 
 	mdma->irq = irq_of_parse_and_map(dn, 0);
+<<<<<<< HEAD
 	if (mdma->irq == NO_IRQ) {
+=======
+	if (!mdma->irq) {
+>>>>>>> v4.9.227
 		dev_err(dev, "Error mapping IRQ!\n");
 		retval = -EINVAL;
 		goto err;
@@ -903,7 +1126,11 @@ static int mpc_dma_probe(struct platform_device *op)
 	if (of_device_is_compatible(dn, "fsl,mpc8308-dma")) {
 		mdma->is_mpc8308 = 1;
 		mdma->irq2 = irq_of_parse_and_map(dn, 1);
+<<<<<<< HEAD
 		if (mdma->irq2 == NO_IRQ) {
+=======
+		if (!mdma->irq2) {
+>>>>>>> v4.9.227
 			dev_err(dev, "Error mapping IRQ!\n");
 			retval = -EINVAL;
 			goto err_dispose1;
@@ -956,23 +1183,40 @@ static int mpc_dma_probe(struct platform_device *op)
 
 	dma = &mdma->dma;
 	dma->dev = dev;
+<<<<<<< HEAD
 	if (mdma->is_mpc8308)
 		dma->chancnt = MPC8308_DMACHAN_MAX;
 	else
 		dma->chancnt = MPC512x_DMACHAN_MAX;
+=======
+>>>>>>> v4.9.227
 	dma->device_alloc_chan_resources = mpc_dma_alloc_chan_resources;
 	dma->device_free_chan_resources = mpc_dma_free_chan_resources;
 	dma->device_issue_pending = mpc_dma_issue_pending;
 	dma->device_tx_status = mpc_dma_tx_status;
 	dma->device_prep_dma_memcpy = mpc_dma_prep_memcpy;
 	dma->device_prep_slave_sg = mpc_dma_prep_slave_sg;
+<<<<<<< HEAD
 	dma->device_control = mpc_dma_device_control;
+=======
+	dma->device_config = mpc_dma_device_config;
+	dma->device_terminate_all = mpc_dma_device_terminate_all;
+>>>>>>> v4.9.227
 
 	INIT_LIST_HEAD(&dma->channels);
 	dma_cap_set(DMA_MEMCPY, dma->cap_mask);
 	dma_cap_set(DMA_SLAVE, dma->cap_mask);
 
+<<<<<<< HEAD
 	for (i = 0; i < dma->chancnt; i++) {
+=======
+	if (mdma->is_mpc8308)
+		chancnt = MPC8308_DMACHAN_MAX;
+	else
+		chancnt = MPC512x_DMACHAN_MAX;
+
+	for (i = 0; i < chancnt; i++) {
+>>>>>>> v4.9.227
 		mchan = &mdma->channels[i];
 
 		mchan->chan.device = dma;
@@ -1010,7 +1254,12 @@ static int mpc_dma_probe(struct platform_device *op)
 		out_be32(&mdma->regs->dmaerrl, 0xFFFF);
 	} else {
 		out_be32(&mdma->regs->dmacr, MPC_DMA_DMACR_EDCG |
+<<<<<<< HEAD
 					MPC_DMA_DMACR_ERGA | MPC_DMA_DMACR_ERCA);
+=======
+						MPC_DMA_DMACR_ERGA |
+						MPC_DMA_DMACR_ERCA);
+>>>>>>> v4.9.227
 
 		/* Disable hardware DMA requests */
 		out_be32(&mdma->regs->dmaerqh, 0);
@@ -1075,22 +1324,37 @@ static int mpc_dma_remove(struct platform_device *op)
 	}
 	free_irq(mdma->irq, mdma);
 	irq_dispose_mapping(mdma->irq);
+<<<<<<< HEAD
+=======
+	tasklet_kill(&mdma->tasklet);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id mpc_dma_match[] = {
+=======
+static const struct of_device_id mpc_dma_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "fsl,mpc5121-dma", },
 	{ .compatible = "fsl,mpc8308-dma", },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, mpc_dma_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver mpc_dma_driver = {
 	.probe		= mpc_dma_probe,
 	.remove		= mpc_dma_remove,
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= mpc_dma_match,
 	},
 };

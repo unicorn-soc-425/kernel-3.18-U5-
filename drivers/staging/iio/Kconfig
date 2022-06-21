@@ -12,11 +12,15 @@ source "drivers/staging/iio/frequency/Kconfig"
 source "drivers/staging/iio/gyro/Kconfig"
 source "drivers/staging/iio/impedance-analyzer/Kconfig"
 source "drivers/staging/iio/light/Kconfig"
+<<<<<<< HEAD
 source "drivers/staging/iio/magnetometer/Kconfig"
+=======
+>>>>>>> v4.9.227
 source "drivers/staging/iio/meter/Kconfig"
 source "drivers/staging/iio/resolver/Kconfig"
 source "drivers/staging/iio/trigger/Kconfig"
 
+<<<<<<< HEAD
 config IIO_DUMMY_EVGEN
        tristate
 
@@ -44,4 +48,6 @@ config IIO_SIMPLE_DUMMY_BUFFER
 
 endif # IIO_SIMPLE_DUMMY
 
+=======
+>>>>>>> v4.9.227
 endmenu

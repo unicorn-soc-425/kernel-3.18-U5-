@@ -18,6 +18,11 @@
 
 #define pr_fmt(fmt) "nci_spi: %s: " fmt, __func__
 
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+
+>>>>>>> v4.9.227
 #include <linux/export.h>
 #include <linux/spi/spi.h>
 #include <linux/crc-ccitt.h>
@@ -56,6 +61,10 @@ static int __nci_spi_send(struct nci_spi *nspi, struct sk_buff *skb,
 	}
 	t.cs_change = cs_change;
 	t.delay_usecs = nspi->xfer_udelay;
+<<<<<<< HEAD
+=======
+	t.speed_hz = nspi->xfer_speed_hz;
+>>>>>>> v4.9.227
 
 	spi_message_init(&m);
 	spi_message_add_tail(&t, &m);
@@ -142,7 +151,12 @@ struct nci_spi *nci_spi_allocate_spi(struct spi_device *spi,
 
 	nspi->acknowledge_mode = acknowledge_mode;
 	nspi->xfer_udelay = delay;
+<<<<<<< HEAD
 
+=======
+	/* Use controller max SPI speed by default */
+	nspi->xfer_speed_hz = 0;
+>>>>>>> v4.9.227
 	nspi->spi = spi;
 	nspi->ndev = ndev;
 	init_completion(&nspi->req_completion);
@@ -195,12 +209,20 @@ static struct sk_buff *__nci_spi_read(struct nci_spi *nspi)
 	tx.tx_buf = req;
 	tx.len = 2;
 	tx.cs_change = 0;
+<<<<<<< HEAD
+=======
+	tx.speed_hz = nspi->xfer_speed_hz;
+>>>>>>> v4.9.227
 	spi_message_add_tail(&tx, &m);
 
 	memset(&rx, 0, sizeof(struct spi_transfer));
 	rx.rx_buf = resp_hdr;
 	rx.len = 2;
 	rx.cs_change = 1;
+<<<<<<< HEAD
+=======
+	rx.speed_hz = nspi->xfer_speed_hz;
+>>>>>>> v4.9.227
 	spi_message_add_tail(&rx, &m);
 
 	ret = spi_sync(nspi->spi, &m);
@@ -224,6 +246,10 @@ static struct sk_buff *__nci_spi_read(struct nci_spi *nspi)
 	rx.len = rx_len;
 	rx.cs_change = 0;
 	rx.delay_usecs = nspi->xfer_udelay;
+<<<<<<< HEAD
+=======
+	rx.speed_hz = nspi->xfer_speed_hz;
+>>>>>>> v4.9.227
 	spi_message_add_tail(&rx, &m);
 
 	ret = spi_sync(nspi->spi, &m);
@@ -320,3 +346,8 @@ done:
 	return skb;
 }
 EXPORT_SYMBOL_GPL(nci_spi_read);
+<<<<<<< HEAD
+=======
+
+MODULE_LICENSE("GPL");
+>>>>>>> v4.9.227

@@ -132,7 +132,11 @@ static int is_valid_adc(uint16_t adc_val, uint16_t min, uint16_t max)
  * to achieve very close approximate temp value with less than
  * 0.5C error
  */
+<<<<<<< HEAD
 static int adc_to_temp(int direct, uint16_t adc_val, unsigned long *tp)
+=======
+static int adc_to_temp(int direct, uint16_t adc_val, int *tp)
+>>>>>>> v4.9.227
 {
 	int temp;
 
@@ -174,14 +178,22 @@ static int adc_to_temp(int direct, uint16_t adc_val, unsigned long *tp)
  *
  * Can sleep
  */
+<<<<<<< HEAD
 static int mid_read_temp(struct thermal_zone_device *tzd, unsigned long *temp)
+=======
+static int mid_read_temp(struct thermal_zone_device *tzd, int *temp)
+>>>>>>> v4.9.227
 {
 	struct thermal_device_info *td_info = tzd->devdata;
 	uint16_t adc_val, addr;
 	uint8_t data = 0;
 	int ret;
+<<<<<<< HEAD
 	unsigned long curr_temp;
 
+=======
+	int curr_temp;
+>>>>>>> v4.9.227
 
 	addr = td_info->chnl_addr;
 
@@ -416,6 +428,10 @@ static struct thermal_device_info *initialize_sensor(int index)
 	return td_info;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 /**
  * mid_thermal_resume - resume routine
  * @dev: device structure
@@ -443,6 +459,10 @@ static int mid_thermal_suspend(struct device *dev)
 	 */
 	return configure_adc(0);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(mid_thermal_pm,
 			 mid_thermal_suspend, mid_thermal_resume);
@@ -453,7 +473,11 @@ static SIMPLE_DEV_PM_OPS(mid_thermal_pm,
  *
  * Can sleep
  */
+<<<<<<< HEAD
 static int read_curr_temp(struct thermal_zone_device *tzd, unsigned long *temp)
+=======
+static int read_curr_temp(struct thermal_zone_device *tzd, int *temp)
+>>>>>>> v4.9.227
 {
 	WARN_ON(tzd == NULL);
 	return mid_read_temp(tzd, temp);
@@ -556,7 +580,10 @@ MODULE_DEVICE_TABLE(platform, therm_id_table);
 static struct platform_driver mid_thermal_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &mid_thermal_pm,
 	},
 	.probe = mid_thermal_probe,

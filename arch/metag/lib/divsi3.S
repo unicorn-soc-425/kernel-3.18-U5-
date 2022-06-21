@@ -50,7 +50,11 @@ $LIDMCQuick:
 	ADDCC   D0Re0,D0Re0,#1          ! If yes result += 1
 	SUBCC   D1Ar1,D1Ar1,D1Re0       !        and A -= Bu
 	ORS     D0Ar4,D0Ar4,D0Ar4       ! Return neg result?
+<<<<<<< HEAD
 	NEG     D0Ar2,D0Re0             ! Calulate neg result
+=======
+	NEG     D0Ar2,D0Re0             ! Calculate neg result
+>>>>>>> v4.9.227
 	MOVMI   D0Re0,D0Ar2             ! Yes: Take neg result
 $LIDMCRet:
 	MOV     PC,D1RtP
@@ -94,7 +98,11 @@ $LIDMCLoop:
 	LSR     D1Re0, D1Re0, #1        ! Shift down B
 	BNZ     $LIDMCLoop               ! Was single bit in curbit lost?
 	ORS     D0Ar4,D0Ar4,D0Ar4       ! Return neg result?
+<<<<<<< HEAD
 	NEG     D0Ar2,D0Re0             ! Calulate neg result
+=======
+	NEG     D0Ar2,D0Re0             ! Calculate neg result
+>>>>>>> v4.9.227
 	MOVMI   D0Re0,D0Ar2             ! Yes: Take neg result
 	MOV     PC,D1RtP
 	.size   ___divsi3,.-___divsi3

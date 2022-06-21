@@ -65,7 +65,11 @@
 		};
 
 		iofpga@7,00000000 {
+<<<<<<< HEAD
 			compatible = "arm,amba-bus", "simple-bus";
+=======
+			compatible = "simple-bus";
+>>>>>>> v4.9.227
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 7 0 0x20000>;
@@ -74,19 +78,31 @@
 				compatible = "arm,vexpress-sysreg";
 				reg = <0x00000 0x1000>;
 
+<<<<<<< HEAD
 				v2m_led_gpios: sys_led@08 {
+=======
+				v2m_led_gpios: sys_led {
+>>>>>>> v4.9.227
 					compatible = "arm,vexpress-sysreg,sys_led";
 					gpio-controller;
 					#gpio-cells = <2>;
 				};
 
+<<<<<<< HEAD
 				v2m_mmc_gpios: sys_mci@48 {
+=======
+				v2m_mmc_gpios: sys_mci {
+>>>>>>> v4.9.227
 					compatible = "arm,vexpress-sysreg,sys_mci";
 					gpio-controller;
 					#gpio-cells = <2>;
 				};
 
+<<<<<<< HEAD
 				v2m_flash_gpios: sys_flash@4c {
+=======
+				v2m_flash_gpios: sys_flash {
+>>>>>>> v4.9.227
 					compatible = "arm,vexpress-sysreg,sys_flash";
 					gpio-controller;
 					#gpio-cells = <2>;
@@ -100,6 +116,11 @@
 				clock-names = "refclk", "timclk", "apb_pclk";
 				#clock-cells = <1>;
 				clock-output-names = "timerclken0", "timerclken1", "timerclken2", "timerclken3";
+<<<<<<< HEAD
+=======
+				assigned-clocks = <&v2m_sysctl 0>, <&v2m_sysctl 1>, <&v2m_sysctl 3>, <&v2m_sysctl 3>;
+				assigned-clock-parents = <&v2m_refclk1mhz>, <&v2m_refclk1mhz>, <&v2m_refclk1mhz>, <&v2m_refclk1mhz>;
+>>>>>>> v4.9.227
 			};
 
 			/* PCI-E I2C bus */
@@ -283,7 +304,11 @@
 			};
 		};
 
+<<<<<<< HEAD
 		v2m_fixed_3v3: fixedregulator@0 {
+=======
+		v2m_fixed_3v3: fixed-regulator-0 {
+>>>>>>> v4.9.227
 			compatible = "regulator-fixed";
 			regulator-name = "3V3";
 			regulator-min-microvolt = <3300000>;
@@ -315,49 +340,81 @@
 		leds {
 			compatible = "gpio-leds";
 
+<<<<<<< HEAD
 			user@1 {
+=======
+			user1 {
+>>>>>>> v4.9.227
 				label = "v2m:green:user1";
 				gpios = <&v2m_led_gpios 0 0>;
 				linux,default-trigger = "heartbeat";
 			};
 
+<<<<<<< HEAD
 			user@2 {
+=======
+			user2 {
+>>>>>>> v4.9.227
 				label = "v2m:green:user2";
 				gpios = <&v2m_led_gpios 1 0>;
 				linux,default-trigger = "mmc0";
 			};
 
+<<<<<<< HEAD
 			user@3 {
+=======
+			user3 {
+>>>>>>> v4.9.227
 				label = "v2m:green:user3";
 				gpios = <&v2m_led_gpios 2 0>;
 				linux,default-trigger = "cpu0";
 			};
 
+<<<<<<< HEAD
 			user@4 {
+=======
+			user4 {
+>>>>>>> v4.9.227
 				label = "v2m:green:user4";
 				gpios = <&v2m_led_gpios 3 0>;
 				linux,default-trigger = "cpu1";
 			};
 
+<<<<<<< HEAD
 			user@5 {
+=======
+			user5 {
+>>>>>>> v4.9.227
 				label = "v2m:green:user5";
 				gpios = <&v2m_led_gpios 4 0>;
 				linux,default-trigger = "cpu2";
 			};
 
+<<<<<<< HEAD
 			user@6 {
+=======
+			user6 {
+>>>>>>> v4.9.227
 				label = "v2m:green:user6";
 				gpios = <&v2m_led_gpios 5 0>;
 				linux,default-trigger = "cpu3";
 			};
 
+<<<<<<< HEAD
 			user@7 {
+=======
+			user7 {
+>>>>>>> v4.9.227
 				label = "v2m:green:user7";
 				gpios = <&v2m_led_gpios 6 0>;
 				linux,default-trigger = "cpu4";
 			};
 
+<<<<<<< HEAD
 			user@8 {
+=======
+			user8 {
+>>>>>>> v4.9.227
 				label = "v2m:green:user8";
 				gpios = <&v2m_led_gpios 7 0>;
 				linux,default-trigger = "cpu5";
@@ -368,7 +425,11 @@
 			compatible = "arm,vexpress,config-bus";
 			arm,vexpress,config-bridge = <&v2m_sysreg>;
 
+<<<<<<< HEAD
 			osc@0 {
+=======
+			oscclk0 {
+>>>>>>> v4.9.227
 				/* MCC static memory clock */
 				compatible = "arm,vexpress-osc";
 				arm,vexpress-sysreg,func = <1 0>;
@@ -377,7 +438,11 @@
 				clock-output-names = "v2m:oscclk0";
 			};
 
+<<<<<<< HEAD
 			v2m_oscclk1: osc@1 {
+=======
+			v2m_oscclk1: oscclk1 {
+>>>>>>> v4.9.227
 				/* CLCD clock */
 				compatible = "arm,vexpress-osc";
 				arm,vexpress-sysreg,func = <1 1>;
@@ -386,7 +451,11 @@
 				clock-output-names = "v2m:oscclk1";
 			};
 
+<<<<<<< HEAD
 			v2m_oscclk2: osc@2 {
+=======
+			v2m_oscclk2: oscclk2 {
+>>>>>>> v4.9.227
 				/* IO FPGA peripheral clock */
 				compatible = "arm,vexpress-osc";
 				arm,vexpress-sysreg,func = <1 2>;
@@ -395,7 +464,11 @@
 				clock-output-names = "v2m:oscclk2";
 			};
 
+<<<<<<< HEAD
 			volt@0 {
+=======
+			volt-vio {
+>>>>>>> v4.9.227
 				/* Logic level voltage */
 				compatible = "arm,vexpress-volt";
 				arm,vexpress-sysreg,func = <2 0>;
@@ -404,34 +477,58 @@
 				label = "VIO";
 			};
 
+<<<<<<< HEAD
 			temp@0 {
+=======
+			temp-mcc {
+>>>>>>> v4.9.227
 				/* MCC internal operating temperature */
 				compatible = "arm,vexpress-temp";
 				arm,vexpress-sysreg,func = <4 0>;
 				label = "MCC";
 			};
 
+<<<<<<< HEAD
 			reset@0 {
+=======
+			reset {
+>>>>>>> v4.9.227
 				compatible = "arm,vexpress-reset";
 				arm,vexpress-sysreg,func = <5 0>;
 			};
 
+<<<<<<< HEAD
 			muxfpga@0 {
+=======
+			muxfpga {
+>>>>>>> v4.9.227
 				compatible = "arm,vexpress-muxfpga";
 				arm,vexpress-sysreg,func = <7 0>;
 			};
 
+<<<<<<< HEAD
 			shutdown@0 {
+=======
+			shutdown {
+>>>>>>> v4.9.227
 				compatible = "arm,vexpress-shutdown";
 				arm,vexpress-sysreg,func = <8 0>;
 			};
 
+<<<<<<< HEAD
 			reboot@0 {
+=======
+			reboot {
+>>>>>>> v4.9.227
 				compatible = "arm,vexpress-reboot";
 				arm,vexpress-sysreg,func = <9 0>;
 			};
 
+<<<<<<< HEAD
 			dvimode@0 {
+=======
+			dvimode {
+>>>>>>> v4.9.227
 				compatible = "arm,vexpress-dvimode";
 				arm,vexpress-sysreg,func = <11 0>;
 			};

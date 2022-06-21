@@ -157,8 +157,12 @@ static void twl4030_vibra_close(struct input_dev *input)
 }
 
 /*** Module ***/
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int twl4030_vibra_suspend(struct device *dev)
+=======
+static int __maybe_unused twl4030_vibra_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct vibra_info *info = platform_get_drvdata(pdev);
@@ -169,12 +173,19 @@ static int twl4030_vibra_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int twl4030_vibra_resume(struct device *dev)
+=======
+static int __maybe_unused twl4030_vibra_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	vibra_disable_leds();
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(twl4030_vibra_pm_ops,
 			 twl4030_vibra_suspend, twl4030_vibra_resume);
@@ -226,7 +237,10 @@ static int twl4030_vibra_probe(struct platform_device *pdev)
 
 	info->input_dev->name = "twl4030:vibrator";
 	info->input_dev->id.version = 1;
+<<<<<<< HEAD
 	info->input_dev->dev.parent = pdev->dev.parent;
+=======
+>>>>>>> v4.9.227
 	info->input_dev->close = twl4030_vibra_close;
 	__set_bit(FF_RUMBLE, info->input_dev->ffbit);
 
@@ -256,7 +270,10 @@ static struct platform_driver twl4030_vibra_driver = {
 	.probe		= twl4030_vibra_probe,
 	.driver		= {
 		.name	= "twl4030-vibra",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &twl4030_vibra_pm_ops,
 	},
 };

@@ -37,9 +37,13 @@
 			{ 1 << NFS_INO_ADVISE_RDPLUS, "ADVISE_RDPLUS" }, \
 			{ 1 << NFS_INO_STALE, "STALE" }, \
 			{ 1 << NFS_INO_INVALIDATING, "INVALIDATING" }, \
+<<<<<<< HEAD
 			{ 1 << NFS_INO_FLUSHING, "FLUSHING" }, \
 			{ 1 << NFS_INO_FSCACHE, "FSCACHE" }, \
 			{ 1 << NFS_INO_COMMIT, "COMMIT" }, \
+=======
+			{ 1 << NFS_INO_FSCACHE, "FSCACHE" }, \
+>>>>>>> v4.9.227
 			{ 1 << NFS_INO_LAYOUTCOMMIT, "NEED_LAYOUTCOMMIT" }, \
 			{ 1 << NFS_INO_LAYOUTCOMMITTING, "LAYOUTCOMMIT" })
 
@@ -703,14 +707,24 @@ TRACE_EVENT(nfs_sillyrename_unlink,
 		),
 
 		TP_fast_assign(
+<<<<<<< HEAD
 			struct inode *dir = data->dir;
+=======
+			struct inode *dir = d_inode(data->dentry->d_parent);
+>>>>>>> v4.9.227
 			size_t len = data->args.name.len;
 			__entry->dev = dir->i_sb->s_dev;
 			__entry->dir = NFS_FILEID(dir);
 			__entry->error = error;
+<<<<<<< HEAD
 			memcpy(__get_dynamic_array(name),
 				data->args.name.name, len);
 			((char *)__get_dynamic_array(name))[len] = 0;
+=======
+			memcpy(__get_str(name),
+				data->args.name.name, len);
+			__get_str(name)[len] = 0;
+>>>>>>> v4.9.227
 		),
 
 		TP_printk(

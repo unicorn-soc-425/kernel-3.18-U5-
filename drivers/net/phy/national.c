@@ -110,6 +110,7 @@ static void ns_giga_speed_fallback(struct phy_device *phydev, int mode)
 
 static void ns_10_base_t_hdx_loopack(struct phy_device *phydev, int disable)
 {
+<<<<<<< HEAD
 	if (disable)
 		ns_exp_write(phydev, 0x1c0, ns_exp_read(phydev, 0x1c0) | 1);
 	else
@@ -118,6 +119,19 @@ static void ns_10_base_t_hdx_loopack(struct phy_device *phydev, int disable)
 
 	pr_debug("10BASE-T HDX loopback %s\n",
 		 (ns_exp_read(phydev, 0x1c0) & 0x0001) ? "off" : "on");
+=======
+	u16 lb_dis = BIT(1);
+
+	if (disable)
+		ns_exp_write(phydev, 0x1c0,
+			     ns_exp_read(phydev, 0x1c0) | lb_dis);
+	else
+		ns_exp_write(phydev, 0x1c0,
+			     ns_exp_read(phydev, 0x1c0) & ~lb_dis);
+
+	pr_debug("10BASE-T HDX loopback %s\n",
+		 (ns_exp_read(phydev, 0x1c0) & lb_dis) ? "off" : "on");
+>>>>>>> v4.9.227
 }
 
 static int ns_config_init(struct phy_device *phydev)
@@ -129,7 +143,11 @@ static int ns_config_init(struct phy_device *phydev)
 	return ns_ack_interrupt(phydev);
 }
 
+<<<<<<< HEAD
 static struct phy_driver dp83865_driver = {
+=======
+static struct phy_driver dp83865_driver[] = { {
+>>>>>>> v4.9.227
 	.phy_id = DP83865_PHY_ID,
 	.phy_id_mask = 0xfffffff0,
 	.name = "NatSemi DP83865",
@@ -140,6 +158,7 @@ static struct phy_driver dp83865_driver = {
 	.read_status = genphy_read_status,
 	.ack_interrupt = ns_ack_interrupt,
 	.config_intr = ns_config_intr,
+<<<<<<< HEAD
 	.driver = {.owner = THIS_MODULE,}
 };
 
@@ -152,14 +171,22 @@ static void __exit ns_exit(void)
 {
 	phy_driver_unregister(&dp83865_driver);
 }
+=======
+} };
+
+module_phy_driver(dp83865_driver);
+>>>>>>> v4.9.227
 
 MODULE_DESCRIPTION("NatSemi PHY driver");
 MODULE_AUTHOR("Stuart Menefy");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 module_init(ns_init);
 module_exit(ns_exit);
 
+=======
+>>>>>>> v4.9.227
 static struct mdio_device_id __maybe_unused ns_tbl[] = {
 	{ DP83865_PHY_ID, 0xfffffff0 },
 	{ }

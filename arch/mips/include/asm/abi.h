@@ -11,15 +11,31 @@
 
 #include <asm/signal.h>
 #include <asm/siginfo.h>
+<<<<<<< HEAD
+=======
+#include <asm/vdso.h>
+>>>>>>> v4.9.227
 
 struct mips_abi {
 	int (* const setup_frame)(void *sig_return, struct ksignal *ksig,
 				  struct pt_regs *regs, sigset_t *set);
+<<<<<<< HEAD
 	const unsigned long	signal_return_offset;
 	int (* const setup_rt_frame)(void *sig_return, struct ksignal *ksig,
 				     struct pt_regs *regs, sigset_t *set);
 	const unsigned long	rt_signal_return_offset;
 	const unsigned long	restart;
+=======
+	int (* const setup_rt_frame)(void *sig_return, struct ksignal *ksig,
+				     struct pt_regs *regs, sigset_t *set);
+	const unsigned long	restart;
+
+	unsigned	off_sc_fpregs;
+	unsigned	off_sc_fpc_csr;
+	unsigned	off_sc_used_math;
+
+	struct mips_vdso_image *vdso;
+>>>>>>> v4.9.227
 };
 
 #endif /* _ASM_ABI_H */

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013, Mellanox Technologies inc.  All rights reserved.
+=======
+ * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
+>>>>>>> v4.9.227
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -37,6 +41,7 @@
 #include <rdma/ib_verbs.h>
 #include "mlx5_core.h"
 
+<<<<<<< HEAD
 struct mlx5_attach_mcg_mbox_in {
 	struct mlx5_inbox_hdr	hdr;
 	__be32			qpn;
@@ -80,11 +85,25 @@ int mlx5_core_attach_mcg(struct mlx5_core_dev *dev, union ib_gid *mgid, u32 qpn)
 		err = mlx5_cmd_status_to_err(&out.hdr);
 
 	return err;
+=======
+int mlx5_core_attach_mcg(struct mlx5_core_dev *dev, union ib_gid *mgid, u32 qpn)
+{
+	u32 out[MLX5_ST_SZ_DW(attach_to_mcg_out)] = {0};
+	u32 in[MLX5_ST_SZ_DW(attach_to_mcg_in)]   = {0};
+	void *gid;
+
+	MLX5_SET(attach_to_mcg_in, in, opcode, MLX5_CMD_OP_ATTACH_TO_MCG);
+	MLX5_SET(attach_to_mcg_in, in, qpn, qpn);
+	gid = MLX5_ADDR_OF(attach_to_mcg_in, in, multicast_gid);
+	memcpy(gid, mgid, sizeof(*mgid));
+	return mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(mlx5_core_attach_mcg);
 
 int mlx5_core_detach_mcg(struct mlx5_core_dev *dev, union ib_gid *mgid, u32 qpn)
 {
+<<<<<<< HEAD
 	struct mlx5_detach_mcg_mbox_in in;
 	struct mlx5_detach_mcg_mbox_out out;
 	int err;
@@ -102,5 +121,16 @@ int mlx5_core_detach_mcg(struct mlx5_core_dev *dev, union ib_gid *mgid, u32 qpn)
 		err = mlx5_cmd_status_to_err(&out.hdr);
 
 	return err;
+=======
+	u32 out[MLX5_ST_SZ_DW(detach_from_mcg_out)] = {0};
+	u32 in[MLX5_ST_SZ_DW(detach_from_mcg_in)]   = {0};
+	void *gid;
+
+	MLX5_SET(detach_from_mcg_in, in, opcode, MLX5_CMD_OP_DETACH_FROM_MCG);
+	MLX5_SET(detach_from_mcg_in, in, qpn, qpn);
+	gid = MLX5_ADDR_OF(detach_from_mcg_in, in, multicast_gid);
+	memcpy(gid, mgid, sizeof(*mgid));
+	return mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(mlx5_core_detach_mcg);

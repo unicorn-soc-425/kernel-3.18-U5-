@@ -221,6 +221,11 @@ static int snd_at73c213_pcm_open(struct snd_pcm_substream *substream)
 	runtime->hw = snd_at73c213_playback_hw;
 	chip->substream = substream;
 
+<<<<<<< HEAD
+=======
+	clk_enable(chip->ssc->clk);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -228,6 +233,10 @@ static int snd_at73c213_pcm_close(struct snd_pcm_substream *substream)
 {
 	struct snd_at73c213 *chip = snd_pcm_substream_chip(substream);
 	chip->substream = NULL;
+<<<<<<< HEAD
+=======
+	clk_disable(chip->ssc->clk);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -897,6 +906,11 @@ static int snd_at73c213_dev_init(struct snd_card *card,
 	chip->card = card;
 	chip->irq = -1;
 
+<<<<<<< HEAD
+=======
+	clk_enable(chip->ssc->clk);
+
+>>>>>>> v4.9.227
 	retval = request_irq(irq, snd_at73c213_interrupt, 0, "at73c213", chip);
 	if (retval) {
 		dev_dbg(&chip->spi->dev, "unable to request irq %d\n", irq);
@@ -935,6 +949,11 @@ out_irq:
 	free_irq(chip->irq, chip);
 	chip->irq = -1;
 out:
+<<<<<<< HEAD
+=======
+	clk_disable(chip->ssc->clk);
+
+>>>>>>> v4.9.227
 	return retval;
 }
 
@@ -1012,7 +1031,13 @@ static int snd_at73c213_remove(struct spi_device *spi)
 	int retval;
 
 	/* Stop playback. */
+<<<<<<< HEAD
 	ssc_writel(chip->ssc->regs, CR, SSC_BIT(CR_TXDIS));
+=======
+	clk_enable(chip->ssc->clk);
+	ssc_writel(chip->ssc->regs, CR, SSC_BIT(CR_TXDIS));
+	clk_disable(chip->ssc->clk);
+>>>>>>> v4.9.227
 
 	/* Mute sound. */
 	retval = snd_at73c213_write_reg(chip, DAC_LMPG, 0x3f);
@@ -1080,6 +1105,10 @@ static int snd_at73c213_suspend(struct device *dev)
 	struct snd_at73c213 *chip = card->private_data;
 
 	ssc_writel(chip->ssc->regs, CR, SSC_BIT(CR_TXDIS));
+<<<<<<< HEAD
+=======
+	clk_disable(chip->ssc->clk);
+>>>>>>> v4.9.227
 	clk_disable(chip->board->dac_clk);
 
 	return 0;
@@ -1091,6 +1120,10 @@ static int snd_at73c213_resume(struct device *dev)
 	struct snd_at73c213 *chip = card->private_data;
 
 	clk_enable(chip->board->dac_clk);
+<<<<<<< HEAD
+=======
+	clk_enable(chip->ssc->clk);
+>>>>>>> v4.9.227
 	ssc_writel(chip->ssc->regs, CR, SSC_BIT(CR_TXEN));
 
 	return 0;

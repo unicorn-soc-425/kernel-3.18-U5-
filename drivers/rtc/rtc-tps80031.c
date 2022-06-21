@@ -287,7 +287,11 @@ static int tps80031_rtc_probe(struct platform_device *pdev)
 
 	ret = devm_request_threaded_irq(&pdev->dev, rtc->irq, NULL,
 			tps80031_rtc_irq,
+<<<<<<< HEAD
 			IRQF_ONESHOT | IRQF_EARLY_RESUME,
+=======
+			IRQF_ONESHOT,
+>>>>>>> v4.9.227
 			dev_name(&pdev->dev), rtc);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "request IRQ:%d failed, err = %d\n",
@@ -324,7 +328,10 @@ static SIMPLE_DEV_PM_OPS(tps80031_pm_ops, tps80031_rtc_suspend,
 static struct platform_driver tps80031_rtc_driver = {
 	.driver	= {
 		.name	= "tps80031-rtc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &tps80031_pm_ops,
 	},
 	.probe	= tps80031_rtc_probe,

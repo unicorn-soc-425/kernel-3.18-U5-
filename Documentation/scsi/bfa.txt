@@ -50,7 +50,11 @@ be found at:
 
 http://www.brocade.com/services-support/drivers-downloads/adapters/Linux.page
 
+<<<<<<< HEAD
 and then click following respective util pacakge link
+=======
+and then click following respective util package link
+>>>>>>> v4.9.227
 
 	Version			Link
 

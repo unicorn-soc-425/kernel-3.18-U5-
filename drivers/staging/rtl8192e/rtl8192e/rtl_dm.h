@@ -6,10 +6,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -27,26 +30,35 @@
 #define		DM_DIG_THRESH_HIGH					40
 #define		DM_DIG_THRESH_LOW					35
 
+<<<<<<< HEAD
 #define		DM_FALSEALARM_THRESH_LOW	40
 #define		DM_FALSEALARM_THRESH_HIGH	1000
 
+=======
+>>>>>>> v4.9.227
 #define		DM_DIG_HIGH_PWR_THRESH_HIGH		75
 #define		DM_DIG_HIGH_PWR_THRESH_LOW		70
 
 #define		BW_AUTO_SWITCH_HIGH_LOW			25
 #define		BW_AUTO_SWITCH_LOW_HIGH			30
 
+<<<<<<< HEAD
 #define		DM_check_fsync_time_interval				500
 
 
+=======
+>>>>>>> v4.9.227
 #define		DM_DIG_BACKOFF				12
 #define		DM_DIG_MAX					0x36
 #define		DM_DIG_MIN					0x1c
 #define		DM_DIG_MIN_Netcore			0x12
 
+<<<<<<< HEAD
 #define		DM_DIG_BACKOFF_MAX			12
 #define		DM_DIG_BACKOFF_MIN			-4
 
+=======
+>>>>>>> v4.9.227
 #define		RxPathSelection_SS_TH_low		30
 #define		RxPathSelection_diff_TH			18
 
@@ -55,8 +67,11 @@
 #define		RateAdaptiveTH_Low_40M		10
 #define		VeryLowRSSI					15
 
+<<<<<<< HEAD
 #define		CTSToSelfTHVal					35
 
+=======
+>>>>>>> v4.9.227
 #define		WAIotTHVal						25
 
 #define		E_FOR_TX_POWER_TRACK	       300
@@ -70,6 +85,7 @@
 #define			Tx_Retry_Count_Reg	 0x1ac
 #define		RegC38_TH				 20
 
+<<<<<<< HEAD
 #define		TX_POWER_NEAR_FIELD_THRESH_LVL2	74
 #define		TX_POWER_NEAR_FIELD_THRESH_LVL1	67
 
@@ -78,6 +94,8 @@
 #define		TxHighPwrLevel_Level2		2
 
 #define		DM_Type_ByFW			0
+=======
+>>>>>>> v4.9.227
 #define		DM_Type_ByDriver		1
 
 /*--------------------------Define Parameters-------------------------------*/
@@ -87,17 +105,23 @@
 struct dig_t {
 	u8		dig_enable_flag;
 	u8		dig_algorithm;
+<<<<<<< HEAD
 	u8		Dig_TwoPort_Algorithm;
 	u8		Dig_Ext_Port_Stage;
 	u8		dbg_mode;
+=======
+>>>>>>> v4.9.227
 	u8		dig_algorithm_switch;
 
 	long		rssi_low_thresh;
 	long		rssi_high_thresh;
 
+<<<<<<< HEAD
 	u32		FALowThresh;
 	u32		FAHighThresh;
 
+=======
+>>>>>>> v4.9.227
 	long		rssi_high_power_lowthresh;
 	long		rssi_high_power_highthresh;
 
@@ -105,8 +129,11 @@ struct dig_t {
 	u8		dig_highpwr_state;
 	u8		CurSTAConnectState;
 	u8		PreSTAConnectState;
+<<<<<<< HEAD
 	u8		CurAPConnectState;
 	u8		PreAPConnectState;
+=======
+>>>>>>> v4.9.227
 
 	u8		curpd_thstate;
 	u8		prepd_thstate;
@@ -116,6 +143,7 @@ struct dig_t {
 	u32		pre_ig_value;
 	u32		cur_ig_value;
 
+<<<<<<< HEAD
 	u8		Backoff_Enable_Flag;
 	u8		backoff_val;
 	char		BackoffVal_range_max;
@@ -123,6 +151,11 @@ struct dig_t {
 	u8		rx_gain_range_max;
 	u8		rx_gain_range_min;
 	bool		initialgain_lowerbound_state;
+=======
+	u8		backoff_val;
+	u8		rx_gain_range_max;
+	u8		rx_gain_range_min;
+>>>>>>> v4.9.227
 
 	long		rssi_val;
 };
@@ -141,6 +174,7 @@ enum dm_ratr_sta {
 	DM_RATR_STA_MAX
 };
 
+<<<<<<< HEAD
 enum dm_dig_op_sta {
 	DIG_TYPE_THRESH_HIGH	= 0,
 	DIG_TYPE_THRESH_LOW	= 1,
@@ -158,6 +192,8 @@ enum dm_dig_op_sta {
 	DIG_OP_TYPE_MAX
 };
 
+=======
+>>>>>>> v4.9.227
 enum dm_dig_alg {
 	DIG_ALGO_BY_FALSE_ALARM = 0,
 	DIG_ALGO_BY_RSSI	= 1,
@@ -166,6 +202,7 @@ enum dm_dig_alg {
 	DIG_ALGO_MAX
 };
 
+<<<<<<< HEAD
 enum dm_dig_two_port_alg {
 	DIG_TWO_PORT_ALGO_RSSI = 0,
 	DIG_TWO_PORT_ALGO_FALSE_ALARM = 1,
@@ -186,6 +223,8 @@ enum dm_dig_dbg {
 	DIG_DBG_MAX
 };
 
+=======
+>>>>>>> v4.9.227
 enum dm_dig_connect {
 	DIG_STA_DISCONNECT = 0,
 	DIG_STA_CONNECT = 1,
@@ -211,7 +250,10 @@ enum dm_dig_cs_ratio {
 
 struct drx_path_sel {
 	u8		Enable;
+<<<<<<< HEAD
 	u8		DbgMode;
+=======
+>>>>>>> v4.9.227
 	u8		cck_method;
 	u8		cck_Rx_path;
 
@@ -232,12 +274,15 @@ enum dm_cck_rx_path_method {
 };
 
 
+<<<<<<< HEAD
 enum dm_dbg {
 	DM_DBG_OFF = 0,
 	DM_DBG_ON = 1,
 	DM_DBG_MAX
 };
 
+=======
+>>>>>>> v4.9.227
 struct dcmd_txcmd {
 	u32	Op;
 	u32	Length;
@@ -248,6 +293,7 @@ struct dcmd_txcmd {
 
 /*------------------------Export global variable----------------------------*/
 extern	struct dig_t dm_digtable;
+<<<<<<< HEAD
 extern	u8		dm_shadow[16][256];
 extern struct drx_path_sel DM_RxPathSelTable;
 
@@ -321,4 +367,37 @@ extern	void	dm_shadow_init(struct net_device *dev);
 extern	void dm_initialize_txpower_tracking(struct net_device *dev);
 extern  void    dm_CheckRfCtrlGPIO(void *data);
 
+=======
+extern struct drx_path_sel DM_RxPathSelTable;
+
+/* Pre-calculated gain tables */
+extern const u32 dm_tx_bb_gain[TxBBGainTableLength];
+extern const u8 dm_cck_tx_bb_gain[CCKTxBBGainTableLength][8];
+extern const u8 dm_cck_tx_bb_gain_ch14[CCKTxBBGainTableLength][8];
+/* Maps table index to iq amplify gain (dB, 12 to -24dB) */
+#define dm_tx_bb_gain_idx_to_amplify(idx) (-idx + 12)
+
+/*------------------------Export global variable----------------------------*/
+
+
+/*--------------------------Exported Function prototype---------------------*/
+/*--------------------------Exported Function prototype---------------------*/
+
+void rtl92e_dm_init(struct net_device *dev);
+void rtl92e_dm_deinit(struct net_device *dev);
+
+void rtl92e_dm_watchdog(struct net_device *dev);
+
+
+void    rtl92e_init_adaptive_rate(struct net_device *dev);
+void    rtl92e_dm_txpower_tracking_wq(void *data);
+
+void rtl92e_dm_cck_txpower_adjust(struct net_device *dev, bool binch14);
+
+void    rtl92e_dm_restore_state(struct net_device *dev);
+void    rtl92e_dm_backup_state(struct net_device *dev);
+void    rtl92e_dm_init_edca_turbo(struct net_device *dev);
+void    rtl92e_dm_rf_pathcheck_wq(void *data);
+void rtl92e_dm_init_txpower_tracking(struct net_device *dev);
+>>>>>>> v4.9.227
 #endif	/*__R8192UDM_H__ */

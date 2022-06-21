@@ -28,7 +28,10 @@
 #ifndef CX22702_H
 #define CX22702_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/dvb/frontend.h>
 
 struct cx22702_config {

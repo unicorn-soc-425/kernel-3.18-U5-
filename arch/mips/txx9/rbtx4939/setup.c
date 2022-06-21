@@ -215,7 +215,11 @@ static int __init rbtx4939_led_probe(struct platform_device *pdev)
 	int i;
 	static char *default_triggers[] __initdata = {
 		"heartbeat",
+<<<<<<< HEAD
 		"ide-disk",
+=======
+		"disk-activity",
+>>>>>>> v4.9.227
 		"nand-disk",
 	};
 
@@ -245,7 +249,10 @@ static int __init rbtx4939_led_probe(struct platform_device *pdev)
 static struct platform_driver rbtx4939_led_driver = {
 	.driver	 = {
 		.name = "rbtx4939-led",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

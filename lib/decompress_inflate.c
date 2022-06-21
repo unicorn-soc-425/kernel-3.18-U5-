@@ -1,4 +1,8 @@
 #ifdef STATIC
+<<<<<<< HEAD
+=======
+#define PREBOOT
+>>>>>>> v4.9.227
 /* Pre-boot environment: included */
 
 /* prevent inclusion of _LINUX_KERNEL_H in pre-boot environment: lots
@@ -33,23 +37,38 @@ static long INIT nofill(void *buffer, unsigned long len)
 }
 
 /* Included from initramfs et al code */
+<<<<<<< HEAD
 STATIC int INIT gunzip(unsigned char *buf, long len,
 		       long (*fill)(void*, unsigned long),
 		       long (*flush)(void*, unsigned long),
 		       unsigned char *out_buf,
+=======
+STATIC int INIT __gunzip(unsigned char *buf, long len,
+		       long (*fill)(void*, unsigned long),
+		       long (*flush)(void*, unsigned long),
+		       unsigned char *out_buf, long out_len,
+>>>>>>> v4.9.227
 		       long *pos,
 		       void(*error)(char *x)) {
 	u8 *zbuf;
 	struct z_stream_s *strm;
 	int rc;
+<<<<<<< HEAD
 	size_t out_len;
+=======
+>>>>>>> v4.9.227
 
 	rc = -1;
 	if (flush) {
 		out_len = 0x8000; /* 32 K */
 		out_buf = malloc(out_len);
 	} else {
+<<<<<<< HEAD
 		out_len = ((size_t)~0) - (size_t)out_buf; /* no limit */
+=======
+		if (!out_len)
+			out_len = ((size_t)~0) - (size_t)out_buf; /* no limit */
+>>>>>>> v4.9.227
 	}
 	if (!out_buf) {
 		error("Out of memory while allocating output buffer");
@@ -181,4 +200,28 @@ gunzip_nomem1:
 	return rc; /* returns Z_OK (0) if successful */
 }
 
+<<<<<<< HEAD
 #define decompress gunzip
+=======
+#ifndef PREBOOT
+STATIC int INIT gunzip(unsigned char *buf, long len,
+		       long (*fill)(void*, unsigned long),
+		       long (*flush)(void*, unsigned long),
+		       unsigned char *out_buf,
+		       long *pos,
+		       void (*error)(char *x))
+{
+	return __gunzip(buf, len, fill, flush, out_buf, 0, pos, error);
+}
+#else
+STATIC int INIT __decompress(unsigned char *buf, long len,
+			   long (*fill)(void*, unsigned long),
+			   long (*flush)(void*, unsigned long),
+			   unsigned char *out_buf, long out_len,
+			   long *pos,
+			   void (*error)(char *x))
+{
+	return __gunzip(buf, len, fill, flush, out_buf, out_len, pos, error);
+}
+#endif
+>>>>>>> v4.9.227

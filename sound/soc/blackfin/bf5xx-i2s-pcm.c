@@ -342,6 +342,7 @@ static struct snd_soc_platform_driver bf5xx_i2s_soc_platform = {
 
 static int bfin_i2s_soc_platform_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_platform(&pdev->dev, &bf5xx_i2s_soc_platform);
 }
 
@@ -349,16 +350,26 @@ static int bfin_i2s_soc_platform_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_platform(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_platform(&pdev->dev,
+					      &bf5xx_i2s_soc_platform);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver bfin_i2s_pcm_driver = {
 	.driver = {
 		.name = "bfin-i2s-pcm-audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 
 	.probe = bfin_i2s_soc_platform_probe,
 	.remove = bfin_i2s_soc_platform_remove,
+=======
+	},
+
+	.probe = bfin_i2s_soc_platform_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(bfin_i2s_pcm_driver);

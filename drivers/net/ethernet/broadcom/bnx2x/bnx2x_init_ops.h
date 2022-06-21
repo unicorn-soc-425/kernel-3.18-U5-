@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 /* bnx2x_init_ops.h: Broadcom Everest network driver.
+=======
+/* bnx2x_init_ops.h: Qlogic Everest network driver.
+>>>>>>> v4.9.227
  *               Static functions needed during the initialization.
  *               This file is "included" in bnx2x_main.c.
  *
  * Copyright (c) 2007-2013 Broadcom Corporation
+<<<<<<< HEAD
+=======
+ * Copyright (c) 2014 QLogic Corporation
+ All rights reserved
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

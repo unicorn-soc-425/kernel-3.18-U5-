@@ -1,6 +1,10 @@
 /*
  * Copyright (C) 2010 ST Microelectronics
+<<<<<<< HEAD
  * Rajeev Kumar<rajeev-dlh.kumar@st.com>
+=======
+ * Rajeev Kumar <rajeevkumar.linux@gmail.com>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any

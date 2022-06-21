@@ -9,6 +9,10 @@
  */
 
 #include <asm/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 /* Work around cpp -rob */
 #define ALLOC #alloc
@@ -63,6 +67,11 @@ __bzero_begin:
 
 	.globl	__bzero
 	.globl	memset
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(__bzero)
+	EXPORT_SYMBOL(memset)
+>>>>>>> v4.9.227
 	.globl	__memset_start, __memset_end
 __memset_start:
 memset:

@@ -93,9 +93,13 @@ void sdio_run_irqs(struct mmc_host *host)
 {
 	mmc_claim_host(host);
 	host->sdio_irq_pending = true;
+<<<<<<< HEAD
 	mmc_host_clk_hold(host);
 	process_sdio_pending_irqs(host);
 	mmc_host_clk_release(host);
+=======
+	process_sdio_pending_irqs(host);
+>>>>>>> v4.9.227
 	mmc_release_host(host);
 }
 EXPORT_SYMBOL_GPL(sdio_run_irqs);
@@ -106,7 +110,10 @@ static int sdio_irq_thread(void *_host)
 	struct sched_param param = { .sched_priority = 1 };
 	unsigned long period, idle_period;
 	int ret;
+<<<<<<< HEAD
 	bool ws;
+=======
+>>>>>>> v4.9.227
 
 	sched_setscheduler(current, SCHED_FIFO, &param);
 
@@ -140,6 +147,7 @@ static int sdio_irq_thread(void *_host)
 		ret = __mmc_claim_host(host, &host->sdio_irq_thread_abort);
 		if (ret)
 			break;
+<<<<<<< HEAD
 		ws = false;
 		/*
 		 * prevent suspend if it has started when scheduled;
@@ -151,6 +159,8 @@ static int sdio_irq_thread(void *_host)
 			pm_wakeup_event(&host->card->dev, 100);
 			ws = true;
 		}
+=======
+>>>>>>> v4.9.227
 		ret = process_sdio_pending_irqs(host);
 		host->sdio_irq_pending = false;
 		mmc_release_host(host);
@@ -182,6 +192,7 @@ static int sdio_irq_thread(void *_host)
 		}
 
 		set_current_state(TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 		if (host->caps & MMC_CAP_SDIO_IRQ) {
 			mmc_host_clk_hold(host);
 			host->ops->enable_sdio_irq(host, 1);
@@ -193,16 +204,25 @@ static int sdio_irq_thread(void *_host)
 		 */
 		if (ws && (host->dev_status == DEV_RESUMED))
 			pm_relax(&host->card->dev);
+=======
+		if (host->caps & MMC_CAP_SDIO_IRQ)
+			host->ops->enable_sdio_irq(host, 1);
+>>>>>>> v4.9.227
 		if (!kthread_should_stop())
 			schedule_timeout(period);
 		set_current_state(TASK_RUNNING);
 	} while (!kthread_should_stop());
 
+<<<<<<< HEAD
 	if (host->caps & MMC_CAP_SDIO_IRQ) {
 		mmc_host_clk_hold(host);
 		host->ops->enable_sdio_irq(host, 0);
 		mmc_host_clk_release(host);
 	}
+=======
+	if (host->caps & MMC_CAP_SDIO_IRQ)
+		host->ops->enable_sdio_irq(host, 0);
+>>>>>>> v4.9.227
 
 	pr_debug("%s: IRQ thread exiting with code %d\n",
 		 mmc_hostname(host), ret);
@@ -228,9 +248,13 @@ static int sdio_card_irq_get(struct mmc_card *card)
 				return err;
 			}
 		} else if (host->caps & MMC_CAP_SDIO_IRQ) {
+<<<<<<< HEAD
 			mmc_host_clk_hold(host);
 			host->ops->enable_sdio_irq(host, 1);
 			mmc_host_clk_release(host);
+=======
+			host->ops->enable_sdio_irq(host, 1);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -249,9 +273,13 @@ static int sdio_card_irq_put(struct mmc_card *card)
 			atomic_set(&host->sdio_irq_thread_abort, 1);
 			kthread_stop(host->sdio_irq_thread);
 		} else if (host->caps & MMC_CAP_SDIO_IRQ) {
+<<<<<<< HEAD
 			mmc_host_clk_hold(host);
 			host->ops->enable_sdio_irq(host, 0);
 			mmc_host_clk_release(host);
+=======
+			host->ops->enable_sdio_irq(host, 0);
+>>>>>>> v4.9.227
 		}
 	}
 

@@ -20,7 +20,11 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <media/saa7146.h>
+=======
+#include <media/drv-intf/saa7146.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 
 static int saa7146_num;
@@ -71,7 +75,11 @@ static inline int saa7146_wait_for_debi_done_sleep(struct saa7146_dev *dev,
 		if (saa7146_read(dev, MC2) & 2)
 			break;
 		if (err) {
+<<<<<<< HEAD
 			pr_err("%s: %s timed out while waiting for registers getting programmed\n",
+=======
+			pr_debug("%s: %s timed out while waiting for registers getting programmed\n",
+>>>>>>> v4.9.227
 			       dev->name, __func__);
 			return -ETIMEDOUT;
 		}

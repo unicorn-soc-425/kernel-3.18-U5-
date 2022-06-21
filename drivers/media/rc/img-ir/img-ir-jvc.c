@@ -12,8 +12,13 @@
 #include "img-ir-hw.h"
 
 /* Convert JVC data to a scancode */
+<<<<<<< HEAD
 static int img_ir_jvc_scancode(int len, u64 raw, enum rc_type *protocol,
 			       u32 *scancode, u64 enabled_protocols)
+=======
+static int img_ir_jvc_scancode(int len, u64 raw, u64 enabled_protocols,
+			       struct img_ir_scancode_req *request)
+>>>>>>> v4.9.227
 {
 	unsigned int cust, data;
 
@@ -23,8 +28,13 @@ static int img_ir_jvc_scancode(int len, u64 raw, enum rc_type *protocol,
 	cust = (raw >> 0) & 0xff;
 	data = (raw >> 8) & 0xff;
 
+<<<<<<< HEAD
 	*protocol = RC_TYPE_JVC;
 	*scancode = cust << 8 | data;
+=======
+	request->protocol = RC_TYPE_JVC;
+	request->scancode = cust << 8 | data;
+>>>>>>> v4.9.227
 	return IMG_IR_SCANCODE;
 }
 

@@ -166,9 +166,15 @@ static unsigned int debug;
 module_param(debug, int, 0644);
 MODULE_PARM_DESC(debug, "enable debug messages");
 
+<<<<<<< HEAD
 #define dprintk(level, fmt, arg...) do {			\
 if (debug >= level)						\
 	pr_debug(fmt, ##arg);					\
+=======
+#define dprintk(level, fmt, arg...) do {				\
+if (debug >= level)							\
+	printk(KERN_DEBUG KBUILD_MODNAME ": %s " fmt, __func__, ##arg);	\
+>>>>>>> v4.9.227
 } while (0)
 
 
@@ -544,7 +550,11 @@ error:
 static int init_state(struct drxk_state *state)
 {
 	/*
+<<<<<<< HEAD
 	 * FIXME: most (all?) of the values bellow should be moved into
+=======
+	 * FIXME: most (all?) of the values below should be moved into
+>>>>>>> v4.9.227
 	 * struct drxk_config, as they are probably board-specific
 	 */
 	u32 ul_vsb_if_agc_mode = DRXK_AGC_CTRL_AUTO;
@@ -3262,6 +3272,10 @@ static int dvbt_sc_command(struct drxk_state *state,
 	}
 
 	/* Write needed parameters and the command */
+<<<<<<< HEAD
+=======
+	status = 0;
+>>>>>>> v4.9.227
 	switch (cmd) {
 		/* All commands using 5 parameters */
 		/* All commands using 4 parameters */
@@ -3270,16 +3284,28 @@ static int dvbt_sc_command(struct drxk_state *state,
 	case OFDM_SC_RA_RAM_CMD_PROC_START:
 	case OFDM_SC_RA_RAM_CMD_SET_PREF_PARAM:
 	case OFDM_SC_RA_RAM_CMD_PROGRAM_PARAM:
+<<<<<<< HEAD
 		status = write16(state, OFDM_SC_RA_RAM_PARAM1__A, param1);
 		/* All commands using 1 parameters */
 	case OFDM_SC_RA_RAM_CMD_SET_ECHO_TIMING:
 	case OFDM_SC_RA_RAM_CMD_USER_IO:
 		status = write16(state, OFDM_SC_RA_RAM_PARAM0__A, param0);
+=======
+		status |= write16(state, OFDM_SC_RA_RAM_PARAM1__A, param1);
+		/* All commands using 1 parameters */
+	case OFDM_SC_RA_RAM_CMD_SET_ECHO_TIMING:
+	case OFDM_SC_RA_RAM_CMD_USER_IO:
+		status |= write16(state, OFDM_SC_RA_RAM_PARAM0__A, param0);
+>>>>>>> v4.9.227
 		/* All commands using 0 parameters */
 	case OFDM_SC_RA_RAM_CMD_GET_OP_PARAM:
 	case OFDM_SC_RA_RAM_CMD_NULL:
 		/* Write command */
+<<<<<<< HEAD
 		status = write16(state, OFDM_SC_RA_RAM_CMD__A, cmd);
+=======
+		status |= write16(state, OFDM_SC_RA_RAM_CMD__A, cmd);
+>>>>>>> v4.9.227
 		break;
 	default:
 		/* Unknown command */
@@ -6310,8 +6336,12 @@ static void drxk_release(struct dvb_frontend *fe)
 	struct drxk_state *state = fe->demodulator_priv;
 
 	dprintk(1, "\n");
+<<<<<<< HEAD
 	if (state->fw)
 		release_firmware(state->fw);
+=======
+	release_firmware(state->fw);
+>>>>>>> v4.9.227
 
 	kfree(state);
 }
@@ -6448,7 +6478,11 @@ static int get_strength(struct drxk_state *state, u64 *strength)
 			return status;
 
 		/* SCU c.o.c. */
+<<<<<<< HEAD
 		read16(state, SCU_RAM_AGC_RF_IACCU_HI_CO__A, &scu_coc);
+=======
+		status = read16(state, SCU_RAM_AGC_RF_IACCU_HI_CO__A, &scu_coc);
+>>>>>>> v4.9.227
 		if (status < 0)
 			return status;
 
@@ -6640,7 +6674,11 @@ error:
 }
 
 
+<<<<<<< HEAD
 static int drxk_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int drxk_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct drxk_state *state = fe->demodulator_priv;
 	int rc;

@@ -21,4 +21,8 @@
  *  02111-1307  USA
  */
 
+<<<<<<< HEAD
 extern struct cx2341x_handler_ops cx18_cxhdl_ops;
+=======
+extern const struct cx2341x_handler_ops cx18_cxhdl_ops;
+>>>>>>> v4.9.227

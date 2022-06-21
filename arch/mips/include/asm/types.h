@@ -11,6 +11,7 @@
 #ifndef _ASM_TYPES_H
 #define _ASM_TYPES_H
 
+<<<<<<< HEAD
 # include <asm-generic/int-ll64.h>
 #include <uapi/asm/types.h>
 
@@ -30,4 +31,9 @@ typedef unsigned long phys_t;
 
 #endif /* __ASSEMBLY__ */
 
+=======
+#include <asm-generic/int-ll64.h>
+#include <uapi/asm/types.h>
+
+>>>>>>> v4.9.227
 #endif /* _ASM_TYPES_H */

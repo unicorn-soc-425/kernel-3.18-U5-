@@ -7,10 +7,13 @@
  *  Free Software Foundation;  either version 2 of the License, or (at your
  *  option) any later version.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/dmaengine.h>
@@ -25,8 +28,11 @@
 #include <linux/irq.h>
 #include <linux/clk.h>
 
+<<<<<<< HEAD
 #include <asm/mach-jz4740/dma.h>
 
+=======
+>>>>>>> v4.9.227
 #include "virt-dma.h"
 
 #define JZ_DMA_NR_CHANS 6
@@ -210,7 +216,11 @@ static enum jz4740_dma_transfer_size jz4740_dma_maxburst(u32 maxburst)
 }
 
 static int jz4740_dma_slave_config(struct dma_chan *c,
+<<<<<<< HEAD
 	const struct dma_slave_config *config)
+=======
+				   struct dma_slave_config *config)
+>>>>>>> v4.9.227
 {
 	struct jz4740_dmaengine_chan *chan = to_jz4740_dma_chan(c);
 	struct jz4740_dma_dev *dmadev = jz4740_dma_chan_get_dev(chan);
@@ -290,6 +300,7 @@ static int jz4740_dma_terminate_all(struct dma_chan *c)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int jz4740_dma_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 	unsigned long arg)
 {
@@ -305,6 +316,8 @@ static int jz4740_dma_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static int jz4740_dma_start_transfer(struct jz4740_dmaengine_chan *chan)
 {
 	struct jz4740_dma_dev *dmadev = jz4740_dma_chan_get_dev(chan);
@@ -358,7 +371,11 @@ static void jz4740_dma_chan_irq(struct jz4740_dmaengine_chan *chan)
 {
 	spin_lock(&chan->vchan.lock);
 	if (chan->desc) {
+<<<<<<< HEAD
 		if (chan->desc && chan->desc->cyclic) {
+=======
+		if (chan->desc->cyclic) {
+>>>>>>> v4.9.227
 			vchan_cyclic_callback(&chan->desc->vdesc);
 		} else {
 			if (chan->next_sg == chan->desc->num_sgs) {
@@ -511,11 +528,14 @@ static enum dma_status jz4740_dma_tx_status(struct dma_chan *c,
 	return status;
 }
 
+<<<<<<< HEAD
 static int jz4740_dma_alloc_chan_resources(struct dma_chan *c)
 {
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static void jz4740_dma_free_chan_resources(struct dma_chan *c)
 {
 	vchan_free_chan_resources(to_virt_chan(c));
@@ -526,6 +546,12 @@ static void jz4740_dma_desc_free(struct virt_dma_desc *vdesc)
 	kfree(container_of(vdesc, struct jz4740_dma_desc, vdesc));
 }
 
+<<<<<<< HEAD
+=======
+#define JZ4740_DMA_BUSWIDTHS (BIT(DMA_SLAVE_BUSWIDTH_1_BYTE) | \
+	BIT(DMA_SLAVE_BUSWIDTH_2_BYTES) | BIT(DMA_SLAVE_BUSWIDTH_4_BYTES))
+
+>>>>>>> v4.9.227
 static int jz4740_dma_probe(struct platform_device *pdev)
 {
 	struct jz4740_dmaengine_chan *chan;
@@ -555,18 +581,34 @@ static int jz4740_dma_probe(struct platform_device *pdev)
 
 	dma_cap_set(DMA_SLAVE, dd->cap_mask);
 	dma_cap_set(DMA_CYCLIC, dd->cap_mask);
+<<<<<<< HEAD
 	dd->device_alloc_chan_resources = jz4740_dma_alloc_chan_resources;
+=======
+>>>>>>> v4.9.227
 	dd->device_free_chan_resources = jz4740_dma_free_chan_resources;
 	dd->device_tx_status = jz4740_dma_tx_status;
 	dd->device_issue_pending = jz4740_dma_issue_pending;
 	dd->device_prep_slave_sg = jz4740_dma_prep_slave_sg;
 	dd->device_prep_dma_cyclic = jz4740_dma_prep_dma_cyclic;
+<<<<<<< HEAD
 	dd->device_control = jz4740_dma_control;
 	dd->dev = &pdev->dev;
 	dd->chancnt = JZ_DMA_NR_CHANS;
 	INIT_LIST_HEAD(&dd->channels);
 
 	for (i = 0; i < dd->chancnt; i++) {
+=======
+	dd->device_config = jz4740_dma_slave_config;
+	dd->device_terminate_all = jz4740_dma_terminate_all;
+	dd->src_addr_widths = JZ4740_DMA_BUSWIDTHS;
+	dd->dst_addr_widths = JZ4740_DMA_BUSWIDTHS;
+	dd->directions = BIT(DMA_DEV_TO_MEM) | BIT(DMA_MEM_TO_DEV);
+	dd->residue_granularity = DMA_RESIDUE_GRANULARITY_BURST;
+	dd->dev = &pdev->dev;
+	INIT_LIST_HEAD(&dd->channels);
+
+	for (i = 0; i < JZ_DMA_NR_CHANS; i++) {
+>>>>>>> v4.9.227
 		chan = &dmadev->chan[i];
 		chan->id = i;
 		chan->vchan.desc_free = jz4740_dma_desc_free;
@@ -593,12 +635,32 @@ err_clk:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static void jz4740_cleanup_vchan(struct dma_device *dmadev)
+{
+	struct jz4740_dmaengine_chan *chan, *_chan;
+
+	list_for_each_entry_safe(chan, _chan,
+				&dmadev->channels, vchan.chan.device_node) {
+		list_del(&chan->vchan.chan.device_node);
+		tasklet_kill(&chan->vchan.task);
+	}
+}
+
+
+>>>>>>> v4.9.227
 static int jz4740_dma_remove(struct platform_device *pdev)
 {
 	struct jz4740_dma_dev *dmadev = platform_get_drvdata(pdev);
 	int irq = platform_get_irq(pdev, 0);
 
 	free_irq(irq, dmadev);
+<<<<<<< HEAD
+=======
+
+	jz4740_cleanup_vchan(&dmadev->ddev);
+>>>>>>> v4.9.227
 	dma_async_device_unregister(&dmadev->ddev);
 	clk_disable_unprepare(dmadev->clk);
 
@@ -610,7 +672,10 @@ static struct platform_driver jz4740_dma_driver = {
 	.remove = jz4740_dma_remove,
 	.driver = {
 		.name = "jz4740-dma",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(jz4740_dma_driver);

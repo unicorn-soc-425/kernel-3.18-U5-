@@ -1228,7 +1228,11 @@ static void __exit cleanup_pss(void)
 {
 	if(!pss_no_sound)
 	{
+<<<<<<< HEAD
 		if(fw_load && pss_synth)
+=======
+		if (fw_load)
+>>>>>>> v4.9.227
 			vfree(pss_synth);
 		if(pssmss)
 			unload_pss_mss(&cfg2);

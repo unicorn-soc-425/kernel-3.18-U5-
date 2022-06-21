@@ -58,7 +58,11 @@ struct usb_function *usb_get_function(struct usb_function_instance *fi)
 	struct usb_function *f;
 
 	f = fi->fd->alloc_func(fi);
+<<<<<<< HEAD
 	if ((f == NULL) || IS_ERR(f))
+=======
+	if (IS_ERR(f))
+>>>>>>> v4.9.227
 		return f;
 	f->fi = fi;
 	return f;

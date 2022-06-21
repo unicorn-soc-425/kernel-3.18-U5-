@@ -19,7 +19,10 @@
 
 #include <linux/slab.h>
 #include <linux/hashtable.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kref.h>
 #include <linux/spinlock.h>
 #include <net/af_ieee802154.h>
@@ -30,7 +33,11 @@ struct mac802154_llsec_key {
 
 	/* one tfm for each authsize (4/8/16) */
 	struct crypto_aead *tfm[3];
+<<<<<<< HEAD
 	struct crypto_blkcipher *tfm0;
+=======
+	struct crypto_skcipher *tfm0;
+>>>>>>> v4.9.227
 
 	struct kref ref;
 };

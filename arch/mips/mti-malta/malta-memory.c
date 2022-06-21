@@ -16,10 +16,15 @@
 #include <linux/string.h>
 
 #include <asm/bootinfo.h>
+<<<<<<< HEAD
+=======
+#include <asm/cdmm.h>
+>>>>>>> v4.9.227
 #include <asm/maar.h>
 #include <asm/sections.h>
 #include <asm/fw/fw.h>
 
+<<<<<<< HEAD
 static fw_memblock_t mdesc[FW_MAX_MEMBLOCKS];
 
 /* determined physical memory size, not overridden by command line args	 */
@@ -124,12 +129,18 @@ fw_memblock_t * __init fw_getmdesc(int eva)
 	return &mdesc[0];
 }
 
+=======
+/* determined physical memory size, not overridden by command line args	 */
+unsigned long physical_memsize = 0L;
+
+>>>>>>> v4.9.227
 static void free_init_pages_eva_malta(void *begin, void *end)
 {
 	free_init_pages("unused kernel", __pa_symbol((unsigned long *)begin),
 			__pa_symbol((unsigned long *)end));
 }
 
+<<<<<<< HEAD
 static int __init fw_memtype_classify(unsigned int type)
 {
 	switch (type) {
@@ -161,6 +172,13 @@ void __init fw_meminit(void)
 		add_memory_region(base, size, type);
 		p++;
 	}
+=======
+void __init fw_meminit(void)
+{
+	bool eva = IS_ENABLED(CONFIG_EVA);
+
+	free_init_pages_eva = eva ? free_init_pages_eva_malta : NULL;
+>>>>>>> v4.9.227
 }
 
 void __init prom_free_prom_memory(void)
@@ -178,6 +196,7 @@ void __init prom_free_prom_memory(void)
 	}
 }
 
+<<<<<<< HEAD
 unsigned platform_maar_init(unsigned num_pairs)
 {
 	phys_addr_t mem_end = (physical_memsize & ~0xffffull) - 1;
@@ -201,4 +220,10 @@ unsigned platform_maar_init(unsigned num_pairs)
 	}
 
 	return maar_config(cfg, num_cfg, num_pairs);
+=======
+phys_addr_t mips_cdmm_phys_base(void)
+{
+	/* This address is "typically unused" */
+	return 0x1fc10000;
+>>>>>>> v4.9.227
 }

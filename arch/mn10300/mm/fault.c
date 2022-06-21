@@ -23,8 +23,13 @@
 #include <linux/interrupt.h>
 #include <linux/init.h>
 #include <linux/vt_kern.h>		/* For unblank_screen() */
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+
+>>>>>>> v4.9.227
 #include <asm/pgalloc.h>
 #include <asm/hardirq.h>
 #include <asm/cpu-regs.h>
@@ -168,7 +173,11 @@ asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long fault_code,
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (faulthandler_disabled() || !mm)
+>>>>>>> v4.9.227
 		goto no_context;
 
 	if ((fault_code & MMUFCR_xFC_ACCESS) == MMUFCR_xFC_ACCESS_USR)
@@ -254,7 +263,11 @@ good_area:
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> v4.9.227
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;

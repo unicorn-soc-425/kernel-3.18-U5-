@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -44,7 +48,10 @@
 #include "../include/lustre_handles.h"
 #include "../include/lustre_lib.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static __u64 handle_base;
 #define HANDLE_INCR 7
 static spinlock_t handle_base_lock;
@@ -66,7 +73,11 @@ void class_handle_hash(struct portals_handle *h,
 {
 	struct handle_bucket *bucket;
 
+<<<<<<< HEAD
 	LASSERT(h != NULL);
+=======
+	LASSERT(h);
+>>>>>>> v4.9.227
 	LASSERT(list_empty(&h->h_link));
 
 	/*
@@ -126,6 +137,10 @@ static void class_handle_unhash_nolock(struct portals_handle *h)
 void class_handle_unhash(struct portals_handle *h)
 {
 	struct handle_bucket *bucket;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	bucket = handle_hash + (h->h_cookie & HANDLE_HASH_MASK);
 
 	spin_lock(&bucket->lock);
@@ -134,6 +149,7 @@ void class_handle_unhash(struct portals_handle *h)
 }
 EXPORT_SYMBOL(class_handle_unhash);
 
+<<<<<<< HEAD
 void class_handle_hash_back(struct portals_handle *h)
 {
 	struct handle_bucket *bucket;
@@ -148,20 +164,35 @@ void class_handle_hash_back(struct portals_handle *h)
 EXPORT_SYMBOL(class_handle_hash_back);
 
 void *class_handle2object(__u64 cookie)
+=======
+void *class_handle2object(__u64 cookie, const void *owner)
+>>>>>>> v4.9.227
 {
 	struct handle_bucket *bucket;
 	struct portals_handle *h;
 	void *retval = NULL;
 
+<<<<<<< HEAD
 	LASSERT(handle_hash != NULL);
 
 	/* Be careful when you want to change this code. See the
 	 * rcu_read_lock() definition on top this file. - jxiong */
+=======
+	LASSERT(handle_hash);
+
+	/* Be careful when you want to change this code. See the
+	 * rcu_read_lock() definition on top this file. - jxiong
+	 */
+>>>>>>> v4.9.227
 	bucket = handle_hash + (cookie & HANDLE_HASH_MASK);
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(h, &bucket->head, h_link) {
+<<<<<<< HEAD
 		if (h->h_cookie != cookie)
+=======
+		if (h->h_cookie != cookie || h->h_owner != owner)
+>>>>>>> v4.9.227
 			continue;
 
 		spin_lock(&h->h_lock);
@@ -180,6 +211,7 @@ EXPORT_SYMBOL(class_handle2object);
 
 void class_handle_free_cb(struct rcu_head *rcu)
 {
+<<<<<<< HEAD
 	struct portals_handle *h = RCU2HANDLE(rcu);
 	void *ptr = (void *)(unsigned long)h->h_cookie;
 
@@ -187,12 +219,25 @@ void class_handle_free_cb(struct rcu_head *rcu)
 		h->h_ops->hop_free(ptr, h->h_size);
 	else
 		OBD_FREE(ptr, h->h_size);
+=======
+	struct portals_handle *h;
+	void *ptr;
+
+	h = container_of(rcu, struct portals_handle, h_rcu);
+	ptr = (void *)(unsigned long)h->h_cookie;
+
+	if (h->h_ops->hop_free)
+		h->h_ops->hop_free(ptr, h->h_size);
+	else
+		kfree(ptr);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(class_handle_free_cb);
 
 int class_handle_init(void)
 {
 	struct handle_bucket *bucket;
+<<<<<<< HEAD
 	struct timeval tv;
 	int seed[2];
 
@@ -200,6 +245,16 @@ int class_handle_init(void)
 
 	OBD_ALLOC_LARGE(handle_hash, sizeof(*bucket) * HANDLE_HASH_SIZE);
 	if (handle_hash == NULL)
+=======
+	struct timespec64 ts;
+	int seed[2];
+
+	LASSERT(!handle_hash);
+
+	handle_hash = libcfs_kvzalloc(sizeof(*bucket) * HANDLE_HASH_SIZE,
+				      GFP_NOFS);
+	if (!handle_hash)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	spin_lock_init(&handle_base_lock);
@@ -211,8 +266,13 @@ int class_handle_init(void)
 
 	/** bug 21430: add randomness to the initial base */
 	cfs_get_random_bytes(seed, sizeof(seed));
+<<<<<<< HEAD
 	do_gettimeofday(&tv);
 	cfs_srand(tv.tv_sec ^ seed[0], tv.tv_usec ^ seed[1]);
+=======
+	ktime_get_ts64(&ts);
+	cfs_srand(ts.tv_sec ^ seed[0], ts.tv_nsec ^ seed[1]);
+>>>>>>> v4.9.227
 
 	cfs_get_random_bytes(&handle_base, sizeof(handle_base));
 	LASSERT(handle_base != 0ULL);
@@ -229,7 +289,11 @@ static int cleanup_all_handles(void)
 		struct portals_handle *h;
 
 		spin_lock(&handle_hash[i].lock);
+<<<<<<< HEAD
 		list_for_each_entry_rcu(h, &(handle_hash[i].head), h_link) {
+=======
+		list_for_each_entry_rcu(h, &handle_hash[i].head, h_link) {
+>>>>>>> v4.9.227
 			CERROR("force clean handle %#llx addr %p ops %p\n",
 			       h->h_cookie, h, h->h_ops);
 
@@ -245,11 +309,20 @@ static int cleanup_all_handles(void)
 void class_handle_cleanup(void)
 {
 	int count;
+<<<<<<< HEAD
 	LASSERT(handle_hash != NULL);
 
 	count = cleanup_all_handles();
 
 	OBD_FREE_LARGE(handle_hash, sizeof(*handle_hash) * HANDLE_HASH_SIZE);
+=======
+
+	LASSERT(handle_hash);
+
+	count = cleanup_all_handles();
+
+	kvfree(handle_hash);
+>>>>>>> v4.9.227
 	handle_hash = NULL;
 
 	if (count != 0)

@@ -295,7 +295,11 @@ static int o2cb_cluster_check(void)
 		set_bit(node_num, netmap);
 		if (!memcmp(hbmap, netmap, sizeof(hbmap)))
 			return 0;
+<<<<<<< HEAD
 		if (i < O2CB_MAP_STABILIZE_COUNT)
+=======
+		if (i < O2CB_MAP_STABILIZE_COUNT - 1)
+>>>>>>> v4.9.227
 			msleep(1000);
 	}
 

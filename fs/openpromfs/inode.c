@@ -166,7 +166,11 @@ static int openpromfs_readdir(struct file *, struct dir_context *);
 
 static const struct file_operations openprom_operations = {
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.iterate	= openpromfs_readdir,
+=======
+	.iterate_shared	= openpromfs_readdir,
+>>>>>>> v4.9.227
 	.llseek		= generic_file_llseek,
 };
 
@@ -355,7 +359,11 @@ static struct inode *openprom_iget(struct super_block *sb, ino_t ino)
 	if (!inode)
 		return ERR_PTR(-ENOMEM);
 	if (inode->i_state & I_NEW) {
+<<<<<<< HEAD
 		inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME;
+=======
+		inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 		if (inode->i_ino == OPENPROM_ROOT_INO) {
 			inode->i_op = &openprom_inode_operations;
 			inode->i_fop = &openprom_operations;
@@ -443,7 +451,11 @@ static int __init init_openprom_fs(void)
 					    sizeof(struct op_inode_info),
 					    0,
 					    (SLAB_RECLAIM_ACCOUNT |
+<<<<<<< HEAD
 					     SLAB_MEM_SPREAD),
+=======
+					     SLAB_MEM_SPREAD | SLAB_ACCOUNT),
+>>>>>>> v4.9.227
 					    op_inode_init_once);
 	if (!op_inode_cachep)
 		return -ENOMEM;

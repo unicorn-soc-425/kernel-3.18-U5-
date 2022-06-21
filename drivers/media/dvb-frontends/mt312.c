@@ -142,7 +142,14 @@ static inline int mt312_readreg(struct mt312_state *state,
 static inline int mt312_writereg(struct mt312_state *state,
 				 const enum mt312_reg_addr reg, const u8 val)
 {
+<<<<<<< HEAD
 	return mt312_write(state, reg, &val, 1);
+=======
+	u8 tmp = val; /* see gcc.gnu.org/bugzilla/show_bug.cgi?id=81715 */
+
+
+	return mt312_write(state, reg, &tmp, 1);
+>>>>>>> v4.9.227
 }
 
 static inline u32 mt312_div(u32 a, u32 b)
@@ -156,7 +163,11 @@ static int mt312_reset(struct mt312_state *state, const u8 full)
 }
 
 static int mt312_get_inversion(struct mt312_state *state,
+<<<<<<< HEAD
 			       fe_spectral_inversion_t *i)
+=======
+			       enum fe_spectral_inversion *i)
+>>>>>>> v4.9.227
 {
 	int ret;
 	u8 vit_mode;
@@ -225,9 +236,15 @@ static int mt312_get_symbol_rate(struct mt312_state *state, u32 *sr)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mt312_get_code_rate(struct mt312_state *state, fe_code_rate_t *cr)
 {
 	const fe_code_rate_t fec_tab[8] =
+=======
+static int mt312_get_code_rate(struct mt312_state *state, enum fe_code_rate *cr)
+{
+	const enum fe_code_rate fec_tab[8] =
+>>>>>>> v4.9.227
 	    { FEC_1_2, FEC_2_3, FEC_3_4, FEC_5_6, FEC_6_7, FEC_7_8,
 		FEC_AUTO, FEC_AUTO };
 
@@ -380,7 +397,12 @@ static int mt312_send_master_cmd(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mt312_send_burst(struct dvb_frontend *fe, const fe_sec_mini_cmd_t c)
+=======
+static int mt312_send_burst(struct dvb_frontend *fe,
+			    const enum fe_sec_mini_cmd c)
+>>>>>>> v4.9.227
 {
 	struct mt312_state *state = fe->demodulator_priv;
 	const u8 mini_tab[2] = { 0x02, 0x03 };
@@ -403,7 +425,12 @@ static int mt312_send_burst(struct dvb_frontend *fe, const fe_sec_mini_cmd_t c)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mt312_set_tone(struct dvb_frontend *fe, const fe_sec_tone_mode_t t)
+=======
+static int mt312_set_tone(struct dvb_frontend *fe,
+			  const enum fe_sec_tone_mode t)
+>>>>>>> v4.9.227
 {
 	struct mt312_state *state = fe->demodulator_priv;
 	const u8 tone_tab[2] = { 0x01, 0x00 };
@@ -426,7 +453,12 @@ static int mt312_set_tone(struct dvb_frontend *fe, const fe_sec_tone_mode_t t)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mt312_set_voltage(struct dvb_frontend *fe, const fe_sec_voltage_t v)
+=======
+static int mt312_set_voltage(struct dvb_frontend *fe,
+			     const enum fe_sec_voltage v)
+>>>>>>> v4.9.227
 {
 	struct mt312_state *state = fe->demodulator_priv;
 	const u8 volt_tab[3] = { 0x00, 0x40, 0x00 };
@@ -442,7 +474,11 @@ static int mt312_set_voltage(struct dvb_frontend *fe, const fe_sec_voltage_t v)
 	return mt312_writereg(state, DISEQC_MODE, val);
 }
 
+<<<<<<< HEAD
 static int mt312_read_status(struct dvb_frontend *fe, fe_status_t *s)
+=======
+static int mt312_read_status(struct dvb_frontend *fe, enum fe_status *s)
+>>>>>>> v4.9.227
 {
 	struct mt312_state *state = fe->demodulator_priv;
 	int ret;
@@ -644,9 +680,15 @@ static int mt312_set_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mt312_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+=======
+static int mt312_get_frontend(struct dvb_frontend *fe,
+			      struct dtv_frontend_properties *p)
+{
+>>>>>>> v4.9.227
 	struct mt312_state *state = fe->demodulator_priv;
 	int ret;
 

@@ -55,13 +55,24 @@
 	__raw_writel((val), (dev)->reg + REG_SMADDR)
 
 struct nuc900_nand {
+<<<<<<< HEAD
 	struct mtd_info mtd;
+=======
+>>>>>>> v4.9.227
 	struct nand_chip chip;
 	void __iomem *reg;
 	struct clk *clk;
 	spinlock_t lock;
 };
 
+<<<<<<< HEAD
+=======
+static inline struct nuc900_nand *mtd_to_nuc900(struct mtd_info *mtd)
+{
+	return container_of(mtd_to_nand(mtd), struct nuc900_nand, chip);
+}
+
+>>>>>>> v4.9.227
 static const struct mtd_partition partitions[] = {
 	{
 	 .name = "NAND FS 0",
@@ -78,9 +89,13 @@ static const struct mtd_partition partitions[] = {
 static unsigned char nuc900_nand_read_byte(struct mtd_info *mtd)
 {
 	unsigned char ret;
+<<<<<<< HEAD
 	struct nuc900_nand *nand;
 
 	nand = container_of(mtd, struct nuc900_nand, mtd);
+=======
+	struct nuc900_nand *nand = mtd_to_nuc900(mtd);
+>>>>>>> v4.9.227
 
 	ret = (unsigned char)read_data_reg(nand);
 
@@ -91,9 +106,13 @@ static void nuc900_nand_read_buf(struct mtd_info *mtd,
 				 unsigned char *buf, int len)
 {
 	int i;
+<<<<<<< HEAD
 	struct nuc900_nand *nand;
 
 	nand = container_of(mtd, struct nuc900_nand, mtd);
+=======
+	struct nuc900_nand *nand = mtd_to_nuc900(mtd);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < len; i++)
 		buf[i] = (unsigned char)read_data_reg(nand);
@@ -103,9 +122,13 @@ static void nuc900_nand_write_buf(struct mtd_info *mtd,
 				  const unsigned char *buf, int len)
 {
 	int i;
+<<<<<<< HEAD
 	struct nuc900_nand *nand;
 
 	nand = container_of(mtd, struct nuc900_nand, mtd);
+=======
+	struct nuc900_nand *nand = mtd_to_nuc900(mtd);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < len; i++)
 		write_data_reg(nand, buf[i]);
@@ -115,7 +138,11 @@ static int nuc900_check_rb(struct nuc900_nand *nand)
 {
 	unsigned int val;
 	spin_lock(&nand->lock);
+<<<<<<< HEAD
 	val = __raw_readl(REG_SMISR);
+=======
+	val = __raw_readl(nand->reg + REG_SMISR);
+>>>>>>> v4.9.227
 	val &= READYBUSY;
 	spin_unlock(&nand->lock);
 
@@ -124,11 +151,17 @@ static int nuc900_check_rb(struct nuc900_nand *nand)
 
 static int nuc900_nand_devready(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	struct nuc900_nand *nand;
 	int ready;
 
 	nand = container_of(mtd, struct nuc900_nand, mtd);
 
+=======
+	struct nuc900_nand *nand = mtd_to_nuc900(mtd);
+	int ready;
+
+>>>>>>> v4.9.227
 	ready = (nuc900_check_rb(nand)) ? 1 : 0;
 	return ready;
 }
@@ -136,10 +169,15 @@ static int nuc900_nand_devready(struct mtd_info *mtd)
 static void nuc900_nand_command_lp(struct mtd_info *mtd, unsigned int command,
 				   int column, int page_addr)
 {
+<<<<<<< HEAD
 	register struct nand_chip *chip = mtd->priv;
 	struct nuc900_nand *nand;
 
 	nand = container_of(mtd, struct nuc900_nand, mtd);
+=======
+	register struct nand_chip *chip = mtd_to_nand(mtd);
+	struct nuc900_nand *nand = mtd_to_nuc900(mtd);
+>>>>>>> v4.9.227
 
 	if (command == NAND_CMD_READOOB) {
 		column += mtd->writesize;
@@ -241,6 +279,10 @@ static int nuc900_nand_probe(struct platform_device *pdev)
 {
 	struct nuc900_nand *nuc900_nand;
 	struct nand_chip *chip;
+<<<<<<< HEAD
+=======
+	struct mtd_info *mtd;
+>>>>>>> v4.9.227
 	struct resource *res;
 
 	nuc900_nand = devm_kzalloc(&pdev->dev, sizeof(struct nuc900_nand),
@@ -248,9 +290,15 @@ static int nuc900_nand_probe(struct platform_device *pdev)
 	if (!nuc900_nand)
 		return -ENOMEM;
 	chip = &(nuc900_nand->chip);
+<<<<<<< HEAD
 
 	nuc900_nand->mtd.priv	= chip;
 	nuc900_nand->mtd.owner	= THIS_MODULE;
+=======
+	mtd = nand_to_mtd(chip);
+
+	mtd->dev.parent		= &pdev->dev;
+>>>>>>> v4.9.227
 	spin_lock_init(&nuc900_nand->lock);
 
 	nuc900_nand->clk = devm_clk_get(&pdev->dev, NULL);
@@ -266,6 +314,10 @@ static int nuc900_nand_probe(struct platform_device *pdev)
 	chip->chip_delay	= 50;
 	chip->options		= 0;
 	chip->ecc.mode		= NAND_ECC_SOFT;
+<<<<<<< HEAD
+=======
+	chip->ecc.algo		= NAND_ECC_HAMMING;
+>>>>>>> v4.9.227
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	nuc900_nand->reg = devm_ioremap_resource(&pdev->dev, res);
@@ -274,11 +326,18 @@ static int nuc900_nand_probe(struct platform_device *pdev)
 
 	nuc900_nand_enable(nuc900_nand);
 
+<<<<<<< HEAD
 	if (nand_scan(&(nuc900_nand->mtd), 1))
 		return -ENXIO;
 
 	mtd_device_register(&(nuc900_nand->mtd), partitions,
 			    ARRAY_SIZE(partitions));
+=======
+	if (nand_scan(mtd, 1))
+		return -ENXIO;
+
+	mtd_device_register(mtd, partitions, ARRAY_SIZE(partitions));
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, nuc900_nand);
 
@@ -289,7 +348,11 @@ static int nuc900_nand_remove(struct platform_device *pdev)
 {
 	struct nuc900_nand *nuc900_nand = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	nand_release(&nuc900_nand->mtd);
+=======
+	nand_release(nand_to_mtd(&nuc900_nand->chip));
+>>>>>>> v4.9.227
 	clk_disable(nuc900_nand->clk);
 
 	return 0;
@@ -300,7 +363,10 @@ static struct platform_driver nuc900_nand_driver = {
 	.remove		= nuc900_nand_remove,
 	.driver		= {
 		.name	= "nuc900-fmi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

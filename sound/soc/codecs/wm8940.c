@@ -492,7 +492,11 @@ static int wm8940_set_bias_level(struct snd_soc_codec *codec,
 		ret = snd_soc_write(codec, WM8940_POWER1, pwr_reg | 0x1);
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			ret = regcache_sync(wm8940->regmap);
 			if (ret < 0) {
 				dev_err(codec->dev, "Failed to sync cache: %d\n", ret);
@@ -510,8 +514,11 @@ static int wm8940_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -695,6 +702,7 @@ static struct snd_soc_dai_driver wm8940_dai = {
 	.symmetric_rates = 1,
 };
 
+<<<<<<< HEAD
 static int wm8940_suspend(struct snd_soc_codec *codec)
 {
 	return wm8940_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -706,6 +714,8 @@ static int wm8940_resume(struct snd_soc_codec *codec)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int wm8940_probe(struct snd_soc_codec *codec)
 {
 	struct wm8940_setup_data *pdata = codec->dev->platform_data;
@@ -718,7 +728,11 @@ static int wm8940_probe(struct snd_soc_codec *codec)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	wm8940_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
+=======
+	snd_soc_codec_force_bias_level(codec, SND_SOC_BIAS_STANDBY);
+>>>>>>> v4.9.227
 
 	ret = snd_soc_write(codec, WM8940_POWER1, 0x180);
 	if (ret < 0)
@@ -736,6 +750,7 @@ static int wm8940_probe(struct snd_soc_codec *codec)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int wm8940_remove(struct snd_soc_codec *codec)
 {
 	wm8940_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -754,6 +769,21 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8940 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8940_dapm_widgets),
 	.dapm_routes =  wm8940_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm8940_dapm_routes),
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8940 = {
+	.probe =	wm8940_probe,
+	.set_bias_level = wm8940_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8940_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8940_snd_controls),
+		.dapm_widgets		= wm8940_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8940_dapm_widgets),
+		.dapm_routes		= wm8940_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm8940_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config wm8940_regmap = {
@@ -763,6 +793,10 @@ static const struct regmap_config wm8940_regmap = {
 	.max_register = WM8940_MONOMIX,
 	.reg_defaults = wm8940_reg_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm8940_reg_defaults),
+<<<<<<< HEAD
+=======
+	.cache_type = REGCACHE_RBTREE,
+>>>>>>> v4.9.227
 
 	.readable_reg = wm8940_readable_register,
 	.volatile_reg = wm8940_volatile_register,
@@ -807,7 +841,10 @@ MODULE_DEVICE_TABLE(i2c, wm8940_i2c_id);
 static struct i2c_driver wm8940_i2c_driver = {
 	.driver = {
 		.name = "wm8940",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe =    wm8940_i2c_probe,
 	.remove =   wm8940_i2c_remove,

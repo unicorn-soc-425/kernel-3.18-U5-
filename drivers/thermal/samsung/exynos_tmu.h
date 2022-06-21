@@ -23,6 +23,7 @@
 #ifndef _EXYNOS_TMU_H
 #define _EXYNOS_TMU_H
 #include <linux/cpu_cooling.h>
+<<<<<<< HEAD
 
 #include "exynos_thermal_common.h"
 
@@ -33,6 +34,9 @@ enum calibration_type {
 	TYPE_TWO_POINT_TRIMMING,
 	TYPE_NONE,
 };
+=======
+#include <dt-bindings/thermal/thermal_exynos.h>
+>>>>>>> v4.9.227
 
 enum soc_type {
 	SOC_ARCH_EXYNOS3250 = 1,
@@ -40,6 +44,7 @@ enum soc_type {
 	SOC_ARCH_EXYNOS4412,
 	SOC_ARCH_EXYNOS5250,
 	SOC_ARCH_EXYNOS5260,
+<<<<<<< HEAD
 	SOC_ARCH_EXYNOS5420_TRIMINFO,
 	SOC_ARCH_EXYNOS5440,
 };
@@ -146,10 +151,18 @@ struct exynos_tmu_registers {
 
 	u32	tmu_irqstatus;
 	u32	tmu_pmin;
+=======
+	SOC_ARCH_EXYNOS5420,
+	SOC_ARCH_EXYNOS5420_TRIMINFO,
+	SOC_ARCH_EXYNOS5433,
+	SOC_ARCH_EXYNOS5440,
+	SOC_ARCH_EXYNOS7,
+>>>>>>> v4.9.227
 };
 
 /**
  * struct exynos_tmu_platform_data
+<<<<<<< HEAD
  * @threshold: basic temperature for generating interrupt
  *	       25 <= threshold <= 125 [unit: degree Celsius]
  * @threshold_falling: differntial value for setting threshold
@@ -178,6 +191,8 @@ struct exynos_tmu_registers {
  *	0 = disable trigger_level[] interrupt
  * @max_trigger_level: max trigger level supported by the TMU
  * @non_hw_trigger_levels: number of defined non-hardware trigger levels
+=======
+>>>>>>> v4.9.227
  * @gain: gain of amplifier in the positive-TC generator block
  *	0 < gain <= 15
  * @reference_voltage: reference voltage of amplifier
@@ -189,6 +204,7 @@ struct exynos_tmu_registers {
  * @efuse_value: platform defined fuse value
  * @min_efuse_value: minimum valid trimming data
  * @max_efuse_value: maximum valid trimming data
+<<<<<<< HEAD
  * @first_point_trim: temp value of the first point trimming
  * @second_point_trim: temp value of the second point trimming
  * @default_temp_offset: default temperature offset in case of no trimming
@@ -202,10 +218,15 @@ struct exynos_tmu_registers {
  *	and bitfields shifts and masks.
  * @features: a bitfield value indicating the features supported in SOC like
  *	emulation, multi instance etc
+=======
+ * @default_temp_offset: default temperature offset in case of no trimming
+ * @cal_type: calibration type for temperature
+>>>>>>> v4.9.227
  *
  * This structure is required for configuration of exynos_tmu driver.
  */
 struct exynos_tmu_platform_data {
+<<<<<<< HEAD
 	u8 threshold;
 	u8 threshold_falling;
 	u8 trigger_levels[MAX_TRIP_COUNT];
@@ -213,6 +234,8 @@ struct exynos_tmu_platform_data {
 	bool trigger_enable[MAX_TRIP_COUNT];
 	u8 max_trigger_level;
 	u8 non_hw_trigger_levels;
+=======
+>>>>>>> v4.9.227
 	u8 gain;
 	u8 reference_voltage;
 	u8 noise_cancel_mode;
@@ -223,6 +246,7 @@ struct exynos_tmu_platform_data {
 	u8 first_point_trim;
 	u8 second_point_trim;
 	u8 default_temp_offset;
+<<<<<<< HEAD
 	u8 test_mux;
 	u8 triminfo_reload[MAX_TRIMINFO_CTRL_REG];
 
@@ -244,6 +268,12 @@ struct exynos_tmu_platform_data {
 struct exynos_tmu_init_data {
 	int tmu_count;
 	struct exynos_tmu_platform_data tmu_data[];
+=======
+
+	enum soc_type type;
+	u32 cal_type;
+	u32 cal_mode;
+>>>>>>> v4.9.227
 };
 
 #endif /* _EXYNOS_TMU_H */

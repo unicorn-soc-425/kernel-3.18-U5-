@@ -36,6 +36,7 @@ static inline unsigned long _get_base(char * addr)
   return 0;
 }
 
+<<<<<<< HEAD
 #define nop() __asm__ __volatile__ ("nop");
 
 #define xchg(ptr,x) ((__typeof__(*(ptr)))__xchg((unsigned long)(x),(ptr),sizeof(*(ptr))))
@@ -44,4 +45,6 @@ static inline unsigned long _get_base(char * addr)
 struct __xchg_dummy { unsigned long a[100]; };
 #define __xg(x) ((struct __xchg_dummy *)(x))
 
+=======
+>>>>>>> v4.9.227
 #endif

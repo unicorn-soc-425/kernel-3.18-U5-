@@ -19,6 +19,10 @@
 #include <linux/gpio.h>
 #include <linux/delay.h>
 #include <linux/leds.h>
+<<<<<<< HEAD
+=======
+#include <linux/pwm.h>
+>>>>>>> v4.9.227
 #include <linux/pwm_backlight.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
@@ -30,6 +34,10 @@
 #include <video/samsung_fimd.h>
 #include <mach/hardware.h>
 #include <mach/map.h>
+<<<<<<< HEAD
+=======
+#include <mach/irqs.h>
+>>>>>>> v4.9.227
 
 #include <asm/irq.h>
 #include <asm/mach-types.h>
@@ -73,6 +81,14 @@ static struct s3c2410_uartcfg hmt_uartcfgs[] __initdata = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+static struct pwm_lookup hmt_pwm_lookup[] = {
+	PWM_LOOKUP("samsung-pwm", 1, "pwm-backlight.0", NULL,
+		   1000000000 / (100 * 256 * 20), PWM_POLARITY_NORMAL),
+};
+
+>>>>>>> v4.9.227
 static int hmt_bl_init(struct device *dev)
 {
 	int ret;
@@ -110,10 +126,15 @@ static void hmt_bl_exit(struct device *dev)
 }
 
 static struct platform_pwm_backlight_data hmt_backlight_data = {
+<<<<<<< HEAD
 	.pwm_id		= 1,
 	.max_brightness	= 100 * 256,
 	.dft_brightness	= 40 * 256,
 	.pwm_period_ns	= 1000000000 / (100 * 256 * 20),
+=======
+	.max_brightness	= 100 * 256,
+	.dft_brightness	= 40 * 256,
+>>>>>>> v4.9.227
 	.enable_gpio	= -1,
 	.init		= hmt_bl_init,
 	.notify		= hmt_bl_notify,
@@ -268,12 +289,20 @@ static void __init hmt_machine_init(void)
 	gpio_request(S3C64XX_GPF(13), "usb power");
 	gpio_direction_output(S3C64XX_GPF(13), 1);
 
+<<<<<<< HEAD
+=======
+	pwm_add_table(hmt_pwm_lookup, ARRAY_SIZE(hmt_pwm_lookup));
+>>>>>>> v4.9.227
 	platform_add_devices(hmt_devices, ARRAY_SIZE(hmt_devices));
 }
 
 MACHINE_START(HMT, "Airgoo-HMT")
 	/* Maintainer: Peter Korsgaard <jacmet@sunsite.dk> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= S3C64XX_NR_IRQS,
+>>>>>>> v4.9.227
 	.init_irq	= s3c6410_init_irq,
 	.map_io		= hmt_map_io,
 	.init_machine	= hmt_machine_init,

@@ -25,8 +25,11 @@
 #include <linux/spi/spi.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.2"
 
+=======
+>>>>>>> v4.9.227
 #define RS5C348_REG_SECS	0
 #define RS5C348_REG_MINS	1
 #define RS5C348_REG_HOURS	2
@@ -171,7 +174,10 @@ static int rs5c348_probe(struct spi_device *spi)
 		goto kfree_exit;
 	}
 
+<<<<<<< HEAD
 	dev_info(&spi->dev, "chip found, driver version " DRV_VERSION "\n");
+=======
+>>>>>>> v4.9.227
 	dev_info(&spi->dev, "spiclk %u KHz.\n",
 		 (spi->max_speed_hz + 500) / 1000);
 
@@ -221,7 +227,10 @@ static int rs5c348_probe(struct spi_device *spi)
 static struct spi_driver rs5c348_driver = {
 	.driver = {
 		.name	= "rtc-rs5c348",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe	= rs5c348_probe,
 };
@@ -231,5 +240,8 @@ module_spi_driver(rs5c348_driver);
 MODULE_AUTHOR("Atsushi Nemoto <anemo@mba.ocn.ne.jp>");
 MODULE_DESCRIPTION("Ricoh RS5C348 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227
 MODULE_ALIAS("spi:rtc-rs5c348");

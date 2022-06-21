@@ -25,7 +25,10 @@
 
 #include <linux/bug.h>
 #include <linux/plist.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
+=======
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_DEBUG_PI_LIST
 

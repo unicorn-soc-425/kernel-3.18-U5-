@@ -14,7 +14,10 @@
 #include <linux/of_device.h>
 #include <linux/regmap.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
+=======
+>>>>>>> v4.9.227
 
 #define TLC591XX_MAX_LEDS	16
 
@@ -42,13 +45,19 @@
 #define LEDOUT_MASK		0x3
 
 #define ldev_to_led(c)		container_of(c, struct tlc591xx_led, ldev)
+<<<<<<< HEAD
 #define work_to_led(work)	container_of(work, struct tlc591xx_led, work)
+=======
+>>>>>>> v4.9.227
 
 struct tlc591xx_led {
 	bool active;
 	unsigned int led_no;
 	struct led_classdev ldev;
+<<<<<<< HEAD
 	struct work_struct work;
+=======
+>>>>>>> v4.9.227
 	struct tlc591xx_priv *priv;
 };
 
@@ -110,12 +119,21 @@ tlc591xx_set_pwm(struct tlc591xx_priv *priv, struct tlc591xx_led *led,
 	return regmap_write(priv->regmap, pwm, brightness);
 }
 
+<<<<<<< HEAD
 static void
 tlc591xx_led_work(struct work_struct *work)
 {
 	struct tlc591xx_led *led = work_to_led(work);
 	struct tlc591xx_priv *priv = led->priv;
 	enum led_brightness brightness = led->ldev.brightness;
+=======
+static int
+tlc591xx_brightness_set(struct led_classdev *led_cdev,
+			enum led_brightness brightness)
+{
+	struct tlc591xx_led *led = ldev_to_led(led_cdev);
+	struct tlc591xx_priv *priv = led->priv;
+>>>>>>> v4.9.227
 	int err;
 
 	switch (brightness) {
@@ -131,6 +149,7 @@ tlc591xx_led_work(struct work_struct *work)
 			err = tlc591xx_set_pwm(priv, led, brightness);
 	}
 
+<<<<<<< HEAD
 	if (err)
 		dev_err(led->ldev.dev, "Failed setting brightness\n");
 }
@@ -143,6 +162,9 @@ tlc591xx_brightness_set(struct led_classdev *led_cdev,
 
 	led->ldev.brightness = brightness;
 	schedule_work(&led->work);
+=======
+	return err;
+>>>>>>> v4.9.227
 }
 
 static void
@@ -151,10 +173,15 @@ tlc591xx_destroy_devices(struct tlc591xx_priv *priv, unsigned int j)
 	int i = j;
 
 	while (--i >= 0) {
+<<<<<<< HEAD
 		if (priv->leds[i].active) {
 			led_classdev_unregister(&priv->leds[i].ldev);
 			cancel_work_sync(&priv->leds[i].work);
 		}
+=======
+		if (priv->leds[i].active)
+			led_classdev_unregister(&priv->leds[i].ldev);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -175,9 +202,14 @@ tlc591xx_configure(struct device *dev,
 
 		led->priv = priv;
 		led->led_no = i;
+<<<<<<< HEAD
 		led->ldev.brightness_set = tlc591xx_brightness_set;
 		led->ldev.max_brightness = LED_FULL;
 		INIT_WORK(&led->work, tlc591xx_led_work);
+=======
+		led->ldev.brightness_set_blocking = tlc591xx_brightness_set;
+		led->ldev.max_brightness = LED_FULL;
+>>>>>>> v4.9.227
 		err = led_classdev_register(dev, &led->ldev);
 		if (err < 0) {
 			dev_err(dev, "couldn't register LED %s\n",
@@ -231,10 +263,13 @@ tlc591xx_probe(struct i2c_client *client,
 	if (!count || count > tlc591xx->max_leds)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (!i2c_check_functionality(client->adapter,
 				     I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 
+=======
+>>>>>>> v4.9.227
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;

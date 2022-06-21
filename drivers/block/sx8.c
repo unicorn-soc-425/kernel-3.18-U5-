@@ -23,7 +23,11 @@
 #include <linux/workqueue.h>
 #include <linux/bitops.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <linux/hdreg.h>
 #include <linux/dma-mapping.h>
 #include <linux/completion.h>
@@ -620,7 +624,11 @@ static int carm_array_info (struct carm_host *host, unsigned int array_idx)
 	spin_unlock_irq(&host->lock);
 
 	DPRINTK("blk_execute_rq_nowait, tag == %u\n", idx);
+<<<<<<< HEAD
 	crq->rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	crq->rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> v4.9.227
 	crq->rq->special = crq;
 	blk_execute_rq_nowait(host->oob_q, NULL, crq->rq, true, NULL);
 
@@ -661,7 +669,11 @@ static int carm_send_special (struct carm_host *host, carm_sspc_t func)
 	crq->msg_bucket = (u32) rc;
 
 	DPRINTK("blk_execute_rq_nowait, tag == %u\n", idx);
+<<<<<<< HEAD
 	crq->rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	crq->rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> v4.9.227
 	crq->rq->special = crq;
 	blk_execute_rq_nowait(host->oob_q, NULL, crq->rq, true, NULL);
 
@@ -671,16 +683,26 @@ static int carm_send_special (struct carm_host *host, carm_sspc_t func)
 static unsigned int carm_fill_sync_time(struct carm_host *host,
 					unsigned int idx, void *mem)
 {
+<<<<<<< HEAD
 	struct timeval tv;
 	struct carm_msg_sync_time *st = mem;
 
 	do_gettimeofday(&tv);
+=======
+	struct carm_msg_sync_time *st = mem;
+
+	time64_t tv = ktime_get_real_seconds();
+>>>>>>> v4.9.227
 
 	memset(st, 0, sizeof(*st));
 	st->type	= CARM_MSG_MISC;
 	st->subtype	= MISC_SET_TIME;
 	st->handle	= cpu_to_le32(TAG_ENCODE(idx));
+<<<<<<< HEAD
 	st->timestamp	= cpu_to_le32(tv.tv_sec);
+=======
+	st->timestamp	= cpu_to_le32(tv);
+>>>>>>> v4.9.227
 
 	return sizeof(struct carm_msg_sync_time);
 }

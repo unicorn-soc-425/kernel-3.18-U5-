@@ -40,12 +40,15 @@ int coda_iscontrol(const char *name, size_t length)
                 (strncmp(name, CODA_CONTROL, CODA_CONTROLLEN) == 0));
 }
 
+<<<<<<< HEAD
 /* recognize /coda inode */
 int coda_isroot(struct inode *i)
 {
     return ( i->i_sb->s_root->d_inode == i );
 }
 
+=======
+>>>>>>> v4.9.227
 unsigned short coda_flags_to_cflags(unsigned short flags)
 {
 	unsigned short coda_flags = 0;

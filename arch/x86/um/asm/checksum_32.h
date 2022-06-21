@@ -13,7 +13,11 @@ static inline __sum16 ip_compute_csum(const void *buff, int len)
 #define _HAVE_ARCH_IPV6_CSUM
 static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 					  const struct in6_addr *daddr,
+<<<<<<< HEAD
 					  __u32 len, unsigned short proto,
+=======
+					  __u32 len, __u8 proto,
+>>>>>>> v4.9.227
 					  __wsum sum)
 {
 	__asm__(

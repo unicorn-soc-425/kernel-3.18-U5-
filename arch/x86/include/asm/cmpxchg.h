@@ -2,10 +2,16 @@
 #define ASM_X86_CMPXCHG_H
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
 #include <asm/alternative.h> /* Provides LOCK_PREFIX */
 
 #define __HAVE_ARCH_CMPXCHG 1
 
+=======
+#include <asm/cpufeatures.h>
+#include <asm/alternative.h> /* Provides LOCK_PREFIX */
+
+>>>>>>> v4.9.227
 /*
  * Non-existant functions to indicate usage errors at link time
  * (or compile-time if the compiler implements __compiletime_error().
@@ -159,6 +165,7 @@ extern void __add_wrong_size(void)
  * value of "*ptr".
  *
  * xadd() is locked when multiple CPUs are online
+<<<<<<< HEAD
  * xadd_sync() is always locked
  * xadd_local() is never locked
  */
@@ -206,6 +213,11 @@ extern void __add_wrong_size(void)
  */
 #define add_smp(ptr, inc)	__add((ptr), (inc), LOCK_PREFIX)
 #define add_sync(ptr, inc)	__add((ptr), (inc), "lock; ")
+=======
+ */
+#define __xadd(ptr, inc, lock)	__xchg_op((ptr), (inc), xadd, lock)
+#define xadd(ptr, inc)		__xadd((ptr), (inc), LOCK_PREFIX)
+>>>>>>> v4.9.227
 
 #define __cmpxchg_double(pfx, p1, p2, o1, o2, n1, n2)			\
 ({									\

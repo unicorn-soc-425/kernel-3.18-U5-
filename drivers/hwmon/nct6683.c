@@ -29,7 +29,11 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/acpi.h>
+<<<<<<< HEAD
 #include <linux/dmi.h>
+=======
+#include <linux/delay.h>
+>>>>>>> v4.9.227
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/io.h>
@@ -45,7 +49,11 @@ enum kinds { nct6683 };
 
 static bool force;
 module_param(force, bool, 0);
+<<<<<<< HEAD
 MODULE_PARM_DESC(force, "Set to one to enable detection on non-Intel boards");
+=======
+MODULE_PARM_DESC(force, "Set to one to enable support for unknown vendors");
+>>>>>>> v4.9.227
 
 static const char * const nct6683_device_names[] = {
 	"nct6683",
@@ -141,6 +149,10 @@ superio_exit(int ioreg)
 #define NCT6683_REG_MON(x)		(0x100 + (x) * 2)
 #define NCT6683_REG_FAN_RPM(x)		(0x140 + (x) * 2)
 #define NCT6683_REG_PWM(x)		(0x160 + (x))
+<<<<<<< HEAD
+=======
+#define NCT6683_REG_PWM_WRITE(x)	(0xa28 + (x))
+>>>>>>> v4.9.227
 
 #define NCT6683_REG_MON_STS(x)		(0x174 + (x))
 #define NCT6683_REG_IDLE(x)		(0x178 + (x))
@@ -165,8 +177,18 @@ superio_exit(int ioreg)
 
 #define NCT6683_REG_FAN_MIN(x)		(0x3b8 + (x) * 2)	/* 16 bit */
 
+<<<<<<< HEAD
 #define NCT6683_REG_CUSTOMER_ID		0x602
 #define NCT6683_CUSTOMER_ID_INTEL	0x805
+=======
+#define NCT6683_REG_FAN_CFG_CTRL	0xa01
+#define NCT6683_FAN_CFG_REQ		0x80
+#define NCT6683_FAN_CFG_DONE		0x40
+
+#define NCT6683_REG_CUSTOMER_ID		0x602
+#define NCT6683_CUSTOMER_ID_INTEL	0x805
+#define NCT6683_CUSTOMER_ID_MITAC	0xa0e
+>>>>>>> v4.9.227
 
 #define NCT6683_REG_BUILD_YEAR		0x604
 #define NCT6683_REG_BUILD_MONTH		0x605
@@ -394,7 +416,12 @@ struct sensor_template_group {
 };
 
 static struct attribute_group *
+<<<<<<< HEAD
 nct6683_create_attr_group(struct device *dev, struct sensor_template_group *tg,
+=======
+nct6683_create_attr_group(struct device *dev,
+			  const struct sensor_template_group *tg,
+>>>>>>> v4.9.227
 			  int repeat)
 {
 	struct sensor_device_attribute_2 *a2;
@@ -559,6 +586,10 @@ static int get_temp_reg(struct nct6683_data *data, int nr, int index)
 			break;
 		}
 		break;
+<<<<<<< HEAD
+=======
+	case NCT6683_CUSTOMER_ID_MITAC:
+>>>>>>> v4.9.227
 	default:
 		switch (nr) {
 		default:
@@ -703,7 +734,11 @@ static struct sensor_device_template *nct6683_attributes_in_template[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static struct sensor_template_group nct6683_in_template_group = {
+=======
+static const struct sensor_template_group nct6683_in_template_group = {
+>>>>>>> v4.9.227
 	.templates = nct6683_attributes_in_template,
 	.is_visible = nct6683_in_is_visible,
 };
@@ -774,7 +809,11 @@ static struct sensor_device_template *nct6683_attributes_fan_template[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static struct sensor_template_group nct6683_fan_template_group = {
+=======
+static const struct sensor_template_group nct6683_fan_template_group = {
+>>>>>>> v4.9.227
 	.templates = nct6683_attributes_fan_template,
 	.is_visible = nct6683_fan_is_visible,
 	.base = 1,
@@ -902,7 +941,11 @@ static struct sensor_device_template *nct6683_attributes_temp_template[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static struct sensor_template_group nct6683_temp_template_group = {
+=======
+static const struct sensor_template_group nct6683_temp_template_group = {
+>>>>>>> v4.9.227
 	.templates = nct6683_attributes_temp_template,
 	.is_visible = nct6683_temp_is_visible,
 	.base = 1,
@@ -918,7 +961,33 @@ show_pwm(struct device *dev, struct device_attribute *attr, char *buf)
 	return sprintf(buf, "%d\n", data->pwm[index]);
 }
 
+<<<<<<< HEAD
 SENSOR_TEMPLATE(pwm, "pwm%d", S_IRUGO, show_pwm, NULL, 0);
+=======
+static ssize_t
+store_pwm(struct device *dev, struct device_attribute *attr, const char *buf,
+	  size_t count)
+{
+	struct sensor_device_attribute_2 *sattr = to_sensor_dev_attr_2(attr);
+	struct nct6683_data *data = dev_get_drvdata(dev);
+	int index = sattr->index;
+	unsigned long val;
+
+	if (kstrtoul(buf, 10, &val) || val > 255)
+		return -EINVAL;
+
+	mutex_lock(&data->update_lock);
+	nct6683_write(data, NCT6683_REG_FAN_CFG_CTRL, NCT6683_FAN_CFG_REQ);
+	usleep_range(1000, 2000);
+	nct6683_write(data, NCT6683_REG_PWM_WRITE(index), val);
+	nct6683_write(data, NCT6683_REG_FAN_CFG_CTRL, NCT6683_FAN_CFG_DONE);
+	mutex_unlock(&data->update_lock);
+
+	return count;
+}
+
+SENSOR_TEMPLATE(pwm, "pwm%d", S_IRUGO, show_pwm, store_pwm, 0);
+>>>>>>> v4.9.227
 
 static umode_t nct6683_pwm_is_visible(struct kobject *kobj,
 				      struct attribute *attr, int index)
@@ -930,6 +999,13 @@ static umode_t nct6683_pwm_is_visible(struct kobject *kobj,
 	if (!(data->have_pwm & (1 << pwm)))
 		return 0;
 
+<<<<<<< HEAD
+=======
+	/* Only update pwm values for Mitac boards */
+	if (data->customer_id == NCT6683_CUSTOMER_ID_MITAC)
+		return attr->mode | S_IWUSR;
+
+>>>>>>> v4.9.227
 	return attr->mode;
 }
 
@@ -938,7 +1014,11 @@ static struct sensor_device_template *nct6683_attributes_pwm_template[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static struct sensor_template_group nct6683_pwm_template_group = {
+=======
+static const struct sensor_template_group nct6683_pwm_template_group = {
+>>>>>>> v4.9.227
 	.templates = nct6683_attributes_pwm_template,
 	.is_visible = nct6683_pwm_is_visible,
 	.base = 1,
@@ -1170,6 +1250,10 @@ static int nct6683_probe(struct platform_device *pdev)
 	struct device *hwmon_dev;
 	struct resource *res;
 	int groups = 0;
+<<<<<<< HEAD
+=======
+	char build[16];
+>>>>>>> v4.9.227
 
 	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
 	if (!devm_request_region(dev, res->start, IOREGION_LENGTH, DRVNAME))
@@ -1187,6 +1271,20 @@ static int nct6683_probe(struct platform_device *pdev)
 
 	data->customer_id = nct6683_read16(data, NCT6683_REG_CUSTOMER_ID);
 
+<<<<<<< HEAD
+=======
+	/* By default only instantiate driver if the customer ID is known */
+	switch (data->customer_id) {
+	case NCT6683_CUSTOMER_ID_INTEL:
+		break;
+	case NCT6683_CUSTOMER_ID_MITAC:
+		break;
+	default:
+		if (!force)
+			return -ENODEV;
+	}
+
+>>>>>>> v4.9.227
 	nct6683_init_device(data);
 	nct6683_setup_fans(data);
 	nct6683_setup_sensors(data);
@@ -1230,6 +1328,7 @@ static int nct6683_probe(struct platform_device *pdev)
 	}
 	data->groups[groups++] = &nct6683_group_other;
 
+<<<<<<< HEAD
 	dev_info(dev, "%s EC firmware version %d.%d build %02x/%02x/%02x\n",
 		 nct6683_chip_names[data->kind],
 		 nct6683_read(data, NCT6683_REG_VERSION_HI),
@@ -1237,6 +1336,24 @@ static int nct6683_probe(struct platform_device *pdev)
 		 nct6683_read(data, NCT6683_REG_BUILD_MONTH),
 		 nct6683_read(data, NCT6683_REG_BUILD_DAY),
 		 nct6683_read(data, NCT6683_REG_BUILD_YEAR));
+=======
+	if (data->customer_id == NCT6683_CUSTOMER_ID_INTEL)
+		scnprintf(build, sizeof(build), "%02x/%02x/%02x",
+			  nct6683_read(data, NCT6683_REG_BUILD_MONTH),
+			  nct6683_read(data, NCT6683_REG_BUILD_DAY),
+			  nct6683_read(data, NCT6683_REG_BUILD_YEAR));
+	else
+		scnprintf(build, sizeof(build), "%02d/%02d/%02d",
+			  nct6683_read(data, NCT6683_REG_BUILD_MONTH),
+			  nct6683_read(data, NCT6683_REG_BUILD_DAY),
+			  nct6683_read(data, NCT6683_REG_BUILD_YEAR));
+
+	dev_info(dev, "%s EC firmware version %d.%d build %s\n",
+		 nct6683_chip_names[data->kind],
+		 nct6683_read(data, NCT6683_REG_VERSION_HI),
+		 nct6683_read(data, NCT6683_REG_VERSION_LO),
+		 build);
+>>>>>>> v4.9.227
 
 	hwmon_dev = devm_hwmon_device_register_with_groups(dev,
 			nct6683_device_names[data->kind], data, data->groups);
@@ -1284,7 +1401,10 @@ static const struct dev_pm_ops nct6683_dev_pm_ops = {
 
 static struct platform_driver nct6683_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DRVNAME,
 		.pm	= NCT6683_DEV_PM_OPS,
 	},
@@ -1293,11 +1413,15 @@ static struct platform_driver nct6683_driver = {
 
 static int __init nct6683_find(int sioaddr, struct nct6683_sio_data *sio_data)
 {
+<<<<<<< HEAD
 	const char *board_vendor;
+=======
+>>>>>>> v4.9.227
 	int addr;
 	u16 val;
 	int err;
 
+<<<<<<< HEAD
 	/*
 	 * Only run on Intel boards unless the 'force' module parameter is set
 	 */
@@ -1307,6 +1431,8 @@ static int __init nct6683_find(int sioaddr, struct nct6683_sio_data *sio_data)
 			return -ENODEV;
 	}
 
+=======
+>>>>>>> v4.9.227
 	err = superio_enter(sioaddr);
 	if (err)
 		return err;

@@ -20,7 +20,10 @@
  */
 struct thread_info {
 	struct task_struct *task;	/* XXX not really needed, except for dup_task_struct() */
+<<<<<<< HEAD
 	struct exec_domain *exec_domain;/* execution domain */
+=======
+>>>>>>> v4.9.227
 	__u32 flags;			/* thread_info flags (see TIF_*) */
 	__u32 cpu;			/* current CPU */
 	__u32 last_cpu;			/* Last CPU thread ran on */
@@ -40,7 +43,10 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> v4.9.227
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.addr_limit	= KERNEL_DS,		\
@@ -50,6 +56,7 @@ struct thread_info {
 #ifndef ASM_OFFSETS_C
 /* how to get the thread information struct from C */
 #define current_thread_info()	((struct thread_info *) ((char *) current + IA64_TASK_SIZE))
+<<<<<<< HEAD
 #define alloc_thread_info_node(tsk, node)	\
 		((struct thread_info *) ((char *) (tsk) + IA64_TASK_SIZE))
 #define task_thread_info(tsk)	((struct thread_info *) ((char *) (tsk) + IA64_TASK_SIZE))
@@ -59,6 +66,17 @@ struct thread_info {
 #define task_thread_info(tsk)	((struct thread_info *) 0)
 #endif
 #define free_thread_info(ti)	/* nothing */
+=======
+#define alloc_thread_stack_node(tsk, node)	\
+		((unsigned long *) ((char *) (tsk) + IA64_TASK_SIZE))
+#define task_thread_info(tsk)	((struct thread_info *) ((char *) (tsk) + IA64_TASK_SIZE))
+#else
+#define current_thread_info()	((struct thread_info *) 0)
+#define alloc_thread_stack_node(tsk, node)	((unsigned long *) 0)
+#define task_thread_info(tsk)	((struct thread_info *) 0)
+#endif
+#define free_thread_stack(tsk)	/* nothing */
+>>>>>>> v4.9.227
 #define task_stack_page(tsk)	((void *)(tsk))
 
 #define __HAVE_THREAD_FUNCTIONS
@@ -123,6 +141,7 @@ struct thread_info {
 /* like TIF_ALLWORK_BITS but sans TIF_SYSCALL_TRACE or TIF_SYSCALL_AUDIT */
 #define TIF_WORK_MASK		(TIF_ALLWORK_MASK&~(_TIF_SYSCALL_TRACE|_TIF_SYSCALL_AUDIT))
 
+<<<<<<< HEAD
 #define TS_RESTORE_SIGMASK	2	/* restore signal mask in do_signal() */
 
 #ifndef __ASSEMBLY__
@@ -151,4 +170,6 @@ static inline bool test_and_clear_restore_sigmask(void)
 }
 #endif	/* !__ASSEMBLY__ */
 
+=======
+>>>>>>> v4.9.227
 #endif /* _ASM_IA64_THREAD_INFO_H */

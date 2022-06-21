@@ -300,7 +300,10 @@ static struct platform_driver mv64x60_wdt_driver = {
 	.probe = mv64x60_wdt_probe,
 	.remove = mv64x60_wdt_remove,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = MV64x60_WDT_NAME,
 	},
 };

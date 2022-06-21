@@ -19,12 +19,20 @@
 #include "../br_private.h"
 
 static void nft_meta_bridge_get_eval(const struct nft_expr *expr,
+<<<<<<< HEAD
 				     struct nft_data data[NFT_REG_MAX + 1],
+=======
+				     struct nft_regs *regs,
+>>>>>>> v4.9.227
 				     const struct nft_pktinfo *pkt)
 {
 	const struct nft_meta *priv = nft_expr_priv(expr);
 	const struct net_device *in = pkt->in, *out = pkt->out;
+<<<<<<< HEAD
 	struct nft_data *dest = &data[priv->dreg];
+=======
+	u32 *dest = &regs->data[priv->dreg];
+>>>>>>> v4.9.227
 	const struct net_bridge_port *p;
 
 	switch (priv->key) {
@@ -40,12 +48,21 @@ static void nft_meta_bridge_get_eval(const struct nft_expr *expr,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	strncpy((char *)dest->data, p->br->dev->name, sizeof(dest->data));
 	return;
 out:
 	return nft_meta_get_eval(expr, data, pkt);
 err:
 	data[NFT_REG_VERDICT].verdict = NFT_BREAK;
+=======
+	strncpy((char *)dest, p->br->dev->name, IFNAMSIZ);
+	return;
+out:
+	return nft_meta_get_eval(expr, regs, pkt);
+err:
+	regs->verdict.code = NFT_BREAK;
+>>>>>>> v4.9.227
 }
 
 static int nft_meta_bridge_get_init(const struct nft_ctx *ctx,
@@ -53,17 +70,26 @@ static int nft_meta_bridge_get_init(const struct nft_ctx *ctx,
 				    const struct nlattr * const tb[])
 {
 	struct nft_meta *priv = nft_expr_priv(expr);
+<<<<<<< HEAD
 	int err;
+=======
+	unsigned int len;
+>>>>>>> v4.9.227
 
 	priv->key = ntohl(nla_get_be32(tb[NFTA_META_KEY]));
 	switch (priv->key) {
 	case NFT_META_BRI_IIFNAME:
 	case NFT_META_BRI_OIFNAME:
+<<<<<<< HEAD
+=======
+		len = IFNAMSIZ;
+>>>>>>> v4.9.227
 		break;
 	default:
 		return nft_meta_get_init(ctx, expr, tb);
 	}
 
+<<<<<<< HEAD
 	priv->dreg = ntohl(nla_get_be32(tb[NFTA_META_DREG]));
 	err = nft_validate_output_register(priv->dreg);
 	if (err < 0)
@@ -74,6 +100,11 @@ static int nft_meta_bridge_get_init(const struct nft_ctx *ctx,
 		return err;
 
 	return 0;
+=======
+	priv->dreg = nft_parse_register(tb[NFTA_META_DREG]);
+	return nft_validate_register_store(ctx, priv->dreg, NULL,
+					   NFT_DATA_VALUE, len);
+>>>>>>> v4.9.227
 }
 
 static struct nft_expr_type nft_meta_bridge_type;
@@ -90,7 +121,13 @@ static const struct nft_expr_ops nft_meta_bridge_set_ops = {
 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_meta)),
 	.eval		= nft_meta_set_eval,
 	.init		= nft_meta_set_init,
+<<<<<<< HEAD
 	.dump		= nft_meta_set_dump,
+=======
+	.destroy	= nft_meta_set_destroy,
+	.dump		= nft_meta_set_dump,
+	.validate	= nft_meta_set_validate,
+>>>>>>> v4.9.227
 };
 
 static const struct nft_expr_ops *

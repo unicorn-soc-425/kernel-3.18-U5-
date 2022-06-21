@@ -3,6 +3,7 @@ config DRM_NOUVEAU
 	depends on DRM && PCI
         select FW_LOADER
 	select DRM_KMS_HELPER
+<<<<<<< HEAD
 	select DRM_KMS_FB_HELPER
 	select DRM_TTM
 	select FB_CFB_FILLRECT
@@ -10,6 +11,9 @@ config DRM_NOUVEAU
 	select FB_CFB_IMAGEBLIT
 	select FB
 	select FRAMEBUFFER_CONSOLE if !EXPERT
+=======
+	select DRM_TTM
+>>>>>>> v4.9.227
 	select FB_BACKLIGHT if DRM_NOUVEAU_BACKLIGHT
 	select ACPI_VIDEO if ACPI && X86 && BACKLIGHT_CLASS_DEVICE && INPUT
 	select X86_PLATFORM_DEVICES if ACPI && X86

@@ -22,6 +22,10 @@
  * Started by Ingo Molnar <mingo@elte.hu>
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/elf-randomize.h>
+>>>>>>> v4.9.227
 #include <linux/personality.h>
 #include <linux/mm.h>
 #include <linux/mman.h>
@@ -31,9 +35,12 @@
 #include <linux/security.h>
 #include <asm/pgalloc.h>
 
+<<<<<<< HEAD
 unsigned long mmap_rnd_mask;
 unsigned long mmap_align_mask;
 
+=======
+>>>>>>> v4.9.227
 static unsigned long stack_maxrandom_size(void)
 {
 	if (!(current->flags & PF_RANDOMIZE))
@@ -62,10 +69,14 @@ static inline int mmap_is_legacy(void)
 
 unsigned long arch_mmap_rnd(void)
 {
+<<<<<<< HEAD
 	if (is_32bit_task())
 		return (get_random_int() & 0x7ff) << PAGE_SHIFT;
 	else
 		return (get_random_int() & mmap_rnd_mask) << PAGE_SHIFT;
+=======
+	return (get_random_int() & MMAP_RND_MASK) << PAGE_SHIFT;
+>>>>>>> v4.9.227
 }
 
 static unsigned long mmap_base_legacy(unsigned long rnd)
@@ -92,7 +103,10 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct *vma;
 	struct vm_unmapped_area_info info;
+<<<<<<< HEAD
 	int do_color_align;
+=======
+>>>>>>> v4.9.227
 
 	if (len > TASK_SIZE - mmap_min_addr)
 		return -ENOMEM;
@@ -104,6 +118,7 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 		addr = PAGE_ALIGN(addr);
 		vma = find_vma(mm, addr);
 		if (TASK_SIZE - len >= addr && addr >= mmap_min_addr &&
+<<<<<<< HEAD
 		    (!vma || addr + len <= vma->vm_start))
 			return addr;
 	}
@@ -112,11 +127,24 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 	if (filp || (flags & MAP_SHARED))
 		do_color_align = !is_32bit_task();
 
+=======
+		    (!vma || addr + len <= vm_start_gap(vma)))
+			return addr;
+	}
+
+>>>>>>> v4.9.227
 	info.flags = 0;
 	info.length = len;
 	info.low_limit = mm->mmap_base;
 	info.high_limit = TASK_SIZE;
+<<<<<<< HEAD
 	info.align_mask = do_color_align ? (mmap_align_mask << PAGE_SHIFT) : 0;
+=======
+	if (filp || (flags & MAP_SHARED))
+		info.align_mask = MMAP_ALIGN_MASK << PAGE_SHIFT;
+	else
+		info.align_mask = 0;
+>>>>>>> v4.9.227
 	info.align_offset = pgoff << PAGE_SHIFT;
 	return vm_unmapped_area(&info);
 }
@@ -130,7 +158,10 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	struct mm_struct *mm = current->mm;
 	unsigned long addr = addr0;
 	struct vm_unmapped_area_info info;
+<<<<<<< HEAD
 	int do_color_align;
+=======
+>>>>>>> v4.9.227
 
 	/* requested length too big for entire address space */
 	if (len > TASK_SIZE - mmap_min_addr)
@@ -144,6 +175,7 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 		addr = PAGE_ALIGN(addr);
 		vma = find_vma(mm, addr);
 		if (TASK_SIZE - len >= addr && addr >= mmap_min_addr &&
+<<<<<<< HEAD
 				(!vma || addr + len <= vma->vm_start))
 			return addr;
 	}
@@ -152,11 +184,24 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	if (filp || (flags & MAP_SHARED))
 		do_color_align = !is_32bit_task();
 
+=======
+				(!vma || addr + len <= vm_start_gap(vma)))
+			return addr;
+	}
+
+>>>>>>> v4.9.227
 	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
 	info.length = len;
 	info.low_limit = max(PAGE_SIZE, mmap_min_addr);
 	info.high_limit = mm->mmap_base;
+<<<<<<< HEAD
 	info.align_mask = do_color_align ? (mmap_align_mask << PAGE_SHIFT) : 0;
+=======
+	if (filp || (flags & MAP_SHARED))
+		info.align_mask = MMAP_ALIGN_MASK << PAGE_SHIFT;
+	else
+		info.align_mask = 0;
+>>>>>>> v4.9.227
 	info.align_offset = pgoff << PAGE_SHIFT;
 	addr = vm_unmapped_area(&info);
 
@@ -177,6 +222,7 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	return addr;
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 
 /*
@@ -208,11 +254,20 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 int s390_mmap_check(unsigned long addr, unsigned long len, unsigned long flags)
 {
 	if (is_compat_task() || (TASK_SIZE >= (1UL << 53)))
+=======
+int s390_mmap_check(unsigned long addr, unsigned long len, unsigned long flags)
+{
+	if (is_compat_task() || TASK_SIZE >= TASK_MAX_SIZE)
+>>>>>>> v4.9.227
 		return 0;
 	if (!(flags & MAP_FIXED))
 		addr = 0;
 	if ((addr + len) >= TASK_SIZE)
+<<<<<<< HEAD
 		return crst_table_upgrade(current->mm, 1UL << 53);
+=======
+		return crst_table_upgrade(current->mm);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -227,9 +282,15 @@ s390_get_unmapped_area(struct file *filp, unsigned long addr,
 	area = arch_get_unmapped_area(filp, addr, len, pgoff, flags);
 	if (!(area & ~PAGE_MASK))
 		return area;
+<<<<<<< HEAD
 	if (area == -ENOMEM && !is_compat_task() && TASK_SIZE < (1UL << 53)) {
 		/* Upgrade the page table to 4 levels and retry. */
 		rc = crst_table_upgrade(mm, 1UL << 53);
+=======
+	if (area == -ENOMEM && !is_compat_task() && TASK_SIZE < TASK_MAX_SIZE) {
+		/* Upgrade the page table to 4 levels and retry. */
+		rc = crst_table_upgrade(mm);
+>>>>>>> v4.9.227
 		if (rc)
 			return (unsigned long) rc;
 		area = arch_get_unmapped_area(filp, addr, len, pgoff, flags);
@@ -249,9 +310,15 @@ s390_get_unmapped_area_topdown(struct file *filp, const unsigned long addr,
 	area = arch_get_unmapped_area_topdown(filp, addr, len, pgoff, flags);
 	if (!(area & ~PAGE_MASK))
 		return area;
+<<<<<<< HEAD
 	if (area == -ENOMEM && !is_compat_task() && TASK_SIZE < (1UL << 53)) {
 		/* Upgrade the page table to 4 levels and retry. */
 		rc = crst_table_upgrade(mm, 1UL << 53);
+=======
+	if (area == -ENOMEM && !is_compat_task() && TASK_SIZE < TASK_MAX_SIZE) {
+		/* Upgrade the page table to 4 levels and retry. */
+		rc = crst_table_upgrade(mm);
+>>>>>>> v4.9.227
 		if (rc)
 			return (unsigned long) rc;
 		area = arch_get_unmapped_area_topdown(filp, addr, len,
@@ -282,6 +349,7 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 		mm->get_unmapped_area = s390_get_unmapped_area_topdown;
 	}
 }
+<<<<<<< HEAD
 
 static int __init setup_mmap_rnd(void)
 {
@@ -316,3 +384,5 @@ static int __init setup_mmap_rnd(void)
 early_initcall(setup_mmap_rnd);
 
 #endif
+=======
+>>>>>>> v4.9.227

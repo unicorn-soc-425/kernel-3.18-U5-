@@ -266,8 +266,16 @@ static int adis16480_set_freq(struct iio_dev *indio_dev, int val, int val2)
 	struct adis16480 *st = iio_priv(indio_dev);
 	unsigned int t;
 
+<<<<<<< HEAD
 	t =  val * 1000 + val2 / 1000;
 	if (t <= 0)
+=======
+	if (val < 0 || val2 < 0)
+		return -EINVAL;
+
+	t =  val * 1000 + val2 / 1000;
+	if (t == 0)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	t = 2460000 / t;
@@ -369,12 +377,22 @@ static int adis16480_get_calibbias(struct iio_dev *indio_dev,
 	case IIO_MAGN:
 	case IIO_PRESSURE:
 		ret = adis_read_reg_16(&st->adis, reg, &val16);
+<<<<<<< HEAD
 		*bias = sign_extend32(val16, 15);
+=======
+		if (ret == 0)
+			*bias = sign_extend32(val16, 15);
+>>>>>>> v4.9.227
 		break;
 	case IIO_ANGL_VEL:
 	case IIO_ACCEL:
 		ret = adis_read_reg_32(&st->adis, reg, &val32);
+<<<<<<< HEAD
 		*bias = sign_extend32(val32, 31);
+=======
+		if (ret == 0)
+			*bias = sign_extend32(val32, 31);
+>>>>>>> v4.9.227
 		break;
 	default:
 			ret = -EINVAL;
@@ -721,6 +739,10 @@ static const struct iio_info adis16480_info = {
 	.write_raw = &adis16480_write_raw,
 	.update_scan_mode = adis_update_scan_mode,
 	.driver_module = THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.debugfs_reg_access = adis_debugfs_reg_access,
+>>>>>>> v4.9.227
 };
 
 static int adis16480_stop_device(struct iio_dev *indio_dev)
@@ -765,7 +787,13 @@ static int adis16480_initial_setup(struct iio_dev *indio_dev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	sscanf(indio_dev->name, "adis%u\n", &device_id);
+=======
+	ret = sscanf(indio_dev->name, "adis%u\n", &device_id);
+	if (ret != 1)
+		return -EINVAL;
+>>>>>>> v4.9.227
 
 	if (prod_id != device_id)
 		dev_warn(&indio_dev->dev, "Device ID(%u) and product ID(%u) do not match.",
@@ -896,7 +924,10 @@ MODULE_DEVICE_TABLE(spi, adis16480_ids);
 static struct spi_driver adis16480_driver = {
 	.driver = {
 		.name = "adis16480",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.id_table = adis16480_ids,
 	.probe = adis16480_probe,

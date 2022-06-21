@@ -65,6 +65,13 @@
  * Some controllers can support SDIO IRQ signalling.
  */
 #define TMIO_MMC_SDIO_IRQ		(1 << 2)
+<<<<<<< HEAD
+=======
+
+/* Some features are only available or tested on RCar Gen2 or later */
+#define TMIO_MMC_MIN_RCAR2		(1 << 3)
+
+>>>>>>> v4.9.227
 /*
  * Some controllers require waiting for the SD bus to become
  * idle before writing to some registers.
@@ -96,11 +103,14 @@
 #define TMIO_MMC_SDIO_STATUS_QUIRK	(1 << 8)
 
 /*
+<<<<<<< HEAD
  * Some controllers have DMA enable/disable register
  */
 #define TMIO_MMC_HAVE_CTL_DMA_REG	(1 << 9)
 
 /*
+=======
+>>>>>>> v4.9.227
  * Some controllers allows to set SDx actual clock
  */
 #define TMIO_MMC_CLK_ACTUAL		(1 << 10)
@@ -112,6 +122,7 @@ void tmio_core_mmc_clk_div(void __iomem *cnf, int shift, int state);
 
 struct dma_chan;
 
+<<<<<<< HEAD
 struct tmio_mmc_dma {
 	void *chan_priv_tx;
 	void *chan_priv_rx;
@@ -124,14 +135,22 @@ struct tmio_mmc_dma {
 
 struct tmio_mmc_host;
 
+=======
+>>>>>>> v4.9.227
 /*
  * data for the MMC controller
  */
 struct tmio_mmc_data {
+<<<<<<< HEAD
+=======
+	void				*chan_priv_tx;
+	void				*chan_priv_rx;
+>>>>>>> v4.9.227
 	unsigned int			hclk;
 	unsigned long			capabilities;
 	unsigned long			capabilities2;
 	unsigned long			flags;
+<<<<<<< HEAD
 	unsigned long			bus_shift;
 	u32				ocr_mask;	/* available voltages */
 	struct tmio_mmc_dma		*dma;
@@ -145,6 +164,14 @@ struct tmio_mmc_data {
 	void (*clk_disable)(struct platform_device *pdev);
 	int (*multi_io_quirk)(struct mmc_card *card,
 			      unsigned int direction, int blk_size);
+=======
+	u32				ocr_mask;	/* available voltages */
+	unsigned int			cd_gpio;
+	int				alignment_shift;
+	dma_addr_t			dma_rx_offset;
+	void (*set_pwr)(struct platform_device *host, int state);
+	void (*set_clk_div)(struct platform_device *host, int state);
+>>>>>>> v4.9.227
 };
 
 /*

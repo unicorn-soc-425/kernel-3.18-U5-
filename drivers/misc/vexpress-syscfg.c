@@ -61,7 +61,11 @@ static int vexpress_syscfg_exec(struct vexpress_syscfg_func *func,
 	int tries;
 	long timeout;
 
+<<<<<<< HEAD
 	if (WARN_ON(index > func->num_templates))
+=======
+	if (WARN_ON(index >= func->num_templates))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	command = readl(syscfg->base + SYS_CFGCTRL);
@@ -145,7 +149,11 @@ static struct regmap_config vexpress_syscfg_regmap_config = {
 static struct regmap *vexpress_syscfg_regmap_init(struct device *dev,
 		void *context)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
+=======
+	int err;
+>>>>>>> v4.9.227
 	struct vexpress_syscfg *syscfg = context;
 	struct vexpress_syscfg_func *func;
 	struct property *prop;
@@ -155,6 +163,7 @@ static struct regmap *vexpress_syscfg_regmap_init(struct device *dev,
 	u32 site, position, dcc;
 	int i;
 
+<<<<<<< HEAD
 	if (dev->of_node) {
 		int err = vexpress_config_get_topo(dev->of_node, &site,
 				&position, &dcc);
@@ -181,6 +190,20 @@ static struct regmap *vexpress_syscfg_regmap_init(struct device *dev,
 		dcc = 0;
 		num = 1;
 	}
+=======
+	err = vexpress_config_get_topo(dev->of_node, &site,
+				&position, &dcc);
+	if (err)
+		return ERR_PTR(err);
+
+	prop = of_find_property(dev->of_node,
+			"arm,vexpress-sysreg,func", NULL);
+	if (!prop)
+		return ERR_PTR(-EINVAL);
+
+	num = prop->length / sizeof(u32) / 2;
+	val = prop->value;
+>>>>>>> v4.9.227
 
 	/*
 	 * "arm,vexpress-energy" function used to be described
@@ -207,6 +230,7 @@ static struct regmap *vexpress_syscfg_regmap_init(struct device *dev,
 	for (i = 0; i < num; i++) {
 		u32 function, device;
 
+<<<<<<< HEAD
 		if (dev->of_node) {
 			function = be32_to_cpup(val++);
 			device = be32_to_cpup(val++);
@@ -214,6 +238,10 @@ static struct regmap *vexpress_syscfg_regmap_init(struct device *dev,
 			function = pdev->resource[0].end;
 			device = pdev->id;
 		}
+=======
+		function = be32_to_cpup(val++);
+		device = be32_to_cpup(val++);
+>>>>>>> v4.9.227
 
 		dev_dbg(dev, "func %p: %u/%u/%u/%u/%u\n",
 				func, site, position, dcc,
@@ -265,6 +293,7 @@ static struct vexpress_config_bridge_ops vexpress_syscfg_bridge_ops = {
 };
 
 
+<<<<<<< HEAD
 /* Non-DT hack, to be gone... */
 static struct device *vexpress_syscfg_bridge;
 
@@ -276,6 +305,8 @@ int vexpress_syscfg_device_register(struct platform_device *pdev)
 }
 
 
+=======
+>>>>>>> v4.9.227
 static int vexpress_syscfg_probe(struct platform_device *pdev)
 {
 	struct vexpress_syscfg *syscfg;
@@ -303,10 +334,13 @@ static int vexpress_syscfg_probe(struct platform_device *pdev)
 	if (IS_ERR(bridge))
 		return PTR_ERR(bridge);
 
+<<<<<<< HEAD
 	/* Non-DT case */
 	if (!pdev->dev.of_node)
 		vexpress_syscfg_bridge = bridge;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 

@@ -1,5 +1,9 @@
 /*
  * Copyright (C) 2011  Intel Corporation. All rights reserved.
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2014 Marvell International Ltd.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -531,10 +535,17 @@ static u8 nfc_llcp_reserve_sdp_ssap(struct nfc_llcp_local *local)
 
 static int nfc_llcp_build_gb(struct nfc_llcp_local *local)
 {
+<<<<<<< HEAD
 	u8 *gb_cur, *version_tlv, version, version_length;
 	u8 *lto_tlv, lto_length;
 	u8 *wks_tlv, wks_length;
 	u8 *miux_tlv, miux_length;
+=======
+	u8 *gb_cur, version, version_length;
+	u8 lto_length, wks_length, miux_length;
+	u8 *version_tlv = NULL, *lto_tlv = NULL,
+	   *wks_tlv = NULL, *miux_tlv = NULL;
+>>>>>>> v4.9.227
 	__be16 wks = cpu_to_be16(local->local_wks);
 	u8 gb_len = 0;
 	int ret = 0;
@@ -542,17 +553,45 @@ static int nfc_llcp_build_gb(struct nfc_llcp_local *local)
 	version = LLCP_VERSION_11;
 	version_tlv = nfc_llcp_build_tlv(LLCP_TLV_VERSION, &version,
 					 1, &version_length);
+<<<<<<< HEAD
 	gb_len += version_length;
 
 	lto_tlv = nfc_llcp_build_tlv(LLCP_TLV_LTO, &local->lto, 1, &lto_length);
+=======
+	if (!version_tlv) {
+		ret = -ENOMEM;
+		goto out;
+	}
+	gb_len += version_length;
+
+	lto_tlv = nfc_llcp_build_tlv(LLCP_TLV_LTO, &local->lto, 1, &lto_length);
+	if (!lto_tlv) {
+		ret = -ENOMEM;
+		goto out;
+	}
+>>>>>>> v4.9.227
 	gb_len += lto_length;
 
 	pr_debug("Local wks 0x%lx\n", local->local_wks);
 	wks_tlv = nfc_llcp_build_tlv(LLCP_TLV_WKS, (u8 *)&wks, 2, &wks_length);
+<<<<<<< HEAD
+=======
+	if (!wks_tlv) {
+		ret = -ENOMEM;
+		goto out;
+	}
+>>>>>>> v4.9.227
 	gb_len += wks_length;
 
 	miux_tlv = nfc_llcp_build_tlv(LLCP_TLV_MIUX, (u8 *)&local->miux, 0,
 				      &miux_length);
+<<<<<<< HEAD
+=======
+	if (!miux_tlv) {
+		ret = -ENOMEM;
+		goto out;
+	}
+>>>>>>> v4.9.227
 	gb_len += miux_length;
 
 	gb_len += ARRAY_SIZE(llcp_magic);
@@ -731,9 +770,14 @@ static void nfc_llcp_tx_work(struct work_struct *work)
 			int ret;
 
 			pr_debug("Sending pending skb\n");
+<<<<<<< HEAD
 			print_hex_dump(KERN_DEBUG, "LLCP Tx: ",
 				       DUMP_PREFIX_OFFSET, 16, 1,
 				       skb->data, skb->len, true);
+=======
+			print_hex_dump_debug("LLCP Tx: ", DUMP_PREFIX_OFFSET,
+					     16, 1, skb->data, skb->len, true);
+>>>>>>> v4.9.227
 
 			if (ptype == LLCP_PDU_DISC && sk != NULL &&
 			    sk->sk_state == LLCP_DISCONNECTING) {
@@ -933,7 +977,11 @@ static void nfc_llcp_recv_connect(struct nfc_llcp_local *local,
 		sock->ssap = ssap;
 	}
 
+<<<<<<< HEAD
 	new_sk = nfc_llcp_sock_alloc(NULL, parent->sk_type, GFP_ATOMIC);
+=======
+	new_sk = nfc_llcp_sock_alloc(NULL, parent->sk_type, GFP_ATOMIC, 0);
+>>>>>>> v4.9.227
 	if (new_sk == NULL) {
 		reason = LLCP_DM_REJ;
 		release_sock(&sock->sk);
@@ -1411,8 +1459,13 @@ static void nfc_llcp_rx_skb(struct nfc_llcp_local *local, struct sk_buff *skb)
 	pr_debug("ptype 0x%x dsap 0x%x ssap 0x%x\n", ptype, dsap, ssap);
 
 	if (ptype != LLCP_PDU_SYMM)
+<<<<<<< HEAD
 		print_hex_dump(KERN_DEBUG, "LLCP Rx: ", DUMP_PREFIX_OFFSET,
 			       16, 1, skb->data, skb->len, true);
+=======
+		print_hex_dump_debug("LLCP Rx: ", DUMP_PREFIX_OFFSET, 16, 1,
+				     skb->data, skb->len, true);
+>>>>>>> v4.9.227
 
 	switch (ptype) {
 	case LLCP_PDU_SYMM:
@@ -1511,8 +1564,15 @@ int nfc_llcp_data_received(struct nfc_dev *dev, struct sk_buff *skb)
 	struct nfc_llcp_local *local;
 
 	local = nfc_llcp_find_local(dev);
+<<<<<<< HEAD
 	if (local == NULL)
 		return -ENODEV;
+=======
+	if (local == NULL) {
+		kfree_skb(skb);
+		return -ENODEV;
+	}
+>>>>>>> v4.9.227
 
 	__nfc_llcp_recv(local, skb);
 

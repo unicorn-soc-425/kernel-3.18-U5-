@@ -57,7 +57,12 @@
 /* V4L2 capability aliases */
 #define CX18_CAP_ENCODER (V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_TUNER | \
 			  V4L2_CAP_AUDIO | V4L2_CAP_READWRITE | \
+<<<<<<< HEAD
 			  V4L2_CAP_VBI_CAPTURE | V4L2_CAP_SLICED_VBI_CAPTURE)
+=======
+			  V4L2_CAP_STREAMING | V4L2_CAP_VBI_CAPTURE | \
+			  V4L2_CAP_SLICED_VBI_CAPTURE)
+>>>>>>> v4.9.227
 
 struct cx18_card_video_input {
 	u8  video_type; 	/* video input type */

@@ -188,7 +188,11 @@ static void find_regs(tilegx_bundle_bits bundle, uint64_t *rd, uint64_t *ra,
 	 * Parse fault bundle, find potential used registers and mark
 	 * corresponding bits in reg_map and alias_map. These 2 bit maps
 	 * are used to find the scratch registers and determine if there
+<<<<<<< HEAD
 	 * is register alais.
+=======
+	 * is register alias.
+>>>>>>> v4.9.227
 	 */
 	if (bundle & TILEGX_BUNDLE_MODE_MASK) {  /* Y Mode Bundle. */
 
@@ -969,8 +973,12 @@ void jit_bundle_gen(struct pt_regs *regs, tilegx_bundle_bits bundle,
 		unaligned_fixup_count++;
 
 		if (unaligned_printk) {
+<<<<<<< HEAD
 			pr_info("%s/%d. Unalign fixup for kernel access "
 				"to userspace %lx.",
+=======
+			pr_info("%s/%d - Unalign fixup for kernel access to userspace %lx\n",
+>>>>>>> v4.9.227
 				current->comm, current->pid, regs->regs[ra]);
 		}
 
@@ -985,7 +993,11 @@ void jit_bundle_gen(struct pt_regs *regs, tilegx_bundle_bits bundle,
 			.si_addr = (unsigned char __user *)0
 		};
 		if (unaligned_printk)
+<<<<<<< HEAD
 			pr_info("Unalign bundle: unexp @%llx, %llx",
+=======
+			pr_info("Unalign bundle: unexp @%llx, %llx\n",
+>>>>>>> v4.9.227
 				(unsigned long long)regs->pc,
 				(unsigned long long)bundle);
 
@@ -1370,8 +1382,12 @@ void jit_bundle_gen(struct pt_regs *regs, tilegx_bundle_bits bundle,
 		frag.bundle = bundle;
 
 		if (unaligned_printk) {
+<<<<<<< HEAD
 			pr_info("%s/%d, Unalign fixup: pc=%lx "
 				"bundle=%lx %d %d %d %d %d %d %d %d.",
+=======
+			pr_info("%s/%d, Unalign fixup: pc=%lx bundle=%lx %d %d %d %d %d %d %d %d\n",
+>>>>>>> v4.9.227
 				current->comm, current->pid,
 				(unsigned long)frag.pc,
 				(unsigned long)frag.bundle,
@@ -1380,8 +1396,13 @@ void jit_bundle_gen(struct pt_regs *regs, tilegx_bundle_bits bundle,
 				(int)y1_lr, (int)y1_br, (int)x1_add);
 
 			for (k = 0; k < n; k += 2)
+<<<<<<< HEAD
 				pr_info("[%d] %016llx %016llx", k,
 					(unsigned long long)frag.insn[k],
+=======
+				pr_info("[%d] %016llx %016llx\n",
+					k, (unsigned long long)frag.insn[k],
+>>>>>>> v4.9.227
 					(unsigned long long)frag.insn[k+1]);
 		}
 
@@ -1402,7 +1423,11 @@ void jit_bundle_gen(struct pt_regs *regs, tilegx_bundle_bits bundle,
 				.si_addr = (void __user *)&jit_code_area[idx]
 			};
 
+<<<<<<< HEAD
 			pr_warn("Unalign fixup: pid=%d %s jit_code_area=%llx",
+=======
+			pr_warn("Unalign fixup: pid=%d %s jit_code_area=%llx\n",
+>>>>>>> v4.9.227
 				current->pid, current->comm,
 				(unsigned long long)&jit_code_area[idx]);
 
@@ -1485,6 +1510,7 @@ void do_unaligned(struct pt_regs *regs, int vecnum)
 			/* If exception came from kernel, try fix it up. */
 			if (fixup_exception(regs)) {
 				if (unaligned_printk)
+<<<<<<< HEAD
 					pr_info("Unalign fixup: %d %llx @%llx",
 						(int)unaligned_fixup,
 						(unsigned long long)regs->ex1,
@@ -1495,6 +1521,17 @@ void do_unaligned(struct pt_regs *regs, int vecnum)
 			panic("Unalign exception in Kernel. pc=%lx",
 			      regs->pc);
 			return;
+=======
+					pr_info("Unalign fixup: %d %llx @%llx\n",
+						(int)unaligned_fixup,
+						(unsigned long long)regs->ex1,
+						(unsigned long long)regs->pc);
+			} else {
+				/* Not fixable. Go panic. */
+				panic("Unalign exception in Kernel. pc=%lx",
+				      regs->pc);
+			}
+>>>>>>> v4.9.227
 		} else {
 			/*
 			 * Try to fix the exception. If we can't, panic the
@@ -1503,8 +1540,13 @@ void do_unaligned(struct pt_regs *regs, int vecnum)
 			bundle = GX_INSN_BSWAP(
 				*((tilegx_bundle_bits *)(regs->pc)));
 			jit_bundle_gen(regs, bundle, align_ctl);
+<<<<<<< HEAD
 			return;
 		}
+=======
+		}
+		return;
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -1519,7 +1561,11 @@ void do_unaligned(struct pt_regs *regs, int vecnum)
 		};
 
 		if (unaligned_printk)
+<<<<<<< HEAD
 			pr_info("Unalign fixup: %d %llx @%llx",
+=======
+			pr_info("Unalign fixup: %d %llx @%llx\n",
+>>>>>>> v4.9.227
 				(int)unaligned_fixup,
 				(unsigned long long)regs->ex1,
 				(unsigned long long)regs->pc);
@@ -1532,7 +1578,11 @@ void do_unaligned(struct pt_regs *regs, int vecnum)
 	}
 
 
+<<<<<<< HEAD
 	/* Read the bundle casued the exception! */
+=======
+	/* Read the bundle caused the exception! */
+>>>>>>> v4.9.227
 	pc = (tilegx_bundle_bits __user *)(regs->pc);
 	if (get_user(bundle, pc) != 0) {
 		/* Probably never be here since pc is valid user address.*/
@@ -1579,14 +1629,22 @@ void do_unaligned(struct pt_regs *regs, int vecnum)
 						    0);
 
 		if (IS_ERR((void __force *)user_page)) {
+<<<<<<< HEAD
 			pr_err("Out of kernel pages trying do_mmap.\n");
+=======
+			pr_err("Out of kernel pages trying do_mmap\n");
+>>>>>>> v4.9.227
 			return;
 		}
 
 		/* Save the address in the thread_info struct */
 		info->unalign_jit_base = user_page;
 		if (unaligned_printk)
+<<<<<<< HEAD
 			pr_info("Unalign bundle: %d:%d, allocate page @%llx",
+=======
+			pr_info("Unalign bundle: %d:%d, allocate page @%llx\n",
+>>>>>>> v4.9.227
 				raw_smp_processor_id(), current->pid,
 				(unsigned long long)user_page);
 	}

@@ -227,8 +227,12 @@ static irqreturn_t htcpld_handler(int irq, void *dev)
 static void htcpld_chip_set(struct gpio_chip *chip, unsigned offset, int val)
 {
 	struct i2c_client *client;
+<<<<<<< HEAD
 	struct htcpld_chip *chip_data =
 		container_of(chip, struct htcpld_chip, chip_out);
+=======
+	struct htcpld_chip *chip_data = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	client = chip_data->client;
@@ -257,6 +261,7 @@ static void htcpld_chip_set_ni(struct work_struct *work)
 
 static int htcpld_chip_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct htcpld_chip *chip_data;
 	u8 cache;
 
@@ -265,6 +270,14 @@ static int htcpld_chip_get(struct gpio_chip *chip, unsigned offset)
 		cache = chip_data->cache_out;
 	} else if (!strncmp(chip->label, "htcpld-in", 9)) {
 		chip_data = container_of(chip, struct htcpld_chip, chip_in);
+=======
+	struct htcpld_chip *chip_data = gpiochip_get_data(chip);
+	u8 cache;
+
+	if (!strncmp(chip->label, "htcpld-out", 10)) {
+		cache = chip_data->cache_out;
+	} else if (!strncmp(chip->label, "htcpld-in", 9)) {
+>>>>>>> v4.9.227
 		cache = chip_data->cache_in;
 	} else
 		return -EINVAL;
@@ -291,9 +304,13 @@ static int htcpld_direction_input(struct gpio_chip *chip,
 
 static int htcpld_chip_to_irq(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct htcpld_chip *chip_data;
 
 	chip_data = container_of(chip, struct htcpld_chip, chip_in);
+=======
+	struct htcpld_chip *chip_data = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	if (offset < chip_data->nirqs)
 		return chip_data->irq_start + offset;
@@ -318,7 +335,10 @@ static int htcpld_setup_chip_irq(
 	struct htcpld_data *htcpld;
 	struct htcpld_chip *chip;
 	unsigned int irq, irq_end;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> v4.9.227
 
 	/* Get the platform and driver data */
 	htcpld = platform_get_drvdata(pdev);
@@ -330,6 +350,7 @@ static int htcpld_setup_chip_irq(
 		irq_set_chip_and_handler(irq, &htcpld_muxed_chip,
 					 handle_simple_irq);
 		irq_set_chip_data(irq, chip);
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
 #else
@@ -338,6 +359,12 @@ static int htcpld_setup_chip_irq(
 	}
 
 	return ret;
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int htcpld_register_chip_i2c(
@@ -434,7 +461,11 @@ static int htcpld_register_chip_gpio(
 	/* Setup the GPIO chips */
 	gpio_chip = &(chip->chip_out);
 	gpio_chip->label           = "htcpld-out";
+<<<<<<< HEAD
 	gpio_chip->dev             = dev;
+=======
+	gpio_chip->parent             = dev;
+>>>>>>> v4.9.227
 	gpio_chip->owner           = THIS_MODULE;
 	gpio_chip->get             = htcpld_chip_get;
 	gpio_chip->set             = htcpld_chip_set;
@@ -445,7 +476,11 @@ static int htcpld_register_chip_gpio(
 
 	gpio_chip = &(chip->chip_in);
 	gpio_chip->label           = "htcpld-in";
+<<<<<<< HEAD
 	gpio_chip->dev             = dev;
+=======
+	gpio_chip->parent             = dev;
+>>>>>>> v4.9.227
 	gpio_chip->owner           = THIS_MODULE;
 	gpio_chip->get             = htcpld_chip_get;
 	gpio_chip->set             = NULL;
@@ -456,14 +491,22 @@ static int htcpld_register_chip_gpio(
 	gpio_chip->ngpio           = plat_chip_data->num_gpios;
 
 	/* Add the GPIO chips */
+<<<<<<< HEAD
 	ret = gpiochip_add(&(chip->chip_out));
+=======
+	ret = gpiochip_add_data(&(chip->chip_out), chip);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_warn(dev, "Unable to register output GPIOs for 0x%x: %d\n",
 			 plat_chip_data->addr, ret);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&(chip->chip_in));
+=======
+	ret = gpiochip_add_data(&(chip->chip_in), chip);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_warn(dev, "Unable to register input GPIOs for 0x%x: %d\n",
 			 plat_chip_data->addr, ret);
@@ -564,7 +607,12 @@ static int htcpld_core_probe(struct platform_device *pdev)
 		htcpld->chained_irq = res->start;
 
 		/* Setup the chained interrupt handler */
+<<<<<<< HEAD
 		flags = IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING;
+=======
+		flags = IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING |
+			IRQF_ONESHOT;
+>>>>>>> v4.9.227
 		ret = request_threaded_irq(htcpld->chained_irq,
 					   NULL, htcpld_handler,
 					   flags, pdev->name, htcpld);

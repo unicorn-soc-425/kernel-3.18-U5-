@@ -11,11 +11,16 @@
 #include <linux/export.h>
 #include <linux/kobject.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/resume-trace.h>
+=======
+#include <linux/pm-trace.h>
+>>>>>>> v4.9.227
 #include <linux/workqueue.h>
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ_LIMIT_USERSPACE
 #include <linux/cpufreq.h>
 #include <linux/cpufreq_limit.h>
@@ -27,6 +32,10 @@
 static int sched_boost_active = 0;
 #endif
 
+=======
+#include "power.h"
+
+>>>>>>> v4.9.227
 DEFINE_MUTEX(pm_mutex);
 
 #ifdef CONFIG_PM_SLEEP
@@ -288,7 +297,21 @@ static inline void pm_print_times_init(void)
 {
 	pm_print_times_enabled = !!initcall_debug;
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PP_SLEEP_DEBUG */
+=======
+
+static ssize_t pm_wakeup_irq_show(struct kobject *kobj,
+					struct kobj_attribute *attr,
+					char *buf)
+{
+	return pm_wakeup_irq ? sprintf(buf, "%u\n", pm_wakeup_irq) : -ENODATA;
+}
+
+power_attr_ro(pm_wakeup_irq);
+
+#else /* !CONFIG_PM_SLEEP_DEBUG */
+>>>>>>> v4.9.227
 static inline void pm_print_times_init(void) {}
 #endif /* CONFIG_PM_SLEEP_DEBUG */
 
@@ -529,6 +552,7 @@ power_attr(wake_unlock);
 #endif /* CONFIG_PM_WAKELOCKS */
 #endif /* CONFIG_PM_SLEEP */
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ_LIMIT_USERSPACE
 static int cpufreq_max_limit_val = -1;
 static int cpufreq_min_limit_val = -1;
@@ -724,6 +748,8 @@ int set_freq_limit(unsigned long id, unsigned int freq)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM_TRACE
 int pm_trace_enabled;
 
@@ -759,6 +785,7 @@ static ssize_t pm_trace_dev_match_show(struct kobject *kobj,
 	return show_trace_dev_match(buf, PAGE_SIZE);
 }
 
+<<<<<<< HEAD
 static ssize_t
 pm_trace_dev_match_store(struct kobject *kobj, struct kobj_attribute *attr,
 			 const char *buf, size_t n)
@@ -767,6 +794,9 @@ pm_trace_dev_match_store(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 power_attr(pm_trace_dev_match);
+=======
+power_attr_ro(pm_trace_dev_match);
+>>>>>>> v4.9.227
 
 #endif /* CONFIG_PM_TRACE */
 
@@ -794,6 +824,7 @@ power_attr(pm_freeze_timeout);
 
 #endif	/* CONFIG_FREEZER*/
 
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_PM
 extern int qpnp_set_resin_wk_int(int en);
 static int volkey_wakeup = 1;
@@ -896,6 +927,8 @@ static struct kobj_attribute selfdischg_usage_attr = {
 };
 #endif /* CONFIG_SW_SELF_DISCHARGING */
 
+=======
+>>>>>>> v4.9.227
 static struct attribute * g[] = {
 	&state_attr.attr,
 #ifdef CONFIG_PM_TRACE
@@ -917,6 +950,7 @@ static struct attribute * g[] = {
 #endif
 #ifdef CONFIG_PM_SLEEP_DEBUG
 	&pm_print_times_attr.attr,
+<<<<<<< HEAD
 #endif
 #endif
 #ifdef CONFIG_CPU_FREQ_LIMIT_USERSPACE
@@ -933,6 +967,14 @@ static struct attribute * g[] = {
 #if defined(CONFIG_SW_SELF_DISCHARGING)
 	&selfdischg_usage_attr.attr,
 #endif
+=======
+	&pm_wakeup_irq_attr.attr,
+#endif
+#endif
+#ifdef CONFIG_FREEZER
+	&pm_freeze_timeout_attr.attr,
+#endif
+>>>>>>> v4.9.227
 	NULL,
 };
 
@@ -957,6 +999,10 @@ static int __init pm_init(void)
 		return error;
 	hibernate_image_size_init();
 	hibernate_reserved_size_init();
+<<<<<<< HEAD
+=======
+	pm_states_init();
+>>>>>>> v4.9.227
 	power_kobj = kobject_create_and_add("power", NULL);
 	if (!power_kobj)
 		return -ENOMEM;

@@ -239,6 +239,7 @@ spufs_mem_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	unsigned long address = (unsigned long)vmf->virtual_address;
 	unsigned long pfn, offset;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SPU_FS_64K_LS
 	struct spu_state *csa = &ctx->csa;
 	int psize;
@@ -256,6 +257,8 @@ spufs_mem_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	}
 #endif /* CONFIG_SPU_FS_64K_LS */
 
+=======
+>>>>>>> v4.9.227
 	offset = vmf->pgoff << PAGE_SHIFT;
 	if (offset >= LS_SIZE)
 		return VM_FAULT_SIGBUS;
@@ -310,6 +313,7 @@ static const struct vm_operations_struct spufs_mem_mmap_vmops = {
 
 static int spufs_mem_mmap(struct file *file, struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_SPU_FS_64K_LS
 	struct spu_context	*ctx = file->private_data;
 	struct spu_state	*csa = &ctx->csa;
@@ -326,6 +330,8 @@ static int spufs_mem_mmap(struct file *file, struct vm_area_struct *vma)
 	}
 #endif /* CONFIG_SPU_FS_64K_LS */
 
+=======
+>>>>>>> v4.9.227
 	if (!(vma->vm_flags & VM_SHARED))
 		return -EINVAL;
 
@@ -336,6 +342,7 @@ static int spufs_mem_mmap(struct file *file, struct vm_area_struct *vma)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SPU_FS_64K_LS
 static unsigned long spufs_get_unmapped_area(struct file *file,
 		unsigned long addr, unsigned long len, unsigned long pgoff,
@@ -355,6 +362,8 @@ static unsigned long spufs_get_unmapped_area(struct file *file,
 }
 #endif /* CONFIG_SPU_FS_64K_LS */
 
+=======
+>>>>>>> v4.9.227
 static const struct file_operations spufs_mem_fops = {
 	.open			= spufs_mem_open,
 	.release		= spufs_mem_release,
@@ -362,9 +371,12 @@ static const struct file_operations spufs_mem_fops = {
 	.write			= spufs_mem_write,
 	.llseek			= generic_file_llseek,
 	.mmap			= spufs_mem_mmap,
+<<<<<<< HEAD
 #ifdef CONFIG_SPU_FS_64K_LS
 	.get_unmapped_area	= spufs_get_unmapped_area,
 #endif
+=======
+>>>>>>> v4.9.227
 };
 
 static int spufs_ps_fault(struct vm_area_struct *vma,
@@ -921,7 +933,11 @@ void spufs_wbox_callback(struct spu *spu)
  * - end of the mapped area
  *
  * If the file is opened without O_NONBLOCK, we wait here until
+<<<<<<< HEAD
  * space is availabyl, but return when we have been able to
+=======
+ * space is available, but return when we have been able to
+>>>>>>> v4.9.227
  * write something.
  */
 static ssize_t spufs_wbox_write(struct file *file, const char __user *buf,
@@ -1854,9 +1870,15 @@ static int spufs_mfc_fsync(struct file *file, loff_t start, loff_t end, int data
 	struct inode *inode = file_inode(file);
 	int err = filemap_write_and_wait_range(inode->i_mapping, start, end);
 	if (!err) {
+<<<<<<< HEAD
 		mutex_lock(&inode->i_mutex);
 		err = spufs_mfc_flush(file, NULL);
 		mutex_unlock(&inode->i_mutex);
+=======
+		inode_lock(inode);
+		err = spufs_mfc_flush(file, NULL);
+		inode_unlock(inode);
+>>>>>>> v4.9.227
 	}
 	return err;
 }

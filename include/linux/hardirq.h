@@ -9,7 +9,11 @@
 
 
 extern void synchronize_irq(unsigned int irq);
+<<<<<<< HEAD
 extern void synchronize_hardirq(unsigned int irq);
+=======
+extern bool synchronize_hardirq(unsigned int irq);
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_TINY_RCU)
 
@@ -61,6 +65,10 @@ extern void irq_exit(void);
 
 #define nmi_enter()						\
 	do {							\
+<<<<<<< HEAD
+=======
+		printk_nmi_enter();				\
+>>>>>>> v4.9.227
 		lockdep_off();					\
 		ftrace_nmi_enter();				\
 		BUG_ON(in_nmi());				\
@@ -77,6 +85,10 @@ extern void irq_exit(void);
 		preempt_count_sub(NMI_OFFSET + HARDIRQ_OFFSET);	\
 		ftrace_nmi_exit();				\
 		lockdep_on();					\
+<<<<<<< HEAD
+=======
+		printk_nmi_exit();				\
+>>>>>>> v4.9.227
 	} while (0)
 
 #endif /* LINUX_HARDIRQ_H */

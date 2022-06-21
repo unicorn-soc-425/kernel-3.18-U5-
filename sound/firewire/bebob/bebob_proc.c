@@ -73,7 +73,11 @@ proc_read_meters(struct snd_info_entry *entry,
 		 struct snd_info_buffer *buffer)
 {
 	struct snd_bebob *bebob = entry->private_data;
+<<<<<<< HEAD
 	struct snd_bebob_meter_spec *spec = bebob->spec->meter;
+=======
+	const struct snd_bebob_meter_spec *spec = bebob->spec->meter;
+>>>>>>> v4.9.227
 	u32 *buf;
 	unsigned int i, c, channels, size;
 
@@ -132,15 +136,29 @@ static void
 proc_read_clock(struct snd_info_entry *entry,
 		struct snd_info_buffer *buffer)
 {
+<<<<<<< HEAD
 	struct snd_bebob *bebob = entry->private_data;
 	struct snd_bebob_rate_spec *rate_spec = bebob->spec->rate;
 	struct snd_bebob_clock_spec *clk_spec = bebob->spec->clock;
 	unsigned int rate, id;
 	bool internal;
+=======
+	static const char *const clk_labels[] = {
+		"Internal",
+		"External",
+		"SYT-Match",
+	};
+	struct snd_bebob *bebob = entry->private_data;
+	const struct snd_bebob_rate_spec *rate_spec = bebob->spec->rate;
+	const struct snd_bebob_clock_spec *clk_spec = bebob->spec->clock;
+	enum snd_bebob_clock_type src;
+	unsigned int rate;
+>>>>>>> v4.9.227
 
 	if (rate_spec->get(bebob, &rate) >= 0)
 		snd_iprintf(buffer, "Sampling rate: %d\n", rate);
 
+<<<<<<< HEAD
 	if (clk_spec) {
 		if (clk_spec->get(bebob, &id) >= 0)
 			snd_iprintf(buffer, "Clock Source: %s\n",
@@ -151,6 +169,15 @@ proc_read_clock(struct snd_info_entry *entry,
 			snd_iprintf(buffer, "Clock Source: %s (MSU-dest: %d)\n",
 				    (internal) ? "Internal" : "External",
 				    bebob->sync_input_plug);
+=======
+	if (snd_bebob_stream_get_clock_src(bebob, &src) >= 0) {
+		if (clk_spec)
+			snd_iprintf(buffer, "Clock Source: %s\n",
+				    clk_labels[src]);
+		else
+			snd_iprintf(buffer, "Clock Source: %s (MSU-dest: %d)\n",
+				    clk_labels[src], bebob->sync_input_plug);
+>>>>>>> v4.9.227
 	}
 }
 

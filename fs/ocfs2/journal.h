@@ -472,6 +472,14 @@ static inline int ocfs2_unlink_credits(struct super_block *sb)
  * orphan dir index leaf */
 #define OCFS2_DELETE_INODE_CREDITS (3 * OCFS2_INODE_UPDATE_CREDITS + 4)
 
+<<<<<<< HEAD
+=======
+/* dinode + orphan dir dinode + extent tree leaf block + orphan dir entry +
+ * orphan dir index root + orphan dir index leaf */
+#define OCFS2_INODE_ADD_TO_ORPHAN_CREDITS  (2 * OCFS2_INODE_UPDATE_CREDITS + 4)
+#define OCFS2_INODE_DEL_FROM_ORPHAN_CREDITS  OCFS2_INODE_ADD_TO_ORPHAN_CREDITS
+
+>>>>>>> v4.9.227
 /* dinode update, old dir dinode update, new dir dinode update, old
  * dir dir entry, new dir dir entry, dir entry update for renaming
  * directory + target unlink + 3 x dir index leaves */
@@ -614,7 +622,11 @@ static inline int ocfs2_calc_tree_trunc_credits(struct super_block *sb,
 
 static inline int ocfs2_jbd2_file_inode(handle_t *handle, struct inode *inode)
 {
+<<<<<<< HEAD
 	return jbd2_journal_file_inode(handle, &OCFS2_I(inode)->ip_jinode);
+=======
+	return jbd2_journal_inode_add_write(handle, &OCFS2_I(inode)->ip_jinode);
+>>>>>>> v4.9.227
 }
 
 static inline int ocfs2_begin_ordered_truncate(struct inode *inode,
@@ -632,9 +644,17 @@ static inline void ocfs2_update_inode_fsync_trans(handle_t *handle,
 {
 	struct ocfs2_inode_info *oi = OCFS2_I(inode);
 
+<<<<<<< HEAD
 	oi->i_sync_tid = handle->h_transaction->t_tid;
 	if (datasync)
 		oi->i_datasync_tid = handle->h_transaction->t_tid;
+=======
+	if (!is_handle_aborted(handle)) {
+		oi->i_sync_tid = handle->h_transaction->t_tid;
+		if (datasync)
+			oi->i_datasync_tid = handle->h_transaction->t_tid;
+	}
+>>>>>>> v4.9.227
 }
 
 #endif /* OCFS2_JOURNAL_H */

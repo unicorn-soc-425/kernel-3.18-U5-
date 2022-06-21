@@ -40,6 +40,10 @@
 #include <linux/moduleparam.h>
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/time.h>
 #include <linux/skbuff.h>
@@ -174,7 +178,11 @@ struct stir_cb {
 	__u8		  *fifo_status;
 
 	iobuff_t  	  rx_buff;	/* receive unwrap state machine */
+<<<<<<< HEAD
 	struct timeval	  rx_time;
+=======
+	ktime_t		rx_time;
+>>>>>>> v4.9.227
 	int		  receiving;
 	struct urb	 *rx_urb;
 };
@@ -650,15 +658,23 @@ static int fifo_txwait(struct stir_cb *stir, int space)
 static void turnaround_delay(const struct stir_cb *stir, long us)
 {
 	long ticks;
+<<<<<<< HEAD
 	struct timeval now;
+=======
+>>>>>>> v4.9.227
 
 	if (us <= 0)
 		return;
 
+<<<<<<< HEAD
 	do_gettimeofday(&now);
 	if (now.tv_sec - stir->rx_time.tv_sec > 0)
 		us -= USEC_PER_SEC;
 	us -= now.tv_usec - stir->rx_time.tv_usec;
+=======
+	us -= ktime_us_delta(ktime_get(), stir->rx_time);
+
+>>>>>>> v4.9.227
 	if (us < 10)
 		return;
 
@@ -720,7 +736,11 @@ static void stir_send(struct stir_cb *stir, struct sk_buff *skb)
 
 	stir->netdev->stats.tx_packets++;
 	stir->netdev->stats.tx_bytes += skb->len;
+<<<<<<< HEAD
 	stir->netdev->trans_start = jiffies;
+=======
+	netif_trans_update(stir->netdev);
+>>>>>>> v4.9.227
 	pr_debug("send %d (%d)\n", skb->len, wraplen);
 
 	if (usb_bulk_msg(stir->usbdev, usb_sndbulkpipe(stir->usbdev, 1),
@@ -823,8 +843,13 @@ static void stir_rcv_irq(struct urb *urb)
 		pr_debug("receive %d\n", urb->actual_length);
 		unwrap_chars(stir, urb->transfer_buffer,
 			     urb->actual_length);
+<<<<<<< HEAD
 		
 		do_gettimeofday(&stir->rx_time);
+=======
+
+		stir->rx_time = ktime_get();
+>>>>>>> v4.9.227
 	}
 
 	/* kernel thread is stopping receiver don't resubmit */
@@ -876,7 +901,11 @@ static int stir_net_open(struct net_device *netdev)
 
 	skb_reserve(stir->rx_buff.skb, 1);
 	stir->rx_buff.head = stir->rx_buff.skb->data;
+<<<<<<< HEAD
 	do_gettimeofday(&stir->rx_time);
+=======
+	stir->rx_time = ktime_get();
+>>>>>>> v4.9.227
 
 	stir->rx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!stir->rx_urb) 

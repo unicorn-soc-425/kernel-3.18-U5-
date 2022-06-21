@@ -28,6 +28,10 @@
 
 #include <linux/export.h>
 #include <linux/dma-buf.h>
+<<<<<<< HEAD
+=======
+#include <linux/rbtree.h>
+>>>>>>> v4.9.227
 #include <drm/drmP.h>
 #include <drm/drm_gem.h>
 
@@ -61,9 +65,17 @@
  */
 
 struct drm_prime_member {
+<<<<<<< HEAD
 	struct list_head entry;
 	struct dma_buf *dma_buf;
 	uint32_t handle;
+=======
+	struct dma_buf *dma_buf;
+	uint32_t handle;
+
+	struct rb_node dmabuf_rb;
+	struct rb_node handle_rb;
+>>>>>>> v4.9.227
 };
 
 struct drm_prime_attachment {
@@ -75,6 +87,10 @@ static int drm_prime_add_buf_handle(struct drm_prime_file_private *prime_fpriv,
 				    struct dma_buf *dma_buf, uint32_t handle)
 {
 	struct drm_prime_member *member;
+<<<<<<< HEAD
+=======
+	struct rb_node **p, *rb;
+>>>>>>> v4.9.227
 
 	member = kmalloc(sizeof(*member), GFP_KERNEL);
 	if (!member)
@@ -83,18 +99,68 @@ static int drm_prime_add_buf_handle(struct drm_prime_file_private *prime_fpriv,
 	get_dma_buf(dma_buf);
 	member->dma_buf = dma_buf;
 	member->handle = handle;
+<<<<<<< HEAD
 	list_add(&member->entry, &prime_fpriv->head);
+=======
+
+	rb = NULL;
+	p = &prime_fpriv->dmabufs.rb_node;
+	while (*p) {
+		struct drm_prime_member *pos;
+
+		rb = *p;
+		pos = rb_entry(rb, struct drm_prime_member, dmabuf_rb);
+		if (dma_buf > pos->dma_buf)
+			p = &rb->rb_right;
+		else
+			p = &rb->rb_left;
+	}
+	rb_link_node(&member->dmabuf_rb, rb, p);
+	rb_insert_color(&member->dmabuf_rb, &prime_fpriv->dmabufs);
+
+	rb = NULL;
+	p = &prime_fpriv->handles.rb_node;
+	while (*p) {
+		struct drm_prime_member *pos;
+
+		rb = *p;
+		pos = rb_entry(rb, struct drm_prime_member, handle_rb);
+		if (handle > pos->handle)
+			p = &rb->rb_right;
+		else
+			p = &rb->rb_left;
+	}
+	rb_link_node(&member->handle_rb, rb, p);
+	rb_insert_color(&member->handle_rb, &prime_fpriv->handles);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static struct dma_buf *drm_prime_lookup_buf_by_handle(struct drm_prime_file_private *prime_fpriv,
 						      uint32_t handle)
 {
+<<<<<<< HEAD
 	struct drm_prime_member *member;
 
 	list_for_each_entry(member, &prime_fpriv->head, entry) {
 		if (member->handle == handle)
 			return member->dma_buf;
+=======
+	struct rb_node *rb;
+
+	rb = prime_fpriv->handles.rb_node;
+	while (rb) {
+		struct drm_prime_member *member;
+
+		member = rb_entry(rb, struct drm_prime_member, handle_rb);
+		if (member->handle == handle)
+			return member->dma_buf;
+		else if (member->handle < handle)
+			rb = rb->rb_right;
+		else
+			rb = rb->rb_left;
+>>>>>>> v4.9.227
 	}
 
 	return NULL;
@@ -104,6 +170,7 @@ static int drm_prime_lookup_buf_handle(struct drm_prime_file_private *prime_fpri
 				       struct dma_buf *dma_buf,
 				       uint32_t *handle)
 {
+<<<<<<< HEAD
 	struct drm_prime_member *member;
 
 	list_for_each_entry(member, &prime_fpriv->head, entry) {
@@ -112,6 +179,25 @@ static int drm_prime_lookup_buf_handle(struct drm_prime_file_private *prime_fpri
 			return 0;
 		}
 	}
+=======
+	struct rb_node *rb;
+
+	rb = prime_fpriv->dmabufs.rb_node;
+	while (rb) {
+		struct drm_prime_member *member;
+
+		member = rb_entry(rb, struct drm_prime_member, dmabuf_rb);
+		if (member->dma_buf == dma_buf) {
+			*handle = member->handle;
+			return 0;
+		} else if (member->dma_buf < dma_buf) {
+			rb = rb->rb_right;
+		} else {
+			rb = rb->rb_left;
+		}
+	}
+
+>>>>>>> v4.9.227
 	return -ENOENT;
 }
 
@@ -166,6 +252,7 @@ static void drm_gem_map_detach(struct dma_buf *dma_buf,
 void drm_prime_remove_buf_handle_locked(struct drm_prime_file_private *prime_fpriv,
 					struct dma_buf *dma_buf)
 {
+<<<<<<< HEAD
 	struct drm_prime_member *member, *safe;
 
 	list_for_each_entry_safe(member, safe, &prime_fpriv->head, entry) {
@@ -173,6 +260,26 @@ void drm_prime_remove_buf_handle_locked(struct drm_prime_file_private *prime_fpr
 			dma_buf_put(dma_buf);
 			list_del(&member->entry);
 			kfree(member);
+=======
+	struct rb_node *rb;
+
+	rb = prime_fpriv->dmabufs.rb_node;
+	while (rb) {
+		struct drm_prime_member *member;
+
+		member = rb_entry(rb, struct drm_prime_member, dmabuf_rb);
+		if (member->dma_buf == dma_buf) {
+			rb_erase(&member->handle_rb, &prime_fpriv->handles);
+			rb_erase(&member->dmabuf_rb, &prime_fpriv->dmabufs);
+
+			dma_buf_put(dma_buf);
+			kfree(member);
+			return;
+		} else if (member->dma_buf < dma_buf) {
+			rb = rb->rb_right;
+		} else {
+			rb = rb->rb_left;
+>>>>>>> v4.9.227
 		}
 	}
 }
@@ -222,18 +329,59 @@ static void drm_gem_unmap_dma_buf(struct dma_buf_attachment *attach,
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * drm_gem_dmabuf_export - dma_buf export implementation for GEM
+ * @dev: parent device for the exported dmabuf
+ * @exp_info: the export information used by dma_buf_export()
+ *
+ * This wraps dma_buf_export() for use by generic GEM drivers that are using
+ * drm_gem_dmabuf_release(). In addition to calling dma_buf_export(), we take
+ * a reference to the drm_device which is released by drm_gem_dmabuf_release().
+ *
+ * Returns the new dmabuf.
+ */
+struct dma_buf *drm_gem_dmabuf_export(struct drm_device *dev,
+				      struct dma_buf_export_info *exp_info)
+{
+	struct dma_buf *dma_buf;
+
+	dma_buf = dma_buf_export(exp_info);
+	if (!IS_ERR(dma_buf))
+		drm_dev_ref(dev);
+
+	return dma_buf;
+}
+EXPORT_SYMBOL(drm_gem_dmabuf_export);
+
+/**
+>>>>>>> v4.9.227
  * drm_gem_dmabuf_release - dma_buf release implementation for GEM
  * @dma_buf: buffer to be released
  *
  * Generic release function for dma_bufs exported as PRIME buffers. GEM drivers
  * must use this in their dma_buf ops structure as the release callback.
+<<<<<<< HEAD
+=======
+ * drm_gem_dmabuf_release() should be used in conjunction with
+ * drm_gem_dmabuf_export().
+>>>>>>> v4.9.227
  */
 void drm_gem_dmabuf_release(struct dma_buf *dma_buf)
 {
 	struct drm_gem_object *obj = dma_buf->priv;
+<<<<<<< HEAD
 
 	/* drop the reference on the export fd holds */
 	drm_gem_object_unreference_unlocked(obj);
+=======
+	struct drm_device *dev = obj->dev;
+
+	/* drop the reference on the export fd holds */
+	drm_gem_object_unreference_unlocked(obj);
+
+	drm_dev_unref(dev);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(drm_gem_dmabuf_release);
 
@@ -313,6 +461,7 @@ static const struct dma_buf_ops drm_gem_prime_dmabuf_ops =  {
  *
  * Export callbacks:
  *
+<<<<<<< HEAD
  *  - @gem_prime_pin (optional): prepare a GEM object for exporting
  *
  *  - @gem_prime_get_sg_table: provide a scatter/gather table of pinned pages
@@ -326,6 +475,17 @@ static const struct dma_buf_ops drm_gem_prime_dmabuf_ops =  {
  * Import callback:
  *
  *  - @gem_prime_import_sg_table (import): produce a GEM object from another
+=======
+ *  * @gem_prime_pin (optional): prepare a GEM object for exporting
+ *  * @gem_prime_get_sg_table: provide a scatter/gather table of pinned pages
+ *  * @gem_prime_vmap: vmap a buffer exported by your driver
+ *  * @gem_prime_vunmap: vunmap a buffer exported by your driver
+ *  * @gem_prime_mmap (optional): mmap a buffer exported by your driver
+ *
+ * Import callback:
+ *
+ *  * @gem_prime_import_sg_table (import): produce a GEM object from another
+>>>>>>> v4.9.227
  *    driver's scatter/gather table
  */
 
@@ -333,12 +493,17 @@ static const struct dma_buf_ops drm_gem_prime_dmabuf_ops =  {
  * drm_gem_prime_export - helper library implementation of the export callback
  * @dev: drm_device to export from
  * @obj: GEM object to export
+<<<<<<< HEAD
  * @flags: flags like DRM_CLOEXEC
+=======
+ * @flags: flags like DRM_CLOEXEC and DRM_RDWR
+>>>>>>> v4.9.227
  *
  * This is the implementation of the gem_prime_export functions for GEM drivers
  * using the PRIME helpers.
  */
 struct dma_buf *drm_gem_prime_export(struct drm_device *dev,
+<<<<<<< HEAD
 				     struct drm_gem_object *obj, int flags)
 {
 	struct reservation_object *robj = NULL;
@@ -348,6 +513,24 @@ struct dma_buf *drm_gem_prime_export(struct drm_device *dev,
 
 	return dma_buf_export(obj, &drm_gem_prime_dmabuf_ops, obj->size,
 			      flags, robj);
+=======
+				     struct drm_gem_object *obj,
+				     int flags)
+{
+	struct dma_buf_export_info exp_info = {
+		.exp_name = KBUILD_MODNAME, /* white lie for debug */
+		.owner = dev->driver->fops->owner,
+		.ops = &drm_gem_prime_dmabuf_ops,
+		.size = obj->size,
+		.flags = flags,
+		.priv = obj,
+	};
+
+	if (dev->driver->gem_prime_res_obj)
+		exp_info.resv = dev->driver->gem_prime_res_obj(obj);
+
+	return drm_gem_dmabuf_export(dev, &exp_info);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(drm_gem_prime_export);
 
@@ -407,7 +590,11 @@ int drm_gem_prime_handle_to_fd(struct drm_device *dev,
 	struct dma_buf *dmabuf;
 
 	mutex_lock(&file_priv->prime.lock);
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file_priv, handle);
+=======
+	obj = drm_gem_object_lookup(file_priv, handle);
+>>>>>>> v4.9.227
 	if (!obj)  {
 		ret = -ENOENT;
 		goto out_unlock;
@@ -593,7 +780,11 @@ int drm_gem_prime_fd_to_handle(struct drm_device *dev,
 		get_dma_buf(dma_buf);
 	}
 
+<<<<<<< HEAD
 	/* drm_gem_handle_create_tail unlocks dev->object_name_lock. */
+=======
+	/* _handle_create_tail unconditionally unlocks dev->object_name_lock. */
+>>>>>>> v4.9.227
 	ret = drm_gem_handle_create_tail(file_priv, obj, handle);
 	drm_gem_object_unreference_unlocked(obj);
 	if (ret)
@@ -601,11 +792,18 @@ int drm_gem_prime_fd_to_handle(struct drm_device *dev,
 
 	ret = drm_prime_add_buf_handle(&file_priv->prime,
 			dma_buf, *handle);
+<<<<<<< HEAD
 	if (ret)
 		goto fail;
 
 	mutex_unlock(&file_priv->prime.lock);
 
+=======
+	mutex_unlock(&file_priv->prime.lock);
+	if (ret)
+		goto fail;
+
+>>>>>>> v4.9.227
 	dma_buf_put(dma_buf);
 
 	return 0;
@@ -615,11 +813,22 @@ fail:
 	 * to detach.. which seems ok..
 	 */
 	drm_gem_handle_delete(file_priv, *handle);
+<<<<<<< HEAD
 out_unlock:
 	mutex_unlock(&dev->object_name_lock);
 out_put:
 	dma_buf_put(dma_buf);
 	mutex_unlock(&file_priv->prime.lock);
+=======
+	dma_buf_put(dma_buf);
+	return ret;
+
+out_unlock:
+	mutex_unlock(&dev->object_name_lock);
+out_put:
+	mutex_unlock(&file_priv->prime.lock);
+	dma_buf_put(dma_buf);
+>>>>>>> v4.9.227
 	return ret;
 }
 EXPORT_SYMBOL(drm_gem_prime_fd_to_handle);
@@ -628,7 +837,10 @@ int drm_prime_handle_to_fd_ioctl(struct drm_device *dev, void *data,
 				 struct drm_file *file_priv)
 {
 	struct drm_prime_handle *args = data;
+<<<<<<< HEAD
 	uint32_t flags;
+=======
+>>>>>>> v4.9.227
 
 	if (!drm_core_check_feature(dev, DRIVER_PRIME))
 		return -EINVAL;
@@ -637,6 +849,7 @@ int drm_prime_handle_to_fd_ioctl(struct drm_device *dev, void *data,
 		return -ENOSYS;
 
 	/* check flags are valid */
+<<<<<<< HEAD
 	if (args->flags & ~DRM_CLOEXEC)
 		return -EINVAL;
 
@@ -645,6 +858,13 @@ int drm_prime_handle_to_fd_ioctl(struct drm_device *dev, void *data,
 
 	return dev->driver->prime_handle_to_fd(dev, file_priv,
 			args->handle, flags, &args->fd);
+=======
+	if (args->flags & ~(DRM_CLOEXEC | DRM_RDWR))
+		return -EINVAL;
+
+	return dev->driver->prime_handle_to_fd(dev, file_priv,
+			args->handle, args->flags, &args->fd);
+>>>>>>> v4.9.227
 }
 
 int drm_prime_fd_to_handle_ioctl(struct drm_device *dev, void *data,
@@ -761,12 +981,22 @@ EXPORT_SYMBOL(drm_prime_gem_destroy);
 
 void drm_prime_init_file_private(struct drm_prime_file_private *prime_fpriv)
 {
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&prime_fpriv->head);
 	mutex_init(&prime_fpriv->lock);
+=======
+	mutex_init(&prime_fpriv->lock);
+	prime_fpriv->dmabufs = RB_ROOT;
+	prime_fpriv->handles = RB_ROOT;
+>>>>>>> v4.9.227
 }
 
 void drm_prime_destroy_file_private(struct drm_prime_file_private *prime_fpriv)
 {
 	/* by now drm_gem_release should've made sure the list is empty */
+<<<<<<< HEAD
 	WARN_ON(!list_empty(&prime_fpriv->head));
+=======
+	WARN_ON(!RB_EMPTY_ROOT(&prime_fpriv->dmabufs));
+>>>>>>> v4.9.227
 }

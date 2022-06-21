@@ -47,9 +47,18 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(PL2303_VENDOR_ID, PL2303_PRODUCT_ID_HCR331) },
 	{ USB_DEVICE(PL2303_VENDOR_ID, PL2303_PRODUCT_ID_MOTOROLA) },
 	{ USB_DEVICE(PL2303_VENDOR_ID, PL2303_PRODUCT_ID_ZTEK) },
+<<<<<<< HEAD
 	{ USB_DEVICE(IODATA_VENDOR_ID, IODATA_PRODUCT_ID) },
 	{ USB_DEVICE(IODATA_VENDOR_ID, IODATA_PRODUCT_ID_RSAQ5) },
 	{ USB_DEVICE(ATEN_VENDOR_ID, ATEN_PRODUCT_ID) },
+=======
+	{ USB_DEVICE(PL2303_VENDOR_ID, PL2303_PRODUCT_ID_TB) },
+	{ USB_DEVICE(IODATA_VENDOR_ID, IODATA_PRODUCT_ID) },
+	{ USB_DEVICE(IODATA_VENDOR_ID, IODATA_PRODUCT_ID_RSAQ5) },
+	{ USB_DEVICE(ATEN_VENDOR_ID, ATEN_PRODUCT_ID) },
+	{ USB_DEVICE(ATEN_VENDOR_ID, ATEN_PRODUCT_UC485) },
+	{ USB_DEVICE(ATEN_VENDOR_ID, ATEN_PRODUCT_ID2) },
+>>>>>>> v4.9.227
 	{ USB_DEVICE(ATEN_VENDOR_ID2, ATEN_PRODUCT_ID) },
 	{ USB_DEVICE(ELCOM_VENDOR_ID, ELCOM_PRODUCT_ID) },
 	{ USB_DEVICE(ELCOM_VENDOR_ID, ELCOM_PRODUCT_ID_UCSGT) },
@@ -84,15 +93,31 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(YCCABLE_VENDOR_ID, YCCABLE_PRODUCT_ID) },
 	{ USB_DEVICE(SUPERIAL_VENDOR_ID, SUPERIAL_PRODUCT_ID) },
 	{ USB_DEVICE(HP_VENDOR_ID, HP_LD220_PRODUCT_ID) },
+<<<<<<< HEAD
 	{ USB_DEVICE(HP_VENDOR_ID, HP_LD960_PRODUCT_ID) },
 	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM220_PRODUCT_ID) },
 	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM960_PRODUCT_ID) },
+=======
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LD220TA_PRODUCT_ID) },
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LD381_PRODUCT_ID) },
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LD960_PRODUCT_ID) },
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LD960TA_PRODUCT_ID) },
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM220_PRODUCT_ID) },
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM960_PRODUCT_ID) },
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LM920_PRODUCT_ID) },
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LM940_PRODUCT_ID) },
+	{ USB_DEVICE(HP_VENDOR_ID, HP_TD620_PRODUCT_ID) },
+>>>>>>> v4.9.227
 	{ USB_DEVICE(CRESSI_VENDOR_ID, CRESSI_EDY_PRODUCT_ID) },
 	{ USB_DEVICE(ZEAGLE_VENDOR_ID, ZEAGLE_N2ITION3_PRODUCT_ID) },
 	{ USB_DEVICE(SONY_VENDOR_ID, SONY_QN3USB_PRODUCT_ID) },
 	{ USB_DEVICE(SANWA_VENDOR_ID, SANWA_PRODUCT_ID) },
 	{ USB_DEVICE(ADLINK_VENDOR_ID, ADLINK_ND6530_PRODUCT_ID) },
 	{ USB_DEVICE(SMART_VENDOR_ID, SMART_PRODUCT_ID) },
+<<<<<<< HEAD
+=======
+	{ USB_DEVICE(AT_VENDOR_ID, AT_VTKIT3_PRODUCT_ID) },
+>>>>>>> v4.9.227
 	{ }					/* Terminating entry */
 };
 
@@ -132,6 +157,10 @@ MODULE_DEVICE_TABLE(usb, id_table);
 #define UART_OVERRUN_ERROR		0x40
 #define UART_CTS			0x80
 
+<<<<<<< HEAD
+=======
+static void pl2303_set_break(struct usb_serial_port *port, bool enable);
+>>>>>>> v4.9.227
 
 enum pl2303_type {
 	TYPE_01,	/* Type 0 and 1 (difference unknown) */
@@ -220,9 +249,23 @@ static int pl2303_probe(struct usb_serial *serial,
 static int pl2303_startup(struct usb_serial *serial)
 {
 	struct pl2303_serial_private *spriv;
+<<<<<<< HEAD
 	enum pl2303_type type = TYPE_01;
 	unsigned char *buf;
 
+=======
+	unsigned char num_ports = serial->num_ports;
+	enum pl2303_type type = TYPE_01;
+	unsigned char *buf;
+
+	if (serial->num_bulk_in < num_ports ||
+			serial->num_bulk_out < num_ports ||
+			serial->num_interrupt_in < num_ports) {
+		dev_err(&serial->interface->dev, "missing endpoints\n");
+		return -ENODEV;
+	}
+
+>>>>>>> v4.9.227
 	spriv = kzalloc(sizeof(*spriv), GFP_KERNEL);
 	if (!spriv)
 		return -ENOMEM;
@@ -362,6 +405,7 @@ static speed_t pl2303_encode_baud_rate_direct(unsigned char buf[4],
 static speed_t pl2303_encode_baud_rate_divisor(unsigned char buf[4],
 								speed_t baud)
 {
+<<<<<<< HEAD
 	unsigned int tmp;
 
 	/*
@@ -377,6 +421,40 @@ static speed_t pl2303_encode_baud_rate_divisor(unsigned char buf[4],
 		buf[1] <<= 1;
 	}
 	buf[0] = tmp;
+=======
+	unsigned int baseline, mantissa, exponent;
+
+	/*
+	 * Apparently the formula is:
+	 *   baudrate = 12M * 32 / (mantissa * 4^exponent)
+	 * where
+	 *   mantissa = buf[8:0]
+	 *   exponent = buf[11:9]
+	 */
+	baseline = 12000000 * 32;
+	mantissa = baseline / baud;
+	if (mantissa == 0)
+		mantissa = 1;	/* Avoid dividing by zero if baud > 32*12M. */
+	exponent = 0;
+	while (mantissa >= 512) {
+		if (exponent < 7) {
+			mantissa >>= 2;	/* divide by 4 */
+			exponent++;
+		} else {
+			/* Exponent is maxed. Trim mantissa and leave. */
+			mantissa = 511;
+			break;
+		}
+	}
+
+	buf[3] = 0x80;
+	buf[2] = 0;
+	buf[1] = exponent << 1 | mantissa >> 8;
+	buf[0] = mantissa & 0xff;
+
+	/* Calculate and return the exact baud rate. */
+	baud = (baseline / mantissa) >> (exponent << 1);
+>>>>>>> v4.9.227
 
 	return baud;
 }
@@ -615,6 +693,10 @@ static void pl2303_close(struct usb_serial_port *port)
 {
 	usb_serial_generic_close(port);
 	usb_kill_urb(port->interrupt_in_urb);
+<<<<<<< HEAD
+=======
+	pl2303_set_break(port, false);
+>>>>>>> v4.9.227
 }
 
 static int pl2303_open(struct tty_struct *tty, struct usb_serial_port *port)
@@ -741,17 +823,29 @@ static int pl2303_ioctl(struct tty_struct *tty,
 	return -ENOIOCTLCMD;
 }
 
+<<<<<<< HEAD
 static void pl2303_break_ctl(struct tty_struct *tty, int break_state)
 {
 	struct usb_serial_port *port = tty->driver_data;
+=======
+static void pl2303_set_break(struct usb_serial_port *port, bool enable)
+{
+>>>>>>> v4.9.227
 	struct usb_serial *serial = port->serial;
 	u16 state;
 	int result;
 
+<<<<<<< HEAD
 	if (break_state == 0)
 		state = BREAK_OFF;
 	else
 		state = BREAK_ON;
+=======
+	if (enable)
+		state = BREAK_ON;
+	else
+		state = BREAK_OFF;
+>>>>>>> v4.9.227
 
 	dev_dbg(&port->dev, "%s - turning break %s\n", __func__,
 			state == BREAK_OFF ? "off" : "on");
@@ -763,6 +857,16 @@ static void pl2303_break_ctl(struct tty_struct *tty, int break_state)
 		dev_err(&port->dev, "error sending break = %d\n", result);
 }
 
+<<<<<<< HEAD
+=======
+static void pl2303_break_ctl(struct tty_struct *tty, int state)
+{
+	struct usb_serial_port *port = tty->driver_data;
+
+	pl2303_set_break(port, state);
+}
+
+>>>>>>> v4.9.227
 static void pl2303_update_line_status(struct usb_serial_port *port,
 				      unsigned char *data,
 				      unsigned int actual_length)

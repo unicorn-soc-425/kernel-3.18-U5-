@@ -1,6 +1,10 @@
 config LGUEST
 	tristate "Linux hypervisor example code"
+<<<<<<< HEAD
 	depends on X86_32 && EVENTFD && TTY
+=======
+	depends on X86_32 && EVENTFD && TTY && PCI_DIRECT
+>>>>>>> v4.9.227
 	select HVC_DRIVER
 	---help---
 	  This is a very simple module which allows you to run

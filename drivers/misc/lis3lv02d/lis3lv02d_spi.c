@@ -61,7 +61,11 @@ static union axis_conversion lis3lv02d_axis_normal =
 	{ .as_array = { 1, 2, 3 } };
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static struct of_device_id lis302dl_spi_dt_ids[] = {
+=======
+static const struct of_device_id lis302dl_spi_dt_ids[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "st,lis302dl-spi" },
 	{}
 };
@@ -138,7 +142,10 @@ static SIMPLE_DEV_PM_OPS(lis3lv02d_spi_pm, lis3lv02d_spi_suspend,
 static struct spi_driver lis302dl_spi_driver = {
 	.driver	 = {
 		.name   = DRV_NAME,
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &lis3lv02d_spi_pm,
 		.of_match_table = of_match_ptr(lis302dl_spi_dt_ids),
 	},

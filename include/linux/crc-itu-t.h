@@ -3,7 +3,11 @@
  *
  * Implements the standard CRC ITU-T V.41:
  *   Width 16
+<<<<<<< HEAD
  *   Poly  0x0x1021 (x^16 + x^12 + x^15 + 1)
+=======
+ *   Poly  0x1021 (x^16 + x^12 + x^15 + 1)
+>>>>>>> v4.9.227
  *   Init  0
  *
  * This source code is licensed under the GNU General Public License,

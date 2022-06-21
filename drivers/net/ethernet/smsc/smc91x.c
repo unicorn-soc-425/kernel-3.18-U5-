@@ -91,6 +91,14 @@ static const char version[] =
 
 #include "smc91x.h"
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_ASSABET_NEPONSET)
+#include <mach/assabet.h>
+#include <mach/neponset.h>
+#endif
+
+>>>>>>> v4.9.227
 #ifndef SMC_NOWAIT
 # define SMC_NOWAIT		0
 #endif
@@ -614,7 +622,11 @@ static void smc_hardware_send_pkt(unsigned long data)
 	SMC_SET_MMU_CMD(lp, MC_ENQUEUE);
 	smc_special_unlock(&lp->lock, flags);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> v4.9.227
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += len;
 
@@ -632,7 +644,12 @@ done:	if (!THROTTLE_TX_PKTS)
  * now, or set the card to generates an interrupt when ready
  * for the packet.
  */
+<<<<<<< HEAD
 static int smc_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+smc_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct smc_local *lp = netdev_priv(dev);
 	void __iomem *ioaddr = lp->base;
@@ -1359,7 +1376,11 @@ static void smc_timeout(struct net_device *dev)
 		schedule_work(&lp->phy_configure);
 
 	/* We can accept TX packets again */
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	netif_wake_queue(dev);
 }
 
@@ -2013,10 +2034,25 @@ static int smc_probe(struct net_device *dev, void __iomem *ioaddr,
 	lp->cfg.flags |= SMC91X_USE_DMA;
 #  endif
 	if (lp->cfg.flags & SMC91X_USE_DMA) {
+<<<<<<< HEAD
 		int dma = pxa_request_dma(dev->name, DMA_PRIO_LOW,
 					  smc_pxa_dma_irq, NULL);
 		if (dma >= 0)
 			dev->dma = dma;
+=======
+		dma_cap_mask_t mask;
+		struct pxad_param param;
+
+		dma_cap_zero(mask);
+		dma_cap_set(DMA_SLAVE, mask);
+		param.prio = PXAD_PRIO_LOWEST;
+		param.drcmr = -1UL;
+
+		lp->dma_chan =
+			dma_request_slave_channel_compat(mask, pxad_filter_fn,
+							 &param, &dev->dev,
+							 "data");
+>>>>>>> v4.9.227
 	}
 #endif
 
@@ -2027,8 +2063,13 @@ static int smc_probe(struct net_device *dev, void __iomem *ioaddr,
 			    version_string, revision_register & 0x0f,
 			    lp->base, dev->irq);
 
+<<<<<<< HEAD
 		if (dev->dma != (unsigned char)-1)
 			pr_cont(" DMA %d", dev->dma);
+=======
+		if (lp->dma_chan)
+			pr_cont(" DMA %p", lp->dma_chan);
+>>>>>>> v4.9.227
 
 		pr_cont("%s%s\n",
 			lp->cfg.flags & SMC91X_NOWAIT ? " [nowait]" : "",
@@ -2053,8 +2094,13 @@ static int smc_probe(struct net_device *dev, void __iomem *ioaddr,
 
 err_out:
 #ifdef CONFIG_ARCH_PXA
+<<<<<<< HEAD
 	if (retval && dev->dma != (unsigned char)-1)
 		pxa_free_dma(dev->dma);
+=======
+	if (retval && lp->dma_chan)
+		dma_release_channel(lp->dma_chan);
+>>>>>>> v4.9.227
 #endif
 	return retval;
 }
@@ -2182,6 +2228,15 @@ static void smc_release_datacs(struct platform_device *pdev, struct net_device *
 	}
 }
 
+<<<<<<< HEAD
+=======
+static const struct acpi_device_id smc91x_acpi_match[] = {
+	{ "LNRO0003", 0 },
+	{ }
+};
+MODULE_DEVICE_TABLE(acpi, smc91x_acpi_match);
+
+>>>>>>> v4.9.227
 #if IS_BUILTIN(CONFIG_OF)
 static const struct of_device_id smc91x_match[] = {
 	{ .compatible = "smsc,lan91c94", },
@@ -2199,6 +2254,7 @@ static int try_toggle_control_gpio(struct device *dev,
 				   int value, unsigned int nsdelay)
 {
 	struct gpio_desc *gpio = *desc;
+<<<<<<< HEAD
 	int res;
 
 	gpio = devm_gpiod_get_index(dev, name, index);
@@ -2220,6 +2276,19 @@ static int try_toggle_control_gpio(struct device *dev,
 	if (nsdelay)
 		usleep_range(nsdelay, 2 * nsdelay);
 	gpiod_set_value_cansleep(gpio, value);
+=======
+	enum gpiod_flags flags = value ? GPIOD_OUT_LOW : GPIOD_OUT_HIGH;
+
+	gpio = devm_gpiod_get_index_optional(dev, name, index, flags);
+	if (IS_ERR(gpio))
+		return PTR_ERR(gpio);
+
+	if (gpio) {
+		if (nsdelay)
+			usleep_range(nsdelay, 2 * nsdelay);
+		gpiod_set_value_cansleep(gpio, value);
+	}
+>>>>>>> v4.9.227
 	*desc = gpio;
 
 	return 0;
@@ -2266,12 +2335,25 @@ static int smc_drv_probe(struct platform_device *pdev)
 	if (pd) {
 		memcpy(&lp->cfg, pd, sizeof(lp->cfg));
 		lp->io_shift = SMC91X_IO_SHIFT(lp->cfg.flags);
+<<<<<<< HEAD
+=======
+
+		if (!SMC_8BIT(lp) && !SMC_16BIT(lp)) {
+			dev_err(&pdev->dev,
+				"at least one of 8-bit or 16-bit access support is required.\n");
+			ret = -ENXIO;
+			goto out_free_netdev;
+		}
+>>>>>>> v4.9.227
 	}
 
 #if IS_BUILTIN(CONFIG_OF)
 	match = of_match_device(of_match_ptr(smc91x_match), &pdev->dev);
 	if (match) {
+<<<<<<< HEAD
 		struct device_node *np = pdev->dev.of_node;
+=======
+>>>>>>> v4.9.227
 		u32 val;
 
 		/* Optional pwrdwn GPIO configured? */
@@ -2297,7 +2379,12 @@ static int smc_drv_probe(struct platform_device *pdev)
 			usleep_range(750, 1000);
 
 		/* Combination of IO widths supported, default to 16-bit */
+<<<<<<< HEAD
 		if (!of_property_read_u32(np, "reg-io-width", &val)) {
+=======
+		if (!device_property_read_u32(&pdev->dev, "reg-io-width",
+					      &val)) {
+>>>>>>> v4.9.227
 			if (val & 1)
 				lp->cfg.flags |= SMC91X_USE_8BIT;
 			if ((val == 0) || (val & 2))
@@ -2307,6 +2394,12 @@ static int smc_drv_probe(struct platform_device *pdev)
 		} else {
 			lp->cfg.flags |= SMC91X_USE_16BIT;
 		}
+<<<<<<< HEAD
+=======
+		if (!device_property_read_u32(&pdev->dev, "reg-shift",
+					      &val))
+			lp->io_shift = val;
+>>>>>>> v4.9.227
 	}
 #endif
 
@@ -2339,8 +2432,13 @@ static int smc_drv_probe(struct platform_device *pdev)
 	}
 
 	ndev->irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (ndev->irq <= 0) {
 		ret = -ENODEV;
+=======
+	if (ndev->irq < 0) {
+		ret = ndev->irq;
+>>>>>>> v4.9.227
 		goto out_release_io;
 	}
 	/*
@@ -2355,8 +2453,14 @@ static int smc_drv_probe(struct platform_device *pdev)
 	ret = smc_request_attrib(pdev, ndev);
 	if (ret)
 		goto out_release_io;
+<<<<<<< HEAD
 #if defined(CONFIG_SA1100_ASSABET)
 	neponset_ncr_set(NCR_ENET_OSC_EN);
+=======
+#if defined(CONFIG_ASSABET_NEPONSET)
+	if (machine_is_assabet() && machine_has_neponset())
+		neponset_ncr_set(NCR_ENET_OSC_EN);
+>>>>>>> v4.9.227
 #endif
 	platform_set_drvdata(pdev, ndev);
 	ret = smc_enable_device(pdev);
@@ -2374,6 +2478,10 @@ static int smc_drv_probe(struct platform_device *pdev)
 		struct smc_local *lp = netdev_priv(ndev);
 		lp->device = &pdev->dev;
 		lp->physaddr = res->start;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	}
 #endif
 
@@ -2410,8 +2518,13 @@ static int smc_drv_remove(struct platform_device *pdev)
 	free_irq(ndev->irq, ndev);
 
 #ifdef CONFIG_ARCH_PXA
+<<<<<<< HEAD
 	if (ndev->dma != (unsigned char)-1)
 		pxa_free_dma(ndev->dma);
+=======
+	if (lp->dma_chan)
+		dma_release_channel(lp->dma_chan);
+>>>>>>> v4.9.227
 #endif
 	iounmap(lp->base);
 
@@ -2472,9 +2585,15 @@ static struct platform_driver smc_driver = {
 	.remove		= smc_drv_remove,
 	.driver		= {
 		.name	= CARDNAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &smc_drv_pm_ops,
 		.of_match_table = of_match_ptr(smc91x_match),
+=======
+		.pm	= &smc_drv_pm_ops,
+		.of_match_table   = of_match_ptr(smc91x_match),
+		.acpi_match_table = smc91x_acpi_match,
+>>>>>>> v4.9.227
 	},
 };
 

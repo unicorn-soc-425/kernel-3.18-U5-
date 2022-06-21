@@ -27,8 +27,11 @@
 #include <linux/pwm.h>
 #include <linux/of_device.h>
 
+<<<<<<< HEAD
 #include "pwm-tipwmss.h"
 
+=======
+>>>>>>> v4.9.227
 /* ECAP registers and bits definitions */
 #define CAP1			0x08
 #define CAP2			0x0C
@@ -97,7 +100,11 @@ static int ecap_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	writew(reg_val, pc->mmio_base + ECCTL2);
 
+<<<<<<< HEAD
 	if (!test_bit(PWMF_ENABLED, &pwm->flags)) {
+=======
+	if (!pwm_is_enabled(pwm)) {
+>>>>>>> v4.9.227
 		/* Update active registers if not running */
 		writel(duty_cycles, pc->mmio_base + CAP2);
 		writel(period_cycles, pc->mmio_base + CAP1);
@@ -111,7 +118,11 @@ static int ecap_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		writel(period_cycles, pc->mmio_base + CAP3);
 	}
 
+<<<<<<< HEAD
 	if (!test_bit(PWMF_ENABLED, &pwm->flags)) {
+=======
+	if (!pwm_is_enabled(pwm)) {
+>>>>>>> v4.9.227
 		reg_val = readw(pc->mmio_base + ECCTL2);
 		/* Disable APWM mode to put APWM output Low */
 		reg_val &= ~ECCTL2_APWM_MODE;
@@ -179,7 +190,11 @@ static void ecap_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 
 static void ecap_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
 {
+<<<<<<< HEAD
 	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+=======
+	if (pwm_is_enabled(pwm)) {
+>>>>>>> v4.9.227
 		dev_warn(chip->dev, "Removing PWM device without disabling\n");
 		pm_runtime_put_sync(chip->dev);
 	}
@@ -195,6 +210,10 @@ static const struct pwm_ops ecap_pwm_ops = {
 };
 
 static const struct of_device_id ecap_of_match[] = {
+<<<<<<< HEAD
+=======
+	{ .compatible	= "ti,am3352-ecap" },
+>>>>>>> v4.9.227
 	{ .compatible	= "ti,am33xx-ecap" },
 	{},
 };
@@ -202,11 +221,18 @@ MODULE_DEVICE_TABLE(of, ecap_of_match);
 
 static int ecap_pwm_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
+=======
+	struct device_node *np = pdev->dev.of_node;
+>>>>>>> v4.9.227
 	int ret;
 	struct resource *r;
 	struct clk *clk;
 	struct ecap_pwm_chip *pc;
+<<<<<<< HEAD
 	u16 status;
+=======
+>>>>>>> v4.9.227
 
 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
 	if (!pc)
@@ -214,6 +240,16 @@ static int ecap_pwm_probe(struct platform_device *pdev)
 
 	clk = devm_clk_get(&pdev->dev, "fck");
 	if (IS_ERR(clk)) {
+<<<<<<< HEAD
+=======
+		if (of_device_is_compatible(np, "ti,am33xx-ecap")) {
+			dev_warn(&pdev->dev, "Binding is obsolete.\n");
+			clk = devm_clk_get(pdev->dev.parent, "fck");
+		}
+	}
+
+	if (IS_ERR(clk)) {
+>>>>>>> v4.9.227
 		dev_err(&pdev->dev, "failed to get clock\n");
 		return PTR_ERR(clk);
 	}
@@ -243,6 +279,7 @@ static int ecap_pwm_probe(struct platform_device *pdev)
 	}
 
 	pm_runtime_enable(&pdev->dev);
+<<<<<<< HEAD
 	pm_runtime_get_sync(&pdev->dev);
 
 	status = pwmss_submodule_state_change(pdev->dev.parent,
@@ -263,12 +300,18 @@ pwmss_clk_failure:
 	pm_runtime_disable(&pdev->dev);
 	pwmchip_remove(&pc->chip);
 	return ret;
+=======
+
+	platform_set_drvdata(pdev, pc);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int ecap_pwm_remove(struct platform_device *pdev)
 {
 	struct ecap_pwm_chip *pc = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	pm_runtime_get_sync(&pdev->dev);
 	/*
 	 * Due to hardware misbehaviour, acknowledge of the stop_req
@@ -277,6 +320,8 @@ static int ecap_pwm_remove(struct platform_device *pdev)
 	pwmss_submodule_state_change(pdev->dev.parent, PWMSS_ECAPCLK_STOP_REQ);
 	pm_runtime_put_sync(&pdev->dev);
 
+=======
+>>>>>>> v4.9.227
 	pm_runtime_disable(&pdev->dev);
 	return pwmchip_remove(&pc->chip);
 }
@@ -306,7 +351,11 @@ static int ecap_pwm_suspend(struct device *dev)
 	ecap_pwm_save_context(pc);
 
 	/* Disable explicitly if PWM is running */
+<<<<<<< HEAD
 	if (test_bit(PWMF_ENABLED, &pwm->flags))
+=======
+	if (pwm_is_enabled(pwm))
+>>>>>>> v4.9.227
 		pm_runtime_put_sync(dev);
 
 	return 0;
@@ -318,7 +367,11 @@ static int ecap_pwm_resume(struct device *dev)
 	struct pwm_device *pwm = pc->chip.pwms;
 
 	/* Enable explicitly if PWM was running */
+<<<<<<< HEAD
 	if (test_bit(PWMF_ENABLED, &pwm->flags))
+=======
+	if (pwm_is_enabled(pwm))
+>>>>>>> v4.9.227
 		pm_runtime_get_sync(dev);
 
 	ecap_pwm_restore_context(pc);
@@ -331,7 +384,10 @@ static SIMPLE_DEV_PM_OPS(ecap_pwm_pm_ops, ecap_pwm_suspend, ecap_pwm_resume);
 static struct platform_driver ecap_pwm_driver = {
 	.driver = {
 		.name	= "ecap",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ecap_of_match,
 		.pm	= &ecap_pwm_pm_ops,
 	},

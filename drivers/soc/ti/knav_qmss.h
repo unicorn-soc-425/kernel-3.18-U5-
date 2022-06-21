@@ -93,13 +93,21 @@ struct knav_reg_pdsp_regs {
 struct knav_reg_acc_command {
 	u32		command;
 	u32		queue_mask;
+<<<<<<< HEAD
 	u32		list_phys;
+=======
+	u32		list_dma;
+>>>>>>> v4.9.227
 	u32		queue_num;
 	u32		timer_config;
 };
 
 struct knav_link_ram_block {
+<<<<<<< HEAD
 	dma_addr_t	 phys;
+=======
+	dma_addr_t	 dma;
+>>>>>>> v4.9.227
 	void		*virt;
 	size_t		 size;
 };
@@ -135,9 +143,16 @@ struct knav_pdsp_info {
 	};
 	void __iomem					*intd;
 	u32 __iomem					*iram;
+<<<<<<< HEAD
 	const char					*firmware;
 	u32						id;
 	struct list_head				list;
+=======
+	u32						id;
+	struct list_head				list;
+	bool						loaded;
+	bool						started;
+>>>>>>> v4.9.227
 };
 
 struct knav_qmgr_info {
@@ -348,15 +363,25 @@ struct knav_range_info {
 	list_for_each_entry(region, &kdev->regions, list)
 
 #define first_region(kdev)					\
+<<<<<<< HEAD
 	list_first_entry(&kdev->regions, \
 			struct knav_region, list)
+=======
+	list_first_entry_or_null(&kdev->regions, \
+				 struct knav_region, list)
+>>>>>>> v4.9.227
 
 #define for_each_queue_range(kdev, range)			\
 	list_for_each_entry(range, &kdev->queue_ranges, list)
 
 #define first_queue_range(kdev)					\
+<<<<<<< HEAD
 	list_first_entry(&kdev->queue_ranges, \
 			struct knav_range_info, list)
+=======
+	list_first_entry_or_null(&kdev->queue_ranges, \
+				 struct knav_range_info, list)
+>>>>>>> v4.9.227
 
 #define for_each_pool(kdev, pool)				\
 	list_for_each_entry(pool, &kdev->pools, list)

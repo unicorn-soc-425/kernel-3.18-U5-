@@ -421,14 +421,22 @@ static int __init roccat_init(void)
 
 	retval = alloc_chrdev_region(&dev_id, ROCCAT_FIRST_MINOR,
 			ROCCAT_MAX_DEVICES, "roccat");
+<<<<<<< HEAD
 
 	roccat_major = MAJOR(dev_id);
 
+=======
+>>>>>>> v4.9.227
 	if (retval < 0) {
 		pr_warn("can't get major number\n");
 		goto error;
 	}
 
+<<<<<<< HEAD
+=======
+	roccat_major = MAJOR(dev_id);
+
+>>>>>>> v4.9.227
 	cdev_init(&roccat_cdev, &roccat_ops);
 	retval = cdev_add(&roccat_cdev, dev_id, ROCCAT_MAX_DEVICES);
 

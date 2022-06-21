@@ -17,7 +17,11 @@ Example:
 
 usb2_phy: usb2phy@0 {
 	compatible	= "st,stih416-usb-phy";
+<<<<<<< HEAD
 	#phy-cell	= <0>;
+=======
+	#phy-cells	= <0>;
+>>>>>>> v4.9.227
 	st,syscfg	= <&syscfg_rear>;
 	clocks		= <&clk_sysin>;
 	clock-names	= "osc_phy";

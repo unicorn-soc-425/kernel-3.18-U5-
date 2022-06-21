@@ -235,6 +235,7 @@ out:
 	return num_modes;
 }
 
+<<<<<<< HEAD
 static struct drm_encoder *ptn3460_best_encoder(struct drm_connector *connector)
 {
 	struct ptn3460_bridge *ptn_bridge = connector_to_ptn3460(connector);
@@ -245,6 +246,10 @@ static struct drm_encoder *ptn3460_best_encoder(struct drm_connector *connector)
 static struct drm_connector_helper_funcs ptn3460_connector_helper_funcs = {
 	.get_modes = ptn3460_get_modes,
 	.best_encoder = ptn3460_best_encoder,
+=======
+static const struct drm_connector_helper_funcs ptn3460_connector_helper_funcs = {
+	.get_modes = ptn3460_get_modes,
+>>>>>>> v4.9.227
 };
 
 static enum drm_connector_status ptn3460_detect(struct drm_connector *connector,
@@ -253,6 +258,7 @@ static enum drm_connector_status ptn3460_detect(struct drm_connector *connector,
 	return connector_status_connected;
 }
 
+<<<<<<< HEAD
 static void ptn3460_connector_destroy(struct drm_connector *connector)
 {
 	drm_connector_cleanup(connector);
@@ -263,6 +269,13 @@ static struct drm_connector_funcs ptn3460_connector_funcs = {
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.detect = ptn3460_detect,
 	.destroy = ptn3460_connector_destroy,
+=======
+static const struct drm_connector_funcs ptn3460_connector_funcs = {
+	.dpms = drm_atomic_helper_connector_dpms,
+	.fill_modes = drm_helper_probe_single_connector_modes,
+	.detect = ptn3460_detect,
+	.destroy = drm_connector_cleanup,
+>>>>>>> v4.9.227
 	.reset = drm_atomic_helper_connector_reset,
 	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
 	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
@@ -299,7 +312,11 @@ static int ptn3460_bridge_attach(struct drm_bridge *bridge)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct drm_bridge_funcs ptn3460_bridge_funcs = {
+=======
+static const struct drm_bridge_funcs ptn3460_bridge_funcs = {
+>>>>>>> v4.9.227
 	.pre_enable = ptn3460_pre_enable,
 	.enable = ptn3460_enable,
 	.disable = ptn3460_disable,

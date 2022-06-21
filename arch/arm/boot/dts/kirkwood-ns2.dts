@@ -1,5 +1,9 @@
 /dts-v1/;
 
+<<<<<<< HEAD
+=======
+#include <dt-bindings/leds/leds-ns2.h>
+>>>>>>> v4.9.227
 #include "kirkwood-ns2-common.dtsi"
 
 / {
@@ -27,6 +31,13 @@
 			label = "ns2:blue:sata";
 			slow-gpio = <&gpio0 29 0>;
 			cmd-gpio = <&gpio0 30 0>;
+<<<<<<< HEAD
+=======
+			modes-map = <NS_V2_LED_OFF  1 0
+				     NS_V2_LED_ON   0 1
+				     NS_V2_LED_ON   1 1
+				     NS_V2_LED_SATA 0 0>;
+>>>>>>> v4.9.227
 		};
 	};
 };

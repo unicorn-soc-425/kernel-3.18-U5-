@@ -90,7 +90,11 @@ uint32_t jffs2_truncate_fragtree(struct jffs2_sb_info *c, struct rb_root *list, 
 
 	/* If the last fragment starts at the RAM page boundary, it is
 	 * REF_PRISTINE irrespective of its size. */
+<<<<<<< HEAD
 	if (frag->node && (frag->ofs & (PAGE_CACHE_SIZE - 1)) == 0) {
+=======
+	if (frag->node && (frag->ofs & (PAGE_SIZE - 1)) == 0) {
+>>>>>>> v4.9.227
 		dbg_fragtree2("marking the last fragment 0x%08x-0x%08x REF_PRISTINE.\n",
 			frag->ofs, frag->ofs + frag->size);
 		frag->node->raw->flash_offset = ref_offset(frag->node->raw) | REF_PRISTINE;
@@ -237,7 +241,11 @@ static int jffs2_add_frag_to_fragtree(struct jffs2_sb_info *c, struct rb_root *r
 		   If so, both 'this' and the new node get marked REF_NORMAL so
 		   the GC can take a look.
 		*/
+<<<<<<< HEAD
 		if (lastend && (lastend-1) >> PAGE_CACHE_SHIFT == newfrag->ofs >> PAGE_CACHE_SHIFT) {
+=======
+		if (lastend && (lastend-1) >> PAGE_SHIFT == newfrag->ofs >> PAGE_SHIFT) {
+>>>>>>> v4.9.227
 			if (this->node)
 				mark_ref_normal(this->node->raw);
 			mark_ref_normal(newfrag->node->raw);
@@ -382,7 +390,11 @@ int jffs2_add_full_dnode_to_inode(struct jffs2_sb_info *c, struct jffs2_inode_in
 
 	/* If we now share a page with other nodes, mark either previous
 	   or next node REF_NORMAL, as appropriate.  */
+<<<<<<< HEAD
 	if (newfrag->ofs & (PAGE_CACHE_SIZE-1)) {
+=======
+	if (newfrag->ofs & (PAGE_SIZE-1)) {
+>>>>>>> v4.9.227
 		struct jffs2_node_frag *prev = frag_prev(newfrag);
 
 		mark_ref_normal(fn->raw);
@@ -391,7 +403,11 @@ int jffs2_add_full_dnode_to_inode(struct jffs2_sb_info *c, struct jffs2_inode_in
 			mark_ref_normal(prev->node->raw);
 	}
 
+<<<<<<< HEAD
 	if ((newfrag->ofs+newfrag->size) & (PAGE_CACHE_SIZE-1)) {
+=======
+	if ((newfrag->ofs+newfrag->size) & (PAGE_SIZE-1)) {
+>>>>>>> v4.9.227
 		struct jffs2_node_frag *next = frag_next(newfrag);
 
 		if (next) {

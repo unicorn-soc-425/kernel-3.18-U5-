@@ -12,14 +12,21 @@
 #include <as-layout.h>
 #include <mm_id.h>
 #include <os.h>
+<<<<<<< HEAD
 #include <proc_mm.h>
+=======
+>>>>>>> v4.9.227
 #include <ptrace_user.h>
 #include <registers.h>
 #include <skas.h>
 #include <sysdep/ptrace.h>
 #include <sysdep/stub.h>
 
+<<<<<<< HEAD
 extern unsigned long batch_syscall_stub, __syscall_stub_start;
+=======
+extern char batch_syscall_stub[], __syscall_stub_start[];
+>>>>>>> v4.9.227
 
 extern void wait_stub_done(int pid);
 
@@ -39,15 +46,23 @@ static int __init init_syscall_regs(void)
 {
 	get_safe_registers(syscall_regs, NULL);
 	syscall_regs[REGS_IP_INDEX] = STUB_CODE +
+<<<<<<< HEAD
 		((unsigned long) &batch_syscall_stub -
 		 (unsigned long) &__syscall_stub_start);
+=======
+		((unsigned long) batch_syscall_stub -
+		 (unsigned long) __syscall_stub_start);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 __initcall(init_syscall_regs);
 
+<<<<<<< HEAD
 extern int proc_mm;
 
+=======
+>>>>>>> v4.9.227
 static inline long do_syscall_stub(struct mm_id * mm_idp, void **addr)
 {
 	int n, i;
@@ -56,10 +71,13 @@ static inline long do_syscall_stub(struct mm_id * mm_idp, void **addr)
 	unsigned long * syscall;
 	int err, pid = mm_idp->u.pid;
 
+<<<<<<< HEAD
 	if (proc_mm)
 		/* FIXME: Need to look up userspace_pid by cpu */
 		pid = userspace_pid[0];
 
+=======
+>>>>>>> v4.9.227
 	n = ptrace_setregs(pid, syscall_regs);
 	if (n < 0) {
 		printk(UM_KERN_ERR "Registers - \n");
@@ -178,6 +196,7 @@ int map(struct mm_id * mm_idp, unsigned long virt, unsigned long len, int prot,
 	int phys_fd, unsigned long long offset, int done, void **data)
 {
 	int ret;
+<<<<<<< HEAD
 
 	if (proc_mm) {
 		struct proc_mm_op map;
@@ -210,6 +229,14 @@ int map(struct mm_id * mm_idp, unsigned long virt, unsigned long len, int prot,
 		ret = run_syscall_stub(mm_idp, STUB_MMAP_NR, args, virt,
 				       data, done);
 	}
+=======
+	unsigned long args[] = { virt, len, prot,
+				 MAP_SHARED | MAP_FIXED, phys_fd,
+				 MMAP_OFFSET(offset) };
+
+	ret = run_syscall_stub(mm_idp, STUB_MMAP_NR, args, virt,
+			       data, done);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -218,6 +245,7 @@ int unmap(struct mm_id * mm_idp, unsigned long addr, unsigned long len,
 	  int done, void **data)
 {
 	int ret;
+<<<<<<< HEAD
 
 	if (proc_mm) {
 		struct proc_mm_op unmap;
@@ -244,6 +272,13 @@ int unmap(struct mm_id * mm_idp, unsigned long addr, unsigned long len,
 		ret = run_syscall_stub(mm_idp, __NR_munmap, args, 0,
 				       data, done);
 	}
+=======
+	unsigned long args[] = { (unsigned long) addr, len, 0, 0, 0,
+				 0 };
+
+	ret = run_syscall_stub(mm_idp, __NR_munmap, args, 0,
+			       data, done);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -251,6 +286,7 @@ int unmap(struct mm_id * mm_idp, unsigned long addr, unsigned long len,
 int protect(struct mm_id * mm_idp, unsigned long addr, unsigned long len,
 	    unsigned int prot, int done, void **data)
 {
+<<<<<<< HEAD
 	struct proc_mm_op protect;
 	int ret;
 
@@ -278,6 +314,13 @@ int protect(struct mm_id * mm_idp, unsigned long addr, unsigned long len,
 		ret = run_syscall_stub(mm_idp, __NR_mprotect, args, 0,
 				       data, done);
 	}
+=======
+	int ret;
+	unsigned long args[] = { addr, len, prot, 0, 0, 0 };
+
+	ret = run_syscall_stub(mm_idp, __NR_mprotect, args, 0,
+			       data, done);
+>>>>>>> v4.9.227
 
 	return ret;
 }

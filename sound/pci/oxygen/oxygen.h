@@ -35,7 +35,11 @@
 #define CAPTURE_1_FROM_SPDIF	0x0080
 #define CAPTURE_2_FROM_I2S_2	0x0100
 #define CAPTURE_2_FROM_AC97_1	0x0200
+<<<<<<< HEAD
      /* CAPTURE_3_FROM_I2S_3		not implemented */
+=======
+#define CAPTURE_3_FROM_I2S_3	0x0400
+>>>>>>> v4.9.227
 #define MIDI_OUTPUT		0x0800
 #define MIDI_INPUT		0x1000
 #define AC97_CD_INPUT		0x2000

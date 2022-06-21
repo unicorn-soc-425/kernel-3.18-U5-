@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2012, Intel Corporation.
+=======
+ * Copyright (c) 2012, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -36,17 +44,28 @@
 
 #define DEBUG_SUBSYSTEM S_LOG
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #include "../include/obd_class.h"
 #include "../include/lustre_log.h"
 #include "llog_internal.h"
 
 /* helper functions for calling the llog obd methods */
+<<<<<<< HEAD
 static struct llog_ctxt* llog_new_ctxt(struct obd_device *obd)
 {
 	struct llog_ctxt *ctxt;
 
 	OBD_ALLOC_PTR(ctxt);
+=======
+static struct llog_ctxt *llog_new_ctxt(struct obd_device *obd)
+{
+	struct llog_ctxt *ctxt;
+
+	ctxt = kzalloc(sizeof(*ctxt), GFP_NOFS);
+>>>>>>> v4.9.227
 	if (!ctxt)
 		return NULL;
 
@@ -66,7 +85,11 @@ static void llog_ctxt_destroy(struct llog_ctxt *ctxt)
 		class_import_put(ctxt->loc_imp);
 		ctxt->loc_imp = NULL;
 	}
+<<<<<<< HEAD
 	OBD_FREE_PTR(ctxt);
+=======
+	kfree(ctxt);
+>>>>>>> v4.9.227
 }
 
 int __llog_ctxt_put(const struct lu_env *env, struct llog_ctxt *ctxt)
@@ -89,7 +112,12 @@ int __llog_ctxt_put(const struct lu_env *env, struct llog_ctxt *ctxt)
 	spin_unlock(&obd->obd_dev_lock);
 
 	/* obd->obd_starting is needed for the case of cleanup
+<<<<<<< HEAD
 	 * in error case while obd is starting up. */
+=======
+	 * in error case while obd is starting up.
+	 */
+>>>>>>> v4.9.227
 	LASSERTF(obd->obd_starting == 1 ||
 		 obd->obd_stopping == 1 || obd->obd_set_up == 0,
 		 "wrong obd state: %d/%d/%d\n", !!obd->obd_starting,
@@ -111,11 +139,16 @@ int llog_cleanup(const struct lu_env *env, struct llog_ctxt *ctxt)
 	struct obd_llog_group *olg;
 	int rc, idx;
 
+<<<<<<< HEAD
 	LASSERT(ctxt != NULL);
 	LASSERT(ctxt != LP_POISON);
 
 	olg = ctxt->loc_olg;
 	LASSERT(olg != NULL);
+=======
+	olg = ctxt->loc_olg;
+	LASSERT(olg);
+>>>>>>> v4.9.227
 	LASSERT(olg != LP_POISON);
 
 	idx = ctxt->loc_idx;
@@ -152,7 +185,11 @@ int llog_setup(const struct lu_env *env, struct obd_device *obd,
 	if (index < 0 || index >= LLOG_MAX_CTXTS)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	LASSERT(olg != NULL);
+=======
+	LASSERT(olg);
+>>>>>>> v4.9.227
 
 	ctxt = llog_new_ctxt(obd);
 	if (!ctxt)
@@ -212,6 +249,7 @@ int llog_setup(const struct lu_env *env, struct obd_device *obd,
 }
 EXPORT_SYMBOL(llog_setup);
 
+<<<<<<< HEAD
 int llog_sync(struct llog_ctxt *ctxt, struct obd_export *exp, int flags)
 {
 	int rc = 0;
@@ -242,12 +280,17 @@ int llog_cancel(const struct lu_env *env, struct llog_ctxt *ctxt,
 }
 EXPORT_SYMBOL(llog_cancel);
 
+=======
+>>>>>>> v4.9.227
 /* context key constructor/destructor: llog_key_init, llog_key_fini */
 LU_KEY_INIT_FINI(llog, struct llog_thread_info);
 /* context key: llog_thread_key */
 LU_CONTEXT_KEY_DEFINE(llog, LCT_MD_THREAD | LCT_MG_THREAD | LCT_LOCAL);
 LU_KEY_INIT_GENERIC(llog);
+<<<<<<< HEAD
 EXPORT_SYMBOL(llog_thread_key);
+=======
+>>>>>>> v4.9.227
 
 int llog_info_init(void)
 {

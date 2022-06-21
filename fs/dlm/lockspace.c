@@ -673,11 +673,18 @@ static int new_lockspace(const char *name, const char *cluster,
 	kfree(ls->ls_recover_buf);
  out_lkbidr:
 	idr_destroy(&ls->ls_lkbidr);
+<<<<<<< HEAD
+=======
+ out_rsbtbl:
+>>>>>>> v4.9.227
 	for (i = 0; i < DLM_REMOVE_NAMES_MAX; i++) {
 		if (ls->ls_remove_names[i])
 			kfree(ls->ls_remove_names[i]);
 	}
+<<<<<<< HEAD
  out_rsbtbl:
+=======
+>>>>>>> v4.9.227
 	vfree(ls->ls_rsbtbl);
  out_lsfree:
 	if (do_unreg)
@@ -800,6 +807,10 @@ static int release_lockspace(struct dlm_ls *ls, int force)
 
 	dlm_delete_debug_file(ls);
 
+<<<<<<< HEAD
+=======
+	idr_destroy(&ls->ls_recover_idr);
+>>>>>>> v4.9.227
 	kfree(ls->ls_recover_buf);
 
 	/*

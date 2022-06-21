@@ -1,4 +1,5 @@
 TODO:
+<<<<<<< HEAD
 	-checkpatch warnings
 	-move /proc entries to /sys
 	-proper major number(s)
@@ -14,6 +15,18 @@ TODO:
 		-sparstop
 	-move individual drivers into proper driver subsystems
 		
+=======
+	- enhance visornic to use channel_interrupt() hook instead of a
+	  kernel thread
+	- enhance visorhba to use channel_interrupt() hook instead of a
+	  kernel thread
+	- teach visorbus to handle virtual interrupts triggered by s-Par
+	  back-end, and call function driver's channel_interrupt() function
+	  when they occur
+	- enhance debugfs interfaces (e.g., per device, etc.)
+	- upgrade/remove deprecated workqueue operations
+	- move individual drivers into proper driver subsystems
+>>>>>>> v4.9.227
 
 Patches to:
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>

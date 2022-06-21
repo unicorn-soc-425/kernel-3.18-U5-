@@ -3894,7 +3894,10 @@ static int jfs_xtstat_proc_open(struct inode *inode, struct file *file)
 }
 
 const struct file_operations jfs_xtstat_proc_fops = {
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	.open		= jfs_xtstat_proc_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,

@@ -96,8 +96,13 @@ ssize_t xdr_partial_copy_from_skb(struct xdr_buf *xdr, unsigned int base, struct
 	if (base || xdr->page_base) {
 		pglen -= base;
 		base += xdr->page_base;
+<<<<<<< HEAD
 		ppage += base >> PAGE_CACHE_SHIFT;
 		base &= ~PAGE_CACHE_MASK;
+=======
+		ppage += base >> PAGE_SHIFT;
+		base &= ~PAGE_MASK;
+>>>>>>> v4.9.227
 	}
 	do {
 		char *kaddr;
@@ -113,7 +118,11 @@ ssize_t xdr_partial_copy_from_skb(struct xdr_buf *xdr, unsigned int base, struct
 			}
 		}
 
+<<<<<<< HEAD
 		len = PAGE_CACHE_SIZE;
+=======
+		len = PAGE_SIZE;
+>>>>>>> v4.9.227
 		kaddr = kmap_atomic(*ppage);
 		if (base) {
 			len -= base;
@@ -155,7 +164,11 @@ int csum_partial_copy_to_xdr(struct xdr_buf *xdr, struct sk_buff *skb)
 	struct xdr_skb_reader	desc;
 
 	desc.skb = skb;
+<<<<<<< HEAD
 	desc.offset = sizeof(struct udphdr);
+=======
+	desc.offset = 0;
+>>>>>>> v4.9.227
 	desc.count = skb->len - desc.offset;
 
 	if (skb_csum_unnecessary(skb))

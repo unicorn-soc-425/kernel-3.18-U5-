@@ -157,7 +157,11 @@ static const struct i2c_device_id ar1021_i2c_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, ar1021_i2c_id);
 
+<<<<<<< HEAD
 static struct of_device_id ar1021_i2c_of_match[] = {
+=======
+static const struct of_device_id ar1021_i2c_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "microchip,ar1021-i2c", },
 	{ }
 };
@@ -166,7 +170,10 @@ MODULE_DEVICE_TABLE(of, ar1021_i2c_of_match);
 static struct i2c_driver ar1021_i2c_driver = {
 	.driver	= {
 		.name	= "ar1021_i2c",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &ar1021_i2c_pm,
 		.of_match_table = ar1021_i2c_of_match,
 	},

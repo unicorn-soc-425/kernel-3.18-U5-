@@ -16,7 +16,11 @@
 #include <regex.h>
 #include <tools/le_byteshift.h>
 
+<<<<<<< HEAD
 void die(char *fmt, ...);
+=======
+void die(char *fmt, ...) __attribute__((noreturn));
+>>>>>>> v4.9.227
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 

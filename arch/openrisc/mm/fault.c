@@ -163,7 +163,11 @@ good_area:
 	 * the fault.
 	 */
 
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> v4.9.227
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;

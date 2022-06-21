@@ -313,6 +313,12 @@ extern int book3e_htw_mode;
  * return 1, indicating that the tlb requires preloading.
  */
 #define HUGETLB_NEED_PRELOAD
+<<<<<<< HEAD
+=======
+
+#define mmu_cleanup_all NULL
+
+>>>>>>> v4.9.227
 #endif
 
 #endif /* !__ASSEMBLY__ */

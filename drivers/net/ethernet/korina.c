@@ -152,7 +152,11 @@ static inline void korina_abort_dma(struct net_device *dev,
 	       writel(0x10, &ch->dmac);
 
 	       while (!(readl(&ch->dmas) & DMA_STAT_HALT))
+<<<<<<< HEAD
 		       dev->trans_start = jiffies;
+=======
+		       netif_trans_update(dev);
+>>>>>>> v4.9.227
 
 	       writel(0, &ch->dmas);
        }
@@ -283,7 +287,11 @@ static int korina_send_packet(struct sk_buff *skb, struct net_device *dev)
 	}
 	dma_cache_wback((u32) td, sizeof(*td));
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&lp->lock, flags);
 
 	return NETDEV_TX_OK;
@@ -622,7 +630,11 @@ korina_tx_dma_interrupt(int irq, void *dev_id)
 				&(lp->tx_dma_regs->dmandptr));
 			lp->tx_chain_status = desc_empty;
 			lp->tx_chain_head = lp->tx_chain_tail;
+<<<<<<< HEAD
 			dev->trans_start = jiffies;
+=======
+			netif_trans_update(dev);
+>>>>>>> v4.9.227
 		}
 		if (dmas & DMA_STAT_ERR)
 			printk(KERN_ERR "%s: DMA error\n", dev->name);
@@ -811,7 +823,11 @@ static int korina_init(struct net_device *dev)
 	/* reset ethernet logic */
 	writel(0, &lp->eth_regs->ethintfc);
 	while ((readl(&lp->eth_regs->ethintfc) & ETH_INT_FC_RIP))
+<<<<<<< HEAD
 		dev->trans_start = jiffies;
+=======
+		netif_trans_update(dev);
+>>>>>>> v4.9.227
 
 	/* Enable Ethernet Interface */
 	writel(ETH_INT_FC_EN, &lp->eth_regs->ethintfc);

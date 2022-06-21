@@ -26,10 +26,15 @@
 struct lp8788_led {
 	struct lp8788 *lp;
 	struct mutex lock;
+<<<<<<< HEAD
 	struct work_struct work;
 	struct led_classdev led_dev;
 	enum lp8788_isink_number isink_num;
 	enum led_brightness brightness;
+=======
+	struct led_classdev led_dev;
+	enum lp8788_isink_number isink_num;
+>>>>>>> v4.9.227
 	int on;
 };
 
@@ -76,6 +81,7 @@ static int lp8788_led_init_device(struct lp8788_led *led,
 	return lp8788_update_bits(led->lp, addr, mask, val);
 }
 
+<<<<<<< HEAD
 static void lp8788_led_enable(struct lp8788_led *led,
 			enum lp8788_isink_number num, int on)
 {
@@ -94,6 +100,31 @@ static void lp8788_led_work(struct work_struct *work)
 	enum lp8788_isink_number num = led->isink_num;
 	int enable;
 	u8 val = led->brightness;
+=======
+static int lp8788_led_enable(struct lp8788_led *led,
+			enum lp8788_isink_number num, int on)
+{
+	int ret;
+
+	u8 mask = 1 << num;
+	u8 val = on << num;
+
+	ret = lp8788_update_bits(led->lp, LP8788_ISINK_CTRL, mask, val);
+	if (ret == 0)
+		led->on = on;
+
+	return ret;
+}
+
+static int lp8788_brightness_set(struct led_classdev *led_cdev,
+				enum led_brightness val)
+{
+	struct lp8788_led *led =
+			container_of(led_cdev, struct lp8788_led, led_dev);
+
+	enum lp8788_isink_number num = led->isink_num;
+	int enable, ret;
+>>>>>>> v4.9.227
 
 	mutex_lock(&led->lock);
 
@@ -101,15 +132,26 @@ static void lp8788_led_work(struct work_struct *work)
 	case LP8788_ISINK_1:
 	case LP8788_ISINK_2:
 	case LP8788_ISINK_3:
+<<<<<<< HEAD
 		lp8788_write_byte(led->lp, lp8788_pwm_addr[num], val);
 		break;
 	default:
 		mutex_unlock(&led->lock);
 		return;
+=======
+		ret = lp8788_write_byte(led->lp, lp8788_pwm_addr[num], val);
+		if (ret < 0)
+			goto unlock;
+		break;
+	default:
+		mutex_unlock(&led->lock);
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	enable = (val > 0) ? 1 : 0;
 	if (enable != led->on)
+<<<<<<< HEAD
 		lp8788_led_enable(led, num, enable);
 
 	mutex_unlock(&led->lock);
@@ -123,6 +165,12 @@ static void lp8788_brightness_set(struct led_classdev *led_cdev,
 
 	led->brightness = brt_val;
 	schedule_work(&led->work);
+=======
+		ret = lp8788_led_enable(led, num, enable);
+unlock:
+	mutex_unlock(&led->lock);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int lp8788_led_probe(struct platform_device *pdev)
@@ -139,7 +187,11 @@ static int lp8788_led_probe(struct platform_device *pdev)
 
 	led->lp = lp;
 	led->led_dev.max_brightness = MAX_BRIGHTNESS;
+<<<<<<< HEAD
 	led->led_dev.brightness_set = lp8788_brightness_set;
+=======
+	led->led_dev.brightness_set_blocking = lp8788_brightness_set;
+>>>>>>> v4.9.227
 
 	led_pdata = lp->pdata ? lp->pdata->led_pdata : NULL;
 
@@ -149,9 +201,12 @@ static int lp8788_led_probe(struct platform_device *pdev)
 		led->led_dev.name = led_pdata->name;
 
 	mutex_init(&led->lock);
+<<<<<<< HEAD
 	INIT_WORK(&led->work, lp8788_led_work);
 
 	platform_set_drvdata(pdev, led);
+=======
+>>>>>>> v4.9.227
 
 	ret = lp8788_led_init_device(led, led_pdata);
 	if (ret) {
@@ -159,7 +214,11 @@ static int lp8788_led_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = led_classdev_register(dev, &led->led_dev);
+=======
+	ret = devm_led_classdev_register(dev, &led->led_dev);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(dev, "led register err: %d\n", ret);
 		return ret;
@@ -168,6 +227,7 @@ static int lp8788_led_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lp8788_led_remove(struct platform_device *pdev)
 {
 	struct lp8788_led *led = platform_get_drvdata(pdev);
@@ -184,6 +244,12 @@ static struct platform_driver lp8788_led_driver = {
 	.driver = {
 		.name = LP8788_DEV_KEYLED,
 		.owner = THIS_MODULE,
+=======
+static struct platform_driver lp8788_led_driver = {
+	.probe = lp8788_led_probe,
+	.driver = {
+		.name = LP8788_DEV_KEYLED,
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(lp8788_led_driver);

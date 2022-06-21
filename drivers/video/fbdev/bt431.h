@@ -2,6 +2,10 @@
  *	linux/drivers/video/bt431.h
  *
  *	Copyright 2003  Thiemo Seufer <seufer@csv.ica.uni-stuttgart.de>
+<<<<<<< HEAD
+=======
+ *	Copyright 2016  Maciej W. Rozycki <macro@linux-mips.org>
+>>>>>>> v4.9.227
  *
  *	This file is subject to the terms and conditions of the GNU General
  *	Public License. See the file COPYING in the main directory of this
@@ -9,6 +13,11 @@
  */
 #include <linux/types.h>
 
+<<<<<<< HEAD
+=======
+#define BT431_CURSOR_SIZE	64
+
+>>>>>>> v4.9.227
 /*
  * Bt431 cursor generator registers, 32-bit aligned.
  * Two twin Bt431 are used on the DECstation's PMAG-AA.
@@ -60,7 +69,11 @@ static inline u8 bt431_get_value(u16 val)
 #define BT431_CMD_CURS_ENABLE	0x40
 #define BT431_CMD_XHAIR_ENABLE	0x20
 #define BT431_CMD_OR_CURSORS	0x10
+<<<<<<< HEAD
 #define BT431_CMD_AND_CURSORS	0x00
+=======
+#define BT431_CMD_XOR_CURSORS	0x00
+>>>>>>> v4.9.227
 #define BT431_CMD_1_1_MUX	0x00
 #define BT431_CMD_4_1_MUX	0x04
 #define BT431_CMD_5_1_MUX	0x08
@@ -196,6 +209,7 @@ static inline void bt431_position_cursor(struct bt431_regs *regs, u16 x, u16 y)
 	bt431_write_reg_inc(regs, (y >> 8) & 0x0f); /* BT431_REG_CYHI */
 }
 
+<<<<<<< HEAD
 static inline void bt431_set_font(struct bt431_regs *regs, u8 fgc,
 				  u16 width, u16 height)
 {
@@ -218,6 +232,32 @@ static inline void bt431_set_font(struct bt431_regs *regs, u8 fgc,
 
 		bt431_write_cmap_inc(regs, value);
 	}
+=======
+static inline void bt431_set_cursor(struct bt431_regs *regs,
+				    const char *data, const char *mask,
+				    u16 rop, u16 width, u16 height)
+{
+	u16 x, y;
+	int i;
+
+	i = 0;
+	width = DIV_ROUND_UP(width, 8);
+	bt431_select_reg(regs, BT431_REG_CRAM_BASE);
+	for (y = 0; y < BT431_CURSOR_SIZE; y++)
+		for (x = 0; x < BT431_CURSOR_SIZE / 8; x++) {
+			u16 val = 0;
+
+			if (y < height && x < width) {
+				val = mask[i];
+				if (rop == ROP_XOR)
+					val = (val << 8) | (val ^ data[i]);
+				else
+					val = (val << 8) | (val & data[i]);
+				i++;
+			}
+			bt431_write_cmap_inc(regs, val);
+		}
+>>>>>>> v4.9.227
 }
 
 static inline void bt431_init_cursor(struct bt431_regs *regs)

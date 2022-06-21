@@ -126,9 +126,15 @@ vma based method:
 
  - no VM changes are needed - 'struct address_space' is left alone.
 
+<<<<<<< HEAD
  - no registration of individual locks is needed: robust mutexes dont
    need any extra per-lock syscalls. Robust mutexes thus become a very
    lightweight primitive - so they dont force the application designer
+=======
+ - no registration of individual locks is needed: robust mutexes don't
+   need any extra per-lock syscalls. Robust mutexes thus become a very
+   lightweight primitive - so they don't force the application designer
+>>>>>>> v4.9.227
    to do a hard choice between performance and robustness - robust
    mutexes are just as fast.
 
@@ -202,7 +208,11 @@ and the remaining bits are for the TID.
 Testing, architecture support
 -----------------------------
 
+<<<<<<< HEAD
 i've tested the new syscalls on x86 and x86_64, and have made sure the
+=======
+I've tested the new syscalls on x86 and x86_64, and have made sure the
+>>>>>>> v4.9.227
 parsing of the userspace list is robust [ ;-) ] even if the list is
 deliberately corrupted.
 

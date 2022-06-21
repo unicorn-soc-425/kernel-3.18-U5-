@@ -196,7 +196,11 @@ static int get_ctl_type(struct snd_card *card, struct snd_ctl_elem_id *id,
 	kctl = snd_ctl_find_id(card, id);
 	if (! kctl) {
 		up_read(&card->controls_rwsem);
+<<<<<<< HEAD
 		return -ENXIO;
+=======
+		return -ENOENT;
+>>>>>>> v4.9.227
 	}
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 	if (info == NULL) {

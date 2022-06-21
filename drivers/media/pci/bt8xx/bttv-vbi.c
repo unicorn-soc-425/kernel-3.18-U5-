@@ -450,6 +450,7 @@ void bttv_vbi_fmt_reset(struct bttv_vbi_fmt *f, unsigned int norm)
 	/* See bttv_vbi_fmt_set(). */
 	f->end                  = tvnorm->vbistart[0] * 2 + 2;
 }
+<<<<<<< HEAD
 
 /* ----------------------------------------------------------------------- */
 /*
@@ -457,3 +458,5 @@ void bttv_vbi_fmt_reset(struct bttv_vbi_fmt *f, unsigned int norm)
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

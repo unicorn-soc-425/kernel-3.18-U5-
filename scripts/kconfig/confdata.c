@@ -16,6 +16,14 @@
 
 #include "lkc.h"
 
+<<<<<<< HEAD
+=======
+struct conf_printer {
+	void (*print_symbol)(FILE *, struct symbol *, const char *, void *);
+	void (*print_comment)(FILE *, const char *, void *);
+};
+
+>>>>>>> v4.9.227
 static void conf_warning(const char *fmt, ...)
 	__attribute__ ((format (printf, 1, 2)));
 
@@ -59,6 +67,10 @@ static void conf_message(const char *fmt, ...)
 	va_start(ap, fmt);
 	if (conf_message_callback)
 		conf_message_callback(fmt, ap);
+<<<<<<< HEAD
+=======
+	va_end(ap);
+>>>>>>> v4.9.227
 }
 
 const char *conf_get_configname(void)
@@ -242,7 +254,11 @@ e_out:
 	return -1;
 }
 
+<<<<<<< HEAD
 int conf_read_simple(const char *name, int def, int sym_init)
+=======
+int conf_read_simple(const char *name, int def)
+>>>>>>> v4.9.227
 {
 	FILE *in = NULL;
 	char   *line = NULL;
@@ -261,11 +277,16 @@ int conf_read_simple(const char *name, int def, int sym_init)
 		if (in)
 			goto load;
 		sym_add_change_count(1);
+<<<<<<< HEAD
 		if (!sym_defconfig_list) {
 			if (modules_sym)
 				sym_calc_value(modules_sym);
 			return 1;
 		}
+=======
+		if (!sym_defconfig_list)
+			return 1;
+>>>>>>> v4.9.227
 
 		for_all_defaults(sym_defconfig_list, prop) {
 			if (expr_calc_value(prop->visible.expr) == no ||
@@ -290,8 +311,11 @@ load:
 	conf_unsaved = 0;
 
 	def_flags = SYMBOL_DEF << def;
+<<<<<<< HEAD
 	if (!sym_init)
 		goto readsym;
+=======
+>>>>>>> v4.9.227
 	for_all_symbols(i, sym) {
 		sym->flags |= SYMBOL_CHANGED;
 		sym->flags &= ~(def_flags|SYMBOL_VALID);
@@ -309,7 +333,11 @@ load:
 			sym->def[def].tri = no;
 		}
 	}
+<<<<<<< HEAD
 readsym:
+=======
+
+>>>>>>> v4.9.227
 	while (compat_getline(&line, &line_asize, in) != -1) {
 		conf_lineno++;
 		sym = NULL;
@@ -374,7 +402,13 @@ readsym:
 				continue;
 		} else {
 			if (line[0] != '\r' && line[0] != '\n')
+<<<<<<< HEAD
 				conf_warning("unexpected data");
+=======
+				conf_warning("unexpected data: %.*s",
+					     (int)strcspn(line, "\r\n"), line);
+
+>>>>>>> v4.9.227
 			continue;
 		}
 setsym:
@@ -400,9 +434,12 @@ setsym:
 	}
 	free(line);
 	fclose(in);
+<<<<<<< HEAD
 
 	if (modules_sym)
 		sym_calc_value(modules_sym);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -413,8 +450,17 @@ int conf_read(const char *name)
 
 	sym_set_change_count(0);
 
+<<<<<<< HEAD
 	if (conf_read_simple(name, S_DEF_USER, true))
 		return 1;
+=======
+	if (conf_read_simple(name, S_DEF_USER)) {
+		sym_calc_value(modules_sym);
+		return 1;
+	}
+
+	sym_calc_value(modules_sym);
+>>>>>>> v4.9.227
 
 	for_all_symbols(i, sym) {
 		sym_calc_value(sym);
@@ -741,7 +787,11 @@ int conf_write(const char *name)
 	struct menu *menu;
 	const char *basename;
 	const char *str;
+<<<<<<< HEAD
 	char dirname[PATH_MAX+1], tmpname[PATH_MAX+1], newname[PATH_MAX+1];
+=======
+	char dirname[PATH_MAX+1], tmpname[PATH_MAX+22], newname[PATH_MAX+8];
+>>>>>>> v4.9.227
 	char *env;
 
 	dirname[0] = 0;
@@ -844,7 +894,12 @@ static int conf_split_config(void)
 	int res, i, fd;
 
 	name = conf_get_autoconfig_name();
+<<<<<<< HEAD
 	conf_read_simple(name, S_DEF_AUTO, true);
+=======
+	conf_read_simple(name, S_DEF_AUTO);
+	sym_calc_value(modules_sym);
+>>>>>>> v4.9.227
 
 	if (chdir("include/config"))
 		return 1;
@@ -1233,7 +1288,11 @@ bool conf_set_all_new_symbols(enum conf_def_mode mode)
 
 		sym_calc_value(csym);
 		if (mode == def_random)
+<<<<<<< HEAD
 			has_changed = randomize_choice_values(csym);
+=======
+			has_changed |= randomize_choice_values(csym);
+>>>>>>> v4.9.227
 		else {
 			set_all_choice_values(csym);
 			has_changed = true;

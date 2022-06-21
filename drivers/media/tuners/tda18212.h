@@ -21,7 +21,10 @@
 #ifndef TDA18212_H
 #define TDA18212_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include "dvb_frontend.h"
 
 struct tda18212_config {

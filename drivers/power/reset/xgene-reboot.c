@@ -24,6 +24,7 @@
  * For system shutdown, this is board specify. If a board designer
  * implements GPIO shutdown, use the gpio-poweroff.c driver.
  */
+<<<<<<< HEAD
 #include <linux/io.h>
 #include <linux/of_device.h>
 #include <linux/of_address.h>
@@ -54,11 +55,46 @@ static void xgene_restart(enum reboot_mode mode, const char *cmd)
 		cpu_relax();
 
 	dev_emerg(&ctx->pdev->dev, "Unable to restart system\n");
+=======
+#include <linux/delay.h>
+#include <linux/io.h>
+#include <linux/notifier.h>
+#include <linux/of_device.h>
+#include <linux/of_address.h>
+#include <linux/platform_device.h>
+#include <linux/reboot.h>
+#include <linux/stat.h>
+#include <linux/slab.h>
+
+struct xgene_reboot_context {
+	struct device *dev;
+	void *csr;
+	u32 mask;
+	struct notifier_block restart_handler;
+};
+
+static int xgene_restart_handler(struct notifier_block *this,
+				 unsigned long mode, void *cmd)
+{
+	struct xgene_reboot_context *ctx =
+		container_of(this, struct xgene_reboot_context,
+			     restart_handler);
+
+	/* Issue the reboot */
+	writel(ctx->mask, ctx->csr);
+
+	mdelay(1000);
+
+	dev_emerg(ctx->dev, "Unable to restart system\n");
+
+	return NOTIFY_DONE;
+>>>>>>> v4.9.227
 }
 
 static int xgene_reboot_probe(struct platform_device *pdev)
 {
 	struct xgene_reboot_context *ctx;
+<<<<<<< HEAD
 
 	ctx = devm_kzalloc(&pdev->dev, sizeof(*ctx), GFP_KERNEL);
 	if (!ctx) {
@@ -84,6 +120,37 @@ static int xgene_reboot_probe(struct platform_device *pdev)
 }
 
 static struct of_device_id xgene_reboot_of_match[] = {
+=======
+	struct device *dev = &pdev->dev;
+	int err;
+
+	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
+	if (!ctx)
+		return -ENOMEM;
+
+	ctx->csr = of_iomap(dev->of_node, 0);
+	if (!ctx->csr) {
+		dev_err(dev, "can not map resource\n");
+		return -ENODEV;
+	}
+
+	if (of_property_read_u32(dev->of_node, "mask", &ctx->mask))
+		ctx->mask = 0xFFFFFFFF;
+
+	ctx->dev = dev;
+	ctx->restart_handler.notifier_call = xgene_restart_handler;
+	ctx->restart_handler.priority = 128;
+	err = register_restart_handler(&ctx->restart_handler);
+	if (err) {
+		iounmap(ctx->csr);
+		dev_err(dev, "cannot register restart handler (err=%d)\n", err);
+	}
+
+	return err;
+}
+
+static const struct of_device_id xgene_reboot_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "apm,xgene-reboot" },
 	{}
 };

@@ -433,12 +433,19 @@ static int efm32_i2c_probe(struct platform_device *pdev)
 	ret = request_irq(ddata->irq, efm32_i2c_irq, 0, DRIVER_NAME, ddata);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to request irq (%d)\n", ret);
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_disable_clk;
+>>>>>>> v4.9.227
 	}
 
 	ret = i2c_add_adapter(&ddata->adapter);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "failed to add i2c adapter (%d)\n", ret);
+=======
+>>>>>>> v4.9.227
 		free_irq(ddata->irq, ddata);
 
 err_disable_clk:
@@ -473,7 +480,10 @@ static struct platform_driver efm32_i2c_driver = {
 
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = efm32_i2c_dt_ids,
 	},
 };

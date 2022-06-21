@@ -2,7 +2,10 @@
  *  include/linux/irqchip/arm-gic.h
  *
  *  Copyright (C) 2002 ARM Limited, All Rights Reserved.
+<<<<<<< HEAD
  *  Copyright (c) 2014, The Linux Foundation. All rights reserved.
+=======
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -21,15 +24,29 @@
 #define GIC_CPU_ALIAS_BINPOINT		0x1c
 #define GIC_CPU_ACTIVEPRIO		0xd0
 #define GIC_CPU_IDENT			0xfc
+<<<<<<< HEAD
 
 #define GICC_ENABLE			0x1
 #define GICC_INT_PRI_THRESHOLD		0xf0
+=======
+#define GIC_CPU_DEACTIVATE		0x1000
+
+#define GICC_ENABLE			0x1
+#define GICC_INT_PRI_THRESHOLD		0xf0
+
+#define GIC_CPU_CTRL_EOImodeNS		(1 << 9)
+
+>>>>>>> v4.9.227
 #define GICC_IAR_INT_ID_MASK		0x3ff
 #define GICC_INT_SPURIOUS		1023
 #define GICC_DIS_BYPASS_MASK		0x1e0
 
 #define GIC_DIST_CTRL			0x000
 #define GIC_DIST_CTR			0x004
+<<<<<<< HEAD
+=======
+#define GIC_DIST_IIDR			0x008
+>>>>>>> v4.9.227
 #define GIC_DIST_IGROUP			0x080
 #define GIC_DIST_ENABLE_SET		0x100
 #define GIC_DIST_ENABLE_CLEAR		0x180
@@ -72,11 +89,20 @@
 
 #define GICH_LR_VIRTUALID		(0x3ff << 0)
 #define GICH_LR_PHYSID_CPUID_SHIFT	(10)
+<<<<<<< HEAD
 #define GICH_LR_PHYSID_CPUID		(7 << GICH_LR_PHYSID_CPUID_SHIFT)
+=======
+#define GICH_LR_PHYSID_CPUID		(0x3ff << GICH_LR_PHYSID_CPUID_SHIFT)
+#define GICH_LR_PRIORITY_SHIFT		23
+>>>>>>> v4.9.227
 #define GICH_LR_STATE			(3 << 28)
 #define GICH_LR_PENDING_BIT		(1 << 28)
 #define GICH_LR_ACTIVE_BIT		(1 << 29)
 #define GICH_LR_EOI			(1 << 19)
+<<<<<<< HEAD
+=======
+#define GICH_LR_HW			(1 << 31)
+>>>>>>> v4.9.227
 
 #define GICH_VMCR_CTRL_SHIFT		0
 #define GICH_VMCR_CTRL_MASK		(0x21f << GICH_VMCR_CTRL_SHIFT)
@@ -95,6 +121,7 @@
 #include <linux/irqdomain.h>
 
 struct device_node;
+<<<<<<< HEAD
 
 extern struct irq_chip gic_arch_extn;
 
@@ -110,11 +137,44 @@ static inline void gic_init(unsigned int nr, int start,
 }
 
 int gicv2m_of_init(struct device_node *node, struct irq_domain *parent);
+=======
+struct gic_chip_data;
+
+void gic_cascade_irq(unsigned int gic_nr, unsigned int irq);
+int gic_cpu_if_down(unsigned int gic_nr);
+void gic_cpu_save(struct gic_chip_data *gic);
+void gic_cpu_restore(struct gic_chip_data *gic);
+void gic_dist_save(struct gic_chip_data *gic);
+void gic_dist_restore(struct gic_chip_data *gic);
+
+/*
+ * Subdrivers that need some preparatory work can initialize their
+ * chips and call this to register their GICs.
+ */
+int gic_of_init(struct device_node *node, struct device_node *parent);
+
+/*
+ * Initialises and registers a non-root or child GIC chip. Memory for
+ * the gic_chip_data structure is dynamically allocated.
+ */
+int gic_of_init_child(struct device *dev, struct gic_chip_data **gic, int irq);
+
+/*
+ * Legacy platforms not converted to DT yet must use this to init
+ * their GIC
+ */
+void gic_init(unsigned int nr, int start,
+	      void __iomem *dist , void __iomem *cpu);
+
+int gicv2m_init(struct fwnode_handle *parent_handle,
+		struct irq_domain *parent);
+>>>>>>> v4.9.227
 
 void gic_send_sgi(unsigned int cpu_id, unsigned int irq);
 int gic_get_cpu_id(unsigned int cpu);
 void gic_migrate_target(unsigned int new_cpu_id);
 unsigned long gic_get_sgir_physaddr(void);
+<<<<<<< HEAD
 void gic_show_pending_irq(void);
 
 extern const struct irq_domain_ops *gic_routable_irq_domain_ops;
@@ -123,5 +183,8 @@ static inline void __init register_routable_domain_ops
 {
 	gic_routable_irq_domain_ops = ops;
 }
+=======
+
+>>>>>>> v4.9.227
 #endif /* __ASSEMBLY */
 #endif

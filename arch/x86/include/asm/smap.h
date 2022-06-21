@@ -15,7 +15,11 @@
 
 #include <linux/stringify.h>
 #include <asm/nops.h>
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
+=======
+#include <asm/cpufeatures.h>
+>>>>>>> v4.9.227
 
 /* "Raw" instruction opcodes */
 #define __ASM_CLAC	.byte 0x0f,0x01,0xca
@@ -27,6 +31,7 @@
 
 #ifdef CONFIG_X86_SMAP
 
+<<<<<<< HEAD
 #define ASM_CLAC							\
 	661: ASM_NOP3 ;							\
 	.pushsection .altinstr_replacement, "ax" ;			\
@@ -44,6 +49,13 @@
 	.pushsection .altinstructions, "a" ;				\
 	altinstruction_entry 661b, 662b, X86_FEATURE_SMAP, 3, 3 ;	\
 	.popsection
+=======
+#define ASM_CLAC \
+	ALTERNATIVE "", __stringify(__ASM_CLAC), X86_FEATURE_SMAP
+
+#define ASM_STAC \
+	ALTERNATIVE "", __stringify(__ASM_STAC), X86_FEATURE_SMAP
+>>>>>>> v4.9.227
 
 #else /* CONFIG_X86_SMAP */
 
@@ -61,20 +73,34 @@
 static __always_inline void clac(void)
 {
 	/* Note: a barrier is implicit in alternative() */
+<<<<<<< HEAD
 	alternative(ASM_NOP3, __stringify(__ASM_CLAC), X86_FEATURE_SMAP);
+=======
+	alternative("", __stringify(__ASM_CLAC), X86_FEATURE_SMAP);
+>>>>>>> v4.9.227
 }
 
 static __always_inline void stac(void)
 {
 	/* Note: a barrier is implicit in alternative() */
+<<<<<<< HEAD
 	alternative(ASM_NOP3, __stringify(__ASM_STAC), X86_FEATURE_SMAP);
+=======
+	alternative("", __stringify(__ASM_STAC), X86_FEATURE_SMAP);
+>>>>>>> v4.9.227
 }
 
 /* These macros can be used in asm() statements */
 #define ASM_CLAC \
+<<<<<<< HEAD
 	ALTERNATIVE(ASM_NOP3, __stringify(__ASM_CLAC), X86_FEATURE_SMAP)
 #define ASM_STAC \
 	ALTERNATIVE(ASM_NOP3, __stringify(__ASM_STAC), X86_FEATURE_SMAP)
+=======
+	ALTERNATIVE("", __stringify(__ASM_CLAC), X86_FEATURE_SMAP)
+#define ASM_STAC \
+	ALTERNATIVE("", __stringify(__ASM_STAC), X86_FEATURE_SMAP)
+>>>>>>> v4.9.227
 
 #else /* CONFIG_X86_SMAP */
 

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,6 +70,10 @@
 #define ACPI_NS_PREFIX_IS_SCOPE     0x10
 #define ACPI_NS_EXTERNAL            0x20
 #define ACPI_NS_TEMPORARY           0x40
+<<<<<<< HEAD
+=======
+#define ACPI_NS_OVERRIDE_IF_FOUND   0x80
+>>>>>>> v4.9.227
 
 /* Flags for acpi_ns_walk_namespace */
 
@@ -76,6 +84,10 @@
 /* Object is not a package element */
 
 #define ACPI_NOT_PACKAGE_ELEMENT    ACPI_UINT32_MAX
+<<<<<<< HEAD
+=======
+#define ACPI_ALL_PACKAGE_ELEMENTS   (ACPI_UINT32_MAX-1)
+>>>>>>> v4.9.227
 
 /* Always emit warning message, not dependent on node flags */
 
@@ -86,7 +98,11 @@
  */
 acpi_status acpi_ns_initialize_objects(void);
 
+<<<<<<< HEAD
 acpi_status acpi_ns_initialize_devices(void);
+=======
+acpi_status acpi_ns_initialize_devices(u32 flags);
+>>>>>>> v4.9.227
 
 /*
  * nsload -  Namespace loading
@@ -128,6 +144,12 @@ acpi_status
 acpi_ns_parse_table(u32 table_index, struct acpi_namespace_node *start_node);
 
 acpi_status
+<<<<<<< HEAD
+=======
+acpi_ns_execute_table(u32 table_index, struct acpi_namespace_node *start_node);
+
+acpi_status
+>>>>>>> v4.9.227
 acpi_ns_one_complete_parse(u32 pass_number,
 			   u32 table_index,
 			   struct acpi_namespace_node *start_node);
@@ -182,6 +204,7 @@ acpi_ns_convert_to_buffer(union acpi_operand_object *original_object,
 			  union acpi_operand_object **return_object);
 
 acpi_status
+<<<<<<< HEAD
 acpi_ns_convert_to_unicode(union acpi_operand_object *original_object,
 			   union acpi_operand_object **return_object);
 
@@ -195,19 +218,49 @@ acpi_ns_convert_to_resource(union acpi_operand_object *original_object,
 #ifdef	ACPI_FUTURE_USAGE
 void acpi_ns_dump_tables(acpi_handle search_base, u32 max_depth);
 #endif				/* ACPI_FUTURE_USAGE */
+=======
+acpi_ns_convert_to_unicode(struct acpi_namespace_node *scope,
+			   union acpi_operand_object *original_object,
+			   union acpi_operand_object **return_object);
+
+acpi_status
+acpi_ns_convert_to_resource(struct acpi_namespace_node *scope,
+			    union acpi_operand_object *original_object,
+			    union acpi_operand_object **return_object);
+
+acpi_status
+acpi_ns_convert_to_reference(struct acpi_namespace_node *scope,
+			     union acpi_operand_object *original_object,
+			     union acpi_operand_object **return_object);
+
+/*
+ * nsdump - Namespace dump/print utilities
+ */
+void acpi_ns_dump_tables(acpi_handle search_base, u32 max_depth);
+>>>>>>> v4.9.227
 
 void acpi_ns_dump_entry(acpi_handle handle, u32 debug_level);
 
 void
+<<<<<<< HEAD
 acpi_ns_dump_pathname(acpi_handle handle, char *msg, u32 level, u32 component);
 
 void acpi_ns_print_pathname(u32 num_segments, char *pathname);
+=======
+acpi_ns_dump_pathname(acpi_handle handle,
+		      const char *msg, u32 level, u32 component);
+
+void acpi_ns_print_pathname(u32 num_segments, const char *pathname);
+>>>>>>> v4.9.227
 
 acpi_status
 acpi_ns_dump_one_object(acpi_handle obj_handle,
 			u32 level, void *context, void **return_value);
 
+<<<<<<< HEAD
 #ifdef	ACPI_FUTURE_USAGE
+=======
+>>>>>>> v4.9.227
 void
 acpi_ns_dump_objects(acpi_object_type type,
 		     u8 display_type,
@@ -219,7 +272,10 @@ acpi_ns_dump_object_paths(acpi_object_type type,
 			  u8 display_type,
 			  u32 max_depth,
 			  acpi_owner_id owner_id, acpi_handle start_handle);
+<<<<<<< HEAD
 #endif				/* ACPI_FUTURE_USAGE */
+=======
+>>>>>>> v4.9.227
 
 /*
  * nseval - Namespace evaluation functions
@@ -271,22 +327,46 @@ acpi_ns_check_package(struct acpi_evaluate_info *info,
  */
 u32 acpi_ns_opens_scope(acpi_object_type type);
 
+<<<<<<< HEAD
 acpi_status
 acpi_ns_build_external_path(struct acpi_namespace_node *node,
 			    acpi_size size, char *name_buffer);
 
 char *acpi_ns_get_external_pathname(struct acpi_namespace_node *node);
 
+=======
+char *acpi_ns_get_external_pathname(struct acpi_namespace_node *node);
+
+u32
+acpi_ns_build_normalized_path(struct acpi_namespace_node *node,
+			      char *full_path, u32 path_size, u8 no_trailing);
+
+char *acpi_ns_get_normalized_pathname(struct acpi_namespace_node *node,
+				      u8 no_trailing);
+
+>>>>>>> v4.9.227
 char *acpi_ns_name_of_current_scope(struct acpi_walk_state *walk_state);
 
 acpi_status
 acpi_ns_handle_to_pathname(acpi_handle target_handle,
+<<<<<<< HEAD
 			   struct acpi_buffer *buffer);
+=======
+			   struct acpi_buffer *buffer, u8 no_trailing);
+>>>>>>> v4.9.227
 
 u8
 acpi_ns_pattern_match(struct acpi_namespace_node *obj_node, char *search_for);
 
 acpi_status
+<<<<<<< HEAD
+=======
+acpi_ns_get_node_unlocked(struct acpi_namespace_node *prefix_node,
+			  const char *external_pathname,
+			  u32 flags, struct acpi_namespace_node **out_node);
+
+acpi_status
+>>>>>>> v4.9.227
 acpi_ns_get_node(struct acpi_namespace_node *prefix_node,
 		 const char *external_pathname,
 		 u32 flags, struct acpi_namespace_node **out_node);

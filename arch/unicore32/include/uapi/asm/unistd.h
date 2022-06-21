@@ -10,6 +10,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+#define __ARCH_WANT_RENAMEAT
+
+>>>>>>> v4.9.227
 /* Use the standard ABI for syscalls. */
 #include <asm-generic/unistd.h>
 #define __ARCH_WANT_SYS_CLONE

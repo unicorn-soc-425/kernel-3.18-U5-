@@ -26,8 +26,14 @@
  */
 static void syncpt_restore(struct host1x_syncpt *sp)
 {
+<<<<<<< HEAD
 	struct host1x *host = sp->host;
 	int min = host1x_syncpt_read_min(sp);
+=======
+	u32 min = host1x_syncpt_read_min(sp);
+	struct host1x *host = sp->host;
+
+>>>>>>> v4.9.227
 	host1x_sync_writel(host, min, HOST1X_SYNC_SYNCPT(sp->id));
 }
 
@@ -37,6 +43,10 @@ static void syncpt_restore(struct host1x_syncpt *sp)
 static void syncpt_restore_wait_base(struct host1x_syncpt *sp)
 {
 	struct host1x *host = sp->host;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	host1x_sync_writel(host, sp->base_val,
 			   HOST1X_SYNC_SYNCPT_BASE(sp->id));
 }
@@ -47,6 +57,10 @@ static void syncpt_restore_wait_base(struct host1x_syncpt *sp)
 static void syncpt_read_wait_base(struct host1x_syncpt *sp)
 {
 	struct host1x *host = sp->host;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	sp->base_val =
 		host1x_sync_readl(host, HOST1X_SYNC_SYNCPT_BASE(sp->id));
 }
@@ -85,6 +99,10 @@ static int syncpt_cpu_incr(struct host1x_syncpt *sp)
 	if (!host1x_syncpt_client_managed(sp) &&
 	    host1x_syncpt_idle(sp))
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	host1x_sync_writel(host, BIT_MASK(sp->id),
 			   HOST1X_SYNC_SYNCPT_CPU_INCR(reg_offset));
 	wmb();
@@ -95,10 +113,17 @@ static int syncpt_cpu_incr(struct host1x_syncpt *sp)
 /* remove a wait pointed to by patch_addr */
 static int syncpt_patch_wait(struct host1x_syncpt *sp, void *patch_addr)
 {
+<<<<<<< HEAD
 	u32 override = host1x_class_host_wait_syncpt(
 		HOST1X_SYNCPT_RESERVED, 0);
 
 	*((u32 *)patch_addr) = override;
+=======
+	u32 override = host1x_class_host_wait_syncpt(HOST1X_SYNCPT_RESERVED, 0);
+
+	*((u32 *)patch_addr) = override;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 

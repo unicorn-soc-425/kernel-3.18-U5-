@@ -30,7 +30,10 @@
 #include <asm/rtc.h>
 
 #define DRV_NAME	"sh-rtc"
+<<<<<<< HEAD
 #define DRV_VERSION	"0.2.3"
+=======
+>>>>>>> v4.9.227
 
 #define RTC_REG(r)	((r) * rtc_reg_size)
 
@@ -455,7 +458,11 @@ static int sh_rtc_set_time(struct device *dev, struct rtc_time *tm)
 static inline int sh_rtc_read_alarm_value(struct sh_rtc *rtc, int reg_off)
 {
 	unsigned int byte;
+<<<<<<< HEAD
 	int value = 0xff;	/* return 0xff for ignored values */
+=======
+	int value = -1;			/* return -1 for ignored values */
+>>>>>>> v4.9.227
 
 	byte = readb(rtc->regbase + reg_off);
 	if (byte & AR_ENB) {
@@ -482,7 +489,10 @@ static int sh_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 	tm->tm_mon	= sh_rtc_read_alarm_value(rtc, RMONAR);
 	if (tm->tm_mon > 0)
 		tm->tm_mon -= 1; /* RTC is 1-12, tm_mon is 0-11 */
+<<<<<<< HEAD
 	tm->tm_year     = 0xffff;
+=======
+>>>>>>> v4.9.227
 
 	wkalrm->enabled = (readb(rtc->regbase + RCR1) & RCR1_AIE) ? 1 : 0;
 
@@ -501,6 +511,7 @@ static inline void sh_rtc_write_alarm_value(struct sh_rtc *rtc,
 		writeb(bin2bcd(value) | AR_ENB,  rtc->regbase + reg_off);
 }
 
+<<<<<<< HEAD
 static int sh_rtc_check_alarm(struct rtc_time *tm)
 {
 	/*
@@ -536,17 +547,23 @@ static int sh_rtc_check_alarm(struct rtc_time *tm)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int sh_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct sh_rtc *rtc = platform_get_drvdata(pdev);
 	unsigned int rcr1;
 	struct rtc_time *tm = &wkalrm->time;
+<<<<<<< HEAD
 	int mon, err;
 
 	err = sh_rtc_check_alarm(tm);
 	if (unlikely(err < 0))
 		return err;
+=======
+	int mon;
+>>>>>>> v4.9.227
 
 	spin_lock_irq(&rtc->lock);
 
@@ -782,7 +799,10 @@ static SIMPLE_DEV_PM_OPS(sh_rtc_pm_ops, sh_rtc_suspend, sh_rtc_resume);
 static struct platform_driver sh_rtc_platform_driver = {
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &sh_rtc_pm_ops,
 	},
 	.remove		= __exit_p(sh_rtc_remove),
@@ -791,7 +811,10 @@ static struct platform_driver sh_rtc_platform_driver = {
 module_platform_driver_probe(sh_rtc_platform_driver, sh_rtc_probe);
 
 MODULE_DESCRIPTION("SuperH on-chip RTC driver");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Paul Mundt <lethal@linux-sh.org>, "
 	      "Jamie Lenehan <lenehan@twibble.org>, "
 	      "Angelo Castello <angelo.castello@st.com>");

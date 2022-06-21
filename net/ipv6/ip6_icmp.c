@@ -39,7 +39,11 @@ void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
 
 	if (!send)
 		goto out;
+<<<<<<< HEAD
 	send(skb, type, code, info);
+=======
+	send(skb, type, code, info, NULL);
+>>>>>>> v4.9.227
 out:
 	rcu_read_unlock();
 }

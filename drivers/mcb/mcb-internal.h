@@ -5,8 +5,13 @@
 
 #define PCI_VENDOR_ID_MEN		0x1a88
 #define PCI_DEVICE_ID_MEN_CHAMELEON	0x4d45
+<<<<<<< HEAD
 #define CHAMELEON_FILENAME_LEN		12
 #define CHAMELEONV2_MAGIC		0xabce
+=======
+#define CHAMELEONV2_MAGIC		0xabce
+#define CHAM_HEADER_SIZE		0x200
+>>>>>>> v4.9.227
 
 enum chameleon_descriptor_type {
 	CHAMELEON_DTYPE_GENERAL = 0x0,
@@ -112,6 +117,18 @@ struct chameleon_bdd {
 	u32 size;
 } __packed;
 
+<<<<<<< HEAD
+=======
+struct chameleon_bar {
+	u32 addr;
+	u32 size;
+};
+
+#define BAR_CNT(x) ((x) & 0x07)
+#define CHAMELEON_BAR_MAX	6
+#define BAR_DESC_SIZE(x)	((x) * sizeof(struct chameleon_bar) + sizeof(__le32))
+
+>>>>>>> v4.9.227
 int chameleon_parse_cells(struct mcb_bus *bus, phys_addr_t mapbase,
 			  void __iomem *base);
 

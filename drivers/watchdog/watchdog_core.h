@@ -32,6 +32,10 @@
  *	Functions/procedures to be called by the core
  */
 extern int watchdog_dev_register(struct watchdog_device *);
+<<<<<<< HEAD
 extern int watchdog_dev_unregister(struct watchdog_device *);
+=======
+extern void watchdog_dev_unregister(struct watchdog_device *);
+>>>>>>> v4.9.227
 extern int __init watchdog_dev_init(void);
 extern void __exit watchdog_dev_exit(void);

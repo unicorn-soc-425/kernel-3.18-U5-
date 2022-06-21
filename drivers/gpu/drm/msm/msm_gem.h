@@ -24,6 +24,7 @@
 /* Additional internal-use only BO flags: */
 #define MSM_BO_STOLEN        0x10000000    /* try to use stolen/splash memory */
 
+<<<<<<< HEAD
 struct msm_gem_buf {
 	dma_addr_t dma_addr;
 	struct dma_attrs dma_attrs;
@@ -38,6 +39,22 @@ struct msm_gem_object {
 	/* global timestamp */
 	uint32_t read_timestamp;
 	uint32_t write_timestamp;
+=======
+struct msm_gem_object {
+	struct drm_gem_object base;
+
+	uint32_t flags;
+
+	/**
+	 * Advice: are the backing pages purgeable?
+	 */
+	uint8_t madv;
+
+	/**
+	 * count of active vmap'ing
+	 */
+	uint8_t vmap_count;
+>>>>>>> v4.9.227
 
 	/* And object is either:
 	 *  inactive - on priv->inactive_list
@@ -58,6 +75,7 @@ struct msm_gem_object {
 	struct list_head submit_entry;
 
 	struct page **pages;
+<<<<<<< HEAD
 	void *vaddr;
 
 	struct {
@@ -65,6 +83,15 @@ struct msm_gem_object {
 		dma_addr_t iova;
 	} domain[NUM_DOMAINS];
 	struct sg_table *import_sgt;
+=======
+	struct sg_table *sgt;
+	void *vaddr;
+
+	struct {
+		// XXX
+		uint32_t iova;
+	} domain[NUM_DOMAINS];
+>>>>>>> v4.9.227
 
 	/* normally (resv == &_resv) except for imported bo's */
 	struct reservation_object *resv;
@@ -82,6 +109,7 @@ static inline bool is_active(struct msm_gem_object *msm_obj)
 	return msm_obj->gpu != NULL;
 }
 
+<<<<<<< HEAD
 static inline uint32_t msm_gem_fence(struct msm_gem_object *msm_obj,
 		uint32_t op)
 {
@@ -96,6 +124,17 @@ static inline uint32_t msm_gem_fence(struct msm_gem_object *msm_obj,
 	mutex_unlock(&dev->struct_mutex);
 
 	return fence;
+=======
+static inline bool is_purgeable(struct msm_gem_object *msm_obj)
+{
+	return (msm_obj->madv == MSM_MADV_DONTNEED) && msm_obj->sgt &&
+			!msm_obj->base.dma_buf && !msm_obj->base.import_attach;
+}
+
+static inline bool is_vunmapable(struct msm_gem_object *msm_obj)
+{
+	return (msm_obj->vmap_count == 0) && msm_obj->vaddr;
+>>>>>>> v4.9.227
 }
 
 /* Created per submit-ioctl, to track bo's and cmdstream bufs, etc,
@@ -103,6 +142,7 @@ static inline uint32_t msm_gem_fence(struct msm_gem_object *msm_obj,
  * make it easier to unwind when things go wrong, etc).  This only
  * lasts for the duration of the submit-ioctl.
  */
+<<<<<<< HEAD
 
 struct msm_submit_cmd {
 	uint32_t type;
@@ -117,18 +157,39 @@ struct msm_submit_bos {
 	uint32_t iova;
 };
 
+=======
+>>>>>>> v4.9.227
 struct msm_gem_submit {
 	struct drm_device *dev;
 	struct msm_gpu *gpu;
 	struct list_head node;   /* node in gpu submit_list */
 	struct list_head bo_list;
 	struct ww_acquire_ctx ticket;
+<<<<<<< HEAD
 	uint32_t fence;
 	bool valid;
 	unsigned int nr_cmds;
 	unsigned int nr_bos;
 	struct msm_submit_cmd *cmd;
 	struct msm_submit_bos *bos;
+=======
+	struct fence *fence;
+	struct pid *pid;    /* submitting process */
+	bool valid;         /* true if no cmdstream patching needed */
+	unsigned int nr_cmds;
+	unsigned int nr_bos;
+	struct {
+		uint32_t type;
+		uint32_t size;  /* in dwords */
+		uint32_t iova;
+		uint32_t idx;   /* cmdstream buffer idx in bos[] */
+	} *cmd;  /* array of size nr_cmds */
+	struct {
+		uint32_t flags;
+		struct msm_gem_object *obj;
+		uint32_t iova;
+	} bos[0];
+>>>>>>> v4.9.227
 };
 
 #endif /* __MSM_GEM_H__ */

@@ -4,6 +4,10 @@ config IOMMU_API
 
 menuconfig IOMMU_SUPPORT
 	bool "IOMMU Hardware Support"
+<<<<<<< HEAD
+=======
+	depends on MMU
+>>>>>>> v4.9.227
 	default y
 	---help---
 	  Say Y here if you want to compile device drivers for IO Memory
@@ -22,6 +26,10 @@ config IOMMU_IO_PGTABLE
 config IOMMU_IO_PGTABLE_LPAE
 	bool "ARMv7/v8 Long Descriptor Format"
 	select IOMMU_IO_PGTABLE
+<<<<<<< HEAD
+=======
+	depends on HAS_DMA && (ARM || ARM64 || COMPILE_TEST)
+>>>>>>> v4.9.227
 	help
 	  Enable support for the ARM long descriptor pagetable format.
 	  This allocator supports 4K/2M/1G, 16K/32M and 64K/512M page
@@ -37,6 +45,7 @@ config IOMMU_IO_PGTABLE_LPAE_SELFTEST
 
 	  If unsure, say N here.
 
+<<<<<<< HEAD
 config IOMMU_IO_PGTABLE_FAST
 	bool "Fast ARMv7/v8 Long Descriptor Format"
 	depends on ARM64_DMA_USE_IOMMU
@@ -54,10 +63,28 @@ config IOMMU_IO_PGTABLE_FAST_SELFTEST
 	depends on IOMMU_IO_PGTABLE_FAST
 	help
 	  Enable self-tests for "fast" page table allocator. This performs
+=======
+config IOMMU_IO_PGTABLE_ARMV7S
+	bool "ARMv7/v8 Short Descriptor Format"
+	select IOMMU_IO_PGTABLE
+	depends on HAS_DMA && (ARM || ARM64 || COMPILE_TEST)
+	help
+	  Enable support for the ARM Short-descriptor pagetable format.
+	  This supports 32-bit virtual and physical addresses mapped using
+	  2-level tables with 4KB pages/1MB sections, and contiguous entries
+	  for 64KB pages/16MB supersections if indicated by the IOMMU driver.
+
+config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
+	bool "ARMv7s selftests"
+	depends on IOMMU_IO_PGTABLE_ARMV7S
+	help
+	  Enable self-tests for ARMv7s page table allocator. This performs
+>>>>>>> v4.9.227
 	  a series of page-table consistency checks during boot.
 
 	  If unsure, say N here.
 
+<<<<<<< HEAD
 config IOMMU_IO_PGTABLE_FAST_PROVE_TLB
 	bool "Prove correctness of TLB maintenance in the Fast DMA mapper"
 	depends on IOMMU_IO_PGTABLE_FAST
@@ -75,13 +102,33 @@ config IOMMU_IO_PGTABLE_FAST_PROVE_TLB
 
 endmenu
 
+=======
+endmenu
+
+config IOMMU_IOVA
+	tristate
+
+>>>>>>> v4.9.227
 config OF_IOMMU
        def_bool y
        depends on OF && IOMMU_API
 
+<<<<<<< HEAD
 config FSL_PAMU
 	bool "Freescale IOMMU support"
 	depends on PPC_E500MC
+=======
+# IOMMU-agnostic DMA-mapping layer
+config IOMMU_DMA
+	bool
+	select IOMMU_API
+	select IOMMU_IOVA
+	select NEED_SG_DMA_LENGTH
+
+config FSL_PAMU
+	bool "Freescale IOMMU support"
+	depends on PPC_E500MC || (COMPILE_TEST && PPC)
+>>>>>>> v4.9.227
 	select IOMMU_API
 	select GENERIC_ALLOCATOR
 	help
@@ -92,9 +139,16 @@ config FSL_PAMU
 # MSM IOMMU support
 config MSM_IOMMU
 	bool "MSM IOMMU Support"
+<<<<<<< HEAD
 	select IOMMU_API
 	select ARM_DMA_USE_IOMMU if ARM
 	select ARM64_DMA_USE_IOMMU if ARM64
+=======
+	depends on ARM
+	depends on ARCH_MSM8X60 || ARCH_MSM8960 || COMPILE_TEST
+	select IOMMU_API
+	select IOMMU_IO_PGTABLE_ARMV7S
+>>>>>>> v4.9.227
 	help
 	  Support for the IOMMUs found on certain Qualcomm SOCs.
 	  These IOMMUs allow virtualization of the address space used by most
@@ -102,6 +156,7 @@ config MSM_IOMMU
 
 	  If unsure, say N here.
 
+<<<<<<< HEAD
 # MSM IOMMUv1 support
 config MSM_IOMMU_V1
 	bool "MSM IOMMUv1 Support"
@@ -194,6 +249,11 @@ config IOMMU_FORCE_4K_MAPPINGS
          worst case scenario.
 
          If unsure, say N here.
+=======
+config IOMMU_PGTABLES_L2
+	def_bool y
+	depends on MSM_IOMMU && MMU && SMP && CPU_DCACHE_DISABLE=n
+>>>>>>> v4.9.227
 
 # AMD IOMMU support
 config AMD_IOMMU
@@ -204,6 +264,10 @@ config AMD_IOMMU
 	select PCI_PRI
 	select PCI_PASID
 	select IOMMU_API
+<<<<<<< HEAD
+=======
+	select IOMMU_IOVA
+>>>>>>> v4.9.227
 	depends on X86_64 && PCI && ACPI
 	---help---
 	  With this option you can enable support for AMD IOMMU hardware in
@@ -216,6 +280,7 @@ config AMD_IOMMU
 	  your BIOS for an option to enable it or if you have an IVRS ACPI
 	  table.
 
+<<<<<<< HEAD
 config AMD_IOMMU_STATS
 	bool "Export AMD IOMMU statistics to debugfs"
 	depends on AMD_IOMMU
@@ -226,6 +291,8 @@ config AMD_IOMMU_STATS
 	  information to userspace via debugfs.
 	  If unsure, say N.
 
+=======
+>>>>>>> v4.9.227
 config AMD_IOMMU_V2
 	tristate "AMD IOMMU Version 2 driver"
 	depends on AMD_IOMMU
@@ -243,6 +310,10 @@ config INTEL_IOMMU
 	bool "Support for Intel IOMMU using DMA Remapping Devices"
 	depends on PCI_MSI && ACPI && (X86 || IA64_GENERIC)
 	select IOMMU_API
+<<<<<<< HEAD
+=======
+	select IOMMU_IOVA
+>>>>>>> v4.9.227
 	select DMAR_TABLE
 	help
 	  DMA remapping (DMAR) devices support enables independent address
@@ -251,6 +322,19 @@ config INTEL_IOMMU
 	  and include PCI device scope covered by these DMA
 	  remapping devices.
 
+<<<<<<< HEAD
+=======
+config INTEL_IOMMU_SVM
+	bool "Support for Shared Virtual Memory with Intel IOMMU"
+	depends on INTEL_IOMMU && X86
+	select PCI_PASID
+	select MMU_NOTIFIER
+	help
+	  Shared Virtual Memory (SVM) provides a facility for devices
+	  to access DMA resources through process address space by
+	  means of a Process Address Space ID (PASID).
+
+>>>>>>> v4.9.227
 config INTEL_IOMMU_DEFAULT_ON
 	def_bool y
 	prompt "Enable Intel DMA Remapping Devices by default"
@@ -292,13 +376,19 @@ config IRQ_REMAP
 # OMAP IOMMU support
 config OMAP_IOMMU
 	bool "OMAP IOMMU Support"
+<<<<<<< HEAD
 	depends on ARCH_OMAP2PLUS
+=======
+	depends on ARM && MMU
+	depends on ARCH_OMAP2PLUS || COMPILE_TEST
+>>>>>>> v4.9.227
 	select IOMMU_API
 	---help---
 	  The OMAP3 media platform drivers depend on iommu support,
 	  if you need them say Y here.
 
 config OMAP_IOMMU_DEBUG
+<<<<<<< HEAD
        tristate "Export OMAP IOMMU internals in DebugFS"
        depends on OMAP_IOMMU && DEBUG_FS
        help
@@ -306,6 +396,28 @@ config OMAP_IOMMU_DEBUG
          the internal state of OMAP IOMMU in debugfs.
 
          Say N unless you know you need this.
+=======
+	bool "Export OMAP IOMMU internals in DebugFS"
+	depends on OMAP_IOMMU && DEBUG_FS
+	---help---
+	  Select this to see extensive information about
+	  the internal state of OMAP IOMMU in debugfs.
+
+	  Say N unless you know you need this.
+
+config ROCKCHIP_IOMMU
+	bool "Rockchip IOMMU Support"
+	depends on ARM
+	depends on ARCH_ROCKCHIP || COMPILE_TEST
+	select IOMMU_API
+	select ARM_DMA_USE_IOMMU
+	help
+	  Support for IOMMUs found on Rockchip rk32xx SOCs.
+	  These IOMMUs allow virtualization of the address space used by most
+	  cores within the multimedia subsystem.
+	  Say Y here if you are using a Rockchip SoC that includes an IOMMU
+	  device.
+>>>>>>> v4.9.227
 
 config TEGRA_IOMMU_GART
 	bool "Tegra GART IOMMU Support"
@@ -318,6 +430,7 @@ config TEGRA_IOMMU_GART
 	  hardware included on Tegra SoCs.
 
 config TEGRA_IOMMU_SMMU
+<<<<<<< HEAD
 	bool "Tegra SMMU IOMMU Support"
 	depends on ARCH_TEGRA && TEGRA_AHB
 	select IOMMU_API
@@ -330,6 +443,20 @@ config TEGRA_IOMMU_SMMU
 config EXYNOS_IOMMU
 	bool "Exynos IOMMU Support"
 	depends on ARCH_EXYNOS
+=======
+	bool "NVIDIA Tegra SMMU Support"
+	depends on ARCH_TEGRA
+	depends on TEGRA_AHB
+	depends on TEGRA_MC
+	select IOMMU_API
+	help
+	  This driver supports the IOMMU hardware (SMMU) found on NVIDIA Tegra
+	  SoCs (Tegra30 up to Tegra210).
+
+config EXYNOS_IOMMU
+	bool "Exynos IOMMU Support"
+	depends on ARCH_EXYNOS && MMU
+>>>>>>> v4.9.227
 	select IOMMU_API
 	select ARM_DMA_USE_IOMMU
 	help
@@ -349,6 +476,7 @@ config EXYNOS_IOMMU_DEBUG
 
 	  Say N unless you need kernel log message for IOMMU debugging.
 
+<<<<<<< HEAD
 config SHMOBILE_IPMMU
 	bool
 
@@ -429,6 +557,14 @@ config IPMMU_VMSA
 	depends on ARM_LPAE
 	depends on ARCH_SHMOBILE || COMPILE_TEST
 	select IOMMU_API
+=======
+config IPMMU_VMSA
+	bool "Renesas VMSA-compatible IPMMU"
+	depends on ARM_LPAE
+	depends on ARCH_RENESAS || COMPILE_TEST
+	select IOMMU_API
+	select IOMMU_IO_PGTABLE_LPAE
+>>>>>>> v4.9.227
 	select ARM_DMA_USE_IOMMU
 	help
 	  Support for the Renesas VMSA-compatible IPMMU Renesas found in the
@@ -444,6 +580,7 @@ config SPAPR_TCE_IOMMU
 	  Enables bits of IOMMU API required by VFIO. The iommu_ops
 	  is not implemented as it is not necessary for VFIO.
 
+<<<<<<< HEAD
 config ARM_SMMU
 	bool "ARM Ltd. System MMU (SMMU) Support"
 	depends on ARM64 || ARM
@@ -451,6 +588,15 @@ config ARM_SMMU
 	select IOMMU_IO_PGTABLE_LPAE
 	select ARM_DMA_USE_IOMMU if ARM
 	select ARM64_DMA_USE_IOMMU if ARM64
+=======
+# ARM IOMMU support
+config ARM_SMMU
+	bool "ARM Ltd. System MMU (SMMU) Support"
+	depends on (ARM64 || ARM) && MMU
+	select IOMMU_API
+	select IOMMU_IO_PGTABLE_LPAE
+	select ARM_DMA_USE_IOMMU if ARM
+>>>>>>> v4.9.227
 	help
 	  Support for implementations of the ARM System MMU architecture
 	  versions 1 and 2.
@@ -458,6 +604,7 @@ config ARM_SMMU
 	  Say Y here if your SoC includes an IOMMU device implementing
 	  the ARM SMMU architecture.
 
+<<<<<<< HEAD
 menuconfig IOMMU_DEBUG
 	bool "IOMMU Profiling and Debugging"
 	help
@@ -487,5 +634,61 @@ config IOMMU_TESTS
 	  should be minimal.
 
 endif # IOMMU_DEBUG
+=======
+config ARM_SMMU_V3
+	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+	depends on ARM64
+	select IOMMU_API
+	select IOMMU_IO_PGTABLE_LPAE
+	select GENERIC_MSI_IRQ_DOMAIN
+	help
+	  Support for implementations of the ARM System MMU architecture
+	  version 3 providing translation support to a PCIe root complex.
+
+	  Say Y here if your system includes an IOMMU device implementing
+	  the ARM SMMUv3 architecture.
+
+config S390_IOMMU
+	def_bool y if S390 && PCI
+	depends on S390 && PCI
+	select IOMMU_API
+	help
+	  Support for the IOMMU API for s390 PCI devices.
+
+config MTK_IOMMU
+	bool "MTK IOMMU Support"
+	depends on ARM || ARM64
+	depends on ARCH_MEDIATEK || COMPILE_TEST
+	select ARM_DMA_USE_IOMMU
+	select IOMMU_API
+	select IOMMU_DMA
+	select IOMMU_IO_PGTABLE_ARMV7S
+	select MEMORY
+	select MTK_SMI
+	help
+	  Support for the M4U on certain Mediatek SOCs. M4U is MultiMedia
+	  Memory Management Unit. This option enables remapping of DMA memory
+	  accesses for the multimedia subsystem.
+
+	  If unsure, say N here.
+
+config MTK_IOMMU_V1
+	bool "MTK IOMMU Version 1 (M4U gen1) Support"
+	depends on ARM
+	depends on ARCH_MEDIATEK || COMPILE_TEST
+	select ARM_DMA_USE_IOMMU
+	select IOMMU_API
+	select MEMORY
+	select MTK_SMI
+	select COMMON_CLK_MT2701_MMSYS
+	select COMMON_CLK_MT2701_IMGSYS
+	select COMMON_CLK_MT2701_VDECSYS
+	help
+	  Support for the M4U on certain Mediatek SoCs. M4U generation 1 HW is
+	  Multimedia Memory Managememt Unit. This option enables remapping of
+	  DMA memory accesses for the multimedia subsystem.
+
+	  if unsure, say N here.
+>>>>>>> v4.9.227
 
 endif # IOMMU_SUPPORT

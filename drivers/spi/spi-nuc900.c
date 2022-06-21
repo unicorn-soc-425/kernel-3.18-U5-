@@ -423,7 +423,10 @@ static struct platform_driver nuc900_spi_driver = {
 	.remove		= nuc900_spi_remove,
 	.driver		= {
 		.name	= "nuc900-spi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(nuc900_spi_driver);

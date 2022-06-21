@@ -5,11 +5,19 @@ numbered uniquely in a device dependent manner.  The nodes for an MDIO
 bus multiplexer/switch will have one child node for each child bus.
 
 Required properties:
+<<<<<<< HEAD
 - mdio-parent-bus : phandle to the parent MDIO bus.
+=======
+>>>>>>> v4.9.227
 - #address-cells = <1>;
 - #size-cells = <0>;
 
 Optional properties:
+<<<<<<< HEAD
+=======
+- mdio-parent-bus : phandle to the parent MDIO bus.
+
+>>>>>>> v4.9.227
 - Other properties specific to the multiplexer/switch hardware.
 
 Required properties for child nodes:
@@ -47,7 +55,10 @@ Example :
 
 			phy11: ethernet-phy@1 {
 				reg = <1>;
+<<<<<<< HEAD
 				compatible = "marvell,88e1149r";
+=======
+>>>>>>> v4.9.227
 				marvell,reg-init = <3 0x10 0 0x5777>,
 					<3 0x11 0 0x00aa>,
 					<3 0x12 0 0x4105>,
@@ -57,7 +68,10 @@ Example :
 			};
 			phy12: ethernet-phy@2 {
 				reg = <2>;
+<<<<<<< HEAD
 				compatible = "marvell,88e1149r";
+=======
+>>>>>>> v4.9.227
 				marvell,reg-init = <3 0x10 0 0x5777>,
 					<3 0x11 0 0x00aa>,
 					<3 0x12 0 0x4105>,
@@ -67,7 +81,10 @@ Example :
 			};
 			phy13: ethernet-phy@3 {
 				reg = <3>;
+<<<<<<< HEAD
 				compatible = "marvell,88e1149r";
+=======
+>>>>>>> v4.9.227
 				marvell,reg-init = <3 0x10 0 0x5777>,
 					<3 0x11 0 0x00aa>,
 					<3 0x12 0 0x4105>,
@@ -77,7 +94,10 @@ Example :
 			};
 			phy14: ethernet-phy@4 {
 				reg = <4>;
+<<<<<<< HEAD
 				compatible = "marvell,88e1149r";
+=======
+>>>>>>> v4.9.227
 				marvell,reg-init = <3 0x10 0 0x5777>,
 					<3 0x11 0 0x00aa>,
 					<3 0x12 0 0x4105>,
@@ -94,7 +114,10 @@ Example :
 
 			phy21: ethernet-phy@1 {
 				reg = <1>;
+<<<<<<< HEAD
 				compatible = "marvell,88e1149r";
+=======
+>>>>>>> v4.9.227
 				marvell,reg-init = <3 0x10 0 0x5777>,
 					<3 0x11 0 0x00aa>,
 					<3 0x12 0 0x4105>,
@@ -104,7 +127,10 @@ Example :
 			};
 			phy22: ethernet-phy@2 {
 				reg = <2>;
+<<<<<<< HEAD
 				compatible = "marvell,88e1149r";
+=======
+>>>>>>> v4.9.227
 				marvell,reg-init = <3 0x10 0 0x5777>,
 					<3 0x11 0 0x00aa>,
 					<3 0x12 0 0x4105>,
@@ -114,7 +140,10 @@ Example :
 			};
 			phy23: ethernet-phy@3 {
 				reg = <3>;
+<<<<<<< HEAD
 				compatible = "marvell,88e1149r";
+=======
+>>>>>>> v4.9.227
 				marvell,reg-init = <3 0x10 0 0x5777>,
 					<3 0x11 0 0x00aa>,
 					<3 0x12 0 0x4105>,
@@ -124,7 +153,10 @@ Example :
 			};
 			phy24: ethernet-phy@4 {
 				reg = <4>;
+<<<<<<< HEAD
 				compatible = "marvell,88e1149r";
+=======
+>>>>>>> v4.9.227
 				marvell,reg-init = <3 0x10 0 0x5777>,
 					<3 0x11 0 0x00aa>,
 					<3 0x12 0 0x4105>,

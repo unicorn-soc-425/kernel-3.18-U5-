@@ -16,6 +16,7 @@
 
 #include <linux/cpu_pm.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/suspend.h>
 
 #include <asm/suspend.h>
@@ -29,16 +30,41 @@ static int highbank_suspend_finish(unsigned long val)
 	};
 
 	return psci_ops.cpu_suspend(ps, __pa(cpu_resume));
+=======
+#include <linux/psci.h>
+#include <linux/suspend.h>
+
+#include <asm/suspend.h>
+
+#include <uapi/linux/psci.h>
+
+#define HIGHBANK_SUSPEND_PARAM \
+	((0 << PSCI_0_2_POWER_STATE_ID_SHIFT) | \
+	 (1 << PSCI_0_2_POWER_STATE_AFFL_SHIFT) | \
+	 (PSCI_POWER_STATE_TYPE_POWER_DOWN << PSCI_0_2_POWER_STATE_TYPE_SHIFT))
+
+static int highbank_suspend_finish(unsigned long val)
+{
+	return psci_ops.cpu_suspend(HIGHBANK_SUSPEND_PARAM, __pa(cpu_resume));
+>>>>>>> v4.9.227
 }
 
 static int highbank_pm_enter(suspend_state_t state)
 {
 	cpu_pm_enter();
+<<<<<<< HEAD
 	cpu_cluster_pm_enter(0);
 
 	cpu_suspend(0, highbank_suspend_finish);
 
 	cpu_cluster_pm_exit(0);
+=======
+	cpu_cluster_pm_enter();
+
+	cpu_suspend(0, highbank_suspend_finish);
+
+	cpu_cluster_pm_exit();
+>>>>>>> v4.9.227
 	cpu_pm_exit();
 
 	return 0;

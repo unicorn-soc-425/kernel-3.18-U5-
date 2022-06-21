@@ -4,8 +4,11 @@
 #include <asm/metag_mem.h>
 
 #define nop()		asm volatile ("NOP")
+<<<<<<< HEAD
 #define mb()		wmb()
 #define rmb()		barrier()
+=======
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_METAG_META21
 
@@ -41,6 +44,7 @@ static inline void wr_fence(void)
 
 #endif /* !CONFIG_METAG_META21 */
 
+<<<<<<< HEAD
 static inline void wmb(void)
 {
 	/* flush writes through the write combiner */
@@ -55,6 +59,12 @@ static inline void wmb(void)
 #define smp_rmb()       barrier()
 #define smp_wmb()       barrier()
 #else
+=======
+/* flush writes through the write combiner */
+#define mb()		wr_fence()
+#define rmb()		barrier()
+#define wmb()		mb()
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_METAG_SMP_WRITE_REORDERING
 /*
@@ -65,13 +75,18 @@ static inline void wmb(void)
  * incoherence). It is therefore ineffective if used after and on the same
  * thread as a write.
  */
+<<<<<<< HEAD
 static inline void fence(void)
+=======
+static inline void metag_fence(void)
+>>>>>>> v4.9.227
 {
 	volatile int *flushptr = (volatile int *) LINSYSEVENT_WR_ATOMIC_UNLOCK;
 	barrier();
 	*flushptr = 0;
 	barrier();
 }
+<<<<<<< HEAD
 #define smp_mb()        fence()
 #define smp_rmb()       fence()
 #define smp_wmb()       barrier()
@@ -102,5 +117,27 @@ do {									\
 
 #define smp_mb__before_atomic()	barrier()
 #define smp_mb__after_atomic()	barrier()
+=======
+#define __smp_mb()	metag_fence()
+#define __smp_rmb()	metag_fence()
+#define __smp_wmb()	barrier()
+#else
+#define metag_fence()	do { } while (0)
+#define __smp_mb()	barrier()
+#define __smp_rmb()	barrier()
+#define __smp_wmb()	barrier()
+#endif
+
+#ifdef CONFIG_SMP
+#define fence()		metag_fence()
+#else
+#define fence()		do { } while (0)
+#endif
+
+#define __smp_mb__before_atomic()	barrier()
+#define __smp_mb__after_atomic()	barrier()
+
+#include <asm-generic/barrier.h>
+>>>>>>> v4.9.227
 
 #endif /* _ASM_METAG_BARRIER_H */

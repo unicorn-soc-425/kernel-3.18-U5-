@@ -90,11 +90,14 @@ static int ir_rc6_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	u8 toggle;
 	enum rc_type protocol;
 
+<<<<<<< HEAD
 	if (!(dev->enabled_protocols &
 	      (RC_BIT_RC6_0 | RC_BIT_RC6_6A_20 | RC_BIT_RC6_6A_24 |
 	       RC_BIT_RC6_6A_32 | RC_BIT_RC6_MCE)))
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	if (!is_timing_event(ev)) {
 		if (ev.reset)
 			data->state = STATE_INACTIVE;
@@ -253,7 +256,11 @@ again:
 				toggle = 0;
 				break;
 			case 24:
+<<<<<<< HEAD
 				protocol = RC_BIT_RC6_6A_24;
+=======
+				protocol = RC_TYPE_RC6_6A_24;
+>>>>>>> v4.9.227
 				toggle = 0;
 				break;
 			case 32:
@@ -262,7 +269,11 @@ again:
 					toggle = !!(scancode & RC6_6A_MCE_TOGGLE_MASK);
 					scancode &= ~RC6_6A_MCE_TOGGLE_MASK;
 				} else {
+<<<<<<< HEAD
 					protocol = RC_BIT_RC6_6A_32;
+=======
+					protocol = RC_TYPE_RC6_6A_32;
+>>>>>>> v4.9.227
 					toggle = 0;
 				}
 				break;

@@ -194,12 +194,21 @@ static struct clk_lookup lookups[] = {
 	/* MSTP32 clocks */
 	CLKDEV_DEV_ID("i2c-sh7734.0", &mstp_clks[MSTP030]),
 	CLKDEV_DEV_ID("i2c-sh7734.1", &mstp_clks[MSTP029]),
+<<<<<<< HEAD
 	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP026]),
 	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP025]),
 	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP024]),
 	CLKDEV_ICK_ID("sci_fck", "sh-sci.3", &mstp_clks[MSTP023]),
 	CLKDEV_ICK_ID("sci_fck", "sh-sci.4", &mstp_clks[MSTP022]),
 	CLKDEV_ICK_ID("sci_fck", "sh-sci.5", &mstp_clks[MSTP021]),
+=======
+	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP026]),
+	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP025]),
+	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP024]),
+	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[MSTP023]),
+	CLKDEV_ICK_ID("fck", "sh-sci.4", &mstp_clks[MSTP022]),
+	CLKDEV_ICK_ID("fck", "sh-sci.5", &mstp_clks[MSTP021]),
+>>>>>>> v4.9.227
 	CLKDEV_CON_ID("hscif", &mstp_clks[MSTP019]),
 	CLKDEV_ICK_ID("fck", "sh-tmu.0", &mstp_clks[MSTP016]),
 	CLKDEV_ICK_ID("fck", "sh-tmu.1", &mstp_clks[MSTP015]),
@@ -246,8 +255,12 @@ int __init arch_clk_init(void)
 	for (i = 0; i < ARRAY_SIZE(main_clks); i++)
 		ret |= clk_register(main_clks[i]);
 
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(lookups); i++)
 		clkdev_add(&lookups[i]);
+=======
+	clkdev_add_table(lookups, ARRAY_SIZE(lookups));
+>>>>>>> v4.9.227
 
 	if (!ret)
 		ret = sh_clk_div4_register(div4_clks, ARRAY_SIZE(div4_clks),

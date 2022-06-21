@@ -57,6 +57,7 @@ static const char card_name[] = "LX6464ES";
 #define PCI_DEVICE_ID_PLX_LX6464ES		PCI_DEVICE_ID_PLX_9056
 
 static const struct pci_device_id snd_lx6464es_ids[] = {
+<<<<<<< HEAD
 	{ PCI_DEVICE(PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_LX6464ES),
 	  .subvendor = PCI_VENDOR_ID_DIGIGRAM,
 	  .subdevice = PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ES_SERIAL_SUBSYSTEM
@@ -64,6 +65,15 @@ static const struct pci_device_id snd_lx6464es_ids[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_LX6464ES),
 	  .subvendor = PCI_VENDOR_ID_DIGIGRAM,
 	  .subdevice = PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ES_CAE_SERIAL_SUBSYSTEM
+=======
+	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_LX6464ES,
+			 PCI_VENDOR_ID_DIGIGRAM,
+			 PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ES_SERIAL_SUBSYSTEM),
+	},			/* LX6464ES */
+	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_LX6464ES,
+			 PCI_VENDOR_ID_DIGIGRAM,
+			 PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ES_CAE_SERIAL_SUBSYSTEM),
+>>>>>>> v4.9.227
 	},			/* LX6464ES-CAE */
 	{ 0, },
 };
@@ -234,8 +244,13 @@ static int lx_pcm_open(struct snd_pcm_substream *substream)
 
 	/* the clock rate cannot be changed */
 	board_rate = chip->board_sample_rate;
+<<<<<<< HEAD
 	err = snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_RATE,
 					   board_rate, board_rate);
+=======
+	err = snd_pcm_hw_constraint_single(runtime, SNDRV_PCM_HW_PARAM_RATE,
+					   board_rate);
+>>>>>>> v4.9.227
 
 	if (err < 0) {
 		dev_warn(chip->card->dev, "could not constrain periods\n");
@@ -412,9 +427,15 @@ static int lx_pcm_hw_free(struct snd_pcm_substream *substream)
 	err = snd_pcm_lib_free_pages(substream);
 
 	if (is_capture)
+<<<<<<< HEAD
 		chip->capture_stream.stream = 0;
 	else
 		chip->playback_stream.stream = 0;
+=======
+		chip->capture_stream.stream = NULL;
+	else
+		chip->playback_stream.stream = NULL;
+>>>>>>> v4.9.227
 
 exit:
 	mutex_unlock(&chip->setup_mutex);
@@ -804,7 +825,11 @@ mac_ready:
 	return err;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops lx_ops_playback = {
+=======
+static const struct snd_pcm_ops lx_ops_playback = {
+>>>>>>> v4.9.227
 	.open      = lx_pcm_open,
 	.close     = lx_pcm_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -815,7 +840,11 @@ static struct snd_pcm_ops lx_ops_playback = {
 	.pointer   = lx_pcm_stream_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops lx_ops_capture = {
+=======
+static const struct snd_pcm_ops lx_ops_capture = {
+>>>>>>> v4.9.227
 	.open      = lx_pcm_open,
 	.close     = lx_pcm_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -981,7 +1010,11 @@ static int snd_lx6464es_create(struct snd_card *card,
 	pci_set_master(pci);
 
 	/* check if we can restrict PCI DMA transfers to 32 bits */
+<<<<<<< HEAD
 	err = pci_set_dma_mask(pci, DMA_BIT_MASK(32));
+=======
+	err = dma_set_mask(&pci->dev, DMA_BIT_MASK(32));
+>>>>>>> v4.9.227
 	if (err < 0) {
 		dev_err(card->dev,
 			"architecture does not support 32bit PCI busmaster DMA\n");

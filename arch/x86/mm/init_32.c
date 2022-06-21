@@ -5,7 +5,10 @@
  *  Support of BIGMEM added by Gerhard Wichert, Siemens AG, July 1999
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/signal.h>
 #include <linux/sched.h>
 #include <linux/kernel.h>
@@ -284,7 +287,11 @@ kernel_physical_mapping_init(unsigned long start,
 	 */
 	mapping_iter = 1;
 
+<<<<<<< HEAD
 	if (!cpu_has_pse)
+=======
+	if (!boot_cpu_has(X86_FEATURE_PSE))
+>>>>>>> v4.9.227
 		use_pse = 0;
 
 repeat:
@@ -388,7 +395,10 @@ repeat:
 }
 
 pte_t *kmap_pte;
+<<<<<<< HEAD
 pgprot_t kmap_prot;
+=======
+>>>>>>> v4.9.227
 
 static inline pte_t *kmap_get_fixmap_pte(unsigned long vaddr)
 {
@@ -405,8 +415,11 @@ static void __init kmap_init(void)
 	 */
 	kmap_vstart = __fix_to_virt(FIX_KMAP_BEGIN);
 	kmap_pte = kmap_get_fixmap_pte(kmap_vstart);
+<<<<<<< HEAD
 
 	kmap_prot = PAGE_KERNEL;
+=======
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_HIGHMEM
@@ -434,7 +447,11 @@ void __init add_highpages_with_active_regions(int nid,
 	phys_addr_t start, end;
 	u64 i;
 
+<<<<<<< HEAD
 	for_each_free_mem_range(i, nid, &start, &end, NULL) {
+=======
+	for_each_free_mem_range(i, nid, MEMBLOCK_NONE, &start, &end, NULL) {
+>>>>>>> v4.9.227
 		unsigned long pfn = clamp_t(unsigned long, PFN_UP(start),
 					    start_pfn, end_pfn);
 		unsigned long e_pfn = clamp_t(unsigned long, PFN_DOWN(end),
@@ -807,9 +824,12 @@ void __init mem_init(void)
 	BUILD_BUG_ON(VMALLOC_START			>= VMALLOC_END);
 #undef high_memory
 #undef __FIXADDR_TOP
+<<<<<<< HEAD
 #ifdef CONFIG_RANDOMIZE_BASE
 	BUILD_BUG_ON(CONFIG_RANDOMIZE_BASE_MAX_OFFSET > KERNEL_IMAGE_SIZE);
 #endif
+=======
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_HIGHMEM
 	BUG_ON(PKMAP_BASE + LAST_PKMAP*PAGE_SIZE	> FIXADDR_START);
@@ -823,11 +843,19 @@ void __init mem_init(void)
 }
 
 #ifdef CONFIG_MEMORY_HOTPLUG
+<<<<<<< HEAD
 int arch_add_memory(int nid, u64 start, u64 size)
 {
 	struct pglist_data *pgdata = NODE_DATA(nid);
 	struct zone *zone = pgdata->node_zones +
 		zone_for_memory(nid, start, size, ZONE_HIGHMEM);
+=======
+int arch_add_memory(int nid, u64 start, u64 size, bool for_device)
+{
+	struct pglist_data *pgdata = NODE_DATA(nid);
+	struct zone *zone = pgdata->node_zones +
+		zone_for_memory(nid, start, size, ZONE_HIGHMEM, for_device);
+>>>>>>> v4.9.227
 	unsigned long start_pfn = start >> PAGE_SHIFT;
 	unsigned long nr_pages = size >> PAGE_SHIFT;
 
@@ -956,4 +984,9 @@ void mark_rodata_ro(void)
 	set_pages_ro(virt_to_page(start), size >> PAGE_SHIFT);
 #endif
 	mark_nxdata_nx();
+<<<<<<< HEAD
+=======
+	if (__supported_pte_mask & _PAGE_NX)
+		debug_checkwx();
+>>>>>>> v4.9.227
 }

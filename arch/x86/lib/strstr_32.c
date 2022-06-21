@@ -1,4 +1,8 @@
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 
 char *strstr(const char *cs, const char *ct)
 {
@@ -28,4 +32,8 @@ __asm__ __volatile__(
 	: "dx", "di");
 return __res;
 }
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL(strstr);
+>>>>>>> v4.9.227

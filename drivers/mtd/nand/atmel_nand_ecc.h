@@ -43,6 +43,10 @@
 #define		PMECC_CFG_BCH_ERR8		(2 << 0)
 #define		PMECC_CFG_BCH_ERR12		(3 << 0)
 #define		PMECC_CFG_BCH_ERR24		(4 << 0)
+<<<<<<< HEAD
+=======
+#define		PMECC_CFG_BCH_ERR32		(5 << 0)
+>>>>>>> v4.9.227
 
 #define		PMECC_CFG_SECTOR512		(0 << 4)
 #define		PMECC_CFG_SECTOR1024		(1 << 4)
@@ -108,7 +112,15 @@
 #define		PMERRLOC_ERR_NUM_MASK		(0x1f << 8)
 #define		PMERRLOC_CALC_DONE		(1 << 0)
 #define ATMEL_PMERRLOC_SIGMAx		0x028	/* Error location SIGMA x */
+<<<<<<< HEAD
 #define ATMEL_PMERRLOC_ELx		0x08c	/* Error location x */
+=======
+
+/*
+ * The ATMEL_PMERRLOC_ELx register location depends from the number of
+ * bits corrected by the PMECC controller. Do not use it.
+ */
+>>>>>>> v4.9.227
 
 /* Register access macros for PMECC */
 #define pmecc_readl_relaxed(addr, reg) \
@@ -136,16 +148,33 @@
 	readl_relaxed((addr) + ATMEL_PMERRLOC_SIGMAx + ((n) * 4))
 
 #define pmerrloc_readl_el_relaxed(addr, n) \
+<<<<<<< HEAD
 	readl_relaxed((addr) + ATMEL_PMERRLOC_ELx + ((n) * 4))
+=======
+	readl_relaxed((addr) + ((n) * 4))
+>>>>>>> v4.9.227
 
 /* Galois field dimension */
 #define PMECC_GF_DIMENSION_13			13
 #define PMECC_GF_DIMENSION_14			14
 
+<<<<<<< HEAD
+=======
+/* Primitive Polynomial used by PMECC */
+#define PMECC_GF_13_PRIMITIVE_POLY		0x201b
+#define PMECC_GF_14_PRIMITIVE_POLY		0x4443
+
+>>>>>>> v4.9.227
 #define PMECC_LOOKUP_TABLE_SIZE_512		0x2000
 #define PMECC_LOOKUP_TABLE_SIZE_1024		0x4000
 
 /* Time out value for reading PMECC status register */
 #define PMECC_MAX_TIMEOUT_MS			100
 
+<<<<<<< HEAD
+=======
+/* Reserved bytes in oob area */
+#define PMECC_OOB_RESERVED_BYTES		2
+
+>>>>>>> v4.9.227
 #endif

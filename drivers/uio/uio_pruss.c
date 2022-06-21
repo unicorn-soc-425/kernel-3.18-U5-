@@ -24,6 +24,10 @@
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
+=======
+#include <linux/sizes.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/genalloc.h>
 
@@ -231,7 +235,10 @@ static struct platform_driver pruss_driver = {
 	.remove = pruss_remove,
 	.driver = {
 		   .name = DRV_NAME,
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   },
 };
 

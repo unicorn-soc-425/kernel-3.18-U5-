@@ -500,17 +500,26 @@ enum {
 	SD_WP_MARK, SD_CLK_MARK, SD_CMD_MARK,
 	CRX0_MARK, CRX1_MARK,
 	CTX0_MARK, CTX1_MARK,
+<<<<<<< HEAD
+=======
+	CRX0_CRX1_MARK, CTX0_CTX1_MARK,
+>>>>>>> v4.9.227
 
 	PWM1A_MARK, PWM1B_MARK, PWM1C_MARK, PWM1D_MARK,
 	PWM1E_MARK, PWM1F_MARK, PWM1G_MARK, PWM1H_MARK,
 	PWM2A_MARK, PWM2B_MARK, PWM2C_MARK, PWM2D_MARK,
 	PWM2E_MARK, PWM2F_MARK, PWM2G_MARK, PWM2H_MARK,
 	IERXD_MARK, IETXD_MARK,
+<<<<<<< HEAD
 	CRX0_CRX1_MARK,
 	WDTOVF_MARK,
 
 	CRX0X1_MARK,
 
+=======
+	WDTOVF_MARK,
+
+>>>>>>> v4.9.227
 	/* DMAC */
 	TEND0_MARK, DACK0_MARK, DREQ0_MARK,
 	TEND1_MARK, DACK1_MARK, DREQ1_MARK,
@@ -998,12 +1007,20 @@ static const u16 pinmux_data[] = {
 
 	PINMUX_DATA(PJ3_DATA, PJ3MD_00),
 	PINMUX_DATA(CRX1_MARK, PJ3MD_01),
+<<<<<<< HEAD
 	PINMUX_DATA(CRX0X1_MARK, PJ3MD_10),
+=======
+	PINMUX_DATA(CRX0_CRX1_MARK, PJ3MD_10),
+>>>>>>> v4.9.227
 	PINMUX_DATA(IRQ1_PJ_MARK, PJ3MD_11),
 
 	PINMUX_DATA(PJ2_DATA, PJ2MD_000),
 	PINMUX_DATA(CTX1_MARK, PJ2MD_001),
+<<<<<<< HEAD
 	PINMUX_DATA(CRX0_CRX1_MARK, PJ2MD_010),
+=======
+	PINMUX_DATA(CTX0_CTX1_MARK, PJ2MD_010),
+>>>>>>> v4.9.227
 	PINMUX_DATA(CS2_MARK, PJ2MD_011),
 	PINMUX_DATA(SCK0_MARK, PJ2MD_100),
 	PINMUX_DATA(LCD_M_DISP_MARK, PJ2MD_101),
@@ -1248,6 +1265,10 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(CTX1),
 	GPIO_FN(CRX1),
 	GPIO_FN(CTX0),
+<<<<<<< HEAD
+=======
+	GPIO_FN(CTX0_CTX1),
+>>>>>>> v4.9.227
 	GPIO_FN(CRX0),
 	GPIO_FN(CRX0_CRX1),
 
@@ -1716,6 +1737,12 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	},
 
 	{ PINMUX_CFG_REG("PFCR3", 0xfffe38a8, 16, 4) {
+<<<<<<< HEAD
+=======
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+>>>>>>> v4.9.227
 		PF12MD_000, PF12MD_001, 0, PF12MD_011,
 		PF12MD_100, PF12MD_101, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0 }
@@ -1759,8 +1786,15 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		0, 0, 0, 0, 0, 0, 0, 0,
 		PF1MD_000, PF1MD_001, PF1MD_010, PF1MD_011,
 		PF1MD_100, PF1MD_101, 0, 0,
+<<<<<<< HEAD
 		0, 0, 0, 0, 0, 0, 0, 0
 	 }
+=======
+		0, 0, 0, 0, 0, 0, 0, 0,
+		PF0MD_000, PF0MD_001, PF0MD_010, PF0MD_011,
+		PF0MD_100, PF0MD_101, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0 }
+>>>>>>> v4.9.227
 	},
 
 	{ PINMUX_CFG_REG("PFIOR0", 0xfffe38b2, 16, 1) {
@@ -2126,6 +2160,11 @@ const struct sh_pfc_soc_info sh7264_pinmux_info = {
 	.cfg_regs = pinmux_config_regs,
 	.data_regs = pinmux_data_regs,
 
+<<<<<<< HEAD
 	.gpio_data = pinmux_data,
 	.gpio_data_size = ARRAY_SIZE(pinmux_data),
+=======
+	.pinmux_data = pinmux_data,
+	.pinmux_data_size = ARRAY_SIZE(pinmux_data),
+>>>>>>> v4.9.227
 };

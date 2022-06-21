@@ -19,12 +19,25 @@
 #define _LINUX_IO_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/init.h>
+#include <linux/bug.h>
+#include <linux/err.h>
+>>>>>>> v4.9.227
 #include <asm/io.h>
 #include <asm/page.h>
 
 struct device;
+<<<<<<< HEAD
 
 __visible void __iowrite32_copy(void __iomem *to, const void *from, size_t count);
+=======
+struct resource;
+
+__visible void __iowrite32_copy(void __iomem *to, const void *from, size_t count);
+void __ioread32_copy(void *to, const void __iomem *from, size_t count);
+>>>>>>> v4.9.227
 void __iowrite64_copy(void __iomem *to, const void *from, size_t count);
 
 #ifdef CONFIG_MMU
@@ -38,6 +51,17 @@ static inline int ioremap_page_range(unsigned long addr, unsigned long end,
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HAVE_ARCH_HUGE_VMAP
+void __init ioremap_huge_init(void);
+int arch_ioremap_pud_supported(void);
+int arch_ioremap_pmd_supported(void);
+#else
+static inline void ioremap_huge_init(void) { }
+#endif
+
+>>>>>>> v4.9.227
 /*
  * Managed iomap interface
  */
@@ -61,14 +85,31 @@ static inline void devm_ioport_unmap(struct device *dev, void __iomem *addr)
 #define IOMEM_ERR_PTR(err) (__force void __iomem *)ERR_PTR(err)
 
 void __iomem *devm_ioremap(struct device *dev, resource_size_t offset,
+<<<<<<< HEAD
 			    unsigned long size);
 void __iomem *devm_ioremap_nocache(struct device *dev, resource_size_t offset,
 				    unsigned long size);
+=======
+			   resource_size_t size);
+void __iomem *devm_ioremap_nocache(struct device *dev, resource_size_t offset,
+				   resource_size_t size);
+void __iomem *devm_ioremap_wc(struct device *dev, resource_size_t offset,
+				   resource_size_t size);
+>>>>>>> v4.9.227
 void devm_iounmap(struct device *dev, void __iomem *addr);
 int check_signature(const volatile void __iomem *io_addr,
 			const unsigned char *signature, int length);
 void devm_ioremap_release(struct device *dev, void *res);
 
+<<<<<<< HEAD
+=======
+void *devm_memremap(struct device *dev, resource_size_t offset,
+		size_t size, unsigned long flags);
+void devm_memunmap(struct device *dev, void *addr);
+
+void *__devm_memremap_pages(struct device *dev, struct resource *res);
+
+>>>>>>> v4.9.227
 /*
  * Some systems do not have legacy ISA devices.
  * /dev/port is not a valid interface on these systems.
@@ -110,4 +151,39 @@ static inline int arch_phys_wc_index(int handle)
 #endif
 #endif
 
+<<<<<<< HEAD
+=======
+enum {
+	/* See memremap() kernel-doc for usage description... */
+	MEMREMAP_WB = 1 << 0,
+	MEMREMAP_WT = 1 << 1,
+	MEMREMAP_WC = 1 << 2,
+};
+
+void *memremap(resource_size_t offset, size_t size, unsigned long flags);
+void memunmap(void *addr);
+
+/*
+ * On x86 PAT systems we have memory tracking that keeps track of
+ * the allowed mappings on memory ranges. This tracking works for
+ * all the in-kernel mapping APIs (ioremap*), but where the user
+ * wishes to map a range from a physical device into user memory
+ * the tracking won't be updated. This API is to be used by
+ * drivers which remap physical device pages into userspace,
+ * and wants to make sure they are mapped WC and not UC.
+ */
+#ifndef arch_io_reserve_memtype_wc
+static inline int arch_io_reserve_memtype_wc(resource_size_t base,
+					     resource_size_t size)
+{
+	return 0;
+}
+
+static inline void arch_io_free_memtype_wc(resource_size_t base,
+					   resource_size_t size)
+{
+}
+#endif
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_IO_H */

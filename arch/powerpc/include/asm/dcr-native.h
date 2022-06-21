@@ -24,6 +24,10 @@
 
 #include <linux/spinlock.h>
 #include <asm/cputable.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu_has_feature.h>
+>>>>>>> v4.9.227
 
 typedef struct {
 	unsigned int base;
@@ -31,7 +35,11 @@ typedef struct {
 
 static inline bool dcr_map_ok_native(dcr_host_native_t host)
 {
+<<<<<<< HEAD
 	return 1;
+=======
+	return true;
+>>>>>>> v4.9.227
 }
 
 #define dcr_map_native(dev, dcr_n, dcr_c) \

@@ -15,18 +15,30 @@
 static int write8(void *client, u8 val)
 {
 	u8 data = val;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return spi_write(client, &data, 1);
 }
 
 static int write16(void *client, u8 reg, u8 val)
 {
 	u8 data[2] = {reg, val};
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return spi_write(client, data, 2);
 }
 
 static int write24(void *client, u8 reg, u16 val)
 {
 	u8 data[3] = {reg, val >> 8, val};
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return spi_write(client, data, 3);
 }
 
@@ -34,6 +46,10 @@ static int read8(void *client)
 {
 	int ret;
 	u8 data;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	ret = spi_read(client, &data, 1);
 	if (ret < 0)
 		return ret;
@@ -128,7 +144,10 @@ MODULE_DEVICE_TABLE(spi, ad_dpot_spi_id);
 static struct spi_driver ad_dpot_spi_driver = {
 	.driver = {
 		.name	= "ad_dpot",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ad_dpot_spi_probe,
 	.remove		= ad_dpot_spi_remove,

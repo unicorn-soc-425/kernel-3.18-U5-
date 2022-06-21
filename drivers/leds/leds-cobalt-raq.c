@@ -108,6 +108,7 @@ err_null:
 	return retval;
 }
 
+<<<<<<< HEAD
 static int cobalt_raq_led_remove(struct platform_device *pdev)
 {
 	led_classdev_unregister(&raq_power_off_led);
@@ -125,6 +126,12 @@ static struct platform_driver cobalt_raq_led_driver = {
 	.driver = {
 		.name	= "cobalt-raq-leds",
 		.owner	= THIS_MODULE,
+=======
+static struct platform_driver cobalt_raq_led_driver = {
+	.probe	= cobalt_raq_led_probe,
+	.driver = {
+		.name	= "cobalt-raq-leds",
+>>>>>>> v4.9.227
 	},
 };
 
@@ -132,5 +139,9 @@ static int __init cobalt_raq_led_init(void)
 {
 	return platform_driver_register(&cobalt_raq_led_driver);
 }
+<<<<<<< HEAD
 
 module_init(cobalt_raq_led_init);
+=======
+device_initcall(cobalt_raq_led_init);
+>>>>>>> v4.9.227

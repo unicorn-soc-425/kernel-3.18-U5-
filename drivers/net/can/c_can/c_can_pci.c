@@ -161,6 +161,10 @@ static int c_can_pci_probe(struct pci_dev *pdev,
 
 	dev->irq = pdev->irq;
 	priv->base = addr;
+<<<<<<< HEAD
+=======
+	priv->device = &pdev->dev;
+>>>>>>> v4.9.227
 
 	if (!c_can_pci_data->freq) {
 		dev_err(&pdev->dev, "no clock frequency defined\n");

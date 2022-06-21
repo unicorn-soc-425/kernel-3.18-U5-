@@ -16,11 +16,14 @@
 
 #include "scsi_priv.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 static int do_scsi_runtime_resume(struct device *dev,
 				   const struct dev_pm_ops *pm);
 #endif
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM_SLEEP
 
 static int do_scsi_suspend(struct device *dev, const struct dev_pm_ops *pm)
@@ -82,11 +85,16 @@ static int scsi_dev_type_resume(struct device *dev,
 	scsi_device_resume(to_scsi_device(dev));
 	dev_dbg(dev, "scsi resume: %d\n", err);
 
+<<<<<<< HEAD
 	if (err == 0 && (cb != do_scsi_runtime_resume)) {
+=======
+	if (err == 0) {
+>>>>>>> v4.9.227
 		pm_runtime_disable(dev);
 		err = pm_runtime_set_active(dev);
 		pm_runtime_enable(dev);
 
+<<<<<<< HEAD
 		if (!err && scsi_is_sdev_device(dev)) {
 			struct scsi_device *sdev = to_scsi_device(dev);
 
@@ -97,6 +105,20 @@ static int scsi_dev_type_resume(struct device *dev,
 			 */
 			if (sdev->request_queue->dev)
 				blk_post_runtime_resume(sdev->request_queue, 0);
+=======
+		/*
+		 * Forcibly set runtime PM status of request queue to "active"
+		 * to make sure we can again get requests from the queue
+		 * (see also blk_pm_peek_request()).
+		 *
+		 * The resume hook will correct runtime PM status of the disk.
+		 */
+		if (!err && scsi_is_sdev_device(dev)) {
+			struct scsi_device *sdev = to_scsi_device(dev);
+
+			if (sdev->request_queue->dev)
+				blk_set_runtime_active(sdev->request_queue);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -230,6 +252,7 @@ static int scsi_bus_restore(struct device *dev)
 
 #endif /* CONFIG_PM_SLEEP */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 
 static int do_scsi_runtime_suspend(struct device *dev,
@@ -244,12 +267,15 @@ static int do_scsi_runtime_resume(struct device *dev,
 	return pm && pm->runtime_resume ? pm->runtime_resume(dev) : 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int sdev_runtime_suspend(struct device *dev)
 {
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 	struct scsi_device *sdev = to_scsi_device(dev);
 	int err = 0;
 
+<<<<<<< HEAD
 	if (!sdev->request_queue->dev) {
 		err = scsi_dev_type_suspend(dev, do_scsi_runtime_suspend);
 		if (err == -EAGAIN)
@@ -265,6 +291,15 @@ static int sdev_runtime_suspend(struct device *dev)
 		err = pm->runtime_suspend(dev);
 		blk_post_runtime_suspend(sdev->request_queue, err);
 	}
+=======
+	err = blk_pre_runtime_suspend(sdev->request_queue);
+	if (err)
+		return err;
+	if (pm && pm->runtime_suspend)
+		err = pm->runtime_suspend(dev);
+	blk_post_runtime_suspend(sdev->request_queue, err);
+
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -287,6 +322,7 @@ static int sdev_runtime_resume(struct device *dev)
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 	int err = 0;
 
+<<<<<<< HEAD
 	if (!sdev->request_queue->dev)
 		return scsi_dev_type_resume(dev, do_scsi_runtime_resume);
 
@@ -295,6 +331,13 @@ static int sdev_runtime_resume(struct device *dev)
 		err = pm->runtime_resume(dev);
 		blk_post_runtime_resume(sdev->request_queue, err);
 	}
+=======
+	blk_pre_runtime_resume(sdev->request_queue);
+	if (pm && pm->runtime_resume)
+		err = pm->runtime_resume(dev);
+	blk_post_runtime_resume(sdev->request_queue, err);
+
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -372,6 +415,7 @@ void scsi_autopm_put_host(struct Scsi_Host *shost)
 	pm_runtime_put_sync(&shost->shost_gendev);
 }
 
+<<<<<<< HEAD
 #else
 
 #define scsi_runtime_suspend	NULL
@@ -380,6 +424,8 @@ void scsi_autopm_put_host(struct Scsi_Host *shost)
 
 #endif /* CONFIG_PM_RUNTIME */
 
+=======
+>>>>>>> v4.9.227
 const struct dev_pm_ops scsi_bus_pm_ops = {
 	.prepare =		scsi_bus_prepare,
 	.suspend =		scsi_bus_suspend,

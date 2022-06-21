@@ -1,9 +1,13 @@
 #include <linux/export.h>
 #include <linux/netfilter/ipset/pfxlen.h>
 
+<<<<<<< HEAD
 /*
  * Prefixlen maps for fast conversions, by Jan Engelhardt.
  */
+=======
+/* Prefixlen maps for fast conversions, by Jan Engelhardt. */
+>>>>>>> v4.9.227
 
 #define E(a, b, c, d) \
 	{.ip6 = { \
@@ -11,8 +15,12 @@
 		htonl(c), htonl(d), \
 	} }
 
+<<<<<<< HEAD
 /*
  * This table works for both IPv4 and IPv6;
+=======
+/* This table works for both IPv4 and IPv6;
+>>>>>>> v4.9.227
  * just use prefixlen_netmask_map[prefixlength].ip.
  */
 const union nf_inet_addr ip_set_netmask_map[] = {
@@ -149,6 +157,7 @@ const union nf_inet_addr ip_set_netmask_map[] = {
 EXPORT_SYMBOL_GPL(ip_set_netmask_map);
 
 #undef  E
+<<<<<<< HEAD
 #define E(a, b, c, d)						\
 	{.ip6 = { (__force __be32) a, (__force __be32) b,	\
 		  (__force __be32) c, (__force __be32) d,	\
@@ -156,6 +165,14 @@ EXPORT_SYMBOL_GPL(ip_set_netmask_map);
 
 /*
  * This table works for both IPv4 and IPv6;
+=======
+#define E(a, b, c, d)					\
+	{.ip6 = { (__force __be32)a, (__force __be32)b,	\
+		  (__force __be32)c, (__force __be32)d,	\
+	} }
+
+/* This table works for both IPv4 and IPv6;
+>>>>>>> v4.9.227
  * just use prefixlen_hostmask_map[prefixlength].ip.
  */
 const union nf_inet_addr ip_set_hostmask_map[] = {

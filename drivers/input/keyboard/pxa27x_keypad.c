@@ -20,6 +20,10 @@
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/input.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/clk.h>
@@ -28,10 +32,13 @@
 #include <linux/slab.h>
 #include <linux/of.h>
 
+<<<<<<< HEAD
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
 #include <mach/hardware.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/platform_data/keypad-pxa27x.h>
 /*
  * Keypad Controller registers
@@ -348,13 +355,20 @@ static int pxa27x_keypad_build_keycode(struct pxa27x_keypad *keypad)
 {
 	const struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
 	struct input_dev *input_dev = keypad->input_dev;
+<<<<<<< HEAD
 	const struct matrix_keymap_data *keymap_data =
 				pdata ? pdata->matrix_keymap_data : NULL;
+=======
+>>>>>>> v4.9.227
 	unsigned short keycode;
 	int i;
 	int error;
 
+<<<<<<< HEAD
 	error = matrix_keypad_build_keymap(keymap_data, NULL,
+=======
+	error = matrix_keypad_build_keymap(pdata->matrix_keymap_data, NULL,
+>>>>>>> v4.9.227
 					   pdata->matrix_key_rows,
 					   pdata->matrix_key_cols,
 					   keypad->keycodes, input_dev);
@@ -741,6 +755,7 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
+<<<<<<< HEAD
 	keypad = kzalloc(sizeof(struct pxa27x_keypad), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!keypad || !input_dev) {
@@ -748,11 +763,22 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 		error = -ENOMEM;
 		goto failed_free;
 	}
+=======
+	keypad = devm_kzalloc(&pdev->dev, sizeof(*keypad),
+			      GFP_KERNEL);
+	if (!keypad)
+		return -ENOMEM;
+
+	input_dev = devm_input_allocate_device(&pdev->dev);
+	if (!input_dev)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	keypad->pdata = pdata;
 	keypad->input_dev = input_dev;
 	keypad->irq = irq;
 
+<<<<<<< HEAD
 	res = request_mem_region(res->start, resource_size(res), pdev->name);
 	if (res == NULL) {
 		dev_err(&pdev->dev, "failed to request I/O memory\n");
@@ -772,6 +798,16 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to get keypad clock\n");
 		error = PTR_ERR(keypad->clk);
 		goto failed_free_io;
+=======
+	keypad->mmio_base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(keypad->mmio_base))
+		return PTR_ERR(keypad->mmio_base);
+
+	keypad->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(keypad->clk)) {
+		dev_err(&pdev->dev, "failed to get keypad clock\n");
+		return PTR_ERR(keypad->clk);
+>>>>>>> v4.9.227
 	}
 
 	input_dev->name = pdev->name;
@@ -802,7 +838,11 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 	}
 	if (error) {
 		dev_err(&pdev->dev, "failed to build keycode\n");
+<<<<<<< HEAD
 		goto failed_put_clk;
+=======
+		return error;
+>>>>>>> v4.9.227
 	}
 
 	keypad->row_shift = get_count_order(pdata->matrix_key_cols);
@@ -812,24 +852,37 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 		input_dev->evbit[0] |= BIT_MASK(EV_REL);
 	}
 
+<<<<<<< HEAD
 	error = request_irq(irq, pxa27x_keypad_irq_handler, 0,
 			    pdev->name, keypad);
 	if (error) {
 		dev_err(&pdev->dev, "failed to request IRQ\n");
 		goto failed_put_clk;
+=======
+	error = devm_request_irq(&pdev->dev, irq, pxa27x_keypad_irq_handler,
+				 0, pdev->name, keypad);
+	if (error) {
+		dev_err(&pdev->dev, "failed to request IRQ\n");
+		return error;
+>>>>>>> v4.9.227
 	}
 
 	/* Register the input device */
 	error = input_register_device(input_dev);
 	if (error) {
 		dev_err(&pdev->dev, "failed to register input device\n");
+<<<<<<< HEAD
 		goto failed_free_irq;
+=======
+		return error;
+>>>>>>> v4.9.227
 	}
 
 	platform_set_drvdata(pdev, keypad);
 	device_init_wakeup(&pdev->dev, 1);
 
 	return 0;
+<<<<<<< HEAD
 
 failed_free_irq:
 	free_irq(irq, keypad);
@@ -867,6 +920,10 @@ static int pxa27x_keypad_remove(struct platform_device *pdev)
 /* work with hotplug and coldplug */
 MODULE_ALIAS("platform:pxa27x-keypad");
 
+=======
+}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_OF
 static const struct of_device_id pxa27x_keypad_dt_match[] = {
 	{ .compatible = "marvell,pxa27x-keypad" },
@@ -877,11 +934,17 @@ MODULE_DEVICE_TABLE(of, pxa27x_keypad_dt_match);
 
 static struct platform_driver pxa27x_keypad_driver = {
 	.probe		= pxa27x_keypad_probe,
+<<<<<<< HEAD
 	.remove		= pxa27x_keypad_remove,
 	.driver		= {
 		.name	= "pxa27x-keypad",
 		.of_match_table = of_match_ptr(pxa27x_keypad_dt_match),
 		.owner	= THIS_MODULE,
+=======
+	.driver		= {
+		.name	= "pxa27x-keypad",
+		.of_match_table = of_match_ptr(pxa27x_keypad_dt_match),
+>>>>>>> v4.9.227
 		.pm	= &pxa27x_keypad_pm_ops,
 	},
 };
@@ -889,3 +952,8 @@ module_platform_driver(pxa27x_keypad_driver);
 
 MODULE_DESCRIPTION("PXA27x Keypad Controller Driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+/* work with hotplug and coldplug */
+MODULE_ALIAS("platform:pxa27x-keypad");
+>>>>>>> v4.9.227

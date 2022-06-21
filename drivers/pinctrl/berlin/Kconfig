@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 if ARCH_BERLIN
+=======
+if (ARCH_BERLIN || COMPILE_TEST)
+>>>>>>> v4.9.227
 
 config PINCTRL_BERLIN
 	bool
@@ -6,6 +10,7 @@ config PINCTRL_BERLIN
 	select REGMAP_MMIO
 
 config PINCTRL_BERLIN_BG2
+<<<<<<< HEAD
 	bool
 	select PINCTRL_BERLIN
 
@@ -15,6 +20,25 @@ config PINCTRL_BERLIN_BG2CD
 
 config PINCTRL_BERLIN_BG2Q
 	bool
+=======
+	def_bool MACH_BERLIN_BG2
+	depends on OF
+	select PINCTRL_BERLIN
+
+config PINCTRL_BERLIN_BG2CD
+	def_bool MACH_BERLIN_BG2CD
+	depends on OF
+	select PINCTRL_BERLIN
+
+config PINCTRL_BERLIN_BG2Q
+	def_bool MACH_BERLIN_BG2Q
+	depends on OF
+	select PINCTRL_BERLIN
+
+config PINCTRL_BERLIN_BG4CT
+	bool "Marvell berlin4ct pin controller driver"
+	depends on OF
+>>>>>>> v4.9.227
 	select PINCTRL_BERLIN
 
 endif

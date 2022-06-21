@@ -49,11 +49,16 @@ void debug_mutex_free_waiter(struct mutex_waiter *waiter)
 }
 
 void debug_mutex_add_waiter(struct mutex *lock, struct mutex_waiter *waiter,
+<<<<<<< HEAD
 			    struct thread_info *ti)
+=======
+			    struct task_struct *task)
+>>>>>>> v4.9.227
 {
 	SMP_DEBUG_LOCKS_WARN_ON(!spin_is_locked(&lock->wait_lock));
 
 	/* Mark the current thread as blocked on the lock: */
+<<<<<<< HEAD
 	ti->task->blocked_on = waiter;
 }
 
@@ -64,6 +69,18 @@ void mutex_remove_waiter(struct mutex *lock, struct mutex_waiter *waiter,
 	DEBUG_LOCKS_WARN_ON(waiter->task != ti->task);
 	DEBUG_LOCKS_WARN_ON(ti->task->blocked_on != waiter);
 	ti->task->blocked_on = NULL;
+=======
+	task->blocked_on = waiter;
+}
+
+void mutex_remove_waiter(struct mutex *lock, struct mutex_waiter *waiter,
+			 struct task_struct *task)
+{
+	DEBUG_LOCKS_WARN_ON(list_empty(&waiter->list));
+	DEBUG_LOCKS_WARN_ON(waiter->task != task);
+	DEBUG_LOCKS_WARN_ON(task->blocked_on != waiter);
+	task->blocked_on = NULL;
+>>>>>>> v4.9.227
 
 	list_del_init(&waiter->list);
 	waiter->task = NULL;
@@ -80,13 +97,20 @@ void debug_mutex_unlock(struct mutex *lock)
 			DEBUG_LOCKS_WARN_ON(lock->owner != current);
 
 		DEBUG_LOCKS_WARN_ON(!lock->wait_list.prev && !lock->wait_list.next);
+<<<<<<< HEAD
 		mutex_clear_owner(lock);
+=======
+>>>>>>> v4.9.227
 	}
 
 	/*
 	 * __mutex_slowpath_needs_to_unlock() is explicitly 0 for debug
 	 * mutexes so that we can do it here after we've verified state.
 	 */
+<<<<<<< HEAD
+=======
+	mutex_clear_owner(lock);
+>>>>>>> v4.9.227
 	atomic_set(&lock->count, 1);
 }
 

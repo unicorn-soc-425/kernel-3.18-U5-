@@ -63,6 +63,7 @@ static int migor_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_NB_IF |
 				  SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_CBS_CFS);
 	if (ret < 0)
@@ -73,6 +74,8 @@ static int migor_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	codec_freq = rate * 512;
 	/*
 	 * This propagates the parent frequency change to children and
@@ -144,6 +147,11 @@ static struct snd_soc_dai_link migor_dai = {
 	.codec_dai_name = "wm8978-hifi",
 	.platform_name = "siu-pcm-audio",
 	.codec_name = "wm8978.0-001a",
+<<<<<<< HEAD
+=======
+	.dai_fmt = SND_SOC_DAIFMT_NB_IF | SND_SOC_DAIFMT_I2S |
+		   SND_SOC_DAIFMT_CBS_CFS,
+>>>>>>> v4.9.227
 	.ops = &migor_dai_ops,
 };
 
@@ -170,12 +178,19 @@ static int __init migor_init(void)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	siumckb_lookup = clkdev_alloc(&siumckb_clk, "siumckb_clk", NULL);
+=======
+	siumckb_lookup = clkdev_create(&siumckb_clk, "siumckb_clk", NULL);
+>>>>>>> v4.9.227
 	if (!siumckb_lookup) {
 		ret = -ENOMEM;
 		goto eclkdevalloc;
 	}
+<<<<<<< HEAD
 	clkdev_add(siumckb_lookup);
+=======
+>>>>>>> v4.9.227
 
 	/* Port number used on this machine: port B */
 	migor_snd_device = platform_device_alloc("soc-audio", 1);

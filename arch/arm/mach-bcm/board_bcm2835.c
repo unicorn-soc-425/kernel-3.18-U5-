@@ -12,16 +12,23 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/irqchip.h>
 #include <linux/of_address.h>
 #include <linux/of_platform.h>
+=======
+#include <linux/init.h>
+#include <linux/irqchip.h>
+#include <linux/of_address.h>
+>>>>>>> v4.9.227
 #include <linux/clk/bcm2835.h>
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #define PM_RSTC				0x1c
 #define PM_RSTS				0x20
 #define PM_WDOG				0x24
@@ -125,13 +132,31 @@ static void __init bcm2835_init(void)
 
 static const char * const bcm2835_compat[] = {
 	"brcm,bcm2835",
+=======
+static void __init bcm2835_init(void)
+{
+	bcm2835_init_clocks();
+}
+
+static const char * const bcm2835_compat[] = {
+#ifdef CONFIG_ARCH_MULTI_V6
+	"brcm,bcm2835",
+#endif
+#ifdef CONFIG_ARCH_MULTI_V7
+	"brcm,bcm2836",
+#endif
+>>>>>>> v4.9.227
 	NULL
 };
 
 DT_MACHINE_START(BCM2835, "BCM2835")
+<<<<<<< HEAD
 	.map_io = bcm2835_map_io,
 	.init_irq = irqchip_init,
 	.init_machine = bcm2835_init,
 	.restart = bcm2835_restart,
+=======
+	.init_machine = bcm2835_init,
+>>>>>>> v4.9.227
 	.dt_compat = bcm2835_compat
 MACHINE_END

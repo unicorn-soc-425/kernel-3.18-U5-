@@ -14,10 +14,13 @@
 
 #include <asm/setup.h>
 
+<<<<<<< HEAD
 static void *efi_runtime_map;
 static int nr_efi_runtime_map;
 static u32 efi_memdesc_size;
 
+=======
+>>>>>>> v4.9.227
 struct efi_runtime_map_entry {
 	efi_memory_desc_t md;
 	struct kobject kobj;   /* kobject for each entry */
@@ -106,7 +109,12 @@ static struct kobj_type __refdata map_ktype = {
 static struct kset *map_kset;
 
 static struct efi_runtime_map_entry *
+<<<<<<< HEAD
 add_sysfs_runtime_map_entry(struct kobject *kobj, int nr)
+=======
+add_sysfs_runtime_map_entry(struct kobject *kobj, int nr,
+			    efi_memory_desc_t *md)
+>>>>>>> v4.9.227
 {
 	int ret;
 	struct efi_runtime_map_entry *entry;
@@ -120,11 +128,19 @@ add_sysfs_runtime_map_entry(struct kobject *kobj, int nr)
 	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
 	if (!entry) {
 		kset_unregister(map_kset);
+<<<<<<< HEAD
 		return entry;
 	}
 
 	memcpy(&entry->md, efi_runtime_map + nr * efi_memdesc_size,
 	       sizeof(efi_memory_desc_t));
+=======
+		map_kset = NULL;
+		return ERR_PTR(-ENOMEM);
+	}
+
+	memcpy(&entry->md, md, sizeof(efi_memory_desc_t));
+>>>>>>> v4.9.227
 
 	kobject_init(&entry->kobj, &map_ktype);
 	entry->kobj.kset = map_kset;
@@ -132,6 +148,10 @@ add_sysfs_runtime_map_entry(struct kobject *kobj, int nr)
 	if (ret) {
 		kobject_put(&entry->kobj);
 		kset_unregister(map_kset);
+<<<<<<< HEAD
+=======
+		map_kset = NULL;
+>>>>>>> v4.9.227
 		return ERR_PTR(ret);
 	}
 
@@ -140,12 +160,20 @@ add_sysfs_runtime_map_entry(struct kobject *kobj, int nr)
 
 int efi_get_runtime_map_size(void)
 {
+<<<<<<< HEAD
 	return nr_efi_runtime_map * efi_memdesc_size;
+=======
+	return efi.memmap.nr_map * efi.memmap.desc_size;
+>>>>>>> v4.9.227
 }
 
 int efi_get_runtime_map_desc_size(void)
 {
+<<<<<<< HEAD
 	return efi_memdesc_size;
+=======
+	return efi.memmap.desc_size;
+>>>>>>> v4.9.227
 }
 
 int efi_runtime_map_copy(void *buf, size_t bufsz)
@@ -155,6 +183,7 @@ int efi_runtime_map_copy(void *buf, size_t bufsz)
 	if (sz > bufsz)
 		sz = bufsz;
 
+<<<<<<< HEAD
 	memcpy(buf, efi_runtime_map, sz);
 	return 0;
 }
@@ -166,27 +195,52 @@ void efi_runtime_map_setup(void *map, int nr_entries, u32 desc_size)
 	efi_memdesc_size = desc_size;
 }
 
+=======
+	memcpy(buf, efi.memmap.map, sz);
+	return 0;
+}
+
+>>>>>>> v4.9.227
 int __init efi_runtime_map_init(struct kobject *efi_kobj)
 {
 	int i, j, ret = 0;
 	struct efi_runtime_map_entry *entry;
+<<<<<<< HEAD
 
 	if (!efi_runtime_map)
 		return 0;
 
 	map_entries = kzalloc(nr_efi_runtime_map * sizeof(entry), GFP_KERNEL);
+=======
+	efi_memory_desc_t *md;
+
+	if (!efi_enabled(EFI_MEMMAP))
+		return 0;
+
+	map_entries = kzalloc(efi.memmap.nr_map * sizeof(entry), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!map_entries) {
 		ret = -ENOMEM;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < nr_efi_runtime_map; i++) {
 		entry = add_sysfs_runtime_map_entry(efi_kobj, i);
+=======
+	i = 0;
+	for_each_efi_memory_desc(md) {
+		entry = add_sysfs_runtime_map_entry(efi_kobj, i, md);
+>>>>>>> v4.9.227
 		if (IS_ERR(entry)) {
 			ret = PTR_ERR(entry);
 			goto out_add_entry;
 		}
+<<<<<<< HEAD
 		*(map_entries + i) = entry;
+=======
+		*(map_entries + i++) = entry;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -195,8 +249,11 @@ out_add_entry:
 		entry = *(map_entries + j);
 		kobject_put(&entry->kobj);
 	}
+<<<<<<< HEAD
 	if (map_kset)
 		kset_unregister(map_kset);
+=======
+>>>>>>> v4.9.227
 out:
 	return ret;
 }

@@ -297,7 +297,10 @@ int omap3isp_h3a_aewb_init(struct isp_device *isp)
 
 	aewb->ops = &h3a_aewb_ops;
 	aewb->priv = aewb_cfg;
+<<<<<<< HEAD
 	aewb->dma_ch = -1;
+=======
+>>>>>>> v4.9.227
 	aewb->event_type = V4L2_EVENT_OMAP3ISP_AEWB;
 	aewb->isp = isp;
 

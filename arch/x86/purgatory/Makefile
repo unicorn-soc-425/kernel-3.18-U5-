@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+OBJECT_FILES_NON_STANDARD := y
+
+>>>>>>> v4.9.227
 purgatory-y := purgatory.o stack.o setup-x86_$(BITS).o sha256.o entry64.o string.o
 
 targets += $(purgatory-y)
@@ -6,6 +11,12 @@ PURGATORY_OBJS = $(addprefix $(obj)/,$(purgatory-y))
 LDFLAGS_purgatory.ro := -e purgatory_start -r --no-undefined -nostdlib -z nodefaultlib
 targets += purgatory.ro
 
+<<<<<<< HEAD
+=======
+KASAN_SANITIZE	:= n
+KCOV_INSTRUMENT := n
+
+>>>>>>> v4.9.227
 # Default KBUILD_CFLAGS can have -pg option set when FTRACE is enabled. That
 # in turn leaves some undefined symbols like __fentry__ in purgatory and not
 # sure how to relocate those. Like kexec-tools, use custom flags.
@@ -26,5 +37,8 @@ quiet_cmd_bin2c = BIN2C   $@
 $(obj)/kexec-purgatory.c: $(obj)/purgatory.ro FORCE
 	$(call if_changed,bin2c)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_KEXEC_FILE)	+= kexec-purgatory.o

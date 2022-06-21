@@ -184,12 +184,21 @@ check_partition(struct gendisk *hd, struct block_device *bdev)
 	if (err)
 	/* The partition is unrecognized. So report I/O errors if there were any */
 		res = err;
+<<<<<<< HEAD
 	if (!res)
 		strlcat(state->pp_buf, " unknown partition table\n", PAGE_SIZE);
 	else if (warn_no_part)
 		strlcat(state->pp_buf, " unable to read partition table\n", PAGE_SIZE);
 
 	printk(KERN_INFO "%s", state->pp_buf);
+=======
+	if (res) {
+		if (warn_no_part)
+			strlcat(state->pp_buf,
+				" unable to read partition table\n", PAGE_SIZE);
+		printk(KERN_INFO "%s", state->pp_buf);
+	}
+>>>>>>> v4.9.227
 
 	free_page((unsigned long)state->pp_buf);
 	free_partitions(state);

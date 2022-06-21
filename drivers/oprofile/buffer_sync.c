@@ -21,6 +21,10 @@
  * objects.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/file.h>
+>>>>>>> v4.9.227
 #include <linux/mm.h>
 #include <linux/workqueue.h>
 #include <linux/notifier.h>
@@ -224,10 +228,25 @@ static inline unsigned long fast_get_dcookie(struct path *path)
 static unsigned long get_exec_dcookie(struct mm_struct *mm)
 {
 	unsigned long cookie = NO_COOKIE;
+<<<<<<< HEAD
 
 	if (mm && mm->exe_file)
 		cookie = fast_get_dcookie(&mm->exe_file->f_path);
 
+=======
+	struct file *exe_file;
+
+	if (!mm)
+		goto done;
+
+	exe_file = get_mm_exe_file(mm);
+	if (!exe_file)
+		goto done;
+
+	cookie = fast_get_dcookie(&exe_file->f_path);
+	fput(exe_file);
+done:
+>>>>>>> v4.9.227
 	return cookie;
 }
 
@@ -236,6 +255,11 @@ static unsigned long get_exec_dcookie(struct mm_struct *mm)
  * pair that can then be added to the global event buffer. We make
  * sure to do this lookup before a mm->mmap modification happens so
  * we don't lose track.
+<<<<<<< HEAD
+=======
+ *
+ * The caller must ensure the mm is not nil (ie: not a kernel thread).
+>>>>>>> v4.9.227
  */
 static unsigned long
 lookup_dcookie(struct mm_struct *mm, unsigned long addr, off_t *offset)
@@ -243,6 +267,10 @@ lookup_dcookie(struct mm_struct *mm, unsigned long addr, off_t *offset)
 	unsigned long cookie = NO_COOKIE;
 	struct vm_area_struct *vma;
 
+<<<<<<< HEAD
+=======
+	down_read(&mm->mmap_sem);
+>>>>>>> v4.9.227
 	for (vma = find_vma(mm, addr); vma; vma = vma->vm_next) {
 
 		if (addr < vma->vm_start || addr >= vma->vm_end)
@@ -262,6 +290,10 @@ lookup_dcookie(struct mm_struct *mm, unsigned long addr, off_t *offset)
 
 	if (!vma)
 		cookie = INVALID_COOKIE;
+<<<<<<< HEAD
+=======
+	up_read(&mm->mmap_sem);
+>>>>>>> v4.9.227
 
 	return cookie;
 }
@@ -402,6 +434,7 @@ static void release_mm(struct mm_struct *mm)
 {
 	if (!mm)
 		return;
+<<<<<<< HEAD
 	up_read(&mm->mmap_sem);
 	mmput(mm);
 }
@@ -416,6 +449,11 @@ static struct mm_struct *take_tasks_mm(struct task_struct *task)
 }
 
 
+=======
+	mmput(mm);
+}
+
+>>>>>>> v4.9.227
 static inline int is_code(unsigned long val)
 {
 	return val == ESCAPE_CODE;
@@ -532,7 +570,11 @@ void sync_buffer(int cpu)
 				new = (struct task_struct *)val;
 				oldmm = mm;
 				release_mm(oldmm);
+<<<<<<< HEAD
 				mm = take_tasks_mm(new);
+=======
+				mm = get_task_mm(new);
+>>>>>>> v4.9.227
 				if (mm != oldmm)
 					cookie = get_exec_dcookie(mm);
 				add_user_ctx_switch(new, cookie);

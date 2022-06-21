@@ -31,6 +31,10 @@
 #include "pinctrl-mvebu.h"
 
 static void __iomem *mpp_base;
+<<<<<<< HEAD
+=======
+static u32 *mpp_saved_regs;
+>>>>>>> v4.9.227
 
 static int armada_xp_mpp_ctrl_get(unsigned pid, unsigned long *config)
 {
@@ -53,7 +57,11 @@ enum armada_xp_variant {
 static struct mvebu_mpp_mode armada_xp_mpp_modes[] = {
 	MPP_MODE(0,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x1, "ge0", "txclko",     V_MV78230_PLUS),
+=======
+		 MPP_VAR_FUNCTION(0x1, "ge0", "txclkout",   V_MV78230_PLUS),
+>>>>>>> v4.9.227
 		 MPP_VAR_FUNCTION(0x4, "lcd", "d0",         V_MV78230_PLUS)),
 	MPP_MODE(1,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
@@ -102,17 +110,29 @@ static struct mvebu_mpp_mode armada_xp_mpp_modes[] = {
 	MPP_MODE(12,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "ge0", "txd4",       V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x2, "ge1", "clkout",     V_MV78230_PLUS),
+=======
+		 MPP_VAR_FUNCTION(0x2, "ge1", "txclkout",   V_MV78230_PLUS),
+>>>>>>> v4.9.227
 		 MPP_VAR_FUNCTION(0x4, "lcd", "d12",        V_MV78230_PLUS)),
 	MPP_MODE(13,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "ge0", "txd5",       V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "ge1", "txd0",       V_MV78230_PLUS),
+<<<<<<< HEAD
+=======
+		 MPP_VAR_FUNCTION(0x3, "spi1", "mosi",      V_MV78230_PLUS),
+>>>>>>> v4.9.227
 		 MPP_VAR_FUNCTION(0x4, "lcd", "d13",        V_MV78230_PLUS)),
 	MPP_MODE(14,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "ge0", "txd6",       V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "ge1", "txd1",       V_MV78230_PLUS),
+<<<<<<< HEAD
+=======
+		 MPP_VAR_FUNCTION(0x3, "spi1", "sck",       V_MV78230_PLUS),
+>>>>>>> v4.9.227
 		 MPP_VAR_FUNCTION(0x4, "lcd", "d14",        V_MV78230_PLUS)),
 	MPP_MODE(15,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
@@ -123,11 +143,19 @@ static struct mvebu_mpp_mode armada_xp_mpp_modes[] = {
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "ge0", "txclk",      V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "ge1", "txd3",       V_MV78230_PLUS),
+<<<<<<< HEAD
+=======
+		 MPP_VAR_FUNCTION(0x3, "spi1", "cs0",       V_MV78230_PLUS),
+>>>>>>> v4.9.227
 		 MPP_VAR_FUNCTION(0x4, "lcd", "d16",        V_MV78230_PLUS)),
 	MPP_MODE(17,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "ge0", "col",        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "ge1", "txctl",      V_MV78230_PLUS),
+<<<<<<< HEAD
+=======
+		 MPP_VAR_FUNCTION(0x3, "spi1", "miso",      V_MV78230_PLUS),
+>>>>>>> v4.9.227
 		 MPP_VAR_FUNCTION(0x4, "lcd", "d17",        V_MV78230_PLUS)),
 	MPP_MODE(18,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
@@ -151,7 +179,11 @@ static struct mvebu_mpp_mode armada_xp_mpp_modes[] = {
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "ge0", "rxd5",       V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "ge1", "rxd3",       V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x3, "mem", "bat",        V_MV78230_PLUS),
+=======
+		 MPP_VAR_FUNCTION(0x3, "dram", "bat",       V_MV78230_PLUS),
+>>>>>>> v4.9.227
 		 MPP_VAR_FUNCTION(0x4, "lcd", "d21",        V_MV78230_PLUS)),
 	MPP_MODE(22,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
@@ -210,12 +242,22 @@ static struct mvebu_mpp_mode armada_xp_mpp_modes[] = {
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "sd0", "d1",         V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x3, "tdm", "int4",       V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x4, "mem", "bat",        V_MV78230_PLUS)),
+=======
+		 MPP_VAR_FUNCTION(0x4, "dram", "bat",       V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x5, "dram", "vttctrl",   V_MV78230_PLUS)),
+>>>>>>> v4.9.227
 	MPP_MODE(34,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "sd0", "d2",         V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "sata0", "prsnt",    V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x3, "tdm", "int5",       V_MV78230_PLUS)),
+=======
+		 MPP_VAR_FUNCTION(0x3, "tdm", "int5",       V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x4, "dram", "deccerr",   V_MV78230_PLUS)),
+>>>>>>> v4.9.227
 	MPP_MODE(35,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "sd0", "d3",         V_MV78230_PLUS),
@@ -223,6 +265,7 @@ static struct mvebu_mpp_mode armada_xp_mpp_modes[] = {
 		 MPP_VAR_FUNCTION(0x3, "tdm", "int6",       V_MV78230_PLUS)),
 	MPP_MODE(36,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x1, "spi", "mosi",       V_MV78230_PLUS)),
 	MPP_MODE(37,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
@@ -246,41 +289,99 @@ static struct mvebu_mpp_mode armada_xp_mpp_modes[] = {
 		 MPP_VAR_FUNCTION(0x3, "sata1", "prsnt",    V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x4, "lcd", "vga-vsync",  V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x5, "pcie", "clkreq1",   V_MV78230_PLUS)),
+=======
+		 MPP_VAR_FUNCTION(0x1, "spi0", "mosi",      V_MV78230_PLUS)),
+	MPP_MODE(37,
+		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x1, "spi0", "miso",      V_MV78230_PLUS)),
+	MPP_MODE(38,
+		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x1, "spi0", "sck",       V_MV78230_PLUS)),
+	MPP_MODE(39,
+		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x1, "spi0", "cs0",       V_MV78230_PLUS)),
+	MPP_MODE(40,
+		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x1, "spi0", "cs1",       V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x2, "uart2", "cts",      V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x4, "lcd", "vga-hsync",  V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x5, "pcie", "clkreq0",   V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x6, "spi1", "cs1",       V_MV78230_PLUS)),
+	MPP_MODE(41,
+		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x1, "spi0", "cs2",       V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x2, "uart2", "rts",      V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x3, "sata1", "prsnt",    V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x4, "lcd", "vga-vsync",  V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x5, "pcie", "clkreq1",   V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x6, "spi1", "cs2",       V_MV78230_PLUS)),
+>>>>>>> v4.9.227
 	MPP_MODE(42,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "uart2", "rxd",      V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "uart0", "cts",      V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x3, "tdm", "int7",       V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x4, "tdm-1", "timer",    V_MV78230_PLUS)),
+=======
+		 MPP_VAR_FUNCTION(0x4, "tdm", "timer",      V_MV78230_PLUS)),
+>>>>>>> v4.9.227
 	MPP_MODE(43,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "uart2", "txd",      V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "uart0", "rts",      V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x3, "spi", "cs3",        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x4, "pcie", "rstout",    V_MV78230_PLUS)),
+=======
+		 MPP_VAR_FUNCTION(0x3, "spi0", "cs3",       V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x4, "pcie", "rstout",    V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x6, "spi1", "cs3",       V_MV78230_PLUS)),
+>>>>>>> v4.9.227
 	MPP_MODE(44,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "uart2", "cts",      V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "uart3", "rxd",      V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x3, "spi", "cs4",        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x4, "mem", "bat",        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x5, "pcie", "clkreq2",   V_MV78230_PLUS)),
+=======
+		 MPP_VAR_FUNCTION(0x3, "spi0", "cs4",       V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x4, "dram", "bat",       V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x5, "pcie", "clkreq2",   V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x6, "spi1", "cs4",       V_MV78230_PLUS)),
+>>>>>>> v4.9.227
 	MPP_MODE(45,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "uart2", "rts",      V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "uart3", "txd",      V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x3, "spi", "cs5",        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x4, "sata1", "prsnt",    V_MV78230_PLUS)),
+=======
+		 MPP_VAR_FUNCTION(0x3, "spi0", "cs5",       V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x4, "sata1", "prsnt",    V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x5, "dram", "vttctrl",   V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x6, "spi1", "cs5",       V_MV78230_PLUS)),
+>>>>>>> v4.9.227
 	MPP_MODE(46,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "uart3", "rts",      V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "uart1", "rts",      V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x3, "spi", "cs6",        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x4, "sata0", "prsnt",    V_MV78230_PLUS)),
+=======
+		 MPP_VAR_FUNCTION(0x3, "spi0", "cs6",       V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x4, "sata0", "prsnt",    V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x6, "spi1", "cs6",       V_MV78230_PLUS)),
+>>>>>>> v4.9.227
 	MPP_MODE(47,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "uart3", "cts",      V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "uart1", "cts",      V_MV78230_PLUS),
+<<<<<<< HEAD
 		 MPP_VAR_FUNCTION(0x3, "spi", "cs7",        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x4, "ref", "clkout",     V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x5, "pcie", "clkreq3",   V_MV78230_PLUS)),
@@ -288,6 +389,17 @@ static struct mvebu_mpp_mode armada_xp_mpp_modes[] = {
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "dev", "clkout",     V_MV78230_PLUS),
 		 MPP_VAR_FUNCTION(0x2, "dev", "burst/last", V_MV78230_PLUS)),
+=======
+		 MPP_VAR_FUNCTION(0x3, "spi0", "cs7",       V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x4, "ref", "clkout",     V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x5, "pcie", "clkreq3",   V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x6, "spi1", "cs7",       V_MV78230_PLUS)),
+	MPP_MODE(48,
+		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x1, "dev", "clkout",     V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x2, "dev", "burst/last", V_MV78230_PLUS),
+		 MPP_VAR_FUNCTION(0x3, "nand", "rb",        V_MV78230_PLUS)),
+>>>>>>> v4.9.227
 	MPP_MODE(49,
 		 MPP_VAR_FUNCTION(0x0, "gpio", NULL,        V_MV78260_PLUS),
 		 MPP_VAR_FUNCTION(0x1, "dev", "we3",        V_MV78260_PLUS)),
@@ -346,7 +458,11 @@ static struct mvebu_mpp_mode armada_xp_mpp_modes[] = {
 
 static struct mvebu_pinctrl_soc_info armada_xp_pinctrl_info;
 
+<<<<<<< HEAD
 static struct of_device_id armada_xp_pinctrl_of_match[] = {
+=======
+static const struct of_device_id armada_xp_pinctrl_of_match[] = {
+>>>>>>> v4.9.227
 	{
 		.compatible = "marvell,mv78230-pinctrl",
 		.data       = (void *) V_MV78230,
@@ -391,12 +507,48 @@ static struct pinctrl_gpio_range mv78460_mpp_gpio_ranges[] = {
 	MPP_GPIO_RANGE(2,  64, 64,  3),
 };
 
+<<<<<<< HEAD
+=======
+static int armada_xp_pinctrl_suspend(struct platform_device *pdev,
+				     pm_message_t state)
+{
+	struct mvebu_pinctrl_soc_info *soc =
+		platform_get_drvdata(pdev);
+	int i, nregs;
+
+	nregs = DIV_ROUND_UP(soc->nmodes, MVEBU_MPPS_PER_REG);
+
+	for (i = 0; i < nregs; i++)
+		mpp_saved_regs[i] = readl(mpp_base + i * 4);
+
+	return 0;
+}
+
+static int armada_xp_pinctrl_resume(struct platform_device *pdev)
+{
+	struct mvebu_pinctrl_soc_info *soc =
+		platform_get_drvdata(pdev);
+	int i, nregs;
+
+	nregs = DIV_ROUND_UP(soc->nmodes, MVEBU_MPPS_PER_REG);
+
+	for (i = 0; i < nregs; i++)
+		writel(mpp_saved_regs[i], mpp_base + i * 4);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int armada_xp_pinctrl_probe(struct platform_device *pdev)
 {
 	struct mvebu_pinctrl_soc_info *soc = &armada_xp_pinctrl_info;
 	const struct of_device_id *match =
 		of_match_device(armada_xp_pinctrl_of_match, &pdev->dev);
 	struct resource *res;
+<<<<<<< HEAD
+=======
+	int nregs;
+>>>>>>> v4.9.227
 
 	if (!match)
 		return -ENODEV;
@@ -444,11 +596,22 @@ static int armada_xp_pinctrl_probe(struct platform_device *pdev)
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	nregs = DIV_ROUND_UP(soc->nmodes, MVEBU_MPPS_PER_REG);
+
+	mpp_saved_regs = devm_kmalloc(&pdev->dev, nregs * sizeof(u32),
+				      GFP_KERNEL);
+	if (!mpp_saved_regs)
+		return -ENOMEM;
+
+>>>>>>> v4.9.227
 	pdev->dev.platform_data = soc;
 
 	return mvebu_pinctrl_probe(pdev);
 }
 
+<<<<<<< HEAD
 static int armada_xp_pinctrl_remove(struct platform_device *pdev)
 {
 	return mvebu_pinctrl_remove(pdev);
@@ -462,6 +625,16 @@ static struct platform_driver armada_xp_pinctrl_driver = {
 	},
 	.probe = armada_xp_pinctrl_probe,
 	.remove = armada_xp_pinctrl_remove,
+=======
+static struct platform_driver armada_xp_pinctrl_driver = {
+	.driver = {
+		.name = "armada-xp-pinctrl",
+		.of_match_table = armada_xp_pinctrl_of_match,
+	},
+	.probe = armada_xp_pinctrl_probe,
+	.suspend = armada_xp_pinctrl_suspend,
+	.resume = armada_xp_pinctrl_resume,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(armada_xp_pinctrl_driver);

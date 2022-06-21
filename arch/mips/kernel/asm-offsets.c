@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * offset.c: Calculate pt_regs and task_struct offsets.
+=======
+ * asm-offsets.c: Calculate pt_regs and task_struct offsets.
+>>>>>>> v4.9.227
  *
  * Copyright (C) 1996 David S. Miller
  * Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003 Ralf Baechle
@@ -14,6 +18,10 @@
 #include <linux/mm.h>
 #include <linux/kbuild.h>
 #include <linux/suspend.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu-info.h>
+>>>>>>> v4.9.227
 #include <asm/pm.h>
 #include <asm/ptrace.h>
 #include <asm/processor.h>
@@ -92,15 +100,27 @@ void output_thread_info_defines(void)
 {
 	COMMENT("MIPS thread_info offsets.");
 	OFFSET(TI_TASK, thread_info, task);
+<<<<<<< HEAD
 	OFFSET(TI_EXEC_DOMAIN, thread_info, exec_domain);
+=======
+>>>>>>> v4.9.227
 	OFFSET(TI_FLAGS, thread_info, flags);
 	OFFSET(TI_TP_VALUE, thread_info, tp_value);
 	OFFSET(TI_CPU, thread_info, cpu);
 	OFFSET(TI_PRE_COUNT, thread_info, preempt_count);
+<<<<<<< HEAD
+=======
+	OFFSET(TI_R2_EMUL_RET, thread_info, r2_emul_return);
+>>>>>>> v4.9.227
 	OFFSET(TI_ADDR_LIMIT, thread_info, addr_limit);
 	OFFSET(TI_REGS, thread_info, regs);
 	DEFINE(_THREAD_SIZE, THREAD_SIZE);
 	DEFINE(_THREAD_MASK, THREAD_MASK);
+<<<<<<< HEAD
+=======
+	DEFINE(_IRQ_STACK_SIZE, IRQ_STACK_SIZE);
+	DEFINE(_IRQ_STACK_START, IRQ_STACK_START);
+>>>>>>> v4.9.227
 	BLANK();
 }
 
@@ -128,6 +148,10 @@ void output_thread_defines(void)
 	       thread.cp0_baduaddr);
 	OFFSET(THREAD_ECODE, task_struct, \
 	       thread.error_code);
+<<<<<<< HEAD
+=======
+	OFFSET(THREAD_TRAPNO, task_struct, thread.trap_nr);
+>>>>>>> v4.9.227
 	BLANK();
 }
 
@@ -166,6 +190,7 @@ void output_thread_fpu_defines(void)
 	OFFSET(THREAD_FPR30, task_struct, thread.fpu.fpr[30]);
 	OFFSET(THREAD_FPR31, task_struct, thread.fpu.fpr[31]);
 
+<<<<<<< HEAD
 	/* the least significant 64 bits of each FP register */
 	OFFSET(THREAD_FPR0_LS64, task_struct,
 	       thread.fpu.fpr[0].val64[FPR_IDX(64, 0)]);
@@ -232,6 +257,8 @@ void output_thread_fpu_defines(void)
 	OFFSET(THREAD_FPR31_LS64, task_struct,
 	       thread.fpu.fpr[31].val64[FPR_IDX(64, 0)]);
 
+=======
+>>>>>>> v4.9.227
 	OFFSET(THREAD_FCR31, task_struct, thread.fpu.fcr31);
 	OFFSET(THREAD_MSA_CSR, task_struct, thread.fpu.msacsr);
 	BLANK();
@@ -311,6 +338,7 @@ void output_sc_defines(void)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS32_COMPAT
 void output_sc32_defines(void)
 {
@@ -322,6 +350,8 @@ void output_sc32_defines(void)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 void output_signal_defined(void)
 {
 	COMMENT("Linux signal numbers.");
@@ -381,6 +411,10 @@ void output_octeon_cop2_state_defines(void)
 	OFFSET(OCTEON_CP2_GFM_RESULT,	octeon_cop2_state, cop2_gfm_result);
 	OFFSET(OCTEON_CP2_HSH_DATW,	octeon_cop2_state, cop2_hsh_datw);
 	OFFSET(OCTEON_CP2_HSH_IVW,	octeon_cop2_state, cop2_hsh_ivw);
+<<<<<<< HEAD
+=======
+	OFFSET(OCTEON_CP2_SHA3,		octeon_cop2_state, cop2_sha3);
+>>>>>>> v4.9.227
 	OFFSET(THREAD_CP2,	task_struct, thread.cp2);
 	OFFSET(THREAD_CVMSEG,	task_struct, thread.cvmseg.cvmseg);
 	BLANK();
@@ -416,6 +450,7 @@ void output_pm_defines(void)
 void output_kvm_defines(void)
 {
 	COMMENT(" KVM/MIPS Specfic offsets. ");
+<<<<<<< HEAD
 	DEFINE(VCPU_ARCH_SIZE, sizeof(struct kvm_vcpu_arch));
 	OFFSET(VCPU_RUN, kvm_vcpu, run);
 	OFFSET(VCPU_HOST_ARCH, kvm_vcpu, arch);
@@ -474,6 +509,44 @@ void output_kvm_defines(void)
 
 	OFFSET(COP0_TLB_HI, mips_coproc, reg[MIPS_CP0_TLB_HI][0]);
 	OFFSET(COP0_STATUS, mips_coproc, reg[MIPS_CP0_STATUS][0]);
+=======
+
+	OFFSET(VCPU_FPR0, kvm_vcpu_arch, fpu.fpr[0]);
+	OFFSET(VCPU_FPR1, kvm_vcpu_arch, fpu.fpr[1]);
+	OFFSET(VCPU_FPR2, kvm_vcpu_arch, fpu.fpr[2]);
+	OFFSET(VCPU_FPR3, kvm_vcpu_arch, fpu.fpr[3]);
+	OFFSET(VCPU_FPR4, kvm_vcpu_arch, fpu.fpr[4]);
+	OFFSET(VCPU_FPR5, kvm_vcpu_arch, fpu.fpr[5]);
+	OFFSET(VCPU_FPR6, kvm_vcpu_arch, fpu.fpr[6]);
+	OFFSET(VCPU_FPR7, kvm_vcpu_arch, fpu.fpr[7]);
+	OFFSET(VCPU_FPR8, kvm_vcpu_arch, fpu.fpr[8]);
+	OFFSET(VCPU_FPR9, kvm_vcpu_arch, fpu.fpr[9]);
+	OFFSET(VCPU_FPR10, kvm_vcpu_arch, fpu.fpr[10]);
+	OFFSET(VCPU_FPR11, kvm_vcpu_arch, fpu.fpr[11]);
+	OFFSET(VCPU_FPR12, kvm_vcpu_arch, fpu.fpr[12]);
+	OFFSET(VCPU_FPR13, kvm_vcpu_arch, fpu.fpr[13]);
+	OFFSET(VCPU_FPR14, kvm_vcpu_arch, fpu.fpr[14]);
+	OFFSET(VCPU_FPR15, kvm_vcpu_arch, fpu.fpr[15]);
+	OFFSET(VCPU_FPR16, kvm_vcpu_arch, fpu.fpr[16]);
+	OFFSET(VCPU_FPR17, kvm_vcpu_arch, fpu.fpr[17]);
+	OFFSET(VCPU_FPR18, kvm_vcpu_arch, fpu.fpr[18]);
+	OFFSET(VCPU_FPR19, kvm_vcpu_arch, fpu.fpr[19]);
+	OFFSET(VCPU_FPR20, kvm_vcpu_arch, fpu.fpr[20]);
+	OFFSET(VCPU_FPR21, kvm_vcpu_arch, fpu.fpr[21]);
+	OFFSET(VCPU_FPR22, kvm_vcpu_arch, fpu.fpr[22]);
+	OFFSET(VCPU_FPR23, kvm_vcpu_arch, fpu.fpr[23]);
+	OFFSET(VCPU_FPR24, kvm_vcpu_arch, fpu.fpr[24]);
+	OFFSET(VCPU_FPR25, kvm_vcpu_arch, fpu.fpr[25]);
+	OFFSET(VCPU_FPR26, kvm_vcpu_arch, fpu.fpr[26]);
+	OFFSET(VCPU_FPR27, kvm_vcpu_arch, fpu.fpr[27]);
+	OFFSET(VCPU_FPR28, kvm_vcpu_arch, fpu.fpr[28]);
+	OFFSET(VCPU_FPR29, kvm_vcpu_arch, fpu.fpr[29]);
+	OFFSET(VCPU_FPR30, kvm_vcpu_arch, fpu.fpr[30]);
+	OFFSET(VCPU_FPR31, kvm_vcpu_arch, fpu.fpr[31]);
+
+	OFFSET(VCPU_FCR31, kvm_vcpu_arch, fpu.fcr31);
+	OFFSET(VCPU_MSA_CSR, kvm_vcpu_arch, fpu.msacsr);
+>>>>>>> v4.9.227
 	BLANK();
 }
 

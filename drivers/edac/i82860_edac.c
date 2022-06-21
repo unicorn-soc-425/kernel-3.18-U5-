@@ -343,20 +343,29 @@ fail1:
 	pci_unregister_driver(&i82860_driver);
 
 fail0:
+<<<<<<< HEAD
 	if (mci_pdev != NULL)
 		pci_dev_put(mci_pdev);
 
+=======
+	pci_dev_put(mci_pdev);
+>>>>>>> v4.9.227
 	return pci_rc;
 }
 
 static void __exit i82860_exit(void)
 {
 	edac_dbg(3, "\n");
+<<<<<<< HEAD
 
 	pci_unregister_driver(&i82860_driver);
 
 	if (mci_pdev != NULL)
 		pci_dev_put(mci_pdev);
+=======
+	pci_unregister_driver(&i82860_driver);
+	pci_dev_put(mci_pdev);
+>>>>>>> v4.9.227
 }
 
 module_init(i82860_init);

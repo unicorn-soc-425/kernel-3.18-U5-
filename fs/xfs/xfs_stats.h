@@ -19,8 +19,11 @@
 #define __XFS_STATS_H__
 
 
+<<<<<<< HEAD
 #if defined(CONFIG_PROC_FS) && !defined(XFS_STATS_OFF)
 
+=======
+>>>>>>> v4.9.227
 #include <linux/percpu.h>
 
 /*
@@ -199,7 +202,43 @@ struct xfsstats {
 	__uint32_t		xs_fibt_2_alloc;
 	__uint32_t		xs_fibt_2_free;
 	__uint32_t		xs_fibt_2_moves;
+<<<<<<< HEAD
 #define XFSSTAT_END_XQMSTAT		(XFSSTAT_END_FIBT_V2+6)
+=======
+#define XFSSTAT_END_RMAP_V2		(XFSSTAT_END_FIBT_V2+15)
+	__uint32_t		xs_rmap_2_lookup;
+	__uint32_t		xs_rmap_2_compare;
+	__uint32_t		xs_rmap_2_insrec;
+	__uint32_t		xs_rmap_2_delrec;
+	__uint32_t		xs_rmap_2_newroot;
+	__uint32_t		xs_rmap_2_killroot;
+	__uint32_t		xs_rmap_2_increment;
+	__uint32_t		xs_rmap_2_decrement;
+	__uint32_t		xs_rmap_2_lshift;
+	__uint32_t		xs_rmap_2_rshift;
+	__uint32_t		xs_rmap_2_split;
+	__uint32_t		xs_rmap_2_join;
+	__uint32_t		xs_rmap_2_alloc;
+	__uint32_t		xs_rmap_2_free;
+	__uint32_t		xs_rmap_2_moves;
+#define XFSSTAT_END_REFCOUNT		(XFSSTAT_END_RMAP_V2 + 15)
+	__uint32_t		xs_refcbt_2_lookup;
+	__uint32_t		xs_refcbt_2_compare;
+	__uint32_t		xs_refcbt_2_insrec;
+	__uint32_t		xs_refcbt_2_delrec;
+	__uint32_t		xs_refcbt_2_newroot;
+	__uint32_t		xs_refcbt_2_killroot;
+	__uint32_t		xs_refcbt_2_increment;
+	__uint32_t		xs_refcbt_2_decrement;
+	__uint32_t		xs_refcbt_2_lshift;
+	__uint32_t		xs_refcbt_2_rshift;
+	__uint32_t		xs_refcbt_2_split;
+	__uint32_t		xs_refcbt_2_join;
+	__uint32_t		xs_refcbt_2_alloc;
+	__uint32_t		xs_refcbt_2_free;
+	__uint32_t		xs_refcbt_2_moves;
+#define XFSSTAT_END_XQMSTAT		(XFSSTAT_END_REFCOUNT + 6)
+>>>>>>> v4.9.227
 	__uint32_t		xs_qm_dqreclaims;
 	__uint32_t		xs_qm_dqreclaim_misses;
 	__uint32_t		xs_qm_dquot_dups;
@@ -215,6 +254,7 @@ struct xfsstats {
 	__uint64_t		xs_read_bytes;
 };
 
+<<<<<<< HEAD
 DECLARE_PER_CPU(struct xfsstats, xfsstats);
 
 /*
@@ -224,6 +264,31 @@ DECLARE_PER_CPU(struct xfsstats, xfsstats);
 #define XFS_STATS_INC(v)	(per_cpu(xfsstats, current_cpu()).v++)
 #define XFS_STATS_DEC(v)	(per_cpu(xfsstats, current_cpu()).v--)
 #define XFS_STATS_ADD(v, inc)	(per_cpu(xfsstats, current_cpu()).v += (inc))
+=======
+int xfs_stats_format(struct xfsstats __percpu *stats, char *buf);
+void xfs_stats_clearall(struct xfsstats __percpu *stats);
+extern struct xstats xfsstats;
+
+#define XFS_STATS_INC(mp, v)					\
+do {								\
+	per_cpu_ptr(xfsstats.xs_stats, current_cpu())->v++;	\
+	per_cpu_ptr(mp->m_stats.xs_stats, current_cpu())->v++;	\
+} while (0)
+
+#define XFS_STATS_DEC(mp, v)					\
+do {								\
+	per_cpu_ptr(xfsstats.xs_stats, current_cpu())->v--;	\
+	per_cpu_ptr(mp->m_stats.xs_stats, current_cpu())->v--;	\
+} while (0)
+
+#define XFS_STATS_ADD(mp, v, inc)					\
+do {									\
+	per_cpu_ptr(xfsstats.xs_stats, current_cpu())->v += (inc);	\
+	per_cpu_ptr(mp->m_stats.xs_stats, current_cpu())->v += (inc);	\
+} while (0)
+
+#if defined(CONFIG_PROC_FS)
+>>>>>>> v4.9.227
 
 extern int xfs_init_procfs(void);
 extern void xfs_cleanup_procfs(void);
@@ -231,10 +296,13 @@ extern void xfs_cleanup_procfs(void);
 
 #else	/* !CONFIG_PROC_FS */
 
+<<<<<<< HEAD
 # define XFS_STATS_INC(count)
 # define XFS_STATS_DEC(count)
 # define XFS_STATS_ADD(count, inc)
 
+=======
+>>>>>>> v4.9.227
 static inline int xfs_init_procfs(void)
 {
 	return 0;

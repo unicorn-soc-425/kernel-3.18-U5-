@@ -2,7 +2,11 @@
 #define __LINUX_BRIDGE_NETFILTER_H
 
 #include <uapi/linux/netfilter_bridge.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/skbuff.h>
+>>>>>>> v4.9.227
 
 enum nf_br_hook_priorities {
 	NF_BR_PRI_FIRST = INT_MIN,
@@ -17,6 +21,7 @@ enum nf_br_hook_priorities {
 
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
 
+<<<<<<< HEAD
 #define BRNF_PKT_TYPE			0x01
 #define BRNF_BRIDGED_DNAT		0x02
 #define BRNF_BRIDGED			0x04
@@ -109,6 +114,9 @@ struct bridge_skb_cb {
 		__be32 ipv4;
 	} daddr;
 };
+=======
+int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb);
+>>>>>>> v4.9.227
 
 static inline void br_drop_fake_rtable(struct sk_buff *skb)
 {
@@ -118,10 +126,57 @@ static inline void br_drop_fake_rtable(struct sk_buff *skb)
 		skb_dst_drop(skb);
 }
 
+<<<<<<< HEAD
 #else
 #define nf_bridge_maybe_copy_header(skb)	(0)
 #define nf_bridge_pad(skb)			(0)
 #define br_drop_fake_rtable(skb)	        do { } while (0)
+=======
+static inline int nf_bridge_get_physinif(const struct sk_buff *skb)
+{
+	struct nf_bridge_info *nf_bridge;
+
+	if (skb->nf_bridge == NULL)
+		return 0;
+
+	nf_bridge = skb->nf_bridge;
+	return nf_bridge->physindev ? nf_bridge->physindev->ifindex : 0;
+}
+
+static inline int nf_bridge_get_physoutif(const struct sk_buff *skb)
+{
+	struct nf_bridge_info *nf_bridge;
+
+	if (skb->nf_bridge == NULL)
+		return 0;
+
+	nf_bridge = skb->nf_bridge;
+	return nf_bridge->physoutdev ? nf_bridge->physoutdev->ifindex : 0;
+}
+
+static inline struct net_device *
+nf_bridge_get_physindev(const struct sk_buff *skb)
+{
+	return skb->nf_bridge ? skb->nf_bridge->physindev : NULL;
+}
+
+static inline struct net_device *
+nf_bridge_get_physoutdev(const struct sk_buff *skb)
+{
+	return skb->nf_bridge ? skb->nf_bridge->physoutdev : NULL;
+}
+
+static inline bool nf_bridge_in_prerouting(const struct sk_buff *skb)
+{
+	return skb->nf_bridge && skb->nf_bridge->in_prerouting;
+}
+#else
+#define br_drop_fake_rtable(skb)	        do { } while (0)
+static inline bool nf_bridge_in_prerouting(const struct sk_buff *skb)
+{
+	return false;
+}
+>>>>>>> v4.9.227
 #endif /* CONFIG_BRIDGE_NETFILTER */
 
 #endif

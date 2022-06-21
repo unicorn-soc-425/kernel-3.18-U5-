@@ -75,7 +75,14 @@ find_unwind_entry(unsigned long addr)
 	if (addr >= kernel_unwind_table.start && 
 	    addr <= kernel_unwind_table.end)
 		e = find_unwind_entry_in_table(&kernel_unwind_table, addr);
+<<<<<<< HEAD
 	else 
+=======
+	else {
+		unsigned long flags;
+
+		spin_lock_irqsave(&unwind_lock, flags);
+>>>>>>> v4.9.227
 		list_for_each_entry(table, &unwind_tables, list) {
 			if (addr >= table->start && 
 			    addr <= table->end)
@@ -86,6 +93,11 @@ find_unwind_entry(unsigned long addr)
 				break;
 			}
 		}
+<<<<<<< HEAD
+=======
+		spin_unlock_irqrestore(&unwind_lock, flags);
+	}
+>>>>>>> v4.9.227
 
 	return e;
 }
@@ -303,6 +315,7 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 
 			insn = *(unsigned int *)npc;
 
+<<<<<<< HEAD
 			if ((insn & 0xffffc000) == 0x37de0000 ||
 			    (insn & 0xffe00000) == 0x6fc00000) {
 				/* ldo X(sp), sp, or stwm X,D(sp) */
@@ -315,6 +328,18 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 				/* std,ma X,D(sp) */
 				frame_size += (insn & 0x1 ? -1 << 13 : 0) | 
 					(((insn >> 4) & 0x3ff) << 3);
+=======
+			if ((insn & 0xffffc001) == 0x37de0000 ||
+			    (insn & 0xffe00001) == 0x6fc00000) {
+				/* ldo X(sp), sp, or stwm X,D(sp) */
+				frame_size += (insn & 0x3fff) >> 1;
+				dbg("analyzing func @ %lx, insn=%08x @ "
+				    "%lx, frame_size = %ld\n", info->ip,
+				    insn, npc, frame_size);
+			} else if ((insn & 0xffe00009) == 0x73c00008) {
+				/* std,ma X,D(sp) */
+				frame_size += ((insn >> 4) & 0x3ff) << 3;
+>>>>>>> v4.9.227
 				dbg("analyzing func @ %lx, insn=%08x @ "
 				    "%lx, frame_size = %ld\n", info->ip,
 				    insn, npc, frame_size);
@@ -333,6 +358,12 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 			}
 		}
 
+<<<<<<< HEAD
+=======
+		if (frame_size > e->Total_frame_size << 3)
+			frame_size = e->Total_frame_size << 3;
+
+>>>>>>> v4.9.227
 		if (!unwind_special(info, e->region_start, frame_size)) {
 			info->prev_sp = info->sp - frame_size;
 			if (e->Millicode)

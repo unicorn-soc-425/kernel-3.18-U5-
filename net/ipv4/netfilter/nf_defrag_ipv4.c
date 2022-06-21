@@ -22,6 +22,7 @@
 #endif
 #include <net/netfilter/nf_conntrack_zones.h>
 
+<<<<<<< HEAD
 static int nf_ct_ipv4_gather_frags(struct sk_buff *skb, u_int32_t user)
 {
 	int err;
@@ -36,6 +37,19 @@ static int nf_ct_ipv4_gather_frags(struct sk_buff *skb, u_int32_t user)
 		ip_send_check(ip_hdr(skb));
 		skb->ignore_df = 1;
 	}
+=======
+static int nf_ct_ipv4_gather_frags(struct net *net, struct sk_buff *skb,
+				   u_int32_t user)
+{
+	int err;
+
+	local_bh_disable();
+	err = ip_defrag(net, skb, user);
+	local_bh_enable();
+
+	if (!err)
+		skb->ignore_df = 1;
+>>>>>>> v4.9.227
 
 	return err;
 }
@@ -43,6 +57,7 @@ static int nf_ct_ipv4_gather_frags(struct sk_buff *skb, u_int32_t user)
 static enum ip_defrag_users nf_ct_defrag_user(unsigned int hooknum,
 					      struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	u16 zone = NF_CT_DEFAULT_ZONE;
 
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
@@ -72,6 +87,34 @@ static unsigned int ipv4_conntrack_defrag(const struct nf_hook_ops *ops,
 
 	if (sk && (sk->sk_family == PF_INET) &&
 	    inet->nodefrag)
+=======
+	u16 zone_id = NF_CT_DEFAULT_ZONE_ID;
+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+	if (skb->nfct) {
+		enum ip_conntrack_info ctinfo;
+		const struct nf_conn *ct = nf_ct_get(skb, &ctinfo);
+
+		zone_id = nf_ct_zone_id(nf_ct_zone(ct), CTINFO2DIR(ctinfo));
+	}
+#endif
+	if (nf_bridge_in_prerouting(skb))
+		return IP_DEFRAG_CONNTRACK_BRIDGE_IN + zone_id;
+
+	if (hooknum == NF_INET_PRE_ROUTING)
+		return IP_DEFRAG_CONNTRACK_IN + zone_id;
+	else
+		return IP_DEFRAG_CONNTRACK_OUT + zone_id;
+}
+
+static unsigned int ipv4_conntrack_defrag(void *priv,
+					  struct sk_buff *skb,
+					  const struct nf_hook_state *state)
+{
+	struct sock *sk = skb->sk;
+
+	if (sk && sk_fullsock(sk) && (sk->sk_family == PF_INET) &&
+	    inet_sk(sk)->nodefrag)
+>>>>>>> v4.9.227
 		return NF_ACCEPT;
 
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
@@ -85,9 +128,15 @@ static unsigned int ipv4_conntrack_defrag(const struct nf_hook_ops *ops,
 	/* Gather fragments. */
 	if (ip_is_fragment(ip_hdr(skb))) {
 		enum ip_defrag_users user =
+<<<<<<< HEAD
 			nf_ct_defrag_user(ops->hooknum, skb);
 
 		if (nf_ct_ipv4_gather_frags(skb, user))
+=======
+			nf_ct_defrag_user(state->hook, skb);
+
+		if (nf_ct_ipv4_gather_frags(state->net, skb, user))
+>>>>>>> v4.9.227
 			return NF_STOLEN;
 	}
 	return NF_ACCEPT;
@@ -96,14 +145,20 @@ static unsigned int ipv4_conntrack_defrag(const struct nf_hook_ops *ops,
 static struct nf_hook_ops ipv4_defrag_ops[] = {
 	{
 		.hook		= ipv4_conntrack_defrag,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf		= NFPROTO_IPV4,
 		.hooknum	= NF_INET_PRE_ROUTING,
 		.priority	= NF_IP_PRI_CONNTRACK_DEFRAG,
 	},
 	{
 		.hook           = ipv4_conntrack_defrag,
+<<<<<<< HEAD
 		.owner          = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf             = NFPROTO_IPV4,
 		.hooknum        = NF_INET_LOCAL_OUT,
 		.priority       = NF_IP_PRI_CONNTRACK_DEFRAG,

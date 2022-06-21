@@ -6,6 +6,7 @@
 #include <asm/setup.h>
 
 
+<<<<<<< HEAD
 void * __init_refok zalloc_maybe_bootmem(size_t size, gfp_t mask)
 {
 	void *p;
@@ -16,6 +17,16 @@ void * __init_refok zalloc_maybe_bootmem(size_t size, gfp_t mask)
 		p = alloc_bootmem(size);
 		if (p)
 			memset(p, 0, size);
+=======
+void * __ref zalloc_maybe_bootmem(size_t size, gfp_t mask)
+{
+	void *p;
+
+	if (slab_is_available())
+		p = kzalloc(size, mask);
+	else {
+		p = memblock_virt_alloc(size, 0);
+>>>>>>> v4.9.227
 	}
 	return p;
 }

@@ -89,23 +89,37 @@ static const int isink_cur[] = {
 #define to_wm8350_led(led_cdev) \
 	container_of(led_cdev, struct wm8350_led, cdev)
 
+<<<<<<< HEAD
 static void wm8350_led_enable(struct wm8350_led *led)
 {
 	int ret;
 
 	if (led->enabled)
 		return;
+=======
+static int wm8350_led_enable(struct wm8350_led *led)
+{
+	int ret = 0;
+
+	if (led->enabled)
+		return ret;
+>>>>>>> v4.9.227
 
 	ret = regulator_enable(led->isink);
 	if (ret != 0) {
 		dev_err(led->cdev.dev, "Failed to enable ISINK: %d\n", ret);
+<<<<<<< HEAD
 		return;
+=======
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	ret = regulator_enable(led->dcdc);
 	if (ret != 0) {
 		dev_err(led->cdev.dev, "Failed to enable DCDC: %d\n", ret);
 		regulator_disable(led->isink);
+<<<<<<< HEAD
 		return;
 	}
 
@@ -118,11 +132,31 @@ static void wm8350_led_disable(struct wm8350_led *led)
 
 	if (!led->enabled)
 		return;
+=======
+		return ret;
+	}
+
+	led->enabled = 1;
+
+	return ret;
+}
+
+static int wm8350_led_disable(struct wm8350_led *led)
+{
+	int ret = 0;
+
+	if (!led->enabled)
+		return ret;
+>>>>>>> v4.9.227
 
 	ret = regulator_disable(led->dcdc);
 	if (ret != 0) {
 		dev_err(led->cdev.dev, "Failed to disable DCDC: %d\n", ret);
+<<<<<<< HEAD
 		return;
+=======
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	ret = regulator_disable(led->isink);
@@ -132,6 +166,7 @@ static void wm8350_led_disable(struct wm8350_led *led)
 		if (ret != 0)
 			dev_err(led->cdev.dev, "Failed to reenable DCDC: %d\n",
 				ret);
+<<<<<<< HEAD
 		return;
 	}
 
@@ -146,13 +181,36 @@ static void led_work(struct work_struct *work)
 	unsigned long flags;
 
 	mutex_lock(&led->mutex);
+=======
+		return ret;
+	}
+
+	led->enabled = 0;
+
+	return ret;
+}
+
+static int wm8350_led_set(struct led_classdev *led_cdev,
+			   enum led_brightness value)
+{
+	struct wm8350_led *led = to_wm8350_led(led_cdev);
+	unsigned long flags;
+	int ret;
+	int uA;
+
+	led->value = value;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&led->value_lock, flags);
 
 	if (led->value == LED_OFF) {
 		spin_unlock_irqrestore(&led->value_lock, flags);
+<<<<<<< HEAD
 		wm8350_led_disable(led);
 		goto out;
+=======
+		return wm8350_led_disable(led);
+>>>>>>> v4.9.227
 	}
 
 	/* This scales linearly into the index of valid current
@@ -166,6 +224,7 @@ static void led_work(struct work_struct *work)
 
 	ret = regulator_set_current_limit(led->isink, isink_cur[uA],
 					  isink_cur[uA]);
+<<<<<<< HEAD
 	if (ret != 0)
 		dev_err(led->cdev.dev, "Failed to set %duA: %d\n",
 			isink_cur[uA], ret);
@@ -186,16 +245,30 @@ static void wm8350_led_set(struct led_classdev *led_cdev,
 	led->value = value;
 	schedule_work(&led->work);
 	spin_unlock_irqrestore(&led->value_lock, flags);
+=======
+	if (ret != 0) {
+		dev_err(led->cdev.dev, "Failed to set %duA: %d\n",
+			isink_cur[uA], ret);
+		return ret;
+	}
+
+	return wm8350_led_enable(led);
+>>>>>>> v4.9.227
 }
 
 static void wm8350_led_shutdown(struct platform_device *pdev)
 {
 	struct wm8350_led *led = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	mutex_lock(&led->mutex);
 	led->value = LED_OFF;
 	wm8350_led_disable(led);
 	mutex_unlock(&led->mutex);
+=======
+	led->value = LED_OFF;
+	wm8350_led_disable(led);
+>>>>>>> v4.9.227
 }
 
 static int wm8350_led_probe(struct platform_device *pdev)
@@ -232,7 +305,11 @@ static int wm8350_led_probe(struct platform_device *pdev)
 	if (led == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	led->cdev.brightness_set = wm8350_led_set;
+=======
+	led->cdev.brightness_set_blocking = wm8350_led_set;
+>>>>>>> v4.9.227
 	led->cdev.default_trigger = pdata->default_trigger;
 	led->cdev.name = pdata->name;
 	led->cdev.flags |= LED_CORE_SUSPENDRESUME;
@@ -251,8 +328,11 @@ static int wm8350_led_probe(struct platform_device *pdev)
 			 pdata->max_uA);
 
 	spin_lock_init(&led->value_lock);
+<<<<<<< HEAD
 	mutex_init(&led->mutex);
 	INIT_WORK(&led->work, led_work);
+=======
+>>>>>>> v4.9.227
 	led->value = LED_OFF;
 	platform_set_drvdata(pdev, led);
 
@@ -264,7 +344,10 @@ static int wm8350_led_remove(struct platform_device *pdev)
 	struct wm8350_led *led = platform_get_drvdata(pdev);
 
 	led_classdev_unregister(&led->cdev);
+<<<<<<< HEAD
 	flush_work(&led->work);
+=======
+>>>>>>> v4.9.227
 	wm8350_led_disable(led);
 	return 0;
 }
@@ -272,7 +355,10 @@ static int wm8350_led_remove(struct platform_device *pdev)
 static struct platform_driver wm8350_led_driver = {
 	.driver = {
 		   .name = "wm8350-led",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   },
 	.probe = wm8350_led_probe,
 	.remove = wm8350_led_remove,

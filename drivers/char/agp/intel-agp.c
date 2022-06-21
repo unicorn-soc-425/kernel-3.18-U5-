@@ -920,5 +920,9 @@ static void __exit agp_intel_cleanup(void)
 module_init(agp_intel_init);
 module_exit(agp_intel_cleanup);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+MODULE_AUTHOR("Dave Jones, Various @Intel");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL and additional rights");

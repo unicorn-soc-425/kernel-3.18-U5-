@@ -76,11 +76,23 @@ static DEFINE_MUTEX(devlist);
 static __le32* cx88_risc_field(__le32 *rp, struct scatterlist *sglist,
 			    unsigned int offset, u32 sync_line,
 			    unsigned int bpl, unsigned int padding,
+<<<<<<< HEAD
 			    unsigned int lines, unsigned int lpi)
+=======
+			    unsigned int lines, unsigned int lpi, bool jump)
+>>>>>>> v4.9.227
 {
 	struct scatterlist *sg;
 	unsigned int line,todo,sol;
 
+<<<<<<< HEAD
+=======
+	if (jump) {
+		(*rp++) = cpu_to_le32(RISC_JUMP);
+		(*rp++) = 0;
+	}
+
+>>>>>>> v4.9.227
 	/* sync instruction */
 	if (sync_line != NO_SYNC_LINE)
 		*(rp++) = cpu_to_le32(RISC_RESYNC | sync_line);
@@ -90,7 +102,11 @@ static __le32* cx88_risc_field(__le32 *rp, struct scatterlist *sglist,
 	for (line = 0; line < lines; line++) {
 		while (offset && offset >= sg_dma_len(sg)) {
 			offset -= sg_dma_len(sg);
+<<<<<<< HEAD
 			sg++;
+=======
+			sg = sg_next(sg);
+>>>>>>> v4.9.227
 		}
 		if (lpi && line>0 && !(line % lpi))
 			sol = RISC_SOL | RISC_IRQ1 | RISC_CNT_INC;
@@ -109,13 +125,21 @@ static __le32* cx88_risc_field(__le32 *rp, struct scatterlist *sglist,
 			*(rp++)=cpu_to_le32(sg_dma_address(sg)+offset);
 			todo -= (sg_dma_len(sg)-offset);
 			offset = 0;
+<<<<<<< HEAD
 			sg++;
+=======
+			sg = sg_next(sg);
+>>>>>>> v4.9.227
 			while (todo > sg_dma_len(sg)) {
 				*(rp++)=cpu_to_le32(RISC_WRITE|
 						    sg_dma_len(sg));
 				*(rp++)=cpu_to_le32(sg_dma_address(sg));
 				todo -= sg_dma_len(sg);
+<<<<<<< HEAD
 				sg++;
+=======
+				sg = sg_next(sg);
+>>>>>>> v4.9.227
 			}
 			*(rp++)=cpu_to_le32(RISC_WRITE|RISC_EOL|todo);
 			*(rp++)=cpu_to_le32(sg_dma_address(sg));
@@ -127,14 +151,21 @@ static __le32* cx88_risc_field(__le32 *rp, struct scatterlist *sglist,
 	return rp;
 }
 
+<<<<<<< HEAD
 int cx88_risc_buffer(struct pci_dev *pci, struct btcx_riscmem *risc,
+=======
+int cx88_risc_buffer(struct pci_dev *pci, struct cx88_riscmem *risc,
+>>>>>>> v4.9.227
 		     struct scatterlist *sglist,
 		     unsigned int top_offset, unsigned int bottom_offset,
 		     unsigned int bpl, unsigned int padding, unsigned int lines)
 {
 	u32 instructions,fields;
 	__le32 *rp;
+<<<<<<< HEAD
 	int rc;
+=======
+>>>>>>> v4.9.227
 
 	fields = 0;
 	if (UNSET != top_offset)
@@ -147,18 +178,34 @@ int cx88_risc_buffer(struct pci_dev *pci, struct btcx_riscmem *risc,
 	   can cause next bpl to start close to a page border.  First DMA
 	   region may be smaller than PAGE_SIZE */
 	instructions  = fields * (1 + ((bpl + padding) * lines) / PAGE_SIZE + lines);
+<<<<<<< HEAD
 	instructions += 2;
 	if ((rc = btcx_riscmem_alloc(pci,risc,instructions*8)) < 0)
 		return rc;
+=======
+	instructions += 4;
+	risc->size = instructions * 8;
+	risc->dma = 0;
+	risc->cpu = pci_zalloc_consistent(pci, risc->size, &risc->dma);
+	if (NULL == risc->cpu)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	/* write risc instructions */
 	rp = risc->cpu;
 	if (UNSET != top_offset)
 		rp = cx88_risc_field(rp, sglist, top_offset, 0,
+<<<<<<< HEAD
 				     bpl, padding, lines, 0);
 	if (UNSET != bottom_offset)
 		rp = cx88_risc_field(rp, sglist, bottom_offset, 0x200,
 				     bpl, padding, lines, 0);
+=======
+				     bpl, padding, lines, 0, true);
+	if (UNSET != bottom_offset)
+		rp = cx88_risc_field(rp, sglist, bottom_offset, 0x200,
+				     bpl, padding, lines, 0, top_offset == UNSET);
+>>>>>>> v4.9.227
 
 	/* save pointer to jmp instruction address */
 	risc->jmp = rp;
@@ -166,19 +213,27 @@ int cx88_risc_buffer(struct pci_dev *pci, struct btcx_riscmem *risc,
 	return 0;
 }
 
+<<<<<<< HEAD
 int cx88_risc_databuffer(struct pci_dev *pci, struct btcx_riscmem *risc,
+=======
+int cx88_risc_databuffer(struct pci_dev *pci, struct cx88_riscmem *risc,
+>>>>>>> v4.9.227
 			 struct scatterlist *sglist, unsigned int bpl,
 			 unsigned int lines, unsigned int lpi)
 {
 	u32 instructions;
 	__le32 *rp;
+<<<<<<< HEAD
 	int rc;
+=======
+>>>>>>> v4.9.227
 
 	/* estimate risc mem: worst case is one write per page border +
 	   one write per scan line + syncs + jump (all 2 dwords).  Here
 	   there is no padding and no sync.  First DMA region may be smaller
 	   than PAGE_SIZE */
 	instructions  = 1 + (bpl * lines) / PAGE_SIZE + lines;
+<<<<<<< HEAD
 	instructions += 1;
 	if ((rc = btcx_riscmem_alloc(pci,risc,instructions*8)) < 0)
 		return rc;
@@ -186,6 +241,18 @@ int cx88_risc_databuffer(struct pci_dev *pci, struct btcx_riscmem *risc,
 	/* write risc instructions */
 	rp = risc->cpu;
 	rp = cx88_risc_field(rp, sglist, 0, NO_SYNC_LINE, bpl, 0, lines, lpi);
+=======
+	instructions += 3;
+	risc->size = instructions * 8;
+	risc->dma = 0;
+	risc->cpu = pci_zalloc_consistent(pci, risc->size, &risc->dma);
+	if (NULL == risc->cpu)
+		return -ENOMEM;
+
+	/* write risc instructions */
+	rp = risc->cpu;
+	rp = cx88_risc_field(rp, sglist, 0, NO_SYNC_LINE, bpl, 0, lines, lpi, !lpi);
+>>>>>>> v4.9.227
 
 	/* save pointer to jmp instruction address */
 	risc->jmp = rp;
@@ -193,6 +260,7 @@ int cx88_risc_databuffer(struct pci_dev *pci, struct btcx_riscmem *risc,
 	return 0;
 }
 
+<<<<<<< HEAD
 int cx88_risc_stopper(struct pci_dev *pci, struct btcx_riscmem *risc,
 		      u32 reg, u32 mask, u32 value)
 {
@@ -226,6 +294,8 @@ cx88_free_buffer(struct videobuf_queue *q, struct cx88_buffer *buf)
 	buf->vb.state = VIDEOBUF_NEEDS_INIT;
 }
 
+=======
+>>>>>>> v4.9.227
 /* ------------------------------------------------------------------ */
 /* our SRAM memory layout                                             */
 
@@ -539,6 +609,7 @@ void cx88_wakeup(struct cx88_core *core,
 		 struct cx88_dmaqueue *q, u32 count)
 {
 	struct cx88_buffer *buf;
+<<<<<<< HEAD
 	int bc;
 
 	for (bc = 0;; bc++) {
@@ -566,6 +637,16 @@ void cx88_wakeup(struct cx88_core *core,
 	if (bc != 1)
 		dprintk(2, "%s: %d buffers handled (should be 1)\n",
 			__func__, bc);
+=======
+
+	buf = list_entry(q->active.next,
+			 struct cx88_buffer, list);
+	buf->vb.vb2_buf.timestamp = ktime_get_ns();
+	buf->vb.field = core->field;
+	buf->vb.sequence = q->count++;
+	list_del(&buf->list);
+	vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_DONE);
+>>>>>>> v4.9.227
 }
 
 void cx88_shutdown(struct cx88_core *core)
@@ -909,6 +990,16 @@ int cx88_set_tvnorm(struct cx88_core *core, v4l2_std_id norm)
 	u32 bdelay,agcdelay,htotal;
 	u32 cxiformat, cxoformat;
 
+<<<<<<< HEAD
+=======
+	if (norm == core->tvnorm)
+		return 0;
+	if (core->v4ldev && (vb2_is_busy(&core->v4ldev->vb2_vidq) ||
+			     vb2_is_busy(&core->v4ldev->vb2_vbiq)))
+		return -EBUSY;
+	if (core->dvbdev && vb2_is_busy(&core->dvbdev->vb2_mpegq))
+		return -EBUSY;
+>>>>>>> v4.9.227
 	core->tvnorm = norm;
 	fsc8       = norm_fsc8(norm);
 	adc_clock  = xtal;
@@ -1023,6 +1114,7 @@ int cx88_set_tvnorm(struct cx88_core *core, v4l2_std_id norm)
 
 /* ------------------------------------------------------------------ */
 
+<<<<<<< HEAD
 struct video_device *cx88_vdev_init(struct cx88_core *core,
 				    struct pci_dev *pci,
 				    const struct video_device *template_,
@@ -1034,6 +1126,16 @@ struct video_device *cx88_vdev_init(struct cx88_core *core,
 	if (NULL == vfd)
 		return NULL;
 	*vfd = *template_;
+=======
+void cx88_vdev_init(struct cx88_core *core,
+		    struct pci_dev *pci,
+		    struct video_device *vfd,
+		    const struct video_device *template_,
+		    const char *type)
+{
+	*vfd = *template_;
+
+>>>>>>> v4.9.227
 	/*
 	 * The dev pointer of v4l2_device is NULL, instead we set the
 	 * video_device dev_parent pointer to the correct PCI bus device.
@@ -1042,10 +1144,17 @@ struct video_device *cx88_vdev_init(struct cx88_core *core,
 	 */
 	vfd->v4l2_dev = &core->v4l2_dev;
 	vfd->dev_parent = &pci->dev;
+<<<<<<< HEAD
 	vfd->release = video_device_release;
 	snprintf(vfd->name, sizeof(vfd->name), "%s %s (%s)",
 		 core->name, type, core->board.name);
 	return vfd;
+=======
+	vfd->release = video_device_release_empty;
+	vfd->lock = &core->lock;
+	snprintf(vfd->name, sizeof(vfd->name), "%s %s (%s)",
+		 core->name, type, core->board.name);
+>>>>>>> v4.9.227
 }
 
 struct cx88_core* cx88_core_get(struct pci_dev *pci)
@@ -1114,8 +1223,11 @@ EXPORT_SYMBOL(cx88_shutdown);
 
 EXPORT_SYMBOL(cx88_risc_buffer);
 EXPORT_SYMBOL(cx88_risc_databuffer);
+<<<<<<< HEAD
 EXPORT_SYMBOL(cx88_risc_stopper);
 EXPORT_SYMBOL(cx88_free_buffer);
+=======
+>>>>>>> v4.9.227
 
 EXPORT_SYMBOL(cx88_sram_channels);
 EXPORT_SYMBOL(cx88_sram_channel_setup);
@@ -1130,6 +1242,7 @@ EXPORT_SYMBOL(cx88_core_put);
 
 EXPORT_SYMBOL(cx88_ir_start);
 EXPORT_SYMBOL(cx88_ir_stop);
+<<<<<<< HEAD
 
 /*
  * Local variables:
@@ -1137,3 +1250,5 @@ EXPORT_SYMBOL(cx88_ir_stop);
  * End:
  * kate: eol "unix"; indent-width 3; remove-trailing-space on; replace-trailing-space-save on; tab-width 8; replace-tabs off; space-indent off; mixed-indent off
  */
+=======
+>>>>>>> v4.9.227

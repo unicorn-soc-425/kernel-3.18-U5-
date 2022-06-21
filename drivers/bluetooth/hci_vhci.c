@@ -56,8 +56,11 @@ struct vhci_data {
 
 static int vhci_open_dev(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	set_bit(HCI_RUNNING, &hdev->flags);
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -65,9 +68,12 @@ static int vhci_close_dev(struct hci_dev *hdev)
 {
 	struct vhci_data *data = hci_get_drvdata(hdev);
 
+<<<<<<< HEAD
 	if (!test_and_clear_bit(HCI_RUNNING, &hdev->flags))
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	skb_queue_purge(&data->readq);
 
 	return 0;
@@ -86,10 +92,14 @@ static int vhci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct vhci_data *data = hci_get_drvdata(hdev);
 
+<<<<<<< HEAD
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		return -EBUSY;
 
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
+=======
+	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
+>>>>>>> v4.9.227
 	skb_queue_tail(&data->readq, skb);
 
 	wake_up_interruptible(&data->read_wait);
@@ -105,10 +115,17 @@ static int __vhci_create_device(struct vhci_data *data, __u8 opcode)
 	if (data->hdev)
 		return -EBADFD;
 
+<<<<<<< HEAD
 	/* bits 0-1 are dev_type (BR/EDR or AMP) */
 	dev_type = opcode & 0x03;
 
 	if (dev_type != HCI_BREDR && dev_type != HCI_AMP)
+=======
+	/* bits 0-1 are dev_type (Primary or AMP) */
+	dev_type = opcode & 0x03;
+
+	if (dev_type != HCI_PRIMARY && dev_type != HCI_AMP)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	/* bits 2-5 are reserved (must be zero) */
@@ -152,7 +169,11 @@ static int __vhci_create_device(struct vhci_data *data, __u8 opcode)
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
 	bt_cb(skb)->pkt_type = HCI_VENDOR_PKT;
+=======
+	hci_skb_pkt_type(skb) = HCI_VENDOR_PKT;
+>>>>>>> v4.9.227
 
 	*skb_put(skb, 1) = 0xff;
 	*skb_put(skb, 1) = opcode;
@@ -206,7 +227,11 @@ static inline ssize_t vhci_get_user(struct vhci_data *data,
 			return -ENODEV;
 		}
 
+<<<<<<< HEAD
 		bt_cb(skb)->pkt_type = pkt_type;
+=======
+		hci_skb_pkt_type(skb) = pkt_type;
+>>>>>>> v4.9.227
 
 		ret = hci_recv_frame(data->hdev, skb);
 		break;
@@ -252,7 +277,11 @@ static inline ssize_t vhci_put_user(struct vhci_data *data,
 
 	data->hdev->stat.byte_tx += len;
 
+<<<<<<< HEAD
 	switch (bt_cb(skb)->pkt_type) {
+=======
+	switch (hci_skb_pkt_type(skb)) {
+>>>>>>> v4.9.227
 	case HCI_COMMAND_PKT:
 		data->hdev->stat.cmd_tx++;
 		break;
@@ -324,7 +353,11 @@ static void vhci_open_timeout(struct work_struct *work)
 	struct vhci_data *data = container_of(work, struct vhci_data,
 					      open_timeout.work);
 
+<<<<<<< HEAD
 	vhci_create_device(data, amp ? HCI_AMP : HCI_BREDR);
+=======
+	vhci_create_device(data, amp ? HCI_AMP : HCI_PRIMARY);
+>>>>>>> v4.9.227
 }
 
 static int vhci_open(struct inode *inode, struct file *file)
@@ -380,11 +413,16 @@ static const struct file_operations vhci_fops = {
 	.llseek		= no_llseek,
 };
 
+<<<<<<< HEAD
 static struct miscdevice vhci_miscdev= {
+=======
+static struct miscdevice vhci_miscdev = {
+>>>>>>> v4.9.227
 	.name	= "vhci",
 	.fops	= &vhci_fops,
 	.minor	= VHCI_MINOR,
 };
+<<<<<<< HEAD
 
 static int __init vhci_init(void)
 {
@@ -400,6 +438,9 @@ static void __exit vhci_exit(void)
 
 module_init(vhci_init);
 module_exit(vhci_exit);
+=======
+module_misc_device(vhci_miscdev);
+>>>>>>> v4.9.227
 
 module_param(amp, bool, 0644);
 MODULE_PARM_DESC(amp, "Create AMP controller device");

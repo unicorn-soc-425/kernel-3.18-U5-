@@ -47,6 +47,7 @@
 #define   WIFI_ADHOC_MASTER_STATE 0x00000040
 #define   WIFI_UNDER_LINKING	0x00000080
 #define WIFI_SITE_MONITOR	0x00000800	/* to indicate the station
+<<<<<<< HEAD
 						 * is under site surveying*/
 #define	WIFI_MP_STATE		0x00010000
 #define	WIFI_MP_CTX_BACKGROUND	0x00020000	/* in cont. tx background*/
@@ -57,6 +58,22 @@
 #define	WIFI_MP_CTX_CCK_HW	0x00100000	/* in continuous tx*/
 #define	WIFI_MP_CTX_CCK_CS	0x00200000	/* in cont, tx with carrier
 						 * suppression*/
+=======
+						 * is under site surveying
+						 */
+#define	WIFI_MP_STATE		0x00010000
+#define	WIFI_MP_CTX_BACKGROUND	0x00020000	/* in cont. tx background*/
+#define	WIFI_MP_CTX_ST		0x00040000	/* in cont. tx with
+						 * single-tone
+						 */
+#define	WIFI_MP_CTX_BACKGROUND_PENDING	0x00080000 /* pending in cont, tx
+						    * background due to out of skb
+						    */
+#define	WIFI_MP_CTX_CCK_HW	0x00100000	/* in continuous tx*/
+#define	WIFI_MP_CTX_CCK_CS	0x00200000	/* in cont, tx with carrier
+						 * suppression
+						 */
+>>>>>>> v4.9.227
 #define   WIFI_MP_LPBK_STATE	0x00400000
 
 #define _FW_UNDER_LINKING	WIFI_UNDER_LINKING
@@ -153,7 +170,11 @@ static inline void clr_fwstate(struct mlme_priv *pmlmepriv, sint state)
 	unsigned long irqL;
 
 	spin_lock_irqsave(&pmlmepriv->lock, irqL);
+<<<<<<< HEAD
 	if (check_fwstate(pmlmepriv, state) == true)
+=======
+	if (check_fwstate(pmlmepriv, state))
+>>>>>>> v4.9.227
 		pmlmepriv->fw_state ^= state;
 	spin_unlock_irqrestore(&pmlmepriv->lock, irqL);
 }
@@ -202,7 +223,11 @@ sint r8712_set_key(struct _adapter *adapter,
 		   struct security_priv *psecuritypriv, sint keyid);
 sint r8712_set_auth(struct _adapter *adapter,
 		    struct security_priv *psecuritypriv);
+<<<<<<< HEAD
 uint r8712_get_ndis_wlan_bssid_ex_sz(struct ndis_wlan_bssid_ex *bss);
+=======
+uint r8712_get_wlan_bssid_ex_sz(struct wlan_bssid_ex *bss);
+>>>>>>> v4.9.227
 void r8712_generate_random_ibss(u8 *pibss);
 u8 *r8712_get_capability_from_ie(u8 *ie);
 struct wlan_network *r8712_get_oldest_wlan_network(

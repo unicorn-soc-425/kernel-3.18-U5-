@@ -13,11 +13,14 @@
  * General Public License version 2 for more details (a copy is included
  * in the LICENSE file that accompanied this code).
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA
  *
+=======
+>>>>>>> v4.9.227
  * GPL HEADER END
  */
 /*
@@ -38,10 +41,17 @@
 
 /* The persistent object (i.e. actually stores stuff!) */
 #define ECHO_PERSISTENT_OBJID    1ULL
+<<<<<<< HEAD
 #define ECHO_PERSISTENT_SIZE     ((__u64)(1<<20))
 
 /* block size to use for data verification */
 #define OBD_ECHO_BLOCK_SIZE	(4<<10)
 
+=======
+#define ECHO_PERSISTENT_SIZE     ((__u64)(1 << 20))
+
+/* block size to use for data verification */
+#define OBD_ECHO_BLOCK_SIZE	(4 << 10)
+>>>>>>> v4.9.227
 
 #endif

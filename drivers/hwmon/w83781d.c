@@ -1839,7 +1839,10 @@ w83781d_isa_remove(struct platform_device *pdev)
 
 static struct platform_driver w83781d_isa_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "w83781d",
 	},
 	.probe = w83781d_isa_probe,

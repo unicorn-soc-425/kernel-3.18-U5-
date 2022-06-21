@@ -22,12 +22,20 @@
 #include <linux/sizes.h>
 
 #include <media/media-entity.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-mem2mem.h>
 #include <media/v4l2-mediabus.h>
+<<<<<<< HEAD
 #include <media/exynos-fimc.h>
+=======
+#include <media/drv-intf/exynos-fimc.h>
+>>>>>>> v4.9.227
 
 #define dbg(fmt, args...) \
 	pr_debug("%s:%d: " fmt "\n", __func__, __LINE__, ##args)
@@ -224,7 +232,11 @@ struct fimc_addr {
  * @index: buffer index for the output DMA engine
  */
 struct fimc_vid_buffer {
+<<<<<<< HEAD
 	struct vb2_buffer	vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head	list;
 	struct fimc_addr	paddr;
 	int			index;
@@ -307,7 +319,10 @@ struct fimc_m2m_device {
  */
 struct fimc_vid_cap {
 	struct fimc_ctx			*ctx;
+<<<<<<< HEAD
 	struct vb2_alloc_ctx		*alloc_ctx;
+=======
+>>>>>>> v4.9.227
 	struct v4l2_subdev		subdev;
 	struct exynos_video_entity	ve;
 	struct media_pad		vd_pad;
@@ -417,7 +432,10 @@ struct fimc_ctx;
  * @m2m:	memory-to-memory V4L2 device information
  * @vid_cap:	camera capture device information
  * @state:	flags used to synchronize m2m and capture mode operation
+<<<<<<< HEAD
  * @alloc_ctx:	videobuf2 memory allocator context
+=======
+>>>>>>> v4.9.227
  * @pipeline:	fimc video capture pipeline data structure
  */
 struct fimc_dev {
@@ -436,7 +454,10 @@ struct fimc_dev {
 	struct fimc_m2m_device		m2m;
 	struct fimc_vid_cap		vid_cap;
 	unsigned long			state;
+<<<<<<< HEAD
 	struct vb2_alloc_ctx		*alloc_ctx;
+=======
+>>>>>>> v4.9.227
 };
 
 /**
@@ -579,8 +600,13 @@ static inline bool fimc_jpeg_fourcc(u32 pixelformat)
 
 static inline bool fimc_user_defined_mbus_fmt(u32 code)
 {
+<<<<<<< HEAD
 	return (code == V4L2_MBUS_FMT_JPEG_1X8 ||
 		code == V4L2_MBUS_FMT_S5C_UYVY_JPEG_1X8);
+=======
+	return (code == MEDIA_BUS_FMT_JPEG_1X8 ||
+		code == MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8);
+>>>>>>> v4.9.227
 }
 
 /* Return the alpha component bit mask */

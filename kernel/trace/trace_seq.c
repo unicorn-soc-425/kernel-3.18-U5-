@@ -27,10 +27,26 @@
 #include <linux/trace_seq.h>
 
 /* How much buffer is left on the trace_seq? */
+<<<<<<< HEAD
 #define TRACE_SEQ_BUF_LEFT(s) ((PAGE_SIZE - 1) - (s)->len)
 
 /* How much buffer is written? */
 #define TRACE_SEQ_BUF_USED(s) min((s)->len, (unsigned int)(PAGE_SIZE - 1))
+=======
+#define TRACE_SEQ_BUF_LEFT(s) seq_buf_buffer_left(&(s)->seq)
+
+/* How much buffer is written? */
+#define TRACE_SEQ_BUF_USED(s) seq_buf_used(&(s)->seq)
+
+/*
+ * trace_seq should work with being initialized with 0s.
+ */
+static inline void __trace_seq_init(struct trace_seq *s)
+{
+	if (unlikely(!s->seq.size))
+		trace_seq_init(s);
+}
+>>>>>>> v4.9.227
 
 /**
  * trace_print_seq - move the contents of trace_seq into a seq_file
@@ -43,10 +59,18 @@
  */
 int trace_print_seq(struct seq_file *m, struct trace_seq *s)
 {
+<<<<<<< HEAD
 	unsigned int len = TRACE_SEQ_BUF_USED(s);
 	int ret;
 
 	ret = seq_write(m, s->buffer, len);
+=======
+	int ret;
+
+	__trace_seq_init(s);
+
+	ret = seq_buf_print_seq(m, &s->seq);
+>>>>>>> v4.9.227
 
 	/*
 	 * Only reset this buffer if we successfully wrote to the
@@ -69,6 +93,7 @@ int trace_print_seq(struct seq_file *m, struct trace_seq *s)
  * trace_seq_printf() is used to store strings into a special
  * buffer (@s). Then the output may be either used by
  * the sequencer or pulled into another buffer.
+<<<<<<< HEAD
  *
  * Returns 1 if we successfully written all the contents to
  *   the buffer.
@@ -97,6 +122,28 @@ int trace_seq_printf(struct trace_seq *s, const char *fmt, ...)
 	s->len += ret;
 
 	return 1;
+=======
+ */
+void trace_seq_printf(struct trace_seq *s, const char *fmt, ...)
+{
+	unsigned int save_len = s->seq.len;
+	va_list ap;
+
+	if (s->full)
+		return;
+
+	__trace_seq_init(s);
+
+	va_start(ap, fmt);
+	seq_buf_vprintf(&s->seq, fmt, ap);
+	va_end(ap);
+
+	/* If we can't write it all, don't bother writing anything */
+	if (unlikely(seq_buf_has_overflowed(&s->seq))) {
+		s->seq.len = save_len;
+		s->full = 1;
+	}
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(trace_seq_printf);
 
@@ -107,6 +154,7 @@ EXPORT_SYMBOL_GPL(trace_seq_printf);
  * @nmaskbits:	The number of bits that are valid in @maskp
  *
  * Writes a ASCII representation of a bitmask string into @s.
+<<<<<<< HEAD
  *
  * Returns 1 if we successfully written all the contents to
  *   the buffer.
@@ -126,6 +174,25 @@ int trace_seq_bitmask(struct trace_seq *s, const unsigned long *maskp,
 	s->len += ret;
 
 	return 1;
+=======
+ */
+void trace_seq_bitmask(struct trace_seq *s, const unsigned long *maskp,
+		      int nmaskbits)
+{
+	unsigned int save_len = s->seq.len;
+
+	if (s->full)
+		return;
+
+	__trace_seq_init(s);
+
+	seq_buf_printf(&s->seq, "%*pb", nmaskbits, maskp);
+
+	if (unlikely(seq_buf_has_overflowed(&s->seq))) {
+		s->seq.len = save_len;
+		s->full = 1;
+	}
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(trace_seq_bitmask);
 
@@ -139,6 +206,7 @@ EXPORT_SYMBOL_GPL(trace_seq_bitmask);
  * trace_seq_printf is used to store strings into a special
  * buffer (@s). Then the output may be either used by
  * the sequencer or pulled into another buffer.
+<<<<<<< HEAD
  *
  * Returns how much it wrote to the buffer.
  */
@@ -161,6 +229,25 @@ int trace_seq_vprintf(struct trace_seq *s, const char *fmt, va_list args)
 	s->len += ret;
 
 	return len;
+=======
+ */
+void trace_seq_vprintf(struct trace_seq *s, const char *fmt, va_list args)
+{
+	unsigned int save_len = s->seq.len;
+
+	if (s->full)
+		return;
+
+	__trace_seq_init(s);
+
+	seq_buf_vprintf(&s->seq, fmt, args);
+
+	/* If we can't write it all, don't bother writing anything */
+	if (unlikely(seq_buf_has_overflowed(&s->seq))) {
+		s->seq.len = save_len;
+		s->full = 1;
+	}
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(trace_seq_vprintf);
 
@@ -178,6 +265,7 @@ EXPORT_SYMBOL_GPL(trace_seq_vprintf);
  *
  * This function will take the format and the binary array and finish
  * the conversion into the ASCII string within the buffer.
+<<<<<<< HEAD
  *
  * Returns how much it wrote to the buffer.
  */
@@ -200,6 +288,26 @@ int trace_seq_bprintf(struct trace_seq *s, const char *fmt, const u32 *binary)
 	s->len += ret;
 
 	return len;
+=======
+ */
+void trace_seq_bprintf(struct trace_seq *s, const char *fmt, const u32 *binary)
+{
+	unsigned int save_len = s->seq.len;
+
+	if (s->full)
+		return;
+
+	__trace_seq_init(s);
+
+	seq_buf_bprintf(&s->seq, fmt, binary);
+
+	/* If we can't write it all, don't bother writing anything */
+	if (unlikely(seq_buf_has_overflowed(&s->seq))) {
+		s->seq.len = save_len;
+		s->full = 1;
+		return;
+	}
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(trace_seq_bprintf);
 
@@ -212,14 +320,20 @@ EXPORT_SYMBOL_GPL(trace_seq_bprintf);
  * copy to user routines. This function records a simple string
  * into a special buffer (@s) for later retrieval by a sequencer
  * or other mechanism.
+<<<<<<< HEAD
  *
  * Returns how much it wrote to the buffer.
  */
 int trace_seq_puts(struct trace_seq *s, const char *str)
+=======
+ */
+void trace_seq_puts(struct trace_seq *s, const char *str)
+>>>>>>> v4.9.227
 {
 	unsigned int len = strlen(str);
 
 	if (s->full)
+<<<<<<< HEAD
 		return 0;
 
 	if (len > TRACE_SEQ_BUF_LEFT(s)) {
@@ -231,6 +345,18 @@ int trace_seq_puts(struct trace_seq *s, const char *str)
 	s->len += len;
 
 	return len;
+=======
+		return;
+
+	__trace_seq_init(s);
+
+	if (len > TRACE_SEQ_BUF_LEFT(s)) {
+		s->full = 1;
+		return;
+	}
+
+	seq_buf_putmem(&s->seq, str, len);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(trace_seq_puts);
 
@@ -243,6 +369,7 @@ EXPORT_SYMBOL_GPL(trace_seq_puts);
  * copy to user routines. This function records a simple charater
  * into a special buffer (@s) for later retrieval by a sequencer
  * or other mechanism.
+<<<<<<< HEAD
  *
  * Returns how much it wrote to the buffer.
  */
@@ -259,6 +386,22 @@ int trace_seq_putc(struct trace_seq *s, unsigned char c)
 	s->buffer[s->len++] = c;
 
 	return 1;
+=======
+ */
+void trace_seq_putc(struct trace_seq *s, unsigned char c)
+{
+	if (s->full)
+		return;
+
+	__trace_seq_init(s);
+
+	if (TRACE_SEQ_BUF_LEFT(s) < 1) {
+		s->full = 1;
+		return;
+	}
+
+	seq_buf_putc(&s->seq, c);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(trace_seq_putc);
 
@@ -271,6 +414,7 @@ EXPORT_SYMBOL_GPL(trace_seq_putc);
  * There may be cases where raw memory needs to be written into the
  * buffer and a strcpy() would not work. Using this function allows
  * for such cases.
+<<<<<<< HEAD
  *
  * Returns how much it wrote to the buffer.
  */
@@ -294,6 +438,25 @@ EXPORT_SYMBOL_GPL(trace_seq_putmem);
 #define MAX_MEMHEX_BYTES	8U
 #define HEX_CHARS		(MAX_MEMHEX_BYTES*2 + 1)
 
+=======
+ */
+void trace_seq_putmem(struct trace_seq *s, const void *mem, unsigned int len)
+{
+	if (s->full)
+		return;
+
+	__trace_seq_init(s);
+
+	if (len > TRACE_SEQ_BUF_LEFT(s)) {
+		s->full = 1;
+		return;
+	}
+
+	seq_buf_putmem(&s->seq, mem, len);
+}
+EXPORT_SYMBOL_GPL(trace_seq_putmem);
+
+>>>>>>> v4.9.227
 /**
  * trace_seq_putmem_hex - write raw memory into the buffer in ASCII hex
  * @s: trace sequence descriptor
@@ -303,6 +466,7 @@ EXPORT_SYMBOL_GPL(trace_seq_putmem);
  * This is similar to trace_seq_putmem() except instead of just copying the
  * raw memory into the buffer it writes its ASCII representation of it
  * in hex characters.
+<<<<<<< HEAD
  *
  * Returns how much it wrote to the buffer.
  */
@@ -338,6 +502,33 @@ int trace_seq_putmem_hex(struct trace_seq *s, const void *mem,
 		cnt += trace_seq_putmem(s, hex, j);
 	}
 	return cnt;
+=======
+ */
+void trace_seq_putmem_hex(struct trace_seq *s, const void *mem,
+			 unsigned int len)
+{
+	unsigned int save_len = s->seq.len;
+
+	if (s->full)
+		return;
+
+	__trace_seq_init(s);
+
+	/* Each byte is represented by two chars */
+	if (len * 2 > TRACE_SEQ_BUF_LEFT(s)) {
+		s->full = 1;
+		return;
+	}
+
+	/* The added spaces can still cause an overflow */
+	seq_buf_putmem_hex(&s->seq, mem, len);
+
+	if (unlikely(seq_buf_has_overflowed(&s->seq))) {
+		s->seq.len = save_len;
+		s->full = 1;
+		return;
+	}
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(trace_seq_putmem_hex);
 
@@ -355,16 +546,26 @@ EXPORT_SYMBOL_GPL(trace_seq_putmem_hex);
  */
 int trace_seq_path(struct trace_seq *s, const struct path *path)
 {
+<<<<<<< HEAD
 	unsigned char *p;
+=======
+	unsigned int save_len = s->seq.len;
+>>>>>>> v4.9.227
 
 	if (s->full)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	__trace_seq_init(s);
+
+>>>>>>> v4.9.227
 	if (TRACE_SEQ_BUF_LEFT(s) < 1) {
 		s->full = 1;
 		return 0;
 	}
 
+<<<<<<< HEAD
 	p = d_path(path, s->buffer + s->len, PAGE_SIZE - s->len);
 	if (!IS_ERR(p)) {
 		p = mangle_path(s->buffer + s->len, p, "\n");
@@ -379,6 +580,17 @@ int trace_seq_path(struct trace_seq *s, const struct path *path)
 
 	s->full = 1;
 	return 0;
+=======
+	seq_buf_path(&s->seq, path, "\n");
+
+	if (unlikely(seq_buf_has_overflowed(&s->seq))) {
+		s->seq.len = save_len;
+		s->full = 1;
+		return 0;
+	}
+
+	return 1;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(trace_seq_path);
 
@@ -404,6 +616,7 @@ EXPORT_SYMBOL_GPL(trace_seq_path);
  */
 int trace_seq_to_user(struct trace_seq *s, char __user *ubuf, int cnt)
 {
+<<<<<<< HEAD
 	int len;
 	int ret;
 
@@ -424,5 +637,9 @@ int trace_seq_to_user(struct trace_seq *s, char __user *ubuf, int cnt)
 
 	s->readpos += cnt;
 	return cnt;
+=======
+	__trace_seq_init(s);
+	return seq_buf_to_user(&s->seq, ubuf, cnt);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(trace_seq_to_user);

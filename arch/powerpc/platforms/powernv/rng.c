@@ -24,12 +24,28 @@
 
 struct powernv_rng {
 	void __iomem *regs;
+<<<<<<< HEAD
+=======
+	void __iomem *regs_real;
+>>>>>>> v4.9.227
 	unsigned long mask;
 };
 
 static DEFINE_PER_CPU(struct powernv_rng *, powernv_rng);
 
 
+<<<<<<< HEAD
+=======
+int powernv_hwrng_present(void)
+{
+	struct powernv_rng *rng;
+
+	rng = get_cpu_var(powernv_rng);
+	put_cpu_var(rng);
+	return rng != NULL;
+}
+
+>>>>>>> v4.9.227
 static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
 {
 	unsigned long parity;
@@ -46,6 +62,20 @@ static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
 	return val;
 }
 
+<<<<<<< HEAD
+=======
+int powernv_get_random_real_mode(unsigned long *v)
+{
+	struct powernv_rng *rng;
+
+	rng = raw_cpu_read(powernv_rng);
+
+	*v = rng_whiten(rng, in_rm64(rng->regs_real));
+
+	return 1;
+}
+
+>>>>>>> v4.9.227
 int powernv_get_random_long(unsigned long *v)
 {
 	struct powernv_rng *rng;
@@ -80,12 +110,26 @@ static __init void rng_init_per_cpu(struct powernv_rng *rng,
 static __init int rng_create(struct device_node *dn)
 {
 	struct powernv_rng *rng;
+<<<<<<< HEAD
+=======
+	struct resource res;
+>>>>>>> v4.9.227
 	unsigned long val;
 
 	rng = kzalloc(sizeof(*rng), GFP_KERNEL);
 	if (!rng)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	if (of_address_to_resource(dn, 0, &res)) {
+		kfree(rng);
+		return -ENXIO;
+	}
+
+	rng->regs_real = (void __iomem *)res.start;
+
+>>>>>>> v4.9.227
 	rng->regs = of_iomap(dn, 0);
 	if (!rng->regs) {
 		kfree(rng);
@@ -99,7 +143,11 @@ static __init int rng_create(struct device_node *dn)
 
 	pr_info_once("Registering arch random hook.\n");
 
+<<<<<<< HEAD
 	ppc_md.get_random_long = powernv_get_random_long;
+=======
+	ppc_md.get_random_seed = powernv_get_random_long;
+>>>>>>> v4.9.227
 
 	return 0;
 }

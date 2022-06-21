@@ -75,6 +75,10 @@ static inline void *kmap_atomic(struct page *page)
 	unsigned long vaddr;
 	int idx, type;
 
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> v4.9.227
 	pagefault_disable();
 	if (page < highmem_start_page)
 		return page_address(page);
@@ -98,6 +102,10 @@ static inline void __kunmap_atomic(unsigned long vaddr)
 
 	if (vaddr < FIXADDR_START) { /* FIXME */
 		pagefault_enable();
+<<<<<<< HEAD
+=======
+		preempt_enable();
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -122,6 +130,10 @@ static inline void __kunmap_atomic(unsigned long vaddr)
 
 	kmap_atomic_idx_pop();
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> v4.9.227
 }
 #endif /* __KERNEL__ */
 

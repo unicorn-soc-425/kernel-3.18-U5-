@@ -74,22 +74,47 @@ extern struct mutex fanout_mutex;
 #define PACKET_FANOUT_MAX	256
 
 struct packet_fanout {
+<<<<<<< HEAD
 #ifdef CONFIG_NET_NS
 	struct net		*net;
 #endif
+=======
+	possible_net_t		net;
+>>>>>>> v4.9.227
 	unsigned int		num_members;
 	u16			id;
 	u8			type;
 	u8			flags;
+<<<<<<< HEAD
 	atomic_t		rr_cur;
 	struct list_head	list;
 	struct sock		*arr[PACKET_FANOUT_MAX];
 	int			next[PACKET_FANOUT_MAX];
+=======
+	union {
+		atomic_t		rr_cur;
+		struct bpf_prog __rcu	*bpf_prog;
+	};
+	struct list_head	list;
+	struct sock		*arr[PACKET_FANOUT_MAX];
+>>>>>>> v4.9.227
 	spinlock_t		lock;
 	atomic_t		sk_ref;
 	struct packet_type	prot_hook ____cacheline_aligned_in_smp;
 };
 
+<<<<<<< HEAD
+=======
+struct packet_rollover {
+	int			sock;
+	atomic_long_t		num;
+	atomic_long_t		num_huge;
+	atomic_long_t		num_failed;
+#define ROLLOVER_HLEN	(L1_CACHE_BYTES / sizeof(u32))
+	u32			history[ROLLOVER_HLEN] ____cacheline_aligned;
+} ____cacheline_aligned_in_smp;
+
+>>>>>>> v4.9.227
 struct packet_sock {
 	/* struct sock has to be the first member of packet_sock */
 	struct sock		sk;
@@ -106,14 +131,25 @@ struct packet_sock {
 				has_vnet_hdr:1,
 				tp_loss:1,
 				tp_tx_has_off:1;
+<<<<<<< HEAD
 	int			ifindex;	/* bound device		*/
 	__be16			num;
+=======
+	int			pressure;
+	int			ifindex;	/* bound device		*/
+	__be16			num;
+	struct packet_rollover	*rollover;
+>>>>>>> v4.9.227
 	struct packet_mclist	*mclist;
 	atomic_t		mapped;
 	enum tpacket_versions	tp_version;
 	unsigned int		tp_hdrlen;
 	unsigned int		tp_reserve;
 	unsigned int		tp_tstamp;
+<<<<<<< HEAD
+=======
+	struct completion	skb_completion;
+>>>>>>> v4.9.227
 	struct net_device __rcu	*cached_dev;
 	int			(*xmit)(struct sk_buff *skb);
 	struct packet_type	prot_hook ____cacheline_aligned_in_smp;

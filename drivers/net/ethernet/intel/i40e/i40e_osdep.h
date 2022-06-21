@@ -35,7 +35,11 @@
 #include <linux/highuid.h>
 
 /* get readq/writeq support for 32 bit kernels, use the low-first version */
+<<<<<<< HEAD
 #include <asm-generic/io-64-nonatomic-lo-hi.h>
+=======
+#include <linux/io-64-nonatomic-lo-hi.h>
+>>>>>>> v4.9.227
 
 /* File to be the magic between shared code and
  * actual OS primitives

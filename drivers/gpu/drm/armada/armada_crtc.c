@@ -199,7 +199,11 @@ static void armada_drm_plane_work_run(struct armada_crtc *dcrtc,
 	/* Handle any pending frame work. */
 	if (work) {
 		work->fn(dcrtc, plane, work);
+<<<<<<< HEAD
 		drm_vblank_put(dcrtc->crtc.dev, dcrtc->num);
+=======
+		drm_crtc_vblank_put(&dcrtc->crtc);
+>>>>>>> v4.9.227
 	}
 
 	wake_up(&plane->frame_wait);
@@ -210,7 +214,11 @@ int armada_drm_plane_work_queue(struct armada_crtc *dcrtc,
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = drm_vblank_get(dcrtc->crtc.dev, dcrtc->num);
+=======
+	ret = drm_crtc_vblank_get(&dcrtc->crtc);
+>>>>>>> v4.9.227
 	if (ret) {
 		DRM_ERROR("failed to acquire vblank counter\n");
 		return ret;
@@ -218,7 +226,11 @@ int armada_drm_plane_work_queue(struct armada_crtc *dcrtc,
 
 	ret = cmpxchg(&plane->work, NULL, work) ? -EBUSY : 0;
 	if (ret)
+<<<<<<< HEAD
 		drm_vblank_put(dcrtc->crtc.dev, dcrtc->num);
+=======
+		drm_crtc_vblank_put(&dcrtc->crtc);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -234,7 +246,11 @@ struct armada_plane_work *armada_drm_plane_work_cancel(
 	struct armada_plane_work *work = xchg(&plane->work, NULL);
 
 	if (work)
+<<<<<<< HEAD
 		drm_vblank_put(dcrtc->crtc.dev, dcrtc->num);
+=======
+		drm_crtc_vblank_put(&dcrtc->crtc);
+>>>>>>> v4.9.227
 
 	return work;
 }
@@ -260,7 +276,11 @@ static void armada_drm_crtc_complete_frame_work(struct armada_crtc *dcrtc,
 
 	if (fwork->event) {
 		spin_lock_irqsave(&dev->event_lock, flags);
+<<<<<<< HEAD
 		drm_send_vblank_event(dev, dcrtc->num, fwork->event);
+=======
+		drm_crtc_send_vblank_event(&dcrtc->crtc, fwork->event);
+>>>>>>> v4.9.227
 		spin_unlock_irqrestore(&dev->event_lock, flags);
 	}
 
@@ -332,6 +352,7 @@ static void armada_drm_crtc_dpms(struct drm_crtc *crtc, int dpms)
 {
 	struct armada_crtc *dcrtc = drm_to_armada_crtc(crtc);
 
+<<<<<<< HEAD
 	if (dcrtc->dpms != dpms) {
 		dcrtc->dpms = dpms;
 		if (!IS_ERR(dcrtc->clk) && !dpms_blanked(dpms))
@@ -343,6 +364,21 @@ static void armada_drm_crtc_dpms(struct drm_crtc *crtc, int dpms)
 			armada_drm_vblank_off(dcrtc);
 		else
 			drm_crtc_vblank_on(&dcrtc->crtc);
+=======
+	if (dpms_blanked(dcrtc->dpms) != dpms_blanked(dpms)) {
+		if (dpms_blanked(dpms))
+			armada_drm_vblank_off(dcrtc);
+		else if (!IS_ERR(dcrtc->clk))
+			WARN_ON(clk_prepare_enable(dcrtc->clk));
+		dcrtc->dpms = dpms;
+		armada_drm_crtc_update(dcrtc);
+		if (!dpms_blanked(dpms))
+			drm_crtc_vblank_on(&dcrtc->crtc);
+		else if (!IS_ERR(dcrtc->clk))
+			clk_disable_unprepare(dcrtc->clk);
+	} else if (dcrtc->dpms != dpms) {
+		dcrtc->dpms = dpms;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -410,7 +446,11 @@ static void armada_drm_crtc_irq(struct armada_crtc *dcrtc, u32 stat)
 		DRM_ERROR("graphics underflow on crtc %u\n", dcrtc->num);
 
 	if (stat & VSYNC_IRQ)
+<<<<<<< HEAD
 		drm_handle_vblank(dcrtc->crtc.dev, dcrtc->num);
+=======
+		drm_crtc_handle_vblank(&dcrtc->crtc);
+>>>>>>> v4.9.227
 
 	spin_lock(&dcrtc->irq_lock);
 	ovl_plane = dcrtc->plane;
@@ -592,9 +632,15 @@ static int armada_drm_crtc_mode_set(struct drm_crtc *crtc,
 
 	if (interlaced ^ dcrtc->interlaced) {
 		if (adj->flags & DRM_MODE_FLAG_INTERLACE)
+<<<<<<< HEAD
 			drm_vblank_get(dcrtc->crtc.dev, dcrtc->num);
 		else
 			drm_vblank_put(dcrtc->crtc.dev, dcrtc->num);
+=======
+			drm_crtc_vblank_get(&dcrtc->crtc);
+		else
+			drm_crtc_vblank_put(&dcrtc->crtc);
+>>>>>>> v4.9.227
 		dcrtc->interlaced = interlaced;
 	}
 
@@ -897,7 +943,10 @@ static void cursor_update(void *data)
 static int armada_drm_crtc_cursor_set(struct drm_crtc *crtc,
 	struct drm_file *file, uint32_t handle, uint32_t w, uint32_t h)
 {
+<<<<<<< HEAD
 	struct drm_device *dev = crtc->dev;
+=======
+>>>>>>> v4.9.227
 	struct armada_crtc *dcrtc = drm_to_armada_crtc(crtc);
 	struct armada_gem_object *obj = NULL;
 	int ret;
@@ -911,7 +960,11 @@ static int armada_drm_crtc_cursor_set(struct drm_crtc *crtc,
 		if (w > 64 || h > 64 || (w > 32 && h > 32))
 			return -ENOMEM;
 
+<<<<<<< HEAD
 		obj = armada_gem_object_lookup(dev, file, handle);
+=======
+		obj = armada_gem_object_lookup(file, handle);
+>>>>>>> v4.9.227
 		if (!obj)
 			return -ENOENT;
 
@@ -928,11 +981,18 @@ static int armada_drm_crtc_cursor_set(struct drm_crtc *crtc,
 		}
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&dev->struct_mutex);
 	if (dcrtc->cursor_obj) {
 		dcrtc->cursor_obj->update = NULL;
 		dcrtc->cursor_obj->update_data = NULL;
 		drm_gem_object_unreference(&dcrtc->cursor_obj->obj);
+=======
+	if (dcrtc->cursor_obj) {
+		dcrtc->cursor_obj->update = NULL;
+		dcrtc->cursor_obj->update_data = NULL;
+		drm_gem_object_unreference_unlocked(&dcrtc->cursor_obj->obj);
+>>>>>>> v4.9.227
 	}
 	dcrtc->cursor_obj = obj;
 	dcrtc->cursor_w = w;
@@ -942,14 +1002,20 @@ static int armada_drm_crtc_cursor_set(struct drm_crtc *crtc,
 		obj->update_data = dcrtc;
 		obj->update = cursor_update;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&dev->struct_mutex);
+=======
+>>>>>>> v4.9.227
 
 	return ret;
 }
 
 static int armada_drm_crtc_cursor_move(struct drm_crtc *crtc, int x, int y)
 {
+<<<<<<< HEAD
 	struct drm_device *dev = crtc->dev;
+=======
+>>>>>>> v4.9.227
 	struct armada_crtc *dcrtc = drm_to_armada_crtc(crtc);
 	int ret;
 
@@ -957,11 +1023,17 @@ static int armada_drm_crtc_cursor_move(struct drm_crtc *crtc, int x, int y)
 	if (!dcrtc->variant->has_spu_adv_reg)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	mutex_lock(&dev->struct_mutex);
 	dcrtc->cursor_x = x;
 	dcrtc->cursor_y = y;
 	ret = armada_drm_crtc_cursor_update(dcrtc, false);
 	mutex_unlock(&dev->struct_mutex);
+=======
+	dcrtc->cursor_x = x;
+	dcrtc->cursor_y = y;
+	ret = armada_drm_crtc_cursor_update(dcrtc, false);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -972,7 +1044,11 @@ static void armada_drm_crtc_destroy(struct drm_crtc *crtc)
 	struct armada_private *priv = crtc->dev->dev_private;
 
 	if (dcrtc->cursor_obj)
+<<<<<<< HEAD
 		drm_gem_object_unreference(&dcrtc->cursor_obj->obj);
+=======
+		drm_gem_object_unreference_unlocked(&dcrtc->cursor_obj->obj);
+>>>>>>> v4.9.227
 
 	priv->dcrtc[dcrtc->num] = NULL;
 	drm_crtc_cleanup(&dcrtc->crtc);
@@ -1074,7 +1150,11 @@ armada_drm_crtc_set_property(struct drm_crtc *crtc,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct drm_crtc_funcs armada_crtc_funcs = {
+=======
+static const struct drm_crtc_funcs armada_crtc_funcs = {
+>>>>>>> v4.9.227
 	.cursor_set	= armada_drm_crtc_cursor_set,
 	.cursor_move	= armada_drm_crtc_cursor_move,
 	.destroy	= armada_drm_crtc_destroy,
@@ -1182,6 +1262,7 @@ static int armada_drm_crtc_create(struct drm_device *drm, struct device *dev,
 
 	ret = devm_request_irq(dev, irq, armada_drm_irq, 0, "armada_drm_crtc",
 			       dcrtc);
+<<<<<<< HEAD
 	if (ret < 0) {
 		kfree(dcrtc);
 		return ret;
@@ -1193,6 +1274,15 @@ static int armada_drm_crtc_create(struct drm_device *drm, struct device *dev,
 			kfree(dcrtc);
 			return ret;
 		}
+=======
+	if (ret < 0)
+		goto err_crtc;
+
+	if (dcrtc->variant->init) {
+		ret = dcrtc->variant->init(dcrtc, dev);
+		if (ret)
+			goto err_crtc;
+>>>>>>> v4.9.227
 	}
 
 	/* Ensure AXI pipeline is enabled */
@@ -1203,19 +1293,31 @@ static int armada_drm_crtc_create(struct drm_device *drm, struct device *dev,
 	dcrtc->crtc.port = port;
 
 	primary = kzalloc(sizeof(*primary), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!primary)
 		return -ENOMEM;
+=======
+	if (!primary) {
+		ret = -ENOMEM;
+		goto err_crtc;
+	}
+>>>>>>> v4.9.227
 
 	ret = armada_drm_plane_init(primary);
 	if (ret) {
 		kfree(primary);
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_crtc;
+>>>>>>> v4.9.227
 	}
 
 	ret = drm_universal_plane_init(drm, &primary->base, 0,
 				       &armada_primary_plane_funcs,
 				       armada_primary_formats,
 				       ARRAY_SIZE(armada_primary_formats),
+<<<<<<< HEAD
 				       DRM_PLANE_TYPE_PRIMARY);
 	if (ret) {
 		kfree(primary);
@@ -1224,6 +1326,16 @@ static int armada_drm_crtc_create(struct drm_device *drm, struct device *dev,
 
 	ret = drm_crtc_init_with_planes(drm, &dcrtc->crtc, &primary->base, NULL,
 					&armada_crtc_funcs);
+=======
+				       DRM_PLANE_TYPE_PRIMARY, NULL);
+	if (ret) {
+		kfree(primary);
+		goto err_crtc;
+	}
+
+	ret = drm_crtc_init_with_planes(drm, &dcrtc->crtc, &primary->base, NULL,
+					&armada_crtc_funcs, NULL);
+>>>>>>> v4.9.227
 	if (ret)
 		goto err_crtc_init;
 
@@ -1238,6 +1350,12 @@ static int armada_drm_crtc_create(struct drm_device *drm, struct device *dev,
 
 err_crtc_init:
 	primary->base.funcs->destroy(&primary->base);
+<<<<<<< HEAD
+=======
+err_crtc:
+	kfree(dcrtc);
+
+>>>>>>> v4.9.227
 	return ret;
 }
 

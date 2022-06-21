@@ -40,7 +40,10 @@
 #include <asm/io.h>
 #include <asm/dbdma.h>
 #include <asm/ide.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
 #include <asm/sections.h>
@@ -708,6 +711,10 @@ set_timings_mdma(ide_drive_t *drive, int intf_type, u32 *timings, u32 *timings2,
 		*timings = ((*timings) & ~TR_133_PIOREG_MDMA_MASK) | tr;
 		*timings2 = (*timings2) & ~TR_133_UDMAREG_UDMA_EN;
 		}
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> v4.9.227
 	case controller_un_ata6:
 	case controller_k2_ata6: {
 		/* 100Mhz cell */
@@ -920,6 +927,10 @@ static u8 pmac_ide_cable_detect(ide_hwif_t *hwif)
 	struct device_node *root = of_find_node_by_path("/");
 	const char *model = of_get_property(root, "model", NULL);
 
+<<<<<<< HEAD
+=======
+	of_node_put(root);
+>>>>>>> v4.9.227
 	/* Get cable type from device-tree. */
 	if (cable && !strncmp(cable, "80-", 3)) {
 		/* Some drives fail to detect 80c cable in PowerBook */
@@ -1497,9 +1508,15 @@ static int pmac_ide_build_dmatable(ide_drive_t *drive, struct ide_cmd *cmd)
 				       drive->name);
 				return 0;
 			}
+<<<<<<< HEAD
 			st_le16(&table->command, wr? OUTPUT_MORE: INPUT_MORE);
 			st_le16(&table->req_count, tc);
 			st_le32(&table->phy_addr, cur_addr);
+=======
+			table->command = cpu_to_le16(wr? OUTPUT_MORE: INPUT_MORE);
+			table->req_count = cpu_to_le16(tc);
+			table->phy_addr = cpu_to_le32(cur_addr);
+>>>>>>> v4.9.227
 			table->cmd_dep = 0;
 			table->xfer_status = 0;
 			table->res_count = 0;
@@ -1513,10 +1530,17 @@ static int pmac_ide_build_dmatable(ide_drive_t *drive, struct ide_cmd *cmd)
 
 	/* convert the last command to an input/output last command */
 	if (count) {
+<<<<<<< HEAD
 		st_le16(&table[-1].command, wr? OUTPUT_LAST: INPUT_LAST);
 		/* add the stop command to the end of the list */
 		memset(table, 0, sizeof(struct dbdma_cmd));
 		st_le16(&table->command, DBDMA_STOP);
+=======
+		table[-1].command = cpu_to_le16(wr? OUTPUT_LAST: INPUT_LAST);
+		/* add the stop command to the end of the list */
+		memset(table, 0, sizeof(struct dbdma_cmd));
+		table->command = cpu_to_le16(DBDMA_STOP);
+>>>>>>> v4.9.227
 		mb();
 		writel(hwif->dmatable_dma, &dma->cmdptr);
 		return 1;
@@ -1689,10 +1713,16 @@ static int pmac_ide_init_dma(ide_hwif_t *hwif, const struct ide_port_info *d)
 	 * The +2 is +1 for the stop command and +1 to allow for
 	 * aligning the start address to a multiple of 16 bytes.
 	 */
+<<<<<<< HEAD
 	pmif->dma_table_cpu = pci_alloc_consistent(
 		dev,
 		(MAX_DCMDS + 2) * sizeof(struct dbdma_cmd),
 		&hwif->dmatable_dma);
+=======
+	pmif->dma_table_cpu = dma_alloc_coherent(&dev->dev,
+		(MAX_DCMDS + 2) * sizeof(struct dbdma_cmd),
+		&hwif->dmatable_dma, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (pmif->dma_table_cpu == NULL) {
 		printk(KERN_ERR "%s: unable to allocate DMA command list\n",
 		       hwif->name);

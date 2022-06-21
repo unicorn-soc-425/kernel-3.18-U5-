@@ -111,7 +111,12 @@ int sctp_bind_addr_dup(struct sctp_bind_addr *dest,
 	dest->port = src->port;
 
 	list_for_each_entry(addr, &src->address_list, list) {
+<<<<<<< HEAD
 		error = sctp_add_bind_addr(dest, &addr->a, 1, gfp);
+=======
+		error = sctp_add_bind_addr(dest, &addr->a, sizeof(addr->a),
+					   1, gfp);
+>>>>>>> v4.9.227
 		if (error < 0)
 			break;
 	}
@@ -150,7 +155,11 @@ void sctp_bind_addr_free(struct sctp_bind_addr *bp)
 
 /* Add an address to the bind address list in the SCTP_bind_addr structure. */
 int sctp_add_bind_addr(struct sctp_bind_addr *bp, union sctp_addr *new,
+<<<<<<< HEAD
 		       __u8 addr_state, gfp_t gfp)
+=======
+		       int new_size, __u8 addr_state, gfp_t gfp)
+>>>>>>> v4.9.227
 {
 	struct sctp_sockaddr_entry *addr;
 
@@ -159,7 +168,11 @@ int sctp_add_bind_addr(struct sctp_bind_addr *bp, union sctp_addr *new,
 	if (!addr)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	memcpy(&addr->a, new, sizeof(*new));
+=======
+	memcpy(&addr->a, new, min_t(size_t, sizeof(*new), new_size));
+>>>>>>> v4.9.227
 
 	/* Fix up the port if it has not yet been set.
 	 * Both v4 and v6 have the port at the same offset.
@@ -291,7 +304,12 @@ int sctp_raw_to_bind_addrs(struct sctp_bind_addr *bp, __u8 *raw_addr_list,
 		}
 
 		af->from_addr_param(&addr, rawaddr, htons(port), 0);
+<<<<<<< HEAD
 		retval = sctp_add_bind_addr(bp, &addr, SCTP_ADDR_SRC, gfp);
+=======
+		retval = sctp_add_bind_addr(bp, &addr, sizeof(addr),
+					    SCTP_ADDR_SRC, gfp);
+>>>>>>> v4.9.227
 		if (retval) {
 			/* Can't finish building the list, clean up. */
 			sctp_bind_addr_clean(bp);
@@ -453,8 +471,13 @@ static int sctp_copy_one_addr(struct net *net, struct sctp_bind_addr *dest,
 		    (((AF_INET6 == addr->sa.sa_family) &&
 		      (flags & SCTP_ADDR6_ALLOWED) &&
 		      (flags & SCTP_ADDR6_PEERSUPP))))
+<<<<<<< HEAD
 			error = sctp_add_bind_addr(dest, addr, SCTP_ADDR_SRC,
 						    gfp);
+=======
+			error = sctp_add_bind_addr(dest, addr, sizeof(*addr),
+						   SCTP_ADDR_SRC, gfp);
+>>>>>>> v4.9.227
 	}
 
 	return error;

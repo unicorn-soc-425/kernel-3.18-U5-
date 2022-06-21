@@ -368,6 +368,7 @@ simscsi_init(void)
 	scsi_host_put(host);
 	return error;
 }
+<<<<<<< HEAD
 
 static void __exit
 simscsi_exit(void)
@@ -378,3 +379,6 @@ simscsi_exit(void)
 
 module_init(simscsi_init);
 module_exit(simscsi_exit);
+=======
+device_initcall(simscsi_init);
+>>>>>>> v4.9.227

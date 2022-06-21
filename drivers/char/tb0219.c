@@ -21,6 +21,10 @@
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 
 #include <asm/io.h>
 #include <asm/reboot.h>
@@ -337,7 +341,10 @@ static struct platform_driver tb0219_device_driver = {
 	.remove		= tb0219_remove,
 	.driver		= {
 		.name	= "TB0219",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

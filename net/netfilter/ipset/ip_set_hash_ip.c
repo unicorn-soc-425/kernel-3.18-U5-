@@ -56,15 +56,26 @@ hash_ip4_data_equal(const struct hash_ip4_elem *e1,
 	return e1->ip == e2->ip;
 }
 
+<<<<<<< HEAD
 static inline bool
+=======
+static bool
+>>>>>>> v4.9.227
 hash_ip4_data_list(struct sk_buff *skb, const struct hash_ip4_elem *e)
 {
 	if (nla_put_ipaddr4(skb, IPSET_ATTR_IP, e->ip))
 		goto nla_put_failure;
+<<<<<<< HEAD
 	return 0;
 
 nla_put_failure:
 	return 1;
+=======
+	return false;
+
+nla_put_failure:
+	return true;
+>>>>>>> v4.9.227
 }
 
 static inline void
@@ -74,7 +85,10 @@ hash_ip4_data_next(struct hash_ip4_elem *next, const struct hash_ip4_elem *e)
 }
 
 #define MTYPE		hash_ip4
+<<<<<<< HEAD
 #define PF		4
+=======
+>>>>>>> v4.9.227
 #define HOST_MASK	32
 #include "ip_set_hash_gen.h"
 
@@ -109,6 +123,7 @@ hash_ip4_uadt(struct ip_set *set, struct nlattr *tb[],
 	u32 ip = 0, ip_to = 0, hosts;
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (unlikely(!tb[IPSET_ATTR_IP] ||
 		     !ip_set_optattr_netorder(tb, IPSET_ATTR_TIMEOUT) ||
 		     !ip_set_optattr_netorder(tb, IPSET_ATTR_PACKETS) ||
@@ -123,6 +138,19 @@ hash_ip4_uadt(struct ip_set *set, struct nlattr *tb[],
 
 	ret = ip_set_get_hostipaddr4(tb[IPSET_ATTR_IP], &ip) ||
 	      ip_set_get_extensions(set, tb, &ext);
+=======
+	if (tb[IPSET_ATTR_LINENO])
+		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
+
+	if (unlikely(!tb[IPSET_ATTR_IP]))
+		return -IPSET_ERR_PROTOCOL;
+
+	ret = ip_set_get_hostipaddr4(tb[IPSET_ATTR_IP], &ip);
+	if (ret)
+		return ret;
+
+	ret = ip_set_get_extensions(set, tb, &ext);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -145,7 +173,11 @@ hash_ip4_uadt(struct ip_set *set, struct nlattr *tb[],
 	} else if (tb[IPSET_ATTR_CIDR]) {
 		u8 cidr = nla_get_u8(tb[IPSET_ATTR_CIDR]);
 
+<<<<<<< HEAD
 		if (!cidr || cidr > 32)
+=======
+		if (!cidr || cidr > HOST_MASK)
+>>>>>>> v4.9.227
 			return -IPSET_ERR_INVALID_CIDR;
 		ip_set_mask_from_to(ip, ip_to, cidr);
 	}
@@ -162,8 +194,13 @@ hash_ip4_uadt(struct ip_set *set, struct nlattr *tb[],
 
 		if (ret && !ip_set_eexist(ret, flags))
 			return ret;
+<<<<<<< HEAD
 		else
 			ret = 0;
+=======
+
+		ret = 0;
+>>>>>>> v4.9.227
 	}
 	return ret;
 }
@@ -196,10 +233,17 @@ hash_ip6_data_list(struct sk_buff *skb, const struct hash_ip6_elem *e)
 {
 	if (nla_put_ipaddr6(skb, IPSET_ATTR_IP, &e->ip.in6))
 		goto nla_put_failure;
+<<<<<<< HEAD
 	return 0;
 
 nla_put_failure:
 	return 1;
+=======
+	return false;
+
+nla_put_failure:
+	return true;
+>>>>>>> v4.9.227
 }
 
 static inline void
@@ -208,12 +252,18 @@ hash_ip6_data_next(struct hash_ip4_elem *next, const struct hash_ip6_elem *e)
 }
 
 #undef MTYPE
+<<<<<<< HEAD
 #undef PF
 #undef HOST_MASK
 #undef HKEY_DATALEN
 
 #define MTYPE		hash_ip6
 #define PF		6
+=======
+#undef HOST_MASK
+
+#define MTYPE		hash_ip6
+>>>>>>> v4.9.227
 #define HOST_MASK	128
 
 #define IP_SET_EMIT_CREATE
@@ -247,6 +297,7 @@ hash_ip6_uadt(struct ip_set *set, struct nlattr *tb[],
 	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
 	int ret;
 
+<<<<<<< HEAD
 	if (unlikely(!tb[IPSET_ATTR_IP] ||
 		     !ip_set_optattr_netorder(tb, IPSET_ATTR_TIMEOUT) ||
 		     !ip_set_optattr_netorder(tb, IPSET_ATTR_PACKETS) ||
@@ -263,6 +314,27 @@ hash_ip6_uadt(struct ip_set *set, struct nlattr *tb[],
 
 	ret = ip_set_get_ipaddr6(tb[IPSET_ATTR_IP], &e.ip) ||
 	      ip_set_get_extensions(set, tb, &ext);
+=======
+	if (tb[IPSET_ATTR_LINENO])
+		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
+
+	if (unlikely(!tb[IPSET_ATTR_IP]))
+		return -IPSET_ERR_PROTOCOL;
+	if (unlikely(tb[IPSET_ATTR_IP_TO]))
+		return -IPSET_ERR_HASH_RANGE_UNSUPPORTED;
+	if (unlikely(tb[IPSET_ATTR_CIDR])) {
+		u8 cidr = nla_get_u8(tb[IPSET_ATTR_CIDR]);
+
+		if (cidr != HOST_MASK)
+			return -IPSET_ERR_INVALID_CIDR;
+	}
+
+	ret = ip_set_get_ipaddr6(tb[IPSET_ATTR_IP], &e.ip);
+	if (ret)
+		return ret;
+
+	ret = ip_set_get_extensions(set, tb, &ext);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -301,7 +373,12 @@ static struct ip_set_type hash_ip_type __read_mostly = {
 		[IPSET_ATTR_LINENO]	= { .type = NLA_U32 },
 		[IPSET_ATTR_BYTES]	= { .type = NLA_U64 },
 		[IPSET_ATTR_PACKETS]	= { .type = NLA_U64 },
+<<<<<<< HEAD
 		[IPSET_ATTR_COMMENT]	= { .type = NLA_NUL_STRING },
+=======
+		[IPSET_ATTR_COMMENT]	= { .type = NLA_NUL_STRING,
+					    .len  = IPSET_MAX_COMMENT_SIZE },
+>>>>>>> v4.9.227
 		[IPSET_ATTR_SKBMARK]	= { .type = NLA_U64 },
 		[IPSET_ATTR_SKBPRIO]	= { .type = NLA_U32 },
 		[IPSET_ATTR_SKBQUEUE]	= { .type = NLA_U16 },
@@ -318,6 +395,10 @@ hash_ip_init(void)
 static void __exit
 hash_ip_fini(void)
 {
+<<<<<<< HEAD
+=======
+	rcu_barrier();
+>>>>>>> v4.9.227
 	ip_set_type_unregister(&hash_ip_type);
 }
 

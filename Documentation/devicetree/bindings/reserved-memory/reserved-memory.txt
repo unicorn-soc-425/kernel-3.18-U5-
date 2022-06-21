@@ -51,14 +51,18 @@ compatible (optional) - standard definition
           used as a shared pool of DMA buffers for a set of devices. It can
           be used by an operating system to instanciate the necessary pool
           management subsystem if necessary.
+<<<<<<< HEAD
 	- removed-dma-pool: This indicates a region of memory which is meant to
 	  be carved out and not exposed to kernel.
+=======
+>>>>>>> v4.9.227
         - vendor specific string in the form <vendor>,[<device>-]<usage>
 no-map (optional) - empty property
     - Indicates the operating system must not create a virtual mapping
       of the region as part of its standard mapping of system memory,
       nor permit speculative access to it under any circumstances other
       than under the control of the device driver using the region.
+<<<<<<< HEAD
 no-map-fixup (optional) - empty property
     - Indicates the operating system must reserve the memory region and keep
       virtual mapping. Upon first allocation the actual allocated region is
@@ -69,6 +73,8 @@ no-map-fixup (optional) - empty property
       (first) allocation is done. This property is for some specific use cases,
       if unsure please don't use it. This property cannot be used together with
       "no-map" attribute.
+=======
+>>>>>>> v4.9.227
 reusable (optional) - empty property
     - The operating system can use the memory in this region with the
       limitation that the device driver(s) owning the region need to be

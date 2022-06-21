@@ -368,7 +368,11 @@ static struct smp_funcall {
 	unsigned long arg5;
 	unsigned long processors_in[NR_CPUS];	/* Set when ipi entered. */
 	unsigned long processors_out[NR_CPUS];	/* Set when ipi exited. */
+<<<<<<< HEAD
 } ccall_info;
+=======
+} ccall_info __attribute__((aligned(8)));
+>>>>>>> v4.9.227
 
 static DEFINE_SPINLOCK(cross_call_lock);
 

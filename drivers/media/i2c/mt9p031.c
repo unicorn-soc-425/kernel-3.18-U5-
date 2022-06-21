@@ -15,19 +15,31 @@
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/consumer.h>
+>>>>>>> v4.9.227
 #include <linux/i2c.h>
 #include <linux/log2.h>
 #include <linux/module.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_gpio.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/of_graph.h>
 #include <linux/pm.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <linux/videodev2.h>
 
+<<<<<<< HEAD
 #include <media/mt9p031.h>
+=======
+#include <media/i2c/mt9p031.h>
+#include <media/v4l2-async.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
@@ -135,7 +147,11 @@ struct mt9p031 {
 	struct aptina_pll pll;
 	unsigned int clk_div;
 	bool use_pll;
+<<<<<<< HEAD
 	int reset;
+=======
+	struct gpio_desc *reset;
+>>>>>>> v4.9.227
 
 	struct v4l2_ctrl_handler ctrls;
 	struct v4l2_ctrl *blc_auto;
@@ -251,7 +267,11 @@ static int mt9p031_clk_setup(struct mt9p031 *mt9p031)
 		div = DIV_ROUND_UP(pdata->ext_freq, pdata->target_freq);
 		div = roundup_pow_of_two(div) / 2;
 
+<<<<<<< HEAD
 		mt9p031->clk_div = max_t(unsigned int, div, 64);
+=======
+		mt9p031->clk_div = min_t(unsigned int, div, 64);
+>>>>>>> v4.9.227
 		mt9p031->use_pll = false;
 
 		return 0;
@@ -308,9 +328,15 @@ static int mt9p031_power_on(struct mt9p031 *mt9p031)
 {
 	int ret;
 
+<<<<<<< HEAD
 	/* Ensure RESET_BAR is low */
 	if (gpio_is_valid(mt9p031->reset)) {
 		gpio_set_value(mt9p031->reset, 0);
+=======
+	/* Ensure RESET_BAR is active */
+	if (mt9p031->reset) {
+		gpiod_set_value(mt9p031->reset, 1);
+>>>>>>> v4.9.227
 		usleep_range(1000, 2000);
 	}
 
@@ -331,8 +357,13 @@ static int mt9p031_power_on(struct mt9p031 *mt9p031)
 	}
 
 	/* Now RESET_BAR must be high */
+<<<<<<< HEAD
 	if (gpio_is_valid(mt9p031->reset)) {
 		gpio_set_value(mt9p031->reset, 1);
+=======
+	if (mt9p031->reset) {
+		gpiod_set_value(mt9p031->reset, 0);
+>>>>>>> v4.9.227
 		usleep_range(1000, 2000);
 	}
 
@@ -341,8 +372,13 @@ static int mt9p031_power_on(struct mt9p031 *mt9p031)
 
 static void mt9p031_power_off(struct mt9p031 *mt9p031)
 {
+<<<<<<< HEAD
 	if (gpio_is_valid(mt9p031->reset)) {
 		gpio_set_value(mt9p031->reset, 0);
+=======
+	if (mt9p031->reset) {
+		gpiod_set_value(mt9p031->reset, 1);
+>>>>>>> v4.9.227
 		usleep_range(1000, 2000);
 	}
 
@@ -474,7 +510,11 @@ static int mt9p031_s_stream(struct v4l2_subdev *subdev, int enable)
 }
 
 static int mt9p031_enum_mbus_code(struct v4l2_subdev *subdev,
+<<<<<<< HEAD
 				  struct v4l2_subdev_fh *fh,
+=======
+				  struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 				  struct v4l2_subdev_mbus_code_enum *code)
 {
 	struct mt9p031 *mt9p031 = to_mt9p031(subdev);
@@ -487,7 +527,11 @@ static int mt9p031_enum_mbus_code(struct v4l2_subdev *subdev,
 }
 
 static int mt9p031_enum_frame_size(struct v4l2_subdev *subdev,
+<<<<<<< HEAD
 				   struct v4l2_subdev_fh *fh,
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 				   struct v4l2_subdev_frame_size_enum *fse)
 {
 	struct mt9p031 *mt9p031 = to_mt9p031(subdev);
@@ -505,12 +549,20 @@ static int mt9p031_enum_frame_size(struct v4l2_subdev *subdev,
 }
 
 static struct v4l2_mbus_framefmt *
+<<<<<<< HEAD
 __mt9p031_get_pad_format(struct mt9p031 *mt9p031, struct v4l2_subdev_fh *fh,
+=======
+__mt9p031_get_pad_format(struct mt9p031 *mt9p031, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			 unsigned int pad, u32 which)
 {
 	switch (which) {
 	case V4L2_SUBDEV_FORMAT_TRY:
+<<<<<<< HEAD
 		return v4l2_subdev_get_try_format(fh, pad);
+=======
+		return v4l2_subdev_get_try_format(&mt9p031->subdev, cfg, pad);
+>>>>>>> v4.9.227
 	case V4L2_SUBDEV_FORMAT_ACTIVE:
 		return &mt9p031->format;
 	default:
@@ -519,12 +571,20 @@ __mt9p031_get_pad_format(struct mt9p031 *mt9p031, struct v4l2_subdev_fh *fh,
 }
 
 static struct v4l2_rect *
+<<<<<<< HEAD
 __mt9p031_get_pad_crop(struct mt9p031 *mt9p031, struct v4l2_subdev_fh *fh,
+=======
+__mt9p031_get_pad_crop(struct mt9p031 *mt9p031, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 		     unsigned int pad, u32 which)
 {
 	switch (which) {
 	case V4L2_SUBDEV_FORMAT_TRY:
+<<<<<<< HEAD
 		return v4l2_subdev_get_try_crop(fh, pad);
+=======
+		return v4l2_subdev_get_try_crop(&mt9p031->subdev, cfg, pad);
+>>>>>>> v4.9.227
 	case V4L2_SUBDEV_FORMAT_ACTIVE:
 		return &mt9p031->crop;
 	default:
@@ -533,18 +593,30 @@ __mt9p031_get_pad_crop(struct mt9p031 *mt9p031, struct v4l2_subdev_fh *fh,
 }
 
 static int mt9p031_get_format(struct v4l2_subdev *subdev,
+<<<<<<< HEAD
 			      struct v4l2_subdev_fh *fh,
+=======
+			      struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			      struct v4l2_subdev_format *fmt)
 {
 	struct mt9p031 *mt9p031 = to_mt9p031(subdev);
 
+<<<<<<< HEAD
 	fmt->format = *__mt9p031_get_pad_format(mt9p031, fh, fmt->pad,
+=======
+	fmt->format = *__mt9p031_get_pad_format(mt9p031, cfg, fmt->pad,
+>>>>>>> v4.9.227
 						fmt->which);
 	return 0;
 }
 
 static int mt9p031_set_format(struct v4l2_subdev *subdev,
+<<<<<<< HEAD
 			      struct v4l2_subdev_fh *fh,
+=======
+			      struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			      struct v4l2_subdev_format *format)
 {
 	struct mt9p031 *mt9p031 = to_mt9p031(subdev);
@@ -555,7 +627,11 @@ static int mt9p031_set_format(struct v4l2_subdev *subdev,
 	unsigned int hratio;
 	unsigned int vratio;
 
+<<<<<<< HEAD
 	__crop = __mt9p031_get_pad_crop(mt9p031, fh, format->pad,
+=======
+	__crop = __mt9p031_get_pad_crop(mt9p031, cfg, format->pad,
+>>>>>>> v4.9.227
 					format->which);
 
 	/* Clamp the width and height to avoid dividing by zero. */
@@ -571,7 +647,11 @@ static int mt9p031_set_format(struct v4l2_subdev *subdev,
 	hratio = DIV_ROUND_CLOSEST(__crop->width, width);
 	vratio = DIV_ROUND_CLOSEST(__crop->height, height);
 
+<<<<<<< HEAD
 	__format = __mt9p031_get_pad_format(mt9p031, fh, format->pad,
+=======
+	__format = __mt9p031_get_pad_format(mt9p031, cfg, format->pad,
+>>>>>>> v4.9.227
 					    format->which);
 	__format->width = __crop->width / hratio;
 	__format->height = __crop->height / vratio;
@@ -581,6 +661,7 @@ static int mt9p031_set_format(struct v4l2_subdev *subdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mt9p031_get_crop(struct v4l2_subdev *subdev,
 			    struct v4l2_subdev_fh *fh,
 			    struct v4l2_subdev_crop *crop)
@@ -595,12 +676,31 @@ static int mt9p031_get_crop(struct v4l2_subdev *subdev,
 static int mt9p031_set_crop(struct v4l2_subdev *subdev,
 			    struct v4l2_subdev_fh *fh,
 			    struct v4l2_subdev_crop *crop)
+=======
+static int mt9p031_get_selection(struct v4l2_subdev *subdev,
+				 struct v4l2_subdev_pad_config *cfg,
+				 struct v4l2_subdev_selection *sel)
+{
+	struct mt9p031 *mt9p031 = to_mt9p031(subdev);
+
+	if (sel->target != V4L2_SEL_TGT_CROP)
+		return -EINVAL;
+
+	sel->r = *__mt9p031_get_pad_crop(mt9p031, cfg, sel->pad, sel->which);
+	return 0;
+}
+
+static int mt9p031_set_selection(struct v4l2_subdev *subdev,
+				 struct v4l2_subdev_pad_config *cfg,
+				 struct v4l2_subdev_selection *sel)
+>>>>>>> v4.9.227
 {
 	struct mt9p031 *mt9p031 = to_mt9p031(subdev);
 	struct v4l2_mbus_framefmt *__format;
 	struct v4l2_rect *__crop;
 	struct v4l2_rect rect;
 
+<<<<<<< HEAD
 	/* Clamp the crop rectangle boundaries and align them to a multiple of 2
 	 * pixels to ensure a GRBG Bayer pattern.
 	 */
@@ -612,6 +712,22 @@ static int mt9p031_set_crop(struct v4l2_subdev *subdev,
 			     MT9P031_WINDOW_WIDTH_MIN,
 			     MT9P031_WINDOW_WIDTH_MAX);
 	rect.height = clamp_t(unsigned int, ALIGN(crop->rect.height, 2),
+=======
+	if (sel->target != V4L2_SEL_TGT_CROP)
+		return -EINVAL;
+
+	/* Clamp the crop rectangle boundaries and align them to a multiple of 2
+	 * pixels to ensure a GRBG Bayer pattern.
+	 */
+	rect.left = clamp(ALIGN(sel->r.left, 2), MT9P031_COLUMN_START_MIN,
+			  MT9P031_COLUMN_START_MAX);
+	rect.top = clamp(ALIGN(sel->r.top, 2), MT9P031_ROW_START_MIN,
+			 MT9P031_ROW_START_MAX);
+	rect.width = clamp_t(unsigned int, ALIGN(sel->r.width, 2),
+			     MT9P031_WINDOW_WIDTH_MIN,
+			     MT9P031_WINDOW_WIDTH_MAX);
+	rect.height = clamp_t(unsigned int, ALIGN(sel->r.height, 2),
+>>>>>>> v4.9.227
 			      MT9P031_WINDOW_HEIGHT_MIN,
 			      MT9P031_WINDOW_HEIGHT_MAX);
 
@@ -620,20 +736,33 @@ static int mt9p031_set_crop(struct v4l2_subdev *subdev,
 	rect.height = min_t(unsigned int, rect.height,
 			    MT9P031_PIXEL_ARRAY_HEIGHT - rect.top);
 
+<<<<<<< HEAD
 	__crop = __mt9p031_get_pad_crop(mt9p031, fh, crop->pad, crop->which);
+=======
+	__crop = __mt9p031_get_pad_crop(mt9p031, cfg, sel->pad, sel->which);
+>>>>>>> v4.9.227
 
 	if (rect.width != __crop->width || rect.height != __crop->height) {
 		/* Reset the output image size if the crop rectangle size has
 		 * been modified.
 		 */
+<<<<<<< HEAD
 		__format = __mt9p031_get_pad_format(mt9p031, fh, crop->pad,
 						    crop->which);
+=======
+		__format = __mt9p031_get_pad_format(mt9p031, cfg, sel->pad,
+						    sel->which);
+>>>>>>> v4.9.227
 		__format->width = rect.width;
 		__format->height = rect.height;
 	}
 
 	*__crop = rect;
+<<<<<<< HEAD
 	crop->rect = rect;
+=======
+	sel->r = rect;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -812,7 +941,11 @@ static int mt9p031_s_ctrl(struct v4l2_ctrl *ctrl)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct v4l2_ctrl_ops mt9p031_ctrl_ops = {
+=======
+static const struct v4l2_ctrl_ops mt9p031_ctrl_ops = {
+>>>>>>> v4.9.227
 	.s_ctrl = mt9p031_s_ctrl,
 };
 
@@ -941,18 +1074,31 @@ static int mt9p031_open(struct v4l2_subdev *subdev, struct v4l2_subdev_fh *fh)
 	struct v4l2_mbus_framefmt *format;
 	struct v4l2_rect *crop;
 
+<<<<<<< HEAD
 	crop = v4l2_subdev_get_try_crop(fh, 0);
+=======
+	crop = v4l2_subdev_get_try_crop(subdev, fh->pad, 0);
+>>>>>>> v4.9.227
 	crop->left = MT9P031_COLUMN_START_DEF;
 	crop->top = MT9P031_ROW_START_DEF;
 	crop->width = MT9P031_WINDOW_WIDTH_DEF;
 	crop->height = MT9P031_WINDOW_HEIGHT_DEF;
 
+<<<<<<< HEAD
 	format = v4l2_subdev_get_try_format(fh, 0);
 
 	if (mt9p031->model == MT9P031_MODEL_MONOCHROME)
 		format->code = V4L2_MBUS_FMT_Y12_1X12;
 	else
 		format->code = V4L2_MBUS_FMT_SGRBG12_1X12;
+=======
+	format = v4l2_subdev_get_try_format(subdev, fh->pad, 0);
+
+	if (mt9p031->model == MT9P031_MODEL_MONOCHROME)
+		format->code = MEDIA_BUS_FMT_Y12_1X12;
+	else
+		format->code = MEDIA_BUS_FMT_SGRBG12_1X12;
+>>>>>>> v4.9.227
 
 	format->width = MT9P031_WINDOW_WIDTH_DEF;
 	format->height = MT9P031_WINDOW_HEIGHT_DEF;
@@ -980,8 +1126,13 @@ static struct v4l2_subdev_pad_ops mt9p031_subdev_pad_ops = {
 	.enum_frame_size = mt9p031_enum_frame_size,
 	.get_fmt = mt9p031_get_format,
 	.set_fmt = mt9p031_set_format,
+<<<<<<< HEAD
 	.get_crop = mt9p031_get_crop,
 	.set_crop = mt9p031_set_crop,
+=======
+	.get_selection = mt9p031_get_selection,
+	.set_selection = mt9p031_set_selection,
+>>>>>>> v4.9.227
 };
 
 static struct v4l2_subdev_ops mt9p031_subdev_ops = {
@@ -1017,7 +1168,10 @@ mt9p031_get_pdata(struct i2c_client *client)
 	if (!pdata)
 		goto done;
 
+<<<<<<< HEAD
 	pdata->reset = of_get_named_gpio(client->dev.of_node, "reset-gpios", 0);
+=======
+>>>>>>> v4.9.227
 	of_property_read_u32(np, "input-clock-frequency", &pdata->ext_freq);
 	of_property_read_u32(np, "pixel-clock-frequency", &pdata->target_freq);
 
@@ -1054,7 +1208,10 @@ static int mt9p031_probe(struct i2c_client *client,
 	mt9p031->output_control	= MT9P031_OUTPUT_CONTROL_DEF;
 	mt9p031->mode2 = MT9P031_READ_MODE_2_ROW_BLC;
 	mt9p031->model = did->driver_data;
+<<<<<<< HEAD
 	mt9p031->reset = -1;
+=======
+>>>>>>> v4.9.227
 
 	mt9p031->regulators[0].supply = "vdd";
 	mt9p031->regulators[1].supply = "vdd_io";
@@ -1066,6 +1223,11 @@ static int mt9p031_probe(struct i2c_client *client,
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	mutex_init(&mt9p031->power_lock);
+
+>>>>>>> v4.9.227
 	v4l2_ctrl_handler_init(&mt9p031->ctrls, ARRAY_SIZE(mt9p031_ctrls) + 6);
 
 	v4l2_ctrl_new_std(&mt9p031->ctrls, &mt9p031_ctrl_ops,
@@ -1103,12 +1265,19 @@ static int mt9p031_probe(struct i2c_client *client,
 	mt9p031->blc_offset = v4l2_ctrl_find(&mt9p031->ctrls,
 					     V4L2_CID_BLC_DIGITAL_OFFSET);
 
+<<<<<<< HEAD
 	mutex_init(&mt9p031->power_lock);
+=======
+>>>>>>> v4.9.227
 	v4l2_i2c_subdev_init(&mt9p031->subdev, client, &mt9p031_subdev_ops);
 	mt9p031->subdev.internal_ops = &mt9p031_subdev_internal_ops;
 
 	mt9p031->pad.flags = MEDIA_PAD_FL_SOURCE;
+<<<<<<< HEAD
 	ret = media_entity_init(&mt9p031->subdev.entity, 1, &mt9p031->pad, 0);
+=======
+	ret = media_entity_pads_init(&mt9p031->subdev.entity, 1, &mt9p031->pad);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto done;
 
@@ -1120,15 +1289,22 @@ static int mt9p031_probe(struct i2c_client *client,
 	mt9p031->crop.top = MT9P031_ROW_START_DEF;
 
 	if (mt9p031->model == MT9P031_MODEL_MONOCHROME)
+<<<<<<< HEAD
 		mt9p031->format.code = V4L2_MBUS_FMT_Y12_1X12;
 	else
 		mt9p031->format.code = V4L2_MBUS_FMT_SGRBG12_1X12;
+=======
+		mt9p031->format.code = MEDIA_BUS_FMT_Y12_1X12;
+	else
+		mt9p031->format.code = MEDIA_BUS_FMT_SGRBG12_1X12;
+>>>>>>> v4.9.227
 
 	mt9p031->format.width = MT9P031_WINDOW_WIDTH_DEF;
 	mt9p031->format.height = MT9P031_WINDOW_HEIGHT_DEF;
 	mt9p031->format.field = V4L2_FIELD_NONE;
 	mt9p031->format.colorspace = V4L2_COLORSPACE_SRGB;
 
+<<<<<<< HEAD
 	if (gpio_is_valid(pdata->reset)) {
 		ret = devm_gpio_request_one(&client->dev, pdata->reset,
 					    GPIOF_OUT_INIT_LOW, "mt9p031_rst");
@@ -1139,11 +1315,25 @@ static int mt9p031_probe(struct i2c_client *client,
 	}
 
 	ret = mt9p031_clk_setup(mt9p031);
+=======
+	mt9p031->reset = devm_gpiod_get_optional(&client->dev, "reset",
+						 GPIOD_OUT_HIGH);
+
+	ret = mt9p031_clk_setup(mt9p031);
+	if (ret)
+		goto done;
+
+	ret = v4l2_async_register_subdev(&mt9p031->subdev);
+>>>>>>> v4.9.227
 
 done:
 	if (ret < 0) {
 		v4l2_ctrl_handler_free(&mt9p031->ctrls);
 		media_entity_cleanup(&mt9p031->subdev.entity);
+<<<<<<< HEAD
+=======
+		mutex_destroy(&mt9p031->power_lock);
+>>>>>>> v4.9.227
 	}
 
 	return ret;
@@ -1155,8 +1345,14 @@ static int mt9p031_remove(struct i2c_client *client)
 	struct mt9p031 *mt9p031 = to_mt9p031(subdev);
 
 	v4l2_ctrl_handler_free(&mt9p031->ctrls);
+<<<<<<< HEAD
 	v4l2_device_unregister_subdev(subdev);
 	media_entity_cleanup(&subdev->entity);
+=======
+	v4l2_async_unregister_subdev(subdev);
+	media_entity_cleanup(&subdev->entity);
+	mutex_destroy(&mt9p031->power_lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }

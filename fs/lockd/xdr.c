@@ -95,6 +95,7 @@ nlm_decode_fh(__be32 *p, struct nfs_fh *f)
 	return p + XDR_QUADLEN(NFS2_FHSIZE);
 }
 
+<<<<<<< HEAD
 static inline __be32 *
 nlm_encode_fh(__be32 *p, struct nfs_fh *f)
 {
@@ -103,6 +104,8 @@ nlm_encode_fh(__be32 *p, struct nfs_fh *f)
 	return p + XDR_QUADLEN(NFS2_FHSIZE);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Encode and decode owner handle
  */

@@ -144,9 +144,17 @@ static int oxygen_open(struct snd_pcm_substream *substream,
 		runtime->hw = *oxygen_hardware[channel];
 	switch (channel) {
 	case PCM_C:
+<<<<<<< HEAD
 		runtime->hw.rates &= ~(SNDRV_PCM_RATE_32000 |
 				       SNDRV_PCM_RATE_64000);
 		runtime->hw.rate_min = 44100;
+=======
+		if (chip->model.device_config & CAPTURE_1_FROM_SPDIF) {
+			runtime->hw.rates &= ~(SNDRV_PCM_RATE_32000 |
+					       SNDRV_PCM_RATE_64000);
+			runtime->hw.rate_min = 44100;
+		}
+>>>>>>> v4.9.227
 		/* fall through */
 	case PCM_A:
 	case PCM_B:
@@ -430,17 +438,46 @@ static int oxygen_rec_c_hw_params(struct snd_pcm_substream *substream,
 				  struct snd_pcm_hw_params *hw_params)
 {
 	struct oxygen *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
+=======
+	bool is_spdif;
+>>>>>>> v4.9.227
 	int err;
 
 	err = oxygen_hw_params(substream, hw_params);
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
+=======
+	is_spdif = chip->model.device_config & CAPTURE_1_FROM_SPDIF;
+
+>>>>>>> v4.9.227
 	spin_lock_irq(&chip->reg_lock);
 	oxygen_write8_masked(chip, OXYGEN_REC_FORMAT,
 			     oxygen_format(hw_params) << OXYGEN_REC_FORMAT_C_SHIFT,
 			     OXYGEN_REC_FORMAT_C_MASK);
+<<<<<<< HEAD
 	spin_unlock_irq(&chip->reg_lock);
+=======
+	if (!is_spdif)
+		oxygen_write16_masked(chip, OXYGEN_I2S_C_FORMAT,
+				      oxygen_rate(hw_params) |
+				      chip->model.adc_i2s_format |
+				      get_mclk(chip, PCM_B, hw_params) |
+				      oxygen_i2s_bits(hw_params),
+				      OXYGEN_I2S_RATE_MASK |
+				      OXYGEN_I2S_FORMAT_MASK |
+				      OXYGEN_I2S_MCLK_MASK |
+				      OXYGEN_I2S_BITS_MASK);
+	spin_unlock_irq(&chip->reg_lock);
+
+	if (!is_spdif) {
+		mutex_lock(&chip->mutex);
+		chip->model.set_adc_params(chip, hw_params);
+		mutex_unlock(&chip->mutex);
+	}
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -610,7 +647,11 @@ static snd_pcm_uframes_t oxygen_pointer(struct snd_pcm_substream *substream)
 	return bytes_to_frames(runtime, curr_addr - (u32)runtime->dma_addr);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops oxygen_rec_a_ops = {
+=======
+static const struct snd_pcm_ops oxygen_rec_a_ops = {
+>>>>>>> v4.9.227
 	.open      = oxygen_rec_a_open,
 	.close     = oxygen_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -621,7 +662,11 @@ static struct snd_pcm_ops oxygen_rec_a_ops = {
 	.pointer   = oxygen_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops oxygen_rec_b_ops = {
+=======
+static const struct snd_pcm_ops oxygen_rec_b_ops = {
+>>>>>>> v4.9.227
 	.open      = oxygen_rec_b_open,
 	.close     = oxygen_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -632,7 +677,11 @@ static struct snd_pcm_ops oxygen_rec_b_ops = {
 	.pointer   = oxygen_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops oxygen_rec_c_ops = {
+=======
+static const struct snd_pcm_ops oxygen_rec_c_ops = {
+>>>>>>> v4.9.227
 	.open      = oxygen_rec_c_open,
 	.close     = oxygen_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -643,7 +692,11 @@ static struct snd_pcm_ops oxygen_rec_c_ops = {
 	.pointer   = oxygen_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops oxygen_spdif_ops = {
+=======
+static const struct snd_pcm_ops oxygen_spdif_ops = {
+>>>>>>> v4.9.227
 	.open      = oxygen_spdif_open,
 	.close     = oxygen_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -654,7 +707,11 @@ static struct snd_pcm_ops oxygen_spdif_ops = {
 	.pointer   = oxygen_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops oxygen_multich_ops = {
+=======
+static const struct snd_pcm_ops oxygen_multich_ops = {
+>>>>>>> v4.9.227
 	.open      = oxygen_multich_open,
 	.close     = oxygen_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -665,7 +722,11 @@ static struct snd_pcm_ops oxygen_multich_ops = {
 	.pointer   = oxygen_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops oxygen_ac97_ops = {
+=======
+static const struct snd_pcm_ops oxygen_ac97_ops = {
+>>>>>>> v4.9.227
 	.open      = oxygen_ac97_open,
 	.close     = oxygen_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -676,11 +737,14 @@ static struct snd_pcm_ops oxygen_ac97_ops = {
 	.pointer   = oxygen_pointer,
 };
 
+<<<<<<< HEAD
 static void oxygen_pcm_free(struct snd_pcm *pcm)
 {
 	snd_pcm_lib_preallocate_free_for_all(pcm);
 }
 
+=======
+>>>>>>> v4.9.227
 int oxygen_pcm_init(struct oxygen *chip)
 {
 	struct snd_pcm *pcm;
@@ -705,7 +769,10 @@ int oxygen_pcm_init(struct oxygen *chip)
 			snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
 					&oxygen_rec_b_ops);
 		pcm->private_data = chip;
+<<<<<<< HEAD
 		pcm->private_free = oxygen_pcm_free;
+=======
+>>>>>>> v4.9.227
 		strcpy(pcm->name, "Multichannel");
 		if (outs)
 			snd_pcm_lib_preallocate_pages(pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream,
@@ -734,7 +801,10 @@ int oxygen_pcm_init(struct oxygen *chip)
 			snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
 					&oxygen_rec_c_ops);
 		pcm->private_data = chip;
+<<<<<<< HEAD
 		pcm->private_free = oxygen_pcm_free;
+=======
+>>>>>>> v4.9.227
 		strcpy(pcm->name, "Digital");
 		snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 						      snd_dma_pci_data(chip->pci),
@@ -765,12 +835,36 @@ int oxygen_pcm_init(struct oxygen *chip)
 			snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
 					&oxygen_rec_b_ops);
 		pcm->private_data = chip;
+<<<<<<< HEAD
 		pcm->private_free = oxygen_pcm_free;
+=======
+>>>>>>> v4.9.227
 		strcpy(pcm->name, outs ? "Front Panel" : "Analog 2");
 		snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 						      snd_dma_pci_data(chip->pci),
 						      DEFAULT_BUFFER_BYTES,
 						      BUFFER_BYTES_MAX);
 	}
+<<<<<<< HEAD
+=======
+
+	ins = !!(chip->model.device_config & CAPTURE_3_FROM_I2S_3);
+	if (ins) {
+		err = snd_pcm_new(chip->card, "Analog3", 3, 0, ins, &pcm);
+		if (err < 0)
+			return err;
+		snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
+				&oxygen_rec_c_ops);
+		oxygen_write8_masked(chip, OXYGEN_REC_ROUTING,
+				     OXYGEN_REC_C_ROUTE_I2S_ADC_3,
+				     OXYGEN_REC_C_ROUTE_MASK);
+		pcm->private_data = chip;
+		strcpy(pcm->name, "Analog 3");
+		snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
+						      snd_dma_pci_data(chip->pci),
+						      DEFAULT_BUFFER_BYTES,
+						      BUFFER_BYTES_MAX);
+	}
+>>>>>>> v4.9.227
 	return 0;
 }

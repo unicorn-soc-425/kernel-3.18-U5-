@@ -11,6 +11,7 @@
 #ifndef _ASM_DMA_MAPPING_H
 #define _ASM_DMA_MAPPING_H
 
+<<<<<<< HEAD
 #include <linux/mm.h>
 #include <linux/scatterlist.h>
 
@@ -159,6 +160,16 @@ int dma_set_mask(struct device *dev, u64 mask)
 
 	*dev->dma_mask = mask;
 	return 0;
+=======
+#include <asm/cache.h>
+#include <asm/io.h>
+
+extern struct dma_map_ops mn10300_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	return &mn10300_dma_ops;
+>>>>>>> v4.9.227
 }
 
 static inline
@@ -168,6 +179,7 @@ void dma_cache_sync(void *vaddr, size_t size,
 	mn10300_dcache_flush_inv();
 }
 
+<<<<<<< HEAD
 /* Not supported for now */
 static inline int dma_mmap_coherent(struct device *dev,
 				    struct vm_area_struct *vma, void *cpu_addr,
@@ -183,4 +195,6 @@ static inline int dma_get_sgtable(struct device *dev, struct sg_table *sgt,
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 #endif

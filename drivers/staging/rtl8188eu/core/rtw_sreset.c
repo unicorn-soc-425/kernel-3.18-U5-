@@ -11,28 +11,41 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 
 #include <rtw_sreset.h>
 #include <usb_ops_linux.h>
 
+<<<<<<< HEAD
 void sreset_init_value(struct adapter *padapter)
 {
 	struct hal_data_8188e	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
+=======
+void rtw_hal_sreset_init(struct adapter *padapter)
+{
+	struct sreset_priv *psrtpriv = &padapter->HalData->srestpriv;
+>>>>>>> v4.9.227
 
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 }
 
 u8 sreset_get_wifi_status(struct adapter *padapter)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
+=======
+	struct sreset_priv *psrtpriv = &padapter->HalData->srestpriv;
+>>>>>>> v4.9.227
 
 	u8 status = WIFI_STATUS_SUCCESS;
 	u32 val32 = 0;
@@ -47,7 +60,11 @@ u8 sreset_get_wifi_status(struct adapter *padapter)
 
 	if (WIFI_STATUS_SUCCESS != psrtpriv->Wifi_Error_Status) {
 		DBG_88E("==>%s error_status(0x%x)\n", __func__, psrtpriv->Wifi_Error_Status);
+<<<<<<< HEAD
 		status = (psrtpriv->Wifi_Error_Status & (~(USB_READ_PORT_FAIL|USB_WRITE_PORT_FAIL)));
+=======
+		status = psrtpriv->Wifi_Error_Status & (~(USB_READ_PORT_FAIL|USB_WRITE_PORT_FAIL));
+>>>>>>> v4.9.227
 	}
 	DBG_88E("==> %s wifi_status(0x%x)\n", __func__, status);
 
@@ -59,6 +76,10 @@ u8 sreset_get_wifi_status(struct adapter *padapter)
 
 void sreset_set_wifi_error_status(struct adapter *padapter, u32 status)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e	*pHalData = GET_HAL_DATA(padapter);
 	pHalData->srestpriv.Wifi_Error_Status = status;
+=======
+	padapter->HalData->srestpriv.Wifi_Error_Status = status;
+>>>>>>> v4.9.227
 }

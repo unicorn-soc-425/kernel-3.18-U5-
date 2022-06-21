@@ -1,7 +1,10 @@
 obj-y += rstc.o
 obj-y += common.o
 obj-y += rtciobrg.o
+<<<<<<< HEAD
 obj-$(CONFIG_DEBUG_LL) += lluart.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_SUSPEND) += pm.o sleep.o
 obj-$(CONFIG_SMP) += platsmp.o headsmp.o
 obj-$(CONFIG_HOTPLUG_CPU)  += hotplug.o

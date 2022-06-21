@@ -13,6 +13,7 @@
 		do { spin_lock(lock); (void)(flags); } while (0)
 #define spin_unlock_mutex(lock, flags) \
 		do { spin_unlock(lock); (void)(flags); } while (0)
+<<<<<<< HEAD
 #define mutex_remove_waiter(lock, waiter, ti) \
 		__list_del((waiter)->list.prev, (waiter)->list.next)
 
@@ -20,11 +21,30 @@
 static inline void mutex_set_owner(struct mutex *lock)
 {
 	lock->owner = current;
+=======
+#define mutex_remove_waiter(lock, waiter, task) \
+		__list_del((waiter)->list.prev, (waiter)->list.next)
+
+#ifdef CONFIG_MUTEX_SPIN_ON_OWNER
+/*
+ * The mutex owner can get read and written to locklessly.
+ * We should use WRITE_ONCE when writing the owner value to
+ * avoid store tearing, otherwise, a thread could potentially
+ * read a partially written and incomplete owner value.
+ */
+static inline void mutex_set_owner(struct mutex *lock)
+{
+	WRITE_ONCE(lock->owner, current);
+>>>>>>> v4.9.227
 }
 
 static inline void mutex_clear_owner(struct mutex *lock)
 {
+<<<<<<< HEAD
 	lock->owner = NULL;
+=======
+	WRITE_ONCE(lock->owner, NULL);
+>>>>>>> v4.9.227
 }
 #else
 static inline void mutex_set_owner(struct mutex *lock)

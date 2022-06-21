@@ -21,6 +21,7 @@
 #include <linux/futex.h>
 #include <linux/uaccess.h>
 
+<<<<<<< HEAD
 #include <asm/errno.h>
 
 #define __futex_atomic_op(insn, ret, oldval, uaddr, tmp, oparg)		\
@@ -31,6 +32,22 @@ do {									\
 	insn "\n"							\
 "2:	stlxr	%w3, %w0, %2\n"						\
 "	cbnz	%w3, 1b\n"						\
+=======
+#include <asm/alternative.h>
+#include <asm/cpufeature.h>
+#include <asm/errno.h>
+#include <asm/sysreg.h>
+
+#define __futex_atomic_op(insn, ret, oldval, uaddr, tmp, oparg)		\
+	asm volatile(							\
+	ALTERNATIVE("nop", SET_PSTATE_PAN(0), ARM64_HAS_PAN,		\
+		    CONFIG_ARM64_PAN)					\
+"	prfm	pstl1strm, %2\n"					\
+"1:	ldxr	%w1, %2\n"						\
+	insn "\n"							\
+"2:	stlxr	%w0, %w3, %2\n"						\
+"	cbnz	%w0, 1b\n"						\
+>>>>>>> v4.9.227
 "	dmb	ish\n"							\
 "3:\n"									\
 "	.pushsection .fixup,\"ax\"\n"					\
@@ -38,6 +55,7 @@ do {									\
 "4:	mov	%w0, %w5\n"						\
 "	b	3b\n"							\
 "	.popsection\n"							\
+<<<<<<< HEAD
 "	.pushsection __ex_table,\"a\"\n"				\
 "	.align	3\n"							\
 "	.quad	1b, 4b, 2b, 4b\n"					\
@@ -84,12 +102,49 @@ futex_atomic_op_inuser(unsigned int encoded_op, u32 __user *uaddr)
 		break;
 	case FUTEX_OP_XOR:
 		__futex_atomic_op("eor	%w0, %w1, %w4",
+=======
+	_ASM_EXTABLE(1b, 4b)						\
+	_ASM_EXTABLE(2b, 4b)						\
+	ALTERNATIVE("nop", SET_PSTATE_PAN(1), ARM64_HAS_PAN,		\
+		    CONFIG_ARM64_PAN)					\
+	: "=&r" (ret), "=&r" (oldval), "+Q" (*uaddr), "=&r" (tmp)	\
+	: "r" (oparg), "Ir" (-EFAULT)					\
+	: "memory")
+
+static inline int
+arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
+{
+	int oldval = 0, ret, tmp;
+
+	pagefault_disable();
+
+	switch (op) {
+	case FUTEX_OP_SET:
+		__futex_atomic_op("mov	%w3, %w4",
+				  ret, oldval, uaddr, tmp, oparg);
+		break;
+	case FUTEX_OP_ADD:
+		__futex_atomic_op("add	%w3, %w1, %w4",
+				  ret, oldval, uaddr, tmp, oparg);
+		break;
+	case FUTEX_OP_OR:
+		__futex_atomic_op("orr	%w3, %w1, %w4",
+				  ret, oldval, uaddr, tmp, oparg);
+		break;
+	case FUTEX_OP_ANDN:
+		__futex_atomic_op("and	%w3, %w1, %w4",
+				  ret, oldval, uaddr, tmp, ~oparg);
+		break;
+	case FUTEX_OP_XOR:
+		__futex_atomic_op("eor	%w3, %w1, %w4",
+>>>>>>> v4.9.227
 				  ret, oldval, uaddr, tmp, oparg);
 		break;
 	default:
 		ret = -ENOSYS;
 	}
 
+<<<<<<< HEAD
 	pagefault_enable();	/* subsumes preempt_enable() */
 
 	if (!ret) {
@@ -103,21 +158,44 @@ futex_atomic_op_inuser(unsigned int encoded_op, u32 __user *uaddr)
 		default: ret = -ENOSYS;
 		}
 	}
+=======
+	pagefault_enable();
+
+	if (!ret)
+		*oval = oldval;
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static inline int
+<<<<<<< HEAD
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
+=======
+futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *_uaddr,
+>>>>>>> v4.9.227
 			      u32 oldval, u32 newval)
 {
 	int ret = 0;
 	u32 val, tmp;
+<<<<<<< HEAD
 
 	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
 		return -EFAULT;
 
 	uaccess_enable();
 	asm volatile("// futex_atomic_cmpxchg_inatomic\n"
+=======
+	u32 __user *uaddr;
+
+	if (!access_ok(VERIFY_WRITE, _uaddr, sizeof(u32)))
+		return -EFAULT;
+
+	uaddr = __uaccess_mask_ptr(_uaddr);
+	asm volatile("// futex_atomic_cmpxchg_inatomic\n"
+ALTERNATIVE("nop", SET_PSTATE_PAN(0), ARM64_HAS_PAN, CONFIG_ARM64_PAN)
+"	prfm	pstl1strm, %2\n"
+>>>>>>> v4.9.227
 "1:	ldxr	%w1, %2\n"
 "	sub	%w3, %w1, %w4\n"
 "	cbnz	%w3, 3f\n"
@@ -129,6 +207,7 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 "4:	mov	%w0, %w6\n"
 "	b	3b\n"
 "	.popsection\n"
+<<<<<<< HEAD
 "	.pushsection __ex_table,\"a\"\n"
 "	.align	3\n"
 "	.quad	1b, 4b, 2b, 4b\n"
@@ -137,6 +216,14 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	: "r" (oldval), "r" (newval), "Ir" (-EFAULT)
 	: "memory");
 	uaccess_disable();
+=======
+	_ASM_EXTABLE(1b, 4b)
+	_ASM_EXTABLE(2b, 4b)
+ALTERNATIVE("nop", SET_PSTATE_PAN(1), ARM64_HAS_PAN, CONFIG_ARM64_PAN)
+	: "+r" (ret), "=&r" (val), "+Q" (*uaddr), "=&r" (tmp)
+	: "r" (oldval), "r" (newval), "Ir" (-EFAULT)
+	: "memory");
+>>>>>>> v4.9.227
 
 	*uval = val;
 	return ret;

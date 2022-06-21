@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __HALPWRSEQCMD_H__
 #define __HALPWRSEQCMD_H__
@@ -29,6 +32,7 @@
 #define PWR_CMD_DELAY		0x03
 #define PWR_CMD_END		0x04
 
+<<<<<<< HEAD
 /* The value of base: 4 bits */
 /*  define the base address of each block */
 #define PWR_BASEADDR_MAC	0x00
@@ -47,6 +51,8 @@
 #define PWR_FAB_UMC_MSK		BIT(1)
 #define PWR_FAB_ALL_MSK		(BIT(0)|BIT(1)|BIT(2)|BIT(3))
 
+=======
+>>>>>>> v4.9.227
 /* The value of cut_msk: 8 bits */
 #define PWR_CUT_TESTCHIP_MSK	BIT(0)
 #define PWR_CUT_A_MSK		BIT(1)
@@ -67,9 +73,12 @@ enum pwrseq_cmd_delat_unit {
 struct wl_pwr_cfg {
 	u16 offset;
 	u8 cut_msk;
+<<<<<<< HEAD
 	u8 fab_msk:4;
 	u8 interface_msk:4;
 	u8 base:4;
+=======
+>>>>>>> v4.9.227
 	u8 cmd:4;
 	u8 msk;
 	u8 value;
@@ -77,14 +86,22 @@ struct wl_pwr_cfg {
 
 #define GET_PWR_CFG_OFFSET(__PWR_CMD)		__PWR_CMD.offset
 #define GET_PWR_CFG_CUT_MASK(__PWR_CMD)		__PWR_CMD.cut_msk
+<<<<<<< HEAD
 #define GET_PWR_CFG_FAB_MASK(__PWR_CMD)		__PWR_CMD.fab_msk
 #define GET_PWR_CFG_INTF_MASK(__PWR_CMD)	__PWR_CMD.interface_msk
 #define GET_PWR_CFG_BASE(__PWR_CMD)		__PWR_CMD.base
+=======
+>>>>>>> v4.9.227
 #define GET_PWR_CFG_CMD(__PWR_CMD)		__PWR_CMD.cmd
 #define GET_PWR_CFG_MASK(__PWR_CMD)		__PWR_CMD.msk
 #define GET_PWR_CFG_VALUE(__PWR_CMD)		__PWR_CMD.value
 
+<<<<<<< HEAD
 u8 rtl88eu_pwrseqcmdparsing(struct adapter *padapter, u8 cut_vers, u8 fab_vers,
 			    u8 ifacetype, struct wl_pwr_cfg pwrcfgCmd[]);
+=======
+u8 rtl88eu_pwrseqcmdparsing(struct adapter *padapter, u8 cut_vers,
+			    struct wl_pwr_cfg pwrcfgCmd[]);
+>>>>>>> v4.9.227
 
 #endif

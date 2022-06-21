@@ -123,7 +123,11 @@ static int ocfs2_global_is_id(void *dp, struct dquot *dquot)
 		      dquot->dq_id);
 }
 
+<<<<<<< HEAD
 struct qtree_fmt_operations ocfs2_global_ops = {
+=======
+const struct qtree_fmt_operations ocfs2_global_ops = {
+>>>>>>> v4.9.227
 	.mem2disk_dqblk = ocfs2_global_mem2diskdqb,
 	.disk2mem_dqblk = ocfs2_global_disk2memdqb,
 	.is_id = ocfs2_global_is_id,
@@ -308,7 +312,11 @@ int ocfs2_lock_global_qf(struct ocfs2_mem_dqinfo *oinfo, int ex)
 		WARN_ON(bh != oinfo->dqi_gqi_bh);
 	spin_unlock(&dq_data_lock);
 	if (ex) {
+<<<<<<< HEAD
 		mutex_lock(&oinfo->dqi_gqinode->i_mutex);
+=======
+		inode_lock(oinfo->dqi_gqinode);
+>>>>>>> v4.9.227
 		down_write(&OCFS2_I(oinfo->dqi_gqinode)->ip_alloc_sem);
 	} else {
 		down_read(&OCFS2_I(oinfo->dqi_gqinode)->ip_alloc_sem);
@@ -320,7 +328,11 @@ void ocfs2_unlock_global_qf(struct ocfs2_mem_dqinfo *oinfo, int ex)
 {
 	if (ex) {
 		up_write(&OCFS2_I(oinfo->dqi_gqinode)->ip_alloc_sem);
+<<<<<<< HEAD
 		mutex_unlock(&oinfo->dqi_gqinode->i_mutex);
+=======
+		inode_unlock(oinfo->dqi_gqinode);
+>>>>>>> v4.9.227
 	} else {
 		up_read(&OCFS2_I(oinfo->dqi_gqinode)->ip_alloc_sem);
 	}
@@ -483,7 +495,11 @@ int __ocfs2_sync_dquot(struct dquot *dquot, int freeing)
 	struct ocfs2_mem_dqinfo *info = sb_dqinfo(sb, type)->dqi_priv;
 	struct ocfs2_global_disk_dqblk dqblk;
 	s64 spacechange, inodechange;
+<<<<<<< HEAD
 	time_t olditime, oldbtime;
+=======
+	time64_t olditime, oldbtime;
+>>>>>>> v4.9.227
 
 	err = sb->s_op->quota_read(sb, type, (char *)&dqblk,
 				   sizeof(struct ocfs2_global_disk_dqblk),
@@ -714,7 +730,11 @@ static int ocfs2_release_dquot(struct dquot *dquot)
 
 	mutex_lock(&dquot->dq_lock);
 	/* Check whether we are not racing with some other dqget() */
+<<<<<<< HEAD
 	if (atomic_read(&dquot->dq_count) > 1)
+=======
+	if (dquot_is_busy(dquot))
+>>>>>>> v4.9.227
 		goto out;
 	/* Running from downconvert thread? Postpone quota processing to wq */
 	if (current == osb->dc_task) {
@@ -726,7 +746,11 @@ static int ocfs2_release_dquot(struct dquot *dquot)
 		dqgrab(dquot);
 		/* First entry on list -> queue work */
 		if (llist_add(&OCFS2_DQUOT(dquot)->list, &osb->dquot_drop_list))
+<<<<<<< HEAD
 			queue_work(ocfs2_wq, &osb->dquot_drop_work);
+=======
+			queue_work(osb->ocfs2_wq, &osb->dquot_drop_work);
+>>>>>>> v4.9.227
 		goto out;
 	}
 	status = ocfs2_lock_global_qf(oinfo, 1);
@@ -860,6 +884,40 @@ out:
 	return status;
 }
 
+<<<<<<< HEAD
+=======
+static int ocfs2_get_next_id(struct super_block *sb, struct kqid *qid)
+{
+	int type = qid->type;
+	struct ocfs2_mem_dqinfo *info = sb_dqinfo(sb, type)->dqi_priv;
+	int status = 0;
+
+	trace_ocfs2_get_next_id(from_kqid(&init_user_ns, *qid), type);
+	if (!sb_has_quota_loaded(sb, type)) {
+		status = -ESRCH;
+		goto out;
+	}
+	status = ocfs2_lock_global_qf(info, 0);
+	if (status < 0)
+		goto out;
+	status = ocfs2_qinfo_lock(info, 0);
+	if (status < 0)
+		goto out_global;
+	status = qtree_get_next_id(&info->dqi_gi, qid);
+	ocfs2_qinfo_unlock(info, 0);
+out_global:
+	ocfs2_unlock_global_qf(info, 0);
+out:
+	/*
+	 * Avoid logging ENOENT since it just means there isn't next ID and
+	 * ESRCH which means quota isn't enabled for the filesystem.
+	 */
+	if (status && status != -ENOENT && status != -ESRCH)
+		mlog_errno(status);
+	return status;
+}
+
+>>>>>>> v4.9.227
 static int ocfs2_mark_dquot_dirty(struct dquot *dquot)
 {
 	unsigned long mask = (1 << (DQ_LASTSET_B + QIF_ILIMITS_B)) |
@@ -968,4 +1026,8 @@ const struct dquot_operations ocfs2_quota_operations = {
 	.write_info	= ocfs2_write_info,
 	.alloc_dquot	= ocfs2_alloc_dquot,
 	.destroy_dquot	= ocfs2_destroy_dquot,
+<<<<<<< HEAD
+=======
+	.get_next_id	= ocfs2_get_next_id,
+>>>>>>> v4.9.227
 };

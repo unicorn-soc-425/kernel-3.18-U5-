@@ -28,10 +28,22 @@ enum {
 	SI2165_MODE_PLL_XTAL = 0x21
 };
 
+<<<<<<< HEAD
 struct si2165_config {
 	/* i2c addr
 	 * possible values: 0x64,0x65,0x66,0x67 */
 	u8 i2c_addr;
+=======
+/* I2C addresses
+ * possible values: 0x64,0x65,0x66,0x67
+ */
+struct si2165_platform_data {
+	/*
+	 * frontend
+	 * returned by driver
+	 */
+	struct dvb_frontend **fe;
+>>>>>>> v4.9.227
 
 	/* external clock or XTAL */
 	u8 chip_mode;
@@ -45,6 +57,7 @@ struct si2165_config {
 	bool inversion;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_SI2165)
 struct dvb_frontend *si2165_attach(
 	const struct si2165_config *config,
@@ -59,4 +72,6 @@ static inline struct dvb_frontend *si2165_attach(
 }
 #endif /* CONFIG_DVB_SI2165 */
 
+=======
+>>>>>>> v4.9.227
 #endif /* _DVB_SI2165_H */

@@ -22,7 +22,10 @@
 #ifndef _LG2160_H_
 #define _LG2160_H_
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 

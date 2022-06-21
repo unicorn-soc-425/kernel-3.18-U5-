@@ -27,7 +27,11 @@
 #include <core/client.h>
 #include <subdev/timer.h>
 
+<<<<<<< HEAD
 #include <nvif/class.h>
+=======
+#include <nvif/cl5070.h>
+>>>>>>> v4.9.227
 #include <nvif/unpack.h>
 
 int
@@ -39,10 +43,17 @@ nv50_dac_power(NV50_DISP_MTHD_V1)
 		struct nv50_disp_dac_pwr_v0 v0;
 	} *args = data;
 	u32 stat;
+<<<<<<< HEAD
 	int ret;
 
 	nvif_ioctl(object, "disp dac pwr size %d\n", size);
 	if (nvif_unpack(args->v0, 0, 0, false)) {
+=======
+	int ret = -ENOSYS;
+
+	nvif_ioctl(object, "disp dac pwr size %d\n", size);
+	if (!(ret = nvif_unpack(ret, &data, &size, args->v0, 0, 0, false))) {
+>>>>>>> v4.9.227
 		nvif_ioctl(object, "disp dac pwr vers %d state %d data %d "
 				   "vsync %d hsync %d\n",
 			   args->v0.version, args->v0.state, args->v0.data,
@@ -76,10 +87,17 @@ nv50_dac_sense(NV50_DISP_MTHD_V1)
 	} *args = data;
 	const u32 doff = outp->or * 0x800;
 	u32 loadval;
+<<<<<<< HEAD
 	int ret;
 
 	nvif_ioctl(object, "disp dac load size %d\n", size);
 	if (nvif_unpack(args->v0, 0, 0, false)) {
+=======
+	int ret = -ENOSYS;
+
+	nvif_ioctl(object, "disp dac load size %d\n", size);
+	if (!(ret = nvif_unpack(ret, &data, &size, args->v0, 0, 0, false))) {
+>>>>>>> v4.9.227
 		nvif_ioctl(object, "disp dac load vers %d data %08x\n",
 			   args->v0.version, args->v0.data);
 		if (args->v0.data & 0xfff00000)

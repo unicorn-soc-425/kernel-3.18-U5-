@@ -45,18 +45,26 @@ struct ath_struct {
 	struct hci_uart *hu;
 	unsigned int cur_sleep;
 
+<<<<<<< HEAD
+=======
+	struct sk_buff *rx_skb;
+>>>>>>> v4.9.227
 	struct sk_buff_head txq;
 	struct work_struct ctxtsw;
 };
 
 static int ath_wakeup_ar3k(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	struct ktermios ktermios;
+=======
+>>>>>>> v4.9.227
 	int status = tty->driver->ops->tiocmget(tty);
 
 	if (status & TIOCM_CTS)
 		return status;
 
+<<<<<<< HEAD
 	/* Disable Automatic RTSCTS */
 	ktermios = tty->termios;
 	ktermios.c_cflag &= ~CRTSCTS;
@@ -64,20 +72,31 @@ static int ath_wakeup_ar3k(struct tty_struct *tty)
 
 	/* Clear RTS first */
 	status = tty->driver->ops->tiocmget(tty);
+=======
+	/* Clear RTS first */
+	tty->driver->ops->tiocmget(tty);
+>>>>>>> v4.9.227
 	tty->driver->ops->tiocmset(tty, 0x00, TIOCM_RTS);
 	mdelay(20);
 
 	/* Set RTS, wake up board */
+<<<<<<< HEAD
 	status = tty->driver->ops->tiocmget(tty);
+=======
+	tty->driver->ops->tiocmget(tty);
+>>>>>>> v4.9.227
 	tty->driver->ops->tiocmset(tty, TIOCM_RTS, 0x00);
 	mdelay(20);
 
 	status = tty->driver->ops->tiocmget(tty);
+<<<<<<< HEAD
 
 	/* Disable Automatic RTSCTS */
 	ktermios.c_cflag |= CRTSCTS;
 	status = tty_set_termios(tty, &ktermios);
 
+=======
+>>>>>>> v4.9.227
 	return status;
 }
 
@@ -105,13 +124,22 @@ static void ath_hci_uart_work(struct work_struct *work)
 	hci_uart_tx_wakeup(hu);
 }
 
+<<<<<<< HEAD
 /* Initialize protocol */
+=======
+>>>>>>> v4.9.227
 static int ath_open(struct hci_uart *hu)
 {
 	struct ath_struct *ath;
 
 	BT_DBG("hu %p", hu);
 
+<<<<<<< HEAD
+=======
+	if (!hci_uart_has_flow_control(hu))
+		return -EOPNOTSUPP;
+
+>>>>>>> v4.9.227
 	ath = kzalloc(sizeof(*ath), GFP_KERNEL);
 	if (!ath)
 		return -ENOMEM;
@@ -126,7 +154,28 @@ static int ath_open(struct hci_uart *hu)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Flush protocol data */
+=======
+static int ath_close(struct hci_uart *hu)
+{
+	struct ath_struct *ath = hu->priv;
+
+	BT_DBG("hu %p", hu);
+
+	skb_queue_purge(&ath->txq);
+
+	kfree_skb(ath->rx_skb);
+
+	cancel_work_sync(&ath->ctxtsw);
+
+	hu->priv = NULL;
+	kfree(ath);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int ath_flush(struct hci_uart *hu)
 {
 	struct ath_struct *ath = hu->priv;
@@ -138,6 +187,7 @@ static int ath_flush(struct hci_uart *hu)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Close protocol */
 static int ath_close(struct hci_uart *hu)
 {
@@ -151,27 +201,96 @@ static int ath_close(struct hci_uart *hu)
 
 	hu->priv = NULL;
 	kfree(ath);
+=======
+static int ath_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr)
+{
+	struct sk_buff *skb;
+	u8 buf[10];
+	int err;
+
+	buf[0] = 0x01;
+	buf[1] = 0x01;
+	buf[2] = 0x00;
+	buf[3] = sizeof(bdaddr_t);
+	memcpy(buf + 4, bdaddr, sizeof(bdaddr_t));
+
+	skb = __hci_cmd_sync(hdev, 0xfc0b, sizeof(buf), buf, HCI_INIT_TIMEOUT);
+	if (IS_ERR(skb)) {
+		err = PTR_ERR(skb);
+		BT_ERR("%s: Change address command failed (%d)",
+		       hdev->name, err);
+		return err;
+	}
+	kfree_skb(skb);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #define HCI_OP_ATH_SLEEP 0xFC04
 
 /* Enqueue frame for transmittion */
+=======
+static int ath_setup(struct hci_uart *hu)
+{
+	BT_DBG("hu %p", hu);
+
+	hu->hdev->set_bdaddr = ath_set_bdaddr;
+
+	return 0;
+}
+
+static const struct h4_recv_pkt ath_recv_pkts[] = {
+	{ H4_RECV_ACL,   .recv = hci_recv_frame },
+	{ H4_RECV_SCO,   .recv = hci_recv_frame },
+	{ H4_RECV_EVENT, .recv = hci_recv_frame },
+};
+
+static int ath_recv(struct hci_uart *hu, const void *data, int count)
+{
+	struct ath_struct *ath = hu->priv;
+
+	ath->rx_skb = h4_recv_buf(hu->hdev, ath->rx_skb, data, count,
+				  ath_recv_pkts, ARRAY_SIZE(ath_recv_pkts));
+	if (IS_ERR(ath->rx_skb)) {
+		int err = PTR_ERR(ath->rx_skb);
+		BT_ERR("%s: Frame reassembly failed (%d)", hu->hdev->name, err);
+		ath->rx_skb = NULL;
+		return err;
+	}
+
+	return count;
+}
+
+#define HCI_OP_ATH_SLEEP 0xFC04
+
+>>>>>>> v4.9.227
 static int ath_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 {
 	struct ath_struct *ath = hu->priv;
 
+<<<<<<< HEAD
 	if (bt_cb(skb)->pkt_type == HCI_SCODATA_PKT) {
+=======
+	if (hci_skb_pkt_type(skb) == HCI_SCODATA_PKT) {
+>>>>>>> v4.9.227
 		kfree_skb(skb);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Update power management enable flag with parameters of
 	 * HCI sleep enable vendor specific HCI command.
 	 */
 	if (bt_cb(skb)->pkt_type == HCI_COMMAND_PKT) {
+=======
+	/* Update power management enable flag with parameters of
+	 * HCI sleep enable vendor specific HCI command.
+	 */
+	if (hci_skb_pkt_type(skb) == HCI_COMMAND_PKT) {
+>>>>>>> v4.9.227
 		struct hci_command_hdr *hdr = (void *)skb->data;
 
 		if (__le16_to_cpu(hdr->opcode) == HCI_OP_ATH_SLEEP)
@@ -181,7 +300,11 @@ static int ath_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 	BT_DBG("hu %p skb %p", hu, skb);
 
 	/* Prepend skb with frame type */
+<<<<<<< HEAD
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
+=======
+	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
+>>>>>>> v4.9.227
 
 	skb_queue_tail(&ath->txq, skb);
 	set_bit(HCI_UART_SENDING, &hu->tx_state);
@@ -198,6 +321,7 @@ static struct sk_buff *ath_dequeue(struct hci_uart *hu)
 	return skb_dequeue(&ath->txq);
 }
 
+<<<<<<< HEAD
 /* Recv data */
 static int ath_recv(struct hci_uart *hu, void *data, int count)
 {
@@ -220,10 +344,24 @@ static struct hci_uart_proto athp = {
 	.enqueue = ath_enqueue,
 	.dequeue = ath_dequeue,
 	.flush = ath_flush,
+=======
+static const struct hci_uart_proto athp = {
+	.id		= HCI_UART_ATH3K,
+	.name		= "ATH3K",
+	.manufacturer	= 69,
+	.open		= ath_open,
+	.close		= ath_close,
+	.flush		= ath_flush,
+	.setup		= ath_setup,
+	.recv		= ath_recv,
+	.enqueue	= ath_enqueue,
+	.dequeue	= ath_dequeue,
+>>>>>>> v4.9.227
 };
 
 int __init ath_init(void)
 {
+<<<<<<< HEAD
 	int err = hci_uart_register_proto(&athp);
 
 	if (!err)
@@ -232,6 +370,9 @@ int __init ath_init(void)
 		BT_ERR("HCIATH3K protocol registration failed");
 
 	return err;
+=======
+	return hci_uart_register_proto(&athp);
+>>>>>>> v4.9.227
 }
 
 int __exit ath_deinit(void)

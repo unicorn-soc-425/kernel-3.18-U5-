@@ -28,9 +28,15 @@
 
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
 #include <media/videobuf2-dma-contig.h>
 #include <media/exynos-fimc.h>
+=======
+#include <media/videobuf2-v4l2.h>
+#include <media/videobuf2-dma-contig.h>
+#include <media/drv-intf/exynos-fimc.h>
+>>>>>>> v4.9.227
 
 #include "common.h"
 #include "media-dev.h"
@@ -39,6 +45,7 @@
 #include "fimc-is-param.h"
 
 static int isp_video_capture_queue_setup(struct vb2_queue *vq,
+<<<<<<< HEAD
 			const struct v4l2_format *pfmt,
 			unsigned int *num_buffers, unsigned int *num_planes,
 			unsigned int sizes[], void *allocators[])
@@ -57,12 +64,24 @@ static int isp_video_capture_queue_setup(struct vb2_queue *vq,
 		fmt = isp->video_capture.format;
 		wh = vid_fmt->width * vid_fmt->height;
 	}
+=======
+			unsigned int *num_buffers, unsigned int *num_planes,
+			unsigned int sizes[], struct device *alloc_devs[])
+{
+	struct fimc_isp *isp = vb2_get_drv_priv(vq);
+	struct v4l2_pix_format_mplane *vid_fmt = &isp->video_capture.pixfmt;
+	const struct fimc_fmt *fmt = isp->video_capture.format;
+	unsigned int wh, i;
+
+	wh = vid_fmt->width * vid_fmt->height;
+>>>>>>> v4.9.227
 
 	if (fmt == NULL)
 		return -EINVAL;
 
 	*num_buffers = clamp_t(u32, *num_buffers, FIMC_ISP_REQ_BUFS_MIN,
 						FIMC_ISP_REQ_BUFS_MAX);
+<<<<<<< HEAD
 	*num_planes = fmt->memplanes;
 
 	for (i = 0; i < fmt->memplanes; i++) {
@@ -73,6 +92,21 @@ static int isp_video_capture_queue_setup(struct vb2_queue *vq,
 			sizes[i] = size;
 		allocators[i] = isp->alloc_ctx;
 	}
+=======
+	if (*num_planes) {
+		if (*num_planes != fmt->memplanes)
+			return -EINVAL;
+		for (i = 0; i < *num_planes; i++)
+			if (sizes[i] < (wh * fmt->depth[i]) / 8)
+				return -EINVAL;
+		return 0;
+	}
+
+	*num_planes = fmt->memplanes;
+
+	for (i = 0; i < fmt->memplanes; i++)
+		sizes[i] = (wh * fmt->depth[i]) / 8;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -194,10 +228,18 @@ static int isp_video_capture_buffer_prepare(struct vb2_buffer *vb)
 
 static void isp_video_capture_buffer_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct fimc_isp *isp = vb2_get_drv_priv(vb->vb2_queue);
 	struct fimc_is_video *video = &isp->video_capture;
 	struct fimc_is *is = fimc_isp_to_is(isp);
 	struct isp_video_buf *ivb = to_isp_video_buf(vb);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct fimc_isp *isp = vb2_get_drv_priv(vb->vb2_queue);
+	struct fimc_is_video *video = &isp->video_capture;
+	struct fimc_is *is = fimc_isp_to_is(isp);
+	struct isp_video_buf *ivb = to_isp_video_buf(vbuf);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	unsigned int i;
 
@@ -219,8 +261,13 @@ static void isp_video_capture_buffer_queue(struct vb2_buffer *vb)
 							ivb->dma_addr[i];
 
 			isp_dbg(2, &video->ve.vdev,
+<<<<<<< HEAD
 				"dma_buf %pad (%d/%d/%d) addr: %pad\n",
 				&buf_index, ivb->index, i, vb->v4l2_buf.index,
+=======
+				"dma_buf %d (%d/%d/%d) addr: %pad\n",
+				buf_index, ivb->index, i, vb->index,
+>>>>>>> v4.9.227
 				&ivb->dma_addr[i]);
 		}
 
@@ -242,7 +289,11 @@ static void isp_video_capture_buffer_queue(struct vb2_buffer *vb)
 void fimc_isp_video_irq_handler(struct fimc_is *is)
 {
 	struct fimc_is_video *video = &is->isp.video_capture;
+<<<<<<< HEAD
 	struct vb2_buffer *vb;
+=======
+	struct vb2_v4l2_buffer *vbuf;
+>>>>>>> v4.9.227
 	int buf_index;
 
 	/* TODO: Ensure the DMA is really stopped in stop_streaming callback */
@@ -250,10 +301,17 @@ void fimc_isp_video_irq_handler(struct fimc_is *is)
 		return;
 
 	buf_index = (is->i2h_cmd.args[1] - 1) % video->buf_count;
+<<<<<<< HEAD
 	vb = &video->buffers[buf_index]->vb;
 
 	v4l2_get_timestamp(&vb->v4l2_buf.timestamp);
 	vb2_buffer_done(vb, VB2_BUF_STATE_DONE);
+=======
+	vbuf = &video->buffers[buf_index]->vb;
+
+	vbuf->vb2_buf.timestamp = ktime_get_ns();
+	vb2_buffer_done(&vbuf->vb2_buf, VB2_BUF_STATE_DONE);
+>>>>>>> v4.9.227
 
 	video->buf_mask &= ~BIT(buf_index);
 	fimc_is_hw_set_isp_buf_mask(is, video->buf_mask);
@@ -288,7 +346,11 @@ static int isp_video_open(struct file *file)
 		goto rel_fh;
 
 	if (v4l2_fh_is_singular_file(file)) {
+<<<<<<< HEAD
 		mutex_lock(&me->parent->graph_mutex);
+=======
+		mutex_lock(&me->graph_obj.mdev->graph_mutex);
+>>>>>>> v4.9.227
 
 		ret = fimc_pipeline_call(ve, open, me, true);
 
@@ -296,7 +358,11 @@ static int isp_video_open(struct file *file)
 		if (ret == 0)
 			me->use_count++;
 
+<<<<<<< HEAD
 		mutex_unlock(&me->parent->graph_mutex);
+=======
+		mutex_unlock(&me->graph_obj.mdev->graph_mutex);
+>>>>>>> v4.9.227
 	}
 	if (!ret)
 		goto unlock;
@@ -312,7 +378,11 @@ static int isp_video_release(struct file *file)
 	struct fimc_isp *isp = video_drvdata(file);
 	struct fimc_is_video *ivc = &isp->video_capture;
 	struct media_entity *entity = &ivc->ve.vdev.entity;
+<<<<<<< HEAD
 	struct media_device *mdev = entity->parent;
+=======
+	struct media_device *mdev = entity->graph_obj.mdev;
+>>>>>>> v4.9.227
 
 	mutex_lock(&isp->video_lock);
 
@@ -321,7 +391,11 @@ static int isp_video_release(struct file *file)
 		ivc->streaming = 0;
 	}
 
+<<<<<<< HEAD
 	vb2_fop_release(file);
+=======
+	_vb2_fop_release(file, NULL);
+>>>>>>> v4.9.227
 
 	if (v4l2_fh_is_singular_file(file)) {
 		fimc_pipeline_call(&ivc->ve, close);
@@ -472,8 +546,12 @@ static int isp_video_pipeline_validate(struct fimc_isp *isp)
 
 		/* Retrieve format at the source pad */
 		pad = media_entity_remote_pad(pad);
+<<<<<<< HEAD
 		if (pad == NULL ||
 		    media_entity_type(pad->entity) != MEDIA_ENT_T_V4L2_SUBDEV)
+=======
+		if (!pad || !is_media_entity_v4l2_subdev(pad->entity))
+>>>>>>> v4.9.227
 			break;
 
 		sd = media_entity_to_v4l2_subdev(pad->entity);
@@ -604,6 +682,10 @@ int fimc_isp_video_device_register(struct fimc_isp *isp,
 	q->drv_priv = isp;
 	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 	q->lock = &isp->video_lock;
+<<<<<<< HEAD
+=======
+	q->dev = &isp->pdev->dev;
+>>>>>>> v4.9.227
 
 	ret = vb2_queue_init(q);
 	if (ret < 0)
@@ -623,7 +705,11 @@ int fimc_isp_video_device_register(struct fimc_isp *isp,
 	vdev->lock = &isp->video_lock;
 
 	iv->pad.flags = MEDIA_PAD_FL_SINK;
+<<<<<<< HEAD
 	ret = media_entity_init(&vdev->entity, 1, &iv->pad, 0);
+=======
+	ret = media_entity_pads_init(&vdev->entity, 1, &iv->pad);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 

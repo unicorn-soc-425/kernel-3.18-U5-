@@ -1,5 +1,6 @@
 #include <as-layout.h>
 
+<<<<<<< HEAD
 	.globl syscall_stub
 .section .__syscall_stub, "ax"
 syscall_stub:
@@ -20,6 +21,12 @@ batch_syscall_stub:
 	sal	$32, %rbx
 	mov	$(STUB_DATA & 0xffffffff), %rax
 	or	%rax, %rbx
+=======
+.section .__syscall_stub, "ax"
+	.globl batch_syscall_stub
+batch_syscall_stub:
+	mov	$(STUB_DATA), %rbx
+>>>>>>> v4.9.227
 	/* load pointer to first operation */
 	mov	%rbx, %rsp
 	add	$0x10, %rsp

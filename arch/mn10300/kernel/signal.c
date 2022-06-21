@@ -75,7 +75,11 @@ static int restore_sigcontext(struct pt_regs *regs,
 		struct fpucontext *buf;
 		err |= __get_user(buf, &sc->fpucontext);
 		if (buf) {
+<<<<<<< HEAD
 			if (verify_area(VERIFY_READ, buf, sizeof(*buf)))
+=======
+			if (!access_ok(VERIFY_READ, buf, sizeof(*buf)))
+>>>>>>> v4.9.227
 				goto badframe;
 			err |= fpu_restore_sigcontext(buf);
 		}
@@ -98,7 +102,11 @@ asmlinkage long sys_sigreturn(void)
 	long d0;
 
 	frame = (struct sigframe __user *) current_frame()->sp;
+<<<<<<< HEAD
 	if (verify_area(VERIFY_READ, frame, sizeof(*frame)))
+=======
+	if (!access_ok(VERIFY_READ, frame, sizeof(*frame)))
+>>>>>>> v4.9.227
 		goto badframe;
 	if (__get_user(set.sig[0], &frame->sc.oldmask))
 		goto badframe;
@@ -130,7 +138,11 @@ asmlinkage long sys_rt_sigreturn(void)
 	long d0;
 
 	frame = (struct rt_sigframe __user *) current_frame()->sp;
+<<<<<<< HEAD
 	if (verify_area(VERIFY_READ, frame, sizeof(*frame)))
+=======
+	if (!access_ok(VERIFY_READ, frame, sizeof(*frame)))
+>>>>>>> v4.9.227
 		goto badframe;
 	if (__copy_from_user(&set, &frame->uc.uc_sigmask, sizeof(set)))
 		goto badframe;
@@ -202,13 +214,18 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set,
 		       struct pt_regs *regs)
 {
 	struct sigframe __user *frame;
+<<<<<<< HEAD
 	int rsig, sig = ksig->sig;
+=======
+	int sig = ksig->sig;
+>>>>>>> v4.9.227
 
 	frame = get_sigframe(ksig, regs, sizeof(*frame));
 
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	rsig = sig;
 	if (sig < 32 &&
 	    current_thread_info()->exec_domain &&
@@ -216,6 +233,9 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set,
 		rsig = current_thread_info()->exec_domain->signal_invmap[sig];
 
 	if (__put_user(rsig, &frame->sig) < 0 ||
+=======
+	if (__put_user(sig, &frame->sig) < 0 ||
+>>>>>>> v4.9.227
 	    __put_user(&frame->sc, &frame->psc) < 0)
 		return -EFAULT;
 
@@ -270,13 +290,18 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 			  struct pt_regs *regs)
 {
 	struct rt_sigframe __user *frame;
+<<<<<<< HEAD
 	int rsig, sig = ksig->sig;
+=======
+	int sig = ksig->sig;
+>>>>>>> v4.9.227
 
 	frame = get_sigframe(ksig, regs, sizeof(*frame));
 
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	rsig = sig;
 	if (sig < 32 &&
 	    current_thread_info()->exec_domain &&
@@ -284,6 +309,9 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 		rsig = current_thread_info()->exec_domain->signal_invmap[sig];
 
 	if (__put_user(rsig, &frame->sig) ||
+=======
+	if (__put_user(sig, &frame->sig) ||
+>>>>>>> v4.9.227
 	    __put_user(&frame->info, &frame->pinfo) ||
 	    __put_user(&frame->uc, &frame->puc) ||
 	    copy_siginfo_to_user(&frame->info, &ksig->info))

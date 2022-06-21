@@ -29,12 +29,19 @@ static int st_gyro_spi_probe(struct spi_device *spi)
 		return -ENOMEM;
 
 	gdata = iio_priv(indio_dev);
+<<<<<<< HEAD
 	gdata->dev = &spi->dev;
 
 	st_sensors_spi_configure(indio_dev, spi, gdata);
 
 	err = st_gyro_common_probe(indio_dev,
 				(struct st_sensors_platform_data *)&gyro_pdata);
+=======
+
+	st_sensors_spi_configure(indio_dev, spi, gdata);
+
+	err = st_gyro_common_probe(indio_dev);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return err;
 
@@ -54,15 +61,25 @@ static const struct spi_device_id st_gyro_id_table[] = {
 	{ LSM330DL_GYRO_DEV_NAME },
 	{ LSM330DLC_GYRO_DEV_NAME },
 	{ L3GD20_GYRO_DEV_NAME },
+<<<<<<< HEAD
 	{ L3G4IS_GYRO_DEV_NAME },
 	{ LSM330_GYRO_DEV_NAME },
+=======
+	{ L3GD20H_GYRO_DEV_NAME },
+	{ L3G4IS_GYRO_DEV_NAME },
+	{ LSM330_GYRO_DEV_NAME },
+	{ LSM9DS0_GYRO_DEV_NAME },
+>>>>>>> v4.9.227
 	{},
 };
 MODULE_DEVICE_TABLE(spi, st_gyro_id_table);
 
 static struct spi_driver st_gyro_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "st-gyro-spi",
 	},
 	.probe = st_gyro_spi_probe,

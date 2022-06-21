@@ -29,6 +29,10 @@
 #include "../seq_lock.h"
 #include <linux/init.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> v4.9.227
 
 
 /*
@@ -173,10 +177,16 @@ snd_seq_oss_midi_check_new_port(struct snd_seq_port_info *pinfo)
 	/*
 	 * allocate midi info record
 	 */
+<<<<<<< HEAD
 	if ((mdev = kzalloc(sizeof(*mdev), GFP_KERNEL)) == NULL) {
 		pr_err("ALSA: seq_oss: can't malloc midi info\n");
 		return -ENOMEM;
 	}
+=======
+	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
+	if (!mdev)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	/* copy the port information */
 	mdev->client = pinfo->addr.client;
@@ -237,8 +247,12 @@ snd_seq_oss_midi_check_exit_port(int client, int port)
 		spin_unlock_irqrestore(&register_lock, flags);
 		snd_use_lock_free(&mdev->use_lock);
 		snd_use_lock_sync(&mdev->use_lock);
+<<<<<<< HEAD
 		if (mdev->coder)
 			snd_midi_event_free(mdev->coder);
+=======
+		snd_midi_event_free(mdev->coder);
+>>>>>>> v4.9.227
 		kfree(mdev);
 	}
 	spin_lock_irqsave(&register_lock, flags);
@@ -265,8 +279,12 @@ snd_seq_oss_midi_clear_all(void)
 	spin_lock_irqsave(&register_lock, flags);
 	for (i = 0; i < max_midi_devs; i++) {
 		if ((mdev = midi_devs[i]) != NULL) {
+<<<<<<< HEAD
 			if (mdev->coder)
 				snd_midi_event_free(mdev->coder);
+=======
+			snd_midi_event_free(mdev->coder);
+>>>>>>> v4.9.227
 			kfree(mdev);
 			midi_devs[i] = NULL;
 		}
@@ -318,6 +336,10 @@ get_mididev(struct seq_oss_devinfo *dp, int dev)
 {
 	if (dev < 0 || dev >= dp->max_mididev)
 		return NULL;
+<<<<<<< HEAD
+=======
+	dev = array_index_nospec(dev, dp->max_mididev);
+>>>>>>> v4.9.227
 	return get_mdev(dev);
 }
 
@@ -616,6 +638,10 @@ send_midi_event(struct seq_oss_devinfo *dp, struct snd_seq_event *ev, struct seq
 		len = snd_seq_oss_timer_start(dp->timer);
 	if (ev->type == SNDRV_SEQ_EVENT_SYSEX) {
 		snd_seq_oss_readq_sysex(dp->readq, mdev->seq_device, ev);
+<<<<<<< HEAD
+=======
+		snd_midi_event_reset_decode(mdev->coder);
+>>>>>>> v4.9.227
 	} else {
 		len = snd_midi_event_decode(mdev->coder, msg, sizeof(msg), ev);
 		if (len > 0)
@@ -666,7 +692,11 @@ snd_seq_oss_midi_make_info(struct seq_oss_devinfo *dp, int dev, struct midi_info
 }
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> v4.9.227
 /*
  * proc interface
  */
@@ -706,4 +736,8 @@ snd_seq_oss_midi_info_read(struct snd_info_buffer *buf)
 		snd_use_lock_free(&mdev->use_lock);
 	}
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PROC_FS */
+=======
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> v4.9.227

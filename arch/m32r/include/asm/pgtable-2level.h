@@ -13,6 +13,10 @@
  * the M32R is two-level, so we don't really have any
  * PMD directory physically.
  */
+<<<<<<< HEAD
+=======
+#define __PAGETABLE_PMD_FOLDED
+>>>>>>> v4.9.227
 #define PMD_SHIFT	22
 #define PTRS_PER_PMD	1
 
@@ -70,9 +74,12 @@ static inline pmd_t *pmd_offset(pgd_t * dir, unsigned long address)
 #define pfn_pte(pfn, prot)	__pte(((pfn) << PAGE_SHIFT) | pgprot_val(prot))
 #define pfn_pmd(pfn, prot)	__pmd(((pfn) << PAGE_SHIFT) | pgprot_val(prot))
 
+<<<<<<< HEAD
 #define PTE_FILE_MAX_BITS	29
 #define pte_to_pgoff(pte)	(((pte_val(pte) >> 2) & 0x7f) | (((pte_val(pte) >> 10)) << 7))
 #define pgoff_to_pte(off)	((pte_t) { (((off) & 0x7f) << 2) | (((off) >> 7) << 10) | _PAGE_FILE })
 
+=======
+>>>>>>> v4.9.227
 #endif /* __KERNEL__ */
 #endif /* _ASM_M32R_PGTABLE_2LEVEL_H */

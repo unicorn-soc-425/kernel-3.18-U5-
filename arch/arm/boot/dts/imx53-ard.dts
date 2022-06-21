@@ -69,21 +69,33 @@
 			label = "Home";
 			gpios = <&gpio5 10 0>;
 			linux,code = <102>; /* KEY_HOME */
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 
 		back {
 			label = "Back";
 			gpios = <&gpio5 11 0>;
 			linux,code = <158>; /* KEY_BACK */
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 
 		program {
 			label = "Program";
 			gpios = <&gpio5 12 0>;
 			linux,code = <362>; /* KEY_PROGRAM */
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 
 		volume-up {

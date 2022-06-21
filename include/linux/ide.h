@@ -39,6 +39,22 @@
 
 struct device;
 
+<<<<<<< HEAD
+=======
+/* IDE-specific values for req->cmd_type */
+enum ata_cmd_type_bits {
+	REQ_TYPE_ATA_TASKFILE = REQ_TYPE_DRV_PRIV + 1,
+	REQ_TYPE_ATA_PC,
+	REQ_TYPE_ATA_SENSE,	/* sense request */
+	REQ_TYPE_ATA_PM_SUSPEND,/* suspend request */
+	REQ_TYPE_ATA_PM_RESUME,	/* resume request */
+};
+
+#define ata_pm_request(rq)	\
+	((rq)->cmd_type == REQ_TYPE_ATA_PM_SUSPEND || \
+	 (rq)->cmd_type == REQ_TYPE_ATA_PM_RESUME)
+
+>>>>>>> v4.9.227
 /* Error codes returned in rq->errors to the higher part of the driver. */
 enum {
 	IDE_DRV_ERROR_GENERAL	= 101,
@@ -1314,6 +1330,22 @@ struct ide_port_info {
 	u8			udma_mask;
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * State information carried for REQ_TYPE_ATA_PM_SUSPEND and REQ_TYPE_ATA_PM_RESUME
+ * requests.
+ */
+struct ide_pm_state {
+	/* PM state machine step value, currently driver specific */
+	int	pm_step;
+	/* requested PM state value (S1, S2, S3, S4, ...) */
+	u32	pm_state;
+	void*	data;		/* for driver use */
+};
+
+
+>>>>>>> v4.9.227
 int ide_pci_init_one(struct pci_dev *, const struct ide_port_info *, void *);
 int ide_pci_init_two(struct pci_dev *, struct pci_dev *,
 		     const struct ide_port_info *, void *);
@@ -1551,4 +1583,8 @@ static inline void ide_set_drivedata(ide_drive_t *drive, void *data)
 #define ide_host_for_each_port(i, port, host) \
 	for ((i) = 0; ((port) = (host)->ports[i]) || (i) < MAX_HOST_PORTS; (i)++)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 #endif /* _IDE_H */

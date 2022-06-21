@@ -185,7 +185,12 @@ static void tda10086_diseqc_wait(struct tda10086_state *state)
 	}
 }
 
+<<<<<<< HEAD
 static int tda10086_set_tone (struct dvb_frontend* fe, fe_sec_tone_mode_t tone)
+=======
+static int tda10086_set_tone(struct dvb_frontend *fe,
+			     enum fe_sec_tone_mode tone)
+>>>>>>> v4.9.227
 {
 	struct tda10086_state* state = fe->demodulator_priv;
 	u8 t22k_off = 0x80;
@@ -238,7 +243,12 @@ static int tda10086_send_master_cmd (struct dvb_frontend* fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tda10086_send_burst (struct dvb_frontend* fe, fe_sec_mini_cmd_t minicmd)
+=======
+static int tda10086_send_burst(struct dvb_frontend *fe,
+			       enum fe_sec_mini_cmd minicmd)
+>>>>>>> v4.9.227
 {
 	struct tda10086_state* state = fe->demodulator_priv;
 	u8 oldval = tda10086_read_byte(state, 0x36);
@@ -457,9 +467,15 @@ static int tda10086_set_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tda10086_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *fe_params = &fe->dtv_property_cache;
+=======
+static int tda10086_get_frontend(struct dvb_frontend *fe,
+				 struct dtv_frontend_properties *fe_params)
+{
+>>>>>>> v4.9.227
 	struct tda10086_state* state = fe->demodulator_priv;
 	u8 val;
 	int tmp;
@@ -472,8 +488,13 @@ static int tda10086_get_frontend(struct dvb_frontend *fe)
 		return -EINVAL;
 
 	/* calculate the updated frequency (note: we convert from Hz->kHz) */
+<<<<<<< HEAD
 	tmp64 = tda10086_read_byte(state, 0x52);
 	tmp64 |= (tda10086_read_byte(state, 0x51) << 8);
+=======
+	tmp64 = ((u64)tda10086_read_byte(state, 0x52)
+		| (tda10086_read_byte(state, 0x51) << 8));
+>>>>>>> v4.9.227
 	if (tmp64 & 0x8000)
 		tmp64 |= 0xffffffffffff0000ULL;
 	tmp64 = (tmp64 * (SACLK/1000ULL));
@@ -551,7 +572,12 @@ static int tda10086_get_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tda10086_read_status(struct dvb_frontend* fe, fe_status_t *fe_status)
+=======
+static int tda10086_read_status(struct dvb_frontend *fe,
+				enum fe_status *fe_status)
+>>>>>>> v4.9.227
 {
 	struct tda10086_state* state = fe->demodulator_priv;
 	u8 val;

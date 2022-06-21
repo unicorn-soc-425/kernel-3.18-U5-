@@ -48,7 +48,12 @@ struct nrpn_conv_table {
  * convert NRPN/control values
  */
 
+<<<<<<< HEAD
 static int send_converted_effect(struct nrpn_conv_table *table, int num_tables,
+=======
+static int send_converted_effect(const struct nrpn_conv_table *table,
+				 int num_tables,
+>>>>>>> v4.9.227
 				 struct snd_emux_port *port,
 				 struct snd_midi_channel *chan,
 				 int type, int val, int mode)
@@ -179,7 +184,11 @@ static int fx_conv_Q(int val)
 }
 
 
+<<<<<<< HEAD
 static struct nrpn_conv_table awe_effects[] =
+=======
+static const struct nrpn_conv_table awe_effects[] =
+>>>>>>> v4.9.227
 {
 	{ 0, EMUX_FX_LFO1_DELAY,	fx_lfo1_delay},
 	{ 1, EMUX_FX_LFO1_FREQ,	fx_lfo1_freq},
@@ -266,7 +275,11 @@ static int gs_vib_delay(int val)
 	return -(val - 64) * gs_sense[FX_VIBDELAY] / 50;
 }
 
+<<<<<<< HEAD
 static struct nrpn_conv_table gs_effects[] =
+=======
+static const struct nrpn_conv_table gs_effects[] =
+>>>>>>> v4.9.227
 {
 	{32, EMUX_FX_CUTOFF,	gs_cutoff},
 	{33, EMUX_FX_FILTERQ,	gs_filterQ},
@@ -350,7 +363,11 @@ static int xg_release(int val)
 	return -(val - 64) * xg_sense[FX_RELEASE] / 64;
 }
 
+<<<<<<< HEAD
 static struct nrpn_conv_table xg_effects[] =
+=======
+static const struct nrpn_conv_table xg_effects[] =
+>>>>>>> v4.9.227
 {
 	{71, EMUX_FX_CUTOFF,	xg_cutoff},
 	{74, EMUX_FX_FILTERQ,	xg_filterQ},

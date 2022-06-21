@@ -40,13 +40,21 @@
 	};
 
 	ocp {
+<<<<<<< HEAD
 		bandgap: bandgap {
+=======
+		bandgap: bandgap@4a002260 {
+>>>>>>> v4.9.227
 			reg = <0x4a002260 0x4
 			       0x4a00232C 0x4
 			       0x4a002378 0x18>;
 			compatible = "ti,omap4460-bandgap";
 			interrupts = <0 126 IRQ_TYPE_LEVEL_HIGH>; /* talert */
+<<<<<<< HEAD
 			gpios = <&gpio3 22 0>; /* tshut */
+=======
+			gpios = <&gpio3 22 GPIO_ACTIVE_HIGH>; /* tshut */
+>>>>>>> v4.9.227
 
 			#thermal-sensor-cells = <0>;
 		};

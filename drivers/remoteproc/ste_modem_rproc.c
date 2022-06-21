@@ -67,8 +67,12 @@ static int sproc_load_segments(struct rproc *rproc, const struct firmware *fw)
 static const struct ste_toc_entry *sproc_find_rsc_entry(const void *data)
 {
 	int i;
+<<<<<<< HEAD
 	const struct ste_toc *toc;
 	toc = data;
+=======
+	const struct ste_toc *toc = data;
+>>>>>>> v4.9.227
 
 	/* Search the table for the resource table */
 	for (i = 0; i < SPROC_MAX_TOC_ENTRIES &&
@@ -230,6 +234,10 @@ static int sproc_start(struct rproc *rproc)
 static int sproc_stop(struct rproc *rproc)
 {
 	struct sproc *sproc = rproc->priv;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	sproc_dbg(sproc, "stop ste-modem\n");
 
 	return sproc->mdev->ops.power(sproc->mdev, false);
@@ -257,7 +265,11 @@ static int sproc_drv_remove(struct platform_device *pdev)
 	rproc_del(sproc->rproc);
 	dma_free_coherent(sproc->rproc->dev.parent, SPROC_FW_SIZE,
 			  sproc->fw_addr, sproc->fw_dma_addr);
+<<<<<<< HEAD
 	rproc_put(sproc->rproc);
+=======
+	rproc_free(sproc->rproc);
+>>>>>>> v4.9.227
 
 	mdev->drv_data = NULL;
 
@@ -289,6 +301,10 @@ static int sproc_probe(struct platform_device *pdev)
 	sproc = rproc->priv;
 	sproc->mdev = mdev;
 	sproc->rproc = rproc;
+<<<<<<< HEAD
+=======
+	rproc->has_iommu = false;
+>>>>>>> v4.9.227
 	mdev->drv_data = sproc;
 
 	/* Provide callback functions to modem device */
@@ -324,14 +340,21 @@ free_mem:
 free_rproc:
 	/* Reset device data upon error */
 	mdev->drv_data = NULL;
+<<<<<<< HEAD
 	rproc_put(rproc);
+=======
+	rproc_free(rproc);
+>>>>>>> v4.9.227
 	return err;
 }
 
 static struct platform_driver sproc_driver = {
 	.driver	= {
 		.name	= SPROC_MODEM_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe	= sproc_probe,
 	.remove	= sproc_drv_remove,

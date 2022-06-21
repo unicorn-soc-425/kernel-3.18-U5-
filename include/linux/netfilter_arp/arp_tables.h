@@ -48,6 +48,7 @@ struct arpt_error {
 }
 
 extern void *arpt_alloc_initial_table(const struct xt_table *);
+<<<<<<< HEAD
 extern struct xt_table *arpt_register_table(struct net *net,
 					    const struct xt_table *table,
 					    const struct arpt_replace *repl);
@@ -56,6 +57,15 @@ extern unsigned int arpt_do_table(struct sk_buff *skb,
 				  unsigned int hook,
 				  const struct net_device *in,
 				  const struct net_device *out,
+=======
+int arpt_register_table(struct net *net, const struct xt_table *table,
+			const struct arpt_replace *repl,
+			const struct nf_hook_ops *ops, struct xt_table **res);
+void arpt_unregister_table(struct net *net, struct xt_table *table,
+			   const struct nf_hook_ops *ops);
+extern unsigned int arpt_do_table(struct sk_buff *skb,
+				  const struct nf_hook_state *state,
+>>>>>>> v4.9.227
 				  struct xt_table *table);
 
 #ifdef CONFIG_COMPAT

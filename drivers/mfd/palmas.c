@@ -733,7 +733,10 @@ static struct i2c_driver palmas_i2c_driver = {
 	.driver = {
 		   .name = "palmas",
 		   .of_match_table = of_palmas_match_tbl,
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = palmas_i2c_probe,
 	.remove = palmas_i2c_remove,

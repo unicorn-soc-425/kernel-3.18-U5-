@@ -17,7 +17,10 @@
 #include <linux/types.h>
 #include <linux/platform_device.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/idr.h>
+=======
+>>>>>>> v4.9.227
 
 #include "../w1.h"
 #include "../w1_int.h"
@@ -111,6 +114,7 @@ static const struct attribute_group *w1_ds2781_groups[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static DEFINE_IDA(bat_ida);
 
 static int w1_ds2781_add_slave(struct w1_slave *sl)
@@ -130,6 +134,16 @@ static int w1_ds2781_add_slave(struct w1_slave *sl)
 		ret = -ENOMEM;
 		goto pdev_alloc_failed;
 	}
+=======
+static int w1_ds2781_add_slave(struct w1_slave *sl)
+{
+	int ret;
+	struct platform_device *pdev;
+
+	pdev = platform_device_alloc("ds2781-battery", PLATFORM_DEVID_AUTO);
+	if (!pdev)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	pdev->dev.parent = &sl->dev;
 
 	ret = platform_device_add(pdev);
@@ -142,19 +156,28 @@ static int w1_ds2781_add_slave(struct w1_slave *sl)
 
 pdev_add_failed:
 	platform_device_put(pdev);
+<<<<<<< HEAD
 pdev_alloc_failed:
 	ida_simple_remove(&bat_ida, id);
 noid:
+=======
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static void w1_ds2781_remove_slave(struct w1_slave *sl)
 {
 	struct platform_device *pdev = dev_get_drvdata(&sl->dev);
+<<<<<<< HEAD
 	int id = pdev->id;
 
 	platform_device_unregister(pdev);
 	ida_simple_remove(&bat_ida, id);
+=======
+
+	platform_device_unregister(pdev);
+>>>>>>> v4.9.227
 }
 
 static struct w1_family_ops w1_ds2781_fops = {
@@ -167,6 +190,7 @@ static struct w1_family w1_ds2781_family = {
 	.fid = W1_FAMILY_DS2781,
 	.fops = &w1_ds2781_fops,
 };
+<<<<<<< HEAD
 
 static int __init w1_ds2781_init(void)
 {
@@ -182,6 +206,9 @@ static void __exit w1_ds2781_exit(void)
 
 module_init(w1_ds2781_init);
 module_exit(w1_ds2781_exit);
+=======
+module_w1_family(w1_ds2781_family);
+>>>>>>> v4.9.227
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Renata Sayakhova <renata@oktetlabs.ru>");

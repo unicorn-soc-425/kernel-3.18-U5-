@@ -557,10 +557,18 @@ exit:
 		pr_err("Failed to handle discovered target err=%d\n", r);
 }
 
+<<<<<<< HEAD
 static int microread_event_received(struct nfc_hci_dev *hdev, u8 gate,
 				     u8 event, struct sk_buff *skb)
 {
 	int r;
+=======
+static int microread_event_received(struct nfc_hci_dev *hdev, u8 pipe,
+				     u8 event, struct sk_buff *skb)
+{
+	int r;
+	u8 gate = hdev->pipes[pipe].gate;
+>>>>>>> v4.9.227
 	u8 mode;
 
 	pr_info("Microread received event 0x%x to gate 0x%x\n", event, gate);

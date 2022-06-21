@@ -105,6 +105,7 @@ static char *split_if_spec(char *str, ...)
 
 	va_start(ap, str);
 	while ((arg = va_arg(ap, char**)) != NULL) {
+<<<<<<< HEAD
 		if (*str == '\0')
 			return NULL;
 		end = strchr(str, ',');
@@ -112,6 +113,19 @@ static char *split_if_spec(char *str, ...)
 			*arg = str;
 		if (end == NULL)
 			return NULL;
+=======
+		if (*str == '\0') {
+			va_end(ap);
+			return NULL;
+		}
+		end = strchr(str, ',');
+		if (end != str)
+			*arg = str;
+		if (end == NULL) {
+			va_end(ap);
+			return NULL;
+		}
+>>>>>>> v4.9.227
 		*end++ = '\0';
 		str = end;
 	}
@@ -424,7 +438,11 @@ static int iss_net_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (len == skb->len) {
 		lp->stats.tx_packets++;
 		lp->stats.tx_bytes += skb->len;
+<<<<<<< HEAD
 		dev->trans_start = jiffies;
+=======
+		netif_trans_update(dev);
+>>>>>>> v4.9.227
 		netif_start_queue(dev);
 
 		/* this is normally done in the interrupt when tx finishes */
@@ -681,6 +699,10 @@ static int iss_net_init(void)
 
 	return 1;
 }
+<<<<<<< HEAD
 
 module_init(iss_net_init);
 
+=======
+device_initcall(iss_net_init);
+>>>>>>> v4.9.227

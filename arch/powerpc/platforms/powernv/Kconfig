@@ -20,9 +20,18 @@ config PPC_POWERNV
 	select PPC_DOORBELL
 	default y
 
+<<<<<<< HEAD
 config PPC_POWERNV_RTAS
 	depends on PPC_POWERNV
 	bool "Support for RTAS based PowerNV platforms such as BML"
 	default y
 	select PPC_ICS_RTAS
 	select PPC_RTAS
+=======
+config OPAL_PRD
+	tristate 'OPAL PRD driver'
+	depends on PPC_POWERNV
+	help
+	  This enables the opal-prd driver, a facility to run processor
+	  recovery diagnostics on OpenPower machines
+>>>>>>> v4.9.227

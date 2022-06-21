@@ -23,6 +23,11 @@
 #ifndef __ASSEMBLY__
 extern void __mcount(void);
 
+<<<<<<< HEAD
+=======
+#define ARCH_SUPPORTS_FTRACE_OPS 1
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_DYNAMIC_FTRACE
 static inline unsigned long ftrace_call_adjust(unsigned long addr)
 {

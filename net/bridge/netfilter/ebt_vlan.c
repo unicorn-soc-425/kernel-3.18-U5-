@@ -45,8 +45,13 @@ ebt_vlan_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	/* VLAN encapsulated Type/Length field, given from orig frame */
 	__be16 encap;
 
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb)) {
 		TCI = vlan_tx_tag_get(skb);
+=======
+	if (skb_vlan_tag_present(skb)) {
+		TCI = skb_vlan_tag_get(skb);
+>>>>>>> v4.9.227
 		encap = skb->protocol;
 	} else {
 		const struct vlan_hdr *fp;
@@ -66,7 +71,12 @@ ebt_vlan_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	 * - Canonical Format Indicator (CFI). The Canonical Format Indicator
 	 * (CFI) is a single bit flag value. Currently ignored.
 	 * - VLAN Identifier (VID). The VID is encoded as
+<<<<<<< HEAD
 	 * an unsigned binary number. */
+=======
+	 * an unsigned binary number.
+	 */
+>>>>>>> v4.9.227
 	id = TCI & VLAN_VID_MASK;
 	prio = (TCI >> 13) & 0x7;
 
@@ -98,7 +108,12 @@ static int ebt_vlan_mt_check(const struct xt_mtchk_param *par)
 	}
 
 	/* Check for bitmask range
+<<<<<<< HEAD
 	 * True if even one bit is out of mask */
+=======
+	 * True if even one bit is out of mask
+	 */
+>>>>>>> v4.9.227
 	if (info->bitmask & ~EBT_VLAN_MASK) {
 		pr_debug("bitmask %2X is out of mask (%2X)\n",
 			 info->bitmask, EBT_VLAN_MASK);
@@ -117,7 +132,12 @@ static int ebt_vlan_mt_check(const struct xt_mtchk_param *par)
 	 * 0 - The null VLAN ID.
 	 * 1 - The default Port VID (PVID)
 	 * 0x0FFF - Reserved for implementation use.
+<<<<<<< HEAD
 	 * if_vlan.h: VLAN_N_VID 4096. */
+=======
+	 * if_vlan.h: VLAN_N_VID 4096.
+	 */
+>>>>>>> v4.9.227
 	if (GET_BITMASK(EBT_VLAN_ID)) {
 		if (!!info->id) { /* if id!=0 => check vid range */
 			if (info->id > VLAN_N_VID) {
@@ -128,7 +148,12 @@ static int ebt_vlan_mt_check(const struct xt_mtchk_param *par)
 			/* Note: This is valid VLAN-tagged frame point.
 			 * Any value of user_priority are acceptable,
 			 * but should be ignored according to 802.1Q Std.
+<<<<<<< HEAD
 			 * So we just drop the prio flag. */
+=======
+			 * So we just drop the prio flag.
+			 */
+>>>>>>> v4.9.227
 			info->bitmask &= ~EBT_VLAN_PRIO;
 		}
 		/* Else, id=0 (null VLAN ID)  => user_priority range (any?) */
@@ -143,7 +168,12 @@ static int ebt_vlan_mt_check(const struct xt_mtchk_param *par)
 	}
 	/* Check for encapsulated proto range - it is possible to be
 	 * any value for u_short range.
+<<<<<<< HEAD
 	 * if_ether.h:  ETH_ZLEN        60   -  Min. octets in frame sans FCS */
+=======
+	 * if_ether.h:  ETH_ZLEN        60   -  Min. octets in frame sans FCS
+	 */
+>>>>>>> v4.9.227
 	if (GET_BITMASK(EBT_VLAN_ENCAP)) {
 		if ((unsigned short) ntohs(info->encap) < ETH_ZLEN) {
 			pr_debug("encap frame length %d is less than "

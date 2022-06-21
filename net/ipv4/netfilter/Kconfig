@@ -25,6 +25,7 @@ config NF_CONNTRACK_IPV4
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
+<<<<<<< HEAD
 config NF_CONNTRACK_PROC_COMPAT
 	bool "proc/sysctl compatibility with old connection tracking"
 	depends on NF_CONNTRACK_PROCFS && NF_CONNTRACK_IPV4
@@ -35,6 +36,52 @@ config NF_CONNTRACK_PROC_COMPAT
 	  old programs that have not been adapted to the new names working.
 
 	  If unsure, say Y.
+=======
+if NF_TABLES
+
+config NF_TABLES_IPV4
+	tristate "IPv4 nf_tables support"
+	help
+	  This option enables the IPv4 support for nf_tables.
+
+if NF_TABLES_IPV4
+
+config NFT_CHAIN_ROUTE_IPV4
+	tristate "IPv4 nf_tables route chain support"
+	help
+	  This option enables the "route" chain for IPv4 in nf_tables. This
+	  chain type is used to force packet re-routing after mangling header
+	  fields such as the source, destination, type of service and
+	  the packet mark.
+
+config NFT_REJECT_IPV4
+	select NF_REJECT_IPV4
+	default NFT_REJECT
+	tristate
+
+config NFT_DUP_IPV4
+	tristate "IPv4 nf_tables packet duplication support"
+	depends on !NF_CONNTRACK || NF_CONNTRACK
+	select NF_DUP_IPV4
+	help
+	  This module enables IPv4 packet duplication support for nf_tables.
+
+endif # NF_TABLES_IPV4
+
+config NF_TABLES_ARP
+	tristate "ARP nf_tables support"
+	help
+	  This option enables the ARP support for nf_tables.
+
+endif # NF_TABLES
+
+config NF_DUP_IPV4
+	tristate "Netfilter IPv4 packet duplication to alternate destination"
+	depends on !NF_CONNTRACK || NF_CONNTRACK
+	help
+	  This option enables the nf_dup_ipv4 core, which duplicates an IPv4
+	  packet to be rerouted to another destination.
+>>>>>>> v4.9.227
 
 config NF_LOG_ARP
 	tristate "ARP packet logging"
@@ -46,6 +93,7 @@ config NF_LOG_IPV4
 	default m if NETFILTER_ADVANCED=n
 	select NF_LOG_COMMON
 
+<<<<<<< HEAD
 config NF_TABLES_IPV4
 	depends on NF_TABLES
 	tristate "IPv4 nf_tables support"
@@ -61,10 +109,13 @@ config NFT_CHAIN_ROUTE_IPV4
 	  fields such as the source, destination, type of service and
 	  the packet mark.
 
+=======
+>>>>>>> v4.9.227
 config NF_REJECT_IPV4
 	tristate "IPv4 packet rejection"
 	default m if NETFILTER_ADVANCED=n
 
+<<<<<<< HEAD
 config NFT_REJECT_IPV4
 	depends on NF_TABLES_IPV4
 	select NF_REJECT_IPV4
@@ -77,6 +128,8 @@ config NF_TABLES_ARP
 	help
 	  This option enables the ARP support for nf_tables.
 
+=======
+>>>>>>> v4.9.227
 config NF_NAT_IPV4
 	tristate "IPv4 NAT"
 	depends on NF_CONNTRACK_IPV4
@@ -113,6 +166,18 @@ config NFT_MASQ_IPV4
 	  This is the expression that provides IPv4 masquerading support for
 	  nf_tables.
 
+<<<<<<< HEAD
+=======
+config NFT_REDIR_IPV4
+	tristate "IPv4 redirect support for nf_tables"
+	depends on NF_TABLES_IPV4
+	depends on NFT_REDIR
+	select NF_NAT_REDIRECT
+	help
+	  This is the expression that provides IPv4 redirect support for
+	  nf_tables.
+
+>>>>>>> v4.9.227
 config NF_NAT_SNMP_BASIC
 	tristate "Basic SNMP-ALG support"
 	depends on NF_CONNTRACK_SNMP
@@ -266,6 +331,7 @@ config IP_NF_TARGET_MASQUERADE
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
+<<<<<<< HEAD
 config IP_NF_TARGET_NATTYPE_MODULE
 	tristate "NATTYPE target support"
 	depends on NF_NAT
@@ -277,6 +343,8 @@ config IP_NF_TARGET_NATTYPE_MODULE
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
+=======
+>>>>>>> v4.9.227
 config IP_NF_TARGET_NETMAP
 	tristate "NETMAP target support"
 	depends on NETFILTER_ADVANCED

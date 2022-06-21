@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /* Intel Ethernet Switch Host Interface Driver
  * Copyright(c) 2013 - 2014 Intel Corporation.
+=======
+/* Intel(R) Ethernet Switch Host Interface Driver
+ * Copyright(c) 2013 - 2016 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -28,16 +33,27 @@
 static s32 fm10k_stop_hw_vf(struct fm10k_hw *hw)
 {
 	u8 *perm_addr = hw->mac.perm_addr;
+<<<<<<< HEAD
 	u32 bal = 0, bah = 0;
+=======
+	u32 bal = 0, bah = 0, tdlen;
+>>>>>>> v4.9.227
 	s32 err;
 	u16 i;
 
 	/* we need to disable the queues before taking further steps */
 	err = fm10k_stop_hw_generic(hw);
+<<<<<<< HEAD
 	if (err)
 		return err;
 
 	/* If permenant address is set then we need to restore it */
+=======
+	if (err && err != FM10K_ERR_REQUESTS_PENDING)
+		return err;
+
+	/* If permanent address is set then we need to restore it */
+>>>>>>> v4.9.227
 	if (is_valid_ether_addr(perm_addr)) {
 		bal = (((u32)perm_addr[3]) << 24) |
 		      (((u32)perm_addr[4]) << 16) |
@@ -48,6 +64,12 @@ static s32 fm10k_stop_hw_vf(struct fm10k_hw *hw)
 		       ((u32)perm_addr[2]);
 	}
 
+<<<<<<< HEAD
+=======
+	/* restore default itr_scale for next VF initialization */
+	tdlen = hw->mac.itr_scale << FM10K_TDLEN_ITR_SCALE_SHIFT;
+
+>>>>>>> v4.9.227
 	/* The queues have already been disabled so we just need to
 	 * update their base address registers
 	 */
@@ -56,16 +78,32 @@ static s32 fm10k_stop_hw_vf(struct fm10k_hw *hw)
 		fm10k_write_reg(hw, FM10K_TDBAH(i), bah);
 		fm10k_write_reg(hw, FM10K_RDBAL(i), bal);
 		fm10k_write_reg(hw, FM10K_RDBAH(i), bah);
+<<<<<<< HEAD
 	}
 
 	return 0;
+=======
+		/* Restore ITR scale in software-defined mechanism in TDLEN
+		 * for next VF initialization. See definition of
+		 * FM10K_TDLEN_ITR_SCALE_SHIFT for more details on the use of
+		 * TDLEN here.
+		 */
+		fm10k_write_reg(hw, FM10K_TDLEN(i), tdlen);
+	}
+
+	return err;
+>>>>>>> v4.9.227
 }
 
 /**
  *  fm10k_reset_hw_vf - VF hardware reset
  *  @hw: pointer to hardware structure
  *
+<<<<<<< HEAD
  *  This function should return the hardare to a state similar to the
+=======
+ *  This function should return the hardware to a state similar to the
+>>>>>>> v4.9.227
  *  one it is in after just being initialized.
  **/
 static s32 fm10k_reset_hw_vf(struct fm10k_hw *hw)
@@ -74,7 +112,13 @@ static s32 fm10k_reset_hw_vf(struct fm10k_hw *hw)
 
 	/* shut down queues we own and reset DMA configuration */
 	err = fm10k_stop_hw_vf(hw);
+<<<<<<< HEAD
 	if (err)
+=======
+	if (err == FM10K_ERR_REQUESTS_PENDING)
+		hw->mac.reset_while_pending++;
+	else if (err)
+>>>>>>> v4.9.227
 		return err;
 
 	/* Inititate VF reset */
@@ -87,9 +131,15 @@ static s32 fm10k_reset_hw_vf(struct fm10k_hw *hw)
 	/* Clear reset bit and verify it was cleared */
 	fm10k_write_reg(hw, FM10K_VFCTRL, 0);
 	if (fm10k_read_reg(hw, FM10K_VFCTRL) & FM10K_VFCTRL_RST)
+<<<<<<< HEAD
 		err = FM10K_ERR_RESET_FAILED;
 
 	return err;
+=======
+		return FM10K_ERR_RESET_FAILED;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -103,7 +153,18 @@ static s32 fm10k_init_hw_vf(struct fm10k_hw *hw)
 	s32 err;
 	u16 i;
 
+<<<<<<< HEAD
 	/* assume we always have at least 1 queue */
+=======
+	/* verify we have at least 1 queue */
+	if (!~fm10k_read_reg(hw, FM10K_TXQCTL(0)) ||
+	    !~fm10k_read_reg(hw, FM10K_RXQCTL(0))) {
+		err = FM10K_ERR_NO_RESOURCES;
+		goto reset_max_queues;
+	}
+
+	/* determine how many queues we have */
+>>>>>>> v4.9.227
 	for (i = 1; tqdloc0 && (i < FM10K_MAX_QUEUES_POOL); i++) {
 		/* verify the Descriptor cache offsets are increasing */
 		tqdloc = ~fm10k_read_reg(hw, FM10K_TQDLOC(i));
@@ -119,11 +180,16 @@ static s32 fm10k_init_hw_vf(struct fm10k_hw *hw)
 	/* shut down queues we own and reset DMA configuration */
 	err = fm10k_disable_queues_generic(hw, i);
 	if (err)
+<<<<<<< HEAD
 		return err;
+=======
+		goto reset_max_queues;
+>>>>>>> v4.9.227
 
 	/* record maximum queue count */
 	hw->mac.max_queues = i;
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -138,6 +204,25 @@ static s32 fm10k_init_hw_vf(struct fm10k_hw *hw)
 static bool fm10k_is_slot_appropriate_vf(struct fm10k_hw *hw)
 {
 	return true;
+=======
+	/* fetch default VLAN and ITR scale */
+	hw->mac.default_vid = (fm10k_read_reg(hw, FM10K_TXQCTL(0)) &
+			       FM10K_TXQCTL_VID_MASK) >> FM10K_TXQCTL_VID_SHIFT;
+	/* Read the ITR scale from TDLEN. See the definition of
+	 * FM10K_TDLEN_ITR_SCALE_SHIFT for more information about how TDLEN is
+	 * used here.
+	 */
+	hw->mac.itr_scale = (fm10k_read_reg(hw, FM10K_TDLEN(0)) &
+			     FM10K_TDLEN_ITR_SCALE_MASK) >>
+			    FM10K_TDLEN_ITR_SCALE_SHIFT;
+
+	return 0;
+
+reset_max_queues:
+	hw->mac.max_queues = 0;
+
+	return err;
+>>>>>>> v4.9.227
 }
 
 /* This structure defines the attibutes to be parsed below */
@@ -169,7 +254,11 @@ static s32 fm10k_update_vlan_vf(struct fm10k_hw *hw, u32 vid, u8 vsi, bool set)
 	if (vsi)
 		return FM10K_ERR_PARAM;
 
+<<<<<<< HEAD
 	/* verify upper 4 bits of vid and length are 0 */
+=======
+	/* clever trick to verify reserved bits in both vid and length */
+>>>>>>> v4.9.227
 	if ((vid << 16 | vid) >> 28)
 		return FM10K_ERR_PARAM;
 
@@ -209,7 +298,11 @@ s32 fm10k_msg_mac_vlan_vf(struct fm10k_hw *hw, u32 **results,
 
 	ether_addr_copy(hw->mac.perm_addr, perm_addr);
 	hw->mac.default_vid = vid & (FM10K_VLAN_TABLE_VID_MAX - 1);
+<<<<<<< HEAD
 	hw->mac.vlan_override = !!(vid & FM10K_VLAN_CLEAR);
+=======
+	hw->mac.vlan_override = !!(vid & FM10K_VLAN_OVERRIDE);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -252,7 +345,11 @@ static s32 fm10k_read_mac_addr_vf(struct fm10k_hw *hw)
 }
 
 /**
+<<<<<<< HEAD
  *  fm10k_update_uc_addr_vf - Update device unicast address
+=======
+ *  fm10k_update_uc_addr_vf - Update device unicast addresses
+>>>>>>> v4.9.227
  *  @hw: pointer to the HW structure
  *  @glort: unused
  *  @mac: MAC address to add/remove from table
@@ -279,10 +376,17 @@ static s32 fm10k_update_uc_addr_vf(struct fm10k_hw *hw, u16 glort,
 
 	/* verify we are not locked down on the MAC address */
 	if (is_valid_ether_addr(hw->mac.perm_addr) &&
+<<<<<<< HEAD
 	    memcmp(hw->mac.perm_addr, mac, ETH_ALEN))
 		return FM10K_ERR_PARAM;
 
 	/* add bit to notify us if this is a set of clear operation */
+=======
+	    !ether_addr_equal(hw->mac.perm_addr, mac))
+		return FM10K_ERR_PARAM;
+
+	/* add bit to notify us if this is a set or clear operation */
+>>>>>>> v4.9.227
 	if (!add)
 		vid |= FM10K_VLAN_CLEAR;
 
@@ -295,7 +399,11 @@ static s32 fm10k_update_uc_addr_vf(struct fm10k_hw *hw, u16 glort,
 }
 
 /**
+<<<<<<< HEAD
  *  fm10k_update_mc_addr_vf - Update device multicast address
+=======
+ *  fm10k_update_mc_addr_vf - Update device multicast addresses
+>>>>>>> v4.9.227
  *  @hw: pointer to the HW structure
  *  @glort: unused
  *  @mac: MAC address to add/remove from table
@@ -319,7 +427,11 @@ static s32 fm10k_update_mc_addr_vf(struct fm10k_hw *hw, u16 glort,
 	if (!is_multicast_ether_addr(mac))
 		return FM10K_ERR_PARAM;
 
+<<<<<<< HEAD
 	/* add bit to notify us if this is a set of clear operation */
+=======
+	/* add bit to notify us if this is a set or clear operation */
+>>>>>>> v4.9.227
 	if (!add)
 		vid |= FM10K_VLAN_CLEAR;
 
@@ -423,6 +535,10 @@ static s32 fm10k_update_xcast_mode_vf(struct fm10k_hw *hw, u16 glort, u8 mode)
 
 	if (mode > FM10K_XCAST_MODE_NONE)
 		return FM10K_ERR_PARAM;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	/* generate message requesting to change xcast mode */
 	fm10k_tlv_msg_init(msg, FM10K_VF_MSG_ID_LPORT_STATE);
 	fm10k_tlv_attr_put_u8(msg, FM10K_LPORT_STATE_MSG_XCAST_MODE, mode);
@@ -431,6 +547,7 @@ static s32 fm10k_update_xcast_mode_vf(struct fm10k_hw *hw, u16 glort, u8 mode)
 	return mbx->ops.enqueue_tx(hw, mbx, msg);
 }
 
+<<<<<<< HEAD
 const struct fm10k_tlv_attr fm10k_1588_msg_attr[] = {
 	FM10K_TLV_ATTR_U64(FM10K_1588_MSG_TIMESTAMP),
 	FM10K_TLV_ATTR_LAST
@@ -438,6 +555,8 @@ const struct fm10k_tlv_attr fm10k_1588_msg_attr[] = {
 
 /* currently there is no shared 1588 timestamp handler */
 
+=======
+>>>>>>> v4.9.227
 /**
  *  fm10k_update_hw_stats_vf - Updates hardware related statistics of VF
  *  @hw: pointer to hardware structure
@@ -489,6 +608,7 @@ static s32 fm10k_configure_dglort_map_vf(struct fm10k_hw *hw,
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  *  fm10k_adjust_systime_vf - Adjust systime frequency
  *  @hw: pointer to hardware structure
@@ -535,6 +655,8 @@ static u64 fm10k_read_systime_vf(struct fm10k_hw *hw)
 	return ((u64)systime_h << 32) | systime_l;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct fm10k_msg_data fm10k_msg_data_vf[] = {
 	FM10K_TLV_MSG_TEST_HANDLER(fm10k_tlv_msg_test),
 	FM10K_VF_MSG_MAC_VLAN_HANDLER(fm10k_msg_mac_vlan_vf),
@@ -542,6 +664,7 @@ static const struct fm10k_msg_data fm10k_msg_data_vf[] = {
 	FM10K_TLV_MSG_ERROR_HANDLER(fm10k_tlv_msg_error),
 };
 
+<<<<<<< HEAD
 static struct fm10k_mac_ops mac_ops_vf = {
 	.get_bus_info		= &fm10k_get_bus_info_generic,
 	.reset_hw		= &fm10k_reset_hw_vf,
@@ -562,6 +685,25 @@ static struct fm10k_mac_ops mac_ops_vf = {
 	.get_host_state		= &fm10k_get_host_state_generic,
 	.adjust_systime		= &fm10k_adjust_systime_vf,
 	.read_systime		= &fm10k_read_systime_vf,
+=======
+static const struct fm10k_mac_ops mac_ops_vf = {
+	.get_bus_info		= fm10k_get_bus_info_generic,
+	.reset_hw		= fm10k_reset_hw_vf,
+	.init_hw		= fm10k_init_hw_vf,
+	.start_hw		= fm10k_start_hw_generic,
+	.stop_hw		= fm10k_stop_hw_vf,
+	.update_vlan		= fm10k_update_vlan_vf,
+	.read_mac_addr		= fm10k_read_mac_addr_vf,
+	.update_uc_addr		= fm10k_update_uc_addr_vf,
+	.update_mc_addr		= fm10k_update_mc_addr_vf,
+	.update_xcast_mode	= fm10k_update_xcast_mode_vf,
+	.update_int_moderator	= fm10k_update_int_moderator_vf,
+	.update_lport_state	= fm10k_update_lport_state_vf,
+	.update_hw_stats	= fm10k_update_hw_stats_vf,
+	.rebind_hw_stats	= fm10k_rebind_hw_stats_vf,
+	.configure_dglort_map	= fm10k_configure_dglort_map_vf,
+	.get_host_state		= fm10k_get_host_state_generic,
+>>>>>>> v4.9.227
 };
 
 static s32 fm10k_get_invariants_vf(struct fm10k_hw *hw)
@@ -571,8 +713,14 @@ static s32 fm10k_get_invariants_vf(struct fm10k_hw *hw)
 	return fm10k_pfvf_mbx_init(hw, &hw->mbx, fm10k_msg_data_vf, 0);
 }
 
+<<<<<<< HEAD
 struct fm10k_info fm10k_vf_info = {
 	.mac		= fm10k_mac_vf,
 	.get_invariants	= &fm10k_get_invariants_vf,
+=======
+const struct fm10k_info fm10k_vf_info = {
+	.mac		= fm10k_mac_vf,
+	.get_invariants	= fm10k_get_invariants_vf,
+>>>>>>> v4.9.227
 	.mac_ops	= &mac_ops_vf,
 };

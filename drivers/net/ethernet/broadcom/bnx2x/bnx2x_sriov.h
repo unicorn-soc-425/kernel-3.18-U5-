@@ -1,15 +1,30 @@
+<<<<<<< HEAD
 /* bnx2x_sriov.h: Broadcom Everest network driver.
  *
  * Copyright 2009-2013 Broadcom Corporation
  *
  * Unless you and Broadcom execute a separate written software license
+=======
+/* bnx2x_sriov.h: QLogic Everest network driver.
+ *
+ * Copyright 2009-2013 Broadcom Corporation
+ * Copyright 2014 QLogic Corporation
+ * All rights reserved
+ *
+ * Unless you and QLogic execute a separate written software license
+>>>>>>> v4.9.227
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2, available
  * at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html (the "GPL").
  *
  * Notwithstanding the above, under no circumstances may you combine this
+<<<<<<< HEAD
  * software in any way with any other Broadcom software provided under a
  * license other than the GPL, without Broadcom's express prior written
+=======
+ * software in any way with any other QLogic software provided under a
+ * license other than the GPL, without QLogic's express prior written
+>>>>>>> v4.9.227
  * consent.
  *
  * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
@@ -75,7 +90,14 @@ struct bnx2x_vf_queue {
 
 	/* VLANs object */
 	struct bnx2x_vlan_mac_obj	vlan_obj;
+<<<<<<< HEAD
 	atomic_t vlan_count;		/* 0 means vlan-0 is set  ~ untagged */
+=======
+
+	/* VLAN-MACs object */
+	struct bnx2x_vlan_mac_obj	vlan_mac_obj;
+
+>>>>>>> v4.9.227
 	unsigned long accept_flags;	/* last accept flags configured */
 
 	/* Queue Slow-path State object */
@@ -103,10 +125,20 @@ struct bnx2x_virtf;
 
 struct bnx2x_vf_mac_vlan_filter {
 	int type;
+<<<<<<< HEAD
 #define BNX2X_VF_FILTER_MAC	1
 #define BNX2X_VF_FILTER_VLAN	2
 
 	bool add;
+=======
+#define BNX2X_VF_FILTER_MAC	BIT(0)
+#define BNX2X_VF_FILTER_VLAN	BIT(1)
+#define BNX2X_VF_FILTER_VLAN_MAC \
+	(BNX2X_VF_FILTER_MAC | BNX2X_VF_FILTER_VLAN) /*shortcut*/
+
+	bool add;
+	bool applied;
+>>>>>>> v4.9.227
 	u8 *mac;
 	u16 vid;
 };
@@ -119,6 +151,7 @@ struct bnx2x_vf_mac_vlan_filters {
 /* vf context */
 struct bnx2x_virtf {
 	u16 cfg_flags;
+<<<<<<< HEAD
 #define VF_CFG_STATS		0x0001
 #define VF_CFG_FW_FC		0x0002
 #define VF_CFG_TPA		0x0004
@@ -127,6 +160,11 @@ struct bnx2x_virtf {
 #define VF_CFG_VLAN		0x0020
 #define VF_CFG_STATS_COALESCE	0x0040
 #define VF_CFG_EXT_BULLETIN	0x0080
+=======
+#define VF_CFG_STATS_COALESCE	0x1
+#define VF_CFG_EXT_BULLETIN	0x2
+#define VF_CFG_VLAN_FILTER	0x4
+>>>>>>> v4.9.227
 	u8 link_cfg;		/* IFLA_VF_LINK_STATE_AUTO
 				 * IFLA_VF_LINK_STATE_ENABLE
 				 * IFLA_VF_LINK_STATE_DISABLE
@@ -136,13 +174,22 @@ struct bnx2x_virtf {
 #define VF_ACQUIRED	1	/* VF acquired, but not initialized */
 #define VF_ENABLED	2	/* VF Enabled */
 #define VF_RESET	3	/* VF FLR'd, pending cleanup */
+<<<<<<< HEAD
+=======
+#define VF_LOST		4	/* Recovery while VFs are loaded */
+>>>>>>> v4.9.227
 
 	bool flr_clnup_stage;	/* true during flr cleanup */
 
 	/* dma */
+<<<<<<< HEAD
 	dma_addr_t fw_stat_map;		/* valid iff VF_CFG_STATS */
 	u16 stats_stride;
 	dma_addr_t spq_map;
+=======
+	dma_addr_t fw_stat_map;
+	u16 stats_stride;
+>>>>>>> v4.9.227
 	dma_addr_t bulletin_map;
 
 	/* Allocated resources counters. Before the VF is acquired, the
@@ -163,8 +210,11 @@ struct bnx2x_virtf {
 #define vf_mac_rules_cnt(vf)		((vf)->alloc_resc.num_mac_filters)
 #define vf_vlan_rules_cnt(vf)		((vf)->alloc_resc.num_vlan_filters)
 #define vf_mc_rules_cnt(vf)		((vf)->alloc_resc.num_mc_filters)
+<<<<<<< HEAD
 	/* Hide a single vlan filter credit for the hypervisor */
 #define vf_vlan_rules_visible_cnt(vf)	(vf_vlan_rules_cnt(vf) - 1)
+=======
+>>>>>>> v4.9.227
 
 	u8 sb_count;	/* actual number of SBs */
 	u8 igu_base_id;	/* base igu status block id */
@@ -196,7 +246,10 @@ struct bnx2x_virtf {
 	int leading_rss;
 
 	/* MCAST object */
+<<<<<<< HEAD
 	int mcast_list_len;
+=======
+>>>>>>> v4.9.227
 	struct bnx2x_mcast_obj		mcast_obj;
 
 	/* RSS configuration object */
@@ -205,6 +258,14 @@ struct bnx2x_virtf {
 	/* slow-path operations */
 	struct mutex			op_mutex; /* one vfop at a time mutex */
 	enum channel_tlvs		op_current;
+<<<<<<< HEAD
+=======
+
+	u8 fp_hsi;
+
+	struct bnx2x_credit_pool_obj	vf_vlans_pool;
+	struct bnx2x_credit_pool_obj	vf_macs_pool;
+>>>>>>> v4.9.227
 };
 
 #define BNX2X_NR_VIRTFN(bp)	((bp)->vfdb->sriov.nr_virtfn)
@@ -228,6 +289,15 @@ struct bnx2x_virtf {
 #define FW_VF_HANDLE(abs_vfid)	\
 	(abs_vfid + FW_PF_MAX_HANDLE)
 
+<<<<<<< HEAD
+=======
+#define GET_NUM_VFS_PER_PATH(bp)	64 /* use max possible value */
+#define GET_NUM_VFS_PER_PF(bp)		((bp)->vfdb ? (bp)->vfdb->sriov.total \
+						    : 0)
+#define VF_MAC_CREDIT_CNT		1
+#define VF_VLAN_CREDIT_CNT		2 /* VLAN0 + 'real' VLAN */
+
+>>>>>>> v4.9.227
 /* locking and unlocking the channel mutex */
 void bnx2x_lock_vf_pf_channel(struct bnx2x *bp, struct bnx2x_virtf *vf,
 			      enum channel_tlvs tlv);
@@ -272,6 +342,13 @@ struct bnx2x_vf_sp {
 	} vlan_rdata;
 
 	union {
+<<<<<<< HEAD
+=======
+		struct eth_classify_rules_ramrod_data	e2;
+	} vlan_mac_rdata;
+
+	union {
+>>>>>>> v4.9.227
 		struct eth_filter_rules_ramrod_data	e2;
 	} rx_mode_rdata;
 
@@ -534,8 +611,19 @@ int bnx2x_iov_link_update_vf(struct bnx2x *bp, int idx);
 
 int bnx2x_set_vf_link_state(struct net_device *dev, int vf, int link_state);
 
+<<<<<<< HEAD
 #else /* CONFIG_BNX2X_SRIOV */
 
+=======
+int bnx2x_vfpf_update_vlan(struct bnx2x *bp, u16 vid, u8 vf_qid, bool add);
+#else /* CONFIG_BNX2X_SRIOV */
+
+#define GET_NUM_VFS_PER_PATH(bp)	0
+#define GET_NUM_VFS_PER_PF(bp)		0
+#define VF_MAC_CREDIT_CNT		0
+#define VF_VLAN_CREDIT_CNT		0
+
+>>>>>>> v4.9.227
 static inline void bnx2x_iov_set_queue_sp_obj(struct bnx2x *bp, int vf_cid,
 				struct bnx2x_queue_sp_obj **q_obj) {}
 static inline void bnx2x_vf_handle_flr_event(struct bnx2x *bp) {}
@@ -602,5 +690,10 @@ struct pf_vf_bulletin_content;
 static inline void bnx2x_vf_bulletin_finalize(struct pf_vf_bulletin_content *bulletin,
 					      bool support_long) {}
 
+<<<<<<< HEAD
+=======
+static inline int bnx2x_vfpf_update_vlan(struct bnx2x *bp, u16 vid, u8 vf_qid, bool add) {return 0; }
+
+>>>>>>> v4.9.227
 #endif /* CONFIG_BNX2X_SRIOV */
 #endif /* bnx2x_sriov.h */

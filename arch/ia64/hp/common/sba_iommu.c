@@ -919,7 +919,11 @@ sba_mark_invalid(struct ioc *ioc, dma_addr_t iova, size_t byte_cnt)
 static dma_addr_t sba_map_page(struct device *dev, struct page *page,
 			       unsigned long poff, size_t size,
 			       enum dma_data_direction dir,
+<<<<<<< HEAD
 			       struct dma_attrs *attrs)
+=======
+			       unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	struct ioc *ioc;
 	void *addr = page_address(page) + poff;
@@ -1005,7 +1009,11 @@ static dma_addr_t sba_map_page(struct device *dev, struct page *page,
 
 static dma_addr_t sba_map_single_attrs(struct device *dev, void *addr,
 				       size_t size, enum dma_data_direction dir,
+<<<<<<< HEAD
 				       struct dma_attrs *attrs)
+=======
+				       unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	return sba_map_page(dev, virt_to_page(addr),
 			    (unsigned long)addr & ~PAGE_MASK, size, dir, attrs);
@@ -1046,7 +1054,11 @@ sba_mark_clean(struct ioc *ioc, dma_addr_t iova, size_t size)
  * See Documentation/DMA-API-HOWTO.txt
  */
 static void sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
+<<<<<<< HEAD
 			   enum dma_data_direction dir, struct dma_attrs *attrs)
+=======
+			   enum dma_data_direction dir, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	struct ioc *ioc;
 #if DELAYED_RESOURCE_CNT > 0
@@ -1115,7 +1127,11 @@ static void sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
 }
 
 void sba_unmap_single_attrs(struct device *dev, dma_addr_t iova, size_t size,
+<<<<<<< HEAD
 			    enum dma_data_direction dir, struct dma_attrs *attrs)
+=======
+			    enum dma_data_direction dir, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	sba_unmap_page(dev, iova, size, dir, attrs);
 }
@@ -1130,7 +1146,11 @@ void sba_unmap_single_attrs(struct device *dev, dma_addr_t iova, size_t size,
  */
 static void *
 sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
+<<<<<<< HEAD
 		   gfp_t flags, struct dma_attrs *attrs)
+=======
+		   gfp_t flags, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	struct ioc *ioc;
 	void *addr;
@@ -1140,6 +1160,7 @@ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
 
 #ifdef CONFIG_NUMA
 	{
+<<<<<<< HEAD
 		int node = ioc->node;
 		struct page *page;
 
@@ -1147,6 +1168,11 @@ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
 			node = numa_node_id();
 
 		page = alloc_pages_exact_node(node, flags, get_order(size));
+=======
+		struct page *page;
+
+		page = alloc_pages_node(ioc->node, flags, get_order(size));
+>>>>>>> v4.9.227
 		if (unlikely(!page))
 			return NULL;
 
@@ -1179,7 +1205,11 @@ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
 	 * device to map single to get an iova mapping.
 	 */
 	*dma_handle = sba_map_single_attrs(&ioc->sac_only_dev->dev, addr,
+<<<<<<< HEAD
 					   size, 0, NULL);
+=======
+					   size, 0, 0);
+>>>>>>> v4.9.227
 
 	return addr;
 }
@@ -1195,9 +1225,15 @@ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
  * See Documentation/DMA-API-HOWTO.txt
  */
 static void sba_free_coherent(struct device *dev, size_t size, void *vaddr,
+<<<<<<< HEAD
 			      dma_addr_t dma_handle, struct dma_attrs *attrs)
 {
 	sba_unmap_single_attrs(dev, dma_handle, size, 0, NULL);
+=======
+			      dma_addr_t dma_handle, unsigned long attrs)
+{
+	sba_unmap_single_attrs(dev, dma_handle, size, 0, 0);
+>>>>>>> v4.9.227
 	free_pages((unsigned long) vaddr, get_order(size));
 }
 
@@ -1446,7 +1482,11 @@ sba_coalesce_chunks(struct ioc *ioc, struct device *dev,
 
 static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
 			       int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			       struct dma_attrs *attrs);
+=======
+			       unsigned long attrs);
+>>>>>>> v4.9.227
 /**
  * sba_map_sg - map Scatter/Gather list
  * @dev: instance of PCI owned by the driver that's asking.
@@ -1459,7 +1499,11 @@ static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
  */
 static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
 			    int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			    struct dma_attrs *attrs)
+=======
+			    unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	struct ioc *ioc;
 	int coalesced, filled = 0;
@@ -1555,7 +1599,11 @@ static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
  */
 static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
 			       int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			       struct dma_attrs *attrs)
+=======
+			       unsigned long attrs)
+>>>>>>> v4.9.227
 {
 #ifdef ASSERT_PDIR_SANITY
 	struct ioc *ioc;

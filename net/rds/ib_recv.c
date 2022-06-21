@@ -36,6 +36,10 @@
 #include <linux/dma-mapping.h>
 #include <rdma/rdma_cm.h>
 
+<<<<<<< HEAD
+=======
+#include "rds_single_path.h"
+>>>>>>> v4.9.227
 #include "rds.h"
 #include "ib.h"
 
@@ -62,12 +66,20 @@ void rds_ib_recv_init_ring(struct rds_ib_connection *ic)
 		sge = &recv->r_sge[0];
 		sge->addr = ic->i_recv_hdrs_dma + (i * sizeof(struct rds_header));
 		sge->length = sizeof(struct rds_header);
+<<<<<<< HEAD
 		sge->lkey = ic->i_mr->lkey;
+=======
+		sge->lkey = ic->i_pd->local_dma_lkey;
+>>>>>>> v4.9.227
 
 		sge = &recv->r_sge[1];
 		sge->addr = 0;
 		sge->length = RDS_FRAG_SIZE;
+<<<<<<< HEAD
 		sge->lkey = ic->i_mr->lkey;
+=======
+		sge->lkey = ic->i_pd->local_dma_lkey;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -297,7 +309,11 @@ static struct rds_page_frag *rds_ib_refill_one_frag(struct rds_ib_connection *ic
 }
 
 static int rds_ib_recv_refill_one(struct rds_connection *conn,
+<<<<<<< HEAD
 				  struct rds_ib_recv_work *recv, int prefill)
+=======
+				  struct rds_ib_recv_work *recv, gfp_t gfp)
+>>>>>>> v4.9.227
 {
 	struct rds_ib_connection *ic = conn->c_transport_data;
 	struct ib_sge *sge;
@@ -305,7 +321,11 @@ static int rds_ib_recv_refill_one(struct rds_connection *conn,
 	gfp_t slab_mask = GFP_NOWAIT;
 	gfp_t page_mask = GFP_NOWAIT;
 
+<<<<<<< HEAD
 	if (prefill) {
+=======
+	if (gfp & __GFP_DIRECT_RECLAIM) {
+>>>>>>> v4.9.227
 		slab_mask = GFP_KERNEL;
 		page_mask = GFP_HIGHUSER;
 	}
@@ -347,6 +367,27 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int acquire_refill(struct rds_connection *conn)
+{
+	return test_and_set_bit(RDS_RECV_REFILL, &conn->c_flags) == 0;
+}
+
+static void release_refill(struct rds_connection *conn)
+{
+	clear_bit(RDS_RECV_REFILL, &conn->c_flags);
+
+	/* We don't use wait_on_bit()/wake_up_bit() because our waking is in a
+	 * hot path and finding waiters is very rare.  We don't want to walk
+	 * the system-wide hashed waitqueue buckets in the fast path only to
+	 * almost never find waiters.
+	 */
+	if (waitqueue_active(&conn->c_waitq))
+		wake_up_all(&conn->c_waitq);
+}
+
+>>>>>>> v4.9.227
 /*
  * This tries to allocate and post unused work requests after making sure that
  * they have all the allocations they need to queue received fragments into
@@ -354,15 +395,32 @@ out:
  *
  * -1 is returned if posting fails due to temporary resource exhaustion.
  */
+<<<<<<< HEAD
 void rds_ib_recv_refill(struct rds_connection *conn, int prefill)
+=======
+void rds_ib_recv_refill(struct rds_connection *conn, int prefill, gfp_t gfp)
+>>>>>>> v4.9.227
 {
 	struct rds_ib_connection *ic = conn->c_transport_data;
 	struct rds_ib_recv_work *recv;
 	struct ib_recv_wr *failed_wr;
 	unsigned int posted = 0;
 	int ret = 0;
+<<<<<<< HEAD
 	u32 pos;
 
+=======
+	bool can_wait = !!(gfp & __GFP_DIRECT_RECLAIM);
+	u32 pos;
+
+	/* the goal here is to just make sure that someone, somewhere
+	 * is posting buffers.  If we can't get the refill lock,
+	 * let them do their thing
+	 */
+	if (!acquire_refill(conn))
+		return;
+
+>>>>>>> v4.9.227
 	while ((prefill || rds_conn_up(conn)) &&
 	       rds_ib_ring_alloc(&ic->i_recv_ring, 1, &pos)) {
 		if (pos >= ic->i_recv_ring.w_nr) {
@@ -372,7 +430,11 @@ void rds_ib_recv_refill(struct rds_connection *conn, int prefill)
 		}
 
 		recv = &ic->i_recvs[pos];
+<<<<<<< HEAD
 		ret = rds_ib_recv_refill_one(conn, recv, prefill);
+=======
+		ret = rds_ib_recv_refill_one(conn, recv, gfp);
+>>>>>>> v4.9.227
 		if (ret) {
 			break;
 		}
@@ -402,6 +464,27 @@ void rds_ib_recv_refill(struct rds_connection *conn, int prefill)
 
 	if (ret)
 		rds_ib_ring_unalloc(&ic->i_recv_ring, 1);
+<<<<<<< HEAD
+=======
+
+	release_refill(conn);
+
+	/* if we're called from the softirq handler, we'll be GFP_NOWAIT.
+	 * in this case the ring being low is going to lead to more interrupts
+	 * and we can safely let the softirq code take care of it unless the
+	 * ring is completely empty.
+	 *
+	 * if we're called from krdsd, we'll be GFP_KERNEL.  In this case
+	 * we might have raced with the softirq code while we had the refill
+	 * lock held.  Use rds_ib_ring_low() instead of ring_empty to decide
+	 * if we should requeue.
+	 */
+	if (rds_conn_up(conn) &&
+	    ((can_wait && rds_ib_ring_low(&ic->i_recv_ring)) ||
+	    rds_ib_ring_empty(&ic->i_recv_ring))) {
+		queue_delayed_work(rds_wq, &conn->c_recv_w, 1);
+	}
+>>>>>>> v4.9.227
 }
 
 /*
@@ -472,6 +555,7 @@ static struct list_head *rds_ib_recv_cache_get(struct rds_ib_refill_cache *cache
 	return head;
 }
 
+<<<<<<< HEAD
 int rds_ib_inc_copy_to_user(struct rds_incoming *inc, struct iovec *first_iov,
 			    size_t size)
 {
@@ -481,6 +565,14 @@ int rds_ib_inc_copy_to_user(struct rds_incoming *inc, struct iovec *first_iov,
 	unsigned long to_copy;
 	unsigned long frag_off = 0;
 	unsigned long iov_off = 0;
+=======
+int rds_ib_inc_copy_to_user(struct rds_incoming *inc, struct iov_iter *to)
+{
+	struct rds_ib_incoming *ibinc;
+	struct rds_page_frag *frag;
+	unsigned long to_copy;
+	unsigned long frag_off = 0;
+>>>>>>> v4.9.227
 	int copied = 0;
 	int ret;
 	u32 len;
@@ -489,12 +581,17 @@ int rds_ib_inc_copy_to_user(struct rds_incoming *inc, struct iovec *first_iov,
 	frag = list_entry(ibinc->ii_frags.next, struct rds_page_frag, f_item);
 	len = be32_to_cpu(inc->i_hdr.h_len);
 
+<<<<<<< HEAD
 	while (copied < size && copied < len) {
+=======
+	while (iov_iter_count(to) && copied < len) {
+>>>>>>> v4.9.227
 		if (frag_off == RDS_FRAG_SIZE) {
 			frag = list_entry(frag->f_item.next,
 					  struct rds_page_frag, f_item);
 			frag_off = 0;
 		}
+<<<<<<< HEAD
 		while (iov_off == iov->iov_len) {
 			iov_off = 0;
 			iov++;
@@ -520,6 +617,21 @@ int rds_ib_inc_copy_to_user(struct rds_incoming *inc, struct iovec *first_iov,
 		}
 
 		iov_off += to_copy;
+=======
+		to_copy = min_t(unsigned long, iov_iter_count(to),
+				RDS_FRAG_SIZE - frag_off);
+		to_copy = min_t(unsigned long, to_copy, len - copied);
+
+		/* XXX needs + offset for multiple recvs per page */
+		rds_stats_add(s_copy_to_user, to_copy);
+		ret = copy_page_to_iter(sg_page(&frag->f_sg),
+					frag->f_sg.offset + frag_off,
+					to_copy,
+					to);
+		if (ret != to_copy)
+			return -EFAULT;
+
+>>>>>>> v4.9.227
 		frag_off += to_copy;
 		copied += to_copy;
 	}
@@ -535,7 +647,11 @@ void rds_ib_recv_init_ack(struct rds_ib_connection *ic)
 
 	sge->addr = ic->i_ack_dma;
 	sge->length = sizeof(struct rds_header);
+<<<<<<< HEAD
 	sge->lkey = ic->i_mr->lkey;
+=======
+	sge->lkey = ic->i_pd->local_dma_lkey;
+>>>>>>> v4.9.227
 
 	wr->sg_list = sge;
 	wr->num_sge = 1;
@@ -567,8 +683,12 @@ void rds_ib_recv_init_ack(struct rds_ib_connection *ic)
  * wr_id and avoids working with the ring in that case.
  */
 #ifndef KERNEL_HAS_ATOMIC64
+<<<<<<< HEAD
 static void rds_ib_set_ack(struct rds_ib_connection *ic, u64 seq,
 				int ack_required)
+=======
+void rds_ib_set_ack(struct rds_ib_connection *ic, u64 seq, int ack_required)
+>>>>>>> v4.9.227
 {
 	unsigned long flags;
 
@@ -593,8 +713,12 @@ static u64 rds_ib_get_ack(struct rds_ib_connection *ic)
 	return seq;
 }
 #else
+<<<<<<< HEAD
 static void rds_ib_set_ack(struct rds_ib_connection *ic, u64 seq,
 				int ack_required)
+=======
+void rds_ib_set_ack(struct rds_ib_connection *ic, u64 seq, int ack_required)
+>>>>>>> v4.9.227
 {
 	atomic64_set(&ic->i_ack_next, seq);
 	if (ack_required) {
@@ -769,7 +893,11 @@ static void rds_ib_cong_recv(struct rds_connection *conn,
 
 		addr = kmap_atomic(sg_page(&frag->f_sg));
 
+<<<<<<< HEAD
 		src = addr + frag_off;
+=======
+		src = addr + frag->f_sg.offset + frag_off;
+>>>>>>> v4.9.227
 		dst = (void *)map->m_page_addrs[map_page] + map_off;
 		for (k = 0; k < to_copy; k += 8) {
 			/* Record ports that became uncongested, ie
@@ -801,6 +929,7 @@ static void rds_ib_cong_recv(struct rds_connection *conn,
 	rds_cong_map_updated(map, uncongested);
 }
 
+<<<<<<< HEAD
 /*
  * Rings are posted with all the allocations they'll need to queue the
  * incoming message to the receiving socket so this can't fail.
@@ -815,6 +944,8 @@ struct rds_ib_ack_state {
 	unsigned int	ack_recv_valid:1;
 };
 
+=======
+>>>>>>> v4.9.227
 static void rds_ib_process_recv(struct rds_connection *conn,
 				struct rds_ib_recv_work *recv, u32 data_len,
 				struct rds_ib_ack_state *state)
@@ -940,6 +1071,7 @@ static void rds_ib_process_recv(struct rds_connection *conn,
 	}
 }
 
+<<<<<<< HEAD
 /*
  * Plucking the oldest entry from the ring can be done concurrently with
  * the thread refilling the ring.  Each ring operation is protected by
@@ -1023,6 +1155,52 @@ void rds_ib_recv_tasklet_fn(unsigned long data)
 	}
 	if (rds_conn_up(conn))
 		rds_ib_attempt_ack(ic);
+=======
+void rds_ib_recv_cqe_handler(struct rds_ib_connection *ic,
+			     struct ib_wc *wc,
+			     struct rds_ib_ack_state *state)
+{
+	struct rds_connection *conn = ic->conn;
+	struct rds_ib_recv_work *recv;
+
+	rdsdebug("wc wr_id 0x%llx status %u (%s) byte_len %u imm_data %u\n",
+		 (unsigned long long)wc->wr_id, wc->status,
+		 ib_wc_status_msg(wc->status), wc->byte_len,
+		 be32_to_cpu(wc->ex.imm_data));
+
+	rds_ib_stats_inc(s_ib_rx_cq_event);
+	recv = &ic->i_recvs[rds_ib_ring_oldest(&ic->i_recv_ring)];
+	ib_dma_unmap_sg(ic->i_cm_id->device, &recv->r_frag->f_sg, 1,
+			DMA_FROM_DEVICE);
+
+	/* Also process recvs in connecting state because it is possible
+	 * to get a recv completion _before_ the rdmacm ESTABLISHED
+	 * event is processed.
+	 */
+	if (wc->status == IB_WC_SUCCESS) {
+		rds_ib_process_recv(conn, recv, wc->byte_len, state);
+	} else {
+		/* We expect errors as the qp is drained during shutdown */
+		if (rds_conn_up(conn) || rds_conn_connecting(conn))
+			rds_ib_conn_error(conn, "recv completion on %pI4 had status %u (%s), disconnecting and reconnecting\n",
+					  &conn->c_faddr,
+					  wc->status,
+					  ib_wc_status_msg(wc->status));
+	}
+
+	/* rds_ib_process_recv() doesn't always consume the frag, and
+	 * we might not have called it at all if the wc didn't indicate
+	 * success. We already unmapped the frag's pages, though, and
+	 * the following rds_ib_ring_free() call tells the refill path
+	 * that it will not find an allocated frag here. Make sure we
+	 * keep that promise by freeing a frag that's still on the ring.
+	 */
+	if (recv->r_frag) {
+		rds_ib_frag_free(ic, recv->r_frag);
+		recv->r_frag = NULL;
+	}
+	rds_ib_ring_free(&ic->i_recv_ring, 1);
+>>>>>>> v4.9.227
 
 	/* If we ever end up with a really empty receive ring, we're
 	 * in deep trouble, as the sender will definitely see RNR
@@ -1031,17 +1209,33 @@ void rds_ib_recv_tasklet_fn(unsigned long data)
 		rds_ib_stats_inc(s_ib_rx_ring_empty);
 
 	if (rds_ib_ring_low(&ic->i_recv_ring))
+<<<<<<< HEAD
 		rds_ib_recv_refill(conn, 0);
 }
 
 int rds_ib_recv(struct rds_connection *conn)
 {
+=======
+		rds_ib_recv_refill(conn, 0, GFP_NOWAIT);
+}
+
+int rds_ib_recv_path(struct rds_conn_path *cp)
+{
+	struct rds_connection *conn = cp->cp_conn;
+>>>>>>> v4.9.227
 	struct rds_ib_connection *ic = conn->c_transport_data;
 	int ret = 0;
 
 	rdsdebug("conn %p\n", conn);
+<<<<<<< HEAD
 	if (rds_conn_up(conn))
 		rds_ib_attempt_ack(ic);
+=======
+	if (rds_conn_up(conn)) {
+		rds_ib_attempt_ack(ic);
+		rds_ib_recv_refill(conn, 0, GFP_KERNEL);
+	}
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -1064,9 +1258,16 @@ int rds_ib_recv_init(void)
 	rds_ib_frag_slab = kmem_cache_create("rds_ib_frag",
 					sizeof(struct rds_page_frag),
 					0, SLAB_HWCACHE_ALIGN, NULL);
+<<<<<<< HEAD
 	if (!rds_ib_frag_slab)
 		kmem_cache_destroy(rds_ib_incoming_slab);
 	else
+=======
+	if (!rds_ib_frag_slab) {
+		kmem_cache_destroy(rds_ib_incoming_slab);
+		rds_ib_incoming_slab = NULL;
+	} else
+>>>>>>> v4.9.227
 		ret = 0;
 out:
 	return ret;

@@ -88,6 +88,10 @@ static void __init cm_a510_init(void)
 
 MACHINE_START(CM_A510, "Compulab CM-A510 Board")
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= DOVE_NR_IRQS,
+>>>>>>> v4.9.227
 	.init_machine	= cm_a510_init,
 	.map_io		= dove_map_io,
 	.init_early	= dove_init_early,

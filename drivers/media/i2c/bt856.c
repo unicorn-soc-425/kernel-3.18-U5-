@@ -252,7 +252,10 @@ MODULE_DEVICE_TABLE(i2c, bt856_id);
 
 static struct i2c_driver bt856_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "bt856",
 	},
 	.probe		= bt856_probe,

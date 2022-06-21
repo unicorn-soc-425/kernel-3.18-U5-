@@ -24,7 +24,11 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <crypto/hash.h>
+<<<<<<< HEAD
 #include <crypto/hash_info.h>
+=======
+
+>>>>>>> v4.9.227
 #include "ima.h"
 
 struct ahash_completion {
@@ -55,7 +59,11 @@ static int param_set_bufsize(const char *val, const struct kernel_param *kp)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_bufsize = {
+=======
+static const struct kernel_param_ops param_ops_bufsize = {
+>>>>>>> v4.9.227
 	.set = param_set_bufsize,
 	.get = param_get_uint,
 };
@@ -67,6 +75,7 @@ MODULE_PARM_DESC(ahash_bufsize, "Maximum ahash buffer size");
 static struct crypto_shash *ima_shash_tfm;
 static struct crypto_ahash *ima_ahash_tfm;
 
+<<<<<<< HEAD
 /**
  * ima_kernel_read - read file content
  *
@@ -97,6 +106,8 @@ static int ima_kernel_read(struct file *file, loff_t offset,
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 int __init ima_init_crypto(void)
 {
 	long rc;
@@ -158,7 +169,11 @@ static void *ima_alloc_pages(loff_t max_size, size_t *allocated_size,
 {
 	void *ptr;
 	int order = ima_maxorder;
+<<<<<<< HEAD
 	gfp_t gfp_mask = __GFP_WAIT | __GFP_NOWARN | __GFP_NORETRY;
+=======
+	gfp_t gfp_mask = __GFP_RECLAIM | __GFP_NOWARN | __GFP_NORETRY;
+>>>>>>> v4.9.227
 
 	if (order)
 		order = min(get_order(max_size), order);
@@ -326,9 +341,19 @@ static int ima_calc_file_hash_atfm(struct file *file,
 		}
 		/* read buffer */
 		rbuf_len = min_t(loff_t, i_size - offset, rbuf_size[active]);
+<<<<<<< HEAD
 		rc = ima_kernel_read(file, offset, rbuf[active], rbuf_len);
 		if (rc != rbuf_len)
 			goto out3;
+=======
+		rc = integrity_kernel_read(file, offset, rbuf[active],
+					   rbuf_len);
+		if (rc != rbuf_len) {
+			if (rc >= 0)
+				rc = -EINVAL;
+			goto out3;
+		}
+>>>>>>> v4.9.227
 
 		if (rbuf[1] && offset) {
 			/* Using two buffers, and it is not the first
@@ -416,7 +441,11 @@ static int ima_calc_file_hash_tfm(struct file *file,
 	while (offset < i_size) {
 		int rbuf_len;
 
+<<<<<<< HEAD
 		rbuf_len = ima_kernel_read(file, offset, rbuf, PAGE_SIZE);
+=======
+		rbuf_len = integrity_kernel_read(file, offset, rbuf, PAGE_SIZE);
+>>>>>>> v4.9.227
 		if (rbuf_len < 0) {
 			rc = rbuf_len;
 			break;
@@ -472,6 +501,19 @@ int ima_calc_file_hash(struct file *file, struct ima_digest_data *hash)
 	loff_t i_size;
 	int rc;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * For consistency, fail file's opened with the O_DIRECT flag on
+	 * filesystems mounted with/without DAX option.
+	 */
+	if (file->f_flags & O_DIRECT) {
+		hash->length = hash_digest_size[ima_hash_algo];
+		hash->algo = ima_hash_algo;
+		return -EINVAL;
+	}
+
+>>>>>>> v4.9.227
 	i_size = i_size_read(file_inode(file));
 
 	if (ima_ahash_minsize && i_size >= ima_ahash_minsize) {
@@ -550,6 +592,127 @@ int ima_calc_field_array_hash(struct ima_field_data *field_data,
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+static int calc_buffer_ahash_atfm(const void *buf, loff_t len,
+				  struct ima_digest_data *hash,
+				  struct crypto_ahash *tfm)
+{
+	struct ahash_request *req;
+	struct scatterlist sg;
+	struct ahash_completion res;
+	int rc, ahash_rc = 0;
+
+	hash->length = crypto_ahash_digestsize(tfm);
+
+	req = ahash_request_alloc(tfm, GFP_KERNEL);
+	if (!req)
+		return -ENOMEM;
+
+	init_completion(&res.completion);
+	ahash_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG |
+				   CRYPTO_TFM_REQ_MAY_SLEEP,
+				   ahash_complete, &res);
+
+	rc = ahash_wait(crypto_ahash_init(req), &res);
+	if (rc)
+		goto out;
+
+	sg_init_one(&sg, buf, len);
+	ahash_request_set_crypt(req, &sg, NULL, len);
+
+	ahash_rc = crypto_ahash_update(req);
+
+	/* wait for the update request to complete */
+	rc = ahash_wait(ahash_rc, &res);
+	if (!rc) {
+		ahash_request_set_crypt(req, NULL, hash->digest, 0);
+		rc = ahash_wait(crypto_ahash_final(req), &res);
+	}
+out:
+	ahash_request_free(req);
+	return rc;
+}
+
+static int calc_buffer_ahash(const void *buf, loff_t len,
+			     struct ima_digest_data *hash)
+{
+	struct crypto_ahash *tfm;
+	int rc;
+
+	tfm = ima_alloc_atfm(hash->algo);
+	if (IS_ERR(tfm))
+		return PTR_ERR(tfm);
+
+	rc = calc_buffer_ahash_atfm(buf, len, hash, tfm);
+
+	ima_free_atfm(tfm);
+
+	return rc;
+}
+
+static int calc_buffer_shash_tfm(const void *buf, loff_t size,
+				struct ima_digest_data *hash,
+				struct crypto_shash *tfm)
+{
+	SHASH_DESC_ON_STACK(shash, tfm);
+	unsigned int len;
+	int rc;
+
+	shash->tfm = tfm;
+	shash->flags = 0;
+
+	hash->length = crypto_shash_digestsize(tfm);
+
+	rc = crypto_shash_init(shash);
+	if (rc != 0)
+		return rc;
+
+	while (size) {
+		len = size < PAGE_SIZE ? size : PAGE_SIZE;
+		rc = crypto_shash_update(shash, buf, len);
+		if (rc)
+			break;
+		buf += len;
+		size -= len;
+	}
+
+	if (!rc)
+		rc = crypto_shash_final(shash, hash->digest);
+	return rc;
+}
+
+static int calc_buffer_shash(const void *buf, loff_t len,
+			     struct ima_digest_data *hash)
+{
+	struct crypto_shash *tfm;
+	int rc;
+
+	tfm = ima_alloc_tfm(hash->algo);
+	if (IS_ERR(tfm))
+		return PTR_ERR(tfm);
+
+	rc = calc_buffer_shash_tfm(buf, len, hash, tfm);
+
+	ima_free_tfm(tfm);
+	return rc;
+}
+
+int ima_calc_buffer_hash(const void *buf, loff_t len,
+			 struct ima_digest_data *hash)
+{
+	int rc;
+
+	if (ima_ahash_minsize && len >= ima_ahash_minsize) {
+		rc = calc_buffer_ahash(buf, len, hash);
+		if (!rc)
+			return 0;
+	}
+
+	return calc_buffer_shash(buf, len, hash);
+}
+
+>>>>>>> v4.9.227
 static void __init ima_pcrread(int idx, u8 *pcr)
 {
 	if (!ima_used_chip)

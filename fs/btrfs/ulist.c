@@ -28,7 +28,11 @@
  * }
  * ulist_free(ulist);
  *
+<<<<<<< HEAD
  * This assumes the graph nodes are adressable by u64. This stems from the
+=======
+ * This assumes the graph nodes are addressable by u64. This stems from the
+>>>>>>> v4.9.227
  * usage for tree enumeration in btrfs, where the logical addresses are
  * 64 bit.
  *
@@ -132,6 +136,18 @@ static struct ulist_node *ulist_rbtree_search(struct ulist *ulist, u64 val)
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static void ulist_rbtree_erase(struct ulist *ulist, struct ulist_node *node)
+{
+	rb_erase(&node->rb_node, &ulist->root);
+	list_del(&node->list);
+	kfree(node);
+	BUG_ON(ulist->nnodes == 0);
+	ulist->nnodes--;
+}
+
+>>>>>>> v4.9.227
 static int ulist_rbtree_insert(struct ulist *ulist, struct ulist_node *ins)
 {
 	struct rb_node **p = &ulist->root.rb_node;
@@ -197,9 +213,12 @@ int ulist_add_merge(struct ulist *ulist, u64 val, u64 aux,
 
 	node->val = val;
 	node->aux = aux;
+<<<<<<< HEAD
 #ifdef CONFIG_BTRFS_DEBUG
 	node->seqnum = ulist->nnodes;
 #endif
+=======
+>>>>>>> v4.9.227
 
 	ret = ulist_rbtree_insert(ulist, node);
 	ASSERT(!ret);
@@ -209,6 +228,36 @@ int ulist_add_merge(struct ulist *ulist, u64 val, u64 aux,
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * ulist_del - delete one node from ulist
+ * @ulist:	ulist to remove node from
+ * @val:	value to delete
+ * @aux:	aux to delete
+ *
+ * The deletion will only be done when *BOTH* val and aux matches.
+ * Return 0 for successful delete.
+ * Return > 0 for not found.
+ */
+int ulist_del(struct ulist *ulist, u64 val, u64 aux)
+{
+	struct ulist_node *node;
+
+	node = ulist_rbtree_search(ulist, val);
+	/* Not found */
+	if (!node)
+		return 1;
+
+	if (node->aux != aux)
+		return 1;
+
+	/* Found and delete */
+	ulist_rbtree_erase(ulist, node);
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /**
  * ulist_next - iterate ulist
  * @ulist:	ulist to iterate
@@ -237,6 +286,7 @@ struct ulist_node *ulist_next(struct ulist *ulist, struct ulist_iterator *uiter)
 		uiter->cur_list = uiter->cur_list->next;
 	} else {
 		uiter->cur_list = ulist->nodes.next;
+<<<<<<< HEAD
 #ifdef CONFIG_BTRFS_DEBUG
 		uiter->i = 0;
 #endif
@@ -247,5 +297,9 @@ struct ulist_node *ulist_next(struct ulist *ulist, struct ulist_iterator *uiter)
 	ASSERT(uiter->i >= 0 && uiter->i < ulist->nnodes);
 	uiter->i++;
 #endif
+=======
+	}
+	node = list_entry(uiter->cur_list, struct ulist_node, list);
+>>>>>>> v4.9.227
 	return node;
 }

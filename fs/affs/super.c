@@ -18,6 +18,10 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/writeback.h>
+<<<<<<< HEAD
+=======
+#include <linux/blkdev.h>
+>>>>>>> v4.9.227
 #include "affs.h"
 
 static int affs_statfs(struct dentry *dentry, struct kstatfs *buf);
@@ -31,7 +35,11 @@ affs_commit_super(struct super_block *sb, int wait)
 	struct affs_root_tail *tail = AFFS_ROOT_TAIL(sb, bh);
 
 	lock_buffer(bh);
+<<<<<<< HEAD
 	secs_to_datestamp(get_seconds(), &tail->disk_change);
+=======
+	secs_to_datestamp(ktime_get_real_seconds(), &tail->disk_change);
+>>>>>>> v4.9.227
 	affs_fix_checksum(sb, bh);
 	unlock_buffer(bh);
 
@@ -131,7 +139,11 @@ static int __init init_inodecache(void)
 	affs_inode_cachep = kmem_cache_create("affs_inode_cache",
 					     sizeof(struct affs_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> v4.9.227
 					     init_once);
 	if (affs_inode_cachep == NULL)
 		return -ENOMEM;
@@ -227,6 +239,7 @@ parse_options(char *options, kuid_t *uid, kgid_t *gid, int *mode, int *reserved,
 			if (match_octal(&args[0], &option))
 				return 0;
 			*mode = option & 0777;
+<<<<<<< HEAD
 			*mount_opts |= SF_SETMODE;
 			break;
 		case Opt_mufs:
@@ -234,15 +247,31 @@ parse_options(char *options, kuid_t *uid, kgid_t *gid, int *mode, int *reserved,
 			break;
 		case Opt_notruncate:
 			*mount_opts |= SF_NO_TRUNCATE;
+=======
+			affs_set_opt(*mount_opts, SF_SETMODE);
+			break;
+		case Opt_mufs:
+			affs_set_opt(*mount_opts, SF_MUFS);
+			break;
+		case Opt_notruncate:
+			affs_set_opt(*mount_opts, SF_NO_TRUNCATE);
+>>>>>>> v4.9.227
 			break;
 		case Opt_prefix:
 			*prefix = match_strdup(&args[0]);
 			if (!*prefix)
 				return 0;
+<<<<<<< HEAD
 			*mount_opts |= SF_PREFIX;
 			break;
 		case Opt_protect:
 			*mount_opts |= SF_IMMUTABLE;
+=======
+			affs_set_opt(*mount_opts, SF_PREFIX);
+			break;
+		case Opt_protect:
+			affs_set_opt(*mount_opts, SF_IMMUTABLE);
+>>>>>>> v4.9.227
 			break;
 		case Opt_reserved:
 			if (match_int(&args[0], reserved))
@@ -258,7 +287,11 @@ parse_options(char *options, kuid_t *uid, kgid_t *gid, int *mode, int *reserved,
 			*gid = make_kgid(current_user_ns(), option);
 			if (!gid_valid(*gid))
 				return 0;
+<<<<<<< HEAD
 			*mount_opts |= SF_SETGID;
+=======
+			affs_set_opt(*mount_opts, SF_SETGID);
+>>>>>>> v4.9.227
 			break;
 		case Opt_setuid:
 			if (match_int(&args[0], &option))
@@ -266,10 +299,17 @@ parse_options(char *options, kuid_t *uid, kgid_t *gid, int *mode, int *reserved,
 			*uid = make_kuid(current_user_ns(), option);
 			if (!uid_valid(*uid))
 				return 0;
+<<<<<<< HEAD
 			*mount_opts |= SF_SETUID;
 			break;
 		case Opt_verbose:
 			*mount_opts |= SF_VERBOSE;
+=======
+			affs_set_opt(*mount_opts, SF_SETUID);
+			break;
+		case Opt_verbose:
+			affs_set_opt(*mount_opts, SF_VERBOSE);
+>>>>>>> v4.9.227
 			break;
 		case Opt_volume: {
 			char *vol = match_strdup(&args[0]);
@@ -352,18 +392,31 @@ static int affs_fill_super(struct super_block *sb, void *data, int silent)
 	 * blocks, we will have to change it.
 	 */
 
+<<<<<<< HEAD
 	size = sb->s_bdev->bd_inode->i_size >> 9;
+=======
+	size = i_size_read(sb->s_bdev->bd_inode) >> 9;
+>>>>>>> v4.9.227
 	pr_debug("initial blocksize=%d, #blocks=%d\n", 512, size);
 
 	affs_set_blocksize(sb, PAGE_SIZE);
 	/* Try to find root block. Its location depends on the block size. */
 
+<<<<<<< HEAD
 	i = 512;
 	j = 4096;
+=======
+	i = bdev_logical_block_size(sb->s_bdev);
+	j = PAGE_SIZE;
+>>>>>>> v4.9.227
 	if (blocksize > 0) {
 		i = j = blocksize;
 		size = size / (blocksize / 512);
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	for (blocksize = i; blocksize <= j; blocksize <<= 1, size >>= 1) {
 		sbi->s_root_block = root_block;
 		if (root_block < 0)
@@ -432,6 +485,7 @@ got_root:
 		sb->s_flags |= MS_RDONLY;
 	}
 	switch (chksum) {
+<<<<<<< HEAD
 		case MUFS_FS:
 		case MUFS_INTLFFS:
 		case MUFS_DCFFS:
@@ -468,6 +522,45 @@ got_root:
 	}
 
 	if (mount_flags & SF_VERBOSE) {
+=======
+	case MUFS_FS:
+	case MUFS_INTLFFS:
+	case MUFS_DCFFS:
+		affs_set_opt(sbi->s_flags, SF_MUFS);
+		/* fall thru */
+	case FS_INTLFFS:
+	case FS_DCFFS:
+		affs_set_opt(sbi->s_flags, SF_INTL);
+		break;
+	case MUFS_FFS:
+		affs_set_opt(sbi->s_flags, SF_MUFS);
+		break;
+	case FS_FFS:
+		break;
+	case MUFS_OFS:
+		affs_set_opt(sbi->s_flags, SF_MUFS);
+		/* fall thru */
+	case FS_OFS:
+		affs_set_opt(sbi->s_flags, SF_OFS);
+		sb->s_flags |= MS_NOEXEC;
+		break;
+	case MUFS_DCOFS:
+	case MUFS_INTLOFS:
+		affs_set_opt(sbi->s_flags, SF_MUFS);
+	case FS_DCOFS:
+	case FS_INTLOFS:
+		affs_set_opt(sbi->s_flags, SF_INTL);
+		affs_set_opt(sbi->s_flags, SF_OFS);
+		sb->s_flags |= MS_NOEXEC;
+		break;
+	default:
+		pr_err("Unknown filesystem on device %s: %08X\n",
+		       sb->s_id, chksum);
+		return -EINVAL;
+	}
+
+	if (affs_test_opt(mount_flags, SF_VERBOSE)) {
+>>>>>>> v4.9.227
 		u8 len = AFFS_ROOT_TAIL(sb, root_bh)->disk_name[0];
 		pr_notice("Mounting volume \"%.*s\": Type=%.3s\\%c, Blocksize=%d\n",
 			len > 31 ? 31 : len,
@@ -478,7 +571,11 @@ got_root:
 	sb->s_flags |= MS_NODEV | MS_NOSUID;
 
 	sbi->s_data_blksize = sb->s_blocksize;
+<<<<<<< HEAD
 	if (sbi->s_flags & SF_OFS)
+=======
+	if (affs_test_opt(sbi->s_flags, SF_OFS))
+>>>>>>> v4.9.227
 		sbi->s_data_blksize -= 24;
 
 	tmp_flags = sb->s_flags;
@@ -493,7 +590,11 @@ got_root:
 	if (IS_ERR(root_inode))
 		return PTR_ERR(root_inode);
 
+<<<<<<< HEAD
 	if (AFFS_SB(sb)->s_flags & SF_INTL)
+=======
+	if (affs_test_opt(AFFS_SB(sb)->s_flags, SF_INTL))
+>>>>>>> v4.9.227
 		sb->s_d_op = &affs_intl_dentry_operations;
 	else
 		sb->s_d_op = &affs_dentry_operations;
@@ -520,10 +621,21 @@ affs_remount(struct super_block *sb, int *flags, char *data)
 	int			 root_block;
 	unsigned long		 mount_flags;
 	int			 res = 0;
+<<<<<<< HEAD
 	char			*new_opts = kstrdup(data, GFP_KERNEL);
 	char			 volume[32];
 	char			*prefix = NULL;
 
+=======
+	char			*new_opts;
+	char			 volume[32];
+	char			*prefix = NULL;
+
+	new_opts = kstrdup(data, GFP_KERNEL);
+	if (data && !new_opts)
+		return -ENOMEM;
+
+>>>>>>> v4.9.227
 	pr_debug("%s(flags=0x%x,opts=\"%s\")\n", __func__, *flags, data);
 
 	sync_filesystem(sb);
@@ -539,7 +651,12 @@ affs_remount(struct super_block *sb, int *flags, char *data)
 	}
 
 	flush_delayed_work(&sbi->sb_work);
+<<<<<<< HEAD
 	replace_mount_options(sb, new_opts);
+=======
+	if (new_opts)
+		replace_mount_options(sb, new_opts);
+>>>>>>> v4.9.227
 
 	sbi->s_flags = mount_flags;
 	sbi->s_mode  = mode;
@@ -584,7 +701,11 @@ affs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_bavail  = free;
 	buf->f_fsid.val[0] = (u32)id;
 	buf->f_fsid.val[1] = (u32)(id >> 32);
+<<<<<<< HEAD
 	buf->f_namelen = 30;
+=======
+	buf->f_namelen = AFFSNAMEMAX;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -602,6 +723,10 @@ static void affs_kill_sb(struct super_block *sb)
 		affs_free_bitmap(sb);
 		affs_brelse(sbi->s_root_bh);
 		kfree(sbi->s_prefix);
+<<<<<<< HEAD
+=======
+		mutex_destroy(&sbi->s_bmlock);
+>>>>>>> v4.9.227
 		kfree(sbi);
 	}
 }

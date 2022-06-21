@@ -86,7 +86,11 @@ static inline u32 ehci_read(void __iomem *base, u32 reg)
 
 static struct hc_driver __read_mostly ehci_omap_hc_driver;
 
+<<<<<<< HEAD
 static const struct ehci_driver_overrides ehci_omap_overrides __initdata = {
+=======
+static const struct ehci_driver_overrides ehci_omap_overrides __initconst = {
+>>>>>>> v4.9.227
 	.extra_priv_size = sizeof(struct omap_hcd),
 };
 

@@ -30,13 +30,20 @@ int ieee754dp_class(union ieee754dp x)
 	return xc;
 }
 
+<<<<<<< HEAD
 int ieee754dp_isnan(union ieee754dp x)
 {
 	return ieee754dp_class(x) >= IEEE754_CLASS_SNAN;
+=======
+static inline int ieee754dp_isnan(union ieee754dp x)
+{
+	return ieee754_class_nan(ieee754dp_class(x));
+>>>>>>> v4.9.227
 }
 
 static inline int ieee754dp_issnan(union ieee754dp x)
 {
+<<<<<<< HEAD
 	assert(ieee754dp_isnan(x));
 	return ((DPMANT(x) & DP_MBIT(DP_FBITS-1)) == DP_MBIT(DP_FBITS-1));
 }
@@ -56,6 +63,31 @@ union ieee754dp __cold ieee754dp_nanxcpt(union ieee754dp r)
 			return r;
 		else
 			return ieee754dp_indef();
+=======
+	int qbit;
+
+	assert(ieee754dp_isnan(x));
+	qbit = (DPMANT(x) & DP_MBIT(DP_FBITS - 1)) == DP_MBIT(DP_FBITS - 1);
+	return ieee754_csr.nan2008 ^ qbit;
+}
+
+
+/*
+ * Raise the Invalid Operation IEEE 754 exception
+ * and convert the signaling NaN supplied to a quiet NaN.
+ */
+union ieee754dp __cold ieee754dp_nanxcpt(union ieee754dp r)
+{
+	assert(ieee754dp_issnan(r));
+
+	ieee754_setcx(IEEE754_INVALID_OPERATION);
+	if (ieee754_csr.nan2008) {
+		DPMANT(r) |= DP_MBIT(DP_FBITS - 1);
+	} else {
+		DPMANT(r) &= ~DP_MBIT(DP_FBITS - 1);
+		if (!ieee754dp_isnan(r))
+			DPMANT(r) |= DP_MBIT(DP_FBITS - 2);
+>>>>>>> v4.9.227
 	}
 
 	return r;
@@ -96,7 +128,11 @@ union ieee754dp ieee754dp_format(int sn, int xe, u64 xm)
 {
 	assert(xm);		/* we don't gen exact zeros (probably should) */
 
+<<<<<<< HEAD
 	assert((xm >> (DP_FBITS + 1 + 3)) == 0);	/* no execess */
+=======
+	assert((xm >> (DP_FBITS + 1 + 3)) == 0);	/* no excess */
+>>>>>>> v4.9.227
 	assert(xm & (DP_HIDDEN_BIT << 3));
 
 	if (xe < DP_EMIN) {
@@ -164,7 +200,11 @@ union ieee754dp ieee754dp_format(int sn, int xe, u64 xm)
 	/* strip grs bits */
 	xm >>= 3;
 
+<<<<<<< HEAD
 	assert((xm >> (DP_FBITS + 1)) == 0);	/* no execess */
+=======
+	assert((xm >> (DP_FBITS + 1)) == 0);	/* no excess */
+>>>>>>> v4.9.227
 	assert(xe >= DP_EMIN);
 
 	if (xe > DP_EMAX) {
@@ -197,7 +237,11 @@ union ieee754dp ieee754dp_format(int sn, int xe, u64 xm)
 			ieee754_setcx(IEEE754_UNDERFLOW);
 		return builddp(sn, DP_EMIN - 1 + DP_EBIAS, xm);
 	} else {
+<<<<<<< HEAD
 		assert((xm >> (DP_FBITS + 1)) == 0);	/* no execess */
+=======
+		assert((xm >> (DP_FBITS + 1)) == 0);	/* no excess */
+>>>>>>> v4.9.227
 		assert(xm & DP_HIDDEN_BIT);
 
 		return builddp(sn, xe + DP_EBIAS, xm & ~DP_HIDDEN_BIT);

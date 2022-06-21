@@ -114,7 +114,10 @@ struct kingsun_cb {
 					   (usually 8) */
 
 	iobuff_t  	  rx_buff;	/* receive unwrap state machine */
+<<<<<<< HEAD
 	struct timeval	  rx_time;
+=======
+>>>>>>> v4.9.227
 	spinlock_t lock;
 	int receiving;
 
@@ -235,7 +238,10 @@ static void kingsun_rcv_irq(struct urb *urb)
 						  &kingsun->netdev->stats,
 						  &kingsun->rx_buff, bytes[i]);
 			}
+<<<<<<< HEAD
 			do_gettimeofday(&kingsun->rx_time);
+=======
+>>>>>>> v4.9.227
 			kingsun->receiving =
 				(kingsun->rx_buff.state != OUTSIDE_FRAME)
 				? 1 : 0;
@@ -273,7 +279,10 @@ static int kingsun_net_open(struct net_device *netdev)
 
 	skb_reserve(kingsun->rx_buff.skb, 1);
 	kingsun->rx_buff.head = kingsun->rx_buff.skb->data;
+<<<<<<< HEAD
 	do_gettimeofday(&kingsun->rx_time);
+=======
+>>>>>>> v4.9.227
 
 	kingsun->rx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!kingsun->rx_urb)

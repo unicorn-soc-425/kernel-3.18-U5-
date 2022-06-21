@@ -26,6 +26,10 @@
 #include <linux/dm9000.h>
 #include <linux/mtd/physmap.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/machine.h>
+>>>>>>> v4.9.227
 #include <linux/i2c/pxa-i2c.h>
 
 #include <asm/types.h>
@@ -40,7 +44,11 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/flash.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
+=======
+#include "pxa27x.h"
+>>>>>>> v4.9.227
 #include <mach/trizeps4.h>
 #include <mach/audio.h>
 #include <linux/platform_data/video-pxafb.h>
@@ -534,6 +542,11 @@ static void __init trizeps4_init(void)
 
 	BCR_writew(trizeps_conxs_bcr);
 	board_backlight_power(1);
+<<<<<<< HEAD
+=======
+
+	regulator_has_full_constraints();
+>>>>>>> v4.9.227
 }
 
 static void __init trizeps4_map_io(void)

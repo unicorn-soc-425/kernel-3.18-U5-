@@ -523,7 +523,11 @@ static void radeon_pm_enable_dynamic_mode(struct radeonfb_info *rinfo)
 	OUTPLL(pllVCLK_ECP_CNTL, tmp);
 
 	/* X doesn't do that ... hrm, we do on mobility && Macs */
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
+=======
+#ifdef CONFIG_PPC
+>>>>>>> v4.9.227
 	if (rinfo->is_mobility) {
 		tmp  = INPLL(pllMCLK_CNTL);
 		tmp &= ~(MCLK_CNTL__FORCE_MCLKA |
@@ -541,7 +545,11 @@ static void radeon_pm_enable_dynamic_mode(struct radeonfb_info *rinfo)
 		OUTPLL(pllMCLK_MISC, tmp);
 		radeon_msleep(15);
 	}
+<<<<<<< HEAD
 #endif /* CONFIG_PPC_OF */
+=======
+#endif /* CONFIG_PPC */
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_PM
@@ -1288,7 +1296,11 @@ static void radeon_pm_full_reset_sdram(struct radeonfb_info *rinfo)
        		radeon_pm_enable_dll_m10(rinfo);
 		radeon_pm_yclk_mclk_sync_m10(rinfo);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
+=======
+#ifdef CONFIG_PPC
+>>>>>>> v4.9.227
 		if (rinfo->of_node != NULL) {
 			int size;
 
@@ -1298,7 +1310,11 @@ static void radeon_pm_full_reset_sdram(struct radeonfb_info *rinfo)
 			else
 				mrtable = default_mrtable;
 		}
+<<<<<<< HEAD
 #endif /* CONFIG_PPC_OF */
+=======
+#endif /* CONFIG_PPC */
+>>>>>>> v4.9.227
 
 		/* Program the SDRAM */
 		sdram_mode_reg = mrtable[0];
@@ -1943,7 +1959,11 @@ static void radeon_reinitialize_M10(struct radeonfb_info *rinfo)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
+=======
+#ifdef CONFIG_PPC
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC_PMAC
 static void radeon_pm_m9p_reconfigure_mc(struct radeonfb_info *rinfo)
 {
@@ -2512,7 +2532,11 @@ static void radeon_reinitialize_QW(struct radeonfb_info *rinfo)
 }
 #endif /* 0 */
 
+<<<<<<< HEAD
 #endif /* CONFIG_PPC_OF */
+=======
+#endif /* CONFIG_PPC */
+>>>>>>> v4.9.227
 
 static void radeonfb_whack_power_state(struct radeonfb_info *rinfo, pci_power_t state)
 {
@@ -2793,7 +2817,11 @@ int radeonfb_pci_resume(struct pci_dev *pdev)
 	return rc;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF__disabled
+=======
+#ifdef CONFIG_PPC__disabled
+>>>>>>> v4.9.227
 static void radeonfb_early_resume(void *data)
 {
         struct radeonfb_info *rinfo = data;
@@ -2803,7 +2831,11 @@ static void radeonfb_early_resume(void *data)
 	radeonfb_pci_resume(rinfo->pdev);
 	rinfo->no_schedule = 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PPC_OF */
+=======
+#endif /* CONFIG_PPC */
+>>>>>>> v4.9.227
 
 #endif /* CONFIG_PM */
 

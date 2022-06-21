@@ -56,6 +56,10 @@ enum carl9170_cmd_oids {
 	CARL9170_CMD_RX_FILTER		= 0x07,
 	CARL9170_CMD_WOL		= 0x08,
 	CARL9170_CMD_TALLY		= 0x09,
+<<<<<<< HEAD
+=======
+	CARL9170_CMD_WREGB		= 0x0a,
+>>>>>>> v4.9.227
 
 	/* CAM */
 	CARL9170_CMD_EKEY		= 0x10,
@@ -123,6 +127,15 @@ struct carl9170_write_reg {
 	} regs[0] __packed;
 } __packed;
 
+<<<<<<< HEAD
+=======
+struct carl9170_write_reg_byte {
+	__le32	addr;
+	__le32  count;
+	u8	val[0];
+} __packed;
+
+>>>>>>> v4.9.227
 #define	CARL9170FW_PHY_HT_ENABLE		0x4
 #define	CARL9170FW_PHY_HT_DYN2040		0x8
 #define	CARL9170FW_PHY_HT_EXT_CHAN_OFF		0x3
@@ -226,6 +239,10 @@ struct carl9170_cmd {
 		struct carl9170_u32_list	echo;
 		struct carl9170_reg_list	rreg;
 		struct carl9170_write_reg	wreg;
+<<<<<<< HEAD
+=======
+		struct carl9170_write_reg_byte	wregb;
+>>>>>>> v4.9.227
 		struct carl9170_rf_init		rf_init;
 		struct carl9170_psm		psm;
 		struct carl9170_wol_cmd		wol;

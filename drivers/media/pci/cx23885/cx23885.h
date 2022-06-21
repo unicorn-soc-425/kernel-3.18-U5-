@@ -30,7 +30,11 @@
 #include <media/rc-core.h>
 
 #include "cx23885-reg.h"
+<<<<<<< HEAD
 #include "media/cx2341x.h"
+=======
+#include "media/drv-intf/cx2341x.h"
+>>>>>>> v4.9.227
 
 #include <linux/mutex.h>
 
@@ -93,7 +97,22 @@
 #define CX23885_BOARD_HAUPPAUGE_IMPACTVCBE     43
 #define CX23885_BOARD_DVICO_FUSIONHDTV_DVB_T_DUAL_EXP2 44
 #define CX23885_BOARD_DVBSKY_T9580             45
+<<<<<<< HEAD
 #define CX23885_BOARD_HAUPPAUGE_STARBURST      52
+=======
+#define CX23885_BOARD_DVBSKY_T980C             46
+#define CX23885_BOARD_DVBSKY_S950C             47
+#define CX23885_BOARD_TT_CT2_4500_CI           48
+#define CX23885_BOARD_DVBSKY_S950              49
+#define CX23885_BOARD_DVBSKY_S952              50
+#define CX23885_BOARD_DVBSKY_T982              51
+#define CX23885_BOARD_HAUPPAUGE_HVR5525        52
+#define CX23885_BOARD_HAUPPAUGE_STARBURST      53
+#define CX23885_BOARD_VIEWCAST_260E            54
+#define CX23885_BOARD_VIEWCAST_460E            55
+#define CX23885_BOARD_HAUPPAUGE_QUADHD_DVB     56
+#define CX23885_BOARD_HAUPPAUGE_QUADHD_ATSC    57
+>>>>>>> v4.9.227
 
 #define GPIO_0 0x00000001
 #define GPIO_1 0x00000002
@@ -163,7 +182,11 @@ struct cx23885_riscmem {
 /* buffer for one video frame */
 struct cx23885_buffer {
 	/* common v4l buffer stuff -- must be first */
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head queue;
 
 	/* cx23885 specific */
@@ -246,7 +269,11 @@ struct cx23885_dmaqueue {
 struct cx23885_tsport {
 	struct cx23885_dev *dev;
 
+<<<<<<< HEAD
 	int                        nr;
+=======
+	unsigned                   nr;
+>>>>>>> v4.9.227
 	int                        sram_chno;
 
 	struct vb2_dvb_frontends   frontends;
@@ -297,10 +324,19 @@ struct cx23885_tsport {
 
 	struct i2c_client *i2c_client_demod;
 	struct i2c_client *i2c_client_tuner;
+<<<<<<< HEAD
 
 	int (*set_frontend)(struct dvb_frontend *fe);
 	int (*fe_set_voltage)(struct dvb_frontend *fe,
 				fe_sec_voltage_t voltage);
+=======
+	struct i2c_client *i2c_client_sec;
+	struct i2c_client *i2c_client_ci;
+
+	int (*set_frontend)(struct dvb_frontend *fe);
+	int (*fe_set_voltage)(struct dvb_frontend *fe,
+			      enum fe_sec_voltage voltage);
+>>>>>>> v4.9.227
 };
 
 struct cx23885_kernel_ir {
@@ -617,11 +653,14 @@ extern int cx23885_risc_databuffer(struct pci_dev *pci,
 /* ----------------------------------------------------------- */
 /* tv norms                                                    */
 
+<<<<<<< HEAD
 static inline unsigned int norm_maxw(v4l2_std_id norm)
 {
 	return (norm & V4L2_STD_525_60) ? 720 : 768;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned int norm_maxh(v4l2_std_id norm)
 {
 	return (norm & V4L2_STD_525_60) ? 480 : 576;

@@ -9,7 +9,10 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -42,11 +45,20 @@ static unsigned long clk_frac_recalc_rate(struct clk_hw *hw,
 {
 	struct clk_frac *frac = to_clk_frac(hw);
 	u32 div;
+<<<<<<< HEAD
+=======
+	u64 tmp_rate;
+>>>>>>> v4.9.227
 
 	div = readl_relaxed(frac->reg) >> frac->shift;
 	div &= (1 << frac->width) - 1;
 
+<<<<<<< HEAD
 	return (parent_rate >> frac->width) * div;
+=======
+	tmp_rate = (u64)parent_rate * div;
+	return tmp_rate >> frac->width;
+>>>>>>> v4.9.227
 }
 
 static long clk_frac_round_rate(struct clk_hw *hw, unsigned long rate,
@@ -55,7 +67,11 @@ static long clk_frac_round_rate(struct clk_hw *hw, unsigned long rate,
 	struct clk_frac *frac = to_clk_frac(hw);
 	unsigned long parent_rate = *prate;
 	u32 div;
+<<<<<<< HEAD
 	u64 tmp;
+=======
+	u64 tmp, tmp_rate, result;
+>>>>>>> v4.9.227
 
 	if (rate > parent_rate)
 		return -EINVAL;
@@ -68,7 +84,15 @@ static long clk_frac_round_rate(struct clk_hw *hw, unsigned long rate,
 	if (!div)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	return (parent_rate >> frac->width) * div;
+=======
+	tmp_rate = (u64)parent_rate * div;
+	result = tmp_rate >> frac->width;
+	if ((result << frac->width) < tmp_rate)
+		result += 1;
+	return result;
+>>>>>>> v4.9.227
 }
 
 static int clk_frac_set_rate(struct clk_hw *hw, unsigned long rate,

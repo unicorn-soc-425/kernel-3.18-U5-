@@ -85,14 +85,29 @@ struct nfsd_net {
 	struct list_head close_lru;
 	struct list_head del_recall_lru;
 
+<<<<<<< HEAD
+=======
+	/* protected by blocked_locks_lock */
+	struct list_head blocked_locks_lru;
+
+>>>>>>> v4.9.227
 	struct delayed_work laundromat_work;
 
 	/* client_lock protects the client lru list and session hash table */
 	spinlock_t client_lock;
 
+<<<<<<< HEAD
 	struct file *rec_file;
 	bool in_grace;
 	struct nfsd4_client_tracking_ops *client_tracking_ops;
+=======
+	/* protects blocked_locks_lru */
+	spinlock_t blocked_locks_lock;
+
+	struct file *rec_file;
+	bool in_grace;
+	const struct nfsd4_client_tracking_ops *client_tracking_ops;
+>>>>>>> v4.9.227
 
 	time_t nfsd4_lease;
 	time_t nfsd4_grace;
@@ -110,6 +125,10 @@ struct nfsd_net {
 	unsigned int max_connections;
 
 	u32 clientid_counter;
+<<<<<<< HEAD
+=======
+	u32 clverifier_counter;
+>>>>>>> v4.9.227
 
 	struct svc_serv *nfsd_serv;
 };

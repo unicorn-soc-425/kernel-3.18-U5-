@@ -37,6 +37,7 @@ static inline __sum16 csum_fold(__wsum sum)
 	return (~sum) >> 16;
 }
 
+<<<<<<< HEAD
 static inline __wsum csum_tcpudp_nofold(unsigned long saddr,
 					unsigned long daddr,
 					unsigned short len,
@@ -47,6 +48,13 @@ static inline __wsum csum_tcpudp_nofold(unsigned long saddr,
 
 	tmp = (__wsum) ntohs(len) << 16;
 	tmp += (__wsum) proto << 8;
+=======
+static inline __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
+					__u32 len, __u8 proto,
+					__wsum sum)
+{
+	__wsum tmp = (__wsum)((len + proto) << 8);
+>>>>>>> v4.9.227
 
 	asm(
 		"	add	%1,%0		\n"
@@ -64,10 +72,15 @@ static inline __wsum csum_tcpudp_nofold(unsigned long saddr,
  * computes the checksum of the TCP/UDP pseudo-header
  * returns a 16-bit checksum, already complemented
  */
+<<<<<<< HEAD
 static inline __sum16 csum_tcpudp_magic(unsigned long saddr,
 					unsigned long daddr,
 					unsigned short len,
 					unsigned short proto,
+=======
+static inline __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
+					__u32 len, __u8 proto,
+>>>>>>> v4.9.227
 					__wsum sum)
 {
 	return csum_fold(csum_tcpudp_nofold(saddr, daddr, len, proto, sum));

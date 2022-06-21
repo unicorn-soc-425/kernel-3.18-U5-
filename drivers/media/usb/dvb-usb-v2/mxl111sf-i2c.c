@@ -320,7 +320,11 @@ fail:
 static int mxl111sf_i2c_send_data(struct mxl111sf_state *state,
 				  u8 index, u8 *wdata)
 {
+<<<<<<< HEAD
 	int ret = mxl111sf_ctrl_msg(state->d, wdata[0],
+=======
+	int ret = mxl111sf_ctrl_msg(state, wdata[0],
+>>>>>>> v4.9.227
 				    &wdata[1], 25, NULL, 0);
 	mxl_fail(ret);
 
@@ -330,7 +334,11 @@ static int mxl111sf_i2c_send_data(struct mxl111sf_state *state,
 static int mxl111sf_i2c_get_data(struct mxl111sf_state *state,
 				 u8 index, u8 *wdata, u8 *rdata)
 {
+<<<<<<< HEAD
 	int ret = mxl111sf_ctrl_msg(state->d, wdata[0],
+=======
+	int ret = mxl111sf_ctrl_msg(state, wdata[0],
+>>>>>>> v4.9.227
 				    &wdata[1], 25, rdata, 24);
 	mxl_fail(ret);
 
@@ -842,9 +850,12 @@ int mxl111sf_i2c_xfer(struct i2c_adapter *adap,
 
 	return i == num ? num : -EREMOTEIO;
 }
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

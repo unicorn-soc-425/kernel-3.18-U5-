@@ -293,8 +293,13 @@ err_alloc:
 }
 
 static int create_constraints(struct powercap_zone *power_zone,
+<<<<<<< HEAD
 				int nr_constraints,
 				struct powercap_zone_constraint_ops *const_ops)
+=======
+			int nr_constraints,
+			const struct powercap_zone_constraint_ops *const_ops)
+>>>>>>> v4.9.227
 {
 	int i;
 	int ret = 0;
@@ -492,6 +497,7 @@ static struct class powercap_class = {
 };
 
 struct powercap_zone *powercap_register_zone(
+<<<<<<< HEAD
 				struct powercap_zone *power_zone,
 				struct powercap_control_type *control_type,
 				const char *name,
@@ -499,6 +505,15 @@ struct powercap_zone *powercap_register_zone(
 				const struct powercap_zone_ops *ops,
 				int nr_constraints,
 				struct powercap_zone_constraint_ops *const_ops)
+=======
+			struct powercap_zone *power_zone,
+			struct powercap_control_type *control_type,
+			const char *name,
+			struct powercap_zone *parent,
+			const struct powercap_zone_ops *ops,
+			int nr_constraints,
+			const struct powercap_zone_constraint_ops *const_ops)
+>>>>>>> v4.9.227
 {
 	int result;
 	int nr_attrs;

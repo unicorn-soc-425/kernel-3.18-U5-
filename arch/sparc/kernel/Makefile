@@ -86,7 +86,11 @@ obj-y                     += auxio_$(BITS).o
 obj-$(CONFIG_SUN_PM)      += apc.o pmc.o
 
 obj-$(CONFIG_MODULES)     += module.o
+<<<<<<< HEAD
 obj-$(CONFIG_MODULES)     += sparc_ksyms_$(BITS).o
+=======
+obj-$(CONFIG_MODULES)     += sparc_ksyms.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_SPARC_LED)   += led.o
 obj-$(CONFIG_KGDB)        += kgdb_$(BITS).o
 

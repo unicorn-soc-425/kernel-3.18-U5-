@@ -435,7 +435,13 @@ static int adis16136_initial_setup(struct iio_dev *indio_dev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	sscanf(indio_dev->name, "adis%u\n", &device_id);
+=======
+	ret = sscanf(indio_dev->name, "adis%u\n", &device_id);
+	if (ret != 1)
+		return -EINVAL;
+>>>>>>> v4.9.227
 
 	if (prod_id != device_id)
 		dev_warn(&indio_dev->dev, "Device ID(%u) and product ID(%u) do not match.",
@@ -473,6 +479,10 @@ enum adis16136_id {
 	ID_ADIS16133,
 	ID_ADIS16135,
 	ID_ADIS16136,
+<<<<<<< HEAD
+=======
+	ID_ADIS16137,
+>>>>>>> v4.9.227
 };
 
 static const struct adis16136_chip_info adis16136_chip_info[] = {
@@ -488,6 +498,13 @@ static const struct adis16136_chip_info adis16136_chip_info[] = {
 		.precision = IIO_DEGREE_TO_RAD(450),
 		.fullscale = 24623,
 	},
+<<<<<<< HEAD
+=======
+	[ID_ADIS16137] = {
+		.precision = IIO_DEGREE_TO_RAD(1000),
+		.fullscale = 24609,
+	},
+>>>>>>> v4.9.227
 };
 
 static int adis16136_probe(struct spi_device *spi)
@@ -557,6 +574,10 @@ static const struct spi_device_id adis16136_ids[] = {
 	{ "adis16133", ID_ADIS16133 },
 	{ "adis16135", ID_ADIS16135 },
 	{ "adis16136", ID_ADIS16136 },
+<<<<<<< HEAD
+=======
+	{ "adis16137", ID_ADIS16137 },
+>>>>>>> v4.9.227
 	{ }
 };
 MODULE_DEVICE_TABLE(spi, adis16136_ids);
@@ -564,7 +585,10 @@ MODULE_DEVICE_TABLE(spi, adis16136_ids);
 static struct spi_driver adis16136_driver = {
 	.driver = {
 		.name = "adis16136",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.id_table = adis16136_ids,
 	.probe = adis16136_probe,

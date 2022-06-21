@@ -19,11 +19,24 @@ extern struct phy_device *of_phy_connect(struct net_device *dev,
 					 struct device_node *phy_np,
 					 void (*hndlr)(struct net_device *),
 					 u32 flags, phy_interface_t iface);
+<<<<<<< HEAD
+=======
+extern struct phy_device *
+of_phy_get_and_connect(struct net_device *dev, struct device_node *np,
+		       void (*hndlr)(struct net_device *));
+>>>>>>> v4.9.227
 struct phy_device *of_phy_attach(struct net_device *dev,
 				 struct device_node *phy_np, u32 flags,
 				 phy_interface_t iface);
 
 extern struct mii_bus *of_mdio_find_bus(struct device_node *mdio_np);
+<<<<<<< HEAD
+=======
+extern int of_mdio_parse_addr(struct device *dev, const struct device_node *np);
+extern int of_phy_register_fixed_link(struct device_node *np);
+extern void of_phy_deregister_fixed_link(struct device_node *np);
+extern bool of_phy_is_fixed_link(struct device_node *np);
+>>>>>>> v4.9.227
 
 #else /* CONFIG_OF */
 static inline int of_mdiobus_register(struct mii_bus *mdio, struct device_node *np)
@@ -49,6 +62,16 @@ static inline struct phy_device *of_phy_connect(struct net_device *dev,
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static inline struct phy_device *
+of_phy_get_and_connect(struct net_device *dev, struct device_node *np,
+		       void (*hndlr)(struct net_device *))
+{
+	return NULL;
+}
+
+>>>>>>> v4.9.227
 static inline struct phy_device *of_phy_attach(struct net_device *dev,
 					       struct device_node *phy_np,
 					       u32 flags, phy_interface_t iface)
@@ -60,16 +83,31 @@ static inline struct mii_bus *of_mdio_find_bus(struct device_node *mdio_np)
 {
 	return NULL;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_OF */
 
 #if defined(CONFIG_OF) && defined(CONFIG_FIXED_PHY)
 extern int of_phy_register_fixed_link(struct device_node *np);
 extern bool of_phy_is_fixed_link(struct device_node *np);
 #else
+=======
+
+static inline int of_mdio_parse_addr(struct device *dev,
+				     const struct device_node *np)
+{
+	return -ENOSYS;
+}
+>>>>>>> v4.9.227
 static inline int of_phy_register_fixed_link(struct device_node *np)
 {
 	return -ENOSYS;
 }
+<<<<<<< HEAD
+=======
+static inline void of_phy_deregister_fixed_link(struct device_node *np)
+{
+}
+>>>>>>> v4.9.227
 static inline bool of_phy_is_fixed_link(struct device_node *np)
 {
 	return false;

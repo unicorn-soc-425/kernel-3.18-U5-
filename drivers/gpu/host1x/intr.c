@@ -122,18 +122,30 @@ static void action_submit_complete(struct host1x_waitlist *waiter)
 static void action_wakeup(struct host1x_waitlist *waiter)
 {
 	wait_queue_head_t *wq = waiter->data;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	wake_up(wq);
 }
 
 static void action_wakeup_interruptible(struct host1x_waitlist *waiter)
 {
 	wait_queue_head_t *wq = waiter->data;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	wake_up_interruptible(wq);
 }
 
 typedef void (*action_handler)(struct host1x_waitlist *waiter);
 
+<<<<<<< HEAD
 static action_handler action_handlers[HOST1X_INTR_ACTION_COUNT] = {
+=======
+static const action_handler action_handlers[HOST1X_INTR_ACTION_COUNT] = {
+>>>>>>> v4.9.227
 	action_submit_complete,
 	action_wakeup,
 	action_wakeup_interruptible,
@@ -209,7 +221,11 @@ static void syncpt_thresh_work(struct work_struct *work)
 				host1x_syncpt_load(host->syncpt + id));
 }
 
+<<<<<<< HEAD
 int host1x_intr_add_action(struct host1x *host, u32 id, u32 thresh,
+=======
+int host1x_intr_add_action(struct host1x *host, unsigned int id, u32 thresh,
+>>>>>>> v4.9.227
 			   enum host1x_intr_action action, void *data,
 			   struct host1x_waitlist *waiter, void **ref)
 {
@@ -254,7 +270,11 @@ int host1x_intr_add_action(struct host1x *host, u32 id, u32 thresh,
 	return 0;
 }
 
+<<<<<<< HEAD
 void host1x_intr_put_ref(struct host1x *host, u32 id, void *ref)
+=======
+void host1x_intr_put_ref(struct host1x *host, unsigned int id, void *ref)
+>>>>>>> v4.9.227
 {
 	struct host1x_waitlist *waiter = ref;
 	struct host1x_syncpt *syncpt;
@@ -277,9 +297,12 @@ int host1x_intr_init(struct host1x *host, unsigned int irq_sync)
 
 	mutex_init(&host->intr_mutex);
 	host->intr_syncpt_irq = irq_sync;
+<<<<<<< HEAD
 	host->intr_wq = create_workqueue("host_syncpt");
 	if (!host->intr_wq)
 		return -ENOMEM;
+=======
+>>>>>>> v4.9.227
 
 	for (id = 0; id < nb_pts; ++id) {
 		struct host1x_syncpt *syncpt = host->syncpt + id;
@@ -288,7 +311,11 @@ int host1x_intr_init(struct host1x *host, unsigned int irq_sync)
 		INIT_LIST_HEAD(&syncpt->intr.wait_head);
 		snprintf(syncpt->intr.thresh_irq_name,
 			 sizeof(syncpt->intr.thresh_irq_name),
+<<<<<<< HEAD
 			 "host1x_sp_%02d", id);
+=======
+			 "host1x_sp_%02u", id);
+>>>>>>> v4.9.227
 	}
 
 	host1x_intr_start(host);
@@ -299,7 +326,10 @@ int host1x_intr_init(struct host1x *host, unsigned int irq_sync)
 void host1x_intr_deinit(struct host1x *host)
 {
 	host1x_intr_stop(host);
+<<<<<<< HEAD
 	destroy_workqueue(host->intr_wq);
+=======
+>>>>>>> v4.9.227
 }
 
 void host1x_intr_start(struct host1x *host)
@@ -342,7 +372,11 @@ void host1x_intr_stop(struct host1x *host)
 		if (!list_empty(&syncpt[id].intr.wait_head)) {
 			/* output diagnostics */
 			mutex_unlock(&host->intr_mutex);
+<<<<<<< HEAD
 			pr_warn("%s cannot stop syncpt intr id=%d\n",
+=======
+			pr_warn("%s cannot stop syncpt intr id=%u\n",
+>>>>>>> v4.9.227
 				__func__, id);
 			return;
 		}

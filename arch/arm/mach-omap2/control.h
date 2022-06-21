@@ -53,6 +53,10 @@
 #define OMAP343X_CONTROL_GENERAL_WKUP	0xa60
 
 /* TI81XX spefic control submodules */
+<<<<<<< HEAD
+=======
+#define TI81XX_CONTROL_DEVBOOT		0x040
+>>>>>>> v4.9.227
 #define TI81XX_CONTROL_DEVCONF		0x600
 
 /* Control register offsets - read/write with omap_ctrl_{read,write}{bwl}() */
@@ -230,6 +234,12 @@
 #define OMAP343X_PADCONF_ETK_D15	OMAP343X_PADCONF_ETK(17)
 
 /* 34xx GENERAL_WKUP register offsets */
+<<<<<<< HEAD
+=======
+#define OMAP34XX_CONTROL_WKUP_CTRL	(OMAP343X_CONTROL_GENERAL_WKUP - 0x4)
+#define OMAP36XX_GPIO_IO_PWRDNZ		BIT(6)
+
+>>>>>>> v4.9.227
 #define OMAP343X_CONTROL_WKUP_DEBOBSMUX(i) (OMAP343X_CONTROL_GENERAL_WKUP + \
 						0x008 + (i))
 #define OMAP343X_CONTROL_WKUP_DEBOBS0 (OMAP343X_CONTROL_GENERAL_WKUP + 0x008)
@@ -246,6 +256,12 @@
 #define OMAP3_PADCONF_SAD2D_MSTANDBY   0x250
 #define OMAP3_PADCONF_SAD2D_IDLEACK    0x254
 
+<<<<<<< HEAD
+=======
+/* TI81XX CONTROL_DEVBOOT register offsets */
+#define TI81XX_CONTROL_STATUS		(TI81XX_CONTROL_DEVBOOT + 0x000)
+
+>>>>>>> v4.9.227
 /* TI81XX CONTROL_DEVCONF register offsets */
 #define TI81XX_CONTROL_DEVICE_ID	(TI81XX_CONTROL_DEVCONF + 0x000)
 
@@ -286,6 +302,13 @@
 #define OMAP5XXX_CONTROL_STATUS                0x134
 #define OMAP5_DEVICETYPE_MASK          (0x7 << 6)
 
+<<<<<<< HEAD
+=======
+/* DRA7XX CONTROL CORE BOOTSTRAP */
+#define DRA7_CTRL_CORE_BOOTSTRAP	0x6c4
+#define DRA7_SPEEDSELECT_MASK		(0x3 << 8)
+
+>>>>>>> v4.9.227
 /*
  * REVISIT: This list of registers is not comprehensive - there are more
  * that should be added.
@@ -432,6 +455,7 @@
 
 #ifndef __ASSEMBLY__
 #ifdef CONFIG_ARCH_OMAP2PLUS
+<<<<<<< HEAD
 extern void __iomem *omap_ctrl_base_get(void);
 extern u8 omap_ctrl_readb(u16 offset);
 extern u16 omap_ctrl_readw(u16 offset);
@@ -441,6 +465,14 @@ extern void omap_ctrl_writeb(u8 val, u16 offset);
 extern void omap_ctrl_writew(u16 val, u16 offset);
 extern void omap_ctrl_writel(u32 val, u16 offset);
 extern void omap4_ctrl_pad_writel(u32 val, u16 offset);
+=======
+extern u8 omap_ctrl_readb(u16 offset);
+extern u16 omap_ctrl_readw(u16 offset);
+extern u32 omap_ctrl_readl(u16 offset);
+extern void omap_ctrl_writeb(u8 val, u16 offset);
+extern void omap_ctrl_writew(u16 val, u16 offset);
+extern void omap_ctrl_writel(u32 val, u16 offset);
+>>>>>>> v4.9.227
 
 extern void omap3_save_scratchpad_contents(void);
 extern void omap3_clear_scratchpad_contents(void);
@@ -456,10 +488,18 @@ extern void omap_ctrl_write_dsp_boot_mode(u8 bootmode);
 extern void omap3630_ctrl_disable_rta(void);
 extern int omap3_ctrl_save_padconf(void);
 void omap3_ctrl_init(void);
+<<<<<<< HEAD
 extern void omap2_set_globals_control(void __iomem *ctrl,
 				      void __iomem *ctrl_pad);
 #else
 #define omap_ctrl_base_get()		0
+=======
+int omap2_control_base_init(void);
+int omap_control_init(void);
+void omap2_set_globals_control(void __iomem *ctrl);
+void __init omap3_control_legacy_iomap_init(void);
+#else
+>>>>>>> v4.9.227
 #define omap_ctrl_readb(x)		0
 #define omap_ctrl_readw(x)		0
 #define omap_ctrl_readl(x)		0

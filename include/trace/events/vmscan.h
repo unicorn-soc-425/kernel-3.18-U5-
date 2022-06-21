@@ -8,7 +8,11 @@
 #include <linux/tracepoint.h>
 #include <linux/mm.h>
 #include <linux/memcontrol.h>
+<<<<<<< HEAD
 #include <trace/events/gfpflags.h>
+=======
+#include <trace/events/mmflags.h>
+>>>>>>> v4.9.227
 
 #define RECLAIM_WB_ANON		0x0001u
 #define RECLAIM_WB_FILE		0x0002u
@@ -55,21 +59,39 @@ TRACE_EVENT(mm_vmscan_kswapd_sleep,
 
 TRACE_EVENT(mm_vmscan_kswapd_wake,
 
+<<<<<<< HEAD
 	TP_PROTO(int nid, int order),
 
 	TP_ARGS(nid, order),
 
 	TP_STRUCT__entry(
 		__field(	int,	nid	)
+=======
+	TP_PROTO(int nid, int zid, int order),
+
+	TP_ARGS(nid, zid, order),
+
+	TP_STRUCT__entry(
+		__field(	int,	nid	)
+		__field(	int,	zid	)
+>>>>>>> v4.9.227
 		__field(	int,	order	)
 	),
 
 	TP_fast_assign(
 		__entry->nid	= nid;
+<<<<<<< HEAD
 		__entry->order	= order;
 	),
 
 	TP_printk("nid=%d order=%d", __entry->nid, __entry->order)
+=======
+		__entry->zid    = zid;
+		__entry->order	= order;
+	),
+
+	TP_printk("nid=%d zid=%d order=%d", __entry->nid, __entry->zid, __entry->order)
+>>>>>>> v4.9.227
 );
 
 TRACE_EVENT(mm_vmscan_wakeup_kswapd,
@@ -98,47 +120,86 @@ TRACE_EVENT(mm_vmscan_wakeup_kswapd,
 
 DECLARE_EVENT_CLASS(mm_vmscan_direct_reclaim_begin_template,
 
+<<<<<<< HEAD
 	TP_PROTO(int order, int may_writepage, gfp_t gfp_flags),
 
 	TP_ARGS(order, may_writepage, gfp_flags),
+=======
+	TP_PROTO(int order, int may_writepage, gfp_t gfp_flags, int classzone_idx),
+
+	TP_ARGS(order, may_writepage, gfp_flags, classzone_idx),
+>>>>>>> v4.9.227
 
 	TP_STRUCT__entry(
 		__field(	int,	order		)
 		__field(	int,	may_writepage	)
 		__field(	gfp_t,	gfp_flags	)
+<<<<<<< HEAD
+=======
+		__field(	int,	classzone_idx	)
+>>>>>>> v4.9.227
 	),
 
 	TP_fast_assign(
 		__entry->order		= order;
 		__entry->may_writepage	= may_writepage;
 		__entry->gfp_flags	= gfp_flags;
+<<<<<<< HEAD
 	),
 
 	TP_printk("order=%d may_writepage=%d gfp_flags=%s",
 		__entry->order,
 		__entry->may_writepage,
 		show_gfp_flags(__entry->gfp_flags))
+=======
+		__entry->classzone_idx	= classzone_idx;
+	),
+
+	TP_printk("order=%d may_writepage=%d gfp_flags=%s classzone_idx=%d",
+		__entry->order,
+		__entry->may_writepage,
+		show_gfp_flags(__entry->gfp_flags),
+		__entry->classzone_idx)
+>>>>>>> v4.9.227
 );
 
 DEFINE_EVENT(mm_vmscan_direct_reclaim_begin_template, mm_vmscan_direct_reclaim_begin,
 
+<<<<<<< HEAD
 	TP_PROTO(int order, int may_writepage, gfp_t gfp_flags),
 
 	TP_ARGS(order, may_writepage, gfp_flags)
+=======
+	TP_PROTO(int order, int may_writepage, gfp_t gfp_flags, int classzone_idx),
+
+	TP_ARGS(order, may_writepage, gfp_flags, classzone_idx)
+>>>>>>> v4.9.227
 );
 
 DEFINE_EVENT(mm_vmscan_direct_reclaim_begin_template, mm_vmscan_memcg_reclaim_begin,
 
+<<<<<<< HEAD
 	TP_PROTO(int order, int may_writepage, gfp_t gfp_flags),
 
 	TP_ARGS(order, may_writepage, gfp_flags)
+=======
+	TP_PROTO(int order, int may_writepage, gfp_t gfp_flags, int classzone_idx),
+
+	TP_ARGS(order, may_writepage, gfp_flags, classzone_idx)
+>>>>>>> v4.9.227
 );
 
 DEFINE_EVENT(mm_vmscan_direct_reclaim_begin_template, mm_vmscan_memcg_softlimit_reclaim_begin,
 
+<<<<<<< HEAD
 	TP_PROTO(int order, int may_writepage, gfp_t gfp_flags),
 
 	TP_ARGS(order, may_writepage, gfp_flags)
+=======
+	TP_PROTO(int order, int may_writepage, gfp_t gfp_flags, int classzone_idx),
+
+	TP_ARGS(order, may_writepage, gfp_flags, classzone_idx)
+>>>>>>> v4.9.227
 );
 
 DECLARE_EVENT_CLASS(mm_vmscan_direct_reclaim_end_template,
@@ -266,16 +327,28 @@ TRACE_EVENT(mm_shrink_slab_end,
 
 DECLARE_EVENT_CLASS(mm_vmscan_lru_isolate_template,
 
+<<<<<<< HEAD
 	TP_PROTO(int order,
+=======
+	TP_PROTO(int classzone_idx,
+		int order,
+>>>>>>> v4.9.227
 		unsigned long nr_requested,
 		unsigned long nr_scanned,
 		unsigned long nr_taken,
 		isolate_mode_t isolate_mode,
 		int file),
 
+<<<<<<< HEAD
 	TP_ARGS(order, nr_requested, nr_scanned, nr_taken, isolate_mode, file),
 
 	TP_STRUCT__entry(
+=======
+	TP_ARGS(classzone_idx, order, nr_requested, nr_scanned, nr_taken, isolate_mode, file),
+
+	TP_STRUCT__entry(
+		__field(int, classzone_idx)
+>>>>>>> v4.9.227
 		__field(int, order)
 		__field(unsigned long, nr_requested)
 		__field(unsigned long, nr_scanned)
@@ -285,6 +358,10 @@ DECLARE_EVENT_CLASS(mm_vmscan_lru_isolate_template,
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
+=======
+		__entry->classzone_idx = classzone_idx;
+>>>>>>> v4.9.227
 		__entry->order = order;
 		__entry->nr_requested = nr_requested;
 		__entry->nr_scanned = nr_scanned;
@@ -293,8 +370,14 @@ DECLARE_EVENT_CLASS(mm_vmscan_lru_isolate_template,
 		__entry->file = file;
 	),
 
+<<<<<<< HEAD
 	TP_printk("isolate_mode=%d order=%d nr_requested=%lu nr_scanned=%lu nr_taken=%lu file=%d",
 		__entry->isolate_mode,
+=======
+	TP_printk("isolate_mode=%d classzone=%d order=%d nr_requested=%lu nr_scanned=%lu nr_taken=%lu file=%d",
+		__entry->isolate_mode,
+		__entry->classzone_idx,
+>>>>>>> v4.9.227
 		__entry->order,
 		__entry->nr_requested,
 		__entry->nr_scanned,
@@ -304,32 +387,51 @@ DECLARE_EVENT_CLASS(mm_vmscan_lru_isolate_template,
 
 DEFINE_EVENT(mm_vmscan_lru_isolate_template, mm_vmscan_lru_isolate,
 
+<<<<<<< HEAD
 	TP_PROTO(int order,
+=======
+	TP_PROTO(int classzone_idx,
+		int order,
+>>>>>>> v4.9.227
 		unsigned long nr_requested,
 		unsigned long nr_scanned,
 		unsigned long nr_taken,
 		isolate_mode_t isolate_mode,
 		int file),
 
+<<<<<<< HEAD
 	TP_ARGS(order, nr_requested, nr_scanned, nr_taken, isolate_mode, file)
+=======
+	TP_ARGS(classzone_idx, order, nr_requested, nr_scanned, nr_taken, isolate_mode, file)
+>>>>>>> v4.9.227
 
 );
 
 DEFINE_EVENT(mm_vmscan_lru_isolate_template, mm_vmscan_memcg_isolate,
 
+<<<<<<< HEAD
 	TP_PROTO(int order,
+=======
+	TP_PROTO(int classzone_idx,
+		int order,
+>>>>>>> v4.9.227
 		unsigned long nr_requested,
 		unsigned long nr_scanned,
 		unsigned long nr_taken,
 		isolate_mode_t isolate_mode,
 		int file),
 
+<<<<<<< HEAD
 	TP_ARGS(order, nr_requested, nr_scanned, nr_taken, isolate_mode, file)
+=======
+	TP_ARGS(classzone_idx, order, nr_requested, nr_scanned, nr_taken, isolate_mode, file)
+>>>>>>> v4.9.227
 
 );
 
 TRACE_EVENT(mm_vmscan_writepage,
 
+<<<<<<< HEAD
 	TP_PROTO(struct page *page,
 		int reclaim_flags),
 
@@ -337,10 +439,19 @@ TRACE_EVENT(mm_vmscan_writepage,
 
 	TP_STRUCT__entry(
 		__field(struct page *, page)
+=======
+	TP_PROTO(struct page *page),
+
+	TP_ARGS(page),
+
+	TP_STRUCT__entry(
+		__field(unsigned long, pfn)
+>>>>>>> v4.9.227
 		__field(int, reclaim_flags)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->page = page;
 		__entry->reclaim_flags = reclaim_flags;
 	),
@@ -348,11 +459,21 @@ TRACE_EVENT(mm_vmscan_writepage,
 	TP_printk("page=%p pfn=%lu flags=%s",
 		__entry->page,
 		page_to_pfn(__entry->page),
+=======
+		__entry->pfn = page_to_pfn(page);
+		__entry->reclaim_flags = trace_reclaim_flags(page);
+	),
+
+	TP_printk("page=%p pfn=%lu flags=%s",
+		pfn_to_page(__entry->pfn),
+		__entry->pfn,
+>>>>>>> v4.9.227
 		show_reclaim_flags(__entry->reclaim_flags))
 );
 
 TRACE_EVENT(mm_vmscan_lru_shrink_inactive,
 
+<<<<<<< HEAD
 	TP_PROTO(int nid, int zid,
 			unsigned long nr_scanned, unsigned long nr_reclaimed,
 			int priority, int reclaim_flags),
@@ -362,6 +483,16 @@ TRACE_EVENT(mm_vmscan_lru_shrink_inactive,
 	TP_STRUCT__entry(
 		__field(int, nid)
 		__field(int, zid)
+=======
+	TP_PROTO(int nid,
+		unsigned long nr_scanned, unsigned long nr_reclaimed,
+		int priority, int file),
+
+	TP_ARGS(nid, nr_scanned, nr_reclaimed, priority, file),
+
+	TP_STRUCT__entry(
+		__field(int, nid)
+>>>>>>> v4.9.227
 		__field(unsigned long, nr_scanned)
 		__field(unsigned long, nr_reclaimed)
 		__field(int, priority)
@@ -370,6 +501,7 @@ TRACE_EVENT(mm_vmscan_lru_shrink_inactive,
 
 	TP_fast_assign(
 		__entry->nid = nid;
+<<<<<<< HEAD
 		__entry->zid = zid;
 		__entry->nr_scanned = nr_scanned;
 		__entry->nr_reclaimed = nr_reclaimed;
@@ -379,6 +511,16 @@ TRACE_EVENT(mm_vmscan_lru_shrink_inactive,
 
 	TP_printk("nid=%d zid=%d nr_scanned=%ld nr_reclaimed=%ld priority=%d flags=%s",
 		__entry->nid, __entry->zid,
+=======
+		__entry->nr_scanned = nr_scanned;
+		__entry->nr_reclaimed = nr_reclaimed;
+		__entry->priority = priority;
+		__entry->reclaim_flags = trace_shrink_flags(file);
+	),
+
+	TP_printk("nid=%d nr_scanned=%ld nr_reclaimed=%ld priority=%d flags=%s",
+		__entry->nid,
+>>>>>>> v4.9.227
 		__entry->nr_scanned, __entry->nr_reclaimed,
 		__entry->priority,
 		show_reclaim_flags(__entry->reclaim_flags))

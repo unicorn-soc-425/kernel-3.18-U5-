@@ -66,7 +66,10 @@ MODULE_DEVICE_TABLE(of, sh_dmae_of_match);
 
 static struct platform_driver shdma_of = {
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "shdma-of",
 		.of_match_table = shdma_of_match,
 	},

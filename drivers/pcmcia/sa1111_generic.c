@@ -18,6 +18,10 @@
 
 #include <mach/hardware.h>
 #include <asm/hardware/sa1111.h>
+<<<<<<< HEAD
+=======
+#include <asm/mach-types.h>
+>>>>>>> v4.9.227
 #include <asm/irq.h>
 
 #include "sa1111_generic.h"
@@ -135,8 +139,18 @@ int sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,
 	int (*add)(struct soc_pcmcia_socket *))
 {
 	struct sa1111_pcmcia_socket *s;
+<<<<<<< HEAD
 	int i, ret = 0;
 
+=======
+	struct clk *clk;
+	int i, ret = 0;
+
+	clk = devm_clk_get(&dev->dev, NULL);
+	if (IS_ERR(clk))
+		return PTR_ERR(clk);
+
+>>>>>>> v4.9.227
 	ops->socket_state = sa1111_pcmcia_socket_state;
 
 	for (i = 0; i < ops->nr; i++) {
@@ -145,6 +159,11 @@ int sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,
 			return -ENOMEM;
 
 		s->soc.nr = ops->first + i;
+<<<<<<< HEAD
+=======
+		s->soc.clk = clk;
+
+>>>>>>> v4.9.227
 		soc_pcmcia_init_one(&s->soc, ops, &dev->dev);
 		s->dev = dev;
 		if (s->soc.nr) {
@@ -196,6 +215,7 @@ static int pcmcia_probe(struct sa1111_dev *dev)
 	sa1111_writel(PCSSR_S0_SLEEP | PCSSR_S1_SLEEP, base + PCSSR);
 	sa1111_writel(PCCR_S0_FLT | PCCR_S1_FLT, base + PCCR);
 
+<<<<<<< HEAD
 #ifdef CONFIG_SA1100_BADGE4
 	pcmcia_badge4_init(&dev->dev);
 #endif
@@ -209,6 +229,32 @@ static int pcmcia_probe(struct sa1111_dev *dev)
 	pcmcia_neponset_init(dev);
 #endif
 	return 0;
+=======
+	ret = -ENODEV;
+#ifdef CONFIG_SA1100_BADGE4
+	if (machine_is_badge4())
+		ret = pcmcia_badge4_init(dev);
+#endif
+#ifdef CONFIG_SA1100_JORNADA720
+	if (machine_is_jornada720())
+		ret = pcmcia_jornada720_init(dev);
+#endif
+#ifdef CONFIG_ARCH_LUBBOCK
+	if (machine_is_lubbock())
+		ret = pcmcia_lubbock_init(dev);
+#endif
+#ifdef CONFIG_ASSABET_NEPONSET
+	if (machine_is_assabet())
+		ret = pcmcia_neponset_init(dev);
+#endif
+
+	if (ret) {
+		release_mem_region(dev->res.start, 512);
+		sa1111_disable_device(dev);
+	}
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int pcmcia_remove(struct sa1111_dev *dev)

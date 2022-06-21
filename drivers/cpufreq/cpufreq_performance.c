@@ -16,6 +16,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 static int cpufreq_governor_performance(struct cpufreq_policy *policy,
 					unsigned int event)
 {
@@ -40,6 +41,18 @@ struct cpufreq_governor cpufreq_gov_performance = {
 	.name		= "performance",
 	.governor	= cpufreq_governor_performance,
 	.owner		= THIS_MODULE,
+=======
+static void cpufreq_gov_performance_limits(struct cpufreq_policy *policy)
+{
+	pr_debug("setting to %u kHz\n", policy->max);
+	__cpufreq_driver_target(policy, policy->max, CPUFREQ_RELATION_H);
+}
+
+static struct cpufreq_governor cpufreq_gov_performance = {
+	.name		= "performance",
+	.owner		= THIS_MODULE,
+	.limits		= cpufreq_gov_performance_limits,
+>>>>>>> v4.9.227
 };
 
 static int __init cpufreq_gov_performance_init(void)
@@ -52,6 +65,22 @@ static void __exit cpufreq_gov_performance_exit(void)
 	cpufreq_unregister_governor(&cpufreq_gov_performance);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
+struct cpufreq_governor *cpufreq_default_governor(void)
+{
+	return &cpufreq_gov_performance;
+}
+#endif
+#ifndef CONFIG_CPU_FREQ_GOV_PERFORMANCE_MODULE
+struct cpufreq_governor *cpufreq_fallback_governor(void)
+{
+	return &cpufreq_gov_performance;
+}
+#endif
+
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Dominik Brodowski <linux@brodo.de>");
 MODULE_DESCRIPTION("CPUfreq policy governor 'performance'");
 MODULE_LICENSE("GPL");

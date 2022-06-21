@@ -92,7 +92,12 @@ static inline void __disable_dcache_nomsr(void)
 #define CACHE_LOOP_LIMITS(start, end, cache_line_length, cache_size)	\
 do {									\
 	int align = ~(cache_line_length - 1);				\
+<<<<<<< HEAD
 	end = min(start + cache_size, end);				\
+=======
+	if (start <  UINT_MAX - cache_size)				\
+		end = min(start + cache_size, end);			\
+>>>>>>> v4.9.227
 	start &= align;							\
 } while (0)
 
@@ -140,10 +145,17 @@ do {									\
 /* It is used only first parameter for OP - for wic, wdc */
 #define CACHE_RANGE_LOOP_1(start, end, line_length, op)			\
 do {									\
+<<<<<<< HEAD
 	int volatile temp = 0;						\
 	int align = ~(line_length - 1);					\
 	end = ((end & align) == end) ? end - line_length : end & align;	\
 	WARN_ON(end - start < 0);					\
+=======
+	unsigned int volatile temp = 0;						\
+	unsigned int align = ~(line_length - 1);					\
+	end = ((end & align) == end) ? end - line_length : end & align;	\
+	WARN_ON(end < start);					\
+>>>>>>> v4.9.227
 									\
 	__asm__ __volatile__ (" 1:	" #op "	%1, r0;"		\
 					"cmpu	%0, %1, %2;"		\

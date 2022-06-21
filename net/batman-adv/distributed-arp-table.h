@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2011-2014 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2011-2016  B.A.T.M.A.N. contributors:
+>>>>>>> v4.9.227
  *
  * Antonio Quartulli
  *
@@ -18,6 +22,7 @@
 #ifndef _NET_BATMAN_ADV_DISTRIBUTED_ARP_TABLE_H_
 #define _NET_BATMAN_ADV_DISTRIBUTED_ARP_TABLE_H_
 
+<<<<<<< HEAD
 #ifdef CONFIG_BATMAN_ADV_DAT
 
 #include "types.h"
@@ -28,6 +33,23 @@
 /**
  * BATADV_DAT_ADDR_MAX - maximum address value in the DHT space
  */
+=======
+#include "main.h"
+
+#include <linux/compiler.h>
+#include <linux/netdevice.h>
+#include <linux/types.h>
+
+#include "originator.h"
+#include "packet.h"
+
+struct seq_file;
+struct sk_buff;
+
+#ifdef CONFIG_BATMAN_ADV_DAT
+
+/* BATADV_DAT_ADDR_MAX - maximum address value in the DHT space */
+>>>>>>> v4.9.227
 #define BATADV_DAT_ADDR_MAX ((batadv_dat_addr_t)~(batadv_dat_addr_t)0)
 
 void batadv_dat_status_update(struct net_device *net_dev);
@@ -49,7 +71,11 @@ bool batadv_dat_drop_broadcast_packet(struct batadv_priv *bat_priv,
 static inline void
 batadv_dat_init_orig_node_addr(struct batadv_orig_node *orig_node)
 {
+<<<<<<< HEAD
 	uint32_t addr;
+=======
+	u32 addr;
+>>>>>>> v4.9.227
 
 	addr = batadv_choose_orig(orig_node->orig, BATADV_DAT_ADDR_MAX);
 	orig_node->dat_addr = (batadv_dat_addr_t)addr;
@@ -64,7 +90,11 @@ static inline void
 batadv_dat_init_own_addr(struct batadv_priv *bat_priv,
 			 struct batadv_hard_iface *primary_if)
 {
+<<<<<<< HEAD
 	uint32_t addr;
+=======
+	u32 addr;
+>>>>>>> v4.9.227
 
 	addr = batadv_choose_orig(primary_if->net_dev->dev_addr,
 				  BATADV_DAT_ADDR_MAX);
@@ -84,7 +114,11 @@ int batadv_dat_cache_seq_print_text(struct seq_file *seq, void *offset);
  * Updates the ethtool statistics for the received packet if it is a DAT subtype
  */
 static inline void batadv_dat_inc_counter(struct batadv_priv *bat_priv,
+<<<<<<< HEAD
 					  uint8_t subtype)
+=======
+					  u8 subtype)
+>>>>>>> v4.9.227
 {
 	switch (subtype) {
 	case BATADV_P_DAT_DHT_GET:
@@ -164,7 +198,11 @@ static inline void batadv_dat_free(struct batadv_priv *bat_priv)
 }
 
 static inline void batadv_dat_inc_counter(struct batadv_priv *bat_priv,
+<<<<<<< HEAD
 					  uint8_t subtype)
+=======
+					  u8 subtype)
+>>>>>>> v4.9.227
 {
 }
 

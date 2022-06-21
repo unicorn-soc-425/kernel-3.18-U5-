@@ -131,7 +131,11 @@ static void qong_init_nor_mtd(void)
  */
 static void qong_nand_cmd_ctrl(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *nand_chip = mtd->priv;
+=======
+	struct nand_chip *nand_chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 
 	if (cmd == NAND_CMD_NONE)
 		return;
@@ -190,9 +194,15 @@ static struct platform_device qong_nand_device = {
 static void __init qong_init_nand_mtd(void)
 {
 	/* init CS */
+<<<<<<< HEAD
 	__raw_writel(0x00004f00, MX31_IO_ADDRESS(MX31_WEIM_CSCRxU(3)));
 	__raw_writel(0x20013b31, MX31_IO_ADDRESS(MX31_WEIM_CSCRxL(3)));
 	__raw_writel(0x00020800, MX31_IO_ADDRESS(MX31_WEIM_CSCRxA(3)));
+=======
+	imx_writel(0x00004f00, MX31_IO_ADDRESS(MX31_WEIM_CSCRxU(3)));
+	imx_writel(0x20013b31, MX31_IO_ADDRESS(MX31_WEIM_CSCRxL(3)));
+	imx_writel(0x00020800, MX31_IO_ADDRESS(MX31_WEIM_CSCRxA(3)));
+>>>>>>> v4.9.227
 
 	mxc_iomux_set_gpr(MUX_SDCTL_CSD1_SEL, true);
 
@@ -251,7 +261,10 @@ static void __init qong_init(void)
 
 	mxc_init_imx_uart();
 	qong_init_nor_mtd();
+<<<<<<< HEAD
 	qong_init_fpga();
+=======
+>>>>>>> v4.9.227
 	imx31_add_imx2_wdt();
 }
 
@@ -268,5 +281,9 @@ MACHINE_START(QONG, "Dave/DENX QongEVB-LITE")
 	.init_irq = mx31_init_irq,
 	.init_time	= qong_timer_init,
 	.init_machine = qong_init,
+<<<<<<< HEAD
+=======
+	.init_late	= qong_init_fpga,
+>>>>>>> v4.9.227
 	.restart	= mxc_restart,
 MACHINE_END

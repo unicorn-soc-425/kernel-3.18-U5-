@@ -54,6 +54,10 @@
 #define PVR2_CVAL_INPUT_COMPOSITE 2
 #define PVR2_CVAL_INPUT_SVIDEO 3
 #define PVR2_CVAL_INPUT_RADIO 4
+<<<<<<< HEAD
+=======
+#define PVR2_CVAL_INPUT_MAX PVR2_CVAL_INPUT_RADIO
+>>>>>>> v4.9.227
 
 enum pvr2_config {
 	pvr2_config_empty,    /* No configuration */
@@ -271,9 +275,12 @@ int pvr2_hdw_cmd_deep_reset(struct pvr2_hdw *);
 /* Execute simple reset command */
 int pvr2_hdw_cmd_powerup(struct pvr2_hdw *);
 
+<<<<<<< HEAD
 /* suspend */
 int pvr2_hdw_cmd_powerdown(struct pvr2_hdw *);
 
+=======
+>>>>>>> v4.9.227
 /* Order decoder to reset */
 int pvr2_hdw_cmd_decoder_reset(struct pvr2_hdw *);
 
@@ -343,6 +350,7 @@ void pvr2_hdw_trigger_module_log(struct pvr2_hdw *hdw);
 int pvr2_upload_firmware2(struct pvr2_hdw *hdw);
 
 #endif /* __PVRUSB2_HDW_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -353,3 +361,5 @@ int pvr2_upload_firmware2(struct pvr2_hdw *hdw);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

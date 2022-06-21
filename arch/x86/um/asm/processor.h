@@ -28,6 +28,11 @@ static inline void rep_nop(void)
 #define cpu_relax()		rep_nop()
 #define cpu_relax_lowlatency()	cpu_relax()
 
+<<<<<<< HEAD
+=======
+#define task_pt_regs(t) (&(t)->thread.regs)
+
+>>>>>>> v4.9.227
 #include <asm/processor-generic.h>
 
 #endif

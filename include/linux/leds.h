@@ -12,6 +12,10 @@
 #ifndef __LINUX_LEDS_H_INCLUDED
 #define __LINUX_LEDS_H_INCLUDED
 
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> v4.9.227
 #include <linux/list.h>
 #include <linux/mutex.h>
 #include <linux/rwsem.h>
@@ -34,11 +38,15 @@ struct led_classdev {
 	const char		*name;
 	enum led_brightness	 brightness;
 	enum led_brightness	 max_brightness;
+<<<<<<< HEAD
 	enum led_brightness	 usr_brightness_req;
+=======
+>>>>>>> v4.9.227
 	int			 flags;
 
 	/* Lower 16 bits reflect status */
 #define LED_SUSPENDED		(1 << 0)
+<<<<<<< HEAD
 	/* Upper 16 bits reflect control information */
 #define LED_CORE_SUSPENDRESUME	(1 << 16)
 #define LED_BLINK_ONESHOT	(1 << 17)
@@ -50,6 +58,34 @@ struct led_classdev {
 	/* Must not sleep, use a workqueue if needed */
 	void		(*brightness_set)(struct led_classdev *led_cdev,
 					  enum led_brightness brightness);
+=======
+#define LED_UNREGISTERING	(1 << 1)
+	/* Upper 16 bits reflect control information */
+#define LED_CORE_SUSPENDRESUME	(1 << 16)
+#define LED_BLINK_SW		(1 << 17)
+#define LED_BLINK_ONESHOT	(1 << 18)
+#define LED_BLINK_ONESHOT_STOP	(1 << 19)
+#define LED_BLINK_INVERT	(1 << 20)
+#define LED_BLINK_BRIGHTNESS_CHANGE (1 << 21)
+#define LED_BLINK_DISABLE	(1 << 22)
+#define LED_SYSFS_DISABLE	(1 << 23)
+#define LED_DEV_CAP_FLASH	(1 << 24)
+#define LED_HW_PLUGGABLE	(1 << 25)
+#define LED_PANIC_INDICATOR	(1 << 26)
+
+	/* Set LED brightness level
+	 * Must not sleep. Use brightness_set_blocking for drivers
+	 * that can sleep while setting brightness.
+	 */
+	void		(*brightness_set)(struct led_classdev *led_cdev,
+					  enum led_brightness brightness);
+	/*
+	 * Set LED brightness level immediately - it can block the caller for
+	 * the time required for accessing a LED device register.
+	 */
+	int (*brightness_set_blocking)(struct led_classdev *led_cdev,
+				       enum led_brightness brightness);
+>>>>>>> v4.9.227
 	/* Get LED brightness level */
 	enum led_brightness (*brightness_get)(struct led_classdev *led_cdev);
 
@@ -58,8 +94,13 @@ struct led_classdev {
 	 * and if both are zero then a sensible default should be chosen.
 	 * The call should adjust the timings in that case and if it can't
 	 * match the values specified exactly.
+<<<<<<< HEAD
 	 * Deactivate blinking again when the brightness is set to a fixed
 	 * value via the brightness_set() callback.
+=======
+	 * Deactivate blinking again when the brightness is set to LED_OFF
+	 * via the brightness_set() callback.
+>>>>>>> v4.9.227
 	 */
 	int		(*blink_set)(struct led_classdev *led_cdev,
 				     unsigned long *delay_on,
@@ -74,6 +115,10 @@ struct led_classdev {
 	unsigned long		 blink_delay_on, blink_delay_off;
 	struct timer_list	 blink_timer;
 	int			 blink_brightness;
+<<<<<<< HEAD
+=======
+	void			(*flash_resume)(struct led_classdev *led_cdev);
+>>>>>>> v4.9.227
 
 	struct work_struct	set_brightness_work;
 	int			delayed_set_value;
@@ -95,7 +140,15 @@ struct led_classdev {
 
 extern int led_classdev_register(struct device *parent,
 				 struct led_classdev *led_cdev);
+<<<<<<< HEAD
 extern void led_classdev_unregister(struct led_classdev *led_cdev);
+=======
+extern int devm_led_classdev_register(struct device *parent,
+				      struct led_classdev *led_cdev);
+extern void led_classdev_unregister(struct led_classdev *led_cdev);
+extern void devm_led_classdev_unregister(struct device *parent,
+					 struct led_classdev *led_cdev);
+>>>>>>> v4.9.227
 extern void led_classdev_suspend(struct led_classdev *led_cdev);
 extern void led_classdev_resume(struct led_classdev *led_cdev);
 
@@ -142,10 +195,32 @@ extern void led_blink_set_oneshot(struct led_classdev *led_cdev,
  *
  * Set an LED's brightness, and, if necessary, cancel the
  * software blink timer that implements blinking when the
+<<<<<<< HEAD
  * hardware doesn't.
  */
 extern void led_set_brightness(struct led_classdev *led_cdev,
 			       enum led_brightness brightness);
+=======
+ * hardware doesn't. This function is guaranteed not to sleep.
+ */
+extern void led_set_brightness(struct led_classdev *led_cdev,
+			       enum led_brightness brightness);
+
+/**
+ * led_set_brightness_sync - set LED brightness synchronously
+ * @led_cdev: the LED to set
+ * @brightness: the brightness to set it to
+ *
+ * Set an LED's brightness immediately. This function will block
+ * the caller for the time required for accessing device registers,
+ * and it can sleep.
+ *
+ * Returns: 0 on success or negative error value on failure
+ */
+extern int led_set_brightness_sync(struct led_classdev *led_cdev,
+				   enum led_brightness value);
+
+>>>>>>> v4.9.227
 /**
  * led_update_brightness - update LED brightness
  * @led_cdev: the LED to query
@@ -209,9 +284,22 @@ struct led_trigger {
 	struct list_head  next_trig;
 };
 
+<<<<<<< HEAD
 /* Registration functions for complex triggers */
 extern int led_trigger_register(struct led_trigger *trigger);
 extern void led_trigger_unregister(struct led_trigger *trigger);
+=======
+ssize_t led_trigger_store(struct device *dev, struct device_attribute *attr,
+			const char *buf, size_t count);
+ssize_t led_trigger_show(struct device *dev, struct device_attribute *attr,
+			char *buf);
+
+/* Registration functions for complex triggers */
+extern int led_trigger_register(struct led_trigger *trigger);
+extern void led_trigger_unregister(struct led_trigger *trigger);
+extern int devm_led_trigger_register(struct device *dev,
+				     struct led_trigger *trigger);
+>>>>>>> v4.9.227
 
 extern void led_trigger_register_simple(const char *name,
 				struct led_trigger **trigger);
@@ -225,6 +313,19 @@ extern void led_trigger_blink_oneshot(struct led_trigger *trigger,
 				      unsigned long *delay_on,
 				      unsigned long *delay_off,
 				      int invert);
+<<<<<<< HEAD
+=======
+extern void led_trigger_set_default(struct led_classdev *led_cdev);
+extern void led_trigger_set(struct led_classdev *led_cdev,
+			struct led_trigger *trigger);
+extern void led_trigger_remove(struct led_classdev *led_cdev);
+
+static inline void *led_get_trigger_data(struct led_classdev *led_cdev)
+{
+	return led_cdev->trigger_data;
+}
+
+>>>>>>> v4.9.227
 /**
  * led_trigger_rename_static - rename a trigger
  * @name: the new trigger name
@@ -254,6 +355,7 @@ static inline void led_trigger_register_simple(const char *name,
 static inline void led_trigger_unregister_simple(struct led_trigger *trigger) {}
 static inline void led_trigger_event(struct led_trigger *trigger,
 				enum led_brightness event) {}
+<<<<<<< HEAD
 #endif /* CONFIG_LEDS_TRIGGERS */
 
 /* Trigger specific functions */
@@ -261,6 +363,37 @@ static inline void led_trigger_event(struct led_trigger *trigger,
 extern void ledtrig_ide_activity(void);
 #else
 static inline void ledtrig_ide_activity(void) {}
+=======
+static inline void led_trigger_blink(struct led_trigger *trigger,
+				      unsigned long *delay_on,
+				      unsigned long *delay_off) {}
+static inline void led_trigger_blink_oneshot(struct led_trigger *trigger,
+				      unsigned long *delay_on,
+				      unsigned long *delay_off,
+				      int invert) {}
+static inline void led_trigger_set_default(struct led_classdev *led_cdev) {}
+static inline void led_trigger_set(struct led_classdev *led_cdev,
+				struct led_trigger *trigger) {}
+static inline void led_trigger_remove(struct led_classdev *led_cdev) {}
+static inline void *led_get_trigger_data(struct led_classdev *led_cdev)
+{
+	return NULL;
+}
+
+#endif /* CONFIG_LEDS_TRIGGERS */
+
+/* Trigger specific functions */
+#ifdef CONFIG_LEDS_TRIGGER_DISK
+extern void ledtrig_disk_activity(void);
+#else
+static inline void ledtrig_disk_activity(void) {}
+#endif
+
+#ifdef CONFIG_LEDS_TRIGGER_MTD
+extern void ledtrig_mtd_activity(void);
+#else
+static inline void ledtrig_mtd_activity(void) {}
+>>>>>>> v4.9.227
 #endif
 
 #if defined(CONFIG_LEDS_TRIGGER_CAMERA) || defined(CONFIG_LEDS_TRIGGER_CAMERA_MODULE)
@@ -285,6 +418,14 @@ struct led_platform_data {
 	struct led_info	*leds;
 };
 
+<<<<<<< HEAD
+=======
+struct gpio_desc;
+typedef int (*gpio_blink_set_t)(struct gpio_desc *desc, int state,
+				unsigned long *delay_on,
+				unsigned long *delay_off);
+
+>>>>>>> v4.9.227
 /* For the leds-gpio driver */
 struct gpio_led {
 	const char *name;
@@ -292,8 +433,15 @@ struct gpio_led {
 	unsigned 	gpio;
 	unsigned	active_low : 1;
 	unsigned	retain_state_suspended : 1;
+<<<<<<< HEAD
 	unsigned	default_state : 2;
 	/* default_state should be one of LEDS_GPIO_DEFSTATE_(ON|OFF|KEEP) */
+=======
+	unsigned	panic_indicator : 1;
+	unsigned	default_state : 2;
+	/* default_state should be one of LEDS_GPIO_DEFSTATE_(ON|OFF|KEEP) */
+	struct gpio_desc *gpiod;
+>>>>>>> v4.9.227
 };
 #define LEDS_GPIO_DEFSTATE_OFF		0
 #define LEDS_GPIO_DEFSTATE_ON		1
@@ -306,6 +454,7 @@ struct gpio_led_platform_data {
 #define GPIO_LED_NO_BLINK_LOW	0	/* No blink GPIO state low */
 #define GPIO_LED_NO_BLINK_HIGH	1	/* No blink GPIO state high */
 #define GPIO_LED_BLINK		2	/* Please, blink */
+<<<<<<< HEAD
 	int		(*gpio_blink_set)(unsigned gpio, int state,
 					unsigned long *delay_on,
 					unsigned long *delay_off);
@@ -313,6 +462,21 @@ struct gpio_led_platform_data {
 
 struct platform_device *gpio_led_register_device(
 		int id, const struct gpio_led_platform_data *pdata);
+=======
+	gpio_blink_set_t	gpio_blink_set;
+};
+
+#ifdef CONFIG_NEW_LEDS
+struct platform_device *gpio_led_register_device(
+		int id, const struct gpio_led_platform_data *pdata);
+#else
+static inline struct platform_device *gpio_led_register_device(
+		int id, const struct gpio_led_platform_data *pdata)
+{
+	return 0;
+}
+#endif
+>>>>>>> v4.9.227
 
 enum cpu_led_event {
 	CPU_LED_IDLE_START,	/* CPU enters idle */

@@ -374,7 +374,11 @@ static int snd_sb16_probe(struct snd_card *card, int dev)
 	if (! is_isapnp_selected(dev) && (err = snd_sb16dsp_configure(chip)) < 0)
 		return err;
 
+<<<<<<< HEAD
 	if ((err = snd_sb16dsp_pcm(chip, 0, &chip->pcm)) < 0)
+=======
+	if ((err = snd_sb16dsp_pcm(chip, 0)) < 0)
+>>>>>>> v4.9.227
 		return err;
 
 	strcpy(card->driver,

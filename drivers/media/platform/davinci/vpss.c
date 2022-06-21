@@ -504,7 +504,10 @@ static const struct dev_pm_ops vpss_pm_ops = {
 static struct platform_driver vpss_driver = {
 	.driver = {
 		.name	= "vpss",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &vpss_pm_ops,
 	},
 	.remove = vpss_remove,
@@ -524,6 +527,14 @@ static int __init vpss_init(void)
 		return -EBUSY;
 
 	oper_cfg.vpss_regs_base2 = ioremap(VPSS_CLK_CTRL, 4);
+<<<<<<< HEAD
+=======
+	if (unlikely(!oper_cfg.vpss_regs_base2)) {
+		release_mem_region(VPSS_CLK_CTRL, 4);
+		return -ENOMEM;
+	}
+
+>>>>>>> v4.9.227
 	writel(VPSS_CLK_CTRL_VENCCLKEN |
 		     VPSS_CLK_CTRL_DACCLKEN, oper_cfg.vpss_regs_base2);
 

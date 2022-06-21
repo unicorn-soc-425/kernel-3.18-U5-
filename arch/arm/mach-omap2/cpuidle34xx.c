@@ -266,7 +266,10 @@ static struct cpuidle_driver omap3_idle_driver = {
 			.enter		  = omap3_enter_idle_bm,
 			.exit_latency	  = 2 + 2,
 			.target_residency = 5,
+<<<<<<< HEAD
 			.flags		  = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.name		  = "C1",
 			.desc		  = "MPU ON + CORE ON",
 		},
@@ -274,7 +277,10 @@ static struct cpuidle_driver omap3_idle_driver = {
 			.enter		  = omap3_enter_idle_bm,
 			.exit_latency	  = 10 + 10,
 			.target_residency = 30,
+<<<<<<< HEAD
 			.flags		  = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.name		  = "C2",
 			.desc		  = "MPU ON + CORE ON",
 		},
@@ -282,7 +288,10 @@ static struct cpuidle_driver omap3_idle_driver = {
 			.enter		  = omap3_enter_idle_bm,
 			.exit_latency	  = 50 + 50,
 			.target_residency = 300,
+<<<<<<< HEAD
 			.flags		  = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.name		  = "C3",
 			.desc		  = "MPU RET + CORE ON",
 		},
@@ -290,7 +299,10 @@ static struct cpuidle_driver omap3_idle_driver = {
 			.enter		  = omap3_enter_idle_bm,
 			.exit_latency	  = 1500 + 1800,
 			.target_residency = 4000,
+<<<<<<< HEAD
 			.flags		  = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.name		  = "C4",
 			.desc		  = "MPU OFF + CORE ON",
 		},
@@ -298,7 +310,10 @@ static struct cpuidle_driver omap3_idle_driver = {
 			.enter		  = omap3_enter_idle_bm,
 			.exit_latency	  = 2500 + 7500,
 			.target_residency = 12000,
+<<<<<<< HEAD
 			.flags		  = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.name		  = "C5",
 			.desc		  = "MPU RET + CORE RET",
 		},
@@ -306,7 +321,10 @@ static struct cpuidle_driver omap3_idle_driver = {
 			.enter		  = omap3_enter_idle_bm,
 			.exit_latency	  = 3000 + 8500,
 			.target_residency = 15000,
+<<<<<<< HEAD
 			.flags		  = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.name		  = "C6",
 			.desc		  = "MPU OFF + CORE RET",
 		},
@@ -314,7 +332,10 @@ static struct cpuidle_driver omap3_idle_driver = {
 			.enter		  = omap3_enter_idle_bm,
 			.exit_latency	  = 10000 + 30000,
 			.target_residency = 30000,
+<<<<<<< HEAD
 			.flags		  = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.name		  = "C7",
 			.desc		  = "MPU OFF + CORE OFF",
 		},

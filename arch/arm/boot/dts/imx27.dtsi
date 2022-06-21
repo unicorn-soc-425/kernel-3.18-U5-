@@ -108,7 +108,11 @@
 			};
 
 			gpt1: timer@10003000 {
+<<<<<<< HEAD
 				compatible = "fsl,imx27-gpt", "fsl,imx1-gpt";
+=======
+				compatible = "fsl,imx27-gpt", "fsl,imx21-gpt";
+>>>>>>> v4.9.227
 				reg = <0x10003000 0x1000>;
 				interrupts = <26>;
 				clocks = <&clks IMX27_CLK_GPT1_IPG_GATE>,
@@ -117,7 +121,11 @@
 			};
 
 			gpt2: timer@10004000 {
+<<<<<<< HEAD
 				compatible = "fsl,imx27-gpt", "fsl,imx1-gpt";
+=======
+				compatible = "fsl,imx27-gpt", "fsl,imx21-gpt";
+>>>>>>> v4.9.227
 				reg = <0x10004000 0x1000>;
 				interrupts = <25>;
 				clocks = <&clks IMX27_CLK_GPT2_IPG_GATE>,
@@ -126,7 +134,11 @@
 			};
 
 			gpt3: timer@10005000 {
+<<<<<<< HEAD
 				compatible = "fsl,imx27-gpt", "fsl,imx1-gpt";
+=======
+				compatible = "fsl,imx27-gpt", "fsl,imx21-gpt";
+>>>>>>> v4.9.227
 				reg = <0x10005000 0x1000>;
 				interrupts = <24>;
 				clocks = <&clks IMX27_CLK_GPT3_IPG_GATE>,
@@ -144,6 +156,18 @@
 				clock-names = "ipg", "per";
 			};
 
+<<<<<<< HEAD
+=======
+			rtc: rtc@10007000 {
+				compatible = "fsl,imx21-rtc";
+				reg = <0x10007000 0x1000>;
+				interrupts = <22>;
+				clocks = <&clks IMX27_CLK_CKIL>,
+					 <&clks IMX27_CLK_RTC_IPG_GATE>;
+				clock-names = "ref", "ipg";
+			};
+
+>>>>>>> v4.9.227
 			kpp: kpp@10008000 {
 				compatible = "fsl,imx27-kpp", "fsl,imx21-kpp";
 				reg = <0x10008000 0x1000>;
@@ -376,7 +400,11 @@
 			};
 
 			gpt4: timer@10019000 {
+<<<<<<< HEAD
 				compatible = "fsl,imx27-gpt", "fsl,imx1-gpt";
+=======
+				compatible = "fsl,imx27-gpt", "fsl,imx21-gpt";
+>>>>>>> v4.9.227
 				reg = <0x10019000 0x1000>;
 				interrupts = <4>;
 				clocks = <&clks IMX27_CLK_GPT4_IPG_GATE>,
@@ -385,7 +413,11 @@
 			};
 
 			gpt5: timer@1001a000 {
+<<<<<<< HEAD
 				compatible = "fsl,imx27-gpt", "fsl,imx1-gpt";
+=======
+				compatible = "fsl,imx27-gpt", "fsl,imx21-gpt";
+>>>>>>> v4.9.227
 				reg = <0x1001a000 0x1000>;
 				interrupts = <3>;
 				clocks = <&clks IMX27_CLK_GPT5_IPG_GATE>,
@@ -436,7 +468,11 @@
 			};
 
 			gpt6: timer@1001f000 {
+<<<<<<< HEAD
 				compatible = "fsl,imx27-gpt", "fsl,imx1-gpt";
+=======
+				compatible = "fsl,imx27-gpt", "fsl,imx21-gpt";
+>>>>>>> v4.9.227
 				reg = <0x1001f000 0x1000>;
 				interrupts = <2>;
 				clocks = <&clks IMX27_CLK_GPT6_IPG_GATE>,
@@ -464,7 +500,11 @@
 			};
 
 			coda: coda@10023000 {
+<<<<<<< HEAD
 				compatible = "fsl,imx27-vpu";
+=======
+				compatible = "fsl,imx27-vpu", "cnm,codadx6";
+>>>>>>> v4.9.227
 				reg = <0x10023000 0x0200>;
 				interrupts = <53>;
 				clocks = <&clks IMX27_CLK_VPU_BAUD_GATE>,
@@ -477,7 +517,14 @@
 				compatible = "fsl,imx27-usb";
 				reg = <0x10024000 0x200>;
 				interrupts = <56>;
+<<<<<<< HEAD
 				clocks = <&clks IMX27_CLK_USB_IPG_GATE>;
+=======
+				clocks = <&clks IMX27_CLK_USB_IPG_GATE>,
+					<&clks IMX27_CLK_USB_AHB_GATE>,
+					<&clks IMX27_CLK_USB_DIV>;
+				clock-names = "ipg", "ahb", "per";
+>>>>>>> v4.9.227
 				fsl,usbmisc = <&usbmisc 0>;
 				status = "disabled";
 			};
@@ -486,8 +533,17 @@
 				compatible = "fsl,imx27-usb";
 				reg = <0x10024200 0x200>;
 				interrupts = <54>;
+<<<<<<< HEAD
 				clocks = <&clks IMX27_CLK_USB_IPG_GATE>;
 				fsl,usbmisc = <&usbmisc 1>;
+=======
+				clocks = <&clks IMX27_CLK_USB_IPG_GATE>,
+					<&clks IMX27_CLK_USB_AHB_GATE>,
+					<&clks IMX27_CLK_USB_DIV>;
+				clock-names = "ipg", "ahb", "per";
+				fsl,usbmisc = <&usbmisc 1>;
+				dr_mode = "host";
+>>>>>>> v4.9.227
 				status = "disabled";
 			};
 
@@ -495,8 +551,17 @@
 				compatible = "fsl,imx27-usb";
 				reg = <0x10024400 0x200>;
 				interrupts = <55>;
+<<<<<<< HEAD
 				clocks = <&clks IMX27_CLK_USB_IPG_GATE>;
 				fsl,usbmisc = <&usbmisc 2>;
+=======
+				clocks = <&clks IMX27_CLK_USB_IPG_GATE>,
+					<&clks IMX27_CLK_USB_AHB_GATE>,
+					<&clks IMX27_CLK_USB_DIV>;
+				clock-names = "ipg", "ahb", "per";
+				fsl,usbmisc = <&usbmisc 2>;
+				dr_mode = "host";
+>>>>>>> v4.9.227
 				status = "disabled";
 			};
 
@@ -504,7 +569,10 @@
 				#index-cells = <1>;
 				compatible = "fsl,imx27-usbmisc";
 				reg = <0x10024600 0x200>;
+<<<<<<< HEAD
 				clocks = <&clks IMX27_CLK_USB_AHB_GATE>;
+=======
+>>>>>>> v4.9.227
 			};
 
 			sahara2: sahara@10025000 {

@@ -1,9 +1,19 @@
+<<<<<<< HEAD
 Freescale SoC SEC Security Engines versions 2.x-3.x
+=======
+Freescale SoC SEC Security Engines versions 1.x-2.x-3.x
+>>>>>>> v4.9.227
 
 Required properties:
 
 - compatible : Should contain entries for this and backward compatible
+<<<<<<< HEAD
   SEC versions, high to low, e.g., "fsl,sec2.1", "fsl,sec2.0"
+=======
+  SEC versions, high to low, e.g., "fsl,sec2.1", "fsl,sec2.0" (SEC2/3)
+                             e.g., "fsl,sec1.2", "fsl,sec1.0" (SEC1)
+    warning: SEC1 and SEC2 are mutually exclusive
+>>>>>>> v4.9.227
 - reg : Offset and length of the register set for the device
 - interrupts : the SEC's interrupt number
 - fsl,num-channels : An integer representing the number of channels

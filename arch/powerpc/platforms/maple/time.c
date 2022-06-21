@@ -77,7 +77,11 @@ void maple_get_rtc_time(struct rtc_time *tm)
 	if ((tm->tm_year + 1900) < 1970)
 		tm->tm_year += 100;
 
+<<<<<<< HEAD
 	GregorianDay(tm);
+=======
+	tm->tm_wday = -1;
+>>>>>>> v4.9.227
 }
 
 int maple_set_rtc_time(struct rtc_time *tm)

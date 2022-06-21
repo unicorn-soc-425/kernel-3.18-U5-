@@ -27,7 +27,10 @@
 
 static const struct nvkm_xtensa_func
 g84_vp = {
+<<<<<<< HEAD
 	.pmc_enable = 0x01020000,
+=======
+>>>>>>> v4.9.227
 	.fifo_val = 0x111,
 	.unkd28 = 0x9c544,
 	.sclass = {

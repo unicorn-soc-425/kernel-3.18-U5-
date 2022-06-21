@@ -159,9 +159,12 @@ struct inode *ubifs_iget(struct super_block *sb, unsigned long inum)
 	if (err)
 		goto out_invalid;
 
+<<<<<<< HEAD
 	/* Disable read-ahead */
 	inode->i_mapping->backing_dev_info = &c->bdi;
 
+=======
+>>>>>>> v4.9.227
 	switch (inode->i_mode & S_IFMT) {
 	case S_IFREG:
 		inode->i_mapping->a_ops = &ubifs_file_address_operations;
@@ -201,6 +204,10 @@ struct inode *ubifs_iget(struct super_block *sb, unsigned long inum)
 		}
 		memcpy(ui->data, ino->data, ui->data_len);
 		((char *)ui->data)[ui->data_len] = '\0';
+<<<<<<< HEAD
+=======
+		inode->i_link = ui->data;
+>>>>>>> v4.9.227
 		break;
 	case S_IFBLK:
 	case S_IFCHR:
@@ -522,19 +529,33 @@ static int init_constants_early(struct ubifs_info *c)
 	c->max_write_shift = fls(c->max_write_size) - 1;
 
 	if (c->leb_size < UBIFS_MIN_LEB_SZ) {
+<<<<<<< HEAD
 		ubifs_err(c, "too small LEBs (%d bytes), min. is %d bytes",
 			  c->leb_size, UBIFS_MIN_LEB_SZ);
+=======
+		ubifs_errc(c, "too small LEBs (%d bytes), min. is %d bytes",
+			   c->leb_size, UBIFS_MIN_LEB_SZ);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
 	if (c->leb_cnt < UBIFS_MIN_LEB_CNT) {
+<<<<<<< HEAD
 		ubifs_err(c, "too few LEBs (%d), min. is %d",
 			  c->leb_cnt, UBIFS_MIN_LEB_CNT);
+=======
+		ubifs_errc(c, "too few LEBs (%d), min. is %d",
+			   c->leb_cnt, UBIFS_MIN_LEB_CNT);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
 	if (!is_power_of_2(c->min_io_size)) {
+<<<<<<< HEAD
 		ubifs_err(c, "bad min. I/O size %d", c->min_io_size);
+=======
+		ubifs_errc(c, "bad min. I/O size %d", c->min_io_size);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -545,8 +566,13 @@ static int init_constants_early(struct ubifs_info *c)
 	if (c->max_write_size < c->min_io_size ||
 	    c->max_write_size % c->min_io_size ||
 	    !is_power_of_2(c->max_write_size)) {
+<<<<<<< HEAD
 		ubifs_err(c, "bad write buffer size %d for %d min. I/O unit",
 			  c->max_write_size, c->min_io_size);
+=======
+		ubifs_errc(c, "bad write buffer size %d for %d min. I/O unit",
+			   c->max_write_size, c->min_io_size);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -1995,9 +2021,13 @@ static struct ubifs_info *alloc_ubifs_info(struct ubi_volume_desc *ubi)
 		INIT_LIST_HEAD(&c->old_buds);
 		INIT_LIST_HEAD(&c->orph_list);
 		INIT_LIST_HEAD(&c->orph_new);
+<<<<<<< HEAD
 
 		c->mount_opts.chk_data_crc = 2;
 		c->no_chk_data_crc = 0;
+=======
+		c->no_chk_data_crc = 1;
+>>>>>>> v4.9.227
 
 		c->highest_inum = UBIFS_FIRST_INO;
 		c->lhead_lnum = c->ltail_lnum = UBIFS_LOG_LNUM;
@@ -2031,7 +2061,11 @@ static int ubifs_fill_super(struct super_block *sb, void *data, int silent)
 	 * Read-ahead will be disabled because @c->bdi.ra_pages is 0.
 	 */
 	c->bdi.name = "ubifs",
+<<<<<<< HEAD
 	c->bdi.capabilities = BDI_CAP_MAP_COPY;
+=======
+	c->bdi.capabilities = 0;
+>>>>>>> v4.9.227
 	err  = bdi_init(&c->bdi);
 	if (err)
 		goto out_close;
@@ -2053,6 +2087,10 @@ static int ubifs_fill_super(struct super_block *sb, void *data, int silent)
 	if (c->max_inode_sz > MAX_LFS_FILESIZE)
 		sb->s_maxbytes = c->max_inode_sz = MAX_LFS_FILESIZE;
 	sb->s_op = &ubifs_super_operations;
+<<<<<<< HEAD
+=======
+	sb->s_xattr = ubifs_xattr_handlers;
+>>>>>>> v4.9.227
 
 	mutex_lock(&c->umount_mutex);
 	err = mount_ubifs(c);
@@ -2120,8 +2158,14 @@ static struct dentry *ubifs_mount(struct file_system_type *fs_type, int flags,
 	 */
 	ubi = open_ubi(name, UBI_READONLY);
 	if (IS_ERR(ubi)) {
+<<<<<<< HEAD
 		pr_err("UBIFS error (pid: %d): cannot open \"%s\", error %d",
 		       current->pid, name, (int)PTR_ERR(ubi));
+=======
+		if (!(flags & MS_SILENT))
+			pr_err("UBIFS error (pid: %d): cannot open \"%s\", error %d",
+			       current->pid, name, (int)PTR_ERR(ubi));
+>>>>>>> v4.9.227
 		return ERR_CAST(ubi);
 	}
 
@@ -2250,19 +2294,33 @@ static int __init ubifs_init(void)
 	BUILD_BUG_ON(UBIFS_COMPR_TYPES_CNT > 4);
 
 	/*
+<<<<<<< HEAD
 	 * We require that PAGE_CACHE_SIZE is greater-than-or-equal-to
 	 * UBIFS_BLOCK_SIZE. It is assumed that both are powers of 2.
 	 */
 	if (PAGE_CACHE_SIZE < UBIFS_BLOCK_SIZE) {
 		pr_err("UBIFS error (pid %d): VFS page cache size is %u bytes, but UBIFS requires at least 4096 bytes",
 		       current->pid, (unsigned int)PAGE_CACHE_SIZE);
+=======
+	 * We require that PAGE_SIZE is greater-than-or-equal-to
+	 * UBIFS_BLOCK_SIZE. It is assumed that both are powers of 2.
+	 */
+	if (PAGE_SIZE < UBIFS_BLOCK_SIZE) {
+		pr_err("UBIFS error (pid %d): VFS page cache size is %u bytes, but UBIFS requires at least 4096 bytes",
+		       current->pid, (unsigned int)PAGE_SIZE);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
 	ubifs_inode_slab = kmem_cache_create("ubifs_inode_slab",
 				sizeof(struct ubifs_inode), 0,
+<<<<<<< HEAD
 				SLAB_MEM_SPREAD | SLAB_RECLAIM_ACCOUNT,
 				&inode_slab_ctor);
+=======
+				SLAB_MEM_SPREAD | SLAB_RECLAIM_ACCOUNT |
+				SLAB_ACCOUNT, &inode_slab_ctor);
+>>>>>>> v4.9.227
 	if (!ubifs_inode_slab)
 		return -ENOMEM;
 

@@ -32,19 +32,29 @@
 #include <asm/vdso.h>
 #include <asm/facility.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_32BIT) || defined(CONFIG_COMPAT)
+=======
+#ifdef CONFIG_COMPAT
+>>>>>>> v4.9.227
 extern char vdso32_start, vdso32_end;
 static void *vdso32_kbase = &vdso32_start;
 static unsigned int vdso32_pages;
 static struct page **vdso32_pagelist;
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 extern char vdso64_start, vdso64_end;
 static void *vdso64_kbase = &vdso64_start;
 static unsigned int vdso64_pages;
 static struct page **vdso64_pagelist;
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 
 /*
  * Should the kernel map a VDSO page into processes and pass its
@@ -82,20 +92,34 @@ struct vdso_data *vdso_data = &vdso_data_store.data;
 /*
  * Setup vdso data page.
  */
+<<<<<<< HEAD
 static void vdso_init_data(struct vdso_data *vd)
+=======
+static void __init vdso_init_data(struct vdso_data *vd)
+>>>>>>> v4.9.227
 {
 	vd->ectg_available = test_facility(31);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 /*
  * Allocate/free per cpu vdso data.
  */
 #define SEGMENT_ORDER	2
 
+<<<<<<< HEAD
 int vdso_alloc_per_cpu(struct _lowcore *lowcore)
 {
 	unsigned long segment_table, page_table, page_frame;
+=======
+int vdso_alloc_per_cpu(struct lowcore *lowcore)
+{
+	unsigned long segment_table, page_table, page_frame;
+	struct vdso_per_cpu_data *vd;
+>>>>>>> v4.9.227
 	u32 *psal, *aste;
 	int i;
 
@@ -110,6 +134,15 @@ int vdso_alloc_per_cpu(struct _lowcore *lowcore)
 	if (!segment_table || !page_table || !page_frame)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	/* Initialize per-cpu vdso data page */
+	vd = (struct vdso_per_cpu_data *) page_frame;
+	vd->cpu_nr = lowcore->cpu_nr;
+	vd->node_id = cpu_to_node(vd->cpu_nr);
+
+	/* Set up access register mode page table */
+>>>>>>> v4.9.227
 	clear_table((unsigned long *) segment_table, _SEGMENT_ENTRY_EMPTY,
 		    PAGE_SIZE << SEGMENT_ORDER);
 	clear_table((unsigned long *) page_table, _PAGE_INVALID,
@@ -141,7 +174,11 @@ out:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 void vdso_free_per_cpu(struct _lowcore *lowcore)
+=======
+void vdso_free_per_cpu(struct lowcore *lowcore)
+>>>>>>> v4.9.227
 {
 	unsigned long segment_table, page_table, page_frame;
 	u32 *psal, *aste;
@@ -166,10 +203,16 @@ static void vdso_init_cr5(void)
 
 	if (!vdso_enabled)
 		return;
+<<<<<<< HEAD
 	cr5 = offsetof(struct _lowcore, paste);
 	__ctl_load(cr5, 5, 5);
 }
 #endif /* CONFIG_64BIT */
+=======
+	cr5 = offsetof(struct lowcore, paste);
+	__ctl_load(cr5, 5, 5);
+}
+>>>>>>> v4.9.227
 
 /*
  * This is called from binfmt_elf, we create the special vma for the
@@ -191,7 +234,10 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	if (!uses_interp)
 		return 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	vdso_pagelist = vdso64_pagelist;
 	vdso_pages = vdso64_pages;
 #ifdef CONFIG_COMPAT
@@ -200,11 +246,14 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 		vdso_pages = vdso32_pages;
 	}
 #endif
+<<<<<<< HEAD
 #else
 	vdso_pagelist = vdso32_pagelist;
 	vdso_pages = vdso32_pages;
 #endif
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * vDSO has a problem and was disabled, just don't "enable" it for
 	 * the process
@@ -219,7 +268,12 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	 * it at vdso_base which is the "natural" base for it, but we might
 	 * fail and end up putting it elsewhere.
 	 */
+<<<<<<< HEAD
 	down_write(&mm->mmap_sem);
+=======
+	if (down_write_killable(&mm->mmap_sem))
+		return -EINTR;
+>>>>>>> v4.9.227
 	vdso_base = get_unmapped_area(NULL, 0, vdso_pages << PAGE_SHIFT, 0, 0);
 	if (IS_ERR_VALUE(vdso_base)) {
 		rc = vdso_base;
@@ -268,7 +322,11 @@ static int __init vdso_init(void)
 	if (!vdso_enabled)
 		return 0;
 	vdso_init_data(vdso_data);
+<<<<<<< HEAD
 #if defined(CONFIG_32BIT) || defined(CONFIG_COMPAT)
+=======
+#ifdef CONFIG_COMPAT
+>>>>>>> v4.9.227
 	/* Calculate the size of the 32 bit vDSO */
 	vdso32_pages = ((&vdso32_end - &vdso32_start
 			 + PAGE_SIZE - 1) >> PAGE_SHIFT) + 1;
@@ -287,7 +345,10 @@ static int __init vdso_init(void)
 	vdso32_pagelist[vdso32_pages] = NULL;
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	/* Calculate the size of the 64 bit vDSO */
 	vdso64_pages = ((&vdso64_end - &vdso64_start
 			 + PAGE_SIZE - 1) >> PAGE_SHIFT) + 1;
@@ -307,12 +368,18 @@ static int __init vdso_init(void)
 	if (vdso_alloc_per_cpu(&S390_lowcore))
 		BUG();
 	vdso_init_cr5();
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
 
 	get_page(virt_to_page(vdso_data));
 
 	smp_wmb();
 
+=======
+
+	get_page(virt_to_page(vdso_data));
+
+>>>>>>> v4.9.227
 	return 0;
 }
 early_initcall(vdso_init);

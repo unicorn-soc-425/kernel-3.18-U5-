@@ -24,6 +24,10 @@
 #include <linux/cpumask.h>
 #include <linux/interrupt.h>
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip/mips-gic.h>
+>>>>>>> v4.9.227
 
 #include <linux/atomic.h>
 #include <asm/cacheflush.h>
@@ -37,15 +41,23 @@
 #include <asm/mipsmtregs.h>
 #include <asm/mips_mt.h>
 #include <asm/amon.h>
+<<<<<<< HEAD
 #include <asm/gic.h>
+=======
+>>>>>>> v4.9.227
 
 static void cmp_init_secondary(void)
 {
 	struct cpuinfo_mips *c __maybe_unused = &current_cpu_data;
 
 	/* Assume GIC is present */
+<<<<<<< HEAD
 	change_c0_status(ST0_IM, STATUSF_IP3 | STATUSF_IP4 | STATUSF_IP6 |
 				 STATUSF_IP7);
+=======
+	change_c0_status(ST0_IM, STATUSF_IP2 | STATUSF_IP3 | STATUSF_IP4 |
+				 STATUSF_IP5 | STATUSF_IP6 | STATUSF_IP7);
+>>>>>>> v4.9.227
 
 	/* Enable per-cpu interrupts: platform specific */
 
@@ -66,7 +78,11 @@ static void cmp_smp_finish(void)
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/* If we have an FPU, enroll ourselves in the FPU-full mask */
 	if (cpu_has_fpu)
+<<<<<<< HEAD
 		cpu_set(smp_processor_id(), mt_fpu_cpumask);
+=======
+		cpumask_set_cpu(smp_processor_id(), &mt_fpu_cpumask);
+>>>>>>> v4.9.227
 #endif /* CONFIG_MIPS_MT_FPAFF */
 
 	local_irq_enable();
@@ -110,7 +126,11 @@ void __init cmp_smp_setup(void)
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/* If we have an FPU, enroll ourselves in the FPU-full mask */
 	if (cpu_has_fpu)
+<<<<<<< HEAD
 		cpu_set(0, mt_fpu_cpumask);
+=======
+		cpumask_set_cpu(0, &mt_fpu_cpumask);
+>>>>>>> v4.9.227
 #endif /* CONFIG_MIPS_MT_FPAFF */
 
 	for (i = 1; i < NR_CPUS; i++) {
@@ -149,8 +169,13 @@ void __init cmp_prepare_cpus(unsigned int max_cpus)
 }
 
 struct plat_smp_ops cmp_smp_ops = {
+<<<<<<< HEAD
 	.send_ipi_single	= gic_send_ipi_single,
 	.send_ipi_mask		= gic_send_ipi_mask,
+=======
+	.send_ipi_single	= mips_smp_send_ipi_single,
+	.send_ipi_mask		= mips_smp_send_ipi_mask,
+>>>>>>> v4.9.227
 	.init_secondary		= cmp_init_secondary,
 	.smp_finish		= cmp_smp_finish,
 	.boot_secondary		= cmp_boot_secondary,

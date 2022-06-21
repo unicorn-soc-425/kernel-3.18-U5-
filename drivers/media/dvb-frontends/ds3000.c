@@ -404,7 +404,12 @@ static int ds3000_load_firmware(struct dvb_frontend *fe,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ds3000_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage)
+=======
+static int ds3000_set_voltage(struct dvb_frontend *fe,
+			      enum fe_sec_voltage voltage)
+>>>>>>> v4.9.227
 {
 	struct ds3000_state *state = fe->demodulator_priv;
 	u8 data;
@@ -431,7 +436,11 @@ static int ds3000_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ds3000_read_status(struct dvb_frontend *fe, fe_status_t* status)
+=======
+static int ds3000_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct ds3000_state *state = fe->demodulator_priv;
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
@@ -457,7 +466,11 @@ static int ds3000_read_status(struct dvb_frontend *fe, fe_status_t* status)
 
 		break;
 	default:
+<<<<<<< HEAD
 		return 1;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	if (state->config->set_lock_led)
@@ -527,7 +540,11 @@ static int ds3000_read_ber(struct dvb_frontend *fe, u32* ber)
 			*ber = 0xffffffff;
 		break;
 	default:
+<<<<<<< HEAD
 		return 1;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -622,7 +639,11 @@ static int ds3000_read_snr(struct dvb_frontend *fe, u16 *snr)
 				snr_reading, *snr);
 		break;
 	default:
+<<<<<<< HEAD
 		return 1;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -660,13 +681,21 @@ static int ds3000_read_ucblocks(struct dvb_frontend *fe, u32 *ucblocks)
 		state->prevUCBS2 = _ucblocks;
 		break;
 	default:
+<<<<<<< HEAD
 		return 1;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ds3000_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
+=======
+static int ds3000_set_tone(struct dvb_frontend *fe, enum fe_sec_tone_mode tone)
+>>>>>>> v4.9.227
 {
 	struct ds3000_state *state = fe->demodulator_priv;
 	u8 data;
@@ -753,7 +782,11 @@ static int ds3000_send_diseqc_msg(struct dvb_frontend *fe,
 		data |= 0x80;
 		ds3000_writereg(state, 0xa2, data);
 
+<<<<<<< HEAD
 		return 1;
+=======
+		return -ETIMEDOUT;
+>>>>>>> v4.9.227
 	}
 
 	data = ds3000_readreg(state, 0xa2);
@@ -766,7 +799,11 @@ static int ds3000_send_diseqc_msg(struct dvb_frontend *fe,
 
 /* Send DiSEqC burst */
 static int ds3000_diseqc_send_burst(struct dvb_frontend *fe,
+<<<<<<< HEAD
 					fe_sec_mini_cmd_t burst)
+=======
+				    enum fe_sec_mini_cmd burst)
+>>>>>>> v4.9.227
 {
 	struct ds3000_state *state = fe->demodulator_priv;
 	int i;
@@ -807,7 +844,11 @@ static int ds3000_diseqc_send_burst(struct dvb_frontend *fe,
 		data |= 0x80;
 		ds3000_writereg(state, 0xa2, data);
 
+<<<<<<< HEAD
 		return 1;
+=======
+		return -ETIMEDOUT;
+>>>>>>> v4.9.227
 	}
 
 	data = ds3000_readreg(state, 0xa2);
@@ -905,7 +946,11 @@ static int ds3000_set_frontend(struct dvb_frontend *fe)
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 
 	int i;
+<<<<<<< HEAD
 	fe_status_t status;
+=======
+	enum fe_status status;
+>>>>>>> v4.9.227
 	s32 offset_khz;
 	u32 frequency;
 	u16 value;
@@ -950,7 +995,11 @@ static int ds3000_set_frontend(struct dvb_frontend *fe)
 			ds3000_writereg(state, 0xfe, 0x98);
 		break;
 	default:
+<<<<<<< HEAD
 		return 1;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	/* enable 27MHz clock output */
@@ -958,6 +1007,18 @@ static int ds3000_set_frontend(struct dvb_frontend *fe)
 	/* enable ac coupling */
 	ds3000_writereg(state, 0x25, 0x8a);
 
+<<<<<<< HEAD
+=======
+	if ((c->symbol_rate < ds3000_ops.info.symbol_rate_min) ||
+			(c->symbol_rate > ds3000_ops.info.symbol_rate_max)) {
+		dprintk("%s() symbol_rate %u out of range (%u ... %u)\n",
+				__func__, c->symbol_rate,
+				ds3000_ops.info.symbol_rate_min,
+				ds3000_ops.info.symbol_rate_max);
+		return -EINVAL;
+	}
+
+>>>>>>> v4.9.227
 	/* enhance symbol rate performance */
 	if ((c->symbol_rate / 1000) <= 5000) {
 		value = 29777 / (c->symbol_rate / 1000) + 1;
@@ -1045,7 +1106,11 @@ static int ds3000_tune(struct dvb_frontend *fe,
 			bool re_tune,
 			unsigned int mode_flags,
 			unsigned int *delay,
+<<<<<<< HEAD
 			fe_status_t *status)
+=======
+			enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	if (re_tune) {
 		int ret = ds3000_set_frontend(fe);

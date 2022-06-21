@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __HAL_INTF_H__
 #define __HAL_INTF_H__
@@ -25,10 +28,17 @@
 #include <Hal8188EPhyCfg.h>
 
 enum RTL871X_HCI_TYPE {
+<<<<<<< HEAD
 	RTW_PCIE	= BIT0,
 	RTW_USB		= BIT1,
 	RTW_SDIO	= BIT2,
 	RTW_GSPI	= BIT3,
+=======
+	RTW_PCIE	= BIT(0),
+	RTW_USB		= BIT(1),
+	RTW_SDIO	= BIT(2),
+	RTW_GSPI	= BIT(3),
+>>>>>>> v4.9.227
 };
 
 enum _CHIP_TYPE {
@@ -63,7 +73,10 @@ enum hw_variables {
 	HW_VAR_SEC_CFG,
 	HW_VAR_BCN_VALID,
 	HW_VAR_RF_TYPE,
+<<<<<<< HEAD
 	HW_VAR_DM_FLAG,
+=======
+>>>>>>> v4.9.227
 	HW_VAR_DM_FUNC_OP,
 	HW_VAR_DM_FUNC_SET,
 	HW_VAR_DM_FUNC_CLR,
@@ -144,6 +157,7 @@ enum hal_intf_ps_func {
 	HAL_MAX_ID,
 };
 
+<<<<<<< HEAD
 struct hal_ops {
 	u32	(*hal_power_on)(struct adapter *padapter);
 	u32	(*hal_init)(struct adapter *padapter);
@@ -227,6 +241,8 @@ struct hal_ops {
 	void (*hal_reset_security_engine)(struct adapter *adapter);
 };
 
+=======
+>>>>>>> v4.9.227
 enum rt_eeprom_type {
 	EEPROM_93C46,
 	EEPROM_93C56,
@@ -234,10 +250,17 @@ enum rt_eeprom_type {
 };
 
 #define RF_CHANGE_BY_INIT	0
+<<<<<<< HEAD
 #define RF_CHANGE_BY_IPS	BIT28
 #define RF_CHANGE_BY_PS		BIT29
 #define RF_CHANGE_BY_HW		BIT30
 #define RF_CHANGE_BY_SW		BIT31
+=======
+#define RF_CHANGE_BY_IPS	BIT(28)
+#define RF_CHANGE_BY_PS		BIT(29)
+#define RF_CHANGE_BY_HW		BIT(30)
+#define RF_CHANGE_BY_SW		BIT(31)
+>>>>>>> v4.9.227
 
 enum hardware_type {
 	HARDWARE_TYPE_RTL8188EU,
@@ -248,6 +271,12 @@ enum hardware_type {
 
 #define is_boot_from_eeprom(adapter) (adapter->eeprompriv.EepromOrEfuse)
 
+<<<<<<< HEAD
+=======
+void UpdateHalRAMask8188EUsb(struct adapter *adapt, u32 mac_id, u8 rssi_level);
+u32 rtl8188eu_hal_deinit(struct adapter *Adapter);
+u32 rtl8188eu_hal_init(struct adapter *Adapter);
+>>>>>>> v4.9.227
 void rtw_hal_def_value_init(struct adapter *padapter);
 
 void	rtw_hal_free_data(struct adapter *padapter);
@@ -267,8 +296,11 @@ void rtw_hal_chip_configure(struct adapter *padapter);
 void rtw_hal_read_chip_info(struct adapter *padapter);
 void rtw_hal_read_chip_version(struct adapter *padapter);
 
+<<<<<<< HEAD
 u8 rtw_hal_set_def_var(struct adapter *padapter,
 		       enum hal_def_variable eVariable, void *pValue);
+=======
+>>>>>>> v4.9.227
 u8 rtw_hal_get_def_var(struct adapter *padapter,
 		       enum hal_def_variable eVariable, void *pValue);
 
@@ -276,11 +308,16 @@ void rtw_hal_set_odm_var(struct adapter *padapter,
 			 enum hal_odm_variable eVariable, void *pValue1,
 			 bool bSet);
 
+<<<<<<< HEAD
 void rtw_hal_enable_interrupt(struct adapter *padapter);
 void rtw_hal_disable_interrupt(struct adapter *padapter);
 
 u32	rtw_hal_inirp_init(struct adapter *padapter);
 u32	rtw_hal_inirp_deinit(struct adapter *padapter);
+=======
+u32	rtw_hal_inirp_init(struct adapter *padapter);
+void	rtw_hal_inirp_deinit(struct adapter *padapter);
+>>>>>>> v4.9.227
 
 s32	rtw_hal_xmit(struct adapter *padapter, struct xmit_frame *pxmitframe);
 s32	rtw_hal_mgnt_xmit(struct adapter *padapter,
@@ -288,7 +325,11 @@ s32	rtw_hal_mgnt_xmit(struct adapter *padapter,
 
 s32	rtw_hal_init_xmit_priv(struct adapter *padapter);
 
+<<<<<<< HEAD
 s32	rtw_hal_init_recv_priv(struct adapter *padapter);
+=======
+int	rtw_hal_init_recv_priv(struct adapter *padapter);
+>>>>>>> v4.9.227
 void	rtw_hal_free_recv_priv(struct adapter *padapter);
 
 void rtw_hal_update_ra_mask(struct adapter *padapter, u32 mac_id, u8 level);
@@ -300,11 +341,14 @@ void rtw_hal_bcn_related_reg_setting(struct adapter *padapter);
 
 u32	rtw_hal_read_rfreg(struct adapter *padapter, enum rf_radio_path eRFPath,
 			   u32 RegAddr, u32 BitMask);
+<<<<<<< HEAD
 void	rtw_hal_write_rfreg(struct adapter *padapter,
 			    enum rf_radio_path eRFPath, u32 RegAddr,
 			    u32 BitMask, u32 Data);
 
 s32	rtw_hal_interrupt_handler(struct adapter *padapter);
+=======
+>>>>>>> v4.9.227
 
 void	rtw_hal_set_bwmode(struct adapter *padapter,
 			   enum ht_channel_width Bandwidth, u8 Offset);
@@ -317,10 +361,15 @@ void	rtw_hal_antdiv_rssi_compared(struct adapter *padapter,
 				     struct wlan_bssid_ex *src);
 
 void rtw_hal_sreset_init(struct adapter *padapter);
+<<<<<<< HEAD
 u8   rtw_hal_sreset_get_wifi_status(struct adapter *padapter);
 
 void rtw_hal_notch_filter(struct adapter *adapter, bool enable);
 void rtw_hal_reset_security_engine(struct adapter *adapter);
+=======
+
+void rtw_hal_notch_filter(struct adapter *adapter, bool enable);
+>>>>>>> v4.9.227
 
 void indicate_wx_scan_complete_event(struct adapter *padapter);
 u8 rtw_do_join(struct adapter *padapter);

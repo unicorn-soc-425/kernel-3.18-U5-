@@ -40,6 +40,10 @@
 #include <linux/tcp.h>
 #include <linux/net_tstamp.h>
 #include <linux/ptp_clock_kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/tick.h>
+>>>>>>> v4.9.227
 
 #include <asm/checksum.h>
 #include <asm/homecache.h>
@@ -292,7 +296,10 @@ static inline int mpipe_instance(struct net_device *dev)
  */
 static bool network_cpus_init(void)
 {
+<<<<<<< HEAD
 	char buf[1024];
+=======
+>>>>>>> v4.9.227
 	int rc;
 
 	if (network_cpus_string == NULL)
@@ -314,8 +321,13 @@ static bool network_cpus_init(void)
 		return false;
 	}
 
+<<<<<<< HEAD
 	cpulist_scnprintf(buf, sizeof(buf), &network_cpus_map);
 	pr_info("Linux network CPUs: %s\n", buf);
+=======
+	pr_info("Linux network CPUs: %*pbl\n",
+		cpumask_pr_args(&network_cpus_map));
+>>>>>>> v4.9.227
 	return true;
 }
 
@@ -462,7 +474,11 @@ static void tile_tx_timestamp(struct sk_buff *skb, int instance)
 	if (unlikely((shtx->tx_flags & SKBTX_HW_TSTAMP) != 0)) {
 		struct mpipe_data *md = &mpipe_data[instance];
 		struct skb_shared_hwtstamps shhwtstamps;
+<<<<<<< HEAD
 		struct timespec ts;
+=======
+		struct timespec64 ts;
+>>>>>>> v4.9.227
 
 		shtx->tx_flags |= SKBTX_IN_PROGRESS;
 		gxio_mpipe_get_timestamp(&md->context, &ts);
@@ -839,7 +855,12 @@ static int ptp_mpipe_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ptp_mpipe_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
+=======
+static int ptp_mpipe_gettime(struct ptp_clock_info *ptp,
+			     struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	int ret = 0;
 	struct mpipe_data *md = container_of(ptp, struct mpipe_data, caps);
@@ -851,7 +872,11 @@ static int ptp_mpipe_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
 }
 
 static int ptp_mpipe_settime(struct ptp_clock_info *ptp,
+<<<<<<< HEAD
 			     const struct timespec *ts)
+=======
+			     const struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	int ret = 0;
 	struct mpipe_data *md = container_of(ptp, struct mpipe_data, caps);
@@ -877,17 +902,28 @@ static struct ptp_clock_info ptp_mpipe_caps = {
 	.pps		= 0,
 	.adjfreq	= ptp_mpipe_adjfreq,
 	.adjtime	= ptp_mpipe_adjtime,
+<<<<<<< HEAD
 	.gettime	= ptp_mpipe_gettime,
 	.settime	= ptp_mpipe_settime,
+=======
+	.gettime64	= ptp_mpipe_gettime,
+	.settime64	= ptp_mpipe_settime,
+>>>>>>> v4.9.227
 	.enable		= ptp_mpipe_enable,
 };
 
 /* Sync mPIPE's timestamp up with Linux system time and register PTP clock. */
 static void register_ptp_clock(struct net_device *dev, struct mpipe_data *md)
 {
+<<<<<<< HEAD
 	struct timespec ts;
 
 	getnstimeofday(&ts);
+=======
+	struct timespec64 ts;
+
+	ktime_get_ts64(&ts);
+>>>>>>> v4.9.227
 	gxio_mpipe_set_timestamp(&md->context, &ts);
 
 	mutex_init(&md->ptp_lock);
@@ -1123,7 +1159,11 @@ static int alloc_percpu_mpipe_resources(struct net_device *dev,
 			addr + i * sizeof(struct tile_net_comps);
 
 	/* If this is a network cpu, create an iqueue. */
+<<<<<<< HEAD
 	if (cpu_isset(cpu, network_cpus_map)) {
+=======
+	if (cpumask_test_cpu(cpu, &network_cpus_map)) {
+>>>>>>> v4.9.227
 		order = get_order(NOTIF_RING_SIZE);
 		page = homecache_alloc_pages(GFP_KERNEL, order, cpu);
 		if (page == NULL) {
@@ -1299,7 +1339,11 @@ static int tile_net_init_mpipe(struct net_device *dev)
 	int first_ring, ring;
 	int instance = mpipe_instance(dev);
 	struct mpipe_data *md = &mpipe_data[instance];
+<<<<<<< HEAD
 	int network_cpus_count = cpus_weight(network_cpus_map);
+=======
+	int network_cpus_count = cpumask_weight(&network_cpus_map);
+>>>>>>> v4.9.227
 
 	if (!hash_default) {
 		netdev_err(dev, "Networking requires hash_default!\n");
@@ -2273,7 +2317,12 @@ static int __init tile_net_init_module(void)
 		tile_net_dev_init(name, mac);
 
 	if (!network_cpus_init())
+<<<<<<< HEAD
 		network_cpus_map = *cpu_online_mask;
+=======
+		cpumask_and(&network_cpus_map, housekeeping_cpumask(),
+			    cpu_online_mask);
+>>>>>>> v4.9.227
 
 	return 0;
 }

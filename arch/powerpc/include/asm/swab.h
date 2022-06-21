@@ -9,6 +9,7 @@
 
 #include <uapi/asm/swab.h>
 
+<<<<<<< HEAD
 static __inline__ __u16 ld_le16(const volatile __u16 *addr)
 {
 	__u16 val;
@@ -35,4 +36,6 @@ static __inline__ void st_le32(volatile __u32 *addr, const __u32 val)
 	__asm__ __volatile__ ("stwbrx %1,0,%2" : "=m" (*addr) : "r" (val), "r" (addr));
 }
 
+=======
+>>>>>>> v4.9.227
 #endif /* _ASM_POWERPC_SWAB_H */

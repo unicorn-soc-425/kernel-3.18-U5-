@@ -16,6 +16,10 @@
 #include <linux/of_platform.h>
 #include <linux/io.h>
 #include <linux/rtc/sirfsoc_rtciobrg.h>
+<<<<<<< HEAD
+=======
+#include <asm/outercache.h>
+>>>>>>> v4.9.227
 #include <asm/suspend.h>
 #include <asm/hardware/cache-l2x0.h>
 
@@ -135,7 +139,10 @@ static struct platform_driver sirfsoc_memc_driver = {
 	.probe		= sirfsoc_memc_probe,
 	.driver = {
 		.name = "sirfsoc-memc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= memc_ids,
 	},
 };

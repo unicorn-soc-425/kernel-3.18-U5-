@@ -25,8 +25,11 @@
 #include <linux/io.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.6"
 
+=======
+>>>>>>> v4.9.227
 enum ds1511reg {
 	DS1511_SEC = 0x0,
 	DS1511_MIN = 0x1,
@@ -64,7 +67,11 @@ enum ds1511reg {
 #define DS1511_KIE	0x04
 #define DS1511_WDE	0x02
 #define DS1511_WDS	0x01
+<<<<<<< HEAD
 #define DS1511_RAM_MAX	0xff
+=======
+#define DS1511_RAM_MAX	0x100
+>>>>>>> v4.9.227
 
 #define RTC_CMD		DS1511_CONTROL_B
 #define RTC_CMD1	DS1511_CONTROL_A
@@ -159,7 +166,11 @@ ds1511_wdog_set(unsigned long deciseconds)
 	/*
 	 * set wdog enable and wdog 'steering' bit to issue a reset
 	 */
+<<<<<<< HEAD
 	rtc_write(DS1511_WDE | DS1511_WDS, RTC_CMD);
+=======
+	rtc_write(rtc_read(RTC_CMD) | DS1511_WDE | DS1511_WDS, RTC_CMD);
+>>>>>>> v4.9.227
 }
 
 void
@@ -407,6 +418,7 @@ ds1511_nvram_read(struct file *filp, struct kobject *kobj,
 {
 	ssize_t count;
 
+<<<<<<< HEAD
 	/*
 	 * if count is more than one, turn on "burst" mode
 	 * turn it off when you're done
@@ -427,6 +439,12 @@ ds1511_nvram_read(struct file *filp, struct kobject *kobj,
 	if (count > 1)
 		rtc_write((rtc_read(RTC_CMD) & ~DS1511_BME), RTC_CMD);
 
+=======
+	rtc_write(pos, DS1511_RAMADDR_LSB);
+	for (count = 0; count < size; count++)
+		*buf++ = rtc_read(DS1511_RAMDATA);
+
+>>>>>>> v4.9.227
 	return count;
 }
 
@@ -437,6 +455,7 @@ ds1511_nvram_write(struct file *filp, struct kobject *kobj,
 {
 	ssize_t count;
 
+<<<<<<< HEAD
 	/*
 	 * if count is more than one, turn on "burst" mode
 	 * turn it off when you're done
@@ -457,6 +476,12 @@ ds1511_nvram_write(struct file *filp, struct kobject *kobj,
 	if (count > 1)
 		rtc_write((rtc_read(RTC_CMD) & ~DS1511_BME), RTC_CMD);
 
+=======
+	rtc_write(pos, DS1511_RAMADDR_LSB);
+	for (count = 0; count < size; count++)
+		rtc_write(*buf++, DS1511_RAMDATA);
+
+>>>>>>> v4.9.227
 	return count;
 }
 
@@ -490,7 +515,11 @@ static int ds1511_rtc_probe(struct platform_device *pdev)
 	/*
 	 * turn on the clock and the crystal, etc.
 	 */
+<<<<<<< HEAD
 	rtc_write(0, RTC_CMD);
+=======
+	rtc_write(DS1511_BME, RTC_CMD);
+>>>>>>> v4.9.227
 	rtc_write(0, RTC_CMD1);
 	/*
 	 * clear the wdog counter
@@ -561,7 +590,10 @@ static struct platform_driver ds1511_rtc_driver = {
 	.remove		= ds1511_rtc_remove,
 	.driver		= {
 		.name	= "ds1511",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -570,4 +602,7 @@ module_platform_driver(ds1511_rtc_driver);
 MODULE_AUTHOR("Andrew Sharp <andy.sharp@lsi.com>");
 MODULE_DESCRIPTION("Dallas DS1511 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227

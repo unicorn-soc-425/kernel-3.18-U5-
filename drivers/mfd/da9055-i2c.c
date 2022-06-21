@@ -79,7 +79,10 @@ static struct i2c_driver da9055_i2c_driver = {
 	.id_table = da9055_i2c_id,
 	.driver = {
 		.name = "da9055-pmic",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(da9055_of_match),
 	},
 };

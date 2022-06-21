@@ -23,6 +23,11 @@
  * they shouldn't be hard-coded!
  */
 
+<<<<<<< HEAD
+=======
+#define __ro_after_init __read_mostly
+
+>>>>>>> v4.9.227
 #define L1_CACHE_BYTES 16
 #define L1_CACHE_SHIFT 4
 

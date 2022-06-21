@@ -62,6 +62,7 @@ int psb_gem_dumb_map_gtt(struct drm_file *file, struct drm_device *dev,
 	int ret = 0;
 	struct drm_gem_object *obj;
 
+<<<<<<< HEAD
 	mutex_lock(&dev->struct_mutex);
 
 	/* GEM does all our handle to object mapping */
@@ -71,6 +72,12 @@ int psb_gem_dumb_map_gtt(struct drm_file *file, struct drm_device *dev,
 		goto unlock;
 	}
 	/* What validation is needed here ? */
+=======
+	/* GEM does all our handle to object mapping */
+	obj = drm_gem_object_lookup(file, handle);
+	if (obj == NULL)
+		return -ENOENT;
+>>>>>>> v4.9.227
 
 	/* Make it mmapable */
 	ret = drm_gem_create_mmap_offset(obj);
@@ -78,9 +85,13 @@ int psb_gem_dumb_map_gtt(struct drm_file *file, struct drm_device *dev,
 		goto out;
 	*offset = drm_vma_node_offset_addr(&obj->vma_node);
 out:
+<<<<<<< HEAD
 	drm_gem_object_unreference(obj);
 unlock:
 	mutex_unlock(&dev->struct_mutex);
+=======
+	drm_gem_object_unreference_unlocked(obj);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -189,7 +200,11 @@ int psb_gem_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 
 	/* Make sure we don't parallel update on a fault, nor move or remove
 	   something from beneath our feet */
+<<<<<<< HEAD
 	mutex_lock(&dev->struct_mutex);
+=======
+	mutex_lock(&dev_priv->mmap_mutex);
+>>>>>>> v4.9.227
 
 	/* For now the mmap pins the object and it stays pinned. As things
 	   stand that will do us no harm */
@@ -215,7 +230,11 @@ int psb_gem_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	ret = vm_insert_pfn(vma, (unsigned long)vmf->virtual_address, pfn);
 
 fail:
+<<<<<<< HEAD
 	mutex_unlock(&dev->struct_mutex);
+=======
+	mutex_unlock(&dev_priv->mmap_mutex);
+>>>>>>> v4.9.227
 	switch (ret) {
 	case 0:
 	case -ERESTARTSYS:

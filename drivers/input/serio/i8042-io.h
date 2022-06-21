@@ -81,7 +81,11 @@ static inline int i8042_platform_init(void)
 		return -EBUSY;
 #endif
 
+<<<<<<< HEAD
 	i8042_reset = 1;
+=======
+	i8042_reset = I8042_RESET_ALWAYS;
+>>>>>>> v4.9.227
 	return 0;
 }
 

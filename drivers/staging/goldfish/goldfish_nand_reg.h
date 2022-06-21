@@ -66,11 +66,20 @@ enum nand_reg {
 };
 
 struct cmd_params {
+<<<<<<< HEAD
 	uint32_t dev;
 	uint32_t addr_low;
 	uint32_t addr_high;
 	uint32_t transfer_size;
 	unsigned long data;
 	uint32_t result;
+=======
+	u32 dev;
+	u32 addr_low;
+	u32 addr_high;
+	u32 transfer_size;
+	unsigned long data;
+	u32 result;
+>>>>>>> v4.9.227
 };
 #endif

@@ -74,8 +74,13 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
 	inet->inet_daddr = fl4->daddr;
 	inet->inet_dport = usin->sin_port;
 	sk->sk_state = TCP_ESTABLISHED;
+<<<<<<< HEAD
 	inet_set_txhash(sk);
 	inet->inet_id = jiffies;
+=======
+	sk_set_txhash(sk);
+	inet->inet_id = prandom_u32();
+>>>>>>> v4.9.227
 
 	sk_dst_set(sk, &rt->dst);
 	err = 0;

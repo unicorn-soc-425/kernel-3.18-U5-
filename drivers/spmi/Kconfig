@@ -12,7 +12,11 @@ if SPMI
 
 config SPMI_MSM_PMIC_ARB
 	tristate "Qualcomm MSM SPMI Controller (PMIC Arbiter)"
+<<<<<<< HEAD
 	depends on IRQ_DOMAIN
+=======
+	select IRQ_DOMAIN
+>>>>>>> v4.9.227
 	depends on ARCH_QCOM || COMPILE_TEST
 	depends on HAS_IOMEM
 	default ARCH_QCOM

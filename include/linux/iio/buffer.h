@@ -18,6 +18,7 @@
 struct iio_buffer;
 
 /**
+<<<<<<< HEAD
  * struct iio_buffer_access_funcs - access functions for buffers.
  * @store_to:		actually store stuff to the buffer
  * @read_first_n:	try to get a specified number of bytes (must exist)
@@ -31,6 +32,32 @@ struct iio_buffer;
  * @set_length:		set number of datums in buffer
  * @release:		called when the last reference to the buffer is dropped,
  *			should free all resources allocated by the buffer.
+=======
+ * INDIO_BUFFER_FLAG_FIXED_WATERMARK - Watermark level of the buffer can not be
+ *   configured. It has a fixed value which will be buffer specific.
+ */
+#define INDIO_BUFFER_FLAG_FIXED_WATERMARK BIT(0)
+
+/**
+ * struct iio_buffer_access_funcs - access functions for buffers.
+ * @store_to:		actually store stuff to the buffer
+ * @read_first_n:	try to get a specified number of bytes (must exist)
+ * @data_available:	indicates how much data is available for reading from
+ *			the buffer.
+ * @request_update:	if a parameter change has been marked, update underlying
+ *			storage.
+ * @set_bytes_per_datum:set number of bytes per datum
+ * @set_length:		set number of datums in buffer
+ * @enable:             called if the buffer is attached to a device and the
+ *                      device starts sampling. Calls are balanced with
+ *                      @disable.
+ * @disable:            called if the buffer is attached to a device and the
+ *                      device stops sampling. Calles are balanced with @enable.
+ * @release:		called when the last reference to the buffer is dropped,
+ *			should free all resources allocated by the buffer.
+ * @modes:		Supported operating modes by this buffer type
+ * @flags:		A bitmask combination of INDIO_BUFFER_FLAG_*
+>>>>>>> v4.9.227
  *
  * The purpose of this structure is to make the buffer element
  * modular as event for a given driver, different usecases may require
@@ -45,6 +72,7 @@ struct iio_buffer_access_funcs {
 	int (*read_first_n)(struct iio_buffer *buffer,
 			    size_t n,
 			    char __user *buf);
+<<<<<<< HEAD
 	bool (*data_available)(struct iio_buffer *buffer);
 
 	int (*request_update)(struct iio_buffer *buffer);
@@ -55,6 +83,22 @@ struct iio_buffer_access_funcs {
 	int (*set_length)(struct iio_buffer *buffer, int length);
 
 	void (*release)(struct iio_buffer *buffer);
+=======
+	size_t (*data_available)(struct iio_buffer *buffer);
+
+	int (*request_update)(struct iio_buffer *buffer);
+
+	int (*set_bytes_per_datum)(struct iio_buffer *buffer, size_t bpd);
+	int (*set_length)(struct iio_buffer *buffer, unsigned int length);
+
+	int (*enable)(struct iio_buffer *buffer, struct iio_dev *indio_dev);
+	int (*disable)(struct iio_buffer *buffer, struct iio_dev *indio_dev);
+
+	void (*release)(struct iio_buffer *buffer);
+
+	unsigned int modes;
+	unsigned int flags;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -68,31 +112,59 @@ struct iio_buffer_access_funcs {
  * @access:		[DRIVER] buffer access functions associated with the
  *			implementation.
  * @scan_el_dev_attr_list:[INTERN] list of scan element related attributes.
+<<<<<<< HEAD
+=======
+ * @buffer_group:	[INTERN] attributes of the buffer group
+>>>>>>> v4.9.227
  * @scan_el_group:	[DRIVER] attribute group for those attributes not
  *			created from the iio_chan_info array.
  * @pollq:		[INTERN] wait queue to allow for polling on the buffer.
  * @stufftoread:	[INTERN] flag to indicate new data.
+<<<<<<< HEAD
+=======
+ * @attrs:		[INTERN] standard attributes of the buffer
+>>>>>>> v4.9.227
  * @demux_list:		[INTERN] list of operations required to demux the scan.
  * @demux_bounce:	[INTERN] buffer for doing gather from incoming scan.
  * @buffer_list:	[INTERN] entry in the devices list of current buffers.
  * @ref:		[INTERN] reference count of the buffer.
+<<<<<<< HEAD
  */
 struct iio_buffer {
 	int					length;
 	int					bytes_per_datum;
+=======
+ * @watermark:		[INTERN] number of datums to wait for poll/read.
+ */
+struct iio_buffer {
+	unsigned int				length;
+	size_t					bytes_per_datum;
+>>>>>>> v4.9.227
 	struct attribute_group			*scan_el_attrs;
 	long					*scan_mask;
 	bool					scan_timestamp;
 	const struct iio_buffer_access_funcs	*access;
 	struct list_head			scan_el_dev_attr_list;
+<<<<<<< HEAD
 	struct attribute_group			scan_el_group;
 	wait_queue_head_t			pollq;
 	bool					stufftoread;
 	const struct attribute_group *attrs;
+=======
+	struct attribute_group			buffer_group;
+	struct attribute_group			scan_el_group;
+	wait_queue_head_t			pollq;
+	bool					stufftoread;
+	const struct attribute			**attrs;
+>>>>>>> v4.9.227
 	struct list_head			demux_list;
 	void					*demux_bounce;
 	struct list_head			buffer_list;
 	struct kref				ref;
+<<<<<<< HEAD
+=======
+	unsigned int				watermark;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -117,6 +189,7 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,
 			struct iio_buffer *buffer, int bit);
 
 /**
+<<<<<<< HEAD
  * iio_scan_mask_set() - set particular bit in the scan mask
  * @indio_dev		IIO device structure
  * @buffer:		the buffer whose scan mask we are interested in
@@ -126,6 +199,8 @@ int iio_scan_mask_set(struct iio_dev *indio_dev,
 		      struct iio_buffer *buffer, int bit);
 
 /**
+=======
+>>>>>>> v4.9.227
  * iio_push_to_buffers() - push to a registered buffer.
  * @indio_dev:		iio_dev structure for device.
  * @data:		Full scan.
@@ -159,6 +234,7 @@ static inline int iio_push_to_buffers_with_timestamp(struct iio_dev *indio_dev,
 
 int iio_update_demux(struct iio_dev *indio_dev);
 
+<<<<<<< HEAD
 /**
  * iio_buffer_register() - register the buffer with IIO core
  * @indio_dev:		device with the buffer to be registered
@@ -209,6 +285,8 @@ ssize_t iio_buffer_show_enable(struct device *dev,
 					   iio_buffer_show_enable,	\
 					   iio_buffer_store_enable)
 
+=======
+>>>>>>> v4.9.227
 bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
 	const unsigned long *mask);
 
@@ -232,6 +310,7 @@ static inline void iio_device_attach_buffer(struct iio_dev *indio_dev,
 
 #else /* CONFIG_IIO_BUFFER */
 
+<<<<<<< HEAD
 static inline int iio_buffer_register(struct iio_dev *indio_dev,
 					   const struct iio_chan_spec *channels,
 					   int num_channels)
@@ -242,6 +321,8 @@ static inline int iio_buffer_register(struct iio_dev *indio_dev,
 static inline void iio_buffer_unregister(struct iio_dev *indio_dev)
 {}
 
+=======
+>>>>>>> v4.9.227
 static inline void iio_buffer_get(struct iio_buffer *buffer) {}
 static inline void iio_buffer_put(struct iio_buffer *buffer) {}
 

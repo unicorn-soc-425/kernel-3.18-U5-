@@ -1,9 +1,16 @@
 /*
  * AMD Cryptographic Coprocessor (CCP) driver
  *
+<<<<<<< HEAD
  * Copyright (C) 2013 Advanced Micro Devices, Inc.
  *
  * Author: Tom Lendacky <thomas.lendacky@amd.com>
+=======
+ * Copyright (C) 2013,2016 Advanced Micro Devices, Inc.
+ *
+ * Author: Tom Lendacky <thomas.lendacky@amd.com>
+ * Author: Gary R Hook <gary.hook@amd.com>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -25,9 +32,12 @@
 
 #include "ccp-dev.h"
 
+<<<<<<< HEAD
 #define IO_BAR				2
 #define IO_OFFSET			0x20000
 
+=======
+>>>>>>> v4.9.227
 #define MSIX_VECTORS			2
 
 struct ccp_msix {
@@ -44,7 +54,11 @@ static int ccp_get_msix_irqs(struct ccp_device *ccp)
 {
 	struct ccp_pci *ccp_pci = ccp->dev_specific;
 	struct device *dev = ccp->dev;
+<<<<<<< HEAD
 	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+=======
+	struct pci_dev *pdev = to_pci_dev(dev);
+>>>>>>> v4.9.227
 	struct msix_entry msix_entry[MSIX_VECTORS];
 	unsigned int name_len = sizeof(ccp_pci->msix[0].name) - 1;
 	int v, ret;
@@ -59,9 +73,17 @@ static int ccp_get_msix_irqs(struct ccp_device *ccp)
 	ccp_pci->msix_count = ret;
 	for (v = 0; v < ccp_pci->msix_count; v++) {
 		/* Set the interrupt names and request the irqs */
+<<<<<<< HEAD
 		snprintf(ccp_pci->msix[v].name, name_len, "ccp-%u", v);
 		ccp_pci->msix[v].vector = msix_entry[v].vector;
 		ret = request_irq(ccp_pci->msix[v].vector, ccp_irq_handler,
+=======
+		snprintf(ccp_pci->msix[v].name, name_len, "%s-%u",
+			 ccp->name, v);
+		ccp_pci->msix[v].vector = msix_entry[v].vector;
+		ret = request_irq(ccp_pci->msix[v].vector,
+				  ccp->vdata->perform->irqhandler,
+>>>>>>> v4.9.227
 				  0, ccp_pci->msix[v].name, dev);
 		if (ret) {
 			dev_notice(dev, "unable to allocate MSI-X IRQ (%d)\n",
@@ -69,6 +91,10 @@ static int ccp_get_msix_irqs(struct ccp_device *ccp)
 			goto e_irq;
 		}
 	}
+<<<<<<< HEAD
+=======
+	ccp->use_tasklet = true;
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -86,7 +112,11 @@ e_irq:
 static int ccp_get_msi_irq(struct ccp_device *ccp)
 {
 	struct device *dev = ccp->dev;
+<<<<<<< HEAD
 	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+=======
+	struct pci_dev *pdev = to_pci_dev(dev);
+>>>>>>> v4.9.227
 	int ret;
 
 	ret = pci_enable_msi(pdev);
@@ -94,11 +124,20 @@ static int ccp_get_msi_irq(struct ccp_device *ccp)
 		return ret;
 
 	ccp->irq = pdev->irq;
+<<<<<<< HEAD
 	ret = request_irq(ccp->irq, ccp_irq_handler, 0, "ccp", dev);
+=======
+	ret = request_irq(ccp->irq, ccp->vdata->perform->irqhandler, 0,
+			  ccp->name, dev);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_notice(dev, "unable to allocate MSI IRQ (%d)\n", ret);
 		goto e_msi;
 	}
+<<<<<<< HEAD
+=======
+	ccp->use_tasklet = true;
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -133,22 +172,35 @@ static void ccp_free_irqs(struct ccp_device *ccp)
 {
 	struct ccp_pci *ccp_pci = ccp->dev_specific;
 	struct device *dev = ccp->dev;
+<<<<<<< HEAD
 	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+=======
+	struct pci_dev *pdev = to_pci_dev(dev);
+>>>>>>> v4.9.227
 
 	if (ccp_pci->msix_count) {
 		while (ccp_pci->msix_count--)
 			free_irq(ccp_pci->msix[ccp_pci->msix_count].vector,
 				 dev);
 		pci_disable_msix(pdev);
+<<<<<<< HEAD
 	} else {
 		free_irq(ccp->irq, dev);
 		pci_disable_msi(pdev);
 	}
+=======
+	} else if (ccp->irq) {
+		free_irq(ccp->irq, dev);
+		pci_disable_msi(pdev);
+	}
+	ccp->irq = 0;
+>>>>>>> v4.9.227
 }
 
 static int ccp_find_mmio_area(struct ccp_device *ccp)
 {
 	struct device *dev = ccp->dev;
+<<<<<<< HEAD
 	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
 	resource_size_t io_len;
 	unsigned long io_flags;
@@ -157,6 +209,17 @@ static int ccp_find_mmio_area(struct ccp_device *ccp)
 	io_len = pci_resource_len(pdev, IO_BAR);
 	if ((io_flags & IORESOURCE_MEM) && (io_len >= (IO_OFFSET + 0x800)))
 		return IO_BAR;
+=======
+	struct pci_dev *pdev = to_pci_dev(dev);
+	resource_size_t io_len;
+	unsigned long io_flags;
+
+	io_flags = pci_resource_flags(pdev, ccp->vdata->bar);
+	io_len = pci_resource_len(pdev, ccp->vdata->bar);
+	if ((io_flags & IORESOURCE_MEM) &&
+	    (io_len >= (ccp->vdata->offset + 0x800)))
+		return ccp->vdata->bar;
+>>>>>>> v4.9.227
 
 	return -EIO;
 }
@@ -174,19 +237,37 @@ static int ccp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (!ccp)
 		goto e_err;
 
+<<<<<<< HEAD
 	ccp_pci = kzalloc(sizeof(*ccp_pci), GFP_KERNEL);
 	if (!ccp_pci) {
 		ret = -ENOMEM;
 		goto e_free1;
 	}
 	ccp->dev_specific = ccp_pci;
+=======
+	ccp_pci = devm_kzalloc(dev, sizeof(*ccp_pci), GFP_KERNEL);
+	if (!ccp_pci)
+		goto e_err;
+
+	ccp->dev_specific = ccp_pci;
+	ccp->vdata = (struct ccp_vdata *)id->driver_data;
+	if (!ccp->vdata || !ccp->vdata->version) {
+		ret = -ENODEV;
+		dev_err(dev, "missing driver data\n");
+		goto e_err;
+	}
+>>>>>>> v4.9.227
 	ccp->get_irq = ccp_get_irqs;
 	ccp->free_irq = ccp_free_irqs;
 
 	ret = pci_request_regions(pdev, "ccp");
 	if (ret) {
 		dev_err(dev, "pci_request_regions failed (%d)\n", ret);
+<<<<<<< HEAD
 		goto e_free2;
+=======
+		goto e_err;
+>>>>>>> v4.9.227
 	}
 
 	ret = pci_enable_device(pdev);
@@ -204,11 +285,19 @@ static int ccp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	ret = -EIO;
 	ccp->io_map = pci_iomap(pdev, bar, 0);
+<<<<<<< HEAD
 	if (ccp->io_map == NULL) {
 		dev_err(dev, "pci_iomap failed\n");
 		goto e_device;
 	}
 	ccp->io_regs = ccp->io_map + IO_OFFSET;
+=======
+	if (!ccp->io_map) {
+		dev_err(dev, "pci_iomap failed\n");
+		goto e_device;
+	}
+	ccp->io_regs = ccp->io_map + ccp->vdata->offset;
+>>>>>>> v4.9.227
 
 	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(48));
 	if (ret) {
@@ -222,7 +311,14 @@ static int ccp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	dev_set_drvdata(dev, ccp);
 
+<<<<<<< HEAD
 	ret = ccp_init(ccp);
+=======
+	if (ccp->vdata->setup)
+		ccp->vdata->setup(ccp);
+
+	ret = ccp->vdata->perform->init(ccp);
+>>>>>>> v4.9.227
 	if (ret)
 		goto e_iomap;
 
@@ -239,12 +335,15 @@ e_device:
 e_regions:
 	pci_release_regions(pdev);
 
+<<<<<<< HEAD
 e_free2:
 	kfree(ccp_pci);
 
 e_free1:
 	kfree(ccp);
 
+=======
+>>>>>>> v4.9.227
 e_err:
 	dev_notice(dev, "initialization failed\n");
 	return ret;
@@ -258,7 +357,11 @@ static void ccp_pci_remove(struct pci_dev *pdev)
 	if (!ccp)
 		return;
 
+<<<<<<< HEAD
 	ccp_destroy(ccp);
+=======
+	ccp->vdata->perform->destroy(ccp);
+>>>>>>> v4.9.227
 
 	pci_iounmap(pdev, ccp->io_map);
 
@@ -266,8 +369,11 @@ static void ccp_pci_remove(struct pci_dev *pdev)
 
 	pci_release_regions(pdev);
 
+<<<<<<< HEAD
 	kfree(ccp);
 
+=======
+>>>>>>> v4.9.227
 	dev_notice(dev, "disabled\n");
 }
 
@@ -321,14 +427,24 @@ static int ccp_pci_resume(struct pci_dev *pdev)
 #endif
 
 static const struct pci_device_id ccp_pci_table[] = {
+<<<<<<< HEAD
 	{ PCI_VDEVICE(AMD, 0x1537), },
+=======
+	{ PCI_VDEVICE(AMD, 0x1537), (kernel_ulong_t)&ccpv3 },
+	{ PCI_VDEVICE(AMD, 0x1456), (kernel_ulong_t)&ccpv5a },
+	{ PCI_VDEVICE(AMD, 0x1468), (kernel_ulong_t)&ccpv5b },
+>>>>>>> v4.9.227
 	/* Last entry must be zero */
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, ccp_pci_table);
 
 static struct pci_driver ccp_pci_driver = {
+<<<<<<< HEAD
 	.name = "AMD Cryptographic Coprocessor",
+=======
+	.name = "ccp",
+>>>>>>> v4.9.227
 	.id_table = ccp_pci_table,
 	.probe = ccp_pci_probe,
 	.remove = ccp_pci_remove,

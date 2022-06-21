@@ -34,7 +34,11 @@ __cmpxchg_u32(volatile int *p, int old, int new)
 	return new;
 #else
 	__asm__ __volatile__(
+<<<<<<< HEAD
 			"       rsil    a15, "__stringify(LOCKLEVEL)"\n"
+=======
+			"       rsil    a15, "__stringify(TOPLEVEL)"\n"
+>>>>>>> v4.9.227
 			"       l32i    %0, %1, 0\n"
 			"       bne     %0, %2, 1f\n"
 			"       s32i    %3, %1, 0\n"
@@ -123,7 +127,11 @@ static inline unsigned long xchg_u32(volatile int * m, unsigned long val)
 #else
 	unsigned long tmp;
 	__asm__ __volatile__(
+<<<<<<< HEAD
 			"       rsil    a15, "__stringify(LOCKLEVEL)"\n"
+=======
+			"       rsil    a15, "__stringify(TOPLEVEL)"\n"
+>>>>>>> v4.9.227
 			"       l32i    %0, %1, 0\n"
 			"       s32i    %2, %1, 0\n"
 			"       wsr     a15, ps\n"

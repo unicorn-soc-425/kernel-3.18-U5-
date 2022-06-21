@@ -76,7 +76,11 @@ static void mod_wired_entry(int entry, unsigned long entrylo0,
 	unsigned long old_ctx;
 
 	/* Save old context and create impossible VPN2 value */
+<<<<<<< HEAD
 	old_ctx = read_c0_entryhi() & 0xff;
+=======
+	old_ctx = read_c0_entryhi() & MIPS_ENTRYHI_ASID;
+>>>>>>> v4.9.227
 	old_pagemask = read_c0_pagemask();
 	write_c0_index(entry);
 	write_c0_pagemask(pagemask);
@@ -429,7 +433,12 @@ static int alchemy_pci_probe(struct platform_device *pdev)
 
 	/* Au1500 revisions older than AD have borked coherent PCI */
 	if ((alchemy_get_cputype() == ALCHEMY_CPU_AU1500) &&
+<<<<<<< HEAD
 	    (read_c0_prid() < 0x01030202) && !coherentio) {
+=======
+	    (read_c0_prid() < 0x01030202) &&
+	    (coherentio == IO_COHERENCE_DISABLED)) {
+>>>>>>> v4.9.227
 		val = __raw_readl(ctx->regs + PCI_REG_CONFIG);
 		val |= PCI_CONFIG_NC;
 		__raw_writel(val, ctx->regs + PCI_REG_CONFIG);
@@ -505,7 +514,10 @@ static struct platform_driver alchemy_pcictl_driver = {
 	.probe		= alchemy_pci_probe,
 	.driver = {
 		.name	= "alchemy-pci",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

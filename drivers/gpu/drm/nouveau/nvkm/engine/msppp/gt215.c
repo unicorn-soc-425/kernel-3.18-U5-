@@ -27,7 +27,10 @@
 
 static const struct nvkm_falcon_func
 gt215_msppp = {
+<<<<<<< HEAD
 	.pmc_enable = 0x00400002,
+=======
+>>>>>>> v4.9.227
 	.init = g98_msppp_init,
 	.sclass = {
 		{ -1, -1, GT212_MSPPP },

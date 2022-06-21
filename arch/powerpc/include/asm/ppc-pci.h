@@ -23,8 +23,11 @@ extern void pci_setup_phb_io_dynamic(struct pci_controller *hose, int primary);
 
 extern struct list_head hose_list;
 
+<<<<<<< HEAD
 extern void find_and_init_phbs(void);
 
+=======
+>>>>>>> v4.9.227
 extern struct pci_dev *isa_bridge_pcidev;	/* may be NULL if no ISA bus */
 
 /** Bus Unit ID macros; get low and hi 32-bits of the 64-bit BUID */
@@ -33,11 +36,22 @@ extern struct pci_dev *isa_bridge_pcidev;	/* may be NULL if no ISA bus */
 
 /* PCI device_node operations */
 struct device_node;
+<<<<<<< HEAD
 typedef void *(*traverse_func)(struct device_node *me, void *data);
 void *traverse_pci_devices(struct device_node *start, traverse_func pre,
 		void *data);
 
 extern void pci_devs_phb_init(void);
+=======
+struct pci_dn;
+
+void *pci_traverse_device_nodes(struct device_node *start,
+				void *(*fn)(struct device_node *, void *),
+				void *data);
+void *traverse_pci_dn(struct pci_dn *root,
+		      void *(*fn)(struct pci_dn *, void *),
+		      void *data);
+>>>>>>> v4.9.227
 extern void pci_devs_phb_init_dynamic(struct pci_controller *phb);
 
 /* From rtas_pci.h */
@@ -58,6 +72,10 @@ int rtas_write_config(struct pci_dn *, int where, int size, u32 val);
 int rtas_read_config(struct pci_dn *, int where, int size, u32 *val);
 void eeh_pe_state_mark(struct eeh_pe *pe, int state);
 void eeh_pe_state_clear(struct eeh_pe *pe, int state);
+<<<<<<< HEAD
+=======
+void eeh_pe_state_mark_with_cfg(struct eeh_pe *pe, int state);
+>>>>>>> v4.9.227
 void eeh_pe_dev_mode_mark(struct eeh_pe *pe, int mode);
 
 void eeh_sysfs_add_device(struct pci_dev *pdev);
@@ -76,7 +94,10 @@ static inline const char *eeh_driver_name(struct pci_dev *pdev)
 #endif /* CONFIG_EEH */
 
 #else /* CONFIG_PCI */
+<<<<<<< HEAD
 static inline void find_and_init_phbs(void) { }
+=======
+>>>>>>> v4.9.227
 static inline void init_pci_config_tokens(void) { }
 #endif /* !CONFIG_PCI */
 

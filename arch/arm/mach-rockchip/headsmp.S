@@ -15,11 +15,14 @@
 #include <linux/linkage.h>
 #include <linux/init.h>
 
+<<<<<<< HEAD
 ENTRY(rockchip_secondary_startup)
 	bl	v7_invalidate_l1
 	b	secondary_startup
 ENDPROC(rockchip_secondary_startup)
 
+=======
+>>>>>>> v4.9.227
 ENTRY(rockchip_secondary_trampoline)
 	ldr	pc, 1f
 ENDPROC(rockchip_secondary_trampoline)

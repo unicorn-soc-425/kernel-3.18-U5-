@@ -45,10 +45,18 @@
 #include <linux/uaccess.h>
 #include <linux/memory.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/text-patching.h>
+>>>>>>> v4.9.227
 #include <asm/debugreg.h>
 #include <asm/apicdef.h>
 #include <asm/apic.h>
 #include <asm/nmi.h>
+<<<<<<< HEAD
+=======
+#include <asm/switch_to.h>
+>>>>>>> v4.9.227
 
 struct dbg_reg_def_t dbg_reg_def[DBG_MAX_REG_NUM] =
 {
@@ -72,7 +80,11 @@ struct dbg_reg_def_t dbg_reg_def[DBG_MAX_REG_NUM] =
 	{ "bx", 8, offsetof(struct pt_regs, bx) },
 	{ "cx", 8, offsetof(struct pt_regs, cx) },
 	{ "dx", 8, offsetof(struct pt_regs, dx) },
+<<<<<<< HEAD
 	{ "si", 8, offsetof(struct pt_regs, dx) },
+=======
+	{ "si", 8, offsetof(struct pt_regs, si) },
+>>>>>>> v4.9.227
 	{ "di", 8, offsetof(struct pt_regs, di) },
 	{ "bp", 8, offsetof(struct pt_regs, bp) },
 	{ "sp", 8, offsetof(struct pt_regs, sp) },
@@ -126,11 +138,19 @@ char *dbg_get_reg(int regno, void *mem, struct pt_regs *regs)
 #ifdef CONFIG_X86_32
 	switch (regno) {
 	case GDB_SS:
+<<<<<<< HEAD
 		if (!user_mode_vm(regs))
 			*(unsigned long *)mem = __KERNEL_DS;
 		break;
 	case GDB_SP:
 		if (!user_mode_vm(regs))
+=======
+		if (!user_mode(regs))
+			*(unsigned long *)mem = __KERNEL_DS;
+		break;
+	case GDB_SP:
+		if (!user_mode(regs))
+>>>>>>> v4.9.227
 			*(unsigned long *)mem = kernel_stack_pointer(regs);
 		break;
 	case GDB_GS:
@@ -165,21 +185,34 @@ void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 	gdb_regs[GDB_DX]	= 0;
 	gdb_regs[GDB_SI]	= 0;
 	gdb_regs[GDB_DI]	= 0;
+<<<<<<< HEAD
 	gdb_regs[GDB_BP]	= *(unsigned long *)p->thread.sp;
+=======
+	gdb_regs[GDB_BP]	= ((struct inactive_task_frame *)p->thread.sp)->bp;
+>>>>>>> v4.9.227
 #ifdef CONFIG_X86_32
 	gdb_regs[GDB_DS]	= __KERNEL_DS;
 	gdb_regs[GDB_ES]	= __KERNEL_DS;
 	gdb_regs[GDB_PS]	= 0;
 	gdb_regs[GDB_CS]	= __KERNEL_CS;
+<<<<<<< HEAD
 	gdb_regs[GDB_PC]	= p->thread.ip;
+=======
+>>>>>>> v4.9.227
 	gdb_regs[GDB_SS]	= __KERNEL_DS;
 	gdb_regs[GDB_FS]	= 0xFFFF;
 	gdb_regs[GDB_GS]	= 0xFFFF;
 #else
+<<<<<<< HEAD
 	gdb_regs32[GDB_PS]	= *(unsigned long *)(p->thread.sp + 8);
 	gdb_regs32[GDB_CS]	= __KERNEL_CS;
 	gdb_regs32[GDB_SS]	= __KERNEL_DS;
 	gdb_regs[GDB_PC]	= 0;
+=======
+	gdb_regs32[GDB_PS]	= 0;
+	gdb_regs32[GDB_CS]	= __KERNEL_CS;
+	gdb_regs32[GDB_SS]	= __KERNEL_DS;
+>>>>>>> v4.9.227
 	gdb_regs[GDB_R8]	= 0;
 	gdb_regs[GDB_R9]	= 0;
 	gdb_regs[GDB_R10]	= 0;
@@ -189,6 +222,10 @@ void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 	gdb_regs[GDB_R14]	= 0;
 	gdb_regs[GDB_R15]	= 0;
 #endif
+<<<<<<< HEAD
+=======
+	gdb_regs[GDB_PC]	= 0;
+>>>>>>> v4.9.227
 	gdb_regs[GDB_SP]	= p->thread.sp;
 }
 
@@ -437,7 +474,11 @@ static void kgdb_disable_hw_debug(struct pt_regs *regs)
  */
 void kgdb_roundup_cpus(unsigned long flags)
 {
+<<<<<<< HEAD
 	apic->send_IPI_allbutself(APIC_DM_NMI);
+=======
+	apic->send_IPI_allbutself(NMI_VECTOR);
+>>>>>>> v4.9.227
 }
 #endif
 
@@ -511,26 +552,51 @@ single_step_cont(struct pt_regs *regs, struct die_args *args)
 	return NOTIFY_STOP;
 }
 
+<<<<<<< HEAD
 static int was_in_debug_nmi[NR_CPUS];
 
 static int kgdb_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 {
+=======
+static DECLARE_BITMAP(was_in_debug_nmi, NR_CPUS);
+
+static int kgdb_nmi_handler(unsigned int cmd, struct pt_regs *regs)
+{
+	int cpu;
+
+>>>>>>> v4.9.227
 	switch (cmd) {
 	case NMI_LOCAL:
 		if (atomic_read(&kgdb_active) != -1) {
 			/* KGDB CPU roundup */
+<<<<<<< HEAD
 			kgdb_nmicallback(raw_smp_processor_id(), regs);
 			was_in_debug_nmi[raw_smp_processor_id()] = 1;
 			touch_nmi_watchdog();
+=======
+			cpu = raw_smp_processor_id();
+			kgdb_nmicallback(cpu, regs);
+			set_bit(cpu, was_in_debug_nmi);
+			touch_nmi_watchdog();
+
+>>>>>>> v4.9.227
 			return NMI_HANDLED;
 		}
 		break;
 
 	case NMI_UNKNOWN:
+<<<<<<< HEAD
 		if (was_in_debug_nmi[raw_smp_processor_id()]) {
 			was_in_debug_nmi[raw_smp_processor_id()] = 0;
 			return NMI_HANDLED;
 		}
+=======
+		cpu = raw_smp_processor_id();
+
+		if (__test_and_clear_bit(cpu, was_in_debug_nmi))
+			return NMI_HANDLED;
+
+>>>>>>> v4.9.227
 		break;
 	default:
 		/* do nothing */
@@ -604,9 +670,15 @@ static struct notifier_block kgdb_notifier = {
 };
 
 /**
+<<<<<<< HEAD
  *	kgdb_arch_init - Perform any architecture specific initalization.
  *
  *	This function will handle the initalization of any architecture
+=======
+ *	kgdb_arch_init - Perform any architecture specific initialization.
+ *
+ *	This function will handle the initialization of any architecture
+>>>>>>> v4.9.227
  *	specific callbacks.
  */
 int kgdb_arch_init(void)

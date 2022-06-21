@@ -4,6 +4,10 @@
 #include <linux/sched.h>
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/irq.h>
+>>>>>>> v4.9.227
 #include <linux/timex.h>
 #include <linux/random.h>
 #include <linux/init.h>
@@ -295,16 +299,23 @@ static void unmask_8259A(void)
 	raw_spin_unlock_irqrestore(&i8259A_lock, flags);
 }
 
+<<<<<<< HEAD
 static void init_8259A(int auto_eoi)
+=======
+static int probe_8259A(void)
+>>>>>>> v4.9.227
 {
 	unsigned long flags;
 	unsigned char probe_val = ~(1 << PIC_CASCADE_IR);
 	unsigned char new_val;
+<<<<<<< HEAD
 
 	i8259A_auto_eoi = auto_eoi;
 
 	raw_spin_lock_irqsave(&i8259A_lock, flags);
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * Check to see if we have a PIC.
 	 * Mask all except the cascade and read
@@ -312,16 +323,38 @@ static void init_8259A(int auto_eoi)
 	 * have a PIC, we will read 0xff as opposed to the
 	 * value we wrote.
 	 */
+<<<<<<< HEAD
+=======
+	raw_spin_lock_irqsave(&i8259A_lock, flags);
+
+>>>>>>> v4.9.227
 	outb(0xff, PIC_SLAVE_IMR);	/* mask all of 8259A-2 */
 	outb(probe_val, PIC_MASTER_IMR);
 	new_val = inb(PIC_MASTER_IMR);
 	if (new_val != probe_val) {
 		printk(KERN_INFO "Using NULL legacy PIC\n");
 		legacy_pic = &null_legacy_pic;
+<<<<<<< HEAD
 		raw_spin_unlock_irqrestore(&i8259A_lock, flags);
 		return;
 	}
 
+=======
+	}
+
+	raw_spin_unlock_irqrestore(&i8259A_lock, flags);
+	return nr_legacy_irqs();
+}
+
+static void init_8259A(int auto_eoi)
+{
+	unsigned long flags;
+
+	i8259A_auto_eoi = auto_eoi;
+
+	raw_spin_lock_irqsave(&i8259A_lock, flags);
+
+>>>>>>> v4.9.227
 	outb(0xff, PIC_MASTER_IMR);	/* mask all of 8259A-1 */
 
 	/*
@@ -329,8 +362,13 @@ static void init_8259A(int auto_eoi)
 	 */
 	outb_pic(0x11, PIC_MASTER_CMD);	/* ICW1: select 8259A-1 init */
 
+<<<<<<< HEAD
 	/* ICW2: 8259A-1 IR0-7 mapped to 0x30-0x37 */
 	outb_pic(IRQ0_VECTOR, PIC_MASTER_IMR);
+=======
+	/* ICW2: 8259A-1 IR0-7 mapped to ISA_IRQ_VECTOR(0) */
+	outb_pic(ISA_IRQ_VECTOR(0), PIC_MASTER_IMR);
+>>>>>>> v4.9.227
 
 	/* 8259A-1 (the master) has a slave on IR2 */
 	outb_pic(1U << PIC_CASCADE_IR, PIC_MASTER_IMR);
@@ -342,8 +380,13 @@ static void init_8259A(int auto_eoi)
 
 	outb_pic(0x11, PIC_SLAVE_CMD);	/* ICW1: select 8259A-2 init */
 
+<<<<<<< HEAD
 	/* ICW2: 8259A-2 IR0-7 mapped to IRQ8_VECTOR */
 	outb_pic(IRQ8_VECTOR, PIC_SLAVE_IMR);
+=======
+	/* ICW2: 8259A-2 IR0-7 mapped to ISA_IRQ_VECTOR(8) */
+	outb_pic(ISA_IRQ_VECTOR(8), PIC_SLAVE_IMR);
+>>>>>>> v4.9.227
 	/* 8259A-2 is a slave on master's IR2 */
 	outb_pic(PIC_CASCADE_IR, PIC_SLAVE_IMR);
 	/* (slave's support for AEOI in flat mode is to be investigated) */
@@ -379,6 +422,13 @@ static int legacy_pic_irq_pending_noop(unsigned int irq)
 {
 	return 0;
 }
+<<<<<<< HEAD
+=======
+static int legacy_pic_probe(void)
+{
+	return 0;
+}
+>>>>>>> v4.9.227
 
 struct legacy_pic null_legacy_pic = {
 	.nr_legacy_irqs = 0,
@@ -388,6 +438,10 @@ struct legacy_pic null_legacy_pic = {
 	.mask_all = legacy_pic_noop,
 	.restore_mask = legacy_pic_noop,
 	.init = legacy_pic_int_noop,
+<<<<<<< HEAD
+=======
+	.probe = legacy_pic_probe,
+>>>>>>> v4.9.227
 	.irq_pending = legacy_pic_irq_pending_noop,
 	.make_irq = legacy_pic_uint_noop,
 };
@@ -400,6 +454,10 @@ struct legacy_pic default_legacy_pic = {
 	.mask_all = mask_8259A,
 	.restore_mask = unmask_8259A,
 	.init = init_8259A,
+<<<<<<< HEAD
+=======
+	.probe = probe_8259A,
+>>>>>>> v4.9.227
 	.irq_pending = i8259A_irq_pending,
 	.make_irq = make_8259A_irq,
 };

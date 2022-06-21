@@ -98,7 +98,11 @@ rename_retry:
 		return end;
 	}
 	namelen = strlen(base);
+<<<<<<< HEAD
 	if (flags & NFS_PATH_CANONICAL) {
+=======
+	if (*end == '/') {
+>>>>>>> v4.9.227
 		/* Strip off excess slashes in base string */
 		while (namelen > 0 && base[namelen - 1] == '/')
 			namelen--;
@@ -139,7 +143,11 @@ EXPORT_SYMBOL_GPL(nfs_path);
 struct vfsmount *nfs_d_automount(struct path *path)
 {
 	struct vfsmount *mnt;
+<<<<<<< HEAD
 	struct nfs_server *server = NFS_SERVER(path->dentry->d_inode);
+=======
+	struct nfs_server *server = NFS_SERVER(d_inode(path->dentry));
+>>>>>>> v4.9.227
 	struct nfs_fh *fh = NULL;
 	struct nfs_fattr *fattr = NULL;
 
@@ -180,16 +188,26 @@ out_nofree:
 static int
 nfs_namespace_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
 {
+<<<<<<< HEAD
 	if (NFS_FH(dentry->d_inode)->size != 0)
 		return nfs_getattr(mnt, dentry, stat);
 	generic_fillattr(dentry->d_inode, stat);
+=======
+	if (NFS_FH(d_inode(dentry))->size != 0)
+		return nfs_getattr(mnt, dentry, stat);
+	generic_fillattr(d_inode(dentry), stat);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int
 nfs_namespace_setattr(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	if (NFS_FH(dentry->d_inode)->size != 0)
+=======
+	if (NFS_FH(d_inode(dentry))->size != 0)
+>>>>>>> v4.9.227
 		return nfs_setattr(dentry, attr);
 	return -EACCES;
 }
@@ -226,7 +244,11 @@ static struct vfsmount *nfs_do_clone_mount(struct nfs_server *server,
 					   const char *devname,
 					   struct nfs_clone_mount *mountdata)
 {
+<<<<<<< HEAD
 	return vfs_kern_mount(&nfs_xdev_fs_type, 0, devname, mountdata);
+=======
+	return vfs_submount(mountdata->dentry, &nfs_xdev_fs_type, devname, mountdata);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -279,7 +301,11 @@ struct vfsmount *nfs_submount(struct nfs_server *server, struct dentry *dentry,
 	struct dentry *parent = dget_parent(dentry);
 
 	/* Look it up again to get its attributes */
+<<<<<<< HEAD
 	err = server->nfs_client->rpc_ops->lookup(parent->d_inode, &dentry->d_name, fh, fattr, NULL);
+=======
+	err = server->nfs_client->rpc_ops->lookup(d_inode(parent), &dentry->d_name, fh, fattr, NULL);
+>>>>>>> v4.9.227
 	dput(parent);
 	if (err != 0)
 		return ERR_PTR(err);

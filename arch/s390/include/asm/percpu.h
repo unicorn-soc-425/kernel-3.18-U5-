@@ -10,8 +10,11 @@
  */
 #define __my_cpu_offset S390_lowcore.percpu_offset
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 
+=======
+>>>>>>> v4.9.227
 /*
  * For 64 bit module code, the module may be more than 4G above the
  * per cpu area, use weak definitions to force the compiler to
@@ -180,11 +183,16 @@
 	ret__;								\
 })
 
+<<<<<<< HEAD
 #define this_cpu_cmpxchg_double_4 arch_this_cpu_cmpxchg_double
 #define this_cpu_cmpxchg_double_8 arch_this_cpu_cmpxchg_double
 
 #endif /* CONFIG_64BIT */
 
+=======
+#define this_cpu_cmpxchg_double_8 arch_this_cpu_cmpxchg_double
+
+>>>>>>> v4.9.227
 #include <asm-generic/percpu.h>
 
 #endif /* __ARCH_S390_PERCPU__ */

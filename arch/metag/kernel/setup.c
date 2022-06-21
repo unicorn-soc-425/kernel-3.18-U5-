@@ -20,7 +20,10 @@
 #include <linux/memblock.h>
 #include <linux/mm.h>
 #include <linux/of_fdt.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/pfn.h>
 #include <linux/root_dev.h>
 #include <linux/sched.h>
@@ -414,9 +417,13 @@ static int __init customize_machine(void)
 	/* customizes platform devices, or adds new ones */
 	if (machine_desc->init_machine)
 		machine_desc->init_machine();
+<<<<<<< HEAD
 	else
 		of_platform_populate(NULL, of_default_bus_match_table, NULL,
 				     NULL);
+=======
+
+>>>>>>> v4.9.227
 	return 0;
 }
 arch_initcall(customize_machine);

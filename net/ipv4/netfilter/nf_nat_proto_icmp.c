@@ -67,7 +67,11 @@ icmp_manip_pkt(struct sk_buff *skb,
 
 	hdr = (struct icmphdr *)(skb->data + hdroff);
 	inet_proto_csum_replace2(&hdr->checksum, skb,
+<<<<<<< HEAD
 				 hdr->un.echo.id, tuple->src.u.icmp.id, 0);
+=======
+				 hdr->un.echo.id, tuple->src.u.icmp.id, false);
+>>>>>>> v4.9.227
 	hdr->un.echo.id = tuple->src.u.icmp.id;
 	return true;
 }

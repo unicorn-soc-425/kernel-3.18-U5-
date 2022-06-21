@@ -112,6 +112,10 @@
 #define IRQ_LPC32XX_GPI_06		LPC32XX_SIC2_IRQ(28)
 #define IRQ_LPC32XX_SYSCLK		LPC32XX_SIC2_IRQ(31)
 
+<<<<<<< HEAD
 #define NR_IRQS				96
+=======
+#define LPC32XX_NR_IRQS			96
+>>>>>>> v4.9.227
 
 #endif

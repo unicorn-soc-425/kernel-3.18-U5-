@@ -302,7 +302,10 @@ static struct platform_driver advwdt_driver = {
 	.remove		= advwdt_remove,
 	.shutdown	= advwdt_shutdown,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DRV_NAME,
 	},
 };

@@ -66,7 +66,11 @@ static void picolcd_led_set_brightness(struct led_classdev *led_cdev,
 	int i, state = 0;
 
 	dev  = led_cdev->dev->parent;
+<<<<<<< HEAD
 	hdev = container_of(dev, struct hid_device, dev);
+=======
+	hdev = to_hid_device(dev);
+>>>>>>> v4.9.227
 	data = hid_get_drvdata(hdev);
 	if (!data)
 		return;
@@ -93,7 +97,11 @@ static enum led_brightness picolcd_led_get_brightness(struct led_classdev *led_c
 	int i, value = 0;
 
 	dev  = led_cdev->dev->parent;
+<<<<<<< HEAD
 	hdev = container_of(dev, struct hid_device, dev);
+=======
+	hdev = to_hid_device(dev);
+>>>>>>> v4.9.227
 	data = hid_get_drvdata(hdev);
 	for (i = 0; i < 8; i++)
 		if (led_cdev == data->led[i]) {

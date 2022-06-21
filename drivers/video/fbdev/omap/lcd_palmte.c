@@ -103,7 +103,10 @@ static struct platform_driver palmte_panel_driver = {
 	.resume		= palmte_panel_resume,
 	.driver		= {
 		.name	= "lcd_palmte",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

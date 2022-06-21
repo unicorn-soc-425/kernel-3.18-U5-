@@ -21,9 +21,15 @@ static int armada_debugfs_gem_linear_show(struct seq_file *m, void *data)
 	struct armada_private *priv = dev->dev_private;
 	int ret;
 
+<<<<<<< HEAD
 	mutex_lock(&dev->struct_mutex);
 	ret = drm_mm_dump_table(m, &priv->linear);
 	mutex_unlock(&dev->struct_mutex);
+=======
+	mutex_lock(&priv->linear_lock);
+	ret = drm_mm_dump_table(m, &priv->linear);
+	mutex_unlock(&priv->linear_lock);
+>>>>>>> v4.9.227
 
 	return ret;
 }

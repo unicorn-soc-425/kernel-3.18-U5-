@@ -1,14 +1,24 @@
 Maxim MAX77686 multi-function device
 
+<<<<<<< HEAD
 MAX77686 is a Mulitifunction device with PMIC, RTC and Charger on chip. It is
+=======
+MAX77686 is a Multifunction device with PMIC, RTC and Charger on chip. It is
+>>>>>>> v4.9.227
 interfaced to host controller using i2c interface. PMIC and Charger submodules
 are addressed using same i2c slave address whereas RTC submodule uses
 different i2c slave address,presently for which we are statically creating i2c
 client while probing.This document describes the binding for mfd device and
 PMIC submodule.
 
+<<<<<<< HEAD
 Binding for the built-in 32k clock generator block is defined separately
 in bindings/clk/maxim,max77686.txt file.
+=======
+Bindings for the built-in 32k clock generator block and
+regulators are defined in ../clk/maxim,max77686.txt and
+../regulator/max77686.txt respectively.
+>>>>>>> v4.9.227
 
 Required properties:
 - compatible : Must be "maxim,max77686";
@@ -16,6 +26,7 @@ Required properties:
 - interrupts : This i2c device has an IRQ line connected to the main SoC.
 - interrupt-parent : The parent interrupt controller.
 
+<<<<<<< HEAD
 Optional node:
 - voltage-regulators : The regulators of max77686 have to be instantiated
   under subnode named "voltage-regulators" using the following format.
@@ -37,10 +48,16 @@ to get matched with their hardware counterparts as follow:
 Example:
 
 	max77686@09 {
+=======
+Example:
+
+	max77686: pmic@09 {
+>>>>>>> v4.9.227
 		compatible = "maxim,max77686";
 		interrupt-parent = <&wakeup_eint>;
 		interrupts = <26 0>;
 		reg = <0x09>;
+<<<<<<< HEAD
 
 		voltage-regulators {
 			ldo11_reg {
@@ -60,3 +77,6 @@ Example:
 				regulator-boot-on;
 			};
 	}
+=======
+	};
+>>>>>>> v4.9.227

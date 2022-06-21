@@ -68,6 +68,11 @@ static int __init ion_dummy_init(void)
 	int i, err;
 
 	idev = ion_device_create(NULL);
+<<<<<<< HEAD
+=======
+	if (IS_ERR(idev))
+		return PTR_ERR(idev);
+>>>>>>> v4.9.227
 	heaps = kcalloc(dummy_ion_pdata.nr, sizeof(struct ion_heap *),
 			GFP_KERNEL);
 	if (!heaps)
@@ -97,7 +102,11 @@ static int __init ion_dummy_init(void)
 		struct ion_platform_heap *heap_data = &dummy_ion_pdata.heaps[i];
 
 		if (heap_data->type == ION_HEAP_TYPE_CARVEOUT &&
+<<<<<<< HEAD
 							!heap_data->base)
+=======
+		    !heap_data->base)
+>>>>>>> v4.9.227
 			continue;
 
 		if (heap_data->type == ION_HEAP_TYPE_CHUNK && !heap_data->base)
@@ -112,20 +121,33 @@ static int __init ion_dummy_init(void)
 	}
 	return 0;
 err:
+<<<<<<< HEAD
 	for (i = 0; i < dummy_ion_pdata.nr; i++) {
 		if (heaps[i])
 			ion_heap_destroy(heaps[i]);
 	}
+=======
+	for (i = 0; i < dummy_ion_pdata.nr; ++i)
+		ion_heap_destroy(heaps[i]);
+>>>>>>> v4.9.227
 	kfree(heaps);
 
 	if (carveout_ptr) {
 		free_pages_exact(carveout_ptr,
+<<<<<<< HEAD
 				dummy_heaps[ION_HEAP_TYPE_CARVEOUT].size);
+=======
+				 dummy_heaps[ION_HEAP_TYPE_CARVEOUT].size);
+>>>>>>> v4.9.227
 		carveout_ptr = NULL;
 	}
 	if (chunk_ptr) {
 		free_pages_exact(chunk_ptr,
+<<<<<<< HEAD
 				dummy_heaps[ION_HEAP_TYPE_CHUNK].size);
+=======
+				 dummy_heaps[ION_HEAP_TYPE_CHUNK].size);
+>>>>>>> v4.9.227
 		chunk_ptr = NULL;
 	}
 	return err;
@@ -144,12 +166,20 @@ static void __exit ion_dummy_exit(void)
 
 	if (carveout_ptr) {
 		free_pages_exact(carveout_ptr,
+<<<<<<< HEAD
 				dummy_heaps[ION_HEAP_TYPE_CARVEOUT].size);
+=======
+				 dummy_heaps[ION_HEAP_TYPE_CARVEOUT].size);
+>>>>>>> v4.9.227
 		carveout_ptr = NULL;
 	}
 	if (chunk_ptr) {
 		free_pages_exact(chunk_ptr,
+<<<<<<< HEAD
 				dummy_heaps[ION_HEAP_TYPE_CHUNK].size);
+=======
+				 dummy_heaps[ION_HEAP_TYPE_CHUNK].size);
+>>>>>>> v4.9.227
 		chunk_ptr = NULL;
 	}
 }

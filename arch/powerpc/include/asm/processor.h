@@ -88,12 +88,15 @@ struct task_struct;
 void start_thread(struct pt_regs *regs, unsigned long fdptr, unsigned long sp);
 void release_thread(struct task_struct *);
 
+<<<<<<< HEAD
 /* Lazy FPU handling on uni-processor */
 extern struct task_struct *last_task_used_math;
 extern struct task_struct *last_task_used_altivec;
 extern struct task_struct *last_task_used_vsx;
 extern struct task_struct *last_task_used_spe;
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC32
 
 #if CONFIG_TASK_SIZE > CONFIG_KERNEL_START
@@ -153,7 +156,11 @@ typedef struct {
 } mm_segment_t;
 
 #define TS_FPR(i) fp_state.fpr[i][TS_FPROFFSET]
+<<<<<<< HEAD
 #define TS_TRANS_FPR(i) transact_fp.fpr[i][TS_FPROFFSET]
+=======
+#define TS_CKFPR(i) ckfp_state.fpr[i][TS_FPROFFSET]
+>>>>>>> v4.9.227
 
 /* FP and VSX 0-31 register set */
 struct thread_fp_state {
@@ -230,7 +237,11 @@ struct thread_struct {
 	unsigned int	align_ctl;	/* alignment handling control */
 #ifdef CONFIG_PPC64
 	unsigned long	start_tb;	/* Start purr when proc switched in */
+<<<<<<< HEAD
 	unsigned long	accum_tb;	/* Total accumilated purr for process */
+=======
+	unsigned long	accum_tb;	/* Total accumulated purr for process */
+>>>>>>> v4.9.227
 #ifdef CONFIG_HAVE_HW_BREAKPOINT
 	struct perf_event *ptrace_bps[HBP_NUM];
 	/*
@@ -242,7 +253,13 @@ struct thread_struct {
 #endif
 	struct arch_hw_breakpoint hw_brk; /* info on the hardware breakpoint */
 	unsigned long	trap_nr;	/* last trap # on this thread */
+<<<<<<< HEAD
 #ifdef CONFIG_ALTIVEC
+=======
+	u8 load_fp;
+#ifdef CONFIG_ALTIVEC
+	u8 load_vec;
+>>>>>>> v4.9.227
 	struct thread_vr_state vr_state;
 	struct thread_vr_state *vr_save_area;
 	unsigned long	vrsave;
@@ -250,7 +267,11 @@ struct thread_struct {
 #endif /* CONFIG_ALTIVEC */
 #ifdef CONFIG_VSX
 	/* VSR status */
+<<<<<<< HEAD
 	int		used_vsr;	/* set if process has used altivec */
+=======
+	int		used_vsr;	/* set if process has used VSX */
+>>>>>>> v4.9.227
 #endif /* CONFIG_VSX */
 #ifdef CONFIG_SPE
 	unsigned long	evr[32];	/* upper 32-bits of SPE regs */
@@ -261,10 +282,17 @@ struct thread_struct {
 	int		used_spe;	/* set if process has used spe */
 #endif /* CONFIG_SPE */
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+<<<<<<< HEAD
 	u64		tm_tfhar;	/* Transaction fail handler addr */
 	u64		tm_texasr;	/* Transaction exception & summary */
 	u64		tm_tfiar;	/* Transaction fail instr address reg */
 	unsigned long	tm_orig_msr;	/* Thread's MSR on ctx switch */
+=======
+	u8	load_tm;
+	u64		tm_tfhar;	/* Transaction fail handler addr */
+	u64		tm_texasr;	/* Transaction exception & summary */
+	u64		tm_tfiar;	/* Transaction fail instr address reg */
+>>>>>>> v4.9.227
 	struct pt_regs	ckpt_regs;	/* Checkpointed registers */
 
 	unsigned long	tm_tar;
@@ -272,13 +300,18 @@ struct thread_struct {
 	unsigned long	tm_dscr;
 
 	/*
+<<<<<<< HEAD
 	 * Transactional FP and VSX 0-31 register set.
 	 * NOTE: the sense of these is the opposite of the integer ckpt_regs!
+=======
+	 * Checkpointed FP and VSX 0-31 register set.
+>>>>>>> v4.9.227
 	 *
 	 * When a transaction is active/signalled/scheduled etc., *regs is the
 	 * most recent set of/speculated GPRs with ckpt_regs being the older
 	 * checkpointed regs to which we roll back if transaction aborts.
 	 *
+<<<<<<< HEAD
 	 * However, fpr[] is the checkpointed 'base state' of FP regs, and
 	 * transact_fpr[] is the new set of transactional values.
 	 * VRs work the same way.
@@ -286,6 +319,13 @@ struct thread_struct {
 	struct thread_fp_state transact_fp;
 	struct thread_vr_state transact_vr;
 	unsigned long	transact_vrsave;
+=======
+	 * These are analogous to how ckpt_regs and pt_regs work
+	 */
+	struct thread_fp_state ckfp_state; /* Checkpointed FP state */
+	struct thread_vr_state ckvr_state; /* Checkpointed VR state */
+	unsigned long	ckvrsave; /* Checkpointed VRSAVE */
+>>>>>>> v4.9.227
 #endif /* CONFIG_PPC_TRANSACTIONAL_MEM */
 #ifdef CONFIG_KVM_BOOK3S_32_HANDLER
 	void*		kvm_shadow_vcpu; /* KVM internal data */
@@ -295,6 +335,19 @@ struct thread_struct {
 #endif
 #ifdef CONFIG_PPC64
 	unsigned long	dscr;
+<<<<<<< HEAD
+=======
+	unsigned long	fscr;
+	/*
+	 * This member element dscr_inherit indicates that the process
+	 * has explicitly attempted and changed the DSCR register value
+	 * for itself. Hence kernel wont use the default CPU DSCR value
+	 * contained in the PACA structure anymore during process context
+	 * switch. Once this variable is set, this behaviour will also be
+	 * inherited to all the children of this process from that point
+	 * onwards.
+	 */
+>>>>>>> v4.9.227
 	int		dscr_inherit;
 	unsigned long	ppr;	/* used to save/restore SMT priority */
 #endif
@@ -309,6 +362,11 @@ struct thread_struct {
 	unsigned long	mmcr2;
 	unsigned 	mmcr0;
 	unsigned 	used_ebb;
+<<<<<<< HEAD
+=======
+	unsigned long	lmrr;
+	unsigned long	lmser;
+>>>>>>> v4.9.227
 #endif
 };
 
@@ -342,6 +400,10 @@ struct thread_struct {
 	.fs = KERNEL_DS, \
 	.fpexc_mode = 0, \
 	.ppr = INIT_PPR, \
+<<<<<<< HEAD
+=======
+	.fscr = FSCR_TAR | FSCR_EBB \
+>>>>>>> v4.9.227
 }
 #endif
 
@@ -377,8 +439,11 @@ extern int set_endian(struct task_struct *tsk, unsigned int val);
 extern int get_unalign_ctl(struct task_struct *tsk, unsigned long adr);
 extern int set_unalign_ctl(struct task_struct *tsk, unsigned int val);
 
+<<<<<<< HEAD
 extern void fp_enable(void);
 extern void vec_enable(void);
+=======
+>>>>>>> v4.9.227
 extern void load_fp_state(struct thread_fp_state *fp);
 extern void store_fp_state(struct thread_fp_state *fp);
 extern void load_vr_state(struct thread_vr_state *vr);
@@ -451,8 +516,16 @@ extern unsigned long cpuidle_disable;
 enum idle_boot_override {IDLE_NO_OVERRIDE = 0, IDLE_POWERSAVE_OFF};
 
 extern int powersave_nap;	/* set if nap mode can be used in idle loop */
+<<<<<<< HEAD
 extern void power7_nap(int check_irq);
 extern void power7_sleep(void);
+=======
+extern unsigned long power7_nap(int check_irq);
+extern unsigned long power7_sleep(void);
+extern unsigned long power7_winkle(void);
+extern unsigned long power9_idle_stop(unsigned long stop_level);
+
+>>>>>>> v4.9.227
 extern void flush_instruction_cache(void);
 extern void hard_reset_now(void);
 extern void poweroff_now(void);

@@ -27,7 +27,10 @@
 #define SUPPORT_SYSRQ
 #endif
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/ioport.h>
 #include <linux/init.h>
 #include <linux/console.h>
@@ -223,6 +226,10 @@ static void serial_pxa_start_tx(struct uart_port *port)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/* should hold up->port.lock */
+>>>>>>> v4.9.227
 static inline void check_modem_status(struct uart_pxa_port *up)
 {
 	int status;
@@ -255,12 +262,20 @@ static inline irqreturn_t serial_pxa_irq(int irq, void *dev_id)
 	iir = serial_in(up, UART_IIR);
 	if (iir & UART_IIR_NO_INT)
 		return IRQ_NONE;
+<<<<<<< HEAD
+=======
+	spin_lock(&up->port.lock);
+>>>>>>> v4.9.227
 	lsr = serial_in(up, UART_LSR);
 	if (lsr & UART_LSR_DR)
 		receive_chars(up, &lsr);
 	check_modem_status(up);
 	if (lsr & UART_LSR_THRE)
 		transmit_chars(up);
+<<<<<<< HEAD
+=======
+	spin_unlock(&up->port.lock);
+>>>>>>> v4.9.227
 	return IRQ_HANDLED;
 }
 
@@ -600,7 +615,11 @@ static struct uart_driver serial_pxa_reg;
 /*
  *	Wait for transmitter & holding register to empty
  */
+<<<<<<< HEAD
 static inline void wait_for_xmitr(struct uart_pxa_port *up)
+=======
+static void wait_for_xmitr(struct uart_pxa_port *up)
+>>>>>>> v4.9.227
 {
 	unsigned int status, tmout = 10000;
 
@@ -821,12 +840,19 @@ static const struct dev_pm_ops serial_pxa_pm_ops = {
 };
 #endif
 
+<<<<<<< HEAD
 static struct of_device_id serial_pxa_dt_ids[] = {
+=======
+static const struct of_device_id serial_pxa_dt_ids[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "mrvl,pxa-uart", },
 	{ .compatible = "mrvl,mmp-uart", },
 	{}
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
+=======
+>>>>>>> v4.9.227
 
 static int serial_pxa_probe_dt(struct platform_device *pdev,
 			       struct uart_pxa_port *sport)
@@ -911,6 +937,7 @@ static int serial_pxa_probe(struct platform_device *dev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int serial_pxa_remove(struct platform_device *dev)
 {
 	struct uart_pxa_port *sport = platform_get_drvdata(dev);
@@ -934,6 +961,17 @@ static struct platform_driver serial_pxa_driver = {
 #ifdef CONFIG_PM
 		.pm	= &serial_pxa_pm_ops,
 #endif
+=======
+static struct platform_driver serial_pxa_driver = {
+        .probe          = serial_pxa_probe,
+
+	.driver		= {
+	        .name	= "pxa2xx-uart",
+#ifdef CONFIG_PM
+		.pm	= &serial_pxa_pm_ops,
+#endif
+		.suppress_bind_attrs = true,
+>>>>>>> v4.9.227
 		.of_match_table = serial_pxa_dt_ids,
 	},
 };
@@ -952,6 +990,7 @@ static int __init serial_pxa_init(void)
 
 	return ret;
 }
+<<<<<<< HEAD
 
 static void __exit serial_pxa_exit(void)
 {
@@ -964,3 +1003,6 @@ module_exit(serial_pxa_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:pxa2xx-uart");
+=======
+device_initcall(serial_pxa_init);
+>>>>>>> v4.9.227

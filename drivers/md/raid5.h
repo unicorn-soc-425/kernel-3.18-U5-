@@ -210,11 +210,28 @@ struct stripe_head {
 	atomic_t		count;	      /* nr of active thread/requests */
 	int			bm_seq;	/* sequence number for bitmap flushes */
 	int			disks;		/* disks in stripe */
+<<<<<<< HEAD
+=======
+	int			overwrite_disks; /* total overwrite disks in stripe,
+						  * this is only checked when stripe
+						  * has STRIPE_BATCH_READY
+						  */
+>>>>>>> v4.9.227
 	enum check_states	check_state;
 	enum reconstruct_states reconstruct_state;
 	spinlock_t		stripe_lock;
 	int			cpu;
 	struct r5worker_group	*group;
+<<<<<<< HEAD
+=======
+
+	struct stripe_head	*batch_head; /* protected by stripe lock */
+	spinlock_t		batch_lock; /* only header's lock is useful */
+	struct list_head	batch_list; /* protected by head's batch lock*/
+
+	struct r5l_io_unit	*log_io;
+	struct list_head	log_list;
+>>>>>>> v4.9.227
 	/**
 	 * struct stripe_operations
 	 * @target - STRIPE_OP_COMPUTE_BLK target
@@ -236,6 +253,10 @@ struct stripe_head {
 		struct bio	*toread, *read, *towrite, *written;
 		sector_t	sector;			/* sector of this page */
 		unsigned long	flags;
+<<<<<<< HEAD
+=======
+		u32		log_checksum;
+>>>>>>> v4.9.227
 	} dev[1]; /* allocated with extra space depending of RAID geometry */
 };
 
@@ -257,9 +278,16 @@ struct stripe_head_state {
 	int dec_preread_active;
 	unsigned long ops_request;
 
+<<<<<<< HEAD
 	struct bio *return_bi;
 	struct md_rdev *blocked_rdev;
 	int handle_bad_blocks;
+=======
+	struct bio_list return_bi;
+	struct md_rdev *blocked_rdev;
+	int handle_bad_blocks;
+	int log_failed;
+>>>>>>> v4.9.227
 };
 
 /* Flags for struct r5dev.flags */
@@ -327,8 +355,24 @@ enum {
 	STRIPE_ON_UNPLUG_LIST,
 	STRIPE_DISCARD,
 	STRIPE_ON_RELEASE_LIST,
+<<<<<<< HEAD
 };
 
+=======
+	STRIPE_BATCH_READY,
+	STRIPE_BATCH_ERR,
+	STRIPE_BITMAP_PENDING,	/* Being added to bitmap, don't add
+				 * to batch yet.
+				 */
+	STRIPE_LOG_TRAPPED, /* trapped into log */
+};
+
+#define STRIPE_EXPAND_SYNC_FLAGS \
+	((1 << STRIPE_EXPAND_SOURCE) |\
+	(1 << STRIPE_EXPAND_READY) |\
+	(1 << STRIPE_EXPANDING) |\
+	(1 << STRIPE_SYNC_REQUESTED))
+>>>>>>> v4.9.227
 /*
  * Operation request flags
  */
@@ -340,6 +384,27 @@ enum {
 	STRIPE_OP_RECONSTRUCT,
 	STRIPE_OP_CHECK,
 };
+<<<<<<< HEAD
+=======
+
+/*
+ * RAID parity calculation preferences
+ */
+enum {
+	PARITY_DISABLE_RMW = 0,
+	PARITY_ENABLE_RMW,
+	PARITY_PREFER_RMW,
+};
+
+/*
+ * Pages requested from set_syndrome_sources()
+ */
+enum {
+	SYNDROME_SRC_ALL,
+	SYNDROME_SRC_WANT_DRAIN,
+	SYNDROME_SRC_WRITTEN,
+};
+>>>>>>> v4.9.227
 /*
  * Plugging:
  *
@@ -396,10 +461,18 @@ struct r5conf {
 	spinlock_t		hash_locks[NR_STRIPE_HASH_LOCKS];
 	struct mddev		*mddev;
 	int			chunk_sectors;
+<<<<<<< HEAD
 	int			level, algorithm;
 	int			max_degraded;
 	int			raid_disks;
 	int			max_nr_stripes;
+=======
+	int			level, algorithm, rmw_level;
+	int			max_degraded;
+	int			raid_disks;
+	int			max_nr_stripes;
+	int			min_nr_stripes;
+>>>>>>> v4.9.227
 
 	/* reshape_progress is the leading edge of a 'reshape'
 	 * It has value MaxSector when no reshape is happening
@@ -439,13 +512,24 @@ struct r5conf {
 	int			skip_copy; /* Don't copy data from bio to stripe cache */
 	struct list_head	*last_hold; /* detect hold_list promotions */
 
+<<<<<<< HEAD
+=======
+	/* bios to have bi_end_io called after metadata is synced */
+	struct bio_list		return_bi;
+
+>>>>>>> v4.9.227
 	atomic_t		reshape_stripes; /* stripes with pending writes for reshape */
 	/* unfortunately we need two cache names as we temporarily have
 	 * two caches.
 	 */
 	int			active_name;
 	char			cache_name[2][32];
+<<<<<<< HEAD
 	struct kmem_cache		*slab_cache; /* for allocating stripes */
+=======
+	struct kmem_cache	*slab_cache; /* for allocating stripes */
+	struct mutex		cache_size_mutex; /* Protect changes to cache size */
+>>>>>>> v4.9.227
 
 	int			seq_flush, seq_write;
 	int			quiesce;
@@ -458,11 +542,16 @@ struct r5conf {
 	/* per cpu variables */
 	struct raid5_percpu {
 		struct page	*spare_page; /* Used when checking P/Q in raid6 */
+<<<<<<< HEAD
 		void		*scribble;   /* space for constructing buffer
+=======
+		struct flex_array *scribble;   /* space for constructing buffer
+>>>>>>> v4.9.227
 					      * lists and performing address
 					      * conversions
 					      */
 	} __percpu *percpu;
+<<<<<<< HEAD
 	size_t			scribble_len; /* size of scribble region must be
 					       * associated with conf to handle
 					       * cpu hotplug while reshaping
@@ -470,6 +559,11 @@ struct r5conf {
 #ifdef CONFIG_HOTPLUG_CPU
 	struct notifier_block	cpu_notify;
 #endif
+=======
+	int scribble_disks;
+	int scribble_sectors;
+	struct hlist_node node;
+>>>>>>> v4.9.227
 
 	/*
 	 * Free stripes pool
@@ -478,11 +572,30 @@ struct r5conf {
 	struct list_head	inactive_list[NR_STRIPE_HASH_LOCKS];
 	atomic_t		empty_inactive_list_nr;
 	struct llist_head	released_stripes;
+<<<<<<< HEAD
 	wait_queue_head_t	wait_for_stripe;
 	wait_queue_head_t	wait_for_overlap;
 	int			inactive_blocked;	/* release of inactive stripes blocked,
 							 * waiting for 25% to be free
 							 */
+=======
+	wait_queue_head_t	wait_for_quiescent;
+	wait_queue_head_t	wait_for_stripe;
+	wait_queue_head_t	wait_for_overlap;
+	unsigned long		cache_state;
+#define R5_INACTIVE_BLOCKED	1	/* release of inactive stripes blocked,
+					 * waiting for 25% to be free
+					 */
+#define R5_ALLOC_MORE		2	/* It might help to allocate another
+					 * stripe.
+					 */
+#define R5_DID_ALLOC		4	/* A stripe was allocated, don't allocate
+					 * more until at least one has been
+					 * released.  This avoids flooding
+					 * the cache.
+					 */
+	struct shrinker		shrinker;
+>>>>>>> v4.9.227
 	int			pool_size; /* number of disks in stripeheads in pool */
 	spinlock_t		device_lock;
 	struct disk_info	*disks;
@@ -495,8 +608,15 @@ struct r5conf {
 	struct r5worker_group	*worker_groups;
 	int			group_cnt;
 	int			worker_cnt_per_group;
+<<<<<<< HEAD
 };
 
+=======
+	struct r5l_log		*log;
+};
+
+
+>>>>>>> v4.9.227
 /*
  * Our supported algorithms
  */
@@ -558,7 +678,29 @@ static inline int algorithm_is_DDF(int layout)
 	return layout >= 8 && layout <= 10;
 }
 
+<<<<<<< HEAD
 extern int md_raid5_congested(struct mddev *mddev, int bits);
 extern void md_raid5_kick_device(struct r5conf *conf);
 extern int raid5_set_cache_size(struct mddev *mddev, int size);
+=======
+extern void md_raid5_kick_device(struct r5conf *conf);
+extern int raid5_set_cache_size(struct mddev *mddev, int size);
+extern sector_t raid5_compute_blocknr(struct stripe_head *sh, int i, int previous);
+extern void raid5_release_stripe(struct stripe_head *sh);
+extern sector_t raid5_compute_sector(struct r5conf *conf, sector_t r_sector,
+				     int previous, int *dd_idx,
+				     struct stripe_head *sh);
+extern struct stripe_head *
+raid5_get_active_stripe(struct r5conf *conf, sector_t sector,
+			int previous, int noblock, int noquiesce);
+extern int r5l_init_log(struct r5conf *conf, struct md_rdev *rdev);
+extern void r5l_exit_log(struct r5l_log *log);
+extern int r5l_write_stripe(struct r5l_log *log, struct stripe_head *head_sh);
+extern void r5l_write_stripe_run(struct r5l_log *log);
+extern void r5l_flush_stripe_to_raid(struct r5l_log *log);
+extern void r5l_stripe_write_finished(struct stripe_head *sh);
+extern int r5l_handle_flush_request(struct r5l_log *log, struct bio *bio);
+extern void r5l_quiesce(struct r5l_log *log, int state);
+extern bool r5l_log_disk_error(struct r5conf *conf);
+>>>>>>> v4.9.227
 #endif

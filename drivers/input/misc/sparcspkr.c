@@ -253,11 +253,18 @@ static const struct of_device_id bbc_beep_match[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, bbc_beep_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver bbc_beep_driver = {
 	.driver = {
 		.name = "bbcbeep",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = bbc_beep_match,
 	},
 	.probe		= bbc_beep_probe,
@@ -333,11 +340,18 @@ static const struct of_device_id grover_beep_match[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, grover_beep_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver grover_beep_driver = {
 	.driver = {
 		.name = "groverbeep",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = grover_beep_match,
 	},
 	.probe		= grover_beep_probe,
@@ -345,6 +359,7 @@ static struct platform_driver grover_beep_driver = {
 	.shutdown	= sparcspkr_shutdown,
 };
 
+<<<<<<< HEAD
 static int __init sparcspkr_init(void)
 {
 	int err = platform_driver_register(&bbc_beep_driver);
@@ -356,12 +371,26 @@ static int __init sparcspkr_init(void)
 	}
 
 	return err;
+=======
+static struct platform_driver * const drivers[] = {
+	&bbc_beep_driver,
+	&grover_beep_driver,
+};
+
+static int __init sparcspkr_init(void)
+{
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 
 static void __exit sparcspkr_exit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&bbc_beep_driver);
 	platform_driver_unregister(&grover_beep_driver);
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 
 module_init(sparcspkr_init);

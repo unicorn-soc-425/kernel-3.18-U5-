@@ -57,7 +57,11 @@ static inline int xen_pci_frontend_enable_msi(struct pci_dev *dev,
 {
 	if (xen_pci_frontend && xen_pci_frontend->enable_msi)
 		return xen_pci_frontend->enable_msi(dev, vectors);
+<<<<<<< HEAD
 	return -ENODEV;
+=======
+	return -ENOSYS;
+>>>>>>> v4.9.227
 }
 static inline void xen_pci_frontend_disable_msi(struct pci_dev *dev)
 {
@@ -69,7 +73,11 @@ static inline int xen_pci_frontend_enable_msix(struct pci_dev *dev,
 {
 	if (xen_pci_frontend && xen_pci_frontend->enable_msix)
 		return xen_pci_frontend->enable_msix(dev, vectors, nvec);
+<<<<<<< HEAD
 	return -ENODEV;
+=======
+	return -ENOSYS;
+>>>>>>> v4.9.227
 }
 static inline void xen_pci_frontend_disable_msix(struct pci_dev *dev)
 {

@@ -112,7 +112,11 @@ void __init free_initrd_mem(unsigned long start, unsigned long end)
 }
 #endif
 
+<<<<<<< HEAD
 void __init_refok free_initmem(void)
+=======
+void __ref free_initmem(void)
+>>>>>>> v4.9.227
 {
 #if defined CONFIG_RAMKERNEL && !defined CONFIG_MPU
 	free_initmem_default(-1);

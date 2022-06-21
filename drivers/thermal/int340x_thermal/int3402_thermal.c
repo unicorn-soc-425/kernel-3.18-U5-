@@ -14,6 +14,7 @@
 #include <linux/platform_device.h>
 #include <linux/acpi.h>
 #include <linux/thermal.h>
+<<<<<<< HEAD
 
 #define ACPI_ACTIVE_COOLING_MAX_NR 10
 
@@ -150,16 +151,49 @@ static int int3402_thermal_get_temp(acpi_handle handle, char *name,
 
 	*temp = DECI_KELVIN_TO_MILLICELSIUS(r);
 	return 0;
+=======
+#include "int340x_thermal_zone.h"
+
+#define INT3402_PERF_CHANGED_EVENT	0x80
+#define INT3402_THERMAL_EVENT		0x90
+
+struct int3402_thermal_data {
+	acpi_handle *handle;
+	struct int34x_thermal_zone *int340x_zone;
+};
+
+static void int3402_notify(acpi_handle handle, u32 event, void *data)
+{
+	struct int3402_thermal_data *priv = data;
+
+	if (!priv)
+		return;
+
+	switch (event) {
+	case INT3402_PERF_CHANGED_EVENT:
+		break;
+	case INT3402_THERMAL_EVENT:
+		int340x_thermal_zone_device_update(priv->int340x_zone,
+						   THERMAL_TRIP_VIOLATED);
+		break;
+	default:
+		break;
+	}
+>>>>>>> v4.9.227
 }
 
 static int int3402_thermal_probe(struct platform_device *pdev)
 {
 	struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
 	struct int3402_thermal_data *d;
+<<<<<<< HEAD
 	struct thermal_zone_device *zone;
 	acpi_status status;
 	unsigned long long trip_cnt;
 	int trip_mask = 0, i;
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	if (!acpi_has_method(adev->handle, "_TMP"))
 		return -ENODEV;
@@ -168,6 +202,7 @@ static int int3402_thermal_probe(struct platform_device *pdev)
 	if (!d)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	status = acpi_evaluate_integer(adev->handle, "PATC", NULL, &trip_cnt);
 	if (ACPI_FAILURE(status))
 		trip_cnt = 0;
@@ -207,15 +242,41 @@ static int int3402_thermal_probe(struct platform_device *pdev)
 	if (IS_ERR(zone))
 		return PTR_ERR(zone);
 	platform_set_drvdata(pdev, zone);
+=======
+	d->int340x_zone = int340x_thermal_zone_add(adev, NULL);
+	if (IS_ERR(d->int340x_zone))
+		return PTR_ERR(d->int340x_zone);
+
+	ret = acpi_install_notify_handler(adev->handle,
+					  ACPI_DEVICE_NOTIFY,
+					  int3402_notify,
+					  d);
+	if (ret) {
+		int340x_thermal_zone_remove(d->int340x_zone);
+		return ret;
+	}
+
+	d->handle = adev->handle;
+	platform_set_drvdata(pdev, d);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static int int3402_thermal_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct thermal_zone_device *zone = platform_get_drvdata(pdev);
 
 	thermal_zone_device_unregister(zone);
+=======
+	struct int3402_thermal_data *d = platform_get_drvdata(pdev);
+
+	acpi_remove_notify_handler(d->handle,
+				   ACPI_DEVICE_NOTIFY, int3402_notify);
+	int340x_thermal_zone_remove(d->int340x_zone);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -231,7 +292,10 @@ static struct platform_driver int3402_thermal_driver = {
 	.remove = int3402_thermal_remove,
 	.driver = {
 		   .name = "int3402 thermal",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   .acpi_match_table = int3402_thermal_match,
 		   },
 };

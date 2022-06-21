@@ -1,7 +1,14 @@
 obj-y					+= clk.o
 obj-y					+= clk-audio-sync.o
+<<<<<<< HEAD
 obj-y					+= clk-divider.o
 obj-y					+= clk-periph.o
+=======
+obj-y					+= clk-dfll.o
+obj-y					+= clk-divider.o
+obj-y					+= clk-periph.o
+obj-y					+= clk-periph-fixed.o
+>>>>>>> v4.9.227
 obj-y					+= clk-periph-gate.o
 obj-y					+= clk-pll.o
 obj-y					+= clk-pll-out.o
@@ -11,7 +18,18 @@ obj-y					+= clk-tegra-periph.o
 obj-y					+= clk-tegra-pmc.o
 obj-y					+= clk-tegra-fixed.o
 obj-y					+= clk-tegra-super-gen4.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_TEGRA_CLK_EMC)		+= clk-emc.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_ARCH_TEGRA_2x_SOC)         += clk-tegra20.o
 obj-$(CONFIG_ARCH_TEGRA_3x_SOC)         += clk-tegra30.o
 obj-$(CONFIG_ARCH_TEGRA_114_SOC)	+= clk-tegra114.o
 obj-$(CONFIG_ARCH_TEGRA_124_SOC)	+= clk-tegra124.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_ARCH_TEGRA_124_SOC)	+= clk-tegra124-dfll-fcpu.o
+obj-$(CONFIG_ARCH_TEGRA_132_SOC)	+= clk-tegra124.o
+obj-y					+= cvb.o
+obj-$(CONFIG_ARCH_TEGRA_210_SOC)	+= clk-tegra210.o
+>>>>>>> v4.9.227

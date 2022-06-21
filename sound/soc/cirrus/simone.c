@@ -74,7 +74,10 @@ static int simone_remove(struct platform_device *pdev)
 static struct platform_driver simone_driver = {
 	.driver		= {
 		.name	= "simone-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= simone_probe,
 	.remove		= simone_remove,

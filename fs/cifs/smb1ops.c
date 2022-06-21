@@ -180,6 +180,12 @@ cifs_get_next_mid(struct TCP_Server_Info *server)
 	/* we do not want to loop forever */
 	last_mid = cur_mid;
 	cur_mid++;
+<<<<<<< HEAD
+=======
+	/* avoid 0xFFFF MID */
+	if (cur_mid == 0xffff)
+		cur_mid++;
+>>>>>>> v4.9.227
 
 	/*
 	 * This nested loop looks more expensive than it is.
@@ -305,7 +311,11 @@ coalesce_t2(char *second_buf, struct smb_hdr *target_hdr)
 	remaining = tgt_total_cnt - total_in_tgt;
 
 	if (remaining < 0) {
+<<<<<<< HEAD
 		cifs_dbg(FYI, "Server sent too much data. tgt_total_cnt=%hu total_in_tgt=%hu\n",
+=======
+		cifs_dbg(FYI, "Server sent too much data. tgt_total_cnt=%hu total_in_tgt=%u\n",
+>>>>>>> v4.9.227
 			 tgt_total_cnt, total_in_tgt);
 		return -EPROTO;
 	}
@@ -722,7 +732,11 @@ cifs_open_file(const unsigned int xid, struct cifs_open_parms *oparms,
 static void
 cifs_set_fid(struct cifsFileInfo *cfile, struct cifs_fid *fid, __u32 oplock)
 {
+<<<<<<< HEAD
 	struct cifsInodeInfo *cinode = CIFS_I(cfile->dentry->d_inode);
+=======
+	struct cifsInodeInfo *cinode = CIFS_I(d_inode(cfile->dentry));
+>>>>>>> v4.9.227
 	cfile->fid.netfid = fid->netfid;
 	cifs_set_oplock_level(cinode, oplock);
 	cinode->can_cache_brlcks = CIFS_CACHE_WRITE(cinode);
@@ -965,7 +979,12 @@ cifs_query_symlink(const unsigned int xid, struct cifs_tcon *tcon,
 	/* Check for unix extensions */
 	if (cap_unix(tcon->ses)) {
 		rc = CIFSSMBUnixQuerySymLink(xid, tcon, full_path, target_path,
+<<<<<<< HEAD
 					     cifs_sb->local_nls);
+=======
+					     cifs_sb->local_nls,
+					     cifs_remap(cifs_sb));
+>>>>>>> v4.9.227
 		if (rc == -EREMOTE)
 			rc = cifs_unix_dfs_readlink(xid, tcon, full_path,
 						    target_path,

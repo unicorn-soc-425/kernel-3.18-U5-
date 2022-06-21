@@ -11,6 +11,14 @@
 
 static inline void print_irq_desc(unsigned int irq, struct irq_desc *desc)
 {
+<<<<<<< HEAD
+=======
+	static DEFINE_RATELIMIT_STATE(ratelimit, 5 * HZ, 5);
+
+	if (!__ratelimit(&ratelimit))
+		return;
+
+>>>>>>> v4.9.227
 	printk("irq %d, desc: %p, depth: %d, count: %d, unhandled: %d\n",
 		irq, desc, desc->depth, desc->irq_count, desc->irqs_unhandled);
 	printk("->handle_irq():  %p, ", desc->handle_irq);

@@ -29,7 +29,10 @@ struct regulator {
 	int uA_load;
 	int min_uV;
 	int max_uV;
+<<<<<<< HEAD
 	int enabled;
+=======
+>>>>>>> v4.9.227
 	char *supply_name;
 	struct device_attribute dev_attr;
 	struct regulator_dev *rdev;
@@ -39,11 +42,19 @@ struct regulator {
 #ifdef CONFIG_OF
 struct regulator_init_data *regulator_of_get_init_data(struct device *dev,
 			         const struct regulator_desc *desc,
+<<<<<<< HEAD
+=======
+				 struct regulator_config *config,
+>>>>>>> v4.9.227
 				 struct device_node **node);
 #else
 static inline struct regulator_init_data *
 regulator_of_get_init_data(struct device *dev,
 			   const struct regulator_desc *desc,
+<<<<<<< HEAD
+=======
+			   struct regulator_config *config,
+>>>>>>> v4.9.227
 			   struct device_node **node)
 {
 	return NULL;

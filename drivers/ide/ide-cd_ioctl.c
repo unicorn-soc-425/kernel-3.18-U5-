@@ -303,8 +303,13 @@ int ide_cdrom_reset(struct cdrom_device_info *cdi)
 	struct request *rq;
 	int ret;
 
+<<<<<<< HEAD
 	rq = blk_get_request(drive->queue, READ, __GFP_WAIT);
 	rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	rq = blk_get_request(drive->queue, READ, __GFP_RECLAIM);
+	rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> v4.9.227
 	rq->cmd_flags = REQ_QUIET;
 	ret = blk_execute_rq(drive->queue, cd->disk, rq, 0);
 	blk_put_request(rq);
@@ -459,9 +464,12 @@ int ide_cdrom_packet(struct cdrom_device_info *cdi,
 	   layer. the packet must be complete, as we do not
 	   touch it at all. */
 
+<<<<<<< HEAD
 	if (cgc->data_direction == CGC_DATA_WRITE)
 		flags |= REQ_WRITE;
 
+=======
+>>>>>>> v4.9.227
 	if (cgc->sense)
 		memset(cgc->sense, 0, sizeof(struct request_sense));
 

@@ -70,11 +70,14 @@ static inline void release_thread(struct task_struct *dead_task)
 {
 }
 
+<<<<<<< HEAD
 /* Free all resources held by a thread. */
 static inline void exit_thread(void)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 extern unsigned long thread_saved_pc(struct task_struct *t);
 
 extern unsigned long get_wchan(struct task_struct *p);
@@ -127,11 +130,14 @@ static inline void release_thread(struct task_struct *dead_task)
 {
 }
 
+<<<<<<< HEAD
 /* Free current thread data structures etc.  */
 static inline void exit_thread(void)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 /* Return saved (kernel) PC of a blocked thread.  */
 #  define thread_saved_pc(tsk)	\
 	((tsk)->thread.regs ? (tsk)->thread.regs->r15 : 0)

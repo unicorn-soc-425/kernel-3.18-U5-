@@ -34,6 +34,10 @@
 #include "cx18-controls.h"
 #include "cx18-ioctl.h"
 #include "cx18-cards.h"
+<<<<<<< HEAD
+=======
+#include <media/v4l2-event.h>
+>>>>>>> v4.9.227
 
 /* This function tries to claim the stream for a specific file descriptor.
    If no one else is using this stream then the stream is claimed and
@@ -489,7 +493,11 @@ static ssize_t cx18_read_pos(struct cx18_stream *s, char __user *ubuf,
 
 	CX18_DEBUG_HI_FILE("read %zd from %s, got %zd\n", count, s->name, rc);
 	if (rc > 0)
+<<<<<<< HEAD
 		pos += rc;
+=======
+		*pos += rc;
+>>>>>>> v4.9.227
 	return rc;
 }
 
@@ -609,13 +617,25 @@ ssize_t cx18_v4l2_read(struct file *filp, char __user *buf, size_t count,
 
 unsigned int cx18_v4l2_enc_poll(struct file *filp, poll_table *wait)
 {
+<<<<<<< HEAD
+=======
+	unsigned long req_events = poll_requested_events(wait);
+>>>>>>> v4.9.227
 	struct cx18_open_id *id = file2id(filp);
 	struct cx18 *cx = id->cx;
 	struct cx18_stream *s = &cx->streams[id->type];
 	int eof = test_bit(CX18_F_S_STREAMOFF, &s->s_flags);
+<<<<<<< HEAD
 
 	/* Start a capture if there is none */
 	if (!eof && !test_bit(CX18_F_S_STREAMING, &s->s_flags)) {
+=======
+	unsigned res = 0;
+
+	/* Start a capture if there is none */
+	if (!eof && !test_bit(CX18_F_S_STREAMING, &s->s_flags) &&
+			(req_events & (POLLIN | POLLRDNORM))) {
+>>>>>>> v4.9.227
 		int rc;
 
 		mutex_lock(&cx->serialize_lock);
@@ -632,14 +652,24 @@ unsigned int cx18_v4l2_enc_poll(struct file *filp, poll_table *wait)
 	if ((s->vb_type == V4L2_BUF_TYPE_VIDEO_CAPTURE) &&
 		(id->type == CX18_ENC_STREAM_TYPE_YUV)) {
 		int videobuf_poll = videobuf_poll_stream(filp, &s->vbuf_q, wait);
+<<<<<<< HEAD
                 if (eof && videobuf_poll == POLLERR)
                         return POLLHUP;
                 else
                         return videobuf_poll;
+=======
+
+		if (v4l2_event_pending(&id->fh))
+			res |= POLLPRI;
+                if (eof && videobuf_poll == POLLERR)
+			return res | POLLHUP;
+		return res | videobuf_poll;
+>>>>>>> v4.9.227
 	}
 
 	/* add stream's waitq to the poll list */
 	CX18_DEBUG_HI_FILE("Encoder poll\n");
+<<<<<<< HEAD
 	poll_wait(filp, &s->waitq, wait);
 
 	if (atomic_read(&s->q_full.depth))
@@ -647,6 +677,18 @@ unsigned int cx18_v4l2_enc_poll(struct file *filp, poll_table *wait)
 	if (eof)
 		return POLLHUP;
 	return 0;
+=======
+	if (v4l2_event_pending(&id->fh))
+		res |= POLLPRI;
+	else
+		poll_wait(filp, &s->waitq, wait);
+
+	if (atomic_read(&s->q_full.depth))
+		return res | POLLIN | POLLRDNORM;
+	if (eof)
+		return res | POLLHUP;
+	return res;
+>>>>>>> v4.9.227
 }
 
 int cx18_v4l2_mmap(struct file *file, struct vm_area_struct *vma)
@@ -797,7 +839,11 @@ static int cx18_serialized_open(struct cx18_stream *s, struct file *filp)
 		CX18_DEBUG_WARN("nomem on v4l2 open\n");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	v4l2_fh_init(&item->fh, s->video_dev);
+=======
+	v4l2_fh_init(&item->fh, &s->video_dev);
+>>>>>>> v4.9.227
 
 	item->cx = cx;
 	item->type = s->type;

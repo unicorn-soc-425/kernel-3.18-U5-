@@ -21,6 +21,7 @@
 
 #ifdef arch_idle_time
 
+<<<<<<< HEAD
 static cputime64_t get_idle_time(int cpu)
 {
 	cputime64_t idle;
@@ -38,6 +39,25 @@ static cputime64_t get_iowait_time(int cpu)
 	iowait = kcpustat_cpu(cpu).cpustat[CPUTIME_IOWAIT];
 	if (cpu_online(cpu) && nr_iowait_cpu(cpu))
 		iowait += arch_idle_time(cpu);
+=======
+static u64 get_idle_time(int cpu)
+{
+	u64 idle;
+
+	idle = kcpustat_cpu(cpu).cpustat[CPUTIME_IDLE];
+	if (cpu_online(cpu) && !nr_iowait_cpu(cpu))
+		idle += cputime_to_nsecs(arch_idle_time(cpu));
+	return idle;
+}
+
+static u64 get_iowait_time(int cpu)
+{
+	u64 iowait;
+
+	iowait = kcpustat_cpu(cpu).cpustat[CPUTIME_IOWAIT];
+	if (cpu_online(cpu) && nr_iowait_cpu(cpu))
+		iowait += cputime_to_nsecs(arch_idle_time(cpu));
+>>>>>>> v4.9.227
 	return iowait;
 }
 
@@ -45,6 +65,7 @@ static cputime64_t get_iowait_time(int cpu)
 
 static u64 get_idle_time(int cpu)
 {
+<<<<<<< HEAD
 	u64 idle, idle_time = -1ULL;
 
 	if (cpu_online(cpu))
@@ -55,12 +76,25 @@ static u64 get_idle_time(int cpu)
 		idle = kcpustat_cpu(cpu).cpustat[CPUTIME_IDLE];
 	else
 		idle = usecs_to_cputime64(idle_time);
+=======
+	u64 idle, idle_usecs = -1ULL;
+
+	if (cpu_online(cpu))
+		idle_usecs = get_cpu_idle_time_us(cpu, NULL);
+
+	if (idle_usecs == -1ULL)
+		/* !NO_HZ or cpu offline so we can rely on cpustat.idle */
+		idle = kcpustat_cpu(cpu).cpustat[CPUTIME_IDLE];
+	else
+		idle = idle_usecs * NSEC_PER_USEC;
+>>>>>>> v4.9.227
 
 	return idle;
 }
 
 static u64 get_iowait_time(int cpu)
 {
+<<<<<<< HEAD
 	u64 iowait, iowait_time = -1ULL;
 
 	if (cpu_online(cpu))
@@ -71,6 +105,18 @@ static u64 get_iowait_time(int cpu)
 		iowait = kcpustat_cpu(cpu).cpustat[CPUTIME_IOWAIT];
 	else
 		iowait = usecs_to_cputime64(iowait_time);
+=======
+	u64 iowait, iowait_usecs = -1ULL;
+
+	if (cpu_online(cpu))
+		iowait_usecs = get_cpu_iowait_time_us(cpu, NULL);
+
+	if (iowait_usecs == -1ULL)
+		/* !NO_HZ or cpu offline so we can rely on cpustat.iowait */
+		iowait = kcpustat_cpu(cpu).cpustat[CPUTIME_IOWAIT];
+	else
+		iowait = iowait_usecs * NSEC_PER_USEC;
+>>>>>>> v4.9.227
 
 	return iowait;
 }
@@ -80,19 +126,30 @@ static u64 get_iowait_time(int cpu)
 static int show_stat(struct seq_file *p, void *v)
 {
 	int i, j;
+<<<<<<< HEAD
 	unsigned long jif;
+=======
+>>>>>>> v4.9.227
 	u64 user, nice, system, idle, iowait, irq, softirq, steal;
 	u64 guest, guest_nice;
 	u64 sum = 0;
 	u64 sum_softirq = 0;
 	unsigned int per_softirq_sums[NR_SOFTIRQS] = {0};
+<<<<<<< HEAD
 	struct timespec boottime;
+=======
+	struct timespec64 boottime;
+>>>>>>> v4.9.227
 
 	user = nice = system = idle = iowait =
 		irq = softirq = steal = 0;
 	guest = guest_nice = 0;
+<<<<<<< HEAD
 	getboottime(&boottime);
 	jif = boottime.tv_sec;
+=======
+	getboottime64(&boottime);
+>>>>>>> v4.9.227
 
 	for_each_possible_cpu(i) {
 		user += kcpustat_cpu(i).cpustat[CPUTIME_USER];
@@ -117,6 +174,7 @@ static int show_stat(struct seq_file *p, void *v)
 	}
 	sum += arch_irq_stat();
 
+<<<<<<< HEAD
 	seq_puts(p, "cpu ");
 	seq_put_decimal_ull(p, ' ', cputime64_to_clock_t(user));
 	seq_put_decimal_ull(p, ' ', cputime64_to_clock_t(nice));
@@ -128,6 +186,18 @@ static int show_stat(struct seq_file *p, void *v)
 	seq_put_decimal_ull(p, ' ', cputime64_to_clock_t(steal));
 	seq_put_decimal_ull(p, ' ', cputime64_to_clock_t(guest));
 	seq_put_decimal_ull(p, ' ', cputime64_to_clock_t(guest_nice));
+=======
+	seq_put_decimal_ull(p, "cpu  ", nsec_to_clock_t(user));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(nice));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(system));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(idle));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(iowait));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(irq));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(softirq));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(steal));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(guest));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(guest_nice));
+>>>>>>> v4.9.227
 	seq_putc(p, '\n');
 
 	for_each_online_cpu(i) {
@@ -143,6 +213,7 @@ static int show_stat(struct seq_file *p, void *v)
 		guest = kcpustat_cpu(i).cpustat[CPUTIME_GUEST];
 		guest_nice = kcpustat_cpu(i).cpustat[CPUTIME_GUEST_NICE];
 		seq_printf(p, "cpu%d", i);
+<<<<<<< HEAD
 		seq_put_decimal_ull(p, ' ', cputime64_to_clock_t(user));
 		seq_put_decimal_ull(p, ' ', cputime64_to_clock_t(nice));
 		seq_put_decimal_ull(p, ' ', cputime64_to_clock_t(system));
@@ -164,19 +235,53 @@ static int show_stat(struct seq_file *p, void *v)
 	seq_printf(p,
 		"\nctxt %llu\n"
 		"btime %lu\n"
+=======
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(user));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(nice));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(system));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(idle));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(iowait));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(irq));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(softirq));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(steal));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(guest));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(guest_nice));
+		seq_putc(p, '\n');
+	}
+	seq_put_decimal_ull(p, "intr ", (unsigned long long)sum);
+
+	/* sum again ? it could be updated? */
+	for_each_irq_nr(j)
+		seq_put_decimal_ull(p, " ", kstat_irqs_usr(j));
+
+	seq_printf(p,
+		"\nctxt %llu\n"
+		"btime %llu\n"
+>>>>>>> v4.9.227
 		"processes %lu\n"
 		"procs_running %lu\n"
 		"procs_blocked %lu\n",
 		nr_context_switches(),
+<<<<<<< HEAD
 		(unsigned long)jif,
+=======
+		(unsigned long long)boottime.tv_sec,
+>>>>>>> v4.9.227
 		total_forks,
 		nr_running(),
 		nr_iowait());
 
+<<<<<<< HEAD
 	seq_printf(p, "softirq %llu", (unsigned long long)sum_softirq);
 
 	for (i = 0; i < NR_SOFTIRQS; i++)
 		seq_put_decimal_ull(p, ' ', per_softirq_sums[i]);
+=======
+	seq_put_decimal_ull(p, "softirq ", (unsigned long long)sum_softirq);
+
+	for (i = 0; i < NR_SOFTIRQS; i++)
+		seq_put_decimal_ull(p, " ", per_softirq_sums[i]);
+>>>>>>> v4.9.227
 	seq_putc(p, '\n');
 
 	return 0;

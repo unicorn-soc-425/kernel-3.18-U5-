@@ -58,7 +58,11 @@ MODULE_PARM_DESC(show, " Show attached FCoE transports");
 module_param_call(create, fcoe_transport_create, NULL,
 		  (void *)FIP_MODE_FABRIC, S_IWUSR);
 __MODULE_PARM_TYPE(create, "string");
+<<<<<<< HEAD
 MODULE_PARM_DESC(create, " Creates fcoe instance on a ethernet interface");
+=======
+MODULE_PARM_DESC(create, " Creates fcoe instance on an ethernet interface");
+>>>>>>> v4.9.227
 
 module_param_call(create_vn2vn, fcoe_transport_create, NULL,
 		  (void *)FIP_MODE_VN2VN, S_IWUSR);
@@ -68,6 +72,7 @@ MODULE_PARM_DESC(create_vn2vn, " Creates a VN_node to VN_node FCoE instance "
 
 module_param_call(destroy, fcoe_transport_destroy, NULL, NULL, S_IWUSR);
 __MODULE_PARM_TYPE(destroy, "string");
+<<<<<<< HEAD
 MODULE_PARM_DESC(destroy, " Destroys fcoe instance on a ethernet interface");
 
 module_param_call(enable, fcoe_transport_enable, NULL, NULL, S_IWUSR);
@@ -77,12 +82,61 @@ MODULE_PARM_DESC(enable, " Enables fcoe on a ethernet interface.");
 module_param_call(disable, fcoe_transport_disable, NULL, NULL, S_IWUSR);
 __MODULE_PARM_TYPE(disable, "string");
 MODULE_PARM_DESC(disable, " Disables fcoe on a ethernet interface.");
+=======
+MODULE_PARM_DESC(destroy, " Destroys fcoe instance on an ethernet interface");
+
+module_param_call(enable, fcoe_transport_enable, NULL, NULL, S_IWUSR);
+__MODULE_PARM_TYPE(enable, "string");
+MODULE_PARM_DESC(enable, " Enables fcoe on an ethernet interface.");
+
+module_param_call(disable, fcoe_transport_disable, NULL, NULL, S_IWUSR);
+__MODULE_PARM_TYPE(disable, "string");
+MODULE_PARM_DESC(disable, " Disables fcoe on an ethernet interface.");
+>>>>>>> v4.9.227
 
 /* notification function for packets from net device */
 static struct notifier_block libfcoe_notifier = {
 	.notifier_call = libfcoe_device_notification,
 };
 
+<<<<<<< HEAD
+=======
+static const struct {
+	u32 fc_port_speed;
+#define SPEED_2000	2000
+#define SPEED_4000	4000
+#define SPEED_8000	8000
+#define SPEED_16000	16000
+#define SPEED_32000	32000
+	u32 eth_port_speed;
+} fcoe_port_speed_mapping[] = {
+	{ FC_PORTSPEED_1GBIT,   SPEED_1000   },
+	{ FC_PORTSPEED_2GBIT,   SPEED_2000   },
+	{ FC_PORTSPEED_4GBIT,   SPEED_4000   },
+	{ FC_PORTSPEED_8GBIT,   SPEED_8000   },
+	{ FC_PORTSPEED_10GBIT,  SPEED_10000  },
+	{ FC_PORTSPEED_16GBIT,  SPEED_16000  },
+	{ FC_PORTSPEED_20GBIT,  SPEED_20000  },
+	{ FC_PORTSPEED_25GBIT,  SPEED_25000  },
+	{ FC_PORTSPEED_32GBIT,  SPEED_32000  },
+	{ FC_PORTSPEED_40GBIT,  SPEED_40000  },
+	{ FC_PORTSPEED_50GBIT,  SPEED_50000  },
+	{ FC_PORTSPEED_100GBIT, SPEED_100000 },
+};
+
+static inline u32 eth2fc_speed(u32 eth_port_speed)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(fcoe_port_speed_mapping); i++) {
+		if (fcoe_port_speed_mapping[i].eth_port_speed == eth_port_speed)
+			return fcoe_port_speed_mapping[i].fc_port_speed;
+	}
+
+	return FC_PORTSPEED_UNKNOWN;
+}
+
+>>>>>>> v4.9.227
 /**
  * fcoe_link_speed_update() - Update the supported and actual link speeds
  * @lport: The local port to update speeds for
@@ -93,14 +147,21 @@ static struct notifier_block libfcoe_notifier = {
 int fcoe_link_speed_update(struct fc_lport *lport)
 {
 	struct net_device *netdev = fcoe_get_netdev(lport);
+<<<<<<< HEAD
 	struct ethtool_cmd ecmd;
 
 	if (!__ethtool_get_settings(netdev, &ecmd)) {
+=======
+	struct ethtool_link_ksettings ecmd;
+
+	if (!__ethtool_get_link_ksettings(netdev, &ecmd)) {
+>>>>>>> v4.9.227
 		lport->link_supported_speeds &= ~(FC_PORTSPEED_1GBIT  |
 		                                  FC_PORTSPEED_10GBIT |
 		                                  FC_PORTSPEED_20GBIT |
 		                                  FC_PORTSPEED_40GBIT);
 
+<<<<<<< HEAD
 		if (ecmd.supported & (SUPPORTED_1000baseT_Half |
 		                      SUPPORTED_1000baseT_Full |
 		                      SUPPORTED_1000baseKX_Full))
@@ -139,6 +200,34 @@ int fcoe_link_speed_update(struct fc_lport *lport)
 			lport->link_speed = FC_PORTSPEED_UNKNOWN;
 			break;
 		}
+=======
+		if (ecmd.link_modes.supported[0] & (
+			    SUPPORTED_1000baseT_Half |
+			    SUPPORTED_1000baseT_Full |
+			    SUPPORTED_1000baseKX_Full))
+			lport->link_supported_speeds |= FC_PORTSPEED_1GBIT;
+
+		if (ecmd.link_modes.supported[0] & (
+			    SUPPORTED_10000baseT_Full   |
+			    SUPPORTED_10000baseKX4_Full |
+			    SUPPORTED_10000baseKR_Full  |
+			    SUPPORTED_10000baseR_FEC))
+			lport->link_supported_speeds |= FC_PORTSPEED_10GBIT;
+
+		if (ecmd.link_modes.supported[0] & (
+			    SUPPORTED_20000baseMLD2_Full |
+			    SUPPORTED_20000baseKR2_Full))
+			lport->link_supported_speeds |= FC_PORTSPEED_20GBIT;
+
+		if (ecmd.link_modes.supported[0] & (
+			    SUPPORTED_40000baseKR4_Full |
+			    SUPPORTED_40000baseCR4_Full |
+			    SUPPORTED_40000baseSR4_Full |
+			    SUPPORTED_40000baseLR4_Full))
+			lport->link_supported_speeds |= FC_PORTSPEED_40GBIT;
+
+		lport->link_speed = eth2fc_speed(ecmd.base.speed);
+>>>>>>> v4.9.227
 		return 0;
 	}
 	return -1;

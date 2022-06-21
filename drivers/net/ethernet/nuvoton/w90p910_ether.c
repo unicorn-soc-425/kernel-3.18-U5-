@@ -476,7 +476,11 @@ static void w90p910_reset_mac(struct net_device *dev)
 
 	w90p910_init_desc(dev);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	ether->cur_tx = 0x0;
 	ether->finish_tx = 0x0;
 	ether->cur_rx = 0x0;
@@ -490,7 +494,11 @@ static void w90p910_reset_mac(struct net_device *dev)
 	w90p910_trigger_tx(dev);
 	w90p910_trigger_rx(dev);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 
 	if (netif_queue_stopped(dev))
 		netif_wake_queue(dev);
@@ -751,7 +759,11 @@ static void netdev_rx(struct net_device *dev)
 				dev_err(&pdev->dev, "rx crc err\n");
 				ether->stats.rx_crc_errors++;
 			} else if (status & RXDS_ALIE) {
+<<<<<<< HEAD
 				dev_err(&pdev->dev, "rx aligment err\n");
+=======
+				dev_err(&pdev->dev, "rx alignment err\n");
+>>>>>>> v4.9.227
 				ether->stats.rx_frame_errors++;
 			} else if (status & RXDS_PTLE) {
 				dev_err(&pdev->dev, "rx longer err\n");
@@ -918,7 +930,11 @@ static const struct net_device_ops w90p910_ether_netdev_ops = {
 	.ndo_change_mtu		= eth_change_mtu,
 };
 
+<<<<<<< HEAD
 static void __init get_mac_address(struct net_device *dev)
+=======
+static void get_mac_address(struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct w90p910_ether *ether = netdev_priv(dev);
 	struct platform_device *pdev;
@@ -1038,7 +1054,11 @@ static int w90p910_ether_probe(struct platform_device *pdev)
 
 	error = register_netdev(dev);
 	if (error != 0) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Regiter EMC w90p910 FAILED\n");
+=======
+		dev_err(&pdev->dev, "Register EMC w90p910 FAILED\n");
+>>>>>>> v4.9.227
 		error = -ENODEV;
 		goto failed_put_rmiiclk;
 	}
@@ -1081,7 +1101,10 @@ static struct platform_driver w90p910_ether_driver = {
 	.remove		= w90p910_ether_remove,
 	.driver		= {
 		.name	= "nuc900-emc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

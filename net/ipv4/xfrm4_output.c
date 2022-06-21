@@ -30,6 +30,11 @@ static int xfrm4_tunnel_check_size(struct sk_buff *skb)
 
 	mtu = dst_mtu(skb_dst(skb));
 	if (skb->len > mtu) {
+<<<<<<< HEAD
+=======
+		skb->protocol = htons(ETH_P_IP);
+
+>>>>>>> v4.9.227
 		if (skb->sk)
 			xfrm_local_error(skb, mtu);
 		else
@@ -63,11 +68,16 @@ int xfrm4_prepare_output(struct xfrm_state *x, struct sk_buff *skb)
 		return err;
 
 	IPCB(skb)->flags |= IPSKB_XFRM_TUNNEL_SIZE;
+<<<<<<< HEAD
+=======
+	skb->protocol = htons(ETH_P_IP);
+>>>>>>> v4.9.227
 
 	return x->outer_mode->output2(x, skb);
 }
 EXPORT_SYMBOL(xfrm4_prepare_output);
 
+<<<<<<< HEAD
 int xfrm4_output_finish(struct sk_buff *skb)
 {
 	memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
@@ -81,12 +91,25 @@ int xfrm4_output_finish(struct sk_buff *skb)
 }
 
 static int __xfrm4_output(struct sk_buff *skb)
+=======
+int xfrm4_output_finish(struct sock *sk, struct sk_buff *skb)
+{
+	memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
+
+	IPCB(skb)->flags |= IPSKB_XFRM_TRANSFORMED;
+
+	return xfrm_output(sk, skb);
+}
+
+static int __xfrm4_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	struct xfrm_state *x = skb_dst(skb)->xfrm;
 
 #ifdef CONFIG_NETFILTER
 	if (!x) {
 		IPCB(skb)->flags |= IPSKB_REROUTED;
+<<<<<<< HEAD
 		return dst_output(skb);
 	}
 #endif
@@ -98,6 +121,20 @@ int xfrm4_output(struct sock *sk, struct sk_buff *skb)
 {
 	return NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING, skb,
 			    NULL, skb_dst(skb)->dev, __xfrm4_output,
+=======
+		return dst_output(net, sk, skb);
+	}
+#endif
+
+	return x->outer_mode->afinfo->output_finish(sk, skb);
+}
+
+int xfrm4_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	return NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING,
+			    net, sk, skb, NULL, skb_dst(skb)->dev,
+			    __xfrm4_output,
+>>>>>>> v4.9.227
 			    !(IPCB(skb)->flags & IPSKB_REROUTED));
 }
 

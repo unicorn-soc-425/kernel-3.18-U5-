@@ -62,7 +62,11 @@ static int __init ps3_register_lpm_devices(void)
 		&dev->lpm.rights);
 
 	if (result) {
+<<<<<<< HEAD
 		pr_debug("%s:%d: ps3_repository_read_lpm_privleges failed \n",
+=======
+		pr_debug("%s:%d: ps3_repository_read_lpm_privileges failed\n",
+>>>>>>> v4.9.227
 			__func__, __LINE__);
 		goto fail_read_repo;
 	}
@@ -189,7 +193,11 @@ fail_malloc:
 	return result;
 }
 
+<<<<<<< HEAD
 static int __init_refok ps3_setup_uhc_device(
+=======
+static int __ref ps3_setup_uhc_device(
+>>>>>>> v4.9.227
 	const struct ps3_repository_device *repo, enum ps3_match_id match_id,
 	enum ps3_interrupt_type interrupt_type, enum ps3_reg_type reg_type)
 {

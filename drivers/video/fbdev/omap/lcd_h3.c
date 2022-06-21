@@ -22,8 +22,13 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/i2c/tps65010.h>
+<<<<<<< HEAD
 
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+
+>>>>>>> v4.9.227
 #include "omapfb.h"
 
 #define MODULE_NAME	"omapfb-lcd_h3"
@@ -120,7 +125,10 @@ static struct platform_driver h3_panel_driver = {
 	.resume		= h3_panel_resume,
 	.driver		= {
 		.name	= "lcd_h3",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

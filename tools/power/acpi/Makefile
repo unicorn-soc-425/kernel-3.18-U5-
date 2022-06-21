@@ -8,6 +8,7 @@
 # as published by the Free Software Foundation; version 2
 # of the License.
 
+<<<<<<< HEAD
 OUTPUT=./
 ifeq ("$(origin O)", "command line")
 	OUTPUT := $(O)/
@@ -159,3 +160,22 @@ uninstall:
 	- rm -f $(DESTDIR)${mandir}/man8/acpidump.8
 
 .PHONY: all utils install-tools install-man install uninstall clean
+=======
+include ../../scripts/Makefile.include
+
+all: acpidbg acpidump ec
+clean: acpidbg_clean acpidump_clean ec_clean
+install: acpidbg_install acpidump_install ec_install
+uninstall: acpidbg_uninstall acpidump_uninstall ec_uninstall
+
+acpidbg acpidump ec: FORCE
+	$(call descend,tools/$@,all)
+acpidbg_clean acpidump_clean ec_clean:
+	$(call descend,tools/$(@:_clean=),clean)
+acpidbg_install acpidump_install ec_install:
+	$(call descend,tools/$(@:_install=),install)
+acpidbg_uninstall acpidump_uninstall ec_uninstall:
+	$(call descend,tools/$(@:_uninstall=),uninstall)
+
+.PHONY: FORCE
+>>>>>>> v4.9.227

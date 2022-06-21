@@ -96,11 +96,15 @@ static int keystone_usbphy_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, k_phy);
 
+<<<<<<< HEAD
 	ret = usb_add_phy_dev(&k_phy->usb_phy_gen.phy);
 	if (ret)
 		return ret;
 
 	return 0;
+=======
+	return usb_add_phy_dev(&k_phy->usb_phy_gen.phy);
+>>>>>>> v4.9.227
 }
 
 static int keystone_usbphy_remove(struct platform_device *pdev)
@@ -123,7 +127,10 @@ static struct platform_driver keystone_usbphy_driver = {
 	.remove         = keystone_usbphy_remove,
 	.driver         = {
 		.name   = "keystone-usbphy",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = keystone_usbphy_ids,
 	},
 };

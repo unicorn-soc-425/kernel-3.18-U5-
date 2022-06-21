@@ -10,7 +10,11 @@
  *  Copyright (C) 2008-2009 Red Hat, Inc., Ingo Molnar
  *  Copyright (C) 2009 Jaswinder Singh Rajput
  *  Copyright (C) 2009 Advanced Micro Devices, Inc., Robert Richter
+<<<<<<< HEAD
  *  Copyright (C) 2008-2009 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ *  Copyright (C) 2008-2009 Red Hat, Inc., Peter Zijlstra
+>>>>>>> v4.9.227
  *  Copyright (C) 2009 Intel Corporation, <markus.t.metzger@intel.com>
  *
  * ppc:
@@ -352,11 +356,16 @@ static struct pmu pmu = {
 	.read		= sh_pmu_read,
 };
 
+<<<<<<< HEAD
 static void sh_pmu_setup(int cpu)
+=======
+static int sh_pmu_prepare_cpu(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 	struct cpu_hw_events *cpuhw = &per_cpu(cpu_hw_events, cpu);
 
 	memset(cpuhw, 0, sizeof(struct cpu_hw_events));
+<<<<<<< HEAD
 }
 
 static int
@@ -374,6 +383,9 @@ sh_pmu_notifier(struct notifier_block *self, unsigned long action, void *hcpu)
 	}
 
 	return NOTIFY_OK;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 int register_sh_pmu(struct sh_pmu *_pmu)
@@ -394,6 +406,11 @@ int register_sh_pmu(struct sh_pmu *_pmu)
 	WARN_ON(_pmu->num_events > MAX_HWEVENTS);
 
 	perf_pmu_register(&pmu, "cpu", PERF_TYPE_RAW);
+<<<<<<< HEAD
 	perf_cpu_notifier(sh_pmu_notifier);
+=======
+	cpuhp_setup_state(CPUHP_PERF_SUPERH, "PERF_SUPERH", sh_pmu_prepare_cpu,
+			  NULL);
+>>>>>>> v4.9.227
 	return 0;
 }

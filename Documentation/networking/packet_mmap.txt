@@ -440,9 +440,16 @@ and the following flags apply:
 +++ Capture process:
      from include/linux/if_packet.h
 
+<<<<<<< HEAD
      #define TP_STATUS_COPY          2 
      #define TP_STATUS_LOSING        4 
      #define TP_STATUS_CSUMNOTREADY  8 
+=======
+     #define TP_STATUS_COPY          (1 << 1)
+     #define TP_STATUS_LOSING        (1 << 2)
+     #define TP_STATUS_CSUMNOTREADY  (1 << 3)
+     #define TP_STATUS_CSUM_VALID    (1 << 7)
+>>>>>>> v4.9.227
 
 TP_STATUS_COPY        : This flag indicates that the frame (and associated
                         meta information) has been truncated because it's 
@@ -466,6 +473,15 @@ TP_STATUS_CSUMNOTREADY: currently it's used for outgoing IP packets which
                         reading the packet we should not try to check the 
                         checksum. 
 
+<<<<<<< HEAD
+=======
+TP_STATUS_CSUM_VALID  : This flag indicates that at least the transport
+                        header checksum of the packet has been already
+                        validated on the kernel side. If the flag is not set
+                        then we are free to check the checksum by ourselves
+                        provided that TP_STATUS_CSUMNOTREADY is also not set.
+
+>>>>>>> v4.9.227
 for convenience there are also the following defines:
 
      #define TP_STATUS_KERNEL        0

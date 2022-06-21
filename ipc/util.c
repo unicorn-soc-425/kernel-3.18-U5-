@@ -71,6 +71,7 @@ struct ipc_proc_iface {
 	int (*show)(struct seq_file *, void *);
 };
 
+<<<<<<< HEAD
 static void ipc_memory_notifier(struct work_struct *work)
 {
 	ipcns_notify(IPCNS_MEMCHANGED);
@@ -109,6 +110,8 @@ static struct notifier_block ipc_memory_nb = {
 	.priority = IPC_CALLBACK_PRI,
 };
 
+=======
+>>>>>>> v4.9.227
 /**
  * ipc_init - initialise ipc subsystem
  *
@@ -124,8 +127,11 @@ static int __init ipc_init(void)
 	sem_init();
 	msg_init();
 	shm_init();
+<<<<<<< HEAD
 	register_hotmemory_notifier(&ipc_memory_nb);
 	register_ipcns_notifier(&init_ipc_ns);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 device_initcall(ipc_init);
@@ -454,6 +460,7 @@ void *ipc_alloc(int size)
 /**
  * ipc_free - free ipc space
  * @ptr: pointer returned by ipc_alloc
+<<<<<<< HEAD
  * @size: size of block
  *
  * Free a block created with ipc_alloc(). The caller must know the size
@@ -465,6 +472,14 @@ void ipc_free(void *ptr, int size)
 		vfree(ptr);
 	else
 		kfree(ptr);
+=======
+ *
+ * Free a block created with ipc_alloc().
+ */
+void ipc_free(void *ptr)
+{
+	kvfree(ptr);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -507,10 +522,14 @@ void ipc_rcu_free(struct rcu_head *head)
 {
 	struct ipc_rcu *p = container_of(head, struct ipc_rcu, rcu);
 
+<<<<<<< HEAD
 	if (is_vmalloc_addr(p))
 		vfree(p);
 	else
 		kfree(p);
+=======
+	kvfree(p);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -598,7 +617,11 @@ void ipc64_perm_to_ipc_perm(struct ipc64_perm *in, struct ipc_perm *out)
  * Call inside the RCU critical section.
  * The ipc object is *not* locked on exit.
  */
+<<<<<<< HEAD
 struct kern_ipc_perm *ipc_obtain_object(struct ipc_ids *ids, int id)
+=======
+struct kern_ipc_perm *ipc_obtain_object_idr(struct ipc_ids *ids, int id)
+>>>>>>> v4.9.227
 {
 	struct kern_ipc_perm *out;
 	int lid = ipcid_to_idx(id);
@@ -624,6 +647,7 @@ struct kern_ipc_perm *ipc_lock(struct ipc_ids *ids, int id)
 	struct kern_ipc_perm *out;
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	out = ipc_obtain_object(ids, id);
 	if (IS_ERR(out))
 		goto err1;
@@ -632,13 +656,31 @@ struct kern_ipc_perm *ipc_lock(struct ipc_ids *ids, int id)
 
 	/* ipc_rmid() may have already freed the ID while ipc_lock
 	 * was spinning: here verify that the structure is still valid
+=======
+	out = ipc_obtain_object_idr(ids, id);
+	if (IS_ERR(out))
+		goto err;
+
+	spin_lock(&out->lock);
+
+	/*
+	 * ipc_rmid() may have already freed the ID while ipc_lock()
+	 * was spinning: here verify that the structure is still valid.
+	 * Upon races with RMID, return -EIDRM, thus indicating that
+	 * the ID points to a removed identifier.
+>>>>>>> v4.9.227
 	 */
 	if (ipc_valid_object(out))
 		return out;
 
 	spin_unlock(&out->lock);
+<<<<<<< HEAD
 	out = ERR_PTR(-EINVAL);
 err1:
+=======
+	out = ERR_PTR(-EIDRM);
+err:
+>>>>>>> v4.9.227
 	rcu_read_unlock();
 	return out;
 }
@@ -648,7 +690,11 @@ err1:
  * @ids: ipc identifier set
  * @id: ipc id to look for
  *
+<<<<<<< HEAD
  * Similar to ipc_obtain_object() but also checks
+=======
+ * Similar to ipc_obtain_object_idr() but also checks
+>>>>>>> v4.9.227
  * the ipc object reference counter.
  *
  * Call inside the RCU critical section.
@@ -656,13 +702,21 @@ err1:
  */
 struct kern_ipc_perm *ipc_obtain_object_check(struct ipc_ids *ids, int id)
 {
+<<<<<<< HEAD
 	struct kern_ipc_perm *out = ipc_obtain_object(ids, id);
+=======
+	struct kern_ipc_perm *out = ipc_obtain_object_idr(ids, id);
+>>>>>>> v4.9.227
 
 	if (IS_ERR(out))
 		goto out;
 
 	if (ipc_checkid(out, id))
+<<<<<<< HEAD
 		return ERR_PTR(-EIDRM);
+=======
+		return ERR_PTR(-EINVAL);
+>>>>>>> v4.9.227
 out:
 	return out;
 }
@@ -796,12 +850,19 @@ static struct kern_ipc_perm *sysvipc_find_ipc(struct ipc_ids *ids, loff_t pos,
 			total++;
 	}
 
+<<<<<<< HEAD
 	if (total >= ids->in_use)
 		return NULL;
+=======
+	ipc = NULL;
+	if (total >= ids->in_use)
+		goto out;
+>>>>>>> v4.9.227
 
 	for (; pos < IPCMNI; pos++) {
 		ipc = idr_find(&ids->ipcs_idr, pos);
 		if (ipc != NULL) {
+<<<<<<< HEAD
 			*new_pos = pos + 1;
 			rcu_read_lock();
 			ipc_lock_object(ipc);
@@ -811,6 +872,16 @@ static struct kern_ipc_perm *sysvipc_find_ipc(struct ipc_ids *ids, loff_t pos,
 
 	/* Out of range - return NULL to terminate iteration */
 	return NULL;
+=======
+			rcu_read_lock();
+			ipc_lock_object(ipc);
+			break;
+		}
+	}
+out:
+	*new_pos = pos + 1;
+	return ipc;
+>>>>>>> v4.9.227
 }
 
 static void *sysvipc_proc_next(struct seq_file *s, void *it, loff_t *pos)
@@ -877,8 +948,15 @@ static int sysvipc_proc_show(struct seq_file *s, void *it)
 	struct ipc_proc_iter *iter = s->private;
 	struct ipc_proc_iface *iface = iter->iface;
 
+<<<<<<< HEAD
 	if (it == SEQ_START_TOKEN)
 		return seq_puts(s, iface->header);
+=======
+	if (it == SEQ_START_TOKEN) {
+		seq_puts(s, iface->header);
+		return 0;
+	}
+>>>>>>> v4.9.227
 
 	return iface->show(s, it);
 }

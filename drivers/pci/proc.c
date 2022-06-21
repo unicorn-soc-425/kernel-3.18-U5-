@@ -231,23 +231,51 @@ static int proc_bus_pci_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct pci_dev *dev = PDE_DATA(file_inode(file));
 	struct pci_filp_private *fpriv = file->private_data;
+<<<<<<< HEAD
 	int i, ret;
+=======
+	int i, ret, write_combine = 0, res_bit;
+>>>>>>> v4.9.227
 
 	if (!capable(CAP_SYS_RAWIO))
 		return -EPERM;
 
+<<<<<<< HEAD
 	/* Make sure the caller is mapping a real resource for this device */
 	for (i = 0; i < PCI_ROM_RESOURCE; i++) {
 		if (pci_mmap_fits(dev, i, vma,  PCI_MMAP_PROCFS))
+=======
+	if (fpriv->mmap_state == pci_mmap_io)
+		res_bit = IORESOURCE_IO;
+	else
+		res_bit = IORESOURCE_MEM;
+
+	/* Make sure the caller is mapping a real resource for this device */
+	for (i = 0; i < PCI_ROM_RESOURCE; i++) {
+		if (dev->resource[i].flags & res_bit &&
+		    pci_mmap_fits(dev, i, vma,  PCI_MMAP_PROCFS))
+>>>>>>> v4.9.227
 			break;
 	}
 
 	if (i >= PCI_ROM_RESOURCE)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	ret = pci_mmap_page_range(dev, vma,
 				  fpriv->mmap_state,
 				  fpriv->write_combine);
+=======
+	if (fpriv->mmap_state == pci_mmap_mem &&
+	    fpriv->write_combine) {
+		if (dev->resource[i].flags & IORESOURCE_PREFETCH)
+			write_combine = 1;
+		else
+			return -EINVAL;
+	}
+	ret = pci_mmap_page_range(dev, vma,
+				  fpriv->mmap_state, write_combine);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 

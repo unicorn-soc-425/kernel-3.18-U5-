@@ -49,12 +49,25 @@ bitbang_txrx_be_cpha0(struct spi_device *spi,
 {
 	/* if (cpol == 0) this is SPI_MODE_0; else this is SPI_MODE_2 */
 
+<<<<<<< HEAD
+=======
+	u32 oldbit = (!(word & (1<<(bits-1)))) << 31;
+>>>>>>> v4.9.227
 	/* clock starts at inactive polarity */
 	for (word <<= (32 - bits); likely(bits); bits--) {
 
 		/* setup MSB (to slave) on trailing edge */
+<<<<<<< HEAD
 		if ((flags & SPI_MASTER_NO_TX) == 0)
 			setmosi(spi, word & (1 << 31));
+=======
+		if ((flags & SPI_MASTER_NO_TX) == 0) {
+			if ((word & (1 << 31)) != oldbit) {
+				setmosi(spi, word & (1 << 31));
+				oldbit = word & (1 << 31);
+			}
+		}
+>>>>>>> v4.9.227
 		spidelay(nsecs);	/* T(setup) */
 
 		setsck(spi, !cpol);
@@ -76,13 +89,26 @@ bitbang_txrx_be_cpha1(struct spi_device *spi,
 {
 	/* if (cpol == 0) this is SPI_MODE_1; else this is SPI_MODE_3 */
 
+<<<<<<< HEAD
+=======
+	u32 oldbit = (!(word & (1<<(bits-1)))) << 31;
+>>>>>>> v4.9.227
 	/* clock starts at inactive polarity */
 	for (word <<= (32 - bits); likely(bits); bits--) {
 
 		/* setup MSB (to slave) on leading edge */
 		setsck(spi, !cpol);
+<<<<<<< HEAD
 		if ((flags & SPI_MASTER_NO_TX) == 0)
 			setmosi(spi, word & (1 << 31));
+=======
+		if ((flags & SPI_MASTER_NO_TX) == 0) {
+			if ((word & (1 << 31)) != oldbit) {
+				setmosi(spi, word & (1 << 31));
+				oldbit = word & (1 << 31);
+			}
+		}
+>>>>>>> v4.9.227
 		spidelay(nsecs); /* T(setup) */
 
 		setsck(spi, cpol);

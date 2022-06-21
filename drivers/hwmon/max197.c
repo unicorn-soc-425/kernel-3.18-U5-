@@ -324,7 +324,11 @@ static int max197_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_device_id max197_device_ids[] = {
+=======
+static const struct platform_device_id max197_device_ids[] = {
+>>>>>>> v4.9.227
 	{ "max197", max197 },
 	{ "max199", max199 },
 	{ }
@@ -334,7 +338,10 @@ MODULE_DEVICE_TABLE(platform, max197_device_ids);
 static struct platform_driver max197_driver = {
 	.driver = {
 		.name = "max197",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = max197_probe,
 	.remove = max197_remove,

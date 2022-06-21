@@ -10,6 +10,11 @@ host1x-y = \
 	mipi.o \
 	hw/host1x01.o \
 	hw/host1x02.o \
+<<<<<<< HEAD
 	hw/host1x04.o
+=======
+	hw/host1x04.o \
+	hw/host1x05.o
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_TEGRA_HOST1X) += host1x.o

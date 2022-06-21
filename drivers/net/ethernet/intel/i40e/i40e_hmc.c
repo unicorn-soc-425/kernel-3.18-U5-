@@ -49,7 +49,11 @@ i40e_status i40e_add_sd_table_entry(struct i40e_hw *hw,
 	struct i40e_hmc_sd_entry *sd_entry;
 	bool dma_mem_alloc_done = false;
 	struct i40e_dma_mem mem;
+<<<<<<< HEAD
 	i40e_status ret_code;
+=======
+	i40e_status ret_code = I40E_SUCCESS;
+>>>>>>> v4.9.227
 	u64 alloc_len;
 
 	if (NULL == hmc_info->sd_table.sd_entry) {
@@ -116,6 +120,10 @@ exit:
  * @hw: pointer to our HW structure
  * @hmc_info: pointer to the HMC configuration information structure
  * @pd_index: which page descriptor index to manipulate
+<<<<<<< HEAD
+=======
+ * @rsrc_pg: if not NULL, use preallocated page instead of allocating new one.
+>>>>>>> v4.9.227
  *
  * This function:
  *	1. Initializes the pd entry
@@ -129,12 +137,21 @@ exit:
  **/
 i40e_status i40e_add_pd_table_entry(struct i40e_hw *hw,
 					      struct i40e_hmc_info *hmc_info,
+<<<<<<< HEAD
 					      u32 pd_index)
+=======
+					      u32 pd_index,
+					      struct i40e_dma_mem *rsrc_pg)
+>>>>>>> v4.9.227
 {
 	i40e_status ret_code = 0;
 	struct i40e_hmc_pd_table *pd_table;
 	struct i40e_hmc_pd_entry *pd_entry;
 	struct i40e_dma_mem mem;
+<<<<<<< HEAD
+=======
+	struct i40e_dma_mem *page = &mem;
+>>>>>>> v4.9.227
 	u32 sd_idx, rel_pd_idx;
 	u64 *pd_addr;
 	u64 page_desc;
@@ -155,6 +172,7 @@ i40e_status i40e_add_pd_table_entry(struct i40e_hw *hw,
 	pd_table = &hmc_info->sd_table.sd_entry[sd_idx].u.pd_table;
 	pd_entry = &pd_table->pd_entry[rel_pd_idx];
 	if (!pd_entry->valid) {
+<<<<<<< HEAD
 		/* allocate a 4K backing page */
 		ret_code = i40e_allocate_dma_mem(hw, &mem, i40e_mem_bp,
 						 I40E_HMC_PAGED_BP_SIZE,
@@ -167,6 +185,26 @@ i40e_status i40e_add_pd_table_entry(struct i40e_hw *hw,
 		pd_entry->bp.entry_type = I40E_SD_TYPE_PAGED;
 		/* Set page address and valid bit */
 		page_desc = mem.pa | 0x1;
+=======
+		if (rsrc_pg) {
+			pd_entry->rsrc_pg = true;
+			page = rsrc_pg;
+		} else {
+			/* allocate a 4K backing page */
+			ret_code = i40e_allocate_dma_mem(hw, page, i40e_mem_bp,
+						I40E_HMC_PAGED_BP_SIZE,
+						I40E_HMC_PD_BP_BUF_ALIGNMENT);
+			if (ret_code)
+				goto exit;
+			pd_entry->rsrc_pg = false;
+		}
+
+		pd_entry->bp.addr = *page;
+		pd_entry->bp.sd_pd_index = pd_index;
+		pd_entry->bp.entry_type = I40E_SD_TYPE_PAGED;
+		/* Set page address and valid bit */
+		page_desc = page->pa | 0x1;
+>>>>>>> v4.9.227
 
 		pd_addr = (u64 *)pd_table->pd_page_addr.va;
 		pd_addr += rel_pd_idx;
@@ -240,7 +278,12 @@ i40e_status i40e_remove_pd_bp(struct i40e_hw *hw,
 	I40E_INVALIDATE_PF_HMC_PD(hw, sd_idx, idx);
 
 	/* free memory here */
+<<<<<<< HEAD
 	ret_code = i40e_free_dma_mem(hw, &(pd_entry->bp.addr));
+=======
+	if (!pd_entry->rsrc_pg)
+		ret_code = i40e_free_dma_mem(hw, &pd_entry->bp.addr);
+>>>>>>> v4.9.227
 	if (ret_code)
 		goto exit;
 	if (!pd_table->ref_cnt)
@@ -287,6 +330,7 @@ i40e_status i40e_remove_sd_bp_new(struct i40e_hw *hw,
 					    u32 idx, bool is_pf)
 {
 	struct i40e_hmc_sd_entry *sd_entry;
+<<<<<<< HEAD
 	i40e_status ret_code = 0;
 
 	/* get the entry and decrease its ref counter */
@@ -302,6 +346,17 @@ i40e_status i40e_remove_sd_bp_new(struct i40e_hw *hw,
 		goto exit;
 exit:
 	return ret_code;
+=======
+
+	if (!is_pf)
+		return I40E_NOT_SUPPORTED;
+
+	/* get the entry and decrease its ref counter */
+	sd_entry = &hmc_info->sd_table.sd_entry[idx];
+	I40E_CLEAR_PF_SD_ENTRY(hw, idx, I40E_SD_TYPE_DIRECT);
+
+	return i40e_free_dma_mem(hw, &sd_entry->u.bp.addr);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -341,6 +396,7 @@ i40e_status i40e_remove_pd_page_new(struct i40e_hw *hw,
 					      struct i40e_hmc_info *hmc_info,
 					      u32 idx, bool is_pf)
 {
+<<<<<<< HEAD
 	i40e_status ret_code = 0;
 	struct i40e_hmc_sd_entry *sd_entry;
 
@@ -357,4 +413,15 @@ i40e_status i40e_remove_pd_page_new(struct i40e_hw *hw,
 		goto exit;
 exit:
 	return ret_code;
+=======
+	struct i40e_hmc_sd_entry *sd_entry;
+
+	if (!is_pf)
+		return I40E_NOT_SUPPORTED;
+
+	sd_entry = &hmc_info->sd_table.sd_entry[idx];
+	I40E_CLEAR_PF_SD_ENTRY(hw, idx, I40E_SD_TYPE_PAGED);
+
+	return  i40e_free_dma_mem(hw, &sd_entry->u.pd_table.pd_page_addr);
+>>>>>>> v4.9.227
 }

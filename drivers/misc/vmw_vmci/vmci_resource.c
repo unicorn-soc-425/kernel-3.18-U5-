@@ -56,7 +56,12 @@ static struct vmci_resource *vmci_resource_lookup(struct vmci_handle handle,
 
 		if (r->type == type &&
 		    rid == handle.resource &&
+<<<<<<< HEAD
 		    (cid == handle.context || cid == VMCI_INVALID_ID)) {
+=======
+		    (cid == handle.context || cid == VMCI_INVALID_ID ||
+		     handle.context == VMCI_INVALID_ID)) {
+>>>>>>> v4.9.227
 			resource = r;
 			break;
 		}

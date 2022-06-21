@@ -66,7 +66,11 @@ struct kimage;
 
 /* Memory to backup during crash kdump */
 #define KEXEC_BACKUP_SRC_START	(0UL)
+<<<<<<< HEAD
 #define KEXEC_BACKUP_SRC_END	(640 * 1024UL)	/* 640K */
+=======
+#define KEXEC_BACKUP_SRC_END	(640 * 1024UL - 1)	/* 640K */
+>>>>>>> v4.9.227
 
 /*
  * CPU does not save ss and sp on stack if execution is already
@@ -210,6 +214,10 @@ struct kexec_entry64_regs {
 
 typedef void crash_vmclear_fn(void);
 extern crash_vmclear_fn __rcu *crash_vmclear_loaded_vmcss;
+<<<<<<< HEAD
+=======
+extern void kdump_nmi_shootdown_cpus(void);
+>>>>>>> v4.9.227
 
 #endif /* __ASSEMBLY__ */
 

@@ -1,9 +1,18 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
  *
  * Linux driver for Brocade Fibre Channel Host Bus Adapter.
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -2697,7 +2706,11 @@ bfa_ioc_reset_fwstate(struct bfa_ioc_s *ioc)
 	bfa_ioc_set_alt_ioc_fwstate(ioc, BFI_IOC_UNINIT);
 }
 
+<<<<<<< HEAD
 #define BFA_MFG_NAME "Brocade"
+=======
+#define BFA_MFG_NAME "QLogic"
+>>>>>>> v4.9.227
 void
 bfa_ioc_get_adapter_attr(struct bfa_ioc_s *ioc,
 			 struct bfa_adapter_attr_s *ad_attr)
@@ -2802,7 +2815,11 @@ void
 bfa_ioc_get_adapter_manufacturer(struct bfa_ioc_s *ioc, char *manufacturer)
 {
 	memset((void *)manufacturer, 0, BFA_ADAPTER_MFG_NAME_LEN);
+<<<<<<< HEAD
 	memcpy(manufacturer, BFA_MFG_NAME, BFA_ADAPTER_MFG_NAME_LEN);
+=======
+	strlcpy(manufacturer, BFA_MFG_NAME, BFA_ADAPTER_MFG_NAME_LEN);
+>>>>>>> v4.9.227
 }
 
 void
@@ -3878,7 +3895,11 @@ bfa_sfp_show_comp(struct bfa_sfp_s *sfp, struct bfi_mbmsg_s *msg)
 		bfa_trc(sfp, sfp->data_valid);
 		if (sfp->data_valid) {
 			u32	size = sizeof(struct sfp_mem_s);
+<<<<<<< HEAD
 			u8 *des = (u8 *) &(sfp->sfpmem);
+=======
+			u8 *des = (u8 *)(sfp->sfpmem);
+>>>>>>> v4.9.227
 			memcpy(des, sfp->dbuf_kva, size);
 		}
 		/*

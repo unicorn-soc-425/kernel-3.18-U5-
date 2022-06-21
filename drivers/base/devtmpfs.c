@@ -157,10 +157,17 @@ static int dev_mkdir(const char *name, umode_t mode)
 	if (IS_ERR(dentry))
 		return PTR_ERR(dentry);
 
+<<<<<<< HEAD
 	err = vfs_mkdir(path.dentry->d_inode, dentry, mode);
 	if (!err)
 		/* mark as kernel-created inode */
 		dentry->d_inode->i_private = &thread;
+=======
+	err = vfs_mkdir(d_inode(path.dentry), dentry, mode);
+	if (!err)
+		/* mark as kernel-created inode */
+		d_inode(dentry)->i_private = &thread;
+>>>>>>> v4.9.227
 	done_path_create(&path, dentry);
 	return err;
 }
@@ -207,7 +214,11 @@ static int handle_create(const char *nodename, umode_t mode, kuid_t uid,
 	if (IS_ERR(dentry))
 		return PTR_ERR(dentry);
 
+<<<<<<< HEAD
 	err = vfs_mknod(path.dentry->d_inode, dentry, mode, dev->devt);
+=======
+	err = vfs_mknod(d_inode(path.dentry), dentry, mode, dev->devt);
+>>>>>>> v4.9.227
 	if (!err) {
 		struct iattr newattrs;
 
@@ -215,12 +226,21 @@ static int handle_create(const char *nodename, umode_t mode, kuid_t uid,
 		newattrs.ia_uid = uid;
 		newattrs.ia_gid = gid;
 		newattrs.ia_valid = ATTR_MODE|ATTR_UID|ATTR_GID;
+<<<<<<< HEAD
 		mutex_lock(&dentry->d_inode->i_mutex);
 		notify_change(dentry, &newattrs, NULL);
 		mutex_unlock(&dentry->d_inode->i_mutex);
 
 		/* mark as kernel-created inode */
 		dentry->d_inode->i_private = &thread;
+=======
+		inode_lock(d_inode(dentry));
+		notify_change(dentry, &newattrs, NULL);
+		inode_unlock(d_inode(dentry));
+
+		/* mark as kernel-created inode */
+		d_inode(dentry)->i_private = &thread;
+>>>>>>> v4.9.227
 	}
 	done_path_create(&path, dentry);
 	return err;
@@ -235,16 +255,26 @@ static int dev_rmdir(const char *name)
 	dentry = kern_path_locked(name, &parent);
 	if (IS_ERR(dentry))
 		return PTR_ERR(dentry);
+<<<<<<< HEAD
 	if (dentry->d_inode) {
 		if (dentry->d_inode->i_private == &thread)
 			err = vfs_rmdir(parent.dentry->d_inode, dentry);
+=======
+	if (d_really_is_positive(dentry)) {
+		if (d_inode(dentry)->i_private == &thread)
+			err = vfs_rmdir(d_inode(parent.dentry), dentry);
+>>>>>>> v4.9.227
 		else
 			err = -EPERM;
 	} else {
 		err = -ENOENT;
 	}
 	dput(dentry);
+<<<<<<< HEAD
 	mutex_unlock(&parent.dentry->d_inode->i_mutex);
+=======
+	inode_unlock(d_inode(parent.dentry));
+>>>>>>> v4.9.227
 	path_put(&parent);
 	return err;
 }
@@ -306,11 +336,19 @@ static int handle_remove(const char *nodename, struct device *dev)
 	if (IS_ERR(dentry))
 		return PTR_ERR(dentry);
 
+<<<<<<< HEAD
 	if (dentry->d_inode) {
 		struct kstat stat;
 		struct path p = {.mnt = parent.mnt, .dentry = dentry};
 		err = vfs_getattr(&p, &stat);
 		if (!err && dev_mynode(dev, dentry->d_inode, &stat)) {
+=======
+	if (d_really_is_positive(dentry)) {
+		struct kstat stat;
+		struct path p = {.mnt = parent.mnt, .dentry = dentry};
+		err = vfs_getattr(&p, &stat);
+		if (!err && dev_mynode(dev, d_inode(dentry), &stat)) {
+>>>>>>> v4.9.227
 			struct iattr newattrs;
 			/*
 			 * before unlinking this node, reset permissions
@@ -321,10 +359,17 @@ static int handle_remove(const char *nodename, struct device *dev)
 			newattrs.ia_mode = stat.mode & ~0777;
 			newattrs.ia_valid =
 				ATTR_UID|ATTR_GID|ATTR_MODE;
+<<<<<<< HEAD
 			mutex_lock(&dentry->d_inode->i_mutex);
 			notify_change(dentry, &newattrs, NULL);
 			mutex_unlock(&dentry->d_inode->i_mutex);
 			err = vfs_unlink(parent.dentry->d_inode, dentry, NULL);
+=======
+			inode_lock(d_inode(dentry));
+			notify_change(dentry, &newattrs, NULL);
+			inode_unlock(d_inode(dentry));
+			err = vfs_unlink(d_inode(parent.dentry), dentry, NULL);
+>>>>>>> v4.9.227
 			if (!err || err == -ENOENT)
 				deleted = 1;
 		}
@@ -332,7 +377,11 @@ static int handle_remove(const char *nodename, struct device *dev)
 		err = -ENOENT;
 	}
 	dput(dentry);
+<<<<<<< HEAD
 	mutex_unlock(&parent.dentry->d_inode->i_mutex);
+=======
+	inode_unlock(d_inode(parent.dentry));
+>>>>>>> v4.9.227
 
 	path_put(&parent);
 	if (deleted && strchr(nodename, '/'))

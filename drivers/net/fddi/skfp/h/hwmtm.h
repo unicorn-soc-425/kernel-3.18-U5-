@@ -74,6 +74,7 @@
 #define NULL 		0
 #endif
 
+<<<<<<< HEAD
 #ifdef	LITTLE_ENDIAN
 #define HWM_REVERSE(x)	(x)
 #else
@@ -83,6 +84,8 @@
 				 (((x)>>24L)&0x000000ffL))
 #endif
 
+=======
+>>>>>>> v4.9.227
 #define C_INDIC		(1L<<25)
 #define A_INDIC		(1L<<26)
 #define	RD_FS_LOCAL	0x80

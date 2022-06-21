@@ -16,6 +16,7 @@
 #define HAVE_ARCH_SIGINFO_T
 
 /*
+<<<<<<< HEAD
  * We duplicate the generic versions - <asm-generic/siginfo.h> is just borked
  * by design ...
  */
@@ -23,6 +24,8 @@
 struct siginfo;
 
 /*
+=======
+>>>>>>> v4.9.227
  * Careful to keep union _sifields from shifting ...
  */
 #if _MIPS_SZLONG == 32
@@ -37,6 +40,10 @@ struct siginfo;
 
 #include <asm-generic/siginfo.h>
 
+<<<<<<< HEAD
+=======
+/* We can't use generic siginfo_t, because our si_code and si_errno are swapped */
+>>>>>>> v4.9.227
 typedef struct siginfo {
 	int si_signo;
 	int si_code;
@@ -92,6 +99,18 @@ typedef struct siginfo {
 			int _trapno;	/* TRAP # which caused the signal */
 #endif
 			short _addr_lsb;
+<<<<<<< HEAD
+=======
+			union {
+				/* used when si_code=SEGV_BNDERR */
+				struct {
+					void __user *_lower;
+					void __user *_upper;
+				} _addr_bnd;
+				/* used when si_code=SEGV_PKUERR */
+				__u32 _pkey;
+			};
+>>>>>>> v4.9.227
 		} _sigfault;
 
 		/* SIGPOLL, SIGXFSZ (To do ...)	 */
@@ -120,5 +139,8 @@ typedef struct siginfo {
 #define SI_TIMER __SI_CODE(__SI_TIMER, -3) /* sent by timer expiration */
 #define SI_MESGQ __SI_CODE(__SI_MESGQ, -4) /* sent by real time mesq state change */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #endif /* _UAPI_ASM_SIGINFO_H */

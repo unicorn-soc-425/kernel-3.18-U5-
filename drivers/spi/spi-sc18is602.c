@@ -12,10 +12,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/kernel.h>
@@ -27,6 +30,10 @@
 #include <linux/pm_runtime.h>
 #include <linux/of.h>
 #include <linux/platform_data/sc18is602.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/consumer.h>
+>>>>>>> v4.9.227
 
 enum chips { sc18is602, sc18is602b, sc18is603 };
 
@@ -54,6 +61,11 @@ struct sc18is602 {
 	u8			buffer[SC18IS602_BUFSIZ + 1];
 	int			tlen;	/* Data queued for tx in buffer */
 	int			rindex;	/* Receive data index in buffer */
+<<<<<<< HEAD
+=======
+
+	struct gpio_desc	*reset;
+>>>>>>> v4.9.227
 };
 
 static int sc18is602_wait_ready(struct sc18is602 *hw, int len)
@@ -261,6 +273,15 @@ static int sc18is602_probe(struct i2c_client *client,
 	hw = spi_master_get_devdata(master);
 	i2c_set_clientdata(client, hw);
 
+<<<<<<< HEAD
+=======
+	/* assert reset and then release */
+	hw->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+	if (IS_ERR(hw->reset))
+		return PTR_ERR(hw->reset);
+	gpiod_set_value_cansleep(hw->reset, 0);
+
+>>>>>>> v4.9.227
 	hw->master = master;
 	hw->client = client;
 	hw->dev = dev;
@@ -290,7 +311,11 @@ static int sc18is602_probe(struct i2c_client *client,
 			hw->freq = SC18IS602_CLOCK;
 		break;
 	}
+<<<<<<< HEAD
 	master->bus_num = client->adapter->nr;
+=======
+	master->bus_num = np ? -1 : client->adapter->nr;
+>>>>>>> v4.9.227
 	master->mode_bits = SPI_CPHA | SPI_CPOL | SPI_LSB_FIRST;
 	master->bits_per_word_mask = SPI_BPW_MASK(8);
 	master->setup = sc18is602_setup;

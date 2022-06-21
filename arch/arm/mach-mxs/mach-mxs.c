@@ -268,6 +268,7 @@ static void __init apx4devkit_init(void)
 					   apx4devkit_phy_fixup);
 }
 
+<<<<<<< HEAD
 #define ENET0_MDC__GPIO_4_0	MXS_GPIO_NR(4, 0)
 #define ENET0_MDIO__GPIO_4_1	MXS_GPIO_NR(4, 1)
 #define ENET0_RX_EN__GPIO_4_2	MXS_GPIO_NR(4, 2)
@@ -342,6 +343,8 @@ static void __init tx28_post_init(void)
 	pinctrl_put(pctl);
 }
 
+=======
+>>>>>>> v4.9.227
 static void __init crystalfontz_init(void)
 {
 	update_fec_mac_prop(OUI_CRYSTALFONTZ);
@@ -498,6 +501,7 @@ static void __init mxs_machine_init(void)
 	else if (of_machine_is_compatible("msr,m28cu3"))
 		m28cu3_init();
 
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table,
 			     NULL, parent);
 
@@ -505,6 +509,11 @@ static void __init mxs_machine_init(void)
 
 	if (of_machine_is_compatible("karo,tx28"))
 		tx28_post_init();
+=======
+	of_platform_default_populate(NULL, NULL, parent);
+
+	mxs_restart_init();
+>>>>>>> v4.9.227
 }
 
 #define MXS_CLKCTRL_RESET_CHIP		(1 << 1)
@@ -528,7 +537,11 @@ static void mxs_restart(enum reboot_mode mode, const char *cmd)
 	soft_restart(0);
 }
 
+<<<<<<< HEAD
 static const char *mxs_dt_compat[] __initdata = {
+=======
+static const char *const mxs_dt_compat[] __initconst = {
+>>>>>>> v4.9.227
 	"fsl,imx28",
 	"fsl,imx23",
 	NULL,

@@ -19,7 +19,10 @@
 #include <linux/export.h>
 
 #include <drm/drm_sysfs.h>
+<<<<<<< HEAD
 #include <drm/drm_core.h>
+=======
+>>>>>>> v4.9.227
 #include <drm/drmP.h>
 #include "drm_internal.h"
 
@@ -32,6 +35,7 @@ static struct device_type drm_sysfs_device_minor = {
 
 struct class *drm_class;
 
+<<<<<<< HEAD
 /**
  * __drm_class_suspend - internal DRM class suspend routine
  * @dev: Linux device to suspend
@@ -101,17 +105,23 @@ static const struct dev_pm_ops drm_class_dev_pm_ops = {
 	.freeze		= drm_class_freeze,
 };
 
+=======
+>>>>>>> v4.9.227
 static char *drm_devnode(struct device *dev, umode_t *mode)
 {
 	return kasprintf(GFP_KERNEL, "dri/%s", dev_name(dev));
 }
 
+<<<<<<< HEAD
 static CLASS_ATTR_STRING(version, S_IRUGO,
 		CORE_NAME " "
 		__stringify(CORE_MAJOR) "."
 		__stringify(CORE_MINOR) "."
 		__stringify(CORE_PATCHLEVEL) " "
 		CORE_DATE);
+=======
+static CLASS_ATTR_STRING(version, S_IRUGO, "drm 1.1.0 20060810");
+>>>>>>> v4.9.227
 
 /**
  * drm_sysfs_init - initialize sysfs helpers
@@ -131,8 +141,11 @@ int drm_sysfs_init(void)
 	if (IS_ERR(drm_class))
 		return PTR_ERR(drm_class);
 
+<<<<<<< HEAD
 	drm_class->pm = &drm_class_dev_pm_ops;
 
+=======
+>>>>>>> v4.9.227
 	err = class_create_file(drm_class, &class_attr_version.attr);
 	if (err) {
 		class_destroy(drm_class);
@@ -167,13 +180,18 @@ static ssize_t status_store(struct device *device,
 {
 	struct drm_connector *connector = to_drm_connector(device);
 	struct drm_device *dev = connector->dev;
+<<<<<<< HEAD
 	enum drm_connector_status old_status;
+=======
+	enum drm_connector_force old_force;
+>>>>>>> v4.9.227
 	int ret;
 
 	ret = mutex_lock_interruptible(&dev->mode_config.mutex);
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	old_status = connector->status;
 
 	if (sysfs_streq(buf, "detect")) {
@@ -208,6 +226,30 @@ static ssize_t status_store(struct device *device,
 		if (dev->mode_config.poll_enabled)
 			schedule_delayed_work(&dev->mode_config.output_poll_work,
 					      0);
+=======
+	old_force = connector->force;
+
+	if (sysfs_streq(buf, "detect"))
+		connector->force = 0;
+	else if (sysfs_streq(buf, "on"))
+		connector->force = DRM_FORCE_ON;
+	else if (sysfs_streq(buf, "on-digital"))
+		connector->force = DRM_FORCE_ON_DIGITAL;
+	else if (sysfs_streq(buf, "off"))
+		connector->force = DRM_FORCE_OFF;
+	else
+		ret = -EINVAL;
+
+	if (old_force != connector->force || !connector->force) {
+		DRM_DEBUG_KMS("[CONNECTOR:%d:%s] force updated from %d to %d or reprobing\n",
+			      connector->base.id,
+			      connector->name,
+			      old_force, connector->force);
+
+		connector->funcs->fill_modes(connector,
+					     dev->mode_config.max_width,
+					     dev->mode_config.max_height);
+>>>>>>> v4.9.227
 	}
 
 	mutex_unlock(&dev->mode_config.mutex);
@@ -220,9 +262,18 @@ static ssize_t status_show(struct device *device,
 			   char *buf)
 {
 	struct drm_connector *connector = to_drm_connector(device);
+<<<<<<< HEAD
 
 	return snprintf(buf, PAGE_SIZE, "%s\n",
 			drm_get_connector_status_name(connector->status));
+=======
+	enum drm_connector_status status;
+
+	status = READ_ONCE(connector->status);
+
+	return snprintf(buf, PAGE_SIZE, "%s\n",
+			drm_get_connector_status_name(status));
+>>>>>>> v4.9.227
 }
 
 static ssize_t dpms_show(struct device *device,
@@ -243,15 +294,24 @@ static ssize_t enabled_show(struct device *device,
 			   char *buf)
 {
 	struct drm_connector *connector = to_drm_connector(device);
+<<<<<<< HEAD
 
 	return snprintf(buf, PAGE_SIZE, "%s\n", connector->encoder ? "enabled" :
 			"disabled");
+=======
+	bool enabled;
+
+	enabled = READ_ONCE(connector->encoder);
+
+	return snprintf(buf, PAGE_SIZE, enabled ? "enabled\n" : "disabled\n");
+>>>>>>> v4.9.227
 }
 
 static ssize_t edid_show(struct file *filp, struct kobject *kobj,
 			 struct bin_attribute *attr, char *buf, loff_t off,
 			 size_t count)
 {
+<<<<<<< HEAD
 	struct device *connector_dev = container_of(kobj, struct device, kobj);
 	struct drm_connector *connector = to_drm_connector(connector_dev);
 	unsigned char *edid;
@@ -259,20 +319,46 @@ static ssize_t edid_show(struct file *filp, struct kobject *kobj,
 
 	if (!connector->edid_blob_ptr)
 		return 0;
+=======
+	struct device *connector_dev = kobj_to_dev(kobj);
+	struct drm_connector *connector = to_drm_connector(connector_dev);
+	unsigned char *edid;
+	size_t size;
+	ssize_t ret = 0;
+
+	mutex_lock(&connector->dev->mode_config.mutex);
+	if (!connector->edid_blob_ptr)
+		goto unlock;
+>>>>>>> v4.9.227
 
 	edid = connector->edid_blob_ptr->data;
 	size = connector->edid_blob_ptr->length;
 	if (!edid)
+<<<<<<< HEAD
 		return 0;
 
 	if (off >= size)
 		return 0;
+=======
+		goto unlock;
+
+	if (off >= size)
+		goto unlock;
+>>>>>>> v4.9.227
 
 	if (off + count > size)
 		count = size - off;
 	memcpy(buf, edid + off, count);
 
+<<<<<<< HEAD
 	return count;
+=======
+	ret = count;
+unlock:
+	mutex_unlock(&connector->dev->mode_config.mutex);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static ssize_t modes_show(struct device *device,
@@ -283,14 +369,23 @@ static ssize_t modes_show(struct device *device,
 	struct drm_display_mode *mode;
 	int written = 0;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&connector->dev->mode_config.mutex);
+>>>>>>> v4.9.227
 	list_for_each_entry(mode, &connector->modes, head) {
 		written += snprintf(buf + written, PAGE_SIZE - written, "%s\n",
 				    mode->name);
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&connector->dev->mode_config.mutex);
+>>>>>>> v4.9.227
 
 	return written;
 }
 
+<<<<<<< HEAD
 static ssize_t tv_subconnector_show(struct device *device,
 				    struct device_attribute *attr,
 				    char *buf)
@@ -387,6 +482,8 @@ static ssize_t dvii_select_subconnector_show(struct device *device,
 			drm_get_dvi_i_select_name((int)subconnector));
 }
 
+=======
+>>>>>>> v4.9.227
 static DEVICE_ATTR_RW(status);
 static DEVICE_ATTR_RO(enabled);
 static DEVICE_ATTR_RO(dpms);
@@ -400,6 +497,7 @@ static struct attribute *connector_dev_attrs[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static DEVICE_ATTR_RO(tv_subconnector);
 static DEVICE_ATTR_RO(tv_select_subconnector);
 
@@ -448,6 +546,8 @@ static umode_t connector_is_tv(struct kobject *kobj,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static struct bin_attribute edid_attr = {
 	.attr.name = "edid",
 	.attr.mode = 0444,
@@ -465,6 +565,7 @@ static const struct attribute_group connector_dev_group = {
 	.bin_attrs = connector_bin_attrs,
 };
 
+<<<<<<< HEAD
 static const struct attribute_group connector_tv_dev_group = {
 	.attrs = connector_tv_dev_attrs,
 	.is_visible = connector_is_tv,
@@ -479,6 +580,10 @@ static const struct attribute_group *connector_dev_groups[] = {
 	&connector_dev_group,
 	&connector_tv_dev_group,
 	&connector_dvii_dev_group,
+=======
+static const struct attribute_group *connector_dev_groups[] = {
+	&connector_dev_group,
+>>>>>>> v4.9.227
 	NULL
 };
 

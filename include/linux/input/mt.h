@@ -119,7 +119,12 @@ struct input_mt_pos {
 };
 
 int input_mt_assign_slots(struct input_dev *dev, int *slots,
+<<<<<<< HEAD
 			  const struct input_mt_pos *pos, int num_pos);
+=======
+			  const struct input_mt_pos *pos, int num_pos,
+			  int dmax);
+>>>>>>> v4.9.227
 
 int input_mt_get_slot_by_key(struct input_dev *dev, int key);
 

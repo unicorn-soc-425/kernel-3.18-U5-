@@ -12,7 +12,11 @@
 #include <dt-bindings/gpio/gpio.h>
 
 / {
+<<<<<<< HEAD
 	model = "Phytec phyFLEX-i.MX6 Ouad";
+=======
+	model = "Phytec phyFLEX-i.MX6 Quad";
+>>>>>>> v4.9.227
 	compatible = "phytec,imx6q-pfla02", "fsl,imx6q";
 
 	memory {
@@ -80,7 +84,11 @@
 	cs-gpios = <&gpio4 24 0>;
 
 	flash@0 {
+<<<<<<< HEAD
 		compatible = "m25p80";
+=======
+		compatible = "m25p80", "jedec,spi-nor";
+>>>>>>> v4.9.227
 		spi-max-frequency = <20000000>;
 		reg = <0>;
 	};
@@ -90,6 +98,10 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
 	phy-mode = "rgmii";
+<<<<<<< HEAD
+=======
+	phy-reset-duration = <10>; /* in msecs */
+>>>>>>> v4.9.227
 	phy-reset-gpios = <&gpio3 23 GPIO_ACTIVE_LOW>;
 	phy-supply = <&vdd_eth_io_reg>;
 	status = "disabled";
@@ -231,6 +243,7 @@
 			fsl,pins = <
 				MX6QDL_PAD_ENET_MDIO__ENET_MDIO		0x1b0b0
 				MX6QDL_PAD_ENET_MDC__ENET_MDC		0x1b0b0
+<<<<<<< HEAD
 				MX6QDL_PAD_RGMII_TXC__RGMII_TXC		0x1b0b0
 				MX6QDL_PAD_RGMII_TD0__RGMII_TD0		0x1b0b0
 				MX6QDL_PAD_RGMII_TD1__RGMII_TD1		0x1b0b0
@@ -244,6 +257,21 @@
 				MX6QDL_PAD_RGMII_RD2__RGMII_RD2		0x1b0b0
 				MX6QDL_PAD_RGMII_RD3__RGMII_RD3		0x1b0b0
 				MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL	0x1b0b0
+=======
+				MX6QDL_PAD_RGMII_TXC__RGMII_TXC		0x1b030
+				MX6QDL_PAD_RGMII_TD0__RGMII_TD0		0x1b030
+				MX6QDL_PAD_RGMII_TD1__RGMII_TD1		0x1b030
+				MX6QDL_PAD_RGMII_TD2__RGMII_TD2		0x1b030
+				MX6QDL_PAD_RGMII_TD3__RGMII_TD3		0x1b030
+				MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL	0x1b030
+				MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK	0x1b0b0
+				MX6QDL_PAD_RGMII_RXC__RGMII_RXC		0x1b030
+				MX6QDL_PAD_RGMII_RD0__RGMII_RD0		0x1b030
+				MX6QDL_PAD_RGMII_RD1__RGMII_RD1		0x1b030
+				MX6QDL_PAD_RGMII_RD2__RGMII_RD2		0x1b030
+				MX6QDL_PAD_RGMII_RD3__RGMII_RD3		0x1b030
+				MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL	0x1b030
+>>>>>>> v4.9.227
 				MX6QDL_PAD_ENET_TX_EN__ENET_TX_EN	0x1b0b0
 			>;
 		};
@@ -373,12 +401,31 @@
 };
 
 &pcie {
+<<<<<<< HEAD
 	pinctrl-name = "default";
+=======
+	pinctrl-names = "default";
+>>>>>>> v4.9.227
 	pinctrl-0 = <&pinctrl_pcie>;
 	reset-gpio = <&gpio4 17 0>;
 	status = "disabled";
 };
 
+<<<<<<< HEAD
+=======
+&reg_arm {
+	vin-supply = <&vddcore_reg>;
+};
+
+&reg_pu {
+	vin-supply = <&vddsoc_reg>;
+};
+
+&reg_soc {
+	vin-supply = <&vddsoc_reg>;
+};
+
+>>>>>>> v4.9.227
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;
@@ -409,8 +456,13 @@
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2>;
+<<<<<<< HEAD
 	cd-gpios = <&gpio1 4 0>;
 	wp-gpios = <&gpio1 2 0>;
+=======
+	cd-gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
+	wp-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 	status = "disabled";
 };
 
@@ -418,7 +470,12 @@
         pinctrl-names = "default";
         pinctrl-0 = <&pinctrl_usdhc3
 		     &pinctrl_usdhc3_cdwp>;
+<<<<<<< HEAD
         cd-gpios = <&gpio1 27 0>;
         wp-gpios = <&gpio1 29 0>;
+=======
+	cd-gpios = <&gpio1 27 GPIO_ACTIVE_LOW>;
+	wp-gpios = <&gpio1 29 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
         status = "disabled";
 };

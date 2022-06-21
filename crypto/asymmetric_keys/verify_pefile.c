@@ -16,7 +16,11 @@
 #include <linux/err.h>
 #include <linux/pe.h>
 #include <linux/asn1.h>
+<<<<<<< HEAD
 #include <crypto/pkcs7.h>
+=======
+#include <linux/verification.h>
+>>>>>>> v4.9.227
 #include <crypto/hash.h>
 #include "verify_pefile.h"
 
@@ -328,12 +332,20 @@ static int pefile_digest_pe(const void *pebuf, unsigned int pelen,
 	void *digest;
 	int ret;
 
+<<<<<<< HEAD
 	kenter(",%u", ctx->digest_algo);
+=======
+	kenter(",%s", ctx->digest_algo);
+>>>>>>> v4.9.227
 
 	/* Allocate the hashing algorithm we're going to need and find out how
 	 * big the hash operational data will be.
 	 */
+<<<<<<< HEAD
 	tfm = crypto_alloc_shash(hash_algo_name[ctx->digest_algo], 0, 0);
+=======
+	tfm = crypto_alloc_shash(ctx->digest_algo, 0, 0);
+>>>>>>> v4.9.227
 	if (IS_ERR(tfm))
 		return (PTR_ERR(tfm) == -ENOENT) ? -ENOPKG : PTR_ERR(tfm);
 
@@ -392,8 +404,13 @@ error_no_desc:
  * verify_pefile_signature - Verify the signature on a PE binary image
  * @pebuf: Buffer containing the PE binary image
  * @pelen: Length of the binary image
+<<<<<<< HEAD
  * @trust_keyring: Signing certificates to use as starting points
  * @_trusted: Set to true if trustworth, false otherwise
+=======
+ * @trust_keys: Signing certificate(s) to use as starting points
+ * @usage: The use to which the key is being put.
+>>>>>>> v4.9.227
  *
  * Validate that the certificate chain inside the PKCS#7 message inside the PE
  * binary image intersects keys we already know and trust.
@@ -417,12 +434,19 @@ error_no_desc:
  * May also return -ENOMEM.
  */
 int verify_pefile_signature(const void *pebuf, unsigned pelen,
+<<<<<<< HEAD
 			    struct key *trusted_keyring, bool *_trusted)
 {
 	struct pkcs7_message *pkcs7;
 	struct pefile_context ctx;
 	const void *data;
 	size_t datalen;
+=======
+			    struct key *trusted_keys,
+			    enum key_being_used_for usage)
+{
+	struct pefile_context ctx;
+>>>>>>> v4.9.227
 	int ret;
 
 	kenter("");
@@ -436,6 +460,7 @@ int verify_pefile_signature(const void *pebuf, unsigned pelen,
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	pkcs7 = pkcs7_parse_message(pebuf + ctx.sig_offset, ctx.sig_len);
 	if (IS_ERR(pkcs7))
 		return PTR_ERR(pkcs7);
@@ -449,6 +474,12 @@ int verify_pefile_signature(const void *pebuf, unsigned pelen,
 	}
 
 	ret = mscode_parse(&ctx);
+=======
+	ret = verify_pkcs7_signature(NULL, 0,
+				     pebuf + ctx.sig_offset, ctx.sig_len,
+				     trusted_keys, usage,
+				     mscode_parse, &ctx);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto error;
 
@@ -459,6 +490,7 @@ int verify_pefile_signature(const void *pebuf, unsigned pelen,
 	 * contents.
 	 */
 	ret = pefile_digest_pe(pebuf, pelen, &ctx);
+<<<<<<< HEAD
 	if (ret < 0)
 		goto error;
 
@@ -470,5 +502,10 @@ int verify_pefile_signature(const void *pebuf, unsigned pelen,
 
 error:
 	pkcs7_free_message(ctx.pkcs7);
+=======
+
+error:
+	kfree(ctx.digest);
+>>>>>>> v4.9.227
 	return ret;
 }

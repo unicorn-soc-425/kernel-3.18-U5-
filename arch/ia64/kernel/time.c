@@ -25,7 +25,10 @@
 #include <asm/machvec.h>
 #include <asm/delay.h>
 #include <asm/hw_irq.h>
+<<<<<<< HEAD
 #include <asm/paravirt.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/ptrace.h>
 #include <asm/sal.h>
 #include <asm/sections.h>
@@ -47,6 +50,7 @@ EXPORT_SYMBOL(last_cli_ip);
 
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT
 /* We need to define a real function for sched_clock, to override the
    weak default version */
@@ -65,15 +69,20 @@ paravirt_clocksource_resume(struct clocksource *cs)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 static struct clocksource clocksource_itc = {
 	.name           = "itc",
 	.rating         = 350,
 	.read           = itc_get_cycles,
 	.mask           = CLOCKSOURCE_MASK(64),
 	.flags          = CLOCK_SOURCE_IS_CONTINUOUS,
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT
 	.resume		= paravirt_clocksource_resume,
 #endif
+=======
+>>>>>>> v4.9.227
 };
 static struct clocksource *itc_clocksource;
 
@@ -164,9 +173,12 @@ timer_interrupt (int irq, void *dev_id)
 
 	profile_tick(CPU_PROFILING);
 
+<<<<<<< HEAD
 	if (paravirt_do_steal_accounting(&new_itm))
 		goto skip_process_time_accounting;
 
+=======
+>>>>>>> v4.9.227
 	while (1) {
 		update_process_times(user_mode(get_irq_regs()));
 
@@ -187,8 +199,11 @@ timer_interrupt (int irq, void *dev_id)
 		local_irq_disable();
 	}
 
+<<<<<<< HEAD
 skip_process_time_accounting:
 
+=======
+>>>>>>> v4.9.227
 	do {
 		/*
 		 * If we're too close to the next clock tick for
@@ -337,8 +352,11 @@ void ia64_init_itm(void)
 		 */
 		clocksource_itc.rating = 50;
 
+<<<<<<< HEAD
 	paravirt_init_missing_ticks_accounting(smp_processor_id());
 
+=======
+>>>>>>> v4.9.227
 	/* avoid softlock up message when cpu is unplug and plugged again. */
 	touch_softlockup_watchdog();
 
@@ -384,7 +402,11 @@ static struct irqaction timer_irqaction = {
 	.name =		"timer"
 };
 
+<<<<<<< HEAD
 void read_persistent_clock(struct timespec *ts)
+=======
+void read_persistent_clock64(struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	efi_gettimeofday(ts);
 }

@@ -13,6 +13,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -53,13 +54,35 @@
 
 static struct map_desc r8a7779_io_desc[] __initdata = {
 	/* 2M entity map for 0xf0000000 (MPCORE) */
+=======
+ */
+#include <linux/clk/renesas.h>
+#include <linux/clocksource.h>
+#include <linux/init.h>
+#include <linux/irq.h>
+#include <linux/irqchip.h>
+#include <linux/irqchip/arm-gic.h>
+
+#include <asm/mach/arch.h>
+#include <asm/mach/map.h>
+
+#include "common.h"
+#include "r8a7779.h"
+
+static struct map_desc r8a7779_io_desc[] __initdata = {
+	/* 2M identity mapping for 0xf0000000 (MPCORE) */
+>>>>>>> v4.9.227
 	{
 		.virtual	= 0xf0000000,
 		.pfn		= __phys_to_pfn(0xf0000000),
 		.length		= SZ_2M,
 		.type		= MT_DEVICE_NONSHARED
 	},
+<<<<<<< HEAD
 	/* 16M entity map for 0xfexxxxxx (DMAC-S/HPBREG/INTC2/LRAM/DBSC) */
+=======
+	/* 16M identity mapping for 0xfexxxxxx (DMAC-S/HPBREG/INTC2/LRAM/DBSC) */
+>>>>>>> v4.9.227
 	{
 		.virtual	= 0xfe000000,
 		.pfn		= __phys_to_pfn(0xfe000000),
@@ -68,8 +91,14 @@ static struct map_desc r8a7779_io_desc[] __initdata = {
 	},
 };
 
+<<<<<<< HEAD
 void __init r8a7779_map_io(void)
 {
+=======
+static void __init r8a7779_map_io(void)
+{
+	debug_ll_io_init();
+>>>>>>> v4.9.227
 	iotable_init(r8a7779_io_desc, ARRAY_SIZE(r8a7779_io_desc));
 }
 
@@ -83,6 +112,7 @@ void __init r8a7779_map_io(void)
 #define INT2NTSR0 IOMEM(0xfe700060)
 #define INT2NTSR1 IOMEM(0xfe700064)
 
+<<<<<<< HEAD
 static struct renesas_intc_irqpin_config irqpin0_platform_data __initdata = {
 	.irq_base = irq_pin(0), /* IRQ0 -> IRQ3 */
 	.sense_bitfield_width = 2,
@@ -725,6 +755,10 @@ void __init r8a7779_init_irq_dt(void)
 {
 	gic_arch_extn.irq_set_wake = r8a7779_set_wake;
 
+=======
+static void __init r8a7779_init_irq_dt(void)
+{
+>>>>>>> v4.9.227
 	irqchip_init();
 
 	/* route all interrupts to ARM */
@@ -741,7 +775,11 @@ void __init r8a7779_init_irq_dt(void)
 
 #define MODEMR		0xffcc0020
 
+<<<<<<< HEAD
 u32 __init r8a7779_read_mode_pins(void)
+=======
+static u32 __init r8a7779_read_mode_pins(void)
+>>>>>>> v4.9.227
 {
 	static u32 mode;
 	static bool mode_valid;
@@ -757,16 +795,36 @@ u32 __init r8a7779_read_mode_pins(void)
 	return mode;
 }
 
+<<<<<<< HEAD
 static const char *r8a7779_compat_dt[] __initdata = {
+=======
+static void __init r8a7779_init_time(void)
+{
+	r8a7779_clocks_init(r8a7779_read_mode_pins());
+	clocksource_probe();
+}
+
+static const char *const r8a7779_compat_dt[] __initconst = {
+>>>>>>> v4.9.227
 	"renesas,r8a7779",
 	NULL,
 };
 
 DT_MACHINE_START(R8A7779_DT, "Generic R8A7779 (Flattened Device Tree)")
+<<<<<<< HEAD
 	.map_io		= r8a7779_map_io,
 	.init_early	= shmobile_init_delay,
+=======
+	.smp		= smp_ops(r8a7779_smp_ops),
+	.map_io		= r8a7779_map_io,
+	.init_early	= shmobile_init_delay,
+	.init_time	= r8a7779_init_time,
+>>>>>>> v4.9.227
 	.init_irq	= r8a7779_init_irq_dt,
 	.init_late	= shmobile_init_late,
 	.dt_compat	= r8a7779_compat_dt,
 MACHINE_END
+<<<<<<< HEAD
 #endif /* CONFIG_USE_OF */
+=======
+>>>>>>> v4.9.227

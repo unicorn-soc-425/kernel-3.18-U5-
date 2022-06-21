@@ -18,11 +18,19 @@
  */
 #include <linux/hardirq.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/types.h>
 
 #include <asm/i387.h>
+=======
+#include <linux/export.h>
+#include <linux/sched.h>
+#include <linux/types.h>
+
+#include <asm/fpu/api.h>
+>>>>>>> v4.9.227
 #include <asm/asm.h>
 
 void *_mmx_memcpy(void *to, const void *from, size_t len)

@@ -23,7 +23,11 @@
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/timer.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/of_platform.h>
 
 #include <asm/processor.h>
@@ -94,16 +98,27 @@ static int pmi_notifier(struct notifier_block *nb,
 				       unsigned long event, void *data)
 {
 	struct cpufreq_policy *policy = data;
+<<<<<<< HEAD
 	struct cpufreq_frequency_table *cbe_freqs;
 	u8 node;
 
 	/* Should this really be called for CPUFREQ_ADJUST, CPUFREQ_INCOMPATIBLE
 	 * and CPUFREQ_NOTIFY policy events?)
+=======
+	struct cpufreq_frequency_table *cbe_freqs = policy->freq_table;
+	u8 node;
+
+	/* Should this really be called for CPUFREQ_ADJUST and CPUFREQ_NOTIFY
+	 * policy events?)
+>>>>>>> v4.9.227
 	 */
 	if (event == CPUFREQ_START)
 		return 0;
 
+<<<<<<< HEAD
 	cbe_freqs = cpufreq_frequency_get_table(policy->cpu);
+=======
+>>>>>>> v4.9.227
 	node = cbe_cpu_to_node(policy->cpu);
 
 	pr_debug("got notified, event=%lu, node=%u\n", event, node);
@@ -142,6 +157,7 @@ static int __init cbe_cpufreq_pmi_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static void __exit cbe_cpufreq_pmi_exit(void)
 {
@@ -154,3 +170,6 @@ module_exit(cbe_cpufreq_pmi_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Christian Krafft <krafft@de.ibm.com>");
+=======
+device_initcall(cbe_cpufreq_pmi_init);
+>>>>>>> v4.9.227

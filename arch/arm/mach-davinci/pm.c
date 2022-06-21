@@ -21,7 +21,11 @@
 
 #include <mach/common.h>
 #include <mach/da8xx.h>
+<<<<<<< HEAD
 #include <mach/sram.h>
+=======
+#include "sram.h"
+>>>>>>> v4.9.227
 #include <mach/pm.h>
 
 #include "clock.h"
@@ -148,7 +152,10 @@ static int __exit davinci_pm_remove(struct platform_device *pdev)
 static struct platform_driver davinci_pm_driver = {
 	.driver = {
 		.name	 = "pm-davinci",
+<<<<<<< HEAD
 		.owner	 = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.remove = __exit_p(davinci_pm_remove),
 };

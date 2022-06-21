@@ -1,9 +1,18 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
  *
  * Linux driver for Brocade Fibre Channel Host Bus Adapter.
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -126,7 +135,11 @@ bfad_iocmd_ioc_get_attr(struct bfad_s *bfad, void *cmd)
 
 	/* fill in driver attr info */
 	strcpy(iocmd->ioc_attr.driver_attr.driver, BFAD_DRIVER_NAME);
+<<<<<<< HEAD
 	strncpy(iocmd->ioc_attr.driver_attr.driver_ver,
+=======
+	strlcpy(iocmd->ioc_attr.driver_attr.driver_ver,
+>>>>>>> v4.9.227
 		BFAD_DRIVER_VERSION, BFA_VERSION_LEN);
 	strcpy(iocmd->ioc_attr.driver_attr.fw_ver,
 		iocmd->ioc_attr.adapter_attr.fw_ver);
@@ -314,9 +327,15 @@ bfad_iocmd_port_get_attr(struct bfad_s *bfad, void *cmd)
 	iocmd->attr.port_type = port_attr.port_type;
 	iocmd->attr.loopback = port_attr.loopback;
 	iocmd->attr.authfail = port_attr.authfail;
+<<<<<<< HEAD
 	strncpy(iocmd->attr.port_symname.symname,
 		port_attr.port_cfg.sym_name.symname,
 		sizeof(port_attr.port_cfg.sym_name.symname));
+=======
+	strlcpy(iocmd->attr.port_symname.symname,
+		port_attr.port_cfg.sym_name.symname,
+		sizeof(iocmd->attr.port_symname.symname));
+>>>>>>> v4.9.227
 
 	iocmd->status = BFA_STATUS_OK;
 	return 0;

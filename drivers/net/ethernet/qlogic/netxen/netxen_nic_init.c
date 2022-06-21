@@ -135,7 +135,11 @@ void netxen_release_tx_buffers(struct netxen_adapter *adapter)
 	int i, j;
 	struct nx_host_tx_ring *tx_ring = adapter->tx_ring;
 
+<<<<<<< HEAD
 	spin_lock(&adapter->tx_clean_lock);
+=======
+	spin_lock_bh(&adapter->tx_clean_lock);
+>>>>>>> v4.9.227
 	cmd_buf = tx_ring->cmd_buf_arr;
 	for (i = 0; i < tx_ring->num_desc; i++) {
 		buffrag = cmd_buf->frag_array;
@@ -159,7 +163,11 @@ void netxen_release_tx_buffers(struct netxen_adapter *adapter)
 		}
 		cmd_buf++;
 	}
+<<<<<<< HEAD
 	spin_unlock(&adapter->tx_clean_lock);
+=======
+	spin_unlock_bh(&adapter->tx_clean_lock);
+>>>>>>> v4.9.227
 }
 
 void netxen_free_sw_resources(struct netxen_adapter *adapter)
@@ -1125,7 +1133,12 @@ netxen_validate_firmware(struct netxen_adapter *adapter)
 		return -EINVAL;
 	}
 	val = nx_get_bios_version(adapter);
+<<<<<<< HEAD
 	netxen_rom_fast_read(adapter, NX_BIOS_VERSION_OFFSET, (int *)&bios);
+=======
+	if (netxen_rom_fast_read(adapter, NX_BIOS_VERSION_OFFSET, (int *)&bios))
+		return -EIO;
+>>>>>>> v4.9.227
 	if ((__force u32)val != bios) {
 		dev_err(&pdev->dev, "%s: firmware bios is incompatible\n",
 				fw_name[fw_type]);
@@ -1764,7 +1777,11 @@ int netxen_process_cmd_ring(struct netxen_adapter *adapter)
 	int done = 0;
 	struct nx_host_tx_ring *tx_ring = adapter->tx_ring;
 
+<<<<<<< HEAD
 	if (!spin_trylock(&adapter->tx_clean_lock))
+=======
+	if (!spin_trylock_bh(&adapter->tx_clean_lock))
+>>>>>>> v4.9.227
 		return 1;
 
 	sw_consumer = tx_ring->sw_consumer;
@@ -1819,7 +1836,11 @@ int netxen_process_cmd_ring(struct netxen_adapter *adapter)
 	 */
 	hw_consumer = le32_to_cpu(*(tx_ring->hw_consumer));
 	done = (sw_consumer == hw_consumer);
+<<<<<<< HEAD
 	spin_unlock(&adapter->tx_clean_lock);
+=======
+	spin_unlock_bh(&adapter->tx_clean_lock);
+>>>>>>> v4.9.227
 
 	return done;
 }

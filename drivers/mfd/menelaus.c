@@ -42,10 +42,17 @@
 #include <linux/bcd.h>
 #include <linux/slab.h>
 #include <linux/mfd/menelaus.h>
+<<<<<<< HEAD
 
 #include <asm/mach/irq.h>
 
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+
+#include <asm/mach/irq.h>
+
+>>>>>>> v4.9.227
 
 #define DRIVER_NAME			"menelaus"
 
@@ -532,6 +539,7 @@ static const struct menelaus_vtg_value vcore_values[] = {
 	{ 1450, 18 },
 };
 
+<<<<<<< HEAD
 int menelaus_set_vcore_sw(unsigned int mV)
 {
 	int val, ret;
@@ -555,6 +563,8 @@ int menelaus_set_vcore_sw(unsigned int mV)
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 int menelaus_set_vcore_hw(unsigned int roof_mV, unsigned int floor_mV)
 {
 	int fval, rval, val, ret;
@@ -1239,7 +1249,11 @@ static int menelaus_probe(struct i2c_client *client,
 	err = menelaus_read_reg(MENELAUS_VCORE_CTRL1);
 	if (err < 0)
 		goto fail;
+<<<<<<< HEAD
 	if (err & BIT(7))
+=======
+	if (err & VCORE_CTRL1_HW_NSW)
+>>>>>>> v4.9.227
 		menelaus->vcore_hw_mode = 1;
 	else
 		menelaus->vcore_hw_mode = 0;
@@ -1259,7 +1273,11 @@ fail:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __exit menelaus_remove(struct i2c_client *client)
+=======
+static int menelaus_remove(struct i2c_client *client)
+>>>>>>> v4.9.227
 {
 	struct menelaus_chip	*menelaus = i2c_get_clientdata(client);
 
@@ -1280,7 +1298,11 @@ static struct i2c_driver menelaus_i2c_driver = {
 		.name		= DRIVER_NAME,
 	},
 	.probe		= menelaus_probe,
+<<<<<<< HEAD
 	.remove		= __exit_p(menelaus_remove),
+=======
+	.remove		= menelaus_remove,
+>>>>>>> v4.9.227
 	.id_table	= menelaus_id,
 };
 

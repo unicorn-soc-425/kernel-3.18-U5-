@@ -24,7 +24,12 @@
 
 static int load_em86(struct linux_binprm *bprm)
 {
+<<<<<<< HEAD
 	char *interp, *i_name, *i_arg;
+=======
+	const char *i_name, *i_arg;
+	char *interp;
+>>>>>>> v4.9.227
 	struct file * file;
 	int retval;
 	struct elfhdr	elf_ex;
@@ -42,6 +47,13 @@ static int load_em86(struct linux_binprm *bprm)
 			return -ENOEXEC;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Need to be able to load the file after exec */
+	if (bprm->interp_flags & BINPRM_FLAGS_PATH_INACCESSIBLE)
+		return -ENOENT;
+
+>>>>>>> v4.9.227
 	allow_write_access(bprm->file);
 	fput(bprm->file);
 	bprm->file = NULL;

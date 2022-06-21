@@ -28,6 +28,10 @@ static inline void setup_cputime_one_jiffy(void) { }
 #include <asm/div64.h>
 #include <asm/time.h>
 #include <asm/param.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu_has_feature.h>
+>>>>>>> v4.9.227
 
 typedef u64 __nocast cputime_t;
 typedef u64 __nocast cputime64_t;
@@ -90,11 +94,18 @@ static inline void setup_cputime_one_jiffy(void)
 static inline cputime64_t jiffies64_to_cputime64(const u64 jif)
 {
 	u64 ct;
+<<<<<<< HEAD
 	u64 sec;
 
 	/* have to be a little careful about overflow */
 	ct = jif % HZ;
 	sec = jif / HZ;
+=======
+	u64 sec = jif;
+
+	/* have to be a little careful about overflow */
+	ct = do_div(sec, HZ);
+>>>>>>> v4.9.227
 	if (ct) {
 		ct *= tb_ticks_per_sec;
 		do_div(ct, HZ);
@@ -230,7 +241,20 @@ static inline cputime_t clock_t_to_cputime(const unsigned long clk)
 
 #define cputime64_to_clock_t(ct)	cputime_to_clock_t((cputime_t)(ct))
 
+<<<<<<< HEAD
 static inline void arch_vtime_task_switch(struct task_struct *tsk) { }
+=======
+/*
+ * PPC64 uses PACA which is task independent for storing accounting data while
+ * PPC32 uses struct thread_info, therefore at task switch the accounting data
+ * has to be populated in the new task
+ */
+#ifdef CONFIG_PPC64
+static inline void arch_vtime_task_switch(struct task_struct *tsk) { }
+#else
+void arch_vtime_task_switch(struct task_struct *tsk);
+#endif
+>>>>>>> v4.9.227
 
 #endif /* __KERNEL__ */
 #endif /* CONFIG_VIRT_CPU_ACCOUNTING_NATIVE */

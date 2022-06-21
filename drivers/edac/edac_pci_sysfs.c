@@ -14,9 +14,12 @@
 #include "edac_core.h"
 #include "edac_module.h"
 
+<<<<<<< HEAD
 /* Turn off this whole feature if PCI is not configured */
 #ifdef CONFIG_PCI
 
+=======
+>>>>>>> v4.9.227
 #define EDAC_PCI_SYMLINK	"device"
 
 /* data variables exported via sysfs */
@@ -334,10 +337,14 @@ static struct kobj_type ktype_edac_pci_main_kobj = {
 };
 
 /**
+<<<<<<< HEAD
  * edac_pci_main_kobj_setup()
  *
  *	setup the sysfs for EDAC PCI attributes
  *	assumes edac_subsys has already been initialized
+=======
+ * edac_pci_main_kobj_setup: Setup the sysfs for EDAC PCI attributes.
+>>>>>>> v4.9.227
  */
 static int edac_pci_main_kobj_setup(void)
 {
@@ -354,11 +361,14 @@ static int edac_pci_main_kobj_setup(void)
 	 * controls and attributes
 	 */
 	edac_subsys = edac_get_sysfs_subsys();
+<<<<<<< HEAD
 	if (edac_subsys == NULL) {
 		edac_dbg(1, "no edac_subsys\n");
 		err = -ENODEV;
 		goto decrement_count_fail;
 	}
+=======
+>>>>>>> v4.9.227
 
 	/* Bump the reference count on this module to ensure the
 	 * modules isn't unloaded until we deconstruct the top
@@ -367,7 +377,11 @@ static int edac_pci_main_kobj_setup(void)
 	if (!try_module_get(THIS_MODULE)) {
 		edac_dbg(1, "try_module_get() failed\n");
 		err = -ENODEV;
+<<<<<<< HEAD
 		goto mod_get_fail;
+=======
+		goto decrement_count_fail;
+>>>>>>> v4.9.227
 	}
 
 	edac_pci_top_main_kobj = kzalloc(sizeof(struct kobject), GFP_KERNEL);
@@ -402,9 +416,12 @@ kobject_init_and_add_fail:
 kzalloc_fail:
 	module_put(THIS_MODULE);
 
+<<<<<<< HEAD
 mod_get_fail:
 	edac_put_sysfs_subsys();
 
+=======
+>>>>>>> v4.9.227
 decrement_count_fail:
 	/* if are on this error exit, nothing to tear down */
 	atomic_dec(&edac_pci_sysfs_refcount);
@@ -429,7 +446,10 @@ static void edac_pci_main_kobj_teardown(void)
 	if (atomic_dec_return(&edac_pci_sysfs_refcount) == 0) {
 		edac_dbg(0, "called kobject_put on main kobj\n");
 		kobject_put(edac_pci_top_main_kobj);
+<<<<<<< HEAD
 		edac_put_sysfs_subsys();
+=======
+>>>>>>> v4.9.227
 	}
 }
 
@@ -761,5 +781,8 @@ MODULE_PARM_DESC(check_pci_errors,
 module_param(edac_pci_panic_on_pe, int, 0644);
 MODULE_PARM_DESC(edac_pci_panic_on_pe,
 		 "Panic on PCI Bus Parity error: 0=off 1=on");
+<<<<<<< HEAD
 
 #endif				/* CONFIG_PCI */
+=======
+>>>>>>> v4.9.227

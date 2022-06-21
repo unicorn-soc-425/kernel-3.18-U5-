@@ -301,7 +301,10 @@ struct fc_host_statistics *fc_get_host_stats(struct Scsi_Host *shost)
 {
 	struct fc_host_statistics *fc_stats;
 	struct fc_lport *lport = shost_priv(shost);
+<<<<<<< HEAD
 	struct timespec v0, v1;
+=======
+>>>>>>> v4.9.227
 	unsigned int cpu;
 	u64 fcp_in_bytes = 0;
 	u64 fcp_out_bytes = 0;
@@ -309,9 +312,13 @@ struct fc_host_statistics *fc_get_host_stats(struct Scsi_Host *shost)
 	fc_stats = &lport->host_stats;
 	memset(fc_stats, 0, sizeof(struct fc_host_statistics));
 
+<<<<<<< HEAD
 	jiffies_to_timespec(jiffies, &v0);
 	jiffies_to_timespec(lport->boot_time, &v1);
 	fc_stats->seconds_since_last_reset = (v0.tv_sec - v1.tv_sec);
+=======
+	fc_stats->seconds_since_last_reset = (jiffies - lport->boot_time) / HZ;
+>>>>>>> v4.9.227
 
 	for_each_possible_cpu(cpu) {
 		struct fc_stats *stats;
@@ -1739,14 +1746,22 @@ void fc_lport_flogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 	    fc_frame_payload_op(fp) != ELS_LS_ACC) {
 		FC_LPORT_DBG(lport, "FLOGI not accepted or bad response\n");
 		fc_lport_error(lport, fp);
+<<<<<<< HEAD
 		goto err;
+=======
+		goto out;
+>>>>>>> v4.9.227
 	}
 
 	flp = fc_frame_payload_get(fp, sizeof(*flp));
 	if (!flp) {
 		FC_LPORT_DBG(lport, "FLOGI bad response\n");
 		fc_lport_error(lport, fp);
+<<<<<<< HEAD
 		goto err;
+=======
+		goto out;
+>>>>>>> v4.9.227
 	}
 
 	mfs = ntohs(flp->fl_csp.sp_bb_data) &
@@ -1756,7 +1771,11 @@ void fc_lport_flogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 		FC_LPORT_DBG(lport, "FLOGI bad mfs:%hu response, "
 			     "lport->mfs:%hu\n", mfs, lport->mfs);
 		fc_lport_error(lport, fp);
+<<<<<<< HEAD
 		goto err;
+=======
+		goto out;
+>>>>>>> v4.9.227
 	}
 
 	if (mfs <= lport->mfs) {
@@ -2090,7 +2109,11 @@ int fc_lport_bsg_request(struct fc_bsg_job *job)
 	struct fc_rport *rport;
 	struct fc_rport_priv *rdata;
 	int rc = -EINVAL;
+<<<<<<< HEAD
 	u32 did;
+=======
+	u32 did, tov;
+>>>>>>> v4.9.227
 
 	job->reply->reply_payload_rcv_len = 0;
 	if (rsp)
@@ -2121,6 +2144,7 @@ int fc_lport_bsg_request(struct fc_bsg_job *job)
 
 	case FC_BSG_HST_CT:
 		did = ntoh24(job->request->rqst_data.h_ct.port_id);
+<<<<<<< HEAD
 		if (did == FC_FID_DIR_SERV)
 			rdata = lport->dns_rdata;
 		else
@@ -2130,6 +2154,22 @@ int fc_lport_bsg_request(struct fc_bsg_job *job)
 			break;
 
 		rc = fc_lport_ct_request(job, lport, did, rdata->e_d_tov);
+=======
+		if (did == FC_FID_DIR_SERV) {
+			rdata = lport->dns_rdata;
+			if (!rdata)
+				break;
+			tov = rdata->e_d_tov;
+		} else {
+			rdata = lport->tt.rport_lookup(lport, did);
+			if (!rdata)
+				break;
+			tov = rdata->e_d_tov;
+			kref_put(&rdata->kref, lport->tt.rport_destroy);
+		}
+
+		rc = fc_lport_ct_request(job, lport, did, tov);
+>>>>>>> v4.9.227
 		break;
 
 	case FC_BSG_HST_ELS_NOLOGIN:

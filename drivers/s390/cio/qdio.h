@@ -84,7 +84,10 @@ enum qdio_irq_states {
 #define QDIO_SIGA_WRITEQ	0x04
 #define QDIO_SIGA_QEBSM_FLAG	0x80
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 static inline int do_sqbs(u64 token, unsigned char state, int queue,
 			  int *start, int *count)
 {
@@ -122,12 +125,15 @@ static inline int do_eqbs(u64 token, unsigned char *state, int queue,
 
 	return (_ccq >> 32) & 0xff;
 }
+<<<<<<< HEAD
 #else
 static inline int do_sqbs(u64 token, unsigned char state, int queue,
 			  int *start, int *count) { return 0; }
 static inline int do_eqbs(u64 token, unsigned char *state, int queue,
 			  int *start, int *count, int ack) { return 0; }
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 
 struct qdio_irq;
 

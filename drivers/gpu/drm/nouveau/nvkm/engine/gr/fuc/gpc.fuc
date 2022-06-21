@@ -247,10 +247,14 @@ init:
 	tpc_strand_info(-1);
 
 	ld b32 $r4 D[$r0 + #tpc_count]
+<<<<<<< HEAD
 	mov $r5 NV_PGRAPH_GPC0_TPC0
 	ld b32 $r6 D[$r0 + #gpc_id]
 	shl b32 $r6 15
 	add b32 $r5 $r6
+=======
+	gpc_addr($r5, NV_PGRAPH_GPC0_TPC0)
+>>>>>>> v4.9.227
 	tpc_strand_init_tpc_loop:
 		add b32 $r14 $r5 NV_TPC_STRAND_CNT
 		call(nv_rd32)
@@ -294,12 +298,22 @@ init:
 // Main program loop, very simple, sleeps until woken up by the interrupt
 // handler, pulls a command from the queue and executes its handler
 //
+<<<<<<< HEAD
 main:
 	bset $flags $p0
 	sleep $p0
 	mov $r13 #cmd_queue
 	call(queue_get)
 	bra $p1 #main
+=======
+wait:
+	sleep $p0
+	bset $flags $p0
+main:
+	mov $r13 #cmd_queue
+	call(queue_get)
+	bra $p1 #wait
+>>>>>>> v4.9.227
 
 	// 0x0000-0x0003 are all context transfers
 	cmpu b32 $r14 0x04
@@ -325,6 +339,10 @@ main:
 
 // interrupt handler
 ih:
+<<<<<<< HEAD
+=======
+	push $r0
+>>>>>>> v4.9.227
 	push $r8
 	mov $r8 $flags
 	push $r8
@@ -361,6 +379,10 @@ ih:
 	pop $r8
 	mov $flags $r8
 	pop $r8
+<<<<<<< HEAD
+=======
+	pop $r0
+>>>>>>> v4.9.227
 	bclr $flags $p0
 	iret
 

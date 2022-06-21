@@ -68,8 +68,12 @@ struct snd_hwdep {
 	wait_queue_head_t open_wait;
 	void *private_data;
 	void (*private_free) (struct snd_hwdep *hwdep);
+<<<<<<< HEAD
 	struct device *dev;
 	const struct attribute_group **groups;
+=======
+	struct device dev;
+>>>>>>> v4.9.227
 
 	struct mutex open_mutex;
 	int used;			/* reference counter */

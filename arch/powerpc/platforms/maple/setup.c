@@ -94,7 +94,11 @@ static unsigned long maple_find_nvram_base(void)
 	return result;
 }
 
+<<<<<<< HEAD
 static void maple_restart(char *cmd)
+=======
+static void __noreturn maple_restart(char *cmd)
+>>>>>>> v4.9.227
 {
 	unsigned int maple_nvram_base;
 	const unsigned int *maple_nvram_offset, *maple_nvram_command;
@@ -119,9 +123,16 @@ static void maple_restart(char *cmd)
 	for (;;) ;
  fail:
 	printk(KERN_EMERG "Maple: Manual Restart Required\n");
+<<<<<<< HEAD
 }
 
 static void maple_power_off(void)
+=======
+	for (;;) ;
+}
+
+static void __noreturn maple_power_off(void)
+>>>>>>> v4.9.227
 {
 	unsigned int maple_nvram_base;
 	const unsigned int *maple_nvram_offset, *maple_nvram_command;
@@ -146,15 +157,26 @@ static void maple_power_off(void)
 	for (;;) ;
  fail:
 	printk(KERN_EMERG "Maple: Manual Power-Down Required\n");
+<<<<<<< HEAD
 }
 
 static void maple_halt(void)
+=======
+	for (;;) ;
+}
+
+static void __noreturn maple_halt(void)
+>>>>>>> v4.9.227
 {
 	maple_power_off();
 }
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 struct smp_ops_t maple_smp_ops = {
+=======
+static struct smp_ops_t maple_smp_ops = {
+>>>>>>> v4.9.227
 	.probe		= smp_mpic_probe,
 	.message_pass	= smp_mpic_message_pass,
 	.kick_cpu	= smp_generic_kick_cpu,
@@ -169,12 +191,20 @@ static void __init maple_use_rtas_reboot_and_halt_if_present(void)
 	if (rtas_service_present("system-reboot") &&
 	    rtas_service_present("power-off")) {
 		ppc_md.restart = rtas_restart;
+<<<<<<< HEAD
 		ppc_md.power_off = rtas_power_off;
+=======
+		pm_power_off = rtas_power_off;
+>>>>>>> v4.9.227
 		ppc_md.halt = rtas_halt;
 	}
 }
 
+<<<<<<< HEAD
 void __init maple_setup_arch(void)
+=======
+static void __init maple_setup_arch(void)
+>>>>>>> v4.9.227
 {
 	/* init to some ~sane value until calibrate_delay() runs */
 	loops_per_jiffy = 50000000;
@@ -196,6 +226,7 @@ void __init maple_setup_arch(void)
 	mmio_nvram_init();
 }
 
+<<<<<<< HEAD
 /* 
  * Early initialization.
  */
@@ -208,6 +239,8 @@ static void __init maple_init_early(void)
 	DBG(" <- maple_init_early\n");
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * This is almost identical to pSeries and CHRP. We need to make that
  * code generic at one point, with appropriate bits in the device-tree to
@@ -298,6 +331,7 @@ static void __init maple_progress(char *s, unsigned short hex)
  */
 static int __init maple_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (!of_flat_dt_is_compatible(root, "Momentum,Maple") &&
@@ -312,10 +346,20 @@ static int __init maple_probe(void)
 	alloc_dart_table();
 
 	hpte_init_native();
+=======
+	if (!of_machine_is_compatible("Momentum,Maple") &&
+	    !of_machine_is_compatible("Momentum,Apache"))
+		return 0;
+
+	pm_power_off = maple_power_off;
+
+	iommu_init_early_dart(&maple_pci_controller_ops);
+>>>>>>> v4.9.227
 
 	return 1;
 }
 
+<<<<<<< HEAD
 define_machine(maple) {
 	.name			= "Maple",
 	.probe			= maple_probe,
@@ -335,6 +379,8 @@ define_machine(maple) {
 	.power_save		= power4_idle,
 };
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_EDAC
 /*
  * Register a platform device for CPC925 memory controller on
@@ -391,3 +437,23 @@ static int __init maple_cpc925_edac_setup(void)
 }
 machine_device_initcall(maple, maple_cpc925_edac_setup);
 #endif
+<<<<<<< HEAD
+=======
+
+define_machine(maple) {
+	.name			= "Maple",
+	.probe			= maple_probe,
+	.setup_arch		= maple_setup_arch,
+	.init_IRQ		= maple_init_IRQ,
+	.pci_irq_fixup		= maple_pci_irq_fixup,
+	.pci_get_legacy_ide_irq	= maple_pci_get_legacy_ide_irq,
+	.restart		= maple_restart,
+	.halt			= maple_halt,
+	.get_boot_time		= maple_get_boot_time,
+	.set_rtc_time		= maple_set_rtc_time,
+	.get_rtc_time		= maple_get_rtc_time,
+	.calibrate_decr		= generic_calibrate_decr,
+	.progress		= maple_progress,
+	.power_save		= power4_idle,
+};
+>>>>>>> v4.9.227

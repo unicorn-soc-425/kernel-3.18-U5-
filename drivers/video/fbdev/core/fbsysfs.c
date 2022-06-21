@@ -485,7 +485,11 @@ static ssize_t show_bl_curve(struct device *device,
 
 	mutex_lock(&fb_info->bl_curve_mutex);
 	for (i = 0; i < FB_BACKLIGHT_LEVELS; i += 8)
+<<<<<<< HEAD
 		len += snprintf(&buf[len], PAGE_SIZE, "%8ph\n",
+=======
+		len += scnprintf(&buf[len], PAGE_SIZE - len, "%8ph\n",
+>>>>>>> v4.9.227
 				fb_info->bl_curve + i);
 	mutex_unlock(&fb_info->bl_curve_mutex);
 

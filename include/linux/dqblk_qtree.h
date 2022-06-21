@@ -35,7 +35,11 @@ struct qtree_mem_dqinfo {
 	unsigned int dqi_entry_size;	/* Size of quota entry in quota file */
 	unsigned int dqi_usable_bs;	/* Space usable in block for quota data */
 	unsigned int dqi_qtree_depth;	/* Precomputed depth of quota tree */
+<<<<<<< HEAD
 	struct qtree_fmt_operations *dqi_ops;	/* Operations for entry manipulation */
+=======
+	const struct qtree_fmt_operations *dqi_ops; /* Operations for entry manipulation */
+>>>>>>> v4.9.227
 };
 
 int qtree_write_dquot(struct qtree_mem_dqinfo *info, struct dquot *dquot);

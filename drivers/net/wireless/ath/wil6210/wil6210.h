@@ -25,7 +25,10 @@
 #include <linux/types.h>
 #include "wmi.h"
 #include "wil_platform.h"
+<<<<<<< HEAD
 #include "ftm.h"
+=======
+>>>>>>> v4.9.227
 
 extern bool no_fw_recovery;
 extern unsigned int mtu_max;
@@ -666,8 +669,11 @@ struct wil6210_priv {
 	/* High Access Latency Policy voting */
 	struct wil_halp halp;
 
+<<<<<<< HEAD
 	struct wil_ftm_priv ftm;
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 #ifdef CONFIG_PM_SLEEP
 	struct notifier_block pm_notify;
@@ -683,9 +689,19 @@ struct wil6210_priv {
 #define wil_to_ndev(i) (wil_to_wdev(i)->netdev)
 #define ndev_to_wil(n) (wdev_to_wil(n->ieee80211_ptr))
 
+<<<<<<< HEAD
 void wil_dbg_trace(struct wil6210_priv *wil, const char *fmt, ...);
 void __wil_err(struct wil6210_priv *wil, const char *fmt, ...);
 void __wil_err_ratelimited(struct wil6210_priv *wil, const char *fmt, ...);
+=======
+__printf(2, 3)
+void wil_dbg_trace(struct wil6210_priv *wil, const char *fmt, ...);
+__printf(2, 3)
+void __wil_err(struct wil6210_priv *wil, const char *fmt, ...);
+__printf(2, 3)
+void __wil_err_ratelimited(struct wil6210_priv *wil, const char *fmt, ...);
+__printf(2, 3)
+>>>>>>> v4.9.227
 void __wil_info(struct wil6210_priv *wil, const char *fmt, ...);
 __printf(2, 3)
 void wil_dbg_ratelimited(const struct wil6210_priv *wil, const char *fmt, ...);
@@ -785,7 +801,10 @@ void wil_mbox_ring_le2cpus(struct wil6210_mbox_ring *r);
 int wil_find_cid(struct wil6210_priv *wil, const u8 *mac);
 void wil_set_ethtoolops(struct net_device *ndev);
 
+<<<<<<< HEAD
 void __iomem *wmi_buffer_block(struct wil6210_priv *wil, __le32 ptr, u32 size);
+=======
+>>>>>>> v4.9.227
 void __iomem *wmi_buffer(struct wil6210_priv *wil, __le32 ptr);
 void __iomem *wmi_addr(struct wil6210_priv *wil, u32 ptr);
 int wmi_read_hdr(struct wil6210_priv *wil, __le32 ptr,
@@ -869,8 +888,11 @@ int wmi_pcp_start(struct wil6210_priv *wil, int bi, u8 wmi_nettype,
 		  u8 chan, u8 hidden_ssid, u8 is_go);
 int wmi_pcp_stop(struct wil6210_priv *wil);
 int wmi_led_cfg(struct wil6210_priv *wil, bool enable);
+<<<<<<< HEAD
 int wmi_aoa_meas(struct wil6210_priv *wil, const void *mac_addr, u8 chan,
 		 u8 type);
+=======
+>>>>>>> v4.9.227
 void wil6210_disconnect(struct wil6210_priv *wil, const u8 *bssid,
 			u16 reason_code, bool from_event);
 void wil_probe_client_flush(struct wil6210_priv *wil);
@@ -914,6 +936,7 @@ void wil_halp_unvote(struct wil6210_priv *wil);
 void wil6210_set_halp(struct wil6210_priv *wil);
 void wil6210_clear_halp(struct wil6210_priv *wil);
 
+<<<<<<< HEAD
 void wil_ftm_init(struct wil6210_priv *wil);
 void wil_ftm_deinit(struct wil6210_priv *wil);
 void wil_ftm_stop_operations(struct wil6210_priv *wil);
@@ -928,4 +951,6 @@ void wil_aoa_evt_meas(struct wil6210_priv *wil,
 		      struct wmi_aoa_meas_event *evt,
 		      int len);
 
+=======
+>>>>>>> v4.9.227
 #endif /* __WIL6210_H__ */

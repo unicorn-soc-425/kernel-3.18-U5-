@@ -12,6 +12,7 @@
 #ifndef _ASM_C6X_DMA_MAPPING_H
 #define _ASM_C6X_DMA_MAPPING_H
 
+<<<<<<< HEAD
 #include <linux/dma-debug.h>
 #include <asm-generic/dma-coherent.h>
 
@@ -103,5 +104,24 @@ static inline int dma_get_sgtable(struct device *dev, struct sg_table *sgt,
 {
 	return -EINVAL;
 }
+=======
+/*
+ * DMA errors are defined by all-bits-set in the DMA address.
+ */
+#define DMA_ERROR_CODE ~0
+
+extern struct dma_map_ops c6x_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	return &c6x_dma_ops;
+}
+
+extern void coherent_mem_init(u32 start, u32 size);
+void *c6x_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+		gfp_t gfp, unsigned long attrs);
+void c6x_dma_free(struct device *dev, size_t size, void *vaddr,
+		dma_addr_t dma_handle, unsigned long attrs);
+>>>>>>> v4.9.227
 
 #endif	/* _ASM_C6X_DMA_MAPPING_H */

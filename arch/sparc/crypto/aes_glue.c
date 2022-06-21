@@ -499,7 +499,11 @@ module_init(aes_sparc64_mod_init);
 module_exit(aes_sparc64_mod_fini);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("AES Secure Hash Algorithm, sparc64 aes opcode accelerated");
+=======
+MODULE_DESCRIPTION("Rijndael (AES) Cipher Algorithm, sparc64 aes opcode accelerated");
+>>>>>>> v4.9.227
 
 MODULE_ALIAS_CRYPTO("aes");
 

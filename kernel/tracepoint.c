@@ -91,11 +91,21 @@ static void debug_print_probes(struct tracepoint_func *funcs)
 		printk(KERN_DEBUG "Probe %d : %p\n", i, funcs[i].func);
 }
 
+<<<<<<< HEAD
 static struct tracepoint_func *func_add(struct tracepoint_func **funcs,
 		struct tracepoint_func *tp_func)
 {
 	int nr_probes = 0;
 	struct tracepoint_func *old, *new;
+=======
+static struct tracepoint_func *
+func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
+	 int prio)
+{
+	struct tracepoint_func *old, *new;
+	int nr_probes = 0;
+	int pos = -1;
+>>>>>>> v4.9.227
 
 	if (WARN_ON(!tp_func->func))
 		return ERR_PTR(-EINVAL);
@@ -104,18 +114,46 @@ static struct tracepoint_func *func_add(struct tracepoint_func **funcs,
 	old = *funcs;
 	if (old) {
 		/* (N -> N+1), (N != 0, 1) probes */
+<<<<<<< HEAD
 		for (nr_probes = 0; old[nr_probes].func; nr_probes++)
 			if (old[nr_probes].func == tp_func->func &&
 			    old[nr_probes].data == tp_func->data)
 				return ERR_PTR(-EEXIST);
+=======
+		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
+			/* Insert before probes of lower priority */
+			if (pos < 0 && old[nr_probes].prio < prio)
+				pos = nr_probes;
+			if (old[nr_probes].func == tp_func->func &&
+			    old[nr_probes].data == tp_func->data)
+				return ERR_PTR(-EEXIST);
+		}
+>>>>>>> v4.9.227
 	}
 	/* + 2 : one for new probe, one for NULL func */
 	new = allocate_probes(nr_probes + 2);
 	if (new == NULL)
 		return ERR_PTR(-ENOMEM);
+<<<<<<< HEAD
 	if (old)
 		memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
 	new[nr_probes] = *tp_func;
+=======
+	if (old) {
+		if (pos < 0) {
+			pos = nr_probes;
+			memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
+		} else {
+			/* Copy higher priority probes ahead of the new probe */
+			memcpy(new, old, pos * sizeof(struct tracepoint_func));
+			/* Copy the rest after it. */
+			memcpy(new + pos + 1, old + pos,
+			       (nr_probes - pos) * sizeof(struct tracepoint_func));
+		}
+	} else
+		pos = 0;
+	new[pos] = *tp_func;
+>>>>>>> v4.9.227
 	new[nr_probes + 1].func = NULL;
 	*funcs = new;
 	debug_print_probes(*funcs);
@@ -174,7 +212,11 @@ static void *func_remove(struct tracepoint_func **funcs,
  * Add the probe function to a tracepoint.
  */
 static int tracepoint_add_func(struct tracepoint *tp,
+<<<<<<< HEAD
 		struct tracepoint_func *func)
+=======
+			       struct tracepoint_func *func, int prio)
+>>>>>>> v4.9.227
 {
 	struct tracepoint_func *old, *tp_funcs;
 
@@ -183,9 +225,15 @@ static int tracepoint_add_func(struct tracepoint *tp,
 
 	tp_funcs = rcu_dereference_protected(tp->funcs,
 			lockdep_is_held(&tracepoints_mutex));
+<<<<<<< HEAD
 	old = func_add(&tp_funcs, func);
 	if (IS_ERR(old)) {
 		WARN_ON_ONCE(1);
+=======
+	old = func_add(&tp_funcs, func, prio);
+	if (IS_ERR(old)) {
+		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
+>>>>>>> v4.9.227
 		return PTR_ERR(old);
 	}
 
@@ -218,7 +266,11 @@ static int tracepoint_remove_func(struct tracepoint *tp,
 			lockdep_is_held(&tracepoints_mutex));
 	old = func_remove(&tp_funcs, func);
 	if (IS_ERR(old)) {
+<<<<<<< HEAD
 		WARN_ON_ONCE(1);
+=======
+		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
+>>>>>>> v4.9.227
 		return PTR_ERR(old);
 	}
 
@@ -240,6 +292,39 @@ static int tracepoint_remove_func(struct tracepoint *tp,
  * @tp: tracepoint
  * @probe: probe handler
  * @data: tracepoint data
+<<<<<<< HEAD
+=======
+ * @prio: priority of this function over other registered functions
+ *
+ * Returns 0 if ok, error value on error.
+ * Note: if @tp is within a module, the caller is responsible for
+ * unregistering the probe before the module is gone. This can be
+ * performed either with a tracepoint module going notifier, or from
+ * within module exit functions.
+ */
+int tracepoint_probe_register_prio(struct tracepoint *tp, void *probe,
+				   void *data, int prio)
+{
+	struct tracepoint_func tp_func;
+	int ret;
+
+	mutex_lock(&tracepoints_mutex);
+	tp_func.func = probe;
+	tp_func.data = data;
+	tp_func.prio = prio;
+	ret = tracepoint_add_func(tp, &tp_func, prio);
+	mutex_unlock(&tracepoints_mutex);
+	return ret;
+}
+EXPORT_SYMBOL_GPL(tracepoint_probe_register_prio);
+
+/**
+ * tracepoint_probe_register -  Connect a probe to a tracepoint
+ * @tp: tracepoint
+ * @probe: probe handler
+ * @data: tracepoint data
+ * @prio: priority of this function over other registered functions
+>>>>>>> v4.9.227
  *
  * Returns 0 if ok, error value on error.
  * Note: if @tp is within a module, the caller is responsible for
@@ -249,6 +334,7 @@ static int tracepoint_remove_func(struct tracepoint *tp,
  */
 int tracepoint_probe_register(struct tracepoint *tp, void *probe, void *data)
 {
+<<<<<<< HEAD
 	struct tracepoint_func tp_func;
 	int ret;
 
@@ -258,6 +344,9 @@ int tracepoint_probe_register(struct tracepoint *tp, void *probe, void *data)
 	ret = tracepoint_add_func(tp, &tp_func);
 	mutex_unlock(&tracepoints_mutex);
 	return ret;
+=======
+	return tracepoint_probe_register_prio(tp, probe, data, TRACEPOINT_DEFAULT_PRIO);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(tracepoint_probe_register);
 
@@ -452,7 +541,11 @@ static __init int init_tracepoints(void)
 
 	ret = register_module_notifier(&tracepoint_module_nb);
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("Failed to register tracepoint module enter notifier\n");
+=======
+		pr_warn("Failed to register tracepoint module enter notifier\n");
+>>>>>>> v4.9.227
 
 	return ret;
 }

@@ -30,6 +30,10 @@
 #include <linux/module.h>
 #include <linux/kfifo.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
+=======
+#include <linux/time64.h>
+>>>>>>> v4.9.227
 #include <linux/gfp.h>
 #include <net/net_namespace.h>
 
@@ -47,13 +51,18 @@ static struct {
 	struct kfifo	  fifo;
 	spinlock_t	  lock;
 	wait_queue_head_t wait;
+<<<<<<< HEAD
 	struct timespec	  tstart;
+=======
+	struct timespec64 tstart;
+>>>>>>> v4.9.227
 } dccpw;
 
 static void printl(const char *fmt, ...)
 {
 	va_list args;
 	int len;
+<<<<<<< HEAD
 	struct timespec now;
 	char tbuf[256];
 
@@ -61,6 +70,15 @@ static void printl(const char *fmt, ...)
 	getnstimeofday(&now);
 
 	now = timespec_sub(now, dccpw.tstart);
+=======
+	struct timespec64 now;
+	char tbuf[256];
+
+	va_start(args, fmt);
+	getnstimeofday64(&now);
+
+	now = timespec64_sub(now, dccpw.tstart);
+>>>>>>> v4.9.227
 
 	len = sprintf(tbuf, "%lu.%06lu ",
 		      (unsigned long) now.tv_sec,
@@ -72,8 +90,12 @@ static void printl(const char *fmt, ...)
 	wake_up(&dccpw.wait);
 }
 
+<<<<<<< HEAD
 static int jdccp_sendmsg(struct kiocb *iocb, struct sock *sk,
 			 struct msghdr *msg, size_t size)
+=======
+static int jdccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+>>>>>>> v4.9.227
 {
 	const struct inet_sock *inet = inet_sk(sk);
 	struct ccid3_hc_tx_sock *hc = NULL;
@@ -111,7 +133,11 @@ static struct jprobe dccp_send_probe = {
 static int dccpprobe_open(struct inode *inode, struct file *file)
 {
 	kfifo_reset(&dccpw.fifo);
+<<<<<<< HEAD
 	getnstimeofday(&dccpw.tstart);
+=======
+	getnstimeofday64(&dccpw.tstart);
+>>>>>>> v4.9.227
 	return 0;
 }
 

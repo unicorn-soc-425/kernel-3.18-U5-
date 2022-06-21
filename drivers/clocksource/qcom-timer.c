@@ -40,8 +40,11 @@
 
 #define GPT_HZ 32768
 
+<<<<<<< HEAD
 #define MSM_DGT_SHIFT 5
 
+=======
+>>>>>>> v4.9.227
 static void __iomem *event_base;
 static void __iomem *sts_base;
 
@@ -49,7 +52,11 @@ static irqreturn_t msm_timer_interrupt(int irq, void *dev_id)
 {
 	struct clock_event_device *evt = dev_id;
 	/* Stop the timer tick */
+<<<<<<< HEAD
 	if (evt->mode == CLOCK_EVT_MODE_ONESHOT) {
+=======
+	if (clockevent_state_oneshot(evt)) {
+>>>>>>> v4.9.227
 		u32 ctrl = readl_relaxed(event_base + TIMER_ENABLE);
 		ctrl &= ~TIMER_ENABLE_EN;
 		writel_relaxed(ctrl, event_base + TIMER_ENABLE);
@@ -77,13 +84,18 @@ static int msm_timer_set_next_event(unsigned long cycles,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void msm_timer_set_mode(enum clock_event_mode mode,
 			      struct clock_event_device *evt)
+=======
+static int msm_timer_shutdown(struct clock_event_device *evt)
+>>>>>>> v4.9.227
 {
 	u32 ctrl;
 
 	ctrl = readl_relaxed(event_base + TIMER_ENABLE);
 	ctrl &= ~(TIMER_ENABLE_EN | TIMER_ENABLE_CLR_ON_MATCH_EN);
+<<<<<<< HEAD
 
 	switch (mode) {
 	case CLOCK_EVT_MODE_RESUME:
@@ -97,6 +109,10 @@ static void msm_timer_set_mode(enum clock_event_mode mode,
 		break;
 	}
 	writel_relaxed(ctrl, event_base + TIMER_ENABLE);
+=======
+	writel_relaxed(ctrl, event_base + TIMER_ENABLE);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static struct clock_event_device __percpu *msm_evt;
@@ -119,16 +135,28 @@ static struct clocksource msm_clocksource = {
 static int msm_timer_irq;
 static int msm_timer_has_ppi;
 
+<<<<<<< HEAD
 static int msm_local_timer_setup(struct clock_event_device *evt)
 {
 	int cpu = smp_processor_id();
+=======
+static int msm_local_timer_starting_cpu(unsigned int cpu)
+{
+	struct clock_event_device *evt = per_cpu_ptr(msm_evt, cpu);
+>>>>>>> v4.9.227
 	int err;
 
 	evt->irq = msm_timer_irq;
 	evt->name = "msm_timer";
 	evt->features = CLOCK_EVT_FEAT_ONESHOT;
 	evt->rating = 200;
+<<<<<<< HEAD
 	evt->set_mode = msm_timer_set_mode;
+=======
+	evt->set_state_shutdown = msm_timer_shutdown;
+	evt->set_state_oneshot = msm_timer_shutdown;
+	evt->tick_resume = msm_timer_shutdown;
+>>>>>>> v4.9.227
 	evt->set_next_event = msm_timer_set_next_event;
 	evt->cpumask = cpumask_of(cpu);
 
@@ -147,6 +175,7 @@ static int msm_local_timer_setup(struct clock_event_device *evt)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void msm_local_timer_stop(struct clock_event_device *evt)
 {
 	evt->set_mode(CLOCK_EVT_MODE_UNUSED, evt);
@@ -176,6 +205,17 @@ static struct notifier_block msm_timer_cpu_nb = {
 	.notifier_call = msm_timer_cpu_notify,
 };
 
+=======
+static int msm_local_timer_dying_cpu(unsigned int cpu)
+{
+	struct clock_event_device *evt = per_cpu_ptr(msm_evt, cpu);
+
+	evt->set_state_shutdown(evt);
+	disable_percpu_irq(evt->irq);
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static u64 notrace msm_sched_clock_read(void)
 {
 	return msm_clocksource.read(&msm_clocksource);
@@ -190,7 +230,11 @@ static struct delay_timer msm_delay_timer = {
 	.read_current_timer = msm_read_current_timer,
 };
 
+<<<<<<< HEAD
 static void __init msm_timer_init(u32 dgt_hz, int sched_bits, int irq,
+=======
+static int __init msm_timer_init(u32 dgt_hz, int sched_bits, int irq,
+>>>>>>> v4.9.227
 				  bool percpu)
 {
 	struct clocksource *cs = &msm_clocksource;
@@ -212,14 +256,25 @@ static void __init msm_timer_init(u32 dgt_hz, int sched_bits, int irq,
 	if (res) {
 		pr_err("request_percpu_irq failed\n");
 	} else {
+<<<<<<< HEAD
 		res = register_cpu_notifier(&msm_timer_cpu_nb);
+=======
+		/* Install and invoke hotplug callbacks */
+		res = cpuhp_setup_state(CPUHP_AP_QCOM_TIMER_STARTING,
+					"AP_QCOM_TIMER_STARTING",
+					msm_local_timer_starting_cpu,
+					msm_local_timer_dying_cpu);
+>>>>>>> v4.9.227
 		if (res) {
 			free_percpu_irq(irq, msm_evt);
 			goto err;
 		}
+<<<<<<< HEAD
 
 		/* Immediately configure the timer on the boot CPU */
 		msm_local_timer_setup(raw_cpu_ptr(msm_evt));
+=======
+>>>>>>> v4.9.227
 	}
 
 err:
@@ -230,6 +285,7 @@ err:
 	sched_clock_register(msm_sched_clock_read, sched_bits, dgt_hz);
 	msm_delay_timer.freq = dgt_hz;
 	register_current_timer_delay(&msm_delay_timer);
+<<<<<<< HEAD
 }
 
 #ifdef CONFIG_ARCH_QCOM
@@ -237,6 +293,16 @@ static void __init msm_dt_timer_init(struct device_node *np)
 {
 	u32 freq;
 	int irq;
+=======
+
+	return res;
+}
+
+static int __init msm_dt_timer_init(struct device_node *np)
+{
+	u32 freq;
+	int irq, ret;
+>>>>>>> v4.9.227
 	struct resource res;
 	u32 percpu_offset;
 	void __iomem *base;
@@ -245,34 +311,57 @@ static void __init msm_dt_timer_init(struct device_node *np)
 	base = of_iomap(np, 0);
 	if (!base) {
 		pr_err("Failed to map event base\n");
+<<<<<<< HEAD
 		return;
+=======
+		return -ENXIO;
+>>>>>>> v4.9.227
 	}
 
 	/* We use GPT0 for the clockevent */
 	irq = irq_of_parse_and_map(np, 1);
 	if (irq <= 0) {
 		pr_err("Can't get irq\n");
+<<<<<<< HEAD
 		return;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	/* We use CPU0's DGT for the clocksource */
 	if (of_property_read_u32(np, "cpu-offset", &percpu_offset))
 		percpu_offset = 0;
 
+<<<<<<< HEAD
 	if (of_address_to_resource(np, 0, &res)) {
 		pr_err("Failed to parse DGT resource\n");
 		return;
+=======
+	ret = of_address_to_resource(np, 0, &res);
+	if (ret) {
+		pr_err("Failed to parse DGT resource\n");
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	cpu0_base = ioremap(res.start + percpu_offset, resource_size(&res));
 	if (!cpu0_base) {
 		pr_err("Failed to map source base\n");
+<<<<<<< HEAD
 		return;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	if (of_property_read_u32(np, "clock-frequency", &freq)) {
 		pr_err("Unknown frequency\n");
+<<<<<<< HEAD
 		return;
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	event_base = base + 0x4;
@@ -281,6 +370,7 @@ static void __init msm_dt_timer_init(struct device_node *np)
 	freq /= 4;
 	writel_relaxed(DGT_CLK_CTL_DIV_4, source_base + DGT_CLK_CTL);
 
+<<<<<<< HEAD
 	msm_timer_init(freq, 32, irq, !!percpu_offset);
 }
 CLOCKSOURCE_OF_DECLARE(kpss_timer, "qcom,kpss-timer", msm_dt_timer_init);
@@ -341,3 +431,9 @@ void __init qsd8x50_timer_init(void)
 	msm_timer_init(19200000 / 4, 32, 7, false);
 }
 #endif
+=======
+	return msm_timer_init(freq, 32, irq, !!percpu_offset);
+}
+CLOCKSOURCE_OF_DECLARE(kpss_timer, "qcom,kpss-timer", msm_dt_timer_init);
+CLOCKSOURCE_OF_DECLARE(scss_timer, "qcom,scss-timer", msm_dt_timer_init);
+>>>>>>> v4.9.227

@@ -269,8 +269,13 @@ int nfs_fscache_release_page(struct page *page, gfp_t gfp)
 		if (!fscache_maybe_release_page(cookie, page, gfp))
 			return 0;
 
+<<<<<<< HEAD
 		nfs_add_fscache_stats(page->mapping->host,
 				      NFSIOS_FSCACHE_PAGES_UNCACHED, 1);
+=======
+		nfs_inc_fscache_stats(page->mapping->host,
+				      NFSIOS_FSCACHE_PAGES_UNCACHED);
+>>>>>>> v4.9.227
 	}
 
 	return 1;
@@ -293,8 +298,13 @@ void __nfs_fscache_invalidate_page(struct page *page, struct inode *inode)
 
 	BUG_ON(!PageLocked(page));
 	fscache_uncache_page(cookie, page);
+<<<<<<< HEAD
 	nfs_add_fscache_stats(page->mapping->host,
 			      NFSIOS_FSCACHE_PAGES_UNCACHED, 1);
+=======
+	nfs_inc_fscache_stats(page->mapping->host,
+			      NFSIOS_FSCACHE_PAGES_UNCACHED);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -343,19 +353,31 @@ int __nfs_readpage_from_fscache(struct nfs_open_context *ctx,
 	case 0: /* read BIO submitted (page in fscache) */
 		dfprintk(FSCACHE,
 			 "NFS:    readpage_from_fscache: BIO submitted\n");
+<<<<<<< HEAD
 		nfs_add_fscache_stats(inode, NFSIOS_FSCACHE_PAGES_READ_OK, 1);
+=======
+		nfs_inc_fscache_stats(inode, NFSIOS_FSCACHE_PAGES_READ_OK);
+>>>>>>> v4.9.227
 		return ret;
 
 	case -ENOBUFS: /* inode not in cache */
 	case -ENODATA: /* page not in cache */
+<<<<<<< HEAD
 		nfs_add_fscache_stats(inode, NFSIOS_FSCACHE_PAGES_READ_FAIL, 1);
+=======
+		nfs_inc_fscache_stats(inode, NFSIOS_FSCACHE_PAGES_READ_FAIL);
+>>>>>>> v4.9.227
 		dfprintk(FSCACHE,
 			 "NFS:    readpage_from_fscache %d\n", ret);
 		return 1;
 
 	default:
 		dfprintk(FSCACHE, "NFS:    readpage_from_fscache %d\n", ret);
+<<<<<<< HEAD
 		nfs_add_fscache_stats(inode, NFSIOS_FSCACHE_PAGES_READ_FAIL, 1);
+=======
+		nfs_inc_fscache_stats(inode, NFSIOS_FSCACHE_PAGES_READ_FAIL);
+>>>>>>> v4.9.227
 	}
 	return ret;
 }
@@ -429,11 +451,20 @@ void __nfs_readpage_to_fscache(struct inode *inode, struct page *page, int sync)
 
 	if (ret != 0) {
 		fscache_uncache_page(nfs_i_fscache(inode), page);
+<<<<<<< HEAD
 		nfs_add_fscache_stats(inode,
 				      NFSIOS_FSCACHE_PAGES_WRITTEN_FAIL, 1);
 		nfs_add_fscache_stats(inode, NFSIOS_FSCACHE_PAGES_UNCACHED, 1);
 	} else {
 		nfs_add_fscache_stats(inode,
 				      NFSIOS_FSCACHE_PAGES_WRITTEN_OK, 1);
+=======
+		nfs_inc_fscache_stats(inode,
+				      NFSIOS_FSCACHE_PAGES_WRITTEN_FAIL);
+		nfs_inc_fscache_stats(inode, NFSIOS_FSCACHE_PAGES_UNCACHED);
+	} else {
+		nfs_inc_fscache_stats(inode,
+				      NFSIOS_FSCACHE_PAGES_WRITTEN_OK);
+>>>>>>> v4.9.227
 	}
 }

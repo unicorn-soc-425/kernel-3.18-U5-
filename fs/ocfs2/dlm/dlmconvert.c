@@ -212,6 +212,15 @@ grant:
 	if (lock->lksb->flags & DLM_LKSB_PUT_LVB)
 		memcpy(res->lvb, lock->lksb->lvb, DLM_LVB_LEN);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Move the lock to the tail because it may be the only lock which has
+	 * an invalid lvb.
+	 */
+	list_move_tail(&lock->list, &res->granted);
+
+>>>>>>> v4.9.227
 	status = DLM_NORMAL;
 	*call_ast = 1;
 	goto unlock_exit;

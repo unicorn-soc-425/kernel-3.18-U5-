@@ -18,6 +18,10 @@
 #include <linux/of.h>
 #include <linux/of_graph.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/component.h>
+>>>>>>> v4.9.227
 #include <drm/drmP.h>
 #include <linux/mfd/syscon.h>
 #include <linux/regmap.h>
@@ -128,7 +132,11 @@ static void mic_set_path(struct exynos_mic *mic, bool enable)
 	} else
 		val &= ~(MIC0_RGB_MUX | MIC0_I80_MUX | MIC0_ON_MUX);
 
+<<<<<<< HEAD
 	regmap_write(mic->sysreg, DSD_CFG_MUX, val);
+=======
+	ret = regmap_write(mic->sysreg, DSD_CFG_MUX, val);
+>>>>>>> v4.9.227
 	if (ret)
 		DRM_ERROR("mic: Failed to read system register\n");
 }
@@ -306,9 +314,15 @@ exit:
 	return ret;
 }
 
+<<<<<<< HEAD
 void mic_disable(struct drm_bridge *bridge) { }
 
 void mic_post_disable(struct drm_bridge *bridge)
+=======
+static void mic_disable(struct drm_bridge *bridge) { }
+
+static void mic_post_disable(struct drm_bridge *bridge)
+>>>>>>> v4.9.227
 {
 	struct exynos_mic *mic = bridge->driver_private;
 	int i;
@@ -328,7 +342,11 @@ already_disabled:
 	mutex_unlock(&mic_mutex);
 }
 
+<<<<<<< HEAD
 void mic_pre_enable(struct drm_bridge *bridge)
+=======
+static void mic_pre_enable(struct drm_bridge *bridge)
+>>>>>>> v4.9.227
 {
 	struct exynos_mic *mic = bridge->driver_private;
 	int ret, i;
@@ -371,11 +389,43 @@ already_enabled:
 	mutex_unlock(&mic_mutex);
 }
 
+<<<<<<< HEAD
 void mic_enable(struct drm_bridge *bridge) { }
 
 void mic_destroy(struct drm_bridge *bridge)
 {
 	struct exynos_mic *mic = bridge->driver_private;
+=======
+static void mic_enable(struct drm_bridge *bridge) { }
+
+static const struct drm_bridge_funcs mic_bridge_funcs = {
+	.disable = mic_disable,
+	.post_disable = mic_post_disable,
+	.pre_enable = mic_pre_enable,
+	.enable = mic_enable,
+};
+
+static int exynos_mic_bind(struct device *dev, struct device *master,
+			   void *data)
+{
+	struct exynos_mic *mic = dev_get_drvdata(dev);
+	int ret;
+
+	mic->bridge.funcs = &mic_bridge_funcs;
+	mic->bridge.of_node = dev->of_node;
+	mic->bridge.driver_private = mic;
+	ret = drm_bridge_add(&mic->bridge);
+	if (ret)
+		DRM_ERROR("mic: Failed to add MIC to the global bridge list\n");
+
+	return ret;
+}
+
+static void exynos_mic_unbind(struct device *dev, struct device *master,
+			      void *data)
+{
+	struct exynos_mic *mic = dev_get_drvdata(dev);
+>>>>>>> v4.9.227
 	int i;
 
 	mutex_lock(&mic_mutex);
@@ -387,6 +437,7 @@ void mic_destroy(struct drm_bridge *bridge)
 
 already_disabled:
 	mutex_unlock(&mic_mutex);
+<<<<<<< HEAD
 }
 
 struct drm_bridge_funcs mic_bridge_funcs = {
@@ -397,6 +448,18 @@ struct drm_bridge_funcs mic_bridge_funcs = {
 };
 
 int exynos_mic_probe(struct platform_device *pdev)
+=======
+
+	drm_bridge_remove(&mic->bridge);
+}
+
+static const struct component_ops exynos_mic_component_ops = {
+	.bind	= exynos_mic_bind,
+	.unbind	= exynos_mic_unbind,
+};
+
+static int exynos_mic_probe(struct platform_device *pdev)
+>>>>>>> v4.9.227
 {
 	struct device *dev = &pdev->dev;
 	struct exynos_mic *mic;
@@ -432,6 +495,7 @@ int exynos_mic_probe(struct platform_device *pdev)
 							"samsung,disp-syscon");
 	if (IS_ERR(mic->sysreg)) {
 		DRM_ERROR("mic: Failed to get system register.\n");
+<<<<<<< HEAD
 		goto err;
 	}
 
@@ -441,11 +505,18 @@ int exynos_mic_probe(struct platform_device *pdev)
 	ret = drm_bridge_add(&mic->bridge);
 	if (ret) {
 		DRM_ERROR("mic: Failed to add MIC to the global bridge list\n");
+=======
+		ret = PTR_ERR(mic->sysreg);
+>>>>>>> v4.9.227
 		goto err;
 	}
 
 	for (i = 0; i < NUM_CLKS; i++) {
+<<<<<<< HEAD
 		mic->clks[i] = of_clk_get_by_name(dev->of_node, clk_names[i]);
+=======
+		mic->clks[i] = devm_clk_get(dev, clk_names[i]);
+>>>>>>> v4.9.227
 		if (IS_ERR(mic->clks[i])) {
 			DRM_ERROR("mic: Failed to get clock (%s)\n",
 								clk_names[i]);
@@ -454,7 +525,14 @@ int exynos_mic_probe(struct platform_device *pdev)
 		}
 	}
 
+<<<<<<< HEAD
 	DRM_DEBUG_KMS("MIC has been probed\n");
+=======
+	platform_set_drvdata(pdev, mic);
+
+	DRM_DEBUG_KMS("MIC has been probed\n");
+	return component_add(dev, &exynos_mic_component_ops);
+>>>>>>> v4.9.227
 
 err:
 	return ret;
@@ -462,6 +540,7 @@ err:
 
 static int exynos_mic_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct exynos_mic *mic = platform_get_drvdata(pdev);
 	int i;
 
@@ -470,6 +549,9 @@ static int exynos_mic_remove(struct platform_device *pdev)
 	for (i = NUM_CLKS - 1; i > -1; i--)
 		clk_put(mic->clks[i]);
 
+=======
+	component_del(&pdev->dev, &exynos_mic_component_ops);
+>>>>>>> v4.9.227
 	return 0;
 }
 

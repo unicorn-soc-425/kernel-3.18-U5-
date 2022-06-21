@@ -67,7 +67,11 @@ static int mtu_max_set(const char *val, const struct kernel_param *kp)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops mtu_max_ops = {
+=======
+static const struct kernel_param_ops mtu_max_ops = {
+>>>>>>> v4.9.227
 	.set = mtu_max_set,
 	.get = param_get_uint,
 };
@@ -96,7 +100,11 @@ static int ring_order_set(const char *val, const struct kernel_param *kp)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops ring_order_ops = {
+=======
+static const struct kernel_param_ops ring_order_ops = {
+>>>>>>> v4.9.227
 	.set = ring_order_set,
 	.get = param_get_uint,
 };
@@ -533,8 +541,11 @@ int wil_priv_init(struct wil6210_priv *wil)
 	spin_lock_init(&wil->wmi_ev_lock);
 	init_waitqueue_head(&wil->wq);
 
+<<<<<<< HEAD
 	wil_ftm_init(wil);
 
+=======
+>>>>>>> v4.9.227
 	wil->wmi_wq = create_singlethread_workqueue(WIL_NAME "_wmi");
 	if (!wil->wmi_wq)
 		return -EAGAIN;
@@ -582,7 +593,10 @@ void wil_priv_deinit(struct wil6210_priv *wil)
 {
 	wil_dbg_misc(wil, "%s()\n", __func__);
 
+<<<<<<< HEAD
 	wil_ftm_deinit(wil);
+=======
+>>>>>>> v4.9.227
 	wil_set_recovery_state(wil, fw_recovery_idle);
 	del_timer_sync(&wil->scan_timer);
 	del_timer_sync(&wil->p2p.discovery_timer);
@@ -806,7 +820,11 @@ static void wil_bl_crash_info(struct wil6210_priv *wil, bool is_err)
 
 static int wil_wait_for_fw_ready(struct wil6210_priv *wil)
 {
+<<<<<<< HEAD
 	ulong to = msecs_to_jiffies(1000);
+=======
+	ulong to = msecs_to_jiffies(2000);
+>>>>>>> v4.9.227
 	ulong left = wait_for_completion_timeout(&wil->wmi_ready, to);
 
 	if (0 == left) {
@@ -872,10 +890,21 @@ int wil_reset(struct wil6210_priv *wil, bool load_fw)
 
 	mutex_lock(&wil->p2p_wdev_mutex);
 	if (wil->scan_request) {
+<<<<<<< HEAD
 		wil_dbg_misc(wil, "Abort scan_request 0x%p\n",
 			     wil->scan_request);
 		del_timer_sync(&wil->scan_timer);
 		cfg80211_scan_done(wil->scan_request, true);
+=======
+		struct cfg80211_scan_info info = {
+			.aborted = true,
+		};
+
+		wil_dbg_misc(wil, "Abort scan_request 0x%p\n",
+			     wil->scan_request);
+		del_timer_sync(&wil->scan_timer);
+		cfg80211_scan_done(wil->scan_request, &info);
+>>>>>>> v4.9.227
 		wil->scan_request = NULL;
 	}
 	mutex_unlock(&wil->p2p_wdev_mutex);
@@ -1071,6 +1100,7 @@ int __wil_down(struct wil6210_priv *wil)
 	wil_enable_irq(wil);
 
 	wil_p2p_stop_radio_operations(wil);
+<<<<<<< HEAD
 	wil_ftm_stop_operations(wil);
 
 	mutex_lock(&wil->p2p_wdev_mutex);
@@ -1079,6 +1109,19 @@ int __wil_down(struct wil6210_priv *wil)
 			     wil->scan_request);
 		del_timer_sync(&wil->scan_timer);
 		cfg80211_scan_done(wil->scan_request, true);
+=======
+
+	mutex_lock(&wil->p2p_wdev_mutex);
+	if (wil->scan_request) {
+		struct cfg80211_scan_info info = {
+			.aborted = true,
+		};
+
+		wil_dbg_misc(wil, "Abort scan_request 0x%p\n",
+			     wil->scan_request);
+		del_timer_sync(&wil->scan_timer);
+		cfg80211_scan_done(wil->scan_request, &info);
+>>>>>>> v4.9.227
 		wil->scan_request = NULL;
 	}
 	mutex_unlock(&wil->p2p_wdev_mutex);

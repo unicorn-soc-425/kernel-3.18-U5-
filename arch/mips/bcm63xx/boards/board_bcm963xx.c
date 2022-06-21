@@ -7,6 +7,11 @@
  * Copyright (C) 2008 Florian Fainelli <florian@openwrt.org>
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -31,7 +36,10 @@
 
 #include <uapi/linux/bcm933xx_hcs.h>
 
+<<<<<<< HEAD
 #define PFX	"board_bcm963xx: "
+=======
+>>>>>>> v4.9.227
 
 #define HCS_OFFSET_128K			0x20000
 
@@ -740,7 +748,11 @@ int bcm63xx_get_fallback_sprom(struct ssb_bus *bus, struct ssb_sprom *out)
 		memcpy(out, &bcm63xx_sprom, sizeof(struct ssb_sprom));
 		return 0;
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "unable to fill SPROM for given bustype.\n");
+=======
+		pr_err("unable to fill SPROM for given bustype\n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 }
@@ -784,7 +796,11 @@ void __init board_prom_init(void)
 			 cfe[5], cfe[6], cfe[7], cfe[8], cfe[9]);
 	else
 		strcpy(cfe_version, "unknown");
+<<<<<<< HEAD
 	printk(KERN_INFO PFX "CFE version: %s\n", cfe_version);
+=======
+	pr_info("CFE version: %s\n", cfe_version);
+>>>>>>> v4.9.227
 
 	bcm63xx_nvram_init(boot_addr + BCM963XX_NVRAM_OFFSET);
 
@@ -808,8 +824,12 @@ void __init board_prom_init(void)
 		char name[17];
 		memcpy(name, board_name, 16);
 		name[16] = 0;
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "unknown bcm963xx board: %s\n",
 		       name);
+=======
+		pr_err("unknown bcm963xx board: %s\n", name);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -854,7 +874,11 @@ void __init board_setup(void)
 {
 	if (!board.name[0])
 		panic("unable to detect bcm963xx board");
+<<<<<<< HEAD
 	printk(KERN_INFO PFX "board name: %s\n", board.name);
+=======
+	pr_info("board name: %s\n", board.name);
+>>>>>>> v4.9.227
 
 	/* make sure we're running on expected cpu */
 	if (bcm63xx_get_cpu_id() != board.expected_cpu_id)
@@ -910,7 +934,11 @@ int __init board_register_devices(void)
 		memcpy(bcm63xx_sprom.et1mac, bcm63xx_sprom.il0mac, ETH_ALEN);
 		if (ssb_arch_register_fallback_sprom(
 				&bcm63xx_get_fallback_sprom) < 0)
+<<<<<<< HEAD
 			pr_err(PFX "failed to register fallback SPROM\n");
+=======
+			pr_err("failed to register fallback SPROM\n");
+>>>>>>> v4.9.227
 	}
 #endif
 

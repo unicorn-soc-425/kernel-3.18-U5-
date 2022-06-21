@@ -93,6 +93,13 @@ ip_vs_update_conntrack(struct sk_buff *skb, struct ip_vs_conn *cp, int outin)
 	if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ)
 		return;
 
+<<<<<<< HEAD
+=======
+	/* Never alter conntrack for OPS conns (no reply is expected) */
+	if (cp->flags & IP_VS_CONN_F_ONE_PACKET)
+		return;
+
+>>>>>>> v4.9.227
 	/* Alter reply only in original direction */
 	if (CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL)
 		return;
@@ -161,7 +168,11 @@ static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 
 	/* RS->CLIENT */
 	orig = &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple;
+<<<<<<< HEAD
 	ip_vs_conn_fill_param(net, exp->tuple.src.l3num, orig->dst.protonum,
+=======
+	ip_vs_conn_fill_param(net_ipvs(net), exp->tuple.src.l3num, orig->dst.protonum,
+>>>>>>> v4.9.227
 			      &orig->src.u3, orig->src.u.tcp.port,
 			      &orig->dst.u3, orig->dst.u.tcp.port, &p);
 	cp = ip_vs_conn_out_get(&p);
@@ -274,6 +285,7 @@ void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
 		" for conn " FMT_CONN "\n",
 		__func__, ARG_TUPLE(&tuple), ARG_CONN(cp));
 
+<<<<<<< HEAD
 	h = nf_conntrack_find_get(ip_vs_conn_net(cp), NF_CT_DEFAULT_ZONE,
 				  &tuple);
 	if (h) {
@@ -285,6 +297,15 @@ void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
 				__func__, ct, ARG_TUPLE(&tuple));
 			if (ct->timeout.function)
 				ct->timeout.function(ct->timeout.data);
+=======
+	h = nf_conntrack_find_get(cp->ipvs->net, &nf_ct_zone_dflt, &tuple);
+	if (h) {
+		ct = nf_ct_tuplehash_to_ctrack(h);
+		if (nf_ct_kill(ct)) {
+			IP_VS_DBG(7, "%s: ct=%p, deleted conntrack for tuple="
+				FMT_TUPLE "\n",
+				__func__, ct, ARG_TUPLE(&tuple));
+>>>>>>> v4.9.227
 		} else {
 			IP_VS_DBG(7, "%s: ct=%p, no conntrack timer for tuple="
 				FMT_TUPLE "\n",

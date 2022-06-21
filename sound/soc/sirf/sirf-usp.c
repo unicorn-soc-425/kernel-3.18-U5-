@@ -421,7 +421,10 @@ static const struct dev_pm_ops sirf_usp_pcm_pm_ops = {
 static struct platform_driver sirf_usp_pcm_driver = {
 	.driver = {
 		.name = "sirf-usp-pcm",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = sirf_usp_pcm_of_match,
 		.pm = &sirf_usp_pcm_pm_ops,
 	},

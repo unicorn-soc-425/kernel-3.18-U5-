@@ -199,7 +199,10 @@ static struct platform_driver ohci_hcd_tilegx_driver = {
 	.shutdown	= ohci_hcd_tilegx_drv_shutdown,
 	.driver = {
 		.name	= "tilegx-ohci",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	}
 };
 

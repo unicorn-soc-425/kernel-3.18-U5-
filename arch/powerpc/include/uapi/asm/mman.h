@@ -22,6 +22,10 @@
 
 #define MCL_CURRENT     0x2000          /* lock all currently mapped pages */
 #define MCL_FUTURE      0x4000          /* lock all additions to address space */
+<<<<<<< HEAD
+=======
+#define MCL_ONFAULT	0x8000		/* lock all pages that are faulted in */
+>>>>>>> v4.9.227
 
 #define MAP_POPULATE	0x8000		/* populate (prefault) pagetables */
 #define MAP_NONBLOCK	0x10000		/* do not block on IO */

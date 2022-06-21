@@ -36,10 +36,23 @@ struct si2168_config {
 	struct i2c_adapter **i2c_adapter;
 
 	/* TS mode */
+<<<<<<< HEAD
 	u8 ts_mode;
 };
 
 #define SI2168_TS_PARALLEL	0x06
 #define SI2168_TS_SERIAL	0x03
+=======
+#define SI2168_TS_PARALLEL	0x06
+#define SI2168_TS_SERIAL	0x03
+	u8 ts_mode;
+
+	/* TS clock inverted */
+	bool ts_clock_inv;
+
+	/* TS clock gapped */
+	bool ts_clock_gapped;
+};
+>>>>>>> v4.9.227
 
 #endif

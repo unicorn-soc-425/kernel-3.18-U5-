@@ -14,7 +14,12 @@
 #include <linux/rbtree.h>
 #include <net/net_namespace.h>
 #include <linux/sched/rt.h>
+<<<<<<< HEAD
 #include <linux/task_integrity.h>
+=======
+
+#include <asm/thread_info.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_SMP
 # define INIT_PUSHABLE_TASKS(tsk)					\
@@ -26,6 +31,7 @@
 extern struct files_struct init_files;
 extern struct fs_struct init_fs;
 
+<<<<<<< HEAD
 #ifdef CONFIG_CGROUPS
 #define INIT_GROUP_RWSEM(sig)						\
 	.group_rwsem = __RWSEM_INITIALIZER(sig.group_rwsem),
@@ -33,6 +39,8 @@ extern struct fs_struct init_fs;
 #define INIT_GROUP_RWSEM(sig)
 #endif
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_CPUSETS
 #define INIT_CPUSET_SEQ(tsk)							\
 	.mems_allowed_seq = SEQCNT_ZERO(tsk.mems_allowed_seq),
@@ -40,6 +48,17 @@ extern struct fs_struct init_fs;
 #define INIT_CPUSET_SEQ(tsk)
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
+#define INIT_PREV_CPUTIME(x)	.prev_cputime = {			\
+	.lock = __RAW_SPIN_LOCK_UNLOCKED(x.prev_cputime.lock),		\
+},
+#else
+#define INIT_PREV_CPUTIME(x)
+#endif
+
+>>>>>>> v4.9.227
 #define INIT_SIGNALS(sig) {						\
 	.nr_threads	= 1,						\
 	.thread_head	= LIST_HEAD_INIT(init_task.thread_node),	\
@@ -51,6 +70,7 @@ extern struct fs_struct init_fs;
 	.cpu_timers	= INIT_CPU_TIMERS(sig.cpu_timers),		\
 	.rlim		= INIT_RLIMITS,					\
 	.cputimer	= { 						\
+<<<<<<< HEAD
 		.cputime = INIT_CPUTIME,				\
 		.running = 0,						\
 		.lock = __RAW_SPIN_LOCK_UNLOCKED(sig.cputimer.lock),	\
@@ -58,6 +78,15 @@ extern struct fs_struct init_fs;
 	.cred_guard_mutex =						\
 		 __MUTEX_INITIALIZER(sig.cred_guard_mutex),		\
 	INIT_GROUP_RWSEM(sig)						\
+=======
+		.cputime_atomic	= INIT_CPUTIME_ATOMIC,			\
+		.running	= false,				\
+		.checking_timer = false,				\
+	},								\
+	INIT_PREV_CPUTIME(sig)						\
+	.cred_guard_mutex =						\
+		 __MUTEX_INITIALIZER(sig.cred_guard_mutex),		\
+>>>>>>> v4.9.227
 }
 
 extern struct nsproxy init_nsproxy;
@@ -103,7 +132,11 @@ extern struct group_info init_groups;
 #define INIT_IDS
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_TREE_PREEMPT_RCU
+=======
+#ifdef CONFIG_PREEMPT_RCU
+>>>>>>> v4.9.227
 #define INIT_TASK_RCU_TREE_PREEMPT()					\
 	.rcu_blocked_node = NULL,
 #else
@@ -150,13 +183,18 @@ extern struct task_group root_task_group;
 
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING_GEN
 # define INIT_VTIME(tsk)						\
+<<<<<<< HEAD
 	.vtime_seqlock = __SEQLOCK_UNLOCKED(tsk.vtime_seqlock),	\
+=======
+	.vtime_seqcount = SEQCNT_ZERO(tsk.vtime_seqcount),	\
+>>>>>>> v4.9.227
 	.vtime_snap = 0,				\
 	.vtime_snap_whence = VTIME_SYS,
 #else
 # define INIT_VTIME(tsk)
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_FIVE
 # define INIT_TASK_INTEGRITY(integrity) {				\
 	.user_value = INTEGRITY_NONE,					\
@@ -174,6 +212,8 @@ extern struct task_group root_task_group;
 # define INIT_TASK_INTEGRITY(integrity)
 #endif
 
+=======
+>>>>>>> v4.9.227
 #define INIT_TASK_COMM "swapper"
 
 #ifdef CONFIG_RT_MUTEXES
@@ -184,6 +224,18 @@ extern struct task_group root_task_group;
 # define INIT_RT_MUTEXES(tsk)
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NUMA_BALANCING
+# define INIT_NUMA_BALANCING(tsk)					\
+	.numa_preferred_nid = -1,					\
+	.numa_group = NULL,						\
+	.numa_faults = NULL,
+#else
+# define INIT_NUMA_BALANCING(tsk)
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_KASAN
 # define INIT_KASAN(tsk)						\
 	.kasan_depth = 1,
@@ -191,14 +243,31 @@ extern struct task_group root_task_group;
 # define INIT_KASAN(tsk)
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_THREAD_INFO_IN_TASK
+# define INIT_TASK_TI(tsk)			\
+	.thread_info = INIT_THREAD_INFO(tsk),	\
+	.stack_refcount = ATOMIC_INIT(1),
+#else
+# define INIT_TASK_TI(tsk)
+#endif
+
+>>>>>>> v4.9.227
 /*
  *  INIT_TASK is used to set up the first task table, touch at
  * your own risk!. Base=0, limit=0x1fffff (=2MB)
  */
 #define INIT_TASK(tsk)	\
 {									\
+<<<<<<< HEAD
 	.state		= 0,						\
 	.stack		= &init_thread_info,				\
+=======
+	INIT_TASK_TI(tsk)						\
+	.state		= 0,						\
+	.stack		= init_stack,					\
+>>>>>>> v4.9.227
 	.usage		= ATOMIC_INIT(2),				\
 	.flags		= PF_KTHREAD,					\
 	.prio		= MAX_PRIO-20,					\
@@ -264,9 +333,16 @@ extern struct task_group root_task_group;
 	INIT_TASK_RCU_TASKS(tsk)					\
 	INIT_CPUSET_SEQ(tsk)						\
 	INIT_RT_MUTEXES(tsk)						\
+<<<<<<< HEAD
 	INIT_VTIME(tsk)							\
 	INIT_KASAN(tsk)							\
 	INIT_INTEGRITY(tsk)						\
+=======
+	INIT_PREV_CPUTIME(tsk)						\
+	INIT_VTIME(tsk)							\
+	INIT_NUMA_BALANCING(tsk)					\
+	INIT_KASAN(tsk)							\
+>>>>>>> v4.9.227
 }
 
 

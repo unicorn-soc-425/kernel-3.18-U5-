@@ -10,6 +10,11 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/export.h>
 #include <linux/interrupt.h>
@@ -178,7 +183,11 @@ static int __init s3c_freq_debugfs_init(void)
 {
 	dbgfs_root = debugfs_create_dir("s3c-cpufreq", NULL);
 	if (IS_ERR(dbgfs_root)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: error creating debugfs root\n", __func__);
+=======
+		pr_err("%s: error creating debugfs root\n", __func__);
+>>>>>>> v4.9.227
 		return PTR_ERR(dbgfs_root);
 	}
 

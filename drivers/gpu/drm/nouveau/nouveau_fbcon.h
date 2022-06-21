@@ -34,7 +34,10 @@
 struct nouveau_fbdev {
 	struct drm_fb_helper helper;
 	struct nouveau_framebuffer nouveau_fb;
+<<<<<<< HEAD
 	struct list_head fbdev_list;
+=======
+>>>>>>> v4.9.227
 	struct drm_device *dev;
 	unsigned int saved_flags;
 	struct nvif_object surf2d;

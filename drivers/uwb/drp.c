@@ -619,11 +619,17 @@ static void uwb_drp_handle_alien_drp(struct uwb_rc *rc, struct uwb_ie_drp *drp_i
 	struct device *dev = &rc->uwb_dev.dev;
 	struct uwb_mas_bm mas;
 	struct uwb_cnflt_alien *cnflt;
+<<<<<<< HEAD
 	char buf[72];
 	unsigned long delay_us = UWB_MAS_LENGTH_US * UWB_MAS_PER_ZONE;
 
 	uwb_drp_ie_to_bm(&mas, drp_ie);
 	bitmap_scnprintf(buf, sizeof(buf), mas.bm, UWB_NUM_MAS);
+=======
+	unsigned long delay_us = UWB_MAS_LENGTH_US * UWB_MAS_PER_ZONE;
+
+	uwb_drp_ie_to_bm(&mas, drp_ie);
+>>>>>>> v4.9.227
 
 	list_for_each_entry(cnflt, &rc->cnflt_alien_list, rc_node) {
 		if (bitmap_equal(cnflt->mas.bm, mas.bm, UWB_NUM_MAS)) {
@@ -644,9 +650,13 @@ static void uwb_drp_handle_alien_drp(struct uwb_rc *rc, struct uwb_ie_drp *drp_i
 	}
 
 	INIT_LIST_HEAD(&cnflt->rc_node);
+<<<<<<< HEAD
 	init_timer(&cnflt->timer);
 	cnflt->timer.function = uwb_cnflt_timer;
 	cnflt->timer.data     = (unsigned long)cnflt;
+=======
+	setup_timer(&cnflt->timer, uwb_cnflt_timer, (unsigned long)cnflt);
+>>>>>>> v4.9.227
 
 	cnflt->rc = rc;
 	INIT_WORK(&cnflt->cnflt_update_work, uwb_cnflt_update_work);

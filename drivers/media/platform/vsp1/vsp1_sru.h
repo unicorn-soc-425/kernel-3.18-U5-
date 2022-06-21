@@ -28,6 +28,11 @@ struct vsp1_sru {
 	struct vsp1_entity entity;
 
 	struct v4l2_ctrl_handler ctrls;
+<<<<<<< HEAD
+=======
+
+	unsigned int intensity;
+>>>>>>> v4.9.227
 };
 
 static inline struct vsp1_sru *to_sru(struct v4l2_subdev *subdev)

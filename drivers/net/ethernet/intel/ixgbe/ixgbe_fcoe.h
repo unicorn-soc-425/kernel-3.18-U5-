@@ -46,6 +46,10 @@
 #define IXGBE_FCBUFF_MAX	65536	/* 64KB max */
 #define IXGBE_FCBUFF_MIN	4096	/* 4KB min */
 #define IXGBE_FCOE_DDP_MAX	512	/* 9 bits xid */
+<<<<<<< HEAD
+=======
+#define IXGBE_FCOE_DDP_MAX_X550	2048	/* 11 bits xid */
+>>>>>>> v4.9.227
 
 /* Default traffic class to use for FCoE */
 #define IXGBE_FCOE_DEFTC	3
@@ -77,7 +81,11 @@ struct ixgbe_fcoe {
 	struct ixgbe_fcoe_ddp_pool __percpu *ddp_pool;
 	atomic_t refcnt;
 	spinlock_t lock;
+<<<<<<< HEAD
 	struct ixgbe_fcoe_ddp ddp[IXGBE_FCOE_DDP_MAX];
+=======
+	struct ixgbe_fcoe_ddp ddp[IXGBE_FCOE_DDP_MAX_X550];
+>>>>>>> v4.9.227
 	void *extra_ddp_buffer;
 	dma_addr_t extra_ddp_buffer_dma;
 	unsigned long mode;

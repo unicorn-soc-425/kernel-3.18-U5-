@@ -253,6 +253,11 @@ static int ch7006_encoder_create_resources(struct drm_encoder *encoder,
 	drm_mode_create_tv_properties(dev, NUM_TV_NORMS, ch7006_tv_norm_names);
 
 	priv->scale_property = drm_property_create_range(dev, 0, "scale", 0, 2);
+<<<<<<< HEAD
+=======
+	if (!priv->scale_property)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	drm_object_attach_property(&connector->base, conf->tv_select_subconnector_property,
 				      priv->select_subconnector);
@@ -359,6 +364,7 @@ static int ch7006_encoder_set_property(struct drm_encoder *encoder,
 
 		/* Disable the crtc to ensure a full modeset is
 		 * performed whenever it's turned on again. */
+<<<<<<< HEAD
 		if (crtc) {
 			struct drm_mode_set modeset = {
 				.crtc = crtc,
@@ -366,12 +372,20 @@ static int ch7006_encoder_set_property(struct drm_encoder *encoder,
 
 			drm_mode_set_config_internal(&modeset);
 		}
+=======
+		if (crtc)
+			drm_crtc_force_disable(crtc);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct drm_encoder_slave_funcs ch7006_encoder_funcs = {
+=======
+static const struct drm_encoder_slave_funcs ch7006_encoder_funcs = {
+>>>>>>> v4.9.227
 	.set_config = ch7006_encoder_set_config,
 	.destroy = ch7006_encoder_destroy,
 	.dpms = ch7006_encoder_dpms,

@@ -38,6 +38,14 @@ struct kmem_cache {
 #endif
 
 #include <linux/memcontrol.h>
+<<<<<<< HEAD
+=======
+#include <linux/fault-inject.h>
+#include <linux/kmemcheck.h>
+#include <linux/kasan.h>
+#include <linux/kmemleak.h>
+#include <linux/random.h>
+>>>>>>> v4.9.227
 
 /*
  * State of the slab allocator.
@@ -71,6 +79,10 @@ unsigned long calculate_alignment(unsigned long flags,
 
 #ifndef CONFIG_SLOB
 /* Kmalloc array related functions */
+<<<<<<< HEAD
+=======
+void setup_kmalloc_cache_index_table(void);
+>>>>>>> v4.9.227
 void create_kmalloc_caches(unsigned long);
 
 /* Find the kmalloc slab corresponding for a certain size */
@@ -86,8 +98,11 @@ extern struct kmem_cache *create_kmalloc_cache(const char *name, size_t size,
 extern void create_boot_cache(struct kmem_cache *, const char *name,
 			size_t size, unsigned long flags);
 
+<<<<<<< HEAD
 struct mem_cgroup;
 
+=======
+>>>>>>> v4.9.227
 int slab_unmergeable(struct kmem_cache *s);
 struct kmem_cache *find_mergeable(size_t size, size_t align,
 		unsigned long flags, const char *name, void (*ctor)(void *));
@@ -122,17 +137,29 @@ static inline unsigned long kmem_cache_flags(unsigned long object_size,
 #define SLAB_DEBUG_FLAGS (SLAB_RED_ZONE | SLAB_POISON | SLAB_STORE_USER)
 #elif defined(CONFIG_SLUB_DEBUG)
 #define SLAB_DEBUG_FLAGS (SLAB_RED_ZONE | SLAB_POISON | SLAB_STORE_USER | \
+<<<<<<< HEAD
 			  SLAB_TRACE | SLAB_DEBUG_FREE)
+=======
+			  SLAB_TRACE | SLAB_CONSISTENCY_CHECKS)
+>>>>>>> v4.9.227
 #else
 #define SLAB_DEBUG_FLAGS (0)
 #endif
 
 #if defined(CONFIG_SLAB)
 #define SLAB_CACHE_FLAGS (SLAB_MEM_SPREAD | SLAB_NOLEAKTRACE | \
+<<<<<<< HEAD
 			  SLAB_RECLAIM_ACCOUNT | SLAB_TEMPORARY | SLAB_NOTRACK)
 #elif defined(CONFIG_SLUB)
 #define SLAB_CACHE_FLAGS (SLAB_NOLEAKTRACE | SLAB_RECLAIM_ACCOUNT | \
 			  SLAB_TEMPORARY | SLAB_NOTRACK)
+=======
+			  SLAB_RECLAIM_ACCOUNT | SLAB_TEMPORARY | \
+			  SLAB_NOTRACK | SLAB_ACCOUNT)
+#elif defined(CONFIG_SLUB)
+#define SLAB_CACHE_FLAGS (SLAB_NOLEAKTRACE | SLAB_RECLAIM_ACCOUNT | \
+			  SLAB_TEMPORARY | SLAB_NOTRACK | SLAB_ACCOUNT)
+>>>>>>> v4.9.227
 #else
 #define SLAB_CACHE_FLAGS (0)
 #endif
@@ -140,6 +167,10 @@ static inline unsigned long kmem_cache_flags(unsigned long object_size,
 #define CACHE_CREATE_MASK (SLAB_CORE_FLAGS | SLAB_DEBUG_FLAGS | SLAB_CACHE_FLAGS)
 
 int __kmem_cache_shutdown(struct kmem_cache *);
+<<<<<<< HEAD
+=======
+void __kmem_cache_release(struct kmem_cache *);
+>>>>>>> v4.9.227
 int __kmem_cache_shrink(struct kmem_cache *);
 void slab_kmem_cache_release(struct kmem_cache *);
 
@@ -164,6 +195,7 @@ void slabinfo_show_stats(struct seq_file *m, struct kmem_cache *s);
 ssize_t slabinfo_write(struct file *file, const char __user *buffer,
 		       size_t count, loff_t *ppos);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MEMCG_KMEM
 static inline bool is_root_cache(struct kmem_cache *s)
 {
@@ -175,6 +207,35 @@ static inline bool slab_equal_or_root(struct kmem_cache *s,
 {
 	return (p == s) ||
 		(s->memcg_params && (p == s->memcg_params->root_cache));
+=======
+/*
+ * Generic implementation of bulk operations
+ * These are useful for situations in which the allocator cannot
+ * perform optimizations. In that case segments of the object listed
+ * may be allocated or freed using these operations.
+ */
+void __kmem_cache_free_bulk(struct kmem_cache *, size_t, void **);
+int __kmem_cache_alloc_bulk(struct kmem_cache *, gfp_t, size_t, void **);
+
+#if defined(CONFIG_MEMCG) && !defined(CONFIG_SLOB)
+/*
+ * Iterate over all memcg caches of the given root cache. The caller must hold
+ * slab_mutex.
+ */
+#define for_each_memcg_cache(iter, root) \
+	list_for_each_entry(iter, &(root)->memcg_params.list, \
+			    memcg_params.list)
+
+static inline bool is_root_cache(struct kmem_cache *s)
+{
+	return s->memcg_params.is_root_cache;
+}
+
+static inline bool slab_equal_or_root(struct kmem_cache *s,
+				      struct kmem_cache *p)
+{
+	return p == s || p == s->memcg_params.root_cache;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -185,23 +246,33 @@ static inline bool slab_equal_or_root(struct kmem_cache *s,
 static inline const char *cache_name(struct kmem_cache *s)
 {
 	if (!is_root_cache(s))
+<<<<<<< HEAD
 		return s->memcg_params->root_cache->name;
+=======
+		s = s->memcg_params.root_cache;
+>>>>>>> v4.9.227
 	return s->name;
 }
 
 /*
  * Note, we protect with RCU only the memcg_caches array, not per-memcg caches.
+<<<<<<< HEAD
  * That said the caller must assure the memcg's cache won't go away. Since once
  * created a memcg's cache is destroyed only along with the root cache, it is
  * true if we are going to allocate from the cache or hold a reference to the
  * root cache by other means. Otherwise, we should hold either the slab_mutex
  * or the memcg's slab_caches_mutex while calling this function and accessing
  * the returned value.
+=======
+ * That said the caller must assure the memcg's cache won't go away by either
+ * taking a css reference to the owner cgroup, or holding the slab_mutex.
+>>>>>>> v4.9.227
  */
 static inline struct kmem_cache *
 cache_from_memcg_idx(struct kmem_cache *s, int idx)
 {
 	struct kmem_cache *cachep;
+<<<<<<< HEAD
 	struct memcg_cache_params *params;
 
 	if (!s->memcg_params)
@@ -211,13 +282,27 @@ cache_from_memcg_idx(struct kmem_cache *s, int idx)
 	params = rcu_dereference(s->memcg_params);
 	cachep = params->memcg_caches[idx];
 	rcu_read_unlock();
+=======
+	struct memcg_cache_array *arr;
+
+	rcu_read_lock();
+	arr = rcu_dereference(s->memcg_params.memcg_caches);
+>>>>>>> v4.9.227
 
 	/*
 	 * Make sure we will access the up-to-date value. The code updating
 	 * memcg_caches issues a write barrier to match this (see
+<<<<<<< HEAD
 	 * memcg_register_cache()).
 	 */
 	smp_read_barrier_depends();
+=======
+	 * memcg_create_kmem_cache()).
+	 */
+	cachep = lockless_dereference(arr->entries[idx]);
+	rcu_read_unlock();
+
+>>>>>>> v4.9.227
 	return cachep;
 }
 
@@ -225,16 +310,29 @@ static inline struct kmem_cache *memcg_root_cache(struct kmem_cache *s)
 {
 	if (is_root_cache(s))
 		return s;
+<<<<<<< HEAD
 	return s->memcg_params->root_cache;
 }
 
 static __always_inline int memcg_charge_slab(struct kmem_cache *s,
 					     gfp_t gfp, int order)
 {
+=======
+	return s->memcg_params.root_cache;
+}
+
+static __always_inline int memcg_charge_slab(struct page *page,
+					     gfp_t gfp, int order,
+					     struct kmem_cache *s)
+{
+	int ret;
+
+>>>>>>> v4.9.227
 	if (!memcg_kmem_enabled())
 		return 0;
 	if (is_root_cache(s))
 		return 0;
+<<<<<<< HEAD
 	return __memcg_charge_slab(s, gfp, order);
 }
 
@@ -247,6 +345,40 @@ static __always_inline void memcg_uncharge_slab(struct kmem_cache *s, int order)
 	__memcg_uncharge_slab(s, order);
 }
 #else
+=======
+
+	ret = memcg_kmem_charge_memcg(page, gfp, order, s->memcg_params.memcg);
+	if (ret)
+		return ret;
+
+	memcg_kmem_update_page_stat(page,
+			(s->flags & SLAB_RECLAIM_ACCOUNT) ?
+			MEMCG_SLAB_RECLAIMABLE : MEMCG_SLAB_UNRECLAIMABLE,
+			1 << order);
+	return 0;
+}
+
+static __always_inline void memcg_uncharge_slab(struct page *page, int order,
+						struct kmem_cache *s)
+{
+	if (!memcg_kmem_enabled())
+		return;
+
+	memcg_kmem_update_page_stat(page,
+			(s->flags & SLAB_RECLAIM_ACCOUNT) ?
+			MEMCG_SLAB_RECLAIMABLE : MEMCG_SLAB_UNRECLAIMABLE,
+			-(1 << order));
+	memcg_kmem_uncharge(page, order);
+}
+
+extern void slab_init_memcg_params(struct kmem_cache *);
+
+#else /* CONFIG_MEMCG && !CONFIG_SLOB */
+
+#define for_each_memcg_cache(iter, root) \
+	for ((void)(iter), (void)(root); 0; )
+
+>>>>>>> v4.9.227
 static inline bool is_root_cache(struct kmem_cache *s)
 {
 	return true;
@@ -274,15 +406,32 @@ static inline struct kmem_cache *memcg_root_cache(struct kmem_cache *s)
 	return s;
 }
 
+<<<<<<< HEAD
 static inline int memcg_charge_slab(struct kmem_cache *s, gfp_t gfp, int order)
+=======
+static inline int memcg_charge_slab(struct page *page, gfp_t gfp, int order,
+				    struct kmem_cache *s)
+>>>>>>> v4.9.227
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void memcg_uncharge_slab(struct kmem_cache *s, int order)
 {
 }
 #endif
+=======
+static inline void memcg_uncharge_slab(struct page *page, int order,
+				       struct kmem_cache *s)
+{
+}
+
+static inline void slab_init_memcg_params(struct kmem_cache *s)
+{
+}
+#endif /* CONFIG_MEMCG && !CONFIG_SLOB */
+>>>>>>> v4.9.227
 
 static inline struct kmem_cache *cache_from_obj(struct kmem_cache *s, void *x)
 {
@@ -296,7 +445,12 @@ static inline struct kmem_cache *cache_from_obj(struct kmem_cache *s, void *x)
 	 * to not do even the assignment. In that case, slab_equal_or_root
 	 * will also be a constant.
 	 */
+<<<<<<< HEAD
 	if (!memcg_kmem_enabled() && !unlikely(s->flags & SLAB_DEBUG_FREE))
+=======
+	if (!memcg_kmem_enabled() &&
+	    !unlikely(s->flags & SLAB_CONSISTENCY_CHECKS))
+>>>>>>> v4.9.227
 		return s;
 
 	page = virt_to_head_page(x);
@@ -305,11 +459,84 @@ static inline struct kmem_cache *cache_from_obj(struct kmem_cache *s, void *x)
 		return cachep;
 
 	pr_err("%s: Wrong slab cache. %s but object is from %s\n",
+<<<<<<< HEAD
 	       __func__, cachep->name, s->name);
+=======
+	       __func__, s->name, cachep->name);
+>>>>>>> v4.9.227
 	WARN_ON_ONCE(1);
 	return s;
 }
 
+<<<<<<< HEAD
+=======
+static inline size_t slab_ksize(const struct kmem_cache *s)
+{
+#ifndef CONFIG_SLUB
+	return s->object_size;
+
+#else /* CONFIG_SLUB */
+# ifdef CONFIG_SLUB_DEBUG
+	/*
+	 * Debugging requires use of the padding between object
+	 * and whatever may come after it.
+	 */
+	if (s->flags & (SLAB_RED_ZONE | SLAB_POISON))
+		return s->object_size;
+# endif
+	if (s->flags & SLAB_KASAN)
+		return s->object_size;
+	/*
+	 * If we have the need to store the freelist pointer
+	 * back there or track user information then we can
+	 * only use the space before that information.
+	 */
+	if (s->flags & (SLAB_DESTROY_BY_RCU | SLAB_STORE_USER))
+		return s->inuse;
+	/*
+	 * Else we can use all the padding etc for the allocation
+	 */
+	return s->size;
+#endif
+}
+
+static inline struct kmem_cache *slab_pre_alloc_hook(struct kmem_cache *s,
+						     gfp_t flags)
+{
+	flags &= gfp_allowed_mask;
+	lockdep_trace_alloc(flags);
+	might_sleep_if(gfpflags_allow_blocking(flags));
+
+	if (should_failslab(s, flags))
+		return NULL;
+
+	if (memcg_kmem_enabled() &&
+	    ((flags & __GFP_ACCOUNT) || (s->flags & SLAB_ACCOUNT)))
+		return memcg_kmem_get_cache(s);
+
+	return s;
+}
+
+static inline void slab_post_alloc_hook(struct kmem_cache *s, gfp_t flags,
+					size_t size, void **p)
+{
+	size_t i;
+
+	flags &= gfp_allowed_mask;
+	for (i = 0; i < size; i++) {
+		void *object = p[i];
+
+		kmemcheck_slab_alloc(s, flags, object, slab_ksize(s));
+		kmemleak_alloc_recursive(object, s->object_size, 1,
+					 s->flags, flags);
+		kasan_slab_alloc(s, object, flags);
+	}
+
+	if (memcg_kmem_enabled())
+		memcg_kmem_put_cache(s);
+}
+
+>>>>>>> v4.9.227
 #ifndef CONFIG_SLOB
 /*
  * The slab lists for all objects.
@@ -321,6 +548,10 @@ struct kmem_cache_node {
 	struct list_head slabs_partial;	/* partial list first, better asm code */
 	struct list_head slabs_full;
 	struct list_head slabs_free;
+<<<<<<< HEAD
+=======
+	unsigned long num_slabs;
+>>>>>>> v4.9.227
 	unsigned long free_objects;
 	unsigned int free_limit;
 	unsigned int colour_next;	/* Per-node cache coloring */
@@ -357,7 +588,29 @@ static inline struct kmem_cache_node *get_node(struct kmem_cache *s, int node)
 
 #endif
 
+<<<<<<< HEAD
 void *slab_next(struct seq_file *m, void *p, loff_t *pos);
 void slab_stop(struct seq_file *m, void *p);
+=======
+void *slab_start(struct seq_file *m, loff_t *pos);
+void *slab_next(struct seq_file *m, void *p, loff_t *pos);
+void slab_stop(struct seq_file *m, void *p);
+int memcg_slab_show(struct seq_file *m, void *p);
+
+void ___cache_free(struct kmem_cache *cache, void *x, unsigned long addr);
+
+#ifdef CONFIG_SLAB_FREELIST_RANDOM
+int cache_random_seq_create(struct kmem_cache *cachep, unsigned int count,
+			gfp_t gfp);
+void cache_random_seq_destroy(struct kmem_cache *cachep);
+#else
+static inline int cache_random_seq_create(struct kmem_cache *cachep,
+					unsigned int count, gfp_t gfp)
+{
+	return 0;
+}
+static inline void cache_random_seq_destroy(struct kmem_cache *cachep) { }
+#endif /* CONFIG_SLAB_FREELIST_RANDOM */
+>>>>>>> v4.9.227
 
 #endif /* MM_SLAB_H */

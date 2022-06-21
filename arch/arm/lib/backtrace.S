@@ -10,6 +10,10 @@
  * 27/03/03 Ian Molton Clean up CONFIG_CPU
  *
  */
+<<<<<<< HEAD
+=======
+#include <linux/kern_levels.h>
+>>>>>>> v4.9.227
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 		.text
@@ -83,13 +87,21 @@ for_each_frame:	tst	frame, mask		@ Check for address exceptions
 		teq	r3, r1, lsr #11
 		ldreq	r0, [frame, #-8]	@ get sp
 		subeq	r0, r0, #4		@ point at the last arg
+<<<<<<< HEAD
 		bleq	.Ldumpstm		@ dump saved registers
+=======
+		bleq	dump_backtrace_stm	@ dump saved registers
+>>>>>>> v4.9.227
 
 1004:		ldr	r1, [sv_pc, #0]		@ if stmfd sp!, {..., fp, ip, lr, pc}
 		ldr	r3, .Ldsi		@ instruction exists,
 		teq	r3, r1, lsr #11
 		subeq	r0, frame, #16
+<<<<<<< HEAD
 		bleq	.Ldumpstm		@ dump saved registers
+=======
+		bleq	dump_backtrace_stm	@ dump saved registers
+>>>>>>> v4.9.227
 
 		teq	sv_fp, #0		@ zero saved fp means
 		beq	no_frame		@ no further frames
@@ -112,6 +124,7 @@ ENDPROC(c_backtrace)
 		.long	1004b, 1006b
 		.popsection
 
+<<<<<<< HEAD
 #define instr r4
 #define reg   r5
 #define stack r6
@@ -144,6 +157,8 @@ ENDPROC(c_backtrace)
 
 .Lfp:		.asciz	" r%d:%08x%s"
 .Lcr:		.asciz	"\n"
+=======
+>>>>>>> v4.9.227
 .Lbad:		.asciz	"Backtrace aborted due to bad frame pointer <%p>\n"
 		.align
 .Ldsi:		.word	0xe92dd800 >> 11	@ stmfd sp!, {... fp, ip, lr, pc}

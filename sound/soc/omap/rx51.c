@@ -33,7 +33,10 @@
 #include <sound/pcm.h>
 #include <sound/soc.h>
 #include <linux/platform_data/asoc-ti-mcbsp.h>
+<<<<<<< HEAD
 #include "../codecs/tpa6130a2.h"
+=======
+>>>>>>> v4.9.227
 
 #include <asm/mach-types.h>
 
@@ -107,8 +110,12 @@ static int rx51_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_card *card = rtd->card;
 
+<<<<<<< HEAD
 	snd_pcm_hw_constraint_minmax(runtime,
 				     SNDRV_PCM_HW_PARAM_CHANNELS, 2, 2);
+=======
+	snd_pcm_hw_constraint_single(runtime, SNDRV_PCM_HW_PARAM_CHANNELS, 2);
+>>>>>>> v4.9.227
 	rx51_ext_control(&card->dapm);
 
 	return 0;
@@ -133,7 +140,11 @@ static struct snd_soc_ops rx51_ops = {
 static int rx51_get_spk(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] = rx51_spk_func;
+=======
+	ucontrol->value.enumerated.item[0] = rx51_spk_func;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -143,10 +154,17 @@ static int rx51_set_spk(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_card *card = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	if (rx51_spk_func == ucontrol->value.integer.value[0])
 		return 0;
 
 	rx51_spk_func = ucontrol->value.integer.value[0];
+=======
+	if (rx51_spk_func == ucontrol->value.enumerated.item[0])
+		return 0;
+
+	rx51_spk_func = ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 	rx51_ext_control(&card->dapm);
 
 	return 1;
@@ -165,6 +183,7 @@ static int rx51_spk_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int rx51_hp_event(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *k, int event)
 {
@@ -182,6 +201,12 @@ static int rx51_get_input(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	ucontrol->value.integer.value[0] = rx51_dmic_func;
+=======
+static int rx51_get_input(struct snd_kcontrol *kcontrol,
+			  struct snd_ctl_elem_value *ucontrol)
+{
+	ucontrol->value.enumerated.item[0] = rx51_dmic_func;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -191,10 +216,17 @@ static int rx51_set_input(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_card *card = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	if (rx51_dmic_func == ucontrol->value.integer.value[0])
 		return 0;
 
 	rx51_dmic_func = ucontrol->value.integer.value[0];
+=======
+	if (rx51_dmic_func == ucontrol->value.enumerated.item[0])
+		return 0;
+
+	rx51_dmic_func = ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 	rx51_ext_control(&card->dapm);
 
 	return 1;
@@ -203,7 +235,11 @@ static int rx51_set_input(struct snd_kcontrol *kcontrol,
 static int rx51_get_jack(struct snd_kcontrol *kcontrol,
 			 struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] = rx51_jack_func;
+=======
+	ucontrol->value.enumerated.item[0] = rx51_jack_func;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -213,10 +249,17 @@ static int rx51_set_jack(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_card *card = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	if (rx51_jack_func == ucontrol->value.integer.value[0])
 		return 0;
 
 	rx51_jack_func = ucontrol->value.integer.value[0];
+=======
+	if (rx51_jack_func == ucontrol->value.enumerated.item[0])
+		return 0;
+
+	rx51_jack_func = ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 	rx51_ext_control(&card->dapm);
 
 	return 1;
@@ -236,7 +279,11 @@ static struct snd_soc_jack_gpio rx51_av_jack_gpios[] = {
 static const struct snd_soc_dapm_widget aic34_dapm_widgets[] = {
 	SND_SOC_DAPM_SPK("Ext Spk", rx51_spk_event),
 	SND_SOC_DAPM_MIC("DMic", NULL),
+<<<<<<< HEAD
 	SND_SOC_DAPM_HP("Headphone Jack", rx51_hp_event),
+=======
+	SND_SOC_DAPM_HP("Headphone Jack", NULL),
+>>>>>>> v4.9.227
 	SND_SOC_DAPM_MIC("HS Mic", NULL),
 	SND_SOC_DAPM_LINE("FM Transmitter", NULL),
 	SND_SOC_DAPM_SPK("Earphone", NULL),
@@ -245,6 +292,7 @@ static const struct snd_soc_dapm_widget aic34_dapm_widgets[] = {
 static const struct snd_soc_dapm_route audio_map[] = {
 	{"Ext Spk", NULL, "HPLOUT"},
 	{"Ext Spk", NULL, "HPROUT"},
+<<<<<<< HEAD
 	{"Headphone Jack", NULL, "LLOUT"},
 	{"Headphone Jack", NULL, "RLOUT"},
 	{"FM Transmitter", NULL, "LLOUT"},
@@ -252,12 +300,31 @@ static const struct snd_soc_dapm_route audio_map[] = {
 
 	{"DMic Rate 64", NULL, "Mic Bias"},
 	{"Mic Bias", NULL, "DMic"},
+=======
+	{"Ext Spk", NULL, "HPLCOM"},
+	{"Ext Spk", NULL, "HPRCOM"},
+	{"FM Transmitter", NULL, "LLOUT"},
+	{"FM Transmitter", NULL, "RLOUT"},
+
+	{"Headphone Jack", NULL, "TPA6130A2 HPLEFT"},
+	{"Headphone Jack", NULL, "TPA6130A2 HPRIGHT"},
+	{"TPA6130A2 LEFTIN", NULL, "LLOUT"},
+	{"TPA6130A2 RIGHTIN", NULL, "RLOUT"},
+
+	{"DMic Rate 64", NULL, "DMic"},
+	{"DMic", NULL, "Mic Bias"},
+>>>>>>> v4.9.227
 
 	{"b LINE2R", NULL, "MONO_LOUT"},
 	{"Earphone", NULL, "b HPLOUT"},
 
+<<<<<<< HEAD
 	{"LINE1L", NULL, "b Mic Bias"},
 	{"b Mic Bias", NULL, "HS Mic"}
+=======
+	{"LINE1L", NULL, "HS Mic"},
+	{"HS Mic", NULL, "b Mic Bias"},
+>>>>>>> v4.9.227
 };
 
 static const char * const spk_function[] = {"Off", "On"};
@@ -285,6 +352,7 @@ static const struct snd_kcontrol_new aic34_rx51_controls[] = {
 
 static int rx51_aic34_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_card *card = rtd->card;
 	struct rx51_audio_pdata *pdata = snd_soc_card_get_drvdata(card);
@@ -303,6 +371,13 @@ static int rx51_aic34_init(struct snd_soc_pcm_runtime *rtd)
 		return err;
 	}
 	snd_soc_limit_volume(codec, "TPA6130A2 Headphone Playback Volume", 42);
+=======
+	struct snd_soc_card *card = rtd->card;
+	struct rx51_audio_pdata *pdata = snd_soc_card_get_drvdata(card);
+	int err;
+
+	snd_soc_limit_volume(card, "TPA6130A2 Headphone Playback Volume", 42);
+>>>>>>> v4.9.227
 
 	err = omap_mcbsp_st_add_controls(rtd, 2);
 	if (err < 0) {
@@ -311,9 +386,15 @@ static int rx51_aic34_init(struct snd_soc_pcm_runtime *rtd)
 	}
 
 	/* AV jack detection */
+<<<<<<< HEAD
 	err = snd_soc_jack_new(codec, "AV Jack",
 			       SND_JACK_HEADSET | SND_JACK_VIDEOOUT,
 			       &rx51_av_jack);
+=======
+	err = snd_soc_card_jack_new(rtd->card, "AV Jack",
+				    SND_JACK_HEADSET | SND_JACK_VIDEOOUT,
+				    &rx51_av_jack, NULL, 0);
+>>>>>>> v4.9.227
 	if (err) {
 		dev_err(card->dev, "Failed to add AV Jack\n");
 		return err;
@@ -363,6 +444,13 @@ static struct snd_soc_aux_dev rx51_aux_dev[] = {
 		.name = "TLV320AIC34b",
 		.codec_name = "tlv320aic3x-codec.2-0019",
 	},
+<<<<<<< HEAD
+=======
+	{
+		.name = "TPA61320A2",
+		.codec_name = "tpa6130a2.2-0060",
+	},
+>>>>>>> v4.9.227
 };
 
 static struct snd_soc_codec_conf rx51_codec_conf[] = {
@@ -370,6 +458,13 @@ static struct snd_soc_codec_conf rx51_codec_conf[] = {
 		.dev_name = "tlv320aic3x-codec.2-0019",
 		.name_prefix = "b",
 	},
+<<<<<<< HEAD
+=======
+	{
+		.dev_name = "tpa6130a2.2-0060",
+		.name_prefix = "TPA6130A2",
+	},
+>>>>>>> v4.9.227
 };
 
 /* Audio card */
@@ -383,6 +478,10 @@ static struct snd_soc_card rx51_sound_card = {
 	.num_aux_devs = ARRAY_SIZE(rx51_aux_dev),
 	.codec_conf = rx51_codec_conf,
 	.num_configs = ARRAY_SIZE(rx51_codec_conf),
+<<<<<<< HEAD
+=======
+	.fully_routed = true,
+>>>>>>> v4.9.227
 
 	.controls = aic34_rx51_controls,
 	.num_controls = ARRAY_SIZE(aic34_rx51_controls),
@@ -440,11 +539,18 @@ static int rx51_soc_probe(struct platform_device *pdev)
 			dev_err(&pdev->dev, "Headphone amplifier node is not provided\n");
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 
 		/* TODO: tpa6130a2a driver supports only a single instance, so
 		 * this driver ignores the headphone-amplifier node for now.
 		 * It's already mandatory in the DT binding to be future proof.
 		 */
+=======
+		rx51_aux_dev[1].codec_name = NULL;
+		rx51_aux_dev[1].codec_of_node = dai_node;
+		rx51_codec_conf[1].dev_name = NULL;
+		rx51_codec_conf[1].of_node = dai_node;
+>>>>>>> v4.9.227
 	}
 
 	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
@@ -455,12 +561,18 @@ static int rx51_soc_probe(struct platform_device *pdev)
 	snd_soc_card_set_drvdata(card, pdata);
 
 	pdata->tvout_selection_gpio = devm_gpiod_get(card->dev,
+<<<<<<< HEAD
 						     "tvout-selection");
+=======
+						     "tvout-selection",
+						     GPIOD_OUT_LOW);
+>>>>>>> v4.9.227
 	if (IS_ERR(pdata->tvout_selection_gpio)) {
 		dev_err(card->dev, "could not get tvout selection gpio\n");
 		return PTR_ERR(pdata->tvout_selection_gpio);
 	}
 
+<<<<<<< HEAD
 	err = gpiod_direction_output(pdata->tvout_selection_gpio, 0);
 	if (err) {
 		dev_err(card->dev, "could not setup tvout selection gpio\n");
@@ -469,17 +581,28 @@ static int rx51_soc_probe(struct platform_device *pdev)
 
 	pdata->jack_detection_gpio = devm_gpiod_get(card->dev,
 						    "jack-detection");
+=======
+	pdata->jack_detection_gpio = devm_gpiod_get(card->dev,
+						    "jack-detection",
+						    GPIOD_ASIS);
+>>>>>>> v4.9.227
 	if (IS_ERR(pdata->jack_detection_gpio)) {
 		dev_err(card->dev, "could not get jack detection gpio\n");
 		return PTR_ERR(pdata->jack_detection_gpio);
 	}
 
+<<<<<<< HEAD
 	pdata->eci_sw_gpio = devm_gpiod_get(card->dev, "eci-switch");
+=======
+	pdata->eci_sw_gpio = devm_gpiod_get(card->dev, "eci-switch",
+					    GPIOD_OUT_HIGH);
+>>>>>>> v4.9.227
 	if (IS_ERR(pdata->eci_sw_gpio)) {
 		dev_err(card->dev, "could not get eci switch gpio\n");
 		return PTR_ERR(pdata->eci_sw_gpio);
 	}
 
+<<<<<<< HEAD
 	err = gpiod_direction_output(pdata->eci_sw_gpio, 1);
 	if (err) {
 		dev_err(card->dev, "could not setup eci switch gpio\n");
@@ -488,17 +611,25 @@ static int rx51_soc_probe(struct platform_device *pdev)
 
 	pdata->speaker_amp_gpio = devm_gpiod_get(card->dev,
 						 "speaker-amplifier");
+=======
+	pdata->speaker_amp_gpio = devm_gpiod_get(card->dev,
+						 "speaker-amplifier",
+						 GPIOD_OUT_LOW);
+>>>>>>> v4.9.227
 	if (IS_ERR(pdata->speaker_amp_gpio)) {
 		dev_err(card->dev, "could not get speaker enable gpio\n");
 		return PTR_ERR(pdata->speaker_amp_gpio);
 	}
 
+<<<<<<< HEAD
 	err = gpiod_direction_output(pdata->speaker_amp_gpio, 0);
 	if (err) {
 		dev_err(card->dev, "could not setup speaker enable gpio\n");
 		return err;
 	}
 
+=======
+>>>>>>> v4.9.227
 	err = devm_snd_soc_register_card(card->dev, card);
 	if (err) {
 		dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n", err);
@@ -519,7 +650,10 @@ MODULE_DEVICE_TABLE(of, rx51_audio_of_match);
 static struct platform_driver rx51_soc_driver = {
 	.driver = {
 		.name = "rx51-audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(rx51_audio_of_match),
 	},
 	.probe = rx51_soc_probe,

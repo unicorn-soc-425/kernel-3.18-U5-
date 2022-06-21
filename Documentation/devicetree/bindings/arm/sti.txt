@@ -13,3 +13,14 @@ Boards with the ST STiH407 SoC shall have the following properties:
 Required root node property:
 compatible = "st,stih407";
 
+<<<<<<< HEAD
+=======
+Boards with the ST STiH410 SoC shall have the following properties:
+Required root node property:
+compatible = "st,stih410";
+
+Boards with the ST STiH418 SoC shall have the following properties:
+Required root node property:
+compatible = "st,stih418";
+
+>>>>>>> v4.9.227

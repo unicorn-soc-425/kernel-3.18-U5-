@@ -93,7 +93,11 @@ extern const struct unwind_idx __start_unwind_idx[];
 static const struct unwind_idx *__origin_unwind_idx;
 extern const struct unwind_idx __stop_unwind_idx[];
 
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(unwind_lock);
+=======
+static DEFINE_RAW_SPINLOCK(unwind_lock);
+>>>>>>> v4.9.227
 static LIST_HEAD(unwind_tables);
 
 /* Convert a prel31 symbol to an absolute address */
@@ -201,7 +205,11 @@ static const struct unwind_idx *unwind_find_idx(unsigned long addr)
 		/* module unwind tables */
 		struct unwind_table *table;
 
+<<<<<<< HEAD
 		spin_lock_irqsave(&unwind_lock, flags);
+=======
+		raw_spin_lock_irqsave(&unwind_lock, flags);
+>>>>>>> v4.9.227
 		list_for_each_entry(table, &unwind_tables, list) {
 			if (addr >= table->begin_addr &&
 			    addr < table->end_addr) {
@@ -213,7 +221,11 @@ static const struct unwind_idx *unwind_find_idx(unsigned long addr)
 				break;
 			}
 		}
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&unwind_lock, flags);
+=======
+		raw_spin_unlock_irqrestore(&unwind_lock, flags);
+>>>>>>> v4.9.227
 	}
 
 	pr_debug("%s: idx = %p\n", __func__, idx);
@@ -471,7 +483,10 @@ int unwind_frame(struct stackframe *frame)
 void unwind_backtrace(struct pt_regs *regs, struct task_struct *tsk)
 {
 	struct stackframe frame;
+<<<<<<< HEAD
 	register unsigned long current_sp asm ("sp");
+=======
+>>>>>>> v4.9.227
 
 	pr_debug("%s(regs = %p tsk = %p)\n", __func__, regs, tsk);
 
@@ -485,7 +500,11 @@ void unwind_backtrace(struct pt_regs *regs, struct task_struct *tsk)
 			frame.pc = regs->ARM_lr;
 	} else if (tsk == current) {
 		frame.fp = (unsigned long)__builtin_frame_address(0);
+<<<<<<< HEAD
 		frame.sp = current_sp;
+=======
+		frame.sp = current_stack_pointer;
+>>>>>>> v4.9.227
 		frame.lr = (unsigned long)__builtin_return_address(0);
 		frame.pc = (unsigned long)unwind_backtrace;
 	} else {
@@ -530,9 +549,15 @@ struct unwind_table *unwind_table_add(unsigned long start, unsigned long size,
 	tab->begin_addr = text_addr;
 	tab->end_addr = text_addr + text_size;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&unwind_lock, flags);
 	list_add_tail(&tab->list, &unwind_tables);
 	spin_unlock_irqrestore(&unwind_lock, flags);
+=======
+	raw_spin_lock_irqsave(&unwind_lock, flags);
+	list_add_tail(&tab->list, &unwind_tables);
+	raw_spin_unlock_irqrestore(&unwind_lock, flags);
+>>>>>>> v4.9.227
 
 	return tab;
 }
@@ -544,9 +569,15 @@ void unwind_table_del(struct unwind_table *tab)
 	if (!tab)
 		return;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&unwind_lock, flags);
 	list_del(&tab->list);
 	spin_unlock_irqrestore(&unwind_lock, flags);
+=======
+	raw_spin_lock_irqsave(&unwind_lock, flags);
+	list_del(&tab->list);
+	raw_spin_unlock_irqrestore(&unwind_lock, flags);
+>>>>>>> v4.9.227
 
 	kfree(tab);
 }

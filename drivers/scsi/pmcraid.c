@@ -45,6 +45,10 @@
 #include <asm/processor.h>
 #include <linux/libata.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_device.h>
@@ -249,6 +253,7 @@ static int pmcraid_slave_configure(struct scsi_device *scsi_dev)
 				      PMCRAID_VSET_MAX_SECTORS);
 	}
 
+<<<<<<< HEAD
 	if (scsi_dev->tagged_supported &&
 	    (RES_IS_GSCSI(res->cfg_entry) || RES_IS_VSET(res->cfg_entry))) {
 		scsi_activate_tcq(scsi_dev, scsi_dev->queue_depth);
@@ -258,6 +263,13 @@ static int pmcraid_slave_configure(struct scsi_device *scsi_dev)
 		scsi_adjust_queue_depth(scsi_dev, 0,
 					scsi_dev->host->cmd_per_lun);
 	}
+=======
+	/*
+	 * We never want to report TCQ support for these types of devices.
+	 */
+	if (!RES_IS_GSCSI(res->cfg_entry) && !RES_IS_VSET(res->cfg_entry))
+		scsi_dev->tagged_supported = 0;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -289,11 +301,15 @@ static void pmcraid_slave_destroy(struct scsi_device *scsi_dev)
  * pmcraid_change_queue_depth - Change the device's queue depth
  * @scsi_dev: scsi device struct
  * @depth: depth to set
+<<<<<<< HEAD
  * @reason: calling context
+=======
+>>>>>>> v4.9.227
  *
  * Return value
  *	actual depth set
  */
+<<<<<<< HEAD
 static int pmcraid_change_queue_depth(struct scsi_device *scsi_dev, int depth,
 				      int reason)
 {
@@ -338,6 +354,16 @@ static int pmcraid_change_queue_type(struct scsi_device *scsi_dev, int tag)
 
 
 /**
+=======
+static int pmcraid_change_queue_depth(struct scsi_device *scsi_dev, int depth)
+{
+	if (depth > PMCRAID_MAX_CMD_PER_LUN)
+		depth = PMCRAID_MAX_CMD_PER_LUN;
+	return scsi_change_queue_depth(scsi_dev, depth);
+}
+
+/**
+>>>>>>> v4.9.227
  * pmcraid_init_cmdblk - initializes a command block
  *
  * @cmd: pointer to struct pmcraid_cmd to be initialized
@@ -346,7 +372,11 @@ static int pmcraid_change_queue_type(struct scsi_device *scsi_dev, int tag)
  * Return Value
  *	 None
  */
+<<<<<<< HEAD
 void pmcraid_init_cmdblk(struct pmcraid_cmd *cmd, int index)
+=======
+static void pmcraid_init_cmdblk(struct pmcraid_cmd *cmd, int index)
+>>>>>>> v4.9.227
 {
 	struct pmcraid_ioarcb *ioarcb = &(cmd->ioa_cb->ioarcb);
 	dma_addr_t dma_addr = cmd->ioa_cb_bus_addr;
@@ -441,7 +471,11 @@ static struct pmcraid_cmd *pmcraid_get_free_cmd(
  * Return Value:
  *	nothing
  */
+<<<<<<< HEAD
 void pmcraid_return_cmd(struct pmcraid_cmd *cmd)
+=======
+static void pmcraid_return_cmd(struct pmcraid_cmd *cmd)
+>>>>>>> v4.9.227
 {
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
 	unsigned long lock_flags;
@@ -1514,6 +1548,7 @@ static int pmcraid_notify_aen(
 	}
 
 	/* send genetlink multicast message to notify appplications */
+<<<<<<< HEAD
 	result = genlmsg_end(skb, msg_header);
 
 	if (result < 0) {
@@ -1521,6 +1556,9 @@ static int pmcraid_notify_aen(
 		nlmsg_free(skb);
 		return result;
 	}
+=======
+	genlmsg_end(skb, msg_header);
+>>>>>>> v4.9.227
 
 	result = genlmsg_multicast(&pmcraid_event_family, skb,
 				   0, 0, GFP_ATOMIC);
@@ -1756,7 +1794,11 @@ static struct pmcraid_ioasc_error *pmcraid_get_error_info(u32 ioasc)
  * @ioasc: ioasc code
  * @cmd: pointer to command that resulted in 'ioasc'
  */
+<<<<<<< HEAD
 void pmcraid_ioasc_logger(u32 ioasc, struct pmcraid_cmd *cmd)
+=======
+static void pmcraid_ioasc_logger(u32 ioasc, struct pmcraid_cmd *cmd)
+>>>>>>> v4.9.227
 {
 	struct pmcraid_ioasc_error *error_info = pmcraid_get_error_info(ioasc);
 
@@ -3175,6 +3217,7 @@ static int pmcraid_eh_host_reset_handler(struct scsi_cmnd *scmd)
 }
 
 /**
+<<<<<<< HEAD
  * pmcraid_task_attributes - Translate SPI Q-Tags to task attributes
  * @scsi_cmd:   scsi command struct
  *
@@ -3205,6 +3248,8 @@ static u8 pmcraid_task_attributes(struct scsi_cmnd *scsi_cmd)
 
 
 /**
+=======
+>>>>>>> v4.9.227
  * pmcraid_init_ioadls - initializes IOADL related fields in IOARCB
  * @cmd: pmcraid command struct
  * @sgcount: count of scatter-gather elements
@@ -3213,7 +3258,11 @@ static u8 pmcraid_task_attributes(struct scsi_cmnd *scsi_cmd)
  *   returns pointer pmcraid_ioadl_desc, initialized to point to internal
  *   or external IOADLs
  */
+<<<<<<< HEAD
 struct pmcraid_ioadl_desc *
+=======
+static struct pmcraid_ioadl_desc *
+>>>>>>> v4.9.227
 pmcraid_init_ioadls(struct pmcraid_cmd *cmd, int sgcount)
 {
 	struct pmcraid_ioadl_desc *ioadl;
@@ -3559,7 +3608,13 @@ static int pmcraid_queuecommand_lck(
 		}
 
 		ioarcb->request_flags0 |= NO_LINK_DESCS;
+<<<<<<< HEAD
 		ioarcb->request_flags1 |= pmcraid_task_attributes(scsi_cmd);
+=======
+
+		if (scsi_cmd->flags & SCMD_TAGGED)
+			ioarcb->request_flags1 |= TASK_TAG_SIMPLE;
+>>>>>>> v4.9.227
 
 		if (RES_IS_GSCSI(res->cfg_entry))
 			ioarcb->request_flags1 |= DELAY_AFTER_RESET;
@@ -4292,7 +4347,11 @@ static ssize_t pmcraid_show_adapter_id(
 static struct device_attribute pmcraid_adapter_id_attr = {
 	.attr = {
 		 .name = "adapter_id",
+<<<<<<< HEAD
 		 .mode = S_IRUGO | S_IWUSR,
+=======
+		 .mode = S_IRUGO,
+>>>>>>> v4.9.227
 		 },
 	.show = pmcraid_show_adapter_id,
 };
@@ -4320,7 +4379,10 @@ static struct scsi_host_template pmcraid_host_template = {
 	.slave_configure = pmcraid_slave_configure,
 	.slave_destroy = pmcraid_slave_destroy,
 	.change_queue_depth = pmcraid_change_queue_depth,
+<<<<<<< HEAD
 	.change_queue_type  = pmcraid_change_queue_type,
+=======
+>>>>>>> v4.9.227
 	.can_queue = PMCRAID_MAX_IO_CMD,
 	.this_id = -1,
 	.sg_tablesize = PMCRAID_MAX_IOADLS,
@@ -4329,7 +4391,11 @@ static struct scsi_host_template pmcraid_host_template = {
 	.cmd_per_lun = PMCRAID_MAX_CMD_PER_LUN,
 	.use_clustering = ENABLE_CLUSTERING,
 	.shost_attrs = pmcraid_host_attrs,
+<<<<<<< HEAD
 	.proc_name = PMCRAID_DRIVER_NAME
+=======
+	.proc_name = PMCRAID_DRIVER_NAME,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -5638,11 +5704,17 @@ static void pmcraid_set_timestamp(struct pmcraid_cmd *cmd)
 	__be32 time_stamp_len = cpu_to_be32(PMCRAID_TIMESTAMP_LEN);
 	struct pmcraid_ioadl_desc *ioadl = ioarcb->add_data.u.ioadl;
 
+<<<<<<< HEAD
 	struct timeval tv;
 	__le64 timestamp;
 
 	do_gettimeofday(&tv);
 	timestamp = tv.tv_sec * 1000;
+=======
+	__le64 timestamp;
+
+	timestamp = ktime_get_real_seconds() * 1000;
+>>>>>>> v4.9.227
 
 	pinstance->timestamp_data->timestamp[0] = (__u8)(timestamp);
 	pinstance->timestamp_data->timestamp[1] = (__u8)((timestamp) >> 8);

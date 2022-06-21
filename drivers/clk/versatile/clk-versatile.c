@@ -8,8 +8,11 @@
  * published by the Free Software Foundation.
  */
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/clkdev.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/err.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -35,7 +38,11 @@ static const struct icst_params cp_auxosc_params = {
 	.idx2s		= icst525_idx2s,
 };
 
+<<<<<<< HEAD
 static const struct clk_icst_desc __initdata cm_auxosc_desc = {
+=======
+static const struct clk_icst_desc cm_auxosc_desc __initconst = {
+>>>>>>> v4.9.227
 	.params = &cp_auxosc_params,
 	.vco_offset = 0x1c,
 	.lock_offset = INTEGRATOR_HDR_LOCK_OFFSET,
@@ -69,7 +76,11 @@ static void __init cm_osc_setup(struct device_node *np,
 		struct device_node *parent;
 
 		parent = of_get_parent(np);
+<<<<<<< HEAD
 		if (!np) {
+=======
+		if (!parent) {
+>>>>>>> v4.9.227
 			pr_err("no parent on core module clock\n");
 			return;
 		}

@@ -21,6 +21,7 @@ below:
 
   echo oneshot > trigger
 
+<<<<<<< HEAD
 This adds the following sysfs attributes to the LED:
 
   delay_on - specifies for how many milliseconds the LED has to stay at
@@ -39,6 +40,10 @@ This adds the following sysfs attributes to the LED:
 
   shot - write any non-empty string to signal an events, this starts a blink
          sequence if not already running.
+=======
+This adds sysfs attributes to the LED that are documented in:
+Documentation/ABI/testing/sysfs-class-led-trigger-oneshot
+>>>>>>> v4.9.227
 
 Example use-case: network devices, initialization:
 

@@ -113,7 +113,11 @@ static int safe_usermode(int new_usermode, bool warn)
 		new_usermode |= UM_FIXUP;
 
 		if (warn)
+<<<<<<< HEAD
 			printk(KERN_WARNING "alignment: ignoring faults is unsafe on this CPU.  Defaulting to fixup mode.\n");
+=======
+			pr_warn("alignment: ignoring faults is unsafe on this CPU.  Defaulting to fixup mode.\n");
+>>>>>>> v4.9.227
 	}
 
 	return new_usermode;
@@ -201,7 +205,11 @@ union offset_union {
  THUMB(	"1:	"ins"	%1, [%2]\n"	)		\
  THUMB(	"	add	%2, %2, #1\n"	)		\
 	"2:\n"						\
+<<<<<<< HEAD
 	"	.pushsection .fixup,\"ax\"\n"		\
+=======
+	"	.pushsection .text.fixup,\"ax\"\n"	\
+>>>>>>> v4.9.227
 	"	.align	2\n"				\
 	"3:	mov	%0, #1\n"			\
 	"	b	2b\n"				\
@@ -261,7 +269,11 @@ union offset_union {
 		"	mov	%1, %1, "NEXT_BYTE"\n"		\
 		"2:	"ins"	%1, [%2]\n"			\
 		"3:\n"						\
+<<<<<<< HEAD
 		"	.pushsection .fixup,\"ax\"\n"		\
+=======
+		"	.pushsection .text.fixup,\"ax\"\n"	\
+>>>>>>> v4.9.227
 		"	.align	2\n"				\
 		"4:	mov	%0, #1\n"			\
 		"	b	3b\n"				\
@@ -301,7 +313,11 @@ union offset_union {
 		"	mov	%1, %1, "NEXT_BYTE"\n"		\
 		"4:	"ins"	%1, [%2]\n"			\
 		"5:\n"						\
+<<<<<<< HEAD
 		"	.pushsection .fixup,\"ax\"\n"		\
+=======
+		"	.pushsection .text.fixup,\"ax\"\n"	\
+>>>>>>> v4.9.227
 		"	.align	2\n"				\
 		"6:	mov	%0, #1\n"			\
 		"	b	5b\n"				\
@@ -541,7 +557,11 @@ do_alignment_ldmstm(unsigned long addr, unsigned long instr, struct pt_regs *reg
 	 * processor for us.
 	 */
 	if (addr != eaddr) {
+<<<<<<< HEAD
 		printk(KERN_ERR "LDMSTM: PC = %08lx, instr = %08lx, "
+=======
+		pr_err("LDMSTM: PC = %08lx, instr = %08lx, "
+>>>>>>> v4.9.227
 			"addr = %08lx, eaddr = %08lx\n",
 			 instruction_pointer(regs), instr, addr, eaddr);
 		show_regs(regs);
@@ -587,7 +607,11 @@ fault:
 	return TYPE_FAULT;
 
 bad:
+<<<<<<< HEAD
 	printk(KERN_ERR "Alignment trap: not handling ldm with s-bit set\n");
+=======
+	pr_err("Alignment trap: not handling ldm with s-bit set\n");
+>>>>>>> v4.9.227
 	return TYPE_ERROR;
 }
 
@@ -767,6 +791,39 @@ do_alignment_t32_to_handler(unsigned long *pinstr, struct pt_regs *regs,
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static int alignment_get_arm(struct pt_regs *regs, u32 *ip, unsigned long *inst)
+{
+	u32 instr = 0;
+	int fault;
+
+	if (user_mode(regs))
+		fault = get_user(instr, ip);
+	else
+		fault = probe_kernel_address(ip, instr);
+
+	*inst = __mem_to_opcode_arm(instr);
+
+	return fault;
+}
+
+static int alignment_get_thumb(struct pt_regs *regs, u16 *ip, u16 *inst)
+{
+	u16 instr = 0;
+	int fault;
+
+	if (user_mode(regs))
+		fault = get_user(instr, ip);
+	else
+		fault = probe_kernel_address(ip, instr);
+
+	*inst = __mem_to_opcode_thumb16(instr);
+
+	return fault;
+}
+
+>>>>>>> v4.9.227
 static int
 do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 {
@@ -774,10 +831,17 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	unsigned long instr = 0, instrptr;
 	int (*handler)(unsigned long addr, unsigned long instr, struct pt_regs *regs);
 	unsigned int type;
+<<<<<<< HEAD
 	unsigned int fault;
 	u16 tinstr = 0;
 	int isize = 4;
 	int thumb2_32b = 0;
+=======
+	u16 tinstr = 0;
+	int isize = 4;
+	int thumb2_32b = 0;
+	int fault;
+>>>>>>> v4.9.227
 
 	if (interrupts_enabled(regs))
 		local_irq_enable();
@@ -786,15 +850,25 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 
 	if (thumb_mode(regs)) {
 		u16 *ptr = (u16 *)(instrptr & ~1);
+<<<<<<< HEAD
 		fault = probe_kernel_address(ptr, tinstr);
 		tinstr = __mem_to_opcode_thumb16(tinstr);
+=======
+
+		fault = alignment_get_thumb(regs, ptr, &tinstr);
+>>>>>>> v4.9.227
 		if (!fault) {
 			if (cpu_architecture() >= CPU_ARCH_ARMv7 &&
 			    IS_T32(tinstr)) {
 				/* Thumb-2 32-bit */
+<<<<<<< HEAD
 				u16 tinst2 = 0;
 				fault = probe_kernel_address(ptr + 1, tinst2);
 				tinst2 = __mem_to_opcode_thumb16(tinst2);
+=======
+				u16 tinst2;
+				fault = alignment_get_thumb(regs, ptr + 1, &tinst2);
+>>>>>>> v4.9.227
 				instr = __opcode_thumb32_compose(tinstr, tinst2);
 				thumb2_32b = 1;
 			} else {
@@ -803,8 +877,12 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 			}
 		}
 	} else {
+<<<<<<< HEAD
 		fault = probe_kernel_address(instrptr, instr);
 		instr = __mem_to_opcode_arm(instr);
+=======
+		fault = alignment_get_arm(regs, (void *)instrptr, &instr);
+>>>>>>> v4.9.227
 	}
 
 	if (fault) {
@@ -919,13 +997,21 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	return 0;
 
  swp:
+<<<<<<< HEAD
 	printk(KERN_ERR "Alignment trap: not handling swp instruction\n");
+=======
+	pr_err("Alignment trap: not handling swp instruction\n");
+>>>>>>> v4.9.227
 
  bad:
 	/*
 	 * Oops, we didn't handle the instruction.
 	 */
+<<<<<<< HEAD
 	printk(KERN_ERR "Alignment trap: not handling instruction "
+=======
+	pr_err("Alignment trap: not handling instruction "
+>>>>>>> v4.9.227
 		"%0*lx at [<%08lx>]\n",
 		isize << 1,
 		isize == 2 ? tinstr : instr, instrptr);

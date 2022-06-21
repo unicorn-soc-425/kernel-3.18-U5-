@@ -14,10 +14,16 @@
 #include <linux/cpuidle.h>
 #include <linux/cpu_pm.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/clockchips.h>
 
 #include <asm/cpuidle.h>
 #include <asm/proc-fns.h>
+=======
+#include <linux/tick.h>
+
+#include <asm/cpuidle.h>
+>>>>>>> v4.9.227
 
 #include "common.h"
 #include "pm.h"
@@ -84,7 +90,10 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 {
 	struct idle_statedata *cx = state_ptr + index;
 	u32 mpuss_can_lose_context = 0;
+<<<<<<< HEAD
 	int cpu_id = smp_processor_id();
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * CPU0 has to wait and stay ON until CPU1 is OFF state.
@@ -112,7 +121,11 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 	mpuss_can_lose_context = (cx->mpu_state == PWRDM_POWER_RET) &&
 				 (cx->mpu_logic_state == PWRDM_POWER_OFF);
 
+<<<<<<< HEAD
 	clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_ENTER, &cpu_id);
+=======
+	tick_broadcast_enter();
+>>>>>>> v4.9.227
 
 	/*
 	 * Call idle CPU PM enter notifier chain so that
@@ -129,7 +142,11 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 		 * to save GIC and wakeupgen context.
 		 */
 		if (mpuss_can_lose_context)
+<<<<<<< HEAD
 			cpu_cluster_pm_enter(0);
+=======
+			cpu_cluster_pm_enter();
+>>>>>>> v4.9.227
 	}
 
 	omap4_enter_lowpower(dev->cpu, cx->cpu_state);
@@ -142,7 +159,11 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 		    mpuss_can_lose_context)
 			gic_dist_disable();
 
+<<<<<<< HEAD
 		clkdm_wakeup(cpu_clkdm[1]);
+=======
+		clkdm_deny_idle(cpu_clkdm[1]);
+>>>>>>> v4.9.227
 		omap_set_pwrdm_state(cpu_pd[1], PWRDM_POWER_ON);
 		clkdm_allow_idle(cpu_clkdm[1]);
 
@@ -167,9 +188,15 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 	 * to restore GIC and wakeupgen context.
 	 */
 	if (dev->cpu == 0 && mpuss_can_lose_context)
+<<<<<<< HEAD
 		cpu_cluster_pm_exit(0);
 
 	clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_EXIT, &cpu_id);
+=======
+		cpu_cluster_pm_exit();
+
+	tick_broadcast_exit();
+>>>>>>> v4.9.227
 
 fail:
 	cpuidle_coupled_parallel_barrier(dev, &abort_barrier);
@@ -184,8 +211,12 @@ fail:
  */
 static void omap_setup_broadcast_timer(void *arg)
 {
+<<<<<<< HEAD
 	int cpu = smp_processor_id();
 	clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_ON, &cpu);
+=======
+	tick_broadcast_enable();
+>>>>>>> v4.9.227
 }
 
 static struct cpuidle_driver omap4_idle_driver = {
@@ -196,7 +227,10 @@ static struct cpuidle_driver omap4_idle_driver = {
 			/* C1 - CPU0 ON + CPU1 ON + MPU ON */
 			.exit_latency = 2 + 2,
 			.target_residency = 5,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 			.enter = omap_enter_idle_simple,
 			.name = "C1",
 			.desc = "CPUx ON, MPUSS ON"
@@ -205,7 +239,11 @@ static struct cpuidle_driver omap4_idle_driver = {
 			/* C2 - CPU0 OFF + CPU1 OFF + MPU CSWR */
 			.exit_latency = 328 + 440,
 			.target_residency = 960,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID | CPUIDLE_FLAG_COUPLED,
+=======
+			.flags = CPUIDLE_FLAG_COUPLED,
+>>>>>>> v4.9.227
 			.enter = omap_enter_idle_coupled,
 			.name = "C2",
 			.desc = "CPUx OFF, MPUSS CSWR",
@@ -214,7 +252,11 @@ static struct cpuidle_driver omap4_idle_driver = {
 			/* C3 - CPU0 OFF + CPU1 OFF + MPU OSWR */
 			.exit_latency = 460 + 518,
 			.target_residency = 1100,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID | CPUIDLE_FLAG_COUPLED,
+=======
+			.flags = CPUIDLE_FLAG_COUPLED,
+>>>>>>> v4.9.227
 			.enter = omap_enter_idle_coupled,
 			.name = "C3",
 			.desc = "CPUx OFF, MPUSS OSWR",

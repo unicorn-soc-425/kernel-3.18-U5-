@@ -8,7 +8,10 @@
  */
 
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
 #include <linux/clk-private.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/io.h>
 #include <linux/err.h>

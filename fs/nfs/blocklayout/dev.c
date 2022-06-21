@@ -1,11 +1,19 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014 Christoph Hellwig.
+=======
+ * Copyright (c) 2014-2016 Christoph Hellwig.
+>>>>>>> v4.9.227
  */
 #include <linux/sunrpc/svc.h>
 #include <linux/blkdev.h>
 #include <linux/nfs4.h>
 #include <linux/nfs_fs.h>
 #include <linux/nfs_xdr.h>
+<<<<<<< HEAD
+=======
+#include <linux/pr.h>
+>>>>>>> v4.9.227
 
 #include "blocklayout.h"
 
@@ -21,8 +29,24 @@ bl_free_device(struct pnfs_block_dev *dev)
 			bl_free_device(&dev->children[i]);
 		kfree(dev->children);
 	} else {
+<<<<<<< HEAD
 		if (dev->bdev)
 			blkdev_put(dev->bdev, FMODE_READ);
+=======
+		if (dev->pr_registered) {
+			const struct pr_ops *ops =
+				dev->bdev->bd_disk->fops->pr_ops;
+			int error;
+
+			error = ops->pr_register(dev->bdev, dev->pr_key, 0,
+				false);
+			if (error)
+				pr_err("failed to unregister PR key.\n");
+		}
+
+		if (dev->bdev)
+			blkdev_put(dev->bdev, FMODE_READ | FMODE_WRITE);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -33,7 +57,11 @@ bl_free_deviceid_node(struct nfs4_deviceid_node *d)
 		container_of(d, struct pnfs_block_dev, node);
 
 	bl_free_device(dev);
+<<<<<<< HEAD
 	kfree(dev);
+=======
+	kfree_rcu(dev, node.rcu);
+>>>>>>> v4.9.227
 }
 
 static int
@@ -53,8 +81,13 @@ nfs4_block_decode_volume(struct xdr_stream *xdr, struct pnfs_block_volume *b)
 		if (!p)
 			return -EIO;
 		b->simple.nr_sigs = be32_to_cpup(p++);
+<<<<<<< HEAD
 		if (!b->simple.nr_sigs) {
 			dprintk("no signature\n");
+=======
+		if (!b->simple.nr_sigs || b->simple.nr_sigs > PNFS_BLOCK_MAX_UUIDS) {
+			dprintk("Bad signature count: %d\n", b->simple.nr_sigs);
+>>>>>>> v4.9.227
 			return -EIO;
 		}
 
@@ -65,6 +98,14 @@ nfs4_block_decode_volume(struct xdr_stream *xdr, struct pnfs_block_volume *b)
 				return -EIO;
 			p = xdr_decode_hyper(p, &b->simple.sigs[i].offset);
 			b->simple.sigs[i].sig_len = be32_to_cpup(p++);
+<<<<<<< HEAD
+=======
+			if (b->simple.sigs[i].sig_len > PNFS_BLOCK_UUID_LEN) {
+				pr_info("signature too long: %d\n",
+					b->simple.sigs[i].sig_len);
+				return -EIO;
+			}
+>>>>>>> v4.9.227
 
 			p = xdr_inline_decode(xdr, b->simple.sigs[i].sig_len);
 			if (!p)
@@ -72,7 +113,12 @@ nfs4_block_decode_volume(struct xdr_stream *xdr, struct pnfs_block_volume *b)
 			memcpy(&b->simple.sigs[i].sig, p,
 				b->simple.sigs[i].sig_len);
 
+<<<<<<< HEAD
 			b->simple.len += 8 + 4 + b->simple.sigs[i].sig_len;
+=======
+			b->simple.len += 8 + 4 + \
+				(XDR_QUADLEN(b->simple.sigs[i].sig_len) << 2);
+>>>>>>> v4.9.227
 		}
 		break;
 	case PNFS_BLOCK_VOLUME_SLICE:
@@ -87,7 +133,16 @@ nfs4_block_decode_volume(struct xdr_stream *xdr, struct pnfs_block_volume *b)
 		p = xdr_inline_decode(xdr, 4);
 		if (!p)
 			return -EIO;
+<<<<<<< HEAD
 		b->concat.volumes_count = be32_to_cpup(p++);
+=======
+
+		b->concat.volumes_count = be32_to_cpup(p++);
+		if (b->concat.volumes_count > PNFS_BLOCK_MAX_DEVICES) {
+			dprintk("Too many volumes: %d\n", b->concat.volumes_count);
+			return -EIO;
+		}
+>>>>>>> v4.9.227
 
 		p = xdr_inline_decode(xdr, b->concat.volumes_count * 4);
 		if (!p)
@@ -99,8 +154,18 @@ nfs4_block_decode_volume(struct xdr_stream *xdr, struct pnfs_block_volume *b)
 		p = xdr_inline_decode(xdr, 8 + 4);
 		if (!p)
 			return -EIO;
+<<<<<<< HEAD
 		p = xdr_decode_hyper(p, &b->stripe.chunk_size);
 		b->stripe.volumes_count = be32_to_cpup(p++);
+=======
+
+		p = xdr_decode_hyper(p, &b->stripe.chunk_size);
+		b->stripe.volumes_count = be32_to_cpup(p++);
+		if (b->stripe.volumes_count > PNFS_BLOCK_MAX_DEVICES) {
+			dprintk("Too many volumes: %d\n", b->stripe.volumes_count);
+			return -EIO;
+		}
+>>>>>>> v4.9.227
 
 		p = xdr_inline_decode(xdr, b->stripe.volumes_count * 4);
 		if (!p)
@@ -108,6 +173,27 @@ nfs4_block_decode_volume(struct xdr_stream *xdr, struct pnfs_block_volume *b)
 		for (i = 0; i < b->stripe.volumes_count; i++)
 			b->stripe.volumes[i] = be32_to_cpup(p++);
 		break;
+<<<<<<< HEAD
+=======
+	case PNFS_BLOCK_VOLUME_SCSI:
+		p = xdr_inline_decode(xdr, 4 + 4 + 4);
+		if (!p)
+			return -EIO;
+		b->scsi.code_set = be32_to_cpup(p++);
+		b->scsi.designator_type = be32_to_cpup(p++);
+		b->scsi.designator_len = be32_to_cpup(p++);
+		p = xdr_inline_decode(xdr, b->scsi.designator_len);
+		if (!p)
+			return -EIO;
+		if (b->scsi.designator_len > 256)
+			return -EIO;
+		memcpy(&b->scsi.designator, p, b->scsi.designator_len);
+		p = xdr_inline_decode(xdr, 8);
+		if (!p)
+			return -EIO;
+		p = xdr_decode_hyper(p, &b->scsi.pr_key);
+		break;
+>>>>>>> v4.9.227
 	default:
 		dprintk("unknown volume type!\n");
 		return -EIO;
@@ -189,18 +275,32 @@ bl_parse_simple(struct nfs_server *server, struct pnfs_block_dev *d,
 		struct pnfs_block_volume *volumes, int idx, gfp_t gfp_mask)
 {
 	struct pnfs_block_volume *v = &volumes[idx];
+<<<<<<< HEAD
+=======
+	struct block_device *bdev;
+>>>>>>> v4.9.227
 	dev_t dev;
 
 	dev = bl_resolve_deviceid(server, v, gfp_mask);
 	if (!dev)
 		return -EIO;
 
+<<<<<<< HEAD
 	d->bdev = blkdev_get_by_dev(dev, FMODE_READ, NULL);
 	if (IS_ERR(d->bdev)) {
 		printk(KERN_WARNING "pNFS: failed to open device %d:%d (%ld)\n",
 			MAJOR(dev), MINOR(dev), PTR_ERR(d->bdev));
 		return PTR_ERR(d->bdev);
 	}
+=======
+	bdev = blkdev_get_by_dev(dev, FMODE_READ | FMODE_WRITE, NULL);
+	if (IS_ERR(bdev)) {
+		printk(KERN_WARNING "pNFS: failed to open device %d:%d (%ld)\n",
+			MAJOR(dev), MINOR(dev), PTR_ERR(bdev));
+		return PTR_ERR(bdev);
+	}
+	d->bdev = bdev;
+>>>>>>> v4.9.227
 
 
 	d->len = i_size_read(d->bdev->bd_inode);
@@ -211,6 +311,146 @@ bl_parse_simple(struct nfs_server *server, struct pnfs_block_dev *d,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static bool
+bl_validate_designator(struct pnfs_block_volume *v)
+{
+	switch (v->scsi.designator_type) {
+	case PS_DESIGNATOR_EUI64:
+		if (v->scsi.code_set != PS_CODE_SET_BINARY)
+			return false;
+
+		if (v->scsi.designator_len != 8 &&
+		    v->scsi.designator_len != 10 &&
+		    v->scsi.designator_len != 16)
+			return false;
+
+		return true;
+	case PS_DESIGNATOR_NAA:
+		if (v->scsi.code_set != PS_CODE_SET_BINARY)
+			return false;
+
+		if (v->scsi.designator_len != 8 &&
+		    v->scsi.designator_len != 16)
+			return false;
+
+		return true;
+	case PS_DESIGNATOR_T10:
+	case PS_DESIGNATOR_NAME:
+		pr_err("pNFS: unsupported designator "
+			"(code set %d, type %d, len %d.\n",
+			v->scsi.code_set,
+			v->scsi.designator_type,
+			v->scsi.designator_len);
+		return false;
+	default:
+		pr_err("pNFS: invalid designator "
+			"(code set %d, type %d, len %d.\n",
+			v->scsi.code_set,
+			v->scsi.designator_type,
+			v->scsi.designator_len);
+		return false;
+	}
+}
+
+/*
+ * Try to open the udev path for the WWN.  At least on Debian the udev
+ * by-id path will always point to the dm-multipath device if one exists.
+ */
+static struct block_device *
+bl_open_udev_path(struct pnfs_block_volume *v)
+{
+	struct block_device *bdev;
+	const char *devname;
+
+	devname = kasprintf(GFP_KERNEL, "/dev/disk/by-id/wwn-0x%*phN",
+				v->scsi.designator_len, v->scsi.designator);
+	if (!devname)
+		return ERR_PTR(-ENOMEM);
+
+	bdev = blkdev_get_by_path(devname, FMODE_READ | FMODE_WRITE, NULL);
+	if (IS_ERR(bdev)) {
+		pr_warn("pNFS: failed to open device %s (%ld)\n",
+			devname, PTR_ERR(bdev));
+	}
+
+	kfree(devname);
+	return bdev;
+}
+
+/*
+ * Try to open the RH/Fedora specific dm-mpath udev path for this WWN, as the
+ * wwn- links will only point to the first discovered SCSI device there.
+ */
+static struct block_device *
+bl_open_dm_mpath_udev_path(struct pnfs_block_volume *v)
+{
+	struct block_device *bdev;
+	const char *devname;
+
+	devname = kasprintf(GFP_KERNEL,
+			"/dev/disk/by-id/dm-uuid-mpath-%d%*phN",
+			v->scsi.designator_type,
+			v->scsi.designator_len, v->scsi.designator);
+	if (!devname)
+		return ERR_PTR(-ENOMEM);
+
+	bdev = blkdev_get_by_path(devname, FMODE_READ | FMODE_WRITE, NULL);
+	kfree(devname);
+	return bdev;
+}
+
+static int
+bl_parse_scsi(struct nfs_server *server, struct pnfs_block_dev *d,
+		struct pnfs_block_volume *volumes, int idx, gfp_t gfp_mask)
+{
+	struct pnfs_block_volume *v = &volumes[idx];
+	struct block_device *bdev;
+	const struct pr_ops *ops;
+	int error;
+
+	if (!bl_validate_designator(v))
+		return -EINVAL;
+
+	bdev = bl_open_dm_mpath_udev_path(v);
+	if (IS_ERR(bdev))
+		bdev = bl_open_udev_path(v);
+	if (IS_ERR(bdev))
+		return PTR_ERR(bdev);
+	d->bdev = bdev;
+
+	d->len = i_size_read(d->bdev->bd_inode);
+	d->map = bl_map_simple;
+	d->pr_key = v->scsi.pr_key;
+
+	pr_info("pNFS: using block device %s (reservation key 0x%llx)\n",
+		d->bdev->bd_disk->disk_name, d->pr_key);
+
+	ops = d->bdev->bd_disk->fops->pr_ops;
+	if (!ops) {
+		pr_err("pNFS: block device %s does not support reservations.",
+				d->bdev->bd_disk->disk_name);
+		error = -EINVAL;
+		goto out_blkdev_put;
+	}
+
+	error = ops->pr_register(d->bdev, 0, d->pr_key, true);
+	if (error) {
+		pr_err("pNFS: failed to register key for block device %s.",
+				d->bdev->bd_disk->disk_name);
+		goto out_blkdev_put;
+	}
+
+	d->pr_registered = true;
+	return 0;
+
+out_blkdev_put:
+	blkdev_put(d->bdev, FMODE_READ | FMODE_WRITE);
+	return error;
+}
+
+>>>>>>> v4.9.227
 static int
 bl_parse_slice(struct nfs_server *server, struct pnfs_block_dev *d,
 		struct pnfs_block_volume *volumes, int idx, gfp_t gfp_mask)
@@ -298,6 +538,11 @@ bl_parse_deviceid(struct nfs_server *server, struct pnfs_block_dev *d,
 		return bl_parse_concat(server, d, volumes, idx, gfp_mask);
 	case PNFS_BLOCK_VOLUME_STRIPE:
 		return bl_parse_stripe(server, d, volumes, idx, gfp_mask);
+<<<<<<< HEAD
+=======
+	case PNFS_BLOCK_VOLUME_SCSI:
+		return bl_parse_scsi(server, d, volumes, idx, gfp_mask);
+>>>>>>> v4.9.227
 	default:
 		dprintk("unsupported volume type: %d\n", volumes[idx].type);
 		return -EIO;

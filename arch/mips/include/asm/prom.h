@@ -11,7 +11,11 @@
 #ifndef __ASM_PROM_H
 #define __ASM_PROM_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
+=======
+#ifdef CONFIG_USE_OF
+>>>>>>> v4.9.227
 #include <linux/bug.h>
 #include <linux/io.h>
 #include <linux/types.h>
@@ -22,6 +26,7 @@ extern void device_tree_init(void);
 struct boot_param_header;
 
 extern void __dt_setup_arch(void *bph);
+<<<<<<< HEAD
 
 #define dt_setup_arch(sym)						\
 ({									\
@@ -29,6 +34,9 @@ extern void __dt_setup_arch(void *bph);
 									\
 	__dt_setup_arch(__dtb_##sym##_begin);				\
 })
+=======
+extern int __dt_register_buses(const char *bus0, const char *bus1);
+>>>>>>> v4.9.227
 
 #else /* CONFIG_OF */
 static inline void device_tree_init(void) { }

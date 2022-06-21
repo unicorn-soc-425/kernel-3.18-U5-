@@ -104,7 +104,11 @@ const struct shmob_drm_format_info *shmob_drm_format_info(u32 fourcc)
 
 static struct drm_framebuffer *
 shmob_drm_fb_create(struct drm_device *dev, struct drm_file *file_priv,
+<<<<<<< HEAD
 		    struct drm_mode_fb_cmd2 *mode_cmd)
+=======
+		    const struct drm_mode_fb_cmd2 *mode_cmd)
+>>>>>>> v4.9.227
 {
 	const struct shmob_drm_format_info *format;
 

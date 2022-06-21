@@ -123,9 +123,13 @@ struct greth_private {
 	struct napi_struct napi;
 	spinlock_t devlock;
 
+<<<<<<< HEAD
 	struct phy_device *phy;
 	struct mii_bus *mdio;
 	int mdio_irqs[PHY_MAX_ADDR];
+=======
+	struct mii_bus *mdio;
+>>>>>>> v4.9.227
 	unsigned int link;
 	unsigned int speed;
 	unsigned int duplex;

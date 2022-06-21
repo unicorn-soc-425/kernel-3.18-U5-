@@ -55,6 +55,12 @@
 #include <linux/kthread.h>
 #include <linux/freezer.h>
 #include <linux/console.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_graph.h>
+#include <video/of_display_timing.h>
+#include <video/videomode.h>
+>>>>>>> v4.9.227
 
 #include <mach/hardware.h>
 #include <asm/io.h>
@@ -457,7 +463,11 @@ static int pxafb_adjust_timing(struct pxafb_info *fbi,
 static int pxafb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 {
 	struct pxafb_info *fbi = container_of(info, struct pxafb_info, fb);
+<<<<<<< HEAD
 	struct pxafb_mach_info *inf = dev_get_platdata(fbi->dev);
+=======
+	struct pxafb_mach_info *inf = fbi->inf;
+>>>>>>> v4.9.227
 	int err;
 
 	if (inf->fixed_modes) {
@@ -1230,7 +1240,11 @@ static unsigned int __smart_timing(unsigned time_ns, unsigned long lcd_clk)
 static void setup_smart_timing(struct pxafb_info *fbi,
 				struct fb_var_screeninfo *var)
 {
+<<<<<<< HEAD
 	struct pxafb_mach_info *inf = dev_get_platdata(fbi->dev);
+=======
+	struct pxafb_mach_info *inf = fbi->inf;
+>>>>>>> v4.9.227
 	struct pxafb_mode_info *mode = &inf->modes[0];
 	unsigned long lclk = clk_get_rate(fbi->clk);
 	unsigned t1, t2, t3, t4;
@@ -1258,14 +1272,21 @@ static void setup_smart_timing(struct pxafb_info *fbi,
 static int pxafb_smart_thread(void *arg)
 {
 	struct pxafb_info *fbi = arg;
+<<<<<<< HEAD
 	struct pxafb_mach_info *inf = dev_get_platdata(fbi->dev);
+=======
+	struct pxafb_mach_info *inf = fbi->inf;
+>>>>>>> v4.9.227
 
 	if (!inf->smart_update) {
 		pr_err("%s: not properly initialized, thread terminated\n",
 				__func__);
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	inf = dev_get_platdata(fbi->dev);
+=======
+>>>>>>> v4.9.227
 
 	pr_debug("%s(): task starting\n", __func__);
 
@@ -1285,7 +1306,11 @@ static int pxafb_smart_thread(void *arg)
 		mutex_unlock(&fbi->ctrlr_lock);
 
 		set_current_state(TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 		schedule_timeout(30 * HZ / 1000);
+=======
+		schedule_timeout(msecs_to_jiffies(30));
+>>>>>>> v4.9.227
 	}
 
 	pr_debug("%s(): task ending\n", __func__);
@@ -1460,7 +1485,11 @@ static void pxafb_disable_controller(struct pxafb_info *fbi)
 #ifdef CONFIG_FB_PXA_SMARTPANEL
 	if (fbi->lccr0 & LCCR0_LCDT) {
 		wait_for_completion_timeout(&fbi->refresh_done,
+<<<<<<< HEAD
 				200 * HZ / 1000);
+=======
+				msecs_to_jiffies(200));
+>>>>>>> v4.9.227
 		return;
 	}
 #endif
@@ -1472,7 +1501,11 @@ static void pxafb_disable_controller(struct pxafb_info *fbi)
 	lcd_writel(fbi, LCCR0, lccr0);
 	lcd_writel(fbi, LCCR0, lccr0 | LCCR0_DIS);
 
+<<<<<<< HEAD
 	wait_for_completion_timeout(&fbi->disable_done, 200 * HZ / 1000);
+=======
+	wait_for_completion_timeout(&fbi->disable_done, msecs_to_jiffies(200));
+>>>>>>> v4.9.227
 
 	/* disable LCD controller clock */
 	clk_disable_unprepare(fbi->clk);
@@ -1668,7 +1701,10 @@ pxafb_freq_policy(struct notifier_block *nb, unsigned long val, void *data)
 
 	switch (val) {
 	case CPUFREQ_ADJUST:
+<<<<<<< HEAD
 	case CPUFREQ_INCOMPATIBLE:
+=======
+>>>>>>> v4.9.227
 		pr_debug("min dma period: %d ps, "
 			"new clock %d kHz\n", pxafb_display_dma_period(var),
 			policy->max);
@@ -1789,11 +1825,19 @@ decode_mode:
 		fbi->video_mem_size = video_mem_size;
 }
 
+<<<<<<< HEAD
 static struct pxafb_info *pxafb_init_fbinfo(struct device *dev)
 {
 	struct pxafb_info *fbi;
 	void *addr;
 	struct pxafb_mach_info *inf = dev_get_platdata(dev);
+=======
+static struct pxafb_info *pxafb_init_fbinfo(struct device *dev,
+					    struct pxafb_mach_info *inf)
+{
+	struct pxafb_info *fbi;
+	void *addr;
+>>>>>>> v4.9.227
 
 	/* Alloc the pxafb_info and pseudo_palette in one step */
 	fbi = kmalloc(sizeof(struct pxafb_info) + sizeof(u32) * 16, GFP_KERNEL);
@@ -1802,6 +1846,10 @@ static struct pxafb_info *pxafb_init_fbinfo(struct device *dev)
 
 	memset(fbi, 0, sizeof(struct pxafb_info));
 	fbi->dev = dev;
+<<<<<<< HEAD
+=======
+	fbi->inf = inf;
+>>>>>>> v4.9.227
 
 	fbi->clk = clk_get(dev, NULL);
 	if (IS_ERR(fbi->clk)) {
@@ -1853,10 +1901,16 @@ static struct pxafb_info *pxafb_init_fbinfo(struct device *dev)
 }
 
 #ifdef CONFIG_FB_PXA_PARAMETERS
+<<<<<<< HEAD
 static int parse_opt_mode(struct device *dev, const char *this_opt)
 {
 	struct pxafb_mach_info *inf = dev_get_platdata(dev);
 
+=======
+static int parse_opt_mode(struct device *dev, const char *this_opt,
+			  struct pxafb_mach_info *inf)
+{
+>>>>>>> v4.9.227
 	const char *name = this_opt+5;
 	unsigned int namelen = strlen(name);
 	int res_specified = 0, bpp_specified = 0;
@@ -1912,9 +1966,15 @@ done:
 	return 0;
 }
 
+<<<<<<< HEAD
 static int parse_opt(struct device *dev, char *this_opt)
 {
 	struct pxafb_mach_info *inf = dev_get_platdata(dev);
+=======
+static int parse_opt(struct device *dev, char *this_opt,
+		     struct pxafb_mach_info *inf)
+{
+>>>>>>> v4.9.227
 	struct pxafb_mode_info *mode = &inf->modes[0];
 	char s[64];
 
@@ -1923,7 +1983,11 @@ static int parse_opt(struct device *dev, char *this_opt)
 	if (!strncmp(this_opt, "vmem:", 5)) {
 		video_mem_size = memparse(this_opt + 5, NULL);
 	} else if (!strncmp(this_opt, "mode:", 5)) {
+<<<<<<< HEAD
 		return parse_opt_mode(dev, this_opt);
+=======
+		return parse_opt_mode(dev, this_opt, inf);
+>>>>>>> v4.9.227
 	} else if (!strncmp(this_opt, "pixclock:", 9)) {
 		mode->pixclock = simple_strtoul(this_opt+9, NULL, 0);
 		sprintf(s, "pixclock: %ld\n", mode->pixclock);
@@ -2012,7 +2076,12 @@ static int parse_opt(struct device *dev, char *this_opt)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pxafb_parse_options(struct device *dev, char *options)
+=======
+static int pxafb_parse_options(struct device *dev, char *options,
+			       struct pxafb_mach_info *inf)
+>>>>>>> v4.9.227
 {
 	char *this_opt;
 	int ret;
@@ -2024,7 +2093,11 @@ static int pxafb_parse_options(struct device *dev, char *options)
 
 	/* could be made table driven or similar?... */
 	while ((this_opt = strsep(&options, ",")) != NULL) {
+<<<<<<< HEAD
 		ret = parse_opt(dev, this_opt);
+=======
+		ret = parse_opt(dev, this_opt, inf);
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 	}
@@ -2093,6 +2166,7 @@ static void pxafb_check_options(struct device *dev, struct pxafb_mach_info *inf)
 #define pxafb_check_options(...)	do {} while (0)
 #endif
 
+<<<<<<< HEAD
 static int pxafb_probe(struct platform_device *dev)
 {
 	struct pxafb_info *fbi;
@@ -2109,6 +2183,183 @@ static int pxafb_probe(struct platform_device *dev)
 		goto failed;
 
 	ret = pxafb_parse_options(&dev->dev, g_options);
+=======
+#if defined(CONFIG_OF)
+static const char * const lcd_types[] = {
+	"unknown", "mono-stn", "mono-dstn", "color-stn", "color-dstn",
+	"color-tft", "smart-panel", NULL
+};
+
+static int of_get_pxafb_display(struct device *dev, struct device_node *disp,
+				struct pxafb_mach_info *info, u32 bus_width)
+{
+	struct display_timings *timings;
+	struct videomode vm;
+	int i, ret = -EINVAL;
+	const char *s;
+
+	ret = of_property_read_string(disp, "lcd-type", &s);
+	if (ret)
+		s = "color-tft";
+
+	for (i = 0; lcd_types[i]; i++)
+		if (!strcmp(s, lcd_types[i]))
+			break;
+	if (!i || !lcd_types[i]) {
+		dev_err(dev, "lcd-type %s is unknown\n", s);
+		return -EINVAL;
+	}
+	info->lcd_conn |= LCD_CONN_TYPE(i);
+	info->lcd_conn |= LCD_CONN_WIDTH(bus_width);
+
+	timings = of_get_display_timings(disp);
+	if (!timings)
+		return -EINVAL;
+
+	ret = -ENOMEM;
+	info->modes = kcalloc(timings->num_timings, sizeof(info->modes[0]),
+			      GFP_KERNEL);
+	if (!info->modes)
+		goto out;
+	info->num_modes = timings->num_timings;
+
+	for (i = 0; i < timings->num_timings; i++) {
+		ret = videomode_from_timings(timings, &vm, i);
+		if (ret) {
+			dev_err(dev, "videomode_from_timings %d failed: %d\n",
+				i, ret);
+			goto out;
+		}
+		if (vm.flags & DISPLAY_FLAGS_PIXDATA_POSEDGE)
+			info->lcd_conn |= LCD_PCLK_EDGE_RISE;
+		if (vm.flags & DISPLAY_FLAGS_PIXDATA_NEGEDGE)
+			info->lcd_conn |= LCD_PCLK_EDGE_FALL;
+		if (vm.flags & DISPLAY_FLAGS_DE_HIGH)
+			info->lcd_conn |= LCD_BIAS_ACTIVE_HIGH;
+		if (vm.flags & DISPLAY_FLAGS_DE_LOW)
+			info->lcd_conn |= LCD_BIAS_ACTIVE_LOW;
+		if (vm.flags & DISPLAY_FLAGS_HSYNC_HIGH)
+			info->modes[i].sync |= FB_SYNC_HOR_HIGH_ACT;
+		if (vm.flags & DISPLAY_FLAGS_VSYNC_HIGH)
+			info->modes[i].sync |= FB_SYNC_VERT_HIGH_ACT;
+
+		info->modes[i].pixclock = 1000000000UL / (vm.pixelclock / 1000);
+		info->modes[i].xres = vm.hactive;
+		info->modes[i].yres = vm.vactive;
+		info->modes[i].hsync_len = vm.hsync_len;
+		info->modes[i].left_margin = vm.hback_porch;
+		info->modes[i].right_margin = vm.hfront_porch;
+		info->modes[i].vsync_len = vm.vsync_len;
+		info->modes[i].upper_margin = vm.vback_porch;
+		info->modes[i].lower_margin = vm.vfront_porch;
+	}
+	ret = 0;
+
+out:
+	display_timings_release(timings);
+	return ret;
+}
+
+static int of_get_pxafb_mode_info(struct device *dev,
+				  struct pxafb_mach_info *info)
+{
+	struct device_node *display, *np;
+	u32 bus_width;
+	int ret, i;
+
+	np = of_graph_get_next_endpoint(dev->of_node, NULL);
+	if (!np) {
+		dev_err(dev, "could not find endpoint\n");
+		return -EINVAL;
+	}
+	ret = of_property_read_u32(np, "bus-width", &bus_width);
+	if (ret) {
+		dev_err(dev, "no bus-width specified: %d\n", ret);
+		of_node_put(np);
+		return ret;
+	}
+
+	display = of_graph_get_remote_port_parent(np);
+	of_node_put(np);
+	if (!display) {
+		dev_err(dev, "no display defined\n");
+		return -EINVAL;
+	}
+
+	ret = of_get_pxafb_display(dev, display, info, bus_width);
+	of_node_put(display);
+	if (ret)
+		return ret;
+
+	for (i = 0; i < info->num_modes; i++)
+		info->modes[i].bpp = bus_width;
+
+	return 0;
+}
+
+static struct pxafb_mach_info *of_pxafb_of_mach_info(struct device *dev)
+{
+	int ret;
+	struct pxafb_mach_info *info;
+
+	if (!dev->of_node)
+		return NULL;
+	info = devm_kzalloc(dev, sizeof(*info), GFP_KERNEL);
+	if (!info)
+		return ERR_PTR(-ENOMEM);
+	ret = of_get_pxafb_mode_info(dev, info);
+	if (ret) {
+		kfree(info->modes);
+		return ERR_PTR(ret);
+	}
+
+	/*
+	 * On purpose, neither lccrX registers nor video memory size can be
+	 * specified through device-tree, they are considered more a debug hack
+	 * available through command line.
+	 */
+	return info;
+}
+#else
+static struct pxafb_mach_info *of_pxafb_of_mach_info(struct device *dev)
+{
+	return NULL;
+}
+#endif
+
+static int pxafb_probe(struct platform_device *dev)
+{
+	struct pxafb_info *fbi;
+	struct pxafb_mach_info *inf, *pdata;
+	struct resource *r;
+	int i, irq, ret;
+
+	dev_dbg(&dev->dev, "pxafb_probe\n");
+
+	ret = -ENOMEM;
+	pdata = dev_get_platdata(&dev->dev);
+	inf = devm_kmalloc(&dev->dev, sizeof(*inf), GFP_KERNEL);
+	if (!inf)
+		goto failed;
+
+	if (pdata) {
+		*inf = *pdata;
+		inf->modes =
+			devm_kmalloc_array(&dev->dev, pdata->num_modes,
+					   sizeof(inf->modes[0]), GFP_KERNEL);
+		if (!inf->modes)
+			goto failed;
+		for (i = 0; i < inf->num_modes; i++)
+			inf->modes[i] = pdata->modes[i];
+	}
+
+	if (!pdata)
+		inf = of_pxafb_of_mach_info(&dev->dev);
+	if (IS_ERR_OR_NULL(inf))
+		goto failed;
+
+	ret = pxafb_parse_options(&dev->dev, g_options, inf);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto failed;
 
@@ -2126,7 +2377,11 @@ static int pxafb_probe(struct platform_device *dev)
 		goto failed;
 	}
 
+<<<<<<< HEAD
 	fbi = pxafb_init_fbinfo(&dev->dev);
+=======
+	fbi = pxafb_init_fbinfo(&dev->dev, inf);
+>>>>>>> v4.9.227
 	if (!fbi) {
 		/* only reason for pxafb_init_fbinfo to fail is kmalloc */
 		dev_err(&dev->dev, "Failed to initialize framebuffer device\n");
@@ -2286,8 +2541,13 @@ static int pxafb_remove(struct platform_device *dev)
 
 	free_pages_exact(fbi->video_mem, fbi->video_mem_size);
 
+<<<<<<< HEAD
 	dma_free_writecombine(&dev->dev, fbi->dma_buff_size,
 			fbi->dma_buff, fbi->dma_buff_phys);
+=======
+	dma_free_wc(&dev->dev, fbi->dma_buff_size, fbi->dma_buff,
+		    fbi->dma_buff_phys);
+>>>>>>> v4.9.227
 
 	iounmap(fbi->mmio_base);
 
@@ -2300,12 +2560,28 @@ static int pxafb_remove(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id pxafb_of_dev_id[] = {
+	{ .compatible = "marvell,pxa270-lcdc", },
+	{ .compatible = "marvell,pxa300-lcdc", },
+	{ .compatible = "marvell,pxa2xx-lcdc", },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, pxafb_of_dev_id);
+
+>>>>>>> v4.9.227
 static struct platform_driver pxafb_driver = {
 	.probe		= pxafb_probe,
 	.remove 	= pxafb_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.name	= "pxa2xx-fb",
+=======
+		.name	= "pxa2xx-fb",
+		.of_match_table = pxafb_of_dev_id,
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 		.pm	= &pxafb_pm_ops,
 #endif

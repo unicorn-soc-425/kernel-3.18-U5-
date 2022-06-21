@@ -24,6 +24,7 @@ void uvc_function_connect(struct uvc_device *uvc);
 
 void uvc_function_disconnect(struct uvc_device *uvc);
 
+<<<<<<< HEAD
 int video_ready_callback(struct usb_function *function);
 int video_closed_callback(struct usb_function *function);
 
@@ -360,5 +361,7 @@ static const struct uvc_descriptor_header * const uvc_ss_streaming_cls[] = {
 	NULL,
 };
 
+=======
+>>>>>>> v4.9.227
 #endif /* _F_UVC_H_ */
 

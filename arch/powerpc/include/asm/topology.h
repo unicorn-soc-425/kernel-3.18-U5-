@@ -87,9 +87,17 @@ static inline int prrn_is_enabled(void)
 #include <asm/smp.h>
 
 #define topology_physical_package_id(cpu)	(cpu_to_chip_id(cpu))
+<<<<<<< HEAD
 #define topology_thread_cpumask(cpu)	(per_cpu(cpu_sibling_map, cpu))
 #define topology_core_cpumask(cpu)	(per_cpu(cpu_core_map, cpu))
 #define topology_core_id(cpu)		(cpu_to_core_id(cpu))
+=======
+#define topology_sibling_cpumask(cpu)	(per_cpu(cpu_sibling_map, cpu))
+#define topology_core_cpumask(cpu)	(per_cpu(cpu_core_map, cpu))
+#define topology_core_id(cpu)		(cpu_to_core_id(cpu))
+
+int dlpar_cpu_readd(int cpu);
+>>>>>>> v4.9.227
 #endif
 #endif
 

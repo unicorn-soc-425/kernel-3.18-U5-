@@ -79,6 +79,7 @@ enum csio_dev_state {
 };
 
 #define FW_PARAM_DEV(param) \
+<<<<<<< HEAD
 	(FW_PARAMS_MNEM(FW_PARAMS_MNEM_DEV) | \
 	 FW_PARAMS_PARAM_X(FW_PARAMS_PARAM_DEV_##param))
 
@@ -87,6 +88,16 @@ enum csio_dev_state {
 	 FW_PARAMS_PARAM_X(FW_PARAMS_PARAM_PFVF_##param)|  \
 	 FW_PARAMS_PARAM_Y(0) | \
 	 FW_PARAMS_PARAM_Z(0))
+=======
+	(FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) | \
+	 FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_##param))
+
+#define FW_PARAM_PFVF(param) \
+	(FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_PFVF) | \
+	 FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_PFVF_##param)|  \
+	 FW_PARAMS_PARAM_Y_V(0) | \
+	 FW_PARAMS_PARAM_Z_V(0))
+>>>>>>> v4.9.227
 
 enum {
 	PAUSE_RX      = 1 << 0,

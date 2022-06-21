@@ -31,6 +31,10 @@ enum hash_algo {
 	HASH_ALGO_TGR_128,
 	HASH_ALGO_TGR_160,
 	HASH_ALGO_TGR_192,
+<<<<<<< HEAD
+=======
+	HASH_ALGO_SM3_256,
+>>>>>>> v4.9.227
 	HASH_ALGO__LAST
 };
 

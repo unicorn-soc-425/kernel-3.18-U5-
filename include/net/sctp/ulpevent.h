@@ -48,6 +48,7 @@
  */
 struct sctp_ulpevent {
 	struct sctp_association *asoc;
+<<<<<<< HEAD
 	__u16 stream;
 	__u16 ssn;
 	__u16 flags;
@@ -57,6 +58,17 @@ struct sctp_ulpevent {
 	int msg_flags;
 	int iif;
 	unsigned int rmem_len;
+=======
+	struct sctp_chunk *chunk;
+	unsigned int rmem_len;
+	__u32 ppid;
+	__u32 tsn;
+	__u32 cumtsn;
+	__u16 stream;
+	__u16 ssn;
+	__u16 flags;
+	__u16 msg_flags;
+>>>>>>> v4.9.227
 };
 
 /* Retrieve the skb this event sits inside of. */

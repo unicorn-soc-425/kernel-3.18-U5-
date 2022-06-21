@@ -1,6 +1,10 @@
 /* net/tipc/socket.h: Include file for TIPC socket code
  *
+<<<<<<< HEAD
  * Copyright (c) 2014, Ericsson AB
+=======
+ * Copyright (c) 2014-2016, Ericsson AB
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +40,7 @@
 #define _TIPC_SOCK_H
 
 #include <net/sock.h>
+<<<<<<< HEAD
 
 #define TIPC_CONNACK_INTV         256
 #define TIPC_FLOWCTRL_WIN        (TIPC_CONNACK_INTV * 2)
@@ -47,5 +52,30 @@ void tipc_sk_mcast_rcv(struct sk_buff *buf);
 void tipc_sk_reinit(void);
 int tipc_sk_ref_table_init(u32 requested_size, u32 start);
 void tipc_sk_ref_table_stop(void);
+=======
+#include <net/genetlink.h>
+
+/* Compatibility values for deprecated message based flow control */
+#define FLOWCTL_MSG_WIN 512
+#define FLOWCTL_MSG_LIM ((FLOWCTL_MSG_WIN * 2 + 1) * SKB_TRUESIZE(MAX_MSG_SIZE))
+
+#define FLOWCTL_BLK_SZ 1024
+
+/* Socket receive buffer sizes */
+#define RCVBUF_MIN  (FLOWCTL_BLK_SZ * 512)
+#define RCVBUF_DEF  (FLOWCTL_BLK_SZ * 1024 * 2)
+#define RCVBUF_MAX  (FLOWCTL_BLK_SZ * 1024 * 16)
+
+int tipc_socket_init(void);
+void tipc_socket_stop(void);
+void tipc_sk_rcv(struct net *net, struct sk_buff_head *inputq);
+void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
+		       struct sk_buff_head *inputq);
+void tipc_sk_reinit(struct net *net);
+int tipc_sk_rht_init(struct net *net);
+void tipc_sk_rht_destroy(struct net *net);
+int tipc_nl_sk_dump(struct sk_buff *skb, struct netlink_callback *cb);
+int tipc_nl_publ_dump(struct sk_buff *skb, struct netlink_callback *cb);
+>>>>>>> v4.9.227
 
 #endif

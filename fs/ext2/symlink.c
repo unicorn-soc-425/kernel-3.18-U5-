@@ -19,6 +19,7 @@
 
 #include "ext2.h"
 #include "xattr.h"
+<<<<<<< HEAD
 #include <linux/namei.h>
 
 static void *ext2_follow_link(struct dentry *dentry, struct nameidata *nd)
@@ -38,11 +39,21 @@ const struct inode_operations ext2_symlink_inode_operations = {
 	.getxattr	= generic_getxattr,
 	.listxattr	= ext2_listxattr,
 	.removexattr	= generic_removexattr,
+=======
+
+const struct inode_operations ext2_symlink_inode_operations = {
+	.readlink	= generic_readlink,
+	.get_link	= page_get_link,
+	.setattr	= ext2_setattr,
+#ifdef CONFIG_EXT2_FS_XATTR
+	.listxattr	= ext2_listxattr,
+>>>>>>> v4.9.227
 #endif
 };
  
 const struct inode_operations ext2_fast_symlink_inode_operations = {
 	.readlink	= generic_readlink,
+<<<<<<< HEAD
 	.follow_link	= ext2_follow_link,
 	.setattr	= ext2_setattr,
 #ifdef CONFIG_EXT2_FS_XATTR
@@ -50,5 +61,11 @@ const struct inode_operations ext2_fast_symlink_inode_operations = {
 	.getxattr	= generic_getxattr,
 	.listxattr	= ext2_listxattr,
 	.removexattr	= generic_removexattr,
+=======
+	.get_link	= simple_get_link,
+	.setattr	= ext2_setattr,
+#ifdef CONFIG_EXT2_FS_XATTR
+	.listxattr	= ext2_listxattr,
+>>>>>>> v4.9.227
 #endif
 };

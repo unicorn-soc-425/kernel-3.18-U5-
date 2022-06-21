@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,7 +78,11 @@ struct acpi_rsconvert_info acpi_rs_convert_address16[5] = {
 	 * Address Translation Offset
 	 * Address Length
 	 */
+<<<<<<< HEAD
 	{ACPI_RSC_MOVE16, ACPI_RS_OFFSET(data.address16.granularity),
+=======
+	{ACPI_RSC_MOVE16, ACPI_RS_OFFSET(data.address16.address.granularity),
+>>>>>>> v4.9.227
 	 AML_OFFSET(address16.granularity),
 	 5},
 
@@ -112,7 +120,11 @@ struct acpi_rsconvert_info acpi_rs_convert_address32[5] = {
 	 * Address Translation Offset
 	 * Address Length
 	 */
+<<<<<<< HEAD
 	{ACPI_RSC_MOVE32, ACPI_RS_OFFSET(data.address32.granularity),
+=======
+	{ACPI_RSC_MOVE32, ACPI_RS_OFFSET(data.address32.address.granularity),
+>>>>>>> v4.9.227
 	 AML_OFFSET(address32.granularity),
 	 5},
 
@@ -150,7 +162,11 @@ struct acpi_rsconvert_info acpi_rs_convert_address64[5] = {
 	 * Address Translation Offset
 	 * Address Length
 	 */
+<<<<<<< HEAD
 	{ACPI_RSC_MOVE64, ACPI_RS_OFFSET(data.address64.granularity),
+=======
+	{ACPI_RSC_MOVE64, ACPI_RS_OFFSET(data.address64.address.granularity),
+>>>>>>> v4.9.227
 	 AML_OFFSET(address64.granularity),
 	 5},
 
@@ -194,7 +210,12 @@ struct acpi_rsconvert_info acpi_rs_convert_ext_address64[5] = {
 	 * Address Length
 	 * Type-Specific Attribute
 	 */
+<<<<<<< HEAD
 	{ACPI_RSC_MOVE64, ACPI_RS_OFFSET(data.ext_address64.granularity),
+=======
+	{ACPI_RSC_MOVE64,
+	 ACPI_RS_OFFSET(data.ext_address64.address.granularity),
+>>>>>>> v4.9.227
 	 AML_OFFSET(ext_address64.granularity),
 	 6}
 };
@@ -311,8 +332,13 @@ acpi_rs_get_address_common(struct acpi_resource *resource,
 
 	/* Validate the Resource Type */
 
+<<<<<<< HEAD
 	if ((aml->address.resource_type > 2)
 	    && (aml->address.resource_type < 0xC0)) {
+=======
+	if ((aml->address.resource_type > 2) &&
+	    (aml->address.resource_type < 0xC0)) {
+>>>>>>> v4.9.227
 		return (FALSE);
 	}
 

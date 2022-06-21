@@ -25,11 +25,18 @@
 #include <linux/slab.h>
 #include <linux/ioport.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/es1688.h>
 #include <sound/initval.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/dma.h>
 
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
@@ -614,8 +621,12 @@ static int snd_es1688_free(struct snd_es1688 *chip)
 {
 	if (chip->hardware != ES1688_HW_UNDEF)
 		snd_es1688_init(chip, 0);
+<<<<<<< HEAD
 	if (chip->res_port)
 		release_and_free_resource(chip->res_port);
+=======
+	release_and_free_resource(chip->res_port);
+>>>>>>> v4.9.227
 	if (chip->irq >= 0)
 		free_irq(chip->irq, (void *) chip);
 	if (chip->dma8 >= 0) {
@@ -729,8 +740,12 @@ static struct snd_pcm_ops snd_es1688_capture_ops = {
 	.pointer =		snd_es1688_capture_pointer,
 };
 
+<<<<<<< HEAD
 int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip,
 		   int device, struct snd_pcm **rpcm)
+=======
+int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -750,9 +765,12 @@ int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip,
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_isa_data(),
 					      64*1024, 64*1024);
+<<<<<<< HEAD
 
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -762,11 +780,16 @@ int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip,
 
 static int snd_es1688_info_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[9] = {
+=======
+	static const char * const texts[8] = {
+>>>>>>> v4.9.227
 		"Mic", "Mic Master", "CD", "AOUT",
 		"Mic1", "Mix", "Line", "Master"
 	};
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 8;
@@ -774,6 +797,9 @@ static int snd_es1688_info_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_ele
 		uinfo->value.enumerated.item = 7;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 8, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_es1688_get_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)

@@ -34,7 +34,10 @@ static int dbg_populate_lsave(struct ubifs_info *c);
 
 /**
  * first_dirty_cnode - find first dirty cnode.
+<<<<<<< HEAD
  * @c: UBIFS file-system description object
+=======
+>>>>>>> v4.9.227
  * @nnode: nnode at which to start
  *
  * This function returns the first dirty cnode or %NULL if there is not one.
@@ -1623,7 +1626,10 @@ static int dbg_is_node_dirty(struct ubifs_info *c, int node_type, int lnum,
  * dbg_check_ltab_lnum - check the ltab for a LPT LEB number.
  * @c: the UBIFS file-system description object
  * @lnum: LEB number where node was written
+<<<<<<< HEAD
  * @offs: offset where node was written
+=======
+>>>>>>> v4.9.227
  *
  * This function returns %0 on success and a negative error code on failure.
  */
@@ -1870,7 +1876,11 @@ int dbg_chk_lpt_sz(struct ubifs_info *c, int action, int len)
 }
 
 /**
+<<<<<<< HEAD
  * ubifs_dump_lpt_leb - dump an LPT LEB.
+=======
+ * dump_lpt_leb - dump an LPT LEB.
+>>>>>>> v4.9.227
  * @c: UBIFS file-system description object
  * @lnum: LEB number to dump
  *

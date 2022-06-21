@@ -82,7 +82,11 @@ static int ep93xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	 * The clock needs to be enabled to access the PWM registers.
 	 * Configuration can be changed at any time.
 	 */
+<<<<<<< HEAD
 	if (!test_bit(PWMF_ENABLED, &pwm->flags)) {
+=======
+	if (!pwm_is_enabled(pwm)) {
+>>>>>>> v4.9.227
 		ret = clk_enable(ep93xx_pwm->clk);
 		if (ret)
 			return ret;
@@ -113,7 +117,11 @@ static int ep93xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		ret = -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (!test_bit(PWMF_ENABLED, &pwm->flags))
+=======
+	if (!pwm_is_enabled(pwm))
+>>>>>>> v4.9.227
 		clk_disable(ep93xx_pwm->clk);
 
 	return ret;

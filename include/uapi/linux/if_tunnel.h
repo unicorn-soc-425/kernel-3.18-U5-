@@ -2,6 +2,12 @@
 #define _UAPI_IF_TUNNEL_H_
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/if.h>
+#include <linux/ip.h>
+#include <linux/in6.h>
+>>>>>>> v4.9.227
 #include <asm/byteorder.h>
 
 
@@ -24,9 +30,29 @@
 #define GRE_SEQ		__cpu_to_be16(0x1000)
 #define GRE_STRICT	__cpu_to_be16(0x0800)
 #define GRE_REC		__cpu_to_be16(0x0700)
+<<<<<<< HEAD
 #define GRE_FLAGS	__cpu_to_be16(0x00F8)
 #define GRE_VERSION	__cpu_to_be16(0x0007)
 
+=======
+#define GRE_ACK		__cpu_to_be16(0x0080)
+#define GRE_FLAGS	__cpu_to_be16(0x0078)
+#define GRE_VERSION	__cpu_to_be16(0x0007)
+
+#define GRE_IS_CSUM(f)		((f) & GRE_CSUM)
+#define GRE_IS_ROUTING(f)	((f) & GRE_ROUTING)
+#define GRE_IS_KEY(f)		((f) & GRE_KEY)
+#define GRE_IS_SEQ(f)		((f) & GRE_SEQ)
+#define GRE_IS_STRICT(f)	((f) & GRE_STRICT)
+#define GRE_IS_REC(f)		((f) & GRE_REC)
+#define GRE_IS_ACK(f)		((f) & GRE_ACK)
+
+#define GRE_VERSION_0		__cpu_to_be16(0x0000)
+#define GRE_VERSION_1		__cpu_to_be16(0x0001)
+#define GRE_PROTO_PPP		__cpu_to_be16(0x880b)
+#define GRE_PPTP_KEY_MASK	__cpu_to_be32(0xffff)
+
+>>>>>>> v4.9.227
 struct ip_tunnel_parm {
 	char			name[IFNAMSIZ];
 	int			link;
@@ -57,6 +83,10 @@ enum {
 	IFLA_IPTUN_ENCAP_FLAGS,
 	IFLA_IPTUN_ENCAP_SPORT,
 	IFLA_IPTUN_ENCAP_DPORT,
+<<<<<<< HEAD
+=======
+	IFLA_IPTUN_COLLECT_METADATA,
+>>>>>>> v4.9.227
 	__IFLA_IPTUN_MAX,
 };
 #define IFLA_IPTUN_MAX	(__IFLA_IPTUN_MAX - 1)
@@ -69,6 +99,10 @@ enum tunnel_encap_types {
 
 #define TUNNEL_ENCAP_FLAG_CSUM		(1<<0)
 #define TUNNEL_ENCAP_FLAG_CSUM6		(1<<1)
+<<<<<<< HEAD
+=======
+#define TUNNEL_ENCAP_FLAG_REMCSUM	(1<<2)
+>>>>>>> v4.9.227
 
 /* SIT-mode i_flags */
 #define	SIT_ISATAP	0x0001
@@ -111,6 +145,11 @@ enum {
 	IFLA_GRE_ENCAP_FLAGS,
 	IFLA_GRE_ENCAP_SPORT,
 	IFLA_GRE_ENCAP_DPORT,
+<<<<<<< HEAD
+=======
+	IFLA_GRE_COLLECT_METADATA,
+	IFLA_GRE_IGNORE_DF,
+>>>>>>> v4.9.227
 	__IFLA_GRE_MAX,
 };
 

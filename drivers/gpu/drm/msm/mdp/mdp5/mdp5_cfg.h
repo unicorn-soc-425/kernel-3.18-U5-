@@ -85,7 +85,10 @@ struct mdp5_cfg_hw {
 	struct mdp5_pipe_block pipe_vig;
 	struct mdp5_pipe_block pipe_rgb;
 	struct mdp5_pipe_block pipe_dma;
+<<<<<<< HEAD
 	struct mdp5_pipe_block pipe_cursor;
+=======
+>>>>>>> v4.9.227
 	struct mdp5_lm_block  lm;
 	struct mdp5_sub_block dspp;
 	struct mdp5_sub_block ad;

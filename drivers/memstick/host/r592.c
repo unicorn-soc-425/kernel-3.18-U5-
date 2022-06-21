@@ -298,8 +298,12 @@ static int r592_transfer_fifo_dma(struct r592_device *dev)
 	sg_count = dma_map_sg(&dev->pci_dev->dev, &dev->req->sg, 1, is_write ?
 		PCI_DMA_TODEVICE : PCI_DMA_FROMDEVICE);
 
+<<<<<<< HEAD
 	if (sg_count != 1 ||
 			(sg_dma_len(&dev->req->sg) < dev->req->sg.length)) {
+=======
+	if (sg_count != 1 || sg_dma_len(&dev->req->sg) < R592_LFIFO_SIZE) {
+>>>>>>> v4.9.227
 		message("problem in dma_map_sg");
 		return -EIO;
 	}
@@ -754,7 +758,11 @@ static int r592_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto error2;
 
 	pci_set_master(pdev);
+<<<<<<< HEAD
 	error = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	error = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> v4.9.227
 	if (error)
 		goto error3;
 
@@ -787,8 +795,13 @@ static int r592_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	}
 
 	/* This is just a precation, so don't fail */
+<<<<<<< HEAD
 	dev->dummy_dma_page = pci_alloc_consistent(pdev, PAGE_SIZE,
 		&dev->dummy_dma_page_physical_address);
+=======
+	dev->dummy_dma_page = dma_alloc_coherent(&pdev->dev, PAGE_SIZE,
+		&dev->dummy_dma_page_physical_address, GFP_KERNEL);
+>>>>>>> v4.9.227
 	r592_stop_dma(dev , 0);
 
 	if (request_irq(dev->irq, &r592_irq, IRQF_SHARED,
@@ -805,7 +818,11 @@ error7:
 	free_irq(dev->irq, dev);
 error6:
 	if (dev->dummy_dma_page)
+<<<<<<< HEAD
 		pci_free_consistent(pdev, PAGE_SIZE, dev->dummy_dma_page,
+=======
+		dma_free_coherent(&pdev->dev, PAGE_SIZE, dev->dummy_dma_page,
+>>>>>>> v4.9.227
 			dev->dummy_dma_page_physical_address);
 
 	kthread_stop(dev->io_thread);
@@ -845,7 +862,11 @@ static void r592_remove(struct pci_dev *pdev)
 	memstick_free_host(dev->host);
 
 	if (dev->dummy_dma_page)
+<<<<<<< HEAD
 		pci_free_consistent(pdev, PAGE_SIZE, dev->dummy_dma_page,
+=======
+		dma_free_coherent(&pdev->dev, PAGE_SIZE, dev->dummy_dma_page,
+>>>>>>> v4.9.227
 			dev->dummy_dma_page_physical_address);
 }
 

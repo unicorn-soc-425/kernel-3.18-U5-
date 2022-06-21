@@ -170,7 +170,11 @@ struct imxfb_info {
 	struct regulator	*lcd_pwr;
 };
 
+<<<<<<< HEAD
 static struct platform_device_id imxfb_devtype[] = {
+=======
+static const struct platform_device_id imxfb_devtype[] = {
+>>>>>>> v4.9.227
 	{
 		.name = "imx1-fb",
 		.driver_data = IMX1_FB,
@@ -183,7 +187,11 @@ static struct platform_device_id imxfb_devtype[] = {
 };
 MODULE_DEVICE_TABLE(platform, imxfb_devtype);
 
+<<<<<<< HEAD
 static struct of_device_id imxfb_of_dev_id[] = {
+=======
+static const struct of_device_id imxfb_of_dev_id[] = {
+>>>>>>> v4.9.227
 	{
 		.compatible = "fsl,imx1-fb",
 		.data = &imxfb_devtype[IMX1_FB],
@@ -473,11 +481,20 @@ static int imxfb_set_par(struct fb_info *info)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void imxfb_enable_controller(struct imxfb_info *fbi)
 {
 
 	if (fbi->enabled)
 		return;
+=======
+static int imxfb_enable_controller(struct imxfb_info *fbi)
+{
+	int ret;
+
+	if (fbi->enabled)
+		return 0;
+>>>>>>> v4.9.227
 
 	pr_debug("Enabling LCD controller\n");
 
@@ -496,10 +513,36 @@ static void imxfb_enable_controller(struct imxfb_info *fbi)
 	 */
 	writel(RMCR_LCDC_EN_MX1, fbi->regs + LCDC_RMCR);
 
+<<<<<<< HEAD
 	clk_prepare_enable(fbi->clk_ipg);
 	clk_prepare_enable(fbi->clk_ahb);
 	clk_prepare_enable(fbi->clk_per);
 	fbi->enabled = true;
+=======
+	ret = clk_prepare_enable(fbi->clk_ipg);
+	if (ret)
+		goto err_enable_ipg;
+
+	ret = clk_prepare_enable(fbi->clk_ahb);
+	if (ret)
+		goto err_enable_ahb;
+
+	ret = clk_prepare_enable(fbi->clk_per);
+	if (ret)
+		goto err_enable_per;
+
+	fbi->enabled = true;
+	return 0;
+
+err_enable_per:
+	clk_disable_unprepare(fbi->clk_ahb);
+err_enable_ahb:
+	clk_disable_unprepare(fbi->clk_ipg);
+err_enable_ipg:
+	writel(0, fbi->regs + LCDC_RMCR);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static void imxfb_disable_controller(struct imxfb_info *fbi)
@@ -510,8 +553,13 @@ static void imxfb_disable_controller(struct imxfb_info *fbi)
 	pr_debug("Disabling LCD controller\n");
 
 	clk_disable_unprepare(fbi->clk_per);
+<<<<<<< HEAD
 	clk_disable_unprepare(fbi->clk_ipg);
 	clk_disable_unprepare(fbi->clk_ahb);
+=======
+	clk_disable_unprepare(fbi->clk_ahb);
+	clk_disable_unprepare(fbi->clk_ipg);
+>>>>>>> v4.9.227
 	fbi->enabled = false;
 
 	writel(0, fbi->regs + LCDC_RMCR);
@@ -532,8 +580,12 @@ static int imxfb_blank(int blank, struct fb_info *info)
 		break;
 
 	case FB_BLANK_UNBLANK:
+<<<<<<< HEAD
 		imxfb_enable_controller(fbi);
 		break;
+=======
+		return imxfb_enable_controller(fbi);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -758,10 +810,18 @@ static int imxfb_lcd_get_power(struct lcd_device *lcddev)
 {
 	struct imxfb_info *fbi = dev_get_drvdata(&lcddev->dev);
 
+<<<<<<< HEAD
 	if (!IS_ERR(fbi->lcd_pwr))
 		return regulator_is_enabled(fbi->lcd_pwr);
 
 	return 1;
+=======
+	if (!IS_ERR(fbi->lcd_pwr) &&
+	    !regulator_is_enabled(fbi->lcd_pwr))
+		return FB_BLANK_POWERDOWN;
+
+	return FB_BLANK_UNBLANK;
+>>>>>>> v4.9.227
 }
 
 static int imxfb_lcd_set_power(struct lcd_device *lcddev, int power)
@@ -769,7 +829,11 @@ static int imxfb_lcd_set_power(struct lcd_device *lcddev, int power)
 	struct imxfb_info *fbi = dev_get_drvdata(&lcddev->dev);
 
 	if (!IS_ERR(fbi->lcd_pwr)) {
+<<<<<<< HEAD
 		if (power)
+=======
+		if (power == FB_BLANK_UNBLANK)
+>>>>>>> v4.9.227
 			return regulator_enable(fbi->lcd_pwr);
 		else
 			return regulator_disable(fbi->lcd_pwr);
@@ -902,6 +966,24 @@ static int imxfb_probe(struct platform_device *pdev)
 		goto failed_getclock;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * The LCDC controller does not have an enable bit. The
+	 * controller starts directly when the clocks are enabled.
+	 * If the clocks are enabled when the controller is not yet
+	 * programmed with proper register values (enabled at the
+	 * bootloader, for example) then it just goes into some undefined
+	 * state.
+	 * To avoid this issue, let's enable and disable LCDC IPG clock
+	 * so that we force some kind of 'reset' to the LCDC block.
+	 */
+	ret = clk_prepare_enable(fbi->clk_ipg);
+	if (ret)
+		goto failed_getclock;
+	clk_disable_unprepare(fbi->clk_ipg);
+
+>>>>>>> v4.9.227
 	fbi->clk_ahb = devm_clk_get(&pdev->dev, "ahb");
 	if (IS_ERR(fbi->clk_ahb)) {
 		ret = PTR_ERR(fbi->clk_ahb);
@@ -922,8 +1004,13 @@ static int imxfb_probe(struct platform_device *pdev)
 	}
 
 	fbi->map_size = PAGE_ALIGN(info->fix.smem_len);
+<<<<<<< HEAD
 	info->screen_base = dma_alloc_writecombine(&pdev->dev, fbi->map_size,
 						   &fbi->map_dma, GFP_KERNEL);
+=======
+	info->screen_base = dma_alloc_wc(&pdev->dev, fbi->map_size,
+					 &fbi->map_dma, GFP_KERNEL);
+>>>>>>> v4.9.227
 
 	if (!info->screen_base) {
 		dev_err(&pdev->dev, "Failed to allocate video RAM: %d\n", ret);
@@ -990,8 +1077,13 @@ failed_cmap:
 	if (pdata && pdata->exit)
 		pdata->exit(fbi->pdev);
 failed_platform_init:
+<<<<<<< HEAD
 	dma_free_writecombine(&pdev->dev, fbi->map_size, info->screen_base,
 			      fbi->map_dma);
+=======
+	dma_free_wc(&pdev->dev, fbi->map_size, info->screen_base,
+		    fbi->map_dma);
+>>>>>>> v4.9.227
 failed_map:
 	iounmap(fbi->regs);
 failed_ioremap:
@@ -1026,8 +1118,13 @@ static int imxfb_remove(struct platform_device *pdev)
 	kfree(info->pseudo_palette);
 	framebuffer_release(info);
 
+<<<<<<< HEAD
 	dma_free_writecombine(&pdev->dev, fbi->map_size, info->screen_base,
 			      fbi->map_dma);
+=======
+	dma_free_wc(&pdev->dev, fbi->map_size, info->screen_base,
+		    fbi->map_dma);
+>>>>>>> v4.9.227
 
 	iounmap(fbi->regs);
 	release_mem_region(res->start, resource_size(res));
@@ -1061,7 +1158,10 @@ static struct platform_driver imxfb_driver = {
 	.driver		= {
 		.name	= DRIVER_NAME,
 		.of_match_table = imxfb_of_dev_id,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &imxfb_pm_ops,
 	},
 	.probe		= imxfb_probe,

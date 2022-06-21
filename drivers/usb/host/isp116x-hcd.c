@@ -500,7 +500,12 @@ static void start_atl_transfers(struct isp116x *isp116x)
 	if (isp116x->periodic_count) {
 		isp116x->fmindex = index =
 		    (isp116x->fmindex + 1) & (PERIODIC_SIZE - 1);
+<<<<<<< HEAD
 		if ((load = isp116x->load[index])) {
+=======
+		load = isp116x->load[index];
+		if (load) {
+>>>>>>> v4.9.227
 			/* Bring all int transfers for this frame
 			   into the active queue */
 			isp116x->atl_active = last_ep =
@@ -943,12 +948,23 @@ static void isp116x_hub_descriptor(struct isp116x *isp116x,
 {
 	u32 reg = isp116x->rhdesca;
 
+<<<<<<< HEAD
 	desc->bDescriptorType = 0x29;
+=======
+	desc->bDescriptorType = USB_DT_HUB;
+>>>>>>> v4.9.227
 	desc->bDescLength = 9;
 	desc->bHubContrCurrent = 0;
 	desc->bNbrPorts = (u8) (reg & 0x3);
 	/* Power switching, device type, overcurrent. */
+<<<<<<< HEAD
 	desc->wHubCharacteristics = cpu_to_le16((u16) ((reg >> 8) & 0x1f));
+=======
+	desc->wHubCharacteristics = cpu_to_le16((u16) ((reg >> 8) &
+						       (HUB_CHAR_LPSM |
+							HUB_CHAR_COMPOUND |
+							HUB_CHAR_OCPM)));
+>>>>>>> v4.9.227
 	desc->bPwrOn2PwrGood = (u8) ((reg >> 24) & 0xff);
 	/* ports removable, and legacy PortPwrCtrlMask */
 	desc->u.hs.DeviceRemovable[0] = 0;
@@ -1707,7 +1723,10 @@ static struct platform_driver isp116x_driver = {
 	.resume = isp116x_resume,
 	.driver = {
 		.name = hcd_name,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

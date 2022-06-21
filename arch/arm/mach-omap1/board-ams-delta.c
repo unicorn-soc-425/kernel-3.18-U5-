@@ -11,7 +11,11 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #include <linux/basic_mmio_gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -41,7 +45,11 @@
 
 #include <mach/hardware.h>
 #include <mach/ams-delta-fiq.h>
+<<<<<<< HEAD
 #include <mach/camera.h>
+=======
+#include "camera.h"
+>>>>>>> v4.9.227
 #include <mach/usb.h>
 
 #include "iomap.h"
@@ -511,6 +519,12 @@ static void modem_pm(struct uart_port *port, unsigned int state, unsigned old)
 {
 	struct modem_private_data *priv = port->private_data;
 
+<<<<<<< HEAD
+=======
+	if (!priv)
+		return;
+
+>>>>>>> v4.9.227
 	if (IS_ERR(priv->regulator))
 		return;
 
@@ -626,6 +640,10 @@ MACHINE_START(AMS_DELTA, "Amstrad E3 (Delta)")
 	.map_io		= ams_delta_map_io,
 	.init_early	= omap1_init_early,
 	.init_irq	= omap1_init_irq,
+<<<<<<< HEAD
+=======
+	.handle_irq	= omap1_handle_irq,
+>>>>>>> v4.9.227
 	.init_machine	= ams_delta_init,
 	.init_late	= ams_delta_init_late,
 	.init_time	= omap1_timer_init,

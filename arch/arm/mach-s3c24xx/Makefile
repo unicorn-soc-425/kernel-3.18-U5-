@@ -12,12 +12,18 @@
 obj-y				+= common.o
 
 obj-$(CONFIG_CPU_S3C2410)	+= s3c2410.o
+<<<<<<< HEAD
 obj-$(CONFIG_S3C2410_DMA)	+= dma-s3c2410.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_S3C2410_PLL)	+= pll-s3c2410.o
 obj-$(CONFIG_S3C2410_PM)	+= pm-s3c2410.o sleep-s3c2410.o
 
 obj-$(CONFIG_CPU_S3C2412)	+= s3c2412.o
+<<<<<<< HEAD
 obj-$(CONFIG_S3C2412_DMA)	+= dma-s3c2412.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_S3C2412_PM)	+= pm-s3c2412.o
 obj-$(CONFIG_S3C2412_PM_SLEEP)	+= sleep-s3c2412.o
 
@@ -27,7 +33,10 @@ obj-$(CONFIG_S3C2416_PM)	+= pm-s3c2416.o
 obj-$(CONFIG_CPU_S3C2440)	+= s3c2440.o
 obj-$(CONFIG_CPU_S3C2442)	+= s3c2442.o
 obj-$(CONFIG_CPU_S3C244X)	+= s3c244x.o
+<<<<<<< HEAD
 obj-$(CONFIG_S3C2440_DMA)	+= dma-s3c2440.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_S3C2440_PLL_12000000) += pll-s3c2440-12000000.o
 obj-$(CONFIG_S3C2440_PLL_16934400) += pll-s3c2440-16934400.o
 
@@ -35,19 +44,30 @@ obj-$(CONFIG_CPU_S3C2443)	+= s3c2443.o
 
 # PM
 
+<<<<<<< HEAD
 obj-$(CONFIG_PM)		+= pm.o irq-pm.o sleep.o
 
 # common code
 
 obj-$(CONFIG_S3C24XX_DMA)	+= dma.o
 
+=======
+obj-$(CONFIG_PM)		+= pm.o
+obj-$(CONFIG_PM_SLEEP)		+= irq-pm.o sleep.o
+
+# common code
+
+>>>>>>> v4.9.227
 obj-$(CONFIG_S3C2410_CPUFREQ_UTILS) += cpufreq-utils.o
 
 obj-$(CONFIG_S3C2410_IOTIMING)	+= iotiming-s3c2410.o
 obj-$(CONFIG_S3C2412_IOTIMING)	+= iotiming-s3c2412.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_S3C2443_DMA)	+= dma-s3c2443.o
 
+=======
+>>>>>>> v4.9.227
 #
 # machine support
 # following is ordered alphabetically by option text.
@@ -105,3 +125,7 @@ obj-$(CONFIG_S3C2416_SETUP_SDHCI_GPIO)	+= setup-sdhci-gpio.o
 obj-$(CONFIG_S3C2443_SETUP_SPI)		+= setup-spi.o
 obj-$(CONFIG_ARCH_S3C24XX)		+= setup-i2c.o
 obj-$(CONFIG_S3C24XX_SETUP_TS)		+= setup-ts.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_S3C_SETUP_CAMIF)		+= setup-camif.o
+>>>>>>> v4.9.227

@@ -30,7 +30,11 @@
  *   Cleaned up and rewrote lowlevel routines.
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <asm/dma.h>
 #include <linux/init.h>
 #include <linux/time.h>
@@ -594,15 +598,22 @@ static struct snd_pcm_ops snd_sb8_capture_ops = {
 	.pointer =		snd_sb8_capture_pointer,
 };
 
+<<<<<<< HEAD
 int snd_sb8dsp_pcm(struct snd_sb *chip, int device, struct snd_pcm ** rpcm)
+=======
+int snd_sb8dsp_pcm(struct snd_sb *chip, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_card *card = chip->card;
 	struct snd_pcm *pcm;
 	int err;
 	size_t max_prealloc = 64 * 1024;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
+=======
+>>>>>>> v4.9.227
 	if ((err = snd_pcm_new(card, "SB8 DSP", device, 1, 1, &pcm)) < 0)
 		return err;
 	sprintf(pcm->name, "DSP v%i.%i", chip->version >> 8, chip->version & 0xff);
@@ -618,8 +629,11 @@ int snd_sb8dsp_pcm(struct snd_sb *chip, int device, struct snd_pcm ** rpcm)
 					      snd_dma_isa_data(),
 					      64*1024, max_prealloc);
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 

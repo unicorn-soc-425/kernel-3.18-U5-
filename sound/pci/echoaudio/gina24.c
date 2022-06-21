@@ -53,6 +53,10 @@
 #include <linux/module.h>
 #include <linux/firmware.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/info.h>
 #include <sound/control.h>
@@ -61,7 +65,10 @@
 #include <sound/pcm_params.h>
 #include <sound/asoundef.h>
 #include <sound/initval.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/atomic.h>
 #include "echoaudio.h"
 

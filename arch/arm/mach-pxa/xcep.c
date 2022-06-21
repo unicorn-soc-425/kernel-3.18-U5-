@@ -28,7 +28,11 @@
 #include <asm/mach/map.h>
 
 #include <mach/hardware.h>
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
+=======
+#include "pxa25x.h"
+>>>>>>> v4.9.227
 #include <mach/smemc.h>
 
 #include "generic.h"
@@ -120,7 +124,12 @@ static struct resource smc91x_resources[] = {
 };
 
 static struct smc91x_platdata xcep_smc91x_info = {
+<<<<<<< HEAD
 	.flags	= SMC91X_USE_32BIT | SMC91X_NOWAIT | SMC91X_USE_DMA,
+=======
+	.flags	= SMC91X_USE_8BIT | SMC91X_USE_16BIT | SMC91X_USE_32BIT |
+		  SMC91X_NOWAIT | SMC91X_USE_DMA,
+>>>>>>> v4.9.227
 };
 
 static struct platform_device smc91x_device = {

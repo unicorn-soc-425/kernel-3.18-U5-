@@ -84,10 +84,17 @@ ip_fast_csum(const void *iph, unsigned int ihl)
 }
 
 static inline __wsum
+<<<<<<< HEAD
 csum_tcpudp_nofold(__be32 saddr, __be32 daddr, unsigned short len,
 		   unsigned short proto, __wsum sum)
 {
 	u32 lenprot = len | proto << 16;
+=======
+csum_tcpudp_nofold(__be32 saddr, __be32 daddr, __u32 len,
+		   __u8 proto, __wsum sum)
+{
+	u32 lenprot = len + proto;
+>>>>>>> v4.9.227
 	if (__builtin_constant_p(sum) && sum == 0) {
 		__asm__(
 		"adds	%0, %1, %2	@ csum_tcpudp_nofold0	\n\t"
@@ -121,8 +128,13 @@ csum_tcpudp_nofold(__be32 saddr, __be32 daddr, unsigned short len,
  * returns a 16-bit checksum, already complemented
  */
 static inline __sum16
+<<<<<<< HEAD
 csum_tcpudp_magic(__be32 saddr, __be32 daddr, unsigned short len,
 		  unsigned short proto, __wsum sum)
+=======
+csum_tcpudp_magic(__be32 saddr, __be32 daddr, __u32 len,
+		  __u8 proto, __wsum sum)
+>>>>>>> v4.9.227
 {
 	return csum_fold(csum_tcpudp_nofold(saddr, daddr, len, proto, sum));
 }
@@ -144,8 +156,13 @@ __csum_ipv6_magic(const struct in6_addr *saddr, const struct in6_addr *daddr, __
 		__be32 proto, __wsum sum);
 
 static inline __sum16
+<<<<<<< HEAD
 csum_ipv6_magic(const struct in6_addr *saddr, const struct in6_addr *daddr, __u32 len,
 		unsigned short proto, __wsum sum)
+=======
+csum_ipv6_magic(const struct in6_addr *saddr, const struct in6_addr *daddr,
+		__u32 len, __u8 proto, __wsum sum)
+>>>>>>> v4.9.227
 {
 	return csum_fold(__csum_ipv6_magic(saddr, daddr, htonl(len),
 					   htonl(proto), sum));

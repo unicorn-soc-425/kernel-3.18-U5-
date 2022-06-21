@@ -9,8 +9,13 @@
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+
+>>>>>>> v4.9.227
 #include <asm/prom.h>
 #include <asm/macio.h>
 #include <asm/pmac_feature.h>

@@ -21,8 +21,13 @@
 #include <linux/platform_data/pca953x.h>
 #include <linux/gpio.h>
 
+<<<<<<< HEAD
 #include <mach/pxa300.h>
 #include <mach/zylonite.h>
+=======
+#include "pxa300.h"
+#include "zylonite.h"
+>>>>>>> v4.9.227
 
 #include "generic.h"
 

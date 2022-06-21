@@ -86,7 +86,10 @@ static int iris_remove(struct platform_device *pdev)
 static struct platform_driver iris_driver = {
 	.driver		= {
 		.name   = "iris",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe          = iris_probe,
 	.remove         = iris_remove,

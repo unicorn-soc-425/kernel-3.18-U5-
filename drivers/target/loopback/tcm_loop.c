@@ -34,16 +34,22 @@
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
+<<<<<<< HEAD
 #include <target/target_core_fabric_configfs.h>
 #include <target/target_core_configfs.h>
+=======
+>>>>>>> v4.9.227
 
 #include "tcm_loop.h"
 
 #define to_tcm_loop_hba(hba)	container_of(hba, struct tcm_loop_hba, dev)
 
+<<<<<<< HEAD
 /* Local pointer to allocated TCM configfs fabric module */
 static struct target_fabric_configfs *tcm_loop_fabric_configfs;
 
+=======
+>>>>>>> v4.9.227
 static struct workqueue_struct *tcm_loop_workqueue;
 static struct kmem_cache *tcm_loop_cmd_cache;
 
@@ -108,6 +114,7 @@ static struct device_driver tcm_loop_driverfs = {
 /*
  * Used with root_device_register() in tcm_loop_alloc_core_bus() below
  */
+<<<<<<< HEAD
 struct device *tcm_loop_primary;
 
 /*
@@ -161,6 +168,9 @@ static int tcm_loop_sam_attr(struct scsi_cmnd *sc, int tag)
 
 	return MSG_SIMPLE_TAG;
 }
+=======
+static struct device *tcm_loop_primary;
+>>>>>>> v4.9.227
 
 static void tcm_loop_submission_work(struct work_struct *work)
 {
@@ -218,9 +228,16 @@ static void tcm_loop_submission_work(struct work_struct *work)
 		transfer_length = scsi_bufflen(sc);
 	}
 
+<<<<<<< HEAD
 	rc = target_submit_cmd_map_sgls(se_cmd, tl_nexus->se_sess, sc->cmnd,
 			&tl_cmd->tl_sense_buf[0], tl_cmd->sc->device->lun,
 			transfer_length, tcm_loop_sam_attr(sc, tl_cmd->sc_cmd_tag),
+=======
+	se_cmd->tag = tl_cmd->sc_cmd_tag;
+	rc = target_submit_cmd_map_sgls(se_cmd, tl_nexus->se_sess, sc->cmnd,
+			&tl_cmd->tl_sense_buf[0], tl_cmd->sc->device->lun,
+			transfer_length, TCM_SIMPLE_TAG,
+>>>>>>> v4.9.227
 			sc->sc_data_direction, 0,
 			scsi_sglist(sc), scsi_sg_count(sc),
 			sgl_bidi, sgl_bidi_count,
@@ -270,7 +287,11 @@ static int tcm_loop_queuecommand(struct Scsi_Host *sh, struct scsi_cmnd *sc)
  * to struct scsi_device
  */
 static int tcm_loop_issue_tmr(struct tcm_loop_tpg *tl_tpg,
+<<<<<<< HEAD
 			      int lun, int task, enum tcm_tmreq_table tmr)
+=======
+			      u64 lun, int task, enum tcm_tmreq_table tmr)
+>>>>>>> v4.9.227
 {
 	struct se_cmd *se_cmd = NULL;
 	struct se_session *se_sess;
@@ -310,7 +331,11 @@ static int tcm_loop_issue_tmr(struct tcm_loop_tpg *tl_tpg,
 	 * Initialize struct se_cmd descriptor from target_core_mod infrastructure
 	 */
 	transport_init_se_cmd(se_cmd, se_tpg->se_tpg_tfo, se_sess, 0,
+<<<<<<< HEAD
 				DMA_NONE, MSG_SIMPLE_TAG,
+=======
+				DMA_NONE, TCM_SIMPLE_TAG,
+>>>>>>> v4.9.227
 				&tl_cmd->tl_sense_buf[0]);
 
 	rc = core_tmr_alloc_req(se_cmd, tl_tmr, tmr, GFP_KERNEL);
@@ -415,6 +440,7 @@ static int tcm_loop_slave_alloc(struct scsi_device *sd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tcm_loop_slave_configure(struct scsi_device *sd)
 {
 	if (sd->tagged_supported) {
@@ -429,13 +455,19 @@ static int tcm_loop_slave_configure(struct scsi_device *sd)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static struct scsi_host_template tcm_loop_driver_template = {
 	.show_info		= tcm_loop_show_info,
 	.proc_name		= "tcm_loopback",
 	.name			= "TCM_Loopback",
 	.queuecommand		= tcm_loop_queuecommand,
+<<<<<<< HEAD
 	.change_queue_depth	= tcm_loop_change_queue_depth,
 	.change_queue_type	= tcm_loop_change_queue_type,
+=======
+	.change_queue_depth	= scsi_change_queue_depth,
+>>>>>>> v4.9.227
 	.eh_abort_handler = tcm_loop_abort_task,
 	.eh_device_reset_handler = tcm_loop_device_reset,
 	.eh_target_reset_handler = tcm_loop_target_reset,
@@ -446,8 +478,13 @@ static struct scsi_host_template tcm_loop_driver_template = {
 	.max_sectors		= 0xFFFF,
 	.use_clustering		= DISABLE_CLUSTERING,
 	.slave_alloc		= tcm_loop_slave_alloc,
+<<<<<<< HEAD
 	.slave_configure	= tcm_loop_slave_configure,
 	.module			= THIS_MODULE,
+=======
+	.module			= THIS_MODULE,
+	.track_queue_depth	= 1,
+>>>>>>> v4.9.227
 };
 
 static int tcm_loop_driver_probe(struct device *dev)
@@ -476,7 +513,11 @@ static int tcm_loop_driver_probe(struct device *dev)
 	sh->max_id = 2;
 	sh->max_lun = 0;
 	sh->max_channel = 0;
+<<<<<<< HEAD
 	sh->max_cmd_len = TL_SCSI_MAX_CMD_LEN;
+=======
+	sh->max_cmd_len = SCSI_MAX_VARLEN_CDB_SIZE;
+>>>>>>> v4.9.227
 
 	host_prot = SHOST_DIF_TYPE1_PROTECTION | SHOST_DIF_TYPE2_PROTECTION |
 		    SHOST_DIF_TYPE3_PROTECTION | SHOST_DIX_TYPE1_PROTECTION |
@@ -587,6 +628,7 @@ static char *tcm_loop_get_fabric_name(void)
 	return "loopback";
 }
 
+<<<<<<< HEAD
 static u8 tcm_loop_get_fabric_proto_ident(struct se_portal_group *se_tpg)
 {
 	struct tcm_loop_tpg *tl_tpg = se_tpg->se_tpg_fabric_ptr;
@@ -612,24 +654,40 @@ static u8 tcm_loop_get_fabric_proto_ident(struct se_portal_group *se_tpg)
 	}
 
 	return sas_get_fabric_proto_ident(se_tpg);
+=======
+static inline struct tcm_loop_tpg *tl_tpg(struct se_portal_group *se_tpg)
+{
+	return container_of(se_tpg, struct tcm_loop_tpg, tl_se_tpg);
+>>>>>>> v4.9.227
 }
 
 static char *tcm_loop_get_endpoint_wwn(struct se_portal_group *se_tpg)
 {
+<<<<<<< HEAD
 	struct tcm_loop_tpg *tl_tpg = se_tpg->se_tpg_fabric_ptr;
 	/*
 	 * Return the passed NAA identifier for the SAS Target Port
 	 */
 	return &tl_tpg->tl_hba->tl_wwn_address[0];
+=======
+	/*
+	 * Return the passed NAA identifier for the Target Port
+	 */
+	return &tl_tpg(se_tpg)->tl_hba->tl_wwn_address[0];
+>>>>>>> v4.9.227
 }
 
 static u16 tcm_loop_get_tag(struct se_portal_group *se_tpg)
 {
+<<<<<<< HEAD
 	struct tcm_loop_tpg *tl_tpg = se_tpg->se_tpg_fabric_ptr;
+=======
+>>>>>>> v4.9.227
 	/*
 	 * This Tag is used when forming SCSI Name identifier in EVPD=1 0x83
 	 * to represent the SCSI Target Port.
 	 */
+<<<<<<< HEAD
 	return tl_tpg->tl_tpgt;
 }
 
@@ -728,6 +786,9 @@ static char *tcm_loop_parse_pr_out_transport_id(
 
 	return sas_parse_pr_out_transport_id(se_tpg, buf, out_tid_len,
 			port_nexus_ptr);
+=======
+	return tl_tpg(se_tpg)->tl_tpgt;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -763,6 +824,7 @@ static int tcm_loop_check_prod_mode_write_protect(struct se_portal_group *se_tpg
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct se_node_acl *tcm_loop_tpg_alloc_fabric_acl(
 	struct se_portal_group *se_tpg)
 {
@@ -785,6 +847,13 @@ static void tcm_loop_tpg_release_fabric_acl(
 				struct tcm_loop_nacl, se_node_acl);
 
 	kfree(tl_nacl);
+=======
+static int tcm_loop_check_prot_fabric_only(struct se_portal_group *se_tpg)
+{
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg, struct tcm_loop_tpg,
+						   tl_se_tpg);
+	return tl_tpg->tl_fabric_prot_type;
+>>>>>>> v4.9.227
 }
 
 static u32 tcm_loop_get_inst_index(struct se_portal_group *se_tpg)
@@ -802,6 +871,7 @@ static void tcm_loop_set_default_node_attributes(struct se_node_acl *se_acl)
 	return;
 }
 
+<<<<<<< HEAD
 static u32 tcm_loop_get_task_tag(struct se_cmd *se_cmd)
 {
 	struct tcm_loop_cmd *tl_cmd = container_of(se_cmd,
@@ -810,6 +880,8 @@ static u32 tcm_loop_get_task_tag(struct se_cmd *se_cmd)
 	return tl_cmd->sc_cmd_tag;
 }
 
+=======
+>>>>>>> v4.9.227
 static int tcm_loop_get_cmd_state(struct se_cmd *se_cmd)
 {
 	struct tcm_loop_cmd *tl_cmd = container_of(se_cmd,
@@ -818,6 +890,7 @@ static int tcm_loop_get_cmd_state(struct se_cmd *se_cmd)
 	return tl_cmd->sc_cmd_state;
 }
 
+<<<<<<< HEAD
 static int tcm_loop_shutdown_session(struct se_session *se_sess)
 {
 	return 0;
@@ -828,6 +901,8 @@ static void tcm_loop_close_session(struct se_session *se_sess)
 	return;
 };
 
+=======
+>>>>>>> v4.9.227
 static int tcm_loop_write_pending(struct se_cmd *se_cmd)
 {
 	/*
@@ -962,7 +1037,11 @@ static void tcm_loop_port_unlink(
 				se_lun->unpacked_lun);
 	if (!sd) {
 		pr_err("Unable to locate struct scsi_device for %d:%d:"
+<<<<<<< HEAD
 			"%d\n", 0, tl_tpg->tl_tpgt, se_lun->unpacked_lun);
+=======
+			"%llu\n", 0, tl_tpg->tl_tpgt, se_lun->unpacked_lun);
+>>>>>>> v4.9.227
 		return;
 	}
 	/*
@@ -978,28 +1057,92 @@ static void tcm_loop_port_unlink(
 
 /* End items for tcm_loop_port_cit */
 
+<<<<<<< HEAD
 /* Start items for tcm_loop_nexus_cit */
 
+=======
+static ssize_t tcm_loop_tpg_attrib_fabric_prot_type_show(
+		struct config_item *item, char *page)
+{
+	struct se_portal_group *se_tpg = attrib_to_tpg(item);
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg, struct tcm_loop_tpg,
+						   tl_se_tpg);
+
+	return sprintf(page, "%d\n", tl_tpg->tl_fabric_prot_type);
+}
+
+static ssize_t tcm_loop_tpg_attrib_fabric_prot_type_store(
+		struct config_item *item, const char *page, size_t count)
+{
+	struct se_portal_group *se_tpg = attrib_to_tpg(item);
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg, struct tcm_loop_tpg,
+						   tl_se_tpg);
+	unsigned long val;
+	int ret = kstrtoul(page, 0, &val);
+
+	if (ret) {
+		pr_err("kstrtoul() returned %d for fabric_prot_type\n", ret);
+		return ret;
+	}
+	if (val != 0 && val != 1 && val != 3) {
+		pr_err("Invalid qla2xxx fabric_prot_type: %lu\n", val);
+		return -EINVAL;
+	}
+	tl_tpg->tl_fabric_prot_type = val;
+
+	return count;
+}
+
+CONFIGFS_ATTR(tcm_loop_tpg_attrib_, fabric_prot_type);
+
+static struct configfs_attribute *tcm_loop_tpg_attrib_attrs[] = {
+	&tcm_loop_tpg_attrib_attr_fabric_prot_type,
+	NULL,
+};
+
+/* Start items for tcm_loop_nexus_cit */
+
+static int tcm_loop_alloc_sess_cb(struct se_portal_group *se_tpg,
+				  struct se_session *se_sess, void *p)
+{
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
+					struct tcm_loop_tpg, tl_se_tpg);
+
+	tl_tpg->tl_nexus = p;
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int tcm_loop_make_nexus(
 	struct tcm_loop_tpg *tl_tpg,
 	const char *name)
 {
+<<<<<<< HEAD
 	struct se_portal_group *se_tpg;
 	struct tcm_loop_hba *tl_hba = tl_tpg->tl_hba;
 	struct tcm_loop_nexus *tl_nexus;
 	int ret = -ENOMEM;
+=======
+	struct tcm_loop_hba *tl_hba = tl_tpg->tl_hba;
+	struct tcm_loop_nexus *tl_nexus;
+	int ret;
+>>>>>>> v4.9.227
 
 	if (tl_tpg->tl_nexus) {
 		pr_debug("tl_tpg->tl_nexus already exists\n");
 		return -EEXIST;
 	}
+<<<<<<< HEAD
 	se_tpg = &tl_tpg->tl_se_tpg;
+=======
+>>>>>>> v4.9.227
 
 	tl_nexus = kzalloc(sizeof(struct tcm_loop_nexus), GFP_KERNEL);
 	if (!tl_nexus) {
 		pr_err("Unable to allocate struct tcm_loop_nexus\n");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	/*
 	 * Initialize the struct se_session pointer
 	 */
@@ -1026,14 +1169,29 @@ static int tcm_loop_make_nexus(
 	__transport_register_session(se_tpg, tl_nexus->se_sess->se_node_acl,
 			tl_nexus->se_sess, tl_nexus);
 	tl_tpg->tl_nexus = tl_nexus;
+=======
+
+	tl_nexus->se_sess = target_alloc_session(&tl_tpg->tl_se_tpg, 0, 0,
+					TARGET_PROT_DIN_PASS | TARGET_PROT_DOUT_PASS,
+					name, tl_nexus, tcm_loop_alloc_sess_cb);
+	if (IS_ERR(tl_nexus->se_sess)) {
+		ret = PTR_ERR(tl_nexus->se_sess);
+		kfree(tl_nexus);
+		return ret;
+	}
+
+>>>>>>> v4.9.227
 	pr_debug("TCM_Loop_ConfigFS: Established I_T Nexus to emulated"
 		" %s Initiator Port: %s\n", tcm_loop_dump_proto_id(tl_hba),
 		name);
 	return 0;
+<<<<<<< HEAD
 
 out:
 	kfree(tl_nexus);
 	return ret;
+=======
+>>>>>>> v4.9.227
 }
 
 static int tcm_loop_drop_nexus(
@@ -1061,7 +1219,11 @@ static int tcm_loop_drop_nexus(
 		" %s Initiator Port: %s\n", tcm_loop_dump_proto_id(tpg->tl_hba),
 		tl_nexus->se_sess->se_node_acl->initiatorname);
 	/*
+<<<<<<< HEAD
 	 * Release the SCSI I_T Nexus to the emulated SAS Target Port
+=======
+	 * Release the SCSI I_T Nexus to the emulated Target Port
+>>>>>>> v4.9.227
 	 */
 	transport_deregister_session(tl_nexus->se_sess);
 	tpg->tl_nexus = NULL;
@@ -1071,10 +1233,16 @@ static int tcm_loop_drop_nexus(
 
 /* End items for tcm_loop_nexus_cit */
 
+<<<<<<< HEAD
 static ssize_t tcm_loop_tpg_show_nexus(
 	struct se_portal_group *se_tpg,
 	char *page)
 {
+=======
+static ssize_t tcm_loop_tpg_nexus_show(struct config_item *item, char *page)
+{
+	struct se_portal_group *se_tpg = to_tpg(item);
+>>>>>>> v4.9.227
 	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
 			struct tcm_loop_tpg, tl_se_tpg);
 	struct tcm_loop_nexus *tl_nexus;
@@ -1090,11 +1258,18 @@ static ssize_t tcm_loop_tpg_show_nexus(
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t tcm_loop_tpg_store_nexus(
 	struct se_portal_group *se_tpg,
 	const char *page,
 	size_t count)
 {
+=======
+static ssize_t tcm_loop_tpg_nexus_store(struct config_item *item,
+		const char *page, size_t count)
+{
+	struct se_portal_group *se_tpg = to_tpg(item);
+>>>>>>> v4.9.227
 	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
 			struct tcm_loop_tpg, tl_se_tpg);
 	struct tcm_loop_hba *tl_hba = tl_tpg->tl_hba;
@@ -1169,12 +1344,19 @@ check_newline:
 	return count;
 }
 
+<<<<<<< HEAD
 TF_TPG_BASE_ATTR(tcm_loop, nexus, S_IRUGO | S_IWUSR);
 
 static ssize_t tcm_loop_tpg_show_transport_status(
 	struct se_portal_group *se_tpg,
 	char *page)
 {
+=======
+static ssize_t tcm_loop_tpg_transport_status_show(struct config_item *item,
+		char *page)
+{
+	struct se_portal_group *se_tpg = to_tpg(item);
+>>>>>>> v4.9.227
 	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
 			struct tcm_loop_tpg, tl_se_tpg);
 	const char *status = NULL;
@@ -1197,11 +1379,18 @@ static ssize_t tcm_loop_tpg_show_transport_status(
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t tcm_loop_tpg_store_transport_status(
 	struct se_portal_group *se_tpg,
 	const char *page,
 	size_t count)
 {
+=======
+static ssize_t tcm_loop_tpg_transport_status_store(struct config_item *item,
+		const char *page, size_t count)
+{
+	struct se_portal_group *se_tpg = to_tpg(item);
+>>>>>>> v4.9.227
 	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
 			struct tcm_loop_tpg, tl_se_tpg);
 
@@ -1211,16 +1400,47 @@ static ssize_t tcm_loop_tpg_store_transport_status(
 	}
 	if (!strncmp(page, "offline", 7)) {
 		tl_tpg->tl_transport_status = TCM_TRANSPORT_OFFLINE;
+<<<<<<< HEAD
+=======
+		if (tl_tpg->tl_nexus) {
+			struct se_session *tl_sess = tl_tpg->tl_nexus->se_sess;
+
+			core_allocate_nexus_loss_ua(tl_sess->se_node_acl);
+		}
+>>>>>>> v4.9.227
 		return count;
 	}
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 TF_TPG_BASE_ATTR(tcm_loop, transport_status, S_IRUGO | S_IWUSR);
 
 static struct configfs_attribute *tcm_loop_tpg_attrs[] = {
 	&tcm_loop_tpg_nexus.attr,
 	&tcm_loop_tpg_transport_status.attr,
+=======
+static ssize_t tcm_loop_tpg_address_show(struct config_item *item,
+					 char *page)
+{
+	struct se_portal_group *se_tpg = to_tpg(item);
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
+			struct tcm_loop_tpg, tl_se_tpg);
+	struct tcm_loop_hba *tl_hba = tl_tpg->tl_hba;
+
+	return snprintf(page, PAGE_SIZE, "%d:0:%d\n",
+			tl_hba->sh->host_no, tl_tpg->tl_tpgt);
+}
+
+CONFIGFS_ATTR(tcm_loop_tpg_, nexus);
+CONFIGFS_ATTR(tcm_loop_tpg_, transport_status);
+CONFIGFS_ATTR_RO(tcm_loop_tpg_, address);
+
+static struct configfs_attribute *tcm_loop_tpg_attrs[] = {
+	&tcm_loop_tpg_attr_nexus,
+	&tcm_loop_tpg_attr_transport_status,
+	&tcm_loop_tpg_attr_address,
+>>>>>>> v4.9.227
 	NULL,
 };
 
@@ -1234,21 +1454,36 @@ static struct se_portal_group *tcm_loop_make_naa_tpg(
 	struct tcm_loop_hba *tl_hba = container_of(wwn,
 			struct tcm_loop_hba, tl_hba_wwn);
 	struct tcm_loop_tpg *tl_tpg;
+<<<<<<< HEAD
 	char *tpgt_str, *end_ptr;
 	int ret;
 	unsigned short int tpgt;
 
 	tpgt_str = strstr(name, "tpgt_");
 	if (!tpgt_str) {
+=======
+	int ret;
+	unsigned long tpgt;
+
+	if (strstr(name, "tpgt_") != name) {
+>>>>>>> v4.9.227
 		pr_err("Unable to locate \"tpgt_#\" directory"
 				" group\n");
 		return ERR_PTR(-EINVAL);
 	}
+<<<<<<< HEAD
 	tpgt_str += 5; /* Skip ahead of "tpgt_" */
 	tpgt = (unsigned short int) simple_strtoul(tpgt_str, &end_ptr, 0);
 
 	if (tpgt >= TL_TPGS_PER_HBA) {
 		pr_err("Passed tpgt: %hu exceeds TL_TPGS_PER_HBA:"
+=======
+	if (kstrtoul(name+5, 10, &tpgt))
+		return ERR_PTR(-EINVAL);
+
+	if (tpgt >= TL_TPGS_PER_HBA) {
+		pr_err("Passed tpgt: %lu exceeds TL_TPGS_PER_HBA:"
+>>>>>>> v4.9.227
 				" %u\n", tpgt, TL_TPGS_PER_HBA);
 		return ERR_PTR(-EINVAL);
 	}
@@ -1256,16 +1491,26 @@ static struct se_portal_group *tcm_loop_make_naa_tpg(
 	tl_tpg->tl_hba = tl_hba;
 	tl_tpg->tl_tpgt = tpgt;
 	/*
+<<<<<<< HEAD
 	 * Register the tl_tpg as a emulated SAS TCM Target Endpoint
 	 */
 	ret = core_tpg_register(&tcm_loop_fabric_configfs->tf_ops,
 			wwn, &tl_tpg->tl_se_tpg, tl_tpg,
 			TRANSPORT_TPG_TYPE_NORMAL);
+=======
+	 * Register the tl_tpg as a emulated TCM Target Endpoint
+	 */
+	ret = core_tpg_register(wwn, &tl_tpg->tl_se_tpg, tl_hba->tl_proto_id);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ERR_PTR(-ENOMEM);
 
 	pr_debug("TCM_Loop_ConfigFS: Allocated Emulated %s"
+<<<<<<< HEAD
 		" Target Port %s,t,0x%04x\n", tcm_loop_dump_proto_id(tl_hba),
+=======
+		" Target Port %s,t,0x%04lx\n", tcm_loop_dump_proto_id(tl_hba),
+>>>>>>> v4.9.227
 		config_item_name(&wwn->wwn_group.cg_item), tpgt);
 
 	return &tl_tpg->tl_se_tpg;
@@ -1283,11 +1528,19 @@ static void tcm_loop_drop_naa_tpg(
 	tl_hba = tl_tpg->tl_hba;
 	tpgt = tl_tpg->tl_tpgt;
 	/*
+<<<<<<< HEAD
 	 * Release the I_T Nexus for the Virtual SAS link if present
 	 */
 	tcm_loop_drop_nexus(tl_tpg);
 	/*
 	 * Deregister the tl_tpg as a emulated SAS TCM Target Endpoint
+=======
+	 * Release the I_T Nexus for the Virtual target link if present
+	 */
+	tcm_loop_drop_nexus(tl_tpg);
+	/*
+	 * Deregister the tl_tpg as a emulated TCM Target Endpoint
+>>>>>>> v4.9.227
 	 */
 	core_tpg_deregister(se_tpg);
 
@@ -1380,8 +1633,14 @@ static void tcm_loop_drop_scsi_hba(
 				struct tcm_loop_hba, tl_hba_wwn);
 
 	pr_debug("TCM_Loop_ConfigFS: Deallocating emulated Target"
+<<<<<<< HEAD
 		" SAS Address: %s at Linux/SCSI Host ID: %d\n",
 		tl_hba->tl_wwn_address, tl_hba->sh->host_no);
+=======
+		" %s Address: %s at Linux/SCSI Host ID: %d\n",
+		tcm_loop_dump_proto_id(tl_hba), tl_hba->tl_wwn_address,
+		tl_hba->sh->host_no);
+>>>>>>> v4.9.227
 	/*
 	 * Call device_unregister() on the original tl_hba->dev.
 	 * tcm_loop_fabric_scsi.c:tcm_loop_release_adapter() will
@@ -1391,22 +1650,34 @@ static void tcm_loop_drop_scsi_hba(
 }
 
 /* Start items for tcm_loop_cit */
+<<<<<<< HEAD
 static ssize_t tcm_loop_wwn_show_attr_version(
 	struct target_fabric_configfs *tf,
 	char *page)
+=======
+static ssize_t tcm_loop_wwn_version_show(struct config_item *item, char *page)
+>>>>>>> v4.9.227
 {
 	return sprintf(page, "TCM Loopback Fabric module %s\n", TCM_LOOP_VERSION);
 }
 
+<<<<<<< HEAD
 TF_WWN_ATTR_RO(tcm_loop, version);
 
 static struct configfs_attribute *tcm_loop_wwn_attrs[] = {
 	&tcm_loop_wwn_version.attr,
+=======
+CONFIGFS_ATTR_RO(tcm_loop_wwn_, version);
+
+static struct configfs_attribute *tcm_loop_wwn_attrs[] = {
+	&tcm_loop_wwn_attr_version,
+>>>>>>> v4.9.227
 	NULL,
 };
 
 /* End items for tcm_loop_cit */
 
+<<<<<<< HEAD
 static int tcm_loop_register_configfs(void)
 {
 	struct target_fabric_configfs *fabric;
@@ -1528,6 +1799,43 @@ static void tcm_loop_deregister_configfs(void)
 	pr_debug("TCM_LOOP[0] - Cleared"
 				" tcm_loop_fabric_configfs\n");
 }
+=======
+static const struct target_core_fabric_ops loop_ops = {
+	.module				= THIS_MODULE,
+	.name				= "loopback",
+	.get_fabric_name		= tcm_loop_get_fabric_name,
+	.tpg_get_wwn			= tcm_loop_get_endpoint_wwn,
+	.tpg_get_tag			= tcm_loop_get_tag,
+	.tpg_check_demo_mode		= tcm_loop_check_demo_mode,
+	.tpg_check_demo_mode_cache	= tcm_loop_check_demo_mode_cache,
+	.tpg_check_demo_mode_write_protect =
+				tcm_loop_check_demo_mode_write_protect,
+	.tpg_check_prod_mode_write_protect =
+				tcm_loop_check_prod_mode_write_protect,
+	.tpg_check_prot_fabric_only	= tcm_loop_check_prot_fabric_only,
+	.tpg_get_inst_index		= tcm_loop_get_inst_index,
+	.check_stop_free		= tcm_loop_check_stop_free,
+	.release_cmd			= tcm_loop_release_cmd,
+	.sess_get_index			= tcm_loop_sess_get_index,
+	.write_pending			= tcm_loop_write_pending,
+	.write_pending_status		= tcm_loop_write_pending_status,
+	.set_default_node_attributes	= tcm_loop_set_default_node_attributes,
+	.get_cmd_state			= tcm_loop_get_cmd_state,
+	.queue_data_in			= tcm_loop_queue_data_in,
+	.queue_status			= tcm_loop_queue_status,
+	.queue_tm_rsp			= tcm_loop_queue_tm_rsp,
+	.aborted_task			= tcm_loop_aborted_task,
+	.fabric_make_wwn		= tcm_loop_make_scsi_hba,
+	.fabric_drop_wwn		= tcm_loop_drop_scsi_hba,
+	.fabric_make_tpg		= tcm_loop_make_naa_tpg,
+	.fabric_drop_tpg		= tcm_loop_drop_naa_tpg,
+	.fabric_post_link		= tcm_loop_port_link,
+	.fabric_pre_unlink		= tcm_loop_port_unlink,
+	.tfc_wwn_attrs			= tcm_loop_wwn_attrs,
+	.tfc_tpg_base_attrs		= tcm_loop_tpg_attrs,
+	.tfc_tpg_attrib_attrs		= tcm_loop_tpg_attrib_attrs,
+};
+>>>>>>> v4.9.227
 
 static int __init tcm_loop_fabric_init(void)
 {
@@ -1551,7 +1859,11 @@ static int __init tcm_loop_fabric_init(void)
 	if (ret)
 		goto out_destroy_cache;
 
+<<<<<<< HEAD
 	ret = tcm_loop_register_configfs();
+=======
+	ret = target_register_template(&loop_ops);
+>>>>>>> v4.9.227
 	if (ret)
 		goto out_release_core_bus;
 
@@ -1569,7 +1881,11 @@ out:
 
 static void __exit tcm_loop_fabric_exit(void)
 {
+<<<<<<< HEAD
 	tcm_loop_deregister_configfs();
+=======
+	target_unregister_template(&loop_ops);
+>>>>>>> v4.9.227
 	tcm_loop_release_core_bus();
 	kmem_cache_destroy(tcm_loop_cmd_cache);
 	destroy_workqueue(tcm_loop_workqueue);

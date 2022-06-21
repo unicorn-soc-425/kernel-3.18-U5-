@@ -65,7 +65,11 @@
  * - power management? (card can do voice wakeup according to datasheet!!)
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/gameport.h>
@@ -672,7 +676,11 @@ static int snd_als4000_capture_close(struct snd_pcm_substream *substream)
 
 /******************************************************************/
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_als4000_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_als4000_playback_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_als4000_playback_open,
 	.close =	snd_als4000_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -683,7 +691,11 @@ static struct snd_pcm_ops snd_als4000_playback_ops = {
 	.pointer =	snd_als4000_playback_pointer
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_als4000_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_als4000_capture_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_als4000_capture_open,
 	.close =	snd_als4000_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -871,8 +883,13 @@ static int snd_card_als4000_probe(struct pci_dev *pci,
 		return err;
 	}
 	/* check, if we can restrict PCI DMA transfers to 24 bits */
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(24)) < 0 ||
 	    pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(24)) < 0) {
+=======
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(24)) < 0 ||
+	    dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(24)) < 0) {
+>>>>>>> v4.9.227
 		dev_err(&pci->dev, "architecture does not support 24bit PCI busmaster DMA\n");
 		pci_disable_device(pci);
 		return -ENXIO;
@@ -988,7 +1005,10 @@ static void snd_card_als4000_remove(struct pci_dev *pci)
 #ifdef CONFIG_PM_SLEEP
 static int snd_als4000_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_card_als4000 *acard = card->private_data;
 	struct snd_sb *chip = acard->chip;
@@ -997,20 +1017,27 @@ static int snd_als4000_suspend(struct device *dev)
 	
 	snd_pcm_suspend_all(chip->pcm);
 	snd_sbmixer_suspend(chip);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int snd_als4000_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_card_als4000 *acard = card->private_data;
 	struct snd_sb *chip = acard->chip;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -1020,6 +1047,8 @@ static int snd_als4000_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> v4.9.227
 	snd_als4000_configure(chip);
 	snd_sbdsp_reset(chip);
 	snd_sbmixer_resume(chip);

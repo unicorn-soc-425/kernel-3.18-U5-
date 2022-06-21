@@ -87,10 +87,17 @@ static inline void tlb_finish_mmu(struct mmu_gather *tlb,
  * tlb_ptep_clear_flush. In both flush modes the tlb for a page cache page
  * has already been freed, so just do free_page_and_swap_cache.
  */
+<<<<<<< HEAD
 static inline int __tlb_remove_page(struct mmu_gather *tlb, struct page *page)
 {
 	free_page_and_swap_cache(page);
 	return 1; /* avoid calling tlb_flush_mmu */
+=======
+static inline bool __tlb_remove_page(struct mmu_gather *tlb, struct page *page)
+{
+	free_page_and_swap_cache(page);
+	return false; /* avoid calling tlb_flush_mmu */
+>>>>>>> v4.9.227
 }
 
 static inline void tlb_remove_page(struct mmu_gather *tlb, struct page *page)
@@ -98,6 +105,27 @@ static inline void tlb_remove_page(struct mmu_gather *tlb, struct page *page)
 	free_page_and_swap_cache(page);
 }
 
+<<<<<<< HEAD
+=======
+static inline bool __tlb_remove_page_size(struct mmu_gather *tlb,
+					  struct page *page, int page_size)
+{
+	return __tlb_remove_page(tlb, page);
+}
+
+static inline bool __tlb_remove_pte_page(struct mmu_gather *tlb,
+					 struct page *page)
+{
+	return __tlb_remove_page(tlb, page);
+}
+
+static inline void tlb_remove_page_size(struct mmu_gather *tlb,
+					struct page *page, int page_size)
+{
+	return tlb_remove_page(tlb, page);
+}
+
+>>>>>>> v4.9.227
 /*
  * pte_free_tlb frees a pte table and clears the CRSTE for the
  * page table from the tlb.
@@ -118,11 +146,18 @@ static inline void pte_free_tlb(struct mmu_gather *tlb, pgtable_t pte,
 static inline void pmd_free_tlb(struct mmu_gather *tlb, pmd_t *pmd,
 				unsigned long address)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 	if (tlb->mm->context.asce_limit <= (1UL << 31))
 		return;
 	tlb_remove_table(tlb, pmd);
 #endif
+=======
+	if (tlb->mm->context.asce_limit <= (1UL << 31))
+		return;
+	pgtable_pmd_page_dtor(virt_to_page(pmd));
+	tlb_remove_table(tlb, pmd);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -135,11 +170,17 @@ static inline void pmd_free_tlb(struct mmu_gather *tlb, pmd_t *pmd,
 static inline void pud_free_tlb(struct mmu_gather *tlb, pud_t *pud,
 				unsigned long address)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 	if (tlb->mm->context.asce_limit <= (1UL << 42))
 		return;
 	tlb_remove_table(tlb, pud);
 #endif
+=======
+	if (tlb->mm->context.asce_limit <= (1UL << 42))
+		return;
+	tlb_remove_table(tlb, pud);
+>>>>>>> v4.9.227
 }
 
 #define tlb_start_vma(tlb, vma)			do { } while (0)

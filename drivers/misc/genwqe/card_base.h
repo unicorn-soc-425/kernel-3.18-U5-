@@ -34,7 +34,10 @@
 #include <linux/semaphore.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/version.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 
@@ -405,7 +408,11 @@ struct genwqe_file {
 	struct file *filp;
 
 	struct fasync_struct *async_queue;
+<<<<<<< HEAD
 	struct task_struct *owner;
+=======
+	struct pid *opener;
+>>>>>>> v4.9.227
 	struct list_head list;		/* entry in list of open files */
 
 	spinlock_t map_lock;		/* lock for dma_mappings */
@@ -515,7 +522,11 @@ int  __genwqe_execute_ddcb(struct genwqe_dev *cd,
 /**
  * __genwqe_execute_raw_ddcb() - Execute DDCB request without addr translation
  *
+<<<<<<< HEAD
  * This version will not do address translation or any modifcation of
+=======
+ * This version will not do address translation or any modification of
+>>>>>>> v4.9.227
  * the DDCB data. It is used e.g. for the MoveFlash DDCB which is
  * entirely prepared by the driver itself. That means the appropriate
  * DMA addresses are already in the DDCB and do not need any

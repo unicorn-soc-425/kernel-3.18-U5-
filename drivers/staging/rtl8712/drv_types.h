@@ -11,10 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -23,11 +26,20 @@
  * Larry Finger <Larry.Finger@lwfinger.net>
  *
  ******************************************************************************/
+<<<<<<< HEAD
 /*---------------------------------------------------------------------
 
 	For type defines and data structure defines
 
 -----------------------------------------------------------------------*/
+=======
+/* ---------------------------------------------------------------------
+ *
+ *	For type defines and data structure defines
+ *
+ * ---------------------------------------------------------------------
+ */
+>>>>>>> v4.9.227
 #ifndef __DRV_TYPES_H__
 #define __DRV_TYPES_H__
 
@@ -129,8 +141,13 @@ struct dvobj_priv {
 	struct _adapter *padapter;
 	u32 nr_endpoint;
 	u8   ishighspeed;
+<<<<<<< HEAD
 	uint(*inirp_init)(struct _adapter *adapter);
 	uint(*inirp_deinit)(struct _adapter *adapter);
+=======
+	uint (*inirp_init)(struct _adapter *adapter);
+	uint (*inirp_deinit)(struct _adapter *adapter);
+>>>>>>> v4.9.227
 	struct usb_device *pusbdev;
 };
 
@@ -158,6 +175,10 @@ struct _adapter {
 	struct mp_priv  mppriv;
 	s32	bDriverStopped;
 	s32	bSurpriseRemoved;
+<<<<<<< HEAD
+=======
+	s32	bSuspended;
+>>>>>>> v4.9.227
 	u32	IsrContent;
 	u32	ImrContent;
 	u8	EepromAddressSize;
@@ -166,7 +187,11 @@ struct _adapter {
 	 pid_t evtThread;
 	struct task_struct *xmitThread;
 	pid_t recvThread;
+<<<<<<< HEAD
 	uint(*dvobj_init)(struct _adapter *adapter);
+=======
+	uint (*dvobj_init)(struct _adapter *adapter);
+>>>>>>> v4.9.227
 	void (*dvobj_deinit)(struct _adapter *adapter);
 	struct net_device *pnetdev;
 	int bup;

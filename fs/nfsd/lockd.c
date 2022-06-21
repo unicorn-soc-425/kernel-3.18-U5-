@@ -58,7 +58,11 @@ nlm_fclose(struct file *filp)
 	fput(filp);
 }
 
+<<<<<<< HEAD
 static struct nlmsvc_binding	nfsd_nlm_ops = {
+=======
+static const struct nlmsvc_binding nfsd_nlm_ops = {
+>>>>>>> v4.9.227
 	.fopen		= nlm_fopen,		/* open file for locking */
 	.fclose		= nlm_fclose,		/* close file */
 };

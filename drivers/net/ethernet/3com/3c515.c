@@ -992,7 +992,11 @@ static void corkscrew_timeout(struct net_device *dev)
 		if (!(inw(ioaddr + EL3_STATUS) & CmdInProgress))
 			break;
 	outw(TxEnable, ioaddr + EL3_CMD);
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	dev->stats.tx_errors++;
 	dev->stats.tx_dropped++;
 	netif_wake_queue(dev);

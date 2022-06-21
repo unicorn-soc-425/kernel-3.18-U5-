@@ -721,7 +721,10 @@ static int ab3100_regulators_probe(struct platform_device *pdev)
 static struct platform_driver ab3100_regulators_driver = {
 	.driver = {
 		.name  = "ab3100-regulators",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = ab3100_regulators_probe,
 	.remove = ab3100_regulators_remove,

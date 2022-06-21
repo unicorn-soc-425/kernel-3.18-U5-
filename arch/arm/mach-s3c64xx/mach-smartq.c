@@ -12,8 +12,15 @@
 #include <linux/delay.h>
 #include <linux/fb.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/platform_device.h>
+=======
+#include <linux/gpio/machine.h>
+#include <linux/init.h>
+#include <linux/platform_device.h>
+#include <linux/pwm.h>
+>>>>>>> v4.9.227
 #include <linux/pwm_backlight.h>
 #include <linux/serial_core.h>
 #include <linux/serial_s3c.h>
@@ -41,6 +48,10 @@
 #include <plat/samsung-time.h>
 
 #include "common.h"
+<<<<<<< HEAD
+=======
+#include "mach-smartq.h"
+>>>>>>> v4.9.227
 #include "regs-modem.h"
 
 #define UCON S3C2410_UCON_DEFAULT
@@ -139,6 +150,14 @@ static struct platform_device smartq_usb_otg_vbus_dev = {
 	.dev.platform_data	= &smartq_usb_otg_vbus_pdata,
 };
 
+<<<<<<< HEAD
+=======
+static struct pwm_lookup smartq_pwm_lookup[] = {
+	PWM_LOOKUP("samsung-pwm", 1, "pwm-backlight.0", NULL,
+		   1000000000 / (1000 * 20), PWM_POLARITY_NORMAL),
+};
+
+>>>>>>> v4.9.227
 static int smartq_bl_init(struct device *dev)
 {
     s3c_gpio_cfgpin(S3C64XX_GPF(15), S3C_GPIO_SFN(2));
@@ -147,10 +166,15 @@ static int smartq_bl_init(struct device *dev)
 }
 
 static struct platform_pwm_backlight_data smartq_backlight_data = {
+<<<<<<< HEAD
 	.pwm_id		= 1,
 	.max_brightness	= 1000,
 	.dft_brightness	= 600,
 	.pwm_period_ns	= 1000000000 / (1000 * 20),
+=======
+	.max_brightness	= 1000,
+	.dft_brightness	= 600,
+>>>>>>> v4.9.227
 	.enable_gpio	= -1,
 	.init		= smartq_bl_init,
 };
@@ -189,7 +213,11 @@ static struct s3c_hwmon_pdata smartq_hwmon_pdata __initdata = {
 	},
 };
 
+<<<<<<< HEAD
 static struct s3c_hsotg_plat smartq_hsotg_pdata;
+=======
+static struct dwc2_hsotg_plat smartq_hsotg_pdata;
+>>>>>>> v4.9.227
 
 static int __init smartq_lcd_setup_gpio(void)
 {
@@ -248,7 +276,10 @@ static struct platform_device *smartq_devices[] __initdata = {
 	&s3c_device_ohci,
 	&s3c_device_rtc,
 	&samsung_device_pwm,
+<<<<<<< HEAD
 	&s3c_device_ts,
+=======
+>>>>>>> v4.9.227
 	&s3c_device_usb_hsotg,
 	&s3c64xx_device_iis0,
 	&smartq_backlight_device,
@@ -379,6 +410,7 @@ void __init smartq_map_io(void)
 	smartq_lcd_mode_set();
 }
 
+<<<<<<< HEAD
 void __init smartq_machine_init(void)
 {
 	s3c_i2c0_set_platdata(NULL);
@@ -387,6 +419,25 @@ void __init smartq_machine_init(void)
 	s3c_sdhci1_set_platdata(&smartq_internal_hsmmc_pdata);
 	s3c_sdhci2_set_platdata(&smartq_internal_hsmmc_pdata);
 	s3c24xx_ts_set_platdata(&smartq_touchscreen_pdata);
+=======
+static struct gpiod_lookup_table smartq_audio_gpios = {
+	.dev_id = "smartq-audio",
+	.table = {
+		GPIO_LOOKUP("GPL", 12, "headphone detect", 0),
+		GPIO_LOOKUP("GPK", 12, "amplifiers shutdown", 0),
+		{ },
+	},
+};
+
+void __init smartq_machine_init(void)
+{
+	s3c_i2c0_set_platdata(NULL);
+	dwc2_hsotg_set_platdata(&smartq_hsotg_pdata);
+	s3c_hwmon_set_platdata(&smartq_hwmon_pdata);
+	s3c_sdhci1_set_platdata(&smartq_internal_hsmmc_pdata);
+	s3c_sdhci2_set_platdata(&smartq_internal_hsmmc_pdata);
+	s3c64xx_ts_set_platdata(&smartq_touchscreen_pdata);
+>>>>>>> v4.9.227
 
 	i2c_register_board_info(0, smartq_i2c_devs,
 				ARRAY_SIZE(smartq_i2c_devs));
@@ -396,5 +447,13 @@ void __init smartq_machine_init(void)
 	WARN_ON(smartq_usb_host_init());
 	WARN_ON(smartq_wifi_init());
 
+<<<<<<< HEAD
 	platform_add_devices(smartq_devices, ARRAY_SIZE(smartq_devices));
+=======
+	pwm_add_table(smartq_pwm_lookup, ARRAY_SIZE(smartq_pwm_lookup));
+	platform_add_devices(smartq_devices, ARRAY_SIZE(smartq_devices));
+
+	gpiod_add_lookup_table(&smartq_audio_gpios);
+	platform_device_register_simple("smartq-audio", -1, NULL, 0);
+>>>>>>> v4.9.227
 }

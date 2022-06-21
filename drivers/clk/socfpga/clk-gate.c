@@ -15,8 +15,12 @@
  * Based from clk-highbank.c
  *
  */
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/clkdev.h>
+=======
+#include <linux/slab.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/mfd/syscon.h>
@@ -32,14 +36,20 @@
 #define SOCFPGA_MMC_CLK			"sdmmc_clk"
 #define SOCFPGA_GPIO_DB_CLK_OFFSET	0xA8
 
+<<<<<<< HEAD
 #define streq(a, b) (strcmp((a), (b)) == 0)
 
+=======
+>>>>>>> v4.9.227
 #define to_socfpga_gate_clk(p) container_of(p, struct socfpga_gate_clk, hw.hw)
 
 /* SDMMC Group for System Manager defines */
 #define SYSMGR_SDMMCGRP_CTRL_OFFSET    0x108
+<<<<<<< HEAD
 #define SYSMGR_SDMMC_CTRL_SET(smplsel, drvsel) \
 	((((smplsel) & 0x7) << 3) | (((drvsel) & 0x7) << 0))
+=======
+>>>>>>> v4.9.227
 
 static u8 socfpga_clk_get_parent(struct clk_hw *hwclk)
 {
@@ -110,7 +120,11 @@ static unsigned long socfpga_clk_recalc_rate(struct clk_hw *hwclk,
 		div = socfpgaclk->fixed_div;
 	else if (socfpgaclk->div_reg) {
 		val = readl(socfpgaclk->div_reg) >> socfpgaclk->shift;
+<<<<<<< HEAD
 		val &= div_mask(socfpgaclk->width);
+=======
+		val &= GENMASK(socfpgaclk->width - 1, 0);
+>>>>>>> v4.9.227
 		/* Check for GPIO_DB_CLK by its offset */
 		if ((int) socfpgaclk->div_reg & SOCFPGA_GPIO_DB_CLK_OFFSET)
 			div = val + 1;
@@ -194,7 +208,10 @@ static void __init __socfpga_gate_init(struct device_node *node,
 	const char *parent_name[SOCFPGA_MAX_PARENTS];
 	struct clk_init_data init;
 	int rc;
+<<<<<<< HEAD
 	int i = 0;
+=======
+>>>>>>> v4.9.227
 
 	socfpga_clk = kzalloc(sizeof(*socfpga_clk), GFP_KERNEL);
 	if (WARN_ON(!socfpga_clk))
@@ -224,7 +241,11 @@ static void __init __socfpga_gate_init(struct device_node *node,
 		socfpga_clk->shift = div_reg[1];
 		socfpga_clk->width = div_reg[2];
 	} else {
+<<<<<<< HEAD
 		socfpga_clk->div_reg = 0;
+=======
+		socfpga_clk->div_reg = NULL;
+>>>>>>> v4.9.227
 	}
 
 	rc = of_property_read_u32_array(node, "clk-phase", clk_phase, 2);
@@ -238,12 +259,18 @@ static void __init __socfpga_gate_init(struct device_node *node,
 	init.name = clk_name;
 	init.ops = ops;
 	init.flags = 0;
+<<<<<<< HEAD
 	while (i < SOCFPGA_MAX_PARENTS && (parent_name[i] =
 			of_clk_get_parent_name(node, i)) != NULL)
 		i++;
 
 	init.parent_names = parent_name;
 	init.num_parents = i;
+=======
+
+	init.num_parents = of_clk_parent_fill(node, parent_name, SOCFPGA_MAX_PARENTS);
+	init.parent_names = parent_name;
+>>>>>>> v4.9.227
 	socfpga_clk->hw.hw.init = &init;
 
 	clk = clk_register(NULL, &socfpga_clk->hw.hw);

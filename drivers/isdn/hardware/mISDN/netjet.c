@@ -392,7 +392,11 @@ read_dma(struct tiger_ch *bc, u32 idx, int cnt)
 	}
 	stat = bchannel_get_rxbuf(&bc->bch, cnt);
 	/* only transparent use the count here, HDLC overun is detected later */
+<<<<<<< HEAD
 	if (stat == ENOMEM) {
+=======
+	if (stat == -ENOMEM) {
+>>>>>>> v4.9.227
 		pr_warning("%s.B%d: No memory for %d bytes\n",
 			   card->name, bc->bch.nr, cnt);
 		return;

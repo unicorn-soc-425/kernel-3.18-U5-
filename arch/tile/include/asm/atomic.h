@@ -34,7 +34,11 @@
  */
 static inline int atomic_read(const atomic_t *v)
 {
+<<<<<<< HEAD
 	return ACCESS_ONCE(v->counter);
+=======
+	return READ_ONCE(v->counter);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -46,6 +50,11 @@ static inline int atomic_read(const atomic_t *v)
  */
 #define atomic_sub_return(i, v)		atomic_add_return((int)(-(i)), (v))
 
+<<<<<<< HEAD
+=======
+#define atomic_fetch_sub(i, v)		atomic_fetch_add(-(int)(i), (v))
+
+>>>>>>> v4.9.227
 /**
  * atomic_sub - subtract integer from atomic variable
  * @i: integer value to subtract

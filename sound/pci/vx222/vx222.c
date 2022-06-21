@@ -259,6 +259,7 @@ static void snd_vx222_remove(struct pci_dev *pci)
 #ifdef CONFIG_PM_SLEEP
 static int snd_vx222_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_vx222 *vx = card->private_data;
@@ -269,10 +270,17 @@ static int snd_vx222_suspend(struct device *dev)
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
 	return err;
+=======
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_vx222 *vx = card->private_data;
+
+	return snd_vx_suspend(&vx->core);
+>>>>>>> v4.9.227
 }
 
 static int snd_vx222_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_vx222 *vx = card->private_data;
@@ -285,6 +293,11 @@ static int snd_vx222_resume(struct device *dev)
 		return -EIO;
 	}
 	pci_set_master(pci);
+=======
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_vx222 *vx = card->private_data;
+
+>>>>>>> v4.9.227
 	return snd_vx_resume(&vx->core);
 }
 

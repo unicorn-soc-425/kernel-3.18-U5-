@@ -15,10 +15,16 @@
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 
 #include "irqchip.h"
 
+=======
+#include <linux/irqchip.h>
+#include <linux/of.h>
+
+>>>>>>> v4.9.227
 unsigned int cached_irq_mask;
 
 /*
@@ -90,7 +96,11 @@ static struct irq_chip xtensa_irq_chip = {
 int __init xtensa_pic_init_legacy(struct device_node *interrupt_parent)
 {
 	struct irq_domain *root_domain =
+<<<<<<< HEAD
 		irq_domain_add_legacy(NULL, NR_IRQS, 0, 0,
+=======
+		irq_domain_add_legacy(NULL, NR_IRQS - 1, 1, 0,
+>>>>>>> v4.9.227
 				&xtensa_irq_domain_ops, &xtensa_irq_chip);
 	irq_set_default_host(root_domain);
 	return 0;

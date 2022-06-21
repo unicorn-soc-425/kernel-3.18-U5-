@@ -56,7 +56,11 @@ enum sis900_configuration_register_bits {
 	EDB_MASTER_EN = 0x00002000
 };
 
+<<<<<<< HEAD
 enum sis900_eeprom_access_reigster_bits {
+=======
+enum sis900_eeprom_access_register_bits {
+>>>>>>> v4.9.227
 	MDC  = 0x00000040, MDDIR = 0x00000020, MDIO = 0x00000010, /* 7016 specific */
 	EECS = 0x00000008, EECLK = 0x00000004, EEDO = 0x00000002,
 	EEDI = 0x00000001
@@ -73,7 +77,11 @@ enum sis900_interrupt_register_bits {
 	RxERR  = 0x00000004, RxDESC = 0x00000002, RxOK  = 0x00000001
 };
 
+<<<<<<< HEAD
 enum sis900_interrupt_enable_reigster_bits {
+=======
+enum sis900_interrupt_enable_register_bits {
+>>>>>>> v4.9.227
 	IE = 0x00000001
 };
 
@@ -310,7 +318,11 @@ enum sis630_revision_id {
 #define CRC_SIZE                4
 #define MAC_HEADER_SIZE         14
 
+<<<<<<< HEAD
 #if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
+=======
+#if IS_ENABLED(CONFIG_VLAN_8021Q)
+>>>>>>> v4.9.227
 #define MAX_FRAME_SIZE  (1518 + 4)
 #else
 #define MAX_FRAME_SIZE  1518

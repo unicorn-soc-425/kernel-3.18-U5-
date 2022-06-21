@@ -615,11 +615,17 @@ struct mtd_info *cfi_cmdset_0002(struct map_info *map, int primary)
 
 				for (i=0; i<cfi->cfiq->NumEraseRegions / 2; i++) {
 					int j = (cfi->cfiq->NumEraseRegions-1)-i;
+<<<<<<< HEAD
 					__u32 swap;
 
 					swap = cfi->cfiq->EraseRegionInfo[i];
 					cfi->cfiq->EraseRegionInfo[i] = cfi->cfiq->EraseRegionInfo[j];
 					cfi->cfiq->EraseRegionInfo[j] = swap;
+=======
+
+					swap(cfi->cfiq->EraseRegionInfo[i],
+					     cfi->cfiq->EraseRegionInfo[j]);
+>>>>>>> v4.9.227
 				}
 			}
 			/* Set the default CFI lock/unlock addresses */
@@ -1296,7 +1302,11 @@ static int do_otp_write(struct map_info *map, struct flchip *chip, loff_t adr,
 		unsigned long bus_ofs = adr & ~(map_bankwidth(map)-1);
 		int gap = adr - bus_ofs;
 		int n = min_t(int, len, map_bankwidth(map) - gap);
+<<<<<<< HEAD
 		map_word datum;
+=======
+		map_word datum = map_word_ff(map);
+>>>>>>> v4.9.227
 
 		if (n != map_bankwidth(map)) {
 			/* partial write of a word, load old contents */
@@ -1626,6 +1636,7 @@ static int __xipram do_write_oneword(struct map_info *map, struct flchip *chip,
 			continue;
 		}
 
+<<<<<<< HEAD
 		if (time_after(jiffies, timeo) && !chip_ready(map, adr)){
 			xip_enable(map, chip, adr);
 			printk(KERN_WARNING "MTD %s(): software timeout\n", __func__);
@@ -1634,21 +1645,49 @@ static int __xipram do_write_oneword(struct map_info *map, struct flchip *chip,
 		}
 
 		if (chip_ready(map, adr))
+=======
+		/*
+		 * We check "time_after" and "!chip_good" before checking
+		 * "chip_good" to avoid the failure due to scheduling.
+		 */
+		if (time_after(jiffies, timeo) && !chip_good(map, adr, datum)) {
+			xip_enable(map, chip, adr);
+			printk(KERN_WARNING "MTD %s(): software timeout\n", __func__);
+			xip_disable(map, chip, adr);
+			ret = -EIO;
+			break;
+		}
+
+		if (chip_good(map, adr, datum))
+>>>>>>> v4.9.227
 			break;
 
 		/* Latency issues. Drop the lock, wait a while and retry */
 		UDELAY(map, chip, adr, 1);
 	}
+<<<<<<< HEAD
 	/* Did we succeed? */
 	if (!chip_good(map, adr, datum)) {
+=======
+
+	/* Did we succeed? */
+	if (ret) {
+>>>>>>> v4.9.227
 		/* reset on all failures. */
 		map_write( map, CMD(0xF0), chip->start );
 		/* FIXME - should have reset delay before continuing */
 
+<<<<<<< HEAD
 		if (++retry_cnt <= MAX_RETRIES)
 			goto retry;
 
 		ret = -EIO;
+=======
+		if (++retry_cnt <= MAX_RETRIES) {
+			ret = 0;
+			goto retry;
+		}
+>>>>>>> v4.9.227
 	}
 	xip_enable(map, chip, adr);
  op_done:
@@ -1875,7 +1914,15 @@ static int __xipram do_write_buffer(struct map_info *map, struct flchip *chip,
 			continue;
 		}
 
+<<<<<<< HEAD
 		if (time_after(jiffies, timeo) && !chip_ready(map, adr))
+=======
+		/*
+		 * We check "time_after" and "!chip_good" before checking "chip_good" to avoid
+		 * the failure due to scheduling.
+		 */
+		if (time_after(jiffies, timeo) && !chip_good(map, adr, datum))
+>>>>>>> v4.9.227
 			break;
 
 		if (chip_good(map, adr, datum)) {

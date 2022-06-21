@@ -29,6 +29,11 @@ struct cpuidle_monitor *all_monitors[] = {
 0
 };
 
+<<<<<<< HEAD
+=======
+int cpu_count;
+
+>>>>>>> v4.9.227
 static struct cpuidle_monitor *monitors[MONITORS_MAX];
 static unsigned int avail_monitors;
 
@@ -143,6 +148,12 @@ void print_results(int topology_depth, int cpu)
 	/* Be careful CPUs may got resorted for pkg value do not just use cpu */
 	if (!bitmask_isbitset(cpus_chosen, cpu_top.core_info[cpu].cpu))
 		return;
+<<<<<<< HEAD
+=======
+	if (!cpu_top.core_info[cpu].is_online &&
+	    cpu_top.core_info[cpu].pkg == -1)
+		return;
+>>>>>>> v4.9.227
 
 	if (topology_depth > 2)
 		printf("%4d|", cpu_top.core_info[cpu].pkg);
@@ -191,7 +202,12 @@ void print_results(int topology_depth, int cpu)
 	 * It's up to the monitor plug-in to check .is_online, this one
 	 * is just for additional info.
 	 */
+<<<<<<< HEAD
 	if (!cpu_top.core_info[cpu].is_online) {
+=======
+	if (!cpu_top.core_info[cpu].is_online &&
+	    cpu_top.core_info[cpu].pkg != -1) {
+>>>>>>> v4.9.227
 		printf(_(" *is offline\n"));
 		return;
 	} else
@@ -388,6 +404,12 @@ int cmd_monitor(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!cpu_top.core_info[0].is_online)
+		printf("WARNING: at least one cpu is offline\n");
+
+>>>>>>> v4.9.227
 	/* Default is: monitor all CPUs */
 	if (bitmask_isallclear(cpus_chosen))
 		bitmask_setall(cpus_chosen);

@@ -9,8 +9,11 @@
 #ifndef _ASM_S390_PERF_EVENT_H
 #define _ASM_S390_PERF_EVENT_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 
+=======
+>>>>>>> v4.9.227
 #include <linux/perf_event.h>
 #include <linux/device.h>
 #include <asm/cpu_mf.h>
@@ -23,7 +26,11 @@
 #define PMU_F_ERR_LSDA			0x0200
 #define PMU_F_ERR_MASK			(PMU_F_ERR_IBE|PMU_F_ERR_LSDA)
 
+<<<<<<< HEAD
 /* Perf defintions for PMU event attributes in sysfs */
+=======
+/* Perf definitions for PMU event attributes in sysfs */
+>>>>>>> v4.9.227
 extern __init const struct attribute_group **cpumf_cf_event_group(void);
 extern ssize_t cpumf_events_sysfs_show(struct device *dev,
 				       struct device_attribute *attr,
@@ -88,9 +95,12 @@ struct sf_raw_sample {
 	u8		    padding[];	  /* Padding to next multiple of 8 */
 } __packed;
 
+<<<<<<< HEAD
 /* Perf hardware reserve and release functions */
 int perf_reserve_sampling(void);
 void perf_release_sampling(void);
 
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 #endif /* _ASM_S390_PERF_EVENT_H */

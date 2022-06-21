@@ -25,6 +25,7 @@
 #include "pvrusb2-hdw-internal.h"
 void pvr2_msp3400_subdev_update(struct pvr2_hdw *, struct v4l2_subdev *);
 #endif /* __PVRUSB2_AUDIO_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -35,3 +36,5 @@ void pvr2_msp3400_subdev_update(struct pvr2_hdw *, struct v4l2_subdev *);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

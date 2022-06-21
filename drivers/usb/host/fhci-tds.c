@@ -85,7 +85,11 @@ static struct usb_td __iomem *next_bd(struct usb_td __iomem *base,
 
 void fhci_push_dummy_bd(struct endpoint *ep)
 {
+<<<<<<< HEAD
 	if (ep->already_pushed_dummy_bd == false) {
+=======
+	if (!ep->already_pushed_dummy_bd) {
+>>>>>>> v4.9.227
 		u16 td_status = in_be16(&ep->empty_td->status);
 
 		out_be32(&ep->empty_td->buf_ptr, DUMMY_BD_BUFFER);

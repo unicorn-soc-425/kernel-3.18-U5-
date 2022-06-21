@@ -73,11 +73,19 @@ EXPORT_SYMBOL_GPL(rds_trans_unregister);
 
 void rds_trans_put(struct rds_transport *trans)
 {
+<<<<<<< HEAD
 	if (trans && trans->t_owner)
 		module_put(trans->t_owner);
 }
 
 struct rds_transport *rds_trans_get_preferred(__be32 addr)
+=======
+	if (trans)
+		module_put(trans->t_owner);
+}
+
+struct rds_transport *rds_trans_get_preferred(struct net *net, __be32 addr)
+>>>>>>> v4.9.227
 {
 	struct rds_transport *ret = NULL;
 	struct rds_transport *trans;
@@ -90,7 +98,32 @@ struct rds_transport *rds_trans_get_preferred(__be32 addr)
 	for (i = 0; i < RDS_TRANS_COUNT; i++) {
 		trans = transports[i];
 
+<<<<<<< HEAD
 		if (trans && (trans->laddr_check(addr) == 0) &&
+=======
+		if (trans && (trans->laddr_check(net, addr) == 0) &&
+		    (!trans->t_owner || try_module_get(trans->t_owner))) {
+			ret = trans;
+			break;
+		}
+	}
+	up_read(&rds_trans_sem);
+
+	return ret;
+}
+
+struct rds_transport *rds_trans_get(int t_type)
+{
+	struct rds_transport *ret = NULL;
+	struct rds_transport *trans;
+	unsigned int i;
+
+	down_read(&rds_trans_sem);
+	for (i = 0; i < RDS_TRANS_COUNT; i++) {
+		trans = transports[i];
+
+		if (trans && trans->t_type == t_type &&
+>>>>>>> v4.9.227
 		    (!trans->t_owner || try_module_get(trans->t_owner))) {
 			ret = trans;
 			break;
@@ -119,8 +152,12 @@ unsigned int rds_trans_stats_info_copy(struct rds_info_iterator *iter,
 	rds_info_iter_unmap(iter);
 	down_read(&rds_trans_sem);
 
+<<<<<<< HEAD
 	for (i = 0; i < RDS_TRANS_COUNT; i++)
 	{
+=======
+	for (i = 0; i < RDS_TRANS_COUNT; i++) {
+>>>>>>> v4.9.227
 		trans = transports[i];
 		if (!trans || !trans->stats_info_copy)
 			continue;

@@ -3,7 +3,11 @@ config SIBYTE_SB1250
 	select CEVT_SB1250
 	select CSRC_SB1250
 	select HW_HAS_PCI
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select SIBYTE_ENABLE_LDT_IF_PCI
 	select SIBYTE_HAS_ZBUS_PROFILING
 	select SIBYTE_SB1xxx_SOC
@@ -13,7 +17,11 @@ config SIBYTE_BCM1120
 	bool
 	select CEVT_SB1250
 	select CSRC_SB1250
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select SIBYTE_BCM112X
 	select SIBYTE_HAS_ZBUS_PROFILING
 	select SIBYTE_SB1xxx_SOC
@@ -23,7 +31,11 @@ config SIBYTE_BCM1125
 	select CEVT_SB1250
 	select CSRC_SB1250
 	select HW_HAS_PCI
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select SIBYTE_BCM112X
 	select SIBYTE_HAS_ZBUS_PROFILING
 	select SIBYTE_SB1xxx_SOC
@@ -33,7 +45,11 @@ config SIBYTE_BCM1125H
 	select CEVT_SB1250
 	select CSRC_SB1250
 	select HW_HAS_PCI
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select SIBYTE_BCM112X
 	select SIBYTE_ENABLE_LDT_IF_PCI
 	select SIBYTE_HAS_ZBUS_PROFILING
@@ -43,7 +59,11 @@ config SIBYTE_BCM112X
 	bool
 	select CEVT_SB1250
 	select CSRC_SB1250
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select SIBYTE_SB1xxx_SOC
 	select SIBYTE_HAS_ZBUS_PROFILING
 
@@ -52,7 +72,11 @@ config SIBYTE_BCM1x80
 	select CEVT_BCM1480
 	select CSRC_BCM1480
 	select HW_HAS_PCI
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select SIBYTE_HAS_ZBUS_PROFILING
 	select SIBYTE_SB1xxx_SOC
 	select SYS_SUPPORTS_SMP
@@ -62,7 +86,11 @@ config SIBYTE_BCM1x55
 	select CEVT_BCM1480
 	select CSRC_BCM1480
 	select HW_HAS_PCI
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select SIBYTE_SB1xxx_SOC
 	select SIBYTE_HAS_ZBUS_PROFILING
 	select SYS_SUPPORTS_SMP
@@ -70,7 +98,11 @@ config SIBYTE_BCM1x55
 config SIBYTE_SB1xxx_SOC
 	bool
 	select DMA_COHERENT
+<<<<<<< HEAD
 	select IRQ_CPU
+=======
+	select IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 	select SWAP_IO_SPACE
 	select SYS_SUPPORTS_32BIT_KERNEL
 	select SYS_SUPPORTS_64BIT_KERNEL
@@ -81,11 +113,14 @@ choice
 	prompt "SiByte SOC Stepping"
 	depends on SIBYTE_SB1xxx_SOC
 
+<<<<<<< HEAD
 config CPU_SB1_PASS_1
 	bool "1250 Pass1"
 	depends on SIBYTE_SB1250
 	select CPU_HAS_PREFETCH
 
+=======
+>>>>>>> v4.9.227
 config CPU_SB1_PASS_2_1250
 	bool "1250 An"
 	depends on SIBYTE_SB1250
@@ -148,7 +183,12 @@ config SIBYTE_CFE_CONSOLE
 config SIBYTE_BUS_WATCHER
 	bool "Support for Bus Watcher statistics"
 	depends on SIBYTE_SB1xxx_SOC && \
+<<<<<<< HEAD
 		(SIBYTE_BCM112X || SIBYTE_SB1250)
+=======
+		(SIBYTE_BCM112X || SIBYTE_SB1250 || \
+		 SIBYTE_BCM1x55 || SIBYTE_BCM1x80)
+>>>>>>> v4.9.227
 	help
 	  Handle and keep statistics on the bus error interrupts (COR_ECC,
 	  BAD_ECC, IO_BUS).

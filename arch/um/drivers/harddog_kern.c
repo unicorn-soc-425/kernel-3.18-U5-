@@ -175,6 +175,7 @@ static struct miscdevice harddog_miscdev = {
 	.name		= "watchdog",
 	.fops		= &harddog_fops,
 };
+<<<<<<< HEAD
 
 static char banner[] __initdata = KERN_INFO "UML Watchdog Timer\n";
 
@@ -199,3 +200,6 @@ static void __exit harddog_exit(void)
 
 module_init(harddog_init);
 module_exit(harddog_exit);
+=======
+module_misc_device(harddog_miscdev);
+>>>>>>> v4.9.227

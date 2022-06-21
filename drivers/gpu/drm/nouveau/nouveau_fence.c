@@ -30,10 +30,18 @@
 #include <linux/hrtimer.h>
 #include <trace/events/fence.h>
 
+<<<<<<< HEAD
 #include <nvif/notify.h>
 #include <nvif/event.h>
 
 #include "nouveau_drm.h"
+=======
+#include <nvif/cl826e.h>
+#include <nvif/notify.h>
+#include <nvif/event.h>
+
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 #include "nouveau_fence.h"
 
@@ -157,7 +165,11 @@ nouveau_fence_wait_uevent_handler(struct nvif_notify *notify)
 
 		fence = list_entry(fctx->pending.next, typeof(*fence), head);
 		chan = rcu_dereference_protected(fence->channel, lockdep_is_held(&fctx->lock));
+<<<<<<< HEAD
 		if (nouveau_fence_update(fence->channel, fctx))
+=======
+		if (nouveau_fence_update(chan, fctx))
+>>>>>>> v4.9.227
 			ret = NVIF_NOTIFY_DROP;
 	}
 	spin_unlock_irqrestore(&fctx->lock, flags);

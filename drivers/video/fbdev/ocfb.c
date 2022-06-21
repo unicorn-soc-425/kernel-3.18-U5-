@@ -61,7 +61,11 @@ struct ocfb_dev {
 	/* flag indicating whether the regs are little endian accessed */
 	int little_endian;
 	/* Physical and virtual addresses of framebuffer */
+<<<<<<< HEAD
 	phys_addr_t fb_phys;
+=======
+	dma_addr_t fb_phys;
+>>>>>>> v4.9.227
 	void __iomem *fb_virt;
 	u32 pseudo_palette[PALETTE_SIZE];
 };
@@ -123,11 +127,19 @@ static int ocfb_setupfb(struct ocfb_dev *fbdev)
 
 	/* Horizontal timings */
 	ocfb_writereg(fbdev, OCFB_HTIM, (var->hsync_len - 1) << 24 |
+<<<<<<< HEAD
 		      (var->right_margin - 1) << 16 | (var->xres - 1));
 
 	/* Vertical timings */
 	ocfb_writereg(fbdev, OCFB_VTIM, (var->vsync_len - 1) << 24 |
 		      (var->lower_margin - 1) << 16 | (var->yres - 1));
+=======
+		      (var->left_margin - 1) << 16 | (var->xres - 1));
+
+	/* Vertical timings */
+	ocfb_writereg(fbdev, OCFB_VTIM, (var->vsync_len - 1) << 24 |
+		      (var->upper_margin - 1) << 16 | (var->yres - 1));
+>>>>>>> v4.9.227
 
 	/* Total length of frame */
 	hlen = var->left_margin + var->right_margin + var->hsync_len +
@@ -325,7 +337,10 @@ static int ocfb_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "I/O resource request failed\n");
 		return -ENXIO;
 	}
+<<<<<<< HEAD
 	res->flags &= ~IORESOURCE_CACHEABLE;
+=======
+>>>>>>> v4.9.227
 	fbdev->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(fbdev->regs))
 		return PTR_ERR(fbdev->regs);

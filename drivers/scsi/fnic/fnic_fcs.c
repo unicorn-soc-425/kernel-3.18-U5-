@@ -135,6 +135,14 @@ void fnic_handle_link(struct work_struct *work)
 			fnic->lport->host->host_no, FNIC_FC_LE,
 			"Link Status: UP_DOWN",
 			strlen("Link Status: UP_DOWN"));
+<<<<<<< HEAD
+=======
+		if (fnic->config.flags & VFCF_FIP_CAPABLE) {
+			FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host,
+				"deleting fip-timer during link-down\n");
+			del_timer_sync(&fnic->fip_timer);
+		}
+>>>>>>> v4.9.227
 		fcoe_ctlr_link_down(&fnic->ctlr);
 	}
 
@@ -354,7 +362,11 @@ static void fnic_fcoe_send_vlan_req(struct fnic *fnic)
 
 	vlan->fip.fip_ver = FIP_VER_ENCAPS(FIP_VER);
 	vlan->fip.fip_op = htons(FIP_OP_VLAN);
+<<<<<<< HEAD
 	vlan->fip.fip_subcode = FIP_SC_VL_REQ;
+=======
+	vlan->fip.fip_subcode = FIP_SC_VL_NOTE;
+>>>>>>> v4.9.227
 	vlan->fip.fip_dl_len = htons(sizeof(vlan->desc) / FIP_BPW);
 
 	vlan->desc.mac.fd_desc.fip_dtype = FIP_DT_MAC;
@@ -546,7 +558,11 @@ static int fnic_fcoe_handle_fip_frame(struct fnic *fnic, struct sk_buff *skb)
 			goto drop;
 		/* pass it on to fcoe */
 		ret = 1;
+<<<<<<< HEAD
 	} else if (op == FIP_OP_VLAN && sub == FIP_SC_VL_REP) {
+=======
+	} else if (op == FIP_OP_VLAN && sub == FIP_SC_VL_NOTE) {
+>>>>>>> v4.9.227
 		/* set the vlan as used */
 		fnic_fcoe_process_vlan_resp(fnic, skb);
 		ret = 0;
@@ -934,6 +950,10 @@ int fnic_alloc_rq_frame(struct vnic_rq *rq)
 	struct sk_buff *skb;
 	u16 len;
 	dma_addr_t pa;
+<<<<<<< HEAD
+=======
+	int r;
+>>>>>>> v4.9.227
 
 	len = FC_FRAME_HEADROOM + FC_MAX_FRAME + FC_FRAME_TAILROOM;
 	skb = dev_alloc_skb(len);
@@ -947,8 +967,24 @@ int fnic_alloc_rq_frame(struct vnic_rq *rq)
 	skb_reset_network_header(skb);
 	skb_put(skb, len);
 	pa = pci_map_single(fnic->pdev, skb->data, len, PCI_DMA_FROMDEVICE);
+<<<<<<< HEAD
 	fnic_queue_rq_desc(rq, skb, pa, len);
 	return 0;
+=======
+
+	if (pci_dma_mapping_error(fnic->pdev, pa)) {
+		r = -ENOMEM;
+		printk(KERN_ERR "PCI mapping failed with error %d\n", r);
+		goto free_skb;
+	}
+
+	fnic_queue_rq_desc(rq, skb, pa, len);
+	return 0;
+
+free_skb:
+	kfree_skb(skb);
+	return r;
+>>>>>>> v4.9.227
 }
 
 void fnic_free_rq_buf(struct vnic_rq *rq, struct vnic_rq_buf *buf)
@@ -976,6 +1012,10 @@ void fnic_eth_send(struct fcoe_ctlr *fip, struct sk_buff *skb)
 	struct ethhdr *eth_hdr;
 	struct vlan_ethhdr *vlan_hdr;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	int r;
+>>>>>>> v4.9.227
 
 	if (!fnic->vlan_hw_insert) {
 		eth_hdr = (struct ethhdr *)skb_mac_header(skb);
@@ -998,6 +1038,7 @@ void fnic_eth_send(struct fcoe_ctlr *fip, struct sk_buff *skb)
 
 	pa = pci_map_single(fnic->pdev, skb->data, skb->len, PCI_DMA_TODEVICE);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&fnic->wq_lock[0], flags);
 	if (!vnic_wq_desc_avail(wq)) {
 		pci_unmap_single(fnic->pdev, pa, skb->len, PCI_DMA_TODEVICE);
@@ -1006,10 +1047,32 @@ void fnic_eth_send(struct fcoe_ctlr *fip, struct sk_buff *skb)
 		return;
 	}
 
+=======
+	r = pci_dma_mapping_error(fnic->pdev, pa);
+	if (r) {
+		printk(KERN_ERR "PCI mapping failed with error %d\n", r);
+		goto free_skb;
+	}
+
+	spin_lock_irqsave(&fnic->wq_lock[0], flags);
+	if (!vnic_wq_desc_avail(wq))
+		goto irq_restore;
+
+>>>>>>> v4.9.227
 	fnic_queue_wq_eth_desc(wq, skb, pa, skb->len,
 			       0 /* hw inserts cos value */,
 			       fnic->vlan_id, 1);
 	spin_unlock_irqrestore(&fnic->wq_lock[0], flags);
+<<<<<<< HEAD
+=======
+	return;
+
+irq_restore:
+	spin_unlock_irqrestore(&fnic->wq_lock[0], flags);
+	pci_unmap_single(fnic->pdev, pa, skb->len, PCI_DMA_TODEVICE);
+free_skb:
+	kfree_skb(skb);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1066,6 +1129,15 @@ static int fnic_send_frame(struct fnic *fnic, struct fc_frame *fp)
 
 	pa = pci_map_single(fnic->pdev, eth_hdr, tot_len, PCI_DMA_TODEVICE);
 
+<<<<<<< HEAD
+=======
+	if (pci_dma_mapping_error(fnic->pdev, pa)) {
+		ret = -ENOMEM;
+		printk(KERN_ERR "DMA map failed with error %d\n", ret);
+		goto free_skb_on_err;
+	}
+
+>>>>>>> v4.9.227
 	if ((fnic_fc_trace_set_data(fnic->lport->host->host_no, FNIC_FC_SEND,
 				(char *)eth_hdr, tot_len)) != 0) {
 		printk(KERN_ERR "fnic ctlr frame trace error!!!");
@@ -1077,15 +1149,27 @@ static int fnic_send_frame(struct fnic *fnic, struct fc_frame *fp)
 		pci_unmap_single(fnic->pdev, pa,
 				 tot_len, PCI_DMA_TODEVICE);
 		ret = -1;
+<<<<<<< HEAD
 		goto fnic_send_frame_end;
+=======
+		goto irq_restore;
+>>>>>>> v4.9.227
 	}
 
 	fnic_queue_wq_desc(wq, skb, pa, tot_len, fr_eof(fp),
 			   0 /* hw inserts cos value */,
 			   fnic->vlan_id, 1, 1, 1);
+<<<<<<< HEAD
 fnic_send_frame_end:
 	spin_unlock_irqrestore(&fnic->wq_lock[0], flags);
 
+=======
+
+irq_restore:
+	spin_unlock_irqrestore(&fnic->wq_lock[0], flags);
+
+free_skb_on_err:
+>>>>>>> v4.9.227
 	if (ret)
 		dev_kfree_skb_any(fp_skb(fp));
 
@@ -1273,7 +1357,11 @@ void fnic_handle_fip_timer(struct fnic *fnic)
 	}
 	spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 
+<<<<<<< HEAD
 	if (fnic->ctlr.mode == FIP_ST_NON_FIP)
+=======
+	if (fnic->ctlr.mode == FIP_MODE_NON_FIP)
+>>>>>>> v4.9.227
 		return;
 
 	spin_lock_irqsave(&fnic->vlans_lock, flags);

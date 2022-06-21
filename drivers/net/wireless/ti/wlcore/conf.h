@@ -110,6 +110,7 @@ enum {
 	CONF_SG_OPPORTUNISTIC
 };
 
+<<<<<<< HEAD
 enum {
 	/*
 	 * Configure the min and max time BT gains the antenna
@@ -346,6 +347,13 @@ enum {
 
 struct conf_sg_settings {
 	u32 params[CONF_SG_PARAMS_MAX];
+=======
+#define WLCORE_CONF_SG_PARAMS_MAX 67
+#define WLCORE_CONF_SG_PARAMS_ALL 0xff
+
+struct conf_sg_settings {
+	u32 params[WLCORE_CONF_SG_PARAMS_MAX];
+>>>>>>> v4.9.227
 	u8 state;
 } __packed;
 
@@ -997,6 +1005,14 @@ struct conf_conn_settings {
 	 * whether we can go to ELP.
 	 */
 	u8 sta_sleep_auth;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Default RX BA Activity filter configuration
+	 */
+	u8 suspend_rx_ba_activity;
+>>>>>>> v4.9.227
 } __packed;
 
 enum {
@@ -1181,6 +1197,18 @@ struct conf_sched_scan_settings {
 
 	/* SNR threshold to be used for filtering */
 	s8 snr_threshold;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * number of short intervals scheduled scan cycles before
+	 * switching to long intervals
+	 */
+	u8 num_short_intervals;
+
+	/* interval between each long scheduled scan cycle (in ms) */
+	u16 long_interval;
+>>>>>>> v4.9.227
 } __packed;
 
 struct conf_ht_setting {
@@ -1347,7 +1375,11 @@ struct conf_recovery_settings {
  * version, the two LSB are the lower driver's private conf
  * version.
  */
+<<<<<<< HEAD
 #define WLCORE_CONF_VERSION	(0x0005 << 16)
+=======
+#define WLCORE_CONF_VERSION	(0x0007 << 16)
+>>>>>>> v4.9.227
 #define WLCORE_CONF_MASK	0xffff0000
 #define WLCORE_CONF_SIZE	(sizeof(struct wlcore_conf_header) +	\
 				 sizeof(struct wlcore_conf))

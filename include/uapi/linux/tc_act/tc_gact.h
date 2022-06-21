@@ -25,6 +25,10 @@ enum {
 	TCA_GACT_TM,
 	TCA_GACT_PARMS,
 	TCA_GACT_PROB,
+<<<<<<< HEAD
+=======
+	TCA_GACT_PAD,
+>>>>>>> v4.9.227
 	__TCA_GACT_MAX
 };
 #define TCA_GACT_MAX (__TCA_GACT_MAX - 1)

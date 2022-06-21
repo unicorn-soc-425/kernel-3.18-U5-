@@ -60,6 +60,7 @@
 #define FX2CMD_ONAIR_DTV_POWER_OFF     0xa3u
 
 #endif /* _PVRUSB2_FX2_CMD_H_ */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -70,3 +71,5 @@
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

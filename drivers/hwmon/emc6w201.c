@@ -464,7 +464,11 @@ static int emc6w201_detect(struct i2c_client *client,
 	if (verstep < 0 || (verstep & 0xF0) != 0xB0)
 		return -ENODEV;
 	if ((verstep & 0x0F) > 2) {
+<<<<<<< HEAD
 		dev_dbg(&client->dev, "Unknwown EMC6W201 stepping %d\n",
+=======
+		dev_dbg(&client->dev, "Unknown EMC6W201 stepping %d\n",
+>>>>>>> v4.9.227
 			verstep & 0x0F);
 		return -ENODEV;
 	}

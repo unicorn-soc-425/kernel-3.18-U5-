@@ -18,6 +18,7 @@
 #include <linux/mm.h>
 #include <asm/machdep.h>
 
+<<<<<<< HEAD
 static void invalidate_old_hpte(unsigned long vsid, unsigned long addr,
 				pmd_t *pmdp, unsigned int psize, int ssize)
 {
@@ -72,6 +73,11 @@ static void invalidate_old_hpte(unsigned long vsid, unsigned long addr,
 int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 		    pmd_t *pmdp, unsigned long trap, int local, int ssize,
 		    unsigned int psize)
+=======
+int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
+		    pmd_t *pmdp, unsigned long trap, unsigned long flags,
+		    int ssize, unsigned int psize)
+>>>>>>> v4.9.227
 {
 	unsigned int index, valid;
 	unsigned char *hpte_slot_array;
@@ -84,6 +90,7 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 	 * atomically mark the linux large page PMD busy and dirty
 	 */
 	do {
+<<<<<<< HEAD
 		pmd_t pmd = ACCESS_ONCE(*pmdp);
 
 		old_pmd = pmd_val(pmd);
@@ -95,11 +102,22 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 			return 0;
 		/* If PMD permissions don't match, take page fault */
 		if (unlikely(access & ~old_pmd))
+=======
+		pmd_t pmd = READ_ONCE(*pmdp);
+
+		old_pmd = pmd_val(pmd);
+		/* If PMD busy, retry the access */
+		if (unlikely(old_pmd & H_PAGE_BUSY))
+			return 0;
+		/* If PMD permissions don't match, take page fault */
+		if (unlikely(!check_pte_access(access, old_pmd)))
+>>>>>>> v4.9.227
 			return 1;
 		/*
 		 * Try to lock the PTE, add ACCESSED and DIRTY if it was
 		 * a write access
 		 */
+<<<<<<< HEAD
 		new_pmd = old_pmd | _PAGE_BUSY | _PAGE_ACCESSED;
 		if (access & _PAGE_RW)
 			new_pmd |= _PAGE_DIRTY;
@@ -117,6 +135,14 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 	 * _PAGE_EXEC -> HW_NO_EXEC since it's inverted
 	 */
 	rflags |= ((new_pmd & _PAGE_EXEC) ? 0 : HPTE_R_N);
+=======
+		new_pmd = old_pmd | H_PAGE_BUSY | _PAGE_ACCESSED;
+		if (access & _PAGE_WRITE)
+			new_pmd |= _PAGE_DIRTY;
+	} while (!pmd_xchg(pmdp, __pmd(old_pmd), __pmd(new_pmd)));
+
+	rflags = htab_convert_pte_flags(new_pmd);
+>>>>>>> v4.9.227
 
 #if 0
 	if (!cpu_has_feature(CPU_FTR_COHERENT_ICACHE)) {
@@ -133,7 +159,11 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 	 */
 	shift = mmu_psize_defs[psize].shift;
 	index = (ea & ~HPAGE_PMD_MASK) >> shift;
+<<<<<<< HEAD
 	BUG_ON(index >= 4096);
+=======
+	BUG_ON(index >= PTE_FRAG_SIZE);
+>>>>>>> v4.9.227
 
 	vpn = hpt_vpn(ea, vsid, ssize);
 	hpte_slot_array = get_hpte_slot_array(pmdp);
@@ -143,8 +173,24 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 		 * base page size. This is because demote_segment won't flush
 		 * hash page table entries.
 		 */
+<<<<<<< HEAD
 		if ((old_pmd & _PAGE_HASHPTE) && !(old_pmd & _PAGE_COMBO))
 			invalidate_old_hpte(vsid, ea, pmdp, MMU_PAGE_64K, ssize);
+=======
+		if ((old_pmd & H_PAGE_HASHPTE) && !(old_pmd & H_PAGE_COMBO)) {
+			flush_hash_hugepage(vsid, ea, pmdp, MMU_PAGE_64K,
+					    ssize, flags);
+			/*
+			 * With THP, we also clear the slot information with
+			 * respect to all the 64K hash pte mapping the 16MB
+			 * page. They are all invalid now. This make sure we
+			 * don't find the slot valid when we fault with 4k
+			 * base page size.
+			 *
+			 */
+			memset(hpte_slot_array, 0, PTE_FRAG_SIZE);
+		}
+>>>>>>> v4.9.227
 	}
 
 	valid = hpte_valid(hpte_slot_array, index);
@@ -157,8 +203,13 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 		slot = (hash & htab_hash_mask) * HPTES_PER_GROUP;
 		slot += hidx & _PTEIDX_GROUP_IX;
 
+<<<<<<< HEAD
 		ret = ppc_md.hpte_updatepp(slot, rflags, vpn,
 					   psize, lpsize, ssize, local);
+=======
+		ret = mmu_hash_ops.hpte_updatepp(slot, rflags, vpn,
+						 psize, lpsize, ssize, flags);
+>>>>>>> v4.9.227
 		/*
 		 * We failed to update, try to insert a new entry.
 		 */
@@ -179,6 +230,7 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 		hash = hpt_hash(vpn, shift, ssize);
 		/* insert new entry */
 		pa = pmd_pfn(__pmd(old_pmd)) << PAGE_SHIFT;
+<<<<<<< HEAD
 		new_pmd |= _PAGE_HASHPTE;
 
 		/* Add in WIMG bits */
@@ -188,27 +240,47 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 		 * enable the memory coherence always
 		 */
 		rflags |= HPTE_R_M;
+=======
+		new_pmd |= H_PAGE_HASHPTE;
+
+>>>>>>> v4.9.227
 repeat:
 		hpte_group = ((hash & htab_hash_mask) * HPTES_PER_GROUP) & ~0x7UL;
 
 		/* Insert into the hash table, primary slot */
+<<<<<<< HEAD
 		slot = ppc_md.hpte_insert(hpte_group, vpn, pa, rflags, 0,
 					  psize, lpsize, ssize);
+=======
+		slot = mmu_hash_ops.hpte_insert(hpte_group, vpn, pa, rflags, 0,
+						psize, lpsize, ssize);
+>>>>>>> v4.9.227
 		/*
 		 * Primary is full, try the secondary
 		 */
 		if (unlikely(slot == -1)) {
 			hpte_group = ((~hash & htab_hash_mask) *
 				      HPTES_PER_GROUP) & ~0x7UL;
+<<<<<<< HEAD
 			slot = ppc_md.hpte_insert(hpte_group, vpn, pa,
 						  rflags, HPTE_V_SECONDARY,
 						  psize, lpsize, ssize);
+=======
+			slot = mmu_hash_ops.hpte_insert(hpte_group, vpn, pa,
+							rflags,
+							HPTE_V_SECONDARY,
+							psize, lpsize, ssize);
+>>>>>>> v4.9.227
 			if (slot == -1) {
 				if (mftb() & 0x1)
 					hpte_group = ((hash & htab_hash_mask) *
 						      HPTES_PER_GROUP) & ~0x7UL;
 
+<<<<<<< HEAD
 				ppc_md.hpte_remove(hpte_group);
+=======
+				mmu_hash_ops.hpte_remove(hpte_group);
+>>>>>>> v4.9.227
 				goto repeat;
 			}
 		}
@@ -230,17 +302,29 @@ repeat:
 		mark_hpte_slot_valid(hpte_slot_array, index, slot);
 	}
 	/*
+<<<<<<< HEAD
 	 * Mark the pte with _PAGE_COMBO, if we are trying to hash it with
 	 * base page size 4k.
 	 */
 	if (psize == MMU_PAGE_4K)
 		new_pmd |= _PAGE_COMBO;
+=======
+	 * Mark the pte with H_PAGE_COMBO, if we are trying to hash it with
+	 * base page size 4k.
+	 */
+	if (psize == MMU_PAGE_4K)
+		new_pmd |= H_PAGE_COMBO;
+>>>>>>> v4.9.227
 	/*
 	 * The hpte valid is stored in the pgtable whose address is in the
 	 * second half of the PMD. Order this against clearing of the busy bit in
 	 * huge pmd.
 	 */
 	smp_wmb();
+<<<<<<< HEAD
 	*pmdp = __pmd(new_pmd & ~_PAGE_BUSY);
+=======
+	*pmdp = __pmd(new_pmd & ~H_PAGE_BUSY);
+>>>>>>> v4.9.227
 	return 0;
 }

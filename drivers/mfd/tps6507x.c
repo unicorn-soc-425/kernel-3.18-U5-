@@ -100,6 +100,7 @@ static int tps6507x_i2c_probe(struct i2c_client *i2c,
 	tps6507x->read_dev = tps6507x_i2c_read_device;
 	tps6507x->write_dev = tps6507x_i2c_write_device;
 
+<<<<<<< HEAD
 	return mfd_add_devices(tps6507x->dev, -1, tps6507x_devs,
 			       ARRAY_SIZE(tps6507x_devs), NULL, 0, NULL);
 }
@@ -115,6 +116,15 @@ static int tps6507x_i2c_remove(struct i2c_client *i2c)
 static const struct i2c_device_id tps6507x_i2c_id[] = {
        { "tps6507x", 0 },
        { }
+=======
+	return devm_mfd_add_devices(tps6507x->dev, -1, tps6507x_devs,
+				    ARRAY_SIZE(tps6507x_devs), NULL, 0, NULL);
+}
+
+static const struct i2c_device_id tps6507x_i2c_id[] = {
+	{ "tps6507x", 0 },
+	{ }
+>>>>>>> v4.9.227
 };
 MODULE_DEVICE_TABLE(i2c, tps6507x_i2c_id);
 
@@ -129,11 +139,17 @@ MODULE_DEVICE_TABLE(of, tps6507x_of_match);
 static struct i2c_driver tps6507x_i2c_driver = {
 	.driver = {
 		   .name = "tps6507x",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
 		   .of_match_table = of_match_ptr(tps6507x_of_match),
 	},
 	.probe = tps6507x_i2c_probe,
 	.remove = tps6507x_i2c_remove,
+=======
+		   .of_match_table = of_match_ptr(tps6507x_of_match),
+	},
+	.probe = tps6507x_i2c_probe,
+>>>>>>> v4.9.227
 	.id_table = tps6507x_i2c_id,
 };
 

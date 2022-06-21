@@ -14,8 +14,13 @@
 #include <linux/fs.h>
 #include <linux/platform_device.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+
+>>>>>>> v4.9.227
 #include <asm/io.h>
 
 #include <mach/portmux.h>
@@ -203,7 +208,11 @@ fail:
 
 static int direction_input(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct pio_device *pio = container_of(chip, struct pio_device, chip);
+=======
+	struct pio_device *pio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 mask = 1 << offset;
 
 	if (!(pio_readl(pio, PSR) & mask))
@@ -215,7 +224,11 @@ static int direction_input(struct gpio_chip *chip, unsigned offset)
 
 static int gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct pio_device *pio = container_of(chip, struct pio_device, chip);
+=======
+	struct pio_device *pio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	return (pio_readl(pio, PDSR) >> offset) & 1;
 }
@@ -224,7 +237,11 @@ static void gpio_set(struct gpio_chip *chip, unsigned offset, int value);
 
 static int direction_output(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct pio_device *pio = container_of(chip, struct pio_device, chip);
+=======
+	struct pio_device *pio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 mask = 1 << offset;
 
 	if (!(pio_readl(pio, PSR) & mask))
@@ -237,7 +254,11 @@ static int direction_output(struct gpio_chip *chip, unsigned offset, int value)
 
 static void gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct pio_device *pio = container_of(chip, struct pio_device, chip);
+=======
+	struct pio_device *pio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 mask = 1 << offset;
 
 	if (value)
@@ -281,12 +302,20 @@ static struct irq_chip gpio_irqchip = {
 	.irq_set_type	= gpio_irq_type,
 };
 
+<<<<<<< HEAD
 static void gpio_irq_handler(unsigned irq, struct irq_desc *desc)
+=======
+static void gpio_irq_handler(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct pio_device	*pio = irq_desc_get_chip_data(desc);
 	unsigned		gpio_irq;
 
+<<<<<<< HEAD
 	gpio_irq = (unsigned) irq_get_handler_data(irq);
+=======
+	gpio_irq = (unsigned) irq_desc_get_handler_data(desc);
+>>>>>>> v4.9.227
 	for (;;) {
 		u32		isr;
 
@@ -312,7 +341,10 @@ gpio_irq_setup(struct pio_device *pio, int irq, int gpio_irq)
 	unsigned	i;
 
 	irq_set_chip_data(irq, pio);
+<<<<<<< HEAD
 	irq_set_handler_data(irq, (void *)gpio_irq);
+=======
+>>>>>>> v4.9.227
 
 	for (i = 0; i < 32; i++, gpio_irq++) {
 		irq_set_chip_data(gpio_irq, pio);
@@ -320,7 +352,12 @@ gpio_irq_setup(struct pio_device *pio, int irq, int gpio_irq)
 					 handle_simple_irq);
 	}
 
+<<<<<<< HEAD
 	irq_set_chained_handler(irq, gpio_irq_handler);
+=======
+	irq_set_chained_handler_and_data(irq, gpio_irq_handler,
+					 (void *)gpio_irq);
+>>>>>>> v4.9.227
 }
 
 /*--------------------------------------------------------------------------*/
@@ -335,7 +372,11 @@ gpio_irq_setup(struct pio_device *pio, int irq, int gpio_irq)
  */
 static void pio_bank_show(struct seq_file *s, struct gpio_chip *chip)
 {
+<<<<<<< HEAD
 	struct pio_device *pio = container_of(chip, struct pio_device, chip);
+=======
+	struct pio_device *pio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32			psr, osr, imr, pdsr, pusr, ifsr, mdsr;
 	unsigned		i;
 	u32			mask;
@@ -397,7 +438,11 @@ static int __init pio_probe(struct platform_device *pdev)
 	pio->chip.label = pio->name;
 	pio->chip.base = pdev->id * 32;
 	pio->chip.ngpio = 32;
+<<<<<<< HEAD
 	pio->chip.dev = &pdev->dev;
+=======
+	pio->chip.parent = &pdev->dev;
+>>>>>>> v4.9.227
 	pio->chip.owner = THIS_MODULE;
 
 	pio->chip.direction_input = direction_input;
@@ -406,7 +451,11 @@ static int __init pio_probe(struct platform_device *pdev)
 	pio->chip.set = gpio_set;
 	pio->chip.dbg_show = pio_bank_show;
 
+<<<<<<< HEAD
 	gpiochip_add(&pio->chip);
+=======
+	gpiochip_add_data(&pio->chip, pio);
+>>>>>>> v4.9.227
 
 	gpio_irq_setup(pio, irq, gpio_irq_base);
 
@@ -435,7 +484,11 @@ void __init at32_init_pio(struct platform_device *pdev)
 	struct resource *regs;
 	struct pio_device *pio;
 
+<<<<<<< HEAD
 	if (pdev->id > MAX_NR_PIO_DEVICES) {
+=======
+	if (pdev->id >= MAX_NR_PIO_DEVICES) {
+>>>>>>> v4.9.227
 		dev_err(&pdev->dev, "only %d PIO devices supported\n",
 			MAX_NR_PIO_DEVICES);
 		return;

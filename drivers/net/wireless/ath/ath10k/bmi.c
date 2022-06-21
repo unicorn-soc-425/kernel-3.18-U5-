@@ -221,7 +221,11 @@ int ath10k_bmi_lz_data(struct ath10k *ar, const void *buffer, u32 length)
 	u32 txlen;
 	int ret;
 
+<<<<<<< HEAD
 	ath10k_dbg(ar, ATH10K_DBG_BMI, "bmi lz data buffer 0x%p length %d\n",
+=======
+	ath10k_dbg(ar, ATH10K_DBG_BMI, "bmi lz data buffer 0x%pK length %d\n",
+>>>>>>> v4.9.227
 		   buffer, length);
 
 	if (ar->bmi.done_sent) {
@@ -287,7 +291,11 @@ int ath10k_bmi_fast_download(struct ath10k *ar,
 	int ret;
 
 	ath10k_dbg(ar, ATH10K_DBG_BMI,
+<<<<<<< HEAD
 		   "bmi fast download address 0x%x buffer 0x%p length %d\n",
+=======
+		   "bmi fast download address 0x%x buffer 0x%pK length %d\n",
+>>>>>>> v4.9.227
 		   address, buffer, length);
 
 	ret = ath10k_bmi_lz_stream_start(ar, address);

@@ -1,6 +1,10 @@
 /*
  * SMP support for SoCs with APMU
  *
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2014  Renesas Electronics Corporation
+>>>>>>> v4.9.227
  * Copyright (C) 2013  Magnus Damm
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,6 +26,11 @@
 #include <asm/smp_plat.h>
 #include <asm/suspend.h>
 #include "common.h"
+<<<<<<< HEAD
+=======
+#include "platsmp-apmu.h"
+#include "rcar-gen2.h"
+>>>>>>> v4.9.227
 
 static struct {
 	void __iomem *iomem;
@@ -44,7 +53,11 @@ static int __maybe_unused apmu_power_on(void __iomem *p, int bit)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int apmu_power_off(void __iomem *p, int bit)
+=======
+static int __maybe_unused apmu_power_off(void __iomem *p, int bit)
+>>>>>>> v4.9.227
 {
 	/* request Core Standby for next WFI */
 	writel_relaxed(3, p + CPUNCR_OFFS(bit));
@@ -65,13 +78,21 @@ static int __maybe_unused apmu_power_off_poll(void __iomem *p, int bit)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int apmu_wrap(int cpu, int (*fn)(void __iomem *p, int cpu))
+=======
+static int __maybe_unused apmu_wrap(int cpu, int (*fn)(void __iomem *p, int cpu))
+>>>>>>> v4.9.227
 {
 	void __iomem *p = apmu_cpus[cpu].iomem;
 
 	return p ? fn(p, apmu_cpus[cpu].bit) : -EINVAL;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+>>>>>>> v4.9.227
 static void apmu_init_cpu(struct resource *res, int cpu, int bit)
 {
 	if ((cpu >= ARRAY_SIZE(apmu_cpus)) || apmu_cpus[cpu].iomem)
@@ -83,6 +104,7 @@ static void apmu_init_cpu(struct resource *res, int cpu, int bit)
 	pr_debug("apmu ioremap %d %d %pr\n", cpu, bit, res);
 }
 
+<<<<<<< HEAD
 static struct {
 	struct resource iomem;
 	int cpus[4];
@@ -100,11 +122,21 @@ static struct {
 static void apmu_parse_cfg(void (*fn)(struct resource *res, int cpu, int bit))
 {
 	u32 id;
+=======
+static void apmu_parse_cfg(void (*fn)(struct resource *res, int cpu, int bit),
+			   struct rcar_apmu_config *apmu_config, int num)
+{
+	int id;
+>>>>>>> v4.9.227
 	int k;
 	int bit, index;
 	bool is_allowed;
 
+<<<<<<< HEAD
 	for (k = 0; k < ARRAY_SIZE(apmu_config); k++) {
+=======
+	for (k = 0; k < num; k++) {
+>>>>>>> v4.9.227
 		/* only enable the cluster that includes the boot CPU */
 		is_allowed = false;
 		for (bit = 0; bit < ARRAY_SIZE(apmu_config[k].cpus); bit++) {
@@ -128,6 +160,7 @@ static void apmu_parse_cfg(void (*fn)(struct resource *res, int cpu, int bit))
 	}
 }
 
+<<<<<<< HEAD
 void __init shmobile_smp_apmu_prepare_cpus(unsigned int max_cpus)
 {
 	/* install boot code shared by all CPUs */
@@ -147,6 +180,110 @@ int shmobile_smp_apmu_boot_secondary(unsigned int cpu, struct task_struct *idle)
 	return apmu_wrap(cpu, apmu_power_on);
 }
 #endif
+=======
+static const struct of_device_id apmu_ids[] = {
+	{ .compatible = "renesas,apmu" },
+	{ /*sentinel*/ }
+};
+
+static void apmu_parse_dt(void (*fn)(struct resource *res, int cpu, int bit))
+{
+	struct device_node *np_apmu, *np_cpu;
+	struct resource res;
+	int bit, index;
+	u32 id;
+
+	for_each_matching_node(np_apmu, apmu_ids) {
+		/* only enable the cluster that includes the boot CPU */
+		bool is_allowed = false;
+
+		for (bit = 0; bit < CONFIG_NR_CPUS; bit++) {
+			np_cpu = of_parse_phandle(np_apmu, "cpus", bit);
+			if (np_cpu) {
+				if (!of_property_read_u32(np_cpu, "reg", &id)) {
+					if (id == cpu_logical_map(0)) {
+						is_allowed = true;
+						of_node_put(np_cpu);
+						break;
+					}
+
+				}
+				of_node_put(np_cpu);
+			}
+		}
+		if (!is_allowed)
+			continue;
+
+		for (bit = 0; bit < CONFIG_NR_CPUS; bit++) {
+			np_cpu = of_parse_phandle(np_apmu, "cpus", bit);
+			if (np_cpu) {
+				if (!of_property_read_u32(np_cpu, "reg", &id)) {
+					index = get_logical_index(id);
+					if ((index >= 0) &&
+					    !of_address_to_resource(np_apmu,
+								    0, &res))
+						fn(&res, index, bit);
+				}
+				of_node_put(np_cpu);
+			}
+		}
+	}
+}
+
+static void __init shmobile_smp_apmu_setup_boot(void)
+{
+	/* install boot code shared by all CPUs */
+	shmobile_boot_fn = virt_to_phys(shmobile_smp_boot);
+}
+
+void __init shmobile_smp_apmu_prepare_cpus(unsigned int max_cpus,
+					   struct rcar_apmu_config *apmu_config,
+					   int num)
+{
+	shmobile_smp_apmu_setup_boot();
+	apmu_parse_cfg(apmu_init_cpu, apmu_config, num);
+}
+
+int shmobile_smp_apmu_boot_secondary(unsigned int cpu, struct task_struct *idle)
+{
+	/* For this particular CPU register boot vector */
+	shmobile_smp_hook(cpu, virt_to_phys(secondary_startup), 0);
+
+	return apmu_wrap(cpu, apmu_power_on);
+}
+
+static void __init shmobile_smp_apmu_prepare_cpus_dt(unsigned int max_cpus)
+{
+	shmobile_smp_apmu_setup_boot();
+	apmu_parse_dt(apmu_init_cpu);
+	rcar_gen2_pm_init();
+}
+
+static int shmobile_smp_apmu_boot_secondary_md21(unsigned int cpu,
+						 struct task_struct *idle)
+{
+	/* Error out when hardware debug mode is enabled */
+	if (rcar_gen2_read_mode_pins() & BIT(21)) {
+		pr_warn("Unable to boot CPU%u when MD21 is set\n", cpu);
+		return -ENOTSUPP;
+	}
+
+	return shmobile_smp_apmu_boot_secondary(cpu, idle);
+}
+
+static struct smp_operations apmu_smp_ops __initdata = {
+	.smp_prepare_cpus	= shmobile_smp_apmu_prepare_cpus_dt,
+	.smp_boot_secondary	= shmobile_smp_apmu_boot_secondary_md21,
+#ifdef CONFIG_HOTPLUG_CPU
+	.cpu_can_disable	= shmobile_smp_cpu_can_disable,
+	.cpu_die		= shmobile_smp_apmu_cpu_die,
+	.cpu_kill		= shmobile_smp_apmu_cpu_kill,
+#endif
+};
+
+CPU_METHOD_OF_DECLARE(shmobile_smp_apmu, "renesas,apmu", &apmu_smp_ops);
+#endif /* CONFIG_SMP */
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_HOTPLUG_CPU) || defined(CONFIG_SUSPEND)
 /* nicked from arch/arm/mach-exynos/hotplug.c */
@@ -179,7 +316,11 @@ static inline void cpu_enter_lowpower_a15(void)
 	dsb();
 }
 
+<<<<<<< HEAD
 void shmobile_smp_apmu_cpu_shutdown(unsigned int cpu)
+=======
+static void shmobile_smp_apmu_cpu_shutdown(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 
 	/* Select next sleep mode using the APMU */

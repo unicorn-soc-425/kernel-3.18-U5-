@@ -13,11 +13,19 @@
 
 #include <media/v4l2-device.h>
 #include <media/v4l2-mediabus.h>
+<<<<<<< HEAD
 #include <media/soc_mediabus.h>
 
 static const struct soc_mbus_lookup mbus_fmt[] = {
 {
 	.code = V4L2_MBUS_FMT_YUYV8_2X8,
+=======
+#include <media/drv-intf/soc_mediabus.h>
+
+static const struct soc_mbus_lookup mbus_fmt[] = {
+{
+	.code = MEDIA_BUS_FMT_YUYV8_2X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_YUYV,
 		.name			= "YUYV",
@@ -27,7 +35,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_YVYU8_2X8,
+=======
+	.code = MEDIA_BUS_FMT_YVYU8_2X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_YVYU,
 		.name			= "YVYU",
@@ -37,7 +49,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_UYVY8_2X8,
+=======
+	.code = MEDIA_BUS_FMT_UYVY8_2X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_UYVY,
 		.name			= "UYVY",
@@ -47,7 +63,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_VYUY8_2X8,
+=======
+	.code = MEDIA_BUS_FMT_VYUY8_2X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_VYUY,
 		.name			= "VYUY",
@@ -57,7 +77,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_RGB555_2X8_PADHI_LE,
+=======
+	.code = MEDIA_BUS_FMT_RGB555_2X8_PADHI_LE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_RGB555,
 		.name			= "RGB555",
@@ -67,7 +91,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_RGB555_2X8_PADHI_BE,
+=======
+	.code = MEDIA_BUS_FMT_RGB555_2X8_PADHI_BE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_RGB555X,
 		.name			= "RGB555X",
@@ -77,7 +105,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_RGB565_2X8_LE,
+=======
+	.code = MEDIA_BUS_FMT_RGB565_2X8_LE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_RGB565,
 		.name			= "RGB565",
@@ -87,7 +119,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_RGB565_2X8_BE,
+=======
+	.code = MEDIA_BUS_FMT_RGB565_2X8_BE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_RGB565X,
 		.name			= "RGB565X",
@@ -97,7 +133,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_RGB666_1X18,
+=======
+	.code = MEDIA_BUS_FMT_RGB666_1X18,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_RGB32,
 		.name			= "RGB666/32bpp",
@@ -106,7 +146,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.order			= SOC_MBUS_ORDER_LE,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_RGB888_1X24,
+=======
+	.code = MEDIA_BUS_FMT_RGB888_1X24,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_RGB32,
 		.name			= "RGB888/32bpp",
@@ -115,7 +159,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.order			= SOC_MBUS_ORDER_LE,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_RGB888_2X12_BE,
+=======
+	.code = MEDIA_BUS_FMT_RGB888_2X12_BE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_RGB32,
 		.name			= "RGB888/32bpp",
@@ -124,7 +172,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.order			= SOC_MBUS_ORDER_BE,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_RGB888_2X12_LE,
+=======
+	.code = MEDIA_BUS_FMT_RGB888_2X12_LE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_RGB32,
 		.name			= "RGB888/32bpp",
@@ -133,7 +185,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.order			= SOC_MBUS_ORDER_LE,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SBGGR8_1X8,
+=======
+	.code = MEDIA_BUS_FMT_SBGGR8_1X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SBGGR8,
 		.name			= "Bayer 8 BGGR",
@@ -143,7 +199,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SBGGR10_1X10,
+=======
+	.code = MEDIA_BUS_FMT_SBGGR10_1X10,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SBGGR10,
 		.name			= "Bayer 10 BGGR",
@@ -153,7 +213,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_Y8_1X8,
+=======
+	.code = MEDIA_BUS_FMT_Y8_1X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_GREY,
 		.name			= "Grey",
@@ -163,7 +227,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_Y10_1X10,
+=======
+	.code = MEDIA_BUS_FMT_Y10_1X10,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_Y10,
 		.name			= "Grey 10bit",
@@ -173,7 +241,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SBGGR10_2X8_PADHI_LE,
+=======
+	.code = MEDIA_BUS_FMT_SBGGR10_2X8_PADHI_LE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SBGGR10,
 		.name			= "Bayer 10 BGGR",
@@ -183,7 +255,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SBGGR10_2X8_PADLO_LE,
+=======
+	.code = MEDIA_BUS_FMT_SBGGR10_2X8_PADLO_LE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SBGGR10,
 		.name			= "Bayer 10 BGGR",
@@ -193,7 +269,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SBGGR10_2X8_PADHI_BE,
+=======
+	.code = MEDIA_BUS_FMT_SBGGR10_2X8_PADHI_BE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SBGGR10,
 		.name			= "Bayer 10 BGGR",
@@ -203,7 +283,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SBGGR10_2X8_PADLO_BE,
+=======
+	.code = MEDIA_BUS_FMT_SBGGR10_2X8_PADLO_BE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SBGGR10,
 		.name			= "Bayer 10 BGGR",
@@ -213,7 +297,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_JPEG_1X8,
+=======
+	.code = MEDIA_BUS_FMT_JPEG_1X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc                 = V4L2_PIX_FMT_JPEG,
 		.name                   = "JPEG",
@@ -223,7 +311,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_RGB444_2X8_PADHI_BE,
+=======
+	.code = MEDIA_BUS_FMT_RGB444_2X8_PADHI_BE,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_RGB444,
 		.name			= "RGB444",
@@ -233,7 +325,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_YUYV8_1_5X8,
+=======
+	.code = MEDIA_BUS_FMT_YUYV8_1_5X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_YUV420,
 		.name			= "YUYV 4:2:0",
@@ -243,7 +339,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_YVYU8_1_5X8,
+=======
+	.code = MEDIA_BUS_FMT_YVYU8_1_5X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_YVU420,
 		.name			= "YVYU 4:2:0",
@@ -253,7 +353,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_UYVY8_1X16,
+=======
+	.code = MEDIA_BUS_FMT_UYVY8_1X16,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_UYVY,
 		.name			= "UYVY 16bit",
@@ -263,7 +367,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_VYUY8_1X16,
+=======
+	.code = MEDIA_BUS_FMT_VYUY8_1X16,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_VYUY,
 		.name			= "VYUY 16bit",
@@ -273,7 +381,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_YUYV8_1X16,
+=======
+	.code = MEDIA_BUS_FMT_YUYV8_1X16,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_YUYV,
 		.name			= "YUYV 16bit",
@@ -283,7 +395,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_YVYU8_1X16,
+=======
+	.code = MEDIA_BUS_FMT_YVYU8_1X16,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_YVYU,
 		.name			= "YVYU 16bit",
@@ -293,7 +409,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SGRBG8_1X8,
+=======
+	.code = MEDIA_BUS_FMT_SGRBG8_1X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SGRBG8,
 		.name			= "Bayer 8 GRBG",
@@ -303,7 +423,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SGRBG10_DPCM8_1X8,
+=======
+	.code = MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SGRBG10DPCM8,
 		.name			= "Bayer 10 BGGR DPCM 8",
@@ -313,7 +437,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SGBRG10_1X10,
+=======
+	.code = MEDIA_BUS_FMT_SGBRG10_1X10,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SGBRG10,
 		.name			= "Bayer 10 GBRG",
@@ -323,7 +451,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SGRBG10_1X10,
+=======
+	.code = MEDIA_BUS_FMT_SGRBG10_1X10,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SGRBG10,
 		.name			= "Bayer 10 GRBG",
@@ -333,7 +465,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SRGGB10_1X10,
+=======
+	.code = MEDIA_BUS_FMT_SRGGB10_1X10,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SRGGB10,
 		.name			= "Bayer 10 RGGB",
@@ -343,7 +479,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SBGGR12_1X12,
+=======
+	.code = MEDIA_BUS_FMT_SBGGR12_1X12,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SBGGR12,
 		.name			= "Bayer 12 BGGR",
@@ -353,7 +493,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SGBRG12_1X12,
+=======
+	.code = MEDIA_BUS_FMT_SGBRG12_1X12,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SGBRG12,
 		.name			= "Bayer 12 GBRG",
@@ -363,7 +507,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SGRBG12_1X12,
+=======
+	.code = MEDIA_BUS_FMT_SGRBG12_1X12,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SGRBG12,
 		.name			= "Bayer 12 GRBG",
@@ -373,7 +521,11 @@ static const struct soc_mbus_lookup mbus_fmt[] = {
 		.layout			= SOC_MBUS_LAYOUT_PACKED,
 	},
 }, {
+<<<<<<< HEAD
 	.code = V4L2_MBUS_FMT_SRGGB12_1X12,
+=======
+	.code = MEDIA_BUS_FMT_SRGGB12_1X12,
+>>>>>>> v4.9.227
 	.fmt = {
 		.fourcc			= V4L2_PIX_FMT_SRGGB12,
 		.name			= "Bayer 12 RGGB",
@@ -458,7 +610,11 @@ s32 soc_mbus_image_size(const struct soc_mbus_pixelfmt *mf,
 EXPORT_SYMBOL(soc_mbus_image_size);
 
 const struct soc_mbus_pixelfmt *soc_mbus_find_fmtdesc(
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode code,
+=======
+	u32 code,
+>>>>>>> v4.9.227
 	const struct soc_mbus_lookup *lookup,
 	int n)
 {
@@ -473,7 +629,11 @@ const struct soc_mbus_pixelfmt *soc_mbus_find_fmtdesc(
 EXPORT_SYMBOL(soc_mbus_find_fmtdesc);
 
 const struct soc_mbus_pixelfmt *soc_mbus_get_fmtdesc(
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode code)
+=======
+	u32 code)
+>>>>>>> v4.9.227
 {
 	return soc_mbus_find_fmtdesc(code, mbus_fmt, ARRAY_SIZE(mbus_fmt));
 }

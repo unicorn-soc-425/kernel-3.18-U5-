@@ -93,7 +93,11 @@ static int dove_init_sensor(const struct dove_thermal_priv *priv)
 }
 
 static int dove_get_temp(struct thermal_zone_device *thermal,
+<<<<<<< HEAD
 			  unsigned long *temp)
+=======
+			  int *temp)
+>>>>>>> v4.9.227
 {
 	unsigned long reg;
 	struct dove_thermal_priv *priv = thermal->devdata;
@@ -184,7 +188,10 @@ static struct platform_driver dove_thermal_driver = {
 	.remove = dove_thermal_exit,
 	.driver = {
 		.name = "dove_thermal",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = dove_thermal_id_table,
 	},
 };

@@ -20,7 +20,12 @@
 #include <plat/cpu.h>
 #include <plat/cpu-freq-core.h>
 
+<<<<<<< HEAD
 static struct cpufreq_frequency_table s3c2440_plls_12[] __initdata = {
+=======
+/* This array should be sorted in ascending order of the frequencies */
+static struct cpufreq_frequency_table s3c2440_plls_12[] = {
+>>>>>>> v4.9.227
 	{ .frequency = 75000000,	.driver_data = PLLVAL(0x75, 3, 3),  }, 	/* FVco 600.000000 */
 	{ .frequency = 80000000,	.driver_data = PLLVAL(0x98, 4, 3),  }, 	/* FVco 640.000000 */
 	{ .frequency = 90000000,	.driver_data = PLLVAL(0x70, 2, 3),  }, 	/* FVco 720.000000 */

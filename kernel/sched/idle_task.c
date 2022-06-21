@@ -24,11 +24,19 @@ static void check_preempt_curr_idle(struct rq *rq, struct task_struct *p, int fl
 }
 
 static struct task_struct *
+<<<<<<< HEAD
 pick_next_task_idle(struct rq *rq, struct task_struct *prev)
 {
 	put_prev_task(rq, prev);
 
 	schedstat_inc(rq, sched_goidle);
+=======
+pick_next_task_idle(struct rq *rq, struct task_struct *prev, struct pin_cookie cookie)
+{
+	put_prev_task(rq, prev);
+	update_idle_core(rq);
+	schedstat_inc(rq->sched_goidle);
+>>>>>>> v4.9.227
 	return rq->idle;
 }
 
@@ -47,7 +55,10 @@ dequeue_task_idle(struct rq *rq, struct task_struct *p, int flags)
 
 static void put_prev_task_idle(struct rq *rq, struct task_struct *prev)
 {
+<<<<<<< HEAD
 	idle_exit_fair(rq);
+=======
+>>>>>>> v4.9.227
 	rq_last_tick_reset(rq);
 }
 
@@ -79,6 +90,7 @@ static void update_curr_idle(struct rq *rq)
 {
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_HMP
 
 static void
@@ -107,6 +119,8 @@ fixup_hmp_sched_stats_idle(struct rq *rq, struct task_struct *p,
 
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * Simple, special scheduling class for the per-CPU idle tasks:
  */
@@ -124,6 +138,10 @@ const struct sched_class idle_sched_class = {
 
 #ifdef CONFIG_SMP
 	.select_task_rq		= select_task_rq_idle,
+<<<<<<< HEAD
+=======
+	.set_cpus_allowed	= set_cpus_allowed_common,
+>>>>>>> v4.9.227
 #endif
 
 	.set_curr_task          = set_curr_task_idle,
@@ -134,9 +152,12 @@ const struct sched_class idle_sched_class = {
 	.prio_changed		= prio_changed_idle,
 	.switched_to		= switched_to_idle,
 	.update_curr		= update_curr_idle,
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_HMP
 	.inc_hmp_sched_stats	= inc_hmp_sched_stats_idle,
 	.dec_hmp_sched_stats	= dec_hmp_sched_stats_idle,
 	.fixup_hmp_sched_stats	= fixup_hmp_sched_stats_idle,
 #endif
+=======
+>>>>>>> v4.9.227
 };

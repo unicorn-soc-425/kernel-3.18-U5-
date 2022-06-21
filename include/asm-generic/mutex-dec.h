@@ -20,7 +20,11 @@
 static inline void
 __mutex_fastpath_lock(atomic_t *count, void (*fail_fn)(atomic_t *))
 {
+<<<<<<< HEAD
 	if (unlikely(atomic_dec_return(count) < 0))
+=======
+	if (unlikely(atomic_dec_return_acquire(count) < 0))
+>>>>>>> v4.9.227
 		fail_fn(count);
 }
 
@@ -35,7 +39,11 @@ __mutex_fastpath_lock(atomic_t *count, void (*fail_fn)(atomic_t *))
 static inline int
 __mutex_fastpath_lock_retval(atomic_t *count)
 {
+<<<<<<< HEAD
 	if (unlikely(atomic_dec_return(count) < 0))
+=======
+	if (unlikely(atomic_dec_return_acquire(count) < 0))
+>>>>>>> v4.9.227
 		return -1;
 	return 0;
 }
@@ -56,7 +64,11 @@ __mutex_fastpath_lock_retval(atomic_t *count)
 static inline void
 __mutex_fastpath_unlock(atomic_t *count, void (*fail_fn)(atomic_t *))
 {
+<<<<<<< HEAD
 	if (unlikely(atomic_inc_return(count) <= 0))
+=======
+	if (unlikely(atomic_inc_return_release(count) <= 0))
+>>>>>>> v4.9.227
 		fail_fn(count);
 }
 
@@ -80,7 +92,11 @@ __mutex_fastpath_unlock(atomic_t *count, void (*fail_fn)(atomic_t *))
 static inline int
 __mutex_fastpath_trylock(atomic_t *count, int (*fail_fn)(atomic_t *))
 {
+<<<<<<< HEAD
 	if (likely(atomic_cmpxchg(count, 1, 0) == 1))
+=======
+	if (likely(atomic_read(count) == 1 && atomic_cmpxchg_acquire(count, 1, 0) == 1))
+>>>>>>> v4.9.227
 		return 1;
 	return 0;
 }

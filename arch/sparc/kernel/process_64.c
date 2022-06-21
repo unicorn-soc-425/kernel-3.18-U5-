@@ -103,7 +103,11 @@ static void show_regwindow32(struct pt_regs *regs)
 	mm_segment_t old_fs;
 	
 	__asm__ __volatile__ ("flushw");
+<<<<<<< HEAD
 	rw = compat_ptr((unsigned)regs->u_regs[14]);
+=======
+	rw = compat_ptr((unsigned int)regs->u_regs[14]);
+>>>>>>> v4.9.227
 	old_fs = get_fs();
 	set_fs (USER_DS);
 	if (copy_from_user (&r_w, rw, sizeof(r_w))) {
@@ -239,7 +243,11 @@ static void __global_reg_poll(struct global_reg_snapshot *gp)
 	}
 }
 
+<<<<<<< HEAD
 void arch_trigger_all_cpu_backtrace(bool include_self)
+=======
+void arch_trigger_cpumask_backtrace(const cpumask_t *mask, bool exclude_self)
+>>>>>>> v4.9.227
 {
 	struct thread_info *tp = current_thread_info();
 	struct pt_regs *regs = get_irq_regs();
@@ -255,15 +263,26 @@ void arch_trigger_all_cpu_backtrace(bool include_self)
 
 	memset(global_cpu_snapshot, 0, sizeof(global_cpu_snapshot));
 
+<<<<<<< HEAD
 	if (include_self)
+=======
+	if (cpumask_test_cpu(this_cpu, mask) && !exclude_self)
+>>>>>>> v4.9.227
 		__global_reg_self(tp, regs, this_cpu);
 
 	smp_fetch_global_regs();
 
+<<<<<<< HEAD
 	for_each_online_cpu(cpu) {
 		struct global_reg_snapshot *gp;
 
 		if (!include_self && cpu == this_cpu)
+=======
+	for_each_cpu(cpu, mask) {
+		struct global_reg_snapshot *gp;
+
+		if (exclude_self && cpu == this_cpu)
+>>>>>>> v4.9.227
 			continue;
 
 		gp = &global_cpu_snapshot[cpu].reg;
@@ -300,7 +319,11 @@ void arch_trigger_all_cpu_backtrace(bool include_self)
 
 static void sysrq_handle_globreg(int key)
 {
+<<<<<<< HEAD
 	arch_trigger_all_cpu_backtrace(true);
+=======
+	trigger_all_cpu_backtrace();
+>>>>>>> v4.9.227
 }
 
 static struct sysrq_key_op sparc_globalreg_op = {
@@ -417,9 +440,15 @@ unsigned long thread_saved_pc(struct task_struct *tsk)
 }
 
 /* Free current thread data structures etc.. */
+<<<<<<< HEAD
 void exit_thread(void)
 {
 	struct thread_info *t = current_thread_info();
+=======
+void exit_thread(struct task_struct *tsk)
+{
+	struct thread_info *t = task_thread_info(tsk);
+>>>>>>> v4.9.227
 
 	if (t->utraps) {
 		if (t->utraps[0] < 2)

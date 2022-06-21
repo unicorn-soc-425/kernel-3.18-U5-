@@ -12,9 +12,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> v4.9.227
  *
  * File: device.h
  *
@@ -65,6 +68,11 @@
 #define RATE_AUTO	12
 
 #define MAX_RATE			12
+<<<<<<< HEAD
+=======
+#define VNT_B_RATES	(BIT(RATE_1M) | BIT(RATE_2M) |\
+			BIT(RATE_5M) | BIT(RATE_11M))
+>>>>>>> v4.9.227
 
 /*
  * device specific
@@ -160,7 +168,11 @@
 #define MESSAGE_TYPE_CLRKEYENTRY	0x9
 #define MESSAGE_TYPE_WRITE_MISCFF	0xa
 #define MESSAGE_TYPE_SET_ANTMD		0xb
+<<<<<<< HEAD
 #define MESSAGE_TYPE_SELECT_CHANNLE	0xc
+=======
+#define MESSAGE_TYPE_SELECT_CHANNEL	0xc
+>>>>>>> v4.9.227
 #define MESSAGE_TYPE_SET_TSFTBTT	0xd
 #define MESSAGE_TYPE_SET_SSTIFS		0xe
 #define MESSAGE_TYPE_CHANGE_BBTYPE	0xf
@@ -262,8 +274,13 @@ enum {
 };
 
 /* flags for options */
+<<<<<<< HEAD
 #define DEVICE_FLAGS_UNPLUG		BIT(0)
 #define DEVICE_FLAGS_DISCONNECTED	BIT(1)
+=======
+#define DEVICE_FLAGS_UNPLUG		0
+#define DEVICE_FLAGS_DISCONNECTED	1
+>>>>>>> v4.9.227
 
 struct vnt_private {
 	/* mac80211 */
@@ -272,6 +289,10 @@ struct vnt_private {
 	u8 mac_hw;
 	/* netdev */
 	struct usb_device *usb;
+<<<<<<< HEAD
+=======
+	struct usb_interface *intf;
+>>>>>>> v4.9.227
 
 	u64 tsf_time;
 	u8 rx_rate;
@@ -307,8 +328,13 @@ struct vnt_private {
 
 	struct vnt_cmd_card_init init_command;
 	struct vnt_rsp_card_init init_response;
+<<<<<<< HEAD
 	u8 current_net_addr[ETH_ALEN];
 	u8 permanent_net_addr[ETH_ALEN];
+=======
+	u8 current_net_addr[ETH_ALEN] __aligned(2);
+	u8 permanent_net_addr[ETH_ALEN] __aligned(2);
+>>>>>>> v4.9.227
 
 	u8 exist_sw_net_addr;
 
@@ -364,7 +390,11 @@ struct vnt_private {
 	/* Power save */
 	u16 current_aid;
 
+<<<<<<< HEAD
 	/* Beacon releated */
+=======
+	/* Beacon related */
+>>>>>>> v4.9.227
 	u16 seq_counter;
 
 	enum vnt_cmd_state command_state;
@@ -389,6 +419,11 @@ struct vnt_private {
 	u8 bb_pre_ed_rssi;
 	u8 bb_pre_ed_index;
 
+<<<<<<< HEAD
+=======
+	u16 wake_up_count;
+
+>>>>>>> v4.9.227
 	/* command timer */
 	struct delayed_work run_command_work;
 

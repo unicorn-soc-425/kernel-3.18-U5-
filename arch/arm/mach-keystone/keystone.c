@@ -27,7 +27,10 @@
 
 #include "keystone.h"
 
+<<<<<<< HEAD
 static struct notifier_block platform_nb;
+=======
+>>>>>>> v4.9.227
 static unsigned long keystone_dma_pfn_offset __read_mostly;
 
 static int keystone_platform_notifier(struct notifier_block *nb,
@@ -49,6 +52,7 @@ static int keystone_platform_notifier(struct notifier_block *nb,
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static void __init keystone_init(void)
 {
 	keystone_pm_runtime_init();
@@ -63,6 +67,23 @@ static phys_addr_t keystone_virt_to_idmap(unsigned long x)
 }
 
 static long long __init keystone_init_meminfo(void)
+=======
+static struct notifier_block platform_nb = {
+	.notifier_call = keystone_platform_notifier,
+};
+
+static void __init keystone_init(void)
+{
+	if (PHYS_OFFSET >= KEYSTONE_HIGH_PHYS_START) {
+		keystone_dma_pfn_offset = PFN_DOWN(KEYSTONE_HIGH_PHYS_START -
+						   KEYSTONE_LOW_PHYS_START);
+		bus_register_notifier(&platform_bus_type, &platform_nb);
+	}
+	keystone_pm_runtime_init();
+}
+
+static long long __init keystone_pv_fixup(void)
+>>>>>>> v4.9.227
 {
 	long long offset;
 	phys_addr_t mem_start, mem_end;
@@ -85,6 +106,7 @@ static long long __init keystone_init_meminfo(void)
 	offset = KEYSTONE_HIGH_PHYS_START - KEYSTONE_LOW_PHYS_START;
 
 	/* Populate the arch idmap hook */
+<<<<<<< HEAD
 	arch_virt_to_idmap = keystone_virt_to_idmap;
 	platform_nb.notifier_call = keystone_platform_notifier;
 	keystone_dma_pfn_offset = PFN_DOWN(KEYSTONE_HIGH_PHYS_START -
@@ -92,11 +114,22 @@ static long long __init keystone_init_meminfo(void)
 
 	pr_info("Switching to high address space at 0x%llx\n",
 	        (u64)PHYS_OFFSET + (u64)offset);
+=======
+	arch_phys_to_idmap_offset = -offset;
+>>>>>>> v4.9.227
 
 	return offset;
 }
 
+<<<<<<< HEAD
 static const char *keystone_match[] __initconst = {
+=======
+static const char *const keystone_match[] __initconst = {
+	"ti,k2hk",
+	"ti,k2e",
+	"ti,k2l",
+	"ti,k2g",
+>>>>>>> v4.9.227
 	"ti,keystone",
 	NULL,
 };
@@ -108,5 +141,9 @@ DT_MACHINE_START(KEYSTONE, "Keystone")
 	.smp		= smp_ops(keystone_smp_ops),
 	.init_machine	= keystone_init,
 	.dt_compat	= keystone_match,
+<<<<<<< HEAD
 	.init_meminfo   = keystone_init_meminfo,
+=======
+	.pv_fixup	= keystone_pv_fixup,
+>>>>>>> v4.9.227
 MACHINE_END

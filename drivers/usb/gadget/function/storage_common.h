@@ -68,11 +68,14 @@ do {									\
 /* Length of a SCSI Command Data Block */
 #define MAX_COMMAND_SIZE	16
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 /* SCSI commands that we recognize */
 #define READ_CD					0xbe
 #endif
 
+=======
+>>>>>>> v4.9.227
 /* SCSI Sense Key/Additional Sense Code/ASC Qualifier values */
 #define SS_NO_SENSE				0
 #define SS_COMMUNICATION_FAILURE		0x040800
@@ -93,6 +96,15 @@ do {									\
 #define ASC(x)		((u8) ((x) >> 8))
 #define ASCQ(x)		((u8) (x))
 
+<<<<<<< HEAD
+=======
+/*
+ * Vendor (8 chars), product (16 chars), release (4 hexadecimal digits) and NUL
+ * byte
+ */
+#define INQUIRY_STRING_LEN ((size_t) (8 + 16 + 4 + 1))
+
+>>>>>>> v4.9.227
 struct fsg_lun {
 	struct file	*filp;
 	loff_t		file_length;
@@ -115,6 +127,7 @@ struct fsg_lun {
 						       of bound block device */
 	unsigned int	blksize; /* logical block size of bound block device */
 	struct device	dev;
+<<<<<<< HEAD
 	struct {
 		unsigned long rbytes;
 		unsigned long wbytes;
@@ -124,6 +137,11 @@ struct fsg_lun {
 
 	const char	*name;		/* "lun.name" */
 	const char	**name_pfx;	/* "function.name" */
+=======
+	const char	*name;		/* "lun.name" */
+	const char	**name_pfx;	/* "function.name" */
+	char		inquiry_string[INQUIRY_STRING_LEN];
+>>>>>>> v4.9.227
 };
 
 static inline bool fsg_lun_is_open(struct fsg_lun *curlun)
@@ -135,6 +153,7 @@ static inline bool fsg_lun_is_open(struct fsg_lun *curlun)
 #define FSG_BUFLEN	((u32)16384)
 
 /* Maximal number of LUNs supported in mass storage function */
+<<<<<<< HEAD
 #define FSG_MAX_LUNS	8
 /*
  * Vendor (8 chars), product (16 chars), release (4 hexadecimal
@@ -142,6 +161,9 @@ static inline bool fsg_lun_is_open(struct fsg_lun *curlun)
  */
 #define INQUIRY_MAX_LEN	29
 #define LUN_NAME_LEN	8
+=======
+#define FSG_MAX_LUNS	16
+>>>>>>> v4.9.227
 
 enum fsg_buffer_state {
 	BUF_STATE_EMPTY = 0,
@@ -228,6 +250,10 @@ ssize_t fsg_show_ro(struct fsg_lun *curlun, char *buf);
 ssize_t fsg_show_nofua(struct fsg_lun *curlun, char *buf);
 ssize_t fsg_show_file(struct fsg_lun *curlun, struct rw_semaphore *filesem,
 		      char *buf);
+<<<<<<< HEAD
+=======
+ssize_t fsg_show_inquiry_string(struct fsg_lun *curlun, char *buf);
+>>>>>>> v4.9.227
 ssize_t fsg_show_cdrom(struct fsg_lun *curlun, char *buf);
 ssize_t fsg_show_removable(struct fsg_lun *curlun, char *buf);
 ssize_t fsg_store_ro(struct fsg_lun *curlun, struct rw_semaphore *filesem,
@@ -239,9 +265,14 @@ ssize_t fsg_store_cdrom(struct fsg_lun *curlun, struct rw_semaphore *filesem,
 			const char *buf, size_t count);
 ssize_t fsg_store_removable(struct fsg_lun *curlun, const char *buf,
 			    size_t count);
+<<<<<<< HEAD
 ssize_t fsg_show_perf(struct device *dev, struct device_attribute *attr,
 				char *buf);
 ssize_t fsg_store_perf(struct device *dev, struct device_attribute *attr,
 				const char *buf, size_t count);
+=======
+ssize_t fsg_store_inquiry_string(struct fsg_lun *curlun, const char *buf,
+				 size_t count);
+>>>>>>> v4.9.227
 
 #endif /* USB_STORAGE_COMMON_H */

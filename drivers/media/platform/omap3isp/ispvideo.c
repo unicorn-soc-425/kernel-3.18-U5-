@@ -22,8 +22,15 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <media/v4l2-dev.h>
 #include <media/v4l2-ioctl.h>
+=======
+
+#include <media/v4l2-dev.h>
+#include <media/v4l2-ioctl.h>
+#include <media/v4l2-mc.h>
+>>>>>>> v4.9.227
 #include <media/videobuf2-dma-contig.h>
 
 #include "ispvideo.h"
@@ -39,6 +46,7 @@
  * corresponding in-memory formats to the table below!!!
  */
 static struct isp_format_info formats[] = {
+<<<<<<< HEAD
 	{ V4L2_MBUS_FMT_Y8_1X8, V4L2_MBUS_FMT_Y8_1X8,
 	  V4L2_MBUS_FMT_Y8_1X8, V4L2_MBUS_FMT_Y8_1X8,
 	  V4L2_PIX_FMT_GREY, 8, 1, },
@@ -107,6 +115,76 @@ static struct isp_format_info formats[] = {
 	  V4L2_PIX_FMT_UYVY, 8, 2, },
 	{ V4L2_MBUS_FMT_YUYV8_2X8, V4L2_MBUS_FMT_YUYV8_2X8,
 	  V4L2_MBUS_FMT_YUYV8_2X8, 0,
+=======
+	{ MEDIA_BUS_FMT_Y8_1X8, MEDIA_BUS_FMT_Y8_1X8,
+	  MEDIA_BUS_FMT_Y8_1X8, MEDIA_BUS_FMT_Y8_1X8,
+	  V4L2_PIX_FMT_GREY, 8, 1, },
+	{ MEDIA_BUS_FMT_Y10_1X10, MEDIA_BUS_FMT_Y10_1X10,
+	  MEDIA_BUS_FMT_Y10_1X10, MEDIA_BUS_FMT_Y8_1X8,
+	  V4L2_PIX_FMT_Y10, 10, 2, },
+	{ MEDIA_BUS_FMT_Y12_1X12, MEDIA_BUS_FMT_Y10_1X10,
+	  MEDIA_BUS_FMT_Y12_1X12, MEDIA_BUS_FMT_Y8_1X8,
+	  V4L2_PIX_FMT_Y12, 12, 2, },
+	{ MEDIA_BUS_FMT_SBGGR8_1X8, MEDIA_BUS_FMT_SBGGR8_1X8,
+	  MEDIA_BUS_FMT_SBGGR8_1X8, MEDIA_BUS_FMT_SBGGR8_1X8,
+	  V4L2_PIX_FMT_SBGGR8, 8, 1, },
+	{ MEDIA_BUS_FMT_SGBRG8_1X8, MEDIA_BUS_FMT_SGBRG8_1X8,
+	  MEDIA_BUS_FMT_SGBRG8_1X8, MEDIA_BUS_FMT_SGBRG8_1X8,
+	  V4L2_PIX_FMT_SGBRG8, 8, 1, },
+	{ MEDIA_BUS_FMT_SGRBG8_1X8, MEDIA_BUS_FMT_SGRBG8_1X8,
+	  MEDIA_BUS_FMT_SGRBG8_1X8, MEDIA_BUS_FMT_SGRBG8_1X8,
+	  V4L2_PIX_FMT_SGRBG8, 8, 1, },
+	{ MEDIA_BUS_FMT_SRGGB8_1X8, MEDIA_BUS_FMT_SRGGB8_1X8,
+	  MEDIA_BUS_FMT_SRGGB8_1X8, MEDIA_BUS_FMT_SRGGB8_1X8,
+	  V4L2_PIX_FMT_SRGGB8, 8, 1, },
+	{ MEDIA_BUS_FMT_SBGGR10_DPCM8_1X8, MEDIA_BUS_FMT_SBGGR10_DPCM8_1X8,
+	  MEDIA_BUS_FMT_SBGGR10_1X10, 0,
+	  V4L2_PIX_FMT_SBGGR10DPCM8, 8, 1, },
+	{ MEDIA_BUS_FMT_SGBRG10_DPCM8_1X8, MEDIA_BUS_FMT_SGBRG10_DPCM8_1X8,
+	  MEDIA_BUS_FMT_SGBRG10_1X10, 0,
+	  V4L2_PIX_FMT_SGBRG10DPCM8, 8, 1, },
+	{ MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8, MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8,
+	  MEDIA_BUS_FMT_SGRBG10_1X10, 0,
+	  V4L2_PIX_FMT_SGRBG10DPCM8, 8, 1, },
+	{ MEDIA_BUS_FMT_SRGGB10_DPCM8_1X8, MEDIA_BUS_FMT_SRGGB10_DPCM8_1X8,
+	  MEDIA_BUS_FMT_SRGGB10_1X10, 0,
+	  V4L2_PIX_FMT_SRGGB10DPCM8, 8, 1, },
+	{ MEDIA_BUS_FMT_SBGGR10_1X10, MEDIA_BUS_FMT_SBGGR10_1X10,
+	  MEDIA_BUS_FMT_SBGGR10_1X10, MEDIA_BUS_FMT_SBGGR8_1X8,
+	  V4L2_PIX_FMT_SBGGR10, 10, 2, },
+	{ MEDIA_BUS_FMT_SGBRG10_1X10, MEDIA_BUS_FMT_SGBRG10_1X10,
+	  MEDIA_BUS_FMT_SGBRG10_1X10, MEDIA_BUS_FMT_SGBRG8_1X8,
+	  V4L2_PIX_FMT_SGBRG10, 10, 2, },
+	{ MEDIA_BUS_FMT_SGRBG10_1X10, MEDIA_BUS_FMT_SGRBG10_1X10,
+	  MEDIA_BUS_FMT_SGRBG10_1X10, MEDIA_BUS_FMT_SGRBG8_1X8,
+	  V4L2_PIX_FMT_SGRBG10, 10, 2, },
+	{ MEDIA_BUS_FMT_SRGGB10_1X10, MEDIA_BUS_FMT_SRGGB10_1X10,
+	  MEDIA_BUS_FMT_SRGGB10_1X10, MEDIA_BUS_FMT_SRGGB8_1X8,
+	  V4L2_PIX_FMT_SRGGB10, 10, 2, },
+	{ MEDIA_BUS_FMT_SBGGR12_1X12, MEDIA_BUS_FMT_SBGGR10_1X10,
+	  MEDIA_BUS_FMT_SBGGR12_1X12, MEDIA_BUS_FMT_SBGGR8_1X8,
+	  V4L2_PIX_FMT_SBGGR12, 12, 2, },
+	{ MEDIA_BUS_FMT_SGBRG12_1X12, MEDIA_BUS_FMT_SGBRG10_1X10,
+	  MEDIA_BUS_FMT_SGBRG12_1X12, MEDIA_BUS_FMT_SGBRG8_1X8,
+	  V4L2_PIX_FMT_SGBRG12, 12, 2, },
+	{ MEDIA_BUS_FMT_SGRBG12_1X12, MEDIA_BUS_FMT_SGRBG10_1X10,
+	  MEDIA_BUS_FMT_SGRBG12_1X12, MEDIA_BUS_FMT_SGRBG8_1X8,
+	  V4L2_PIX_FMT_SGRBG12, 12, 2, },
+	{ MEDIA_BUS_FMT_SRGGB12_1X12, MEDIA_BUS_FMT_SRGGB10_1X10,
+	  MEDIA_BUS_FMT_SRGGB12_1X12, MEDIA_BUS_FMT_SRGGB8_1X8,
+	  V4L2_PIX_FMT_SRGGB12, 12, 2, },
+	{ MEDIA_BUS_FMT_UYVY8_1X16, MEDIA_BUS_FMT_UYVY8_1X16,
+	  MEDIA_BUS_FMT_UYVY8_1X16, 0,
+	  V4L2_PIX_FMT_UYVY, 16, 2, },
+	{ MEDIA_BUS_FMT_YUYV8_1X16, MEDIA_BUS_FMT_YUYV8_1X16,
+	  MEDIA_BUS_FMT_YUYV8_1X16, 0,
+	  V4L2_PIX_FMT_YUYV, 16, 2, },
+	{ MEDIA_BUS_FMT_UYVY8_2X8, MEDIA_BUS_FMT_UYVY8_2X8,
+	  MEDIA_BUS_FMT_UYVY8_2X8, 0,
+	  V4L2_PIX_FMT_UYVY, 8, 2, },
+	{ MEDIA_BUS_FMT_YUYV8_2X8, MEDIA_BUS_FMT_YUYV8_2X8,
+	  MEDIA_BUS_FMT_YUYV8_2X8, 0,
+>>>>>>> v4.9.227
 	  V4L2_PIX_FMT_YUYV, 8, 2, },
 	/* Empty entry to catch the unsupported pixel code (0) used by the CCDC
 	 * module and avoid NULL pointer dereferences.
@@ -114,8 +192,12 @@ static struct isp_format_info formats[] = {
 	{ 0, }
 };
 
+<<<<<<< HEAD
 const struct isp_format_info *
 omap3isp_video_format_info(enum v4l2_mbus_pixelcode code)
+=======
+const struct isp_format_info *omap3isp_video_format_info(u32 code)
+>>>>>>> v4.9.227
 {
 	unsigned int i;
 
@@ -211,8 +293,12 @@ isp_video_remote_subdev(struct isp_video *video, u32 *pad)
 
 	remote = media_entity_remote_pad(&video->pad);
 
+<<<<<<< HEAD
 	if (remote == NULL ||
 	    media_entity_type(remote->entity) != MEDIA_ENT_T_V4L2_SUBDEV)
+=======
+	if (!remote || !is_media_entity_v4l2_subdev(remote->entity))
+>>>>>>> v4.9.227
 		return NULL;
 
 	if (pad)
@@ -227,16 +313,34 @@ static int isp_video_get_graph_data(struct isp_video *video,
 {
 	struct media_entity_graph graph;
 	struct media_entity *entity = &video->video.entity;
+<<<<<<< HEAD
 	struct media_device *mdev = entity->parent;
 	struct isp_video *far_end = NULL;
 
 	mutex_lock(&mdev->graph_mutex);
+=======
+	struct media_device *mdev = entity->graph_obj.mdev;
+	struct isp_video *far_end = NULL;
+	int ret;
+
+	mutex_lock(&mdev->graph_mutex);
+	ret = media_entity_graph_walk_init(&graph, entity->graph_obj.mdev);
+	if (ret) {
+		mutex_unlock(&mdev->graph_mutex);
+		return ret;
+	}
+
+>>>>>>> v4.9.227
 	media_entity_graph_walk_start(&graph, entity);
 
 	while ((entity = media_entity_graph_walk_next(&graph))) {
 		struct isp_video *__video;
 
+<<<<<<< HEAD
 		pipe->entities |= 1 << entity->id;
+=======
+		media_entity_enum_set(&pipe->ent_enum, entity);
+>>>>>>> v4.9.227
 
 		if (far_end != NULL)
 			continue;
@@ -244,7 +348,11 @@ static int isp_video_get_graph_data(struct isp_video *video,
 		if (entity == &video->video.entity)
 			continue;
 
+<<<<<<< HEAD
 		if (media_entity_type(entity) != MEDIA_ENT_T_DEVNODE)
+=======
+		if (!is_media_entity_v4l2_video_device(entity))
+>>>>>>> v4.9.227
 			continue;
 
 		__video = to_isp_video(media_entity_to_video_device(entity));
@@ -254,6 +362,11 @@ static int isp_video_get_graph_data(struct isp_video *video,
 
 	mutex_unlock(&mdev->graph_mutex);
 
+<<<<<<< HEAD
+=======
+	media_entity_graph_walk_cleanup(&graph);
+
+>>>>>>> v4.9.227
 	if (video->type == V4L2_BUF_TYPE_VIDEO_CAPTURE) {
 		pipe->input = far_end;
 		pipe->output = video;
@@ -321,9 +434,14 @@ isp_video_check_format(struct isp_video *video, struct isp_video_fh *vfh)
  */
 
 static int isp_video_queue_setup(struct vb2_queue *queue,
+<<<<<<< HEAD
 				 const struct v4l2_format *fmt,
 				 unsigned int *count, unsigned int *num_planes,
 				 unsigned int sizes[], void *alloc_ctxs[])
+=======
+				 unsigned int *count, unsigned int *num_planes,
+				 unsigned int sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	struct isp_video_fh *vfh = vb2_get_drv_priv(queue);
 	struct isp_video *video = vfh->video;
@@ -334,8 +452,11 @@ static int isp_video_queue_setup(struct vb2_queue *queue,
 	if (sizes[0] == 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	alloc_ctxs[0] = video->alloc_ctx;
 
+=======
+>>>>>>> v4.9.227
 	*count = min(*count, video->capture_mem / PAGE_ALIGN(sizes[0]));
 
 	return 0;
@@ -343,8 +464,14 @@ static int isp_video_queue_setup(struct vb2_queue *queue,
 
 static int isp_video_buffer_prepare(struct vb2_buffer *buf)
 {
+<<<<<<< HEAD
 	struct isp_video_fh *vfh = vb2_get_drv_priv(buf->vb2_queue);
 	struct isp_buffer *buffer = to_isp_buffer(buf);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(buf);
+	struct isp_video_fh *vfh = vb2_get_drv_priv(buf->vb2_queue);
+	struct isp_buffer *buffer = to_isp_buffer(vbuf);
+>>>>>>> v4.9.227
 	struct isp_video *video = vfh->video;
 	dma_addr_t addr;
 
@@ -364,7 +491,12 @@ static int isp_video_buffer_prepare(struct vb2_buffer *buf)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	vb2_set_plane_payload(&buffer->vb, 0, vfh->format.fmt.pix.sizeimage);
+=======
+	vb2_set_plane_payload(&buffer->vb.vb2_buf, 0,
+			      vfh->format.fmt.pix.sizeimage);
+>>>>>>> v4.9.227
 	buffer->dma = addr;
 
 	return 0;
@@ -381,8 +513,14 @@ static int isp_video_buffer_prepare(struct vb2_buffer *buf)
  */
 static void isp_video_buffer_queue(struct vb2_buffer *buf)
 {
+<<<<<<< HEAD
 	struct isp_video_fh *vfh = vb2_get_drv_priv(buf->vb2_queue);
 	struct isp_buffer *buffer = to_isp_buffer(buf);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(buf);
+	struct isp_video_fh *vfh = vb2_get_drv_priv(buf->vb2_queue);
+	struct isp_buffer *buffer = to_isp_buffer(vbuf);
+>>>>>>> v4.9.227
 	struct isp_video *video = vfh->video;
 	struct isp_pipeline *pipe = to_isp_pipeline(&video->video.entity);
 	enum isp_pipeline_state state;
@@ -393,7 +531,11 @@ static void isp_video_buffer_queue(struct vb2_buffer *buf)
 	spin_lock_irqsave(&video->irqlock, flags);
 
 	if (unlikely(video->error)) {
+<<<<<<< HEAD
 		vb2_buffer_done(&buffer->vb, VB2_BUF_STATE_ERROR);
+=======
+		vb2_buffer_done(&buffer->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+>>>>>>> v4.9.227
 		spin_unlock_irqrestore(&video->irqlock, flags);
 		return;
 	}
@@ -425,10 +567,74 @@ static void isp_video_buffer_queue(struct vb2_buffer *buf)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * omap3isp_video_return_buffers - Return all queued buffers to videobuf2
+ * @video: ISP video object
+ * @state: new state for the returned buffers
+ *
+ * Return all buffers queued on the video node to videobuf2 in the given state.
+ * The buffer state should be VB2_BUF_STATE_QUEUED if called due to an error
+ * when starting the stream, or VB2_BUF_STATE_ERROR otherwise.
+ *
+ * The function must be called with the video irqlock held.
+ */
+static void omap3isp_video_return_buffers(struct isp_video *video,
+					  enum vb2_buffer_state state)
+{
+	while (!list_empty(&video->dmaqueue)) {
+		struct isp_buffer *buf;
+
+		buf = list_first_entry(&video->dmaqueue,
+				       struct isp_buffer, irqlist);
+		list_del(&buf->irqlist);
+		vb2_buffer_done(&buf->vb.vb2_buf, state);
+	}
+}
+
+static int isp_video_start_streaming(struct vb2_queue *queue,
+				     unsigned int count)
+{
+	struct isp_video_fh *vfh = vb2_get_drv_priv(queue);
+	struct isp_video *video = vfh->video;
+	struct isp_pipeline *pipe = to_isp_pipeline(&video->video.entity);
+	unsigned long flags;
+	int ret;
+
+	/* In sensor-to-memory mode, the stream can be started synchronously
+	 * to the stream on command. In memory-to-memory mode, it will be
+	 * started when buffers are queued on both the input and output.
+	 */
+	if (pipe->input)
+		return 0;
+
+	ret = omap3isp_pipeline_set_stream(pipe,
+					   ISP_PIPELINE_STREAM_CONTINUOUS);
+	if (ret < 0) {
+		spin_lock_irqsave(&video->irqlock, flags);
+		omap3isp_video_return_buffers(video, VB2_BUF_STATE_QUEUED);
+		spin_unlock_irqrestore(&video->irqlock, flags);
+		return ret;
+	}
+
+	spin_lock_irqsave(&video->irqlock, flags);
+	if (list_empty(&video->dmaqueue))
+		video->dmaqueue_flags |= ISP_VIDEO_DMAQUEUE_UNDERRUN;
+	spin_unlock_irqrestore(&video->irqlock, flags);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static const struct vb2_ops isp_video_queue_ops = {
 	.queue_setup = isp_video_queue_setup,
 	.buf_prepare = isp_video_buffer_prepare,
 	.buf_queue = isp_video_buffer_queue,
+<<<<<<< HEAD
+=======
+	.start_streaming = isp_video_start_streaming,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -450,10 +656,16 @@ static const struct vb2_ops isp_video_queue_ops = {
 struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video)
 {
 	struct isp_pipeline *pipe = to_isp_pipeline(&video->video.entity);
+<<<<<<< HEAD
 	enum isp_pipeline_state state;
 	struct isp_buffer *buf;
 	unsigned long flags;
 	struct timespec ts;
+=======
+	enum vb2_buffer_state vb_state;
+	struct isp_buffer *buf;
+	unsigned long flags;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&video->irqlock, flags);
 	if (WARN_ON(list_empty(&video->dmaqueue))) {
@@ -466,9 +678,13 @@ struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video)
 	list_del(&buf->irqlist);
 	spin_unlock_irqrestore(&video->irqlock, flags);
 
+<<<<<<< HEAD
 	ktime_get_ts(&ts);
 	buf->vb.v4l2_buf.timestamp.tv_sec = ts.tv_sec;
 	buf->vb.v4l2_buf.timestamp.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+=======
+	buf->vb.vb2_buf.timestamp = ktime_get_ns();
+>>>>>>> v4.9.227
 
 	/* Do frame number propagation only if this is the output video node.
 	 * Frame number either comes from the CSI receivers or it gets
@@ -477,6 +693,7 @@ struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video)
 	 * first, so the input number might lag behind by 1 in some cases.
 	 */
 	if (video == pipe->output && !pipe->do_propagation)
+<<<<<<< HEAD
 		buf->vb.v4l2_buf.sequence =
 			atomic_inc_return(&pipe->frame_number);
 	else
@@ -496,10 +713,36 @@ struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video)
 	}
 
 	vb2_buffer_done(&buf->vb, state);
+=======
+		buf->vb.sequence =
+			atomic_inc_return(&pipe->frame_number);
+	else
+		buf->vb.sequence = atomic_read(&pipe->frame_number);
+
+	if (pipe->field != V4L2_FIELD_NONE)
+		buf->vb.sequence /= 2;
+
+	buf->vb.field = pipe->field;
+
+	/* Report pipeline errors to userspace on the capture device side. */
+	if (video->type == V4L2_BUF_TYPE_VIDEO_CAPTURE && pipe->error) {
+		vb_state = VB2_BUF_STATE_ERROR;
+		pipe->error = false;
+	} else {
+		vb_state = VB2_BUF_STATE_DONE;
+	}
+
+	vb2_buffer_done(&buf->vb.vb2_buf, vb_state);
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&video->irqlock, flags);
 
 	if (list_empty(&video->dmaqueue)) {
+<<<<<<< HEAD
+=======
+		enum isp_pipeline_state state;
+
+>>>>>>> v4.9.227
 		spin_unlock_irqrestore(&video->irqlock, flags);
 
 		if (video->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
@@ -525,7 +768,10 @@ struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video)
 
 	buf = list_first_entry(&video->dmaqueue, struct isp_buffer,
 			       irqlist);
+<<<<<<< HEAD
 	buf->vb.state = VB2_BUF_STATE_ACTIVE;
+=======
+>>>>>>> v4.9.227
 
 	spin_unlock_irqrestore(&video->irqlock, flags);
 
@@ -536,14 +782,20 @@ struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video)
  * omap3isp_video_cancel_stream - Cancel stream on a video node
  * @video: ISP video object
  *
+<<<<<<< HEAD
  * Cancelling a stream mark all buffers on the video node as erroneous and makes
  * sure no new buffer can be queued.
+=======
+ * Cancelling a stream returns all buffers queued on the video node to videobuf2
+ * in the erroneous state and makes sure no new buffer can be queued.
+>>>>>>> v4.9.227
  */
 void omap3isp_video_cancel_stream(struct isp_video *video)
 {
 	unsigned long flags;
 
 	spin_lock_irqsave(&video->irqlock, flags);
+<<<<<<< HEAD
 
 	while (!list_empty(&video->dmaqueue)) {
 		struct isp_buffer *buf;
@@ -556,6 +808,10 @@ void omap3isp_video_cancel_stream(struct isp_video *video)
 
 	video->error = true;
 
+=======
+	omap3isp_video_return_buffers(video, VB2_BUF_STATE_ERROR);
+	video->error = true;
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&video->irqlock, flags);
 }
 
@@ -603,10 +859,20 @@ isp_video_querycap(struct file *file, void *fh, struct v4l2_capability *cap)
 	strlcpy(cap->card, video->video.name, sizeof(cap->card));
 	strlcpy(cap->bus_info, "media", sizeof(cap->bus_info));
 
+<<<<<<< HEAD
 	if (video->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
 		cap->capabilities = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING;
 	else
 		cap->capabilities = V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_STREAMING;
+=======
+	cap->capabilities = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_VIDEO_OUTPUT
+		| V4L2_CAP_STREAMING | V4L2_CAP_DEVICE_CAPS;
+
+	if (video->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
+		cap->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING;
+	else
+		cap->device_caps = V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_STREAMING;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -714,6 +980,7 @@ isp_video_try_format(struct file *file, void *fh, struct v4l2_format *format)
 }
 
 static int
+<<<<<<< HEAD
 isp_video_cropcap(struct file *file, void *fh, struct v4l2_cropcap *cropcap)
 {
 	struct isp_video *video = video_drvdata(file);
@@ -733,21 +1000,60 @@ isp_video_cropcap(struct file *file, void *fh, struct v4l2_cropcap *cropcap)
 
 static int
 isp_video_get_crop(struct file *file, void *fh, struct v4l2_crop *crop)
+=======
+isp_video_get_selection(struct file *file, void *fh, struct v4l2_selection *sel)
+>>>>>>> v4.9.227
 {
 	struct isp_video *video = video_drvdata(file);
 	struct v4l2_subdev_format format;
 	struct v4l2_subdev *subdev;
+<<<<<<< HEAD
 	u32 pad;
 	int ret;
 
+=======
+	struct v4l2_subdev_selection sdsel = {
+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+		.target = sel->target,
+	};
+	u32 pad;
+	int ret;
+
+	switch (sel->target) {
+	case V4L2_SEL_TGT_CROP:
+	case V4L2_SEL_TGT_CROP_BOUNDS:
+	case V4L2_SEL_TGT_CROP_DEFAULT:
+		if (video->type == V4L2_BUF_TYPE_VIDEO_OUTPUT)
+			return -EINVAL;
+		break;
+	case V4L2_SEL_TGT_COMPOSE:
+	case V4L2_SEL_TGT_COMPOSE_BOUNDS:
+	case V4L2_SEL_TGT_COMPOSE_DEFAULT:
+		if (video->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
+			return -EINVAL;
+		break;
+	default:
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 	subdev = isp_video_remote_subdev(video, &pad);
 	if (subdev == NULL)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* Try the get crop operation first and fallback to get format if not
 	 * implemented.
 	 */
 	ret = v4l2_subdev_call(subdev, video, g_crop, crop);
+=======
+	/* Try the get selection operation first and fallback to get format if not
+	 * implemented.
+	 */
+	sdsel.pad = pad;
+	ret = v4l2_subdev_call(subdev, pad, get_selection, NULL, &sdsel);
+	if (!ret)
+		sel->r = sdsel.r;
+>>>>>>> v4.9.227
 	if (ret != -ENOIOCTLCMD)
 		return ret;
 
@@ -757,15 +1063,23 @@ isp_video_get_crop(struct file *file, void *fh, struct v4l2_crop *crop)
 	if (ret < 0)
 		return ret == -ENOIOCTLCMD ? -ENOTTY : ret;
 
+<<<<<<< HEAD
 	crop->c.left = 0;
 	crop->c.top = 0;
 	crop->c.width = format.format.width;
 	crop->c.height = format.format.height;
+=======
+	sel->r.left = 0;
+	sel->r.top = 0;
+	sel->r.width = format.format.width;
+	sel->r.height = format.format.height;
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static int
+<<<<<<< HEAD
 isp_video_set_crop(struct file *file, void *fh, const struct v4l2_crop *crop)
 {
 	struct isp_video *video = video_drvdata(file);
@@ -779,6 +1093,43 @@ isp_video_set_crop(struct file *file, void *fh, const struct v4l2_crop *crop)
 	mutex_lock(&video->mutex);
 	ret = v4l2_subdev_call(subdev, video, s_crop, crop);
 	mutex_unlock(&video->mutex);
+=======
+isp_video_set_selection(struct file *file, void *fh, struct v4l2_selection *sel)
+{
+	struct isp_video *video = video_drvdata(file);
+	struct v4l2_subdev *subdev;
+	struct v4l2_subdev_selection sdsel = {
+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+		.target = sel->target,
+		.flags = sel->flags,
+		.r = sel->r,
+	};
+	u32 pad;
+	int ret;
+
+	switch (sel->target) {
+	case V4L2_SEL_TGT_CROP:
+		if (video->type == V4L2_BUF_TYPE_VIDEO_OUTPUT)
+			return -EINVAL;
+		break;
+	case V4L2_SEL_TGT_COMPOSE:
+		if (video->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
+			return -EINVAL;
+		break;
+	default:
+		return -EINVAL;
+	}
+	subdev = isp_video_remote_subdev(video, &pad);
+	if (subdev == NULL)
+		return -EINVAL;
+
+	sdsel.pad = pad;
+	mutex_lock(&video->mutex);
+	ret = v4l2_subdev_call(subdev, pad, set_selection, NULL, &sdsel);
+	mutex_unlock(&video->mutex);
+	if (!ret)
+		sel->r = sdsel.r;
+>>>>>>> v4.9.227
 
 	return ret == -ENOIOCTLCMD ? -ENOTTY : ret;
 }
@@ -900,7 +1251,11 @@ static int isp_video_check_external_subdevs(struct isp_video *video,
 
 	for (i = 0; i < ARRAY_SIZE(ents); i++) {
 		/* Is the entity part of the pipeline? */
+<<<<<<< HEAD
 		if (!(pipe->entities & (1 << ents[i]->id)))
+=======
+		if (!media_entity_enum_test(&pipe->ent_enum, ents[i]))
+>>>>>>> v4.9.227
 			continue;
 
 		/* ISP entities have always sink pad == 0. Find source. */
@@ -918,7 +1273,11 @@ static int isp_video_check_external_subdevs(struct isp_video *video,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (media_entity_type(source) != MEDIA_ENT_T_V4L2_SUBDEV)
+=======
+	if (!is_media_entity_v4l2_subdev(source))
+>>>>>>> v4.9.227
 		return 0;
 
 	pipe->external = media_entity_to_v4l2_subdev(source);
@@ -952,7 +1311,12 @@ static int isp_video_check_external_subdevs(struct isp_video *video,
 
 	pipe->external_rate = ctrl.value64;
 
+<<<<<<< HEAD
 	if (pipe->entities & (1 << isp->isp_ccdc.subdev.entity.id)) {
+=======
+	if (media_entity_enum_test(&pipe->ent_enum,
+				   &isp->isp_ccdc.subdev.entity)) {
+>>>>>>> v4.9.227
 		unsigned int rate = UINT_MAX;
 		/*
 		 * Check that maximum allowed CCDC pixel rate isn't
@@ -1018,10 +1382,18 @@ isp_video_streamon(struct file *file, void *fh, enum v4l2_buf_type type)
 	pipe = video->video.entity.pipe
 	     ? to_isp_pipeline(&video->video.entity) : &video->pipe;
 
+<<<<<<< HEAD
 	pipe->entities = 0;
 
 	if (video->isp->pdata->set_constraints)
 		video->isp->pdata->set_constraints(video->isp, true);
+=======
+	ret = media_entity_enum_init(&pipe->ent_enum, &video->isp->media_dev);
+	if (ret)
+		goto err_enum_init;
+
+	/* TODO: Implement PM QoS */
+>>>>>>> v4.9.227
 	pipe->l3_ick = clk_get_rate(video->isp->clock[ISP_CLK_L3_ICK]);
 	pipe->max_rate = pipe->l3_ick;
 
@@ -1077,6 +1449,7 @@ isp_video_streamon(struct file *file, void *fh, enum v4l2_buf_type type)
 	if (ret < 0)
 		goto err_check_format;
 
+<<<<<<< HEAD
 	/* In sensor-to-memory mode, the stream can be started synchronously
 	 * to the stream on command. In memory-to-memory mode, it will be
 	 * started when buffers are queued on both the input and output.
@@ -1104,6 +1477,16 @@ err_check_format:
 err_pipeline_start:
 	if (video->isp->pdata->set_constraints)
 		video->isp->pdata->set_constraints(video->isp, false);
+=======
+	mutex_unlock(&video->stream_lock);
+
+	return 0;
+
+err_check_format:
+	media_entity_pipeline_stop(&video->video.entity);
+err_pipeline_start:
+	/* TODO: Implement PM QoS */
+>>>>>>> v4.9.227
 	/* The DMA queue must be emptied here, otherwise CCDC interrupts that
 	 * will get triggered the next time the CCDC is powered up will try to
 	 * access buffers that might have been freed but still present in the
@@ -1114,7 +1497,15 @@ err_pipeline_start:
 	INIT_LIST_HEAD(&video->dmaqueue);
 	video->queue = NULL;
 
+<<<<<<< HEAD
 	mutex_unlock(&video->stream_lock);
+=======
+	media_entity_enum_cleanup(&pipe->ent_enum);
+
+err_enum_init:
+	mutex_unlock(&video->stream_lock);
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -1163,10 +1554,18 @@ isp_video_streamoff(struct file *file, void *fh, enum v4l2_buf_type type)
 	video->queue = NULL;
 	video->error = false;
 
+<<<<<<< HEAD
 	if (video->isp->pdata->set_constraints)
 		video->isp->pdata->set_constraints(video->isp, false);
 	media_entity_pipeline_stop(&video->video.entity);
 
+=======
+	/* TODO: Implement PM QoS */
+	media_entity_pipeline_stop(&video->video.entity);
+
+	media_entity_enum_cleanup(&pipe->ent_enum);
+
+>>>>>>> v4.9.227
 done:
 	mutex_unlock(&video->stream_lock);
 	return 0;
@@ -1206,9 +1605,14 @@ static const struct v4l2_ioctl_ops isp_video_ioctl_ops = {
 	.vidioc_g_fmt_vid_out		= isp_video_get_format,
 	.vidioc_s_fmt_vid_out		= isp_video_set_format,
 	.vidioc_try_fmt_vid_out		= isp_video_try_format,
+<<<<<<< HEAD
 	.vidioc_cropcap			= isp_video_cropcap,
 	.vidioc_g_crop			= isp_video_get_crop,
 	.vidioc_s_crop			= isp_video_set_crop,
+=======
+	.vidioc_g_selection		= isp_video_get_selection,
+	.vidioc_s_selection		= isp_video_set_selection,
+>>>>>>> v4.9.227
 	.vidioc_g_parm			= isp_video_get_param,
 	.vidioc_s_parm			= isp_video_set_param,
 	.vidioc_reqbufs			= isp_video_reqbufs,
@@ -1246,7 +1650,11 @@ static int isp_video_open(struct file *file)
 		goto done;
 	}
 
+<<<<<<< HEAD
 	ret = omap3isp_pipeline_pm_use(&video->video.entity, 1);
+=======
+	ret = v4l2_pipeline_pm_use(&video->video.entity, 1);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		omap3isp_put(video->isp);
 		goto done;
@@ -1260,6 +1668,10 @@ static int isp_video_open(struct file *file)
 	queue->mem_ops = &vb2_dma_contig_memops;
 	queue->buf_struct_size = sizeof(struct isp_buffer);
 	queue->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+<<<<<<< HEAD
+=======
+	queue->dev = video->isp->dev;
+>>>>>>> v4.9.227
 
 	ret = vb2_queue_init(&handle->queue);
 	if (ret < 0) {
@@ -1296,7 +1708,11 @@ static int isp_video_release(struct file *file)
 	vb2_queue_release(&handle->queue);
 	mutex_unlock(&video->queue_lock);
 
+<<<<<<< HEAD
 	omap3isp_pipeline_pm_use(&video->video.entity, 0);
+=======
+	v4l2_pipeline_pm_use(&video->video.entity, 0);
+>>>>>>> v4.9.227
 
 	/* Release the file handle. */
 	v4l2_fh_del(vfh);
@@ -1324,6 +1740,7 @@ static unsigned int isp_video_poll(struct file *file, poll_table *wait)
 static int isp_video_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct isp_video_fh *vfh = to_isp_video_fh(file->private_data);
+<<<<<<< HEAD
 	struct isp_video *video = video_drvdata(file);
 	int ret;
 
@@ -1332,6 +1749,10 @@ static int isp_video_mmap(struct file *file, struct vm_area_struct *vma)
 	mutex_unlock(&video->queue_lock);
 
 	return ret;
+=======
+
+	return vb2_mmap(&vfh->queue, vma);
+>>>>>>> v4.9.227
 }
 
 static struct v4l2_file_operations isp_video_fops = {
@@ -1372,6 +1793,7 @@ int omap3isp_video_init(struct isp_video *video, const char *name)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	video->alloc_ctx = vb2_dma_contig_init_ctx(video->isp->dev);
 	if (IS_ERR(video->alloc_ctx))
 		return PTR_ERR(video->alloc_ctx);
@@ -1381,6 +1803,11 @@ int omap3isp_video_init(struct isp_video *video, const char *name)
 		vb2_dma_contig_cleanup_ctx(video->alloc_ctx);
 		return ret;
 	}
+=======
+	ret = media_entity_pads_init(&video->video.entity, 1, &video->pad);
+	if (ret < 0)
+		return ret;
+>>>>>>> v4.9.227
 
 	mutex_init(&video->mutex);
 	atomic_set(&video->active, 0);
@@ -1409,7 +1836,10 @@ int omap3isp_video_init(struct isp_video *video, const char *name)
 
 void omap3isp_video_cleanup(struct isp_video *video)
 {
+<<<<<<< HEAD
 	vb2_dma_contig_cleanup_ctx(video->alloc_ctx);
+=======
+>>>>>>> v4.9.227
 	media_entity_cleanup(&video->video.entity);
 	mutex_destroy(&video->queue_lock);
 	mutex_destroy(&video->stream_lock);

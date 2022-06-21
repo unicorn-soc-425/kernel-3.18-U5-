@@ -54,14 +54,24 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+<<<<<<< HEAD
 #include <linux/err.h>
 #include <linux/types.h>
 #include <linux/crypto.h>
+=======
+#include <crypto/skcipher.h>
+#include <linux/err.h>
+#include <linux/types.h>
+>>>>>>> v4.9.227
 #include <linux/sunrpc/gss_krb5.h>
 #include <linux/sunrpc/xdr.h>
 #include <linux/lcm.h>
 
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> v4.9.227
 # define RPCDBG_FACILITY        RPCDBG_AUTH
 #endif
 
@@ -147,7 +157,11 @@ u32 krb5_derive_key(const struct gss_krb5_enctype *gk5e,
 	size_t blocksize, keybytes, keylength, n;
 	unsigned char *inblockdata, *outblockdata, *rawkey;
 	struct xdr_netobj inblock, outblock;
+<<<<<<< HEAD
 	struct crypto_blkcipher *cipher;
+=======
+	struct crypto_skcipher *cipher;
+>>>>>>> v4.9.227
 	u32 ret = EINVAL;
 
 	blocksize = gk5e->blocksize;
@@ -157,11 +171,19 @@ u32 krb5_derive_key(const struct gss_krb5_enctype *gk5e,
 	if ((inkey->len != keylength) || (outkey->len != keylength))
 		goto err_return;
 
+<<<<<<< HEAD
 	cipher = crypto_alloc_blkcipher(gk5e->encrypt_name, 0,
 					CRYPTO_ALG_ASYNC);
 	if (IS_ERR(cipher))
 		goto err_return;
 	if (crypto_blkcipher_setkey(cipher, inkey->data, inkey->len))
+=======
+	cipher = crypto_alloc_skcipher(gk5e->encrypt_name, 0,
+				       CRYPTO_ALG_ASYNC);
+	if (IS_ERR(cipher))
+		goto err_return;
+	if (crypto_skcipher_setkey(cipher, inkey->data, inkey->len))
+>>>>>>> v4.9.227
 		goto err_return;
 
 	/* allocate and set up buffers */
@@ -238,7 +260,11 @@ err_free_in:
 	memset(inblockdata, 0, blocksize);
 	kfree(inblockdata);
 err_free_cipher:
+<<<<<<< HEAD
 	crypto_free_blkcipher(cipher);
+=======
+	crypto_free_skcipher(cipher);
+>>>>>>> v4.9.227
 err_return:
 	return ret;
 }

@@ -570,16 +570,23 @@ static int kirkwood_i2s_dev_probe(struct platform_device *pdev)
 		return PTR_ERR(priv->clk);
 	}
 
+<<<<<<< HEAD
 	err = clk_prepare_enable(priv->clk);
 	if (err < 0)
 		return err;
 
+=======
+>>>>>>> v4.9.227
 	priv->extclk = devm_clk_get(&pdev->dev, "extclk");
 	if (IS_ERR(priv->extclk)) {
 		if (PTR_ERR(priv->extclk) == -EPROBE_DEFER)
 			return -EPROBE_DEFER;
 	} else {
+<<<<<<< HEAD
 		if (priv->extclk == priv->clk) {
+=======
+		if (clk_is_match(priv->extclk, priv->clk)) {
+>>>>>>> v4.9.227
 			devm_clk_put(&pdev->dev, priv->extclk);
 			priv->extclk = ERR_PTR(-EINVAL);
 		} else {
@@ -589,6 +596,13 @@ static int kirkwood_i2s_dev_probe(struct platform_device *pdev)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	err = clk_prepare_enable(priv->clk);
+	if (err < 0)
+		return err;
+
+>>>>>>> v4.9.227
 	/* Some sensible defaults - this reflects the powerup values */
 	priv->ctl_play = KIRKWOOD_PLAYCTL_SIZE_24;
 	priv->ctl_rec = KIRKWOOD_RECCTL_SIZE_24;
@@ -643,7 +657,11 @@ static int kirkwood_i2s_dev_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static struct of_device_id mvebu_audio_of_match[] = {
+=======
+static const struct of_device_id mvebu_audio_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "marvell,kirkwood-audio" },
 	{ .compatible = "marvell,dove-audio" },
 	{ .compatible = "marvell,armada370-audio" },
@@ -657,7 +675,10 @@ static struct platform_driver kirkwood_i2s_driver = {
 	.remove = kirkwood_i2s_dev_remove,
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(mvebu_audio_of_match),
 	},
 };

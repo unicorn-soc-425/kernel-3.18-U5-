@@ -32,8 +32,12 @@
 
 static cycle_t uv_read_rtc(struct clocksource *cs);
 static int uv_rtc_next_event(unsigned long, struct clock_event_device *);
+<<<<<<< HEAD
 static void uv_rtc_timer_setup(enum clock_event_mode,
 				struct clock_event_device *);
+=======
+static int uv_rtc_shutdown(struct clock_event_device *evt);
+>>>>>>> v4.9.227
 
 static struct clocksource clocksource_uv = {
 	.name		= RTC_NAME,
@@ -44,6 +48,7 @@ static struct clocksource clocksource_uv = {
 };
 
 static struct clock_event_device clock_event_device_uv = {
+<<<<<<< HEAD
 	.name		= RTC_NAME,
 	.features	= CLOCK_EVT_FEAT_ONESHOT,
 	.shift		= 20,
@@ -52,6 +57,16 @@ static struct clock_event_device clock_event_device_uv = {
 	.set_next_event	= uv_rtc_next_event,
 	.set_mode	= uv_rtc_timer_setup,
 	.event_handler	= NULL,
+=======
+	.name			= RTC_NAME,
+	.features		= CLOCK_EVT_FEAT_ONESHOT,
+	.shift			= 20,
+	.rating			= 400,
+	.irq			= -1,
+	.set_next_event		= uv_rtc_next_event,
+	.set_state_shutdown	= uv_rtc_shutdown,
+	.event_handler		= NULL,
+>>>>>>> v4.9.227
 };
 
 static DEFINE_PER_CPU(struct clock_event_device, cpu_ced);
@@ -166,7 +181,11 @@ static __init int uv_rtc_allocate_timers(void)
 	for_each_present_cpu(cpu) {
 		int nid = cpu_to_node(cpu);
 		int bid = uv_cpu_to_blade_id(cpu);
+<<<<<<< HEAD
 		int bcpu = uv_cpu_hub_info(cpu)->blade_processor_id;
+=======
+		int bcpu = uv_cpu_blade_processor_id(cpu);
+>>>>>>> v4.9.227
 		struct uv_rtc_timer_head *head = blade_info[bid];
 
 		if (!head) {
@@ -227,7 +246,11 @@ static int uv_rtc_set_timer(int cpu, u64 expires)
 	int pnode = uv_cpu_to_pnode(cpu);
 	int bid = uv_cpu_to_blade_id(cpu);
 	struct uv_rtc_timer_head *head = blade_info[bid];
+<<<<<<< HEAD
 	int bcpu = uv_cpu_hub_info(cpu)->blade_processor_id;
+=======
+	int bcpu = uv_cpu_blade_processor_id(cpu);
+>>>>>>> v4.9.227
 	u64 *t = &head->cpu[bcpu].expires;
 	unsigned long flags;
 	int next_cpu;
@@ -263,7 +286,11 @@ static int uv_rtc_unset_timer(int cpu, int force)
 	int pnode = uv_cpu_to_pnode(cpu);
 	int bid = uv_cpu_to_blade_id(cpu);
 	struct uv_rtc_timer_head *head = blade_info[bid];
+<<<<<<< HEAD
 	int bcpu = uv_cpu_hub_info(cpu)->blade_processor_id;
+=======
+	int bcpu = uv_cpu_blade_processor_id(cpu);
+>>>>>>> v4.9.227
 	u64 *t = &head->cpu[bcpu].expires;
 	unsigned long flags;
 	int rc = 0;
@@ -321,6 +348,7 @@ static int uv_rtc_next_event(unsigned long delta,
 }
 
 /*
+<<<<<<< HEAD
  * Setup the RTC timer in oneshot mode
  */
 static void uv_rtc_timer_setup(enum clock_event_mode mode,
@@ -339,6 +367,16 @@ static void uv_rtc_timer_setup(enum clock_event_mode mode,
 		uv_rtc_unset_timer(ced_cpu, 1);
 		break;
 	}
+=======
+ * Shutdown the RTC timer
+ */
+static int uv_rtc_shutdown(struct clock_event_device *evt)
+{
+	int ced_cpu = cpumask_first(evt->cpumask);
+
+	uv_rtc_unset_timer(ced_cpu, 1);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void uv_rtc_interrupt(void)

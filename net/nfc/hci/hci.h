@@ -65,6 +65,17 @@ struct hci_create_pipe_resp {
 	u8 pipe;
 } __packed;
 
+<<<<<<< HEAD
+=======
+struct hci_delete_pipe_noti {
+	u8 pipe;
+} __packed;
+
+struct hci_all_pipe_cleared_noti {
+	u8 host;
+} __packed;
+
+>>>>>>> v4.9.227
 #define NFC_HCI_FRAGMENT	0x7f
 
 #define HCP_HEADER(type, instr) ((((type) & 0x03) << 6) | ((instr) & 0x3f))
@@ -77,8 +88,11 @@ int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
 			   data_exchange_cb_t cb, void *cb_context,
 			   unsigned long completion_delay);
 
+<<<<<<< HEAD
 u8 nfc_hci_pipe2gate(struct nfc_hci_dev *hdev, u8 pipe);
 
+=======
+>>>>>>> v4.9.227
 void nfc_hci_hcp_message_rx(struct nfc_hci_dev *hdev, u8 pipe, u8 type,
 			    u8 instruction, struct sk_buff *skb);
 

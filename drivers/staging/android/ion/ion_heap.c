@@ -2,7 +2,10 @@
  * drivers/staging/android/ion/ion_heap.c
  *
  * Copyright (C) 2011 Google, Inc.
+<<<<<<< HEAD
  * Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+>>>>>>> v4.9.227
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -23,9 +26,12 @@
 #include <linux/sched.h>
 #include <linux/scatterlist.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include <linux/highmem.h>
 #include <linux/dma-mapping.h>
+=======
+>>>>>>> v4.9.227
 #include "ion.h"
 #include "ion_priv.h"
 
@@ -60,7 +66,11 @@ void *ion_heap_map_kernel(struct ion_heap *heap,
 	vaddr = vmap(pages, npages, VM_MAP, pgprot);
 	vfree(pages);
 
+<<<<<<< HEAD
 	if (vaddr == NULL)
+=======
+	if (!vaddr)
+>>>>>>> v4.9.227
 		return ERR_PTR(-ENOMEM);
 
 	return vaddr;
@@ -97,7 +107,11 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
 		}
 		len = min(len, remainder);
 		ret = remap_pfn_range(vma, addr, page_to_pfn(page), len,
+<<<<<<< HEAD
 				vma->vm_page_prot);
+=======
+				      vma->vm_page_prot);
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 		addr += len;
@@ -120,7 +134,11 @@ static int ion_heap_clear_pages(struct page **pages, int num, pgprot_t pgprot)
 }
 
 static int ion_heap_sglist_zero(struct scatterlist *sgl, unsigned int nents,
+<<<<<<< HEAD
 						pgprot_t pgprot)
+=======
+				pgprot_t pgprot)
+>>>>>>> v4.9.227
 {
 	int p = 0;
 	int ret = 0;
@@ -185,7 +203,11 @@ size_t ion_heap_freelist_size(struct ion_heap *heap)
 }
 
 static size_t _ion_heap_freelist_drain(struct ion_heap *heap, size_t size,
+<<<<<<< HEAD
 				bool skip_pools)
+=======
+				       bool skip_pools)
+>>>>>>> v4.9.227
 {
 	struct ion_buffer *buffer;
 	size_t total_drained = 0;
@@ -270,7 +292,11 @@ int ion_heap_init_deferred_free(struct ion_heap *heap)
 }
 
 static unsigned long ion_heap_shrink_count(struct shrinker *shrinker,
+<<<<<<< HEAD
 						struct shrink_control *sc)
+=======
+					   struct shrink_control *sc)
+>>>>>>> v4.9.227
 {
 	struct ion_heap *heap = container_of(shrinker, struct ion_heap,
 					     shrinker);
@@ -283,7 +309,11 @@ static unsigned long ion_heap_shrink_count(struct shrinker *shrinker,
 }
 
 static unsigned long ion_heap_shrink_scan(struct shrinker *shrinker,
+<<<<<<< HEAD
 						struct shrink_control *sc)
+=======
+					  struct shrink_control *sc)
+>>>>>>> v4.9.227
 {
 	struct ion_heap *heap = container_of(shrinker, struct ion_heap,
 					     shrinker);
@@ -325,9 +355,14 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 
 	switch (heap_data->type) {
 	case ION_HEAP_TYPE_SYSTEM_CONTIG:
+<<<<<<< HEAD
 		pr_err("%s: Heap type is disabled: %d\n", __func__,
 		       heap_data->type);
 		return ERR_PTR(-EINVAL);
+=======
+		heap = ion_system_contig_heap_create(heap_data);
+		break;
+>>>>>>> v4.9.227
 	case ION_HEAP_TYPE_SYSTEM:
 		heap = ion_system_heap_create(heap_data);
 		break;
@@ -347,17 +382,29 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 	}
 
 	if (IS_ERR_OR_NULL(heap)) {
+<<<<<<< HEAD
 		pr_err("%s: error creating heap %s type %d base %pa size %zu\n",
 		       __func__, heap_data->name, heap_data->type,
 		       &heap_data->base, heap_data->size);
+=======
+		pr_err("%s: error creating heap %s type %d base %lu size %zu\n",
+		       __func__, heap_data->name, heap_data->type,
+		       heap_data->base, heap_data->size);
+>>>>>>> v4.9.227
 		return ERR_PTR(-EINVAL);
 	}
 
 	heap->name = heap_data->name;
 	heap->id = heap_data->id;
+<<<<<<< HEAD
 	heap->priv = heap_data->priv;
 	return heap;
 }
+=======
+	return heap;
+}
+EXPORT_SYMBOL(ion_heap_create);
+>>>>>>> v4.9.227
 
 void ion_heap_destroy(struct ion_heap *heap)
 {
@@ -366,8 +413,12 @@ void ion_heap_destroy(struct ion_heap *heap)
 
 	switch (heap->type) {
 	case ION_HEAP_TYPE_SYSTEM_CONTIG:
+<<<<<<< HEAD
 		pr_err("%s: Heap type is disabled: %d\n", __func__,
 		       heap->type);
+=======
+		ion_system_contig_heap_destroy(heap);
+>>>>>>> v4.9.227
 		break;
 	case ION_HEAP_TYPE_SYSTEM:
 		ion_system_heap_destroy(heap);
@@ -386,3 +437,7 @@ void ion_heap_destroy(struct ion_heap *heap)
 		       heap->type);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ion_heap_destroy);
+>>>>>>> v4.9.227

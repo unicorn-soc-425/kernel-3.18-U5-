@@ -62,6 +62,7 @@ static int proc_ipc_dointvec_minmax_orphans(struct ctl_table *table, int write,
 	return err;
 }
 
+<<<<<<< HEAD
 static int proc_ipc_callback_dointvec_minmax(struct ctl_table *table, int write,
 	void __user *buffer, size_t *lenp, loff_t *ppos)
 {
@@ -85,6 +86,8 @@ static int proc_ipc_callback_dointvec_minmax(struct ctl_table *table, int write,
 	return rc;
 }
 
+=======
+>>>>>>> v4.9.227
 static int proc_ipc_doulongvec_minmax(struct ctl_table *table, int write,
 	void __user *buffer, size_t *lenp, loff_t *ppos)
 {
@@ -96,6 +99,7 @@ static int proc_ipc_doulongvec_minmax(struct ctl_table *table, int write,
 					lenp, ppos);
 }
 
+<<<<<<< HEAD
 /*
  * Routine that is called when the file "auto_msgmni" has successfully been
  * written.
@@ -144,6 +148,21 @@ static int proc_ipcauto_dointvec_minmax(struct ctl_table *table, int write,
 	}
 
 	return rc;
+=======
+static int proc_ipc_auto_msgmni(struct ctl_table *table, int write,
+	void __user *buffer, size_t *lenp, loff_t *ppos)
+{
+	struct ctl_table ipc_table;
+	int dummy = 0;
+
+	memcpy(&ipc_table, table, sizeof(ipc_table));
+	ipc_table.data = &dummy;
+
+	if (write)
+		pr_info_once("writing to auto_msgmni has no effect");
+
+	return proc_dointvec_minmax(&ipc_table, write, buffer, lenp, ppos);
+>>>>>>> v4.9.227
 }
 
 #else
@@ -151,8 +170,12 @@ static int proc_ipcauto_dointvec_minmax(struct ctl_table *table, int write,
 #define proc_ipc_dointvec	   NULL
 #define proc_ipc_dointvec_minmax   NULL
 #define proc_ipc_dointvec_minmax_orphans   NULL
+<<<<<<< HEAD
 #define proc_ipc_callback_dointvec_minmax  NULL
 #define proc_ipcauto_dointvec_minmax NULL
+=======
+#define proc_ipc_auto_msgmni	   NULL
+>>>>>>> v4.9.227
 #endif
 
 static int zero;
@@ -204,11 +227,27 @@ static struct ctl_table ipc_kern_table[] = {
 		.data		= &init_ipc_ns.msg_ctlmni,
 		.maxlen		= sizeof(init_ipc_ns.msg_ctlmni),
 		.mode		= 0644,
+<<<<<<< HEAD
 		.proc_handler	= proc_ipc_callback_dointvec_minmax,
+=======
+		.proc_handler	= proc_ipc_dointvec_minmax,
+>>>>>>> v4.9.227
 		.extra1		= &zero,
 		.extra2		= &int_max,
 	},
 	{
+<<<<<<< HEAD
+=======
+		.procname	= "auto_msgmni",
+		.data		= NULL,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= proc_ipc_auto_msgmni,
+		.extra1		= &zero,
+		.extra2		= &one,
+	},
+	{
+>>>>>>> v4.9.227
 		.procname	=  "msgmnb",
 		.data		= &init_ipc_ns.msg_ctlmnb,
 		.maxlen		= sizeof(init_ipc_ns.msg_ctlmnb),
@@ -224,6 +263,7 @@ static struct ctl_table ipc_kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_ipc_dointvec,
 	},
+<<<<<<< HEAD
 	{
 		.procname	= "auto_msgmni",
 		.data		= &init_ipc_ns.auto_msgmni,
@@ -233,6 +273,8 @@ static struct ctl_table ipc_kern_table[] = {
 		.extra1		= &zero,
 		.extra2		= &one,
 	},
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_CHECKPOINT_RESTORE
 	{
 		.procname	= "sem_next_id",

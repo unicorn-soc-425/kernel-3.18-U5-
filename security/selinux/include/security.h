@@ -39,11 +39,15 @@
 
 /* Range of policy versions we understand*/
 #define POLICYDB_VERSION_MIN   POLICYDB_VERSION_BASE
+<<<<<<< HEAD
 #ifdef CONFIG_SECURITY_SELINUX_POLICYDB_VERSION_MAX
 #define POLICYDB_VERSION_MAX	CONFIG_SECURITY_SELINUX_POLICYDB_VERSION_MAX_VALUE
 #else
 #define POLICYDB_VERSION_MAX	POLICYDB_VERSION_XPERMS_IOCTL
 #endif
+=======
+#define POLICYDB_VERSION_MAX	POLICYDB_VERSION_XPERMS_IOCTL
+>>>>>>> v4.9.227
 
 /* Mask for just the mount related flags */
 #define SE_MNTMASK	0x0f
@@ -134,6 +138,7 @@ struct extended_perms {
 };
 
 /* definitions of av_decision.flags */
+<<<<<<< HEAD
 // [ SEC_SELINUX_PORTING_COMMON
 #ifdef CONFIG_ALWAYS_ENFORCE
 #define AVD_FLAGS_PERMISSIVE	0x0000
@@ -141,6 +146,9 @@ struct extended_perms {
 #define AVD_FLAGS_PERMISSIVE	0x0001
 #endif
 // ] SEC_SELINUX_PORTING_COMMON
+=======
+#define AVD_FLAGS_PERMISSIVE	0x0001
+>>>>>>> v4.9.227
 
 void security_compute_av(u32 ssid, u32 tsid,
 			 u16 tclass, struct av_decision *avd,
@@ -172,6 +180,11 @@ int security_sid_to_context_force(u32 sid, char **scontext, u32 *scontext_len);
 int security_context_to_sid(const char *scontext, u32 scontext_len,
 			    u32 *out_sid, gfp_t gfp);
 
+<<<<<<< HEAD
+=======
+int security_context_str_to_sid(const char *scontext, u32 *out_sid, gfp_t gfp);
+
+>>>>>>> v4.9.227
 int security_context_to_sid_default(const char *scontext, u32 scontext_len,
 				    u32 *out_sid, u32 def_sid, gfp_t gfp_flags);
 
@@ -191,6 +204,12 @@ int security_node_sid(u16 domain, void *addr, u32 addrlen,
 int security_validate_transition(u32 oldsid, u32 newsid, u32 tasksid,
 				 u16 tclass);
 
+<<<<<<< HEAD
+=======
+int security_validate_transition_user(u32 oldsid, u32 newsid, u32 tasksid,
+				      u16 tclass);
+
+>>>>>>> v4.9.227
 int security_bounded_transition(u32 oldsid, u32 newsid);
 
 int security_sid_mls_copy(u32 sid, u32 mls_sid, u32 *new_sid);

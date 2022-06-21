@@ -11,7 +11,11 @@
 #ifndef __MPC8xx_H
 #define __MPC8xx_H
 
+<<<<<<< HEAD
 extern void mpc8xx_restart(char *cmd);
+=======
+extern void __noreturn mpc8xx_restart(char *cmd);
+>>>>>>> v4.9.227
 extern void mpc8xx_calibrate_decr(void);
 extern int mpc8xx_set_rtc_time(struct rtc_time *tm);
 extern void mpc8xx_get_rtc_time(struct rtc_time *tm);

@@ -25,9 +25,24 @@ config INPUT
 
 if INPUT
 
+<<<<<<< HEAD
 config SEC_DEBUG_TSP_LOG
 	tristate "Support for tsp_msg"
 	default n
+=======
+config INPUT_LEDS
+	tristate "Export input device LEDs in sysfs"
+	depends on LEDS_CLASS
+	default INPUT
+	help
+	  Say Y here if you would like to export LEDs on input devices
+	  as standard LED class devices in sysfs.
+
+	  If unsure, say Y.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called input-leds.
+>>>>>>> v4.9.227
 
 config INPUT_FF_MEMLESS
 	tristate "Support for memoryless force-feedback devices"
@@ -178,6 +193,7 @@ config INPUT_APMPOWER
 	  To compile this driver as a module, choose M here: the
 	  module will be called apm-power.
 
+<<<<<<< HEAD
 config INPUT_KEYRESET
 	bool "Reset key"
 	depends on INPUT
@@ -226,6 +242,8 @@ config SEC_AUTO_INPUT
 	  To compile this driver as a module, choose M here: the
 	  module will be called autoinput.
 
+=======
+>>>>>>> v4.9.227
 comment "Input Device Drivers"
 
 source "drivers/input/keyboard/Kconfig"
@@ -240,7 +258,11 @@ source "drivers/input/touchscreen/Kconfig"
 
 source "drivers/input/misc/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/input/sensors/smi130/Kconfig"
+=======
+source "drivers/input/rmi4/Kconfig"
+>>>>>>> v4.9.227
 
 endif
 

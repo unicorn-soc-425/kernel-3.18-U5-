@@ -27,7 +27,10 @@
 
 #define OMAP_I2C_SIZE		0x3f
 #define OMAP1_I2C_BASE		0xfffb3800
+<<<<<<< HEAD
 #define OMAP1_INT_I2C		(32 + 4)
+=======
+>>>>>>> v4.9.227
 
 static const char name[] = "omap_i2c";
 
@@ -67,7 +70,11 @@ int __init omap_i2c_add_bus(struct omap_i2c_bus_platform_data *pdata,
 	res[0].start = OMAP1_I2C_BASE;
 	res[0].end = res[0].start + OMAP_I2C_SIZE;
 	res[0].flags = IORESOURCE_MEM;
+<<<<<<< HEAD
 	res[1].start = OMAP1_INT_I2C;
+=======
+	res[1].start = INT_I2C;
+>>>>>>> v4.9.227
 	res[1].flags = IORESOURCE_IRQ;
 	pdev->resource = res;
 

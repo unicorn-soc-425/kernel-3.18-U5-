@@ -89,7 +89,11 @@ static void os_info_old_alloc(int nr, int align)
 		goto fail;
 	}
 	buf_align = PTR_ALIGN(buf, align);
+<<<<<<< HEAD
 	if (copy_from_oldmem(buf_align, (void *) addr, size)) {
+=======
+	if (copy_oldmem_kernel(buf_align, (void *) addr, size)) {
+>>>>>>> v4.9.227
 		msg = "copy failed";
 		goto fail_free;
 	}
@@ -122,14 +126,23 @@ static void os_info_old_init(void)
 		return;
 	if (!OLDMEM_BASE)
 		goto fail;
+<<<<<<< HEAD
 	if (copy_from_oldmem(&addr, &S390_lowcore.os_info, sizeof(addr)))
+=======
+	if (copy_oldmem_kernel(&addr, &S390_lowcore.os_info, sizeof(addr)))
+>>>>>>> v4.9.227
 		goto fail;
 	if (addr == 0 || addr % PAGE_SIZE)
 		goto fail;
 	os_info_old = kzalloc(sizeof(*os_info_old), GFP_KERNEL);
 	if (!os_info_old)
 		goto fail;
+<<<<<<< HEAD
 	if (copy_from_oldmem(os_info_old, (void *) addr, sizeof(*os_info_old)))
+=======
+	if (copy_oldmem_kernel(os_info_old, (void *) addr,
+			       sizeof(*os_info_old)))
+>>>>>>> v4.9.227
 		goto fail_free;
 	if (os_info_old->magic != OS_INFO_MAGIC)
 		goto fail_free;

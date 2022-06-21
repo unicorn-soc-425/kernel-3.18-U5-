@@ -1,6 +1,11 @@
 #ifndef __LINUX_BRIDGE_EBT_ARPREPLY_H
 #define __LINUX_BRIDGE_EBT_ARPREPLY_H
 
+<<<<<<< HEAD
+=======
+#include <linux/if_ether.h>
+
+>>>>>>> v4.9.227
 struct ebt_arpreply_info {
 	unsigned char mac[ETH_ALEN];
 	int target;

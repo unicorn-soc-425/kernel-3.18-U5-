@@ -1,7 +1,11 @@
 /*
  * libcxgbi.h: Chelsio common library for T3/T4 iSCSI driver.
  *
+<<<<<<< HEAD
  * Copyright (c) 2010 Chelsio Communications, Inc.
+=======
+ * Copyright (c) 2010-2015 Chelsio Communications, Inc.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +28,18 @@
 #include <linux/scatterlist.h>
 #include <linux/skbuff.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <scsi/scsi_device.h>
 #include <scsi/libiscsi_tcp.h>
 
+=======
+#include <linux/version.h>
+#include <scsi/scsi_device.h>
+#include <scsi/libiscsi_tcp.h>
+
+#include <libcxgb_ppm.h>
+
+>>>>>>> v4.9.227
 enum cxgbi_dbg_flag {
 	CXGBI_DBG_ISCSI,
 	CXGBI_DBG_DDP,
@@ -84,15 +97,19 @@ static inline unsigned int cxgbi_ulp_extra_len(int submode)
 	return ulp2_extra_len[submode & 3];
 }
 
+<<<<<<< HEAD
 /*
  * struct pagepod_hdr, pagepod - pagepod format
  */
 
+=======
+>>>>>>> v4.9.227
 #define CPL_RX_DDP_STATUS_DDP_SHIFT	16 /* ddp'able */
 #define CPL_RX_DDP_STATUS_PAD_SHIFT	19 /* pad error */
 #define CPL_RX_DDP_STATUS_HCRC_SHIFT	20 /* hcrc error */
 #define CPL_RX_DDP_STATUS_DCRC_SHIFT	21 /* dcrc error */
 
+<<<<<<< HEAD
 struct cxgbi_pagepod_hdr {
 	u32 vld_tid;
 	u32 pgsz_tag_clr;
@@ -170,6 +187,8 @@ struct cxgbi_ddp_info {
 #define PPOD_VALID(x)		((x) << PPOD_VALID_SHIFT)
 #define PPOD_VALID_FLAG		PPOD_VALID(1U)
 
+=======
+>>>>>>> v4.9.227
 /*
  * sge_opaque_hdr -
  * Opaque version of structure the SGE stores at skb->head of TX_DATA packets
@@ -234,6 +253,11 @@ struct cxgbi_sock {
 	u32 snd_nxt;
 	u32 snd_una;
 	u32 write_seq;
+<<<<<<< HEAD
+=======
+	u32 snd_win;
+	u32 rcv_win;
+>>>>>>> v4.9.227
 };
 
 /*
@@ -277,6 +301,11 @@ struct cxgbi_skb_tx_cb {
 
 enum cxgbi_skcb_flags {
 	SKCBF_TX_NEED_HDR,	/* packet needs a header */
+<<<<<<< HEAD
+=======
+	SKCBF_TX_MEM_WRITE,     /* memory write */
+	SKCBF_TX_FLAG_COMPL,    /* wr completion flag */
+>>>>>>> v4.9.227
 	SKCBF_RX_COALESCED,	/* received whole pdu */
 	SKCBF_RX_HDR,		/* received pdu header */
 	SKCBF_RX_DATA,		/* received pdu payload */
@@ -317,8 +346,13 @@ static inline void cxgbi_skcb_clear_flag(struct sk_buff *skb,
 	__clear_bit(flag, &(cxgbi_skcb_flags(skb)));
 }
 
+<<<<<<< HEAD
 static inline int cxgbi_skcb_test_flag(struct sk_buff *skb,
 					enum cxgbi_skcb_flags flag)
+=======
+static inline int cxgbi_skcb_test_flag(const struct sk_buff *skb,
+				       enum cxgbi_skcb_flags flag)
+>>>>>>> v4.9.227
 {
 	return test_bit(flag, &(cxgbi_skcb_flags(skb)));
 }
@@ -525,6 +559,12 @@ struct cxgbi_ports_map {
 #define CXGBI_FLAG_DEV_T4		0x2
 #define CXGBI_FLAG_ADAPTER_RESET	0x4
 #define CXGBI_FLAG_IPV4_SET		0x10
+<<<<<<< HEAD
+=======
+#define CXGBI_FLAG_USE_PPOD_OFLDQ       0x40
+#define CXGBI_FLAG_DDP_OFF		0x100
+
+>>>>>>> v4.9.227
 struct cxgbi_device {
 	struct list_head list_head;
 	struct list_head rcu_node;
@@ -540,14 +580,18 @@ struct cxgbi_device {
 	struct iscsi_transport *itp;
 
 	unsigned int pfvf;
+<<<<<<< HEAD
 	unsigned int snd_win;
 	unsigned int rcv_win;
+=======
+>>>>>>> v4.9.227
 	unsigned int rx_credit_thres;
 	unsigned int skb_tx_rsvd;
 	unsigned int skb_rx_extra;	/* for msg coalesced mode */
 	unsigned int tx_max_size;
 	unsigned int rx_max_size;
 	struct cxgbi_ports_map pmap;
+<<<<<<< HEAD
 	struct cxgbi_tag_format tag_format;
 	struct cxgbi_ddp_info *ddp;
 
@@ -557,6 +601,16 @@ struct cxgbi_device {
 				struct cxgbi_gather_list *);
 	void (*csk_ddp_clear)(struct cxgbi_hba *,
 				unsigned int, unsigned int, unsigned int);
+=======
+
+	void (*dev_ddp_cleanup)(struct cxgbi_device *);
+	struct cxgbi_ppm* (*cdev2ppm)(struct cxgbi_device *);
+	int (*csk_ddp_set_map)(struct cxgbi_ppm *, struct cxgbi_sock *,
+			       struct cxgbi_task_tag_info *);
+	void (*csk_ddp_clear_map)(struct cxgbi_device *cdev,
+				  struct cxgbi_ppm *,
+				  struct cxgbi_task_tag_info *);
+>>>>>>> v4.9.227
 	int (*csk_ddp_setup_digest)(struct cxgbi_sock *,
 				unsigned int, int, int, int);
 	int (*csk_ddp_setup_pgidx)(struct cxgbi_sock *,
@@ -580,6 +634,11 @@ struct cxgbi_conn {
 	struct iscsi_conn *iconn;
 	struct cxgbi_hba *chba;
 	u32 task_idx_bits;
+<<<<<<< HEAD
+=======
+	unsigned int ddp_full;
+	unsigned int ddp_tag_full;
+>>>>>>> v4.9.227
 };
 
 struct cxgbi_endpoint {
@@ -593,13 +652,22 @@ struct cxgbi_task_data {
 	unsigned short nr_frags;
 	struct page_frag frags[MAX_PDU_FRAGS];
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	unsigned int offset;
 	unsigned int count;
 	unsigned int sgoffset;
+=======
+	unsigned int dlen;
+	unsigned int offset;
+	unsigned int count;
+	unsigned int sgoffset;
+	struct cxgbi_task_tag_info ttinfo;
+>>>>>>> v4.9.227
 };
 #define iscsi_task_cxgbi_data(task) \
 	((task)->dd_data + sizeof(struct iscsi_tcp_task))
 
+<<<<<<< HEAD
 static inline int cxgbi_is_ddp_tag(struct cxgbi_tag_format *tformat, u32 tag)
 {
 	return !(tag & (1 << (tformat->rsvd_bits + tformat->rsvd_shift - 1)));
@@ -672,6 +740,8 @@ static inline u32 cxgbi_tag_nonrsvd_bits(struct cxgbi_tag_format *tformat,
 	return v1 | v2;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void *cxgbi_alloc_big_mem(unsigned int size,
 					gfp_t gfp)
 {
@@ -685,10 +755,14 @@ static inline void *cxgbi_alloc_big_mem(unsigned int size,
 
 static inline void cxgbi_free_big_mem(void *addr)
 {
+<<<<<<< HEAD
 	if (is_vmalloc_addr(addr))
 		vfree(addr);
 	else
 		kfree(addr);
+=======
+	kvfree(addr);
+>>>>>>> v4.9.227
 }
 
 static inline void cxgbi_set_iscsi_ipv4(struct cxgbi_hba *chba, __be32 ipaddr)
@@ -752,7 +826,17 @@ int cxgbi_ddp_init(struct cxgbi_device *, unsigned int, unsigned int,
 			unsigned int, unsigned int);
 int cxgbi_ddp_cleanup(struct cxgbi_device *);
 void cxgbi_ddp_page_size_factor(int *);
+<<<<<<< HEAD
 void cxgbi_ddp_ppod_clear(struct cxgbi_pagepod *);
 void cxgbi_ddp_ppod_set(struct cxgbi_pagepod *, struct cxgbi_pagepod_hdr *,
 			struct cxgbi_gather_list *, unsigned int);
+=======
+void cxgbi_ddp_set_one_ppod(struct cxgbi_pagepod *,
+			    struct cxgbi_task_tag_info *,
+			    struct scatterlist **sg_pp, unsigned int *sg_off);
+void cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *,
+			 struct cxgbi_tag_format *, unsigned int ppmax,
+			 unsigned int llimit, unsigned int start,
+			 unsigned int rsvd_factor);
+>>>>>>> v4.9.227
 #endif	/*__LIBCXGBI_H__*/

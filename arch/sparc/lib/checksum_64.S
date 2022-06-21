@@ -13,6 +13,10 @@
  *	BSD4.4 portable checksum routine
  */
 
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 	.text
 
 csum_partial_fix_alignment:
@@ -37,6 +41,10 @@ csum_partial_fix_alignment:
 
 	.align		32
 	.globl		csum_partial
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(csum_partial)
+>>>>>>> v4.9.227
 csum_partial:		/* %o0=buff, %o1=len, %o2=sum */
 	prefetch	[%o0 + 0x000], #n_reads
 	clr		%o4

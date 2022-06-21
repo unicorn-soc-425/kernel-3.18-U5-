@@ -250,7 +250,11 @@ void bch_bio_map(struct bio *bio, void *base)
 	BUG_ON(!bio->bi_iter.bi_size);
 	BUG_ON(bio->bi_vcnt);
 
+<<<<<<< HEAD
 	bv->bv_offset = base ? ((unsigned long) base) % PAGE_SIZE : 0;
+=======
+	bv->bv_offset = base ? offset_in_page(base) : 0;
+>>>>>>> v4.9.227
 	goto start;
 
 	for (; size; bio->bi_vcnt++, bv++) {

@@ -63,6 +63,12 @@ static int kernfs_get_target_path(struct kernfs_node *parent,
 		if (base == kn)
 			break;
 
+<<<<<<< HEAD
+=======
+		if ((s - path) + 3 >= PATH_MAX)
+			return -ENAMETOOLONG;
+
+>>>>>>> v4.9.227
 		strcpy(s, "../");
 		s += 3;
 		base = base->parent;
@@ -79,7 +85,11 @@ static int kernfs_get_target_path(struct kernfs_node *parent,
 	if (len < 2)
 		return -EINVAL;
 	len--;
+<<<<<<< HEAD
 	if ((s - path) + len > PATH_MAX)
+=======
+	if ((s - path) + len >= PATH_MAX)
+>>>>>>> v4.9.227
 		return -ENAMETOOLONG;
 
 	/* reverse fillup of target string from target to base */
@@ -88,7 +98,11 @@ static int kernfs_get_target_path(struct kernfs_node *parent,
 		int slen = strlen(kn->name);
 
 		len -= slen;
+<<<<<<< HEAD
 		strncpy(s + len, kn->name, slen);
+=======
+		memcpy(s + len, kn->name, slen);
+>>>>>>> v4.9.227
 		if (len)
 			s[--len] = '/';
 
@@ -112,6 +126,7 @@ static int kernfs_getlink(struct dentry *dentry, char *path)
 	return error;
 }
 
+<<<<<<< HEAD
 static void *kernfs_iop_follow_link(struct dentry *dentry, struct nameidata *nd)
 {
 	int error = -ENOMEM;
@@ -141,6 +156,33 @@ const struct inode_operations kernfs_symlink_iops = {
 	.readlink	= generic_readlink,
 	.follow_link	= kernfs_iop_follow_link,
 	.put_link	= kernfs_iop_put_link,
+=======
+static const char *kernfs_iop_get_link(struct dentry *dentry,
+				       struct inode *inode,
+				       struct delayed_call *done)
+{
+	char *body;
+	int error;
+
+	if (!dentry)
+		return ERR_PTR(-ECHILD);
+	body = kzalloc(PAGE_SIZE, GFP_KERNEL);
+	if (!body)
+		return ERR_PTR(-ENOMEM);
+	error = kernfs_getlink(dentry, body);
+	if (unlikely(error < 0)) {
+		kfree(body);
+		return ERR_PTR(error);
+	}
+	set_delayed_call(done, kfree_link, body);
+	return body;
+}
+
+const struct inode_operations kernfs_symlink_iops = {
+	.listxattr	= kernfs_iop_listxattr,
+	.readlink	= generic_readlink,
+	.get_link	= kernfs_iop_get_link,
+>>>>>>> v4.9.227
 	.setattr	= kernfs_iop_setattr,
 	.getattr	= kernfs_iop_getattr,
 	.permission	= kernfs_iop_permission,

@@ -53,14 +53,20 @@
 #ifndef _LINUX_P80211CONV_H
 #define _LINUX_P80211CONV_H
 
+<<<<<<< HEAD
 #define WLAN_ETHADDR_LEN	6
+=======
+>>>>>>> v4.9.227
 #define WLAN_IEEE_OUI_LEN	3
 
 #define WLAN_ETHCONV_ENCAP	1
 #define WLAN_ETHCONV_8021h	3
 
+<<<<<<< HEAD
 #define WLAN_ETHHDR_LEN		14
 
+=======
+>>>>>>> v4.9.227
 #define P80211CAPTURE_VERSION	0x80211001
 
 #define	P80211_FRMMETA_MAGIC	0x802110
@@ -131,8 +137,13 @@ struct p80211_metawep {
 
 /* local ether header type */
 struct wlan_ethhdr {
+<<<<<<< HEAD
 	u8 daddr[WLAN_ETHADDR_LEN];
 	u8 saddr[WLAN_ETHADDR_LEN];
+=======
+	u8 daddr[ETH_ALEN];
+	u8 saddr[ETH_ALEN];
+>>>>>>> v4.9.227
 	u16 type;
 } __packed;
 

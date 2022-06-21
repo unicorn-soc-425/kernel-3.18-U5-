@@ -325,7 +325,11 @@ static long dsp56k_ioctl(struct file *file, unsigned int cmd,
 			if(get_user(bin, &binary->bin) < 0)
 				return -EFAULT;
 		
+<<<<<<< HEAD
 			if (len == 0) {
+=======
+			if (len <= 0) {
+>>>>>>> v4.9.227
 				return -EINVAL;      /* nothing to upload?!? */
 			}
 			if (len > DSP56K_MAX_BINARY_LENGTH) {

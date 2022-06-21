@@ -200,7 +200,11 @@ out:
 }
 
 /* host must be already claimed */
+<<<<<<< HEAD
 int ssb_sdio_switch_core(struct ssb_bus *bus, struct ssb_device *dev)
+=======
+static int ssb_sdio_switch_core(struct ssb_bus *bus, struct ssb_device *dev)
+>>>>>>> v4.9.227
 {
 	u8 coreidx = dev->core_index;
 	u32 sbaddr;

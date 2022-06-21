@@ -28,7 +28,11 @@ void arch_jump_label_transform(struct jump_entry *entry,
 	void *addr = (void *)entry->code;
 	u32 insn;
 
+<<<<<<< HEAD
 	if (type == JUMP_LABEL_ENABLE) {
+=======
+	if (type == JUMP_LABEL_JMP) {
+>>>>>>> v4.9.227
 		insn = aarch64_insn_gen_branch_imm(entry->code,
 						   entry->target,
 						   AARCH64_INSN_BRANCH_NOLINK);

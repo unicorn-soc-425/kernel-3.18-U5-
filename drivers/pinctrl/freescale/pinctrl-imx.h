@@ -78,12 +78,24 @@ struct imx_pinctrl_soc_info {
 	struct imx_pin_reg *pin_regs;
 	struct imx_pin_group *groups;
 	unsigned int ngroups;
+<<<<<<< HEAD
 	struct imx_pmx_func *functions;
 	unsigned int nfunctions;
 	unsigned int flags;
 };
 
 #define SHARE_MUX_CONF_REG	0x1
+=======
+	unsigned int group_index;
+	struct imx_pmx_func *functions;
+	unsigned int nfunctions;
+	unsigned int flags;
+	const char *gpr_compatible;
+};
+
+#define SHARE_MUX_CONF_REG	0x1
+#define ZERO_OFFSET_VALID	0x2
+>>>>>>> v4.9.227
 
 #define NO_MUX		0x0
 #define NO_PAD		0x0
@@ -96,5 +108,8 @@ struct imx_pinctrl_soc_info {
 
 int imx_pinctrl_probe(struct platform_device *pdev,
 			struct imx_pinctrl_soc_info *info);
+<<<<<<< HEAD
 int imx_pinctrl_remove(struct platform_device *pdev);
+=======
+>>>>>>> v4.9.227
 #endif /* __DRIVERS_PINCTRL_IMX_H */

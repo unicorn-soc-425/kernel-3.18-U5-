@@ -45,9 +45,12 @@ int mxl111sf_idac_config(struct mxl111sf_state *state,
 			 u8 current_value, u8 hysteresis_value);
 
 #endif /* _DVB_USB_MXL111SF_PHY_H_ */
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

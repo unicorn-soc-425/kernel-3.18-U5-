@@ -36,7 +36,11 @@
 /* Start and stop Midi input */
 static int enable_midi_input(struct echoaudio *chip, char enable)
 {
+<<<<<<< HEAD
 	DE_MID(("enable_midi_input(%d)\n", enable));
+=======
+	dev_dbg(chip->card->dev, "enable_midi_input(%d)\n", enable);
+>>>>>>> v4.9.227
 
 	if (wait_handshake(chip))
 		return -EIO;
@@ -74,7 +78,11 @@ static int write_midi(struct echoaudio *chip, u8 *data, int bytes)
 	chip->comm_page->midi_out_free_count = 0;
 	clear_handshake(chip);
 	send_vector(chip, DSP_VC_MIDI_WRITE);
+<<<<<<< HEAD
 	DE_MID(("write_midi: %d\n", bytes));
+=======
+	dev_dbg(chip->card->dev, "write_midi: %d\n", bytes);
+>>>>>>> v4.9.227
 	return bytes;
 }
 
@@ -157,7 +165,10 @@ static int snd_echo_midi_input_open(struct snd_rawmidi_substream *substream)
 	struct echoaudio *chip = substream->rmidi->private_data;
 
 	chip->midi_in = substream;
+<<<<<<< HEAD
 	DE_MID(("rawmidi_iopen\n"));
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -183,7 +194,10 @@ static int snd_echo_midi_input_close(struct snd_rawmidi_substream *substream)
 	struct echoaudio *chip = substream->rmidi->private_data;
 
 	chip->midi_in = NULL;
+<<<<<<< HEAD
 	DE_MID(("rawmidi_iclose\n"));
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -196,7 +210,10 @@ static int snd_echo_midi_output_open(struct snd_rawmidi_substream *substream)
 	chip->tinuse = 0;
 	chip->midi_full = 0;
 	chip->midi_out = substream;
+<<<<<<< HEAD
 	DE_MID(("rawmidi_oopen\n"));
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -209,7 +226,10 @@ static void snd_echo_midi_output_write(unsigned long data)
 	int bytes, sent, time;
 	unsigned char buf[MIDI_OUT_BUFFER_SIZE - 1];
 
+<<<<<<< HEAD
 	DE_MID(("snd_echo_midi_output_write\n"));
+=======
+>>>>>>> v4.9.227
 	/* No interrupts are involved: we have to check at regular intervals
 	if the card's output buffer has room for new data. */
 	sent = bytes = 0;
@@ -218,7 +238,11 @@ static void snd_echo_midi_output_write(unsigned long data)
 	if (!snd_rawmidi_transmit_empty(chip->midi_out)) {
 		bytes = snd_rawmidi_transmit_peek(chip->midi_out, buf,
 						  MIDI_OUT_BUFFER_SIZE - 1);
+<<<<<<< HEAD
 		DE_MID(("Try to send %d bytes...\n", bytes));
+=======
+		dev_dbg(chip->card->dev, "Try to send %d bytes...\n", bytes);
+>>>>>>> v4.9.227
 		sent = write_midi(chip, buf, bytes);
 		if (sent < 0) {
 			dev_err(chip->card->dev,
@@ -227,12 +251,20 @@ static void snd_echo_midi_output_write(unsigned long data)
 			sent = 9000;
 			chip->midi_full = 1;
 		} else if (sent > 0) {
+<<<<<<< HEAD
 			DE_MID(("%d bytes sent\n", sent));
+=======
+			dev_dbg(chip->card->dev, "%d bytes sent\n", sent);
+>>>>>>> v4.9.227
 			snd_rawmidi_transmit_ack(chip->midi_out, sent);
 		} else {
 			/* Buffer is full. DSP's internal buffer is 64 (128 ?)
 			bytes long. Let's wait until half of them are sent */
+<<<<<<< HEAD
 			DE_MID(("Full\n"));
+=======
+			dev_dbg(chip->card->dev, "Full\n");
+>>>>>>> v4.9.227
 			sent = 32;
 			chip->midi_full = 1;
 		}
@@ -244,7 +276,12 @@ static void snd_echo_midi_output_write(unsigned long data)
 		   sent */
 		time = (sent << 3) / 25 + 1;	/* 8/25=0.32ms to send a byte */
 		mod_timer(&chip->timer, jiffies + (time * HZ + 999) / 1000);
+<<<<<<< HEAD
 		DE_MID(("Timer armed(%d)\n", ((time * HZ + 999) / 1000)));
+=======
+		dev_dbg(chip->card->dev,
+			"Timer armed(%d)\n", ((time * HZ + 999) / 1000));
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&chip->lock, flags);
 }
@@ -256,6 +293,7 @@ static void snd_echo_midi_output_trigger(struct snd_rawmidi_substream *substream
 {
 	struct echoaudio *chip = substream->rmidi->private_data;
 
+<<<<<<< HEAD
 	DE_MID(("snd_echo_midi_output_trigger(%d)\n", up));
 	spin_lock_irq(&chip->lock);
 	if (up) {
@@ -263,6 +301,14 @@ static void snd_echo_midi_output_trigger(struct snd_rawmidi_substream *substream
 			init_timer(&chip->timer);
 			chip->timer.function = snd_echo_midi_output_write;
 			chip->timer.data = (unsigned long)chip;
+=======
+	dev_dbg(chip->card->dev, "snd_echo_midi_output_trigger(%d)\n", up);
+	spin_lock_irq(&chip->lock);
+	if (up) {
+		if (!chip->tinuse) {
+			setup_timer(&chip->timer, snd_echo_midi_output_write,
+				    (unsigned long)chip);
+>>>>>>> v4.9.227
 			chip->tinuse = 1;
 		}
 	} else {
@@ -270,7 +316,11 @@ static void snd_echo_midi_output_trigger(struct snd_rawmidi_substream *substream
 			chip->tinuse = 0;
 			spin_unlock_irq(&chip->lock);
 			del_timer_sync(&chip->timer);
+<<<<<<< HEAD
 			DE_MID(("Timer removed\n"));
+=======
+			dev_dbg(chip->card->dev, "Timer removed\n");
+>>>>>>> v4.9.227
 			return;
 		}
 	}
@@ -287,7 +337,10 @@ static int snd_echo_midi_output_close(struct snd_rawmidi_substream *substream)
 	struct echoaudio *chip = substream->rmidi->private_data;
 
 	chip->midi_out = NULL;
+<<<<<<< HEAD
 	DE_MID(("rawmidi_oclose\n"));
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -327,6 +380,9 @@ static int snd_echo_midi_create(struct snd_card *card,
 
 	chip->rmidi->info_flags |= SNDRV_RAWMIDI_INFO_OUTPUT |
 		SNDRV_RAWMIDI_INFO_INPUT | SNDRV_RAWMIDI_INFO_DUPLEX;
+<<<<<<< HEAD
 	DE_INIT(("MIDI ok\n"));
+=======
+>>>>>>> v4.9.227
 	return 0;
 }

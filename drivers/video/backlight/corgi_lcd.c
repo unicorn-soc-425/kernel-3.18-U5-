@@ -177,7 +177,11 @@ static int corgi_ssp_lcdtg_send(struct corgi_lcd *lcd, int adrs, uint8_t data)
 	struct spi_message msg;
 	struct spi_transfer xfer = {
 		.len		= 1,
+<<<<<<< HEAD
 		.cs_change	= 1,
+=======
+		.cs_change	= 0,
+>>>>>>> v4.9.227
 		.tx_buf		= lcd->buf,
 	};
 
@@ -598,7 +602,10 @@ static int corgi_lcd_remove(struct spi_device *spi)
 static struct spi_driver corgi_lcd_driver = {
 	.driver		= {
 		.name	= "corgi-lcd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &corgi_lcd_pm_ops,
 	},
 	.probe		= corgi_lcd_probe,

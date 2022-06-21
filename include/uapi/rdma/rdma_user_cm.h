@@ -244,12 +244,26 @@ struct rdma_ucm_join_ip_mcast {
 	__u32 id;
 };
 
+<<<<<<< HEAD
+=======
+/* Multicast join flags */
+enum {
+	RDMA_MC_JOIN_FLAG_FULLMEMBER,
+	RDMA_MC_JOIN_FLAG_SENDONLY_FULLMEMBER,
+	RDMA_MC_JOIN_FLAG_RESERVED,
+};
+
+>>>>>>> v4.9.227
 struct rdma_ucm_join_mcast {
 	__u64 response;		/* rdma_ucma_create_id_resp */
 	__u64 uid;
 	__u32 id;
 	__u16 addr_size;
+<<<<<<< HEAD
 	__u16 reserved;
+=======
+	__u16 join_flags;
+>>>>>>> v4.9.227
 	struct sockaddr_storage addr;
 };
 

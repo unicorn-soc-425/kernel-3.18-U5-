@@ -149,7 +149,11 @@ nv50_disp_dmac_new_(const struct nv50_disp_dmac_func *func,
 	chan->func = func;
 
 	ret = nv50_disp_chan_ctor(&nv50_disp_dmac_func_, mthd, root,
+<<<<<<< HEAD
 				  chid, head, oclass, &chan->base);
+=======
+				  chid, chid, head, oclass, &chan->base);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -179,9 +183,15 @@ nv50_disp_dmac_bind(struct nv50_disp_dmac *chan,
 		    struct nvkm_object *object, u32 handle)
 {
 	return nvkm_ramht_insert(chan->base.root->ramht, object,
+<<<<<<< HEAD
 				 chan->base.chid, -10, handle,
 				 chan->base.chid << 28 |
 				 chan->base.chid);
+=======
+				 chan->base.chid.user, -10, handle,
+				 chan->base.chid.user << 28 |
+				 chan->base.chid.user);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -190,6 +200,7 @@ nv50_disp_dmac_fini(struct nv50_disp_dmac *chan)
 	struct nv50_disp *disp = chan->base.root->disp;
 	struct nvkm_subdev *subdev = &disp->base.engine.subdev;
 	struct nvkm_device *device = subdev->device;
+<<<<<<< HEAD
 	int chid = chan->base.chid;
 
 	/* deactivate channel */
@@ -205,6 +216,24 @@ nv50_disp_dmac_fini(struct nv50_disp_dmac *chan)
 
 	/* disable error reporting and completion notifications */
 	nvkm_mask(device, 0x610028, 0x00010001 << chid, 0x00000000 << chid);
+=======
+	int ctrl = chan->base.chid.ctrl;
+	int user = chan->base.chid.user;
+
+	/* deactivate channel */
+	nvkm_mask(device, 0x610200 + (ctrl * 0x0010), 0x00001010, 0x00001000);
+	nvkm_mask(device, 0x610200 + (ctrl * 0x0010), 0x00000003, 0x00000000);
+	if (nvkm_msec(device, 2000,
+		if (!(nvkm_rd32(device, 0x610200 + (ctrl * 0x10)) & 0x001e0000))
+			break;
+	) < 0) {
+		nvkm_error(subdev, "ch %d fini timeout, %08x\n", user,
+			   nvkm_rd32(device, 0x610200 + (ctrl * 0x10)));
+	}
+
+	/* disable error reporting and completion notifications */
+	nvkm_mask(device, 0x610028, 0x00010001 << user, 0x00000000 << user);
+>>>>>>> v4.9.227
 }
 
 static int
@@ -213,6 +242,7 @@ nv50_disp_dmac_init(struct nv50_disp_dmac *chan)
 	struct nv50_disp *disp = chan->base.root->disp;
 	struct nvkm_subdev *subdev = &disp->base.engine.subdev;
 	struct nvkm_device *device = subdev->device;
+<<<<<<< HEAD
 	int chid = chan->base.chid;
 
 	/* enable error reporting */
@@ -233,6 +263,29 @@ nv50_disp_dmac_init(struct nv50_disp_dmac *chan)
 	) < 0) {
 		nvkm_error(subdev, "ch %d init timeout, %08x\n", chid,
 			   nvkm_rd32(device, 0x610200 + (chid * 0x10)));
+=======
+	int ctrl = chan->base.chid.ctrl;
+	int user = chan->base.chid.user;
+
+	/* enable error reporting */
+	nvkm_mask(device, 0x610028, 0x00010000 << user, 0x00010000 << user);
+
+	/* initialise channel for dma command submission */
+	nvkm_wr32(device, 0x610204 + (ctrl * 0x0010), chan->push);
+	nvkm_wr32(device, 0x610208 + (ctrl * 0x0010), 0x00010000);
+	nvkm_wr32(device, 0x61020c + (ctrl * 0x0010), ctrl);
+	nvkm_mask(device, 0x610200 + (ctrl * 0x0010), 0x00000010, 0x00000010);
+	nvkm_wr32(device, 0x640000 + (ctrl * 0x1000), 0x00000000);
+	nvkm_wr32(device, 0x610200 + (ctrl * 0x0010), 0x00000013);
+
+	/* wait for it to go inactive */
+	if (nvkm_msec(device, 2000,
+		if (!(nvkm_rd32(device, 0x610200 + (ctrl * 0x10)) & 0x80000000))
+			break;
+	) < 0) {
+		nvkm_error(subdev, "ch %d init timeout, %08x\n", user,
+			   nvkm_rd32(device, 0x610200 + (ctrl * 0x10)));
+>>>>>>> v4.9.227
 		return -EBUSY;
 	}
 

@@ -6,7 +6,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -117,8 +121,13 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
 
 	/* Clear wake status (WAK_STS) */
 
+<<<<<<< HEAD
 	status =
 	    acpi_write((u64)ACPI_X_WAKE_STATUS, &acpi_gbl_FADT.sleep_status);
+=======
+	status = acpi_write((u64)ACPI_X_WAKE_STATUS,
+			    &acpi_gbl_FADT.sleep_status);
+>>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}

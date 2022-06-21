@@ -31,7 +31,11 @@
  * This should be totally fair - if anything is waiting, a process that wants a
  * lock will go to the back of the queue. When the currently active lock is
  * released, if there's a writer at the front of the queue, then that and only
+<<<<<<< HEAD
  * that will be woken up; if there's a bunch of consequtive readers at the
+=======
+ * that will be woken up; if there's a bunch of consecutive readers at the
+>>>>>>> v4.9.227
  * front, then they'll all be woken up, but no other readers will be.
  */
 
@@ -39,17 +43,23 @@
 #error "please don't include asm/rwsem.h directly, use linux/rwsem.h instead"
 #endif
 
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 #define RWSEM_UNLOCKED_VALUE	0x00000000
 #define RWSEM_ACTIVE_BIAS	0x00000001
 #define RWSEM_ACTIVE_MASK	0x0000ffff
 #define RWSEM_WAITING_BIAS	(-0x00010000)
 #else /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 #define RWSEM_UNLOCKED_VALUE	0x0000000000000000L
 #define RWSEM_ACTIVE_BIAS	0x0000000000000001L
 #define RWSEM_ACTIVE_MASK	0x00000000ffffffffL
 #define RWSEM_WAITING_BIAS	(-0x0000000100000000L)
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 #define RWSEM_ACTIVE_READ_BIAS	RWSEM_ACTIVE_BIAS
 #define RWSEM_ACTIVE_WRITE_BIAS	(RWSEM_WAITING_BIAS + RWSEM_ACTIVE_BIAS)
 
@@ -61,6 +71,7 @@ static inline void __down_read(struct rw_semaphore *sem)
 	signed long old, new;
 
 	asm volatile(
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 		"	l	%0,%2\n"
 		"0:	lr	%1,%0\n"
@@ -68,12 +79,17 @@ static inline void __down_read(struct rw_semaphore *sem)
 		"	cs	%0,%1,%2\n"
 		"	jl	0b"
 #else /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		"	lg	%0,%2\n"
 		"0:	lgr	%1,%0\n"
 		"	aghi	%1,%4\n"
 		"	csg	%0,%1,%2\n"
 		"	jl	0b"
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		: "=&d" (old), "=&d" (new), "=Q" (sem->count)
 		: "Q" (sem->count), "i" (RWSEM_ACTIVE_READ_BIAS)
 		: "cc", "memory");
@@ -89,6 +105,7 @@ static inline int __down_read_trylock(struct rw_semaphore *sem)
 	signed long old, new;
 
 	asm volatile(
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 		"	l	%0,%2\n"
 		"0:	ltr	%1,%0\n"
@@ -98,6 +115,8 @@ static inline int __down_read_trylock(struct rw_semaphore *sem)
 		"	jl	0b\n"
 		"1:"
 #else /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		"	lg	%0,%2\n"
 		"0:	ltgr	%1,%0\n"
 		"	jm	1f\n"
@@ -105,7 +124,10 @@ static inline int __down_read_trylock(struct rw_semaphore *sem)
 		"	csg	%0,%1,%2\n"
 		"	jl	0b\n"
 		"1:"
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		: "=&d" (old), "=&d" (new), "=Q" (sem->count)
 		: "Q" (sem->count), "i" (RWSEM_ACTIVE_READ_BIAS)
 		: "cc", "memory");
@@ -115,12 +137,17 @@ static inline int __down_read_trylock(struct rw_semaphore *sem)
 /*
  * lock for writing
  */
+<<<<<<< HEAD
 static inline void __down_write_nested(struct rw_semaphore *sem, int subclass)
+=======
+static inline long ___down_write(struct rw_semaphore *sem)
+>>>>>>> v4.9.227
 {
 	signed long old, new, tmp;
 
 	tmp = RWSEM_ACTIVE_WRITE_BIAS;
 	asm volatile(
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 		"	l	%0,%2\n"
 		"0:	lr	%1,%0\n"
@@ -128,22 +155,46 @@ static inline void __down_write_nested(struct rw_semaphore *sem, int subclass)
 		"	cs	%0,%1,%2\n"
 		"	jl	0b"
 #else /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		"	lg	%0,%2\n"
 		"0:	lgr	%1,%0\n"
 		"	ag	%1,%4\n"
 		"	csg	%0,%1,%2\n"
 		"	jl	0b"
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
 		: "=&d" (old), "=&d" (new), "=Q" (sem->count)
 		: "Q" (sem->count), "m" (tmp)
 		: "cc", "memory");
 	if (old != 0)
 		rwsem_down_write_failed(sem);
+=======
+		: "=&d" (old), "=&d" (new), "=Q" (sem->count)
+		: "Q" (sem->count), "m" (tmp)
+		: "cc", "memory");
+
+	return old;
+>>>>>>> v4.9.227
 }
 
 static inline void __down_write(struct rw_semaphore *sem)
 {
+<<<<<<< HEAD
 	__down_write_nested(sem, 0);
+=======
+	if (___down_write(sem))
+		rwsem_down_write_failed(sem);
+}
+
+static inline int __down_write_killable(struct rw_semaphore *sem)
+{
+	if (___down_write(sem))
+		if (IS_ERR(rwsem_down_write_failed_killable(sem)))
+			return -EINTR;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -154,6 +205,7 @@ static inline int __down_write_trylock(struct rw_semaphore *sem)
 	signed long old;
 
 	asm volatile(
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 		"	l	%0,%1\n"
 		"0:	ltr	%0,%0\n"
@@ -161,12 +213,17 @@ static inline int __down_write_trylock(struct rw_semaphore *sem)
 		"	cs	%0,%3,%1\n"
 		"	jl	0b\n"
 #else /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		"	lg	%0,%1\n"
 		"0:	ltgr	%0,%0\n"
 		"	jnz	1f\n"
 		"	csg	%0,%3,%1\n"
 		"	jl	0b\n"
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		"1:"
 		: "=&d" (old), "=Q" (sem->count)
 		: "Q" (sem->count), "d" (RWSEM_ACTIVE_WRITE_BIAS)
@@ -182,6 +239,7 @@ static inline void __up_read(struct rw_semaphore *sem)
 	signed long old, new;
 
 	asm volatile(
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 		"	l	%0,%2\n"
 		"0:	lr	%1,%0\n"
@@ -189,12 +247,17 @@ static inline void __up_read(struct rw_semaphore *sem)
 		"	cs	%0,%1,%2\n"
 		"	jl	0b"
 #else /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		"	lg	%0,%2\n"
 		"0:	lgr	%1,%0\n"
 		"	aghi	%1,%4\n"
 		"	csg	%0,%1,%2\n"
 		"	jl	0b"
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		: "=&d" (old), "=&d" (new), "=Q" (sem->count)
 		: "Q" (sem->count), "i" (-RWSEM_ACTIVE_READ_BIAS)
 		: "cc", "memory");
@@ -212,6 +275,7 @@ static inline void __up_write(struct rw_semaphore *sem)
 
 	tmp = -RWSEM_ACTIVE_WRITE_BIAS;
 	asm volatile(
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 		"	l	%0,%2\n"
 		"0:	lr	%1,%0\n"
@@ -219,12 +283,17 @@ static inline void __up_write(struct rw_semaphore *sem)
 		"	cs	%0,%1,%2\n"
 		"	jl	0b"
 #else /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		"	lg	%0,%2\n"
 		"0:	lgr	%1,%0\n"
 		"	ag	%1,%4\n"
 		"	csg	%0,%1,%2\n"
 		"	jl	0b"
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		: "=&d" (old), "=&d" (new), "=Q" (sem->count)
 		: "Q" (sem->count), "m" (tmp)
 		: "cc", "memory");
@@ -242,6 +311,7 @@ static inline void __downgrade_write(struct rw_semaphore *sem)
 
 	tmp = -RWSEM_WAITING_BIAS;
 	asm volatile(
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 		"	l	%0,%2\n"
 		"0:	lr	%1,%0\n"
@@ -249,12 +319,17 @@ static inline void __downgrade_write(struct rw_semaphore *sem)
 		"	cs	%0,%1,%2\n"
 		"	jl	0b"
 #else /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		"	lg	%0,%2\n"
 		"0:	lgr	%1,%0\n"
 		"	ag	%1,%4\n"
 		"	csg	%0,%1,%2\n"
 		"	jl	0b"
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 		: "=&d" (old), "=&d" (new), "=Q" (sem->count)
 		: "Q" (sem->count), "m" (tmp)
 		: "cc", "memory");
@@ -262,6 +337,7 @@ static inline void __downgrade_write(struct rw_semaphore *sem)
 		rwsem_downgrade_wake(sem);
 }
 
+<<<<<<< HEAD
 /*
  * implement atomic add functionality
  */
@@ -315,4 +391,6 @@ static inline long rwsem_atomic_update(long delta, struct rw_semaphore *sem)
 	return new;
 }
 
+=======
+>>>>>>> v4.9.227
 #endif /* _S390_RWSEM_H */

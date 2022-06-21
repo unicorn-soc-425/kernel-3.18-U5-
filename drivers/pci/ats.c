@@ -17,6 +17,7 @@
 
 #include "pci.h"
 
+<<<<<<< HEAD
 static int ats_alloc_one(struct pci_dev *dev, int ps)
 {
 	int pos;
@@ -45,6 +46,17 @@ static void ats_free_one(struct pci_dev *dev)
 {
 	kfree(dev->ats);
 	dev->ats = NULL;
+=======
+void pci_ats_init(struct pci_dev *dev)
+{
+	int pos;
+
+	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ATS);
+	if (!pos)
+		return;
+
+	dev->ats_cap = pos;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -56,14 +68,26 @@ static void ats_free_one(struct pci_dev *dev)
  */
 int pci_enable_ats(struct pci_dev *dev, int ps)
 {
+<<<<<<< HEAD
 	int rc;
 	u16 ctrl;
 
 	BUG_ON(dev->ats && dev->ats->is_enabled);
+=======
+	u16 ctrl;
+	struct pci_dev *pdev;
+
+	if (!dev->ats_cap)
+		return -EINVAL;
+
+	if (WARN_ON(dev->ats_enabled))
+		return -EBUSY;
+>>>>>>> v4.9.227
 
 	if (ps < PCI_ATS_MIN_STU)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (dev->is_physfn || dev->is_virtfn) {
 		struct pci_dev *pdev = dev->is_physfn ? dev : dev->physfn;
 
@@ -93,6 +117,26 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
 
 	dev->ats->is_enabled = 1;
 
+=======
+	/*
+	 * Note that enabling ATS on a VF fails unless it's already enabled
+	 * with the same STU on the PF.
+	 */
+	ctrl = PCI_ATS_CTRL_ENABLE;
+	if (dev->is_virtfn) {
+		pdev = pci_physfn(dev);
+		if (pdev->ats_stu != ps)
+			return -EINVAL;
+
+		atomic_inc(&pdev->ats_ref_cnt);  /* count enabled VFs */
+	} else {
+		dev->ats_stu = ps;
+		ctrl |= PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
+	}
+	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+
+	dev->ats_enabled = 1;
+>>>>>>> v4.9.227
 	return 0;
 }
 EXPORT_SYMBOL_GPL(pci_enable_ats);
@@ -103,6 +147,7 @@ EXPORT_SYMBOL_GPL(pci_enable_ats);
  */
 void pci_disable_ats(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	u16 ctrl;
 
 	BUG_ON(!dev->ats || !dev->ats->is_enabled);
@@ -125,6 +170,27 @@ void pci_disable_ats(struct pci_dev *dev)
 
 	if (!dev->is_physfn)
 		ats_free_one(dev);
+=======
+	struct pci_dev *pdev;
+	u16 ctrl;
+
+	if (WARN_ON(!dev->ats_enabled))
+		return;
+
+	if (atomic_read(&dev->ats_ref_cnt))
+		return;		/* VFs still enabled */
+
+	if (dev->is_virtfn) {
+		pdev = pci_physfn(dev);
+		atomic_dec(&pdev->ats_ref_cnt);
+	}
+
+	pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, &ctrl);
+	ctrl &= ~PCI_ATS_CTRL_ENABLE;
+	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+
+	dev->ats_enabled = 0;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(pci_disable_ats);
 
@@ -132,6 +198,7 @@ void pci_restore_ats_state(struct pci_dev *dev)
 {
 	u16 ctrl;
 
+<<<<<<< HEAD
 	if (!pci_ats_enabled(dev))
 		return;
 	if (!pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ATS))
@@ -142,6 +209,15 @@ void pci_restore_ats_state(struct pci_dev *dev)
 		ctrl |= PCI_ATS_CTRL_STU(dev->ats->stu - PCI_ATS_MIN_STU);
 
 	pci_write_config_word(dev, dev->ats->pos + PCI_ATS_CTRL, ctrl);
+=======
+	if (!dev->ats_enabled)
+		return;
+
+	ctrl = PCI_ATS_CTRL_ENABLE;
+	if (!dev->is_virtfn)
+		ctrl |= PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
+	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(pci_restore_ats_state);
 
@@ -159,6 +235,7 @@ EXPORT_SYMBOL_GPL(pci_restore_ats_state);
  */
 int pci_ats_queue_depth(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	int pos;
 	u16 cap;
 
@@ -176,6 +253,18 @@ int pci_ats_queue_depth(struct pci_dev *dev)
 
 	return PCI_ATS_CAP_QDEP(cap) ? PCI_ATS_CAP_QDEP(cap) :
 				       PCI_ATS_MAX_QDEP;
+=======
+	u16 cap;
+
+	if (!dev->ats_cap)
+		return -EINVAL;
+
+	if (dev->is_virtfn)
+		return 0;
+
+	pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CAP, &cap);
+	return PCI_ATS_CAP_QDEP(cap) ? PCI_ATS_CAP_QDEP(cap) : PCI_ATS_MAX_QDEP;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(pci_ats_queue_depth);
 

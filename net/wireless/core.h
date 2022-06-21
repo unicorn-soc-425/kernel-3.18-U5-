@@ -36,6 +36,16 @@ struct cfg80211_registered_device {
 	 * the country on the country IE changed. */
 	char country_ie_alpha2[2];
 
+<<<<<<< HEAD
+=======
+	/*
+	 * the driver requests the regulatory core to set this regulatory
+	 * domain as the wiphy's. Only used for %REGULATORY_WIPHY_SELF_MANAGED
+	 * devices using the regulatory_set_wiphy_regd() API
+	 */
+	const struct ieee80211_regdomain *requested_regd;
+
+>>>>>>> v4.9.227
 	/* If a Country IE has been received this tells us the environment
 	 * which its telling us its in. This defaults to ENVIRON_ANY */
 	enum environment_cap env;
@@ -43,15 +53,28 @@ struct cfg80211_registered_device {
 	/* wiphy index, internal only */
 	int wiphy_idx;
 
+<<<<<<< HEAD
 	/* associated wireless interfaces, protected by rtnl or RCU */
 	struct list_head wdev_list;
 	int devlist_generation, wdev_id;
 	int opencount; /* also protected by devlist_mtx */
+=======
+	/* protected by RTNL */
+	int devlist_generation, wdev_id;
+	int opencount;
+>>>>>>> v4.9.227
 	wait_queue_head_t dev_wait;
 
 	struct list_head beacon_registrations;
 	spinlock_t beacon_registrations_lock;
 
+<<<<<<< HEAD
+=======
+	struct list_head mlme_unreg;
+	spinlock_t mlme_unreg_lock;
+	struct work_struct mlme_unreg_wk;
+
+>>>>>>> v4.9.227
 	/* protected by RTNL only */
 	int num_running_ifaces;
 	int num_running_monitor_ifaces;
@@ -61,9 +84,16 @@ struct cfg80211_registered_device {
 	struct list_head bss_list;
 	struct rb_root bss_tree;
 	u32 bss_generation;
+<<<<<<< HEAD
 	struct cfg80211_scan_request *scan_req; /* protected by RTNL */
 	struct sk_buff *scan_msg;
 	struct cfg80211_sched_scan_request *sched_scan_req;
+=======
+	u32 bss_entries;
+	struct cfg80211_scan_request *scan_req; /* protected by RTNL */
+	struct sk_buff *scan_msg;
+	struct cfg80211_sched_scan_request __rcu *sched_scan_req;
+>>>>>>> v4.9.227
 	unsigned long suspend_at;
 	struct work_struct scan_done_wk;
 	struct work_struct sched_scan_results_wk;
@@ -113,6 +143,10 @@ cfg80211_rdev_free_wowlan(struct cfg80211_registered_device *rdev)
 	    rdev->wiphy.wowlan_config->tcp->sock)
 		sock_release(rdev->wiphy.wowlan_config->tcp->sock);
 	kfree(rdev->wiphy.wowlan_config->tcp);
+<<<<<<< HEAD
+=======
+	kfree(rdev->wiphy.wowlan_config->nd_config);
+>>>>>>> v4.9.227
 	kfree(rdev->wiphy.wowlan_config);
 #endif
 }
@@ -130,6 +164,21 @@ struct cfg80211_internal_bss {
 	unsigned long refcount;
 	atomic_t hold;
 
+<<<<<<< HEAD
+=======
+	/* time at the start of the reception of the first octet of the
+	 * timestamp field of the last beacon/probe received for this BSS.
+	 * The time is the TSF of the BSS specified by %parent_bssid.
+	 */
+	u64 parent_tsf;
+
+	/* the BSS according to which %parent_tsf is set. This is set to
+	 * the BSS that the interface that requested the scan was connected to
+	 * when the beacon/probe was received.
+	 */
+	u8 parent_bssid[ETH_ALEN] __aligned(2);
+
+>>>>>>> v4.9.227
 	/* must be last because of priv member */
 	struct cfg80211_bss pub;
 };
@@ -226,9 +275,15 @@ struct cfg80211_event {
 };
 
 struct cfg80211_cached_keys {
+<<<<<<< HEAD
 	struct key_params params[6];
 	u8 data[6][WLAN_MAX_KEY_LEN];
 	int def, defmgmt;
+=======
+	struct key_params params[CFG80211_MAX_WEP_KEYS];
+	u8 data[CFG80211_MAX_WEP_KEYS][WLAN_KEY_LEN_WEP104];
+	int def;
+>>>>>>> v4.9.227
 };
 
 enum cfg80211_chan_mode {
@@ -295,6 +350,21 @@ int cfg80211_set_mesh_channel(struct cfg80211_registered_device *rdev,
 			      struct wireless_dev *wdev,
 			      struct cfg80211_chan_def *chandef);
 
+<<<<<<< HEAD
+=======
+/* OCB */
+int __cfg80211_join_ocb(struct cfg80211_registered_device *rdev,
+			struct net_device *dev,
+			struct ocb_setup *setup);
+int cfg80211_join_ocb(struct cfg80211_registered_device *rdev,
+		      struct net_device *dev,
+		      struct ocb_setup *setup);
+int __cfg80211_leave_ocb(struct cfg80211_registered_device *rdev,
+			 struct net_device *dev);
+int cfg80211_leave_ocb(struct cfg80211_registered_device *rdev,
+		       struct net_device *dev);
+
+>>>>>>> v4.9.227
 /* AP */
 int __cfg80211_stop_ap(struct cfg80211_registered_device *rdev,
 		       struct net_device *dev, bool notify);
@@ -330,6 +400,10 @@ void cfg80211_mlme_down(struct cfg80211_registered_device *rdev,
 int cfg80211_mlme_register_mgmt(struct wireless_dev *wdev, u32 snd_pid,
 				u16 frame_type, const u8 *match_data,
 				int match_len);
+<<<<<<< HEAD
+=======
+void cfg80211_mlme_unreg_wk(struct work_struct *wk);
+>>>>>>> v4.9.227
 void cfg80211_mlme_unregister_socket(struct wireless_dev *wdev, u32 nlpid);
 void cfg80211_mlme_purge_registrations(struct wireless_dev *wdev);
 int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
@@ -373,6 +447,10 @@ void cfg80211_sme_disassoc(struct wireless_dev *wdev);
 void cfg80211_sme_deauth(struct wireless_dev *wdev);
 void cfg80211_sme_auth_timeout(struct wireless_dev *wdev);
 void cfg80211_sme_assoc_timeout(struct wireless_dev *wdev);
+<<<<<<< HEAD
+=======
+void cfg80211_sme_abandon_assoc(struct wireless_dev *wdev);
+>>>>>>> v4.9.227
 
 /* internal helpers */
 bool cfg80211_supported_cipher_suite(struct wiphy *wiphy, u32 cipher);
@@ -392,6 +470,7 @@ int cfg80211_change_iface(struct cfg80211_registered_device *rdev,
 void cfg80211_process_rdev_events(struct cfg80211_registered_device *rdev);
 void cfg80211_process_wdev_events(struct wireless_dev *wdev);
 
+<<<<<<< HEAD
 int cfg80211_can_use_iftype_chan(struct cfg80211_registered_device *rdev,
 				 struct wireless_dev *wdev,
 				 enum nl80211_iftype iftype,
@@ -399,6 +478,8 @@ int cfg80211_can_use_iftype_chan(struct cfg80211_registered_device *rdev,
 				 enum cfg80211_chan_mode chanmode,
 				 u8 radar_detect);
 
+=======
+>>>>>>> v4.9.227
 /**
  * cfg80211_chandef_dfs_usable - checks if chandef is DFS usable
  * @wiphy: the wiphy to validate against
@@ -446,17 +527,32 @@ int ieee80211_get_ratemask(struct ieee80211_supported_band *sband,
 			   u32 *mask);
 
 int cfg80211_validate_beacon_int(struct cfg80211_registered_device *rdev,
+<<<<<<< HEAD
 				 enum nl80211_iftype iftype, u32 beacon_int);
+=======
+				 u32 beacon_int);
+>>>>>>> v4.9.227
 
 void cfg80211_update_iface_num(struct cfg80211_registered_device *rdev,
 			       enum nl80211_iftype iftype, int num);
 
 void __cfg80211_leave(struct cfg80211_registered_device *rdev,
 		      struct wireless_dev *wdev);
+<<<<<<< HEAD
+=======
+void cfg80211_leave(struct cfg80211_registered_device *rdev,
+		    struct wireless_dev *wdev);
+>>>>>>> v4.9.227
 
 void cfg80211_stop_p2p_device(struct cfg80211_registered_device *rdev,
 			      struct wireless_dev *wdev);
 
+<<<<<<< HEAD
+=======
+void cfg80211_stop_nan(struct cfg80211_registered_device *rdev,
+		       struct wireless_dev *wdev);
+
+>>>>>>> v4.9.227
 #define CFG80211_MAX_NUM_DIFFERENT_CHANNELS 10
 
 #ifdef CONFIG_CFG80211_DEVELOPER_WARNINGS

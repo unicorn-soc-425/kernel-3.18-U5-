@@ -48,6 +48,10 @@
 #define GOTGCTL_ASESVLD			(1 << 18)
 #define GOTGCTL_DBNC_SHORT		(1 << 17)
 #define GOTGCTL_CONID_B			(1 << 16)
+<<<<<<< HEAD
+=======
+#define GOTGCTL_DBNCE_FLTR_BYPASS	(1 << 15)
+>>>>>>> v4.9.227
 #define GOTGCTL_DEVHNPEN		(1 << 11)
 #define GOTGCTL_HSTSETHNPEN		(1 << 10)
 #define GOTGCTL_HNPREQ			(1 << 9)
@@ -142,6 +146,10 @@
 #define GINTSTS_RESETDET		(1 << 23)
 #define GINTSTS_FET_SUSP		(1 << 22)
 #define GINTSTS_INCOMPL_IP		(1 << 21)
+<<<<<<< HEAD
+=======
+#define GINTSTS_INCOMPL_SOOUT		(1 << 21)
+>>>>>>> v4.9.227
 #define GINTSTS_INCOMPL_SOIN		(1 << 20)
 #define GINTSTS_OEPINT			(1 << 19)
 #define GINTSTS_IEPINT			(1 << 18)
@@ -294,6 +302,10 @@
 #define GHWCFG4_NUM_IN_EPS_MASK			(0xf << 26)
 #define GHWCFG4_NUM_IN_EPS_SHIFT		26
 #define GHWCFG4_DED_FIFO_EN			(1 << 25)
+<<<<<<< HEAD
+=======
+#define GHWCFG4_DED_FIFO_SHIFT		25
+>>>>>>> v4.9.227
 #define GHWCFG4_SESSION_END_FILT_EN		(1 << 24)
 #define GHWCFG4_B_VALID_FILT_EN			(1 << 23)
 #define GHWCFG4_A_VALID_FILT_EN			(1 << 22)
@@ -457,6 +469,12 @@
 #define DSTS_SUSPSTS			(1 << 0)
 
 #define DIEPMSK				HSOTG_REG(0x810)
+<<<<<<< HEAD
+=======
+#define DIEPMSK_NAKMSK			(1 << 13)
+#define DIEPMSK_BNAININTRMSK		(1 << 9)
+#define DIEPMSK_TXFIFOUNDRNMSK		(1 << 8)
+>>>>>>> v4.9.227
 #define DIEPMSK_TXFIFOEMPTY		(1 << 7)
 #define DIEPMSK_INEPNAKEFFMSK		(1 << 6)
 #define DIEPMSK_INTKNEPMISMSK		(1 << 5)
@@ -468,6 +486,10 @@
 
 #define DOEPMSK				HSOTG_REG(0x814)
 #define DOEPMSK_BACK2BACKSETUP		(1 << 6)
+<<<<<<< HEAD
+=======
+#define DOEPMSK_STSPHSERCVDMSK		(1 << 5)
+>>>>>>> v4.9.227
 #define DOEPMSK_OUTTKNEPDISMSK		(1 << 4)
 #define DOEPMSK_SETUPMSK		(1 << 3)
 #define DOEPMSK_AHBERRMSK		(1 << 2)
@@ -484,6 +506,10 @@
 #define DTKNQR2				HSOTG_REG(0x824)
 #define DTKNQR3				HSOTG_REG(0x830)
 #define DTKNQR4				HSOTG_REG(0x834)
+<<<<<<< HEAD
+=======
+#define DIEPEMPMSK			HSOTG_REG(0x834)
+>>>>>>> v4.9.227
 
 #define DVBUSDIS			HSOTG_REG(0x828)
 #define DVBUSPULSE			HSOTG_REG(0x82C)
@@ -541,9 +567,25 @@
 
 #define DIEPINT(_a)			HSOTG_REG(0x908 + ((_a) * 0x20))
 #define DOEPINT(_a)			HSOTG_REG(0xB08 + ((_a) * 0x20))
+<<<<<<< HEAD
 #define DXEPINT_INEPNAKEFF		(1 << 6)
 #define DXEPINT_BACK2BACKSETUP		(1 << 6)
 #define DXEPINT_INTKNEPMIS		(1 << 5)
+=======
+#define DXEPINT_SETUP_RCVD		(1 << 15)
+#define DXEPINT_NYETINTRPT		(1 << 14)
+#define DXEPINT_NAKINTRPT		(1 << 13)
+#define DXEPINT_BBLEERRINTRPT		(1 << 12)
+#define DXEPINT_PKTDRPSTS		(1 << 11)
+#define DXEPINT_BNAINTR			(1 << 9)
+#define DXEPINT_TXFIFOUNDRN		(1 << 8)
+#define DXEPINT_OUTPKTERR		(1 << 8)
+#define DXEPINT_TXFEMP			(1 << 7)
+#define DXEPINT_INEPNAKEFF		(1 << 6)
+#define DXEPINT_BACK2BACKSETUP		(1 << 6)
+#define DXEPINT_INTKNEPMIS		(1 << 5)
+#define DXEPINT_STSPHSERCVD		(1 << 5)
+>>>>>>> v4.9.227
 #define DXEPINT_INTKNTXFEMP		(1 << 4)
 #define DXEPINT_OUTTKNEPDIS		(1 << 4)
 #define DXEPINT_TIMEOUT			(1 << 3)
@@ -766,10 +808,13 @@
 #define TSIZ_XFERSIZE_SHIFT		0
 
 #define HCDMA(_ch)			HSOTG_REG(0x0514 + 0x20 * (_ch))
+<<<<<<< HEAD
 #define HCDMA_DMA_ADDR_MASK		(0x1fffff << 11)
 #define HCDMA_DMA_ADDR_SHIFT		11
 #define HCDMA_CTD_MASK			(0xff << 3)
 #define HCDMA_CTD_SHIFT			3
+=======
+>>>>>>> v4.9.227
 
 #define HCDMAB(_ch)			HSOTG_REG(0x051c + 0x20 * (_ch))
 

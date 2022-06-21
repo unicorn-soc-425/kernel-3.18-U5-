@@ -2,23 +2,45 @@
 
 platforms += alchemy
 platforms += ar7
+<<<<<<< HEAD
 platforms += ath79
 platforms += bcm47xx
 platforms += bcm63xx
+=======
+platforms += ath25
+platforms += ath79
+platforms += bcm47xx
+platforms += bcm63xx
+platforms += bmips
+>>>>>>> v4.9.227
 platforms += cavium-octeon
 platforms += cobalt
 platforms += dec
 platforms += emma
+<<<<<<< HEAD
+=======
+platforms += generic
+>>>>>>> v4.9.227
 platforms += jazz
 platforms += jz4740
 platforms += lantiq
 platforms += lasat
+<<<<<<< HEAD
 platforms += loongson
 platforms += loongson1
 platforms += mti-malta
 platforms += mti-sead3
 platforms += netlogic
 platforms += paravirt
+=======
+platforms += loongson32
+platforms += loongson64
+platforms += mti-malta
+platforms += netlogic
+platforms += paravirt
+platforms += pic32
+platforms += pistachio
+>>>>>>> v4.9.227
 platforms += pmcs-msp71xx
 platforms += pnx833x
 platforms += ralink
@@ -30,6 +52,10 @@ platforms += sibyte
 platforms += sni
 platforms += txx9
 platforms += vr41xx
+<<<<<<< HEAD
+=======
+platforms += xilfpga
+>>>>>>> v4.9.227
 
 # include the platform specific files
 include $(patsubst %, $(srctree)/arch/mips/%/Platform, $(platforms))

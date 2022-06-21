@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2007-2014 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2007-2016  B.A.T.M.A.N. contributors:
+>>>>>>> v4.9.227
  *
  * Marek Lindner
  *
@@ -18,6 +22,7 @@
 #ifndef _NET_BATMAN_ADV_ICMP_SOCKET_H_
 #define _NET_BATMAN_ADV_ICMP_SOCKET_H_
 
+<<<<<<< HEAD
 #define BATADV_ICMP_SOCKET "socket"
 
 void batadv_socket_init(void);
@@ -25,4 +30,35 @@ int batadv_socket_setup(struct batadv_priv *bat_priv);
 void batadv_socket_receive_packet(struct batadv_icmp_header *icmph,
 				  size_t icmp_len);
 
+=======
+#include "main.h"
+
+#include <linux/types.h>
+
+struct batadv_icmp_header;
+
+#define BATADV_ICMP_SOCKET "socket"
+
+int batadv_socket_setup(struct batadv_priv *bat_priv);
+
+#ifdef CONFIG_BATMAN_ADV_DEBUGFS
+
+void batadv_socket_init(void);
+void batadv_socket_receive_packet(struct batadv_icmp_header *icmph,
+				  size_t icmp_len);
+
+#else
+
+static inline void batadv_socket_init(void)
+{
+}
+
+static inline void
+batadv_socket_receive_packet(struct batadv_icmp_header *icmph, size_t icmp_len)
+{
+}
+
+#endif
+
+>>>>>>> v4.9.227
 #endif /* _NET_BATMAN_ADV_ICMP_SOCKET_H_ */

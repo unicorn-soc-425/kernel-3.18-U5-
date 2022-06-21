@@ -42,7 +42,11 @@ extern struct _ddebug __stop___verbose[];
 
 struct ddebug_table {
 	struct list_head link;
+<<<<<<< HEAD
 	char *mod_name;
+=======
+	const char *mod_name;
+>>>>>>> v4.9.227
 	unsigned int num_ddebugs;
 	struct _ddebug *ddebugs;
 };
@@ -188,6 +192,16 @@ static int ddebug_change(const struct ddebug_query *query,
 			newflags = (dp->flags & mask) | flags;
 			if (newflags == dp->flags)
 				continue;
+<<<<<<< HEAD
+=======
+#ifdef HAVE_JUMP_LABEL
+			if (dp->flags & _DPRINTK_FLAGS_PRINT) {
+				if (!(flags & _DPRINTK_FLAGS_PRINT))
+					static_branch_disable(&dp->key.dd_key_true);
+			} else if (flags & _DPRINTK_FLAGS_PRINT)
+				static_branch_enable(&dp->key.dd_key_true);
+#endif
+>>>>>>> v4.9.227
 			dp->flags = newflags;
 			vpr_info("changed %s:%d [%s]%s =%s\n",
 				 trim_prefix(dp->filename), dp->lineno,
@@ -580,7 +594,11 @@ void __dynamic_dev_dbg(struct _ddebug *descriptor,
 	} else {
 		char buf[PREFIX_SIZE];
 
+<<<<<<< HEAD
 		dev_printk_emit(7, dev, "%s%s %s: %pV",
+=======
+		dev_printk_emit(LOGLEVEL_DEBUG, dev, "%s%s %s: %pV",
+>>>>>>> v4.9.227
 				dynamic_emit_prefix(descriptor, buf),
 				dev_driver_string(dev), dev_name(dev),
 				&vaf);
@@ -609,7 +627,11 @@ void __dynamic_netdev_dbg(struct _ddebug *descriptor,
 	if (dev && dev->dev.parent) {
 		char buf[PREFIX_SIZE];
 
+<<<<<<< HEAD
 		dev_printk_emit(7, dev->dev.parent,
+=======
+		dev_printk_emit(LOGLEVEL_DEBUG, dev->dev.parent,
+>>>>>>> v4.9.227
 				"%s%s %s %s%s: %pV",
 				dynamic_emit_prefix(descriptor, buf),
 				dev_driver_string(dev->dev.parent),
@@ -645,7 +667,11 @@ static __init int ddebug_setup_query(char *str)
 __setup("ddebug_query=", ddebug_setup_query);
 
 /*
+<<<<<<< HEAD
  * File_ops->write method for <debugfs>/dynamic_debug/conrol.  Gathers the
+=======
+ * File_ops->write method for <debugfs>/dynamic_debug/control.  Gathers the
+>>>>>>> v4.9.227
  * command text from userspace, parses and executes it.
  */
 #define USER_BUF_PAGE 4096
@@ -661,6 +687,7 @@ static ssize_t ddebug_proc_write(struct file *file, const char __user *ubuf,
 		pr_warn("expected <%d bytes into control\n", USER_BUF_PAGE);
 		return -E2BIG;
 	}
+<<<<<<< HEAD
 	tmpbuf = kmalloc(len + 1, GFP_KERNEL);
 	if (!tmpbuf)
 		return -ENOMEM;
@@ -669,6 +696,11 @@ static ssize_t ddebug_proc_write(struct file *file, const char __user *ubuf,
 		return -EFAULT;
 	}
 	tmpbuf[len] = '\0';
+=======
+	tmpbuf = memdup_user_nul(ubuf, len);
+	if (IS_ERR(tmpbuf))
+		return PTR_ERR(tmpbuf);
+>>>>>>> v4.9.227
 	vpr_info("read %d bytes from userspace\n", (int)len);
 
 	ret = ddebug_exec_queries(tmpbuf, NULL);
@@ -845,12 +877,20 @@ int ddebug_add_module(struct _ddebug *tab, unsigned int n,
 			     const char *name)
 {
 	struct ddebug_table *dt;
+<<<<<<< HEAD
 	char *new_name;
+=======
+	const char *new_name;
+>>>>>>> v4.9.227
 
 	dt = kzalloc(sizeof(*dt), GFP_KERNEL);
 	if (dt == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
 	new_name = kstrdup(name, GFP_KERNEL);
+=======
+	new_name = kstrdup_const(name, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (new_name == NULL) {
 		kfree(dt);
 		return -ENOMEM;
@@ -911,7 +951,11 @@ int ddebug_dyndbg_module_param_cb(char *param, char *val, const char *module)
 static void ddebug_table_free(struct ddebug_table *dt)
 {
 	list_del_init(&dt->link);
+<<<<<<< HEAD
 	kfree(dt->mod_name);
+=======
+	kfree_const(dt->mod_name);
+>>>>>>> v4.9.227
 	kfree(dt);
 }
 
@@ -1031,6 +1075,7 @@ static int __init dynamic_debug_init(void)
 	 * slightly noisy if verbose, but harmless.
 	 */
 	cmdline = kstrdup(saved_command_line, GFP_KERNEL);
+<<<<<<< HEAD
 	if (cmdline) {
 		parse_args("dyndbg params", cmdline, NULL,
 			   0, 0, 0, NULL, &ddebug_dyndbg_boot_param_cb);
@@ -1038,6 +1083,11 @@ static int __init dynamic_debug_init(void)
 	} else
 		pr_err("Failed to parse boot args for dyndbg params\n");
 
+=======
+	parse_args("dyndbg params", cmdline, NULL,
+		   0, 0, 0, NULL, &ddebug_dyndbg_boot_param_cb);
+	kfree(cmdline);
+>>>>>>> v4.9.227
 	return 0;
 
 out_err:

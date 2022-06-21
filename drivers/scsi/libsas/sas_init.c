@@ -45,7 +45,10 @@ struct sas_task *sas_alloc_task(gfp_t flags)
 	struct sas_task *task = kmem_cache_zalloc(sas_task_cache, flags);
 
 	if (task) {
+<<<<<<< HEAD
 		INIT_LIST_HEAD(&task->list);
+=======
+>>>>>>> v4.9.227
 		spin_lock_init(&task->task_state_lock);
 		task->task_state_flags = SAS_TASK_STATE_PENDING;
 	}
@@ -77,7 +80,10 @@ EXPORT_SYMBOL_GPL(sas_alloc_slow_task);
 void sas_free_task(struct sas_task *task)
 {
 	if (task) {
+<<<<<<< HEAD
 		BUG_ON(!list_empty(&task->list));
+=======
+>>>>>>> v4.9.227
 		kfree(task->slow_task);
 		kmem_cache_free(sas_task_cache, task);
 	}
@@ -127,11 +133,14 @@ int sas_register_ha(struct sas_ha_struct *sas_ha)
 	spin_lock_init(&sas_ha->phy_port_lock);
 	sas_hash_addr(sas_ha->hashed_sas_addr, sas_ha->sas_addr);
 
+<<<<<<< HEAD
 	if (sas_ha->lldd_queue_size == 0)
 		sas_ha->lldd_queue_size = 1;
 	else if (sas_ha->lldd_queue_size == -1)
 		sas_ha->lldd_queue_size = 128; /* Sanity */
 
+=======
+>>>>>>> v4.9.227
 	set_bit(SAS_HA_REGISTERED, &sas_ha->state);
 	spin_lock_init(&sas_ha->lock);
 	mutex_init(&sas_ha->drain_mutex);
@@ -157,6 +166,7 @@ int sas_register_ha(struct sas_ha_struct *sas_ha)
 		goto Undo_ports;
 	}
 
+<<<<<<< HEAD
 	if (sas_ha->lldd_max_execute_num > 1) {
 		error = sas_init_queue(sas_ha);
 		if (error) {
@@ -166,6 +176,8 @@ int sas_register_ha(struct sas_ha_struct *sas_ha)
 		}
 	}
 
+=======
+>>>>>>> v4.9.227
 	INIT_LIST_HEAD(&sas_ha->eh_done_q);
 	INIT_LIST_HEAD(&sas_ha->eh_ata_q);
 
@@ -201,11 +213,14 @@ int sas_unregister_ha(struct sas_ha_struct *sas_ha)
 	__sas_drain_work(sas_ha);
 	mutex_unlock(&sas_ha->drain_mutex);
 
+<<<<<<< HEAD
 	if (sas_ha->lldd_max_execute_num > 1) {
 		sas_shutdown_queue(sas_ha);
 		sas_ha->lldd_max_execute_num = 1;
 	}
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 

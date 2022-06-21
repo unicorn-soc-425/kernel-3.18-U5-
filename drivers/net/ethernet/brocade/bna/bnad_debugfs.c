@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Linux network driver for Brocade Converged Network Adapter.
+=======
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -11,9 +15,16 @@
  * General Public License for more details.
  */
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2011 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> v4.9.227
  */
 
 #include <linux/debugfs.h>
@@ -75,8 +86,12 @@ bnad_debugfs_open_fwtrc(struct inode *inode, struct file *file)
 		fw_debug->debug_buffer = NULL;
 		kfree(fw_debug);
 		fw_debug = NULL;
+<<<<<<< HEAD
 		pr_warn("bnad %s: Failed to collect fwtrc\n",
 			pci_name(bnad->pcidev));
+=======
+		netdev_warn(bnad->netdev, "failed to collect fwtrc\n");
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	}
 
@@ -116,8 +131,12 @@ bnad_debugfs_open_fwsave(struct inode *inode, struct file *file)
 		fw_debug->debug_buffer = NULL;
 		kfree(fw_debug);
 		fw_debug = NULL;
+<<<<<<< HEAD
 		pr_warn("bna %s: Failed to collect fwsave\n",
 			pci_name(bnad->pcidev));
+=======
+		netdev_warn(bnad->netdev, "failed to collect fwsave\n");
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	}
 
@@ -172,7 +191,11 @@ bnad_get_debug_drvinfo(struct bnad *bnad, void *buffer, u32 len)
 
 	/* Retrieve flash partition info */
 	fcomp.comp_status = 0;
+<<<<<<< HEAD
 	init_completion(&fcomp.comp);
+=======
+	reinit_completion(&fcomp.comp);
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	ret = bfa_nw_flash_get_attr(&bnad->bna.flash, &drvinfo->flash_attr,
 				bnad_cb_completion, &fcomp);
@@ -216,8 +239,12 @@ bnad_debugfs_open_drvinfo(struct inode *inode, struct file *file)
 		drv_info->debug_buffer = NULL;
 		kfree(drv_info);
 		drv_info = NULL;
+<<<<<<< HEAD
 		pr_warn("bna %s: Failed to collect drvinfo\n",
 			pci_name(bnad->pcidev));
+=======
+		netdev_warn(bnad->netdev, "failed to collect drvinfo\n");
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	}
 
@@ -270,6 +297,7 @@ bna_reg_offset_check(struct bfa_ioc *ioc, u32 offset, u32 len)
 	area = (offset >> 15) & 0x7;
 	if (area == 0) {
 		/* PCIe core register */
+<<<<<<< HEAD
 		if ((offset + (len<<2)) > 0x8000)	/* 8k dwords or 32KB */
 			return BFA_STATUS_EINVAL;
 	} else if (area == 0x1) {
@@ -279,6 +307,17 @@ bna_reg_offset_check(struct bfa_ioc *ioc, u32 offset, u32 len)
 	} else {
 		/* CB register space 64KB */
 		if ((offset + (len<<2)) > BFA_REG_ADDRMSK(ioc))
+=======
+		if (offset + (len << 2) > 0x8000)	/* 8k dwords or 32KB */
+			return BFA_STATUS_EINVAL;
+	} else if (area == 0x1) {
+		/* CB 32 KB memory page */
+		if (offset + (len << 2) > 0x10000)	/* 8k dwords or 32KB */
+			return BFA_STATUS_EINVAL;
+	} else {
+		/* CB register space 64KB */
+		if (offset + (len << 2) > BFA_REG_ADDRMSK(ioc))
+>>>>>>> v4.9.227
 			return BFA_STATUS_EINVAL;
 	}
 	return BFA_STATUS_OK;
@@ -314,12 +353,18 @@ bnad_debugfs_write_regrd(struct file *file, const char __user *buf,
 	struct bnad_debug_info *regrd_debug = file->private_data;
 	struct bnad *bnad = (struct bnad *)regrd_debug->i_private;
 	struct bfa_ioc *ioc = &bnad->bna.ioceth.ioc;
+<<<<<<< HEAD
 	int addr, len, rc, i;
+=======
+	int rc, i;
+	u32 addr, len;
+>>>>>>> v4.9.227
 	u32 *regbuf;
 	void __iomem *rb, *reg_addr;
 	unsigned long flags;
 	void *kern_buf;
 
+<<<<<<< HEAD
 	/* Allocate memory to store the user space buf */
 	kern_buf = kzalloc(nbytes, GFP_KERNEL);
 	if (!kern_buf)
@@ -334,13 +379,26 @@ bnad_debugfs_write_regrd(struct file *file, const char __user *buf,
 	if (rc < 2) {
 		pr_warn("bna %s: Failed to read user buffer\n",
 			pci_name(bnad->pcidev));
+=======
+	/* Copy the user space buf */
+	kern_buf = memdup_user(buf, nbytes);
+	if (IS_ERR(kern_buf))
+		return PTR_ERR(kern_buf);
+
+	rc = sscanf(kern_buf, "%x:%x", &addr, &len);
+	if (rc < 2 || len > UINT_MAX >> 2) {
+		netdev_warn(bnad->netdev, "failed to read user buffer\n");
+>>>>>>> v4.9.227
 		kfree(kern_buf);
 		return -EINVAL;
 	}
 
 	kfree(kern_buf);
 	kfree(bnad->regdata);
+<<<<<<< HEAD
 	bnad->regdata = NULL;
+=======
+>>>>>>> v4.9.227
 	bnad->reglen = 0;
 
 	bnad->regdata = kzalloc(len << 2, GFP_KERNEL);
@@ -354,8 +412,12 @@ bnad_debugfs_write_regrd(struct file *file, const char __user *buf,
 	/* offset and len sanity check */
 	rc = bna_reg_offset_check(ioc, addr, len);
 	if (rc) {
+<<<<<<< HEAD
 		pr_warn("bna %s: Failed reg offset check\n",
 			pci_name(bnad->pcidev));
+=======
+		netdev_warn(bnad->netdev, "failed reg offset check\n");
+>>>>>>> v4.9.227
 		kfree(bnad->regdata);
 		bnad->regdata = NULL;
 		bnad->reglen = 0;
@@ -382,11 +444,17 @@ bnad_debugfs_write_regwr(struct file *file, const char __user *buf,
 	struct bnad_debug_info *debug = file->private_data;
 	struct bnad *bnad = (struct bnad *)debug->i_private;
 	struct bfa_ioc *ioc = &bnad->bna.ioceth.ioc;
+<<<<<<< HEAD
 	int addr, val, rc;
+=======
+	int rc;
+	u32 addr, val;
+>>>>>>> v4.9.227
 	void __iomem *reg_addr;
 	unsigned long flags;
 	void *kern_buf;
 
+<<<<<<< HEAD
 	/* Allocate memory to store the user space buf */
 	kern_buf = kzalloc(nbytes, GFP_KERNEL);
 	if (!kern_buf)
@@ -401,6 +469,16 @@ bnad_debugfs_write_regwr(struct file *file, const char __user *buf,
 	if (rc < 2) {
 		pr_warn("bna %s: Failed to read user buffer\n",
 			pci_name(bnad->pcidev));
+=======
+	/* Copy the user space buf */
+	kern_buf = memdup_user(buf, nbytes);
+	if (IS_ERR(kern_buf))
+		return PTR_ERR(kern_buf);
+
+	rc = sscanf(kern_buf, "%x:%x", &addr, &val);
+	if (rc < 2) {
+		netdev_warn(bnad->netdev, "failed to read user buffer\n");
+>>>>>>> v4.9.227
 		kfree(kern_buf);
 		return -EINVAL;
 	}
@@ -411,8 +489,12 @@ bnad_debugfs_write_regwr(struct file *file, const char __user *buf,
 	/* offset and len sanity check */
 	rc = bna_reg_offset_check(ioc, addr, 1);
 	if (rc) {
+<<<<<<< HEAD
 		pr_warn("bna %s: Failed reg offset check\n",
 			pci_name(bnad->pcidev));
+=======
+		netdev_warn(bnad->netdev, "failed reg offset check\n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -524,7 +606,12 @@ bnad_debugfs_init(struct bnad *bnad)
 		bna_debugfs_root = debugfs_create_dir("bna", NULL);
 		atomic_set(&bna_debugfs_port_count, 0);
 		if (!bna_debugfs_root) {
+<<<<<<< HEAD
 			pr_warn("BNA: debugfs root dir creation failed\n");
+=======
+			netdev_warn(bnad->netdev,
+				    "debugfs root dir creation failed\n");
+>>>>>>> v4.9.227
 			return;
 		}
 	}
@@ -535,8 +622,13 @@ bnad_debugfs_init(struct bnad *bnad)
 		bnad->port_debugfs_root =
 			debugfs_create_dir(name, bna_debugfs_root);
 		if (!bnad->port_debugfs_root) {
+<<<<<<< HEAD
 			pr_warn("bna pci_dev %s: root dir creation failed\n",
 				pci_name(bnad->pcidev));
+=======
+			netdev_warn(bnad->netdev,
+				    "debugfs root dir creation failed\n");
+>>>>>>> v4.9.227
 			return;
 		}
 
@@ -551,9 +643,15 @@ bnad_debugfs_init(struct bnad *bnad)
 							bnad,
 							file->fops);
 			if (!bnad->bnad_dentry_files[i]) {
+<<<<<<< HEAD
 				pr_warn(
 				     "BNA pci_dev:%s: create %s entry failed\n",
 				     pci_name(bnad->pcidev), file->name);
+=======
+				netdev_warn(bnad->netdev,
+					    "create %s entry failed\n",
+					    file->name);
+>>>>>>> v4.9.227
 				return;
 			}
 		}

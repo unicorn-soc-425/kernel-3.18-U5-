@@ -1,4 +1,8 @@
 /*
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2015 Thomas Meyer (thomas@m3y3r.de)
+>>>>>>> v4.9.227
  * Copyright (C) 2002- 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
  */
@@ -16,11 +20,17 @@
 #include <kern_util.h>
 #include <mem.h>
 #include <os.h>
+<<<<<<< HEAD
 #include <proc_mm.h>
 #include <ptrace_user.h>
 #include <registers.h>
 #include <skas.h>
 #include <skas_ptrace.h>
+=======
+#include <ptrace_user.h>
+#include <registers.h>
+#include <skas.h>
+>>>>>>> v4.9.227
 #include <sysdep/stub.h>
 
 int is_skas_winch(int pid, int fd, void *data)
@@ -47,7 +57,11 @@ static int ptrace_dump_regs(int pid)
  * Signals that are OK to receive in the stub - we'll just continue it.
  * SIGWINCH will happen when UML is inside a detached screen.
  */
+<<<<<<< HEAD
 #define STUB_SIG_MASK ((1 << SIGVTALRM) | (1 << SIGWINCH))
+=======
+#define STUB_SIG_MASK ((1 << SIGALRM) | (1 << SIGWINCH))
+>>>>>>> v4.9.227
 
 /* Signals that the stub will finish with - anything else is an error */
 #define STUB_DONE_MASK (1 << SIGTRAP)
@@ -88,6 +102,7 @@ bad_wait:
 
 extern unsigned long current_stub_stack(void);
 
+<<<<<<< HEAD
 static void get_skas_faultinfo(int pid, struct faultinfo *fi)
 {
 	int err;
@@ -141,6 +156,43 @@ static void get_skas_faultinfo(int pid, struct faultinfo *fi)
 static void handle_segv(int pid, struct uml_pt_regs * regs)
 {
 	get_skas_faultinfo(pid, &regs->faultinfo);
+=======
+static void get_skas_faultinfo(int pid, struct faultinfo *fi, unsigned long *aux_fp_regs)
+{
+	int err;
+
+	err = get_fp_registers(pid, aux_fp_regs);
+	if (err < 0) {
+		printk(UM_KERN_ERR "save_fp_registers returned %d\n",
+		       err);
+		fatal_sigsegv();
+	}
+	err = ptrace(PTRACE_CONT, pid, 0, SIGSEGV);
+	if (err) {
+		printk(UM_KERN_ERR "Failed to continue stub, pid = %d, "
+		       "errno = %d\n", pid, errno);
+		fatal_sigsegv();
+	}
+	wait_stub_done(pid);
+
+	/*
+	 * faultinfo is prepared by the stub-segv-handler at start of
+	 * the stub stack page. We just have to copy it.
+	 */
+	memcpy(fi, (void *)current_stub_stack(), sizeof(*fi));
+
+	err = put_fp_registers(pid, aux_fp_regs);
+	if (err < 0) {
+		printk(UM_KERN_ERR "put_fp_registers returned %d\n",
+		       err);
+		fatal_sigsegv();
+	}
+}
+
+static void handle_segv(int pid, struct uml_pt_regs *regs, unsigned long *aux_fp_regs)
+{
+	get_skas_faultinfo(pid, &regs->faultinfo, aux_fp_regs);
+>>>>>>> v4.9.227
 	segv(regs->faultinfo, 0, 1, NULL);
 }
 
@@ -156,9 +208,12 @@ static void handle_trap(int pid, struct uml_pt_regs *regs,
 	if ((UPT_IP(regs) >= STUB_START) && (UPT_IP(regs) < STUB_END))
 		fatal_sigsegv();
 
+<<<<<<< HEAD
 	/* Mark this as a syscall */
 	UPT_SYSCALL_NR(regs) = PT_SYSCALL_NR(regs->gp);
 
+=======
+>>>>>>> v4.9.227
 	if (!local_using_sysemu)
 	{
 		err = ptrace(PTRACE_POKEUSER, pid, PT_SYSCALL_NR_OFFSET,
@@ -193,17 +248,27 @@ static void handle_trap(int pid, struct uml_pt_regs *regs,
 	handle_syscall(regs);
 }
 
+<<<<<<< HEAD
 extern int __syscall_stub_start;
+=======
+extern char __syscall_stub_start[];
+>>>>>>> v4.9.227
 
 static int userspace_tramp(void *stack)
 {
 	void *addr;
+<<<<<<< HEAD
 	int err;
+=======
+	int fd;
+	unsigned long long offset;
+>>>>>>> v4.9.227
 
 	ptrace(PTRACE_TRACEME, 0, 0, 0);
 
 	signal(SIGTERM, SIG_DFL);
 	signal(SIGWINCH, SIG_IGN);
+<<<<<<< HEAD
 	err = set_interval();
 	if (err) {
 		printk(UM_KERN_ERR "userspace_tramp - setting timer failed, "
@@ -241,11 +306,44 @@ static int userspace_tramp(void *stack)
 		}
 	}
 	if (!ptrace_faultinfo && (stack != NULL)) {
+=======
+
+	/*
+	 * This has a pte, but it can't be mapped in with the usual
+	 * tlb_flush mechanism because this is part of that mechanism
+	 */
+	fd = phys_mapping(to_phys(__syscall_stub_start), &offset);
+	addr = mmap64((void *) STUB_CODE, UM_KERN_PAGE_SIZE,
+		      PROT_EXEC, MAP_FIXED | MAP_PRIVATE, fd, offset);
+	if (addr == MAP_FAILED) {
+		printk(UM_KERN_ERR "mapping mmap stub at 0x%lx failed, "
+		       "errno = %d\n", STUB_CODE, errno);
+		exit(1);
+	}
+
+	if (stack != NULL) {
+		fd = phys_mapping(to_phys(stack), &offset);
+		addr = mmap((void *) STUB_DATA,
+			    UM_KERN_PAGE_SIZE, PROT_READ | PROT_WRITE,
+			    MAP_FIXED | MAP_SHARED, fd, offset);
+		if (addr == MAP_FAILED) {
+			printk(UM_KERN_ERR "mapping segfault stack "
+			       "at 0x%lx failed, errno = %d\n",
+			       STUB_DATA, errno);
+			exit(1);
+		}
+	}
+	if (stack != NULL) {
+>>>>>>> v4.9.227
 		struct sigaction sa;
 
 		unsigned long v = STUB_CODE +
 				  (unsigned long) stub_segv_handler -
+<<<<<<< HEAD
 				  (unsigned long) &__syscall_stub_start;
+=======
+				  (unsigned long) __syscall_stub_start;
+>>>>>>> v4.9.227
 
 		set_sigstack((void *) STUB_DATA, UM_KERN_PAGE_SIZE);
 		sigemptyset(&sa.sa_mask);
@@ -286,11 +384,15 @@ int start_userspace(unsigned long stub_stack)
 
 	sp = (unsigned long) stack + UM_KERN_PAGE_SIZE - sizeof(void *);
 
+<<<<<<< HEAD
 	flags = CLONE_FILES;
 	if (proc_mm)
 		flags |= CLONE_VM;
 	else
 		flags |= SIGCHLD;
+=======
+	flags = CLONE_FILES | SIGCHLD;
+>>>>>>> v4.9.227
 
 	pid = clone(userspace_tramp, (void *) sp, flags, (void *) stub_stack);
 	if (pid < 0) {
@@ -308,7 +410,11 @@ int start_userspace(unsigned long stub_stack)
 			       "errno = %d\n", errno);
 			goto out_kill;
 		}
+<<<<<<< HEAD
 	} while (WIFSTOPPED(status) && (WSTOPSIG(status) == SIGVTALRM));
+=======
+	} while (WIFSTOPPED(status) && (WSTOPSIG(status) == SIGALRM));
+>>>>>>> v4.9.227
 
 	if (!WIFSTOPPED(status) || (WSTOPSIG(status) != SIGSTOP)) {
 		err = -EINVAL;
@@ -339,10 +445,15 @@ int start_userspace(unsigned long stub_stack)
 	return err;
 }
 
+<<<<<<< HEAD
 void userspace(struct uml_pt_regs *regs)
 {
 	struct itimerval timer;
 	unsigned long long nsecs, now;
+=======
+void userspace(struct uml_pt_regs *regs, unsigned long *aux_fp_regs)
+{
+>>>>>>> v4.9.227
 	int err, status, op, pid = userspace_pid[0];
 	/* To prevent races if using_sysemu changes under us.*/
 	int local_using_sysemu;
@@ -351,6 +462,7 @@ void userspace(struct uml_pt_regs *regs)
 	/* Handle any immediate reschedules or signals */
 	interrupt_end();
 
+<<<<<<< HEAD
 	if (getitimer(ITIMER_VIRTUAL, &timer))
 		printk(UM_KERN_ERR "Failed to get itimer, errno = %d\n", errno);
 	nsecs = timer.it_value.tv_sec * UM_NSEC_PER_SEC +
@@ -358,6 +470,10 @@ void userspace(struct uml_pt_regs *regs)
 	nsecs += os_nsecs();
 
 	while (1) {
+=======
+	while (1) {
+
+>>>>>>> v4.9.227
 		/*
 		 * This can legitimately fail if the process loads a
 		 * bogus value into a segment register.  It will
@@ -413,6 +529,7 @@ void userspace(struct uml_pt_regs *regs)
 
 			switch (sig) {
 			case SIGSEGV:
+<<<<<<< HEAD
 				if (PTRACE_FULL_FAULTINFO ||
 				    !ptrace_faultinfo) {
 					get_skas_faultinfo(pid,
@@ -421,6 +538,15 @@ void userspace(struct uml_pt_regs *regs)
 							     regs);
 				}
 				else handle_segv(pid, regs);
+=======
+				if (PTRACE_FULL_FAULTINFO) {
+					get_skas_faultinfo(pid,
+							   &regs->faultinfo, aux_fp_regs);
+					(*sig_info[SIGSEGV])(SIGSEGV, (struct siginfo *)&si,
+							     regs);
+				}
+				else handle_segv(pid, regs, aux_fp_regs);
+>>>>>>> v4.9.227
 				break;
 			case SIGTRAP + 0x80:
 			        handle_trap(pid, regs, local_using_sysemu);
@@ -428,6 +554,7 @@ void userspace(struct uml_pt_regs *regs)
 			case SIGTRAP:
 				relay_signal(SIGTRAP, (struct siginfo *)&si, regs);
 				break;
+<<<<<<< HEAD
 			case SIGVTALRM:
 				now = os_nsecs();
 				if (now < nsecs)
@@ -440,6 +567,9 @@ void userspace(struct uml_pt_regs *regs)
 					timer.it_value.tv_usec *
 					UM_NSEC_PER_USEC;
 				nsecs += os_nsecs();
+=======
+			case SIGALRM:
+>>>>>>> v4.9.227
 				break;
 			case SIGIO:
 			case SIGILL:
@@ -474,7 +604,11 @@ static int __init init_thread_regs(void)
 	/* Set parent's instruction pointer to start of clone-stub */
 	thread_regs[REGS_IP_INDEX] = STUB_CODE +
 				(unsigned long) stub_clone_handler -
+<<<<<<< HEAD
 				(unsigned long) &__syscall_stub_start;
+=======
+				(unsigned long) __syscall_stub_start;
+>>>>>>> v4.9.227
 	thread_regs[REGS_SP_INDEX] = STUB_DATA + UM_KERN_PAGE_SIZE -
 		sizeof(void *);
 #ifdef __SIGNAL_FRAMESIZE
@@ -487,7 +621,10 @@ __initcall(init_thread_regs);
 
 int copy_context_skas0(unsigned long new_stack, int pid)
 {
+<<<<<<< HEAD
 	struct timeval tv = { .tv_sec = 0, .tv_usec = UM_USEC_PER_SEC / UM_HZ };
+=======
+>>>>>>> v4.9.227
 	int err;
 	unsigned long current_stack = current_stub_stack();
 	struct stub_data *data = (struct stub_data *) current_stack;
@@ -499,11 +636,18 @@ int copy_context_skas0(unsigned long new_stack, int pid)
 	 * prepare offset and fd of child's stack as argument for parent's
 	 * and child's mmap2 calls
 	 */
+<<<<<<< HEAD
 	*data = ((struct stub_data) { .offset	= MMAP_OFFSET(new_offset),
 				      .fd	= new_fd,
 				      .timer    = ((struct itimerval)
 					           { .it_value = tv,
 						     .it_interval = tv }) });
+=======
+	*data = ((struct stub_data) {
+			.offset	= MMAP_OFFSET(new_offset),
+			.fd     = new_fd
+	});
+>>>>>>> v4.9.227
 
 	err = ptrace_setregs(pid, thread_regs);
 	if (err < 0) {
@@ -571,6 +715,7 @@ int copy_context_skas0(unsigned long new_stack, int pid)
 	return err;
 }
 
+<<<<<<< HEAD
 /*
  * This is used only, if stub pages are needed, while proc_mm is
  * available. Opening /proc/mm creates a new mm_context, which lacks
@@ -632,6 +777,8 @@ int map_stub_pages(int fd, unsigned long code, unsigned long data,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 void new_thread(void *stack, jmp_buf *buf, void (*handler)(void))
 {
 	(*buf)[0].JB_IP = (unsigned long) handler;
@@ -674,7 +821,11 @@ int start_idle_thread(void *stack, jmp_buf *switch_buf)
 	n = setjmp(initial_jmpbuf);
 	switch (n) {
 	case INIT_JMP_NEW_THREAD:
+<<<<<<< HEAD
 		(*switch_buf)[0].JB_IP = (unsigned long) new_thread_handler;
+=======
+		(*switch_buf)[0].JB_IP = (unsigned long) uml_finishsetup;
+>>>>>>> v4.9.227
 		(*switch_buf)[0].JB_SP = (unsigned long) stack +
 			UM_THREAD_SIZE - sizeof(void *);
 		break;
@@ -694,6 +845,14 @@ int start_idle_thread(void *stack, jmp_buf *switch_buf)
 		fatal_sigsegv();
 	}
 	longjmp(*switch_buf, 1);
+<<<<<<< HEAD
+=======
+
+	/* unreachable */
+	printk(UM_KERN_ERR "impossible long jump!");
+	fatal_sigsegv();
+	return 0;
+>>>>>>> v4.9.227
 }
 
 void initial_thread_cb_skas(void (*proc)(void *), void *arg)
@@ -728,6 +887,7 @@ void reboot_skas(void)
 
 void __switch_mm(struct mm_id *mm_idp)
 {
+<<<<<<< HEAD
 	int err;
 
 	/* FIXME: need cpu pid in __switch_mm */
@@ -741,4 +901,7 @@ void __switch_mm(struct mm_id *mm_idp)
 		}
 	}
 	else userspace_pid[0] = mm_idp->u.pid;
+=======
+	userspace_pid[0] = mm_idp->u.pid;
+>>>>>>> v4.9.227
 }

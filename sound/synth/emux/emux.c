@@ -53,9 +53,13 @@ int snd_emux_new(struct snd_emux **remu)
 	emu->max_voices = 0;
 	emu->use_time = 0;
 
+<<<<<<< HEAD
 	init_timer(&emu->tlist);
 	emu->tlist.function = snd_emux_timer_callback;
 	emu->tlist.data = (unsigned long)emu;
+=======
+	setup_timer(&emu->tlist, snd_emux_timer_callback, (unsigned long)emu);
+>>>>>>> v4.9.227
 	emu->timer_active = 0;
 
 	*remu = emu;
@@ -130,9 +134,13 @@ int snd_emux_register(struct snd_emux *emu, struct snd_card *card, int index, ch
 #endif
 	snd_emux_init_virmidi(emu, card);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 	snd_emux_proc_init(emu, card, index);
 #endif
+=======
+	snd_emux_proc_init(emu, card, index);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -152,20 +160,29 @@ int snd_emux_free(struct snd_emux *emu)
 		del_timer(&emu->tlist);
 	spin_unlock_irqrestore(&emu->voice_lock, flags);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 	snd_emux_proc_free(emu);
 #endif
+=======
+	snd_emux_proc_free(emu);
+>>>>>>> v4.9.227
 	snd_emux_delete_virmidi(emu);
 #ifdef CONFIG_SND_SEQUENCER_OSS
 	snd_emux_detach_seq_oss(emu);
 #endif
 	snd_emux_detach_seq(emu);
+<<<<<<< HEAD
 
 	snd_emux_delete_hwdep(emu);
 
 	if (emu->sflist)
 		snd_sf_free(emu->sflist);
 
+=======
+	snd_emux_delete_hwdep(emu);
+	snd_sf_free(emu->sflist);
+>>>>>>> v4.9.227
 	kfree(emu->voices);
 	kfree(emu->name);
 	kfree(emu);

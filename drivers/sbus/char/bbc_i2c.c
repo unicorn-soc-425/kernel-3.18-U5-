@@ -413,7 +413,10 @@ MODULE_DEVICE_TABLE(of, bbc_i2c_match);
 static struct platform_driver bbc_i2c_driver = {
 	.driver = {
 		.name = "bbc_i2c",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = bbc_i2c_match,
 	},
 	.probe		= bbc_i2c_probe,

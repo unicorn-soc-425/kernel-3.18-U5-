@@ -49,7 +49,11 @@ static int amixer_output_slot(const struct rsc *rsc)
 	return (amixer_index(rsc) << 4) + 0x4;
 }
 
+<<<<<<< HEAD
 static struct rsc_ops amixer_basic_rsc_ops = {
+=======
+static const struct rsc_ops amixer_basic_rsc_ops = {
+>>>>>>> v4.9.227
 	.master		= amixer_master,
 	.next_conj	= amixer_next_conj,
 	.index		= amixer_index,
@@ -186,7 +190,11 @@ static int amixer_setup(struct amixer *amixer, struct rsc *input,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct amixer_rsc_ops amixer_ops = {
+=======
+static const struct amixer_rsc_ops amixer_ops = {
+>>>>>>> v4.9.227
 	.set_input		= amixer_set_input,
 	.set_invalid_squash	= amixer_set_invalid_squash,
 	.set_scale		= amixer_set_y,
@@ -357,7 +365,11 @@ static int sum_output_slot(const struct rsc *rsc)
 	return (sum_index(rsc) << 4) + 0xc;
 }
 
+<<<<<<< HEAD
 static struct rsc_ops sum_basic_rsc_ops = {
+=======
+static const struct rsc_ops sum_basic_rsc_ops = {
+>>>>>>> v4.9.227
 	.master		= sum_master,
 	.next_conj	= sum_next_conj,
 	.index		= sum_index,

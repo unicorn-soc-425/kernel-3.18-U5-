@@ -74,7 +74,10 @@ static int __init ps3_rtc_probe(struct platform_device *dev)
 static struct platform_driver ps3_rtc_driver = {
 	.driver = {
 		.name = "rtc-ps3",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

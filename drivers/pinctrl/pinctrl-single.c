@@ -255,6 +255,16 @@ static enum pin_config_param pcs_bias[] = {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * This lock class tells lockdep that irqchip core that this single
+ * pinctrl can be in a different category than its parents, so it won't
+ * report false recursion.
+ */
+static struct lock_class_key pcs_lock_class;
+
+/*
+>>>>>>> v4.9.227
  * REVISIT: Reads and writes could eventually use regmap or something
  * generic. But at least on omaps, some mux registers are performance
  * critical as they may need to be remuxed every time before and after
@@ -1484,10 +1494,14 @@ static void pcs_irq_free(struct pcs_device *pcs)
 static void pcs_free_resources(struct pcs_device *pcs)
 {
 	pcs_irq_free(pcs);
+<<<<<<< HEAD
 
 	if (pcs->pctl)
 		pinctrl_unregister(pcs->pctl);
 
+=======
+	pinctrl_unregister(pcs->pctl);
+>>>>>>> v4.9.227
 	pcs_free_funcs(pcs);
 	pcs_free_pingroups(pcs);
 }
@@ -1501,7 +1515,11 @@ static void pcs_free_resources(struct pcs_device *pcs)
 		}							\
 	} while (0);
 
+<<<<<<< HEAD
 static struct of_device_id pcs_of_match[];
+=======
+static const struct of_device_id pcs_of_match[];
+>>>>>>> v4.9.227
 
 static int pcs_add_gpio_func(struct device_node *node, struct pcs_device *pcs)
 {
@@ -1682,12 +1700,20 @@ static irqreturn_t pcs_irq_handler(int irq, void *d)
  * Use this if you have a separate interrupt for each
  * pinctrl-single instance.
  */
+<<<<<<< HEAD
 static void pcs_irq_chain_handler(unsigned int irq, struct irq_desc *desc)
+=======
+static void pcs_irq_chain_handler(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct pcs_soc_data *pcs_soc = irq_desc_get_handler_data(desc);
 	struct irq_chip *chip;
 
+<<<<<<< HEAD
 	chip = irq_get_chip(irq);
+=======
+	chip = irq_desc_get_chip(desc);
+>>>>>>> v4.9.227
 	chained_irq_enter(chip, desc);
 	pcs_irq_handle(pcs_soc);
 	/* REVISIT: export and add handle_bad_irq(irq, desc)? */
@@ -1719,17 +1745,26 @@ static int pcs_irqdomain_map(struct irq_domain *d, unsigned int irq,
 	irq_set_chip_data(irq, pcs_soc);
 	irq_set_chip_and_handler(irq, &pcs->chip,
 				 handle_level_irq);
+<<<<<<< HEAD
 
 #ifdef CONFIG_ARM
 	set_irq_flags(irq, IRQF_VALID);
 #else
 	irq_set_noprobe(irq);
 #endif
+=======
+	irq_set_lockdep_class(irq, &pcs_lock_class);
+	irq_set_noprobe(irq);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops pcs_irqdomain_ops = {
+=======
+static const struct irq_domain_ops pcs_irqdomain_ops = {
+>>>>>>> v4.9.227
 	.map = pcs_irqdomain_map,
 	.xlate = irq_domain_xlate_onecell,
 };
@@ -1763,16 +1798,27 @@ static int pcs_irq_init_chained_handler(struct pcs_device *pcs,
 		int res;
 
 		res = request_irq(pcs_soc->irq, pcs_irq_handler,
+<<<<<<< HEAD
 				  IRQF_SHARED | IRQF_NO_SUSPEND,
+=======
+				  IRQF_SHARED | IRQF_NO_SUSPEND |
+				  IRQF_NO_THREAD,
+>>>>>>> v4.9.227
 				  name, pcs_soc);
 		if (res) {
 			pcs_soc->irq = -1;
 			return res;
 		}
 	} else {
+<<<<<<< HEAD
 		irq_set_handler_data(pcs_soc->irq, pcs_soc);
 		irq_set_chained_handler(pcs_soc->irq,
 					pcs_irq_chain_handler);
+=======
+		irq_set_chained_handler_and_data(pcs_soc->irq,
+						 pcs_irq_chain_handler,
+						 pcs_soc);
+>>>>>>> v4.9.227
 	}
 
 	/*
@@ -1924,9 +1970,15 @@ static int pcs_probe(struct platform_device *pdev)
 		goto free;
 
 	pcs->pctl = pinctrl_register(&pcs->desc, pcs->dev, pcs);
+<<<<<<< HEAD
 	if (!pcs->pctl) {
 		dev_err(pcs->dev, "could not register single pinctrl driver\n");
 		ret = -EINVAL;
+=======
+	if (IS_ERR(pcs->pctl)) {
+		dev_err(pcs->dev, "could not register single pinctrl driver\n");
+		ret = PTR_ERR(pcs->pctl);
+>>>>>>> v4.9.227
 		goto free;
 	}
 
@@ -1985,7 +2037,10 @@ static const struct pcs_soc_data pinctrl_single_omap_wkup = {
 };
 
 static const struct pcs_soc_data pinctrl_single_dra7 = {
+<<<<<<< HEAD
 	.flags = PCS_QUIRK_SHARED_IRQ,
+=======
+>>>>>>> v4.9.227
 	.irq_enable_mask = (1 << 24),	/* WAKEUPENABLE */
 	.irq_status_mask = (1 << 25),	/* WAKEUPEVENT */
 };
@@ -2003,7 +2058,11 @@ static const struct pcs_soc_data pinconf_single = {
 	.flags = PCS_FEAT_PINCONF,
 };
 
+<<<<<<< HEAD
 static struct of_device_id pcs_of_match[] = {
+=======
+static const struct of_device_id pcs_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "ti,omap3-padconf", .data = &pinctrl_single_omap_wkup },
 	{ .compatible = "ti,omap4-padconf", .data = &pinctrl_single_omap_wkup },
 	{ .compatible = "ti,omap5-padconf", .data = &pinctrl_single_omap_wkup },
@@ -2019,7 +2078,10 @@ static struct platform_driver pcs_driver = {
 	.probe		= pcs_probe,
 	.remove		= pcs_remove,
 	.driver = {
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name		= DRIVER_NAME,
 		.of_match_table	= pcs_of_match,
 	},

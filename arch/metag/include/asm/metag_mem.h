@@ -881,7 +881,11 @@
 #define    PERFCTRL_DCSTALL 11 /* Dcache+TLB o/p delayed (per-thread) */
 #define    PERFCTRL_ICSTALL 12 /* Icache+TLB o/p delayed (per-thread) */
 
+<<<<<<< HEAD
 #define    PERFCTRL_INT     13 /* Internal core delailed events (see next) */
+=======
+#define    PERFCTRL_INT     13 /* Internal core detailed events (see next) */
+>>>>>>> v4.9.227
 #define    PERFCTRL_EXT     15 /* External source in core periphery */
 #endif /* METAC_2_1 */
 

@@ -358,7 +358,11 @@ int viafb_setup_engine(struct fb_info *info)
 	viapar->shared->vq_vram_addr = viapar->fbmem_free;
 	viapar->fbmem_used += VQ_SIZE;
 
+<<<<<<< HEAD
 #if defined(CONFIG_VIDEO_VIA_CAMERA) || defined(CONFIG_VIDEO_VIA_CAMERA_MODULE)
+=======
+#if IS_ENABLED(CONFIG_VIDEO_VIA_CAMERA)
+>>>>>>> v4.9.227
 	/*
 	 * Set aside a chunk of framebuffer memory for the camera
 	 * driver.  Someday this driver probably needs a proper allocator

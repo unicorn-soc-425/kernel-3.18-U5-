@@ -6,6 +6,10 @@
 #include <linux/linkage.h>
 #include <asm/asi.h>
 #include <asm/backoff.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	.text
 
@@ -29,6 +33,10 @@ ENTRY(test_and_set_bit)	/* %o0=nr, %o1=addr */
 	 nop
 2:	BACKOFF_SPIN(%o3, %o4, 1b)
 ENDPROC(test_and_set_bit)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(test_and_set_bit)
+>>>>>>> v4.9.227
 
 ENTRY(test_and_clear_bit) /* %o0=nr, %o1=addr */
 	BACKOFF_SETUP(%o3)
@@ -50,6 +58,10 @@ ENTRY(test_and_clear_bit) /* %o0=nr, %o1=addr */
 	 nop
 2:	BACKOFF_SPIN(%o3, %o4, 1b)
 ENDPROC(test_and_clear_bit)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(test_and_clear_bit)
+>>>>>>> v4.9.227
 
 ENTRY(test_and_change_bit) /* %o0=nr, %o1=addr */
 	BACKOFF_SETUP(%o3)
@@ -71,6 +83,10 @@ ENTRY(test_and_change_bit) /* %o0=nr, %o1=addr */
 	 nop
 2:	BACKOFF_SPIN(%o3, %o4, 1b)
 ENDPROC(test_and_change_bit)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(test_and_change_bit)
+>>>>>>> v4.9.227
 
 ENTRY(set_bit) /* %o0=nr, %o1=addr */
 	BACKOFF_SETUP(%o3)
@@ -90,6 +106,10 @@ ENTRY(set_bit) /* %o0=nr, %o1=addr */
 	 nop
 2:	BACKOFF_SPIN(%o3, %o4, 1b)
 ENDPROC(set_bit)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(set_bit)
+>>>>>>> v4.9.227
 
 ENTRY(clear_bit) /* %o0=nr, %o1=addr */
 	BACKOFF_SETUP(%o3)
@@ -109,6 +129,10 @@ ENTRY(clear_bit) /* %o0=nr, %o1=addr */
 	 nop
 2:	BACKOFF_SPIN(%o3, %o4, 1b)
 ENDPROC(clear_bit)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(clear_bit)
+>>>>>>> v4.9.227
 
 ENTRY(change_bit) /* %o0=nr, %o1=addr */
 	BACKOFF_SETUP(%o3)
@@ -128,3 +152,7 @@ ENTRY(change_bit) /* %o0=nr, %o1=addr */
 	 nop
 2:	BACKOFF_SPIN(%o3, %o4, 1b)
 ENDPROC(change_bit)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(change_bit)
+>>>>>>> v4.9.227

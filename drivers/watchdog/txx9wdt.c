@@ -112,7 +112,11 @@ static int __init txx9wdt_probe(struct platform_device *dev)
 		txx9_imclk = NULL;
 		goto exit;
 	}
+<<<<<<< HEAD
 	ret = clk_enable(txx9_imclk);
+=======
+	ret = clk_prepare_enable(txx9_imclk);
+>>>>>>> v4.9.227
 	if (ret) {
 		clk_put(txx9_imclk);
 		txx9_imclk = NULL;
@@ -131,6 +135,10 @@ static int __init txx9wdt_probe(struct platform_device *dev)
 	txx9wdt.timeout = timeout;
 	txx9wdt.min_timeout = 1;
 	txx9wdt.max_timeout = WD_MAX_TIMEOUT;
+<<<<<<< HEAD
+=======
+	txx9wdt.parent = &dev->dev;
+>>>>>>> v4.9.227
 	watchdog_set_nowayout(&txx9wdt, nowayout);
 
 	ret = watchdog_register_device(&txx9wdt);
@@ -143,7 +151,11 @@ static int __init txx9wdt_probe(struct platform_device *dev)
 	return 0;
 exit:
 	if (txx9_imclk) {
+<<<<<<< HEAD
 		clk_disable(txx9_imclk);
+=======
+		clk_disable_unprepare(txx9_imclk);
+>>>>>>> v4.9.227
 		clk_put(txx9_imclk);
 	}
 	return ret;
@@ -152,7 +164,11 @@ exit:
 static int __exit txx9wdt_remove(struct platform_device *dev)
 {
 	watchdog_unregister_device(&txx9wdt);
+<<<<<<< HEAD
 	clk_disable(txx9_imclk);
+=======
+	clk_disable_unprepare(txx9_imclk);
+>>>>>>> v4.9.227
 	clk_put(txx9_imclk);
 	return 0;
 }
@@ -167,7 +183,10 @@ static struct platform_driver txx9wdt_driver = {
 	.shutdown = txx9wdt_shutdown,
 	.driver = {
 		.name = "txx9wdt",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

@@ -60,6 +60,12 @@ struct kmem_cache {
 	atomic_t allocmiss;
 	atomic_t freehit;
 	atomic_t freemiss;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DEBUG_SLAB_LEAK
+	atomic_t store_user_clean;
+#endif
+>>>>>>> v4.9.227
 
 	/*
 	 * If debugging is enabled, then the allocator can add additional
@@ -69,11 +75,39 @@ struct kmem_cache {
 	 */
 	int obj_offset;
 #endif /* CONFIG_DEBUG_SLAB */
+<<<<<<< HEAD
 #ifdef CONFIG_MEMCG_KMEM
 	struct memcg_cache_params *memcg_params;
+=======
+
+#ifdef CONFIG_MEMCG
+	struct memcg_cache_params memcg_params;
+#endif
+#ifdef CONFIG_KASAN
+	struct kasan_cache kasan_info;
+#endif
+
+#ifdef CONFIG_SLAB_FREELIST_RANDOM
+	unsigned int *random_seq;
+>>>>>>> v4.9.227
 #endif
 
 	struct kmem_cache_node *node[MAX_NUMNODES];
 };
 
+<<<<<<< HEAD
+=======
+static inline void *nearest_obj(struct kmem_cache *cache, struct page *page,
+				void *x)
+{
+	void *object = x - (x - page->s_mem) % cache->size;
+	void *last_object = page->s_mem + (cache->num - 1) * cache->size;
+
+	if (unlikely(object > last_object))
+		return last_object;
+	else
+		return object;
+}
+
+>>>>>>> v4.9.227
 #endif	/* _LINUX_SLAB_DEF_H */

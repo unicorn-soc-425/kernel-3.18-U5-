@@ -217,9 +217,19 @@ error_ret:
 static int ade7753_reset(struct device *dev)
 {
 	u16 val;
+<<<<<<< HEAD
 
 	ade7753_spi_read_reg_16(dev, ADE7753_MODE, &val);
 	val |= 1 << 6; /* Software Chip Reset */
+=======
+	int ret;
+
+	ret = ade7753_spi_read_reg_16(dev, ADE7753_MODE, &val);
+	if (ret)
+		return ret;
+
+	val |= BIT(6); /* Software Chip Reset */
+>>>>>>> v4.9.227
 
 	return ade7753_spi_write_reg_16(dev, ADE7753_MODE, val);
 }
@@ -328,10 +338,18 @@ static int ade7753_set_irq(struct device *dev, bool enable)
 		goto error_ret;
 
 	if (enable)
+<<<<<<< HEAD
 		irqen |= 1 << 3; /* Enables an interrupt when a data is
 				    present in the waveform register */
 	else
 		irqen &= ~(1 << 3);
+=======
+		irqen |= BIT(3); /* Enables an interrupt when a data is
+				  * present in the waveform register
+				  */
+	else
+		irqen &= ~BIT(3);
+>>>>>>> v4.9.227
 
 	ret = ade7753_spi_write_reg_8(dev, ADE7753_IRQEN, irqen);
 
@@ -343,9 +361,19 @@ error_ret:
 static int ade7753_stop_device(struct device *dev)
 {
 	u16 val;
+<<<<<<< HEAD
 
 	ade7753_spi_read_reg_16(dev, ADE7753_MODE, &val);
 	val |= 1 << 4;  /* AD converters can be turned off */
+=======
+	int ret;
+
+	ret = ade7753_spi_read_reg_16(dev, ADE7753_MODE, &val);
+	if (ret)
+		return ret;
+
+	val |= BIT(4);  /* AD converters can be turned off */
+>>>>>>> v4.9.227
 
 	return ade7753_spi_write_reg_16(dev, ADE7753_MODE, val);
 }
@@ -406,12 +434,20 @@ static ssize_t ade7753_write_frequency(struct device *dev,
 	ret = kstrtou16(buf, 10, &val);
 	if (ret)
 		return ret;
+<<<<<<< HEAD
 	if (val == 0)
+=======
+	if (!val)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	mutex_lock(&indio_dev->mlock);
 
+<<<<<<< HEAD
 	t = (27900 / val);
+=======
+	t = 27900 / val;
+>>>>>>> v4.9.227
 	if (t > 0)
 		t--;
 
@@ -517,6 +553,7 @@ static int ade7753_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = iio_device_register(indio_dev);
 	if (ret)
 		return ret;
@@ -525,6 +562,11 @@ static int ade7753_probe(struct spi_device *spi)
 }
 
 /* fixme, confirm ordering in this function */
+=======
+	return iio_device_register(indio_dev);
+}
+
+>>>>>>> v4.9.227
 static int ade7753_remove(struct spi_device *spi)
 {
 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
@@ -538,7 +580,10 @@ static int ade7753_remove(struct spi_device *spi)
 static struct spi_driver ade7753_driver = {
 	.driver = {
 		.name = "ade7753",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = ade7753_probe,
 	.remove = ade7753_remove,

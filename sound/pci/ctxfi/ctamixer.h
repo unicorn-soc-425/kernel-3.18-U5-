@@ -58,7 +58,11 @@ struct amixer {
 	unsigned char idx[8];
 	struct rsc *input;	/* pointer to a resource acting as source */
 	struct sum *sum;	/* Put amixer output to this summation node */
+<<<<<<< HEAD
 	struct amixer_rsc_ops *ops;	/* AMixer specific operations */
+=======
+	const struct amixer_rsc_ops *ops;	/* AMixer specific operations */
+>>>>>>> v4.9.227
 };
 
 struct amixer_rsc_ops {

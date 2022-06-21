@@ -9,6 +9,10 @@ snd-usb-audio-objs := 	card.o \
 			helper.o \
 			mixer.o \
 			mixer_quirks.o \
+<<<<<<< HEAD
+=======
+			mixer_scarlett.o \
+>>>>>>> v4.9.227
 			pcm.o \
 			proc.o \
 			quirks.o \
@@ -24,3 +28,7 @@ obj-$(CONFIG_SND_USB_USX2Y) += snd-usbmidi-lib.o
 obj-$(CONFIG_SND_USB_US122L) += snd-usbmidi-lib.o
 
 obj-$(CONFIG_SND) += misc/ usx2y/ caiaq/ 6fire/ hiface/ bcd2000/
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_SND_USB_LINE6)	+= line6/
+>>>>>>> v4.9.227

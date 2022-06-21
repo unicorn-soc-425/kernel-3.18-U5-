@@ -67,7 +67,11 @@ void (*cvmx_override_pko_queue_priority) (int pko_port,
 void (*cvmx_override_ipd_port_setup) (int ipd_port);
 
 /* Port count per interface */
+<<<<<<< HEAD
 static int interface_port_count[5];
+=======
+static int interface_port_count[9];
+>>>>>>> v4.9.227
 
 /* Port last configured link info index by IPD/PKO port */
 static cvmx_helper_link_info_t
@@ -83,8 +87,17 @@ static cvmx_helper_link_info_t
  */
 int cvmx_helper_get_number_of_interfaces(void)
 {
+<<<<<<< HEAD
 	if (OCTEON_IS_MODEL(OCTEON_CN56XX) || OCTEON_IS_MODEL(OCTEON_CN52XX))
 		return 4;
+=======
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		return 9;
+	if (OCTEON_IS_MODEL(OCTEON_CN56XX) || OCTEON_IS_MODEL(OCTEON_CN52XX))
+		return 4;
+	if (OCTEON_IS_MODEL(OCTEON_CN7XXX))
+		return 5;
+>>>>>>> v4.9.227
 	else
 		return 3;
 }
@@ -258,6 +271,45 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_octeon2(int interface)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * @INTERNAL
+ * Return interface mode for CN7XXX.
+ */
+static cvmx_helper_interface_mode_t __cvmx_get_mode_cn7xxx(int interface)
+{
+	union cvmx_gmxx_inf_mode mode;
+
+	mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
+
+	switch (interface) {
+	case 0:
+	case 1:
+		switch (mode.cn68xx.mode) {
+		case 0:
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		case 1:
+		case 2:
+			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+		case 3:
+			return CVMX_HELPER_INTERFACE_MODE_XAUI;
+		default:
+			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+		}
+	case 2:
+		return CVMX_HELPER_INTERFACE_MODE_NPI;
+	case 3:
+		return CVMX_HELPER_INTERFACE_MODE_LOOP;
+	case 4:
+		/* TODO: Implement support for AGL (RGMII). */
+		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	default:
+		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	}
+}
+
+/**
+>>>>>>> v4.9.227
  * Get the operating mode of an interface. Depending on the Octeon
  * chip and configuration, this function returns an enumeration
  * of the type of packet I/O supported by an interface.
@@ -276,6 +328,15 @@ cvmx_helper_interface_mode_t cvmx_helper_interface_get_mode(int interface)
 		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
 
 	/*
+<<<<<<< HEAD
+=======
+	 * OCTEON III models
+	 */
+	if (OCTEON_IS_MODEL(OCTEON_CN7XXX))
+		return __cvmx_get_mode_cn7xxx(interface);
+
+	/*
+>>>>>>> v4.9.227
 	 * Octeon II models
 	 */
 	if (OCTEON_IS_MODEL(OCTEON_CN6XXX) || OCTEON_IS_MODEL(OCTEON_CNF71XX))
@@ -656,6 +717,24 @@ static int __cvmx_helper_global_setup_pko(void)
 	fau_to.s.tout_val = 0xfff;
 	fau_to.s.tout_enb = 0;
 	cvmx_write_csr(CVMX_IOB_FAU_TIMEOUT, fau_to.u64);
+<<<<<<< HEAD
+=======
+
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+		union cvmx_pko_reg_min_pkt min_pkt;
+
+		min_pkt.u64 = 0;
+		min_pkt.s.size1 = 59;
+		min_pkt.s.size2 = 59;
+		min_pkt.s.size3 = 59;
+		min_pkt.s.size4 = 59;
+		min_pkt.s.size5 = 59;
+		min_pkt.s.size6 = 59;
+		min_pkt.s.size7 = 59;
+		cvmx_write_csr(CVMX_PKO_REG_MIN_PKT, min_pkt.u64);
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -781,7 +860,10 @@ int __cvmx_helper_errata_fix_ipd_ptr_alignment(void)
 	int retry_cnt;
 	int retry_loop_cnt;
 	int i;
+<<<<<<< HEAD
 	cvmx_helper_link_info_t link_info;
+=======
+>>>>>>> v4.9.227
 
 	/* Save values for restore at end */
 	uint64_t prtx_cfg =
@@ -942,6 +1024,7 @@ fix_ipd_exit:
 		       (INDEX(FIX_IPD_OUTPORT), INTERFACE(FIX_IPD_OUTPORT)),
 		       frame_max);
 	cvmx_write_csr(CVMX_ASXX_PRT_LOOP(INTERFACE(FIX_IPD_OUTPORT)), 0);
+<<<<<<< HEAD
 	/* Set link to down so autonegotiation will set it up again */
 	link_info.u64 = 0;
 	cvmx_helper_link_set(FIX_IPD_OUTPORT, link_info);
@@ -951,6 +1034,8 @@ fix_ipd_exit:
 	 * user applications.
 	 */
 	cvmx_helper_link_autoconf(FIX_IPD_OUTPORT);
+=======
+>>>>>>> v4.9.227
 
 	CVMX_SYNC;
 	if (num_segs)

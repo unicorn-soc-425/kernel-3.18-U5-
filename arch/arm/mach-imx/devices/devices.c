@@ -22,6 +22,12 @@
 #include <linux/err.h>
 #include <linux/platform_device.h>
 
+<<<<<<< HEAD
+=======
+#include "../common.h"
+#include "devices-common.h"
+
+>>>>>>> v4.9.227
 struct device mxc_aips_bus = {
 	.init_name	= "mxc_aips",
 };

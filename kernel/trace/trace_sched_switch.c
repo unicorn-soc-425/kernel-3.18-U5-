@@ -5,8 +5,11 @@
  *
  */
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/fs.h>
 #include <linux/debugfs.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kallsyms.h>
 #include <linux/uaccess.h>
 #include <linux/ftrace.h>
@@ -14,6 +17,7 @@
 
 #include "trace.h"
 
+<<<<<<< HEAD
 static struct trace_array	*ctx_trace;
 static int __read_mostly	tracer_enabled;
 static int			sched_ref;
@@ -57,11 +61,21 @@ probe_sched_switch(void *ignore, struct task_struct *prev, struct task_struct *n
 	int cpu;
 	int pc;
 
+=======
+static int			sched_ref;
+static DEFINE_MUTEX(sched_register_mutex);
+
+static void
+probe_sched_switch(void *ignore, bool preempt,
+		   struct task_struct *prev, struct task_struct *next)
+{
+>>>>>>> v4.9.227
 	if (unlikely(!sched_ref))
 		return;
 
 	tracing_record_cmdline(prev);
 	tracing_record_cmdline(next);
+<<<<<<< HEAD
 
 	if (!tracer_enabled || sched_stopped)
 		return;
@@ -112,10 +126,18 @@ probe_sched_wakeup(void *ignore, struct task_struct *wakee, int success)
 	unsigned long flags;
 	int cpu, pc;
 
+=======
+}
+
+static void
+probe_sched_wakeup(void *ignore, struct task_struct *wakee)
+{
+>>>>>>> v4.9.227
 	if (unlikely(!sched_ref))
 		return;
 
 	tracing_record_cmdline(current);
+<<<<<<< HEAD
 
 	if (!tracer_enabled || sched_stopped)
 		return;
@@ -130,6 +152,8 @@ probe_sched_wakeup(void *ignore, struct task_struct *wakee, int success)
 					   flags, pc);
 
 	local_irq_restore(flags);
+=======
+>>>>>>> v4.9.227
 }
 
 static int tracing_sched_register(void)
@@ -197,6 +221,7 @@ void tracing_stop_cmdline_record(void)
 {
 	tracing_stop_sched_switch();
 }
+<<<<<<< HEAD
 
 /**
  * tracing_start_sched_switch_record - start tracing context switches
@@ -245,3 +270,5 @@ void tracing_sched_switch_assign_trace(struct trace_array *tr)
 	ctx_trace = tr;
 }
 
+=======
+>>>>>>> v4.9.227

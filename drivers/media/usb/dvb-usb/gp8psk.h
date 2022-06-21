@@ -24,6 +24,7 @@ extern int dvb_usb_gp8psk_debug;
 #define deb_info(args...) dprintk(dvb_usb_gp8psk_debug,0x01,args)
 #define deb_xfer(args...) dprintk(dvb_usb_gp8psk_debug,0x02,args)
 #define deb_rc(args...)   dprintk(dvb_usb_gp8psk_debug,0x04,args)
+<<<<<<< HEAD
 #define deb_fe(args...)   dprintk(dvb_usb_gp8psk_debug,0x08,args)
 
 /* Twinhan Vendor requests */
@@ -76,6 +77,8 @@ extern int dvb_usb_gp8psk_debug;
 #define ADV_MOD_DCII_C_OQPSK 7 /* Digicipher II offset QPSK */
 #define ADV_MOD_DSS_QPSK 8     /* DSS (DIRECTV) QPSK */
 #define ADV_MOD_DVB_BPSK 9     /* DVB-S BPSK */
+=======
+>>>>>>> v4.9.227
 
 #define GET_USB_SPEED                     0x07
 
@@ -86,6 +89,7 @@ extern int dvb_usb_gp8psk_debug;
 #define PRODUCT_STRING_READ               0x0D
 #define FW_BCD_VERSION_READ               0x14
 
+<<<<<<< HEAD
 /* firmware revision id's */
 #define GP8PSK_FW_REV1			0x020604
 #define GP8PSK_FW_REV2			0x020704
@@ -97,4 +101,6 @@ extern int gp8psk_usb_out_op(struct dvb_usb_device *d, u8 req, u16 value,
 			     u16 index, u8 *b, int blen);
 extern int gp8psk_bcm4500_reload(struct dvb_usb_device *d);
 
+=======
+>>>>>>> v4.9.227
 #endif

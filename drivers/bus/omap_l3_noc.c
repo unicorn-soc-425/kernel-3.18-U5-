@@ -1,7 +1,11 @@
 /*
  * OMAP L3 Interconnect error handling driver
  *
+<<<<<<< HEAD
  * Copyright (C) 2011-2014 Texas Instruments Incorporated - http://www.ti.com/
+=======
+ * Copyright (C) 2011-2015 Texas Instruments Incorporated - http://www.ti.com/
+>>>>>>> v4.9.227
  *	Santosh Shilimkar <santosh.shilimkar@ti.com>
  *	Sricharan <r.sricharan@ti.com>
  *
@@ -233,7 +237,12 @@ static irqreturn_t l3_interrupt_handler(int irq, void *_l3)
 }
 
 static const struct of_device_id l3_noc_match[] = {
+<<<<<<< HEAD
 	{.compatible = "ti,omap4-l3-noc", .data = &omap_l3_data},
+=======
+	{.compatible = "ti,omap4-l3-noc", .data = &omap4_l3_data},
+	{.compatible = "ti,omap5-l3-noc", .data = &omap5_l3_data},
+>>>>>>> v4.9.227
 	{.compatible = "ti,dra7-l3-noc", .data = &dra_l3_data},
 	{.compatible = "ti,am4372-l3-noc", .data = &am4372_l3_data},
 	{},
@@ -284,7 +293,11 @@ static int omap_l3_probe(struct platform_device *pdev)
 	 */
 	l3->debug_irq = platform_get_irq(pdev, 0);
 	ret = devm_request_irq(l3->dev, l3->debug_irq, l3_interrupt_handler,
+<<<<<<< HEAD
 			       IRQF_DISABLED, "l3-dbg-irq", l3);
+=======
+			       0x0, "l3-dbg-irq", l3);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(l3->dev, "request_irq failed for %d\n",
 			l3->debug_irq);
@@ -293,14 +306,22 @@ static int omap_l3_probe(struct platform_device *pdev)
 
 	l3->app_irq = platform_get_irq(pdev, 1);
 	ret = devm_request_irq(l3->dev, l3->app_irq, l3_interrupt_handler,
+<<<<<<< HEAD
 			       IRQF_DISABLED, "l3-app-irq", l3);
+=======
+			       0x0, "l3-app-irq", l3);
+>>>>>>> v4.9.227
 	if (ret)
 		dev_err(l3->dev, "request_irq failed for %d\n", l3->app_irq);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef	CONFIG_PM
+=======
+#ifdef	CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 
 /**
  * l3_resume_noirq() - resume function for l3_noc
@@ -346,7 +367,11 @@ static int l3_resume_noirq(struct device *dev)
 }
 
 static const struct dev_pm_ops l3_dev_pm_ops = {
+<<<<<<< HEAD
 	.resume_noirq		= l3_resume_noirq,
+=======
+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, l3_resume_noirq)
+>>>>>>> v4.9.227
 };
 
 #define L3_DEV_PM_OPS (&l3_dev_pm_ops)
@@ -358,7 +383,10 @@ static struct platform_driver omap_l3_driver = {
 	.probe		= omap_l3_probe,
 	.driver		= {
 		.name		= "omap_l3_noc",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm		= L3_DEV_PM_OPS,
 		.of_match_table = of_match_ptr(l3_noc_match),
 	},

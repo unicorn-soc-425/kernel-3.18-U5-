@@ -5,6 +5,10 @@
 config QUOTA
 	bool "Quota support"
 	select QUOTACTL
+<<<<<<< HEAD
+=======
+	select SRCU
+>>>>>>> v4.9.227
 	help
 	  If you say Y here, you will be able to set per user limits for disk
 	  usage (also called disk quotas). Currently, it works for the

@@ -6,8 +6,13 @@
  * firmware based USB peripherals.
  */
 
+<<<<<<< HEAD
 #ifndef __LINUX_USB_CDC_H
 #define __LINUX_USB_CDC_H
+=======
+#ifndef __UAPI_LINUX_USB_CDC_H
+#define __UAPI_LINUX_USB_CDC_H
+>>>>>>> v4.9.227
 
 #include <linux/types.h>
 
@@ -231,7 +236,10 @@ struct usb_cdc_mbim_extended_desc {
 
 #define USB_CDC_SEND_ENCAPSULATED_COMMAND	0x00
 #define USB_CDC_GET_ENCAPSULATED_RESPONSE	0x01
+<<<<<<< HEAD
 #define USB_CDC_RESET_FUNCTION			0x05
+=======
+>>>>>>> v4.9.227
 #define USB_CDC_REQ_SET_LINE_CODING		0x20
 #define USB_CDC_REQ_GET_LINE_CODING		0x21
 #define USB_CDC_REQ_SET_CONTROL_LINE_STATE	0x22
@@ -445,4 +453,8 @@ struct usb_cdc_ncm_ndp_input_size {
 #define USB_CDC_NCM_CRC_NOT_APPENDED			0x00
 #define USB_CDC_NCM_CRC_APPENDED			0x01
 
+<<<<<<< HEAD
 #endif /* __LINUX_USB_CDC_H */
+=======
+#endif /* __UAPI_LINUX_USB_CDC_H */
+>>>>>>> v4.9.227

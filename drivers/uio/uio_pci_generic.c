@@ -91,7 +91,12 @@ static int probe(struct pci_dev *pdev,
 	gdev->info.handler = irqhandler;
 	gdev->pdev = pdev;
 
+<<<<<<< HEAD
 	if (uio_register_device(&pdev->dev, &gdev->info))
+=======
+	err = uio_register_device(&pdev->dev, &gdev->info);
+	if (err)
+>>>>>>> v4.9.227
 		goto err_register;
 	pci_set_drvdata(pdev, gdev);
 

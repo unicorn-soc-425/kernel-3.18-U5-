@@ -2,6 +2,10 @@
 #define __LINUX_USB_NOP_XCEIV_H
 
 #include <linux/usb/otg.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/consumer.h>
+>>>>>>> v4.9.227
 
 struct usb_phy_generic_platform_data {
 	enum usb_phy_type type;
@@ -11,6 +15,10 @@ struct usb_phy_generic_platform_data {
 	unsigned int needs_vcc:1;
 	unsigned int needs_reset:1;	/* deprecated */
 	int gpio_reset;
+<<<<<<< HEAD
+=======
+	struct gpio_desc *gpiod_vbus;
+>>>>>>> v4.9.227
 };
 
 #if IS_ENABLED(CONFIG_NOP_USB_XCEIV)

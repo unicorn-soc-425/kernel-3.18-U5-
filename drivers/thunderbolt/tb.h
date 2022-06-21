@@ -226,7 +226,11 @@ void tb_switch_free(struct tb_switch *sw);
 void tb_switch_suspend(struct tb_switch *sw);
 int tb_switch_resume(struct tb_switch *sw);
 int tb_switch_reset(struct tb *tb, u64 route);
+<<<<<<< HEAD
 void tb_sw_set_unpplugged(struct tb_switch *sw);
+=======
+void tb_sw_set_unplugged(struct tb_switch *sw);
+>>>>>>> v4.9.227
 struct tb_switch *get_switch_at_route(struct tb_switch *sw, u64 route);
 
 int tb_wait_for_port(struct tb_port *port, bool wait_if_unplugged);

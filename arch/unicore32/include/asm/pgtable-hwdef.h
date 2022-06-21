@@ -44,7 +44,10 @@
 #define PTE_TYPE_INVALID	(3 << 0)
 
 #define PTE_PRESENT		(1 << 2)
+<<<<<<< HEAD
 #define PTE_FILE		(1 << 3)	/* only when !PRESENT */
+=======
+>>>>>>> v4.9.227
 #define PTE_YOUNG		(1 << 3)
 #define PTE_DIRTY		(1 << 4)
 #define PTE_CACHEABLE		(1 << 5)

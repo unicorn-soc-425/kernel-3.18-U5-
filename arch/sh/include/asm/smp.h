@@ -34,11 +34,14 @@ enum {
 DECLARE_PER_CPU(int, cpu_state);
 
 void smp_message_recv(unsigned int msg);
+<<<<<<< HEAD
 void smp_timer_broadcast(const struct cpumask *mask);
 
 void local_timer_interrupt(void);
 void local_timer_setup(unsigned int cpu);
 void local_timer_stop(unsigned int cpu);
+=======
+>>>>>>> v4.9.227
 
 void arch_send_call_function_single_ipi(int cpu);
 void arch_send_call_function_ipi_mask(const struct cpumask *mask);
@@ -69,6 +72,19 @@ static inline int hard_smp_processor_id(void)
 	return mp_ops->smp_processor_id();
 }
 
+<<<<<<< HEAD
+=======
+struct of_cpu_method {
+	const char *method;
+	struct plat_smp_ops *ops;
+};
+
+#define CPU_METHOD_OF_DECLARE(name, _method, _ops)			\
+	static const struct of_cpu_method __cpu_method_of_table_##name	\
+		__used __section(__cpu_method_of_table)			\
+		= { .method = _method, .ops = _ops }
+
+>>>>>>> v4.9.227
 #else
 
 #define hard_smp_processor_id()	(0)

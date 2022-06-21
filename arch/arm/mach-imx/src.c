@@ -73,7 +73,11 @@ static int imx_src_reset_module(struct reset_controller_dev *rcdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct reset_control_ops imx_src_ops = {
+=======
+static const struct reset_control_ops imx_src_ops = {
+>>>>>>> v4.9.227
 	.reset = imx_src_reset_module,
 };
 

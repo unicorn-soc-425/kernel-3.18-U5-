@@ -2164,7 +2164,11 @@ static void kv_apply_state_adjust_rules(struct radeon_device *rdev,
 	if (pi->caps_stable_p_state) {
 		stable_p_state_sclk = (max_limits->sclk * 75) / 100;
 
+<<<<<<< HEAD
 		for (i = table->count - 1; i >= 0; i++) {
+=======
+		for (i = table->count - 1; i >= 0; i--) {
+>>>>>>> v4.9.227
 			if (stable_p_state_sclk >= table->entries[i].clk) {
 				stable_p_state_sclk = table->entries[i].clk;
 				break;
@@ -2640,7 +2644,11 @@ static int kv_parse_power_table(struct radeon_device *rdev)
 	struct _NonClockInfoArray *non_clock_info_array;
 	union power_info *power_info;
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
+<<<<<<< HEAD
         u16 data_offset;
+=======
+	u16 data_offset;
+>>>>>>> v4.9.227
 	u8 frev, crev;
 	u8 *power_state_offset;
 	struct kv_ps *ps;
@@ -2738,7 +2746,11 @@ int kv_dpm_init(struct radeon_device *rdev)
 	for (i = 0; i < SUMO_MAX_HARDWARE_POWERLEVELS; i++)
 		pi->at[i] = TRINITY_AT_DFLT;
 
+<<<<<<< HEAD
         pi->sram_end = SMC_RAM_END;
+=======
+	pi->sram_end = SMC_RAM_END;
+>>>>>>> v4.9.227
 
 	/* Enabling nb dpm on an asrock system prevents dpm from working */
 	if (rdev->pdev->subsystem_vendor == 0x1849)

@@ -52,13 +52,22 @@ enum {
 	/* Options that take integer arguments */
 	Opt_debug, Opt_dfltuid, Opt_dfltgid, Opt_afid,
 	/* String options */
+<<<<<<< HEAD
 	Opt_uname, Opt_remotename, Opt_trans, Opt_cache, Opt_cachetag,
+=======
+	Opt_uname, Opt_remotename, Opt_cache, Opt_cachetag,
+>>>>>>> v4.9.227
 	/* Options that take no arguments */
 	Opt_nodevmap,
 	/* Cache options */
 	Opt_cache_loose, Opt_fscache, Opt_mmap,
 	/* Access options */
 	Opt_access, Opt_posixacl,
+<<<<<<< HEAD
+=======
+	/* Lock timeout option */
+	Opt_locktimeout,
+>>>>>>> v4.9.227
 	/* Error token */
 	Opt_err
 };
@@ -78,6 +87,10 @@ static const match_table_t tokens = {
 	{Opt_cachetag, "cachetag=%s"},
 	{Opt_access, "access=%s"},
 	{Opt_posixacl, "posixacl"},
+<<<<<<< HEAD
+=======
+	{Opt_locktimeout, "locktimeout=%u"},
+>>>>>>> v4.9.227
 	{Opt_err, NULL}
 };
 
@@ -126,6 +139,10 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 #ifdef CONFIG_9P_FSCACHE
 	v9ses->cachetag = NULL;
 #endif
+<<<<<<< HEAD
+=======
+	v9ses->session_lock_timeout = P9_LOCK_TIMEOUT;
+>>>>>>> v4.9.227
 
 	if (!opts)
 		return 0;
@@ -298,6 +315,26 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 #endif
 			break;
 
+<<<<<<< HEAD
+=======
+		case Opt_locktimeout:
+			r = match_int(&args[0], &option);
+			if (r < 0) {
+				p9_debug(P9_DEBUG_ERROR,
+					 "integer field, but no integer?\n");
+				ret = r;
+				continue;
+			}
+			if (option < 1) {
+				p9_debug(P9_DEBUG_ERROR,
+					 "locktimeout must be a greater than zero integer.\n");
+				ret = -EINVAL;
+				continue;
+			}
+			v9ses->session_lock_timeout = (long)option * HZ;
+			break;
+
+>>>>>>> v4.9.227
 		default:
 			continue;
 		}
@@ -320,6 +357,7 @@ fail_option_alloc:
 struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 		  const char *dev_name, char *data)
 {
+<<<<<<< HEAD
 	int retval = -EINVAL;
 	struct p9_fid *fid;
 	int rc;
@@ -345,6 +383,23 @@ struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 	spin_lock(&v9fs_sessionlist_lock);
 	list_add(&v9ses->slist, &v9fs_sessionlist);
 	spin_unlock(&v9fs_sessionlist_lock);
+=======
+	struct p9_fid *fid;
+	int rc = -ENOMEM;
+
+	v9ses->uname = kstrdup(V9FS_DEFUSER, GFP_KERNEL);
+	if (!v9ses->uname)
+		goto err_names;
+
+	v9ses->aname = kstrdup(V9FS_DEFANAME, GFP_KERNEL);
+	if (!v9ses->aname)
+		goto err_names;
+	init_rwsem(&v9ses->rename_sem);
+
+	rc = bdi_setup_and_register(&v9ses->bdi, "9p");
+	if (rc)
+		goto err_names;
+>>>>>>> v4.9.227
 
 	v9ses->uid = INVALID_UID;
 	v9ses->dfltuid = V9FS_DEFUID;
@@ -352,10 +407,16 @@ struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 
 	v9ses->clnt = p9_client_create(dev_name, data);
 	if (IS_ERR(v9ses->clnt)) {
+<<<<<<< HEAD
 		retval = PTR_ERR(v9ses->clnt);
 		v9ses->clnt = NULL;
 		p9_debug(P9_DEBUG_ERROR, "problem initializing 9p client\n");
 		goto error;
+=======
+		rc = PTR_ERR(v9ses->clnt);
+		p9_debug(P9_DEBUG_ERROR, "problem initializing 9p client\n");
+		goto err_bdi;
+>>>>>>> v4.9.227
 	}
 
 	v9ses->flags = V9FS_ACCESS_USER;
@@ -368,10 +429,15 @@ struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 	}
 
 	rc = v9fs_parse_options(v9ses, data);
+<<<<<<< HEAD
 	if (rc < 0) {
 		retval = rc;
 		goto error;
 	}
+=======
+	if (rc < 0)
+		goto err_clnt;
+>>>>>>> v4.9.227
 
 	v9ses->maxdata = v9ses->clnt->msize - P9_IOHDRSZ;
 
@@ -405,10 +471,16 @@ struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 	fid = p9_client_attach(v9ses->clnt, NULL, v9ses->uname, INVALID_UID,
 							v9ses->aname);
 	if (IS_ERR(fid)) {
+<<<<<<< HEAD
 		retval = PTR_ERR(fid);
 		fid = NULL;
 		p9_debug(P9_DEBUG_ERROR, "cannot attach\n");
 		goto error;
+=======
+		rc = PTR_ERR(fid);
+		p9_debug(P9_DEBUG_ERROR, "cannot attach\n");
+		goto err_clnt;
+>>>>>>> v4.9.227
 	}
 
 	if ((v9ses->flags & V9FS_ACCESS_MASK) == V9FS_ACCESS_SINGLE)
@@ -420,12 +492,29 @@ struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 	/* register the session for caching */
 	v9fs_cache_session_get_cookie(v9ses);
 #endif
+<<<<<<< HEAD
 
 	return fid;
 
 error:
 	bdi_destroy(&v9ses->bdi);
 	return ERR_PTR(retval);
+=======
+	spin_lock(&v9fs_sessionlist_lock);
+	list_add(&v9ses->slist, &v9fs_sessionlist);
+	spin_unlock(&v9fs_sessionlist_lock);
+
+	return fid;
+
+err_clnt:
+	p9_client_destroy(v9ses->clnt);
+err_bdi:
+	bdi_destroy(&v9ses->bdi);
+err_names:
+	kfree(v9ses->uname);
+	kfree(v9ses->aname);
+	return ERR_PTR(rc);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -581,7 +670,11 @@ static int v9fs_init_inode_cache(void)
 	v9fs_inode_cache = kmem_cache_create("v9fs_inode_cache",
 					  sizeof(struct v9fs_inode),
 					  0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 					      SLAB_MEM_SPREAD),
+=======
+					      SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> v4.9.227
 					  v9fs_inode_init_once);
 	if (!v9fs_inode_cache)
 		return -ENOMEM;

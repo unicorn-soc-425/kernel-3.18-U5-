@@ -41,6 +41,14 @@
 		};
 	};
 
+<<<<<<< HEAD
+=======
+	arm-pmu {
+		compatible = "arm,cortex-a9-pmu";
+		interrupts = <29>;
+	};
+
+>>>>>>> v4.9.227
 	axi {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -132,6 +140,10 @@
 				reg = <0x90020000 0x10000>;
 				interrupts = <31>;
 				clocks = <&clks 35>;
+<<<<<<< HEAD
+=======
+				resets = <&rstc 6>;
+>>>>>>> v4.9.227
 			};
 		};
 
@@ -173,6 +185,10 @@
 				compatible = "sirf,prima2-dspif";
 				reg = <0xa8000000 0x10000>;
 				interrupts = <9>;
+<<<<<<< HEAD
+=======
+				resets = <&rstc 1>;
+>>>>>>> v4.9.227
 			};
 
 			gps@a8010000 {
@@ -180,6 +196,10 @@
 				reg = <0xa8010000 0x10000>;
 				interrupts = <7>;
 				clocks = <&clks 9>;
+<<<<<<< HEAD
+=======
+				resets = <&rstc 2>;
+>>>>>>> v4.9.227
 			};
 
 			dsp@a9000000 {
@@ -187,6 +207,10 @@
 				reg = <0xa9000000 0x1000000>;
 				interrupts = <8>;
 				clocks = <&clks 8>;
+<<<<<<< HEAD
+=======
+				resets = <&rstc 0>;
+>>>>>>> v4.9.227
 			};
 		};
 
@@ -524,12 +548,42 @@
                                                 sirf,function = "sdmmc5";
                                         };
                                 };
+<<<<<<< HEAD
+=======
+				i2s_mclk_pins_a: i2s_mclk@0 {
+                                        i2s_mclk {
+                                                sirf,pins = "i2smclkgrp";
+                                                sirf,function = "i2s_mclk";
+                                        };
+                                };
+				i2s_ext_clk_input_pins_a: i2s_ext_clk_input@0 {
+                                        i2s_ext_clk_input {
+                                                sirf,pins = "i2s_ext_clk_inputgrp";
+                                                sirf,function = "i2s_ext_clk_input";
+                                        };
+                                };
+>>>>>>> v4.9.227
                                 i2s_pins_a: i2s@0 {
                                         i2s {
                                                 sirf,pins = "i2sgrp";
                                                 sirf,function = "i2s";
                                         };
                                 };
+<<<<<<< HEAD
+=======
+				i2s_no_din_pins_a: i2s_no_din@0 {
+                                        i2s_no_din {
+                                                sirf,pins = "i2s_no_dingrp";
+                                                sirf,function = "i2s_no_din";
+                                        };
+                                };
+				i2s_6chn_pins_a: i2s_6chn@0 {
+                                        i2s_6chn {
+                                                sirf,pins = "i2s_6chngrp";
+                                                sirf,function = "i2s_6chn";
+                                        };
+                                };
+>>>>>>> v4.9.227
                                 ac97_pins_a: ac97@0 {
                                         ac97 {
                                                 sirf,pins = "ac97grp";

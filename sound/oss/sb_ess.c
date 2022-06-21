@@ -604,7 +604,11 @@ static void ess_audio_output_block_audio2
 	ess_chgmixer (devc, 0x78, 0x03, 0x03);   /* Go */
 
 	devc->irq_mode_16 = IMODE_OUTPUT;
+<<<<<<< HEAD
 		devc->intr_active_16 = 1;
+=======
+	devc->intr_active_16 = 1;
+>>>>>>> v4.9.227
 }
 
 static void ess_audio_output_block
@@ -1183,6 +1187,7 @@ FKS_test (devc);
 			chip = "ES1688";
 		}
 
+<<<<<<< HEAD
 	    printk ( KERN_INFO "ESS chip %s %s%s\n"
                , chip
                , ( devc->sbmo.esstype == ESSTYPE_DETECT || devc->sbmo.esstype == ESSTYPE_LIKE20
@@ -1194,6 +1199,14 @@ FKS_test (devc);
                  : ""
                  )
                );
+=======
+		printk(KERN_INFO "ESS chip %s %s%s\n", chip,
+		       (devc->sbmo.esstype == ESSTYPE_DETECT ||
+			devc->sbmo.esstype == ESSTYPE_LIKE20) ?
+				"detected" : "specified",
+			devc->sbmo.esstype == ESSTYPE_LIKE20 ?
+				" (kernel 2.0 compatible)" : "");
+>>>>>>> v4.9.227
 
 		sprintf(name,"ESS %s AudioDrive (rev %d)", chip, ess_minor & 0x0f);
 	} else {

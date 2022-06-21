@@ -705,4 +705,12 @@ typedef struct sctp_auth_chunk {
 	sctp_authhdr_t auth_hdr;
 } __packed sctp_auth_chunk_t;
 
+<<<<<<< HEAD
+=======
+struct sctp_infox {
+	struct sctp_info *sctpinfo;
+	struct sctp_association *asoc;
+};
+
+>>>>>>> v4.9.227
 #endif /* __LINUX_SCTP_H__ */

@@ -13,6 +13,7 @@
  *  Short name translation 1999, 2001 by Wolfram Pienkoss <wp@bszh.de>
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/time.h>
@@ -20,6 +21,11 @@
 #include <linux/compat.h>
 #include <linux/uaccess.h>
 #include <linux/kernel.h>
+=======
+#include <linux/slab.h>
+#include <linux/compat.h>
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 #include "fat.h"
 
 /*
@@ -95,7 +101,11 @@ next:
 
 	*bh = NULL;
 	iblock = *pos >> sb->s_blocksize_bits;
+<<<<<<< HEAD
 	err = fat_bmap(dir, iblock, &phys, &mapped_blocks, 0);
+=======
+	err = fat_bmap(dir, iblock, &phys, &mapped_blocks, 0, false);
+>>>>>>> v4.9.227
 	if (err || !phys)
 		return -1;	/* beyond EOF or error */
 
@@ -614,9 +624,15 @@ parse_record:
 		int status = fat_parse_long(inode, &cpos, &bh, &de,
 					    &unicode, &nr_slots);
 		if (status < 0) {
+<<<<<<< HEAD
 			ctx->pos = cpos;
 			ret = status;
 			goto out;
+=======
+			bh = NULL;
+			ret = status;
+			goto end_of_dir;
+>>>>>>> v4.9.227
 		} else if (status == PARSE_INVALID)
 			goto record_end;
 		else if (status == PARSE_NOT_LONGNAME)
@@ -658,8 +674,14 @@ parse_record:
 	fill_len = short_len;
 
 start_filldir:
+<<<<<<< HEAD
 	if (!fake_offset)
 		ctx->pos = cpos - (nr_slots + 1) * sizeof(struct msdos_dir_entry);
+=======
+	ctx->pos = cpos - (nr_slots + 1) * sizeof(struct msdos_dir_entry);
+	if (fake_offset && ctx->pos < 2)
+		ctx->pos = 2;
+>>>>>>> v4.9.227
 
 	if (!memcmp(de->name, MSDOS_DOT, MSDOS_NAME)) {
 		if (!dir_emit_dot(file, ctx))
@@ -685,14 +707,27 @@ record_end:
 	fake_offset = 0;
 	ctx->pos = cpos;
 	goto get_new;
+<<<<<<< HEAD
 end_of_dir:
 	ctx->pos = cpos;
+=======
+
+end_of_dir:
+	if (fake_offset && cpos < 2)
+		ctx->pos = 2;
+	else
+		ctx->pos = cpos;
+>>>>>>> v4.9.227
 fill_failed:
 	brelse(bh);
 	if (unicode)
 		__putname(unicode);
 out:
 	mutex_unlock(&sbi->s_lock);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -702,10 +737,18 @@ static int fat_readdir(struct file *file, struct dir_context *ctx)
 }
 
 #define FAT_IOCTL_FILLDIR_FUNC(func, dirent_type)			   \
+<<<<<<< HEAD
 static int func(void *__buf, const char *name, int name_len,		   \
 			     loff_t offset, u64 ino, unsigned int d_type)  \
 {									   \
 	struct fat_ioctl_filldir_callback *buf = __buf;			   \
+=======
+static int func(struct dir_context *ctx, const char *name, int name_len,   \
+			     loff_t offset, u64 ino, unsigned int d_type)  \
+{									   \
+	struct fat_ioctl_filldir_callback *buf =			   \
+		container_of(ctx, struct fat_ioctl_filldir_callback, ctx); \
+>>>>>>> v4.9.227
 	struct dirent_type __user *d1 = buf->dirent;			   \
 	struct dirent_type __user *d2 = d1 + 1;				   \
 									   \
@@ -766,7 +809,11 @@ static int fat_ioctl_readdir(struct inode *inode, struct file *file,
 
 	buf.dirent = dirent;
 	buf.result = 0;
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
+=======
+	inode_lock_shared(inode);
+>>>>>>> v4.9.227
 	buf.ctx.pos = file->f_pos;
 	ret = -ENOENT;
 	if (!IS_DEADDIR(inode)) {
@@ -774,7 +821,11 @@ static int fat_ioctl_readdir(struct inode *inode, struct file *file,
 				    short_only, both ? &buf : NULL);
 		file->f_pos = buf.ctx.pos;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_unlock_shared(inode);
+>>>>>>> v4.9.227
 	if (ret >= 0)
 		ret = buf.result;
 	return ret;
@@ -858,7 +909,11 @@ static long fat_compat_dir_ioctl(struct file *filp, unsigned cmd,
 const struct file_operations fat_dir_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.iterate	= fat_readdir,
+=======
+	.iterate_shared	= fat_readdir,
+>>>>>>> v4.9.227
 	.unlocked_ioctl	= fat_dir_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= fat_compat_dir_ioctl,
@@ -1012,7 +1067,11 @@ static int __fat_remove_entries(struct inode *dir, loff_t pos, int nr_slots)
 			de++;
 			nr_slots--;
 		}
+<<<<<<< HEAD
 		mark_buffer_dirty_inode_sync(bh, dir);
+=======
+		mark_buffer_dirty_inode(bh, dir);
+>>>>>>> v4.9.227
 		if (IS_DIRSYNC(dir))
 			err = sync_dirty_buffer(bh);
 		brelse(bh);
@@ -1047,7 +1106,11 @@ int fat_remove_entries(struct inode *dir, struct fat_slot_info *sinfo)
 		de--;
 		nr_slots--;
 	}
+<<<<<<< HEAD
 	mark_buffer_dirty_inode_sync(bh, dir);
+=======
+	mark_buffer_dirty_inode(bh, dir);
+>>>>>>> v4.9.227
 	if (IS_DIRSYNC(dir))
 		err = sync_dirty_buffer(bh);
 	brelse(bh);
@@ -1068,7 +1131,11 @@ int fat_remove_entries(struct inode *dir, struct fat_slot_info *sinfo)
 		}
 	}
 
+<<<<<<< HEAD
 	dir->i_mtime = dir->i_atime = CURRENT_TIME_SEC;
+=======
+	dir->i_mtime = dir->i_atime = current_time(dir);
+>>>>>>> v4.9.227
 	if (IS_DIRSYNC(dir))
 		(void)fat_sync_inode(dir);
 	else
@@ -1094,9 +1161,18 @@ static int fat_zeroed_cluster(struct inode *dir, sector_t blknr, int nr_used,
 			err = -ENOMEM;
 			goto error;
 		}
+<<<<<<< HEAD
 		memset(bhs[n]->b_data, 0, sb->s_blocksize);
 		set_buffer_uptodate(bhs[n]);
 		mark_buffer_dirty_inode_sync(bhs[n], dir);
+=======
+		/* Avoid race with userspace read via bdev */
+		lock_buffer(bhs[n]);
+		memset(bhs[n]->b_data, 0, sb->s_blocksize);
+		set_buffer_uptodate(bhs[n]);
+		unlock_buffer(bhs[n]);
+		mark_buffer_dirty_inode(bhs[n], dir);
+>>>>>>> v4.9.227
 
 		n++;
 		blknr++;
@@ -1152,6 +1228,11 @@ int fat_alloc_new_dir(struct inode *dir, struct timespec *ts)
 	fat_time_unix2fat(sbi, ts, &time, &date, &time_cs);
 
 	de = (struct msdos_dir_entry *)bhs[0]->b_data;
+<<<<<<< HEAD
+=======
+	/* Avoid race with userspace read via bdev */
+	lock_buffer(bhs[0]);
+>>>>>>> v4.9.227
 	/* filling the new directory slots ("." and ".." entries) */
 	memcpy(de[0].name, MSDOS_DOT, MSDOS_NAME);
 	memcpy(de[1].name, MSDOS_DOTDOT, MSDOS_NAME);
@@ -1174,7 +1255,12 @@ int fat_alloc_new_dir(struct inode *dir, struct timespec *ts)
 	de[0].size = de[1].size = 0;
 	memset(de + 2, 0, sb->s_blocksize - 2 * sizeof(*de));
 	set_buffer_uptodate(bhs[0]);
+<<<<<<< HEAD
 	mark_buffer_dirty_inode_sync(bhs[0], dir);
+=======
+	unlock_buffer(bhs[0]);
+	mark_buffer_dirty_inode(bhs[0], dir);
+>>>>>>> v4.9.227
 
 	err = fat_zeroed_cluster(dir, blknr, 1, bhs, MAX_BUF_PER_PAGE);
 	if (err)
@@ -1231,11 +1317,22 @@ static int fat_add_new_entries(struct inode *dir, void *slots, int nr_slots,
 
 			/* fill the directory entry */
 			copy = min(size, sb->s_blocksize);
+<<<<<<< HEAD
 			memcpy(bhs[n]->b_data, slots, copy);
 			slots += copy;
 			size -= copy;
 			set_buffer_uptodate(bhs[n]);
 			mark_buffer_dirty_inode_sync(bhs[n], dir);
+=======
+			/* Avoid race with userspace read via bdev */
+			lock_buffer(bhs[n]);
+			memcpy(bhs[n]->b_data, slots, copy);
+			set_buffer_uptodate(bhs[n]);
+			unlock_buffer(bhs[n]);
+			mark_buffer_dirty_inode(bhs[n], dir);
+			slots += copy;
+			size -= copy;
+>>>>>>> v4.9.227
 			if (!size)
 				break;
 			n++;
@@ -1335,7 +1432,11 @@ found:
 		for (i = 0; i < long_bhs; i++) {
 			int copy = min_t(int, sb->s_blocksize - offset, size);
 			memcpy(bhs[i]->b_data + offset, slots, copy);
+<<<<<<< HEAD
 			mark_buffer_dirty_inode_sync(bhs[i], dir);
+=======
+			mark_buffer_dirty_inode(bhs[i], dir);
+>>>>>>> v4.9.227
 			offset = 0;
 			slots += copy;
 			size -= copy;
@@ -1346,7 +1447,11 @@ found:
 			/* Fill the short name slot. */
 			int copy = min_t(int, sb->s_blocksize - offset, size);
 			memcpy(bhs[i]->b_data + offset, slots, copy);
+<<<<<<< HEAD
 			mark_buffer_dirty_inode_sync(bhs[i], dir);
+=======
+			mark_buffer_dirty_inode(bhs[i], dir);
+>>>>>>> v4.9.227
 			if (IS_DIRSYNC(dir))
 				err = sync_dirty_buffer(bhs[i]);
 		}

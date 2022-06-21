@@ -39,7 +39,10 @@ config S3C_LOWLEVEL_UART_PORT
 
 config SAMSUNG_ATAGS
 	def_bool n
+<<<<<<< HEAD
 	depends on !ARCH_MULTIPLATFORM
+=======
+>>>>>>> v4.9.227
 	depends on ATAGS
 	help
 	   This option enables ATAGS based boot support code for
@@ -70,6 +73,10 @@ config S3C_GPIO_TRACK
 
 config S3C_ADC
 	bool "ADC common driver support"
+<<<<<<< HEAD
+=======
+	depends on !ARCH_MULTIPLATFORM
+>>>>>>> v4.9.227
 	help
 	  Core support for the ADC block found in the Samsung SoC systems
 	  for drivers such as the touchscreen and hwmon to use to share
@@ -217,12 +224,15 @@ config SAMSUNG_DEV_PWM
 	help
 	  Compile in platform device definition for PWM Timer
 
+<<<<<<< HEAD
 config SAMSUNG_DEV_BACKLIGHT
 	bool
 	depends on SAMSUNG_DEV_PWM
 	help
 	  Compile in platform device definition LCD backlight with PWM Timer
 
+=======
+>>>>>>> v4.9.227
 config S3C24XX_PWM
 	bool "PWM device support"
 	select PWM
@@ -231,6 +241,7 @@ config S3C24XX_PWM
 	  Support for exporting the PWM timer blocks via the pwm device
 	  system
 
+<<<<<<< HEAD
 config S3C_SETUP_CAMIF
 	bool
 	help
@@ -242,6 +253,10 @@ config S3C_DMA
 	bool
 	help
 	  Internal configuration for S3C DMA core
+=======
+config GPIO_SAMSUNG
+	def_bool y
+>>>>>>> v4.9.227
 
 config SAMSUNG_PM_GPIO
 	bool
@@ -249,6 +264,7 @@ config SAMSUNG_PM_GPIO
 	help
 	  Include legacy GPIO power management code for platforms not using
 	  pinctrl-samsung driver.
+<<<<<<< HEAD
 
 config SAMSUNG_DMADEV
 	bool "Use legacy Samsung DMA abstraction"
@@ -265,6 +281,10 @@ config S5P_DEV_MFC
 	help
 	  Compile in setup memory (init) code for MFC
 
+=======
+endif
+
+>>>>>>> v4.9.227
 comment "Power management"
 
 config SAMSUNG_PM_DEBUG
@@ -287,7 +307,11 @@ config S3C_PM_DEBUG_LED_SMDK
 
 config SAMSUNG_PM_CHECK
 	bool "S3C2410 PM Suspend Memory CRC"
+<<<<<<< HEAD
 	depends on PM
+=======
+	depends on PM && (PLAT_S3C24XX || ARCH_S3C64XX || ARCH_S5PV210)
+>>>>>>> v4.9.227
 	select CRC32
 	help
 	  Enable the PM code's memory area checksum over sleep. This option

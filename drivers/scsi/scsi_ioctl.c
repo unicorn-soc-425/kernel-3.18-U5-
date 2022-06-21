@@ -126,7 +126,11 @@ static int ioctl_internal_command(struct scsi_device *sdev, char *cmd,
 			sdev_printk(KERN_INFO, sdev,
 				    "ioctl_internal_command return code = %x\n",
 				    result);
+<<<<<<< HEAD
 			scsi_print_sense_hdr("   ", &sshdr);
+=======
+			scsi_print_sense_hdr(sdev, NULL, &sshdr);
+>>>>>>> v4.9.227
 			break;
 		}
 	}
@@ -200,6 +204,7 @@ int scsi_ioctl(struct scsi_device *sdev, int cmd, void __user *arg)
 {
 	char scsi_cmd[MAX_COMMAND_SIZE];
 
+<<<<<<< HEAD
 	/* No idea how this happens.... */
 	if (!sdev)
 		return -ENXIO;
@@ -213,6 +218,8 @@ int scsi_ioctl(struct scsi_device *sdev, int cmd, void __user *arg)
 	if (!scsi_block_when_processing_errors(sdev))
 		return -ENODEV;
 
+=======
+>>>>>>> v4.9.227
 	/* Check for deprecated ioctls ... all the ioctls which don't
 	 * follow the new unique numbering scheme are deprecated */
 	switch (cmd) {
@@ -273,6 +280,11 @@ int scsi_ioctl(struct scsi_device *sdev, int cmd, void __user *arg)
 				     START_STOP_TIMEOUT, NORMAL_RETRIES);
         case SCSI_IOCTL_GET_PCI:
                 return scsi_ioctl_get_pci(sdev, arg);
+<<<<<<< HEAD
+=======
+	case SG_SCSI_RESET:
+		return scsi_ioctl_reset(sdev, arg);
+>>>>>>> v4.9.227
 	default:
 		if (sdev->host->hostt->ioctl)
 			return sdev->host->hostt->ioctl(sdev, cmd, arg);
@@ -281,6 +293,7 @@ int scsi_ioctl(struct scsi_device *sdev, int cmd, void __user *arg)
 }
 EXPORT_SYMBOL(scsi_ioctl);
 
+<<<<<<< HEAD
 /**
  * scsi_nonblockable_ioctl() - Handle SG_SCSI_RESET
  * @sdev: scsi device receiving ioctl
@@ -333,3 +346,22 @@ int scsi_nonblockable_ioctl(struct scsi_device *sdev, int cmd,
 	return -ENODEV;
 }
 EXPORT_SYMBOL(scsi_nonblockable_ioctl);
+=======
+/*
+ * We can process a reset even when a device isn't fully operable.
+ */
+int scsi_ioctl_block_when_processing_errors(struct scsi_device *sdev, int cmd,
+		bool ndelay)
+{
+	if (cmd == SG_SCSI_RESET && ndelay) {
+		if (scsi_host_in_recovery(sdev->host))
+			return -EAGAIN;
+	} else {
+		if (!scsi_block_when_processing_errors(sdev))
+			return -ENODEV;
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(scsi_ioctl_block_when_processing_errors);
+>>>>>>> v4.9.227

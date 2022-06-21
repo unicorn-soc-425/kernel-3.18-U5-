@@ -55,9 +55,12 @@ struct sdhci_pxa_platdata {
 	unsigned int	quirks2;
 	unsigned int	pm_caps;
 };
+<<<<<<< HEAD
 
 struct sdhci_pxa {
 	u8	clk_enable;
 	u8	power_mode;
 };
+=======
+>>>>>>> v4.9.227
 #endif /* _PXA_SDHCI_H_ */

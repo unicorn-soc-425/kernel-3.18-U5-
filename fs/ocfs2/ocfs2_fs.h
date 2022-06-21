@@ -102,7 +102,12 @@
 					 | OCFS2_FEATURE_INCOMPAT_INDEXED_DIRS \
 					 | OCFS2_FEATURE_INCOMPAT_REFCOUNT_TREE \
 					 | OCFS2_FEATURE_INCOMPAT_DISCONTIG_BG	\
+<<<<<<< HEAD
 					 | OCFS2_FEATURE_INCOMPAT_CLUSTERINFO)
+=======
+					 | OCFS2_FEATURE_INCOMPAT_CLUSTERINFO \
+					 | OCFS2_FEATURE_INCOMPAT_APPEND_DIO)
+>>>>>>> v4.9.227
 #define OCFS2_FEATURE_RO_COMPAT_SUPP	(OCFS2_FEATURE_RO_COMPAT_UNWRITTEN \
 					 | OCFS2_FEATURE_RO_COMPAT_USRQUOTA \
 					 | OCFS2_FEATURE_RO_COMPAT_GRPQUOTA)
@@ -167,7 +172,11 @@
 /* Refcount tree support */
 #define OCFS2_FEATURE_INCOMPAT_REFCOUNT_TREE	0x1000
 
+<<<<<<< HEAD
 /* Discontigous block groups */
+=======
+/* Discontiguous block groups */
+>>>>>>> v4.9.227
 #define OCFS2_FEATURE_INCOMPAT_DISCONTIG_BG	0x2000
 
 /*
@@ -178,6 +187,14 @@
 #define OCFS2_FEATURE_INCOMPAT_CLUSTERINFO	0x4000
 
 /*
+<<<<<<< HEAD
+=======
+ * Append Direct IO support
+ */
+#define OCFS2_FEATURE_INCOMPAT_APPEND_DIO	0x8000
+
+/*
+>>>>>>> v4.9.227
  * backup superblock flag is used to indicate that this volume
  * has backup superblocks.
  */
@@ -199,6 +216,10 @@
 #define OCFS2_FEATURE_RO_COMPAT_USRQUOTA	0x0002
 #define OCFS2_FEATURE_RO_COMPAT_GRPQUOTA	0x0004
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 /* The byte offset of the first backup block will be 1G.
  * The following will be 4G, 16G, 64G, 256G and 1T.
  */
@@ -229,6 +250,11 @@
 #define OCFS2_CHAIN_FL		(0x00000400)	/* Chain allocator */
 #define OCFS2_DEALLOC_FL	(0x00000800)	/* Truncate log */
 #define OCFS2_QUOTA_FL		(0x00001000)	/* Quota file */
+<<<<<<< HEAD
+=======
+#define OCFS2_DIO_ORPHANED_FL	(0X00002000)	/* On the orphan list especially
+						 * for dio */
+>>>>>>> v4.9.227
 
 /*
  * Flags on ocfs2_dinode.i_dyn_features
@@ -571,7 +597,11 @@ struct ocfs2_extended_slot {
 /*00*/	__u8	es_valid;
 	__u8	es_reserved1[3];
 	__le32	es_node_num;
+<<<<<<< HEAD
 /*10*/
+=======
+/*08*/
+>>>>>>> v4.9.227
 };
 
 /*
@@ -729,7 +759,13 @@ struct ocfs2_dinode {
 					   inode belongs to.  Only valid
 					   if allocated from a
 					   discontiguous block group */
+<<<<<<< HEAD
 /*A0*/	__le64 i_reserved2[3];
+=======
+/*A0*/	__le16 i_dio_orphaned_slot;	/* only used for append dio write */
+	__le16 i_reserved1[3];
+	__le64 i_reserved2[2];
+>>>>>>> v4.9.227
 /*B8*/	union {
 		__le64 i_pad1;		/* Generic way to refer to this
 					   64bit union */
@@ -928,7 +964,11 @@ struct ocfs2_group_desc
 			/*
 			 * Block groups may be discontiguous when
 			 * OCFS2_FEATURE_INCOMPAT_DISCONTIG_BG is set.
+<<<<<<< HEAD
 			 * The extents of a discontigous block group are
+=======
+			 * The extents of a discontiguous block group are
+>>>>>>> v4.9.227
 			 * stored in bg_list.  It is a flat list.
 			 * l_tree_depth must always be zero.  A
 			 * discontiguous group is signified by a non-zero

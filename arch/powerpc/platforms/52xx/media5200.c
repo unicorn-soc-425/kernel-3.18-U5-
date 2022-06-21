@@ -80,7 +80,11 @@ static struct irq_chip media5200_irq_chip = {
 	.irq_mask_ack = media5200_irq_mask,
 };
 
+<<<<<<< HEAD
 void media5200_irq_cascade(unsigned int virq, struct irq_desc *desc)
+=======
+static void media5200_irq_cascade(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	int sub_virq, val;
@@ -242,7 +246,11 @@ static const char * const board[] __initconst = {
  */
 static int __init media5200_probe(void)
 {
+<<<<<<< HEAD
 	return of_flat_dt_match(of_get_flat_dt_root(), board);
+=======
+	return of_device_compatible_match(of_root, board);
+>>>>>>> v4.9.227
 }
 
 define_machine(media5200_platform) {

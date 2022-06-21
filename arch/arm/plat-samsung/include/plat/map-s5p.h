@@ -14,6 +14,7 @@
 #define __ASM_PLAT_MAP_S5P_H __FILE__
 
 #define S5P_VA_CHIPID		S3C_ADDR(0x02000000)
+<<<<<<< HEAD
 #define S5P_VA_CMU		S3C_ADDR(0x02100000)
 #define S5P_VA_GPIO		S3C_ADDR(0x02200000)
 #define S5P_VA_GPIO1		S5P_VA_GPIO
@@ -31,14 +32,19 @@
 
 #define S5P_VA_COMBINER_BASE	S3C_ADDR(0x02700000)
 #define S5P_VA_COMBINER(x)	(S5P_VA_COMBINER_BASE + ((x) >> 2) * 0x10)
+=======
+>>>>>>> v4.9.227
 
 #define S5P_VA_COREPERI_BASE	S3C_ADDR(0x02800000)
 #define S5P_VA_COREPERI(x)	(S5P_VA_COREPERI_BASE + (x))
 #define S5P_VA_SCU		S5P_VA_COREPERI(0x0)
+<<<<<<< HEAD
 #define S5P_VA_TWD		S5P_VA_COREPERI(0x600)
 
 #define S5P_VA_GIC_CPU		S3C_ADDR(0x02810000)
 #define S5P_VA_GIC_DIST		S3C_ADDR(0x02820000)
+=======
+>>>>>>> v4.9.227
 
 #define VA_VIC(x)		(S3C_VA_IRQ + ((x) * 0x10000))
 #define VA_VIC0			VA_VIC(0)
@@ -46,6 +52,7 @@
 #define VA_VIC2			VA_VIC(2)
 #define VA_VIC3			VA_VIC(3)
 
+<<<<<<< HEAD
 #define S5P_VA_UART(x)		(S3C_VA_UART + ((x) * S3C_UART_OFFSET))
 #define S5P_VA_UART0		S5P_VA_UART(0)
 #define S5P_VA_UART1		S5P_VA_UART(1)
@@ -56,6 +63,8 @@
 #define S3C_UART_OFFSET		(0x400)
 #endif
 
+=======
+>>>>>>> v4.9.227
 #include <plat/map-s3c.h>
 
 #endif /* __ASM_PLAT_MAP_S5P_H */

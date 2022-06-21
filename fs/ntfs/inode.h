@@ -239,7 +239,11 @@ typedef struct {
  */
 static inline ntfs_inode *NTFS_I(struct inode *inode)
 {
+<<<<<<< HEAD
 	return (ntfs_inode *)list_entry(inode, big_ntfs_inode, vfs_inode);
+=======
+	return (ntfs_inode *)container_of(inode, big_ntfs_inode, vfs_inode);
+>>>>>>> v4.9.227
 }
 
 static inline struct inode *VFS_I(ntfs_inode *ni)

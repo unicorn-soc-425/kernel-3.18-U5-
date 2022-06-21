@@ -67,8 +67,12 @@ static struct cpuidle_driver bl_idle_little_driver = {
 		.enter			= bl_enter_powerdown,
 		.exit_latency		= 700,
 		.target_residency	= 2500,
+<<<<<<< HEAD
 		.flags			= CPUIDLE_FLAG_TIME_VALID |
 					  CPUIDLE_FLAG_TIMER_STOP,
+=======
+		.flags			= CPUIDLE_FLAG_TIMER_STOP,
+>>>>>>> v4.9.227
 		.name			= "C1",
 		.desc			= "ARM little-cluster power down",
 	},
@@ -89,8 +93,12 @@ static struct cpuidle_driver bl_idle_big_driver = {
 		.enter			= bl_enter_powerdown,
 		.exit_latency		= 500,
 		.target_residency	= 2000,
+<<<<<<< HEAD
 		.flags			= CPUIDLE_FLAG_TIME_VALID |
 					  CPUIDLE_FLAG_TIMER_STOP,
+=======
+		.flags			= CPUIDLE_FLAG_TIMER_STOP,
+>>>>>>> v4.9.227
 		.name			= "C1",
 		.desc			= "ARM big-cluster power down",
 	},
@@ -110,6 +118,7 @@ static int notrace bl_powerdown_finisher(unsigned long arg)
 	unsigned int cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
 
 	mcpm_set_entry_vector(cpu, cluster, cpu_resume);
+<<<<<<< HEAD
 
 	/*
 	 * Residency value passed to mcpm_cpu_suspend back-end
@@ -117,6 +126,9 @@ static int notrace bl_powerdown_finisher(unsigned long arg)
 	 * temporary value.
 	 */
 	mcpm_cpu_suspend(0);
+=======
+	mcpm_cpu_suspend();
+>>>>>>> v4.9.227
 
 	/* return value != 0 means failure */
 	return 1;
@@ -175,6 +187,10 @@ static int __init bl_idle_init(void)
 {
 	int ret;
 	struct device_node *root = of_find_node_by_path("/");
+<<<<<<< HEAD
+=======
+	const struct of_device_id *match_id;
+>>>>>>> v4.9.227
 
 	if (!root)
 		return -ENODEV;
@@ -182,8 +198,21 @@ static int __init bl_idle_init(void)
 	/*
 	 * Initialize the driver just for a compliant set of machines
 	 */
+<<<<<<< HEAD
 	if (!of_match_node(compatible_machine_match, root))
 		return -ENODEV;
+=======
+	match_id = of_match_node(compatible_machine_match, root);
+
+	of_node_put(root);
+
+	if (!match_id)
+		return -ENODEV;
+
+	if (!mcpm_is_available())
+		return -EUNATCH;
+
+>>>>>>> v4.9.227
 	/*
 	 * For now the differentiation between little and big cores
 	 * is based on the part number. A7 cores are considered little

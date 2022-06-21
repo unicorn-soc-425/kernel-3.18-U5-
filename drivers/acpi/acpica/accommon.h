@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,5 +63,11 @@
 #include "acglobal.h"		/* All global variables */
 #include "achware.h"		/* Hardware defines and interfaces */
 #include "acutils.h"		/* Utility interfaces */
+<<<<<<< HEAD
+=======
+#ifndef ACPI_USE_SYSTEM_CLIBRARY
+#include "acclib.h"		/* C library interfaces */
+#endif				/* !ACPI_USE_SYSTEM_CLIBRARY */
+>>>>>>> v4.9.227
 
 #endif				/* __ACCOMMON_H__ */

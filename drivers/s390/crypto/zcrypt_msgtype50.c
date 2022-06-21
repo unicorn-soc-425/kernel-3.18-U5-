@@ -248,7 +248,11 @@ static int ICACRT_msg_to_type50CRT_msg(struct zcrypt_device *zdev,
 	unsigned char *p, *q, *dp, *dq, *u, *inp;
 
 	mod_len = crt->inputdatalength;
+<<<<<<< HEAD
 	short_len = mod_len / 2;
+=======
+	short_len = (mod_len + 1) / 2;
+>>>>>>> v4.9.227
 
 	/*
 	 * CEX2A and CEX3A w/o FW update can handle requests up to
@@ -336,9 +340,16 @@ static int convert_type80(struct zcrypt_device *zdev,
 		/* The result is too short, the CEX2A card may not do that.. */
 		zdev->online = 0;
 		pr_err("Cryptographic device %x failed and was set offline\n",
+<<<<<<< HEAD
 		       zdev->ap_dev->qid);
 		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%drc%d",
 			       zdev->ap_dev->qid, zdev->online, t80h->code);
+=======
+		       AP_QID_DEVICE(zdev->ap_dev->qid));
+		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%drc%d",
+			       AP_QID_DEVICE(zdev->ap_dev->qid),
+			       zdev->online, t80h->code);
+>>>>>>> v4.9.227
 
 		return -EAGAIN;	/* repeat the request on a different device. */
 	}
@@ -368,9 +379,15 @@ static int convert_response(struct zcrypt_device *zdev,
 	default: /* Unknown response type, this should NEVER EVER happen */
 		zdev->online = 0;
 		pr_err("Cryptographic device %x failed and was set offline\n",
+<<<<<<< HEAD
 		       zdev->ap_dev->qid);
 		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%dfail",
 			       zdev->ap_dev->qid, zdev->online);
+=======
+		       AP_QID_DEVICE(zdev->ap_dev->qid));
+		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%dfail",
+			       AP_QID_DEVICE(zdev->ap_dev->qid), zdev->online);
+>>>>>>> v4.9.227
 		return -EAGAIN;	/* repeat the request on a different device. */
 	}
 }
@@ -395,10 +412,15 @@ static void zcrypt_cex2a_receive(struct ap_device *ap_dev,
 	int length;
 
 	/* Copy the reply message to the request message buffer. */
+<<<<<<< HEAD
 	if (IS_ERR(reply)) {
 		memcpy(msg->message, &error_reply, sizeof(error_reply));
 		goto out;
 	}
+=======
+	if (!reply)
+		goto out;	/* ap_msg->rc indicates the error */
+>>>>>>> v4.9.227
 	t80h = reply->message;
 	if (t80h->type == TYPE80_RSP_CODE) {
 		if (ap_dev->device_type == AP_DEVICE_TYPE_CEX2A)
@@ -449,10 +471,19 @@ static long zcrypt_cex2a_modexpo(struct zcrypt_device *zdev,
 	init_completion(&work);
 	ap_queue_message(zdev->ap_dev, &ap_msg);
 	rc = wait_for_completion_interruptible(&work);
+<<<<<<< HEAD
 	if (rc == 0)
 		rc = convert_response(zdev, &ap_msg, mex->outputdata,
 				      mex->outputdatalength);
 	else
+=======
+	if (rc == 0) {
+		rc = ap_msg.rc;
+		if (rc == 0)
+			rc = convert_response(zdev, &ap_msg, mex->outputdata,
+					      mex->outputdatalength);
+	} else
+>>>>>>> v4.9.227
 		/* Signal pending. */
 		ap_cancel_message(zdev->ap_dev, &ap_msg);
 out_free:
@@ -493,10 +524,19 @@ static long zcrypt_cex2a_modexpo_crt(struct zcrypt_device *zdev,
 	init_completion(&work);
 	ap_queue_message(zdev->ap_dev, &ap_msg);
 	rc = wait_for_completion_interruptible(&work);
+<<<<<<< HEAD
 	if (rc == 0)
 		rc = convert_response(zdev, &ap_msg, crt->outputdata,
 				      crt->outputdatalength);
 	else
+=======
+	if (rc == 0) {
+		rc = ap_msg.rc;
+		if (rc == 0)
+			rc = convert_response(zdev, &ap_msg, crt->outputdata,
+					      crt->outputdatalength);
+	} else
+>>>>>>> v4.9.227
 		/* Signal pending. */
 		ap_cancel_message(zdev->ap_dev, &ap_msg);
 out_free:
@@ -511,6 +551,10 @@ static struct zcrypt_ops zcrypt_msgtype50_ops = {
 	.rsa_modexpo = zcrypt_cex2a_modexpo,
 	.rsa_modexpo_crt = zcrypt_cex2a_modexpo_crt,
 	.owner = THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.name = MSGTYPE50_NAME,
+>>>>>>> v4.9.227
 	.variant = MSGTYPE50_VARIANT_DEFAULT,
 };
 

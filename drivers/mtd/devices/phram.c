@@ -17,7 +17,11 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -247,12 +251,18 @@ static int phram_setup(const char *val)
 
 	ret = parse_num64(&start, token[1]);
 	if (ret) {
+<<<<<<< HEAD
 		kfree(name);
 		parse_err("illegal start address\n");
+=======
+		parse_err("illegal start address\n");
+		goto error;
+>>>>>>> v4.9.227
 	}
 
 	ret = parse_num64(&len, token[2]);
 	if (ret) {
+<<<<<<< HEAD
 		kfree(name);
 		parse_err("illegal device length\n");
 	}
@@ -263,6 +273,21 @@ static int phram_setup(const char *val)
 	else
 		kfree(name);
 
+=======
+		parse_err("illegal device length\n");
+		goto error;
+	}
+
+	ret = register_device(name, start, len);
+	if (ret)
+		goto error;
+
+	pr_info("%s device: %#llx at %#llx\n", name, len, start);
+	return 0;
+
+error:
+	kfree(name);
+>>>>>>> v4.9.227
 	return ret;
 }
 

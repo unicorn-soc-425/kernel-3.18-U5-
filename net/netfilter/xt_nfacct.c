@@ -26,7 +26,11 @@ static bool nfacct_mt(const struct sk_buff *skb, struct xt_action_param *par)
 
 	nfnl_acct_update(skb, info->nfacct);
 
+<<<<<<< HEAD
 	overquota = nfnl_acct_overquota(skb, info->nfacct);
+=======
+	overquota = nfnl_acct_overquota(par->net, skb, info->nfacct);
+>>>>>>> v4.9.227
 
 	return overquota == NFACCT_UNDERQUOTA ? false : true;
 }
@@ -37,7 +41,11 @@ nfacct_mt_checkentry(const struct xt_mtchk_param *par)
 	struct xt_nfacct_match_info *info = par->matchinfo;
 	struct nf_acct *nfacct;
 
+<<<<<<< HEAD
 	nfacct = nfnl_acct_find_get(info->name);
+=======
+	nfacct = nfnl_acct_find_get(par->net, info->name);
+>>>>>>> v4.9.227
 	if (nfacct == NULL) {
 		pr_info("xt_nfacct: accounting object with name `%s' "
 			"does not exists\n", info->name);

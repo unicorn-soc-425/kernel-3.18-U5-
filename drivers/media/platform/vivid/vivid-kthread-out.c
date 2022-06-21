@@ -87,6 +87,7 @@ static void vivid_thread_vid_out_tick(struct vivid_dev *dev)
 		return;
 
 	if (vid_out_buf) {
+<<<<<<< HEAD
 		vid_out_buf->vb.v4l2_buf.sequence = dev->vid_out_seq_count;
 		if (dev->field_out == V4L2_FIELD_ALTERNATE) {
 			/*
@@ -101,12 +102,29 @@ static void vivid_thread_vid_out_tick(struct vivid_dev *dev)
 				VB2_BUF_STATE_ERROR : VB2_BUF_STATE_DONE);
 		dprintk(dev, 2, "vid_out buffer %d done\n",
 			vid_out_buf->vb.v4l2_buf.index);
+=======
+		vid_out_buf->vb.sequence = dev->vid_out_seq_count;
+		if (dev->field_out == V4L2_FIELD_ALTERNATE) {
+			/*
+			 * The sequence counter counts frames, not fields.
+			 * So divide by two.
+			 */
+			vid_out_buf->vb.sequence /= 2;
+		}
+		vid_out_buf->vb.vb2_buf.timestamp =
+			ktime_get_ns() + dev->time_wrap_offset;
+		vb2_buffer_done(&vid_out_buf->vb.vb2_buf, dev->dqbuf_error ?
+				VB2_BUF_STATE_ERROR : VB2_BUF_STATE_DONE);
+		dprintk(dev, 2, "vid_out buffer %d done\n",
+			vid_out_buf->vb.vb2_buf.index);
+>>>>>>> v4.9.227
 	}
 
 	if (vbi_out_buf) {
 		if (dev->stream_sliced_vbi_out)
 			vivid_sliced_vbi_out_process(dev, vbi_out_buf);
 
+<<<<<<< HEAD
 		vbi_out_buf->vb.v4l2_buf.sequence = dev->vbi_out_seq_count;
 		v4l2_get_timestamp(&vbi_out_buf->vb.v4l2_buf.timestamp);
 		vbi_out_buf->vb.v4l2_buf.timestamp.tv_sec += dev->time_wrap_offset;
@@ -114,6 +132,15 @@ static void vivid_thread_vid_out_tick(struct vivid_dev *dev)
 				VB2_BUF_STATE_ERROR : VB2_BUF_STATE_DONE);
 		dprintk(dev, 2, "vbi_out buffer %d done\n",
 			vbi_out_buf->vb.v4l2_buf.index);
+=======
+		vbi_out_buf->vb.sequence = dev->vbi_out_seq_count;
+		vbi_out_buf->vb.vb2_buf.timestamp =
+			ktime_get_ns() + dev->time_wrap_offset;
+		vb2_buffer_done(&vbi_out_buf->vb.vb2_buf, dev->dqbuf_error ?
+				VB2_BUF_STATE_ERROR : VB2_BUF_STATE_DONE);
+		dprintk(dev, 2, "vbi_out buffer %d done\n",
+			vbi_out_buf->vb.vb2_buf.index);
+>>>>>>> v4.9.227
 	}
 	dev->dqbuf_error = false;
 }
@@ -147,7 +174,15 @@ static int vivid_thread_vid_out(void *data)
 		if (kthread_should_stop())
 			break;
 
+<<<<<<< HEAD
 		mutex_lock(&dev->mutex);
+=======
+		if (!mutex_trylock(&dev->mutex)) {
+			schedule_timeout_uninterruptible(1);
+			continue;
+		}
+
+>>>>>>> v4.9.227
 		cur_jiffies = jiffies;
 		if (dev->out_seq_resync) {
 			dev->jiffies_vid_out = cur_jiffies;
@@ -248,8 +283,16 @@ int vivid_start_generating_vid_out(struct vivid_dev *dev, bool *pstreaming)
 			"%s-vid-out", dev->v4l2_dev.name);
 
 	if (IS_ERR(dev->kthread_vid_out)) {
+<<<<<<< HEAD
 		v4l2_err(&dev->v4l2_dev, "kernel_thread() failed\n");
 		return PTR_ERR(dev->kthread_vid_out);
+=======
+		int err = PTR_ERR(dev->kthread_vid_out);
+
+		dev->kthread_vid_out = NULL;
+		v4l2_err(&dev->v4l2_dev, "kernel_thread() failed\n");
+		return err;
+>>>>>>> v4.9.227
 	}
 	*pstreaming = true;
 	vivid_grab_controls(dev, true);
@@ -274,9 +317,15 @@ void vivid_stop_generating_vid_out(struct vivid_dev *dev, bool *pstreaming)
 			buf = list_entry(dev->vid_out_active.next,
 					 struct vivid_buffer, list);
 			list_del(&buf->list);
+<<<<<<< HEAD
 			vb2_buffer_done(&buf->vb, VB2_BUF_STATE_ERROR);
 			dprintk(dev, 2, "vid_out buffer %d done\n",
 				buf->vb.v4l2_buf.index);
+=======
+			vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+			dprintk(dev, 2, "vid_out buffer %d done\n",
+				buf->vb.vb2_buf.index);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -287,9 +336,15 @@ void vivid_stop_generating_vid_out(struct vivid_dev *dev, bool *pstreaming)
 			buf = list_entry(dev->vbi_out_active.next,
 					 struct vivid_buffer, list);
 			list_del(&buf->list);
+<<<<<<< HEAD
 			vb2_buffer_done(&buf->vb, VB2_BUF_STATE_ERROR);
 			dprintk(dev, 2, "vbi_out buffer %d done\n",
 				buf->vb.v4l2_buf.index);
+=======
+			vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+			dprintk(dev, 2, "vbi_out buffer %d done\n",
+				buf->vb.vb2_buf.index);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -298,8 +353,13 @@ void vivid_stop_generating_vid_out(struct vivid_dev *dev, bool *pstreaming)
 
 	/* shutdown control thread */
 	vivid_grab_controls(dev, false);
+<<<<<<< HEAD
 	mutex_unlock(&dev->mutex);
 	kthread_stop(dev->kthread_vid_out);
 	dev->kthread_vid_out = NULL;
 	mutex_lock(&dev->mutex);
+=======
+	kthread_stop(dev->kthread_vid_out);
+	dev->kthread_vid_out = NULL;
+>>>>>>> v4.9.227
 }

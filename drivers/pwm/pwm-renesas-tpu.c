@@ -301,7 +301,11 @@ static int tpu_pwm_config(struct pwm_chip *chip, struct pwm_device *_pwm,
 	pwm->duty = duty;
 
 	/* If the channel is disabled we're done. */
+<<<<<<< HEAD
 	if (!test_bit(PWMF_ENABLED, &_pwm->flags))
+=======
+	if (!pwm_is_enabled(_pwm))
+>>>>>>> v4.9.227
 		return 0;
 
 	if (duty_only && pwm->timer_on) {
@@ -423,16 +427,28 @@ static int tpu_probe(struct platform_device *pdev)
 	tpu->chip.base = -1;
 	tpu->chip.npwm = TPU_CHANNEL_MAX;
 
+<<<<<<< HEAD
 	ret = pwmchip_add(&tpu->chip);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to register PWM chip\n");
+=======
+	pm_runtime_enable(&pdev->dev);
+
+	ret = pwmchip_add(&tpu->chip);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "failed to register PWM chip\n");
+		pm_runtime_disable(&pdev->dev);
+>>>>>>> v4.9.227
 		return ret;
 	}
 
 	dev_info(&pdev->dev, "TPU PWM %d registered\n", tpu->pdev->id);
 
+<<<<<<< HEAD
 	pm_runtime_enable(&pdev->dev);
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -442,12 +458,19 @@ static int tpu_remove(struct platform_device *pdev)
 	int ret;
 
 	ret = pwmchip_remove(&tpu->chip);
+<<<<<<< HEAD
 	if (ret)
 		return ret;
 
 	pm_runtime_disable(&pdev->dev);
 
 	return 0;
+=======
+
+	pm_runtime_disable(&pdev->dev);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_OF
@@ -468,7 +491,10 @@ static struct platform_driver tpu_driver = {
 	.remove		= tpu_remove,
 	.driver		= {
 		.name	= "renesas-tpu-pwm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(tpu_of_table),
 	}
 };

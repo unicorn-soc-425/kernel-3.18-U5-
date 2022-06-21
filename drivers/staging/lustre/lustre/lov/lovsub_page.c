@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -60,11 +64,19 @@ static const struct cl_page_operations lovsub_page_ops = {
 };
 
 int lovsub_page_init(const struct lu_env *env, struct cl_object *obj,
+<<<<<<< HEAD
 			struct cl_page *page, struct page *unused)
 {
 	struct lovsub_page *lsb = cl_object_page_slice(obj, page);
 
 	cl_page_slice_add(page, &lsb->lsb_cl, obj, &lovsub_page_ops);
+=======
+		     struct cl_page *page, pgoff_t index)
+{
+	struct lovsub_page *lsb = cl_object_page_slice(obj, page);
+
+	cl_page_slice_add(page, &lsb->lsb_cl, obj, index, &lovsub_page_ops);
+>>>>>>> v4.9.227
 	return 0;
 }
 

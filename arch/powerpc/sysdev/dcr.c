@@ -54,7 +54,11 @@ bool dcr_map_ok_generic(dcr_host_t host)
 	else if (host.type == DCR_HOST_MMIO)
 		return dcr_map_ok_mmio(host.host.mmio);
 	else
+<<<<<<< HEAD
 		return 0;
+=======
+		return false;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(dcr_map_ok_generic);
 

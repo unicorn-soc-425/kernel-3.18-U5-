@@ -194,7 +194,11 @@ static ssize_t write_hw(struct file *file, struct kobject *kobj,
 	int length = min(sizeof(struct atto_ioctl), count);
 
 	if (!a->local_atto_ioctl) {
+<<<<<<< HEAD
 		a->local_atto_ioctl = kzalloc(sizeof(struct atto_ioctl),
+=======
+		a->local_atto_ioctl = kmalloc(sizeof(struct atto_ioctl),
+>>>>>>> v4.9.227
 					      GFP_KERNEL);
 		if (a->local_atto_ioctl == NULL) {
 			esas2r_log(ESAS2R_LOG_WARN,
@@ -246,7 +250,11 @@ static struct scsi_host_template driver_template = {
 	.eh_target_reset_handler	= esas2r_target_reset,
 	.can_queue			= 128,
 	.this_id			= -1,
+<<<<<<< HEAD
 	.sg_tablesize			= SCSI_MAX_SG_SEGMENTS,
+=======
+	.sg_tablesize			= SG_CHUNK_SIZE,
+>>>>>>> v4.9.227
 	.cmd_per_lun			=
 		ESAS2R_DEFAULT_CMD_PER_LUN,
 	.present			= 0,
@@ -254,11 +262,15 @@ static struct scsi_host_template driver_template = {
 	.use_clustering			= ENABLE_CLUSTERING,
 	.emulated			= 0,
 	.proc_name			= ESAS2R_DRVR_NAME,
+<<<<<<< HEAD
 	.slave_configure		= esas2r_slave_configure,
 	.slave_alloc			= esas2r_slave_alloc,
 	.slave_destroy			= esas2r_slave_destroy,
 	.change_queue_depth		= esas2r_change_queue_depth,
 	.change_queue_type		= esas2r_change_queue_type,
+=======
+	.change_queue_depth		= scsi_change_queue_depth,
+>>>>>>> v4.9.227
 	.max_sectors			= 0xFFFF,
 };
 
@@ -275,7 +287,11 @@ module_param(num_sg_lists, int, 0);
 MODULE_PARM_DESC(num_sg_lists,
 		 "Number of scatter/gather lists.  Default 1024.");
 
+<<<<<<< HEAD
 int sg_tablesize = SCSI_MAX_SG_SEGMENTS;
+=======
+int sg_tablesize = SG_CHUNK_SIZE;
+>>>>>>> v4.9.227
 module_param(sg_tablesize, int, 0);
 MODULE_PARM_DESC(sg_tablesize,
 		 "Maximum number of entries in a scatter/gather table.");
@@ -752,7 +768,11 @@ int esas2r_show_info(struct seq_file *m, struct Scsi_Host *sh)
 	if (dev_count == 0)
 		seq_puts(m, "none\n");
 
+<<<<<<< HEAD
 	seq_puts(m, "\n");
+=======
+	seq_putc(m, '\n');
+>>>>>>> v4.9.227
 	return 0;
 
 }
@@ -1259,6 +1279,7 @@ int esas2r_target_reset(struct scsi_cmnd *cmd)
 	return esas2r_dev_targ_reset(cmd, true);
 }
 
+<<<<<<< HEAD
 int esas2r_change_queue_depth(struct scsi_device *dev, int depth, int reason)
 {
 	esas2r_log(ESAS2R_LOG_INFO, "change_queue_depth %p, %d", dev, depth);
@@ -1313,6 +1334,8 @@ void esas2r_slave_destroy(struct scsi_device *dev)
 		       "esas2r_slave_destroy()");
 }
 
+=======
+>>>>>>> v4.9.227
 void esas2r_log_request_failure(struct esas2r_adapter *a,
 				struct esas2r_request *rq)
 {

@@ -10,6 +10,7 @@
 #include <linux/init.h>
 #include <linux/serial_8250.h>
 
+<<<<<<< HEAD
 #define PORT(_base,_irq)				\
 	{						\
 		.iobase		= _base,		\
@@ -36,6 +37,27 @@ static struct plat_serial8250_port boca_data[] = {
 	PORT(0x168, 12),
 	PORT(0x170, 12),
 	PORT(0x178, 12),
+=======
+#include "8250.h"
+
+static struct plat_serial8250_port boca_data[] = {
+	SERIAL8250_PORT(0x100, 12),
+	SERIAL8250_PORT(0x108, 12),
+	SERIAL8250_PORT(0x110, 12),
+	SERIAL8250_PORT(0x118, 12),
+	SERIAL8250_PORT(0x120, 12),
+	SERIAL8250_PORT(0x128, 12),
+	SERIAL8250_PORT(0x130, 12),
+	SERIAL8250_PORT(0x138, 12),
+	SERIAL8250_PORT(0x140, 12),
+	SERIAL8250_PORT(0x148, 12),
+	SERIAL8250_PORT(0x150, 12),
+	SERIAL8250_PORT(0x158, 12),
+	SERIAL8250_PORT(0x160, 12),
+	SERIAL8250_PORT(0x168, 12),
+	SERIAL8250_PORT(0x170, 12),
+	SERIAL8250_PORT(0x178, 12),
+>>>>>>> v4.9.227
 	{ },
 };
 

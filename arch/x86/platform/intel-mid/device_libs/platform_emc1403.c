@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * platform_emc1403.c: emc1403 platform data initilization file
+=======
+ * platform_emc1403.c: emc1403 platform data initialization file
+>>>>>>> v4.9.227
  *
  * (C) Copyright 2013 Intel Corporation
  * Author: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@intel.com>

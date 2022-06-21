@@ -35,6 +35,7 @@ void default_idle(void)
 	local_irq_enable();
 }
 
+<<<<<<< HEAD
 /*
  * Free current thread data structures etc..
  */
@@ -44,6 +45,8 @@ void exit_thread(void)
 	/* Nothing needs to be done.  */
 }
 
+=======
+>>>>>>> v4.9.227
 /* if the watchdog is enabled, we can simply disable interrupts and go
  * into an eternal loop, and the watchdog will reset the CPU after 0.1s
  * if on the other hand the watchdog wasn't enabled, we just enable it and wait

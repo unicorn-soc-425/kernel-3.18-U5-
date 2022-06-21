@@ -39,7 +39,11 @@
 #define pcm_omap1510()	0
 #endif
 
+<<<<<<< HEAD
 static const struct snd_pcm_hardware omap_pcm_hardware = {
+=======
+static struct snd_pcm_hardware omap_pcm_hardware = {
+>>>>>>> v4.9.227
 	.info			= SNDRV_PCM_INFO_MMAP |
 				  SNDRV_PCM_INFO_MMAP_VALID |
 				  SNDRV_PCM_INFO_INTERLEAVED |
@@ -53,6 +57,27 @@ static const struct snd_pcm_hardware omap_pcm_hardware = {
 	.buffer_bytes_max	= 128 * 1024,
 };
 
+<<<<<<< HEAD
+=======
+/* sDMA supports only 1, 2, and 4 byte transfer elements. */
+static void omap_pcm_limit_supported_formats(void)
+{
+	int i;
+
+	for (i = 0; i <= SNDRV_PCM_FORMAT_LAST; i++) {
+		switch (snd_pcm_format_physical_width(i)) {
+		case 8:
+		case 16:
+		case 32:
+			omap_pcm_hardware.formats |= (1LL << i);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+>>>>>>> v4.9.227
 /* this may get called several times by oss emulation */
 static int omap_pcm_hw_params(struct snd_pcm_substream *substream,
 			      struct snd_pcm_hw_params *params)
@@ -64,6 +89,11 @@ static int omap_pcm_hw_params(struct snd_pcm_substream *substream,
 	struct dma_chan *chan;
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	memset(&config, 0x00, sizeof(config));
+
+>>>>>>> v4.9.227
 	dma_data = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
 
 	/* return if this is a bufferless transfer e.g.
@@ -138,10 +168,15 @@ static int omap_pcm_mmap(struct snd_pcm_substream *substream,
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
+<<<<<<< HEAD
 	return dma_mmap_writecombine(substream->pcm->card->dev, vma,
 				     runtime->dma_area,
 				     runtime->dma_addr,
 				     runtime->dma_bytes);
+=======
+	return dma_mmap_wc(substream->pcm->card->dev, vma, runtime->dma_area,
+			   runtime->dma_addr, runtime->dma_bytes);
+>>>>>>> v4.9.227
 }
 
 static struct snd_pcm_ops omap_pcm_ops = {
@@ -165,8 +200,12 @@ static int omap_pcm_preallocate_dma_buffer(struct snd_pcm *pcm,
 	buf->dev.type = SNDRV_DMA_TYPE_DEV;
 	buf->dev.dev = pcm->card->dev;
 	buf->private_data = NULL;
+<<<<<<< HEAD
 	buf->area = dma_alloc_writecombine(pcm->card->dev, size,
 					   &buf->addr, GFP_KERNEL);
+=======
+	buf->area = dma_alloc_wc(pcm->card->dev, size, &buf->addr, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!buf->area)
 		return -ENOMEM;
 
@@ -189,8 +228,12 @@ static void omap_pcm_free_dma_buffers(struct snd_pcm *pcm)
 		if (!buf->area)
 			continue;
 
+<<<<<<< HEAD
 		dma_free_writecombine(pcm->card->dev, buf->bytes,
 				      buf->area, buf->addr);
+=======
+		dma_free_wc(pcm->card->dev, buf->bytes, buf->area, buf->addr);
+>>>>>>> v4.9.227
 		buf->area = NULL;
 	}
 }
@@ -235,6 +278,10 @@ static struct snd_soc_platform_driver omap_soc_platform = {
 
 int omap_pcm_platform_register(struct device *dev)
 {
+<<<<<<< HEAD
+=======
+	omap_pcm_limit_supported_formats();
+>>>>>>> v4.9.227
 	return devm_snd_soc_register_platform(dev, &omap_soc_platform);
 }
 EXPORT_SYMBOL_GPL(omap_pcm_platform_register);

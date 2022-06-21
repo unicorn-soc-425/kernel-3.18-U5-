@@ -2,10 +2,20 @@
 # LED Core
 obj-$(CONFIG_NEW_LEDS)			+= led-core.o
 obj-$(CONFIG_LEDS_CLASS)		+= led-class.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_LEDS_CLASS_FLASH)		+= led-class-flash.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_LEDS_TRIGGERS)		+= led-triggers.o
 
 # LED Platform Drivers
 obj-$(CONFIG_LEDS_88PM860X)		+= leds-88pm860x.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_LEDS_AAT1290)		+= leds-aat1290.o
+obj-$(CONFIG_LEDS_BCM6328)		+= leds-bcm6328.o
+obj-$(CONFIG_LEDS_BCM6358)		+= leds-bcm6358.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_LEDS_BD2802)		+= leds-bd2802.o
 obj-$(CONFIG_LEDS_LOCOMO)		+= leds-locomo.o
 obj-$(CONFIG_LEDS_LM3530)		+= leds-lm3530.o
@@ -22,12 +32,20 @@ obj-$(CONFIG_LEDS_PCA9532)		+= leds-pca9532.o
 obj-$(CONFIG_LEDS_GPIO_REGISTER)	+= leds-gpio-register.o
 obj-$(CONFIG_LEDS_GPIO)			+= leds-gpio.o
 obj-$(CONFIG_LEDS_LP3944)		+= leds-lp3944.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_LEDS_LP3952)		+= leds-lp3952.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_LEDS_LP55XX_COMMON)	+= leds-lp55xx-common.o
 obj-$(CONFIG_LEDS_LP5521)		+= leds-lp5521.o
 obj-$(CONFIG_LEDS_LP5523)		+= leds-lp5523.o
 obj-$(CONFIG_LEDS_LP5562)		+= leds-lp5562.o
 obj-$(CONFIG_LEDS_LP8501)		+= leds-lp8501.o
 obj-$(CONFIG_LEDS_LP8788)		+= leds-lp8788.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_LEDS_LP8860)		+= leds-lp8860.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_LEDS_TCA6507)		+= leds-tca6507.o
 obj-$(CONFIG_LEDS_TLC591XX)		+= leds-tlc591xx.o
 obj-$(CONFIG_LEDS_CLEVO_MAIL)		+= leds-clevo-mail.o
@@ -37,7 +55,10 @@ obj-$(CONFIG_LEDS_OT200)		+= leds-ot200.o
 obj-$(CONFIG_LEDS_FSG)			+= leds-fsg.o
 obj-$(CONFIG_LEDS_PCA955X)		+= leds-pca955x.o
 obj-$(CONFIG_LEDS_PCA963X)		+= leds-pca963x.o
+<<<<<<< HEAD
 obj-$(CONFIG_LEDS_PCA9956B)		+= leds-pca9956b.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_LEDS_DA903X)		+= leds-da903x.o
 obj-$(CONFIG_LEDS_DA9052)		+= leds-da9052.o
 obj-$(CONFIG_LEDS_WM831X_STATUS)	+= leds-wm831x-status.o
@@ -52,6 +73,7 @@ obj-$(CONFIG_LEDS_MC13783)		+= leds-mc13783.o
 obj-$(CONFIG_LEDS_NS2)			+= leds-ns2.o
 obj-$(CONFIG_LEDS_NETXBIG)		+= leds-netxbig.o
 obj-$(CONFIG_LEDS_ASIC3)		+= leds-asic3.o
+<<<<<<< HEAD
 obj-$(CONFIG_LEDS_MAX8997)		+= leds-max8997.o
 obj-$(CONFIG_LEDS_LM355x)		+= leds-lm355x.o
 obj-$(CONFIG_LEDS_BLINKM)		+= leds-blinkm.o
@@ -72,6 +94,23 @@ obj-$(CONFIG_FLASHLIGHT)		+= flashlight.o
 obj-$(CONFIG_SM_FLASH_LED)		+= smfled.o
 obj-$(CONFIG_FLED_SM5703)		+= sm5703_fled.o
 obj-$(CONFIG_LEDS_S2MU005)		+= leds-s2mu005.o
+=======
+obj-$(CONFIG_LEDS_MAX77693)		+= leds-max77693.o
+obj-$(CONFIG_LEDS_MAX8997)		+= leds-max8997.o
+obj-$(CONFIG_LEDS_LM355x)		+= leds-lm355x.o
+obj-$(CONFIG_LEDS_BLINKM)		+= leds-blinkm.o
+obj-$(CONFIG_LEDS_SYSCON)		+= leds-syscon.o
+obj-$(CONFIG_LEDS_VERSATILE)		+= leds-versatile.o
+obj-$(CONFIG_LEDS_MENF21BMC)		+= leds-menf21bmc.o
+obj-$(CONFIG_LEDS_KTD2692)		+= leds-ktd2692.o
+obj-$(CONFIG_LEDS_POWERNV)		+= leds-powernv.o
+obj-$(CONFIG_LEDS_SEAD3)		+= leds-sead3.o
+obj-$(CONFIG_LEDS_IS31FL319X)		+= leds-is31fl319x.o
+obj-$(CONFIG_LEDS_IS31FL32XX)		+= leds-is31fl32xx.o
+obj-$(CONFIG_LEDS_PM8058)		+= leds-pm8058.o
+obj-$(CONFIG_LEDS_MLXCPLD)		+= leds-mlxcpld.o
+
+>>>>>>> v4.9.227
 # LED SPI Drivers
 obj-$(CONFIG_LEDS_DAC124S085)		+= leds-dac124s085.o
 

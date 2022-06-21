@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Linux network driver for Brocade Converged Network Adapter.
+=======
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -11,9 +15,16 @@
  * General Public License for more details.
  */
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2011 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> v4.9.227
  */
 
 /* File for interrupt macros and functions */
@@ -212,7 +223,11 @@ do {									\
  * 15 bits (32K) should  be large enough to accumulate, anyways, and the max.
  * acked events to h/w can be (32K + max poll weight) (currently 64).
  */
+<<<<<<< HEAD
 #define	BNA_IB_MAX_ACK_EVENTS		(1 << 15)
+=======
+#define BNA_IB_MAX_ACK_EVENTS		BIT(15)
+>>>>>>> v4.9.227
 
 /* These macros build the data portion of the TxQ/RxQ doorbell */
 #define BNA_DOORBELL_Q_PRD_IDX(_pi)	(0x80000000 | (_pi))
@@ -281,6 +296,7 @@ do {									\
 #define BNA_TXQ_WI_EXTENSION		(0x104)	/* Extension WI */
 
 /* TxQ Entry Control Flags */
+<<<<<<< HEAD
 #define BNA_TXQ_WI_CF_FCOE_CRC		(1 << 8)
 #define BNA_TXQ_WI_CF_IPID_MODE		(1 << 5)
 #define BNA_TXQ_WI_CF_INS_PRIO		(1 << 4)
@@ -288,6 +304,15 @@ do {									\
 #define BNA_TXQ_WI_CF_UDP_CKSUM		(1 << 2)
 #define BNA_TXQ_WI_CF_TCP_CKSUM		(1 << 1)
 #define BNA_TXQ_WI_CF_IP_CKSUM		(1 << 0)
+=======
+#define BNA_TXQ_WI_CF_FCOE_CRC		BIT(8)
+#define BNA_TXQ_WI_CF_IPID_MODE		BIT(5)
+#define BNA_TXQ_WI_CF_INS_PRIO		BIT(4)
+#define BNA_TXQ_WI_CF_INS_VLAN		BIT(3)
+#define BNA_TXQ_WI_CF_UDP_CKSUM		BIT(2)
+#define BNA_TXQ_WI_CF_TCP_CKSUM		BIT(1)
+#define BNA_TXQ_WI_CF_IP_CKSUM		BIT(0)
+>>>>>>> v4.9.227
 
 #define BNA_TXQ_WI_L4_HDR_N_OFFSET(_hdr_size, _offset) \
 		(((_hdr_size) << 10) | ((_offset) & 0x3FF))
@@ -296,6 +321,7 @@ do {									\
  * Completion Q defines
  */
 /* CQ Entry Flags */
+<<<<<<< HEAD
 #define	BNA_CQ_EF_MAC_ERROR	(1 <<  0)
 #define	BNA_CQ_EF_FCS_ERROR	(1 <<  1)
 #define	BNA_CQ_EF_TOO_LONG	(1 <<  2)
@@ -326,6 +352,38 @@ do {									\
  * Bit 31 is set in every end of frame completion
  */
 #define BNA_CQ_EF_EOP		(1 << 31)
+=======
+#define BNA_CQ_EF_MAC_ERROR	BIT(0)
+#define BNA_CQ_EF_FCS_ERROR	BIT(1)
+#define BNA_CQ_EF_TOO_LONG	BIT(2)
+#define BNA_CQ_EF_FC_CRC_OK	BIT(3)
+
+#define BNA_CQ_EF_RSVD1		BIT(4)
+#define BNA_CQ_EF_L4_CKSUM_OK	BIT(5)
+#define BNA_CQ_EF_L3_CKSUM_OK	BIT(6)
+#define BNA_CQ_EF_HDS_HEADER	BIT(7)
+
+#define BNA_CQ_EF_UDP		BIT(8)
+#define BNA_CQ_EF_TCP		BIT(9)
+#define BNA_CQ_EF_IP_OPTIONS	BIT(10)
+#define BNA_CQ_EF_IPV6		BIT(11)
+
+#define BNA_CQ_EF_IPV4		BIT(12)
+#define BNA_CQ_EF_VLAN		BIT(13)
+#define BNA_CQ_EF_RSS		BIT(14)
+#define BNA_CQ_EF_RSVD2		BIT(15)
+
+#define BNA_CQ_EF_MCAST_MATCH   BIT(16)
+#define BNA_CQ_EF_MCAST		BIT(17)
+#define BNA_CQ_EF_BCAST		BIT(18)
+#define BNA_CQ_EF_REMOTE	BIT(19)
+
+#define BNA_CQ_EF_LOCAL		BIT(20)
+/* CAT2 ASIC does not use bit 21 as per the SPEC.
+ * Bit 31 is set in every end of frame completion
+ */
+#define BNA_CQ_EF_EOP		BIT(31)
+>>>>>>> v4.9.227
 
 /* Data structures */
 
@@ -362,7 +420,11 @@ struct bna_txq_wi_vector {
 
 /*  TxQ Entry Structure
  *
+<<<<<<< HEAD
  *  BEWARE:  Load values into this structure with correct endianess.
+=======
+ *  BEWARE:  Load values into this structure with correct endianness.
+>>>>>>> v4.9.227
  */
 struct bna_txq_entry {
 	union {

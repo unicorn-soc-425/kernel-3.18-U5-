@@ -306,16 +306,27 @@ static int cmm_timeout_handler(struct ctl_table *ctl, int write,
 	}
 
 	if (write) {
+<<<<<<< HEAD
 		len = *lenp;
 		if (copy_from_user(buf, buffer,
 				   len > sizeof(buf) ? sizeof(buf) : len))
 			return -EFAULT;
 		buf[sizeof(buf) - 1] = '\0';
+=======
+		len = min(*lenp, sizeof(buf));
+		if (copy_from_user(buf, buffer, len))
+			return -EFAULT;
+		buf[len - 1] = '\0';
+>>>>>>> v4.9.227
 		cmm_skip_blanks(buf, &p);
 		nr = simple_strtoul(p, &p, 0);
 		cmm_skip_blanks(p, &p);
 		seconds = simple_strtoul(p, &p, 0);
 		cmm_set_timeout(nr, seconds);
+<<<<<<< HEAD
+=======
+		*ppos += *lenp;
+>>>>>>> v4.9.227
 	} else {
 		len = sprintf(buf, "%ld %ld\n",
 			      cmm_timeout_pages, cmm_timeout_seconds);
@@ -323,9 +334,15 @@ static int cmm_timeout_handler(struct ctl_table *ctl, int write,
 			len = *lenp;
 		if (copy_to_user(buffer, buf, len))
 			return -EFAULT;
+<<<<<<< HEAD
 	}
 	*lenp = len;
 	*ppos += len;
+=======
+		*lenp = len;
+		*ppos += len;
+	}
+>>>>>>> v4.9.227
 	return 0;
 }
 

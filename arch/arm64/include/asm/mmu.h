@@ -17,6 +17,7 @@
 #define __ASM_MMU_H
 
 #define USER_ASID_FLAG	(UL(1) << 48)
+<<<<<<< HEAD
 #define TTBR_ASID_MASK	(UL(0xffff) << 48)
 
 #ifndef __ASSEMBLY__
@@ -25,6 +26,12 @@
 
 #include <asm/cpufeature.h>
 #include <asm/percpu.h>
+=======
+
+#ifndef __ASSEMBLY__
+
+#include <linux/percpu.h>
+>>>>>>> v4.9.227
 
 typedef struct {
 	atomic64_t	id;
@@ -41,7 +48,11 @@ typedef struct {
 static inline bool arm64_kernel_unmapped_at_el0(void)
 {
 	return IS_ENABLED(CONFIG_UNMAP_KERNEL_AT_EL0) &&
+<<<<<<< HEAD
 	       cpus_have_cap(ARM64_UNMAP_KERNEL_AT_EL0);
+=======
+	       cpus_have_const_cap(ARM64_UNMAP_KERNEL_AT_EL0);
+>>>>>>> v4.9.227
 }
 
 typedef void (*bp_hardening_cb_t)(void);
@@ -82,12 +93,22 @@ static inline void arm64_apply_bp_hardening(void)	{ }
 #endif	/* CONFIG_HARDEN_BRANCH_PREDICTOR */
 
 extern void paging_init(void);
+<<<<<<< HEAD
 extern void __iomem *early_io_map(phys_addr_t phys, unsigned long virt);
 extern void init_mem_pgprot(void);
 extern void mem_text_write_kernel_word(u32 *addr, u32 word);
 extern void create_pgd_mapping(struct mm_struct *mm, phys_addr_t phys,
 			       unsigned long virt, phys_addr_t size,
 			       pgprot_t prot);
+=======
+extern void bootmem_init(void);
+extern void __iomem *early_io_map(phys_addr_t phys, unsigned long virt);
+extern void init_mem_pgprot(void);
+extern void create_pgd_mapping(struct mm_struct *mm, phys_addr_t phys,
+			       unsigned long virt, phys_addr_t size,
+			       pgprot_t prot, bool allow_block_mappings);
+extern void *fixmap_remap_fdt(phys_addr_t dt_phys);
+>>>>>>> v4.9.227
 
 #endif	/* !__ASSEMBLY__ */
 #endif

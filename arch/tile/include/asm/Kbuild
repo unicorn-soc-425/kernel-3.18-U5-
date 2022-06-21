@@ -11,16 +11,26 @@ generic-y += errno.h
 generic-y += exec.h
 generic-y += fb.h
 generic-y += fcntl.h
+<<<<<<< HEAD
 generic-y += hash.h
+=======
+>>>>>>> v4.9.227
 generic-y += hw_irq.h
 generic-y += ioctl.h
 generic-y += ioctls.h
 generic-y += ipcbuf.h
 generic-y += irq_regs.h
+<<<<<<< HEAD
 generic-y += irq_work.h
 generic-y += local.h
 generic-y += local64.h
 generic-y += mcs_spinlock.h
+=======
+generic-y += local.h
+generic-y += local64.h
+generic-y += mcs_spinlock.h
+generic-y += mm-arch-hooks.h
+>>>>>>> v4.9.227
 generic-y += msgbuf.h
 generic-y += mutex.h
 generic-y += param.h
@@ -29,7 +39,11 @@ generic-y += poll.h
 generic-y += posix_types.h
 generic-y += preempt.h
 generic-y += resource.h
+<<<<<<< HEAD
 generic-y += scatterlist.h
+=======
+generic-y += seccomp.h
+>>>>>>> v4.9.227
 generic-y += sembuf.h
 generic-y += serial.h
 generic-y += shmbuf.h
@@ -41,5 +55,8 @@ generic-y += termbits.h
 generic-y += termios.h
 generic-y += trace_clock.h
 generic-y += types.h
+<<<<<<< HEAD
 generic-y += word-at-a-time.h
+=======
+>>>>>>> v4.9.227
 generic-y += xor.h

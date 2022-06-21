@@ -18,7 +18,11 @@
 
 static struct ci_hdrc_platform_data ci_hdrc_zevio_platdata = {
 	.name			= "ci_hdrc_zevio",
+<<<<<<< HEAD
 	.flags			= CI_HDRC_REGS_SHARED,
+=======
+	.flags			= CI_HDRC_REGS_SHARED | CI_HDRC_FORCE_FULLSPEED,
+>>>>>>> v4.9.227
 	.capoffset		= DEF_CAPOFFSET,
 };
 
@@ -61,7 +65,10 @@ static struct platform_driver ci_hdrc_zevio_driver = {
 	.remove = ci_hdrc_zevio_remove,
 	.driver = {
 		.name = "zevio_usb",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ci_hdrc_zevio_dt_ids,
 	},
 };

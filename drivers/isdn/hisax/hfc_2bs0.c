@@ -31,7 +31,11 @@ WaitForBusy(struct IsdnCardState *cs)
 		to--;
 	}
 	if (!to) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "HiSax: waitforBusy timeout\n");
+=======
+		printk(KERN_WARNING "HiSax: %s timeout\n", __func__);
+>>>>>>> v4.9.227
 		return (0);
 	} else
 		return (to);

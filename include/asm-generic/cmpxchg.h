@@ -79,23 +79,40 @@ unsigned long __xchg(unsigned long x, volatile void *ptr, int size)
 	}
 }
 
+<<<<<<< HEAD
 #define xchg(ptr, x) \
 	((__typeof__(*(ptr))) __xchg((unsigned long)(x), (ptr), sizeof(*(ptr))))
+=======
+#define xchg(ptr, x) ({							\
+	((__typeof__(*(ptr)))						\
+		__xchg((unsigned long)(x), (ptr), sizeof(*(ptr))));	\
+})
+>>>>>>> v4.9.227
 
 #endif /* xchg */
 
 /*
  * Atomic compare and exchange.
+<<<<<<< HEAD
  *
  * Do not define __HAVE_ARCH_CMPXCHG because we want to use it to check whether
  * a cmpxchg primitive faster than repeated local irq save/restore exists.
+=======
+>>>>>>> v4.9.227
  */
 #include <asm-generic/cmpxchg-local.h>
 
 #ifndef cmpxchg_local
+<<<<<<< HEAD
 #define cmpxchg_local(ptr, o, n)				  	       \
 	((__typeof__(*(ptr)))__cmpxchg_local_generic((ptr), (unsigned long)(o),\
 			(unsigned long)(n), sizeof(*(ptr))))
+=======
+#define cmpxchg_local(ptr, o, n) ({					       \
+	((__typeof__(*(ptr)))__cmpxchg_local_generic((ptr), (unsigned long)(o),\
+			(unsigned long)(n), sizeof(*(ptr))));		       \
+})
+>>>>>>> v4.9.227
 #endif
 
 #ifndef cmpxchg64_local

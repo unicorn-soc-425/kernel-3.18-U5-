@@ -80,7 +80,11 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
 {
 	unsigned i;
 
+<<<<<<< HEAD
 	for (i = 0; i < max_cpus; ++i)
+=======
+	for_each_possible_cpu(i)
+>>>>>>> v4.9.227
 		set_cpu_present(i, true);
 }
 
@@ -93,6 +97,14 @@ void __init smp_init_cpus(void)
 	pr_info("%s: Core Count = %d\n", __func__, ncpus);
 	pr_info("%s: Core Id = %d\n", __func__, core_id);
 
+<<<<<<< HEAD
+=======
+	if (ncpus > NR_CPUS) {
+		ncpus = NR_CPUS;
+		pr_info("%s: limiting core count by %d\n", __func__, ncpus);
+	}
+
+>>>>>>> v4.9.227
 	for (i = 0; i < ncpus; ++i)
 		set_cpu_possible(i, true);
 }
@@ -157,7 +169,11 @@ void secondary_start_kernel(void)
 
 	complete(&cpu_running);
 
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> v4.9.227
 }
 
 static void mx_cpu_start(void *p)
@@ -192,9 +208,17 @@ static int boot_secondary(unsigned int cpu, struct task_struct *ts)
 	int i;
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 	cpu_start_id = cpu;
 	system_flush_invalidate_dcache_range(
 			(unsigned long)&cpu_start_id, sizeof(cpu_start_id));
+=======
+	WRITE_ONCE(cpu_start_id, cpu);
+	/* Pairs with the third memw in the cpu_restart */
+	mb();
+	system_flush_invalidate_dcache_range((unsigned long)&cpu_start_id,
+					     sizeof(cpu_start_id));
+>>>>>>> v4.9.227
 #endif
 	smp_call_function_single(0, mx_cpu_start, (void *)cpu, 1);
 
@@ -203,6 +227,7 @@ static int boot_secondary(unsigned int cpu, struct task_struct *ts)
 			ccount = get_ccount();
 		while (!ccount);
 
+<<<<<<< HEAD
 		cpu_start_ccount = ccount;
 
 		while (time_before(jiffies, timeout)) {
@@ -215,6 +240,23 @@ static int boot_secondary(unsigned int cpu, struct task_struct *ts)
 			smp_call_function_single(0, mx_cpu_stop,
 					(void *)cpu, 1);
 			cpu_start_ccount = 0;
+=======
+		WRITE_ONCE(cpu_start_ccount, ccount);
+
+		do {
+			/*
+			 * Pairs with the first two memws in the
+			 * .Lboot_secondary.
+			 */
+			mb();
+			ccount = READ_ONCE(cpu_start_ccount);
+		} while (ccount && time_before(jiffies, timeout));
+
+		if (ccount) {
+			smp_call_function_single(0, mx_cpu_stop,
+						 (void *)cpu, 1);
+			WRITE_ONCE(cpu_start_ccount, 0);
+>>>>>>> v4.9.227
 			return -EIO;
 		}
 	}
@@ -234,6 +276,10 @@ int __cpu_up(unsigned int cpu, struct task_struct *idle)
 	pr_debug("%s: Calling wakeup_secondary(cpu:%d, idle:%p, sp: %08lx)\n",
 			__func__, cpu, idle, start_info.stack);
 
+<<<<<<< HEAD
+=======
+	init_completion(&cpu_running);
+>>>>>>> v4.9.227
 	ret = boot_secondary(cpu, idle);
 	if (ret == 0) {
 		wait_for_completion_timeout(&cpu_running,
@@ -295,8 +341,15 @@ void __cpu_die(unsigned int cpu)
 	unsigned long timeout = jiffies + msecs_to_jiffies(1000);
 	while (time_before(jiffies, timeout)) {
 		system_invalidate_dcache_range((unsigned long)&cpu_start_id,
+<<<<<<< HEAD
 				sizeof(cpu_start_id));
 		if (cpu_start_id == -cpu) {
+=======
+					       sizeof(cpu_start_id));
+		/* Pairs with the second memw in the cpu_restart */
+		mb();
+		if (READ_ONCE(cpu_start_id) == -cpu) {
+>>>>>>> v4.9.227
 			platform_cpu_kill(cpu);
 			return;
 		}

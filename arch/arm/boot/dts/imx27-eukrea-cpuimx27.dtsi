@@ -77,7 +77,11 @@
 &uart4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart4>;
+<<<<<<< HEAD
 	fsl,uart-has-rtscts;
+=======
+	uart-has-rtscts;
+>>>>>>> v4.9.227
 	status = "okay";
 };
 

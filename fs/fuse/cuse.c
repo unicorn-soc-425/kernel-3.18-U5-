@@ -38,7 +38,10 @@
 #include <linux/device.h>
 #include <linux/file.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/aio.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kdev_t.h>
 #include <linux/kthread.h>
 #include <linux/list.h>
@@ -48,6 +51,10 @@
 #include <linux/slab.h>
 #include <linux/stat.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/uio.h>
+>>>>>>> v4.9.227
 
 #include "fuse_i.h"
 
@@ -88,6 +95,7 @@ static struct list_head *cuse_conntbl_head(dev_t devt)
  * FUSE file.
  */
 
+<<<<<<< HEAD
 static ssize_t cuse_read(struct file *file, char __user *buf, size_t count,
 			 loff_t *ppos)
 {
@@ -109,11 +117,29 @@ static ssize_t cuse_write(struct file *file, const char __user *buf,
 	struct iov_iter ii;
 	iov_iter_init(&ii, WRITE, &iov, 1, count);
 
+=======
+static ssize_t cuse_read_iter(struct kiocb *kiocb, struct iov_iter *to)
+{
+	struct fuse_io_priv io = FUSE_IO_PRIV_SYNC(kiocb->ki_filp);
+	loff_t pos = 0;
+
+	return fuse_direct_io(&io, to, &pos, FUSE_DIO_CUSE);
+}
+
+static ssize_t cuse_write_iter(struct kiocb *kiocb, struct iov_iter *from)
+{
+	struct fuse_io_priv io = FUSE_IO_PRIV_SYNC(kiocb->ki_filp);
+	loff_t pos = 0;
+>>>>>>> v4.9.227
 	/*
 	 * No locking or generic_write_checks(), the server is
 	 * responsible for locking and sanity checks.
 	 */
+<<<<<<< HEAD
 	return fuse_direct_io(&io, &ii, &pos,
+=======
+	return fuse_direct_io(&io, from, &pos,
+>>>>>>> v4.9.227
 			      FUSE_DIO_WRITE | FUSE_DIO_CUSE);
 }
 
@@ -186,8 +212,13 @@ static long cuse_file_compat_ioctl(struct file *file, unsigned int cmd,
 
 static const struct file_operations cuse_frontend_fops = {
 	.owner			= THIS_MODULE,
+<<<<<<< HEAD
 	.read			= cuse_read,
 	.write			= cuse_write,
+=======
+	.read_iter		= cuse_read_iter,
+	.write_iter		= cuse_write_iter,
+>>>>>>> v4.9.227
 	.open			= cuse_open,
 	.release		= cuse_release,
 	.unlocked_ioctl		= cuse_file_ioctl,
@@ -415,7 +446,11 @@ err_unlock:
 err_region:
 	unregister_chrdev_region(devt, 1);
 err:
+<<<<<<< HEAD
 	fuse_conn_kill(fc);
+=======
+	fuse_abort_conn(fc);
+>>>>>>> v4.9.227
 	goto out;
 }
 
@@ -498,6 +533,10 @@ static void cuse_fc_release(struct fuse_conn *fc)
  */
 static int cuse_channel_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
+=======
+	struct fuse_dev *fud;
+>>>>>>> v4.9.227
 	struct cuse_conn *cc;
 	int rc;
 
@@ -508,6 +547,7 @@ static int cuse_channel_open(struct inode *inode, struct file *file)
 
 	fuse_conn_init(&cc->fc);
 
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&cc->list);
 	cc->fc.release = cuse_fc_release;
 
@@ -519,6 +559,25 @@ static int cuse_channel_open(struct inode *inode, struct file *file)
 		return rc;
 	}
 	file->private_data = &cc->fc;	/* channel owns base reference to cc */
+=======
+	fud = fuse_dev_alloc(&cc->fc);
+	if (!fud) {
+		kfree(cc);
+		return -ENOMEM;
+	}
+
+	INIT_LIST_HEAD(&cc->list);
+	cc->fc.release = cuse_fc_release;
+
+	cc->fc.initialized = 1;
+	rc = cuse_send_init(cc);
+	if (rc) {
+		fuse_dev_free(fud);
+		fuse_conn_put(&cc->fc);
+		return rc;
+	}
+	file->private_data = fud;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -536,7 +595,12 @@ static int cuse_channel_open(struct inode *inode, struct file *file)
  */
 static int cuse_channel_release(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct cuse_conn *cc = fc_to_cc(file->private_data);
+=======
+	struct fuse_dev *fud = file->private_data;
+	struct cuse_conn *cc = fc_to_cc(fud->fc);
+>>>>>>> v4.9.227
 	int rc;
 
 	/* remove from the conntbl, no more access from this point on */
@@ -551,6 +615,11 @@ static int cuse_channel_release(struct inode *inode, struct file *file)
 		unregister_chrdev_region(cc->cdev->dev, 1);
 		cdev_del(cc->cdev);
 	}
+<<<<<<< HEAD
+=======
+	/* Base reference is now owned by "fud" */
+	fuse_conn_put(&cc->fc);
+>>>>>>> v4.9.227
 
 	rc = fuse_dev_release(inode, file);	/* puts the base reference */
 

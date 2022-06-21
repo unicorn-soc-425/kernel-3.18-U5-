@@ -15,6 +15,10 @@
 #include <drm/drm_panel.h>
 #include <drm/drm_atomic_helper.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/of_graph.h>
+>>>>>>> v4.9.227
 #include <linux/regulator/consumer.h>
 
 #include <video/of_videomode.h>
@@ -57,7 +61,11 @@ static void exynos_dpi_connector_destroy(struct drm_connector *connector)
 	drm_connector_cleanup(connector);
 }
 
+<<<<<<< HEAD
 static struct drm_connector_funcs exynos_dpi_connector_funcs = {
+=======
+static const struct drm_connector_funcs exynos_dpi_connector_funcs = {
+>>>>>>> v4.9.227
 	.dpms = drm_atomic_helper_connector_dpms,
 	.detect = exynos_dpi_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,
@@ -92,6 +100,7 @@ static int exynos_dpi_get_modes(struct drm_connector *connector)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct drm_encoder *
 exynos_dpi_best_encoder(struct drm_connector *connector)
 {
@@ -103,6 +112,10 @@ exynos_dpi_best_encoder(struct drm_connector *connector)
 static struct drm_connector_helper_funcs exynos_dpi_connector_helper_funcs = {
 	.get_modes = exynos_dpi_get_modes,
 	.best_encoder = exynos_dpi_best_encoder,
+=======
+static const struct drm_connector_helper_funcs exynos_dpi_connector_helper_funcs = {
+	.get_modes = exynos_dpi_get_modes,
+>>>>>>> v4.9.227
 };
 
 static int exynos_dpi_create_connector(struct drm_encoder *encoder)
@@ -128,6 +141,7 @@ static int exynos_dpi_create_connector(struct drm_encoder *encoder)
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool exynos_dpi_mode_fixup(struct drm_encoder *encoder,
 				  const struct drm_display_mode *mode,
 				  struct drm_display_mode *adjusted_mode)
@@ -135,6 +149,8 @@ static bool exynos_dpi_mode_fixup(struct drm_encoder *encoder,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 static void exynos_dpi_mode_set(struct drm_encoder *encoder,
 				struct drm_display_mode *mode,
 				struct drm_display_mode *adjusted_mode)
@@ -161,13 +177,18 @@ static void exynos_dpi_disable(struct drm_encoder *encoder)
 	}
 }
 
+<<<<<<< HEAD
 static struct drm_encoder_helper_funcs exynos_dpi_encoder_helper_funcs = {
 	.mode_fixup = exynos_dpi_mode_fixup,
+=======
+static const struct drm_encoder_helper_funcs exynos_dpi_encoder_helper_funcs = {
+>>>>>>> v4.9.227
 	.mode_set = exynos_dpi_mode_set,
 	.enable = exynos_dpi_enable,
 	.disable = exynos_dpi_disable,
 };
 
+<<<<<<< HEAD
 static struct drm_encoder_funcs exynos_dpi_encoder_funcs = {
 	.destroy = drm_encoder_cleanup,
 };
@@ -233,6 +254,12 @@ of_graph_get_remote_port_parent(const struct device_node *node)
 	return np;
 }
 
+=======
+static const struct drm_encoder_funcs exynos_dpi_encoder_funcs = {
+	.destroy = drm_encoder_cleanup,
+};
+
+>>>>>>> v4.9.227
 enum {
 	FIMD_PORT_IN0,
 	FIMD_PORT_IN1,
@@ -245,12 +272,16 @@ static struct device_node *exynos_dpi_of_find_panel_node(struct device *dev)
 {
 	struct device_node *np, *ep;
 
+<<<<<<< HEAD
 	np = of_graph_get_port_by_reg(dev->of_node, FIMD_PORT_RGB);
 	if (!np)
 		return NULL;
 
 	ep = of_graph_get_endpoint_by_reg(np, 0);
 	of_node_put(np);
+=======
+	ep = of_graph_get_endpoint_by_regs(dev->of_node, FIMD_PORT_RGB, 0);
+>>>>>>> v4.9.227
 	if (!ep)
 		return NULL;
 
@@ -309,7 +340,11 @@ int exynos_dpi_bind(struct drm_device *dev, struct drm_encoder *encoder)
 	DRM_DEBUG_KMS("possible_crtcs = 0x%x\n", encoder->possible_crtcs);
 
 	drm_encoder_init(dev, encoder, &exynos_dpi_encoder_funcs,
+<<<<<<< HEAD
 			 DRM_MODE_ENCODER_TMDS);
+=======
+			 DRM_MODE_ENCODER_TMDS, NULL);
+>>>>>>> v4.9.227
 
 	drm_encoder_helper_add(encoder, &exynos_dpi_encoder_helper_funcs);
 

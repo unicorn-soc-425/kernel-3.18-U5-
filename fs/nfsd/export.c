@@ -20,6 +20,10 @@
 #include "nfsd.h"
 #include "nfsfh.h"
 #include "netns.h"
+<<<<<<< HEAD
+=======
+#include "pnfs.h"
+>>>>>>> v4.9.227
 
 #define NFSDDBG_FACILITY	NFSDDBG_EXPORT
 
@@ -545,6 +549,10 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 
 	exp.ex_client = dom;
 	exp.cd = cd;
+<<<<<<< HEAD
+=======
+	exp.ex_devid_map = NULL;
+>>>>>>> v4.9.227
 
 	/* expiry */
 	err = -EINVAL;
@@ -597,7 +605,11 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 				goto out4;
 		}
 
+<<<<<<< HEAD
 		err = check_export(exp.ex_path.dentry->d_inode, &exp.ex_flags,
+=======
+		err = check_export(d_inode(exp.ex_path.dentry), &exp.ex_flags,
+>>>>>>> v4.9.227
 				   exp.ex_uuid);
 		if (err)
 			goto out4;
@@ -621,6 +633,11 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 		if (!gid_valid(exp.ex_anon_gid))
 			goto out4;
 		err = 0;
+<<<<<<< HEAD
+=======
+
+		nfsd4_setup_layout_type(&exp);
+>>>>>>> v4.9.227
 	}
 
 	expp = svc_export_lookup(&exp);
@@ -687,8 +704,12 @@ static int svc_export_match(struct cache_head *a, struct cache_head *b)
 	struct svc_export *orig = container_of(a, struct svc_export, h);
 	struct svc_export *new = container_of(b, struct svc_export, h);
 	return orig->ex_client == new->ex_client &&
+<<<<<<< HEAD
 		orig->ex_path.dentry == new->ex_path.dentry &&
 		orig->ex_path.mnt == new->ex_path.mnt;
+=======
+		path_equal(&orig->ex_path, &new->ex_path);
+>>>>>>> v4.9.227
 }
 
 static void svc_export_init(struct cache_head *cnew, struct cache_head *citem)
@@ -703,6 +724,10 @@ static void svc_export_init(struct cache_head *cnew, struct cache_head *citem)
 	new->ex_fslocs.locations = NULL;
 	new->ex_fslocs.locations_count = 0;
 	new->ex_fslocs.migrated = 0;
+<<<<<<< HEAD
+=======
+	new->ex_layout_types = 0;
+>>>>>>> v4.9.227
 	new->ex_uuid = NULL;
 	new->cd = item->cd;
 }
@@ -717,6 +742,11 @@ static void export_update(struct cache_head *cnew, struct cache_head *citem)
 	new->ex_anon_uid = item->ex_anon_uid;
 	new->ex_anon_gid = item->ex_anon_gid;
 	new->ex_fsid = item->ex_fsid;
+<<<<<<< HEAD
+=======
+	new->ex_devid_map = item->ex_devid_map;
+	item->ex_devid_map = NULL;
+>>>>>>> v4.9.227
 	new->ex_uuid = item->ex_uuid;
 	item->ex_uuid = NULL;
 	new->ex_fslocs.locations = item->ex_fslocs.locations;
@@ -725,6 +755,10 @@ static void export_update(struct cache_head *cnew, struct cache_head *citem)
 	item->ex_fslocs.locations_count = 0;
 	new->ex_fslocs.migrated = item->ex_fslocs.migrated;
 	item->ex_fslocs.migrated = 0;
+<<<<<<< HEAD
+=======
+	new->ex_layout_types = item->ex_layout_types;
+>>>>>>> v4.9.227
 	new->ex_nflavors = item->ex_nflavors;
 	for (i = 0; i < MAX_SECINFO_LIST; i++) {
 		new->ex_flavors[i] = item->ex_flavors[i];
@@ -883,7 +917,11 @@ exp_rootfh(struct net *net, struct auth_domain *clp, char *name,
 		printk("nfsd: exp_rootfh path not found %s", name);
 		return err;
 	}
+<<<<<<< HEAD
 	inode = path.dentry->d_inode;
+=======
+	inode = d_inode(path.dentry);
+>>>>>>> v4.9.227
 
 	dprintk("nfsd: exp_rootfh(%s [%p] %s:%s/%ld)\n",
 		 name, path.dentry, clp->name,
@@ -947,6 +985,19 @@ __be32 check_nfsd_access(struct svc_export *exp, struct svc_rqst *rqstp)
 		    rqstp->rq_cred.cr_flavor == RPC_AUTH_UNIX)
 			return 0;
 	}
+<<<<<<< HEAD
+=======
+
+	/* If the compound op contains a spo_must_allowed op,
+	 * it will be sent with integrity/protection which
+	 * will have to be expressly allowed on mounts that
+	 * don't support it
+	 */
+
+	if (nfsd4_spo_must_allow(rqstp))
+		return 0;
+
+>>>>>>> v4.9.227
 	return nfserr_wrongsec;
 }
 
@@ -1068,6 +1119,7 @@ exp_pseudoroot(struct svc_rqst *rqstp, struct svc_fh *fhp)
 	return rv;
 }
 
+<<<<<<< HEAD
 /* Iterator */
 
 static void *e_start(struct seq_file *m, loff_t *pos)
@@ -1135,6 +1187,8 @@ static void e_stop(struct seq_file *m, void *p)
 	read_unlock(&cd->hash_lock);
 }
 
+=======
+>>>>>>> v4.9.227
 static struct flags {
 	int flag;
 	char *name[2];
@@ -1151,6 +1205,10 @@ static struct flags {
 	{ NFSEXP_NOSUBTREECHECK, {"no_subtree_check", ""}},
 	{ NFSEXP_NOAUTHNLM, {"insecure_locks", ""}},
 	{ NFSEXP_V4ROOT, {"v4root", ""}},
+<<<<<<< HEAD
+=======
+	{ NFSEXP_PNFS, {"pnfs", ""}},
+>>>>>>> v4.9.227
 	{ 0, {"", ""}}
 };
 
@@ -1262,9 +1320,15 @@ static int e_show(struct seq_file *m, void *p)
 }
 
 const struct seq_operations nfs_exports_op = {
+<<<<<<< HEAD
 	.start	= e_start,
 	.next	= e_next,
 	.stop	= e_stop,
+=======
+	.start	= cache_seq_start,
+	.next	= cache_seq_next,
+	.stop	= cache_seq_stop,
+>>>>>>> v4.9.227
 	.show	= e_show,
 };
 

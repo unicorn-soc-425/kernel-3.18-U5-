@@ -21,7 +21,10 @@
 #include <linux/cpuidle.h>
 #include <linux/io.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <asm/proc-fns.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/cpuidle.h>
 
 #define KIRKWOOD_MAX_STATES	2
@@ -47,7 +50,10 @@ static struct cpuidle_driver kirkwood_idle_driver = {
 		.enter			= kirkwood_enter_idle,
 		.exit_latency		= 10,
 		.target_residency	= 100000,
+<<<<<<< HEAD
 		.flags			= CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 		.name			= "DDR SR",
 		.desc			= "WFI and DDR Self Refresh",
 	},
@@ -78,7 +84,10 @@ static struct platform_driver kirkwood_cpuidle_driver = {
 	.remove = kirkwood_cpuidle_remove,
 	.driver = {
 		   .name = "kirkwood_cpuidle",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   },
 };
 

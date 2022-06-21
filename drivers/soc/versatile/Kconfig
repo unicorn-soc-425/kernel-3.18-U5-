@@ -1,6 +1,18 @@
 #
 # ARM Versatile SoC drivers
 #
+<<<<<<< HEAD
+=======
+config SOC_INTEGRATOR_CM
+	bool "SoC bus device for the ARM Integrator platform core modules"
+	depends on ARCH_INTEGRATOR
+	select SOC_BUS
+	help
+	  Include support for the SoC bus on the ARM Integrator platform
+	  core modules providing some sysfs information about the ASIC
+	  variant.
+
+>>>>>>> v4.9.227
 config SOC_REALVIEW
 	bool "SoC bus device for the ARM RealView platforms"
 	depends on ARCH_REALVIEW

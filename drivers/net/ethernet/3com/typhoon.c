@@ -769,11 +769,19 @@ typhoon_start_tx(struct sk_buff *skb, struct net_device *dev)
 		first_txd->processFlags |= TYPHOON_TX_PF_IP_CHKSUM;
 	}
 
+<<<<<<< HEAD
 	if(vlan_tx_tag_present(skb)) {
 		first_txd->processFlags |=
 		    TYPHOON_TX_PF_INSERT_VLAN | TYPHOON_TX_PF_VLAN_PRIORITY;
 		first_txd->processFlags |=
 		    cpu_to_le32(htons(vlan_tx_tag_get(skb)) <<
+=======
+	if (skb_vlan_tag_present(skb)) {
+		first_txd->processFlags |=
+		    TYPHOON_TX_PF_INSERT_VLAN | TYPHOON_TX_PF_VLAN_PRIORITY;
+		first_txd->processFlags |=
+		    cpu_to_le32(htons(skb_vlan_tag_get(skb)) <<
+>>>>>>> v4.9.227
 				TYPHOON_TX_PF_VLAN_TAG_SHIFT);
 	}
 
@@ -1285,7 +1293,11 @@ typhoon_request_firmware(struct typhoon *tp)
 		return err;
 	}
 
+<<<<<<< HEAD
 	image_data = (u8 *) typhoon_fw->data;
+=======
+	image_data = typhoon_fw->data;
+>>>>>>> v4.9.227
 	remaining = typhoon_fw->size;
 	if (remaining < sizeof(struct typhoon_file_header))
 		goto invalid_fw;
@@ -1343,7 +1355,11 @@ typhoon_download_firmware(struct typhoon *tp)
 	int i;
 	int err;
 
+<<<<<<< HEAD
 	image_data = (u8 *) typhoon_fw->data;
+=======
+	image_data = typhoon_fw->data;
+>>>>>>> v4.9.227
 	fHdr = (struct typhoon_file_header *) image_data;
 
 	/* Cannot just map the firmware image using pci_map_single() as

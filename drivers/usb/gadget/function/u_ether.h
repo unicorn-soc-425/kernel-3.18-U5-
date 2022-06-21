@@ -20,8 +20,11 @@
 #include <linux/usb/cdc.h>
 #include <linux/netdevice.h>
 
+<<<<<<< HEAD
 #include "gadget_chips.h"
 
+=======
+>>>>>>> v4.9.227
 #define QMULT_DEFAULT 5
 
 /*
@@ -66,6 +69,10 @@ struct gether {
 	struct usb_ep			*out_ep;
 
 	bool				is_zlp_ok;
+<<<<<<< HEAD
+=======
+	bool				no_skb_reserve;
+>>>>>>> v4.9.227
 
 	u16				cdc_filter;
 
@@ -75,12 +82,16 @@ struct gether {
 	bool				is_fixed;
 	u32				fixed_out_len;
 	u32				fixed_in_len;
+<<<<<<< HEAD
 	unsigned			ul_max_pkts_per_xfer;
 	uint32_t			dl_max_pkts_per_xfer;
 	uint32_t			dl_max_xfer_size;
 	bool				multi_pkt_xfer;
 	bool				rx_trigger_enabled;
 	bool				rx_triggered;
+=======
+	bool				supports_multi_frame;
+>>>>>>> v4.9.227
 	struct sk_buff			*(*wrap)(struct gether *port,
 						struct sk_buff *skb);
 	int				(*unwrap)(struct gether *port,
@@ -90,7 +101,10 @@ struct gether {
 	/* called on network open/close */
 	void				(*open)(struct gether *);
 	void				(*close)(struct gether *);
+<<<<<<< HEAD
 	struct rndis_packet_msg_type	*header;
+=======
+>>>>>>> v4.9.227
 };
 
 #define	DEFAULT_FILTER	(USB_CDC_PACKET_TYPE_BROADCAST \
@@ -137,9 +151,12 @@ struct net_device *gether_setup_name_default(const char *netname);
  *
  */
 int gether_register_netdev(struct net_device *net);
+<<<<<<< HEAD
 void gether_update_dl_max_pkts_per_xfer(struct gether *link, uint32_t n);
 void gether_update_dl_max_xfer_size(struct gether *link, uint32_t s);
 void gether_enable_sg(struct gether *link, bool);
+=======
+>>>>>>> v4.9.227
 
 /* gether_setup_default - initialize one ethernet-over-usb link
  * Context: may sleep
@@ -264,12 +281,19 @@ void gether_cleanup(struct eth_dev *dev);
 /* connect/disconnect is handled by individual functions */
 struct net_device *gether_connect(struct gether *);
 void gether_disconnect(struct gether *);
+<<<<<<< HEAD
 int gether_up(struct gether *);
+=======
+>>>>>>> v4.9.227
 
 /* Some controllers can't support CDC Ethernet (ECM) ... */
 static inline bool can_support_ecm(struct usb_gadget *gadget)
 {
+<<<<<<< HEAD
 	if (!gadget_supports_altsettings(gadget))
+=======
+	if (!gadget_is_altset_supported(gadget))
+>>>>>>> v4.9.227
 		return false;
 
 	/* Everything else is *presumably* fine ... but this is a bit
@@ -279,6 +303,9 @@ static inline bool can_support_ecm(struct usb_gadget *gadget)
 	return true;
 }
 
+<<<<<<< HEAD
 int rndis_rx_trigger(bool);
 
+=======
+>>>>>>> v4.9.227
 #endif /* __U_ETHER_H */

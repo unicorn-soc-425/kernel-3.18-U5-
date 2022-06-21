@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +49,10 @@
 #include "accommon.h"
 #include "acinterp.h"
 #include "amlcode.h"
+<<<<<<< HEAD
 #include "amlresrc.h"
+=======
+>>>>>>> v4.9.227
 
 #define _COMPONENT          ACPI_EXECUTER
 ACPI_MODULE_NAME("exmisc")
@@ -98,9 +105,15 @@ acpi_ex_get_object_reference(union acpi_operand_object *obj_desc,
 
 		default:
 
+<<<<<<< HEAD
 			ACPI_ERROR((AE_INFO, "Unknown Reference Class 0x%2.2X",
 				    obj_desc->reference.class));
 			return_ACPI_STATUS(AE_AML_INTERNAL);
+=======
+			ACPI_ERROR((AE_INFO, "Invalid Reference Class 0x%2.2X",
+				    obj_desc->reference.class));
+			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
+>>>>>>> v4.9.227
 		}
 		break;
 
@@ -140,6 +153,7 @@ acpi_ex_get_object_reference(union acpi_operand_object *obj_desc,
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ex_concat_template
  *
  * PARAMETERS:  operand0            - First source object
@@ -397,6 +411,8 @@ cleanup:
 
 /*******************************************************************************
  *
+=======
+>>>>>>> v4.9.227
  * FUNCTION:    acpi_ex_do_math_op
  *
  * PARAMETERS:  opcode              - AML opcode
@@ -585,14 +601,25 @@ acpi_ex_do_logical_op(u16 opcode,
 	switch (operand0->common.type) {
 	case ACPI_TYPE_INTEGER:
 
+<<<<<<< HEAD
 		status =
 		    acpi_ex_convert_to_integer(operand1, &local_operand1, 16);
+=======
+		status = acpi_ex_convert_to_integer(operand1, &local_operand1,
+						    ACPI_STRTOUL_BASE16);
+>>>>>>> v4.9.227
 		break;
 
 	case ACPI_TYPE_STRING:
 
+<<<<<<< HEAD
 		status = acpi_ex_convert_to_string(operand1, &local_operand1,
 						   ACPI_IMPLICIT_CONVERT_HEX);
+=======
+		status =
+		    acpi_ex_convert_to_string(operand1, &local_operand1,
+					      ACPI_IMPLICIT_CONVERT_HEX);
+>>>>>>> v4.9.227
 		break;
 
 	case ACPI_TYPE_BUFFER:
@@ -660,9 +687,15 @@ acpi_ex_do_logical_op(u16 opcode,
 
 		/* Lexicographic compare: compare the data bytes */
 
+<<<<<<< HEAD
 		compare = ACPI_MEMCMP(operand0->buffer.pointer,
 				      local_operand1->buffer.pointer,
 				      (length0 > length1) ? length1 : length0);
+=======
+		compare = memcmp(operand0->buffer.pointer,
+				 local_operand1->buffer.pointer,
+				 (length0 > length1) ? length1 : length0);
+>>>>>>> v4.9.227
 
 		switch (opcode) {
 		case AML_LEQUAL_OP:	/* LEqual (Operand0, Operand1) */

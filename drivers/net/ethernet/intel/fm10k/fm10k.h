@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /* Intel Ethernet Switch Host Interface Driver
  * Copyright(c) 2013 - 2014 Intel Corporation.
+=======
+/* Intel(R) Ethernet Switch Host Interface Driver
+ * Copyright(c) 2013 - 2016 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -23,17 +28,28 @@
 
 #include <linux/types.h>
 #include <linux/etherdevice.h>
+<<<<<<< HEAD
 #include <linux/rtnetlink.h>
 #include <linux/if_vlan.h>
 #include <linux/pci.h>
 #include <linux/net_tstamp.h>
 #include <linux/clocksource.h>
 #include <linux/ptp_clock_kernel.h>
+=======
+#include <linux/cpumask.h>
+#include <linux/rtnetlink.h>
+#include <linux/if_vlan.h>
+#include <linux/pci.h>
+>>>>>>> v4.9.227
 
 #include "fm10k_pf.h"
 #include "fm10k_vf.h"
 
+<<<<<<< HEAD
 #define FM10K_MAX_JUMBO_FRAME_SIZE	15358	/* Maximum supported size 15K */
+=======
+#define FM10K_MAX_JUMBO_FRAME_SIZE	15342	/* Maximum supported size 15K */
+>>>>>>> v4.9.227
 
 #define MAX_QUEUES	FM10K_MAX_QUEUES_PF
 
@@ -66,6 +82,10 @@ struct fm10k_l2_accel {
 enum fm10k_ring_state_t {
 	__FM10K_TX_DETECT_HANG,
 	__FM10K_HANG_CHECK_ARMED,
+<<<<<<< HEAD
+=======
+	__FM10K_TX_XPS_INIT_DONE,
+>>>>>>> v4.9.227
 };
 
 #define check_for_tx_hang(ring) \
@@ -101,12 +121,25 @@ struct fm10k_tx_queue_stats {
 	u64 csum_err;
 	u64 tx_busy;
 	u64 tx_done_old;
+<<<<<<< HEAD
+=======
+	u64 csum_good;
+>>>>>>> v4.9.227
 };
 
 struct fm10k_rx_queue_stats {
 	u64 alloc_failed;
 	u64 csum_err;
 	u64 errors;
+<<<<<<< HEAD
+=======
+	u64 csum_good;
+	u64 switch_errors;
+	u64 drops;
+	u64 pp_errors;
+	u64 link_errors;
+	u64 length_errors;
+>>>>>>> v4.9.227
 };
 
 struct fm10k_ring {
@@ -131,7 +164,11 @@ struct fm10k_ring {
 					 * different for DCB and RSS modes
 					 */
 	u8 qos_pc;			/* priority class of queue */
+<<<<<<< HEAD
 	u16 vid;			/* default vlan ID of queue */
+=======
+	u16 vid;			/* default VLAN ID of queue */
+>>>>>>> v4.9.227
 	u16 count;			/* amount of descriptors */
 
 	u16 next_to_alloc;
@@ -157,14 +194,28 @@ struct fm10k_ring_container {
 	unsigned int total_packets;	/* total packets processed this int */
 	u16 work_limit;			/* total work allowed per interrupt */
 	u16 itr;			/* interrupt throttle rate value */
+<<<<<<< HEAD
+=======
+	u8 itr_scale;			/* ITR adjustment based on PCI speed */
+>>>>>>> v4.9.227
 	u8 count;			/* total number of rings in vector */
 };
 
 #define FM10K_ITR_MAX		0x0FFF	/* maximum value for ITR */
 #define FM10K_ITR_10K		100	/* 100us */
 #define FM10K_ITR_20K		50	/* 50us */
+<<<<<<< HEAD
 #define FM10K_ITR_ADAPTIVE	0x8000	/* adaptive interrupt moderation flag */
 
+=======
+#define FM10K_ITR_40K		25	/* 25us */
+#define FM10K_ITR_ADAPTIVE	0x8000	/* adaptive interrupt moderation flag */
+
+#define ITR_IS_ADAPTIVE(itr) (!!(itr & FM10K_ITR_ADAPTIVE))
+
+#define FM10K_TX_ITR_DEFAULT	FM10K_ITR_40K
+#define FM10K_RX_ITR_DEFAULT	FM10K_ITR_20K
+>>>>>>> v4.9.227
 #define FM10K_ITR_ENABLE	(FM10K_ITR_AUTOMASK | FM10K_ITR_MASK_CLEAR)
 
 static inline struct netdev_queue *txring_txq(const struct fm10k_ring *ring)
@@ -196,6 +247,10 @@ struct fm10k_q_vector {
 	struct fm10k_ring_container rx, tx;
 
 	struct napi_struct napi;
+<<<<<<< HEAD
+=======
+	cpumask_t affinity_mask;
+>>>>>>> v4.9.227
 	char name[IFNAMSIZ + 9];
 
 #ifdef CONFIG_DEBUG_FS
@@ -227,14 +282,24 @@ struct fm10k_iov_data {
 	struct fm10k_vf_info	vf_info[0];
 };
 
+<<<<<<< HEAD
 #define fm10k_vxlan_port_for_each(vp, intfc) \
 	list_for_each_entry(vp, &(intfc)->vxlan_port, list)
 struct fm10k_vxlan_port {
+=======
+struct fm10k_udp_port {
+>>>>>>> v4.9.227
 	struct list_head	list;
 	sa_family_t		sa_family;
 	__be16			port;
 };
 
+<<<<<<< HEAD
+=======
+/* one work queue for entire driver */
+extern struct workqueue_struct *fm10k_workqueue;
+
+>>>>>>> v4.9.227
 struct fm10k_intfc {
 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
 	struct net_device *netdev;
@@ -243,11 +308,20 @@ struct fm10k_intfc {
 	unsigned long state;
 
 	u32 flags;
+<<<<<<< HEAD
 #define FM10K_FLAG_RESET_REQUESTED		(u32)(1 << 0)
 #define FM10K_FLAG_RSS_FIELD_IPV4_UDP		(u32)(1 << 1)
 #define FM10K_FLAG_RSS_FIELD_IPV6_UDP		(u32)(1 << 2)
 #define FM10K_FLAG_RX_TS_ENABLED		(u32)(1 << 3)
 #define FM10K_FLAG_SWPRI_CONFIG			(u32)(1 << 4)
+=======
+#define FM10K_FLAG_RESET_REQUESTED		(u32)(BIT(0))
+#define FM10K_FLAG_RSS_FIELD_IPV4_UDP		(u32)(BIT(1))
+#define FM10K_FLAG_RSS_FIELD_IPV6_UDP		(u32)(BIT(2))
+#define FM10K_FLAG_RX_TS_ENABLED		(u32)(BIT(3))
+#define FM10K_FLAG_SWPRI_CONFIG			(u32)(BIT(4))
+#define FM10K_FLAG_DEBUG_STATS			(u32)(BIT(5))
+>>>>>>> v4.9.227
 	int xcast_mode;
 
 	/* Tx fast path data */
@@ -266,7 +340,10 @@ struct fm10k_intfc {
 	u64 tx_csum_errors;
 	u64 alloc_failed;
 	u64 rx_csum_errors;
+<<<<<<< HEAD
 	u64 rx_errors;
+=======
+>>>>>>> v4.9.227
 
 	u64 tx_bytes_nic;
 	u64 tx_packets_nic;
@@ -275,6 +352,20 @@ struct fm10k_intfc {
 	u64 rx_drops_nic;
 	u64 rx_overrun_pf;
 	u64 rx_overrun_vf;
+<<<<<<< HEAD
+=======
+
+	/* Debug Statistics */
+	u64 hw_sm_mbx_full;
+	u64 hw_csum_tx_good;
+	u64 hw_csum_rx_good;
+	u64 rx_switch_errors;
+	u64 rx_drops;
+	u64 rx_pp_errors;
+	u64 rx_link_errors;
+	u64 rx_length_errors;
+
+>>>>>>> v4.9.227
 	u32 tx_timeout_count;
 
 	/* RX */
@@ -303,10 +394,15 @@ struct fm10k_intfc {
 	unsigned long last_reset;
 	unsigned long link_down_event;
 	bool host_ready;
+<<<<<<< HEAD
+=======
+	bool lport_map_failed;
+>>>>>>> v4.9.227
 
 	u32 reta[FM10K_RETA_SIZE];
 	u32 rssrk[FM10K_RSSRK_SIZE];
 
+<<<<<<< HEAD
 	/* VXLAN port tracking information */
 	struct list_head vxlan_port;
 
@@ -328,6 +424,16 @@ struct fm10k_intfc {
 	 */
 	s64 ptp_adjust;
 	rwlock_t systime_lock;
+=======
+	/* UDP encapsulation port tracking information */
+	struct list_head vxlan_port;
+	struct list_head geneve_port;
+
+#ifdef CONFIG_DEBUG_FS
+	struct dentry *dbg_intfc;
+#endif /* CONFIG_DEBUG_FS */
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_DCB
 	u8 pfc_en;
 #endif
@@ -348,6 +454,10 @@ enum fm10k_state_t {
 	__FM10K_SERVICE_DISABLE,
 	__FM10K_MBX_LOCK,
 	__FM10K_LINK_DOWN,
+<<<<<<< HEAD
+=======
+	__FM10K_UPDATING_STATS,
+>>>>>>> v4.9.227
 };
 
 static inline void fm10k_mbx_lock(struct fm10k_intfc *interface)
@@ -392,7 +502,11 @@ static inline u16 fm10k_desc_unused(struct fm10k_ring *ring)
 	 (&(((union fm10k_rx_desc *)((R)->desc))[i]))
 
 #define FM10K_MAX_TXD_PWR	14
+<<<<<<< HEAD
 #define FM10K_MAX_DATA_PER_TXD	(1 << FM10K_MAX_TXD_PWR)
+=======
+#define FM10K_MAX_DATA_PER_TXD	(1u << FM10K_MAX_TXD_PWR)
+>>>>>>> v4.9.227
 
 /* Tx Descriptors needed, worst case */
 #define TXD_USE_COUNT(S)	DIV_ROUND_UP((S), FM10K_MAX_DATA_PER_TXD)
@@ -413,7 +527,11 @@ union fm10k_ftag_info {
 	struct {
 		/* dglort and sglort combined into a single 32bit desc read */
 		__le32 glort;
+<<<<<<< HEAD
 		/* upper 16 bits of vlan are reserved 0 for swpri_type_user */
+=======
+		/* upper 16 bits of VLAN are reserved 0 for swpri_type_user */
+>>>>>>> v4.9.227
 		__le32 vlan;
 	} d;
 	struct {
@@ -439,9 +557,17 @@ extern char fm10k_driver_name[];
 extern const char fm10k_driver_version[];
 int fm10k_init_queueing_scheme(struct fm10k_intfc *interface);
 void fm10k_clear_queueing_scheme(struct fm10k_intfc *interface);
+<<<<<<< HEAD
 netdev_tx_t fm10k_xmit_frame_ring(struct sk_buff *skb,
 				  struct fm10k_ring *tx_ring);
 void fm10k_tx_timeout_reset(struct fm10k_intfc *interface);
+=======
+__be16 fm10k_tx_encap_offload(struct sk_buff *skb);
+netdev_tx_t fm10k_xmit_frame_ring(struct sk_buff *skb,
+				  struct fm10k_ring *tx_ring);
+void fm10k_tx_timeout_reset(struct fm10k_intfc *interface);
+u64 fm10k_get_tx_pending(struct fm10k_ring *ring, bool in_sw);
+>>>>>>> v4.9.227
 bool fm10k_check_tx_hang(struct fm10k_ring *tx_ring);
 void fm10k_alloc_rx_buffers(struct fm10k_ring *rx_ring, u16 cleaned_count);
 
@@ -457,9 +583,18 @@ void fm10k_down(struct fm10k_intfc *interface);
 void fm10k_update_stats(struct fm10k_intfc *interface);
 void fm10k_service_event_schedule(struct fm10k_intfc *interface);
 void fm10k_update_rx_drop_en(struct fm10k_intfc *interface);
+<<<<<<< HEAD
 
 /* Netdev */
 struct net_device *fm10k_alloc_netdev(void);
+=======
+#ifdef CONFIG_NET_POLL_CONTROLLER
+void fm10k_netpoll(struct net_device *netdev);
+#endif
+
+/* Netdev */
+struct net_device *fm10k_alloc_netdev(const struct fm10k_info *info);
+>>>>>>> v4.9.227
 int fm10k_setup_rx_resources(struct fm10k_ring *);
 int fm10k_setup_tx_resources(struct fm10k_ring *);
 void fm10k_free_rx_resources(struct fm10k_ring *);
@@ -476,6 +611,10 @@ int fm10k_close(struct net_device *netdev);
 
 /* Ethtool */
 void fm10k_set_ethtool_ops(struct net_device *dev);
+<<<<<<< HEAD
+=======
+void fm10k_write_reta(struct fm10k_intfc *interface, const u32 *indir);
+>>>>>>> v4.9.227
 
 /* IOV */
 s32 fm10k_iov_event(struct fm10k_intfc *interface);
@@ -487,9 +626,15 @@ int fm10k_iov_configure(struct pci_dev *pdev, int num_vfs);
 s32 fm10k_iov_update_pvid(struct fm10k_intfc *interface, u16 glort, u16 pvid);
 int fm10k_ndo_set_vf_mac(struct net_device *netdev, int vf_idx, u8 *mac);
 int fm10k_ndo_set_vf_vlan(struct net_device *netdev,
+<<<<<<< HEAD
 			  int vf_idx, u16 vid, u8 qos);
 int fm10k_ndo_set_vf_bw(struct net_device *netdev, int vf_idx, int rate,
 			int unused);
+=======
+			  int vf_idx, u16 vid, u8 qos, __be16 vlan_proto);
+int fm10k_ndo_set_vf_bw(struct net_device *netdev, int vf_idx,
+			int __always_unused min_rate, int max_rate);
+>>>>>>> v4.9.227
 int fm10k_ndo_get_vf_config(struct net_device *netdev,
 			    int vf_idx, struct ifla_vf_info *ivi);
 
@@ -510,6 +655,7 @@ static inline void fm10k_dbg_init(void) {}
 static inline void fm10k_dbg_exit(void) {}
 #endif /* CONFIG_DEBUG_FS */
 
+<<<<<<< HEAD
 /* Time Stamping */
 void fm10k_systime_to_hwtstamp(struct fm10k_intfc *interface,
 			       struct skb_shared_hwtstamps *hwtstamp,
@@ -527,4 +673,12 @@ int fm10k_set_ts_config(struct net_device *netdev, struct ifreq *ifr);
 
 /* DCB */
 void fm10k_dcbnl_set_ops(struct net_device *dev);
+=======
+/* DCB */
+#ifdef CONFIG_DCB
+void fm10k_dcbnl_set_ops(struct net_device *dev);
+#else
+static inline void fm10k_dcbnl_set_ops(struct net_device *dev) {}
+#endif
+>>>>>>> v4.9.227
 #endif /* _FM10K_H_ */

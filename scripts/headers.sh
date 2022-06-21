@@ -19,8 +19,11 @@ for arch in ${archs}; do
 	case ${arch} in
 	um)        # no userspace export
 		;;
+<<<<<<< HEAD
 	cris)      # headers export are known broken
 		;;
+=======
+>>>>>>> v4.9.227
 	*)
 		if [ -d ${srctree}/arch/${arch} ]; then
 			do_command $1 ${arch}

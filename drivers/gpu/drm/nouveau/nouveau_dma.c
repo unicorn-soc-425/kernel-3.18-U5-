@@ -24,7 +24,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 
 void

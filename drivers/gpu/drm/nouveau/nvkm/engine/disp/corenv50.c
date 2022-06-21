@@ -28,6 +28,10 @@
 #include <subdev/timer.h>
 
 #include <nvif/class.h>
+<<<<<<< HEAD
+=======
+#include <nvif/cl507d.h>
+>>>>>>> v4.9.227
 #include <nvif/unpack.h>
 
 int
@@ -42,10 +46,17 @@ nv50_disp_core_new(const struct nv50_disp_dmac_func *func,
 	} *args = data;
 	struct nvkm_object *parent = oclass->parent;
 	u64 push;
+<<<<<<< HEAD
 	int ret;
 
 	nvif_ioctl(parent, "create disp core channel dma size %d\n", size);
 	if (nvif_unpack(args->v0, 0, 0, false)) {
+=======
+	int ret = -ENOSYS;
+
+	nvif_ioctl(parent, "create disp core channel dma size %d\n", size);
+	if (!(ret = nvif_unpack(ret, &data, &size, args->v0, 0, 0, false))) {
+>>>>>>> v4.9.227
 		nvif_ioctl(parent, "create disp core channel dma vers %d "
 				   "pushbuf %016llx\n",
 			   args->v0.version, args->v0.pushbuf);

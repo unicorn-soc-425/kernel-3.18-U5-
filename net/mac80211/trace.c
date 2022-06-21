@@ -8,6 +8,10 @@
 #include "debug.h"
 #define CREATE_TRACE_POINTS
 #include "trace.h"
+<<<<<<< HEAD
+=======
+#include "trace_msg.h"
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_MAC80211_MESSAGE_TRACING
 void __sdata_info(const char *fmt, ...)

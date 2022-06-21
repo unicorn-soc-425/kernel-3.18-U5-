@@ -36,6 +36,43 @@
 #include <linux/serial.h>
 #include "usb-wwan.h"
 
+<<<<<<< HEAD
+=======
+/*
+ * Generate DTR/RTS signals on the port using the SET_CONTROL_LINE_STATE request
+ * in CDC ACM.
+ */
+static int usb_wwan_send_setup(struct usb_serial_port *port)
+{
+	struct usb_serial *serial = port->serial;
+	struct usb_wwan_port_private *portdata;
+	int val = 0;
+	int ifnum;
+	int res;
+
+	portdata = usb_get_serial_port_data(port);
+
+	if (portdata->dtr_state)
+		val |= 0x01;
+	if (portdata->rts_state)
+		val |= 0x02;
+
+	ifnum = serial->interface->cur_altsetting->desc.bInterfaceNumber;
+
+	res = usb_autopm_get_interface(serial->interface);
+	if (res)
+		return res;
+
+	res = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
+				0x22, 0x21, val, ifnum, NULL, 0,
+				USB_CTRL_SET_TIMEOUT);
+
+	usb_autopm_put_interface(port->serial->interface);
+
+	return res;
+}
+
+>>>>>>> v4.9.227
 void usb_wwan_dtr_rts(struct usb_serial_port *port, int on)
 {
 	struct usb_wwan_port_private *portdata;
@@ -43,7 +80,11 @@ void usb_wwan_dtr_rts(struct usb_serial_port *port, int on)
 
 	intfdata = usb_get_serial_data(port->serial);
 
+<<<<<<< HEAD
 	if (!intfdata->send_setup)
+=======
+	if (!intfdata->use_send_setup)
+>>>>>>> v4.9.227
 		return;
 
 	portdata = usb_get_serial_port_data(port);
@@ -51,7 +92,11 @@ void usb_wwan_dtr_rts(struct usb_serial_port *port, int on)
 	portdata->rts_state = on;
 	portdata->dtr_state = on;
 
+<<<<<<< HEAD
 	intfdata->send_setup(port);
+=======
+	usb_wwan_send_setup(port);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(usb_wwan_dtr_rts);
 
@@ -84,7 +129,11 @@ int usb_wwan_tiocmset(struct tty_struct *tty,
 	portdata = usb_get_serial_port_data(port);
 	intfdata = usb_get_serial_data(port->serial);
 
+<<<<<<< HEAD
 	if (!intfdata->send_setup)
+=======
+	if (!intfdata->use_send_setup)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	/* FIXME: what locks portdata fields ? */
@@ -97,7 +146,11 @@ int usb_wwan_tiocmset(struct tty_struct *tty,
 		portdata->rts_state = 0;
 	if (clear & TIOCM_DTR)
 		portdata->dtr_state = 0;
+<<<<<<< HEAD
 	return intfdata->send_setup(port);
+=======
+	return usb_wwan_send_setup(port);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(usb_wwan_tiocmset);
 
@@ -271,6 +324,13 @@ static void usb_wwan_indat_callback(struct urb *urb)
 	if (status) {
 		dev_dbg(dev, "%s: nonzero status: %d on endpoint %02x.\n",
 			__func__, status, endpoint);
+<<<<<<< HEAD
+=======
+
+		/* don't resubmit on fatal errors */
+		if (status == -ESHUTDOWN || status == -ENOENT)
+			return;
+>>>>>>> v4.9.227
 	} else {
 		if (urb->actual_length) {
 			tty_insert_flip_string(&port->port, data,
@@ -282,7 +342,11 @@ static void usb_wwan_indat_callback(struct urb *urb)
 	/* Resubmit urb so we continue receiving */
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err) {
+<<<<<<< HEAD
 		if (err != -EPERM) {
+=======
+		if (err != -EPERM && err != -ENODEV) {
+>>>>>>> v4.9.227
 			dev_err(dev, "%s: resubmit read urb failed. (%d)\n",
 				__func__, err);
 			/* busy also in error unless we are killed */
@@ -430,7 +494,11 @@ void usb_wwan_close(struct usb_serial_port *port)
 
 	/*
 	 * Need to take susp_lock to make sure port is not already being
+<<<<<<< HEAD
 	 * resumed, but no need to hold it due to ASYNC_INITIALIZED.
+=======
+	 * resumed, but no need to hold it due to initialized
+>>>>>>> v4.9.227
 	 */
 	spin_lock_irq(&intfdata->susp_lock);
 	if (--intfdata->open_ports == 0)
@@ -461,6 +529,10 @@ static struct urb *usb_wwan_setup_urb(struct usb_serial_port *port,
 				      void (*callback) (struct urb *))
 {
 	struct usb_serial *serial = port->serial;
+<<<<<<< HEAD
+=======
+	struct usb_wwan_intf_private *intfdata = usb_get_serial_data(serial);
+>>>>>>> v4.9.227
 	struct urb *urb;
 
 	urb = usb_alloc_urb(0, GFP_KERNEL);	/* No ISO */
@@ -471,6 +543,12 @@ static struct urb *usb_wwan_setup_urb(struct usb_serial_port *port,
 			  usb_sndbulkpipe(serial->dev, endpoint) | dir,
 			  buf, len, callback, ctx);
 
+<<<<<<< HEAD
+=======
+	if (intfdata->use_zlp && dir == USB_DIR_OUT)
+		urb->transfer_flags |= URB_ZERO_PACKET;
+
+>>>>>>> v4.9.227
 	return urb;
 }
 
@@ -648,7 +726,11 @@ int usb_wwan_resume(struct usb_serial *serial)
 	for (i = 0; i < serial->num_ports; i++) {
 		port = serial->port[i];
 
+<<<<<<< HEAD
 		if (!test_bit(ASYNCB_INITIALIZED, &port->port.flags))
+=======
+		if (!tty_port_initialized(&port->port))
+>>>>>>> v4.9.227
 			continue;
 
 		portdata = usb_get_serial_port_data(port);

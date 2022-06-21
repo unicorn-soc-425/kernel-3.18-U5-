@@ -16,7 +16,11 @@
 		clock-div = <1>;
 	};
 
+<<<<<<< HEAD
 	aes1_ick: aes1_ick {
+=======
+	aes1_ick: aes1_ick@a14 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&security_l4_ick2>;
@@ -24,7 +28,11 @@
 		reg = <0x0a14>;
 	};
 
+<<<<<<< HEAD
 	rng_ick: rng_ick {
+=======
+	rng_ick: rng_ick@a14 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&security_l4_ick2>;
@@ -32,7 +40,11 @@
 		ti,bit-shift = <2>;
 	};
 
+<<<<<<< HEAD
 	sha11_ick: sha11_ick {
+=======
+	sha11_ick: sha11_ick@a14 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&security_l4_ick2>;
@@ -40,7 +52,11 @@
 		ti,bit-shift = <1>;
 	};
 
+<<<<<<< HEAD
 	des1_ick: des1_ick {
+=======
+	des1_ick: des1_ick@a14 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&security_l4_ick2>;
@@ -48,7 +64,11 @@
 		ti,bit-shift = <0>;
 	};
 
+<<<<<<< HEAD
 	cam_mclk: cam_mclk {
+=======
+	cam_mclk: cam_mclk@f00 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,gate-clock";
 		clocks = <&dpll4_m5x2_ck>;
@@ -57,7 +77,11 @@
 		ti,set-rate-parent;
 	};
 
+<<<<<<< HEAD
 	cam_ick: cam_ick {
+=======
+	cam_ick: cam_ick@f10 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-no-wait-interface-clock";
 		clocks = <&l4_ick>;
@@ -65,7 +89,11 @@
 		ti,bit-shift = <0>;
 	};
 
+<<<<<<< HEAD
 	csi2_96m_fck: csi2_96m_fck {
+=======
+	csi2_96m_fck: csi2_96m_fck@f00 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,gate-clock";
 		clocks = <&core_96m_fck>;
@@ -81,7 +109,11 @@
 		clock-div = <1>;
 	};
 
+<<<<<<< HEAD
 	pka_ick: pka_ick {
+=======
+	pka_ick: pka_ick@a14 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&security_l3_ick>;
@@ -89,7 +121,11 @@
 		ti,bit-shift = <4>;
 	};
 
+<<<<<<< HEAD
 	icr_ick: icr_ick {
+=======
+	icr_ick: icr_ick@a10 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&core_l4_ick>;
@@ -97,7 +133,11 @@
 		ti,bit-shift = <29>;
 	};
 
+<<<<<<< HEAD
 	des2_ick: des2_ick {
+=======
+	des2_ick: des2_ick@a10 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&core_l4_ick>;
@@ -105,7 +145,11 @@
 		ti,bit-shift = <26>;
 	};
 
+<<<<<<< HEAD
 	mspro_ick: mspro_ick {
+=======
+	mspro_ick: mspro_ick@a10 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&core_l4_ick>;
@@ -113,7 +157,11 @@
 		ti,bit-shift = <23>;
 	};
 
+<<<<<<< HEAD
 	mailboxes_ick: mailboxes_ick {
+=======
+	mailboxes_ick: mailboxes_ick@a10 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&core_l4_ick>;
@@ -129,7 +177,11 @@
 		clock-div = <1>;
 	};
 
+<<<<<<< HEAD
 	sr1_fck: sr1_fck {
+=======
+	sr1_fck: sr1_fck@c00 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
 		clocks = <&sys_ck>;
@@ -137,7 +189,11 @@
 		ti,bit-shift = <6>;
 	};
 
+<<<<<<< HEAD
 	sr2_fck: sr2_fck {
+=======
+	sr2_fck: sr2_fck@c00 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
 		clocks = <&sys_ck>;
@@ -153,7 +209,11 @@
 		clock-div = <1>;
 	};
 
+<<<<<<< HEAD
 	dpll2_fck: dpll2_fck {
+=======
+	dpll2_fck: dpll2_fck@40 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,divider-clock";
 		clocks = <&core_ck>;
@@ -163,7 +223,11 @@
 		ti,index-starts-at-one;
 	};
 
+<<<<<<< HEAD
 	dpll2_ck: dpll2_ck {
+=======
+	dpll2_ck: dpll2_ck@4 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-dpll-clock";
 		clocks = <&sys_ck>, <&dpll2_fck>;
@@ -173,7 +237,11 @@
 		ti,low-power-bypass;
 	};
 
+<<<<<<< HEAD
 	dpll2_m2_ck: dpll2_m2_ck {
+=======
+	dpll2_m2_ck: dpll2_m2_ck@44 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,divider-clock";
 		clocks = <&dpll2_ck>;
@@ -182,7 +250,11 @@
 		ti,index-starts-at-one;
 	};
 
+<<<<<<< HEAD
 	iva2_ck: iva2_ck {
+=======
+	iva2_ck: iva2_ck@0 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
 		clocks = <&dpll2_m2_ck>;
@@ -190,7 +262,11 @@
 		ti,bit-shift = <0>;
 	};
 
+<<<<<<< HEAD
 	modem_fck: modem_fck {
+=======
+	modem_fck: modem_fck@a00 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&sys_ck>;
@@ -198,7 +274,11 @@
 		ti,bit-shift = <31>;
 	};
 
+<<<<<<< HEAD
 	sad2d_ick: sad2d_ick {
+=======
+	sad2d_ick: sad2d_ick@a10 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&l3_ick>;
@@ -206,7 +286,11 @@
 		ti,bit-shift = <3>;
 	};
 
+<<<<<<< HEAD
 	mad2d_ick: mad2d_ick {
+=======
+	mad2d_ick: mad2d_ick@a18 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&l3_ick>;
@@ -214,7 +298,11 @@
 		ti,bit-shift = <3>;
 	};
 
+<<<<<<< HEAD
 	mspro_fck: mspro_fck {
+=======
+	mspro_fck: mspro_fck@a00 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
 		clocks = <&core_96m_fck>;

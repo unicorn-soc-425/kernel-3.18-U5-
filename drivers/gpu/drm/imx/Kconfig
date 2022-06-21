@@ -1,15 +1,23 @@
 config DRM_IMX
 	tristate "DRM Support for Freescale i.MX"
 	select DRM_KMS_HELPER
+<<<<<<< HEAD
 	select DRM_KMS_FB_HELPER
 	select VIDEOMODE_HELPERS
 	select DRM_GEM_CMA_HELPER
 	select DRM_KMS_CMA_HELPER
 	depends on DRM && (ARCH_MXC || ARCH_MULTIPLATFORM) && HAVE_DMA_ATTRS
+=======
+	select VIDEOMODE_HELPERS
+	select DRM_GEM_CMA_HELPER
+	select DRM_KMS_CMA_HELPER
+	depends on DRM && (ARCH_MXC || ARCH_MULTIPLATFORM)
+>>>>>>> v4.9.227
 	depends on IMX_IPUV3_CORE
 	help
 	  enable i.MX graphics support
 
+<<<<<<< HEAD
 config DRM_IMX_FB_HELPER
 	tristate "provide legacy framebuffer /dev/fb0"
 	select DRM_KMS_CMA_HELPER
@@ -19,6 +27,8 @@ config DRM_IMX_FB_HELPER
 	  for your device. This is necessary to get a framebuffer console
 	  and also for applications using the legacy framebuffer API
 
+=======
+>>>>>>> v4.9.227
 config DRM_IMX_PARALLEL_DISPLAY
 	tristate "Support for parallel displays"
 	select DRM_PANEL

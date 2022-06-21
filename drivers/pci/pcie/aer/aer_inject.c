@@ -25,6 +25,10 @@
 #include <linux/fs.h>
 #include <linux/uaccess.h>
 #include <linux/stddef.h>
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> v4.9.227
 #include "aerdrv.h"
 
 /* Override the existing corrected and uncorrected error masks */
@@ -41,12 +45,20 @@ struct aer_error_inj {
 	u32 header_log1;
 	u32 header_log2;
 	u32 header_log3;
+<<<<<<< HEAD
 	u16 domain;
+=======
+	u32 domain;
+>>>>>>> v4.9.227
 };
 
 struct aer_error {
 	struct list_head list;
+<<<<<<< HEAD
 	u16 domain;
+=======
+	u32 domain;
+>>>>>>> v4.9.227
 	unsigned int bus;
 	unsigned int devfn;
 	int pos_cap_err;
@@ -74,7 +86,11 @@ static LIST_HEAD(pci_bus_ops_list);
 /* Protect einjected and pci_bus_ops_list */
 static DEFINE_SPINLOCK(inject_lock);
 
+<<<<<<< HEAD
 static void aer_error_init(struct aer_error *err, u16 domain,
+=======
+static void aer_error_init(struct aer_error *err, u32 domain,
+>>>>>>> v4.9.227
 			   unsigned int bus, unsigned int devfn,
 			   int pos_cap_err)
 {
@@ -86,7 +102,11 @@ static void aer_error_init(struct aer_error *err, u16 domain,
 }
 
 /* inject_lock must be held before calling */
+<<<<<<< HEAD
 static struct aer_error *__find_aer_error(u16 domain, unsigned int bus,
+=======
+static struct aer_error *__find_aer_error(u32 domain, unsigned int bus,
+>>>>>>> v4.9.227
 					  unsigned int devfn)
 {
 	struct aer_error *err;
@@ -106,7 +126,11 @@ static struct aer_error *__find_aer_error_by_dev(struct pci_dev *dev)
 	int domain = pci_domain_nr(dev->bus);
 	if (domain < 0)
 		return NULL;
+<<<<<<< HEAD
 	return __find_aer_error((u16)domain, dev->bus->number, dev->devfn);
+=======
+	return __find_aer_error(domain, dev->bus->number, dev->devfn);
+>>>>>>> v4.9.227
 }
 
 /* inject_lock must be held before calling */
@@ -124,6 +148,7 @@ static struct pci_ops *__find_pci_bus_ops(struct pci_bus *bus)
 static struct pci_bus_ops *pci_bus_ops_pop(void)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	struct pci_bus_ops *bus_ops = NULL;
 
 	spin_lock_irqsave(&inject_lock, flags);
@@ -134,6 +159,15 @@ static struct pci_bus_ops *pci_bus_ops_pop(void)
 		list_del(lh);
 		bus_ops = list_entry(lh, struct pci_bus_ops, list);
 	}
+=======
+	struct pci_bus_ops *bus_ops;
+
+	spin_lock_irqsave(&inject_lock, flags);
+	bus_ops = list_first_entry_or_null(&pci_bus_ops_list,
+					   struct pci_bus_ops, list);
+	if (bus_ops)
+		list_del(&bus_ops->list);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&inject_lock, flags);
 	return bus_ops;
 }
@@ -181,14 +215,25 @@ static u32 *find_pci_config_dword(struct aer_error *err, int where,
 	return target;
 }
 
+<<<<<<< HEAD
 static int pci_read_aer(struct pci_bus *bus, unsigned int devfn, int where,
 			int size, u32 *val)
+=======
+static int aer_inj_read_config(struct pci_bus *bus, unsigned int devfn,
+			       int where, int size, u32 *val)
+>>>>>>> v4.9.227
 {
 	u32 *sim;
 	struct aer_error *err;
 	unsigned long flags;
 	struct pci_ops *ops;
+<<<<<<< HEAD
 	int domain;
+=======
+	struct pci_ops *my_ops;
+	int domain;
+	int rv;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&inject_lock, flags);
 	if (size != sizeof(u32))
@@ -196,7 +241,11 @@ static int pci_read_aer(struct pci_bus *bus, unsigned int devfn, int where,
 	domain = pci_domain_nr(bus);
 	if (domain < 0)
 		goto out;
+<<<<<<< HEAD
 	err = __find_aer_error((u16)domain, bus->number, devfn);
+=======
+	err = __find_aer_error(domain, bus->number, devfn);
+>>>>>>> v4.9.227
 	if (!err)
 		goto out;
 
@@ -208,19 +257,45 @@ static int pci_read_aer(struct pci_bus *bus, unsigned int devfn, int where,
 	}
 out:
 	ops = __find_pci_bus_ops(bus);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&inject_lock, flags);
 	return ops->read(bus, devfn, where, size, val);
 }
 
 static int pci_write_aer(struct pci_bus *bus, unsigned int devfn, int where,
 			 int size, u32 val)
+=======
+	/*
+	 * pci_lock must already be held, so we can directly
+	 * manipulate bus->ops.  Many config access functions,
+	 * including pci_generic_config_read() require the original
+	 * bus->ops be installed to function, so temporarily put them
+	 * back.
+	 */
+	my_ops = bus->ops;
+	bus->ops = ops;
+	rv = ops->read(bus, devfn, where, size, val);
+	bus->ops = my_ops;
+	spin_unlock_irqrestore(&inject_lock, flags);
+	return rv;
+}
+
+static int aer_inj_write_config(struct pci_bus *bus, unsigned int devfn,
+				int where, int size, u32 val)
+>>>>>>> v4.9.227
 {
 	u32 *sim;
 	struct aer_error *err;
 	unsigned long flags;
 	int rw1cs;
 	struct pci_ops *ops;
+<<<<<<< HEAD
 	int domain;
+=======
+	struct pci_ops *my_ops;
+	int domain;
+	int rv;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&inject_lock, flags);
 	if (size != sizeof(u32))
@@ -228,7 +303,11 @@ static int pci_write_aer(struct pci_bus *bus, unsigned int devfn, int where,
 	domain = pci_domain_nr(bus);
 	if (domain < 0)
 		goto out;
+<<<<<<< HEAD
 	err = __find_aer_error((u16)domain, bus->number, devfn);
+=======
+	err = __find_aer_error(domain, bus->number, devfn);
+>>>>>>> v4.9.227
 	if (!err)
 		goto out;
 
@@ -243,6 +322,7 @@ static int pci_write_aer(struct pci_bus *bus, unsigned int devfn, int where,
 	}
 out:
 	ops = __find_pci_bus_ops(bus);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&inject_lock, flags);
 	return ops->write(bus, devfn, where, size, val);
 }
@@ -250,6 +330,26 @@ out:
 static struct pci_ops pci_ops_aer = {
 	.read = pci_read_aer,
 	.write = pci_write_aer,
+=======
+	/*
+	 * pci_lock must already be held, so we can directly
+	 * manipulate bus->ops.  Many config access functions,
+	 * including pci_generic_config_write() require the original
+	 * bus->ops be installed to function, so temporarily put them
+	 * back.
+	 */
+	my_ops = bus->ops;
+	bus->ops = ops;
+	rv = ops->write(bus, devfn, where, size, val);
+	bus->ops = my_ops;
+	spin_unlock_irqrestore(&inject_lock, flags);
+	return rv;
+}
+
+static struct pci_ops aer_inj_pci_ops = {
+	.read = aer_inj_read_config,
+	.write = aer_inj_write_config,
+>>>>>>> v4.9.227
 };
 
 static void pci_bus_ops_init(struct pci_bus_ops *bus_ops,
@@ -270,9 +370,15 @@ static int pci_bus_set_aer_ops(struct pci_bus *bus)
 	bus_ops = kmalloc(sizeof(*bus_ops), GFP_KERNEL);
 	if (!bus_ops)
 		return -ENOMEM;
+<<<<<<< HEAD
 	ops = pci_bus_set_ops(bus, &pci_ops_aer);
 	spin_lock_irqsave(&inject_lock, flags);
 	if (ops == &pci_ops_aer)
+=======
+	ops = pci_bus_set_ops(bus, &aer_inj_pci_ops);
+	spin_lock_irqsave(&inject_lock, flags);
+	if (ops == &aer_inj_pci_ops)
+>>>>>>> v4.9.227
 		goto out;
 	pci_bus_ops_init(bus_ops, bus, ops);
 	list_add(&bus_ops->list, &pci_bus_ops_list);
@@ -283,6 +389,7 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct pci_dev *pcie_find_root_port(struct pci_dev *dev)
 {
 	while (1) {
@@ -297,6 +404,8 @@ static struct pci_dev *pcie_find_root_port(struct pci_dev *dev)
 	return NULL;
 }
 
+=======
+>>>>>>> v4.9.227
 static int find_aer_device_iter(struct device *device, void *data)
 {
 	struct pcie_device **result = data;
@@ -329,18 +438,31 @@ static int aer_inject(struct aer_error_inj *einj)
 	u32 sever, cor_mask, uncor_mask, cor_mask_orig = 0, uncor_mask_orig = 0;
 	int ret = 0;
 
+<<<<<<< HEAD
 	dev = pci_get_domain_bus_and_slot((int)einj->domain, einj->bus, devfn);
+=======
+	dev = pci_get_domain_bus_and_slot(einj->domain, einj->bus, devfn);
+>>>>>>> v4.9.227
 	if (!dev)
 		return -ENODEV;
 	rpdev = pcie_find_root_port(dev);
 	if (!rpdev) {
+<<<<<<< HEAD
+=======
+		dev_err(&dev->dev, "aer_inject: Root port not found\n");
+>>>>>>> v4.9.227
 		ret = -ENODEV;
 		goto out_put;
 	}
 
 	pos_cap_err = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ERR);
 	if (!pos_cap_err) {
+<<<<<<< HEAD
 		ret = -EPERM;
+=======
+		dev_err(&dev->dev, "aer_inject: Device doesn't support AER\n");
+		ret = -EPROTONOSUPPORT;
+>>>>>>> v4.9.227
 		goto out_put;
 	}
 	pci_read_config_dword(dev, pos_cap_err + PCI_ERR_UNCOR_SEVER, &sever);
@@ -350,7 +472,13 @@ static int aer_inject(struct aer_error_inj *einj)
 
 	rp_pos_cap_err = pci_find_ext_capability(rpdev, PCI_EXT_CAP_ID_ERR);
 	if (!rp_pos_cap_err) {
+<<<<<<< HEAD
 		ret = -EPERM;
+=======
+		dev_err(&rpdev->dev,
+			"aer_inject: Root port doesn't support AER\n");
+		ret = -EPROTONOSUPPORT;
+>>>>>>> v4.9.227
 		goto out_put;
 	}
 
@@ -397,14 +525,24 @@ static int aer_inject(struct aer_error_inj *einj)
 	if (!aer_mask_override && einj->cor_status &&
 	    !(einj->cor_status & ~cor_mask)) {
 		ret = -EINVAL;
+<<<<<<< HEAD
 		printk(KERN_WARNING "The correctable error(s) is masked by device\n");
+=======
+		dev_warn(&dev->dev,
+			 "aer_inject: The correctable error(s) is masked by device\n");
+>>>>>>> v4.9.227
 		spin_unlock_irqrestore(&inject_lock, flags);
 		goto out_put;
 	}
 	if (!aer_mask_override && einj->uncor_status &&
 	    !(einj->uncor_status & ~uncor_mask)) {
 		ret = -EINVAL;
+<<<<<<< HEAD
 		printk(KERN_WARNING "The uncorrectable error(s) is masked by device\n");
+=======
+		dev_warn(&dev->dev,
+			 "aer_inject: The uncorrectable error(s) is masked by device\n");
+>>>>>>> v4.9.227
 		spin_unlock_irqrestore(&inject_lock, flags);
 		goto out_put;
 	}
@@ -457,6 +595,7 @@ static int aer_inject(struct aer_error_inj *einj)
 
 	if (find_aer_device(rpdev, &edev)) {
 		if (!get_service_data(edev)) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "AER service is not initialized\n");
 			ret = -EINVAL;
 			goto out_put;
@@ -464,6 +603,21 @@ static int aer_inject(struct aer_error_inj *einj)
 		aer_irq(-1, edev);
 	} else
 		ret = -EINVAL;
+=======
+			dev_warn(&edev->device,
+				 "aer_inject: AER service is not initialized\n");
+			ret = -EPROTONOSUPPORT;
+			goto out_put;
+		}
+		dev_info(&edev->device,
+			 "aer_inject: Injecting errors %08x/%08x into device %s\n",
+			 einj->cor_status, einj->uncor_status, pci_name(dev));
+		aer_irq(-1, edev);
+	} else {
+		dev_err(&rpdev->dev, "aer_inject: AER device not found\n");
+		ret = -ENODEV;
+	}
+>>>>>>> v4.9.227
 out_put:
 	kfree(err_alloc);
 	kfree(rperr_alloc);

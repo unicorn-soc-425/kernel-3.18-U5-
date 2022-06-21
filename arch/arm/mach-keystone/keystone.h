@@ -15,7 +15,11 @@
 
 #ifndef __ASSEMBLER__
 
+<<<<<<< HEAD
 extern struct smp_operations keystone_smp_ops;
+=======
+extern const struct smp_operations keystone_smp_ops;
+>>>>>>> v4.9.227
 extern void secondary_startup(void);
 extern u32 keystone_cpu_smc(u32 command, u32 cpu, u32 addr);
 extern int keystone_pm_runtime_init(void);

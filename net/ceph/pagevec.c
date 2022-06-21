@@ -23,17 +23,27 @@ struct page **ceph_get_direct_page_vector(const void __user *data,
 	if (!pages)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
 	down_read(&current->mm->mmap_sem);
 	while (got < num_pages) {
 		rc = get_user_pages(current, current->mm,
 		    (unsigned long)data + ((unsigned long)got * PAGE_SIZE),
 		    num_pages - got, write_page, 0, pages + got, NULL);
+=======
+	while (got < num_pages) {
+		rc = get_user_pages_unlocked(
+		    (unsigned long)data + ((unsigned long)got * PAGE_SIZE),
+		    num_pages - got, pages + got, write_page ? FOLL_WRITE : 0);
+>>>>>>> v4.9.227
 		if (rc < 0)
 			break;
 		BUG_ON(rc == 0);
 		got += rc;
 	}
+<<<<<<< HEAD
 	up_read(&current->mm->mmap_sem);
+=======
+>>>>>>> v4.9.227
 	if (rc < 0)
 		goto fail;
 	return pages;
@@ -53,10 +63,14 @@ void ceph_put_page_vector(struct page **pages, int num_pages, bool dirty)
 			set_page_dirty_lock(pages[i]);
 		put_page(pages[i]);
 	}
+<<<<<<< HEAD
 	if (is_vmalloc_addr(pages))
 		vfree(pages);
 	else
 		kfree(pages);
+=======
+	kvfree(pages);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(ceph_put_page_vector);
 
@@ -100,19 +114,31 @@ int ceph_copy_user_to_page_vector(struct page **pages,
 					 loff_t off, size_t len)
 {
 	int i = 0;
+<<<<<<< HEAD
 	int po = off & ~PAGE_CACHE_MASK;
+=======
+	int po = off & ~PAGE_MASK;
+>>>>>>> v4.9.227
 	int left = len;
 	int l, bad;
 
 	while (left > 0) {
+<<<<<<< HEAD
 		l = min_t(int, PAGE_CACHE_SIZE-po, left);
+=======
+		l = min_t(int, PAGE_SIZE-po, left);
+>>>>>>> v4.9.227
 		bad = copy_from_user(page_address(pages[i]) + po, data, l);
 		if (bad == l)
 			return -EFAULT;
 		data += l - bad;
 		left -= l - bad;
 		po += l - bad;
+<<<<<<< HEAD
 		if (po == PAGE_CACHE_SIZE) {
+=======
+		if (po == PAGE_SIZE) {
+>>>>>>> v4.9.227
 			po = 0;
 			i++;
 		}
@@ -126,17 +152,29 @@ void ceph_copy_to_page_vector(struct page **pages,
 				    loff_t off, size_t len)
 {
 	int i = 0;
+<<<<<<< HEAD
 	size_t po = off & ~PAGE_CACHE_MASK;
 	size_t left = len;
 
 	while (left > 0) {
 		size_t l = min_t(size_t, PAGE_CACHE_SIZE-po, left);
+=======
+	size_t po = off & ~PAGE_MASK;
+	size_t left = len;
+
+	while (left > 0) {
+		size_t l = min_t(size_t, PAGE_SIZE-po, left);
+>>>>>>> v4.9.227
 
 		memcpy(page_address(pages[i]) + po, data, l);
 		data += l;
 		left -= l;
 		po += l;
+<<<<<<< HEAD
 		if (po == PAGE_CACHE_SIZE) {
+=======
+		if (po == PAGE_SIZE) {
+>>>>>>> v4.9.227
 			po = 0;
 			i++;
 		}
@@ -149,17 +187,29 @@ void ceph_copy_from_page_vector(struct page **pages,
 				    loff_t off, size_t len)
 {
 	int i = 0;
+<<<<<<< HEAD
 	size_t po = off & ~PAGE_CACHE_MASK;
 	size_t left = len;
 
 	while (left > 0) {
 		size_t l = min_t(size_t, PAGE_CACHE_SIZE-po, left);
+=======
+	size_t po = off & ~PAGE_MASK;
+	size_t left = len;
+
+	while (left > 0) {
+		size_t l = min_t(size_t, PAGE_SIZE-po, left);
+>>>>>>> v4.9.227
 
 		memcpy(data, page_address(pages[i]) + po, l);
 		data += l;
 		left -= l;
 		po += l;
+<<<<<<< HEAD
 		if (po == PAGE_CACHE_SIZE) {
+=======
+		if (po == PAGE_SIZE) {
+>>>>>>> v4.9.227
 			po = 0;
 			i++;
 		}
@@ -173,25 +223,42 @@ EXPORT_SYMBOL(ceph_copy_from_page_vector);
  */
 void ceph_zero_page_vector_range(int off, int len, struct page **pages)
 {
+<<<<<<< HEAD
 	int i = off >> PAGE_CACHE_SHIFT;
 
 	off &= ~PAGE_CACHE_MASK;
+=======
+	int i = off >> PAGE_SHIFT;
+
+	off &= ~PAGE_MASK;
+>>>>>>> v4.9.227
 
 	dout("zero_page_vector_page %u~%u\n", off, len);
 
 	/* leading partial page? */
 	if (off) {
+<<<<<<< HEAD
 		int end = min((int)PAGE_CACHE_SIZE, off + len);
+=======
+		int end = min((int)PAGE_SIZE, off + len);
+>>>>>>> v4.9.227
 		dout("zeroing %d %p head from %d\n", i, pages[i],
 		     (int)off);
 		zero_user_segment(pages[i], off, end);
 		len -= (end - off);
 		i++;
 	}
+<<<<<<< HEAD
 	while (len >= PAGE_CACHE_SIZE) {
 		dout("zeroing %d %p len=%d\n", i, pages[i], len);
 		zero_user_segment(pages[i], 0, PAGE_CACHE_SIZE);
 		len -= PAGE_CACHE_SIZE;
+=======
+	while (len >= PAGE_SIZE) {
+		dout("zeroing %d %p len=%d\n", i, pages[i], len);
+		zero_user_segment(pages[i], 0, PAGE_SIZE);
+		len -= PAGE_SIZE;
+>>>>>>> v4.9.227
 		i++;
 	}
 	/* trailing partial page? */

@@ -1,10 +1,18 @@
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "bcm2835.dtsi"
+=======
+#include "bcm2835.dtsi"
+#include "bcm2835-rpi.dtsi"
+#include "bcm283x-rpi-smsc9512.dtsi"
+#include "bcm283x-rpi-usb-host.dtsi"
+>>>>>>> v4.9.227
 
 / {
 	compatible = "raspberrypi,model-b", "brcm,bcm2835";
 	model = "Raspberry Pi Model B";
 
+<<<<<<< HEAD
 	memory {
 		reg = <0 0x10000000>;
 	};
@@ -17,11 +25,17 @@
 			gpios = <&gpio 16 1>;
 			default-state = "keep";
 			linux,default-trigger = "heartbeat";
+=======
+	leds {
+		act {
+			gpios = <&gpio 16 1>;
+>>>>>>> v4.9.227
 		};
 	};
 };
 
 &gpio {
+<<<<<<< HEAD
 	pinctrl-names = "default";
 	pinctrl-0 = <&gpioout &alt0 &alt2 &alt3>;
 
@@ -60,4 +74,11 @@
 &sdhci {
 	status = "okay";
 	bus-width = <4>;
+=======
+	pinctrl-0 = <&gpioout &alt0 &alt3>;
+};
+
+&hdmi {
+	hpd-gpios = <&gpio 46 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 };

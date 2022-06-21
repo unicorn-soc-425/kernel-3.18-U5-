@@ -868,8 +868,22 @@ static int swim_floppy_init(struct swim_priv *swd)
 
 exit_put_disks:
 	unregister_blkdev(FLOPPY_MAJOR, "fd");
+<<<<<<< HEAD
 	while (drive--)
 		put_disk(swd->unit[drive].disk);
+=======
+	do {
+		struct gendisk *disk = swd->unit[drive].disk;
+
+		if (disk) {
+			if (disk->queue) {
+				blk_cleanup_queue(disk->queue);
+				disk->queue = NULL;
+			}
+			put_disk(disk);
+		}
+	} while (drive--);
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -971,7 +985,10 @@ static struct platform_driver swim_driver = {
 	.remove = swim_remove,
 	.driver   = {
 		.name	= CARDNAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

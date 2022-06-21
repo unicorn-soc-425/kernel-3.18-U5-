@@ -1,5 +1,9 @@
 /* Intel PRO/1000 Linux driver
+<<<<<<< HEAD
  * Copyright(c) 1999 - 2014 Intel Corporation.
+=======
+ * Copyright(c) 1999 - 2015 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,

@@ -131,6 +131,7 @@ void planetcore_set_stdout_path(const char *table)
 
 	setprop_str(chosen, "linux,stdout-path", path);
 }
+<<<<<<< HEAD
 
 void planetcore_set_serial_speed(const char *table)
 {
@@ -164,3 +165,5 @@ void planetcore_set_serial_speed(const char *table)
 	baud32 = baud;
 	setprop(stdout, "current-speed", &baud32, 4);
 }
+=======
+>>>>>>> v4.9.227

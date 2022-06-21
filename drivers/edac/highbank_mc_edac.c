@@ -124,6 +124,16 @@ static ssize_t highbank_mc_inject_ctrl(struct device *dev,
 
 static DEVICE_ATTR(inject_ctrl, S_IWUSR, NULL, highbank_mc_inject_ctrl);
 
+<<<<<<< HEAD
+=======
+static struct attribute *highbank_dev_attrs[] = {
+	&dev_attr_inject_ctrl.attr,
+	NULL
+};
+
+ATTRIBUTE_GROUPS(highbank_dev);
+
+>>>>>>> v4.9.227
 struct hb_mc_settings {
 	int	err_offset;
 	int	int_offset;
@@ -139,7 +149,11 @@ static struct hb_mc_settings mw_settings = {
 	.int_offset = MW_DDR_ECC_INT_BASE,
 };
 
+<<<<<<< HEAD
 static struct of_device_id hb_ddr_ctrl_of_match[] = {
+=======
+static const struct of_device_id hb_ddr_ctrl_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "calxeda,hb-ddr-ctrl",		.data = &hb_settings },
 	{ .compatible = "calxeda,ecx-2000-ddr-ctrl",	.data = &mw_settings },
 	{},
@@ -231,7 +245,11 @@ static int highbank_mc_probe(struct platform_device *pdev)
 	dimm->mtype = MEM_DDR3;
 	dimm->edac_mode = EDAC_SECDED;
 
+<<<<<<< HEAD
 	res = edac_mc_add_mc(mci);
+=======
+	res = edac_mc_add_mc_with_groups(mci, highbank_dev_groups);
+>>>>>>> v4.9.227
 	if (res < 0)
 		goto err;
 
@@ -243,8 +261,11 @@ static int highbank_mc_probe(struct platform_device *pdev)
 		goto err2;
 	}
 
+<<<<<<< HEAD
 	device_create_file(&mci->dev, &dev_attr_inject_ctrl);
 
+=======
+>>>>>>> v4.9.227
 	devres_close_group(&pdev->dev, NULL);
 	return 0;
 err2:
@@ -259,7 +280,10 @@ static int highbank_mc_remove(struct platform_device *pdev)
 {
 	struct mem_ctl_info *mci = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	device_remove_file(&mci->dev, &dev_attr_inject_ctrl);
+=======
+>>>>>>> v4.9.227
 	edac_mc_del_mc(&pdev->dev);
 	edac_mc_free(mci);
 	return 0;

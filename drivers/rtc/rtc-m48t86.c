@@ -16,7 +16,11 @@
 #include <linux/module.h>
 #include <linux/rtc.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/m48t86.h>
+=======
+#include <linux/platform_data/rtc-m48t86.h>
+>>>>>>> v4.9.227
 #include <linux/bcd.h>
 
 #define M48T86_REG_SEC		0x00
@@ -39,9 +43,12 @@
 #define M48T86_REG_B_SET	(1 << 7)
 #define M48T86_REG_D_VRT	(1 << 7)
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.1"
 
 
+=======
+>>>>>>> v4.9.227
 static int m48t86_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	unsigned char reg;
@@ -169,7 +176,10 @@ static int m48t86_rtc_probe(struct platform_device *dev)
 static struct platform_driver m48t86_rtc_platform_driver = {
 	.driver		= {
 		.name	= "rtc-m48t86",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= m48t86_rtc_probe,
 };
@@ -179,5 +189,8 @@ module_platform_driver(m48t86_rtc_platform_driver);
 MODULE_AUTHOR("Alessandro Zummo <a.zummo@towertech.it>");
 MODULE_DESCRIPTION("M48T86 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227
 MODULE_ALIAS("platform:rtc-m48t86");

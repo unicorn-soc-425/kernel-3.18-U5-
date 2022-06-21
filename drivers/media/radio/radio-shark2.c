@@ -137,7 +137,11 @@ static int shark_read_reg(struct radio_tea5777 *tea, u32 *reg_ret)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct radio_tea5777_ops shark_tea_ops = {
+=======
+static const struct radio_tea5777_ops shark_tea_ops = {
+>>>>>>> v4.9.227
 	.write_reg = shark_write_reg,
 	.read_reg  = shark_read_reg,
 };

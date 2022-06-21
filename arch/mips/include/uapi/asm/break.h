@@ -21,6 +21,11 @@
 #define BRK_DIVZERO	7	/* Divide by zero check */
 #define BRK_RANGE	8	/* Range error check */
 #define BRK_BUG		12	/* Used by BUG() */
+<<<<<<< HEAD
+=======
+#define BRK_UPROBE	13	/* See <asm/uprobes.h> */
+#define BRK_UPROBE_XOL	14	/* See <asm/uprobes.h> */
+>>>>>>> v4.9.227
 #define BRK_MEMU	514	/* Used by FPU emulator */
 #define BRK_KPROBE_BP	515	/* Kprobe break */
 #define BRK_KPROBE_SSTEPBP 516	/* Kprobe single step software implementation */

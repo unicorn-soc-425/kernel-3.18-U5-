@@ -37,6 +37,12 @@ account_scheduler_latency(struct task_struct *task, int usecs, int inter)
 
 void clear_all_latency_tracing(struct task_struct *p);
 
+<<<<<<< HEAD
+=======
+extern int sysctl_latencytop(struct ctl_table *table, int write,
+			void __user *buffer, size_t *lenp, loff_t *ppos);
+
+>>>>>>> v4.9.227
 #else
 
 static inline void

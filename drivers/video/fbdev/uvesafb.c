@@ -33,7 +33,11 @@ static struct cb_id uvesafb_cn_id = {
 static char v86d_path[PATH_MAX] = "/sbin/v86d";
 static char v86d_started;	/* has v86d been started by uvesafb? */
 
+<<<<<<< HEAD
 static struct fb_fix_screeninfo uvesafb_fix = {
+=======
+static const struct fb_fix_screeninfo uvesafb_fix = {
+>>>>>>> v4.9.227
 	.id	= "VESA VGA",
 	.type	= FB_TYPE_PACKED_PIXELS,
 	.accel	= FB_ACCEL_NONE,
@@ -1220,8 +1224,12 @@ static int uvesafb_release(struct fb_info *info, int user)
 	uvesafb_vbe_state_restore(par, par->vbe_state_orig);
 out:
 	atomic_dec(&par->ref_count);
+<<<<<<< HEAD
 	if (task)
 		uvesafb_free(task);
+=======
+	uvesafb_free(task);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1924,8 +1932,12 @@ static int uvesafb_init(void)
 			err = -ENOMEM;
 
 		if (err) {
+<<<<<<< HEAD
 			if (uvesafb_device)
 				platform_device_put(uvesafb_device);
+=======
+			platform_device_put(uvesafb_device);
+>>>>>>> v4.9.227
 			platform_driver_unregister(&uvesafb_driver);
 			cn_del_callback(&uvesafb_cn_id);
 			return err;
@@ -1980,7 +1992,11 @@ static int param_set_scroll(const char *val, const struct kernel_param *kp)
 
 	return 0;
 }
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_scroll = {
+=======
+static const struct kernel_param_ops param_ops_scroll = {
+>>>>>>> v4.9.227
 	.set = param_set_scroll,
 };
 #define param_check_scroll(name, p) __param_check(name, p, void)

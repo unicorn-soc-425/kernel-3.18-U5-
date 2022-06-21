@@ -260,7 +260,11 @@ static irqreturn_t line_write_interrupt(int irq, void *data)
 	if (err == 0) {
 		spin_unlock(&line->lock);
 		return IRQ_NONE;
+<<<<<<< HEAD
 	} else if (err < 0) {
+=======
+	} else if ((err < 0) && (err != -EAGAIN)) {
+>>>>>>> v4.9.227
 		line->head = line->buffer;
 		line->tail = line->buffer;
 	}
@@ -632,6 +636,10 @@ static irqreturn_t winch_interrupt(int irq, void *data)
 	int fd = winch->fd;
 	int err;
 	char c;
+<<<<<<< HEAD
+=======
+	struct pid *pgrp;
+>>>>>>> v4.9.227
 
 	if (fd != -1) {
 		err = generic_read(fd, &c, NULL);
@@ -657,7 +665,14 @@ static irqreturn_t winch_interrupt(int irq, void *data)
 		if (line != NULL) {
 			chan_window_size(line, &tty->winsize.ws_row,
 					 &tty->winsize.ws_col);
+<<<<<<< HEAD
 			kill_pgrp(tty->pgrp, SIGWINCH, 1);
+=======
+			pgrp = tty_get_pgrp(tty);
+			if (pgrp)
+				kill_pgrp(pgrp, SIGWINCH, 1);
+			put_pid(pgrp);
+>>>>>>> v4.9.227
 		}
 		tty_kref_put(tty);
 	}

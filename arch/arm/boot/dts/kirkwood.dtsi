@@ -27,7 +27,11 @@
 	       i2c0 = &i2c0;
 	};
 
+<<<<<<< HEAD
 	mbus {
+=======
+	mbus@f1000000 {
+>>>>>>> v4.9.227
 		compatible = "marvell,kirkwood-mbus", "simple-bus";
 		#address-cells = <2>;
 		#size-cells = <1>;
@@ -40,6 +44,7 @@
 		pcie-mem-aperture = <0xe0000000 0x10000000>; /* 256 MiB memory space */
 		pcie-io-aperture  = <0xf2000000 0x100000>;   /*   1 MiB    I/O space */
 
+<<<<<<< HEAD
 		cesa: crypto@0301 {
 			compatible = "marvell,orion-crypto";
 			reg = <MBUS_ID(0xf0, 0x01) 0x30000 0x10000>,
@@ -50,6 +55,8 @@
 			status = "okay";
 		};
 
+=======
+>>>>>>> v4.9.227
 		nand: nand@012f {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -65,6 +72,17 @@
 			pinctrl-names = "default";
 			status = "disabled";
 		};
+<<<<<<< HEAD
+=======
+
+		crypto_sram: sa-sram@0301 {
+			compatible = "mmio-sram";
+			reg = <MBUS_ID(0x03, 0x01) 0x0 0x800>;
+			clocks = <&gate_clk 17>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+		};
+>>>>>>> v4.9.227
 	};
 
 	ocp@f1000000 {
@@ -252,6 +270,20 @@
 			status = "okay";
 		};
 
+<<<<<<< HEAD
+=======
+		cesa: crypto@30000 {
+			compatible = "marvell,kirkwood-crypto";
+			reg = <0x30000 0x10000>;
+			reg-names = "regs";
+			interrupts = <22>;
+			clocks = <&gate_clk 17>;
+			marvell,crypto-srams = <&crypto_sram>;
+			marvell,crypto-sram-size = <0x800>;
+			status = "okay";
+		};
+
+>>>>>>> v4.9.227
 		usb0: ehci@50000 {
 			compatible = "marvell,orion-ehci";
 			reg = <0x50000 0x1000>;
@@ -372,7 +404,11 @@
 
 		audio0: audio-controller@a0000 {
 			compatible = "marvell,kirkwood-audio";
+<<<<<<< HEAD
 			#sound-dai-cells = <0>;
+=======
+			#sound-dai-cells = <1>;
+>>>>>>> v4.9.227
 			reg = <0xa0000 0x2210>;
 			interrupts = <24>;
 			clocks = <&gate_clk 9>;

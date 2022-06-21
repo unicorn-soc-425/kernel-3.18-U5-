@@ -14,6 +14,7 @@
 #include <linux/sched.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/vmalloc.h>
 #include <linux/stddef.h>
 #include <linux/unistd.h>
@@ -24,6 +25,14 @@
 #include <linux/kallsyms.h>
 #include <linux/init.h>
 #include <linux/cpu.h>
+=======
+#include <linux/stddef.h>
+#include <linux/unistd.h>
+#include <linux/user.h>
+#include <linux/interrupt.h>
+#include <linux/kallsyms.h>
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/elfcore.h>
 #include <linux/pm.h>
 #include <linux/tick.h>
@@ -32,11 +41,15 @@
 #include <linux/random.h>
 #include <linux/hw_breakpoint.h>
 #include <linux/leds.h>
+<<<<<<< HEAD
 #include <linux/reboot.h>
 #include <linux/console.h>
 
 #include <asm/cacheflush.h>
 #include <asm/idmap.h>
+=======
+
+>>>>>>> v4.9.227
 #include <asm/processor.h>
 #include <asm/thread_notify.h>
 #include <asm/stacktrace.h>
@@ -44,7 +57,10 @@
 #include <asm/mach/time.h>
 #include <asm/tls.h>
 #include <asm/vdso.h>
+<<<<<<< HEAD
 #include "reboot.h"
+=======
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_CC_STACKPROTECTOR
 #include <linux/stackprotector.h>
@@ -55,14 +71,20 @@ EXPORT_SYMBOL(__stack_chk_guard);
 static const char *processor_modes[] __maybe_unused = {
   "USER_26", "FIQ_26" , "IRQ_26" , "SVC_26" , "UK4_26" , "UK5_26" , "UK6_26" , "UK7_26" ,
   "UK8_26" , "UK9_26" , "UK10_26", "UK11_26", "UK12_26", "UK13_26", "UK14_26", "UK15_26",
+<<<<<<< HEAD
   "USER_32", "FIQ_32" , "IRQ_32" , "SVC_32" , "UK4_32" , "UK5_32" , "UK6_32" , "ABT_32" ,
   "UK8_32" , "UK9_32" , "UK10_32", "UND_32" , "UK12_32", "UK13_32", "UK14_32", "SYS_32"
+=======
+  "USER_32", "FIQ_32" , "IRQ_32" , "SVC_32" , "UK4_32" , "UK5_32" , "MON_32" , "ABT_32" ,
+  "UK8_32" , "UK9_32" , "HYP_32", "UND_32" , "UK12_32", "UK13_32", "UK14_32", "SYS_32"
+>>>>>>> v4.9.227
 };
 
 static const char *isa_modes[] __maybe_unused = {
   "ARM" , "Thumb" , "Jazelle", "ThumbEE"
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 void arch_trigger_all_cpu_backtrace(void)
 {
@@ -168,12 +190,18 @@ EXPORT_SYMBOL(pm_power_off);
 
 void (*arm_pm_restart)(enum reboot_mode reboot_mode, const char *cmd);
 
+=======
+>>>>>>> v4.9.227
 /*
  * This is our default idle handler.
  */
 
+<<<<<<< HEAD
 extern void arch_idle(void);
 void (*arm_pm_idle)(void) = arch_idle;
+=======
+void (*arm_pm_idle)(void);
+>>>>>>> v4.9.227
 
 /*
  * Called from the core idle loop.
@@ -195,7 +223,10 @@ void arch_cpu_idle_prepare(void)
 
 void arch_cpu_idle_enter(void)
 {
+<<<<<<< HEAD
 	idle_notifier_call_chain(IDLE_START);
+=======
+>>>>>>> v4.9.227
 	ledtrig_cpu(CPU_LED_IDLE_START);
 #ifdef CONFIG_PL310_ERRATA_769419
 	wmb();
@@ -205,6 +236,7 @@ void arch_cpu_idle_enter(void)
 void arch_cpu_idle_exit(void)
 {
 	ledtrig_cpu(CPU_LED_IDLE_END);
+<<<<<<< HEAD
 	idle_notifier_call_chain(IDLE_END);
 }
 
@@ -370,12 +402,37 @@ static void show_extra_register_data(struct pt_regs *regs, int nbytes)
 	show_data(regs->ARM_r8 - nbytes, nbytes * 2, "R8");
 	show_data(regs->ARM_r9 - nbytes, nbytes * 2, "R9");
 	show_data(regs->ARM_r10 - nbytes, nbytes * 2, "R10");
+=======
+>>>>>>> v4.9.227
 }
 
 void __show_regs(struct pt_regs *regs)
 {
 	unsigned long flags;
 	char buf[64];
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_CPU_V7M
+	unsigned int domain, fs;
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+	/*
+	 * Get the domain register for the parent context. In user
+	 * mode, we don't save the DACR, so lets use what it should
+	 * be. For other modes, we place it after the pt_regs struct.
+	 */
+	if (user_mode(regs)) {
+		domain = DACR_UACCESS_ENABLE;
+		fs = get_fs();
+	} else {
+		domain = to_svc_pt_regs(regs)->dacr;
+		fs = to_svc_pt_regs(regs)->addr_limit;
+	}
+#else
+	domain = get_domain();
+	fs = get_fs();
+#endif
+#endif
+>>>>>>> v4.9.227
 
 	show_regs_print_info(KERN_DEFAULT);
 
@@ -404,6 +461,7 @@ void __show_regs(struct pt_regs *regs)
 
 #ifndef CONFIG_CPU_V7M
 	{
+<<<<<<< HEAD
 		unsigned int domain = get_domain();
 		const char *segment;
 
@@ -423,6 +481,14 @@ void __show_regs(struct pt_regs *regs)
 		    domain_val(DOMAIN_USER, DOMAIN_NOACCESS))
 			segment = "none";
 		else if (get_fs() == get_ds())
+=======
+		const char *segment;
+
+		if ((domain & domain_mask(DOMAIN_USER)) ==
+		    domain_val(DOMAIN_USER, DOMAIN_NOACCESS))
+			segment = "none";
+		else if (fs == get_ds())
+>>>>>>> v4.9.227
 			segment = "kernel";
 		else
 			segment = "user";
@@ -444,11 +510,19 @@ void __show_regs(struct pt_regs *regs)
 		buf[0] = '\0';
 #ifdef CONFIG_CPU_CP15_MMU
 		{
+<<<<<<< HEAD
 			unsigned int transbase, dac = get_domain();
 			asm("mrc p15, 0, %0, c2, c0\n\t"
 			    : "=r" (transbase));
 			snprintf(buf, sizeof(buf), "  Table: %08x  DAC: %08x",
 			  	transbase, dac);
+=======
+			unsigned int transbase;
+			asm("mrc p15, 0, %0, c2, c0\n\t"
+			    : "=r" (transbase));
+			snprintf(buf, sizeof(buf), "  Table: %08x  DAC: %08x",
+				transbase, domain);
+>>>>>>> v4.9.227
 		}
 #endif
 		asm("mrc p15, 0, %0, c1, c0\n" : "=r" (ctrl));
@@ -456,8 +530,11 @@ void __show_regs(struct pt_regs *regs)
 		printk("Control: %08x%s\n", ctrl, buf);
 	}
 #endif
+<<<<<<< HEAD
 	if (get_fs() == get_ds())
 		show_extra_register_data(regs, 128);
+=======
+>>>>>>> v4.9.227
 }
 
 void show_regs(struct pt_regs * regs)
@@ -473,9 +550,15 @@ EXPORT_SYMBOL_GPL(thread_notify_head);
 /*
  * Free current thread data structures etc..
  */
+<<<<<<< HEAD
 void exit_thread(void)
 {
 	thread_notify(THREAD_NOTIFY_EXIT, current_thread_info());
+=======
+void exit_thread(struct task_struct *tsk)
+{
+	thread_notify(THREAD_NOTIFY_EXIT, task_thread_info(tsk));
+>>>>>>> v4.9.227
 }
 
 void flush_thread(void)
@@ -594,8 +677,12 @@ unsigned long get_wchan(struct task_struct *p)
 
 unsigned long arch_randomize_brk(struct mm_struct *mm)
 {
+<<<<<<< HEAD
 	unsigned long range_end = mm->brk + 0x02000000;
 	return randomize_range(mm->brk, range_end, 0) ? : mm->brk;
+=======
+	return randomize_page(mm->brk, 0x02000000);
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_MMU
@@ -700,7 +787,12 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	npages = 1; /* for sigpage */
 	npages += vdso_total_pages;
 
+<<<<<<< HEAD
 	down_write(&mm->mmap_sem);
+=======
+	if (down_write_killable(&mm->mmap_sem))
+		return -EINTR;
+>>>>>>> v4.9.227
 	hint = sigpage_addr(mm, npages);
 	addr = get_unmapped_area(NULL, hint, npages << PAGE_SHIFT, 0, 0);
 	if (IS_ERR_VALUE(addr)) {

@@ -43,7 +43,11 @@ static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
+<<<<<<< HEAD
 	.bcdUSB =		cpu_to_le16(0x0200),
+=======
+	/* .bcdUSB = DYNAMIC */
+>>>>>>> v4.9.227
 
 	.bDeviceClass =		USB_CLASS_COMM,
 	.bDeviceSubClass =	0,
@@ -60,6 +64,7 @@ static struct usb_device_descriptor device_desc = {
 	.bNumConfigurations =	1,
 };
 
+<<<<<<< HEAD
 static struct usb_otg_descriptor otg_descriptor = {
 	.bLength =		sizeof otg_descriptor,
 	.bDescriptorType =	USB_DT_OTG,
@@ -75,6 +80,9 @@ static const struct usb_descriptor_header *otg_desc[] = {
 	NULL,
 };
 
+=======
+static const struct usb_descriptor_header *otg_desc[2];
+>>>>>>> v4.9.227
 
 /* string IDs are assigned dynamically */
 static struct usb_string strings_dev[] = {
@@ -104,7 +112,11 @@ static struct usb_function_instance *fi_ecm;
 /*
  * We _always_ have both CDC ECM and CDC ACM functions.
  */
+<<<<<<< HEAD
 static int __init cdc_do_config(struct usb_configuration *c)
+=======
+static int cdc_do_config(struct usb_configuration *c)
+>>>>>>> v4.9.227
 {
 	int	status;
 
@@ -153,7 +165,11 @@ static struct usb_configuration cdc_config_driver = {
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int __init cdc_bind(struct usb_composite_dev *cdev)
+=======
+static int cdc_bind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 	struct usb_gadget	*gadget = cdev->gadget;
 	struct f_ecm_opts	*ecm_opts;
@@ -193,10 +209,30 @@ static int __init cdc_bind(struct usb_composite_dev *cdev)
 	device_desc.iManufacturer = strings_dev[USB_GADGET_MANUFACTURER_IDX].id;
 	device_desc.iProduct = strings_dev[USB_GADGET_PRODUCT_IDX].id;
 
+<<<<<<< HEAD
 	/* register our configuration */
 	status = usb_add_config(cdev, &cdc_config_driver, cdc_do_config);
 	if (status < 0)
 		goto fail1;
+=======
+	if (gadget_is_otg(gadget) && !otg_desc[0]) {
+		struct usb_descriptor_header *usb_desc;
+
+		usb_desc = usb_otg_descriptor_alloc(gadget);
+		if (!usb_desc) {
+			status = -ENOMEM;
+			goto fail1;
+		}
+		usb_otg_descriptor_init(gadget, usb_desc);
+		otg_desc[0] = usb_desc;
+		otg_desc[1] = NULL;
+	}
+
+	/* register our configuration */
+	status = usb_add_config(cdev, &cdc_config_driver, cdc_do_config);
+	if (status < 0)
+		goto fail2;
+>>>>>>> v4.9.227
 
 	usb_composite_overwrite_options(cdev, &coverwrite);
 	dev_info(&gadget->dev, "%s, version: " DRIVER_VERSION "\n",
@@ -204,6 +240,12 @@ static int __init cdc_bind(struct usb_composite_dev *cdev)
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+fail2:
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+>>>>>>> v4.9.227
 fail1:
 	usb_put_function_instance(fi_serial);
 fail:
@@ -211,7 +253,11 @@ fail:
 	return status;
 }
 
+<<<<<<< HEAD
 static int __exit cdc_unbind(struct usb_composite_dev *cdev)
+=======
+static int cdc_unbind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 	usb_put_function(f_acm);
 	usb_put_function_instance(fi_serial);
@@ -219,6 +265,7 @@ static int __exit cdc_unbind(struct usb_composite_dev *cdev)
 		usb_put_function(f_ecm);
 	if (!IS_ERR_OR_NULL(fi_ecm))
 		usb_put_function_instance(fi_ecm);
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -229,6 +276,21 @@ static __refdata struct usb_composite_driver cdc_driver = {
 	.max_speed	= USB_SPEED_HIGH,
 	.bind		= cdc_bind,
 	.unbind		= __exit_p(cdc_unbind),
+=======
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+
+	return 0;
+}
+
+static struct usb_composite_driver cdc_driver = {
+	.name		= "g_cdc",
+	.dev		= &device_desc,
+	.strings	= dev_strings,
+	.max_speed	= USB_SPEED_SUPER,
+	.bind		= cdc_bind,
+	.unbind		= cdc_unbind,
+>>>>>>> v4.9.227
 };
 
 module_usb_composite_driver(cdc_driver);

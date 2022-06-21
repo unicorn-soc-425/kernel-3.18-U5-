@@ -136,7 +136,11 @@ static int pvc_create(struct net *net, struct socket *sock, int protocol,
 		return -EAFNOSUPPORT;
 
 	sock->ops = &pvc_proto_ops;
+<<<<<<< HEAD
 	return vcc_create(net, sock, protocol, PF_ATMPVC);
+=======
+	return vcc_create(net, sock, protocol, PF_ATMPVC, kern);
+>>>>>>> v4.9.227
 }
 
 static const struct net_proto_family pvc_family_ops = {

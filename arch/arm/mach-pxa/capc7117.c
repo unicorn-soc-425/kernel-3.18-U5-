@@ -24,12 +24,21 @@
 #include <linux/ata_platform.h>
 #include <linux/serial_8250.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/machine.h>
+>>>>>>> v4.9.227
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
+<<<<<<< HEAD
 #include <mach/pxa320.h>
 #include <mach/mxm8x10.h>
+=======
+#include "pxa320.h"
+#include "mxm8x10.h"
+>>>>>>> v4.9.227
 
 #include "generic.h"
 
@@ -144,6 +153,11 @@ static void __init capc7117_init(void)
 
 	capc7117_uarts_init();
 	capc7117_ide_init();
+<<<<<<< HEAD
+=======
+
+	regulator_has_full_constraints();
+>>>>>>> v4.9.227
 }
 
 MACHINE_START(CAPC7117,

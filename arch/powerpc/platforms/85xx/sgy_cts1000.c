@@ -38,18 +38,30 @@ static void gpio_halt_wfn(struct work_struct *work)
 }
 static DECLARE_WORK(gpio_halt_wq, gpio_halt_wfn);
 
+<<<<<<< HEAD
 static void gpio_halt_cb(void)
+=======
+static void __noreturn gpio_halt_cb(void)
+>>>>>>> v4.9.227
 {
 	enum of_gpio_flags flags;
 	int trigger, gpio;
 
 	if (!halt_node)
+<<<<<<< HEAD
 		return;
+=======
+		panic("No reset GPIO information was provided in DT\n");
+>>>>>>> v4.9.227
 
 	gpio = of_get_gpio_flags(halt_node, 0, &flags);
 
 	if (!gpio_is_valid(gpio))
+<<<<<<< HEAD
 		return;
+=======
+		panic("Provided GPIO is invalid\n");
+>>>>>>> v4.9.227
 
 	trigger = (flags == OF_GPIO_ACTIVE_LOW);
 
@@ -57,6 +69,11 @@ static void gpio_halt_cb(void)
 
 	/* Probably wont return */
 	gpio_set_value(gpio, trigger);
+<<<<<<< HEAD
+=======
+
+	panic("Halt failed\n");
+>>>>>>> v4.9.227
 }
 
 /* This IRQ means someone pressed the power button and it is waiting for us
@@ -120,7 +137,11 @@ static int gpio_halt_probe(struct platform_device *pdev)
 
 	/* Register our halt function */
 	ppc_md.halt = gpio_halt_cb;
+<<<<<<< HEAD
 	ppc_md.power_off = gpio_halt_cb;
+=======
+	pm_power_off = gpio_halt_cb;
+>>>>>>> v4.9.227
 
 	printk(KERN_INFO "gpio-halt: registered GPIO %d (%d trigger, %d"
 	       " irq).\n", gpio, trigger, irq);
@@ -137,7 +158,11 @@ static int gpio_halt_remove(struct platform_device *pdev)
 		free_irq(irq, halt_node);
 
 		ppc_md.halt = NULL;
+<<<<<<< HEAD
 		ppc_md.power_off = NULL;
+=======
+		pm_power_off = NULL;
+>>>>>>> v4.9.227
 
 		gpio_free(gpio);
 
@@ -161,7 +186,10 @@ MODULE_DEVICE_TABLE(of, gpio_halt_match);
 static struct platform_driver gpio_halt_driver = {
 	.driver = {
 		.name		= "gpio-halt",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = gpio_halt_match,
 	},
 	.probe		= gpio_halt_probe,

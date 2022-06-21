@@ -6,12 +6,21 @@
 
 #include <linux/sysfs.h>
 #include <linux/dm-ioctl.h>
+<<<<<<< HEAD
 #include "dm.h"
+=======
+#include "dm-core.h"
+#include "dm-rq.h"
+>>>>>>> v4.9.227
 
 struct dm_sysfs_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct mapped_device *, char *);
+<<<<<<< HEAD
 	ssize_t (*store)(struct mapped_device *, char *);
+=======
+	ssize_t (*store)(struct mapped_device *, const char *, size_t count);
+>>>>>>> v4.9.227
 };
 
 #define DM_ATTR_RO(_name) \
@@ -39,6 +48,34 @@ static ssize_t dm_attr_show(struct kobject *kobj, struct attribute *attr,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+#define DM_ATTR_RW(_name) \
+struct dm_sysfs_attr dm_attr_##_name = \
+	__ATTR(_name, S_IRUGO | S_IWUSR, dm_attr_##_name##_show, dm_attr_##_name##_store)
+
+static ssize_t dm_attr_store(struct kobject *kobj, struct attribute *attr,
+			     const char *page, size_t count)
+{
+	struct dm_sysfs_attr *dm_attr;
+	struct mapped_device *md;
+	ssize_t ret;
+
+	dm_attr = container_of(attr, struct dm_sysfs_attr, attr);
+	if (!dm_attr->store)
+		return -EIO;
+
+	md = dm_get_from_kobject(kobj);
+	if (!md)
+		return -EINVAL;
+
+	ret = dm_attr->store(md, page, count);
+	dm_put(md);
+
+	return ret;
+}
+
+>>>>>>> v4.9.227
 static ssize_t dm_attr_name_show(struct mapped_device *md, char *buf)
 {
 	if (dm_copy_name_and_uuid(md, buf, NULL))
@@ -64,25 +101,51 @@ static ssize_t dm_attr_suspended_show(struct mapped_device *md, char *buf)
 	return strlen(buf);
 }
 
+<<<<<<< HEAD
 static DM_ATTR_RO(name);
 static DM_ATTR_RO(uuid);
 static DM_ATTR_RO(suspended);
+=======
+static ssize_t dm_attr_use_blk_mq_show(struct mapped_device *md, char *buf)
+{
+	sprintf(buf, "%d\n", dm_use_blk_mq(md));
+
+	return strlen(buf);
+}
+
+static DM_ATTR_RO(name);
+static DM_ATTR_RO(uuid);
+static DM_ATTR_RO(suspended);
+static DM_ATTR_RO(use_blk_mq);
+static DM_ATTR_RW(rq_based_seq_io_merge_deadline);
+>>>>>>> v4.9.227
 
 static struct attribute *dm_attrs[] = {
 	&dm_attr_name.attr,
 	&dm_attr_uuid.attr,
 	&dm_attr_suspended.attr,
+<<<<<<< HEAD
+=======
+	&dm_attr_use_blk_mq.attr,
+	&dm_attr_rq_based_seq_io_merge_deadline.attr,
+>>>>>>> v4.9.227
 	NULL,
 };
 
 static const struct sysfs_ops dm_sysfs_ops = {
 	.show	= dm_attr_show,
+<<<<<<< HEAD
 };
 
 /*
  * dm kobject is embedded in mapped_device structure
  * no need to define release function here
  */
+=======
+	.store	= dm_attr_store,
+};
+
+>>>>>>> v4.9.227
 static struct kobj_type dm_ktype = {
 	.sysfs_ops	= &dm_sysfs_ops,
 	.default_attrs	= dm_attrs,

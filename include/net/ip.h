@@ -31,15 +31,25 @@
 #include <net/route.h>
 #include <net/snmp.h>
 #include <net/flow.h>
+<<<<<<< HEAD
 #include <net/flow_keys.h>
+=======
+#include <net/flow_dissector.h>
+>>>>>>> v4.9.227
 
 #define IPV4_MIN_MTU		68			/* RFC 791 */
 
 struct sock;
 
 struct inet_skb_parm {
+<<<<<<< HEAD
 	struct ip_options	opt;		/* Compiled IP options		*/
 	unsigned char		flags;
+=======
+	int			iif;
+	struct ip_options	opt;		/* Compiled IP options		*/
+	u16			flags;
+>>>>>>> v4.9.227
 
 #define IPSKB_FORWARDED		BIT(0)
 #define IPSKB_XFRM_TUNNEL_SIZE	BIT(1)
@@ -47,16 +57,33 @@ struct inet_skb_parm {
 #define IPSKB_FRAG_COMPLETE	BIT(3)
 #define IPSKB_REROUTED		BIT(4)
 #define IPSKB_DOREDIRECT	BIT(5)
+<<<<<<< HEAD
+=======
+#define IPSKB_FRAG_PMTU		BIT(6)
+#define IPSKB_L3SLAVE		BIT(7)
+>>>>>>> v4.9.227
 
 	u16			frag_max_size;
 };
 
+<<<<<<< HEAD
+=======
+static inline bool ipv4_l3mdev_skb(u16 flags)
+{
+	return !!(flags & IPSKB_L3SLAVE);
+}
+
+>>>>>>> v4.9.227
 static inline unsigned int ip_hdrlen(const struct sk_buff *skb)
 {
 	return ip_hdr(skb)->ihl * 4;
 }
 
 struct ipcm_cookie {
+<<<<<<< HEAD
+=======
+	struct sockcm_cookie	sockc;
+>>>>>>> v4.9.227
 	__be32			addr;
 	int			oif;
 	struct ip_options_rcu	*opt;
@@ -101,13 +128,18 @@ int igmp_mc_init(void);
  *	Functions provided by ip.c
  */
 
+<<<<<<< HEAD
 int ip_build_and_send_pkt(struct sk_buff *skb, struct sock *sk,
+=======
+int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
+>>>>>>> v4.9.227
 			  __be32 saddr, __be32 daddr,
 			  struct ip_options_rcu *opt);
 int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt,
 	   struct net_device *orig_dev);
 int ip_local_deliver(struct sk_buff *skb);
 int ip_mr_input(struct sk_buff *skb);
+<<<<<<< HEAD
 int ip_output(struct sock *sk, struct sk_buff *skb);
 int ip_mc_output(struct sock *sk, struct sk_buff *skb);
 int ip_fragment(struct sk_buff *skb, int (*output)(struct sk_buff *));
@@ -119,6 +151,15 @@ static inline int ip_local_out(struct sk_buff *skb)
 {
 	return ip_local_out_sk(skb->sk, skb);
 }
+=======
+int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb);
+int ip_mc_output(struct net *net, struct sock *sk, struct sk_buff *skb);
+int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
+		   int (*output)(struct net *, struct sock *, struct sk_buff *));
+void ip_send_check(struct iphdr *ip);
+int __ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb);
+int ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb);
+>>>>>>> v4.9.227
 
 int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl);
 void ip_init(void);
@@ -175,7 +216,10 @@ struct ip_reply_arg {
 				/* -1 if not needed */ 
 	int	    bound_dev_if;
 	u8  	    tos;
+<<<<<<< HEAD
 	kuid_t	    uid;
+=======
+>>>>>>> v4.9.227
 }; 
 
 #define IP_REPLY_ARG_NOSRCCHECK 1
@@ -192,6 +236,7 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
 			   unsigned int len);
 
 #define IP_INC_STATS(net, field)	SNMP_INC_STATS64((net)->mib.ip_statistics, field)
+<<<<<<< HEAD
 #define IP_INC_STATS_BH(net, field)	SNMP_INC_STATS64_BH((net)->mib.ip_statistics, field)
 #define IP_ADD_STATS(net, field, val)	SNMP_ADD_STATS64((net)->mib.ip_statistics, field, val)
 #define IP_ADD_STATS_BH(net, field, val) SNMP_ADD_STATS64_BH((net)->mib.ip_statistics, field, val)
@@ -208,12 +253,64 @@ unsigned long snmp_fold_field(void __percpu *mib, int offt);
 #if BITS_PER_LONG==32
 u64 snmp_fold_field64(void __percpu *mib, int offt, size_t sync_off);
 #else
+=======
+#define __IP_INC_STATS(net, field)	__SNMP_INC_STATS64((net)->mib.ip_statistics, field)
+#define IP_ADD_STATS(net, field, val)	SNMP_ADD_STATS64((net)->mib.ip_statistics, field, val)
+#define __IP_ADD_STATS(net, field, val) __SNMP_ADD_STATS64((net)->mib.ip_statistics, field, val)
+#define IP_UPD_PO_STATS(net, field, val) SNMP_UPD_PO_STATS64((net)->mib.ip_statistics, field, val)
+#define __IP_UPD_PO_STATS(net, field, val) __SNMP_UPD_PO_STATS64((net)->mib.ip_statistics, field, val)
+#define NET_INC_STATS(net, field)	SNMP_INC_STATS((net)->mib.net_statistics, field)
+#define __NET_INC_STATS(net, field)	__SNMP_INC_STATS((net)->mib.net_statistics, field)
+#define NET_ADD_STATS(net, field, adnd)	SNMP_ADD_STATS((net)->mib.net_statistics, field, adnd)
+#define __NET_ADD_STATS(net, field, adnd) __SNMP_ADD_STATS((net)->mib.net_statistics, field, adnd)
+
+u64 snmp_get_cpu_field(void __percpu *mib, int cpu, int offct);
+unsigned long snmp_fold_field(void __percpu *mib, int offt);
+#if BITS_PER_LONG==32
+u64 snmp_get_cpu_field64(void __percpu *mib, int cpu, int offct,
+			 size_t syncp_offset);
+u64 snmp_fold_field64(void __percpu *mib, int offt, size_t sync_off);
+#else
+static inline u64  snmp_get_cpu_field64(void __percpu *mib, int cpu, int offct,
+					size_t syncp_offset)
+{
+	return snmp_get_cpu_field(mib, cpu, offct);
+
+}
+
+>>>>>>> v4.9.227
 static inline u64 snmp_fold_field64(void __percpu *mib, int offt, size_t syncp_off)
 {
 	return snmp_fold_field(mib, offt);
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#define snmp_get_cpu_field64_batch(buff64, stats_list, mib_statistic, offset) \
+{ \
+	int i, c; \
+	for_each_possible_cpu(c) { \
+		for (i = 0; stats_list[i].name; i++) \
+			buff64[i] += snmp_get_cpu_field64( \
+					mib_statistic, \
+					c, stats_list[i].entry, \
+					offset); \
+	} \
+}
+
+#define snmp_get_cpu_field_batch(buff, stats_list, mib_statistic) \
+{ \
+	int i, c; \
+	for_each_possible_cpu(c) { \
+		for (i = 0; stats_list[i].name; i++) \
+			buff[i] += snmp_get_cpu_field( \
+						mib_statistic, \
+						c, stats_list[i].entry); \
+	} \
+}
+
+>>>>>>> v4.9.227
 void inet_get_local_port_range(struct net *net, int *low, int *high);
 
 #ifdef CONFIG_SYSCTL
@@ -236,7 +333,10 @@ static inline int inet_is_local_reserved_port(struct net *net, int port)
 }
 #endif
 
+<<<<<<< HEAD
 extern int sysctl_reserved_port_bind;
+=======
+>>>>>>> v4.9.227
 __be32 inet_current_timestamp(void);
 
 /* From inetpeer.c */
@@ -244,12 +344,15 @@ extern int inet_peer_threshold;
 extern int inet_peer_minttl;
 extern int inet_peer_maxttl;
 
+<<<<<<< HEAD
 /* From ip_input.c */
 extern int sysctl_ip_early_demux;
 
 /* From ip_output.c */
 extern int sysctl_ip_dynaddr;
 
+=======
+>>>>>>> v4.9.227
 void ipfrag_init(void);
 
 void ip_static_sysctl_init(void);
@@ -276,12 +379,30 @@ int ip_decrease_ttl(struct iphdr *iph)
 	return --iph->ttl;
 }
 
+<<<<<<< HEAD
 static inline
 int ip_dont_fragment(struct sock *sk, struct dst_entry *dst)
 {
 	return  inet_sk(sk)->pmtudisc == IP_PMTUDISC_DO ||
 		(inet_sk(sk)->pmtudisc == IP_PMTUDISC_WANT &&
 		 !(dst_metric_locked(dst, RTAX_MTU)));
+=======
+static inline int ip_mtu_locked(const struct dst_entry *dst)
+{
+	const struct rtable *rt = (const struct rtable *)dst;
+
+	return rt->rt_mtu_locked || dst_metric_locked(dst, RTAX_MTU);
+}
+
+static inline
+int ip_dont_fragment(const struct sock *sk, const struct dst_entry *dst)
+{
+	u8 pmtudisc = READ_ONCE(inet_sk(sk)->pmtudisc);
+
+	return  pmtudisc == IP_PMTUDISC_DO ||
+		(pmtudisc == IP_PMTUDISC_WANT &&
+		 !ip_mtu_locked(dst));
+>>>>>>> v4.9.227
 }
 
 static inline bool ip_sk_accept_pmtu(const struct sock *sk)
@@ -307,6 +428,7 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
 	struct net *net = dev_net(dst->dev);
 
 	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
+<<<<<<< HEAD
 	    dst_metric_locked(dst, RTAX_MTU) ||
 	    !forwarding)
 		return dst_mtu(dst);
@@ -328,6 +450,32 @@ u32 ip_idents_reserve(u32 hash, int segs);
 void __ip_select_ident(struct iphdr *iph, int segs);
 
 static inline void ip_select_ident_segs(struct sk_buff *skb, struct sock *sk, int segs)
+=======
+	    ip_mtu_locked(dst) ||
+	    !forwarding)
+		return dst_mtu(dst);
+
+	return min(READ_ONCE(dst->dev->mtu), IP_MAX_MTU);
+}
+
+static inline unsigned int ip_skb_dst_mtu(struct sock *sk,
+					  const struct sk_buff *skb)
+{
+	if (!sk || !sk_fullsock(sk) || ip_sk_use_pmtu(sk)) {
+		bool forwarding = IPCB(skb)->flags & IPSKB_FORWARDED;
+
+		return ip_dst_mtu_maybe_forward(skb_dst(skb), forwarding);
+	}
+
+	return min(READ_ONCE(skb_dst(skb)->dev->mtu), IP_MAX_MTU);
+}
+
+u32 ip_idents_reserve(u32 hash, int segs);
+void __ip_select_ident(struct net *net, struct iphdr *iph, int segs);
+
+static inline void ip_select_ident_segs(struct net *net, struct sk_buff *skb,
+					struct sock *sk, int segs)
+>>>>>>> v4.9.227
 {
 	struct iphdr *iph = ip_hdr(skb);
 
@@ -344,6 +492,7 @@ static inline void ip_select_ident_segs(struct sk_buff *skb, struct sock *sk, in
 			iph->id = 0;
 		}
 	} else {
+<<<<<<< HEAD
 		__ip_select_ident(iph, segs);
 	}
 }
@@ -351,6 +500,16 @@ static inline void ip_select_ident_segs(struct sk_buff *skb, struct sock *sk, in
 static inline void ip_select_ident(struct sk_buff *skb, struct sock *sk)
 {
 	ip_select_ident_segs(skb, sk, 1);
+=======
+		__ip_select_ident(net, iph, segs);
+	}
+}
+
+static inline void ip_select_ident(struct net *net, struct sk_buff *skb,
+				   struct sock *sk)
+{
+	ip_select_ident_segs(net, skb, sk, 1);
+>>>>>>> v4.9.227
 }
 
 static inline __wsum inet_compute_pseudo(struct sk_buff *skb, int proto)
@@ -359,6 +518,7 @@ static inline __wsum inet_compute_pseudo(struct sk_buff *skb, int proto)
 				  skb->len, proto, 0);
 }
 
+<<<<<<< HEAD
 static inline void inet_set_txhash(struct sock *sk)
 {
 	struct inet_sock *inet = inet_sk(sk);
@@ -370,6 +530,20 @@ static inline void inet_set_txhash(struct sock *sk)
 	keys.port16[1] = inet->inet_dport;
 
 	sk->sk_txhash = flow_hash_from_keys(&keys);
+=======
+/* copy IPv4 saddr & daddr to flow_keys, possibly using 64bit load/store
+ * Equivalent to :	flow->v4addrs.src = iph->saddr;
+ *			flow->v4addrs.dst = iph->daddr;
+ */
+static inline void iph_to_flow_copy_v4addrs(struct flow_keys *flow,
+					    const struct iphdr *iph)
+{
+	BUILD_BUG_ON(offsetof(typeof(flow->addrs), v4addrs.dst) !=
+		     offsetof(typeof(flow->addrs), v4addrs.src) +
+			      sizeof(flow->addrs.v4addrs.src));
+	memcpy(&flow->addrs.v4addrs, &iph->saddr, sizeof(flow->addrs.v4addrs));
+	flow->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
+>>>>>>> v4.9.227
 }
 
 static inline __wsum inet_gro_compute_pseudo(struct sk_buff *skb, int proto)
@@ -460,6 +634,14 @@ static __inline__ void inet_reset_saddr(struct sock *sk)
 
 #endif
 
+<<<<<<< HEAD
+=======
+static inline unsigned int ipv4_addr_hash(__be32 ip)
+{
+	return (__force unsigned int) ip;
+}
+
+>>>>>>> v4.9.227
 bool ip_call_ra_chain(struct sk_buff *skb);
 
 /*
@@ -482,16 +664,37 @@ enum ip_defrag_users {
 	IP_DEFRAG_MACVLAN,
 };
 
+<<<<<<< HEAD
 int ip_defrag(struct sk_buff *skb, u32 user);
 #ifdef CONFIG_INET
 struct sk_buff *ip_check_defrag(struct sk_buff *skb, u32 user);
 #else
 static inline struct sk_buff *ip_check_defrag(struct sk_buff *skb, u32 user)
+=======
+/* Return true if the value of 'user' is between 'lower_bond'
+ * and 'upper_bond' inclusively.
+ */
+static inline bool ip_defrag_user_in_between(u32 user,
+					     enum ip_defrag_users lower_bond,
+					     enum ip_defrag_users upper_bond)
+{
+	return user >= lower_bond && user <= upper_bond;
+}
+
+int ip_defrag(struct net *net, struct sk_buff *skb, u32 user);
+#ifdef CONFIG_INET
+struct sk_buff *ip_check_defrag(struct net *net, struct sk_buff *skb, u32 user);
+#else
+static inline struct sk_buff *ip_check_defrag(struct net *net, struct sk_buff *skb, u32 user)
+>>>>>>> v4.9.227
 {
 	return skb;
 }
 #endif
+<<<<<<< HEAD
 int ip_frag_mem(struct net *net);
+=======
+>>>>>>> v4.9.227
 
 /*
  *	Functions provided by ip_forward.c
@@ -514,6 +717,11 @@ static inline int ip_options_echo(struct ip_options *dopt, struct sk_buff *skb)
 }
 
 void ip_options_fragment(struct sk_buff *skb);
+<<<<<<< HEAD
+=======
+int __ip_options_compile(struct net *net, struct ip_options *opt,
+			 struct sk_buff *skb, __be32 *info);
+>>>>>>> v4.9.227
 int ip_options_compile(struct net *net, struct ip_options *opt,
 		       struct sk_buff *skb);
 int ip_options_get(struct net *net, struct ip_options_rcu **optp,
@@ -522,15 +730,24 @@ int ip_options_get_from_user(struct net *net, struct ip_options_rcu **optp,
 			     unsigned char __user *data, int optlen);
 void ip_options_undo(struct ip_options *opt);
 void ip_forward_options(struct sk_buff *skb);
+<<<<<<< HEAD
 int ip_options_rcv_srr(struct sk_buff *skb);
+=======
+int ip_options_rcv_srr(struct sk_buff *skb, struct net_device *dev);
+>>>>>>> v4.9.227
 
 /*
  *	Functions provided by ip_sockglue.c
  */
 
 void ipv4_pktinfo_prepare(const struct sock *sk, struct sk_buff *skb);
+<<<<<<< HEAD
 void ip_cmsg_recv(struct msghdr *msg, struct sk_buff *skb);
 int ip_cmsg_send(struct net *net, struct msghdr *msg,
+=======
+void ip_cmsg_recv_offset(struct msghdr *msg, struct sk_buff *skb, int tlen, int offset);
+int ip_cmsg_send(struct sock *sk, struct msghdr *msg,
+>>>>>>> v4.9.227
 		 struct ipcm_cookie *ipc, bool allow_ipv6);
 int ip_setsockopt(struct sock *sk, int level, int optname, char __user *optval,
 		  unsigned int optlen);
@@ -549,6 +766,14 @@ void ip_icmp_error(struct sock *sk, struct sk_buff *skb, int err, __be16 port,
 void ip_local_error(struct sock *sk, int err, __be32 daddr, __be16 dport,
 		    u32 info);
 
+<<<<<<< HEAD
+=======
+static inline void ip_cmsg_recv(struct msghdr *msg, struct sk_buff *skb)
+{
+	ip_cmsg_recv_offset(msg, skb, 0, 0);
+}
+
+>>>>>>> v4.9.227
 bool icmp_global_allow(void);
 extern int sysctl_icmp_msgs_per_sec;
 extern int sysctl_icmp_msgs_burst;
@@ -557,4 +782,12 @@ extern int sysctl_icmp_msgs_burst;
 int ip_misc_proc_init(void);
 #endif
 
+<<<<<<< HEAD
+=======
+static inline bool inetdev_valid_mtu(unsigned int mtu)
+{
+	return likely(mtu >= IPV4_MIN_MTU);
+}
+
+>>>>>>> v4.9.227
 #endif	/* _IP_H */

@@ -47,7 +47,11 @@
 #define DLM_HASH_BUCKETS	(DLM_HASH_PAGES * DLM_BUCKETS_PER_PAGE)
 
 /* Intended to make it easier for us to switch out hash functions */
+<<<<<<< HEAD
 #define dlm_lockid_hash(_n, _l) full_name_hash(_n, _l)
+=======
+#define dlm_lockid_hash(_n, _l) full_name_hash(NULL, _n, _l)
+>>>>>>> v4.9.227
 
 enum dlm_mle_type {
 	DLM_MLE_BLOCK = 0,
@@ -282,6 +286,10 @@ static inline void __dlm_set_joining_node(struct dlm_ctxt *dlm,
 #define DLM_LOCK_RES_DROPPING_REF         0x00000040
 #define DLM_LOCK_RES_BLOCK_DIRTY          0x00001000
 #define DLM_LOCK_RES_SETREF_INPROG        0x00002000
+<<<<<<< HEAD
+=======
+#define DLM_LOCK_RES_RECOVERY_WAITING     0x00004000
+>>>>>>> v4.9.227
 
 /* max milliseconds to wait to sync up a network failure with a node death */
 #define DLM_NODE_DEATH_WAIT_MAX (5 * 1000)
@@ -376,6 +384,7 @@ struct dlm_lock
 		 lksb_kernel_allocated:1;
 };
 
+<<<<<<< HEAD
 
 #define DLM_LKSB_UNUSED1           0x01
 #define DLM_LKSB_PUT_LVB           0x02
@@ -387,6 +396,8 @@ struct dlm_lock
 #define DLM_LKSB_UNUSED6           0x80
 
 
+=======
+>>>>>>> v4.9.227
 enum dlm_lockres_list {
 	DLM_GRANTED_LIST = 0,
 	DLM_CONVERTING_LIST = 1,
@@ -462,6 +473,10 @@ enum {
 	DLM_QUERY_REGION		= 519,
 	DLM_QUERY_NODEINFO		= 520,
 	DLM_BEGIN_EXIT_DOMAIN_MSG	= 521,
+<<<<<<< HEAD
+=======
+	DLM_DEREF_LOCKRES_DONE		= 522,
+>>>>>>> v4.9.227
 };
 
 struct dlm_reco_node_data
@@ -556,7 +571,11 @@ struct dlm_master_requery
  * };
  *
  * from ../cluster/tcp.h
+<<<<<<< HEAD
  *    NET_MAX_PAYLOAD_BYTES  (4096 - sizeof(net_msg))
+=======
+ *    O2NET_MAX_PAYLOAD_BYTES  (4096 - sizeof(net_msg))
+>>>>>>> v4.9.227
  *    (roughly 4080 bytes)
  * and sizeof(dlm_migratable_lockres) = 112 bytes
  * and sizeof(dlm_migratable_lock) = 16 bytes
@@ -597,7 +616,11 @@ struct dlm_migratable_lockres
 
 /* from above, 128 bytes
  * for some undetermined future use */
+<<<<<<< HEAD
 #define DLM_MIG_LOCKRES_RESERVED   (NET_MAX_PAYLOAD_BYTES - \
+=======
+#define DLM_MIG_LOCKRES_RESERVED   (O2NET_MAX_PAYLOAD_BYTES - \
+>>>>>>> v4.9.227
 				    DLM_MIG_LOCKRES_MAX_LEN)
 
 struct dlm_create_lock
@@ -793,6 +816,23 @@ struct dlm_deref_lockres
 	u8 name[O2NM_MAX_NAME_LEN];
 };
 
+<<<<<<< HEAD
+=======
+enum {
+	DLM_DEREF_RESPONSE_DONE = 0,
+	DLM_DEREF_RESPONSE_INPROG = 1,
+};
+
+struct dlm_deref_lockres_done {
+	u32 pad1;
+	u16 pad2;
+	u8 node_idx;
+	u8 namelen;
+
+	u8 name[O2NM_MAX_NAME_LEN];
+};
+
+>>>>>>> v4.9.227
 static inline enum dlm_status
 __dlm_lockres_state_to_status(struct dlm_lock_resource *res)
 {
@@ -800,7 +840,12 @@ __dlm_lockres_state_to_status(struct dlm_lock_resource *res)
 
 	assert_spin_locked(&res->spinlock);
 
+<<<<<<< HEAD
 	if (res->state & DLM_LOCK_RES_RECOVERING)
+=======
+	if (res->state & (DLM_LOCK_RES_RECOVERING|
+			DLM_LOCK_RES_RECOVERY_WAITING))
+>>>>>>> v4.9.227
 		status = DLM_RECOVERING;
 	else if (res->state & DLM_LOCK_RES_MIGRATING)
 		status = DLM_MIGRATING;
@@ -979,6 +1024,11 @@ int dlm_assert_master_handler(struct o2net_msg *msg, u32 len, void *data,
 void dlm_assert_master_post_handler(int status, void *data, void *ret_data);
 int dlm_deref_lockres_handler(struct o2net_msg *msg, u32 len, void *data,
 			      void **ret_data);
+<<<<<<< HEAD
+=======
+int dlm_deref_lockres_done_handler(struct o2net_msg *msg, u32 len, void *data,
+			      void **ret_data);
+>>>>>>> v4.9.227
 int dlm_migrate_request_handler(struct o2net_msg *msg, u32 len, void *data,
 				void **ret_data);
 int dlm_mig_lockres_handler(struct o2net_msg *msg, u32 len, void *data,
@@ -996,6 +1046,11 @@ int dlm_finalize_reco_handler(struct o2net_msg *msg, u32 len, void *data,
 int dlm_do_master_requery(struct dlm_ctxt *dlm, struct dlm_lock_resource *res,
 			  u8 nodenum, u8 *real_master);
 
+<<<<<<< HEAD
+=======
+void __dlm_do_purge_lockres(struct dlm_ctxt *dlm,
+		struct dlm_lock_resource *res);
+>>>>>>> v4.9.227
 
 int dlm_dispatch_assert_master(struct dlm_ctxt *dlm,
 			       struct dlm_lock_resource *res,
@@ -1014,13 +1069,20 @@ void dlm_move_lockres_to_recovery_list(struct dlm_ctxt *dlm,
 
 /* will exit holding res->spinlock, but may drop in function */
 void __dlm_wait_on_lockres_flags(struct dlm_lock_resource *res, int flags);
+<<<<<<< HEAD
 void __dlm_wait_on_lockres_flags_set(struct dlm_lock_resource *res, int flags);
+=======
+>>>>>>> v4.9.227
 
 /* will exit holding res->spinlock, but may drop in function */
 static inline void __dlm_wait_on_lockres(struct dlm_lock_resource *res)
 {
 	__dlm_wait_on_lockres_flags(res, (DLM_LOCK_RES_IN_PROGRESS|
 				    	  DLM_LOCK_RES_RECOVERING|
+<<<<<<< HEAD
+=======
+					  DLM_LOCK_RES_RECOVERY_WAITING|
+>>>>>>> v4.9.227
 					  DLM_LOCK_RES_MIGRATING));
 }
 

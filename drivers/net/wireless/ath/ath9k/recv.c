@@ -377,7 +377,11 @@ u32 ath_calcrxfilter(struct ath_softc *sc)
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	u32 rfilt;
 
+<<<<<<< HEAD
 	if (config_enabled(CONFIG_ATH9K_TX99))
+=======
+	if (IS_ENABLED(CONFIG_ATH9K_TX99))
+>>>>>>> v4.9.227
 		return 0;
 
 	rfilt = ATH9K_RX_FILTER_UCAST | ATH9K_RX_FILTER_BCAST
@@ -392,11 +396,14 @@ u32 ath_calcrxfilter(struct ath_softc *sc)
 	if (sc->cur_chan->rxfilter & FIF_PROBE_REQ)
 		rfilt |= ATH9K_RX_FILTER_PROBEREQ;
 
+<<<<<<< HEAD
 	/*
 	 * Set promiscuous mode when FIF_PROMISC_IN_BSS is enabled for station
 	 * mode interface or when in monitor mode. AP mode does not need this
 	 * since it receives all in-BSS frames anyway.
 	 */
+=======
+>>>>>>> v4.9.227
 	if (sc->sc_ah->is_monitoring)
 		rfilt |= ATH9K_RX_FILTER_PROM;
 
@@ -408,7 +415,11 @@ u32 ath_calcrxfilter(struct ath_softc *sc)
 	    (sc->cur_chan->nvifs <= 1) &&
 	    !(sc->cur_chan->rxfilter & FIF_BCN_PRBRESP_PROMISC))
 		rfilt |= ATH9K_RX_FILTER_MYBEACON;
+<<<<<<< HEAD
 	else
+=======
+	else if (sc->sc_ah->opmode != NL80211_IFTYPE_OCB)
+>>>>>>> v4.9.227
 		rfilt |= ATH9K_RX_FILTER_BEACON;
 
 	if ((sc->sc_ah->opmode == NL80211_IFTYPE_AP) ||
@@ -425,9 +436,19 @@ u32 ath_calcrxfilter(struct ath_softc *sc)
 		rfilt |= ATH9K_RX_FILTER_MCAST_BCAST_ALL;
 	}
 
+<<<<<<< HEAD
 	if (AR_SREV_9550(sc->sc_ah) || AR_SREV_9531(sc->sc_ah))
 		rfilt |= ATH9K_RX_FILTER_4ADDRESS;
 
+=======
+	if (AR_SREV_9550(sc->sc_ah) || AR_SREV_9531(sc->sc_ah) ||
+	    AR_SREV_9561(sc->sc_ah))
+		rfilt |= ATH9K_RX_FILTER_4ADDRESS;
+
+	if (AR_SREV_9462(sc->sc_ah) || AR_SREV_9565(sc->sc_ah))
+		rfilt |= ATH9K_RX_FILTER_CONTROL_WRAPPER;
+
+>>>>>>> v4.9.227
 	if (ath9k_is_chanctx_enabled() &&
 	    test_bit(ATH_OP_SCANNING, &common->op_flags))
 		rfilt |= ATH9K_RX_FILTER_BEACON;
@@ -495,10 +516,16 @@ bool ath_stoprecv(struct ath_softc *sc)
 
 	if (!(ah->ah_flags & AH_UNPLUGGED) &&
 	    unlikely(!stopped)) {
+<<<<<<< HEAD
 		ath_err(ath9k_hw_common(sc->sc_ah),
 			"Could not stop RX, we could be "
 			"confusing the DMA engine when we start RX up\n");
 		ATH_DBG_WARN_ON_ONCE(!stopped);
+=======
+		ath_dbg(ath9k_hw_common(sc->sc_ah), RESET,
+			"Failed to stop Rx DMA\n");
+		RESET_STAT_INC(sc, RESET_RX_DMA_ERROR);
+>>>>>>> v4.9.227
 	}
 	return stopped && !reset;
 }
@@ -870,7 +897,11 @@ static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
 	 */
 	if (rx_stats->rs_status & ATH9K_RXERR_PHY) {
 		ath9k_dfs_process_phyerr(sc, hdr, rx_stats, rx_status->mactime);
+<<<<<<< HEAD
 		if (ath_process_fft(sc, hdr, rx_stats, rx_status->mactime))
+=======
+		if (ath_cmn_process_fft(&sc->spec_priv, hdr, rx_stats, rx_status->mactime))
+>>>>>>> v4.9.227
 			RX_STAT_INC(rx_spectral);
 
 		return -EINVAL;

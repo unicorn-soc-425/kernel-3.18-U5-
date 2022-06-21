@@ -112,7 +112,11 @@ static unsigned int bfin_getfreq_khz(unsigned int cpu)
 }
 
 #ifdef CONFIG_BF60x
+<<<<<<< HEAD
 unsigned long cpu_set_cclk(int cpu, unsigned long new)
+=======
+static int cpu_set_cclk(int cpu, unsigned long new)
+>>>>>>> v4.9.227
 {
 	struct clk *clk;
 	int ret;

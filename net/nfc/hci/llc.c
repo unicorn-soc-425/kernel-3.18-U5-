@@ -133,6 +133,7 @@ void nfc_llc_free(struct nfc_llc *llc)
 	kfree(llc);
 }
 
+<<<<<<< HEAD
 inline void nfc_llc_get_rx_head_tail_room(struct nfc_llc *llc, int *rx_headroom,
 					  int *rx_tailroom)
 {
@@ -151,16 +152,39 @@ inline int nfc_llc_stop(struct nfc_llc *llc)
 }
 
 inline void nfc_llc_rcv_from_drv(struct nfc_llc *llc, struct sk_buff *skb)
+=======
+int nfc_llc_start(struct nfc_llc *llc)
+{
+	return llc->ops->start(llc);
+}
+EXPORT_SYMBOL(nfc_llc_start);
+
+int nfc_llc_stop(struct nfc_llc *llc)
+{
+	return llc->ops->stop(llc);
+}
+EXPORT_SYMBOL(nfc_llc_stop);
+
+void nfc_llc_rcv_from_drv(struct nfc_llc *llc, struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	llc->ops->rcv_from_drv(llc, skb);
 }
 
+<<<<<<< HEAD
 inline int nfc_llc_xmit_from_hci(struct nfc_llc *llc, struct sk_buff *skb)
+=======
+int nfc_llc_xmit_from_hci(struct nfc_llc *llc, struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	return llc->ops->xmit_from_hci(llc, skb);
 }
 
+<<<<<<< HEAD
 inline void *nfc_llc_get_data(struct nfc_llc *llc)
+=======
+void *nfc_llc_get_data(struct nfc_llc *llc)
+>>>>>>> v4.9.227
 {
 	return llc->data;
 }

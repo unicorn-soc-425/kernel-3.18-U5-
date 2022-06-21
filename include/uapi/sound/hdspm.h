@@ -20,6 +20,11 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+
+>>>>>>> v4.9.227
 /* Maximum channels is 64 even on 56Mode you have 64playbacks to matrix */
 #define HDSPM_MAX_CHANNELS      64
 
@@ -40,6 +45,7 @@ enum hdspm_speed {
 /* -------------------- IOCTL Peak/RMS Meters -------------------- */
 
 struct hdspm_peak_rms {
+<<<<<<< HEAD
 	uint32_t input_peaks[64];
 	uint32_t playback_peaks[64];
 	uint32_t output_peaks[64];
@@ -49,6 +55,17 @@ struct hdspm_peak_rms {
 	uint64_t output_rms[64];
 
 	uint8_t speed; /* enum {ss, ds, qs} */
+=======
+	__u32 input_peaks[64];
+	__u32 playback_peaks[64];
+	__u32 output_peaks[64];
+
+	__u64 input_rms[64];
+	__u64 playback_rms[64];
+	__u64 output_rms[64];
+
+	__u8 speed; /* enum {ss, ds, qs} */
+>>>>>>> v4.9.227
 	int status2;
 };
 
@@ -74,14 +91,22 @@ struct hdspm_config {
 #define SNDRV_HDSPM_IOCTL_GET_CONFIG \
 	_IOR('H', 0x41, struct hdspm_config)
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> v4.9.227
  * If there's a TCO (TimeCode Option) board installed,
  * there are further options and status data available.
  * The hdspm_ltc structure contains the current SMPTE
  * timecode and some status information and can be
  * obtained via SNDRV_HDSPM_IOCTL_GET_LTC or in the
  * hdspm_status struct.
+<<<<<<< HEAD
  **/
+=======
+ */
+>>>>>>> v4.9.227
 
 enum hdspm_ltc_format {
 	format_invalid,
@@ -113,11 +138,19 @@ struct hdspm_ltc {
 
 #define SNDRV_HDSPM_IOCTL_GET_LTC _IOR('H', 0x46, struct hdspm_ltc)
 
+<<<<<<< HEAD
 /**
  * The status data reflects the device's current state
  * as determined by the card's configuration and
  * connection status.
  **/
+=======
+/*
+ * The status data reflects the device's current state
+ * as determined by the card's configuration and
+ * connection status.
+ */
+>>>>>>> v4.9.227
 
 enum hdspm_sync {
 	hdspm_sync_no_lock = 0,
@@ -149,6 +182,7 @@ enum hdspm_syncsource {
 };
 
 struct hdspm_status {
+<<<<<<< HEAD
 	uint8_t card_type; /* enum hdspm_io_type */
 	enum hdspm_syncsource autosync_source;
 
@@ -164,6 +198,23 @@ struct hdspm_status {
 			uint8_t madi_input; /* enum hdspm_madi_input */
 			uint8_t channel_format; /* enum hdspm_madi_channel_format */
 			uint8_t frame_format; /* enum hdspm_madi_frame_format */
+=======
+	__u8 card_type; /* enum hdspm_io_type */
+	enum hdspm_syncsource autosync_source;
+
+	__u64 card_clock;
+	__u32 master_period;
+
+	union {
+		struct {
+			__u8 sync_wc; /* enum hdspm_sync */
+			__u8 sync_madi; /* enum hdspm_sync */
+			__u8 sync_tco; /* enum hdspm_sync */
+			__u8 sync_in; /* enum hdspm_sync */
+			__u8 madi_input; /* enum hdspm_madi_input */
+			__u8 channel_format; /* enum hdspm_madi_channel_format */
+			__u8 frame_format; /* enum hdspm_madi_frame_format */
+>>>>>>> v4.9.227
 		} madi;
 	} card_specific;
 };
@@ -171,14 +222,24 @@ struct hdspm_status {
 #define SNDRV_HDSPM_IOCTL_GET_STATUS \
 	_IOR('H', 0x47, struct hdspm_status)
 
+<<<<<<< HEAD
 /**
  * Get information about the card and its add-ons.
  **/
+=======
+/*
+ * Get information about the card and its add-ons.
+ */
+>>>>>>> v4.9.227
 
 #define HDSPM_ADDON_TCO 1
 
 struct hdspm_version {
+<<<<<<< HEAD
 	uint8_t card_type; /* enum hdspm_io_type */
+=======
+	__u8 card_type; /* enum hdspm_io_type */
+>>>>>>> v4.9.227
 	char cardname[20];
 	unsigned int serial;
 	unsigned short firmware_rev;

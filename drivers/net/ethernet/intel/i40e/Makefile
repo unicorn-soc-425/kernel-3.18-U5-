@@ -1,7 +1,11 @@
 ################################################################################
 #
 # Intel Ethernet Controller XL710 Family Linux Driver
+<<<<<<< HEAD
 # Copyright(c) 2013 - 2014 Intel Corporation.
+=======
+# Copyright(c) 2013 - 2015 Intel Corporation.
+>>>>>>> v4.9.227
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -41,6 +45,10 @@ i40e-objs := i40e_main.o \
 	i40e_diag.o	\
 	i40e_txrx.o	\
 	i40e_ptp.o	\
+<<<<<<< HEAD
+=======
+	i40e_client.o   \
+>>>>>>> v4.9.227
 	i40e_virtchnl_pf.o
 
 i40e-$(CONFIG_I40E_DCB) += i40e_dcb.o i40e_dcb_nl.o

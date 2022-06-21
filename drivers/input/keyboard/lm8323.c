@@ -616,6 +616,11 @@ static ssize_t lm8323_set_disable(struct device *dev,
 	unsigned int i;
 
 	ret = kstrtouint(buf, 10, &i);
+<<<<<<< HEAD
+=======
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 
 	mutex_lock(&lm->lock);
 	lm->kp_enabled = !i;

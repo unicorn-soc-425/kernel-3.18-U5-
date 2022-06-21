@@ -16,7 +16,12 @@
 	model = "SAMSUNG XYREF5260 board based on EXYNOS5260";
 	compatible = "samsung,xyref5260", "samsung,exynos5260", "samsung,exynos5";
 
+<<<<<<< HEAD
 	memory {
+=======
+	memory@20000000 {
+		device_type = "memory";
+>>>>>>> v4.9.227
 		reg = <0x20000000 0x80000000>;
 	};
 
@@ -42,9 +47,15 @@
 &pinctrl_0 {
 	hdmi_hpd_irq: hdmi-hpd-irq {
 		samsung,pins = "gpx3-7";
+<<<<<<< HEAD
 		samsung,pin-function = <0>;
 		samsung,pin-pud = <1>;
 		samsung,pin-drv = <0>;
+=======
+		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
+		samsung,pin-pud = <EXYNOS_PIN_PULL_DOWN>;
+		samsung,pin-drv = <EXYNOS5260_PIN_DRV_LV1>;
+>>>>>>> v4.9.227
 	};
 };
 
@@ -70,7 +81,11 @@
 	broken-cd;
 	bypass-smu;
 	cap-mmc-highspeed;
+<<<<<<< HEAD
 	supports-hs200-mode; /* 200 Mhz */
+=======
+	supports-hs200-mode; /* 200 MHz */
+>>>>>>> v4.9.227
 	card-detect-delay = <200>;
 	samsung,dw-mshc-ciu-div = <3>;
 	samsung,dw-mshc-sdr-timing = <0 4>;

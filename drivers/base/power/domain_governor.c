@@ -11,8 +11,11 @@
 #include <linux/pm_qos.h>
 #include <linux/hrtimer.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 
+=======
+>>>>>>> v4.9.227
 static int dev_update_qos_constraint(struct device *dev, void *data)
 {
 	s64 *constraint_ns_p = data;
@@ -39,10 +42,17 @@ static int dev_update_qos_constraint(struct device *dev, void *data)
 }
 
 /**
+<<<<<<< HEAD
  * default_stop_ok - Default PM domain governor routine for stopping devices.
  * @dev: Device to check.
  */
 static bool default_stop_ok(struct device *dev)
+=======
+ * default_suspend_ok - Default PM domain governor routine to suspend devices.
+ * @dev: Device to check.
+ */
+static bool default_suspend_ok(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct gpd_timing_data *td = &dev_gpd_data(dev)->td;
 	unsigned long flags;
@@ -53,13 +63,21 @@ static bool default_stop_ok(struct device *dev)
 	spin_lock_irqsave(&dev->power.lock, flags);
 
 	if (!td->constraint_changed) {
+<<<<<<< HEAD
 		bool ret = td->cached_stop_ok;
+=======
+		bool ret = td->cached_suspend_ok;
+>>>>>>> v4.9.227
 
 		spin_unlock_irqrestore(&dev->power.lock, flags);
 		return ret;
 	}
 	td->constraint_changed = false;
+<<<<<<< HEAD
 	td->cached_stop_ok = false;
+=======
+	td->cached_suspend_ok = false;
+>>>>>>> v4.9.227
 	td->effective_constraint_ns = -1;
 	constraint_ns = __dev_pm_qos_read_value(dev);
 
@@ -79,11 +97,17 @@ static bool default_stop_ok(struct device *dev)
 				      dev_update_qos_constraint);
 
 	if (constraint_ns > 0) {
+<<<<<<< HEAD
 		constraint_ns -= td->start_latency_ns;
+=======
+		constraint_ns -= td->suspend_latency_ns +
+				td->resume_latency_ns;
+>>>>>>> v4.9.227
 		if (constraint_ns == 0)
 			return false;
 	}
 	td->effective_constraint_ns = constraint_ns;
+<<<<<<< HEAD
 	td->cached_stop_ok = constraint_ns > td->stop_latency_ns ||
 				constraint_ns == 0;
 	/*
@@ -91,6 +115,15 @@ static bool default_stop_ok(struct device *dev)
 	 * their stop latencies into account here.
 	 */
 	return td->cached_stop_ok;
+=======
+	td->cached_suspend_ok = constraint_ns >= 0;
+
+	/*
+	 * The children have been suspended already, so we don't need to take
+	 * their suspend latencies into account here.
+	 */
+	return td->cached_suspend_ok;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -99,7 +132,12 @@ static bool default_stop_ok(struct device *dev)
  *
  * This routine must be executed under the PM domain's lock.
  */
+<<<<<<< HEAD
 static bool default_power_down_ok(struct dev_pm_domain *pd)
+=======
+static bool __default_power_down_ok(struct dev_pm_domain *pd,
+				     unsigned int state)
+>>>>>>> v4.9.227
 {
 	struct generic_pm_domain *genpd = pd_to_genpd(pd);
 	struct gpd_link *link;
@@ -107,6 +145,7 @@ static bool default_power_down_ok(struct dev_pm_domain *pd)
 	s64 min_off_time_ns;
 	s64 off_on_time_ns;
 
+<<<<<<< HEAD
 	if (genpd->max_off_time_changed) {
 		struct gpd_link *link;
 
@@ -140,6 +179,11 @@ static bool default_power_down_ok(struct dev_pm_domain *pd)
 			off_on_time_ns +=
 				to_gpd_data(pdd)->td.save_state_latency_ns;
 	}
+=======
+	off_on_time_ns = genpd->states[state].power_off_latency_ns +
+		genpd->states[state].power_on_latency_ns;
+
+>>>>>>> v4.9.227
 
 	min_off_time_ns = -1;
 	/*
@@ -173,9 +217,12 @@ static bool default_power_down_ok(struct dev_pm_domain *pd)
 		struct gpd_timing_data *td;
 		s64 constraint_ns;
 
+<<<<<<< HEAD
 		if (!pdd->dev->driver)
 			continue;
 
+=======
+>>>>>>> v4.9.227
 		/*
 		 * Check if the device is allowed to be off long enough for the
 		 * domain to turn off and on (that's how much time it will
@@ -183,7 +230,11 @@ static bool default_power_down_ok(struct dev_pm_domain *pd)
 		 */
 		td = &to_gpd_data(pdd)->td;
 		constraint_ns = td->effective_constraint_ns;
+<<<<<<< HEAD
 		/* default_stop_ok() need not be called before us. */
+=======
+		/* default_suspend_ok() need not be called before us. */
+>>>>>>> v4.9.227
 		if (constraint_ns < 0) {
 			constraint_ns = dev_pm_qos_read_value(pdd->dev);
 			constraint_ns *= NSEC_PER_USEC;
@@ -195,7 +246,10 @@ static bool default_power_down_ok(struct dev_pm_domain *pd)
 		 * constraint_ns cannot be negative here, because the device has
 		 * been suspended.
 		 */
+<<<<<<< HEAD
 		constraint_ns -= td->restore_state_latency_ns;
+=======
+>>>>>>> v4.9.227
 		if (constraint_ns <= off_on_time_ns)
 			return false;
 
@@ -203,8 +257,11 @@ static bool default_power_down_ok(struct dev_pm_domain *pd)
 			min_off_time_ns = constraint_ns;
 	}
 
+<<<<<<< HEAD
 	genpd->cached_power_down_ok = true;
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * If the computed minimum device off time is negative, there are no
 	 * latency constraints, so the domain can spend arbitrary time in the
@@ -218,15 +275,58 @@ static bool default_power_down_ok(struct dev_pm_domain *pd)
 	 * time and the time needed to turn the domain on is the maximum
 	 * theoretical time this domain can spend in the "off" state.
 	 */
+<<<<<<< HEAD
 	genpd->max_off_time_ns = min_off_time_ns - genpd->power_on_latency_ns;
 	return true;
 }
 
+=======
+	genpd->max_off_time_ns = min_off_time_ns -
+		genpd->states[state].power_on_latency_ns;
+	return true;
+}
+
+static bool default_power_down_ok(struct dev_pm_domain *pd)
+{
+	struct generic_pm_domain *genpd = pd_to_genpd(pd);
+	struct gpd_link *link;
+
+	if (!genpd->max_off_time_changed)
+		return genpd->cached_power_down_ok;
+
+	/*
+	 * We have to invalidate the cached results for the masters, so
+	 * use the observation that default_power_down_ok() is not
+	 * going to be called for any master until this instance
+	 * returns.
+	 */
+	list_for_each_entry(link, &genpd->slave_links, slave_node)
+		link->master->max_off_time_changed = true;
+
+	genpd->max_off_time_ns = -1;
+	genpd->max_off_time_changed = false;
+	genpd->cached_power_down_ok = true;
+	genpd->state_idx = genpd->state_count - 1;
+
+	/* Find a state to power down to, starting from the deepest. */
+	while (!__default_power_down_ok(pd, genpd->state_idx)) {
+		if (genpd->state_idx == 0) {
+			genpd->cached_power_down_ok = false;
+			break;
+		}
+		genpd->state_idx--;
+	}
+
+	return genpd->cached_power_down_ok;
+}
+
+>>>>>>> v4.9.227
 static bool always_on_power_down_ok(struct dev_pm_domain *domain)
 {
 	return false;
 }
 
+<<<<<<< HEAD
 #else /* !CONFIG_PM_RUNTIME */
 
 static inline bool default_stop_ok(struct device *dev) { return false; }
@@ -238,6 +338,10 @@ static inline bool default_stop_ok(struct device *dev) { return false; }
 
 struct dev_power_governor simple_qos_governor = {
 	.stop_ok = default_stop_ok,
+=======
+struct dev_power_governor simple_qos_governor = {
+	.suspend_ok = default_suspend_ok,
+>>>>>>> v4.9.227
 	.power_down_ok = default_power_down_ok,
 };
 
@@ -246,5 +350,9 @@ struct dev_power_governor simple_qos_governor = {
  */
 struct dev_power_governor pm_domain_always_on_gov = {
 	.power_down_ok = always_on_power_down_ok,
+<<<<<<< HEAD
 	.stop_ok = default_stop_ok,
+=======
+	.suspend_ok = default_suspend_ok,
+>>>>>>> v4.9.227
 };

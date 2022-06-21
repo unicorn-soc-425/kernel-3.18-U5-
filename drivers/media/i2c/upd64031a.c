@@ -27,7 +27,11 @@
 #include <linux/videodev2.h>
 #include <linux/slab.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/upd64031a.h>
+=======
+#include <media/i2c/upd64031a.h>
+>>>>>>> v4.9.227
 
 /* --------------------- read registers functions define -------------------- */
 
@@ -241,7 +245,10 @@ MODULE_DEVICE_TABLE(i2c, upd64031a_id);
 
 static struct i2c_driver upd64031a_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "upd64031a",
 	},
 	.probe		= upd64031a_probe,

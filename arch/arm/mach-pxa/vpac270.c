@@ -24,20 +24,33 @@
 #include <linux/dm9000.h>
 #include <linux/ucb1400.h>
 #include <linux/ata_platform.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/machine.h>
+>>>>>>> v4.9.227
 #include <linux/regulator/max1586.h>
 #include <linux/i2c/pxa-i2c.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
+=======
+#include "pxa27x.h"
+>>>>>>> v4.9.227
 #include <mach/audio.h>
 #include <mach/vpac270.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
+<<<<<<< HEAD
 #include <mach/pxa27x-udc.h>
 #include <mach/udc.h>
+=======
+#include "pxa27x-udc.h"
+#include "udc.h"
+>>>>>>> v4.9.227
 #include <linux/platform_data/ata-pxa.h>
 
 #include "generic.h"
@@ -711,6 +724,11 @@ static void __init vpac270_init(void)
 	vpac270_ts_init();
 	vpac270_rtc_init();
 	vpac270_ide_init();
+<<<<<<< HEAD
+=======
+
+	regulator_has_full_constraints();
+>>>>>>> v4.9.227
 }
 
 MACHINE_START(VPAC270, "Voipac PXA270")

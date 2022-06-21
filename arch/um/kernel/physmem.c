@@ -8,6 +8,10 @@
 #include <linux/mm.h>
 #include <linux/pfn.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/sections.h>
+>>>>>>> v4.9.227
 #include <as-layout.h>
 #include <init.h>
 #include <kern.h>
@@ -55,12 +59,36 @@ void map_memory(unsigned long virt, unsigned long phys, unsigned long len,
 	}
 }
 
+<<<<<<< HEAD
 extern int __syscall_stub_start;
 
+=======
+/**
+ * setup_physmem() - Setup physical memory for UML
+ * @start:	Start address of the physical kernel memory,
+ *		i.e start address of the executable image.
+ * @reserve_end:	end address of the physical kernel memory.
+ * @len:	Length of total physical memory that should be mapped/made
+ *		available, in bytes.
+ * @highmem:	Number of highmem bytes that should be mapped/made available.
+ *
+ * Creates an unlinked temporary file of size (len + highmem) and memory maps
+ * it on the last executable image address (uml_reserved).
+ *
+ * The offset is needed as the length of the total physical memory
+ * (len + highmem) includes the size of the memory used be the executable image,
+ * but the mapped-to address is the last address of the executable image
+ * (uml_reserved == end address of executable image).
+ *
+ * The memory mapped memory of the temporary file is used as backing memory
+ * of all user space processes/kernel tasks.
+ */
+>>>>>>> v4.9.227
 void __init setup_physmem(unsigned long start, unsigned long reserve_end,
 			  unsigned long len, unsigned long long highmem)
 {
 	unsigned long reserve = reserve_end - start;
+<<<<<<< HEAD
 	int pfn = PFN_UP(__pa(reserve_end));
 	int delta = (len - reserve) >> PAGE_SHIFT;
 	int err, offset, bootmap_size;
@@ -73,6 +101,29 @@ void __init setup_physmem(unsigned long start, unsigned long reserve_end,
 	if (err < 0) {
 		printf("setup_physmem - mapping %ld bytes of memory at 0x%p "
 		       "failed - errno = %d\n", len - offset,
+=======
+	unsigned long pfn = PFN_UP(__pa(reserve_end));
+	unsigned long delta = (len - reserve) >> PAGE_SHIFT;
+	unsigned long offset, bootmap_size;
+	long map_size;
+	int err;
+
+	offset = uml_reserved - uml_physmem;
+	map_size = len - offset;
+	if(map_size <= 0) {
+		printf("Too few physical memory! Needed=%d, given=%d\n",
+		       offset, len);
+		exit(1);
+	}
+
+	physmem_fd = create_mem_file(len + highmem);
+
+	err = os_map_memory((void *) uml_reserved, physmem_fd, offset,
+			    map_size, 1, 1, 1);
+	if (err < 0) {
+		printf("setup_physmem - mapping %ld bytes of memory at 0x%p "
+		       "failed - errno = %d\n", map_size,
+>>>>>>> v4.9.227
 		       (void *) uml_reserved, err);
 		exit(1);
 	}
@@ -81,8 +132,13 @@ void __init setup_physmem(unsigned long start, unsigned long reserve_end,
 	 * Special kludge - This page will be mapped in to userspace processes
 	 * from physmem_fd, so it needs to be written out there.
 	 */
+<<<<<<< HEAD
 	os_seek_file(physmem_fd, __pa(&__syscall_stub_start));
 	os_write_file(physmem_fd, &__syscall_stub_start, PAGE_SIZE);
+=======
+	os_seek_file(physmem_fd, __pa(__syscall_stub_start));
+	os_write_file(physmem_fd, __syscall_stub_start, PAGE_SIZE);
+>>>>>>> v4.9.227
 	os_fsync_file(physmem_fd);
 
 	bootmap_size = init_bootmem(pfn, pfn + delta);

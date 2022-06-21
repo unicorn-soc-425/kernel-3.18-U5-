@@ -172,6 +172,11 @@ struct mxsfb_info {
 	struct fb_info fb_info;
 	struct platform_device *pdev;
 	struct clk *clk;
+<<<<<<< HEAD
+=======
+	struct clk *clk_axi;
+	struct clk *clk_disp_axi;
+>>>>>>> v4.9.227
 	void __iomem *base;	/* registers */
 	unsigned allocated_size;
 	int enabled;
@@ -314,6 +319,21 @@ static int mxsfb_check_var(struct fb_var_screeninfo *var,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline void mxsfb_enable_axi_clk(struct mxsfb_info *host)
+{
+	if (host->clk_axi)
+		clk_prepare_enable(host->clk_axi);
+}
+
+static inline void mxsfb_disable_axi_clk(struct mxsfb_info *host)
+{
+	if (host->clk_axi)
+		clk_disable_unprepare(host->clk_axi);
+}
+
+>>>>>>> v4.9.227
 static void mxsfb_enable_controller(struct fb_info *fb_info)
 {
 	struct mxsfb_info *host = to_imxfb_host(fb_info);
@@ -331,9 +351,19 @@ static void mxsfb_enable_controller(struct fb_info *fb_info)
 		}
 	}
 
+<<<<<<< HEAD
 	clk_prepare_enable(host->clk);
 	clk_set_rate(host->clk, PICOS2KHZ(fb_info->var.pixclock) * 1000U);
 
+=======
+	if (host->clk_disp_axi)
+		clk_prepare_enable(host->clk_disp_axi);
+	clk_prepare_enable(host->clk);
+	clk_set_rate(host->clk, PICOS2KHZ(fb_info->var.pixclock) * 1000U);
+
+	mxsfb_enable_axi_clk(host);
+
+>>>>>>> v4.9.227
 	/* if it was disabled, re-enable the mode again */
 	writel(CTRL_DOTCLK_MODE, host->base + LCDC_CTRL + REG_SET);
 
@@ -373,7 +403,15 @@ static void mxsfb_disable_controller(struct fb_info *fb_info)
 	reg = readl(host->base + LCDC_VDCTRL4);
 	writel(reg & ~VDCTRL4_SYNC_SIGNALS_ON, host->base + LCDC_VDCTRL4);
 
+<<<<<<< HEAD
 	clk_disable_unprepare(host->clk);
+=======
+	mxsfb_disable_axi_clk(host);
+
+	clk_disable_unprepare(host->clk);
+	if (host->clk_disp_axi)
+		clk_disable_unprepare(host->clk_disp_axi);
+>>>>>>> v4.9.227
 
 	host->enabled = 0;
 
@@ -410,6 +448,11 @@ static int mxsfb_set_par(struct fb_info *fb_info)
 		mxsfb_disable_controller(fb_info);
 	}
 
+<<<<<<< HEAD
+=======
+	mxsfb_enable_axi_clk(host);
+
+>>>>>>> v4.9.227
 	/* clear the FIFOs */
 	writel(CTRL1_FIFO_CLEAR, host->base + LCDC_CTRL1 + REG_SET);
 
@@ -427,6 +470,10 @@ static int mxsfb_set_par(struct fb_info *fb_info)
 		ctrl |= CTRL_SET_WORD_LENGTH(3);
 		switch (host->ld_intf_width) {
 		case STMLCDIF_8BIT:
+<<<<<<< HEAD
+=======
+			mxsfb_disable_axi_clk(host);
+>>>>>>> v4.9.227
 			dev_err(&host->pdev->dev,
 					"Unsupported LCD bus width mapping\n");
 			return -EINVAL;
@@ -440,6 +487,10 @@ static int mxsfb_set_par(struct fb_info *fb_info)
 		writel(CTRL1_SET_BYTE_PACKAGING(0x7), host->base + LCDC_CTRL1);
 		break;
 	default:
+<<<<<<< HEAD
+=======
+		mxsfb_disable_axi_clk(host);
+>>>>>>> v4.9.227
 		dev_err(&host->pdev->dev, "Unhandled color depth of %u\n",
 				fb_info->var.bits_per_pixel);
 		return -EINVAL;
@@ -493,6 +544,11 @@ static int mxsfb_set_par(struct fb_info *fb_info)
 			fb_info->fix.line_length * fb_info->var.yoffset,
 			host->base + host->devdata->next_buf);
 
+<<<<<<< HEAD
+=======
+	mxsfb_disable_axi_clk(host);
+
+>>>>>>> v4.9.227
 	if (reenable)
 		mxsfb_enable_controller(fb_info);
 
@@ -571,10 +627,20 @@ static int mxsfb_pan_display(struct fb_var_screeninfo *var,
 
 	offset = fb_info->fix.line_length * var->yoffset;
 
+<<<<<<< HEAD
+=======
+	mxsfb_enable_axi_clk(host);
+
+>>>>>>> v4.9.227
 	/* update on next VSYNC */
 	writel(fb_info->fix.smem_start + offset,
 			host->base + host->devdata->next_buf);
 
+<<<<<<< HEAD
+=======
+	mxsfb_disable_axi_clk(host);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -597,6 +663,7 @@ static int mxsfb_restore_mode(struct mxsfb_info *host,
 	unsigned line_count;
 	unsigned period;
 	unsigned long pa, fbsize;
+<<<<<<< HEAD
 	int bits_per_pixel, ofs;
 	u32 transfer_count, vdctrl0, vdctrl2, vdctrl3, vdctrl4, ctrl;
 
@@ -604,6 +671,19 @@ static int mxsfb_restore_mode(struct mxsfb_info *host,
 	ctrl = readl(host->base + LCDC_CTRL);
 	if (!(ctrl & CTRL_RUN))
 		return -EINVAL;
+=======
+	int bits_per_pixel, ofs, ret = 0;
+	u32 transfer_count, vdctrl0, vdctrl2, vdctrl3, vdctrl4, ctrl;
+
+	mxsfb_enable_axi_clk(host);
+
+	/* Only restore the mode when the controller is running */
+	ctrl = readl(host->base + LCDC_CTRL);
+	if (!(ctrl & CTRL_RUN)) {
+		ret = -EINVAL;
+		goto err;
+	}
+>>>>>>> v4.9.227
 
 	vdctrl0 = readl(host->base + LCDC_VDCTRL0);
 	vdctrl2 = readl(host->base + LCDC_VDCTRL2);
@@ -624,7 +704,12 @@ static int mxsfb_restore_mode(struct mxsfb_info *host,
 		break;
 	case 1:
 	default:
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		ret = -EINVAL;
+		goto err;
+>>>>>>> v4.9.227
 	}
 
 	fb_info->var.bits_per_pixel = bits_per_pixel;
@@ -662,10 +747,21 @@ static int mxsfb_restore_mode(struct mxsfb_info *host,
 
 	pa = readl(host->base + host->devdata->cur_buf);
 	fbsize = fb_info->fix.line_length * vmode->yres;
+<<<<<<< HEAD
 	if (pa < fb_info->fix.smem_start)
 		return -EINVAL;
 	if (pa + fbsize > fb_info->fix.smem_start + fb_info->fix.smem_len)
 		return -EINVAL;
+=======
+	if (pa < fb_info->fix.smem_start) {
+		ret = -EINVAL;
+		goto err;
+	}
+	if (pa + fbsize > fb_info->fix.smem_start + fb_info->fix.smem_len) {
+		ret = -EINVAL;
+		goto err;
+	}
+>>>>>>> v4.9.227
 	ofs = pa - fb_info->fix.smem_start;
 	if (ofs) {
 		memmove(fb_info->screen_base, fb_info->screen_base + ofs, fbsize);
@@ -678,7 +774,15 @@ static int mxsfb_restore_mode(struct mxsfb_info *host,
 	clk_prepare_enable(host->clk);
 	host->enabled = 1;
 
+<<<<<<< HEAD
 	return 0;
+=======
+err:
+	if (ret)
+		mxsfb_disable_axi_clk(host);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int mxsfb_init_fbinfo_dt(struct mxsfb_info *host,
@@ -755,6 +859,10 @@ static int mxsfb_init_fbinfo(struct mxsfb_info *host,
 			struct fb_videomode *vmode)
 {
 	int ret;
+<<<<<<< HEAD
+=======
+	struct device *dev = &host->pdev->dev;
+>>>>>>> v4.9.227
 	struct fb_info *fb_info = &host->fb_info;
 	struct fb_var_screeninfo *var = &fb_info->var;
 	dma_addr_t fb_phys;
@@ -780,12 +888,19 @@ static int mxsfb_init_fbinfo(struct mxsfb_info *host,
 
 	/* Memory allocation for framebuffer */
 	fb_size = SZ_2M;
+<<<<<<< HEAD
 	fb_virt = alloc_pages_exact(fb_size, GFP_DMA);
 	if (!fb_virt)
 		return -ENOMEM;
 
 	fb_phys = virt_to_phys(fb_virt);
 
+=======
+	fb_virt = dma_alloc_wc(dev, PAGE_ALIGN(fb_size), &fb_phys, GFP_KERNEL);
+	if (!fb_virt)
+		return -ENOMEM;
+
+>>>>>>> v4.9.227
 	fb_info->fix.smem_start = fb_phys;
 	fb_info->screen_base = fb_virt;
 	fb_info->screen_size = fb_info->fix.smem_len = fb_size;
@@ -798,12 +913,23 @@ static int mxsfb_init_fbinfo(struct mxsfb_info *host,
 
 static void mxsfb_free_videomem(struct mxsfb_info *host)
 {
+<<<<<<< HEAD
 	struct fb_info *fb_info = &host->fb_info;
 
 	free_pages_exact(fb_info->screen_base, fb_info->fix.smem_len);
 }
 
 static struct platform_device_id mxsfb_devtype[] = {
+=======
+	struct device *dev = &host->pdev->dev;
+	struct fb_info *fb_info = &host->fb_info;
+
+	dma_free_wc(dev, fb_info->screen_size, fb_info->screen_base,
+		    fb_info->fix.smem_start);
+}
+
+static const struct platform_device_id mxsfb_devtype[] = {
+>>>>>>> v4.9.227
 	{
 		.name = "imx23-fb",
 		.driver_data = MXSFB_V3,
@@ -867,6 +993,17 @@ static int mxsfb_probe(struct platform_device *pdev)
 		goto fb_release;
 	}
 
+<<<<<<< HEAD
+=======
+	host->clk_axi = devm_clk_get(&host->pdev->dev, "axi");
+	if (IS_ERR(host->clk_axi))
+		host->clk_axi = NULL;
+
+	host->clk_disp_axi = devm_clk_get(&host->pdev->dev, "disp_axi");
+	if (IS_ERR(host->clk_disp_axi))
+		host->clk_disp_axi = NULL;
+
+>>>>>>> v4.9.227
 	host->reg_lcd = devm_regulator_get(&pdev->dev, "lcd");
 	if (IS_ERR(host->reg_lcd))
 		host->reg_lcd = NULL;
@@ -896,7 +1033,13 @@ static int mxsfb_probe(struct platform_device *pdev)
 	}
 
 	if (!host->enabled) {
+<<<<<<< HEAD
 		writel(0, host->base + LCDC_CTRL);
+=======
+		mxsfb_enable_axi_clk(host);
+		writel(0, host->base + LCDC_CTRL);
+		mxsfb_disable_axi_clk(host);
+>>>>>>> v4.9.227
 		mxsfb_set_par(fb_info);
 		mxsfb_enable_controller(fb_info);
 	}
@@ -935,11 +1078,21 @@ static void mxsfb_shutdown(struct platform_device *pdev)
 	struct fb_info *fb_info = platform_get_drvdata(pdev);
 	struct mxsfb_info *host = to_imxfb_host(fb_info);
 
+<<<<<<< HEAD
+=======
+	mxsfb_enable_axi_clk(host);
+
+>>>>>>> v4.9.227
 	/*
 	 * Force stop the LCD controller as keeping it running during reboot
 	 * might interfere with the BootROM's boot mode pads sampling.
 	 */
 	writel(CTRL_RUN, host->base + LCDC_CTRL + REG_CLR);
+<<<<<<< HEAD
+=======
+
+	mxsfb_disable_axi_clk(host);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver mxsfb_driver = {

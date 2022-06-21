@@ -110,16 +110,44 @@ static int img_ir_probe(struct platform_device *pdev)
 	priv->clk = devm_clk_get(&pdev->dev, "core");
 	if (IS_ERR(priv->clk))
 		dev_warn(&pdev->dev, "cannot get core clock resource\n");
+<<<<<<< HEAD
 	/*
 	 * The driver doesn't need to know about the system ("sys") or power
 	 * modulation ("mod") clocks yet
 	 */
+=======
+
+	/* Get sys clock */
+	priv->sys_clk = devm_clk_get(&pdev->dev, "sys");
+	if (IS_ERR(priv->sys_clk))
+		dev_warn(&pdev->dev, "cannot get sys clock resource\n");
+	/*
+	 * Enabling the system clock before the register interface is
+	 * accessed. ISR shouldn't get called with Sys Clock disabled,
+	 * hence exiting probe with an error.
+	 */
+	if (!IS_ERR(priv->sys_clk)) {
+		error = clk_prepare_enable(priv->sys_clk);
+		if (error) {
+			dev_err(&pdev->dev, "cannot enable sys clock\n");
+			return error;
+		}
+	}
+>>>>>>> v4.9.227
 
 	/* Set up raw & hw decoder */
 	error = img_ir_probe_raw(priv);
 	error2 = img_ir_probe_hw(priv);
+<<<<<<< HEAD
 	if (error && error2)
 		return (error == -ENODEV) ? error2 : error;
+=======
+	if (error && error2) {
+		if (error == -ENODEV)
+			error = error2;
+		goto err_probe;
+	}
+>>>>>>> v4.9.227
 
 	/* Get the IRQ */
 	priv->irq = irq;
@@ -139,6 +167,12 @@ static int img_ir_probe(struct platform_device *pdev)
 err_irq:
 	img_ir_remove_hw(priv);
 	img_ir_remove_raw(priv);
+<<<<<<< HEAD
+=======
+err_probe:
+	if (!IS_ERR(priv->sys_clk))
+		clk_disable_unprepare(priv->sys_clk);
+>>>>>>> v4.9.227
 	return error;
 }
 
@@ -152,6 +186,11 @@ static int img_ir_remove(struct platform_device *pdev)
 
 	if (!IS_ERR(priv->clk))
 		clk_disable_unprepare(priv->clk);
+<<<<<<< HEAD
+=======
+	if (!IS_ERR(priv->sys_clk))
+		clk_disable_unprepare(priv->sys_clk);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -166,7 +205,10 @@ MODULE_DEVICE_TABLE(of, img_ir_match);
 static struct platform_driver img_ir_driver = {
 	.driver = {
 		.name = "img-ir",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= img_ir_match,
 		.pm = &img_ir_pmops,
 	},

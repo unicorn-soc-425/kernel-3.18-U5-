@@ -22,6 +22,12 @@
 #include <linux/mfd/syscon.h>
 #include <linux/phy/phy.h>
 
+<<<<<<< HEAD
+=======
+#define PHYPARAM_REG	1
+#define PHYCTRL_REG	2
+
+>>>>>>> v4.9.227
 /* Default PHY_SEL and REFCLKSEL configuration */
 #define STIH407_USB_PICOPHY_CTRL_PORT_CONF	0x6
 #define STIH407_USB_PICOPHY_CTRL_PORT_MASK	0x1f
@@ -93,7 +99,11 @@ static int stih407_usb2_picophy_probe(struct platform_device *pdev)
 	struct device_node *np = dev->of_node;
 	struct phy_provider *phy_provider;
 	struct phy *phy;
+<<<<<<< HEAD
 	struct resource *res;
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	phy_dev = devm_kzalloc(dev, sizeof(*phy_dev), GFP_KERNEL);
 	if (!phy_dev)
@@ -102,13 +112,21 @@ static int stih407_usb2_picophy_probe(struct platform_device *pdev)
 	phy_dev->dev = dev;
 	dev_set_drvdata(dev, phy_dev);
 
+<<<<<<< HEAD
 	phy_dev->rstc = devm_reset_control_get(dev, "global");
+=======
+	phy_dev->rstc = devm_reset_control_get_shared(dev, "global");
+>>>>>>> v4.9.227
 	if (IS_ERR(phy_dev->rstc)) {
 		dev_err(dev, "failed to ctrl picoPHY reset\n");
 		return PTR_ERR(phy_dev->rstc);
 	}
 
+<<<<<<< HEAD
 	phy_dev->rstport = devm_reset_control_get(dev, "port");
+=======
+	phy_dev->rstport = devm_reset_control_get_exclusive(dev, "port");
+>>>>>>> v4.9.227
 	if (IS_ERR(phy_dev->rstport)) {
 		dev_err(dev, "failed to ctrl picoPHY reset\n");
 		return PTR_ERR(phy_dev->rstport);
@@ -123,6 +141,7 @@ static int stih407_usb2_picophy_probe(struct platform_device *pdev)
 		return PTR_ERR(phy_dev->regmap);
 	}
 
+<<<<<<< HEAD
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "ctrl");
 	if (!res) {
 		dev_err(dev, "No ctrl reg found\n");
@@ -138,6 +157,23 @@ static int stih407_usb2_picophy_probe(struct platform_device *pdev)
 	phy_dev->param = res->start;
 
 	phy = devm_phy_create(dev, NULL, &stih407_usb2_picophy_data, NULL);
+=======
+	ret = of_property_read_u32_index(np, "st,syscfg", PHYPARAM_REG,
+					&phy_dev->param);
+	if (ret) {
+		dev_err(dev, "can't get phyparam offset (%d)\n", ret);
+		return ret;
+	}
+
+	ret = of_property_read_u32_index(np, "st,syscfg", PHYCTRL_REG,
+					&phy_dev->ctrl);
+	if (ret) {
+		dev_err(dev, "can't get phyctrl offset (%d)\n", ret);
+		return ret;
+	}
+
+	phy = devm_phy_create(dev, NULL, &stih407_usb2_picophy_data);
+>>>>>>> v4.9.227
 	if (IS_ERR(phy)) {
 		dev_err(dev, "failed to create Display Port PHY\n");
 		return PTR_ERR(phy);

@@ -342,6 +342,10 @@ ioremap_cache(phys_addr_t offset, unsigned long size)
 {
 	return __ioremap_mode(offset, size, PAGE_KERNEL);
 }
+<<<<<<< HEAD
+=======
+#define ioremap_cache ioremap_cache
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_HAVE_IOREMAP_PROT
 static inline void __iomem *
@@ -368,7 +372,16 @@ static inline int iounmap_fixed(void __iomem *addr) { return -EINVAL; }
 #endif
 
 #define ioremap_nocache	ioremap
+<<<<<<< HEAD
 #define iounmap		__iounmap
+=======
+#define ioremap_uc	ioremap
+
+static inline void iounmap(void __iomem *addr)
+{
+	__iounmap(addr);
+}
+>>>>>>> v4.9.227
 
 /*
  * Convert a physical pointer to a virtual kernel pointer for /dev/mem

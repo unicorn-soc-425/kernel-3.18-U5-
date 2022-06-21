@@ -59,7 +59,11 @@
 #define XBUS_SWITCH_J17_11	((*XBUS_SWITCH) & (1 << 5))
 #define XBUS_SWITCH_J17_9	((*XBUS_SWITCH) & (1 << 6))
 
+<<<<<<< HEAD
 #define UNCACHEABLE_ADDR	(ARMCSR_BASE + 0x108)
+=======
+#define UNCACHEABLE_ADDR	(ARMCSR_BASE + 0x108)	/* CSR_ROMBASEMASK */
+>>>>>>> v4.9.227
 
 
 /* PIC irq control */

@@ -9,6 +9,7 @@
  *
  */
 
+<<<<<<< HEAD
 enum drm_plane_type exynos_plane_get_type(unsigned int zpos,
 					  unsigned int cursor_win);
 int exynos_plane_init(struct drm_device *dev,
@@ -16,3 +17,9 @@ int exynos_plane_init(struct drm_device *dev,
 		      unsigned long possible_crtcs, enum drm_plane_type type,
 		      const uint32_t *formats, unsigned int fcount,
 		      unsigned int zpos);
+=======
+int exynos_plane_init(struct drm_device *dev,
+		      struct exynos_drm_plane *exynos_plane, unsigned int index,
+		      unsigned long possible_crtcs,
+		      const struct exynos_drm_plane_config *config);
+>>>>>>> v4.9.227

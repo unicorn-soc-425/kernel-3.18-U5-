@@ -113,12 +113,18 @@ static const struct file_operations csio_mem_debugfs_fops = {
 void csio_add_debugfs_mem(struct csio_hw *hw, const char *name,
 				 unsigned int idx, unsigned int size_mb)
 {
+<<<<<<< HEAD
 	struct dentry *de;
 
 	de = debugfs_create_file(name, S_IRUSR, hw->debugfs_root,
 				 (void *)hw + idx, &csio_mem_debugfs_fops);
 	if (de && de->d_inode)
 		de->d_inode->i_size = size_mb << 20;
+=======
+	debugfs_create_file_size(name, S_IRUSR, hw->debugfs_root,
+				 (void *)hw + idx, &csio_mem_debugfs_fops,
+				 size_mb << 20);
+>>>>>>> v4.9.227
 }
 
 static int csio_setup_debugfs(struct csio_hw *hw)
@@ -128,10 +134,17 @@ static int csio_setup_debugfs(struct csio_hw *hw)
 	if (IS_ERR_OR_NULL(hw->debugfs_root))
 		return -1;
 
+<<<<<<< HEAD
 	i = csio_rd_reg32(hw, MA_TARGET_MEM_ENABLE);
 	if (i & EDRAM0_ENABLE)
 		csio_add_debugfs_mem(hw, "edc0", MEM_EDC0, 5);
 	if (i & EDRAM1_ENABLE)
+=======
+	i = csio_rd_reg32(hw, MA_TARGET_MEM_ENABLE_A);
+	if (i & EDRAM0_ENABLE_F)
+		csio_add_debugfs_mem(hw, "edc0", MEM_EDC0, 5);
+	if (i & EDRAM1_ENABLE_F)
+>>>>>>> v4.9.227
 		csio_add_debugfs_mem(hw, "edc1", MEM_EDC1, 5);
 
 	hw->chip_ops->chip_dfs_create_ext_mem(hw);
@@ -651,7 +664,11 @@ csio_shost_init(struct csio_hw *hw, struct device *dev,
 	if (csio_lnode_init(ln, hw, pln))
 		goto err_shost_put;
 
+<<<<<<< HEAD
 	if (scsi_add_host(shost, dev))
+=======
+	if (scsi_add_host_with_dma(shost, dev, &hw->pdev->dev))
+>>>>>>> v4.9.227
 		goto err_lnode_exit;
 
 	return ln;
@@ -955,6 +972,13 @@ static int csio_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	struct csio_hw *hw;
 	struct csio_lnode *ln;
 
+<<<<<<< HEAD
+=======
+	/* probe only T5 cards */
+	if (!csio_is_t5((pdev->device & CSIO_HW_CHIP_MASK)))
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	rv = csio_pci_init(pdev, &bars);
 	if (rv)
 		goto err;
@@ -974,10 +998,17 @@ static int csio_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	}
 
 	sprintf(hw->fwrev_str, "%u.%u.%u.%u\n",
+<<<<<<< HEAD
 		    FW_HDR_FW_VER_MAJOR_GET(hw->fwrev),
 		    FW_HDR_FW_VER_MINOR_GET(hw->fwrev),
 		    FW_HDR_FW_VER_MICRO_GET(hw->fwrev),
 		    FW_HDR_FW_VER_BUILD_GET(hw->fwrev));
+=======
+		    FW_HDR_FW_VER_MAJOR_G(hw->fwrev),
+		    FW_HDR_FW_VER_MINOR_G(hw->fwrev),
+		    FW_HDR_FW_VER_MICRO_G(hw->fwrev),
+		    FW_HDR_FW_VER_BUILD_G(hw->fwrev));
+>>>>>>> v4.9.227
 
 	for (i = 0; i < hw->num_pports; i++) {
 		ln = csio_shost_init(hw, &pdev->dev, true, NULL);
@@ -1167,6 +1198,7 @@ static struct pci_error_handlers csio_err_handler = {
 	.resume		= csio_pci_resume,
 };
 
+<<<<<<< HEAD
 static const struct pci_device_id csio_pci_tbl[] = {
 	CSIO_DEVICE(CSIO_DEVID_T440DBG_FCOE, 0),        /* T4 DEBUG FCOE */
 	CSIO_DEVICE(CSIO_DEVID_T420CR_FCOE, 0),		/* T420CR FCOE */
@@ -1214,6 +1246,22 @@ static const struct pci_device_id csio_pci_tbl[] = {
 	{ 0, 0, 0, 0, 0, 0, 0 }
 };
 
+=======
+/*
+ *  Macros needed to support the PCI Device ID Table ...
+ */
+#define CH_PCI_DEVICE_ID_TABLE_DEFINE_BEGIN \
+	static const struct pci_device_id csio_pci_tbl[] = {
+/* Define for FCoE uses PF6 */
+#define CH_PCI_DEVICE_ID_FUNCTION	0x6
+
+#define CH_PCI_ID_TABLE_ENTRY(devid) \
+		{ PCI_VDEVICE(CHELSIO, (devid)), 0 }
+
+#define CH_PCI_DEVICE_ID_TABLE_DEFINE_END { 0, } }
+
+#include "t4_pci_id_tbl.h"
+>>>>>>> v4.9.227
 
 static struct pci_driver csio_pci_driver = {
 	.name		= KBUILD_MODNAME,
@@ -1284,5 +1332,8 @@ MODULE_DESCRIPTION(CSIO_DRV_DESC);
 MODULE_LICENSE(CSIO_DRV_LICENSE);
 MODULE_DEVICE_TABLE(pci, csio_pci_tbl);
 MODULE_VERSION(CSIO_DRV_VERSION);
+<<<<<<< HEAD
 MODULE_FIRMWARE(FW_FNAME_T4);
+=======
+>>>>>>> v4.9.227
 MODULE_FIRMWARE(FW_FNAME_T5);

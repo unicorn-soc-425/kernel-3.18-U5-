@@ -17,6 +17,10 @@
 #include <linux/videodev2.h>
 #include <media/v4l2-common.h>
 #include <media/v4l2-fh.h>
+<<<<<<< HEAD
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/videobuf2-dma-contig.h>
 #include <media/davinci/vpbe_types.h>
 #include <media/davinci/vpbe_osd.h>
@@ -64,14 +68,21 @@ struct display_layer_info {
 };
 
 struct vpbe_disp_buffer {
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head list;
 };
 
 /* vpbe display object structure */
 struct vpbe_layer {
+<<<<<<< HEAD
 	/* number of buffers in fbuffers */
 	unsigned int numbuffers;
+=======
+>>>>>>> v4.9.227
 	/* Pointer to the vpbe_display */
 	struct vpbe_display *disp_dev;
 	/* Pointer pointing to current v4l2_buffer */
@@ -82,8 +93,11 @@ struct vpbe_layer {
 	 * Buffer queue used in video-buf
 	 */
 	struct vb2_queue buffer_queue;
+<<<<<<< HEAD
 	/* allocator-specific contexts for each plane */
 	struct vb2_alloc_ctx *alloc_ctx;
+=======
+>>>>>>> v4.9.227
 	/* Queue of filled frames */
 	struct list_head dma_queue;
 	/* Used in video-buf */
@@ -91,10 +105,13 @@ struct vpbe_layer {
 	/* V4l2 specific parameters */
 	/* Identifies video device for this layer */
 	struct video_device video_dev;
+<<<<<<< HEAD
 	/* This field keeps track of type of buffer exchange mechanism user
 	 * has selected
 	 */
 	enum v4l2_memory memory;
+=======
+>>>>>>> v4.9.227
 	/* Used to store pixel format */
 	struct v4l2_pix_format pix_fmt;
 	enum v4l2_field buf_field;
@@ -106,12 +123,17 @@ struct vpbe_layer {
 	unsigned char window_enable;
 	/* number of open instances of the layer */
 	unsigned int usrs;
+<<<<<<< HEAD
 	/* number of users performing IO */
 	unsigned int io_usrs;
 	/* Indicates id of the field which is being displayed */
 	unsigned int field_id;
 	/* Indicates whether streaming started */
 	unsigned char started;
+=======
+	/* Indicates id of the field which is being displayed */
+	unsigned int field_id;
+>>>>>>> v4.9.227
 	/* Identifies device object */
 	enum vpbe_display_device_id device_id;
 	/* facilitation of ioctl ops lock by v4l2*/
@@ -131,6 +153,7 @@ struct vpbe_display {
 	struct osd_state *osd_device;
 };
 
+<<<<<<< HEAD
 /* File handle structure */
 struct vpbe_fh {
 	struct v4l2_fh fh;
@@ -142,6 +165,8 @@ struct vpbe_fh {
 	unsigned char io_allowed;
 };
 
+=======
+>>>>>>> v4.9.227
 struct buf_config_params {
 	unsigned char min_numbuffers;
 	unsigned char numbuffers[VPBE_DISPLAY_MAX_DEVICES];

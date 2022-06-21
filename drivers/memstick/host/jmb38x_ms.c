@@ -419,10 +419,17 @@ static int jmb38x_ms_issue_cmd(struct memstick_host *msh)
 	}
 
 	if (host->cmd_flags & DMA_DATA) {
+<<<<<<< HEAD
 		if (1 != pci_map_sg(host->chip->pdev, &host->req->sg, 1,
 				    host->req->data_dir == READ
 				    ? PCI_DMA_FROMDEVICE
 				    : PCI_DMA_TODEVICE)) {
+=======
+		if (1 != dma_map_sg(&host->chip->pdev->dev, &host->req->sg, 1,
+				    host->req->data_dir == READ
+				    ? DMA_FROM_DEVICE
+				    : DMA_TO_DEVICE)) {
+>>>>>>> v4.9.227
 			host->req->error = -ENOMEM;
 			return host->req->error;
 		}
@@ -487,9 +494,15 @@ static void jmb38x_ms_complete_cmd(struct memstick_host *msh, int last)
 	writel(0, host->addr + DMA_CONTROL);
 
 	if (host->cmd_flags & DMA_DATA) {
+<<<<<<< HEAD
 		pci_unmap_sg(host->chip->pdev, &host->req->sg, 1,
 			     host->req->data_dir == READ
 			     ? PCI_DMA_FROMDEVICE : PCI_DMA_TODEVICE);
+=======
+		dma_unmap_sg(&host->chip->pdev->dev, &host->req->sg, 1,
+			     host->req->data_dir == READ
+			     ? DMA_FROM_DEVICE : DMA_TO_DEVICE);
+>>>>>>> v4.9.227
 	} else {
 		t_val = readl(host->addr + INT_STATUS_ENABLE);
 		if (host->req->data_dir == READ)
@@ -925,7 +938,11 @@ static int jmb38x_ms_probe(struct pci_dev *pdev,
 	int pci_dev_busy = 0;
 	int rc, cnt;
 
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> v4.9.227
 	if (rc)
 		return rc;
 
@@ -947,7 +964,11 @@ static int jmb38x_ms_probe(struct pci_dev *pdev,
 	if (!cnt) {
 		rc = -ENODEV;
 		pci_dev_busy = 1;
+<<<<<<< HEAD
 		goto err_out;
+=======
+		goto err_out_int;
+>>>>>>> v4.9.227
 	}
 
 	jm = kzalloc(sizeof(struct jmb38x_ms)

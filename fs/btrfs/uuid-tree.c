@@ -69,8 +69,14 @@ static int btrfs_uuid_tree_lookup(struct btrfs_root *uuid_root, u8 *uuid,
 	ret = -ENOENT;
 
 	if (!IS_ALIGNED(item_size, sizeof(u64))) {
+<<<<<<< HEAD
 		btrfs_warn(uuid_root->fs_info, "uuid item with illegal size %lu!",
 			(unsigned long)item_size);
+=======
+		btrfs_warn(uuid_root->fs_info,
+			   "uuid item with illegal size %lu!",
+			   (unsigned long)item_size);
+>>>>>>> v4.9.227
 		goto out;
 	}
 	while (item_size) {
@@ -137,10 +143,17 @@ int btrfs_uuid_tree_add(struct btrfs_trans_handle *trans,
 		offset = btrfs_item_ptr_offset(eb, slot);
 		offset += btrfs_item_size_nr(eb, slot) - sizeof(subid_le);
 	} else if (ret < 0) {
+<<<<<<< HEAD
 		btrfs_warn(uuid_root->fs_info, "insert uuid item failed %d "
 			"(0x%016llx, 0x%016llx) type %u!",
 			ret, (unsigned long long)key.objectid,
 			(unsigned long long)key.offset, type);
+=======
+		btrfs_warn(uuid_root->fs_info,
+			   "insert uuid item failed %d (0x%016llx, 0x%016llx) type %u!",
+			   ret, (unsigned long long)key.objectid,
+			   (unsigned long long)key.offset, type);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -184,8 +197,13 @@ int btrfs_uuid_tree_rem(struct btrfs_trans_handle *trans,
 
 	ret = btrfs_search_slot(trans, uuid_root, &key, path, -1, 1);
 	if (ret < 0) {
+<<<<<<< HEAD
 		btrfs_warn(uuid_root->fs_info, "error %d while searching for uuid item!",
 			ret);
+=======
+		btrfs_warn(uuid_root->fs_info,
+			   "error %d while searching for uuid item!", ret);
+>>>>>>> v4.9.227
 		goto out;
 	}
 	if (ret > 0) {
@@ -198,8 +216,14 @@ int btrfs_uuid_tree_rem(struct btrfs_trans_handle *trans,
 	offset = btrfs_item_ptr_offset(eb, slot);
 	item_size = btrfs_item_size_nr(eb, slot);
 	if (!IS_ALIGNED(item_size, sizeof(u64))) {
+<<<<<<< HEAD
 		btrfs_warn(uuid_root->fs_info, "uuid item with illegal size %lu!",
 			(unsigned long)item_size);
+=======
+		btrfs_warn(uuid_root->fs_info,
+			   "uuid item with illegal size %lu!",
+			   (unsigned long)item_size);
+>>>>>>> v4.9.227
 		ret = -ENOENT;
 		goto out;
 	}
@@ -299,8 +323,14 @@ again_search_slot:
 		offset = btrfs_item_ptr_offset(leaf, slot);
 		item_size = btrfs_item_size_nr(leaf, slot);
 		if (!IS_ALIGNED(item_size, sizeof(u64))) {
+<<<<<<< HEAD
 			btrfs_warn(fs_info, "uuid item with illegal size %lu!",
 				(unsigned long)item_size);
+=======
+			btrfs_warn(fs_info,
+				   "uuid item with illegal size %lu!",
+				   (unsigned long)item_size);
+>>>>>>> v4.9.227
 			goto skip;
 		}
 		while (item_size) {
@@ -332,6 +362,11 @@ again_search_slot:
 				}
 				if (ret < 0 && ret != -ENOENT)
 					goto out;
+<<<<<<< HEAD
+=======
+				key.offset++;
+				goto again_search_slot;
+>>>>>>> v4.9.227
 			}
 			item_size -= sizeof(subid_le);
 			offset += sizeof(subid_le);

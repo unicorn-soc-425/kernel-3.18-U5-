@@ -1,4 +1,10 @@
 /*
+<<<<<<< HEAD
+=======
+ * Freescale imx6sl pinctrl driver
+ *
+ * Author: Shawn Guo <shawn.guo@linaro.org>
+>>>>>>> v4.9.227
  * Copyright (C) 2013 Freescale Semiconductor, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -9,7 +15,10 @@
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/pinctrl/pinctrl.h>
@@ -364,13 +373,20 @@ static const struct pinctrl_pin_desc imx6sl_pinctrl_pads[] = {
 static struct imx_pinctrl_soc_info imx6sl_pinctrl_info = {
 	.pins = imx6sl_pinctrl_pads,
 	.npins = ARRAY_SIZE(imx6sl_pinctrl_pads),
+<<<<<<< HEAD
+=======
+	.gpr_compatible = "fsl,imx6sl-iomuxc-gpr",
+>>>>>>> v4.9.227
 };
 
 static const struct of_device_id imx6sl_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx6sl-iomuxc", },
 	{ /* sentinel */ }
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, imx6sl_pinctrl_of_match);
+=======
+>>>>>>> v4.9.227
 
 static int imx6sl_pinctrl_probe(struct platform_device *pdev)
 {
@@ -380,11 +396,17 @@ static int imx6sl_pinctrl_probe(struct platform_device *pdev)
 static struct platform_driver imx6sl_pinctrl_driver = {
 	.driver = {
 		.name = "imx6sl-pinctrl",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = imx6sl_pinctrl_of_match,
 	},
 	.probe = imx6sl_pinctrl_probe,
 	.remove = imx_pinctrl_remove,
+=======
+		.of_match_table = imx6sl_pinctrl_of_match,
+	},
+	.probe = imx6sl_pinctrl_probe,
+>>>>>>> v4.9.227
 };
 
 static int __init imx6sl_pinctrl_init(void)
@@ -392,6 +414,7 @@ static int __init imx6sl_pinctrl_init(void)
 	return platform_driver_register(&imx6sl_pinctrl_driver);
 }
 arch_initcall(imx6sl_pinctrl_init);
+<<<<<<< HEAD
 
 static void __exit imx6sl_pinctrl_exit(void)
 {
@@ -402,3 +425,5 @@ module_exit(imx6sl_pinctrl_exit);
 MODULE_AUTHOR("Shawn Guo <shawn.guo@linaro.org>");
 MODULE_DESCRIPTION("Freescale imx6sl pinctrl driver");
 MODULE_LICENSE("GPL v2");
+=======
+>>>>>>> v4.9.227

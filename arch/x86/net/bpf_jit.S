@@ -8,7 +8,11 @@
  * of the License.
  */
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/dwarf2.h>
+=======
+#include <asm/frame.h>
+>>>>>>> v4.9.227
 
 /*
  * Calling convention :
@@ -23,6 +27,7 @@
 	32 /* space for rbx,r13,r14,r15 */ + \
 	8 /* space for skb_copy_bits */)
 
+<<<<<<< HEAD
 sk_load_word:
 	.globl	sk_load_word
 
@@ -32,6 +37,18 @@ sk_load_word:
 sk_load_word_positive_offset:
 	.globl	sk_load_word_positive_offset
 
+=======
+#define FUNC(name) \
+	.globl name; \
+	.type name, @function; \
+	name:
+
+FUNC(sk_load_word)
+	test	%esi,%esi
+	js	bpf_slow_path_word_neg
+
+FUNC(sk_load_word_positive_offset)
+>>>>>>> v4.9.227
 	mov	%r9d,%eax		# hlen
 	sub	%esi,%eax		# hlen - offset
 	cmp	$3,%eax
@@ -40,6 +57,7 @@ sk_load_word_positive_offset:
 	bswap   %eax  			/* ntohl() */
 	ret
 
+<<<<<<< HEAD
 sk_load_half:
 	.globl	sk_load_half
 
@@ -49,6 +67,13 @@ sk_load_half:
 sk_load_half_positive_offset:
 	.globl	sk_load_half_positive_offset
 
+=======
+FUNC(sk_load_half)
+	test	%esi,%esi
+	js	bpf_slow_path_half_neg
+
+FUNC(sk_load_half_positive_offset)
+>>>>>>> v4.9.227
 	mov	%r9d,%eax
 	sub	%esi,%eax		#	hlen - offset
 	cmp	$1,%eax
@@ -57,6 +82,7 @@ sk_load_half_positive_offset:
 	rol	$8,%ax			# ntohs()
 	ret
 
+<<<<<<< HEAD
 sk_load_byte:
 	.globl	sk_load_byte
 
@@ -66,6 +92,13 @@ sk_load_byte:
 sk_load_byte_positive_offset:
 	.globl	sk_load_byte_positive_offset
 
+=======
+FUNC(sk_load_byte)
+	test	%esi,%esi
+	js	bpf_slow_path_byte_neg
+
+FUNC(sk_load_byte_positive_offset)
+>>>>>>> v4.9.227
 	cmp	%esi,%r9d   /* if (offset >= hlen) goto bpf_slow_path_byte */
 	jle	bpf_slow_path_byte
 	movzbl	(SKBDATA,%rsi),%eax
@@ -73,16 +106,29 @@ sk_load_byte_positive_offset:
 
 /* rsi contains offset and can be scratched */
 #define bpf_slow_path_common(LEN)		\
+<<<<<<< HEAD
+=======
+	lea	-MAX_BPF_STACK + 32(%rbp), %rdx;\
+	FRAME_BEGIN;				\
+>>>>>>> v4.9.227
 	mov	%rbx, %rdi; /* arg1 == skb */	\
 	push	%r9;				\
 	push	SKBDATA;			\
 /* rsi already has offset */			\
 	mov	$LEN,%ecx;	/* len */	\
+<<<<<<< HEAD
 	lea	- MAX_BPF_STACK + 32(%rbp),%rdx;			\
 	call	skb_copy_bits;			\
 	test    %eax,%eax;			\
 	pop	SKBDATA;			\
 	pop	%r9;
+=======
+	call	skb_copy_bits;			\
+	test    %eax,%eax;			\
+	pop	SKBDATA;			\
+	pop	%r9;				\
+	FRAME_END
+>>>>>>> v4.9.227
 
 
 bpf_slow_path_word:
@@ -107,6 +153,10 @@ bpf_slow_path_byte:
 	ret
 
 #define sk_negative_common(SIZE)				\
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN;						\
+>>>>>>> v4.9.227
 	mov	%rbx, %rdi; /* arg1 == skb */			\
 	push	%r9;						\
 	push	SKBDATA;					\
@@ -116,13 +166,22 @@ bpf_slow_path_byte:
 	test	%rax,%rax;					\
 	pop	SKBDATA;					\
 	pop	%r9;						\
+<<<<<<< HEAD
+=======
+	FRAME_END;						\
+>>>>>>> v4.9.227
 	jz	bpf_error
 
 bpf_slow_path_word_neg:
 	cmp	SKF_MAX_NEG_OFF, %esi	/* test range */
 	jl	bpf_error	/* offset lower -> error  */
+<<<<<<< HEAD
 sk_load_word_negative_offset:
 	.globl	sk_load_word_negative_offset
+=======
+
+FUNC(sk_load_word_negative_offset)
+>>>>>>> v4.9.227
 	sk_negative_common(4)
 	mov	(%rax), %eax
 	bswap	%eax
@@ -131,8 +190,13 @@ sk_load_word_negative_offset:
 bpf_slow_path_half_neg:
 	cmp	SKF_MAX_NEG_OFF, %esi
 	jl	bpf_error
+<<<<<<< HEAD
 sk_load_half_negative_offset:
 	.globl	sk_load_half_negative_offset
+=======
+
+FUNC(sk_load_half_negative_offset)
+>>>>>>> v4.9.227
 	sk_negative_common(2)
 	mov	(%rax),%ax
 	rol	$8,%ax
@@ -142,8 +206,13 @@ sk_load_half_negative_offset:
 bpf_slow_path_byte_neg:
 	cmp	SKF_MAX_NEG_OFF, %esi
 	jl	bpf_error
+<<<<<<< HEAD
 sk_load_byte_negative_offset:
 	.globl	sk_load_byte_negative_offset
+=======
+
+FUNC(sk_load_byte_negative_offset)
+>>>>>>> v4.9.227
 	sk_negative_common(1)
 	movzbl	(%rax), %eax
 	ret

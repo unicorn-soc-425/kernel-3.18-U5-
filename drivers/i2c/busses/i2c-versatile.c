@@ -70,6 +70,7 @@ static int i2c_versatile_probe(struct platform_device *dev)
 	struct resource *r;
 	int ret;
 
+<<<<<<< HEAD
 	r = platform_get_resource(dev, IORESOURCE_MEM, 0);
 	if (!r) {
 		ret = -EINVAL;
@@ -92,6 +93,16 @@ static int i2c_versatile_probe(struct platform_device *dev)
 		ret = -ENOMEM;
 		goto err_free;
 	}
+=======
+	i2c = devm_kzalloc(&dev->dev, sizeof(struct i2c_versatile), GFP_KERNEL);
+	if (!i2c)
+		return -ENOMEM;
+
+	r = platform_get_resource(dev, IORESOURCE_MEM, 0);
+	i2c->base = devm_ioremap_resource(&dev->dev, r);
+	if (IS_ERR(i2c->base))
+		return PTR_ERR(i2c->base);
+>>>>>>> v4.9.227
 
 	writel(SCL | SDA, i2c->base + I2C_CONTROLS);
 
@@ -105,6 +116,7 @@ static int i2c_versatile_probe(struct platform_device *dev)
 
 	i2c->adap.nr = dev->id;
 	ret = i2c_bit_add_numbered_bus(&i2c->adap);
+<<<<<<< HEAD
 	if (ret >= 0) {
 		platform_set_drvdata(dev, i2c);
 		return 0;
@@ -117,6 +129,14 @@ static int i2c_versatile_probe(struct platform_device *dev)
 	release_mem_region(r->start, resource_size(r));
  err_out:
 	return ret;
+=======
+	if (ret < 0)
+		return ret;
+
+	platform_set_drvdata(dev, i2c);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int i2c_versatile_remove(struct platform_device *dev)
@@ -138,7 +158,10 @@ static struct platform_driver i2c_versatile_driver = {
 	.remove		= i2c_versatile_remove,
 	.driver		= {
 		.name	= "versatile-i2c",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = i2c_versatile_match,
 	},
 };

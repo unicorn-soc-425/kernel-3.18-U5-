@@ -78,8 +78,11 @@ static struct platform_device xlr_nor_dev = {
 	.resource	= xlr_nor_res,
 };
 
+<<<<<<< HEAD
 const char *xlr_part_probes[] = { "cmdlinepart", NULL };
 
+=======
+>>>>>>> v4.9.227
 /*
  * Use "gen_nand" driver for NAND flash
  *
@@ -111,7 +114,10 @@ struct platform_nand_data xlr_nand_data = {
 		.nr_partitions	= ARRAY_SIZE(xlr_nand_parts),
 		.chip_delay	= 50,
 		.partitions	= xlr_nand_parts,
+<<<<<<< HEAD
 		.part_probe_types = xlr_part_probes,
+=======
+>>>>>>> v4.9.227
 	},
 	.ctrl = {
 		.cmd_ctrl	= xlr_nand_ctrl,

@@ -61,4 +61,10 @@
  */
 #define __write_once __read_mostly
 
+<<<<<<< HEAD
+=======
+/* __ro_after_init is the generic name for the tile arch __write_once. */
+#define __ro_after_init __read_mostly
+
+>>>>>>> v4.9.227
 #endif /* _ASM_TILE_CACHE_H */

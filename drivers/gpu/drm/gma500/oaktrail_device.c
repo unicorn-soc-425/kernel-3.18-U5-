@@ -568,6 +568,11 @@ const struct psb_ops oaktrail_chip_ops = {
 
 	.save_regs = oaktrail_save_display_registers,
 	.restore_regs = oaktrail_restore_display_registers,
+<<<<<<< HEAD
+=======
+	.save_crtc = gma_crtc_save,
+	.restore_crtc = gma_crtc_restore,
+>>>>>>> v4.9.227
 	.power_down = oaktrail_power_down,
 	.power_up = oaktrail_power_up,
 

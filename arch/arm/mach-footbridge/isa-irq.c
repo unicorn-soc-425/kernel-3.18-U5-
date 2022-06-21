@@ -87,13 +87,21 @@ static struct irq_chip isa_hi_chip = {
 	.irq_unmask	= isa_unmask_pic_hi_irq,
 };
 
+<<<<<<< HEAD
 static void
 isa_irq_handler(unsigned int irq, struct irq_desc *desc)
+=======
+static void isa_irq_handler(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	unsigned int isa_irq = *(unsigned char *)PCIIACK_BASE;
 
 	if (isa_irq < _ISA_IRQ(0) || isa_irq >= _ISA_IRQ(16)) {
+<<<<<<< HEAD
 		do_bad_IRQ(isa_irq, desc);
+=======
+		do_bad_IRQ(desc);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -153,13 +161,21 @@ void __init isa_init_irq(unsigned int host_irq)
 		for (irq = _ISA_IRQ(0); irq < _ISA_IRQ(8); irq++) {
 			irq_set_chip_and_handler(irq, &isa_lo_chip,
 						 handle_level_irq);
+<<<<<<< HEAD
 			set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+			irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> v4.9.227
 		}
 
 		for (irq = _ISA_IRQ(8); irq < _ISA_IRQ(16); irq++) {
 			irq_set_chip_and_handler(irq, &isa_hi_chip,
 						 handle_level_irq);
+<<<<<<< HEAD
 			set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+			irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> v4.9.227
 		}
 
 		request_resource(&ioport_resource, &pic1_resource);
@@ -175,8 +191,13 @@ void __init isa_init_irq(unsigned int host_irq)
 		 * resistor on this line.
 		 */
 		if (machine_is_netwinder())
+<<<<<<< HEAD
 			set_irq_flags(_ISA_IRQ(11), IRQF_VALID |
 				      IRQF_PROBE | IRQF_NOAUTOEN);
+=======
+			irq_modify_status(_ISA_IRQ(11),
+				IRQ_NOREQUEST | IRQ_NOPROBE, IRQ_NOAUTOEN);
+>>>>>>> v4.9.227
 	}
 }
 

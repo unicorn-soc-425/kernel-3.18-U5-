@@ -53,6 +53,10 @@
 #include "xattr.h"
 #include "refcounttree.h"
 #include "ocfs2_trace.h"
+<<<<<<< HEAD
+=======
+#include "filecheck.h"
+>>>>>>> v4.9.227
 
 #include "buffer_head_io.h"
 
@@ -74,6 +78,17 @@ static int ocfs2_truncate_for_delete(struct ocfs2_super *osb,
 				    struct inode *inode,
 				    struct buffer_head *fe_bh);
 
+<<<<<<< HEAD
+=======
+static int ocfs2_filecheck_read_inode_block_full(struct inode *inode,
+						 struct buffer_head **bh,
+						 int flags, int type);
+static int ocfs2_filecheck_validate_inode_block(struct super_block *sb,
+						struct buffer_head *bh);
+static int ocfs2_filecheck_repair_inode_block(struct super_block *sb,
+					      struct buffer_head *bh);
+
+>>>>>>> v4.9.227
 void ocfs2_set_inode_flags(struct inode *inode)
 {
 	unsigned int flags = OCFS2_I(inode)->ip_attr;
@@ -127,6 +142,10 @@ struct inode *ocfs2_ilookup(struct super_block *sb, u64 blkno)
 struct inode *ocfs2_iget(struct ocfs2_super *osb, u64 blkno, unsigned flags,
 			 int sysfile_type)
 {
+<<<<<<< HEAD
+=======
+	int rc = 0;
+>>>>>>> v4.9.227
 	struct inode *inode = NULL;
 	struct super_block *sb = osb->sb;
 	struct ocfs2_find_inode_args args;
@@ -161,12 +180,20 @@ struct inode *ocfs2_iget(struct ocfs2_super *osb, u64 blkno, unsigned flags,
 	}
 	trace_ocfs2_iget5_locked(inode->i_state);
 	if (inode->i_state & I_NEW) {
+<<<<<<< HEAD
 		ocfs2_read_locked_inode(inode, &args);
+=======
+		rc = ocfs2_read_locked_inode(inode, &args);
+>>>>>>> v4.9.227
 		unlock_new_inode(inode);
 	}
 	if (is_bad_inode(inode)) {
 		iput(inode);
+<<<<<<< HEAD
 		inode = ERR_PTR(-ESTALE);
+=======
+		inode = ERR_PTR(rc);
+>>>>>>> v4.9.227
 		goto bail;
 	}
 
@@ -247,7 +274,11 @@ static int ocfs2_init_locked_inode(struct inode *inode, void *opaque)
 	inode->i_ino = args->fi_ino;
 	OCFS2_I(inode)->ip_blkno = args->fi_blkno;
 	if (args->fi_sysfile_type != 0)
+<<<<<<< HEAD
 		lockdep_set_class(&inode->i_mutex,
+=======
+		lockdep_set_class(&inode->i_rwsem,
+>>>>>>> v4.9.227
 			&ocfs2_sysfile_lock_key[args->fi_sysfile_type]);
 	if (args->fi_sysfile_type == USER_QUOTA_SYSTEM_INODE ||
 	    args->fi_sysfile_type == GROUP_QUOTA_SYSTEM_INODE ||
@@ -361,6 +392,10 @@ void ocfs2_populate_inode(struct inode *inode, struct ocfs2_dinode *fe,
 		    break;
 	    case S_IFLNK:
 		    inode->i_op = &ocfs2_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		    inode_nohighmem(inode);
+>>>>>>> v4.9.227
 		    i_size_write(inode, le64_to_cpu(fe->i_size));
 		    break;
 	    default:
@@ -409,7 +444,11 @@ static int ocfs2_read_locked_inode(struct inode *inode,
 	struct ocfs2_super *osb;
 	struct ocfs2_dinode *fe;
 	struct buffer_head *bh = NULL;
+<<<<<<< HEAD
 	int status, can_lock;
+=======
+	int status, can_lock, lock_level = 0;
+>>>>>>> v4.9.227
 	u32 generation = 0;
 
 	status = -EINVAL;
@@ -477,7 +516,11 @@ static int ocfs2_read_locked_inode(struct inode *inode,
 			mlog_errno(status);
 			return status;
 		}
+<<<<<<< HEAD
 		status = ocfs2_inode_lock(inode, NULL, 0);
+=======
+		status = ocfs2_inode_lock(inode, NULL, lock_level);
+>>>>>>> v4.9.227
 		if (status) {
 			make_bad_inode(inode);
 			mlog_errno(status);
@@ -494,16 +537,42 @@ static int ocfs2_read_locked_inode(struct inode *inode,
 	}
 
 	if (can_lock) {
+<<<<<<< HEAD
 		status = ocfs2_read_inode_block_full(inode, &bh,
 						     OCFS2_BH_IGNORE_CACHE);
+=======
+		if (args->fi_flags & OCFS2_FI_FLAG_FILECHECK_CHK)
+			status = ocfs2_filecheck_read_inode_block_full(inode,
+						&bh, OCFS2_BH_IGNORE_CACHE, 0);
+		else if (args->fi_flags & OCFS2_FI_FLAG_FILECHECK_FIX)
+			status = ocfs2_filecheck_read_inode_block_full(inode,
+						&bh, OCFS2_BH_IGNORE_CACHE, 1);
+		else
+			status = ocfs2_read_inode_block_full(inode,
+						&bh, OCFS2_BH_IGNORE_CACHE);
+>>>>>>> v4.9.227
 	} else {
 		status = ocfs2_read_blocks_sync(osb, args->fi_blkno, 1, &bh);
 		/*
 		 * If buffer is in jbd, then its checksum may not have been
 		 * computed as yet.
 		 */
+<<<<<<< HEAD
 		if (!status && !buffer_jbd(bh))
 			status = ocfs2_validate_inode_block(osb->sb, bh);
+=======
+		if (!status && !buffer_jbd(bh)) {
+			if (args->fi_flags & OCFS2_FI_FLAG_FILECHECK_CHK)
+				status = ocfs2_filecheck_validate_inode_block(
+								osb->sb, bh);
+			else if (args->fi_flags & OCFS2_FI_FLAG_FILECHECK_FIX)
+				status = ocfs2_filecheck_repair_inode_block(
+								osb->sb, bh);
+			else
+				status = ocfs2_validate_inode_block(
+								osb->sb, bh);
+		}
+>>>>>>> v4.9.227
 	}
 	if (status < 0) {
 		mlog_errno(status);
@@ -531,17 +600,41 @@ static int ocfs2_read_locked_inode(struct inode *inode,
 
 	BUG_ON(args->fi_blkno != le64_to_cpu(fe->i_blkno));
 
+<<<<<<< HEAD
+=======
+	if (buffer_dirty(bh) && !buffer_jbd(bh)) {
+		if (can_lock) {
+			ocfs2_inode_unlock(inode, lock_level);
+			lock_level = 1;
+			ocfs2_inode_lock(inode, NULL, lock_level);
+		}
+		status = ocfs2_write_block(osb, bh, INODE_CACHE(inode));
+		if (status < 0) {
+			mlog_errno(status);
+			goto bail;
+		}
+	}
+
+>>>>>>> v4.9.227
 	status = 0;
 
 bail:
 	if (can_lock)
+<<<<<<< HEAD
 		ocfs2_inode_unlock(inode, 0);
+=======
+		ocfs2_inode_unlock(inode, lock_level);
+>>>>>>> v4.9.227
 
 	if (status < 0)
 		make_bad_inode(inode);
 
+<<<<<<< HEAD
 	if (args && bh)
 		brelse(bh);
+=======
+	brelse(bh);
+>>>>>>> v4.9.227
 
 	return status;
 }
@@ -625,15 +718,26 @@ static int ocfs2_remove_inode(struct inode *inode,
 		ocfs2_get_system_file_inode(osb, INODE_ALLOC_SYSTEM_INODE,
 					    le16_to_cpu(di->i_suballoc_slot));
 	if (!inode_alloc_inode) {
+<<<<<<< HEAD
 		status = -EEXIST;
+=======
+		status = -ENOENT;
+>>>>>>> v4.9.227
 		mlog_errno(status);
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&inode_alloc_inode->i_mutex);
 	status = ocfs2_inode_lock(inode_alloc_inode, &inode_alloc_bh, 1);
 	if (status < 0) {
 		mutex_unlock(&inode_alloc_inode->i_mutex);
+=======
+	inode_lock(inode_alloc_inode);
+	status = ocfs2_inode_lock(inode_alloc_inode, &inode_alloc_bh, 1);
+	if (status < 0) {
+		inode_unlock(inode_alloc_inode);
+>>>>>>> v4.9.227
 
 		mlog_errno(status);
 		goto bail;
@@ -649,7 +753,11 @@ static int ocfs2_remove_inode(struct inode *inode,
 
 	if (!(OCFS2_I(inode)->ip_flags & OCFS2_INODE_SKIP_ORPHAN_DIR)) {
 		status = ocfs2_orphan_del(osb, handle, orphan_dir_inode, inode,
+<<<<<<< HEAD
 					  orphan_dir_bh);
+=======
+					  orphan_dir_bh, false);
+>>>>>>> v4.9.227
 		if (status < 0) {
 			mlog_errno(status);
 			goto bail_commit;
@@ -680,7 +788,11 @@ bail_commit:
 	ocfs2_commit_trans(osb, handle);
 bail_unlock:
 	ocfs2_inode_unlock(inode_alloc_inode, 1);
+<<<<<<< HEAD
 	mutex_unlock(&inode_alloc_inode->i_mutex);
+=======
+	inode_unlock(inode_alloc_inode);
+>>>>>>> v4.9.227
 	brelse(inode_alloc_bh);
 bail:
 	iput(inode_alloc_inode);
@@ -743,7 +855,11 @@ static int ocfs2_wipe_inode(struct inode *inode,
 							       ORPHAN_DIR_SYSTEM_INODE,
 							       orphaned_slot);
 		if (!orphan_dir_inode) {
+<<<<<<< HEAD
 			status = -EEXIST;
+=======
+			status = -ENOENT;
+>>>>>>> v4.9.227
 			mlog_errno(status);
 			goto bail;
 		}
@@ -751,10 +867,17 @@ static int ocfs2_wipe_inode(struct inode *inode,
 		/* Lock the orphan dir. The lock will be held for the entire
 		 * delete_inode operation. We do this now to avoid races with
 		 * recovery completion on other nodes. */
+<<<<<<< HEAD
 		mutex_lock(&orphan_dir_inode->i_mutex);
 		status = ocfs2_inode_lock(orphan_dir_inode, &orphan_dir_bh, 1);
 		if (status < 0) {
 			mutex_unlock(&orphan_dir_inode->i_mutex);
+=======
+		inode_lock(orphan_dir_inode);
+		status = ocfs2_inode_lock(orphan_dir_inode, &orphan_dir_bh, 1);
+		if (status < 0) {
+			inode_unlock(orphan_dir_inode);
+>>>>>>> v4.9.227
 
 			mlog_errno(status);
 			goto bail;
@@ -803,7 +926,11 @@ bail_unlock_dir:
 		return status;
 
 	ocfs2_inode_unlock(orphan_dir_inode, 1);
+<<<<<<< HEAD
 	mutex_unlock(&orphan_dir_inode->i_mutex);
+=======
+	inode_unlock(orphan_dir_inode);
+>>>>>>> v4.9.227
 	brelse(orphan_dir_bh);
 bail:
 	iput(orphan_dir_inode);
@@ -972,6 +1099,10 @@ static void ocfs2_delete_inode(struct inode *inode)
 	int wipe, status;
 	sigset_t oldset;
 	struct buffer_head *di_bh = NULL;
+<<<<<<< HEAD
+=======
+	struct ocfs2_dinode *di = NULL;
+>>>>>>> v4.9.227
 
 	trace_ocfs2_delete_inode(inode->i_ino,
 				 (unsigned long long)OCFS2_I(inode)->ip_blkno,
@@ -1026,6 +1157,17 @@ static void ocfs2_delete_inode(struct inode *inode)
 		goto bail_unlock_nfs_sync;
 	}
 
+<<<<<<< HEAD
+=======
+	di = (struct ocfs2_dinode *)di_bh->b_data;
+	/* Skip inode deletion and wait for dio orphan entry recovered
+	 * first */
+	if (unlikely(di->i_flags & cpu_to_le32(OCFS2_DIO_ORPHANED_FL))) {
+		ocfs2_cleanup_delete_inode(inode, 0);
+		goto bail_unlock_inode;
+	}
+
+>>>>>>> v4.9.227
 	/* Query the cluster. This will be the final decision made
 	 * before we go ahead and wipe the inode. */
 	status = ocfs2_query_inode_wipe(inode, di_bh, &wipe);
@@ -1117,6 +1259,12 @@ static void ocfs2_clear_inode(struct inode *inode)
 	mlog_bug_on_msg(!list_empty(&oi->ip_io_markers),
 			"Clear inode of %llu, inode has io markers\n",
 			(unsigned long long)oi->ip_blkno);
+<<<<<<< HEAD
+=======
+	mlog_bug_on_msg(!list_empty(&oi->ip_unwritten_list),
+			"Clear inode of %llu, inode has unwritten extents\n",
+			(unsigned long long)oi->ip_blkno);
+>>>>>>> v4.9.227
 
 	ocfs2_extent_map_trunc(inode, 0);
 
@@ -1192,17 +1340,32 @@ void ocfs2_evict_inode(struct inode *inode)
 int ocfs2_drop_inode(struct inode *inode)
 {
 	struct ocfs2_inode_info *oi = OCFS2_I(inode);
+<<<<<<< HEAD
 	int res;
+=======
+>>>>>>> v4.9.227
 
 	trace_ocfs2_drop_inode((unsigned long long)oi->ip_blkno,
 				inode->i_nlink, oi->ip_flags);
 
+<<<<<<< HEAD
 	if (oi->ip_flags & OCFS2_INODE_MAYBE_ORPHANED)
 		res = 1;
 	else
 		res = generic_drop_inode(inode);
 
 	return res;
+=======
+	assert_spin_locked(&inode->i_lock);
+	inode->i_state |= I_WILL_FREE;
+	spin_unlock(&inode->i_lock);
+	write_inode_now(inode, 1);
+	spin_lock(&inode->i_lock);
+	WARN_ON(inode->i_state & I_NEW);
+	inode->i_state &= ~I_WILL_FREE;
+
+	return 1;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1210,7 +1373,11 @@ int ocfs2_drop_inode(struct inode *inode)
  */
 int ocfs2_inode_revalidate(struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	int status = 0;
 
 	trace_ocfs2_inode_revalidate(inode,
@@ -1351,32 +1518,57 @@ int ocfs2_validate_inode_block(struct super_block *sb,
 	rc = -EINVAL;
 
 	if (!OCFS2_IS_VALID_DINODE(di)) {
+<<<<<<< HEAD
 		ocfs2_error(sb, "Invalid dinode #%llu: signature = %.*s\n",
 			    (unsigned long long)bh->b_blocknr, 7,
 			    di->i_signature);
+=======
+		rc = ocfs2_error(sb, "Invalid dinode #%llu: signature = %.*s\n",
+				 (unsigned long long)bh->b_blocknr, 7,
+				 di->i_signature);
+>>>>>>> v4.9.227
 		goto bail;
 	}
 
 	if (le64_to_cpu(di->i_blkno) != bh->b_blocknr) {
+<<<<<<< HEAD
 		ocfs2_error(sb, "Invalid dinode #%llu: i_blkno is %llu\n",
 			    (unsigned long long)bh->b_blocknr,
 			    (unsigned long long)le64_to_cpu(di->i_blkno));
+=======
+		rc = ocfs2_error(sb, "Invalid dinode #%llu: i_blkno is %llu\n",
+				 (unsigned long long)bh->b_blocknr,
+				 (unsigned long long)le64_to_cpu(di->i_blkno));
+>>>>>>> v4.9.227
 		goto bail;
 	}
 
 	if (!(di->i_flags & cpu_to_le32(OCFS2_VALID_FL))) {
+<<<<<<< HEAD
 		ocfs2_error(sb,
 			    "Invalid dinode #%llu: OCFS2_VALID_FL not set\n",
 			    (unsigned long long)bh->b_blocknr);
+=======
+		rc = ocfs2_error(sb,
+				 "Invalid dinode #%llu: OCFS2_VALID_FL not set\n",
+				 (unsigned long long)bh->b_blocknr);
+>>>>>>> v4.9.227
 		goto bail;
 	}
 
 	if (le32_to_cpu(di->i_fs_generation) !=
 	    OCFS2_SB(sb)->fs_generation) {
+<<<<<<< HEAD
 		ocfs2_error(sb,
 			    "Invalid dinode #%llu: fs_generation is %u\n",
 			    (unsigned long long)bh->b_blocknr,
 			    le32_to_cpu(di->i_fs_generation));
+=======
+		rc = ocfs2_error(sb,
+				 "Invalid dinode #%llu: fs_generation is %u\n",
+				 (unsigned long long)bh->b_blocknr,
+				 le32_to_cpu(di->i_fs_generation));
+>>>>>>> v4.9.227
 		goto bail;
 	}
 
@@ -1386,6 +1578,172 @@ bail:
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+static int ocfs2_filecheck_validate_inode_block(struct super_block *sb,
+						struct buffer_head *bh)
+{
+	int rc = 0;
+	struct ocfs2_dinode *di = (struct ocfs2_dinode *)bh->b_data;
+
+	trace_ocfs2_filecheck_validate_inode_block(
+		(unsigned long long)bh->b_blocknr);
+
+	BUG_ON(!buffer_uptodate(bh));
+
+	/*
+	 * Call ocfs2_validate_meta_ecc() first since it has ecc repair
+	 * function, but we should not return error immediately when ecc
+	 * validation fails, because the reason is quite likely the invalid
+	 * inode number inputed.
+	 */
+	rc = ocfs2_validate_meta_ecc(sb, bh->b_data, &di->i_check);
+	if (rc) {
+		mlog(ML_ERROR,
+		     "Filecheck: checksum failed for dinode %llu\n",
+		     (unsigned long long)bh->b_blocknr);
+		rc = -OCFS2_FILECHECK_ERR_BLOCKECC;
+	}
+
+	if (!OCFS2_IS_VALID_DINODE(di)) {
+		mlog(ML_ERROR,
+		     "Filecheck: invalid dinode #%llu: signature = %.*s\n",
+		     (unsigned long long)bh->b_blocknr, 7, di->i_signature);
+		rc = -OCFS2_FILECHECK_ERR_INVALIDINO;
+		goto bail;
+	} else if (rc)
+		goto bail;
+
+	if (le64_to_cpu(di->i_blkno) != bh->b_blocknr) {
+		mlog(ML_ERROR,
+		     "Filecheck: invalid dinode #%llu: i_blkno is %llu\n",
+		     (unsigned long long)bh->b_blocknr,
+		     (unsigned long long)le64_to_cpu(di->i_blkno));
+		rc = -OCFS2_FILECHECK_ERR_BLOCKNO;
+		goto bail;
+	}
+
+	if (!(di->i_flags & cpu_to_le32(OCFS2_VALID_FL))) {
+		mlog(ML_ERROR,
+		     "Filecheck: invalid dinode #%llu: OCFS2_VALID_FL "
+		     "not set\n",
+		     (unsigned long long)bh->b_blocknr);
+		rc = -OCFS2_FILECHECK_ERR_VALIDFLAG;
+		goto bail;
+	}
+
+	if (le32_to_cpu(di->i_fs_generation) !=
+	    OCFS2_SB(sb)->fs_generation) {
+		mlog(ML_ERROR,
+		     "Filecheck: invalid dinode #%llu: fs_generation is %u\n",
+		     (unsigned long long)bh->b_blocknr,
+		     le32_to_cpu(di->i_fs_generation));
+		rc = -OCFS2_FILECHECK_ERR_GENERATION;
+		goto bail;
+	}
+
+bail:
+	return rc;
+}
+
+static int ocfs2_filecheck_repair_inode_block(struct super_block *sb,
+					      struct buffer_head *bh)
+{
+	int changed = 0;
+	struct ocfs2_dinode *di = (struct ocfs2_dinode *)bh->b_data;
+
+	if (!ocfs2_filecheck_validate_inode_block(sb, bh))
+		return 0;
+
+	trace_ocfs2_filecheck_repair_inode_block(
+		(unsigned long long)bh->b_blocknr);
+
+	if (ocfs2_is_hard_readonly(OCFS2_SB(sb)) ||
+	    ocfs2_is_soft_readonly(OCFS2_SB(sb))) {
+		mlog(ML_ERROR,
+		     "Filecheck: cannot repair dinode #%llu "
+		     "on readonly filesystem\n",
+		     (unsigned long long)bh->b_blocknr);
+		return -OCFS2_FILECHECK_ERR_READONLY;
+	}
+
+	if (buffer_jbd(bh)) {
+		mlog(ML_ERROR,
+		     "Filecheck: cannot repair dinode #%llu, "
+		     "its buffer is in jbd\n",
+		     (unsigned long long)bh->b_blocknr);
+		return -OCFS2_FILECHECK_ERR_INJBD;
+	}
+
+	if (!OCFS2_IS_VALID_DINODE(di)) {
+		/* Cannot fix invalid inode block */
+		return -OCFS2_FILECHECK_ERR_INVALIDINO;
+	}
+
+	if (!(di->i_flags & cpu_to_le32(OCFS2_VALID_FL))) {
+		/* Cannot just add VALID_FL flag back as a fix,
+		 * need more things to check here.
+		 */
+		return -OCFS2_FILECHECK_ERR_VALIDFLAG;
+	}
+
+	if (le64_to_cpu(di->i_blkno) != bh->b_blocknr) {
+		di->i_blkno = cpu_to_le64(bh->b_blocknr);
+		changed = 1;
+		mlog(ML_ERROR,
+		     "Filecheck: reset dinode #%llu: i_blkno to %llu\n",
+		     (unsigned long long)bh->b_blocknr,
+		     (unsigned long long)le64_to_cpu(di->i_blkno));
+	}
+
+	if (le32_to_cpu(di->i_fs_generation) !=
+	    OCFS2_SB(sb)->fs_generation) {
+		di->i_fs_generation = cpu_to_le32(OCFS2_SB(sb)->fs_generation);
+		changed = 1;
+		mlog(ML_ERROR,
+		     "Filecheck: reset dinode #%llu: fs_generation to %u\n",
+		     (unsigned long long)bh->b_blocknr,
+		     le32_to_cpu(di->i_fs_generation));
+	}
+
+	if (changed || ocfs2_validate_meta_ecc(sb, bh->b_data, &di->i_check)) {
+		ocfs2_compute_meta_ecc(sb, bh->b_data, &di->i_check);
+		mark_buffer_dirty(bh);
+		mlog(ML_ERROR,
+		     "Filecheck: reset dinode #%llu: compute meta ecc\n",
+		     (unsigned long long)bh->b_blocknr);
+	}
+
+	return 0;
+}
+
+static int
+ocfs2_filecheck_read_inode_block_full(struct inode *inode,
+				      struct buffer_head **bh,
+				      int flags, int type)
+{
+	int rc;
+	struct buffer_head *tmp = *bh;
+
+	if (!type) /* Check inode block */
+		rc = ocfs2_read_blocks(INODE_CACHE(inode),
+				OCFS2_I(inode)->ip_blkno,
+				1, &tmp, flags,
+				ocfs2_filecheck_validate_inode_block);
+	else /* Repair inode block */
+		rc = ocfs2_read_blocks(INODE_CACHE(inode),
+				OCFS2_I(inode)->ip_blkno,
+				1, &tmp, flags,
+				ocfs2_filecheck_repair_inode_block);
+
+	/* If ocfs2_read_blocks() got us a new bh, pass it up. */
+	if (!rc && !*bh)
+		*bh = tmp;
+
+	return rc;
+}
+
+>>>>>>> v4.9.227
 int ocfs2_read_inode_block_full(struct inode *inode, struct buffer_head **bh,
 				int flags)
 {

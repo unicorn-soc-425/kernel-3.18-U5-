@@ -72,7 +72,11 @@ static int of_pci_phb_probe(struct platform_device *dev)
 
 	/* Register devices with EEH */
 	if (dev->dev.of_node->child)
+<<<<<<< HEAD
 		eeh_add_device_tree_early(dev->dev.of_node);
+=======
+		eeh_add_device_tree_early(PCI_DN(dev->dev.of_node));
+>>>>>>> v4.9.227
 
 	/* Scan the bus */
 	pcibios_scan_phb(phb);
@@ -110,7 +114,10 @@ static struct platform_driver of_pci_phb_driver = {
 	.probe = of_pci_phb_probe,
 	.driver = {
 		.name = "of-pci",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_pci_phb_ids,
 	},
 };

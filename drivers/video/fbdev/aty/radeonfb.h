@@ -20,7 +20,11 @@
 
 #include <asm/io.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_PPC_OF) || defined(CONFIG_SPARC)
+=======
+#if defined(CONFIG_PPC) || defined(CONFIG_SPARC)
+>>>>>>> v4.9.227
 #include <asm/prom.h>
 #endif
 
@@ -301,7 +305,11 @@ struct radeonfb_info {
 	unsigned long		fb_local_base;
 
 	struct pci_dev		*pdev;
+<<<<<<< HEAD
 #if defined(CONFIG_PPC_OF) || defined(CONFIG_SPARC)
+=======
+#if defined(CONFIG_PPC) || defined(CONFIG_SPARC)
+>>>>>>> v4.9.227
 	struct device_node	*of_node;
 #endif
 
@@ -340,7 +348,11 @@ struct radeonfb_info {
 
 	struct pll_info		pll;
 
+<<<<<<< HEAD
 	int			mtrr_hdl;
+=======
+	int			wc_cookie;
+>>>>>>> v4.9.227
 
 	u32			save_regs[100];
 	int			asleep;
@@ -370,6 +382,7 @@ struct radeonfb_info {
  * IO macros
  */
 
+<<<<<<< HEAD
 /* Note about this function: we have some rare cases where we must not schedule,
  * this typically happen with our special "wake up early" hook which allows us to
  * wake up the graphic chip (and thus get the console back) before everything else
@@ -384,6 +397,9 @@ static inline void _radeon_msleep(struct radeonfb_info *rinfo, unsigned long ms)
 		msleep(ms);
 }
 
+=======
+void _radeon_msleep(struct radeonfb_info *rinfo, unsigned long ms);
+>>>>>>> v4.9.227
 
 #define INREG8(addr)		readb((rinfo->mmio_base)+addr)
 #define OUTREG8(addr,val)	writeb(val, (rinfo->mmio_base)+addr)
@@ -392,6 +408,7 @@ static inline void _radeon_msleep(struct radeonfb_info *rinfo, unsigned long ms)
 #define INREG(addr)		readl((rinfo->mmio_base)+addr)
 #define OUTREG(addr,val)	writel(val, (rinfo->mmio_base)+addr)
 
+<<<<<<< HEAD
 static inline void _OUTREGP(struct radeonfb_info *rinfo, u32 addr,
 		       u32 val, u32 mask)
 {
@@ -405,6 +422,9 @@ static inline void _OUTREGP(struct radeonfb_info *rinfo, u32 addr,
 	OUTREG(addr, tmp);
 	spin_unlock_irqrestore(&rinfo->reg_lock, flags);
 }
+=======
+void _OUTREGP(struct radeonfb_info *rinfo, u32 addr, u32 val, u32 mask);
+>>>>>>> v4.9.227
 
 #define OUTREGP(addr,val,mask)	_OUTREGP(rinfo, addr, val,mask)
 
@@ -425,6 +445,7 @@ static inline void _OUTREGP(struct radeonfb_info *rinfo, u32 addr,
  * possible exception to this rule is the call to unblank(), which may
  * be done at irq time if an oops is in progress.
  */
+<<<<<<< HEAD
 static inline void radeon_pll_errata_after_index(struct radeonfb_info *rinfo)
 {
 	if (!(rinfo->errata & CHIP_ERRATA_PLL_DUMMYREADS))
@@ -483,6 +504,26 @@ static inline void __OUTPLLP(struct radeonfb_info *rinfo, unsigned int index,
 	__OUTPLL(rinfo, index, tmp);
 }
 
+=======
+void radeon_pll_errata_after_index_slow(struct radeonfb_info *rinfo);
+static inline void radeon_pll_errata_after_index(struct radeonfb_info *rinfo)
+{
+	if (rinfo->errata & CHIP_ERRATA_PLL_DUMMYREADS)
+		radeon_pll_errata_after_index_slow(rinfo);
+}
+
+void radeon_pll_errata_after_data_slow(struct radeonfb_info *rinfo);
+static inline void radeon_pll_errata_after_data(struct radeonfb_info *rinfo)
+{
+	if (rinfo->errata & (CHIP_ERRATA_PLL_DELAY|CHIP_ERRATA_R300_CG))
+		radeon_pll_errata_after_data_slow(rinfo);
+}
+
+u32 __INPLL(struct radeonfb_info *rinfo, u32 addr);
+void __OUTPLL(struct radeonfb_info *rinfo, unsigned int index, u32 val);
+void __OUTPLLP(struct radeonfb_info *rinfo, unsigned int index,
+			     u32 val, u32 mask);
+>>>>>>> v4.9.227
 
 #define INPLL(addr)			__INPLL(rinfo, addr)
 #define OUTPLL(index, val)		__OUTPLL(rinfo, index, val)
@@ -532,6 +573,7 @@ static inline u32 radeon_get_dstbpp(u16 depth)
  * 2D Engine helper routines
  */
 
+<<<<<<< HEAD
 static inline void _radeon_fifo_wait(struct radeonfb_info *rinfo, int entries)
 {
 	int i;
@@ -584,6 +626,11 @@ static inline void _radeon_engine_idle(struct radeonfb_info *rinfo)
 	printk(KERN_ERR "radeonfb: Idle Timeout !\n");
 }
 
+=======
+void _radeon_fifo_wait(struct radeonfb_info *rinfo, int entries);
+void radeon_engine_flush(struct radeonfb_info *rinfo);
+void _radeon_engine_idle(struct radeonfb_info *rinfo);
+>>>>>>> v4.9.227
 
 #define radeon_engine_idle()		_radeon_engine_idle(rinfo)
 #define radeon_fifo_wait(entries)	_radeon_fifo_wait(rinfo,entries)

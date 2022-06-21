@@ -126,6 +126,7 @@ static void soundbus_device_shutdown(struct device *dev)
 		drv->shutdown(soundbus_dev);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int soundbus_device_suspend(struct device *dev, pm_message_t state)
@@ -150,17 +151,25 @@ static int soundbus_device_resume(struct device * dev)
 
 #endif /* CONFIG_PM */
 
+=======
+/* soundbus_dev_attrs is declared in sysfs.c */
+ATTRIBUTE_GROUPS(soundbus_dev);
+>>>>>>> v4.9.227
 static struct bus_type soundbus_bus_type = {
 	.name		= "aoa-soundbus",
 	.probe		= soundbus_probe,
 	.uevent		= soundbus_uevent,
 	.remove		= soundbus_device_remove,
 	.shutdown	= soundbus_device_shutdown,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	.suspend	= soundbus_device_suspend,
 	.resume		= soundbus_device_resume,
 #endif
 	.dev_attrs	= soundbus_dev_attrs,
+=======
+	.dev_groups	= soundbus_dev_groups,
+>>>>>>> v4.9.227
 };
 
 int soundbus_add_one(struct soundbus_dev *dev)

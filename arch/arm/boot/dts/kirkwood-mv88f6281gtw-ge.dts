@@ -31,6 +31,7 @@
 		stdout-path = &uart0;
 	};
 
+<<<<<<< HEAD
 	mbus {
 		pcie-controller {
 			status = "okay";
@@ -41,6 +42,8 @@
 		};
         };
 
+=======
+>>>>>>> v4.9.227
 	ocp@f1000000 {
 		pin-controller@10000 {
 			pmx_usb_led: pmx-usb-led {
@@ -65,7 +68,11 @@
 			flash@0 {
 				#address-cells = <1>;
 				#size-cells = <1>;
+<<<<<<< HEAD
 				compatible = "mxicy,mx25l12805d";
+=======
+				compatible = "mxicy,mx25l12805d", "jedec,spi-nor";
+>>>>>>> v4.9.227
 				reg = <0>;
 				spi-max-frequency = <50000000>;
 				mode = <0>;
@@ -109,19 +116,31 @@
 		pinctrl-0 = <&pmx_keys>;
 		pinctrl-names = "default";
 
+<<<<<<< HEAD
 		button@1 {
+=======
+		restart {
+>>>>>>> v4.9.227
 			label = "SWR Button";
 			linux,code = <KEY_RESTART>;
 			gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
 		};
+<<<<<<< HEAD
 		button@2 {
+=======
+		wps {
+>>>>>>> v4.9.227
 			label = "WPS Button";
 			linux,code = <KEY_WPS_BUTTON>;
 			gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
 		};
 	};
 
+<<<<<<< HEAD
 	dsa@0 {
+=======
+	dsa {
+>>>>>>> v4.9.227
 		compatible = "marvell,dsa";
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -179,3 +198,14 @@
 		duplex = <1>;
 	};
 };
+<<<<<<< HEAD
+=======
+
+&pciec {
+        status = "okay";
+};
+
+&pcie0 {
+	status = "okay";
+};
+>>>>>>> v4.9.227

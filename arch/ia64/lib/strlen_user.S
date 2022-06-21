@@ -16,6 +16,10 @@
  */
 
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 //
 // int strlen_user(char *)
@@ -196,3 +200,7 @@ GLOBAL_ENTRY(__strlen_user)
 	mov ar.pfs=saved_pfs	// because of ar.ec, restore no matter what
 	br.ret.sptk.many rp
 END(__strlen_user)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__strlen_user)
+>>>>>>> v4.9.227

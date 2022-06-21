@@ -13,11 +13,14 @@
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE.  See the GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 * Temple Place - Suite 330, Boston,
  * MA  02111-1307, USA.
  *
+=======
+>>>>>>> v4.9.227
  * Contact Information:
  * Scott H Kilau <Scott_Kilau@digi.com>
  * Wendy Xiong   <wendyx@us.ibm.com>
@@ -649,7 +652,11 @@ static void neo_flush_uart_write(struct jsm_channel *ch)
 
 		/* Check to see if the UART feels it completely flushed the FIFO. */
 		tmp = readb(&ch->ch_neo_uart->isr_fcr);
+<<<<<<< HEAD
 		if (tmp & 4) {
+=======
+		if (tmp & UART_FCR_CLEAR_XMIT) {
+>>>>>>> v4.9.227
 			jsm_dbg(IOCTL, &ch->ch_bd->pci_dev,
 				"Still flushing TX UART... i: %d\n", i);
 			udelay(10);
@@ -694,7 +701,11 @@ static void neo_flush_uart_read(struct jsm_channel *ch)
 /*
  * No locks are assumed to be held when calling this function.
  */
+<<<<<<< HEAD
 static void neo_clear_break(struct jsm_channel *ch, int force)
+=======
+static void neo_clear_break(struct jsm_channel *ch)
+>>>>>>> v4.9.227
 {
 	unsigned long lock_flags;
 
@@ -719,7 +730,11 @@ static void neo_clear_break(struct jsm_channel *ch, int force)
 /*
  * Parse the ISR register.
  */
+<<<<<<< HEAD
 static inline void neo_parse_isr(struct jsm_board *brd, u32 port)
+=======
+static void neo_parse_isr(struct jsm_board *brd, u32 port)
+>>>>>>> v4.9.227
 {
 	struct jsm_channel *ch;
 	u8 isr;
@@ -729,7 +744,11 @@ static inline void neo_parse_isr(struct jsm_board *brd, u32 port)
 	if (!brd)
 		return;
 
+<<<<<<< HEAD
 	if (port > brd->maxports)
+=======
+	if (port >= brd->maxports)
+>>>>>>> v4.9.227
 		return;
 
 	ch = brd->channels[port];
@@ -845,7 +864,11 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
 	if (!brd)
 		return;
 
+<<<<<<< HEAD
 	if (port > brd->maxports)
+=======
+	if (port >= brd->maxports)
+>>>>>>> v4.9.227
 		return;
 
 	ch = brd->channels[port];
@@ -1024,6 +1047,7 @@ static void neo_param(struct jsm_channel *ch)
 		lcr |= UART_LCR_STOP;
 
 	switch (ch->ch_c_cflag & CSIZE) {
+<<<<<<< HEAD
 		case CS5:
 			lcr |= UART_LCR_WLEN5;
 			break;
@@ -1037,14 +1061,32 @@ static void neo_param(struct jsm_channel *ch)
 		default:
 			lcr |= UART_LCR_WLEN8;
 		break;
+=======
+	case CS5:
+		lcr |= UART_LCR_WLEN5;
+		break;
+	case CS6:
+		lcr |= UART_LCR_WLEN6;
+		break;
+	case CS7:
+		lcr |= UART_LCR_WLEN7;
+		break;
+	case CS8:
+	default:
+		lcr |= UART_LCR_WLEN8;
+	break;
+>>>>>>> v4.9.227
 	}
 
 	ier = readb(&ch->ch_neo_uart->ier);
 	uart_lcr = readb(&ch->ch_neo_uart->lcr);
 
+<<<<<<< HEAD
 	if (baud == 0)
 		baud = 9600;
 
+=======
+>>>>>>> v4.9.227
 	quot = ch->ch_bd->bd_dividend / baud;
 
 	if (quot != 0) {
@@ -1188,7 +1230,11 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
 			 */
 
 			/* Verify the port is in range. */
+<<<<<<< HEAD
 			if (port > brd->nasync)
+=======
+			if (port >= brd->nasync)
+>>>>>>> v4.9.227
 				continue;
 
 			ch = brd->channels[port];

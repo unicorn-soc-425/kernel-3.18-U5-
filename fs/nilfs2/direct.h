@@ -13,11 +13,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Koji Sato <koji@osrg.net>.
+=======
+ * Written by Koji Sato.
+>>>>>>> v4.9.227
  */
 
 #ifndef _NILFS_DIRECT_H
@@ -28,6 +32,7 @@
 #include "bmap.h"
 
 
+<<<<<<< HEAD
 /**
  * struct nilfs_direct_node - direct node
  * @dn_flags: flags
@@ -38,6 +43,8 @@ struct nilfs_direct_node {
 	__u8 pad[7];
 };
 
+=======
+>>>>>>> v4.9.227
 #define NILFS_DIRECT_NBLOCKS	(NILFS_BMAP_SIZE / sizeof(__le64) - 1)
 #define NILFS_DIRECT_KEY_MIN	0
 #define NILFS_DIRECT_KEY_MAX	(NILFS_DIRECT_NBLOCKS - 1)

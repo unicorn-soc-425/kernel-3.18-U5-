@@ -55,14 +55,22 @@
 		compatible = "arm,hdlcd";
 		reg = <0 0x2b000000 0 0x1000>;
 		interrupts = <0 85 4>;
+<<<<<<< HEAD
 		clocks = <&oscclk5>;
+=======
+		clocks = <&hdlcd_clk>;
+>>>>>>> v4.9.227
 		clock-names = "pxlclk";
 	};
 
 	memory-controller@2b0a0000 {
 		compatible = "arm,pl341", "arm,primecell";
 		reg = <0 0x2b0a0000 0 0x1000>;
+<<<<<<< HEAD
 		clocks = <&oscclk7>;
+=======
+		clocks = <&sys_pll>;
+>>>>>>> v4.9.227
 		clock-names = "apb_pclk";
 	};
 
@@ -71,7 +79,11 @@
 		status = "disabled";
 		reg = <0 0x2b060000 0 0x1000>;
 		interrupts = <0 98 4>;
+<<<<<<< HEAD
 		clocks = <&oscclk7>;
+=======
+		clocks = <&sys_pll>;
+>>>>>>> v4.9.227
 		clock-names = "apb_pclk";
 	};
 
@@ -92,7 +104,11 @@
 		reg = <0 0x7ffd0000 0 0x1000>;
 		interrupts = <0 86 4>,
 			     <0 87 4>;
+<<<<<<< HEAD
 		clocks = <&oscclk7>;
+=======
+		clocks = <&sys_pll>;
+>>>>>>> v4.9.227
 		clock-names = "apb_pclk";
 	};
 
@@ -104,7 +120,11 @@
 			     <0 89 4>,
 			     <0 90 4>,
 			     <0 91 4>;
+<<<<<<< HEAD
 		clocks = <&oscclk7>;
+=======
+		clocks = <&sys_pll>;
+>>>>>>> v4.9.227
 		clock-names = "apb_pclk";
 	};
 
@@ -126,7 +146,11 @@
 		compatible = "arm,vexpress,config-bus";
 		arm,vexpress,config-bridge = <&v2m_sysreg>;
 
+<<<<<<< HEAD
 		osc@0 {
+=======
+		oscclk0 {
+>>>>>>> v4.9.227
 			/* CPU PLL reference clock */
 			compatible = "arm,vexpress-osc";
 			arm,vexpress-sysreg,func = <1 0>;
@@ -135,7 +159,11 @@
 			clock-output-names = "oscclk0";
 		};
 
+<<<<<<< HEAD
 		osc@4 {
+=======
+		oscclk4 {
+>>>>>>> v4.9.227
 			/* Multiplexed AXI master clock */
 			compatible = "arm,vexpress-osc";
 			arm,vexpress-sysreg,func = <1 4>;
@@ -144,7 +172,11 @@
 			clock-output-names = "oscclk4";
 		};
 
+<<<<<<< HEAD
 		oscclk5: osc@5 {
+=======
+		hdlcd_clk: oscclk5 {
+>>>>>>> v4.9.227
 			/* HDLCD PLL reference clock */
 			compatible = "arm,vexpress-osc";
 			arm,vexpress-sysreg,func = <1 5>;
@@ -153,7 +185,11 @@
 			clock-output-names = "oscclk5";
 		};
 
+<<<<<<< HEAD
 		smbclk: osc@6 {
+=======
+		smbclk: oscclk6 {
+>>>>>>> v4.9.227
 			/* SMB clock */
 			compatible = "arm,vexpress-osc";
 			arm,vexpress-sysreg,func = <1 6>;
@@ -162,7 +198,11 @@
 			clock-output-names = "oscclk6";
 		};
 
+<<<<<<< HEAD
 		oscclk7: osc@7 {
+=======
+		sys_pll: oscclk7 {
+>>>>>>> v4.9.227
 			/* SYS PLL reference clock */
 			compatible = "arm,vexpress-osc";
 			arm,vexpress-sysreg,func = <1 7>;
@@ -171,7 +211,11 @@
 			clock-output-names = "oscclk7";
 		};
 
+<<<<<<< HEAD
 		osc@8 {
+=======
+		oscclk8 {
+>>>>>>> v4.9.227
 			/* DDR2 PLL reference clock */
 			compatible = "arm,vexpress-osc";
 			arm,vexpress-sysreg,func = <1 8>;
@@ -180,7 +224,11 @@
 			clock-output-names = "oscclk8";
 		};
 
+<<<<<<< HEAD
 		volt@0 {
+=======
+		volt-cores {
+>>>>>>> v4.9.227
 			/* CPU core voltage */
 			compatible = "arm,vexpress-volt";
 			arm,vexpress-sysreg,func = <2 0>;
@@ -191,28 +239,44 @@
 			label = "Cores";
 		};
 
+<<<<<<< HEAD
 		amp@0 {
+=======
+		amp-cores {
+>>>>>>> v4.9.227
 			/* Total current for the two cores */
 			compatible = "arm,vexpress-amp";
 			arm,vexpress-sysreg,func = <3 0>;
 			label = "Cores";
 		};
 
+<<<<<<< HEAD
 		temp@0 {
+=======
+		temp-dcc {
+>>>>>>> v4.9.227
 			/* DCC internal temperature */
 			compatible = "arm,vexpress-temp";
 			arm,vexpress-sysreg,func = <4 0>;
 			label = "DCC";
 		};
 
+<<<<<<< HEAD
 		power@0 {
+=======
+		power-cores {
+>>>>>>> v4.9.227
 			/* Total power */
 			compatible = "arm,vexpress-power";
 			arm,vexpress-sysreg,func = <12 0>;
 			label = "Cores";
 		};
 
+<<<<<<< HEAD
 		energy@0 {
+=======
+		energy {
+>>>>>>> v4.9.227
 			/* Total energy */
 			compatible = "arm,vexpress-energy";
 			arm,vexpress-sysreg,func = <13 0>;
@@ -220,7 +284,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	smb {
+=======
+	smb@08000000 {
+>>>>>>> v4.9.227
 		compatible = "simple-bus";
 
 		#address-cells = <2>;
@@ -280,4 +348,20 @@
 
 		/include/ "vexpress-v2m-rs1.dtsi"
 	};
+<<<<<<< HEAD
+=======
+
+	site2: hsb@40000000 {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges = <0 0 0x40000000 0x3fef0000>;
+		#interrupt-cells = <1>;
+		interrupt-map-mask = <0 3>;
+		interrupt-map = <0 0 &gic 0 36 4>,
+				<0 1 &gic 0 37 4>,
+				<0 2 &gic 0 38 4>,
+				<0 3 &gic 0 39 4>;
+	};
+>>>>>>> v4.9.227
 };

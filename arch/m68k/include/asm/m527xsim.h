@@ -103,8 +103,15 @@
  */
 #define	MCFFEC_BASE0		(MCF_IPSBAR + 0x1000)
 #define	MCFFEC_SIZE0		0x800
+<<<<<<< HEAD
 #define	MCFFEC_BASE1		(MCF_IPSBAR + 0x1800)
 #define	MCFFEC_SIZE1		0x800
+=======
+#ifdef CONFIG_M5275
+#define	MCFFEC_BASE1		(MCF_IPSBAR + 0x1800)
+#define	MCFFEC_SIZE1		0x800
+#endif
+>>>>>>> v4.9.227
 
 /*
  *	QSPI module.

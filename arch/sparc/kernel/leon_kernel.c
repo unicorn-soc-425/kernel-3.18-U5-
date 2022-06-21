@@ -53,7 +53,11 @@ static inline unsigned int leon_eirq_get(int cpu)
 }
 
 /* Handle one or multiple IRQs from the extended interrupt controller */
+<<<<<<< HEAD
 static void leon_handle_ext_irq(unsigned int irq, struct irq_desc *desc)
+=======
+static void leon_handle_ext_irq(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	unsigned int eirq;
 	struct irq_bucket *p;
@@ -126,7 +130,11 @@ static int leon_set_affinity(struct irq_data *data, const struct cpumask *dest,
 	int oldcpu, newcpu;
 
 	mask = (unsigned long)data->chip_data;
+<<<<<<< HEAD
 	oldcpu = irq_choose_cpu(data->affinity);
+=======
+	oldcpu = irq_choose_cpu(irq_data_get_affinity_mask(data));
+>>>>>>> v4.9.227
 	newcpu = irq_choose_cpu(dest);
 
 	if (oldcpu == newcpu)
@@ -149,7 +157,11 @@ static void leon_unmask_irq(struct irq_data *data)
 	int cpu;
 
 	mask = (unsigned long)data->chip_data;
+<<<<<<< HEAD
 	cpu = irq_choose_cpu(data->affinity);
+=======
+	cpu = irq_choose_cpu(irq_data_get_affinity_mask(data));
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&leon_irq_lock, flags);
 	oldmask = LEON3_BYPASS_LOAD_PA(LEON_IMASK(cpu));
 	LEON3_BYPASS_STORE_PA(LEON_IMASK(cpu), (oldmask | mask));
@@ -162,7 +174,11 @@ static void leon_mask_irq(struct irq_data *data)
 	int cpu;
 
 	mask = (unsigned long)data->chip_data;
+<<<<<<< HEAD
 	cpu = irq_choose_cpu(data->affinity);
+=======
+	cpu = irq_choose_cpu(irq_data_get_affinity_mask(data));
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&leon_irq_lock, flags);
 	oldmask = LEON3_BYPASS_LOAD_PA(LEON_IMASK(cpu));
 	LEON3_BYPASS_STORE_PA(LEON_IMASK(cpu), (oldmask & ~mask));
@@ -203,7 +219,11 @@ static struct irq_chip leon_irq = {
 
 /*
  * Build a LEON IRQ for the edge triggered LEON IRQ controller:
+<<<<<<< HEAD
  *  Edge (normal) IRQ           - handle_simple_irq, ack=DONT-CARE, never ack
+=======
+ *  Edge (normal) IRQ           - handle_simple_irq, ack=DON'T-CARE, never ack
+>>>>>>> v4.9.227
  *  Level IRQ (PCI|Level-GPIO)  - handle_fasteoi_irq, ack=1, ack after ISR
  *  Per-CPU Edge                - handle_percpu_irq, ack=0
  */

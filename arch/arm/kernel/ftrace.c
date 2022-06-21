@@ -20,8 +20,12 @@
 #include <asm/cacheflush.h>
 #include <asm/opcodes.h>
 #include <asm/ftrace.h>
+<<<<<<< HEAD
 
 #include "insn.h"
+=======
+#include <asm/insn.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_THUMB2_KERNEL
 #define	NOP		0xf85deb04	/* pop.w {lr} */
@@ -30,11 +34,14 @@
 #endif
 
 #ifdef CONFIG_DYNAMIC_FTRACE
+<<<<<<< HEAD
 #ifdef CONFIG_OLD_MCOUNT
 #define OLD_MCOUNT_ADDR	((unsigned long) mcount)
 #define OLD_FTRACE_ADDR ((unsigned long) ftrace_caller_old)
 
 #define	OLD_NOP		0xe1a00000	/* mov r0, r0 */
+=======
+>>>>>>> v4.9.227
 
 static int __ftrace_modify_code(void *data)
 {
@@ -52,6 +59,15 @@ void arch_ftrace_update_code(int command)
 	stop_machine(__ftrace_modify_code, &command, NULL);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OLD_MCOUNT
+#define OLD_MCOUNT_ADDR	((unsigned long) mcount)
+#define OLD_FTRACE_ADDR ((unsigned long) ftrace_caller_old)
+
+#define	OLD_NOP		0xe1a00000	/* mov r0, r0 */
+
+>>>>>>> v4.9.227
 static unsigned long ftrace_nop_replace(struct dyn_ftrace *rec)
 {
 	return rec->arch.old_mcount ? OLD_NOP : NOP;
@@ -219,7 +235,11 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr,
 	}
 
 	err = ftrace_push_return_trace(old, self_addr, &trace.depth,
+<<<<<<< HEAD
 				       frame_pointer);
+=======
+				       frame_pointer, NULL);
+>>>>>>> v4.9.227
 	if (err == -EBUSY) {
 		*parent = old;
 		return;

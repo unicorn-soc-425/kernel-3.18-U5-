@@ -22,6 +22,12 @@
 
 #include "wm9705.h"
 
+<<<<<<< HEAD
+=======
+#define WM9705_VENDOR_ID 0x574d4c05
+#define WM9705_VENDOR_ID_MASK 0xffffffff
+
+>>>>>>> v4.9.227
 /*
  * WM9705 register cache
  */
@@ -203,13 +209,21 @@ static const struct snd_soc_dapm_route wm9705_audio_map[] = {
 /* We use a register cache to enhance read performance. */
 static unsigned int ac97_read(struct snd_soc_codec *codec, unsigned int reg)
 {
+<<<<<<< HEAD
+=======
+	struct snd_ac97 *ac97 = snd_soc_codec_get_drvdata(codec);
+>>>>>>> v4.9.227
 	u16 *cache = codec->reg_cache;
 
 	switch (reg) {
 	case AC97_RESET:
 	case AC97_VENDOR_ID1:
 	case AC97_VENDOR_ID2:
+<<<<<<< HEAD
 		return soc_ac97_ops->read(codec->ac97, reg);
+=======
+		return soc_ac97_ops->read(ac97, reg);
+>>>>>>> v4.9.227
 	default:
 		reg = reg >> 1;
 
@@ -223,9 +237,16 @@ static unsigned int ac97_read(struct snd_soc_codec *codec, unsigned int reg)
 static int ac97_write(struct snd_soc_codec *codec, unsigned int reg,
 	unsigned int val)
 {
+<<<<<<< HEAD
 	u16 *cache = codec->reg_cache;
 
 	soc_ac97_ops->write(codec->ac97, reg, val);
+=======
+	struct snd_ac97 *ac97 = snd_soc_codec_get_drvdata(codec);
+	u16 *cache = codec->reg_cache;
+
+	soc_ac97_ops->write(ac97, reg, val);
+>>>>>>> v4.9.227
 	reg = reg >> 1;
 	if (reg < (ARRAY_SIZE(wm9705_reg)))
 		cache[reg] = val;
@@ -263,7 +284,10 @@ static const struct snd_soc_dai_ops wm9705_dai_ops = {
 static struct snd_soc_dai_driver wm9705_dai[] = {
 	{
 		.name = "wm9705-hifi",
+<<<<<<< HEAD
 		.ac97_control = 1,
+=======
+>>>>>>> v4.9.227
 		.playback = {
 			.stream_name = "HiFi Playback",
 			.channels_min = 1,
@@ -292,6 +316,7 @@ static struct snd_soc_dai_driver wm9705_dai[] = {
 	}
 };
 
+<<<<<<< HEAD
 static int wm9705_reset(struct snd_soc_codec *codec)
 {
 	if (soc_ac97_ops->reset) {
@@ -307,12 +332,21 @@ static int wm9705_reset(struct snd_soc_codec *codec)
 static int wm9705_soc_suspend(struct snd_soc_codec *codec)
 {
 	soc_ac97_ops->write(codec->ac97, AC97_POWERDOWN, 0xffff);
+=======
+#ifdef CONFIG_PM
+static int wm9705_soc_suspend(struct snd_soc_codec *codec)
+{
+	struct snd_ac97 *ac97 = snd_soc_codec_get_drvdata(codec);
+
+	soc_ac97_ops->write(ac97, AC97_POWERDOWN, 0xffff);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static int wm9705_soc_resume(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	int i, ret;
 	u16 *cache = codec->reg_cache;
 
@@ -324,6 +358,19 @@ static int wm9705_soc_resume(struct snd_soc_codec *codec)
 
 	for (i = 2; i < ARRAY_SIZE(wm9705_reg) << 1; i += 2) {
 		soc_ac97_ops->write(codec->ac97, i, cache[i>>1]);
+=======
+	struct snd_ac97 *ac97 = snd_soc_codec_get_drvdata(codec);
+	int i, ret;
+	u16 *cache = codec->reg_cache;
+
+	ret = snd_ac97_reset(ac97, true, WM9705_VENDOR_ID,
+		WM9705_VENDOR_ID_MASK);
+	if (ret < 0)
+		return ret;
+
+	for (i = 2; i < ARRAY_SIZE(wm9705_reg) << 1; i += 2) {
+		soc_ac97_ops->write(ac97, i, cache[i>>1]);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -335,6 +382,7 @@ static int wm9705_soc_resume(struct snd_soc_codec *codec)
 
 static int wm9705_soc_probe(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
 	ret = snd_soc_new_ac97_codec(codec, soc_ac97_ops, 0);
@@ -355,15 +403,39 @@ static int wm9705_soc_probe(struct snd_soc_codec *codec)
 reset_err:
 	snd_soc_free_ac97_codec(codec);
 	return ret;
+=======
+	struct snd_ac97 *ac97;
+
+	ac97 = snd_soc_new_ac97_codec(codec, WM9705_VENDOR_ID,
+		WM9705_VENDOR_ID_MASK);
+	if (IS_ERR(ac97)) {
+		dev_err(codec->dev, "Failed to register AC97 codec\n");
+		return PTR_ERR(ac97);
+	}
+
+	snd_soc_codec_set_drvdata(codec, ac97);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int wm9705_soc_remove(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	snd_soc_free_ac97_codec(codec);
 	return 0;
 }
 
 static struct snd_soc_codec_driver soc_codec_dev_wm9705 = {
+=======
+	struct snd_ac97 *ac97 = snd_soc_codec_get_drvdata(codec);
+
+	snd_soc_free_ac97_codec(ac97);
+	return 0;
+}
+
+static const struct snd_soc_codec_driver soc_codec_dev_wm9705 = {
+>>>>>>> v4.9.227
 	.probe = 	wm9705_soc_probe,
 	.remove = 	wm9705_soc_remove,
 	.suspend =	wm9705_soc_suspend,
@@ -374,10 +446,22 @@ static struct snd_soc_codec_driver soc_codec_dev_wm9705 = {
 	.reg_word_size = sizeof(u16),
 	.reg_cache_step = 2,
 	.reg_cache_default = wm9705_reg,
+<<<<<<< HEAD
 	.dapm_widgets = wm9705_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(wm9705_dapm_widgets),
 	.dapm_routes = wm9705_audio_map,
 	.num_dapm_routes = ARRAY_SIZE(wm9705_audio_map),
+=======
+
+	.component_driver = {
+		.controls		= wm9705_snd_ac97_controls,
+		.num_controls		= ARRAY_SIZE(wm9705_snd_ac97_controls),
+		.dapm_widgets		= wm9705_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm9705_dapm_widgets),
+		.dapm_routes		= wm9705_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(wm9705_audio_map),
+	},
+>>>>>>> v4.9.227
 };
 
 static int wm9705_probe(struct platform_device *pdev)
@@ -395,7 +479,10 @@ static int wm9705_remove(struct platform_device *pdev)
 static struct platform_driver wm9705_codec_driver = {
 	.driver = {
 			.name = "wm9705-codec",
+<<<<<<< HEAD
 			.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 
 	.probe = wm9705_probe,

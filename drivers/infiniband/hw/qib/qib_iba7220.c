@@ -902,7 +902,12 @@ static void sdma_7220_errors(struct qib_pportdata *ppd, u64 errs)
 	errs &= QLOGIC_IB_E_SDMAERRS;
 
 	msg = dd->cspec->sdmamsgbuf;
+<<<<<<< HEAD
 	qib_decode_7220_sdma_errs(ppd, errs, msg, sizeof dd->cspec->sdmamsgbuf);
+=======
+	qib_decode_7220_sdma_errs(ppd, errs, msg,
+		sizeof(dd->cspec->sdmamsgbuf));
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&ppd->sdma_lock, flags);
 
 	if (errs & ERR_MASK(SendBufMisuseErr)) {
@@ -1043,6 +1048,10 @@ done:
 static void reenable_7220_chase(unsigned long opaque)
 {
 	struct qib_pportdata *ppd = (struct qib_pportdata *)opaque;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	ppd->cpspec->chase_timer.expires = 0;
 	qib_set_ib_7220_lstate(ppd, QLOGIC_IB_IBCC_LINKCMD_DOWN,
 		QLOGIC_IB_IBCC_LINKINITCMD_POLL);
@@ -1101,7 +1110,11 @@ static void handle_7220_errors(struct qib_devdata *dd, u64 errs)
 
 	/* do these first, they are most important */
 	if (errs & ERR_MASK(HardwareErr))
+<<<<<<< HEAD
 		qib_7220_handle_hwerrors(dd, msg, sizeof dd->cspec->emsgbuf);
+=======
+		qib_7220_handle_hwerrors(dd, msg, sizeof(dd->cspec->emsgbuf));
+>>>>>>> v4.9.227
 	else
 		for (log_idx = 0; log_idx < QIB_EEP_LOG_CNT; ++log_idx)
 			if (errs & dd->eep_st_masks[log_idx].errs_to_log)
@@ -1155,7 +1168,11 @@ static void handle_7220_errors(struct qib_devdata *dd, u64 errs)
 		ERR_MASK(RcvEgrFullErr) | ERR_MASK(RcvHdrFullErr) |
 		ERR_MASK(HardwareErr) | ERR_MASK(SDmaDisabledErr);
 
+<<<<<<< HEAD
 	qib_decode_7220_err(dd, msg, sizeof dd->cspec->emsgbuf, errs & ~mask);
+=======
+	qib_decode_7220_err(dd, msg, sizeof(dd->cspec->emsgbuf), errs & ~mask);
+>>>>>>> v4.9.227
 
 	if (errs & E_SUM_PKTERRS)
 		qib_stats.sps_rcverrs++;
@@ -1380,7 +1397,11 @@ static void qib_7220_handle_hwerrors(struct qib_devdata *dd, char *msg,
 		bits = (u32) ((hwerrs >>
 			       QLOGIC_IB_HWE_PCIEMEMPARITYERR_SHIFT) &
 			      QLOGIC_IB_HWE_PCIEMEMPARITYERR_MASK);
+<<<<<<< HEAD
 		snprintf(bitsmsg, sizeof dd->cspec->bitsmsgbuf,
+=======
+		snprintf(bitsmsg, sizeof(dd->cspec->bitsmsgbuf),
+>>>>>>> v4.9.227
 			 "[PCIe Mem Parity Errs %x] ", bits);
 		strlcat(msg, bitsmsg, msgl);
 	}
@@ -1390,7 +1411,11 @@ static void qib_7220_handle_hwerrors(struct qib_devdata *dd, char *msg,
 
 	if (hwerrs & _QIB_PLL_FAIL) {
 		isfatal = 1;
+<<<<<<< HEAD
 		snprintf(bitsmsg, sizeof dd->cspec->bitsmsgbuf,
+=======
+		snprintf(bitsmsg, sizeof(dd->cspec->bitsmsgbuf),
+>>>>>>> v4.9.227
 			 "[PLL failed (%llx), InfiniPath hardware unusable]",
 			 (unsigned long long) hwerrs & _QIB_PLL_FAIL);
 		strlcat(msg, bitsmsg, msgl);
@@ -4124,11 +4149,17 @@ static int qib_init_7220_variables(struct qib_devdata *dd)
 	qib_7220_config_ctxts(dd);
 	qib_set_ctxtcnt(dd);  /* needed for PAT setup */
 
+<<<<<<< HEAD
 	if (qib_wc_pat) {
 		ret = init_chip_wc_pat(dd, 0);
 		if (ret)
 			goto bail;
 	}
+=======
+	ret = init_chip_wc_pat(dd, 0);
+	if (ret)
+		goto bail;
+>>>>>>> v4.9.227
 	set_7220_baseaddrs(dd); /* set chip access pointers now */
 
 	ret = 0;

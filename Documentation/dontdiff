@@ -3,6 +3,10 @@
 *.bc
 *.bin
 *.bz2
+<<<<<<< HEAD
+=======
+*.c.[012]*.*
+>>>>>>> v4.9.227
 *.cis
 *.cpio
 *.csp
@@ -165,7 +169,10 @@ mach-types.h
 machtypes.h
 map
 map_hugetlb
+<<<<<<< HEAD
 media
+=======
+>>>>>>> v4.9.227
 mconf
 miboot*
 mk_elfconfig

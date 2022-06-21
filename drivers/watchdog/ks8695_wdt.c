@@ -254,6 +254,7 @@ static int ks8695wdt_probe(struct platform_device *pdev)
 
 static int ks8695wdt_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int res;
 
 	res = misc_deregister(&ks8695wdt_miscdev);
@@ -261,6 +262,12 @@ static int ks8695wdt_remove(struct platform_device *pdev)
 		ks8695wdt_miscdev.parent = NULL;
 
 	return res;
+=======
+	misc_deregister(&ks8695wdt_miscdev);
+	ks8695wdt_miscdev.parent = NULL;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void ks8695wdt_shutdown(struct platform_device *pdev)
@@ -296,7 +303,10 @@ static struct platform_driver ks8695wdt_driver = {
 	.resume		= ks8695wdt_resume,
 	.driver		= {
 		.name	= "ks8695_wdt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

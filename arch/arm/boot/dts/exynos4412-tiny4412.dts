@@ -13,12 +13,25 @@
 
 /dts-v1/;
 #include "exynos4412.dtsi"
+<<<<<<< HEAD
+=======
+#include <dt-bindings/gpio/gpio.h>
+>>>>>>> v4.9.227
 
 / {
 	model = "FriendlyARM TINY4412 board based on Exynos4412";
 	compatible = "friendlyarm,tiny4412", "samsung,exynos4412", "samsung,exynos4";
 
+<<<<<<< HEAD
 	memory {
+=======
+	chosen {
+		stdout-path = &serial_0;
+	};
+
+	memory@40000000 {
+		device_type = "memory";
+>>>>>>> v4.9.227
 		reg = <0x40000000 0x40000000>;
 	};
 
@@ -27,31 +40,48 @@
 
 		led1 {
 			label = "led1";
+<<<<<<< HEAD
 			gpios = <&gpm4 0 1>;
+=======
+			gpios = <&gpm4 0 GPIO_ACTIVE_LOW>;
+>>>>>>> v4.9.227
 			default-state = "off";
 			linux,default-trigger = "heartbeat";
 		};
 
 		led2 {
 			label = "led2";
+<<<<<<< HEAD
 			gpios = <&gpm4 1 1>;
+=======
+			gpios = <&gpm4 1 GPIO_ACTIVE_LOW>;
+>>>>>>> v4.9.227
 			default-state = "off";
 		};
 
 		led3 {
 			label = "led3";
+<<<<<<< HEAD
 			gpios = <&gpm4 2 1>;
+=======
+			gpios = <&gpm4 2 GPIO_ACTIVE_LOW>;
+>>>>>>> v4.9.227
 			default-state = "off";
 		};
 
 		led4 {
 			label = "led4";
+<<<<<<< HEAD
 			gpios = <&gpm4 3 1>;
+=======
+			gpios = <&gpm4 3 GPIO_ACTIVE_LOW>;
+>>>>>>> v4.9.227
 			default-state = "off";
 			linux,default-trigger = "mmc0";
 		};
 	};
 
+<<<<<<< HEAD
 	rtc@10070000 {
 		status = "okay";
 	};
@@ -79,6 +109,8 @@
 		status = "okay";
 	};
 
+=======
+>>>>>>> v4.9.227
 	fixed-rate-clocks {
 		xxti {
 			compatible = "samsung,clock-xxti";
@@ -91,3 +123,33 @@
 		};
 	};
 };
+<<<<<<< HEAD
+=======
+
+&rtc {
+	status = "okay";
+};
+
+&sdhci_2 {
+	bus-width = <4>;
+	pinctrl-0 = <&sd2_clk &sd2_cmd &sd2_cd &sd2_bus4>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&serial_0 {
+	status = "okay";
+};
+
+&serial_1 {
+	status = "okay";
+};
+
+&serial_2 {
+	status = "okay";
+};
+
+&serial_3 {
+	status = "okay";
+};
+>>>>>>> v4.9.227

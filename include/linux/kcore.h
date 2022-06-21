@@ -9,6 +9,10 @@ enum kcore_type {
 	KCORE_VMALLOC,
 	KCORE_RAM,
 	KCORE_VMEMMAP,
+<<<<<<< HEAD
+=======
+	KCORE_USER,
+>>>>>>> v4.9.227
 	KCORE_OTHER,
 };
 

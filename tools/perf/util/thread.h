@@ -1,12 +1,23 @@
 #ifndef __PERF_THREAD_H
 #define __PERF_THREAD_H
 
+<<<<<<< HEAD
+=======
+#include <linux/atomic.h>
+>>>>>>> v4.9.227
 #include <linux/rbtree.h>
 #include <linux/list.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include "symbol.h"
 #include <strlist.h>
+<<<<<<< HEAD
+=======
+#include <intlist.h>
+
+struct thread_stack;
+struct unwind_libunwind_ops;
+>>>>>>> v4.9.227
 
 struct thread {
 	union {
@@ -18,6 +29,7 @@ struct thread {
 	pid_t			tid;
 	pid_t			ppid;
 	int			cpu;
+<<<<<<< HEAD
 	char			shortname[3];
 	bool			comm_set;
 	bool			dead; /* if set thread has exited */
@@ -25,6 +37,22 @@ struct thread {
 	int			comm_len;
 
 	void			*priv;
+=======
+	atomic_t		refcnt;
+	char			shortname[3];
+	bool			comm_set;
+	int			comm_len;
+	bool			dead; /* if set thread has exited */
+	struct list_head	comm_list;
+	u64			db_id;
+
+	void			*priv;
+	struct thread_stack	*ts;
+#ifdef HAVE_LIBUNWIND_SUPPORT
+	void				*addr_space;
+	struct unwind_libunwind_ops	*unwind_libunwind_ops;
+#endif
+>>>>>>> v4.9.227
 };
 
 struct machine;
@@ -33,6 +61,21 @@ struct comm;
 struct thread *thread__new(pid_t pid, pid_t tid);
 int thread__init_map_groups(struct thread *thread, struct machine *machine);
 void thread__delete(struct thread *thread);
+<<<<<<< HEAD
+=======
+
+struct thread *thread__get(struct thread *thread);
+void thread__put(struct thread *thread);
+
+static inline void __thread__zput(struct thread **thread)
+{
+	thread__put(*thread);
+	*thread = NULL;
+}
+
+#define thread__zput(thread) __thread__zput(&thread)
+
+>>>>>>> v4.9.227
 static inline void thread__exited(struct thread *thread)
 {
 	thread->dead = true;
@@ -46,10 +89,16 @@ static inline int thread__set_comm(struct thread *thread, const char *comm,
 	return __thread__set_comm(thread, comm, timestamp, false);
 }
 
+<<<<<<< HEAD
+=======
+int thread__set_comm_from_proc(struct thread *thread);
+
+>>>>>>> v4.9.227
 int thread__comm_len(struct thread *thread);
 struct comm *thread__comm(const struct thread *thread);
 struct comm *thread__exec_comm(const struct thread *thread);
 const char *thread__comm_str(const struct thread *thread);
+<<<<<<< HEAD
 void thread__insert_map(struct thread *thread, struct map *map);
 int thread__fork(struct thread *thread, struct thread *parent, u64 timestamp);
 size_t thread__fprintf(struct thread *thread, FILE *fp);
@@ -59,11 +108,27 @@ void thread__find_addr_map(struct thread *thread, struct machine *machine,
 			   struct addr_location *al);
 
 void thread__find_addr_location(struct thread *thread, struct machine *machine,
+=======
+int thread__insert_map(struct thread *thread, struct map *map);
+int thread__fork(struct thread *thread, struct thread *parent, u64 timestamp);
+size_t thread__fprintf(struct thread *thread, FILE *fp);
+
+struct thread *thread__main_thread(struct machine *machine, struct thread *thread);
+
+void thread__find_addr_map(struct thread *thread,
+			   u8 cpumode, enum map_type type, u64 addr,
+			   struct addr_location *al);
+
+void thread__find_addr_location(struct thread *thread,
+>>>>>>> v4.9.227
 				u8 cpumode, enum map_type type, u64 addr,
 				struct addr_location *al);
 
 void thread__find_cpumode_addr_location(struct thread *thread,
+<<<<<<< HEAD
 					struct machine *machine,
+=======
+>>>>>>> v4.9.227
 					enum map_type type, u64 addr,
 					struct addr_location *al);
 
@@ -84,6 +149,19 @@ static inline bool thread__is_filtered(struct thread *thread)
 		return true;
 	}
 
+<<<<<<< HEAD
+=======
+	if (symbol_conf.pid_list &&
+	    !intlist__has_entry(symbol_conf.pid_list, thread->pid_)) {
+		return true;
+	}
+
+	if (symbol_conf.tid_list &&
+	    !intlist__has_entry(symbol_conf.tid_list, thread->tid)) {
+		return true;
+	}
+
+>>>>>>> v4.9.227
 	return false;
 }
 

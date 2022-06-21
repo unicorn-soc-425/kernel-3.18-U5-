@@ -7,7 +7,11 @@
  * defined; unless noted otherwise, they are optional, and can be
  * filled in with a null pointer.
  *
+<<<<<<< HEAD
  * struct tty_struct * (*lookup)(struct tty_driver *self, int idx)
+=======
+ * struct tty_struct * (*lookup)(struct tty_driver *self, struct file *, int idx)
+>>>>>>> v4.9.227
  *
  *	Return the tty device corresponding to idx, NULL if there is not
  *	one currently in use and an ERR_PTR value on error. Called under
@@ -250,7 +254,11 @@ struct serial_icounter_struct;
 
 struct tty_operations {
 	struct tty_struct * (*lookup)(struct tty_driver *driver,
+<<<<<<< HEAD
 			struct inode *inode, int idx);
+=======
+			struct file *filp, int idx);
+>>>>>>> v4.9.227
 	int  (*install)(struct tty_driver *driver, struct tty_struct *tty);
 	void (*remove)(struct tty_driver *driver, struct tty_struct *tty);
 	int  (*open)(struct tty_struct * tty, struct file * filp);
@@ -296,7 +304,11 @@ struct tty_operations {
 struct tty_driver {
 	int	magic;		/* magic number for this structure */
 	struct kref kref;	/* Reference management */
+<<<<<<< HEAD
 	struct cdev *cdevs;
+=======
+	struct cdev **cdevs;
+>>>>>>> v4.9.227
 	struct module	*owner;
 	const char	*driver_name;
 	const char	*name;

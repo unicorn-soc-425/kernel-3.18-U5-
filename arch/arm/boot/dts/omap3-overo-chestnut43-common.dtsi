@@ -37,6 +37,7 @@
 		pinctrl-0 = <&button_pins>;
 		#address-cells = <1>;
 		#size-cells = <0>;
+<<<<<<< HEAD
 		button0@23 {
 			label = "button0";
 			linux,code = <BTN_0>;
@@ -48,6 +49,19 @@
 			linux,code = <BTN_1>;
 			gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;		/* gpio_14 */
 			gpio-key,wakeup;
+=======
+		button0 {
+			label = "button0";
+			linux,code = <BTN_0>;
+			gpios = <&gpio1 23 GPIO_ACTIVE_LOW>;		/* gpio_23 */
+			wakeup-source;
+		};
+		button1 {
+			label = "button1";
+			linux,code = <BTN_1>;
+			gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;		/* gpio_14 */
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 	};
 };
@@ -55,8 +69,11 @@
 #include "omap-gpmc-smsc9221.dtsi"
 
 &gpmc {
+<<<<<<< HEAD
 	ranges = <5 0 0x2c000000 0x1000000>;	/* CS5 */
 
+=======
+>>>>>>> v4.9.227
 	ethernet@gpmc {
 		reg = <5 0 0xff>;
 		interrupt-parent = <&gpio6>;

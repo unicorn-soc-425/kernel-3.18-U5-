@@ -45,18 +45,28 @@ struct proto udplitev6_prot = {
 	.getsockopt	   = udpv6_getsockopt,
 	.sendmsg	   = udpv6_sendmsg,
 	.recvmsg	   = udpv6_recvmsg,
+<<<<<<< HEAD
 	.backlog_rcv	   = udpv6_queue_rcv_skb,
+=======
+	.backlog_rcv	   = __udpv6_queue_rcv_skb,
+>>>>>>> v4.9.227
 	.hash		   = udp_lib_hash,
 	.unhash		   = udp_lib_unhash,
 	.get_port	   = udp_v6_get_port,
 	.obj_size	   = sizeof(struct udp6_sock),
+<<<<<<< HEAD
 	.slab_flags	   = SLAB_DESTROY_BY_RCU,
+=======
+>>>>>>> v4.9.227
 	.h.udp_table	   = &udplite_table,
 #ifdef CONFIG_COMPAT
 	.compat_setsockopt = compat_udpv6_setsockopt,
 	.compat_getsockopt = compat_udpv6_getsockopt,
 #endif
+<<<<<<< HEAD
 	.clear_sk	   = udp_v6_clear_sk,
+=======
+>>>>>>> v4.9.227
 };
 
 static struct inet_protosw udplite6_protosw = {

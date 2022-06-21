@@ -48,12 +48,17 @@ struct efm32_clock_event_ddata {
 	unsigned periodic_top;
 };
 
+<<<<<<< HEAD
 static void efm32_clock_event_set_mode(enum clock_event_mode mode,
 				       struct clock_event_device *evtdev)
+=======
+static int efm32_clock_event_shutdown(struct clock_event_device *evtdev)
+>>>>>>> v4.9.227
 {
 	struct efm32_clock_event_ddata *ddata =
 		container_of(evtdev, struct efm32_clock_event_ddata, evtdev);
 
+<<<<<<< HEAD
 	switch (mode) {
 	case CLOCK_EVT_MODE_PERIODIC:
 		writel_relaxed(TIMERn_CMD_STOP, ddata->base + TIMERn_CMD);
@@ -82,6 +87,39 @@ static void efm32_clock_event_set_mode(enum clock_event_mode mode,
 	case CLOCK_EVT_MODE_RESUME:
 		break;
 	}
+=======
+	writel_relaxed(TIMERn_CMD_STOP, ddata->base + TIMERn_CMD);
+	return 0;
+}
+
+static int efm32_clock_event_set_oneshot(struct clock_event_device *evtdev)
+{
+	struct efm32_clock_event_ddata *ddata =
+		container_of(evtdev, struct efm32_clock_event_ddata, evtdev);
+
+	writel_relaxed(TIMERn_CMD_STOP, ddata->base + TIMERn_CMD);
+	writel_relaxed(TIMERn_CTRL_PRESC_1024 |
+		       TIMERn_CTRL_CLKSEL_PRESCHFPERCLK |
+		       TIMERn_CTRL_OSMEN |
+		       TIMERn_CTRL_MODE_DOWN,
+		       ddata->base + TIMERn_CTRL);
+	return 0;
+}
+
+static int efm32_clock_event_set_periodic(struct clock_event_device *evtdev)
+{
+	struct efm32_clock_event_ddata *ddata =
+		container_of(evtdev, struct efm32_clock_event_ddata, evtdev);
+
+	writel_relaxed(TIMERn_CMD_STOP, ddata->base + TIMERn_CMD);
+	writel_relaxed(ddata->periodic_top, ddata->base + TIMERn_TOP);
+	writel_relaxed(TIMERn_CTRL_PRESC_1024 |
+		       TIMERn_CTRL_CLKSEL_PRESCHFPERCLK |
+		       TIMERn_CTRL_MODE_DOWN,
+		       ddata->base + TIMERn_CTRL);
+	writel_relaxed(TIMERn_CMD_START, ddata->base + TIMERn_CMD);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int efm32_clock_event_set_next_event(unsigned long evt,
@@ -111,8 +149,15 @@ static irqreturn_t efm32_clock_event_handler(int irq, void *dev_id)
 static struct efm32_clock_event_ddata clock_event_ddata = {
 	.evtdev = {
 		.name = "efm32 clockevent",
+<<<<<<< HEAD
 		.features = CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_MODE_PERIODIC,
 		.set_mode = efm32_clock_event_set_mode,
+=======
+		.features = CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_PERIODIC,
+		.set_state_shutdown = efm32_clock_event_shutdown,
+		.set_state_periodic = efm32_clock_event_set_periodic,
+		.set_state_oneshot = efm32_clock_event_set_oneshot,
+>>>>>>> v4.9.227
 		.set_next_event = efm32_clock_event_set_next_event,
 		.rating = 200,
 	},
@@ -229,10 +274,22 @@ static int __init efm32_clockevent_init(struct device_node *np)
 					DIV_ROUND_CLOSEST(rate, 1024),
 					0xf, 0xffff);
 
+<<<<<<< HEAD
 	setup_irq(irq, &efm32_clock_event_irq);
 
 	return 0;
 
+=======
+	ret = setup_irq(irq, &efm32_clock_event_irq);
+	if (ret) {
+		pr_err("Failed setup irq");
+		goto err_setup_irq;
+	}
+
+	return 0;
+
+err_setup_irq:
+>>>>>>> v4.9.227
 err_get_irq:
 
 	iounmap(base);
@@ -251,16 +308,27 @@ err_clk_get:
  * This function asserts that we have exactly one clocksource and one
  * clock_event_device in the end.
  */
+<<<<<<< HEAD
 static void __init efm32_timer_init(struct device_node *np)
 {
 	static int has_clocksource, has_clockevent;
 	int ret;
+=======
+static int __init efm32_timer_init(struct device_node *np)
+{
+	static int has_clocksource, has_clockevent;
+	int ret = 0;
+>>>>>>> v4.9.227
 
 	if (!has_clocksource) {
 		ret = efm32_clocksource_init(np);
 		if (!ret) {
 			has_clocksource = 1;
+<<<<<<< HEAD
 			return;
+=======
+			return 0;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -268,9 +336,17 @@ static void __init efm32_timer_init(struct device_node *np)
 		ret = efm32_clockevent_init(np);
 		if (!ret) {
 			has_clockevent = 1;
+<<<<<<< HEAD
 			return;
 		}
 	}
+=======
+			return 0;
+		}
+	}
+
+	return ret;
+>>>>>>> v4.9.227
 }
 CLOCKSOURCE_OF_DECLARE(efm32compat, "efm32,timer", efm32_timer_init);
 CLOCKSOURCE_OF_DECLARE(efm32, "energymicro,efm32-timer", efm32_timer_init);

@@ -48,7 +48,10 @@
 #define ADF_TRANSPORT_INTRN_H
 
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/atomic.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/spinlock_types.h>
 #include "adf_transport.h"
 
@@ -92,7 +95,11 @@ struct adf_etr_data {
 	struct dentry *debug;
 };
 
+<<<<<<< HEAD
 void adf_response_handler(unsigned long bank_addr);
+=======
+void adf_response_handler(uintptr_t bank_addr);
+>>>>>>> v4.9.227
 #ifdef CONFIG_DEBUG_FS
 #include <linux/debugfs.h>
 int adf_bank_debugfs_add(struct adf_etr_bank_data *bank);

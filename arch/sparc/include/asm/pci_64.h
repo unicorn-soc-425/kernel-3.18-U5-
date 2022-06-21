@@ -31,6 +31,7 @@
 #define PCI64_REQUIRED_MASK	(~(u64)0)
 #define PCI64_ADDR_BASE		0xfffc000000000000UL
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 					enum pci_dma_burst_strategy *strat,
@@ -50,6 +51,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /* Return the index of the PCI controller for device PDEV. */
 
 int pci_domain_nr(struct pci_bus *bus);
@@ -74,9 +77,12 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 }
 
 #define HAVE_ARCH_PCI_RESOURCE_TO_USER
+<<<<<<< HEAD
 void pci_resource_to_user(const struct pci_dev *dev, int bar,
 			  const struct resource *rsrc,
 			  resource_size_t *start, resource_size_t *end);
+=======
+>>>>>>> v4.9.227
 #endif /* __KERNEL__ */
 
 #endif /* __SPARC64_PCI_H */

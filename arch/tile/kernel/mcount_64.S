@@ -81,7 +81,16 @@ STD_ENTRY(ftrace_caller)
 
 	/* arg1: self return address */
 	/* arg2: parent's return address */
+<<<<<<< HEAD
 	{ move	r0, lr; move	r1, r10 }
+=======
+	/* arg3: ftrace_ops */
+	/* arg4: regs (but make it NULL) */
+	{ move	r0, lr;  moveli        r2, hw2_last(function_trace_op) }
+	{ move	r1, r10; shl16insli    r2, r2, hw1(function_trace_op) }
+	{ movei	r3, 0;   shl16insli    r2, r2, hw0(function_trace_op) }
+	ld	r2,r2
+>>>>>>> v4.9.227
 
 	.global	ftrace_call
 ftrace_call:

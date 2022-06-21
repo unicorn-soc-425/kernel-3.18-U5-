@@ -1508,7 +1508,11 @@ static int xc4000_get_signal(struct dvb_frontend *fe, u16 *strength)
 	if (value >= 0x2000) {
 		value = 0;
 	} else {
+<<<<<<< HEAD
 		value = ~value << 3;
+=======
+		value = (~value << 3) & 0xffff;
+>>>>>>> v4.9.227
 	}
 
 	goto ret;

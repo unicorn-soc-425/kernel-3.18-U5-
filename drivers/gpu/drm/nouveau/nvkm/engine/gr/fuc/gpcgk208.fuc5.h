@@ -349,9 +349,16 @@ uint32_t gk208_grgpc_code[] = {
 	0x801f29f0,
 	0xf6023000,
 	0x04bd0002,
+<<<<<<< HEAD
 /* 0x0448: main */
 	0xf40031f4,
 	0x240d0028,
+=======
+/* 0x0448: wait */
+	0xf40028f4,
+/* 0x044e: main */
+	0x240d0031,
+>>>>>>> v4.9.227
 	0x0000377e,
 	0xb0f401f4,
 	0x18f404e4,
@@ -360,6 +367,7 @@ uint32_t gk208_grgpc_code[] = {
 	0xb60412fd,
 	0x1efd01e4,
 	0x0018fe05,
+<<<<<<< HEAD
 	0x00051b7e,
 /* 0x0477: main_not_ctx_xfer */
 	0x94d40ef4,
@@ -392,29 +400,81 @@ uint32_t gk208_grgpc_code[] = {
 	0x80fc0088,
 	0xf80032f4,
 /* 0x04e1: hub_barrier_done */
+=======
+	0x00051f7e,
+/* 0x0477: main_not_ctx_xfer */
+	0x94da0ef4,
+	0xf5f010ef,
+	0x02f87e01,
+	0xcd0ef400,
+/* 0x0484: ih */
+	0x80f900f9,
+	0xf90188fe,
+	0xf990f980,
+	0xf9b0f9a0,
+	0xf9e0f9d0,
+	0x4a04bdf0,
+	0xaacf0200,
+	0x04abc400,
+	0x0d1f0bf4,
+	0x1a004e24,
+	0x4f00eecf,
+	0xffcf1900,
+	0x00047e00,
+	0x40010e00,
+	0x0ef61d00,
+/* 0x04c3: ih_no_fifo */
+	0x4004bd00,
+	0x0af60100,
+	0xfc04bd00,
+	0xfce0fcf0,
+	0xfcb0fcd0,
+	0xfc90fca0,
+	0x0088fe80,
+	0x00fc80fc,
+	0xf80032f4,
+/* 0x04e5: hub_barrier_done */
+>>>>>>> v4.9.227
 	0x98010f01,
 	0xfebb040e,
 	0x8effb204,
 	0x7e409418,
 	0xf800008f,
+<<<<<<< HEAD
 /* 0x04f5: ctx_redswitch */
 	0x80200f00,
 	0xf6018500,
 	0x04bd000f,
 /* 0x0502: ctx_redswitch_delay */
+=======
+/* 0x04f9: ctx_redswitch */
+	0x80200f00,
+	0xf6018500,
+	0x04bd000f,
+/* 0x0506: ctx_redswitch_delay */
+>>>>>>> v4.9.227
 	0xe2b6080e,
 	0xfd1bf401,
 	0x0800f5f1,
 	0x0200f5f1,
 	0x01850080,
 	0xbd000ff6,
+<<<<<<< HEAD
 /* 0x051b: ctx_xfer */
+=======
+/* 0x051f: ctx_xfer */
+>>>>>>> v4.9.227
 	0x8000f804,
 	0xf6028100,
 	0x04bd000f,
 	0x7e0711f4,
+<<<<<<< HEAD
 /* 0x052b: ctx_xfer_not_load */
 	0x7e0004f5,
+=======
+/* 0x052f: ctx_xfer_not_load */
+	0x7e0004f9,
+>>>>>>> v4.9.227
 	0xbd000216,
 	0x47fc8024,
 	0x0002f602,
@@ -449,10 +509,17 @@ uint32_t gk208_grgpc_code[] = {
 	0x7e00013d,
 	0xf400020a,
 	0x12f40601,
+<<<<<<< HEAD
 /* 0x05b5: ctx_xfer_post */
 	0x02277e07,
 /* 0x05b9: ctx_xfer_done */
 	0x04e17e00,
+=======
+/* 0x05b9: ctx_xfer_post */
+	0x02277e07,
+/* 0x05bd: ctx_xfer_done */
+	0x04e57e00,
+>>>>>>> v4.9.227
 	0x0000f800,
 	0x00000000,
 	0x00000000,
@@ -469,5 +536,8 @@ uint32_t gk208_grgpc_code[] = {
 	0x00000000,
 	0x00000000,
 	0x00000000,
+<<<<<<< HEAD
 	0x00000000,
+=======
+>>>>>>> v4.9.227
 };

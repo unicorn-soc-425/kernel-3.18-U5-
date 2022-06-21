@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __INC_HAL8188EPHYCFG_H__
 #define __INC_HAL8188EPHYCFG_H__
@@ -69,13 +72,20 @@ enum hw90_block {
 enum rf_radio_path {
 	RF_PATH_A = 0,			/* Radio Path A */
 	RF_PATH_B = 1,			/* Radio Path B */
+<<<<<<< HEAD
 	RF_PATH_C = 2,			/* Radio Path C */
 	RF_PATH_D = 3,			/* Radio Path D */
+=======
+>>>>>>> v4.9.227
 };
 
 #define MAX_PG_GROUP 13
 
+<<<<<<< HEAD
 #define	RF_PATH_MAX			3
+=======
+#define	RF_PATH_MAX			2
+>>>>>>> v4.9.227
 #define		MAX_RF_PATH		RF_PATH_MAX
 #define		MAX_TX_COUNT		4 /* path numbers */
 
@@ -87,6 +97,7 @@ enum rf_radio_path {
 
 enum wireless_mode {
 	WIRELESS_MODE_UNKNOWN = 0x00,
+<<<<<<< HEAD
 	WIRELESS_MODE_A			= BIT2,
 	WIRELESS_MODE_B			= BIT0,
 	WIRELESS_MODE_G			= BIT1,
@@ -94,6 +105,15 @@ enum wireless_mode {
 	WIRELESS_MODE_N_24G		= BIT3,
 	WIRELESS_MODE_N_5G		= BIT4,
 	WIRELESS_MODE_AC		= BIT6
+=======
+	WIRELESS_MODE_A			= BIT(2),
+	WIRELESS_MODE_B			= BIT(0),
+	WIRELESS_MODE_G			= BIT(1),
+	WIRELESS_MODE_AUTO		= BIT(5),
+	WIRELESS_MODE_N_24G		= BIT(3),
+	WIRELESS_MODE_N_5G		= BIT(4),
+	WIRELESS_MODE_AC		= BIT(6)
+>>>>>>> v4.9.227
 };
 
 enum phy_rate_tx_offset_area {
@@ -165,6 +185,7 @@ struct bb_reg_def {
 				 * Path A and B */
 };
 
+<<<<<<< HEAD
 struct ant_sel_ofdm {
 	u32 r_tx_antenna:4;
 	u32 r_ant_l:4;
@@ -183,6 +204,8 @@ struct ant_sel_cck {
 	u8 r_ccktx_enable:4;
 };
 
+=======
+>>>>>>> v4.9.227
 /*------------------------------Define structure----------------------------*/
 
 

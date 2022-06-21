@@ -19,7 +19,11 @@
 	 */
 	twl4030_pins: pinmux_twl4030_pins {
 		pinctrl-single,pins = <
+<<<<<<< HEAD
 			0x1b0 (PIN_INPUT_PULLUP | PIN_OFF_WAKEUPENABLE | MUX_MODE0) /* sys_nirq.sys_nirq */
+=======
+			OMAP3_CORE1_IOPAD(0x21e0, PIN_INPUT_PULLUP | PIN_OFF_WAKEUPENABLE | MUX_MODE0) /* sys_nirq.sys_nirq */
+>>>>>>> v4.9.227
 		>;
 	};
 };

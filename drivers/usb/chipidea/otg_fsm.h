@@ -62,6 +62,7 @@
 /* SSEND time before SRP */
 #define TB_SSEND_SRP         (1500)	/* minimum 1.5 sec, section:5.1.2 */
 
+<<<<<<< HEAD
 #define TB_SESS_VLD          (1000)
 
 enum ci_otg_fsm_timer_index {
@@ -90,6 +91,11 @@ struct ci_otg_fsm_timer_list {
 };
 
 #ifdef CONFIG_USB_OTG_FSM
+=======
+#define TB_AIDL_BDIS         (20)	/* 4ms ~ 150ms, section 5.2.1 */
+
+#if IS_ENABLED(CONFIG_USB_OTG_FSM)
+>>>>>>> v4.9.227
 
 int ci_hdrc_otg_fsm_init(struct ci_hdrc *ci);
 int ci_otg_fsm_work(struct ci_hdrc *ci);

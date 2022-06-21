@@ -205,7 +205,11 @@ static int au1xac97c_dai_probe(struct snd_soc_dai *dai)
 
 static struct snd_soc_dai_driver au1xac97c_dai_driver = {
 	.name			= "alchemy-ac97c",
+<<<<<<< HEAD
 	.ac97_control		= 1,
+=======
+	.bus_control		= true,
+>>>>>>> v4.9.227
 	.probe			= au1xac97c_dai_probe,
 	.playback = {
 		.rates		= AC97_RATES,
@@ -334,7 +338,10 @@ static const struct dev_pm_ops au1xpscac97_pmops = {
 static struct platform_driver au1xac97c_driver = {
 	.driver	= {
 		.name	= "alchemy-ac97c",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= AU1XPSCAC97_PMOPS,
 	},
 	.probe		= au1xac97c_drvprobe,

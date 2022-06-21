@@ -116,7 +116,11 @@ EXPORT_SYMBOL_GPL(viafb_irq_disable);
  * most viafb systems will not need to have this extra code for a while.
  * As soon as another user comes long, the ifdef can be removed.
  */
+<<<<<<< HEAD
 #if defined(CONFIG_VIDEO_VIA_CAMERA) || defined(CONFIG_VIDEO_VIA_CAMERA_MODULE)
+=======
+#if IS_ENABLED(CONFIG_VIDEO_VIA_CAMERA)
+>>>>>>> v4.9.227
 /*
  * Access to the DMA engine.  This currently provides what the camera
  * driver needs (i.e. outgoing only) but is easily expandable if need
@@ -542,7 +546,11 @@ static struct viafb_subdev_info {
 	{
 		.name = "viafb-i2c",
 	},
+<<<<<<< HEAD
 #if defined(CONFIG_VIDEO_VIA_CAMERA) || defined(CONFIG_VIDEO_VIA_CAMERA_MODULE)
+=======
+#if IS_ENABLED(CONFIG_VIDEO_VIA_CAMERA)
+>>>>>>> v4.9.227
 	{
 		.name = "viafb-camera",
 	},

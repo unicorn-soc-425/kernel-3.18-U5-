@@ -2,7 +2,11 @@
 #define _ASM_SCORE_MODULE_H
 
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <asm/extable.h>
+>>>>>>> v4.9.227
 #include <asm-generic/module.h>
 
 struct mod_arch_specific {

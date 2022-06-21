@@ -456,8 +456,14 @@ static irqreturn_t atkbd_interrupt(struct serio *serio, unsigned char data,
 
 	keycode = atkbd->keycode[code];
 
+<<<<<<< HEAD
 	if (keycode != ATKBD_KEY_NULL)
 		input_event(dev, EV_MSC, MSC_SCAN, code);
+=======
+	if (!(atkbd->release && test_bit(code, atkbd->force_release_mask)))
+		if (keycode != ATKBD_KEY_NULL)
+			input_event(dev, EV_MSC, MSC_SCAN, code);
+>>>>>>> v4.9.227
 
 	switch (keycode) {
 	case ATKBD_KEY_NULL:
@@ -511,6 +517,10 @@ static irqreturn_t atkbd_interrupt(struct serio *serio, unsigned char data,
 		input_sync(dev);
 
 		if (value && test_bit(code, atkbd->force_release_mask)) {
+<<<<<<< HEAD
+=======
+			input_event(dev, EV_MSC, MSC_SCAN, code);
+>>>>>>> v4.9.227
 			input_report_key(dev, keycode, 0);
 			input_sync(dev);
 		}
@@ -1397,8 +1407,13 @@ static ssize_t atkbd_set_extra(struct atkbd *atkbd, const char *buf, size_t coun
 
 static ssize_t atkbd_show_force_release(struct atkbd *atkbd, char *buf)
 {
+<<<<<<< HEAD
 	size_t len = bitmap_scnlistprintf(buf, PAGE_SIZE - 2,
 			atkbd->force_release_mask, ATKBD_KEYMAP_SIZE);
+=======
+	size_t len = scnprintf(buf, PAGE_SIZE - 1, "%*pbl",
+			       ATKBD_KEYMAP_SIZE, atkbd->force_release_mask);
+>>>>>>> v4.9.227
 
 	buf[len++] = '\n';
 	buf[len] = '\0';
@@ -1651,6 +1666,15 @@ static int __init atkbd_deactivate_fixup(const struct dmi_system_id *id)
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * NOTE: do not add any more "force release" quirks to this table.  The
+ * task of adjusting list of keys that should be "released" automatically
+ * by the driver is now delegated to userspace tools, such as udev, so
+ * submit such quirks there.
+ */
+>>>>>>> v4.9.227
 static const struct dmi_system_id atkbd_dmi_quirk_table[] __initconst = {
 	{
 		.matches = {

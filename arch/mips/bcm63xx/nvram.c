@@ -10,6 +10,10 @@
 
 #define pr_fmt(fmt) "bcm63xx_nvram: " fmt
 
+<<<<<<< HEAD
+=======
+#include <linux/bcm963xx_nvram.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/crc32.h>
 #include <linux/export.h>
@@ -18,6 +22,7 @@
 
 #include <bcm63xx_nvram.h>
 
+<<<<<<< HEAD
 /*
  * nvram structure
  */
@@ -35,6 +40,8 @@ struct bcm963xx_nvram {
 	u32	checksum_high;
 };
 
+=======
+>>>>>>> v4.9.227
 #define BCM63XX_DEFAULT_PSI_SIZE	64
 
 static struct bcm963xx_nvram nvram;
@@ -42,11 +49,15 @@ static int mac_addr_used;
 
 void __init bcm63xx_nvram_init(void *addr)
 {
+<<<<<<< HEAD
 	unsigned int check_len;
+=======
+>>>>>>> v4.9.227
 	u32 crc, expected_crc;
 	u8 hcs_mac_addr[ETH_ALEN] = { 0x00, 0x10, 0x18, 0xff, 0xff, 0xff };
 
 	/* extract nvram data */
+<<<<<<< HEAD
 	memcpy(&nvram, addr, sizeof(nvram));
 
 	/* check checksum before using data */
@@ -63,6 +74,12 @@ void __init bcm63xx_nvram_init(void *addr)
 	crc = crc32_le(~0, (u8 *)&nvram, check_len);
 
 	if (crc != expected_crc)
+=======
+	memcpy(&nvram, addr, BCM963XX_NVRAM_V5_SIZE);
+
+	/* check checksum before using data */
+	if (bcm963xx_nvram_checksum(&nvram, &expected_crc, &crc))
+>>>>>>> v4.9.227
 		pr_warn("nvram checksum failed, contents may be invalid (expected %08x, got %08x)\n",
 			expected_crc, crc);
 

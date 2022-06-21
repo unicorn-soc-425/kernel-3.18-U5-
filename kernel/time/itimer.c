@@ -26,7 +26,11 @@
  */
 static struct timeval itimer_get_remtime(struct hrtimer *timer)
 {
+<<<<<<< HEAD
 	ktime_t rem = hrtimer_get_remaining(timer);
+=======
+	ktime_t rem = __hrtimer_get_remaining(timer, true);
+>>>>>>> v4.9.227
 
 	/*
 	 * Racy but safe: if the itimer expires after the above

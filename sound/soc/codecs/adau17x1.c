@@ -9,6 +9,10 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <sound/core.h>
@@ -23,6 +27,10 @@
 
 #include "sigmadsp.h"
 #include "adau17x1.h"
+<<<<<<< HEAD
+=======
+#include "adau-utils.h"
+>>>>>>> v4.9.227
 
 static const char * const adau17x1_capture_mixer_boost_text[] = {
 	"Normal operation", "Boost Level 1", "Boost Level 2", "Boost Level 3",
@@ -61,7 +69,12 @@ static const struct snd_kcontrol_new adau17x1_controls[] = {
 static int adau17x1_pll_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct adau *adau = snd_soc_codec_get_drvdata(w->codec);
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+	struct adau *adau = snd_soc_codec_get_drvdata(codec);
+>>>>>>> v4.9.227
 	int ret;
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
@@ -176,6 +189,10 @@ static int adau17x1_dsp_mux_enum_put(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_codec *codec = snd_soc_dapm_kcontrol_codec(kcontrol);
+<<<<<<< HEAD
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	struct snd_soc_dapm_update update;
@@ -209,7 +226,11 @@ static int adau17x1_dsp_mux_enum_put(struct snd_kcontrol *kcontrol,
 		update.reg = reg;
 		update.val = val;
 
+<<<<<<< HEAD
 		snd_soc_dapm_mux_update_power(&codec->dapm, kcontrol,
+=======
+		snd_soc_dapm_mux_update_power(dapm, kcontrol,
+>>>>>>> v4.9.227
 				ucontrol->value.enumerated.item[0], e, &update);
 	}
 
@@ -322,6 +343,119 @@ bool adau17x1_has_dsp(struct adau *adau)
 }
 EXPORT_SYMBOL_GPL(adau17x1_has_dsp);
 
+<<<<<<< HEAD
+=======
+static int adau17x1_set_dai_pll(struct snd_soc_dai *dai, int pll_id,
+	int source, unsigned int freq_in, unsigned int freq_out)
+{
+	struct snd_soc_codec *codec = dai->codec;
+	struct adau *adau = snd_soc_codec_get_drvdata(codec);
+	int ret;
+
+	if (freq_in < 8000000 || freq_in > 27000000)
+		return -EINVAL;
+
+	ret = adau_calc_pll_cfg(freq_in, freq_out, adau->pll_regs);
+	if (ret < 0)
+		return ret;
+
+	/* The PLL register is 6 bytes long and can only be written at once. */
+	ret = regmap_raw_write(adau->regmap, ADAU17X1_PLL_CONTROL,
+			adau->pll_regs, ARRAY_SIZE(adau->pll_regs));
+	if (ret)
+		return ret;
+
+	adau->pll_freq = freq_out;
+
+	return 0;
+}
+
+static int adau17x1_set_dai_sysclk(struct snd_soc_dai *dai,
+		int clk_id, unsigned int freq, int dir)
+{
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(dai->codec);
+	struct adau *adau = snd_soc_codec_get_drvdata(dai->codec);
+	bool is_pll;
+	bool was_pll;
+
+	switch (clk_id) {
+	case ADAU17X1_CLK_SRC_MCLK:
+		is_pll = false;
+		break;
+	case ADAU17X1_CLK_SRC_PLL_AUTO:
+		if (!adau->mclk)
+			return -EINVAL;
+		/* Fall-through */
+	case ADAU17X1_CLK_SRC_PLL:
+		is_pll = true;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	switch (adau->clk_src) {
+	case ADAU17X1_CLK_SRC_MCLK:
+		was_pll = false;
+		break;
+	case ADAU17X1_CLK_SRC_PLL:
+	case ADAU17X1_CLK_SRC_PLL_AUTO:
+		was_pll = true;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	adau->sysclk = freq;
+
+	if (is_pll != was_pll) {
+		if (is_pll) {
+			snd_soc_dapm_add_routes(dapm,
+				&adau17x1_dapm_pll_route, 1);
+		} else {
+			snd_soc_dapm_del_routes(dapm,
+				&adau17x1_dapm_pll_route, 1);
+		}
+	}
+
+	adau->clk_src = clk_id;
+
+	return 0;
+}
+
+static int adau17x1_auto_pll(struct snd_soc_dai *dai,
+	struct snd_pcm_hw_params *params)
+{
+	struct adau *adau = snd_soc_dai_get_drvdata(dai);
+	unsigned int pll_rate;
+
+	switch (params_rate(params)) {
+	case 48000:
+	case 8000:
+	case 12000:
+	case 16000:
+	case 24000:
+	case 32000:
+	case 96000:
+		pll_rate = 48000 * 1024;
+		break;
+	case 44100:
+	case 7350:
+	case 11025:
+	case 14700:
+	case 22050:
+	case 29400:
+	case 88200:
+		pll_rate = 44100 * 1024;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	return adau17x1_set_dai_pll(dai, ADAU17X1_PLL, ADAU17X1_PLL_SRC_MCLK,
+		clk_get_rate(adau->mclk), pll_rate);
+}
+
+>>>>>>> v4.9.227
 static int adau17x1_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
@@ -329,11 +463,29 @@ static int adau17x1_hw_params(struct snd_pcm_substream *substream,
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	unsigned int val, div, dsp_div;
 	unsigned int freq;
+<<<<<<< HEAD
 
 	if (adau->clk_src == ADAU17X1_CLK_SRC_PLL)
 		freq = adau->pll_freq;
 	else
 		freq = adau->sysclk;
+=======
+	int ret;
+
+	switch (adau->clk_src) {
+	case ADAU17X1_CLK_SRC_PLL_AUTO:
+		ret = adau17x1_auto_pll(dai, params);
+		if (ret)
+			return ret;
+		/* Fall-through */
+	case ADAU17X1_CLK_SRC_PLL:
+		freq = adau->pll_freq;
+		break;
+	default:
+		freq = adau->sysclk;
+		break;
+	}
+>>>>>>> v4.9.227
 
 	if (freq % params_rate(params) != 0)
 		return -EINVAL;
@@ -378,6 +530,15 @@ static int adau17x1_hw_params(struct snd_pcm_substream *substream,
 		regmap_write(adau->regmap, ADAU17X1_DSP_SAMPLING_RATE, dsp_div);
 	}
 
+<<<<<<< HEAD
+=======
+	if (adau->sigmadsp) {
+		ret = adau17x1_setup_firmware(adau, params_rate(params));
+		if (ret < 0)
+			return ret;
+	}
+
+>>>>>>> v4.9.227
 	if (adau->dai_fmt != SND_SOC_DAIFMT_RIGHT_J)
 		return 0;
 
@@ -399,6 +560,7 @@ static int adau17x1_hw_params(struct snd_pcm_substream *substream,
 			ADAU17X1_SERIAL_PORT1_DELAY_MASK, val);
 }
 
+<<<<<<< HEAD
 static int adau17x1_set_dai_pll(struct snd_soc_dai *dai, int pll_id,
 	int source, unsigned int freq_in, unsigned int freq_out)
 {
@@ -486,6 +648,8 @@ static int adau17x1_set_dai_sysclk(struct snd_soc_dai *dai,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int adau17x1_set_dai_fmt(struct snd_soc_dai *dai,
 		unsigned int fmt)
 {
@@ -683,12 +847,30 @@ static int adau17x1_set_dai_tdm_slot(struct snd_soc_dai *dai,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int adau17x1_startup(struct snd_pcm_substream *substream,
+	struct snd_soc_dai *dai)
+{
+	struct adau *adau = snd_soc_codec_get_drvdata(dai->codec);
+
+	if (adau->sigmadsp)
+		return sigmadsp_restrict_params(adau->sigmadsp, substream);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 const struct snd_soc_dai_ops adau17x1_dai_ops = {
 	.hw_params	= adau17x1_hw_params,
 	.set_sysclk	= adau17x1_set_dai_sysclk,
 	.set_fmt	= adau17x1_set_dai_fmt,
 	.set_pll	= adau17x1_set_dai_pll,
 	.set_tdm_slot	= adau17x1_set_dai_tdm_slot,
+<<<<<<< HEAD
+=======
+	.startup	= adau17x1_startup,
+>>>>>>> v4.9.227
 };
 EXPORT_SYMBOL_GPL(adau17x1_dai_ops);
 
@@ -709,8 +891,27 @@ int adau17x1_set_micbias_voltage(struct snd_soc_codec *codec,
 }
 EXPORT_SYMBOL_GPL(adau17x1_set_micbias_voltage);
 
+<<<<<<< HEAD
 bool adau17x1_readable_register(struct device *dev, unsigned int reg)
 {
+=======
+bool adau17x1_precious_register(struct device *dev, unsigned int reg)
+{
+	/* SigmaDSP parameter memory */
+	if (reg < 0x400)
+		return true;
+
+	return false;
+}
+EXPORT_SYMBOL_GPL(adau17x1_precious_register);
+
+bool adau17x1_readable_register(struct device *dev, unsigned int reg)
+{
+	/* SigmaDSP parameter memory */
+	if (reg < 0x400)
+		return true;
+
+>>>>>>> v4.9.227
 	switch (reg) {
 	case ADAU17X1_CLOCK_CONTROL:
 	case ADAU17X1_PLL_CONTROL:
@@ -767,8 +968,12 @@ bool adau17x1_volatile_register(struct device *dev, unsigned int reg)
 }
 EXPORT_SYMBOL_GPL(adau17x1_volatile_register);
 
+<<<<<<< HEAD
 int adau17x1_load_firmware(struct adau *adau, struct device *dev,
 	const char *firmware)
+=======
+int adau17x1_setup_firmware(struct adau *adau, unsigned int rate)
+>>>>>>> v4.9.227
 {
 	int ret;
 	int dspsr;
@@ -780,7 +985,11 @@ int adau17x1_load_firmware(struct adau *adau, struct device *dev,
 	regmap_write(adau->regmap, ADAU17X1_DSP_ENABLE, 1);
 	regmap_write(adau->regmap, ADAU17X1_DSP_SAMPLING_RATE, 0xf);
 
+<<<<<<< HEAD
 	ret = process_sigma_firmware_regmap(dev, adau->regmap, firmware);
+=======
+	ret = sigmadsp_setup(adau->sigmadsp, rate);
+>>>>>>> v4.9.227
 	if (ret) {
 		regmap_write(adau->regmap, ADAU17X1_DSP_ENABLE, 0);
 		return ret;
@@ -789,10 +998,18 @@ int adau17x1_load_firmware(struct adau *adau, struct device *dev,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(adau17x1_load_firmware);
 
 int adau17x1_add_widgets(struct snd_soc_codec *codec)
 {
+=======
+EXPORT_SYMBOL_GPL(adau17x1_setup_firmware);
+
+int adau17x1_add_widgets(struct snd_soc_codec *codec)
+{
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	int ret;
 
@@ -800,31 +1017,64 @@ int adau17x1_add_widgets(struct snd_soc_codec *codec)
 		ARRAY_SIZE(adau17x1_controls));
 	if (ret)
 		return ret;
+<<<<<<< HEAD
 	ret = snd_soc_dapm_new_controls(&codec->dapm, adau17x1_dapm_widgets,
+=======
+	ret = snd_soc_dapm_new_controls(dapm, adau17x1_dapm_widgets,
+>>>>>>> v4.9.227
 		ARRAY_SIZE(adau17x1_dapm_widgets));
 	if (ret)
 		return ret;
 
 	if (adau17x1_has_dsp(adau)) {
+<<<<<<< HEAD
 		ret = snd_soc_dapm_new_controls(&codec->dapm,
 			adau17x1_dsp_dapm_widgets,
 			ARRAY_SIZE(adau17x1_dsp_dapm_widgets));
 	}
 	return ret;
+=======
+		ret = snd_soc_dapm_new_controls(dapm, adau17x1_dsp_dapm_widgets,
+			ARRAY_SIZE(adau17x1_dsp_dapm_widgets));
+		if (ret)
+			return ret;
+
+		if (!adau->sigmadsp)
+			return 0;
+
+		ret = sigmadsp_attach(adau->sigmadsp, &codec->component);
+		if (ret) {
+			dev_err(codec->dev, "Failed to attach firmware: %d\n",
+				ret);
+			return ret;
+		}
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(adau17x1_add_widgets);
 
 int adau17x1_add_routes(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	int ret;
 
 	ret = snd_soc_dapm_add_routes(&codec->dapm, adau17x1_dapm_routes,
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+	struct adau *adau = snd_soc_codec_get_drvdata(codec);
+	int ret;
+
+	ret = snd_soc_dapm_add_routes(dapm, adau17x1_dapm_routes,
+>>>>>>> v4.9.227
 		ARRAY_SIZE(adau17x1_dapm_routes));
 	if (ret)
 		return ret;
 
 	if (adau17x1_has_dsp(adau)) {
+<<<<<<< HEAD
 		ret = snd_soc_dapm_add_routes(&codec->dapm,
 			adau17x1_dsp_dapm_routes,
 			ARRAY_SIZE(adau17x1_dsp_dapm_routes));
@@ -833,6 +1083,18 @@ int adau17x1_add_routes(struct snd_soc_codec *codec)
 			adau17x1_no_dsp_dapm_routes,
 			ARRAY_SIZE(adau17x1_no_dsp_dapm_routes));
 	}
+=======
+		ret = snd_soc_dapm_add_routes(dapm, adau17x1_dsp_dapm_routes,
+			ARRAY_SIZE(adau17x1_dsp_dapm_routes));
+	} else {
+		ret = snd_soc_dapm_add_routes(dapm, adau17x1_no_dsp_dapm_routes,
+			ARRAY_SIZE(adau17x1_no_dsp_dapm_routes));
+	}
+
+	if (adau->clk_src != ADAU17X1_CLK_SRC_MCLK)
+		snd_soc_dapm_add_routes(dapm, &adau17x1_dapm_pll_route, 1);
+
+>>>>>>> v4.9.227
 	return ret;
 }
 EXPORT_SYMBOL_GPL(adau17x1_add_routes);
@@ -851,9 +1113,17 @@ int adau17x1_resume(struct snd_soc_codec *codec)
 EXPORT_SYMBOL_GPL(adau17x1_resume);
 
 int adau17x1_probe(struct device *dev, struct regmap *regmap,
+<<<<<<< HEAD
 	enum adau17x1_type type, void (*switch_mode)(struct device *dev))
 {
 	struct adau *adau;
+=======
+	enum adau17x1_type type, void (*switch_mode)(struct device *dev),
+	const char *firmware_name)
+{
+	struct adau *adau;
+	int ret;
+>>>>>>> v4.9.227
 
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
@@ -862,12 +1132,52 @@ int adau17x1_probe(struct device *dev, struct regmap *regmap,
 	if (!adau)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	adau->mclk = devm_clk_get(dev, "mclk");
+	if (IS_ERR(adau->mclk)) {
+		if (PTR_ERR(adau->mclk) != -ENOENT)
+			return PTR_ERR(adau->mclk);
+		/* Clock is optional (for the driver) */
+		adau->mclk = NULL;
+	} else if (adau->mclk) {
+		adau->clk_src = ADAU17X1_CLK_SRC_PLL_AUTO;
+
+		/*
+		 * Any valid PLL output rate will work at this point, use one
+		 * that is likely to be chosen later as well. The register will
+		 * be written when the PLL is powered up for the first time.
+		 */
+		ret = adau_calc_pll_cfg(clk_get_rate(adau->mclk), 48000 * 1024,
+				adau->pll_regs);
+		if (ret < 0)
+			return ret;
+
+		ret = clk_prepare_enable(adau->mclk);
+		if (ret)
+			return ret;
+	}
+
+>>>>>>> v4.9.227
 	adau->regmap = regmap;
 	adau->switch_mode = switch_mode;
 	adau->type = type;
 
 	dev_set_drvdata(dev, adau);
 
+<<<<<<< HEAD
+=======
+	if (firmware_name) {
+		adau->sigmadsp = devm_sigmadsp_init_regmap(dev, regmap, NULL,
+			firmware_name);
+		if (IS_ERR(adau->sigmadsp)) {
+			dev_warn(dev, "Could not find firmware file: %ld\n",
+				PTR_ERR(adau->sigmadsp));
+			adau->sigmadsp = NULL;
+		}
+	}
+
+>>>>>>> v4.9.227
 	if (switch_mode)
 		switch_mode(dev);
 
@@ -875,6 +1185,19 @@ int adau17x1_probe(struct device *dev, struct regmap *regmap,
 }
 EXPORT_SYMBOL_GPL(adau17x1_probe);
 
+<<<<<<< HEAD
+=======
+void adau17x1_remove(struct device *dev)
+{
+	struct adau *adau = dev_get_drvdata(dev);
+
+	snd_soc_unregister_codec(dev);
+	if (adau->mclk)
+		clk_disable_unprepare(adau->mclk);
+}
+EXPORT_SYMBOL_GPL(adau17x1_remove);
+
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("ASoC ADAU1X61/ADAU1X81 common code");
 MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
 MODULE_LICENSE("GPL");

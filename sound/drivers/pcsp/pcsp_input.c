@@ -14,7 +14,11 @@
 
 #include <linux/init.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include "pcsp.h"
 #include "pcsp_input.h"
 

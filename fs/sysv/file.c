@@ -21,9 +21,13 @@
  */
 const struct file_operations sysv_file_operations = {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.read		= new_sync_read,
 	.read_iter	= generic_file_read_iter,
 	.write		= new_sync_write,
+=======
+	.read_iter	= generic_file_read_iter,
+>>>>>>> v4.9.227
 	.write_iter	= generic_file_write_iter,
 	.mmap		= generic_file_mmap,
 	.fsync		= generic_file_fsync,
@@ -32,10 +36,17 @@ const struct file_operations sysv_file_operations = {
 
 static int sysv_setattr(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	int error;
 
 	error = inode_change_ok(inode, attr);
+=======
+	struct inode *inode = d_inode(dentry);
+	int error;
+
+	error = setattr_prepare(dentry, attr);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 

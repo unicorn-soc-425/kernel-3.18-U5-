@@ -75,6 +75,7 @@ int iwch_register_mem(struct iwch_dev *rhp, struct iwch_pd *php,
 	return ret;
 }
 
+<<<<<<< HEAD
 int iwch_reregister_mem(struct iwch_dev *rhp, struct iwch_pd *php,
 					struct iwch_mr *mhp,
 					int shift,
@@ -106,6 +107,8 @@ int iwch_reregister_mem(struct iwch_dev *rhp, struct iwch_pd *php,
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 int iwch_alloc_pbl(struct iwch_mr *mhp, int npages)
 {
 	mhp->attr.pbl_addr = cxio_hal_pblpool_alloc(&mhp->rhp->rdev,
@@ -130,6 +133,7 @@ int iwch_write_pbl(struct iwch_mr *mhp, __be64 *pages, int npages, int offset)
 	return cxio_write_pbl(&mhp->rhp->rdev, pages,
 			      mhp->attr.pbl_addr + (offset << 3), npages);
 }
+<<<<<<< HEAD
 
 int build_phys_page_list(struct ib_phys_buf *buffer_list,
 					int num_phys_buf,
@@ -201,3 +205,5 @@ int build_phys_page_list(struct ib_phys_buf *buffer_list,
 	return 0;
 
 }
+=======
+>>>>>>> v4.9.227

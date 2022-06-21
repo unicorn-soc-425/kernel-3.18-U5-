@@ -94,7 +94,11 @@ void __init tegra_cpu_reset_handler_init(void)
 	__tegra_cpu_reset_handler_data[TEGRA_RESET_MASK_PRESENT] =
 		*((u32 *)cpu_possible_mask);
 	__tegra_cpu_reset_handler_data[TEGRA_RESET_STARTUP_SECONDARY] =
+<<<<<<< HEAD
 		virt_to_phys((void *)tegra_secondary_startup);
+=======
+		virt_to_phys((void *)secondary_startup);
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_PM_SLEEP

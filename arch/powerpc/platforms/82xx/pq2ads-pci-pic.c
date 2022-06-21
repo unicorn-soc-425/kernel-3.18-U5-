@@ -78,7 +78,11 @@ static struct irq_chip pq2ads_pci_ic = {
 	.irq_disable = pq2ads_pci_mask_irq
 };
 
+<<<<<<< HEAD
 static void pq2ads_pci_irq_demux(unsigned int irq, struct irq_desc *desc)
+=======
+static void pq2ads_pci_irq_demux(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct pq2ads_pci_pic *priv = irq_desc_get_handler_data(desc);
 	u32 stat, mask, pend;
@@ -131,7 +135,11 @@ int __init pq2ads_pci_init_irq(void)
 	}
 
 	irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (irq == NO_IRQ) {
+=======
+	if (!irq) {
+>>>>>>> v4.9.227
 		printk(KERN_ERR "No interrupt in pci pic node.\n");
 		of_node_put(np);
 		goto out;

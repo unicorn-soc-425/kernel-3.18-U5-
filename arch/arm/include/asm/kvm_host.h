@@ -21,27 +21,51 @@
 
 #include <linux/types.h>
 #include <linux/kvm_types.h>
+<<<<<<< HEAD
+=======
+#include <asm/cputype.h>
+>>>>>>> v4.9.227
 #include <asm/kvm.h>
 #include <asm/kvm_asm.h>
 #include <asm/kvm_mmio.h>
 #include <asm/fpstate.h>
 #include <kvm/arm_arch_timer.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_KVM_ARM_MAX_VCPUS)
 #define KVM_MAX_VCPUS CONFIG_KVM_ARM_MAX_VCPUS
 #else
 #define KVM_MAX_VCPUS 0
 #endif
+=======
+#define __KVM_HAVE_ARCH_INTC_INITIALIZED
+>>>>>>> v4.9.227
 
 #define KVM_USER_MEM_SLOTS 32
 #define KVM_PRIVATE_MEM_SLOTS 4
 #define KVM_COALESCED_MMIO_PAGE_OFFSET 1
 #define KVM_HAVE_ONE_REG
+<<<<<<< HEAD
+=======
+#define KVM_HALT_POLL_NS_DEFAULT 500000
+>>>>>>> v4.9.227
 
 #define KVM_VCPU_MAX_FEATURES 2
 
 #include <kvm/arm_vgic.h>
 
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_ARM_GIC_V3
+#define KVM_MAX_VCPUS VGIC_V3_MAX_CPUS
+#else
+#define KVM_MAX_VCPUS VGIC_V2_MAX_CPUS
+#endif
+
+#define KVM_REQ_VCPU_EXIT	8
+
+>>>>>>> v4.9.227
 u32 *kvm_vcpu_reg(struct kvm_vcpu *vcpu, u8 reg_num, u32 mode);
 int __attribute_const__ kvm_target_cpu(void);
 int kvm_reset_vcpu(struct kvm_vcpu *vcpu);
@@ -51,6 +75,12 @@ struct kvm_arch {
 	/* VTTBR value associated with below pgd and vmid */
 	u64    vttbr;
 
+<<<<<<< HEAD
+=======
+	/* The last vcpu id that ran on each physical CPU */
+	int __percpu *last_vcpu_ran;
+
+>>>>>>> v4.9.227
 	/* Timer */
 	struct arch_timer_kvm	timer;
 
@@ -68,6 +98,13 @@ struct kvm_arch {
 
 	/* Interrupt controller */
 	struct vgic_dist	vgic;
+<<<<<<< HEAD
+=======
+	int max_vcpus;
+
+	/* Mandated version of PSCI */
+	u32 psci_version;
+>>>>>>> v4.9.227
 };
 
 #define KVM_NR_MEM_OBJS     40
@@ -85,6 +122,7 @@ struct kvm_vcpu_fault_info {
 	u32 hsr;		/* Hyp Syndrome Register */
 	u32 hxfar;		/* Hyp Data/Inst. Fault Address Register */
 	u32 hpfar;		/* Hyp IPA Fault Address Register */
+<<<<<<< HEAD
 	u32 hyp_pc;		/* PC when exception was taken from Hyp mode */
 };
 
@@ -92,13 +130,69 @@ typedef struct vfp_hard_struct kvm_cpu_context_t;
 
 struct kvm_vcpu_arch {
 	struct kvm_regs regs;
+=======
+};
+
+/*
+ * 0 is reserved as an invalid value.
+ * Order should be kept in sync with the save/restore code.
+ */
+enum vcpu_sysreg {
+	__INVALID_SYSREG__,
+	c0_MPIDR,		/* MultiProcessor ID Register */
+	c0_CSSELR,		/* Cache Size Selection Register */
+	c1_SCTLR,		/* System Control Register */
+	c1_ACTLR,		/* Auxiliary Control Register */
+	c1_CPACR,		/* Coprocessor Access Control */
+	c2_TTBR0,		/* Translation Table Base Register 0 */
+	c2_TTBR0_high,		/* TTBR0 top 32 bits */
+	c2_TTBR1,		/* Translation Table Base Register 1 */
+	c2_TTBR1_high,		/* TTBR1 top 32 bits */
+	c2_TTBCR,		/* Translation Table Base Control R. */
+	c3_DACR,		/* Domain Access Control Register */
+	c5_DFSR,		/* Data Fault Status Register */
+	c5_IFSR,		/* Instruction Fault Status Register */
+	c5_ADFSR,		/* Auxilary Data Fault Status R */
+	c5_AIFSR,		/* Auxilary Instrunction Fault Status R */
+	c6_DFAR,		/* Data Fault Address Register */
+	c6_IFAR,		/* Instruction Fault Address Register */
+	c7_PAR,			/* Physical Address Register */
+	c7_PAR_high,		/* PAR top 32 bits */
+	c9_L2CTLR,		/* Cortex A15/A7 L2 Control Register */
+	c10_PRRR,		/* Primary Region Remap Register */
+	c10_NMRR,		/* Normal Memory Remap Register */
+	c12_VBAR,		/* Vector Base Address Register */
+	c13_CID,		/* Context ID Register */
+	c13_TID_URW,		/* Thread ID, User R/W */
+	c13_TID_URO,		/* Thread ID, User R/O */
+	c13_TID_PRIV,		/* Thread ID, Privileged */
+	c14_CNTKCTL,		/* Timer Control Register (PL1) */
+	c10_AMAIR0,		/* Auxilary Memory Attribute Indirection Reg0 */
+	c10_AMAIR1,		/* Auxilary Memory Attribute Indirection Reg1 */
+	NR_CP15_REGS		/* Number of regs (incl. invalid) */
+};
+
+struct kvm_cpu_context {
+	struct kvm_regs	gp_regs;
+	struct vfp_hard_struct vfp;
+	u32 cp15[NR_CP15_REGS];
+};
+
+typedef struct kvm_cpu_context kvm_cpu_context_t;
+
+struct kvm_vcpu_arch {
+	struct kvm_cpu_context ctxt;
+>>>>>>> v4.9.227
 
 	int target; /* Processor target */
 	DECLARE_BITMAP(features, KVM_VCPU_MAX_FEATURES);
 
+<<<<<<< HEAD
 	/* System control coprocessor (cp15) */
 	u32 cp15[NR_CP15_REGS];
 
+=======
+>>>>>>> v4.9.227
 	/* The CPU type we expose to the VM */
 	u32 midr;
 
@@ -111,9 +205,12 @@ struct kvm_vcpu_arch {
 	/* Exception Information */
 	struct kvm_vcpu_fault_info fault;
 
+<<<<<<< HEAD
 	/* Floating point registers (VFP and Advanced SIMD/NEON) */
 	struct vfp_hard_struct vfp_guest;
 
+=======
+>>>>>>> v4.9.227
 	/* Host FP context */
 	kvm_cpu_context_t *host_cpu_context;
 
@@ -126,7 +223,14 @@ struct kvm_vcpu_arch {
 	 * here.
 	 */
 
+<<<<<<< HEAD
 	/* Don't run the guest on this vcpu */
+=======
+	/* vcpu power-off state */
+	bool power_off;
+
+	 /* Don't run the guest (internal implementation need) */
+>>>>>>> v4.9.227
 	bool pause;
 
 	/* IO related fields */
@@ -140,6 +244,7 @@ struct kvm_vcpu_arch {
 };
 
 struct kvm_vm_stat {
+<<<<<<< HEAD
 	u32 remote_tlb_flush;
 };
 
@@ -149,12 +254,36 @@ struct kvm_vcpu_stat {
 
 int kvm_vcpu_set_target(struct kvm_vcpu *vcpu,
 			const struct kvm_vcpu_init *init);
+=======
+	ulong remote_tlb_flush;
+};
+
+struct kvm_vcpu_stat {
+	u64 halt_successful_poll;
+	u64 halt_attempted_poll;
+	u64 halt_poll_invalid;
+	u64 halt_wakeup;
+	u64 hvc_exit_stat;
+	u64 wfe_exit_stat;
+	u64 wfi_exit_stat;
+	u64 mmio_exit_user;
+	u64 mmio_exit_kernel;
+	u64 exits;
+};
+
+#define vcpu_cp15(v,r)	(v)->arch.ctxt.cp15[r]
+
+>>>>>>> v4.9.227
 int kvm_vcpu_preferred_target(struct kvm_vcpu_init *init);
 unsigned long kvm_arm_num_regs(struct kvm_vcpu *vcpu);
 int kvm_arm_copy_reg_indices(struct kvm_vcpu *vcpu, u64 __user *indices);
 int kvm_arm_get_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
 int kvm_arm_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
+<<<<<<< HEAD
 u64 kvm_call_hyp(void *hypfn, ...);
+=======
+unsigned long kvm_call_hyp(void *hypfn, ...);
+>>>>>>> v4.9.227
 void force_vm_exit(const cpumask_t *mask);
 
 #define KVM_ARCH_WANT_MMU_NOTIFIER
@@ -165,6 +294,7 @@ void kvm_set_spte_hva(struct kvm *kvm, unsigned long hva, pte_t pte);
 
 unsigned long kvm_arm_num_regs(struct kvm_vcpu *vcpu);
 int kvm_arm_copy_reg_indices(struct kvm_vcpu *vcpu, u64 __user *indices);
+<<<<<<< HEAD
 
 /* We do not have shadow page tables, hence the empty hooks */
 static inline int kvm_age_hva(struct kvm *kvm, unsigned long start,
@@ -178,6 +308,12 @@ static inline int kvm_test_age_hva(struct kvm *kvm, unsigned long hva)
 	return 0;
 }
 
+=======
+int kvm_age_hva(struct kvm *kvm, unsigned long start, unsigned long end);
+int kvm_test_age_hva(struct kvm *kvm, unsigned long hva);
+
+/* We do not have shadow page tables, hence the empty hooks */
+>>>>>>> v4.9.227
 static inline void kvm_arch_mmu_notifier_invalidate_page(struct kvm *kvm,
 							 unsigned long address)
 {
@@ -185,6 +321,13 @@ static inline void kvm_arch_mmu_notifier_invalidate_page(struct kvm *kvm,
 
 struct kvm_vcpu *kvm_arm_get_running_vcpu(void);
 struct kvm_vcpu __percpu **kvm_get_running_vcpus(void);
+<<<<<<< HEAD
+=======
+void kvm_arm_halt_guest(struct kvm *kvm);
+void kvm_arm_resume_guest(struct kvm *kvm);
+void kvm_arm_halt_vcpu(struct kvm_vcpu *vcpu);
+void kvm_arm_resume_vcpu(struct kvm_vcpu *vcpu);
+>>>>>>> v4.9.227
 
 int kvm_arm_copy_coproc_indices(struct kvm_vcpu *vcpu, u64 __user *uindices);
 unsigned long kvm_arm_num_coproc_regs(struct kvm_vcpu *vcpu);
@@ -194,8 +337,12 @@ int kvm_arm_coproc_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *);
 int handle_exit(struct kvm_vcpu *vcpu, struct kvm_run *run,
 		int exception_index);
 
+<<<<<<< HEAD
 static inline void __cpu_init_hyp_mode(phys_addr_t boot_pgd_ptr,
 				       phys_addr_t pgd_ptr,
+=======
+static inline void __cpu_init_hyp_mode(phys_addr_t pgd_ptr,
+>>>>>>> v4.9.227
 				       unsigned long hyp_stack_ptr,
 				       unsigned long vector_ptr)
 {
@@ -204,6 +351,7 @@ static inline void __cpu_init_hyp_mode(phys_addr_t boot_pgd_ptr,
 	 * code. The init code doesn't need to preserve these
 	 * registers as r0-r3 are already callee saved according to
 	 * the AAPCS.
+<<<<<<< HEAD
 	 * Note that we slightly misuse the prototype by casing the
 	 * stack pointer to a void *.
 	 *
@@ -216,10 +364,20 @@ static inline void __cpu_init_hyp_mode(phys_addr_t boot_pgd_ptr,
 	 */
 
 	kvm_call_hyp(NULL, 0, boot_pgd_ptr);
+=======
+	 * Note that we slightly misuse the prototype by casting the
+	 * stack pointer to a void *.
+
+	 * The PGDs are always passed as the third argument, in order
+	 * to be passed into r2-r3 to the init code (yes, this is
+	 * compliant with the PCS!).
+	 */
+>>>>>>> v4.9.227
 
 	kvm_call_hyp((void*)hyp_stack_ptr, vector_ptr, pgd_ptr);
 }
 
+<<<<<<< HEAD
 static inline int kvm_arch_dev_ioctl_check_extension(long ext)
 {
 	return 0;
@@ -228,15 +386,89 @@ static inline int kvm_arch_dev_ioctl_check_extension(long ext)
 static inline void vgic_arch_setup(const struct vgic_params *vgic)
 {
 	BUG_ON(vgic->type != VGIC_V2);
+=======
+static inline void __cpu_init_stage2(void)
+{
+	kvm_call_hyp(__init_stage2_translation);
+}
+
+static inline void __cpu_reset_hyp_mode(unsigned long vector_ptr,
+					phys_addr_t phys_idmap_start)
+{
+	kvm_call_hyp((void *)virt_to_idmap(__kvm_hyp_reset), vector_ptr);
+}
+
+static inline int kvm_arch_dev_ioctl_check_extension(struct kvm *kvm, long ext)
+{
+	return 0;
+>>>>>>> v4.9.227
 }
 
 int kvm_perf_init(void);
 int kvm_perf_teardown(void);
 
+<<<<<<< HEAD
 static inline void kvm_arch_hardware_disable(void) {}
+=======
+void kvm_mmu_wp_memory_region(struct kvm *kvm, int slot);
+
+struct kvm_vcpu *kvm_mpidr_to_vcpu(struct kvm *kvm, unsigned long mpidr);
+
+>>>>>>> v4.9.227
 static inline void kvm_arch_hardware_unsetup(void) {}
 static inline void kvm_arch_sync_events(struct kvm *kvm) {}
 static inline void kvm_arch_vcpu_uninit(struct kvm_vcpu *vcpu) {}
 static inline void kvm_arch_sched_in(struct kvm_vcpu *vcpu, int cpu) {}
+<<<<<<< HEAD
+=======
+static inline void kvm_arch_vcpu_block_finish(struct kvm_vcpu *vcpu) {}
+
+static inline void kvm_arm_init_debug(void) {}
+static inline void kvm_arm_setup_debug(struct kvm_vcpu *vcpu) {}
+static inline void kvm_arm_clear_debug(struct kvm_vcpu *vcpu) {}
+static inline void kvm_arm_reset_debug_ptr(struct kvm_vcpu *vcpu) {}
+static inline int kvm_arm_vcpu_arch_set_attr(struct kvm_vcpu *vcpu,
+					     struct kvm_device_attr *attr)
+{
+	return -ENXIO;
+}
+static inline int kvm_arm_vcpu_arch_get_attr(struct kvm_vcpu *vcpu,
+					     struct kvm_device_attr *attr)
+{
+	return -ENXIO;
+}
+static inline int kvm_arm_vcpu_arch_has_attr(struct kvm_vcpu *vcpu,
+					     struct kvm_device_attr *attr)
+{
+	return -ENXIO;
+}
+
+static inline bool kvm_arm_harden_branch_predictor(void)
+{
+	switch(read_cpuid_part()) {
+#ifdef CONFIG_HARDEN_BRANCH_PREDICTOR
+	case ARM_CPU_PART_BRAHMA_B15:
+	case ARM_CPU_PART_CORTEX_A12:
+	case ARM_CPU_PART_CORTEX_A15:
+	case ARM_CPU_PART_CORTEX_A17:
+		return true;
+#endif
+	default:
+		return false;
+	}
+}
+
+#define KVM_SSBD_UNKNOWN		-1
+#define KVM_SSBD_FORCE_DISABLE		0
+#define KVM_SSBD_KERNEL		1
+#define KVM_SSBD_FORCE_ENABLE		2
+#define KVM_SSBD_MITIGATED		3
+
+static inline int kvm_arm_have_ssbd(void)
+{
+	/* No way to detect it yet, pretend it is not there. */
+	return KVM_SSBD_UNKNOWN;
+}
+>>>>>>> v4.9.227
 
 #endif /* __ARM_KVM_HOST_H__ */

@@ -2,13 +2,24 @@
 config DRM_MSM
 	tristate "MSM DRM"
 	depends on DRM
+<<<<<<< HEAD
 	depends on ARCH_MSM || (ARM && COMPILE_TEST)
 	depends on OF
+=======
+	depends on ARCH_QCOM || (ARM && COMPILE_TEST)
+	depends on OF && COMMON_CLK
+>>>>>>> v4.9.227
 	select REGULATOR
 	select DRM_KMS_HELPER
 	select DRM_PANEL
 	select SHMEM
 	select TMPFS
+<<<<<<< HEAD
+=======
+	select QCOM_SCM
+	select SND_SOC_HDMI_CODEC if SND_SOC
+	select SYNC_FILE
+>>>>>>> v4.9.227
 	default y
 	help
 	  DRM/KMS driver for MSM/snapdragon.
@@ -22,16 +33,31 @@ config DRM_MSM_REGISTER_LOGGING
 	  that can be parsed by envytools demsm tool.  If enabled, register
 	  logging can be switched on via msm.reglog=y module param.
 
+<<<<<<< HEAD
+=======
+config DRM_MSM_HDMI_HDCP
+	bool "Enable HDMI HDCP support in MSM DRM driver"
+	depends on DRM_MSM && QCOM_SCM
+	default y
+	help
+	  Choose this option to enable HDCP state machine
+
+>>>>>>> v4.9.227
 config DRM_MSM_DSI
 	bool "Enable DSI support in MSM DRM driver"
 	depends on DRM_MSM
 	select DRM_PANEL
 	select DRM_MIPI_DSI
+<<<<<<< HEAD
 	default n
+=======
+	default y
+>>>>>>> v4.9.227
 	help
 	  Choose this option if you have a need for MIPI DSI connector
 	  support.
 
+<<<<<<< HEAD
 config DRM_MSM_DSI_STAGING
 	bool "Enable new DSI driver support in MSM DRM driver"
 	depends on DRM_MSM
@@ -44,6 +70,8 @@ config DRM_MSM_DSI_STAGING
 	  Interface and DSI stands for Display Serial Interface which powers
 	  the primary display of your mobile device.
 
+=======
+>>>>>>> v4.9.227
 config DRM_MSM_DSI_PLL
 	bool "Enable DSI PLL driver in MSM DRM"
 	depends on DRM_MSM_DSI && COMMON_CLK
@@ -66,6 +94,7 @@ config DRM_MSM_DSI_20NM_PHY
 	help
 	  Choose this option if the 20nm DSI PHY is used on the platform.
 
+<<<<<<< HEAD
 config DRM_MSM_MDP4
 	tristate "MSM MDP4 DRM driver"
 	depends on DRM_MSM
@@ -93,3 +122,12 @@ config DRM_SDE_HDMI
 	default y
 	help
 	  Choose this option if HDMI connector support is needed in SDE driver.
+=======
+config DRM_MSM_DSI_28NM_8960_PHY
+	bool "Enable DSI 28nm 8960 PHY driver in MSM DRM"
+	depends on DRM_MSM_DSI
+	default y
+	help
+	  Choose this option if the 28nm DSI PHY 8960 variant is used on the
+	  platform.
+>>>>>>> v4.9.227

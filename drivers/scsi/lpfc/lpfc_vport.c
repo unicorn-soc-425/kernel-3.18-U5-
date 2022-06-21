@@ -1,7 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
+<<<<<<< HEAD
  * Copyright (C) 2004-2013 Emulex.  All rights reserved.           *
+=======
+ * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
+>>>>>>> v4.9.227
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.emulex.com                                                  *
  * Portions Copyright (C) 2004-2005 Christoph Hellwig              *
@@ -393,6 +397,18 @@ lpfc_vport_create(struct fc_vport *fc_vport, bool disable)
 	*(struct lpfc_vport **)fc_vport->dd_data = vport;
 	vport->fc_vport = fc_vport;
 
+<<<<<<< HEAD
+=======
+	/* At this point we are fully registered with SCSI Layer.  */
+	vport->load_flag |= FC_ALLOW_FDMI;
+	if (phba->cfg_enable_SmartSAN ||
+	    (phba->cfg_fdmi_on == LPFC_FDMI_SUPPORT)) {
+		/* Setup appropriate attribute masks */
+		vport->fdmi_hba_mask = phba->pport->fdmi_hba_mask;
+		vport->fdmi_port_mask = phba->pport->fdmi_port_mask;
+	}
+
+>>>>>>> v4.9.227
 	/*
 	 * In SLI4, the vpi must be activated before it can be used
 	 * by the port.
@@ -575,8 +591,13 @@ int
 lpfc_vport_delete(struct fc_vport *fc_vport)
 {
 	struct lpfc_nodelist *ndlp = NULL;
+<<<<<<< HEAD
 	struct Scsi_Host *shost = (struct Scsi_Host *) fc_vport->shost;
 	struct lpfc_vport *vport = *(struct lpfc_vport **)fc_vport->dd_data;
+=======
+	struct lpfc_vport *vport = *(struct lpfc_vport **)fc_vport->dd_data;
+	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
+>>>>>>> v4.9.227
 	struct lpfc_hba   *phba = vport->phba;
 	long timeout;
 	bool ns_ndlp_referenced = false;
@@ -653,8 +674,13 @@ lpfc_vport_delete(struct fc_vport *fc_vport)
 	}
 
 	/* Remove FC host and then SCSI host with the vport */
+<<<<<<< HEAD
 	fc_remove_host(lpfc_shost_from_vport(vport));
 	scsi_remove_host(lpfc_shost_from_vport(vport));
+=======
+	fc_remove_host(shost);
+	scsi_remove_host(shost);
+>>>>>>> v4.9.227
 
 	ndlp = lpfc_findnode_did(phba->pport, Fabric_DID);
 
@@ -780,7 +806,12 @@ skip_logo:
 		 * Completion of unreg_vpi (lpfc_mbx_cmpl_unreg_vpi)
 		 * does the scsi_host_put() to release the vport.
 		 */
+<<<<<<< HEAD
 		if (lpfc_mbx_unreg_vpi(vport))
+=======
+		if (!(vport->vpi_state & LPFC_VPI_REGISTERED) ||
+				lpfc_mbx_unreg_vpi(vport))
+>>>>>>> v4.9.227
 			scsi_host_put(shost);
 	} else
 		scsi_host_put(shost);

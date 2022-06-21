@@ -1334,7 +1334,11 @@ init_card(struct l1oip *hc, int pri, int bundle)
 	if (id[l1oip_cnt] == 0) {
 		printk(KERN_WARNING "Warning: No 'id' value given or "
 		       "0, this is highly unsecure. Please use 32 "
+<<<<<<< HEAD
 		       "bit randmom number 0x...\n");
+=======
+		       "bit random number 0x...\n");
+>>>>>>> v4.9.227
 	}
 	hc->id = id[l1oip_cnt];
 	if (debug & DEBUG_L1OIP_INIT)

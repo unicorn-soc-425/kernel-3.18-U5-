@@ -173,18 +173,30 @@ static int kgdb_nmi_poll_one_knock(void)
 bool kgdb_nmi_poll_knock(void)
 {
 	if (kgdb_nmi_knock < 0)
+<<<<<<< HEAD
 		return 1;
+=======
+		return true;
+>>>>>>> v4.9.227
 
 	while (1) {
 		int ret;
 
 		ret = kgdb_nmi_poll_one_knock();
 		if (ret == NO_POLL_CHAR)
+<<<<<<< HEAD
 			return 0;
 		else if (ret == 1)
 			break;
 	}
 	return 1;
+=======
+			return false;
+		else if (ret == 1)
+			break;
+	}
+	return true;
+>>>>>>> v4.9.227
 }
 
 /*

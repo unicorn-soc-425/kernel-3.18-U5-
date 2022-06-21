@@ -26,7 +26,10 @@
  */
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> v4.9.227
 	unsigned long		flags;		/* low level flags */
 	unsigned long		status;		/* thread-synchronous flags */
 	__u32			homecache_cpu;	/* CPU we are homecached on */
@@ -43,6 +46,10 @@ struct thread_info {
 	unsigned long		unalign_jit_tmp[4]; /* temp r0..r3 storage */
 	void __user		*unalign_jit_base; /* unalign fixup JIT base */
 #endif
+<<<<<<< HEAD
+=======
+	bool in_backtrace;			/* currently doing backtrace? */
+>>>>>>> v4.9.227
 };
 
 /*
@@ -51,7 +58,10 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> v4.9.227
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
@@ -79,7 +89,11 @@ struct thread_info {
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 void arch_release_thread_info(struct thread_info *info);
+=======
+void arch_release_thread_stack(unsigned long *stack);
+>>>>>>> v4.9.227
 
 /* How to get the thread information struct from C. */
 register unsigned long stack_pointer __asm__("sp");
@@ -126,6 +140,10 @@ extern void _cpu_idle(void);
 #define TIF_NOTIFY_RESUME	8	/* callback before returning to user */
 #define TIF_SYSCALL_TRACEPOINT	9	/* syscall tracepoint instrumentation */
 #define TIF_POLLING_NRFLAG	10	/* idle is polling for TIF_NEED_RESCHED */
+<<<<<<< HEAD
+=======
+#define TIF_NOHZ		11	/* in adaptive nohz mode */
+>>>>>>> v4.9.227
 
 #define _TIF_SIGPENDING		(1<<TIF_SIGPENDING)
 #define _TIF_NEED_RESCHED	(1<<TIF_NEED_RESCHED)
@@ -138,6 +156,7 @@ extern void _cpu_idle(void);
 #define _TIF_NOTIFY_RESUME	(1<<TIF_NOTIFY_RESUME)
 #define _TIF_SYSCALL_TRACEPOINT	(1<<TIF_SYSCALL_TRACEPOINT)
 #define _TIF_POLLING_NRFLAG	(1<<TIF_POLLING_NRFLAG)
+<<<<<<< HEAD
 
 /* Work to do on any return to user space. */
 #define _TIF_ALLWORK_MASK \
@@ -146,6 +165,22 @@ extern void _cpu_idle(void);
 
 /* Work to do at syscall entry. */
 #define _TIF_SYSCALL_ENTRY_WORK (_TIF_SYSCALL_TRACE | _TIF_SYSCALL_TRACEPOINT)
+=======
+#define _TIF_NOHZ		(1<<TIF_NOHZ)
+
+/* Work to do as we loop to exit to user space. */
+#define _TIF_WORK_MASK \
+	(_TIF_SIGPENDING | _TIF_NEED_RESCHED | \
+	 _TIF_ASYNC_TLB | _TIF_NOTIFY_RESUME)
+
+/* Work to do on any return to user space. */
+#define _TIF_ALLWORK_MASK \
+	(_TIF_WORK_MASK | _TIF_SINGLESTEP | _TIF_NOHZ)
+
+/* Work to do at syscall entry. */
+#define _TIF_SYSCALL_ENTRY_WORK \
+	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_TRACEPOINT | _TIF_NOHZ)
+>>>>>>> v4.9.227
 
 /* Work to do at syscall exit. */
 #define _TIF_SYSCALL_EXIT_WORK (_TIF_SYSCALL_TRACE | _TIF_SYSCALL_TRACEPOINT)
@@ -160,6 +195,7 @@ extern void _cpu_idle(void);
 #ifdef __tilegx__
 #define TS_COMPAT		0x0001	/* 32-bit compatibility mode */
 #endif
+<<<<<<< HEAD
 #define TS_RESTORE_SIGMASK	0x0008	/* restore signal mask in do_signal */
 
 #ifndef __ASSEMBLY__
@@ -187,5 +223,7 @@ static inline bool test_and_clear_restore_sigmask(void)
 	return true;
 }
 #endif	/* !__ASSEMBLY__ */
+=======
+>>>>>>> v4.9.227
 
 #endif /* _ASM_TILE_THREAD_INFO_H */

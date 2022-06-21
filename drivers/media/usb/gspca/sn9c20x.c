@@ -92,7 +92,10 @@ struct sd {
 	struct v4l2_ctrl *jpegqual;
 
 	struct work_struct work;
+<<<<<<< HEAD
 	struct workqueue_struct *work_thread;
+=======
+>>>>>>> v4.9.227
 
 	u32 pktsz;			/* (used by pkt_scan) */
 	u16 npkt;
@@ -139,6 +142,16 @@ static const struct dmi_system_id flip_dmi_table[] = {
 		}
 	},
 	{
+<<<<<<< HEAD
+=======
+		.ident = "MSI MS-1039",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "MICRO-STAR INT'L CO.,LTD."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "MS-1039"),
+		}
+	},
+	{
+>>>>>>> v4.9.227
 		.ident = "MSI MS-1632",
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "MSI"),
@@ -924,6 +937,14 @@ static void reg_r(struct gspca_dev *gspca_dev, u16 reg, u16 length)
 	if (unlikely(result < 0 || result != length)) {
 		pr_err("Read register %02x failed %d\n", reg, result);
 		gspca_dev->usb_err = result;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the buffer is zeroed to avoid uninitialized
+		 * values.
+		 */
+		memset(gspca_dev->usb_buf, 0, USB_BUF_SZ);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -2051,8 +2072,11 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	if (mode & MODE_JPEG) {
 		sd->pktsz = sd->npkt = 0;
 		sd->nchg = 0;
+<<<<<<< HEAD
 		sd->work_thread =
 			create_singlethread_workqueue(KBUILD_MODNAME);
+=======
+>>>>>>> v4.9.227
 	}
 
 	return gspca_dev->usb_err;
@@ -2070,12 +2094,18 @@ static void sd_stop0(struct gspca_dev *gspca_dev)
 {
 	struct sd *sd = (struct sd *) gspca_dev;
 
+<<<<<<< HEAD
 	if (sd->work_thread != NULL) {
 		mutex_unlock(&gspca_dev->usb_lock);
 		destroy_workqueue(sd->work_thread);
 		mutex_lock(&gspca_dev->usb_lock);
 		sd->work_thread = NULL;
 	}
+=======
+	mutex_unlock(&gspca_dev->usb_lock);
+	flush_work(&sd->work);
+	mutex_lock(&gspca_dev->usb_lock);
+>>>>>>> v4.9.227
 }
 
 static void do_autoexposure(struct gspca_dev *gspca_dev, u16 avg_lum)
@@ -2228,7 +2258,11 @@ static void transfer_check(struct gspca_dev *gspca_dev,
 				new_qual = sd->jpegqual->maximum;
 			if (new_qual != curqual) {
 				sd->jpegqual->cur.val = new_qual;
+<<<<<<< HEAD
 				queue_work(sd->work_thread, &sd->work);
+=======
+				schedule_work(&sd->work);
+>>>>>>> v4.9.227
 			}
 		}
 	} else {

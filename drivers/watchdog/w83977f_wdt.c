@@ -224,7 +224,11 @@ static int wdt_keepalive(void)
 
 static int wdt_set_timeout(int t)
 {
+<<<<<<< HEAD
 	int tmrval;
+=======
+	unsigned int tmrval;
+>>>>>>> v4.9.227
 
 	/*
 	 * Convert seconds to watchdog counter time units, rounding up.

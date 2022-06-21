@@ -252,6 +252,7 @@ static int ipwireless_get_serial_info(struct ipw_tty *tty,
 {
 	struct serial_struct tmp;
 
+<<<<<<< HEAD
 	if (!retinfo)
 		return (-EFAULT);
 
@@ -266,6 +267,13 @@ static int ipwireless_get_serial_info(struct ipw_tty *tty,
 	tmp.closing_wait = 0;
 	tmp.custom_divisor = 0;
 	tmp.hub6 = 0;
+=======
+	memset(&tmp, 0, sizeof(tmp));
+	tmp.type = PORT_UNKNOWN;
+	tmp.line = tty->index;
+	tmp.baud_base = 115200;
+
+>>>>>>> v4.9.227
 	if (copy_to_user(retinfo, &tmp, sizeof(*retinfo)))
 		return -EFAULT;
 

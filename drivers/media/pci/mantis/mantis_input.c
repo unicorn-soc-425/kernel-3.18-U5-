@@ -12,6 +12,7 @@
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
+<<<<<<< HEAD
 
 	You should have received a copy of the GNU General Public License
 	along with this program; if not, write to the Free Software
@@ -20,6 +21,10 @@
 
 #if 0 /* Currently unused */
 
+=======
+*/
+
+>>>>>>> v4.9.227
 #include <media/rc-core.h>
 #include <linux/pci.h>
 
@@ -30,6 +35,7 @@
 #include "dvb_net.h"
 
 #include "mantis_common.h"
+<<<<<<< HEAD
 #include "mantis_reg.h"
 #include "mantis_uart.h"
 
@@ -105,25 +111,49 @@ static struct rc_map_list ir_mantis_map = {
 		.name = RC_MAP_MANTIS,
 	}
 };
+=======
+#include "mantis_input.h"
+
+#define MODULE_NAME "mantis_core"
+
+void mantis_input_process(struct mantis_pci *mantis, int scancode)
+{
+	if (mantis->rc)
+		rc_keydown(mantis->rc, RC_TYPE_UNKNOWN, scancode, 0);
+}
+>>>>>>> v4.9.227
 
 int mantis_input_init(struct mantis_pci *mantis)
 {
 	struct rc_dev *dev;
 	int err;
 
+<<<<<<< HEAD
 	err = rc_map_register(&ir_mantis_map);
 	if (err)
 		goto out;
 
+=======
+>>>>>>> v4.9.227
 	dev = rc_allocate_device();
 	if (!dev) {
 		dprintk(MANTIS_ERROR, 1, "Remote device allocation failed");
 		err = -ENOMEM;
+<<<<<<< HEAD
 		goto out_map;
 	}
 
 	sprintf(mantis->input_name, "Mantis %s IR receiver", mantis->hwconfig->model_name);
 	sprintf(mantis->input_phys, "pci-%s/ir0", pci_name(mantis->pdev));
+=======
+		goto out;
+	}
+
+	snprintf(mantis->input_name, sizeof(mantis->input_name),
+		 "Mantis %s IR receiver", mantis->hwconfig->model_name);
+	snprintf(mantis->input_phys, sizeof(mantis->input_phys),
+		 "pci-%s/ir0", pci_name(mantis->pdev));
+>>>>>>> v4.9.227
 
 	dev->input_name         = mantis->input_name;
 	dev->input_phys         = mantis->input_phys;
@@ -132,7 +162,11 @@ int mantis_input_init(struct mantis_pci *mantis)
 	dev->input_id.product   = mantis->device_id;
 	dev->input_id.version   = 1;
 	dev->driver_name        = MODULE_NAME;
+<<<<<<< HEAD
 	dev->map_name           = RC_MAP_MANTIS;
+=======
+	dev->map_name           = mantis->rc_map_name ? : RC_MAP_EMPTY;
+>>>>>>> v4.9.227
 	dev->dev.parent         = &mantis->pdev->dev;
 
 	err = rc_register_device(dev);
@@ -146,6 +180,7 @@ int mantis_input_init(struct mantis_pci *mantis)
 
 out_dev:
 	rc_free_device(dev);
+<<<<<<< HEAD
 out_map:
 	rc_map_unregister(&ir_mantis_map);
 out:
@@ -160,3 +195,15 @@ int mantis_init_exit(struct mantis_pci *mantis)
 }
 
 #endif
+=======
+out:
+	return err;
+}
+EXPORT_SYMBOL_GPL(mantis_input_init);
+
+void mantis_input_exit(struct mantis_pci *mantis)
+{
+	rc_unregister_device(mantis->rc);
+}
+EXPORT_SYMBOL_GPL(mantis_input_exit);
+>>>>>>> v4.9.227

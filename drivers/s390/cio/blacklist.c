@@ -51,9 +51,14 @@ static int blacklist_range(range_action action, unsigned int from_ssid,
 {
 	if ((from_ssid > to_ssid) || ((from_ssid == to_ssid) && (from > to))) {
 		if (msgtrigger)
+<<<<<<< HEAD
 			pr_warning("0.%x.%04x to 0.%x.%04x is not a valid "
 				   "range for cio_ignore\n", from_ssid, from,
 				   to_ssid, to);
+=======
+			pr_warn("0.%x.%04x to 0.%x.%04x is not a valid range for cio_ignore\n",
+				from_ssid, from, to_ssid, to);
+>>>>>>> v4.9.227
 
 		return 1;
 	}
@@ -140,8 +145,13 @@ static int parse_busid(char *str, unsigned int *cssid, unsigned int *ssid,
 	rc = 0;
 out:
 	if (rc && msgtrigger)
+<<<<<<< HEAD
 		pr_warning("%s is not a valid device for the cio_ignore "
 			   "kernel parameter\n", str);
+=======
+		pr_warn("%s is not a valid device for the cio_ignore kernel parameter\n",
+			str);
+>>>>>>> v4.9.227
 
 	return rc;
 }
@@ -303,8 +313,15 @@ static void *
 cio_ignore_proc_seq_next(struct seq_file *s, void *it, loff_t *offset)
 {
 	struct ccwdev_iter *iter;
+<<<<<<< HEAD
 
 	if (*offset >= (__MAX_SUBCHANNEL + 1) * (__MAX_SSID + 1))
+=======
+	loff_t p = *offset;
+
+	(*offset)++;
+	if (p >= (__MAX_SUBCHANNEL + 1) * (__MAX_SSID + 1))
+>>>>>>> v4.9.227
 		return NULL;
 	iter = it;
 	if (iter->devno == __MAX_SUBCHANNEL) {
@@ -314,7 +331,10 @@ cio_ignore_proc_seq_next(struct seq_file *s, void *it, loff_t *offset)
 			return NULL;
 	} else
 		iter->devno++;
+<<<<<<< HEAD
 	(*offset)++;
+=======
+>>>>>>> v4.9.227
 	return iter;
 }
 
@@ -330,18 +350,33 @@ cio_ignore_proc_seq_show(struct seq_file *s, void *it)
 	if (!iter->in_range) {
 		/* First device in range. */
 		if ((iter->devno == __MAX_SUBCHANNEL) ||
+<<<<<<< HEAD
 		    !is_blacklisted(iter->ssid, iter->devno + 1))
 			/* Singular device. */
 			return seq_printf(s, "0.%x.%04x\n",
 					  iter->ssid, iter->devno);
 		iter->in_range = 1;
 		return seq_printf(s, "0.%x.%04x-", iter->ssid, iter->devno);
+=======
+		    !is_blacklisted(iter->ssid, iter->devno + 1)) {
+			/* Singular device. */
+			seq_printf(s, "0.%x.%04x\n", iter->ssid, iter->devno);
+			return 0;
+		}
+		iter->in_range = 1;
+		seq_printf(s, "0.%x.%04x-", iter->ssid, iter->devno);
+		return 0;
+>>>>>>> v4.9.227
 	}
 	if ((iter->devno == __MAX_SUBCHANNEL) ||
 	    !is_blacklisted(iter->ssid, iter->devno + 1)) {
 		/* Last device in range. */
 		iter->in_range = 0;
+<<<<<<< HEAD
 		return seq_printf(s, "0.%x.%04x\n", iter->ssid, iter->devno);
+=======
+		seq_printf(s, "0.%x.%04x\n", iter->ssid, iter->devno);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }

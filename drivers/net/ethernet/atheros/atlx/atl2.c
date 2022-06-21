@@ -887,8 +887,13 @@ static netdev_tx_t atl2_xmit_frame(struct sk_buff *skb,
 		offset = ((u32)(skb->len-copy_len + 3) & ~3);
 	}
 #ifdef NETIF_F_HW_VLAN_CTAG_TX
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb)) {
 		u16 vlan_tag = vlan_tx_tag_get(skb);
+=======
+	if (skb_vlan_tag_present(skb)) {
+		u16 vlan_tag = skb_vlan_tag_get(skb);
+>>>>>>> v4.9.227
 		vlan_tag = (vlan_tag << 4) |
 			(vlan_tag >> 13) |
 			((vlan_tag >> 9) & 0x8);
@@ -1338,13 +1343,20 @@ static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct net_device *netdev;
 	struct atl2_adapter *adapter;
+<<<<<<< HEAD
 	static int cards_found;
+=======
+	static int cards_found = 0;
+>>>>>>> v4.9.227
 	unsigned long mmio_start;
 	int mmio_len;
 	int err;
 
+<<<<<<< HEAD
 	cards_found = 0;
 
+=======
+>>>>>>> v4.9.227
 	err = pci_enable_device(pdev);
 	if (err)
 		return err;
@@ -1436,6 +1448,7 @@ static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	atl2_check_options(adapter);
 
+<<<<<<< HEAD
 	init_timer(&adapter->watchdog_timer);
 	adapter->watchdog_timer.function = atl2_watchdog;
 	adapter->watchdog_timer.data = (unsigned long) adapter;
@@ -1443,6 +1456,13 @@ static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	init_timer(&adapter->phy_config_timer);
 	adapter->phy_config_timer.function = atl2_phy_config;
 	adapter->phy_config_timer.data = (unsigned long) adapter;
+=======
+	setup_timer(&adapter->watchdog_timer, atl2_watchdog,
+		    (unsigned long)adapter);
+
+	setup_timer(&adapter->phy_config_timer, atl2_phy_config,
+		    (unsigned long)adapter);
+>>>>>>> v4.9.227
 
 	INIT_WORK(&adapter->reset_task, atl2_reset_task);
 	INIT_WORK(&adapter->link_chg_task, atl2_link_chg_task);
@@ -2032,10 +2052,13 @@ static void atl2_get_drvinfo(struct net_device *netdev,
 	strlcpy(drvinfo->fw_version, "L2", sizeof(drvinfo->fw_version));
 	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->n_stats = 0;
 	drvinfo->testinfo_len = 0;
 	drvinfo->regdump_len = atl2_get_regs_len(netdev);
 	drvinfo->eedump_len = atl2_get_eeprom_len(netdev);
+=======
+>>>>>>> v4.9.227
 }
 
 static void atl2_get_wol(struct net_device *netdev,

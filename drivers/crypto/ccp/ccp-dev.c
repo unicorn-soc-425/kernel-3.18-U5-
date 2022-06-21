@@ -1,9 +1,16 @@
 /*
  * AMD Cryptographic Coprocessor (CCP) driver
  *
+<<<<<<< HEAD
  * Copyright (C) 2013 Advanced Micro Devices, Inc.
  *
  * Author: Tom Lendacky <thomas.lendacky@amd.com>
+=======
+ * Copyright (C) 2013,2016 Advanced Micro Devices, Inc.
+ *
+ * Author: Tom Lendacky <thomas.lendacky@amd.com>
+ * Author: Gary R Hook <gary.hook@amd.com>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +23,11 @@
 #include <linux/sched.h>
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/spinlock_types.h>
+#include <linux/types.h>
+>>>>>>> v4.9.227
 #include <linux/mutex.h>
 #include <linux/delay.h>
 #include <linux/hw_random.h>
@@ -37,6 +49,7 @@ struct ccp_tasklet_data {
 	struct ccp_cmd *cmd;
 };
 
+<<<<<<< HEAD
 
 static struct ccp_device *ccp_dev;
 static inline struct ccp_device *ccp_get_device(void)
@@ -52,6 +65,191 @@ static inline void ccp_add_device(struct ccp_device *ccp)
 static inline void ccp_del_device(struct ccp_device *ccp)
 {
 	ccp_dev = NULL;
+=======
+ /* Human-readable error strings */
+#define CCP_MAX_ERROR_CODE	64
+ static char *ccp_error_codes[] = {
+ 	"",
+	"ILLEGAL_ENGINE",
+	"ILLEGAL_KEY_ID",
+	"ILLEGAL_FUNCTION_TYPE",
+	"ILLEGAL_FUNCTION_MODE",
+	"ILLEGAL_FUNCTION_ENCRYPT",
+	"ILLEGAL_FUNCTION_SIZE",
+	"Zlib_MISSING_INIT_EOM",
+	"ILLEGAL_FUNCTION_RSVD",
+	"ILLEGAL_BUFFER_LENGTH",
+	"VLSB_FAULT",
+	"ILLEGAL_MEM_ADDR",
+	"ILLEGAL_MEM_SEL",
+	"ILLEGAL_CONTEXT_ID",
+	"ILLEGAL_KEY_ADDR",
+	"0xF Reserved",
+	"Zlib_ILLEGAL_MULTI_QUEUE",
+	"Zlib_ILLEGAL_JOBID_CHANGE",
+	"CMD_TIMEOUT",
+	"IDMA0_AXI_SLVERR",
+	"IDMA0_AXI_DECERR",
+	"0x15 Reserved",
+	"IDMA1_AXI_SLAVE_FAULT",
+	"IDMA1_AIXI_DECERR",
+	"0x18 Reserved",
+	"ZLIBVHB_AXI_SLVERR",
+	"ZLIBVHB_AXI_DECERR",
+	"0x1B Reserved",
+	"ZLIB_UNEXPECTED_EOM",
+	"ZLIB_EXTRA_DATA",
+	"ZLIB_BTYPE",
+	"ZLIB_UNDEFINED_SYMBOL",
+	"ZLIB_UNDEFINED_DISTANCE_S",
+	"ZLIB_CODE_LENGTH_SYMBOL",
+	"ZLIB _VHB_ILLEGAL_FETCH",
+	"ZLIB_UNCOMPRESSED_LEN",
+	"ZLIB_LIMIT_REACHED",
+	"ZLIB_CHECKSUM_MISMATCH0",
+	"ODMA0_AXI_SLVERR",
+	"ODMA0_AXI_DECERR",
+	"0x28 Reserved",
+	"ODMA1_AXI_SLVERR",
+	"ODMA1_AXI_DECERR",
+};
+
+void ccp_log_error(struct ccp_device *d, unsigned int e)
+{
+	if (WARN_ON(e >= CCP_MAX_ERROR_CODE))
+		return;
+
+	if (e < ARRAY_SIZE(ccp_error_codes))
+		dev_err(d->dev, "CCP error %d: %s\n", e, ccp_error_codes[e]);
+	else
+		dev_err(d->dev, "CCP error %d: Unknown Error\n", e);
+}
+
+/* List of CCPs, CCP count, read-write access lock, and access functions
+ *
+ * Lock structure: get ccp_unit_lock for reading whenever we need to
+ * examine the CCP list. While holding it for reading we can acquire
+ * the RR lock to update the round-robin next-CCP pointer. The unit lock
+ * must be acquired before the RR lock.
+ *
+ * If the unit-lock is acquired for writing, we have total control over
+ * the list, so there's no value in getting the RR lock.
+ */
+static DEFINE_RWLOCK(ccp_unit_lock);
+static LIST_HEAD(ccp_units);
+
+/* Round-robin counter */
+static DEFINE_SPINLOCK(ccp_rr_lock);
+static struct ccp_device *ccp_rr;
+
+/* Ever-increasing value to produce unique unit numbers */
+static atomic_t ccp_unit_ordinal;
+static unsigned int ccp_increment_unit_ordinal(void)
+{
+	return atomic_inc_return(&ccp_unit_ordinal);
+}
+
+/**
+ * ccp_add_device - add a CCP device to the list
+ *
+ * @ccp: ccp_device struct pointer
+ *
+ * Put this CCP on the unit list, which makes it available
+ * for use.
+ *
+ * Returns zero if a CCP device is present, -ENODEV otherwise.
+ */
+void ccp_add_device(struct ccp_device *ccp)
+{
+	unsigned long flags;
+
+	write_lock_irqsave(&ccp_unit_lock, flags);
+	list_add_tail(&ccp->entry, &ccp_units);
+	if (!ccp_rr)
+		/* We already have the list lock (we're first) so this
+		 * pointer can't change on us. Set its initial value.
+		 */
+		ccp_rr = ccp;
+	write_unlock_irqrestore(&ccp_unit_lock, flags);
+}
+
+/**
+ * ccp_del_device - remove a CCP device from the list
+ *
+ * @ccp: ccp_device struct pointer
+ *
+ * Remove this unit from the list of devices. If the next device
+ * up for use is this one, adjust the pointer. If this is the last
+ * device, NULL the pointer.
+ */
+void ccp_del_device(struct ccp_device *ccp)
+{
+	unsigned long flags;
+
+	write_lock_irqsave(&ccp_unit_lock, flags);
+	if (ccp_rr == ccp) {
+		/* ccp_unit_lock is read/write; any read access
+		 * will be suspended while we make changes to the
+		 * list and RR pointer.
+		 */
+		if (list_is_last(&ccp_rr->entry, &ccp_units))
+			ccp_rr = list_first_entry(&ccp_units, struct ccp_device,
+						  entry);
+		else
+			ccp_rr = list_next_entry(ccp_rr, entry);
+	}
+	list_del(&ccp->entry);
+	if (list_empty(&ccp_units))
+		ccp_rr = NULL;
+	write_unlock_irqrestore(&ccp_unit_lock, flags);
+}
+
+
+
+int ccp_register_rng(struct ccp_device *ccp)
+{
+	int ret = 0;
+
+	dev_dbg(ccp->dev, "Registering RNG...\n");
+	/* Register an RNG */
+	ccp->hwrng.name = ccp->rngname;
+	ccp->hwrng.read = ccp_trng_read;
+	ret = hwrng_register(&ccp->hwrng);
+	if (ret)
+		dev_err(ccp->dev, "error registering hwrng (%d)\n", ret);
+
+	return ret;
+}
+
+void ccp_unregister_rng(struct ccp_device *ccp)
+{
+	if (ccp->hwrng.name)
+		hwrng_unregister(&ccp->hwrng);
+}
+
+static struct ccp_device *ccp_get_device(void)
+{
+	unsigned long flags;
+	struct ccp_device *dp = NULL;
+
+	/* We round-robin through the unit list.
+	 * The (ccp_rr) pointer refers to the next unit to use.
+	 */
+	read_lock_irqsave(&ccp_unit_lock, flags);
+	if (!list_empty(&ccp_units)) {
+		spin_lock(&ccp_rr_lock);
+		dp = ccp_rr;
+		if (list_is_last(&ccp_rr->entry, &ccp_units))
+			ccp_rr = list_first_entry(&ccp_units, struct ccp_device,
+						  entry);
+		else
+			ccp_rr = list_next_entry(ccp_rr, entry);
+		spin_unlock(&ccp_rr_lock);
+	}
+	read_unlock_irqrestore(&ccp_unit_lock, flags);
+
+	return dp;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -61,14 +259,51 @@ static inline void ccp_del_device(struct ccp_device *ccp)
  */
 int ccp_present(void)
 {
+<<<<<<< HEAD
 	if (ccp_get_device())
 		return 0;
 
 	return -ENODEV;
+=======
+	unsigned long flags;
+	int ret;
+
+	read_lock_irqsave(&ccp_unit_lock, flags);
+	ret = list_empty(&ccp_units);
+	read_unlock_irqrestore(&ccp_unit_lock, flags);
+
+	return ret ? -ENODEV : 0;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(ccp_present);
 
 /**
+<<<<<<< HEAD
+=======
+ * ccp_version - get the version of the CCP device
+ *
+ * Returns the version from the first unit on the list;
+ * otherwise a zero if no CCP device is present
+ */
+unsigned int ccp_version(void)
+{
+	struct ccp_device *dp;
+	unsigned long flags;
+	int ret = 0;
+
+	read_lock_irqsave(&ccp_unit_lock, flags);
+	if (!list_empty(&ccp_units)) {
+		dp = list_first_entry(&ccp_units, struct ccp_device, entry);
+		ret = dp->vdata->version;
+	}
+	read_unlock_irqrestore(&ccp_unit_lock, flags);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(ccp_version);
+
+/**
+>>>>>>> v4.9.227
  * ccp_enqueue_cmd - queue an operation for processing by the CCP
  *
  * @cmd: ccp_cmd struct to be processed
@@ -91,11 +326,21 @@ EXPORT_SYMBOL_GPL(ccp_present);
  */
 int ccp_enqueue_cmd(struct ccp_cmd *cmd)
 {
+<<<<<<< HEAD
 	struct ccp_device *ccp = ccp_get_device();
+=======
+	struct ccp_device *ccp;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	unsigned int i;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	/* Some commands might need to be sent to a specific device */
+	ccp = cmd->ccp ? cmd->ccp : ccp_get_device();
+
+>>>>>>> v4.9.227
 	if (!ccp)
 		return -ENODEV;
 
@@ -222,7 +467,16 @@ static void ccp_do_cmd_complete(unsigned long data)
 	complete(&tdata->completion);
 }
 
+<<<<<<< HEAD
 static int ccp_cmd_queue_thread(void *data)
+=======
+/**
+ * ccp_cmd_queue_thread - create a kernel thread to manage a CCP queue
+ *
+ * @data: thread-specific data
+ */
+int ccp_cmd_queue_thread(void *data)
+>>>>>>> v4.9.227
 {
 	struct ccp_cmd_queue *cmd_q = (struct ccp_cmd_queue *)data;
 	struct ccp_cmd *cmd;
@@ -258,14 +512,52 @@ static int ccp_cmd_queue_thread(void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ccp_trng_read(struct hwrng *rng, void *data, size_t max, bool wait)
+=======
+/**
+ * ccp_alloc_struct - allocate and initialize the ccp_device struct
+ *
+ * @dev: device struct of the CCP
+ */
+struct ccp_device *ccp_alloc_struct(struct device *dev)
+{
+	struct ccp_device *ccp;
+
+	ccp = devm_kzalloc(dev, sizeof(*ccp), GFP_KERNEL);
+	if (!ccp)
+		return NULL;
+	ccp->dev = dev;
+
+	INIT_LIST_HEAD(&ccp->cmd);
+	INIT_LIST_HEAD(&ccp->backlog);
+
+	spin_lock_init(&ccp->cmd_lock);
+	mutex_init(&ccp->req_mutex);
+	mutex_init(&ccp->sb_mutex);
+	ccp->sb_count = KSB_COUNT;
+	ccp->sb_start = 0;
+
+	ccp->ord = ccp_increment_unit_ordinal();
+	snprintf(ccp->name, MAX_CCP_NAME_LEN, "ccp-%u", ccp->ord);
+	snprintf(ccp->rngname, MAX_CCP_NAME_LEN, "ccp-%u-rng", ccp->ord);
+
+	return ccp;
+}
+
+int ccp_trng_read(struct hwrng *rng, void *data, size_t max, bool wait)
+>>>>>>> v4.9.227
 {
 	struct ccp_device *ccp = container_of(rng, struct ccp_device, hwrng);
 	u32 trng_value;
 	int len = min_t(int, sizeof(trng_value), max);
 
+<<<<<<< HEAD
 	/*
 	 * Locking is provided by the caller so we can update device
+=======
+	/* Locking is provided by the caller so we can update device
+>>>>>>> v4.9.227
 	 * hwrng-related fields safely
 	 */
 	trng_value = ioread32(ccp->io_regs + TRNG_OUT_REG);
@@ -287,6 +579,7 @@ static int ccp_trng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 	return len;
 }
 
+<<<<<<< HEAD
 /**
  * ccp_alloc_struct - allocate and initialize the ccp_device struct
  *
@@ -561,6 +854,8 @@ irqreturn_t ccp_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 bool ccp_queues_suspended(struct ccp_device *ccp)
 {
@@ -580,6 +875,7 @@ bool ccp_queues_suspended(struct ccp_device *ccp)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86
 static const struct x86_cpu_id ccp_support[] = {
 	{ X86_VENDOR_AMD, 22, },
@@ -614,6 +910,24 @@ static int __init ccp_mod_init(void)
 
 		break;
 	}
+=======
+static int __init ccp_mod_init(void)
+{
+#ifdef CONFIG_X86
+	int ret;
+
+	ret = ccp_pci_init();
+	if (ret)
+		return ret;
+
+	/* Don't leave the driver loaded if init failed */
+	if (ccp_present() != 0) {
+		ccp_pci_exit();
+		return -ENODEV;
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_ARM64
@@ -624,7 +938,11 @@ static int __init ccp_mod_init(void)
 		return ret;
 
 	/* Don't leave the driver loaded if init failed */
+<<<<<<< HEAD
 	if (!ccp_get_device()) {
+=======
+	if (ccp_present() != 0) {
+>>>>>>> v4.9.227
 		ccp_platform_exit();
 		return -ENODEV;
 	}
@@ -638,6 +956,7 @@ static int __init ccp_mod_init(void)
 static void __exit ccp_mod_exit(void)
 {
 #ifdef CONFIG_X86
+<<<<<<< HEAD
 	struct cpuinfo_x86 *cpuinfo = &boot_cpu_data;
 
 	switch (cpuinfo->x86) {
@@ -645,6 +964,9 @@ static void __exit ccp_mod_exit(void)
 		ccp_pci_exit();
 		break;
 	}
+=======
+	ccp_pci_exit();
+>>>>>>> v4.9.227
 #endif
 
 #ifdef CONFIG_ARM64

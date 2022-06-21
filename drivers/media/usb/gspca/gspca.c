@@ -436,7 +436,11 @@ void gspca_frame_add(struct gspca_dev *gspca_dev,
 		}
 		j = gspca_dev->fr_queue[i];
 		frame = &gspca_dev->frame[j];
+<<<<<<< HEAD
 		frame->v4l2_buf.timestamp = ktime_to_timeval(ktime_get());
+=======
+		v4l2_get_timestamp(&frame->v4l2_buf.timestamp);
+>>>>>>> v4.9.227
 		frame->v4l2_buf.sequence = gspca_dev->sequence++;
 		gspca_dev->image = frame->data;
 		gspca_dev->image_len = 0;
@@ -522,7 +526,11 @@ static int frame_alloc(struct gspca_dev *gspca_dev, struct file *file,
 		frame = &gspca_dev->frame[i];
 		frame->v4l2_buf.index = i;
 		frame->v4l2_buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+<<<<<<< HEAD
 		frame->v4l2_buf.flags = 0;
+=======
+		frame->v4l2_buf.flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+>>>>>>> v4.9.227
 		frame->v4l2_buf.field = V4L2_FIELD_NONE;
 		frame->v4l2_buf.length = frsz;
 		frame->v4l2_buf.memory = memory;
@@ -705,7 +713,11 @@ static int build_isoc_ep_tb(struct gspca_dev *gspca_dev,
 			psize = (psize & 0x07ff) * (1 + ((psize >> 11) & 3));
 			bandwidth = psize * 1000;
 			if (gspca_dev->dev->speed == USB_SPEED_HIGH
+<<<<<<< HEAD
 			 || gspca_dev->dev->speed == USB_SPEED_SUPER)
+=======
+			 || gspca_dev->dev->speed >= USB_SPEED_SUPER)
+>>>>>>> v4.9.227
 				bandwidth *= 8;
 			bandwidth /= 1 << (ep->desc.bInterval - 1);
 			if (bandwidth <= last_bw)
@@ -795,10 +807,15 @@ static int create_urbs(struct gspca_dev *gspca_dev,
 
 	for (n = 0; n < nurbs; n++) {
 		urb = usb_alloc_urb(npkt, GFP_KERNEL);
+<<<<<<< HEAD
 		if (!urb) {
 			pr_err("usb_alloc_urb failed\n");
 			return -ENOMEM;
 		}
+=======
+		if (!urb)
+			return -ENOMEM;
+>>>>>>> v4.9.227
 		gspca_dev->urb[n] = urb;
 		urb->transfer_buffer = usb_alloc_coherent(gspca_dev->dev,
 						bsize,
@@ -996,6 +1013,22 @@ static int wxh_to_mode(struct gspca_dev *gspca_dev,
 {
 	int i;
 
+<<<<<<< HEAD
+=======
+	for (i = 0; i < gspca_dev->cam.nmodes; i++) {
+		if (width == gspca_dev->cam.cam_mode[i].width
+		    && height == gspca_dev->cam.cam_mode[i].height)
+			return i;
+	}
+	return -EINVAL;
+}
+
+static int wxh_to_nearest_mode(struct gspca_dev *gspca_dev,
+			int width, int height)
+{
+	int i;
+
+>>>>>>> v4.9.227
 	for (i = gspca_dev->cam.nmodes; --i > 0; ) {
 		if (width >= gspca_dev->cam.cam_mode[i].width
 		    && height >= gspca_dev->cam.cam_mode[i].height)
@@ -1125,8 +1158,13 @@ static int try_fmt_vid_cap(struct gspca_dev *gspca_dev,
 	PDEBUG_MODE(gspca_dev, D_CONF, "try fmt cap",
 		    fmt->fmt.pix.pixelformat, w, h);
 
+<<<<<<< HEAD
 	/* search the closest mode for width and height */
 	mode = wxh_to_mode(gspca_dev, w, h);
+=======
+	/* search the nearest mode for width and height */
+	mode = wxh_to_nearest_mode(gspca_dev, w, h);
+>>>>>>> v4.9.227
 
 	/* OK if right palette */
 	if (gspca_dev->cam.cam_mode[mode].pixelformat
@@ -1233,9 +1271,19 @@ static int vidioc_enum_frameintervals(struct file *filp, void *priv,
 				      struct v4l2_frmivalenum *fival)
 {
 	struct gspca_dev *gspca_dev = video_drvdata(filp);
+<<<<<<< HEAD
 	int mode = wxh_to_mode(gspca_dev, fival->width, fival->height);
 	__u32 i;
 
+=======
+	int mode;
+	__u32 i;
+
+	mode = wxh_to_mode(gspca_dev, fival->width, fival->height);
+	if (mode < 0)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	if (gspca_dev->cam.mode_framerates == NULL ||
 			gspca_dev->cam.mode_framerates[mode].nrates == 0)
 		return -EINVAL;
@@ -1246,7 +1294,11 @@ static int vidioc_enum_frameintervals(struct file *filp, void *priv,
 
 	for (i = 0; i < gspca_dev->cam.mode_framerates[mode].nrates; i++) {
 		if (fival->index == i) {
+<<<<<<< HEAD
 			fival->type = V4L2_FRMSIZE_TYPE_DISCRETE;
+=======
+			fival->type = V4L2_FRMIVAL_TYPE_DISCRETE;
+>>>>>>> v4.9.227
 			fival->discrete.numerator = 1;
 			fival->discrete.denominator =
 				gspca_dev->cam.mode_framerates[mode].rates[i];
@@ -1562,7 +1614,11 @@ static int vidioc_s_parm(struct file *filp, void *priv,
 			struct v4l2_streamparm *parm)
 {
 	struct gspca_dev *gspca_dev = video_drvdata(filp);
+<<<<<<< HEAD
 	int n;
+=======
+	unsigned int n;
+>>>>>>> v4.9.227
 
 	n = parm->parm.capture.readbuffers;
 	if (n == 0 || n >= GSPCA_MAX_FRAMES)
@@ -1909,7 +1965,11 @@ static ssize_t dev_read(struct file *file, char __user *data,
 	}
 
 	/* get a frame */
+<<<<<<< HEAD
 	timestamp = ktime_to_timeval(ktime_get());
+=======
+	v4l2_get_timestamp(&timestamp);
+>>>>>>> v4.9.227
 	timestamp.tv_sec--;
 	n = 2;
 	for (;;) {
@@ -2028,7 +2088,11 @@ int gspca_dev_probe2(struct usb_interface *intf,
 		pr_err("couldn't kzalloc gspca struct\n");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	gspca_dev->usb_buf = kmalloc(USB_BUF_SZ, GFP_KERNEL);
+=======
+	gspca_dev->usb_buf = kzalloc(USB_BUF_SZ, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!gspca_dev->usb_buf) {
 		pr_err("out of memory\n");
 		ret = -ENOMEM;

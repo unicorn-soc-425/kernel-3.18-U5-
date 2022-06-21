@@ -52,6 +52,10 @@ static unsigned int max_requests = IBMVFC_MAX_REQUESTS_DEFAULT;
 static unsigned int disc_threads = IBMVFC_MAX_DISC_THREADS;
 static unsigned int ibmvfc_debug = IBMVFC_DEBUG;
 static unsigned int log_level = IBMVFC_DEFAULT_LOG_LEVEL;
+<<<<<<< HEAD
+=======
+static unsigned int cls3_error = IBMVFC_CLS3_ERROR;
+>>>>>>> v4.9.227
 static LIST_HEAD(ibmvfc_head);
 static DEFINE_SPINLOCK(ibmvfc_driver_lock);
 static struct scsi_transport_template *ibmvfc_transport_template;
@@ -86,6 +90,12 @@ MODULE_PARM_DESC(debug, "Enable driver debug information. "
 module_param_named(log_level, log_level, uint, 0);
 MODULE_PARM_DESC(log_level, "Set to 0 - 4 for increasing verbosity of device driver. "
 		 "[Default=" __stringify(IBMVFC_DEFAULT_LOG_LEVEL) "]");
+<<<<<<< HEAD
+=======
+module_param_named(cls3_error, cls3_error, uint, 0);
+MODULE_PARM_DESC(cls3_error, "Enable FC Class 3 Error Recovery. "
+		 "[Default=" __stringify(IBMVFC_CLS3_ERROR) "]");
+>>>>>>> v4.9.227
 
 static const struct {
 	u16 status;
@@ -717,7 +727,10 @@ static int ibmvfc_reset_crq(struct ibmvfc_host *vhost)
 	spin_lock_irqsave(vhost->host->host_lock, flags);
 	vhost->state = IBMVFC_NO_CRQ;
 	vhost->logged_in = 0;
+<<<<<<< HEAD
 	ibmvfc_set_host_action(vhost, IBMVFC_HOST_ACTION_NONE);
+=======
+>>>>>>> v4.9.227
 
 	/* Clean out the queue */
 	memset(crq->msgs, 0, PAGE_SIZE);
@@ -1335,6 +1348,12 @@ static int ibmvfc_map_sg_data(struct scsi_cmnd *scmd,
 	struct srp_direct_buf *data = &vfc_cmd->ioba;
 	struct ibmvfc_host *vhost = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
+=======
+	if (cls3_error)
+		vfc_cmd->flags |= cpu_to_be16(IBMVFC_CLASS_3_ERR);
+
+>>>>>>> v4.9.227
 	sg_mapped = scsi_dma_map(scmd);
 	if (!sg_mapped) {
 		vfc_cmd->flags |= cpu_to_be16(IBMVFC_NO_MEM_DESC);
@@ -1615,7 +1634,10 @@ static int ibmvfc_queuecommand_lck(struct scsi_cmnd *cmnd,
 	struct fc_rport *rport = starget_to_rport(scsi_target(cmnd->device));
 	struct ibmvfc_cmd *vfc_cmd;
 	struct ibmvfc_event *evt;
+<<<<<<< HEAD
 	u8 tag[2];
+=======
+>>>>>>> v4.9.227
 	int rc;
 
 	if (unlikely((rc = fc_remote_port_chkready(rport))) ||
@@ -1643,6 +1665,7 @@ static int ibmvfc_queuecommand_lck(struct scsi_cmnd *cmnd,
 	int_to_scsilun(cmnd->device->lun, &vfc_cmd->iu.lun);
 	memcpy(vfc_cmd->iu.cdb, cmnd->cmnd, cmnd->cmd_len);
 
+<<<<<<< HEAD
 	if (scsi_populate_tag_msg(cmnd, tag)) {
 		vfc_cmd->task_tag = cpu_to_be64(tag[1]);
 		switch (tag[0]) {
@@ -1656,6 +1679,11 @@ static int ibmvfc_queuecommand_lck(struct scsi_cmnd *cmnd,
 			vfc_cmd->iu.pri_task_attr = IBMVFC_ORDERED_TASK;
 			break;
 		};
+=======
+	if (cmnd->flags & SCMD_TAGGED) {
+		vfc_cmd->task_tag = cpu_to_be64(cmnd->tag);
+		vfc_cmd->iu.pri_task_attr = IBMVFC_SIMPLE_TASK;
+>>>>>>> v4.9.227
 	}
 
 	if (likely(!(rc = ibmvfc_map_sg_data(cmnd, evt, vfc_cmd, vhost->dev))))
@@ -2647,7 +2675,12 @@ static void ibmvfc_handle_async(struct ibmvfc_async_crq *crq,
 	struct ibmvfc_target *tgt;
 
 	ibmvfc_log(vhost, desc->log_level, "%s event received. scsi_id: %llx, wwpn: %llx,"
+<<<<<<< HEAD
 		   " node_name: %llx%s\n", desc->desc, crq->scsi_id, crq->wwpn, crq->node_name,
+=======
+		   " node_name: %llx%s\n", desc->desc, be64_to_cpu(crq->scsi_id),
+		   be64_to_cpu(crq->wwpn), be64_to_cpu(crq->node_name),
+>>>>>>> v4.9.227
 		   ibmvfc_get_link_state(crq->link_state));
 
 	switch (be64_to_cpu(crq->event)) {
@@ -2897,12 +2930,15 @@ static int ibmvfc_slave_configure(struct scsi_device *sdev)
 	spin_lock_irqsave(shost->host_lock, flags);
 	if (sdev->type == TYPE_DISK)
 		sdev->allow_restart = 1;
+<<<<<<< HEAD
 
 	if (sdev->tagged_supported) {
 		scsi_set_tag_type(sdev, MSG_SIMPLE_TAG);
 		scsi_activate_tcq(sdev, sdev->queue_depth);
 	} else
 		scsi_deactivate_tcq(sdev, sdev->queue_depth);
+=======
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(shost->host_lock, flags);
 	return 0;
 }
@@ -2916,6 +2952,7 @@ static int ibmvfc_slave_configure(struct scsi_device *sdev)
  * Return value:
  * 	actual depth set
  **/
+<<<<<<< HEAD
 static int ibmvfc_change_queue_depth(struct scsi_device *sdev, int qdepth,
 				     int reason)
 {
@@ -2950,6 +2987,14 @@ static int ibmvfc_change_queue_type(struct scsi_device *sdev, int tag_type)
 		tag_type = 0;
 
 	return tag_type;
+=======
+static int ibmvfc_change_queue_depth(struct scsi_device *sdev, int qdepth)
+{
+	if (qdepth > IBMVFC_MAX_CMDS_PER_LUN)
+		qdepth = IBMVFC_MAX_CMDS_PER_LUN;
+
+	return scsi_change_queue_depth(sdev, qdepth);
+>>>>>>> v4.9.227
 }
 
 static ssize_t ibmvfc_show_host_partition_name(struct device *dev,
@@ -3133,7 +3178,10 @@ static struct scsi_host_template driver_template = {
 	.target_alloc = ibmvfc_target_alloc,
 	.scan_finished = ibmvfc_scan_finished,
 	.change_queue_depth = ibmvfc_change_queue_depth,
+<<<<<<< HEAD
 	.change_queue_type = ibmvfc_change_queue_type,
+=======
+>>>>>>> v4.9.227
 	.cmd_per_lun = 16,
 	.can_queue = IBMVFC_MAX_REQUESTS_DEFAULT,
 	.this_id = -1,
@@ -3141,6 +3189,10 @@ static struct scsi_host_template driver_template = {
 	.max_sectors = IBMVFC_MAX_SECTORS,
 	.use_clustering = ENABLE_CLUSTERING,
 	.shost_attrs = ibmvfc_attrs,
+<<<<<<< HEAD
+=======
+	.track_queue_depth = 1,
+>>>>>>> v4.9.227
 };
 
 /**
@@ -3425,6 +3477,13 @@ static void ibmvfc_tgt_send_prli(struct ibmvfc_target *tgt)
 	prli->parms.type = IBMVFC_SCSI_FCP_TYPE;
 	prli->parms.flags = cpu_to_be16(IBMVFC_PRLI_EST_IMG_PAIR);
 	prli->parms.service_parms = cpu_to_be32(IBMVFC_PRLI_INITIATOR_FUNC);
+<<<<<<< HEAD
+=======
+	prli->parms.service_parms |= cpu_to_be32(IBMVFC_PRLI_READ_FCP_XFER_RDY_DISABLED);
+
+	if (cls3_error)
+		prli->parms.service_parms |= cpu_to_be32(IBMVFC_PRLI_RETRY);
+>>>>>>> v4.9.227
 
 	ibmvfc_set_tgt_action(tgt, IBMVFC_TGT_ACTION_INIT_WAIT);
 	if (ibmvfc_send_event(evt, vhost, default_timeout)) {
@@ -4766,6 +4825,11 @@ static void ibmvfc_rport_add_thread(struct work_struct *work)
 					tgt_dbg(tgt, "Setting rport roles\n");
 					fc_remote_port_rolechg(rport, tgt->ids.roles);
 					put_device(&rport->dev);
+<<<<<<< HEAD
+=======
+				} else {
+					spin_unlock_irqrestore(vhost->host->host_lock, flags);
+>>>>>>> v4.9.227
 				}
 
 				kref_put(&tgt->kref, ibmvfc_release_tgt);
@@ -4915,8 +4979,13 @@ static int ibmvfc_remove(struct vio_dev *vdev)
 
 	spin_lock_irqsave(vhost->host->host_lock, flags);
 	ibmvfc_purge_requests(vhost, DID_ERROR);
+<<<<<<< HEAD
 	ibmvfc_free_event_pool(vhost);
 	spin_unlock_irqrestore(vhost->host->host_lock, flags);
+=======
+	spin_unlock_irqrestore(vhost->host->host_lock, flags);
+	ibmvfc_free_event_pool(vhost);
+>>>>>>> v4.9.227
 
 	ibmvfc_free_mem(vhost);
 	spin_lock(&ibmvfc_driver_lock);

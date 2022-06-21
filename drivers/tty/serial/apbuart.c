@@ -572,7 +572,11 @@ static int apbuart_probe(struct platform_device *op)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id apbuart_match[] = {
+=======
+static const struct of_device_id apbuart_match[] = {
+>>>>>>> v4.9.227
 	{
 	 .name = "GAISLER_APBUART",
 	 },
@@ -581,11 +585,18 @@ static struct of_device_id apbuart_match[] = {
 	 },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, apbuart_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver grlib_apbuart_of_driver = {
 	.probe = apbuart_probe,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "grlib-apbuart",
 		.of_match_table = apbuart_match,
 	},

@@ -425,7 +425,10 @@ static struct platform_driver atmel_wm97xx_driver = {
 	.remove		= __exit_p(atmel_wm97xx_remove),
 	.driver		= {
 		.name	= "wm97xx-touch",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &atmel_wm97xx_pm_ops,
 	},
 };

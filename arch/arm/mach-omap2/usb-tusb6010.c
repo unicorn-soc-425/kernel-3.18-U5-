@@ -71,7 +71,11 @@ static int tusb_set_async_mode(unsigned sysclk_ps)
 
 	gpmc_calc_timings(&t, &tusb_async, &dev_t);
 
+<<<<<<< HEAD
 	return gpmc_cs_set_timings(async_cs, &t);
+=======
+	return gpmc_cs_set_timings(async_cs, &t, &tusb_async);
+>>>>>>> v4.9.227
 }
 
 static int tusb_set_sync_mode(unsigned sysclk_ps)
@@ -98,7 +102,11 @@ static int tusb_set_sync_mode(unsigned sysclk_ps)
 
 	gpmc_calc_timings(&t, &tusb_sync, &dev_t);
 
+<<<<<<< HEAD
 	return gpmc_cs_set_timings(sync_cs, &t);
+=======
+	return gpmc_cs_set_timings(sync_cs, &t, &tusb_sync);
+>>>>>>> v4.9.227
 }
 
 /* tusb driver calls this when it changes the chip's clocking */

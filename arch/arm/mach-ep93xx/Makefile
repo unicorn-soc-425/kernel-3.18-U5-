@@ -1,7 +1,11 @@
 #
 # Makefile for the linux kernel.
 #
+<<<<<<< HEAD
 obj-y			:= core.o clock.o
+=======
+obj-y			:= core.o clock.o timer-ep93xx.o
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_EP93XX_DMA)	+= dma.o
 

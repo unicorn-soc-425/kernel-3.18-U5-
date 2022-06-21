@@ -443,6 +443,24 @@ static int ati_remote_sendpacket(struct ati_remote *ati_remote, u16 cmd,
 	return retval;
 }
 
+<<<<<<< HEAD
+=======
+struct accel_times {
+	const char	value;
+	unsigned int	msecs;
+};
+
+static const struct accel_times accel[] = {
+	{  1,  125 },
+	{  2,  250 },
+	{  4,  500 },
+	{  6, 1000 },
+	{  9, 1500 },
+	{ 13, 2000 },
+	{ 20,    0 },
+};
+
+>>>>>>> v4.9.227
 /*
  * ati_remote_compute_accel
  *
@@ -454,6 +472,7 @@ static int ati_remote_sendpacket(struct ati_remote *ati_remote, u16 cmd,
  */
 static int ati_remote_compute_accel(struct ati_remote *ati_remote)
 {
+<<<<<<< HEAD
 	static const char accel[] = { 1, 2, 4, 6, 9, 13, 20 };
 	unsigned long now = jiffies;
 	int acc;
@@ -478,6 +497,24 @@ static int ati_remote_compute_accel(struct ati_remote *ati_remote)
 		acc = accel[6];
 
 	return acc;
+=======
+	unsigned long now = jiffies, reset_time;
+	int i;
+
+	reset_time = msecs_to_jiffies(250);
+
+	if (time_after(now, ati_remote->old_jiffies + reset_time)) {
+		ati_remote->acc_jiffies = now;
+		return 1;
+	}
+	for (i = 0; i < ARRAY_SIZE(accel) - 1; i++) {
+		unsigned long timeout = msecs_to_jiffies(accel[i].msecs);
+
+		if (time_before(now, ati_remote->acc_jiffies + timeout))
+			return accel[i].value;
+	}
+	return accel[i].value;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -866,6 +903,7 @@ static int ati_remote_probe(struct usb_interface *interface,
 	strlcat(ati_remote->rc_phys, "/input0", sizeof(ati_remote->rc_phys));
 	strlcat(ati_remote->mouse_phys, "/input1", sizeof(ati_remote->mouse_phys));
 
+<<<<<<< HEAD
 	if (udev->manufacturer)
 		strlcpy(ati_remote->rc_name, udev->manufacturer,
 			sizeof(ati_remote->rc_name));
@@ -873,6 +911,12 @@ static int ati_remote_probe(struct usb_interface *interface,
 	if (udev->product)
 		snprintf(ati_remote->rc_name, sizeof(ati_remote->rc_name),
 			 "%s %s", ati_remote->rc_name, udev->product);
+=======
+	snprintf(ati_remote->rc_name, sizeof(ati_remote->rc_name), "%s%s%s",
+		udev->manufacturer ?: "",
+		udev->manufacturer && udev->product ? " " : "",
+		udev->product ?: "");
+>>>>>>> v4.9.227
 
 	if (!strlen(ati_remote->rc_name))
 		snprintf(ati_remote->rc_name, sizeof(ati_remote->rc_name),

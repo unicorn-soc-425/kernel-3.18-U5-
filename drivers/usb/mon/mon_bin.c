@@ -18,6 +18,10 @@
 #include <linux/mm.h>
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/time64.h>
+>>>>>>> v4.9.227
 
 #include <asm/uaccess.h>
 
@@ -92,8 +96,13 @@ struct mon_bin_hdr {
 	unsigned short busnum;	/* Bus number */
 	char flag_setup;
 	char flag_data;
+<<<<<<< HEAD
 	s64 ts_sec;		/* gettimeofday */
 	s32 ts_usec;		/* gettimeofday */
+=======
+	s64 ts_sec;		/* getnstimeofday64 */
+	s32 ts_usec;		/* getnstimeofday64 */
+>>>>>>> v4.9.227
 	int status;
 	unsigned int len_urb;	/* Length of data (submitted or actual) */
 	unsigned int len_cap;	/* Delivered length */
@@ -483,7 +492,11 @@ static void mon_bin_event(struct mon_reader_bin *rp, struct urb *urb,
     char ev_type, int status)
 {
 	const struct usb_endpoint_descriptor *epd = &urb->ep->desc;
+<<<<<<< HEAD
 	struct timeval ts;
+=======
+	struct timespec64 ts;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	unsigned int urb_length;
 	unsigned int offset;
@@ -494,7 +507,11 @@ static void mon_bin_event(struct mon_reader_bin *rp, struct urb *urb,
 	struct mon_bin_hdr *ep;
 	char data_tag = 0;
 
+<<<<<<< HEAD
 	do_gettimeofday(&ts);
+=======
+	getnstimeofday64(&ts);
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&rp->b_lock, flags);
 
@@ -568,7 +585,11 @@ static void mon_bin_event(struct mon_reader_bin *rp, struct urb *urb,
 	ep->busnum = urb->dev->bus->busnum;
 	ep->id = (unsigned long) urb;
 	ep->ts_sec = ts.tv_sec;
+<<<<<<< HEAD
 	ep->ts_usec = ts.tv_usec;
+=======
+	ep->ts_usec = ts.tv_nsec / NSEC_PER_USEC;
+>>>>>>> v4.9.227
 	ep->status = status;
 	ep->len_urb = urb_length;
 	ep->len_cap = length + lendesc;
@@ -629,12 +650,20 @@ static void mon_bin_complete(void *data, struct urb *urb, int status)
 static void mon_bin_error(void *data, struct urb *urb, int error)
 {
 	struct mon_reader_bin *rp = data;
+<<<<<<< HEAD
 	struct timeval ts;
+=======
+	struct timespec64 ts;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	unsigned int offset;
 	struct mon_bin_hdr *ep;
 
+<<<<<<< HEAD
 	do_gettimeofday(&ts);
+=======
+	getnstimeofday64(&ts);
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&rp->b_lock, flags);
 
@@ -656,7 +685,11 @@ static void mon_bin_error(void *data, struct urb *urb, int error)
 	ep->busnum = urb->dev->bus->busnum;
 	ep->id = (unsigned long) urb;
 	ep->ts_sec = ts.tv_sec;
+<<<<<<< HEAD
 	ep->ts_usec = ts.tv_usec;
+=======
+	ep->ts_usec = ts.tv_nsec / NSEC_PER_USEC;
+>>>>>>> v4.9.227
 	ep->status = error;
 
 	ep->flag_setup = '-';
@@ -675,7 +708,12 @@ static int mon_bin_open(struct inode *inode, struct file *file)
 	int rc;
 
 	mutex_lock(&mon_lock);
+<<<<<<< HEAD
 	if ((mbus = mon_bus_lookup(iminor(inode))) == NULL) {
+=======
+	mbus = mon_bus_lookup(iminor(inode));
+	if (mbus == NULL) {
+>>>>>>> v4.9.227
 		mutex_unlock(&mon_lock);
 		return -ENODEV;
 	}
@@ -1020,8 +1058,13 @@ static long mon_bin_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 			return -EINVAL;
 
 		size = CHUNK_ALIGN(arg);
+<<<<<<< HEAD
 		if ((vec = kzalloc(sizeof(struct mon_pgmap) * (size/CHUNK_SIZE),
 		    GFP_KERNEL)) == NULL) {
+=======
+		vec = kzalloc(sizeof(struct mon_pgmap) * (size / CHUNK_SIZE), GFP_KERNEL);
+		if (vec == NULL) {
+>>>>>>> v4.9.227
 			ret = -ENOMEM;
 			break;
 		}
@@ -1034,12 +1077,27 @@ static long mon_bin_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 
 		mutex_lock(&rp->fetch_lock);
 		spin_lock_irqsave(&rp->b_lock, flags);
+<<<<<<< HEAD
 		mon_free_buff(rp->b_vec, rp->b_size/CHUNK_SIZE);
 		kfree(rp->b_vec);
 		rp->b_vec  = vec;
 		rp->b_size = size;
 		rp->b_read = rp->b_in = rp->b_out = rp->b_cnt = 0;
 		rp->cnt_lost = 0;
+=======
+		if (rp->mmap_active) {
+			mon_free_buff(vec, size/CHUNK_SIZE);
+			kfree(vec);
+			ret = -EBUSY;
+		} else {
+			mon_free_buff(rp->b_vec, rp->b_size/CHUNK_SIZE);
+			kfree(rp->b_vec);
+			rp->b_vec  = vec;
+			rp->b_size = size;
+			rp->b_read = rp->b_in = rp->b_out = rp->b_cnt = 0;
+			rp->cnt_lost = 0;
+		}
+>>>>>>> v4.9.227
 		spin_unlock_irqrestore(&rp->b_lock, flags);
 		mutex_unlock(&rp->fetch_lock);
 		}
@@ -1211,13 +1269,30 @@ mon_bin_poll(struct file *file, struct poll_table_struct *wait)
 static void mon_bin_vma_open(struct vm_area_struct *vma)
 {
 	struct mon_reader_bin *rp = vma->vm_private_data;
+<<<<<<< HEAD
 	rp->mmap_active++;
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&rp->b_lock, flags);
+	rp->mmap_active++;
+	spin_unlock_irqrestore(&rp->b_lock, flags);
+>>>>>>> v4.9.227
 }
 
 static void mon_bin_vma_close(struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	struct mon_reader_bin *rp = vma->vm_private_data;
 	rp->mmap_active--;
+=======
+	unsigned long flags;
+
+	struct mon_reader_bin *rp = vma->vm_private_data;
+	spin_lock_irqsave(&rp->b_lock, flags);
+	rp->mmap_active--;
+	spin_unlock_irqrestore(&rp->b_lock, flags);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1229,6 +1304,7 @@ static int mon_bin_vma_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	unsigned long offset, chunk_idx;
 	struct page *pageptr;
 
+<<<<<<< HEAD
 	mutex_lock(&rp->fetch_lock);
 	offset = vmf->pgoff << PAGE_SHIFT;
 	if (offset >= rp->b_size) {
@@ -1239,6 +1315,14 @@ static int mon_bin_vma_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	pageptr = rp->b_vec[chunk_idx].pg;
 	get_page(pageptr);
 	mutex_unlock(&rp->fetch_lock);
+=======
+	offset = vmf->pgoff << PAGE_SHIFT;
+	if (offset >= rp->b_size)
+		return VM_FAULT_SIGBUS;
+	chunk_idx = offset / CHUNK_SIZE;
+	pageptr = rp->b_vec[chunk_idx].pg;
+	get_page(pageptr);
+>>>>>>> v4.9.227
 	vmf->page = pageptr;
 	return 0;
 }

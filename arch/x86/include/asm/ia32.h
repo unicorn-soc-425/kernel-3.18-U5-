@@ -10,7 +10,11 @@
  * 32 bit structures for IA32 support.
  */
 
+<<<<<<< HEAD
 #include <asm/sigcontext32.h>
+=======
+#include <uapi/asm/sigcontext.h>
+>>>>>>> v4.9.227
 
 /* signal.h */
 
@@ -18,6 +22,7 @@ struct ucontext_ia32 {
 	unsigned int	  uc_flags;
 	unsigned int 	  uc_link;
 	compat_stack_t	  uc_stack;
+<<<<<<< HEAD
 	struct sigcontext_ia32 uc_mcontext;
 	compat_sigset_t	  uc_sigmask;	/* mask last for extensibility */
 };
@@ -28,6 +33,9 @@ struct ucontext_x32 {
 	compat_stack_t	  uc_stack;
 	unsigned int	  uc__pad0;     /* needed for alignment */
 	struct sigcontext uc_mcontext;  /* the 64-bit sigcontext type */
+=======
+	struct sigcontext_32 uc_mcontext;
+>>>>>>> v4.9.227
 	compat_sigset_t	  uc_sigmask;	/* mask last for extensibility */
 };
 

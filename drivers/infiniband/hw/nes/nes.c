@@ -111,6 +111,7 @@ static struct pci_device_id nes_pci_table[] = {
 
 MODULE_DEVICE_TABLE(pci, nes_pci_table);
 
+<<<<<<< HEAD
 /* registered nes netlink callbacks */
 static struct ibnl_client_cbs nes_nl_cb_table[] = {
 	[RDMA_NL_IWPM_REG_PID] = {.dump = iwpm_register_pid_cb},
@@ -121,6 +122,8 @@ static struct ibnl_client_cbs nes_nl_cb_table[] = {
 	[RDMA_NL_IWPM_MAPINFO_NUM] = {.dump = iwpm_ack_mapping_info_cb}
 };
 
+=======
+>>>>>>> v4.9.227
 static int nes_inetaddr_event(struct notifier_block *, unsigned long, void *);
 static int nes_net_event(struct notifier_block *, unsigned long, void *);
 static int nes_notifiers_registered;
@@ -681,6 +684,7 @@ static int nes_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 	}
 	nes_notifiers_registered++;
 
+<<<<<<< HEAD
 	if (ibnl_add_client(RDMA_NL_NES, RDMA_NL_IWPM_NUM_OPS, nes_nl_cb_table))
 		printk(KERN_ERR PFX "%s[%u]: Failed to add netlink callback\n",
 			__func__, __LINE__);
@@ -692,6 +696,8 @@ static int nes_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 		goto bail7;
 	}
 
+=======
+>>>>>>> v4.9.227
 	INIT_DELAYED_WORK(&nesdev->work, nes_recheck_link_status);
 
 	/* Initialize network devices */
@@ -730,7 +736,10 @@ static int nes_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 
 	nes_debug(NES_DBG_INIT, "netdev_count=%d, nesadapter->netdev_count=%d\n",
 			nesdev->netdev_count, nesdev->nesadapter->netdev_count);
+<<<<<<< HEAD
 	ibnl_remove_client(RDMA_NL_NES);
+=======
+>>>>>>> v4.9.227
 
 	nes_notifiers_registered--;
 	if (nes_notifiers_registered == 0) {
@@ -794,8 +803,11 @@ static void nes_remove(struct pci_dev *pcidev)
 				nesdev->nesadapter->netdev_count--;
 			}
 		}
+<<<<<<< HEAD
 	ibnl_remove_client(RDMA_NL_NES);
 	iwpm_exit(RDMA_NL_NES);
+=======
+>>>>>>> v4.9.227
 
 	nes_notifiers_registered--;
 	if (nes_notifiers_registered == 0) {

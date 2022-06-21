@@ -41,7 +41,11 @@
 #include <linux/unistd.h>
 #include <linux/time.h>
 
+<<<<<<< HEAD
 #define SYSCALL_MAP_SIZE      ((__NR_syscalls + 31) / 32)
+=======
+#define SYSCALL_MAP_SIZE      ((NR_syscalls + 31) / 32)
+>>>>>>> v4.9.227
 
 /*
  * So here is the ppc64 backward compatible version
@@ -86,6 +90,10 @@ struct vdso_data {
 	__s32 wtom_clock_nsec;
 	struct timespec stamp_xtime;	/* xtime as at tb_orig_stamp */
 	__u32 stamp_sec_fraction;	/* fractional seconds of stamp_xtime */
+<<<<<<< HEAD
+=======
+	__u32 hrtimer_res;			/* hrtimer resolution */
+>>>>>>> v4.9.227
    	__u32 syscall_map_64[SYSCALL_MAP_SIZE]; /* map of syscalls  */
    	__u32 syscall_map_32[SYSCALL_MAP_SIZE]; /* map of syscalls */
 };
@@ -107,6 +115,10 @@ struct vdso_data {
 	__s32 wtom_clock_nsec;
 	struct timespec stamp_xtime;	/* xtime as at tb_orig_stamp */
 	__u32 stamp_sec_fraction;	/* fractional seconds of stamp_xtime */
+<<<<<<< HEAD
+=======
+	__u32 hrtimer_res;		/* hrtimer resolution */
+>>>>>>> v4.9.227
    	__u32 syscall_map_32[SYSCALL_MAP_SIZE]; /* map of syscalls */
 	__u32 dcache_block_size;	/* L1 d-cache block size     */
 	__u32 icache_block_size;	/* L1 i-cache block size     */

@@ -22,6 +22,7 @@
 #include <asm/uaccess.h>
 #include <asm/mmu.h>
 
+<<<<<<< HEAD
 /**
  *	derive_parent - basically like dirname(1)
  *	@path:  the full_name of a node to be added to the tree
@@ -53,6 +54,9 @@ static struct device_node *derive_parent(const char *path)
 		kfree(parent_path);
 	return parent;
 }
+=======
+#include "of_helpers.h"
+>>>>>>> v4.9.227
 
 static int pSeries_reconfig_add_node(const char *path, struct property *proplist)
 {
@@ -71,7 +75,11 @@ static int pSeries_reconfig_add_node(const char *path, struct property *proplist
 	of_node_set_flag(np, OF_DYNAMIC);
 	of_node_init(np);
 
+<<<<<<< HEAD
 	np->parent = derive_parent(path);
+=======
+	np->parent = pseries_of_derive_parent(path);
+>>>>>>> v4.9.227
 	if (IS_ERR(np->parent)) {
 		err = PTR_ERR(np->parent);
 		goto out_err;
@@ -332,7 +340,10 @@ static int do_remove_property(char *buf, size_t bufsize)
 {
 	struct device_node *np;
 	char *tmp;
+<<<<<<< HEAD
 	struct property *prop;
+=======
+>>>>>>> v4.9.227
 	buf = parse_node(buf, bufsize, &np);
 
 	if (!np)
@@ -345,9 +356,13 @@ static int do_remove_property(char *buf, size_t bufsize)
 	if (strlen(buf) == 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	prop = of_find_property(np, buf, NULL);
 
 	return of_remove_property(np, prop);
+=======
+	return of_remove_property(np, of_find_property(np, buf, NULL));
+>>>>>>> v4.9.227
 }
 
 static int do_update_property(char *buf, size_t bufsize)

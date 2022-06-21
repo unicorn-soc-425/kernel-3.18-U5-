@@ -1,7 +1,11 @@
 /*
  * net/tipc/node.h: Include file for TIPC node management routines
  *
+<<<<<<< HEAD
  * Copyright (c) 2000-2006, Ericsson AB
+=======
+ * Copyright (c) 2000-2006, 2014-2016, Ericsson AB
+>>>>>>> v4.9.227
  * Copyright (c) 2005, 2010-2014, Wind River Systems
  * All rights reserved.
  *
@@ -37,12 +41,16 @@
 #ifndef _TIPC_NODE_H
 #define _TIPC_NODE_H
 
+<<<<<<< HEAD
 #include "node_subscr.h"
+=======
+>>>>>>> v4.9.227
 #include "addr.h"
 #include "net.h"
 #include "bearer.h"
 #include "msg.h"
 
+<<<<<<< HEAD
 /*
  * Out-of-range value for node signature
  */
@@ -171,4 +179,51 @@ static inline uint tipc_node_get_mtu(u32 addr, u32 selector)
 	return mtu;
 }
 
+=======
+/* Optional capabilities supported by this code version
+ */
+enum {
+	TIPC_BCAST_SYNCH      = (1 << 1),
+	TIPC_BCAST_STATE_NACK = (1 << 2),
+	TIPC_BLOCK_FLOWCTL    = (1 << 3)
+};
+
+#define TIPC_NODE_CAPABILITIES (TIPC_BCAST_SYNCH | \
+				TIPC_BCAST_STATE_NACK | \
+				TIPC_BLOCK_FLOWCTL)
+#define INVALID_BEARER_ID -1
+
+void tipc_node_stop(struct net *net);
+void tipc_node_check_dest(struct net *net, u32 onode,
+			  struct tipc_bearer *bearer,
+			  u16 capabilities, u32 signature,
+			  struct tipc_media_addr *maddr,
+			  bool *respond, bool *dupl_addr);
+void tipc_node_delete_links(struct net *net, int bearer_id);
+int tipc_node_get_linkname(struct net *net, u32 bearer_id, u32 node,
+			   char *linkname, size_t len);
+int tipc_node_xmit(struct net *net, struct sk_buff_head *list, u32 dnode,
+		   int selector);
+int tipc_node_xmit_skb(struct net *net, struct sk_buff *skb, u32 dest,
+		       u32 selector);
+void tipc_node_subscribe(struct net *net, struct list_head *subscr, u32 addr);
+void tipc_node_unsubscribe(struct net *net, struct list_head *subscr, u32 addr);
+void tipc_node_broadcast(struct net *net, struct sk_buff *skb);
+int tipc_node_add_conn(struct net *net, u32 dnode, u32 port, u32 peer_port);
+void tipc_node_remove_conn(struct net *net, u32 dnode, u32 port);
+int tipc_node_get_mtu(struct net *net, u32 addr, u32 sel);
+u16 tipc_node_get_capabilities(struct net *net, u32 addr);
+int tipc_nl_node_dump(struct sk_buff *skb, struct netlink_callback *cb);
+int tipc_nl_node_dump_link(struct sk_buff *skb, struct netlink_callback *cb);
+int tipc_nl_node_reset_link_stats(struct sk_buff *skb, struct genl_info *info);
+int tipc_nl_node_get_link(struct sk_buff *skb, struct genl_info *info);
+int tipc_nl_node_set_link(struct sk_buff *skb, struct genl_info *info);
+int tipc_nl_peer_rm(struct sk_buff *skb, struct genl_info *info);
+
+int tipc_nl_node_set_monitor(struct sk_buff *skb, struct genl_info *info);
+int tipc_nl_node_get_monitor(struct sk_buff *skb, struct genl_info *info);
+int tipc_nl_node_dump_monitor(struct sk_buff *skb, struct netlink_callback *cb);
+int tipc_nl_node_dump_monitor_peer(struct sk_buff *skb,
+				   struct netlink_callback *cb);
+>>>>>>> v4.9.227
 #endif

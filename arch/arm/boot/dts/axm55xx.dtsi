@@ -107,7 +107,11 @@
 		};
 
 		amba {
+<<<<<<< HEAD
 			compatible = "arm,amba-bus";
+=======
+			compatible = "simple-bus";
+>>>>>>> v4.9.227
 			#address-cells = <2>;
 			#size-cells = <2>;
 			ranges;

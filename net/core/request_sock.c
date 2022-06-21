@@ -37,6 +37,7 @@
 int sysctl_max_syn_backlog = 256;
 EXPORT_SYMBOL(sysctl_max_syn_backlog);
 
+<<<<<<< HEAD
 int reqsk_queue_alloc(struct request_sock_queue *queue,
 		      unsigned int nr_table_entries)
 {
@@ -110,6 +111,18 @@ void reqsk_queue_destroy(struct request_sock_queue *queue)
 
 	WARN_ON(lopt->qlen != 0);
 	kvfree(lopt);
+=======
+void reqsk_queue_alloc(struct request_sock_queue *queue)
+{
+	spin_lock_init(&queue->rskq_lock);
+
+	spin_lock_init(&queue->fastopenq.lock);
+	queue->fastopenq.rskq_rst_head = NULL;
+	queue->fastopenq.rskq_rst_tail = NULL;
+	queue->fastopenq.qlen = 0;
+
+	queue->rskq_accept_head = NULL;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -153,24 +166,40 @@ void reqsk_queue_destroy(struct request_sock_queue *queue)
  * case might also exist in tcp_v4_hnd_req() that will trigger this locking
  * order.
  *
+<<<<<<< HEAD
  * When a TFO req is created, it needs to sock_hold its listener to prevent
  * the latter data structure from going away.
  *
  * This function also sets "treq->listener" to NULL and unreference listener
  * socket. treq->listener is used by the listener so it is protected by the
+=======
+ * This function also sets "treq->tfo_listener" to false.
+ * treq->tfo_listener is used by the listener so it is protected by the
+>>>>>>> v4.9.227
  * fastopenq->lock in this function.
  */
 void reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,
 			   bool reset)
 {
+<<<<<<< HEAD
 	struct sock *lsk = tcp_rsk(req)->listener;
 	struct fastopen_queue *fastopenq =
 	    inet_csk(lsk)->icsk_accept_queue.fastopenq;
+=======
+	struct sock *lsk = req->rsk_listener;
+	struct fastopen_queue *fastopenq;
+
+	fastopenq = &inet_csk(lsk)->icsk_accept_queue.fastopenq;
+>>>>>>> v4.9.227
 
 	tcp_sk(sk)->fastopen_rsk = NULL;
 	spin_lock_bh(&fastopenq->lock);
 	fastopenq->qlen--;
+<<<<<<< HEAD
 	tcp_rsk(req)->listener = NULL;
+=======
+	tcp_rsk(req)->tfo_listener = false;
+>>>>>>> v4.9.227
 	if (req->sk)	/* the child socket hasn't been accepted yet */
 		goto out;
 
@@ -179,8 +208,12 @@ void reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,
 		 * special RST handling below.
 		 */
 		spin_unlock_bh(&fastopenq->lock);
+<<<<<<< HEAD
 		sock_put(lsk);
 		reqsk_free(req);
+=======
+		reqsk_put(req);
+>>>>>>> v4.9.227
 		return;
 	}
 	/* Wait for 60secs before removing a req that has triggered RST.
@@ -190,7 +223,11 @@ void reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,
 	 *
 	 * For more details see CoNext'11 "TCP Fast Open" paper.
 	 */
+<<<<<<< HEAD
 	req->expires = jiffies + 60*HZ;
+=======
+	req->rsk_timer.expires = jiffies + 60*HZ;
+>>>>>>> v4.9.227
 	if (fastopenq->rskq_rst_head == NULL)
 		fastopenq->rskq_rst_head = req;
 	else
@@ -201,5 +238,8 @@ void reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,
 	fastopenq->qlen++;
 out:
 	spin_unlock_bh(&fastopenq->lock);
+<<<<<<< HEAD
 	sock_put(lsk);
+=======
+>>>>>>> v4.9.227
 }

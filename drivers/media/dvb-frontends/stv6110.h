@@ -25,7 +25,10 @@
 #ifndef __DVB_STV6110_H__
 #define __DVB_STV6110_H__
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 

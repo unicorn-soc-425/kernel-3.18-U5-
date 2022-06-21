@@ -42,7 +42,11 @@
 #include <linux/tty_flip.h>
 #include <linux/serial.h>
 #include <linux/console.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/sysrq.h>
 #include <linux/circ_buf.h>
 #include <linux/serial_reg.h>
@@ -659,7 +663,11 @@ static void sn_sal_timer_poll(unsigned long data)
  * @port: Our sn_cons_port (which contains the uart port)
  *
  * So this is used by sn_sal_serial_console_init (early on, before we're
+<<<<<<< HEAD
  * registered with serial core).  It's also used by sn_sal_module_init
+=======
+ * registered with serial core).  It's also used by sn_sal_init
+>>>>>>> v4.9.227
  * right after we've registered with serial core.  The later only happens
  * if we didn't already come through here via sn_sal_serial_console_init.
  *
@@ -709,7 +717,11 @@ static void __init sn_sal_switch_to_asynch(struct sn_cons_port *port)
  * sn_sal_switch_to_interrupts - Switch to interrupt driven mode
  * @port: Our sn_cons_port (which contains the uart port)
  *
+<<<<<<< HEAD
  * In sn_sal_module_init, after we're registered with serial core and
+=======
+ * In sn_sal_init, after we're registered with serial core and
+>>>>>>> v4.9.227
  * the port is added, this function is called to switch us to interrupt
  * mode.  We were previously in asynch/polling mode (using init_timer).
  *
@@ -773,7 +785,11 @@ static struct uart_driver sal_console_uart = {
 };
 
 /**
+<<<<<<< HEAD
  * sn_sal_module_init - When the kernel loads us, get us rolling w/ serial core
+=======
+ * sn_sal_init - When the kernel loads us, get us rolling w/ serial core
+>>>>>>> v4.9.227
  *
  * Before this is called, we've been printing kernel messages in a special
  * early mode not making use of the serial core infrastructure.  When our
@@ -781,7 +797,11 @@ static struct uart_driver sal_console_uart = {
  * core and try to enable interrupt driven mode.
  *
  */
+<<<<<<< HEAD
 static int __init sn_sal_module_init(void)
+=======
+static int __init sn_sal_init(void)
+>>>>>>> v4.9.227
 {
 	int retval;
 
@@ -811,7 +831,11 @@ static int __init sn_sal_module_init(void)
 
 	if (uart_register_driver(&sal_console_uart) < 0) {
 		printk
+<<<<<<< HEAD
 		    ("ERROR sn_sal_module_init failed uart_register_driver, line %d\n",
+=======
+		    ("ERROR sn_sal_init failed uart_register_driver, line %d\n",
+>>>>>>> v4.9.227
 		     __LINE__);
 		return -ENODEV;
 	}
@@ -832,18 +856,27 @@ static int __init sn_sal_module_init(void)
 
 	/* when this driver is compiled in, the console initialization
 	 * will have already switched us into asynchronous operation
+<<<<<<< HEAD
 	 * before we get here through the module initcalls */
+=======
+	 * before we get here through the initcalls */
+>>>>>>> v4.9.227
 	if (!sal_console_port.sc_is_asynch) {
 		sn_sal_switch_to_asynch(&sal_console_port);
 	}
 
+<<<<<<< HEAD
 	/* at this point (module_init) we can try to turn on interrupts */
+=======
+	/* at this point (device_init) we can try to turn on interrupts */
+>>>>>>> v4.9.227
 	if (!IS_RUNNING_ON_SIMULATOR()) {
 		sn_sal_switch_to_interrupts(&sal_console_port);
 	}
 	sn_process_input = 1;
 	return 0;
 }
+<<<<<<< HEAD
 
 /**
  * sn_sal_module_exit - When we're unloaded, remove the driver/port
@@ -859,6 +892,9 @@ static void __exit sn_sal_module_exit(void)
 
 module_init(sn_sal_module_init);
 module_exit(sn_sal_module_exit);
+=======
+device_initcall(sn_sal_init);
+>>>>>>> v4.9.227
 
 /**
  * puts_raw_fixed - sn_sal_console_write helper for adding \r's as required

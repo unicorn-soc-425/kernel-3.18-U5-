@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2012, Intel Corporation.
+=======
+ * Copyright (c) 2012, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -42,7 +50,10 @@
 
 #define DEBUG_SUBSYSTEM S_LOG
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #include "../include/lustre_log.h"
 
 static void print_llogd_body(struct llogd_body *d)
@@ -78,13 +89,20 @@ void lustre_swab_ost_id(struct ost_id *oid)
 }
 EXPORT_SYMBOL(lustre_swab_ost_id);
 
+<<<<<<< HEAD
 void lustre_swab_llog_id(struct llog_logid *log_id)
+=======
+static void lustre_swab_llog_id(struct llog_logid *log_id)
+>>>>>>> v4.9.227
 {
 	__swab64s(&log_id->lgl_oi.oi.oi_id);
 	__swab64s(&log_id->lgl_oi.oi.oi_seq);
 	__swab32s(&log_id->lgl_ogen);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(lustre_swab_llog_id);
+=======
+>>>>>>> v4.9.227
 
 void lustre_swab_llogd_body(struct llogd_body *d)
 {
@@ -109,13 +127,20 @@ void lustre_swab_llogd_conn_body(struct llogd_conn_body *d)
 }
 EXPORT_SYMBOL(lustre_swab_llogd_conn_body);
 
+<<<<<<< HEAD
 void lustre_swab_ll_fid(struct ll_fid *fid)
+=======
+static void lustre_swab_ll_fid(struct ll_fid *fid)
+>>>>>>> v4.9.227
 {
 	__swab64s(&fid->id);
 	__swab32s(&fid->generation);
 	__swab32s(&fid->f_type);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(lustre_swab_ll_fid);
+=======
+>>>>>>> v4.9.227
 
 void lustre_swab_lu_seq_range(struct lu_seq_range *range)
 {
@@ -168,7 +193,12 @@ void lustre_swab_llog_rec(struct llog_rec_hdr *rec)
 	}
 	case CHANGELOG_REC:
 	{
+<<<<<<< HEAD
 		struct llog_changelog_rec *cr = (struct llog_changelog_rec *)rec;
+=======
+		struct llog_changelog_rec *cr =
+			(struct llog_changelog_rec *)rec;
+>>>>>>> v4.9.227
 
 		__swab16s(&cr->cr.cr_namelen);
 		__swab16s(&cr->cr.cr_flags);
@@ -178,6 +208,7 @@ void lustre_swab_llog_rec(struct llog_rec_hdr *rec)
 		__swab64s(&cr->cr.cr_time);
 		lustre_swab_lu_fid(&cr->cr.cr_tfid);
 		lustre_swab_lu_fid(&cr->cr.cr_pfid);
+<<<<<<< HEAD
 		if (CHANGELOG_REC_EXTENDED(&cr->cr)) {
 			struct llog_changelog_ext_rec *ext =
 				(struct llog_changelog_ext_rec *)rec;
@@ -190,6 +221,25 @@ void lustre_swab_llog_rec(struct llog_rec_hdr *rec)
 		}
 		break;
 	}
+=======
+		if (cr->cr.cr_flags & CLF_RENAME) {
+			struct changelog_ext_rename *rnm =
+				changelog_rec_rename(&cr->cr);
+
+			lustre_swab_lu_fid(&rnm->cr_sfid);
+			lustre_swab_lu_fid(&rnm->cr_spfid);
+		}
+		/*
+		 * Because the tail follows a variable-length structure we need
+		 * to compute its location at runtime
+		 */
+		tail = (struct llog_rec_tail *)((char *)&cr->cr +
+						changelog_rec_size(&cr->cr) +
+						cr->cr.cr_namelen);
+		break;
+	}
+
+>>>>>>> v4.9.227
 	case CHANGELOG_USER_REC:
 	{
 		struct llog_changelog_user_rec *cur =
@@ -228,6 +278,10 @@ void lustre_swab_llog_rec(struct llog_rec_hdr *rec)
 		__swab32s(&lsr->lsr_uid_h);
 		__swab32s(&lsr->lsr_gid);
 		__swab32s(&lsr->lsr_gid_h);
+<<<<<<< HEAD
+=======
+		__swab64s(&lsr->lsr_valid);
+>>>>>>> v4.9.227
 		tail = &lsr->lsr_tail;
 		break;
 	}
@@ -346,9 +400,13 @@ void lustre_swab_lustre_cfg(struct lustre_cfg *lcfg)
 		__swab32s(&lcfg->lcfg_buflens[i]);
 
 	print_lustre_cfg(lcfg);
+<<<<<<< HEAD
 	return;
 }
 EXPORT_SYMBOL(lustre_swab_lustre_cfg);
+=======
+}
+>>>>>>> v4.9.227
 
 /* used only for compatibility with old on-disk cfg_marker data */
 struct cfg_marker32 {
@@ -387,7 +445,12 @@ void lustre_swab_cfg_marker(struct cfg_marker *marker, int swab, int size)
 		 *
 		 * Overwrite fields from the end first, so they are not
 		 * clobbered, and use memmove() instead of memcpy() because
+<<<<<<< HEAD
 		 * the source and target buffers overlap.  bug 16771 */
+=======
+		 * the source and target buffers overlap.  bug 16771
+		 */
+>>>>>>> v4.9.227
 		createtime = cm32->cm_createtime;
 		canceltime = cm32->cm_canceltime;
 		memmove(marker->cm_comment, cm32->cm_comment, MTI_NAMELEN32);
@@ -400,14 +463,22 @@ void lustre_swab_cfg_marker(struct cfg_marker *marker, int swab, int size)
 		}
 		marker->cm_createtime = createtime;
 		marker->cm_canceltime = canceltime;
+<<<<<<< HEAD
 		CDEBUG(D_CONFIG, "Find old cfg_marker(Srv32b,Clt64b) "
 		       "for target %s, converting\n",
+=======
+		CDEBUG(D_CONFIG, "Find old cfg_marker(Srv32b,Clt64b) for target %s, converting\n",
+>>>>>>> v4.9.227
 		       marker->cm_tgtname);
 	} else if (swab) {
 		__swab64s(&marker->cm_createtime);
 		__swab64s(&marker->cm_canceltime);
 	}
+<<<<<<< HEAD
 
 	return;
 }
 EXPORT_SYMBOL(lustre_swab_cfg_marker);
+=======
+}
+>>>>>>> v4.9.227

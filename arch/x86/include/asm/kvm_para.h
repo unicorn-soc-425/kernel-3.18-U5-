@@ -108,7 +108,11 @@ static inline void kvm_spinlock_init(void)
 
 static inline bool kvm_para_available(void)
 {
+<<<<<<< HEAD
 	return 0;
+=======
+	return false;
+>>>>>>> v4.9.227
 }
 
 static inline unsigned int kvm_arch_para_features(void)

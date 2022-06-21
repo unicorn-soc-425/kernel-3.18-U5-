@@ -18,6 +18,10 @@
 #include <asm/unistd.h>
 #include <asm/asm-compat.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	.text
 
@@ -118,3 +122,7 @@ _GLOBAL(longjmp)
 _GLOBAL(current_stack_pointer)
 	PPC_LL	r3,0(r1)
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(current_stack_pointer)
+>>>>>>> v4.9.227

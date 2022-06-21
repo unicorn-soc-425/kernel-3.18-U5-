@@ -33,6 +33,10 @@
 
 #include <drm/drmP.h>
 #include <drm/drm_gem.h>
+<<<<<<< HEAD
+=======
+#include <drm/drm_atomic.h>
+>>>>>>> v4.9.227
 #include <drm/drm_crtc_helper.h>
 #include <ttm/ttm_bo_api.h>
 #include <ttm/ttm_bo_driver.h>
@@ -75,6 +79,10 @@ typedef void (*virtio_gpu_resp_cb)(struct virtio_gpu_device *vgdev,
 struct virtio_gpu_fence_driver {
 	atomic64_t       last_seq;
 	uint64_t         sync_seq;
+<<<<<<< HEAD
+=======
+	uint64_t         context;
+>>>>>>> v4.9.227
 	struct list_head fences;
 	spinlock_t       lock;
 };
@@ -328,13 +336,21 @@ void virtio_gpu_dequeue_fence_func(struct work_struct *work);
 /* virtio_gpu_display.c */
 int virtio_gpu_framebuffer_init(struct drm_device *dev,
 				struct virtio_gpu_framebuffer *vgfb,
+<<<<<<< HEAD
 				struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+				const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 				struct drm_gem_object *obj);
 int virtio_gpu_modeset_init(struct virtio_gpu_device *vgdev);
 void virtio_gpu_modeset_fini(struct virtio_gpu_device *vgdev);
 
 /* virtio_gpu_plane.c */
 struct drm_plane *virtio_gpu_plane_init(struct virtio_gpu_device *vgdev,
+<<<<<<< HEAD
+=======
+					enum drm_plane_type type,
+>>>>>>> v4.9.227
 					int index);
 
 /* virtio_gpu_ttm.c */
@@ -400,7 +416,11 @@ static inline int virtio_gpu_object_reserve(struct virtio_gpu_object *bo,
 {
 	int r;
 
+<<<<<<< HEAD
 	r = ttm_bo_reserve(&bo->tbo, true, no_wait, false, NULL);
+=======
+	r = ttm_bo_reserve(&bo->tbo, true, no_wait, NULL);
+>>>>>>> v4.9.227
 	if (unlikely(r != 0)) {
 		if (r != -ERESTARTSYS) {
 			struct virtio_gpu_device *qdev =

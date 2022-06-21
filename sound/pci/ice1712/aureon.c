@@ -205,6 +205,7 @@ static int aureon_universe_inmux_info(struct snd_kcontrol *kcontrol,
 	static const char * const texts[3] =
 		{"Internal Aux", "Wavetable", "Rear Line-In"};
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 3;
@@ -212,6 +213,9 @@ static int aureon_universe_inmux_info(struct snd_kcontrol *kcontrol,
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> v4.9.227
 }
 
 static int aureon_universe_inmux_get(struct snd_kcontrol *kcontrol,
@@ -1106,6 +1110,7 @@ static int wm_adc_mux_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_in
 	};
 	struct snd_ice1712 *ice = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 2;
 	if (ice->eeprom.subvendor == VT1724_SUBDEVICE_AUREON71_UNIVERSE) {
@@ -1120,6 +1125,12 @@ static int wm_adc_mux_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_in
 		strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	}
 	return 0;
+=======
+	if (ice->eeprom.subvendor == VT1724_SUBDEVICE_AUREON71_UNIVERSE)
+		return snd_ctl_enum_info(uinfo, 2, 8, universe_texts);
+	else
+		return snd_ctl_enum_info(uinfo, 2, 5, texts);
+>>>>>>> v4.9.227
 }
 
 static int wm_adc_mux_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1167,6 +1178,7 @@ static int aureon_cs8415_mux_info(struct snd_kcontrol *kcontrol, struct snd_ctl_
 		"CD",
 		"Coax"
 	};
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 2;
@@ -1177,6 +1189,12 @@ static int aureon_cs8415_mux_info(struct snd_kcontrol *kcontrol, struct snd_ctl_
 	else
 		strcpy(uinfo->value.enumerated.name, aureon_texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	if (ice->eeprom.subvendor == VT1724_SUBDEVICE_PRODIGY71)
+		return snd_ctl_enum_info(uinfo, 1, 2, prodigy_texts);
+	else
+		return snd_ctl_enum_info(uinfo, 1, 2, aureon_texts);
+>>>>>>> v4.9.227
 }
 
 static int aureon_cs8415_mux_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1392,6 +1410,7 @@ static int aureon_oversampling_info(struct snd_kcontrol *k, struct snd_ctl_elem_
 {
 	static const char * const texts[2] = { "128x", "64x"	};
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 2;
@@ -1401,6 +1420,9 @@ static int aureon_oversampling_info(struct snd_kcontrol *k, struct snd_ctl_elem_
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> v4.9.227
 }
 
 static int aureon_oversampling_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)

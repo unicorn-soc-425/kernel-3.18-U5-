@@ -37,6 +37,11 @@
 
 #define ISCSI_TRANSPORT_VERSION "2.0-870"
 
+<<<<<<< HEAD
+=======
+#define ISCSI_SEND_MAX_ALLOWED  10
+
+>>>>>>> v4.9.227
 static int dbg_session;
 module_param_named(debug_session, dbg_session, int,
 		   S_IRUGO | S_IWUSR);
@@ -204,6 +209,11 @@ iscsi_create_endpoint(int dd_size)
 					iscsi_match_epid);
 		if (!dev)
 			break;
+<<<<<<< HEAD
+=======
+		else
+			put_device(dev);
+>>>>>>> v4.9.227
 	}
 	if (id == ISCSI_MAX_EPID) {
 		printk(KERN_ERR "Too many connections. Max supported %u\n",
@@ -1007,7 +1017,11 @@ static void iscsi_flashnode_sess_release(struct device *dev)
 	kfree(fnode_sess);
 }
 
+<<<<<<< HEAD
 struct device_type iscsi_flashnode_sess_dev_type = {
+=======
+static struct device_type iscsi_flashnode_sess_dev_type = {
+>>>>>>> v4.9.227
 	.name = "iscsi_flashnode_sess_dev_type",
 	.groups = iscsi_flashnode_sess_attr_groups,
 	.release = iscsi_flashnode_sess_release,
@@ -1193,13 +1207,21 @@ static void iscsi_flashnode_conn_release(struct device *dev)
 	kfree(fnode_conn);
 }
 
+<<<<<<< HEAD
 struct device_type iscsi_flashnode_conn_dev_type = {
+=======
+static struct device_type iscsi_flashnode_conn_dev_type = {
+>>>>>>> v4.9.227
 	.name = "iscsi_flashnode_conn_dev_type",
 	.groups = iscsi_flashnode_conn_attr_groups,
 	.release = iscsi_flashnode_conn_release,
 };
 
+<<<<<<< HEAD
 struct bus_type iscsi_flashnode_bus;
+=======
+static struct bus_type iscsi_flashnode_bus;
+>>>>>>> v4.9.227
 
 int iscsi_flashnode_bus_match(struct device *dev,
 				     struct device_driver *drv)
@@ -1210,7 +1232,11 @@ int iscsi_flashnode_bus_match(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(iscsi_flashnode_bus_match);
 
+<<<<<<< HEAD
 struct bus_type iscsi_flashnode_bus = {
+=======
+static struct bus_type iscsi_flashnode_bus = {
+>>>>>>> v4.9.227
 	.name = "iscsi_flashnode",
 	.match = &iscsi_flashnode_bus_match,
 };
@@ -1322,11 +1348,18 @@ EXPORT_SYMBOL_GPL(iscsi_create_flashnode_conn);
  *  1 on success
  *  0 on failure
  */
+<<<<<<< HEAD
 int iscsi_is_flashnode_conn_dev(struct device *dev, void *data)
 {
 	return dev->bus == &iscsi_flashnode_bus;
 }
 EXPORT_SYMBOL_GPL(iscsi_is_flashnode_conn_dev);
+=======
+static int iscsi_is_flashnode_conn_dev(struct device *dev, void *data)
+{
+	return dev->bus == &iscsi_flashnode_bus;
+}
+>>>>>>> v4.9.227
 
 static int iscsi_destroy_flashnode_conn(struct iscsi_bus_flash_conn *fnode_conn)
 {
@@ -1781,6 +1814,10 @@ struct iscsi_scan_data {
 	unsigned int channel;
 	unsigned int id;
 	u64 lun;
+<<<<<<< HEAD
+=======
+	enum scsi_scan_mode rescan;
+>>>>>>> v4.9.227
 };
 
 static int iscsi_user_scan_session(struct device *dev, void *data)
@@ -1817,7 +1854,11 @@ static int iscsi_user_scan_session(struct device *dev, void *data)
 		    (scan_data->id == SCAN_WILD_CARD ||
 		     scan_data->id == id))
 			scsi_scan_target(&session->dev, 0, id,
+<<<<<<< HEAD
 					 scan_data->lun, 1);
+=======
+					 scan_data->lun, scan_data->rescan);
+>>>>>>> v4.9.227
 	}
 
 user_scan_exit:
@@ -1834,6 +1875,10 @@ static int iscsi_user_scan(struct Scsi_Host *shost, uint channel,
 	scan_data.channel = channel;
 	scan_data.id = id;
 	scan_data.lun = lun;
+<<<<<<< HEAD
+=======
+	scan_data.rescan = SCSI_SCAN_MANUAL;
+>>>>>>> v4.9.227
 
 	return device_for_each_child(&shost->shost_gendev, &scan_data,
 				     iscsi_user_scan_session);
@@ -1850,6 +1895,10 @@ static void iscsi_scan_session(struct work_struct *work)
 	scan_data.channel = 0;
 	scan_data.id = SCAN_WILD_CARD;
 	scan_data.lun = SCAN_WILD_CARD;
+<<<<<<< HEAD
+=======
+	scan_data.rescan = SCSI_SCAN_RESCAN;
+>>>>>>> v4.9.227
 
 	iscsi_user_scan_session(&session->dev, &scan_data);
 	atomic_dec(&ihost->nr_scans);
@@ -2010,7 +2059,11 @@ static void __iscsi_unbind_session(struct work_struct *work)
 	if (session->target_id == ISCSI_MAX_TARGET) {
 		spin_unlock_irqrestore(&session->lock, flags);
 		mutex_unlock(&ihost->mutex);
+<<<<<<< HEAD
 		return;
+=======
+		goto unbind_session_exit;
+>>>>>>> v4.9.227
 	}
 
 	target_id = session->target_id;
@@ -2022,6 +2075,11 @@ static void __iscsi_unbind_session(struct work_struct *work)
 		ida_simple_remove(&iscsi_sess_ida, target_id);
 
 	scsi_remove_target(&session->dev);
+<<<<<<< HEAD
+=======
+
+unbind_session_exit:
+>>>>>>> v4.9.227
 	iscsi_session_event(session, ISCSI_KEVENT_UNBIND_SESSION);
 	ISCSI_DBG_TRANS_SESSION(session, "Completed target removal\n");
 }
@@ -2040,6 +2098,10 @@ iscsi_alloc_session(struct Scsi_Host *shost, struct iscsi_transport *transport,
 	session->transport = transport;
 	session->creator = -1;
 	session->recovery_tmo = 120;
+<<<<<<< HEAD
+=======
+	session->recovery_tmo_sysfs_override = false;
+>>>>>>> v4.9.227
 	session->state = ISCSI_SESSION_FREE;
 	INIT_DELAYED_WORK(&session->recovery_work, session_recovery_timedout);
 	INIT_LIST_HEAD(&session->sess_list);
@@ -2064,13 +2126,19 @@ EXPORT_SYMBOL_GPL(iscsi_alloc_session);
 
 int iscsi_add_session(struct iscsi_cls_session *session, unsigned int target_id)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = iscsi_session_to_shost(session);
 	struct iscsi_cls_host *ihost;
+=======
+>>>>>>> v4.9.227
 	unsigned long flags;
 	int id = 0;
 	int err;
 
+<<<<<<< HEAD
 	ihost = shost->shost_data;
+=======
+>>>>>>> v4.9.227
 	session->sid = atomic_add_return(1, &iscsi_session_nr);
 
 	if (target_id == ISCSI_MAX_TARGET) {
@@ -2343,12 +2411,15 @@ iscsi_multicast_skb(struct sk_buff *skb, uint32_t group, gfp_t gfp)
 	return nlmsg_multicast(nls, skb, 0, group, gfp);
 }
 
+<<<<<<< HEAD
 static int
 iscsi_unicast_skb(struct sk_buff *skb, u32 portid)
 {
 	return nlmsg_unicast(nls, skb, portid);
 }
 
+=======
+>>>>>>> v4.9.227
 int iscsi_recv_pdu(struct iscsi_cls_conn *conn, struct iscsi_hdr *hdr,
 		   char *data, uint32_t data_size)
 {
@@ -2551,11 +2622,21 @@ void iscsi_ping_comp_event(uint32_t host_no, struct iscsi_transport *transport,
 EXPORT_SYMBOL_GPL(iscsi_ping_comp_event);
 
 static int
+<<<<<<< HEAD
 iscsi_if_send_reply(u32 portid, int type, void *payload, int size)
+=======
+iscsi_if_send_reply(uint32_t group, int seq, int type, int done, int multi,
+		    void *payload, int size)
+>>>>>>> v4.9.227
 {
 	struct sk_buff	*skb;
 	struct nlmsghdr	*nlh;
 	int len = nlmsg_total_size(size);
+<<<<<<< HEAD
+=======
+	int flags = multi ? NLM_F_MULTI : 0;
+	int t = done ? NLMSG_DONE : type;
+>>>>>>> v4.9.227
 
 	skb = alloc_skb(len, GFP_ATOMIC);
 	if (!skb) {
@@ -2563,9 +2644,16 @@ iscsi_if_send_reply(u32 portid, int type, void *payload, int size)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	nlh = __nlmsg_put(skb, 0, 0, type, (len - sizeof(*nlh)), 0);
 	memcpy(nlmsg_data(nlh), payload, size);
 	return iscsi_unicast_skb(skb, portid);
+=======
+	nlh = __nlmsg_put(skb, 0, 0, t, (len - sizeof(*nlh)), 0);
+	nlh->nlmsg_flags = flags;
+	memcpy(nlmsg_data(nlh), payload, size);
+	return iscsi_multicast_skb(skb, group, GFP_ATOMIC);
+>>>>>>> v4.9.227
 }
 
 static int
@@ -2786,7 +2874,12 @@ iscsi_set_param(struct iscsi_transport *transport, struct iscsi_uevent *ev)
 	switch (ev->u.set_param.param) {
 	case ISCSI_PARAM_SESS_RECOVERY_TMO:
 		sscanf(data, "%d", &value);
+<<<<<<< HEAD
 		session->recovery_tmo = value;
+=======
+		if (!session->recovery_tmo_sysfs_override)
+			session->recovery_tmo = value;
+>>>>>>> v4.9.227
 		break;
 	default:
 		err = transport->set_param(conn, ev->u.set_param.param,
@@ -2961,6 +3054,27 @@ iscsi_set_path(struct iscsi_transport *transport, struct iscsi_uevent *ev)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static int iscsi_session_has_conns(int sid)
+{
+	struct iscsi_cls_conn *conn;
+	unsigned long flags;
+	int found = 0;
+
+	spin_lock_irqsave(&connlock, flags);
+	list_for_each_entry(conn, &connlist, conn_list) {
+		if (iscsi_conn_get_sid(conn) == sid) {
+			found = 1;
+			break;
+		}
+	}
+	spin_unlock_irqrestore(&connlock, flags);
+
+	return found;
+}
+
+>>>>>>> v4.9.227
 static int
 iscsi_set_iface_params(struct iscsi_transport *transport,
 		       struct iscsi_uevent *ev, uint32_t len)
@@ -3037,7 +3151,11 @@ iscsi_get_chap(struct iscsi_transport *transport, struct nlmsghdr *nlh)
 
 	shost = scsi_host_lookup(ev->u.get_chap.host_no);
 	if (!shost) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: failed. Cound not find host no %u\n",
+=======
+		printk(KERN_ERR "%s: failed. Could not find host no %u\n",
+>>>>>>> v4.9.227
 		       __func__, ev->u.get_chap.host_no);
 		return -ENODEV;
 	}
@@ -3492,7 +3610,10 @@ static int
 iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 {
 	int err = 0;
+<<<<<<< HEAD
 	u32 portid;
+=======
+>>>>>>> v4.9.227
 	struct iscsi_uevent *ev = nlmsg_data(nlh);
 	struct iscsi_transport *transport = NULL;
 	struct iscsi_internal *priv;
@@ -3513,12 +3634,19 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 	if (!try_module_get(transport->owner))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	portid = NETLINK_CB(skb).portid;
 
 	switch (nlh->nlmsg_type) {
 	case ISCSI_UEVENT_CREATE_SESSION:
 		err = iscsi_if_create_session(priv, ep, ev,
 					      portid,
+=======
+	switch (nlh->nlmsg_type) {
+	case ISCSI_UEVENT_CREATE_SESSION:
+		err = iscsi_if_create_session(priv, ep, ev,
+					      NETLINK_CB(skb).portid,
+>>>>>>> v4.9.227
 					      ev->u.c_session.initial_cmdsn,
 					      ev->u.c_session.cmds_max,
 					      ev->u.c_session.queue_depth);
@@ -3531,17 +3659,30 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 		}
 
 		err = iscsi_if_create_session(priv, ep, ev,
+<<<<<<< HEAD
 					portid,
+=======
+					NETLINK_CB(skb).portid,
+>>>>>>> v4.9.227
 					ev->u.c_bound_session.initial_cmdsn,
 					ev->u.c_bound_session.cmds_max,
 					ev->u.c_bound_session.queue_depth);
 		break;
 	case ISCSI_UEVENT_DESTROY_SESSION:
 		session = iscsi_session_lookup(ev->u.d_session.sid);
+<<<<<<< HEAD
 		if (session)
 			transport->destroy_session(session);
 		else
 			err = -EINVAL;
+=======
+		if (!session)
+			err = -EINVAL;
+		else if (iscsi_session_has_conns(ev->u.d_session.sid))
+			err = -EBUSY;
+		else
+			transport->destroy_session(session);
+>>>>>>> v4.9.227
 		break;
 	case ISCSI_UEVENT_UNBIND_SESSION:
 		session = iscsi_session_lookup(ev->u.d_session.sid);
@@ -3689,8 +3830,11 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 static void
 iscsi_if_rx(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	u32 portid = NETLINK_CB(skb).portid;
 
+=======
+>>>>>>> v4.9.227
 	mutex_lock(&rx_queue_mutex);
 	while (skb->len >= NLMSG_HDRLEN) {
 		int err;
@@ -3698,6 +3842,10 @@ iscsi_if_rx(struct sk_buff *skb)
 		struct nlmsghdr	*nlh;
 		struct iscsi_uevent *ev;
 		uint32_t group;
+<<<<<<< HEAD
+=======
+		int retries = ISCSI_SEND_MAX_ALLOWED;
+>>>>>>> v4.9.227
 
 		nlh = nlmsg_hdr(skb);
 		if (nlh->nlmsg_len < sizeof(*nlh) + sizeof(*ev) ||
@@ -3726,8 +3874,17 @@ iscsi_if_rx(struct sk_buff *skb)
 				break;
 			if (ev->type == ISCSI_UEVENT_GET_CHAP && !err)
 				break;
+<<<<<<< HEAD
 			err = iscsi_if_send_reply(portid, nlh->nlmsg_type,
 						  ev, sizeof(*ev));
+=======
+			err = iscsi_if_send_reply(group, nlh->nlmsg_seq,
+				nlh->nlmsg_type, 0, 0, ev, sizeof(*ev));
+			if (err == -EAGAIN && --retries < 0) {
+				printk(KERN_WARNING "Send reply failed, error %d\n", err);
+				break;
+			}
+>>>>>>> v4.9.227
 		} while (err < 0 && err != -ECONNREFUSED && err != -ESRCH);
 		skb_pull(skb, rlen);
 	}
@@ -4054,13 +4211,24 @@ store_priv_session_##field(struct device *dev,				\
 	if ((session->state == ISCSI_SESSION_FREE) ||			\
 	    (session->state == ISCSI_SESSION_FAILED))			\
 		return -EBUSY;						\
+<<<<<<< HEAD
 	if (strncmp(buf, "off", 3) == 0)				\
 		session->field = -1;					\
 	else {								\
+=======
+	if (strncmp(buf, "off", 3) == 0) {				\
+		session->field = -1;					\
+		session->field##_sysfs_override = true;			\
+	} else {							\
+>>>>>>> v4.9.227
 		val = simple_strtoul(buf, &cp, 0);			\
 		if (*cp != '\0' && *cp != '\n')				\
 			return -EINVAL;					\
 		session->field = val;					\
+<<<<<<< HEAD
+=======
+		session->field##_sysfs_override = true;			\
+>>>>>>> v4.9.227
 	}								\
 	return count;							\
 }
@@ -4071,6 +4239,10 @@ store_priv_session_##field(struct device *dev,				\
 static ISCSI_CLASS_ATTR(priv_sess, field, S_IRUGO | S_IWUSR,		\
 			show_priv_session_##field,			\
 			store_priv_session_##field)
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 iscsi_priv_session_rw_attr(recovery_tmo, "%d");
 
 static struct attribute *iscsi_session_attrs[] = {
@@ -4308,6 +4480,11 @@ static const struct {
 	{ISCSI_PORT_SPEED_100MBPS,	"100 Mbps" },
 	{ISCSI_PORT_SPEED_1GBPS,	"1 Gbps" },
 	{ISCSI_PORT_SPEED_10GBPS,	"10 Gbps" },
+<<<<<<< HEAD
+=======
+	{ISCSI_PORT_SPEED_25GBPS,       "25 Gbps" },
+	{ISCSI_PORT_SPEED_40GBPS,       "40 Gbps" },
+>>>>>>> v4.9.227
 };
 
 char *iscsi_get_port_speed_name(struct Scsi_Host *shost)

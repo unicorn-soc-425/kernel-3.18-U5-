@@ -54,6 +54,10 @@
 #include <asm/cell-regs.h>
 #include <asm/io-workarounds.h>
 
+<<<<<<< HEAD
+=======
+#include "cell.h"
+>>>>>>> v4.9.227
 #include "interrupt.h"
 #include "pervasive.h"
 #include "ras.h"
@@ -126,6 +130,11 @@ static int cell_setup_phb(struct pci_controller *phb)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
+=======
+	phb->controller_ops = cell_pci_controller_ops;
+
+>>>>>>> v4.9.227
 	np = phb->dn;
 	model = of_get_property(np, "model", NULL);
 	if (model == NULL || strcmp(np->name, "pci"))
@@ -252,6 +261,7 @@ static void __init cell_setup_arch(void)
 
 static int __init cell_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (!of_flat_dt_is_compatible(root, "IBM,CBEA") &&
@@ -259,6 +269,13 @@ static int __init cell_probe(void)
 		return 0;
 
 	hpte_init_native();
+=======
+	if (!of_machine_is_compatible("IBM,CBEA") &&
+	    !of_machine_is_compatible("IBM,CPBW-1.0"))
+		return 0;
+
+	pm_power_off = rtas_power_off;
+>>>>>>> v4.9.227
 
 	return 1;
 }
@@ -269,7 +286,10 @@ define_machine(cell) {
 	.setup_arch		= cell_setup_arch,
 	.show_cpuinfo		= cell_show_cpuinfo,
 	.restart		= rtas_restart,
+<<<<<<< HEAD
 	.power_off		= rtas_power_off,
+=======
+>>>>>>> v4.9.227
 	.halt			= rtas_halt,
 	.get_boot_time		= rtas_get_boot_time,
 	.get_rtc_time		= rtas_get_rtc_time,
@@ -279,3 +299,8 @@ define_machine(cell) {
 	.init_IRQ       	= cell_init_irq,
 	.pci_setup_phb		= cell_setup_phb,
 };
+<<<<<<< HEAD
+=======
+
+struct pci_controller_ops cell_pci_controller_ops;
+>>>>>>> v4.9.227

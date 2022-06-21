@@ -14,6 +14,7 @@ LED sub-node properties:
   see Documentation/devicetree/bindings/leds/common.txt
 - linux,default-trigger :  (optional)
   see Documentation/devicetree/bindings/leds/common.txt
+<<<<<<< HEAD
 - default-state:  (optional) The initial state of the LED.  Valid
   values are "on", "off", and "keep".  If the LED is already on or off
   and the default-state property is set the to same value, then no
@@ -36,6 +37,29 @@ leds {
 
 	fault {
 		gpios = <&mcu_pio 1 0>;
+=======
+- default-state:  (optional) The initial state of the LED.
+  see Documentation/devicetree/bindings/leds/common.txt
+- retain-state-suspended: (optional) The suspend state can be retained.Such
+  as charge-led gpio.
+- panic-indicator : (optional)
+  see Documentation/devicetree/bindings/leds/common.txt
+
+Examples:
+
+#include <dt-bindings/gpio/gpio.h>
+
+leds {
+	compatible = "gpio-leds";
+	hdd {
+		label = "Disk Activity";
+		gpios = <&mcu_pio 0 GPIO_ACTIVE_LOW>;
+		linux,default-trigger = "disk-activity";
+	};
+
+	fault {
+		gpios = <&mcu_pio 1 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 		/* Keep LED on if BIOS detected hardware fault */
 		default-state = "keep";
 	};
@@ -44,11 +68,19 @@ leds {
 run-control {
 	compatible = "gpio-leds";
 	red {
+<<<<<<< HEAD
 		gpios = <&mpc8572 6 0>;
 		default-state = "off";
 	};
 	green {
 		gpios = <&mpc8572 7 0>;
+=======
+		gpios = <&mpc8572 6 GPIO_ACTIVE_HIGH>;
+		default-state = "off";
+	};
+	green {
+		gpios = <&mpc8572 7 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 		default-state = "on";
 	};
 };
@@ -57,7 +89,11 @@ leds {
 	compatible = "gpio-leds";
 
 	charger-led {
+<<<<<<< HEAD
 		gpios = <&gpio1 2 0>;
+=======
+		gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 		linux,default-trigger = "max8903-charger-charging";
 		retain-state-suspended;
 	};

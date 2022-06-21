@@ -1,9 +1,18 @@
 menuconfig ARCH_SUNXI
+<<<<<<< HEAD
 	bool "Allwinner SoCs" if ARCH_MULTI_V7
 	select ARCH_REQUIRE_GPIOLIB
 	select ARCH_HAS_RESET_CONTROLLER
 	select CLKSRC_MMIO
 	select GENERIC_IRQ_CHIP
+=======
+	bool "Allwinner SoCs"
+	depends on ARCH_MULTI_V7
+	select ARCH_HAS_RESET_CONTROLLER
+	select CLKSRC_MMIO
+	select GENERIC_IRQ_CHIP
+	select GPIOLIB
+>>>>>>> v4.9.227
 	select PINCTRL
 	select SUN4I_TIMER
 	select RESET_CONTROLLER
@@ -31,13 +40,29 @@ config MACH_SUN7I
 	default ARCH_SUNXI
 	select ARM_GIC
 	select ARM_PSCI
+<<<<<<< HEAD
+=======
+	select ARCH_SUPPORTS_BIG_ENDIAN
+>>>>>>> v4.9.227
 	select HAVE_ARM_ARCH_TIMER
 	select SUN5I_HSTIMER
 
 config MACH_SUN8I
+<<<<<<< HEAD
 	bool "Allwinner A23 (sun8i) SoCs support"
+=======
+	bool "Allwinner sun8i Family SoCs support"
+>>>>>>> v4.9.227
 	default ARCH_SUNXI
 	select ARM_GIC
 	select MFD_SUN6I_PRCM
 
+<<<<<<< HEAD
+=======
+config MACH_SUN9I
+	bool "Allwinner (sun9i) SoCs support"
+	default ARCH_SUNXI
+	select ARM_GIC
+
+>>>>>>> v4.9.227
 endif

@@ -27,6 +27,7 @@
  *
  * Functions:
  *      BBuGetFrameTime        - Calculate data frame transmitting time
+<<<<<<< HEAD
  *      BBvCaculateParameter   - Caculate PhyLength, PhyService and Phy Signal parameter for baseband Tx
  *      BBbReadEmbedded         - Embedded read baseband register via MAC
  *      BBbWriteEmbedded        - Embedded write baseband register via MAC
@@ -36,12 +37,26 @@
  *      BBvReadAllRegs         - Read All Baseband Registers
  *      BBvLoopbackOn          - Turn on BaseBand Loopback mode
  *      BBvLoopbackOff         - Turn off BaseBand Loopback mode
+=======
+ *      BBvCaculateParameter   - Caculate PhyLength, PhyService and Phy Signal
+ *                               parameter for baseband Tx
+ *      BBbReadEmbedded         - Embedded read baseband register via MAC
+ *      BBbWriteEmbedded        - Embedded write baseband register via MAC
+ *      BBbVT3253Init          - VIA VT3253 baseband chip init code
+>>>>>>> v4.9.227
  *
  * Revision History:
  *      06-10-2003 Bryan YC Fan:  Re-write codes to support VT3253 spec.
  *      08-07-2003 Bryan YC Fan:  Add MAXIM2827/2825 and RFMD2959 support.
+<<<<<<< HEAD
  *      08-26-2003 Kyle Hsu    :  Modify BBuGetFrameTime() and BBvCalculateParameter().
  *                                cancel the setting of MAC_REG_SOFTPWRCTL on BBbVT3253Init().
+=======
+ *      08-26-2003 Kyle Hsu    :  Modify BBuGetFrameTime() and
+ *				  BBvCalculateParameter().
+ *                                cancel the setting of MAC_REG_SOFTPWRCTL on
+ *				  BBbVT3253Init().
+>>>>>>> v4.9.227
  *                                Add the comments.
  *      09-01-2003 Bryan YC Fan:  RF & BB tables updated.
  *                                Modified BBvLoopbackOn & BBvLoopbackOff().
@@ -50,7 +65,10 @@
  */
 
 #include "tmacro.h"
+<<<<<<< HEAD
 #include "tether.h"
+=======
+>>>>>>> v4.9.227
 #include "mac.h"
 #include "baseband.h"
 #include "srom.h"
@@ -71,7 +89,11 @@
 /*---------------------  Static Variables  --------------------------*/
 
 #define CB_VT3253_INIT_FOR_RFMD 446
+<<<<<<< HEAD
 static unsigned char byVT3253InitTab_RFMD[CB_VT3253_INIT_FOR_RFMD][2] = {
+=======
+static const unsigned char byVT3253InitTab_RFMD[CB_VT3253_INIT_FOR_RFMD][2] = {
+>>>>>>> v4.9.227
 	{0x00, 0x30},
 	{0x01, 0x00},
 	{0x02, 0x00},
@@ -521,7 +543,11 @@ static unsigned char byVT3253InitTab_RFMD[CB_VT3253_INIT_FOR_RFMD][2] = {
 };
 
 #define CB_VT3253B0_INIT_FOR_RFMD 256
+<<<<<<< HEAD
 static unsigned char byVT3253B0_RFMD[CB_VT3253B0_INIT_FOR_RFMD][2] = {
+=======
+static const unsigned char byVT3253B0_RFMD[CB_VT3253B0_INIT_FOR_RFMD][2] = {
+>>>>>>> v4.9.227
 	{0x00, 0x31},
 	{0x01, 0x00},
 	{0x02, 0x00},
@@ -782,7 +808,12 @@ static unsigned char byVT3253B0_RFMD[CB_VT3253B0_INIT_FOR_RFMD][2] = {
 
 #define CB_VT3253B0_AGC_FOR_RFMD2959 195
 /* For RFMD2959 */
+<<<<<<< HEAD
 static unsigned char byVT3253B0_AGC4_RFMD2959[CB_VT3253B0_AGC_FOR_RFMD2959][2] = {
+=======
+static
+unsigned char byVT3253B0_AGC4_RFMD2959[CB_VT3253B0_AGC_FOR_RFMD2959][2] = {
+>>>>>>> v4.9.227
 	{0xF0, 0x00},
 	{0xF1, 0x3E},
 	{0xF0, 0x80},
@@ -982,7 +1013,12 @@ static unsigned char byVT3253B0_AGC4_RFMD2959[CB_VT3253B0_AGC_FOR_RFMD2959][2] =
 
 #define CB_VT3253B0_INIT_FOR_AIROHA2230 256
 /* For AIROHA */
+<<<<<<< HEAD
 static unsigned char byVT3253B0_AIROHA2230[CB_VT3253B0_INIT_FOR_AIROHA2230][2] = {
+=======
+static
+unsigned char byVT3253B0_AIROHA2230[CB_VT3253B0_INIT_FOR_AIROHA2230][2] = {
+>>>>>>> v4.9.227
 	{0x00, 0x31},
 	{0x01, 0x00},
 	{0x02, 0x00},
@@ -1704,6 +1740,7 @@ static const unsigned short awcFrameTime[MAX_RATE] = {
 		10, 20, 55, 110, 24, 36, 48, 72, 96, 144, 192, 216
 };
 
+<<<<<<< HEAD
 /*---------------------  Static Functions  --------------------------*/
 
 static
@@ -1744,6 +1781,8 @@ s_vChangeAntenna(
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 /*---------------------  Export Variables  --------------------------*/
 /*
  * Description: Calculate data frame transmitting time
@@ -1770,6 +1809,7 @@ BBuGetFrameTime(
 	unsigned int uFrameTime;
 	unsigned int uPreamble;
 	unsigned int uTmp;
+<<<<<<< HEAD
 	unsigned int uRateIdx = (unsigned int) wRate;
 	unsigned int uRate = 0;
 
@@ -1777,6 +1817,13 @@ BBuGetFrameTime(
 		ASSERT(0);
 		return 0;
 	}
+=======
+	unsigned int uRateIdx = (unsigned int)wRate;
+	unsigned int uRate = 0;
+
+	if (uRateIdx > RATE_54M)
+		return 0;
+>>>>>>> v4.9.227
 
 	uRate = (unsigned int)awcFrameTime[uRateIdx];
 
@@ -1792,6 +1839,7 @@ BBuGetFrameTime(
 			uFrameTime++;
 
 		return uPreamble + uFrameTime;
+<<<<<<< HEAD
 	} else {
 		uFrameTime = (cbFrameLength * 8 + 22) / uRate; /* ???????? */
 		uTmp = ((uFrameTime * uRate) - 22) / 8;
@@ -1804,6 +1852,19 @@ BBuGetFrameTime(
 
 		return 20 + uFrameTime; /* ?????? */
 	}
+=======
+	}
+	uFrameTime = (cbFrameLength * 8 + 22) / uRate; /* ???????? */
+	uTmp = ((uFrameTime * uRate) - 22) / 8;
+	if (cbFrameLength != uTmp)
+		uFrameTime++;
+
+	uFrameTime = uFrameTime * 4;    /* ??????? */
+	if (byPktType != PK_TYPE_11A)
+		uFrameTime += 6;     /* ?????? */
+
+	return 20 + uFrameTime; /* ?????? */
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1968,8 +2029,15 @@ void vnt_get_phy_field(struct vnt_private *priv, u32 frame_length,
  * Return Value: true if succeeded; false if failed.
  *
  */
+<<<<<<< HEAD
 bool BBbReadEmbedded(void __iomem *dwIoBase, unsigned char byBBAddr, unsigned char *pbyData)
 {
+=======
+bool BBbReadEmbedded(struct vnt_private *priv,
+		     unsigned char byBBAddr, unsigned char *pbyData)
+{
+	void __iomem *dwIoBase = priv->PortOffset;
+>>>>>>> v4.9.227
 	unsigned short ww;
 	unsigned char byValue;
 
@@ -1989,7 +2057,10 @@ bool BBbReadEmbedded(void __iomem *dwIoBase, unsigned char byBBAddr, unsigned ch
 	VNSvInPortB(dwIoBase + MAC_REG_BBREGDATA, pbyData);
 
 	if (ww == W_MAX_TIMEOUT) {
+<<<<<<< HEAD
 		DBG_PORT80(0x30);
+=======
+>>>>>>> v4.9.227
 		pr_debug(" DBG_PORT80(0x30)\n");
 		return false;
 	}
@@ -2010,8 +2081,15 @@ bool BBbReadEmbedded(void __iomem *dwIoBase, unsigned char byBBAddr, unsigned ch
  * Return Value: true if succeeded; false if failed.
  *
  */
+<<<<<<< HEAD
 bool BBbWriteEmbedded(void __iomem *dwIoBase, unsigned char byBBAddr, unsigned char byData)
 {
+=======
+bool BBbWriteEmbedded(struct vnt_private *priv,
+		      unsigned char byBBAddr, unsigned char byData)
+{
+	void __iomem *dwIoBase = priv->PortOffset;
+>>>>>>> v4.9.227
 	unsigned short ww;
 	unsigned char byValue;
 
@@ -2030,7 +2108,10 @@ bool BBbWriteEmbedded(void __iomem *dwIoBase, unsigned char byBBAddr, unsigned c
 	}
 
 	if (ww == W_MAX_TIMEOUT) {
+<<<<<<< HEAD
 		DBG_PORT80(0x31);
+=======
+>>>>>>> v4.9.227
 		pr_debug(" DBG_PORT80(0x31)\n");
 		return false;
 	}
@@ -2038,6 +2119,7 @@ bool BBbWriteEmbedded(void __iomem *dwIoBase, unsigned char byBBAddr, unsigned c
 }
 
 /*
+<<<<<<< HEAD
  * Description: Test if all bits are set for the Baseband register
  *
  * Parameters:
@@ -2082,6 +2164,8 @@ bool BBbIsRegBitsOff(void __iomem *dwIoBase, unsigned char byBBAddr, unsigned ch
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Description: VIA VT3253 Baseband chip init function
  *
  * Parameters:
@@ -2096,6 +2180,7 @@ bool BBbIsRegBitsOff(void __iomem *dwIoBase, unsigned char byBBAddr, unsigned ch
  *
  */
 
+<<<<<<< HEAD
 bool BBbVT3253Init(struct vnt_private *pDevice)
 {
 	bool bResult = true;
@@ -2103,10 +2188,20 @@ bool BBbVT3253Init(struct vnt_private *pDevice)
 	void __iomem *dwIoBase = pDevice->PortOffset;
 	unsigned char byRFType = pDevice->byRFType;
 	unsigned char byLocalID = pDevice->byLocalID;
+=======
+bool BBbVT3253Init(struct vnt_private *priv)
+{
+	bool bResult = true;
+	int        ii;
+	void __iomem *dwIoBase = priv->PortOffset;
+	unsigned char byRFType = priv->byRFType;
+	unsigned char byLocalID = priv->byLocalID;
+>>>>>>> v4.9.227
 
 	if (byRFType == RF_RFMD2959) {
 		if (byLocalID <= REV_ID_VT3253_A1) {
 			for (ii = 0; ii < CB_VT3253_INIT_FOR_RFMD; ii++)
+<<<<<<< HEAD
 				bResult &= BBbWriteEmbedded(dwIoBase, byVT3253InitTab_RFMD[ii][0], byVT3253InitTab_RFMD[ii][1]);
 
 		} else {
@@ -2193,10 +2288,125 @@ bool BBbVT3253Init(struct vnt_private *pDevice)
 		pDevice->ldBmThreshold[1] = -50;
 		pDevice->ldBmThreshold[2] = 0;
 		pDevice->ldBmThreshold[3] = 0;
+=======
+				bResult &= BBbWriteEmbedded(priv,
+					byVT3253InitTab_RFMD[ii][0],
+					byVT3253InitTab_RFMD[ii][1]);
+
+		} else {
+			for (ii = 0; ii < CB_VT3253B0_INIT_FOR_RFMD; ii++)
+				bResult &= BBbWriteEmbedded(priv,
+					byVT3253B0_RFMD[ii][0],
+					byVT3253B0_RFMD[ii][1]);
+
+			for (ii = 0; ii < CB_VT3253B0_AGC_FOR_RFMD2959; ii++)
+				bResult &= BBbWriteEmbedded(priv,
+					byVT3253B0_AGC4_RFMD2959[ii][0],
+					byVT3253B0_AGC4_RFMD2959[ii][1]);
+
+			VNSvOutPortD(dwIoBase + MAC_REG_ITRTMSET, 0x23);
+			MACvRegBitsOn(dwIoBase, MAC_REG_PAPEDELAY, BIT(0));
+		}
+		priv->abyBBVGA[0] = 0x18;
+		priv->abyBBVGA[1] = 0x0A;
+		priv->abyBBVGA[2] = 0x0;
+		priv->abyBBVGA[3] = 0x0;
+		priv->ldBmThreshold[0] = -70;
+		priv->ldBmThreshold[1] = -50;
+		priv->ldBmThreshold[2] = 0;
+		priv->ldBmThreshold[3] = 0;
+	} else if ((byRFType == RF_AIROHA) || (byRFType == RF_AL2230S)) {
+		for (ii = 0; ii < CB_VT3253B0_INIT_FOR_AIROHA2230; ii++)
+			bResult &= BBbWriteEmbedded(priv,
+				byVT3253B0_AIROHA2230[ii][0],
+				byVT3253B0_AIROHA2230[ii][1]);
+
+		for (ii = 0; ii < CB_VT3253B0_AGC; ii++)
+			bResult &= BBbWriteEmbedded(priv,
+				byVT3253B0_AGC[ii][0], byVT3253B0_AGC[ii][1]);
+
+		priv->abyBBVGA[0] = 0x1C;
+		priv->abyBBVGA[1] = 0x10;
+		priv->abyBBVGA[2] = 0x0;
+		priv->abyBBVGA[3] = 0x0;
+		priv->ldBmThreshold[0] = -70;
+		priv->ldBmThreshold[1] = -48;
+		priv->ldBmThreshold[2] = 0;
+		priv->ldBmThreshold[3] = 0;
+	} else if (byRFType == RF_UW2451) {
+		for (ii = 0; ii < CB_VT3253B0_INIT_FOR_UW2451; ii++)
+			bResult &= BBbWriteEmbedded(priv,
+				byVT3253B0_UW2451[ii][0],
+				byVT3253B0_UW2451[ii][1]);
+
+		for (ii = 0; ii < CB_VT3253B0_AGC; ii++)
+			bResult &= BBbWriteEmbedded(priv,
+				byVT3253B0_AGC[ii][0],
+				byVT3253B0_AGC[ii][1]);
+
+		VNSvOutPortB(dwIoBase + MAC_REG_ITRTMSET, 0x23);
+		MACvRegBitsOn(dwIoBase, MAC_REG_PAPEDELAY, BIT(0));
+
+		priv->abyBBVGA[0] = 0x14;
+		priv->abyBBVGA[1] = 0x0A;
+		priv->abyBBVGA[2] = 0x0;
+		priv->abyBBVGA[3] = 0x0;
+		priv->ldBmThreshold[0] = -60;
+		priv->ldBmThreshold[1] = -50;
+		priv->ldBmThreshold[2] = 0;
+		priv->ldBmThreshold[3] = 0;
+	} else if (byRFType == RF_UW2452) {
+		for (ii = 0; ii < CB_VT3253B0_INIT_FOR_UW2451; ii++)
+			bResult &= BBbWriteEmbedded(priv,
+				byVT3253B0_UW2451[ii][0],
+				byVT3253B0_UW2451[ii][1]);
+
+		/* Init ANT B select,
+		 * TX Config CR09 = 0x61->0x45,
+		 * 0x45->0x41(VC1/VC2 define, make the ANT_A, ANT_B inverted)
+		 */
+
+		/*bResult &= BBbWriteEmbedded(dwIoBase,0x09,0x41);*/
+
+		/* Init ANT B select,
+		 * RX Config CR10 = 0x28->0x2A,
+		 * 0x2A->0x28(VC1/VC2 define,
+		 * make the ANT_A, ANT_B inverted)
+		 */
+
+		/*bResult &= BBbWriteEmbedded(dwIoBase,0x0a,0x28);*/
+		/* Select VC1/VC2, CR215 = 0x02->0x06 */
+		bResult &= BBbWriteEmbedded(priv, 0xd7, 0x06);
+
+		/* {{RobertYu:20050125, request by Jack */
+		bResult &= BBbWriteEmbedded(priv, 0x90, 0x20);
+		bResult &= BBbWriteEmbedded(priv, 0x97, 0xeb);
+		/* }} */
+
+		/* {{RobertYu:20050221, request by Jack */
+		bResult &= BBbWriteEmbedded(priv, 0xa6, 0x00);
+		bResult &= BBbWriteEmbedded(priv, 0xa8, 0x30);
+		/* }} */
+		bResult &= BBbWriteEmbedded(priv, 0xb0, 0x58);
+
+		for (ii = 0; ii < CB_VT3253B0_AGC; ii++)
+			bResult &= BBbWriteEmbedded(priv,
+				byVT3253B0_AGC[ii][0], byVT3253B0_AGC[ii][1]);
+
+		priv->abyBBVGA[0] = 0x14;
+		priv->abyBBVGA[1] = 0x0A;
+		priv->abyBBVGA[2] = 0x0;
+		priv->abyBBVGA[3] = 0x0;
+		priv->ldBmThreshold[0] = -60;
+		priv->ldBmThreshold[1] = -50;
+		priv->ldBmThreshold[2] = 0;
+		priv->ldBmThreshold[3] = 0;
+>>>>>>> v4.9.227
 		/* }} RobertYu */
 
 	} else if (byRFType == RF_VT3226) {
 		for (ii = 0; ii < CB_VT3253B0_INIT_FOR_AIROHA2230; ii++)
+<<<<<<< HEAD
 			bResult &= BBbWriteEmbedded(dwIoBase, byVT3253B0_AIROHA2230[ii][0], byVT3253B0_AIROHA2230[ii][1]);
 
 		for (ii = 0; ii < CB_VT3253B0_AGC; ii++)
@@ -2210,11 +2420,30 @@ bool BBbVT3253Init(struct vnt_private *pDevice)
 		pDevice->ldBmThreshold[1] = -48;
 		pDevice->ldBmThreshold[2] = 0;
 		pDevice->ldBmThreshold[3] = 0;
+=======
+			bResult &= BBbWriteEmbedded(priv,
+				byVT3253B0_AIROHA2230[ii][0],
+				byVT3253B0_AIROHA2230[ii][1]);
+
+		for (ii = 0; ii < CB_VT3253B0_AGC; ii++)
+			bResult &= BBbWriteEmbedded(priv,
+				byVT3253B0_AGC[ii][0], byVT3253B0_AGC[ii][1]);
+
+		priv->abyBBVGA[0] = 0x1C;
+		priv->abyBBVGA[1] = 0x10;
+		priv->abyBBVGA[2] = 0x0;
+		priv->abyBBVGA[3] = 0x0;
+		priv->ldBmThreshold[0] = -70;
+		priv->ldBmThreshold[1] = -48;
+		priv->ldBmThreshold[2] = 0;
+		priv->ldBmThreshold[3] = 0;
+>>>>>>> v4.9.227
 		/* Fix VT3226 DFC system timing issue */
 		MACvSetRFLE_LatchBase(dwIoBase);
 		/* {{ RobertYu: 20050104 */
 	} else if (byRFType == RF_AIROHA7230) {
 		for (ii = 0; ii < CB_VT3253B0_INIT_FOR_AIROHA2230; ii++)
+<<<<<<< HEAD
 			bResult &= BBbWriteEmbedded(dwIoBase, byVT3253B0_AIROHA2230[ii][0], byVT3253B0_AIROHA2230[ii][1]);
 
 
@@ -2248,12 +2477,55 @@ bool BBbVT3253Init(struct vnt_private *pDevice)
 	if (byLocalID > REV_ID_VT3253_A1) {
 		BBbWriteEmbedded(dwIoBase, 0x04, 0x7F);
 		BBbWriteEmbedded(dwIoBase, 0x0D, 0x01);
+=======
+			bResult &= BBbWriteEmbedded(priv,
+				byVT3253B0_AIROHA2230[ii][0],
+				byVT3253B0_AIROHA2230[ii][1]);
+
+
+		/* {{ RobertYu:20050223, request by JerryChung */
+		/* Init ANT B select,TX Config CR09 = 0x61->0x45,
+		 * 0x45->0x41(VC1/VC2 define, make the ANT_A, ANT_B inverted)
+		 */
+		/*bResult &= BBbWriteEmbedded(dwIoBase,0x09,0x41);*/
+		/* Init ANT B select,RX Config CR10 = 0x28->0x2A,
+		 * 0x2A->0x28(VC1/VC2 define, make the ANT_A, ANT_B inverted)
+		 */
+		/*bResult &= BBbWriteEmbedded(dwIoBase,0x0a,0x28);*/
+		/* Select VC1/VC2, CR215 = 0x02->0x06 */
+		bResult &= BBbWriteEmbedded(priv, 0xd7, 0x06);
+		/* }} */
+
+		for (ii = 0; ii < CB_VT3253B0_AGC; ii++)
+			bResult &= BBbWriteEmbedded(priv,
+				byVT3253B0_AGC[ii][0], byVT3253B0_AGC[ii][1]);
+
+		priv->abyBBVGA[0] = 0x1C;
+		priv->abyBBVGA[1] = 0x10;
+		priv->abyBBVGA[2] = 0x0;
+		priv->abyBBVGA[3] = 0x0;
+		priv->ldBmThreshold[0] = -70;
+		priv->ldBmThreshold[1] = -48;
+		priv->ldBmThreshold[2] = 0;
+		priv->ldBmThreshold[3] = 0;
+		/* }} RobertYu */
+	} else {
+		/* No VGA Table now */
+		priv->bUpdateBBVGA = false;
+		priv->abyBBVGA[0] = 0x1C;
+	}
+
+	if (byLocalID > REV_ID_VT3253_A1) {
+		BBbWriteEmbedded(priv, 0x04, 0x7F);
+		BBbWriteEmbedded(priv, 0x0D, 0x01);
+>>>>>>> v4.9.227
 	}
 
 	return bResult;
 }
 
 /*
+<<<<<<< HEAD
  * Description: Read All Baseband Registers
  *
  * Parameters:
@@ -2367,11 +2639,17 @@ void BBvLoopbackOff(struct vnt_private *pDevice)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Description: Set ShortSlotTime mode
  *
  * Parameters:
  *  In:
+<<<<<<< HEAD
  *      pDevice     - Device Structure
+=======
+ *      priv     - Device Structure
+>>>>>>> v4.9.227
  *  Out:
  *      none
  *
@@ -2379,19 +2657,30 @@ void BBvLoopbackOff(struct vnt_private *pDevice)
  *
  */
 void
+<<<<<<< HEAD
 BBvSetShortSlotTime(struct vnt_private *pDevice)
+=======
+BBvSetShortSlotTime(struct vnt_private *priv)
+>>>>>>> v4.9.227
 {
 	unsigned char byBBRxConf = 0;
 	unsigned char byBBVGA = 0;
 
+<<<<<<< HEAD
 	BBbReadEmbedded(pDevice->PortOffset, 0x0A, &byBBRxConf); /* CR10 */
 
 	if (pDevice->bShortSlotTime)
+=======
+	BBbReadEmbedded(priv, 0x0A, &byBBRxConf); /* CR10 */
+
+	if (priv->bShortSlotTime)
+>>>>>>> v4.9.227
 		byBBRxConf &= 0xDF; /* 1101 1111 */
 	else
 		byBBRxConf |= 0x20; /* 0010 0000 */
 
 	/* patch for 3253B0 Baseband with Cardbus module */
+<<<<<<< HEAD
 	BBbReadEmbedded(pDevice->PortOffset, 0xE7, &byBBVGA);
 	if (byBBVGA == pDevice->abyBBVGA[0])
 		byBBRxConf |= 0x20; /* 0010 0000 */
@@ -2415,6 +2704,31 @@ void BBvSetVGAGainOffset(struct vnt_private *pDevice, unsigned char byData)
 		byBBRxConf |= 0x20; /* 0010 0000 */
 	pDevice->byBBVGACurrent = byData;
 	BBbWriteEmbedded(pDevice->PortOffset, 0x0A, byBBRxConf); /* CR10 */
+=======
+	BBbReadEmbedded(priv, 0xE7, &byBBVGA);
+	if (byBBVGA == priv->abyBBVGA[0])
+		byBBRxConf |= 0x20; /* 0010 0000 */
+
+	BBbWriteEmbedded(priv, 0x0A, byBBRxConf); /* CR10 */
+}
+
+void BBvSetVGAGainOffset(struct vnt_private *priv, unsigned char byData)
+{
+	unsigned char byBBRxConf = 0;
+
+	BBbWriteEmbedded(priv, 0xE7, byData);
+
+	BBbReadEmbedded(priv, 0x0A, &byBBRxConf); /* CR10 */
+	/* patch for 3253B0 Baseband with Cardbus module */
+	if (byData == priv->abyBBVGA[0])
+		byBBRxConf |= 0x20; /* 0010 0000 */
+	else if (priv->bShortSlotTime)
+		byBBRxConf &= 0xDF; /* 1101 1111 */
+	else
+		byBBRxConf |= 0x20; /* 0010 0000 */
+	priv->byBBVGACurrent = byData;
+	BBbWriteEmbedded(priv, 0x0A, byBBRxConf); /* CR10 */
+>>>>>>> v4.9.227
 }
 
 /*
@@ -2430,12 +2744,21 @@ void BBvSetVGAGainOffset(struct vnt_private *pDevice, unsigned char byData)
  *
  */
 void
+<<<<<<< HEAD
 BBvSoftwareReset(void __iomem *dwIoBase)
 {
 	BBbWriteEmbedded(dwIoBase, 0x50, 0x40);
 	BBbWriteEmbedded(dwIoBase, 0x50, 0);
 	BBbWriteEmbedded(dwIoBase, 0x9C, 0x01);
 	BBbWriteEmbedded(dwIoBase, 0x9C, 0);
+=======
+BBvSoftwareReset(struct vnt_private *priv)
+{
+	BBbWriteEmbedded(priv, 0x50, 0x40);
+	BBbWriteEmbedded(priv, 0x50, 0);
+	BBbWriteEmbedded(priv, 0x9C, 0x01);
+	BBbWriteEmbedded(priv, 0x9C, 0);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -2451,6 +2774,7 @@ BBvSoftwareReset(void __iomem *dwIoBase)
  *
  */
 void
+<<<<<<< HEAD
 BBvPowerSaveModeON(void __iomem *dwIoBase)
 {
 	unsigned char byOrgData;
@@ -2458,6 +2782,15 @@ BBvPowerSaveModeON(void __iomem *dwIoBase)
 	BBbReadEmbedded(dwIoBase, 0x0D, &byOrgData);
 	byOrgData |= BIT0;
 	BBbWriteEmbedded(dwIoBase, 0x0D, byOrgData);
+=======
+BBvPowerSaveModeON(struct vnt_private *priv)
+{
+	unsigned char byOrgData;
+
+	BBbReadEmbedded(priv, 0x0D, &byOrgData);
+	byOrgData |= BIT(0);
+	BBbWriteEmbedded(priv, 0x0D, byOrgData);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -2473,6 +2806,7 @@ BBvPowerSaveModeON(void __iomem *dwIoBase)
  *
  */
 void
+<<<<<<< HEAD
 BBvPowerSaveModeOFF(void __iomem *dwIoBase)
 {
 	unsigned char byOrgData;
@@ -2480,6 +2814,15 @@ BBvPowerSaveModeOFF(void __iomem *dwIoBase)
 	BBbReadEmbedded(dwIoBase, 0x0D, &byOrgData);
 	byOrgData &= ~(BIT0);
 	BBbWriteEmbedded(dwIoBase, 0x0D, byOrgData);
+=======
+BBvPowerSaveModeOFF(struct vnt_private *priv)
+{
+	unsigned char byOrgData;
+
+	BBbReadEmbedded(priv, 0x0D, &byOrgData);
+	byOrgData &= ~(BIT(0));
+	BBbWriteEmbedded(priv, 0x0D, byOrgData);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -2487,7 +2830,11 @@ BBvPowerSaveModeOFF(void __iomem *dwIoBase)
  *
  * Parameters:
  *  In:
+<<<<<<< HEAD
  *      pDevice          - Device Structure
+=======
+ *      priv          - Device Structure
+>>>>>>> v4.9.227
  *      byAntennaMode    - Antenna Mode
  *  Out:
  *      none
@@ -2497,11 +2844,19 @@ BBvPowerSaveModeOFF(void __iomem *dwIoBase)
  */
 
 void
+<<<<<<< HEAD
 BBvSetTxAntennaMode(void __iomem *dwIoBase, unsigned char byAntennaMode)
 {
 	unsigned char byBBTxConf;
 
 	BBbReadEmbedded(dwIoBase, 0x09, &byBBTxConf); /* CR09 */
+=======
+BBvSetTxAntennaMode(struct vnt_private *priv, unsigned char byAntennaMode)
+{
+	unsigned char byBBTxConf;
+
+	BBbReadEmbedded(priv, 0x09, &byBBTxConf); /* CR09 */
+>>>>>>> v4.9.227
 	if (byAntennaMode == ANT_DIVERSITY) {
 		/* bit 1 is diversity */
 		byBBTxConf |= 0x02;
@@ -2512,7 +2867,11 @@ BBvSetTxAntennaMode(void __iomem *dwIoBase, unsigned char byAntennaMode)
 		byBBTxConf &= 0xFD; /* 1111 1101 */
 		byBBTxConf |= 0x04;
 	}
+<<<<<<< HEAD
 	BBbWriteEmbedded(dwIoBase, 0x09, byBBTxConf); /* CR09 */
+=======
+	BBbWriteEmbedded(priv, 0x09, byBBTxConf); /* CR09 */
+>>>>>>> v4.9.227
 }
 
 /*
@@ -2520,7 +2879,11 @@ BBvSetTxAntennaMode(void __iomem *dwIoBase, unsigned char byAntennaMode)
  *
  * Parameters:
  *  In:
+<<<<<<< HEAD
  *      pDevice          - Device Structure
+=======
+ *      priv          - Device Structure
+>>>>>>> v4.9.227
  *      byAntennaMode    - Antenna Mode
  *  Out:
  *      none
@@ -2530,11 +2893,19 @@ BBvSetTxAntennaMode(void __iomem *dwIoBase, unsigned char byAntennaMode)
  */
 
 void
+<<<<<<< HEAD
 BBvSetRxAntennaMode(void __iomem *dwIoBase, unsigned char byAntennaMode)
 {
 	unsigned char byBBRxConf;
 
 	BBbReadEmbedded(dwIoBase, 0x0A, &byBBRxConf); /* CR10 */
+=======
+BBvSetRxAntennaMode(struct vnt_private *priv, unsigned char byAntennaMode)
+{
+	unsigned char byBBRxConf;
+
+	BBbReadEmbedded(priv, 0x0A, &byBBRxConf); /* CR10 */
+>>>>>>> v4.9.227
 	if (byAntennaMode == ANT_DIVERSITY) {
 		byBBRxConf |= 0x01;
 
@@ -2544,7 +2915,11 @@ BBvSetRxAntennaMode(void __iomem *dwIoBase, unsigned char byAntennaMode)
 		byBBRxConf &= 0xFE; /* 1111 1110 */
 		byBBRxConf |= 0x02;
 	}
+<<<<<<< HEAD
 	BBbWriteEmbedded(dwIoBase, 0x0A, byBBRxConf); /* CR10 */
+=======
+	BBbWriteEmbedded(priv, 0x0A, byBBRxConf); /* CR10 */
+>>>>>>> v4.9.227
 }
 
 /*
@@ -2552,7 +2927,11 @@ BBvSetRxAntennaMode(void __iomem *dwIoBase, unsigned char byAntennaMode)
  *
  * Parameters:
  *  In:
+<<<<<<< HEAD
  *      pDevice          - Device Structure
+=======
+ *      priv          - Device Structure
+>>>>>>> v4.9.227
  *  Out:
  *      none
  *
@@ -2560,6 +2939,7 @@ BBvSetRxAntennaMode(void __iomem *dwIoBase, unsigned char byAntennaMode)
  *
  */
 void
+<<<<<<< HEAD
 BBvSetDeepSleep(void __iomem *dwIoBase, unsigned char byLocalID)
 {
 	BBbWriteEmbedded(dwIoBase, 0x0C, 0x17); /* CR12 */
@@ -2866,4 +3246,17 @@ TimerState1CallBack(
 	pDevice->byAntennaState = 0;
 	BBvClearAntDivSQ3Value(pDevice);
 	spin_unlock_irq(&pDevice->lock);
+=======
+BBvSetDeepSleep(struct vnt_private *priv, unsigned char byLocalID)
+{
+	BBbWriteEmbedded(priv, 0x0C, 0x17); /* CR12 */
+	BBbWriteEmbedded(priv, 0x0D, 0xB9); /* CR13 */
+}
+
+void
+BBvExitDeepSleep(struct vnt_private *priv, unsigned char byLocalID)
+{
+	BBbWriteEmbedded(priv, 0x0C, 0x00); /* CR12 */
+	BBbWriteEmbedded(priv, 0x0D, 0x01); /* CR13 */
+>>>>>>> v4.9.227
 }

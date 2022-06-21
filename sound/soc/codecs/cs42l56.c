@@ -56,7 +56,11 @@ struct  cs42l56_private {
 	u8 iface;
 	u8 iface_fmt;
 	u8 iface_inv;
+<<<<<<< HEAD
 #if defined(CONFIG_INPUT) || defined(CONFIG_INPUT_MODULE)
+=======
+#if IS_ENABLED(CONFIG_INPUT)
+>>>>>>> v4.9.227
 	struct input_dev *beep;
 	struct work_struct beep_work;
 	int beep_rate;
@@ -115,6 +119,7 @@ static const struct reg_default cs42l56_reg_defaults[] = {
 static bool cs42l56_readable_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
+<<<<<<< HEAD
 	case CS42L56_CHIP_ID_1:
 	case CS42L56_CHIP_ID_2:
 	case CS42L56_PWRCTL_1:
@@ -161,6 +166,9 @@ static bool cs42l56_readable_register(struct device *dev, unsigned int reg)
 	case CS42L56_LIM_THRESHOLD_CTL:
 	case CS42L56_LIM_CTL_RELEASE_RATE:
 	case CS42L56_LIM_ATTACK_RATE:
+=======
+	case CS42L56_CHIP_ID_1 ... CS42L56_LIM_ATTACK_RATE:
+>>>>>>> v4.9.227
 		return true;
 	default:
 		return false;
@@ -185,6 +193,7 @@ static DECLARE_TLV_DB_SCALE(tone_tlv, -1050, 150, 0);
 static DECLARE_TLV_DB_SCALE(preamp_tlv, 0, 1000, 0);
 static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
 
+<<<<<<< HEAD
 static const unsigned int ngnb_tlv[] = {
 	TLV_DB_RANGE_HEAD(2),
 	0, 1, TLV_DB_SCALE_ITEM(-8200, 600, 0),
@@ -200,6 +209,20 @@ static const unsigned int alc_tlv[] = {
 	0, 2, TLV_DB_SCALE_ITEM(-3000, 600, 0),
 	3, 7, TLV_DB_SCALE_ITEM(-1200, 300, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(ngnb_tlv,
+	0, 1, TLV_DB_SCALE_ITEM(-8200, 600, 0),
+	2, 5, TLV_DB_SCALE_ITEM(-7600, 300, 0)
+);
+static const DECLARE_TLV_DB_RANGE(ngb_tlv,
+	0, 2, TLV_DB_SCALE_ITEM(-6400, 600, 0),
+	3, 7, TLV_DB_SCALE_ITEM(-4600, 300, 0)
+);
+static const DECLARE_TLV_DB_RANGE(alc_tlv,
+	0, 2, TLV_DB_SCALE_ITEM(-3000, 600, 0),
+	3, 7, TLV_DB_SCALE_ITEM(-1200, 300, 0)
+);
+>>>>>>> v4.9.227
 
 static const char * const beep_config_text[] = {
 	"Off", "Single", "Multiple", "Continuous"
@@ -953,7 +976,11 @@ static int cs42l56_set_bias_level(struct snd_soc_codec *codec,
 				    CS42L56_PDN_ALL_MASK, 0);
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			regcache_cache_only(cs42l56->regmap, false);
 			regcache_sync(cs42l56->regmap);
 			ret = regulator_bulk_enable(ARRAY_SIZE(cs42l56->supplies),
@@ -978,7 +1005,10 @@ static int cs42l56_set_bias_level(struct snd_soc_codec *codec,
 						    cs42l56->supplies);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -990,7 +1020,11 @@ static int cs42l56_set_bias_level(struct snd_soc_codec *codec,
 			SNDRV_PCM_FMTBIT_S32_LE)
 
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops cs42l56_ops = {
+=======
+static const struct snd_soc_dai_ops cs42l56_ops = {
+>>>>>>> v4.9.227
 	.hw_params	= cs42l56_pcm_hw_params,
 	.digital_mute	= cs42l56_digital_mute,
 	.set_fmt	= cs42l56_set_dai_fmt,
@@ -1026,7 +1060,11 @@ static void cs42l56_beep_work(struct work_struct *work)
 	struct cs42l56_private *cs42l56 =
 		container_of(work, struct cs42l56_private, beep_work);
 	struct snd_soc_codec *codec = cs42l56->codec;
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 	int i;
 	int val = 0;
 	int best = 0;
@@ -1164,12 +1202,17 @@ static int cs42l56_remove(struct snd_soc_codec *codec)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_cs42l56 = {
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_cs42l56 = {
+>>>>>>> v4.9.227
 	.probe = cs42l56_probe,
 	.remove = cs42l56_remove,
 	.set_bias_level = cs42l56_set_bias_level,
 	.suspend_bias_off = true,
 
+<<<<<<< HEAD
 	.dapm_widgets = cs42l56_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(cs42l56_dapm_widgets),
 	.dapm_routes = cs42l56_audio_map,
@@ -1180,6 +1223,19 @@ static struct snd_soc_codec_driver soc_codec_dev_cs42l56 = {
 };
 
 static struct regmap_config cs42l56_regmap = {
+=======
+	.component_driver = {
+		.controls		= cs42l56_snd_controls,
+		.num_controls		= ARRAY_SIZE(cs42l56_snd_controls),
+		.dapm_widgets		= cs42l56_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(cs42l56_dapm_widgets),
+		.dapm_routes		= cs42l56_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(cs42l56_audio_map),
+	},
+};
+
+static const struct regmap_config cs42l56_regmap = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 
@@ -1409,7 +1465,10 @@ MODULE_DEVICE_TABLE(i2c, cs42l56_id);
 static struct i2c_driver cs42l56_i2c_driver = {
 	.driver = {
 		.name = "cs42l56",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = cs42l56_of_match,
 	},
 	.id_table = cs42l56_id,

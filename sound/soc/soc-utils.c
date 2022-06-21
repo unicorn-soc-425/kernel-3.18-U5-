@@ -80,7 +80,11 @@ static int dummy_dma_open(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops dummy_dma_ops = {
+=======
+static const struct snd_pcm_ops dummy_dma_ops = {
+>>>>>>> v4.9.227
 	.open		= dummy_dma_open,
 	.ioctl		= snd_pcm_lib_ioctl,
 };
@@ -101,6 +105,18 @@ static struct snd_soc_codec_driver dummy_codec;
 			SNDRV_PCM_FMTBIT_S32_LE | \
 			SNDRV_PCM_FMTBIT_U32_LE | \
 			SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_LE)
+<<<<<<< HEAD
+=======
+/*
+ * The dummy CODEC is only meant to be used in situations where there is no
+ * actual hardware.
+ *
+ * If there is actual hardware even if it does not have a control bus
+ * the hardware will still have constraints like supported samplerates, etc.
+ * which should be modelled. And the data flow graph also should be modelled
+ * using DAPM.
+ */
+>>>>>>> v4.9.227
 static struct snd_soc_dai_driver dummy_dai = {
 	.name = "snd-soc-dummy-dai",
 	.playback = {
@@ -130,9 +146,12 @@ static int snd_soc_dummy_probe(struct platform_device *pdev)
 {
 	int ret;
 
+<<<<<<< HEAD
 	memset(&dummy_codec, 0,
 		sizeof(struct snd_soc_codec_driver));
 
+=======
+>>>>>>> v4.9.227
 	ret = snd_soc_register_codec(&pdev->dev, &dummy_codec, &dummy_dai, 1);
 	if (ret < 0)
 		return ret;
@@ -157,7 +176,10 @@ static int snd_soc_dummy_remove(struct platform_device *pdev)
 static struct platform_driver soc_dummy_driver = {
 	.driver = {
 		.name = "snd-soc-dummy",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = snd_soc_dummy_probe,
 	.remove = snd_soc_dummy_remove,

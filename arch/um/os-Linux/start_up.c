@@ -24,7 +24,10 @@
 #include <ptrace_user.h>
 #include <registers.h>
 #include <skas.h>
+<<<<<<< HEAD
 #include <skas_ptrace.h>
+=======
+>>>>>>> v4.9.227
 
 static void ptrace_child(void)
 {
@@ -145,6 +148,7 @@ static int stop_ptraced_child(int pid, int exitcode, int mustexit)
 }
 
 /* Changed only during early boot */
+<<<<<<< HEAD
 int ptrace_faultinfo;
 static int disable_ptrace_faultinfo;
 
@@ -183,6 +187,8 @@ __uml_setup("mode=skas0", mode_skas0_cmd_param,
 "    Disables SKAS3 and SKAS4 usage, so that SKAS0 is used.\n\n");
 
 /* Changed only during early boot */
+=======
+>>>>>>> v4.9.227
 static int force_sysemu_disabled = 0;
 
 static int __init nosysemu_cmd_param(char *str, int* add)
@@ -378,6 +384,7 @@ void __init os_early_checks(void)
 	stop_ptraced_child(pid, 1, 1);
 }
 
+<<<<<<< HEAD
 static int __init noprocmm_cmd_param(char *str, int* add)
 {
 	disable_proc_mm = 1;
@@ -493,6 +500,8 @@ void can_do_skas(void)
 		skas_needs_stub = 1;
 }
 
+=======
+>>>>>>> v4.9.227
 int __init parse_iomem(char *str, int *add)
 {
 	struct iomem_region *new;

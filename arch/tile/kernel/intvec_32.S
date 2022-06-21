@@ -572,7 +572,11 @@ intvec_\vecname:
 	}
 	wh64    r52
 
+<<<<<<< HEAD
 #ifdef CONFIG_TRACE_IRQFLAGS
+=======
+#if defined(CONFIG_TRACE_IRQFLAGS) || defined(CONFIG_CONTEXT_TRACKING)
+>>>>>>> v4.9.227
 	.ifnc \function,handle_nmi
 	/*
 	 * We finally have enough state set up to notify the irq
@@ -588,6 +592,12 @@ intvec_\vecname:
 	{ move r32, r2; move r33, r3 }
 	.endif
 	TRACE_IRQS_OFF
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CONTEXT_TRACKING
+	jal     context_tracking_user_exit
+#endif
+>>>>>>> v4.9.227
 	.ifnc \function,handle_syscall
 	{ move r0, r30; move r1, r31 }
 	{ move r2, r32; move r3, r33 }
@@ -846,6 +856,7 @@ STD_ENTRY(interrupt_return)
 	FEEDBACK_REENTER(interrupt_return)
 
 	/*
+<<<<<<< HEAD
 	 * Use r33 to hold whether we have already loaded the callee-saves
 	 * into ptregs.  We don't want to do it twice in this loop, since
 	 * then we'd clobber whatever changes are made by ptrace, etc.
@@ -858,6 +869,8 @@ STD_ENTRY(interrupt_return)
 
 .Lretry_work_pending:
 	/*
+=======
+>>>>>>> v4.9.227
 	 * Disable interrupts so as to make sure we don't
 	 * miss an interrupt that sets any of the thread flags (like
 	 * need_resched or sigpending) between sampling and the iret.
@@ -867,6 +880,7 @@ STD_ENTRY(interrupt_return)
 	IRQ_DISABLE(r20, r21)
 	TRACE_IRQS_OFF  /* Note: clobbers registers r0-r29 */
 
+<<<<<<< HEAD
 
 	/* Check to see if there is any work to do before returning to user. */
 	{
@@ -894,6 +908,29 @@ STD_ENTRY(interrupt_return)
 	movei   r33, 1
 1:	jal     do_work_pending
 	bnz     r0, .Lretry_work_pending
+=======
+	/*
+	 * See if there are any work items (including single-shot items)
+	 * to do.  If so, save the callee-save registers to pt_regs
+	 * and then dispatch to C code.
+	 */
+	GET_THREAD_INFO(r21)
+	{
+	 addi   r22, r21, THREAD_INFO_FLAGS_OFFSET
+	 moveli r20, lo16(_TIF_ALLWORK_MASK)
+	}
+	{
+	 lw     r22, r22
+	 auli   r20, r20, ha16(_TIF_ALLWORK_MASK)
+	}
+	and     r1, r22, r20
+	{
+	 PTREGS_PTR(r0, PTREGS_OFFSET_BASE)
+	 bzt    r1, .Lrestore_all
+	}
+	push_extra_callee_saves r0
+	jal     prepare_exit_to_usermode
+>>>>>>> v4.9.227
 
 	/*
 	 * In the NMI case we
@@ -1224,6 +1261,10 @@ handle_syscall:
 	 jal    do_syscall_trace_enter
 	}
 	FEEDBACK_REENTER(handle_syscall)
+<<<<<<< HEAD
+=======
+	blz     r0, .Lsyscall_sigreturn_skip
+>>>>>>> v4.9.227
 
 	/*
 	 * We always reload our registers from the stack at this
@@ -1326,7 +1367,11 @@ STD_ENTRY(ret_from_kernel_thread)
 	FEEDBACK_REENTER(ret_from_kernel_thread)
 	{
 	 movei  r30, 0               /* not an NMI */
+<<<<<<< HEAD
 	 j      .Lresume_userspace   /* jump into middle of interrupt_return */
+=======
+	 j      interrupt_return
+>>>>>>> v4.9.227
 	}
 	STD_ENDPROC(ret_from_kernel_thread)
 

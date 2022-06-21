@@ -13,6 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -20,6 +21,10 @@
  * Written by Seiji Kihara <kihara@osrg.net>, Amagai Yoshiji <amagai@osrg.net>,
  *            and Ryusuke Konishi <ryusuke@osrg.net>.
  * Revised by Ryusuke Konishi <ryusuke@osrg.net>.
+=======
+ * Written by Seiji Kihara, Amagai Yoshiji, and Ryusuke Konishi.
+ * Revised by Ryusuke Konishi.
+>>>>>>> v4.9.227
  *
  */
 /*
@@ -106,7 +111,11 @@ int nilfs_gccache_submit_read_data(struct inode *inode, sector_t blkoff,
 	bh->b_blocknr = pbn;
 	bh->b_end_io = end_buffer_read_sync;
 	get_bh(bh);
+<<<<<<< HEAD
 	submit_bh(READ, bh);
+=======
+	submit_bh(REQ_OP_READ, 0, bh);
+>>>>>>> v4.9.227
 	if (vbn)
 		bh->b_blocknr = vbn;
  out:
@@ -115,7 +124,11 @@ int nilfs_gccache_submit_read_data(struct inode *inode, sector_t blkoff,
 
  failed:
 	unlock_page(bh->b_page);
+<<<<<<< HEAD
 	page_cache_release(bh->b_page);
+=======
+	put_page(bh->b_page);
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -143,7 +156,12 @@ int nilfs_gccache_submit_read_node(struct inode *inode, sector_t pbn,
 	int ret;
 
 	ret = nilfs_btnode_submit_block(&NILFS_I(inode)->i_btnode_cache,
+<<<<<<< HEAD
 					vbn ? : pbn, pbn, READ, out_bh, &pbn);
+=======
+					vbn ? : pbn, pbn, REQ_OP_READ, 0,
+					out_bh, &pbn);
+>>>>>>> v4.9.227
 	if (ret == -EEXIST) /* internal code (cache hit) */
 		ret = 0;
 	return ret;
@@ -152,8 +170,20 @@ int nilfs_gccache_submit_read_node(struct inode *inode, sector_t pbn,
 int nilfs_gccache_wait_and_mark_dirty(struct buffer_head *bh)
 {
 	wait_on_buffer(bh);
+<<<<<<< HEAD
 	if (!buffer_uptodate(bh))
 		return -EIO;
+=======
+	if (!buffer_uptodate(bh)) {
+		struct inode *inode = bh->b_page->mapping->host;
+
+		nilfs_msg(inode->i_sb, KERN_ERR,
+			  "I/O error reading %s block for GC (ino=%lu, vblocknr=%llu)",
+			  buffer_nilfs_node(bh) ? "node" : "data",
+			  inode->i_ino, (unsigned long long)bh->b_blocknr);
+		return -EIO;
+	}
+>>>>>>> v4.9.227
 	if (buffer_dirty(bh))
 		return -EEXIST;
 
@@ -172,7 +202,10 @@ int nilfs_init_gcinode(struct inode *inode)
 	inode->i_mode = S_IFREG;
 	mapping_set_gfp_mask(inode->i_mapping, GFP_NOFS);
 	inode->i_mapping->a_ops = &empty_aops;
+<<<<<<< HEAD
 	inode->i_mapping->backing_dev_info = inode->i_sb->s_bdi;
+=======
+>>>>>>> v4.9.227
 
 	ii->i_flags = 0;
 	nilfs_bmap_init_gc(ii->i_bmap);

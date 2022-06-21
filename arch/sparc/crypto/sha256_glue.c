@@ -135,7 +135,11 @@ static int sha224_sparc64_final(struct shash_desc *desc, u8 *hash)
 	sha256_sparc64_final(desc, D);
 
 	memcpy(hash, D, SHA224_DIGEST_SIZE);
+<<<<<<< HEAD
 	memset(D, 0, SHA256_DIGEST_SIZE);
+=======
+	memzero_explicit(D, SHA256_DIGEST_SIZE);
+>>>>>>> v4.9.227
 
 	return 0;
 }

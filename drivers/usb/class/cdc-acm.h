@@ -19,7 +19,11 @@
  */
 
 #define ACM_TTY_MAJOR		166
+<<<<<<< HEAD
 #define ACM_TTY_MINORS		32
+=======
+#define ACM_TTY_MINORS		256
+>>>>>>> v4.9.227
 
 /*
  * Requests.
@@ -95,7 +99,10 @@ struct acm {
 	struct urb *read_urbs[ACM_NR];
 	struct acm_rb read_buffers[ACM_NR];
 	int rx_buflimit;
+<<<<<<< HEAD
 	int rx_endpoint;
+=======
+>>>>>>> v4.9.227
 	spinlock_t read_lock;
 	int write_used;					/* number of non-empty write buffers */
 	int transmitting;
@@ -130,8 +137,16 @@ struct acm {
 #define NO_UNION_NORMAL			BIT(0)
 #define SINGLE_RX_URB			BIT(1)
 #define NO_CAP_LINE			BIT(2)
+<<<<<<< HEAD
 #define NOT_A_MODEM			BIT(3)
+=======
+>>>>>>> v4.9.227
 #define NO_DATA_INTERFACE		BIT(4)
 #define IGNORE_DEVICE			BIT(5)
 #define QUIRK_CONTROL_LINE_STATE	BIT(6)
 #define CLEAR_HALT_CONDITIONS		BIT(7)
+<<<<<<< HEAD
+=======
+#define SEND_ZERO_PACKET		BIT(8)
+#define DISABLE_ECHO			BIT(9)
+>>>>>>> v4.9.227

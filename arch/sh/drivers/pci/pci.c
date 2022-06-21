@@ -58,6 +58,7 @@ static void pcibios_scanbus(struct pci_channel *hose)
 
 	need_domain_info = need_domain_info || hose->index;
 	hose->need_domain_info = need_domain_info;
+<<<<<<< HEAD
 	if (bus) {
 		next_busno = bus->busn_res.end + 1;
 		/* Don't allow 8-bit bus number overflow inside the hose -
@@ -73,6 +74,25 @@ static void pcibios_scanbus(struct pci_channel *hose)
 	} else {
 		pci_free_resource_list(&resources);
 	}
+=======
+
+	if (!bus) {
+		pci_free_resource_list(&resources);
+		return;
+	}
+
+	next_busno = bus->busn_res.end + 1;
+	/* Don't allow 8-bit bus number overflow inside the hose -
+	   reserve some space for bridges. */
+	if (next_busno > 224) {
+		next_busno = 0;
+		need_domain_info = 1;
+	}
+
+	pci_bus_size_bridges(bus);
+	pci_bus_assign_resources(bus);
+	pci_bus_add_devices(bus);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -219,7 +239,11 @@ pcibios_bus_report_status_early(struct pci_channel *hose,
  * We can't use pci_find_device() here since we are
  * called from interrupt context.
  */
+<<<<<<< HEAD
 static void __init_refok
+=======
+static void __ref
+>>>>>>> v4.9.227
 pcibios_bus_report_status(struct pci_bus *bus, unsigned int status_mask,
 			  int warn)
 {
@@ -254,7 +278,11 @@ pcibios_bus_report_status(struct pci_bus *bus, unsigned int status_mask,
 			pcibios_bus_report_status(dev->subordinate, status_mask, warn);
 }
 
+<<<<<<< HEAD
 void __init_refok pcibios_report_status(unsigned int status_mask, int warn)
+=======
+void __ref pcibios_report_status(unsigned int status_mask, int warn)
+>>>>>>> v4.9.227
 {
 	struct pci_channel *hose;
 

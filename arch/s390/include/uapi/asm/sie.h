@@ -7,6 +7,10 @@
 	{ 0x9c, "DIAG (0x9c) time slice end directed" },	\
 	{ 0x204, "DIAG (0x204) logical-cpu utilization" },	\
 	{ 0x258, "DIAG (0x258) page-reference services" },	\
+<<<<<<< HEAD
+=======
+	{ 0x288, "DIAG (0x288) watchdog functions" },		\
+>>>>>>> v4.9.227
 	{ 0x308, "DIAG (0x308) ipl functions" },		\
 	{ 0x500, "DIAG (0x500) KVM virtio functions" },		\
 	{ 0x501, "DIAG (0x501) KVM breakpoint" }
@@ -15,14 +19,29 @@
 	{ 0x01, "SIGP sense" },					\
 	{ 0x02, "SIGP external call" },				\
 	{ 0x03, "SIGP emergency signal" },			\
+<<<<<<< HEAD
+=======
+	{ 0x04, "SIGP start" },					\
+>>>>>>> v4.9.227
 	{ 0x05, "SIGP stop" },					\
 	{ 0x06, "SIGP restart" },				\
 	{ 0x09, "SIGP stop and store status" },			\
 	{ 0x0b, "SIGP initial cpu reset" },			\
+<<<<<<< HEAD
 	{ 0x0d, "SIGP set prefix" },				\
 	{ 0x0e, "SIGP store status at address" },		\
 	{ 0x12, "SIGP set architecture" },			\
 	{ 0x15, "SIGP sense running" }
+=======
+	{ 0x0c, "SIGP cpu reset" },				\
+	{ 0x0d, "SIGP set prefix" },				\
+	{ 0x0e, "SIGP store status at address" },		\
+	{ 0x12, "SIGP set architecture" },			\
+	{ 0x13, "SIGP conditional emergency signal" },		\
+	{ 0x15, "SIGP sense running" },				\
+	{ 0x16, "SIGP set multithreading"},			\
+	{ 0x17, "SIGP store additional status ait address"}
+>>>>>>> v4.9.227
 
 #define icpt_prog_codes						\
 	{ 0x0001, "Prog Operation" },				\
@@ -134,6 +153,10 @@
 	exit_code_ipa0(0xB2, 0x4c, "TAR"),	\
 	exit_code_ipa0(0xB2, 0x50, "CSP"),	\
 	exit_code_ipa0(0xB2, 0x54, "MVPG"),	\
+<<<<<<< HEAD
+=======
+	exit_code_ipa0(0xB2, 0x56, "STHYI"),	\
+>>>>>>> v4.9.227
 	exit_code_ipa0(0xB2, 0x58, "BSG"),	\
 	exit_code_ipa0(0xB2, 0x5a, "BSA"),	\
 	exit_code_ipa0(0xB2, 0x5f, "CHSC"),	\
@@ -230,7 +253,11 @@
  * and returns a key, which can be used to find a mnemonic name
  * of the instruction in the icpt_insn_codes table.
  */
+<<<<<<< HEAD
 #define icpt_insn_decoder(insn)			\
+=======
+#define icpt_insn_decoder(insn) (		\
+>>>>>>> v4.9.227
 	INSN_DECODE_IPA0(0x01, insn, 48, 0xff)	\
 	INSN_DECODE_IPA0(0xaa, insn, 48, 0x0f)	\
 	INSN_DECODE_IPA0(0xb2, insn, 48, 0xff)	\
@@ -239,6 +266,10 @@
 	INSN_DECODE_IPA0(0xe5, insn, 48, 0xff)	\
 	INSN_DECODE_IPA0(0xeb, insn, 16, 0xff)	\
 	INSN_DECODE_IPA0(0xc8, insn, 48, 0x0f)	\
+<<<<<<< HEAD
 	INSN_DECODE(insn)
+=======
+	INSN_DECODE(insn))
+>>>>>>> v4.9.227
 
 #endif /* _UAPI_ASM_S390_SIE_H */

@@ -7,7 +7,11 @@
 #include <linux/kernel.h>
 #include <linux/miscdevice.h>
 #include <linux/fcntl.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+#include <linux/module.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/fs.h>
 

@@ -3,7 +3,11 @@
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
+<<<<<<< HEAD
  *  Copyright (C) 2012 John Crispin <blogic@openwrt.org>
+=======
+ *  Copyright (C) 2012 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  */
 
 #include <linux/of_irq.h>

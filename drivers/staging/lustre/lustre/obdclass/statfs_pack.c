@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -46,6 +50,7 @@
 #include "../include/obd_support.h"
 #include "../include/obd_class.h"
 
+<<<<<<< HEAD
 void statfs_pack(struct obd_statfs *osfs, struct kstatfs *sfs)
 {
 	memset(osfs, 0, sizeof(*osfs));
@@ -60,6 +65,8 @@ void statfs_pack(struct obd_statfs *osfs, struct kstatfs *sfs)
 }
 EXPORT_SYMBOL(statfs_pack);
 
+=======
+>>>>>>> v4.9.227
 void statfs_unpack(struct kstatfs *sfs, struct obd_statfs *osfs)
 {
 	memset(sfs, 0, sizeof(*sfs));

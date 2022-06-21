@@ -1,6 +1,10 @@
 IBM s390 QDIO Ethernet Driver
 
+<<<<<<< HEAD
 HiperSockets Bridge Port Support
+=======
+OSA and HiperSockets Bridge Port Support
+>>>>>>> v4.9.227
 
 Uevents
 
@@ -8,7 +12,11 @@ To generate the events the device must be assigned a role of either
 a primary or a secondary Bridge Port. For more information, see
 "z/VM Connectivity, SC24-6174".
 
+<<<<<<< HEAD
 When run on HiperSockets Bridge Capable Port hardware, and the state
+=======
+When run on an OSA or HiperSockets Bridge Capable Port hardware, and the state
+>>>>>>> v4.9.227
 of some configured Bridge Port device on the channel changes, a udev
 event with ACTION=CHANGE is emitted on behalf of the corresponding
 ccwgroup device. The event has the following attributes:

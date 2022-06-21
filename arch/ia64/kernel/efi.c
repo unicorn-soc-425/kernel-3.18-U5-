@@ -236,7 +236,11 @@ STUB_GET_NEXT_HIGH_MONO_COUNT(virt, id)
 STUB_RESET_SYSTEM(virt, id)
 
 void
+<<<<<<< HEAD
 efi_gettimeofday (struct timespec *ts)
+=======
+efi_gettimeofday (struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	efi_time_t tm;
 
@@ -245,7 +249,11 @@ efi_gettimeofday (struct timespec *ts)
 		return;
 	}
 
+<<<<<<< HEAD
 	ts->tv_sec = mktime(tm.year, tm.month, tm.day,
+=======
+	ts->tv_sec = mktime64(tm.year, tm.month, tm.day,
+>>>>>>> v4.9.227
 			    tm.hour, tm.minute, tm.second);
 	ts->tv_nsec = tm.nanosecond;
 }
@@ -464,7 +472,10 @@ efi_map_pal_code (void)
 		 GRANULEROUNDDOWN((unsigned long) pal_vaddr),
 		 pte_val(pfn_pte(__pa(pal_vaddr) >> PAGE_SHIFT, PAGE_KERNEL)),
 		 IA64_GRANULE_SHIFT);
+<<<<<<< HEAD
 	paravirt_dv_serialize_data();
+=======
+>>>>>>> v4.9.227
 	ia64_set_psr(psr);		/* restore psr */
 }
 
@@ -532,8 +543,11 @@ efi_init (void)
 	       efi.systab->hdr.revision >> 16,
 	       efi.systab->hdr.revision & 0xffff, vendor);
 
+<<<<<<< HEAD
 	set_bit(EFI_SYSTEM_TABLES, &efi.flags);
 
+=======
+>>>>>>> v4.9.227
 	palo_phys      = EFI_INVALID_TABLE_ADDR;
 
 	if (efi_config_init(arch_tables) != 0)
@@ -967,7 +981,11 @@ efi_uart_console_only(void)
 /*
  * Look for the first granule aligned memory descriptor memory
  * that is big enough to hold EFI memory map. Make sure this
+<<<<<<< HEAD
  * descriptor is atleast granule sized so it does not get trimmed
+=======
+ * descriptor is at least granule sized so it does not get trimmed
+>>>>>>> v4.9.227
  */
 struct kern_memdesc *
 find_memmap_space (void)
@@ -1179,7 +1197,11 @@ efi_initialize_iomem_resources(struct resource *code_resource,
 	efi_memory_desc_t *md;
 	u64 efi_desc_size;
 	char *name;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+	unsigned long flags, desc;
+>>>>>>> v4.9.227
 
 	efi_map_start = __va(ia64_boot_param->efi_memmap);
 	efi_map_end   = efi_map_start + ia64_boot_param->efi_memmap_size;
@@ -1194,6 +1216,11 @@ efi_initialize_iomem_resources(struct resource *code_resource,
 			continue;
 
 		flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+<<<<<<< HEAD
+=======
+		desc = IORES_DESC_NONE;
+
+>>>>>>> v4.9.227
 		switch (md->type) {
 
 			case EFI_MEMORY_MAPPED_IO:
@@ -1208,14 +1235,27 @@ efi_initialize_iomem_resources(struct resource *code_resource,
 				if (md->attribute & EFI_MEMORY_WP) {
 					name = "System ROM";
 					flags |= IORESOURCE_READONLY;
+<<<<<<< HEAD
 				} else if (md->attribute == EFI_MEMORY_UC)
 					name = "Uncached RAM";
 				else
 					name = "System RAM";
+=======
+				} else if (md->attribute == EFI_MEMORY_UC) {
+					name = "Uncached RAM";
+				} else {
+					name = "System RAM";
+					flags |= IORESOURCE_SYSRAM;
+				}
+>>>>>>> v4.9.227
 				break;
 
 			case EFI_ACPI_MEMORY_NVS:
 				name = "ACPI Non-volatile Storage";
+<<<<<<< HEAD
+=======
+				desc = IORES_DESC_ACPI_NV_STORAGE;
+>>>>>>> v4.9.227
 				break;
 
 			case EFI_UNUSABLE_MEMORY:
@@ -1223,6 +1263,14 @@ efi_initialize_iomem_resources(struct resource *code_resource,
 				flags |= IORESOURCE_DISABLED;
 				break;
 
+<<<<<<< HEAD
+=======
+			case EFI_PERSISTENT_MEMORY:
+				name = "Persistent Memory";
+				desc = IORES_DESC_PERSISTENT_MEMORY;
+				break;
+
+>>>>>>> v4.9.227
 			case EFI_RESERVED_TYPE:
 			case EFI_RUNTIME_SERVICES_CODE:
 			case EFI_RUNTIME_SERVICES_DATA:
@@ -1243,6 +1291,10 @@ efi_initialize_iomem_resources(struct resource *code_resource,
 		res->start = md->phys_addr;
 		res->end = md->phys_addr + efi_md_size(md) - 1;
 		res->flags = flags;
+<<<<<<< HEAD
+=======
+		res->desc = desc;
+>>>>>>> v4.9.227
 
 		if (insert_resource(&iomem_resource, res) < 0)
 			kfree(res);

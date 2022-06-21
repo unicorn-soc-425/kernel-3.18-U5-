@@ -177,6 +177,7 @@ static struct mtd_partition axis_partitions[MAX_PARTITIONS] = {
 	},
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_ETRAX_AXISFLASHMAP_MTD0WHOLE
 /* Main flash device */
 static struct mtd_partition main_partition = {
@@ -186,6 +187,8 @@ static struct mtd_partition main_partition = {
 };
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * Probe a chip select for AMD-compatible (JEDEC) or CFI-compatible flash
  * chips in that order (because the amd_flash-driver is faster).
@@ -212,7 +215,11 @@ static struct mtd_info *probe_cs(struct map_info *map_cs)
 /*
  * Probe each chip select individually for flash chips. If there are chips on
  * both cse0 and cse1, the mtd_info structs will be concatenated to one struct
+<<<<<<< HEAD
  * so that MTD partitions can cross chip boundries.
+=======
+ * so that MTD partitions can cross chip boundaries.
+>>>>>>> v4.9.227
  *
  * The only known restriction to how you can mount your chips is that each
  * chip select must hold similar flash chips. But you need external hardware
@@ -369,6 +376,7 @@ static int __init init_axis_flash(void)
 		pidx++;
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_ETRAX_AXISFLASHMAP_MTD0WHOLE
 	if (mymtd) {
 		main_partition.size = mymtd->size;
@@ -379,6 +387,8 @@ static int __init init_axis_flash(void)
 	}
 #endif
 
+=======
+>>>>>>> v4.9.227
         if (mymtd) {
 		if (use_default_ptable) {
 			printk(KERN_INFO " Using default partition table.\n");
@@ -397,7 +407,11 @@ static int __init init_axis_flash(void)
 	if (!romfs_in_flash) {
 		/* Create an RAM device for the root partition (romfs). */
 
+<<<<<<< HEAD
 #if !defined(CONFIG_MTD_MTDRAM) || (CONFIG_MTDRAM_TOTAL_SIZE != 0) || (CONFIG_MTDRAM_ABS_POS != 0)
+=======
+#if !defined(CONFIG_MTD_MTDRAM) || (CONFIG_MTDRAM_TOTAL_SIZE != 0)
+>>>>>>> v4.9.227
 		/* No use trying to boot this kernel from RAM. Panic! */
 		printk(KERN_EMERG "axisflashmap: Cannot create an MTD RAM "
 		       "device due to kernel (mis)configuration!\n");

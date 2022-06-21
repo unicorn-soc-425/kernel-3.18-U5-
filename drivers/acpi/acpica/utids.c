@@ -1,11 +1,19 @@
 /******************************************************************************
  *
+<<<<<<< HEAD
  * Module Name: utids - support for device Ids - HID, UID, CID
+=======
+ * Module Name: utids - support for device Ids - HID, UID, CID, SUB, CLS
+>>>>>>> v4.9.227
  *
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -95,7 +103,11 @@ acpi_ut_execute_HID(struct acpi_namespace_node *device_node,
 
 	hid =
 	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_pnp_device_id) +
+<<<<<<< HEAD
 				 (acpi_size) length);
+=======
+				 (acpi_size)length);
+>>>>>>> v4.9.227
 	if (!hid) {
 		status = AE_NO_MEMORY;
 		goto cleanup;
@@ -111,7 +123,11 @@ acpi_ut_execute_HID(struct acpi_namespace_node *device_node,
 	if (obj_desc->common.type == ACPI_TYPE_INTEGER) {
 		acpi_ex_eisa_id_to_string(hid->string, obj_desc->integer.value);
 	} else {
+<<<<<<< HEAD
 		ACPI_STRCPY(hid->string, obj_desc->string.pointer);
+=======
+		strcpy(hid->string, obj_desc->string.pointer);
+>>>>>>> v4.9.227
 	}
 
 	hid->length = length;
@@ -127,6 +143,7 @@ cleanup:
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_execute_SUB
  *
  * PARAMETERS:  device_node         - Node for the device
@@ -194,6 +211,8 @@ cleanup:
 
 /*******************************************************************************
  *
+=======
+>>>>>>> v4.9.227
  * FUNCTION:    acpi_ut_execute_UID
  *
  * PARAMETERS:  device_node         - Node for the device
@@ -240,7 +259,11 @@ acpi_ut_execute_UID(struct acpi_namespace_node *device_node,
 
 	uid =
 	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_pnp_device_id) +
+<<<<<<< HEAD
 				 (acpi_size) length);
+=======
+				 (acpi_size)length);
+>>>>>>> v4.9.227
 	if (!uid) {
 		status = AE_NO_MEMORY;
 		goto cleanup;
@@ -256,7 +279,11 @@ acpi_ut_execute_UID(struct acpi_namespace_node *device_node,
 	if (obj_desc->common.type == ACPI_TYPE_INTEGER) {
 		acpi_ex_integer_to_string(uid->string, obj_desc->integer.value);
 	} else {
+<<<<<<< HEAD
 		ACPI_STRCPY(uid->string, obj_desc->string.pointer);
+=======
+		strcpy(uid->string, obj_desc->string.pointer);
+>>>>>>> v4.9.227
 	}
 
 	uid->length = length;
@@ -376,7 +403,11 @@ acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
 	/* Area for CID strings starts after the CID PNP_DEVICE_ID array */
 
 	next_id_string = ACPI_CAST_PTR(char, cid_list->ids) +
+<<<<<<< HEAD
 	    ((acpi_size) count * sizeof(struct acpi_pnp_device_id));
+=======
+	    ((acpi_size)count * sizeof(struct acpi_pnp_device_id));
+>>>>>>> v4.9.227
 
 	/* Copy/convert the CIDs to the return buffer */
 
@@ -393,8 +424,12 @@ acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
 
 			/* Copy the String CID from the returned object */
 
+<<<<<<< HEAD
 			ACPI_STRCPY(next_id_string,
 				    cid_objects[i]->string.pointer);
+=======
+			strcpy(next_id_string, cid_objects[i]->string.pointer);
+>>>>>>> v4.9.227
 			length = cid_objects[i]->string.length + 1;
 		}
 
@@ -416,3 +451,95 @@ cleanup:
 	acpi_ut_remove_reference(obj_desc);
 	return_ACPI_STATUS(status);
 }
+<<<<<<< HEAD
+=======
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_ut_execute_CLS
+ *
+ * PARAMETERS:  device_node         - Node for the device
+ *              return_id           - Where the _CLS is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Executes the _CLS control method that returns PCI-defined
+ *              class code of the device. The _CLS value is always a package
+ *              containing PCI class information as a list of integers.
+ *              The returned string has format "BBSSPP", where:
+ *                BB = Base-class code
+ *                SS = Sub-class code
+ *                PP = Programming Interface code
+ *
+ ******************************************************************************/
+
+acpi_status
+acpi_ut_execute_CLS(struct acpi_namespace_node *device_node,
+		    struct acpi_pnp_device_id **return_id)
+{
+	union acpi_operand_object *obj_desc;
+	union acpi_operand_object **cls_objects;
+	u32 count;
+	struct acpi_pnp_device_id *cls;
+	u32 length;
+	acpi_status status;
+	u8 class_code[3] = { 0, 0, 0 };
+
+	ACPI_FUNCTION_TRACE(ut_execute_CLS);
+
+	status = acpi_ut_evaluate_object(device_node, METHOD_NAME__CLS,
+					 ACPI_BTYPE_PACKAGE, &obj_desc);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Get the size of the String to be returned, includes null terminator */
+
+	length = ACPI_PCICLS_STRING_SIZE;
+	cls_objects = obj_desc->package.elements;
+	count = obj_desc->package.count;
+
+	if (obj_desc->common.type == ACPI_TYPE_PACKAGE) {
+		if (count > 0
+		    && cls_objects[0]->common.type == ACPI_TYPE_INTEGER) {
+			class_code[0] = (u8)cls_objects[0]->integer.value;
+		}
+		if (count > 1
+		    && cls_objects[1]->common.type == ACPI_TYPE_INTEGER) {
+			class_code[1] = (u8)cls_objects[1]->integer.value;
+		}
+		if (count > 2
+		    && cls_objects[2]->common.type == ACPI_TYPE_INTEGER) {
+			class_code[2] = (u8)cls_objects[2]->integer.value;
+		}
+	}
+
+	/* Allocate a buffer for the CLS */
+
+	cls =
+	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_pnp_device_id) +
+				 (acpi_size)length);
+	if (!cls) {
+		status = AE_NO_MEMORY;
+		goto cleanup;
+	}
+
+	/* Area for the string starts after PNP_DEVICE_ID struct */
+
+	cls->string =
+	    ACPI_ADD_PTR(char, cls, sizeof(struct acpi_pnp_device_id));
+
+	/* Simply copy existing string */
+
+	acpi_ex_pci_cls_to_string(cls->string, class_code);
+	cls->length = length;
+	*return_id = cls;
+
+cleanup:
+
+	/* On exit, we must delete the return object */
+
+	acpi_ut_remove_reference(obj_desc);
+	return_ACPI_STATUS(status);
+}
+>>>>>>> v4.9.227

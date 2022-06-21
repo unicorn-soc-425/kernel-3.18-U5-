@@ -108,9 +108,15 @@ static void *gcov_seq_next(struct seq_file *seq, void *data, loff_t *pos)
 {
 	struct gcov_iterator *iter = data;
 
+<<<<<<< HEAD
 	if (gcov_iter_next(iter))
 		return NULL;
 	(*pos)++;
+=======
+	(*pos)++;
+	if (gcov_iter_next(iter))
+		return NULL;
+>>>>>>> v4.9.227
 
 	return iter;
 }

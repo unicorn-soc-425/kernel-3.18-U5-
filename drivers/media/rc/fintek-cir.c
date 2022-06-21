@@ -33,7 +33,10 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <media/rc-core.h>
+<<<<<<< HEAD
 #include <linux/pci_ids.h>
+=======
+>>>>>>> v4.9.227
 
 #include "fintek-cir.h"
 
@@ -684,6 +687,7 @@ static struct pnp_driver fintek_driver = {
 	.shutdown	= fintek_shutdown,
 };
 
+<<<<<<< HEAD
 static int __init fintek_init(void)
 {
 	return pnp_register_driver(&fintek_driver);
@@ -694,6 +698,8 @@ static void __exit fintek_exit(void)
 	pnp_unregister_driver(&fintek_driver);
 }
 
+=======
+>>>>>>> v4.9.227
 module_param(debug, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Enable debugging output");
 
@@ -703,5 +709,9 @@ MODULE_DESCRIPTION(FINTEK_DESCRIPTION " driver");
 MODULE_AUTHOR("Jarod Wilson <jarod@redhat.com>");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 module_init(fintek_init);
 module_exit(fintek_exit);
+=======
+module_pnp_driver(fintek_driver);
+>>>>>>> v4.9.227

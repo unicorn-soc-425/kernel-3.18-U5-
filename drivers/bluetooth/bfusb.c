@@ -324,7 +324,11 @@ static inline int bfusb_recv_block(struct bfusb_data *data, int hdr, unsigned ch
 			return -ENOMEM;
 		}
 
+<<<<<<< HEAD
 		bt_cb(skb)->pkt_type = pkt_type;
+=======
+		hci_skb_pkt_type(skb) = pkt_type;
+>>>>>>> v4.9.227
 
 		data->reassembly = skb;
 	} else {
@@ -422,17 +426,23 @@ static int bfusb_open(struct hci_dev *hdev)
 
 	BT_DBG("hdev %p bfusb %p", hdev, data);
 
+<<<<<<< HEAD
 	if (test_and_set_bit(HCI_RUNNING, &hdev->flags))
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	write_lock_irqsave(&data->lock, flags);
 
 	err = bfusb_rx_submit(data, NULL);
 	if (!err) {
 		for (i = 1; i < BFUSB_MAX_BULK_RX; i++)
 			bfusb_rx_submit(data, NULL);
+<<<<<<< HEAD
 	} else {
 		clear_bit(HCI_RUNNING, &hdev->flags);
+=======
+>>>>>>> v4.9.227
 	}
 
 	write_unlock_irqrestore(&data->lock, flags);
@@ -458,9 +468,12 @@ static int bfusb_close(struct hci_dev *hdev)
 
 	BT_DBG("hdev %p bfusb %p", hdev, data);
 
+<<<<<<< HEAD
 	if (!test_and_clear_bit(HCI_RUNNING, &hdev->flags))
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	write_lock_irqsave(&data->lock, flags);
 	write_unlock_irqrestore(&data->lock, flags);
 
@@ -477,12 +490,19 @@ static int bfusb_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	unsigned char buf[3];
 	int sent = 0, size, count;
 
+<<<<<<< HEAD
 	BT_DBG("hdev %p skb %p type %d len %d", hdev, skb, bt_cb(skb)->pkt_type, skb->len);
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		return -EBUSY;
 
 	switch (bt_cb(skb)->pkt_type) {
+=======
+	BT_DBG("hdev %p skb %p type %d len %d", hdev, skb,
+	       hci_skb_pkt_type(skb), skb->len);
+
+	switch (hci_skb_pkt_type(skb)) {
+>>>>>>> v4.9.227
 	case HCI_COMMAND_PKT:
 		hdev->stat.cmd_tx++;
 		break;
@@ -492,10 +512,17 @@ static int bfusb_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	case HCI_SCODATA_PKT:
 		hdev->stat.sco_tx++;
 		break;
+<<<<<<< HEAD
 	};
 
 	/* Prepend skb with frame type */
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
+=======
+	}
+
+	/* Prepend skb with frame type */
+	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
+>>>>>>> v4.9.227
 
 	count = skb->len;
 
@@ -646,10 +673,15 @@ static int bfusb_probe(struct usb_interface *intf, const struct usb_device_id *i
 
 	/* Initialize control structure and load firmware */
 	data = devm_kzalloc(&intf->dev, sizeof(struct bfusb_data), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!data) {
 		BT_ERR("Can't allocate memory for control structure");
 		goto done;
 	}
+=======
+	if (!data)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	data->udev = udev;
 	data->bulk_in_ep    = bulk_in_ep->desc.bEndpointAddress;
@@ -696,6 +728,11 @@ static int bfusb_probe(struct usb_interface *intf, const struct usb_device_id *i
 	hdev->flush = bfusb_flush;
 	hdev->send  = bfusb_send_frame;
 
+<<<<<<< HEAD
+=======
+	set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, &hdev->quirks);
+
+>>>>>>> v4.9.227
 	if (hci_register_dev(hdev) < 0) {
 		BT_ERR("Can't register HCI device");
 		hci_free_dev(hdev);

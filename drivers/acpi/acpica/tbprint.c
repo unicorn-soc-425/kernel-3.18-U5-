@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,9 +77,16 @@ static void acpi_tb_fix_string(char *string, acpi_size length)
 {
 
 	while (length && *string) {
+<<<<<<< HEAD
 		if (!ACPI_IS_PRINT(*string)) {
 			*string = '?';
 		}
+=======
+		if (!isprint((int)*string)) {
+			*string = '?';
+		}
+
+>>>>>>> v4.9.227
 		string++;
 		length--;
 	}
@@ -100,7 +111,11 @@ acpi_tb_cleanup_table_header(struct acpi_table_header *out_header,
 			     struct acpi_table_header *header)
 {
 
+<<<<<<< HEAD
 	ACPI_MEMCPY(out_header, header, sizeof(struct acpi_table_header));
+=======
+	memcpy(out_header, header, sizeof(struct acpi_table_header));
+>>>>>>> v4.9.227
 
 	acpi_tb_fix_string(out_header->signature, ACPI_NAME_SIZE);
 	acpi_tb_fix_string(out_header->oem_id, ACPI_OEM_ID_SIZE);
@@ -131,19 +146,32 @@ acpi_tb_print_table_header(acpi_physical_address address,
 
 		/* FACS only has signature and length fields */
 
+<<<<<<< HEAD
 		ACPI_INFO((AE_INFO, "%-4.4s 0x%8.8X%8.8X %06X",
+=======
+		ACPI_INFO(("%-4.4s 0x%8.8X%8.8X %06X",
+>>>>>>> v4.9.227
 			   header->signature, ACPI_FORMAT_UINT64(address),
 			   header->length));
 	} else if (ACPI_VALIDATE_RSDP_SIG(header->signature)) {
 
 		/* RSDP has no common fields */
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(local_header.oem_id,
 			    ACPI_CAST_PTR(struct acpi_table_rsdp,
 					  header)->oem_id, ACPI_OEM_ID_SIZE);
 		acpi_tb_fix_string(local_header.oem_id, ACPI_OEM_ID_SIZE);
 
 		ACPI_INFO((AE_INFO, "RSDP 0x%8.8X%8.8X %06X (v%.2d %-6.6s)",
+=======
+		memcpy(local_header.oem_id,
+		       ACPI_CAST_PTR(struct acpi_table_rsdp, header)->oem_id,
+		       ACPI_OEM_ID_SIZE);
+		acpi_tb_fix_string(local_header.oem_id, ACPI_OEM_ID_SIZE);
+
+		ACPI_INFO(("RSDP 0x%8.8X%8.8X %06X (v%.2d %-6.6s)",
+>>>>>>> v4.9.227
 			   ACPI_FORMAT_UINT64(address),
 			   (ACPI_CAST_PTR(struct acpi_table_rsdp, header)->
 			    revision >
@@ -157,8 +185,12 @@ acpi_tb_print_table_header(acpi_physical_address address,
 
 		acpi_tb_cleanup_table_header(&local_header, header);
 
+<<<<<<< HEAD
 		ACPI_INFO((AE_INFO,
 			   "%-4.4s 0x%8.8X%8.8X"
+=======
+		ACPI_INFO(("%-4.4s 0x%8.8X%8.8X"
+>>>>>>> v4.9.227
 			   " %06X (v%.2d %-6.6s %-8.8s %08X %-4.4s %08X)",
 			   local_header.signature, ACPI_FORMAT_UINT64(address),
 			   local_header.length, local_header.revision,

@@ -264,8 +264,12 @@ static int eeti_ts_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int eeti_ts_suspend(struct device *dev)
+=======
+static int __maybe_unused eeti_ts_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct eeti_ts_priv *priv = i2c_get_clientdata(client);
@@ -284,7 +288,11 @@ static int eeti_ts_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int eeti_ts_resume(struct device *dev)
+=======
+static int __maybe_unused eeti_ts_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct eeti_ts_priv *priv = i2c_get_clientdata(client);
@@ -302,7 +310,10 @@ static int eeti_ts_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(eeti_ts_pm, eeti_ts_suspend, eeti_ts_resume);
 

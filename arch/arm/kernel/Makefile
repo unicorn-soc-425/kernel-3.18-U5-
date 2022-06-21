@@ -16,7 +16,11 @@ CFLAGS_REMOVE_return_address.o = -pg
 # Object file lists.
 
 obj-y		:= elf.o entry-common.o irq.o opcodes.o \
+<<<<<<< HEAD
 		   process.o ptrace.o return_address.o \
+=======
+		   process.o ptrace.o reboot.o return_address.o \
+>>>>>>> v4.9.227
 		   setup.o signal.o sigreturn_codes.o \
 		   stacktrace.o sys_arm.o time.o traps.o
 
@@ -30,12 +34,20 @@ else
 obj-y		+= entry-armv.o
 endif
 
+<<<<<<< HEAD
 obj-$(CONFIG_OC_ETM)		+= etm.o
+=======
+obj-$(CONFIG_MMU)		+= bugs.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_CPU_IDLE)		+= cpuidle.o
 obj-$(CONFIG_ISA_DMA_API)	+= dma.o
 obj-$(CONFIG_FIQ)		+= fiq.o fiqasm.o
 obj-$(CONFIG_MODULES)		+= armksyms.o module.o
+<<<<<<< HEAD
 obj-$(CONFIG_ARTHUR)		+= arthur.o
+=======
+obj-$(CONFIG_ARM_MODULE_PLTS)	+= module-plts.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_ISA_DMA)		+= dma-isa.o
 obj-$(CONFIG_PCI)		+= bios32.o isa.o
 obj-$(CONFIG_ARM_CPU_SUSPEND)	+= sleep.o suspend.o
@@ -47,10 +59,15 @@ endif
 obj-$(CONFIG_HAVE_ARM_SCU)	+= smp_scu.o
 obj-$(CONFIG_HAVE_ARM_TWD)	+= smp_twd.o
 obj-$(CONFIG_ARM_ARCH_TIMER)	+= arch_timer.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_FUNCTION_TRACER)	+= entry-ftrace.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_DYNAMIC_FTRACE)	+= ftrace.o insn.o
 obj-$(CONFIG_FUNCTION_GRAPH_TRACER)	+= ftrace.o insn.o
 obj-$(CONFIG_JUMP_LABEL)	+= jump_label.o insn.o patch.o
 obj-$(CONFIG_KEXEC)		+= machine_kexec.o relocate_kernel.o
+<<<<<<< HEAD
 obj-$(CONFIG_UPROBES)		+= probes.o probes-arm.o uprobes.o uprobes-arm.o
 obj-$(CONFIG_KPROBES)		+= probes.o kprobes.o kprobes-common.o patch.o
 ifdef CONFIG_THUMB2_KERNEL
@@ -65,6 +82,10 @@ test-kprobes-objs		+= kprobes-test-thumb.o
 else
 test-kprobes-objs		+= kprobes-test-arm.o
 endif
+=======
+# Main staffs in KPROBES are in arch/arm/probes/ .
+obj-$(CONFIG_KPROBES)		+= patch.o insn.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_OABI_COMPAT)	+= sys_oabi-compat.o
 obj-$(CONFIG_ARM_THUMBEE)	+= thumbee.o
 obj-$(CONFIG_KGDB)		+= kgdb.o patch.o
@@ -82,24 +103,48 @@ obj-$(CONFIG_CPU_MOHAWK)	+= xscale-cp0.o
 obj-$(CONFIG_CPU_PJ4)		+= pj4-cp0.o
 obj-$(CONFIG_CPU_PJ4B)		+= pj4-cp0.o
 obj-$(CONFIG_IWMMXT)		+= iwmmxt.o
+<<<<<<< HEAD
 obj-$(CONFIG_PERF_EVENTS)	+= perf_regs.o
 obj-$(CONFIG_HW_PERF_EVENTS)	+= perf_event.o perf_event_cpu.o
 AFLAGS_iwmmxt.o			:= -Wa,-mcpu=iwmmxt
 obj-$(CONFIG_ARM_CPU_TOPOLOGY)  += topology.o
 obj-$(CONFIG_VDSO)		+= vdso.o
+=======
+obj-$(CONFIG_PERF_EVENTS)	+= perf_regs.o perf_callchain.o
+obj-$(CONFIG_HW_PERF_EVENTS)	+= perf_event_xscale.o perf_event_v6.o \
+				   perf_event_v7.o
+AFLAGS_iwmmxt.o			:= -Wa,-mcpu=iwmmxt
+obj-$(CONFIG_ARM_CPU_TOPOLOGY)  += topology.o
+obj-$(CONFIG_VDSO)		+= vdso.o
+obj-$(CONFIG_EFI)		+= efi.o
+>>>>>>> v4.9.227
 
 ifneq ($(CONFIG_ARCH_EBSA110),y)
   obj-y		+= io.o
 endif
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_PARAVIRT)	+= paravirt.o
+>>>>>>> v4.9.227
 
 head-y			:= head$(MMUEXT).o
 obj-$(CONFIG_DEBUG_LL)	+= debug.o
 obj-$(CONFIG_EARLY_PRINTK)	+= early_printk.o
 
 obj-$(CONFIG_ARM_VIRT_EXT)	+= hyp-stub.o
+<<<<<<< HEAD
 ifeq ($(CONFIG_ARM_PSCI),y)
 obj-y				+= psci.o psci-call.o
 obj-$(CONFIG_SMP)		+= psci_smp.o
 endif
 
+=======
+AFLAGS_hyp-stub.o		:=-Wa,-march=armv7-a
+ifeq ($(CONFIG_ARM_PSCI),y)
+obj-$(CONFIG_SMP)		+= psci_smp.o
+endif
+
+obj-$(CONFIG_HAVE_ARM_SMCCC)	+= smccc-call.o
+
+>>>>>>> v4.9.227
 extra-y := $(head-y) vmlinux.lds

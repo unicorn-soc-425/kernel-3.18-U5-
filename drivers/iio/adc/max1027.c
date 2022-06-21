@@ -426,6 +426,10 @@ static int max1027_probe(struct spi_device *spi)
 
 	indio_dev->name = spi_get_device_id(spi)->name;
 	indio_dev->dev.parent = &spi->dev;
+<<<<<<< HEAD
+=======
+	indio_dev->dev.of_node = spi->dev.of_node;
+>>>>>>> v4.9.227
 	indio_dev->info = &max1027_info;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->channels = st->info->channels;
@@ -436,7 +440,11 @@ static int max1027_probe(struct spi_device *spi)
 				  indio_dev->num_channels * 2,
 				  GFP_KERNEL);
 	if (st->buffer == NULL) {
+<<<<<<< HEAD
 		dev_err(&indio_dev->dev, "Can't allocate bufffer\n");
+=======
+		dev_err(&indio_dev->dev, "Can't allocate buffer\n");
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	}
 
@@ -470,6 +478,17 @@ static int max1027_probe(struct spi_device *spi)
 		goto fail_dev_register;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Internal reset */
+	st->reg = MAX1027_RST_REG;
+	ret = spi_write(st->spi, &st->reg, 1);
+	if (ret < 0) {
+		dev_err(&indio_dev->dev, "Failed to reset the ADC\n");
+		return ret;
+	}
+
+>>>>>>> v4.9.227
 	/* Disable averaging */
 	st->reg = MAX1027_AVG_REG;
 	ret = spi_write(st->spi, &st->reg, 1);
@@ -508,7 +527,11 @@ static int max1027_remove(struct spi_device *spi)
 static struct spi_driver max1027_driver = {
 	.driver = {
 		.name	= "max1027",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(max1027_adc_dt_ids),
+>>>>>>> v4.9.227
 	},
 	.probe		= max1027_probe,
 	.remove		= max1027_remove,

@@ -17,6 +17,10 @@
 #include <linux/gfp.h>
 #include <linux/crash_dump.h>
 #include <linux/debug_locks.h>
+<<<<<<< HEAD
+=======
+#include <asm/diag.h>
+>>>>>>> v4.9.227
 #include <asm/ipl.h>
 #include <asm/smp.h>
 #include <asm/setup.h>
@@ -120,8 +124,14 @@ static char *dump_type_str(enum dump_type type)
  * Must be in data section since the bss section
  * is not cleared when these are accessed.
  */
+<<<<<<< HEAD
 static u16 ipl_devno __attribute__((__section__(".data"))) = 0;
 u32 ipl_flags __attribute__((__section__(".data"))) = 0;
+=======
+static u8 ipl_ssid __section(.data) = 0;
+static u16 ipl_devno __section(.data) = 0;
+u32 ipl_flags __section(.data) = 0;
+>>>>>>> v4.9.227
 
 enum ipl_method {
 	REIPL_METHOD_CCW_CIO,
@@ -165,28 +175,50 @@ static struct ipl_parameter_block *dump_block_ccw;
 
 static struct sclp_ipl_info sclp_ipl_info;
 
+<<<<<<< HEAD
 int diag308(unsigned long subcode, void *addr)
+=======
+static inline int __diag308(unsigned long subcode, void *addr)
+>>>>>>> v4.9.227
 {
 	register unsigned long _addr asm("0") = (unsigned long) addr;
 	register unsigned long _rc asm("1") = 0;
 
 	asm volatile(
 		"	diag	%0,%2,0x308\n"
+<<<<<<< HEAD
 		"0:\n"
+=======
+		"0:	nopr	%%r7\n"
+>>>>>>> v4.9.227
 		EX_TABLE(0b,0b)
 		: "+d" (_addr), "+d" (_rc)
 		: "d" (subcode) : "cc", "memory");
 	return _rc;
 }
+<<<<<<< HEAD
+=======
+
+int diag308(unsigned long subcode, void *addr)
+{
+	diag_stat_inc(DIAG_STAT_X308);
+	return __diag308(subcode, addr);
+}
+>>>>>>> v4.9.227
 EXPORT_SYMBOL_GPL(diag308);
 
 /* SYSFS */
 
+<<<<<<< HEAD
 #define DEFINE_IPL_ATTR_RO(_prefix, _name, _format, _value)		\
+=======
+#define IPL_ATTR_SHOW_FN(_prefix, _name, _format, args...)		\
+>>>>>>> v4.9.227
 static ssize_t sys_##_prefix##_##_name##_show(struct kobject *kobj,	\
 		struct kobj_attribute *attr,				\
 		char *page)						\
 {									\
+<<<<<<< HEAD
 	return sprintf(page, _format, _value);				\
 }									\
 static struct kobj_attribute sys_##_prefix##_##_name##_attr =		\
@@ -200,6 +232,45 @@ static ssize_t sys_##_prefix##_##_name##_show(struct kobject *kobj,	\
 	return sprintf(page, _fmt_out,					\
 			(unsigned long long) _value);			\
 }									\
+=======
+	return snprintf(page, PAGE_SIZE, _format, ##args);		\
+}
+
+#define IPL_ATTR_CCW_STORE_FN(_prefix, _name, _ipl_blk)			\
+static ssize_t sys_##_prefix##_##_name##_store(struct kobject *kobj,	\
+		struct kobj_attribute *attr,				\
+		const char *buf, size_t len)				\
+{									\
+	unsigned long long ssid, devno;					\
+									\
+	if (sscanf(buf, "0.%llx.%llx\n", &ssid, &devno) != 2)		\
+		return -EINVAL;						\
+									\
+	if (ssid > __MAX_SSID || devno > __MAX_SUBCHANNEL)		\
+		return -EINVAL;						\
+									\
+	_ipl_blk.ssid = ssid;						\
+	_ipl_blk.devno = devno;						\
+	return len;							\
+}
+
+#define DEFINE_IPL_CCW_ATTR_RW(_prefix, _name, _ipl_blk)		\
+IPL_ATTR_SHOW_FN(_prefix, _name, "0.%x.%04x\n",				\
+		 _ipl_blk.ssid, _ipl_blk.devno);			\
+IPL_ATTR_CCW_STORE_FN(_prefix, _name, _ipl_blk);			\
+static struct kobj_attribute sys_##_prefix##_##_name##_attr =		\
+	__ATTR(_name, (S_IRUGO | S_IWUSR),				\
+	       sys_##_prefix##_##_name##_show,				\
+	       sys_##_prefix##_##_name##_store)				\
+
+#define DEFINE_IPL_ATTR_RO(_prefix, _name, _format, _value)		\
+IPL_ATTR_SHOW_FN(_prefix, _name, _format, _value)			\
+static struct kobj_attribute sys_##_prefix##_##_name##_attr =		\
+	__ATTR(_name, S_IRUGO, sys_##_prefix##_##_name##_show, NULL)
+
+#define DEFINE_IPL_ATTR_RW(_prefix, _name, _fmt_out, _fmt_in, _value)	\
+IPL_ATTR_SHOW_FN(_prefix, _name, _fmt_out, (unsigned long long) _value)	\
+>>>>>>> v4.9.227
 static ssize_t sys_##_prefix##_##_name##_store(struct kobject *kobj,	\
 		struct kobj_attribute *attr,				\
 		const char *buf, size_t len)				\
@@ -213,6 +284,7 @@ static ssize_t sys_##_prefix##_##_name##_store(struct kobject *kobj,	\
 static struct kobj_attribute sys_##_prefix##_##_name##_attr =		\
 	__ATTR(_name,(S_IRUGO | S_IWUSR),				\
 			sys_##_prefix##_##_name##_show,			\
+<<<<<<< HEAD
 			sys_##_prefix##_##_name##_store);
 
 #define DEFINE_IPL_ATTR_STR_RW(_prefix, _name, _fmt_out, _fmt_in, _value)\
@@ -222,6 +294,12 @@ static ssize_t sys_##_prefix##_##_name##_show(struct kobject *kobj,	\
 {									\
 	return sprintf(page, _fmt_out, _value);				\
 }									\
+=======
+			sys_##_prefix##_##_name##_store)
+
+#define DEFINE_IPL_ATTR_STR_RW(_prefix, _name, _fmt_out, _fmt_in, _value)\
+IPL_ATTR_SHOW_FN(_prefix, _name, _fmt_out, _value)			\
+>>>>>>> v4.9.227
 static ssize_t sys_##_prefix##_##_name##_store(struct kobject *kobj,	\
 		struct kobj_attribute *attr,				\
 		const char *buf, size_t len)				\
@@ -233,7 +311,11 @@ static ssize_t sys_##_prefix##_##_name##_store(struct kobject *kobj,	\
 static struct kobj_attribute sys_##_prefix##_##_name##_attr =		\
 	__ATTR(_name,(S_IRUGO | S_IWUSR),				\
 			sys_##_prefix##_##_name##_show,			\
+<<<<<<< HEAD
 			sys_##_prefix##_##_name##_store);
+=======
+			sys_##_prefix##_##_name##_store)
+>>>>>>> v4.9.227
 
 static void make_attrs_ro(struct attribute **attrs)
 {
@@ -396,7 +478,11 @@ static ssize_t sys_ipl_device_show(struct kobject *kobj,
 
 	switch (ipl_info.type) {
 	case IPL_TYPE_CCW:
+<<<<<<< HEAD
 		return sprintf(page, "0.0.%04x\n", ipl_devno);
+=======
+		return sprintf(page, "0.%x.%04x\n", ipl_ssid, ipl_devno);
+>>>>>>> v4.9.227
 	case IPL_TYPE_FCP:
 	case IPL_TYPE_FCP_DUMP:
 		return sprintf(page, "0.0.%04x\n", ipl->ipl_info.fcp.devno);
@@ -415,6 +501,7 @@ static ssize_t ipl_parameter_read(struct file *filp, struct kobject *kobj,
 	return memory_read_from_buffer(buf, count, &off, IPL_PARMBLOCK_START,
 					IPL_PARMBLOCK_SIZE);
 }
+<<<<<<< HEAD
 
 static struct bin_attribute ipl_parameter_attr = {
 	.attr = {
@@ -424,6 +511,11 @@ static struct bin_attribute ipl_parameter_attr = {
 	.size = PAGE_SIZE,
 	.read = &ipl_parameter_read,
 };
+=======
+static struct bin_attribute ipl_parameter_attr =
+	__BIN_ATTR(binary_parameter, S_IRUGO, ipl_parameter_read, NULL,
+		   PAGE_SIZE);
+>>>>>>> v4.9.227
 
 static ssize_t ipl_scp_data_read(struct file *filp, struct kobject *kobj,
 				 struct bin_attribute *attr, char *buf,
@@ -434,6 +526,7 @@ static ssize_t ipl_scp_data_read(struct file *filp, struct kobject *kobj,
 
 	return memory_read_from_buffer(buf, count, &off, scp_data, size);
 }
+<<<<<<< HEAD
 
 static struct bin_attribute ipl_scp_data_attr = {
 	.attr = {
@@ -442,6 +535,15 @@ static struct bin_attribute ipl_scp_data_attr = {
 	},
 	.size = PAGE_SIZE,
 	.read = ipl_scp_data_read,
+=======
+static struct bin_attribute ipl_scp_data_attr =
+	__BIN_ATTR(scp_data, S_IRUGO, ipl_scp_data_read, NULL, PAGE_SIZE);
+
+static struct bin_attribute *ipl_fcp_bin_attrs[] = {
+	&ipl_parameter_attr,
+	&ipl_scp_data_attr,
+	NULL,
+>>>>>>> v4.9.227
 };
 
 /* FCP ipl device attributes */
@@ -484,6 +586,10 @@ static struct attribute *ipl_fcp_attrs[] = {
 
 static struct attribute_group ipl_fcp_attr_group = {
 	.attrs = ipl_fcp_attrs,
+<<<<<<< HEAD
+=======
+	.bin_attrs = ipl_fcp_bin_attrs,
+>>>>>>> v4.9.227
 };
 
 /* CCW ipl device attributes */
@@ -540,6 +646,7 @@ static struct attribute_group ipl_unknown_attr_group = {
 
 static struct kset *ipl_kset;
 
+<<<<<<< HEAD
 static int __init ipl_register_fcp_files(void)
 {
 	int rc;
@@ -565,6 +672,12 @@ out:
 static void __ipl_run(void *unused)
 {
 	diag308(DIAG308_IPL, NULL);
+=======
+static void __ipl_run(void *unused)
+{
+	__bpon();
+	diag308(DIAG308_LOAD_CLEAR, NULL);
+>>>>>>> v4.9.227
 	if (MACHINE_IS_VM)
 		__cpcmd("IPL", NULL, 0, NULL);
 	else if (ipl_info.type == IPL_TYPE_CCW)
@@ -596,7 +709,11 @@ static int __init ipl_init(void)
 		break;
 	case IPL_TYPE_FCP:
 	case IPL_TYPE_FCP_DUMP:
+<<<<<<< HEAD
 		rc = ipl_register_fcp_files();
+=======
+		rc = sysfs_create_group(&ipl_kset->kobj, &ipl_fcp_attr_group);
+>>>>>>> v4.9.227
 		break;
 	case IPL_TYPE_NSS:
 		rc = sysfs_create_group(&ipl_kset->kobj, &ipl_nss_attr_group);
@@ -716,6 +833,7 @@ static ssize_t reipl_fcp_scpdata_write(struct file *filp, struct kobject *kobj,
 				       struct bin_attribute *attr,
 				       char *buf, loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	size_t padding;
 	size_t scpdata_len;
 
@@ -731,6 +849,16 @@ static ssize_t reipl_fcp_scpdata_write(struct file *filp, struct kobject *kobj,
 	memcpy(reipl_block_fcp->ipl_info.fcp.scp_data, buf + off, count);
 	scpdata_len = off + count;
 
+=======
+	size_t scpdata_len = count;
+	size_t padding;
+
+
+	if (off)
+		return -EINVAL;
+
+	memcpy(reipl_block_fcp->ipl_info.fcp.scp_data, buf, count);
+>>>>>>> v4.9.227
 	if (scpdata_len % 8) {
 		padding = 8 - (scpdata_len % 8);
 		memset(reipl_block_fcp->ipl_info.fcp.scp_data + scpdata_len,
@@ -744,6 +872,7 @@ static ssize_t reipl_fcp_scpdata_write(struct file *filp, struct kobject *kobj,
 
 	return count;
 }
+<<<<<<< HEAD
 
 static struct bin_attribute sys_reipl_fcp_scp_data_attr = {
 	.attr = {
@@ -753,6 +882,15 @@ static struct bin_attribute sys_reipl_fcp_scp_data_attr = {
 	.size = PAGE_SIZE,
 	.read = reipl_fcp_scpdata_read,
 	.write = reipl_fcp_scpdata_write,
+=======
+static struct bin_attribute sys_reipl_fcp_scp_data_attr =
+	__BIN_ATTR(scp_data, (S_IRUGO | S_IWUSR), reipl_fcp_scpdata_read,
+		   reipl_fcp_scpdata_write, DIAG308_SCPDATA_SIZE);
+
+static struct bin_attribute *reipl_fcp_bin_attrs[] = {
+	&sys_reipl_fcp_scp_data_attr,
+	NULL,
+>>>>>>> v4.9.227
 };
 
 DEFINE_IPL_ATTR_RW(reipl_fcp, wwpn, "0x%016llx\n", "%llx\n",
@@ -842,12 +980,20 @@ static struct attribute *reipl_fcp_attrs[] = {
 
 static struct attribute_group reipl_fcp_attr_group = {
 	.attrs = reipl_fcp_attrs,
+<<<<<<< HEAD
 };
 
 /* CCW reipl device attributes */
 
 DEFINE_IPL_ATTR_RW(reipl_ccw, device, "0.0.%04llx\n", "0.0.%llx\n",
 	reipl_block_ccw->ipl_info.ccw.devno);
+=======
+	.bin_attrs = reipl_fcp_bin_attrs,
+};
+
+/* CCW reipl device attributes */
+DEFINE_IPL_CCW_ATTR_RW(reipl_ccw, device, reipl_block_ccw->ipl_info.ccw);
+>>>>>>> v4.9.227
 
 /* NSS wrapper */
 static ssize_t reipl_nss_loadparm_show(struct kobject *kobj,
@@ -1087,8 +1233,13 @@ static void __reipl_run(void *unused)
 
 	switch (reipl_method) {
 	case REIPL_METHOD_CCW_CIO:
+<<<<<<< HEAD
 		devid.devno = reipl_block_ccw->ipl_info.ccw.devno;
 		devid.ssid  = 0;
+=======
+		devid.ssid  = reipl_block_ccw->ipl_info.ccw.ssid;
+		devid.devno = reipl_block_ccw->ipl_info.ccw.devno;
+>>>>>>> v4.9.227
 		reipl_ccw_dev(&devid);
 		break;
 	case REIPL_METHOD_CCW_VM:
@@ -1097,6 +1248,7 @@ static void __reipl_run(void *unused)
 		break;
 	case REIPL_METHOD_CCW_DIAG:
 		diag308(DIAG308_SET, reipl_block_ccw);
+<<<<<<< HEAD
 		diag308(DIAG308_IPL, NULL);
 		break;
 	case REIPL_METHOD_FCP_RW_DIAG:
@@ -1105,13 +1257,30 @@ static void __reipl_run(void *unused)
 		break;
 	case REIPL_METHOD_FCP_RO_DIAG:
 		diag308(DIAG308_IPL, NULL);
+=======
+		if (MACHINE_IS_LPAR)
+			diag308(DIAG308_LOAD_NORMAL_DUMP, NULL);
+		else
+			diag308(DIAG308_LOAD_CLEAR, NULL);
+		break;
+	case REIPL_METHOD_FCP_RW_DIAG:
+		diag308(DIAG308_SET, reipl_block_fcp);
+		diag308(DIAG308_LOAD_CLEAR, NULL);
+		break;
+	case REIPL_METHOD_FCP_RO_DIAG:
+		diag308(DIAG308_LOAD_CLEAR, NULL);
+>>>>>>> v4.9.227
 		break;
 	case REIPL_METHOD_FCP_RO_VM:
 		__cpcmd("IPL", NULL, 0, NULL);
 		break;
 	case REIPL_METHOD_NSS_DIAG:
 		diag308(DIAG308_SET, reipl_block_nss);
+<<<<<<< HEAD
 		diag308(DIAG308_IPL, NULL);
+=======
+		diag308(DIAG308_LOAD_CLEAR, NULL);
+>>>>>>> v4.9.227
 		break;
 	case REIPL_METHOD_NSS:
 		get_ipl_string(buf, reipl_block_nss, REIPL_METHOD_NSS);
@@ -1120,7 +1289,11 @@ static void __reipl_run(void *unused)
 	case REIPL_METHOD_DEFAULT:
 		if (MACHINE_IS_VM)
 			__cpcmd("IPL", NULL, 0, NULL);
+<<<<<<< HEAD
 		diag308(DIAG308_IPL, NULL);
+=======
+		diag308(DIAG308_LOAD_CLEAR, NULL);
+>>>>>>> v4.9.227
 		break;
 	case REIPL_METHOD_FCP_DUMP:
 		break;
@@ -1223,6 +1396,10 @@ static int __init reipl_ccw_init(void)
 
 	reipl_block_ccw_init(reipl_block_ccw);
 	if (ipl_info.type == IPL_TYPE_CCW) {
+<<<<<<< HEAD
+=======
+		reipl_block_ccw->ipl_info.ccw.ssid = ipl_ssid;
+>>>>>>> v4.9.227
 		reipl_block_ccw->ipl_info.ccw.devno = ipl_devno;
 		reipl_block_ccw_fill_parms(reipl_block_ccw);
 	}
@@ -1262,6 +1439,7 @@ static int __init reipl_fcp_init(void)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	rc = sysfs_create_bin_file(&reipl_fcp_kset->kobj,
 				   &sys_reipl_fcp_scp_data_attr);
 	if (rc) {
@@ -1271,6 +1449,8 @@ static int __init reipl_fcp_init(void)
 		return rc;
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (ipl_info.type == IPL_TYPE_FCP) {
 		memcpy(reipl_block_fcp, IPL_PARMBLOCK_START, PAGE_SIZE);
 		/*
@@ -1376,9 +1556,13 @@ static struct attribute_group dump_fcp_attr_group = {
 };
 
 /* CCW dump device attributes */
+<<<<<<< HEAD
 
 DEFINE_IPL_ATTR_RW(dump_ccw, device, "0.0.%04llx\n", "0.0.%llx\n",
 		   dump_block_ccw->ipl_info.ccw.devno);
+=======
+DEFINE_IPL_CCW_ATTR_RW(dump_ccw, device, dump_block_ccw->ipl_info.ccw);
+>>>>>>> v4.9.227
 
 static struct attribute *dump_ccw_attrs[] = {
 	&sys_dump_ccw_device_attr.attr,
@@ -1445,7 +1629,11 @@ static void diag308_dump(void *dump_block)
 {
 	diag308(DIAG308_SET, dump_block);
 	while (1) {
+<<<<<<< HEAD
 		if (diag308(DIAG308_DUMP, NULL) != 0x302)
+=======
+		if (diag308(DIAG308_LOAD_NORMAL_DUMP, NULL) != 0x302)
+>>>>>>> v4.9.227
 			break;
 		udelay_simple(USEC_PER_SEC);
 	}
@@ -1458,8 +1646,13 @@ static void __dump_run(void *unused)
 
 	switch (dump_method) {
 	case DUMP_METHOD_CCW_CIO:
+<<<<<<< HEAD
 		devid.devno = dump_block_ccw->ipl_info.ccw.devno;
 		devid.ssid  = 0;
+=======
+		devid.ssid  = dump_block_ccw->ipl_info.ccw.ssid;
+		devid.devno = dump_block_ccw->ipl_info.ccw.devno;
+>>>>>>> v4.9.227
 		reipl_ccw_dev(&devid);
 		break;
 	case DUMP_METHOD_CCW_VM:
@@ -1714,9 +1907,13 @@ static ssize_t on_reboot_store(struct kobject *kobj,
 {
 	return set_trigger(buf, &on_reboot_trigger, len);
 }
+<<<<<<< HEAD
 
 static struct kobj_attribute on_reboot_attr =
 	__ATTR(on_reboot, 0644, on_reboot_show, on_reboot_store);
+=======
+static struct kobj_attribute on_reboot_attr = __ATTR_RW(on_reboot);
+>>>>>>> v4.9.227
 
 static void do_machine_restart(char *__unused)
 {
@@ -1742,9 +1939,13 @@ static ssize_t on_panic_store(struct kobject *kobj,
 {
 	return set_trigger(buf, &on_panic_trigger, len);
 }
+<<<<<<< HEAD
 
 static struct kobj_attribute on_panic_attr =
 	__ATTR(on_panic, 0644, on_panic_show, on_panic_store);
+=======
+static struct kobj_attribute on_panic_attr = __ATTR_RW(on_panic);
+>>>>>>> v4.9.227
 
 static void do_panic(void)
 {
@@ -1770,9 +1971,13 @@ static ssize_t on_restart_store(struct kobject *kobj,
 {
 	return set_trigger(buf, &on_restart_trigger, len);
 }
+<<<<<<< HEAD
 
 static struct kobj_attribute on_restart_attr =
 	__ATTR(on_restart, 0644, on_restart_show, on_restart_store);
+=======
+static struct kobj_attribute on_restart_attr = __ATTR_RW(on_restart);
+>>>>>>> v4.9.227
 
 static void __do_restart(void *ignore)
 {
@@ -1809,10 +2014,14 @@ static ssize_t on_halt_store(struct kobject *kobj,
 {
 	return set_trigger(buf, &on_halt_trigger, len);
 }
+<<<<<<< HEAD
 
 static struct kobj_attribute on_halt_attr =
 	__ATTR(on_halt, 0644, on_halt_show, on_halt_store);
 
+=======
+static struct kobj_attribute on_halt_attr = __ATTR_RW(on_halt);
+>>>>>>> v4.9.227
 
 static void do_machine_halt(void)
 {
@@ -1838,10 +2047,14 @@ static ssize_t on_poff_store(struct kobject *kobj,
 {
 	return set_trigger(buf, &on_poff_trigger, len);
 }
+<<<<<<< HEAD
 
 static struct kobj_attribute on_poff_attr =
 	__ATTR(on_poff, 0644, on_poff_show, on_poff_store);
 
+=======
+static struct kobj_attribute on_poff_attr = __ATTR_RW(on_poff);
+>>>>>>> v4.9.227
 
 static void do_machine_power_off(void)
 {
@@ -1851,12 +2064,29 @@ static void do_machine_power_off(void)
 }
 void (*_machine_power_off)(void) = do_machine_power_off;
 
+<<<<<<< HEAD
+=======
+static struct attribute *shutdown_action_attrs[] = {
+	&on_restart_attr.attr,
+	&on_reboot_attr.attr,
+	&on_panic_attr.attr,
+	&on_halt_attr.attr,
+	&on_poff_attr.attr,
+	NULL,
+};
+
+static struct attribute_group shutdown_action_attr_group = {
+	.attrs = shutdown_action_attrs,
+};
+
+>>>>>>> v4.9.227
 static void __init shutdown_triggers_init(void)
 {
 	shutdown_actions_kset = kset_create_and_add("shutdown_actions", NULL,
 						    firmware_kobj);
 	if (!shutdown_actions_kset)
 		goto fail;
+<<<<<<< HEAD
 	if (sysfs_create_file(&shutdown_actions_kset->kobj,
 			      &on_reboot_attr.attr))
 		goto fail;
@@ -1871,6 +2101,10 @@ static void __init shutdown_triggers_init(void)
 		goto fail;
 	if (sysfs_create_file(&shutdown_actions_kset->kobj,
 			      &on_restart_attr.attr))
+=======
+	if (sysfs_create_group(&shutdown_actions_kset->kobj,
+			       &shutdown_action_attr_group))
+>>>>>>> v4.9.227
 		goto fail;
 	return;
 fail:
@@ -1990,6 +2224,7 @@ void __init setup_ipl(void)
 	ipl_info.type = get_ipl_type();
 	switch (ipl_info.type) {
 	case IPL_TYPE_CCW:
+<<<<<<< HEAD
 		ipl_info.data.ccw.dev_id.devno = ipl_devno;
 		ipl_info.data.ccw.dev_id.ssid = 0;
 		break;
@@ -1998,6 +2233,16 @@ void __init setup_ipl(void)
 		ipl_info.data.fcp.dev_id.devno =
 			IPL_PARMBLOCK_START->ipl_info.fcp.devno;
 		ipl_info.data.fcp.dev_id.ssid = 0;
+=======
+		ipl_info.data.ccw.dev_id.ssid = ipl_ssid;
+		ipl_info.data.ccw.dev_id.devno = ipl_devno;
+		break;
+	case IPL_TYPE_FCP:
+	case IPL_TYPE_FCP_DUMP:
+		ipl_info.data.fcp.dev_id.ssid = 0;
+		ipl_info.data.fcp.dev_id.devno =
+			IPL_PARMBLOCK_START->ipl_info.fcp.devno;
+>>>>>>> v4.9.227
 		ipl_info.data.fcp.wwpn = IPL_PARMBLOCK_START->ipl_info.fcp.wwpn;
 		ipl_info.data.fcp.lun = IPL_PARMBLOCK_START->ipl_info.fcp.lun;
 		break;
@@ -2029,6 +2274,10 @@ void __init ipl_save_parameters(void)
 	if (cio_get_iplinfo(&iplinfo))
 		return;
 
+<<<<<<< HEAD
+=======
+	ipl_ssid = iplinfo.ssid;
+>>>>>>> v4.9.227
 	ipl_devno = iplinfo.devno;
 	ipl_flags |= IPL_DEVNO_VALID;
 	if (!iplinfo.is_qdio)
@@ -2063,16 +2312,23 @@ static void do_reset_calls(void)
 {
 	struct reset_call *reset;
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 	if (diag308_set_works) {
 		diag308_reset();
 		return;
 	}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 	list_for_each_entry(reset, &rcall, list)
 		reset->fn();
 }
 
+<<<<<<< HEAD
 u32 dump_prefix_page;
 
 void s390_reset_system(void (*func)(void *), void *data)
@@ -2080,13 +2336,23 @@ void s390_reset_system(void (*func)(void *), void *data)
 	struct _lowcore *lc;
 
 	lc = (struct _lowcore *)(unsigned long) store_prefix();
+=======
+void s390_reset_system(void)
+{
+	struct lowcore *lc;
+
+	lc = (struct lowcore *)(unsigned long) store_prefix();
+>>>>>>> v4.9.227
 
 	/* Stack for interrupt/machine check handler */
 	lc->panic_stack = S390_lowcore.panic_stack;
 
+<<<<<<< HEAD
 	/* Save prefix page address for dump case */
 	dump_prefix_page = (u32)(unsigned long) lc;
 
+=======
+>>>>>>> v4.9.227
 	/* Disable prefixing */
 	set_prefix(0);
 
@@ -2096,11 +2362,16 @@ void s390_reset_system(void (*func)(void *), void *data)
 	/* Set new machine check handler */
 	S390_lowcore.mcck_new_psw.mask = PSW_KERNEL_BITS | PSW_MASK_DAT;
 	S390_lowcore.mcck_new_psw.addr =
+<<<<<<< HEAD
 		PSW_ADDR_AMODE | (unsigned long) s390_base_mcck_handler;
+=======
+		(unsigned long) s390_base_mcck_handler;
+>>>>>>> v4.9.227
 
 	/* Set new program check handler */
 	S390_lowcore.program_new_psw.mask = PSW_KERNEL_BITS | PSW_MASK_DAT;
 	S390_lowcore.program_new_psw.addr =
+<<<<<<< HEAD
 		PSW_ADDR_AMODE | (unsigned long) s390_base_pgm_handler;
 
 	/* Store status at absolute zero */
@@ -2109,4 +2380,9 @@ void s390_reset_system(void (*func)(void *), void *data)
 	do_reset_calls();
 	if (func)
 		func(data);
+=======
+		(unsigned long) s390_base_pgm_handler;
+
+	do_reset_calls();
+>>>>>>> v4.9.227
 }

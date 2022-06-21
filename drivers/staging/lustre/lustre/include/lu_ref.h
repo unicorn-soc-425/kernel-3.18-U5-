@@ -17,10 +17,13 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
+<<<<<<< HEAD
  *   You should have received a copy of the GNU General Public License
  *   along with Lustre; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> v4.9.227
  */
 
 #ifndef __LUSTRE_LU_REF_H
@@ -107,7 +110,10 @@
  * @{
  */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  * dummy data structures/functions to pass compile for now.
  * We need to reimplement them with kref.

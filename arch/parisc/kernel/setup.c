@@ -38,6 +38,10 @@
 #include <linux/export.h>
 
 #include <asm/processor.h>
+<<<<<<< HEAD
+=======
+#include <asm/sections.h>
+>>>>>>> v4.9.227
 #include <asm/pdc.h>
 #include <asm/led.h>
 #include <asm/machdep.h>	/* for pa7300lc_init() proto */
@@ -130,7 +134,27 @@ void __init setup_arch(char **cmdline_p)
 	printk(KERN_INFO "The 32-bit Kernel has started...\n");
 #endif
 
+<<<<<<< HEAD
 	printk(KERN_INFO "Default page size is %dKB.\n", (int)(PAGE_SIZE / 1024));
+=======
+	printk(KERN_INFO "Kernel default page size is %d KB. Huge pages ",
+		(int)(PAGE_SIZE / 1024));
+#ifdef CONFIG_HUGETLB_PAGE
+	printk(KERN_CONT "enabled with %d MB physical and %d MB virtual size",
+		 1 << (REAL_HPAGE_SHIFT - 20), 1 << (HPAGE_SHIFT - 20));
+#else
+	printk(KERN_CONT "disabled");
+#endif
+	printk(KERN_CONT ".\n");
+
+	/*
+	 * Check if initial kernel page mappings are sufficient.
+	 * panic early if not, else we may access kernel functions
+	 * and variables which can't be reached.
+	 */
+	if (__pa((unsigned long) &_end) >= KERNEL_INITIAL_SIZE)
+		panic("KERNEL_INITIAL_ORDER too small!");
+>>>>>>> v4.9.227
 
 	pdc_console_init();
 
@@ -317,6 +341,13 @@ static int __init parisc_init(void)
 	/* tell PDC we're Linux. Nevermind failure. */
 	pdc_stable_write(0x40, &osid, sizeof(osid));
 	
+<<<<<<< HEAD
+=======
+	/* start with known state */
+	flush_cache_all_local();
+	flush_tlb_all_local(NULL);
+
+>>>>>>> v4.9.227
 	processor_init();
 #ifdef CONFIG_SMP
 	pr_info("CPU(s): %d out of %d %s at %d.%06d MHz online\n",
@@ -377,10 +408,20 @@ arch_initcall(parisc_init);
 void start_parisc(void)
 {
 	extern void start_kernel(void);
+<<<<<<< HEAD
+=======
+	extern void early_trap_init(void);
+>>>>>>> v4.9.227
 
 	int ret, cpunum;
 	struct pdc_coproc_cfg coproc_cfg;
 
+<<<<<<< HEAD
+=======
+	/* check QEMU/SeaBIOS marker in PAGE0 */
+	running_on_qemu = (memcmp(&PAGE0->pad0, "SeaBIOS", 8) == 0);
+
+>>>>>>> v4.9.227
 	cpunum = smp_processor_id();
 
 	set_firmware_width_unlocked();
@@ -397,6 +438,11 @@ void start_parisc(void)
 		panic("must have an fpu to boot linux");
 	}
 
+<<<<<<< HEAD
+=======
+	early_trap_init(); /* initialize checksum of fault_vector */
+
+>>>>>>> v4.9.227
 	start_kernel();
 	// not reached
 }

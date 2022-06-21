@@ -69,16 +69,29 @@ static void tcp_veno_init(struct sock *sk)
 }
 
 /* Do rtt sampling needed for Veno. */
+<<<<<<< HEAD
 static void tcp_veno_pkts_acked(struct sock *sk, u32 cnt, s32 rtt_us)
+=======
+static void tcp_veno_pkts_acked(struct sock *sk,
+				const struct ack_sample *sample)
+>>>>>>> v4.9.227
 {
 	struct veno *veno = inet_csk_ca(sk);
 	u32 vrtt;
 
+<<<<<<< HEAD
 	if (rtt_us < 0)
 		return;
 
 	/* Never allow zero rtt or baseRTT */
 	vrtt = rtt_us + 1;
+=======
+	if (sample->rtt_us < 0)
+		return;
+
+	/* Never allow zero rtt or baseRTT */
+	vrtt = sample->rtt_us + 1;
+>>>>>>> v4.9.227
 
 	/* Filter to find propagation delay: */
 	if (vrtt < veno->basertt)
@@ -150,7 +163,11 @@ static void tcp_veno_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 
 		veno->diff = (tp->snd_cwnd << V_PARAM_SHIFT) - target_cwnd;
 
+<<<<<<< HEAD
 		if (tp->snd_cwnd <= tp->snd_ssthresh) {
+=======
+		if (tcp_in_slow_start(tp)) {
+>>>>>>> v4.9.227
 			/* Slow start.  */
 			tcp_slow_start(tp, acked);
 		} else {
@@ -159,7 +176,11 @@ static void tcp_veno_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 				/* In the "non-congestive state", increase cwnd
 				 *  every rtt.
 				 */
+<<<<<<< HEAD
 				tcp_cong_avoid_ai(tp, tp->snd_cwnd);
+=======
+				tcp_cong_avoid_ai(tp, tp->snd_cwnd, 1);
+>>>>>>> v4.9.227
 			} else {
 				/* In the "congestive state", increase cwnd
 				 * every other rtt.

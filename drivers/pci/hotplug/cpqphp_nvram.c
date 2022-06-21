@@ -114,10 +114,17 @@ static u32 add_byte(u32 **p_buffer, u8 value, u32 *used, u32 *avail)
 	if ((*used + 1) > *avail)
 		return(1);
 
+<<<<<<< HEAD
 	*((u8*)*p_buffer) = value;
 	tByte = (u8**)p_buffer;
 	(*tByte)++;
 	*used+=1;
+=======
+	*((u8 *)*p_buffer) = value;
+	tByte = (u8 **)p_buffer;
+	(*tByte)++;
+	*used += 1;
+>>>>>>> v4.9.227
 	return(0);
 }
 
@@ -129,7 +136,11 @@ static u32 add_dword(u32 **p_buffer, u32 value, u32 *used, u32 *avail)
 
 	**p_buffer = value;
 	(*p_buffer)++;
+<<<<<<< HEAD
 	*used+=4;
+=======
+	*used += 4;
+>>>>>>> v4.9.227
 	return(0);
 }
 
@@ -141,7 +152,11 @@ static u32 add_dword(u32 **p_buffer, u32 value, u32 *used, u32 *avail)
  *
  * returns 0 for non-Compaq ROM, 1 for Compaq ROM
  */
+<<<<<<< HEAD
 static int check_for_compaq_ROM (void __iomem *rom_start)
+=======
+static int check_for_compaq_ROM(void __iomem *rom_start)
+>>>>>>> v4.9.227
 {
 	u8 temp1, temp2, temp3, temp4, temp5, temp6;
 	int result = 0;
@@ -160,12 +175,20 @@ static int check_for_compaq_ROM (void __iomem *rom_start)
 	    (temp6 == 'Q')) {
 		result = 1;
 	}
+<<<<<<< HEAD
 	dbg ("%s - returned %d\n", __func__, result);
+=======
+	dbg("%s - returned %d\n", __func__, result);
+>>>>>>> v4.9.227
 	return result;
 }
 
 
+<<<<<<< HEAD
 static u32 access_EV (u16 operation, u8 *ev_name, u8 *buffer, u32 *buf_size)
+=======
+static u32 access_EV(u16 operation, u8 *ev_name, u8 *buffer, u32 *buf_size)
+>>>>>>> v4.9.227
 {
 	unsigned long flags;
 	int op = operation;
@@ -197,7 +220,11 @@ static u32 access_EV (u16 operation, u8 *ev_name, u8 *buffer, u32 *buf_size)
  *
  * Read the hot plug Resource Table from NVRAM
  */
+<<<<<<< HEAD
 static int load_HRT (void __iomem *rom_start)
+=======
+static int load_HRT(void __iomem *rom_start)
+>>>>>>> v4.9.227
 {
 	u32 available;
 	u32 temp_dword;
@@ -232,7 +259,11 @@ static int load_HRT (void __iomem *rom_start)
  *
  * Save the hot plug Resource Table in NVRAM
  */
+<<<<<<< HEAD
 static u32 store_HRT (void __iomem *rom_start)
+=======
+static u32 store_HRT(void __iomem *rom_start)
+>>>>>>> v4.9.227
 {
 	u32 *buffer;
 	u32 *pFill;
@@ -252,7 +283,11 @@ static u32 store_HRT (void __iomem *rom_start)
 	if (!check_for_compaq_ROM(rom_start))
 		return(1);
 
+<<<<<<< HEAD
 	buffer = (u32*) evbuffer;
+=======
+	buffer = (u32 *) evbuffer;
+>>>>>>> v4.9.227
 
 	if (!buffer)
 		return(1);
@@ -306,7 +341,11 @@ static u32 store_HRT (void __iomem *rom_start)
 		loop = 0;
 
 		while (resNode) {
+<<<<<<< HEAD
 			loop ++;
+=======
+			loop++;
+>>>>>>> v4.9.227
 
 			/* base */
 			rc = add_dword(&pFill, resNode->base, &usedbytes, &available);
@@ -331,7 +370,11 @@ static u32 store_HRT (void __iomem *rom_start)
 		loop = 0;
 
 		while (resNode) {
+<<<<<<< HEAD
 			loop ++;
+=======
+			loop++;
+>>>>>>> v4.9.227
 
 			/* base */
 			rc = add_dword(&pFill, resNode->base, &usedbytes, &available);
@@ -356,7 +399,11 @@ static u32 store_HRT (void __iomem *rom_start)
 		loop = 0;
 
 		while (resNode) {
+<<<<<<< HEAD
 			loop ++;
+=======
+			loop++;
+>>>>>>> v4.9.227
 
 			/* base */
 			rc = add_dword(&pFill, resNode->base, &usedbytes, &available);
@@ -381,7 +428,11 @@ static u32 store_HRT (void __iomem *rom_start)
 		loop = 0;
 
 		while (resNode) {
+<<<<<<< HEAD
 			loop ++;
+=======
+			loop++;
+>>>>>>> v4.9.227
 
 			/* base */
 			rc = add_dword(&pFill, resNode->base, &usedbytes, &available);
@@ -408,7 +459,11 @@ static u32 store_HRT (void __iomem *rom_start)
 
 	temp_dword = usedbytes;
 
+<<<<<<< HEAD
 	rc = access_EV(WRITE_EV, "CQTHPS", (u8*) buffer, &temp_dword);
+=======
+	rc = access_EV(WRITE_EV, "CQTHPS", (u8 *) buffer, &temp_dword);
+>>>>>>> v4.9.227
 
 	dbg("usedbytes = 0x%x, length = 0x%x\n", usedbytes, temp_dword);
 
@@ -423,7 +478,11 @@ static u32 store_HRT (void __iomem *rom_start)
 }
 
 
+<<<<<<< HEAD
 void compaq_nvram_init (void __iomem *rom_start)
+=======
+void compaq_nvram_init(void __iomem *rom_start)
+>>>>>>> v4.9.227
 {
 	if (rom_start)
 		compaq_int15_entry_point = (rom_start + ROM_INT15_PHY_ADDR - ROM_PHY_ADDR);
@@ -435,7 +494,11 @@ void compaq_nvram_init (void __iomem *rom_start)
 }
 
 
+<<<<<<< HEAD
 int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
+=======
+int compaq_nvram_load(void __iomem *rom_start, struct controller *ctrl)
+>>>>>>> v4.9.227
 {
 	u8 bus, device, function;
 	u8 nummem, numpmem, numio, numbus;
@@ -451,7 +514,11 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 	if (!evbuffer_init) {
 		/* Read the resource list information in from NVRAM */
 		if (load_HRT(rom_start))
+<<<<<<< HEAD
 			memset (evbuffer, 0, 1024);
+=======
+			memset(evbuffer, 0, 1024);
+>>>>>>> v4.9.227
 
 		evbuffer_init = 1;
 	}
@@ -472,7 +539,11 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 
 		p_byte += 3;
 
+<<<<<<< HEAD
 		if (p_byte > ((u8*)p_EV_header + evbuffer_length))
+=======
+		if (p_byte > ((u8 *)p_EV_header + evbuffer_length))
+>>>>>>> v4.9.227
 			return 2;
 
 		bus = p_ev_ctrl->bus;
@@ -489,20 +560,32 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 
 			p_byte += 4;
 
+<<<<<<< HEAD
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length))
+=======
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length))
+>>>>>>> v4.9.227
 				return 2;
 
 			/* Skip forward to the next entry */
 			p_byte += (nummem + numpmem + numio + numbus) * 8;
 
+<<<<<<< HEAD
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length))
+=======
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length))
+>>>>>>> v4.9.227
 				return 2;
 
 			p_ev_ctrl = (struct ev_hrt_ctrl *) p_byte;
 
 			p_byte += 3;
 
+<<<<<<< HEAD
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length))
+=======
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length))
+>>>>>>> v4.9.227
 				return 2;
 
 			bus = p_ev_ctrl->bus;
@@ -517,7 +600,11 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 
 		p_byte += 4;
 
+<<<<<<< HEAD
 		if (p_byte > ((u8*)p_EV_header + evbuffer_length))
+=======
+		if (p_byte > ((u8 *)p_EV_header + evbuffer_length))
+>>>>>>> v4.9.227
 			return 2;
 
 		while (nummem--) {
@@ -526,20 +613,36 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 			if (!mem_node)
 				break;
 
+<<<<<<< HEAD
 			mem_node->base = *(u32*)p_byte;
 			dbg("mem base = %8.8x\n",mem_node->base);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			mem_node->base = *(u32 *)p_byte;
+			dbg("mem base = %8.8x\n", mem_node->base);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> v4.9.227
 				kfree(mem_node);
 				return 2;
 			}
 
+<<<<<<< HEAD
 			mem_node->length = *(u32*)p_byte;
 			dbg("mem length = %8.8x\n",mem_node->length);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			mem_node->length = *(u32 *)p_byte;
+			dbg("mem length = %8.8x\n", mem_node->length);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> v4.9.227
 				kfree(mem_node);
 				return 2;
 			}
@@ -554,20 +657,36 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 			if (!p_mem_node)
 				break;
 
+<<<<<<< HEAD
 			p_mem_node->base = *(u32*)p_byte;
 			dbg("pre-mem base = %8.8x\n",p_mem_node->base);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			p_mem_node->base = *(u32 *)p_byte;
+			dbg("pre-mem base = %8.8x\n", p_mem_node->base);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> v4.9.227
 				kfree(p_mem_node);
 				return 2;
 			}
 
+<<<<<<< HEAD
 			p_mem_node->length = *(u32*)p_byte;
 			dbg("pre-mem length = %8.8x\n",p_mem_node->length);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			p_mem_node->length = *(u32 *)p_byte;
+			dbg("pre-mem length = %8.8x\n", p_mem_node->length);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> v4.9.227
 				kfree(p_mem_node);
 				return 2;
 			}
@@ -582,20 +701,36 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 			if (!io_node)
 				break;
 
+<<<<<<< HEAD
 			io_node->base = *(u32*)p_byte;
 			dbg("io base = %8.8x\n",io_node->base);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			io_node->base = *(u32 *)p_byte;
+			dbg("io base = %8.8x\n", io_node->base);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> v4.9.227
 				kfree(io_node);
 				return 2;
 			}
 
+<<<<<<< HEAD
 			io_node->length = *(u32*)p_byte;
 			dbg("io length = %8.8x\n",io_node->length);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			io_node->length = *(u32 *)p_byte;
+			dbg("io length = %8.8x\n", io_node->length);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> v4.9.227
 				kfree(io_node);
 				return 2;
 			}
@@ -610,18 +745,32 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 			if (!bus_node)
 				break;
 
+<<<<<<< HEAD
 			bus_node->base = *(u32*)p_byte;
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			bus_node->base = *(u32 *)p_byte;
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> v4.9.227
 				kfree(bus_node);
 				return 2;
 			}
 
+<<<<<<< HEAD
 			bus_node->length = *(u32*)p_byte;
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			bus_node->length = *(u32 *)p_byte;
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> v4.9.227
 				kfree(bus_node);
 				return 2;
 			}
@@ -650,7 +799,11 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 }
 
 
+<<<<<<< HEAD
 int compaq_nvram_store (void __iomem *rom_start)
+=======
+int compaq_nvram_store(void __iomem *rom_start)
+>>>>>>> v4.9.227
 {
 	int rc = 1;
 

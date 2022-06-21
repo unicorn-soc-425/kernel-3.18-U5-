@@ -73,7 +73,10 @@ static void cns3xxx_pwr_soft_rst_force(unsigned int block)
 
 	__raw_writel(reg, PM_SOFT_RST_REG);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(cns3xxx_pwr_soft_rst_force);
+=======
+>>>>>>> v4.9.227
 
 void cns3xxx_pwr_soft_rst(unsigned int block)
 {

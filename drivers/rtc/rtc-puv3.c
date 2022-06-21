@@ -328,7 +328,10 @@ static struct platform_driver puv3_rtc_driver = {
 	.remove		= puv3_rtc_remove,
 	.driver		= {
 		.name	= "PKUnity-v3-RTC",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &puv3_rtc_pm_ops,
 	}
 };

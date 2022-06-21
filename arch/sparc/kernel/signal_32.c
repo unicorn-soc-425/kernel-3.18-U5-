@@ -89,7 +89,11 @@ asmlinkage void do_sigreturn(struct pt_regs *regs)
 	sf = (struct signal_frame __user *) regs->u_regs[UREG_FP];
 
 	/* 1. Make sure we are not getting garbage from the user */
+<<<<<<< HEAD
 	if (!invalid_frame_pointer(sf, sizeof(*sf)))
+=======
+	if (invalid_frame_pointer(sf, sizeof(*sf)))
+>>>>>>> v4.9.227
 		goto segv_and_exit;
 
 	if (get_user(ufp, &sf->info.si_regs.u_regs[UREG_FP]))
@@ -150,7 +154,11 @@ asmlinkage void do_rt_sigreturn(struct pt_regs *regs)
 
 	synchronize_user_stack();
 	sf = (struct rt_signal_frame __user *) regs->u_regs[UREG_FP];
+<<<<<<< HEAD
 	if (!invalid_frame_pointer(sf, sizeof(*sf)))
+=======
+	if (invalid_frame_pointer(sf, sizeof(*sf)))
+>>>>>>> v4.9.227
 		goto segv;
 
 	if (get_user(ufp, &sf->regs.u_regs[UREG_FP]))

@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  *
  * File: channel.c
  *
@@ -157,7 +160,11 @@ void vnt_init_bands(struct vnt_private *priv)
 			ch[i].flags = IEEE80211_CHAN_NO_HT40;
 		}
 
+<<<<<<< HEAD
 		priv->hw->wiphy->bands[IEEE80211_BAND_5GHZ] =
+=======
+		priv->hw->wiphy->bands[NL80211_BAND_5GHZ] =
+>>>>>>> v4.9.227
 						&vnt_supported_5ghz_band;
 	/* fallthrough */
 	case RF_AL2230:
@@ -171,7 +178,11 @@ void vnt_init_bands(struct vnt_private *priv)
 			ch[i].flags = IEEE80211_CHAN_NO_HT40;
 		}
 
+<<<<<<< HEAD
 		priv->hw->wiphy->bands[IEEE80211_BAND_2GHZ] =
+=======
+		priv->hw->wiphy->bands[NL80211_BAND_2GHZ] =
+>>>>>>> v4.9.227
 						&vnt_supported_2ghz_band;
 		break;
 	}

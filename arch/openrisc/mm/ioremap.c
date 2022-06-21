@@ -38,7 +38,11 @@ static unsigned int fixmaps_used __initdata;
  * have to convert them into an offset in a page-aligned mapping, but the
  * caller shouldn't need to know that small detail.
  */
+<<<<<<< HEAD
 void __iomem *__init_refok
+=======
+void __iomem *__ref
+>>>>>>> v4.9.227
 __ioremap(phys_addr_t addr, unsigned long size, pgprot_t prot)
 {
 	phys_addr_t p;
@@ -116,13 +120,21 @@ void iounmap(void *addr)
  * the memblock infrastructure.
  */
 
+<<<<<<< HEAD
 pte_t __init_refok *pte_alloc_one_kernel(struct mm_struct *mm,
+=======
+pte_t __ref *pte_alloc_one_kernel(struct mm_struct *mm,
+>>>>>>> v4.9.227
 					 unsigned long address)
 {
 	pte_t *pte;
 
 	if (likely(mem_init_done)) {
+<<<<<<< HEAD
 		pte = (pte_t *) __get_free_page(GFP_KERNEL | __GFP_REPEAT);
+=======
+		pte = (pte_t *) __get_free_page(GFP_KERNEL);
+>>>>>>> v4.9.227
 	} else {
 		pte = (pte_t *) alloc_bootmem_low_pages(PAGE_SIZE);
 #if 0

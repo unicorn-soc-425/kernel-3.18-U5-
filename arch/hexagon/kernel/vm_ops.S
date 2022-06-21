@@ -26,7 +26,11 @@
  * could be, and perhaps some day will be, handled as in-line
  * macros, but for tracing/debugging it's handy to have
  * a single point of invocation for each of them.
+<<<<<<< HEAD
  * Conveniently, they take paramters and return values
+=======
+ * Conveniently, they take parameters and return values
+>>>>>>> v4.9.227
  * consistent with the ABI calling convention.
  */
 

@@ -16,25 +16,34 @@
  * the file called "COPYING".
  *
  * Intel MIC Host driver.
+<<<<<<< HEAD
  *
  * Global TODO's across the driver to be added after initial base
  * patches are accepted upstream:
  * 1) Enable DMA support.
  * 2) Enable per vring interrupt support.
+=======
+>>>>>>> v4.9.227
  */
 #include <linux/fs.h>
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/poll.h>
+<<<<<<< HEAD
 #include <linux/suspend.h>
+=======
+>>>>>>> v4.9.227
 
 #include <linux/mic_common.h>
 #include "../common/mic_dev.h"
 #include "mic_device.h"
 #include "mic_x100.h"
 #include "mic_smpt.h"
+<<<<<<< HEAD
 #include "mic_fops.h"
 #include "mic_virtio.h"
+=======
+>>>>>>> v4.9.227
 
 static const char mic_driver_name[] = "mic";
 
@@ -63,6 +72,7 @@ MODULE_DEVICE_TABLE(pci, mic_pci_tbl);
 
 /* ID allocator for MIC devices */
 static struct ida g_mic_ida;
+<<<<<<< HEAD
 /* Class of MIC devices for sysfs accessibility. */
 static struct class *g_mic_class;
 /* Base device node number for MIC devices */
@@ -76,22 +86,33 @@ static const struct file_operations mic_fops = {
 	.mmap = mic_mmap,
 	.owner = THIS_MODULE,
 };
+=======
+>>>>>>> v4.9.227
 
 /* Initialize the device page */
 static int mic_dp_init(struct mic_device *mdev)
 {
 	mdev->dp = kzalloc(MIC_DP_SIZE, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!mdev->dp) {
 		dev_err(mdev->sdev->parent, "%s %d err %d\n",
 			__func__, __LINE__, -ENOMEM);
 		return -ENOMEM;
 	}
+=======
+	if (!mdev->dp)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	mdev->dp_dma_addr = mic_map_single(mdev,
 		mdev->dp, MIC_DP_SIZE);
 	if (mic_map_error(mdev->dp_dma_addr)) {
 		kfree(mdev->dp);
+<<<<<<< HEAD
 		dev_err(mdev->sdev->parent, "%s %d err %d\n",
+=======
+		dev_err(&mdev->pdev->dev, "%s %d err %d\n",
+>>>>>>> v4.9.227
 			__func__, __LINE__, -ENOMEM);
 		return -ENOMEM;
 	}
@@ -108,6 +129,7 @@ static void mic_dp_uninit(struct mic_device *mdev)
 }
 
 /**
+<<<<<<< HEAD
  * mic_shutdown_db - Shutdown doorbell interrupt handler.
  */
 static irqreturn_t mic_shutdown_db(int irq, void *data)
@@ -132,6 +154,8 @@ static irqreturn_t mic_shutdown_db(int irq, void *data)
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * mic_ops_init: Initialize HW specific operation tables.
  *
  * @mdev: pointer to mic_device instance
@@ -188,6 +212,7 @@ static enum mic_hw_family mic_get_family(struct pci_dev *pdev)
 }
 
 /**
+<<<<<<< HEAD
 * mic_pm_notifier: Notifier callback function that handles
 * PM notifications.
 *
@@ -225,6 +250,8 @@ static int mic_pm_notifier(struct notifier_block *notifier,
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * mic_device_init - Allocates and initializes the MIC device structure
  *
  * @mdev: pointer to mic_device instance
@@ -232,6 +259,7 @@ static int mic_pm_notifier(struct notifier_block *notifier,
  *
  * returns none.
  */
+<<<<<<< HEAD
 static int
 mic_device_init(struct mic_device *mdev, struct pci_dev *pdev)
 {
@@ -278,6 +306,17 @@ static void mic_device_uninit(struct mic_device *mdev)
 	flush_work(&mdev->reset_trigger_work);
 	flush_work(&mdev->shutdown_work);
 	unregister_pm_notifier(&mdev->pm_notifier);
+=======
+static void
+mic_device_init(struct mic_device *mdev, struct pci_dev *pdev)
+{
+	mdev->pdev = pdev;
+	mdev->family = mic_get_family(pdev);
+	mdev->stepping = pdev->revision;
+	mic_ops_init(mdev);
+	mutex_init(&mdev->mic_mutex);
+	mdev->irq_info.next_avail_src = 0;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -289,7 +328,11 @@ static void mic_device_uninit(struct mic_device *mdev)
  * returns 0 on success, < 0 on failure.
  */
 static int mic_probe(struct pci_dev *pdev,
+<<<<<<< HEAD
 		const struct pci_device_id *ent)
+=======
+		     const struct pci_device_id *ent)
+>>>>>>> v4.9.227
 {
 	int rc;
 	struct mic_device *mdev;
@@ -307,16 +350,24 @@ static int mic_probe(struct pci_dev *pdev,
 		goto ida_fail;
 	}
 
+<<<<<<< HEAD
 	rc = mic_device_init(mdev, pdev);
 	if (rc) {
 		dev_err(&pdev->dev, "mic_device_init failed rc %d\n", rc);
 		goto device_init_fail;
 	}
+=======
+	mic_device_init(mdev, pdev);
+>>>>>>> v4.9.227
 
 	rc = pci_enable_device(pdev);
 	if (rc) {
 		dev_err(&pdev->dev, "failed to enable pci device.\n");
+<<<<<<< HEAD
 		goto uninit_device;
+=======
+		goto ida_remove;
+>>>>>>> v4.9.227
 	}
 
 	pci_set_master(pdev);
@@ -365,6 +416,7 @@ static int mic_probe(struct pci_dev *pdev,
 
 	pci_set_drvdata(pdev, mdev);
 
+<<<<<<< HEAD
 	mdev->sdev = device_create_with_groups(g_mic_class, &pdev->dev,
 		MKDEV(MAJOR(g_mic_devno), mdev->id), NULL,
 		mdev->attr_group, "mic%d", mdev->id);
@@ -406,11 +458,26 @@ static int mic_probe(struct pci_dev *pdev,
 	rc = cdev_add(&mdev->cdev, MKDEV(MAJOR(g_mic_devno), mdev->id), 1);
 	if (rc) {
 		dev_err(&pdev->dev, "cdev_add err id %d rc %d\n", mdev->id, rc);
+=======
+	rc = mic_dp_init(mdev);
+	if (rc) {
+		dev_err(&pdev->dev, "mic_dp_init failed rc %d\n", rc);
+		goto smpt_uninit;
+	}
+	mic_bootparam_init(mdev);
+	mic_create_debug_dir(mdev);
+
+	mdev->cosm_dev = cosm_register_device(&mdev->pdev->dev, &cosm_hw_ops);
+	if (IS_ERR(mdev->cosm_dev)) {
+		rc = PTR_ERR(mdev->cosm_dev);
+		dev_err(&pdev->dev, "cosm_add_device failed rc %d\n", rc);
+>>>>>>> v4.9.227
 		goto cleanup_debug_dir;
 	}
 	return 0;
 cleanup_debug_dir:
 	mic_delete_debug_dir(mdev);
+<<<<<<< HEAD
 	mutex_lock(&mdev->mic_mutex);
 	mic_free_irq(mdev, mdev->shutdown_cookie, mdev);
 	mutex_unlock(&mdev->mic_mutex);
@@ -420,6 +487,9 @@ sysfs_put:
 	sysfs_put(mdev->state_sysfs);
 destroy_device:
 	device_destroy(g_mic_class, MKDEV(MAJOR(g_mic_devno), mdev->id));
+=======
+	mic_dp_uninit(mdev);
+>>>>>>> v4.9.227
 smpt_uninit:
 	mic_smpt_uninit(mdev);
 free_interrupts:
@@ -432,9 +502,13 @@ release_regions:
 	pci_release_regions(pdev);
 disable_device:
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 uninit_device:
 	mic_device_uninit(mdev);
 device_init_fail:
+=======
+ida_remove:
+>>>>>>> v4.9.227
 	ida_simple_remove(&g_mic_ida, mdev->id);
 ida_fail:
 	kfree(mdev);
@@ -458,6 +532,7 @@ static void mic_remove(struct pci_dev *pdev)
 	if (!mdev)
 		return;
 
+<<<<<<< HEAD
 	mic_stop(mdev, false);
 	cdev_del(&mdev->cdev);
 	mic_delete_debug_dir(mdev);
@@ -473,11 +548,24 @@ static void mic_remove(struct pci_dev *pdev)
 	iounmap(mdev->mmio.va);
 	iounmap(mdev->aper.va);
 	mic_device_uninit(mdev);
+=======
+	cosm_unregister_device(mdev->cosm_dev);
+	mic_delete_debug_dir(mdev);
+	mic_dp_uninit(mdev);
+	mic_smpt_uninit(mdev);
+	mic_free_interrupts(mdev, pdev);
+	iounmap(mdev->aper.va);
+	iounmap(mdev->mmio.va);
+>>>>>>> v4.9.227
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
 	ida_simple_remove(&g_mic_ida, mdev->id);
 	kfree(mdev);
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 static struct pci_driver mic_driver = {
 	.name = mic_driver_name,
 	.id_table = mic_pci_tbl,
@@ -489,6 +577,7 @@ static int __init mic_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = alloc_chrdev_region(&g_mic_devno, 0,
 		MIC_MAX_NUM_DEVS, mic_driver_name);
 	if (ret) {
@@ -503,6 +592,9 @@ static int __init mic_init(void)
 		goto cleanup_chrdev;
 	}
 
+=======
+	request_module("mic_x100_dma");
+>>>>>>> v4.9.227
 	mic_init_debugfs();
 	ida_init(&g_mic_ida);
 	ret = pci_register_driver(&mic_driver);
@@ -510,6 +602,7 @@ static int __init mic_init(void)
 		pr_err("pci_register_driver failed ret %d\n", ret);
 		goto cleanup_debugfs;
 	}
+<<<<<<< HEAD
 	return ret;
 cleanup_debugfs:
 	mic_exit_debugfs();
@@ -517,6 +610,12 @@ cleanup_debugfs:
 cleanup_chrdev:
 	unregister_chrdev_region(g_mic_devno, MIC_MAX_NUM_DEVS);
 error:
+=======
+	return 0;
+cleanup_debugfs:
+	ida_destroy(&g_mic_ida);
+	mic_exit_debugfs();
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -525,8 +624,11 @@ static void __exit mic_exit(void)
 	pci_unregister_driver(&mic_driver);
 	ida_destroy(&g_mic_ida);
 	mic_exit_debugfs();
+<<<<<<< HEAD
 	class_destroy(g_mic_class);
 	unregister_chrdev_region(g_mic_devno, MIC_MAX_NUM_DEVS);
+=======
+>>>>>>> v4.9.227
 }
 
 module_init(mic_init);

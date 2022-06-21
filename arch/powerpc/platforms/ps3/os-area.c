@@ -194,11 +194,14 @@ static const struct os_area_db_id os_area_db_id_rtc_diff = {
 	.key = OS_AREA_DB_KEY_RTC_DIFF
 };
 
+<<<<<<< HEAD
 static const struct os_area_db_id os_area_db_id_video_mode = {
 	.owner = OS_AREA_DB_OWNER_LINUX,
 	.key = OS_AREA_DB_KEY_VIDEO_MODE
 };
 
+=======
+>>>>>>> v4.9.227
 #define SECONDS_FROM_1970_TO_2000 946684800LL
 
 /**
@@ -669,7 +672,11 @@ static int update_flash_db(void)
 	db_set_64(db, &os_area_db_id_rtc_diff, saved_params.rtc_diff);
 
 	count = os_area_flash_write(db, sizeof(struct os_area_db), pos);
+<<<<<<< HEAD
 	if (count < sizeof(struct os_area_db)) {
+=======
+	if (count < 0 || count < sizeof(struct os_area_db)) {
+>>>>>>> v4.9.227
 		pr_debug("%s: os_area_flash_write failed %zd\n", __func__,
 			 count);
 		error = count < 0 ? count : -EIO;

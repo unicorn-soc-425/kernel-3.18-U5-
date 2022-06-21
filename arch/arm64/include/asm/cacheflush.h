@@ -3,7 +3,10 @@
  *
  * Copyright (C) 1999-2002 Russell King.
  * Copyright (C) 2012 ARM Ltd.
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -66,12 +69,21 @@
  *		- kaddr  - page address
  *		- size   - region size
  */
+<<<<<<< HEAD
 extern void flush_cache_all(void);
 extern void flush_cache_louis(void);
 extern void flush_cache_range(struct vm_area_struct *vma, unsigned long start, unsigned long end);
 extern void flush_icache_range(unsigned long start, unsigned long end);
 extern void __flush_dcache_area(void *addr, size_t len);
 extern void __flush_cache_user_range(unsigned long start, unsigned long end);
+=======
+extern void flush_cache_range(struct vm_area_struct *vma, unsigned long start, unsigned long end);
+extern void flush_icache_range(unsigned long start, unsigned long end);
+extern void __flush_dcache_area(void *addr, size_t len);
+extern void __clean_dcache_area_poc(void *addr, size_t len);
+extern void __clean_dcache_area_pou(void *addr, size_t len);
+extern long __flush_cache_user_range(unsigned long start, unsigned long end);
+>>>>>>> v4.9.227
 
 static inline void flush_cache_mm(struct mm_struct *mm)
 {
@@ -87,6 +99,7 @@ static inline void flush_cache_page(struct vm_area_struct *vma,
  */
 extern void __dma_map_area(const void *, size_t, int);
 extern void __dma_unmap_area(const void *, size_t, int);
+<<<<<<< HEAD
 extern void __dma_flush_range(const void *, const void *);
 extern void __dma_inv_range(const void *, const void *);
 extern void __dma_clean_range(const void *, const void *);
@@ -94,6 +107,9 @@ extern void __dma_clean_range(const void *, const void *);
 #define dmac_flush_range __dma_flush_range
 #define dmac_inv_range __dma_inv_range
 #define dmac_clean_range __dma_clean_range
+=======
+extern void __dma_flush_area(const void *, size_t);
+>>>>>>> v4.9.227
 
 /*
  * Copy user data from/to a page which is mapped into a different
@@ -124,6 +140,7 @@ extern void copy_to_user_page(struct vm_area_struct *, struct page *,
 #define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 1
 extern void flush_dcache_page(struct page *);
 
+<<<<<<< HEAD
 static inline void __local_flush_icache_all(void)
 {
 	asm("ic iallu");
@@ -131,6 +148,8 @@ static inline void __local_flush_icache_all(void)
 	isb();
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void __flush_icache_all(void)
 {
 	asm("ic	ialluis");
@@ -164,6 +183,7 @@ int set_memory_rw(unsigned long addr, int numpages);
 int set_memory_x(unsigned long addr, int numpages);
 int set_memory_nx(unsigned long addr, int numpages);
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_RODATA
 void mark_rodata_ro(void);
 #endif
@@ -181,4 +201,6 @@ static inline void set_kernel_text_ro(void) { }
 #define mark_addr_rdonly(a)
 #define mark_addr_rdwrite(a)
 #endif
+=======
+>>>>>>> v4.9.227
 #endif

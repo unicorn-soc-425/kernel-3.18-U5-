@@ -92,7 +92,10 @@ static inline void account_process_tick(struct task_struct *tsk, int user)
 extern void account_process_tick(struct task_struct *, int user);
 #endif
 
+<<<<<<< HEAD
 extern void account_steal_ticks(unsigned long ticks);
+=======
+>>>>>>> v4.9.227
 extern void account_idle_ticks(unsigned long ticks);
 
 #endif /* _LINUX_KERNEL_STAT_H */

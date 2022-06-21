@@ -6,7 +6,10 @@
  */
 
 #include <linux/sysfs.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/stat.h>
 #include <linux/slab.h>
@@ -16,7 +19,10 @@
 #include <linux/err.h>
 
 static DEFINE_IDA(soc_ida);
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(soc_lock);
+=======
+>>>>>>> v4.9.227
 
 static ssize_t soc_info_get(struct device *dev,
 			    struct device_attribute *attr,
@@ -43,8 +49,13 @@ struct device *soc_device_to_device(struct soc_device *soc_dev)
 }
 
 static umode_t soc_attribute_mode(struct kobject *kobj,
+<<<<<<< HEAD
                                  struct attribute *attr,
                                  int index)
+=======
+				struct attribute *attr,
+				int index)
+>>>>>>> v4.9.227
 {
 	struct device *dev = container_of(kobj, struct device, kobj);
 	struct soc_device *soc_dev = container_of(dev, struct soc_device, dev);
@@ -60,7 +71,11 @@ static umode_t soc_attribute_mode(struct kobject *kobj,
 		return attr->mode;
 	if ((attr == &dev_attr_soc_id.attr)
 	    && (soc_dev->attr->soc_id != NULL))
+<<<<<<< HEAD
 	        return attr->mode;
+=======
+		return attr->mode;
+>>>>>>> v4.9.227
 
 	/* Unknown or unfilled attribute. */
 	return 0;
@@ -117,11 +132,16 @@ struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr
 
 	soc_dev = kzalloc(sizeof(*soc_dev), GFP_KERNEL);
 	if (!soc_dev) {
+<<<<<<< HEAD
 	        ret = -ENOMEM;
+=======
+		ret = -ENOMEM;
+>>>>>>> v4.9.227
 		goto out1;
 	}
 
 	/* Fetch a unique (reclaimable) SOC ID. */
+<<<<<<< HEAD
 	do {
 		if (!ida_pre_get(&soc_ida, GFP_KERNEL)) {
 			ret = -ENOMEM;
@@ -136,6 +156,12 @@ struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr
 
 	if (ret)
 	         goto out2;
+=======
+	ret = ida_simple_get(&soc_ida, 0, 0, GFP_KERNEL);
+	if (ret < 0)
+		goto out2;
+	soc_dev->soc_dev_num = ret;
+>>>>>>> v4.9.227
 
 	soc_dev->attr = soc_dev_attr;
 	soc_dev->dev.bus = &soc_bus_type;
@@ -151,26 +177,43 @@ struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr
 	return soc_dev;
 
 out3:
+<<<<<<< HEAD
 	ida_remove(&soc_ida, soc_dev->soc_dev_num);
+=======
+	ida_simple_remove(&soc_ida, soc_dev->soc_dev_num);
+>>>>>>> v4.9.227
 out2:
 	kfree(soc_dev);
 out1:
 	return ERR_PTR(ret);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(soc_device_register);
+>>>>>>> v4.9.227
 
 /* Ensure soc_dev->attr is freed prior to calling soc_device_unregister. */
 void soc_device_unregister(struct soc_device *soc_dev)
 {
+<<<<<<< HEAD
 	ida_remove(&soc_ida, soc_dev->soc_dev_num);
 
 	device_unregister(&soc_dev->dev);
 }
+=======
+	ida_simple_remove(&soc_ida, soc_dev->soc_dev_num);
+
+	device_unregister(&soc_dev->dev);
+}
+EXPORT_SYMBOL_GPL(soc_device_unregister);
+>>>>>>> v4.9.227
 
 static int __init soc_bus_register(void)
 {
 	return bus_register(&soc_bus_type);
 }
 core_initcall(soc_bus_register);
+<<<<<<< HEAD
 
 static void __exit soc_bus_unregister(void)
 {
@@ -179,3 +222,5 @@ static void __exit soc_bus_unregister(void)
 	bus_unregister(&soc_bus_type);
 }
 module_exit(soc_bus_unregister);
+=======
+>>>>>>> v4.9.227

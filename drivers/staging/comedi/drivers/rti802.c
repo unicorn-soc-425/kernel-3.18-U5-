@@ -20,7 +20,11 @@
  * Driver: rti802
  * Description: Analog Devices RTI-802
  * Author: Anders Blomdell <anders.blomdell@control.lth.se>
+<<<<<<< HEAD
  * Devices: (Analog Devices) RTI-802 [rti802]
+=======
+ * Devices: [Analog Devices] RTI-802 (rti802)
+>>>>>>> v4.9.227
  * Status: works
  *
  * Configuration Options:
@@ -100,7 +104,10 @@ static int rti802_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->maxdata	= 0xfff;
 	s->n_chan	= 8;
 	s->insn_write	= rti802_ao_insn_write;
+<<<<<<< HEAD
 	s->insn_read	= comedi_readback_insn_read;
+=======
+>>>>>>> v4.9.227
 
 	ret = comedi_alloc_subdev_readback(s);
 	if (ret)

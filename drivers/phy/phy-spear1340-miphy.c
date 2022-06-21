@@ -2,8 +2,13 @@
  * ST spear1340-miphy driver
  *
  * Copyright (C) 2014 ST Microelectronics
+<<<<<<< HEAD
  * Pratyush Anand <pratyush.anand@st.com>
  * Mohit Kumar <mohit.kumar@st.com>
+=======
+ * Pratyush Anand <pratyush.anand@gmail.com>
+ * Mohit Kumar <mohit.kumar.dhaka@gmail.com>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -189,7 +194,11 @@ static const struct of_device_id spear1340_miphy_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, spear1340_miphy_of_match);
 
+<<<<<<< HEAD
 static struct phy_ops spear1340_miphy_ops = {
+=======
+static const struct phy_ops spear1340_miphy_ops = {
+>>>>>>> v4.9.227
 	.init = spear1340_miphy_init,
 	.exit = spear1340_miphy_exit,
 	.owner = THIS_MODULE,
@@ -229,14 +238,22 @@ static struct phy *spear1340_miphy_xlate(struct device *dev,
 
 	if (args->args_count < 1) {
 		dev_err(dev, "DT did not pass correct no of args\n");
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-ENODEV);
+>>>>>>> v4.9.227
 	}
 
 	priv->mode = args->args[0];
 
 	if (priv->mode != SATA && priv->mode != PCIE) {
 		dev_err(dev, "DT did not pass correct phy mode\n");
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-ENODEV);
+>>>>>>> v4.9.227
 	}
 
 	return priv->phy;
@@ -259,7 +276,11 @@ static int spear1340_miphy_probe(struct platform_device *pdev)
 		return PTR_ERR(priv->misc);
 	}
 
+<<<<<<< HEAD
 	priv->phy = devm_phy_create(dev, NULL, &spear1340_miphy_ops, NULL);
+=======
+	priv->phy = devm_phy_create(dev, NULL, &spear1340_miphy_ops);
+>>>>>>> v4.9.227
 	if (IS_ERR(priv->phy)) {
 		dev_err(dev, "failed to create SATA PCIe PHY\n");
 		return PTR_ERR(priv->phy);
@@ -290,5 +311,9 @@ static struct platform_driver spear1340_miphy_driver = {
 module_platform_driver(spear1340_miphy_driver);
 
 MODULE_DESCRIPTION("ST SPEAR1340-MIPHY driver");
+<<<<<<< HEAD
 MODULE_AUTHOR("Pratyush Anand <pratyush.anand@st.com>");
+=======
+MODULE_AUTHOR("Pratyush Anand <pratyush.anand@gmail.com>");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL v2");

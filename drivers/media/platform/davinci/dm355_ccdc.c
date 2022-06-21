@@ -1030,7 +1030,10 @@ static int dm355_ccdc_remove(struct platform_device *pdev)
 static struct platform_driver dm355_ccdc_driver = {
 	.driver = {
 		.name	= "dm355_ccdc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.remove = dm355_ccdc_remove,
 	.probe = dm355_ccdc_probe,

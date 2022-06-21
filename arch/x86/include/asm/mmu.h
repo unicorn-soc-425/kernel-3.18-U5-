@@ -3,6 +3,7 @@
 
 #include <linux/spinlock.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 
 /*
  * The x86 doesn't have a mmu context, but
@@ -10,6 +11,23 @@
  */
 typedef struct {
 	struct ldt_struct *ldt;
+=======
+#include <linux/atomic.h>
+
+/*
+ * x86 has arch-specific MMU state beyond what lives in mm_struct.
+ */
+typedef struct {
+	/*
+	 * ctx_id uniquely identifies this mm_struct.  A ctx_id will never
+	 * be reused, and zero is not a valid ctx_id.
+	 */
+	u64 ctx_id;
+
+#ifdef CONFIG_MODIFY_LDT_SYSCALL
+	struct ldt_struct *ldt;
+#endif
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_X86_64
 	/* True if mm supports a task running in 32 bit compatibility mode. */
@@ -17,6 +35,7 @@ typedef struct {
 #endif
 
 	struct mutex lock;
+<<<<<<< HEAD
 	void __user *vdso;
 } mm_context_t;
 
@@ -27,5 +46,27 @@ static inline void leave_mm(int cpu)
 {
 }
 #endif
+=======
+	void __user *vdso;			/* vdso base address */
+	const struct vdso_image *vdso_image;	/* vdso image in use */
+
+	atomic_t perf_rdpmc_allowed;	/* nonzero if rdpmc is allowed */
+#ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
+	/*
+	 * One bit per protection key says whether userspace can
+	 * use it or not.  protected by mmap_sem.
+	 */
+	u16 pkey_allocation_map;
+	s16 execute_only_pkey;
+#endif
+} mm_context_t;
+
+#define INIT_MM_CONTEXT(mm)						\
+	.context = {							\
+		.ctx_id = 1,						\
+	}
+
+void leave_mm(int cpu);
+>>>>>>> v4.9.227
 
 #endif /* _ASM_X86_MMU_H */

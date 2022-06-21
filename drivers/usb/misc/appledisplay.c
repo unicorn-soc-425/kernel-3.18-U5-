@@ -63,6 +63,11 @@ static const struct usb_device_id appledisplay_table[] = {
 	{ APPLEDISPLAY_DEVICE(0x9219) },
 	{ APPLEDISPLAY_DEVICE(0x921c) },
 	{ APPLEDISPLAY_DEVICE(0x921d) },
+<<<<<<< HEAD
+=======
+	{ APPLEDISPLAY_DEVICE(0x9222) },
+	{ APPLEDISPLAY_DEVICE(0x9226) },
+>>>>>>> v4.9.227
 	{ APPLEDISPLAY_DEVICE(0x9236) },
 
 	/* Terminating entry */
@@ -85,7 +90,10 @@ struct appledisplay {
 };
 
 static atomic_t count_displays = ATOMIC_INIT(0);
+<<<<<<< HEAD
 static struct workqueue_struct *wq;
+=======
+>>>>>>> v4.9.227
 
 static void appledisplay_complete(struct urb *urb)
 {
@@ -122,7 +130,11 @@ static void appledisplay_complete(struct urb *urb)
 	case ACD_BTN_BRIGHT_UP:
 	case ACD_BTN_BRIGHT_DOWN:
 		pdata->button_pressed = 1;
+<<<<<<< HEAD
 		queue_delayed_work(wq, &pdata->work, 0);
+=======
+		schedule_delayed_work(&pdata->work, 0);
+>>>>>>> v4.9.227
 		break;
 	case ACD_BTN_NONE:
 	default:
@@ -159,8 +171,16 @@ static int appledisplay_bl_update_status(struct backlight_device *bd)
 		pdata->msgdata, 2,
 		ACD_USB_TIMEOUT);
 	mutex_unlock(&pdata->sysfslock);
+<<<<<<< HEAD
 	
 	return retval;
+=======
+
+	if (retval < 0)
+		return retval;
+	else
+		return 0;
+>>>>>>> v4.9.227
 }
 
 static int appledisplay_bl_get_brightness(struct backlight_device *bd)
@@ -178,7 +198,16 @@ static int appledisplay_bl_get_brightness(struct backlight_device *bd)
 		0,
 		pdata->msgdata, 2,
 		ACD_USB_TIMEOUT);
+<<<<<<< HEAD
 	brightness = pdata->msgdata[1];
+=======
+	if (retval < 2) {
+		if (retval >= 0)
+			retval = -EMSGSIZE;
+	} else {
+		brightness = pdata->msgdata[1];
+	}
+>>>>>>> v4.9.227
 	mutex_unlock(&pdata->sysfslock);
 
 	if (retval < 0)
@@ -239,7 +268,10 @@ static int appledisplay_probe(struct usb_interface *iface,
 	pdata = kzalloc(sizeof(struct appledisplay), GFP_KERNEL);
 	if (!pdata) {
 		retval = -ENOMEM;
+<<<<<<< HEAD
 		dev_err(&iface->dev, "Out of memory\n");
+=======
+>>>>>>> v4.9.227
 		goto error;
 	}
 
@@ -253,8 +285,11 @@ static int appledisplay_probe(struct usb_interface *iface,
 	pdata->msgdata = kmalloc(ACD_MSG_BUFFER_LEN, GFP_KERNEL);
 	if (!pdata->msgdata) {
 		retval = -ENOMEM;
+<<<<<<< HEAD
 		dev_err(&iface->dev,
 			"Allocating buffer for control messages failed\n");
+=======
+>>>>>>> v4.9.227
 		goto error;
 	}
 
@@ -262,7 +297,10 @@ static int appledisplay_probe(struct usb_interface *iface,
 	pdata->urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!pdata->urb) {
 		retval = -ENOMEM;
+<<<<<<< HEAD
 		dev_err(&iface->dev, "Allocating URB failed\n");
+=======
+>>>>>>> v4.9.227
 		goto error;
 	}
 
@@ -324,12 +362,20 @@ error:
 	if (pdata) {
 		if (pdata->urb) {
 			usb_kill_urb(pdata->urb);
+<<<<<<< HEAD
+=======
+			cancel_delayed_work_sync(&pdata->work);
+>>>>>>> v4.9.227
 			if (pdata->urbdata)
 				usb_free_coherent(pdata->udev, ACD_URB_BUFFER_LEN,
 					pdata->urbdata, pdata->urb->transfer_dma);
 			usb_free_urb(pdata->urb);
 		}
+<<<<<<< HEAD
 		if (pdata->bd && !IS_ERR(pdata->bd))
+=======
+		if (!IS_ERR(pdata->bd))
+>>>>>>> v4.9.227
 			backlight_device_unregister(pdata->bd);
 		kfree(pdata->msgdata);
 	}
@@ -344,7 +390,11 @@ static void appledisplay_disconnect(struct usb_interface *iface)
 
 	if (pdata) {
 		usb_kill_urb(pdata->urb);
+<<<<<<< HEAD
 		cancel_delayed_work(&pdata->work);
+=======
+		cancel_delayed_work_sync(&pdata->work);
+>>>>>>> v4.9.227
 		backlight_device_unregister(pdata->bd);
 		usb_free_coherent(pdata->udev, ACD_URB_BUFFER_LEN,
 			pdata->urbdata, pdata->urb->transfer_dma);
@@ -365,19 +415,25 @@ static struct usb_driver appledisplay_driver = {
 
 static int __init appledisplay_init(void)
 {
+<<<<<<< HEAD
 	wq = create_singlethread_workqueue("appledisplay");
 	if (!wq) {
 		printk(KERN_ERR "appledisplay: Could not create work queue\n");
 		return -ENOMEM;
 	}
 
+=======
+>>>>>>> v4.9.227
 	return usb_register(&appledisplay_driver);
 }
 
 static void __exit appledisplay_exit(void)
 {
+<<<<<<< HEAD
 	flush_workqueue(wq);
 	destroy_workqueue(wq);
+=======
+>>>>>>> v4.9.227
 	usb_deregister(&appledisplay_driver);
 }
 

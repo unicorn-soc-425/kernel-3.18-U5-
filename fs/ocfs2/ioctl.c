@@ -86,7 +86,11 @@ static int ocfs2_set_inode_attr(struct inode *inode, unsigned flags,
 	unsigned oldflags;
 	int status;
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+>>>>>>> v4.9.227
 
 	status = ocfs2_inode_lock(inode, &bh, 1);
 	if (status < 0) {
@@ -135,7 +139,11 @@ static int ocfs2_set_inode_attr(struct inode *inode, unsigned flags,
 bail_unlock:
 	ocfs2_inode_unlock(inode, 1);
 bail:
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_unlock(inode);
+>>>>>>> v4.9.227
 
 	brelse(bh);
 
@@ -287,9 +295,15 @@ static int ocfs2_info_scan_inode_alloc(struct ocfs2_super *osb,
 	struct ocfs2_dinode *dinode_alloc = NULL;
 
 	if (inode_alloc)
+<<<<<<< HEAD
 		mutex_lock(&inode_alloc->i_mutex);
 
 	if (o2info_coherent(&fi->ifi_req)) {
+=======
+		inode_lock(inode_alloc);
+
+	if (inode_alloc && o2info_coherent(&fi->ifi_req)) {
+>>>>>>> v4.9.227
 		status = ocfs2_inode_lock(inode_alloc, &bh, 0);
 		if (status < 0) {
 			mlog_errno(status);
@@ -317,7 +331,11 @@ bail:
 		ocfs2_inode_unlock(inode_alloc, 0);
 
 	if (inode_alloc)
+<<<<<<< HEAD
 		mutex_unlock(&inode_alloc->i_mutex);
+=======
+		inode_unlock(inode_alloc);
+>>>>>>> v4.9.227
 
 	brelse(bh);
 
@@ -547,7 +565,11 @@ static int ocfs2_info_freefrag_scan_bitmap(struct ocfs2_super *osb,
 	struct ocfs2_dinode *gb_dinode = NULL;
 
 	if (gb_inode)
+<<<<<<< HEAD
 		mutex_lock(&gb_inode->i_mutex);
+=======
+		inode_lock(gb_inode);
+>>>>>>> v4.9.227
 
 	if (o2info_coherent(&ffg->iff_req)) {
 		status = ocfs2_inode_lock(gb_inode, &bh, 0);
@@ -604,11 +626,17 @@ bail:
 		ocfs2_inode_unlock(gb_inode, 0);
 
 	if (gb_inode)
+<<<<<<< HEAD
 		mutex_unlock(&gb_inode->i_mutex);
 
 	if (gb_inode)
 		iput(gb_inode);
 
+=======
+		inode_unlock(gb_inode);
+
+	iput(gb_inode);
+>>>>>>> v4.9.227
 	brelse(bh);
 
 	return status;
@@ -980,7 +1008,10 @@ long ocfs2_compat_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 	case OCFS2_IOC_GROUP_EXTEND:
 	case OCFS2_IOC_GROUP_ADD:
 	case OCFS2_IOC_GROUP_ADD64:
+<<<<<<< HEAD
 	case FITRIM:
+=======
+>>>>>>> v4.9.227
 		break;
 	case OCFS2_IOC_REFLINK:
 		if (copy_from_user(&args, argp, sizeof(args)))

@@ -9,7 +9,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #define DEBUG
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -19,10 +23,15 @@
 #include <linux/platform_device.h>
 #include <linux/spi/spi.h>
 #include <linux/acpi.h>
+<<<<<<< HEAD
 #include <linux/regulator/consumer.h>
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
 #include <linux/mutex.h>
+=======
+#include <linux/gpio.h>
+#include <linux/gpio/consumer.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -33,6 +42,7 @@
 #include <sound/tlv.h>
 #include <sound/rt5659.h>
 
+<<<<<<< HEAD
 #include "rt5659.h"
 
 static struct regmap *global_regmap;
@@ -82,6 +92,12 @@ static struct reg_default init_list[] = {
 #define RT5659_INIT_REG_LEN ARRAY_SIZE(init_list)
 
 static const struct reg_default rt5659_reg[RT5659_ADC_R_EQ_POST_VOL + 1] = {
+=======
+#include "rl6231.h"
+#include "rt5659.h"
+
+static const struct reg_default rt5659_reg[] = {
+>>>>>>> v4.9.227
 	{ 0x0000, 0x0000 },
 	{ 0x0001, 0x4848 },
 	{ 0x0002, 0x8080 },
@@ -1191,13 +1207,17 @@ static const DECLARE_TLV_DB_SCALE(in_vol_tlv, -3450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(adc_vol_tlv, -17625, 375, 0);
 static const DECLARE_TLV_DB_SCALE(adc_bst_tlv, 0, 1200, 0);
 static const DECLARE_TLV_DB_SCALE(in_bst_tlv, -1200, 75, 0);
+<<<<<<< HEAD
 static const DECLARE_TLV_DB_SCALE(dac_mixer_vol_tlv, -6000, 6000, 0);
+=======
+>>>>>>> v4.9.227
 
 /* Interface data select */
 static const char * const rt5659_data_select[] = {
 	"L/R", "R/L", "L/L", "R/R"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(rt5659_if1_01_adc_enum,
 	RT5659_TDM_CTRL_2, 14, rt5659_data_select);
 
@@ -1222,6 +1242,56 @@ static const SOC_ENUM_SINGLE_DECL(rt5659_if3_dac_enum,
 static const SOC_ENUM_SINGLE_DECL(rt5659_if3_adc_enum,
 	RT5659_DIG_INF23_DATA, RT5659_IF3_ADC_SEL_SFT, rt5659_data_select);
 
+=======
+static SOC_ENUM_SINGLE_DECL(rt5659_if1_01_adc_enum,
+	RT5659_TDM_CTRL_2, RT5659_DS_ADC_SLOT01_SFT, rt5659_data_select);
+
+static SOC_ENUM_SINGLE_DECL(rt5659_if1_23_adc_enum,
+	RT5659_TDM_CTRL_2, RT5659_DS_ADC_SLOT23_SFT, rt5659_data_select);
+
+static SOC_ENUM_SINGLE_DECL(rt5659_if1_45_adc_enum,
+	RT5659_TDM_CTRL_2, RT5659_DS_ADC_SLOT45_SFT, rt5659_data_select);
+
+static SOC_ENUM_SINGLE_DECL(rt5659_if1_67_adc_enum,
+	RT5659_TDM_CTRL_2, RT5659_DS_ADC_SLOT67_SFT, rt5659_data_select);
+
+static SOC_ENUM_SINGLE_DECL(rt5659_if2_dac_enum,
+	RT5659_DIG_INF23_DATA, RT5659_IF2_DAC_SEL_SFT, rt5659_data_select);
+
+static SOC_ENUM_SINGLE_DECL(rt5659_if2_adc_enum,
+	RT5659_DIG_INF23_DATA, RT5659_IF2_ADC_SEL_SFT, rt5659_data_select);
+
+static SOC_ENUM_SINGLE_DECL(rt5659_if3_dac_enum,
+	RT5659_DIG_INF23_DATA, RT5659_IF3_DAC_SEL_SFT, rt5659_data_select);
+
+static SOC_ENUM_SINGLE_DECL(rt5659_if3_adc_enum,
+	RT5659_DIG_INF23_DATA, RT5659_IF3_ADC_SEL_SFT, rt5659_data_select);
+
+static const struct snd_kcontrol_new rt5659_if1_01_adc_swap_mux =
+	SOC_DAPM_ENUM("IF1 01 ADC Swap Source", rt5659_if1_01_adc_enum);
+
+static const struct snd_kcontrol_new rt5659_if1_23_adc_swap_mux =
+	SOC_DAPM_ENUM("IF1 23 ADC1 Swap Source", rt5659_if1_23_adc_enum);
+
+static const struct snd_kcontrol_new rt5659_if1_45_adc_swap_mux =
+	SOC_DAPM_ENUM("IF1 45 ADC1 Swap Source", rt5659_if1_45_adc_enum);
+
+static const struct snd_kcontrol_new rt5659_if1_67_adc_swap_mux =
+	SOC_DAPM_ENUM("IF1 67 ADC1 Swap Source", rt5659_if1_67_adc_enum);
+
+static const struct snd_kcontrol_new rt5659_if2_dac_swap_mux =
+	SOC_DAPM_ENUM("IF2 DAC Swap Source", rt5659_if2_dac_enum);
+
+static const struct snd_kcontrol_new rt5659_if2_adc_swap_mux =
+	SOC_DAPM_ENUM("IF2 ADC Swap Source", rt5659_if2_adc_enum);
+
+static const struct snd_kcontrol_new rt5659_if3_dac_swap_mux =
+	SOC_DAPM_ENUM("IF3 DAC Swap Source", rt5659_if3_dac_enum);
+
+static const struct snd_kcontrol_new rt5659_if3_adc_swap_mux =
+	SOC_DAPM_ENUM("IF3 ADC Swap Source", rt5659_if3_adc_enum);
+
+>>>>>>> v4.9.227
 static const char * const rt5659_asrc_clk_src[] = {
 	"clk_sysy_div_out", "clk_i2s1_track", "clk_i2s2_track",
 	"clk_i2s3_track", "clk_sys2", "clk_sys3"
@@ -1231,6 +1301,7 @@ static unsigned int rt5659_asrc_clk_map_values[] = {
 	0, 1, 2, 3, 5, 6,
 };
 
+<<<<<<< HEAD
 static const SOC_VALUE_ENUM_SINGLE_DECL(
 	rt5659_da_sto_asrc_enum, RT5659_ASRC_2, RT5659_DA_STO_T_SFT, 0x7,
 	rt5659_asrc_clk_src, rt5659_asrc_clk_map_values);
@@ -1425,16 +1496,65 @@ static int rt5659_hp_vol_put(struct snd_kcontrol *kcontrol,
 			global_rt5659->impedance_bias << 8);
 
 	mutex_unlock(&rt5659->calibrate_mutex);
+=======
+static SOC_VALUE_ENUM_SINGLE_DECL(
+	rt5659_da_sto_asrc_enum, RT5659_ASRC_2, RT5659_DA_STO_T_SFT, 0x7,
+	rt5659_asrc_clk_src, rt5659_asrc_clk_map_values);
+
+static SOC_VALUE_ENUM_SINGLE_DECL(
+	rt5659_da_monol_asrc_enum, RT5659_ASRC_2, RT5659_DA_MONO_L_T_SFT, 0x7,
+	rt5659_asrc_clk_src, rt5659_asrc_clk_map_values);
+
+static SOC_VALUE_ENUM_SINGLE_DECL(
+	rt5659_da_monor_asrc_enum, RT5659_ASRC_2, RT5659_DA_MONO_R_T_SFT, 0x7,
+	rt5659_asrc_clk_src, rt5659_asrc_clk_map_values);
+
+static SOC_VALUE_ENUM_SINGLE_DECL(
+	rt5659_ad_sto1_asrc_enum, RT5659_ASRC_2, RT5659_AD_STO1_T_SFT, 0x7,
+	rt5659_asrc_clk_src, rt5659_asrc_clk_map_values);
+
+static SOC_VALUE_ENUM_SINGLE_DECL(
+	rt5659_ad_sto2_asrc_enum, RT5659_ASRC_3, RT5659_AD_STO2_T_SFT, 0x7,
+	rt5659_asrc_clk_src, rt5659_asrc_clk_map_values);
+
+static SOC_VALUE_ENUM_SINGLE_DECL(
+	rt5659_ad_monol_asrc_enum, RT5659_ASRC_3, RT5659_AD_MONO_L_T_SFT, 0x7,
+	rt5659_asrc_clk_src, rt5659_asrc_clk_map_values);
+
+static SOC_VALUE_ENUM_SINGLE_DECL(
+	rt5659_ad_monor_asrc_enum, RT5659_ASRC_3, RT5659_AD_MONO_R_T_SFT, 0x7,
+	rt5659_asrc_clk_src, rt5659_asrc_clk_map_values);
+
+static int rt5659_hp_vol_put(struct snd_kcontrol *kcontrol,
+		struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+	int ret = snd_soc_put_volsw(kcontrol, ucontrol);
+
+	if (snd_soc_read(codec, RT5659_STO_NG2_CTRL_1) & RT5659_NG2_EN) {
+		snd_soc_update_bits(codec, RT5659_STO_NG2_CTRL_1,
+			RT5659_NG2_EN_MASK, RT5659_NG2_DIS);
+		snd_soc_update_bits(codec, RT5659_STO_NG2_CTRL_1,
+			RT5659_NG2_EN_MASK, RT5659_NG2_EN);
+	}
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static void rt5659_enable_push_button_irq(struct snd_soc_codec *codec,
 	bool enable)
 {
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
 	if (enable) {
 
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+
+	if (enable) {
+>>>>>>> v4.9.227
 		snd_soc_write(codec, RT5659_4BTN_IL_CMD_1, 0x000b);
 
 		/* MICBIAS1 and Mic Det Power for button detect*/
@@ -1448,11 +1568,23 @@ static void rt5659_enable_push_button_irq(struct snd_soc_codec *codec,
 		snd_soc_update_bits(codec, RT5659_PWR_VOL,
 			RT5659_PWR_MIC_DET, RT5659_PWR_MIC_DET);
 
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, RT5659_IRQ_CTRL_2, 0x8, 0x8);
 		snd_soc_update_bits(codec, RT5659_4BTN_IL_CMD_2, 0x8000, 0x8000);
 	} else {
 		snd_soc_update_bits(codec, RT5659_4BTN_IL_CMD_2, 0x8000, 0x0);
 		snd_soc_update_bits(codec, RT5659_IRQ_CTRL_2, 0x8, 0x0);
+=======
+		snd_soc_update_bits(codec, RT5659_IRQ_CTRL_2,
+				RT5659_IL_IRQ_MASK, RT5659_IL_IRQ_EN);
+		snd_soc_update_bits(codec, RT5659_4BTN_IL_CMD_2,
+				RT5659_4BTN_IL_MASK, RT5659_4BTN_IL_EN);
+	} else {
+		snd_soc_update_bits(codec, RT5659_4BTN_IL_CMD_2,
+				RT5659_4BTN_IL_MASK, RT5659_4BTN_IL_DIS);
+		snd_soc_update_bits(codec, RT5659_IRQ_CTRL_2,
+				RT5659_IL_IRQ_MASK, RT5659_IL_IRQ_DIS);
+>>>>>>> v4.9.227
 		/* MICBIAS1 and Mic Det Power for button detect*/
 		snd_soc_dapm_disable_pin(dapm, "MICBIAS1");
 		snd_soc_dapm_disable_pin(dapm, "Mic Det Power");
@@ -1470,9 +1602,15 @@ static void rt5659_enable_push_button_irq(struct snd_soc_codec *codec,
  * Returns detect status.
  */
 
+<<<<<<< HEAD
 int rt5659_headset_detect(struct snd_soc_codec *codec, int jack_insert)
 {
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+static int rt5659_headset_detect(struct snd_soc_codec *codec, int jack_insert)
+{
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 	int val, i = 0, sleep_time[5] = {300, 150, 100, 50, 30};
 	int reg_63;
 
@@ -1484,6 +1622,7 @@ int rt5659_headset_detect(struct snd_soc_codec *codec, int jack_insert)
 		snd_soc_dapm_sync(dapm);
 		reg_63 = snd_soc_read(codec, RT5659_PWR_ANLG_1);
 
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, RT5659_PWR_ANLG_1, RT5659_PWR_VREF2 |
 			RT5659_PWR_MB, RT5659_PWR_VREF2 | RT5659_PWR_MB);
 		msleep(20);
@@ -1494,12 +1633,30 @@ int rt5659_headset_detect(struct snd_soc_codec *codec, int jack_insert)
 		snd_soc_update_bits(codec, RT5659_EJD_CTRL_1, 0x20, 0x0);
 		msleep(20);
 		snd_soc_update_bits(codec, RT5659_EJD_CTRL_1, 0x20, 0x20);
+=======
+		snd_soc_update_bits(codec, RT5659_PWR_ANLG_1,
+			RT5659_PWR_VREF2 | RT5659_PWR_MB,
+			RT5659_PWR_VREF2 | RT5659_PWR_MB);
+		msleep(20);
+		snd_soc_update_bits(codec, RT5659_PWR_ANLG_1,
+			RT5659_PWR_FV2, RT5659_PWR_FV2);
+
+		snd_soc_write(codec, RT5659_EJD_CTRL_2, 0x4160);
+		snd_soc_update_bits(codec, RT5659_EJD_CTRL_1,
+			0x20, 0x0);
+		msleep(20);
+		snd_soc_update_bits(codec, RT5659_EJD_CTRL_1,
+			0x20, 0x20);
+>>>>>>> v4.9.227
 
 		while (i < 5) {
 			msleep(sleep_time[i]);
 			val = snd_soc_read(codec, RT5659_EJD_CTRL_2) & 0x0003;
+<<<<<<< HEAD
 			pr_debug("%s: %d MX-0C val=%d sleep %d\n", __func__, i,
 				val, sleep_time[i]);
+=======
+>>>>>>> v4.9.227
 			i++;
 			if (val == 0x1 || val == 0x2 || val == 0x3)
 				break;
@@ -1525,22 +1682,34 @@ int rt5659_headset_detect(struct snd_soc_codec *codec, int jack_insert)
 		rt5659->jack_type = 0;
 	}
 
+<<<<<<< HEAD
 	pr_debug("jack_type = %d\n", rt5659->jack_type);
 	return rt5659->jack_type;
 }
 EXPORT_SYMBOL(rt5659_headset_detect);
 
 int rt5659_button_detect(struct snd_soc_codec *codec)
+=======
+	dev_dbg(codec->dev, "jack_type = %d\n", rt5659->jack_type);
+	return rt5659->jack_type;
+}
+
+static int rt5659_button_detect(struct snd_soc_codec *codec)
+>>>>>>> v4.9.227
 {
 	int btn_type, val;
 
 	val = snd_soc_read(codec, RT5659_4BTN_IL_CMD_1);
+<<<<<<< HEAD
 	pr_debug("%s: val=0x%x\n", __func__, val);
+=======
+>>>>>>> v4.9.227
 	btn_type = val & 0xfff0;
 	snd_soc_write(codec, RT5659_4BTN_IL_CMD_1, val);
 
 	return btn_type;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(rt5659_button_detect);
 
 int rt5659_check_jd_status(struct snd_soc_codec *codec)
@@ -1830,6 +1999,101 @@ static int rt5659_adc_power_delay_put(struct snd_kcontrol *kcontrol,
 	adc_power_delay = ucontrol->value.integer.value[0];
 
 	return 0;
+=======
+
+static irqreturn_t rt5659_irq(int irq, void *data)
+{
+	struct rt5659_priv *rt5659 = data;
+
+	queue_delayed_work(system_power_efficient_wq,
+			   &rt5659->jack_detect_work, msecs_to_jiffies(250));
+
+	return IRQ_HANDLED;
+}
+
+int rt5659_set_jack_detect(struct snd_soc_codec *codec,
+	struct snd_soc_jack *hs_jack)
+{
+	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
+
+	rt5659->hs_jack = hs_jack;
+
+	rt5659_irq(0, rt5659);
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(rt5659_set_jack_detect);
+
+static void rt5659_jack_detect_work(struct work_struct *work)
+{
+	struct rt5659_priv *rt5659 =
+		container_of(work, struct rt5659_priv, jack_detect_work.work);
+	int val, btn_type, report = 0;
+
+	if (!rt5659->codec)
+		return;
+
+	val = snd_soc_read(rt5659->codec, RT5659_INT_ST_1) & 0x0080;
+	if (!val) {
+		/* jack in */
+		if (rt5659->jack_type == 0) {
+			/* jack was out, report jack type */
+			report = rt5659_headset_detect(rt5659->codec, 1);
+		} else {
+			/* jack is already in, report button event */
+			report = SND_JACK_HEADSET;
+			btn_type = rt5659_button_detect(rt5659->codec);
+			/**
+			 * rt5659 can report three kinds of button behavior,
+			 * one click, double click and hold. However,
+			 * currently we will report button pressed/released
+			 * event. So all the three button behaviors are
+			 * treated as button pressed.
+			 */
+			switch (btn_type) {
+			case 0x8000:
+			case 0x4000:
+			case 0x2000:
+				report |= SND_JACK_BTN_0;
+				break;
+			case 0x1000:
+			case 0x0800:
+			case 0x0400:
+				report |= SND_JACK_BTN_1;
+				break;
+			case 0x0200:
+			case 0x0100:
+			case 0x0080:
+				report |= SND_JACK_BTN_2;
+				break;
+			case 0x0040:
+			case 0x0020:
+			case 0x0010:
+				report |= SND_JACK_BTN_3;
+				break;
+			case 0x0000: /* unpressed */
+				break;
+			default:
+				btn_type = 0;
+				dev_err(rt5659->codec->dev,
+					"Unexpected button code 0x%04x\n",
+					btn_type);
+				break;
+			}
+
+			/* button release or spurious interrput*/
+			if (btn_type == 0)
+				report =  rt5659->jack_type;
+		}
+	} else {
+		/* jack out */
+		report = rt5659_headset_detect(rt5659->codec, 0);
+	}
+
+	snd_soc_jack_report(rt5659->hs_jack, report, SND_JACK_HEADSET |
+			    SND_JACK_BTN_0 | SND_JACK_BTN_1 |
+			    SND_JACK_BTN_2 | SND_JACK_BTN_3);
+>>>>>>> v4.9.227
 }
 
 static const struct snd_kcontrol_new rt5659_snd_controls[] = {
@@ -1902,6 +2166,7 @@ static const struct snd_kcontrol_new rt5659_snd_controls[] = {
 		RT5659_STO2_ADC_L_BST_SFT, RT5659_STO2_ADC_R_BST_SFT,
 		3, 0, adc_bst_tlv),
 
+<<<<<<< HEAD
 	/* DAC Mixer Volume Control */
 	SOC_SINGLE_TLV("Stereo DAC MIXL DAC L1 Volume", RT5659_STO_DAC_MIXER,
 		RT5659_G_DAC_L1_STO_L_SFT, 1, 1, dac_mixer_vol_tlv),
@@ -1943,10 +2208,13 @@ static const struct snd_kcontrol_new rt5659_snd_controls[] = {
 	SOC_ENUM("ADC IF1 2/3 Data Switch", rt5659_if1_23_adc_enum),
 	SOC_ENUM("ADC IF1 4/5 Data Switch", rt5659_if1_45_adc_enum),
 	SOC_ENUM("ADC IF1 6/7 Data Switch", rt5659_if1_67_adc_enum),
+=======
+>>>>>>> v4.9.227
 	SOC_SINGLE("DAC IF1 DAC1 L Data Switch", RT5659_TDM_CTRL_4, 12, 7, 0),
 	SOC_SINGLE("DAC IF1 DAC1 R Data Switch", RT5659_TDM_CTRL_4, 8, 7, 0),
 	SOC_SINGLE("DAC IF1 DAC2 L Data Switch", RT5659_TDM_CTRL_4, 4, 7, 0),
 	SOC_SINGLE("DAC IF1 DAC2 R Data Switch", RT5659_TDM_CTRL_4, 0, 7, 0),
+<<<<<<< HEAD
 
 	SOC_ENUM("ADC IF2 Data Switch", rt5659_if2_adc_enum),
 	SOC_ENUM("DAC IF2 Data Switch", rt5659_if2_dac_enum),
@@ -1973,6 +2241,8 @@ static const struct snd_kcontrol_new rt5659_snd_controls[] = {
 		rt5659_jack_type_get, rt5659_jack_type_put),
 	SOC_SINGLE_EXT("ADC Power On Delay", SND_SOC_NOPM, 0, 100, 0,
 		rt5659_adc_power_delay_get, rt5659_adc_power_delay_put),
+=======
+>>>>>>> v4.9.227
 };
 
 /**
@@ -1988,6 +2258,7 @@ static const struct snd_kcontrol_new rt5659_snd_controls[] = {
 static int set_dmic_clk(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
 	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
 	int div[] = { 2, 3, 4, 6, 8, 12 }, idx =
@@ -2007,6 +2278,16 @@ static int set_dmic_clk(struct snd_soc_dapm_widget *w,
 			idx = i;
 		}
 	}
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
+	int pd, idx = -EINVAL;
+
+	pd = rl6231_get_pre_div(rt5659->regmap,
+		RT5659_ADDA_CLK_1, RT5659_I2S_PD1_SFT);
+	idx = rl6231_calc_dmic_clk(rt5659->sysclk / pd);
+
+>>>>>>> v4.9.227
 	if (idx < 0)
 		dev_err(codec->dev, "Failed to set DMIC clock\n");
 	else {
@@ -2019,7 +2300,11 @@ static int set_dmic_clk(struct snd_soc_dapm_widget *w,
 static int set_adc_clk(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
@@ -2044,9 +2329,13 @@ static int set_adc_clk(struct snd_soc_dapm_widget *w,
 static int rt5659_charge_pump_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
 
 	pr_debug("%s\n", __func__);
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -2067,6 +2356,7 @@ static int is_sys_clk_from_pll(struct snd_soc_dapm_widget *w,
 			 struct snd_soc_dapm_widget *sink)
 {
 	unsigned int val;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
 	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
 
@@ -2082,17 +2372,31 @@ static int is_sys_clk_from_pll(struct snd_soc_dapm_widget *w,
 		mutex_unlock(&rt5659->calibrate_mutex);
 		return 0;
 	}
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+
+	val = snd_soc_read(codec, RT5659_GLB_CLK);
+	val &= RT5659_SCLK_SRC_MASK;
+	if (val == RT5659_SCLK_SRC_PLL1)
+		return 1;
+	else
+		return 0;
+>>>>>>> v4.9.227
 }
 
 static int is_using_asrc(struct snd_soc_dapm_widget *w,
 			 struct snd_soc_dapm_widget *sink)
 {
 	unsigned int reg, shift, val;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
 	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
 
 	mutex_lock(&rt5659->calibrate_mutex);
 	pr_debug("%s\n", __func__);
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 
 	switch (w->shift) {
 	case RT5659_ADC_MONO_R_ASRC_SFT:
@@ -2120,7 +2424,10 @@ static int is_using_asrc(struct snd_soc_dapm_widget *w,
 		shift = RT5659_DA_STO_T_SFT;
 		break;
 	default:
+<<<<<<< HEAD
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -2132,6 +2439,7 @@ static int is_using_asrc(struct snd_soc_dapm_widget *w,
 		/* I2S_Pre_Div1 should be 1 in asrc mode */
 		snd_soc_update_bits(codec, RT5659_ADDA_CLK_1,
 			RT5659_I2S_PD1_MASK, RT5659_I2S_PD1_2);
+<<<<<<< HEAD
 		/* Prevent I2S ASRC disable for special case */
 		snd_soc_update_bits(codec, RT5659_ASRC_1, 1 << (10 + val),
 			1 << (10 + val));
@@ -2139,11 +2447,16 @@ static int is_using_asrc(struct snd_soc_dapm_widget *w,
 		return 1;
 	default:
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+		return 1;
+	default:
+>>>>>>> v4.9.227
 		return 0;
 	}
 
 }
 
+<<<<<<< HEAD
 static int rt5659_dmic_use_asrc(struct snd_soc_dapm_widget *source,
 			 struct snd_soc_dapm_widget *sink)
 {
@@ -2276,6 +2589,8 @@ static int rt5659_i2s_use_asrc(struct snd_soc_dapm_widget *source,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Digital Mixer */
 static const struct snd_kcontrol_new rt5659_sto1_adc_l_mix[] = {
 	SOC_DAPM_SINGLE("ADC1 Switch", RT5659_STO1_ADC_MIXER,
@@ -2530,14 +2845,22 @@ static const char * const rt5659_dac2_src[] = {
 	"IF1 DAC2", "IF2 DAC", "IF3 DAC", "Mono ADC MIX"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_dac_l2_enum, RT5659_DAC_CTRL,
 	RT5659_DAC_L2_SEL_SFT, rt5659_dac2_src);
 
 static const struct snd_kcontrol_new rt5659_dac_l2_mux =
 	SOC_DAPM_ENUM("DAC L2 Source", rt5659_dac_l2_enum);
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_dac_r2_enum, RT5659_DAC_CTRL,
 	RT5659_DAC_R2_SEL_SFT, rt5659_dac2_src);
 
@@ -2551,7 +2874,11 @@ static const char * const rt5659_sto1_adc1_src[] = {
 	"DAC MIX", "ADC"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_sto1_adc1_enum, RT5659_STO1_ADC_MIXER,
 	RT5659_STO1_ADC1_SRC_SFT, rt5659_sto1_adc1_src);
 
@@ -2564,7 +2891,11 @@ static const char * const rt5659_sto1_adc_src[] = {
 	"ADC1", "ADC2"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_sto1_adc_enum, RT5659_STO1_ADC_MIXER,
 	RT5659_STO1_ADC_SRC_SFT, rt5659_sto1_adc_src);
 
@@ -2577,7 +2908,11 @@ static const char * const rt5659_sto1_adc2_src[] = {
 	"DAC MIX", "DMIC"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_sto1_adc2_enum, RT5659_STO1_ADC_MIXER,
 	RT5659_STO1_ADC2_SRC_SFT, rt5659_sto1_adc2_src);
 
@@ -2590,7 +2925,11 @@ static const char * const rt5659_sto1_dmic_src[] = {
 	"DMIC1", "DMIC2"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_sto1_dmic_enum, RT5659_STO1_ADC_MIXER,
 	RT5659_STO1_DMIC_SRC_SFT, rt5659_sto1_dmic_src);
 
@@ -2604,7 +2943,11 @@ static const char * const rt5659_mono_adc_l2_src[] = {
 	"Mono DAC MIXL", "DMIC"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_mono_adc_l2_enum, RT5659_MONO_ADC_MIXER,
 	RT5659_MONO_ADC_L2_SRC_SFT, rt5659_mono_adc_l2_src);
 
@@ -2618,7 +2961,11 @@ static const char * const rt5659_mono_adc_l1_src[] = {
 	"Mono DAC MIXL", "ADC"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_mono_adc_l1_enum, RT5659_MONO_ADC_MIXER,
 	RT5659_MONO_ADC_L1_SRC_SFT, rt5659_mono_adc_l1_src);
 
@@ -2631,14 +2978,22 @@ static const char * const rt5659_mono_adc_src[] = {
 	"ADC1 L", "ADC1 R", "ADC2 L", "ADC2 R"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_mono_adc_l_enum, RT5659_MONO_ADC_MIXER,
 	RT5659_MONO_ADC_L_SRC_SFT, rt5659_mono_adc_src);
 
 static const struct snd_kcontrol_new rt5659_mono_adc_l_mux =
 	SOC_DAPM_ENUM("Mono ADC L Source", rt5659_mono_adc_l_enum);
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_mono_adcr_enum, RT5659_MONO_ADC_MIXER,
 	RT5659_MONO_ADC_R_SRC_SFT, rt5659_mono_adc_src);
 
@@ -2651,7 +3006,11 @@ static const char * const rt5659_mono_dmic_l_src[] = {
 	"DMIC1 L", "DMIC2 L"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_mono_dmic_l_enum, RT5659_MONO_ADC_MIXER,
 	RT5659_MONO_DMIC_L_SRC_SFT, rt5659_mono_dmic_l_src);
 
@@ -2664,7 +3023,11 @@ static const char * const rt5659_mono_adc_r2_src[] = {
 	"Mono DAC MIXR", "DMIC"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_mono_adc_r2_enum, RT5659_MONO_ADC_MIXER,
 	RT5659_MONO_ADC_R2_SRC_SFT, rt5659_mono_adc_r2_src);
 
@@ -2677,7 +3040,11 @@ static const char * const rt5659_mono_adc_r1_src[] = {
 	"Mono DAC MIXR", "ADC"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_mono_adc_r1_enum, RT5659_MONO_ADC_MIXER,
 	RT5659_MONO_ADC_R1_SRC_SFT, rt5659_mono_adc_r1_src);
 
@@ -2690,7 +3057,11 @@ static const char * const rt5659_mono_dmic_r_src[] = {
 	"DMIC1 R", "DMIC2 R"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_mono_dmic_r_enum, RT5659_MONO_ADC_MIXER,
 	RT5659_MONO_DMIC_R_SRC_SFT, rt5659_mono_dmic_r_src);
 
@@ -2704,14 +3075,22 @@ static const char * const rt5659_dac1_src[] = {
 	"IF1 DAC1", "IF2 DAC", "IF3 DAC"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_dac_r1_enum, RT5659_AD_DA_MIXER,
 	RT5659_DAC1_R_SEL_SFT, rt5659_dac1_src);
 
 static const struct snd_kcontrol_new rt5659_dac_r1_mux =
 	SOC_DAPM_ENUM("DAC R1 Source", rt5659_dac_r1_enum);
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_dac_l1_enum, RT5659_AD_DA_MIXER,
 	RT5659_DAC1_L_SEL_SFT, rt5659_dac1_src);
 
@@ -2724,14 +3103,22 @@ static const char * const rt5659_dig_dac_mix_src[] = {
 	"Stereo DAC Mixer", "Mono DAC Mixer"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_dig_dac_mixl_enum, RT5659_DIG_MIXER,
 	RT5659_DAC_MIX_L_SFT, rt5659_dig_dac_mix_src);
 
 static const struct snd_kcontrol_new rt5659_dig_dac_mixl_mux =
 	SOC_DAPM_ENUM("DAC Digital Mixer L Source", rt5659_dig_dac_mixl_enum);
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_dig_dac_mixr_enum, RT5659_DIG_MIXER,
 	RT5659_DAC_MIX_R_SFT, rt5659_dig_dac_mix_src);
 
@@ -2744,14 +3131,22 @@ static const char * const rt5659_alg_dac1_src[] = {
 	"DAC", "Stereo DAC Mixer"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_alg_dac_l1_enum, RT5659_A_DAC_MUX,
 	RT5659_A_DACL1_SFT, rt5659_alg_dac1_src);
 
 static const struct snd_kcontrol_new rt5659_alg_dac_l1_mux =
 	SOC_DAPM_ENUM("Analog DACL1 Source", rt5659_alg_dac_l1_enum);
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_alg_dac_r1_enum, RT5659_A_DAC_MUX,
 	RT5659_A_DACR1_SFT, rt5659_alg_dac1_src);
 
@@ -2764,14 +3159,22 @@ static const char * const rt5659_alg_dac2_src[] = {
 	"Stereo DAC Mixer", "Mono DAC Mixer"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_alg_dac_l2_enum, RT5659_A_DAC_MUX,
 	RT5659_A_DACL2_SFT, rt5659_alg_dac2_src);
 
 static const struct snd_kcontrol_new rt5659_alg_dac_l2_mux =
 	SOC_DAPM_ENUM("Analog DAC L2 Source", rt5659_alg_dac_l2_enum);
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_alg_dac_r2_enum, RT5659_A_DAC_MUX,
 	RT5659_A_DACR2_SFT, rt5659_alg_dac2_src);
 
@@ -2784,7 +3187,11 @@ static const char * const rt5659_if2_adc_in_src[] = {
 	"IF_ADC1", "IF_ADC2", "DAC_REF", "IF_ADC3"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_if2_adc_in_enum, RT5659_DIG_INF23_DATA,
 	RT5659_IF2_ADC_IN_SFT, rt5659_if2_adc_in_src);
 
@@ -2797,7 +3204,11 @@ static const char * const rt5659_if3_adc_in_src[] = {
 	"IF_ADC1", "IF_ADC2", "DAC_REF", "Stereo2_ADC_L/R"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_if3_adc_in_enum, RT5659_DIG_INF23_DATA,
 	RT5659_IF3_ADC_IN_SFT, rt5659_if3_adc_in_src);
 
@@ -2810,14 +3221,22 @@ static const char * const rt5659_pdm_src[] = {
 	"Mono DAC", "Stereo DAC"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_pdm_l_enum, RT5659_PDM_OUT_CTRL,
 	RT5659_PDM1_L_SFT, rt5659_pdm_src);
 
 static const struct snd_kcontrol_new rt5659_pdm_l_mux =
 	SOC_DAPM_ENUM("PDM L Source", rt5659_pdm_l_enum);
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_pdm_r_enum, RT5659_PDM_OUT_CTRL,
 	RT5659_PDM1_R_SFT, rt5659_pdm_src);
 
@@ -2830,7 +3249,11 @@ static const char * const rt5659_spdif_src[] = {
 	"IF1_DAC1", "IF1_DAC2", "IF2_DAC", "IF3_DAC"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_spdif_enum, RT5659_SPDIF_CTRL,
 	RT5659_SPDIF_SEL_SFT, rt5659_spdif_src);
 
@@ -2850,7 +3273,11 @@ static const char * const rt5659_rx_adc_data_src[] = {
 	"NUL:AD2:DAC:AD1", "NUL:DAC:DAC:AD2", "NUL:DAC:AD2:DAC"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(
+=======
+static SOC_ENUM_SINGLE_DECL(
+>>>>>>> v4.9.227
 	rt5659_rx_adc_data_enum, RT5659_TDM_CTRL_2,
 	RT5659_ADCDAT_SRC_SFT, rt5659_rx_adc_data_src);
 
@@ -2903,6 +3330,7 @@ static const struct snd_kcontrol_new pdm_r_switch =
 static int rt5659_spk_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
 
 
@@ -2912,12 +3340,23 @@ static int rt5659_spk_event(struct snd_soc_dapm_widget *w,
 		snd_soc_update_bits(codec, RT5659_CLASSD_CTRL_1, 0x0200,
 			0x0200);
 		snd_soc_update_bits(codec, RT5659_CLASSD_2, 0x0400, 0x0400);
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+
+	switch (event) {
+	case SND_SOC_DAPM_PRE_PMU:
+		snd_soc_update_bits(codec, RT5659_CLASSD_CTRL_1,
+			RT5659_POW_CLSD_DB_MASK, RT5659_POW_CLSD_DB_EN);
+		snd_soc_update_bits(codec, RT5659_CLASSD_2,
+			RT5659_M_RI_DIG, RT5659_M_RI_DIG);
+>>>>>>> v4.9.227
 		snd_soc_write(codec, RT5659_CLASSD_1, 0x0803);
 		snd_soc_write(codec, RT5659_SPK_DC_CAILB_CTRL_3, 0x0000);
 		break;
 
 	case SND_SOC_DAPM_POST_PMD:
 		snd_soc_write(codec, RT5659_CLASSD_1, 0x0011);
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, RT5659_CLASSD_2, 0x0400, 0x0000);
 		snd_soc_write(codec, RT5659_SPK_DC_CAILB_CTRL_3, 0x0003);
 		snd_soc_update_bits(codec, RT5659_CLASSD_CTRL_1, 0x0200,
@@ -2947,6 +3386,13 @@ static int rt5659_mono_vref_event(struct snd_soc_dapm_widget *w,
 		msleep(20);
 		snd_soc_update_bits(codec, RT5659_PWR_ANLG_1, RT5659_PWR_FV3,
 			RT5659_PWR_FV3);
+=======
+		snd_soc_update_bits(codec, RT5659_CLASSD_2,
+			RT5659_M_RI_DIG, 0x0);
+		snd_soc_write(codec, RT5659_SPK_DC_CAILB_CTRL_3, 0x0003);
+		snd_soc_update_bits(codec, RT5659_CLASSD_CTRL_1,
+			RT5659_POW_CLSD_DB_MASK, RT5659_POW_CLSD_DB_DIS);
+>>>>>>> v4.9.227
 		break;
 
 	default:
@@ -2960,7 +3406,11 @@ static int rt5659_mono_vref_event(struct snd_soc_dapm_widget *w,
 static int rt5659_mono_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -2982,6 +3432,7 @@ static int rt5659_mono_event(struct snd_soc_dapm_widget *w,
 static int rt5659_hp_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
 	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
 
@@ -2999,11 +3450,19 @@ static int rt5659_hp_event(struct snd_soc_dapm_widget *w,
 			}
 		}
 		snd_soc_write(codec,RT5659_HP_CHARGE_PUMP_1, 0x0e1e);
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+
+	switch (event) {
+	case SND_SOC_DAPM_POST_PMU:
+		snd_soc_write(codec, RT5659_HP_CHARGE_PUMP_1, 0x0e1e);
+>>>>>>> v4.9.227
 		snd_soc_update_bits(codec, RT5659_DEPOP_1, 0x0010, 0x0010);
 		break;
 
 	case SND_SOC_DAPM_PRE_PMD:
 		snd_soc_write(codec, RT5659_DEPOP_1, 0x0000);
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, RT5659_DUMMY_2, 0x3000, 0x0);
 		snd_soc_update_bits(codec, RT5659_MICBIAS_2, 0x0100, 0x0000);
 		break;
@@ -3102,6 +3561,8 @@ static int set_bst4_power(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_PRE_PMD:
 		snd_soc_update_bits(codec, RT5659_PWR_ANLG_2,
 			RT5659_PWR_BST4_P | RT5659_PWR_BST4, 0);
+=======
+>>>>>>> v4.9.227
 		break;
 
 	default:
@@ -3116,9 +3577,14 @@ static int set_dmic_power(struct snd_soc_dapm_widget *w,
 {
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
+<<<<<<< HEAD
 		pr_debug("%s\n", __func__);
 		/*Add delay to avoid pop noise*/
 		msleep(dmic_power_delay);
+=======
+		/*Add delay to avoid pop noise*/
+		msleep(450);
+>>>>>>> v4.9.227
 		break;
 
 	default:
@@ -3127,6 +3593,7 @@ static int set_dmic_power(struct snd_soc_dapm_widget *w,
 
 	return 0;
 }
+<<<<<<< HEAD
 static int rt5659_i2s_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
@@ -3375,6 +3842,8 @@ static int rt5659_dac2_event(struct snd_soc_dapm_widget *w,
 
 	return 0;
 }
+=======
+>>>>>>> v4.9.227
 
 static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("LDO2", RT5659_PWR_ANLG_3, RT5659_PWR_LDO2_BIT, 0,
@@ -3384,6 +3853,7 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("Mic Det Power", RT5659_PWR_VOL,
 		RT5659_PWR_MIC_DET_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Mono Vref", RT5659_PWR_ANLG_1,
+<<<<<<< HEAD
 		RT5659_PWR_VREF3_BIT, 0, rt5659_mono_vref_event,
 		SND_SOC_DAPM_POST_PMU),
 
@@ -3415,6 +3885,31 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 
 	/* Input Side */
 	/* micbias */
+=======
+		RT5659_PWR_VREF3_BIT, 0, NULL, 0),
+
+	/* ASRC */
+	SND_SOC_DAPM_SUPPLY_S("I2S1 ASRC", 1, RT5659_ASRC_1,
+		RT5659_I2S1_ASRC_SFT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY_S("I2S2 ASRC", 1, RT5659_ASRC_1,
+		RT5659_I2S2_ASRC_SFT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY_S("I2S3 ASRC", 1, RT5659_ASRC_1,
+		RT5659_I2S3_ASRC_SFT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY_S("DAC STO ASRC", 1, RT5659_ASRC_1,
+		RT5659_DAC_STO_ASRC_SFT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY_S("DAC Mono L ASRC", 1, RT5659_ASRC_1,
+		RT5659_DAC_MONO_L_ASRC_SFT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY_S("DAC Mono R ASRC", 1, RT5659_ASRC_1,
+		RT5659_DAC_MONO_R_ASRC_SFT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY_S("ADC STO1 ASRC", 1, RT5659_ASRC_1,
+		RT5659_ADC_STO1_ASRC_SFT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY_S("ADC Mono L ASRC", 1, RT5659_ASRC_1,
+		RT5659_ADC_MONO_L_ASRC_SFT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY_S("ADC Mono R ASRC", 1, RT5659_ASRC_1,
+		RT5659_ADC_MONO_R_ASRC_SFT, 0, NULL, 0),
+
+	/* Input Side */
+>>>>>>> v4.9.227
 	SND_SOC_DAPM_SUPPLY("MICBIAS1", RT5659_PWR_ANLG_2, RT5659_PWR_MB1_BIT,
 		0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("MICBIAS2", RT5659_PWR_ANLG_2, RT5659_PWR_MB2_BIT,
@@ -3448,6 +3943,7 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		RT5659_DMIC_2_EN_SFT, 0, set_dmic_power, SND_SOC_DAPM_POST_PMU),
 
 	/* Boost */
+<<<<<<< HEAD
 	SND_SOC_DAPM_PGA("BST1", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("BST2", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("BST3", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -3460,6 +3956,25 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		set_bst3_power, SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
 	SND_SOC_DAPM_SUPPLY_S("BST4 Power", 1, SND_SOC_NOPM, 0, 0,
 		set_bst4_power, SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
+=======
+	SND_SOC_DAPM_PGA("BST1", RT5659_PWR_ANLG_2,
+		RT5659_PWR_BST1_P_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_PGA("BST2", RT5659_PWR_ANLG_2,
+		RT5659_PWR_BST2_P_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_PGA("BST3", RT5659_PWR_ANLG_2,
+		RT5659_PWR_BST3_P_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_PGA("BST4", RT5659_PWR_ANLG_2,
+		RT5659_PWR_BST4_P_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("BST1 Power", RT5659_PWR_ANLG_2,
+		RT5659_PWR_BST1_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("BST2 Power", RT5659_PWR_ANLG_2,
+		RT5659_PWR_BST2_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("BST3 Power", RT5659_PWR_ANLG_2,
+		RT5659_PWR_BST3_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("BST4 Power", RT5659_PWR_ANLG_2,
+		RT5659_PWR_BST4_BIT, 0, NULL, 0),
+
+>>>>>>> v4.9.227
 
 	/* Input Volume */
 	SND_SOC_DAPM_PGA("INL VOL", RT5659_PWR_VOL, RT5659_PWR_IN_L_BIT,
@@ -3468,6 +3983,7 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		0, NULL, 0),
 
 	/* REC Mixer */
+<<<<<<< HEAD
 	SND_SOC_DAPM_MIXER("RECMIX1L", SND_SOC_NOPM, 0, 0, rt5659_rec1_l_mix,
 		ARRAY_SIZE(rt5659_rec1_l_mix)),
 	SND_SOC_DAPM_MIXER("RECMIX1R", SND_SOC_NOPM, 0, 0, rt5659_rec1_r_mix,
@@ -3486,6 +4002,16 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		RT5659_PWR_RM2_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY_S("RECMIX2R Power", 2, RT5659_PWR_MIXER,
 		RT5659_PWR_RM2_R_BIT, 0, NULL, 0),
+=======
+	SND_SOC_DAPM_MIXER("RECMIX1L", RT5659_PWR_MIXER, RT5659_PWR_RM1_L_BIT,
+		0, rt5659_rec1_l_mix, ARRAY_SIZE(rt5659_rec1_l_mix)),
+	SND_SOC_DAPM_MIXER("RECMIX1R", RT5659_PWR_MIXER, RT5659_PWR_RM1_R_BIT,
+		0, rt5659_rec1_r_mix, ARRAY_SIZE(rt5659_rec1_r_mix)),
+	SND_SOC_DAPM_MIXER("RECMIX2L", RT5659_PWR_MIXER, RT5659_PWR_RM2_L_BIT,
+		0, rt5659_rec2_l_mix, ARRAY_SIZE(rt5659_rec2_l_mix)),
+	SND_SOC_DAPM_MIXER("RECMIX2R", RT5659_PWR_MIXER, RT5659_PWR_RM2_R_BIT,
+		0, rt5659_rec2_r_mix, ARRAY_SIZE(rt5659_rec2_r_mix)),
+>>>>>>> v4.9.227
 
 	/* ADCs */
 	SND_SOC_DAPM_ADC("ADC1 L", NULL, SND_SOC_NOPM, 0, 0),
@@ -3493,6 +4019,7 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 	SND_SOC_DAPM_ADC("ADC2 L", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_ADC("ADC2 R", NULL, SND_SOC_NOPM, 0, 0),
 
+<<<<<<< HEAD
 	SND_SOC_DAPM_SUPPLY_S("ADC1 L Power", 3, RT5659_PWR_DIG_1,
 		RT5659_PWR_ADC_L1_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY_S("ADC1 R Power", 3, RT5659_PWR_DIG_1,
@@ -3500,6 +4027,15 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY_S("ADC2 L Power", 3, RT5659_PWR_DIG_2,
 		RT5659_PWR_ADC_L2_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY_S("ADC2 R Power", 3, RT5659_PWR_DIG_2,
+=======
+	SND_SOC_DAPM_SUPPLY("ADC1 L Power", RT5659_PWR_DIG_1,
+		RT5659_PWR_ADC_L1_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("ADC1 R Power", RT5659_PWR_DIG_1,
+		RT5659_PWR_ADC_R1_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("ADC2 L Power", RT5659_PWR_DIG_2,
+		RT5659_PWR_ADC_L2_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("ADC2 R Power", RT5659_PWR_DIG_2,
+>>>>>>> v4.9.227
 		RT5659_PWR_ADC_R2_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("ADC1 clock", SND_SOC_NOPM, 0, 0, set_adc_clk,
 		SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),
@@ -3539,14 +4075,23 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		&rt5659_mono_adc_l_mux),
 	SND_SOC_DAPM_MUX("Mono ADC R Mux", SND_SOC_NOPM, 0, 0,
 		&rt5659_mono_adc_r_mux),
+<<<<<<< HEAD
 
 	/* ADC Mixer */
+=======
+	/* ADC Mixer */
+	SND_SOC_DAPM_SUPPLY("ADC Stereo1 Filter", RT5659_PWR_DIG_2,
+		RT5659_PWR_ADC_S1F_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("ADC Stereo2 Filter", RT5659_PWR_DIG_2,
+		RT5659_PWR_ADC_S2F_BIT, 0, NULL, 0),
+>>>>>>> v4.9.227
 	SND_SOC_DAPM_MIXER("Stereo1 ADC MIXL", SND_SOC_NOPM,
 		0, 0, rt5659_sto1_adc_l_mix,
 		ARRAY_SIZE(rt5659_sto1_adc_l_mix)),
 	SND_SOC_DAPM_MIXER("Stereo1 ADC MIXR", SND_SOC_NOPM,
 		0, 0, rt5659_sto1_adc_r_mix,
 		ARRAY_SIZE(rt5659_sto1_adc_r_mix)),
+<<<<<<< HEAD
 	SND_SOC_DAPM_MIXER("Mono ADC MIXL", SND_SOC_NOPM, 0, 1,
 		rt5659_mono_adc_l_mix, ARRAY_SIZE(rt5659_mono_adc_l_mix)),
 	SND_SOC_DAPM_MIXER("Mono ADC MIXR", SND_SOC_NOPM, 0, 1,
@@ -3561,6 +4106,18 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		RT5659_PWR_ADC_MF_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY_S("ADC Mono Right Filter", 4, RT5659_PWR_DIG_2,
 		RT5659_PWR_ADC_MF_R_BIT, 0, NULL, 0),
+=======
+	SND_SOC_DAPM_SUPPLY("ADC Mono Left Filter", RT5659_PWR_DIG_2,
+		RT5659_PWR_ADC_MF_L_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_MIXER("Mono ADC MIXL", RT5659_MONO_ADC_DIG_VOL,
+		RT5659_L_MUTE_SFT, 1, rt5659_mono_adc_l_mix,
+		ARRAY_SIZE(rt5659_mono_adc_l_mix)),
+	SND_SOC_DAPM_SUPPLY("ADC Mono Right Filter", RT5659_PWR_DIG_2,
+		RT5659_PWR_ADC_MF_R_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_MIXER("Mono ADC MIXR", RT5659_MONO_ADC_DIG_VOL,
+		RT5659_R_MUTE_SFT, 1, rt5659_mono_adc_r_mix,
+		ARRAY_SIZE(rt5659_mono_adc_r_mix)),
+>>>>>>> v4.9.227
 
 	/* ADC PGA */
 	SND_SOC_DAPM_PGA("IF_ADC1", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -3572,6 +4129,7 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("IF1_ADC4", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("Stereo2 ADC LR", SND_SOC_NOPM, 0, 0, NULL, 0),
 
+<<<<<<< HEAD
 	SND_SOC_DAPM_PGA_S("Stereo1 ADC Volume L", 1, RT5659_STO1_ADC_DIG_VOL,
 		RT5659_L_MUTE_SFT, 1, rt5659_adc_depop_event, SND_SOC_DAPM_PRE_PMU),
 	SND_SOC_DAPM_PGA_S("Stereo1 ADC Volume R", 1, RT5659_STO1_ADC_DIG_VOL,
@@ -3585,6 +4143,16 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 	/* Digital Interface */
 	SND_SOC_DAPM_SUPPLY("I2S1", RT5659_PWR_DIG_1, RT5659_PWR_I2S1_BIT, 0,
 		rt5659_i2s_event, SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
+=======
+	SND_SOC_DAPM_PGA("Stereo1 ADC Volume L", RT5659_STO1_ADC_DIG_VOL,
+		RT5659_L_MUTE_SFT, 1, NULL, 0),
+	SND_SOC_DAPM_PGA("Stereo1 ADC Volume R", RT5659_STO1_ADC_DIG_VOL,
+		RT5659_R_MUTE_SFT, 1, NULL, 0),
+
+	/* Digital Interface */
+	SND_SOC_DAPM_SUPPLY("I2S1", RT5659_PWR_DIG_1, RT5659_PWR_I2S1_BIT,
+		0, NULL, 0),
+>>>>>>> v4.9.227
 	SND_SOC_DAPM_PGA("IF1 DAC1", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF1 DAC2", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF1 DAC1 L", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -3595,7 +4163,11 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("IF1 ADC L", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF1 ADC R", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("I2S2", RT5659_PWR_DIG_1, RT5659_PWR_I2S2_BIT, 0,
+<<<<<<< HEAD
 		rt5659_i2s_event, SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
+=======
+		NULL, 0),
+>>>>>>> v4.9.227
 	SND_SOC_DAPM_PGA("IF2 DAC", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF2 DAC L", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF2 DAC R", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -3603,7 +4175,11 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("IF2 ADC1", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF2 ADC2", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("I2S3", RT5659_PWR_DIG_1, RT5659_PWR_I2S3_BIT, 0,
+<<<<<<< HEAD
 		rt5659_i2s_event, SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
+=======
+		NULL, 0),
+>>>>>>> v4.9.227
 	SND_SOC_DAPM_PGA("IF3 DAC", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF3 DAC L", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF3 DAC R", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -3620,6 +4196,25 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		&rt5659_if2_adc_in_mux),
 	SND_SOC_DAPM_MUX("IF3 ADC Mux", SND_SOC_NOPM, 0, 0,
 		&rt5659_if3_adc_in_mux),
+<<<<<<< HEAD
+=======
+	SND_SOC_DAPM_MUX("IF1 01 ADC Swap Mux", SND_SOC_NOPM, 0, 0,
+			&rt5659_if1_01_adc_swap_mux),
+	SND_SOC_DAPM_MUX("IF1 23 ADC Swap Mux", SND_SOC_NOPM, 0, 0,
+			&rt5659_if1_23_adc_swap_mux),
+	SND_SOC_DAPM_MUX("IF1 45 ADC Swap Mux", SND_SOC_NOPM, 0, 0,
+			&rt5659_if1_45_adc_swap_mux),
+	SND_SOC_DAPM_MUX("IF1 67 ADC Swap Mux", SND_SOC_NOPM, 0, 0,
+			&rt5659_if1_67_adc_swap_mux),
+	SND_SOC_DAPM_MUX("IF2 DAC Swap Mux", SND_SOC_NOPM, 0, 0,
+			&rt5659_if2_dac_swap_mux),
+	SND_SOC_DAPM_MUX("IF2 ADC Swap Mux", SND_SOC_NOPM, 0, 0,
+			&rt5659_if2_adc_swap_mux),
+	SND_SOC_DAPM_MUX("IF3 DAC Swap Mux", SND_SOC_NOPM, 0, 0,
+			&rt5659_if3_dac_swap_mux),
+	SND_SOC_DAPM_MUX("IF3 ADC Swap Mux", SND_SOC_NOPM, 0, 0,
+			&rt5659_if3_adc_swap_mux),
+>>>>>>> v4.9.227
 
 	/* Audio Interface */
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
@@ -3637,11 +4232,17 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		rt5659_dac_r_mix, ARRAY_SIZE(rt5659_dac_r_mix)),
 
 	/* DAC channel Mux */
+<<<<<<< HEAD
 	SND_SOC_DAPM_MUX_E("DAC L1 Mux", SND_SOC_NOPM, 0, 0, &rt5659_dac_l1_mux,
 		rt5659_dac1_event, SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 	SND_SOC_DAPM_MUX("DAC R1 Mux", SND_SOC_NOPM, 0, 0, &rt5659_dac_r1_mux),
 	SND_SOC_DAPM_MUX_E("DAC L2 Mux", SND_SOC_NOPM, 0, 0, &rt5659_dac_l2_mux,
 		rt5659_dac2_event, SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
+=======
+	SND_SOC_DAPM_MUX("DAC L1 Mux", SND_SOC_NOPM, 0, 0, &rt5659_dac_l1_mux),
+	SND_SOC_DAPM_MUX("DAC R1 Mux", SND_SOC_NOPM, 0, 0, &rt5659_dac_r1_mux),
+	SND_SOC_DAPM_MUX("DAC L2 Mux", SND_SOC_NOPM, 0, 0, &rt5659_dac_l2_mux),
+>>>>>>> v4.9.227
 	SND_SOC_DAPM_MUX("DAC R2 Mux", SND_SOC_NOPM, 0, 0, &rt5659_dac_r2_mux),
 
 	SND_SOC_DAPM_MUX("DAC L1 Source", SND_SOC_NOPM, 0, 0,
@@ -3655,6 +4256,7 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 
 	/* DAC Mixer */
 	SND_SOC_DAPM_SUPPLY("DAC Stereo1 Filter", RT5659_PWR_DIG_2,
+<<<<<<< HEAD
 		RT5659_PWR_DAC_S1F_BIT, 0, rt5659_sto1_filter_event,
 		SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU |
 		SND_SOC_DAPM_PRE_PMD),
@@ -3666,6 +4268,13 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		RT5659_PWR_DAC_MF_R_BIT, 0, rt5659_monor_filter_event,
 		SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU |
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMD),
+=======
+		RT5659_PWR_DAC_S1F_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("DAC Mono Left Filter", RT5659_PWR_DIG_2,
+		RT5659_PWR_DAC_MF_L_BIT, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("DAC Mono Right Filter", RT5659_PWR_DIG_2,
+		RT5659_PWR_DAC_MF_R_BIT, 0, NULL, 0),
+>>>>>>> v4.9.227
 	SND_SOC_DAPM_MIXER("Stereo DAC MIXL", SND_SOC_NOPM, 0, 0,
 		rt5659_sto_dac_l_mix, ARRAY_SIZE(rt5659_sto_dac_l_mix)),
 	SND_SOC_DAPM_MIXER("Stereo DAC MIXR", SND_SOC_NOPM, 0, 0,
@@ -3674,10 +4283,17 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		rt5659_mono_dac_l_mix, ARRAY_SIZE(rt5659_mono_dac_l_mix)),
 	SND_SOC_DAPM_MIXER("Mono DAC MIXR", SND_SOC_NOPM, 0, 0,
 		rt5659_mono_dac_r_mix, ARRAY_SIZE(rt5659_mono_dac_r_mix)),
+<<<<<<< HEAD
 	SND_SOC_DAPM_MUX("DAC MIXL Mux", RT5659_DIG_MIXER, RT5659_M_DAC_MIX_L_SFT,
 		1, &rt5659_dig_dac_mixl_mux),
 	SND_SOC_DAPM_MUX("DAC MIXR Mux", RT5659_DIG_MIXER, RT5659_M_DAC_MIX_R_SFT,
 		1, &rt5659_dig_dac_mixr_mux),
+=======
+	SND_SOC_DAPM_MUX("DAC MIXL", SND_SOC_NOPM, 0, 0,
+		&rt5659_dig_dac_mixl_mux),
+	SND_SOC_DAPM_MUX("DAC MIXR", SND_SOC_NOPM, 0, 0,
+		&rt5659_dig_dac_mixr_mux),
+>>>>>>> v4.9.227
 
 	/* DACs */
 	SND_SOC_DAPM_SUPPLY_S("DAC L1 Power", 1, RT5659_PWR_DIG_1,
@@ -3707,7 +4323,11 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("OUT MIXR", RT5659_PWR_MIXER, RT5659_PWR_OM_R_BIT,
 		0, rt5659_out_r_mix, ARRAY_SIZE(rt5659_out_r_mix)),
 
+<<<<<<< HEAD
 	/* Ouput Volume */
+=======
+	/* Output Volume */
+>>>>>>> v4.9.227
 	SND_SOC_DAPM_SWITCH("SPKVOL L", RT5659_PWR_VOL, RT5659_PWR_SV_L_BIT, 0,
 		&spkvol_l_switch),
 	SND_SOC_DAPM_SWITCH("SPKVOL R", RT5659_PWR_VOL, RT5659_PWR_SV_R_BIT, 0,
@@ -3739,8 +4359,12 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 		SND_SOC_DAPM_PRE_PMU),
 	SND_SOC_DAPM_PGA_S("HP Amp", 1, SND_SOC_NOPM, 0, 0, rt5659_hp_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
+<<<<<<< HEAD
 	SND_SOC_DAPM_PGA("LOUT Amp", RT5659_PWR_ANLG_1, RT5659_PWR_LM_BIT,
 		0, NULL, 0),
+=======
+	SND_SOC_DAPM_PGA("LOUT Amp", SND_SOC_NOPM, 0, 0, NULL, 0),
+>>>>>>> v4.9.227
 
 	SND_SOC_DAPM_SUPPLY("Charge Pump", SND_SOC_NOPM, 0, 0,
 		rt5659_charge_pump_event, SND_SOC_DAPM_PRE_PMU |
@@ -3773,6 +4397,12 @@ static const struct snd_soc_dapm_widget rt5659_dapm_widgets[] = {
 	/* SPDIF */
 	SND_SOC_DAPM_MUX("SPDIF Mux", SND_SOC_NOPM, 0, 0, &rt5659_spdif_mux),
 
+<<<<<<< HEAD
+=======
+	SND_SOC_DAPM_SUPPLY("SYS CLK DET", RT5659_CLK_DET, 3, 0, NULL, 0),
+	SND_SOC_DAPM_SUPPLY("CLKDET", RT5659_CLK_DET, 0, 0, NULL, 0),
+
+>>>>>>> v4.9.227
 	/* Output Lines */
 	SND_SOC_DAPM_OUTPUT("HPOL"),
 	SND_SOC_DAPM_OUTPUT("HPOR"),
@@ -3804,6 +4434,7 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "DAC Mono Right Filter", NULL, "DAC Mono R ASRC", is_using_asrc },
 	{ "DAC Stereo1 Filter", NULL, "DAC STO ASRC", is_using_asrc },
 
+<<<<<<< HEAD
 	{ "I2S1", NULL, "I2S1 ASRC", rt5659_i2s_use_asrc },
 	{ "I2S2", NULL, "I2S2 ASRC", rt5659_i2s_use_asrc },
 	{ "I2S3", NULL, "I2S3 ASRC", rt5659_i2s_use_asrc },
@@ -3812,6 +4443,13 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "Stereo1 DMIC R Mux", NULL, "DMIC STO1 ASRC", rt5659_dmic_use_asrc },
 	{ "Mono DMIC L Mux", NULL, "DMIC Mono L ASRC", rt5659_dmic_use_asrc },
 	{ "Mono DMIC R Mux", NULL, "DMIC Mono R ASRC", rt5659_dmic_use_asrc },
+=======
+	{ "SYS CLK DET", NULL, "CLKDET" },
+
+	{ "I2S1", NULL, "I2S1 ASRC" },
+	{ "I2S2", NULL, "I2S2 ASRC" },
+	{ "I2S3", NULL, "I2S3 ASRC" },
+>>>>>>> v4.9.227
 
 	{ "IN1P", NULL, "LDO2" },
 	{ "IN2P", NULL, "LDO2" },
@@ -3845,7 +4483,10 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "RECMIX1L", "BST3 Switch", "BST3" },
 	{ "RECMIX1L", "BST2 Switch", "BST2" },
 	{ "RECMIX1L", "BST1 Switch", "BST1" },
+<<<<<<< HEAD
 	{ "RECMIX1L", NULL, "RECMIX1L Power" },
+=======
+>>>>>>> v4.9.227
 
 	{ "RECMIX1R", "HPOVOLR Switch", "HPO R Playback" },
 	{ "RECMIX1R", "INR Switch", "INR VOL" },
@@ -3853,7 +4494,10 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "RECMIX1R", "BST3 Switch", "BST3" },
 	{ "RECMIX1R", "BST2 Switch", "BST2" },
 	{ "RECMIX1R", "BST1 Switch", "BST1" },
+<<<<<<< HEAD
 	{ "RECMIX1R", NULL, "RECMIX1R Power" },
+=======
+>>>>>>> v4.9.227
 
 	{ "RECMIX2L", "SPKVOLL Switch", "SPKVOL L" },
 	{ "RECMIX2L", "OUTVOLL Switch", "OUTVOL L" },
@@ -3861,7 +4505,10 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "RECMIX2L", "BST3 Switch", "BST3" },
 	{ "RECMIX2L", "BST2 Switch", "BST2" },
 	{ "RECMIX2L", "BST1 Switch", "BST1" },
+<<<<<<< HEAD
 	{ "RECMIX2L", NULL, "RECMIX2L Power" },
+=======
+>>>>>>> v4.9.227
 
 	{ "RECMIX2R", "MONOVOL Switch", "MONOVOL" },
 	{ "RECMIX2R", "OUTVOLR Switch", "OUTVOL R" },
@@ -3869,7 +4516,10 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "RECMIX2R", "BST3 Switch", "BST3" },
 	{ "RECMIX2R", "BST2 Switch", "BST2" },
 	{ "RECMIX2R", "BST1 Switch", "BST1" },
+<<<<<<< HEAD
 	{ "RECMIX2R", NULL, "RECMIX2R Power" },
+=======
+>>>>>>> v4.9.227
 
 	{ "ADC1 L", NULL, "RECMIX1L" },
 	{ "ADC1 L", NULL, "ADC1 L Power" },
@@ -3912,6 +4562,7 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "Stereo1 ADC R Mux", "ADC2", "ADC2 R" },
 
 	{ "Stereo1 ADC L1 Mux", "ADC", "Stereo1 ADC L Mux" },
+<<<<<<< HEAD
 	{ "Stereo1 ADC L1 Mux", "DAC MIX", "DAC MIXL Mux" },
 	{ "Stereo1 ADC L2 Mux", "DMIC", "Stereo1 DMIC L Mux" },
 	{ "Stereo1 ADC L2 Mux", "DAC MIX", "DAC MIXL Mux" },
@@ -3920,6 +4571,16 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "Stereo1 ADC R1 Mux", "DAC MIX", "DAC MIXR Mux" },
 	{ "Stereo1 ADC R2 Mux", "DMIC", "Stereo1 DMIC R Mux" },
 	{ "Stereo1 ADC R2 Mux", "DAC MIX", "DAC MIXR Mux" },
+=======
+	{ "Stereo1 ADC L1 Mux", "DAC MIX", "DAC MIXL" },
+	{ "Stereo1 ADC L2 Mux", "DMIC", "Stereo1 DMIC L Mux" },
+	{ "Stereo1 ADC L2 Mux", "DAC MIX", "DAC MIXL" },
+
+	{ "Stereo1 ADC R1 Mux", "ADC", "Stereo1 ADC R Mux" },
+	{ "Stereo1 ADC R1 Mux", "DAC MIX", "DAC MIXR" },
+	{ "Stereo1 ADC R2 Mux", "DMIC", "Stereo1 DMIC R Mux" },
+	{ "Stereo1 ADC R2 Mux", "DAC MIX", "DAC MIXR" },
+>>>>>>> v4.9.227
 
 	{ "Mono ADC L Mux", "ADC1 L", "ADC1 L" },
 	{ "Mono ADC L Mux", "ADC1 R", "ADC1 R" },
@@ -3960,6 +4621,7 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "Stereo1 ADC Volume L", NULL, "Stereo1 ADC MIXL" },
 	{ "Stereo1 ADC Volume R", NULL, "Stereo1 ADC MIXR" },
 
+<<<<<<< HEAD
 	{ "Mono ADC Volume L", NULL, "Mono ADC MIXL" },
 	{ "Mono ADC Volume R", NULL, "Mono ADC MIXR" },
 
@@ -3967,6 +4629,12 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "IF_ADC1", NULL, "Stereo1 ADC Volume R" },
 	{ "IF_ADC2", NULL, "Mono ADC Volume L" },
 	{ "IF_ADC2", NULL, "Mono ADC Volume R" },
+=======
+	{ "IF_ADC1", NULL, "Stereo1 ADC Volume L" },
+	{ "IF_ADC1", NULL, "Stereo1 ADC Volume R" },
+	{ "IF_ADC2", NULL, "Mono ADC MIXL" },
+	{ "IF_ADC2", NULL, "Mono ADC MIXR" },
+>>>>>>> v4.9.227
 
 	{ "TDM AD1:AD2:DAC", NULL, "IF_ADC1" },
 	{ "TDM AD1:AD2:DAC", NULL, "IF_ADC2" },
@@ -3997,8 +4665,32 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "TDM Data Mux", "NUL:AD2:DAC:AD1", "TDM AD1:AD2:DAC" },
 	{ "TDM Data Mux", "NUL:DAC:DAC:AD2", "TDM AD2:DAC" },
 	{ "TDM Data Mux", "NUL:DAC:AD2:DAC", "TDM AD2:DAC" },
+<<<<<<< HEAD
 	{ "IF1 ADC", NULL, "I2S1" },
 	{ "IF1 ADC", NULL, "TDM Data Mux" },
+=======
+	{ "IF1 01 ADC Swap Mux", "L/R", "TDM Data Mux" },
+	{ "IF1 01 ADC Swap Mux", "R/L", "TDM Data Mux" },
+	{ "IF1 01 ADC Swap Mux", "L/L", "TDM Data Mux" },
+	{ "IF1 01 ADC Swap Mux", "R/R", "TDM Data Mux" },
+	{ "IF1 23 ADC Swap Mux", "L/R", "TDM Data Mux" },
+	{ "IF1 23 ADC Swap Mux", "R/L", "TDM Data Mux" },
+	{ "IF1 23 ADC Swap Mux", "L/L", "TDM Data Mux" },
+	{ "IF1 23 ADC Swap Mux", "R/R", "TDM Data Mux" },
+	{ "IF1 45 ADC Swap Mux", "L/R", "TDM Data Mux" },
+	{ "IF1 45 ADC Swap Mux", "R/L", "TDM Data Mux" },
+	{ "IF1 45 ADC Swap Mux", "L/L", "TDM Data Mux" },
+	{ "IF1 45 ADC Swap Mux", "R/R", "TDM Data Mux" },
+	{ "IF1 67 ADC Swap Mux", "L/R", "TDM Data Mux" },
+	{ "IF1 67 ADC Swap Mux", "R/L", "TDM Data Mux" },
+	{ "IF1 67 ADC Swap Mux", "L/L", "TDM Data Mux" },
+	{ "IF1 67 ADC Swap Mux", "R/R", "TDM Data Mux" },
+	{ "IF1 ADC", NULL, "IF1 01 ADC Swap Mux" },
+	{ "IF1 ADC", NULL, "IF1 23 ADC Swap Mux" },
+	{ "IF1 ADC", NULL, "IF1 45 ADC Swap Mux" },
+	{ "IF1 ADC", NULL, "IF1 67 ADC Swap Mux" },
+	{ "IF1 ADC", NULL, "I2S1" },
+>>>>>>> v4.9.227
 
 	{ "IF2 ADC Mux", "IF_ADC1", "IF_ADC1" },
 	{ "IF2 ADC Mux", "IF_ADC2", "IF_ADC2" },
@@ -4015,6 +4707,7 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "IF3 ADC", NULL, "I2S3" },
 
 	{ "AIF1TX", NULL, "IF1 ADC" },
+<<<<<<< HEAD
 	{ "AIF2TX", NULL, "IF2 ADC" },
 	{ "AIF3TX", NULL, "IF3 ADC" },
 
@@ -4022,6 +4715,31 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "IF1 DAC2", NULL, "AIF1RX" },
 	{ "IF2 DAC", NULL, "AIF2RX" },
 	{ "IF3 DAC", NULL, "AIF3RX" },
+=======
+	{ "IF2 ADC Swap Mux", "L/R", "IF2 ADC" },
+	{ "IF2 ADC Swap Mux", "R/L", "IF2 ADC" },
+	{ "IF2 ADC Swap Mux", "L/L", "IF2 ADC" },
+	{ "IF2 ADC Swap Mux", "R/R", "IF2 ADC" },
+	{ "AIF2TX", NULL, "IF2 ADC Swap Mux" },
+	{ "IF3 ADC Swap Mux", "L/R", "IF3 ADC" },
+	{ "IF3 ADC Swap Mux", "R/L", "IF3 ADC" },
+	{ "IF3 ADC Swap Mux", "L/L", "IF3 ADC" },
+	{ "IF3 ADC Swap Mux", "R/R", "IF3 ADC" },
+	{ "AIF3TX", NULL, "IF3 ADC Swap Mux" },
+
+	{ "IF1 DAC1", NULL, "AIF1RX" },
+	{ "IF1 DAC2", NULL, "AIF1RX" },
+	{ "IF2 DAC Swap Mux", "L/R", "AIF2RX" },
+	{ "IF2 DAC Swap Mux", "R/L", "AIF2RX" },
+	{ "IF2 DAC Swap Mux", "L/L", "AIF2RX" },
+	{ "IF2 DAC Swap Mux", "R/R", "AIF2RX" },
+	{ "IF2 DAC", NULL, "IF2 DAC Swap Mux" },
+	{ "IF3 DAC Swap Mux", "L/R", "AIF3RX" },
+	{ "IF3 DAC Swap Mux", "R/L", "AIF3RX" },
+	{ "IF3 DAC Swap Mux", "L/L", "AIF3RX" },
+	{ "IF3 DAC Swap Mux", "R/R", "AIF3RX" },
+	{ "IF3 DAC", NULL, "IF3 DAC Swap Mux" },
+>>>>>>> v4.9.227
 
 	{ "IF1 DAC1", NULL, "I2S1" },
 	{ "IF1 DAC2", NULL, "I2S1" },
@@ -4040,6 +4758,7 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "DAC L1 Mux", "IF1 DAC1", "IF1 DAC1 L" },
 	{ "DAC L1 Mux", "IF2 DAC", "IF2 DAC L" },
 	{ "DAC L1 Mux", "IF3 DAC", "IF3 DAC L" },
+<<<<<<< HEAD
 	{ "DAC R1 Mux", "IF1 DAC1", "IF1 DAC1 R" },
 	{ "DAC R1 Mux", "IF2 DAC", "IF2 DAC R" },
 	{ "DAC R1 Mux", "IF3 DAC", "IF3 DAC R" },
@@ -4050,6 +4769,19 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "DAC1 MIXR", "Stereo ADC Switch", "Stereo1 ADC Volume R" },
 	{ "DAC1 MIXR", "DAC1 Switch", "DAC R1 Mux" },
 	{ "DAC1 MIXR", NULL, "DAC Stereo1 Filter" },
+=======
+	{ "DAC L1 Mux", NULL, "DAC Stereo1 Filter" },
+
+	{ "DAC R1 Mux", "IF1 DAC1", "IF1 DAC1 R" },
+	{ "DAC R1 Mux", "IF2 DAC", "IF2 DAC R" },
+	{ "DAC R1 Mux", "IF3 DAC", "IF3 DAC R" },
+	{ "DAC R1 Mux", NULL, "DAC Stereo1 Filter" },
+
+	{ "DAC1 MIXL", "Stereo ADC Switch", "Stereo1 ADC Volume L" },
+	{ "DAC1 MIXL", "DAC1 Switch", "DAC L1 Mux" },
+	{ "DAC1 MIXR", "Stereo ADC Switch", "Stereo1 ADC Volume R" },
+	{ "DAC1 MIXR", "DAC1 Switch", "DAC R1 Mux" },
+>>>>>>> v4.9.227
 
 	{ "DAC_REF", NULL, "DAC1 MIXL" },
 	{ "DAC_REF", NULL, "DAC1 MIXR" },
@@ -4057,13 +4789,21 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "DAC L2 Mux", "IF1 DAC2", "IF1 DAC2 L" },
 	{ "DAC L2 Mux", "IF2 DAC", "IF2 DAC L" },
 	{ "DAC L2 Mux", "IF3 DAC", "IF3 DAC L" },
+<<<<<<< HEAD
 	{ "DAC L2 Mux", "Mono ADC MIX", "Mono ADC Volume L" },
+=======
+	{ "DAC L2 Mux", "Mono ADC MIX", "Mono ADC MIXL" },
+>>>>>>> v4.9.227
 	{ "DAC L2 Mux", NULL, "DAC Mono Left Filter" },
 
 	{ "DAC R2 Mux", "IF1 DAC2", "IF1 DAC2 R" },
 	{ "DAC R2 Mux", "IF2 DAC", "IF2 DAC R" },
 	{ "DAC R2 Mux", "IF3 DAC", "IF3 DAC R" },
+<<<<<<< HEAD
 	{ "DAC R2 Mux", "Mono ADC MIX", "Mono ADC Volume R" },
+=======
+	{ "DAC R2 Mux", "Mono ADC MIX", "Mono ADC MIXR" },
+>>>>>>> v4.9.227
 	{ "DAC R2 Mux", NULL, "DAC Mono Right Filter" },
 
 	{ "Stereo DAC MIXL", "DAC L1 Switch", "DAC1 MIXL" },
@@ -4085,10 +4825,17 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "Mono DAC MIXR", "DAC R2 Switch", "DAC R2 Mux" },
 	{ "Mono DAC MIXR", "DAC L2 Switch", "DAC L2 Mux" },
 
+<<<<<<< HEAD
 	{ "DAC MIXL Mux", "Stereo DAC Mixer", "Stereo DAC MIXL" },
 	{ "DAC MIXL Mux", "Mono DAC Mixer", "Mono DAC MIXL" },
 	{ "DAC MIXR Mux", "Stereo DAC Mixer", "Stereo DAC MIXR" },
 	{ "DAC MIXR Mux", "Mono DAC Mixer", "Mono DAC MIXR" },
+=======
+	{ "DAC MIXL", "Stereo DAC Mixer", "Stereo DAC MIXL" },
+	{ "DAC MIXL", "Mono DAC Mixer", "Mono DAC MIXL" },
+	{ "DAC MIXR", "Stereo DAC Mixer", "Stereo DAC MIXR" },
+	{ "DAC MIXR", "Mono DAC Mixer", "Mono DAC MIXR" },
+>>>>>>> v4.9.227
 
 	{ "DAC L1 Source", NULL, "DAC L1 Power" },
 	{ "DAC L1 Source", "DAC", "DAC1 MIXL" },
@@ -4144,6 +4891,10 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "SPO R MIX", "SPKVOL R Switch", "SPKVOL R" },
 	{ "SPK Amp", NULL, "SPO L MIX" },
 	{ "SPK Amp", NULL, "SPO R MIX" },
+<<<<<<< HEAD
+=======
+	{ "SPK Amp", NULL, "SYS CLK DET" },
+>>>>>>> v4.9.227
 	{ "SPO Playback", "Switch", "SPK Amp" },
 	{ "SPOL", NULL, "SPO Playback" },
 	{ "SPOR", NULL, "SPO Playback" },
@@ -4153,12 +4904,20 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "Mono MIX", "MONOVOL Switch", "MONOVOL" },
 	{ "Mono Amp", NULL, "Mono MIX" },
 	{ "Mono Amp", NULL, "Mono Vref" },
+<<<<<<< HEAD
+=======
+	{ "Mono Amp", NULL, "SYS CLK DET" },
+>>>>>>> v4.9.227
 	{ "Mono Playback", "Switch", "Mono Amp" },
 	{ "MONOOUT", NULL, "Mono Playback" },
 
 	{ "HP Amp", NULL, "DAC L1" },
 	{ "HP Amp", NULL, "DAC R1" },
 	{ "HP Amp", NULL, "Charge Pump" },
+<<<<<<< HEAD
+=======
+	{ "HP Amp", NULL, "SYS CLK DET" },
+>>>>>>> v4.9.227
 	{ "HPO L Playback", "Switch", "HP Amp"},
 	{ "HPO R Playback", "Switch", "HP Amp"},
 	{ "HPOL", NULL, "HPO L Playback" },
@@ -4172,7 +4931,11 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "LOUT R MIX", "OUTVOL R Switch", "OUTVOL R" },
 	{ "LOUT Amp", NULL, "LOUT L MIX" },
 	{ "LOUT Amp", NULL, "LOUT R MIX" },
+<<<<<<< HEAD
 	{ "LOUT Amp", NULL, "Charge Pump" },
+=======
+	{ "LOUT Amp", NULL, "SYS CLK DET" },
+>>>>>>> v4.9.227
 	{ "LOUT L Playback", "Switch", "LOUT Amp" },
 	{ "LOUT R Playback", "Switch", "LOUT Amp" },
 	{ "LOUTL", NULL, "LOUT L Playback" },
@@ -4196,6 +4959,7 @@ static const struct snd_soc_dapm_route rt5659_dapm_routes[] = {
 	{ "SPDIF", NULL, "SPDIF Mux" },
 };
 
+<<<<<<< HEAD
 static int get_clk_info(int sclk, int rate)
 {
 	int i, pd[] = { 1, 2, 3, 4, 6, 8, 12, 16 };
@@ -4211,12 +4975,15 @@ static int get_clk_info(int sclk, int rate)
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 static int rt5659_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
 	struct snd_soc_codec *codec = dai->codec;
 	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
 	unsigned int val_len = 0, val_clk, mask_clk;
+<<<<<<< HEAD
 	int pre_div, bclk_ms, frame_size;
 
 	mutex_lock(&rt5659->calibrate_mutex);
@@ -4228,11 +4995,21 @@ static int rt5659_hw_params(struct snd_pcm_substream *substream,
 		dev_err(codec->dev, "Unsupported clock setting %d for DAI %d\n",
 			rt5659->lrck[dai->id], dai->id);
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+	int pre_div, frame_size;
+
+	rt5659->lrck[dai->id] = params_rate(params);
+	pre_div = rl6231_get_clk_info(rt5659->sysclk, rt5659->lrck[dai->id]);
+	if (pre_div < 0) {
+		dev_err(codec->dev, "Unsupported clock setting %d for DAI %d\n",
+			rt5659->lrck[dai->id], dai->id);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 	frame_size = snd_soc_params_to_frame_size(params);
 	if (frame_size < 0) {
 		dev_err(codec->dev, "Unsupported frame size: %d\n", frame_size);
+<<<<<<< HEAD
 		mutex_unlock(&rt5659->calibrate_mutex);
 		return -EINVAL;
 	}
@@ -4260,6 +5037,27 @@ static int rt5659_hw_params(struct snd_pcm_substream *substream,
 		break;
 	default:
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+		return -EINVAL;
+	}
+
+	dev_dbg(dai->dev, "lrck is %dHz and pre_div is %d for iis %d\n",
+				rt5659->lrck[dai->id], pre_div, dai->id);
+
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		val_len |= RT5659_I2S_DL_20;
+		break;
+	case 24:
+		val_len |= RT5659_I2S_DL_24;
+		break;
+	case 8:
+		val_len |= RT5659_I2S_DL_8;
+		break;
+	default:
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -4271,22 +5069,35 @@ static int rt5659_hw_params(struct snd_pcm_substream *substream,
 			RT5659_I2S_DL_MASK, val_len);
 		break;
 	case RT5659_AIF2:
+<<<<<<< HEAD
 		mask_clk = RT5659_I2S_BCLK_MS2_MASK | RT5659_I2S_PD2_MASK;
 		val_clk = bclk_ms << RT5659_I2S_BCLK_MS2_SFT |
 			pre_div << RT5659_I2S_PD2_SFT;
+=======
+		mask_clk = RT5659_I2S_PD2_MASK;
+		val_clk = pre_div << RT5659_I2S_PD2_SFT;
+>>>>>>> v4.9.227
 		snd_soc_update_bits(codec, RT5659_I2S2_SDP,
 			RT5659_I2S_DL_MASK, val_len);
 		break;
 	case RT5659_AIF3:
+<<<<<<< HEAD
 		mask_clk = RT5659_I2S_BCLK_MS3_MASK | RT5659_I2S_PD3_MASK;
 		val_clk = bclk_ms << RT5659_I2S_BCLK_MS3_SFT |
 			pre_div << RT5659_I2S_PD3_SFT;
+=======
+		mask_clk = RT5659_I2S_PD3_MASK;
+		val_clk = pre_div << RT5659_I2S_PD3_SFT;
+>>>>>>> v4.9.227
 		snd_soc_update_bits(codec, RT5659_I2S3_SDP,
 			RT5659_I2S_DL_MASK, val_len);
 		break;
 	default:
 		dev_err(codec->dev, "Invalid dai->id: %d\n", dai->id);
+<<<<<<< HEAD
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -4295,6 +5106,7 @@ static int rt5659_hw_params(struct snd_pcm_substream *substream,
 	switch (rt5659->lrck[dai->id]) {
 	case 192000:
 		snd_soc_update_bits(codec, RT5659_ADDA_CLK_1,
+<<<<<<< HEAD
 			RT5659_DAC_OSR_MASK | RT5659_ADC_OSR_MASK,
 			RT5659_DAC_OSR_32 | RT5659_ADC_OSR_32);
 		if (dai->id == RT5659_AIF1)
@@ -4325,6 +5137,20 @@ static int rt5659_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	mutex_unlock(&rt5659->calibrate_mutex);
+=======
+			RT5659_DAC_OSR_MASK, RT5659_DAC_OSR_32);
+		break;
+	case 96000:
+		snd_soc_update_bits(codec, RT5659_ADDA_CLK_1,
+			RT5659_DAC_OSR_MASK, RT5659_DAC_OSR_64);
+		break;
+	default:
+		snd_soc_update_bits(codec, RT5659_ADDA_CLK_1,
+			RT5659_DAC_OSR_MASK, RT5659_DAC_OSR_128);
+		break;
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -4334,18 +5160,28 @@ static int rt5659_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
 	unsigned int reg_val = 0;
 
+<<<<<<< HEAD
 	mutex_lock(&rt5659->calibrate_mutex);
 	pr_debug("%s\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBM_CFM:
 		rt5659->master[dai->id] = 1;
 		break;
 	case SND_SOC_DAIFMT_CBS_CFS:
+<<<<<<< HEAD
 		rt5659->master[dai->id] = 0;
 		break;
 	default:
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+		reg_val |= RT5659_I2S_MS_S;
+		rt5659->master[dai->id] = 0;
+		break;
+	default:
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -4356,7 +5192,10 @@ static int rt5659_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		reg_val |= RT5659_I2S_BP_INV;
 		break;
 	default:
+<<<<<<< HEAD
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -4373,12 +5212,16 @@ static int rt5659_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		reg_val |= RT5659_I2S_DF_PCM_B;
 		break;
 	default:
+<<<<<<< HEAD
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
 	switch (dai->id) {
 	case RT5659_AIF1:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, RT5659_I2S1_SDP, RT5659_I2S_BP_MASK |
 			RT5659_I2S_DF_MASK, reg_val);
 		break;
@@ -4388,15 +5231,34 @@ static int rt5659_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		break;
 	case RT5659_AIF3:
 		snd_soc_update_bits(codec, RT5659_I2S3_SDP, RT5659_I2S_BP_MASK |
+=======
+		snd_soc_update_bits(codec, RT5659_I2S1_SDP,
+			RT5659_I2S_MS_MASK | RT5659_I2S_BP_MASK |
+			RT5659_I2S_DF_MASK, reg_val);
+		break;
+	case RT5659_AIF2:
+		snd_soc_update_bits(codec, RT5659_I2S2_SDP,
+			RT5659_I2S_MS_MASK | RT5659_I2S_BP_MASK |
+			RT5659_I2S_DF_MASK, reg_val);
+		break;
+	case RT5659_AIF3:
+		snd_soc_update_bits(codec, RT5659_I2S3_SDP,
+			RT5659_I2S_MS_MASK | RT5659_I2S_BP_MASK |
+>>>>>>> v4.9.227
 			RT5659_I2S_DF_MASK, reg_val);
 		break;
 	default:
 		dev_err(codec->dev, "Invalid dai->id: %d\n", dai->id);
+<<<<<<< HEAD
 		mutex_unlock(&rt5659->calibrate_mutex);
 		return -EINVAL;
 	}
 
 	mutex_unlock(&rt5659->calibrate_mutex);
+=======
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -4407,6 +5269,7 @@ static int rt5659_set_dai_sysclk(struct snd_soc_dai *dai,
 	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
 	unsigned int reg_val = 0;
 
+<<<<<<< HEAD
 	mutex_lock(&rt5659->calibrate_mutex);
 	pr_debug("%s\n", __func__);
 
@@ -4414,6 +5277,10 @@ static int rt5659_set_dai_sysclk(struct snd_soc_dai *dai,
 		mutex_unlock(&rt5659->calibrate_mutex);
 		return 0;
 	}
+=======
+	if (freq == rt5659->sysclk && clk_id == rt5659->sysclk_src)
+		return 0;
+>>>>>>> v4.9.227
 
 	switch (clk_id) {
 	case RT5659_SCLK_S_MCLK:
@@ -4427,7 +5294,10 @@ static int rt5659_set_dai_sysclk(struct snd_soc_dai *dai,
 		break;
 	default:
 		dev_err(codec->dev, "Invalid clock id (%d)\n", clk_id);
+<<<<<<< HEAD
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 	snd_soc_update_bits(codec, RT5659_GLB_CLK,
@@ -4437,6 +5307,7 @@ static int rt5659_set_dai_sysclk(struct snd_soc_dai *dai,
 
 	dev_dbg(dai->dev, "Sysclk is %dHz and clock id is %d\n", freq, clk_id);
 
+<<<<<<< HEAD
 	mutex_unlock(&rt5659->calibrate_mutex);
 	return 0;
 }
@@ -4511,6 +5382,8 @@ code_find:
 	pll_code->m_code = m;
 	pll_code->n_code = n;
 	pll_code->k_code = k;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -4519,6 +5392,7 @@ static int rt5659_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int Source,
 {
 	struct snd_soc_codec *codec = dai->codec;
 	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	struct rt5659_pll_code pll_code;
 	int ret;
 
@@ -4530,6 +5404,14 @@ static int rt5659_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int Source,
 		mutex_unlock(&rt5659->calibrate_mutex);
 		return 0;
 	}
+=======
+	struct rl6231_pll_code pll_code;
+	int ret;
+
+	if (Source == rt5659->pll_src && freq_in == rt5659->pll_in &&
+	    freq_out == rt5659->pll_out)
+		return 0;
+>>>>>>> v4.9.227
 
 	if (!freq_in || !freq_out) {
 		dev_dbg(codec->dev, "PLL disabled\n");
@@ -4538,7 +5420,10 @@ static int rt5659_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int Source,
 		rt5659->pll_out = 0;
 		snd_soc_update_bits(codec, RT5659_GLB_CLK,
 			RT5659_SCLK_SRC_MASK, RT5659_SCLK_SRC_MCLK);
+<<<<<<< HEAD
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -4561,6 +5446,7 @@ static int rt5659_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int Source,
 		break;
 	default:
 		dev_err(codec->dev, "Unknown PLL Source %d\n", Source);
+<<<<<<< HEAD
 		mutex_unlock(&rt5659->calibrate_mutex);
 		return -EINVAL;
 	}
@@ -4569,6 +5455,14 @@ static int rt5659_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int Source,
 	if (ret < 0) {
 		dev_err(codec->dev, "Unsupport input clock %d\n", freq_in);
 		mutex_unlock(&rt5659->calibrate_mutex);
+=======
+		return -EINVAL;
+	}
+
+	ret = rl6231_pll_calc(freq_in, freq_out, &pll_code);
+	if (ret < 0) {
+		dev_err(codec->dev, "Unsupport input clock %d\n", freq_in);
+>>>>>>> v4.9.227
 		return ret;
 	}
 
@@ -4581,13 +5475,19 @@ static int rt5659_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int Source,
 	snd_soc_write(codec, RT5659_PLL_CTRL_2,
 		(pll_code.m_bp ? 0 : pll_code.m_code) << RT5659_PLL_M_SFT |
 		pll_code.m_bp << RT5659_PLL_M_BP_SFT);
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, RT5659_DUMMY_4, 0x1, pll_code.k_bp);
+=======
+>>>>>>> v4.9.227
 
 	rt5659->pll_in = freq_in;
 	rt5659->pll_out = freq_out;
 	rt5659->pll_src = Source;
 
+<<<<<<< HEAD
 	mutex_unlock(&rt5659->calibrate_mutex);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -4643,6 +5543,7 @@ static int rt5659_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 	return 0;
 }
 
+<<<<<<< HEAD
 #define RT5659_REG_DISP_LEN 12
 static ssize_t rt5659_codec_show(struct device *dev,
 				 struct device_attribute *attr, char *buf)
@@ -4830,11 +5731,47 @@ static int rt5659_set_bias_level(struct snd_soc_codec *codec,
 
 	mutex_lock(&rt5659->calibrate_mutex);
 	pr_debug("%s: level = %d\n", __func__, level);
+=======
+static int rt5659_set_bclk_ratio(struct snd_soc_dai *dai, unsigned int ratio)
+{
+	struct snd_soc_codec *codec = dai->codec;
+	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
+
+	dev_dbg(codec->dev, "%s ratio=%d\n", __func__, ratio);
+
+	rt5659->bclk[dai->id] = ratio;
+
+	if (ratio == 64) {
+		switch (dai->id) {
+		case RT5659_AIF2:
+			snd_soc_update_bits(codec, RT5659_ADDA_CLK_1,
+				RT5659_I2S_BCLK_MS2_MASK,
+				RT5659_I2S_BCLK_MS2_64);
+			break;
+		case RT5659_AIF3:
+			snd_soc_update_bits(codec, RT5659_ADDA_CLK_1,
+				RT5659_I2S_BCLK_MS3_MASK,
+				RT5659_I2S_BCLK_MS3_64);
+			break;
+		}
+	}
+
+	return 0;
+}
+
+static int rt5659_set_bias_level(struct snd_soc_codec *codec,
+			enum snd_soc_bias_level level)
+{
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
+	int ret;
+>>>>>>> v4.9.227
 
 	switch (level) {
 	case SND_SOC_BIAS_PREPARE:
 		regmap_update_bits(rt5659->regmap, RT5659_DIG_MISC,
 			RT5659_DIG_GATE_CTRL, RT5659_DIG_GATE_CTRL);
+<<<<<<< HEAD
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
@@ -4848,10 +5785,32 @@ static int rt5659_set_bias_level(struct snd_soc_codec *codec,
 			regmap_update_bits(rt5659->regmap, RT5659_PWR_ANLG_1,
 				RT5659_PWR_FV1 | RT5659_PWR_FV2,
 				RT5659_PWR_FV1 | RT5659_PWR_FV2);
+=======
+		regmap_update_bits(rt5659->regmap, RT5659_PWR_DIG_1,
+			RT5659_PWR_LDO,	RT5659_PWR_LDO);
+		regmap_update_bits(rt5659->regmap, RT5659_PWR_ANLG_1,
+			RT5659_PWR_MB | RT5659_PWR_VREF1 | RT5659_PWR_VREF2,
+			RT5659_PWR_MB | RT5659_PWR_VREF1 | RT5659_PWR_VREF2);
+		msleep(20);
+		regmap_update_bits(rt5659->regmap, RT5659_PWR_ANLG_1,
+			RT5659_PWR_FV1 | RT5659_PWR_FV2,
+			RT5659_PWR_FV1 | RT5659_PWR_FV2);
+		break;
+
+	case SND_SOC_BIAS_STANDBY:
+		if (dapm->bias_level == SND_SOC_BIAS_OFF) {
+			ret = clk_prepare_enable(rt5659->mclk);
+			if (ret) {
+				dev_err(codec->dev,
+					"failed to enable MCLK: %d\n", ret);
+				return ret;
+			}
+>>>>>>> v4.9.227
 		}
 		break;
 
 	case SND_SOC_BIAS_OFF:
+<<<<<<< HEAD
 		regmap_update_bits(rt5659->regmap, RT5659_PWR_DIG_1, RT5659_PWR_LDO, 0);
 		regmap_read(rt5659->regmap, RT5659_PWR_ANLG_2, &value);
 		if (!(value & RT5659_PWR_MB1)) {
@@ -4861,11 +5820,23 @@ static int rt5659_set_bias_level(struct snd_soc_codec *codec,
 		}
 		regmap_update_bits(rt5659->regmap, RT5659_DIG_MISC,
 			RT5659_DIG_GATE_CTRL, 0);
+=======
+		regmap_update_bits(rt5659->regmap, RT5659_PWR_DIG_1,
+			RT5659_PWR_LDO, 0);
+		regmap_update_bits(rt5659->regmap, RT5659_PWR_ANLG_1,
+			RT5659_PWR_MB | RT5659_PWR_VREF1 | RT5659_PWR_VREF2
+			| RT5659_PWR_FV1 | RT5659_PWR_FV2,
+			RT5659_PWR_MB | RT5659_PWR_VREF2);
+		regmap_update_bits(rt5659->regmap, RT5659_DIG_MISC,
+			RT5659_DIG_GATE_CTRL, 0);
+		clk_disable_unprepare(rt5659->mclk);
+>>>>>>> v4.9.227
 		break;
 
 	default:
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
 	mutex_unlock(&rt5659->calibrate_mutex);
@@ -4934,6 +5905,8 @@ static int rt5659_reg_init(struct snd_soc_codec *codec)
 
 	for (i = 0; i < RT5659_INIT_REG_LEN; i++)
 		regmap_write(rt5659->regmap, init_list[i].reg, init_list[i].def);
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -4941,6 +5914,7 @@ static int rt5659_reg_init(struct snd_soc_codec *codec)
 static int rt5659_probe(struct snd_soc_codec *codec)
 {
 	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	int ret;
 
 	pr_debug("%s\n", __func__);
@@ -4966,6 +5940,11 @@ static int rt5659_probe(struct snd_soc_codec *codec)
 
 	schedule_delayed_work(&rt5659->calibrate_work, msecs_to_jiffies(100));
 
+=======
+
+	rt5659->codec = codec;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -4974,8 +5953,11 @@ static int rt5659_remove(struct snd_soc_codec *codec)
 	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
 
 	regmap_write(rt5659->regmap, RT5659_RESET, 0);
+<<<<<<< HEAD
 	device_remove_file(codec->dev, &dev_attr_codec_reg);
 	device_remove_file(codec->dev, &dev_attr_codec_reg_adb);
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -4983,6 +5965,7 @@ static int rt5659_remove(struct snd_soc_codec *codec)
 #ifdef CONFIG_PM
 static int rt5659_suspend(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, RT5659_I2S1_SDP, RT5659_I2S_MS_MASK,
 		RT5659_I2S_MS_S);
 	snd_soc_update_bits(codec, RT5659_I2S2_SDP, RT5659_I2S_MS_MASK,
@@ -4991,11 +5974,25 @@ static int rt5659_suspend(struct snd_soc_codec *codec)
 		RT5659_I2S_MS_S);
 	snd_soc_read(codec, RT5659_DEVICE_ID);
 
+=======
+	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
+
+	regcache_cache_only(rt5659->regmap, true);
+	regcache_mark_dirty(rt5659->regmap);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int rt5659_resume(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
+=======
+	struct rt5659_priv *rt5659 = snd_soc_codec_get_drvdata(codec);
+
+	regcache_cache_only(rt5659->regmap, false);
+	regcache_sync(rt5659->regmap);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 #else
@@ -5005,19 +6002,32 @@ static int rt5659_resume(struct snd_soc_codec *codec)
 
 #define RT5659_STEREO_RATES SNDRV_PCM_RATE_8000_192000
 #define RT5659_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE | \
+<<<<<<< HEAD
 			SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S8)
 
 struct snd_soc_dai_ops rt5659_aif_dai_ops = {
+=======
+		SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S8)
+
+static const struct snd_soc_dai_ops rt5659_aif_dai_ops = {
+>>>>>>> v4.9.227
 	.hw_params = rt5659_hw_params,
 	.set_fmt = rt5659_set_dai_fmt,
 	.set_sysclk = rt5659_set_dai_sysclk,
 	.set_tdm_slot = rt5659_set_tdm_slot,
 	.set_pll = rt5659_set_dai_pll,
+<<<<<<< HEAD
 	/*.set_bclk_ratio = rt5659_set_bclk_ratio, */
 /* TODO: implement rt5659_set_bclk_ratio for MX0077 bit 13, and bclk_ms */
 };
 
 struct snd_soc_dai_driver rt5659_dai[] = {
+=======
+	.set_bclk_ratio = rt5659_set_bclk_ratio,
+};
+
+static struct snd_soc_dai_driver rt5659_dai[] = {
+>>>>>>> v4.9.227
 	{
 		.name = "rt5659-aif1",
 		.id = RT5659_AIF1,
@@ -5084,12 +6094,23 @@ static struct snd_soc_codec_driver soc_codec_dev_rt5659 = {
 	.resume = rt5659_resume,
 	.set_bias_level = rt5659_set_bias_level,
 	.idle_bias_off = true,
+<<<<<<< HEAD
 	.controls = rt5659_snd_controls,
 	.num_controls = ARRAY_SIZE(rt5659_snd_controls),
 	.dapm_widgets = rt5659_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(rt5659_dapm_widgets),
 	.dapm_routes = rt5659_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(rt5659_dapm_routes),
+=======
+	.component_driver = {
+		.controls		= rt5659_snd_controls,
+		.num_controls		= ARRAY_SIZE(rt5659_snd_controls),
+		.dapm_widgets		= rt5659_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(rt5659_dapm_widgets),
+		.dapm_routes		= rt5659_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(rt5659_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 
@@ -5102,20 +6123,27 @@ static const struct regmap_config rt5659_regmap = {
 	.cache_type = REGCACHE_RBTREE,
 	.reg_defaults = rt5659_reg,
 	.num_reg_defaults = ARRAY_SIZE(rt5659_reg),
+<<<<<<< HEAD
 	.use_single_rw = true,
+=======
+>>>>>>> v4.9.227
 };
 
 static const struct i2c_device_id rt5659_i2c_id[] = {
 	{ "rt5658", 0 },
 	{ "rt5659", 0 },
+<<<<<<< HEAD
 	{ "10EC5658:00", 0},
 	{ "10EC5659:00", 0},
 	{ "i2c-10EC5658:00", 0},
 	{ "i2c-10EC5659:00", 0},
+=======
+>>>>>>> v4.9.227
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, rt5659_i2c_id);
 
+<<<<<<< HEAD
 static int rt5659_parse_dt(struct rt5659_priv *rt5659, struct device_node *np)
 {
 	int len = ARRAY_SIZE(hp_gain_table);
@@ -5171,10 +6199,29 @@ static int rt5659_parse_dt(struct rt5659_priv *rt5659, struct device_node *np)
 	} else {
 		rt5659->impedance_gain_map = false;
 	}
+=======
+static int rt5659_parse_dt(struct rt5659_priv *rt5659, struct device *dev)
+{
+	rt5659->pdata.in1_diff = device_property_read_bool(dev,
+					"realtek,in1-differential");
+	rt5659->pdata.in3_diff = device_property_read_bool(dev,
+					"realtek,in3-differential");
+	rt5659->pdata.in4_diff = device_property_read_bool(dev,
+					"realtek,in4-differential");
+
+
+	device_property_read_u32(dev, "realtek,dmic1-data-pin",
+		&rt5659->pdata.dmic1_data_pin);
+	device_property_read_u32(dev, "realtek,dmic2-data-pin",
+		&rt5659->pdata.dmic2_data_pin);
+	device_property_read_u32(dev, "realtek,jd-src",
+		&rt5659->pdata.jd_src);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 void rt5659_calibrate(struct rt5659_priv *rt5659)
 {
 	int value, count;
@@ -5184,6 +6231,12 @@ void rt5659_calibrate(struct rt5659_priv *rt5659)
 	regcache_cache_bypass(rt5659->regmap, true);
 	regmap_write(rt5659->regmap, RT5659_RESET, 0);
 
+=======
+static void rt5659_calibrate(struct rt5659_priv *rt5659)
+{
+	int value, count;
+
+>>>>>>> v4.9.227
 	/* Calibrate HPO Start */
 	/* Fine tune HP Performance */
 	regmap_write(rt5659->regmap, RT5659_BIAS_CUR_CTRL_8, 0xa502);
@@ -5241,7 +6294,12 @@ void rt5659_calibrate(struct rt5659_priv *rt5659)
 			break;
 
 		if (count > 30) {
+<<<<<<< HEAD
 			pr_err("HP Calibration 1 Failure\n");
+=======
+			dev_err(rt5659->codec->dev,
+				"HP Calibration 1 Failure\n");
+>>>>>>> v4.9.227
 			return;
 		}
 
@@ -5265,7 +6323,12 @@ void rt5659_calibrate(struct rt5659_priv *rt5659)
 			break;
 
 		if (count > 85) {
+<<<<<<< HEAD
 			pr_err("HP Calibration 2 Failure\n");
+=======
+			dev_err(rt5659->codec->dev,
+				"HP Calibration 2 Failure\n");
+>>>>>>> v4.9.227
 			return;
 		}
 
@@ -5312,7 +6375,12 @@ void rt5659_calibrate(struct rt5659_priv *rt5659)
 			break;
 
 		if (count > 10) {
+<<<<<<< HEAD
 			pr_err("SPK Calibration Failure\n");
+=======
+			dev_err(rt5659->codec->dev,
+				"SPK Calibration Failure\n");
+>>>>>>> v4.9.227
 			return;
 		}
 
@@ -5344,7 +6412,12 @@ void rt5659_calibrate(struct rt5659_priv *rt5659)
 			break;
 
 		if (count > 35) {
+<<<<<<< HEAD
 			pr_err("Mono Calibration Failure\n");
+=======
+			dev_err(rt5659->codec->dev,
+				"Mono Calibration Failure\n");
+>>>>>>> v4.9.227
 			return;
 		}
 
@@ -5376,6 +6449,7 @@ void rt5659_calibrate(struct rt5659_priv *rt5659)
 	regmap_write(rt5659->regmap, RT5659_MICBIAS_2, 0x0080);
 	regmap_write(rt5659->regmap, RT5659_HP_VOL, 0x8080);
 	regmap_write(rt5659->regmap, RT5659_HP_CHARGE_PUMP_1, 0x0c16);
+<<<<<<< HEAD
 
 	regmap_write(rt5659->regmap, RT5659_RESET, 0);
 	regcache_cache_bypass(rt5659->regmap, false);
@@ -5479,6 +6553,8 @@ static void rt5659_calibrate_handler(struct work_struct *work)
 	}
 
 	rt5659_calibrate(rt5659);
+=======
+>>>>>>> v4.9.227
 }
 
 static int rt5659_i2c_probe(struct i2c_client *i2c,
@@ -5488,13 +6564,17 @@ static int rt5659_i2c_probe(struct i2c_client *i2c,
 	struct rt5659_priv *rt5659;
 	int ret;
 	unsigned int val;
+<<<<<<< HEAD
 	struct regulator *regulator_1v8, *regulator_3v3, *regulator_5v;
 
 	pr_info("Codec driver version %s\n", VERSION);
+=======
+>>>>>>> v4.9.227
 
 	rt5659 = devm_kzalloc(&i2c->dev, sizeof(struct rt5659_priv),
 		GFP_KERNEL);
 
+<<<<<<< HEAD
 	if (NULL == rt5659)
 		return -ENOMEM;
 
@@ -5570,6 +6650,28 @@ static int rt5659_i2c_probe(struct i2c_client *i2c,
 	}
 
 	msleep(300);
+=======
+	if (rt5659 == NULL)
+		return -ENOMEM;
+
+	i2c_set_clientdata(i2c, rt5659);
+
+	if (pdata)
+		rt5659->pdata = *pdata;
+	else
+		rt5659_parse_dt(rt5659, &i2c->dev);
+
+	rt5659->gpiod_ldo1_en = devm_gpiod_get_optional(&i2c->dev, "ldo1-en",
+							GPIOD_OUT_HIGH);
+	if (IS_ERR(rt5659->gpiod_ldo1_en))
+		dev_warn(&i2c->dev, "Request ldo1-en GPIO failed\n");
+
+	rt5659->gpiod_reset = devm_gpiod_get_optional(&i2c->dev, "reset",
+							GPIOD_OUT_HIGH);
+
+	/* Sleep for 300 ms miniumum */
+	usleep_range(300000, 350000);
+>>>>>>> v4.9.227
 
 	rt5659->regmap = devm_regmap_init_i2c(i2c, &rt5659_regmap);
 	if (IS_ERR(rt5659->regmap)) {
@@ -5584,6 +6686,7 @@ static int rt5659_i2c_probe(struct i2c_client *i2c,
 		dev_err(&i2c->dev,
 			"Device with ID register %x is not rt5659\n", val);
 		return -ENODEV;
+<<<<<<< HEAD
 	} else
 		dev_info(&i2c->dev,
 			"Device with ID register %x is rt5659\n", val);
@@ -5594,6 +6697,22 @@ static int rt5659_i2c_probe(struct i2c_client *i2c,
 
 	pr_debug("%s: dmic1_data_pin = %d, dmic2_data_pin =%d\n", __func__,
 		rt5659->pdata.dmic1_data_pin, rt5659->pdata.dmic2_data_pin);
+=======
+	}
+
+	regmap_write(rt5659->regmap, RT5659_RESET, 0);
+
+	/* Check if MCLK provided */
+	rt5659->mclk = devm_clk_get(&i2c->dev, "mclk");
+	if (IS_ERR(rt5659->mclk)) {
+		if (PTR_ERR(rt5659->mclk) != -ENOENT)
+			return PTR_ERR(rt5659->mclk);
+		/* Otherwise mark the mclk pointer to NULL */
+		rt5659->mclk = NULL;
+	}
+
+	rt5659_calibrate(rt5659);
+>>>>>>> v4.9.227
 
 	/* line in diff mode*/
 	if (rt5659->pdata.in1_diff)
@@ -5645,12 +6764,17 @@ static int rt5659_i2c_probe(struct i2c_client *i2c,
 			break;
 
 		default:
+<<<<<<< HEAD
 			pr_debug("no DMIC1\n");
+=======
+			dev_dbg(&i2c->dev, "no DMIC1\n");
+>>>>>>> v4.9.227
 			break;
 		}
 
 		switch (rt5659->pdata.dmic2_data_pin) {
 		case RT5659_DMIC2_DATA_IN2P:
+<<<<<<< HEAD
 			regmap_update_bits(rt5659->regmap, RT5659_DMIC_CTRL_1,
 				RT5659_DMIC_2_DP_MASK, RT5659_DMIC_2_DP_IN2P);
 			break;
@@ -5673,12 +6797,53 @@ static int rt5659_i2c_probe(struct i2c_client *i2c,
 			regmap_update_bits(rt5659->regmap, RT5659_DMIC_CTRL_1,
 				RT5659_DMIC_2_DP_MASK, RT5659_DMIC_2_DP_GPIO12);
 			regmap_update_bits(rt5659->regmap, RT5659_GPIO_CTRL_1,
+=======
+			regmap_update_bits(rt5659->regmap,
+				RT5659_DMIC_CTRL_1,
+				RT5659_DMIC_2_DP_MASK,
+				RT5659_DMIC_2_DP_IN2P);
+			break;
+
+		case RT5659_DMIC2_DATA_GPIO6:
+			regmap_update_bits(rt5659->regmap,
+				RT5659_DMIC_CTRL_1,
+				RT5659_DMIC_2_DP_MASK,
+				RT5659_DMIC_2_DP_GPIO6);
+			regmap_update_bits(rt5659->regmap,
+				RT5659_GPIO_CTRL_1,
+				RT5659_GP6_PIN_MASK,
+				RT5659_GP6_PIN_DMIC2_SDA);
+			break;
+
+		case RT5659_DMIC2_DATA_GPIO10:
+			regmap_update_bits(rt5659->regmap,
+				RT5659_DMIC_CTRL_1,
+				RT5659_DMIC_2_DP_MASK,
+				RT5659_DMIC_2_DP_GPIO10);
+			regmap_update_bits(rt5659->regmap,
+				RT5659_GPIO_CTRL_1,
+				RT5659_GP10_PIN_MASK,
+				RT5659_GP10_PIN_DMIC2_SDA);
+			break;
+
+		case RT5659_DMIC2_DATA_GPIO12:
+			regmap_update_bits(rt5659->regmap,
+				RT5659_DMIC_CTRL_1,
+				RT5659_DMIC_2_DP_MASK,
+				RT5659_DMIC_2_DP_GPIO12);
+			regmap_update_bits(rt5659->regmap,
+				RT5659_GPIO_CTRL_1,
+>>>>>>> v4.9.227
 				RT5659_GP12_PIN_MASK,
 				RT5659_GP12_PIN_DMIC2_SDA);
 			break;
 
 		default:
+<<<<<<< HEAD
 			pr_debug("no DMIC2\n");
+=======
+			dev_dbg(&i2c->dev, "no DMIC2\n");
+>>>>>>> v4.9.227
 			break;
 
 		}
@@ -5697,6 +6862,7 @@ static int rt5659_i2c_probe(struct i2c_client *i2c,
 			RT5659_DMIC_1_DP_IN2N | RT5659_DMIC_2_DP_IN2P);
 	}
 
+<<<<<<< HEAD
 	mutex_init(&rt5659->calibrate_mutex);
 
 	INIT_DELAYED_WORK(&rt5659->i2s_switch_slave_work[RT5659_AIF1],
@@ -5710,6 +6876,38 @@ static int rt5659_i2c_probe(struct i2c_client *i2c,
 	INIT_DELAYED_WORK(&rt5659->dac2r_depop_work, rt5659_dac2r_depop_work);
 	INIT_DELAYED_WORK(&rt5659->calibrate_work,
 		rt5659_calibrate_handler);
+=======
+	switch (rt5659->pdata.jd_src) {
+	case RT5659_JD3:
+		regmap_write(rt5659->regmap, RT5659_EJD_CTRL_1, 0xa880);
+		regmap_write(rt5659->regmap, RT5659_RC_CLK_CTRL, 0x9000);
+		regmap_write(rt5659->regmap, RT5659_GPIO_CTRL_1, 0xc800);
+		regmap_update_bits(rt5659->regmap, RT5659_PWR_ANLG_1,
+				RT5659_PWR_MB, RT5659_PWR_MB);
+		regmap_write(rt5659->regmap, RT5659_PWR_ANLG_2, 0x0001);
+		regmap_write(rt5659->regmap, RT5659_IRQ_CTRL_2, 0x0040);
+		break;
+	case RT5659_JD_NULL:
+		break;
+	default:
+		dev_warn(&i2c->dev, "Currently, support JD3 only\n");
+		break;
+	}
+
+	INIT_DELAYED_WORK(&rt5659->jack_detect_work, rt5659_jack_detect_work);
+
+	if (i2c->irq) {
+		ret = devm_request_threaded_irq(&i2c->dev, i2c->irq, NULL,
+			rt5659_irq, IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING
+			| IRQF_ONESHOT, "rt5659", rt5659);
+		if (ret)
+			dev_err(&i2c->dev, "Failed to reguest IRQ: %d\n", ret);
+
+		/* Enable IRQ output for GPIO1 pin any way */
+		regmap_update_bits(rt5659->regmap, RT5659_GPIO_CTRL_1,
+				   RT5659_GP1_PIN_MASK, RT5659_GP1_PIN_IRQ);
+	}
+>>>>>>> v4.9.227
 
 	return snd_soc_register_codec(&i2c->dev, &soc_codec_dev_rt5659,
 			rt5659_dai, ARRAY_SIZE(rt5659_dai));
@@ -5717,6 +6915,7 @@ static int rt5659_i2c_probe(struct i2c_client *i2c,
 
 static int rt5659_i2c_remove(struct i2c_client *i2c)
 {
+<<<<<<< HEAD
 	struct rt5659_priv *rt5659 = i2c_get_clientdata(i2c);
 
 	if (gpio_is_valid(rt5659->pdata.gpio_ldo)) {
@@ -5739,18 +6938,25 @@ static int rt5659_i2c_remove(struct i2c_client *i2c)
 		gpio_free(rt5659->pdata.gpio_3p3_en);
 	}		
 
+=======
+>>>>>>> v4.9.227
 	snd_soc_unregister_codec(&i2c->dev);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 void rt5659_i2c_shutdown(struct i2c_client *client)
+=======
+static void rt5659_i2c_shutdown(struct i2c_client *client)
+>>>>>>> v4.9.227
 {
 	struct rt5659_priv *rt5659 = i2c_get_clientdata(client);
 
 	regmap_write(rt5659->regmap, RT5659_RESET, 0);
 }
 
+<<<<<<< HEAD
 static const struct of_device_id rt5659_of_match[] = {
 	{ .compatible = "realtek,rt5658", },
 	{ .compatible = "realtek,rt5659", },
@@ -5762,6 +6968,22 @@ static struct acpi_device_id rt5659_acpi_match[] = {
 		{ "10EC5658", 0},
 		{ "10EC5659", 0},
 		{ },
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id rt5659_of_match[] = {
+	{ .compatible = "realtek,rt5658", },
+	{ .compatible = "realtek,rt5659", },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, rt5659_of_match);
+#endif
+
+#ifdef CONFIG_ACPI
+static struct acpi_device_id rt5659_acpi_match[] = {
+	{ "10EC5658", 0, },
+	{ "10EC5659", 0, },
+	{ },
+>>>>>>> v4.9.227
 };
 MODULE_DEVICE_TABLE(acpi, rt5659_acpi_match);
 #endif
@@ -5770,7 +6992,11 @@ struct i2c_driver rt5659_i2c_driver = {
 	.driver = {
 		.name = "rt5659",
 		.owner = THIS_MODULE,
+<<<<<<< HEAD
 		.of_match_table = rt5659_of_match,
+=======
+		.of_match_table = of_match_ptr(rt5659_of_match),
+>>>>>>> v4.9.227
 		.acpi_match_table = ACPI_PTR(rt5659_acpi_match),
 	},
 	.probe = rt5659_i2c_probe,

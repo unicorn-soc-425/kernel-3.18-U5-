@@ -8,7 +8,11 @@
  * published by the Free Software Foundation.
  */
 &prm_clocks {
+<<<<<<< HEAD
 	bandgap_fclk: bandgap_fclk {
+=======
+	bandgap_fclk: bandgap_fclk@1888 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,gate-clock";
 		clocks = <&sys_32k_ck>;

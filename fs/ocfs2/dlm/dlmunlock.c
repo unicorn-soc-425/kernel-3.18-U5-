@@ -105,7 +105,12 @@ static enum dlm_status dlmunlock_common(struct dlm_ctxt *dlm,
 	enum dlm_status status;
 	int actions = 0;
 	int in_use;
+<<<<<<< HEAD
         u8 owner;
+=======
+	u8 owner;
+	int recovery_wait = 0;
+>>>>>>> v4.9.227
 
 	mlog(0, "master_node = %d, valblk = %d\n", master_node,
 	     flags & LKM_VALBLK);
@@ -208,9 +213,18 @@ static enum dlm_status dlmunlock_common(struct dlm_ctxt *dlm,
 		}
 		if (flags & LKM_CANCEL)
 			lock->cancel_pending = 0;
+<<<<<<< HEAD
 		else
 			lock->unlock_pending = 0;
 
+=======
+		else {
+			if (!lock->unlock_pending)
+				recovery_wait = 1;
+			else
+				lock->unlock_pending = 0;
+		}
+>>>>>>> v4.9.227
 	}
 
 	/* get an extra ref on lock.  if we are just switching
@@ -244,6 +258,20 @@ leave:
 	spin_unlock(&res->spinlock);
 	wake_up(&res->wq);
 
+<<<<<<< HEAD
+=======
+	if (recovery_wait) {
+		spin_lock(&res->spinlock);
+		/* Unlock request will directly succeed after owner dies,
+		 * and the lock is already removed from grant list. We have to
+		 * wait for RECOVERING done or we miss the chance to purge it
+		 * since the removement is much faster than RECOVERING proc.
+		 */
+		__dlm_wait_on_lockres_flags(res, DLM_LOCK_RES_RECOVERING);
+		spin_unlock(&res->spinlock);
+	}
+
+>>>>>>> v4.9.227
 	/* let the caller's final dlm_lock_put handle the actual kfree */
 	if (actions & DLM_UNLOCK_FREE_LOCK) {
 		/* this should always be coupled with list removal */
@@ -421,7 +449,11 @@ int dlm_unlock_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 	}
 
 	if (!dlm_grab(dlm))
+<<<<<<< HEAD
 		return DLM_REJECTED;
+=======
+		return DLM_FORWARD;
+>>>>>>> v4.9.227
 
 	mlog_bug_on_msg(!dlm_domain_fully_joined(dlm),
 			"Domain %s not fully joined!\n", dlm->name);

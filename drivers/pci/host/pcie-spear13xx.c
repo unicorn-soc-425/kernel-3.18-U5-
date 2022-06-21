@@ -4,8 +4,13 @@
  * SPEAr13xx PCIe Glue Layer Source Code
  *
  * Copyright (C) 2010-2014 ST Microelectronics
+<<<<<<< HEAD
  * Pratyush Anand <pratyush.anand@st.com>
  * Mohit Kumar <mohit.kumar@st.com>
+=======
+ * Pratyush Anand <pratyush.anand@gmail.com>
+ * Mohit Kumar <mohit.kumar.dhaka@gmail.com>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -13,10 +18,16 @@
  */
 
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+=======
+#include <linux/interrupt.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/pci.h>
 #include <linux/phy/phy.h>
@@ -26,10 +37,17 @@
 #include "pcie-designware.h"
 
 struct spear13xx_pcie {
+<<<<<<< HEAD
 	void __iomem		*app_base;
 	struct phy		*phy;
 	struct clk		*clk;
 	struct pcie_port	pp;
+=======
+	struct pcie_port	pp;		/* DT dbi is pp.dbi_base */
+	void __iomem		*app_base;
+	struct phy		*phy;
+	struct clk		*clk;
+>>>>>>> v4.9.227
 	bool			is_gen1;
 };
 
@@ -58,6 +76,7 @@ struct pcie_app_reg {
 };
 
 /* CR0 ID */
+<<<<<<< HEAD
 #define RX_LANE_FLIP_EN_ID			0
 #define TX_LANE_FLIP_EN_ID			1
 #define SYS_AUX_PWR_DET_ID			2
@@ -139,16 +158,37 @@ struct pcie_app_reg {
 #define VEN_MSI_TC_MASK		((u32)0x7 << VEN_MSI_TC_ID)
 #define VEN_MSI_VECTOR_MASK	((u32)0x1F << VEN_MSI_VECTOR_ID)
 
+=======
+#define APP_LTSSM_ENABLE_ID			3
+#define DEVICE_TYPE_RC				(4 << 25)
+#define MISCTRL_EN_ID				30
+#define REG_TRANSLATION_ENABLE			31
+
+/* CR3 ID */
+#define XMLH_LINK_UP				(1 << 6)
+
+/* CR6 */
+#define MSI_CTRL_INT				(1 << 26)
+
+>>>>>>> v4.9.227
 #define EXP_CAP_ID_OFFSET			0x70
 
 #define to_spear13xx_pcie(x)	container_of(x, struct spear13xx_pcie, pp)
 
+<<<<<<< HEAD
 static int spear13xx_pcie_establish_link(struct pcie_port *pp)
 {
 	u32 val;
 	int count = 0;
 	struct spear13xx_pcie *spear13xx_pcie = to_spear13xx_pcie(pp);
 	struct pcie_app_reg *app_reg = spear13xx_pcie->app_base;
+=======
+static int spear13xx_pcie_establish_link(struct spear13xx_pcie *spear13xx_pcie)
+{
+	struct pcie_port *pp = &spear13xx_pcie->pp;
+	struct pcie_app_reg *app_reg = spear13xx_pcie->app_base;
+	u32 val;
+>>>>>>> v4.9.227
 	u32 exp_cap_off = EXP_CAP_ID_OFFSET;
 
 	if (dw_pcie_link_up(pp)) {
@@ -163,18 +203,28 @@ static int spear13xx_pcie_establish_link(struct pcie_port *pp)
 	 * default value in capability register is 512 bytes. So force
 	 * it to 128 here.
 	 */
+<<<<<<< HEAD
 	dw_pcie_cfg_read(pp->dbi_base, exp_cap_off + PCI_EXP_DEVCTL, 4, &val);
 	val &= ~PCI_EXP_DEVCTL_READRQ;
 	dw_pcie_cfg_write(pp->dbi_base, exp_cap_off + PCI_EXP_DEVCTL, 4, val);
 
 	dw_pcie_cfg_write(pp->dbi_base, PCI_VENDOR_ID, 2, 0x104A);
 	dw_pcie_cfg_write(pp->dbi_base, PCI_DEVICE_ID, 2, 0xCD80);
+=======
+	dw_pcie_cfg_read(pp->dbi_base + exp_cap_off + PCI_EXP_DEVCTL, 2, &val);
+	val &= ~PCI_EXP_DEVCTL_READRQ;
+	dw_pcie_cfg_write(pp->dbi_base + exp_cap_off + PCI_EXP_DEVCTL, 2, val);
+
+	dw_pcie_cfg_write(pp->dbi_base + PCI_VENDOR_ID, 2, 0x104A);
+	dw_pcie_cfg_write(pp->dbi_base + PCI_DEVICE_ID, 2, 0xCD80);
+>>>>>>> v4.9.227
 
 	/*
 	 * if is_gen1 is set then handle it, so that some buggy card
 	 * also works
 	 */
 	if (spear13xx_pcie->is_gen1) {
+<<<<<<< HEAD
 		dw_pcie_cfg_read(pp->dbi_base, exp_cap_off + PCI_EXP_LNKCAP, 4,
 				 &val);
 		if ((val & PCI_EXP_LNKCAP_SLS) != PCI_EXP_LNKCAP_SLS_2_5GB) {
@@ -191,6 +241,24 @@ static int spear13xx_pcie_establish_link(struct pcie_port *pp)
 			val |= PCI_EXP_LNKCAP_SLS_2_5GB;
 			dw_pcie_cfg_write(pp->dbi_base, exp_cap_off +
 					  PCI_EXP_LNKCTL2, 4, val);
+=======
+		dw_pcie_cfg_read(pp->dbi_base + exp_cap_off + PCI_EXP_LNKCAP,
+					4, &val);
+		if ((val & PCI_EXP_LNKCAP_SLS) != PCI_EXP_LNKCAP_SLS_2_5GB) {
+			val &= ~((u32)PCI_EXP_LNKCAP_SLS);
+			val |= PCI_EXP_LNKCAP_SLS_2_5GB;
+			dw_pcie_cfg_write(pp->dbi_base + exp_cap_off +
+				PCI_EXP_LNKCAP, 4, val);
+		}
+
+		dw_pcie_cfg_read(pp->dbi_base + exp_cap_off + PCI_EXP_LNKCTL2,
+					2, &val);
+		if ((val & PCI_EXP_LNKCAP_SLS) != PCI_EXP_LNKCAP_SLS_2_5GB) {
+			val &= ~((u32)PCI_EXP_LNKCAP_SLS);
+			val |= PCI_EXP_LNKCAP_SLS_2_5GB;
+			dw_pcie_cfg_write(pp->dbi_base + exp_cap_off +
+					PCI_EXP_LNKCTL2, 2, val);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -200,6 +268,7 @@ static int spear13xx_pcie_establish_link(struct pcie_port *pp)
 			| ((u32)1 << REG_TRANSLATION_ENABLE),
 			&app_reg->app_ctrl_0);
 
+<<<<<<< HEAD
 	/* check if the link is up or not */
 	while (!dw_pcie_link_up(pp)) {
 		mdelay(100);
@@ -212,20 +281,33 @@ static int spear13xx_pcie_establish_link(struct pcie_port *pp)
 	dev_info(pp->dev, "link up\n");
 
 	return 0;
+=======
+	return dw_pcie_wait_for_link(pp);
+>>>>>>> v4.9.227
 }
 
 static irqreturn_t spear13xx_pcie_irq_handler(int irq, void *arg)
 {
+<<<<<<< HEAD
 	struct pcie_port *pp = arg;
 	struct spear13xx_pcie *spear13xx_pcie = to_spear13xx_pcie(pp);
 	struct pcie_app_reg *app_reg = spear13xx_pcie->app_base;
+=======
+	struct spear13xx_pcie *spear13xx_pcie = arg;
+	struct pcie_app_reg *app_reg = spear13xx_pcie->app_base;
+	struct pcie_port *pp = &spear13xx_pcie->pp;
+>>>>>>> v4.9.227
 	unsigned int status;
 
 	status = readl(&app_reg->int_sts);
 
 	if (status & MSI_CTRL_INT) {
+<<<<<<< HEAD
 		if (!IS_ENABLED(CONFIG_PCI_MSI))
 			BUG();
+=======
+		BUG_ON(!IS_ENABLED(CONFIG_PCI_MSI));
+>>>>>>> v4.9.227
 		dw_handle_msi_irq(pp);
 	}
 
@@ -234,9 +316,15 @@ static irqreturn_t spear13xx_pcie_irq_handler(int irq, void *arg)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void spear13xx_pcie_enable_interrupts(struct pcie_port *pp)
 {
 	struct spear13xx_pcie *spear13xx_pcie = to_spear13xx_pcie(pp);
+=======
+static void spear13xx_pcie_enable_interrupts(struct spear13xx_pcie *spear13xx_pcie)
+{
+	struct pcie_port *pp = &spear13xx_pcie->pp;
+>>>>>>> v4.9.227
 	struct pcie_app_reg *app_reg = spear13xx_pcie->app_base;
 
 	/* Enable MSI interrupt */
@@ -260,8 +348,15 @@ static int spear13xx_pcie_link_up(struct pcie_port *pp)
 
 static void spear13xx_pcie_host_init(struct pcie_port *pp)
 {
+<<<<<<< HEAD
 	spear13xx_pcie_establish_link(pp);
 	spear13xx_pcie_enable_interrupts(pp);
+=======
+	struct spear13xx_pcie *spear13xx_pcie = to_spear13xx_pcie(pp);
+
+	spear13xx_pcie_establish_link(spear13xx_pcie);
+	spear13xx_pcie_enable_interrupts(spear13xx_pcie);
+>>>>>>> v4.9.227
 }
 
 static struct pcie_host_ops spear13xx_pcie_host_ops = {
@@ -269,9 +364,17 @@ static struct pcie_host_ops spear13xx_pcie_host_ops = {
 	.host_init = spear13xx_pcie_host_init,
 };
 
+<<<<<<< HEAD
 static int add_pcie_port(struct pcie_port *pp, struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
+=======
+static int spear13xx_add_pcie_port(struct spear13xx_pcie *spear13xx_pcie,
+				   struct platform_device *pdev)
+{
+	struct pcie_port *pp = &spear13xx_pcie->pp;
+	struct device *dev = pp->dev;
+>>>>>>> v4.9.227
 	int ret;
 
 	pp->irq = platform_get_irq(pdev, 0);
@@ -281,7 +384,11 @@ static int add_pcie_port(struct pcie_port *pp, struct platform_device *pdev)
 	}
 	ret = devm_request_irq(dev, pp->irq, spear13xx_pcie_irq_handler,
 			       IRQF_SHARED | IRQF_NO_THREAD,
+<<<<<<< HEAD
 			       "spear1340-pcie", pp);
+=======
+			       "spear1340-pcie", spear13xx_pcie);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(dev, "failed to request irq %d\n", pp->irq);
 		return ret;
@@ -301,18 +408,30 @@ static int add_pcie_port(struct pcie_port *pp, struct platform_device *pdev)
 
 static int spear13xx_pcie_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct spear13xx_pcie *spear13xx_pcie;
 	struct pcie_port *pp;
 	struct device *dev = &pdev->dev;
 	struct device_node *np = pdev->dev.of_node;
+=======
+	struct device *dev = &pdev->dev;
+	struct spear13xx_pcie *spear13xx_pcie;
+	struct pcie_port *pp;
+	struct device_node *np = dev->of_node;
+>>>>>>> v4.9.227
 	struct resource *dbi_base;
 	int ret;
 
 	spear13xx_pcie = devm_kzalloc(dev, sizeof(*spear13xx_pcie), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!spear13xx_pcie) {
 		dev_err(dev, "no memory for SPEAr13xx pcie\n");
 		return -ENOMEM;
 	}
+=======
+	if (!spear13xx_pcie)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	spear13xx_pcie->phy = devm_phy_get(dev, "pcie-phy");
 	if (IS_ERR(spear13xx_pcie->phy)) {
@@ -338,7 +457,10 @@ static int spear13xx_pcie_probe(struct platform_device *pdev)
 	}
 
 	pp = &spear13xx_pcie->pp;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	pp->dev = dev;
 
 	dbi_base = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dbi");
@@ -353,7 +475,11 @@ static int spear13xx_pcie_probe(struct platform_device *pdev)
 	if (of_property_read_bool(np, "st,pcie-is-gen1"))
 		spear13xx_pcie->is_gen1 = true;
 
+<<<<<<< HEAD
 	ret = add_pcie_port(pp, pdev);
+=======
+	ret = spear13xx_add_pcie_port(spear13xx_pcie, pdev);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto fail_clk;
 
@@ -370,7 +496,10 @@ static const struct of_device_id spear13xx_pcie_of_match[] = {
 	{ .compatible = "st,spear1340-pcie", },
 	{},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, spear13xx_pcie_of_match);
+=======
+>>>>>>> v4.9.227
 
 static struct platform_driver spear13xx_pcie_driver = {
 	.probe		= spear13xx_pcie_probe,
@@ -380,6 +509,7 @@ static struct platform_driver spear13xx_pcie_driver = {
 	},
 };
 
+<<<<<<< HEAD
 /* SPEAr13xx PCIe driver does not allow module unload */
 
 static int __init pcie_init(void)
@@ -391,3 +521,10 @@ module_init(pcie_init);
 MODULE_DESCRIPTION("ST Microelectronics SPEAr13xx PCIe host controller driver");
 MODULE_AUTHOR("Pratyush Anand <pratyush.anand@st.com>");
 MODULE_LICENSE("GPL v2");
+=======
+static int __init spear13xx_pcie_init(void)
+{
+	return platform_driver_register(&spear13xx_pcie_driver);
+}
+device_initcall(spear13xx_pcie_init);
+>>>>>>> v4.9.227

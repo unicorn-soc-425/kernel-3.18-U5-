@@ -33,6 +33,7 @@
    the values given by the device tree.
 
    Any driver for devices capable of working both as RS232 and RS485 should
+<<<<<<< HEAD
    provide at least the following ioctls:
 
     - TIOCSRS485 (typically associated with number 0x542F). This ioctl is used
@@ -77,6 +78,12 @@
 		}
 	}
 
+=======
+   implement the rs485_config callback in the uart_port structure. The
+   serial_core calls rs485_config to do the device specific part in response
+   to TIOCSRS485 and TIOCGRS485 ioctls (see below). The rs485_config callback
+   receives a pointer to struct serial_rs485.
+>>>>>>> v4.9.227
 
 4. USAGE FROM USER-LEVEL
 
@@ -85,9 +92,14 @@
 
 	#include <linux/serial.h>
 
+<<<<<<< HEAD
 	/* Driver-specific ioctls: */
 	#define TIOCGRS485      0x542E
 	#define TIOCSRS485      0x542F
+=======
+	/* Include definition for RS485 ioctls: TIOCGRS485 and TIOCSRS485 */
+	#include <sys/ioctl.h>
+>>>>>>> v4.9.227
 
 	/* Open your specific device (e.g., /dev/mydevice): */
 	int fd = open ("/dev/mydevice", O_RDWR);

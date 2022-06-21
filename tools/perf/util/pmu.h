@@ -4,6 +4,11 @@
 #include <linux/bitmap.h>
 #include <linux/perf_event.h>
 #include <stdbool.h>
+<<<<<<< HEAD
+=======
+#include "evsel.h"
+#include "parse-events.h"
+>>>>>>> v4.9.227
 
 enum {
 	PERF_PMU_FORMAT_VALUE_CONFIG,
@@ -18,35 +23,69 @@ struct perf_event_attr;
 struct perf_pmu {
 	char *name;
 	__u32 type;
+<<<<<<< HEAD
+=======
+	bool selectable;
+>>>>>>> v4.9.227
 	struct perf_event_attr *default_config;
 	struct cpu_map *cpus;
 	struct list_head format;  /* HEAD struct perf_pmu_format -> list */
 	struct list_head aliases; /* HEAD struct perf_pmu_alias -> list */
 	struct list_head list;    /* ELEM */
+<<<<<<< HEAD
+=======
+	int (*set_drv_config)	(struct perf_evsel_config_term *term);
+>>>>>>> v4.9.227
 };
 
 struct perf_pmu_info {
 	const char *unit;
 	double scale;
+<<<<<<< HEAD
+=======
+	bool per_pkg;
+	bool snapshot;
+>>>>>>> v4.9.227
 };
 
 #define UNIT_MAX_LEN	31 /* max length for event unit name */
 
 struct perf_pmu_alias {
 	char *name;
+<<<<<<< HEAD
+=======
+	char *desc;
+	char *long_desc;
+	char *topic;
+>>>>>>> v4.9.227
 	struct list_head terms; /* HEAD struct parse_events_term -> list */
 	struct list_head list;  /* ELEM */
 	char unit[UNIT_MAX_LEN+1];
 	double scale;
+<<<<<<< HEAD
+=======
+	bool per_pkg;
+	bool snapshot;
+>>>>>>> v4.9.227
 };
 
 struct perf_pmu *perf_pmu__find(const char *name);
 int perf_pmu__config(struct perf_pmu *pmu, struct perf_event_attr *attr,
+<<<<<<< HEAD
 		     struct list_head *head_terms);
 int perf_pmu__config_terms(struct list_head *formats,
 			   struct perf_event_attr *attr,
 			   struct list_head *head_terms,
 			   bool zero);
+=======
+		     struct list_head *head_terms,
+		     struct parse_events_error *error);
+int perf_pmu__config_terms(struct list_head *formats,
+			   struct perf_event_attr *attr,
+			   struct list_head *head_terms,
+			   bool zero, struct parse_events_error *error);
+__u64 perf_pmu__format_bits(struct list_head *formats, const char *name);
+>>>>>>> v4.9.227
 int perf_pmu__check_alias(struct perf_pmu *pmu, struct list_head *head_terms,
 			  struct perf_pmu_info *info);
 struct list_head *perf_pmu__alias(struct perf_pmu *pmu,
@@ -61,7 +100,12 @@ int perf_pmu__format_parse(char *dir, struct list_head *head);
 
 struct perf_pmu *perf_pmu__scan(struct perf_pmu *pmu);
 
+<<<<<<< HEAD
 void print_pmu_events(const char *event_glob, bool name_only);
+=======
+void print_pmu_events(const char *event_glob, bool name_only, bool quiet,
+		      bool long_desc);
+>>>>>>> v4.9.227
 bool pmu_have_event(const char *pname, const char *name);
 
 int perf_pmu__scan_file(struct perf_pmu *pmu, const char *name, const char *fmt,

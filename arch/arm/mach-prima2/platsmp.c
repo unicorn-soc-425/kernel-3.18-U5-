@@ -20,6 +20,7 @@
 
 #include "common.h"
 
+<<<<<<< HEAD
 static void __iomem *scu_base;
 static void __iomem *rsc_base;
 
@@ -44,6 +45,12 @@ void __init sirfsoc_map_scu(void)
 	scu_base = (void __iomem *)SIRFSOC_VA(base);
 }
 
+=======
+static void __iomem *clk_base;
+
+static DEFINE_SPINLOCK(boot_lock);
+
+>>>>>>> v4.9.227
 static void sirfsoc_secondary_init(unsigned int cpu)
 {
 	/*
@@ -60,8 +67,13 @@ static void sirfsoc_secondary_init(unsigned int cpu)
 	spin_unlock(&boot_lock);
 }
 
+<<<<<<< HEAD
 static struct of_device_id rsc_ids[]  = {
 	{ .compatible = "sirf,marco-rsc" },
+=======
+static const struct of_device_id clk_ids[]  = {
+	{ .compatible = "sirf,atlas7-clkc" },
+>>>>>>> v4.9.227
 	{},
 };
 
@@ -70,6 +82,7 @@ static int sirfsoc_boot_secondary(unsigned int cpu, struct task_struct *idle)
 	unsigned long timeout;
 	struct device_node *np;
 
+<<<<<<< HEAD
 	np = of_find_matching_node(NULL, rsc_ids);
 	if (!np)
 		return -ENODEV;
@@ -91,6 +104,29 @@ static int sirfsoc_boot_secondary(unsigned int cpu, struct task_struct *idle)
 #define SIRFSOC_CPU1_WAKEMAGIC_OFFSET 0x28
 	__raw_writel(0x3CAF5D62,
 		rsc_base + SIRFSOC_CPU1_WAKEMAGIC_OFFSET);
+=======
+	np = of_find_matching_node(NULL, clk_ids);
+	if (!np)
+		return -ENODEV;
+
+	clk_base = of_iomap(np, 0);
+	if (!clk_base)
+		return -ENOMEM;
+
+	/*
+	 * write the address of secondary startup into the clkc register
+	 * at offset 0x2bC, then write the magic number 0x3CAF5D62 to the
+	 * clkc register at offset 0x2b8, which is what boot rom code is
+	 * waiting for. This would wake up the secondary core from WFE
+	 */
+#define SIRFSOC_CPU1_JUMPADDR_OFFSET 0x2bc
+	__raw_writel(virt_to_phys(sirfsoc_secondary_startup),
+		clk_base + SIRFSOC_CPU1_JUMPADDR_OFFSET);
+
+#define SIRFSOC_CPU1_WAKEMAGIC_OFFSET 0x2b8
+	__raw_writel(0x3CAF5D62,
+		clk_base + SIRFSOC_CPU1_WAKEMAGIC_OFFSET);
+>>>>>>> v4.9.227
 
 	/* make sure write buffer is drained */
 	mb();
@@ -132,6 +168,7 @@ static int sirfsoc_boot_secondary(unsigned int cpu, struct task_struct *idle)
 	return pen_release != -1 ? -ENOSYS : 0;
 }
 
+<<<<<<< HEAD
 static void __init sirfsoc_smp_prepare_cpus(unsigned int max_cpus)
 {
 	scu_enable(scu_base);
@@ -139,6 +176,9 @@ static void __init sirfsoc_smp_prepare_cpus(unsigned int max_cpus)
 
 struct smp_operations sirfsoc_smp_ops __initdata = {
 	.smp_prepare_cpus       = sirfsoc_smp_prepare_cpus,
+=======
+const struct smp_operations sirfsoc_smp_ops __initconst = {
+>>>>>>> v4.9.227
 	.smp_secondary_init     = sirfsoc_secondary_init,
 	.smp_boot_secondary     = sirfsoc_boot_secondary,
 #ifdef CONFIG_HOTPLUG_CPU

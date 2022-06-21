@@ -15,7 +15,10 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 #include <linux/irqdomain.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/irq.h>
 
 #include "msm_drv.h"
@@ -24,22 +27,37 @@
 void mdp5_set_irqmask(struct mdp_kms *mdp_kms, uint32_t irqmask,
 		uint32_t old_irqmask)
 {
+<<<<<<< HEAD
 	mdp5_write(to_mdp5_kms(mdp_kms), REG_MDP5_MDP_INTR_CLEAR(0),
 		irqmask ^ (irqmask & old_irqmask));
 	mdp5_write(to_mdp5_kms(mdp_kms), REG_MDP5_MDP_INTR_EN(0), irqmask);
+=======
+	mdp5_write(to_mdp5_kms(mdp_kms), REG_MDP5_INTR_CLEAR,
+		   irqmask ^ (irqmask & old_irqmask));
+	mdp5_write(to_mdp5_kms(mdp_kms), REG_MDP5_INTR_EN, irqmask);
+>>>>>>> v4.9.227
 }
 
 static void mdp5_irq_error_handler(struct mdp_irq *irq, uint32_t irqstatus)
 {
+<<<<<<< HEAD
 	DRM_ERROR("errors: %08x\n", irqstatus);
+=======
+	DRM_ERROR_RATELIMITED("errors: %08x\n", irqstatus);
+>>>>>>> v4.9.227
 }
 
 void mdp5_irq_preinstall(struct msm_kms *kms)
 {
 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(kms));
 	mdp5_enable(mdp5_kms);
+<<<<<<< HEAD
 	mdp5_write(mdp5_kms, REG_MDP5_MDP_INTR_CLEAR(0), 0xffffffff);
 	mdp5_write(mdp5_kms, REG_MDP5_MDP_INTR_EN(0), 0x00000000);
+=======
+	mdp5_write(mdp5_kms, REG_MDP5_INTR_CLEAR, 0xffffffff);
+	mdp5_write(mdp5_kms, REG_MDP5_INTR_EN, 0x00000000);
+>>>>>>> v4.9.227
 	mdp5_disable(mdp5_kms);
 }
 
@@ -55,7 +73,13 @@ int mdp5_irq_postinstall(struct msm_kms *kms)
 			MDP5_IRQ_INTF2_UNDER_RUN |
 			MDP5_IRQ_INTF3_UNDER_RUN;
 
+<<<<<<< HEAD
 	mdp_irq_register(mdp_kms, error_handler);
+=======
+	mdp5_enable(mdp5_kms);
+	mdp_irq_register(mdp_kms, error_handler);
+	mdp5_disable(mdp5_kms);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -64,21 +88,37 @@ void mdp5_irq_uninstall(struct msm_kms *kms)
 {
 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(kms));
 	mdp5_enable(mdp5_kms);
+<<<<<<< HEAD
 	mdp5_write(mdp5_kms, REG_MDP5_MDP_INTR_EN(0), 0x00000000);
 	mdp5_disable(mdp5_kms);
 }
 
 static void mdp5_irq_mdp(struct mdp_kms *mdp_kms)
 {
+=======
+	mdp5_write(mdp5_kms, REG_MDP5_INTR_EN, 0x00000000);
+	mdp5_disable(mdp5_kms);
+}
+
+irqreturn_t mdp5_irq(struct msm_kms *kms)
+{
+	struct mdp_kms *mdp_kms = to_mdp_kms(kms);
+>>>>>>> v4.9.227
 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(mdp_kms);
 	struct drm_device *dev = mdp5_kms->dev;
 	struct msm_drm_private *priv = dev->dev_private;
 	unsigned int id;
 	uint32_t status, enable;
 
+<<<<<<< HEAD
 	enable = mdp5_read(mdp5_kms, REG_MDP5_MDP_INTR_EN(0));
 	status = mdp5_read(mdp5_kms, REG_MDP5_MDP_INTR_STATUS(0)) & enable;
 	mdp5_write(mdp5_kms, REG_MDP5_MDP_INTR_CLEAR(0), status);
+=======
+	enable = mdp5_read(mdp5_kms, REG_MDP5_INTR_EN);
+	status = mdp5_read(mdp5_kms, REG_MDP5_INTR_STATUS) & enable;
+	mdp5_write(mdp5_kms, REG_MDP5_INTR_CLEAR, status);
+>>>>>>> v4.9.227
 
 	VERB("status=%08x", status);
 
@@ -87,6 +127,7 @@ static void mdp5_irq_mdp(struct mdp_kms *mdp_kms)
 	for (id = 0; id < priv->num_crtcs; id++)
 		if (status & mdp5_crtc_vblank(priv->crtcs[id]))
 			drm_handle_vblank(dev, id);
+<<<<<<< HEAD
 }
 
 irqreturn_t mdp5_irq(struct msm_kms *kms)
@@ -110,6 +151,8 @@ irqreturn_t mdp5_irq(struct msm_kms *kms)
 				mdp5_kms->irqcontroller.domain, hwirq));
 		intr &= ~(1 << hwirq);
 	}
+=======
+>>>>>>> v4.9.227
 
 	return IRQ_HANDLED;
 }
@@ -135,6 +178,7 @@ void mdp5_disable_vblank(struct msm_kms *kms, struct drm_crtc *crtc)
 			mdp5_crtc_vblank(crtc), false);
 	mdp5_disable(mdp5_kms);
 }
+<<<<<<< HEAD
 
 /*
  * interrupt-controller implementation, so sub-blocks (hdmi/eDP/dsi/etc)
@@ -213,3 +257,5 @@ void mdp5_irq_domain_fini(struct mdp5_kms *mdp5_kms)
 		mdp5_kms->irqcontroller.domain = NULL;
 	}
 }
+=======
+>>>>>>> v4.9.227

@@ -72,7 +72,10 @@
 
 
 struct txx9spi {
+<<<<<<< HEAD
 	struct workqueue_struct	*workqueue;
+=======
+>>>>>>> v4.9.227
 	struct work_struct work;
 	spinlock_t lock;	/* protect 'queue' */
 	struct list_head queue;
@@ -181,7 +184,11 @@ static void txx9spi_work_one(struct txx9spi *c, struct spi_message *m)
 		u32 data;
 		unsigned int len = t->len;
 		unsigned int wsize;
+<<<<<<< HEAD
 		u32 speed_hz = t->speed_hz ? : spi->max_speed_hz;
+=======
+		u32 speed_hz = t->speed_hz;
+>>>>>>> v4.9.227
 		u8 bits_per_word = t->bits_per_word;
 
 		wsize = bits_per_word >> 3; /* in bytes */
@@ -315,7 +322,11 @@ static int txx9spi_transfer(struct spi_device *spi, struct spi_message *m)
 
 	spin_lock_irqsave(&c->lock, flags);
 	list_add_tail(&m->queue, &c->queue);
+<<<<<<< HEAD
 	queue_work(c->workqueue, &c->work);
+=======
+	schedule_work(&c->work);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&c->lock, flags);
 
 	return 0;
@@ -347,7 +358,11 @@ static int txx9spi_probe(struct platform_device *dev)
 		c->clk = NULL;
 		goto exit;
 	}
+<<<<<<< HEAD
 	ret = clk_enable(c->clk);
+=======
+	ret = clk_prepare_enable(c->clk);
+>>>>>>> v4.9.227
 	if (ret) {
 		c->clk = NULL;
 		goto exit;
@@ -374,10 +389,13 @@ static int txx9spi_probe(struct platform_device *dev)
 	if (ret)
 		goto exit;
 
+<<<<<<< HEAD
 	c->workqueue = create_singlethread_workqueue(
 				dev_name(master->dev.parent));
 	if (!c->workqueue)
 		goto exit_busy;
+=======
+>>>>>>> v4.9.227
 	c->last_chipselect = -1;
 
 	dev_info(&dev->dev, "at %#llx, irq %d, %dMHz\n",
@@ -400,10 +418,14 @@ static int txx9spi_probe(struct platform_device *dev)
 exit_busy:
 	ret = -EBUSY;
 exit:
+<<<<<<< HEAD
 	if (c->workqueue)
 		destroy_workqueue(c->workqueue);
 	if (c->clk)
 		clk_disable(c->clk);
+=======
+	clk_disable_unprepare(c->clk);
+>>>>>>> v4.9.227
 	spi_master_put(master);
 	return ret;
 }
@@ -413,8 +435,13 @@ static int txx9spi_remove(struct platform_device *dev)
 	struct spi_master *master = platform_get_drvdata(dev);
 	struct txx9spi *c = spi_master_get_devdata(master);
 
+<<<<<<< HEAD
 	destroy_workqueue(c->workqueue);
 	clk_disable(c->clk);
+=======
+	flush_work(&c->work);
+	clk_disable_unprepare(c->clk);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -426,7 +453,10 @@ static struct platform_driver txx9spi_driver = {
 	.remove = txx9spi_remove,
 	.driver = {
 		.name = "spi_txx9",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

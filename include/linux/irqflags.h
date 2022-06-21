@@ -85,7 +85,11 @@
  * The local_irq_*() APIs are equal to the raw_local_irq*()
  * if !TRACE_IRQFLAGS.
  */
+<<<<<<< HEAD
 #ifdef CONFIG_TRACE_IRQFLAGS_SUPPORT
+=======
+#ifdef CONFIG_TRACE_IRQFLAGS
+>>>>>>> v4.9.227
 #define local_irq_enable() \
 	do { trace_hardirqs_on(); raw_local_irq_enable(); } while (0)
 #define local_irq_disable() \
@@ -107,6 +111,7 @@
 			raw_local_irq_restore(flags);	\
 		}					\
 	} while (0)
+<<<<<<< HEAD
 #define local_save_flags(flags)				\
 	do {						\
 		raw_local_save_flags(flags);		\
@@ -123,6 +128,8 @@
 		raw_local_save_flags(_flags);		\
 		raw_irqs_disabled_flags(_flags);	\
 	})
+=======
+>>>>>>> v4.9.227
 
 #define safe_halt()				\
 	do {					\
@@ -131,7 +138,11 @@
 	} while (0)
 
 
+<<<<<<< HEAD
 #else /* !CONFIG_TRACE_IRQFLAGS_SUPPORT */
+=======
+#else /* !CONFIG_TRACE_IRQFLAGS */
+>>>>>>> v4.9.227
 
 #define local_irq_enable()	do { raw_local_irq_enable(); } while (0)
 #define local_irq_disable()	do { raw_local_irq_disable(); } while (0)
@@ -140,6 +151,7 @@
 		raw_local_irq_save(flags);			\
 	} while (0)
 #define local_irq_restore(flags) do { raw_local_irq_restore(flags); } while (0)
+<<<<<<< HEAD
 #define local_save_flags(flags)	do { raw_local_save_flags(flags); } while (0)
 #define irqs_disabled()		(raw_irqs_disabled())
 #define irqs_disabled_flags(flags) (raw_irqs_disabled_flags(flags))
@@ -147,4 +159,30 @@
 
 #endif /* CONFIG_TRACE_IRQFLAGS_SUPPORT */
 
+=======
+#define safe_halt()		do { raw_safe_halt(); } while (0)
+
+#endif /* CONFIG_TRACE_IRQFLAGS */
+
+#define local_save_flags(flags)	raw_local_save_flags(flags)
+
+/*
+ * Some architectures don't define arch_irqs_disabled(), so even if either
+ * definition would be fine we need to use different ones for the time being
+ * to avoid build issues.
+ */
+#ifdef CONFIG_TRACE_IRQFLAGS_SUPPORT
+#define irqs_disabled()					\
+	({						\
+		unsigned long _flags;			\
+		raw_local_save_flags(_flags);		\
+		raw_irqs_disabled_flags(_flags);	\
+	})
+#else /* !CONFIG_TRACE_IRQFLAGS_SUPPORT */
+#define irqs_disabled()	raw_irqs_disabled()
+#endif /* CONFIG_TRACE_IRQFLAGS_SUPPORT */
+
+#define irqs_disabled_flags(flags) raw_irqs_disabled_flags(flags)
+
+>>>>>>> v4.9.227
 #endif

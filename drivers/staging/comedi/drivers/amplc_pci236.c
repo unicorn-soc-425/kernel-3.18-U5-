@@ -42,10 +42,16 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/interrupt.h>
 
 #include "../comedidev.h"
+=======
+#include <linux/interrupt.h>
+
+#include "../comedi_pci.h"
+>>>>>>> v4.9.227
 
 #include "amplc_pc236.h"
 #include "plx9052.h"

@@ -13,6 +13,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -29,6 +33,7 @@
 #include <linux/serial_core.h>
 #include <linux/serial_8250.h>
 
+<<<<<<< HEAD
 #include "serial.h"
 #include "clock.h"
 
@@ -57,6 +62,10 @@ struct platform_device jz4740_usb_ohci_device = {
 	.resource	= jz4740_usb_ohci_resources,
 };
 
+=======
+#include "clock.h"
+
+>>>>>>> v4.9.227
 /* USB Device Controller */
 struct platform_device jz4740_udc_xceiv_device = {
 	.name = "usb_phy_generic",
@@ -279,6 +288,7 @@ struct platform_device jz4740_adc_device = {
 	.resource	= jz4740_adc_resources,
 };
 
+<<<<<<< HEAD
 /* Serial */
 #define JZ4740_UART_DATA(_id) \
 	{ \
@@ -315,6 +325,8 @@ void jz4740_serial_device_register(void)
 	platform_device_register(&jz4740_uart_device);
 }
 
+=======
+>>>>>>> v4.9.227
 /* Watchdog */
 static struct resource jz4740_wdt_resources[] = {
 	{

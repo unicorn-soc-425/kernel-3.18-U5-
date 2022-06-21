@@ -334,8 +334,13 @@ static int ide_dma_sgiioc4(ide_hwif_t *hwif, const struct ide_port_info *d)
 	if (ide_allocate_dma_engine(hwif))
 		goto dma_pci_alloc_failure;
 
+<<<<<<< HEAD
 	pad = pci_alloc_consistent(dev, IOC4_IDE_CACHELINE_SIZE,
 				   (dma_addr_t *)&hwif->extra_base);
+=======
+	pad = dma_alloc_coherent(&dev->dev, IOC4_IDE_CACHELINE_SIZE,
+				   (dma_addr_t *)&hwif->extra_base, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (pad) {
 		ide_set_hwifdata(hwif, pad);
 		return 0;

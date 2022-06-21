@@ -20,15 +20,26 @@
 #include <arch/chip.h>
 
 /* PAGE_SHIFT and HPAGE_SHIFT determine the page sizes. */
+<<<<<<< HEAD
 #if defined(CONFIG_PAGE_SIZE_16KB)
+=======
+#if defined(CONFIG_PAGE_SIZE_4KB)  /* tilepro only */
+#define PAGE_SHIFT	12
+#define CTX_PAGE_FLAG	HV_CTX_PG_SM_4K
+#elif defined(CONFIG_PAGE_SIZE_16KB)
+>>>>>>> v4.9.227
 #define PAGE_SHIFT	14
 #define CTX_PAGE_FLAG	HV_CTX_PG_SM_16K
 #elif defined(CONFIG_PAGE_SIZE_64KB)
 #define PAGE_SHIFT	16
 #define CTX_PAGE_FLAG	HV_CTX_PG_SM_64K
 #else
+<<<<<<< HEAD
 #define PAGE_SHIFT	HV_LOG2_DEFAULT_PAGE_SIZE_SMALL
 #define CTX_PAGE_FLAG	0
+=======
+#error Page size not specified in Kconfig
+>>>>>>> v4.9.227
 #endif
 #define HPAGE_SHIFT	HV_LOG2_DEFAULT_PAGE_SIZE_LARGE
 
@@ -319,6 +330,19 @@ static inline int pfn_valid(unsigned long pfn)
 #define virt_to_page(kaddr) pfn_to_page(kaddr_to_pfn((void *)(kaddr)))
 #define page_to_virt(page) pfn_to_kaddr(page_to_pfn(page))
 
+<<<<<<< HEAD
+=======
+/*
+ * The kernel text is mapped at MEM_SV_START as read-only.  To allow
+ * modifying kernel text, it is also mapped at PAGE_OFFSET as read-write.
+ * This macro converts a kernel address to its writable kernel text mapping,
+ * which is used to modify the text code on a running kernel by kgdb,
+ * ftrace, kprobe, jump label, etc.
+ */
+#define ktext_writable_addr(kaddr) \
+	((unsigned long)(kaddr) - MEM_SV_START + PAGE_OFFSET)
+
+>>>>>>> v4.9.227
 struct mm_struct;
 extern pte_t *virt_to_pte(struct mm_struct *mm, unsigned long addr);
 extern pte_t *virt_to_kpte(unsigned long kaddr);

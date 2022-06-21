@@ -130,6 +130,7 @@ static int moxart_mdio_probe(struct platform_device *pdev)
 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-%d-mii", pdev->name, pdev->id);
 	bus->parent = &pdev->dev;
 
+<<<<<<< HEAD
 	bus->irq = devm_kzalloc(&pdev->dev, sizeof(int) * PHY_MAX_ADDR,
 			GFP_KERNEL);
 	if (!bus->irq) {
@@ -137,6 +138,8 @@ static int moxart_mdio_probe(struct platform_device *pdev)
 		goto err_out_free_mdiobus;
 	}
 
+=======
+>>>>>>> v4.9.227
 	/* Setting PHY_IGNORE_INTERRUPT here even if it has no effect,
 	 * of_mdiobus_register() sets these PHY_POLL.
 	 * Ideally, the interrupt from MAC controller could be used to

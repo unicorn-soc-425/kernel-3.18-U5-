@@ -72,6 +72,7 @@ static inline bool busy_loop_timeout(unsigned long end_time)
 	return time_after(now, end_time);
 }
 
+<<<<<<< HEAD
 /* when used in sock_poll() nonblock is known at compile time to be true
  * so the loop and end_time will be optimized out
  */
@@ -116,6 +117,9 @@ out:
 	rcu_read_unlock_bh();
 	return rc;
 }
+=======
+bool sk_busy_loop(struct sock *sk, int nonblock);
+>>>>>>> v4.9.227
 
 /* used in the NIC receive handler to mark the skb */
 static inline void skb_mark_napi_id(struct sk_buff *skb,

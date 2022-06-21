@@ -40,6 +40,11 @@ const char *ath_opmode_to_string(enum nl80211_iftype opmode)
 		return "P2P-CLIENT";
 	case NL80211_IFTYPE_P2P_GO:
 		return "P2P-GO";
+<<<<<<< HEAD
+=======
+	case NL80211_IFTYPE_OCB:
+		return "OCB";
+>>>>>>> v4.9.227
 	default:
 		return "UNKNOWN";
 	}

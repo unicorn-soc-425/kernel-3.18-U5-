@@ -149,6 +149,11 @@ nfs4_get_device_info(struct nfs_server *server,
 	 */
 	d = server->pnfs_curr_ld->alloc_deviceid_node(server, pdev,
 			gfp_flags);
+<<<<<<< HEAD
+=======
+	if (d && pdev->nocache)
+		set_bit(NFS_DEVICEID_NOCACHE, &d->flags);
+>>>>>>> v4.9.227
 
 out_free_pages:
 	for (i = 0; i < max_pages; i++)
@@ -175,8 +180,13 @@ __nfs4_find_get_deviceid(struct nfs_server *server,
 	rcu_read_lock();
 	d = _lookup_deviceid(server->pnfs_curr_ld, server->nfs_client, id,
 			hash);
+<<<<<<< HEAD
 	if (d != NULL)
 		atomic_inc(&d->ref);
+=======
+	if (d != NULL && !atomic_inc_not_zero(&d->ref))
+		d = NULL;
+>>>>>>> v4.9.227
 	rcu_read_unlock();
 	return d;
 }
@@ -235,12 +245,20 @@ nfs4_delete_deviceid(const struct pnfs_layoutdriver_type *ld,
 		return;
 	}
 	hlist_del_init_rcu(&d->node);
+<<<<<<< HEAD
 	spin_unlock(&nfs4_deviceid_lock);
 	synchronize_rcu();
 
 	/* balance the initial ref set in pnfs_insert_deviceid */
 	if (atomic_dec_and_test(&d->ref))
 		d->ld->free_deviceid_node(d);
+=======
+	clear_bit(NFS_DEVICEID_NOCACHE, &d->flags);
+	spin_unlock(&nfs4_deviceid_lock);
+
+	/* balance the initial ref set in pnfs_insert_deviceid */
+	nfs4_put_deviceid_node(d);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(nfs4_delete_deviceid);
 
@@ -271,6 +289,14 @@ EXPORT_SYMBOL_GPL(nfs4_init_deviceid_node);
 bool
 nfs4_put_deviceid_node(struct nfs4_deviceid_node *d)
 {
+<<<<<<< HEAD
+=======
+	if (test_bit(NFS_DEVICEID_NOCACHE, &d->flags)) {
+		if (atomic_add_unless(&d->ref, -1, 2))
+			return false;
+		nfs4_delete_deviceid(d->ld, d->nfs_client, &d->deviceid);
+	}
+>>>>>>> v4.9.227
 	if (!atomic_dec_and_test(&d->ref))
 		return false;
 	d->ld->free_deviceid_node(d);
@@ -314,6 +340,10 @@ _deviceid_purge_client(const struct nfs_client *clp, long hash)
 		if (d->nfs_client == clp && atomic_read(&d->ref)) {
 			hlist_del_init_rcu(&d->node);
 			hlist_add_head(&d->tmpnode, &tmp);
+<<<<<<< HEAD
+=======
+			clear_bit(NFS_DEVICEID_NOCACHE, &d->flags);
+>>>>>>> v4.9.227
 		}
 	rcu_read_unlock();
 	spin_unlock(&nfs4_deviceid_lock);
@@ -321,12 +351,19 @@ _deviceid_purge_client(const struct nfs_client *clp, long hash)
 	if (hlist_empty(&tmp))
 		return;
 
+<<<<<<< HEAD
 	synchronize_rcu();
 	while (!hlist_empty(&tmp)) {
 		d = hlist_entry(tmp.first, struct nfs4_deviceid_node, tmpnode);
 		hlist_del(&d->tmpnode);
 		if (atomic_dec_and_test(&d->ref))
 			d->ld->free_deviceid_node(d);
+=======
+	while (!hlist_empty(&tmp)) {
+		d = hlist_entry(tmp.first, struct nfs4_deviceid_node, tmpnode);
+		hlist_del(&d->tmpnode);
+		nfs4_put_deviceid_node(d);
+>>>>>>> v4.9.227
 	}
 }
 

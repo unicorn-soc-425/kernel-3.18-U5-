@@ -399,7 +399,11 @@ cifs_create_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 	io_parms.offset = 0;
 	io_parms.length = CIFS_MF_SYMLINK_FILE_SIZE;
 
+<<<<<<< HEAD
 	rc = CIFSSMBWrite(xid, &io_parms, pbytes_written, pbuf, NULL, 0);
+=======
+	rc = CIFSSMBWrite(xid, &io_parms, pbytes_written, pbuf);
+>>>>>>> v4.9.227
 	CIFSSMBClose(xid, tcon, fid.netfid);
 	return rc;
 }
@@ -419,7 +423,11 @@ smb3_query_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 	struct cifs_io_parms io_parms;
 	int buf_type = CIFS_NO_BUFFER;
 	__le16 *utf16_path;
+<<<<<<< HEAD
 	__u8 oplock = SMB2_OPLOCK_LEVEL_II;
+=======
+	__u8 oplock = SMB2_OPLOCK_LEVEL_NONE;
+>>>>>>> v4.9.227
 	struct smb2_file_all_info *pfile_info = NULL;
 
 	oparms.tcon = tcon;
@@ -481,7 +489,11 @@ smb3_create_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 	struct cifs_io_parms io_parms;
 	int create_options = CREATE_NOT_DIR;
 	__le16 *utf16_path;
+<<<<<<< HEAD
 	__u8 oplock = SMB2_OPLOCK_LEVEL_EXCLUSIVE;
+=======
+	__u8 oplock = SMB2_OPLOCK_LEVEL_NONE;
+>>>>>>> v4.9.227
 	struct kvec iov[2];
 
 	if (backup_cred(cifs_sb))
@@ -586,12 +598,21 @@ cifs_hardlink(struct dentry *old_file, struct inode *inode,
 	 * if source file is cached (oplocked) revalidate will not go to server
 	 * until the file is closed or oplock broken so update nlinks locally
 	 */
+<<<<<<< HEAD
 	if (old_file->d_inode) {
 		cifsInode = CIFS_I(old_file->d_inode);
 		if (rc == 0) {
 			spin_lock(&old_file->d_inode->i_lock);
 			inc_nlink(old_file->d_inode);
 			spin_unlock(&old_file->d_inode->i_lock);
+=======
+	if (d_really_is_positive(old_file)) {
+		cifsInode = CIFS_I(d_inode(old_file));
+		if (rc == 0) {
+			spin_lock(&d_inode(old_file)->i_lock);
+			inc_nlink(d_inode(old_file));
+			spin_unlock(&d_inode(old_file)->i_lock);
+>>>>>>> v4.9.227
 
 			/*
 			 * parent dir timestamps will update from srv within a
@@ -626,10 +647,17 @@ cifs_hl_exit:
 	return rc;
 }
 
+<<<<<<< HEAD
 void *
 cifs_follow_link(struct dentry *direntry, struct nameidata *nd)
 {
 	struct inode *inode = direntry->d_inode;
+=======
+const char *
+cifs_get_link(struct dentry *direntry, struct inode *inode,
+	      struct delayed_call *done)
+{
+>>>>>>> v4.9.227
 	int rc = -ENOMEM;
 	unsigned int xid;
 	char *full_path = NULL;
@@ -639,20 +667,39 @@ cifs_follow_link(struct dentry *direntry, struct nameidata *nd)
 	struct cifs_tcon *tcon;
 	struct TCP_Server_Info *server;
 
+<<<<<<< HEAD
+=======
+	if (!direntry)
+		return ERR_PTR(-ECHILD);
+
+>>>>>>> v4.9.227
 	xid = get_xid();
 
 	tlink = cifs_sb_tlink(cifs_sb);
 	if (IS_ERR(tlink)) {
+<<<<<<< HEAD
 		rc = PTR_ERR(tlink);
 		tlink = NULL;
 		goto out;
+=======
+		free_xid(xid);
+		return ERR_CAST(tlink);
+>>>>>>> v4.9.227
 	}
 	tcon = tlink_tcon(tlink);
 	server = tcon->ses->server;
 
 	full_path = build_path_from_dentry(direntry);
+<<<<<<< HEAD
 	if (!full_path)
 		goto out;
+=======
+	if (!full_path) {
+		free_xid(xid);
+		cifs_put_tlink(tlink);
+		return ERR_PTR(-ENOMEM);
+	}
+>>>>>>> v4.9.227
 
 	cifs_dbg(FYI, "Full path: %s inode = 0x%p\n", full_path, inode);
 
@@ -670,6 +717,7 @@ cifs_follow_link(struct dentry *direntry, struct nameidata *nd)
 						&target_path, cifs_sb);
 
 	kfree(full_path);
+<<<<<<< HEAD
 out:
 	if (rc != 0) {
 		kfree(target_path);
@@ -681,6 +729,16 @@ out:
 		cifs_put_tlink(tlink);
 	nd_set_link(nd, target_path);
 	return NULL;
+=======
+	free_xid(xid);
+	cifs_put_tlink(tlink);
+	if (rc != 0) {
+		kfree(target_path);
+		return ERR_PTR(rc);
+	}
+	set_delayed_call(done, kfree_link, target_path);
+	return target_path;
+>>>>>>> v4.9.227
 }
 
 int
@@ -717,7 +775,12 @@ cifs_symlink(struct inode *inode, struct dentry *direntry, const char *symname)
 		rc = create_mf_symlink(xid, pTcon, cifs_sb, full_path, symname);
 	else if (pTcon->unix_ext)
 		rc = CIFSUnixCreateSymLink(xid, pTcon, full_path, symname,
+<<<<<<< HEAD
 					   cifs_sb->local_nls);
+=======
+					   cifs_sb->local_nls,
+					   cifs_remap(cifs_sb));
+>>>>>>> v4.9.227
 	/* else
 	   rc = CIFSCreateReparseSymLink(xid, pTcon, fromName, toName,
 					cifs_sb_target->local_nls); */

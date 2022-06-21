@@ -23,7 +23,10 @@ struct vsp1_device;
 struct vsp1_rwpf;
 
 #define BRU_PAD_SINK(n)				(n)
+<<<<<<< HEAD
 #define BRU_PAD_SOURCE				4
+=======
+>>>>>>> v4.9.227
 
 struct vsp1_bru {
 	struct vsp1_entity entity;
@@ -32,8 +35,14 @@ struct vsp1_bru {
 
 	struct {
 		struct vsp1_rwpf *rpf;
+<<<<<<< HEAD
 		struct v4l2_rect compose;
 	} inputs[4];
+=======
+	} inputs[VSP1_MAX_RPF];
+
+	u32 bgcolor;
+>>>>>>> v4.9.227
 };
 
 static inline struct vsp1_bru *to_bru(struct v4l2_subdev *subdev)

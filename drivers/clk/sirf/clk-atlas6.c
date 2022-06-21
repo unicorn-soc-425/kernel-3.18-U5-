@@ -10,7 +10,10 @@
 #include <linux/module.h>
 #include <linux/bitops.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clkdev.h>
 #include <linux/clk-provider.h>
 #include <linux/of_address.h>
@@ -131,10 +134,16 @@ static void __init atlas6_clk_init(struct device_node *np)
 		panic("unable to map clkc registers\n");
 
 	/* These are always available (RTC and 26MHz OSC)*/
+<<<<<<< HEAD
 	atlas6_clks[rtc] = clk_register_fixed_rate(NULL, "rtc", NULL,
 		CLK_IS_ROOT, 32768);
 	atlas6_clks[osc] = clk_register_fixed_rate(NULL, "osc", NULL,
 		CLK_IS_ROOT, 26000000);
+=======
+	atlas6_clks[rtc] = clk_register_fixed_rate(NULL, "rtc", NULL, 0, 32768);
+	atlas6_clks[osc] = clk_register_fixed_rate(NULL, "osc", NULL, 0,
+						   26000000);
+>>>>>>> v4.9.227
 
 	for (i = pll1; i < maxclk; i++) {
 		atlas6_clks[i] = clk_register(NULL, atlas6_clk_hw_array[i]);

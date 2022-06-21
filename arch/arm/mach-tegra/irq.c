@@ -29,6 +29,7 @@
 
 #include "board.h"
 #include "iomap.h"
+<<<<<<< HEAD
 
 #define ICTLR_CPU_IEP_VFIQ	0x08
 #define ICTLR_CPU_IEP_FIR	0x14
@@ -67,6 +68,13 @@ static u32 cpu_ier[TEGRA_MAX_NUM_ICTLRS];
 static u32 cpu_iep[TEGRA_MAX_NUM_ICTLRS];
 
 static u32 ictlr_wake_mask[TEGRA_MAX_NUM_ICTLRS];
+=======
+#include "irq.h"
+
+#define SGI_MASK 0xFFFF
+
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 static void __iomem *tegra_gic_cpu_base;
 #endif
 
@@ -83,6 +91,7 @@ bool tegra_pending_sgi(void)
 	return false;
 }
 
+<<<<<<< HEAD
 static inline void tegra_irq_write_mask(unsigned int irq, unsigned long reg)
 {
 	void __iomem *base;
@@ -217,6 +226,9 @@ int tegra_legacy_irq_syscore_init(void)
 	return 0;
 }
 
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 static int tegra_gic_notifier(struct notifier_block *self,
 			      unsigned long cmd, void *v)
 {
@@ -251,6 +263,7 @@ static void tegra114_gic_cpu_pm_registration(void)
 	cpu_pm_register_notifier(&tegra_gic_notifier_block);
 }
 #else
+<<<<<<< HEAD
 #define tegra_set_wake NULL
 static void tegra114_gic_cpu_pm_registration(void) { }
 #endif
@@ -290,6 +303,21 @@ void __init tegra_init_irq(void)
 	if (!of_have_populated_dt())
 		gic_init(0, 29, distbase,
 			IO_ADDRESS(TEGRA_ARM_PERIF_BASE + 0x100));
+=======
+static void tegra114_gic_cpu_pm_registration(void) { }
+#endif
+
+static const struct of_device_id tegra_ictlr_match[] __initconst = {
+	{ .compatible = "nvidia,tegra20-ictlr" },
+	{ .compatible = "nvidia,tegra30-ictlr" },
+	{ }
+};
+
+void __init tegra_init_irq(void)
+{
+	if (WARN_ON(!of_find_matching_node(NULL, tegra_ictlr_match)))
+		pr_warn("Outdated DT detected, suspend/resume will NOT work\n");
+>>>>>>> v4.9.227
 
 	tegra114_gic_cpu_pm_registration();
 }

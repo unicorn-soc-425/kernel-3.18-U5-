@@ -346,6 +346,7 @@ int main(int argc, char *argv[])
 
 	for (i = 0; i < ex.e_phnum; i++) {
 		/* Section types we can ignore... */
+<<<<<<< HEAD
 		if (ph[i].p_type == PT_NULL || ph[i].p_type == PT_NOTE ||
 		    ph[i].p_type == PT_PHDR
 		    || ph[i].p_type == PT_MIPS_REGINFO
@@ -353,11 +354,49 @@ int main(int argc, char *argv[])
 			continue;
 		/* Section types we can't handle... */
 		else if (ph[i].p_type != PT_LOAD) {
+=======
+		switch (ph[i].p_type) {
+		case PT_NULL:
+		case PT_NOTE:
+		case PT_PHDR:
+		case PT_MIPS_REGINFO:
+		case PT_MIPS_ABIFLAGS:
+			continue;
+
+		case PT_LOAD:
+			/* Writable (data) segment? */
+			if (ph[i].p_flags & PF_W) {
+				struct sect ndata, nbss;
+
+				ndata.vaddr = ph[i].p_vaddr;
+				ndata.len = ph[i].p_filesz;
+				nbss.vaddr = ph[i].p_vaddr + ph[i].p_filesz;
+				nbss.len = ph[i].p_memsz - ph[i].p_filesz;
+
+				combine(&data, &ndata, 0);
+				combine(&bss, &nbss, 1);
+			} else {
+				struct sect ntxt;
+
+				ntxt.vaddr = ph[i].p_vaddr;
+				ntxt.len = ph[i].p_filesz;
+
+				combine(&text, &ntxt, 0);
+			}
+			/* Remember the lowest segment start address. */
+			if (ph[i].p_vaddr < cur_vma)
+				cur_vma = ph[i].p_vaddr;
+			break;
+
+		default:
+			/* Section types we can't handle... */
+>>>>>>> v4.9.227
 			fprintf(stderr,
 				"Program header %d type %d can't be converted.\n",
 				ex.e_phnum, ph[i].p_type);
 			exit(1);
 		}
+<<<<<<< HEAD
 		/* Writable (data) segment? */
 		if (ph[i].p_flags & PF_W) {
 			struct sect ndata, nbss;
@@ -380,6 +419,8 @@ int main(int argc, char *argv[])
 		/* Remember the lowest segment start address. */
 		if (ph[i].p_vaddr < cur_vma)
 			cur_vma = ph[i].p_vaddr;
+=======
+>>>>>>> v4.9.227
 	}
 
 	/* Sections must be in order to be converted... */

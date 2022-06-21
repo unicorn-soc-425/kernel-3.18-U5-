@@ -1,7 +1,11 @@
 /*
  * Linux driver for VMware's vmxnet3 ethernet NIC.
  *
+<<<<<<< HEAD
  * Copyright (C) 2008-2009, VMware, Inc. All Rights Reserved.
+=======
+ * Copyright (C) 2008-2016, VMware, Inc. All Rights Reserved.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,7 +24,11 @@
  * The full GNU General Public License is included in this distribution in
  * the file called "COPYING".
  *
+<<<<<<< HEAD
  * Maintained by: Shreyas Bhatewara <pv-drivers@vmware.com>
+=======
+ * Maintained by: pv-drivers@vmware.com
+>>>>>>> v4.9.227
  *
  */
 

@@ -83,6 +83,15 @@ struct wl1271_cmd_trigger_scan_to {
 #define MAX_CHANNELS_5GHZ	42
 
 #define SCAN_MAX_CYCLE_INTERVALS 16
+<<<<<<< HEAD
+=======
+
+/* The FW intervals can take up to 16 entries.
+ * The 1st entry isn't used (scan is immediate). The last
+ * entry should be used for the long_interval
+ */
+#define SCAN_MAX_SHORT_INTERVALS (SCAN_MAX_CYCLE_INTERVALS - 2)
+>>>>>>> v4.9.227
 #define SCAN_MAX_BANDS 3
 
 enum {

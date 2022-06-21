@@ -480,11 +480,18 @@ static ssize_t eventlog_write(struct file *filp, struct kobject *kobj,
 	if (count < sizeof(u32))
 		return -EINVAL;
 	param.type = *(u32 *)buf;
+<<<<<<< HEAD
 	count -= sizeof(u32);
 	buf += sizeof(u32);
 
 	/* The remaining buffer is the data payload */
 	if (count > gsmi_dev.data_buf->length)
+=======
+	buf += sizeof(u32);
+
+	/* The remaining buffer is the data payload */
+	if ((count - sizeof(u32)) > gsmi_dev.data_buf->length)
+>>>>>>> v4.9.227
 		return -EINVAL;
 	param.data_len = count - sizeof(u32);
 
@@ -504,7 +511,11 @@ static ssize_t eventlog_write(struct file *filp, struct kobject *kobj,
 
 	spin_unlock_irqrestore(&gsmi_dev.lock, flags);
 
+<<<<<<< HEAD
 	return rc;
+=======
+	return (rc == 0) ? count : rc;
+>>>>>>> v4.9.227
 
 }
 
@@ -910,8 +921,12 @@ out_err:
 	gsmi_buf_free(gsmi_dev.param_buf);
 	gsmi_buf_free(gsmi_dev.data_buf);
 	gsmi_buf_free(gsmi_dev.name_buf);
+<<<<<<< HEAD
 	if (gsmi_dev.dma_pool)
 		dma_pool_destroy(gsmi_dev.dma_pool);
+=======
+	dma_pool_destroy(gsmi_dev.dma_pool);
+>>>>>>> v4.9.227
 	platform_device_unregister(gsmi_dev.pdev);
 	pr_info("gsmi: failed to load: %d\n", ret);
 	return ret;

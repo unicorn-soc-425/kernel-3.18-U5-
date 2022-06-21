@@ -16,7 +16,10 @@
 #include <linux/of_platform.h>
 #include <linux/module.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <asm/system_misc.h>
+=======
+>>>>>>> v4.9.227
 
 static void restart_poweroff_do_poweroff(void)
 {
@@ -55,7 +58,10 @@ static struct platform_driver restart_poweroff_driver = {
 	.remove = restart_poweroff_remove,
 	.driver = {
 		.name = "poweroff-restart",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_restart_poweroff_match,
 	},
 };

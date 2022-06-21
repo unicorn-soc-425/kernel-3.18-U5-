@@ -11,6 +11,10 @@
 
 #include <linux/types.h>
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/if.h>
+>>>>>>> v4.9.227
 #include <linux/netfilter_arp.h>
 
 #include <linux/netfilter/x_tables.h>

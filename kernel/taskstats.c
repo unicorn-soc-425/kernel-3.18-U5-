@@ -115,6 +115,7 @@ static int send_reply(struct sk_buff *skb, struct genl_info *info)
 {
 	struct genlmsghdr *genlhdr = nlmsg_data(nlmsg_hdr(skb));
 	void *reply = genlmsg_data(genlhdr);
+<<<<<<< HEAD
 	int rc;
 
 	rc = genlmsg_end(skb, reply);
@@ -122,6 +123,10 @@ static int send_reply(struct sk_buff *skb, struct genl_info *info)
 		nlmsg_free(skb);
 		return rc;
 	}
+=======
+
+	genlmsg_end(skb, reply);
+>>>>>>> v4.9.227
 
 	return genlmsg_reply(skb, info);
 }
@@ -138,11 +143,15 @@ static void send_cpu_listeners(struct sk_buff *skb,
 	void *reply = genlmsg_data(genlhdr);
 	int rc, delcount = 0;
 
+<<<<<<< HEAD
 	rc = genlmsg_end(skb, reply);
 	if (rc < 0) {
 		nlmsg_free(skb);
 		return;
 	}
+=======
+	genlmsg_end(skb, reply);
+>>>>>>> v4.9.227
 
 	rc = 0;
 	down_read(&listeners->sem);
@@ -370,10 +379,13 @@ static int parse(struct nlattr *na, struct cpumask *mask)
 	return ret;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_64BIT) && !defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
 #define TASKSTATS_NEEDS_PADDING 1
 #endif
 
+=======
+>>>>>>> v4.9.227
 static struct taskstats *mk_reply(struct sk_buff *skb, int type, u32 pid)
 {
 	struct nlattr *na, *ret;
@@ -383,6 +395,7 @@ static struct taskstats *mk_reply(struct sk_buff *skb, int type, u32 pid)
 			? TASKSTATS_TYPE_AGGR_PID
 			: TASKSTATS_TYPE_AGGR_TGID;
 
+<<<<<<< HEAD
 	/*
 	 * The taskstats structure is internally aligned on 8 byte
 	 * boundaries but the layout of the aggregrate reply, with
@@ -406,6 +419,8 @@ static struct taskstats *mk_reply(struct sk_buff *skb, int type, u32 pid)
 	if (nla_put(skb, TASKSTATS_TYPE_NULL, 0, NULL) < 0)
 		goto err;
 #endif
+=======
+>>>>>>> v4.9.227
 	na = nla_nest_start(skb, aggr);
 	if (!na)
 		goto err;
@@ -414,7 +429,12 @@ static struct taskstats *mk_reply(struct sk_buff *skb, int type, u32 pid)
 		nla_nest_cancel(skb, na);
 		goto err;
 	}
+<<<<<<< HEAD
 	ret = nla_reserve(skb, TASKSTATS_TYPE_STATS, sizeof(struct taskstats));
+=======
+	ret = nla_reserve_64bit(skb, TASKSTATS_TYPE_STATS,
+				sizeof(struct taskstats), TASKSTATS_TYPE_NULL);
+>>>>>>> v4.9.227
 	if (!ret) {
 		nla_nest_cancel(skb, na);
 		goto err;
@@ -463,7 +483,11 @@ static int cgroupstats_user_cmd(struct sk_buff *skb, struct genl_info *info)
 	stats = nla_data(na);
 	memset(stats, 0, sizeof(*stats));
 
+<<<<<<< HEAD
 	rc = cgroupstats_build(stats, f.file->f_dentry);
+=======
+	rc = cgroupstats_build(stats, f.file->f_path.dentry);
+>>>>>>> v4.9.227
 	if (rc < 0) {
 		nlmsg_free(rep_skb);
 		goto err;
@@ -513,10 +537,16 @@ static size_t taskstats_packet_size(void)
 	size_t size;
 
 	size = nla_total_size(sizeof(u32)) +
+<<<<<<< HEAD
 		nla_total_size(sizeof(struct taskstats)) + nla_total_size(0);
 #ifdef TASKSTATS_NEEDS_PADDING
 	size += nla_total_size(0); /* Padding for alignment */
 #endif
+=======
+		nla_total_size_64bit(sizeof(struct taskstats)) +
+		nla_total_size(0);
+
+>>>>>>> v4.9.227
 	return size;
 }
 
@@ -595,6 +625,7 @@ static int taskstats_user_cmd(struct sk_buff *skb, struct genl_info *info)
 static struct taskstats *taskstats_tgid_alloc(struct task_struct *tsk)
 {
 	struct signal_struct *sig = tsk->signal;
+<<<<<<< HEAD
 	struct taskstats *stats;
 
 	if (sig->stats || thread_group_empty(tsk))
@@ -614,6 +645,35 @@ static struct taskstats *taskstats_tgid_alloc(struct task_struct *tsk)
 		kmem_cache_free(taskstats_cache, stats);
 ret:
 	return sig->stats;
+=======
+	struct taskstats *stats_new, *stats;
+
+	/* Pairs with smp_store_release() below. */
+	stats = smp_load_acquire(&sig->stats);
+	if (stats || thread_group_empty(tsk))
+		return stats;
+
+	/* No problem if kmem_cache_zalloc() fails */
+	stats_new = kmem_cache_zalloc(taskstats_cache, GFP_KERNEL);
+
+	spin_lock_irq(&tsk->sighand->siglock);
+	stats = sig->stats;
+	if (!stats) {
+		/*
+		 * Pairs with smp_store_release() above and order the
+		 * kmem_cache_zalloc().
+		 */
+		smp_store_release(&sig->stats, stats_new);
+		stats = stats_new;
+		stats_new = NULL;
+	}
+	spin_unlock_irq(&tsk->sighand->siglock);
+
+	if (stats_new)
+		kmem_cache_free(taskstats_cache, stats_new);
+
+	return stats;
+>>>>>>> v4.9.227
 }
 
 /* Send pid data out on exit */

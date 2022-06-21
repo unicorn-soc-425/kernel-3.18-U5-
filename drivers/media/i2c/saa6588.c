@@ -31,7 +31,11 @@
 #include <linux/wait.h>
 #include <asm/uaccess.h>
 
+<<<<<<< HEAD
 #include <media/saa6588.h>
+=======
+#include <media/i2c/saa6588.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-device.h>
 
 
@@ -301,9 +305,13 @@ static void saa6588_i2c_poll(struct saa6588 *s)
 	   first and the last of the 3 bytes block.
 	 */
 
+<<<<<<< HEAD
 	tmp = tmpbuf[2];
 	tmpbuf[2] = tmpbuf[0];
 	tmpbuf[0] = tmp;
+=======
+	swap(tmpbuf[2], tmpbuf[0]);
+>>>>>>> v4.9.227
 
 	/* Map 'Invalid block E' to 'Invalid Block' */
 	if (blocknum == 6)
@@ -520,7 +528,10 @@ MODULE_DEVICE_TABLE(i2c, saa6588_id);
 
 static struct i2c_driver saa6588_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "saa6588",
 	},
 	.probe		= saa6588_probe,

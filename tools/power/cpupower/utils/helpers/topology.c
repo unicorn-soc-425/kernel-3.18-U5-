@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
+<<<<<<< HEAD
 #include <helpers/helpers.h>
 #include <helpers/sysfs.h>
 
@@ -114,3 +115,9 @@ void cpu_topology_release(struct cpupower_topology cpu_top)
 {
 	free(cpu_top.core_info);
 }
+=======
+#include <cpuidle.h>
+
+/* CPU topology/hierarchy parsing ******************/
+
+>>>>>>> v4.9.227

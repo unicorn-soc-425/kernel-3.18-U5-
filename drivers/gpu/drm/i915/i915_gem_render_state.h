@@ -24,6 +24,7 @@
 #ifndef _I915_GEM_RENDER_STATE_H_
 #define _I915_GEM_RENDER_STATE_H_
 
+<<<<<<< HEAD
 #include <linux/types.h>
 
 struct intel_renderstate_rodata {
@@ -45,5 +46,10 @@ int i915_gem_render_state_init(struct drm_i915_gem_request *req);
 void i915_gem_render_state_fini(struct render_state *so);
 int i915_gem_render_state_prepare(struct intel_engine_cs *ring,
 				  struct render_state *so);
+=======
+struct drm_i915_gem_request;
+
+int i915_gem_render_state_init(struct drm_i915_gem_request *req);
+>>>>>>> v4.9.227
 
 #endif /* _I915_GEM_RENDER_STATE_H_ */

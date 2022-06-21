@@ -108,7 +108,10 @@
 
 struct r852_device {
 	void __iomem *mmio;		/* mmio */
+<<<<<<< HEAD
 	struct mtd_info *mtd;		/* mtd backpointer */
+=======
+>>>>>>> v4.9.227
 	struct nand_chip *chip;		/* nand chip backpointer */
 	struct pci_dev *pci_dev;	/* pci backpointer */
 

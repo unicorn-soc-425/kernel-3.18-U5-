@@ -45,6 +45,7 @@ static const struct snd_soc_dapm_route brownstone_audio_map[] = {
 	{"MICBIAS1", NULL, "Main Mic"},
 };
 
+<<<<<<< HEAD
 static int brownstone_wm8994_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
@@ -68,6 +69,8 @@ static int brownstone_wm8994_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int brownstone_wm8994_hw_params(struct snd_pcm_substream *substream,
 				       struct snd_pcm_hw_params *params)
 {
@@ -75,7 +78,10 @@ static int brownstone_wm8994_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	int freq_out, sspa_mclk, sysclk;
+<<<<<<< HEAD
 	int sspa_div;
+=======
+>>>>>>> v4.9.227
 
 	if (params_rate(params) > 11025) {
 		freq_out  = params_rate(params) * 512;
@@ -86,8 +92,11 @@ static int brownstone_wm8994_hw_params(struct snd_pcm_substream *substream,
 		sysclk    = params_rate(params) * 512;
 		sspa_mclk = params_rate(params) * 64;
 	}
+<<<<<<< HEAD
 	sspa_div = freq_out;
 	do_div(sspa_div, sspa_mclk);
+=======
+>>>>>>> v4.9.227
 
 	snd_soc_dai_set_sysclk(cpu_dai, MMP_SSPA_CLK_AUDIO, freq_out, 0);
 	snd_soc_dai_set_pll(cpu_dai, MMP_SYSCLK, 0, freq_out, sysclk);
@@ -115,7 +124,10 @@ static struct snd_soc_dai_link brownstone_wm8994_dai[] = {
 	.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 				SND_SOC_DAIFMT_CBS_CFS,
 	.ops		= &brownstone_ops,
+<<<<<<< HEAD
 	.init		= brownstone_wm8994_init,
+=======
+>>>>>>> v4.9.227
 },
 };
 
@@ -132,6 +144,10 @@ static struct snd_soc_card brownstone = {
 	.num_dapm_widgets = ARRAY_SIZE(brownstone_dapm_widgets),
 	.dapm_routes = brownstone_audio_map,
 	.num_dapm_routes = ARRAY_SIZE(brownstone_audio_map),
+<<<<<<< HEAD
+=======
+	.fully_routed = true,
+>>>>>>> v4.9.227
 };
 
 static int brownstone_probe(struct platform_device *pdev)
@@ -139,13 +155,18 @@ static int brownstone_probe(struct platform_device *pdev)
 	int ret;
 
 	brownstone.dev = &pdev->dev;
+<<<<<<< HEAD
 	ret = snd_soc_register_card(&brownstone);
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, &brownstone);
+>>>>>>> v4.9.227
 	if (ret)
 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
 				ret);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int brownstone_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_card(&brownstone);
@@ -160,6 +181,14 @@ static struct platform_driver mmp_driver = {
 	},
 	.probe		= brownstone_probe,
 	.remove		= brownstone_remove,
+=======
+static struct platform_driver mmp_driver = {
+	.driver		= {
+		.name	= "brownstone-audio",
+		.pm     = &snd_soc_pm_ops,
+	},
+	.probe		= brownstone_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(mmp_driver);
@@ -167,3 +196,7 @@ module_platform_driver(mmp_driver);
 MODULE_AUTHOR("Leo Yan <leoy@marvell.com>");
 MODULE_DESCRIPTION("ALSA SoC Brownstone");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:brownstone-audio");
+>>>>>>> v4.9.227

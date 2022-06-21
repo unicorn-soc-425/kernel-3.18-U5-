@@ -157,6 +157,7 @@ static int goldfish_new_pdev(void)
 static irqreturn_t goldfish_pdev_bus_interrupt(int irq, void *dev_id)
 {
 	irqreturn_t ret = IRQ_NONE;
+<<<<<<< HEAD
 	while (1) {
 		u32 op = readl(pdev_bus_base + PDEV_BUS_OP);
 		switch (op) {
@@ -165,15 +166,36 @@ static irqreturn_t goldfish_pdev_bus_interrupt(int irq, void *dev_id)
 
 		case PDEV_BUS_OP_REMOVE_DEV:
 			goldfish_pdev_remove();
+=======
+
+	while (1) {
+		u32 op = readl(pdev_bus_base + PDEV_BUS_OP);
+
+		switch (op) {
+		case PDEV_BUS_OP_REMOVE_DEV:
+			goldfish_pdev_remove();
+			ret = IRQ_HANDLED;
+>>>>>>> v4.9.227
 			break;
 
 		case PDEV_BUS_OP_ADD_DEV:
 			goldfish_new_pdev();
+<<<<<<< HEAD
 			break;
 		}
 		ret = IRQ_HANDLED;
 	}
 	return ret;
+=======
+			ret = IRQ_HANDLED;
+			break;
+
+		case PDEV_BUS_OP_DONE:
+		default:
+			return ret;
+		}
+	}
+>>>>>>> v4.9.227
 }
 
 static int goldfish_pdev_bus_probe(struct platform_device *pdev)
@@ -220,6 +242,7 @@ free_resources:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int goldfish_pdev_bus_remove(struct platform_device *pdev)
 {
 	iounmap(pdev_bus_base);
@@ -231,9 +254,17 @@ static int goldfish_pdev_bus_remove(struct platform_device *pdev)
 static struct platform_driver goldfish_pdev_bus_driver = {
 	.probe = goldfish_pdev_bus_probe,
 	.remove = goldfish_pdev_bus_remove,
+=======
+static struct platform_driver goldfish_pdev_bus_driver = {
+	.probe = goldfish_pdev_bus_probe,
+>>>>>>> v4.9.227
 	.driver = {
 		.name = "goldfish_pdev_bus"
 	}
 };
+<<<<<<< HEAD
 
 module_platform_driver(goldfish_pdev_bus_driver);
+=======
+builtin_platform_driver(goldfish_pdev_bus_driver);
+>>>>>>> v4.9.227

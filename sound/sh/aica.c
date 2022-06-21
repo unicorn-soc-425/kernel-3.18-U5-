@@ -35,12 +35,19 @@
 #include <linux/timer.h>
 #include <linux/delay.h>
 #include <linux/workqueue.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/pcm.h>
 #include <sound/initval.h>
 #include <sound/info.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/dma.h>
 #include <mach/sysasic.h>
 #include "aica.h"
@@ -63,9 +70,12 @@ MODULE_PARM_DESC(id, "ID string for " CARD_NAME " soundcard.");
 module_param(enable, bool, 0644);
 MODULE_PARM_DESC(enable, "Enable " CARD_NAME " soundcard.");
 
+<<<<<<< HEAD
 /* Use workqueue */
 static struct workqueue_struct *aica_queue;
 
+=======
+>>>>>>> v4.9.227
 /* Simple platform device */
 static struct platform_device *pd;
 static struct resource aica_memory_space[2] = {
@@ -120,10 +130,17 @@ static void spu_memset(u32 toi, u32 what, int length)
 }
 
 /* spu_memload - write to SPU address space */
+<<<<<<< HEAD
 static void spu_memload(u32 toi, void *from, int length)
 {
 	unsigned long flags;
 	u32 *froml = from;
+=======
+static void spu_memload(u32 toi, const void *from, int length)
+{
+	unsigned long flags;
+	const u32 *froml = from;
+>>>>>>> v4.9.227
 	u32 __iomem *to = (u32 __iomem *) (SPU_MEMORY_BASE + toi);
 	int i;
 	u32 val;
@@ -327,7 +344,11 @@ static void aica_period_elapsed(unsigned long timer_var)
 		dreamcastcard->current_period = play_period;
 	if (unlikely(dreamcastcard->dma_check == 0))
 		dreamcastcard->dma_check = 1;
+<<<<<<< HEAD
 	queue_work(aica_queue, &(dreamcastcard->spu_dma_work));
+=======
+	schedule_work(&(dreamcastcard->spu_dma_work));
+>>>>>>> v4.9.227
 }
 
 static void spu_begin_dma(struct snd_pcm_substream *substream)
@@ -337,17 +358,27 @@ static void spu_begin_dma(struct snd_pcm_substream *substream)
 	runtime = substream->runtime;
 	dreamcastcard = substream->pcm->private_data;
 	/*get the queue to do the work */
+<<<<<<< HEAD
 	queue_work(aica_queue, &(dreamcastcard->spu_dma_work));
+=======
+	schedule_work(&(dreamcastcard->spu_dma_work));
+>>>>>>> v4.9.227
 	/* Timer may already be running */
 	if (unlikely(dreamcastcard->timer.data)) {
 		mod_timer(&dreamcastcard->timer, jiffies + 4);
 		return;
 	}
+<<<<<<< HEAD
 	init_timer(&(dreamcastcard->timer));
 	dreamcastcard->timer.data = (unsigned long) substream;
 	dreamcastcard->timer.function = aica_period_elapsed;
 	dreamcastcard->timer.expires = jiffies + 4;
 	add_timer(&(dreamcastcard->timer));
+=======
+	setup_timer(&dreamcastcard->timer, aica_period_elapsed,
+		    (unsigned long) substream);
+	mod_timer(&dreamcastcard->timer, jiffies + 4);
+>>>>>>> v4.9.227
 }
 
 static int snd_aicapcm_pcm_open(struct snd_pcm_substream
@@ -383,7 +414,11 @@ static int snd_aicapcm_pcm_close(struct snd_pcm_substream
 				 *substream)
 {
 	struct snd_card_aica *dreamcastcard = substream->pcm->private_data;
+<<<<<<< HEAD
 	flush_workqueue(aica_queue);
+=======
+	flush_work(&(dreamcastcard->spu_dma_work));
+>>>>>>> v4.9.227
 	if (dreamcastcard->timer.data)
 		del_timer(&dreamcastcard->timer);
 	kfree(dreamcastcard->channel);
@@ -635,9 +670,12 @@ static int snd_aica_probe(struct platform_device *devptr)
 	if (unlikely(err < 0))
 		goto freedreamcast;
 	platform_set_drvdata(devptr, dreamcastcard);
+<<<<<<< HEAD
 	aica_queue = create_workqueue(CARD_NAME);
 	if (unlikely(!aica_queue))
 		goto freedreamcast;
+=======
+>>>>>>> v4.9.227
 	snd_printk
 	    ("ALSA Driver for Yamaha AICA Super Intelligent Sound Processor\n");
 	return 0;
@@ -652,7 +690,10 @@ static struct platform_driver snd_aica_driver = {
 	.remove = snd_aica_remove,
 	.driver = {
 		.name = SND_AICA_DRIVER,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -674,10 +715,13 @@ static int __init aica_init(void)
 
 static void __exit aica_exit(void)
 {
+<<<<<<< HEAD
 	/* Destroy the aica kernel thread            *
 	 * being extra cautious to check if it exists*/
 	if (likely(aica_queue))
 		destroy_workqueue(aica_queue);
+=======
+>>>>>>> v4.9.227
 	platform_device_unregister(pd);
 	platform_driver_unregister(&snd_aica_driver);
 	/* Kill any sound still playing and reset ARM7 to safe state */

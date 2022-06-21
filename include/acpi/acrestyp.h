@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -305,24 +309,37 @@ struct acpi_resource_source {
 	u8                                      max_address_fixed; \
 	union acpi_resource_attribute           info;
 
+<<<<<<< HEAD
 struct acpi_resource_address {
 ACPI_RESOURCE_ADDRESS_COMMON};
 
 struct acpi_resource_address16 {
 	ACPI_RESOURCE_ADDRESS_COMMON u16 granularity;
+=======
+struct acpi_address16_attribute {
+	u16 granularity;
+>>>>>>> v4.9.227
 	u16 minimum;
 	u16 maximum;
 	u16 translation_offset;
 	u16 address_length;
+<<<<<<< HEAD
 	struct acpi_resource_source resource_source;
 };
 
 struct acpi_resource_address32 {
 	ACPI_RESOURCE_ADDRESS_COMMON u32 granularity;
+=======
+};
+
+struct acpi_address32_attribute {
+	u32 granularity;
+>>>>>>> v4.9.227
 	u32 minimum;
 	u32 maximum;
 	u32 translation_offset;
 	u32 address_length;
+<<<<<<< HEAD
 	struct acpi_resource_source resource_source;
 };
 
@@ -337,11 +354,42 @@ struct acpi_resource_address64 {
 
 struct acpi_resource_extended_address64 {
 	ACPI_RESOURCE_ADDRESS_COMMON u8 revision_ID;
+=======
+};
+
+struct acpi_address64_attribute {
+>>>>>>> v4.9.227
 	u64 granularity;
 	u64 minimum;
 	u64 maximum;
 	u64 translation_offset;
 	u64 address_length;
+<<<<<<< HEAD
+=======
+};
+
+struct acpi_resource_address {
+ACPI_RESOURCE_ADDRESS_COMMON};
+
+struct acpi_resource_address16 {
+	ACPI_RESOURCE_ADDRESS_COMMON struct acpi_address16_attribute address;
+	struct acpi_resource_source resource_source;
+};
+
+struct acpi_resource_address32 {
+	ACPI_RESOURCE_ADDRESS_COMMON struct acpi_address32_attribute address;
+	struct acpi_resource_source resource_source;
+};
+
+struct acpi_resource_address64 {
+	ACPI_RESOURCE_ADDRESS_COMMON struct acpi_address64_attribute address;
+	struct acpi_resource_source resource_source;
+};
+
+struct acpi_resource_extended_address64 {
+	ACPI_RESOURCE_ADDRESS_COMMON u8 revision_ID;
+	struct acpi_address64_attribute address;
+>>>>>>> v4.9.227
 	u64 type_specific;
 };
 
@@ -409,6 +457,10 @@ struct acpi_resource_gpio {
 	u8                                      type; \
 	u8                                      producer_consumer;   /* For values, see Producer/Consumer above */\
 	u8                                      slave_mode; \
+<<<<<<< HEAD
+=======
+	u8                                      connection_sharing; \
+>>>>>>> v4.9.227
 	u8                                      type_revision_id; \
 	u16                                     type_data_length; \
 	u16                                     vendor_length; \

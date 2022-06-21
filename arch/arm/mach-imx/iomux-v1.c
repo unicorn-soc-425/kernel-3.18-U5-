@@ -38,12 +38,20 @@ static unsigned imx_iomuxv1_numports;
 
 static inline unsigned long imx_iomuxv1_readl(unsigned offset)
 {
+<<<<<<< HEAD
 	return __raw_readl(imx_iomuxv1_baseaddr + offset);
+=======
+	return imx_readl(imx_iomuxv1_baseaddr + offset);
+>>>>>>> v4.9.227
 }
 
 static inline void imx_iomuxv1_writel(unsigned long val, unsigned offset)
 {
+<<<<<<< HEAD
 	__raw_writel(val, imx_iomuxv1_baseaddr + offset);
+=======
+	imx_writel(val, imx_iomuxv1_baseaddr + offset);
+>>>>>>> v4.9.227
 }
 
 static inline void imx_iomuxv1_rmwl(unsigned offset,

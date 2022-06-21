@@ -17,10 +17,13 @@
   FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
   more details.
 
+<<<<<<< HEAD
   You should have received a copy of the GNU General Public License along with
   this program; if not, write to the Free Software Foundation, Inc., 59
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+=======
+>>>>>>> v4.9.227
   The full GNU General Public License is included in this distribution in the
   file called LICENSE.
 
@@ -49,6 +52,7 @@
 #include <linux/etherdevice.h>
 #include <linux/uaccess.h>
 #include <net/arp.h>
+<<<<<<< HEAD
 
 #include "rtllib.h"
 
@@ -64,11 +68,19 @@ void _setup_timer(struct timer_list *ptimer, void *fun, unsigned long data)
 	init_timer(ptimer);
 }
 
+=======
+#include "rtllib.h"
+
+u32 rt_global_debug_component = COMP_ERR;
+EXPORT_SYMBOL(rt_global_debug_component);
+
+>>>>>>> v4.9.227
 static inline int rtllib_networks_allocate(struct rtllib_device *ieee)
 {
 	if (ieee->networks)
 		return 0;
 
+<<<<<<< HEAD
 	ieee->networks = kzalloc(
 		MAX_NETWORK_COUNT * sizeof(struct rtllib_network),
 		GFP_KERNEL);
@@ -77,6 +89,12 @@ static inline int rtllib_networks_allocate(struct rtllib_device *ieee)
 		       ieee->dev->name);
 		return -ENOMEM;
 	}
+=======
+	ieee->networks = kcalloc(MAX_NETWORK_COUNT,
+				 sizeof(struct rtllib_network), GFP_KERNEL);
+	if (!ieee->networks)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -106,11 +124,19 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	struct net_device *dev;
 	int i, err;
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG_INFO("Initializing...\n");
 
 	dev = alloc_etherdev(sizeof(struct rtllib_device) + sizeof_priv);
 	if (!dev) {
 		RTLLIB_ERROR("Unable to network device.\n");
+=======
+	pr_debug("rtllib: Initializing...\n");
+
+	dev = alloc_etherdev(sizeof(struct rtllib_device) + sizeof_priv);
+	if (!dev) {
+		pr_err("Unable to allocate net_device.\n");
+>>>>>>> v4.9.227
 		return NULL;
 	}
 	ieee = (struct rtllib_device *)netdev_priv_rsl(dev);
@@ -119,13 +145,20 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 
 	err = rtllib_networks_allocate(ieee);
 	if (err) {
+<<<<<<< HEAD
 		RTLLIB_ERROR("Unable to allocate beacon storage: %d\n",
 				err);
+=======
+		pr_err("Unable to allocate beacon storage: %d\n", err);
+>>>>>>> v4.9.227
 		goto failed;
 	}
 	rtllib_networks_initialize(ieee);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	/* Default fragmentation threshold is maximum payload size */
 	ieee->fts = DEFAULT_FTS;
 	ieee->scan_age = DEFAULT_MAX_SCAN_AGE;
@@ -140,15 +173,22 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 
 	spin_lock_init(&ieee->lock);
 	spin_lock_init(&ieee->wpax_suitlist_lock);
+<<<<<<< HEAD
 	spin_lock_init(&ieee->bw_spinlock);
 	spin_lock_init(&ieee->reorder_spinlock);
 	atomic_set(&(ieee->atm_chnlop), 0);
+=======
+	spin_lock_init(&ieee->reorder_spinlock);
+>>>>>>> v4.9.227
 	atomic_set(&(ieee->atm_swbw), 0);
 
 	/* SAM FIXME */
 	lib80211_crypt_info_init(&ieee->crypt_info, "RTLLIB", &ieee->lock);
 
+<<<<<<< HEAD
 	ieee->bHalfNMode = false;
+=======
+>>>>>>> v4.9.227
 	ieee->wpa_enabled = 0;
 	ieee->tkip_countermeasures = 0;
 	ieee->drop_unencrypted = 0;
@@ -161,10 +201,16 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	rtllib_softmac_init(ieee);
 
 	ieee->pHTInfo = kzalloc(sizeof(struct rt_hi_throughput), GFP_KERNEL);
+<<<<<<< HEAD
 	if (ieee->pHTInfo == NULL) {
 		RTLLIB_DEBUG(RTLLIB_DL_ERR, "can't alloc memory for HTInfo\n");
 		return NULL;
 	}
+=======
+	if (!ieee->pHTInfo)
+		return NULL;
+
+>>>>>>> v4.9.227
 	HTUpdateDefaultSetting(ieee);
 	HTInitializeHTInfo(ieee);
 	TSInitialize(ieee);
@@ -201,6 +247,7 @@ void free_rtllib(struct net_device *dev)
 }
 EXPORT_SYMBOL(free_rtllib);
 
+<<<<<<< HEAD
 u32 rtllib_debug_level;
 static int debug = \
 			    RTLLIB_DL_ERR
@@ -254,16 +301,23 @@ static int __init rtllib_init(void)
 		rtllib_proc = NULL;
 		return -EIO;
 	}
+=======
+static int __init rtllib_init(void)
+{
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static void __exit rtllib_exit(void)
 {
+<<<<<<< HEAD
 	if (rtllib_proc) {
 		remove_proc_entry("debug_level", rtllib_proc);
 		remove_proc_entry(DRV_NAME, init_net.proc_net);
 		rtllib_proc = NULL;
 	}
+=======
+>>>>>>> v4.9.227
 }
 
 module_init(rtllib_init);

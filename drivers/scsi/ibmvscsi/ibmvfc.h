@@ -26,7 +26,11 @@
 
 #include <linux/list.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include "viosrp.h"
+=======
+#include <scsi/viosrp.h>
+>>>>>>> v4.9.227
 
 #define IBMVFC_NAME	"ibmvfc"
 #define IBMVFC_DRIVER_VERSION		"1.0.11"
@@ -54,6 +58,10 @@
 #define IBMVFC_DEV_LOSS_TMO		(5 * 60)
 #define IBMVFC_DEFAULT_LOG_LEVEL	2
 #define IBMVFC_MAX_CDB_LEN		16
+<<<<<<< HEAD
+=======
+#define IBMVFC_CLS3_ERROR		0
+>>>>>>> v4.9.227
 
 /*
  * Ensure we have resources for ERP and initialization:

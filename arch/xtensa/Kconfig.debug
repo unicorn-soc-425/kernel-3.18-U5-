@@ -4,7 +4,11 @@ source "lib/Kconfig.debug"
 
 config DEBUG_TLB_SANITY
 	bool "Debug TLB sanity"
+<<<<<<< HEAD
 	depends on DEBUG_KERNEL
+=======
+	depends on DEBUG_KERNEL && MMU
+>>>>>>> v4.9.227
 	help
 	  Enable this to turn on TLB sanity check on each entry to userspace.
 	  This check can spot missing TLB invalidation/wrong PTE permissions/
@@ -14,7 +18,11 @@ config DEBUG_TLB_SANITY
 
 config LD_NO_RELAX
 	bool "Disable linker relaxation"
+<<<<<<< HEAD
 	default n
+=======
+	default y
+>>>>>>> v4.9.227
 	help
 	  Enable this function to disable link-time optimizations.
 	  The default linker behavior is to combine identical literal

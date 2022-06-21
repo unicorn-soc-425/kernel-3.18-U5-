@@ -19,6 +19,7 @@
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
 #include <linux/preempt.h>
 #include <linux/seqlock.h>
 #include <linux/irqflags.h>
@@ -27,6 +28,11 @@
 #include <linux/io.h>
 #include <linux/proc_fs.h>
 #include <linux/sort.h>
+=======
+
+#include <asm/sections.h>
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #include "internal.h"
 
@@ -36,7 +42,10 @@ static struct memblock_region memblock_reserved_init_regions[INIT_MEMBLOCK_REGIO
 static struct memblock_region memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS] __initdata_memblock;
 #endif
 
+<<<<<<< HEAD
 static seqcount_t memblock_seq;
+=======
+>>>>>>> v4.9.227
 struct memblock memblock __initdata_memblock = {
 	.memory.regions		= memblock_memory_init_regions,
 	.memory.cnt		= 1,	/* empty dummy entry */
@@ -60,10 +69,22 @@ int memblock_debug __initdata_memblock;
 #ifdef CONFIG_MOVABLE_NODE
 bool movable_node_enabled __initdata_memblock = false;
 #endif
+<<<<<<< HEAD
+=======
+static bool system_has_some_mirror __initdata_memblock = false;
+>>>>>>> v4.9.227
 static int memblock_can_resize __initdata_memblock;
 static int memblock_memory_in_slab __initdata_memblock = 0;
 static int memblock_reserved_in_slab __initdata_memblock = 0;
 
+<<<<<<< HEAD
+=======
+ulong __init_memblock choose_memblock_flags(void)
+{
+	return system_has_some_mirror ? MEMBLOCK_MIRROR : MEMBLOCK_NONE;
+}
+
+>>>>>>> v4.9.227
 /* inline so we don't get a warning when pr_debug is compiled out */
 static __init_memblock const char *
 memblock_type_name(struct memblock_type *type)
@@ -91,11 +112,16 @@ static unsigned long __init_memblock memblock_addrs_overlap(phys_addr_t base1, p
 	return ((base1 < (base2 + size2)) && (base2 < (base1 + size1)));
 }
 
+<<<<<<< HEAD
 static long __init_memblock memblock_overlaps_region(struct memblock_type *type,
+=======
+bool __init_memblock memblock_overlaps_region(struct memblock_type *type,
+>>>>>>> v4.9.227
 					phys_addr_t base, phys_addr_t size)
 {
 	unsigned long i;
 
+<<<<<<< HEAD
 	for (i = 0; i < type->cnt; i++) {
 		phys_addr_t rgnbase = type->regions[i].base;
 		phys_addr_t rgnsize = type->regions[i].size;
@@ -104,6 +130,13 @@ static long __init_memblock memblock_overlaps_region(struct memblock_type *type,
 	}
 
 	return (i < type->cnt) ? i : -1;
+=======
+	for (i = 0; i < type->cnt; i++)
+		if (memblock_addrs_overlap(base, size, type->regions[i].base,
+					   type->regions[i].size))
+			break;
+	return i < type->cnt;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -113,6 +146,10 @@ static long __init_memblock memblock_overlaps_region(struct memblock_type *type,
  * @size: size of free area to find
  * @align: alignment of free area to find
  * @nid: nid of the free area to find, %NUMA_NO_NODE for any node
+<<<<<<< HEAD
+=======
+ * @flags: pick from blocks based on memory attributes
+>>>>>>> v4.9.227
  *
  * Utility called from memblock_find_in_range_node(), find free area bottom-up.
  *
@@ -121,12 +158,21 @@ static long __init_memblock memblock_overlaps_region(struct memblock_type *type,
  */
 static phys_addr_t __init_memblock
 __memblock_find_range_bottom_up(phys_addr_t start, phys_addr_t end,
+<<<<<<< HEAD
 				phys_addr_t size, phys_addr_t align, int nid)
+=======
+				phys_addr_t size, phys_addr_t align, int nid,
+				ulong flags)
+>>>>>>> v4.9.227
 {
 	phys_addr_t this_start, this_end, cand;
 	u64 i;
 
+<<<<<<< HEAD
 	for_each_free_mem_range(i, nid, &this_start, &this_end, NULL) {
+=======
+	for_each_free_mem_range(i, nid, flags, &this_start, &this_end, NULL) {
+>>>>>>> v4.9.227
 		this_start = clamp(this_start, start, end);
 		this_end = clamp(this_end, start, end);
 
@@ -145,6 +191,10 @@ __memblock_find_range_bottom_up(phys_addr_t start, phys_addr_t end,
  * @size: size of free area to find
  * @align: alignment of free area to find
  * @nid: nid of the free area to find, %NUMA_NO_NODE for any node
+<<<<<<< HEAD
+=======
+ * @flags: pick from blocks based on memory attributes
+>>>>>>> v4.9.227
  *
  * Utility called from memblock_find_in_range_node(), find free area top-down.
  *
@@ -153,12 +203,22 @@ __memblock_find_range_bottom_up(phys_addr_t start, phys_addr_t end,
  */
 static phys_addr_t __init_memblock
 __memblock_find_range_top_down(phys_addr_t start, phys_addr_t end,
+<<<<<<< HEAD
 			       phys_addr_t size, phys_addr_t align, int nid)
+=======
+			       phys_addr_t size, phys_addr_t align, int nid,
+			       ulong flags)
+>>>>>>> v4.9.227
 {
 	phys_addr_t this_start, this_end, cand;
 	u64 i;
 
+<<<<<<< HEAD
 	for_each_free_mem_range_reverse(i, nid, &this_start, &this_end, NULL) {
+=======
+	for_each_free_mem_range_reverse(i, nid, flags, &this_start, &this_end,
+					NULL) {
+>>>>>>> v4.9.227
 		this_start = clamp(this_start, start, end);
 		this_end = clamp(this_end, start, end);
 
@@ -180,6 +240,10 @@ __memblock_find_range_top_down(phys_addr_t start, phys_addr_t end,
  * @start: start of candidate range
  * @end: end of candidate range, can be %MEMBLOCK_ALLOC_{ANYWHERE|ACCESSIBLE}
  * @nid: nid of the free area to find, %NUMA_NO_NODE for any node
+<<<<<<< HEAD
+=======
+ * @flags: pick from blocks based on memory attributes
+>>>>>>> v4.9.227
  *
  * Find @size free area aligned to @align in the specified range and node.
  *
@@ -196,7 +260,11 @@ __memblock_find_range_top_down(phys_addr_t start, phys_addr_t end,
  */
 phys_addr_t __init_memblock memblock_find_in_range_node(phys_addr_t size,
 					phys_addr_t align, phys_addr_t start,
+<<<<<<< HEAD
 					phys_addr_t end, int nid)
+=======
+					phys_addr_t end, int nid, ulong flags)
+>>>>>>> v4.9.227
 {
 	phys_addr_t kernel_end, ret;
 
@@ -221,7 +289,11 @@ phys_addr_t __init_memblock memblock_find_in_range_node(phys_addr_t size,
 
 		/* ok, try bottom-up allocation first */
 		ret = __memblock_find_range_bottom_up(bottom_up_start, end,
+<<<<<<< HEAD
 						      size, align, nid);
+=======
+						      size, align, nid, flags);
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 
@@ -235,11 +307,19 @@ phys_addr_t __init_memblock memblock_find_in_range_node(phys_addr_t size,
 		 * so we use WARN_ONCE() here to see the stack trace if
 		 * fail happens.
 		 */
+<<<<<<< HEAD
 		WARN_ONCE(1, "memblock: bottom-up allocation failed, "
 			     "memory hotunplug may be affected\n");
 	}
 
 	return __memblock_find_range_top_down(start, end, size, align, nid);
+=======
+		WARN_ONCE(1, "memblock: bottom-up allocation failed, memory hotunplug may be affected\n");
+	}
+
+	return __memblock_find_range_top_down(start, end, size, align, nid,
+					      flags);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -258,8 +338,26 @@ phys_addr_t __init_memblock memblock_find_in_range(phys_addr_t start,
 					phys_addr_t end, phys_addr_t size,
 					phys_addr_t align)
 {
+<<<<<<< HEAD
 	return memblock_find_in_range_node(size, align, start, end,
 					    NUMA_NO_NODE);
+=======
+	phys_addr_t ret;
+	ulong flags = choose_memblock_flags();
+
+again:
+	ret = memblock_find_in_range_node(size, align, start, end,
+					    NUMA_NO_NODE, flags);
+
+	if (!ret && (flags & MEMBLOCK_MIRROR)) {
+		pr_warn("Could not allocate %pap bytes of mirrored memory\n",
+			&size);
+		flags &= ~MEMBLOCK_MIRROR;
+		goto again;
+	}
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static void __init_memblock memblock_remove_region(struct memblock_type *type, unsigned long r)
@@ -281,6 +379,7 @@ static void __init_memblock memblock_remove_region(struct memblock_type *type, u
 }
 
 #ifdef CONFIG_ARCH_DISCARD_MEMBLOCK
+<<<<<<< HEAD
 
 phys_addr_t __init_memblock get_allocated_memblock_reserved_regions_info(
 					phys_addr_t *addr)
@@ -306,6 +405,29 @@ phys_addr_t __init_memblock get_allocated_memblock_memory_regions_info(
 			  memblock.memory.max);
 }
 
+=======
+/**
+ * Discard memory and reserved arrays if they were allocated
+ */
+void __init memblock_discard(void)
+{
+	phys_addr_t addr, size;
+
+	if (memblock.reserved.regions != memblock_reserved_init_regions) {
+		addr = __pa(memblock.reserved.regions);
+		size = PAGE_ALIGN(sizeof(struct memblock_region) *
+				  memblock.reserved.max);
+		__memblock_free_late(addr, size);
+	}
+
+	if (memblock.memory.regions != memblock_memory_init_regions) {
+		addr = __pa(memblock.memory.regions);
+		size = PAGE_ALIGN(sizeof(struct memblock_region) *
+				  memblock.memory.max);
+		__memblock_free_late(addr, size);
+	}
+}
+>>>>>>> v4.9.227
 #endif
 
 /**
@@ -466,7 +588,11 @@ static void __init_memblock memblock_merge_regions(struct memblock_type *type)
  * @flags:	flags of the new region
  *
  * Insert new memblock region [@base,@base+@size) into @type at @idx.
+<<<<<<< HEAD
  * @type must already have extra room to accomodate the new region.
+=======
+ * @type must already have extra room to accommodate the new region.
+>>>>>>> v4.9.227
  */
 static void __init_memblock memblock_insert_region(struct memblock_type *type,
 						   int idx, phys_addr_t base,
@@ -485,6 +611,7 @@ static void __init_memblock memblock_insert_region(struct memblock_type *type,
 	type->total_size += size;
 }
 
+<<<<<<< HEAD
 #define NAME_SIZE	14
 struct reserved_mem_reg {
 	phys_addr_t	base;
@@ -605,6 +732,8 @@ void record_memsize_reserved(const char *name, phys_addr_t base,
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * memblock_add_range - add new memblock region
  * @type: memblock type to add new region into
@@ -628,8 +757,13 @@ int __init_memblock memblock_add_range(struct memblock_type *type,
 	bool insert = false;
 	phys_addr_t obase = base;
 	phys_addr_t end = base + memblock_cap_size(base, &size);
+<<<<<<< HEAD
 	int i, nr_new;
 	unsigned long new_size = 0;
+=======
+	int idx, nr_new;
+	struct memblock_region *rgn;
+>>>>>>> v4.9.227
 
 	if (!size)
 		return 0;
@@ -642,20 +776,32 @@ int __init_memblock memblock_add_range(struct memblock_type *type,
 		type->regions[0].flags = flags;
 		memblock_set_region_node(&type->regions[0], nid);
 		type->total_size = size;
+<<<<<<< HEAD
 		new_size = (unsigned long)size;
 		goto done;
+=======
+		return 0;
+>>>>>>> v4.9.227
 	}
 repeat:
 	/*
 	 * The following is executed twice.  Once with %false @insert and
 	 * then with %true.  The first counts the number of regions needed
+<<<<<<< HEAD
 	 * to accomodate the new area.  The second actually inserts them.
+=======
+	 * to accommodate the new area.  The second actually inserts them.
+>>>>>>> v4.9.227
 	 */
 	base = obase;
 	nr_new = 0;
 
+<<<<<<< HEAD
 	for (i = 0; i < type->cnt; i++) {
 		struct memblock_region *rgn = &type->regions[i];
+=======
+	for_each_memblock_type(type, rgn) {
+>>>>>>> v4.9.227
 		phys_addr_t rbase = rgn->base;
 		phys_addr_t rend = rbase + rgn->size;
 
@@ -668,6 +814,7 @@ repeat:
 		 * area, insert that portion.
 		 */
 		if (rbase > base) {
+<<<<<<< HEAD
 			nr_new++;
 			if (insert) {
 				memblock_insert_region(type, i++, base,
@@ -675,6 +822,17 @@ repeat:
 						       flags);
 				new_size += (unsigned long)(rbase - base);
 			}
+=======
+#ifdef CONFIG_HAVE_MEMBLOCK_NODE_MAP
+			WARN_ON(nid != memblock_get_region_node(rgn));
+#endif
+			WARN_ON(flags != rgn->flags);
+			nr_new++;
+			if (insert)
+				memblock_insert_region(type, idx++, base,
+						       rbase - base, nid,
+						       flags);
+>>>>>>> v4.9.227
 		}
 		/* area below @rend is dealt with, forget about it */
 		base = min(rend, end);
@@ -683,6 +841,7 @@ repeat:
 	/* insert the remaining portion */
 	if (base < end) {
 		nr_new++;
+<<<<<<< HEAD
 		if (insert) {
 			memblock_insert_region(type, i, base, end - base,
 					       nid, flags);
@@ -690,6 +849,16 @@ repeat:
 		}
 	}
 
+=======
+		if (insert)
+			memblock_insert_region(type, idx, base, end - base,
+					       nid, flags);
+	}
+
+	if (!nr_new)
+		return 0;
+
+>>>>>>> v4.9.227
 	/*
 	 * If this was the first round, resize array and repeat for actual
 	 * insertions; otherwise, merge and return.
@@ -702,6 +871,7 @@ repeat:
 		goto repeat;
 	} else {
 		memblock_merge_regions(type);
+<<<<<<< HEAD
 	}
 done:
 	if (memsize_reserved_name && type == &memblock.reserved)
@@ -711,6 +881,10 @@ done:
 			type == &memblock.reserved)
 		record_memsize_size_only(memsize_kernel_type, (long)new_size);
 	return 0;
+=======
+		return 0;
+	}
+>>>>>>> v4.9.227
 }
 
 int __init_memblock memblock_add_node(phys_addr_t base, phys_addr_t size,
@@ -721,8 +895,17 @@ int __init_memblock memblock_add_node(phys_addr_t base, phys_addr_t size,
 
 int __init_memblock memblock_add(phys_addr_t base, phys_addr_t size)
 {
+<<<<<<< HEAD
 	return memblock_add_range(&memblock.memory, base, size,
 				   MAX_NUMNODES, 0);
+=======
+	memblock_dbg("memblock_add: [%#016llx-%#016llx] flags %#02lx %pF\n",
+		     (unsigned long long)base,
+		     (unsigned long long)base + size - 1,
+		     0UL, (void *)_RET_IP_);
+
+	return memblock_add_range(&memblock.memory, base, size, MAX_NUMNODES, 0);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -746,7 +929,12 @@ static int __init_memblock memblock_isolate_range(struct memblock_type *type,
 					int *start_rgn, int *end_rgn)
 {
 	phys_addr_t end = base + memblock_cap_size(base, &size);
+<<<<<<< HEAD
 	int i;
+=======
+	int idx;
+	struct memblock_region *rgn;
+>>>>>>> v4.9.227
 
 	*start_rgn = *end_rgn = 0;
 
@@ -758,8 +946,12 @@ static int __init_memblock memblock_isolate_range(struct memblock_type *type,
 		if (memblock_double_array(type, base, size) < 0)
 			return -ENOMEM;
 
+<<<<<<< HEAD
 	for (i = 0; i < type->cnt; i++) {
 		struct memblock_region *rgn = &type->regions[i];
+=======
+	for_each_memblock_type(type, rgn) {
+>>>>>>> v4.9.227
 		phys_addr_t rbase = rgn->base;
 		phys_addr_t rend = rbase + rgn->size;
 
@@ -776,7 +968,11 @@ static int __init_memblock memblock_isolate_range(struct memblock_type *type,
 			rgn->base = base;
 			rgn->size -= base - rbase;
 			type->total_size -= base - rbase;
+<<<<<<< HEAD
 			memblock_insert_region(type, i, rbase, base - rbase,
+=======
+			memblock_insert_region(type, idx, rbase, base - rbase,
+>>>>>>> v4.9.227
 					       memblock_get_region_node(rgn),
 					       rgn->flags);
 		} else if (rend > end) {
@@ -787,21 +983,34 @@ static int __init_memblock memblock_isolate_range(struct memblock_type *type,
 			rgn->base = end;
 			rgn->size -= end - rbase;
 			type->total_size -= end - rbase;
+<<<<<<< HEAD
 			memblock_insert_region(type, i--, rbase, end - rbase,
+=======
+			memblock_insert_region(type, idx--, rbase, end - rbase,
+>>>>>>> v4.9.227
 					       memblock_get_region_node(rgn),
 					       rgn->flags);
 		} else {
 			/* @rgn is fully contained, record it */
 			if (!*end_rgn)
+<<<<<<< HEAD
 				*start_rgn = i;
 			*end_rgn = i + 1;
+=======
+				*start_rgn = idx;
+			*end_rgn = idx + 1;
+>>>>>>> v4.9.227
 		}
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int __init_memblock memblock_remove_range(struct memblock_type *type,
+=======
+static int __init_memblock memblock_remove_range(struct memblock_type *type,
+>>>>>>> v4.9.227
 					  phys_addr_t base, phys_addr_t size)
 {
 	int start_rgn, end_rgn;
@@ -811,6 +1020,7 @@ int __init_memblock memblock_remove_range(struct memblock_type *type,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if (memsize_reserved_name && type == &memblock.memory)
 		record_memsize_reserved(memsize_reserved_name, base, size,
 					true, false);
@@ -819,6 +1029,8 @@ int __init_memblock memblock_remove_range(struct memblock_type *type,
 	else if (memsize_kernel_type != MEMSIZE_KERNEL_STOP
 			&& type == &memblock.reserved)
 		record_memsize_size_only(memsize_kernel_type, size * -1);
+=======
+>>>>>>> v4.9.227
 	for (i = end_rgn - 1; i >= start_rgn; i--)
 		memblock_remove_region(type, i);
 	return 0;
@@ -837,6 +1049,7 @@ int __init_memblock memblock_free(phys_addr_t base, phys_addr_t size)
 		     (unsigned long long)base + size - 1,
 		     (void *)_RET_IP_);
 
+<<<<<<< HEAD
 	if (base < memblock.current_limit)
 		kmemleak_free_part(__va(base), size);
 	return memblock_remove_range(&memblock.reserved, base, size);
@@ -860,6 +1073,46 @@ static int __init_memblock memblock_reserve_region(phys_addr_t base,
 int __init_memblock memblock_reserve(phys_addr_t base, phys_addr_t size)
 {
 	return memblock_reserve_region(base, size, MAX_NUMNODES, 0);
+=======
+	kmemleak_free_part_phys(base, size);
+	return memblock_remove_range(&memblock.reserved, base, size);
+}
+
+int __init_memblock memblock_reserve(phys_addr_t base, phys_addr_t size)
+{
+	memblock_dbg("memblock_reserve: [%#016llx-%#016llx] flags %#02lx %pF\n",
+		     (unsigned long long)base,
+		     (unsigned long long)base + size - 1,
+		     0UL, (void *)_RET_IP_);
+
+	return memblock_add_range(&memblock.reserved, base, size, MAX_NUMNODES, 0);
+}
+
+/**
+ *
+ * This function isolates region [@base, @base + @size), and sets/clears flag
+ *
+ * Return 0 on success, -errno on failure.
+ */
+static int __init_memblock memblock_setclr_flag(phys_addr_t base,
+				phys_addr_t size, int set, int flag)
+{
+	struct memblock_type *type = &memblock.memory;
+	int i, ret, start_rgn, end_rgn;
+
+	ret = memblock_isolate_range(type, base, size, &start_rgn, &end_rgn);
+	if (ret)
+		return ret;
+
+	for (i = start_rgn; i < end_rgn; i++)
+		if (set)
+			memblock_set_region_flags(&type->regions[i], flag);
+		else
+			memblock_clear_region_flags(&type->regions[i], flag);
+
+	memblock_merge_regions(type);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -867,6 +1120,7 @@ int __init_memblock memblock_reserve(phys_addr_t base, phys_addr_t size)
  * @base: the base phys addr of the region
  * @size: the size of the region
  *
+<<<<<<< HEAD
  * This function isolates region [@base, @base + @size), and mark it with flag
  * MEMBLOCK_HOTPLUG.
  *
@@ -886,6 +1140,13 @@ int __init_memblock memblock_mark_hotplug(phys_addr_t base, phys_addr_t size)
 
 	memblock_merge_regions(type);
 	return 0;
+=======
+ * Return 0 on success, -errno on failure.
+ */
+int __init_memblock memblock_mark_hotplug(phys_addr_t base, phys_addr_t size)
+{
+	return memblock_setclr_flag(base, size, 1, MEMBLOCK_HOTPLUG);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -893,6 +1154,7 @@ int __init_memblock memblock_mark_hotplug(phys_addr_t base, phys_addr_t size)
  * @base: the base phys addr of the region
  * @size: the size of the region
  *
+<<<<<<< HEAD
  * This function isolates region [@base, @base + @size), and clear flag
  * MEMBLOCK_HOTPLUG for the isolated regions.
  *
@@ -913,12 +1175,81 @@ int __init_memblock memblock_clear_hotplug(phys_addr_t base, phys_addr_t size)
 
 	memblock_merge_regions(type);
 	return 0;
+=======
+ * Return 0 on success, -errno on failure.
+ */
+int __init_memblock memblock_clear_hotplug(phys_addr_t base, phys_addr_t size)
+{
+	return memblock_setclr_flag(base, size, 0, MEMBLOCK_HOTPLUG);
+}
+
+/**
+ * memblock_mark_mirror - Mark mirrored memory with flag MEMBLOCK_MIRROR.
+ * @base: the base phys addr of the region
+ * @size: the size of the region
+ *
+ * Return 0 on success, -errno on failure.
+ */
+int __init_memblock memblock_mark_mirror(phys_addr_t base, phys_addr_t size)
+{
+	system_has_some_mirror = true;
+
+	return memblock_setclr_flag(base, size, 1, MEMBLOCK_MIRROR);
+}
+
+/**
+ * memblock_mark_nomap - Mark a memory region with flag MEMBLOCK_NOMAP.
+ * @base: the base phys addr of the region
+ * @size: the size of the region
+ *
+ * Return 0 on success, -errno on failure.
+ */
+int __init_memblock memblock_mark_nomap(phys_addr_t base, phys_addr_t size)
+{
+	return memblock_setclr_flag(base, size, 1, MEMBLOCK_NOMAP);
+}
+
+/**
+ * __next_reserved_mem_region - next function for for_each_reserved_region()
+ * @idx: pointer to u64 loop variable
+ * @out_start: ptr to phys_addr_t for start address of the region, can be %NULL
+ * @out_end: ptr to phys_addr_t for end address of the region, can be %NULL
+ *
+ * Iterate over all reserved memory regions.
+ */
+void __init_memblock __next_reserved_mem_region(u64 *idx,
+					   phys_addr_t *out_start,
+					   phys_addr_t *out_end)
+{
+	struct memblock_type *type = &memblock.reserved;
+
+	if (*idx < type->cnt) {
+		struct memblock_region *r = &type->regions[*idx];
+		phys_addr_t base = r->base;
+		phys_addr_t size = r->size;
+
+		if (out_start)
+			*out_start = base;
+		if (out_end)
+			*out_end = base + size - 1;
+
+		*idx += 1;
+		return;
+	}
+
+	/* signal end of iteration */
+	*idx = ULLONG_MAX;
+>>>>>>> v4.9.227
 }
 
 /**
  * __next__mem_range - next function for for_each_free_mem_range() etc.
  * @idx: pointer to u64 loop variable
  * @nid: node selector, %NUMA_NO_NODE for all nodes
+<<<<<<< HEAD
+=======
+ * @flags: pick from blocks based on memory attributes
+>>>>>>> v4.9.227
  * @type_a: pointer to memblock_type from where the range is taken
  * @type_b: pointer to memblock_type which excludes memory from being taken
  * @out_start: ptr to phys_addr_t for start address of the range, can be %NULL
@@ -940,7 +1271,11 @@ int __init_memblock memblock_clear_hotplug(phys_addr_t base, phys_addr_t size)
  * As both region arrays are sorted, the function advances the two indices
  * in lockstep and returns each intersection.
  */
+<<<<<<< HEAD
 void __init_memblock __next_mem_range(u64 *idx, int nid,
+=======
+void __init_memblock __next_mem_range(u64 *idx, int nid, ulong flags,
+>>>>>>> v4.9.227
 				      struct memblock_type *type_a,
 				      struct memblock_type *type_b,
 				      phys_addr_t *out_start,
@@ -968,6 +1303,17 @@ void __init_memblock __next_mem_range(u64 *idx, int nid,
 		if (movable_node_is_enabled() && memblock_is_hotpluggable(m))
 			continue;
 
+<<<<<<< HEAD
+=======
+		/* if we want mirror memory skip non-mirror memory regions */
+		if ((flags & MEMBLOCK_MIRROR) && !memblock_is_mirror(m))
+			continue;
+
+		/* skip nomap memory unless we were asked for it explicitly */
+		if (!(flags & MEMBLOCK_NOMAP) && memblock_is_nomap(m))
+			continue;
+
+>>>>>>> v4.9.227
 		if (!type_b) {
 			if (out_start)
 				*out_start = m_start;
@@ -1031,7 +1377,12 @@ void __init_memblock __next_mem_range(u64 *idx, int nid,
  * in type_b.
  *
  * @idx: pointer to u64 loop variable
+<<<<<<< HEAD
  * @nid: nid: node selector, %NUMA_NO_NODE for all nodes
+=======
+ * @nid: node selector, %NUMA_NO_NODE for all nodes
+ * @flags: pick from blocks based on memory attributes
+>>>>>>> v4.9.227
  * @type_a: pointer to memblock_type from where the range is taken
  * @type_b: pointer to memblock_type which excludes memory from being taken
  * @out_start: ptr to phys_addr_t for start address of the range, can be %NULL
@@ -1040,7 +1391,11 @@ void __init_memblock __next_mem_range(u64 *idx, int nid,
  *
  * Reverse of __next_mem_range().
  */
+<<<<<<< HEAD
 void __init_memblock __next_mem_range_rev(u64 *idx, int nid,
+=======
+void __init_memblock __next_mem_range_rev(u64 *idx, int nid, ulong flags,
+>>>>>>> v4.9.227
 					  struct memblock_type *type_a,
 					  struct memblock_type *type_b,
 					  phys_addr_t *out_start,
@@ -1054,7 +1409,14 @@ void __init_memblock __next_mem_range_rev(u64 *idx, int nid,
 
 	if (*idx == (u64)ULLONG_MAX) {
 		idx_a = type_a->cnt - 1;
+<<<<<<< HEAD
 		idx_b = type_b->cnt;
+=======
+		if (type_b != NULL)
+			idx_b = type_b->cnt;
+		else
+			idx_b = 0;
+>>>>>>> v4.9.227
 	}
 
 	for (; idx_a >= 0; idx_a--) {
@@ -1072,6 +1434,17 @@ void __init_memblock __next_mem_range_rev(u64 *idx, int nid,
 		if (movable_node_is_enabled() && memblock_is_hotpluggable(m))
 			continue;
 
+<<<<<<< HEAD
+=======
+		/* if we want mirror memory skip non-mirror memory regions */
+		if ((flags & MEMBLOCK_MIRROR) && !memblock_is_mirror(m))
+			continue;
+
+		/* skip nomap memory unless we were asked for it explicitly */
+		if (!(flags & MEMBLOCK_NOMAP) && memblock_is_nomap(m))
+			continue;
+
+>>>>>>> v4.9.227
 		if (!type_b) {
 			if (out_start)
 				*out_start = m_start;
@@ -1079,7 +1452,11 @@ void __init_memblock __next_mem_range_rev(u64 *idx, int nid,
 				*out_end = m_end;
 			if (out_nid)
 				*out_nid = m_nid;
+<<<<<<< HEAD
 			idx_a++;
+=======
+			idx_a--;
+>>>>>>> v4.9.227
 			*idx = (u32)idx_a | (u64)idx_b << 32;
 			return;
 		}
@@ -1187,47 +1564,94 @@ int __init_memblock memblock_set_node(phys_addr_t base, phys_addr_t size,
 
 static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
 					phys_addr_t align, phys_addr_t start,
+<<<<<<< HEAD
 					phys_addr_t end, int nid)
+=======
+					phys_addr_t end, int nid, ulong flags)
+>>>>>>> v4.9.227
 {
 	phys_addr_t found;
 
 	if (!align)
 		align = SMP_CACHE_BYTES;
 
+<<<<<<< HEAD
 	found = memblock_find_in_range_node(size, align, start, end, nid);
+=======
+	found = memblock_find_in_range_node(size, align, start, end, nid,
+					    flags);
+>>>>>>> v4.9.227
 	if (found && !memblock_reserve(found, size)) {
 		/*
 		 * The min_count is set to 0 so that memblock allocations are
 		 * never reported as leaks.
 		 */
+<<<<<<< HEAD
 		if (found < memblock.current_limit)
 			kmemleak_alloc(__va(found), size, 0, 0);
+=======
+		kmemleak_alloc_phys(found, size, 0, 0);
+>>>>>>> v4.9.227
 		return found;
 	}
 	return 0;
 }
 
 phys_addr_t __init memblock_alloc_range(phys_addr_t size, phys_addr_t align,
+<<<<<<< HEAD
 					phys_addr_t start, phys_addr_t end)
 {
 	return memblock_alloc_range_nid(size, align, start, end, NUMA_NO_NODE);
+=======
+					phys_addr_t start, phys_addr_t end,
+					ulong flags)
+{
+	return memblock_alloc_range_nid(size, align, start, end, NUMA_NO_NODE,
+					flags);
+>>>>>>> v4.9.227
 }
 
 static phys_addr_t __init memblock_alloc_base_nid(phys_addr_t size,
 					phys_addr_t align, phys_addr_t max_addr,
+<<<<<<< HEAD
 					int nid)
 {
 	return memblock_alloc_range_nid(size, align, 0, max_addr, nid);
+=======
+					int nid, ulong flags)
+{
+	return memblock_alloc_range_nid(size, align, 0, max_addr, nid, flags);
+>>>>>>> v4.9.227
 }
 
 phys_addr_t __init memblock_alloc_nid(phys_addr_t size, phys_addr_t align, int nid)
 {
+<<<<<<< HEAD
 	return memblock_alloc_base_nid(size, align, MEMBLOCK_ALLOC_ACCESSIBLE, nid);
+=======
+	ulong flags = choose_memblock_flags();
+	phys_addr_t ret;
+
+again:
+	ret = memblock_alloc_base_nid(size, align, MEMBLOCK_ALLOC_ACCESSIBLE,
+				      nid, flags);
+
+	if (!ret && (flags & MEMBLOCK_MIRROR)) {
+		flags &= ~MEMBLOCK_MIRROR;
+		goto again;
+	}
+	return ret;
+>>>>>>> v4.9.227
 }
 
 phys_addr_t __init __memblock_alloc_base(phys_addr_t size, phys_addr_t align, phys_addr_t max_addr)
 {
+<<<<<<< HEAD
 	return memblock_alloc_base_nid(size, align, max_addr, NUMA_NO_NODE);
+=======
+	return memblock_alloc_base_nid(size, align, max_addr, NUMA_NO_NODE,
+				       MEMBLOCK_NONE);
+>>>>>>> v4.9.227
 }
 
 phys_addr_t __init memblock_alloc_base(phys_addr_t size, phys_addr_t align, phys_addr_t max_addr)
@@ -1291,6 +1715,10 @@ static void * __init memblock_virt_alloc_internal(
 {
 	phys_addr_t alloc;
 	void *ptr;
+<<<<<<< HEAD
+=======
+	ulong flags = choose_memblock_flags();
+>>>>>>> v4.9.227
 
 	if (WARN_ONCE(nid == MAX_NUMNODES, "Usage of MAX_NUMNODES is deprecated. Use NUMA_NO_NODE instead\n"))
 		nid = NUMA_NO_NODE;
@@ -1311,13 +1739,22 @@ static void * __init memblock_virt_alloc_internal(
 
 again:
 	alloc = memblock_find_in_range_node(size, align, min_addr, max_addr,
+<<<<<<< HEAD
 					    nid);
+=======
+					    nid, flags);
+>>>>>>> v4.9.227
 	if (alloc)
 		goto done;
 
 	if (nid != NUMA_NO_NODE) {
 		alloc = memblock_find_in_range_node(size, align, min_addr,
+<<<<<<< HEAD
 						    max_addr,  NUMA_NO_NODE);
+=======
+						    max_addr, NUMA_NO_NODE,
+						    flags);
+>>>>>>> v4.9.227
 		if (alloc)
 			goto done;
 	}
@@ -1325,10 +1762,23 @@ again:
 	if (min_addr) {
 		min_addr = 0;
 		goto again;
+<<<<<<< HEAD
 	} else {
 		goto error;
 	}
 
+=======
+	}
+
+	if (flags & MEMBLOCK_MIRROR) {
+		flags &= ~MEMBLOCK_MIRROR;
+		pr_warn("Could not allocate %pap bytes of mirrored memory\n",
+			&size);
+		goto again;
+	}
+
+	return NULL;
+>>>>>>> v4.9.227
 done:
 	memblock_reserve(alloc, size);
 	ptr = phys_to_virt(alloc);
@@ -1343,9 +1793,12 @@ done:
 	kmemleak_alloc(ptr, size, 0, 0);
 
 	return ptr;
+<<<<<<< HEAD
 
 error:
 	return NULL;
+=======
+>>>>>>> v4.9.227
 }
 
 /**
@@ -1429,7 +1882,11 @@ void __init __memblock_free_early(phys_addr_t base, phys_addr_t size)
 	memblock_dbg("%s: [%#016llx-%#016llx] %pF\n",
 		     __func__, (u64)base, (u64)base + size - 1,
 		     (void *)_RET_IP_);
+<<<<<<< HEAD
 	kmemleak_free_part(__va(base), size);
+=======
+	kmemleak_free_part_phys(base, size);
+>>>>>>> v4.9.227
 	memblock_remove_range(&memblock.reserved, base, size);
 }
 
@@ -1449,7 +1906,11 @@ void __init __memblock_free_late(phys_addr_t base, phys_addr_t size)
 	memblock_dbg("%s: [%#016llx-%#016llx] %pF\n",
 		     __func__, (u64)base, (u64)base + size - 1,
 		     (void *)_RET_IP_);
+<<<<<<< HEAD
 	kmemleak_free_part(__va(base), size);
+=======
+	kmemleak_free_part_phys(base, size);
+>>>>>>> v4.9.227
 	cursor = PFN_UP(base);
 	end = PFN_DOWN(base + size);
 
@@ -1463,11 +1924,23 @@ void __init __memblock_free_late(phys_addr_t base, phys_addr_t size)
  * Remaining API functions
  */
 
+<<<<<<< HEAD
 phys_addr_t __init memblock_phys_mem_size(void)
+=======
+phys_addr_t __init_memblock memblock_phys_mem_size(void)
+>>>>>>> v4.9.227
 {
 	return memblock.memory.total_size;
 }
 
+<<<<<<< HEAD
+=======
+phys_addr_t __init_memblock memblock_reserved_size(void)
+{
+	return memblock.reserved.total_size;
+}
+
+>>>>>>> v4.9.227
 phys_addr_t __init memblock_mem_size(unsigned long limit_pfn)
 {
 	unsigned long pages = 0;
@@ -1498,15 +1971,27 @@ phys_addr_t __init_memblock memblock_end_of_DRAM(void)
 	return (memblock.memory.regions[idx].base + memblock.memory.regions[idx].size);
 }
 
+<<<<<<< HEAD
 void __init memblock_enforce_memory_limit(phys_addr_t limit)
+=======
+static phys_addr_t __init_memblock __find_max_addr(phys_addr_t limit)
+>>>>>>> v4.9.227
 {
 	phys_addr_t max_addr = (phys_addr_t)ULLONG_MAX;
 	struct memblock_region *r;
 
+<<<<<<< HEAD
 	if (!limit)
 		return;
 
 	/* find out max address */
+=======
+	/*
+	 * translate the memory @limit size into the max address within one of
+	 * the memory memblock regions, if the @limit exceeds the total size
+	 * of those regions, max_addr will keep original value ULLONG_MAX
+	 */
+>>>>>>> v4.9.227
 	for_each_memblock(memory, r) {
 		if (limit <= r->size) {
 			max_addr = r->base + limit;
@@ -1515,6 +2000,25 @@ void __init memblock_enforce_memory_limit(phys_addr_t limit)
 		limit -= r->size;
 	}
 
+<<<<<<< HEAD
+=======
+	return max_addr;
+}
+
+void __init memblock_enforce_memory_limit(phys_addr_t limit)
+{
+	phys_addr_t max_addr = (phys_addr_t)ULLONG_MAX;
+
+	if (!limit)
+		return;
+
+	max_addr = __find_max_addr(limit);
+
+	/* @limit exceeds the total size of the memory, do nothing */
+	if (max_addr == (phys_addr_t)ULLONG_MAX)
+		return;
+
+>>>>>>> v4.9.227
 	/* truncate both memory and reserved regions */
 	memblock_remove_range(&memblock.memory, max_addr,
 			      (phys_addr_t)ULLONG_MAX);
@@ -1522,7 +2026,41 @@ void __init memblock_enforce_memory_limit(phys_addr_t limit)
 			      (phys_addr_t)ULLONG_MAX);
 }
 
+<<<<<<< HEAD
 static int __init_memblock __memblock_search(struct memblock_type *type, phys_addr_t addr)
+=======
+void __init memblock_mem_limit_remove_map(phys_addr_t limit)
+{
+	struct memblock_type *type = &memblock.memory;
+	phys_addr_t max_addr;
+	int i, ret, start_rgn, end_rgn;
+
+	if (!limit)
+		return;
+
+	max_addr = __find_max_addr(limit);
+
+	/* @limit exceeds the total size of the memory, do nothing */
+	if (max_addr == (phys_addr_t)ULLONG_MAX)
+		return;
+
+	ret = memblock_isolate_range(type, max_addr, (phys_addr_t)ULLONG_MAX,
+				&start_rgn, &end_rgn);
+	if (ret)
+		return;
+
+	/* remove all the MAP regions above the limit */
+	for (i = end_rgn - 1; i >= start_rgn; i--) {
+		if (!memblock_is_nomap(&type->regions[i]))
+			memblock_remove_region(type, i);
+	}
+	/* truncate the reserved regions */
+	memblock_remove_range(&memblock.reserved, max_addr,
+			      (phys_addr_t)ULLONG_MAX);
+}
+
+static int __init_memblock memblock_search(struct memblock_type *type, phys_addr_t addr)
+>>>>>>> v4.9.227
 {
 	unsigned int left = 0, right = type->cnt;
 
@@ -1540,6 +2078,7 @@ static int __init_memblock __memblock_search(struct memblock_type *type, phys_ad
 	return -1;
 }
 
+<<<<<<< HEAD
 static int __init_memblock memblock_search(struct memblock_type *type, phys_addr_t addr)
 {
 	int ret;
@@ -1554,15 +2093,34 @@ static int __init_memblock memblock_search(struct memblock_type *type, phys_addr
 }
 
 int __init memblock_is_reserved(phys_addr_t addr)
+=======
+bool __init memblock_is_reserved(phys_addr_t addr)
+>>>>>>> v4.9.227
 {
 	return memblock_search(&memblock.reserved, addr) != -1;
 }
 
+<<<<<<< HEAD
 int __init_memblock memblock_is_memory(phys_addr_t addr)
+=======
+bool __init_memblock memblock_is_memory(phys_addr_t addr)
+>>>>>>> v4.9.227
 {
 	return memblock_search(&memblock.memory, addr) != -1;
 }
 
+<<<<<<< HEAD
+=======
+int __init_memblock memblock_is_map_memory(phys_addr_t addr)
+{
+	int i = memblock_search(&memblock.memory, addr);
+
+	if (i == -1)
+		return false;
+	return !memblock_is_nomap(&memblock.memory.regions[i]);
+}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_HAVE_MEMBLOCK_NODE_MAP
 int __init_memblock memblock_search_pfn_nid(unsigned long pfn,
 			 unsigned long *start_pfn, unsigned long *end_pfn)
@@ -1602,6 +2160,7 @@ int __init_memblock memblock_is_region_memory(phys_addr_t base, phys_addr_t size
 		 memblock.memory.regions[idx].size) >= end;
 }
 
+<<<<<<< HEAD
 int __init_memblock memblock_overlaps_memory(phys_addr_t base, phys_addr_t size)
 {
 	memblock_cap_size(base, &size);
@@ -1609,6 +2168,8 @@ int __init_memblock memblock_overlaps_memory(phys_addr_t base, phys_addr_t size)
 	return memblock_overlaps_region(&memblock.memory, base, size) >= 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * memblock_is_region_reserved - check if a region intersects reserved memory
  * @base: base of region to check
@@ -1617,12 +2178,21 @@ int __init_memblock memblock_overlaps_memory(phys_addr_t base, phys_addr_t size)
  * Check if the region [@base, @base+@size) intersects a reserved memory block.
  *
  * RETURNS:
+<<<<<<< HEAD
  * 0 if false, non-zero if true
  */
 int __init_memblock memblock_is_region_reserved(phys_addr_t base, phys_addr_t size)
 {
 	memblock_cap_size(base, &size);
 	return memblock_overlaps_region(&memblock.reserved, base, size) >= 0;
+=======
+ * True if they intersect, false if not.
+ */
+bool __init_memblock memblock_is_region_reserved(phys_addr_t base, phys_addr_t size)
+{
+	memblock_cap_size(base, &size);
+	return memblock_overlaps_region(&memblock.reserved, base, size);
+>>>>>>> v4.9.227
 }
 
 void __init_memblock memblock_trim_memory(phys_addr_t align)
@@ -1664,12 +2234,21 @@ static void __init_memblock memblock_dump(struct memblock_type *type, char *name
 {
 	unsigned long long base, size;
 	unsigned long flags;
+<<<<<<< HEAD
 	int i;
 
 	pr_info(" %s.cnt  = 0x%lx\n", name, type->cnt);
 
 	for (i = 0; i < type->cnt; i++) {
 		struct memblock_region *rgn = &type->regions[i];
+=======
+	int idx;
+	struct memblock_region *rgn;
+
+	pr_info(" %s.cnt  = 0x%lx\n", name, type->cnt);
+
+	for_each_memblock_type(type, rgn) {
+>>>>>>> v4.9.227
 		char nid_buf[32] = "";
 
 		base = rgn->base;
@@ -1681,10 +2260,40 @@ static void __init_memblock memblock_dump(struct memblock_type *type, char *name
 				 memblock_get_region_node(rgn));
 #endif
 		pr_info(" %s[%#x]\t[%#016llx-%#016llx], %#llx bytes%s flags: %#lx\n",
+<<<<<<< HEAD
 			name, i, base, base + size - 1, size, nid_buf, flags);
 	}
 }
 
+=======
+			name, idx, base, base + size - 1, size, nid_buf, flags);
+	}
+}
+
+extern unsigned long __init_memblock
+memblock_reserved_memory_within(phys_addr_t start_addr, phys_addr_t end_addr)
+{
+	struct memblock_region *rgn;
+	unsigned long size = 0;
+	int idx;
+
+	for_each_memblock_type((&memblock.reserved), rgn) {
+		phys_addr_t start, end;
+
+		if (rgn->base + rgn->size < start_addr)
+			continue;
+		if (rgn->base > end_addr)
+			continue;
+
+		start = rgn->base;
+		end = start + rgn->size;
+		size += end - start;
+	}
+
+	return size;
+}
+
+>>>>>>> v4.9.227
 void __init_memblock __memblock_dump_all(void)
 {
 	pr_info("MEMBLOCK configuration:\n");
@@ -1701,6 +2310,7 @@ void __init memblock_allow_resize(void)
 	memblock_can_resize = 1;
 }
 
+<<<<<<< HEAD
 static unsigned long __init_memblock
 memblock_resize_late(int begin, unsigned long flags)
 {
@@ -1732,6 +2342,8 @@ void __init_memblock memblock_region_resize_late_end(unsigned long flags)
 	memblock_resize_late(0, flags);
 }
 
+=======
+>>>>>>> v4.9.227
 static int __init early_memblock(char *p)
 {
 	if (p && strstr(p, "debug"))
@@ -1776,6 +2388,7 @@ static const struct file_operations memblock_debug_fops = {
 	.release = single_release,
 };
 
+<<<<<<< HEAD
 static int memsize_kernel_show(struct seq_file *m, void *private)
 {
 	int i;
@@ -1935,11 +2548,14 @@ static const struct file_operations proc_memsize_reserved_fops = {
 	.llseek = seq_lseek,
 	.release = single_release,
 };
+=======
+>>>>>>> v4.9.227
 static int __init memblock_init_debugfs(void)
 {
 	struct dentry *root = debugfs_create_dir("memblock", NULL);
 	if (!root)
 		return -ENXIO;
+<<<<<<< HEAD
 	debugfs_create_file("memory", S_IRUSR | S_IRGRP, root, &memblock.memory, &memblock_debug_fops);
 	debugfs_create_file("reserved", S_IRUSR | S_IRGRP, root, &memblock.reserved, &memblock_debug_fops);
 	if (proc_mkdir("memsize", NULL)) {
@@ -1948,6 +2564,12 @@ static int __init memblock_init_debugfs(void)
 	}
 #ifdef CONFIG_HAVE_MEMBLOCK_PHYS_MAP
 	debugfs_create_file("physmem", S_IRUSR | S_IRGRP, root, &memblock.physmem, &memblock_debug_fops);
+=======
+	debugfs_create_file("memory", S_IRUGO, root, &memblock.memory, &memblock_debug_fops);
+	debugfs_create_file("reserved", S_IRUGO, root, &memblock.reserved, &memblock_debug_fops);
+#ifdef CONFIG_HAVE_MEMBLOCK_PHYS_MAP
+	debugfs_create_file("physmem", S_IRUGO, root, &memblock.physmem, &memblock_debug_fops);
+>>>>>>> v4.9.227
 #endif
 
 	return 0;

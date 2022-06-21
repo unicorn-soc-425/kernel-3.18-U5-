@@ -9,7 +9,11 @@ menuconfig MEDIA_SUPPORT
 	  If you want to use Webcams, Video grabber devices and/or TV devices
 	  enable this option and other options below.
 	  Additional info and docs are available on the web at
+<<<<<<< HEAD
 	  <http://linuxtv.org>
+=======
+	  <https://linuxtv.org>
+>>>>>>> v4.9.227
 
 if MEDIA_SUPPORT
 
@@ -51,7 +55,11 @@ config MEDIA_RADIO_SUPPORT
 	  Enable AM/FM radio support.
 
 	  Additional info and docs are available on the web at
+<<<<<<< HEAD
 	  <http://linuxtv.org>
+=======
+	  <https://linuxtv.org>
+>>>>>>> v4.9.227
 
 	  Say Y when you have a board with radio support.
 
@@ -80,6 +88,12 @@ config MEDIA_RC_SUPPORT
 
 	  Say Y when you have a TV or an IR device.
 
+<<<<<<< HEAD
+=======
+config MEDIA_CEC_EDID
+	bool
+
+>>>>>>> v4.9.227
 #
 # Media controller
 #	Selectable only for webcam/grabbers, as other drivers don't use it
@@ -87,13 +101,28 @@ config MEDIA_RC_SUPPORT
 
 config MEDIA_CONTROLLER
 	bool "Media Controller API"
+<<<<<<< HEAD
 	depends on MEDIA_CAMERA_SUPPORT
+=======
+	depends on MEDIA_CAMERA_SUPPORT || MEDIA_ANALOG_TV_SUPPORT || MEDIA_DIGITAL_TV_SUPPORT
+>>>>>>> v4.9.227
 	---help---
 	  Enable the media controller API used to query media devices internal
 	  topology and configure it dynamically.
 
 	  This API is mostly used by camera interfaces in embedded platforms.
 
+<<<<<<< HEAD
+=======
+config MEDIA_CONTROLLER_DVB
+	bool "Enable Media controller for DVB (EXPERIMENTAL)"
+	depends on MEDIA_CONTROLLER
+	---help---
+	  Enable the media controller API support for DVB.
+
+	  This is currently experimental.
+
+>>>>>>> v4.9.227
 #
 # Video4Linux support
 #	Only enables if one of the V4L2 types (ATV, webcam, radio) is selected
@@ -160,7 +189,10 @@ source "drivers/media/usb/Kconfig"
 source "drivers/media/pci/Kconfig"
 source "drivers/media/platform/Kconfig"
 source "drivers/media/mmc/Kconfig"
+<<<<<<< HEAD
 source "drivers/media/parport/Kconfig"
+=======
+>>>>>>> v4.9.227
 source "drivers/media/radio/Kconfig"
 
 comment "Supported FireWire (IEEE 1394) Adapters"
@@ -170,6 +202,7 @@ source "drivers/media/firewire/Kconfig"
 # Common driver options
 source "drivers/media/common/Kconfig"
 
+<<<<<<< HEAD
 comment "Media ancillary drivers (tuners, sensors, i2c, frontends)"
 
 #
@@ -178,6 +211,16 @@ comment "Media ancillary drivers (tuners, sensors, i2c, frontends)"
 
 config MEDIA_SUBDRV_AUTOSELECT
 	bool "Autoselect ancillary drivers (tuners, sensors, i2c, frontends)"
+=======
+comment "Media ancillary drivers (tuners, sensors, i2c, spi, frontends)"
+
+#
+# Ancillary drivers (tuners, i2c, spi, frontends)
+#
+
+config MEDIA_SUBDRV_AUTOSELECT
+	bool "Autoselect ancillary drivers (tuners, sensors, i2c, spi, frontends)"
+>>>>>>> v4.9.227
 	depends on MEDIA_ANALOG_TV_SUPPORT || MEDIA_DIGITAL_TV_SUPPORT || MEDIA_CAMERA_SUPPORT || MEDIA_SDR_SUPPORT
 	depends on HAS_IOMEM
 	select I2C
@@ -206,10 +249,17 @@ config MEDIA_ATTACH
 	default MODULES
 
 source "drivers/media/i2c/Kconfig"
+<<<<<<< HEAD
 source "drivers/media/tuners/Kconfig"
 source "drivers/media/dvb-frontends/Kconfig"
 
 # TDMB drivers
 source "drivers/media/tdmb/Kconfig"
 
+=======
+source "drivers/media/spi/Kconfig"
+source "drivers/media/tuners/Kconfig"
+source "drivers/media/dvb-frontends/Kconfig"
+
+>>>>>>> v4.9.227
 endif # MEDIA_SUPPORT

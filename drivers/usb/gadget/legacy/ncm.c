@@ -49,7 +49,11 @@ static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
+<<<<<<< HEAD
 	.bcdUSB =		cpu_to_le16 (0x0200),
+=======
+	/* .bcdUSB = DYNAMIC */
+>>>>>>> v4.9.227
 
 	.bDeviceClass =		USB_CLASS_COMM,
 	.bDeviceSubClass =	0,
@@ -69,6 +73,7 @@ static struct usb_device_descriptor device_desc = {
 	.bNumConfigurations =	1,
 };
 
+<<<<<<< HEAD
 static struct usb_otg_descriptor otg_descriptor = {
 	.bLength =		sizeof otg_descriptor,
 	.bDescriptorType =	USB_DT_OTG,
@@ -83,6 +88,9 @@ static const struct usb_descriptor_header *otg_desc[] = {
 	(struct usb_descriptor_header *) &otg_descriptor,
 	NULL,
 };
+=======
+static const struct usb_descriptor_header *otg_desc[2];
+>>>>>>> v4.9.227
 
 /* string IDs are assigned dynamically */
 static struct usb_string strings_dev[] = {
@@ -107,7 +115,11 @@ static struct usb_function *f_ncm;
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int __init ncm_do_config(struct usb_configuration *c)
+=======
+static int ncm_do_config(struct usb_configuration *c)
+>>>>>>> v4.9.227
 {
 	int status;
 
@@ -143,7 +155,11 @@ static struct usb_configuration ncm_config_driver = {
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int __init gncm_bind(struct usb_composite_dev *cdev)
+=======
+static int gncm_bind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 	struct usb_gadget	*gadget = cdev->gadget;
 	struct f_ncm_opts	*ncm_opts;
@@ -171,27 +187,58 @@ static int __init gncm_bind(struct usb_composite_dev *cdev)
 	device_desc.iManufacturer = strings_dev[USB_GADGET_MANUFACTURER_IDX].id;
 	device_desc.iProduct = strings_dev[USB_GADGET_PRODUCT_IDX].id;
 
+<<<<<<< HEAD
 	status = usb_add_config(cdev, &ncm_config_driver,
 				ncm_do_config);
 	if (status < 0)
 		goto fail;
+=======
+	if (gadget_is_otg(gadget) && !otg_desc[0]) {
+		struct usb_descriptor_header *usb_desc;
+
+		usb_desc = usb_otg_descriptor_alloc(gadget);
+		if (!usb_desc) {
+			status = -ENOMEM;
+			goto fail;
+		}
+		usb_otg_descriptor_init(gadget, usb_desc);
+		otg_desc[0] = usb_desc;
+		otg_desc[1] = NULL;
+	}
+
+	status = usb_add_config(cdev, &ncm_config_driver,
+				ncm_do_config);
+	if (status < 0)
+		goto fail1;
+>>>>>>> v4.9.227
 
 	usb_composite_overwrite_options(cdev, &coverwrite);
 	dev_info(&gadget->dev, "%s\n", DRIVER_DESC);
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+fail1:
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+>>>>>>> v4.9.227
 fail:
 	usb_put_function_instance(f_ncm_inst);
 	return status;
 }
 
+<<<<<<< HEAD
 static int __exit gncm_unbind(struct usb_composite_dev *cdev)
+=======
+static int gncm_unbind(struct usb_composite_dev *cdev)
+>>>>>>> v4.9.227
 {
 	if (!IS_ERR_OR_NULL(f_ncm))
 		usb_put_function(f_ncm);
 	if (!IS_ERR_OR_NULL(f_ncm_inst))
 		usb_put_function_instance(f_ncm_inst);
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -202,6 +249,21 @@ static __refdata struct usb_composite_driver ncm_driver = {
 	.max_speed	= USB_SPEED_HIGH,
 	.bind		= gncm_bind,
 	.unbind		= __exit_p(gncm_unbind),
+=======
+	kfree(otg_desc[0]);
+	otg_desc[0] = NULL;
+
+	return 0;
+}
+
+static struct usb_composite_driver ncm_driver = {
+	.name		= "g_ncm",
+	.dev		= &device_desc,
+	.strings	= dev_strings,
+	.max_speed	= USB_SPEED_SUPER,
+	.bind		= gncm_bind,
+	.unbind		= gncm_unbind,
+>>>>>>> v4.9.227
 };
 
 module_usb_composite_driver(ncm_driver);

@@ -210,7 +210,11 @@ static void cdrom_analyze_sense_data(ide_drive_t *drive,
 static void ide_cd_complete_failed_rq(ide_drive_t *drive, struct request *rq)
 {
 	/*
+<<<<<<< HEAD
 	 * For REQ_TYPE_SENSE, "rq->special" points to the original
+=======
+	 * For REQ_TYPE_ATA_SENSE, "rq->special" points to the original
+>>>>>>> v4.9.227
 	 * failed request.  Also, the sense data should be read
 	 * directly from rq which might be different from the original
 	 * sense buffer if it got copied during mapping.
@@ -285,7 +289,11 @@ static int cdrom_decode_status(ide_drive_t *drive, u8 stat)
 				  "stat 0x%x",
 				  rq->cmd[0], rq->cmd_type, err, stat);
 
+<<<<<<< HEAD
 	if (rq->cmd_type == REQ_TYPE_SENSE) {
+=======
+	if (rq->cmd_type == REQ_TYPE_ATA_SENSE) {
+>>>>>>> v4.9.227
 		/*
 		 * We got an error trying to get sense info from the drive
 		 * (probably while trying to recover from a former error).
@@ -441,7 +449,11 @@ int ide_cd_queue_pc(ide_drive_t *drive, const unsigned char *cmd,
 		struct request *rq;
 		int error;
 
+<<<<<<< HEAD
 		rq = blk_get_request(drive->queue, write, __GFP_WAIT);
+=======
+		rq = blk_get_request(drive->queue, write, __GFP_RECLAIM);
+>>>>>>> v4.9.227
 
 		memcpy(rq->cmd, cmd, BLK_MAX_CDB);
 		rq->cmd_type = REQ_TYPE_ATA_PC;
@@ -526,7 +538,11 @@ static ide_startstop_t cdrom_newpc_intr(ide_drive_t *drive)
 	ide_expiry_t *expiry = NULL;
 	int dma_error = 0, dma, thislen, uptodate = 0;
 	int write = (rq_data_dir(rq) == WRITE) ? 1 : 0, rc = 0;
+<<<<<<< HEAD
 	int sense = (rq->cmd_type == REQ_TYPE_SENSE);
+=======
+	int sense = (rq->cmd_type == REQ_TYPE_ATA_SENSE);
+>>>>>>> v4.9.227
 	unsigned int timeout;
 	u16 len;
 	u8 ireason, stat;
@@ -791,7 +807,11 @@ static ide_startstop_t ide_cd_do_request(ide_drive_t *drive, struct request *rq,
 		if (cdrom_start_rw(drive, rq) == ide_stopped)
 			goto out_end;
 		break;
+<<<<<<< HEAD
 	case REQ_TYPE_SENSE:
+=======
+	case REQ_TYPE_ATA_SENSE:
+>>>>>>> v4.9.227
 	case REQ_TYPE_BLOCK_PC:
 	case REQ_TYPE_ATA_PC:
 		if (!rq->timeout)
@@ -799,7 +819,11 @@ static ide_startstop_t ide_cd_do_request(ide_drive_t *drive, struct request *rq,
 
 		cdrom_do_block_pc(drive, rq);
 		break;
+<<<<<<< HEAD
 	case REQ_TYPE_SPECIAL:
+=======
+	case REQ_TYPE_DRV_PRIV:
+>>>>>>> v4.9.227
 		/* right now this can only be a reset... */
 		uptodate = 1;
 		goto out_end;
@@ -1772,7 +1796,10 @@ static int ide_cd_probe(ide_drive_t *drive)
 	drive->driver_data = info;
 
 	g->minors = 1;
+<<<<<<< HEAD
 	g->driverfs_dev = &drive->gendev;
+=======
+>>>>>>> v4.9.227
 	g->flags = GENHD_FL_CD | GENHD_FL_REMOVABLE;
 	if (ide_cdrom_setup(drive)) {
 		put_device(&info->dev);
@@ -1782,7 +1809,11 @@ static int ide_cd_probe(ide_drive_t *drive)
 	ide_cd_read_toc(drive, &sense);
 	g->fops = &idecd_ops;
 	g->flags |= GENHD_FL_REMOVABLE | GENHD_FL_BLOCK_EVENTS_ON_EXCL_WRITE;
+<<<<<<< HEAD
 	add_disk(g);
+=======
+	device_add_disk(&drive->gendev, g);
+>>>>>>> v4.9.227
 	return 0;
 
 out_free_disk:

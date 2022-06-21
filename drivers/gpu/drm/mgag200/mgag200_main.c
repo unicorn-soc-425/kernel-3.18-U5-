@@ -17,8 +17,13 @@
 static void mga_user_framebuffer_destroy(struct drm_framebuffer *fb)
 {
 	struct mga_framebuffer *mga_fb = to_mga_framebuffer(fb);
+<<<<<<< HEAD
 	if (mga_fb->obj)
 		drm_gem_object_unreference_unlocked(mga_fb->obj);
+=======
+
+	drm_gem_object_unreference_unlocked(mga_fb->obj);
+>>>>>>> v4.9.227
 	drm_framebuffer_cleanup(fb);
 	kfree(fb);
 }
@@ -29,7 +34,11 @@ static const struct drm_framebuffer_funcs mga_fb_funcs = {
 
 int mgag200_framebuffer_init(struct drm_device *dev,
 			     struct mga_framebuffer *gfb,
+<<<<<<< HEAD
 			     struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+			     const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 			     struct drm_gem_object *obj)
 {
 	int ret;
@@ -47,13 +56,21 @@ int mgag200_framebuffer_init(struct drm_device *dev,
 static struct drm_framebuffer *
 mgag200_user_framebuffer_create(struct drm_device *dev,
 				struct drm_file *filp,
+<<<<<<< HEAD
 				struct drm_mode_fb_cmd2 *mode_cmd)
+=======
+				const struct drm_mode_fb_cmd2 *mode_cmd)
+>>>>>>> v4.9.227
 {
 	struct drm_gem_object *obj;
 	struct mga_framebuffer *mga_fb;
 	int ret;
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, filp, mode_cmd->handles[0]);
+=======
+	obj = drm_gem_object_lookup(filp, mode_cmd->handles[0]);
+>>>>>>> v4.9.227
 	if (obj == NULL)
 		return ERR_PTR(-ENOENT);
 
@@ -135,7 +152,11 @@ static int mga_vram_init(struct mga_device *mdev)
 	aper->ranges[0].base = mdev->mc.vram_base;
 	aper->ranges[0].size = mdev->mc.vram_window;
 
+<<<<<<< HEAD
 	remove_conflicting_framebuffers(aper, "mgafb", true);
+=======
+	drm_fb_helper_remove_conflicting_framebuffers(aper, "mgafb", true);
+>>>>>>> v4.9.227
 	kfree(aper);
 
 	if (!devm_request_mem_region(mdev->dev->dev, mdev->mc.vram_base, mdev->mc.vram_window,
@@ -360,7 +381,11 @@ mgag200_dumb_mmap_offset(struct drm_file *file,
 	struct drm_gem_object *obj;
 	struct mgag200_bo *bo;
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file, handle);
+=======
+	obj = drm_gem_object_lookup(file, handle);
+>>>>>>> v4.9.227
 	if (obj == NULL)
 		return -ENOENT;
 

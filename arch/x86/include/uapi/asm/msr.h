@@ -1,8 +1,11 @@
 #ifndef _UAPI_ASM_X86_MSR_H
 #define _UAPI_ASM_X86_MSR_H
 
+<<<<<<< HEAD
 #include <asm/msr-index.h>
 
+=======
+>>>>>>> v4.9.227
 #ifndef __ASSEMBLY__
 
 #include <linux/types.h>

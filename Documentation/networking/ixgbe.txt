@@ -70,10 +70,17 @@ Avago      1000BASE-T SFP                                    ABCU-5710RZ
 82599-based adapters support all passive and active limiting direct attach
 cables that comply with SFF-8431 v4.1 and SFF-8472 v10.4 specifications.
 
+<<<<<<< HEAD
 Laser turns off for SFP+ when ifconfig down
 -------------------------------------------
 "ifconfig down" turns off the laser for 82599-based SFP+ fiber adapters.
 "ifconfig up" turns on the laser.
+=======
+Laser turns off for SFP+ when device is down
+-------------------------------------------
+"ip link set down" turns off the laser for 82599-based SFP+ fiber adapters.
+"ip link set up" turns on the laser.
+>>>>>>> v4.9.227
 
 
 82598-BASED ADAPTERS
@@ -138,7 +145,11 @@ Other ethtool Commands:
 To enable Flow Director
 	ethtool -K ethX ntuple on
 To add a filter
+<<<<<<< HEAD
 	Use -U switch. e.g., ethtool -U ethX flow-type tcp4 src-ip 0x178000a
+=======
+	Use -U switch. e.g., ethtool -U ethX flow-type tcp4 src-ip 10.0.128.23
+>>>>>>> v4.9.227
         action 1
 To see the list of filters currently present:
 	ethtool -u ethX
@@ -213,6 +224,7 @@ Additional Configurations
   ------------
   The driver supports Jumbo Frames for all adapters. Jumbo Frames support is
   enabled by changing the MTU to a value larger than the default of 1500.
+<<<<<<< HEAD
   The maximum value for the MTU is 16110.  Use the ifconfig command to
   increase the MTU size.  For example:
 
@@ -220,6 +232,15 @@ Additional Configurations
 
   The maximum MTU setting for Jumbo Frames is 16110.  This value coincides
   with the maximum Jumbo Frames size of 16128.
+=======
+  The maximum value for the MTU is 16110.  Use the ip command to
+  increase the MTU size.  For example:
+
+        ip link set dev ethx mtu 9000
+
+  The maximum MTU setting for Jumbo Frames is 9710.  This value coincides
+  with the maximum Jumbo Frames size of 9728.
+>>>>>>> v4.9.227
 
   Generic Receive Offload, aka GRO
   --------------------------------

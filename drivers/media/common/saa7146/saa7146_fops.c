@@ -1,6 +1,10 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <media/saa7146_vv.h>
+=======
+#include <media/drv-intf/saa7146_vv.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 
 /****************************************************************************/
@@ -587,26 +591,39 @@ int saa7146_vv_release(struct saa7146_dev* dev)
 }
 EXPORT_SYMBOL_GPL(saa7146_vv_release);
 
+<<<<<<< HEAD
 int saa7146_register_device(struct video_device **vid, struct saa7146_dev* dev,
 			    char *name, int type)
 {
 	struct video_device *vfd;
+=======
+int saa7146_register_device(struct video_device *vfd, struct saa7146_dev *dev,
+			    char *name, int type)
+{
+>>>>>>> v4.9.227
 	int err;
 	int i;
 
 	DEB_EE("dev:%p, name:'%s', type:%d\n", dev, name, type);
 
+<<<<<<< HEAD
 	// released by vfd->release
 	vfd = video_device_alloc();
 	if (vfd == NULL)
 		return -ENOMEM;
 
+=======
+>>>>>>> v4.9.227
 	vfd->fops = &video_fops;
 	if (type == VFL_TYPE_GRABBER)
 		vfd->ioctl_ops = &dev->ext_vv_data->vid_ops;
 	else
 		vfd->ioctl_ops = &dev->ext_vv_data->vbi_ops;
+<<<<<<< HEAD
 	vfd->release = video_device_release;
+=======
+	vfd->release = video_device_release_empty;
+>>>>>>> v4.9.227
 	vfd->lock = &dev->v4l2_lock;
 	vfd->v4l2_dev = &dev->v4l2_dev;
 	vfd->tvnorms = 0;
@@ -618,18 +635,25 @@ int saa7146_register_device(struct video_device **vid, struct saa7146_dev* dev,
 	err = video_register_device(vfd, type, -1);
 	if (err < 0) {
 		ERR("cannot register v4l2 device. skipping.\n");
+<<<<<<< HEAD
 		video_device_release(vfd);
+=======
+>>>>>>> v4.9.227
 		return err;
 	}
 
 	pr_info("%s: registered device %s [v4l2]\n",
 		dev->name, video_device_node_name(vfd));
+<<<<<<< HEAD
 
 	*vid = vfd;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 EXPORT_SYMBOL_GPL(saa7146_register_device);
 
+<<<<<<< HEAD
 int saa7146_unregister_device(struct video_device **vid, struct saa7146_dev* dev)
 {
 	DEB_EE("dev:%p\n", dev);
@@ -637,6 +661,13 @@ int saa7146_unregister_device(struct video_device **vid, struct saa7146_dev* dev
 	video_unregister_device(*vid);
 	*vid = NULL;
 
+=======
+int saa7146_unregister_device(struct video_device *vfd, struct saa7146_dev *dev)
+{
+	DEB_EE("dev:%p\n", dev);
+
+	video_unregister_device(vfd);
+>>>>>>> v4.9.227
 	return 0;
 }
 EXPORT_SYMBOL_GPL(saa7146_unregister_device);

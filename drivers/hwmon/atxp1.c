@@ -12,10 +12,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+ * The ATXP1 can reside on I2C addresses 0x37 or 0x4e. The chip is
+ * not auto-detected by the driver and must be instantiated explicitly.
+ * See Documentation/i2c/instantiating-devices for more information.
+>>>>>>> v4.9.227
  */
 
 #include <linux/kernel.h>
@@ -43,8 +49,11 @@ MODULE_AUTHOR("Sebastian Witt <se.witt@gmx.net>");
 #define ATXP1_VIDMASK	0x1f
 #define ATXP1_GPIO1MASK	0x0f
 
+<<<<<<< HEAD
 static const unsigned short normal_i2c[] = { 0x37, 0x4e, I2C_CLIENT_END };
 
+=======
+>>>>>>> v4.9.227
 struct atxp1_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
@@ -259,6 +268,7 @@ static struct attribute *atxp1_attrs[] = {
 };
 ATTRIBUTE_GROUPS(atxp1);
 
+<<<<<<< HEAD
 /* Return 0 if detection is successful, -ENODEV otherwise */
 static int atxp1_detect(struct i2c_client *new_client,
 			struct i2c_board_info *info)
@@ -301,6 +311,8 @@ static int atxp1_detect(struct i2c_client *new_client,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int atxp1_probe(struct i2c_client *client,
 		       const struct i2c_device_id *id)
 {
@@ -314,6 +326,14 @@ static int atxp1_probe(struct i2c_client *client,
 
 	/* Get VRM */
 	data->vrm = vid_which_vrm();
+<<<<<<< HEAD
+=======
+	if (data->vrm != 90 && data->vrm != 91) {
+		dev_err(dev, "atxp1: Not supporting VRM %d.%d\n",
+			data->vrm / 10, data->vrm % 10);
+		return -ENODEV;
+	}
+>>>>>>> v4.9.227
 
 	data->client = client;
 	mutex_init(&data->update_lock);
@@ -342,8 +362,11 @@ static struct i2c_driver atxp1_driver = {
 	},
 	.probe		= atxp1_probe,
 	.id_table	= atxp1_id,
+<<<<<<< HEAD
 	.detect		= atxp1_detect,
 	.address_list	= normal_i2c,
+=======
+>>>>>>> v4.9.227
 };
 
 module_i2c_driver(atxp1_driver);

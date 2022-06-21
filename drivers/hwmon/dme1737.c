@@ -2732,7 +2732,10 @@ static int dme1737_isa_remove(struct platform_device *pdev)
 
 static struct platform_driver dme1737_isa_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "dme1737",
 	},
 	.probe = dme1737_isa_probe,

@@ -11,6 +11,7 @@
 
 / {
 	clocks {
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
@@ -20,6 +21,8 @@
 			clock-frequency = <6000000>;
 		};
 
+=======
+>>>>>>> v4.9.227
 		main_xtal {
 			clock-frequency = <6000000>;
 		};

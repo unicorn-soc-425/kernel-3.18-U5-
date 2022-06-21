@@ -37,9 +37,13 @@ machine_device_initcall(virtex, virtex_device_probe);
 
 static int __init virtex_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (!of_flat_dt_is_compatible(root, "xlnx,virtex"))
+=======
+	if (!of_machine_is_compatible("xlnx,virtex"))
+>>>>>>> v4.9.227
 		return 0;
 
 	return 1;

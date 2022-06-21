@@ -24,6 +24,7 @@
  */
 
 #ifndef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
+<<<<<<< HEAD
 #define ACCOUNT_CPU_USER_ENTRY(ra, rb)
 #define ACCOUNT_CPU_USER_EXIT(ra, rb)
 #define ACCOUNT_STOLEN_TIME
@@ -45,6 +46,29 @@
 	ld	ra,PACA_SYSTEM_TIME(r13);				\
 	add	ra,ra,rb;		/* add on to system time */	\
 	std	ra,PACA_SYSTEM_TIME(r13)
+=======
+#define ACCOUNT_CPU_USER_ENTRY(ptr, ra, rb)
+#define ACCOUNT_CPU_USER_EXIT(ptr, ra, rb)
+#define ACCOUNT_STOLEN_TIME
+#else
+#define ACCOUNT_CPU_USER_ENTRY(ptr, ra, rb)				\
+	MFTB(ra);			/* get timebase */		\
+	PPC_LL	rb, ACCOUNT_STARTTIME_USER(ptr);			\
+	PPC_STL	ra, ACCOUNT_STARTTIME(ptr);				\
+	subf	rb,rb,ra;		/* subtract start value */	\
+	PPC_LL	ra, ACCOUNT_USER_TIME(ptr);				\
+	add	ra,ra,rb;		/* add on to user time */	\
+	PPC_STL	ra, ACCOUNT_USER_TIME(ptr);				\
+
+#define ACCOUNT_CPU_USER_EXIT(ptr, ra, rb)				\
+	MFTB(ra);			/* get timebase */		\
+	PPC_LL	rb, ACCOUNT_STARTTIME(ptr);				\
+	PPC_STL	ra, ACCOUNT_STARTTIME_USER(ptr);			\
+	subf	rb,rb,ra;		/* subtract start value */	\
+	PPC_LL	ra, ACCOUNT_SYSTEM_TIME(ptr);				\
+	add	ra,ra,rb;		/* add on to system time */	\
+	PPC_STL	ra, ACCOUNT_SYSTEM_TIME(ptr)
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_PPC_SPLPAR
 #define ACCOUNT_STOLEN_TIME						\
@@ -189,7 +213,11 @@ END_FW_FTR_SECTION_IFSET(FW_FEATURE_SPLPAR)
 #define __STK_REG(i)   (112 + ((i)-14)*8)
 #define STK_REG(i)     __STK_REG(__REG_##i)
 
+<<<<<<< HEAD
 #if defined(_CALL_ELF) && _CALL_ELF == 2
+=======
+#ifdef PPC64_ELF_ABI_v2
+>>>>>>> v4.9.227
 #define STK_GOT		24
 #define __STK_PARAM(i)	(32 + ((i)-3)*8)
 #else
@@ -198,17 +226,26 @@ END_FW_FTR_SECTION_IFSET(FW_FEATURE_SPLPAR)
 #endif
 #define STK_PARAM(i)	__STK_PARAM(__REG_##i)
 
+<<<<<<< HEAD
 #if defined(_CALL_ELF) && _CALL_ELF == 2
 
 #define _GLOBAL(name) \
 	.section ".text"; \
+=======
+#ifdef PPC64_ELF_ABI_v2
+
+#define _GLOBAL(name) \
+>>>>>>> v4.9.227
 	.align 2 ; \
 	.type name,@function; \
 	.globl name; \
 name:
 
 #define _GLOBAL_TOC(name) \
+<<<<<<< HEAD
 	.section ".text"; \
+=======
+>>>>>>> v4.9.227
 	.align 2 ; \
 	.type name,@function; \
 	.globl name; \
@@ -217,6 +254,7 @@ name: \
 	addi r2,r2,(.TOC.-0b)@l; \
 	.localentry name,.-name
 
+<<<<<<< HEAD
 #define _KPROBE(name) \
 	.section ".kprobes.text","a"; \
 	.align 2 ; \
@@ -224,6 +262,8 @@ name: \
 	.globl name; \
 name:
 
+=======
+>>>>>>> v4.9.227
 #define DOTSYM(a)	a
 
 #else
@@ -232,21 +272,33 @@ name:
 #define GLUE(a,b) XGLUE(a,b)
 
 #define _GLOBAL(name) \
+<<<<<<< HEAD
 	.section ".text"; \
 	.align 2 ; \
 	.globl name; \
 	.globl GLUE(.,name); \
 	.section ".opd","aw"; \
+=======
+	.align 2 ; \
+	.globl name; \
+	.globl GLUE(.,name); \
+	.pushsection ".opd","aw"; \
+>>>>>>> v4.9.227
 name: \
 	.quad GLUE(.,name); \
 	.quad .TOC.@tocbase; \
 	.quad 0; \
+<<<<<<< HEAD
 	.previous; \
+=======
+	.popsection; \
+>>>>>>> v4.9.227
 	.type GLUE(.,name),@function; \
 GLUE(.,name):
 
 #define _GLOBAL_TOC(name) _GLOBAL(name)
 
+<<<<<<< HEAD
 #define _KPROBE(name) \
 	.section ".kprobes.text","a"; \
 	.align 2 ; \
@@ -261,6 +313,8 @@ name: \
 	.type GLUE(.,name),@function; \
 GLUE(.,name):
 
+=======
+>>>>>>> v4.9.227
 #define DOTSYM(a)	GLUE(.,a)
 
 #endif
@@ -272,13 +326,17 @@ GLUE(.,name):
 n:
 
 #define _GLOBAL(n)	\
+<<<<<<< HEAD
 	.text;		\
+=======
+>>>>>>> v4.9.227
 	.stabs __stringify(n:F-1),N_FUN,0,0,n;\
 	.globl n;	\
 n:
 
 #define _GLOBAL_TOC(name) _GLOBAL(name)
 
+<<<<<<< HEAD
 #define _KPROBE(n)	\
 	.section ".kprobes.text","a";	\
 	.globl	n;	\
@@ -286,6 +344,27 @@ n:
 
 #endif
 
+=======
+#endif
+
+/*
+ * __kprobes (the C annotation) puts the symbol into the .kprobes.text
+ * section, which gets emitted at the end of regular text.
+ *
+ * _ASM_NOKPROBE_SYMBOL and NOKPROBE_SYMBOL just adds the symbol to
+ * a blacklist. The former is for core kprobe functions/data, the
+ * latter is for those that incdentially must be excluded from probing
+ * and allows them to be linked at more optimal location within text.
+ */
+#define _ASM_NOKPROBE_SYMBOL(entry)			\
+	.pushsection "_kprobe_blacklist","aw";		\
+	PPC_LONG (entry) ;				\
+	.popsection
+
+#define FUNC_START(name)	_GLOBAL(name)
+#define FUNC_END(name)
+
+>>>>>>> v4.9.227
 /* 
  * LOAD_REG_IMMEDIATE(rn, expr)
  *   Loads the value of the constant expression 'expr' into register 'rn'
@@ -413,6 +492,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 	FTR_SECTION_ELSE_NESTED(848);	\
 	mtocrf (FXM), RS;		\
 	ALT_FTR_SECTION_END_NESTED_IFCLR(CPU_FTR_NOEXECUTE, 848)
+<<<<<<< HEAD
 
 /*
  * PPR restore macros used in entry_64.S
@@ -431,6 +511,8 @@ BEGIN_FTR_SECTION_NESTED(945)						\
 	std	ra,TASKTHREADPPR(rb);					\
 END_FTR_SECTION_NESTED(CPU_FTR_HAS_PPR,CPU_FTR_HAS_PPR,945)
 
+=======
+>>>>>>> v4.9.227
 #endif
 
 /*
@@ -445,7 +527,14 @@ END_FTR_SECTION_NESTED(CPU_FTR_HAS_PPR,CPU_FTR_HAS_PPR,945)
 	li	r4,1024;			\
 	mtctr	r4;				\
 	lis	r4,KERNELBASE@h;		\
+<<<<<<< HEAD
 0:	tlbie	r4;				\
+=======
+	.machine push;				\
+	.machine "power4";			\
+0:	tlbie	r4;				\
+	.machine pop;				\
+>>>>>>> v4.9.227
 	addi	r4,r4,0x1000;			\
 	bdnz	0b
 #endif
@@ -465,7 +554,11 @@ END_FTR_SECTION_NESTED(CPU_FTR_HAS_PPR,CPU_FTR_HAS_PPR,945)
 .machine push ;					\
 .machine "power4" ;				\
        lis     scratch,0x60000000@h;		\
+<<<<<<< HEAD
        dcbt    r0,scratch,0b01010;		\
+=======
+       dcbt    0,scratch,0b01010;		\
+>>>>>>> v4.9.227
 .machine pop
 
 /*
@@ -539,7 +632,10 @@ END_FTR_SECTION_NESTED(CPU_FTR_HAS_PPR,CPU_FTR_HAS_PPR,945)
 #endif
 #define MTMSRD(r)	mtmsr	r
 #define MTMSR_EERI(reg)	mtmsr	reg
+<<<<<<< HEAD
 #define CLR_TOP32(r)
+=======
+>>>>>>> v4.9.227
 #endif
 
 #endif /* __KERNEL__ */
@@ -637,6 +733,7 @@ END_FTR_SECTION_NESTED(CPU_FTR_HAS_PPR,CPU_FTR_HAS_PPR,945)
 
 /* AltiVec Registers (VPRs) */
 
+<<<<<<< HEAD
 #define	vr0	0
 #define	vr1	1
 #define	vr2	2
@@ -736,6 +833,107 @@ END_FTR_SECTION_NESTED(CPU_FTR_HAS_PPR,CPU_FTR_HAS_PPR,945)
 #define	vsr61	61
 #define	vsr62	62
 #define	vsr63	63
+=======
+#define	v0	0
+#define	v1	1
+#define	v2	2
+#define	v3	3
+#define	v4	4
+#define	v5	5
+#define	v6	6
+#define	v7	7
+#define	v8	8
+#define	v9	9
+#define	v10	10
+#define	v11	11
+#define	v12	12
+#define	v13	13
+#define	v14	14
+#define	v15	15
+#define	v16	16
+#define	v17	17
+#define	v18	18
+#define	v19	19
+#define	v20	20
+#define	v21	21
+#define	v22	22
+#define	v23	23
+#define	v24	24
+#define	v25	25
+#define	v26	26
+#define	v27	27
+#define	v28	28
+#define	v29	29
+#define	v30	30
+#define	v31	31
+
+/* VSX Registers (VSRs) */
+
+#define	vs0	0
+#define	vs1	1
+#define	vs2	2
+#define	vs3	3
+#define	vs4	4
+#define	vs5	5
+#define	vs6	6
+#define	vs7	7
+#define	vs8	8
+#define	vs9	9
+#define	vs10	10
+#define	vs11	11
+#define	vs12	12
+#define	vs13	13
+#define	vs14	14
+#define	vs15	15
+#define	vs16	16
+#define	vs17	17
+#define	vs18	18
+#define	vs19	19
+#define	vs20	20
+#define	vs21	21
+#define	vs22	22
+#define	vs23	23
+#define	vs24	24
+#define	vs25	25
+#define	vs26	26
+#define	vs27	27
+#define	vs28	28
+#define	vs29	29
+#define	vs30	30
+#define	vs31	31
+#define	vs32	32
+#define	vs33	33
+#define	vs34	34
+#define	vs35	35
+#define	vs36	36
+#define	vs37	37
+#define	vs38	38
+#define	vs39	39
+#define	vs40	40
+#define	vs41	41
+#define	vs42	42
+#define	vs43	43
+#define	vs44	44
+#define	vs45	45
+#define	vs46	46
+#define	vs47	47
+#define	vs48	48
+#define	vs49	49
+#define	vs50	50
+#define	vs51	51
+#define	vs52	52
+#define	vs53	53
+#define	vs54	54
+#define	vs55	55
+#define	vs56	56
+#define	vs57	57
+#define	vs58	58
+#define	vs59	59
+#define	vs60	60
+#define	vs61	61
+#define	vs62	62
+#define	vs63	63
+>>>>>>> v4.9.227
 
 /* SPE Registers (EVPRs) */
 
@@ -809,4 +1007,28 @@ END_FTR_SECTION_NESTED(CPU_FTR_HAS_PPR,CPU_FTR_HAS_PPR,945)
 	.long 0x2400004c  /* rfid				*/
 #endif /* !CONFIG_PPC_BOOK3E */
 #endif /*  __ASSEMBLY__ */
+<<<<<<< HEAD
+=======
+
+/*
+ * Helper macro for exception table entries
+ */
+#define EX_TABLE(_fault, _target)		\
+	stringify_in_c(.section __ex_table,"a";)\
+	stringify_in_c(.balign 4;)		\
+	stringify_in_c(.long (_fault) - . ;)	\
+	stringify_in_c(.long (_target) - . ;)	\
+	stringify_in_c(.previous)
+
+#ifdef CONFIG_PPC_FSL_BOOK3E
+#define BTB_FLUSH(reg)			\
+	lis reg,BUCSR_INIT@h;		\
+	ori reg,reg,BUCSR_INIT@l;	\
+	mtspr SPRN_BUCSR,reg;		\
+	isync;
+#else
+#define BTB_FLUSH(reg)
+#endif /* CONFIG_PPC_FSL_BOOK3E */
+
+>>>>>>> v4.9.227
 #endif /* _ASM_POWERPC_PPC_ASM_H */

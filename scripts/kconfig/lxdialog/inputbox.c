@@ -126,7 +126,12 @@ do_resize:
 			case KEY_DOWN:
 				break;
 			case KEY_BACKSPACE:
+<<<<<<< HEAD
 			case 127:
+=======
+			case 8:   /* ^H */
+			case 127: /* ^? */
+>>>>>>> v4.9.227
 				if (pos) {
 					wattrset(dialog, dlg.inputbox.atr);
 					if (input_x == 0) {

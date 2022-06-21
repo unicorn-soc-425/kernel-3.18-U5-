@@ -21,7 +21,10 @@
 #ifndef R820T_H
 #define R820T_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include "dvb_frontend.h"
 
 enum r820t_chip {

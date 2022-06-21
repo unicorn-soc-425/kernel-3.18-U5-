@@ -32,7 +32,11 @@
 
 #include <linux/backlight.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_reg.h"
 #include "nouveau_encoder.h"
 

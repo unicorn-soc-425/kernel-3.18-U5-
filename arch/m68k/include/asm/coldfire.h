@@ -19,7 +19,11 @@
  *	in any case new boards come along from time to time that have yet
  *	another different clocking frequency.
  */
+<<<<<<< HEAD
 #ifdef CONFIG_CLOCK_SET
+=======
+#ifdef CONFIG_CLOCK_FREQ
+>>>>>>> v4.9.227
 #define	MCF_CLK		CONFIG_CLOCK_FREQ
 #else
 #error "Don't know what your ColdFire CPU clock frequency is??"

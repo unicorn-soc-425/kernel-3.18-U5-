@@ -14,6 +14,11 @@ hugetlbpage.txt
 	- a brief summary of hugetlbpage support in the Linux kernel.
 hwpoison.txt
 	- explains what hwpoison is
+<<<<<<< HEAD
+=======
+idle_page_tracking.txt
+	- description of the idle page tracking feature.
+>>>>>>> v4.9.227
 ksm.txt
 	- how to use the Kernel Samepage Merging feature.
 numa

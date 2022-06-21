@@ -27,7 +27,11 @@
 #define F2FS_XATTR_REFCOUNT_MAX         1024
 
 /* Name indexes */
+<<<<<<< HEAD
 #define F2FS_SYSTEM_ADVISE_PREFIX		"system.advise"
+=======
+#define F2FS_SYSTEM_ADVISE_NAME			"system.advise"
+>>>>>>> v4.9.227
 #define F2FS_XATTR_INDEX_USER			1
 #define F2FS_XATTR_INDEX_POSIX_ACL_ACCESS	2
 #define F2FS_XATTR_INDEX_POSIX_ACL_DEFAULT	3
@@ -58,10 +62,17 @@ struct f2fs_xattr_entry {
 #define XATTR_FIRST_ENTRY(ptr)	(XATTR_ENTRY(XATTR_HDR(ptr) + 1))
 #define XATTR_ROUND		(3)
 
+<<<<<<< HEAD
 #define XATTR_ALIGN(size)	(((size) + XATTR_ROUND) & ~XATTR_ROUND)
 
 #define ENTRY_SIZE(entry) (XATTR_ALIGN(sizeof(struct f2fs_xattr_entry) + \
 			(entry)->e_name_len + le16_to_cpu((entry)->e_value_size)))
+=======
+#define XATTR_ALIGN(size)	((size + XATTR_ROUND) & ~XATTR_ROUND)
+
+#define ENTRY_SIZE(entry) (XATTR_ALIGN(sizeof(struct f2fs_xattr_entry) + \
+			entry->e_name_len + le16_to_cpu(entry->e_value_size)))
+>>>>>>> v4.9.227
 
 #define XATTR_NEXT_ENTRY(entry)	((struct f2fs_xattr_entry *)((char *)(entry) +\
 			ENTRY_SIZE(entry)))
@@ -72,10 +83,16 @@ struct f2fs_xattr_entry {
 		for (entry = XATTR_FIRST_ENTRY(addr);\
 				!IS_XATTR_LAST_ENTRY(entry);\
 				entry = XATTR_NEXT_ENTRY(entry))
+<<<<<<< HEAD
 #define VALID_XATTR_BLOCK_SIZE	(PAGE_SIZE - sizeof(struct node_footer))
 #define XATTR_PADDING_SIZE	(sizeof(__u32))
 #define MIN_OFFSET(i)		XATTR_ALIGN(inline_xattr_size(i) +	\
 						VALID_XATTR_BLOCK_SIZE)
+=======
+
+#define MIN_OFFSET(i)	XATTR_ALIGN(inline_xattr_size(i) + PAGE_SIZE -	\
+				sizeof(struct node_footer) - sizeof(__u32))
+>>>>>>> v4.9.227
 
 #define MAX_VALUE_LEN(i)	(MIN_OFFSET(i) -			\
 				sizeof(struct f2fs_xattr_header) -	\

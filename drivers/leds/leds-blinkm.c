@@ -39,6 +39,7 @@ struct blinkm_led {
 	struct i2c_client *i2c_client;
 	struct led_classdev led_cdev;
 	int id;
+<<<<<<< HEAD
 	atomic_t active;
 };
 
@@ -49,6 +50,11 @@ struct blinkm_work {
 
 #define cdev_to_blmled(c)          container_of(c, struct blinkm_led, led_cdev)
 #define work_to_blmwork(c)         container_of(c, struct blinkm_work, work)
+=======
+};
+
+#define cdev_to_blmled(c)          container_of(c, struct blinkm_led, led_cdev)
+>>>>>>> v4.9.227
 
 struct blinkm_data {
 	struct i2c_client *i2c_client;
@@ -439,6 +445,7 @@ static int blinkm_transfer_hw(struct i2c_client *client, int cmd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void led_work(struct work_struct *work)
 {
 	int ret;
@@ -458,19 +465,25 @@ static void led_work(struct work_struct *work)
 	kfree(blm_work);
 }
 
+=======
+>>>>>>> v4.9.227
 static int blinkm_led_common_set(struct led_classdev *led_cdev,
 				 enum led_brightness value, int color)
 {
 	/* led_brightness is 0, 127 or 255 - we just use it here as-is */
 	struct blinkm_led *led = cdev_to_blmled(led_cdev);
 	struct blinkm_data *data = i2c_get_clientdata(led->i2c_client);
+<<<<<<< HEAD
 	struct blinkm_work *bl_work;
+=======
+>>>>>>> v4.9.227
 
 	switch (color) {
 	case RED:
 		/* bail out if there's no change */
 		if (data->next_red == (u8) value)
 			return 0;
+<<<<<<< HEAD
 		/* we assume a quite fast sequence here ([off]->on->off)
 		 * think of network led trigger - we cannot blink that fast, so
 		 * in case we already have a off->on->off transition queued up,
@@ -478,26 +491,34 @@ static int blinkm_led_common_set(struct led_classdev *led_cdev,
 		 * Revisit: fast-changing brightness. */
 		if (atomic_read(&led->active) > 1)
 			return 0;
+=======
+>>>>>>> v4.9.227
 		data->next_red = (u8) value;
 		break;
 	case GREEN:
 		/* bail out if there's no change */
 		if (data->next_green == (u8) value)
 			return 0;
+<<<<<<< HEAD
 		/* we assume a quite fast sequence here ([off]->on->off)
 		 * Revisit: fast-changing brightness. */
 		if (atomic_read(&led->active) > 1)
 			return 0;
+=======
+>>>>>>> v4.9.227
 		data->next_green = (u8) value;
 		break;
 	case BLUE:
 		/* bail out if there's no change */
 		if (data->next_blue == (u8) value)
 			return 0;
+<<<<<<< HEAD
 		/* we assume a quite fast sequence here ([off]->on->off)
 		 * Revisit: fast-changing brightness. */
 		if (atomic_read(&led->active) > 1)
 			return 0;
+=======
+>>>>>>> v4.9.227
 		data->next_blue = (u8) value;
 		break;
 
@@ -506,6 +527,7 @@ static int blinkm_led_common_set(struct led_classdev *led_cdev,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	bl_work = kzalloc(sizeof(*bl_work), GFP_ATOMIC);
 	if (!bl_work)
 		return -ENOMEM;
@@ -542,6 +564,33 @@ static void blinkm_led_blue_set(struct led_classdev *led_cdev,
 				enum led_brightness value)
 {
 	blinkm_led_common_set(led_cdev, value, BLUE);
+=======
+	blinkm_transfer_hw(led->i2c_client, BLM_GO_RGB);
+	dev_dbg(&led->i2c_client->dev,
+			"# DONE # next_red = %d, next_green = %d,"
+			" next_blue = %d\n",
+			data->next_red, data->next_green,
+			data->next_blue);
+	return 0;
+}
+
+static int blinkm_led_red_set(struct led_classdev *led_cdev,
+			       enum led_brightness value)
+{
+	return blinkm_led_common_set(led_cdev, value, RED);
+}
+
+static int blinkm_led_green_set(struct led_classdev *led_cdev,
+				 enum led_brightness value)
+{
+	return blinkm_led_common_set(led_cdev, value, GREEN);
+}
+
+static int blinkm_led_blue_set(struct led_classdev *led_cdev,
+				enum led_brightness value)
+{
+	return blinkm_led_common_set(led_cdev, value, BLUE);
+>>>>>>> v4.9.227
 }
 
 static void blinkm_init_hw(struct i2c_client *client)
@@ -669,7 +718,10 @@ static int blinkm_probe(struct i2c_client *client,
 		led[i]->id = i;
 		led[i]->led_cdev.max_brightness = 255;
 		led[i]->led_cdev.flags = LED_CORE_SUSPENDRESUME;
+<<<<<<< HEAD
 		atomic_set(&led[i]->active, 0);
+=======
+>>>>>>> v4.9.227
 		switch (i) {
 		case RED:
 			snprintf(blinkm_led_name, sizeof(blinkm_led_name),
@@ -677,7 +729,12 @@ static int blinkm_probe(struct i2c_client *client,
 					 client->adapter->nr,
 					 client->addr);
 			led[i]->led_cdev.name = blinkm_led_name;
+<<<<<<< HEAD
 			led[i]->led_cdev.brightness_set = blinkm_led_red_set;
+=======
+			led[i]->led_cdev.brightness_set_blocking =
+							blinkm_led_red_set;
+>>>>>>> v4.9.227
 			err = led_classdev_register(&client->dev,
 						    &led[i]->led_cdev);
 			if (err < 0) {
@@ -693,7 +750,12 @@ static int blinkm_probe(struct i2c_client *client,
 					 client->adapter->nr,
 					 client->addr);
 			led[i]->led_cdev.name = blinkm_led_name;
+<<<<<<< HEAD
 			led[i]->led_cdev.brightness_set = blinkm_led_green_set;
+=======
+			led[i]->led_cdev.brightness_set_blocking =
+							blinkm_led_green_set;
+>>>>>>> v4.9.227
 			err = led_classdev_register(&client->dev,
 						    &led[i]->led_cdev);
 			if (err < 0) {
@@ -709,7 +771,12 @@ static int blinkm_probe(struct i2c_client *client,
 					 client->adapter->nr,
 					 client->addr);
 			led[i]->led_cdev.name = blinkm_led_name;
+<<<<<<< HEAD
 			led[i]->led_cdev.brightness_set = blinkm_led_blue_set;
+=======
+			led[i]->led_cdev.brightness_set_blocking =
+							blinkm_led_blue_set;
+>>>>>>> v4.9.227
 			err = led_classdev_register(&client->dev,
 						    &led[i]->led_cdev);
 			if (err < 0) {
@@ -746,10 +813,15 @@ static int blinkm_remove(struct i2c_client *client)
 	int i;
 
 	/* make sure no workqueue entries are pending */
+<<<<<<< HEAD
 	for (i = 0; i < 3; i++) {
 		flush_scheduled_work();
 		led_classdev_unregister(&data->blinkm_leds[i].led_cdev);
 	}
+=======
+	for (i = 0; i < 3; i++)
+		led_classdev_unregister(&data->blinkm_leds[i].led_cdev);
+>>>>>>> v4.9.227
 
 	/* reset rgb */
 	data->next_red = 0x00;

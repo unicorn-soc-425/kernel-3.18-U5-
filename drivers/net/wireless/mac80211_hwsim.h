@@ -60,7 +60,11 @@ enum hwsim_tx_control_flags {
  * space, uses:
  *	%HWSIM_ATTR_ADDR_TRANSMITTER, %HWSIM_ATTR_ADDR_RECEIVER,
  *	%HWSIM_ATTR_FRAME, %HWSIM_ATTR_FLAGS, %HWSIM_ATTR_RX_RATE,
+<<<<<<< HEAD
  *	%HWSIM_ATTR_SIGNAL, %HWSIM_ATTR_COOKIE
+=======
+ *	%HWSIM_ATTR_SIGNAL, %HWSIM_ATTR_COOKIE, %HWSIM_ATTR_FREQ (optional)
+>>>>>>> v4.9.227
  * @HWSIM_CMD_TX_INFO_FRAME: Transmission info report from user space to
  * kernel, uses:
  *	%HWSIM_ATTR_ADDR_TRANSMITTER, %HWSIM_ATTR_FLAGS,
@@ -69,6 +73,11 @@ enum hwsim_tx_control_flags {
  *	returns the radio ID (>= 0) or negative on errors, if successful
  *	then multicast the result
  * @HWSIM_CMD_DEL_RADIO: destroy a radio, reply is multicasted
+<<<<<<< HEAD
+=======
+ * @HWSIM_CMD_GET_RADIO: fetch information about existing radios, uses:
+ *	%HWSIM_ATTR_RADIO_ID
+>>>>>>> v4.9.227
  * @__HWSIM_CMD_MAX: enum limit
  */
 enum {
@@ -78,6 +87,10 @@ enum {
 	HWSIM_CMD_TX_INFO_FRAME,
 	HWSIM_CMD_NEW_RADIO,
 	HWSIM_CMD_DEL_RADIO,
+<<<<<<< HEAD
+=======
+	HWSIM_CMD_GET_RADIO,
+>>>>>>> v4.9.227
 	__HWSIM_CMD_MAX,
 };
 #define HWSIM_CMD_MAX (_HWSIM_CMD_MAX - 1)
@@ -119,6 +132,10 @@ enum {
  *	command to force radio removal when process that created the radio dies
  * @HWSIM_ATTR_RADIO_NAME: Name of radio, e.g. phy666
  * @HWSIM_ATTR_NO_VIF:  Do not create vif (wlanX) when creating radio.
+<<<<<<< HEAD
+=======
+ * @HWSIM_ATTR_FREQ: Frequency at which packet is transmitted or received.
+>>>>>>> v4.9.227
  * @__HWSIM_ATTR_MAX: enum limit
  */
 
@@ -143,6 +160,11 @@ enum {
 	HWSIM_ATTR_DESTROY_RADIO_ON_CLOSE,
 	HWSIM_ATTR_RADIO_NAME,
 	HWSIM_ATTR_NO_VIF,
+<<<<<<< HEAD
+=======
+	HWSIM_ATTR_FREQ,
+	HWSIM_ATTR_PAD,
+>>>>>>> v4.9.227
 	__HWSIM_ATTR_MAX,
 };
 #define HWSIM_ATTR_MAX (__HWSIM_ATTR_MAX - 1)

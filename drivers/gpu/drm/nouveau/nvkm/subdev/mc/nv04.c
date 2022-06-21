@@ -23,6 +23,7 @@
  */
 #include "priv.h"
 
+<<<<<<< HEAD
 const struct nvkm_mc_intr
 nv04_mc_intr[] = {
 	{ 0x00000001, NVKM_ENGINE_MPEG },	/* NV17- MPEG/ME */
@@ -35,6 +36,22 @@ nv04_mc_intr[] = {
 	{ 0x02000000, NVKM_ENGINE_DISP },	/* NV11- PCRTC1 */
 	{ 0x10000000, NVKM_SUBDEV_BUS },
 	{ 0x80000000, NVKM_ENGINE_SW },
+=======
+const struct nvkm_mc_map
+nv04_mc_reset[] = {
+	{ 0x00001000, NVKM_ENGINE_GR },
+	{ 0x00000100, NVKM_ENGINE_FIFO },
+	{}
+};
+
+static const struct nvkm_mc_map
+nv04_mc_intr[] = {
+	{ 0x01010000, NVKM_ENGINE_DISP },
+	{ 0x00001000, NVKM_ENGINE_GR },
+	{ 0x00000100, NVKM_ENGINE_FIFO },
+	{ 0x10000000, NVKM_SUBDEV_BUS },
+	{ 0x00100000, NVKM_SUBDEV_TIMER },
+>>>>>>> v4.9.227
 	{}
 };
 
@@ -54,7 +71,11 @@ nv04_mc_intr_rearm(struct nvkm_mc *mc)
 }
 
 u32
+<<<<<<< HEAD
 nv04_mc_intr_mask(struct nvkm_mc *mc)
+=======
+nv04_mc_intr_stat(struct nvkm_mc *mc)
+>>>>>>> v4.9.227
 {
 	return nvkm_rd32(mc->subdev.device, 0x000100);
 }
@@ -73,7 +94,12 @@ nv04_mc = {
 	.intr = nv04_mc_intr,
 	.intr_unarm = nv04_mc_intr_unarm,
 	.intr_rearm = nv04_mc_intr_rearm,
+<<<<<<< HEAD
 	.intr_mask = nv04_mc_intr_mask,
+=======
+	.intr_stat = nv04_mc_intr_stat,
+	.reset = nv04_mc_reset,
+>>>>>>> v4.9.227
 };
 
 int

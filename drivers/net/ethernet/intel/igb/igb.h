@@ -91,11 +91,25 @@ struct igb_adapter;
 #define NVM_COMB_VER_OFF	0x0083
 #define NVM_COMB_VER_PTR	0x003d
 
+<<<<<<< HEAD
+=======
+/* Transmit and receive latency (for PTP timestamps) */
+#define IGB_I210_TX_LATENCY_10		9542
+#define IGB_I210_TX_LATENCY_100		1024
+#define IGB_I210_TX_LATENCY_1000	178
+#define IGB_I210_RX_LATENCY_10		20662
+#define IGB_I210_RX_LATENCY_100		2213
+#define IGB_I210_RX_LATENCY_1000	448
+
+>>>>>>> v4.9.227
 struct vf_data_storage {
 	unsigned char vf_mac_addresses[ETH_ALEN];
 	u16 vf_mc_hashes[IGB_MAX_VF_MC_ENTRIES];
 	u16 num_vf_mc_hashes;
+<<<<<<< HEAD
 	u16 vlans_enabled;
+=======
+>>>>>>> v4.9.227
 	u32 flags;
 	unsigned long last_nack;
 	u16 pf_vlan; /* When set, guest VLAN config not allowed. */
@@ -170,7 +184,11 @@ enum igb_tx_flags {
  * maintain a power of two alignment we have to limit ourselves to 32K.
  */
 #define IGB_MAX_TXD_PWR	15
+<<<<<<< HEAD
 #define IGB_MAX_DATA_PER_TXD	(1 << IGB_MAX_TXD_PWR)
+=======
+#define IGB_MAX_DATA_PER_TXD	(1u << IGB_MAX_TXD_PWR)
+>>>>>>> v4.9.227
 
 /* Tx Descriptors needed, worst case */
 #define TXD_USE_COUNT(S) DIV_ROUND_UP((S), IGB_MAX_DATA_PER_TXD)
@@ -343,8 +361,54 @@ struct hwmon_buff {
 	};
 #endif
 
+<<<<<<< HEAD
 #define IGB_RETA_SIZE	128
 
+=======
+/* The number of L2 ether-type filter registers, Index 3 is reserved
+ * for PTP 1588 timestamp
+ */
+#define MAX_ETYPE_FILTER	(4 - 1)
+/* ETQF filter list: one static filter per filter consumer. This is
+ * to avoid filter collisions later. Add new filters here!!
+ *
+ * Current filters:		Filter 3
+ */
+#define IGB_ETQF_FILTER_1588	3
+
+#define IGB_N_EXTTS	2
+#define IGB_N_PEROUT	2
+#define IGB_N_SDP	4
+#define IGB_RETA_SIZE	128
+
+enum igb_filter_match_flags {
+	IGB_FILTER_FLAG_ETHER_TYPE = 0x1,
+	IGB_FILTER_FLAG_VLAN_TCI   = 0x2,
+};
+
+#define IGB_MAX_RXNFC_FILTERS 16
+
+/* RX network flow classification data structure */
+struct igb_nfc_input {
+	/* Byte layout in order, all values with MSB first:
+	 * match_flags - 1 byte
+	 * etype - 2 bytes
+	 * vlan_tci - 2 bytes
+	 */
+	u8 match_flags;
+	__be16 etype;
+	__be16 vlan_tci;
+};
+
+struct igb_nfc_filter {
+	struct hlist_node nfc_node;
+	struct igb_nfc_input filter;
+	u16 etype_reg_index;
+	u16 sw_idx;
+	u16 action;
+};
+
+>>>>>>> v4.9.227
 /* board specific private data structure */
 struct igb_adapter {
 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
@@ -386,6 +450,11 @@ struct igb_adapter {
 	u16 link_speed;
 	u16 link_duplex;
 
+<<<<<<< HEAD
+=======
+	u8 __iomem *io_addr; /* Mainly for iounmap use */
+
+>>>>>>> v4.9.227
 	struct work_struct reset_task;
 	struct work_struct watchdog_task;
 	bool fc_autoneg;
@@ -433,11 +502,25 @@ struct igb_adapter {
 	unsigned long ptp_tx_start;
 	unsigned long last_rx_ptp_check;
 	unsigned long last_rx_timestamp;
+<<<<<<< HEAD
+=======
+	unsigned int ptp_flags;
+>>>>>>> v4.9.227
 	spinlock_t tmreg_lock;
 	struct cyclecounter cc;
 	struct timecounter tc;
 	u32 tx_hwtstamp_timeouts;
 	u32 rx_hwtstamp_cleared;
+<<<<<<< HEAD
+=======
+	bool pps_sys_wrap_on;
+
+	struct ptp_pin_desc sdp_config[IGB_N_SDP];
+	struct {
+		struct timespec64 start;
+		struct timespec64 period;
+	} perout[IGB_N_PEROUT];
+>>>>>>> v4.9.227
 
 	char fw_version[32];
 #ifdef CONFIG_IGB_HWMON
@@ -454,6 +537,7 @@ struct igb_adapter {
 	int copper_tries;
 	struct e1000_info ei;
 	u16 eee_advert;
+<<<<<<< HEAD
 };
 
 #define IGB_FLAG_HAS_MSI		(1 << 0)
@@ -471,6 +555,36 @@ struct igb_adapter {
 #define IGB_FLAG_MAS_ENABLE		(1 << 12)
 #define IGB_FLAG_HAS_MSIX		(1 << 13)
 #define IGB_FLAG_EEE			(1 << 14)
+=======
+
+	/* RX network flow classification support */
+	struct hlist_head nfc_filter_list;
+	unsigned int nfc_filter_count;
+	/* lock for RX network flow classification filter */
+	spinlock_t nfc_lock;
+	bool etype_bitmap[MAX_ETYPE_FILTER];
+};
+
+/* flags controlling PTP/1588 function */
+#define IGB_PTP_ENABLED		BIT(0)
+#define IGB_PTP_OVERFLOW_CHECK	BIT(1)
+
+#define IGB_FLAG_HAS_MSI		BIT(0)
+#define IGB_FLAG_DCA_ENABLED		BIT(1)
+#define IGB_FLAG_QUAD_PORT_A		BIT(2)
+#define IGB_FLAG_QUEUE_PAIRS		BIT(3)
+#define IGB_FLAG_DMAC			BIT(4)
+#define IGB_FLAG_RSS_FIELD_IPV4_UDP	BIT(6)
+#define IGB_FLAG_RSS_FIELD_IPV6_UDP	BIT(7)
+#define IGB_FLAG_WOL_SUPPORTED		BIT(8)
+#define IGB_FLAG_NEED_LINK_UPDATE	BIT(9)
+#define IGB_FLAG_MEDIA_RESET		BIT(10)
+#define IGB_FLAG_MAS_CAPABLE		BIT(11)
+#define IGB_FLAG_MAS_ENABLE		BIT(12)
+#define IGB_FLAG_HAS_MSIX		BIT(13)
+#define IGB_FLAG_EEE			BIT(14)
+#define IGB_FLAG_VLAN_PROMISC		BIT(15)
+>>>>>>> v4.9.227
 
 /* Media Auto Sense */
 #define IGB_MAS_ENABLE_0		0X0001
@@ -499,6 +613,11 @@ enum igb_boards {
 extern char igb_driver_name[];
 extern char igb_driver_version[];
 
+<<<<<<< HEAD
+=======
+int igb_open(struct net_device *netdev);
+int igb_close(struct net_device *netdev);
+>>>>>>> v4.9.227
 int igb_up(struct igb_adapter *);
 void igb_down(struct igb_adapter *);
 void igb_reinit_locked(struct igb_adapter *);
@@ -525,6 +644,10 @@ void igb_set_fw_version(struct igb_adapter *);
 void igb_ptp_init(struct igb_adapter *adapter);
 void igb_ptp_stop(struct igb_adapter *adapter);
 void igb_ptp_reset(struct igb_adapter *adapter);
+<<<<<<< HEAD
+=======
+void igb_ptp_suspend(struct igb_adapter *adapter);
+>>>>>>> v4.9.227
 void igb_ptp_rx_hang(struct igb_adapter *adapter);
 void igb_ptp_rx_rgtstamp(struct igb_q_vector *q_vector, struct sk_buff *skb);
 void igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, unsigned char *va,
@@ -573,4 +696,12 @@ static inline struct netdev_queue *txring_txq(const struct igb_ring *tx_ring)
 	return netdev_get_tx_queue(tx_ring->netdev, tx_ring->queue_index);
 }
 
+<<<<<<< HEAD
+=======
+int igb_add_filter(struct igb_adapter *adapter,
+		   struct igb_nfc_filter *input);
+int igb_erase_filter(struct igb_adapter *adapter,
+		     struct igb_nfc_filter *input);
+
+>>>>>>> v4.9.227
 #endif /* _IGB_H_ */

@@ -15,10 +15,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/init.h>
@@ -237,6 +240,7 @@ static int au1550_spi_setupxfer(struct spi_device *spi, struct spi_transfer *t)
 	unsigned bpw, hz;
 	u32 cfg, stat;
 
+<<<<<<< HEAD
 	bpw = spi->bits_per_word;
 	hz = spi->max_speed_hz;
 	if (t) {
@@ -244,6 +248,14 @@ static int au1550_spi_setupxfer(struct spi_device *spi, struct spi_transfer *t)
 			bpw = t->bits_per_word;
 		if (t->speed_hz)
 			hz = t->speed_hz;
+=======
+	if (t) {
+		bpw = t->bits_per_word;
+		hz = t->speed_hz;
+	} else {
+		bpw = spi->bits_per_word;
+		hz = spi->max_speed_hz;
+>>>>>>> v4.9.227
 	}
 
 	if (!hz)
@@ -965,7 +977,10 @@ static struct platform_driver au1550_spi_drv = {
 	.remove = au1550_spi_remove,
 	.driver = {
 		.name = "au1550-spi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

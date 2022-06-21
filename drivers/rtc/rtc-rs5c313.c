@@ -50,7 +50,10 @@
 #include <linux/io.h>
 
 #define DRV_NAME	"rs5c313"
+<<<<<<< HEAD
 #define DRV_VERSION	"1.13"
+=======
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_SH_LANDISK
 /*****************************************************/
@@ -381,7 +384,10 @@ static int rs5c313_rtc_probe(struct platform_device *pdev)
 static struct platform_driver rs5c313_rtc_platform_driver = {
 	.driver         = {
 		.name   = DRV_NAME,
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe	= rs5c313_rtc_probe,
 };
@@ -408,7 +414,10 @@ static void __exit rs5c313_rtc_exit(void)
 module_init(rs5c313_rtc_init);
 module_exit(rs5c313_rtc_exit);
 
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227
 MODULE_AUTHOR("kogiidena , Nobuhiro Iwamatsu <iwamatsu@nigauri.org>");
 MODULE_DESCRIPTION("Ricoh RS5C313 RTC device driver");
 MODULE_LICENSE("GPL");

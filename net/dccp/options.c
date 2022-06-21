@@ -253,7 +253,11 @@ out_nonsensical_length:
 	return 0;
 
 out_invalid_option:
+<<<<<<< HEAD
 	DCCP_INC_STATS_BH(DCCP_MIB_INVALIDOPT);
+=======
+	DCCP_INC_STATS(DCCP_MIB_INVALIDOPT);
+>>>>>>> v4.9.227
 	rc = DCCP_RESET_CODE_OPTION_ERROR;
 out_featneg_failed:
 	DCCP_WARN("DCCP(%p): Option %d (len=%d) error=%u\n", sk, opt, len, rc);

@@ -54,6 +54,13 @@ MODULE_DESCRIPTION("Cryptographic Coprocessor interface, " \
 		   "Copyright IBM Corp. 2001, 2012");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
+=======
+static int zcrypt_hwrng_seed = 1;
+module_param_named(hwrng_seed, zcrypt_hwrng_seed, int, S_IRUSR|S_IRGRP);
+MODULE_PARM_DESC(hwrng_seed, "Turn on/off hwrng auto seed, default is 1 (on).");
+
+>>>>>>> v4.9.227
 static DEFINE_SPINLOCK(zcrypt_device_lock);
 static LIST_HEAD(zcrypt_device_list);
 static int zcrypt_device_count = 0;
@@ -313,11 +320,17 @@ EXPORT_SYMBOL(zcrypt_device_unregister);
 
 void zcrypt_msgtype_register(struct zcrypt_ops *zops)
 {
+<<<<<<< HEAD
 	if (zops->owner) {
 		spin_lock_bh(&zcrypt_ops_list_lock);
 		list_add_tail(&zops->list, &zcrypt_ops_list);
 		spin_unlock_bh(&zcrypt_ops_list_lock);
 	}
+=======
+	spin_lock_bh(&zcrypt_ops_list_lock);
+	list_add_tail(&zops->list, &zcrypt_ops_list);
+	spin_unlock_bh(&zcrypt_ops_list_lock);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(zcrypt_msgtype_register);
 
@@ -338,7 +351,11 @@ struct zcrypt_ops *__ops_lookup(unsigned char *name, int variant)
 	spin_lock_bh(&zcrypt_ops_list_lock);
 	list_for_each_entry(zops, &zcrypt_ops_list, list) {
 		if ((zops->variant == variant) &&
+<<<<<<< HEAD
 		    (!strncmp(zops->owner->name, name, MODULE_NAME_LEN))) {
+=======
+		    (!strncmp(zops->name, name, sizeof(zops->name)))) {
+>>>>>>> v4.9.227
 			found = 1;
 			break;
 		}
@@ -468,8 +485,12 @@ static long zcrypt_rsa_crt(struct ica_rsa_modexpo_crt *crt)
 	unsigned long long z1, z2, z3;
 	int rc, copied;
 
+<<<<<<< HEAD
 	if (crt->outputdatalength < crt->inputdatalength ||
 	    (crt->inputdatalength & 1))
+=======
+	if (crt->outputdatalength < crt->inputdatalength)
+>>>>>>> v4.9.227
 		return -EINVAL;
 	/*
 	 * As long as outputdatalength is big enough, we can set the
@@ -1202,6 +1223,7 @@ static void sprinthx(unsigned char *title, struct seq_file *m,
 static void sprinthx4(unsigned char *title, struct seq_file *m,
 		      unsigned int *array, unsigned int len)
 {
+<<<<<<< HEAD
 	int r;
 
 	seq_printf(m, "\n%s\n", title);
@@ -1212,6 +1234,10 @@ static void sprinthx4(unsigned char *title, struct seq_file *m,
 		if ((r % 8) == 7)
 			seq_putc(m, '\n');
 	}
+=======
+	seq_printf(m, "\n%s\n", title);
+	seq_hex_dump(m, "    ", DUMP_PREFIX_NONE, 32, 4, array, len, false);
+>>>>>>> v4.9.227
 	seq_putc(m, '\n');
 }
 
@@ -1373,6 +1399,10 @@ static int zcrypt_rng_data_read(struct hwrng *rng, u32 *data)
 static struct hwrng zcrypt_rng_dev = {
 	.name		= "zcrypt",
 	.data_read	= zcrypt_rng_data_read,
+<<<<<<< HEAD
+=======
+	.quality	= 990,
+>>>>>>> v4.9.227
 };
 
 static int zcrypt_rng_device_add(void)
@@ -1387,6 +1417,11 @@ static int zcrypt_rng_device_add(void)
 			goto out;
 		}
 		zcrypt_rng_buffer_index = 0;
+<<<<<<< HEAD
+=======
+		if (!zcrypt_hwrng_seed)
+			zcrypt_rng_dev.quality = 0;
+>>>>>>> v4.9.227
 		rc = hwrng_register(&zcrypt_rng_dev);
 		if (rc)
 			goto out_free;
@@ -1432,10 +1467,15 @@ int __init zcrypt_debug_init(void)
 void zcrypt_debug_exit(void)
 {
 	debugfs_remove(debugfs_root);
+<<<<<<< HEAD
 	if (zcrypt_dbf_common)
 		debug_unregister(zcrypt_dbf_common);
 	if (zcrypt_dbf_devices)
 		debug_unregister(zcrypt_dbf_devices);
+=======
+	debug_unregister(zcrypt_dbf_common);
+	debug_unregister(zcrypt_dbf_devices);
+>>>>>>> v4.9.227
 }
 
 /**

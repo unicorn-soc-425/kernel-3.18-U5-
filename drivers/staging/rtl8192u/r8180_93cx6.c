@@ -23,8 +23,16 @@
 static void eprom_cs(struct net_device *dev, short bit)
 {
 	u8 cmdreg;
+<<<<<<< HEAD
 
 	read_nic_byte_E(dev, EPROM_CMD, &cmdreg);
+=======
+	int err;
+
+	err = read_nic_byte_E(dev, EPROM_CMD, &cmdreg);
+	if (err)
+		return;
+>>>>>>> v4.9.227
 	if (bit)
 		/* enable EPROM */
 		write_nic_byte_E(dev, EPROM_CMD, cmdreg | EPROM_CS_BIT);
@@ -40,8 +48,16 @@ static void eprom_cs(struct net_device *dev, short bit)
 static void eprom_ck_cycle(struct net_device *dev)
 {
 	u8 cmdreg;
+<<<<<<< HEAD
 
 	read_nic_byte_E(dev, EPROM_CMD, &cmdreg);
+=======
+	int err;
+
+	err = read_nic_byte_E(dev, EPROM_CMD, &cmdreg);
+	if (err)
+		return;
+>>>>>>> v4.9.227
 	write_nic_byte_E(dev, EPROM_CMD, cmdreg | EPROM_CK_BIT);
 	force_pci_posting(dev);
 	udelay(EPROM_DELAY);
@@ -56,8 +72,16 @@ static void eprom_ck_cycle(struct net_device *dev)
 static void eprom_w(struct net_device *dev, short bit)
 {
 	u8 cmdreg;
+<<<<<<< HEAD
 
 	read_nic_byte_E(dev, EPROM_CMD, &cmdreg);
+=======
+	int err;
+
+	err = read_nic_byte_E(dev, EPROM_CMD, &cmdreg);
+	if (err)
+		return;
+>>>>>>> v4.9.227
 	if (bit)
 		write_nic_byte_E(dev, EPROM_CMD, cmdreg | EPROM_W_BIT);
 	else
@@ -71,8 +95,17 @@ static void eprom_w(struct net_device *dev, short bit)
 static short eprom_r(struct net_device *dev)
 {
 	u8 bit;
+<<<<<<< HEAD
 
 	read_nic_byte_E(dev, EPROM_CMD, &bit);
+=======
+	int err;
+
+	err = read_nic_byte_E(dev, EPROM_CMD, &bit);
+	if (err)
+		return err;
+
+>>>>>>> v4.9.227
 	udelay(EPROM_DELAY);
 
 	if (bit & EPROM_R_BIT)
@@ -93,7 +126,11 @@ static void eprom_send_bits_string(struct net_device *dev, short b[], int len)
 }
 
 
+<<<<<<< HEAD
 u32 eprom_read(struct net_device *dev, u32 addr)
+=======
+int eprom_read(struct net_device *dev, u32 addr)
+>>>>>>> v4.9.227
 {
 	struct r8192_priv *priv = ieee80211_priv(dev);
 	short read_cmd[] = {1, 1, 0};
@@ -101,6 +138,10 @@ u32 eprom_read(struct net_device *dev, u32 addr)
 	int i;
 	int addr_len;
 	u32 ret;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> v4.9.227
 
 	ret = 0;
 	/* enable EPROM programming */
@@ -144,7 +185,15 @@ u32 eprom_read(struct net_device *dev, u32 addr)
 		 * and reading data. (eeprom outs a dummy 0)
 		 */
 		eprom_ck_cycle(dev);
+<<<<<<< HEAD
 		ret |= (eprom_r(dev)<<(15-i));
+=======
+		err = eprom_r(dev);
+		if (err < 0)
+			return err;
+
+		ret |= err<<(15-i);
+>>>>>>> v4.9.227
 	}
 
 	eprom_cs(dev, 0);

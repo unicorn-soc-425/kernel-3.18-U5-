@@ -378,8 +378,12 @@ static int wl3501_esbq_exec(struct wl3501_card *this, void *sig, int sig_size)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int wl3501_get_mib_value(struct wl3501_card *this, u8 index,
 				void *bf, int size)
+=======
+static int wl3501_request_mib(struct wl3501_card *this, u8 index, void *bf)
+>>>>>>> v4.9.227
 {
 	struct wl3501_get_req sig = {
 		.sig_id	    = WL3501_SIG_GET_REQ,
@@ -395,6 +399,7 @@ static int wl3501_get_mib_value(struct wl3501_card *this, u8 index,
 			wl3501_set_to_wla(this, ptr, &sig, sizeof(sig));
 			wl3501_esbq_req(this, &ptr);
 			this->sig_get_confirm.mib_status = 255;
+<<<<<<< HEAD
 			spin_unlock_irqrestore(&this->lock, flags);
 			rc = wait_event_interruptible(this->wait,
 				this->sig_get_confirm.mib_status != 255);
@@ -409,6 +414,34 @@ out:
 	return rc;
 }
 
+=======
+			rc = 0;
+		}
+	}
+	spin_unlock_irqrestore(&this->lock, flags);
+
+	return rc;
+}
+
+static int wl3501_get_mib_value(struct wl3501_card *this, u8 index,
+				void *bf, int size)
+{
+	int rc;
+
+	rc = wl3501_request_mib(this, index, bf);
+	if (rc)
+		return rc;
+
+	rc = wait_event_interruptible(this->wait,
+		this->sig_get_confirm.mib_status != 255);
+	if (rc)
+		return rc;
+
+	memcpy(bf, this->sig_get_confirm.mib_value, size);
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int wl3501_pwr_mgmt(struct wl3501_card *this, int suspend)
 {
 	struct wl3501_pwr_mgmt_req sig = {
@@ -1247,7 +1280,13 @@ static int wl3501_reset(struct net_device *dev)
 {
 	struct wl3501_card *this = netdev_priv(dev);
 	int rc = -ENODEV;
+<<<<<<< HEAD
 
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&this->lock, flags);
+>>>>>>> v4.9.227
 	wl3501_block_interrupt(this);
 
 	if (wl3501_init_firmware(this)) {
@@ -1269,11 +1308,16 @@ static int wl3501_reset(struct net_device *dev)
 	pr_debug("%s: device reset", dev->name);
 	rc = 0;
 out:
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&this->lock, flags);
+>>>>>>> v4.9.227
 	return rc;
 }
 
 static void wl3501_tx_timeout(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct wl3501_card *this = netdev_priv(dev);
 	struct net_device_stats *stats = &dev->stats;
 	unsigned long flags;
@@ -1283,11 +1327,22 @@ static void wl3501_tx_timeout(struct net_device *dev)
 	spin_lock_irqsave(&this->lock, flags);
 	rc = wl3501_reset(dev);
 	spin_unlock_irqrestore(&this->lock, flags);
+=======
+	struct net_device_stats *stats = &dev->stats;
+	int rc;
+
+	stats->tx_errors++;
+	rc = wl3501_reset(dev);
+>>>>>>> v4.9.227
 	if (rc)
 		printk(KERN_ERR "%s: Error %d resetting card on Tx timeout!\n",
 		       dev->name, rc);
 	else {
+<<<<<<< HEAD
 		dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+		netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 		netif_wake_queue(dev);
 	}
 }
@@ -1454,7 +1509,11 @@ static int wl3501_get_freq(struct net_device *dev, struct iw_request_info *info,
 	struct wl3501_card *this = netdev_priv(dev);
 
 	wrqu->freq.m = 100000 *
+<<<<<<< HEAD
 		ieee80211_channel_to_frequency(this->chan, IEEE80211_BAND_2GHZ);
+=======
+		ieee80211_channel_to_frequency(this->chan, NL80211_BAND_2GHZ);
+>>>>>>> v4.9.227
 	wrqu->freq.e = 1;
 	return 0;
 }

@@ -80,7 +80,10 @@ static int als_read_raw(struct iio_dev *indio_dev,
 	int report_id = -1;
 	u32 address;
 	int ret_type;
+<<<<<<< HEAD
 	s32 poll_value;
+=======
+>>>>>>> v4.9.227
 
 	*val = 0;
 	*val2 = 0;
@@ -97,6 +100,7 @@ static int als_read_raw(struct iio_dev *indio_dev,
 			break;
 		}
 		if (report_id >= 0) {
+<<<<<<< HEAD
 			poll_value = hid_sensor_read_poll_value(
 						&als_state->common_attributes);
 			if (poll_value < 0)
@@ -110,6 +114,15 @@ static int als_read_raw(struct iio_dev *indio_dev,
 					als_state->common_attributes.hsdev,
 					HID_USAGE_SENSOR_ALS, address,
 					report_id);
+=======
+			hid_sensor_power_state(&als_state->common_attributes,
+						true);
+			*val = sensor_hub_input_attr_get_raw_value(
+					als_state->common_attributes.hsdev,
+					HID_USAGE_SENSOR_ALS, address,
+					report_id,
+					SENSOR_HUB_SYNC);
+>>>>>>> v4.9.227
 			hid_sensor_power_state(&als_state->common_attributes,
 						false);
 		} else {
@@ -368,7 +381,11 @@ static int hid_als_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_device_id hid_als_ids[] = {
+=======
+static const struct platform_device_id hid_als_ids[] = {
+>>>>>>> v4.9.227
 	{
 		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
 		.name = "HID-SENSOR-200041",
@@ -381,6 +398,10 @@ static struct platform_driver hid_als_platform_driver = {
 	.id_table = hid_als_ids,
 	.driver = {
 		.name	= KBUILD_MODNAME,
+<<<<<<< HEAD
+=======
+		.pm	= &hid_sensor_pm_ops,
+>>>>>>> v4.9.227
 	},
 	.probe		= hid_als_probe,
 	.remove		= hid_als_remove,

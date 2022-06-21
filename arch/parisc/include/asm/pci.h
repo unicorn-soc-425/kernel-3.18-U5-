@@ -1,7 +1,11 @@
 #ifndef __ASM_PARISC_PCI_H
 #define __ASM_PARISC_PCI_H
 
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+>>>>>>> v4.9.227
 
 
 
@@ -167,6 +171,10 @@ static inline void pcibios_register_hba(struct pci_hba_data *x)
 {
 }
 #endif
+<<<<<<< HEAD
+=======
+extern void pcibios_init_bridge(struct pci_dev *);
+>>>>>>> v4.9.227
 
 /*
  * pcibios_assign_all_busses() is used in drivers/pci/pci.c:pci_do_scan_bus()
@@ -193,6 +201,7 @@ static inline void pcibios_register_hba(struct pci_hba_data *x)
 #define PCIBIOS_MIN_IO          0x10
 #define PCIBIOS_MIN_MEM         0x1000 /* NBPG - but pci/setup-res.c dies */
 
+<<<<<<< HEAD
 /* export the pci_ DMA API in terms of the dma_ one */
 #include <asm-generic/pci-dma-compat.h>
 
@@ -215,6 +224,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 {
 	return channel ? 15 : 14;

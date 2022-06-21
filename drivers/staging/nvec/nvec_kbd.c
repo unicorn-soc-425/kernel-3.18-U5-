@@ -181,7 +181,10 @@ static struct platform_driver nvec_kbd_driver = {
 	.remove = nvec_kbd_remove,
 	.driver = {
 		.name = "nvec-kbd",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

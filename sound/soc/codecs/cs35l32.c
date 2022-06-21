@@ -13,7 +13,10 @@
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
+<<<<<<< HEAD
 #include <linux/version.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -75,6 +78,7 @@ static const struct reg_default cs35l32_reg_defaults[] = {
 static bool cs35l32_readable_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
+<<<<<<< HEAD
 	case CS35L32_DEVID_AB:
 	case CS35L32_DEVID_CD:
 	case CS35L32_DEVID_E:
@@ -102,6 +106,10 @@ static bool cs35l32_readable_register(struct device *dev, unsigned int reg)
 	case CS35L32_MOVIE_MODE:
 	case CS35L32_FLASH_TIMER:
 	case CS35L32_FLASH_INHIBIT:
+=======
+	case CS35L32_DEVID_AB ... CS35L32_AUDIO_LED_MNGR:
+	case CS35L32_ADSP_CTL ... CS35L32_FLASH_INHIBIT:
+>>>>>>> v4.9.227
 		return true;
 	default:
 		return false;
@@ -111,6 +119,7 @@ static bool cs35l32_readable_register(struct device *dev, unsigned int reg)
 static bool cs35l32_volatile_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
+<<<<<<< HEAD
 	case CS35L32_DEVID_AB:
 	case CS35L32_DEVID_CD:
 	case CS35L32_DEVID_E:
@@ -120,6 +129,10 @@ static bool cs35l32_volatile_register(struct device *dev, unsigned int reg)
 	case CS35L32_INT_STATUS_2:
 	case CS35L32_INT_STATUS_3:
 	case CS35L32_LED_STATUS:
+=======
+	case CS35L32_DEVID_AB ... CS35L32_REV_ID:
+	case CS35L32_INT_STATUS_1 ... CS35L32_LED_STATUS:
+>>>>>>> v4.9.227
 		return true;
 	default:
 		return false;
@@ -129,10 +142,14 @@ static bool cs35l32_volatile_register(struct device *dev, unsigned int reg)
 static bool cs35l32_precious_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
+<<<<<<< HEAD
 	case CS35L32_INT_STATUS_1:
 	case CS35L32_INT_STATUS_2:
 	case CS35L32_INT_STATUS_3:
 	case CS35L32_LED_STATUS:
+=======
+	case CS35L32_INT_STATUS_1 ... CS35L32_LED_STATUS:
+>>>>>>> v4.9.227
 		return true;
 	default:
 		return false;
@@ -264,6 +281,7 @@ static int cs35l32_codec_set_sysclk(struct snd_soc_codec *codec,
 			CS35L32_MCLK_DIV2_MASK | CS35L32_MCLK_RATIO_MASK, val);
 }
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_cs35l32 = {
 	.set_sysclk = cs35l32_codec_set_sysclk,
 
@@ -278,6 +296,23 @@ static struct snd_soc_codec_driver soc_codec_dev_cs35l32 = {
 
 /* Current and threshold powerup sequence Pg37 in datasheet */
 static const struct reg_default cs35l32_monitor_patch[] = {
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_cs35l32 = {
+	.set_sysclk = cs35l32_codec_set_sysclk,
+
+	.component_driver = {
+		.controls		= cs35l32_snd_controls,
+		.num_controls		= ARRAY_SIZE(cs35l32_snd_controls),
+		.dapm_widgets		= cs35l32_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(cs35l32_dapm_widgets),
+		.dapm_routes		= cs35l32_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(cs35l32_audio_map),
+	},
+};
+
+/* Current and threshold powerup sequence Pg37 in datasheet */
+static const struct reg_sequence cs35l32_monitor_patch[] = {
+>>>>>>> v4.9.227
 
 	{ 0x00, 0x99 },
 	{ 0x48, 0x17 },
@@ -288,7 +323,11 @@ static const struct reg_default cs35l32_monitor_patch[] = {
 	{ 0x00, 0x00 },
 };
 
+<<<<<<< HEAD
 static struct regmap_config cs35l32_regmap = {
+=======
+static const struct regmap_config cs35l32_regmap = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 
@@ -310,7 +349,13 @@ static int cs35l32_handle_of_data(struct i2c_client *i2c_client,
 	if (of_property_read_u32(np, "cirrus,sdout-share", &val) >= 0)
 		pdata->sdout_share = val;
 
+<<<<<<< HEAD
 	of_property_read_u32(np, "cirrus,boost-manager", &val);
+=======
+	if (of_property_read_u32(np, "cirrus,boost-manager", &val))
+		val = -1u;
+
+>>>>>>> v4.9.227
 	switch (val) {
 	case CS35L32_BOOST_MGR_AUTO:
 	case CS35L32_BOOST_MGR_AUTO_AUDIO:
@@ -318,13 +363,22 @@ static int cs35l32_handle_of_data(struct i2c_client *i2c_client,
 	case CS35L32_BOOST_MGR_FIXED:
 		pdata->boost_mng = val;
 		break;
+<<<<<<< HEAD
+=======
+	case -1u:
+>>>>>>> v4.9.227
 	default:
 		dev_err(&i2c_client->dev,
 			"Wrong cirrus,boost-manager DT value %d\n", val);
 		pdata->boost_mng = CS35L32_BOOST_MGR_BYPASS;
 	}
 
+<<<<<<< HEAD
 	of_property_read_u32(np, "cirrus,sdout-datacfg", &val);
+=======
+	if (of_property_read_u32(np, "cirrus,sdout-datacfg", &val))
+		val = -1u;
+>>>>>>> v4.9.227
 	switch (val) {
 	case CS35L32_DATA_CFG_LR_VP:
 	case CS35L32_DATA_CFG_LR_STAT:
@@ -332,13 +386,22 @@ static int cs35l32_handle_of_data(struct i2c_client *i2c_client,
 	case CS35L32_DATA_CFG_LR_VPSTAT:
 		pdata->sdout_datacfg = val;
 		break;
+<<<<<<< HEAD
+=======
+	case -1u:
+>>>>>>> v4.9.227
 	default:
 		dev_err(&i2c_client->dev,
 			"Wrong cirrus,sdout-datacfg DT value %d\n", val);
 		pdata->sdout_datacfg = CS35L32_DATA_CFG_LR;
 	}
 
+<<<<<<< HEAD
 	of_property_read_u32(np, "cirrus,battery-threshold", &val);
+=======
+	if (of_property_read_u32(np, "cirrus,battery-threshold", &val))
+		val = -1u;
+>>>>>>> v4.9.227
 	switch (val) {
 	case CS35L32_BATT_THRESH_3_1V:
 	case CS35L32_BATT_THRESH_3_2V:
@@ -346,13 +409,22 @@ static int cs35l32_handle_of_data(struct i2c_client *i2c_client,
 	case CS35L32_BATT_THRESH_3_4V:
 		pdata->batt_thresh = val;
 		break;
+<<<<<<< HEAD
+=======
+	case -1u:
+>>>>>>> v4.9.227
 	default:
 		dev_err(&i2c_client->dev,
 			"Wrong cirrus,battery-threshold DT value %d\n", val);
 		pdata->batt_thresh = CS35L32_BATT_THRESH_3_3V;
 	}
 
+<<<<<<< HEAD
 	of_property_read_u32(np, "cirrus,battery-recovery", &val);
+=======
+	if (of_property_read_u32(np, "cirrus,battery-recovery", &val))
+		val = -1u;
+>>>>>>> v4.9.227
 	switch (val) {
 	case CS35L32_BATT_RECOV_3_1V:
 	case CS35L32_BATT_RECOV_3_2V:
@@ -362,6 +434,10 @@ static int cs35l32_handle_of_data(struct i2c_client *i2c_client,
 	case CS35L32_BATT_RECOV_3_6V:
 		pdata->batt_recov = val;
 		break;
+<<<<<<< HEAD
+=======
+	case -1u:
+>>>>>>> v4.9.227
 	default:
 		dev_err(&i2c_client->dev,
 			"Wrong cirrus,battery-recovery DT value %d\n", val);
@@ -437,6 +513,7 @@ static int cs35l32_i2c_probe(struct i2c_client *i2c_client,
 	}
 
 	/* Reset the Device */
+<<<<<<< HEAD
 	cs35l32->reset_gpio = devm_gpiod_get(&i2c_client->dev,
 		"reset-gpios");
 	if (IS_ERR(cs35l32->reset_gpio)) {
@@ -451,6 +528,14 @@ static int cs35l32_i2c_probe(struct i2c_client *i2c_client,
 			return ret;
 		gpiod_set_value_cansleep(cs35l32->reset_gpio, 1);
 	}
+=======
+	cs35l32->reset_gpio = devm_gpiod_get_optional(&i2c_client->dev,
+		"reset", GPIOD_OUT_LOW);
+	if (IS_ERR(cs35l32->reset_gpio))
+		return PTR_ERR(cs35l32->reset_gpio);
+
+	gpiod_set_value_cansleep(cs35l32->reset_gpio, 1);
+>>>>>>> v4.9.227
 
 	/* initialize codec */
 	ret = regmap_read(cs35l32->regmap, CS35L32_DEVID_AB, &reg);
@@ -544,13 +629,21 @@ static int cs35l32_i2c_remove(struct i2c_client *i2c_client)
 	snd_soc_unregister_codec(&i2c_client->dev);
 
 	/* Hold down reset */
+<<<<<<< HEAD
 	if (cs35l32->reset_gpio)
 		gpiod_set_value_cansleep(cs35l32->reset_gpio, 0);
+=======
+	gpiod_set_value_cansleep(cs35l32->reset_gpio, 0);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 static int cs35l32_runtime_suspend(struct device *dev)
 {
 	struct cs35l32_private *cs35l32 = dev_get_drvdata(dev);
@@ -559,8 +652,12 @@ static int cs35l32_runtime_suspend(struct device *dev)
 	regcache_mark_dirty(cs35l32->regmap);
 
 	/* Hold down reset */
+<<<<<<< HEAD
 	if (cs35l32->reset_gpio)
 		gpiod_set_value_cansleep(cs35l32->reset_gpio, 0);
+=======
+	gpiod_set_value_cansleep(cs35l32->reset_gpio, 0);
+>>>>>>> v4.9.227
 
 	/* remove power */
 	regulator_bulk_disable(ARRAY_SIZE(cs35l32->supplies),
@@ -583,8 +680,12 @@ static int cs35l32_runtime_resume(struct device *dev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	if (cs35l32->reset_gpio)
 		gpiod_set_value_cansleep(cs35l32->reset_gpio, 1);
+=======
+	gpiod_set_value_cansleep(cs35l32->reset_gpio, 1);
+>>>>>>> v4.9.227
 
 	regcache_cache_only(cs35l32->regmap, false);
 	regcache_sync(cs35l32->regmap);
@@ -615,7 +716,10 @@ MODULE_DEVICE_TABLE(i2c, cs35l32_id);
 static struct i2c_driver cs35l32_i2c_driver = {
 	.driver = {
 		   .name = "cs35l32",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   .pm = &cs35l32_runtime_pm,
 		   .of_match_table = cs35l32_of_match,
 		   },

@@ -23,7 +23,11 @@ struct rockchip_gem_object {
 
 	void *kvaddr;
 	dma_addr_t dma_addr;
+<<<<<<< HEAD
 	struct dma_attrs dma_attrs;
+=======
+	unsigned long dma_attrs;
+>>>>>>> v4.9.227
 };
 
 struct sg_table *rockchip_gem_prime_get_sg_table(struct drm_gem_object *obj);

@@ -4,9 +4,12 @@
  * Copyright (C) 2014 Linaro.
  * Viresh Kumar <viresh.kumar@linaro.org>
  *
+<<<<<<< HEAD
  * The OPP code in function set_target() is reused from
  * drivers/cpufreq/omap-cpufreq.c
  *
+=======
+>>>>>>> v4.9.227
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
@@ -18,7 +21,10 @@
 #include <linux/cpu.h>
 #include <linux/cpu_cooling.h>
 #include <linux/cpufreq.h>
+<<<<<<< HEAD
 #include <linux/cpufreq-dt.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/cpumask.h>
 #include <linux/err.h>
 #include <linux/module.h>
@@ -29,11 +35,22 @@
 #include <linux/slab.h>
 #include <linux/thermal.h>
 
+<<<<<<< HEAD
 struct private_data {
 	struct device *cpu_dev;
 	struct regulator *cpu_reg;
 	struct thermal_cooling_device *cdev;
 	unsigned int voltage_tolerance; /* in percentage */
+=======
+#include "cpufreq-dt.h"
+
+struct private_data {
+	struct opp_table *opp_table;
+	struct device *cpu_dev;
+	struct thermal_cooling_device *cdev;
+	const char *reg_name;
+	bool have_static_opps;
+>>>>>>> v4.9.227
 };
 
 static struct freq_attr *cpufreq_dt_attr[] = {
@@ -44,6 +61,7 @@ static struct freq_attr *cpufreq_dt_attr[] = {
 
 static int set_target(struct cpufreq_policy *policy, unsigned int index)
 {
+<<<<<<< HEAD
 	struct dev_pm_opp *opp;
 	struct cpufreq_frequency_table *freq_table = policy->freq_table;
 	struct clk *cpu_clk = policy->clk;
@@ -120,11 +138,59 @@ static int set_target(struct cpufreq_policy *policy, unsigned int index)
 
 static int allocate_resources(int cpu, struct device **cdev,
 			      struct regulator **creg, struct clk **cclk)
+=======
+	struct private_data *priv = policy->driver_data;
+
+	return dev_pm_opp_set_rate(priv->cpu_dev,
+				   policy->freq_table[index].frequency * 1000);
+}
+
+/*
+ * An earlier version of opp-v1 bindings used to name the regulator
+ * "cpu0-supply", we still need to handle that for backwards compatibility.
+ */
+static const char *find_supply_name(struct device *dev)
+{
+	struct device_node *np;
+	struct property *pp;
+	int cpu = dev->id;
+	const char *name = NULL;
+
+	np = of_node_get(dev->of_node);
+
+	/* This must be valid for sure */
+	if (WARN_ON(!np))
+		return NULL;
+
+	/* Try "cpu0" for older DTs */
+	if (!cpu) {
+		pp = of_find_property(np, "cpu0-supply", NULL);
+		if (pp) {
+			name = "cpu0";
+			goto node_put;
+		}
+	}
+
+	pp = of_find_property(np, "cpu-supply", NULL);
+	if (pp) {
+		name = "cpu";
+		goto node_put;
+	}
+
+	dev_dbg(dev, "no regulator for cpu%d\n", cpu);
+node_put:
+	of_node_put(np);
+	return name;
+}
+
+static int resources_available(void)
+>>>>>>> v4.9.227
 {
 	struct device *cpu_dev;
 	struct regulator *cpu_reg;
 	struct clk *cpu_clk;
 	int ret = 0;
+<<<<<<< HEAD
 	char *reg_cpu0 = "cpu0", *reg_cpu = "cpu", *reg;
 
 	cpu_dev = get_cpu_device(cpu);
@@ -170,11 +236,25 @@ try_again:
 
 		ret = PTR_ERR(cpu_clk);
 
+=======
+	const char *name;
+
+	cpu_dev = get_cpu_device(0);
+	if (!cpu_dev) {
+		pr_err("failed to get cpu0 device\n");
+		return -ENODEV;
+	}
+
+	cpu_clk = clk_get(cpu_dev, NULL);
+	ret = PTR_ERR_OR_ZERO(cpu_clk);
+	if (ret) {
+>>>>>>> v4.9.227
 		/*
 		 * If cpu's clk node is present, but clock is not yet
 		 * registered, we should try defering probe.
 		 */
 		if (ret == -EPROBE_DEFER)
+<<<<<<< HEAD
 			dev_dbg(cpu_dev, "cpu%d clock not ready, retry\n", cpu);
 		else
 			dev_err(cpu_dev, "failed to get cpu%d clock: %d\n", cpu,
@@ -186,11 +266,45 @@ try_again:
 	}
 
 	return ret;
+=======
+			dev_dbg(cpu_dev, "clock not ready, retry\n");
+		else
+			dev_err(cpu_dev, "failed to get clock: %d\n", ret);
+
+		return ret;
+	}
+
+	clk_put(cpu_clk);
+
+	name = find_supply_name(cpu_dev);
+	/* Platform doesn't require regulator */
+	if (!name)
+		return 0;
+
+	cpu_reg = regulator_get_optional(cpu_dev, name);
+	ret = PTR_ERR_OR_ZERO(cpu_reg);
+	if (ret) {
+		/*
+		 * If cpu's regulator supply node is present, but regulator is
+		 * not yet registered, we should try defering probe.
+		 */
+		if (ret == -EPROBE_DEFER)
+			dev_dbg(cpu_dev, "cpu0 regulator not ready, retry\n");
+		else
+			dev_dbg(cpu_dev, "no regulator for cpu0: %d\n", ret);
+
+		return ret;
+	}
+
+	regulator_put(cpu_reg);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int cpufreq_init(struct cpufreq_policy *policy)
 {
 	struct cpufreq_frequency_table *freq_table;
+<<<<<<< HEAD
 	struct device_node *np;
 	struct private_data *priv;
 	struct device *cpu_dev;
@@ -213,11 +327,35 @@ static int cpufreq_init(struct cpufreq_policy *policy)
 		dev_err(cpu_dev, "failed to find cpu%d node\n", policy->cpu);
 		ret = -ENOENT;
 		goto out_put_reg_clk;
+=======
+	struct opp_table *opp_table = NULL;
+	struct private_data *priv;
+	struct device *cpu_dev;
+	struct clk *cpu_clk;
+	struct dev_pm_opp *suspend_opp;
+	unsigned int transition_latency;
+	bool fallback = false;
+	const char *name;
+	int ret;
+
+	cpu_dev = get_cpu_device(policy->cpu);
+	if (!cpu_dev) {
+		pr_err("failed to get cpu%d device\n", policy->cpu);
+		return -ENODEV;
+	}
+
+	cpu_clk = clk_get(cpu_dev, NULL);
+	if (IS_ERR(cpu_clk)) {
+		ret = PTR_ERR(cpu_clk);
+		dev_err(cpu_dev, "%s: failed to get clk: %d\n", __func__, ret);
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	/* Get OPP-sharing information from "operating-points-v2" bindings */
 	ret = dev_pm_opp_of_get_sharing_cpus(cpu_dev, policy->cpus);
 	if (ret) {
+<<<<<<< HEAD
 		/*
 		 * operating-points-v2 not supported, fallback to old method of
 		 * finding shared-OPPs for backward compatibility.
@@ -229,6 +367,45 @@ static int cpufreq_init(struct cpufreq_policy *policy)
 	}
 
 	/*
+=======
+		if (ret != -ENOENT)
+			goto out_put_clk;
+
+		/*
+		 * operating-points-v2 not supported, fallback to old method of
+		 * finding shared-OPPs for backward compatibility if the
+		 * platform hasn't set sharing CPUs.
+		 */
+		if (dev_pm_opp_get_sharing_cpus(cpu_dev, policy->cpus))
+			fallback = true;
+	}
+
+	/*
+	 * OPP layer will be taking care of regulators now, but it needs to know
+	 * the name of the regulator first.
+	 */
+	name = find_supply_name(cpu_dev);
+	if (name) {
+		opp_table = dev_pm_opp_set_regulator(cpu_dev, name);
+		if (IS_ERR(opp_table)) {
+			ret = PTR_ERR(opp_table);
+			dev_err(cpu_dev, "Failed to set regulator for cpu%d: %d\n",
+				policy->cpu, ret);
+			goto out_put_clk;
+		}
+	}
+
+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+	if (!priv) {
+		ret = -ENOMEM;
+		goto out_put_regulator;
+	}
+
+	priv->reg_name = name;
+	priv->opp_table = opp_table;
+
+	/*
+>>>>>>> v4.9.227
 	 * Initialize OPP tables for all policy->cpus. They will be shared by
 	 * all CPUs which have marked their CPUs shared with OPP bindings.
 	 *
@@ -238,7 +415,12 @@ static int cpufreq_init(struct cpufreq_policy *policy)
 	 *
 	 * OPPs might be populated at runtime, don't check for error here
 	 */
+<<<<<<< HEAD
 	dev_pm_opp_of_cpumask_add_table(policy->cpus);
+=======
+	if (!dev_pm_opp_of_cpumask_add_table(policy->cpus))
+		priv->have_static_opps = true;
+>>>>>>> v4.9.227
 
 	/*
 	 * But we need OPP table to function so if it is not there let's
@@ -246,16 +428,25 @@ static int cpufreq_init(struct cpufreq_policy *policy)
 	 */
 	ret = dev_pm_opp_get_opp_count(cpu_dev);
 	if (ret <= 0) {
+<<<<<<< HEAD
 		pr_debug("OPP table is not ready, deferring probe\n");
+=======
+		dev_dbg(cpu_dev, "OPP table is not ready, deferring probe\n");
+>>>>>>> v4.9.227
 		ret = -EPROBE_DEFER;
 		goto out_free_opp;
 	}
 
+<<<<<<< HEAD
 	if (need_update) {
 		struct cpufreq_dt_platform_data *pd = cpufreq_get_driver_data();
 
 		if (!pd || !pd->independent_clocks)
 			cpumask_setall(policy->cpus);
+=======
+	if (fallback) {
+		cpumask_setall(policy->cpus);
+>>>>>>> v4.9.227
 
 		/*
 		 * OPP tables are initialized only for policy->cpu, do it for
@@ -265,6 +456,7 @@ static int cpufreq_init(struct cpufreq_policy *policy)
 		if (ret)
 			dev_err(cpu_dev, "%s: failed to mark OPPs as shared: %d\n",
 				__func__, ret);
+<<<<<<< HEAD
 
 		of_property_read_u32(np, "clock-latency", &transition_latency);
 	} else {
@@ -321,10 +513,13 @@ static int cpufreq_init(struct cpufreq_policy *policy)
 		ret = regulator_set_voltage_time(cpu_reg, min_uV, max_uV);
 		if (ret > 0)
 			transition_latency += ret * 1000;
+=======
+>>>>>>> v4.9.227
 	}
 
 	ret = dev_pm_opp_init_cpufreq_table(cpu_dev, &freq_table);
 	if (ret) {
+<<<<<<< HEAD
 		pr_err("failed to init cpufreq table: %d\n", ret);
 		goto out_free_priv;
 	}
@@ -333,6 +528,14 @@ static int cpufreq_init(struct cpufreq_policy *policy)
 	priv->cpu_reg = cpu_reg;
 	policy->driver_data = priv;
 
+=======
+		dev_err(cpu_dev, "failed to init cpufreq table: %d\n", ret);
+		goto out_free_opp;
+	}
+
+	priv->cpu_dev = cpu_dev;
+	policy->driver_data = priv;
+>>>>>>> v4.9.227
 	policy->clk = cpu_clk;
 
 	rcu_read_lock();
@@ -357,14 +560,23 @@ static int cpufreq_init(struct cpufreq_policy *policy)
 		cpufreq_dt_attr[1] = &cpufreq_freq_attr_scaling_boost_freqs;
 	}
 
+<<<<<<< HEAD
 	policy->cpuinfo.transition_latency = transition_latency;
 
 	of_node_put(np);
+=======
+	transition_latency = dev_pm_opp_get_max_transition_latency(cpu_dev);
+	if (!transition_latency)
+		transition_latency = CPUFREQ_ETERNAL;
+
+	policy->cpuinfo.transition_latency = transition_latency;
+>>>>>>> v4.9.227
 
 	return 0;
 
 out_free_cpufreq_table:
 	dev_pm_opp_free_cpufreq_table(cpu_dev, &freq_table);
+<<<<<<< HEAD
 out_free_priv:
 	kfree(priv);
 out_free_opp:
@@ -375,6 +587,17 @@ out_put_reg_clk:
 	clk_put(cpu_clk);
 	if (!IS_ERR(cpu_reg))
 		regulator_put(cpu_reg);
+=======
+out_free_opp:
+	if (priv->have_static_opps)
+		dev_pm_opp_of_cpumask_remove_table(policy->cpus);
+	kfree(priv);
+out_put_regulator:
+	if (name)
+		dev_pm_opp_put_regulator(opp_table);
+out_put_clk:
+	clk_put(cpu_clk);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -385,10 +608,19 @@ static int cpufreq_exit(struct cpufreq_policy *policy)
 
 	cpufreq_cooling_unregister(priv->cdev);
 	dev_pm_opp_free_cpufreq_table(priv->cpu_dev, &policy->freq_table);
+<<<<<<< HEAD
 	dev_pm_opp_of_cpumask_remove_table(policy->related_cpus);
 	clk_put(policy->clk);
 	if (!IS_ERR(priv->cpu_reg))
 		regulator_put(priv->cpu_reg);
+=======
+	if (priv->have_static_opps)
+		dev_pm_opp_of_cpumask_remove_table(policy->related_cpus);
+	if (priv->reg_name)
+		dev_pm_opp_put_regulator(priv->opp_table);
+
+	clk_put(policy->clk);
+>>>>>>> v4.9.227
 	kfree(priv);
 
 	return 0;
@@ -407,8 +639,18 @@ static void cpufreq_ready(struct cpufreq_policy *policy)
 	 * thermal DT code takes care of matching them.
 	 */
 	if (of_find_property(np, "#cooling-cells", NULL)) {
+<<<<<<< HEAD
 		priv->cdev = of_cpufreq_cooling_register(np,
 							 policy->related_cpus);
+=======
+		u32 power_coefficient = 0;
+
+		of_property_read_u32(np, "dynamic-power-coefficient",
+				     &power_coefficient);
+
+		priv->cdev = of_cpufreq_power_cooling_register(np,
+				policy->related_cpus, power_coefficient, NULL);
+>>>>>>> v4.9.227
 		if (IS_ERR(priv->cdev)) {
 			dev_err(priv->cpu_dev,
 				"running cpufreq without cooling device: %ld\n",
@@ -436,9 +678,13 @@ static struct cpufreq_driver dt_cpufreq_driver = {
 
 static int dt_cpufreq_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct device *cpu_dev;
 	struct regulator *cpu_reg;
 	struct clk *cpu_clk;
+=======
+	struct cpufreq_dt_platform_data *data = dev_get_platdata(&pdev->dev);
+>>>>>>> v4.9.227
 	int ret;
 
 	/*
@@ -448,6 +694,7 @@ static int dt_cpufreq_probe(struct platform_device *pdev)
 	 *
 	 * FIXME: Is checking this only for CPU0 sufficient ?
 	 */
+<<<<<<< HEAD
 	ret = allocate_resources(0, &cpu_dev, &cpu_reg, &cpu_clk);
 	if (ret)
 		return ret;
@@ -461,6 +708,18 @@ static int dt_cpufreq_probe(struct platform_device *pdev)
 	ret = cpufreq_register_driver(&dt_cpufreq_driver);
 	if (ret)
 		dev_err(cpu_dev, "failed register driver: %d\n", ret);
+=======
+	ret = resources_available();
+	if (ret)
+		return ret;
+
+	if (data && data->have_governor_per_policy)
+		dt_cpufreq_driver.flags |= CPUFREQ_HAVE_GOVERNOR_PER_POLICY;
+
+	ret = cpufreq_register_driver(&dt_cpufreq_driver);
+	if (ret)
+		dev_err(&pdev->dev, "failed register driver: %d\n", ret);
+>>>>>>> v4.9.227
 
 	return ret;
 }

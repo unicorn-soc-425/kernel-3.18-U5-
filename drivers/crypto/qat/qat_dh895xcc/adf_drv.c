@@ -60,11 +60,15 @@
 #include <adf_accel_devices.h>
 #include <adf_common_drv.h>
 #include <adf_cfg.h>
+<<<<<<< HEAD
 #include <adf_transport_access_macros.h>
 #include "adf_dh895xcc_hw_data.h"
 #include "adf_drv.h"
 
 static const char adf_driver_name[] = ADF_DH895XCC_DEVICE_NAME;
+=======
+#include "adf_dh895xcc_hw_data.h"
+>>>>>>> v4.9.227
 
 #define ADF_SYSTEM_DEVICE(device_id) \
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, device_id)}
@@ -80,20 +84,38 @@ static void adf_remove(struct pci_dev *dev);
 
 static struct pci_driver adf_driver = {
 	.id_table = adf_pci_tbl,
+<<<<<<< HEAD
 	.name = adf_driver_name,
 	.probe = adf_probe,
 	.remove = adf_remove
 };
 
+=======
+	.name = ADF_DH895XCC_DEVICE_NAME,
+	.probe = adf_probe,
+	.remove = adf_remove,
+	.sriov_configure = adf_sriov_configure,
+};
+
+static void adf_cleanup_pci_dev(struct adf_accel_dev *accel_dev)
+{
+	pci_release_regions(accel_dev->accel_pci_dev.pci_dev);
+	pci_disable_device(accel_dev->accel_pci_dev.pci_dev);
+}
+
+>>>>>>> v4.9.227
 static void adf_cleanup_accel(struct adf_accel_dev *accel_dev)
 {
 	struct adf_accel_pci *accel_pci_dev = &accel_dev->accel_pci_dev;
 	int i;
 
+<<<<<<< HEAD
 	adf_exit_admin_comms(accel_dev);
 	adf_exit_arb(accel_dev);
 	adf_cleanup_etr_data(accel_dev);
 
+=======
+>>>>>>> v4.9.227
 	for (i = 0; i < ADF_PCI_MAX_BARS; i++) {
 		struct adf_bar *bar = &accel_pci_dev->pci_bars[i];
 
@@ -102,7 +124,11 @@ static void adf_cleanup_accel(struct adf_accel_dev *accel_dev)
 	}
 
 	if (accel_dev->hw_device) {
+<<<<<<< HEAD
 		switch (accel_dev->hw_device->pci_dev_id) {
+=======
+		switch (accel_pci_dev->pci_dev->device) {
+>>>>>>> v4.9.227
 		case ADF_DH895XCC_PCI_DEVICE_ID:
 			adf_clean_hw_data_dh895xcc(accel_dev->hw_device);
 			break;
@@ -110,6 +136,7 @@ static void adf_cleanup_accel(struct adf_accel_dev *accel_dev)
 			break;
 		}
 		kfree(accel_dev->hw_device);
+<<<<<<< HEAD
 	}
 	adf_cfg_dev_remove(accel_dev);
 	debugfs_remove(accel_dev->debugfs_dir);
@@ -210,6 +237,13 @@ static int qat_dev_start(struct adf_accel_dev *accel_dev)
 err:
 	dev_err(&GET_DEV(accel_dev), "Failed to start QAT accel dev\n");
 	return -EINVAL;
+=======
+		accel_dev->hw_device = NULL;
+	}
+	adf_cfg_dev_remove(accel_dev);
+	debugfs_remove(accel_dev->debugfs_dir);
+	adf_devmgr_rm_dev(accel_dev, NULL);
+>>>>>>> v4.9.227
 }
 
 static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
@@ -217,9 +251,15 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	struct adf_accel_dev *accel_dev;
 	struct adf_accel_pci *accel_pci_dev;
 	struct adf_hw_device_data *hw_data;
+<<<<<<< HEAD
 	void __iomem *pmisc_bar_addr = NULL;
 	char name[ADF_DEVICE_NAME_LENGTH];
 	unsigned int i, bar_nr;
+=======
+	char name[ADF_DEVICE_NAME_LENGTH];
+	unsigned int i, bar_nr;
+	unsigned long bar_mask;
+>>>>>>> v4.9.227
 	int ret;
 
 	switch (ent->device) {
@@ -239,15 +279,28 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	accel_dev = kzalloc_node(sizeof(*accel_dev), GFP_KERNEL,
+<<<<<<< HEAD
 			         dev_to_node(&pdev->dev));
+=======
+				 dev_to_node(&pdev->dev));
+>>>>>>> v4.9.227
 	if (!accel_dev)
 		return -ENOMEM;
 
 	INIT_LIST_HEAD(&accel_dev->crypto_list);
+<<<<<<< HEAD
 
 	/* Add accel device to accel table.
 	 * This should be called before adf_cleanup_accel is called */
 	if (adf_devmgr_add_dev(accel_dev)) {
+=======
+	accel_pci_dev = &accel_dev->accel_pci_dev;
+	accel_pci_dev->pci_dev = pdev;
+
+	/* Add accel device to accel table.
+	 * This should be called before adf_cleanup_accel is called */
+	if (adf_devmgr_add_dev(accel_dev, NULL)) {
+>>>>>>> v4.9.227
 		dev_err(&pdev->dev, "Failed to add new accelerator device.\n");
 		kfree(accel_dev);
 		return -EFAULT;
@@ -263,6 +316,7 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	accel_dev->hw_device = hw_data;
+<<<<<<< HEAD
 	switch (ent->device) {
 	case ADF_DH895XCC_PCI_DEVICE_ID:
 		adf_init_hw_data_dh895xcc(accel_dev->hw_device);
@@ -273,13 +327,21 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	accel_pci_dev = &accel_dev->accel_pci_dev;
 	pci_read_config_byte(pdev, PCI_REVISION_ID, &accel_pci_dev->revid);
 	pci_read_config_dword(pdev, ADF_DH895XCC_FUSECTL_OFFSET,
+=======
+	adf_init_hw_data_dh895xcc(accel_dev->hw_device);
+	pci_read_config_byte(pdev, PCI_REVISION_ID, &accel_pci_dev->revid);
+	pci_read_config_dword(pdev, ADF_DEVICE_FUSECTL_OFFSET,
+>>>>>>> v4.9.227
 			      &hw_data->fuses);
 
 	/* Get Accelerators and Accelerators Engines masks */
 	hw_data->accel_mask = hw_data->get_accel_mask(hw_data->fuses);
 	hw_data->ae_mask = hw_data->get_ae_mask(hw_data->fuses);
 	accel_pci_dev->sku = hw_data->get_sku(hw_data);
+<<<<<<< HEAD
 	accel_pci_dev->pci_dev = pdev;
+=======
+>>>>>>> v4.9.227
 	/* If the device has no acceleration engines then ignore it. */
 	if (!hw_data->accel_mask || !hw_data->ae_mask ||
 	    ((~hw_data->ae_mask) & 0x01)) {
@@ -289,11 +351,22 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	/* Create dev top level debugfs entry */
+<<<<<<< HEAD
 	snprintf(name, sizeof(name), "%s%s_dev%d", ADF_DEVICE_NAME_PREFIX,
 		 hw_data->dev_class->name, hw_data->instance_id);
 	accel_dev->debugfs_dir = debugfs_create_dir(name, NULL);
 	if (!accel_dev->debugfs_dir) {
 		dev_err(&pdev->dev, "Could not create debugfs dir\n");
+=======
+	snprintf(name, sizeof(name), "%s%s_%02x:%02d.%02d",
+		 ADF_DEVICE_NAME_PREFIX, hw_data->dev_class->name,
+		 pdev->bus->number, PCI_SLOT(pdev->devfn),
+		 PCI_FUNC(pdev->devfn));
+
+	accel_dev->debugfs_dir = debugfs_create_dir(name, NULL);
+	if (!accel_dev->debugfs_dir) {
+		dev_err(&pdev->dev, "Could not create debugfs dir %s\n", name);
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 		goto out_err;
 	}
@@ -303,6 +376,11 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (ret)
 		goto out_err;
 
+<<<<<<< HEAD
+=======
+	pcie_set_readrq(pdev, 1024);
+
+>>>>>>> v4.9.227
 	/* enable PCI device */
 	if (pci_enable_device(pdev)) {
 		ret = -EFAULT;
@@ -314,7 +392,11 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		if ((pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))) {
 			dev_err(&pdev->dev, "No usable DMA configuration\n");
 			ret = -EFAULT;
+<<<<<<< HEAD
 			goto out_err;
+=======
+			goto out_err_disable;
+>>>>>>> v4.9.227
 		} else {
 			pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
 		}
@@ -323,6 +405,7 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
 	}
 
+<<<<<<< HEAD
 	if (pci_request_regions(pdev, adf_driver_name)) {
 		ret = -EFAULT;
 		goto out_err;
@@ -337,24 +420,49 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		struct adf_bar *bar = &accel_pci_dev->pci_bars[i];
 
 		bar_nr = i * 2;
+=======
+	if (pci_request_regions(pdev, ADF_DH895XCC_DEVICE_NAME)) {
+		ret = -EFAULT;
+		goto out_err_disable;
+	}
+
+	/* Read accelerator capabilities mask */
+	pci_read_config_dword(pdev, ADF_DEVICE_LEGFUSE_OFFSET,
+			      &hw_data->accel_capabilities_mask);
+
+	/* Find and map all the device's BARS */
+	i = 0;
+	bar_mask = pci_select_bars(pdev, IORESOURCE_MEM);
+	for_each_set_bit(bar_nr, &bar_mask, ADF_PCI_MAX_BARS * 2) {
+		struct adf_bar *bar = &accel_pci_dev->pci_bars[i++];
+
+>>>>>>> v4.9.227
 		bar->base_addr = pci_resource_start(pdev, bar_nr);
 		if (!bar->base_addr)
 			break;
 		bar->size = pci_resource_len(pdev, bar_nr);
 		bar->virt_addr = pci_iomap(accel_pci_dev->pci_dev, bar_nr, 0);
 		if (!bar->virt_addr) {
+<<<<<<< HEAD
 			dev_err(&pdev->dev, "Failed to map BAR %d\n", i);
 			ret = -EFAULT;
 			goto out_err;
 		}
 		if (i == ADF_DH895XCC_PMISC_BAR)
 			pmisc_bar_addr = bar->virt_addr;
+=======
+			dev_err(&pdev->dev, "Failed to map BAR %d\n", bar_nr);
+			ret = -EFAULT;
+			goto out_err_free_reg;
+		}
+>>>>>>> v4.9.227
 	}
 	pci_set_master(pdev);
 
 	if (adf_enable_aer(accel_dev, &adf_driver)) {
 		dev_err(&pdev->dev, "Failed to enable aer\n");
 		ret = -EFAULT;
+<<<<<<< HEAD
 		goto out_err;
 	}
 
@@ -400,6 +508,46 @@ out_err:
 }
 
 static void __exit adf_remove(struct pci_dev *pdev)
+=======
+		goto out_err_free_reg;
+	}
+
+	if (pci_save_state(pdev)) {
+		dev_err(&pdev->dev, "Failed to save pci state\n");
+		ret = -ENOMEM;
+		goto out_err_free_reg;
+	}
+
+	ret = qat_crypto_dev_config(accel_dev);
+	if (ret)
+		goto out_err_free_reg;
+
+	ret = adf_dev_init(accel_dev);
+	if (ret)
+		goto out_err_dev_shutdown;
+
+	ret = adf_dev_start(accel_dev);
+	if (ret)
+		goto out_err_dev_stop;
+
+	return ret;
+
+out_err_dev_stop:
+	adf_dev_stop(accel_dev);
+out_err_dev_shutdown:
+	adf_dev_shutdown(accel_dev);
+out_err_free_reg:
+	pci_release_regions(accel_pci_dev->pci_dev);
+out_err_disable:
+	pci_disable_device(accel_pci_dev->pci_dev);
+out_err:
+	adf_cleanup_accel(accel_dev);
+	kfree(accel_dev);
+	return ret;
+}
+
+static void adf_remove(struct pci_dev *pdev)
+>>>>>>> v4.9.227
 {
 	struct adf_accel_dev *accel_dev = adf_devmgr_pci_to_accel_dev(pdev);
 
@@ -407,17 +555,29 @@ static void __exit adf_remove(struct pci_dev *pdev)
 		pr_err("QAT: Driver removal failed\n");
 		return;
 	}
+<<<<<<< HEAD
 	if (adf_dev_stop(accel_dev))
 		dev_err(&GET_DEV(accel_dev), "Failed to stop QAT accel dev\n");
 	adf_disable_aer(accel_dev);
 	adf_cleanup_accel(accel_dev);
+=======
+	adf_dev_stop(accel_dev);
+	adf_dev_shutdown(accel_dev);
+	adf_disable_aer(accel_dev);
+	adf_cleanup_accel(accel_dev);
+	adf_cleanup_pci_dev(accel_dev);
+	kfree(accel_dev);
+>>>>>>> v4.9.227
 }
 
 static int __init adfdrv_init(void)
 {
 	request_module("intel_qat");
+<<<<<<< HEAD
 	if (qat_admin_register())
 		return -EFAULT;
+=======
+>>>>>>> v4.9.227
 
 	if (pci_register_driver(&adf_driver)) {
 		pr_err("QAT: Driver initialization failed\n");
@@ -429,7 +589,10 @@ static int __init adfdrv_init(void)
 static void __exit adfdrv_release(void)
 {
 	pci_unregister_driver(&adf_driver);
+<<<<<<< HEAD
 	qat_admin_unregister();
+=======
+>>>>>>> v4.9.227
 }
 
 module_init(adfdrv_init);
@@ -437,5 +600,11 @@ module_exit(adfdrv_release);
 
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Intel");
+<<<<<<< HEAD
 MODULE_FIRMWARE("qat_895xcc.bin");
 MODULE_DESCRIPTION("Intel(R) QuickAssist Technology");
+=======
+MODULE_FIRMWARE(ADF_DH895XCC_FW);
+MODULE_DESCRIPTION("Intel(R) QuickAssist Technology");
+MODULE_VERSION(ADF_DRV_VERSION);
+>>>>>>> v4.9.227

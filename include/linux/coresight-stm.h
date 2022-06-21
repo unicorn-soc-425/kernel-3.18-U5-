@@ -3,6 +3,7 @@
 
 #include <uapi/linux/coresight-stm.h>
 
+<<<<<<< HEAD
 #define stm_log_inv(entity_id, proto_id, data, size)			\
 	stm_trace(STM_OPTION_NONE, entity_id, proto_id, data, size)
 
@@ -32,4 +33,6 @@ static inline int stm_trace(uint32_t options, uint8_t entity_id,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 #endif

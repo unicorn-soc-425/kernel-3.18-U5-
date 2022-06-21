@@ -880,11 +880,16 @@ static int utmi_phy_probe(struct tegra_usb_phy *tegra_phy,
 
 	tegra_phy->config = devm_kzalloc(&pdev->dev, sizeof(*config),
 					 GFP_KERNEL);
+<<<<<<< HEAD
 	if (!tegra_phy->config) {
 		dev_err(&pdev->dev,
 			"unable to allocate memory for USB UTMIP config\n");
 		return -ENOMEM;
 	}
+=======
+	if (!tegra_phy->config)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	config = tegra_phy->config;
 
@@ -979,10 +984,15 @@ static int tegra_usb_phy_probe(struct platform_device *pdev)
 	int err;
 
 	tegra_phy = devm_kzalloc(&pdev->dev, sizeof(*tegra_phy), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!tegra_phy) {
 		dev_err(&pdev->dev, "unable to allocate memory for USB2 PHY\n");
 		return -ENOMEM;
 	}
+=======
+	if (!tegra_phy)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	match = of_match_device(tegra_usb_phy_id_table, &pdev->dev);
 	if (!match) {
@@ -1034,7 +1044,11 @@ static int tegra_usb_phy_probe(struct platform_device *pdev)
 	}
 
 	if (of_find_property(np, "dr_mode", NULL))
+<<<<<<< HEAD
 		tegra_phy->mode = of_usb_get_dr_mode(np);
+=======
+		tegra_phy->mode = usb_get_dr_mode(&pdev->dev);
+>>>>>>> v4.9.227
 	else
 		tegra_phy->mode = USB_DR_MODE_HOST;
 
@@ -1086,7 +1100,10 @@ static struct platform_driver tegra_usb_phy_driver = {
 	.remove		= tegra_usb_phy_remove,
 	.driver		= {
 		.name	= "tegra-phy",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = tegra_usb_phy_id_table,
 	},
 };

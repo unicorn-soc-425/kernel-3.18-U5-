@@ -18,7 +18,12 @@
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-ipd-defs.h>
 #include <asm/octeon/cvmx-mio-defs.h>
+<<<<<<< HEAD
 
+=======
+#include <asm/octeon/cvmx-rst-defs.h>
+#include <asm/octeon/cvmx-fpa-defs.h>
+>>>>>>> v4.9.227
 
 static u64 f;
 static u64 rdiv;
@@ -39,11 +44,27 @@ void __init octeon_setup_delays(void)
 
 	if (current_cpu_type() == CPU_CAVIUM_OCTEON2) {
 		union cvmx_mio_rst_boot rst_boot;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		rst_boot.u64 = cvmx_read_csr(CVMX_MIO_RST_BOOT);
 		rdiv = rst_boot.s.c_mul;	/* CPU clock */
 		sdiv = rst_boot.s.pnr_mul;	/* I/O clock */
 		f = (0x8000000000000000ull / sdiv) * 2;
+<<<<<<< HEAD
 	}
+=======
+	} else if (current_cpu_type() == CPU_CAVIUM_OCTEON3) {
+		union cvmx_rst_boot rst_boot;
+
+		rst_boot.u64 = cvmx_read_csr(CVMX_RST_BOOT);
+		rdiv = rst_boot.s.c_mul;	/* CPU clock */
+		sdiv = rst_boot.s.pnr_mul;	/* I/O clock */
+		f = (0x8000000000000000ull / sdiv) * 2;
+	}
+
+>>>>>>> v4.9.227
 }
 
 /*
@@ -56,9 +77,19 @@ void __init octeon_setup_delays(void)
  */
 void octeon_init_cvmcount(void)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	unsigned loops = 2;
 
+=======
+	u64 clk_reg;
+	unsigned long flags;
+	unsigned loops = 2;
+
+	clk_reg = octeon_has_feature(OCTEON_FEATURE_FPA3) ?
+		CVMX_FPA_CLK_COUNT : CVMX_IPD_CLK_COUNT;
+
+>>>>>>> v4.9.227
 	/* Clobber loops so GCC will not unroll the following while loop. */
 	asm("" : "+r" (loops));
 
@@ -68,6 +99,7 @@ void octeon_init_cvmcount(void)
 	 * which should give more deterministic timing.
 	 */
 	while (loops--) {
+<<<<<<< HEAD
 		u64 ipd_clk_count = cvmx_read_csr(CVMX_IPD_CLK_COUNT);
 		if (rdiv != 0) {
 			ipd_clk_count *= rdiv;
@@ -75,11 +107,24 @@ void octeon_init_cvmcount(void)
 				asm("dmultu\t%[cnt],%[f]\n\t"
 				    "mfhi\t%[cnt]"
 				    : [cnt] "+r" (ipd_clk_count)
+=======
+		u64 clk_count = cvmx_read_csr(clk_reg);
+		if (rdiv != 0) {
+			clk_count *= rdiv;
+			if (f != 0) {
+				asm("dmultu\t%[cnt],%[f]\n\t"
+				    "mfhi\t%[cnt]"
+				    : [cnt] "+r" (clk_count)
+>>>>>>> v4.9.227
 				    : [f] "r" (f)
 				    : "hi", "lo");
 			}
 		}
+<<<<<<< HEAD
 		write_c0_cvmcount(ipd_clk_count);
+=======
+		write_c0_cvmcount(clk_count);
+>>>>>>> v4.9.227
 	}
 	local_irq_restore(flags);
 }

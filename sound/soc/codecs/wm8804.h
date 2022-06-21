@@ -13,6 +13,11 @@
 #ifndef _WM8804_H
 #define _WM8804_H
 
+<<<<<<< HEAD
+=======
+#include <linux/regmap.h>
+
+>>>>>>> v4.9.227
 /*
  * Register values.
  */
@@ -62,4 +67,13 @@
 #define WM8804_MCLKDIV_256FS			0
 #define WM8804_MCLKDIV_128FS			1
 
+<<<<<<< HEAD
+=======
+extern const struct regmap_config wm8804_regmap_config;
+extern const struct dev_pm_ops wm8804_pm;
+
+int wm8804_probe(struct device *dev, struct regmap *regmap);
+void wm8804_remove(struct device *dev);
+
+>>>>>>> v4.9.227
 #endif  /* _WM8804_H */

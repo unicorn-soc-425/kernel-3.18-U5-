@@ -4,7 +4,12 @@
 #include <linux/err.h>
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <crypto/hash.h>
+=======
+#include <crypto/aes.h>
+#include <crypto/skcipher.h>
+>>>>>>> v4.9.227
 #include <linux/key-type.h>
 
 #include <keys/ceph-type.h>
@@ -12,14 +17,72 @@
 #include <linux/ceph/decode.h>
 #include "crypto.h"
 
+<<<<<<< HEAD
+=======
+/*
+ * Set ->key and ->tfm.  The rest of the key should be filled in before
+ * this function is called.
+ */
+static int set_secret(struct ceph_crypto_key *key, void *buf)
+{
+	unsigned int noio_flag;
+	int ret;
+
+	key->key = NULL;
+	key->tfm = NULL;
+
+	switch (key->type) {
+	case CEPH_CRYPTO_NONE:
+		return 0; /* nothing to do */
+	case CEPH_CRYPTO_AES:
+		break;
+	default:
+		return -ENOTSUPP;
+	}
+
+	if (!key->len)
+		return -EINVAL;
+
+	key->key = kmemdup(buf, key->len, GFP_NOIO);
+	if (!key->key) {
+		ret = -ENOMEM;
+		goto fail;
+	}
+
+	/* crypto_alloc_skcipher() allocates with GFP_KERNEL */
+	noio_flag = memalloc_noio_save();
+	key->tfm = crypto_alloc_skcipher("cbc(aes)", 0, CRYPTO_ALG_ASYNC);
+	memalloc_noio_restore(noio_flag);
+	if (IS_ERR(key->tfm)) {
+		ret = PTR_ERR(key->tfm);
+		key->tfm = NULL;
+		goto fail;
+	}
+
+	ret = crypto_skcipher_setkey(key->tfm, key->key, key->len);
+	if (ret)
+		goto fail;
+
+	return 0;
+
+fail:
+	ceph_crypto_key_destroy(key);
+	return ret;
+}
+
+>>>>>>> v4.9.227
 int ceph_crypto_key_clone(struct ceph_crypto_key *dst,
 			  const struct ceph_crypto_key *src)
 {
 	memcpy(dst, src, sizeof(struct ceph_crypto_key));
+<<<<<<< HEAD
 	dst->key = kmemdup(src->key, src->len, GFP_NOFS);
 	if (!dst->key)
 		return -ENOMEM;
 	return 0;
+=======
+	return set_secret(dst, src->key);
+>>>>>>> v4.9.227
 }
 
 int ceph_crypto_key_encode(struct ceph_crypto_key *key, void **p, void *end)
@@ -36,16 +99,27 @@ int ceph_crypto_key_encode(struct ceph_crypto_key *key, void **p, void *end)
 
 int ceph_crypto_key_decode(struct ceph_crypto_key *key, void **p, void *end)
 {
+<<<<<<< HEAD
+=======
+	int ret;
+
+>>>>>>> v4.9.227
 	ceph_decode_need(p, end, 2*sizeof(u16) + sizeof(key->created), bad);
 	key->type = ceph_decode_16(p);
 	ceph_decode_copy(p, &key->created, sizeof(key->created));
 	key->len = ceph_decode_16(p);
 	ceph_decode_need(p, end, key->len, bad);
+<<<<<<< HEAD
 	key->key = kmalloc(key->len, GFP_NOFS);
 	if (!key->key)
 		return -ENOMEM;
 	ceph_decode_copy(p, key->key, key->len);
 	return 0;
+=======
+	ret = set_secret(key, *p);
+	*p += key->len;
+	return ret;
+>>>>>>> v4.9.227
 
 bad:
 	dout("failed to decode crypto key\n");
@@ -79,6 +153,7 @@ int ceph_crypto_key_unarmor(struct ceph_crypto_key *key, const char *inkey)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 
 #define AES_KEY_SIZE 16
@@ -86,6 +161,16 @@ int ceph_crypto_key_unarmor(struct ceph_crypto_key *key, const char *inkey)
 static struct crypto_blkcipher *ceph_crypto_alloc_cipher(void)
 {
 	return crypto_alloc_blkcipher("cbc(aes)", 0, CRYPTO_ALG_ASYNC);
+=======
+void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
+{
+	if (key) {
+		kfree(key->key);
+		key->key = NULL;
+		crypto_free_skcipher(key->tfm);
+		key->tfm = NULL;
+	}
+>>>>>>> v4.9.227
 }
 
 static const u8 *aes_iv = (u8 *)CEPH_AES_IV;
@@ -160,6 +245,7 @@ static void teardown_sgtable(struct sg_table *sgt)
 		sg_free_table(sgt);
 }
 
+<<<<<<< HEAD
 static int ceph_aes_encrypt(const void *key, int key_len,
 			    void *dst, size_t *dst_len,
 			    const void *src, size_t src_len)
@@ -516,6 +602,84 @@ int ceph_encrypt2(struct ceph_crypto_key *secret, void *dst, size_t *dst_len,
 
 	default:
 		return -EINVAL;
+=======
+static int ceph_aes_crypt(const struct ceph_crypto_key *key, bool encrypt,
+			  void *buf, int buf_len, int in_len, int *pout_len)
+{
+	SKCIPHER_REQUEST_ON_STACK(req, key->tfm);
+	struct sg_table sgt;
+	struct scatterlist prealloc_sg;
+	char iv[AES_BLOCK_SIZE] __aligned(8);
+	int pad_byte = AES_BLOCK_SIZE - (in_len & (AES_BLOCK_SIZE - 1));
+	int crypt_len = encrypt ? in_len + pad_byte : in_len;
+	int ret;
+
+	WARN_ON(crypt_len > buf_len);
+	if (encrypt)
+		memset(buf + in_len, pad_byte, pad_byte);
+	ret = setup_sgtable(&sgt, &prealloc_sg, buf, crypt_len);
+	if (ret)
+		return ret;
+
+	memcpy(iv, aes_iv, AES_BLOCK_SIZE);
+	skcipher_request_set_tfm(req, key->tfm);
+	skcipher_request_set_callback(req, 0, NULL, NULL);
+	skcipher_request_set_crypt(req, sgt.sgl, sgt.sgl, crypt_len, iv);
+
+	/*
+	print_hex_dump(KERN_ERR, "key: ", DUMP_PREFIX_NONE, 16, 1,
+		       key->key, key->len, 1);
+	print_hex_dump(KERN_ERR, " in: ", DUMP_PREFIX_NONE, 16, 1,
+		       buf, crypt_len, 1);
+	*/
+	if (encrypt)
+		ret = crypto_skcipher_encrypt(req);
+	else
+		ret = crypto_skcipher_decrypt(req);
+	skcipher_request_zero(req);
+	if (ret) {
+		pr_err("%s %scrypt failed: %d\n", __func__,
+		       encrypt ? "en" : "de", ret);
+		goto out_sgt;
+	}
+	/*
+	print_hex_dump(KERN_ERR, "out: ", DUMP_PREFIX_NONE, 16, 1,
+		       buf, crypt_len, 1);
+	*/
+
+	if (encrypt) {
+		*pout_len = crypt_len;
+	} else {
+		pad_byte = *(char *)(buf + in_len - 1);
+		if (pad_byte > 0 && pad_byte <= AES_BLOCK_SIZE &&
+		    in_len >= pad_byte) {
+			*pout_len = in_len - pad_byte;
+		} else {
+			pr_err("%s got bad padding %d on in_len %d\n",
+			       __func__, pad_byte, in_len);
+			ret = -EPERM;
+			goto out_sgt;
+		}
+	}
+
+out_sgt:
+	teardown_sgtable(&sgt);
+	return ret;
+}
+
+int ceph_crypt(const struct ceph_crypto_key *key, bool encrypt,
+	       void *buf, int buf_len, int in_len, int *pout_len)
+{
+	switch (key->type) {
+	case CEPH_CRYPTO_NONE:
+		*pout_len = in_len;
+		return 0;
+	case CEPH_CRYPTO_AES:
+		return ceph_aes_crypt(key, encrypt, buf, buf_len, in_len,
+				      pout_len);
+	default:
+		return -ENOTSUPP;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -541,7 +705,11 @@ static int ceph_key_preparse(struct key_preparsed_payload *prep)
 	if (ret < 0)
 		goto err_ckey;
 
+<<<<<<< HEAD
 	prep->payload[0] = ckey;
+=======
+	prep->payload.data[0] = ckey;
+>>>>>>> v4.9.227
 	prep->quotalen = datalen;
 	return 0;
 
@@ -553,14 +721,22 @@ err:
 
 static void ceph_key_free_preparse(struct key_preparsed_payload *prep)
 {
+<<<<<<< HEAD
 	struct ceph_crypto_key *ckey = prep->payload[0];
+=======
+	struct ceph_crypto_key *ckey = prep->payload.data[0];
+>>>>>>> v4.9.227
 	ceph_crypto_key_destroy(ckey);
 	kfree(ckey);
 }
 
 static void ceph_key_destroy(struct key *key)
 {
+<<<<<<< HEAD
 	struct ceph_crypto_key *ckey = key->payload.data;
+=======
+	struct ceph_crypto_key *ckey = key->payload.data[0];
+>>>>>>> v4.9.227
 
 	ceph_crypto_key_destroy(ckey);
 	kfree(ckey);

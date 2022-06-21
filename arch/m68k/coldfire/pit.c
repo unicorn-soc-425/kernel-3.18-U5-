@@ -42,6 +42,7 @@ static u32 pit_cnt;
  * This is also called after resume to bring the PIT into operation again.
  */
 
+<<<<<<< HEAD
 static void init_cf_pit_timer(enum clock_event_mode mode,
                              struct clock_event_device *evt)
 {
@@ -73,6 +74,30 @@ static void init_cf_pit_timer(enum clock_event_mode mode,
 		/* Nothing to do here */
 		break;
 	}
+=======
+static int cf_pit_set_periodic(struct clock_event_device *evt)
+{
+	__raw_writew(MCFPIT_PCSR_DISABLE, TA(MCFPIT_PCSR));
+	__raw_writew(PIT_CYCLES_PER_JIFFY, TA(MCFPIT_PMR));
+	__raw_writew(MCFPIT_PCSR_EN | MCFPIT_PCSR_PIE |
+		     MCFPIT_PCSR_OVW | MCFPIT_PCSR_RLD |
+		     MCFPIT_PCSR_CLK64, TA(MCFPIT_PCSR));
+	return 0;
+}
+
+static int cf_pit_set_oneshot(struct clock_event_device *evt)
+{
+	__raw_writew(MCFPIT_PCSR_DISABLE, TA(MCFPIT_PCSR));
+	__raw_writew(MCFPIT_PCSR_EN | MCFPIT_PCSR_PIE |
+		     MCFPIT_PCSR_OVW | MCFPIT_PCSR_CLK64, TA(MCFPIT_PCSR));
+	return 0;
+}
+
+static int cf_pit_shutdown(struct clock_event_device *evt)
+{
+	__raw_writew(MCFPIT_PCSR_DISABLE, TA(MCFPIT_PCSR));
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -88,12 +113,24 @@ static int cf_pit_next_event(unsigned long delta,
 }
 
 struct clock_event_device cf_pit_clockevent = {
+<<<<<<< HEAD
 	.name		= "pit",
 	.features	= CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
 	.set_mode	= init_cf_pit_timer,
 	.set_next_event	= cf_pit_next_event,
 	.shift		= 32,
 	.irq		= MCF_IRQ_PIT1,
+=======
+	.name			= "pit",
+	.features		= CLOCK_EVT_FEAT_PERIODIC |
+				  CLOCK_EVT_FEAT_ONESHOT,
+	.set_state_shutdown	= cf_pit_shutdown,
+	.set_state_periodic	= cf_pit_set_periodic,
+	.set_state_oneshot	= cf_pit_set_oneshot,
+	.set_next_event		= cf_pit_next_event,
+	.shift			= 32,
+	.irq			= MCF_IRQ_PIT1,
+>>>>>>> v4.9.227
 };
 
 

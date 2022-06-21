@@ -1,7 +1,12 @@
 /*
  *  Linux MegaRAID driver for SAS based RAID controllers
  *
+<<<<<<< HEAD
  *  Copyright (c) 2009-2012  LSI Corporation.
+=======
+ *  Copyright (c) 2009-2013  LSI Corporation
+ *  Copyright (c) 2013-2014  Avago Technologies
+>>>>>>> v4.9.227
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -14,6 +19,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
@@ -28,6 +34,23 @@
  *
  *  Mail to: LSI Corporation, 1621 Barber Lane, Milpitas, CA 95035
  *     ATTN: Linuxraid
+=======
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  FILE: megaraid_sas_fp.c
+ *
+ *  Authors: Avago Technologies
+ *           Sumant Patro
+ *           Varad Talamacki
+ *           Manoj Jose
+ *           Kashyap Desai <kashyap.desai@avagotech.com>
+ *           Sumit Saxena <sumit.saxena@avagotech.com>
+ *
+ *  Send feedback to: megaraidlinux.pdl@avagotech.com
+ *
+ *  Mail to: Avago Technologies, 350 West Trimble Road, Building 90,
+ *  San Jose, California 95131
+>>>>>>> v4.9.227
  */
 
 #include <linux/kernel.h>
@@ -64,7 +87,19 @@ MODULE_PARM_DESC(lb_pending_cmds, "Change raid-1 load balancing outstanding "
 
 #define ABS_DIFF(a, b)   (((a) > (b)) ? ((a) - (b)) : ((b) - (a)))
 #define MR_LD_STATE_OPTIMAL 3
+<<<<<<< HEAD
 #define FALSE 0
+=======
+
+#ifdef FALSE
+#undef FALSE
+#endif
+#define FALSE 0
+
+#ifdef TRUE
+#undef TRUE
+#endif
+>>>>>>> v4.9.227
 #define TRUE 1
 
 #define SPAN_DEBUG 0
@@ -140,7 +175,11 @@ u16 MR_LdSpanArrayGet(u32 ld, u32 span, struct MR_DRV_RAID_MAP_ALL *map)
 	return le16_to_cpu(map->raidMap.ldSpanMap[ld].spanBlock[span].span.arrayRef);
 }
 
+<<<<<<< HEAD
 u16 MR_PdDevHandleGet(u32 pd, struct MR_DRV_RAID_MAP_ALL *map)
+=======
+__le16 MR_PdDevHandleGet(u32 pd, struct MR_DRV_RAID_MAP_ALL *map)
+>>>>>>> v4.9.227
 {
 	return map->raidMap.devHndlInfo[pd].curDevHdl;
 }
@@ -731,6 +770,7 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 	u8      physArm, span;
 	u64     row;
 	u8	retval = TRUE;
+<<<<<<< HEAD
 	u8	do_invader = 0;
 	u64	*pdBlock = &io_info->pdBlock;
 	u16	*pDevHandle = &io_info->devHandle;
@@ -739,6 +779,14 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER ||
 		instance->pdev->device == PCI_DEVICE_ID_LSI_FURY))
 		do_invader = 1;
+=======
+	u64	*pdBlock = &io_info->pdBlock;
+	__le16	*pDevHandle = &io_info->devHandle;
+	u32	logArm, rowMod, armQ, arm;
+	struct fusion_context *fusion;
+
+	fusion = instance->ctrl_context;
+>>>>>>> v4.9.227
 
 	/*Get row and span from io_info for Uneven Span IO.*/
 	row	    = io_info->start_row;
@@ -767,9 +815,16 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 	if (pd != MR_PD_INVALID)
 		*pDevHandle = MR_PdDevHandleGet(pd, map);
 	else {
+<<<<<<< HEAD
 		*pDevHandle = MR_PD_INVALID;
 		if ((raid->level >= 5) &&
 			(!do_invader  || (do_invader &&
+=======
+		*pDevHandle = cpu_to_le16(MR_PD_INVALID);
+		if ((raid->level >= 5) &&
+			((fusion->adapter_type == THUNDERBOLT_SERIES)  ||
+			((fusion->adapter_type == INVADER_SERIES) &&
+>>>>>>> v4.9.227
 			(raid->regTypeReqOnRead != REGION_TYPE_UNUSED))))
 			pRAID_Context->regLockFlags = REGION_TYPE_EXCLUSIVE;
 		else if (raid->level == 1) {
@@ -813,6 +868,7 @@ u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRow,
 	u8          physArm, span;
 	u64         row;
 	u8	    retval = TRUE;
+<<<<<<< HEAD
 	u8          do_invader = 0;
 	u64	    *pdBlock = &io_info->pdBlock;
 	u16	    *pDevHandle = &io_info->devHandle;
@@ -820,6 +876,14 @@ u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRow,
 	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER ||
 		instance->pdev->device == PCI_DEVICE_ID_LSI_FURY))
 		do_invader = 1;
+=======
+	u64	    *pdBlock = &io_info->pdBlock;
+	__le16	    *pDevHandle = &io_info->devHandle;
+	struct fusion_context *fusion;
+
+	fusion = instance->ctrl_context;
+
+>>>>>>> v4.9.227
 
 	row =  mega_div64_32(stripRow, raid->rowDataSize);
 
@@ -862,9 +926,17 @@ u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRow,
 		/* Get dev handle from Pd. */
 		*pDevHandle = MR_PdDevHandleGet(pd, map);
 	else {
+<<<<<<< HEAD
 		*pDevHandle = MR_PD_INVALID; /* set dev handle as invalid. */
 		if ((raid->level >= 5) &&
 			(!do_invader  || (do_invader &&
+=======
+		/* set dev handle as invalid. */
+		*pDevHandle = cpu_to_le16(MR_PD_INVALID);
+		if ((raid->level >= 5) &&
+			((fusion->adapter_type == THUNDERBOLT_SERIES)  ||
+			((fusion->adapter_type == INVADER_SERIES) &&
+>>>>>>> v4.9.227
 			(raid->regTypeReqOnRead != REGION_TYPE_UNUSED))))
 			pRAID_Context->regLockFlags = REGION_TYPE_EXCLUSIVE;
 		else if (raid->level == 1) {
@@ -898,6 +970,10 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 		    struct RAID_CONTEXT *pRAID_Context,
 		    struct MR_DRV_RAID_MAP_ALL *map, u8 **raidLUN)
 {
+<<<<<<< HEAD
+=======
+	struct fusion_context *fusion;
+>>>>>>> v4.9.227
 	struct MR_LD_RAID  *raid;
 	u32         ld, stripSize, stripe_mask;
 	u64         endLba, endStrip, endRow, start_row, start_strip;
@@ -918,6 +994,10 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 	isRead = io_info->isRead;
 	io_info->IoforUnevenSpan = 0;
 	io_info->start_span	= SPAN_INVALID;
+<<<<<<< HEAD
+=======
+	fusion = instance->ctrl_context;
+>>>>>>> v4.9.227
 
 	ld = MR_TargetIdToLdGet(ldTgtId, map);
 	raid = MR_LdRaidGet(ld, map);
@@ -1008,6 +1088,11 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 	/* assume this IO needs the full row - we'll adjust if not true */
 	regSize             = stripSize;
 
+<<<<<<< HEAD
+=======
+	io_info->do_fp_rlbypass = raid->capability.fpBypassRegionLock;
+
+>>>>>>> v4.9.227
 	/* Check if we can send this I/O via FastPath */
 	if (raid->capability.fpCapable) {
 		if (isRead)
@@ -1081,8 +1166,12 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 		cpu_to_le16(raid->fpIoTimeoutForLd ?
 			    raid->fpIoTimeoutForLd :
 			    map->raidMap.fpPdIoTimeoutSec);
+<<<<<<< HEAD
 	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER) ||
 		(instance->pdev->device == PCI_DEVICE_ID_LSI_FURY))
+=======
+	if (fusion->adapter_type == INVADER_SERIES)
+>>>>>>> v4.9.227
 		pRAID_Context->regLockFlags = (isRead) ?
 			raid->regTypeReqOnRead : raid->regTypeReqOnWrite;
 	else
@@ -1107,7 +1196,11 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 					ref_in_start_stripe, io_info,
 					pRAID_Context, map);
 		/* If IO on an invalid Pd, then FP is not possible.*/
+<<<<<<< HEAD
 		if (io_info->devHandle == MR_PD_INVALID)
+=======
+		if (io_info->devHandle == cpu_to_le16(MR_PD_INVALID))
+>>>>>>> v4.9.227
 			io_info->fpOkForIo = FALSE;
 		return retval;
 	} else if (isRead) {
@@ -1187,10 +1280,13 @@ void mr_update_span_set(struct MR_DRV_RAID_MAP_ALL *map,
 						span_row_width +=
 							MR_LdSpanPtrGet
 							(ld, count, map)->spanRowDataSize;
+<<<<<<< HEAD
 						printk(KERN_INFO "megasas:"
 							"span %x rowDataSize %x\n",
 							count, MR_LdSpanPtrGet
 							(ld, count, map)->spanRowDataSize);
+=======
+>>>>>>> v4.9.227
 					}
 				}
 
@@ -1266,7 +1362,11 @@ void mr_update_load_balance_params(struct MR_DRV_RAID_MAP_ALL *drv_map,
 
 	for (ldCount = 0; ldCount < MAX_LOGICAL_DRIVES_EXT; ldCount++) {
 		ld = MR_TargetIdToLdGet(ldCount, drv_map);
+<<<<<<< HEAD
 		if (ld >= MAX_LOGICAL_DRIVES_EXT) {
+=======
+		if (ld >= MAX_LOGICAL_DRIVES_EXT - 1) {
+>>>>>>> v4.9.227
 			lbInfo[ldCount].loadBalanceFlag = 0;
 			continue;
 		}
@@ -1339,11 +1439,19 @@ u8 megasas_get_best_arm_pd(struct megasas_instance *instance,
 	return io_info->pd_after_lb;
 }
 
+<<<<<<< HEAD
 u16 get_updated_dev_handle(struct megasas_instance *instance,
 	struct LD_LOAD_BALANCE_INFO *lbInfo, struct IO_REQUEST_INFO *io_info)
 {
 	u8 arm_pd;
 	u16 devHandle;
+=======
+__le16 get_updated_dev_handle(struct megasas_instance *instance,
+	struct LD_LOAD_BALANCE_INFO *lbInfo, struct IO_REQUEST_INFO *io_info)
+{
+	u8 arm_pd;
+	__le16 devHandle;
+>>>>>>> v4.9.227
 	struct fusion_context *fusion;
 	struct MR_DRV_RAID_MAP_ALL *drv_map;
 

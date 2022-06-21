@@ -2,7 +2,11 @@
  * max77686.c - mfd core driver for the Maxim 77686/802
  *
  * Copyright (C) 2012 Samsung Electronics
+<<<<<<< HEAD
  * Chiwoong Byun <woong.byun@smasung.com>
+=======
+ * Chiwoong Byun <woong.byun@samsung.com>
+>>>>>>> v4.9.227
  * Jonghwa Lee <jonghwa3.lee@samsung.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,8 +39,11 @@
 #include <linux/err.h>
 #include <linux/of.h>
 
+<<<<<<< HEAD
 #define I2C_ADDR_RTC	(0x0C >> 1)
 
+=======
+>>>>>>> v4.9.227
 static const struct mfd_cell max77686_devs[] = {
 	{ .name = "max77686-pmic", },
 	{ .name = "max77686-rtc", },
@@ -111,17 +118,25 @@ static bool max77802_is_volatile_reg(struct device *dev, unsigned int reg)
 		max77802_rtc_is_volatile_reg(dev, reg));
 }
 
+<<<<<<< HEAD
 static struct regmap_config max77686_regmap_config = {
+=======
+static const struct regmap_config max77686_regmap_config = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 };
 
+<<<<<<< HEAD
 static struct regmap_config max77686_rtc_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
 };
 
 static struct regmap_config max77802_regmap_config = {
+=======
+static const struct regmap_config max77802_regmap_config = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 	.writeable_reg = max77802_is_accessible_reg,
@@ -156,6 +171,7 @@ static const struct regmap_irq_chip max77686_irq_chip = {
 	.num_irqs		= ARRAY_SIZE(max77686_irqs),
 };
 
+<<<<<<< HEAD
 static const struct regmap_irq max77686_rtc_irqs[] = {
 	/* RTC interrupts */
 	{ .reg_offset = 0, .mask = MAX77686_RTCINT_RTC60S_MSK, },
@@ -175,6 +191,8 @@ static const struct regmap_irq_chip max77686_rtc_irq_chip = {
 	.num_irqs		= ARRAY_SIZE(max77686_rtc_irqs),
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct regmap_irq_chip max77802_irq_chip = {
 	.name			= "max77802-pmic",
 	.status_base		= MAX77802_REG_INT1,
@@ -184,6 +202,7 @@ static const struct regmap_irq_chip max77802_irq_chip = {
 	.num_irqs		= ARRAY_SIZE(max77686_irqs),
 };
 
+<<<<<<< HEAD
 static const struct regmap_irq_chip max77802_rtc_irq_chip = {
 	.name			= "max77802-rtc",
 	.status_base		= MAX77802_RTC_INT,
@@ -193,6 +212,8 @@ static const struct regmap_irq_chip max77802_rtc_irq_chip = {
 	.num_irqs		= ARRAY_SIZE(max77686_rtc_irqs),
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id max77686_pmic_dt_match[] = {
 	{
 		.compatible = "maxim,max77686",
@@ -204,6 +225,7 @@ static const struct of_device_id max77686_pmic_dt_match[] = {
 	},
 	{ },
 };
+<<<<<<< HEAD
 
 static struct max77686_platform_data *max77686_i2c_parse_dt_pdata(struct device
 								  *dev)
@@ -217,17 +239,24 @@ static struct max77686_platform_data *max77686_i2c_parse_dt_pdata(struct device
 	dev->platform_data = pd;
 	return pd;
 }
+=======
+MODULE_DEVICE_TABLE(of, max77686_pmic_dt_match);
+>>>>>>> v4.9.227
 
 static int max77686_i2c_probe(struct i2c_client *i2c,
 			      const struct i2c_device_id *id)
 {
 	struct max77686_dev *max77686 = NULL;
+<<<<<<< HEAD
 	struct max77686_platform_data *pdata = dev_get_platdata(&i2c->dev);
+=======
+>>>>>>> v4.9.227
 	const struct of_device_id *match;
 	unsigned int data;
 	int ret = 0;
 	const struct regmap_config *config;
 	const struct regmap_irq_chip *irq_chip;
+<<<<<<< HEAD
 	const struct regmap_irq_chip *rtc_irq_chip;
 	struct regmap **rtc_regmap;
 	const struct mfd_cell *cells;
@@ -241,6 +270,11 @@ static int max77686_i2c_probe(struct i2c_client *i2c,
 		return -EINVAL;
 	}
 
+=======
+	const struct mfd_cell *cells;
+	int n_devs;
+
+>>>>>>> v4.9.227
 	max77686 = devm_kzalloc(&i2c->dev,
 				sizeof(struct max77686_dev), GFP_KERNEL);
 	if (!max77686)
@@ -259,21 +293,30 @@ static int max77686_i2c_probe(struct i2c_client *i2c,
 	max77686->dev = &i2c->dev;
 	max77686->i2c = i2c;
 
+<<<<<<< HEAD
 	max77686->wakeup = pdata->wakeup;
+=======
+>>>>>>> v4.9.227
 	max77686->irq = i2c->irq;
 
 	if (max77686->type == TYPE_MAX77686) {
 		config = &max77686_regmap_config;
 		irq_chip = &max77686_irq_chip;
+<<<<<<< HEAD
 		rtc_irq_chip = &max77686_rtc_irq_chip;
 		rtc_regmap = &max77686->rtc_regmap;
+=======
+>>>>>>> v4.9.227
 		cells =  max77686_devs;
 		n_devs = ARRAY_SIZE(max77686_devs);
 	} else {
 		config = &max77802_regmap_config;
 		irq_chip = &max77802_irq_chip;
+<<<<<<< HEAD
 		rtc_irq_chip = &max77802_rtc_irq_chip;
 		rtc_regmap = &max77686->regmap;
+=======
+>>>>>>> v4.9.227
 		cells =  max77802_devs;
 		n_devs = ARRAY_SIZE(max77802_devs);
 	}
@@ -293,6 +336,7 @@ static int max77686_i2c_probe(struct i2c_client *i2c,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if (max77686->type == TYPE_MAX77686) {
 		max77686->rtc = i2c_new_dummy(i2c->adapter, I2C_ADDR_RTC);
 		if (!max77686->rtc) {
@@ -364,10 +408,34 @@ static int max77686_i2c_remove(struct i2c_client *i2c)
 		i2c_unregister_device(max77686->rtc);
 
 	return 0;
+=======
+	ret = devm_regmap_add_irq_chip(&i2c->dev, max77686->regmap,
+				       max77686->irq,
+				       IRQF_TRIGGER_FALLING | IRQF_ONESHOT |
+				       IRQF_SHARED, 0, irq_chip,
+				       &max77686->irq_data);
+	if (ret < 0) {
+		dev_err(&i2c->dev, "failed to add PMIC irq chip: %d\n", ret);
+		return ret;
+	}
+
+	ret = devm_mfd_add_devices(max77686->dev, -1, cells, n_devs, NULL,
+				   0, NULL);
+	if (ret < 0) {
+		dev_err(&i2c->dev, "failed to add MFD devices: %d\n", ret);
+		return ret;
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static const struct i2c_device_id max77686_i2c_id[] = {
 	{ "max77686", TYPE_MAX77686 },
+<<<<<<< HEAD
+=======
+	{ "max77802", TYPE_MAX77802 },
+>>>>>>> v4.9.227
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, max77686_i2c_id);
@@ -375,7 +443,11 @@ MODULE_DEVICE_TABLE(i2c, max77686_i2c_id);
 #ifdef CONFIG_PM_SLEEP
 static int max77686_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *i2c = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *i2c = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct max77686_dev *max77686 = i2c_get_clientdata(i2c);
 
 	if (device_may_wakeup(dev))
@@ -397,7 +469,11 @@ static int max77686_suspend(struct device *dev)
 
 static int max77686_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *i2c = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *i2c = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct max77686_dev *max77686 = i2c_get_clientdata(i2c);
 
 	if (device_may_wakeup(dev))
@@ -414,11 +490,15 @@ static SIMPLE_DEV_PM_OPS(max77686_pm, max77686_suspend, max77686_resume);
 static struct i2c_driver max77686_i2c_driver = {
 	.driver = {
 		   .name = "max77686",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   .pm = &max77686_pm,
 		   .of_match_table = of_match_ptr(max77686_pmic_dt_match),
 	},
 	.probe = max77686_i2c_probe,
+<<<<<<< HEAD
 	.remove = max77686_i2c_remove,
 	.id_table = max77686_i2c_id,
 };
@@ -435,6 +515,12 @@ static void __exit max77686_i2c_exit(void)
 	i2c_del_driver(&max77686_i2c_driver);
 }
 module_exit(max77686_i2c_exit);
+=======
+	.id_table = max77686_i2c_id,
+};
+
+module_i2c_driver(max77686_i2c_driver);
+>>>>>>> v4.9.227
 
 MODULE_DESCRIPTION("MAXIM 77686/802 multi-function core driver");
 MODULE_AUTHOR("Chiwoong Byun <woong.byun@samsung.com>");

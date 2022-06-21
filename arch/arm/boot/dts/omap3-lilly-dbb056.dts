@@ -114,8 +114,13 @@
 	status = "okay";
 	bus-width = <4>;
 	vmmc-supply = <&vmmc1>;
+<<<<<<< HEAD
 	cd-gpios = <&gpio6 4 0>;   /* gpio_164 */
 	wp-gpios = <&gpio6 3 0>;   /* gpio_163 */
+=======
+	cd-gpios = <&gpio6 4 GPIO_ACTIVE_HIGH>;   /* gpio_164 */
+	wp-gpios = <&gpio6 3 GPIO_ACTIVE_HIGH>;   /* gpio_163 */
+>>>>>>> v4.9.227
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc2_pins>;
 	ti,dual-volt;

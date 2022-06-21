@@ -1,13 +1,22 @@
+<<<<<<< HEAD
 Support is available for filesystems that wish to do automounting support (such
 as kAFS which can be found in fs/afs/). This facility includes allowing
 in-kernel mounts to be performed and mountpoint degradation to be
 requested. The latter can also be requested by userspace.
+=======
+Support is available for filesystems that wish to do automounting
+support (such as kAFS which can be found in fs/afs/ and NFS in
+fs/nfs/). This facility includes allowing in-kernel mounts to be
+performed and mountpoint degradation to be requested. The latter can
+also be requested by userspace.
+>>>>>>> v4.9.227
 
 
 ======================
 IN-KERNEL AUTOMOUNTING
 ======================
 
+<<<<<<< HEAD
 A filesystem can now mount another filesystem on one of its directories by the
 following procedure:
 
@@ -36,6 +45,9 @@ following procedure:
      (d) Release the path in the nameidata argument and substitute in the new
 	 vfsmount and its root dentry. The ref counts on these will need
 	 incrementing.
+=======
+See section "Mount Traps" of  Documentation/filesystems/autofs4.txt
+>>>>>>> v4.9.227
 
 Then from userspace, you can just do something like:
 
@@ -61,6 +73,7 @@ AUTOMATIC MOUNTPOINT EXPIRY
 ===========================
 
 Automatic expiration of mountpoints is easy, provided you've mounted the
+<<<<<<< HEAD
 mountpoint to be expired in the automounting procedure outlined above.
 
 To do expiration, you need to follow these steps:
@@ -72,6 +85,20 @@ To do expiration, you need to follow these steps:
      pointer to this list. It will hang the vfsmount off of it if it succeeds.
 
  (5) When you want mountpoints to be expired, call mark_mounts_for_expiry()
+=======
+mountpoint to be expired in the automounting procedure outlined separately.
+
+To do expiration, you need to follow these steps:
+
+ (1) Create at least one list off which the vfsmounts to be expired can be
+     hung.
+
+ (2) When a new mountpoint is created in the ->d_automount method, add
+     the mnt to the list using mnt_set_expiry()
+             mnt_set_expiry(newmnt, &afs_vfsmounts);
+
+ (3) When you want mountpoints to be expired, call mark_mounts_for_expiry()
+>>>>>>> v4.9.227
      with a pointer to this list. This will process the list, marking every
      vfsmount thereon for potential expiry on the next call.
 

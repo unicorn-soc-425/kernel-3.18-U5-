@@ -31,8 +31,11 @@
 #include "amdgpu_ucode.h"
 #include "clearstate_ci.h"
 
+<<<<<<< HEAD
 #include "uvd/uvd_4_2_d.h"
 
+=======
+>>>>>>> v4.9.227
 #include "dce/dce_8_0_d.h"
 #include "dce/dce_8_0_sh_mask.h"
 
@@ -55,7 +58,10 @@
 static void gfx_v7_0_set_ring_funcs(struct amdgpu_device *adev);
 static void gfx_v7_0_set_irq_funcs(struct amdgpu_device *adev);
 static void gfx_v7_0_set_gds_init(struct amdgpu_device *adev);
+<<<<<<< HEAD
 int gfx_v7_0_get_cu_info(struct amdgpu_device *, struct amdgpu_cu_info *);
+=======
+>>>>>>> v4.9.227
 
 MODULE_FIRMWARE("radeon/bonaire_pfp.bin");
 MODULE_FIRMWARE("radeon/bonaire_me.bin");
@@ -884,6 +890,10 @@ static u32 gfx_v7_0_get_csb_size(struct amdgpu_device *adev);
 static void gfx_v7_0_get_csb_buffer(struct amdgpu_device *adev, volatile u32 *buffer);
 static void gfx_v7_0_init_cp_pg_table(struct amdgpu_device *adev);
 static void gfx_v7_0_init_pg(struct amdgpu_device *adev);
+<<<<<<< HEAD
+=======
+static void gfx_v7_0_get_cu_info(struct amdgpu_device *adev);
+>>>>>>> v4.9.227
 
 /*
  * Core functions
@@ -993,6 +1003,25 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static void gfx_v7_0_free_microcode(struct amdgpu_device *adev)
+{
+	release_firmware(adev->gfx.pfp_fw);
+	adev->gfx.pfp_fw = NULL;
+	release_firmware(adev->gfx.me_fw);
+	adev->gfx.me_fw = NULL;
+	release_firmware(adev->gfx.ce_fw);
+	adev->gfx.ce_fw = NULL;
+	release_firmware(adev->gfx.mec_fw);
+	adev->gfx.mec_fw = NULL;
+	release_firmware(adev->gfx.mec2_fw);
+	adev->gfx.mec2_fw = NULL;
+	release_firmware(adev->gfx.rlc_fw);
+	adev->gfx.rlc_fw = NULL;
+}
+
+>>>>>>> v4.9.227
 /**
  * gfx_v7_0_tiling_mode_table_init - init the hw tiling table
  *
@@ -1006,9 +1035,21 @@ out:
  */
 static void gfx_v7_0_tiling_mode_table_init(struct amdgpu_device *adev)
 {
+<<<<<<< HEAD
 	const u32 num_tile_mode_states = 32;
 	const u32 num_secondary_tile_mode_states = 16;
 	u32 reg_offset, gb_tile_moden, split_equal_to_row_size;
+=======
+	const u32 num_tile_mode_states =
+			ARRAY_SIZE(adev->gfx.config.tile_mode_array);
+	const u32 num_secondary_tile_mode_states =
+			ARRAY_SIZE(adev->gfx.config.macrotile_mode_array);
+	u32 reg_offset, split_equal_to_row_size;
+	uint32_t *tile, *macrotile;
+
+	tile = adev->gfx.config.tile_mode_array;
+	macrotile = adev->gfx.config.macrotile_mode_array;
+>>>>>>> v4.9.227
 
 	switch (adev->gfx.config.mem_row_size_in_kb) {
 	case 1:
@@ -1023,6 +1064,7 @@ static void gfx_v7_0_tiling_mode_table_init(struct amdgpu_device *adev)
 		break;
 	}
 
+<<<<<<< HEAD
 	switch (adev->asic_type) {
 	case CHIP_BONAIRE:
 		for (reg_offset = 0; reg_offset < num_tile_mode_states; reg_offset++) {
@@ -1577,11 +1619,369 @@ static void gfx_v7_0_tiling_mode_table_init(struct amdgpu_device *adev)
 			adev->gfx.config.macrotile_mode_array[reg_offset] = gb_tile_moden;
 			WREG32(mmGB_MACROTILE_MODE0 + reg_offset, gb_tile_moden);
 		}
+=======
+	for (reg_offset = 0; reg_offset < num_tile_mode_states; reg_offset++)
+		tile[reg_offset] = 0;
+	for (reg_offset = 0; reg_offset < num_secondary_tile_mode_states; reg_offset++)
+		macrotile[reg_offset] = 0;
+
+	switch (adev->asic_type) {
+	case CHIP_BONAIRE:
+		tile[0] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_64B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[1] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_128B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[2] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_256B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[3] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_512B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[4] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING) |
+			   TILE_SPLIT(split_equal_to_row_size));
+		tile[5] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[6] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING) |
+			   TILE_SPLIT(split_equal_to_row_size));
+		tile[7] = (TILE_SPLIT(split_equal_to_row_size));
+		tile[8] = (ARRAY_MODE(ARRAY_LINEAR_ALIGNED) |
+			   PIPE_CONFIG(ADDR_SURF_P4_16x16));
+		tile[9] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DISPLAY_MICRO_TILING));
+		tile[10] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_DISPLAY_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[11] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_DISPLAY_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[12] = (TILE_SPLIT(split_equal_to_row_size));
+		tile[13] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING));
+		tile[14] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[15] = (ARRAY_MODE(ARRAY_3D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[16] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[17] = (TILE_SPLIT(split_equal_to_row_size));
+		tile[18] = (ARRAY_MODE(ARRAY_1D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[19] = (ARRAY_MODE(ARRAY_1D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING));
+		tile[20] = (ARRAY_MODE(ARRAY_2D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[21] =  (ARRAY_MODE(ARRAY_3D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[22] = (ARRAY_MODE(ARRAY_PRT_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[23] = (TILE_SPLIT(split_equal_to_row_size));
+		tile[24] = (ARRAY_MODE(ARRAY_2D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[25] = (ARRAY_MODE(ARRAY_2D_TILED_XTHICK) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[26] = (ARRAY_MODE(ARRAY_3D_TILED_XTHICK) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[27] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_ROTATED_MICRO_TILING));
+		tile[28] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_ROTATED_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[29] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_ROTATED_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[30] = (TILE_SPLIT(split_equal_to_row_size));
+
+		macrotile[0] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_4) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[1] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_2) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[2] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[3] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[4] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[5] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[6] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_1) |
+				NUM_BANKS(ADDR_SURF_4_BANK));
+		macrotile[8] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_2) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_8) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[9] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_2) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_4) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[10] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_4) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[11] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_2) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[12] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[13] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[14] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_1) |
+				NUM_BANKS(ADDR_SURF_4_BANK));
+
+		for (reg_offset = 0; reg_offset < num_tile_mode_states; reg_offset++)
+			WREG32(mmGB_TILE_MODE0 + reg_offset, tile[reg_offset]);
+		for (reg_offset = 0; reg_offset < num_secondary_tile_mode_states; reg_offset++)
+			if (reg_offset != 7)
+				WREG32(mmGB_MACROTILE_MODE0 + reg_offset, macrotile[reg_offset]);
+		break;
+	case CHIP_HAWAII:
+		tile[0] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_64B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[1] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_128B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[2] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_256B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[3] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_512B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[4] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING) |
+			   TILE_SPLIT(split_equal_to_row_size));
+		tile[5] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING) |
+			   TILE_SPLIT(split_equal_to_row_size));
+		tile[6] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING) |
+			   TILE_SPLIT(split_equal_to_row_size));
+		tile[7] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING) |
+			   TILE_SPLIT(split_equal_to_row_size));
+		tile[8] = (ARRAY_MODE(ARRAY_LINEAR_ALIGNED) |
+			   PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16));
+		tile[9] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DISPLAY_MICRO_TILING));
+		tile[10] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_DISPLAY_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[11] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_DISPLAY_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[12] = (ARRAY_MODE(ARRAY_PRT_2D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_DISPLAY_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[13] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING));
+		tile[14] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[15] = (ARRAY_MODE(ARRAY_3D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[16] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[17] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[18] = (ARRAY_MODE(ARRAY_1D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[19] = (ARRAY_MODE(ARRAY_1D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING));
+		tile[20] = (ARRAY_MODE(ARRAY_2D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[21] = (ARRAY_MODE(ARRAY_3D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[22] = (ARRAY_MODE(ARRAY_PRT_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[23] = (ARRAY_MODE(ARRAY_PRT_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[24] = (ARRAY_MODE(ARRAY_2D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[25] = (ARRAY_MODE(ARRAY_2D_TILED_XTHICK) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[26] = (ARRAY_MODE(ARRAY_3D_TILED_XTHICK) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[27] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_ROTATED_MICRO_TILING));
+		tile[28] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_ROTATED_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[29] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P16_32x32_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_ROTATED_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[30] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P4_16x16) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_ROTATED_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+
+		macrotile[0] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_4) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[1] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_2) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[2] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_1) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[3] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_1) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[4] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_1) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[5] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_1) |
+				NUM_BANKS(ADDR_SURF_4_BANK));
+		macrotile[6] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_1) |
+				NUM_BANKS(ADDR_SURF_4_BANK));
+		macrotile[8] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_4) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[9] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_2) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[10] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_1) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[11] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_1) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[12] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[13] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[14] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_1) |
+				NUM_BANKS(ADDR_SURF_4_BANK));
+
+		for (reg_offset = 0; reg_offset < num_tile_mode_states; reg_offset++)
+			WREG32(mmGB_TILE_MODE0 + reg_offset, tile[reg_offset]);
+		for (reg_offset = 0; reg_offset < num_secondary_tile_mode_states; reg_offset++)
+			if (reg_offset != 7)
+				WREG32(mmGB_MACROTILE_MODE0 + reg_offset, macrotile[reg_offset]);
+>>>>>>> v4.9.227
 		break;
 	case CHIP_KABINI:
 	case CHIP_KAVERI:
 	case CHIP_MULLINS:
 	default:
+<<<<<<< HEAD
 		for (reg_offset = 0; reg_offset < num_tile_mode_states; reg_offset++) {
 			switch (reg_offset) {
 			case 0:
@@ -1849,6 +2249,173 @@ static void gfx_v7_0_tiling_mode_table_init(struct amdgpu_device *adev)
 			adev->gfx.config.macrotile_mode_array[reg_offset] = gb_tile_moden;
 			WREG32(mmGB_MACROTILE_MODE0 + reg_offset, gb_tile_moden);
 		}
+=======
+		tile[0] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P2) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_64B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[1] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P2) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_128B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[2] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P2) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_256B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[3] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P2) |
+			   TILE_SPLIT(ADDR_SURF_TILE_SPLIT_512B) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[4] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P2) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING) |
+			   TILE_SPLIT(split_equal_to_row_size));
+		tile[5] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P2) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING));
+		tile[6] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P2) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DEPTH_MICRO_TILING) |
+			   TILE_SPLIT(split_equal_to_row_size));
+		tile[7] = (TILE_SPLIT(split_equal_to_row_size));
+		tile[8] = (ARRAY_MODE(ARRAY_LINEAR_ALIGNED) |
+			   PIPE_CONFIG(ADDR_SURF_P2));
+		tile[9] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			   PIPE_CONFIG(ADDR_SURF_P2) |
+			   MICRO_TILE_MODE_NEW(ADDR_SURF_DISPLAY_MICRO_TILING));
+		tile[10] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_DISPLAY_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[11] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_DISPLAY_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[12] = (TILE_SPLIT(split_equal_to_row_size));
+		tile[13] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING));
+		tile[14] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[15] = (ARRAY_MODE(ARRAY_3D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[16] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[17] = (TILE_SPLIT(split_equal_to_row_size));
+		tile[18] = (ARRAY_MODE(ARRAY_1D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[19] = (ARRAY_MODE(ARRAY_1D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING));
+		tile[20] = (ARRAY_MODE(ARRAY_2D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[21] = (ARRAY_MODE(ARRAY_3D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[22] = (ARRAY_MODE(ARRAY_PRT_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[23] = (TILE_SPLIT(split_equal_to_row_size));
+		tile[24] = (ARRAY_MODE(ARRAY_2D_TILED_THICK) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THIN_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[25] = (ARRAY_MODE(ARRAY_2D_TILED_XTHICK) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[26] = (ARRAY_MODE(ARRAY_3D_TILED_XTHICK) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_THICK_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_1));
+		tile[27] = (ARRAY_MODE(ARRAY_1D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_ROTATED_MICRO_TILING));
+		tile[28] = (ARRAY_MODE(ARRAY_2D_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_ROTATED_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_2));
+		tile[29] = (ARRAY_MODE(ARRAY_PRT_TILED_THIN1) |
+			    PIPE_CONFIG(ADDR_SURF_P2) |
+			    MICRO_TILE_MODE_NEW(ADDR_SURF_ROTATED_MICRO_TILING) |
+			    SAMPLE_SPLIT(ADDR_SURF_SAMPLE_SPLIT_8));
+		tile[30] = (TILE_SPLIT(split_equal_to_row_size));
+
+		macrotile[0] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_4) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[1] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_2) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[2] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_2) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[3] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[4] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[5] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[6] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+		macrotile[8] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_4) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_8) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[9] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_4) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_4) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[10] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_2) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_4) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[11] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_2) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_2) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[12] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_2) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[13] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_4) |
+				NUM_BANKS(ADDR_SURF_16_BANK));
+		macrotile[14] = (BANK_WIDTH(ADDR_SURF_BANK_WIDTH_1) |
+				BANK_HEIGHT(ADDR_SURF_BANK_HEIGHT_1) |
+				MACRO_TILE_ASPECT(ADDR_SURF_MACRO_ASPECT_2) |
+				NUM_BANKS(ADDR_SURF_8_BANK));
+
+		for (reg_offset = 0; reg_offset < num_tile_mode_states; reg_offset++)
+			WREG32(mmGB_TILE_MODE0 + reg_offset, tile[reg_offset]);
+		for (reg_offset = 0; reg_offset < num_secondary_tile_mode_states; reg_offset++)
+			if (reg_offset != 7)
+				WREG32(mmGB_MACROTILE_MODE0 + reg_offset, macrotile[reg_offset]);
+>>>>>>> v4.9.227
 		break;
 	}
 }
@@ -1864,9 +2431,21 @@ static void gfx_v7_0_tiling_mode_table_init(struct amdgpu_device *adev)
  * registers are instanced per SE or SH.  0xffffffff means
  * broadcast to all SEs or SHs (CIK).
  */
+<<<<<<< HEAD
 void gfx_v7_0_select_se_sh(struct amdgpu_device *adev, u32 se_num, u32 sh_num)
 {
 	u32 data = GRBM_GFX_INDEX__INSTANCE_BROADCAST_WRITES_MASK;
+=======
+static void gfx_v7_0_select_se_sh(struct amdgpu_device *adev,
+				  u32 se_num, u32 sh_num, u32 instance)
+{
+	u32 data;
+
+	if (instance == 0xffffffff)
+		data = REG_SET_FIELD(0, GRBM_GFX_INDEX, INSTANCE_BROADCAST_WRITES, 1);
+	else
+		data = REG_SET_FIELD(0, GRBM_GFX_INDEX, INSTANCE_INDEX, instance);
+>>>>>>> v4.9.227
 
 	if ((se_num == 0xffffffff) && (sh_num == 0xffffffff))
 		data |= GRBM_GFX_INDEX__SH_BROADCAST_WRITES_MASK |
@@ -1893,6 +2472,7 @@ void gfx_v7_0_select_se_sh(struct amdgpu_device *adev, u32 se_num, u32 sh_num)
  */
 static u32 gfx_v7_0_create_bitmask(u32 bit_width)
 {
+<<<<<<< HEAD
 	u32 i, mask = 0;
 
 	for (i = 0; i < bit_width; i++) {
@@ -1916,10 +2496,25 @@ static u32 gfx_v7_0_create_bitmask(u32 bit_width)
 static u32 gfx_v7_0_get_rb_disabled(struct amdgpu_device *adev,
 				    u32 max_rb_num_per_se,
 				    u32 sh_per_se)
+=======
+	return (u32)((1ULL << bit_width) - 1);
+}
+
+/**
+ * gfx_v7_0_get_rb_active_bitmap - computes the mask of enabled RBs
+ *
+ * @adev: amdgpu_device pointer
+ *
+ * Calculates the bitmask of enabled RBs (CIK).
+ * Returns the enabled RB bitmask.
+ */
+static u32 gfx_v7_0_get_rb_active_bitmap(struct amdgpu_device *adev)
+>>>>>>> v4.9.227
 {
 	u32 data, mask;
 
 	data = RREG32(mmCC_RB_BACKEND_DISABLE);
+<<<<<<< HEAD
 	if (data & 1)
 		data &= CC_RB_BACKEND_DISABLE__BACKEND_DISABLE_MASK;
 	else
@@ -1932,6 +2527,158 @@ static u32 gfx_v7_0_get_rb_disabled(struct amdgpu_device *adev,
 	mask = gfx_v7_0_create_bitmask(max_rb_num_per_se / sh_per_se);
 
 	return data & mask;
+=======
+	data |= RREG32(mmGC_USER_RB_BACKEND_DISABLE);
+
+	data &= CC_RB_BACKEND_DISABLE__BACKEND_DISABLE_MASK;
+	data >>= GC_USER_RB_BACKEND_DISABLE__BACKEND_DISABLE__SHIFT;
+
+	mask = gfx_v7_0_create_bitmask(adev->gfx.config.max_backends_per_se /
+				       adev->gfx.config.max_sh_per_se);
+
+	return (~data) & mask;
+}
+
+static void
+gfx_v7_0_raster_config(struct amdgpu_device *adev, u32 *rconf, u32 *rconf1)
+{
+	switch (adev->asic_type) {
+	case CHIP_BONAIRE:
+		*rconf |= RB_MAP_PKR0(2) | RB_XSEL2(1) | SE_MAP(2) |
+			  SE_XSEL(1) | SE_YSEL(1);
+		*rconf1 |= 0x0;
+		break;
+	case CHIP_HAWAII:
+		*rconf |= RB_MAP_PKR0(2) | RB_MAP_PKR1(2) |
+			  RB_XSEL2(1) | PKR_MAP(2) | PKR_XSEL(1) |
+			  PKR_YSEL(1) | SE_MAP(2) | SE_XSEL(2) |
+			  SE_YSEL(3);
+		*rconf1 |= SE_PAIR_MAP(2) | SE_PAIR_XSEL(3) |
+			   SE_PAIR_YSEL(2);
+		break;
+	case CHIP_KAVERI:
+		*rconf |= RB_MAP_PKR0(2);
+		*rconf1 |= 0x0;
+		break;
+	case CHIP_KABINI:
+	case CHIP_MULLINS:
+		*rconf |= 0x0;
+		*rconf1 |= 0x0;
+		break;
+	default:
+		DRM_ERROR("unknown asic: 0x%x\n", adev->asic_type);
+		break;
+	}
+}
+
+static void
+gfx_v7_0_write_harvested_raster_configs(struct amdgpu_device *adev,
+					u32 raster_config, u32 raster_config_1,
+					unsigned rb_mask, unsigned num_rb)
+{
+	unsigned sh_per_se = max_t(unsigned, adev->gfx.config.max_sh_per_se, 1);
+	unsigned num_se = max_t(unsigned, adev->gfx.config.max_shader_engines, 1);
+	unsigned rb_per_pkr = min_t(unsigned, num_rb / num_se / sh_per_se, 2);
+	unsigned rb_per_se = num_rb / num_se;
+	unsigned se_mask[4];
+	unsigned se;
+
+	se_mask[0] = ((1 << rb_per_se) - 1) & rb_mask;
+	se_mask[1] = (se_mask[0] << rb_per_se) & rb_mask;
+	se_mask[2] = (se_mask[1] << rb_per_se) & rb_mask;
+	se_mask[3] = (se_mask[2] << rb_per_se) & rb_mask;
+
+	WARN_ON(!(num_se == 1 || num_se == 2 || num_se == 4));
+	WARN_ON(!(sh_per_se == 1 || sh_per_se == 2));
+	WARN_ON(!(rb_per_pkr == 1 || rb_per_pkr == 2));
+
+	if ((num_se > 2) && ((!se_mask[0] && !se_mask[1]) ||
+			     (!se_mask[2] && !se_mask[3]))) {
+		raster_config_1 &= ~SE_PAIR_MAP_MASK;
+
+		if (!se_mask[0] && !se_mask[1]) {
+			raster_config_1 |=
+				SE_PAIR_MAP(RASTER_CONFIG_SE_PAIR_MAP_3);
+		} else {
+			raster_config_1 |=
+				SE_PAIR_MAP(RASTER_CONFIG_SE_PAIR_MAP_0);
+		}
+	}
+
+	for (se = 0; se < num_se; se++) {
+		unsigned raster_config_se = raster_config;
+		unsigned pkr0_mask = ((1 << rb_per_pkr) - 1) << (se * rb_per_se);
+		unsigned pkr1_mask = pkr0_mask << rb_per_pkr;
+		int idx = (se / 2) * 2;
+
+		if ((num_se > 1) && (!se_mask[idx] || !se_mask[idx + 1])) {
+			raster_config_se &= ~SE_MAP_MASK;
+
+			if (!se_mask[idx]) {
+				raster_config_se |= SE_MAP(RASTER_CONFIG_SE_MAP_3);
+			} else {
+				raster_config_se |= SE_MAP(RASTER_CONFIG_SE_MAP_0);
+			}
+		}
+
+		pkr0_mask &= rb_mask;
+		pkr1_mask &= rb_mask;
+		if (rb_per_se > 2 && (!pkr0_mask || !pkr1_mask)) {
+			raster_config_se &= ~PKR_MAP_MASK;
+
+			if (!pkr0_mask) {
+				raster_config_se |= PKR_MAP(RASTER_CONFIG_PKR_MAP_3);
+			} else {
+				raster_config_se |= PKR_MAP(RASTER_CONFIG_PKR_MAP_0);
+			}
+		}
+
+		if (rb_per_se >= 2) {
+			unsigned rb0_mask = 1 << (se * rb_per_se);
+			unsigned rb1_mask = rb0_mask << 1;
+
+			rb0_mask &= rb_mask;
+			rb1_mask &= rb_mask;
+			if (!rb0_mask || !rb1_mask) {
+				raster_config_se &= ~RB_MAP_PKR0_MASK;
+
+				if (!rb0_mask) {
+					raster_config_se |=
+						RB_MAP_PKR0(RASTER_CONFIG_RB_MAP_3);
+				} else {
+					raster_config_se |=
+						RB_MAP_PKR0(RASTER_CONFIG_RB_MAP_0);
+				}
+			}
+
+			if (rb_per_se > 2) {
+				rb0_mask = 1 << (se * rb_per_se + rb_per_pkr);
+				rb1_mask = rb0_mask << 1;
+				rb0_mask &= rb_mask;
+				rb1_mask &= rb_mask;
+				if (!rb0_mask || !rb1_mask) {
+					raster_config_se &= ~RB_MAP_PKR1_MASK;
+
+					if (!rb0_mask) {
+						raster_config_se |=
+							RB_MAP_PKR1(RASTER_CONFIG_RB_MAP_3);
+					} else {
+						raster_config_se |=
+							RB_MAP_PKR1(RASTER_CONFIG_RB_MAP_0);
+					}
+				}
+			}
+		}
+
+		/* GRBM_GFX_INDEX has a different offset on CI+ */
+		gfx_v7_0_select_se_sh(adev, se, 0xffffffff, 0xffffffff);
+		WREG32(mmPA_SC_RASTER_CONFIG, raster_config_se);
+		WREG32(mmPA_SC_RASTER_CONFIG_1, raster_config_1);
+	}
+
+	/* GRBM_GFX_INDEX has a different offset on CI+ */
+	gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -1940,6 +2687,7 @@ static u32 gfx_v7_0_get_rb_disabled(struct amdgpu_device *adev,
  * @adev: amdgpu_device pointer
  * @se_num: number of SEs (shader engines) for the asic
  * @sh_per_se: number of SH blocks per SE for the asic
+<<<<<<< HEAD
  * @max_rb_num: max RBs (render backends) for the asic
  *
  * Configures per-SE/SH RB registers (CIK).
@@ -2006,6 +2754,49 @@ static void gfx_v7_0_setup_rb(struct amdgpu_device *adev,
 		WREG32(mmPA_SC_RASTER_CONFIG, data);
 	}
 	gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff);
+=======
+ *
+ * Configures per-SE/SH RB registers (CIK).
+ */
+static void gfx_v7_0_setup_rb(struct amdgpu_device *adev)
+{
+	int i, j;
+	u32 data;
+	u32 raster_config = 0, raster_config_1 = 0;
+	u32 active_rbs = 0;
+	u32 rb_bitmap_width_per_sh = adev->gfx.config.max_backends_per_se /
+					adev->gfx.config.max_sh_per_se;
+	unsigned num_rb_pipes;
+
+	mutex_lock(&adev->grbm_idx_mutex);
+	for (i = 0; i < adev->gfx.config.max_shader_engines; i++) {
+		for (j = 0; j < adev->gfx.config.max_sh_per_se; j++) {
+			gfx_v7_0_select_se_sh(adev, i, j, 0xffffffff);
+			data = gfx_v7_0_get_rb_active_bitmap(adev);
+			active_rbs |= data << ((i * adev->gfx.config.max_sh_per_se + j) *
+					       rb_bitmap_width_per_sh);
+		}
+	}
+	gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
+
+	adev->gfx.config.backend_enable_mask = active_rbs;
+	adev->gfx.config.num_rbs = hweight32(active_rbs);
+
+	num_rb_pipes = min_t(unsigned, adev->gfx.config.max_backends_per_se *
+			     adev->gfx.config.max_shader_engines, 16);
+
+	gfx_v7_0_raster_config(adev, &raster_config, &raster_config_1);
+
+	if (!adev->gfx.config.backend_enable_mask ||
+			adev->gfx.config.num_rbs >= num_rb_pipes) {
+		WREG32(mmPA_SC_RASTER_CONFIG, raster_config);
+		WREG32(mmPA_SC_RASTER_CONFIG_1, raster_config_1);
+	} else {
+		gfx_v7_0_write_harvested_raster_configs(adev, raster_config, raster_config_1,
+							adev->gfx.config.backend_enable_mask,
+							num_rb_pipes);
+	}
+>>>>>>> v4.9.227
 	mutex_unlock(&adev->grbm_idx_mutex);
 }
 
@@ -2059,6 +2850,7 @@ static void gmc_v7_0_init_compute_vmid(struct amdgpu_device *adev)
  */
 static void gfx_v7_0_gpu_init(struct amdgpu_device *adev)
 {
+<<<<<<< HEAD
 	u32 gb_addr_config;
 	u32 mc_shared_chmap, mc_arb_ramcfg;
 	u32 dimm00_addr_map, dimm01_addr_map, dimm10_addr_map, dimm11_addr_map;
@@ -2245,17 +3037,45 @@ static void gfx_v7_0_gpu_init(struct amdgpu_device *adev)
 	WREG32(mmCP_MEQ_THRESHOLDS,
 			(0x30 << CP_MEQ_THRESHOLDS__MEQ1_START__SHIFT) |
 			(0x60 << CP_MEQ_THRESHOLDS__MEQ2_START__SHIFT));
+=======
+	u32 tmp, sh_mem_cfg;
+	int i;
+
+	WREG32(mmGRBM_CNTL, (0xff << GRBM_CNTL__READ_TIMEOUT__SHIFT));
+
+	WREG32(mmGB_ADDR_CONFIG, adev->gfx.config.gb_addr_config);
+	WREG32(mmHDP_ADDR_CONFIG, adev->gfx.config.gb_addr_config);
+	WREG32(mmDMIF_ADDR_CALC, adev->gfx.config.gb_addr_config);
+
+	gfx_v7_0_tiling_mode_table_init(adev);
+
+	gfx_v7_0_setup_rb(adev);
+	gfx_v7_0_get_cu_info(adev);
+
+	/* set HW defaults for 3D engine */
+	WREG32(mmCP_MEQ_THRESHOLDS,
+	       (0x30 << CP_MEQ_THRESHOLDS__MEQ1_START__SHIFT) |
+	       (0x60 << CP_MEQ_THRESHOLDS__MEQ2_START__SHIFT));
+>>>>>>> v4.9.227
 
 	mutex_lock(&adev->grbm_idx_mutex);
 	/*
 	 * making sure that the following register writes will be broadcasted
 	 * to all the shaders
 	 */
+<<<<<<< HEAD
 	gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff);
 
 	/* XXX SH_MEM regs */
 	/* where to put LDS, scratch, GPUVM in FSA64 space */
 	sh_mem_cfg = REG_SET_FIELD(0, SH_MEM_CONFIG, ALIGNMENT_MODE, 
+=======
+	gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
+
+	/* XXX SH_MEM regs */
+	/* where to put LDS, scratch, GPUVM in FSA64 space */
+	sh_mem_cfg = REG_SET_FIELD(0, SH_MEM_CONFIG, ALIGNMENT_MODE,
+>>>>>>> v4.9.227
 				   SH_MEM_ALIGNMENT_MODE_UNALIGNED);
 
 	mutex_lock(&adev->srbm_mutex);
@@ -2379,7 +3199,11 @@ static int gfx_v7_0_ring_test_ring(struct amdgpu_ring *ring)
 		return r;
 	}
 	WREG32(scratch, 0xCAFEDEAD);
+<<<<<<< HEAD
 	r = amdgpu_ring_lock(ring, 3);
+=======
+	r = amdgpu_ring_alloc(ring, 3);
+>>>>>>> v4.9.227
 	if (r) {
 		DRM_ERROR("amdgpu: cp failed to lock ring %d (%d).\n", ring->idx, r);
 		amdgpu_gfx_scratch_free(adev, scratch);
@@ -2388,7 +3212,11 @@ static int gfx_v7_0_ring_test_ring(struct amdgpu_ring *ring)
 	amdgpu_ring_write(ring, PACKET3(PACKET3_SET_UCONFIG_REG, 1));
 	amdgpu_ring_write(ring, (scratch - PACKET3_SET_UCONFIG_REG_START));
 	amdgpu_ring_write(ring, 0xDEADBEEF);
+<<<<<<< HEAD
 	amdgpu_ring_unlock_commit(ring);
+=======
+	amdgpu_ring_commit(ring);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < adev->usec_timeout; i++) {
 		tmp = RREG32(scratch);
@@ -2447,6 +3275,28 @@ static void gfx_v7_0_ring_emit_hdp_flush(struct amdgpu_ring *ring)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * gfx_v7_0_ring_emit_hdp_invalidate - emit an hdp invalidate on the cp
+ *
+ * @adev: amdgpu_device pointer
+ * @ridx: amdgpu ring index
+ *
+ * Emits an hdp invalidate on the cp.
+ */
+static void gfx_v7_0_ring_emit_hdp_invalidate(struct amdgpu_ring *ring)
+{
+	amdgpu_ring_write(ring, PACKET3(PACKET3_WRITE_DATA, 3));
+	amdgpu_ring_write(ring, (WRITE_DATA_ENGINE_SEL(0) |
+				 WRITE_DATA_DST_SEL(0) |
+				 WR_CONFIRM));
+	amdgpu_ring_write(ring, mmHDP_DEBUG0);
+	amdgpu_ring_write(ring, 0);
+	amdgpu_ring_write(ring, 1);
+}
+
+/**
+>>>>>>> v4.9.227
  * gfx_v7_0_ring_emit_fence_gfx - emit a fence on the gfx ring
  *
  * @adev: amdgpu_device pointer
@@ -2516,6 +3366,7 @@ static void gfx_v7_0_ring_emit_fence_compute(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, upper_32_bits(seq));
 }
 
+<<<<<<< HEAD
 /**
  * gfx_v7_0_ring_emit_semaphore - emit a semaphore on the CP ring
  *
@@ -2546,6 +3397,8 @@ static bool gfx_v7_0_ring_emit_semaphore(struct amdgpu_ring *ring,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * IB stuff
  */
@@ -2562,6 +3415,7 @@ static bool gfx_v7_0_ring_emit_semaphore(struct amdgpu_ring *ring,
  * on the gfx ring for execution by the GPU.
  */
 static void gfx_v7_0_ring_emit_ib_gfx(struct amdgpu_ring *ring,
+<<<<<<< HEAD
 				  struct amdgpu_ib *ib)
 {
 	bool need_ctx_switch = ring->current_ctx != ib->ctx;
@@ -2584,6 +3438,15 @@ static void gfx_v7_0_ring_emit_ib_gfx(struct amdgpu_ring *ring,
 
 	/* insert SWITCH_BUFFER packet before first IB in the ring frame */
 	if (need_ctx_switch) {
+=======
+				      struct amdgpu_ib *ib,
+				      unsigned vm_id, bool ctx_switch)
+{
+	u32 header, control = 0;
+
+	/* insert SWITCH_BUFFER packet before first IB in the ring frame */
+	if (ctx_switch) {
+>>>>>>> v4.9.227
 		amdgpu_ring_write(ring, PACKET3(PACKET3_SWITCH_BUFFER, 0));
 		amdgpu_ring_write(ring, 0);
 	}
@@ -2593,8 +3456,12 @@ static void gfx_v7_0_ring_emit_ib_gfx(struct amdgpu_ring *ring,
 	else
 		header = PACKET3(PACKET3_INDIRECT_BUFFER, 2);
 
+<<<<<<< HEAD
 	control |= ib->length_dw |
 		(ib->vm ? (ib->vm->ids[ring->idx].id << 24) : 0);
+=======
+	control |= ib->length_dw | (vm_id << 24);
+>>>>>>> v4.9.227
 
 	amdgpu_ring_write(ring, header);
 	amdgpu_ring_write(ring,
@@ -2607,6 +3474,7 @@ static void gfx_v7_0_ring_emit_ib_gfx(struct amdgpu_ring *ring,
 }
 
 static void gfx_v7_0_ring_emit_ib_compute(struct amdgpu_ring *ring,
+<<<<<<< HEAD
 				  struct amdgpu_ib *ib)
 {
 	u32 header, control = 0;
@@ -2626,6 +3494,14 @@ static void gfx_v7_0_ring_emit_ib_compute(struct amdgpu_ring *ring,
 			   (ib->vm ? (ib->vm->ids[ring->idx].id << 24) : 0);
 
 	amdgpu_ring_write(ring, header);
+=======
+					  struct amdgpu_ib *ib,
+					  unsigned vm_id, bool ctx_switch)
+{
+	u32 control = INDIRECT_BUFFER_VALID | ib->length_dw | (vm_id << 24);
+
+	amdgpu_ring_write(ring, PACKET3(PACKET3_INDIRECT_BUFFER, 2));
+>>>>>>> v4.9.227
 	amdgpu_ring_write(ring,
 #ifdef __BIG_ENDIAN
 					  (2 << 0) |
@@ -2635,6 +3511,28 @@ static void gfx_v7_0_ring_emit_ib_compute(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, control);
 }
 
+<<<<<<< HEAD
+=======
+static void gfx_v7_ring_emit_cntxcntl(struct amdgpu_ring *ring, uint32_t flags)
+{
+	uint32_t dw2 = 0;
+
+	dw2 |= 0x80000000; /* set load_enable otherwise this package is just NOPs */
+	if (flags & AMDGPU_HAVE_CTX_SWITCH) {
+		/* set load_global_config & load_global_uconfig */
+		dw2 |= 0x8001;
+		/* set load_cs_sh_regs */
+		dw2 |= 0x01000000;
+		/* set load_per_context_state & load_gfx_sh_regs */
+		dw2 |= 0x10002;
+	}
+
+	amdgpu_ring_write(ring, PACKET3(PACKET3_CONTEXT_CONTROL, 1));
+	amdgpu_ring_write(ring, dw2);
+	amdgpu_ring_write(ring, 0);
+}
+
+>>>>>>> v4.9.227
 /**
  * gfx_v7_0_ring_test_ib - basic ring IB test
  *
@@ -2644,26 +3542,44 @@ static void gfx_v7_0_ring_emit_ib_compute(struct amdgpu_ring *ring,
  * Provides a basic gfx ring test to verify that IBs are working.
  * Returns 0 on success, error on failure.
  */
+<<<<<<< HEAD
 static int gfx_v7_0_ring_test_ib(struct amdgpu_ring *ring)
+=======
+static int gfx_v7_0_ring_test_ib(struct amdgpu_ring *ring, long timeout)
+>>>>>>> v4.9.227
 {
 	struct amdgpu_device *adev = ring->adev;
 	struct amdgpu_ib ib;
 	struct fence *f = NULL;
 	uint32_t scratch;
 	uint32_t tmp = 0;
+<<<<<<< HEAD
 	unsigned i;
 	int r;
 
 	r = amdgpu_gfx_scratch_get(adev, &scratch);
 	if (r) {
 		DRM_ERROR("amdgpu: failed to get scratch reg (%d).\n", r);
+=======
+	long r;
+
+	r = amdgpu_gfx_scratch_get(adev, &scratch);
+	if (r) {
+		DRM_ERROR("amdgpu: failed to get scratch reg (%ld).\n", r);
+>>>>>>> v4.9.227
 		return r;
 	}
 	WREG32(scratch, 0xCAFEDEAD);
 	memset(&ib, 0, sizeof(ib));
+<<<<<<< HEAD
 	r = amdgpu_ib_get(ring, NULL, 256, &ib);
 	if (r) {
 		DRM_ERROR("amdgpu: failed to get ib (%d).\n", r);
+=======
+	r = amdgpu_ib_get(adev, NULL, 256, &ib);
+	if (r) {
+		DRM_ERROR("amdgpu: failed to get ib (%ld).\n", r);
+>>>>>>> v4.9.227
 		goto err1;
 	}
 	ib.ptr[0] = PACKET3(PACKET3_SET_UCONFIG_REG, 1);
@@ -2671,6 +3587,7 @@ static int gfx_v7_0_ring_test_ib(struct amdgpu_ring *ring)
 	ib.ptr[2] = 0xDEADBEEF;
 	ib.length_dw = 3;
 
+<<<<<<< HEAD
 	r = amdgpu_sched_ib_submit_kernel_helper(adev, ring, &ib, 1, NULL,
 						 AMDGPU_FENCE_OWNER_UNDEFINED,
 						 &f);
@@ -2692,6 +3609,25 @@ static int gfx_v7_0_ring_test_ib(struct amdgpu_ring *ring)
 		DRM_INFO("ib test on ring %d succeeded in %u usecs\n",
 			 ring->idx, i);
 		goto err2;
+=======
+	r = amdgpu_ib_schedule(ring, 1, &ib, NULL, NULL, &f);
+	if (r)
+		goto err2;
+
+	r = fence_wait_timeout(f, false, timeout);
+	if (r == 0) {
+		DRM_ERROR("amdgpu: IB test timed out\n");
+		r = -ETIMEDOUT;
+		goto err2;
+	} else if (r < 0) {
+		DRM_ERROR("amdgpu: fence wait failed (%ld).\n", r);
+		goto err2;
+	}
+	tmp = RREG32(scratch);
+	if (tmp == 0xDEADBEEF) {
+		DRM_INFO("ib test on ring %d succeeded\n", ring->idx);
+		r = 0;
+>>>>>>> v4.9.227
 	} else {
 		DRM_ERROR("amdgpu: ib test failed (scratch(0x%04X)=0x%08X)\n",
 			  scratch, tmp);
@@ -2699,8 +3635,13 @@ static int gfx_v7_0_ring_test_ib(struct amdgpu_ring *ring)
 	}
 
 err2:
+<<<<<<< HEAD
 	fence_put(f);
 	amdgpu_ib_free(adev, &ib);
+=======
+	amdgpu_ib_free(adev, &ib, NULL);
+	fence_put(f);
+>>>>>>> v4.9.227
 err1:
 	amdgpu_gfx_scratch_free(adev, scratch);
 	return r;
@@ -2842,7 +3783,11 @@ static int gfx_v7_0_cp_gfx_start(struct amdgpu_device *adev)
 
 	gfx_v7_0_cp_gfx_enable(adev, true);
 
+<<<<<<< HEAD
 	r = amdgpu_ring_lock(ring, gfx_v7_0_get_csb_size(adev) + 8);
+=======
+	r = amdgpu_ring_alloc(ring, gfx_v7_0_get_csb_size(adev) + 8);
+>>>>>>> v4.9.227
 	if (r) {
 		DRM_ERROR("amdgpu: cp failed to lock ring (%d).\n", r);
 		return r;
@@ -2911,7 +3856,11 @@ static int gfx_v7_0_cp_gfx_start(struct amdgpu_device *adev)
 	amdgpu_ring_write(ring, 0x0000000e); /* VGT_VERTEX_REUSE_BLOCK_CNTL */
 	amdgpu_ring_write(ring, 0x00000010); /* VGT_OUT_DEALLOC_CNTL */
 
+<<<<<<< HEAD
 	amdgpu_ring_unlock_commit(ring);
+=======
+	amdgpu_ring_commit(ring);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -2987,6 +3936,7 @@ static int gfx_v7_0_cp_gfx_resume(struct amdgpu_device *adev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static u32 gfx_v7_0_ring_get_rptr_gfx(struct amdgpu_ring *ring)
 {
 	u32 rptr;
@@ -2994,16 +3944,26 @@ static u32 gfx_v7_0_ring_get_rptr_gfx(struct amdgpu_ring *ring)
 	rptr = ring->adev->wb.wb[ring->rptr_offs];
 
 	return rptr;
+=======
+static u32 gfx_v7_0_ring_get_rptr(struct amdgpu_ring *ring)
+{
+	return ring->adev->wb.wb[ring->rptr_offs];
+>>>>>>> v4.9.227
 }
 
 static u32 gfx_v7_0_ring_get_wptr_gfx(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
+<<<<<<< HEAD
 	u32 wptr;
 
 	wptr = RREG32(mmCP_RB0_WPTR);
 
 	return wptr;
+=======
+
+	return RREG32(mmCP_RB0_WPTR);
+>>>>>>> v4.9.227
 }
 
 static void gfx_v7_0_ring_set_wptr_gfx(struct amdgpu_ring *ring)
@@ -3014,6 +3974,7 @@ static void gfx_v7_0_ring_set_wptr_gfx(struct amdgpu_ring *ring)
 	(void)RREG32(mmCP_RB0_WPTR);
 }
 
+<<<<<<< HEAD
 static u32 gfx_v7_0_ring_get_rptr_compute(struct amdgpu_ring *ring)
 {
 	u32 rptr;
@@ -3031,6 +3992,12 @@ static u32 gfx_v7_0_ring_get_wptr_compute(struct amdgpu_ring *ring)
 	wptr = ring->adev->wb.wb[ring->wptr_offs];
 
 	return wptr;
+=======
+static u32 gfx_v7_0_ring_get_wptr_compute(struct amdgpu_ring *ring)
+{
+	/* XXX check if swapping is necessary on BE */
+	return ring->adev->wb.wb[ring->wptr_offs];
+>>>>>>> v4.9.227
 }
 
 static void gfx_v7_0_ring_set_wptr_compute(struct amdgpu_ring *ring)
@@ -3126,6 +4093,7 @@ static int gfx_v7_0_cp_compute_load_microcode(struct amdgpu_device *adev)
 }
 
 /**
+<<<<<<< HEAD
  * gfx_v7_0_cp_compute_start - start the compute queues
  *
  * @adev: amdgpu_device pointer
@@ -3141,6 +4109,8 @@ static int gfx_v7_0_cp_compute_start(struct amdgpu_device *adev)
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * gfx_v7_0_cp_compute_fini - stop the compute queues
  *
  * @adev: amdgpu_device pointer
@@ -3329,10 +4299,14 @@ static int gfx_v7_0_cp_compute_resume(struct amdgpu_device *adev)
 	u64 wb_gpu_addr;
 	u32 *buf;
 	struct bonaire_mqd *mqd;
+<<<<<<< HEAD
 
 	r = gfx_v7_0_cp_compute_start(adev);
 	if (r)
 		return r;
+=======
+	struct amdgpu_ring *ring;
+>>>>>>> v4.9.227
 
 	/* fix up chicken bits */
 	tmp = RREG32(mmCP_CPF_DEBUG);
@@ -3367,7 +4341,11 @@ static int gfx_v7_0_cp_compute_resume(struct amdgpu_device *adev)
 
 	/* init the queues.  Just two for now. */
 	for (i = 0; i < adev->gfx.num_compute_rings; i++) {
+<<<<<<< HEAD
 		struct amdgpu_ring *ring = &adev->gfx.compute_ring[i];
+=======
+		ring = &adev->gfx.compute_ring[i];
+>>>>>>> v4.9.227
 
 		if (ring->mqd_obj == NULL) {
 			r = amdgpu_bo_create(adev,
@@ -3546,6 +4524,16 @@ static int gfx_v7_0_cp_compute_resume(struct amdgpu_device *adev)
 		amdgpu_bo_unreserve(ring->mqd_obj);
 
 		ring->ready = true;
+<<<<<<< HEAD
+=======
+	}
+
+	gfx_v7_0_cp_compute_enable(adev, true);
+
+	for (i = 0; i < adev->gfx.num_compute_rings; i++) {
+		ring = &adev->gfx.compute_ring[i];
+
+>>>>>>> v4.9.227
 		r = amdgpu_ring_test_ring(ring);
 		if (r)
 			ring->ready = false;
@@ -3610,6 +4598,7 @@ static int gfx_v7_0_cp_resume(struct amdgpu_device *adev)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * vm
  * VMID 0 is the physical GPU addresses as used by the kernel.
@@ -3629,6 +4618,20 @@ static void gfx_v7_0_ring_emit_vm_flush(struct amdgpu_ring *ring,
 {
 	int usepfp = (ring->type == AMDGPU_RING_TYPE_GFX);
 	uint32_t seq = ring->fence_drv.sync_seq[ring->idx];
+=======
+/**
+ * gfx_v7_0_ring_emit_vm_flush - cik vm flush using the CP
+ *
+ * @ring: the ring to emmit the commands to
+ *
+ * Sync the command pipeline with the PFP. E.g. wait for everything
+ * to be completed.
+ */
+static void gfx_v7_0_ring_emit_pipeline_sync(struct amdgpu_ring *ring)
+{
+	int usepfp = (ring->type == AMDGPU_RING_TYPE_GFX);
+	uint32_t seq = ring->fence_drv.sync_seq;
+>>>>>>> v4.9.227
 	uint64_t addr = ring->fence_drv.gpu_addr;
 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WAIT_REG_MEM, 5));
@@ -3648,6 +4651,29 @@ static void gfx_v7_0_ring_emit_vm_flush(struct amdgpu_ring *ring,
 		amdgpu_ring_write(ring, PACKET3(PACKET3_SWITCH_BUFFER, 0));
 		amdgpu_ring_write(ring, 0);
 	}
+<<<<<<< HEAD
+=======
+}
+
+/*
+ * vm
+ * VMID 0 is the physical GPU addresses as used by the kernel.
+ * VMIDs 1-15 are used for userspace clients and are handled
+ * by the amdgpu vm/hsa code.
+ */
+/**
+ * gfx_v7_0_ring_emit_vm_flush - cik vm flush using the CP
+ *
+ * @adev: amdgpu_device pointer
+ *
+ * Update the page table base and flush the VM TLB
+ * using the CP (CIK).
+ */
+static void gfx_v7_0_ring_emit_vm_flush(struct amdgpu_ring *ring,
+					unsigned vm_id, uint64_t pd_addr)
+{
+	int usepfp = (ring->type == AMDGPU_RING_TYPE_GFX);
+>>>>>>> v4.9.227
 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WRITE_DATA, 3));
 	amdgpu_ring_write(ring, (WRITE_DATA_ENGINE_SEL(usepfp) |
@@ -3762,7 +4788,12 @@ static int gfx_v7_0_rlc_init(struct amdgpu_device *adev)
 		}
 	}
 	adev->gfx.rlc.cs_data = ci_cs_data;
+<<<<<<< HEAD
 	adev->gfx.rlc.cp_table_size = CP_ME_TABLE_SIZE * 5 * 4;
+=======
+	adev->gfx.rlc.cp_table_size = ALIGN(CP_ME_TABLE_SIZE * 5 * 4, 2048); /* CP JT */
+	adev->gfx.rlc.cp_table_size += 64 * 1024; /* GDS */
+>>>>>>> v4.9.227
 
 	src_ptr = adev->gfx.rlc.reg_list;
 	dws = adev->gfx.rlc.reg_list_size;
@@ -3920,7 +4951,11 @@ static void gfx_v7_0_wait_for_rlc_serdes(struct amdgpu_device *adev)
 	mutex_lock(&adev->grbm_idx_mutex);
 	for (i = 0; i < adev->gfx.config.max_shader_engines; i++) {
 		for (j = 0; j < adev->gfx.config.max_sh_per_se; j++) {
+<<<<<<< HEAD
 			gfx_v7_0_select_se_sh(adev, i, j);
+=======
+			gfx_v7_0_select_se_sh(adev, i, j, 0xffffffff);
+>>>>>>> v4.9.227
 			for (k = 0; k < adev->usec_timeout; k++) {
 				if (RREG32(mmRLC_SERDES_CU_MASTER_BUSY) == 0)
 					break;
@@ -3928,7 +4963,11 @@ static void gfx_v7_0_wait_for_rlc_serdes(struct amdgpu_device *adev)
 			}
 		}
 	}
+<<<<<<< HEAD
 	gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff);
+=======
+	gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
+>>>>>>> v4.9.227
 	mutex_unlock(&adev->grbm_idx_mutex);
 
 	mask = RLC_SERDES_NONCU_MASTER_BUSY__SE_MASTER_BUSY_MASK |
@@ -3975,7 +5014,11 @@ static u32 gfx_v7_0_halt_rlc(struct amdgpu_device *adev)
 	return orig;
 }
 
+<<<<<<< HEAD
 void gfx_v7_0_enter_rlc_safe_mode(struct amdgpu_device *adev)
+=======
+static void gfx_v7_0_enter_rlc_safe_mode(struct amdgpu_device *adev)
+>>>>>>> v4.9.227
 {
 	u32 tmp, i, mask;
 
@@ -3997,7 +5040,11 @@ void gfx_v7_0_enter_rlc_safe_mode(struct amdgpu_device *adev)
 	}
 }
 
+<<<<<<< HEAD
 void gfx_v7_0_exit_rlc_safe_mode(struct amdgpu_device *adev)
+=======
+static void gfx_v7_0_exit_rlc_safe_mode(struct amdgpu_device *adev)
+>>>>>>> v4.9.227
 {
 	u32 tmp;
 
@@ -4012,7 +5059,11 @@ void gfx_v7_0_exit_rlc_safe_mode(struct amdgpu_device *adev)
  *
  * Halt the RLC ME (MicroEngine) (CIK).
  */
+<<<<<<< HEAD
 void gfx_v7_0_rlc_stop(struct amdgpu_device *adev)
+=======
+static void gfx_v7_0_rlc_stop(struct amdgpu_device *adev)
+>>>>>>> v4.9.227
 {
 	WREG32(mmRLC_CNTL, 0);
 
@@ -4088,7 +5139,11 @@ static int gfx_v7_0_rlc_resume(struct amdgpu_device *adev)
 	WREG32(mmRLC_LB_CNTR_MAX, 0x00008000);
 
 	mutex_lock(&adev->grbm_idx_mutex);
+<<<<<<< HEAD
 	gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff);
+=======
+	gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
+>>>>>>> v4.9.227
 	WREG32(mmRLC_LB_INIT_CU_MASK, 0xffffffff);
 	WREG32(mmRLC_LB_PARAMS, 0x00600408);
 	WREG32(mmRLC_LB_CNTL, 0x80000004);
@@ -4122,13 +5177,21 @@ static void gfx_v7_0_enable_cgcg(struct amdgpu_device *adev, bool enable)
 
 	orig = data = RREG32(mmRLC_CGCG_CGLS_CTRL);
 
+<<<<<<< HEAD
 	if (enable && (adev->cg_flags & AMDGPU_CG_SUPPORT_GFX_CGCG)) {
+=======
+	if (enable && (adev->cg_flags & AMD_CG_SUPPORT_GFX_CGCG)) {
+>>>>>>> v4.9.227
 		gfx_v7_0_enable_gui_idle_interrupt(adev, true);
 
 		tmp = gfx_v7_0_halt_rlc(adev);
 
 		mutex_lock(&adev->grbm_idx_mutex);
+<<<<<<< HEAD
 		gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff);
+=======
+		gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
+>>>>>>> v4.9.227
 		WREG32(mmRLC_SERDES_WR_CU_MASTER_MASK, 0xffffffff);
 		WREG32(mmRLC_SERDES_WR_NONCU_MASTER_MASK, 0xffffffff);
 		tmp2 = RLC_SERDES_WR_CTRL__BPM_ADDR_MASK |
@@ -4160,9 +5223,15 @@ static void gfx_v7_0_enable_mgcg(struct amdgpu_device *adev, bool enable)
 {
 	u32 data, orig, tmp = 0;
 
+<<<<<<< HEAD
 	if (enable && (adev->cg_flags & AMDGPU_CG_SUPPORT_GFX_MGCG)) {
 		if (adev->cg_flags & AMDGPU_CG_SUPPORT_GFX_MGLS) {
 			if (adev->cg_flags & AMDGPU_CG_SUPPORT_GFX_CP_LS) {
+=======
+	if (enable && (adev->cg_flags & AMD_CG_SUPPORT_GFX_MGCG)) {
+		if (adev->cg_flags & AMD_CG_SUPPORT_GFX_MGLS) {
+			if (adev->cg_flags & AMD_CG_SUPPORT_GFX_CP_LS) {
+>>>>>>> v4.9.227
 				orig = data = RREG32(mmCP_MEM_SLP_CNTL);
 				data |= CP_MEM_SLP_CNTL__CP_MEM_LS_EN_MASK;
 				if (orig != data)
@@ -4179,7 +5248,11 @@ static void gfx_v7_0_enable_mgcg(struct amdgpu_device *adev, bool enable)
 		tmp = gfx_v7_0_halt_rlc(adev);
 
 		mutex_lock(&adev->grbm_idx_mutex);
+<<<<<<< HEAD
 		gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff);
+=======
+		gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
+>>>>>>> v4.9.227
 		WREG32(mmRLC_SERDES_WR_CU_MASTER_MASK, 0xffffffff);
 		WREG32(mmRLC_SERDES_WR_NONCU_MASTER_MASK, 0xffffffff);
 		data = RLC_SERDES_WR_CTRL__BPM_ADDR_MASK |
@@ -4189,14 +5262,23 @@ static void gfx_v7_0_enable_mgcg(struct amdgpu_device *adev, bool enable)
 
 		gfx_v7_0_update_rlc(adev, tmp);
 
+<<<<<<< HEAD
 		if (adev->cg_flags & AMDGPU_CG_SUPPORT_GFX_CGTS) {
+=======
+		if (adev->cg_flags & AMD_CG_SUPPORT_GFX_CGTS) {
+>>>>>>> v4.9.227
 			orig = data = RREG32(mmCGTS_SM_CTRL_REG);
 			data &= ~CGTS_SM_CTRL_REG__SM_MODE_MASK;
 			data |= (0x2 << CGTS_SM_CTRL_REG__SM_MODE__SHIFT);
 			data |= CGTS_SM_CTRL_REG__SM_MODE_ENABLE_MASK;
 			data &= ~CGTS_SM_CTRL_REG__OVERRIDE_MASK;
+<<<<<<< HEAD
 			if ((adev->cg_flags & AMDGPU_CG_SUPPORT_GFX_MGLS) &&
 			    (adev->cg_flags & AMDGPU_CG_SUPPORT_GFX_CGTS_LS))
+=======
+			if ((adev->cg_flags & AMD_CG_SUPPORT_GFX_MGLS) &&
+			    (adev->cg_flags & AMD_CG_SUPPORT_GFX_CGTS_LS))
+>>>>>>> v4.9.227
 				data &= ~CGTS_SM_CTRL_REG__LS_OVERRIDE_MASK;
 			data &= ~CGTS_SM_CTRL_REG__ON_MONITOR_ADD_MASK;
 			data |= CGTS_SM_CTRL_REG__ON_MONITOR_ADD_EN_MASK;
@@ -4230,7 +5312,11 @@ static void gfx_v7_0_enable_mgcg(struct amdgpu_device *adev, bool enable)
 		tmp = gfx_v7_0_halt_rlc(adev);
 
 		mutex_lock(&adev->grbm_idx_mutex);
+<<<<<<< HEAD
 		gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff);
+=======
+		gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
+>>>>>>> v4.9.227
 		WREG32(mmRLC_SERDES_WR_CU_MASTER_MASK, 0xffffffff);
 		WREG32(mmRLC_SERDES_WR_NONCU_MASTER_MASK, 0xffffffff);
 		data = RLC_SERDES_WR_CTRL__BPM_ADDR_MASK | RLC_SERDES_WR_CTRL__MGCG_OVERRIDE_1_MASK;
@@ -4262,7 +5348,11 @@ static void gfx_v7_0_enable_sclk_slowdown_on_pu(struct amdgpu_device *adev,
 	u32 data, orig;
 
 	orig = data = RREG32(mmRLC_PG_CNTL);
+<<<<<<< HEAD
 	if (enable && (adev->pg_flags & AMDGPU_PG_SUPPORT_RLC_SMU_HS))
+=======
+	if (enable && (adev->pg_flags & AMD_PG_SUPPORT_RLC_SMU_HS))
+>>>>>>> v4.9.227
 		data |= RLC_PG_CNTL__SMU_CLK_SLOWDOWN_ON_PU_ENABLE_MASK;
 	else
 		data &= ~RLC_PG_CNTL__SMU_CLK_SLOWDOWN_ON_PU_ENABLE_MASK;
@@ -4276,7 +5366,11 @@ static void gfx_v7_0_enable_sclk_slowdown_on_pd(struct amdgpu_device *adev,
 	u32 data, orig;
 
 	orig = data = RREG32(mmRLC_PG_CNTL);
+<<<<<<< HEAD
 	if (enable && (adev->pg_flags & AMDGPU_PG_SUPPORT_RLC_SMU_HS))
+=======
+	if (enable && (adev->pg_flags & AMD_PG_SUPPORT_RLC_SMU_HS))
+>>>>>>> v4.9.227
 		data |= RLC_PG_CNTL__SMU_CLK_SLOWDOWN_ON_PD_ENABLE_MASK;
 	else
 		data &= ~RLC_PG_CNTL__SMU_CLK_SLOWDOWN_ON_PD_ENABLE_MASK;
@@ -4289,7 +5383,11 @@ static void gfx_v7_0_enable_cp_pg(struct amdgpu_device *adev, bool enable)
 	u32 data, orig;
 
 	orig = data = RREG32(mmRLC_PG_CNTL);
+<<<<<<< HEAD
 	if (enable && (adev->pg_flags & AMDGPU_PG_SUPPORT_CP))
+=======
+	if (enable && (adev->pg_flags & AMD_PG_SUPPORT_CP))
+>>>>>>> v4.9.227
 		data &= ~0x8000;
 	else
 		data |= 0x8000;
@@ -4302,7 +5400,11 @@ static void gfx_v7_0_enable_gds_pg(struct amdgpu_device *adev, bool enable)
 	u32 data, orig;
 
 	orig = data = RREG32(mmRLC_PG_CNTL);
+<<<<<<< HEAD
 	if (enable && (adev->pg_flags & AMDGPU_PG_SUPPORT_GDS))
+=======
+	if (enable && (adev->pg_flags & AMD_PG_SUPPORT_GDS))
+>>>>>>> v4.9.227
 		data &= ~0x2000;
 	else
 		data |= 0x2000;
@@ -4383,7 +5485,11 @@ static void gfx_v7_0_enable_gfx_cgpg(struct amdgpu_device *adev,
 {
 	u32 data, orig;
 
+<<<<<<< HEAD
 	if (enable && (adev->pg_flags & AMDGPU_PG_SUPPORT_GFX_PG)) {
+=======
+	if (enable && (adev->pg_flags & AMD_PG_SUPPORT_GFX_PG)) {
+>>>>>>> v4.9.227
 		orig = data = RREG32(mmRLC_PG_CNTL);
 		data |= RLC_PG_CNTL__GFX_POWER_GATING_ENABLE_MASK;
 		if (orig != data)
@@ -4408,6 +5514,7 @@ static void gfx_v7_0_enable_gfx_cgpg(struct amdgpu_device *adev,
 	}
 }
 
+<<<<<<< HEAD
 static u32 gfx_v7_0_get_cu_active_bitmap(struct amdgpu_device *adev,
 					 u32 se, u32 sh)
 {
@@ -4430,10 +5537,40 @@ static u32 gfx_v7_0_get_cu_active_bitmap(struct amdgpu_device *adev,
 	}
 
 	return (~tmp) & mask;
+=======
+static void gfx_v7_0_set_user_cu_inactive_bitmap(struct amdgpu_device *adev,
+						 u32 bitmap)
+{
+	u32 data;
+
+	if (!bitmap)
+		return;
+
+	data = bitmap << GC_USER_SHADER_ARRAY_CONFIG__INACTIVE_CUS__SHIFT;
+	data &= GC_USER_SHADER_ARRAY_CONFIG__INACTIVE_CUS_MASK;
+
+	WREG32(mmGC_USER_SHADER_ARRAY_CONFIG, data);
+}
+
+static u32 gfx_v7_0_get_cu_active_bitmap(struct amdgpu_device *adev)
+{
+	u32 data, mask;
+
+	data = RREG32(mmCC_GC_SHADER_ARRAY_CONFIG);
+	data |= RREG32(mmGC_USER_SHADER_ARRAY_CONFIG);
+
+	data &= CC_GC_SHADER_ARRAY_CONFIG__INACTIVE_CUS_MASK;
+	data >>= CC_GC_SHADER_ARRAY_CONFIG__INACTIVE_CUS__SHIFT;
+
+	mask = gfx_v7_0_create_bitmask(adev->gfx.config.max_cu_per_sh);
+
+	return (~data) & mask;
+>>>>>>> v4.9.227
 }
 
 static void gfx_v7_0_init_ao_cu_mask(struct amdgpu_device *adev)
 {
+<<<<<<< HEAD
 	uint32_t tmp, active_cu_number;
 	struct amdgpu_cu_info cu_info;
 
@@ -4446,6 +5583,15 @@ static void gfx_v7_0_init_ao_cu_mask(struct amdgpu_device *adev)
 	tmp = RREG32(mmRLC_MAX_PG_CU);
 	tmp &= ~RLC_MAX_PG_CU__MAX_POWERED_UP_CU_MASK;
 	tmp |= (active_cu_number << RLC_MAX_PG_CU__MAX_POWERED_UP_CU__SHIFT);
+=======
+	u32 tmp;
+
+	WREG32(mmRLC_PG_ALWAYS_ON_CU_MASK, adev->gfx.cu_info.ao_cu_mask);
+
+	tmp = RREG32(mmRLC_MAX_PG_CU);
+	tmp &= ~RLC_MAX_PG_CU__MAX_POWERED_UP_CU_MASK;
+	tmp |= (adev->gfx.cu_info.number << RLC_MAX_PG_CU__MAX_POWERED_UP_CU__SHIFT);
+>>>>>>> v4.9.227
 	WREG32(mmRLC_MAX_PG_CU, tmp);
 }
 
@@ -4455,7 +5601,11 @@ static void gfx_v7_0_enable_gfx_static_mgpg(struct amdgpu_device *adev,
 	u32 data, orig;
 
 	orig = data = RREG32(mmRLC_PG_CNTL);
+<<<<<<< HEAD
 	if (enable && (adev->pg_flags & AMDGPU_PG_SUPPORT_GFX_SMG))
+=======
+	if (enable && (adev->pg_flags & AMD_PG_SUPPORT_GFX_SMG))
+>>>>>>> v4.9.227
 		data |= RLC_PG_CNTL__STATIC_PER_CU_PG_ENABLE_MASK;
 	else
 		data &= ~RLC_PG_CNTL__STATIC_PER_CU_PG_ENABLE_MASK;
@@ -4469,7 +5619,11 @@ static void gfx_v7_0_enable_gfx_dynamic_mgpg(struct amdgpu_device *adev,
 	u32 data, orig;
 
 	orig = data = RREG32(mmRLC_PG_CNTL);
+<<<<<<< HEAD
 	if (enable && (adev->pg_flags & AMDGPU_PG_SUPPORT_GFX_DMG))
+=======
+	if (enable && (adev->pg_flags & AMD_PG_SUPPORT_GFX_DMG))
+>>>>>>> v4.9.227
 		data |= RLC_PG_CNTL__DYN_PER_CU_PG_ENABLE_MASK;
 	else
 		data &= ~RLC_PG_CNTL__DYN_PER_CU_PG_ENABLE_MASK;
@@ -4636,6 +5790,7 @@ static void gfx_v7_0_get_csb_buffer(struct amdgpu_device *adev,
 
 static void gfx_v7_0_init_pg(struct amdgpu_device *adev)
 {
+<<<<<<< HEAD
 	if (adev->pg_flags & (AMDGPU_PG_SUPPORT_GFX_PG |
 			      AMDGPU_PG_SUPPORT_GFX_SMG |
 			      AMDGPU_PG_SUPPORT_GFX_DMG |
@@ -4645,6 +5800,17 @@ static void gfx_v7_0_init_pg(struct amdgpu_device *adev)
 		gfx_v7_0_enable_sclk_slowdown_on_pu(adev, true);
 		gfx_v7_0_enable_sclk_slowdown_on_pd(adev, true);
 		if (adev->pg_flags & AMDGPU_PG_SUPPORT_GFX_PG) {
+=======
+	if (adev->pg_flags & (AMD_PG_SUPPORT_GFX_PG |
+			      AMD_PG_SUPPORT_GFX_SMG |
+			      AMD_PG_SUPPORT_GFX_DMG |
+			      AMD_PG_SUPPORT_CP |
+			      AMD_PG_SUPPORT_GDS |
+			      AMD_PG_SUPPORT_RLC_SMU_HS)) {
+		gfx_v7_0_enable_sclk_slowdown_on_pu(adev, true);
+		gfx_v7_0_enable_sclk_slowdown_on_pd(adev, true);
+		if (adev->pg_flags & AMD_PG_SUPPORT_GFX_PG) {
+>>>>>>> v4.9.227
 			gfx_v7_0_init_gfx_cgpg(adev);
 			gfx_v7_0_enable_cp_pg(adev, true);
 			gfx_v7_0_enable_gds_pg(adev, true);
@@ -4656,6 +5822,7 @@ static void gfx_v7_0_init_pg(struct amdgpu_device *adev)
 
 static void gfx_v7_0_fini_pg(struct amdgpu_device *adev)
 {
+<<<<<<< HEAD
 	if (adev->pg_flags & (AMDGPU_PG_SUPPORT_GFX_PG |
 			      AMDGPU_PG_SUPPORT_GFX_SMG |
 			      AMDGPU_PG_SUPPORT_GFX_DMG |
@@ -4664,6 +5831,16 @@ static void gfx_v7_0_fini_pg(struct amdgpu_device *adev)
 			      AMDGPU_PG_SUPPORT_RLC_SMU_HS)) {
 		gfx_v7_0_update_gfx_pg(adev, false);
 		if (adev->pg_flags & AMDGPU_PG_SUPPORT_GFX_PG) {
+=======
+	if (adev->pg_flags & (AMD_PG_SUPPORT_GFX_PG |
+			      AMD_PG_SUPPORT_GFX_SMG |
+			      AMD_PG_SUPPORT_GFX_DMG |
+			      AMD_PG_SUPPORT_CP |
+			      AMD_PG_SUPPORT_GDS |
+			      AMD_PG_SUPPORT_RLC_SMU_HS)) {
+		gfx_v7_0_update_gfx_pg(adev, false);
+		if (adev->pg_flags & AMD_PG_SUPPORT_GFX_PG) {
+>>>>>>> v4.9.227
 			gfx_v7_0_enable_cp_pg(adev, false);
 			gfx_v7_0_enable_gds_pg(adev, false);
 		}
@@ -4678,7 +5855,11 @@ static void gfx_v7_0_fini_pg(struct amdgpu_device *adev)
  * Fetches a GPU clock counter snapshot (SI).
  * Returns the 64 bit clock counter snapshot.
  */
+<<<<<<< HEAD
 uint64_t gfx_v7_0_get_gpu_clock_counter(struct amdgpu_device *adev)
+=======
+static uint64_t gfx_v7_0_get_gpu_clock_counter(struct amdgpu_device *adev)
+>>>>>>> v4.9.227
 {
 	uint64_t clock;
 
@@ -4738,12 +5919,65 @@ static void gfx_v7_0_ring_emit_gds_switch(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, (1 << (oa_size + oa_base)) - (1 << oa_base));
 }
 
+<<<<<<< HEAD
+=======
+static unsigned gfx_v7_0_ring_get_emit_ib_size_gfx(struct amdgpu_ring *ring)
+{
+	return
+		4; /* gfx_v7_0_ring_emit_ib_gfx */
+}
+
+static unsigned gfx_v7_0_ring_get_dma_frame_size_gfx(struct amdgpu_ring *ring)
+{
+	return
+		20 + /* gfx_v7_0_ring_emit_gds_switch */
+		7 + /* gfx_v7_0_ring_emit_hdp_flush */
+		5 + /* gfx_v7_0_ring_emit_hdp_invalidate */
+		12 + 12 + 12 + /* gfx_v7_0_ring_emit_fence_gfx x3 for user fence, vm fence */
+		7 + 4 + /* gfx_v7_0_ring_emit_pipeline_sync */
+		17 + 6 + /* gfx_v7_0_ring_emit_vm_flush */
+		3; /* gfx_v7_ring_emit_cntxcntl */
+}
+
+static unsigned gfx_v7_0_ring_get_emit_ib_size_compute(struct amdgpu_ring *ring)
+{
+	return
+		4; /* gfx_v7_0_ring_emit_ib_compute */
+}
+
+static unsigned gfx_v7_0_ring_get_dma_frame_size_compute(struct amdgpu_ring *ring)
+{
+	return
+		20 + /* gfx_v7_0_ring_emit_gds_switch */
+		7 + /* gfx_v7_0_ring_emit_hdp_flush */
+		5 + /* gfx_v7_0_ring_emit_hdp_invalidate */
+		7 + /* gfx_v7_0_ring_emit_pipeline_sync */
+		17 + /* gfx_v7_0_ring_emit_vm_flush */
+		7 + 7 + 7; /* gfx_v7_0_ring_emit_fence_compute x3 for user fence, vm fence */
+}
+
+static const struct amdgpu_gfx_funcs gfx_v7_0_gfx_funcs = {
+	.get_gpu_clock_counter = &gfx_v7_0_get_gpu_clock_counter,
+	.select_se_sh = &gfx_v7_0_select_se_sh,
+};
+
+static const struct amdgpu_rlc_funcs gfx_v7_0_rlc_funcs = {
+	.enter_safe_mode = gfx_v7_0_enter_rlc_safe_mode,
+	.exit_safe_mode = gfx_v7_0_exit_rlc_safe_mode
+};
+
+>>>>>>> v4.9.227
 static int gfx_v7_0_early_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
 	adev->gfx.num_gfx_rings = GFX7_NUM_GFX_RINGS;
 	adev->gfx.num_compute_rings = GFX7_NUM_COMPUTE_RINGS;
+<<<<<<< HEAD
+=======
+	adev->gfx.funcs = &gfx_v7_0_gfx_funcs;
+	adev->gfx.rlc.funcs = &gfx_v7_0_rlc_funcs;
+>>>>>>> v4.9.227
 	gfx_v7_0_set_ring_funcs(adev);
 	gfx_v7_0_set_irq_funcs(adev);
 	gfx_v7_0_set_gds_init(adev);
@@ -4751,6 +5985,165 @@ static int gfx_v7_0_early_init(void *handle)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int gfx_v7_0_late_init(void *handle)
+{
+	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
+	int r;
+
+	r = amdgpu_irq_get(adev, &adev->gfx.priv_reg_irq, 0);
+	if (r)
+		return r;
+
+	r = amdgpu_irq_get(adev, &adev->gfx.priv_inst_irq, 0);
+	if (r)
+		return r;
+
+	return 0;
+}
+
+static void gfx_v7_0_gpu_early_init(struct amdgpu_device *adev)
+{
+	u32 gb_addr_config;
+	u32 mc_shared_chmap, mc_arb_ramcfg;
+	u32 dimm00_addr_map, dimm01_addr_map, dimm10_addr_map, dimm11_addr_map;
+	u32 tmp;
+
+	switch (adev->asic_type) {
+	case CHIP_BONAIRE:
+		adev->gfx.config.max_shader_engines = 2;
+		adev->gfx.config.max_tile_pipes = 4;
+		adev->gfx.config.max_cu_per_sh = 7;
+		adev->gfx.config.max_sh_per_se = 1;
+		adev->gfx.config.max_backends_per_se = 2;
+		adev->gfx.config.max_texture_channel_caches = 4;
+		adev->gfx.config.max_gprs = 256;
+		adev->gfx.config.max_gs_threads = 32;
+		adev->gfx.config.max_hw_contexts = 8;
+
+		adev->gfx.config.sc_prim_fifo_size_frontend = 0x20;
+		adev->gfx.config.sc_prim_fifo_size_backend = 0x100;
+		adev->gfx.config.sc_hiz_tile_fifo_size = 0x30;
+		adev->gfx.config.sc_earlyz_tile_fifo_size = 0x130;
+		gb_addr_config = BONAIRE_GB_ADDR_CONFIG_GOLDEN;
+		break;
+	case CHIP_HAWAII:
+		adev->gfx.config.max_shader_engines = 4;
+		adev->gfx.config.max_tile_pipes = 16;
+		adev->gfx.config.max_cu_per_sh = 11;
+		adev->gfx.config.max_sh_per_se = 1;
+		adev->gfx.config.max_backends_per_se = 4;
+		adev->gfx.config.max_texture_channel_caches = 16;
+		adev->gfx.config.max_gprs = 256;
+		adev->gfx.config.max_gs_threads = 32;
+		adev->gfx.config.max_hw_contexts = 8;
+
+		adev->gfx.config.sc_prim_fifo_size_frontend = 0x20;
+		adev->gfx.config.sc_prim_fifo_size_backend = 0x100;
+		adev->gfx.config.sc_hiz_tile_fifo_size = 0x30;
+		adev->gfx.config.sc_earlyz_tile_fifo_size = 0x130;
+		gb_addr_config = HAWAII_GB_ADDR_CONFIG_GOLDEN;
+		break;
+	case CHIP_KAVERI:
+		adev->gfx.config.max_shader_engines = 1;
+		adev->gfx.config.max_tile_pipes = 4;
+		adev->gfx.config.max_cu_per_sh = 8;
+		adev->gfx.config.max_backends_per_se = 2;
+		adev->gfx.config.max_sh_per_se = 1;
+		adev->gfx.config.max_texture_channel_caches = 4;
+		adev->gfx.config.max_gprs = 256;
+		adev->gfx.config.max_gs_threads = 16;
+		adev->gfx.config.max_hw_contexts = 8;
+
+		adev->gfx.config.sc_prim_fifo_size_frontend = 0x20;
+		adev->gfx.config.sc_prim_fifo_size_backend = 0x100;
+		adev->gfx.config.sc_hiz_tile_fifo_size = 0x30;
+		adev->gfx.config.sc_earlyz_tile_fifo_size = 0x130;
+		gb_addr_config = BONAIRE_GB_ADDR_CONFIG_GOLDEN;
+		break;
+	case CHIP_KABINI:
+	case CHIP_MULLINS:
+	default:
+		adev->gfx.config.max_shader_engines = 1;
+		adev->gfx.config.max_tile_pipes = 2;
+		adev->gfx.config.max_cu_per_sh = 2;
+		adev->gfx.config.max_sh_per_se = 1;
+		adev->gfx.config.max_backends_per_se = 1;
+		adev->gfx.config.max_texture_channel_caches = 2;
+		adev->gfx.config.max_gprs = 256;
+		adev->gfx.config.max_gs_threads = 16;
+		adev->gfx.config.max_hw_contexts = 8;
+
+		adev->gfx.config.sc_prim_fifo_size_frontend = 0x20;
+		adev->gfx.config.sc_prim_fifo_size_backend = 0x100;
+		adev->gfx.config.sc_hiz_tile_fifo_size = 0x30;
+		adev->gfx.config.sc_earlyz_tile_fifo_size = 0x130;
+		gb_addr_config = BONAIRE_GB_ADDR_CONFIG_GOLDEN;
+		break;
+	}
+
+	mc_shared_chmap = RREG32(mmMC_SHARED_CHMAP);
+	adev->gfx.config.mc_arb_ramcfg = RREG32(mmMC_ARB_RAMCFG);
+	mc_arb_ramcfg = adev->gfx.config.mc_arb_ramcfg;
+
+	adev->gfx.config.num_tile_pipes = adev->gfx.config.max_tile_pipes;
+	adev->gfx.config.mem_max_burst_length_bytes = 256;
+	if (adev->flags & AMD_IS_APU) {
+		/* Get memory bank mapping mode. */
+		tmp = RREG32(mmMC_FUS_DRAM0_BANK_ADDR_MAPPING);
+		dimm00_addr_map = REG_GET_FIELD(tmp, MC_FUS_DRAM0_BANK_ADDR_MAPPING, DIMM0ADDRMAP);
+		dimm01_addr_map = REG_GET_FIELD(tmp, MC_FUS_DRAM0_BANK_ADDR_MAPPING, DIMM1ADDRMAP);
+
+		tmp = RREG32(mmMC_FUS_DRAM1_BANK_ADDR_MAPPING);
+		dimm10_addr_map = REG_GET_FIELD(tmp, MC_FUS_DRAM1_BANK_ADDR_MAPPING, DIMM0ADDRMAP);
+		dimm11_addr_map = REG_GET_FIELD(tmp, MC_FUS_DRAM1_BANK_ADDR_MAPPING, DIMM1ADDRMAP);
+
+		/* Validate settings in case only one DIMM installed. */
+		if ((dimm00_addr_map == 0) || (dimm00_addr_map == 3) || (dimm00_addr_map == 4) || (dimm00_addr_map > 12))
+			dimm00_addr_map = 0;
+		if ((dimm01_addr_map == 0) || (dimm01_addr_map == 3) || (dimm01_addr_map == 4) || (dimm01_addr_map > 12))
+			dimm01_addr_map = 0;
+		if ((dimm10_addr_map == 0) || (dimm10_addr_map == 3) || (dimm10_addr_map == 4) || (dimm10_addr_map > 12))
+			dimm10_addr_map = 0;
+		if ((dimm11_addr_map == 0) || (dimm11_addr_map == 3) || (dimm11_addr_map == 4) || (dimm11_addr_map > 12))
+			dimm11_addr_map = 0;
+
+		/* If DIMM Addr map is 8GB, ROW size should be 2KB. Otherwise 1KB. */
+		/* If ROW size(DIMM1) != ROW size(DMIMM0), ROW size should be larger one. */
+		if ((dimm00_addr_map == 11) || (dimm01_addr_map == 11) || (dimm10_addr_map == 11) || (dimm11_addr_map == 11))
+			adev->gfx.config.mem_row_size_in_kb = 2;
+		else
+			adev->gfx.config.mem_row_size_in_kb = 1;
+	} else {
+		tmp = (mc_arb_ramcfg & MC_ARB_RAMCFG__NOOFCOLS_MASK) >> MC_ARB_RAMCFG__NOOFCOLS__SHIFT;
+		adev->gfx.config.mem_row_size_in_kb = (4 * (1 << (8 + tmp))) / 1024;
+		if (adev->gfx.config.mem_row_size_in_kb > 4)
+			adev->gfx.config.mem_row_size_in_kb = 4;
+	}
+	/* XXX use MC settings? */
+	adev->gfx.config.shader_engine_tile_size = 32;
+	adev->gfx.config.num_gpus = 1;
+	adev->gfx.config.multi_gpu_tile_size = 64;
+
+	/* fix up row size */
+	gb_addr_config &= ~GB_ADDR_CONFIG__ROW_SIZE_MASK;
+	switch (adev->gfx.config.mem_row_size_in_kb) {
+	case 1:
+	default:
+		gb_addr_config |= (0 << GB_ADDR_CONFIG__ROW_SIZE__SHIFT);
+		break;
+	case 2:
+		gb_addr_config |= (1 << GB_ADDR_CONFIG__ROW_SIZE__SHIFT);
+		break;
+	case 4:
+		gb_addr_config |= (2 << GB_ADDR_CONFIG__ROW_SIZE__SHIFT);
+		break;
+	}
+	adev->gfx.config.gb_addr_config = gb_addr_config;
+}
+
+>>>>>>> v4.9.227
 static int gfx_v7_0_sw_init(void *handle)
 {
 	struct amdgpu_ring *ring;
@@ -4797,7 +6190,11 @@ static int gfx_v7_0_sw_init(void *handle)
 		ring = &adev->gfx.gfx_ring[i];
 		ring->ring_obj = NULL;
 		sprintf(ring->name, "gfx");
+<<<<<<< HEAD
 		r = amdgpu_ring_init(adev, ring, 1024 * 1024,
+=======
+		r = amdgpu_ring_init(adev, ring, 1024,
+>>>>>>> v4.9.227
 				     PACKET3(PACKET3_NOP, 0x3FFF), 0xf,
 				     &adev->gfx.eop_irq, AMDGPU_CP_IRQ_GFX_EOP,
 				     AMDGPU_RING_TYPE_GFX);
@@ -4821,10 +6218,17 @@ static int gfx_v7_0_sw_init(void *handle)
 		ring->me = 1; /* first MEC */
 		ring->pipe = i / 8;
 		ring->queue = i % 8;
+<<<<<<< HEAD
 		sprintf(ring->name, "comp %d.%d.%d", ring->me, ring->pipe, ring->queue);
 		irq_type = AMDGPU_CP_IRQ_COMPUTE_MEC1_PIPE0_EOP + ring->pipe;
 		/* type-2 packets are deprecated on MEC, use type-3 instead */
 		r = amdgpu_ring_init(adev, ring, 1024 * 1024,
+=======
+		sprintf(ring->name, "comp_%d.%d.%d", ring->me, ring->pipe, ring->queue);
+		irq_type = AMDGPU_CP_IRQ_COMPUTE_MEC1_PIPE0_EOP + ring->pipe;
+		/* type-2 packets are deprecated on MEC, use type-3 instead */
+		r = amdgpu_ring_init(adev, ring, 1024,
+>>>>>>> v4.9.227
 				     PACKET3(PACKET3_NOP, 0x3FFF), 0xf,
 				     &adev->gfx.eop_irq, irq_type,
 				     AMDGPU_RING_TYPE_COMPUTE);
@@ -4833,6 +6237,7 @@ static int gfx_v7_0_sw_init(void *handle)
 	}
 
 	/* reserve GDS, GWS and OA resource for gfx */
+<<<<<<< HEAD
 	r = amdgpu_bo_create(adev, adev->gds.mem.gfx_partition_size,
 			PAGE_SIZE, true,
 			AMDGPU_GEM_DOMAIN_GDS, 0,
@@ -4854,6 +6259,30 @@ static int gfx_v7_0_sw_init(void *handle)
 	if (r)
 		return r;
 
+=======
+	r = amdgpu_bo_create_kernel(adev, adev->gds.mem.gfx_partition_size,
+				    PAGE_SIZE, AMDGPU_GEM_DOMAIN_GDS,
+				    &adev->gds.gds_gfx_bo, NULL, NULL);
+	if (r)
+		return r;
+
+	r = amdgpu_bo_create_kernel(adev, adev->gds.gws.gfx_partition_size,
+				    PAGE_SIZE, AMDGPU_GEM_DOMAIN_GWS,
+				    &adev->gds.gws_gfx_bo, NULL, NULL);
+	if (r)
+		return r;
+
+	r = amdgpu_bo_create_kernel(adev, adev->gds.oa.gfx_partition_size,
+				    PAGE_SIZE, AMDGPU_GEM_DOMAIN_OA,
+				    &adev->gds.oa_gfx_bo, NULL, NULL);
+	if (r)
+		return r;
+
+	adev->gfx.ce_ram_size = 0x8000;
+
+	gfx_v7_0_gpu_early_init(adev);
+
+>>>>>>> v4.9.227
 	return r;
 }
 
@@ -4862,9 +6291,15 @@ static int gfx_v7_0_sw_fini(void *handle)
 	int i;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
+<<<<<<< HEAD
 	amdgpu_bo_unref(&adev->gds.oa_gfx_bo);
 	amdgpu_bo_unref(&adev->gds.gws_gfx_bo);
 	amdgpu_bo_unref(&adev->gds.gds_gfx_bo);
+=======
+	amdgpu_bo_free_kernel(&adev->gds.oa_gfx_bo, NULL, NULL);
+	amdgpu_bo_free_kernel(&adev->gds.gws_gfx_bo, NULL, NULL);
+	amdgpu_bo_free_kernel(&adev->gds.gds_gfx_bo, NULL, NULL);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < adev->gfx.num_gfx_rings; i++)
 		amdgpu_ring_fini(&adev->gfx.gfx_ring[i]);
@@ -4874,6 +6309,10 @@ static int gfx_v7_0_sw_fini(void *handle)
 	gfx_v7_0_cp_compute_fini(adev);
 	gfx_v7_0_rlc_fini(adev);
 	gfx_v7_0_mec_fini(adev);
+<<<<<<< HEAD
+=======
+	gfx_v7_0_free_microcode(adev);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -4894,8 +6333,11 @@ static int gfx_v7_0_hw_init(void *handle)
 	if (r)
 		return r;
 
+<<<<<<< HEAD
 	adev->gfx.ce_ram_size = 0x8000;
 
+=======
+>>>>>>> v4.9.227
 	return r;
 }
 
@@ -4903,6 +6345,11 @@ static int gfx_v7_0_hw_fini(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
+<<<<<<< HEAD
+=======
+	amdgpu_irq_put(adev, &adev->gfx.priv_reg_irq, 0);
+	amdgpu_irq_put(adev, &adev->gfx.priv_inst_irq, 0);
+>>>>>>> v4.9.227
 	gfx_v7_0_cp_enable(adev, false);
 	gfx_v7_0_rlc_stop(adev);
 	gfx_v7_0_fini_pg(adev);
@@ -4951,6 +6398,7 @@ static int gfx_v7_0_wait_for_idle(void *handle)
 	return -ETIMEDOUT;
 }
 
+<<<<<<< HEAD
 static void gfx_v7_0_print_status(void *handle)
 {
 	int i;
@@ -5211,6 +6659,8 @@ static void gfx_v7_0_print_status(void *handle)
 	mutex_unlock(&adev->srbm_mutex);
 }
 
+=======
+>>>>>>> v4.9.227
 static int gfx_v7_0_soft_reset(void *handle)
 {
 	u32 grbm_soft_reset = 0, srbm_soft_reset = 0;
@@ -5244,7 +6694,10 @@ static int gfx_v7_0_soft_reset(void *handle)
 		srbm_soft_reset |= SRBM_SOFT_RESET__SOFT_RESET_GRBM_MASK;
 
 	if (grbm_soft_reset || srbm_soft_reset) {
+<<<<<<< HEAD
 		gfx_v7_0_print_status((void *)adev);
+=======
+>>>>>>> v4.9.227
 		/* disable CG/PG */
 		gfx_v7_0_fini_pg(adev);
 		gfx_v7_0_update_cg(adev, false);
@@ -5287,7 +6740,10 @@ static int gfx_v7_0_soft_reset(void *handle)
 		}
 		/* Wait a little for things to settle down */
 		udelay(50);
+<<<<<<< HEAD
 		gfx_v7_0_print_status((void *)adev);
+=======
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -5522,6 +6978,7 @@ static int gfx_v7_0_set_powergating_state(void *handle,
 	if (state == AMD_PG_STATE_GATE)
 		gate = true;
 
+<<<<<<< HEAD
 	if (adev->pg_flags & (AMDGPU_PG_SUPPORT_GFX_PG |
 			      AMDGPU_PG_SUPPORT_GFX_SMG |
 			      AMDGPU_PG_SUPPORT_GFX_DMG |
@@ -5530,6 +6987,16 @@ static int gfx_v7_0_set_powergating_state(void *handle,
 			      AMDGPU_PG_SUPPORT_RLC_SMU_HS)) {
 		gfx_v7_0_update_gfx_pg(adev, gate);
 		if (adev->pg_flags & AMDGPU_PG_SUPPORT_GFX_PG) {
+=======
+	if (adev->pg_flags & (AMD_PG_SUPPORT_GFX_PG |
+			      AMD_PG_SUPPORT_GFX_SMG |
+			      AMD_PG_SUPPORT_GFX_DMG |
+			      AMD_PG_SUPPORT_CP |
+			      AMD_PG_SUPPORT_GDS |
+			      AMD_PG_SUPPORT_RLC_SMU_HS)) {
+		gfx_v7_0_update_gfx_pg(adev, gate);
+		if (adev->pg_flags & AMD_PG_SUPPORT_GFX_PG) {
+>>>>>>> v4.9.227
 			gfx_v7_0_enable_cp_pg(adev, gate);
 			gfx_v7_0_enable_gds_pg(adev, gate);
 		}
@@ -5539,8 +7006,14 @@ static int gfx_v7_0_set_powergating_state(void *handle,
 }
 
 const struct amd_ip_funcs gfx_v7_0_ip_funcs = {
+<<<<<<< HEAD
 	.early_init = gfx_v7_0_early_init,
 	.late_init = NULL,
+=======
+	.name = "gfx_v7_0",
+	.early_init = gfx_v7_0_early_init,
+	.late_init = gfx_v7_0_late_init,
+>>>>>>> v4.9.227
 	.sw_init = gfx_v7_0_sw_init,
 	.sw_fini = gfx_v7_0_sw_fini,
 	.hw_init = gfx_v7_0_hw_init,
@@ -5550,18 +7023,26 @@ const struct amd_ip_funcs gfx_v7_0_ip_funcs = {
 	.is_idle = gfx_v7_0_is_idle,
 	.wait_for_idle = gfx_v7_0_wait_for_idle,
 	.soft_reset = gfx_v7_0_soft_reset,
+<<<<<<< HEAD
 	.print_status = gfx_v7_0_print_status,
+=======
+>>>>>>> v4.9.227
 	.set_clockgating_state = gfx_v7_0_set_clockgating_state,
 	.set_powergating_state = gfx_v7_0_set_powergating_state,
 };
 
 static const struct amdgpu_ring_funcs gfx_v7_0_ring_funcs_gfx = {
+<<<<<<< HEAD
 	.get_rptr = gfx_v7_0_ring_get_rptr_gfx,
+=======
+	.get_rptr = gfx_v7_0_ring_get_rptr,
+>>>>>>> v4.9.227
 	.get_wptr = gfx_v7_0_ring_get_wptr_gfx,
 	.set_wptr = gfx_v7_0_ring_set_wptr_gfx,
 	.parse_cs = NULL,
 	.emit_ib = gfx_v7_0_ring_emit_ib_gfx,
 	.emit_fence = gfx_v7_0_ring_emit_fence_gfx,
+<<<<<<< HEAD
 	.emit_semaphore = gfx_v7_0_ring_emit_semaphore,
 	.emit_vm_flush = gfx_v7_0_ring_emit_vm_flush,
 	.emit_gds_switch = gfx_v7_0_ring_emit_gds_switch,
@@ -5573,11 +7054,30 @@ static const struct amdgpu_ring_funcs gfx_v7_0_ring_funcs_gfx = {
 
 static const struct amdgpu_ring_funcs gfx_v7_0_ring_funcs_compute = {
 	.get_rptr = gfx_v7_0_ring_get_rptr_compute,
+=======
+	.emit_pipeline_sync = gfx_v7_0_ring_emit_pipeline_sync,
+	.emit_vm_flush = gfx_v7_0_ring_emit_vm_flush,
+	.emit_gds_switch = gfx_v7_0_ring_emit_gds_switch,
+	.emit_hdp_flush = gfx_v7_0_ring_emit_hdp_flush,
+	.emit_hdp_invalidate = gfx_v7_0_ring_emit_hdp_invalidate,
+	.test_ring = gfx_v7_0_ring_test_ring,
+	.test_ib = gfx_v7_0_ring_test_ib,
+	.insert_nop = amdgpu_ring_insert_nop,
+	.pad_ib = amdgpu_ring_generic_pad_ib,
+	.emit_cntxcntl = gfx_v7_ring_emit_cntxcntl,
+	.get_emit_ib_size = gfx_v7_0_ring_get_emit_ib_size_gfx,
+	.get_dma_frame_size = gfx_v7_0_ring_get_dma_frame_size_gfx,
+};
+
+static const struct amdgpu_ring_funcs gfx_v7_0_ring_funcs_compute = {
+	.get_rptr = gfx_v7_0_ring_get_rptr,
+>>>>>>> v4.9.227
 	.get_wptr = gfx_v7_0_ring_get_wptr_compute,
 	.set_wptr = gfx_v7_0_ring_set_wptr_compute,
 	.parse_cs = NULL,
 	.emit_ib = gfx_v7_0_ring_emit_ib_compute,
 	.emit_fence = gfx_v7_0_ring_emit_fence_compute,
+<<<<<<< HEAD
 	.emit_semaphore = gfx_v7_0_ring_emit_semaphore,
 	.emit_vm_flush = gfx_v7_0_ring_emit_vm_flush,
 	.emit_gds_switch = gfx_v7_0_ring_emit_gds_switch,
@@ -5585,6 +7085,19 @@ static const struct amdgpu_ring_funcs gfx_v7_0_ring_funcs_compute = {
 	.test_ring = gfx_v7_0_ring_test_ring,
 	.test_ib = gfx_v7_0_ring_test_ib,
 	.insert_nop = amdgpu_ring_insert_nop,
+=======
+	.emit_pipeline_sync = gfx_v7_0_ring_emit_pipeline_sync,
+	.emit_vm_flush = gfx_v7_0_ring_emit_vm_flush,
+	.emit_gds_switch = gfx_v7_0_ring_emit_gds_switch,
+	.emit_hdp_flush = gfx_v7_0_ring_emit_hdp_flush,
+	.emit_hdp_invalidate = gfx_v7_0_ring_emit_hdp_invalidate,
+	.test_ring = gfx_v7_0_ring_test_ring,
+	.test_ib = gfx_v7_0_ring_test_ib,
+	.insert_nop = amdgpu_ring_insert_nop,
+	.pad_ib = amdgpu_ring_generic_pad_ib,
+	.get_emit_ib_size = gfx_v7_0_ring_get_emit_ib_size_compute,
+	.get_dma_frame_size = gfx_v7_0_ring_get_dma_frame_size_compute,
+>>>>>>> v4.9.227
 };
 
 static void gfx_v7_0_set_ring_funcs(struct amdgpu_device *adev)
@@ -5653,6 +7166,7 @@ static void gfx_v7_0_set_gds_init(struct amdgpu_device *adev)
 }
 
 
+<<<<<<< HEAD
 int gfx_v7_0_get_cu_info(struct amdgpu_device *adev,
 								   struct amdgpu_cu_info *cu_info)
 {
@@ -5661,6 +7175,18 @@ int gfx_v7_0_get_cu_info(struct amdgpu_device *adev,
 
 	if (!adev || !cu_info)
 		return -EINVAL;
+=======
+static void gfx_v7_0_get_cu_info(struct amdgpu_device *adev)
+{
+	int i, j, k, counter, active_cu_number = 0;
+	u32 mask, bitmap, ao_bitmap, ao_cu_mask = 0;
+	struct amdgpu_cu_info *cu_info = &adev->gfx.cu_info;
+	unsigned disable_masks[4 * 2];
+
+	memset(cu_info, 0, sizeof(*cu_info));
+
+	amdgpu_gfx_parse_disable_cu(disable_masks, 4, 2);
+>>>>>>> v4.9.227
 
 	mutex_lock(&adev->grbm_idx_mutex);
 	for (i = 0; i < adev->gfx.config.max_shader_engines; i++) {
@@ -5668,10 +7194,21 @@ int gfx_v7_0_get_cu_info(struct amdgpu_device *adev,
 			mask = 1;
 			ao_bitmap = 0;
 			counter = 0;
+<<<<<<< HEAD
 			bitmap = gfx_v7_0_get_cu_active_bitmap(adev, i, j);
 			cu_info->bitmap[i][j] = bitmap;
 
 			for (k = 0; k < adev->gfx.config.max_cu_per_sh; k ++) {
+=======
+			gfx_v7_0_select_se_sh(adev, i, j, 0xffffffff);
+			if (i < 4 && j < 2)
+				gfx_v7_0_set_user_cu_inactive_bitmap(
+					adev, disable_masks[i * 2 + j]);
+			bitmap = gfx_v7_0_get_cu_active_bitmap(adev);
+			cu_info->bitmap[i][j] = bitmap;
+
+			for (k = 0; k < 16; k ++) {
+>>>>>>> v4.9.227
 				if (bitmap & mask) {
 					if (counter < 2)
 						ao_bitmap |= mask;
@@ -5683,9 +7220,17 @@ int gfx_v7_0_get_cu_info(struct amdgpu_device *adev,
 			ao_cu_mask |= (ao_bitmap << (i * 16 + j * 8));
 		}
 	}
+<<<<<<< HEAD
 
 	cu_info->number = active_cu_number;
 	cu_info->ao_cu_mask = ao_cu_mask;
 	mutex_unlock(&adev->grbm_idx_mutex);
 	return 0;
+=======
+	gfx_v7_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
+	mutex_unlock(&adev->grbm_idx_mutex);
+
+	cu_info->number = active_cu_number;
+	cu_info->ao_cu_mask = ao_cu_mask;
+>>>>>>> v4.9.227
 }

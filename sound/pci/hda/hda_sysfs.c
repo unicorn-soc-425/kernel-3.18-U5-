@@ -48,22 +48,34 @@ static DEVICE_ATTR_RO(power_on_acct);
 static DEVICE_ATTR_RO(power_off_acct);
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
 #define CODEC_INFO_SHOW(type)					\
+=======
+#define CODEC_INFO_SHOW(type, field)				\
+>>>>>>> v4.9.227
 static ssize_t type##_show(struct device *dev,			\
 			   struct device_attribute *attr,	\
 			   char *buf)				\
 {								\
 	struct hda_codec *codec = dev_get_drvdata(dev);		\
+<<<<<<< HEAD
 	return sprintf(buf, "0x%x\n", codec->type);		\
 }
 
 #define CODEC_INFO_STR_SHOW(type)				\
+=======
+	return sprintf(buf, "0x%x\n", codec->field);		\
+}
+
+#define CODEC_INFO_STR_SHOW(type, field)			\
+>>>>>>> v4.9.227
 static ssize_t type##_show(struct device *dev,			\
 			     struct device_attribute *attr,	\
 					char *buf)		\
 {								\
 	struct hda_codec *codec = dev_get_drvdata(dev);		\
 	return sprintf(buf, "%s\n",				\
+<<<<<<< HEAD
 		       codec->type ? codec->type : "");		\
 }
 
@@ -75,6 +87,19 @@ CODEC_INFO_SHOW(mfg);
 CODEC_INFO_STR_SHOW(vendor_name);
 CODEC_INFO_STR_SHOW(chip_name);
 CODEC_INFO_STR_SHOW(modelname);
+=======
+		       codec->field ? codec->field : "");	\
+}
+
+CODEC_INFO_SHOW(vendor_id, core.vendor_id);
+CODEC_INFO_SHOW(subsystem_id, core.subsystem_id);
+CODEC_INFO_SHOW(revision_id, core.revision_id);
+CODEC_INFO_SHOW(afg, core.afg);
+CODEC_INFO_SHOW(mfg, core.mfg);
+CODEC_INFO_STR_SHOW(vendor_name, core.vendor_name);
+CODEC_INFO_STR_SHOW(chip_name, core.chip_name);
+CODEC_INFO_STR_SHOW(modelname, modelname);
+>>>>>>> v4.9.227
 
 static ssize_t pin_configs_show(struct hda_codec *codec,
 				struct snd_array *list,
@@ -141,6 +166,7 @@ static int reconfig_codec(struct hda_codec *codec)
 	err = snd_hda_codec_configure(codec);
 	if (err < 0)
 		goto error;
+<<<<<<< HEAD
 	/* rebuild PCMs */
 	err = snd_hda_codec_build_pcms(codec);
 	if (err < 0)
@@ -150,6 +176,9 @@ static int reconfig_codec(struct hda_codec *codec)
 	if (err < 0)
 		goto error;
 	err = snd_card_register(codec->bus->card);
+=======
+	err = snd_card_register(codec->card);
+>>>>>>> v4.9.227
  error:
 	snd_hda_power_down(codec);
 	return err;
@@ -170,7 +199,11 @@ static char *kstrndup_noeol(const char *src, size_t len)
 	return s;
 }
 
+<<<<<<< HEAD
 #define CODEC_INFO_STORE(type)					\
+=======
+#define CODEC_INFO_STORE(type, field)				\
+>>>>>>> v4.9.227
 static ssize_t type##_store(struct device *dev,			\
 			    struct device_attribute *attr,	\
 			    const char *buf, size_t count)	\
@@ -180,11 +213,19 @@ static ssize_t type##_store(struct device *dev,			\
 	int err = kstrtoul(buf, 0, &val);			\
 	if (err < 0)						\
 		return err;					\
+<<<<<<< HEAD
 	codec->type = val;					\
 	return count;						\
 }
 
 #define CODEC_INFO_STR_STORE(type)				\
+=======
+	codec->field = val;					\
+	return count;						\
+}
+
+#define CODEC_INFO_STR_STORE(type, field)			\
+>>>>>>> v4.9.227
 static ssize_t type##_store(struct device *dev,			\
 			    struct device_attribute *attr,	\
 			    const char *buf, size_t count)	\
@@ -193,6 +234,7 @@ static ssize_t type##_store(struct device *dev,			\
 	char *s = kstrndup_noeol(buf, 64);			\
 	if (!s)							\
 		return -ENOMEM;					\
+<<<<<<< HEAD
 	kfree(codec->type);					\
 	codec->type = s;					\
 	return count;						\
@@ -204,6 +246,19 @@ CODEC_INFO_STORE(revision_id);
 CODEC_INFO_STR_STORE(vendor_name);
 CODEC_INFO_STR_STORE(chip_name);
 CODEC_INFO_STR_STORE(modelname);
+=======
+	kfree(codec->field);					\
+	codec->field = s;					\
+	return count;						\
+}
+
+CODEC_INFO_STORE(vendor_id, core.vendor_id);
+CODEC_INFO_STORE(subsystem_id, core.subsystem_id);
+CODEC_INFO_STORE(revision_id, core.revision_id);
+CODEC_INFO_STR_STORE(vendor_name, core.vendor_name);
+CODEC_INFO_STR_STORE(chip_name, core.chip_name);
+CODEC_INFO_STR_STORE(modelname, modelname);
+>>>>>>> v4.9.227
 
 #define CODEC_ACTION_STORE(type)				\
 static ssize_t type##_store(struct device *dev,			\
@@ -229,7 +284,11 @@ static ssize_t init_verbs_show(struct device *dev,
 	mutex_lock(&codec->user_mutex);
 	for (i = 0; i < codec->init_verbs.used; i++) {
 		struct hda_verb *v = snd_array_elem(&codec->init_verbs, i);
+<<<<<<< HEAD
 		len += snprintf(buf + len, PAGE_SIZE - len,
+=======
+		len += scnprintf(buf + len, PAGE_SIZE - len,
+>>>>>>> v4.9.227
 				"0x%02x 0x%03x 0x%04x\n",
 				v->nid, v->verb, v->param);
 	}
@@ -279,7 +338,11 @@ static ssize_t hints_show(struct device *dev,
 	mutex_lock(&codec->user_mutex);
 	for (i = 0; i < codec->hints.used; i++) {
 		struct hda_hint *hint = snd_array_elem(&codec->hints, i);
+<<<<<<< HEAD
 		len += snprintf(buf + len, PAGE_SIZE - len,
+=======
+		len += scnprintf(buf + len, PAGE_SIZE - len,
+>>>>>>> v4.9.227
 				"%s = %s\n", hint->key, hint->val);
 	}
 	mutex_unlock(&codec->user_mutex);
@@ -417,8 +480,18 @@ static DEVICE_ATTR_RW(user_pin_configs);
 static DEVICE_ATTR_WO(reconfig);
 static DEVICE_ATTR_WO(clear);
 
+<<<<<<< HEAD
 /*
  * Look for hint string
+=======
+/**
+ * snd_hda_get_hint - Look for hint string
+ * @codec: the HDA codec
+ * @key: the hint key string
+ *
+ * Look for a hint key/value pair matching with the given key string
+ * and returns the value string.  If nothing found, returns NULL.
+>>>>>>> v4.9.227
  */
 const char *snd_hda_get_hint(struct hda_codec *codec, const char *key)
 {
@@ -427,6 +500,18 @@ const char *snd_hda_get_hint(struct hda_codec *codec, const char *key)
 }
 EXPORT_SYMBOL_GPL(snd_hda_get_hint);
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_hda_get_bool_hint - Get a boolean hint value
+ * @codec: the HDA codec
+ * @key: the hint key string
+ *
+ * Look for a hint key/value pair matching with the given key string
+ * and returns a boolean value parsed from the value.  If no matching
+ * key is found, return a negative value.
+ */
+>>>>>>> v4.9.227
 int snd_hda_get_bool_hint(struct hda_codec *codec, const char *key)
 {
 	const char *p;
@@ -453,6 +538,19 @@ int snd_hda_get_bool_hint(struct hda_codec *codec, const char *key)
 }
 EXPORT_SYMBOL_GPL(snd_hda_get_bool_hint);
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_hda_get_int_hint - Get an integer hint value
+ * @codec: the HDA codec
+ * @key: the hint key string
+ * @valp: pointer to store a value
+ *
+ * Look for a hint key/value pair matching with the given key string
+ * and stores the integer value to @valp.  If no matching key is found,
+ * return a negative error code.  Otherwise it returns zero.
+ */
+>>>>>>> v4.9.227
 int snd_hda_get_int_hint(struct hda_codec *codec, const char *key, int *valp)
 {
 	const char *p;
@@ -528,10 +626,17 @@ static void parse_codec_mode(char *buf, struct hda_bus *bus,
 
 	*codecp = NULL;
 	if (sscanf(buf, "%i %i %i", &vendorid, &subid, &caddr) == 3) {
+<<<<<<< HEAD
 		list_for_each_entry(codec, &bus->codec_list, list) {
 			if ((vendorid <= 0 || codec->vendor_id == vendorid) &&
 			    (subid <= 0 || codec->subsystem_id == subid) &&
 			    codec->addr == caddr) {
+=======
+		list_for_each_codec(codec, bus) {
+			if ((vendorid <= 0 || codec->core.vendor_id == vendorid) &&
+			    (subid <= 0 || codec->core.subsystem_id == subid) &&
+			    codec->core.addr == caddr) {
+>>>>>>> v4.9.227
 				*codecp = codec;
 				break;
 			}
@@ -571,8 +676,12 @@ static void parse_model_mode(char *buf, struct hda_bus *bus,
 static void parse_chip_name_mode(char *buf, struct hda_bus *bus,
 				 struct hda_codec **codecp)
 {
+<<<<<<< HEAD
 	kfree((*codecp)->chip_name);
 	(*codecp)->chip_name = kstrdup(buf, GFP_KERNEL);
+=======
+	snd_hda_codec_set_name(*codecp, buf);
+>>>>>>> v4.9.227
 }
 
 #define DEFINE_PARSE_ID_MODE(name) \
@@ -581,7 +690,11 @@ static void parse_##name##_mode(char *buf, struct hda_bus *bus, \
 { \
 	unsigned long val; \
 	if (!kstrtoul(buf, 0, &val)) \
+<<<<<<< HEAD
 		(*codecp)->name = val; \
+=======
+		(*codecp)->core.name = val; \
+>>>>>>> v4.9.227
 }
 
 DEFINE_PARSE_ID_MODE(vendor_id);
@@ -690,8 +803,16 @@ static int get_line_from_fw(char *buf, int size, size_t *fw_size_p,
 	return 1;
 }
 
+<<<<<<< HEAD
 /*
  * load a "patch" firmware file and parse it
+=======
+/**
+ * snd_hda_load_patch - load a "patch" firmware file and parse it
+ * @bus: HD-audio bus
+ * @fw_size: the firmware byte size
+ * @fw_buf: the firmware data
+>>>>>>> v4.9.227
  */
 int snd_hda_load_patch(struct hda_bus *bus, size_t fw_size, const void *fw_buf)
 {

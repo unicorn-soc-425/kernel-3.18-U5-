@@ -29,7 +29,11 @@
  */
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include "skein.h"
+=======
+#include "skein_base.h"
+>>>>>>> v4.9.227
 
 #define KEY_SCHEDULE_CONST 0x1BD11BDAA9FC1A22L
 
@@ -52,7 +56,11 @@ enum threefish_size {
  */
 struct threefish_key {
 	u64 state_size;
+<<<<<<< HEAD
 	u64 key[SKEIN_MAX_STATE_WORDS+1];   /* max number of key words*/
+=======
+	u64 key[SKEIN_MAX_STATE_WORDS + 1];   /* max number of key words*/
+>>>>>>> v4.9.227
 	u64 tweak[3];
 };
 

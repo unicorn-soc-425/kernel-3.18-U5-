@@ -54,6 +54,12 @@ int audit_classify_syscall(int abi, unsigned syscall)
 	case __NR_socketcall:
 		return 4;
 #endif
+<<<<<<< HEAD
+=======
+#ifdef __NR_execveat
+	case __NR_execveat:
+#endif
+>>>>>>> v4.9.227
 	case __NR_execve:
 		return 5;
 	default:

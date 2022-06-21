@@ -69,6 +69,46 @@ struct hpte_cache {
 	int pagesize;
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * Struct for a virtual core.
+ * Note: entry_exit_map combines a bitmap of threads that have entered
+ * in the bottom 8 bits and a bitmap of threads that have exited in the
+ * next 8 bits.  This is so that we can atomically set the entry bit
+ * iff the exit map is 0 without taking a lock.
+ */
+struct kvmppc_vcore {
+	int n_runnable;
+	int num_threads;
+	int entry_exit_map;
+	int napping_threads;
+	int first_vcpuid;
+	u16 pcpu;
+	u16 last_cpu;
+	u8 vcore_state;
+	u8 in_guest;
+	struct kvmppc_vcore *master_vcore;
+	struct kvm_vcpu *runnable_threads[MAX_SMT_THREADS];
+	struct list_head preempt_list;
+	spinlock_t lock;
+	struct swait_queue_head wq;
+	spinlock_t stoltb_lock;	/* protects stolen_tb and preempt_tb */
+	u64 stolen_tb;
+	u64 preempt_tb;
+	struct kvm_vcpu *runner;
+	struct kvm *kvm;
+	u64 tb_offset;		/* guest timebase - host timebase */
+	ulong lpcr;
+	u32 arch_compat;
+	ulong pcr;
+	ulong dpdes;		/* doorbell state (POWER8) */
+	ulong vtb;		/* virtual timebase */
+	ulong conferring_threads;
+	unsigned int halt_poll_ns;
+};
+
+>>>>>>> v4.9.227
 struct kvmppc_vcpu_book3s {
 	struct kvmppc_sid_map sid_map[SID_MAP_NUM];
 	struct {
@@ -83,6 +123,10 @@ struct kvmppc_vcpu_book3s {
 	u64 sdr1;
 	u64 hior;
 	u64 msr_mask;
+<<<<<<< HEAD
+=======
+	u64 vtb;
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC_BOOK3S_32
 	u32 vsid_pool[VSID_POOL_SIZE];
 	u32 vsid_next;
@@ -106,10 +150,13 @@ struct kvmppc_vcpu_book3s {
 	spinlock_t mmu_lock;
 };
 
+<<<<<<< HEAD
 #define CONTEXT_HOST		0
 #define CONTEXT_GUEST		1
 #define CONTEXT_GUEST_END	2
 
+=======
+>>>>>>> v4.9.227
 #define VSID_REAL	0x07ffffffffc00000ULL
 #define VSID_BAT	0x07ffffffffb00000ULL
 #define VSID_64K	0x0800000000000000ULL
@@ -158,10 +205,18 @@ extern void kvmppc_set_bat(struct kvm_vcpu *vcpu, struct kvmppc_bat *bat,
 			   bool upper, u32 val);
 extern void kvmppc_giveup_ext(struct kvm_vcpu *vcpu, ulong msr);
 extern int kvmppc_emulate_paired_single(struct kvm_run *run, struct kvm_vcpu *vcpu);
+<<<<<<< HEAD
 extern pfn_t kvmppc_gpa_to_pfn(struct kvm_vcpu *vcpu, gpa_t gpa, bool writing,
 			bool *writable);
 extern void kvmppc_add_revmap_chain(struct kvm *kvm, struct revmap_entry *rev,
 			unsigned long *rmap, long pte_index, int realmode);
+=======
+extern kvm_pfn_t kvmppc_gpa_to_pfn(struct kvm_vcpu *vcpu, gpa_t gpa,
+			bool writing, bool *writable);
+extern void kvmppc_add_revmap_chain(struct kvm *kvm, struct revmap_entry *rev,
+			unsigned long *rmap, long pte_index, int realmode);
+extern void kvmppc_update_rmap_change(unsigned long *rmap, unsigned long psize);
+>>>>>>> v4.9.227
 extern void kvmppc_invalidate_hpte(struct kvm *kvm, __be64 *hptep,
 			unsigned long pte_index);
 void kvmppc_clear_ref_hpte(struct kvm *kvm, __be64 *hptep,
@@ -170,8 +225,11 @@ extern void *kvmppc_pin_guest_page(struct kvm *kvm, unsigned long addr,
 			unsigned long *nb_ret);
 extern void kvmppc_unpin_guest_page(struct kvm *kvm, void *addr,
 			unsigned long gpa, bool dirty);
+<<<<<<< HEAD
 extern long kvmppc_virtmode_h_enter(struct kvm_vcpu *vcpu, unsigned long flags,
 			long pte_index, unsigned long pteh, unsigned long ptel);
+=======
+>>>>>>> v4.9.227
 extern long kvmppc_do_h_enter(struct kvm *kvm, unsigned long flags,
 			long pte_index, unsigned long pteh, unsigned long ptel,
 			pgd_t *pgdir, bool realmode, unsigned long *idx_ret);
@@ -196,6 +254,10 @@ extern void kvmppc_copy_to_svcpu(struct kvmppc_book3s_shadow_vcpu *svcpu,
 				 struct kvm_vcpu *vcpu);
 extern void kvmppc_copy_from_svcpu(struct kvm_vcpu *vcpu,
 				   struct kvmppc_book3s_shadow_vcpu *svcpu);
+<<<<<<< HEAD
+=======
+extern int kvm_irq_bypass;
+>>>>>>> v4.9.227
 
 static inline struct kvmppc_vcpu_book3s *to_book3s(struct kvm_vcpu *vcpu)
 {
@@ -231,12 +293,20 @@ static inline u32 kvmppc_get_cr(struct kvm_vcpu *vcpu)
 	return vcpu->arch.cr;
 }
 
+<<<<<<< HEAD
 static inline void kvmppc_set_xer(struct kvm_vcpu *vcpu, u32 val)
+=======
+static inline void kvmppc_set_xer(struct kvm_vcpu *vcpu, ulong val)
+>>>>>>> v4.9.227
 {
 	vcpu->arch.xer = val;
 }
 
+<<<<<<< HEAD
 static inline u32 kvmppc_get_xer(struct kvm_vcpu *vcpu)
+=======
+static inline ulong kvmppc_get_xer(struct kvm_vcpu *vcpu)
+>>>>>>> v4.9.227
 {
 	return vcpu->arch.xer;
 }
@@ -294,6 +364,12 @@ static inline bool kvmppc_supports_magic_page(struct kvm_vcpu *vcpu)
 	return !is_kvmppc_hv_enabled(vcpu->kvm);
 }
 
+<<<<<<< HEAD
+=======
+extern int kvmppc_h_logical_ci_load(struct kvm_vcpu *vcpu);
+extern int kvmppc_h_logical_ci_store(struct kvm_vcpu *vcpu);
+
+>>>>>>> v4.9.227
 /* Magic register values loaded into r3 and r4 before the 'sc' assembly
  * instruction for the OSI hypercalls */
 #define OSI_SC_MAGIC_R3			0x113724FA

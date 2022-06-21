@@ -41,6 +41,7 @@
 #ifndef EDMA_H_
 #define EDMA_H_
 
+<<<<<<< HEAD
 /* PaRAM slots are laid out like this */
 struct edmacc_param {
 	u32 opt;
@@ -86,6 +87,8 @@ enum fifo_width {
 	W256BIT = 5
 };
 
+=======
+>>>>>>> v4.9.227
 enum dma_event_q {
 	EVENTQ_0 = 0,
 	EVENTQ_1 = 1,
@@ -94,15 +97,19 @@ enum dma_event_q {
 	EVENTQ_DEFAULT = -1
 };
 
+<<<<<<< HEAD
 enum sync_dimension {
 	ASYNC = 0,
 	ABSYNC = 1
 };
 
+=======
+>>>>>>> v4.9.227
 #define EDMA_CTLR_CHAN(ctlr, chan)	(((ctlr) << 16) | (chan))
 #define EDMA_CTLR(i)			((i) >> 16)
 #define EDMA_CHAN_SLOT(i)		((i) & 0xffff)
 
+<<<<<<< HEAD
 #define EDMA_CHANNEL_ANY		-1	/* for edma_alloc_channel() */
 #define EDMA_SLOT_ANY			-1	/* for edma_alloc_slot() */
 #define EDMA_CONT_PARAMS_ANY		 1001
@@ -151,6 +158,9 @@ void edma_pause(unsigned channel);
 void edma_resume(unsigned channel);
 
 void edma_assign_channel_eventq(unsigned channel, enum dma_event_q eventq_no);
+=======
+#define EDMA_FILTER_PARAM(ctlr, chan)	((int[]) { EDMA_CTLR_CHAN(ctlr, chan) })
+>>>>>>> v4.9.227
 
 struct edma_rsv_info {
 
@@ -158,6 +168,11 @@ struct edma_rsv_info {
 	const s16	(*rsv_slots)[2];
 };
 
+<<<<<<< HEAD
+=======
+struct dma_slave_map;
+
+>>>>>>> v4.9.227
 /* platform_data for EDMA driver */
 struct edma_soc_info {
 	/*
@@ -170,10 +185,23 @@ struct edma_soc_info {
 	/* Resource reservation for other cores */
 	struct edma_rsv_info	*rsv;
 
+<<<<<<< HEAD
 	s8	(*queue_priority_mapping)[2];
 	const s16	(*xbar_chans)[2];
 };
 
 int edma_trigger_channel(unsigned);
 
+=======
+	/* List of channels allocated for memcpy, terminated with -1 */
+	s32			*memcpy_channels;
+
+	s8	(*queue_priority_mapping)[2];
+	const s16	(*xbar_chans)[2];
+
+	const struct dma_slave_map *slave_map;
+	int slavecnt;
+};
+
+>>>>>>> v4.9.227
 #endif

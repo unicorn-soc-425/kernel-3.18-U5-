@@ -12,6 +12,11 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/rtc.h>
 #include <linux/delay.h>
@@ -107,8 +112,13 @@ static int max8997_rtc_tm_to_data(struct rtc_time *tm, u8 *data)
 	data[RTC_YEAR] = tm->tm_year > 100 ? (tm->tm_year - 100) : 0;
 
 	if (tm->tm_year < 100) {
+<<<<<<< HEAD
 		pr_warn("%s: MAX8997 RTC cannot handle the year %d."
 			"Assume it's 2000.\n", __func__, 1900 + tm->tm_year);
+=======
+		pr_warn("RTC cannot handle the year %d.  Assume it's 2000.\n",
+			1900 + tm->tm_year);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 	return 0;
@@ -219,7 +229,11 @@ static int max8997_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 
 out:
 	mutex_unlock(&info->lock);
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int max8997_rtc_stop_alarm(struct max8997_rtc_info *info)
@@ -424,7 +438,11 @@ static void max8997_rtc_enable_smpl(struct max8997_rtc_info *info, bool enable)
 
 	val = 0;
 	max8997_read_reg(info->rtc, MAX8997_RTC_WTSR_SMPL, &val);
+<<<<<<< HEAD
 	pr_info("%s: WTSR_SMPL(0x%02x)\n", __func__, val);
+=======
+	pr_info("WTSR_SMPL(0x%02x)\n", val);
+>>>>>>> v4.9.227
 }
 
 static int max8997_rtc_init_reg(struct max8997_rtc_info *info)
@@ -519,11 +537,18 @@ static const struct platform_device_id rtc_id[] = {
 	{ "max8997-rtc", 0 },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(platform, rtc_id);
+>>>>>>> v4.9.227
 
 static struct platform_driver max8997_rtc_driver = {
 	.driver		= {
 		.name	= "max8997-rtc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= max8997_rtc_probe,
 	.shutdown	= max8997_rtc_shutdown,

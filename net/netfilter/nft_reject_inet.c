@@ -18,6 +18,7 @@
 #include <net/netfilter/ipv6/nf_reject.h>
 
 static void nft_reject_inet_eval(const struct nft_expr *expr,
+<<<<<<< HEAD
 				 struct nft_data data[NFT_REG_MAX + 1],
 				 const struct nft_pktinfo *pkt)
 {
@@ -36,12 +37,34 @@ static void nft_reject_inet_eval(const struct nft_expr *expr,
 		case NFT_REJECT_ICMPX_UNREACH:
 			nf_send_unreach(pkt->skb,
 					nft_reject_icmp_code(priv->icmp_code));
+=======
+				 struct nft_regs *regs,
+				 const struct nft_pktinfo *pkt)
+{
+	struct nft_reject *priv = nft_expr_priv(expr);
+
+	switch (pkt->pf) {
+	case NFPROTO_IPV4:
+		switch (priv->type) {
+		case NFT_REJECT_ICMP_UNREACH:
+			nf_send_unreach(pkt->skb, priv->icmp_code,
+					pkt->hook);
+			break;
+		case NFT_REJECT_TCP_RST:
+			nf_send_reset(pkt->net, pkt->skb, pkt->hook);
+			break;
+		case NFT_REJECT_ICMPX_UNREACH:
+			nf_send_unreach(pkt->skb,
+					nft_reject_icmp_code(priv->icmp_code),
+					pkt->hook);
+>>>>>>> v4.9.227
 			break;
 		}
 		break;
 	case NFPROTO_IPV6:
 		switch (priv->type) {
 		case NFT_REJECT_ICMP_UNREACH:
+<<<<<<< HEAD
 			nf_send_unreach6(net, pkt->skb, priv->icmp_code,
 					 pkt->ops->hooknum);
 			break;
@@ -52,11 +75,28 @@ static void nft_reject_inet_eval(const struct nft_expr *expr,
 			nf_send_unreach6(net, pkt->skb,
 					 nft_reject_icmpv6_code(priv->icmp_code),
 					 pkt->ops->hooknum);
+=======
+			nf_send_unreach6(pkt->net, pkt->skb, priv->icmp_code,
+					 pkt->hook);
+			break;
+		case NFT_REJECT_TCP_RST:
+			nf_send_reset6(pkt->net, pkt->skb, pkt->hook);
+			break;
+		case NFT_REJECT_ICMPX_UNREACH:
+			nf_send_unreach6(pkt->net, pkt->skb,
+					 nft_reject_icmpv6_code(priv->icmp_code),
+					 pkt->hook);
+>>>>>>> v4.9.227
 			break;
 		}
 		break;
 	}
+<<<<<<< HEAD
 	data[NFT_REG_VERDICT].verdict = NF_DROP;
+=======
+
+	regs->verdict.code = NF_DROP;
+>>>>>>> v4.9.227
 }
 
 static int nft_reject_inet_init(const struct nft_ctx *ctx,
@@ -64,7 +104,15 @@ static int nft_reject_inet_init(const struct nft_ctx *ctx,
 				const struct nlattr * const tb[])
 {
 	struct nft_reject *priv = nft_expr_priv(expr);
+<<<<<<< HEAD
 	int icmp_code;
+=======
+	int icmp_code, err;
+
+	err = nft_reject_validate(ctx, expr, NULL);
+	if (err < 0)
+		return err;
+>>>>>>> v4.9.227
 
 	if (tb[NFTA_REJECT_TYPE] == NULL)
 		return -EINVAL;
@@ -122,6 +170,10 @@ static const struct nft_expr_ops nft_reject_inet_ops = {
 	.eval		= nft_reject_inet_eval,
 	.init		= nft_reject_inet_init,
 	.dump		= nft_reject_inet_dump,
+<<<<<<< HEAD
+=======
+	.validate	= nft_reject_validate,
+>>>>>>> v4.9.227
 };
 
 static struct nft_expr_type nft_reject_inet_type __read_mostly = {

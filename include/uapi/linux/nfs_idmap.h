@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * include/linux/nfs_idmap.h
+=======
+ * include/uapi/linux/nfs_idmap.h
+>>>>>>> v4.9.227
  *
  *  UID and GID to name mapping for clients.
  *

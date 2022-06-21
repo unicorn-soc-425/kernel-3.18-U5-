@@ -11,6 +11,7 @@
 #ifndef _XTENSA_SYSMEM_H
 #define _XTENSA_SYSMEM_H
 
+<<<<<<< HEAD
 #define SYSMEM_BANKS_MAX 31
 
 struct meminfo {
@@ -32,6 +33,10 @@ extern struct sysmem_info sysmem;
 
 int add_sysmem_bank(unsigned long start, unsigned long end);
 int mem_reserve(unsigned long, unsigned long, int);
+=======
+#include <linux/memblock.h>
+
+>>>>>>> v4.9.227
 void bootmem_init(void);
 void zones_init(void);
 

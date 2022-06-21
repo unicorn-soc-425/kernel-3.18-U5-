@@ -13,12 +13,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Amagai Yoshiji <amagai@osrg.net>,
  *            Ryusuke Konishi <ryusuke@osrg.net>
+=======
+ * Written by Amagai Yoshiji and Ryusuke Konishi.
+>>>>>>> v4.9.227
  */
 
 #include <linux/fs.h>
@@ -39,21 +43,32 @@ int nilfs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 	 */
 	struct the_nilfs *nilfs;
 	struct inode *inode = file->f_mapping->host;
+<<<<<<< HEAD
 	int err;
 
 	err = filemap_write_and_wait_range(inode->i_mapping, start, end);
 	if (err)
 		return err;
 	mutex_lock(&inode->i_mutex);
+=======
+	int err = 0;
+>>>>>>> v4.9.227
 
 	if (nilfs_inode_dirty(inode)) {
 		if (datasync)
 			err = nilfs_construct_dsync_segment(inode->i_sb, inode,
+<<<<<<< HEAD
 							    0, LLONG_MAX);
 		else
 			err = nilfs_construct_segment(inode->i_sb);
 	}
 	mutex_unlock(&inode->i_mutex);
+=======
+							    start, end);
+		else
+			err = nilfs_construct_segment(inode->i_sb);
+	}
+>>>>>>> v4.9.227
 
 	nilfs = inode->i_sb->s_fs_info;
 	if (!err)
@@ -115,7 +130,11 @@ static int nilfs_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
 		goto out;
 
 	file_update_time(vma->vm_file);
+<<<<<<< HEAD
 	ret = __block_page_mkwrite(vma, vmf, nilfs_get_block);
+=======
+	ret = block_page_mkwrite(vma, vmf, nilfs_get_block);
+>>>>>>> v4.9.227
 	if (ret) {
 		nilfs_transaction_abort(inode->i_sb);
 		goto out;
@@ -134,7 +153,10 @@ static const struct vm_operations_struct nilfs_file_vm_ops = {
 	.fault		= filemap_fault,
 	.map_pages	= filemap_map_pages,
 	.page_mkwrite	= nilfs_page_mkwrite,
+<<<<<<< HEAD
 	.remap_pages	= generic_file_remap_pages,
+=======
+>>>>>>> v4.9.227
 };
 
 static int nilfs_file_mmap(struct file *file, struct vm_area_struct *vma)
@@ -150,8 +172,11 @@ static int nilfs_file_mmap(struct file *file, struct vm_area_struct *vma)
  */
 const struct file_operations nilfs_file_operations = {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.read		= new_sync_read,
 	.write		= new_sync_write,
+=======
+>>>>>>> v4.9.227
 	.read_iter	= generic_file_read_iter,
 	.write_iter	= generic_file_write_iter,
 	.unlocked_ioctl	= nilfs_ioctl,

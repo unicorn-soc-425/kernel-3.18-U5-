@@ -99,10 +99,24 @@ static int ark3116_read_reg(struct usb_serial *serial,
 				 usb_rcvctrlpipe(serial->dev, 0),
 				 0xfe, 0xc0, 0, reg,
 				 buf, 1, ARK_TIMEOUT);
+<<<<<<< HEAD
 	if (result < 0)
 		return result;
 	else
 		return buf[0];
+=======
+	if (result < 1) {
+		dev_err(&serial->interface->dev,
+				"failed to read register %u: %d\n",
+				reg, result);
+		if (result >= 0)
+			result = -EIO;
+
+		return result;
+	}
+
+	return buf[0];
+>>>>>>> v4.9.227
 }
 
 static inline int calc_divisor(int bps)
@@ -366,23 +380,44 @@ static int ark3116_open(struct tty_struct *tty, struct usb_serial_port *port)
 		dev_dbg(&port->dev,
 			"%s - usb_serial_generic_open failed: %d\n",
 			__func__, result);
+<<<<<<< HEAD
 		goto err_out;
+=======
+		goto err_free;
+>>>>>>> v4.9.227
 	}
 
 	/* remove any data still left: also clears error state */
 	ark3116_read_reg(serial, UART_RX, buf);
 
 	/* read modem status */
+<<<<<<< HEAD
 	priv->msr = ark3116_read_reg(serial, UART_MSR, buf);
 	/* read line status */
 	priv->lsr = ark3116_read_reg(serial, UART_LSR, buf);
+=======
+	result = ark3116_read_reg(serial, UART_MSR, buf);
+	if (result < 0)
+		goto err_close;
+	priv->msr = *buf;
+
+	/* read line status */
+	result = ark3116_read_reg(serial, UART_LSR, buf);
+	if (result < 0)
+		goto err_close;
+	priv->lsr = *buf;
+>>>>>>> v4.9.227
 
 	result = usb_submit_urb(port->interrupt_in_urb, GFP_KERNEL);
 	if (result) {
 		dev_err(&port->dev, "submit irq_in urb failed %d\n",
 			result);
+<<<<<<< HEAD
 		ark3116_close(port);
 		goto err_out;
+=======
+		goto err_close;
+>>>>>>> v4.9.227
 	}
 
 	/* activate interrupts */
@@ -395,8 +430,20 @@ static int ark3116_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (tty)
 		ark3116_set_termios(tty, port, NULL);
 
+<<<<<<< HEAD
 err_out:
 	kfree(buf);
+=======
+	kfree(buf);
+
+	return 0;
+
+err_close:
+	usb_serial_generic_close(port);
+err_free:
+	kfree(buf);
+
+>>>>>>> v4.9.227
 	return result;
 }
 

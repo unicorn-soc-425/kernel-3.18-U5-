@@ -28,7 +28,10 @@ Contents:
 2.3  Userspace
 2.4  Ondemand
 2.5  Conservative
+<<<<<<< HEAD
 2.6  Interactive
+=======
+>>>>>>> v4.9.227
 
 3.   The Governor Interface in the CPUfreq Core
 
@@ -37,7 +40,11 @@ Contents:
 1. What Is A CPUFreq Governor?
 ==============================
 
+<<<<<<< HEAD
 Most cpufreq drivers (in fact, all except one, longrun) or even most
+=======
+Most cpufreq drivers (except the intel_pstate and longrun) or even most
+>>>>>>> v4.9.227
 cpu frequency scaling algorithms only offer the CPU to be set to one
 frequency. In order to offer dynamic frequency scaling, the cpufreq
 core must be able to tell these drivers of a "target frequency". So
@@ -219,6 +226,7 @@ a decision on when to decrease the frequency while running in any
 speed. Load for frequency increase is still evaluated every
 sampling rate.
 
+<<<<<<< HEAD
 2.6 Interactive
 ---------------
 
@@ -347,6 +355,8 @@ policy->max, max_freq_hysteresis period is not started/extended.
 use_sched_load must be turned on before enabling this feature.
 Default is zero.
 
+=======
+>>>>>>> v4.9.227
 3. The Governor Interface in the CPUfreq Core
 =============================================
 

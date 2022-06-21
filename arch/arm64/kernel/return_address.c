@@ -43,8 +43,16 @@ void *return_address(unsigned int level)
 	frame.fp = (unsigned long)__builtin_frame_address(0);
 	frame.sp = current_stack_pointer;
 	frame.pc = (unsigned long)return_address; /* dummy */
+<<<<<<< HEAD
 
 	walk_stackframe(&frame, save_return_addr, &data);
+=======
+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+	frame.graph = current->curr_ret_stack;
+#endif
+
+	walk_stackframe(current, &frame, save_return_addr, &data);
+>>>>>>> v4.9.227
 
 	if (!data.level)
 		return data.addr;

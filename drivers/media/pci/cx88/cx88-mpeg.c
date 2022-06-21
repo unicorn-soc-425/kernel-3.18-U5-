@@ -86,21 +86,33 @@ static LIST_HEAD(cx8802_devlist);
 static DEFINE_MUTEX(cx8802_mutex);
 /* ------------------------------------------------------------------ */
 
+<<<<<<< HEAD
 static int cx8802_start_dma(struct cx8802_dev    *dev,
+=======
+int cx8802_start_dma(struct cx8802_dev    *dev,
+>>>>>>> v4.9.227
 			    struct cx88_dmaqueue *q,
 			    struct cx88_buffer   *buf)
 {
 	struct cx88_core *core = dev->core;
 
 	dprintk(1, "cx8802_start_dma w: %d, h: %d, f: %d\n",
+<<<<<<< HEAD
 		buf->vb.width, buf->vb.height, buf->vb.field);
+=======
+		core->width, core->height, core->field);
+>>>>>>> v4.9.227
 
 	/* setup fifo + format */
 	cx88_sram_channel_setup(core, &cx88_sram_channels[SRAM_CH28],
 				dev->ts_packet_size, buf->risc.dma);
 
 	/* write TS length to chip */
+<<<<<<< HEAD
 	cx_write(MO_TS_LNGTH, buf->vb.width);
+=======
+	cx_write(MO_TS_LNGTH, dev->ts_packet_size);
+>>>>>>> v4.9.227
 
 	/* FIXME: this needs a review.
 	 * also: move to cx88-blackbird + cx88-dvb source files? */
@@ -173,7 +185,11 @@ static int cx8802_start_dma(struct cx8802_dev    *dev,
 
 	/* reset counter */
 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+<<<<<<< HEAD
 	q->count = 1;
+=======
+	q->count = 0;
+>>>>>>> v4.9.227
 
 	/* enable irqs */
 	dprintk( 1, "setting the interrupt mask\n" );
@@ -210,6 +226,7 @@ static int cx8802_restart_queue(struct cx8802_dev    *dev,
 
 	dprintk( 1, "cx8802_restart_queue\n" );
 	if (list_empty(&q->active))
+<<<<<<< HEAD
 	{
 		struct cx88_buffer *prev;
 		prev = NULL;
@@ -253,11 +270,20 @@ static int cx8802_restart_queue(struct cx8802_dev    *dev,
 	list_for_each_entry(buf, &q->active, vb.queue)
 		buf->count = q->count++;
 	mod_timer(&q->timeout, jiffies+BUFFER_TIMEOUT);
+=======
+		return 0;
+
+	buf = list_entry(q->active.next, struct cx88_buffer, list);
+	dprintk(2,"restart_queue [%p/%d]: restart dma\n",
+		buf, buf->vb.vb2_buf.index);
+	cx8802_start_dma(dev, q, buf);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 /* ------------------------------------------------------------------ */
 
+<<<<<<< HEAD
 int cx8802_buf_prepare(struct videobuf_queue *q, struct cx8802_dev *dev,
 			struct cx88_buffer *buf, enum v4l2_field field)
 {
@@ -287,6 +313,29 @@ int cx8802_buf_prepare(struct videobuf_queue *q, struct cx8802_dev *dev,
  fail:
 	cx88_free_buffer(q,buf);
 	return rc;
+=======
+int cx8802_buf_prepare(struct vb2_queue *q, struct cx8802_dev *dev,
+			struct cx88_buffer *buf)
+{
+	int size = dev->ts_packet_size * dev->ts_packet_count;
+	struct sg_table *sgt = vb2_dma_sg_plane_desc(&buf->vb.vb2_buf, 0);
+	struct cx88_riscmem *risc = &buf->risc;
+	int rc;
+
+	if (vb2_plane_size(&buf->vb.vb2_buf, 0) < size)
+		return -EINVAL;
+	vb2_set_plane_payload(&buf->vb.vb2_buf, 0, size);
+
+	rc = cx88_risc_databuffer(dev->pci, risc, sgt->sgl,
+			     dev->ts_packet_size, dev->ts_packet_count, 0);
+	if (rc) {
+		if (risc->cpu)
+			pci_free_consistent(dev->pci, risc->size, risc->cpu, risc->dma);
+		memset(risc, 0, sizeof(*risc));
+		return rc;
+	}
+	return 0;
+>>>>>>> v4.9.227
 }
 
 void cx8802_buf_queue(struct cx8802_dev *dev, struct cx88_buffer *buf)
@@ -295,6 +344,7 @@ void cx8802_buf_queue(struct cx8802_dev *dev, struct cx88_buffer *buf)
 	struct cx88_dmaqueue  *cx88q = &dev->mpegq;
 
 	dprintk( 1, "cx8802_buf_queue\n" );
+<<<<<<< HEAD
 	/* add jump to stopper */
 	buf->risc.jmp[0] = cpu_to_le32(RISC_JUMP | RISC_IRQ1 | RISC_CNT_INC);
 	buf->risc.jmp[1] = cpu_to_le32(cx88q->stopper.dma);
@@ -318,12 +368,37 @@ void cx8802_buf_queue(struct cx8802_dev *dev, struct cx88_buffer *buf)
 		prev->risc.jmp[1] = cpu_to_le32(buf->risc.dma);
 		dprintk( 1, "[%p/%d] %s - append to active\n",
 			buf, buf->vb.i, __func__);
+=======
+	/* add jump to start */
+	buf->risc.cpu[1] = cpu_to_le32(buf->risc.dma + 8);
+	buf->risc.jmp[0] = cpu_to_le32(RISC_JUMP | RISC_CNT_INC);
+	buf->risc.jmp[1] = cpu_to_le32(buf->risc.dma + 8);
+
+	if (list_empty(&cx88q->active)) {
+		dprintk( 1, "queue is empty - first active\n" );
+		list_add_tail(&buf->list, &cx88q->active);
+		dprintk(1,"[%p/%d] %s - first active\n",
+			buf, buf->vb.vb2_buf.index, __func__);
+
+	} else {
+		buf->risc.cpu[0] |= cpu_to_le32(RISC_IRQ1);
+		dprintk( 1, "queue is not empty - append to active\n" );
+		prev = list_entry(cx88q->active.prev, struct cx88_buffer, list);
+		list_add_tail(&buf->list, &cx88q->active);
+		prev->risc.jmp[1] = cpu_to_le32(buf->risc.dma);
+		dprintk( 1, "[%p/%d] %s - append to active\n",
+			buf, buf->vb.vb2_buf.index, __func__);
+>>>>>>> v4.9.227
 	}
 }
 
 /* ----------------------------------------------------------- */
 
+<<<<<<< HEAD
 static void do_cancel_buffers(struct cx8802_dev *dev, const char *reason, int restart)
+=======
+static void do_cancel_buffers(struct cx8802_dev *dev)
+>>>>>>> v4.9.227
 {
 	struct cx88_dmaqueue *q = &dev->mpegq;
 	struct cx88_buffer *buf;
@@ -331,6 +406,7 @@ static void do_cancel_buffers(struct cx8802_dev *dev, const char *reason, int re
 
 	spin_lock_irqsave(&dev->slock,flags);
 	while (!list_empty(&q->active)) {
+<<<<<<< HEAD
 		buf = list_entry(q->active.next, struct cx88_buffer, vb.queue);
 		list_del(&buf->vb.queue);
 		buf->vb.state = VIDEOBUF_ERROR;
@@ -342,12 +418,18 @@ static void do_cancel_buffers(struct cx8802_dev *dev, const char *reason, int re
 	{
 		dprintk(1, "restarting queue\n" );
 		cx8802_restart_queue(dev,q);
+=======
+		buf = list_entry(q->active.next, struct cx88_buffer, list);
+		list_del(&buf->list);
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&dev->slock,flags);
 }
 
 void cx8802_cancel_buffers(struct cx8802_dev *dev)
 {
+<<<<<<< HEAD
 	struct cx88_dmaqueue *q = &dev->mpegq;
 
 	dprintk( 1, "cx8802_cancel_buffers" );
@@ -366,6 +448,11 @@ static void cx8802_timeout(unsigned long data)
 		cx88_sram_channel_dump(dev->core, &cx88_sram_channels[SRAM_CH28]);
 	cx8802_stop_dma(dev);
 	do_cancel_buffers(dev,"timeout",1);
+=======
+	dprintk( 1, "cx8802_cancel_buffers" );
+	cx8802_stop_dma(dev);
+	do_cancel_buffers(dev);
+>>>>>>> v4.9.227
 }
 
 static const char * cx88_mpeg_irqs[32] = {
@@ -411,6 +498,7 @@ static void cx8802_mpeg_irq(struct cx8802_dev *dev)
 		spin_unlock(&dev->slock);
 	}
 
+<<<<<<< HEAD
 	/* risc2 y */
 	if (status & 0x10) {
 		spin_lock(&dev->slock);
@@ -418,12 +506,17 @@ static void cx8802_mpeg_irq(struct cx8802_dev *dev)
 		spin_unlock(&dev->slock);
 	}
 
+=======
+>>>>>>> v4.9.227
 	/* other general errors */
 	if (status & 0x1f0100) {
 		dprintk( 0, "general errors: 0x%08x\n", status & 0x1f0100 );
 		spin_lock(&dev->slock);
 		cx8802_stop_dma(dev);
+<<<<<<< HEAD
 		cx8802_restart_queue(dev,&dev->mpegq);
+=======
+>>>>>>> v4.9.227
 		spin_unlock(&dev->slock);
 	}
 }
@@ -473,7 +566,12 @@ static int cx8802_init_common(struct cx8802_dev *dev)
 	if (pci_enable_device(dev->pci))
 		return -EIO;
 	pci_set_master(dev->pci);
+<<<<<<< HEAD
 	if (!pci_dma_supported(dev->pci,DMA_BIT_MASK(32))) {
+=======
+	err = pci_set_dma_mask(dev->pci,DMA_BIT_MASK(32));
+	if (err) {
+>>>>>>> v4.9.227
 		printk("%s/2: Oops: no 32bit PCI DMA ???\n",dev->core->name);
 		return -EIO;
 	}
@@ -490,12 +588,15 @@ static int cx8802_init_common(struct cx8802_dev *dev)
 
 	/* init dma queue */
 	INIT_LIST_HEAD(&dev->mpegq.active);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&dev->mpegq.queued);
 	dev->mpegq.timeout.function = cx8802_timeout;
 	dev->mpegq.timeout.data     = (unsigned long)dev;
 	init_timer(&dev->mpegq.timeout);
 	cx88_risc_stopper(dev->pci,&dev->mpegq.stopper,
 			  MO_TS_DMACNTRL,0x11,0x00);
+=======
+>>>>>>> v4.9.227
 
 	/* get irq */
 	err = request_irq(dev->pci->irq, cx8802_irq,
@@ -520,9 +621,12 @@ static void cx8802_fini_common(struct cx8802_dev *dev)
 
 	/* unregister stuff */
 	free_irq(dev->pci->irq, dev);
+<<<<<<< HEAD
 
 	/* free memory */
 	btcx_riscmem_free(dev->pci,&dev->mpegq.stopper);
+=======
+>>>>>>> v4.9.227
 }
 
 /* ----------------------------------------------------------- */
@@ -539,7 +643,10 @@ static int cx8802_suspend_common(struct pci_dev *pci_dev, pm_message_t state)
 		dprintk( 2, "suspend\n" );
 		printk("%s: suspend mpeg\n", core->name);
 		cx8802_stop_dma(dev);
+<<<<<<< HEAD
 		del_timer(&dev->mpegq.timeout);
+=======
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&dev->slock, flags);
 
@@ -822,7 +929,11 @@ static int cx8802_probe(struct pci_dev *pci_dev,
 
 	err = cx8802_init_common(dev);
 	if (err != 0)
+<<<<<<< HEAD
 		goto fail_free;
+=======
+		goto fail_dev;
+>>>>>>> v4.9.227
 
 	INIT_LIST_HEAD(&dev->drvlist);
 	mutex_lock(&cx8802_mutex);
@@ -833,7 +944,11 @@ static int cx8802_probe(struct pci_dev *pci_dev,
 	request_modules(dev);
 	return 0;
 
+<<<<<<< HEAD
  fail_free:
+=======
+ fail_dev:
+>>>>>>> v4.9.227
 	kfree(dev);
  fail_core:
 	core->dvbdev = NULL;
@@ -907,10 +1022,15 @@ module_pci_driver(cx8802_pci_driver);
 EXPORT_SYMBOL(cx8802_buf_prepare);
 EXPORT_SYMBOL(cx8802_buf_queue);
 EXPORT_SYMBOL(cx8802_cancel_buffers);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(cx8802_start_dma);
+>>>>>>> v4.9.227
 
 EXPORT_SYMBOL(cx8802_register_driver);
 EXPORT_SYMBOL(cx8802_unregister_driver);
 EXPORT_SYMBOL(cx8802_get_driver);
+<<<<<<< HEAD
 /* ----------------------------------------------------------- */
 /*
  * Local variables:
@@ -918,3 +1038,5 @@ EXPORT_SYMBOL(cx8802_get_driver);
  * End:
  * kate: eol "unix"; indent-width 3; remove-trailing-space on; replace-trailing-space-save on; tab-width 8; replace-tabs off; space-indent off; mixed-indent off
  */
+=======
+>>>>>>> v4.9.227

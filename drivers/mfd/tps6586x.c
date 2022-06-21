@@ -52,7 +52,11 @@
 #define TPS6586X_VERSIONCRC	0xcd
 
 /* Maximum register */
+<<<<<<< HEAD
 #define TPS6586X_MAX_REGISTER	(TPS6586X_VERSIONCRC + 1)
+=======
+#define TPS6586X_MAX_REGISTER	TPS6586X_VERSIONCRC
+>>>>>>> v4.9.227
 
 struct tps6586x_irq_data {
 	u8	mask_reg;
@@ -299,6 +303,7 @@ static int tps6586x_irq_map(struct irq_domain *h, unsigned int virq,
 	irq_set_chip_data(virq, tps6586x);
 	irq_set_chip_and_handler(virq, &tps6586x_irq_chip, handle_simple_irq);
 	irq_set_nested_thread(virq, 1);
+<<<<<<< HEAD
 
 	/* ARM needs us to explicitly flag the IRQ as valid
 	 * and will set them noprobe when we do so. */
@@ -307,11 +312,18 @@ static int tps6586x_irq_map(struct irq_domain *h, unsigned int virq,
 #else
 	irq_set_noprobe(virq);
 #endif
+=======
+	irq_set_noprobe(virq);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops tps6586x_domain_ops = {
+=======
+static const struct irq_domain_ops tps6586x_domain_ops = {
+>>>>>>> v4.9.227
 	.map    = tps6586x_irq_map,
 	.xlate  = irq_domain_xlate_twocell,
 };
@@ -467,7 +479,11 @@ static bool is_volatile_reg(struct device *dev, unsigned int reg)
 static const struct regmap_config tps6586x_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
+<<<<<<< HEAD
 	.max_register = TPS6586X_MAX_REGISTER - 1,
+=======
+	.max_register = TPS6586X_MAX_REGISTER,
+>>>>>>> v4.9.227
 	.volatile_reg = is_volatile_reg,
 	.cache_type = REGCACHE_RBTREE,
 };
@@ -601,6 +617,32 @@ static int tps6586x_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int __maybe_unused tps6586x_i2c_suspend(struct device *dev)
+{
+	struct tps6586x *tps6586x = dev_get_drvdata(dev);
+
+	if (tps6586x->client->irq)
+		disable_irq(tps6586x->client->irq);
+
+	return 0;
+}
+
+static int __maybe_unused tps6586x_i2c_resume(struct device *dev)
+{
+	struct tps6586x *tps6586x = dev_get_drvdata(dev);
+
+	if (tps6586x->client->irq)
+		enable_irq(tps6586x->client->irq);
+
+	return 0;
+}
+
+static SIMPLE_DEV_PM_OPS(tps6586x_pm_ops, tps6586x_i2c_suspend,
+			 tps6586x_i2c_resume);
+
+>>>>>>> v4.9.227
 static const struct i2c_device_id tps6586x_id_table[] = {
 	{ "tps6586x", 0 },
 	{ },
@@ -610,8 +652,13 @@ MODULE_DEVICE_TABLE(i2c, tps6586x_id_table);
 static struct i2c_driver tps6586x_driver = {
 	.driver	= {
 		.name	= "tps6586x",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.of_match_table = of_match_ptr(tps6586x_of_match),
+=======
+		.of_match_table = of_match_ptr(tps6586x_of_match),
+		.pm	= &tps6586x_pm_ops,
+>>>>>>> v4.9.227
 	},
 	.probe		= tps6586x_i2c_probe,
 	.remove		= tps6586x_i2c_remove,

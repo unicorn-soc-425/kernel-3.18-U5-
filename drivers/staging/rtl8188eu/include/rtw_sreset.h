@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef _RTW_SRESET_C_
 #define _RTW_SRESET_C_
@@ -30,6 +33,7 @@ struct sreset_priv {
 #include <rtl8188e_hal.h>
 
 #define	WIFI_STATUS_SUCCESS		0
+<<<<<<< HEAD
 #define	USB_VEN_REQ_CMD_FAIL	BIT0
 #define	USB_READ_PORT_FAIL		BIT1
 #define	USB_WRITE_PORT_FAIL		BIT2
@@ -39,6 +43,16 @@ struct sreset_priv {
 #define		WIFI_IF_NOT_EXIST			BIT6
 
 void sreset_init_value(struct adapter *padapter);
+=======
+#define	USB_VEN_REQ_CMD_FAIL		BIT(0)
+#define	USB_READ_PORT_FAIL		BIT(1)
+#define	USB_WRITE_PORT_FAIL		BIT(2)
+#define	WIFI_MAC_TXDMA_ERROR		BIT(3)
+#define   WIFI_TX_HANG			BIT(4)
+#define	WIFI_RX_HANG			BIT(5)
+#define		WIFI_IF_NOT_EXIST	BIT(6)
+
+>>>>>>> v4.9.227
 u8 sreset_get_wifi_status(struct adapter *padapter);
 void sreset_set_wifi_error_status(struct adapter *padapter, u32 status);
 

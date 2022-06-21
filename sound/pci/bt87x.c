@@ -27,7 +27,11 @@
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -550,7 +554,11 @@ static snd_pcm_uframes_t snd_bt87x_pointer(struct snd_pcm_substream *substream)
 	return (snd_pcm_uframes_t)bytes_to_frames(runtime, chip->current_line * chip->line_bytes);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_bt87x_pcm_ops = {
+=======
+static const struct snd_pcm_ops snd_bt87x_pcm_ops = {
+>>>>>>> v4.9.227
 	.open = snd_bt87x_pcm_open,
 	.close = snd_bt87x_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -690,8 +698,12 @@ static int snd_bt87x_free(struct snd_bt87x *chip)
 		snd_bt87x_stop(chip);
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
+<<<<<<< HEAD
 	if (chip->mmio)
 		iounmap(chip->mmio);
+=======
+	iounmap(chip->mmio);
+>>>>>>> v4.9.227
 	pci_release_regions(chip->pci);
 	pci_disable_device(chip->pci);
 	kfree(chip);

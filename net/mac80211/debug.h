@@ -2,6 +2,15 @@
 #define __MAC80211_DEBUG_H
 #include <net/cfg80211.h>
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MAC80211_OCB_DEBUG
+#define MAC80211_OCB_DEBUG 1
+#else
+#define MAC80211_OCB_DEBUG 0
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_MAC80211_IBSS_DEBUG
 #define MAC80211_IBSS_DEBUG 1
 #else
@@ -131,6 +140,13 @@ do {									\
 	_sdata_dbg(MAC80211_HT_DEBUG && net_ratelimit(),		\
 		   sdata, fmt, ##__VA_ARGS__)
 
+<<<<<<< HEAD
+=======
+#define ocb_dbg(sdata, fmt, ...)					\
+	_sdata_dbg(MAC80211_OCB_DEBUG,					\
+		   sdata, fmt, ##__VA_ARGS__)
+
+>>>>>>> v4.9.227
 #define ibss_dbg(sdata, fmt, ...)					\
 	_sdata_dbg(MAC80211_IBSS_DEBUG,					\
 		   sdata, fmt, ##__VA_ARGS__)

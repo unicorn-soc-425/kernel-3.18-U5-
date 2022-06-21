@@ -41,7 +41,11 @@
 			label = "BP1";
 			gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
 			linux,code = <256>;
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 			linux,input-type = <1>;
 		};
 	};
@@ -261,14 +265,22 @@
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
+<<<<<<< HEAD
 	fsl,uart-has-rtscts;
+=======
+	uart-has-rtscts;
+>>>>>>> v4.9.227
 	status = "okay";
 };
 
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3 &pinctrl_uart3_rtscts>;
+<<<<<<< HEAD
 	fsl,uart-has-rtscts;
+=======
+	uart-has-rtscts;
+>>>>>>> v4.9.227
 	status = "okay";
 };
 

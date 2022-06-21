@@ -11,17 +11,21 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 
 #define _HAL_INTF_C_
 #include <osdep_service.h>
 #include <drv_types.h>
 #include <hal_intf.h>
+<<<<<<< HEAD
 #include <usb_hal.h>
 
 void rtw_hal_chip_configure(struct adapter *adapt)
@@ -78,6 +82,8 @@ u32 rtw_hal_power_on(struct adapter *adapt)
 		return adapt->HalFunc.hal_power_on(adapt);
 	return _FAIL;
 }
+=======
+>>>>>>> v4.9.227
 
 uint	 rtw_hal_init(struct adapter *adapt)
 {
@@ -85,15 +91,22 @@ uint	 rtw_hal_init(struct adapter *adapt)
 
 	adapt->hw_init_completed = false;
 
+<<<<<<< HEAD
 	status = adapt->HalFunc.hal_init(adapt);
+=======
+	status = rtl8188eu_hal_init(adapt);
+>>>>>>> v4.9.227
 
 	if (status == _SUCCESS) {
 		adapt->hw_init_completed = true;
 
 		if (adapt->registrypriv.notch_filter == 1)
 			rtw_hal_notch_filter(adapt, 1);
+<<<<<<< HEAD
 
 		rtw_hal_reset_security_engine(adapt);
+=======
+>>>>>>> v4.9.227
 	} else {
 		adapt->hw_init_completed = false;
 		DBG_88E("rtw_hal_init: hal__init fail\n");
@@ -109,7 +122,11 @@ uint rtw_hal_deinit(struct adapter *adapt)
 {
 	uint	status = _SUCCESS;
 
+<<<<<<< HEAD
 	status = adapt->HalFunc.hal_deinit(adapt);
+=======
+	status = rtl8188eu_hal_deinit(adapt);
+>>>>>>> v4.9.227
 
 	if (status == _SUCCESS)
 		adapt->hw_init_completed = false;
@@ -119,6 +136,7 @@ uint rtw_hal_deinit(struct adapter *adapt)
 	return status;
 }
 
+<<<<<<< HEAD
 void rtw_hal_set_hwreg(struct adapter *adapt, u8 variable, u8 *val)
 {
 	if (adapt->HalFunc.SetHwRegHandler)
@@ -228,6 +246,8 @@ void rtw_hal_free_recv_priv(struct adapter *adapt)
 		adapt->HalFunc.free_recv_priv(adapt);
 }
 
+=======
+>>>>>>> v4.9.227
 void rtw_hal_update_ra_mask(struct adapter *adapt, u32 mac_id, u8 rssi_level)
 {
 	struct mlme_priv *pmlmepriv = &(adapt->mlmepriv);
@@ -236,12 +256,17 @@ void rtw_hal_update_ra_mask(struct adapter *adapt, u32 mac_id, u8 rssi_level)
 #ifdef CONFIG_88EU_AP_MODE
 		struct sta_info *psta = NULL;
 		struct sta_priv *pstapriv = &adapt->stapriv;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		if ((mac_id-1) > 0)
 			psta = pstapriv->sta_aid[(mac_id-1) - 1];
 		if (psta)
 			add_RATid(adapt, psta, 0);/* todo: based on rssi_level*/
 #endif
 	} else {
+<<<<<<< HEAD
 		if (adapt->HalFunc.UpdateRAMaskHandler)
 			adapt->HalFunc.UpdateRAMaskHandler(adapt, mac_id,
 							      rssi_level);
@@ -349,3 +374,8 @@ void rtw_hal_reset_security_engine(struct adapter *adapter)
 	if (adapter->HalFunc.hal_reset_security_engine)
 		adapter->HalFunc.hal_reset_security_engine(adapter);
 }
+=======
+		UpdateHalRAMask8188EUsb(adapt, mac_id, rssi_level);
+	}
+}
+>>>>>>> v4.9.227

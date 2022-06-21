@@ -1,7 +1,19 @@
+<<<<<<< HEAD
 menuconfig FB_OMAP2
         tristate "OMAP2+ frame buffer support"
         depends on FB && OMAP2_DSS && !DRM_OMAP
 
+=======
+config OMAP2_VRFB
+	bool
+
+menuconfig FB_OMAP2
+        tristate "OMAP2+ frame buffer support"
+        depends on FB
+        depends on DRM_OMAP = n
+
+        select FB_OMAP2_DSS
+>>>>>>> v4.9.227
 	select OMAP2_VRFB if ARCH_OMAP2 || ARCH_OMAP3
         select FB_CFB_FILLRECT
         select FB_CFB_COPYAREA
@@ -9,6 +21,11 @@ menuconfig FB_OMAP2
         help
 	  Frame buffer driver for OMAP2+ based boards.
 
+<<<<<<< HEAD
+=======
+if FB_OMAP2
+
+>>>>>>> v4.9.227
 config FB_OMAP2_DEBUG_SUPPORT
         bool "Debug support for OMAP2+ FB"
 	default y
@@ -25,3 +42,11 @@ config FB_OMAP2_NUM_FBS
 	help
 	  Select the number of framebuffers created. OMAP2/3 has 3 overlays
 	  so normally this would be 3.
+<<<<<<< HEAD
+=======
+
+source "drivers/video/fbdev/omap2/omapfb/dss/Kconfig"
+source "drivers/video/fbdev/omap2/omapfb/displays/Kconfig"
+
+endif
+>>>>>>> v4.9.227

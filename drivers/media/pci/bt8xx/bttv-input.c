@@ -194,11 +194,16 @@ static u32 bttv_rc5_decode(unsigned int code)
 static void bttv_rc5_timer_end(unsigned long data)
 {
 	struct bttv_ir *ir = (struct bttv_ir *)data;
+<<<<<<< HEAD
 	struct timeval tv;
+=======
+	ktime_t tv;
+>>>>>>> v4.9.227
 	u32 gap, rc5, scancode;
 	u8 toggle, command, system;
 
 	/* get time */
+<<<<<<< HEAD
 	do_gettimeofday(&tv);
 
 	/* avoid overflow with gap >1s */
@@ -209,6 +214,15 @@ static void bttv_rc5_timer_end(unsigned long data)
 		    tv.tv_usec - ir->base_time.tv_usec;
 	}
 
+=======
+	tv = ktime_get();
+
+	gap = ktime_to_us(ktime_sub(tv, ir->base_time));
+	/* avoid overflow with gap >1s */
+	if (gap > USEC_PER_SEC) {
+		gap = 200000;
+	}
+>>>>>>> v4.9.227
 	/* signal we're ready to start a new code */
 	ir->active = false;
 
@@ -249,7 +263,11 @@ static void bttv_rc5_timer_end(unsigned long data)
 static int bttv_rc5_irq(struct bttv *btv)
 {
 	struct bttv_ir *ir = btv->remote;
+<<<<<<< HEAD
 	struct timeval tv;
+=======
+	ktime_t tv;
+>>>>>>> v4.9.227
 	u32 gpio;
 	u32 gap;
 	unsigned long current_jiffies;
@@ -259,6 +277,7 @@ static int bttv_rc5_irq(struct bttv *btv)
 
 	/* get time of bit */
 	current_jiffies = jiffies;
+<<<<<<< HEAD
 	do_gettimeofday(&tv);
 
 	/* avoid overflow with gap >1s */
@@ -267,6 +286,14 @@ static int bttv_rc5_irq(struct bttv *btv)
 	} else {
 		gap = 1000000 * (tv.tv_sec - ir->base_time.tv_sec) +
 		    tv.tv_usec - ir->base_time.tv_usec;
+=======
+	tv = ktime_get();
+
+	gap = ktime_to_us(ktime_sub(tv, ir->base_time));
+	/* avoid overflow with gap >1s */
+	if (gap > USEC_PER_SEC) {
+		gap = 200000;
+>>>>>>> v4.9.227
 	}
 
 	dprintk("RC5 IRQ: gap %d us for %s\n",

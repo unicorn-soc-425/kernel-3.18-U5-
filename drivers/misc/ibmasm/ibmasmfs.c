@@ -116,8 +116,13 @@ static int ibmasmfs_fill_super (struct super_block *sb, void *data, int silent)
 {
 	struct inode *root;
 
+<<<<<<< HEAD
 	sb->s_blocksize = PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits = PAGE_CACHE_SHIFT;
+=======
+	sb->s_blocksize = PAGE_SIZE;
+	sb->s_blocksize_bits = PAGE_SHIFT;
+>>>>>>> v4.9.227
 	sb->s_magic = IBMASMFS_MAGIC;
 	sb->s_op = &ibmasmfs_s_ops;
 	sb->s_time_gran = 1;
@@ -144,7 +149,11 @@ static struct inode *ibmasmfs_make_inode(struct super_block *sb, int mode)
 	if (ret) {
 		ret->i_ino = get_next_ino();
 		ret->i_mode = mode;
+<<<<<<< HEAD
 		ret->i_atime = ret->i_mtime = ret->i_ctime = CURRENT_TIME;
+=======
+		ret->i_atime = ret->i_mtime = ret->i_ctime = current_time(ret);
+>>>>>>> v4.9.227
 	}
 	return ret;
 }

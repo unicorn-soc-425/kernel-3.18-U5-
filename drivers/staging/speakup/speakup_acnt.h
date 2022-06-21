@@ -6,10 +6,19 @@
 
 	/* Port Status Flags */
 #define SYNTH_READABLE	0x01	/* mask for bit which is nonzero if a
+<<<<<<< HEAD
 				   byte can be read from the data port */
 #define SYNTH_WRITABLE	0x02	/* mask for RDY bit, which when set to
 				   1, indicates the data port is ready
 				   to accept a byte of data. */
+=======
+				 * byte can be read from the data port
+				 */
+#define SYNTH_WRITABLE	0x02	/* mask for RDY bit, which when set to
+				 * 1, indicates the data port is ready
+				 *  to accept a byte of data.
+				 */
+>>>>>>> v4.9.227
 #define SYNTH_QUIET	'S' /* synth is not speaking */
 #define SYNTH_FULL	'F' /* synth is full. */
 #define SYNTH_ALMOST_EMPTY 'M' /* synth has less than 2 seconds of text left */

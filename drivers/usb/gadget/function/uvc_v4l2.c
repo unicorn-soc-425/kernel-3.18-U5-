@@ -14,7 +14,10 @@
 #include <linux/device.h>
 #include <linux/errno.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/mutex.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/videodev2.h>
 #include <linux/vmalloc.h>
 #include <linux/wait.h>
@@ -27,6 +30,10 @@
 #include "uvc.h"
 #include "uvc_queue.h"
 #include "uvc_video.h"
+<<<<<<< HEAD
+=======
+#include "uvc_v4l2.h"
+>>>>>>> v4.9.227
 
 /* --------------------------------------------------------------------------
  * Requests handling
@@ -76,7 +83,12 @@ uvc_v4l2_querycap(struct file *file, void *fh, struct v4l2_capability *cap)
 	strlcpy(cap->bus_info, dev_name(&cdev->gadget->dev),
 		sizeof(cap->bus_info));
 
+<<<<<<< HEAD
 	cap->capabilities = V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_STREAMING;
+=======
+	cap->device_caps = V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_STREAMING;
+	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -311,8 +323,15 @@ uvc_v4l2_release(struct file *file)
 
 	uvc_function_disconnect(uvc);
 
+<<<<<<< HEAD
 	uvcg_video_enable(video, 0);
 	uvcg_free_buffers(&video->queue);
+=======
+	mutex_lock(&video->mutex);
+	uvcg_video_enable(video, 0);
+	uvcg_free_buffers(&video->queue);
+	mutex_unlock(&video->mutex);
+>>>>>>> v4.9.227
 
 	file->private_data = NULL;
 	v4l2_fh_del(&handle->vfh);
@@ -356,7 +375,11 @@ struct v4l2_file_operations uvc_v4l2_fops = {
 	.owner		= THIS_MODULE,
 	.open		= uvc_v4l2_open,
 	.release	= uvc_v4l2_release,
+<<<<<<< HEAD
 	.ioctl		= video_ioctl2,
+=======
+	.unlocked_ioctl	= video_ioctl2,
+>>>>>>> v4.9.227
 	.mmap		= uvc_v4l2_mmap,
 	.poll		= uvc_v4l2_poll,
 #ifndef CONFIG_MMU

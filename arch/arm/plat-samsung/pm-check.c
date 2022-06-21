@@ -5,7 +5,11 @@
  *	http://armlinux.simtec.co.uk
  *	Ben Dooks <ben@simtec.co.uk>
  *
+<<<<<<< HEAD
  * S3C Power Mangament - suspend/resume memory corruptiuon check.
+=======
+ * S3C Power Mangament - suspend/resume memory corruption check.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -53,8 +57,13 @@ static void s3c_pm_run_res(struct resource *ptr, run_fn_t fn, u32 *arg)
 		if (ptr->child != NULL)
 			s3c_pm_run_res(ptr->child, fn, arg);
 
+<<<<<<< HEAD
 		if ((ptr->flags & IORESOURCE_MEM) &&
 		    strcmp(ptr->name, "System RAM") == 0) {
+=======
+		if ((ptr->flags & IORESOURCE_SYSTEM_RAM)
+				== IORESOURCE_SYSTEM_RAM) {
+>>>>>>> v4.9.227
 			S3C_PMDBG("Found system RAM at %08lx..%08lx\n",
 				  (unsigned long)ptr->start,
 				  (unsigned long)ptr->end);

@@ -40,7 +40,11 @@ struct mcryptd_instance_ctx {
 };
 
 struct mcryptd_hash_ctx {
+<<<<<<< HEAD
 	struct crypto_shash *child;
+=======
+	struct crypto_ahash *child;
+>>>>>>> v4.9.227
 	struct mcryptd_alg_state *alg_state;
 };
 
@@ -60,13 +64,22 @@ struct mcryptd_hash_request_ctx {
 	struct crypto_hash_walk walk;
 	u8 *out;
 	int flag;
+<<<<<<< HEAD
 	struct shash_desc desc;
+=======
+	struct ahash_request areq;
+>>>>>>> v4.9.227
 };
 
 struct mcryptd_ahash *mcryptd_alloc_ahash(const char *alg_name,
 					u32 type, u32 mask);
+<<<<<<< HEAD
 struct crypto_shash *mcryptd_ahash_child(struct mcryptd_ahash *tfm);
 struct shash_desc *mcryptd_shash_desc(struct ahash_request *req);
+=======
+struct crypto_ahash *mcryptd_ahash_child(struct mcryptd_ahash *tfm);
+struct ahash_request *mcryptd_ahash_desc(struct ahash_request *req);
+>>>>>>> v4.9.227
 void mcryptd_free_ahash(struct mcryptd_ahash *tfm);
 void mcryptd_flusher(struct work_struct *work);
 

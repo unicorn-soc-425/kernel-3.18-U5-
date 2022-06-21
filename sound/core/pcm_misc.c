@@ -168,9 +168,13 @@ static struct pcm_format_data pcm_formats[(INT)SNDRV_PCM_FORMAT_LAST+1] = {
 		.le = -1, .signd = -1,
 	},
 	[SNDRV_PCM_FORMAT_SPECIAL] = {
+<<<<<<< HEAD
 		/* set the width and phys same as S16_LE */
 		.width = 16, .phys = 16, .le = -1, .signd = -1,
 		.silence = {},
+=======
+		.le = -1, .signd = -1,
+>>>>>>> v4.9.227
 	},
 	[SNDRV_PCM_FORMAT_S24_3LE] = {
 		.width = 24, .phys = 24, .le = 1, .signd = 1,
@@ -567,3 +571,36 @@ unsigned int snd_pcm_rate_mask_intersect(unsigned int rates_a,
 	return rates_a & rates_b;
 }
 EXPORT_SYMBOL_GPL(snd_pcm_rate_mask_intersect);
+<<<<<<< HEAD
+=======
+
+/**
+ * snd_pcm_rate_range_to_bits - converts rate range to SNDRV_PCM_RATE_xxx bit
+ * @rate_min: the minimum sample rate
+ * @rate_max: the maximum sample rate
+ *
+ * This function has an implicit assumption: the rates in the given range have
+ * only the pre-defined rates like 44100 or 16000.
+ *
+ * Return: The SNDRV_PCM_RATE_xxx flag that corresponds to the given rate range,
+ * or SNDRV_PCM_RATE_KNOT for an unknown range.
+ */
+unsigned int snd_pcm_rate_range_to_bits(unsigned int rate_min,
+	unsigned int rate_max)
+{
+	unsigned int rates = 0;
+	int i;
+
+	for (i = 0; i < snd_pcm_known_rates.count; i++) {
+		if (snd_pcm_known_rates.list[i] >= rate_min
+			&& snd_pcm_known_rates.list[i] <= rate_max)
+			rates |= 1 << i;
+	}
+
+	if (!rates)
+		rates = SNDRV_PCM_RATE_KNOT;
+
+	return rates;
+}
+EXPORT_SYMBOL_GPL(snd_pcm_rate_range_to_bits);
+>>>>>>> v4.9.227

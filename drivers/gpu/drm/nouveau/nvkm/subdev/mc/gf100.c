@@ -23,6 +23,7 @@
  */
 #include "priv.h"
 
+<<<<<<< HEAD
 const struct nvkm_mc_intr
 gf100_mc_intr[] = {
 	{ 0x04000000, NVKM_ENGINE_DISP },  /* DISP first, so pageflip timestamps work. */
@@ -45,6 +46,40 @@ gf100_mc_intr[] = {
 	{ 0x10000000, NVKM_SUBDEV_BUS },
 	{ 0x40000000, NVKM_SUBDEV_IBUS },
 	{ 0x80000000, NVKM_ENGINE_SW },
+=======
+static const struct nvkm_mc_map
+gf100_mc_reset[] = {
+	{ 0x00020000, NVKM_ENGINE_MSPDEC },
+	{ 0x00008000, NVKM_ENGINE_MSVLD },
+	{ 0x00001000, NVKM_ENGINE_GR },
+	{ 0x00000100, NVKM_ENGINE_FIFO },
+	{ 0x00000080, NVKM_ENGINE_CE1 },
+	{ 0x00000040, NVKM_ENGINE_CE0 },
+	{ 0x00000002, NVKM_ENGINE_MSPPP },
+	{}
+};
+
+static const struct nvkm_mc_map
+gf100_mc_intr[] = {
+	{ 0x04000000, NVKM_ENGINE_DISP },
+	{ 0x00020000, NVKM_ENGINE_MSPDEC },
+	{ 0x00008000, NVKM_ENGINE_MSVLD },
+	{ 0x00001000, NVKM_ENGINE_GR },
+	{ 0x00000100, NVKM_ENGINE_FIFO },
+	{ 0x00000040, NVKM_ENGINE_CE1 },
+	{ 0x00000020, NVKM_ENGINE_CE0 },
+	{ 0x00000001, NVKM_ENGINE_MSPPP },
+	{ 0x40000000, NVKM_SUBDEV_IBUS },
+	{ 0x10000000, NVKM_SUBDEV_BUS },
+	{ 0x08000000, NVKM_SUBDEV_FB },
+	{ 0x02000000, NVKM_SUBDEV_LTC },
+	{ 0x01000000, NVKM_SUBDEV_PMU },
+	{ 0x00200000, NVKM_SUBDEV_GPIO },
+	{ 0x00200000, NVKM_SUBDEV_I2C },
+	{ 0x00100000, NVKM_SUBDEV_TIMER },
+	{ 0x00040000, NVKM_SUBDEV_THERM },
+	{ 0x00002000, NVKM_SUBDEV_FB },
+>>>>>>> v4.9.227
 	{},
 };
 
@@ -66,7 +101,11 @@ gf100_mc_intr_rearm(struct nvkm_mc *mc)
 }
 
 u32
+<<<<<<< HEAD
 gf100_mc_intr_mask(struct nvkm_mc *mc)
+=======
+gf100_mc_intr_stat(struct nvkm_mc *mc)
+>>>>>>> v4.9.227
 {
 	struct nvkm_device *device = mc->subdev.device;
 	u32 intr0 = nvkm_rd32(device, 0x000100);
@@ -75,6 +114,17 @@ gf100_mc_intr_mask(struct nvkm_mc *mc)
 }
 
 void
+<<<<<<< HEAD
+=======
+gf100_mc_intr_mask(struct nvkm_mc *mc, u32 mask, u32 stat)
+{
+	struct nvkm_device *device = mc->subdev.device;
+	nvkm_mask(device, 0x000640, mask, stat);
+	nvkm_mask(device, 0x000644, mask, stat);
+}
+
+void
+>>>>>>> v4.9.227
 gf100_mc_unk260(struct nvkm_mc *mc, u32 data)
 {
 	nvkm_wr32(mc->subdev.device, 0x000260, data);
@@ -87,6 +137,11 @@ gf100_mc = {
 	.intr_unarm = gf100_mc_intr_unarm,
 	.intr_rearm = gf100_mc_intr_rearm,
 	.intr_mask = gf100_mc_intr_mask,
+<<<<<<< HEAD
+=======
+	.intr_stat = gf100_mc_intr_stat,
+	.reset = gf100_mc_reset,
+>>>>>>> v4.9.227
 	.unk260 = gf100_mc_unk260,
 };
 

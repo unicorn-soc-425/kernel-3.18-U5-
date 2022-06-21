@@ -9,6 +9,10 @@
 #include <crypto/aes.h>
 #include <crypto/algapi.h>
 #include <linux/crypto.h>
+<<<<<<< HEAD
+=======
+#include <linux/genalloc.h>
+>>>>>>> v4.9.227
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/kthread.h>
@@ -29,6 +33,11 @@
 #define MAX_HW_HASH_SIZE	0xFFFF
 #define MV_CESA_EXPIRE		500 /* msec */
 
+<<<<<<< HEAD
+=======
+#define MV_CESA_DEFAULT_SRAM_SIZE	2048
+
+>>>>>>> v4.9.227
 /*
  * STM:
  *   /---------------------------------------\
@@ -83,6 +92,11 @@ struct req_progress {
 struct crypto_priv {
 	void __iomem *reg;
 	void __iomem *sram;
+<<<<<<< HEAD
+=======
+	struct gen_pool *sram_pool;
+	dma_addr_t sram_dma;
+>>>>>>> v4.9.227
 	int irq;
 	struct clk *clk;
 	struct task_struct *queue_th;
@@ -595,7 +609,11 @@ static int queue_manag(void *data)
 	cpg->eng_st = ENGINE_IDLE;
 	do {
 		struct crypto_async_request *async_req = NULL;
+<<<<<<< HEAD
 		struct crypto_async_request *backlog;
+=======
+		struct crypto_async_request *backlog = NULL;
+>>>>>>> v4.9.227
 
 		__set_current_state(TASK_INTERRUPTIBLE);
 
@@ -1019,6 +1037,42 @@ static struct ahash_alg mv_hmac_sha1_alg = {
 		 }
 };
 
+<<<<<<< HEAD
+=======
+static int mv_cesa_get_sram(struct platform_device *pdev,
+			    struct crypto_priv *cp)
+{
+	struct resource *res;
+	u32 sram_size = MV_CESA_DEFAULT_SRAM_SIZE;
+
+	of_property_read_u32(pdev->dev.of_node, "marvell,crypto-sram-size",
+			     &sram_size);
+
+	cp->sram_size = sram_size;
+	cp->sram_pool = of_gen_pool_get(pdev->dev.of_node,
+					"marvell,crypto-srams", 0);
+	if (cp->sram_pool) {
+		cp->sram = gen_pool_dma_alloc(cp->sram_pool, sram_size,
+					      &cp->sram_dma);
+		if (cp->sram)
+			return 0;
+
+		return -ENOMEM;
+	}
+
+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+					   "sram");
+	if (!res || resource_size(res) < cp->sram_size)
+		return -EINVAL;
+
+	cp->sram = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(cp->sram))
+		return PTR_ERR(cp->sram);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int mv_probe(struct platform_device *pdev)
 {
 	struct crypto_priv *cp;
@@ -1041,6 +1095,7 @@ static int mv_probe(struct platform_device *pdev)
 
 	spin_lock_init(&cp->lock);
 	crypto_init_queue(&cp->queue, 50);
+<<<<<<< HEAD
 	cp->reg = ioremap(res->start, resource_size(res));
 	if (!cp->reg) {
 		ret = -ENOMEM;
@@ -1067,6 +1122,24 @@ static int mv_probe(struct platform_device *pdev)
 	if (irq < 0 || irq == NO_IRQ) {
 		ret = irq;
 		goto err_unmap_sram;
+=======
+	cp->reg = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(cp->reg)) {
+		ret = PTR_ERR(cp->reg);
+		goto err;
+	}
+
+	ret = mv_cesa_get_sram(pdev, cp);
+	if (ret)
+		goto err;
+
+	cp->max_req_size = cp->sram_size - SRAM_CFG_SPACE;
+
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0) {
+		ret = irq;
+		goto err;
+>>>>>>> v4.9.227
 	}
 	cp->irq = irq;
 
@@ -1076,7 +1149,11 @@ static int mv_probe(struct platform_device *pdev)
 	cp->queue_th = kthread_run(queue_manag, cp, "mv_crypto");
 	if (IS_ERR(cp->queue_th)) {
 		ret = PTR_ERR(cp->queue_th);
+<<<<<<< HEAD
 		goto err_unmap_sram;
+=======
+		goto err;
+>>>>>>> v4.9.227
 	}
 
 	ret = request_irq(irq, crypto_int, 0, dev_name(&pdev->dev),
@@ -1134,10 +1211,13 @@ err_irq:
 	}
 err_thread:
 	kthread_stop(cp->queue_th);
+<<<<<<< HEAD
 err_unmap_sram:
 	iounmap(cp->sram);
 err_unmap_reg:
 	iounmap(cp->reg);
+=======
+>>>>>>> v4.9.227
 err:
 	kfree(cp);
 	cpg = NULL;
@@ -1157,8 +1237,11 @@ static int mv_remove(struct platform_device *pdev)
 	kthread_stop(cp->queue_th);
 	free_irq(cp->irq, cp);
 	memset(cp->sram, 0, cp->sram_size);
+<<<<<<< HEAD
 	iounmap(cp->sram);
 	iounmap(cp->reg);
+=======
+>>>>>>> v4.9.227
 
 	if (!IS_ERR(cp->clk)) {
 		clk_disable_unprepare(cp->clk);
@@ -1172,6 +1255,11 @@ static int mv_remove(struct platform_device *pdev)
 
 static const struct of_device_id mv_cesa_of_match_table[] = {
 	{ .compatible = "marvell,orion-crypto", },
+<<<<<<< HEAD
+=======
+	{ .compatible = "marvell,kirkwood-crypto", },
+	{ .compatible = "marvell,dove-crypto", },
+>>>>>>> v4.9.227
 	{}
 };
 MODULE_DEVICE_TABLE(of, mv_cesa_of_match_table);
@@ -1180,7 +1268,10 @@ static struct platform_driver marvell_crypto = {
 	.probe		= mv_probe,
 	.remove		= mv_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "mv_crypto",
 		.of_match_table = mv_cesa_of_match_table,
 	},

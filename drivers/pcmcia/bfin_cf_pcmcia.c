@@ -36,10 +36,17 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 
 #include <pcmcia/ss.h>
 #include <pcmcia/cisreg.h>
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+
+#include <pcmcia/ss.h>
+#include <pcmcia/cisreg.h>
+>>>>>>> v4.9.227
 
 #define	SZ_1K	0x00000400
 #define	SZ_8K	0x00002000
@@ -304,7 +311,10 @@ static int bfin_cf_remove(struct platform_device *pdev)
 static struct platform_driver bfin_cf_driver = {
 	.driver = {
 		   .name = driver_name,
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   },
 	.probe = bfin_cf_probe,
 	.remove = bfin_cf_remove,

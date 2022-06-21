@@ -4,6 +4,10 @@
 
 obj-y   += proc.o
 
+<<<<<<< HEAD
+=======
+CFLAGS_task_mmu.o	+= $(call cc-option,-Wno-override-init,)
+>>>>>>> v4.9.227
 proc-y			:= nommu.o task_nommu.o
 proc-$(CONFIG_MMU)	:= task_mmu.o
 
@@ -24,11 +28,17 @@ proc-y	+= softirqs.o
 proc-y	+= namespaces.o
 proc-y	+= self.o
 proc-y	+= thread_self.o
+<<<<<<< HEAD
 proc-$(CONFIG_PROC_FSLOG)	+= fslog.o
+=======
+>>>>>>> v4.9.227
 proc-$(CONFIG_PROC_SYSCTL)	+= proc_sysctl.o
 proc-$(CONFIG_NET)		+= proc_net.o
 proc-$(CONFIG_PROC_KCORE)	+= kcore.o
 proc-$(CONFIG_PROC_VMCORE)	+= vmcore.o
 proc-$(CONFIG_PRINTK)	+= kmsg.o
 proc-$(CONFIG_PROC_PAGE_MONITOR)	+= page.o
+<<<<<<< HEAD
 proc-$(CONFIG_PROC_AVC) += proc_avc.o
+=======
+>>>>>>> v4.9.227

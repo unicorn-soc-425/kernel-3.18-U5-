@@ -26,12 +26,15 @@
 #include "cthw20k2.h"
 #include "ct20k2reg.h"
 
+<<<<<<< HEAD
 #if BITS_PER_LONG == 32
 #define CT_XFI_DMA_MASK		DMA_BIT_MASK(32) /* 32 bit PTE */
 #else
 #define CT_XFI_DMA_MASK		DMA_BIT_MASK(64) /* 64 bit PTE */
 #endif
 
+=======
+>>>>>>> v4.9.227
 struct hw20k2 {
 	struct hw hw;
 	/* for i2c */
@@ -1615,6 +1618,7 @@ static int hw_dac_init(struct hw *hw, const struct dac_conf *info)
 	int i;
 	struct regs_cs4382 cs_read = {0};
 	struct regs_cs4382 cs_def = {
+<<<<<<< HEAD
 				   0x00000001,  /* Mode Control 1 */
 				   0x00000000,  /* Mode Control 2 */
 				   0x00000084,  /* Mode Control 3 */
@@ -1632,6 +1636,25 @@ static int hw_dac_init(struct hw *hw, const struct dac_conf *info)
 				   0x00000024,  /* Mixing Control Pair 4 */
 				   0x00000000,  /* Vol Control A4 */
 				   0x00000000   /* Vol Control B4 */
+=======
+		.mode_control_1 = 0x00000001, /* Mode Control 1 */
+		.mode_control_2 = 0x00000000, /* Mode Control 2 */
+		.mode_control_3 = 0x00000084, /* Mode Control 3 */
+		.filter_control = 0x00000000, /* Filter Control */
+		.invert_control = 0x00000000, /* Invert Control */
+		.mix_control_P1 = 0x00000024, /* Mixing Control Pair 1 */
+		.vol_control_A1 = 0x00000000, /* Vol Control A1 */
+		.vol_control_B1 = 0x00000000, /* Vol Control B1 */
+		.mix_control_P2 = 0x00000024, /* Mixing Control Pair 2 */
+		.vol_control_A2 = 0x00000000, /* Vol Control A2 */
+		.vol_control_B2 = 0x00000000, /* Vol Control B2 */
+		.mix_control_P3 = 0x00000024, /* Mixing Control Pair 3 */
+		.vol_control_A3 = 0x00000000, /* Vol Control A3 */
+		.vol_control_B3 = 0x00000000, /* Vol Control B3 */
+		.mix_control_P4 = 0x00000024, /* Mixing Control Pair 4 */
+		.vol_control_A4 = 0x00000000, /* Vol Control A4 */
+		.vol_control_B4 = 0x00000000  /* Vol Control B4 */
+>>>>>>> v4.9.227
 				 };
 
 	if (hw->model == CTSB1270) {
@@ -2029,12 +2052,17 @@ static int hw_card_start(struct hw *hw)
 	int err = 0;
 	struct pci_dev *pci = hw->pci;
 	unsigned int gctl;
+<<<<<<< HEAD
+=======
+	const unsigned int dma_bits = BITS_PER_LONG;
+>>>>>>> v4.9.227
 
 	err = pci_enable_device(pci);
 	if (err < 0)
 		return err;
 
 	/* Set DMA transfer mask */
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, CT_XFI_DMA_MASK) < 0 ||
 	    pci_set_consistent_dma_mask(pci, CT_XFI_DMA_MASK) < 0) {
 		dev_err(hw->card->dev,
@@ -2042,6 +2070,13 @@ static int hw_card_start(struct hw *hw)
 			CT_XFI_DMA_MASK);
 		err = -ENXIO;
 		goto error1;
+=======
+	if (!dma_set_mask(&pci->dev, DMA_BIT_MASK(dma_bits))) {
+		dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(dma_bits));
+	} else {
+		dma_set_mask(&pci->dev, DMA_BIT_MASK(32));
+		dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(32));
+>>>>>>> v4.9.227
 	}
 
 	if (!hw->io_base) {
@@ -2110,10 +2145,14 @@ static int hw_card_shutdown(struct hw *hw)
 		free_irq(hw->irq, hw);
 
 	hw->irq	= -1;
+<<<<<<< HEAD
 
 	if (hw->mem_base)
 		iounmap(hw->mem_base);
 
+=======
+	iounmap(hw->mem_base);
+>>>>>>> v4.9.227
 	hw->mem_base = NULL;
 
 	if (hw->io_base)
@@ -2209,6 +2248,7 @@ static int hw_card_init(struct hw *hw, struct card_conf *info)
 #ifdef CONFIG_PM_SLEEP
 static int hw_suspend(struct hw *hw)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = hw->pci;
 
 	hw_card_stop(hw);
@@ -2217,16 +2257,22 @@ static int hw_suspend(struct hw *hw)
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
 
+=======
+	hw_card_stop(hw);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int hw_resume(struct hw *hw, struct card_conf *info)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = hw->pci;
 
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 
+=======
+>>>>>>> v4.9.227
 	/* Re-initialize card hardware. */
 	return hw_card_init(hw, info);
 }

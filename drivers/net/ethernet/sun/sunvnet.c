@@ -1,6 +1,10 @@
 /* sunvnet.c: Sun LDOM Virtual Network Driver.
  *
  * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2016 Oracle. All rights reserved.
+>>>>>>> v4.9.227
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -15,19 +19,36 @@
 #include <linux/ethtool.h>
 #include <linux/etherdevice.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/highmem.h>
+>>>>>>> v4.9.227
 #include <linux/if_vlan.h>
 
 #if IS_ENABLED(CONFIG_IPV6)
 #include <linux/icmpv6.h>
 #endif
 
+<<<<<<< HEAD
+=======
+#include <net/ip.h>
+>>>>>>> v4.9.227
 #include <net/icmp.h>
 #include <net/route.h>
 
 #include <asm/vio.h>
 #include <asm/ldc.h>
 
+<<<<<<< HEAD
 #include "sunvnet.h"
+=======
+#include "sunvnet_common.h"
+
+/* length of time before we decide the hardware is borked,
+ * and dev->tx_timeout() should be called to fix the problem
+ */
+#define VNET_TX_TIMEOUT			(5 * HZ)
+>>>>>>> v4.9.227
 
 #define DRV_MODULE_NAME		"sunvnet"
 #define DRV_MODULE_VERSION	"1.0"
@@ -40,6 +61,7 @@ MODULE_DESCRIPTION("Sun LDOM virtual network driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
 
+<<<<<<< HEAD
 /* Heuristic for the number of times to exponentially backoff and
  * retry sending an LDC trigger when EAGAIN is encountered
  */
@@ -49,10 +71,17 @@ static int __vnet_tx_trigger(struct vnet_port *port, u32 start);
 
 /* Ordered from largest major to lowest */
 static struct vio_version vnet_versions[] = {
+=======
+/* Ordered from largest major to lowest */
+static struct vio_version vnet_versions[] = {
+	{ .major = 1, .minor = 8 },
+	{ .major = 1, .minor = 7 },
+>>>>>>> v4.9.227
 	{ .major = 1, .minor = 6 },
 	{ .major = 1, .minor = 0 },
 };
 
+<<<<<<< HEAD
 static inline u32 vnet_tx_dring_avail(struct vio_dring_state *dr)
 {
 	return vio_dring_avail(dr, VNET_TX_RING_SIZE);
@@ -1232,6 +1261,8 @@ static int vnet_set_mac_addr(struct net_device *dev, void *p)
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 static void vnet_get_drvinfo(struct net_device *dev,
 			     struct ethtool_drvinfo *info)
 {
@@ -1242,12 +1273,20 @@ static void vnet_get_drvinfo(struct net_device *dev,
 static u32 vnet_get_msglevel(struct net_device *dev)
 {
 	struct vnet *vp = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return vp->msg_enable;
 }
 
 static void vnet_set_msglevel(struct net_device *dev, u32 value)
 {
 	struct vnet *vp = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	vp->msg_enable = value;
 }
 
@@ -1258,6 +1297,7 @@ static const struct ethtool_ops vnet_ethtool_ops = {
 	.get_link		= ethtool_op_get_link,
 };
 
+<<<<<<< HEAD
 static void vnet_port_free_tx_bufs(struct vnet_port *port)
 {
 	struct vio_dring_state *dr;
@@ -1357,12 +1397,103 @@ static const struct net_device_ops vnet_ops = {
 };
 
 static struct vnet *vnet_new(const u64 *local_mac)
+=======
+static LIST_HEAD(vnet_list);
+static DEFINE_MUTEX(vnet_list_mutex);
+
+static struct vnet_port *__tx_port_find(struct vnet *vp, struct sk_buff *skb)
+{
+	unsigned int hash = vnet_hashfn(skb->data);
+	struct hlist_head *hp = &vp->port_hash[hash];
+	struct vnet_port *port;
+
+	hlist_for_each_entry_rcu(port, hp, hash) {
+		if (!sunvnet_port_is_up_common(port))
+			continue;
+		if (ether_addr_equal(port->raddr, skb->data))
+			return port;
+	}
+	list_for_each_entry_rcu(port, &vp->port_list, list) {
+		if (!port->switch_port)
+			continue;
+		if (!sunvnet_port_is_up_common(port))
+			continue;
+		return port;
+	}
+	return NULL;
+}
+
+/* func arg to vnet_start_xmit_common() to get the proper tx port */
+static struct vnet_port *vnet_tx_port_find(struct sk_buff *skb,
+					   struct net_device *dev)
+{
+	struct vnet *vp = netdev_priv(dev);
+
+	return __tx_port_find(vp, skb);
+}
+
+static u16 vnet_select_queue(struct net_device *dev, struct sk_buff *skb,
+			     void *accel_priv, select_queue_fallback_t fallback)
+{
+	struct vnet *vp = netdev_priv(dev);
+	struct vnet_port *port = __tx_port_find(vp, skb);
+
+	if (!port)
+		return 0;
+
+	return port->q_index;
+}
+
+/* Wrappers to common functions */
+static int vnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+{
+	return sunvnet_start_xmit_common(skb, dev, vnet_tx_port_find);
+}
+
+static void vnet_set_rx_mode(struct net_device *dev)
+{
+	struct vnet *vp = netdev_priv(dev);
+
+	return sunvnet_set_rx_mode_common(dev, vp);
+}
+
+#ifdef CONFIG_NET_POLL_CONTROLLER
+static void vnet_poll_controller(struct net_device *dev)
+{
+	struct vnet *vp = netdev_priv(dev);
+
+	return sunvnet_poll_controller_common(dev, vp);
+}
+#endif
+
+static const struct net_device_ops vnet_ops = {
+	.ndo_open		= sunvnet_open_common,
+	.ndo_stop		= sunvnet_close_common,
+	.ndo_set_rx_mode	= vnet_set_rx_mode,
+	.ndo_set_mac_address	= sunvnet_set_mac_addr_common,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_tx_timeout		= sunvnet_tx_timeout_common,
+	.ndo_change_mtu		= sunvnet_change_mtu_common,
+	.ndo_start_xmit		= vnet_start_xmit,
+	.ndo_select_queue	= vnet_select_queue,
+#ifdef CONFIG_NET_POLL_CONTROLLER
+	.ndo_poll_controller	= vnet_poll_controller,
+#endif
+};
+
+static struct vnet *vnet_new(const u64 *local_mac,
+			     struct vio_dev *vdev)
+>>>>>>> v4.9.227
 {
 	struct net_device *dev;
 	struct vnet *vp;
 	int err, i;
 
+<<<<<<< HEAD
 	dev = alloc_etherdev(sizeof(*vp));
+=======
+	dev = alloc_etherdev_mqs(sizeof(*vp), VNET_MAX_TXQS, 1);
+>>>>>>> v4.9.227
 	if (!dev)
 		return ERR_PTR(-ENOMEM);
 	dev->needed_headroom = VNET_PACKET_SKIP + 8;
@@ -1374,7 +1505,10 @@ static struct vnet *vnet_new(const u64 *local_mac)
 	vp = netdev_priv(dev);
 
 	spin_lock_init(&vp->lock);
+<<<<<<< HEAD
 	tasklet_init(&vp->vnet_tx_wakeup, maybe_tx_wakeup, (unsigned long)vp);
+=======
+>>>>>>> v4.9.227
 	vp->dev = dev;
 
 	INIT_LIST_HEAD(&vp->port_list);
@@ -1387,6 +1521,15 @@ static struct vnet *vnet_new(const u64 *local_mac)
 	dev->ethtool_ops = &vnet_ethtool_ops;
 	dev->watchdog_timeo = VNET_TX_TIMEOUT;
 
+<<<<<<< HEAD
+=======
+	dev->hw_features = NETIF_F_TSO | NETIF_F_GSO | NETIF_F_ALL_TSO |
+			   NETIF_F_HW_CSUM | NETIF_F_SG;
+	dev->features = dev->hw_features;
+
+	SET_NETDEV_DEV(dev, &vdev->dev);
+
+>>>>>>> v4.9.227
 	err = register_netdev(dev);
 	if (err) {
 		pr_err("Cannot register net device, aborting\n");
@@ -1405,7 +1548,12 @@ err_out_free_dev:
 	return ERR_PTR(err);
 }
 
+<<<<<<< HEAD
 static struct vnet *vnet_find_or_create(const u64 *local_mac)
+=======
+static struct vnet *vnet_find_or_create(const u64 *local_mac,
+					struct vio_dev *vdev)
+>>>>>>> v4.9.227
 {
 	struct vnet *iter, *vp;
 
@@ -1418,7 +1566,11 @@ static struct vnet *vnet_find_or_create(const u64 *local_mac)
 		}
 	}
 	if (!vp)
+<<<<<<< HEAD
 		vp = vnet_new(local_mac);
+=======
+		vp = vnet_new(local_mac, vdev);
+>>>>>>> v4.9.227
 	mutex_unlock(&vnet_list_mutex);
 
 	return vp;
@@ -1434,7 +1586,10 @@ static void vnet_cleanup(void)
 		vp = list_first_entry(&vnet_list, struct vnet, list);
 		list_del(&vp->list);
 		dev = vp->dev;
+<<<<<<< HEAD
 		tasklet_kill(&vp->vnet_tx_wakeup);
+=======
+>>>>>>> v4.9.227
 		/* vio_unregister_driver() should have cleaned up port_list */
 		BUG_ON(!list_empty(&vp->port_list));
 		unregister_netdev(dev);
@@ -1446,7 +1601,12 @@ static void vnet_cleanup(void)
 static const char *local_mac_prop = "local-mac-address";
 
 static struct vnet *vnet_find_parent(struct mdesc_handle *hp,
+<<<<<<< HEAD
 						u64 port_node)
+=======
+				     u64 port_node,
+				     struct vio_dev *vdev)
+>>>>>>> v4.9.227
 {
 	const u64 *local_mac = NULL;
 	u64 a;
@@ -1467,19 +1627,33 @@ static struct vnet *vnet_find_parent(struct mdesc_handle *hp,
 	if (!local_mac)
 		return ERR_PTR(-ENODEV);
 
+<<<<<<< HEAD
 	return vnet_find_or_create(local_mac);
 }
 
 static struct ldc_channel_config vnet_ldc_cfg = {
 	.event		= vnet_event,
+=======
+	return vnet_find_or_create(local_mac, vdev);
+}
+
+static struct ldc_channel_config vnet_ldc_cfg = {
+	.event		= sunvnet_event_common,
+>>>>>>> v4.9.227
 	.mtu		= 64,
 	.mode		= LDC_MODE_UNRELIABLE,
 };
 
 static struct vio_driver_ops vnet_vio_ops = {
+<<<<<<< HEAD
 	.send_attr		= vnet_send_attr,
 	.handle_attr		= vnet_handle_attr,
 	.handshake_complete	= vnet_handshake_complete,
+=======
+	.send_attr		= sunvnet_send_attr_common,
+	.handle_attr		= sunvnet_handle_attr_common,
+	.handshake_complete	= sunvnet_handshake_complete_common,
+>>>>>>> v4.9.227
 };
 
 static void print_version(void)
@@ -1502,7 +1676,11 @@ static int vnet_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 
 	hp = mdesc_grab();
 
+<<<<<<< HEAD
 	vp = vnet_find_parent(hp, vdev->mp);
+=======
+	vp = vnet_find_parent(hp, vdev->mp, vdev);
+>>>>>>> v4.9.227
 	if (IS_ERR(vp)) {
 		pr_err("Cannot find port parent vnet\n");
 		err = PTR_ERR(vp);
@@ -1536,14 +1714,20 @@ static int vnet_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	if (err)
 		goto err_out_free_port;
 
+<<<<<<< HEAD
 	err = vnet_port_alloc_tx_bufs(port);
 	if (err)
 		goto err_out_free_ldc;
+=======
+	netif_napi_add(port->vp->dev, &port->napi, sunvnet_poll_common,
+		       NAPI_POLL_WEIGHT);
+>>>>>>> v4.9.227
 
 	INIT_HLIST_NODE(&port->hash);
 	INIT_LIST_HEAD(&port->list);
 
 	switch_port = 0;
+<<<<<<< HEAD
 	if (mdesc_get_property(hp, vdev->mp, "switch-port", NULL) != NULL)
 		switch_port = 1;
 	port->switch_port = switch_port;
@@ -1554,6 +1738,22 @@ static int vnet_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	else
 		list_add_tail(&port->list, &vp->port_list);
 	hlist_add_head(&port->hash, &vp->port_hash[vnet_hashfn(port->raddr)]);
+=======
+	if (mdesc_get_property(hp, vdev->mp, "switch-port", NULL))
+		switch_port = 1;
+	port->switch_port = switch_port;
+	port->tso = true;
+	port->tsolen = 0;
+
+	spin_lock_irqsave(&vp->lock, flags);
+	if (switch_port)
+		list_add_rcu(&port->list, &vp->port_list);
+	else
+		list_add_tail_rcu(&port->list, &vp->port_list);
+	hlist_add_head_rcu(&port->hash,
+			   &vp->port_hash[vnet_hashfn(port->raddr)]);
+	sunvnet_port_add_txq_common(port);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&vp->lock, flags);
 
 	dev_set_drvdata(&vdev->dev, port);
@@ -1561,18 +1761,28 @@ static int vnet_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	pr_info("%s: PORT ( remote-mac %pM%s )\n",
 		vp->dev->name, port->raddr, switch_port ? " switch-port" : "");
 
+<<<<<<< HEAD
 	setup_timer(&port->clean_timer, vnet_clean_timer_expire,
 		    (unsigned long)port);
 
+=======
+	setup_timer(&port->clean_timer, sunvnet_clean_timer_expire_common,
+		    (unsigned long)port);
+
+	napi_enable(&port->napi);
+>>>>>>> v4.9.227
 	vio_port_up(&port->vio);
 
 	mdesc_release(hp);
 
 	return 0;
 
+<<<<<<< HEAD
 err_out_free_ldc:
 	vio_ldc_free(&port->vio);
 
+=======
+>>>>>>> v4.9.227
 err_out_free_port:
 	kfree(port);
 
@@ -1586,6 +1796,7 @@ static int vnet_port_remove(struct vio_dev *vdev)
 	struct vnet_port *port = dev_get_drvdata(&vdev->dev);
 
 	if (port) {
+<<<<<<< HEAD
 		struct vnet *vp = port->vp;
 		unsigned long flags;
 
@@ -1598,12 +1809,29 @@ static int vnet_port_remove(struct vio_dev *vdev)
 		spin_unlock_irqrestore(&vp->lock, flags);
 
 		vnet_port_free_tx_bufs(port);
+=======
+		del_timer_sync(&port->vio.timer);
+
+		napi_disable(&port->napi);
+
+		list_del_rcu(&port->list);
+		hlist_del_rcu(&port->hash);
+
+		synchronize_rcu();
+		del_timer_sync(&port->clean_timer);
+		sunvnet_port_rm_txq_common(port);
+		netif_napi_del(&port->napi);
+		sunvnet_port_free_tx_bufs_common(port);
+>>>>>>> v4.9.227
 		vio_ldc_free(&port->vio);
 
 		dev_set_drvdata(&vdev->dev, NULL);
 
 		kfree(port);
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	}
 	return 0;
 }

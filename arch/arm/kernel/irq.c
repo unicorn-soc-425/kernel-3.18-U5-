@@ -38,15 +38,23 @@
 #include <linux/export.h>
 
 #include <asm/hardware/cache-l2x0.h>
+<<<<<<< HEAD
+=======
+#include <asm/hardware/cache-uniphier.h>
+#include <asm/outercache.h>
+>>>>>>> v4.9.227
 #include <asm/exception.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>
 #include <asm/mach/time.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 #include <linux/sec_debug.h>
 #endif
 
+=======
+>>>>>>> v4.9.227
 unsigned long irq_err_count;
 
 int arch_show_interrupts(struct seq_file *p, int prec)
@@ -69,6 +77,7 @@ int arch_show_interrupts(struct seq_file *p, int prec)
  */
 void handle_IRQ(unsigned int irq, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 	int cpu = smp_processor_id();
 	unsigned long long start_time = cpu_clock(cpu);
@@ -77,6 +86,9 @@ void handle_IRQ(unsigned int irq, struct pt_regs *regs)
 #ifdef CONFIG_SEC_DEBUG
 	sec_debug_irq_enterexit_log(irq, start_time);
 #endif
+=======
+	__handle_domain_irq(NULL, irq, false, regs);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -88,6 +100,7 @@ asm_do_IRQ(unsigned int irq, struct pt_regs *regs)
 	handle_IRQ(irq, regs);
 }
 
+<<<<<<< HEAD
 void set_irq_flags(unsigned int irq, unsigned int iflags)
 {
 	unsigned long clr = 0, set = IRQ_NOREQUEST | IRQ_NOPROBE | IRQ_NOAUTOEN;
@@ -108,6 +121,8 @@ void set_irq_flags(unsigned int irq, unsigned int iflags)
 }
 EXPORT_SYMBOL_GPL(set_irq_flags);
 
+=======
+>>>>>>> v4.9.227
 void __init init_IRQ(void)
 {
 	int ret;
@@ -119,12 +134,24 @@ void __init init_IRQ(void)
 
 	if (IS_ENABLED(CONFIG_OF) && IS_ENABLED(CONFIG_CACHE_L2X0) &&
 	    (machine_desc->l2c_aux_mask || machine_desc->l2c_aux_val)) {
+<<<<<<< HEAD
 		outer_cache.write_sec = machine_desc->l2c_write_sec;
 		ret = l2x0_of_init(machine_desc->l2c_aux_val,
 				   machine_desc->l2c_aux_mask);
 		if (ret)
 			pr_err("L2C: failed to init: %d\n", ret);
 	}
+=======
+		if (!outer_cache.write_sec)
+			outer_cache.write_sec = machine_desc->l2c_write_sec;
+		ret = l2x0_of_init(machine_desc->l2c_aux_val,
+				   machine_desc->l2c_aux_mask);
+		if (ret && ret != -ENODEV)
+			pr_err("L2C: failed to init: %d\n", ret);
+	}
+
+	uniphier_cache_init();
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_MULTI_IRQ_HANDLER
@@ -144,6 +171,7 @@ int __init arch_probe_nr_irqs(void)
 	return nr_irqs;
 }
 #endif
+<<<<<<< HEAD
 
 #ifdef CONFIG_HOTPLUG_CPU
 
@@ -196,3 +224,5 @@ void migrate_irqs(void)
 	local_irq_restore(flags);
 }
 #endif /* CONFIG_HOTPLUG_CPU */
+=======
+>>>>>>> v4.9.227

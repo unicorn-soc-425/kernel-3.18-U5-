@@ -352,9 +352,13 @@ static void sparc_start_secondary(void *arg)
 	preempt_disable();
 	cpu = smp_processor_id();
 
+<<<<<<< HEAD
 	/* Invoke the CPU_STARTING notifier callbacks */
 	notify_cpu_starting(cpu);
 
+=======
+	notify_cpu_starting(cpu);
+>>>>>>> v4.9.227
 	arch_cpu_pre_online(arg);
 
 	/* Set the CPU in the cpu_online_mask */
@@ -364,7 +368,11 @@ static void sparc_start_secondary(void *arg)
 	local_irq_enable();
 
 	wmb();
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> v4.9.227
 
 	/* We should never reach here! */
 	BUG();

@@ -238,7 +238,11 @@ static int mpic_msgr_probe(struct platform_device *dev)
 
 		if (receive_mask & (1 << i)) {
 			msgr->irq = irq_of_parse_and_map(np, irq_index);
+<<<<<<< HEAD
 			if (msgr->irq == NO_IRQ) {
+=======
+			if (!msgr->irq) {
+>>>>>>> v4.9.227
 				dev_err(&dev->dev,
 						"Missing interrupt specifier");
 				kfree(msgr);
@@ -246,7 +250,11 @@ static int mpic_msgr_probe(struct platform_device *dev)
 			}
 			irq_index += 1;
 		} else {
+<<<<<<< HEAD
 			msgr->irq = NO_IRQ;
+=======
+			msgr->irq = 0;
+>>>>>>> v4.9.227
 		}
 
 		mpic_msgrs[reg_number] = msgr;
@@ -270,7 +278,10 @@ static const struct of_device_id mpic_msgr_ids[] = {
 static struct platform_driver mpic_msgr_driver = {
 	.driver = {
 		.name = "mpic-msgr",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = mpic_msgr_ids,
 	},
 	.probe = mpic_msgr_probe,

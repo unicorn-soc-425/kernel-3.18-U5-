@@ -258,7 +258,10 @@ static void dm9601_get_drvinfo(struct net_device *net,
 {
 	/* Inherit standard device info */
 	usbnet_get_drvinfo(net, info);
+<<<<<<< HEAD
 	info->eedump_len = DM_EEPROM_LEN;
+=======
+>>>>>>> v4.9.227
 }
 
 static u32 dm9601_get_link(struct net_device *net)
@@ -327,7 +330,11 @@ static int dm9601_set_mac_address(struct net_device *net, void *p)
 	struct usbnet *dev = netdev_priv(net);
 
 	if (!is_valid_ether_addr(addr->sa_data)) {
+<<<<<<< HEAD
 		dev_err(&net->dev, "not setting invalid mac address %pKM\n",
+=======
+		dev_err(&net->dev, "not setting invalid mac address %pM\n",
+>>>>>>> v4.9.227
 								addr->sa_data);
 		return -EINVAL;
 	}
@@ -394,7 +401,11 @@ static int dm9601_bind(struct usbnet *dev, struct usb_interface *intf)
 		memcpy(dev->net->dev_addr, mac, ETH_ALEN);
 	else {
 		printk(KERN_WARNING
+<<<<<<< HEAD
 			"dm9601: No valid MAC address in EEPROM, using %pKM\n",
+=======
+			"dm9601: No valid MAC address in EEPROM, using %pM\n",
+>>>>>>> v4.9.227
 			dev->net->dev_addr);
 		__dm9601_set_mac_address(dev);
 	}

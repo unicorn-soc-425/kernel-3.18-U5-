@@ -305,7 +305,10 @@ static struct platform_driver lp3943_pwm_driver = {
 	.remove = lp3943_pwm_remove,
 	.driver = {
 		.name = "lp3943-pwm",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(lp3943_pwm_of_match),
 	},
 };

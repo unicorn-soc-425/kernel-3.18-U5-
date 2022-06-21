@@ -40,11 +40,18 @@
 #include <plat/cpu.h>
 #include <plat/cpu-freq.h>
 #include <plat/devs.h>
+<<<<<<< HEAD
 #include <plat/nand-core.h>
+=======
+>>>>>>> v4.9.227
 #include <plat/pm.h>
 #include <plat/regs-spi.h>
 
 #include "common.h"
+<<<<<<< HEAD
+=======
+#include "nand-core.h"
+>>>>>>> v4.9.227
 #include "regs-dsc.h"
 #include "s3c2412-power.h"
 
@@ -172,7 +179,11 @@ int __init s3c2412_init(void)
 {
 	printk("S3C2412: Initialising architecture\n");
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 	register_syscore_ops(&s3c2412_pm_syscore_ops);
 	register_syscore_ops(&s3c24xx_irq_syscore_ops);
 #endif

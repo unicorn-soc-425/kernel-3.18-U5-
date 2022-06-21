@@ -17,6 +17,11 @@
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
+=======
+#define ARCH_HAS_IOREMAP_WT
+
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <asm/virtconvert.h>
 #include <asm/string.h>
@@ -41,9 +46,26 @@ static inline unsigned long _swapl(unsigned long v)
 //#define __iormb() asm volatile("membar")
 //#define __iowmb() asm volatile("membar")
 
+<<<<<<< HEAD
 #define __raw_readb __builtin_read8
 #define __raw_readw __builtin_read16
 #define __raw_readl __builtin_read32
+=======
+static inline u8 __raw_readb(const volatile void __iomem *addr)
+{
+	return __builtin_read8((volatile void __iomem *)addr);
+}
+
+static inline u16 __raw_readw(const volatile void __iomem *addr)
+{
+	return __builtin_read16((volatile void __iomem *)addr);
+}
+
+static inline u32 __raw_readl(const volatile void __iomem *addr)
+{
+	return __builtin_read32((volatile void __iomem *)addr);
+}
+>>>>>>> v4.9.227
 
 #define __raw_writeb(datum, addr) __builtin_write8(addr, datum)
 #define __raw_writew(datum, addr) __builtin_write16(addr, datum)
@@ -243,6 +265,12 @@ static inline void writel(uint32_t datum, volatile void __iomem *addr)
 		__flush_PCI_writes();
 }
 
+<<<<<<< HEAD
+=======
+#define writeb_relaxed writeb
+#define writew_relaxed writew
+#define writel_relaxed writel
+>>>>>>> v4.9.227
 
 /* Values for nocacheflag and cmode */
 #define IOMAP_FULL_CACHING		0
@@ -262,7 +290,11 @@ static inline void __iomem *ioremap_nocache(unsigned long physaddr, unsigned lon
 	return __ioremap(physaddr, size, IOMAP_NOCACHE_SER);
 }
 
+<<<<<<< HEAD
 static inline void __iomem *ioremap_writethrough(unsigned long physaddr, unsigned long size)
+=======
+static inline void __iomem *ioremap_wt(unsigned long physaddr, unsigned long size)
+>>>>>>> v4.9.227
 {
 	return __ioremap(physaddr, size, IOMAP_WRITETHROUGH);
 }
@@ -273,6 +305,10 @@ static inline void __iomem *ioremap_fullcache(unsigned long physaddr, unsigned l
 }
 
 #define ioremap_wc ioremap_nocache
+<<<<<<< HEAD
+=======
+#define ioremap_uc ioremap_nocache
+>>>>>>> v4.9.227
 
 extern void iounmap(void volatile __iomem *addr);
 
@@ -339,6 +375,14 @@ static inline void iowrite32(u32 val, void __iomem *p)
 		__flush_PCI_writes();
 }
 
+<<<<<<< HEAD
+=======
+#define ioread16be(addr)	be16_to_cpu(ioread16(addr))
+#define ioread32be(addr)	be32_to_cpu(ioread32(addr))
+#define iowrite16be(v, addr)	iowrite16(cpu_to_be16(v), (addr))
+#define iowrite32be(v, addr)	iowrite32(cpu_to_be32(v), (addr))
+
+>>>>>>> v4.9.227
 static inline void ioread8_rep(void __iomem *p, void *dst, unsigned long count)
 {
 	io_insb((unsigned long) p, dst, count);

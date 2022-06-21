@@ -42,13 +42,22 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/flash.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
+=======
+#include "pxa27x.h"
+>>>>>>> v4.9.227
 #include <mach/balloon3.h>
 #include <mach/audio.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/mmc-pxamci.h>
+<<<<<<< HEAD
 #include <mach/udc.h>
 #include <mach/pxa27x-udc.h>
+=======
+#include "udc.h"
+#include "pxa27x-udc.h"
+>>>>>>> v4.9.227
 #include <linux/platform_data/irda-pxaficp.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 
@@ -496,11 +505,16 @@ static struct irq_chip balloon3_irq_chip = {
 	.irq_unmask	= balloon3_unmask_irq,
 };
 
+<<<<<<< HEAD
 static void balloon3_irq_handler(unsigned int irq, struct irq_desc *desc)
+=======
+static void balloon3_irq_handler(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	unsigned long pending = __raw_readl(BALLOON3_INT_CONTROL_REG) &
 					balloon3_irq_enabled;
 	do {
+<<<<<<< HEAD
 		/* clear useless edge notification */
 		if (desc->irq_data.chip->irq_ack) {
 			struct irq_data *d;
@@ -508,6 +522,15 @@ static void balloon3_irq_handler(unsigned int irq, struct irq_desc *desc)
 			d = irq_get_irq_data(BALLOON3_AUX_NIRQ);
 			desc->irq_data.chip->irq_ack(d);
 		}
+=======
+		struct irq_data *d = irq_desc_get_irq_data(desc);
+		struct irq_chip *chip = irq_desc_get_chip(desc);
+		unsigned int irq;
+
+		/* clear useless edge notification */
+		if (chip->irq_ack)
+			chip->irq_ack(d);
+>>>>>>> v4.9.227
 
 		while (pending) {
 			irq = BALLOON3_IRQ(0) + __ffs(pending);
@@ -528,7 +551,11 @@ static void __init balloon3_init_irq(void)
 	for (irq = BALLOON3_IRQ(0); irq <= BALLOON3_IRQ(7); irq++) {
 		irq_set_chip_and_handler(irq, &balloon3_irq_chip,
 					 handle_level_irq);
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> v4.9.227
 	}
 
 	irq_set_chained_handler(BALLOON3_AUX_NIRQ, balloon3_irq_handler);
@@ -572,7 +599,11 @@ static inline void balloon3_i2c_init(void) {}
 #if defined(CONFIG_MTD_NAND_PLATFORM)||defined(CONFIG_MTD_NAND_PLATFORM_MODULE)
 static void balloon3_nand_cmd_ctl(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	uint8_t balloon3_ctl_set = 0, balloon3_ctl_clr = 0;
 
 	if (ctrl & NAND_CTRL_CHANGE) {

@@ -146,8 +146,12 @@ static inline void write3byte(struct sysv_sb_info *sbi,
 
 static const struct inode_operations sysv_symlink_inode_operations = {
 	.readlink	= generic_readlink,
+<<<<<<< HEAD
 	.follow_link	= page_follow_link_light,
 	.put_link	= page_put_link,
+=======
+	.get_link	= page_get_link,
+>>>>>>> v4.9.227
 	.getattr	= sysv_getattr,
 };
 
@@ -162,6 +166,7 @@ void sysv_set_inode(struct inode *inode, dev_t rdev)
 		inode->i_fop = &sysv_dir_operations;
 		inode->i_mapping->a_ops = &sysv_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
+<<<<<<< HEAD
 		if (inode->i_blocks) {
 			inode->i_op = &sysv_symlink_inode_operations;
 			inode->i_mapping->a_ops = &sysv_aops;
@@ -170,6 +175,11 @@ void sysv_set_inode(struct inode *inode, dev_t rdev)
 			nd_terminate_link(SYSV_I(inode)->i_data, inode->i_size,
 				sizeof(SYSV_I(inode)->i_data) - 1);
 		}
+=======
+		inode->i_op = &sysv_symlink_inode_operations;
+		inode_nohighmem(inode);
+		inode->i_mapping->a_ops = &sysv_aops;
+>>>>>>> v4.9.227
 	} else
 		init_special_inode(inode, inode->i_mode, rdev);
 }
@@ -281,7 +291,11 @@ static int __sysv_write_inode(struct inode *inode, int wait)
                 }
         }
 	brelse(bh);
+<<<<<<< HEAD
 	return 0;
+=======
+	return err;
+>>>>>>> v4.9.227
 }
 
 int sysv_write_inode(struct inode *inode, struct writeback_control *wbc)
@@ -352,7 +366,11 @@ int __init sysv_init_icache(void)
 {
 	sysv_inode_cachep = kmem_cache_create("sysv_inode_cache",
 			sizeof(struct sysv_inode_info), 0,
+<<<<<<< HEAD
 			SLAB_RECLAIM_ACCOUNT|SLAB_MEM_SPREAD,
+=======
+			SLAB_RECLAIM_ACCOUNT|SLAB_MEM_SPREAD|SLAB_ACCOUNT,
+>>>>>>> v4.9.227
 			init_once);
 	if (!sysv_inode_cachep)
 		return -ENOMEM;

@@ -39,7 +39,11 @@ static const struct xattr_handler *squashfs_xattr_handler(int);
 ssize_t squashfs_listxattr(struct dentry *d, char *buffer,
 	size_t buffer_size)
 {
+<<<<<<< HEAD
 	struct inode *inode = d->d_inode;
+=======
+	struct inode *inode = d_inode(d);
+>>>>>>> v4.9.227
 	struct super_block *sb = inode->i_sb;
 	struct squashfs_sb_info *msblk = sb->s_fs_info;
 	u64 start = SQUASHFS_XATTR_BLK(squashfs_i(inode)->xattr)
@@ -58,7 +62,11 @@ ssize_t squashfs_listxattr(struct dentry *d, char *buffer,
 		struct squashfs_xattr_entry entry;
 		struct squashfs_xattr_val val;
 		const struct xattr_handler *handler;
+<<<<<<< HEAD
 		int name_size, prefix_size = 0;
+=======
+		int name_size;
+>>>>>>> v4.9.227
 
 		err = squashfs_read_metadata(sb, &entry, &start, &offset,
 							sizeof(entry));
@@ -67,15 +75,26 @@ ssize_t squashfs_listxattr(struct dentry *d, char *buffer,
 
 		name_size = le16_to_cpu(entry.size);
 		handler = squashfs_xattr_handler(le16_to_cpu(entry.type));
+<<<<<<< HEAD
 		if (handler)
 			prefix_size = handler->list(d, buffer, rest, NULL,
 				name_size, handler->flags);
 		if (prefix_size) {
+=======
+		if (handler && (!handler->list || handler->list(d))) {
+			const char *prefix = handler->prefix ?: handler->name;
+			size_t prefix_size = strlen(prefix);
+
+>>>>>>> v4.9.227
 			if (buffer) {
 				if (prefix_size + name_size + 1 > rest) {
 					err = -ERANGE;
 					goto failed;
 				}
+<<<<<<< HEAD
+=======
+				memcpy(buffer, prefix, prefix_size);
+>>>>>>> v4.9.227
 				buffer += prefix_size;
 			}
 			err = squashfs_read_metadata(sb, buffer, &start,
@@ -212,6 +231,7 @@ failed:
 }
 
 
+<<<<<<< HEAD
 /*
  * User namespace support
  */
@@ -237,11 +257,31 @@ static const struct xattr_handler squashfs_xattr_user_handler = {
 	.prefix	= XATTR_USER_PREFIX,
 	.list	= squashfs_user_list,
 	.get	= squashfs_user_get
+=======
+static int squashfs_xattr_handler_get(const struct xattr_handler *handler,
+				      struct dentry *unused,
+				      struct inode *inode,
+				      const char *name,
+				      void *buffer, size_t size)
+{
+	return squashfs_xattr_get(inode, handler->flags, name,
+		buffer, size);
+}
+
+/*
+ * User namespace support
+ */
+static const struct xattr_handler squashfs_xattr_user_handler = {
+	.prefix	= XATTR_USER_PREFIX,
+	.flags	= SQUASHFS_XATTR_USER,
+	.get	= squashfs_xattr_handler_get
+>>>>>>> v4.9.227
 };
 
 /*
  * Trusted namespace support
  */
+<<<<<<< HEAD
 static size_t squashfs_trusted_list(struct dentry *d, char *list,
 	size_t list_size, const char *name, size_t name_len, int type)
 {
@@ -261,17 +301,29 @@ static int squashfs_trusted_get(struct dentry *d, const char *name,
 
 	return squashfs_xattr_get(d->d_inode, SQUASHFS_XATTR_TRUSTED, name,
 		buffer, size);
+=======
+static bool squashfs_trusted_xattr_handler_list(struct dentry *d)
+{
+	return capable(CAP_SYS_ADMIN);
+>>>>>>> v4.9.227
 }
 
 static const struct xattr_handler squashfs_xattr_trusted_handler = {
 	.prefix	= XATTR_TRUSTED_PREFIX,
+<<<<<<< HEAD
 	.list	= squashfs_trusted_list,
 	.get	= squashfs_trusted_get
+=======
+	.flags	= SQUASHFS_XATTR_TRUSTED,
+	.list	= squashfs_trusted_xattr_handler_list,
+	.get	= squashfs_xattr_handler_get
+>>>>>>> v4.9.227
 };
 
 /*
  * Security namespace support
  */
+<<<<<<< HEAD
 static size_t squashfs_security_list(struct dentry *d, char *list,
 	size_t list_size, const char *name, size_t name_len, int type)
 {
@@ -294,6 +346,12 @@ static const struct xattr_handler squashfs_xattr_security_handler = {
 	.prefix	= XATTR_SECURITY_PREFIX,
 	.list	= squashfs_security_list,
 	.get	= squashfs_security_get
+=======
+static const struct xattr_handler squashfs_xattr_security_handler = {
+	.prefix	= XATTR_SECURITY_PREFIX,
+	.flags	= SQUASHFS_XATTR_SECURITY,
+	.get	= squashfs_xattr_handler_get
+>>>>>>> v4.9.227
 };
 
 static const struct xattr_handler *squashfs_xattr_handler(int type)

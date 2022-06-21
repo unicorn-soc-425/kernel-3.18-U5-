@@ -1476,7 +1476,11 @@ void mthca_free_qp(struct mthca_dev *dev,
 
 /* Create UD header for an MLX send and build a data segment for it */
 static int build_mlx_header(struct mthca_dev *dev, struct mthca_sqp *sqp,
+<<<<<<< HEAD
 			    int ind, struct ib_send_wr *wr,
+=======
+			    int ind, struct ib_ud_wr *wr,
+>>>>>>> v4.9.227
 			    struct mthca_mlx_seg *mlx,
 			    struct mthca_data_seg *data)
 {
@@ -1485,10 +1489,17 @@ static int build_mlx_header(struct mthca_dev *dev, struct mthca_sqp *sqp,
 	u16 pkey;
 
 	ib_ud_header_init(256, /* assume a MAD */ 1, 0, 0,
+<<<<<<< HEAD
 			  mthca_ah_grh_present(to_mah(wr->wr.ud.ah)), 0,
 			  &sqp->ud_header);
 
 	err = mthca_read_ah(dev, to_mah(wr->wr.ud.ah), &sqp->ud_header);
+=======
+			  mthca_ah_grh_present(to_mah(wr->ah)), 0, 0, 0,
+			  &sqp->ud_header);
+
+	err = mthca_read_ah(dev, to_mah(wr->ah), &sqp->ud_header);
+>>>>>>> v4.9.227
 	if (err)
 		return err;
 	mlx->flags &= ~cpu_to_be32(MTHCA_NEXT_SOLICIT | 1);
@@ -1499,7 +1510,11 @@ static int build_mlx_header(struct mthca_dev *dev, struct mthca_sqp *sqp,
 	mlx->rlid = sqp->ud_header.lrh.destination_lid;
 	mlx->vcrc = 0;
 
+<<<<<<< HEAD
 	switch (wr->opcode) {
+=======
+	switch (wr->wr.opcode) {
+>>>>>>> v4.9.227
 	case IB_WR_SEND:
 		sqp->ud_header.bth.opcode = IB_OPCODE_UD_SEND_ONLY;
 		sqp->ud_header.immediate_present = 0;
@@ -1507,7 +1522,11 @@ static int build_mlx_header(struct mthca_dev *dev, struct mthca_sqp *sqp,
 	case IB_WR_SEND_WITH_IMM:
 		sqp->ud_header.bth.opcode = IB_OPCODE_UD_SEND_ONLY_WITH_IMMEDIATE;
 		sqp->ud_header.immediate_present = 1;
+<<<<<<< HEAD
 		sqp->ud_header.immediate_data = wr->ex.imm_data;
+=======
+		sqp->ud_header.immediate_data = wr->wr.ex.imm_data;
+>>>>>>> v4.9.227
 		break;
 	default:
 		return -EINVAL;
@@ -1516,18 +1535,31 @@ static int build_mlx_header(struct mthca_dev *dev, struct mthca_sqp *sqp,
 	sqp->ud_header.lrh.virtual_lane    = !sqp->qp.ibqp.qp_num ? 15 : 0;
 	if (sqp->ud_header.lrh.destination_lid == IB_LID_PERMISSIVE)
 		sqp->ud_header.lrh.source_lid = IB_LID_PERMISSIVE;
+<<<<<<< HEAD
 	sqp->ud_header.bth.solicited_event = !!(wr->send_flags & IB_SEND_SOLICITED);
+=======
+	sqp->ud_header.bth.solicited_event = !!(wr->wr.send_flags & IB_SEND_SOLICITED);
+>>>>>>> v4.9.227
 	if (!sqp->qp.ibqp.qp_num)
 		ib_get_cached_pkey(&dev->ib_dev, sqp->qp.port,
 				   sqp->pkey_index, &pkey);
 	else
 		ib_get_cached_pkey(&dev->ib_dev, sqp->qp.port,
+<<<<<<< HEAD
 				   wr->wr.ud.pkey_index, &pkey);
 	sqp->ud_header.bth.pkey = cpu_to_be16(pkey);
 	sqp->ud_header.bth.destination_qpn = cpu_to_be32(wr->wr.ud.remote_qpn);
 	sqp->ud_header.bth.psn = cpu_to_be32((sqp->send_psn++) & ((1 << 24) - 1));
 	sqp->ud_header.deth.qkey = cpu_to_be32(wr->wr.ud.remote_qkey & 0x80000000 ?
 					       sqp->qkey : wr->wr.ud.remote_qkey);
+=======
+				   wr->pkey_index, &pkey);
+	sqp->ud_header.bth.pkey = cpu_to_be16(pkey);
+	sqp->ud_header.bth.destination_qpn = cpu_to_be32(wr->remote_qpn);
+	sqp->ud_header.bth.psn = cpu_to_be32((sqp->send_psn++) & ((1 << 24) - 1));
+	sqp->ud_header.deth.qkey = cpu_to_be32(wr->remote_qkey & 0x80000000 ?
+					       sqp->qkey : wr->remote_qkey);
+>>>>>>> v4.9.227
 	sqp->ud_header.deth.source_qpn = cpu_to_be32(sqp->qp.ibqp.qp_num);
 
 	header_size = ib_ud_header_pack(&sqp->ud_header,
@@ -1569,6 +1601,7 @@ static __always_inline void set_raddr_seg(struct mthca_raddr_seg *rseg,
 }
 
 static __always_inline void set_atomic_seg(struct mthca_atomic_seg *aseg,
+<<<<<<< HEAD
 					   struct ib_send_wr *wr)
 {
 	if (wr->opcode == IB_WR_ATOMIC_CMP_AND_SWP) {
@@ -1576,27 +1609,53 @@ static __always_inline void set_atomic_seg(struct mthca_atomic_seg *aseg,
 		aseg->compare  = cpu_to_be64(wr->wr.atomic.compare_add);
 	} else {
 		aseg->swap_add = cpu_to_be64(wr->wr.atomic.compare_add);
+=======
+					   struct ib_atomic_wr *wr)
+{
+	if (wr->wr.opcode == IB_WR_ATOMIC_CMP_AND_SWP) {
+		aseg->swap_add = cpu_to_be64(wr->swap);
+		aseg->compare  = cpu_to_be64(wr->compare_add);
+	} else {
+		aseg->swap_add = cpu_to_be64(wr->compare_add);
+>>>>>>> v4.9.227
 		aseg->compare  = 0;
 	}
 
 }
 
 static void set_tavor_ud_seg(struct mthca_tavor_ud_seg *useg,
+<<<<<<< HEAD
 			     struct ib_send_wr *wr)
 {
 	useg->lkey    = cpu_to_be32(to_mah(wr->wr.ud.ah)->key);
 	useg->av_addr =	cpu_to_be64(to_mah(wr->wr.ud.ah)->avdma);
 	useg->dqpn    =	cpu_to_be32(wr->wr.ud.remote_qpn);
 	useg->qkey    =	cpu_to_be32(wr->wr.ud.remote_qkey);
+=======
+			     struct ib_ud_wr *wr)
+{
+	useg->lkey    = cpu_to_be32(to_mah(wr->ah)->key);
+	useg->av_addr =	cpu_to_be64(to_mah(wr->ah)->avdma);
+	useg->dqpn    =	cpu_to_be32(wr->remote_qpn);
+	useg->qkey    =	cpu_to_be32(wr->remote_qkey);
+>>>>>>> v4.9.227
 
 }
 
 static void set_arbel_ud_seg(struct mthca_arbel_ud_seg *useg,
+<<<<<<< HEAD
 			     struct ib_send_wr *wr)
 {
 	memcpy(useg->av, to_mah(wr->wr.ud.ah)->av, MTHCA_AV_SIZE);
 	useg->dqpn = cpu_to_be32(wr->wr.ud.remote_qpn);
 	useg->qkey = cpu_to_be32(wr->wr.ud.remote_qkey);
+=======
+			     struct ib_ud_wr *wr)
+{
+	memcpy(useg->av, to_mah(wr->ah)->av, MTHCA_AV_SIZE);
+	useg->dqpn = cpu_to_be32(wr->remote_qpn);
+	useg->qkey = cpu_to_be32(wr->remote_qkey);
+>>>>>>> v4.9.227
 }
 
 int mthca_tavor_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
@@ -1664,11 +1723,19 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 			switch (wr->opcode) {
 			case IB_WR_ATOMIC_CMP_AND_SWP:
 			case IB_WR_ATOMIC_FETCH_AND_ADD:
+<<<<<<< HEAD
 				set_raddr_seg(wqe, wr->wr.atomic.remote_addr,
 					      wr->wr.atomic.rkey);
 				wqe += sizeof (struct mthca_raddr_seg);
 
 				set_atomic_seg(wqe, wr);
+=======
+				set_raddr_seg(wqe, atomic_wr(wr)->remote_addr,
+					      atomic_wr(wr)->rkey);
+				wqe += sizeof (struct mthca_raddr_seg);
+
+				set_atomic_seg(wqe, atomic_wr(wr));
+>>>>>>> v4.9.227
 				wqe += sizeof (struct mthca_atomic_seg);
 				size += (sizeof (struct mthca_raddr_seg) +
 					 sizeof (struct mthca_atomic_seg)) / 16;
@@ -1677,8 +1744,13 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 			case IB_WR_RDMA_WRITE:
 			case IB_WR_RDMA_WRITE_WITH_IMM:
 			case IB_WR_RDMA_READ:
+<<<<<<< HEAD
 				set_raddr_seg(wqe, wr->wr.rdma.remote_addr,
 					      wr->wr.rdma.rkey);
+=======
+				set_raddr_seg(wqe, rdma_wr(wr)->remote_addr,
+					      rdma_wr(wr)->rkey);
+>>>>>>> v4.9.227
 				wqe  += sizeof (struct mthca_raddr_seg);
 				size += sizeof (struct mthca_raddr_seg) / 16;
 				break;
@@ -1694,8 +1766,13 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 			switch (wr->opcode) {
 			case IB_WR_RDMA_WRITE:
 			case IB_WR_RDMA_WRITE_WITH_IMM:
+<<<<<<< HEAD
 				set_raddr_seg(wqe, wr->wr.rdma.remote_addr,
 					      wr->wr.rdma.rkey);
+=======
+				set_raddr_seg(wqe, rdma_wr(wr)->remote_addr,
+					      rdma_wr(wr)->rkey);
+>>>>>>> v4.9.227
 				wqe  += sizeof (struct mthca_raddr_seg);
 				size += sizeof (struct mthca_raddr_seg) / 16;
 				break;
@@ -1708,13 +1785,21 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 			break;
 
 		case UD:
+<<<<<<< HEAD
 			set_tavor_ud_seg(wqe, wr);
+=======
+			set_tavor_ud_seg(wqe, ud_wr(wr));
+>>>>>>> v4.9.227
 			wqe  += sizeof (struct mthca_tavor_ud_seg);
 			size += sizeof (struct mthca_tavor_ud_seg) / 16;
 			break;
 
 		case MLX:
+<<<<<<< HEAD
 			err = build_mlx_header(dev, to_msqp(qp), ind, wr,
+=======
+			err = build_mlx_header(dev, to_msqp(qp), ind, ud_wr(wr),
+>>>>>>> v4.9.227
 					       wqe - sizeof (struct mthca_next_seg),
 					       wqe);
 			if (err) {
@@ -2005,11 +2090,19 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 			switch (wr->opcode) {
 			case IB_WR_ATOMIC_CMP_AND_SWP:
 			case IB_WR_ATOMIC_FETCH_AND_ADD:
+<<<<<<< HEAD
 				set_raddr_seg(wqe, wr->wr.atomic.remote_addr,
 					      wr->wr.atomic.rkey);
 				wqe += sizeof (struct mthca_raddr_seg);
 
 				set_atomic_seg(wqe, wr);
+=======
+				set_raddr_seg(wqe, atomic_wr(wr)->remote_addr,
+					      atomic_wr(wr)->rkey);
+				wqe += sizeof (struct mthca_raddr_seg);
+
+				set_atomic_seg(wqe, atomic_wr(wr));
+>>>>>>> v4.9.227
 				wqe  += sizeof (struct mthca_atomic_seg);
 				size += (sizeof (struct mthca_raddr_seg) +
 					 sizeof (struct mthca_atomic_seg)) / 16;
@@ -2018,8 +2111,13 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 			case IB_WR_RDMA_READ:
 			case IB_WR_RDMA_WRITE:
 			case IB_WR_RDMA_WRITE_WITH_IMM:
+<<<<<<< HEAD
 				set_raddr_seg(wqe, wr->wr.rdma.remote_addr,
 					      wr->wr.rdma.rkey);
+=======
+				set_raddr_seg(wqe, rdma_wr(wr)->remote_addr,
+					      rdma_wr(wr)->rkey);
+>>>>>>> v4.9.227
 				wqe  += sizeof (struct mthca_raddr_seg);
 				size += sizeof (struct mthca_raddr_seg) / 16;
 				break;
@@ -2035,8 +2133,13 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 			switch (wr->opcode) {
 			case IB_WR_RDMA_WRITE:
 			case IB_WR_RDMA_WRITE_WITH_IMM:
+<<<<<<< HEAD
 				set_raddr_seg(wqe, wr->wr.rdma.remote_addr,
 					      wr->wr.rdma.rkey);
+=======
+				set_raddr_seg(wqe, rdma_wr(wr)->remote_addr,
+					      rdma_wr(wr)->rkey);
+>>>>>>> v4.9.227
 				wqe  += sizeof (struct mthca_raddr_seg);
 				size += sizeof (struct mthca_raddr_seg) / 16;
 				break;
@@ -2049,13 +2152,21 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 			break;
 
 		case UD:
+<<<<<<< HEAD
 			set_arbel_ud_seg(wqe, wr);
+=======
+			set_arbel_ud_seg(wqe, ud_wr(wr));
+>>>>>>> v4.9.227
 			wqe  += sizeof (struct mthca_arbel_ud_seg);
 			size += sizeof (struct mthca_arbel_ud_seg) / 16;
 			break;
 
 		case MLX:
+<<<<<<< HEAD
 			err = build_mlx_header(dev, to_msqp(qp), ind, wr,
+=======
+			err = build_mlx_header(dev, to_msqp(qp), ind, ud_wr(wr),
+>>>>>>> v4.9.227
 					       wqe - sizeof (struct mthca_next_seg),
 					       wqe);
 			if (err) {

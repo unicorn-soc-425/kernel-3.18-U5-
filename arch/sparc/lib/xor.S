@@ -13,6 +13,10 @@
 #include <asm/asi.h>
 #include <asm/dcu.h>
 #include <asm/spitfire.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 /*
  *	Requirements:
@@ -90,6 +94,10 @@ ENTRY(xor_vis_2)
 	retl
 	  wr	%g0, 0, %fprs
 ENDPROC(xor_vis_2)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(xor_vis_2)
+>>>>>>> v4.9.227
 
 ENTRY(xor_vis_3)
 	rd	%fprs, %o5
@@ -156,6 +164,10 @@ ENTRY(xor_vis_3)
 	retl
 	 wr	%g0, 0, %fprs
 ENDPROC(xor_vis_3)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(xor_vis_3)
+>>>>>>> v4.9.227
 
 ENTRY(xor_vis_4)
 	rd	%fprs, %o5
@@ -241,6 +253,10 @@ ENTRY(xor_vis_4)
 	retl
 	 wr	%g0, 0, %fprs
 ENDPROC(xor_vis_4)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(xor_vis_4)
+>>>>>>> v4.9.227
 
 ENTRY(xor_vis_5)
 	save	%sp, -192, %sp
@@ -347,6 +363,10 @@ ENTRY(xor_vis_5)
 	ret
 	 restore
 ENDPROC(xor_vis_5)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(xor_vis_5)
+>>>>>>> v4.9.227
 
 	/* Niagara versions. */
 ENTRY(xor_niagara_2) /* %o0=bytes, %o1=dest, %o2=src */
@@ -393,6 +413,10 @@ ENTRY(xor_niagara_2) /* %o0=bytes, %o1=dest, %o2=src */
 	ret
 	 restore
 ENDPROC(xor_niagara_2)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(xor_niagara_2)
+>>>>>>> v4.9.227
 
 ENTRY(xor_niagara_3) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2 */
 	save		%sp, -192, %sp
@@ -454,6 +478,10 @@ ENTRY(xor_niagara_3) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2 */
 	ret
 	 restore
 ENDPROC(xor_niagara_3)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(xor_niagara_3)
+>>>>>>> v4.9.227
 
 ENTRY(xor_niagara_4) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2, %o4=src3 */
 	save		%sp, -192, %sp
@@ -536,6 +564,10 @@ ENTRY(xor_niagara_4) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2, %o4=src3 */
 	ret
 	 restore
 ENDPROC(xor_niagara_4)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(xor_niagara_4)
+>>>>>>> v4.9.227
 
 ENTRY(xor_niagara_5) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2, %o4=src3, %o5=src4 */
 	save		%sp, -192, %sp
@@ -634,3 +666,7 @@ ENTRY(xor_niagara_5) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2, %o4=src3, %o5=s
 	ret
 	 restore
 ENDPROC(xor_niagara_5)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(xor_niagara_5)
+>>>>>>> v4.9.227

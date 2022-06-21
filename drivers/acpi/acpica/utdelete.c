@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -209,6 +213,13 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 			acpi_ut_delete_object_desc(object->method.mutex);
 			object->method.mutex = NULL;
 		}
+<<<<<<< HEAD
+=======
+
+		if (object->method.node) {
+			object->method.node = NULL;
+		}
+>>>>>>> v4.9.227
 		break;
 
 	case ACPI_TYPE_REGION:
@@ -512,8 +523,13 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 		}
 
 		/*
+<<<<<<< HEAD
 		 * All sub-objects must have their reference count incremented also.
 		 * Different object types have different subobjects.
+=======
+		 * All sub-objects must have their reference count incremented
+		 * also. Different object types have different subobjects.
+>>>>>>> v4.9.227
 		 */
 		switch (object->common.type) {
 		case ACPI_TYPE_DEVICE:

@@ -37,7 +37,10 @@ struct mc13783_ts_priv {
 	struct input_dev *idev;
 	struct mc13xxx *mc13xxx;
 	struct delayed_work work;
+<<<<<<< HEAD
 	struct workqueue_struct *workq;
+=======
+>>>>>>> v4.9.227
 	unsigned int sample[4];
 	struct mc13xxx_ts_platform_data *touch;
 };
@@ -54,7 +57,11 @@ static irqreturn_t mc13783_ts_handler(int irq, void *data)
 	 * be rescheduled for immediate execution here. However the rearm
 	 * delay is HZ / 50 which is acceptable.
 	 */
+<<<<<<< HEAD
 	queue_delayed_work(priv->workq, &priv->work, 0);
+=======
+	schedule_delayed_work(&priv->work, 0);
+>>>>>>> v4.9.227
 
 	return IRQ_HANDLED;
 }
@@ -106,16 +113,29 @@ static void mc13783_ts_report_sample(struct mc13783_ts_priv *priv)
 
 			dev_dbg(&idev->dev, "report (%d, %d, %d)\n",
 					x1, y1, 0x1000 - cr0);
+<<<<<<< HEAD
 			queue_delayed_work(priv->workq, &priv->work, HZ / 50);
 		} else
 			dev_dbg(&idev->dev, "report release\n");
+=======
+			schedule_delayed_work(&priv->work, HZ / 50);
+		} else {
+			dev_dbg(&idev->dev, "report release\n");
+		}
+>>>>>>> v4.9.227
 
 		input_report_abs(idev, ABS_PRESSURE,
 				cr0 ? 0x1000 - cr0 : cr0);
 		input_report_key(idev, BTN_TOUCH, cr0);
 		input_sync(idev);
+<<<<<<< HEAD
 	} else
 		dev_dbg(&idev->dev, "discard event\n");
+=======
+	} else {
+		dev_dbg(&idev->dev, "discard event\n");
+	}
+>>>>>>> v4.9.227
 }
 
 static void mc13783_ts_work(struct work_struct *work)
@@ -189,6 +209,7 @@ static int __init mc13783_ts_probe(struct platform_device *pdev)
 		goto err_free_mem;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * We need separate workqueue because mc13783_adc_do_conversion
 	 * uses keventd and thus would deadlock.
@@ -197,6 +218,8 @@ static int __init mc13783_ts_probe(struct platform_device *pdev)
 	if (!priv->workq)
 		goto err_free_mem;
 
+=======
+>>>>>>> v4.9.227
 	idev->name = MC13783_TS_NAME;
 	idev->dev.parent = &pdev->dev;
 
@@ -215,14 +238,21 @@ static int __init mc13783_ts_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(&pdev->dev,
 			"register input device failed with %d\n", ret);
+<<<<<<< HEAD
 		goto err_destroy_wq;
+=======
+		goto err_free_mem;
+>>>>>>> v4.9.227
 	}
 
 	platform_set_drvdata(pdev, priv);
 	return 0;
 
+<<<<<<< HEAD
 err_destroy_wq:
 	destroy_workqueue(priv->workq);
+=======
+>>>>>>> v4.9.227
 err_free_mem:
 	input_free_device(idev);
 	kfree(priv);
@@ -233,7 +263,10 @@ static int mc13783_ts_remove(struct platform_device *pdev)
 {
 	struct mc13783_ts_priv *priv = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	destroy_workqueue(priv->workq);
+=======
+>>>>>>> v4.9.227
 	input_unregister_device(priv->idev);
 	kfree(priv);
 
@@ -243,7 +276,10 @@ static int mc13783_ts_remove(struct platform_device *pdev)
 static struct platform_driver mc13783_ts_driver = {
 	.remove		= mc13783_ts_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= MC13783_TS_NAME,
 	},
 };

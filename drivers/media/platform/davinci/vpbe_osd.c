@@ -1585,7 +1585,10 @@ static struct platform_driver osd_driver = {
 	.remove		= osd_remove,
 	.driver		= {
 		.name	= MODULE_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.id_table	= vpbe_osd_devtype
 };

@@ -35,10 +35,13 @@
 #define PMU_TDC0_OTF_CAL_MASK		(0x1 << 30)
 #define PMU_TDC0_START_CAL_MASK		(0x1 << 25)
 
+<<<<<<< HEAD
 #define A375_Z1_CAL_RESET_LSB		0x8011e214
 #define A375_Z1_CAL_RESET_MSB		0x30a88019
 #define A375_Z1_WORKAROUND_BIT		BIT(9)
 
+=======
+>>>>>>> v4.9.227
 #define A375_UNIT_CONTROL_SHIFT		27
 #define A375_UNIT_CONTROL_MASK		0x7
 #define A375_READOUT_INVERT		BIT(15)
@@ -124,6 +127,7 @@ static void armada375_init_sensor(struct platform_device *pdev,
 				  struct armada_thermal_priv *priv)
 {
 	unsigned long reg;
+<<<<<<< HEAD
 	bool quirk_needed =
 		!!of_device_is_compatible(pdev->dev.of_node,
 					  "marvell,armada375-z1-thermal");
@@ -133,15 +137,20 @@ static void armada375_init_sensor(struct platform_device *pdev,
 		writel(A375_Z1_CAL_RESET_LSB, priv->control);
 		writel(A375_Z1_CAL_RESET_MSB, priv->control + 0x4);
 	}
+=======
+>>>>>>> v4.9.227
 
 	reg = readl(priv->control + 4);
 	reg &= ~(A375_UNIT_CONTROL_MASK << A375_UNIT_CONTROL_SHIFT);
 	reg &= ~A375_READOUT_INVERT;
 	reg &= ~A375_HW_RESETn;
 
+<<<<<<< HEAD
 	if (quirk_needed)
 		reg |= A375_Z1_WORKAROUND_BIT;
 
+=======
+>>>>>>> v4.9.227
 	writel(reg, priv->control + 4);
 	mdelay(20);
 
@@ -171,7 +180,11 @@ static bool armada_is_valid(struct armada_thermal_priv *priv)
 }
 
 static int armada_get_temp(struct thermal_zone_device *thermal,
+<<<<<<< HEAD
 			  unsigned long *temp)
+=======
+			  int *temp)
+>>>>>>> v4.9.227
 {
 	struct armada_thermal_priv *priv = thermal->devdata;
 	unsigned long reg;
@@ -240,9 +253,15 @@ static const struct armada_thermal_data armada380_data = {
 	.is_valid_shift = 10,
 	.temp_shift = 0,
 	.temp_mask = 0x3ff,
+<<<<<<< HEAD
 	.coef_b = 2931108200UL,
 	.coef_m = 5000000UL,
 	.coef_div = 10502,
+=======
+	.coef_b = 1172499100UL,
+	.coef_m = 2000096UL,
+	.coef_div = 4201,
+>>>>>>> v4.9.227
 	.inverted = true,
 };
 
@@ -260,10 +279,13 @@ static const struct of_device_id armada_thermal_id_table[] = {
 		.data       = &armada375_data,
 	},
 	{
+<<<<<<< HEAD
 		.compatible = "marvell,armada375-z1-thermal",
 		.data       = &armada375_data,
 	},
 	{
+=======
+>>>>>>> v4.9.227
 		.compatible = "marvell,armada380-thermal",
 		.data       = &armada380_data,
 	},
@@ -329,7 +351,10 @@ static struct platform_driver armada_thermal_driver = {
 	.remove = armada_thermal_exit,
 	.driver = {
 		.name = "armada_thermal",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = armada_thermal_id_table,
 	},
 };

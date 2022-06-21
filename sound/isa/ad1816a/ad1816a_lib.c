@@ -22,11 +22,18 @@
 #include <linux/interrupt.h>
 #include <linux/slab.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/tlv.h>
 #include <sound/ad1816a.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/dma.h>
 
 static inline int snd_ad1816a_busy_wait(struct snd_ad1816a *chip)
@@ -675,7 +682,11 @@ static struct snd_pcm_ops snd_ad1816a_capture_ops = {
 	.pointer =	snd_ad1816a_capture_pointer,
 };
 
+<<<<<<< HEAD
 int snd_ad1816a_pcm(struct snd_ad1816a *chip, int device, struct snd_pcm **rpcm)
+=======
+int snd_ad1816a_pcm(struct snd_ad1816a *chip, int device)
+>>>>>>> v4.9.227
 {
 	int error;
 	struct snd_pcm *pcm;
@@ -697,6 +708,7 @@ int snd_ad1816a_pcm(struct snd_ad1816a *chip, int device, struct snd_pcm **rpcm)
 					      64*1024, chip->dma1 > 3 || chip->dma2 > 3 ? 128*1024 : 64*1024);
 
 	chip->pcm = pcm;
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
 	return 0;
@@ -704,6 +716,12 @@ int snd_ad1816a_pcm(struct snd_ad1816a *chip, int device, struct snd_pcm **rpcm)
 
 int snd_ad1816a_timer(struct snd_ad1816a *chip, int device,
 		      struct snd_timer **rtimer)
+=======
+	return 0;
+}
+
+int snd_ad1816a_timer(struct snd_ad1816a *chip, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_timer *timer;
 	struct snd_timer_id tid;
@@ -720,8 +738,11 @@ int snd_ad1816a_timer(struct snd_ad1816a *chip, int device,
 	timer->private_data = chip;
 	chip->timer = timer;
 	timer->hw = snd_ad1816a_timer_table;
+<<<<<<< HEAD
 	if (rtimer)
 		*rtimer = timer;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -731,11 +752,16 @@ int snd_ad1816a_timer(struct snd_ad1816a *chip, int device,
 
 static int snd_ad1816a_info_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[8] = {
+=======
+	static const char * const texts[8] = {
+>>>>>>> v4.9.227
 		"Line", "Mix", "CD", "Synth", "Video",
 		"Mic", "Phone",
 	};
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 2;
 	uinfo->value.enumerated.items = 7;
@@ -743,6 +769,9 @@ static int snd_ad1816a_info_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_el
 		uinfo->value.enumerated.item = 6;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 2, 7, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_ad1816a_get_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)

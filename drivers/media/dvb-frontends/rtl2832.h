@@ -2,6 +2,10 @@
  * Realtek RTL2832 DVB-T demodulator driver
  *
  * Copyright (C) 2012 Thomas Mair <thomas.mair86@gmail.com>
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2012-2014 Antti Palosaari <crope@iki.fi>
+>>>>>>> v4.9.227
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -21,6 +25,7 @@
 #ifndef RTL2832_H
 #define RTL2832_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 #include <linux/dvb/frontend.h>
 
@@ -41,10 +46,33 @@ struct rtl2832_config {
 	 * tuner
 	 * XXX: This must be keep sync with dvb_usb_rtl28xxu demod driver.
 	 */
+=======
+#include <linux/dvb/frontend.h>
+#include <linux/i2c-mux.h>
+
+/**
+ * struct rtl2832_platform_data - Platform data for the rtl2832 driver
+ * @clk: Clock frequency (4000000, 16000000, 25000000, 28800000).
+ * @tuner: Used tuner model.
+ * @get_dvb_frontend: Get DVB frontend.
+ * @get_i2c_adapter: Get I2C adapter.
+ * @slave_ts_ctrl: Control slave TS interface.
+ * @pid_filter: Set PID to PID filter.
+ * @pid_filter_ctrl: Control PID filter.
+ */
+
+struct rtl2832_platform_data {
+	u32 clk;
+	/*
+	 * XXX: This list must be kept sync with dvb_usb_rtl28xxu USB IF driver.
+	 */
+#define RTL2832_TUNER_FC2580    0x21
+>>>>>>> v4.9.227
 #define RTL2832_TUNER_TUA9001   0x24
 #define RTL2832_TUNER_FC0012    0x26
 #define RTL2832_TUNER_E4000     0x27
 #define RTL2832_TUNER_FC0013    0x29
+<<<<<<< HEAD
 #define RTL2832_TUNER_R820T	0x2a
 #define RTL2832_TUNER_R828D	0x2b
 	u8 tuner;
@@ -92,4 +120,20 @@ static inline struct i2c_adapter *rtl2832_get_private_i2c_adapter(
 #endif
 
 
+=======
+#define RTL2832_TUNER_R820T     0x2a
+#define RTL2832_TUNER_R828D     0x2b
+#define RTL2832_TUNER_SI2157    0x2c
+	u8 tuner;
+
+	struct dvb_frontend* (*get_dvb_frontend)(struct i2c_client *);
+	struct i2c_adapter* (*get_i2c_adapter)(struct i2c_client *);
+	int (*slave_ts_ctrl)(struct i2c_client *, bool);
+	int (*pid_filter)(struct dvb_frontend *, u8, u16, int);
+	int (*pid_filter_ctrl)(struct dvb_frontend *, int);
+/* private: Register access for SDR module use only */
+	struct regmap *regmap;
+};
+
+>>>>>>> v4.9.227
 #endif /* RTL2832_H */

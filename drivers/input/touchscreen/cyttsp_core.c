@@ -30,9 +30,18 @@
 #include <linux/delay.h>
 #include <linux/input.h>
 #include <linux/input/mt.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
+=======
+#include <linux/input/touchscreen.h>
+#include <linux/gpio.h>
+#include <linux/interrupt.h>
+#include <linux/slab.h>
+#include <linux/property.h>
+#include <linux/gpio/consumer.h>
+>>>>>>> v4.9.227
 
 #include "cyttsp_core.h"
 
@@ -57,6 +66,10 @@
 #define CY_DELAY_DFLT			20 /* ms */
 #define CY_DELAY_MAX			500
 #define CY_ACT_DIST_DFLT		0xF8
+<<<<<<< HEAD
+=======
+#define CY_ACT_DIST_MASK		0x0F
+>>>>>>> v4.9.227
 #define CY_HNDSHK_BIT			0x80
 /* device mode bits */
 #define CY_OPERATE_MODE			0x00
@@ -120,7 +133,11 @@ static int ttsp_send_command(struct cyttsp *ts, u8 cmd)
 
 static int cyttsp_handshake(struct cyttsp *ts)
 {
+<<<<<<< HEAD
 	if (ts->pdata->use_hndshk)
+=======
+	if (ts->use_hndshk)
+>>>>>>> v4.9.227
 		return ttsp_send_command(ts,
 				ts->xy_data.hst_mode ^ CY_HNDSHK_BIT);
 
@@ -142,9 +159,15 @@ static int cyttsp_exit_bl_mode(struct cyttsp *ts)
 	u8 bl_cmd[sizeof(bl_command)];
 
 	memcpy(bl_cmd, bl_command, sizeof(bl_command));
+<<<<<<< HEAD
 	if (ts->pdata->bl_keys)
 		memcpy(&bl_cmd[sizeof(bl_command) - CY_NUM_BL_KEYS],
 			ts->pdata->bl_keys, CY_NUM_BL_KEYS);
+=======
+	if (ts->bl_keys)
+		memcpy(&bl_cmd[sizeof(bl_command) - CY_NUM_BL_KEYS],
+			ts->bl_keys, CY_NUM_BL_KEYS);
+>>>>>>> v4.9.227
 
 	error = ttsp_write_block_data(ts, CY_REG_BASE,
 				      sizeof(bl_cmd), bl_cmd);
@@ -217,6 +240,7 @@ static int cyttsp_set_sysinfo_regs(struct cyttsp *ts)
 {
 	int retval = 0;
 
+<<<<<<< HEAD
 	if (ts->pdata->act_intrvl != CY_ACT_INTRVL_DFLT ||
 	    ts->pdata->tch_tmout != CY_TCH_TMOUT_DFLT ||
 	    ts->pdata->lp_intrvl != CY_LP_INTRVL_DFLT) {
@@ -225,6 +249,16 @@ static int cyttsp_set_sysinfo_regs(struct cyttsp *ts)
 			ts->pdata->act_intrvl,
 			ts->pdata->tch_tmout,
 			ts->pdata->lp_intrvl
+=======
+	if (ts->act_intrvl != CY_ACT_INTRVL_DFLT ||
+	    ts->tch_tmout != CY_TCH_TMOUT_DFLT ||
+	    ts->lp_intrvl != CY_LP_INTRVL_DFLT) {
+
+		u8 intrvl_ray[] = {
+			ts->act_intrvl,
+			ts->tch_tmout,
+			ts->lp_intrvl
+>>>>>>> v4.9.227
 		};
 
 		/* set intrvl registers */
@@ -236,6 +270,19 @@ static int cyttsp_set_sysinfo_regs(struct cyttsp *ts)
 	return retval;
 }
 
+<<<<<<< HEAD
+=======
+static void cyttsp_hard_reset(struct cyttsp *ts)
+{
+	if (ts->reset_gpio) {
+		gpiod_set_value_cansleep(ts->reset_gpio, 1);
+		msleep(CY_DELAY_DFLT);
+		gpiod_set_value_cansleep(ts->reset_gpio, 0);
+		msleep(CY_DELAY_DFLT);
+	}
+}
+
+>>>>>>> v4.9.227
 static int cyttsp_soft_reset(struct cyttsp *ts)
 {
 	unsigned long timeout;
@@ -263,7 +310,11 @@ out:
 
 static int cyttsp_act_dist_setup(struct cyttsp *ts)
 {
+<<<<<<< HEAD
 	u8 act_dist_setup = ts->pdata->act_dist;
+=======
+	u8 act_dist_setup = ts->act_dist;
+>>>>>>> v4.9.227
 
 	/* Init gesture; active distance setup */
 	return ttsp_write_block_data(ts, CY_REG_ACT_DIST,
@@ -472,8 +523,12 @@ static int cyttsp_disable(struct cyttsp *ts)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int cyttsp_suspend(struct device *dev)
+=======
+static int __maybe_unused cyttsp_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct cyttsp *ts = dev_get_drvdata(dev);
 	int retval = 0;
@@ -491,7 +546,11 @@ static int cyttsp_suspend(struct device *dev)
 	return retval;
 }
 
+<<<<<<< HEAD
 static int cyttsp_resume(struct device *dev)
+=======
+static int __maybe_unused cyttsp_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct cyttsp *ts = dev_get_drvdata(dev);
 
@@ -507,8 +566,11 @@ static int cyttsp_resume(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> v4.9.227
 SIMPLE_DEV_PM_OPS(cyttsp_pm_ops, cyttsp_suspend, cyttsp_resume);
 EXPORT_SYMBOL_GPL(cyttsp_pm_ops);
 
@@ -531,14 +593,90 @@ static void cyttsp_close(struct input_dev *dev)
 		cyttsp_disable(ts);
 }
 
+<<<<<<< HEAD
 struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
 			    struct device *dev, int irq, size_t xfer_buf_size)
 {
 	const struct cyttsp_platform_data *pdata = dev_get_platdata(dev);
+=======
+static int cyttsp_parse_properties(struct cyttsp *ts)
+{
+	struct device *dev = ts->dev;
+	u32 dt_value;
+	int ret;
+
+	ts->bl_keys = devm_kzalloc(dev, CY_NUM_BL_KEYS, GFP_KERNEL);
+	if (!ts->bl_keys)
+		return -ENOMEM;
+
+	/* Set some default values */
+	ts->use_hndshk = false;
+	ts->act_dist = CY_ACT_DIST_DFLT;
+	ts->act_intrvl = CY_ACT_INTRVL_DFLT;
+	ts->tch_tmout = CY_TCH_TMOUT_DFLT;
+	ts->lp_intrvl = CY_LP_INTRVL_DFLT;
+
+	ret = device_property_read_u8_array(dev, "bootloader-key",
+					    ts->bl_keys, CY_NUM_BL_KEYS);
+	if (ret) {
+		dev_err(dev,
+			"bootloader-key property could not be retrieved\n");
+		return ret;
+	}
+
+	ts->use_hndshk = device_property_present(dev, "use-handshake");
+
+	if (!device_property_read_u32(dev, "active-distance", &dt_value)) {
+		if (dt_value > 15) {
+			dev_err(dev, "active-distance (%u) must be [0-15]\n",
+				dt_value);
+			return -EINVAL;
+		}
+		ts->act_dist &= ~CY_ACT_DIST_MASK;
+		ts->act_dist |= dt_value;
+	}
+
+	if (!device_property_read_u32(dev, "active-interval-ms", &dt_value)) {
+		if (dt_value > 255) {
+			dev_err(dev, "active-interval-ms (%u) must be [0-255]\n",
+				dt_value);
+			return -EINVAL;
+		}
+		ts->act_intrvl = dt_value;
+	}
+
+	if (!device_property_read_u32(dev, "lowpower-interval-ms", &dt_value)) {
+		if (dt_value > 2550) {
+			dev_err(dev, "lowpower-interval-ms (%u) must be [0-2550]\n",
+				dt_value);
+			return -EINVAL;
+		}
+		/* Register value is expressed in 0.01s / bit */
+		ts->lp_intrvl = dt_value / 10;
+	}
+
+	if (!device_property_read_u32(dev, "touch-timeout-ms", &dt_value)) {
+		if (dt_value > 2550) {
+			dev_err(dev, "touch-timeout-ms (%u) must be [0-2550]\n",
+				dt_value);
+			return -EINVAL;
+		}
+		/* Register value is expressed in 0.01s / bit */
+		ts->tch_tmout = dt_value / 10;
+	}
+
+	return 0;
+}
+
+struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
+			    struct device *dev, int irq, size_t xfer_buf_size)
+{
+>>>>>>> v4.9.227
 	struct cyttsp *ts;
 	struct input_dev *input_dev;
 	int error;
 
+<<<<<<< HEAD
 	if (!pdata || !pdata->name || irq <= 0) {
 		error = -EINVAL;
 		goto err_out;
@@ -570,6 +708,36 @@ struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
 	}
 
 	input_dev->name = pdata->name;
+=======
+	ts = devm_kzalloc(dev, sizeof(*ts) + xfer_buf_size, GFP_KERNEL);
+	if (!ts)
+		return ERR_PTR(-ENOMEM);
+
+	input_dev = devm_input_allocate_device(dev);
+	if (!input_dev)
+		return ERR_PTR(-ENOMEM);
+
+	ts->dev = dev;
+	ts->input = input_dev;
+	ts->bus_ops = bus_ops;
+	ts->irq = irq;
+
+	ts->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+	if (IS_ERR(ts->reset_gpio)) {
+		error = PTR_ERR(ts->reset_gpio);
+		dev_err(dev, "Failed to request reset gpio, error %d\n", error);
+		return ERR_PTR(error);
+	}
+
+	error = cyttsp_parse_properties(ts);
+	if (error)
+		return ERR_PTR(error);
+
+	init_completion(&ts->bl_ready);
+	snprintf(ts->phys, sizeof(ts->phys), "%s/input0", dev_name(dev));
+
+	input_dev->name = "Cypress TTSP TouchScreen";
+>>>>>>> v4.9.227
 	input_dev->phys = ts->phys;
 	input_dev->id.bustype = bus_ops->bustype;
 	input_dev->dev.parent = ts->dev;
@@ -579,6 +747,7 @@ struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
 
 	input_set_drvdata(input_dev, ts);
 
+<<<<<<< HEAD
 	__set_bit(EV_ABS, input_dev->evbit);
 	input_set_abs_params(input_dev, ABS_MT_POSITION_X,
 			     0, pdata->maxx, 0, 0);
@@ -596,18 +765,46 @@ struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
 		dev_err(ts->dev, "failed to request IRQ %d, err: %d\n",
 			ts->irq, error);
 		goto err_platform_exit;
+=======
+	input_set_capability(input_dev, EV_ABS, ABS_MT_POSITION_X);
+	input_set_capability(input_dev, EV_ABS, ABS_MT_POSITION_Y);
+	touchscreen_parse_properties(input_dev, true, NULL);
+
+	error = input_mt_init_slots(input_dev, CY_MAX_ID, 0);
+	if (error) {
+		dev_err(dev, "Unable to init MT slots.\n");
+		return ERR_PTR(error);
+	}
+
+	error = devm_request_threaded_irq(dev, ts->irq, NULL, cyttsp_irq,
+					  IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+					  "cyttsp", ts);
+	if (error) {
+		dev_err(ts->dev, "failed to request IRQ %d, err: %d\n",
+			ts->irq, error);
+		return ERR_PTR(error);
+>>>>>>> v4.9.227
 	}
 
 	disable_irq(ts->irq);
 
+<<<<<<< HEAD
 	error = cyttsp_power_on(ts);
 	if (error)
 		goto err_free_irq;
+=======
+	cyttsp_hard_reset(ts);
+
+	error = cyttsp_power_on(ts);
+	if (error)
+		return ERR_PTR(error);
+>>>>>>> v4.9.227
 
 	error = input_register_device(input_dev);
 	if (error) {
 		dev_err(ts->dev, "failed to register input device: %d\n",
 			error);
+<<<<<<< HEAD
 		goto err_free_irq;
 	}
 
@@ -636,6 +833,15 @@ void cyttsp_remove(struct cyttsp *ts)
 }
 EXPORT_SYMBOL_GPL(cyttsp_remove);
 
+=======
+		return ERR_PTR(error);
+	}
+
+	return ts;
+}
+EXPORT_SYMBOL_GPL(cyttsp_probe);
+
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Cypress TrueTouch(R) Standard touchscreen driver core");
 MODULE_AUTHOR("Cypress");

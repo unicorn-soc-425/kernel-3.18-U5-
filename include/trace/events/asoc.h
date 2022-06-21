@@ -8,6 +8,10 @@
 #include <linux/tracepoint.h>
 
 #define DAPM_DIRECT "(direct)"
+<<<<<<< HEAD
+=======
+#define DAPM_ARROW(dir) (((dir) == SND_SOC_DAPM_DIR_OUT) ? "->" : "<-")
+>>>>>>> v4.9.227
 
 struct snd_soc_jack;
 struct snd_soc_codec;
@@ -152,24 +156,42 @@ TRACE_EVENT(snd_soc_dapm_walk_done,
 		  (int)__entry->path_checks, (int)__entry->neighbour_checks)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(snd_soc_dapm_output_path,
 
 	TP_PROTO(struct snd_soc_dapm_widget *widget,
 		struct snd_soc_dapm_path *path),
 
 	TP_ARGS(widget, path),
+=======
+TRACE_EVENT(snd_soc_dapm_path,
+
+	TP_PROTO(struct snd_soc_dapm_widget *widget,
+		enum snd_soc_dapm_direction dir,
+		struct snd_soc_dapm_path *path),
+
+	TP_ARGS(widget, dir, path),
+>>>>>>> v4.9.227
 
 	TP_STRUCT__entry(
 		__string(	wname,	widget->name		)
 		__string(	pname,	path->name ? path->name : DAPM_DIRECT)
+<<<<<<< HEAD
 		__string(	psname,	path->sink->name	)
 		__field(	int,	path_sink		)
 		__field(	int,	path_connect		)
+=======
+		__string(	pnname,	path->node[dir]->name	)
+		__field(	int,	path_node		)
+		__field(	int,	path_connect		)
+		__field(	int,	path_dir		)
+>>>>>>> v4.9.227
 	),
 
 	TP_fast_assign(
 		__assign_str(wname, widget->name);
 		__assign_str(pname, path->name ? path->name : DAPM_DIRECT);
+<<<<<<< HEAD
 		__assign_str(psname, path->sink->name);
 		__entry->path_connect = path->connect;
 		__entry->path_sink = (long)path->sink;
@@ -208,6 +230,20 @@ TRACE_EVENT(snd_soc_dapm_input_path,
 		(int) __entry->path_source &&
 		(int) __entry->path_connect ? '*' : ' ',
 		__get_str(wname), __get_str(pname), __get_str(psname))
+=======
+		__assign_str(pnname, path->node[dir]->name);
+		__entry->path_connect = path->connect;
+		__entry->path_node = (long)path->node[dir];
+		__entry->path_dir = dir;
+	),
+
+	TP_printk("%c%s %s %s %s %s",
+		(int) __entry->path_node &&
+		(int) __entry->path_connect ? '*' : ' ',
+		__get_str(wname), DAPM_ARROW(__entry->path_dir),
+		__get_str(pname), DAPM_ARROW(__entry->path_dir),
+		__get_str(pnname))
+>>>>>>> v4.9.227
 );
 
 TRACE_EVENT(snd_soc_dapm_connected,
@@ -254,13 +290,21 @@ TRACE_EVENT(snd_soc_jack_report,
 	TP_ARGS(jack, mask, val),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__string(	name,		jack->jack->name	)
+=======
+		__string(	name,		jack->jack->id		)
+>>>>>>> v4.9.227
 		__field(	int,		mask			)
 		__field(	int,		val			)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__assign_str(name, jack->jack->name);
+=======
+		__assign_str(name, jack->jack->id);
+>>>>>>> v4.9.227
 		__entry->mask = mask;
 		__entry->val = val;
 	),
@@ -276,18 +320,27 @@ TRACE_EVENT(snd_soc_jack_notify,
 	TP_ARGS(jack, val),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__string(	name,		jack->jack->name	)
+=======
+		__string(	name,		jack->jack->id		)
+>>>>>>> v4.9.227
 		__field(	int,		val			)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__assign_str(name, jack->jack->name);
+=======
+		__assign_str(name, jack->jack->id);
+>>>>>>> v4.9.227
 		__entry->val = val;
 	),
 
 	TP_printk("jack=%s %x", __get_str(name), (int)__entry->val)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(snd_soc_cache_sync,
 
 	TP_PROTO(struct snd_soc_codec *codec, const char *type,
@@ -313,6 +366,8 @@ TRACE_EVENT(snd_soc_cache_sync,
 		  (int)__entry->id, __get_str(type), __get_str(status))
 );
 
+=======
+>>>>>>> v4.9.227
 #endif /* _TRACE_ASOC_H */
 
 /* This part must be outside protection */

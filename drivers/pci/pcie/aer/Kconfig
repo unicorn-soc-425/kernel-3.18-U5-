@@ -3,7 +3,11 @@
 #
 
 config PCIEAER
+<<<<<<< HEAD
 	boolean "Root Port Advanced Error Reporting support"
+=======
+	bool "Root Port Advanced Error Reporting support"
+>>>>>>> v4.9.227
 	depends on PCIEPORTBUS
 	select RAS
 	default y

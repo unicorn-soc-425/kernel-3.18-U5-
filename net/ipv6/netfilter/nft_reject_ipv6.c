@@ -19,6 +19,7 @@
 #include <net/netfilter/nft_reject.h>
 #include <net/netfilter/ipv6/nf_reject.h>
 
+<<<<<<< HEAD
 void nft_reject_ipv6_eval(const struct nft_expr *expr,
 			  struct nft_data data[NFT_REG_MAX + 1],
 			  const struct nft_pktinfo *pkt)
@@ -33,14 +34,34 @@ void nft_reject_ipv6_eval(const struct nft_expr *expr,
 		break;
 	case NFT_REJECT_TCP_RST:
 		nf_send_reset6(net, pkt->skb, pkt->ops->hooknum);
+=======
+static void nft_reject_ipv6_eval(const struct nft_expr *expr,
+				 struct nft_regs *regs,
+				 const struct nft_pktinfo *pkt)
+{
+	struct nft_reject *priv = nft_expr_priv(expr);
+
+	switch (priv->type) {
+	case NFT_REJECT_ICMP_UNREACH:
+		nf_send_unreach6(pkt->net, pkt->skb, priv->icmp_code,
+				 pkt->hook);
+		break;
+	case NFT_REJECT_TCP_RST:
+		nf_send_reset6(pkt->net, pkt->skb, pkt->hook);
+>>>>>>> v4.9.227
 		break;
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 	data[NFT_REG_VERDICT].verdict = NF_DROP;
 }
 EXPORT_SYMBOL_GPL(nft_reject_ipv6_eval);
+=======
+	regs->verdict.code = NF_DROP;
+}
+>>>>>>> v4.9.227
 
 static struct nft_expr_type nft_reject_ipv6_type;
 static const struct nft_expr_ops nft_reject_ipv6_ops = {
@@ -49,6 +70,10 @@ static const struct nft_expr_ops nft_reject_ipv6_ops = {
 	.eval		= nft_reject_ipv6_eval,
 	.init		= nft_reject_init,
 	.dump		= nft_reject_dump,
+<<<<<<< HEAD
+=======
+	.validate	= nft_reject_validate,
+>>>>>>> v4.9.227
 };
 
 static struct nft_expr_type nft_reject_ipv6_type __read_mostly = {

@@ -34,6 +34,12 @@ DECLARE_EXPORT(__sdivsi3);
 DECLARE_EXPORT(__lshrsi3);
 DECLARE_EXPORT(__ashrsi3);
 DECLARE_EXPORT(__ashlsi3);
+<<<<<<< HEAD
+=======
+DECLARE_EXPORT(__lshrsi3_r0);
+DECLARE_EXPORT(__ashrsi3_r0);
+DECLARE_EXPORT(__ashlsi3_r0);
+>>>>>>> v4.9.227
 DECLARE_EXPORT(__ashiftrt_r4_6);
 DECLARE_EXPORT(__ashiftrt_r4_7);
 DECLARE_EXPORT(__ashiftrt_r4_8);

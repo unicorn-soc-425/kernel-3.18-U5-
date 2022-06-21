@@ -98,12 +98,19 @@ static int n810_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 
 	snd_pcm_hw_constraint_minmax(runtime,
 				     SNDRV_PCM_HW_PARAM_CHANNELS, 2, 2);
 
 	n810_ext_control(&codec->dapm);
+=======
+
+	snd_pcm_hw_constraint_single(runtime, SNDRV_PCM_HW_PARAM_CHANNELS, 2);
+
+	n810_ext_control(&rtd->card->dapm);
+>>>>>>> v4.9.227
 	return clk_prepare_enable(sys_clkout2);
 }
 
@@ -135,7 +142,11 @@ static struct snd_soc_ops n810_ops = {
 static int n810_get_spk(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] = n810_spk_func;
+=======
+	ucontrol->value.enumerated.item[0] = n810_spk_func;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -145,10 +156,17 @@ static int n810_set_spk(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_card *card =  snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	if (n810_spk_func == ucontrol->value.integer.value[0])
 		return 0;
 
 	n810_spk_func = ucontrol->value.integer.value[0];
+=======
+	if (n810_spk_func == ucontrol->value.enumerated.item[0])
+		return 0;
+
+	n810_spk_func = ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 	n810_ext_control(&card->dapm);
 
 	return 1;
@@ -157,7 +175,11 @@ static int n810_set_spk(struct snd_kcontrol *kcontrol,
 static int n810_get_jack(struct snd_kcontrol *kcontrol,
 			 struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] = n810_jack_func;
+=======
+	ucontrol->value.enumerated.item[0] = n810_jack_func;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -167,10 +189,17 @@ static int n810_set_jack(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_card *card =  snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	if (n810_jack_func == ucontrol->value.integer.value[0])
 		return 0;
 
 	n810_jack_func = ucontrol->value.integer.value[0];
+=======
+	if (n810_jack_func == ucontrol->value.enumerated.item[0])
+		return 0;
+
+	n810_jack_func = ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 	n810_ext_control(&card->dapm);
 
 	return 1;
@@ -179,7 +208,11 @@ static int n810_set_jack(struct snd_kcontrol *kcontrol,
 static int n810_get_input(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] = n810_dmic_func;
+=======
+	ucontrol->value.enumerated.item[0] = n810_dmic_func;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -189,10 +222,17 @@ static int n810_set_input(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_card *card =  snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	if (n810_dmic_func == ucontrol->value.integer.value[0])
 		return 0;
 
 	n810_dmic_func = ucontrol->value.integer.value[0];
+=======
+	if (n810_dmic_func == ucontrol->value.enumerated.item[0])
+		return 0;
+
+	n810_dmic_func = ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 	n810_ext_control(&card->dapm);
 
 	return 1;
@@ -255,6 +295,7 @@ static const struct snd_kcontrol_new aic33_n810_controls[] = {
 		     n810_get_input, n810_set_input),
 };
 
+<<<<<<< HEAD
 static int n810_aic33_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
@@ -273,6 +314,8 @@ static int n810_aic33_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Digital audio interface glue - connects codec <--> CPU */
 static struct snd_soc_dai_link n810_dai = {
 	.name = "TLV320AIC33",
@@ -283,7 +326,10 @@ static struct snd_soc_dai_link n810_dai = {
 	.codec_dai_name = "tlv320aic3x-hifi",
 	.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 		   SND_SOC_DAIFMT_CBM_CFM,
+<<<<<<< HEAD
 	.init = n810_aic33_init,
+=======
+>>>>>>> v4.9.227
 	.ops = &n810_ops,
 };
 
@@ -300,6 +346,10 @@ static struct snd_soc_card snd_soc_n810 = {
 	.num_dapm_widgets = ARRAY_SIZE(aic33_dapm_widgets),
 	.dapm_routes = audio_map,
 	.num_dapm_routes = ARRAY_SIZE(audio_map),
+<<<<<<< HEAD
+=======
+	.fully_routed = true,
+>>>>>>> v4.9.227
 };
 
 static struct platform_device *n810_snd_device;

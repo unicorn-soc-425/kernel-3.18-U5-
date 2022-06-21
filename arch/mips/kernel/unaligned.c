@@ -85,12 +85,19 @@
 #include <asm/branch.h>
 #include <asm/byteorder.h>
 #include <asm/cop2.h>
+<<<<<<< HEAD
+=======
+#include <asm/debug.h>
+>>>>>>> v4.9.227
 #include <asm/fpu.h>
 #include <asm/fpu_emulator.h>
 #include <asm/inst.h>
 #include <asm/uaccess.h>
+<<<<<<< HEAD
 #include <asm/fpu.h>
 #include <asm/fpu_emulator.h>
+=======
+>>>>>>> v4.9.227
 
 #define STR(x)	__STR(x)
 #define __STR(x)  #x
@@ -109,10 +116,18 @@ static u32 unaligned_action;
 extern void show_registers(struct pt_regs *regs);
 
 #ifdef __BIG_ENDIAN
+<<<<<<< HEAD
 #define     LoadHW(addr, value, res)  \
 		__asm__ __volatile__ (".set\tnoat\n"        \
 			"1:\t"user_lb("%0", "0(%2)")"\n"    \
 			"2:\t"user_lbu("$1", "1(%2)")"\n\t" \
+=======
+#define     _LoadHW(addr, value, res, type)  \
+do {                                                        \
+		__asm__ __volatile__ (".set\tnoat\n"        \
+			"1:\t"type##_lb("%0", "0(%2)")"\n"  \
+			"2:\t"type##_lbu("$1", "1(%2)")"\n\t"\
+>>>>>>> v4.9.227
 			"sll\t%0, 0x8\n\t"                  \
 			"or\t%0, $1\n\t"                    \
 			"li\t%1, 0\n"                       \
@@ -127,12 +142,24 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=&r" (value), "=r" (res)         \
+<<<<<<< HEAD
 			: "r" (addr), "i" (-EFAULT));
 
 #define     LoadW(addr, value, res)   \
 		__asm__ __volatile__ (                      \
 			"1:\t"user_lwl("%0", "(%2)")"\n"    \
 			"2:\t"user_lwr("%0", "3(%2)")"\n\t" \
+=======
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#ifndef CONFIG_CPU_MIPSR6
+#define     _LoadW(addr, value, res, type)   \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			"1:\t"type##_lwl("%0", "(%2)")"\n"   \
+			"2:\t"type##_lwr("%0", "3(%2)")"\n\t"\
+>>>>>>> v4.9.227
 			"li\t%1, 0\n"                       \
 			"3:\n\t"                            \
 			".insn\n\t"                         \
@@ -145,6 +172,7 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=&r" (value), "=r" (res)         \
+<<<<<<< HEAD
 			: "r" (addr), "i" (-EFAULT));
 
 #define     LoadHWU(addr, value, res) \
@@ -152,6 +180,54 @@ extern void show_registers(struct pt_regs *regs);
 			".set\tnoat\n"                      \
 			"1:\t"user_lbu("%0", "0(%2)")"\n"   \
 			"2:\t"user_lbu("$1", "1(%2)")"\n\t" \
+=======
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#else
+/* MIPSR6 has no lwl instruction */
+#define     _LoadW(addr, value, res, type) \
+do {                                                        \
+		__asm__ __volatile__ (			    \
+			".set\tpush\n"			    \
+			".set\tnoat\n\t"		    \
+			"1:"type##_lb("%0", "0(%2)")"\n\t"  \
+			"2:"type##_lbu("$1", "1(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"3:"type##_lbu("$1", "2(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"4:"type##_lbu("$1", "3(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"li\t%1, 0\n"			    \
+			".set\tpop\n"			    \
+			"10:\n\t"			    \
+			".insn\n\t"			    \
+			".section\t.fixup,\"ax\"\n\t"	    \
+			"11:\tli\t%1, %3\n\t"		    \
+			"j\t10b\n\t"			    \
+			".previous\n\t"			    \
+			".section\t__ex_table,\"a\"\n\t"    \
+			STR(PTR)"\t1b, 11b\n\t"		    \
+			STR(PTR)"\t2b, 11b\n\t"		    \
+			STR(PTR)"\t3b, 11b\n\t"		    \
+			STR(PTR)"\t4b, 11b\n\t"		    \
+			".previous"			    \
+			: "=&r" (value), "=r" (res)	    \
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#endif /* CONFIG_CPU_MIPSR6 */
+
+#define     _LoadHWU(addr, value, res, type) \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			".set\tnoat\n"                      \
+			"1:\t"type##_lbu("%0", "0(%2)")"\n" \
+			"2:\t"type##_lbu("$1", "1(%2)")"\n\t"\
+>>>>>>> v4.9.227
 			"sll\t%0, 0x8\n\t"                  \
 			"or\t%0, $1\n\t"                    \
 			"li\t%1, 0\n"                       \
@@ -167,12 +243,24 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=&r" (value), "=r" (res)         \
+<<<<<<< HEAD
 			: "r" (addr), "i" (-EFAULT));
 
 #define     LoadWU(addr, value, res)  \
 		__asm__ __volatile__ (                      \
 			"1:\t"user_lwl("%0", "(%2)")"\n"    \
 			"2:\t"user_lwr("%0", "3(%2)")"\n\t" \
+=======
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#ifndef CONFIG_CPU_MIPSR6
+#define     _LoadWU(addr, value, res, type)  \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			"1:\t"type##_lwl("%0", "(%2)")"\n"  \
+			"2:\t"type##_lwr("%0", "3(%2)")"\n\t"\
+>>>>>>> v4.9.227
 			"dsll\t%0, %0, 32\n\t"              \
 			"dsrl\t%0, %0, 32\n\t"              \
 			"li\t%1, 0\n"                       \
@@ -187,9 +275,17 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=&r" (value), "=r" (res)         \
+<<<<<<< HEAD
 			: "r" (addr), "i" (-EFAULT));
 
 #define     LoadDW(addr, value, res)  \
+=======
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#define     _LoadDW(addr, value, res)  \
+do {                                                        \
+>>>>>>> v4.9.227
 		__asm__ __volatile__ (                      \
 			"1:\tldl\t%0, (%2)\n"               \
 			"2:\tldr\t%0, 7(%2)\n\t"            \
@@ -205,6 +301,7 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=&r" (value), "=r" (res)         \
+<<<<<<< HEAD
 			: "r" (addr), "i" (-EFAULT));
 
 #define     StoreHW(addr, value, res) \
@@ -213,6 +310,105 @@ extern void show_registers(struct pt_regs *regs);
 			"1:\t"user_sb("%1", "1(%2)")"\n"    \
 			"srl\t$1, %1, 0x8\n"                \
 			"2:\t"user_sb("$1", "0(%2)")"\n"    \
+=======
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#else
+/* MIPSR6 has not lwl and ldl instructions */
+#define	    _LoadWU(addr, value, res, type) \
+do {                                                        \
+		__asm__ __volatile__ (			    \
+			".set\tpush\n\t"		    \
+			".set\tnoat\n\t"		    \
+			"1:"type##_lbu("%0", "0(%2)")"\n\t" \
+			"2:"type##_lbu("$1", "1(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"3:"type##_lbu("$1", "2(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"4:"type##_lbu("$1", "3(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"li\t%1, 0\n"			    \
+			".set\tpop\n"			    \
+			"10:\n\t"			    \
+			".insn\n\t"			    \
+			".section\t.fixup,\"ax\"\n\t"	    \
+			"11:\tli\t%1, %3\n\t"		    \
+			"j\t10b\n\t"			    \
+			".previous\n\t"			    \
+			".section\t__ex_table,\"a\"\n\t"    \
+			STR(PTR)"\t1b, 11b\n\t"		    \
+			STR(PTR)"\t2b, 11b\n\t"		    \
+			STR(PTR)"\t3b, 11b\n\t"		    \
+			STR(PTR)"\t4b, 11b\n\t"		    \
+			".previous"			    \
+			: "=&r" (value), "=r" (res)	    \
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#define     _LoadDW(addr, value, res)  \
+do {                                                        \
+		__asm__ __volatile__ (			    \
+			".set\tpush\n\t"		    \
+			".set\tnoat\n\t"		    \
+			"1:lb\t%0, 0(%2)\n\t"    	    \
+			"2:lbu\t $1, 1(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"3:lbu\t$1, 2(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"4:lbu\t$1, 3(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"5:lbu\t$1, 4(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"6:lbu\t$1, 5(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"7:lbu\t$1, 6(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"8:lbu\t$1, 7(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"li\t%1, 0\n"			    \
+			".set\tpop\n\t"			    \
+			"10:\n\t"			    \
+			".insn\n\t"			    \
+			".section\t.fixup,\"ax\"\n\t"	    \
+			"11:\tli\t%1, %3\n\t"		    \
+			"j\t10b\n\t"			    \
+			".previous\n\t"			    \
+			".section\t__ex_table,\"a\"\n\t"    \
+			STR(PTR)"\t1b, 11b\n\t"		    \
+			STR(PTR)"\t2b, 11b\n\t"		    \
+			STR(PTR)"\t3b, 11b\n\t"		    \
+			STR(PTR)"\t4b, 11b\n\t"		    \
+			STR(PTR)"\t5b, 11b\n\t"		    \
+			STR(PTR)"\t6b, 11b\n\t"		    \
+			STR(PTR)"\t7b, 11b\n\t"		    \
+			STR(PTR)"\t8b, 11b\n\t"		    \
+			".previous"			    \
+			: "=&r" (value), "=r" (res)	    \
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#endif /* CONFIG_CPU_MIPSR6 */
+
+
+#define     _StoreHW(addr, value, res, type) \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			".set\tnoat\n"                      \
+			"1:\t"type##_sb("%1", "1(%2)")"\n"  \
+			"srl\t$1, %1, 0x8\n"                \
+			"2:\t"type##_sb("$1", "0(%2)")"\n"  \
+>>>>>>> v4.9.227
 			".set\tat\n\t"                      \
 			"li\t%0, 0\n"                       \
 			"3:\n\t"                            \
@@ -226,12 +422,24 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=r" (res)                        \
+<<<<<<< HEAD
 			: "r" (value), "r" (addr), "i" (-EFAULT));
 
 #define     StoreW(addr, value, res)  \
 		__asm__ __volatile__ (                      \
 			"1:\t"user_swl("%1", "(%2)")"\n"    \
 			"2:\t"user_swr("%1", "3(%2)")"\n\t" \
+=======
+			: "r" (value), "r" (addr), "i" (-EFAULT));\
+} while(0)
+
+#ifndef CONFIG_CPU_MIPSR6
+#define     _StoreW(addr, value, res, type)  \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			"1:\t"type##_swl("%1", "(%2)")"\n"  \
+			"2:\t"type##_swr("%1", "3(%2)")"\n\t"\
+>>>>>>> v4.9.227
 			"li\t%0, 0\n"                       \
 			"3:\n\t"                            \
 			".insn\n\t"                         \
@@ -244,9 +452,17 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 		: "=r" (res)                                \
+<<<<<<< HEAD
 		: "r" (value), "r" (addr), "i" (-EFAULT));
 
 #define     StoreDW(addr, value, res) \
+=======
+		: "r" (value), "r" (addr), "i" (-EFAULT));  \
+} while(0)
+
+#define     _StoreDW(addr, value, res) \
+do {                                                        \
+>>>>>>> v4.9.227
 		__asm__ __volatile__ (                      \
 			"1:\tsdl\t%1,(%2)\n"                \
 			"2:\tsdr\t%1, 7(%2)\n\t"            \
@@ -262,6 +478,7 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 		: "=r" (res)                                \
+<<<<<<< HEAD
 		: "r" (value), "r" (addr), "i" (-EFAULT));
 #endif
 
@@ -270,6 +487,97 @@ extern void show_registers(struct pt_regs *regs);
 		__asm__ __volatile__ (".set\tnoat\n"        \
 			"1:\t"user_lb("%0", "1(%2)")"\n"    \
 			"2:\t"user_lbu("$1", "0(%2)")"\n\t" \
+=======
+		: "r" (value), "r" (addr), "i" (-EFAULT));  \
+} while(0)
+
+#else
+/* MIPSR6 has no swl and sdl instructions */
+#define     _StoreW(addr, value, res, type)  \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			".set\tpush\n\t"		    \
+			".set\tnoat\n\t"		    \
+			"1:"type##_sb("%1", "3(%2)")"\n\t"  \
+			"srl\t$1, %1, 0x8\n\t"		    \
+			"2:"type##_sb("$1", "2(%2)")"\n\t"  \
+			"srl\t$1, $1,  0x8\n\t"		    \
+			"3:"type##_sb("$1", "1(%2)")"\n\t"  \
+			"srl\t$1, $1, 0x8\n\t"		    \
+			"4:"type##_sb("$1", "0(%2)")"\n\t"  \
+			".set\tpop\n\t"			    \
+			"li\t%0, 0\n"			    \
+			"10:\n\t"			    \
+			".insn\n\t"			    \
+			".section\t.fixup,\"ax\"\n\t"	    \
+			"11:\tli\t%0, %3\n\t"		    \
+			"j\t10b\n\t"			    \
+			".previous\n\t"			    \
+			".section\t__ex_table,\"a\"\n\t"    \
+			STR(PTR)"\t1b, 11b\n\t"		    \
+			STR(PTR)"\t2b, 11b\n\t"		    \
+			STR(PTR)"\t3b, 11b\n\t"		    \
+			STR(PTR)"\t4b, 11b\n\t"		    \
+			".previous"			    \
+		: "=&r" (res)			    	    \
+		: "r" (value), "r" (addr), "i" (-EFAULT)    \
+		: "memory");                                \
+} while(0)
+
+#define     _StoreDW(addr, value, res) \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			".set\tpush\n\t"		    \
+			".set\tnoat\n\t"		    \
+			"1:sb\t%1, 7(%2)\n\t"    	    \
+			"dsrl\t$1, %1, 0x8\n\t"		    \
+			"2:sb\t$1, 6(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"3:sb\t$1, 5(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"4:sb\t$1, 4(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"5:sb\t$1, 3(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"6:sb\t$1, 2(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"7:sb\t$1, 1(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"8:sb\t$1, 0(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			".set\tpop\n\t"			    \
+			"li\t%0, 0\n"			    \
+			"10:\n\t"			    \
+			".insn\n\t"			    \
+			".section\t.fixup,\"ax\"\n\t"	    \
+			"11:\tli\t%0, %3\n\t"		    \
+			"j\t10b\n\t"			    \
+			".previous\n\t"			    \
+			".section\t__ex_table,\"a\"\n\t"    \
+			STR(PTR)"\t1b, 11b\n\t"		    \
+			STR(PTR)"\t2b, 11b\n\t"		    \
+			STR(PTR)"\t3b, 11b\n\t"		    \
+			STR(PTR)"\t4b, 11b\n\t"		    \
+			STR(PTR)"\t5b, 11b\n\t"		    \
+			STR(PTR)"\t6b, 11b\n\t"		    \
+			STR(PTR)"\t7b, 11b\n\t"		    \
+			STR(PTR)"\t8b, 11b\n\t"		    \
+			".previous"			    \
+		: "=&r" (res)			    	    \
+		: "r" (value), "r" (addr), "i" (-EFAULT)    \
+		: "memory");                                \
+} while(0)
+
+#endif /* CONFIG_CPU_MIPSR6 */
+
+#else /* __BIG_ENDIAN */
+
+#define     _LoadHW(addr, value, res, type)  \
+do {                                                        \
+		__asm__ __volatile__ (".set\tnoat\n"        \
+			"1:\t"type##_lb("%0", "1(%2)")"\n"  \
+			"2:\t"type##_lbu("$1", "0(%2)")"\n\t"\
+>>>>>>> v4.9.227
 			"sll\t%0, 0x8\n\t"                  \
 			"or\t%0, $1\n\t"                    \
 			"li\t%1, 0\n"                       \
@@ -284,12 +592,24 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=&r" (value), "=r" (res)         \
+<<<<<<< HEAD
 			: "r" (addr), "i" (-EFAULT));
 
 #define     LoadW(addr, value, res)   \
 		__asm__ __volatile__ (                      \
 			"1:\t"user_lwl("%0", "3(%2)")"\n"   \
 			"2:\t"user_lwr("%0", "(%2)")"\n\t"  \
+=======
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#ifndef CONFIG_CPU_MIPSR6
+#define     _LoadW(addr, value, res, type)   \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			"1:\t"type##_lwl("%0", "3(%2)")"\n" \
+			"2:\t"type##_lwr("%0", "(%2)")"\n\t"\
+>>>>>>> v4.9.227
 			"li\t%1, 0\n"                       \
 			"3:\n\t"                            \
 			".insn\n\t"                         \
@@ -302,6 +622,7 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=&r" (value), "=r" (res)         \
+<<<<<<< HEAD
 			: "r" (addr), "i" (-EFAULT));
 
 #define     LoadHWU(addr, value, res) \
@@ -309,6 +630,55 @@ extern void show_registers(struct pt_regs *regs);
 			".set\tnoat\n"                      \
 			"1:\t"user_lbu("%0", "1(%2)")"\n"   \
 			"2:\t"user_lbu("$1", "0(%2)")"\n\t" \
+=======
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#else
+/* MIPSR6 has no lwl instruction */
+#define     _LoadW(addr, value, res, type) \
+do {                                                        \
+		__asm__ __volatile__ (			    \
+			".set\tpush\n"			    \
+			".set\tnoat\n\t"		    \
+			"1:"type##_lb("%0", "3(%2)")"\n\t"  \
+			"2:"type##_lbu("$1", "2(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"3:"type##_lbu("$1", "1(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"4:"type##_lbu("$1", "0(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"li\t%1, 0\n"			    \
+			".set\tpop\n"			    \
+			"10:\n\t"			    \
+			".insn\n\t"			    \
+			".section\t.fixup,\"ax\"\n\t"	    \
+			"11:\tli\t%1, %3\n\t"		    \
+			"j\t10b\n\t"			    \
+			".previous\n\t"			    \
+			".section\t__ex_table,\"a\"\n\t"    \
+			STR(PTR)"\t1b, 11b\n\t"		    \
+			STR(PTR)"\t2b, 11b\n\t"		    \
+			STR(PTR)"\t3b, 11b\n\t"		    \
+			STR(PTR)"\t4b, 11b\n\t"		    \
+			".previous"			    \
+			: "=&r" (value), "=r" (res)	    \
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#endif /* CONFIG_CPU_MIPSR6 */
+
+
+#define     _LoadHWU(addr, value, res, type) \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			".set\tnoat\n"                      \
+			"1:\t"type##_lbu("%0", "1(%2)")"\n" \
+			"2:\t"type##_lbu("$1", "0(%2)")"\n\t"\
+>>>>>>> v4.9.227
 			"sll\t%0, 0x8\n\t"                  \
 			"or\t%0, $1\n\t"                    \
 			"li\t%1, 0\n"                       \
@@ -324,12 +694,24 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=&r" (value), "=r" (res)         \
+<<<<<<< HEAD
 			: "r" (addr), "i" (-EFAULT));
 
 #define     LoadWU(addr, value, res)  \
 		__asm__ __volatile__ (                      \
 			"1:\t"user_lwl("%0", "3(%2)")"\n"   \
 			"2:\t"user_lwr("%0", "(%2)")"\n\t"  \
+=======
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#ifndef CONFIG_CPU_MIPSR6
+#define     _LoadWU(addr, value, res, type)  \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			"1:\t"type##_lwl("%0", "3(%2)")"\n" \
+			"2:\t"type##_lwr("%0", "(%2)")"\n\t"\
+>>>>>>> v4.9.227
 			"dsll\t%0, %0, 32\n\t"              \
 			"dsrl\t%0, %0, 32\n\t"              \
 			"li\t%1, 0\n"                       \
@@ -344,9 +726,17 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=&r" (value), "=r" (res)         \
+<<<<<<< HEAD
 			: "r" (addr), "i" (-EFAULT));
 
 #define     LoadDW(addr, value, res)  \
+=======
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#define     _LoadDW(addr, value, res)  \
+do {                                                        \
+>>>>>>> v4.9.227
 		__asm__ __volatile__ (                      \
 			"1:\tldl\t%0, 7(%2)\n"              \
 			"2:\tldr\t%0, (%2)\n\t"             \
@@ -362,6 +752,7 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=&r" (value), "=r" (res)         \
+<<<<<<< HEAD
 			: "r" (addr), "i" (-EFAULT));
 
 #define     StoreHW(addr, value, res) \
@@ -370,6 +761,103 @@ extern void show_registers(struct pt_regs *regs);
 			"1:\t"user_sb("%1", "0(%2)")"\n"    \
 			"srl\t$1,%1, 0x8\n"                 \
 			"2:\t"user_sb("$1", "1(%2)")"\n"    \
+=======
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#else
+/* MIPSR6 has not lwl and ldl instructions */
+#define	    _LoadWU(addr, value, res, type) \
+do {                                                        \
+		__asm__ __volatile__ (			    \
+			".set\tpush\n\t"		    \
+			".set\tnoat\n\t"		    \
+			"1:"type##_lbu("%0", "3(%2)")"\n\t" \
+			"2:"type##_lbu("$1", "2(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"3:"type##_lbu("$1", "1(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"4:"type##_lbu("$1", "0(%2)")"\n\t" \
+			"sll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"li\t%1, 0\n"			    \
+			".set\tpop\n"			    \
+			"10:\n\t"			    \
+			".insn\n\t"			    \
+			".section\t.fixup,\"ax\"\n\t"	    \
+			"11:\tli\t%1, %3\n\t"		    \
+			"j\t10b\n\t"			    \
+			".previous\n\t"			    \
+			".section\t__ex_table,\"a\"\n\t"    \
+			STR(PTR)"\t1b, 11b\n\t"		    \
+			STR(PTR)"\t2b, 11b\n\t"		    \
+			STR(PTR)"\t3b, 11b\n\t"		    \
+			STR(PTR)"\t4b, 11b\n\t"		    \
+			".previous"			    \
+			: "=&r" (value), "=r" (res)	    \
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+
+#define     _LoadDW(addr, value, res)  \
+do {                                                        \
+		__asm__ __volatile__ (			    \
+			".set\tpush\n\t"		    \
+			".set\tnoat\n\t"		    \
+			"1:lb\t%0, 7(%2)\n\t"    	    \
+			"2:lbu\t$1, 6(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"3:lbu\t$1, 5(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"4:lbu\t$1, 4(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"5:lbu\t$1, 3(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"6:lbu\t$1, 2(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"7:lbu\t$1, 1(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"8:lbu\t$1, 0(%2)\n\t"   	    \
+			"dsll\t%0, 0x8\n\t"		    \
+			"or\t%0, $1\n\t"		    \
+			"li\t%1, 0\n"			    \
+			".set\tpop\n\t"			    \
+			"10:\n\t"			    \
+			".insn\n\t"			    \
+			".section\t.fixup,\"ax\"\n\t"	    \
+			"11:\tli\t%1, %3\n\t"		    \
+			"j\t10b\n\t"			    \
+			".previous\n\t"			    \
+			".section\t__ex_table,\"a\"\n\t"    \
+			STR(PTR)"\t1b, 11b\n\t"		    \
+			STR(PTR)"\t2b, 11b\n\t"		    \
+			STR(PTR)"\t3b, 11b\n\t"		    \
+			STR(PTR)"\t4b, 11b\n\t"		    \
+			STR(PTR)"\t5b, 11b\n\t"		    \
+			STR(PTR)"\t6b, 11b\n\t"		    \
+			STR(PTR)"\t7b, 11b\n\t"		    \
+			STR(PTR)"\t8b, 11b\n\t"		    \
+			".previous"			    \
+			: "=&r" (value), "=r" (res)	    \
+			: "r" (addr), "i" (-EFAULT));       \
+} while(0)
+#endif /* CONFIG_CPU_MIPSR6 */
+
+#define     _StoreHW(addr, value, res, type) \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			".set\tnoat\n"                      \
+			"1:\t"type##_sb("%1", "0(%2)")"\n"  \
+			"srl\t$1,%1, 0x8\n"                 \
+			"2:\t"type##_sb("$1", "1(%2)")"\n"  \
+>>>>>>> v4.9.227
 			".set\tat\n\t"                      \
 			"li\t%0, 0\n"                       \
 			"3:\n\t"                            \
@@ -383,12 +871,24 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 			: "=r" (res)                        \
+<<<<<<< HEAD
 			: "r" (value), "r" (addr), "i" (-EFAULT));
 
 #define     StoreW(addr, value, res)  \
 		__asm__ __volatile__ (                      \
 			"1:\t"user_swl("%1", "3(%2)")"\n"   \
 			"2:\t"user_swr("%1", "(%2)")"\n\t"  \
+=======
+			: "r" (value), "r" (addr), "i" (-EFAULT));\
+} while(0)
+
+#ifndef CONFIG_CPU_MIPSR6
+#define     _StoreW(addr, value, res, type)  \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			"1:\t"type##_swl("%1", "3(%2)")"\n" \
+			"2:\t"type##_swr("%1", "(%2)")"\n\t"\
+>>>>>>> v4.9.227
 			"li\t%0, 0\n"                       \
 			"3:\n\t"                            \
 			".insn\n\t"                         \
@@ -401,9 +901,17 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 		: "=r" (res)                                \
+<<<<<<< HEAD
 		: "r" (value), "r" (addr), "i" (-EFAULT));
 
 #define     StoreDW(addr, value, res) \
+=======
+		: "r" (value), "r" (addr), "i" (-EFAULT));  \
+} while(0)
+
+#define     _StoreDW(addr, value, res) \
+do {                                                        \
+>>>>>>> v4.9.227
 		__asm__ __volatile__ (                      \
 			"1:\tsdl\t%1, 7(%2)\n"              \
 			"2:\tsdr\t%1, (%2)\n\t"             \
@@ -419,21 +927,133 @@ extern void show_registers(struct pt_regs *regs);
 			STR(PTR)"\t2b, 4b\n\t"              \
 			".previous"                         \
 		: "=r" (res)                                \
+<<<<<<< HEAD
 		: "r" (value), "r" (addr), "i" (-EFAULT));
 #endif
 
+=======
+		: "r" (value), "r" (addr), "i" (-EFAULT));  \
+} while(0)
+
+#else
+/* MIPSR6 has no swl and sdl instructions */
+#define     _StoreW(addr, value, res, type)  \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			".set\tpush\n\t"		    \
+			".set\tnoat\n\t"		    \
+			"1:"type##_sb("%1", "0(%2)")"\n\t"  \
+			"srl\t$1, %1, 0x8\n\t"		    \
+			"2:"type##_sb("$1", "1(%2)")"\n\t"  \
+			"srl\t$1, $1,  0x8\n\t"		    \
+			"3:"type##_sb("$1", "2(%2)")"\n\t"  \
+			"srl\t$1, $1, 0x8\n\t"		    \
+			"4:"type##_sb("$1", "3(%2)")"\n\t"  \
+			".set\tpop\n\t"			    \
+			"li\t%0, 0\n"			    \
+			"10:\n\t"			    \
+			".insn\n\t"			    \
+			".section\t.fixup,\"ax\"\n\t"	    \
+			"11:\tli\t%0, %3\n\t"		    \
+			"j\t10b\n\t"			    \
+			".previous\n\t"			    \
+			".section\t__ex_table,\"a\"\n\t"    \
+			STR(PTR)"\t1b, 11b\n\t"		    \
+			STR(PTR)"\t2b, 11b\n\t"		    \
+			STR(PTR)"\t3b, 11b\n\t"		    \
+			STR(PTR)"\t4b, 11b\n\t"		    \
+			".previous"			    \
+		: "=&r" (res)			    	    \
+		: "r" (value), "r" (addr), "i" (-EFAULT)    \
+		: "memory");                                \
+} while(0)
+
+#define     _StoreDW(addr, value, res) \
+do {                                                        \
+		__asm__ __volatile__ (                      \
+			".set\tpush\n\t"		    \
+			".set\tnoat\n\t"		    \
+			"1:sb\t%1, 0(%2)\n\t"    	    \
+			"dsrl\t$1, %1, 0x8\n\t"		    \
+			"2:sb\t$1, 1(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"3:sb\t$1, 2(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"4:sb\t$1, 3(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"5:sb\t$1, 4(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"6:sb\t$1, 5(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"7:sb\t$1, 6(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			"8:sb\t$1, 7(%2)\n\t"    	    \
+			"dsrl\t$1, $1, 0x8\n\t"		    \
+			".set\tpop\n\t"			    \
+			"li\t%0, 0\n"			    \
+			"10:\n\t"			    \
+			".insn\n\t"			    \
+			".section\t.fixup,\"ax\"\n\t"	    \
+			"11:\tli\t%0, %3\n\t"		    \
+			"j\t10b\n\t"			    \
+			".previous\n\t"			    \
+			".section\t__ex_table,\"a\"\n\t"    \
+			STR(PTR)"\t1b, 11b\n\t"		    \
+			STR(PTR)"\t2b, 11b\n\t"		    \
+			STR(PTR)"\t3b, 11b\n\t"		    \
+			STR(PTR)"\t4b, 11b\n\t"		    \
+			STR(PTR)"\t5b, 11b\n\t"		    \
+			STR(PTR)"\t6b, 11b\n\t"		    \
+			STR(PTR)"\t7b, 11b\n\t"		    \
+			STR(PTR)"\t8b, 11b\n\t"		    \
+			".previous"			    \
+		: "=&r" (res)			    	    \
+		: "r" (value), "r" (addr), "i" (-EFAULT)    \
+		: "memory");                                \
+} while(0)
+
+#endif /* CONFIG_CPU_MIPSR6 */
+#endif
+
+#define LoadHWU(addr, value, res)	_LoadHWU(addr, value, res, kernel)
+#define LoadHWUE(addr, value, res)	_LoadHWU(addr, value, res, user)
+#define LoadWU(addr, value, res)	_LoadWU(addr, value, res, kernel)
+#define LoadWUE(addr, value, res)	_LoadWU(addr, value, res, user)
+#define LoadHW(addr, value, res)	_LoadHW(addr, value, res, kernel)
+#define LoadHWE(addr, value, res)	_LoadHW(addr, value, res, user)
+#define LoadW(addr, value, res)		_LoadW(addr, value, res, kernel)
+#define LoadWE(addr, value, res)	_LoadW(addr, value, res, user)
+#define LoadDW(addr, value, res)	_LoadDW(addr, value, res)
+
+#define StoreHW(addr, value, res)	_StoreHW(addr, value, res, kernel)
+#define StoreHWE(addr, value, res)	_StoreHW(addr, value, res, user)
+#define StoreW(addr, value, res)	_StoreW(addr, value, res, kernel)
+#define StoreWE(addr, value, res)	_StoreW(addr, value, res, user)
+#define StoreDW(addr, value, res)	_StoreDW(addr, value, res)
+
+>>>>>>> v4.9.227
 static void emulate_load_store_insn(struct pt_regs *regs,
 	void __user *addr, unsigned int __user *pc)
 {
 	union mips_instruction insn;
 	unsigned long value;
+<<<<<<< HEAD
 	unsigned int res;
+=======
+	unsigned int res, preempted;
+>>>>>>> v4.9.227
 	unsigned long origpc;
 	unsigned long orig31;
 	void __user *fault_addr = NULL;
 #ifdef	CONFIG_EVA
 	mm_segment_t seg;
 #endif
+<<<<<<< HEAD
+=======
+	union fpureg *fpr;
+	enum msa_2b_fmt df;
+	unsigned int wd;
+>>>>>>> v4.9.227
 	origpc = (unsigned long)pc;
 	orig31 = regs->regs[31];
 
@@ -493,7 +1113,11 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 				set_fs(seg);
 				goto sigbus;
 			}
+<<<<<<< HEAD
 			LoadHW(addr, value, res);
+=======
+			LoadHWE(addr, value, res);
+>>>>>>> v4.9.227
 			if (res) {
 				set_fs(seg);
 				goto fault;
@@ -506,7 +1130,11 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 				set_fs(seg);
 				goto sigbus;
 			}
+<<<<<<< HEAD
 				LoadW(addr, value, res);
+=======
+				LoadWE(addr, value, res);
+>>>>>>> v4.9.227
 			if (res) {
 				set_fs(seg);
 				goto fault;
@@ -519,7 +1147,11 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 				set_fs(seg);
 				goto sigbus;
 			}
+<<<<<<< HEAD
 			LoadHWU(addr, value, res);
+=======
+			LoadHWUE(addr, value, res);
+>>>>>>> v4.9.227
 			if (res) {
 				set_fs(seg);
 				goto fault;
@@ -534,7 +1166,11 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 			}
 			compute_return_epc(regs);
 			value = regs->regs[insn.spec3_format.rt];
+<<<<<<< HEAD
 			StoreHW(addr, value, res);
+=======
+			StoreHWE(addr, value, res);
+>>>>>>> v4.9.227
 			if (res) {
 				set_fs(seg);
 				goto fault;
@@ -547,7 +1183,11 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 			}
 			compute_return_epc(regs);
 			value = regs->regs[insn.spec3_format.rt];
+<<<<<<< HEAD
 			StoreW(addr, value, res);
+=======
+			StoreWE(addr, value, res);
+>>>>>>> v4.9.227
 			if (res) {
 				set_fs(seg);
 				goto fault;
@@ -564,7 +1204,19 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		if (!access_ok(VERIFY_READ, addr, 2))
 			goto sigbus;
 
+<<<<<<< HEAD
 		LoadHW(addr, value, res);
+=======
+		if (IS_ENABLED(CONFIG_EVA)) {
+			if (segment_eq(get_fs(), get_ds()))
+				LoadHW(addr, value, res);
+			else
+				LoadHWE(addr, value, res);
+		} else {
+			LoadHW(addr, value, res);
+		}
+
+>>>>>>> v4.9.227
 		if (res)
 			goto fault;
 		compute_return_epc(regs);
@@ -575,7 +1227,19 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		if (!access_ok(VERIFY_READ, addr, 4))
 			goto sigbus;
 
+<<<<<<< HEAD
 		LoadW(addr, value, res);
+=======
+		if (IS_ENABLED(CONFIG_EVA)) {
+			if (segment_eq(get_fs(), get_ds()))
+				LoadW(addr, value, res);
+			else
+				LoadWE(addr, value, res);
+		} else {
+			LoadW(addr, value, res);
+		}
+
+>>>>>>> v4.9.227
 		if (res)
 			goto fault;
 		compute_return_epc(regs);
@@ -586,7 +1250,19 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		if (!access_ok(VERIFY_READ, addr, 2))
 			goto sigbus;
 
+<<<<<<< HEAD
 		LoadHWU(addr, value, res);
+=======
+		if (IS_ENABLED(CONFIG_EVA)) {
+			if (segment_eq(get_fs(), get_ds()))
+				LoadHWU(addr, value, res);
+			else
+				LoadHWUE(addr, value, res);
+		} else {
+			LoadHWU(addr, value, res);
+		}
+
+>>>>>>> v4.9.227
 		if (res)
 			goto fault;
 		compute_return_epc(regs);
@@ -645,7 +1321,20 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 
 		compute_return_epc(regs);
 		value = regs->regs[insn.i_format.rt];
+<<<<<<< HEAD
 		StoreHW(addr, value, res);
+=======
+
+		if (IS_ENABLED(CONFIG_EVA)) {
+			if (segment_eq(get_fs(), get_ds()))
+				StoreHW(addr, value, res);
+			else
+				StoreHWE(addr, value, res);
+		} else {
+			StoreHW(addr, value, res);
+		}
+
+>>>>>>> v4.9.227
 		if (res)
 			goto fault;
 		break;
@@ -656,7 +1345,20 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 
 		compute_return_epc(regs);
 		value = regs->regs[insn.i_format.rt];
+<<<<<<< HEAD
 		StoreW(addr, value, res);
+=======
+
+		if (IS_ENABLED(CONFIG_EVA)) {
+			if (segment_eq(get_fs(), get_ds()))
+				StoreW(addr, value, res);
+			else
+				StoreWE(addr, value, res);
+		} else {
+			StoreW(addr, value, res);
+		}
+
+>>>>>>> v4.9.227
 		if (res)
 			goto fault;
 		break;
@@ -688,6 +1390,10 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 	case ldc1_op:
 	case swc1_op:
 	case sdc1_op:
+<<<<<<< HEAD
+=======
+	case cop1x_op:
+>>>>>>> v4.9.227
 		die_if_kernel("Unaligned FP access in kernel code", regs);
 		BUG_ON(!used_math());
 
@@ -697,16 +1403,107 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		own_fpu(1);	/* Restore FPU state. */
 
 		/* Signal if something went wrong. */
+<<<<<<< HEAD
 		process_fpemu_return(res, fault_addr);
+=======
+		process_fpemu_return(res, fault_addr, 0);
+>>>>>>> v4.9.227
 
 		if (res == 0)
 			break;
 		return;
 
+<<<<<<< HEAD
+=======
+	case msa_op:
+		if (!cpu_has_msa)
+			goto sigill;
+
+		/*
+		 * If we've reached this point then userland should have taken
+		 * the MSA disabled exception & initialised vector context at
+		 * some point in the past.
+		 */
+		BUG_ON(!thread_msa_context_live());
+
+		df = insn.msa_mi10_format.df;
+		wd = insn.msa_mi10_format.wd;
+		fpr = &current->thread.fpu.fpr[wd];
+
+		switch (insn.msa_mi10_format.func) {
+		case msa_ld_op:
+			if (!access_ok(VERIFY_READ, addr, sizeof(*fpr)))
+				goto sigbus;
+
+			do {
+				/*
+				 * If we have live MSA context keep track of
+				 * whether we get preempted in order to avoid
+				 * the register context we load being clobbered
+				 * by the live context as it's saved during
+				 * preemption. If we don't have live context
+				 * then it can't be saved to clobber the value
+				 * we load.
+				 */
+				preempted = test_thread_flag(TIF_USEDMSA);
+
+				res = __copy_from_user_inatomic(fpr, addr,
+								sizeof(*fpr));
+				if (res)
+					goto fault;
+
+				/*
+				 * Update the hardware register if it is in use
+				 * by the task in this quantum, in order to
+				 * avoid having to save & restore the whole
+				 * vector context.
+				 */
+				preempt_disable();
+				if (test_thread_flag(TIF_USEDMSA)) {
+					write_msa_wr(wd, fpr, df);
+					preempted = 0;
+				}
+				preempt_enable();
+			} while (preempted);
+			break;
+
+		case msa_st_op:
+			if (!access_ok(VERIFY_WRITE, addr, sizeof(*fpr)))
+				goto sigbus;
+
+			/*
+			 * Update from the hardware register if it is in use by
+			 * the task in this quantum, in order to avoid having to
+			 * save & restore the whole vector context.
+			 */
+			preempt_disable();
+			if (test_thread_flag(TIF_USEDMSA))
+				read_msa_wr(wd, fpr, df);
+			preempt_enable();
+
+			res = __copy_to_user_inatomic(addr, fpr, sizeof(*fpr));
+			if (res)
+				goto fault;
+			break;
+
+		default:
+			goto sigbus;
+		}
+
+		compute_return_epc(regs);
+		break;
+
+#ifndef CONFIG_CPU_MIPSR6
+>>>>>>> v4.9.227
 	/*
 	 * COP2 is available to implementor for application specific use.
 	 * It's up to applications to register a notifier chain and do
 	 * whatever they have to do, including possible sending of signals.
+<<<<<<< HEAD
+=======
+	 *
+	 * This instruction has been reallocated in Release 6
+>>>>>>> v4.9.227
 	 */
 	case lwc2_op:
 		cu2_notifier_call_chain(CU2_LWC2_OP, regs);
@@ -723,7 +1520,11 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 	case sdc2_op:
 		cu2_notifier_call_chain(CU2_SDC2_OP, regs);
 		break;
+<<<<<<< HEAD
 
+=======
+#endif
+>>>>>>> v4.9.227
 	default:
 		/*
 		 * Pheeee...  We encountered an yet unknown instruction or
@@ -1129,7 +1930,11 @@ fpu_emul:
 		own_fpu(1);	/* restore FPU state */
 
 		/* If something went wrong, signal */
+<<<<<<< HEAD
 		process_fpemu_return(res, fault_addr);
+=======
+		process_fpemu_return(res, fault_addr, 0);
+>>>>>>> v4.9.227
 
 		if (res == 0)
 			goto success;
@@ -1721,7 +2526,10 @@ sigbus:
 }
 
 #ifdef CONFIG_DEBUG_FS
+<<<<<<< HEAD
 extern struct dentry *mips_debugfs_dir;
+=======
+>>>>>>> v4.9.227
 static int __init debugfs_unaligned(void)
 {
 	struct dentry *d;
@@ -1738,5 +2546,9 @@ static int __init debugfs_unaligned(void)
 		return -ENOMEM;
 	return 0;
 }
+<<<<<<< HEAD
 __initcall(debugfs_unaligned);
+=======
+arch_initcall(debugfs_unaligned);
+>>>>>>> v4.9.227
 #endif

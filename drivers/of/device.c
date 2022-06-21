@@ -60,11 +60,20 @@ int of_device_add(struct platform_device *ofdev)
 	ofdev->name = dev_name(&ofdev->dev);
 	ofdev->id = -1;
 
+<<<<<<< HEAD
 	/* device_add will assume that this device is on the same node as
 	 * the parent. If there is no parent defined, set the node
 	 * explicitly */
 	if (!ofdev->dev.parent)
 		set_dev_node(&ofdev->dev, of_node_to_nid(ofdev->dev.of_node));
+=======
+	/*
+	 * If this device has not binding numa node in devicetree, that is
+	 * of_node_to_nid returns NUMA_NO_NODE. device_add will assume that this
+	 * device is on the same node as the parent.
+	 */
+	set_dev_node(&ofdev->dev, of_node_to_nid(ofdev->dev.of_node));
+>>>>>>> v4.9.227
 
 	return device_add(&ofdev->dev);
 }
@@ -87,7 +96,11 @@ void of_dma_configure(struct device *dev, struct device_node *np)
 	int ret;
 	bool coherent;
 	unsigned long offset;
+<<<<<<< HEAD
 	struct iommu_ops *iommu;
+=======
+	const struct iommu_ops *iommu;
+>>>>>>> v4.9.227
 
 	/*
 	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
@@ -163,6 +176,21 @@ void of_device_unregister(struct platform_device *ofdev)
 }
 EXPORT_SYMBOL(of_device_unregister);
 
+<<<<<<< HEAD
+=======
+const void *of_device_get_match_data(const struct device *dev)
+{
+	const struct of_device_id *match;
+
+	match = of_match_device(dev->driver->of_match_table, dev);
+	if (!match)
+		return NULL;
+
+	return match->data;
+}
+EXPORT_SYMBOL(of_device_get_match_data);
+
+>>>>>>> v4.9.227
 ssize_t of_device_get_modalias(struct device *dev, char *str, ssize_t len)
 {
 	const char *compat;

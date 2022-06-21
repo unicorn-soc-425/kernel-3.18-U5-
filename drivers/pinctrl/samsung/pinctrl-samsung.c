@@ -33,11 +33,14 @@
 #include "../core.h"
 #include "pinctrl-samsung.h"
 
+<<<<<<< HEAD
 #define GROUP_SUFFIX		"-grp"
 #define GSUFFIX_LEN		sizeof(GROUP_SUFFIX)
 #define FUNCTION_SUFFIX		"-mux"
 #define FSUFFIX_LEN		sizeof(FUNCTION_SUFFIX)
 
+=======
+>>>>>>> v4.9.227
 /* list of all possible config options supported */
 static struct pin_config {
 	const char *property;
@@ -55,11 +58,14 @@ static LIST_HEAD(drvdata_list);
 
 static unsigned int pin_base;
 
+<<<<<<< HEAD
 static inline struct samsung_pin_bank *gc_to_pin_bank(struct gpio_chip *gc)
 {
 	return container_of(gc, struct samsung_pin_bank, gpio_chip);
 }
 
+=======
+>>>>>>> v4.9.227
 static int samsung_get_group_count(struct pinctrl_dev *pctldev)
 {
 	struct samsung_pinctrl_drv_data *pmx = pinctrl_dev_get_drvdata(pctldev);
@@ -291,6 +297,10 @@ static int samsung_dt_node_to_map(struct pinctrl_dev *pctldev,
 						&reserved_maps, num_maps);
 		if (ret < 0) {
 			samsung_dt_free_map(pctldev, *map, *num_maps);
+<<<<<<< HEAD
+=======
+			of_node_put(np);
+>>>>>>> v4.9.227
 			return ret;
 		}
 	}
@@ -349,7 +359,11 @@ static void pin_to_reg_bank(struct samsung_pinctrl_drv_data *drvdata,
 {
 	struct samsung_pin_bank *b;
 
+<<<<<<< HEAD
 	b = drvdata->ctrl->pin_banks;
+=======
+	b = drvdata->pin_banks;
+>>>>>>> v4.9.227
 
 	while ((pin >= b->pin_base) &&
 			((b->pin_base + b->nr_pins - 1) < pin))
@@ -366,7 +380,11 @@ static void samsung_pinmux_setup(struct pinctrl_dev *pctldev, unsigned selector,
 					unsigned group, bool enable)
 {
 	struct samsung_pinctrl_drv_data *drvdata;
+<<<<<<< HEAD
 	struct samsung_pin_bank_type *type;
+=======
+	const struct samsung_pin_bank_type *type;
+>>>>>>> v4.9.227
 	struct samsung_pin_bank *bank;
 	void __iomem *reg;
 	u32 mask, shift, data, pin_offset;
@@ -378,7 +396,11 @@ static void samsung_pinmux_setup(struct pinctrl_dev *pctldev, unsigned selector,
 	func = &drvdata->pmx_functions[selector];
 	grp = &drvdata->pin_groups[group];
 
+<<<<<<< HEAD
 	pin_to_reg_bank(drvdata, grp->pins[0] - drvdata->ctrl->base,
+=======
+	pin_to_reg_bank(drvdata, grp->pins[0] - drvdata->pin_base,
+>>>>>>> v4.9.227
 			&reg, &pin_offset, &bank);
 	type = bank->type;
 	mask = (1 << type->fld_width[PINCFG_TYPE_FUNC]) - 1;
@@ -422,7 +444,11 @@ static int samsung_pinconf_rw(struct pinctrl_dev *pctldev, unsigned int pin,
 				unsigned long *config, bool set)
 {
 	struct samsung_pinctrl_drv_data *drvdata;
+<<<<<<< HEAD
 	struct samsung_pin_bank_type *type;
+=======
+	const struct samsung_pin_bank_type *type;
+>>>>>>> v4.9.227
 	struct samsung_pin_bank *bank;
 	void __iomem *reg_base;
 	enum pincfg_type cfg_type = PINCFG_UNPACK_TYPE(*config);
@@ -431,7 +457,11 @@ static int samsung_pinconf_rw(struct pinctrl_dev *pctldev, unsigned int pin,
 	unsigned long flags;
 
 	drvdata = pinctrl_dev_get_drvdata(pctldev);
+<<<<<<< HEAD
 	pin_to_reg_bank(drvdata, pin - drvdata->ctrl->base, &reg_base,
+=======
+	pin_to_reg_bank(drvdata, pin - drvdata->pin_base, &reg_base,
+>>>>>>> v4.9.227
 					&pin_offset, &bank);
 	type = bank->type;
 
@@ -524,25 +554,53 @@ static const struct pinconf_ops samsung_pinconf_ops = {
 	.pin_config_group_set	= samsung_pinconf_group_set,
 };
 
+<<<<<<< HEAD
 /* gpiolib gpio_set callback function */
 static void samsung_gpio_set(struct gpio_chip *gc, unsigned offset, int value)
 {
 	struct samsung_pin_bank *bank = gc_to_pin_bank(gc);
 	struct samsung_pin_bank_type *type = bank->type;
 	unsigned long flags;
+=======
+/*
+ * The samsung_gpio_set_vlaue() should be called with "bank->slock" held
+ * to avoid race condition.
+ */
+static void samsung_gpio_set_value(struct gpio_chip *gc,
+					  unsigned offset, int value)
+{
+	struct samsung_pin_bank *bank = gpiochip_get_data(gc);
+	const struct samsung_pin_bank_type *type = bank->type;
+>>>>>>> v4.9.227
 	void __iomem *reg;
 	u32 data;
 
 	reg = bank->drvdata->virt_base + bank->pctl_offset;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&bank->slock, flags);
 
+=======
+>>>>>>> v4.9.227
 	data = readl(reg + type->reg_offset[PINCFG_TYPE_DAT]);
 	data &= ~(1 << offset);
 	if (value)
 		data |= 1 << offset;
 	writel(data, reg + type->reg_offset[PINCFG_TYPE_DAT]);
+<<<<<<< HEAD
 
+=======
+}
+
+/* gpiolib gpio_set callback function */
+static void samsung_gpio_set(struct gpio_chip *gc, unsigned offset, int value)
+{
+	struct samsung_pin_bank *bank = gpiochip_get_data(gc);
+	unsigned long flags;
+
+	spin_lock_irqsave(&bank->slock, flags);
+	samsung_gpio_set_value(gc, offset, value);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&bank->slock, flags);
 }
 
@@ -551,8 +609,13 @@ static int samsung_gpio_get(struct gpio_chip *gc, unsigned offset)
 {
 	void __iomem *reg;
 	u32 data;
+<<<<<<< HEAD
 	struct samsung_pin_bank *bank = gc_to_pin_bank(gc);
 	struct samsung_pin_bank_type *type = bank->type;
+=======
+	struct samsung_pin_bank *bank = gpiochip_get_data(gc);
+	const struct samsung_pin_bank_type *type = bank->type;
+>>>>>>> v4.9.227
 
 	reg = bank->drvdata->virt_base + bank->pctl_offset;
 
@@ -563,20 +626,34 @@ static int samsung_gpio_get(struct gpio_chip *gc, unsigned offset)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * The samsung_gpio_set_direction() should be called with "bank->slock" held
+ * to avoid race condition.
+>>>>>>> v4.9.227
  * The calls to gpio_direction_output() and gpio_direction_input()
  * leads to this function call.
  */
 static int samsung_gpio_set_direction(struct gpio_chip *gc,
 					     unsigned offset, bool input)
 {
+<<<<<<< HEAD
 	struct samsung_pin_bank_type *type;
+=======
+	const struct samsung_pin_bank_type *type;
+>>>>>>> v4.9.227
 	struct samsung_pin_bank *bank;
 	struct samsung_pinctrl_drv_data *drvdata;
 	void __iomem *reg;
 	u32 data, mask, shift;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	bank = gc_to_pin_bank(gc);
+=======
+
+	bank = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	type = bank->type;
 	drvdata = bank->drvdata;
 
@@ -591,31 +668,61 @@ static int samsung_gpio_set_direction(struct gpio_chip *gc,
 		reg += 4;
 	}
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&bank->slock, flags);
 
+=======
+>>>>>>> v4.9.227
 	data = readl(reg);
 	data &= ~(mask << shift);
 	if (!input)
 		data |= FUNC_OUTPUT << shift;
 	writel(data, reg);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&bank->slock, flags);
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 /* gpiolib gpio_direction_input callback function. */
 static int samsung_gpio_direction_input(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	return samsung_gpio_set_direction(gc, offset, true);
+=======
+	struct samsung_pin_bank *bank = gpiochip_get_data(gc);
+	unsigned long flags;
+	int ret;
+
+	spin_lock_irqsave(&bank->slock, flags);
+	ret = samsung_gpio_set_direction(gc, offset, true);
+	spin_unlock_irqrestore(&bank->slock, flags);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /* gpiolib gpio_direction_output callback function. */
 static int samsung_gpio_direction_output(struct gpio_chip *gc, unsigned offset,
 							int value)
 {
+<<<<<<< HEAD
 	samsung_gpio_set(gc, offset, value);
 	return samsung_gpio_set_direction(gc, offset, false);
+=======
+	struct samsung_pin_bank *bank = gpiochip_get_data(gc);
+	unsigned long flags;
+	int ret;
+
+	spin_lock_irqsave(&bank->slock, flags);
+	samsung_gpio_set_value(gc, offset, value);
+	ret = samsung_gpio_set_direction(gc, offset, false);
+	spin_unlock_irqrestore(&bank->slock, flags);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -624,7 +731,11 @@ static int samsung_gpio_direction_output(struct gpio_chip *gc, unsigned offset,
  */
 static int samsung_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	struct samsung_pin_bank *bank = gc_to_pin_bank(gc);
+=======
+	struct samsung_pin_bank *bank = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	unsigned int virq;
 
 	if (!bank->irq_domain)
@@ -758,8 +869,15 @@ static struct samsung_pmx_func *samsung_pinctrl_create_functions(
 		if (!of_get_child_count(cfg_np)) {
 			ret = samsung_pinctrl_create_function(dev, drvdata,
 							cfg_np, func);
+<<<<<<< HEAD
 			if (ret < 0)
 				return ERR_PTR(ret);
+=======
+			if (ret < 0) {
+				of_node_put(cfg_np);
+				return ERR_PTR(ret);
+			}
+>>>>>>> v4.9.227
 			if (ret > 0) {
 				++func;
 				++func_cnt;
@@ -770,8 +888,16 @@ static struct samsung_pmx_func *samsung_pinctrl_create_functions(
 		for_each_child_of_node(cfg_np, func_np) {
 			ret = samsung_pinctrl_create_function(dev, drvdata,
 						func_np, func);
+<<<<<<< HEAD
 			if (ret < 0)
 				return ERR_PTR(ret);
+=======
+			if (ret < 0) {
+				of_node_put(func_np);
+				of_node_put(cfg_np);
+				return ERR_PTR(ret);
+			}
+>>>>>>> v4.9.227
 			if (ret > 0) {
 				++func;
 				++func_cnt;
@@ -806,7 +932,11 @@ static int samsung_pinctrl_parse_dt(struct platform_device *pdev,
 	functions = samsung_pinctrl_create_functions(dev, drvdata, &func_cnt);
 	if (IS_ERR(functions)) {
 		dev_err(dev, "failed to parse pin functions\n");
+<<<<<<< HEAD
 		return PTR_ERR(groups);
+=======
+		return PTR_ERR(functions);
+>>>>>>> v4.9.227
 	}
 
 	drvdata->pin_groups = groups;
@@ -834,32 +964,53 @@ static int samsung_pinctrl_register(struct platform_device *pdev,
 	ctrldesc->confops = &samsung_pinconf_ops;
 
 	pindesc = devm_kzalloc(&pdev->dev, sizeof(*pindesc) *
+<<<<<<< HEAD
 			drvdata->ctrl->nr_pins, GFP_KERNEL);
+=======
+			drvdata->nr_pins, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!pindesc) {
 		dev_err(&pdev->dev, "mem alloc for pin descriptors failed\n");
 		return -ENOMEM;
 	}
 	ctrldesc->pins = pindesc;
+<<<<<<< HEAD
 	ctrldesc->npins = drvdata->ctrl->nr_pins;
 
 	/* dynamically populate the pin number and pin name for pindesc */
 	for (pin = 0, pdesc = pindesc; pin < ctrldesc->npins; pin++, pdesc++)
 		pdesc->number = pin + drvdata->ctrl->base;
+=======
+	ctrldesc->npins = drvdata->nr_pins;
+
+	/* dynamically populate the pin number and pin name for pindesc */
+	for (pin = 0, pdesc = pindesc; pin < ctrldesc->npins; pin++, pdesc++)
+		pdesc->number = pin + drvdata->pin_base;
+>>>>>>> v4.9.227
 
 	/*
 	 * allocate space for storing the dynamically generated names for all
 	 * the pins which belong to this pin-controller.
 	 */
 	pin_names = devm_kzalloc(&pdev->dev, sizeof(char) * PIN_NAME_LENGTH *
+<<<<<<< HEAD
 					drvdata->ctrl->nr_pins, GFP_KERNEL);
+=======
+					drvdata->nr_pins, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!pin_names) {
 		dev_err(&pdev->dev, "mem alloc for pin names failed\n");
 		return -ENOMEM;
 	}
 
 	/* for each pin, the name of the pin is pin-bank name + pin number */
+<<<<<<< HEAD
 	for (bank = 0; bank < drvdata->ctrl->nr_banks; bank++) {
 		pin_bank = &drvdata->ctrl->pin_banks[bank];
+=======
+	for (bank = 0; bank < drvdata->nr_banks; bank++) {
+		pin_bank = &drvdata->pin_banks[bank];
+>>>>>>> v4.9.227
 		for (pin = 0; pin < pin_bank->nr_pins; pin++) {
 			sprintf(pin_names, "%s-%d", pin_bank->name, pin);
 			pdesc = pindesc + pin_bank->pin_base + pin;
@@ -872,6 +1023,7 @@ static int samsung_pinctrl_register(struct platform_device *pdev,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	drvdata->pctl_dev = pinctrl_register(ctrldesc, &pdev->dev, drvdata);
 	if (!drvdata->pctl_dev) {
 		dev_err(&pdev->dev, "could not register pinctrl driver\n");
@@ -883,6 +1035,20 @@ static int samsung_pinctrl_register(struct platform_device *pdev,
 		pin_bank->grange.name = pin_bank->name;
 		pin_bank->grange.id = bank;
 		pin_bank->grange.pin_base = drvdata->ctrl->base
+=======
+	drvdata->pctl_dev = devm_pinctrl_register(&pdev->dev, ctrldesc,
+						  drvdata);
+	if (IS_ERR(drvdata->pctl_dev)) {
+		dev_err(&pdev->dev, "could not register pinctrl driver\n");
+		return PTR_ERR(drvdata->pctl_dev);
+	}
+
+	for (bank = 0; bank < drvdata->nr_banks; ++bank) {
+		pin_bank = &drvdata->pin_banks[bank];
+		pin_bank->grange.name = pin_bank->name;
+		pin_bank->grange.id = bank;
+		pin_bank->grange.pin_base = drvdata->pin_base
+>>>>>>> v4.9.227
 						+ pin_bank->pin_base;
 		pin_bank->grange.base = pin_bank->gpio_chip.base;
 		pin_bank->grange.npins = pin_bank->gpio_chip.ngpio;
@@ -893,6 +1059,7 @@ static int samsung_pinctrl_register(struct platform_device *pdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int samsung_gpio_request(struct gpio_chip *chip, unsigned offset)
 {
 	return pinctrl_request_gpio(chip->base + offset);
@@ -906,6 +1073,11 @@ static void samsung_gpio_free(struct gpio_chip *chip, unsigned offset)
 static const struct gpio_chip samsung_gpiolib_chip = {
 	.request = samsung_gpio_request,
 	.free = samsung_gpio_free,
+=======
+static const struct gpio_chip samsung_gpiolib_chip = {
+	.request = gpiochip_generic_request,
+	.free = gpiochip_generic_free,
+>>>>>>> v4.9.227
 	.set = samsung_gpio_set,
 	.get = samsung_gpio_get,
 	.direction_input = samsung_gpio_direction_input,
@@ -918,12 +1090,17 @@ static const struct gpio_chip samsung_gpiolib_chip = {
 static int samsung_gpiolib_register(struct platform_device *pdev,
 				    struct samsung_pinctrl_drv_data *drvdata)
 {
+<<<<<<< HEAD
 	struct samsung_pin_ctrl *ctrl = drvdata->ctrl;
 	struct samsung_pin_bank *bank = ctrl->pin_banks;
+=======
+	struct samsung_pin_bank *bank = drvdata->pin_banks;
+>>>>>>> v4.9.227
 	struct gpio_chip *gc;
 	int ret;
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < ctrl->nr_banks; ++i, ++bank) {
 		bank->gpio_chip = samsung_gpiolib_chip;
 
@@ -935,6 +1112,19 @@ static int samsung_gpiolib_register(struct platform_device *pdev,
 		gc->label = bank->name;
 
 		ret = gpiochip_add(gc);
+=======
+	for (i = 0; i < drvdata->nr_banks; ++i, ++bank) {
+		bank->gpio_chip = samsung_gpiolib_chip;
+
+		gc = &bank->gpio_chip;
+		gc->base = drvdata->pin_base + bank->pin_base;
+		gc->ngpio = bank->nr_pins;
+		gc->parent = &pdev->dev;
+		gc->of_node = bank->of_node;
+		gc->label = bank->name;
+
+		ret = gpiochip_add_data(gc, bank);
+>>>>>>> v4.9.227
 		if (ret) {
 			dev_err(&pdev->dev, "failed to register gpio_chip %s, error code: %d\n",
 							gc->label, ret);
@@ -954,51 +1144,107 @@ fail:
 static int samsung_gpiolib_unregister(struct platform_device *pdev,
 				      struct samsung_pinctrl_drv_data *drvdata)
 {
+<<<<<<< HEAD
 	struct samsung_pin_ctrl *ctrl = drvdata->ctrl;
 	struct samsung_pin_bank *bank = ctrl->pin_banks;
 	int i;
 
 	for (i = 0; i < ctrl->nr_banks; ++i, ++bank)
 		gpiochip_remove(&bank->gpio_chip);
+=======
+	struct samsung_pin_bank *bank = drvdata->pin_banks;
+	int i;
+
+	for (i = 0; i < drvdata->nr_banks; ++i, ++bank)
+		gpiochip_remove(&bank->gpio_chip);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static const struct of_device_id samsung_pinctrl_dt_match[];
 
 /* retrieve the soc specific data */
+<<<<<<< HEAD
 static struct samsung_pin_ctrl *samsung_pinctrl_get_soc_data(
 				struct samsung_pinctrl_drv_data *d,
 				struct platform_device *pdev)
+=======
+static const struct samsung_pin_ctrl *
+samsung_pinctrl_get_soc_data(struct samsung_pinctrl_drv_data *d,
+			     struct platform_device *pdev)
+>>>>>>> v4.9.227
 {
 	int id;
 	const struct of_device_id *match;
 	struct device_node *node = pdev->dev.of_node;
 	struct device_node *np;
+<<<<<<< HEAD
 	struct samsung_pin_ctrl *ctrl;
+=======
+	const struct samsung_pin_bank_data *bdata;
+	const struct samsung_pin_ctrl *ctrl;
+>>>>>>> v4.9.227
 	struct samsung_pin_bank *bank;
 	int i;
 
 	id = of_alias_get_id(node, "pinctrl");
 	if (id < 0) {
 		dev_err(&pdev->dev, "failed to get alias id\n");
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-ENOENT);
+>>>>>>> v4.9.227
 	}
 	match = of_match_node(samsung_pinctrl_dt_match, node);
 	ctrl = (struct samsung_pin_ctrl *)match->data + id;
 
+<<<<<<< HEAD
 	bank = ctrl->pin_banks;
 	for (i = 0; i < ctrl->nr_banks; ++i, ++bank) {
 		spin_lock_init(&bank->slock);
 		bank->drvdata = d;
 		bank->pin_base = ctrl->nr_pins;
 		ctrl->nr_pins += bank->nr_pins;
+=======
+	d->suspend = ctrl->suspend;
+	d->resume = ctrl->resume;
+	d->nr_banks = ctrl->nr_banks;
+	d->pin_banks = devm_kcalloc(&pdev->dev, d->nr_banks,
+					sizeof(*d->pin_banks), GFP_KERNEL);
+	if (!d->pin_banks)
+		return ERR_PTR(-ENOMEM);
+
+	bank = d->pin_banks;
+	bdata = ctrl->pin_banks;
+	for (i = 0; i < ctrl->nr_banks; ++i, ++bdata, ++bank) {
+		bank->type = bdata->type;
+		bank->pctl_offset = bdata->pctl_offset;
+		bank->nr_pins = bdata->nr_pins;
+		bank->eint_func = bdata->eint_func;
+		bank->eint_type = bdata->eint_type;
+		bank->eint_mask = bdata->eint_mask;
+		bank->eint_offset = bdata->eint_offset;
+		bank->name = bdata->name;
+
+		spin_lock_init(&bank->slock);
+		bank->drvdata = d;
+		bank->pin_base = d->nr_pins;
+		d->nr_pins += bank->nr_pins;
+>>>>>>> v4.9.227
 	}
 
 	for_each_child_of_node(node, np) {
 		if (!of_find_property(np, "gpio-controller", NULL))
 			continue;
+<<<<<<< HEAD
 		bank = ctrl->pin_banks;
 		for (i = 0; i < ctrl->nr_banks; ++i, ++bank) {
+=======
+		bank = d->pin_banks;
+		for (i = 0; i < d->nr_banks; ++i, ++bank) {
+>>>>>>> v4.9.227
 			if (!strcmp(bank->name, np->name)) {
 				bank->of_node = np;
 				break;
@@ -1006,8 +1252,13 @@ static struct samsung_pin_ctrl *samsung_pinctrl_get_soc_data(
 		}
 	}
 
+<<<<<<< HEAD
 	ctrl->base = pin_base;
 	pin_base += ctrl->nr_pins;
+=======
+	d->pin_base = pin_base;
+	pin_base += d->nr_pins;
+>>>>>>> v4.9.227
 
 	return ctrl;
 }
@@ -1015,6 +1266,7 @@ static struct samsung_pin_ctrl *samsung_pinctrl_get_soc_data(
 static int samsung_pinctrl_probe(struct platform_device *pdev)
 {
 	struct samsung_pinctrl_drv_data *drvdata;
+<<<<<<< HEAD
 	struct device *dev = &pdev->dev;
 	struct samsung_pin_ctrl *ctrl;
 	struct resource *res;
@@ -1038,6 +1290,22 @@ static int samsung_pinctrl_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 	drvdata->ctrl = ctrl;
+=======
+	const struct samsung_pin_ctrl *ctrl;
+	struct device *dev = &pdev->dev;
+	struct resource *res;
+	int ret;
+
+	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
+	if (!drvdata)
+		return -ENOMEM;
+
+	ctrl = samsung_pinctrl_get_soc_data(drvdata, pdev);
+	if (IS_ERR(ctrl)) {
+		dev_err(&pdev->dev, "driver data not available\n");
+		return PTR_ERR(ctrl);
+	}
+>>>>>>> v4.9.227
 	drvdata->dev = dev;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -1082,6 +1350,7 @@ static int samsung_pinctrl_probe(struct platform_device *pdev)
 static void samsung_pinctrl_suspend_dev(
 	struct samsung_pinctrl_drv_data *drvdata)
 {
+<<<<<<< HEAD
 	struct samsung_pin_ctrl *ctrl = drvdata->ctrl;
 	void __iomem *virt_base = drvdata->virt_base;
 	int i;
@@ -1092,6 +1361,16 @@ static void samsung_pinctrl_suspend_dev(
 
 		u8 *offs = bank->type->reg_offset;
 		u8 *widths = bank->type->fld_width;
+=======
+	void __iomem *virt_base = drvdata->virt_base;
+	int i;
+
+	for (i = 0; i < drvdata->nr_banks; i++) {
+		struct samsung_pin_bank *bank = &drvdata->pin_banks[i];
+		void __iomem *reg = virt_base + bank->pctl_offset;
+		const u8 *offs = bank->type->reg_offset;
+		const u8 *widths = bank->type->fld_width;
+>>>>>>> v4.9.227
 		enum pincfg_type type;
 
 		/* Registers without a powerdown config aren't lost */
@@ -1116,8 +1395,13 @@ static void samsung_pinctrl_suspend_dev(
 		}
 	}
 
+<<<<<<< HEAD
 	if (ctrl->suspend)
 		ctrl->suspend(drvdata);
+=======
+	if (drvdata->suspend)
+		drvdata->suspend(drvdata);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -1130,6 +1414,7 @@ static void samsung_pinctrl_suspend_dev(
  */
 static void samsung_pinctrl_resume_dev(struct samsung_pinctrl_drv_data *drvdata)
 {
+<<<<<<< HEAD
 	struct samsung_pin_ctrl *ctrl = drvdata->ctrl;
 	void __iomem *virt_base = drvdata->virt_base;
 	int i;
@@ -1143,6 +1428,19 @@ static void samsung_pinctrl_resume_dev(struct samsung_pinctrl_drv_data *drvdata)
 
 		u8 *offs = bank->type->reg_offset;
 		u8 *widths = bank->type->fld_width;
+=======
+	void __iomem *virt_base = drvdata->virt_base;
+	int i;
+
+	if (drvdata->resume)
+		drvdata->resume(drvdata);
+
+	for (i = 0; i < drvdata->nr_banks; i++) {
+		struct samsung_pin_bank *bank = &drvdata->pin_banks[i];
+		void __iomem *reg = virt_base + bank->pctl_offset;
+		const u8 *offs = bank->type->reg_offset;
+		const u8 *widths = bank->type->fld_width;
+>>>>>>> v4.9.227
 		enum pincfg_type type;
 
 		/* Registers without a powerdown config aren't lost */
@@ -1218,14 +1516,32 @@ static const struct of_device_id samsung_pinctrl_dt_match[] = {
 		.data = (void *)exynos4210_pin_ctrl },
 	{ .compatible = "samsung,exynos4x12-pinctrl",
 		.data = (void *)exynos4x12_pin_ctrl },
+<<<<<<< HEAD
+=======
+	{ .compatible = "samsung,exynos4415-pinctrl",
+		.data = (void *)exynos4415_pin_ctrl },
+>>>>>>> v4.9.227
 	{ .compatible = "samsung,exynos5250-pinctrl",
 		.data = (void *)exynos5250_pin_ctrl },
 	{ .compatible = "samsung,exynos5260-pinctrl",
 		.data = (void *)exynos5260_pin_ctrl },
+<<<<<<< HEAD
 	{ .compatible = "samsung,exynos5420-pinctrl",
 		.data = (void *)exynos5420_pin_ctrl },
 	{ .compatible = "samsung,s5pv210-pinctrl",
 		.data = (void *)s5pv210_pin_ctrl },
+=======
+	{ .compatible = "samsung,exynos5410-pinctrl",
+		.data = (void *)exynos5410_pin_ctrl },
+	{ .compatible = "samsung,exynos5420-pinctrl",
+		.data = (void *)exynos5420_pin_ctrl },
+	{ .compatible = "samsung,exynos5433-pinctrl",
+		.data = (void *)exynos5433_pin_ctrl },
+	{ .compatible = "samsung,s5pv210-pinctrl",
+		.data = (void *)s5pv210_pin_ctrl },
+	{ .compatible = "samsung,exynos7-pinctrl",
+		.data = (void *)exynos7_pin_ctrl },
+>>>>>>> v4.9.227
 #endif
 #ifdef CONFIG_PINCTRL_S3C64XX
 	{ .compatible = "samsung,s3c64xx-pinctrl",
@@ -1249,8 +1565,13 @@ static struct platform_driver samsung_pinctrl_driver = {
 	.probe		= samsung_pinctrl_probe,
 	.driver = {
 		.name	= "samsung-pinctrl",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.of_match_table = samsung_pinctrl_dt_match,
+=======
+		.of_match_table = samsung_pinctrl_dt_match,
+		.suppress_bind_attrs = true,
+>>>>>>> v4.9.227
 	},
 };
 

@@ -164,6 +164,10 @@ void omap2xxx_sdrc_init_params(u32 force_lock_to_unlock_mode)
 	mem_timings.slow_dll_ctrl |=
 		((mem_timings.fast_dll_ctrl & 0xF) | (1 << 2));
 
+<<<<<<< HEAD
 	/* 90 degree phase for anything below 133Mhz + disable DLL filter */
+=======
+	/* 90 degree phase for anything below 133MHz + disable DLL filter */
+>>>>>>> v4.9.227
 	mem_timings.slow_dll_ctrl |= ((1 << 1) | (3 << 8));
 }

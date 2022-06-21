@@ -17,6 +17,7 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 #include "adreno_gpu.h"
 #include "pwrctl.h"
@@ -24,6 +25,9 @@
 #if defined(CONFIG_MSM_BUS_SCALING) && !defined(CONFIG_OF)
 #  include <linux/kgsl.h>
 #endif
+=======
+#include "adreno_gpu.h"
+>>>>>>> v4.9.227
 
 #define ANY_ID 0xff
 
@@ -31,6 +35,7 @@ bool hang_debug = false;
 MODULE_PARM_DESC(hang_debug, "Dump registers when hang is detected (can be slow!)");
 module_param_named(hang_debug, hang_debug, bool, 0600);
 
+<<<<<<< HEAD
 struct msm_gpu *a3xx_gpu_init(struct drm_device *dev);
 struct msm_gpu *a4xx_gpu_init(struct drm_device *dev);
 struct msm_gpu *a5xx_gpu_init(struct drm_device *dev);
@@ -59,6 +64,66 @@ static const struct adreno_info gpulist[] = {
 
 MODULE_FIRMWARE("a530_pm4.fw");
 MODULE_FIRMWARE("a530_pfp.fw");
+=======
+static const struct adreno_info gpulist[] = {
+	{
+		.rev   = ADRENO_REV(3, 0, 5, ANY_ID),
+		.revn  = 305,
+		.name  = "A305",
+		.pm4fw = "a300_pm4.fw",
+		.pfpfw = "a300_pfp.fw",
+		.gmem  = SZ_256K,
+		.init  = a3xx_gpu_init,
+	}, {
+		.rev   = ADRENO_REV(3, 0, 6, 0),
+		.revn  = 307,        /* because a305c is revn==306 */
+		.name  = "A306",
+		.pm4fw = "a300_pm4.fw",
+		.pfpfw = "a300_pfp.fw",
+		.gmem  = SZ_128K,
+		.init  = a3xx_gpu_init,
+	}, {
+		.rev   = ADRENO_REV(3, 2, ANY_ID, ANY_ID),
+		.revn  = 320,
+		.name  = "A320",
+		.pm4fw = "a300_pm4.fw",
+		.pfpfw = "a300_pfp.fw",
+		.gmem  = SZ_512K,
+		.init  = a3xx_gpu_init,
+	}, {
+		.rev   = ADRENO_REV(3, 3, 0, ANY_ID),
+		.revn  = 330,
+		.name  = "A330",
+		.pm4fw = "a330_pm4.fw",
+		.pfpfw = "a330_pfp.fw",
+		.gmem  = SZ_1M,
+		.init  = a3xx_gpu_init,
+	}, {
+		.rev   = ADRENO_REV(4, 2, 0, ANY_ID),
+		.revn  = 420,
+		.name  = "A420",
+		.pm4fw = "a420_pm4.fw",
+		.pfpfw = "a420_pfp.fw",
+		.gmem  = (SZ_1M + SZ_512K),
+		.init  = a4xx_gpu_init,
+	}, {
+		.rev   = ADRENO_REV(4, 3, 0, ANY_ID),
+		.revn  = 430,
+		.name  = "A430",
+		.pm4fw = "a420_pm4.fw",
+		.pfpfw = "a420_pfp.fw",
+		.gmem  = (SZ_1M + SZ_512K),
+		.init  = a4xx_gpu_init,
+	},
+};
+
+MODULE_FIRMWARE("a300_pm4.fw");
+MODULE_FIRMWARE("a300_pfp.fw");
+MODULE_FIRMWARE("a330_pm4.fw");
+MODULE_FIRMWARE("a330_pfp.fw");
+MODULE_FIRMWARE("a420_pm4.fw");
+MODULE_FIRMWARE("a420_pfp.fw");
+>>>>>>> v4.9.227
 
 static inline bool _rev_match(uint8_t entry, uint8_t id)
 {
@@ -135,6 +200,7 @@ struct msm_gpu *adreno_load_gpu(struct drm_device *dev)
 	return gpu;
 }
 
+<<<<<<< HEAD
 
 struct msm_iommu *get_gpu_iommu(struct platform_device *pdev)
 {
@@ -309,6 +375,8 @@ static int adreno_iommu_probe(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static void set_gpu_pdev(struct drm_device *dev,
 		struct platform_device *pdev)
 {
@@ -316,6 +384,7 @@ static void set_gpu_pdev(struct drm_device *dev,
 	priv->gpu_pdev = pdev;
 }
 
+<<<<<<< HEAD
 static int of_parse_legacy_clk(struct adreno_platform_config *config,
 			      struct device_node *node)
 {
@@ -447,6 +516,16 @@ static int adreno_bind(struct device *dev, struct device *master, void *data)
 	int ret;
 
 	ret = of_property_read_u32(root, "qcom,chipid", &val);
+=======
+static int adreno_bind(struct device *dev, struct device *master, void *data)
+{
+	static struct adreno_platform_config config = {};
+	struct device_node *child, *node = dev->of_node;
+	u32 val;
+	int ret;
+
+	ret = of_property_read_u32(node, "qcom,chipid", &val);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(dev, "could not find chipid: %d\n", ret);
 		return ret;
@@ -458,6 +537,7 @@ static int adreno_bind(struct device *dev, struct device *master, void *data)
 	/* find clock rates: */
 	config.fast_rate = 0;
 	config.slow_rate = ~0;
+<<<<<<< HEAD
 
 	node = of_find_node_by_name(root, "qcom,gpu-pwrlevel-bins");
 	if (node == NULL)
@@ -466,13 +546,35 @@ static int adreno_bind(struct device *dev, struct device *master, void *data)
 		ret = of_parse_pwrlevel_bin(dev, &config, node);
 
 	if (ret || !config.fast_rate) {
+=======
+	for_each_child_of_node(node, child) {
+		if (of_device_is_compatible(child, "qcom,gpu-pwrlevels")) {
+			struct device_node *pwrlvl;
+			for_each_child_of_node(child, pwrlvl) {
+				ret = of_property_read_u32(pwrlvl, "qcom,gpu-freq", &val);
+				if (ret) {
+					dev_err(dev, "could not find gpu-freq: %d\n", ret);
+					return ret;
+				}
+				config.fast_rate = max(config.fast_rate, val);
+				config.slow_rate = min(config.slow_rate, val);
+			}
+		}
+	}
+
+	if (!config.fast_rate) {
+>>>>>>> v4.9.227
 		dev_err(dev, "could not find clk rates\n");
 		return -ENXIO;
 	}
 
 	dev->platform_data = &config;
 	set_gpu_pdev(dev_get_drvdata(master), to_platform_device(dev));
+<<<<<<< HEAD
 	return adreno_iommu_probe(to_platform_device(dev));
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void adreno_unbind(struct device *dev, struct device *master,

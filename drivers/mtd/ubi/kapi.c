@@ -227,9 +227,15 @@ out_unlock:
 out_free:
 	kfree(desc);
 out_put_ubi:
+<<<<<<< HEAD
 	ubi_put_device(ubi);
 	ubi_err(ubi, "cannot open device %d, volume %d, error %d",
 		ubi_num, vol_id, err);
+=======
+	ubi_err(ubi, "cannot open device %d, volume %d, error %d",
+		ubi_num, vol_id, err);
+	ubi_put_device(ubi);
+>>>>>>> v4.9.227
 	return ERR_PTR(err);
 }
 EXPORT_SYMBOL_GPL(ubi_open_volume);
@@ -301,9 +307,15 @@ EXPORT_SYMBOL_GPL(ubi_open_volume_nm);
  */
 struct ubi_volume_desc *ubi_open_volume_path(const char *pathname, int mode)
 {
+<<<<<<< HEAD
 	int error, ubi_num, vol_id, mod;
 	struct inode *inode;
 	struct path path;
+=======
+	int error, ubi_num, vol_id;
+	struct path path;
+	struct kstat stat;
+>>>>>>> v4.9.227
 
 	dbg_gen("open volume %s, mode %d", pathname, mode);
 
@@ -314,6 +326,7 @@ struct ubi_volume_desc *ubi_open_volume_path(const char *pathname, int mode)
 	if (error)
 		return ERR_PTR(error);
 
+<<<<<<< HEAD
 	inode = path.dentry->d_inode;
 	mod = inode->i_mode;
 	ubi_num = ubi_major2num(imajor(inode));
@@ -322,6 +335,19 @@ struct ubi_volume_desc *ubi_open_volume_path(const char *pathname, int mode)
 
 	if (!S_ISCHR(mod))
 		return ERR_PTR(-EINVAL);
+=======
+	error = vfs_getattr(&path, &stat);
+	path_put(&path);
+	if (error)
+		return ERR_PTR(error);
+
+	if (!S_ISCHR(stat.mode))
+		return ERR_PTR(-EINVAL);
+
+	ubi_num = ubi_major2num(MAJOR(stat.rdev));
+	vol_id = MINOR(stat.rdev) - 1;
+
+>>>>>>> v4.9.227
 	if (vol_id >= 0 && ubi_num >= 0)
 		return ubi_open_volume(ubi_num, vol_id, mode);
 	return ERR_PTR(-ENODEV);
@@ -535,7 +561,11 @@ int ubi_leb_write(struct ubi_volume_desc *desc, int lnum, const void *buf,
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
+<<<<<<< HEAD
 	if (lnum < 0 || lnum >= vol->reserved_pebs || offset < 0 || len < 0 ||
+=======
+	if (!ubi_leb_valid(vol, lnum) || offset < 0 || len < 0 ||
+>>>>>>> v4.9.227
 	    offset + len > vol->usable_leb_size ||
 	    offset & (ubi->min_io_size - 1) || len & (ubi->min_io_size - 1))
 		return -EINVAL;
@@ -580,7 +610,11 @@ int ubi_leb_change(struct ubi_volume_desc *desc, int lnum, const void *buf,
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
+<<<<<<< HEAD
 	if (lnum < 0 || lnum >= vol->reserved_pebs || len < 0 ||
+=======
+	if (!ubi_leb_valid(vol, lnum) || len < 0 ||
+>>>>>>> v4.9.227
 	    len > vol->usable_leb_size || len & (ubi->min_io_size - 1))
 		return -EINVAL;
 
@@ -617,7 +651,11 @@ int ubi_leb_erase(struct ubi_volume_desc *desc, int lnum)
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
+<<<<<<< HEAD
 	if (lnum < 0 || lnum >= vol->reserved_pebs)
+=======
+	if (!ubi_leb_valid(vol, lnum))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	if (vol->upd_marker)
@@ -677,7 +715,11 @@ int ubi_leb_unmap(struct ubi_volume_desc *desc, int lnum)
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
+<<<<<<< HEAD
 	if (lnum < 0 || lnum >= vol->reserved_pebs)
+=======
+	if (!ubi_leb_valid(vol, lnum))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	if (vol->upd_marker)
@@ -708,18 +750,30 @@ int ubi_leb_map(struct ubi_volume_desc *desc, int lnum)
 	struct ubi_volume *vol = desc->vol;
 	struct ubi_device *ubi = vol->ubi;
 
+<<<<<<< HEAD
 	dbg_gen("unmap LEB %d:%d", vol->vol_id, lnum);
+=======
+	dbg_gen("map LEB %d:%d", vol->vol_id, lnum);
+>>>>>>> v4.9.227
 
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
+<<<<<<< HEAD
 	if (lnum < 0 || lnum >= vol->reserved_pebs)
+=======
+	if (!ubi_leb_valid(vol, lnum))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	if (vol->upd_marker)
 		return -EBADF;
 
+<<<<<<< HEAD
 	if (vol->eba_tbl[lnum] >= 0)
+=======
+	if (ubi_eba_is_mapped(vol, lnum))
+>>>>>>> v4.9.227
 		return -EBADMSG;
 
 	return ubi_eba_write_leb(ubi, vol, lnum, NULL, 0, 0);
@@ -748,13 +802,21 @@ int ubi_is_mapped(struct ubi_volume_desc *desc, int lnum)
 
 	dbg_gen("test LEB %d:%d", vol->vol_id, lnum);
 
+<<<<<<< HEAD
 	if (lnum < 0 || lnum >= vol->reserved_pebs)
+=======
+	if (!ubi_leb_valid(vol, lnum))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	if (vol->upd_marker)
 		return -EBADF;
 
+<<<<<<< HEAD
 	return vol->eba_tbl[lnum] >= 0;
+=======
+	return ubi_eba_is_mapped(vol, lnum);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(ubi_is_mapped);
 

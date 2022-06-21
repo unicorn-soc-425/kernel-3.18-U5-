@@ -570,6 +570,7 @@ flush_thread (void)
 }
 
 /*
+<<<<<<< HEAD
  * Clean up state associated with current thread.  This is called when
  * the thread calls exit().
  */
@@ -586,6 +587,24 @@ exit_thread (void)
 	/* free debug register resources */
 	if (current->thread.flags & IA64_THREAD_DBG_VALID)
 		pfm_release_debug_registers(current);
+=======
+ * Clean up state associated with a thread.  This is called when
+ * the thread calls exit().
+ */
+void
+exit_thread (struct task_struct *tsk)
+{
+
+	ia64_drop_fpu(tsk);
+#ifdef CONFIG_PERFMON
+       /* if needed, stop monitoring and flush state to perfmon context */
+	if (tsk->thread.pfm_context)
+		pfm_exit_thread(tsk);
+
+	/* free debug register resources */
+	if (tsk->thread.flags & IA64_THREAD_DBG_VALID)
+		pfm_release_debug_registers(tsk);
+>>>>>>> v4.9.227
 #endif
 }
 

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright © 2006 Intel Corporation
+=======
+ * Copyright © 2016 Intel Corporation
+>>>>>>> v4.9.227
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -19,6 +23,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+<<<<<<< HEAD
  *
  * Authors:
  *    Eric Anholt <eric@anholt.net>
@@ -540,6 +545,26 @@ struct bdb_driver_features {
 #define EDP_VSWING_0_6V		1
 #define EDP_VSWING_0_8V		2
 #define EDP_VSWING_1_2V		3
+=======
+ */
+
+/*
+ * Please use intel_vbt_defs.h for VBT private data, to hide and abstract away
+ * the VBT from the rest of the driver. Add the parsed, clean data to struct
+ * intel_vbt_data within struct drm_i915_private.
+ */
+
+#ifndef _INTEL_BIOS_H_
+#define _INTEL_BIOS_H_
+
+enum intel_backlight_type {
+	INTEL_BACKLIGHT_PMIC,
+	INTEL_BACKLIGHT_LPSS,
+	INTEL_BACKLIGHT_DISPLAY_DDI,
+	INTEL_BACKLIGHT_DSI_DCS,
+	INTEL_BACKLIGHT_PANEL_DRIVER_INTERFACE,
+};
+>>>>>>> v4.9.227
 
 struct edp_power_seq {
 	u16 t1_t3;
@@ -549,6 +574,7 @@ struct edp_power_seq {
 	u16 t11_t12;
 } __packed;
 
+<<<<<<< HEAD
 struct edp_link_params {
 	u8 rate:4;
 	u8 lanes:4;
@@ -779,10 +805,40 @@ int intel_parse_bios(struct drm_device *dev);
  * entery is based on the panel_index in #40 LFP
  */
 #define MAX_MIPI_CONFIGURATIONS	6
+=======
+/* MIPI Sequence Block definitions */
+enum mipi_seq {
+	MIPI_SEQ_END = 0,
+	MIPI_SEQ_ASSERT_RESET,
+	MIPI_SEQ_INIT_OTP,
+	MIPI_SEQ_DISPLAY_ON,
+	MIPI_SEQ_DISPLAY_OFF,
+	MIPI_SEQ_DEASSERT_RESET,
+	MIPI_SEQ_BACKLIGHT_ON,		/* sequence block v2+ */
+	MIPI_SEQ_BACKLIGHT_OFF,		/* sequence block v2+ */
+	MIPI_SEQ_TEAR_ON,		/* sequence block v2+ */
+	MIPI_SEQ_TEAR_OFF,		/* sequence block v3+ */
+	MIPI_SEQ_POWER_ON,		/* sequence block v3+ */
+	MIPI_SEQ_POWER_OFF,		/* sequence block v3+ */
+	MIPI_SEQ_MAX
+};
+
+enum mipi_seq_element {
+	MIPI_SEQ_ELEM_END = 0,
+	MIPI_SEQ_ELEM_SEND_PKT,
+	MIPI_SEQ_ELEM_DELAY,
+	MIPI_SEQ_ELEM_GPIO,
+	MIPI_SEQ_ELEM_I2C,		/* sequence block v2+ */
+	MIPI_SEQ_ELEM_SPI,		/* sequence block v3+ */
+	MIPI_SEQ_ELEM_PMIC,		/* sequence block v3+ */
+	MIPI_SEQ_ELEM_MAX
+};
+>>>>>>> v4.9.227
 
 #define MIPI_DSI_UNDEFINED_PANEL_ID	0
 #define MIPI_DSI_GENERIC_PANEL_ID	1
 
+<<<<<<< HEAD
 /*
  * PMIC vs SoC Backlight support specified in pwm_blc
  * field in mipi_config block below.
@@ -790,6 +846,8 @@ int intel_parse_bios(struct drm_device *dev);
 #define PPS_BLC_PMIC   0
 #define PPS_BLC_SOC    1
 
+=======
+>>>>>>> v4.9.227
 struct mipi_config {
 	u16 panel_id;
 
@@ -807,6 +865,11 @@ struct mipi_config {
 	u32 video_transfer_mode:2;
 
 	u32 cabc_supported:1;
+<<<<<<< HEAD
+=======
+#define PPS_BLC_PMIC   0
+#define PPS_BLC_SOC    1
+>>>>>>> v4.9.227
 	u32 pwm_blc:1;
 
 	/* Bit 13:10 */
@@ -832,7 +895,17 @@ struct mipi_config {
 	u16 dual_link:2;
 	u16 lane_cnt:2;
 	u16 pixel_overlap:3;
+<<<<<<< HEAD
 	u16 rsvd3:9;
+=======
+	u16 rgb_flip:1;
+#define DL_DCS_PORT_A			0x00
+#define DL_DCS_PORT_C			0x01
+#define DL_DCS_PORT_A_AND_C		0x02
+	u16 dl_dcs_cabc_ports:2;
+	u16 dl_dcs_backlight_ports:2;
+	u16 rsvd3:4;
+>>>>>>> v4.9.227
 
 	u16 rsvd4;
 
@@ -910,12 +983,16 @@ struct mipi_config {
 
 } __packed;
 
+<<<<<<< HEAD
 /* Block 52 contains MIPI configuration block
  * 6 * bdb_mipi_config, followed by 6 pps data
  * block below
  *
  * all delays has a unit of 100us
  */
+=======
+/* all delays have a unit of 100us */
+>>>>>>> v4.9.227
 struct mipi_pps_data {
 	u16 panel_on_delay;
 	u16 bl_enable_delay;
@@ -924,6 +1001,7 @@ struct mipi_pps_data {
 	u16 panel_power_cycle_delay;
 } __packed;
 
+<<<<<<< HEAD
 struct bdb_mipi_config {
 	struct mipi_config config[MAX_MIPI_CONFIGURATIONS];
 	struct mipi_pps_data pps[MAX_MIPI_CONFIGURATIONS];
@@ -970,3 +1048,6 @@ enum mipi_gpio_pin_index {
 };
 
 #endif /* _I830_BIOS_H_ */
+=======
+#endif /* _INTEL_BIOS_H_ */
+>>>>>>> v4.9.227

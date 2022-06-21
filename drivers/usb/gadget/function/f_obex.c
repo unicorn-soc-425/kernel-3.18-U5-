@@ -20,7 +20,10 @@
 #include <linux/module.h>
 
 #include "u_serial.h"
+<<<<<<< HEAD
 #include "gadget_chips.h"
+=======
+>>>>>>> v4.9.227
 
 
 /*
@@ -37,7 +40,10 @@ struct f_obex {
 	u8				data_id;
 	u8				cur_alt;
 	u8				port_num;
+<<<<<<< HEAD
 	u8				can_activate;
+=======
+>>>>>>> v4.9.227
 };
 
 static inline struct f_obex *func_to_obex(struct usb_function *f)
@@ -208,7 +214,11 @@ static int obex_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 		if (alt > 1)
 			goto fail;
 
+<<<<<<< HEAD
 		if (obex->port.in->driver_data) {
+=======
+		if (obex->port.in->enabled) {
+>>>>>>> v4.9.227
 			dev_dbg(&cdev->gadget->dev,
 				"reset obex ttyGS%d\n", obex->port_num);
 			gserial_disconnect(&obex->port);
@@ -268,9 +278,12 @@ static void obex_connect(struct gserial *g)
 	struct usb_composite_dev *cdev = g->func.config->cdev;
 	int			status;
 
+<<<<<<< HEAD
 	if (!obex->can_activate)
 		return;
 
+=======
+>>>>>>> v4.9.227
 	status = usb_function_activate(&g->func);
 	if (status)
 		dev_dbg(&cdev->gadget->dev,
@@ -284,9 +297,12 @@ static void obex_disconnect(struct gserial *g)
 	struct usb_composite_dev *cdev = g->func.config->cdev;
 	int			status;
 
+<<<<<<< HEAD
 	if (!obex->can_activate)
 		return;
 
+=======
+>>>>>>> v4.9.227
 	status = usb_function_deactivate(&g->func);
 	if (status)
 		dev_dbg(&cdev->gadget->dev,
@@ -304,7 +320,11 @@ static inline bool can_support_obex(struct usb_configuration *c)
 	 *
 	 * Altsettings are mandatory, however...
 	 */
+<<<<<<< HEAD
 	if (!gadget_supports_altsettings(c->cdev->gadget))
+=======
+	if (!gadget_is_altset_supported(c->cdev->gadget))
+>>>>>>> v4.9.227
 		return false;
 
 	/* everything else is *probably* fine ... */
@@ -356,13 +376,19 @@ static int obex_bind(struct usb_configuration *c, struct usb_function *f)
 	if (!ep)
 		goto fail;
 	obex->port.in = ep;
+<<<<<<< HEAD
 	ep->driver_data = cdev;	/* claim */
+=======
+>>>>>>> v4.9.227
 
 	ep = usb_ep_autoconfig(cdev->gadget, &obex_fs_ep_out_desc);
 	if (!ep)
 		goto fail;
 	obex->port.out = ep;
+<<<<<<< HEAD
 	ep->driver_data = cdev;	/* claim */
+=======
+>>>>>>> v4.9.227
 
 	/* support all relevant hardware speeds... we expect that when
 	 * hardware is dual speed, all bulk-capable endpoints work at
@@ -374,6 +400,7 @@ static int obex_bind(struct usb_configuration *c, struct usb_function *f)
 	obex_hs_ep_out_desc.bEndpointAddress =
 		obex_fs_ep_out_desc.bEndpointAddress;
 
+<<<<<<< HEAD
 	status = usb_assign_descriptors(f, fs_function, hs_function, NULL);
 	if (status)
 		goto fail;
@@ -389,6 +416,13 @@ static int obex_bind(struct usb_configuration *c, struct usb_function *f)
 		obex->can_activate = true;
 
 
+=======
+	status = usb_assign_descriptors(f, fs_function, hs_function, NULL,
+					NULL);
+	if (status)
+		goto fail;
+
+>>>>>>> v4.9.227
 	dev_dbg(&cdev->gadget->dev, "obex ttyGS%d: %s speed IN/%s OUT/%s\n",
 		obex->port_num,
 		gadget_is_dualspeed(c->cdev->gadget) ? "dual" : "full",
@@ -397,6 +431,7 @@ static int obex_bind(struct usb_configuration *c, struct usb_function *f)
 	return 0;
 
 fail:
+<<<<<<< HEAD
 	/* we might as well release our claims on endpoints */
 	if (obex->port.out)
 		obex->port.out->driver_data = NULL;
@@ -404,6 +439,9 @@ fail:
 		obex->port.in->driver_data = NULL;
 
 	ERROR(cdev, "%s/%pK: can't bind, err %d\n", f->name, f, status);
+=======
+	ERROR(cdev, "%s/%p: can't bind, err %d\n", f->name, f, status);
+>>>>>>> v4.9.227
 
 	return status;
 }
@@ -414,6 +452,7 @@ static inline struct f_serial_opts *to_f_serial_opts(struct config_item *item)
 			    func_inst.group);
 }
 
+<<<<<<< HEAD
 CONFIGFS_ATTR_STRUCT(f_serial_opts);
 static ssize_t f_obex_attr_show(struct config_item *item,
 				struct configfs_attribute *attr,
@@ -430,6 +469,8 @@ static ssize_t f_obex_attr_show(struct config_item *item,
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static void obex_attr_release(struct config_item *item)
 {
 	struct f_serial_opts *opts = to_f_serial_opts(item);
@@ -439,6 +480,7 @@ static void obex_attr_release(struct config_item *item)
 
 static struct configfs_item_operations obex_item_ops = {
 	.release	= obex_attr_release,
+<<<<<<< HEAD
 	.show_attribute = f_obex_attr_show,
 };
 
@@ -452,6 +494,19 @@ static struct f_serial_opts_attribute f_obex_port_num =
 
 static struct configfs_attribute *acm_attrs[] = {
 	&f_obex_port_num.attr,
+=======
+};
+
+static ssize_t f_obex_port_num_show(struct config_item *item, char *page)
+{
+	return sprintf(page, "%u\n", to_f_serial_opts(item)->port_num);
+}
+
+CONFIGFS_ATTR_RO(f_obex_, port_num);
+
+static struct configfs_attribute *acm_attrs[] = {
+	&f_obex_attr_port_num,
+>>>>>>> v4.9.227
 	NULL,
 };
 
@@ -529,6 +584,10 @@ static struct usb_function *obex_alloc(struct usb_function_instance *fi)
 	obex->port.func.get_alt = obex_get_alt;
 	obex->port.func.disable = obex_disable;
 	obex->port.func.free_func = obex_free;
+<<<<<<< HEAD
+=======
+	obex->port.func.bind_deactivated = true;
+>>>>>>> v4.9.227
 
 	return &obex->port.func;
 }

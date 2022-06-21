@@ -6,7 +6,11 @@
 #include <linux/types.h>
 #include <linux/uio.h>
 
+<<<<<<< HEAD
 #define TCMU_VERSION "1.0"
+=======
+#define TCMU_VERSION "2.0"
+>>>>>>> v4.9.227
 
 /*
  * Ring Design
@@ -39,8 +43,14 @@
  * should process the next packet the same way, and so on.
  */
 
+<<<<<<< HEAD
 #define TCMU_MAILBOX_VERSION 1
 #define ALIGN_SIZE 64 /* Should be enough for most CPUs */
+=======
+#define TCMU_MAILBOX_VERSION 2
+#define ALIGN_SIZE 64 /* Should be enough for most CPUs */
+#define TCMU_MAILBOX_FLAG_CAP_OOOC (1 << 0) /* Out-of-order completions */
+>>>>>>> v4.9.227
 
 struct tcmu_mailbox {
 	__u16 version;
@@ -64,11 +74,21 @@ enum tcmu_opcode {
  * Only a few opcodes, and length is 8-byte aligned, so use low bits for opcode.
  */
 struct tcmu_cmd_entry_hdr {
+<<<<<<< HEAD
 		__u32 len_op;
+=======
+	__u32 len_op;
+	__u16 cmd_id;
+	__u8 kflags;
+#define TCMU_UFLAG_UNKNOWN_OP 0x1
+	__u8 uflags;
+
+>>>>>>> v4.9.227
 } __packed;
 
 #define TCMU_OP_MASK 0x7
 
+<<<<<<< HEAD
 static inline enum tcmu_opcode tcmu_hdr_get_op(struct tcmu_cmd_entry_hdr *hdr)
 {
 	return hdr->len_op & TCMU_OP_MASK;
@@ -89,6 +109,28 @@ static inline void tcmu_hdr_set_len(struct tcmu_cmd_entry_hdr *hdr, __u32 len)
 {
 	hdr->len_op &= TCMU_OP_MASK;
 	hdr->len_op |= len;
+=======
+static inline enum tcmu_opcode tcmu_hdr_get_op(__u32 len_op)
+{
+	return len_op & TCMU_OP_MASK;
+}
+
+static inline void tcmu_hdr_set_op(__u32 *len_op, enum tcmu_opcode op)
+{
+	*len_op &= ~TCMU_OP_MASK;
+	*len_op |= (op & TCMU_OP_MASK);
+}
+
+static inline __u32 tcmu_hdr_get_len(__u32 len_op)
+{
+	return len_op & ~TCMU_OP_MASK;
+}
+
+static inline void tcmu_hdr_set_len(__u32 *len_op, __u32 len)
+{
+	*len_op &= TCMU_OP_MASK;
+	*len_op |= len;
+>>>>>>> v4.9.227
 }
 
 /* Currently the same as SCSI_SENSE_BUFFERSIZE */
@@ -97,6 +139,7 @@ static inline void tcmu_hdr_set_len(struct tcmu_cmd_entry_hdr *hdr, __u32 len)
 struct tcmu_cmd_entry {
 	struct tcmu_cmd_entry_hdr hdr;
 
+<<<<<<< HEAD
 	uint16_t cmd_id;
 	uint16_t __pad1;
 
@@ -104,6 +147,16 @@ struct tcmu_cmd_entry {
 		struct {
 			uint64_t cdb_off;
 			uint64_t iov_cnt;
+=======
+	union {
+		struct {
+			uint32_t iov_cnt;
+			uint32_t iov_bidi_cnt;
+			uint32_t iov_dif_cnt;
+			uint64_t cdb_off;
+			uint64_t __pad1;
+			uint64_t __pad2;
+>>>>>>> v4.9.227
 			struct iovec iov[0];
 		} req;
 		struct {

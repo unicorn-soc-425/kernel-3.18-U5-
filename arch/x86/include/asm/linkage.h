@@ -8,6 +8,7 @@
 
 #ifdef CONFIG_X86_32
 #define asmlinkage CPP_ASMLINKAGE __attribute__((regparm(0)))
+<<<<<<< HEAD
 
 /*
  * Make sure the compiler doesn't do anything stupid with the
@@ -42,6 +43,8 @@
 	__asmlinkage_protect_n(ret, "m" (arg1), "m" (arg2), "m" (arg3), \
 			      "m" (arg4), "m" (arg5), "m" (arg6))
 
+=======
+>>>>>>> v4.9.227
 #endif /* CONFIG_X86_32 */
 
 #ifdef __ASSEMBLY__

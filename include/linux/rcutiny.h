@@ -37,6 +37,19 @@ static inline void cond_synchronize_rcu(unsigned long oldstate)
 	might_sleep();
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned long get_state_synchronize_sched(void)
+{
+	return 0;
+}
+
+static inline void cond_synchronize_sched(unsigned long oldstate)
+{
+	might_sleep();
+}
+
+>>>>>>> v4.9.227
 static inline void rcu_barrier_bh(void)
 {
 	wait_rcu_gp(call_rcu_bh);
@@ -73,12 +86,20 @@ static inline void synchronize_sched_expedited(void)
 }
 
 static inline void kfree_call_rcu(struct rcu_head *head,
+<<<<<<< HEAD
 				  void (*func)(struct rcu_head *rcu))
+=======
+				  rcu_callback_t func)
+>>>>>>> v4.9.227
 {
 	call_rcu(head, func);
 }
 
+<<<<<<< HEAD
 static inline void rcu_note_context_switch(int cpu)
+=======
+static inline void rcu_note_context_switch(void)
+>>>>>>> v4.9.227
 {
 	rcu_sched_qs();
 }
@@ -92,17 +113,77 @@ static inline void rcu_virt_note_context_switch(int cpu)
 }
 
 /*
+<<<<<<< HEAD
  * Return the number of grace periods.
  */
 static inline long rcu_batches_completed(void)
+=======
+ * Return the number of grace periods started.
+ */
+static inline unsigned long rcu_batches_started(void)
+>>>>>>> v4.9.227
 {
 	return 0;
 }
 
 /*
+<<<<<<< HEAD
  * Return the number of bottom-half grace periods.
  */
 static inline long rcu_batches_completed_bh(void)
+=======
+ * Return the number of bottom-half grace periods started.
+ */
+static inline unsigned long rcu_batches_started_bh(void)
+{
+	return 0;
+}
+
+/*
+ * Return the number of sched grace periods started.
+ */
+static inline unsigned long rcu_batches_started_sched(void)
+{
+	return 0;
+}
+
+/*
+ * Return the number of grace periods completed.
+ */
+static inline unsigned long rcu_batches_completed(void)
+{
+	return 0;
+}
+
+/*
+ * Return the number of bottom-half grace periods completed.
+ */
+static inline unsigned long rcu_batches_completed_bh(void)
+{
+	return 0;
+}
+
+/*
+ * Return the number of sched grace periods completed.
+ */
+static inline unsigned long rcu_batches_completed_sched(void)
+{
+	return 0;
+}
+
+/*
+ * Return the number of expedited grace periods completed.
+ */
+static inline unsigned long rcu_exp_batches_completed(void)
+{
+	return 0;
+}
+
+/*
+ * Return the number of expedited sched grace periods completed.
+ */
+static inline unsigned long rcu_exp_batches_completed_sched(void)
+>>>>>>> v4.9.227
 {
 	return 0;
 }
@@ -127,6 +208,33 @@ static inline void rcu_cpu_stall_reset(void)
 {
 }
 
+<<<<<<< HEAD
+=======
+static inline void rcu_idle_enter(void)
+{
+}
+
+static inline void rcu_idle_exit(void)
+{
+}
+
+static inline void rcu_irq_enter(void)
+{
+}
+
+static inline void rcu_irq_exit_irqson(void)
+{
+}
+
+static inline void rcu_irq_enter_irqson(void)
+{
+}
+
+static inline void rcu_irq_exit(void)
+{
+}
+
+>>>>>>> v4.9.227
 static inline void exit_rcu(void)
 {
 }
@@ -154,7 +262,24 @@ static inline bool rcu_is_watching(void)
 	return true;
 }
 
+<<<<<<< HEAD
 
 #endif /* #else defined(CONFIG_DEBUG_LOCK_ALLOC) || defined(CONFIG_RCU_TRACE) */
 
+=======
+#endif /* #else defined(CONFIG_DEBUG_LOCK_ALLOC) || defined(CONFIG_RCU_TRACE) */
+
+static inline void rcu_all_qs(void)
+{
+	barrier(); /* Avoid RCU read-side critical sections leaking across. */
+}
+
+/* RCUtree hotplug events */
+#define rcutree_prepare_cpu      NULL
+#define rcutree_online_cpu       NULL
+#define rcutree_offline_cpu      NULL
+#define rcutree_dead_cpu         NULL
+#define rcutree_dying_cpu        NULL
+
+>>>>>>> v4.9.227
 #endif /* __LINUX_RCUTINY_H */

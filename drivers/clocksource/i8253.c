@@ -19,6 +19,16 @@
 DEFINE_RAW_SPINLOCK(i8253_lock);
 EXPORT_SYMBOL(i8253_lock);
 
+<<<<<<< HEAD
+=======
+/*
+ * Handle PIT quirk in pit_shutdown() where zeroing the counter register
+ * restarts the PIT, negating the shutdown. On platforms with the quirk,
+ * platform specific code can set this to false.
+ */
+bool i8253_clear_counter_on_shutdown __ro_after_init = true;
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_CLKSRC_I8253
 /*
  * Since the PIT overflows every tick, its not very useful
@@ -100,6 +110,7 @@ int __init clocksource_i8253_init(void)
 #endif
 
 #ifdef CONFIG_CLKEVT_I8253
+<<<<<<< HEAD
 /*
  * Initialize the PIT timer.
  *
@@ -138,6 +149,45 @@ static void init_pit_timer(enum clock_event_mode mode,
 		break;
 	}
 	raw_spin_unlock(&i8253_lock);
+=======
+static int pit_shutdown(struct clock_event_device *evt)
+{
+	if (!clockevent_state_oneshot(evt) && !clockevent_state_periodic(evt))
+		return 0;
+
+	raw_spin_lock(&i8253_lock);
+
+	outb_p(0x30, PIT_MODE);
+
+	if (i8253_clear_counter_on_shutdown) {
+		outb_p(0, PIT_CH0);
+		outb_p(0, PIT_CH0);
+	}
+
+	raw_spin_unlock(&i8253_lock);
+	return 0;
+}
+
+static int pit_set_oneshot(struct clock_event_device *evt)
+{
+	raw_spin_lock(&i8253_lock);
+	outb_p(0x38, PIT_MODE);
+	raw_spin_unlock(&i8253_lock);
+	return 0;
+}
+
+static int pit_set_periodic(struct clock_event_device *evt)
+{
+	raw_spin_lock(&i8253_lock);
+
+	/* binary, mode 2, LSB/MSB, ch 0 */
+	outb_p(0x34, PIT_MODE);
+	outb_p(PIT_LATCH & 0xff, PIT_CH0);	/* LSB */
+	outb_p(PIT_LATCH >> 8, PIT_CH0);	/* MSB */
+
+	raw_spin_unlock(&i8253_lock);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -160,10 +210,18 @@ static int pit_next_event(unsigned long delta, struct clock_event_device *evt)
  * it can be solely used for the global tick.
  */
 struct clock_event_device i8253_clockevent = {
+<<<<<<< HEAD
 	.name		= "pit",
 	.features	= CLOCK_EVT_FEAT_PERIODIC,
 	.set_mode	= init_pit_timer,
 	.set_next_event = pit_next_event,
+=======
+	.name			= "pit",
+	.features		= CLOCK_EVT_FEAT_PERIODIC,
+	.set_state_shutdown	= pit_shutdown,
+	.set_state_periodic	= pit_set_periodic,
+	.set_next_event		= pit_next_event,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -172,8 +230,15 @@ struct clock_event_device i8253_clockevent = {
  */
 void __init clockevent_i8253_init(bool oneshot)
 {
+<<<<<<< HEAD
 	if (oneshot)
 		i8253_clockevent.features |= CLOCK_EVT_FEAT_ONESHOT;
+=======
+	if (oneshot) {
+		i8253_clockevent.features |= CLOCK_EVT_FEAT_ONESHOT;
+		i8253_clockevent.set_state_oneshot = pit_set_oneshot;
+	}
+>>>>>>> v4.9.227
 	/*
 	 * Start pit with the boot cpu mask. x86 might make it global
 	 * when it is used as broadcast device later.

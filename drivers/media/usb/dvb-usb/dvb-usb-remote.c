@@ -1,6 +1,10 @@
 /* dvb-usb-remote.c is part of the DVB USB library.
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-6 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004-6 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  * see dvb-usb-init.c for copyright information.
  *
  * This file contains functions for initializing the input-device and for handling remote-control-queries.

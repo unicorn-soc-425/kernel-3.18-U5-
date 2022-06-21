@@ -11,11 +11,19 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> v4.9.227
 #include <linux/device.h>
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/jiffies.h>
+<<<<<<< HEAD
+=======
+#include <linux/notifier.h>
+>>>>>>> v4.9.227
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 #include <linux/of_platform.h>
@@ -26,8 +34,11 @@
 #include <linux/smp.h>
 #include <linux/mfd/syscon.h>
 
+<<<<<<< HEAD
 #include <asm/system_misc.h>
 
+=======
+>>>>>>> v4.9.227
 #define RESET_SOURCE_ENABLE_REG 1
 #define SW_MASTER_RESET_REG 2
 
@@ -35,20 +46,40 @@ static struct regmap *regmap;
 static u32 rst_src_en;
 static u32 sw_mstr_rst;
 
+<<<<<<< HEAD
 static void brcmstb_reboot(enum reboot_mode mode, const char *cmd)
+=======
+struct reset_reg_mask {
+	u32 rst_src_en_mask;
+	u32 sw_mstr_rst_mask;
+};
+
+static const struct reset_reg_mask *reset_masks;
+
+static int brcmstb_restart_handler(struct notifier_block *this,
+				   unsigned long mode, void *cmd)
+>>>>>>> v4.9.227
 {
 	int rc;
 	u32 tmp;
 
+<<<<<<< HEAD
 	rc = regmap_write(regmap, rst_src_en, 1);
 	if (rc) {
 		pr_err("failed to write rst_src_en (%d)\n", rc);
 		return;
+=======
+	rc = regmap_write(regmap, rst_src_en, reset_masks->rst_src_en_mask);
+	if (rc) {
+		pr_err("failed to write rst_src_en (%d)\n", rc);
+		return NOTIFY_DONE;
+>>>>>>> v4.9.227
 	}
 
 	rc = regmap_read(regmap, rst_src_en, &tmp);
 	if (rc) {
 		pr_err("failed to read rst_src_en (%d)\n", rc);
+<<<<<<< HEAD
 		return;
 	}
 
@@ -56,22 +87,74 @@ static void brcmstb_reboot(enum reboot_mode mode, const char *cmd)
 	if (rc) {
 		pr_err("failed to write sw_mstr_rst (%d)\n", rc);
 		return;
+=======
+		return NOTIFY_DONE;
+	}
+
+	rc = regmap_write(regmap, sw_mstr_rst, reset_masks->sw_mstr_rst_mask);
+	if (rc) {
+		pr_err("failed to write sw_mstr_rst (%d)\n", rc);
+		return NOTIFY_DONE;
+>>>>>>> v4.9.227
 	}
 
 	rc = regmap_read(regmap, sw_mstr_rst, &tmp);
 	if (rc) {
 		pr_err("failed to read sw_mstr_rst (%d)\n", rc);
+<<<<<<< HEAD
 		return;
+=======
+		return NOTIFY_DONE;
+>>>>>>> v4.9.227
 	}
 
 	while (1)
 		;
+<<<<<<< HEAD
 }
 
+=======
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block brcmstb_restart_nb = {
+	.notifier_call = brcmstb_restart_handler,
+	.priority = 128,
+};
+
+static const struct reset_reg_mask reset_bits_40nm = {
+	.rst_src_en_mask = BIT(0),
+	.sw_mstr_rst_mask = BIT(0),
+};
+
+static const struct reset_reg_mask reset_bits_65nm = {
+	.rst_src_en_mask = BIT(3),
+	.sw_mstr_rst_mask = BIT(31),
+};
+
+static const struct of_device_id of_match[] = {
+	{ .compatible = "brcm,brcmstb-reboot", .data = &reset_bits_40nm },
+	{ .compatible = "brcm,bcm7038-reboot", .data = &reset_bits_65nm },
+	{},
+};
+
+>>>>>>> v4.9.227
 static int brcmstb_reboot_probe(struct platform_device *pdev)
 {
 	int rc;
 	struct device_node *np = pdev->dev.of_node;
+<<<<<<< HEAD
+=======
+	const struct of_device_id *of_id;
+
+	of_id = of_match_node(of_match, np);
+	if (!of_id) {
+		pr_err("failed to look up compatible string\n");
+		return -EINVAL;
+	}
+	reset_masks = of_id->data;
+>>>>>>> v4.9.227
 
 	regmap = syscon_regmap_lookup_by_phandle(np, "syscon");
 	if (IS_ERR(regmap)) {
@@ -93,6 +176,7 @@ static int brcmstb_reboot_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	arm_pm_restart = brcmstb_reboot;
 
 	return 0;
@@ -103,11 +187,24 @@ static const struct of_device_id of_match[] = {
 	{},
 };
 
+=======
+	rc = register_restart_handler(&brcmstb_restart_nb);
+	if (rc)
+		dev_err(&pdev->dev,
+			"cannot register restart handler (err=%d)\n", rc);
+
+	return rc;
+}
+
+>>>>>>> v4.9.227
 static struct platform_driver brcmstb_reboot_driver = {
 	.probe = brcmstb_reboot_probe,
 	.driver = {
 		.name = "brcmstb-reboot",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match,
 	},
 };

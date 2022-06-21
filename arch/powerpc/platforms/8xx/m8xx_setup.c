@@ -198,7 +198,11 @@ void mpc8xx_get_rtc_time(struct rtc_time *tm)
 	return;
 }
 
+<<<<<<< HEAD
 void mpc8xx_restart(char *cmd)
+=======
+void __noreturn mpc8xx_restart(char *cmd)
+>>>>>>> v4.9.227
 {
 	car8xx_t __iomem *clk_r = immr_map(im_clkrst);
 
@@ -214,7 +218,11 @@ void mpc8xx_restart(char *cmd)
 	panic("Restart failed\n");
 }
 
+<<<<<<< HEAD
 static void cpm_cascade(unsigned int irq, struct irq_desc *desc)
+=======
+static void cpm_cascade(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	int cascade_irq = cpm_get_irq();
@@ -241,6 +249,10 @@ void __init mpc8xx_pics_init(void)
 	}
 
 	irq = cpm_pic_init();
+<<<<<<< HEAD
 	if (irq != NO_IRQ)
+=======
+	if (irq)
+>>>>>>> v4.9.227
 		irq_set_chained_handler(irq, cpm_cascade);
 }

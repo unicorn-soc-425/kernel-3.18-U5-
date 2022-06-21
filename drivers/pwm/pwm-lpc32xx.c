@@ -24,9 +24,14 @@ struct lpc32xx_pwm_chip {
 	void __iomem *base;
 };
 
+<<<<<<< HEAD
 #define PWM_ENABLE	(1 << 31)
 #define PWM_RELOADV(x)	(((x) & 0xFF) << 8)
 #define PWM_DUTY(x)	((x) & 0xFF)
+=======
+#define PWM_ENABLE	BIT(31)
+#define PWM_PIN_LEVEL	BIT(30)
+>>>>>>> v4.9.227
 
 #define to_lpc32xx_pwm_chip(_chip) \
 	container_of(_chip, struct lpc32xx_pwm_chip, chip)
@@ -38,6 +43,7 @@ static int lpc32xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	unsigned long long c;
 	int period_cycles, duty_cycles;
 	u32 val;
+<<<<<<< HEAD
 
 	c = clk_get_rate(lpc32xx->clk) / 256;
 	c = c * period_ns;
@@ -72,6 +78,29 @@ static int lpc32xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
 	val &= ~0xFFFF;
 	val |= PWM_RELOADV(period_cycles) | PWM_DUTY(duty_cycles);
+=======
+	c = clk_get_rate(lpc32xx->clk);
+
+	/* The highest acceptable divisor is 256, which is represented by 0 */
+	period_cycles = div64_u64(c * period_ns,
+			       (unsigned long long)NSEC_PER_SEC * 256);
+	if (!period_cycles || period_cycles > 256)
+		return -ERANGE;
+	if (period_cycles == 256)
+		period_cycles = 0;
+
+	/* Compute 256 x #duty/period value and care for corner cases */
+	duty_cycles = div64_u64((unsigned long long)(period_ns - duty_ns) * 256,
+				period_ns);
+	if (!duty_cycles)
+		duty_cycles = 1;
+	if (duty_cycles > 255)
+		duty_cycles = 255;
+
+	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
+	val &= ~0xFFFF;
+	val |= (period_cycles << 8) | duty_cycles;
+>>>>>>> v4.9.227
 	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
 
 	return 0;
@@ -83,7 +112,11 @@ static int lpc32xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
 	u32 val;
 	int ret;
 
+<<<<<<< HEAD
 	ret = clk_enable(lpc32xx->clk);
+=======
+	ret = clk_prepare_enable(lpc32xx->clk);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -103,7 +136,11 @@ static void lpc32xx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 	val &= ~PWM_ENABLE;
 	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
 
+<<<<<<< HEAD
 	clk_disable(lpc32xx->clk);
+=======
+	clk_disable_unprepare(lpc32xx->clk);
+>>>>>>> v4.9.227
 }
 
 static const struct pwm_ops lpc32xx_pwm_ops = {
@@ -118,6 +155,10 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
 	struct lpc32xx_pwm_chip *lpc32xx;
 	struct resource *res;
 	int ret;
+<<<<<<< HEAD
+=======
+	u32 val;
+>>>>>>> v4.9.227
 
 	lpc32xx = devm_kzalloc(&pdev->dev, sizeof(*lpc32xx), GFP_KERNEL);
 	if (!lpc32xx)
@@ -134,7 +175,11 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
 
 	lpc32xx->chip.dev = &pdev->dev;
 	lpc32xx->chip.ops = &lpc32xx_pwm_ops;
+<<<<<<< HEAD
 	lpc32xx->chip.npwm = 2;
+=======
+	lpc32xx->chip.npwm = 1;
+>>>>>>> v4.9.227
 	lpc32xx->chip.base = -1;
 
 	ret = pwmchip_add(&lpc32xx->chip);
@@ -143,6 +188,14 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	/* When PWM is disable, configure the output to the default value */
+	val = readl(lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
+	val &= ~PWM_PIN_LEVEL;
+	writel(val, lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
+
+>>>>>>> v4.9.227
 	platform_set_drvdata(pdev, lpc32xx);
 
 	return 0;
@@ -168,7 +221,10 @@ MODULE_DEVICE_TABLE(of, lpc32xx_pwm_dt_ids);
 static struct platform_driver lpc32xx_pwm_driver = {
 	.driver = {
 		.name = "lpc32xx-pwm",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = lpc32xx_pwm_dt_ids,
 	},
 	.probe = lpc32xx_pwm_probe,

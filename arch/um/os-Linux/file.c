@@ -12,7 +12,13 @@
 #include <sys/mount.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+<<<<<<< HEAD
 #include <sys/un.h>
+=======
+#include <sys/sysmacros.h>
+#include <sys/un.h>
+#include <sys/types.h>
+>>>>>>> v4.9.227
 #include <os.h>
 
 static void copy_stat(struct uml_stat *dst, const struct stat64 *src)
@@ -263,6 +269,18 @@ int os_read_file(int fd, void *buf, int len)
 	return n;
 }
 
+<<<<<<< HEAD
+=======
+int os_pread_file(int fd, void *buf, int len, unsigned long long offset)
+{
+	int n = pread(fd, buf, len, offset);
+
+	if (n < 0)
+		return -errno;
+	return n;
+}
+
+>>>>>>> v4.9.227
 int os_write_file(int fd, const void *buf, int len)
 {
 	int n = write(fd, (void *) buf, len);
@@ -281,6 +299,19 @@ int os_sync_file(int fd)
 	return n;
 }
 
+<<<<<<< HEAD
+=======
+int os_pwrite_file(int fd, const void *buf, int len, unsigned long long offset)
+{
+	int n = pwrite(fd, (void *) buf, len, offset);
+
+	if (n < 0)
+		return -errno;
+	return n;
+}
+
+
+>>>>>>> v4.9.227
 int os_file_size(const char *file, unsigned long long *size_out)
 {
 	struct uml_stat buf;

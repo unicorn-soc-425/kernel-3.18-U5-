@@ -124,14 +124,19 @@ cifs_delete_mid(struct mid_q_entry *mid)
 /*
  * smb_send_kvec - send an array of kvecs to the server
  * @server:	Server to send the data to
+<<<<<<< HEAD
  * @iov:	Pointer to array of kvecs
  * @n_vec:	length of kvec array
+=======
+ * @smb_msg:	Message to send
+>>>>>>> v4.9.227
  * @sent:	amount of data sent on socket is stored here
  *
  * Our basic "send data to server" function. Should be called with srv_mutex
  * held. The caller is responsible for handling the results.
  */
 static int
+<<<<<<< HEAD
 smb_send_kvec(struct TCP_Server_Info *server, struct kvec *iov, size_t n_vec,
 		size_t *sent)
 {
@@ -140,10 +145,18 @@ smb_send_kvec(struct TCP_Server_Info *server, struct kvec *iov, size_t n_vec,
 	struct msghdr smb_msg;
 	unsigned int remaining;
 	size_t first_vec = 0;
+=======
+smb_send_kvec(struct TCP_Server_Info *server, struct msghdr *smb_msg,
+	      size_t *sent)
+{
+	int rc = 0;
+	int retries = 0;
+>>>>>>> v4.9.227
 	struct socket *ssocket = server->ssocket;
 
 	*sent = 0;
 
+<<<<<<< HEAD
 	smb_msg.msg_name = (struct sockaddr *) &server->dstaddr;
 	smb_msg.msg_namelen = sizeof(struct sockaddr);
 	smb_msg.msg_control = NULL;
@@ -159,6 +172,18 @@ smb_send_kvec(struct TCP_Server_Info *server, struct kvec *iov, size_t n_vec,
 
 	i = 0;
 	while (remaining) {
+=======
+	smb_msg->msg_name = (struct sockaddr *) &server->dstaddr;
+	smb_msg->msg_namelen = sizeof(struct sockaddr);
+	smb_msg->msg_control = NULL;
+	smb_msg->msg_controllen = 0;
+	if (server->noblocksnd)
+		smb_msg->msg_flags = MSG_DONTWAIT + MSG_NOSIGNAL;
+	else
+		smb_msg->msg_flags = MSG_NOSIGNAL;
+
+	while (msg_data_left(smb_msg)) {
+>>>>>>> v4.9.227
 		/*
 		 * If blocking send, we try 3 times, since each can block
 		 * for 5 seconds. For nonblocking  we have to try more
@@ -177,6 +202,7 @@ smb_send_kvec(struct TCP_Server_Info *server, struct kvec *iov, size_t n_vec,
 		 * after the retries we will kill the socket and
 		 * reconnect which may clear the network problem.
 		 */
+<<<<<<< HEAD
 		rc = kernel_sendmsg(ssocket, &smb_msg, &iov[first_vec],
 				    n_vec - first_vec, remaining);
 		if (rc == -EAGAIN) {
@@ -188,10 +214,23 @@ smb_send_kvec(struct TCP_Server_Info *server, struct kvec *iov, size_t n_vec,
 				break;
 			}
 			msleep(1 << i);
+=======
+		rc = sock_sendmsg(ssocket, smb_msg);
+		if (rc == -EAGAIN) {
+			retries++;
+			if (retries >= 14 ||
+			    (!server->noblocksnd && (retries > 2))) {
+				cifs_dbg(VFS, "sends on sock %p stuck for 15 seconds\n",
+					 ssocket);
+				return -EAGAIN;
+			}
+			msleep(1 << retries);
+>>>>>>> v4.9.227
 			continue;
 		}
 
 		if (rc < 0)
+<<<<<<< HEAD
 			break;
 
 		/* send was at least partially successful */
@@ -206,6 +245,9 @@ smb_send_kvec(struct TCP_Server_Info *server, struct kvec *iov, size_t n_vec,
 			cifs_dbg(VFS, "sent %d requested %d\n", rc, remaining);
 			break;
 		}
+=======
+			return rc;
+>>>>>>> v4.9.227
 
 		if (rc == 0) {
 			/* should never happen, letting socket clear before
@@ -215,6 +257,7 @@ smb_send_kvec(struct TCP_Server_Info *server, struct kvec *iov, size_t n_vec,
 			continue;
 		}
 
+<<<<<<< HEAD
 		remaining -= rc;
 
 		/* the line below resets i */
@@ -268,6 +311,13 @@ cifs_rqst_page_to_kvec(struct smb_rqst *rqst, unsigned int idx,
 		iov->iov_len = rqst->rq_tailsz;
 	else
 		iov->iov_len = rqst->rq_pagesz;
+=======
+		/* send was at least partially successful */
+		*sent += rc;
+		retries = 0; /* in case we get ENOSPC on the next send */
+	}
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static unsigned long
@@ -299,8 +349,14 @@ smb_send_rqst(struct TCP_Server_Info *server, struct smb_rqst *rqst)
 	unsigned int smb_buf_length = get_rfc1002_length(iov[0].iov_base);
 	unsigned long send_length;
 	unsigned int i;
+<<<<<<< HEAD
 	size_t total_len = 0, sent;
 	struct socket *ssocket = server->ssocket;
+=======
+	size_t total_len = 0, sent, size;
+	struct socket *ssocket = server->ssocket;
+	struct msghdr smb_msg;
+>>>>>>> v4.9.227
 	int val = 1;
 
 	if (ssocket == NULL)
@@ -321,7 +377,17 @@ smb_send_rqst(struct TCP_Server_Info *server, struct smb_rqst *rqst)
 	kernel_setsockopt(ssocket, SOL_TCP, TCP_CORK,
 				(char *)&val, sizeof(val));
 
+<<<<<<< HEAD
 	rc = smb_send_kvec(server, iov, n_vec, &sent);
+=======
+	size = 0;
+	for (i = 0; i < n_vec; i++)
+		size += iov[i].iov_len;
+
+	iov_iter_kvec(&smb_msg.msg_iter, WRITE | ITER_KVEC, iov, n_vec, size);
+
+	rc = smb_send_kvec(server, &smb_msg, &sent);
+>>>>>>> v4.9.227
 	if (rc < 0)
 		goto uncork;
 
@@ -329,11 +395,24 @@ smb_send_rqst(struct TCP_Server_Info *server, struct smb_rqst *rqst)
 
 	/* now walk the page array and send each page in it */
 	for (i = 0; i < rqst->rq_npages; i++) {
+<<<<<<< HEAD
 		struct kvec p_iov;
 
 		cifs_rqst_page_to_kvec(rqst, i, &p_iov);
 		rc = smb_send_kvec(server, &p_iov, 1, &sent);
 		kunmap(rqst->rq_pages[i]);
+=======
+		size_t len = i == rqst->rq_npages - 1
+				? rqst->rq_tailsz
+				: rqst->rq_pagesz;
+		struct bio_vec bvec = {
+			.bv_page = rqst->rq_pages[i],
+			.bv_len = len
+		};
+		iov_iter_bvec(&smb_msg.msg_iter, WRITE | ITER_BVEC,
+			      &bvec, 1, len);
+		rc = smb_send_kvec(server, &smb_msg, &sent);
+>>>>>>> v4.9.227
 		if (rc < 0)
 			break;
 
@@ -360,7 +439,11 @@ uncork:
 	if (rc < 0 && rc != -EINTR)
 		cifs_dbg(VFS, "Error %d sending data on socket to server\n",
 			 rc);
+<<<<<<< HEAD
 	else
+=======
+	else if (rc > 0)
+>>>>>>> v4.9.227
 		rc = 0;
 
 	return rc;
@@ -646,7 +729,13 @@ cifs_sync_mid_result(struct mid_q_entry *mid, struct TCP_Server_Info *server)
 	}
 	spin_unlock(&GlobalMid_Lock);
 
+<<<<<<< HEAD
 	DeleteMidQEntry(mid);
+=======
+	mutex_lock(&server->srv_mutex);
+	DeleteMidQEntry(mid);
+	mutex_unlock(&server->srv_mutex);
+>>>>>>> v4.9.227
 	return rc;
 }
 

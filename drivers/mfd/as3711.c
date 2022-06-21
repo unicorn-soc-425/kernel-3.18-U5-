@@ -108,8 +108,13 @@ static const struct regmap_config as3711_regmap_config = {
 	.volatile_reg = as3711_volatile_reg,
 	.readable_reg = as3711_readable_reg,
 	.precious_reg = as3711_precious_reg,
+<<<<<<< HEAD
 	.max_register = AS3711_MAX_REGS,
 	.num_reg_defaults_raw = AS3711_MAX_REGS,
+=======
+	.max_register = AS3711_MAX_REG,
+	.num_reg_defaults_raw = AS3711_NUM_REGS,
+>>>>>>> v4.9.227
 	.cache_type = REGCACHE_RBTREE,
 };
 
@@ -136,6 +141,7 @@ static int as3711_i2c_probe(struct i2c_client *client,
 	} else {
 		pdata = devm_kzalloc(&client->dev,
 				     sizeof(*pdata), GFP_KERNEL);
+<<<<<<< HEAD
 		if (!pdata) {
 			dev_err(&client->dev, "Failed to allocate pdata\n");
 			return -ENOMEM;
@@ -147,6 +153,15 @@ static int as3711_i2c_probe(struct i2c_client *client,
 		dev_err(&client->dev, "Memory allocation failed\n");
 		return -ENOMEM;
 	}
+=======
+		if (!pdata)
+			return -ENOMEM;
+	}
+
+	as3711 = devm_kzalloc(&client->dev, sizeof(struct as3711), GFP_KERNEL);
+	if (!as3711)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	as3711->dev = &client->dev;
 	i2c_set_clientdata(client, as3711);
@@ -157,7 +172,12 @@ static int as3711_i2c_probe(struct i2c_client *client,
 	as3711->regmap = devm_regmap_init_i2c(client, &as3711_regmap_config);
 	if (IS_ERR(as3711->regmap)) {
 		ret = PTR_ERR(as3711->regmap);
+<<<<<<< HEAD
 		dev_err(&client->dev, "regmap initialization failed: %d\n", ret);
+=======
+		dev_err(&client->dev,
+			"regmap initialization failed: %d\n", ret);
+>>>>>>> v4.9.227
 		return ret;
 	}
 
@@ -172,12 +192,28 @@ static int as3711_i2c_probe(struct i2c_client *client,
 		return -ENODEV;
 	dev_info(as3711->dev, "AS3711 detected: %x:%x\n", id1, id2);
 
+<<<<<<< HEAD
 	/* We can reuse as3711_subdevs[], it will be copied in mfd_add_devices() */
 	if (pdata) {
 		as3711_subdevs[AS3711_REGULATOR].platform_data = &pdata->regulator;
 		as3711_subdevs[AS3711_REGULATOR].pdata_size = sizeof(pdata->regulator);
 		as3711_subdevs[AS3711_BACKLIGHT].platform_data = &pdata->backlight;
 		as3711_subdevs[AS3711_BACKLIGHT].pdata_size = sizeof(pdata->backlight);
+=======
+	/*
+	 * We can reuse as3711_subdevs[],
+	 * it will be copied in mfd_add_devices()
+	 */
+	if (pdata) {
+		as3711_subdevs[AS3711_REGULATOR].platform_data =
+			&pdata->regulator;
+		as3711_subdevs[AS3711_REGULATOR].pdata_size =
+			sizeof(pdata->regulator);
+		as3711_subdevs[AS3711_BACKLIGHT].platform_data =
+			&pdata->backlight;
+		as3711_subdevs[AS3711_BACKLIGHT].pdata_size =
+			sizeof(pdata->backlight);
+>>>>>>> v4.9.227
 	} else {
 		as3711_subdevs[AS3711_REGULATOR].platform_data = NULL;
 		as3711_subdevs[AS3711_REGULATOR].pdata_size = 0;
@@ -185,14 +221,20 @@ static int as3711_i2c_probe(struct i2c_client *client,
 		as3711_subdevs[AS3711_BACKLIGHT].pdata_size = 0;
 	}
 
+<<<<<<< HEAD
 	ret = mfd_add_devices(as3711->dev, -1, as3711_subdevs,
 			      ARRAY_SIZE(as3711_subdevs), NULL, 0, NULL);
+=======
+	ret = devm_mfd_add_devices(as3711->dev, -1, as3711_subdevs,
+				   ARRAY_SIZE(as3711_subdevs), NULL, 0, NULL);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		dev_err(&client->dev, "add mfd devices failed: %d\n", ret);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int as3711_i2c_remove(struct i2c_client *client)
 {
 	struct as3711 *as3711 = i2c_get_clientdata(client);
@@ -201,6 +243,8 @@ static int as3711_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct i2c_device_id as3711_i2c_id[] = {
 	{.name = "as3711", .driver_data = 0},
 	{}
@@ -211,11 +255,17 @@ MODULE_DEVICE_TABLE(i2c, as3711_i2c_id);
 static struct i2c_driver as3711_i2c_driver = {
 	.driver = {
 		   .name = "as3711",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
 		   .of_match_table = of_match_ptr(as3711_of_match),
 	},
 	.probe = as3711_i2c_probe,
 	.remove = as3711_i2c_remove,
+=======
+		   .of_match_table = of_match_ptr(as3711_of_match),
+	},
+	.probe = as3711_i2c_probe,
+>>>>>>> v4.9.227
 	.id_table = as3711_i2c_id,
 };
 

@@ -15,7 +15,11 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-event.h>
 #include <media/v4l2-fh.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 
 /* --------------------------------------------------------------------------
  * UVC constants
@@ -109,6 +113,12 @@
 #define UVC_GUID_FORMAT_RGBP \
 	{ 'R',  'G',  'B',  'P', 0x00, 0x00, 0x10, 0x00, \
 	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+<<<<<<< HEAD
+=======
+#define UVC_GUID_FORMAT_BGR3 \
+	{ 0x7d, 0xeb, 0x36, 0xe4, 0x4f, 0x52, 0xce, 0x11, \
+	 0x9f, 0x53, 0x00, 0x20, 0xaf, 0x0b, 0xa7, 0x70}
+>>>>>>> v4.9.227
 #define UVC_GUID_FORMAT_M420 \
 	{ 'M',  '4',  '2',  '0', 0x00, 0x00, 0x10, 0x00, \
 	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
@@ -116,6 +126,21 @@
 #define UVC_GUID_FORMAT_H264 \
 	{ 'H',  '2',  '6',  '4', 0x00, 0x00, 0x10, 0x00, \
 	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+<<<<<<< HEAD
+=======
+#define UVC_GUID_FORMAT_Y8I \
+	{ 'Y',  '8',  'I',  ' ', 0x00, 0x00, 0x10, 0x00, \
+	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+#define UVC_GUID_FORMAT_Y12I \
+	{ 'Y',  '1',  '2',  'I', 0x00, 0x00, 0x10, 0x00, \
+	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+#define UVC_GUID_FORMAT_Z16 \
+	{ 'Z',  '1',  '6',  ' ', 0x00, 0x00, 0x10, 0x00, \
+	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+#define UVC_GUID_FORMAT_RW10 \
+	{ 'R',  'W',  '1',  '0', 0x00, 0x00, 0x10, 0x00, \
+	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+>>>>>>> v4.9.227
 
 /* ------------------------------------------------------------------------
  * Driver specific constants.
@@ -148,6 +173,10 @@
 #define UVC_QUIRK_PROBE_DEF		0x00000100
 #define UVC_QUIRK_RESTRICT_FRAME_RATE	0x00000200
 #define UVC_QUIRK_RESTORE_CTRLS_ON_INIT	0x00000400
+<<<<<<< HEAD
+=======
+#define UVC_QUIRK_FORCE_Y8		0x00000800
+>>>>>>> v4.9.227
 
 /* Format flags */
 #define UVC_FMT_FLAG_COMPRESSED		0x00000001
@@ -350,7 +379,11 @@ enum uvc_buffer_state {
 };
 
 struct uvc_buffer {
+<<<<<<< HEAD
 	struct vb2_buffer buf;
+=======
+	struct vb2_v4l2_buffer buf;
+>>>>>>> v4.9.227
 	struct list_head queue;
 
 	enum uvc_buffer_state state;
@@ -439,7 +472,11 @@ struct uvc_stats_stream {
 struct uvc_streaming {
 	struct list_head list;
 	struct uvc_device *dev;
+<<<<<<< HEAD
 	struct video_device *vdev;
+=======
+	struct video_device vdev;
+>>>>>>> v4.9.227
 	struct uvc_video_chain *chain;
 	atomic_t active;
 
@@ -513,10 +550,13 @@ struct uvc_streaming {
 	} clock;
 };
 
+<<<<<<< HEAD
 enum uvc_device_state {
 	UVC_DEV_DISCONNECTED = 1,
 };
 
+=======
+>>>>>>> v4.9.227
 struct uvc_device {
 	struct usb_device *udev;
 	struct usb_interface *intf;
@@ -525,7 +565,10 @@ struct uvc_device {
 	int intfnum;
 	char name[32];
 
+<<<<<<< HEAD
 	enum uvc_device_state state;
+=======
+>>>>>>> v4.9.227
 	struct mutex lock;		/* Protects users */
 	unsigned int users;
 	atomic_t nmappings;
@@ -579,7 +622,10 @@ struct uvc_driver {
 #define UVC_TRACE_FORMAT	(1 << 3)
 #define UVC_TRACE_CAPTURE	(1 << 4)
 #define UVC_TRACE_CALLS		(1 << 5)
+<<<<<<< HEAD
 #define UVC_TRACE_IOCTL		(1 << 6)
+=======
+>>>>>>> v4.9.227
 #define UVC_TRACE_FRAME		(1 << 7)
 #define UVC_TRACE_SUSPEND	(1 << 8)
 #define UVC_TRACE_STATUS	(1 << 9)
@@ -595,6 +641,10 @@ extern unsigned int uvc_clock_param;
 extern unsigned int uvc_no_drop_param;
 extern unsigned int uvc_trace_param;
 extern unsigned int uvc_timeout_param;
+<<<<<<< HEAD
+=======
+extern unsigned int uvc_hw_timestamps_param;
+>>>>>>> v4.9.227
 
 #define uvc_trace(flag, msg...) \
 	do { \
@@ -623,18 +673,35 @@ extern struct uvc_entity *uvc_entity_by_id(struct uvc_device *dev, int id);
 /* Video buffers queue management. */
 extern int uvc_queue_init(struct uvc_video_queue *queue,
 		enum v4l2_buf_type type, int drop_corrupted);
+<<<<<<< HEAD
 extern int uvc_alloc_buffers(struct uvc_video_queue *queue,
 		struct v4l2_requestbuffers *rb);
 extern void uvc_free_buffers(struct uvc_video_queue *queue);
+=======
+extern void uvc_queue_release(struct uvc_video_queue *queue);
+extern int uvc_request_buffers(struct uvc_video_queue *queue,
+		struct v4l2_requestbuffers *rb);
+>>>>>>> v4.9.227
 extern int uvc_query_buffer(struct uvc_video_queue *queue,
 		struct v4l2_buffer *v4l2_buf);
 extern int uvc_create_buffers(struct uvc_video_queue *queue,
 		struct v4l2_create_buffers *v4l2_cb);
 extern int uvc_queue_buffer(struct uvc_video_queue *queue,
 		struct v4l2_buffer *v4l2_buf);
+<<<<<<< HEAD
 extern int uvc_dequeue_buffer(struct uvc_video_queue *queue,
 		struct v4l2_buffer *v4l2_buf, int nonblocking);
 extern int uvc_queue_enable(struct uvc_video_queue *queue, int enable);
+=======
+extern int uvc_export_buffer(struct uvc_video_queue *queue,
+		struct v4l2_exportbuffer *exp);
+extern int uvc_dequeue_buffer(struct uvc_video_queue *queue,
+		struct v4l2_buffer *v4l2_buf, int nonblocking);
+extern int uvc_queue_streamon(struct uvc_video_queue *queue,
+			      enum v4l2_buf_type type);
+extern int uvc_queue_streamoff(struct uvc_video_queue *queue,
+			       enum v4l2_buf_type type);
+>>>>>>> v4.9.227
 extern void uvc_queue_cancel(struct uvc_video_queue *queue, int disconnect);
 extern struct uvc_buffer *uvc_queue_next_buffer(struct uvc_video_queue *queue,
 		struct uvc_buffer *buf);
@@ -653,6 +720,10 @@ static inline int uvc_queue_streaming(struct uvc_video_queue *queue)
 }
 
 /* V4L2 interface */
+<<<<<<< HEAD
+=======
+extern const struct v4l2_ioctl_ops uvc_ioctl_ops;
+>>>>>>> v4.9.227
 extern const struct v4l2_file_operations uvc_fops;
 
 /* Media controller */
@@ -669,7 +740,11 @@ extern int uvc_probe_video(struct uvc_streaming *stream,
 extern int uvc_query_ctrl(struct uvc_device *dev, __u8 query, __u8 unit,
 		__u8 intfnum, __u8 cs, void *data, __u16 size);
 void uvc_video_clock_update(struct uvc_streaming *stream,
+<<<<<<< HEAD
 			    struct v4l2_buffer *v4l2_buf,
+=======
+			    struct vb2_v4l2_buffer *vbuf,
+>>>>>>> v4.9.227
 			    struct uvc_buffer *buf);
 
 /* Status */

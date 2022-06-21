@@ -263,7 +263,15 @@ static void lp5562_firmware_loaded(struct lp55xx_chip *chip)
 {
 	const struct firmware *fw = chip->fw;
 
+<<<<<<< HEAD
 	if (fw->size > LP5562_PROGRAM_LENGTH) {
+=======
+	/*
+	 * the firmware is encoded in ascii hex character, with 2 chars
+	 * per byte
+	 */
+	if (fw->size > (LP5562_PROGRAM_LENGTH * 2)) {
+>>>>>>> v4.9.227
 		dev_err(&chip->cl->dev, "firmware data size overflow: %zu\n",
 			fw->size);
 		return;
@@ -311,10 +319,15 @@ static int lp5562_post_init_device(struct lp55xx_chip *chip)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void lp5562_led_brightness_work(struct work_struct *work)
 {
 	struct lp55xx_led *led = container_of(work, struct lp55xx_led,
 					      brightness_work);
+=======
+static int lp5562_led_brightness(struct lp55xx_led *led)
+{
+>>>>>>> v4.9.227
 	struct lp55xx_chip *chip = led->chip;
 	u8 addr[] = {
 		LP5562_REG_R_PWM,
@@ -322,10 +335,20 @@ static void lp5562_led_brightness_work(struct work_struct *work)
 		LP5562_REG_B_PWM,
 		LP5562_REG_W_PWM,
 	};
+<<<<<<< HEAD
 
 	mutex_lock(&chip->lock);
 	lp55xx_write(chip, addr[led->chan_nr], led->brightness);
 	mutex_unlock(&chip->lock);
+=======
+	int ret;
+
+	mutex_lock(&chip->lock);
+	ret = lp55xx_write(chip, addr[led->chan_nr], led->brightness);
+	mutex_unlock(&chip->lock);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static void lp5562_write_program_memory(struct lp55xx_chip *chip,
@@ -503,7 +526,11 @@ static struct lp55xx_device_config lp5562_cfg = {
 	},
 	.post_init_device   = lp5562_post_init_device,
 	.set_led_current    = lp5562_set_led_current,
+<<<<<<< HEAD
 	.brightness_work_fn = lp5562_led_brightness_work,
+=======
+	.brightness_fn      = lp5562_led_brightness,
+>>>>>>> v4.9.227
 	.run_engine         = lp5562_run_engine,
 	.firmware_cb        = lp5562_firmware_loaded,
 	.dev_attr_group     = &lp5562_group,
@@ -515,6 +542,7 @@ static int lp5562_probe(struct i2c_client *client,
 	int ret;
 	struct lp55xx_chip *chip;
 	struct lp55xx_led *led;
+<<<<<<< HEAD
 	struct lp55xx_platform_data *pdata;
 	struct device_node *np = client->dev.of_node;
 
@@ -523,12 +551,25 @@ static int lp5562_probe(struct i2c_client *client,
 			ret = lp55xx_of_populate_pdata(&client->dev, np);
 			if (ret < 0)
 				return ret;
+=======
+	struct lp55xx_platform_data *pdata = dev_get_platdata(&client->dev);
+	struct device_node *np = client->dev.of_node;
+
+	if (!pdata) {
+		if (np) {
+			pdata = lp55xx_of_populate_pdata(&client->dev, np);
+			if (IS_ERR(pdata))
+				return PTR_ERR(pdata);
+>>>>>>> v4.9.227
 		} else {
 			dev_err(&client->dev, "no platform data\n");
 			return -EINVAL;
 		}
 	}
+<<<<<<< HEAD
 	pdata = dev_get_platdata(&client->dev);
+=======
+>>>>>>> v4.9.227
 
 	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
 	if (!chip)

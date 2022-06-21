@@ -1,11 +1,16 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2014 Freescale Semiconductor, Inc.
+=======
+ * Copyright (C) 2015 Freescale Semiconductor, Inc.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 /dts-v1/;
 
 #include <dt-bindings/gpio/gpio.h>
@@ -145,6 +150,22 @@
 
 	pmic: pfuze100@08 {
 		compatible = "fsl,pfuze100";
+=======
+#include "imx6sx-sdb.dtsi"
+
+/ {
+	model = "Freescale i.MX6 SoloX SDB RevB Board";
+};
+
+&i2c1 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c1>;
+	status = "okay";
+
+	pmic: pfuze100@08 {
+		compatible = "fsl,pfuze200";
+>>>>>>> v4.9.227
 		reg = <0x08>;
 
 		regulators {
@@ -156,6 +177,7 @@
 				regulator-ramp-delay = <6250>;
 			};
 
+<<<<<<< HEAD
 			sw1c_reg: sw1c {
 				regulator-min-microvolt = <300000>;
 				regulator-max-microvolt = <1875000>;
@@ -164,6 +186,8 @@
 				regulator-ramp-delay = <6250>;
 			};
 
+=======
+>>>>>>> v4.9.227
 			sw2_reg: sw2 {
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <3300000>;
@@ -185,11 +209,14 @@
 				regulator-always-on;
 			};
 
+<<<<<<< HEAD
 			sw4_reg: sw4 {
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <3300000>;
 			};
 
+=======
+>>>>>>> v4.9.227
 			swbst_reg: swbst {
 				regulator-min-microvolt = <5000000>;
 				regulator-max-microvolt = <5150000>;
@@ -245,6 +272,7 @@
 	};
 };
 
+<<<<<<< HEAD
 &i2c4 {
         clock-frequency = <100000>;
         pinctrl-names = "default";
@@ -568,5 +596,26 @@
 				MX6SX_PAD_SD4_DATA6__GPIO6_IO_20	0x17059 /* WP */
 			>;
 		};
+=======
+&qspi2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_qspi2>;
+	status = "okay";
+
+	flash0: n25q256a@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "micron,n25q256a", "jedec,spi-nor";
+		spi-max-frequency = <29000000>;
+		reg = <0>;
+	};
+
+	flash1: n25q256a@1 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "micron,n25q256a", "jedec,spi-nor";
+		spi-max-frequency = <29000000>;
+		reg = <1>;
+>>>>>>> v4.9.227
 	};
 };

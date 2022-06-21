@@ -108,7 +108,12 @@ struct mp_priv {
 	unsigned char network_macaddr[6];
 	/*Testing Flag*/
 	u32 mode;/*0 for normal type packet,
+<<<<<<< HEAD
 		  * 1 for loopback packet (16bytes TXCMD)*/
+=======
+		  * 1 for loopback packet (16bytes TXCMD)
+		  */
+>>>>>>> v4.9.227
 	sint prev_fw_state;
 	u8 *pallocated_mp_xmitframe_buf;
 	u8 *pmp_xmtframe_buf;
@@ -272,7 +277,10 @@ void r8712_SetTxAGCOffset(struct _adapter *pAdapter, u32 ulTxAGCOffset);
 void r8712_SetDataRate(struct _adapter *pAdapter);
 void r8712_SwitchBandwidth(struct _adapter *pAdapter);
 void r8712_SwitchAntenna(struct _adapter *pAdapter);
+<<<<<<< HEAD
 void r8712_SetCrystalCap(struct _adapter *pAdapter);
+=======
+>>>>>>> v4.9.227
 void r8712_GetThermalMeter(struct _adapter *pAdapter, u32 *value);
 void r8712_SetContinuousTx(struct _adapter *pAdapter, u8 bStart);
 void r8712_SetSingleCarrierTx(struct _adapter *pAdapter, u8 bStart);

@@ -44,6 +44,7 @@
 
 /* status */
 #define STATUS_OIP_MASK			0x01
+<<<<<<< HEAD
 #define STATUS_READY			(0 << 0)
 #define STATUS_BUSY			(1 << 0)
 
@@ -57,6 +58,21 @@
 #define STATUS_ECC_1BIT_CORRECTED	(1 << 4)
 #define STATUS_ECC_ERROR		(2 << 4)
 #define STATUS_ECC_RESERVED		(3 << 4)
+=======
+#define STATUS_READY			0
+#define STATUS_BUSY			BIT(0)
+
+#define STATUS_E_FAIL_MASK		0x04
+#define STATUS_E_FAIL			BIT(2)
+
+#define STATUS_P_FAIL_MASK		0x08
+#define STATUS_P_FAIL			BIT(3)
+
+#define STATUS_ECC_MASK			0x30
+#define STATUS_ECC_1BIT_CORRECTED	BIT(4)
+#define STATUS_ECC_ERROR		BIT(5)
+#define STATUS_ECC_RESERVED		(BIT(5) | BIT(4))
+>>>>>>> v4.9.227
 
 /*ECC enable defines*/
 #define OTP_ECC_MASK			0x10
@@ -78,14 +94,22 @@
 #define BL_ALL_UNLOCKED    0
 
 struct spinand_info {
+<<<<<<< HEAD
 	struct nand_ecclayout *ecclayout;
+=======
+>>>>>>> v4.9.227
 	struct spi_device *spi;
 	void *priv;
 };
 
 struct spinand_state {
+<<<<<<< HEAD
 	uint32_t	col;
 	uint32_t	row;
+=======
+	u32	col;
+	u32	row;
+>>>>>>> v4.9.227
 	int		buf_ptr;
 	u8		*buf;
 };
@@ -101,7 +125,12 @@ struct spinand_cmd {
 	u8		*rx_buf;	/* Rx buf */
 };
 
+<<<<<<< HEAD
 extern int spinand_mtd(struct mtd_info *mtd);
 extern void spinand_mtd_release(struct mtd_info *mtd);
+=======
+int spinand_mtd(struct mtd_info *mtd);
+void spinand_mtd_release(struct mtd_info *mtd);
+>>>>>>> v4.9.227
 
 #endif /* __LINUX_MTD_SPI_NAND_H */

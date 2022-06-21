@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #define  _RTW_SECURITY_C_
 
@@ -189,7 +192,11 @@ void rtw_wep_encrypt(struct adapter *padapter, u8 *pxmitframe)
 				arcfour_encrypt(&mycontext, payload+length, crc, 4);
 
 				pframe += pxmitpriv->frag_len;
+<<<<<<< HEAD
 				pframe = (u8 *) round_up((size_t)(pframe), 4);
+=======
+				pframe = (u8 *)round_up((size_t)(pframe), 4);
+>>>>>>> v4.9.227
 			}
 		}
 	}
@@ -238,7 +245,10 @@ void rtw_wep_decrypt(struct adapter  *padapter, u8 *precvframe)
 				 &crc, &payload[length-4]));
 		}
 	}
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> v4.9.227
 }
 
 /* 3		===== TKIP related ===== */
@@ -258,7 +268,11 @@ static void secmicputuint32(u8 *p, u32 val)
 {
 	long i;
 	for (i = 0; i < 4; i++) {
+<<<<<<< HEAD
 		*p++ = (u8) (val & 0xff);
+=======
+		*p++ = (u8)(val & 0xff);
+>>>>>>> v4.9.227
 		val >>= 8;
 	}
 }
@@ -621,14 +635,22 @@ u32	rtw_tkip_encrypt(struct adapter *padapter, u8 *pxmitframe)
 					arcfour_encrypt(&mycontext, payload, payload, length);
 					arcfour_encrypt(&mycontext, payload+length, crc, 4);
 				} else {
+<<<<<<< HEAD
 					length = pxmitpriv->frag_len-pattrib->hdrlen-pattrib->iv_len-pattrib->icv_len ;
+=======
+					length = pxmitpriv->frag_len-pattrib->hdrlen-pattrib->iv_len-pattrib->icv_len;
+>>>>>>> v4.9.227
 					*((__le32 *)crc) = getcrc32(payload, length);/* modified by Amy*/
 					arcfour_init(&mycontext, rc4key, 16);
 					arcfour_encrypt(&mycontext, payload, payload, length);
 					arcfour_encrypt(&mycontext, payload+length, crc, 4);
 
 					pframe += pxmitpriv->frag_len;
+<<<<<<< HEAD
 					pframe = (u8 *) round_up((size_t)(pframe), 4);
+=======
+					pframe = (u8 *)round_up((size_t)(pframe), 4);
+>>>>>>> v4.9.227
 				}
 			}
 		} else {
@@ -854,7 +876,11 @@ static void mix_column(u8 *in, u8 *out)
 	u8 add1b[4];
 	u8 add1bf7[4];
 	u8 rotl[4];
+<<<<<<< HEAD
 	u8 swap_halfs[4];
+=======
+	u8 swap_halves[4];
+>>>>>>> v4.9.227
 	u8 andf7[4];
 	u8 rotr[4];
 	u8 temp[4];
@@ -866,10 +892,17 @@ static void mix_column(u8 *in, u8 *out)
 			add1b[i] = 0x00;
 	}
 
+<<<<<<< HEAD
 	swap_halfs[0] = in[2];    /* Swap halves */
 	swap_halfs[1] = in[3];
 	swap_halfs[2] = in[0];
 	swap_halfs[3] = in[1];
+=======
+	swap_halves[0] = in[2];    /* Swap halves */
+	swap_halves[1] = in[3];
+	swap_halves[2] = in[0];
+	swap_halves[3] = in[1];
+>>>>>>> v4.9.227
 
 	rotl[0] = in[3];	/* Rotate left 8 bits */
 	rotl[1] = in[0];
@@ -900,7 +933,11 @@ static void mix_column(u8 *in, u8 *out)
 	rotr[3] = temp[0];
 
 	xor_32(add1bf7, rotr, temp);
+<<<<<<< HEAD
 	xor_32(swap_halfs, rotl, tempb);
+=======
+	xor_32(swap_halves, rotl, tempb);
+>>>>>>> v4.9.227
 	xor_32(temp, tempb, out);
 }
 
@@ -953,8 +990,13 @@ static void construct_mic_iv(u8 *mic_iv, int qc_exists, int a4_exists, u8 *mpdu,
 		mic_iv[i] = mpdu[i + 8];	/* mic_iv[2:7] = A2[0:5] = mpdu[10:15] */
 	for (i = 8; i < 14; i++)
 		mic_iv[i] = pn_vector[13 - i];	/* mic_iv[8:13] = PN[5:0] */
+<<<<<<< HEAD
 	mic_iv[14] = (unsigned char) (payload_length / 256);
 	mic_iv[15] = (unsigned char) (payload_length % 256);
+=======
+	mic_iv[14] = (unsigned char)(payload_length / 256);
+	mic_iv[15] = (unsigned char)(payload_length % 256);
+>>>>>>> v4.9.227
 }
 
 /************************************************/
@@ -1045,8 +1087,13 @@ static void construct_ctr_preload(u8 *ctr_preload, int a4_exists, int qc_exists,
 		ctr_preload[i] = mpdu[i + 8];		       /* ctr_preload[2:7] = A2[0:5] = mpdu[10:15] */
 	for (i = 8; i < 14; i++)
 		ctr_preload[i] =    pn_vector[13 - i];	  /* ctr_preload[8:13] = PN[5:0] */
+<<<<<<< HEAD
 	ctr_preload[14] =  (unsigned char) (c / 256); /* Ctr */
 	ctr_preload[15] =  (unsigned char) (c % 256);
+=======
+	ctr_preload[14] =  (unsigned char)(c / 256); /* Ctr */
+	ctr_preload[15] =  (unsigned char)(c % 256);
+>>>>>>> v4.9.227
 }
 
 /************************************/
@@ -1079,6 +1126,7 @@ static int aes_cipher(u8 *key, uint hdrlen, u8 *pframe, uint plen)
 	uint	frtype  = GetFrameType(pframe);
 	uint	frsubtype  = GetFrameSubType(pframe);
 
+<<<<<<< HEAD
 	frsubtype = frsubtype>>4;
 
 	memset((void *)mic_iv, 0, 16);
@@ -1088,6 +1136,17 @@ static int aes_cipher(u8 *key, uint hdrlen, u8 *pframe, uint plen)
 	memset((void *)chain_buffer, 0, 16);
 	memset((void *)aes_out, 0, 16);
 	memset((void *)padded_buffer, 0, 16);
+=======
+	frsubtype >>= 4;
+
+	memset(mic_iv, 0, 16);
+	memset(mic_header1, 0, 16);
+	memset(mic_header2, 0, 16);
+	memset(ctr_preload, 0, 16);
+	memset(chain_buffer, 0, 16);
+	memset(aes_out, 0, 16);
+	memset(padded_buffer, 0, 16);
+>>>>>>> v4.9.227
 
 	if ((hdrlen == WLAN_HDR_A3_LEN) || (hdrlen ==  WLAN_HDR_A3_QOS_LEN))
 		a4_exists = 0;
@@ -1122,7 +1181,11 @@ static int aes_cipher(u8 *key, uint hdrlen, u8 *pframe, uint plen)
 	num_blocks = plen / 16;
 
 	/* Find start of payload */
+<<<<<<< HEAD
 	payload_index = (hdrlen + 8);
+=======
+	payload_index = hdrlen + 8;
+>>>>>>> v4.9.227
 
 	/* Calculate MIC */
 	aes128k128d(key, mic_iv, aes_out);
@@ -1219,7 +1282,11 @@ u32	rtw_aes_encrypt(struct adapter *padapter, u8 *pxmitframe)
 	pframe = ((struct xmit_frame *)pxmitframe)->buf_addr + hw_hdr_offset;
 
 	/* 4 start to encrypt each fragment */
+<<<<<<< HEAD
 	if ((pattrib->encrypt == _AES_)) {
+=======
+	if (pattrib->encrypt == _AES_) {
+>>>>>>> v4.9.227
 		if (pattrib->psta)
 			stainfo = pattrib->psta;
 		else
@@ -1238,11 +1305,19 @@ u32	rtw_aes_encrypt(struct adapter *padapter, u8 *pxmitframe)
 
 					aes_cipher(prwskey, pattrib->hdrlen, pframe, length);
 				} else{
+<<<<<<< HEAD
 					length = pxmitpriv->frag_len-pattrib->hdrlen-pattrib->iv_len-pattrib->icv_len ;
 
 					aes_cipher(prwskey, pattrib->hdrlen, pframe, length);
 					pframe += pxmitpriv->frag_len;
 					pframe = (u8 *) round_up((size_t)(pframe), 8);
+=======
+					length = pxmitpriv->frag_len-pattrib->hdrlen-pattrib->iv_len-pattrib->icv_len;
+
+					aes_cipher(prwskey, pattrib->hdrlen, pframe, length);
+					pframe += pxmitpriv->frag_len;
+					pframe = (u8 *)round_up((size_t)(pframe), 8);
+>>>>>>> v4.9.227
 				}
 			}
 		} else{
@@ -1277,6 +1352,7 @@ static int aes_decipher(u8 *key, uint	hdrlen,
 /*	uint	offset = 0; */
 	uint	frtype  = GetFrameType(pframe);
 	uint	frsubtype  = GetFrameSubType(pframe);
+<<<<<<< HEAD
 	frsubtype = frsubtype>>4;
 
 	memset((void *)mic_iv, 0, 16);
@@ -1286,6 +1362,17 @@ static int aes_decipher(u8 *key, uint	hdrlen,
 	memset((void *)chain_buffer, 0, 16);
 	memset((void *)aes_out, 0, 16);
 	memset((void *)padded_buffer, 0, 16);
+=======
+	frsubtype >>= 4;
+
+	memset(mic_iv, 0, 16);
+	memset(mic_header1, 0, 16);
+	memset(mic_header2, 0, 16);
+	memset(ctr_preload, 0, 16);
+	memset(chain_buffer, 0, 16);
+	memset(aes_out, 0, 16);
+	memset(padded_buffer, 0, 16);
+>>>>>>> v4.9.227
 
 	/* start to decrypt the payload */
 
@@ -1330,7 +1417,11 @@ static int aes_decipher(u8 *key, uint	hdrlen,
 		bitwise_xor(aes_out, &pframe[payload_index], chain_buffer);
 
 		for (j = 0; j < 16; j++)
+<<<<<<< HEAD
 			 pframe[payload_index++] = chain_buffer[j];
+=======
+			pframe[payload_index++] = chain_buffer[j];
+>>>>>>> v4.9.227
 	}
 
 	if (payload_remainder > 0) {    /* If there is a short final block, then pad it,*/
@@ -1366,7 +1457,11 @@ static int aes_decipher(u8 *key, uint	hdrlen,
 	num_blocks = (plen-8) / 16;
 
 	/* Find start of payload */
+<<<<<<< HEAD
 	payload_index = (hdrlen + 8);
+=======
+	payload_index = hdrlen + 8;
+>>>>>>> v4.9.227
 
 	/* Calculate MIC */
 	aes128k128d(key, mic_iv, aes_out);
@@ -1460,7 +1555,11 @@ u32	rtw_aes_decrypt(struct adapter *padapter, u8 *precvframe)
 	u32	res = _SUCCESS;
 	pframe = (unsigned char *)((struct recv_frame *)precvframe)->rx_data;
 	/* 4 start to encrypt each fragment */
+<<<<<<< HEAD
 	if ((prxattrib->encrypt == _AES_)) {
+=======
+	if (prxattrib->encrypt == _AES_) {
+>>>>>>> v4.9.227
 		stainfo = rtw_get_stainfo(&padapter->stapriv, &prxattrib->ta[0]);
 		if (stainfo != NULL) {
 			RT_TRACE(_module_rtl871x_security_c_, _drv_err_, ("rtw_aes_decrypt: stainfo!= NULL!!!\n"));

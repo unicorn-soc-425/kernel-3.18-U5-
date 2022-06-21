@@ -154,8 +154,13 @@ int snd_wss_create(struct snd_card *card,
 		      unsigned short hardware,
 		      unsigned short hwshare,
 		      struct snd_wss **rchip);
+<<<<<<< HEAD
 int snd_wss_pcm(struct snd_wss *chip, int device, struct snd_pcm **rpcm);
 int snd_wss_timer(struct snd_wss *chip, int device, struct snd_timer **rtimer);
+=======
+int snd_wss_pcm(struct snd_wss *chip, int device);
+int snd_wss_timer(struct snd_wss *chip, int device);
+>>>>>>> v4.9.227
 int snd_wss_mixer(struct snd_wss *chip);
 
 const struct snd_pcm_ops *snd_wss_get_pcm_ops(int direction);
@@ -167,7 +172,11 @@ int snd_cs4236_create(struct snd_card *card,
 		      unsigned short hardware,
 		      unsigned short hwshare,
 		      struct snd_wss **rchip);
+<<<<<<< HEAD
 int snd_cs4236_pcm(struct snd_wss *chip, int device, struct snd_pcm **rpcm);
+=======
+int snd_cs4236_pcm(struct snd_wss *chip, int device);
+>>>>>>> v4.9.227
 int snd_cs4236_mixer(struct snd_wss *chip);
 
 /*

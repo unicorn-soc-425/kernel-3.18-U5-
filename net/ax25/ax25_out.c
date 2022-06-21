@@ -24,7 +24,10 @@
 #include <linux/inet.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
+=======
+>>>>>>> v4.9.227
 #include <net/sock.h>
 #include <asm/uaccess.h>
 #include <linux/fcntl.h>

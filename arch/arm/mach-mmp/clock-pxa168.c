@@ -4,8 +4,14 @@
 #include <linux/list.h>
 #include <linux/io.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 
 #include <mach/addr-map.h>
+=======
+#include <linux/clk/mmp.h>
+
+#include "addr-map.h"
+>>>>>>> v4.9.227
 
 #include "common.h"
 #include "clock.h"
@@ -85,7 +91,12 @@ static struct clk_lookup pxa168_clkregs[] = {
 	INIT_CLKREG(&clk_rtc, "sa1100-rtc", NULL),
 };
 
+<<<<<<< HEAD
 void __init pxa168_clk_init(void)
+=======
+void __init pxa168_clk_init(phys_addr_t mpmu_phys, phys_addr_t apmu_phys,
+			    phys_addr_t apbc_phys)
+>>>>>>> v4.9.227
 {
 	clkdev_add_table(ARRAY_AND_SIZE(pxa168_clkregs));
 }

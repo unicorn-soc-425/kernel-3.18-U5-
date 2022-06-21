@@ -91,7 +91,12 @@ static int drr_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
 		if (tca[TCA_RATE]) {
 			err = gen_replace_estimator(&cl->bstats, NULL,
 						    &cl->rate_est,
+<<<<<<< HEAD
 						    qdisc_root_sleeping_lock(sch),
+=======
+						    NULL,
+						    qdisc_root_sleeping_running(sch),
+>>>>>>> v4.9.227
 						    tca[TCA_RATE]);
 			if (err)
 				return err;
@@ -119,7 +124,12 @@ static int drr_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
 
 	if (tca[TCA_RATE]) {
 		err = gen_replace_estimator(&cl->bstats, NULL, &cl->rate_est,
+<<<<<<< HEAD
 					    qdisc_root_sleeping_lock(sch),
+=======
+					    NULL,
+					    qdisc_root_sleeping_running(sch),
+>>>>>>> v4.9.227
 					    tca[TCA_RATE]);
 		if (err) {
 			qdisc_destroy(cl->qdisc);
@@ -279,7 +289,12 @@ static int drr_dump_class_stats(struct Qdisc *sch, unsigned long arg,
 	if (qlen)
 		xstats.deficit = cl->deficit;
 
+<<<<<<< HEAD
 	if (gnet_stats_copy_basic(d, NULL, &cl->bstats) < 0 ||
+=======
+	if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch),
+				  d, NULL, &cl->bstats) < 0 ||
+>>>>>>> v4.9.227
 	    gnet_stats_copy_rate_est(d, &cl->bstats, &cl->rate_est) < 0 ||
 	    gnet_stats_copy_queue(d, NULL, &cl->qdisc->qstats, qlen) < 0)
 		return -1;
@@ -328,7 +343,11 @@ static struct drr_class *drr_classify(struct sk_buff *skb, struct Qdisc *sch,
 
 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
 	fl = rcu_dereference_bh(q->filter_list);
+<<<<<<< HEAD
 	result = tc_classify(skb, fl, &res);
+=======
+	result = tc_classify(skb, fl, &res, false);
+>>>>>>> v4.9.227
 	if (result >= 0) {
 #ifdef CONFIG_NET_CLS_ACT
 		switch (result) {
@@ -347,7 +366,12 @@ static struct drr_class *drr_classify(struct sk_buff *skb, struct Qdisc *sch,
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int drr_enqueue(struct sk_buff *skb, struct Qdisc *sch)
+=======
+static int drr_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+		       struct sk_buff **to_free)
+>>>>>>> v4.9.227
 {
 	struct drr_sched *q = qdisc_priv(sch);
 	struct drr_class *cl;
@@ -357,11 +381,19 @@ static int drr_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	if (cl == NULL) {
 		if (err & __NET_XMIT_BYPASS)
 			qdisc_qstats_drop(sch);
+<<<<<<< HEAD
 		kfree_skb(skb);
 		return err;
 	}
 
 	err = qdisc_enqueue(skb, cl->qdisc);
+=======
+		__qdisc_drop(skb, to_free);
+		return err;
+	}
+
+	err = qdisc_enqueue(skb, cl->qdisc, to_free);
+>>>>>>> v4.9.227
 	if (unlikely(err != NET_XMIT_SUCCESS)) {
 		if (net_xmit_drop_count(err)) {
 			cl->qstats.drops++;
@@ -375,6 +407,10 @@ static int drr_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		cl->deficit = cl->quantum;
 	}
 
+<<<<<<< HEAD
+=======
+	qdisc_qstats_backlog_inc(sch, skb);
+>>>>>>> v4.9.227
 	sch->q.qlen++;
 	return err;
 }
@@ -400,11 +436,20 @@ static struct sk_buff *drr_dequeue(struct Qdisc *sch)
 		if (len <= cl->deficit) {
 			cl->deficit -= len;
 			skb = qdisc_dequeue_peeked(cl->qdisc);
+<<<<<<< HEAD
+=======
+			if (unlikely(skb == NULL))
+				goto out;
+>>>>>>> v4.9.227
 			if (cl->qdisc->q.qlen == 0)
 				list_del(&cl->alist);
 
 			bstats_update(&cl->bstats, skb);
 			qdisc_bstats_update(sch, skb);
+<<<<<<< HEAD
+=======
+			qdisc_qstats_backlog_dec(sch, skb);
+>>>>>>> v4.9.227
 			sch->q.qlen--;
 			return skb;
 		}
@@ -416,6 +461,7 @@ out:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static unsigned int drr_drop(struct Qdisc *sch)
 {
 	struct drr_sched *q = qdisc_priv(sch);
@@ -436,6 +482,8 @@ static unsigned int drr_drop(struct Qdisc *sch)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int drr_init_qdisc(struct Qdisc *sch, struct nlattr *opt)
 {
 	struct drr_sched *q = qdisc_priv(sch);
@@ -461,6 +509,10 @@ static void drr_reset_qdisc(struct Qdisc *sch)
 			qdisc_reset(cl->qdisc);
 		}
 	}
+<<<<<<< HEAD
+=======
+	sch->qstats.backlog = 0;
+>>>>>>> v4.9.227
 	sch->q.qlen = 0;
 }
 
@@ -504,7 +556,10 @@ static struct Qdisc_ops drr_qdisc_ops __read_mostly = {
 	.enqueue	= drr_enqueue,
 	.dequeue	= drr_dequeue,
 	.peek		= qdisc_peek_dequeued,
+<<<<<<< HEAD
 	.drop		= drr_drop,
+=======
+>>>>>>> v4.9.227
 	.init		= drr_init_qdisc,
 	.reset		= drr_reset_qdisc,
 	.destroy	= drr_destroy_qdisc,

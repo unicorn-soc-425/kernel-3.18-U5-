@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  *
  * File: rf.c
  *
@@ -921,8 +924,13 @@ void vnt_rf_table_download(struct vnt_private *priv)
 	if (priv->rf_type == RF_AIROHA7230) {
 		length1 = CB_AL7230_INIT_SEQ * 3;
 		length2 = CB_MAX_CHANNEL * 3;
+<<<<<<< HEAD
 		addr1 = &(al7230_init_table_amode[0][0]);
 		addr2 = &(al7230_channel_table2[0][0]);
+=======
+		addr1 = &al7230_init_table_amode[0][0];
+		addr2 = &al7230_channel_table2[0][0];
+>>>>>>> v4.9.227
 
 		memcpy(array, addr1, length1);
 

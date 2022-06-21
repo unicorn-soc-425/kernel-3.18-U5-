@@ -16,6 +16,7 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 #define Endian16_Swap(value) \
 	((((u16)((value) & 0x00FF)) << 8) | \
 	 (((u16)((value) & 0xFF00)) >> 8))
@@ -26,6 +27,8 @@
 	 (((u32)((value) & 0x00FF0000)) >> 8) | \
 	 (((u32)((value) & 0xFF000000)) >> 24))
 
+=======
+>>>>>>> v4.9.227
 enum {
 	ENDIANNESS_MIN = 0,
 	ENDIANNESS_UNKNOWN,
@@ -37,7 +40,10 @@ enum {
 
 struct gdm_endian {
 	u8 dev_ed;
+<<<<<<< HEAD
 	u8 host_ed;
+=======
+>>>>>>> v4.9.227
 };
 
 void gdm_set_endian(struct gdm_endian *ed, u8 dev_endian);

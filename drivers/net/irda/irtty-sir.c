@@ -231,7 +231,11 @@ static void irtty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
 
 	dev = priv->dev;
 	if (!dev) {
+<<<<<<< HEAD
 		IRDA_WARNING("%s(), not ready yet!\n", __func__);
+=======
+		net_warn_ratelimited("%s(), not ready yet!\n", __func__);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -240,7 +244,11 @@ static void irtty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
 		 *  Characters received with a parity error, etc?
 		 */
  		if (fp && *fp++) { 
+<<<<<<< HEAD
 			IRDA_DEBUG(0, "Framing or parity error!\n");
+=======
+			pr_debug("Framing or parity error!\n");
+>>>>>>> v4.9.227
 			sirdev_receive(dev, NULL, 0);	/* notify sir_dev (updating stats) */
 			return;
  		}
@@ -387,7 +395,11 @@ static int irtty_ioctl(struct tty_struct *tty, struct file *file, unsigned int c
 	IRDA_ASSERT(priv != NULL, return -ENODEV;);
 	IRDA_ASSERT(priv->magic == IRTTY_MAGIC, return -EBADR;);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(3, "%s(cmd=0x%X)\n", __func__, cmd);
+=======
+	pr_debug("%s(cmd=0x%X)\n", __func__, cmd);
+>>>>>>> v4.9.227
 
 	dev = priv->dev;
 	IRDA_ASSERT(dev != NULL, return -1;);
@@ -467,7 +479,11 @@ static int irtty_open(struct tty_struct *tty)
 
 	mutex_unlock(&irtty_mutex);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s - %s: irda line discipline opened\n", __func__, tty->name);
+=======
+	pr_debug("%s - %s: irda line discipline opened\n", __func__, tty->name);
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -518,7 +534,11 @@ static void irtty_close(struct tty_struct *tty)
 
 	kfree(priv);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s - %s: irda line discipline closed\n", __func__, tty->name);
+=======
+	pr_debug("%s - %s: irda line discipline closed\n", __func__, tty->name);
+>>>>>>> v4.9.227
 }
 
 /* ------------------------------------------------------- */
@@ -545,8 +565,13 @@ static int __init irtty_sir_init(void)
 	int err;
 
 	if ((err = tty_register_ldisc(N_IRDA, &irda_ldisc)) != 0)
+<<<<<<< HEAD
 		IRDA_ERROR("IrDA: can't register line discipline (err = %d)\n",
 			   err);
+=======
+		net_err_ratelimited("IrDA: can't register line discipline (err = %d)\n",
+				    err);
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -555,8 +580,13 @@ static void __exit irtty_sir_cleanup(void)
 	int err;
 
 	if ((err = tty_unregister_ldisc(N_IRDA))) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s(), can't unregister line discipline (err = %d)\n",
 			   __func__, err);
+=======
+		net_err_ratelimited("%s(), can't unregister line discipline (err = %d)\n",
+				    __func__, err);
+>>>>>>> v4.9.227
 	}
 }
 

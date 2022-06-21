@@ -297,6 +297,11 @@ struct gfs2_dinode {
 
 #define GFS2_FNAMESIZE		255
 #define GFS2_DIRENT_SIZE(name_len) ((sizeof(struct gfs2_dirent) + (name_len) + 7) & ~7)
+<<<<<<< HEAD
+=======
+#define GFS2_MIN_DIRENT_SIZE (GFS2_DIRENT_SIZE(1))
+
+>>>>>>> v4.9.227
 
 struct gfs2_dirent {
 	struct gfs2_inum de_inum;
@@ -304,11 +309,20 @@ struct gfs2_dirent {
 	__be16 de_rec_len;
 	__be16 de_name_len;
 	__be16 de_type;
+<<<<<<< HEAD
 	union {
 		__u8 __pad[14];
 		struct {
 			__be16 de_rahead;
 			__u8 pad2[12];
+=======
+	__be16 de_rahead;
+	union {
+		__u8 __pad[12];
+		struct {
+			__u32 de_cookie; /* ondisk value not used */
+			__u8 pad3[8];
+>>>>>>> v4.9.227
 		};
 	};
 };

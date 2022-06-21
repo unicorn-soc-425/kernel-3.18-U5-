@@ -130,8 +130,12 @@ static ssize_t kovaplus_sysfs_read(struct file *fp, struct kobject *kobj,
 		char *buf, loff_t off, size_t count,
 		size_t real_size, uint command)
 {
+<<<<<<< HEAD
 	struct device *dev =
 			container_of(kobj, struct device, kobj)->parent->parent;
+=======
+	struct device *dev = kobj_to_dev(kobj)->parent->parent;
+>>>>>>> v4.9.227
 	struct kovaplus_device *kovaplus = hid_get_drvdata(dev_get_drvdata(dev));
 	struct usb_device *usb_dev = interface_to_usbdev(to_usb_interface(dev));
 	int retval;
@@ -156,8 +160,12 @@ static ssize_t kovaplus_sysfs_write(struct file *fp, struct kobject *kobj,
 		void const *buf, loff_t off, size_t count,
 		size_t real_size, uint command)
 {
+<<<<<<< HEAD
 	struct device *dev =
 			container_of(kobj, struct device, kobj)->parent->parent;
+=======
+	struct device *dev = kobj_to_dev(kobj)->parent->parent;
+>>>>>>> v4.9.227
 	struct kovaplus_device *kovaplus = hid_get_drvdata(dev_get_drvdata(dev));
 	struct usb_device *usb_dev = interface_to_usbdev(to_usb_interface(dev));
 	int retval;
@@ -223,8 +231,12 @@ static ssize_t kovaplus_sysfs_read_profilex_settings(struct file *fp,
 		struct kobject *kobj, struct bin_attribute *attr, char *buf,
 		loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	struct device *dev =
 			container_of(kobj, struct device, kobj)->parent->parent;
+=======
+	struct device *dev = kobj_to_dev(kobj)->parent->parent;
+>>>>>>> v4.9.227
 	struct usb_device *usb_dev = interface_to_usbdev(to_usb_interface(dev));
 	ssize_t retval;
 
@@ -242,8 +254,12 @@ static ssize_t kovaplus_sysfs_read_profilex_buttons(struct file *fp,
 		struct kobject *kobj, struct bin_attribute *attr, char *buf,
 		loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	struct device *dev =
 			container_of(kobj, struct device, kobj)->parent->parent;
+=======
+	struct device *dev = kobj_to_dev(kobj)->parent->parent;
+>>>>>>> v4.9.227
 	struct usb_device *usb_dev = interface_to_usbdev(to_usb_interface(dev));
 	ssize_t retval;
 

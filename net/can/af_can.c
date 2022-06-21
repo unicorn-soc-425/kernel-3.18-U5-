@@ -64,9 +64,12 @@
 
 #include "af_can.h"
 
+<<<<<<< HEAD
 static __initconst const char banner[] = KERN_INFO
 	"can: controller area network core (" CAN_VERSION_STRING ")\n";
 
+=======
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Controller Area Network PF_CAN core");
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Urs Thuermann <urs.thuermann@volkswagen.de>, "
@@ -92,6 +95,11 @@ struct timer_list can_stattimer;   /* timer for statistics update */
 struct s_stats    can_stats;       /* packet statistics */
 struct s_pstats   can_pstats;      /* receive list statistics */
 
+<<<<<<< HEAD
+=======
+static atomic_t skbcounter = ATOMIC_INIT(0);
+
+>>>>>>> v4.9.227
 /*
  * af_can socket functions
  */
@@ -114,6 +122,10 @@ EXPORT_SYMBOL(can_ioctl);
 static void can_sock_destruct(struct sock *sk)
 {
 	skb_queue_purge(&sk->sk_receive_queue);
+<<<<<<< HEAD
+=======
+	skb_queue_purge(&sk->sk_error_queue);
+>>>>>>> v4.9.227
 }
 
 static const struct can_proto *can_get_proto(int protocol)
@@ -182,7 +194,11 @@ static int can_create(struct net *net, struct socket *sock, int protocol,
 
 	sock->ops = cp->ops;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_CAN, GFP_KERNEL, cp->prot);
+=======
+	sk = sk_alloc(net, PF_CAN, GFP_KERNEL, cp->prot, kern);
+>>>>>>> v4.9.227
 	if (!sk) {
 		err = -ENOMEM;
 		goto errout;
@@ -532,7 +548,11 @@ static void can_rx_delete_receiver(struct rcu_head *rp)
 
 /**
  * can_rx_unregister - unsubscribe CAN frames from a specific interface
+<<<<<<< HEAD
  * @dev: pointer to netdevice (NULL => unsubcribe from 'all' CAN devices list)
+=======
+ * @dev: pointer to netdevice (NULL => unsubscribe from 'all' CAN devices list)
+>>>>>>> v4.9.227
  * @can_id: CAN identifier
  * @mask: CAN mask
  * @func: callback function on filter match
@@ -690,6 +710,13 @@ static void can_receive(struct sk_buff *skb, struct net_device *dev)
 	can_stats.rx_frames++;
 	can_stats.rx_frames_delta++;
 
+<<<<<<< HEAD
+=======
+	/* create non-zero unique skb identifier together with *skb */
+	while (!(can_skb_prv(skb)->skbcnt))
+		can_skb_prv(skb)->skbcnt = atomic_inc_return(&skbcounter);
+
+>>>>>>> v4.9.227
 	rcu_read_lock();
 
 	/* deliver the packet to sockets listening on all devices */
@@ -905,7 +932,11 @@ static __init int can_init(void)
 		     offsetof(struct can_frame, data) !=
 		     offsetof(struct canfd_frame, data));
 
+<<<<<<< HEAD
 	printk(banner);
+=======
+	pr_info("can: controller area network core (" CAN_VERSION_STRING ")\n");
+>>>>>>> v4.9.227
 
 	memset(&can_rx_alldev_list, 0, sizeof(can_rx_alldev_list));
 
@@ -914,6 +945,7 @@ static __init int can_init(void)
 	if (!rcv_cache)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (stats_timer) {
 		/* the statistics are updated every second (timer triggered) */
 		setup_timer(&can_stattimer, can_stat_update, 0);
@@ -922,6 +954,16 @@ static __init int can_init(void)
 		can_stattimer.function = NULL;
 
 	can_init_proc();
+=======
+	if (IS_ENABLED(CONFIG_PROC_FS)) {
+		if (stats_timer) {
+		/* the statistics are updated every second (timer triggered) */
+			setup_timer(&can_stattimer, can_stat_update, 0);
+			mod_timer(&can_stattimer, round_jiffies(jiffies + HZ));
+		}
+		can_init_proc();
+	}
+>>>>>>> v4.9.227
 
 	/* protocol register */
 	sock_register(&can_family_ops);
@@ -936,10 +978,19 @@ static __exit void can_exit(void)
 {
 	struct net_device *dev;
 
+<<<<<<< HEAD
 	if (stats_timer)
 		del_timer_sync(&can_stattimer);
 
 	can_remove_proc();
+=======
+	if (IS_ENABLED(CONFIG_PROC_FS)) {
+		if (stats_timer)
+			del_timer_sync(&can_stattimer);
+
+		can_remove_proc();
+	}
+>>>>>>> v4.9.227
 
 	/* protocol unregister */
 	dev_remove_pack(&canfd_packet);

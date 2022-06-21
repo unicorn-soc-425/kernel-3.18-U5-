@@ -33,7 +33,10 @@ module_param(fb_defio, int, S_IWUSR | S_IRUSR | S_IWGRP | S_IRGRP);
 struct udl_fbdev {
 	struct drm_fb_helper helper;
 	struct udl_framebuffer ufb;
+<<<<<<< HEAD
 	struct list_head fbdev_list;
+=======
+>>>>>>> v4.9.227
 	int fb_count;
 };
 
@@ -78,6 +81,7 @@ static uint16_t rgb16(uint32_t col)
 }
 #endif
 
+<<<<<<< HEAD
 /*
  * NOTE: fb_defio.c is holding info->fbdefio.mutex
  *   Touching ANY framebuffer memory that triggers a page fault
@@ -140,6 +144,8 @@ error:
 		   &udl->cpu_kcycles_used);
 }
 
+=======
+>>>>>>> v4.9.227
 int udl_handle_damage(struct udl_framebuffer *fb, int x, int y,
 		      int width, int height)
 {
@@ -153,9 +159,12 @@ int udl_handle_damage(struct udl_framebuffer *fb, int x, int y,
 	struct urb *urb;
 	int aligned_x;
 	int bpp = (fb->base.bits_per_pixel / 8);
+<<<<<<< HEAD
 	int x2, y2;
 	bool store_for_later = false;
 	unsigned long flags;
+=======
+>>>>>>> v4.9.227
 
 	if (!fb->active_16)
 		return 0;
@@ -181,6 +190,7 @@ int udl_handle_damage(struct udl_framebuffer *fb, int x, int y,
 	    (y + height > fb->base.height))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* if we are in atomic just store the info
 	   can't test inside spin lock */
 	if (in_atomic())
@@ -213,6 +223,8 @@ int udl_handle_damage(struct udl_framebuffer *fb, int x, int y,
 	fb->x2 = fb->y2 = 0;
 
 	spin_unlock_irqrestore(&fb->dirty_lock, flags);
+=======
+>>>>>>> v4.9.227
 	start_cycles = get_cycles();
 
 	urb = udl_get_urb(dev);
@@ -220,21 +232,36 @@ int udl_handle_damage(struct udl_framebuffer *fb, int x, int y,
 		return 0;
 	cmd = urb->transfer_buffer;
 
+<<<<<<< HEAD
 	for (i = y; i <= y2 ; i++) {
+=======
+	for (i = y; i < y + height ; i++) {
+>>>>>>> v4.9.227
 		const int line_offset = fb->base.pitches[0] * i;
 		const int byte_offset = line_offset + (x * bpp);
 		const int dev_byte_offset = (fb->base.width * bpp * i) + (x * bpp);
 		if (udl_render_hline(dev, bpp, &urb,
 				     (char *) fb->obj->vmapping,
 				     &cmd, byte_offset, dev_byte_offset,
+<<<<<<< HEAD
 				     (x2 - x + 1) * bpp,
+=======
+				     width * bpp,
+>>>>>>> v4.9.227
 				     &bytes_identical, &bytes_sent))
 			goto error;
 	}
 
 	if (cmd > (char *) urb->transfer_buffer) {
 		/* Send partial buffer remaining before exiting */
+<<<<<<< HEAD
 		int len = cmd - (char *) urb->transfer_buffer;
+=======
+		int len;
+		if (cmd < (char *) urb->transfer_buffer + urb->transfer_buffer_length)
+			*cmd++ = 0xAF;
+		len = cmd - (char *) urb->transfer_buffer;
+>>>>>>> v4.9.227
 		ret = udl_submit_urb(dev, urb, len);
 		bytes_sent += len;
 	} else
@@ -289,6 +316,7 @@ static int udl_fb_mmap(struct fb_info *info, struct vm_area_struct *vma)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void udl_fb_fillrect(struct fb_info *info, const struct fb_fillrect *rect)
 {
 	struct udl_fbdev *ufbdev = info->par;
@@ -319,6 +347,8 @@ static void udl_fb_imageblit(struct fb_info *info, const struct fb_image *image)
 			  image->height);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * It's common for several clients to have framebuffer open simultaneously.
  * e.g. both fbcon and X. Makes things interesting.
@@ -336,6 +366,10 @@ static int udl_fb_open(struct fb_info *info, int user)
 
 	ufbdev->fb_count++;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+>>>>>>> v4.9.227
 	if (fb_defio && (info->fbdefio == NULL)) {
 		/* enable defio at last moment if not disabled by client */
 
@@ -345,12 +379,20 @@ static int udl_fb_open(struct fb_info *info, int user)
 
 		if (fbdefio) {
 			fbdefio->delay = DL_DEFIO_WRITE_DELAY;
+<<<<<<< HEAD
 			fbdefio->deferred_io = udlfb_dpy_deferred_io;
+=======
+			fbdefio->deferred_io = drm_fb_helper_deferred_io;
+>>>>>>> v4.9.227
 		}
 
 		info->fbdefio = fbdefio;
 		fb_deferred_io_init(info);
 	}
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 	pr_notice("open /dev/fb%d user=%d fb_info=%p count=%d\n",
 		  info->node, user, info, ufbdev->fb_count);
@@ -368,12 +410,20 @@ static int udl_fb_release(struct fb_info *info, int user)
 
 	ufbdev->fb_count--;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+>>>>>>> v4.9.227
 	if ((ufbdev->fb_count == 0) && (info->fbdefio)) {
 		fb_deferred_io_cleanup(info);
 		kfree(info->fbdefio);
 		info->fbdefio = NULL;
 		info->fbops->fb_mmap = udl_fb_mmap;
 	}
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 	pr_warn("released /dev/fb%d user=%d count=%d\n",
 		info->node, user, ufbdev->fb_count);
@@ -385,9 +435,15 @@ static struct fb_ops udlfb_ops = {
 	.owner = THIS_MODULE,
 	.fb_check_var = drm_fb_helper_check_var,
 	.fb_set_par = drm_fb_helper_set_par,
+<<<<<<< HEAD
 	.fb_fillrect = udl_fb_fillrect,
 	.fb_copyarea = udl_fb_copyarea,
 	.fb_imageblit = udl_fb_imageblit,
+=======
+	.fb_fillrect = drm_fb_helper_sys_fillrect,
+	.fb_copyarea = drm_fb_helper_sys_copyarea,
+	.fb_imageblit = drm_fb_helper_sys_imageblit,
+>>>>>>> v4.9.227
 	.fb_pan_display = drm_fb_helper_pan_display,
 	.fb_blank = drm_fb_helper_blank,
 	.fb_setcmap = drm_fb_helper_setcmap,
@@ -415,7 +471,10 @@ static int udl_user_framebuffer_dirty(struct drm_framebuffer *fb,
 
 	if (ufb->obj->base.import_attach) {
 		ret = dma_buf_begin_cpu_access(ufb->obj->base.import_attach->dmabuf,
+<<<<<<< HEAD
 					       0, ufb->obj->base.size,
+=======
+>>>>>>> v4.9.227
 					       DMA_FROM_DEVICE);
 		if (ret)
 			goto unlock;
@@ -430,9 +489,14 @@ static int udl_user_framebuffer_dirty(struct drm_framebuffer *fb,
 	}
 
 	if (ufb->obj->base.import_attach) {
+<<<<<<< HEAD
 		dma_buf_end_cpu_access(ufb->obj->base.import_attach->dmabuf,
 				       0, ufb->obj->base.size,
 				       DMA_FROM_DEVICE);
+=======
+		ret = dma_buf_end_cpu_access(ufb->obj->base.import_attach->dmabuf,
+					     DMA_FROM_DEVICE);
+>>>>>>> v4.9.227
 	}
 
  unlock:
@@ -461,12 +525,19 @@ static const struct drm_framebuffer_funcs udlfb_funcs = {
 static int
 udl_framebuffer_init(struct drm_device *dev,
 		     struct udl_framebuffer *ufb,
+<<<<<<< HEAD
 		     struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+		     const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 		     struct udl_gem_object *obj)
 {
 	int ret;
 
+<<<<<<< HEAD
 	spin_lock_init(&ufb->dirty_lock);
+=======
+>>>>>>> v4.9.227
 	ufb->obj = obj;
 	drm_helper_mode_fill_fb_struct(&ufb->base, mode_cmd);
 	ret = drm_framebuffer_init(dev, &ufb->base, &udlfb_funcs);
@@ -629,14 +700,22 @@ void udl_fbdev_unplug(struct drm_device *dev)
 struct drm_framebuffer *
 udl_fb_user_fb_create(struct drm_device *dev,
 		   struct drm_file *file,
+<<<<<<< HEAD
 		   struct drm_mode_fb_cmd2 *mode_cmd)
+=======
+		   const struct drm_mode_fb_cmd2 *mode_cmd)
+>>>>>>> v4.9.227
 {
 	struct drm_gem_object *obj;
 	struct udl_framebuffer *ufb;
 	int ret;
 	uint32_t size;
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file, mode_cmd->handles[0]);
+=======
+	obj = drm_gem_object_lookup(file, mode_cmd->handles[0]);
+>>>>>>> v4.9.227
 	if (obj == NULL)
 		return ERR_PTR(-ENOENT);
 

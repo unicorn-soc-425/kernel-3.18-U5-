@@ -26,7 +26,11 @@
 #include "cx18-cards.h"
 #include "cx18-av-core.h"
 #include "cx18-i2c.h"
+<<<<<<< HEAD
 #include <media/cs5345.h>
+=======
+#include <media/i2c/cs5345.h>
+>>>>>>> v4.9.227
 
 #define V4L2_STD_PAL_SECAM (V4L2_STD_PAL|V4L2_STD_SECAM)
 

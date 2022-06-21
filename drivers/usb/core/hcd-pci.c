@@ -28,7 +28,10 @@
 #ifdef CONFIG_PPC_PMAC
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/prom.h>
 #endif
 
@@ -74,6 +77,18 @@ static void for_each_companion(struct pci_dev *pdev, struct usb_hcd *hcd,
 		if (companion->bus != pdev->bus ||
 				PCI_SLOT(companion->devfn) != slot)
 			continue;
+<<<<<<< HEAD
+=======
+
+		/*
+		 * Companion device should be either UHCI,OHCI or EHCI host
+		 * controller, otherwise skip.
+		 */
+		if (companion->class != CL_UHCI && companion->class != CL_OHCI &&
+				companion->class != CL_EHCI)
+			continue;
+
+>>>>>>> v4.9.227
 		companion_hcd = pci_get_drvdata(companion);
 		if (!companion_hcd || !companion_hcd->self.root_hub)
 			continue;
@@ -197,7 +212,11 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	 * The xHCI driver has its own irq management
 	 * make sure irq setup is not touched for xhci in generic hcd code
 	 */
+<<<<<<< HEAD
 	if ((driver->flags & HCD_MASK) != HCD_USB3) {
+=======
+	if ((driver->flags & HCD_MASK) < HCD_USB3) {
+>>>>>>> v4.9.227
 		if (!dev->irq) {
 			dev_err(&dev->dev,
 			"Found HC with no IRQ. Check BIOS/PCI %s setup!\n",
@@ -429,7 +448,10 @@ static int check_root_hub_suspended(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM_RUNTIME)
+=======
+>>>>>>> v4.9.227
 static int suspend_common(struct device *dev, bool do_wakeup)
 {
 	struct pci_dev		*pci_dev = to_pci_dev(dev);
@@ -521,14 +543,20 @@ static int resume_common(struct device *dev, int event)
 				event == PM_EVENT_RESTORE);
 		if (retval) {
 			dev_err(dev, "PCI post-resume error %d!\n", retval);
+<<<<<<< HEAD
 			if (hcd->shared_hcd)
 				usb_hc_died(hcd->shared_hcd);
+=======
+>>>>>>> v4.9.227
 			usb_hc_died(hcd);
 		}
 	}
 	return retval;
 }
+<<<<<<< HEAD
 #endif	/* SLEEP || RUNTIME */
+=======
+>>>>>>> v4.9.227
 
 #ifdef	CONFIG_PM_SLEEP
 
@@ -607,8 +635,11 @@ static int hcd_pci_restore(struct device *dev)
 
 #endif	/* CONFIG_PM_SLEEP */
 
+<<<<<<< HEAD
 #ifdef	CONFIG_PM_RUNTIME
 
+=======
+>>>>>>> v4.9.227
 static int hcd_pci_runtime_suspend(struct device *dev)
 {
 	int	retval;
@@ -630,6 +661,7 @@ static int hcd_pci_runtime_resume(struct device *dev)
 	return retval;
 }
 
+<<<<<<< HEAD
 #else
 
 #define hcd_pci_runtime_suspend	NULL
@@ -637,6 +669,8 @@ static int hcd_pci_runtime_resume(struct device *dev)
 
 #endif	/* CONFIG_PM_RUNTIME */
 
+=======
+>>>>>>> v4.9.227
 const struct dev_pm_ops usb_hcd_pci_pm_ops = {
 	.suspend	= hcd_pci_suspend,
 	.suspend_noirq	= hcd_pci_suspend_noirq,

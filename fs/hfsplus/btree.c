@@ -236,6 +236,7 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id)
 	tree->node_size_shift = ffs(size) - 1;
 
 	tree->pages_per_bnode =
+<<<<<<< HEAD
 		(tree->node_size + PAGE_CACHE_SIZE - 1) >>
 		PAGE_CACHE_SHIFT;
 
@@ -245,6 +246,17 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id)
 
  fail_page:
 	page_cache_release(page);
+=======
+		(tree->node_size + PAGE_SIZE - 1) >>
+		PAGE_SHIFT;
+
+	kunmap(page);
+	put_page(page);
+	return tree;
+
+ fail_page:
+	put_page(page);
+>>>>>>> v4.9.227
  free_inode:
 	tree->inode->i_mapping->a_ops = &hfsplus_aops;
 	iput(tree->inode);
@@ -341,6 +353,37 @@ static struct hfs_bnode *hfs_bmap_new_bmap(struct hfs_bnode *prev, u32 idx)
 	return node;
 }
 
+<<<<<<< HEAD
+=======
+/* Make sure @tree has enough space for the @rsvd_nodes */
+int hfs_bmap_reserve(struct hfs_btree *tree, int rsvd_nodes)
+{
+	struct inode *inode = tree->inode;
+	struct hfsplus_inode_info *hip = HFSPLUS_I(inode);
+	u32 count;
+	int res;
+
+	if (rsvd_nodes <= 0)
+		return 0;
+
+	while (tree->free_nodes < rsvd_nodes) {
+		res = hfsplus_file_extend(inode, hfs_bnode_need_zeroout(tree));
+		if (res)
+			return res;
+		hip->phys_size = inode->i_size =
+			(loff_t)hip->alloc_blocks <<
+				HFSPLUS_SB(tree->sb)->alloc_blksz_shift;
+		hip->fs_blocks =
+			hip->alloc_blocks << HFSPLUS_SB(tree->sb)->fs_shift;
+		inode_set_bytes(inode, inode->i_size);
+		count = inode->i_size >> tree->node_size_shift;
+		tree->free_nodes += count - tree->node_count;
+		tree->node_count = count;
+	}
+	return 0;
+}
+
+>>>>>>> v4.9.227
 struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 {
 	struct hfs_bnode *node, *next_node;
@@ -350,6 +393,7 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 	u16 off16;
 	u16 len;
 	u8 *data, byte, m;
+<<<<<<< HEAD
 	int i;
 
 	while (!tree->free_nodes) {
@@ -371,6 +415,13 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 		tree->free_nodes = count - tree->node_count;
 		tree->node_count = count;
 	}
+=======
+	int i, res;
+
+	res = hfs_bmap_reserve(tree, 1);
+	if (res)
+		return ERR_PTR(res);
+>>>>>>> v4.9.227
 
 	nidx = 0;
 	node = hfs_bnode_find(tree, nidx);
@@ -380,9 +431,15 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 	off = off16;
 
 	off += node->page_offset;
+<<<<<<< HEAD
 	pagep = node->page + (off >> PAGE_CACHE_SHIFT);
 	data = kmap(*pagep);
 	off &= ~PAGE_CACHE_MASK;
+=======
+	pagep = node->page + (off >> PAGE_SHIFT);
+	data = kmap(*pagep);
+	off &= ~PAGE_MASK;
+>>>>>>> v4.9.227
 	idx = 0;
 
 	for (;;) {
@@ -403,7 +460,11 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 					}
 				}
 			}
+<<<<<<< HEAD
 			if (++off >= PAGE_CACHE_SIZE) {
+=======
+			if (++off >= PAGE_SIZE) {
+>>>>>>> v4.9.227
 				kunmap(*pagep);
 				data = kmap(*++pagep);
 				off = 0;
@@ -426,9 +487,15 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 		len = hfs_brec_lenoff(node, 0, &off16);
 		off = off16;
 		off += node->page_offset;
+<<<<<<< HEAD
 		pagep = node->page + (off >> PAGE_CACHE_SHIFT);
 		data = kmap(*pagep);
 		off &= ~PAGE_CACHE_MASK;
+=======
+		pagep = node->page + (off >> PAGE_SHIFT);
+		data = kmap(*pagep);
+		off &= ~PAGE_MASK;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -453,14 +520,24 @@ void hfs_bmap_free(struct hfs_bnode *node)
 
 		nidx -= len * 8;
 		i = node->next;
+<<<<<<< HEAD
 		hfs_bnode_put(node);
+=======
+>>>>>>> v4.9.227
 		if (!i) {
 			/* panic */;
 			pr_crit("unable to free bnode %u. "
 					"bmap not found!\n",
 				node->this);
+<<<<<<< HEAD
 			return;
 		}
+=======
+			hfs_bnode_put(node);
+			return;
+		}
+		hfs_bnode_put(node);
+>>>>>>> v4.9.227
 		node = hfs_bnode_find(tree, i);
 		if (IS_ERR(node))
 			return;
@@ -475,9 +552,15 @@ void hfs_bmap_free(struct hfs_bnode *node)
 		len = hfs_brec_lenoff(node, 0, &off);
 	}
 	off += node->page_offset + nidx / 8;
+<<<<<<< HEAD
 	page = node->page[off >> PAGE_CACHE_SHIFT];
 	data = kmap(page);
 	off &= ~PAGE_CACHE_MASK;
+=======
+	page = node->page[off >> PAGE_SHIFT];
+	data = kmap(page);
+	off &= ~PAGE_MASK;
+>>>>>>> v4.9.227
 	m = 1 << (~nidx & 7);
 	byte = data[off];
 	if (!(byte & m)) {

@@ -17,13 +17,24 @@
 #include <linux/ftrace.h>
 #include <linux/io.h>
 #include <linux/suspend.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+>>>>>>> v4.9.227
 
 #include <asm/init.h>
 #include <asm/pgtable.h>
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
+<<<<<<< HEAD
 #include <asm/debugreg.h>
 #include <asm/kexec-bzimage64.h>
+=======
+#include <asm/io_apic.h>
+#include <asm/debugreg.h>
+#include <asm/kexec-bzimage64.h>
+#include <asm/setup.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_KEXEC_FILE
 static struct kexec_file_ops *kexec_file_loaders[] = {
@@ -335,7 +346,14 @@ void arch_crash_save_vmcoreinfo(void)
 	VMCOREINFO_LENGTH(node_data, MAX_NUMNODES);
 #endif
 	vmcoreinfo_append_str("KERNELOFFSET=%lx\n",
+<<<<<<< HEAD
 			      (unsigned long)&_text - __START_KERNEL);
+=======
+			      kaslr_offset());
+	VMCOREINFO_PAGE_OFFSET(PAGE_OFFSET);
+	VMCOREINFO_VMALLOC_START(VMALLOC_START);
+	VMCOREINFO_VMEMMAP_START(VMEMMAP_START);
+>>>>>>> v4.9.227
 }
 
 /* arch-dependent functionality related to kexec file-based syscall */
@@ -384,6 +402,10 @@ int arch_kimage_file_post_load_cleanup(struct kimage *image)
 	return image->fops->cleanup(image->image_loader_data);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_KEXEC_VERIFY_SIG
+>>>>>>> v4.9.227
 int arch_kexec_kernel_verify_sig(struct kimage *image, void *kernel,
 				 unsigned long kernel_len)
 {
@@ -394,6 +416,10 @@ int arch_kexec_kernel_verify_sig(struct kimage *image, void *kernel,
 
 	return image->fops->verify_sig(kernel, kernel_len);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 /*
  * Apply purgatory relocations.
@@ -536,3 +562,51 @@ overflow:
 	return -ENOEXEC;
 }
 #endif /* CONFIG_KEXEC_FILE */
+<<<<<<< HEAD
+=======
+
+static int
+kexec_mark_range(unsigned long start, unsigned long end, bool protect)
+{
+	struct page *page;
+	unsigned int nr_pages;
+
+	/*
+	 * For physical range: [start, end]. We must skip the unassigned
+	 * crashk resource with zero-valued "end" member.
+	 */
+	if (!end || start > end)
+		return 0;
+
+	page = pfn_to_page(start >> PAGE_SHIFT);
+	nr_pages = (end >> PAGE_SHIFT) - (start >> PAGE_SHIFT) + 1;
+	if (protect)
+		return set_pages_ro(page, nr_pages);
+	else
+		return set_pages_rw(page, nr_pages);
+}
+
+static void kexec_mark_crashkres(bool protect)
+{
+	unsigned long control;
+
+	kexec_mark_range(crashk_low_res.start, crashk_low_res.end, protect);
+
+	/* Don't touch the control code page used in crash_kexec().*/
+	control = PFN_PHYS(page_to_pfn(kexec_crash_image->control_code_page));
+	/* Control code page is located in the 2nd page. */
+	kexec_mark_range(crashk_res.start, control + PAGE_SIZE - 1, protect);
+	control += KEXEC_CONTROL_PAGE_SIZE;
+	kexec_mark_range(control, crashk_res.end, protect);
+}
+
+void arch_kexec_protect_crashkres(void)
+{
+	kexec_mark_crashkres(true);
+}
+
+void arch_kexec_unprotect_crashkres(void)
+{
+	kexec_mark_crashkres(false);
+}
+>>>>>>> v4.9.227

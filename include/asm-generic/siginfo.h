@@ -17,6 +17,7 @@
 struct siginfo;
 void do_schedule_next_timer(struct siginfo *info);
 
+<<<<<<< HEAD
 #ifndef HAVE_ARCH_COPY_SIGINFO
 
 #include <linux/string.h>
@@ -32,6 +33,8 @@ static inline void copy_siginfo(struct siginfo *to, struct siginfo *from)
 
 #endif
 
+=======
+>>>>>>> v4.9.227
 extern int copy_siginfo_to_user(struct siginfo __user *to, const struct siginfo *from);
 
 #endif

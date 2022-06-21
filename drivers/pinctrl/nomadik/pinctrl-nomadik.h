@@ -121,8 +121,11 @@ struct nmk_pingroup {
 
 /**
  * struct nmk_pinctrl_soc_data - Nomadik pin controller per-SoC configuration
+<<<<<<< HEAD
  * @gpio_ranges: An array of GPIO ranges for this SoC
  * @gpio_num_ranges: The number of GPIO ranges for this SoC
+=======
+>>>>>>> v4.9.227
  * @pins:	An array describing all pins the pin controller affects.
  *		All pins which are also GPIOs must be listed first within the
  *		array, and be numbered identically to the GPIO controller's
@@ -137,8 +140,11 @@ struct nmk_pingroup {
  * @prcm_gpiocr_registers: The array of PRCM GPIOCR registers on this SoC
  */
 struct nmk_pinctrl_soc_data {
+<<<<<<< HEAD
 	struct pinctrl_gpio_range *gpio_ranges;
 	unsigned gpio_num_ranges;
+=======
+>>>>>>> v4.9.227
 	const struct pinctrl_pin_desc *pins;
 	unsigned npins;
 	const struct nmk_function *functions;

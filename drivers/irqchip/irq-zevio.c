@@ -11,6 +11,10 @@
 
 #include <linux/io.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
@@ -18,8 +22,11 @@
 #include <asm/mach/irq.h>
 #include <asm/exception.h>
 
+<<<<<<< HEAD
 #include "irqchip.h"
 
+=======
+>>>>>>> v4.9.227
 #define IO_STATUS	0x000
 #define IO_RAW_STATUS	0x004
 #define IO_ENABLE	0x008
@@ -44,8 +51,12 @@ static void __iomem *zevio_irq_io;
 static void zevio_irq_ack(struct irq_data *irqd)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(irqd);
+<<<<<<< HEAD
 	struct irq_chip_regs *regs =
 		&container_of(irqd->chip, struct irq_chip_type, chip)->regs;
+=======
+	struct irq_chip_regs *regs = &irq_data_get_chip_type(irqd)->regs;
+>>>>>>> v4.9.227
 
 	readl(gc->reg_base + regs->ack);
 }

@@ -36,7 +36,11 @@ static int xen_acpi_pad_idle_cpus(unsigned int idle_nums)
 	op.u.core_parking.type = XEN_CORE_PARKING_SET;
 	op.u.core_parking.idle_nums = idle_nums;
 
+<<<<<<< HEAD
 	return HYPERVISOR_dom0_op(&op);
+=======
+	return HYPERVISOR_platform_op(&op);
+>>>>>>> v4.9.227
 }
 
 static int xen_acpi_pad_idle_cpus_num(void)
@@ -46,7 +50,11 @@ static int xen_acpi_pad_idle_cpus_num(void)
 	op.cmd = XENPF_core_parking;
 	op.u.core_parking.type = XEN_CORE_PARKING_GET;
 
+<<<<<<< HEAD
 	return HYPERVISOR_dom0_op(&op)
+=======
+	return HYPERVISOR_platform_op(&op)
+>>>>>>> v4.9.227
 	       ?: op.u.core_parking.idle_nums;
 }
 

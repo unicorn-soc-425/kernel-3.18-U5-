@@ -21,10 +21,18 @@
 #include <linux/err.h>
 #include <linux/i2c.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
+=======
+#include <linux/interrupt.h>
+#include <linux/irq.h>
+#include <linux/regulator/driver.h>
+#include <linux/regulator/machine.h>
+#include <linux/of_device.h>
+>>>>>>> v4.9.227
 #include <linux/regulator/of_regulator.h>
 #include <linux/regmap.h>
 
@@ -44,7 +52,11 @@ static int da9210_set_current_limit(struct regulator_dev *rdev, int min_uA,
 				    int max_uA);
 static int da9210_get_current_limit(struct regulator_dev *rdev);
 
+<<<<<<< HEAD
 static struct regulator_ops da9210_buck_ops = {
+=======
+static const struct regulator_ops da9210_buck_ops = {
+>>>>>>> v4.9.227
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
 	.is_enabled = regulator_is_enabled_regmap,
@@ -120,9 +132,76 @@ static int da9210_get_current_limit(struct regulator_dev *rdev)
 	return da9210_buck_limits[sel];
 }
 
+<<<<<<< HEAD
 /*
  * I2C driver interface functions
  */
+=======
+static irqreturn_t da9210_irq_handler(int irq, void *data)
+{
+	struct da9210 *chip = data;
+	unsigned int val, handled = 0;
+	int error, ret = IRQ_NONE;
+
+	error = regmap_read(chip->regmap, DA9210_REG_EVENT_B, &val);
+	if (error < 0)
+		goto error_i2c;
+
+	mutex_lock(&chip->rdev->mutex);
+
+	if (val & DA9210_E_OVCURR) {
+		regulator_notifier_call_chain(chip->rdev,
+					      REGULATOR_EVENT_OVER_CURRENT,
+					      NULL);
+		handled |= DA9210_E_OVCURR;
+	}
+	if (val & DA9210_E_NPWRGOOD) {
+		regulator_notifier_call_chain(chip->rdev,
+					      REGULATOR_EVENT_UNDER_VOLTAGE,
+					      NULL);
+		handled |= DA9210_E_NPWRGOOD;
+	}
+	if (val & (DA9210_E_TEMP_WARN | DA9210_E_TEMP_CRIT)) {
+		regulator_notifier_call_chain(chip->rdev,
+					      REGULATOR_EVENT_OVER_TEMP, NULL);
+		handled |= val & (DA9210_E_TEMP_WARN | DA9210_E_TEMP_CRIT);
+	}
+	if (val & DA9210_E_VMAX) {
+		regulator_notifier_call_chain(chip->rdev,
+					      REGULATOR_EVENT_REGULATION_OUT,
+					      NULL);
+		handled |= DA9210_E_VMAX;
+	}
+
+	mutex_unlock(&chip->rdev->mutex);
+
+	if (handled) {
+		/* Clear handled events */
+		error = regmap_write(chip->regmap, DA9210_REG_EVENT_B, handled);
+		if (error < 0)
+			goto error_i2c;
+
+		ret = IRQ_HANDLED;
+	}
+
+	return ret;
+
+error_i2c:
+	dev_err(regmap_get_device(chip->regmap), "I2C error : %d\n", error);
+	return ret;
+}
+
+/*
+ * I2C driver interface functions
+ */
+
+static const struct of_device_id da9210_dt_ids[] = {
+	{ .compatible = "dlg,da9210", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, da9210_dt_ids);
+
+>>>>>>> v4.9.227
 static int da9210_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
 {
@@ -132,6 +211,19 @@ static int da9210_i2c_probe(struct i2c_client *i2c,
 	struct regulator_dev *rdev = NULL;
 	struct regulator_config config = { };
 	int error;
+<<<<<<< HEAD
+=======
+	const struct of_device_id *match;
+
+	if (i2c->dev.of_node && !pdata) {
+		match = of_match_device(of_match_ptr(da9210_dt_ids),
+						&i2c->dev);
+		if (!match) {
+			dev_err(&i2c->dev, "Error: No device match found\n");
+			return -ENODEV;
+		}
+	}
+>>>>>>> v4.9.227
 
 	chip = devm_kzalloc(&i2c->dev, sizeof(struct da9210), GFP_KERNEL);
 	if (!chip)
@@ -147,11 +239,27 @@ static int da9210_i2c_probe(struct i2c_client *i2c,
 
 	config.dev = &i2c->dev;
 	config.init_data = pdata ? &pdata->da9210_constraints :
+<<<<<<< HEAD
 		of_get_regulator_init_data(dev, dev->of_node);
+=======
+		of_get_regulator_init_data(dev, dev->of_node, &da9210_reg);
+>>>>>>> v4.9.227
 	config.driver_data = chip;
 	config.regmap = chip->regmap;
 	config.of_node = dev->of_node;
 
+<<<<<<< HEAD
+=======
+	/* Mask all interrupt sources to deassert interrupt line */
+	error = regmap_write(chip->regmap, DA9210_REG_MASK_A, ~0);
+	if (!error)
+		error = regmap_write(chip->regmap, DA9210_REG_MASK_B, ~0);
+	if (error) {
+		dev_err(&i2c->dev, "Failed to write to mask reg: %d\n", error);
+		return error;
+	}
+
+>>>>>>> v4.9.227
 	rdev = devm_regulator_register(&i2c->dev, &da9210_reg, &config);
 	if (IS_ERR(rdev)) {
 		dev_err(&i2c->dev, "Failed to register DA9210 regulator\n");
@@ -159,6 +267,33 @@ static int da9210_i2c_probe(struct i2c_client *i2c,
 	}
 
 	chip->rdev = rdev;
+<<<<<<< HEAD
+=======
+	if (i2c->irq) {
+		error = devm_request_threaded_irq(&i2c->dev, i2c->irq, NULL,
+						  da9210_irq_handler,
+						  IRQF_TRIGGER_LOW |
+						  IRQF_ONESHOT | IRQF_SHARED,
+						  "da9210", chip);
+		if (error) {
+			dev_err(&i2c->dev, "Failed to request IRQ%u: %d\n",
+				i2c->irq, error);
+			return error;
+		}
+
+		error = regmap_update_bits(chip->regmap, DA9210_REG_MASK_B,
+					 DA9210_M_OVCURR | DA9210_M_NPWRGOOD |
+					 DA9210_M_TEMP_WARN |
+					 DA9210_M_TEMP_CRIT | DA9210_M_VMAX, 0);
+		if (error < 0) {
+			dev_err(&i2c->dev, "Failed to update mask reg: %d\n",
+				error);
+			return error;
+		}
+	} else {
+		dev_warn(&i2c->dev, "No IRQ configured\n");
+	}
+>>>>>>> v4.9.227
 
 	i2c_set_clientdata(i2c, chip);
 
@@ -175,7 +310,11 @@ MODULE_DEVICE_TABLE(i2c, da9210_i2c_id);
 static struct i2c_driver da9210_regulator_driver = {
 	.driver = {
 		.name = "da9210",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(da9210_dt_ids),
+>>>>>>> v4.9.227
 	},
 	.probe = da9210_i2c_probe,
 	.id_table = da9210_i2c_id,

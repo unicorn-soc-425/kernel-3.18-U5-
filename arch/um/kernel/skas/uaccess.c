@@ -87,10 +87,17 @@ static int do_op_one_page(unsigned long addr, int len, int is_write,
 	return n;
 }
 
+<<<<<<< HEAD
 static int buffer_op(unsigned long addr, int len, int is_write,
 		     int (*op)(unsigned long, int, void *), void *arg)
 {
 	int size, remain, n;
+=======
+static long buffer_op(unsigned long addr, int len, int is_write,
+		      int (*op)(unsigned long, int, void *), void *arg)
+{
+	long size, remain, n;
+>>>>>>> v4.9.227
 
 	size = min(PAGE_ALIGN(addr) - addr, (unsigned long) len);
 	remain = len;
@@ -139,18 +146,28 @@ static int copy_chunk_from_user(unsigned long from, int len, void *arg)
 	return 0;
 }
 
+<<<<<<< HEAD
 int copy_from_user(void *to, const void __user *from, int n)
+=======
+long __copy_from_user(void *to, const void __user *from, unsigned long n)
+>>>>>>> v4.9.227
 {
 	if (segment_eq(get_fs(), KERNEL_DS)) {
 		memcpy(to, (__force void*)from, n);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	return access_ok(VERIFY_READ, from, n) ?
 	       buffer_op((unsigned long) from, n, 0, copy_chunk_from_user, &to):
 	       n;
 }
 EXPORT_SYMBOL(copy_from_user);
+=======
+	return buffer_op((unsigned long) from, n, 0, copy_chunk_from_user, &to);
+}
+EXPORT_SYMBOL(__copy_from_user);
+>>>>>>> v4.9.227
 
 static int copy_chunk_to_user(unsigned long to, int len, void *arg)
 {
@@ -161,18 +178,28 @@ static int copy_chunk_to_user(unsigned long to, int len, void *arg)
 	return 0;
 }
 
+<<<<<<< HEAD
 int copy_to_user(void __user *to, const void *from, int n)
+=======
+long __copy_to_user(void __user *to, const void *from, unsigned long n)
+>>>>>>> v4.9.227
 {
 	if (segment_eq(get_fs(), KERNEL_DS)) {
 		memcpy((__force void *) to, from, n);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	return access_ok(VERIFY_WRITE, to, n) ?
 	       buffer_op((unsigned long) to, n, 1, copy_chunk_to_user, &from) :
 	       n;
 }
 EXPORT_SYMBOL(copy_to_user);
+=======
+	return buffer_op((unsigned long) to, n, 1, copy_chunk_to_user, &from);
+}
+EXPORT_SYMBOL(__copy_to_user);
+>>>>>>> v4.9.227
 
 static int strncpy_chunk_from_user(unsigned long from, int len, void *arg)
 {
@@ -188,9 +215,15 @@ static int strncpy_chunk_from_user(unsigned long from, int len, void *arg)
 	return 0;
 }
 
+<<<<<<< HEAD
 int strncpy_from_user(char *dst, const char __user *src, int count)
 {
 	int n;
+=======
+long __strncpy_from_user(char *dst, const char __user *src, long count)
+{
+	long n;
+>>>>>>> v4.9.227
 	char *ptr = dst;
 
 	if (segment_eq(get_fs(), KERNEL_DS)) {
@@ -198,16 +231,23 @@ int strncpy_from_user(char *dst, const char __user *src, int count)
 		return strnlen(dst, count);
 	}
 
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_READ, src, 1))
 		return -EFAULT;
 
+=======
+>>>>>>> v4.9.227
 	n = buffer_op((unsigned long) src, count, 0, strncpy_chunk_from_user,
 		      &ptr);
 	if (n != 0)
 		return -EFAULT;
 	return strnlen(dst, count);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(strncpy_from_user);
+=======
+EXPORT_SYMBOL(__strncpy_from_user);
+>>>>>>> v4.9.227
 
 static int clear_chunk(unsigned long addr, int len, void *unused)
 {
@@ -215,22 +255,32 @@ static int clear_chunk(unsigned long addr, int len, void *unused)
 	return 0;
 }
 
+<<<<<<< HEAD
 int __clear_user(void __user *mem, int len)
 {
 	return buffer_op((unsigned long) mem, len, 1, clear_chunk, NULL);
 }
 
 int clear_user(void __user *mem, int len)
+=======
+unsigned long __clear_user(void __user *mem, unsigned long len)
+>>>>>>> v4.9.227
 {
 	if (segment_eq(get_fs(), KERNEL_DS)) {
 		memset((__force void*)mem, 0, len);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	return access_ok(VERIFY_WRITE, mem, len) ?
 	       buffer_op((unsigned long) mem, len, 1, clear_chunk, NULL) : len;
 }
 EXPORT_SYMBOL(clear_user);
+=======
+	return buffer_op((unsigned long) mem, len, 1, clear_chunk, NULL);
+}
+EXPORT_SYMBOL(__clear_user);
+>>>>>>> v4.9.227
 
 static int strnlen_chunk(unsigned long str, int len, void *arg)
 {
@@ -244,7 +294,11 @@ static int strnlen_chunk(unsigned long str, int len, void *arg)
 	return 0;
 }
 
+<<<<<<< HEAD
 int strnlen_user(const void __user *str, int len)
+=======
+long __strnlen_user(const void __user *str, long len)
+>>>>>>> v4.9.227
 {
 	int count = 0, n;
 
@@ -256,4 +310,8 @@ int strnlen_user(const void __user *str, int len)
 		return count + 1;
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(strnlen_user);
+=======
+EXPORT_SYMBOL(__strnlen_user);
+>>>>>>> v4.9.227

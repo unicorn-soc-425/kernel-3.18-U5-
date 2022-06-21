@@ -1,6 +1,7 @@
 #ifndef __LINUX_SWIOTLB_H
 #define __LINUX_SWIOTLB_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 
 struct device;
@@ -8,6 +9,23 @@ struct dma_attrs;
 struct scatterlist;
 
 extern int swiotlb_force;
+=======
+#include <linux/dma-direction.h>
+#include <linux/init.h>
+#include <linux/types.h>
+
+struct device;
+struct page;
+struct scatterlist;
+
+enum swiotlb_force {
+	SWIOTLB_NORMAL,		/* Default - depending on HW DMA mask etc. */
+	SWIOTLB_FORCE,		/* swiotlb=force */
+	SWIOTLB_NO_FORCE,	/* swiotlb=noforce */
+};
+
+extern enum swiotlb_force swiotlb_force;
+>>>>>>> v4.9.227
 
 /*
  * Maximum allowable number of contiguous slabs to map,
@@ -65,10 +83,17 @@ swiotlb_free_coherent(struct device *hwdev, size_t size,
 extern dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
 				   unsigned long offset, size_t size,
 				   enum dma_data_direction dir,
+<<<<<<< HEAD
 				   struct dma_attrs *attrs);
 extern void swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
 			       size_t size, enum dma_data_direction dir,
 			       struct dma_attrs *attrs);
+=======
+				   unsigned long attrs);
+extern void swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
+			       size_t size, enum dma_data_direction dir,
+			       unsigned long attrs);
+>>>>>>> v4.9.227
 
 extern int
 swiotlb_map_sg(struct device *hwdev, struct scatterlist *sg, int nents,
@@ -80,12 +105,21 @@ swiotlb_unmap_sg(struct device *hwdev, struct scatterlist *sg, int nents,
 
 extern int
 swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl, int nelems,
+<<<<<<< HEAD
 		     enum dma_data_direction dir, struct dma_attrs *attrs);
+=======
+		     enum dma_data_direction dir,
+		     unsigned long attrs);
+>>>>>>> v4.9.227
 
 extern void
 swiotlb_unmap_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
 		       int nelems, enum dma_data_direction dir,
+<<<<<<< HEAD
 		       struct dma_attrs *attrs);
+=======
+		       unsigned long attrs);
+>>>>>>> v4.9.227
 
 extern void
 swiotlb_sync_single_for_cpu(struct device *hwdev, dma_addr_t dev_addr,

@@ -122,8 +122,13 @@ static irqreturn_t knav_acc_int_handler(int irq, void *_instdata)
 	channel = acc->channel;
 	list_dma = acc->list_dma[acc->list_index];
 	list_cpu = acc->list_cpu[acc->list_index];
+<<<<<<< HEAD
 	dev_dbg(kdev->dev, "acc-irq: channel %d, list %d, virt %p, phys %x\n",
 		channel, acc->list_index, list_cpu, list_dma);
+=======
+	dev_dbg(kdev->dev, "acc-irq: channel %d, list %d, virt %p, dma %pad\n",
+		channel, acc->list_index, list_cpu, &list_dma);
+>>>>>>> v4.9.227
 	if (atomic_read(&acc->retrigger_count)) {
 		atomic_dec(&acc->retrigger_count);
 		__knav_acc_notify(range, acc);
@@ -209,7 +214,11 @@ static irqreturn_t knav_acc_int_handler(int irq, void *_instdata)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 int knav_range_setup_acc_irq(struct knav_range_info *range,
+=======
+static int knav_range_setup_acc_irq(struct knav_range_info *range,
+>>>>>>> v4.9.227
 				int queue, bool enabled)
 {
 	struct knav_device *kdev = range->kdev;
@@ -261,6 +270,13 @@ int knav_range_setup_acc_irq(struct knav_range_info *range,
 	if (old && !new) {
 		dev_dbg(kdev->dev, "setup-acc-irq: freeing %s for channel %s\n",
 			acc->name, acc->name);
+<<<<<<< HEAD
+=======
+		ret = irq_set_affinity_hint(irq, NULL);
+		if (ret)
+			dev_warn(range->kdev->dev,
+				 "Failed to set IRQ affinity\n");
+>>>>>>> v4.9.227
 		free_irq(irq, range);
 	}
 
@@ -293,12 +309,20 @@ knav_acc_write(struct knav_device *kdev, struct knav_pdsp_info *pdsp,
 	u32 result;
 
 	dev_dbg(kdev->dev, "acc command %08x %08x %08x %08x %08x\n",
+<<<<<<< HEAD
 		cmd->command, cmd->queue_mask, cmd->list_phys,
+=======
+		cmd->command, cmd->queue_mask, cmd->list_dma,
+>>>>>>> v4.9.227
 		cmd->queue_num, cmd->timer_config);
 
 	writel_relaxed(cmd->timer_config, &pdsp->acc_command->timer_config);
 	writel_relaxed(cmd->queue_num, &pdsp->acc_command->queue_num);
+<<<<<<< HEAD
 	writel_relaxed(cmd->list_phys, &pdsp->acc_command->list_phys);
+=======
+	writel_relaxed(cmd->list_dma, &pdsp->acc_command->list_dma);
+>>>>>>> v4.9.227
 	writel_relaxed(cmd->queue_mask, &pdsp->acc_command->queue_mask);
 	writel_relaxed(cmd->command, &pdsp->acc_command->command);
 
@@ -333,7 +357,11 @@ static void knav_acc_setup_cmd(struct knav_device *kdev,
 	memset(cmd, 0, sizeof(*cmd));
 	cmd->command    = acc->channel;
 	cmd->queue_mask = queue_mask;
+<<<<<<< HEAD
 	cmd->list_phys  = acc->list_dma[0];
+=======
+	cmd->list_dma   = (u32)acc->list_dma[0];
+>>>>>>> v4.9.227
 	cmd->queue_num  = info->list_entries << 16;
 	cmd->queue_num |= queue_base;
 
@@ -482,8 +510,13 @@ struct knav_range_ops knav_acc_range_ops = {
  * Return 0 on success or error
  */
 int knav_init_acc_range(struct knav_device *kdev,
+<<<<<<< HEAD
 				struct device_node *node,
 				struct knav_range_info *range)
+=======
+			struct device_node *node,
+			struct knav_range_info *range)
+>>>>>>> v4.9.227
 {
 	struct knav_acc_channel *acc;
 	struct knav_pdsp_info *pdsp;
@@ -526,6 +559,15 @@ int knav_init_acc_range(struct knav_device *kdev,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!pdsp->started) {
+		dev_err(kdev->dev, "pdsp id %d not started for range %s\n",
+			info->pdsp_id, range->name);
+		return -ENODEV;
+	}
+
+>>>>>>> v4.9.227
 	info->pdsp = pdsp;
 	channels = range->num_queues;
 	if (of_get_property(node, "multi-queue", NULL)) {
@@ -581,8 +623,13 @@ int knav_init_acc_range(struct knav_device *kdev,
 		acc->list_cpu[1] = list_mem + list_size;
 		acc->list_dma[0] = list_dma;
 		acc->list_dma[1] = list_dma + list_size;
+<<<<<<< HEAD
 		dev_dbg(kdev->dev, "%s: channel %d, phys %08x, virt %8p\n",
 			acc->name, acc->channel, list_dma, list_mem);
+=======
+		dev_dbg(kdev->dev, "%s: channel %d, dma %pad, virt %8p\n",
+			acc->name, acc->channel, &list_dma, list_mem);
+>>>>>>> v4.9.227
 	}
 
 	range->ops = &knav_acc_range_ops;

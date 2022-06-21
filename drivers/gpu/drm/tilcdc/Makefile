@@ -7,6 +7,10 @@ obj-$(CONFIG_DRM_TILCDC_SLAVE_COMPAT) += tilcdc_slave_compat.o \
 					 tilcdc_slave_compat.dtb.o
 
 tilcdc-y := \
+<<<<<<< HEAD
+=======
+	tilcdc_plane.o \
+>>>>>>> v4.9.227
 	tilcdc_crtc.o \
 	tilcdc_tfp410.o \
 	tilcdc_panel.o \

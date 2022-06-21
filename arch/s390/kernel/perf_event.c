@@ -74,7 +74,11 @@ static unsigned long guest_is_user_mode(struct pt_regs *regs)
 
 static unsigned long instruction_pointer_guest(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	return sie_block(regs)->gpsw.addr & PSW_ADDR_INSN;
+=======
+	return sie_block(regs)->gpsw.addr;
+>>>>>>> v4.9.227
 }
 
 unsigned long perf_instruction_pointer(struct pt_regs *regs)
@@ -222,6 +226,7 @@ static int __init service_level_perf_register(void)
 }
 arch_initcall(service_level_perf_register);
 
+<<<<<<< HEAD
 /* See also arch/s390/kernel/traps.c */
 static unsigned long __store_trace(struct perf_callchain_entry *entry,
 				   unsigned long sp,
@@ -283,6 +288,25 @@ void perf_callchain_kernel(struct perf_callchain_entry *entry,
 }
 
 /* Perf defintions for PMU event attributes in sysfs */
+=======
+static int __perf_callchain_kernel(void *data, unsigned long address, int reliable)
+{
+	struct perf_callchain_entry_ctx *entry = data;
+
+	perf_callchain_store(entry, address);
+	return 0;
+}
+
+void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
+			   struct pt_regs *regs)
+{
+	if (user_mode(regs))
+		return;
+	dump_trace(__perf_callchain_kernel, entry, NULL, regs->gprs[15]);
+}
+
+/* Perf definitions for PMU event attributes in sysfs */
+>>>>>>> v4.9.227
 ssize_t cpumf_events_sysfs_show(struct device *dev,
 				struct device_attribute *attr, char *page)
 {
@@ -292,6 +316,7 @@ ssize_t cpumf_events_sysfs_show(struct device *dev,
 	return sprintf(page, "event=0x%04llx,name=%s\n",
 		       pmu_attr->id, attr->attr.name);
 }
+<<<<<<< HEAD
 
 /* Reserve/release functions for sharing perf hardware */
 static DEFINE_SPINLOCK(perf_hw_owner_lock);
@@ -322,3 +347,5 @@ void perf_release_sampling(void)
 	spin_unlock(&perf_hw_owner_lock);
 }
 EXPORT_SYMBOL(perf_release_sampling);
+=======
+>>>>>>> v4.9.227

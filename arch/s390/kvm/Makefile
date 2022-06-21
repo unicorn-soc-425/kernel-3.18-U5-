@@ -7,11 +7,19 @@
 # as published by the Free Software Foundation.
 
 KVM := ../../../virt/kvm
+<<<<<<< HEAD
 common-objs = $(KVM)/kvm_main.o $(KVM)/eventfd.o  $(KVM)/async_pf.o $(KVM)/irqchip.o
+=======
+common-objs = $(KVM)/kvm_main.o $(KVM)/eventfd.o  $(KVM)/async_pf.o $(KVM)/irqchip.o $(KVM)/vfio.o
+>>>>>>> v4.9.227
 
 ccflags-y := -Ivirt/kvm -Iarch/s390/kvm
 
 kvm-objs := $(common-objs) kvm-s390.o intercept.o interrupt.o priv.o sigp.o
+<<<<<<< HEAD
 kvm-objs += diag.o gaccess.o guestdbg.o
+=======
+kvm-objs += diag.o gaccess.o guestdbg.o sthyi.o vsie.o
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_KVM) += kvm.o

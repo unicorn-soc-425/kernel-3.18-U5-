@@ -105,6 +105,7 @@ static inline void flush_tlb_all(void)
 
 static inline void flush_tlb_mm(struct mm_struct *mm)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_MSM8994_V1_TLBI_WA
 	dsb();
 	__tlbi(vmalle1is);
@@ -112,17 +113,24 @@ static inline void flush_tlb_mm(struct mm_struct *mm)
 	isb();
 #else
 	unsigned long asid = (unsigned long)ASID(mm) << 48;
+=======
+	unsigned long asid = ASID(mm) << 48;
+>>>>>>> v4.9.227
 
 	dsb(ishst);
 	__tlbi(aside1is, asid);
 	__tlbi_user(aside1is, asid);
 	dsb(ish);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 }
 
 static inline void flush_tlb_page(struct vm_area_struct *vma,
 				  unsigned long uaddr)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_MSM8994_V1_TLBI_WA
 	dsb();
 	__tlbi(vmalle1is);
@@ -131,12 +139,18 @@ static inline void flush_tlb_page(struct vm_area_struct *vma,
 #else
 	unsigned long addr = uaddr >> 12 |
 		((unsigned long)ASID(vma->vm_mm) << 48);
+=======
+	unsigned long addr = uaddr >> 12 | (ASID(vma->vm_mm) << 48);
+>>>>>>> v4.9.227
 
 	dsb(ishst);
 	__tlbi(vale1is, addr);
 	__tlbi_user(vale1is, addr);
 	dsb(ish);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 }
 
 /*

@@ -11,6 +11,10 @@
 #ifndef __BCM_SYSPORT_H
 #define __BCM_SYSPORT_H
 
+<<<<<<< HEAD
+=======
+#include <linux/ethtool.h>
+>>>>>>> v4.9.227
 #include <linux/if_vlan.h>
 
 /* Receive/transmit descriptor format */
@@ -292,7 +296,11 @@ struct bcm_rsb {
 #define RDMA_END_ADDR_LO		0x102c
 
 #define RDMA_MBDONE_INTR		0x1030
+<<<<<<< HEAD
 #define  RDMA_INTR_THRESH_MASK		0xff
+=======
+#define  RDMA_INTR_THRESH_MASK		0x1ff
+>>>>>>> v4.9.227
 #define  RDMA_TIMEOUT_SHIFT		16
 #define  RDMA_TIMEOUT_MASK		0xffff
 
@@ -543,7 +551,11 @@ struct bcm_sysport_tx_counters {
 	u32	jbr;		/* RO # of xmited jabber count*/
 	u32	bytes;		/* RO # of xmited byte count */
 	u32	pok;		/* RO # of xmited good pkt */
+<<<<<<< HEAD
 	u32	uc;		/* RO (0x0x4f0)# of xmited unitcast pkt */
+=======
+	u32	uc;		/* RO (0x4f0) # of xmited unicast pkt */
+>>>>>>> v4.9.227
 };
 
 struct bcm_sysport_mib {
@@ -557,6 +569,12 @@ struct bcm_sysport_mib {
 	u32 rxchk_other_pkt_disc;
 	u32 rbuf_ovflow_cnt;
 	u32 rbuf_err_cnt;
+<<<<<<< HEAD
+=======
+	u32 alloc_rx_buff_failed;
+	u32 rx_dma_failed;
+	u32 tx_dma_failed;
+>>>>>>> v4.9.227
 };
 
 /* HW maintains a large list of counters */
@@ -567,6 +585,10 @@ enum bcm_sysport_stat_type {
 	BCM_SYSPORT_STAT_RUNT,
 	BCM_SYSPORT_STAT_RXCHK,
 	BCM_SYSPORT_STAT_RBUF,
+<<<<<<< HEAD
+=======
+	BCM_SYSPORT_STAT_SOFT,
+>>>>>>> v4.9.227
 };
 
 /* Macros to help define ethtool statistics */
@@ -587,6 +609,10 @@ enum bcm_sysport_stat_type {
 #define STAT_MIB_RX(str, m) STAT_MIB(str, m, BCM_SYSPORT_STAT_MIB_RX)
 #define STAT_MIB_TX(str, m) STAT_MIB(str, m, BCM_SYSPORT_STAT_MIB_TX)
 #define STAT_RUNT(str, m) STAT_MIB(str, m, BCM_SYSPORT_STAT_RUNT)
+<<<<<<< HEAD
+=======
+#define STAT_MIB_SOFT(str, m) STAT_MIB(str, m, BCM_SYSPORT_STAT_SOFT)
+>>>>>>> v4.9.227
 
 #define STAT_RXCHK(str, m, ofs) { \
 	.stat_string = str, \
@@ -633,7 +659,11 @@ struct bcm_sysport_tx_ring {
 	unsigned int	desc_count;	/* Number of descriptors */
 	unsigned int	curr_desc;	/* Current descriptor */
 	unsigned int	c_index;	/* Last consumer index */
+<<<<<<< HEAD
 	unsigned int	p_index;	/* Current producer index */
+=======
+	unsigned int	clean_index;	/* Current clean index */
+>>>>>>> v4.9.227
 	struct bcm_sysport_cb *cbs;	/* Transmit control blocks */
 	struct dma_desc	*desc_cpu;	/* CPU view of the descriptor */
 	struct bcm_sysport_priv *priv;	/* private context backpointer */
@@ -658,8 +688,11 @@ struct bcm_sysport_priv {
 
 	/* Receive queue */
 	void __iomem		*rx_bds;
+<<<<<<< HEAD
 	void __iomem		*rx_bd_assign_ptr;
 	unsigned int		rx_bd_assign_index;
+=======
+>>>>>>> v4.9.227
 	struct bcm_sysport_cb	*rx_cbs;
 	unsigned int		num_rx_bds;
 	unsigned int		rx_read_ptr;
@@ -667,7 +700,10 @@ struct bcm_sysport_priv {
 
 	/* PHY device */
 	struct device_node	*phy_dn;
+<<<<<<< HEAD
 	struct phy_device	*phydev;
+=======
+>>>>>>> v4.9.227
 	phy_interface_t		phy_interface;
 	int			old_pause;
 	int			old_link;
@@ -679,6 +715,10 @@ struct bcm_sysport_priv {
 	unsigned int		crc_fwd:1;
 	u16			rev;
 	u32			wolopts;
+<<<<<<< HEAD
+=======
+	u8			sopass[SOPASS_MAX];
+>>>>>>> v4.9.227
 	unsigned int		wol_irq_disabled:1;
 
 	/* MIB related fields */

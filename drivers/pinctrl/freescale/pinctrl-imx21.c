@@ -9,7 +9,11 @@
  * (at your option) any later version.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/pinctrl/pinctrl.h>
@@ -325,11 +329,15 @@ static const struct of_device_id imx21_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx21-iomuxc", },
 	{ }
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, imx21_pinctrl_of_match);
+=======
+>>>>>>> v4.9.227
 
 static struct platform_driver imx21_pinctrl_driver = {
 	.driver	= {
 		.name		= "imx21-pinctrl",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 		.of_match_table	= imx21_pinctrl_of_match,
 	},
@@ -340,3 +348,9 @@ module_platform_driver_probe(imx21_pinctrl_driver, imx21_pinctrl_probe);
 MODULE_AUTHOR("Alexander Shiyan <shc_work@mail.ru>");
 MODULE_DESCRIPTION("Freescale i.MX21 pinctrl driver");
 MODULE_LICENSE("GPL");
+=======
+		.of_match_table	= imx21_pinctrl_of_match,
+	},
+};
+builtin_platform_driver_probe(imx21_pinctrl_driver, imx21_pinctrl_probe);
+>>>>>>> v4.9.227

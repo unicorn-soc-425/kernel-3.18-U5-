@@ -56,9 +56,15 @@ struct pxa25x_ep {
 	 * UDDR = UDC Endpoint Data Register (the fifo)
 	 * DRCM = DMA Request Channel Map
 	 */
+<<<<<<< HEAD
 	volatile u32				*reg_udccs;
 	volatile u32				*reg_ubcr;
 	volatile u32				*reg_uddr;
+=======
+	u32					regoff_udccs;
+	u32					regoff_ubcr;
+	u32					regoff_uddr;
+>>>>>>> v4.9.227
 };
 
 struct pxa25x_request {
@@ -125,6 +131,10 @@ struct pxa25x_udc {
 #ifdef CONFIG_USB_GADGET_DEBUG_FS
 	struct dentry				*debugfs_udc;
 #endif
+<<<<<<< HEAD
+=======
+	void __iomem				*regs;
+>>>>>>> v4.9.227
 };
 #define to_pxa25x(g)	(container_of((g), struct pxa25x_udc, gadget))
 
@@ -197,6 +207,11 @@ dump_udccs0(const char *label)
 		(udccs0 & UDCCS0_OPR) ? " opr" : "");
 }
 
+<<<<<<< HEAD
+=======
+static inline u32 udc_ep_get_UDCCS(struct pxa25x_ep *);
+
+>>>>>>> v4.9.227
 static void __maybe_unused
 dump_state(struct pxa25x_udc *dev)
 {
@@ -228,7 +243,11 @@ dump_state(struct pxa25x_udc *dev)
 	for (i = 1; i < PXA_UDC_NUM_ENDPOINTS; i++) {
 		if (dev->ep[i].ep.desc == NULL)
 			continue;
+<<<<<<< HEAD
 		DMSG ("udccs%d = %02x\n", i, *dev->ep->reg_udccs);
+=======
+		DMSG ("udccs%d = %02x\n", i, udc_ep_get_UDCCS(&dev->ep[i]));
+>>>>>>> v4.9.227
 	}
 }
 

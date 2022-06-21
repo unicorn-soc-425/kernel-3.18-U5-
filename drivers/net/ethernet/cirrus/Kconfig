@@ -7,9 +7,13 @@ config NET_VENDOR_CIRRUS
 	default y
 	depends on ISA || EISA || ARM || MAC
 	---help---
+<<<<<<< HEAD
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> v4.9.227
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -21,18 +25,30 @@ if NET_VENDOR_CIRRUS
 config CS89x0
 	tristate "CS89x0 support"
 	depends on ISA || EISA || ARM
+<<<<<<< HEAD
 	---help---
 	  Support for CS89x0 chipset based Ethernet cards. If you have a
 	  network (Ethernet) card of this type, say Y and read the
 	  Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto> as well as
+=======
+	depends on !PPC32
+	---help---
+	  Support for CS89x0 chipset based Ethernet cards. If you have a
+	  network (Ethernet) card of this type, say Y and read the file
+>>>>>>> v4.9.227
 	  <file:Documentation/networking/cs89x0.txt>.
 
 	  To compile this driver as a module, choose M here. The module
 	  will be called cs89x0.
 
 config CS89x0_PLATFORM
+<<<<<<< HEAD
 	bool "CS89x0 platform driver support"
+=======
+	bool "CS89x0 platform driver support" if HAS_IOPORT_MAP
+	default !HAS_IOPORT_MAP
+>>>>>>> v4.9.227
 	depends on CS89x0
 	help
 	  Say Y to compile the cs89x0 driver as a platform driver. This
@@ -54,9 +70,13 @@ config MAC89x0
 	depends on MAC
 	---help---
 	  Support for CS89x0 chipset based Ethernet cards.  If you have a
+<<<<<<< HEAD
 	  Nubus or LC-PDS network (Ethernet) card of this type, say Y and
 	  read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	  Nubus or LC-PDS network (Ethernet) card of this type, say Y here.
+>>>>>>> v4.9.227
 
 	  To compile this driver as a module, choose M here. This module will
 	  be called mac89x0.

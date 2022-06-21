@@ -20,7 +20,11 @@ static int reiserfs_dir_fsync(struct file *filp, loff_t start, loff_t end,
 const struct file_operations reiserfs_dir_operations = {
 	.llseek = generic_file_llseek,
 	.read = generic_read_dir,
+<<<<<<< HEAD
 	.iterate = reiserfs_readdir,
+=======
+	.iterate_shared = reiserfs_readdir,
+>>>>>>> v4.9.227
 	.fsync = reiserfs_dir_fsync,
 	.unlocked_ioctl = reiserfs_ioctl,
 #ifdef CONFIG_COMPAT
@@ -38,11 +42,19 @@ static int reiserfs_dir_fsync(struct file *filp, loff_t start, loff_t end,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
 	reiserfs_write_lock(inode->i_sb);
 	err = reiserfs_commit_for_inode(inode);
 	reiserfs_write_unlock(inode->i_sb);
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+	reiserfs_write_lock(inode->i_sb);
+	err = reiserfs_commit_for_inode(inode);
+	reiserfs_write_unlock(inode->i_sb);
+	inode_unlock(inode);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return err;
 	return 0;
@@ -53,8 +65,13 @@ static int reiserfs_dir_fsync(struct file *filp, loff_t start, loff_t end,
 static inline bool is_privroot_deh(struct inode *dir, struct reiserfs_de_head *deh)
 {
 	struct dentry *privroot = REISERFS_SB(dir->i_sb)->priv_root;
+<<<<<<< HEAD
 	return (privroot->d_inode &&
 	        deh->deh_objectid == INODE_PKEY(privroot->d_inode)->k_objectid);
+=======
+	return (d_really_is_positive(privroot) &&
+	        deh->deh_objectid == INODE_PKEY(d_inode(privroot))->k_objectid);
+>>>>>>> v4.9.227
 }
 
 int reiserfs_readdir_inode(struct inode *inode, struct dir_context *ctx)

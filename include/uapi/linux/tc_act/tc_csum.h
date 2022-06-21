@@ -10,6 +10,10 @@ enum {
 	TCA_CSUM_UNSPEC,
 	TCA_CSUM_PARMS,
 	TCA_CSUM_TM,
+<<<<<<< HEAD
+=======
+	TCA_CSUM_PAD,
+>>>>>>> v4.9.227
 	__TCA_CSUM_MAX
 };
 #define TCA_CSUM_MAX (__TCA_CSUM_MAX - 1)

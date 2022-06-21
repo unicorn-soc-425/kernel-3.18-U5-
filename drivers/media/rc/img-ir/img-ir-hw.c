@@ -42,6 +42,15 @@ static struct img_ir_decoder *img_ir_decoders[] = {
 #ifdef CONFIG_IR_IMG_SANYO
 	&img_ir_sanyo,
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_IR_IMG_RC5
+	&img_ir_rc5,
+#endif
+#ifdef CONFIG_IR_IMG_RC6
+	&img_ir_rc6,
+#endif
+>>>>>>> v4.9.227
 	NULL
 };
 
@@ -52,6 +61,14 @@ static struct img_ir_decoder *img_ir_decoders[] = {
 
 #define IMG_IR_QUIRK_CODE_BROKEN	0x1	/* Decode is broken */
 #define IMG_IR_QUIRK_CODE_LEN_INCR	0x2	/* Bit length needs increment */
+<<<<<<< HEAD
+=======
+/*
+ * The decoder generates rapid interrupts without actually having
+ * received any new data after an incomplete IR code is decoded.
+ */
+#define IMG_IR_QUIRK_CODE_IRQ		0x4
+>>>>>>> v4.9.227
 
 /* functions for preprocessing timings, ensuring max is set */
 
@@ -542,6 +559,10 @@ static void img_ir_set_decoder(struct img_ir_priv *priv,
 	 */
 	spin_unlock_irq(&priv->lock);
 	del_timer_sync(&hw->end_timer);
+<<<<<<< HEAD
+=======
+	del_timer_sync(&hw->suspend_timer);
+>>>>>>> v4.9.227
 	spin_lock_irq(&priv->lock);
 
 	hw->stopping = false;
@@ -806,6 +827,7 @@ static void img_ir_handle_data(struct img_ir_priv *priv, u32 len, u64 raw)
 	struct img_ir_priv_hw *hw = &priv->hw;
 	const struct img_ir_decoder *dec = hw->decoder;
 	int ret = IMG_IR_SCANCODE;
+<<<<<<< HEAD
 	u32 scancode;
 	enum rc_type protocol = RC_TYPE_UNKNOWN;
 
@@ -820,6 +842,26 @@ static void img_ir_handle_data(struct img_ir_priv *priv, u32 len, u64 raw)
 	if (ret == IMG_IR_SCANCODE) {
 		dev_dbg(priv->dev, "decoded scan code %#x\n", scancode);
 		rc_keydown(hw->rdev, protocol, scancode, 0);
+=======
+	struct img_ir_scancode_req request;
+
+	request.protocol = RC_TYPE_UNKNOWN;
+	request.toggle   = 0;
+
+	if (dec->scancode)
+		ret = dec->scancode(len, raw, hw->enabled_protocols, &request);
+	else if (len >= 32)
+		request.scancode = (u32)raw;
+	else if (len < 32)
+		request.scancode = (u32)raw & ((1 << len)-1);
+	dev_dbg(priv->dev, "data (%u bits) = %#llx\n",
+		len, (unsigned long long)raw);
+	if (ret == IMG_IR_SCANCODE) {
+		dev_dbg(priv->dev, "decoded scan code %#x, toggle %u\n",
+			request.scancode, request.toggle);
+		rc_keydown(hw->rdev, request.protocol, request.scancode,
+			   request.toggle);
+>>>>>>> v4.9.227
 		img_ir_end_repeat(priv);
 	} else if (ret == IMG_IR_REPEATCODE) {
 		if (hw->mode == IMG_IR_M_REPEATING) {
@@ -857,6 +899,32 @@ static void img_ir_end_timer(unsigned long arg)
 	spin_unlock_irq(&priv->lock);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Timer function to re-enable the current protocol after it had been
+ * cleared when invalid interrupts were generated due to a quirk in the
+ * img-ir decoder.
+ */
+static void img_ir_suspend_timer(unsigned long arg)
+{
+	struct img_ir_priv *priv = (struct img_ir_priv *)arg;
+
+	spin_lock_irq(&priv->lock);
+	/*
+	 * Don't overwrite enabled valid/match IRQs if they have already been
+	 * changed by e.g. a filter change.
+	 */
+	if ((priv->hw.quirk_suspend_irq & IMG_IR_IRQ_EDGE) ==
+				img_ir_read(priv, IMG_IR_IRQ_ENABLE))
+		img_ir_write(priv, IMG_IR_IRQ_ENABLE,
+					priv->hw.quirk_suspend_irq);
+	/* enable */
+	img_ir_write(priv, IMG_IR_CONTROL, priv->hw.reg_timings.ctrl);
+	spin_unlock_irq(&priv->lock);
+}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_COMMON_CLK
 static void img_ir_change_frequency(struct img_ir_priv *priv,
 				    struct clk_notifier_data *change)
@@ -922,15 +990,48 @@ void img_ir_isr_hw(struct img_ir_priv *priv, u32 irq_status)
 	if (!hw->decoder)
 		return;
 
+<<<<<<< HEAD
 	ir_status = img_ir_read(priv, IMG_IR_STATUS);
 	if (!(ir_status & (IMG_IR_RXDVAL | IMG_IR_RXDVALD2)))
 		return;
+=======
+	ct = hw->decoder->control.code_type;
+
+	ir_status = img_ir_read(priv, IMG_IR_STATUS);
+	if (!(ir_status & (IMG_IR_RXDVAL | IMG_IR_RXDVALD2))) {
+		if (!(priv->hw.ct_quirks[ct] & IMG_IR_QUIRK_CODE_IRQ) ||
+				hw->stopping)
+			return;
+		/*
+		 * The below functionality is added as a work around to stop
+		 * multiple Interrupts generated when an incomplete IR code is
+		 * received by the decoder.
+		 * The decoder generates rapid interrupts without actually
+		 * having received any new data. After a single interrupt it's
+		 * expected to clear up, but instead multiple interrupts are
+		 * rapidly generated. only way to get out of this loop is to
+		 * reset the control register after a short delay.
+		 */
+		img_ir_write(priv, IMG_IR_CONTROL, 0);
+		hw->quirk_suspend_irq = img_ir_read(priv, IMG_IR_IRQ_ENABLE);
+		img_ir_write(priv, IMG_IR_IRQ_ENABLE,
+			     hw->quirk_suspend_irq & IMG_IR_IRQ_EDGE);
+
+		/* Timer activated to re-enable the protocol. */
+		mod_timer(&hw->suspend_timer,
+			  jiffies + msecs_to_jiffies(5));
+		return;
+	}
+>>>>>>> v4.9.227
 	ir_status &= ~(IMG_IR_RXDVAL | IMG_IR_RXDVALD2);
 	img_ir_write(priv, IMG_IR_STATUS, ir_status);
 
 	len = (ir_status & IMG_IR_RXDLEN) >> IMG_IR_RXDLEN_SHIFT;
 	/* some versions report wrong length for certain code types */
+<<<<<<< HEAD
 	ct = hw->decoder->control.code_type;
+=======
+>>>>>>> v4.9.227
 	if (hw->ct_quirks[ct] & IMG_IR_QUIRK_CODE_LEN_INCR)
 		++len;
 
@@ -972,7 +1073,11 @@ static void img_ir_probe_hw_caps(struct img_ir_priv *priv)
 	hw->ct_quirks[IMG_IR_CODETYPE_PULSELEN]
 		|= IMG_IR_QUIRK_CODE_LEN_INCR;
 	hw->ct_quirks[IMG_IR_CODETYPE_BIPHASE]
+<<<<<<< HEAD
 		|= IMG_IR_QUIRK_CODE_BROKEN;
+=======
+		|= IMG_IR_QUIRK_CODE_IRQ;
+>>>>>>> v4.9.227
 	hw->ct_quirks[IMG_IR_CODETYPE_2BITPULSEPOS]
 		|= IMG_IR_QUIRK_CODE_BROKEN;
 }
@@ -991,6 +1096,11 @@ int img_ir_probe_hw(struct img_ir_priv *priv)
 
 	/* Set up the end timer */
 	setup_timer(&hw->end_timer, img_ir_end_timer, (unsigned long)priv);
+<<<<<<< HEAD
+=======
+	setup_timer(&hw->suspend_timer, img_ir_suspend_timer,
+				(unsigned long)priv);
+>>>>>>> v4.9.227
 
 	/* Register a clock notifier */
 	if (!IS_ERR(priv->clk)) {

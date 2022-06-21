@@ -600,10 +600,18 @@ static void o2net_set_nn_state(struct o2net_node *nn,
 static void o2net_data_ready(struct sock *sk)
 {
 	void (*ready)(struct sock *sk);
+<<<<<<< HEAD
 
 	read_lock(&sk->sk_callback_lock);
 	if (sk->sk_user_data) {
 		struct o2net_sock_container *sc = sk->sk_user_data;
+=======
+	struct o2net_sock_container *sc;
+
+	read_lock_bh(&sk->sk_callback_lock);
+	sc = sk->sk_user_data;
+	if (sc) {
+>>>>>>> v4.9.227
 		sclog(sc, "data_ready hit\n");
 		o2net_set_data_ready_time(sc);
 		o2net_sc_queue_work(sc, &sc->sc_rx_work);
@@ -611,7 +619,11 @@ static void o2net_data_ready(struct sock *sk)
 	} else {
 		ready = sk->sk_data_ready;
 	}
+<<<<<<< HEAD
 	read_unlock(&sk->sk_callback_lock);
+=======
+	read_unlock_bh(&sk->sk_callback_lock);
+>>>>>>> v4.9.227
 
 	ready(sk);
 }
@@ -622,7 +634,11 @@ static void o2net_state_change(struct sock *sk)
 	void (*state_change)(struct sock *sk);
 	struct o2net_sock_container *sc;
 
+<<<<<<< HEAD
 	read_lock(&sk->sk_callback_lock);
+=======
+	read_lock_bh(&sk->sk_callback_lock);
+>>>>>>> v4.9.227
 	sc = sk->sk_user_data;
 	if (sc == NULL) {
 		state_change = sk->sk_state_change;
@@ -649,7 +665,11 @@ static void o2net_state_change(struct sock *sk)
 		break;
 	}
 out:
+<<<<<<< HEAD
 	read_unlock(&sk->sk_callback_lock);
+=======
+	read_unlock_bh(&sk->sk_callback_lock);
+>>>>>>> v4.9.227
 	state_change(sk);
 }
 
@@ -1016,7 +1036,12 @@ void o2net_fill_node_map(unsigned long *map, unsigned bytes)
 
 	memset(map, 0, bytes);
 	for (node = 0; node < O2NM_MAX_NODES; ++node) {
+<<<<<<< HEAD
 		o2net_tx_can_proceed(o2net_nn_from_num(node), &sc, &ret);
+=======
+		if (!o2net_tx_can_proceed(o2net_nn_from_num(node), &sc, &ret))
+			continue;
+>>>>>>> v4.9.227
 		if (!ret) {
 			set_bit(node, map);
 			sc_put(sc);
@@ -1616,6 +1641,7 @@ static void o2net_start_connect(struct work_struct *work)
 
 	/* watch for racing with tearing a node down */
 	node = o2nm_get_node_by_num(o2net_num_from_nn(nn));
+<<<<<<< HEAD
 	if (node == NULL) {
 		ret = 0;
 		goto out;
@@ -1626,6 +1652,14 @@ static void o2net_start_connect(struct work_struct *work)
 		ret = 0;
 		goto out;
 	}
+=======
+	if (node == NULL)
+		goto out;
+
+	mynode = o2nm_get_node_by_num(o2nm_this_node());
+	if (mynode == NULL)
+		goto out;
+>>>>>>> v4.9.227
 
 	spin_lock(&nn->nn_lock);
 	/*
@@ -1736,7 +1770,11 @@ static void o2net_connect_expired(struct work_struct *work)
 		     o2net_idle_timeout() / 1000,
 		     o2net_idle_timeout() % 1000);
 
+<<<<<<< HEAD
 		o2net_set_nn_state(nn, NULL, 0, -ENOTCONN);
+=======
+		o2net_set_nn_state(nn, NULL, 0, 0);
+>>>>>>> v4.9.227
 	}
 	spin_unlock(&nn->nn_lock);
 }
@@ -2011,7 +2049,11 @@ static void o2net_listen_data_ready(struct sock *sk)
 {
 	void (*ready)(struct sock *sk);
 
+<<<<<<< HEAD
 	read_lock(&sk->sk_callback_lock);
+=======
+	read_lock_bh(&sk->sk_callback_lock);
+>>>>>>> v4.9.227
 	ready = sk->sk_user_data;
 	if (ready == NULL) { /* check for teardown race */
 		ready = sk->sk_data_ready;
@@ -2038,7 +2080,11 @@ static void o2net_listen_data_ready(struct sock *sk)
 	}
 
 out:
+<<<<<<< HEAD
 	read_unlock(&sk->sk_callback_lock);
+=======
+	read_unlock_bh(&sk->sk_callback_lock);
+>>>>>>> v4.9.227
 	if (ready != NULL)
 		ready(sk);
 }
@@ -2106,7 +2152,11 @@ int o2net_start_listening(struct o2nm_node *node)
 	BUG_ON(o2net_listen_sock != NULL);
 
 	mlog(ML_KTHREAD, "starting o2net thread...\n");
+<<<<<<< HEAD
 	o2net_wq = create_singlethread_workqueue("o2net");
+=======
+	o2net_wq = alloc_ordered_workqueue("o2net", WQ_MEM_RECLAIM);
+>>>>>>> v4.9.227
 	if (o2net_wq == NULL) {
 		mlog(ML_ERROR, "unable to launch o2net thread\n");
 		return -ENOMEM; /* ? */
@@ -2203,7 +2253,11 @@ out:
 	kfree(o2net_hand);
 	kfree(o2net_keep_req);
 	kfree(o2net_keep_resp);
+<<<<<<< HEAD
 
+=======
+	o2net_debugfs_exit();
+>>>>>>> v4.9.227
 	o2quo_exit();
 	return -ENOMEM;
 }

@@ -228,7 +228,11 @@ __dma_alloc_coherent(struct device *dev, size_t size, dma_addr_t *handle, gfp_t 
 		do {
 			SetPageReserved(page);
 			map_page(vaddr, page_to_phys(page),
+<<<<<<< HEAD
 				 pgprot_noncached(PAGE_KERNEL));
+=======
+				 pgprot_val(pgprot_noncached(PAGE_KERNEL)));
+>>>>>>> v4.9.227
 			page++;
 			vaddr += PAGE_SIZE;
 		} while (size -= PAGE_SIZE);
@@ -327,7 +331,11 @@ void __dma_sync(void *vaddr, size_t size, int direction)
 		 * invalidate only when cache-line aligned otherwise there is
 		 * the potential for discarding uncommitted data from the cache
 		 */
+<<<<<<< HEAD
 		if ((start & (L1_CACHE_BYTES - 1)) || (size & (L1_CACHE_BYTES - 1)))
+=======
+		if ((start | end) & (L1_CACHE_BYTES - 1))
+>>>>>>> v4.9.227
 			flush_dcache_range(start, end);
 		else
 			invalidate_dcache_range(start, end);

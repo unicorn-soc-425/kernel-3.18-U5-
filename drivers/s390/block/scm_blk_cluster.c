@@ -57,6 +57,7 @@ void scm_request_cluster_init(struct scm_request *scmrq)
 	scmrq->cluster.state = CLUSTER_NONE;
 }
 
+<<<<<<< HEAD
 static bool clusters_intersect(struct scm_request *A, struct scm_request *B)
 {
 	unsigned long firstA, lastA, firstB, lastB;
@@ -68,20 +69,41 @@ static bool clusters_intersect(struct scm_request *A, struct scm_request *B)
 	firstB = ((u64) blk_rq_pos(B->request) << 9) / CLUSTER_SIZE;
 	lastB = (((u64) blk_rq_pos(B->request) << 9) +
 		    blk_rq_bytes(B->request) - 1) / CLUSTER_SIZE;
+=======
+static bool clusters_intersect(struct request *A, struct request *B)
+{
+	unsigned long firstA, lastA, firstB, lastB;
+
+	firstA = ((u64) blk_rq_pos(A) << 9) / CLUSTER_SIZE;
+	lastA = (((u64) blk_rq_pos(A) << 9) +
+		    blk_rq_bytes(A) - 1) / CLUSTER_SIZE;
+
+	firstB = ((u64) blk_rq_pos(B) << 9) / CLUSTER_SIZE;
+	lastB = (((u64) blk_rq_pos(B) << 9) +
+		    blk_rq_bytes(B) - 1) / CLUSTER_SIZE;
+>>>>>>> v4.9.227
 
 	return (firstB <= lastA && firstA <= lastB);
 }
 
 bool scm_reserve_cluster(struct scm_request *scmrq)
 {
+<<<<<<< HEAD
 	struct scm_blk_dev *bdev = scmrq->bdev;
 	struct scm_request *iter;
+=======
+	struct request *req = scmrq->request[scmrq->aob->request.msb_count];
+	struct scm_blk_dev *bdev = scmrq->bdev;
+	struct scm_request *iter;
+	int pos, add = 1;
+>>>>>>> v4.9.227
 
 	if (write_cluster_size == 0)
 		return true;
 
 	spin_lock(&bdev->lock);
 	list_for_each_entry(iter, &bdev->cluster_list, cluster.list) {
+<<<<<<< HEAD
 		if (clusters_intersect(scmrq, iter) &&
 		    (rq_data_dir(scmrq->request) == WRITE ||
 		     rq_data_dir(iter->request) == WRITE)) {
@@ -90,6 +112,27 @@ bool scm_reserve_cluster(struct scm_request *scmrq)
 		}
 	}
 	list_add(&scmrq->cluster.list, &bdev->cluster_list);
+=======
+		if (iter == scmrq) {
+			/*
+			 * We don't have to use clusters_intersect here, since
+			 * cluster requests are always started separately.
+			 */
+			add = 0;
+			continue;
+		}
+		for (pos = 0; pos < iter->aob->request.msb_count; pos++) {
+			if (clusters_intersect(req, iter->request[pos]) &&
+			    (rq_data_dir(req) == WRITE ||
+			     rq_data_dir(iter->request[pos]) == WRITE)) {
+				spin_unlock(&bdev->lock);
+				return false;
+			}
+		}
+	}
+	if (add)
+		list_add(&scmrq->cluster.list, &bdev->cluster_list);
+>>>>>>> v4.9.227
 	spin_unlock(&bdev->lock);
 
 	return true;
@@ -114,6 +157,7 @@ void scm_blk_dev_cluster_setup(struct scm_blk_dev *bdev)
 	blk_queue_io_opt(bdev->rq, CLUSTER_SIZE);
 }
 
+<<<<<<< HEAD
 static void scm_prepare_cluster_request(struct scm_request *scmrq)
 {
 	struct scm_blk_dev *bdev = scmrq->bdev;
@@ -122,6 +166,16 @@ static void scm_prepare_cluster_request(struct scm_request *scmrq)
 	struct aidaw *aidaw = scmrq->aidaw;
 	struct msb *msb = &scmrq->aob->msb[0];
 	struct req_iterator iter;
+=======
+static int scm_prepare_cluster_request(struct scm_request *scmrq)
+{
+	struct scm_blk_dev *bdev = scmrq->bdev;
+	struct scm_device *scmdev = bdev->gendisk->private_data;
+	struct request *req = scmrq->request[0];
+	struct msb *msb = &scmrq->aob->msb[0];
+	struct req_iterator iter;
+	struct aidaw *aidaw;
+>>>>>>> v4.9.227
 	struct bio_vec bv;
 	int i = 0;
 	u64 addr;
@@ -131,11 +185,17 @@ static void scm_prepare_cluster_request(struct scm_request *scmrq)
 		scmrq->cluster.state = CLUSTER_READ;
 		/* fall through */
 	case CLUSTER_READ:
+<<<<<<< HEAD
 		scmrq->aob->request.msb_count = 1;
 		msb->bs = MSB_BS_4K;
 		msb->oc = MSB_OC_READ;
 		msb->flags = MSB_FLAG_IDA;
 		msb->data_addr = (u64) aidaw;
+=======
+		msb->bs = MSB_BS_4K;
+		msb->oc = MSB_OC_READ;
+		msb->flags = MSB_FLAG_IDA;
+>>>>>>> v4.9.227
 		msb->blk_count = write_cluster_size;
 
 		addr = scmdev->address + ((u64) blk_rq_pos(req) << 9);
@@ -146,6 +206,15 @@ static void scm_prepare_cluster_request(struct scm_request *scmrq)
 			       CLUSTER_SIZE))
 			msb->blk_count = 2 * write_cluster_size;
 
+<<<<<<< HEAD
+=======
+		aidaw = scm_aidaw_fetch(scmrq, msb->blk_count * PAGE_SIZE);
+		if (!aidaw)
+			return -ENOMEM;
+
+		scmrq->aob->request.msb_count = 1;
+		msb->data_addr = (u64) aidaw;
+>>>>>>> v4.9.227
 		for (i = 0; i < msb->blk_count; i++) {
 			aidaw->data_addr = (u64) scmrq->cluster.buf[i];
 			aidaw++;
@@ -153,6 +222,10 @@ static void scm_prepare_cluster_request(struct scm_request *scmrq)
 
 		break;
 	case CLUSTER_WRITE:
+<<<<<<< HEAD
+=======
+		aidaw = (void *) msb->data_addr;
+>>>>>>> v4.9.227
 		msb->oc = MSB_OC_WRITE;
 
 		for (addr = msb->scm_addr;
@@ -173,22 +246,45 @@ static void scm_prepare_cluster_request(struct scm_request *scmrq)
 		}
 		break;
 	}
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 bool scm_need_cluster_request(struct scm_request *scmrq)
 {
+<<<<<<< HEAD
 	if (rq_data_dir(scmrq->request) == READ)
 		return false;
 
 	return blk_rq_bytes(scmrq->request) < CLUSTER_SIZE;
+=======
+	int pos = scmrq->aob->request.msb_count;
+
+	if (rq_data_dir(scmrq->request[pos]) == READ)
+		return false;
+
+	return blk_rq_bytes(scmrq->request[pos]) < CLUSTER_SIZE;
+>>>>>>> v4.9.227
 }
 
 /* Called with queue lock held. */
 void scm_initiate_cluster_request(struct scm_request *scmrq)
 {
+<<<<<<< HEAD
 	scm_prepare_cluster_request(scmrq);
 	if (eadm_start_aob(scmrq->aob))
 		scm_request_requeue(scmrq);
+=======
+	if (scm_prepare_cluster_request(scmrq))
+		goto requeue;
+	if (eadm_start_aob(scmrq->aob))
+		goto requeue;
+	return;
+requeue:
+	scm_request_requeue(scmrq);
+>>>>>>> v4.9.227
 }
 
 bool scm_test_cluster_request(struct scm_request *scmrq)

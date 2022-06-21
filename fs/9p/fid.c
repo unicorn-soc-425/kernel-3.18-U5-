@@ -257,6 +257,7 @@ struct p9_fid *v9fs_fid_lookup(struct dentry *dentry)
 	return v9fs_fid_lookup_with_uid(dentry, uid, any);
 }
 
+<<<<<<< HEAD
 struct p9_fid *v9fs_fid_clone(struct dentry *dentry)
 {
 	struct p9_fid *fid, *ret;
@@ -281,12 +282,18 @@ static struct p9_fid *v9fs_fid_clone_with_uid(struct dentry *dentry, kuid_t uid)
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 struct p9_fid *v9fs_writeback_fid(struct dentry *dentry)
 {
 	int err;
 	struct p9_fid *fid;
 
+<<<<<<< HEAD
 	fid = v9fs_fid_clone_with_uid(dentry, GLOBAL_ROOT_UID);
+=======
+	fid = clone_fid(v9fs_fid_lookup_with_uid(dentry, GLOBAL_ROOT_UID, 0));
+>>>>>>> v4.9.227
 	if (IS_ERR(fid))
 		goto error_out;
 	/*

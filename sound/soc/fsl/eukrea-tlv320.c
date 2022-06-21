@@ -42,6 +42,7 @@ static int eukrea_tlv320_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	int ret;
 
+<<<<<<< HEAD
 	ret = snd_soc_dai_set_fmt(cpu_dai, SND_SOC_DAIFMT_I2S |
 				  SND_SOC_DAIFMT_NB_NF |
 				  SND_SOC_DAIFMT_CBM_CFM);
@@ -61,6 +62,8 @@ static int eukrea_tlv320_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
+=======
+>>>>>>> v4.9.227
 	ret = snd_soc_dai_set_sysclk(codec_dai, 0,
 				     CODEC_CLOCK, SND_SOC_CLOCK_OUT);
 	if (ret) {
@@ -69,7 +72,11 @@ static int eukrea_tlv320_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	snd_soc_dai_set_tdm_slot(cpu_dai, 0xffffffc, 0xffffffc, 2, 0);
+=======
+	snd_soc_dai_set_tdm_slot(cpu_dai, 0x3, 0x3, 2, 0);
+>>>>>>> v4.9.227
 
 	ret = snd_soc_dai_set_sysclk(cpu_dai, IMX_SSP_SYS_CLK, 0,
 				SND_SOC_CLOCK_IN);
@@ -91,6 +98,11 @@ static struct snd_soc_dai_link eukrea_tlv320_dai = {
 	.name		= "tlv320aic23",
 	.stream_name	= "TLV320AIC23",
 	.codec_dai_name	= "tlv320aic23-hifi",
+<<<<<<< HEAD
+=======
+	.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+			  SND_SOC_DAIFMT_CBM_CFM,
+>>>>>>> v4.9.227
 	.ops		= &eukrea_tlv320_snd_ops,
 };
 
@@ -136,13 +148,21 @@ static int eukrea_tlv320_probe(struct platform_device *pdev)
 		if (ret) {
 			dev_err(&pdev->dev,
 				"fsl,mux-int-port node missing or invalid.\n");
+<<<<<<< HEAD
 			return ret;
+=======
+			goto err;
+>>>>>>> v4.9.227
 		}
 		ret = of_property_read_u32(np, "fsl,mux-ext-port", &ext_port);
 		if (ret) {
 			dev_err(&pdev->dev,
 				"fsl,mux-ext-port node missing or invalid.\n");
+<<<<<<< HEAD
 			return ret;
+=======
+			goto err;
+>>>>>>> v4.9.227
 		}
 
 		/*
@@ -199,7 +219,11 @@ static int eukrea_tlv320_probe(struct platform_device *pdev)
 		);
 	} else {
 		if (np) {
+<<<<<<< HEAD
 			/* The eukrea,asoc-tlv320 driver was explicitely
+=======
+			/* The eukrea,asoc-tlv320 driver was explicitly
+>>>>>>> v4.9.227
 			 * requested (through the device tree).
 			 */
 			dev_err(&pdev->dev,
@@ -217,8 +241,12 @@ static int eukrea_tlv320_probe(struct platform_device *pdev)
 err:
 	if (ret)
 		dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n", ret);
+<<<<<<< HEAD
 	if (np)
 		of_node_put(ssi_np);
+=======
+	of_node_put(ssi_np);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -239,7 +267,10 @@ MODULE_DEVICE_TABLE(of, imx_tlv320_dt_ids);
 static struct platform_driver eukrea_tlv320_driver = {
 	.driver = {
 		.name = "eukrea_tlv320",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = imx_tlv320_dt_ids,
 	},
 	.probe = eukrea_tlv320_probe,

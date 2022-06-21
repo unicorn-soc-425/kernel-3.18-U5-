@@ -10,6 +10,11 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -197,21 +202,34 @@ static int s3c2412_cpufreq_add(struct device *dev,
 
 	hclk = clk_get(NULL, "hclk");
 	if (IS_ERR(hclk)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: cannot find hclk clock\n", __func__);
+=======
+		pr_err("cannot find hclk clock\n");
+>>>>>>> v4.9.227
 		return -ENOENT;
 	}
 
 	fclk = clk_get(NULL, "fclk");
 	if (IS_ERR(fclk)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: cannot find fclk clock\n", __func__);
+=======
+		pr_err("cannot find fclk clock\n");
+>>>>>>> v4.9.227
 		goto err_fclk;
 	}
 
 	fclk_rate = clk_get_rate(fclk);
 	if (fclk_rate > 200000000) {
+<<<<<<< HEAD
 		printk(KERN_INFO
 		       "%s: fclk %ld MHz, assuming 266MHz capable part\n",
 		       __func__, fclk_rate / 1000000);
+=======
+		pr_info("fclk %ld MHz, assuming 266MHz capable part\n",
+			fclk_rate / 1000000);
+>>>>>>> v4.9.227
 		s3c2412_cpufreq_info.max.fclk = 266000000;
 		s3c2412_cpufreq_info.max.hclk = 133000000;
 		s3c2412_cpufreq_info.max.pclk =  66000000;
@@ -219,13 +237,21 @@ static int s3c2412_cpufreq_add(struct device *dev,
 
 	armclk = clk_get(NULL, "armclk");
 	if (IS_ERR(armclk)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: cannot find arm clock\n", __func__);
+=======
+		pr_err("cannot find arm clock\n");
+>>>>>>> v4.9.227
 		goto err_armclk;
 	}
 
 	xtal = clk_get(NULL, "xtal");
 	if (IS_ERR(xtal)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: cannot find xtal clock\n", __func__);
+=======
+		pr_err("cannot find xtal clock\n");
+>>>>>>> v4.9.227
 		goto err_xtal;
 	}
 

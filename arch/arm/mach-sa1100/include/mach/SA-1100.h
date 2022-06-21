@@ -858,6 +858,7 @@
 
 
 /*
+<<<<<<< HEAD
  * Real-Time Clock (RTC) control registers
  *
  * Registers
@@ -892,6 +893,8 @@
 
 
 /*
+=======
+>>>>>>> v4.9.227
  * Power Manager (PM) control registers
  *
  * Registers

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -207,7 +211,11 @@ acpi_ex_do_match(u32 match_op,
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_ex_opcode_6A_0T_1R(struct acpi_walk_state * walk_state)
+=======
+acpi_status acpi_ex_opcode_6A_0T_1R(struct acpi_walk_state *walk_state)
+>>>>>>> v4.9.227
 {
 	union acpi_operand_object **operand = &walk_state->operands[0];
 	union acpi_operand_object *return_desc = NULL;
@@ -310,6 +318,10 @@ acpi_status acpi_ex_opcode_6A_0T_1R(struct acpi_walk_state * walk_state)
 
 		ACPI_ERROR((AE_INFO, "Unknown AML opcode 0x%X",
 			    walk_state->opcode));
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		status = AE_AML_BAD_OPCODE;
 		goto cleanup;
 	}

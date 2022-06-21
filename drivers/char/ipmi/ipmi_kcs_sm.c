@@ -540,7 +540,11 @@ static void kcs_cleanup(struct si_sm_data *kcs)
 {
 }
 
+<<<<<<< HEAD
 struct si_sm_handlers kcs_smi_handlers = {
+=======
+const struct si_sm_handlers kcs_smi_handlers = {
+>>>>>>> v4.9.227
 	.init_data         = init_kcs_data,
 	.start_transaction = start_kcs_transaction,
 	.get_result        = get_kcs_result,

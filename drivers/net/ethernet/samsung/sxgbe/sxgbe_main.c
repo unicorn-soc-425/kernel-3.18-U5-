@@ -124,11 +124,16 @@ static void sxgbe_eee_ctrl_timer(unsigned long arg)
  */
 bool sxgbe_eee_init(struct sxgbe_priv_data * const priv)
 {
+<<<<<<< HEAD
+=======
+	struct net_device *ndev = priv->dev;
+>>>>>>> v4.9.227
 	bool ret = false;
 
 	/* MAC core supports the EEE feature. */
 	if (priv->hw_cap.eee) {
 		/* Check if the PHY supports EEE */
+<<<<<<< HEAD
 		if (phy_init_eee(priv->phydev, 1))
 			return false;
 
@@ -136,6 +141,14 @@ bool sxgbe_eee_init(struct sxgbe_priv_data * const priv)
 		init_timer(&priv->eee_ctrl_timer);
 		priv->eee_ctrl_timer.function = sxgbe_eee_ctrl_timer;
 		priv->eee_ctrl_timer.data = (unsigned long)priv;
+=======
+		if (phy_init_eee(ndev->phydev, 1))
+			return false;
+
+		priv->eee_active = 1;
+		setup_timer(&priv->eee_ctrl_timer, sxgbe_eee_ctrl_timer,
+			    (unsigned long)priv);
+>>>>>>> v4.9.227
 		priv->eee_ctrl_timer.expires = SXGBE_LPI_TIMER(eee_timer);
 		add_timer(&priv->eee_ctrl_timer);
 
@@ -153,12 +166,21 @@ bool sxgbe_eee_init(struct sxgbe_priv_data * const priv)
 
 static void sxgbe_eee_adjust(const struct sxgbe_priv_data *priv)
 {
+<<<<<<< HEAD
+=======
+	struct net_device *ndev = priv->dev;
+
+>>>>>>> v4.9.227
 	/* When the EEE has been already initialised we have to
 	 * modify the PLS bit in the LPI ctrl & status reg according
 	 * to the PHY link status. For this reason.
 	 */
 	if (priv->eee_enabled)
+<<<<<<< HEAD
 		priv->hw->mac->set_eee_pls(priv->ioaddr, priv->phydev->link);
+=======
+		priv->hw->mac->set_eee_pls(priv->ioaddr, ndev->phydev->link);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -204,7 +226,11 @@ static inline u32 sxgbe_tx_avail(struct sxgbe_tx_queue *queue, int tx_qsize)
 static void sxgbe_adjust_link(struct net_device *dev)
 {
 	struct sxgbe_priv_data *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = priv->phydev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> v4.9.227
 	u8 new_state = 0;
 	u8 speed = 0xff;
 
@@ -307,9 +333,12 @@ static int sxgbe_init_phy(struct net_device *ndev)
 	netdev_dbg(ndev, "%s: attached to PHY (UID 0x%x) Link = %d\n",
 		   __func__, phydev->phy_id, phydev->link);
 
+<<<<<<< HEAD
 	/* save phy device in private structure */
 	priv->phydev = phydev;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -365,6 +394,29 @@ static int sxgbe_init_rx_buffers(struct net_device *dev,
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * sxgbe_free_rx_buffers - free what sxgbe_init_rx_buffers() allocated
+ * @dev: net device structure
+ * @rx_ring: ring to be freed
+ * @rx_rsize: ring size
+ * Description:  this function initializes the DMA RX descriptor
+ */
+static void sxgbe_free_rx_buffers(struct net_device *dev,
+				  struct sxgbe_rx_norm_desc *p, int i,
+				  unsigned int dma_buf_sz,
+				  struct sxgbe_rx_queue *rx_ring)
+{
+	struct sxgbe_priv_data *priv = netdev_priv(dev);
+
+	kfree_skb(rx_ring->rx_skbuff[i]);
+	dma_unmap_single(priv->device, rx_ring->rx_skbuff_dma[i],
+			 dma_buf_sz, DMA_FROM_DEVICE);
+}
+
+>>>>>>> v4.9.227
 /**
  * init_tx_ring - init the TX descriptor ring
  * @dev: net device structure
@@ -403,11 +455,19 @@ static int init_tx_ring(struct device *dev, u8 queue_no,
 	/* assign queue number */
 	tx_ring->queue_no = queue_no;
 
+<<<<<<< HEAD
 	/* initalise counters */
 	tx_ring->dirty_tx = 0;
 	tx_ring->cur_tx = 0;
 
 	/* initalise TX queue lock */
+=======
+	/* initialise counters */
+	tx_ring->dirty_tx = 0;
+	tx_ring->cur_tx = 0;
+
+	/* initialise TX queue lock */
+>>>>>>> v4.9.227
 	spin_lock_init(&tx_ring->tx_lock);
 
 	return 0;
@@ -457,7 +517,11 @@ static int init_rx_ring(struct net_device *dev, u8 queue_no,
 	/* RX ring is not allcoated */
 	if (rx_ring == NULL) {
 		netdev_err(dev, "No memory for RX queue\n");
+<<<<<<< HEAD
 		goto error;
+=======
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	}
 
 	/* assign queue number */
@@ -469,11 +533,16 @@ static int init_rx_ring(struct net_device *dev, u8 queue_no,
 					      &rx_ring->dma_rx_phy, GFP_KERNEL);
 
 	if (rx_ring->dma_rx == NULL)
+<<<<<<< HEAD
 		goto error;
+=======
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	/* allocate memory for RX skbuff array */
 	rx_ring->rx_skbuff_dma = kmalloc_array(rx_rsize,
 					       sizeof(dma_addr_t), GFP_KERNEL);
+<<<<<<< HEAD
 	if (rx_ring->rx_skbuff_dma == NULL)
 		goto dmamem_err;
 
@@ -481,6 +550,19 @@ static int init_rx_ring(struct net_device *dev, u8 queue_no,
 					   sizeof(struct sk_buff *), GFP_KERNEL);
 	if (rx_ring->rx_skbuff == NULL)
 		goto rxbuff_err;
+=======
+	if (!rx_ring->rx_skbuff_dma) {
+		ret = -ENOMEM;
+		goto err_free_dma_rx;
+	}
+
+	rx_ring->rx_skbuff = kmalloc_array(rx_rsize,
+					   sizeof(struct sk_buff *), GFP_KERNEL);
+	if (!rx_ring->rx_skbuff) {
+		ret = -ENOMEM;
+		goto err_free_skbuff_dma;
+	}
+>>>>>>> v4.9.227
 
 	/* initialise the buffers */
 	for (desc_index = 0; desc_index < rx_rsize; desc_index++) {
@@ -489,16 +571,24 @@ static int init_rx_ring(struct net_device *dev, u8 queue_no,
 		ret = sxgbe_init_rx_buffers(dev, p, desc_index,
 					    bfsize, rx_ring);
 		if (ret)
+<<<<<<< HEAD
 			goto err_init_rx_buffers;
 	}
 
 	/* initalise counters */
+=======
+			goto err_free_rx_buffers;
+	}
+
+	/* initialise counters */
+>>>>>>> v4.9.227
 	rx_ring->cur_rx = 0;
 	rx_ring->dirty_rx = (unsigned int)(desc_index - rx_rsize);
 	priv->dma_buf_sz = bfsize;
 
 	return 0;
 
+<<<<<<< HEAD
 err_init_rx_buffers:
 	while (--desc_index >= 0)
 		free_rx_ring(priv->device, rx_ring, desc_index);
@@ -511,6 +601,24 @@ dmamem_err:
 			  rx_ring->dma_rx, rx_ring->dma_rx_phy);
 error:
 	return -ENOMEM;
+=======
+err_free_rx_buffers:
+	while (--desc_index >= 0) {
+		struct sxgbe_rx_norm_desc *p;
+
+		p = rx_ring->dma_rx + desc_index;
+		sxgbe_free_rx_buffers(dev, p, desc_index, bfsize, rx_ring);
+	}
+	kfree(rx_ring->rx_skbuff);
+err_free_skbuff_dma:
+	kfree(rx_ring->rx_skbuff_dma);
+err_free_dma_rx:
+	dma_free_coherent(priv->device,
+			  rx_rsize * sizeof(struct sxgbe_rx_norm_desc),
+			  rx_ring->dma_rx, rx_ring->dma_rx_phy);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 /**
  * free_tx_ring - free the TX descriptor ring
@@ -810,7 +918,11 @@ static void sxgbe_restart_tx_queue(struct sxgbe_priv_data *priv, int queue_num)
 	/* free the skbuffs of the ring */
 	tx_free_ring_skbufs(tx_ring);
 
+<<<<<<< HEAD
 	/* initalise counters */
+=======
+	/* initialise counters */
+>>>>>>> v4.9.227
 	tx_ring->cur_tx = 0;
 	tx_ring->dirty_tx = 0;
 
@@ -1009,10 +1121,16 @@ static void sxgbe_tx_init_coalesce(struct sxgbe_priv_data *priv)
 		struct sxgbe_tx_queue *p = priv->txq[queue_num];
 		p->tx_coal_frames =  SXGBE_TX_FRAMES;
 		p->tx_coal_timer = SXGBE_COAL_TX_TIMER;
+<<<<<<< HEAD
 		init_timer(&p->txtimer);
 		p->txtimer.expires = SXGBE_COAL_TIMER(p->tx_coal_timer);
 		p->txtimer.data = (unsigned long)&priv->txq[queue_num];
 		p->txtimer.function = sxgbe_tx_timer;
+=======
+		setup_timer(&p->txtimer, sxgbe_tx_timer,
+			    (unsigned long)&priv->txq[queue_num]);
+		p->txtimer.expires = SXGBE_COAL_TIMER(p->tx_coal_timer);
+>>>>>>> v4.9.227
 		add_timer(&p->txtimer);
 	}
 }
@@ -1147,10 +1265,17 @@ static int sxgbe_open(struct net_device *dev)
 	priv->hw->dma->start_tx(priv->ioaddr, SXGBE_TX_QUEUES);
 	priv->hw->dma->start_rx(priv->ioaddr, SXGBE_RX_QUEUES);
 
+<<<<<<< HEAD
 	if (priv->phydev)
 		phy_start(priv->phydev);
 
 	/* initalise TX coalesce parameters */
+=======
+	if (dev->phydev)
+		phy_start(dev->phydev);
+
+	/* initialise TX coalesce parameters */
+>>>>>>> v4.9.227
 	sxgbe_tx_init_coalesce(priv);
 
 	if ((priv->use_riwt) && (priv->hw->dma->rx_watchdog)) {
@@ -1168,8 +1293,13 @@ static int sxgbe_open(struct net_device *dev)
 
 init_error:
 	free_dma_desc_resources(priv);
+<<<<<<< HEAD
 	if (priv->phydev)
 		phy_disconnect(priv->phydev);
+=======
+	if (dev->phydev)
+		phy_disconnect(dev->phydev);
+>>>>>>> v4.9.227
 phy_error:
 	clk_disable_unprepare(priv->sxgbe_clk);
 
@@ -1190,10 +1320,16 @@ static int sxgbe_release(struct net_device *dev)
 		del_timer_sync(&priv->eee_ctrl_timer);
 
 	/* Stop and disconnect the PHY */
+<<<<<<< HEAD
 	if (priv->phydev) {
 		phy_stop(priv->phydev);
 		phy_disconnect(priv->phydev);
 		priv->phydev = NULL;
+=======
+	if (dev->phydev) {
+		phy_stop(dev->phydev);
+		phy_disconnect(dev->phydev);
+>>>>>>> v4.9.227
 	}
 
 	netif_tx_stop_all_queues(dev);
@@ -1274,7 +1410,11 @@ static netdev_tx_t sxgbe_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (unlikely(skb_is_gso(skb) && tqueue->prev_mss != cur_mss))
 		ctxt_desc_req = 1;
 
+<<<<<<< HEAD
 	if (unlikely(vlan_tx_tag_present(skb) ||
+=======
+	if (unlikely(skb_vlan_tag_present(skb) ||
+>>>>>>> v4.9.227
 		     ((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
 		      tqueue->hwts_tx_en)))
 		ctxt_desc_req = 1;
@@ -1695,7 +1835,11 @@ static inline u64 sxgbe_get_stat64(void __iomem *ioaddr, int reg_lo, int reg_hi)
  *  Description:
  *  This function is a driver entry point whenever ifconfig command gets
  *  executed to see device statistics. Statistics are number of
+<<<<<<< HEAD
  *  bytes sent or received, errors occured etc.
+=======
+ *  bytes sent or received, errors occurred etc.
+>>>>>>> v4.9.227
  *  Return value:
  *  This function returns various statistical information of device.
  */
@@ -1943,7 +2087,10 @@ static void sxgbe_poll_controller(struct net_device *dev)
  */
 static int sxgbe_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
+<<<<<<< HEAD
 	struct sxgbe_priv_data *priv = netdev_priv(dev);
+=======
+>>>>>>> v4.9.227
 	int ret = -EOPNOTSUPP;
 
 	if (!netif_running(dev))
@@ -1953,9 +2100,15 @@ static int sxgbe_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	case SIOCGMIIPHY:
 	case SIOCGMIIREG:
 	case SIOCSMIIREG:
+<<<<<<< HEAD
 		if (!priv->phydev)
 			return -EINVAL;
 		ret = phy_mii_ioctl(priv->phydev, rq, cmd);
+=======
+		if (!dev->phydev)
+			return -EINVAL;
+		ret = phy_mii_ioctl(dev->phydev, rq, cmd);
+>>>>>>> v4.9.227
 		break;
 	default:
 		break;
@@ -2289,7 +2442,11 @@ static int __init sxgbe_cmdline_opt(char *str)
 	if (!str || !*str)
 		return -EINVAL;
 	while ((opt = strsep(&str, ",")) != NULL) {
+<<<<<<< HEAD
 		if (!strncmp(opt, "eee_timer:", 6)) {
+=======
+		if (!strncmp(opt, "eee_timer:", 10)) {
+>>>>>>> v4.9.227
 			if (kstrtoint(opt + 10, 0, &eee_timer))
 				goto err;
 		}

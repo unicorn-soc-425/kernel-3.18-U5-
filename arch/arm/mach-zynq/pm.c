@@ -61,7 +61,11 @@ static void __iomem *zynq_pm_ioremap(const char *comp)
 /**
  * zynq_pm_late_init() - Power management init
  *
+<<<<<<< HEAD
  * Initialization of power management related featurs and infrastructure.
+=======
+ * Initialization of power management related features and infrastructure.
+>>>>>>> v4.9.227
  */
 void __init zynq_pm_late_init(void)
 {

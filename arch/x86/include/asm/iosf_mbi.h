@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * iosf_mbi.h: Intel OnChip System Fabric MailBox access support
+=======
+ * Intel OnChip System Fabric MailBox access support
+>>>>>>> v4.9.227
  */
 
 #ifndef IOSF_MBI_SYMS_H
@@ -16,6 +20,21 @@
 #define MBI_MASK_LO		0x000000FF
 #define MBI_ENABLE		0xF0
 
+<<<<<<< HEAD
+=======
+/* IOSF SB read/write opcodes */
+#define MBI_MMIO_READ		0x00
+#define MBI_MMIO_WRITE		0x01
+#define MBI_CFG_READ		0x04
+#define MBI_CFG_WRITE		0x05
+#define MBI_CR_READ		0x06
+#define MBI_CR_WRITE		0x07
+#define MBI_REG_READ		0x10
+#define MBI_REG_WRITE		0x11
+#define MBI_ESRAM_READ		0x12
+#define MBI_ESRAM_WRITE		0x13
+
+>>>>>>> v4.9.227
 /* Baytrail available units */
 #define BT_MBI_UNIT_AUNIT	0x00
 #define BT_MBI_UNIT_SMC		0x01
@@ -28,6 +47,7 @@
 #define BT_MBI_UNIT_SATA	0xA3
 #define BT_MBI_UNIT_PCIE	0xA6
 
+<<<<<<< HEAD
 /* Baytrail read/write opcodes */
 #define BT_MBI_AUNIT_READ	0x10
 #define BT_MBI_AUNIT_WRITE	0x11
@@ -72,6 +92,15 @@
 #define QRK_MBI_SOC_READ	0x06
 #define QRK_MBI_SOC_WRITE	0x07
 
+=======
+/* Quark available units */
+#define QRK_MBI_UNIT_HBA	0x00
+#define QRK_MBI_UNIT_HB		0x03
+#define QRK_MBI_UNIT_RMU	0x04
+#define QRK_MBI_UNIT_MM		0x05
+#define QRK_MBI_UNIT_SOC	0x31
+
+>>>>>>> v4.9.227
 #if IS_ENABLED(CONFIG_IOSF_MBI)
 
 bool iosf_mbi_available(void);

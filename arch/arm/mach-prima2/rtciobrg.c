@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * RTC I/O Bridge interfaces for CSR SiRFprimaII
+=======
+ * RTC I/O Bridge interfaces for CSR SiRFprimaII/atlas7
+>>>>>>> v4.9.227
  * ARM access the registers of SYSRTC, GPSRTC and PWRC through this module
  *
  * Copyright (c) 2011 Cambridge Silicon Radio Limited, a CSR plc group company.
@@ -10,6 +14,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/regmap.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_device.h>
@@ -66,6 +74,10 @@ u32 sirfsoc_rtc_iobrg_readl(u32 addr)
 {
 	unsigned long flags, val;
 
+<<<<<<< HEAD
+=======
+	/* TODO: add hwspinlock to sync with M3 */
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&rtciobrg_lock, flags);
 
 	val = __sirfsoc_rtc_iobrg_readl(addr);
@@ -90,6 +102,10 @@ void sirfsoc_rtc_iobrg_writel(u32 val, u32 addr)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	 /* TODO: add hwspinlock to sync with M3 */
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&rtciobrg_lock, flags);
 
 	sirfsoc_rtc_iobrg_pre_writel(val, addr);
@@ -102,9 +118,53 @@ void sirfsoc_rtc_iobrg_writel(u32 val, u32 addr)
 }
 EXPORT_SYMBOL_GPL(sirfsoc_rtc_iobrg_writel);
 
+<<<<<<< HEAD
 static const struct of_device_id rtciobrg_ids[] = {
 	{ .compatible = "sirf,prima2-rtciobg" },
 	{ .compatible = "sirf,marco-rtciobg" },
+=======
+
+static int regmap_iobg_regwrite(void *context, unsigned int reg,
+				   unsigned int val)
+{
+	sirfsoc_rtc_iobrg_writel(val, reg);
+	return 0;
+}
+
+static int regmap_iobg_regread(void *context, unsigned int reg,
+				  unsigned int *val)
+{
+	*val = (u32)sirfsoc_rtc_iobrg_readl(reg);
+	return 0;
+}
+
+static struct regmap_bus regmap_iobg = {
+	.reg_write = regmap_iobg_regwrite,
+	.reg_read = regmap_iobg_regread,
+};
+
+/**
+ * devm_regmap_init_iobg(): Initialise managed register map
+ *
+ * @iobg: Device that will be interacted with
+ * @config: Configuration for register map
+ *
+ * The return value will be an ERR_PTR() on error or a valid pointer
+ * to a struct regmap.  The regmap will be automatically freed by the
+ * device management code.
+ */
+struct regmap *devm_regmap_init_iobg(struct device *dev,
+				    const struct regmap_config *config)
+{
+	const struct regmap_bus *bus = &regmap_iobg;
+
+	return devm_regmap_init(dev, bus, dev, config);
+}
+EXPORT_SYMBOL_GPL(devm_regmap_init_iobg);
+
+static const struct of_device_id rtciobrg_ids[] = {
+	{ .compatible = "sirf,prima2-rtciobg" },
+>>>>>>> v4.9.227
 	{}
 };
 
@@ -123,7 +183,10 @@ static struct platform_driver sirfsoc_rtciobrg_driver = {
 	.probe		= sirfsoc_rtciobrg_probe,
 	.driver = {
 		.name = "sirfsoc-rtciobrg",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= rtciobrg_ids,
 	},
 };
@@ -134,7 +197,12 @@ static int __init sirfsoc_rtciobrg_init(void)
 }
 postcore_initcall(sirfsoc_rtciobrg_init);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Zhiwu Song <zhiwu.song@csr.com>, "
 		"Barry Song <baohua.song@csr.com>");
+=======
+MODULE_AUTHOR("Zhiwu Song <zhiwu.song@csr.com>");
+MODULE_AUTHOR("Barry Song <baohua.song@csr.com>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("CSR SiRFprimaII rtc io bridge");
 MODULE_LICENSE("GPL v2");

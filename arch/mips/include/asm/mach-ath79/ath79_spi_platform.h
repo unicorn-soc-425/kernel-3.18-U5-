@@ -16,8 +16,11 @@ struct ath79_spi_platform_data {
 	unsigned	num_chipselect;
 };
 
+<<<<<<< HEAD
 struct ath79_spi_controller_data {
 	unsigned	gpio;
 };
 
+=======
+>>>>>>> v4.9.227
 #endif /* _ATH79_SPI_PLATFORM_H */

@@ -528,10 +528,17 @@ uint32_t gf117_grhub_code[] = {
 	0x0001d001,
 	0x17f104bd,
 	0xf7f00100,
+<<<<<<< HEAD
 	0x0d21f502,
 	0x1f21f508,
 	0x10f7f008,
 	0x086c21f5,
+=======
+	0x1121f502,
+	0x2321f508,
+	0x10f7f008,
+	0x087021f5,
+>>>>>>> v4.9.227
 	0x98000e98,
 	0x21f5010f,
 	0x14950150,
@@ -574,9 +581,15 @@ uint32_t gf117_grhub_code[] = {
 	0xb6800040,
 	0x1bf40132,
 	0x00f7f0be,
+<<<<<<< HEAD
 	0x086c21f5,
 	0xf500f7f0,
 	0xf1080d21,
+=======
+	0x087021f5,
+	0xf500f7f0,
+	0xf1081121,
+>>>>>>> v4.9.227
 	0xf0010007,
 	0x01d00203,
 	0xbd04bd00,
@@ -584,9 +597,16 @@ uint32_t gf117_grhub_code[] = {
 	0x080007f1,
 	0xd00203f0,
 	0x04bd0001,
+<<<<<<< HEAD
 /* 0x0564: main */
 	0xf40031f4,
 	0xd7f00028,
+=======
+/* 0x0564: wait */
+	0xf40028f4,
+/* 0x056a: main */
+	0xd7f00031,
+>>>>>>> v4.9.227
 	0x3921f410,
 	0xb1f401f4,
 	0xf54001e4,
@@ -610,7 +630,11 @@ uint32_t gf117_grhub_code[] = {
 	0x09d00203,
 	0xf404bd00,
 	0x31f40132,
+<<<<<<< HEAD
 	0x4021f502,
+=======
+	0x4421f502,
+>>>>>>> v4.9.227
 	0xf094bd0a,
 	0x07f10799,
 	0x03f01700,
@@ -621,7 +645,11 @@ uint32_t gf117_grhub_code[] = {
 	0x0203f00f,
 	0xbd0009d0,
 	0x0131f404,
+<<<<<<< HEAD
 	0x0a4021f5,
+=======
+	0x0a4421f5,
+>>>>>>> v4.9.227
 	0x99f094bd,
 	0x0007f106,
 	0x0203f017,
@@ -631,7 +659,11 @@ uint32_t gf117_grhub_code[] = {
 	0x12b920f9,
 	0x0132f402,
 	0xf50232f4,
+<<<<<<< HEAD
 	0xfc0a4021,
+=======
+	0xfc0a4421,
+>>>>>>> v4.9.227
 	0x0007f120,
 	0x0203f0c0,
 	0xbd0002d0,
@@ -640,7 +672,11 @@ uint32_t gf117_grhub_code[] = {
 	0xf41f23c8,
 	0x31f40d0b,
 	0x0232f401,
+<<<<<<< HEAD
 	0x0a4021f5,
+=======
+	0x0a4421f5,
+>>>>>>> v4.9.227
 /* 0x063c: chsw_done */
 	0xf10127f0,
 	0xf0c30007,
@@ -650,11 +686,19 @@ uint32_t gf117_grhub_code[] = {
 	0x170007f1,
 	0xd00203f0,
 	0x04bd0009,
+<<<<<<< HEAD
 	0xff080ef5,
 /* 0x0660: main_not_ctx_switch */
 	0xf401e4b0,
 	0xf2b90d1b,
 	0xd021f502,
+=======
+	0xff0e0ef5,
+/* 0x0660: main_not_ctx_switch */
+	0xf401e4b0,
+	0xf2b90d1b,
+	0xd421f502,
+>>>>>>> v4.9.227
 	0x460ef409,
 /* 0x0670: main_not_ctx_chan */
 	0xf402e4b0,
@@ -664,7 +708,11 @@ uint32_t gf117_grhub_code[] = {
 	0x09d00203,
 	0xf404bd00,
 	0x32f40132,
+<<<<<<< HEAD
 	0x4021f502,
+=======
+	0x4421f502,
+>>>>>>> v4.9.227
 	0xf094bd0a,
 	0x07f10799,
 	0x03f01700,
@@ -675,11 +723,16 @@ uint32_t gf117_grhub_code[] = {
 	0xf501f5f0,
 	0xf5037e21,
 /* 0x06b3: main_done */
+<<<<<<< HEAD
 	0xbdfeb50e,
+=======
+	0xbdfebb0e,
+>>>>>>> v4.9.227
 	0x1f29f024,
 	0x080007f1,
 	0xd00203f0,
 	0x04bd0002,
+<<<<<<< HEAD
 	0xfea00ef5,
 /* 0x06c8: ih */
 	0x88fe80f9,
@@ -754,35 +807,132 @@ uint32_t gf117_grhub_code[] = {
 	0x0088fe80,
 	0x32f480fc,
 /* 0x07d7: ctx_4160s */
+=======
+	0xfea60ef5,
+/* 0x06c8: ih */
+	0x80f900f9,
+	0xf90188fe,
+	0xf990f980,
+	0xf9b0f9a0,
+	0xf9e0f9d0,
+	0xf104bdf0,
+	0xf00200a7,
+	0xaacf00a3,
+	0x04abc400,
+	0xf0300bf4,
+	0xe7f110d7,
+	0xe3f01a00,
+	0x00eecf00,
+	0x1900f7f1,
+	0xcf00f3f0,
+	0x21f400ff,
+	0x00b0b704,
+	0x01e7f004,
+	0x1d0007f1,
+	0xd00003f0,
+	0x04bd000e,
+/* 0x071c: ih_no_fifo */
+	0x0100abe4,
+	0xf00d0bf4,
+	0xe7f110d7,
+	0x21f44001,
+/* 0x072d: ih_no_ctxsw */
+	0x00abe404,
+	0x6c0bf404,
+	0x0708e7f1,
+	0xf440e3f0,
+	0xffb96821,
+	0x0007f102,
+	0x0203f004,
+	0xbd000fd0,
+	0x04e7f104,
+	0x40e3f007,
+	0xb96821f4,
+	0x07f102ff,
+	0x03f00300,
+	0x000fd002,
+	0xfec704bd,
+	0x02ee9450,
+	0x0700f7f1,
+	0xbb40f3f0,
+	0x21f400ef,
+	0x0007f168,
+	0x0203f002,
+	0xbd000fd0,
+	0x03f7f004,
+	0x037e21f5,
+	0x0100b7f1,
+	0xf102bfb9,
+	0xf00144e7,
+	0x21f440e3,
+/* 0x079d: ih_no_fwmthd */
+	0x04b7f19d,
+	0xffb0bd05,
+	0x0bf4b4ab,
+	0x0007f10f,
+	0x0303f007,
+	0xbd000bd0,
+/* 0x07b5: ih_no_other */
+	0x0007f104,
+	0x0003f001,
+	0xbd000ad0,
+	0xfcf0fc04,
+	0xfcd0fce0,
+	0xfca0fcb0,
+	0xfe80fc90,
+	0x80fc0088,
+	0x32f400fc,
+/* 0x07db: ctx_4160s */
+>>>>>>> v4.9.227
 	0xf001f800,
 	0xffb901f7,
 	0x60e7f102,
 	0x40e3f041,
+<<<<<<< HEAD
 /* 0x07e7: ctx_4160s_wait */
+=======
+/* 0x07eb: ctx_4160s_wait */
+>>>>>>> v4.9.227
 	0xf19d21f4,
 	0xf04160e7,
 	0x21f440e3,
 	0x02ffb968,
 	0xf404ffc8,
 	0x00f8f00b,
+<<<<<<< HEAD
 /* 0x07fc: ctx_4160c */
+=======
+/* 0x0800: ctx_4160c */
+>>>>>>> v4.9.227
 	0xffb9f4bd,
 	0x60e7f102,
 	0x40e3f041,
 	0xf89d21f4,
+<<<<<<< HEAD
 /* 0x080d: ctx_4170s */
+=======
+/* 0x0811: ctx_4170s */
+>>>>>>> v4.9.227
 	0x10f5f000,
 	0xf102ffb9,
 	0xf04170e7,
 	0x21f440e3,
+<<<<<<< HEAD
 /* 0x081f: ctx_4170w */
+=======
+/* 0x0823: ctx_4170w */
+>>>>>>> v4.9.227
 	0xf100f89d,
 	0xf04170e7,
 	0x21f440e3,
 	0x02ffb968,
 	0xf410f4f0,
 	0x00f8f01b,
+<<<<<<< HEAD
 /* 0x0834: ctx_redswitch */
+=======
+/* 0x0838: ctx_redswitch */
+>>>>>>> v4.9.227
 	0x0200e7f1,
 	0xf040e5f0,
 	0xe5f020e5,
@@ -790,7 +940,11 @@ uint32_t gf117_grhub_code[] = {
 	0x0103f085,
 	0xbd000ed0,
 	0x08f7f004,
+<<<<<<< HEAD
 /* 0x0850: ctx_redswitch_delay */
+=======
+/* 0x0854: ctx_redswitch_delay */
+>>>>>>> v4.9.227
 	0xf401f2b6,
 	0xe5f1fd1b,
 	0xe5f10400,
@@ -798,7 +952,11 @@ uint32_t gf117_grhub_code[] = {
 	0x03f08500,
 	0x000ed001,
 	0x00f804bd,
+<<<<<<< HEAD
 /* 0x086c: ctx_86c */
+=======
+/* 0x0870: ctx_86c */
+>>>>>>> v4.9.227
 	0x1b0007f1,
 	0xd00203f0,
 	0x04bd000f,
@@ -809,16 +967,28 @@ uint32_t gf117_grhub_code[] = {
 	0xa86ce7f1,
 	0xf441e3f0,
 	0x00f89d21,
+<<<<<<< HEAD
 /* 0x0894: ctx_mem */
 	0x840007f1,
 	0xd00203f0,
 	0x04bd000f,
 /* 0x08a0: ctx_mem_wait */
+=======
+/* 0x0898: ctx_mem */
+	0x840007f1,
+	0xd00203f0,
+	0x04bd000f,
+/* 0x08a4: ctx_mem_wait */
+>>>>>>> v4.9.227
 	0x8400f7f1,
 	0xcf02f3f0,
 	0xfffd00ff,
 	0xf31bf405,
+<<<<<<< HEAD
 /* 0x08b2: ctx_load */
+=======
+/* 0x08b6: ctx_load */
+>>>>>>> v4.9.227
 	0x94bd00f8,
 	0xf10599f0,
 	0xf00f0007,
@@ -836,7 +1006,11 @@ uint32_t gf117_grhub_code[] = {
 	0x02d00203,
 	0xf004bd00,
 	0x21f507f7,
+<<<<<<< HEAD
 	0x07f10894,
+=======
+	0x07f10898,
+>>>>>>> v4.9.227
 	0x03f0c000,
 	0x0002d002,
 	0x0bfe04bd,
@@ -891,6 +1065,7 @@ uint32_t gf117_grhub_code[] = {
 	0x03f01700,
 	0x0009d002,
 	0x00f804bd,
+<<<<<<< HEAD
 /* 0x09d0: ctx_chan */
 	0x07d721f5,
 	0x08b221f5,
@@ -900,22 +1075,45 @@ uint32_t gf117_grhub_code[] = {
 	0xfc21f508,
 /* 0x09eb: ctx_mmio_exec */
 	0x9800f807,
+=======
+/* 0x09d4: ctx_chan */
+	0x07db21f5,
+	0x08b621f5,
+	0xf40ca7f0,
+	0xf7f0d021,
+	0x9821f505,
+	0x0021f508,
+/* 0x09ef: ctx_mmio_exec */
+	0x9800f808,
+>>>>>>> v4.9.227
 	0x07f14103,
 	0x03f08100,
 	0x0003d002,
 	0x34bd04bd,
+<<<<<<< HEAD
 /* 0x09fc: ctx_mmio_loop */
+=======
+/* 0x0a00: ctx_mmio_loop */
+>>>>>>> v4.9.227
 	0xf4ff34c4,
 	0x57f10f1b,
 	0x53f00200,
 	0x0535fa06,
+<<<<<<< HEAD
 /* 0x0a0e: ctx_mmio_pull */
+=======
+/* 0x0a12: ctx_mmio_pull */
+>>>>>>> v4.9.227
 	0x4e9803f8,
 	0x814f9880,
 	0xb69d21f4,
 	0x12b60830,
 	0xdf1bf401,
+<<<<<<< HEAD
 /* 0x0a20: ctx_mmio_done */
+=======
+/* 0x0a24: ctx_mmio_done */
+>>>>>>> v4.9.227
 	0xf1160398,
 	0xf0810007,
 	0x03d00203,
@@ -924,17 +1122,26 @@ uint32_t gf117_grhub_code[] = {
 	0x13f00100,
 	0x0601fa06,
 	0x00f803f8,
+<<<<<<< HEAD
 /* 0x0a40: ctx_xfer */
 	0xf104e7f0,
 	0xf0020007,
 	0x0ed00303,
 /* 0x0a4f: ctx_xfer_idle */
+=======
+/* 0x0a44: ctx_xfer */
+	0xf104e7f0,
+	0xf0020007,
+	0x0ed00303,
+/* 0x0a53: ctx_xfer_idle */
+>>>>>>> v4.9.227
 	0xf104bd00,
 	0xf00000e7,
 	0xeecf03e3,
 	0x00e4f100,
 	0xf21bf420,
 	0xf40611f4,
+<<<<<<< HEAD
 /* 0x0a66: ctx_xfer_pre */
 	0xf7f01102,
 	0x6c21f510,
@@ -948,6 +1155,21 @@ uint32_t gf117_grhub_code[] = {
 	0x0d21f5f4,
 	0xb221f508,
 /* 0x0a8d: ctx_xfer_exec */
+=======
+/* 0x0a6a: ctx_xfer_pre */
+	0xf7f01102,
+	0x7021f510,
+	0xdb21f508,
+	0x1c11f407,
+/* 0x0a78: ctx_xfer_pre_load */
+	0xf502f7f0,
+	0xf5081121,
+	0xf5082321,
+	0xbd083821,
+	0x1121f5f4,
+	0xb621f508,
+/* 0x0a91: ctx_xfer_exec */
+>>>>>>> v4.9.227
 	0x16019808,
 	0x07f124bd,
 	0x03f00500,
@@ -982,6 +1204,7 @@ uint32_t gf117_grhub_code[] = {
 	0x1301f402,
 	0xf40ca7f0,
 	0xf7f0d021,
+<<<<<<< HEAD
 	0x9421f505,
 	0x3202f408,
 /* 0x0b1c: ctx_xfer_post */
@@ -1000,6 +1223,25 @@ uint32_t gf117_grhub_code[] = {
 /* 0x0b4b: ctx_xfer_done */
 	0xf807fc21,
 	0x00000000,
+=======
+	0x9821f505,
+	0x3202f408,
+/* 0x0b20: ctx_xfer_post */
+	0xf502f7f0,
+	0xbd081121,
+	0x7021f5f4,
+	0x7f21f508,
+	0x2321f502,
+	0xf5f4bd08,
+	0xf4081121,
+	0x01981011,
+	0x0511fd40,
+	0xf5070bf4,
+/* 0x0b4b: ctx_xfer_no_post_mmio */
+	0xf509ef21,
+/* 0x0b4f: ctx_xfer_done */
+	0xf8080021,
+>>>>>>> v4.9.227
 	0x00000000,
 	0x00000000,
 	0x00000000,

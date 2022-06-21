@@ -70,7 +70,11 @@
 #include <sound/ac97_codec.h>
 #include <sound/info.h>
 #include <sound/tlv.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #include "ca0106.h"
 
@@ -185,6 +189,7 @@ static int snd_ca0106_shared_spdif_put(struct snd_kcontrol *kcontrol,
 static int snd_ca0106_capture_source_info(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[6] = {
 		"IEC958 out", "i2s mixer out", "IEC958 in", "i2s in", "AC97 in", "SRC out"
 	};
@@ -196,6 +201,13 @@ static int snd_ca0106_capture_source_info(struct snd_kcontrol *kcontrol,
                 uinfo->value.enumerated.item = 5;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[6] = {
+		"IEC958 out", "i2s mixer out", "IEC958 in", "i2s in", "AC97 in", "SRC out"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 6, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_ca0106_capture_source_get(struct snd_kcontrol *kcontrol,
@@ -228,6 +240,7 @@ static int snd_ca0106_capture_source_put(struct snd_kcontrol *kcontrol,
 static int snd_ca0106_i2c_capture_source_info(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[6] = {
 		"Phone", "Mic", "Line in", "Aux"
 	};
@@ -239,6 +252,13 @@ static int snd_ca0106_i2c_capture_source_info(struct snd_kcontrol *kcontrol,
                 uinfo->value.enumerated.item = 3;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"Phone", "Mic", "Line in", "Aux"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 4, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_ca0106_i2c_capture_source_get(struct snd_kcontrol *kcontrol,
@@ -273,6 +293,7 @@ static int snd_ca0106_i2c_capture_source_put(struct snd_kcontrol *kcontrol,
 static int snd_ca0106_capture_line_in_side_out_info(struct snd_kcontrol *kcontrol,
 					       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[2] = { "Side out", "Line in" };
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -282,11 +303,17 @@ static int snd_ca0106_capture_line_in_side_out_info(struct snd_kcontrol *kcontro
                 uinfo->value.enumerated.item = 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[2] = { "Side out", "Line in" };
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_ca0106_capture_mic_line_in_info(struct snd_kcontrol *kcontrol,
 					       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[2] = { "Line in", "Mic in" };
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -296,6 +323,11 @@ static int snd_ca0106_capture_mic_line_in_info(struct snd_kcontrol *kcontrol,
                 uinfo->value.enumerated.item = 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[2] = { "Line in", "Mic in" };
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_ca0106_capture_mic_line_in_get(struct snd_kcontrol *kcontrol,

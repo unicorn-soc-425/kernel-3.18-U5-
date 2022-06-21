@@ -1,5 +1,9 @@
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 
 #undef memcpy
 #undef memset

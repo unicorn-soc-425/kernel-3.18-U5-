@@ -1,7 +1,11 @@
 /*
  * BPF JIT compiler for ARM64
  *
+<<<<<<< HEAD
  * Copyright (C) 2014 Zi Shen Lim <zlim.lnx@gmail.com>
+=======
+ * Copyright (C) 2014-2016 Zi Shen Lim <zlim.lnx@gmail.com>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -35,6 +39,10 @@
 	aarch64_insn_gen_comp_branch_imm(0, offset, Rt, A64_VARIANT(sf), \
 		AARCH64_INSN_BRANCH_COMP_##type)
 #define A64_CBZ(sf, Rt, imm19) A64_COMP_BRANCH(sf, Rt, (imm19) << 2, ZERO)
+<<<<<<< HEAD
+=======
+#define A64_CBNZ(sf, Rt, imm19) A64_COMP_BRANCH(sf, Rt, (imm19) << 2, NONZERO)
+>>>>>>> v4.9.227
 
 /* Conditional branch (immediate) */
 #define A64_COND_BRANCH(cond, offset) \
@@ -54,6 +62,10 @@
 #define A64_BL(imm26) A64_BRANCH((imm26) << 2, LINK)
 
 /* Unconditional branch (register) */
+<<<<<<< HEAD
+=======
+#define A64_BR(Rn)  aarch64_insn_gen_branch_reg(Rn, AARCH64_INSN_BRANCH_NOLINK)
+>>>>>>> v4.9.227
 #define A64_BLR(Rn) aarch64_insn_gen_branch_reg(Rn, AARCH64_INSN_BRANCH_LINK)
 #define A64_RET(Rn) aarch64_insn_gen_branch_reg(Rn, AARCH64_INSN_BRANCH_RETURN)
 
@@ -110,6 +122,13 @@
 /* Rd = Rn >> shift; signed */
 #define A64_ASR(sf, Rd, Rn, shift) A64_SBFM(sf, Rd, Rn, shift, (sf) ? 63 : 31)
 
+<<<<<<< HEAD
+=======
+/* Zero extend */
+#define A64_UXTH(sf, Rd, Rn) A64_UBFM(sf, Rd, Rn, 0, 15)
+#define A64_UXTW(sf, Rd, Rn) A64_UBFM(sf, Rd, Rn, 0, 31)
+
+>>>>>>> v4.9.227
 /* Move wide (immediate) */
 #define A64_MOVEW(sf, Rd, imm16, shift, type) \
 	aarch64_insn_gen_movewide(Rd, imm16, shift, \

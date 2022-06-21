@@ -25,6 +25,10 @@
 #include <linux/slab.h>
 #include <asm/irq.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <media/rc-map.h>
+>>>>>>> v4.9.227
 
 #include "dmxdev.h"
 #include "dvbdev.h"
@@ -49,6 +53,10 @@
 #include "mantis_pci.h"
 #include "mantis_i2c.h"
 #include "mantis_reg.h"
+<<<<<<< HEAD
+=======
+#include "mantis_input.h"
+>>>>>>> v4.9.227
 
 static unsigned int verbose;
 module_param(verbose, int, 0644);
@@ -114,6 +122,13 @@ static irqreturn_t mantis_irq_handler(int irq, void *dev_id)
 	}
 	if (stat & MANTIS_INT_IRQ1) {
 		dprintk(MANTIS_DEBUG, 0, "<%s>", label[2]);
+<<<<<<< HEAD
+=======
+		spin_lock(&mantis->intmask_lock);
+		mmwrite(mmread(MANTIS_INT_MASK) & ~MANTIS_INT_IRQ1,
+			MANTIS_INT_MASK);
+		spin_unlock(&mantis->intmask_lock);
+>>>>>>> v4.9.227
 		schedule_work(&mantis->uart_work);
 	}
 	if (stat & MANTIS_INT_OCERR) {
@@ -162,6 +177,10 @@ static irqreturn_t mantis_irq_handler(int irq, void *dev_id)
 static int mantis_pci_probe(struct pci_dev *pdev,
 			    const struct pci_device_id *pci_id)
 {
+<<<<<<< HEAD
+=======
+	struct mantis_pci_drvdata *drvdata;
+>>>>>>> v4.9.227
 	struct mantis_pci *mantis;
 	struct mantis_hwconfig *config;
 	int err = 0;
@@ -169,6 +188,7 @@ static int mantis_pci_probe(struct pci_dev *pdev,
 	mantis = kzalloc(sizeof(struct mantis_pci), GFP_KERNEL);
 	if (mantis == NULL) {
 		printk(KERN_ERR "%s ERROR: Out of memory\n", __func__);
+<<<<<<< HEAD
 		err = -ENOMEM;
 		goto fail0;
 	}
@@ -179,50 +199,103 @@ static int mantis_pci_probe(struct pci_dev *pdev,
 	config			= (struct mantis_hwconfig *) pci_id->driver_data;
 	config->irq_handler	= &mantis_irq_handler;
 	mantis->hwconfig	= config;
+=======
+		return -ENOMEM;
+	}
+
+	drvdata			= (void *)pci_id->driver_data;
+	mantis->num		= devs;
+	mantis->verbose		= verbose;
+	mantis->pdev		= pdev;
+	config			= drvdata->hwconfig;
+	config->irq_handler	= &mantis_irq_handler;
+	mantis->hwconfig	= config;
+	mantis->rc_map_name	= drvdata->rc_map_name;
+
+	spin_lock_init(&mantis->intmask_lock);
+>>>>>>> v4.9.227
 
 	err = mantis_pci_init(mantis);
 	if (err) {
 		dprintk(MANTIS_ERROR, 1, "ERROR: Mantis PCI initialization failed <%d>", err);
+<<<<<<< HEAD
 		goto fail1;
+=======
+		goto err_free_mantis;
+>>>>>>> v4.9.227
 	}
 
 	err = mantis_stream_control(mantis, STREAM_TO_HIF);
 	if (err < 0) {
 		dprintk(MANTIS_ERROR, 1, "ERROR: Mantis stream control failed <%d>", err);
+<<<<<<< HEAD
 		goto fail1;
+=======
+		goto err_pci_exit;
+>>>>>>> v4.9.227
 	}
 
 	err = mantis_i2c_init(mantis);
 	if (err < 0) {
 		dprintk(MANTIS_ERROR, 1, "ERROR: Mantis I2C initialization failed <%d>", err);
+<<<<<<< HEAD
 		goto fail2;
+=======
+		goto err_pci_exit;
+>>>>>>> v4.9.227
 	}
 
 	err = mantis_get_mac(mantis);
 	if (err < 0) {
 		dprintk(MANTIS_ERROR, 1, "ERROR: Mantis MAC address read failed <%d>", err);
+<<<<<<< HEAD
 		goto fail2;
+=======
+		goto err_i2c_exit;
+>>>>>>> v4.9.227
 	}
 
 	err = mantis_dma_init(mantis);
 	if (err < 0) {
 		dprintk(MANTIS_ERROR, 1, "ERROR: Mantis DMA initialization failed <%d>", err);
+<<<<<<< HEAD
 		goto fail3;
+=======
+		goto err_i2c_exit;
+>>>>>>> v4.9.227
 	}
 
 	err = mantis_dvb_init(mantis);
 	if (err < 0) {
 		dprintk(MANTIS_ERROR, 1, "ERROR: Mantis DVB initialization failed <%d>", err);
+<<<<<<< HEAD
 		goto fail4;
 	}
 	err = mantis_uart_init(mantis);
 	if (err < 0) {
 		dprintk(MANTIS_ERROR, 1, "ERROR: Mantis UART initialization failed <%d>", err);
 		goto fail6;
+=======
+		goto err_dma_exit;
+	}
+
+	err = mantis_input_init(mantis);
+	if (err < 0) {
+		dprintk(MANTIS_ERROR, 1,
+			"ERROR: Mantis DVB initialization failed <%d>", err);
+		goto err_dvb_exit;
+	}
+
+	err = mantis_uart_init(mantis);
+	if (err < 0) {
+		dprintk(MANTIS_ERROR, 1, "ERROR: Mantis UART initialization failed <%d>", err);
+		goto err_input_exit;
+>>>>>>> v4.9.227
 	}
 
 	devs++;
 
+<<<<<<< HEAD
 	return err;
 
 
@@ -247,6 +320,28 @@ fail1:
 	kfree(mantis);
 
 fail0:
+=======
+	return 0;
+
+err_input_exit:
+	mantis_input_exit(mantis);
+
+err_dvb_exit:
+	mantis_dvb_exit(mantis);
+
+err_dma_exit:
+	mantis_dma_exit(mantis);
+
+err_i2c_exit:
+	mantis_i2c_exit(mantis);
+
+err_pci_exit:
+	mantis_pci_exit(mantis);
+
+err_free_mantis:
+	kfree(mantis);
+
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -257,6 +352,10 @@ static void mantis_pci_remove(struct pci_dev *pdev)
 	if (mantis) {
 
 		mantis_uart_exit(mantis);
+<<<<<<< HEAD
+=======
+		mantis_input_exit(mantis);
+>>>>>>> v4.9.227
 		mantis_dvb_exit(mantis);
 		mantis_dma_exit(mantis);
 		mantis_i2c_exit(mantis);
@@ -267,6 +366,7 @@ static void mantis_pci_remove(struct pci_dev *pdev)
 }
 
 static struct pci_device_id mantis_pci_table[] = {
+<<<<<<< HEAD
 	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_1033_DVB_S, &vp1033_config),
 	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_1034_DVB_S, &vp1034_config),
 	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_1041_DVB_S2, &vp1041_config),
@@ -278,6 +378,30 @@ static struct pci_device_id mantis_pci_table[] = {
 	MAKE_ENTRY(TECHNISAT, CABLESTAR_HD2, &vp2040_config),
 	MAKE_ENTRY(TERRATEC, CINERGY_C, &vp2040_config),
 	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_3030_DVB_T, &vp3030_config),
+=======
+	MAKE_ENTRY(TECHNISAT, CABLESTAR_HD2, &vp2040_config,
+		   RC_MAP_TECHNISAT_TS35),
+	MAKE_ENTRY(TECHNISAT, SKYSTAR_HD2_10, &vp1041_config,
+		   NULL),
+	MAKE_ENTRY(TECHNISAT, SKYSTAR_HD2_20, &vp1041_config,
+		   NULL),
+	MAKE_ENTRY(TERRATEC, CINERGY_C, &vp2040_config,
+		   RC_MAP_TERRATEC_CINERGY_C_PCI),
+	MAKE_ENTRY(TERRATEC, CINERGY_S2_PCI_HD, &vp1041_config,
+		   RC_MAP_TERRATEC_CINERGY_S2_HD),
+	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_1033_DVB_S, &vp1033_config,
+		   NULL),
+	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_1034_DVB_S, &vp1034_config,
+		   NULL),
+	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_1041_DVB_S2, &vp1041_config,
+		   RC_MAP_TWINHAN_DTV_CAB_CI),
+	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_2033_DVB_C, &vp2033_config,
+		   RC_MAP_TWINHAN_DTV_CAB_CI),
+	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_2040_DVB_C, &vp2040_config,
+		   NULL),
+	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_3030_DVB_T, &vp3030_config,
+		   NULL),
+>>>>>>> v4.9.227
 	{ }
 };
 

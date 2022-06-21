@@ -15,6 +15,7 @@
 #include <net/netfilter/nf_tables.h>
 
 static unsigned int
+<<<<<<< HEAD
 nft_do_chain_arp(const struct nf_hook_ops *ops,
 		  struct sk_buff *skb,
 		  const struct net_device *in,
@@ -26,6 +27,17 @@ nft_do_chain_arp(const struct nf_hook_ops *ops,
 	nft_set_pktinfo(&pkt, ops, skb, in, out);
 
 	return nft_do_chain(&pkt, ops);
+=======
+nft_do_chain_arp(void *priv,
+		  struct sk_buff *skb,
+		  const struct nf_hook_state *state)
+{
+	struct nft_pktinfo pkt;
+
+	nft_set_pktinfo_unspec(&pkt, skb, state);
+
+	return nft_do_chain(&pkt, priv);
+>>>>>>> v4.9.227
 }
 
 static struct nft_af_info nft_af_arp __read_mostly = {
@@ -59,7 +71,11 @@ err:
 
 static void nf_tables_arp_exit_net(struct net *net)
 {
+<<<<<<< HEAD
 	nft_unregister_afinfo(net->nft.arp);
+=======
+	nft_unregister_afinfo(net, net->nft.arp);
+>>>>>>> v4.9.227
 	kfree(net->nft.arp);
 }
 
@@ -82,7 +98,14 @@ static int __init nf_tables_arp_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	nft_register_chain_type(&filter_arp);
+=======
+	ret = nft_register_chain_type(&filter_arp);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> v4.9.227
 	ret = register_pernet_subsys(&nf_tables_arp_net_ops);
 	if (ret < 0)
 		nft_unregister_chain_type(&filter_arp);

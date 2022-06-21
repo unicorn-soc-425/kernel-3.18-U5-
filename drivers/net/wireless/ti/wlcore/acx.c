@@ -534,9 +534,15 @@ int wl12xx_acx_sg_cfg(struct wl1271 *wl)
 	}
 
 	/* BT-WLAN coext parameters */
+<<<<<<< HEAD
 	for (i = 0; i < CONF_SG_PARAMS_MAX; i++)
 		param->params[i] = cpu_to_le32(c->params[i]);
 	param->param_idx = CONF_SG_PARAMS_ALL;
+=======
+	for (i = 0; i < WLCORE_CONF_SG_PARAMS_MAX; i++)
+		param->params[i] = cpu_to_le32(c->params[i]);
+	param->param_idx = WLCORE_CONF_SG_PARAMS_ALL;
+>>>>>>> v4.9.227
 
 	ret = wl1271_cmd_configure(wl, ACX_SG_CFG, param, sizeof(*param));
 	if (ret < 0) {
@@ -1419,7 +1425,12 @@ out:
 
 /* setup BA session receiver setting in the FW. */
 int wl12xx_acx_set_ba_receiver_session(struct wl1271 *wl, u8 tid_index,
+<<<<<<< HEAD
 				       u16 ssn, bool enable, u8 peer_hlid)
+=======
+				       u16 ssn, bool enable, u8 peer_hlid,
+				       u8 win_size)
+>>>>>>> v4.9.227
 {
 	struct wl1271_acx_ba_receiver_setup *acx;
 	int ret;
@@ -1435,7 +1446,11 @@ int wl12xx_acx_set_ba_receiver_session(struct wl1271 *wl, u8 tid_index,
 	acx->hlid = peer_hlid;
 	acx->tid = tid_index;
 	acx->enable = enable;
+<<<<<<< HEAD
 	acx->win_size = wl->conf.ht.rx_ba_win_size;
+=======
+	acx->win_size =	win_size;
+>>>>>>> v4.9.227
 	acx->ssn = ssn;
 
 	ret = wlcore_cmd_configure_failsafe(wl, ACX_BA_SESSION_RX_SETUP, acx,
@@ -1725,7 +1740,11 @@ int wl12xx_acx_config_hangover(struct wl1271 *wl)
 	acx->decrease_delta = conf->decrease_delta;
 	acx->quiet_time = conf->quiet_time;
 	acx->increase_time = conf->increase_time;
+<<<<<<< HEAD
 	acx->window_size = acx->window_size;
+=======
+	acx->window_size = conf->window_size;
+>>>>>>> v4.9.227
 
 	ret = wl1271_cmd_configure(wl, ACX_CONFIG_HANGOVER, acx,
 				   sizeof(*acx));

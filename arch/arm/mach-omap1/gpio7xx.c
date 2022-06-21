@@ -21,6 +21,11 @@
 
 #include <mach/irqs.h>
 
+<<<<<<< HEAD
+=======
+#include "soc.h"
+
+>>>>>>> v4.9.227
 #define OMAP7XX_GPIO1_BASE		0xfffbc000
 #define OMAP7XX_GPIO2_BASE		0xfffbc800
 #define OMAP7XX_GPIO3_BASE		0xfffbd000

@@ -8,6 +8,7 @@ static inline void ack_bad_irq(int irq)
 {
 	extern unsigned long irq_err_count;
 	irq_err_count++;
+<<<<<<< HEAD
 }
 
 void set_irq_flags(unsigned int irq, unsigned int flags);
@@ -16,6 +17,11 @@ void set_irq_flags(unsigned int irq, unsigned int flags);
 #define IRQF_PROBE	(1 << 1)
 #define IRQF_NOAUTOEN	(1 << 2)
 
+=======
+	pr_crit("unexpected IRQ trap at vector %02x\n", irq);
+}
+
+>>>>>>> v4.9.227
 #define ARCH_IRQ_INIT_FLAGS	(IRQ_NOREQUEST | IRQ_NOPROBE)
 
 #endif

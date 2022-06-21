@@ -16,19 +16,43 @@
 #include <linux/types.h>
 
 asmlinkage int __raw_uncached_fetch_asm(const volatile int *ptr);
+<<<<<<< HEAD
 asmlinkage int __raw_atomic_update_asm(volatile int *ptr, int value);
 asmlinkage int __raw_atomic_clear_asm(volatile int *ptr, int value);
 asmlinkage int __raw_atomic_set_asm(volatile int *ptr, int value);
+=======
+asmlinkage int __raw_atomic_add_asm(volatile int *ptr, int value);
+asmlinkage int __raw_atomic_xadd_asm(volatile int *ptr, int value);
+
+asmlinkage int __raw_atomic_and_asm(volatile int *ptr, int value);
+asmlinkage int __raw_atomic_or_asm(volatile int *ptr, int value);
+>>>>>>> v4.9.227
 asmlinkage int __raw_atomic_xor_asm(volatile int *ptr, int value);
 asmlinkage int __raw_atomic_test_asm(const volatile int *ptr, int value);
 
 #define atomic_read(v) __raw_uncached_fetch_asm(&(v)->counter)
 
+<<<<<<< HEAD
 #define atomic_add_return(i, v) __raw_atomic_update_asm(&(v)->counter, i)
 #define atomic_sub_return(i, v) __raw_atomic_update_asm(&(v)->counter, -(i))
 
 #define atomic_clear_mask(m, v) __raw_atomic_clear_asm(&(v)->counter, m)
 #define atomic_set_mask(m, v)   __raw_atomic_set_asm(&(v)->counter, m)
+=======
+#define atomic_add_return(i, v) __raw_atomic_add_asm(&(v)->counter, i)
+#define atomic_sub_return(i, v) __raw_atomic_add_asm(&(v)->counter, -(i))
+
+#define atomic_fetch_add(i, v) __raw_atomic_xadd_asm(&(v)->counter, i)
+#define atomic_fetch_sub(i, v) __raw_atomic_xadd_asm(&(v)->counter, -(i))
+
+#define atomic_or(i, v)  (void)__raw_atomic_or_asm(&(v)->counter, i)
+#define atomic_and(i, v) (void)__raw_atomic_and_asm(&(v)->counter, i)
+#define atomic_xor(i, v) (void)__raw_atomic_xor_asm(&(v)->counter, i)
+
+#define atomic_fetch_or(i, v)  __raw_atomic_or_asm(&(v)->counter, i)
+#define atomic_fetch_and(i, v) __raw_atomic_and_asm(&(v)->counter, i)
+#define atomic_fetch_xor(i, v) __raw_atomic_xor_asm(&(v)->counter, i)
+>>>>>>> v4.9.227
 
 #endif
 

@@ -30,7 +30,11 @@
 #include <linux/platform_device.h>
 #include <linux/omapfb.h>
 
+<<<<<<< HEAD
 #include <video/omapdss.h>
+=======
+#include <video/omapfb_dss.h>
+>>>>>>> v4.9.227
 #include <video/omapvrfb.h>
 
 #include "omapfb.h"
@@ -1091,7 +1095,11 @@ static void mmap_user_close(struct vm_area_struct *vma)
 	omapfb_put_mem_region(rg);
 }
 
+<<<<<<< HEAD
 static struct vm_operations_struct mmap_user_ops = {
+=======
+static const struct vm_operations_struct mmap_user_ops = {
+>>>>>>> v4.9.227
 	.open = mmap_user_open,
 	.close = mmap_user_close,
 };
@@ -1332,7 +1340,11 @@ static void omapfb_free_fbmem(struct fb_info *fbi)
 	}
 
 	dma_free_attrs(fbdev->dev, rg->size, rg->token, rg->dma_handle,
+<<<<<<< HEAD
 			&rg->attrs);
+=======
+			rg->attrs);
+>>>>>>> v4.9.227
 
 	rg->token = NULL;
 	rg->vaddr = NULL;
@@ -1370,7 +1382,11 @@ static int omapfb_alloc_fbmem(struct fb_info *fbi, unsigned long size,
 	struct omapfb2_device *fbdev = ofbi->fbdev;
 	struct omapfb2_mem_region *rg;
 	void *token;
+<<<<<<< HEAD
 	DEFINE_DMA_ATTRS(attrs);
+=======
+	unsigned long attrs;
+>>>>>>> v4.9.227
 	dma_addr_t dma_handle;
 	int r;
 
@@ -1386,15 +1402,26 @@ static int omapfb_alloc_fbmem(struct fb_info *fbi, unsigned long size,
 
 	size = PAGE_ALIGN(size);
 
+<<<<<<< HEAD
 	dma_set_attr(DMA_ATTR_WRITE_COMBINE, &attrs);
 
 	if (ofbi->rotation_type == OMAP_DSS_ROT_VRFB)
 		dma_set_attr(DMA_ATTR_NO_KERNEL_MAPPING, &attrs);
+=======
+	attrs = DMA_ATTR_WRITE_COMBINE;
+
+	if (ofbi->rotation_type == OMAP_DSS_ROT_VRFB)
+		attrs |= DMA_ATTR_NO_KERNEL_MAPPING;
+>>>>>>> v4.9.227
 
 	DBG("allocating %lu bytes for fb %d\n", size, ofbi->id);
 
 	token = dma_alloc_attrs(fbdev->dev, size, &dma_handle,
+<<<<<<< HEAD
 			GFP_KERNEL, &attrs);
+=======
+			GFP_KERNEL, attrs);
+>>>>>>> v4.9.227
 
 	if (token == NULL) {
 		dev_err(fbdev->dev, "failed to allocate framebuffer\n");
@@ -1408,7 +1435,11 @@ static int omapfb_alloc_fbmem(struct fb_info *fbi, unsigned long size,
 		r = omap_vrfb_request_ctx(&rg->vrfb);
 		if (r) {
 			dma_free_attrs(fbdev->dev, size, token, dma_handle,
+<<<<<<< HEAD
 					&attrs);
+=======
+					attrs);
+>>>>>>> v4.9.227
 			dev_err(fbdev->dev, "vrfb create ctx failed\n");
 			return r;
 		}
@@ -2073,7 +2104,11 @@ static int omapfb_mode_to_timings(const char *mode_str,
 	} else {
 		timings->data_pclk_edge = OMAPDSS_DRIVE_SIG_RISING_EDGE;
 		timings->de_level = OMAPDSS_SIG_ACTIVE_HIGH;
+<<<<<<< HEAD
 		timings->sync_pclk_edge = OMAPDSS_DRIVE_SIG_OPPOSITE_EDGES;
+=======
+		timings->sync_pclk_edge = OMAPDSS_DRIVE_SIG_FALLING_EDGE;
+>>>>>>> v4.9.227
 	}
 
 	timings->pixelclock = PICOS2KHZ(var->pixclock) * 1000;
@@ -2223,7 +2258,11 @@ static void fb_videomode_to_omap_timings(struct fb_videomode *m,
 	} else {
 		t->data_pclk_edge = OMAPDSS_DRIVE_SIG_RISING_EDGE;
 		t->de_level = OMAPDSS_SIG_ACTIVE_HIGH;
+<<<<<<< HEAD
 		t->sync_pclk_edge = OMAPDSS_DRIVE_SIG_OPPOSITE_EDGES;
+=======
+		t->sync_pclk_edge = OMAPDSS_DRIVE_SIG_FALLING_EDGE;
+>>>>>>> v4.9.227
 	}
 
 	t->x_res = m->xres;
@@ -2638,7 +2677,10 @@ static struct platform_driver omapfb_driver = {
 	.remove         = omapfb_remove,
 	.driver         = {
 		.name   = "omapfb",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

@@ -3,7 +3,11 @@
 
 #include <subdev/mmu.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 
 struct nouveau_framebuffer {
 	struct drm_framebuffer base;
@@ -23,12 +27,21 @@ nouveau_framebuffer(struct drm_framebuffer *fb)
 }
 
 int nouveau_framebuffer_init(struct drm_device *, struct nouveau_framebuffer *,
+<<<<<<< HEAD
 			     struct drm_mode_fb_cmd2 *, struct nouveau_bo *);
+=======
+			     const struct drm_mode_fb_cmd2 *, struct nouveau_bo *);
+>>>>>>> v4.9.227
 
 struct nouveau_page_flip_state {
 	struct list_head head;
 	struct drm_pending_vblank_event *event;
+<<<<<<< HEAD
 	int crtc, bpp, pitch, x, y;
+=======
+	struct drm_crtc *crtc;
+	int bpp, pitch;
+>>>>>>> v4.9.227
 	u64 offset;
 };
 

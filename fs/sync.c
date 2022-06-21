@@ -20,6 +20,7 @@
 #define VALID_FLAGS (SYNC_FILE_RANGE_WAIT_BEFORE|SYNC_FILE_RANGE_WRITE| \
 			SYNC_FILE_RANGE_WAIT_AFTER)
 
+<<<<<<< HEAD
 /* Interruptible sync for Samsung Mobile Device */
 #ifdef CONFIG_INTERRUPTIBLE_SYNC
 
@@ -270,6 +271,8 @@ int intr_sync(int *sync_ret)
 }
 #endif /* CONFIG_INTERRUPTIBLE_SYNC */
 
+=======
+>>>>>>> v4.9.227
 /*
  * Do the filesystem syncing work. For simple filesystems
  * writeback_inodes_sb(sb) just dirties buffers with inodes so we have to
@@ -336,7 +339,16 @@ static void fdatawrite_one_bdev(struct block_device *bdev, void *arg)
 
 static void fdatawait_one_bdev(struct block_device *bdev, void *arg)
 {
+<<<<<<< HEAD
 	filemap_fdatawait(bdev->bd_inode->i_mapping);
+=======
+	/*
+	 * We keep the error status of individual mapping so that
+	 * applications can catch the writeback error using fsync(2).
+	 * See filemap_fdatawait_keep_errors() for details.
+	 */
+	filemap_fdatawait_keep_errors(bdev->bd_inode->i_mapping);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -404,7 +416,11 @@ SYSCALL_DEFINE1(syncfs, int, fd)
 
 	if (!f.file)
 		return -EBADF;
+<<<<<<< HEAD
 	sb = f.file->f_dentry->d_sb;
+=======
+	sb = f.file->f_path.dentry->d_sb;
+>>>>>>> v4.9.227
 
 	down_read(&sb->s_umount);
 	ret = sync_filesystem(sb);
@@ -463,7 +479,10 @@ static int do_fsync(unsigned int fd, int datasync)
 	if (f.file) {
 		ret = vfs_fsync(f.file, datasync);
 		fdput(f);
+<<<<<<< HEAD
 		inc_syscfs(current);
+=======
+>>>>>>> v4.9.227
 	}
 	return ret;
 }
@@ -548,7 +567,11 @@ SYSCALL_DEFINE4(sync_file_range, int, fd, loff_t, offset, loff_t, nbytes,
 		goto out;
 
 	if (sizeof(pgoff_t) == 4) {
+<<<<<<< HEAD
 		if (offset >= (0x100000000ULL << PAGE_CACHE_SHIFT)) {
+=======
+		if (offset >= (0x100000000ULL << PAGE_SHIFT)) {
+>>>>>>> v4.9.227
 			/*
 			 * The range starts outside a 32 bit machine's
 			 * pagecache addressing capabilities.  Let it "succeed"
@@ -556,7 +579,11 @@ SYSCALL_DEFINE4(sync_file_range, int, fd, loff_t, offset, loff_t, nbytes,
 			ret = 0;
 			goto out;
 		}
+<<<<<<< HEAD
 		if (endbyte >= (0x100000000ULL << PAGE_CACHE_SHIFT)) {
+=======
+		if (endbyte >= (0x100000000ULL << PAGE_SHIFT)) {
+>>>>>>> v4.9.227
 			/*
 			 * Out to EOF
 			 */
@@ -594,7 +621,12 @@ SYSCALL_DEFINE4(sync_file_range, int, fd, loff_t, offset, loff_t, nbytes,
 	}
 
 	if (flags & SYNC_FILE_RANGE_WRITE) {
+<<<<<<< HEAD
 		ret = filemap_fdatawrite_range(mapping, offset, endbyte);
+=======
+		ret = __filemap_fdatawrite_range(mapping, offset, endbyte,
+						 WB_SYNC_NONE);
+>>>>>>> v4.9.227
 		if (ret < 0)
 			goto out_put;
 	}

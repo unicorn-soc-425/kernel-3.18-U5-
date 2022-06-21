@@ -61,6 +61,10 @@ void ldc_free(struct ldc_channel *lp);
 
 /* Register TX and RX queues of the link with the hypervisor.  */
 int ldc_bind(struct ldc_channel *lp);
+<<<<<<< HEAD
+=======
+void ldc_unbind(struct ldc_channel *lp);
+>>>>>>> v4.9.227
 
 /* For non-RAW protocols we need to complete a handshake before
  * communication can proceed.  ldc_connect() does that, if the

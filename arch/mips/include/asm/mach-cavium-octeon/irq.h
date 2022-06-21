@@ -42,8 +42,11 @@ enum octeon_irq {
 	OCTEON_IRQ_TIMER1,
 	OCTEON_IRQ_TIMER2,
 	OCTEON_IRQ_TIMER3,
+<<<<<<< HEAD
 	OCTEON_IRQ_USB0,
 	OCTEON_IRQ_USB1,
+=======
+>>>>>>> v4.9.227
 #ifndef CONFIG_PCI_MSI
 	OCTEON_IRQ_LAST = 127
 #endif

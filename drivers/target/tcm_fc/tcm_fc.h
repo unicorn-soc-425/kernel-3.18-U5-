@@ -80,8 +80,13 @@ struct ft_node_auth {
  * Node ACL for FC remote port session.
  */
 struct ft_node_acl {
+<<<<<<< HEAD
 	struct ft_node_auth node_auth;
 	struct se_node_acl se_node_acl;
+=======
+	struct se_node_acl se_node_acl;
+	struct ft_node_auth node_auth;
+>>>>>>> v4.9.227
 };
 
 struct ft_lun {
@@ -129,7 +134,10 @@ struct ft_cmd {
 
 extern struct mutex ft_lport_lock;
 extern struct fc4_prov ft_prov;
+<<<<<<< HEAD
 extern struct target_fabric_configfs *ft_configfs;
+=======
+>>>>>>> v4.9.227
 extern unsigned int ft_debug_logging;
 
 /*
@@ -140,7 +148,10 @@ extern unsigned int ft_debug_logging;
  * Session ops.
  */
 void ft_sess_put(struct ft_sess *);
+<<<<<<< HEAD
 int ft_sess_shutdown(struct se_session *);
+=======
+>>>>>>> v4.9.227
 void ft_sess_close(struct se_session *);
 u32 ft_sess_get_index(struct se_session *);
 u32 ft_sess_get_port_name(struct se_session *, unsigned char *, u32);
@@ -158,7 +169,10 @@ int ft_queue_status(struct se_cmd *);
 int ft_queue_data_in(struct se_cmd *);
 int ft_write_pending(struct se_cmd *);
 int ft_write_pending_status(struct se_cmd *);
+<<<<<<< HEAD
 u32 ft_get_task_tag(struct se_cmd *);
+=======
+>>>>>>> v4.9.227
 int ft_get_cmd_state(struct se_cmd *);
 void ft_queue_tm_resp(struct se_cmd *);
 void ft_aborted_task(struct se_cmd *);
@@ -168,7 +182,10 @@ void ft_aborted_task(struct se_cmd *);
  */
 void ft_recv_req(struct ft_sess *, struct fc_frame *);
 struct ft_tpg *ft_lport_find_tpg(struct fc_lport *);
+<<<<<<< HEAD
 struct ft_node_acl *ft_acl_get(struct ft_tpg *, struct fc_rport_priv *);
+=======
+>>>>>>> v4.9.227
 
 void ft_recv_write_data(struct ft_cmd *, struct fc_frame *);
 void ft_dump_cmd(struct ft_cmd *, const char *caller);

@@ -23,6 +23,10 @@
 #include <linux/hardirq.h>
 #include <linux/init.h>
 #include <linux/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <linux/kprobes.h>
+>>>>>>> v4.9.227
 #include <linux/stat.h>
 #include <linux/uaccess.h>
 
@@ -34,7 +38,11 @@
 /* Determine debug architecture. */
 u8 debug_monitors_arch(void)
 {
+<<<<<<< HEAD
 	return cpuid_feature_extract_field(read_system_reg(SYS_ID_AA64DFR0_EL1),
+=======
+	return cpuid_feature_extract_unsigned_field(read_system_reg(SYS_ID_AA64DFR0_EL1),
+>>>>>>> v4.9.227
 						ID_AA64DFR0_DEBUGVER_SHIFT);
 }
 
@@ -45,6 +53,7 @@ static void mdscr_write(u32 mdscr)
 {
 	unsigned long flags;
 	local_dbg_save(flags);
+<<<<<<< HEAD
 	asm volatile("msr mdscr_el1, %0" :: "r" (mdscr));
 	local_dbg_restore(flags);
 }
@@ -55,12 +64,28 @@ static u32 mdscr_read(void)
 	asm volatile("mrs %0, mdscr_el1" : "=r" (mdscr));
 	return mdscr;
 }
+=======
+	write_sysreg(mdscr, mdscr_el1);
+	local_dbg_restore(flags);
+}
+NOKPROBE_SYMBOL(mdscr_write);
+
+static u32 mdscr_read(void)
+{
+	return read_sysreg(mdscr_el1);
+}
+NOKPROBE_SYMBOL(mdscr_read);
+>>>>>>> v4.9.227
 
 /*
  * Allow root to disable self-hosted debug from userspace.
  * This is useful if you want to connect an external JTAG debugger.
  */
+<<<<<<< HEAD
 static u32 debug_enabled = 1;
+=======
+static bool debug_enabled = true;
+>>>>>>> v4.9.227
 
 static int create_debug_debugfs_entry(void)
 {
@@ -71,7 +96,11 @@ fs_initcall(create_debug_debugfs_entry);
 
 static int __init early_debug_disable(char *buf)
 {
+<<<<<<< HEAD
 	debug_enabled = 0;
+=======
+	debug_enabled = false;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -84,7 +113,11 @@ early_param("nodebugmon", early_debug_disable);
 static DEFINE_PER_CPU(int, mde_ref_count);
 static DEFINE_PER_CPU(int, kde_ref_count);
 
+<<<<<<< HEAD
 void enable_debug_monitors(enum debug_el el)
+=======
+void enable_debug_monitors(enum dbg_active_el el)
+>>>>>>> v4.9.227
 {
 	u32 mdscr, enable = 0;
 
@@ -103,8 +136,14 @@ void enable_debug_monitors(enum debug_el el)
 		mdscr_write(mdscr);
 	}
 }
+<<<<<<< HEAD
 
 void disable_debug_monitors(enum debug_el el)
+=======
+NOKPROBE_SYMBOL(enable_debug_monitors);
+
+void disable_debug_monitors(enum dbg_active_el el)
+>>>>>>> v4.9.227
 {
 	u32 mdscr, disable = 0;
 
@@ -123,10 +162,15 @@ void disable_debug_monitors(enum debug_el el)
 		mdscr_write(mdscr);
 	}
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(disable_debug_monitors);
+>>>>>>> v4.9.227
 
 /*
  * OS lock clearing.
  */
+<<<<<<< HEAD
 static void clear_os_lock(void *unused)
 {
 	asm volatile("msr oslar_el1, %0" : : "r" (0));
@@ -158,6 +202,21 @@ static int debug_monitors_init(void)
 
 	cpu_notifier_register_done();
 	return 0;
+=======
+static int clear_os_lock(unsigned int cpu)
+{
+	write_sysreg(0, osdlr_el1);
+	write_sysreg(0, oslar_el1);
+	isb();
+	return 0;
+}
+
+static int debug_monitors_init(void)
+{
+	return cpuhp_setup_state(CPUHP_AP_ARM64_DEBUG_MONITORS_STARTING,
+				 "CPUHP_AP_ARM64_DEBUG_MONITORS_STARTING",
+				 clear_os_lock, NULL);
+>>>>>>> v4.9.227
 }
 postcore_initcall(debug_monitors_init);
 
@@ -166,6 +225,7 @@ postcore_initcall(debug_monitors_init);
  */
 static void set_regs_spsr_ss(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	unsigned long spsr;
 
 	spsr = regs->pstate;
@@ -192,10 +252,32 @@ void register_step_hook(struct step_hook *hook)
 	write_lock(&step_hook_lock);
 	list_add(&hook->node, &step_hook);
 	write_unlock(&step_hook_lock);
+=======
+	regs->pstate |= DBG_SPSR_SS;
+}
+NOKPROBE_SYMBOL(set_regs_spsr_ss);
+
+static void clear_regs_spsr_ss(struct pt_regs *regs)
+{
+	regs->pstate &= ~DBG_SPSR_SS;
+}
+NOKPROBE_SYMBOL(clear_regs_spsr_ss);
+
+/* EL1 Single Step Handler hooks */
+static LIST_HEAD(step_hook);
+static DEFINE_SPINLOCK(step_hook_lock);
+
+void register_step_hook(struct step_hook *hook)
+{
+	spin_lock(&step_hook_lock);
+	list_add_rcu(&hook->node, &step_hook);
+	spin_unlock(&step_hook_lock);
+>>>>>>> v4.9.227
 }
 
 void unregister_step_hook(struct step_hook *hook)
 {
+<<<<<<< HEAD
 	write_lock(&step_hook_lock);
 	list_del(&hook->node);
 	write_unlock(&step_hook_lock);
@@ -203,6 +285,16 @@ void unregister_step_hook(struct step_hook *hook)
 
 /*
  * Call registered single step handers
+=======
+	spin_lock(&step_hook_lock);
+	list_del_rcu(&hook->node);
+	spin_unlock(&step_hook_lock);
+	synchronize_rcu();
+}
+
+/*
+ * Call registered single step handlers
+>>>>>>> v4.9.227
  * There is no Syndrome info to check for determining the handler.
  * So we call all the registered handlers, until the right handler is
  * found which returns zero.
@@ -212,24 +304,60 @@ static int call_step_hook(struct pt_regs *regs, unsigned int esr)
 	struct step_hook *hook;
 	int retval = DBG_HOOK_ERROR;
 
+<<<<<<< HEAD
 	read_lock(&step_hook_lock);
 
 	list_for_each_entry(hook, &step_hook, node)	{
+=======
+	rcu_read_lock();
+
+	list_for_each_entry_rcu(hook, &step_hook, node)	{
+>>>>>>> v4.9.227
 		retval = hook->fn(regs, esr);
 		if (retval == DBG_HOOK_HANDLED)
 			break;
 	}
 
+<<<<<<< HEAD
 	read_unlock(&step_hook_lock);
 
 	return retval;
 }
+=======
+	rcu_read_unlock();
+
+	return retval;
+}
+NOKPROBE_SYMBOL(call_step_hook);
+
+static void send_user_sigtrap(int si_code)
+{
+	struct pt_regs *regs = current_pt_regs();
+	siginfo_t info = {
+		.si_signo	= SIGTRAP,
+		.si_errno	= 0,
+		.si_code	= si_code,
+		.si_addr	= (void __user *)instruction_pointer(regs),
+	};
+
+	if (WARN_ON(!user_mode(regs)))
+		return;
+
+	if (interrupts_enabled(regs))
+		local_irq_enable();
+
+	force_sig_info(SIGTRAP, &info, current);
+}
+>>>>>>> v4.9.227
 
 static int single_step_handler(unsigned long addr, unsigned int esr,
 			       struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * If we are stepping a pending breakpoint, call the hw_breakpoint
 	 * handler first.
@@ -238,11 +366,15 @@ static int single_step_handler(unsigned long addr, unsigned int esr,
 		return 0;
 
 	if (user_mode(regs)) {
+<<<<<<< HEAD
 		info.si_signo = SIGTRAP;
 		info.si_errno = 0;
 		info.si_code  = TRAP_HWBKPT;
 		info.si_addr  = (void __user *)instruction_pointer(regs);
 		force_sig_info(SIGTRAP, &info, current);
+=======
+		send_user_sigtrap(TRAP_TRACE);
+>>>>>>> v4.9.227
 
 		/*
 		 * ptrace will disable single step unless explicitly
@@ -252,6 +384,13 @@ static int single_step_handler(unsigned long addr, unsigned int esr,
 		 */
 		user_rewind_single_step(current);
 	} else {
+<<<<<<< HEAD
+=======
+#ifdef	CONFIG_KPROBES
+		if (kprobe_single_step_handler(regs, esr) == DBG_HOOK_HANDLED)
+			return 0;
+#endif
+>>>>>>> v4.9.227
 		if (call_step_hook(regs, esr) == DBG_HOOK_HANDLED)
 			return 0;
 
@@ -265,6 +404,10 @@ static int single_step_handler(unsigned long addr, unsigned int esr,
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(single_step_handler);
+>>>>>>> v4.9.227
 
 /*
  * Breakpoint handler is re-entrant as another breakpoint can
@@ -272,6 +415,7 @@ static int single_step_handler(unsigned long addr, unsigned int esr,
  * Use reader/writer locks instead of plain spinlock.
  */
 static LIST_HEAD(break_hook);
+<<<<<<< HEAD
 static DEFINE_RWLOCK(break_hook_lock);
 
 void register_break_hook(struct break_hook *hook)
@@ -279,13 +423,29 @@ void register_break_hook(struct break_hook *hook)
 	write_lock(&break_hook_lock);
 	list_add(&hook->node, &break_hook);
 	write_unlock(&break_hook_lock);
+=======
+static DEFINE_SPINLOCK(break_hook_lock);
+
+void register_break_hook(struct break_hook *hook)
+{
+	spin_lock(&break_hook_lock);
+	list_add_rcu(&hook->node, &break_hook);
+	spin_unlock(&break_hook_lock);
+>>>>>>> v4.9.227
 }
 
 void unregister_break_hook(struct break_hook *hook)
 {
+<<<<<<< HEAD
 	write_lock(&break_hook_lock);
 	list_del(&hook->node);
 	write_unlock(&break_hook_lock);
+=======
+	spin_lock(&break_hook_lock);
+	list_del_rcu(&hook->node);
+	spin_unlock(&break_hook_lock);
+	synchronize_rcu();
+>>>>>>> v4.9.227
 }
 
 static int call_break_hook(struct pt_regs *regs, unsigned int esr)
@@ -293,6 +453,7 @@ static int call_break_hook(struct pt_regs *regs, unsigned int esr)
 	struct break_hook *hook;
 	int (*fn)(struct pt_regs *regs, unsigned int esr) = NULL;
 
+<<<<<<< HEAD
 	read_lock(&break_hook_lock);
 	list_for_each_entry(hook, &break_hook, node)
 		if ((esr & hook->esr_mask) == hook->esr_val)
@@ -301,10 +462,22 @@ static int call_break_hook(struct pt_regs *regs, unsigned int esr)
 
 	return fn ? fn(regs, esr) : DBG_HOOK_ERROR;
 }
+=======
+	rcu_read_lock();
+	list_for_each_entry_rcu(hook, &break_hook, node)
+		if ((esr & hook->esr_mask) == hook->esr_val)
+			fn = hook->fn;
+	rcu_read_unlock();
+
+	return fn ? fn(regs, esr) : DBG_HOOK_ERROR;
+}
+NOKPROBE_SYMBOL(call_break_hook);
+>>>>>>> v4.9.227
 
 static int brk_handler(unsigned long addr, unsigned int esr,
 		       struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 
 	if (user_mode(regs)) {
@@ -318,15 +491,35 @@ static int brk_handler(unsigned long addr, unsigned int esr,
 		force_sig_info(SIGTRAP, &info, current);
 	} else if (call_break_hook(regs, esr) != DBG_HOOK_HANDLED) {
 		pr_warning("Unexpected kernel BRK exception at EL1\n");
+=======
+	if (user_mode(regs)) {
+		send_user_sigtrap(TRAP_BRKPT);
+	}
+#ifdef	CONFIG_KPROBES
+	else if ((esr & BRK64_ESR_MASK) == BRK64_ESR_KPROBES) {
+		if (kprobe_breakpoint_handler(regs, esr) != DBG_HOOK_HANDLED)
+			return -EFAULT;
+	}
+#endif
+	else if (call_break_hook(regs, esr) != DBG_HOOK_HANDLED) {
+		pr_warn("Unexpected kernel BRK exception at EL1\n");
+>>>>>>> v4.9.227
 		return -EFAULT;
 	}
 
 	return 0;
 }
+<<<<<<< HEAD
 
 int aarch32_break_handler(struct pt_regs *regs)
 {
 	siginfo_t info;
+=======
+NOKPROBE_SYMBOL(brk_handler);
+
+int aarch32_break_handler(struct pt_regs *regs)
+{
+>>>>>>> v4.9.227
 	u32 arm_instr;
 	u16 thumb_instr;
 	bool bp = false;
@@ -357,6 +550,7 @@ int aarch32_break_handler(struct pt_regs *regs)
 	if (!bp)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	info = (siginfo_t) {
 		.si_signo = SIGTRAP,
 		.si_errno = 0,
@@ -367,11 +561,21 @@ int aarch32_break_handler(struct pt_regs *regs)
 	force_sig_info(SIGTRAP, &info, current);
 	return 0;
 }
+=======
+	send_user_sigtrap(TRAP_BRKPT);
+	return 0;
+}
+NOKPROBE_SYMBOL(aarch32_break_handler);
+>>>>>>> v4.9.227
 
 static int __init debug_traps_init(void)
 {
 	hook_debug_fault_code(DBG_ESR_EVT_HWSS, single_step_handler, SIGTRAP,
+<<<<<<< HEAD
 			      TRAP_HWBKPT, "single-step handler");
+=======
+			      TRAP_TRACE, "single-step handler");
+>>>>>>> v4.9.227
 	hook_debug_fault_code(DBG_ESR_EVT_BRK, brk_handler, SIGTRAP,
 			      TRAP_BRKPT, "ptrace BRK handler");
 	return 0;
@@ -388,6 +592,10 @@ void user_rewind_single_step(struct task_struct *task)
 	if (test_ti_thread_flag(task_thread_info(task), TIF_SINGLESTEP))
 		set_regs_spsr_ss(task_pt_regs(task));
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(user_rewind_single_step);
+>>>>>>> v4.9.227
 
 void user_fastforward_single_step(struct task_struct *task)
 {
@@ -403,6 +611,10 @@ void kernel_enable_single_step(struct pt_regs *regs)
 	mdscr_write(mdscr_read() | DBG_MDSCR_SS);
 	enable_debug_monitors(DBG_ACTIVE_EL1);
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(kernel_enable_single_step);
+>>>>>>> v4.9.227
 
 void kernel_disable_single_step(void)
 {
@@ -410,21 +622,42 @@ void kernel_disable_single_step(void)
 	mdscr_write(mdscr_read() & ~DBG_MDSCR_SS);
 	disable_debug_monitors(DBG_ACTIVE_EL1);
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(kernel_disable_single_step);
+>>>>>>> v4.9.227
 
 int kernel_active_single_step(void)
 {
 	WARN_ON(!irqs_disabled());
 	return mdscr_read() & DBG_MDSCR_SS;
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(kernel_active_single_step);
+>>>>>>> v4.9.227
 
 /* ptrace API */
 void user_enable_single_step(struct task_struct *task)
 {
+<<<<<<< HEAD
 	set_ti_thread_flag(task_thread_info(task), TIF_SINGLESTEP);
 	set_regs_spsr_ss(task_pt_regs(task));
 }
+=======
+	struct thread_info *ti = task_thread_info(task);
+
+	if (!test_and_set_ti_thread_flag(ti, TIF_SINGLESTEP))
+		set_regs_spsr_ss(task_pt_regs(task));
+}
+NOKPROBE_SYMBOL(user_enable_single_step);
+>>>>>>> v4.9.227
 
 void user_disable_single_step(struct task_struct *task)
 {
 	clear_ti_thread_flag(task_thread_info(task), TIF_SINGLESTEP);
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(user_disable_single_step);
+>>>>>>> v4.9.227

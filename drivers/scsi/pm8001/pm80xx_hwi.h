@@ -177,7 +177,12 @@
 /* Thermal related */
 #define	THERMAL_ENABLE			0x1
 #define	THERMAL_LOG_ENABLE		0x1
+<<<<<<< HEAD
 #define THERMAL_OP_CODE			0x6
+=======
+#define THERMAL_PAGE_CODE_7H		0x6
+#define THERMAL_PAGE_CODE_8H		0x7
+>>>>>>> v4.9.227
 #define LTEMPHIL			 70
 #define RTEMPHIL			100
 
@@ -1174,7 +1179,11 @@ typedef struct SASProtocolTimerConfig SASProtocolTimerConfig_t;
 #define IO_XFER_ERROR_INTERNAL_CRC_ERROR	0x54
 #define MPI_IO_RQE_BUSY_FULL			0x55
 #define IO_XFER_ERR_EOB_DATA_OVERRUN		0x56
+<<<<<<< HEAD
 #define IO_XFR_ERROR_INVALID_SSP_RSP_FRAME	0x57
+=======
+#define IO_XFER_ERROR_INVALID_SSP_RSP_FRAME	0x57
+>>>>>>> v4.9.227
 #define IO_OPEN_CNX_ERROR_OPEN_PREEMPTED	0x58
 
 #define MPI_ERR_IO_RESOURCE_UNAVAILABLE		0x1004
@@ -1287,6 +1296,12 @@ typedef struct SASProtocolTimerConfig SASProtocolTimerConfig_t;
 #define SCRATCH_PAD_BOOT_LOAD_SUCCESS	0x0
 #define SCRATCH_PAD_IOP0_READY		0xC00
 #define SCRATCH_PAD_IOP1_READY		0x3000
+<<<<<<< HEAD
+=======
+#define SCRATCH_PAD_MIPSALL_READY	(SCRATCH_PAD_IOP1_READY | \
+					SCRATCH_PAD_IOP0_READY | \
+					SCRATCH_PAD_RAAE_READY)
+>>>>>>> v4.9.227
 
 /* boot loader state */
 #define SCRATCH_PAD1_BOOTSTATE_MASK		0x70	/* Bit 4-6 */

@@ -135,6 +135,7 @@ static inline void apbt_clear_mapping(void)
 	apbt_virt_address = NULL;
 }
 
+<<<<<<< HEAD
 /*
  * APBT timer interrupt enable / disable
  */
@@ -143,6 +144,8 @@ static inline int is_apbt_capable(void)
 	return apbt_virt_address ? 1 : 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int __init apbt_clockevent_register(void)
 {
 	struct sfi_timer_table_entry *mtmr;
@@ -179,10 +182,13 @@ static int __init apbt_clockevent_register(void)
 
 static void apbt_setup_irq(struct apbt_dev *adev)
 {
+<<<<<<< HEAD
 	/* timer0 irq has been setup early */
 	if (adev->irq == 0)
 		return;
 
+=======
+>>>>>>> v4.9.227
 	irq_modify_status(adev->irq, 0, IRQ_MOVE_PCNTXT);
 	irq_set_affinity(adev->irq, cpumask_of(adev->cpu));
 }
@@ -227,6 +233,7 @@ void apbt_setup_secondary_clock(void)
  * cpu timers during the offline process due to the ordering of notification.
  * the extra interrupt is harmless.
  */
+<<<<<<< HEAD
 static int apbt_cpuhp_notify(struct notifier_block *n,
 			     unsigned long action, void *hcpu)
 {
@@ -247,6 +254,20 @@ static int apbt_cpuhp_notify(struct notifier_block *n,
 		pr_debug("APBT notified %lu, no action\n", action);
 	}
 	return NOTIFY_OK;
+=======
+static int apbt_cpu_dead(unsigned int cpu)
+{
+	struct apbt_dev *adev = &per_cpu(cpu_apbt_dev, cpu);
+
+	dw_apb_clockevent_pause(adev->timer);
+	if (system_state == SYSTEM_RUNNING) {
+		pr_debug("skipping APBT CPU %u offline\n", cpu);
+	} else {
+		pr_debug("APBT clockevent for cpu %u offline\n", cpu);
+		dw_apb_clockevent_stop(adev->timer);
+	}
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static __init int apbt_late_init(void)
@@ -254,9 +275,14 @@ static __init int apbt_late_init(void)
 	if (intel_mid_timer_options == INTEL_MID_TIMER_LAPIC_APBT ||
 		!apb_timer_block_enabled)
 		return 0;
+<<<<<<< HEAD
 	/* This notifier should be called after workqueue is ready */
 	hotcpu_notifier(apbt_cpuhp_notify, -20);
 	return 0;
+=======
+	return cpuhp_setup_state(CPUHP_X86_APB_DEAD, "X86_APB_DEAD", NULL,
+				 apbt_cpu_dead);
+>>>>>>> v4.9.227
 }
 fs_initcall(apbt_late_init);
 #else
@@ -275,7 +301,11 @@ static int apbt_clocksource_register(void)
 
 	/* Verify whether apbt counter works */
 	t1 = dw_apb_clocksource_read(clocksource_apbt);
+<<<<<<< HEAD
 	rdtscll(start);
+=======
+	start = rdtsc();
+>>>>>>> v4.9.227
 
 	/*
 	 * We don't know the TSC frequency yet, but waiting for
@@ -285,7 +315,11 @@ static int apbt_clocksource_register(void)
 	 */
 	do {
 		rep_nop();
+<<<<<<< HEAD
 		rdtscll(now);
+=======
+		now = rdtsc();
+>>>>>>> v4.9.227
 	} while ((now - start) < 200000UL);
 
 	/* APBT is the only always on clocksource, it has to work! */
@@ -402,13 +436,21 @@ unsigned long apbt_quick_calibrate(void)
 	old = dw_apb_clocksource_read(clocksource_apbt);
 	old += loop;
 
+<<<<<<< HEAD
 	t1 = __native_read_tsc();
+=======
+	t1 = rdtsc();
+>>>>>>> v4.9.227
 
 	do {
 		new = dw_apb_clocksource_read(clocksource_apbt);
 	} while (new < old);
 
+<<<<<<< HEAD
 	t2 = __native_read_tsc();
+=======
+	t2 = rdtsc();
+>>>>>>> v4.9.227
 
 	shift = 5;
 	if (unlikely(loop >> shift == 0)) {

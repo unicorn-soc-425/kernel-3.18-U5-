@@ -22,7 +22,10 @@
 #include <linux/dma-mapping.h>
 #include <linux/io.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/kernel.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -32,6 +35,7 @@
 
 #include "ohci.h"
 
+<<<<<<< HEAD
 
 #include <mach/hardware.h>
 #include <asm/mach-types.h>
@@ -51,6 +55,11 @@
 #define USB_HOST_NEED_CLK_EN	(1 << 21)
 #define PAD_CONTROL_LAST_DRIVEN	(1 << 19)
 
+=======
+#include <mach/hardware.h>
+
+#define USB_CONFIG_BASE		0x31020000
+>>>>>>> v4.9.227
 #define USB_OTG_STAT_CONTROL	IO_ADDRESS(USB_CONFIG_BASE + 0x110)
 
 /* USB_OTG_STAT_CONTROL bit defines */
@@ -75,9 +84,13 @@ static struct i2c_client *isp1301_i2c_client;
 
 extern int usb_disabled(void);
 
+<<<<<<< HEAD
 static struct clk *usb_pll_clk;
 static struct clk *usb_dev_clk;
 static struct clk *usb_otg_clk;
+=======
+static struct clk *usb_host_clk;
+>>>>>>> v4.9.227
 
 static void isp1301_configure_lpc32xx(void)
 {
@@ -117,9 +130,12 @@ static void isp1301_configure_lpc32xx(void)
 	i2c_smbus_write_byte_data(isp1301_i2c_client,
 		ISP1301_I2C_INTERRUPT_RISING | ISP1301_I2C_REG_CLEAR_ADDR, ~0);
 
+<<<<<<< HEAD
 	/* Enable usb_need_clk clock after transceiver is initialized */
 	__raw_writel(__raw_readl(USB_CTRL) | USB_HOST_NEED_CLK_EN, USB_CTRL);
 
+=======
+>>>>>>> v4.9.227
 	printk(KERN_INFO "ISP1301 Vendor ID  : 0x%04x\n",
 	      i2c_smbus_read_word_data(isp1301_i2c_client, 0x00));
 	printk(KERN_INFO "ISP1301 Product ID : 0x%04x\n",
@@ -192,6 +208,7 @@ static int ohci_hcd_nxp_probe(struct platform_device *pdev)
 		goto fail_disable;
 	}
 
+<<<<<<< HEAD
 	/* Enable AHB slave USB clock, needed for further USB clock control */
 	__raw_writel(USB_SLAVE_HCLK_EN | PAD_CONTROL_LAST_DRIVEN, USB_CTRL);
 
@@ -245,6 +262,22 @@ static int ohci_hcd_nxp_probe(struct platform_device *pdev)
 		goto fail_otg;
 	}
 
+=======
+	/* Enable USB host clock */
+	usb_host_clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(usb_host_clk)) {
+		dev_err(&pdev->dev, "failed to acquire USB OHCI clock\n");
+		ret = PTR_ERR(usb_host_clk);
+		goto fail_disable;
+	}
+
+	ret = clk_prepare_enable(usb_host_clk);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "failed to start USB OHCI clock\n");
+		goto fail_disable;
+	}
+
+>>>>>>> v4.9.227
 	isp1301_configure();
 
 	hcd = usb_create_hcd(driver, &pdev->dev, dev_name(&pdev->dev));
@@ -283,11 +316,15 @@ static int ohci_hcd_nxp_probe(struct platform_device *pdev)
 fail_resource:
 	usb_put_hcd(hcd);
 fail_hcd:
+<<<<<<< HEAD
 	clk_disable(usb_otg_clk);
 fail_otg:
 	clk_disable(usb_dev_clk);
 fail_rate:
 	clk_disable(usb_pll_clk);
+=======
+	clk_disable_unprepare(usb_host_clk);
+>>>>>>> v4.9.227
 fail_disable:
 	isp1301_i2c_client = NULL;
 	return ret;
@@ -300,9 +337,13 @@ static int ohci_hcd_nxp_remove(struct platform_device *pdev)
 	usb_remove_hcd(hcd);
 	ohci_nxp_stop_hc();
 	usb_put_hcd(hcd);
+<<<<<<< HEAD
 	clk_disable(usb_pll_clk);
 	clk_disable(usb_dev_clk);
 	i2c_unregister_device(isp1301_i2c_client);
+=======
+	clk_disable_unprepare(usb_host_clk);
+>>>>>>> v4.9.227
 	isp1301_i2c_client = NULL;
 
 	return 0;
@@ -322,7 +363,10 @@ MODULE_DEVICE_TABLE(of, ohci_hcd_nxp_match);
 static struct platform_driver ohci_hcd_nxp_driver = {
 	.driver = {
 		.name = "usb-ohci",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(ohci_hcd_nxp_match),
 	},
 	.probe = ohci_hcd_nxp_probe,

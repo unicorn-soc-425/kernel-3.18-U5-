@@ -22,6 +22,11 @@
 #include <linux/mm.h>
 #include <linux/dma-mapping.h>
 #include <linux/kvm_host.h>
+<<<<<<< HEAD
+=======
+#include <linux/suspend.h>
+#include <asm/cpufeature.h>
+>>>>>>> v4.9.227
 #include <asm/fixmap.h>
 #include <asm/thread_info.h>
 #include <asm/memory.h>
@@ -29,11 +34,16 @@
 #include <asm/suspend.h>
 #include <asm/vdso_datapage.h>
 #include <linux/kbuild.h>
+<<<<<<< HEAD
+=======
+#include <linux/arm-smccc.h>
+>>>>>>> v4.9.227
 
 int main(void)
 {
   DEFINE(TSK_ACTIVE_MM,		offsetof(struct task_struct, active_mm));
   BLANK();
+<<<<<<< HEAD
 #ifdef CONFIG_THREAD_INFO_IN_TASK
   DEFINE(TSK_TI_FLAGS,		offsetof(struct task_struct, thread_info.flags));
   DEFINE(TSK_TI_PREEMPT,	offsetof(struct task_struct, thread_info.preempt_count));
@@ -48,6 +58,13 @@ int main(void)
 #ifdef CONFIG_ARM64_SW_TTBR0_PAN
   DEFINE(TSK_TI_TTBR0,		offsetof(struct thread_info, ttbr0));
 #endif
+=======
+  DEFINE(TI_FLAGS,		offsetof(struct thread_info, flags));
+  DEFINE(TI_PREEMPT,		offsetof(struct thread_info, preempt_count));
+  DEFINE(TI_ADDR_LIMIT,		offsetof(struct thread_info, addr_limit));
+  DEFINE(TI_TASK,		offsetof(struct thread_info, task));
+  DEFINE(TI_CPU,		offsetof(struct thread_info, cpu));
+>>>>>>> v4.9.227
   BLANK();
   DEFINE(THREAD_CPU_CONTEXT,	offsetof(struct task_struct, thread.cpu_context));
   BLANK();
@@ -59,6 +76,20 @@ int main(void)
   DEFINE(S_X5,			offsetof(struct pt_regs, regs[5]));
   DEFINE(S_X6,			offsetof(struct pt_regs, regs[6]));
   DEFINE(S_X7,			offsetof(struct pt_regs, regs[7]));
+<<<<<<< HEAD
+=======
+  DEFINE(S_X8,			offsetof(struct pt_regs, regs[8]));
+  DEFINE(S_X10,			offsetof(struct pt_regs, regs[10]));
+  DEFINE(S_X12,			offsetof(struct pt_regs, regs[12]));
+  DEFINE(S_X14,			offsetof(struct pt_regs, regs[14]));
+  DEFINE(S_X16,			offsetof(struct pt_regs, regs[16]));
+  DEFINE(S_X18,			offsetof(struct pt_regs, regs[18]));
+  DEFINE(S_X20,			offsetof(struct pt_regs, regs[20]));
+  DEFINE(S_X22,			offsetof(struct pt_regs, regs[22]));
+  DEFINE(S_X24,			offsetof(struct pt_regs, regs[24]));
+  DEFINE(S_X26,			offsetof(struct pt_regs, regs[26]));
+  DEFINE(S_X28,			offsetof(struct pt_regs, regs[28]));
+>>>>>>> v4.9.227
   DEFINE(S_LR,			offsetof(struct pt_regs, regs[30]));
   DEFINE(S_SP,			offsetof(struct pt_regs, sp));
 #ifdef CONFIG_COMPAT
@@ -87,7 +118,11 @@ int main(void)
   DEFINE(CLOCK_REALTIME,	CLOCK_REALTIME);
   DEFINE(CLOCK_MONOTONIC,	CLOCK_MONOTONIC);
   DEFINE(CLOCK_MONOTONIC_RAW,	CLOCK_MONOTONIC_RAW);
+<<<<<<< HEAD
   DEFINE(CLOCK_REALTIME_RES,	MONOTONIC_RES_NSEC);
+=======
+  DEFINE(CLOCK_REALTIME_RES,	offsetof(struct vdso_data, hrtimer_res));
+>>>>>>> v4.9.227
   DEFINE(CLOCK_REALTIME_COARSE,	CLOCK_REALTIME_COARSE);
   DEFINE(CLOCK_MONOTONIC_COARSE,CLOCK_MONOTONIC_COARSE);
   DEFINE(CLOCK_COARSE_RES,	LOW_RES_NSEC);
@@ -118,6 +153,7 @@ int main(void)
   DEFINE(TZ_MINWEST,		offsetof(struct timezone, tz_minuteswest));
   DEFINE(TZ_DSTTIME,		offsetof(struct timezone, tz_dsttime));
   BLANK();
+<<<<<<< HEAD
 #ifdef CONFIG_THREAD_INFO_IN_TASK
   DEFINE(CPU_BOOT_STACK,	offsetof(struct secondary_data, stack));
   DEFINE(CPU_BOOT_TASK,		offsetof(struct secondary_data, task));
@@ -168,14 +204,44 @@ int main(void)
   DEFINE(KVM_VGIC_VCTRL,	offsetof(struct kvm, arch.vgic.vctrl_base));
 #endif
 #ifdef CONFIG_ARM64_CPU_SUSPEND
+=======
+  DEFINE(CPU_BOOT_STACK,	offsetof(struct secondary_data, stack));
+  BLANK();
+#ifdef CONFIG_KVM_ARM_HOST
+  DEFINE(VCPU_CONTEXT,		offsetof(struct kvm_vcpu, arch.ctxt));
+  DEFINE(VCPU_WORKAROUND_FLAGS,	offsetof(struct kvm_vcpu, arch.workaround_flags));
+  DEFINE(CPU_GP_REGS,		offsetof(struct kvm_cpu_context, gp_regs));
+  DEFINE(CPU_USER_PT_REGS,	offsetof(struct kvm_regs, regs));
+  DEFINE(CPU_FP_REGS,		offsetof(struct kvm_regs, fp_regs));
+  DEFINE(VCPU_FPEXC32_EL2,	offsetof(struct kvm_vcpu, arch.ctxt.sys_regs[FPEXC32_EL2]));
+  DEFINE(VCPU_HOST_CONTEXT,	offsetof(struct kvm_vcpu, arch.host_cpu_context));
+  DEFINE(HOST_CONTEXT_VCPU,	offsetof(struct kvm_cpu_context, __hyp_running_vcpu));
+#endif
+#ifdef CONFIG_CPU_PM
+>>>>>>> v4.9.227
   DEFINE(CPU_SUSPEND_SZ,	sizeof(struct cpu_suspend_ctx));
   DEFINE(CPU_CTX_SP,		offsetof(struct cpu_suspend_ctx, sp));
   DEFINE(MPIDR_HASH_MASK,	offsetof(struct mpidr_hash, mask));
   DEFINE(MPIDR_HASH_SHIFTS,	offsetof(struct mpidr_hash, shift_aff));
+<<<<<<< HEAD
   DEFINE(SLEEP_SAVE_SP_SZ,	sizeof(struct sleep_save_sp));
   DEFINE(SLEEP_SAVE_SP_PHYS,	offsetof(struct sleep_save_sp, save_ptr_stash_phys));
   DEFINE(SLEEP_SAVE_SP_VIRT,	offsetof(struct sleep_save_sp, save_ptr_stash));
 #endif
+=======
+  DEFINE(SLEEP_STACK_DATA_SYSTEM_REGS,	offsetof(struct sleep_stack_data, system_regs));
+  DEFINE(SLEEP_STACK_DATA_CALLEE_REGS,	offsetof(struct sleep_stack_data, callee_saved_regs));
+#endif
+  DEFINE(ARM_SMCCC_RES_X0_OFFS,		offsetof(struct arm_smccc_res, a0));
+  DEFINE(ARM_SMCCC_RES_X2_OFFS,		offsetof(struct arm_smccc_res, a2));
+  DEFINE(ARM_SMCCC_QUIRK_ID_OFFS,	offsetof(struct arm_smccc_quirk, id));
+  DEFINE(ARM_SMCCC_QUIRK_STATE_OFFS,	offsetof(struct arm_smccc_quirk, state));
+  BLANK();
+  DEFINE(HIBERN_PBE_ORIG,	offsetof(struct pbe, orig_address));
+  DEFINE(HIBERN_PBE_ADDR,	offsetof(struct pbe, address));
+  DEFINE(HIBERN_PBE_NEXT,	offsetof(struct pbe, next));
+  DEFINE(ARM64_FTR_SYSVAL,	offsetof(struct arm64_ftr_reg, sys_val));
+>>>>>>> v4.9.227
   BLANK();
 #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
   DEFINE(TRAMP_VALIAS,		TRAMP_VALIAS);

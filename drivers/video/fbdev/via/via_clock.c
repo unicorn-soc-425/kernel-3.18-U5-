@@ -30,7 +30,11 @@
 #include "global.h"
 #include "debug.h"
 
+<<<<<<< HEAD
 const char *via_slap = "Please slap VIA Technologies to motivate them "
+=======
+static const char *via_slap = "Please slap VIA Technologies to motivate them "
+>>>>>>> v4.9.227
 	"releasing full documentation for your platform!\n";
 
 static inline u32 cle266_encode_pll(struct via_pll_config pll)

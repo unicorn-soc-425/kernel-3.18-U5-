@@ -24,10 +24,16 @@ struct mempolicy;
  * tree) of these proc_dir_entries, so that we can dynamically
  * add new files to /proc.
  *
+<<<<<<< HEAD
  * The "next" pointer creates a linked list of one /proc directory,
  * while parent/subdir create the directory structure (every
  * /proc file has a parent, but "subdir" is NULL for all
  * non-directory entries).
+=======
+ * parent/subdir are used for the directory structure (every /proc file has a
+ * parent, but "subdir" is empty for all non-directory entries).
+ * subdir_node is used to build the rb tree "subdir" of the parent.
+>>>>>>> v4.9.227
  */
 struct proc_dir_entry {
 	unsigned int low_ino;
@@ -38,7 +44,13 @@ struct proc_dir_entry {
 	loff_t size;
 	const struct inode_operations *proc_iops;
 	const struct file_operations *proc_fops;
+<<<<<<< HEAD
 	struct proc_dir_entry *next, *parent, *subdir;
+=======
+	struct proc_dir_entry *parent;
+	struct rb_root subdir;
+	struct rb_node subdir_node;
+>>>>>>> v4.9.227
 	void *data;
 	atomic_t count;		/* use count */
 	atomic_t in_use;	/* number of callers into module in progress; */
@@ -59,12 +71,21 @@ union proc_op {
 
 struct proc_inode {
 	struct pid *pid;
+<<<<<<< HEAD
 	int fd;
+=======
+	unsigned int fd;
+>>>>>>> v4.9.227
 	union proc_op op;
 	struct proc_dir_entry *pde;
 	struct ctl_table_header *sysctl;
 	struct ctl_table *sysctl_entry;
+<<<<<<< HEAD
 	struct proc_ns ns;
+=======
+	struct hlist_node sysctl_inodes;
+	const struct proc_ns_operations *ns_ops;
+>>>>>>> v4.9.227
 	struct inode vfs_inode;
 };
 
@@ -154,8 +175,12 @@ extern int proc_pid_status(struct seq_file *, struct pid_namespace *,
 			   struct pid *, struct task_struct *);
 extern int proc_pid_statm(struct seq_file *, struct pid_namespace *,
 			  struct pid *, struct task_struct *);
+<<<<<<< HEAD
 extern int proc_pid_statlmkd(struct seq_file *, struct pid_namespace *,
 			  struct pid *, struct task_struct *);
+=======
+
+>>>>>>> v4.9.227
 /*
  * base.c
  */
@@ -191,6 +216,15 @@ static inline struct proc_dir_entry *pde_get(struct proc_dir_entry *pde)
 }
 extern void pde_put(struct proc_dir_entry *);
 
+<<<<<<< HEAD
+=======
+static inline bool is_empty_pde(const struct proc_dir_entry *pde)
+{
+	return S_ISDIR(pde->mode) && !pde->proc_iops;
+}
+struct proc_dir_entry *proc_create_mount_point(const char *name);
+
+>>>>>>> v4.9.227
 /*
  * inode.c
  */
@@ -203,11 +237,18 @@ struct pde_opener {
 extern const struct inode_operations proc_link_inode_operations;
 
 extern const struct inode_operations proc_pid_link_inode_operations;
+<<<<<<< HEAD
 extern const struct file_operations proc_reclaim_operations;
 
 extern void proc_init_inodecache(void);
 extern struct inode *proc_get_inode(struct super_block *, struct proc_dir_entry *);
 extern int proc_fill_super(struct super_block *);
+=======
+
+extern void proc_init_inodecache(void);
+extern struct inode *proc_get_inode(struct super_block *, struct proc_dir_entry *);
+extern int proc_fill_super(struct super_block *, void *data, int flags);
+>>>>>>> v4.9.227
 extern void proc_entry_rundown(struct proc_dir_entry *);
 
 /*
@@ -244,10 +285,19 @@ extern void proc_thread_self_init(void);
  */
 #ifdef CONFIG_PROC_SYSCTL
 extern int proc_sys_init(void);
+<<<<<<< HEAD
 extern void sysctl_head_put(struct ctl_table_header *);
 #else
 static inline void proc_sys_init(void) { }
 static inline void sysctl_head_put(struct ctl_table_header *head) { }
+=======
+extern void proc_sys_evict_inode(struct inode *inode,
+				 struct ctl_table_header *head);
+#else
+static inline void proc_sys_init(void) { }
+static inline void proc_sys_evict_inode(struct  inode *inode,
+					struct ctl_table_header *head) { }
+>>>>>>> v4.9.227
 #endif
 
 /*
@@ -263,6 +313,10 @@ static inline void proc_tty_init(void) {}
  * root.c
  */
 extern struct proc_dir_entry proc_root;
+<<<<<<< HEAD
+=======
+extern int proc_parse_options(char *options, struct pid_namespace *pid);
+>>>>>>> v4.9.227
 
 extern void proc_self_init(void);
 extern int proc_remount(struct super_block *, int *, char *);
@@ -289,7 +343,10 @@ extern const struct file_operations proc_tid_maps_operations;
 extern const struct file_operations proc_pid_numa_maps_operations;
 extern const struct file_operations proc_tid_numa_maps_operations;
 extern const struct file_operations proc_pid_smaps_operations;
+<<<<<<< HEAD
 extern const struct file_operations proc_pid_smaps_simple_operations;
+=======
+>>>>>>> v4.9.227
 extern const struct file_operations proc_tid_smaps_operations;
 extern const struct file_operations proc_clear_refs_operations;
 extern const struct file_operations proc_pagemap_operations;
@@ -298,6 +355,9 @@ extern unsigned long task_vsize(struct mm_struct *);
 extern unsigned long task_statm(struct mm_struct *,
 				unsigned long *, unsigned long *,
 				unsigned long *, unsigned long *);
+<<<<<<< HEAD
 extern void task_statlmkd(struct mm_struct *, unsigned long *,
 				unsigned long *, unsigned long *);
+=======
+>>>>>>> v4.9.227
 extern void task_mem(struct seq_file *, struct mm_struct *);

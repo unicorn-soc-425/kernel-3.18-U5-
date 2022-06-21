@@ -2865,10 +2865,15 @@ int wa_dti_start(struct wahc *wa)
 		goto out;
 
 	wa->dti_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (wa->dti_urb == NULL) {
 		dev_err(dev, "Can't allocate DTI URB\n");
 		goto error_dti_urb_alloc;
 	}
+=======
+	if (wa->dti_urb == NULL)
+		goto error_dti_urb_alloc;
+>>>>>>> v4.9.227
 	usb_fill_bulk_urb(
 		wa->dti_urb, wa->usb_dev,
 		usb_rcvbulkpipe(wa->usb_dev, 0x80 | dti_epd->bEndpointAddress),

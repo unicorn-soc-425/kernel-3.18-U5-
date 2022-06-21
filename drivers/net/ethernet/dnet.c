@@ -173,7 +173,11 @@ static int dnet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
 static void dnet_handle_link_change(struct net_device *dev)
 {
 	struct dnet *bp = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = bp->phy_dev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	u32 mode_reg, ctl_reg;
 
@@ -255,6 +259,7 @@ static int dnet_mii_probe(struct net_device *dev)
 {
 	struct dnet *bp = netdev_priv(dev);
 	struct phy_device *phydev = NULL;
+<<<<<<< HEAD
 	int phy_addr;
 
 	/* find the first phy */
@@ -264,6 +269,11 @@ static int dnet_mii_probe(struct net_device *dev)
 			break;
 		}
 	}
+=======
+
+	/* find the first phy */
+	phydev = phy_find_first(bp->mii_bus);
+>>>>>>> v4.9.227
 
 	if (!phydev) {
 		printk(KERN_ERR "%s: no PHY found\n", dev->name);
@@ -274,11 +284,19 @@ static int dnet_mii_probe(struct net_device *dev)
 
 	/* attach the mac to the phy */
 	if (bp->capabilities & DNET_HAS_RMII) {
+<<<<<<< HEAD
 		phydev = phy_connect(dev, dev_name(&phydev->dev),
 				     &dnet_handle_link_change,
 				     PHY_INTERFACE_MODE_RMII);
 	} else {
 		phydev = phy_connect(dev, dev_name(&phydev->dev),
+=======
+		phydev = phy_connect(dev, phydev_name(phydev),
+				     &dnet_handle_link_change,
+				     PHY_INTERFACE_MODE_RMII);
+	} else {
+		phydev = phy_connect(dev, phydev_name(phydev),
+>>>>>>> v4.9.227
 				     &dnet_handle_link_change,
 				     PHY_INTERFACE_MODE_MII);
 	}
@@ -301,14 +319,21 @@ static int dnet_mii_probe(struct net_device *dev)
 	bp->link = 0;
 	bp->speed = 0;
 	bp->duplex = -1;
+<<<<<<< HEAD
 	bp->phy_dev = phydev;
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static int dnet_mii_init(struct dnet *bp)
 {
+<<<<<<< HEAD
 	int err, i;
+=======
+	int err;
+>>>>>>> v4.9.227
 
 	bp->mii_bus = mdiobus_alloc();
 	if (bp->mii_bus == NULL)
@@ -323,6 +348,7 @@ static int dnet_mii_init(struct dnet *bp)
 
 	bp->mii_bus->priv = bp;
 
+<<<<<<< HEAD
 	bp->mii_bus->irq = devm_kmalloc(&bp->pdev->dev,
 					sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (!bp->mii_bus->irq) {
@@ -333,6 +359,8 @@ static int dnet_mii_init(struct dnet *bp)
 	for (i = 0; i < PHY_MAX_ADDR; i++)
 		bp->mii_bus->irq[i] = PHY_POLL;
 
+=======
+>>>>>>> v4.9.227
 	if (mdiobus_register(bp->mii_bus)) {
 		err = -ENXIO;
 		goto err_out;
@@ -398,6 +426,7 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 		 * break out of while loop if there are no more
 		 * packets waiting
 		 */
+<<<<<<< HEAD
 		if (!(dnet_readl(bp, RX_FIFO_WCNT) >> 16)) {
 			napi_complete(napi);
 			int_enable = dnet_readl(bp, INTR_ENB);
@@ -405,6 +434,10 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 			dnet_writel(bp, int_enable, INTR_ENB);
 			return 0;
 		}
+=======
+		if (!(dnet_readl(bp, RX_FIFO_WCNT) >> 16))
+			break;
+>>>>>>> v4.9.227
 
 		cmd_word = dnet_readl(bp, RX_LEN_FIFO);
 		pkt_len = cmd_word & 0xFFFF;
@@ -433,20 +466,33 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 			       "size %u.\n", dev->name, pkt_len);
 	}
 
+<<<<<<< HEAD
 	budget -= npackets;
 
 	if (npackets < budget) {
 		/* We processed all packets available.  Tell NAPI it can
 		 * stop polling then re-enable rx interrupts */
+=======
+	if (npackets < budget) {
+		/* We processed all packets available.  Tell NAPI it can
+		 * stop polling then re-enable rx interrupts.
+		 */
+>>>>>>> v4.9.227
 		napi_complete(napi);
 		int_enable = dnet_readl(bp, INTR_ENB);
 		int_enable |= DNET_INTR_SRC_RX_CMDFIFOAF;
 		dnet_writel(bp, int_enable, INTR_ENB);
+<<<<<<< HEAD
 		return 0;
 	}
 
 	/* There are still packets waiting */
 	return 1;
+=======
+	}
+
+	return npackets;
+>>>>>>> v4.9.227
 }
 
 static irqreturn_t dnet_interrupt(int irq, void *dev_id)
@@ -653,16 +699,27 @@ static int dnet_open(struct net_device *dev)
 	struct dnet *bp = netdev_priv(dev);
 
 	/* if the phy is not yet register, retry later */
+<<<<<<< HEAD
 	if (!bp->phy_dev)
+=======
+	if (!dev->phydev)
+>>>>>>> v4.9.227
 		return -EAGAIN;
 
 	napi_enable(&bp->napi);
 	dnet_init_hw(bp);
 
+<<<<<<< HEAD
 	phy_start_aneg(bp->phy_dev);
 
 	/* schedule a link state check */
 	phy_start(bp->phy_dev);
+=======
+	phy_start_aneg(dev->phydev);
+
+	/* schedule a link state check */
+	phy_start(dev->phydev);
+>>>>>>> v4.9.227
 
 	netif_start_queue(dev);
 
@@ -676,8 +733,13 @@ static int dnet_close(struct net_device *dev)
 	netif_stop_queue(dev);
 	napi_disable(&bp->napi);
 
+<<<<<<< HEAD
 	if (bp->phy_dev)
 		phy_stop(bp->phy_dev);
+=======
+	if (dev->phydev)
+		phy_stop(dev->phydev);
+>>>>>>> v4.9.227
 
 	dnet_reset_hw(bp);
 	netif_carrier_off(dev);
@@ -755,6 +817,7 @@ static struct net_device_stats *dnet_get_stats(struct net_device *dev)
 	return nstat;
 }
 
+<<<<<<< HEAD
 static int dnet_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct dnet *bp = netdev_priv(dev);
@@ -781,6 +844,11 @@ static int dnet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
 	struct dnet *bp = netdev_priv(dev);
 	struct phy_device *phydev = bp->phy_dev;
+=======
+static int dnet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+{
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> v4.9.227
 
 	if (!netif_running(dev))
 		return -EINVAL;
@@ -800,11 +868,19 @@ static void dnet_get_drvinfo(struct net_device *dev,
 }
 
 static const struct ethtool_ops dnet_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings		= dnet_get_settings,
 	.set_settings		= dnet_set_settings,
 	.get_drvinfo		= dnet_get_drvinfo,
 	.get_link		= ethtool_op_get_link,
 	.get_ts_info		= ethtool_op_get_ts_info,
+=======
+	.get_drvinfo		= dnet_get_drvinfo,
+	.get_link		= ethtool_op_get_link,
+	.get_ts_info		= ethtool_op_get_ts_info,
+	.get_link_ksettings     = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings     = phy_ethtool_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 static const struct net_device_ops dnet_netdev_ops = {
@@ -899,10 +975,15 @@ static int dnet_probe(struct platform_device *pdev)
 	       (bp->capabilities & DNET_HAS_IRQ) ? "" : "no ",
 	       (bp->capabilities & DNET_HAS_GIGABIT) ? "" : "no ",
 	       (bp->capabilities & DNET_HAS_DMA) ? "" : "no ");
+<<<<<<< HEAD
 	phydev = bp->phy_dev;
 	dev_info(&pdev->dev, "attached PHY driver [%s] "
 	       "(mii_bus:phy_addr=%s, irq=%d)\n",
 	       phydev->drv->name, dev_name(&phydev->dev), phydev->irq);
+=======
+	phydev = dev->phydev;
+	phy_attached_info(phydev);
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -925,8 +1006,13 @@ static int dnet_remove(struct platform_device *pdev)
 
 	if (dev) {
 		bp = netdev_priv(dev);
+<<<<<<< HEAD
 		if (bp->phy_dev)
 			phy_disconnect(bp->phy_dev);
+=======
+		if (dev->phydev)
+			phy_disconnect(dev->phydev);
+>>>>>>> v4.9.227
 		mdiobus_unregister(bp->mii_bus);
 		mdiobus_free(bp->mii_bus);
 		unregister_netdev(dev);

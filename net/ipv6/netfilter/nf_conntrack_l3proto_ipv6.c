@@ -60,11 +60,19 @@ static bool ipv6_invert_tuple(struct nf_conntrack_tuple *tuple,
 	return true;
 }
 
+<<<<<<< HEAD
 static int ipv6_print_tuple(struct seq_file *s,
 			    const struct nf_conntrack_tuple *tuple)
 {
 	return seq_printf(s, "src=%pI6 dst=%pI6 ",
 			  tuple->src.u3.ip6, tuple->dst.u3.ip6);
+=======
+static void ipv6_print_tuple(struct seq_file *s,
+			    const struct nf_conntrack_tuple *tuple)
+{
+	seq_printf(s, "src=%pI6 dst=%pI6 ",
+		   tuple->src.u3.ip6, tuple->dst.u3.ip6);
+>>>>>>> v4.9.227
 }
 
 static int ipv6_get_l4proto(const struct sk_buff *skb, unsigned int nhoff,
@@ -95,11 +103,17 @@ static int ipv6_get_l4proto(const struct sk_buff *skb, unsigned int nhoff,
 	return NF_ACCEPT;
 }
 
+<<<<<<< HEAD
 static unsigned int ipv6_helper(const struct nf_hook_ops *ops,
 				struct sk_buff *skb,
 				const struct net_device *in,
 				const struct net_device *out,
 				int (*okfn)(struct sk_buff *))
+=======
+static unsigned int ipv6_helper(void *priv,
+				struct sk_buff *skb,
+				const struct nf_hook_state *state)
+>>>>>>> v4.9.227
 {
 	struct nf_conn *ct;
 	const struct nf_conn_help *help;
@@ -117,7 +131,11 @@ static unsigned int ipv6_helper(const struct nf_hook_ops *ops,
 	help = nfct_help(ct);
 	if (!help)
 		return NF_ACCEPT;
+<<<<<<< HEAD
 	/* rcu_read_lock()ed by nf_hook_slow */
+=======
+	/* rcu_read_lock()ed by nf_hook_thresh */
+>>>>>>> v4.9.227
 	helper = rcu_dereference(help->helper);
 	if (!helper)
 		return NF_ACCEPT;
@@ -133,11 +151,17 @@ static unsigned int ipv6_helper(const struct nf_hook_ops *ops,
 	return helper->help(skb, protoff, ct, ctinfo);
 }
 
+<<<<<<< HEAD
 static unsigned int ipv6_confirm(const struct nf_hook_ops *ops,
 				 struct sk_buff *skb,
 				 const struct net_device *in,
 				 const struct net_device *out,
 				 int (*okfn)(struct sk_buff *))
+=======
+static unsigned int ipv6_confirm(void *priv,
+				 struct sk_buff *skb,
+				 const struct nf_hook_state *state)
+>>>>>>> v4.9.227
 {
 	struct nf_conn *ct;
 	enum ip_conntrack_info ctinfo;
@@ -169,6 +193,7 @@ out:
 	return nf_conntrack_confirm(skb);
 }
 
+<<<<<<< HEAD
 static unsigned int ipv6_conntrack_in(const struct nf_hook_ops *ops,
 				      struct sk_buff *skb,
 				      const struct net_device *in,
@@ -183,54 +208,88 @@ static unsigned int ipv6_conntrack_local(const struct nf_hook_ops *ops,
 					 const struct net_device *in,
 					 const struct net_device *out,
 					 int (*okfn)(struct sk_buff *))
+=======
+static unsigned int ipv6_conntrack_in(void *priv,
+				      struct sk_buff *skb,
+				      const struct nf_hook_state *state)
+{
+	return nf_conntrack_in(state->net, PF_INET6, state->hook, skb);
+}
+
+static unsigned int ipv6_conntrack_local(void *priv,
+					 struct sk_buff *skb,
+					 const struct nf_hook_state *state)
+>>>>>>> v4.9.227
 {
 	/* root is playing with raw sockets. */
 	if (skb->len < sizeof(struct ipv6hdr)) {
 		net_notice_ratelimited("ipv6_conntrack_local: packet too short\n");
 		return NF_ACCEPT;
 	}
+<<<<<<< HEAD
 	return nf_conntrack_in(dev_net(out), PF_INET6, ops->hooknum, skb);
+=======
+	return nf_conntrack_in(state->net, PF_INET6, state->hook, skb);
+>>>>>>> v4.9.227
 }
 
 static struct nf_hook_ops ipv6_conntrack_ops[] __read_mostly = {
 	{
 		.hook		= ipv6_conntrack_in,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf		= NFPROTO_IPV6,
 		.hooknum	= NF_INET_PRE_ROUTING,
 		.priority	= NF_IP6_PRI_CONNTRACK,
 	},
 	{
 		.hook		= ipv6_conntrack_local,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf		= NFPROTO_IPV6,
 		.hooknum	= NF_INET_LOCAL_OUT,
 		.priority	= NF_IP6_PRI_CONNTRACK,
 	},
 	{
 		.hook		= ipv6_helper,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf		= NFPROTO_IPV6,
 		.hooknum	= NF_INET_POST_ROUTING,
 		.priority	= NF_IP6_PRI_CONNTRACK_HELPER,
 	},
 	{
 		.hook		= ipv6_confirm,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf		= NFPROTO_IPV6,
 		.hooknum	= NF_INET_POST_ROUTING,
 		.priority	= NF_IP6_PRI_LAST,
 	},
 	{
 		.hook		= ipv6_helper,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf		= NFPROTO_IPV6,
 		.hooknum	= NF_INET_LOCAL_IN,
 		.priority	= NF_IP6_PRI_CONNTRACK_HELPER,
 	},
 	{
 		.hook		= ipv6_confirm,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pf		= NFPROTO_IPV6,
 		.hooknum	= NF_INET_LOCAL_IN,
 		.priority	= NF_IP6_PRI_LAST-1,
@@ -266,7 +325,11 @@ ipv6_getorigdst(struct sock *sk, int optval, void __user *user, int *len)
 	if (*len < 0 || (unsigned int) *len < sizeof(sin6))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	h = nf_conntrack_find_get(sock_net(sk), NF_CT_DEFAULT_ZONE, &tuple);
+=======
+	h = nf_conntrack_find_get(sock_net(sk), &nf_ct_zone_dflt, &tuple);
+>>>>>>> v4.9.227
 	if (!h) {
 		pr_debug("IP6T_SO_ORIGINAL_DST: Can't find %pI6c/%u-%pI6c/%u.\n",
 			 &tuple.src.u3.ip6, ntohs(tuple.src.u.tcp.port),
@@ -296,10 +359,15 @@ ipv6_getorigdst(struct sock *sk, int optval, void __user *user, int *len)
 static int ipv6_tuple_to_nlattr(struct sk_buff *skb,
 				const struct nf_conntrack_tuple *tuple)
 {
+<<<<<<< HEAD
 	if (nla_put(skb, CTA_IP_V6_SRC, sizeof(u_int32_t) * 4,
 		    &tuple->src.u3.ip6) ||
 	    nla_put(skb, CTA_IP_V6_DST, sizeof(u_int32_t) * 4,
 		    &tuple->dst.u3.ip6))
+=======
+	if (nla_put_in6_addr(skb, CTA_IP_V6_SRC, &tuple->src.u3.in6) ||
+	    nla_put_in6_addr(skb, CTA_IP_V6_DST, &tuple->dst.u3.in6))
+>>>>>>> v4.9.227
 		goto nla_put_failure;
 	return 0;
 
@@ -318,10 +386,15 @@ static int ipv6_nlattr_to_tuple(struct nlattr *tb[],
 	if (!tb[CTA_IP_V6_SRC] || !tb[CTA_IP_V6_DST])
 		return -EINVAL;
 
+<<<<<<< HEAD
 	memcpy(&t->src.u3.ip6, nla_data(tb[CTA_IP_V6_SRC]),
 	       sizeof(u_int32_t) * 4);
 	memcpy(&t->dst.u3.ip6, nla_data(tb[CTA_IP_V6_DST]),
 	       sizeof(u_int32_t) * 4);
+=======
+	t->src.u3.in6 = nla_get_in6_addr(tb[CTA_IP_V6_SRC]);
+	t->dst.u3.in6 = nla_get_in6_addr(tb[CTA_IP_V6_DST]);
+>>>>>>> v4.9.227
 
 	return 0;
 }

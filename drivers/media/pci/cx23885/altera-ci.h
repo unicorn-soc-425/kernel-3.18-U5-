@@ -20,8 +20,11 @@
 #ifndef __ALTERA_CI_H
 #define __ALTERA_CI_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> v4.9.227
 #define ALT_DATA	0x000000ff
 #define ALT_TDI		0x00008000
 #define ALT_TDO		0x00004000

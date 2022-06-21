@@ -320,21 +320,41 @@ static union iucv_param *iucv_param_irq[NR_CPUS];
  *
  * Returns the result of the CP IUCV call.
  */
+<<<<<<< HEAD
 static inline int iucv_call_b2f0(int command, union iucv_param *parm)
+=======
+static inline int __iucv_call_b2f0(int command, union iucv_param *parm)
+>>>>>>> v4.9.227
 {
 	register unsigned long reg0 asm ("0");
 	register unsigned long reg1 asm ("1");
 	int ccode;
 
 	reg0 = command;
+<<<<<<< HEAD
 	reg1 = virt_to_phys(parm);
+=======
+	reg1 = (unsigned long)parm;
+>>>>>>> v4.9.227
 	asm volatile(
 		"	.long 0xb2f01000\n"
 		"	ipm	%0\n"
 		"	srl	%0,28\n"
 		: "=d" (ccode), "=m" (*parm), "+d" (reg0), "+a" (reg1)
 		:  "m" (*parm) : "cc");
+<<<<<<< HEAD
 	return (ccode == 1) ? parm->ctrl.iprcode : ccode;
+=======
+	return ccode;
+}
+
+static inline int iucv_call_b2f0(int command, union iucv_param *parm)
+{
+	int ccode;
+
+	ccode = __iucv_call_b2f0(command, parm);
+	return ccode == 1 ? parm->ctrl.iprcode : ccode;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -345,6 +365,7 @@ static inline int iucv_call_b2f0(int command, union iucv_param *parm)
  * Returns the maximum number of connections or -EPERM is IUCV is not
  * available.
  */
+<<<<<<< HEAD
 static int iucv_query_maxconn(void)
 {
 	register unsigned long reg0 asm ("0");
@@ -355,6 +376,14 @@ static int iucv_query_maxconn(void)
 	param = kzalloc(sizeof(union iucv_param), GFP_KERNEL|GFP_DMA);
 	if (!param)
 		return -ENOMEM;
+=======
+static int __iucv_query_maxconn(void *param, unsigned long *max_pathid)
+{
+	register unsigned long reg0 asm ("0");
+	register unsigned long reg1 asm ("1");
+	int ccode;
+
+>>>>>>> v4.9.227
 	reg0 = IUCV_QUERY;
 	reg1 = (unsigned long) param;
 	asm volatile (
@@ -362,8 +391,27 @@ static int iucv_query_maxconn(void)
 		"	ipm	%0\n"
 		"	srl	%0,28\n"
 		: "=d" (ccode), "+d" (reg0), "+d" (reg1) : : "cc");
+<<<<<<< HEAD
 	if (ccode == 0)
 		iucv_max_pathid = reg1;
+=======
+	*max_pathid = reg1;
+	return ccode;
+}
+
+static int iucv_query_maxconn(void)
+{
+	unsigned long max_pathid;
+	void *param;
+	int ccode;
+
+	param = kzalloc(sizeof(union iucv_param), GFP_KERNEL | GFP_DMA);
+	if (!param)
+		return -ENOMEM;
+	ccode = __iucv_query_maxconn(param, &max_pathid);
+	if (ccode == 0)
+		iucv_max_pathid = max_pathid;
+>>>>>>> v4.9.227
 	kfree(param);
 	return ccode ? -EPERM : 0;
 }
@@ -713,7 +761,11 @@ static struct notifier_block __refdata iucv_cpu_notifier = {
  *
  * Sever an iucv path to free up the pathid. Used internally.
  */
+<<<<<<< HEAD
 static int iucv_sever_pathid(u16 pathid, u8 userdata[16])
+=======
+static int iucv_sever_pathid(u16 pathid, u8 *userdata)
+>>>>>>> v4.9.227
 {
 	union iucv_param *parm;
 
@@ -876,7 +928,11 @@ static struct notifier_block iucv_reboot_notifier = {
  * Returns the result of the CP IUCV call.
  */
 int iucv_path_accept(struct iucv_path *path, struct iucv_handler *handler,
+<<<<<<< HEAD
 		     u8 userdata[16], void *private)
+=======
+		     u8 *userdata, void *private)
+>>>>>>> v4.9.227
 {
 	union iucv_param *parm;
 	int rc;
@@ -923,7 +979,11 @@ EXPORT_SYMBOL(iucv_path_accept);
  * Returns the result of the CP IUCV call.
  */
 int iucv_path_connect(struct iucv_path *path, struct iucv_handler *handler,
+<<<<<<< HEAD
 		      u8 userid[8], u8 system[8], u8 userdata[16],
+=======
+		      u8 *userid, u8 *system, u8 *userdata,
+>>>>>>> v4.9.227
 		      void *private)
 {
 	union iucv_param *parm;
@@ -985,7 +1045,11 @@ EXPORT_SYMBOL(iucv_path_connect);
  *
  * Returns the result from the CP IUCV call.
  */
+<<<<<<< HEAD
 int iucv_path_quiesce(struct iucv_path *path, u8 userdata[16])
+=======
+int iucv_path_quiesce(struct iucv_path *path, u8 *userdata)
+>>>>>>> v4.9.227
 {
 	union iucv_param *parm;
 	int rc;
@@ -1017,7 +1081,11 @@ EXPORT_SYMBOL(iucv_path_quiesce);
  *
  * Returns the result from the CP IUCV call.
  */
+<<<<<<< HEAD
 int iucv_path_resume(struct iucv_path *path, u8 userdata[16])
+=======
+int iucv_path_resume(struct iucv_path *path, u8 *userdata)
+>>>>>>> v4.9.227
 {
 	union iucv_param *parm;
 	int rc;
@@ -1047,7 +1115,11 @@ out:
  *
  * Returns the result from the CP IUCV call.
  */
+<<<<<<< HEAD
 int iucv_path_sever(struct iucv_path *path, u8 userdata[16])
+=======
+int iucv_path_sever(struct iucv_path *path, u8 *userdata)
+>>>>>>> v4.9.227
 {
 	int rc;
 

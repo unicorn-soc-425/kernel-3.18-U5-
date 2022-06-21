@@ -57,6 +57,15 @@ For twl4030 regulators/LDOs
 
 Optional properties:
 - Any optional property defined in bindings/regulator/regulator.txt
+<<<<<<< HEAD
+=======
+For twl4030 regulators/LDOs:
+ - regulator-initial-mode:
+  - 0x08 - Sleep mode, the nominal output voltage is maintained with low power
+           consumption with low load current capability.
+  - 0x0e - Active mode, the regulator can deliver its nominal output voltage
+           with full-load current capability.
+>>>>>>> v4.9.227
 
 Example:
 

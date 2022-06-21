@@ -8,6 +8,10 @@ config BTRFS_FS
 	select LZO_DECOMPRESS
 	select RAID6_PQ
 	select XOR_BLOCKS
+<<<<<<< HEAD
+=======
+	select SRCU
+>>>>>>> v4.9.227
 
 	help
 	  Btrfs is a general purpose copy-on-write filesystem with extents,

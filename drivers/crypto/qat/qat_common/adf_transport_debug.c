@@ -86,9 +86,13 @@ static int adf_ring_show(struct seq_file *sfile, void *v)
 {
 	struct adf_etr_ring_data *ring = sfile->private;
 	struct adf_etr_bank_data *bank = ring->bank;
+<<<<<<< HEAD
 	uint32_t *msg = v;
 	void __iomem *csr = ring->bank->csr_addr;
 	int i, x;
+=======
+	void __iomem *csr = ring->bank->csr_addr;
+>>>>>>> v4.9.227
 
 	if (v == SEQ_START_TOKEN) {
 		int head, tail, empty;
@@ -100,6 +104,11 @@ static int adf_ring_show(struct seq_file *sfile, void *v)
 		empty = READ_CSR_E_STAT(csr, bank->bank_number);
 
 		seq_puts(sfile, "------- Ring configuration -------\n");
+<<<<<<< HEAD
+=======
+		seq_printf(sfile, "ring name: %s\n",
+			   ring->ring_debug->ring_name);
+>>>>>>> v4.9.227
 		seq_printf(sfile, "ring num %d, bank num %d\n",
 			   ring->ring_number, ring->bank->bank_number);
 		seq_printf(sfile, "head %x, tail %x, empty: %d\n",
@@ -111,6 +120,7 @@ static int adf_ring_show(struct seq_file *sfile, void *v)
 		seq_puts(sfile, "----------- Ring data ------------\n");
 		return 0;
 	}
+<<<<<<< HEAD
 	seq_printf(sfile, "%p:", msg);
 	x = 0;
 	i = 0;
@@ -123,6 +133,10 @@ static int adf_ring_show(struct seq_file *sfile, void *v)
 		}
 	}
 	seq_puts(sfile, "\n");
+=======
+	seq_hex_dump(sfile, "", DUMP_PREFIX_ADDRESS, 32, 4,
+		     v, ADF_MSG_SIZE_TO_BYTES(ring->msg_size), false);
+>>>>>>> v4.9.227
 	return 0;
 }
 

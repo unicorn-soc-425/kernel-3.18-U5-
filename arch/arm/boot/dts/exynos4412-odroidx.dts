@@ -18,7 +18,12 @@
 	model = "Hardkernel ODROID-X board based on Exynos4412";
 	compatible = "hardkernel,odroid-x", "samsung,exynos4412", "samsung,exynos4";
 
+<<<<<<< HEAD
 	memory {
+=======
+	memory@40000000 {
+		device_type = "memory";
+>>>>>>> v4.9.227
 		reg = <0x40000000 0x3FF00000>;
 	};
 
@@ -26,18 +31,27 @@
 		compatible = "gpio-leds";
 		led1 {
 			label = "led1:heart";
+<<<<<<< HEAD
 			gpios = <&gpc1 0 1>;
+=======
+			gpios = <&gpc1 0 GPIO_ACTIVE_LOW>;
+>>>>>>> v4.9.227
 			default-state = "on";
 			linux,default-trigger = "heartbeat";
 		};
 		led2 {
 			label = "led2:mmc0";
+<<<<<<< HEAD
 			gpios = <&gpc1 2 1>;
+=======
+			gpios = <&gpc1 2 GPIO_ACTIVE_LOW>;
+>>>>>>> v4.9.227
 			default-state = "on";
 			linux,default-trigger = "mmc0";
 		};
 	};
 
+<<<<<<< HEAD
 	serial@13820000 {
 		status = "okay";
 	};
@@ -46,17 +60,27 @@
 		status = "okay";
 	};
 
+=======
+>>>>>>> v4.9.227
 	gpio_keys {
 		pinctrl-0 = <&gpio_power_key &gpio_home_key>;
 
 		home_key {
 			interrupt-parent = <&gpx2>;
 			interrupts = <2 0>;
+<<<<<<< HEAD
 			gpios = <&gpx2 2 0>;
 			linux,code = <KEY_HOME>;
 			label = "home key";
 			debounce-interval = <10>;
 			gpio-key,wakeup;
+=======
+			gpios = <&gpx2 2 GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_HOME>;
+			label = "home key";
+			debounce-interval = <10>;
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 	};
 
@@ -65,21 +89,56 @@
 		regulator-name = "p3v3_en";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
+<<<<<<< HEAD
 		gpio = <&gpa1 1 1>;
+=======
+		gpio = <&gpa1 1 GPIO_ACTIVE_LOW>;
+>>>>>>> v4.9.227
 		enable-active-high;
 		regulator-always-on;
 	};
 };
 
+<<<<<<< HEAD
+=======
+/* VDDQ for MSHC (eMMC card) */
+&buck8_reg {
+	regulator-name = "BUCK8_VDDQ_MMC4_2.8V";
+	regulator-min-microvolt = <2800000>;
+	regulator-max-microvolt = <2800000>;
+};
+
+>>>>>>> v4.9.227
 &ehci {
 	port@1 {
 		status = "okay";
 	};
 };
 
+<<<<<<< HEAD
 &pinctrl_1 {
 	gpio_home_key: home_key {
 		samsung,pins = "gpx2-2";
 		samsung,pin-pud = <0>;
 	};
 };
+=======
+&mshc_0 {
+	vqmmc-supply = <&buck8_reg>;
+};
+
+&pinctrl_1 {
+	gpio_home_key: home_key {
+		samsung,pins = "gpx2-2";
+		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+	};
+};
+
+&serial_2 {
+	status = "okay";
+};
+
+&serial_3 {
+	status = "okay";
+};
+>>>>>>> v4.9.227

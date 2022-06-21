@@ -983,7 +983,11 @@ static void sun3_82586_timeout(struct net_device *dev)
 		p->scb->cmd_cuc = CUC_START;
 		sun3_attn586();
 		WAIT_4_SCB_CMD();
+<<<<<<< HEAD
 		dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+		netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 		return 0;
 	}
 #endif
@@ -996,7 +1000,11 @@ static void sun3_82586_timeout(struct net_device *dev)
 		sun3_82586_close(dev);
 		sun3_82586_open(dev);
 	}
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 }
 
 /******************************************************

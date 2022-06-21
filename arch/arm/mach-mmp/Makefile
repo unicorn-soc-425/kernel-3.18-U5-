@@ -1,6 +1,10 @@
 #
 # Makefile for Marvell's PXA168 processors line
 #
+<<<<<<< HEAD
+=======
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-pxa/include
+>>>>>>> v4.9.227
 
 obj-y				+= common.o devices.o time.o
 

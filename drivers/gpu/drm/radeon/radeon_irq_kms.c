@@ -291,6 +291,10 @@ int radeon_irq_kms_init(struct radeon_device *rdev)
 	if (r) {
 		return r;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	/* enable msi */
 	rdev->msi_enabled = 0;
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 obj-y := time.o cpu.o system.o irq-common.o
 
 obj-$(CONFIG_SOC_IMX1) += clk-imx1.o mm-imx1.o
@@ -18,6 +19,22 @@ obj-$(CONFIG_COMMON_CLK) += clk-pllv1.o clk-pllv2.o clk-pllv3.o clk-gate2.o \
 			    clk-pfd.o clk-busy.o clk.o \
 			    clk-fixup-div.o clk-fixup-mux.o \
 			    clk-gate-exclusive.o
+=======
+obj-y := cpu.o system.o irq-common.o
+
+obj-$(CONFIG_SOC_IMX21) += mm-imx21.o
+
+obj-$(CONFIG_SOC_IMX25) += cpu-imx25.o mach-imx25.o pm-imx25.o
+
+obj-$(CONFIG_SOC_IMX27) += cpu-imx27.o pm-imx27.o
+obj-$(CONFIG_SOC_IMX27) += mm-imx27.o ehci-imx27.o
+
+obj-$(CONFIG_SOC_IMX31) += mm-imx3.o cpu-imx31.o iomux-imx31.o ehci-imx31.o
+obj-$(CONFIG_SOC_IMX35) += mm-imx3.o cpu-imx35.o ehci-imx35.o
+
+imx5-pm-$(CONFIG_PM) += pm-imx5.o
+obj-$(CONFIG_SOC_IMX5) += cpu-imx5.o $(imx5-pm-y)
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_IMX_HAVE_IOMUX_V1) += iomux-v1.o
 obj-$(CONFIG_ARCH_MXC_IOMUX_V3) += iomux-v3.o
@@ -33,6 +50,10 @@ obj-$(CONFIG_SOC_IMX5) += cpuidle-imx5.o
 obj-$(CONFIG_SOC_IMX6Q) += cpuidle-imx6q.o
 obj-$(CONFIG_SOC_IMX6SL) += cpuidle-imx6sl.o
 obj-$(CONFIG_SOC_IMX6SX) += cpuidle-imx6sx.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_SOC_IMX6UL) += cpuidle-imx6sx.o
+>>>>>>> v4.9.227
 endif
 
 ifdef CONFIG_SND_IMX_SOC
@@ -40,6 +61,7 @@ obj-y += ssi-fiq.o
 obj-y += ssi-fiq-ksym.o
 endif
 
+<<<<<<< HEAD
 # i.MX1 based machines
 obj-$(CONFIG_MACH_SCB9328) += mach-scb9328.o
 obj-$(CONFIG_MACH_APF9328) += mach-apf9328.o
@@ -54,6 +76,11 @@ obj-$(CONFIG_MACH_EUKREA_CPUIMX25SD) += mach-eukrea_cpuimx25.o
 obj-$(CONFIG_MACH_EUKREA_MBIMXSD25_BASEBOARD) += eukrea_mbimxsd25-baseboard.o
 obj-$(CONFIG_MACH_IMX25_DT) += imx25-dt.o
 
+=======
+# i.MX21 based machines
+obj-$(CONFIG_MACH_MX21ADS) += mach-mx21ads.o
+
+>>>>>>> v4.9.227
 # i.MX27 based machines
 obj-$(CONFIG_MACH_MX27ADS) += mach-mx27ads.o
 obj-$(CONFIG_MACH_MX27_3DS) += mach-mx27_3ds.o
@@ -79,8 +106,11 @@ obj-$(CONFIG_MACH_IMX31_DT) += imx31-dt.o
 # i.MX35 based machines
 obj-$(CONFIG_MACH_PCM043) += mach-pcm043.o
 obj-$(CONFIG_MACH_MX35_3DS) += mach-mx35_3ds.o
+<<<<<<< HEAD
 obj-$(CONFIG_MACH_EUKREA_CPUIMX35SD) += mach-cpuimx35.o
 obj-$(CONFIG_MACH_EUKREA_MBIMXSD35_BASEBOARD) += eukrea_mbimxsd35-baseboard.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_MACH_VPR200) += mach-vpr200.o
 obj-$(CONFIG_MACH_IMX35_DT) += imx35-dt.o
 
@@ -88,25 +118,55 @@ obj-$(CONFIG_HAVE_IMX_ANATOP) += anatop.o
 obj-$(CONFIG_HAVE_IMX_GPC) += gpc.o
 obj-$(CONFIG_HAVE_IMX_MMDC) += mmdc.o
 obj-$(CONFIG_HAVE_IMX_SRC) += src.o
+<<<<<<< HEAD
 ifdef CONFIG_SOC_IMX6
+=======
+ifneq ($(CONFIG_SOC_IMX6)$(CONFIG_SOC_LS1021A),)
+>>>>>>> v4.9.227
 AFLAGS_headsmp.o :=-Wa,-march=armv7-a
 obj-$(CONFIG_SMP) += headsmp.o platsmp.o
 obj-$(CONFIG_HOTPLUG_CPU) += hotplug.o
 endif
+<<<<<<< HEAD
 obj-$(CONFIG_SOC_IMX6Q) += clk-imx6q.o mach-imx6q.o
 obj-$(CONFIG_SOC_IMX6SL) += clk-imx6sl.o mach-imx6sl.o
 obj-$(CONFIG_SOC_IMX6SX) += clk-imx6sx.o mach-imx6sx.o
+=======
+obj-$(CONFIG_SOC_IMX6Q) += mach-imx6q.o
+obj-$(CONFIG_SOC_IMX6SL) += mach-imx6sl.o
+obj-$(CONFIG_SOC_IMX6SX) += mach-imx6sx.o
+obj-$(CONFIG_SOC_IMX6UL) += mach-imx6ul.o
+obj-$(CONFIG_SOC_IMX7D) += mach-imx7d.o
+>>>>>>> v4.9.227
 
 ifeq ($(CONFIG_SUSPEND),y)
 AFLAGS_suspend-imx6.o :=-Wa,-march=armv7-a
 obj-$(CONFIG_SOC_IMX6) += suspend-imx6.o
+<<<<<<< HEAD
 endif
 obj-$(CONFIG_SOC_IMX6) += pm-imx6.o
 
+=======
+obj-$(CONFIG_SOC_IMX53) += suspend-imx53.o
+endif
+ifeq ($(CONFIG_ARM_CPU_SUSPEND),y)
+AFLAGS_resume-imx6.o :=-Wa,-march=armv7-a
+obj-$(CONFIG_SOC_IMX6) += resume-imx6.o
+endif
+obj-$(CONFIG_SOC_IMX6) += pm-imx6.o
+
+obj-$(CONFIG_SOC_IMX1) += mach-imx1.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_SOC_IMX50) += mach-imx50.o
 obj-$(CONFIG_SOC_IMX51) += mach-imx51.o
 obj-$(CONFIG_SOC_IMX53) += mach-imx53.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_SOC_VF610) += clk-vf610.o mach-vf610.o
+=======
+obj-$(CONFIG_SOC_VF610) += mach-vf610.o
+
+obj-$(CONFIG_SOC_LS1021A) += mach-ls1021a.o
+>>>>>>> v4.9.227
 
 obj-y += devices/

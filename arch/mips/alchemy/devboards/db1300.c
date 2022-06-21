@@ -24,6 +24,10 @@
 #include <linux/wm97xx.h>
 
 #include <asm/mach-au1x00/au1000.h>
+<<<<<<< HEAD
+=======
+#include <asm/mach-au1x00/gpio-au1300.h>
+>>>>>>> v4.9.227
 #include <asm/mach-au1x00/au1100_mmc.h>
 #include <asm/mach-au1x00/au1200fb.h>
 #include <asm/mach-au1x00/au1xxx_dbdma.h>
@@ -149,7 +153,11 @@ static void __init db1300_gpio_config(void)
 static void au1300_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 				 unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	unsigned long ioaddr = (unsigned long)this->IO_ADDR_W;
 
 	ioaddr &= 0xffffff00;

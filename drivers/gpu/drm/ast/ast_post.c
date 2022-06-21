@@ -375,12 +375,26 @@ void ast_post_gpu(struct drm_device *dev)
 	ast_enable_mmio(dev);
 	ast_set_def_ext_reg(dev);
 
+<<<<<<< HEAD
 	if (ast->chip == AST2300 || ast->chip == AST2400)
 		ast_init_dram_2300(dev);
 	else
 		ast_init_dram_reg(dev);
 
 	ast_init_3rdtx(dev);
+=======
+	if (ast->config_mode == ast_use_p2a) {
+		if (ast->chip == AST2300 || ast->chip == AST2400)
+			ast_init_dram_2300(dev);
+		else
+			ast_init_dram_reg(dev);
+
+		ast_init_3rdtx(dev);
+	} else {
+		if (ast->tx_chip_type != AST_TX_NONE)
+			ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xa3, 0xcf, 0x80);	/* Enable DVO */
+	}
+>>>>>>> v4.9.227
 }
 
 /* AST 2300 DRAM settings */

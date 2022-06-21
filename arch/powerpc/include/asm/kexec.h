@@ -86,6 +86,14 @@ extern int overlaps_crashkernel(unsigned long start, unsigned long size);
 extern void reserve_crashkernel(void);
 extern void machine_kexec_mask_interrupts(void);
 
+<<<<<<< HEAD
+=======
+static inline bool kdump_in_progress(void)
+{
+	return crashing_cpu >= 0;
+}
+
+>>>>>>> v4.9.227
 #else /* !CONFIG_KEXEC */
 static inline void crash_kexec_secondary(struct pt_regs *regs) { }
 
@@ -106,6 +114,14 @@ static inline int crash_shutdown_unregister(crash_shutdown_t handler)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool kdump_in_progress(void)
+{
+	return false;
+}
+
+>>>>>>> v4.9.227
 #endif /* CONFIG_KEXEC */
 #endif /* ! __ASSEMBLY__ */
 #endif /* __KERNEL__ */

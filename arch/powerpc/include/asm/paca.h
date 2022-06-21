@@ -16,6 +16,10 @@
 
 #ifdef CONFIG_PPC64
 
+<<<<<<< HEAD
+=======
+#include <linux/string.h>
+>>>>>>> v4.9.227
 #include <asm/types.h>
 #include <asm/lppaca.h>
 #include <asm/mmu.h>
@@ -24,6 +28,11 @@
 #ifdef CONFIG_KVM_BOOK3S_64_HANDLER
 #include <asm/kvm_book3s_asm.h>
 #endif
+<<<<<<< HEAD
+=======
+#include <asm/accounting.h>
+#include <asm/hmi.h>
+>>>>>>> v4.9.227
 
 register struct paca_struct *local_paca asm("r13");
 
@@ -42,7 +51,10 @@ extern unsigned int debug_smp_processor_id(void); /* from linux/smp.h */
 #define get_slb_shadow()	(get_paca()->slb_shadow_ptr)
 
 struct task_struct;
+<<<<<<< HEAD
 struct opal_machine_check_event;
+=======
+>>>>>>> v4.9.227
 
 /*
  * Defines the layout of the paca.
@@ -107,9 +119,15 @@ struct paca_struct {
 #endif /* CONFIG_PPC_STD_MMU_64 */
 
 #ifdef CONFIG_PPC_BOOK3E
+<<<<<<< HEAD
 	u64 exgen[8] __attribute__((aligned(0x80)));
 	/* Keep pgd in the same cacheline as the start of extlb */
 	pgd_t *pgd __attribute__((aligned(0x80))); /* Current PGD */
+=======
+	u64 exgen[8] __aligned(0x40);
+	/* Keep pgd in the same cacheline as the start of extlb */
+	pgd_t *pgd __aligned(0x40); /* Current PGD */
+>>>>>>> v4.9.227
 	pgd_t *kernel_pgd;		/* Kernel PGD */
 
 	/* Shared by all threads of a core -- points to tcd of first thread */
@@ -132,7 +150,20 @@ struct paca_struct {
 	struct tlb_core_data tcd;
 #endif /* CONFIG_PPC_BOOK3E */
 
+<<<<<<< HEAD
 	mm_context_t context;
+=======
+#ifdef CONFIG_PPC_BOOK3S
+	mm_context_id_t mm_ctx_id;
+#ifdef CONFIG_PPC_MM_SLICES
+	u64 mm_ctx_low_slices_psize;
+	unsigned char mm_ctx_high_slices_psize[SLICE_ARRAY_SIZE];
+#else
+	u16 mm_ctx_user_psize;
+	u16 mm_ctx_sllp;
+#endif
+#endif
+>>>>>>> v4.9.227
 
 	/*
 	 * then miscellaneous read-write fields
@@ -154,11 +185,23 @@ struct paca_struct {
 #endif
 
 #ifdef CONFIG_PPC_POWERNV
+<<<<<<< HEAD
 	/* Pointer to OPAL machine check event structure set by the
 	 * early exception handler for use by high level C handler
 	 */
 	struct opal_machine_check_event *opal_mc_evt;
 #endif
+=======
+	/* Per-core mask tracking idle threads and a lock bit-[L][TTTTTTTT] */
+	u32 *core_idle_state_ptr;
+	u8 thread_idle_state;		/* PNV_THREAD_RUNNING/NAP/SLEEP	*/
+	/* Mask to indicate thread id in core */
+	u8 thread_mask;
+	/* Mask to denote subcore sibling threads */
+	u8 subcore_sibling_mask;
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC_BOOK3S_64
 	/* Exclusive emergency stack pointer for machine check exception. */
 	void *mc_emergency_sp;
@@ -171,6 +214,7 @@ struct paca_struct {
 #endif
 
 	/* Stuff for accurate time accounting */
+<<<<<<< HEAD
 	u64 user_time;			/* accumulated usermode TB ticks */
 	u64 system_time;		/* accumulated system TB ticks */
 	u64 user_time_scaled;		/* accumulated usermode SPURR ticks */
@@ -178,6 +222,9 @@ struct paca_struct {
 	u64 starttime_user;		/* TB value on exit to usermode */
 	u64 startspurr;			/* SPURR value snapshot */
 	u64 utime_sspurr;		/* ->user_time when ->startspurr set */
+=======
+	struct cpu_accounting_data accounting;
+>>>>>>> v4.9.227
 	u64 stolen_time;		/* TB ticks taken by hypervisor */
 	u64 dtl_ridx;			/* read index in dispatch log */
 	struct dtl_entry *dtl_curr;	/* pointer corresponding to dtl_ridx */
@@ -188,9 +235,48 @@ struct paca_struct {
 	struct kvmppc_book3s_shadow_vcpu shadow_vcpu;
 #endif
 	struct kvmppc_host_state kvm_hstate;
+<<<<<<< HEAD
 #endif
 };
 
+=======
+#ifdef CONFIG_KVM_BOOK3S_HV_POSSIBLE
+	/*
+	 * Bitmap for sibling subcore status. See kvm/book3s_hv_ras.c for
+	 * more details
+	 */
+	struct sibling_subcore_state *sibling_subcore_state;
+#endif
+#endif
+#ifdef CONFIG_PPC_BOOK3S_64
+	/*
+	 * rfi fallback flush must be in its own cacheline to prevent
+	 * other paca data leaking into the L1d
+	 */
+	u64 exrfi[13] __aligned(0x80);
+	void *rfi_flush_fallback_area;
+	u64 l1d_flush_size;
+#endif
+};
+
+#ifdef CONFIG_PPC_BOOK3S
+static inline void copy_mm_to_paca(mm_context_t *context)
+{
+	get_paca()->mm_ctx_id = context->id;
+#ifdef CONFIG_PPC_MM_SLICES
+	get_paca()->mm_ctx_low_slices_psize = context->low_slices_psize;
+	memcpy(&get_paca()->mm_ctx_high_slices_psize,
+	       &context->high_slices_psize, SLICE_ARRAY_SIZE);
+#else
+	get_paca()->mm_ctx_user_psize = context->user_psize;
+	get_paca()->mm_ctx_sllp = context->sllp;
+#endif
+}
+#else
+static inline void copy_mm_to_paca(mm_context_t *context){}
+#endif
+
+>>>>>>> v4.9.227
 extern struct paca_struct *paca;
 extern void initialise_paca(struct paca_struct *new_paca, int cpu);
 extern void setup_paca(struct paca_struct *new_paca);

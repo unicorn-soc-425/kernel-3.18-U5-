@@ -68,6 +68,12 @@ static inline bool should_writeback(struct cached_dev *dc, struct bio *bio,
 	    in_use > CUTOFF_WRITEBACK_SYNC)
 		return false;
 
+<<<<<<< HEAD
+=======
+	if (bio_op(bio) == REQ_OP_DISCARD)
+		return false;
+
+>>>>>>> v4.9.227
 	if (dc->partial_stripes_expensive &&
 	    bcache_dev_stripe_dirty(dc, bio->bi_iter.bi_sector,
 				    bio_sectors(bio)))
@@ -76,7 +82,11 @@ static inline bool should_writeback(struct cached_dev *dc, struct bio *bio,
 	if (would_skip)
 		return false;
 
+<<<<<<< HEAD
 	return bio->bi_rw & REQ_SYNC ||
+=======
+	return bio->bi_opf & REQ_SYNC ||
+>>>>>>> v4.9.227
 		in_use <= CUTOFF_WRITEBACK;
 }
 

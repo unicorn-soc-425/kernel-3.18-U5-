@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -41,7 +45,10 @@
 #error Do not #include this file directly. #include <linux/libcfs/libcfs.h> instead
 #endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #include <linux/bitops.h>
 #include <linux/compiler.h>
 #include <linux/ctype.h>
@@ -61,7 +68,11 @@
 #include <linux/moduleparam.h>
 #include <linux/mutex.h>
 #include <linux/notifier.h>
+<<<<<<< HEAD
 #include <linux/proc_fs.h>
+=======
+#include <linux/pagemap.h>
+>>>>>>> v4.9.227
 #include <linux/random.h>
 #include <linux/rbtree.h>
 #include <linux/rwsem.h>
@@ -85,8 +96,11 @@
 #include <stdarg.h>
 #include "linux-cpu.h"
 #include "linux-time.h"
+<<<<<<< HEAD
 #include "linux-mem.h"
 
+=======
+>>>>>>> v4.9.227
 
 #define LUSTRE_TRACE_SIZE (THREAD_SIZE >> 5)
 
@@ -121,9 +135,12 @@ do {								    \
 #define CDEBUG_STACK() (0L)
 #endif /* __x86_64__ */
 
+<<<<<<< HEAD
 /* initial pid  */
 #define LUSTRE_LNET_PID	  12345
 
+=======
+>>>>>>> v4.9.227
 #define __current_nesting_level() (0)
 
 /**
@@ -143,5 +160,8 @@ typedef long long_ptr_t;
 #define WITH_WATCHDOG
 #endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #endif /* _LINUX_LIBCFS_H */

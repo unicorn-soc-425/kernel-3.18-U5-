@@ -1181,6 +1181,13 @@ static void zs_console_write(struct console *co, const char *s,
 	if (txint & TxINT_ENAB) {
 		zport->regs[1] |= TxINT_ENAB;
 		write_zsreg(zport, R1, zport->regs[1]);
+<<<<<<< HEAD
+=======
+
+		/* Resume any transmission as the TxIP bit won't be set.  */
+		if (!zport->tx_stopped)
+			zs_raw_transmit_chars(zport);
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&scc->zlock, flags);
 }

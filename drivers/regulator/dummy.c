@@ -33,7 +33,11 @@ static struct regulator_init_data dummy_initdata = {
 
 static struct regulator_ops dummy_ops;
 
+<<<<<<< HEAD
 static struct regulator_desc dummy_desc = {
+=======
+static const struct regulator_desc dummy_desc = {
+>>>>>>> v4.9.227
 	.name = "regulator-dummy",
 	.id = -1,
 	.type = REGULATOR_VOLTAGE,
@@ -63,7 +67,10 @@ static struct platform_driver dummy_regulator_driver = {
 	.probe		= dummy_regulator_probe,
 	.driver		= {
 		.name		= "reg-dummy",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

@@ -9,13 +9,23 @@
 #include <linux/vmstat.h>
 #include <linux/highmem.h>
 #include <linux/swap.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/memremap.h>
+
+#include <asm/mmu_context.h>
+>>>>>>> v4.9.227
 #include <asm/pgtable.h>
 
 static inline pte_t gup_get_pte(pte_t *ptep)
 {
 #ifndef CONFIG_X86_PAE
+<<<<<<< HEAD
 	return ACCESS_ONCE(*ptep);
+=======
+	return READ_ONCE(*ptep);
+>>>>>>> v4.9.227
 #else
 	/*
 	 * With get_user_pages_fast, we walk down the pagetables without taking
@@ -63,6 +73,55 @@ retry:
 #endif
 }
 
+<<<<<<< HEAD
+=======
+static void undo_dev_pagemap(int *nr, int nr_start, struct page **pages)
+{
+	while ((*nr) - nr_start) {
+		struct page *page = pages[--(*nr)];
+
+		ClearPageReferenced(page);
+		put_page(page);
+	}
+}
+
+/*
+ * 'pteval' can come from a pte, pmd or pud.  We only check
+ * _PAGE_PRESENT, _PAGE_USER, and _PAGE_RW in here which are the
+ * same value on all 3 types.
+ */
+static inline int pte_allows_gup(unsigned long pteval, int write)
+{
+	unsigned long need_pte_bits = _PAGE_PRESENT|_PAGE_USER;
+
+	if (write)
+		need_pte_bits |= _PAGE_RW;
+
+	if ((pteval & need_pte_bits) != need_pte_bits)
+		return 0;
+
+	/* Check memory protection keys permissions. */
+	if (!__pkru_allows_pkey(pte_flags_pkey(pteval), write))
+		return 0;
+
+	return 1;
+}
+
+/*
+ * Return the compund head page with ref appropriately incremented,
+ * or NULL if that failed.
+ */
+static inline struct page *try_get_compound_head(struct page *page, int refs)
+{
+	struct page *head = compound_head(page);
+	if (WARN_ON_ONCE(page_ref_count(head) < 0))
+		return NULL;
+	if (unlikely(!page_cache_add_speculative(head, refs)))
+		return NULL;
+	return head;
+}
+
+>>>>>>> v4.9.227
 /*
  * The performance critical leaf functions are made noinline otherwise gcc
  * inlines everything into a single function which results in too much
@@ -71,6 +130,7 @@ retry:
 static noinline int gup_pte_range(pmd_t pmd, unsigned long addr,
 		unsigned long end, int write, struct page **pages, int *nr)
 {
+<<<<<<< HEAD
 	unsigned long mask;
 	pte_t *ptep;
 
@@ -85,17 +145,65 @@ static noinline int gup_pte_range(pmd_t pmd, unsigned long addr,
 
 		/* Similar to the PMD case, NUMA hinting must take slow path */
 		if (pte_numa(pte)) {
+=======
+	struct dev_pagemap *pgmap = NULL;
+	int nr_start = *nr;
+	pte_t *ptep;
+
+	ptep = pte_offset_map(&pmd, addr);
+	do {
+		pte_t pte = gup_get_pte(ptep);
+		struct page *head, *page;
+
+		/* Similar to the PMD case, NUMA hinting must take slow path */
+		if (pte_protnone(pte)) {
+>>>>>>> v4.9.227
 			pte_unmap(ptep);
 			return 0;
 		}
 
+<<<<<<< HEAD
 		if ((pte_flags(pte) & (mask | _PAGE_SPECIAL)) != mask) {
+=======
+		if (!pte_allows_gup(pte_val(pte), write)) {
+			pte_unmap(ptep);
+			return 0;
+		}
+
+		if (pte_devmap(pte)) {
+			pgmap = get_dev_pagemap(pte_pfn(pte), pgmap);
+			if (unlikely(!pgmap)) {
+				undo_dev_pagemap(nr, nr_start, pages);
+				pte_unmap(ptep);
+				return 0;
+			}
+		} else if (pte_special(pte)) {
+>>>>>>> v4.9.227
 			pte_unmap(ptep);
 			return 0;
 		}
 		VM_BUG_ON(!pfn_valid(pte_pfn(pte)));
 		page = pte_page(pte);
+<<<<<<< HEAD
 		get_page(page);
+=======
+
+		head = try_get_compound_head(page, 1);
+		if (!head) {
+			put_dev_pagemap(pgmap);
+			pte_unmap(ptep);
+			return 0;
+		}
+
+		if (unlikely(pte_val(pte) != pte_val(*ptep))) {
+			put_page(head);
+			put_dev_pagemap(pgmap);
+			pte_unmap(ptep);
+			return 0;
+		}
+
+		put_dev_pagemap(pgmap);
+>>>>>>> v4.9.227
 		SetPageReferenced(page);
 		pages[*nr] = page;
 		(*nr)++;
@@ -110,6 +218,7 @@ static inline void get_head_page_multiple(struct page *page, int nr)
 {
 	VM_BUG_ON_PAGE(page != compound_head(page), page);
 	VM_BUG_ON_PAGE(page_count(page) == 0, page);
+<<<<<<< HEAD
 	atomic_add(nr, &page->_count);
 	SetPageReferenced(page);
 }
@@ -133,12 +242,70 @@ static noinline int gup_huge_pmd(pmd_t pmd, unsigned long addr,
 
 	refs = 0;
 	head = pte_page(pte);
+=======
+	page_ref_add(page, nr);
+	SetPageReferenced(page);
+}
+
+static int __gup_device_huge_pmd(pmd_t pmd, unsigned long addr,
+		unsigned long end, struct page **pages, int *nr)
+{
+	int nr_start = *nr;
+	unsigned long pfn = pmd_pfn(pmd);
+	struct dev_pagemap *pgmap = NULL;
+
+	pfn += (addr & ~PMD_MASK) >> PAGE_SHIFT;
+	do {
+		struct page *page = pfn_to_page(pfn);
+
+		pgmap = get_dev_pagemap(pfn, pgmap);
+		if (unlikely(!pgmap)) {
+			undo_dev_pagemap(nr, nr_start, pages);
+			return 0;
+		}
+		if (unlikely(!try_get_page(page))) {
+			put_dev_pagemap(pgmap);
+			return 0;
+		}
+		SetPageReferenced(page);
+		pages[*nr] = page;
+		put_dev_pagemap(pgmap);
+		(*nr)++;
+		pfn++;
+	} while (addr += PAGE_SIZE, addr != end);
+	return 1;
+}
+
+static noinline int gup_huge_pmd(pmd_t pmd, unsigned long addr,
+		unsigned long end, int write, struct page **pages, int *nr)
+{
+	struct page *head, *page;
+	int refs;
+
+	if (!pte_allows_gup(pmd_val(pmd), write))
+		return 0;
+
+	VM_BUG_ON(!pfn_valid(pmd_pfn(pmd)));
+	if (pmd_devmap(pmd))
+		return __gup_device_huge_pmd(pmd, addr, end, pages, nr);
+
+	/* hugepages are never "special" */
+	VM_BUG_ON(pmd_flags(pmd) & _PAGE_SPECIAL);
+
+	refs = 0;
+	head = pmd_page(pmd);
+	if (WARN_ON_ONCE(page_ref_count(head) <= 0))
+		return 0;
+>>>>>>> v4.9.227
 	page = head + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
 	do {
 		VM_BUG_ON_PAGE(compound_head(page) != head, page);
 		pages[*nr] = page;
+<<<<<<< HEAD
 		if (PageTail(page))
 			get_huge_page_tail(page);
+=======
+>>>>>>> v4.9.227
 		(*nr)++;
 		page++;
 		refs++;
@@ -159,6 +326,7 @@ static int gup_pmd_range(pud_t pud, unsigned long addr, unsigned long end,
 		pmd_t pmd = *pmdp;
 
 		next = pmd_addr_end(addr, end);
+<<<<<<< HEAD
 		/*
 		 * The pmd_trans_splitting() check below explains why
 		 * pmdp_splitting_flush has to flush the tlb, to stop
@@ -171,6 +339,9 @@ static int gup_pmd_range(pud_t pud, unsigned long addr, unsigned long end,
 		 * tlb flush IPI wouldn't run.
 		 */
 		if (pmd_none(pmd) || pmd_trans_splitting(pmd))
+=======
+		if (pmd_none(pmd))
+>>>>>>> v4.9.227
 			return 0;
 		if (unlikely(pmd_large(pmd) || !pmd_present(pmd))) {
 			/*
@@ -178,7 +349,11 @@ static int gup_pmd_range(pud_t pud, unsigned long addr, unsigned long end,
 			 * slowpath for accounting purposes and so that they
 			 * can be serialised against THP migration.
 			 */
+<<<<<<< HEAD
 			if (pmd_numa(pmd))
+=======
+			if (pmd_protnone(pmd))
+>>>>>>> v4.9.227
 				return 0;
 			if (!gup_huge_pmd(pmd, addr, next, write, pages, nr))
 				return 0;
@@ -194,6 +369,7 @@ static int gup_pmd_range(pud_t pud, unsigned long addr, unsigned long end,
 static noinline int gup_huge_pud(pud_t pud, unsigned long addr,
 		unsigned long end, int write, struct page **pages, int *nr)
 {
+<<<<<<< HEAD
 	unsigned long mask;
 	pte_t pte = *(pte_t *)&pud;
 	struct page *head, *page;
@@ -210,12 +386,30 @@ static noinline int gup_huge_pud(pud_t pud, unsigned long addr,
 
 	refs = 0;
 	head = pte_page(pte);
+=======
+	struct page *head, *page;
+	int refs;
+
+	if (!pte_allows_gup(pud_val(pud), write))
+		return 0;
+	/* hugepages are never "special" */
+	VM_BUG_ON(pud_flags(pud) & _PAGE_SPECIAL);
+	VM_BUG_ON(!pfn_valid(pud_pfn(pud)));
+
+	refs = 0;
+	head = pud_page(pud);
+	if (WARN_ON_ONCE(page_ref_count(head) <= 0))
+		return 0;
+>>>>>>> v4.9.227
 	page = head + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
 	do {
 		VM_BUG_ON_PAGE(compound_head(page) != head, page);
 		pages[*nr] = page;
+<<<<<<< HEAD
 		if (PageTail(page))
 			get_huge_page_tail(page);
+=======
+>>>>>>> v4.9.227
 		(*nr)++;
 		page++;
 		refs++;
@@ -388,10 +582,16 @@ slow_irqon:
 		start += nr << PAGE_SHIFT;
 		pages += nr;
 
+<<<<<<< HEAD
 		down_read(&mm->mmap_sem);
 		ret = get_user_pages(current, mm, start,
 			(end - start) >> PAGE_SHIFT, write, 0, pages, NULL);
 		up_read(&mm->mmap_sem);
+=======
+		ret = get_user_pages_unlocked(start,
+					      (end - start) >> PAGE_SHIFT,
+					      pages, write ? FOLL_WRITE : 0);
+>>>>>>> v4.9.227
 
 		/* Have to be a bit careful with return values */
 		if (nr > 0) {

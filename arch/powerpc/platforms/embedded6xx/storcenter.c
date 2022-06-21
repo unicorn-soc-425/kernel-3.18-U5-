@@ -96,7 +96,11 @@ static void __init storcenter_init_IRQ(void)
 	mpic_init(mpic);
 }
 
+<<<<<<< HEAD
 static void storcenter_restart(char *cmd)
+=======
+static void __noreturn storcenter_restart(char *cmd)
+>>>>>>> v4.9.227
 {
 	local_irq_disable();
 
@@ -109,9 +113,13 @@ static void storcenter_restart(char *cmd)
 
 static int __init storcenter_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "iomega,storcenter");
+=======
+	return of_machine_is_compatible("iomega,storcenter");
+>>>>>>> v4.9.227
 }
 
 define_machine(storcenter){

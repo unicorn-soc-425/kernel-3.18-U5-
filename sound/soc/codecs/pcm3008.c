@@ -32,7 +32,11 @@ static int pcm3008_dac_ev(struct snd_soc_dapm_widget *w,
 			  struct snd_kcontrol *kcontrol,
 			  int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	struct pcm3008_setup_data *setup = codec->dev->platform_data;
 
 	gpio_set_value_cansleep(setup->pdda_pin,
@@ -45,7 +49,11 @@ static int pcm3008_adc_ev(struct snd_soc_dapm_widget *w,
 			  struct snd_kcontrol *kcontrol,
 			  int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 	struct pcm3008_setup_data *setup = codec->dev->platform_data;
 
 	gpio_set_value_cansleep(setup->pdad_pin,
@@ -99,10 +107,19 @@ static struct snd_soc_dai_driver pcm3008_dai = {
 };
 
 static struct snd_soc_codec_driver soc_codec_dev_pcm3008 = {
+<<<<<<< HEAD
 	.dapm_widgets = pcm3008_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(pcm3008_dapm_widgets),
 	.dapm_routes = pcm3008_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(pcm3008_dapm_routes),
+=======
+	.component_driver = {
+		.dapm_widgets		= pcm3008_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(pcm3008_dapm_widgets),
+		.dapm_routes		= pcm3008_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(pcm3008_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static int pcm3008_codec_probe(struct platform_device *pdev)
@@ -162,7 +179,10 @@ static struct platform_driver pcm3008_codec_driver = {
 	.remove		= pcm3008_codec_remove,
 	.driver		= {
 		.name	= "pcm3008-codec",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

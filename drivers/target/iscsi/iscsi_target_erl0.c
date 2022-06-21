@@ -21,9 +21,14 @@
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
 
+<<<<<<< HEAD
 #include "iscsi_target_core.h"
 #include "iscsi_target_seq_pdu_list.h"
 #include "iscsi_target_tq.h"
+=======
+#include <target/iscsi/iscsi_target_core.h>
+#include "iscsi_target_seq_pdu_list.h"
+>>>>>>> v4.9.227
 #include "iscsi_target_erl0.h"
 #include "iscsi_target_erl1.h"
 #include "iscsi_target_erl2.h"
@@ -785,7 +790,11 @@ static void iscsit_handle_time2retain_timeout(unsigned long data)
 	}
 
 	spin_unlock_bh(&se_tpg->session_lock);
+<<<<<<< HEAD
 	target_put_session(sess->se_sess);
+=======
+	iscsit_close_session(sess);
+>>>>>>> v4.9.227
 }
 
 void iscsit_start_time2retain_handler(struct iscsi_session *sess)
@@ -959,6 +968,7 @@ void iscsit_take_action_for_connection_exit(struct iscsi_conn *conn, bool *conn_
 	iscsit_handle_connection_cleanup(conn);
 	*conn_freed = true;
 }
+<<<<<<< HEAD
 
 /*
  *	This is the simple function that makes the magic of
@@ -1012,3 +1022,5 @@ int iscsit_recover_from_unknown_opcode(struct iscsi_conn *conn)
 
 	return 0;
 }
+=======
+>>>>>>> v4.9.227

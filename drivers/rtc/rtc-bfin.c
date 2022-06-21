@@ -361,7 +361,11 @@ static int bfin_rtc_probe(struct platform_device *pdev)
 	/* Register our RTC with the RTC framework */
 	rtc->rtc_dev = devm_rtc_device_register(dev, pdev->name, &bfin_rtc_ops,
 						THIS_MODULE);
+<<<<<<< HEAD
 	if (unlikely(IS_ERR(rtc->rtc_dev)))
+=======
+	if (IS_ERR(rtc->rtc_dev))
+>>>>>>> v4.9.227
 		return PTR_ERR(rtc->rtc_dev);
 
 	/* Grab the IRQ and init the hardware */
@@ -434,7 +438,10 @@ static SIMPLE_DEV_PM_OPS(bfin_rtc_pm_ops, bfin_rtc_suspend, bfin_rtc_resume);
 static struct platform_driver bfin_rtc_driver = {
 	.driver		= {
 		.name	= "rtc-bfin",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &bfin_rtc_pm_ops,
 	},
 	.probe		= bfin_rtc_probe,

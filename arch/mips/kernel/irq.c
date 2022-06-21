@@ -25,6 +25,7 @@
 #include <linux/atomic.h>
 #include <asm/uaccess.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_KGDB
 int kgdb_early_setup;
 #endif
@@ -66,6 +67,9 @@ void free_irqno(unsigned int irq)
 	clear_bit(irq, irq_map);
 	smp_mb__after_atomic();
 }
+=======
+void *irq_stack[NR_CPUS];
+>>>>>>> v4.9.227
 
 /*
  * 'what should we do if we get a hw irq event on an illegal vector'.
@@ -92,21 +96,40 @@ asmlinkage void spurious_interrupt(void)
 void __init init_IRQ(void)
 {
 	int i;
+<<<<<<< HEAD
 
 #ifdef CONFIG_KGDB
 	if (kgdb_early_setup)
 		return;
 #endif
+=======
+	unsigned int order = get_order(IRQ_STACK_SIZE);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < NR_IRQS; i++)
 		irq_set_noprobe(i);
 
+<<<<<<< HEAD
 	arch_init_irq();
 
 #ifdef CONFIG_KGDB
 	if (!kgdb_early_setup)
 		kgdb_early_setup = 1;
 #endif
+=======
+	if (cpu_has_veic)
+		clear_c0_status(ST0_IM);
+
+	arch_init_irq();
+
+	for_each_possible_cpu(i) {
+		void *s = (void *)__get_free_pages(GFP_KERNEL, order);
+
+		irq_stack[i] = s;
+		pr_debug("CPU%d IRQ stack at 0x%p - 0x%p\n", i,
+			irq_stack[i], irq_stack[i] + IRQ_STACK_SIZE);
+	}
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_DEBUG_STACKOVERFLOW

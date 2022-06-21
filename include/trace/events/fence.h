@@ -17,7 +17,11 @@ TRACE_EVENT(fence_annotate_wait_on,
 
 	TP_STRUCT__entry(
 		__string(driver, fence->ops->get_driver_name(fence))
+<<<<<<< HEAD
 		__string(timeline, fence->ops->get_driver_name(fence))
+=======
+		__string(timeline, fence->ops->get_timeline_name(fence))
+>>>>>>> v4.9.227
 		__field(unsigned int, context)
 		__field(unsigned int, seqno)
 

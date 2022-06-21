@@ -15,7 +15,11 @@
 #include <linux/videodev2.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #include <media/ak881x.h>
+=======
+#include <media/i2c/ak881x.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-common.h>
 #include <media/v4l2-device.h>
 
@@ -93,6 +97,7 @@ static int ak881x_s_register(struct v4l2_subdev *sd,
 }
 #endif
 
+<<<<<<< HEAD
 static int ak881x_try_g_mbus_fmt(struct v4l2_subdev *sd,
 				 struct v4l2_mbus_framefmt *mf)
 {
@@ -103,11 +108,29 @@ static int ak881x_try_g_mbus_fmt(struct v4l2_subdev *sd,
 			      &mf->height, 0, ak881x->lines, 1, 0);
 	mf->field	= V4L2_FIELD_INTERLACED;
 	mf->code	= V4L2_MBUS_FMT_YUYV8_2X8;
+=======
+static int ak881x_fill_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+	struct i2c_client *client = v4l2_get_subdevdata(sd);
+	struct ak881x *ak881x = to_ak881x(client);
+
+	if (format->pad)
+		return -EINVAL;
+
+	v4l_bound_align_image(&mf->width, 0, 720, 2,
+			      &mf->height, 0, ak881x->lines, 1, 0);
+	mf->field	= V4L2_FIELD_INTERLACED;
+	mf->code	= MEDIA_BUS_FMT_YUYV8_2X8;
+>>>>>>> v4.9.227
 	mf->colorspace	= V4L2_COLORSPACE_SMPTE170M;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ak881x_s_mbus_fmt(struct v4l2_subdev *sd,
 			     struct v4l2_mbus_framefmt *mf)
 {
@@ -129,10 +152,27 @@ static int ak881x_enum_mbus_fmt(struct v4l2_subdev *sd, unsigned int index,
 }
 
 static int ak881x_cropcap(struct v4l2_subdev *sd, struct v4l2_cropcap *a)
+=======
+static int ak881x_enum_mbus_code(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_mbus_code_enum *code)
+{
+	if (code->pad || code->index)
+		return -EINVAL;
+
+	code->code = MEDIA_BUS_FMT_YUYV8_2X8;
+	return 0;
+}
+
+static int ak881x_get_selection(struct v4l2_subdev *sd,
+				struct v4l2_subdev_pad_config *cfg,
+				struct v4l2_subdev_selection *sel)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct ak881x *ak881x = to_ak881x(client);
 
+<<<<<<< HEAD
 	a->bounds.left			= 0;
 	a->bounds.top			= 0;
 	a->bounds.width			= 720;
@@ -143,6 +183,22 @@ static int ak881x_cropcap(struct v4l2_subdev *sd, struct v4l2_cropcap *a)
 	a->pixelaspect.denominator	= 1;
 
 	return 0;
+=======
+	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE)
+		return -EINVAL;
+
+	switch (sel->target) {
+	case V4L2_SEL_TGT_CROP_BOUNDS:
+	case V4L2_SEL_TGT_CROP_DEFAULT:
+		sel->r.left = 0;
+		sel->r.top = 0;
+		sel->r.width = 720;
+		sel->r.height = ak881x->lines;
+		return 0;
+	default:
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 }
 
 static int ak881x_s_std_output(struct v4l2_subdev *sd, v4l2_std_id std)
@@ -160,12 +216,21 @@ static int ak881x_s_std_output(struct v4l2_subdev *sd, v4l2_std_id std)
 	} else if (std == V4L2_STD_PAL_60) {
 		vp1 = 7;
 		ak881x->lines = 480;
+<<<<<<< HEAD
 	} else if (std && !(std & ~V4L2_STD_PAL)) {
 		vp1 = 0xf;
 		ak881x->lines = 576;
 	} else if (std && !(std & ~V4L2_STD_NTSC)) {
 		vp1 = 0;
 		ak881x->lines = 480;
+=======
+	} else if (std & V4L2_STD_NTSC) {
+		vp1 = 0;
+		ak881x->lines = 480;
+	} else if (std & V4L2_STD_PAL) {
+		vp1 = 0xf;
+		ak881x->lines = 576;
+>>>>>>> v4.9.227
 	} else {
 		/* No SECAM or PAL_N/Nc supported */
 		return -EINVAL;
@@ -211,18 +276,35 @@ static struct v4l2_subdev_core_ops ak881x_subdev_core_ops = {
 };
 
 static struct v4l2_subdev_video_ops ak881x_subdev_video_ops = {
+<<<<<<< HEAD
 	.s_mbus_fmt	= ak881x_s_mbus_fmt,
 	.g_mbus_fmt	= ak881x_try_g_mbus_fmt,
 	.try_mbus_fmt	= ak881x_try_g_mbus_fmt,
 	.cropcap	= ak881x_cropcap,
 	.enum_mbus_fmt	= ak881x_enum_mbus_fmt,
+=======
+>>>>>>> v4.9.227
 	.s_std_output	= ak881x_s_std_output,
 	.s_stream	= ak881x_s_stream,
+};
+
+<<<<<<< HEAD
+static struct v4l2_subdev_ops ak881x_subdev_ops = {
+	.core	= &ak881x_subdev_core_ops,
+	.video	= &ak881x_subdev_video_ops,
+=======
+static const struct v4l2_subdev_pad_ops ak881x_subdev_pad_ops = {
+	.enum_mbus_code = ak881x_enum_mbus_code,
+	.get_selection	= ak881x_get_selection,
+	.set_fmt	= ak881x_fill_fmt,
+	.get_fmt	= ak881x_fill_fmt,
 };
 
 static struct v4l2_subdev_ops ak881x_subdev_ops = {
 	.core	= &ak881x_subdev_core_ops,
 	.video	= &ak881x_subdev_video_ops,
+	.pad	= &ak881x_subdev_pad_ops,
+>>>>>>> v4.9.227
 };
 
 static int ak881x_probe(struct i2c_client *client,

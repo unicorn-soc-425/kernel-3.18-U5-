@@ -64,8 +64,13 @@
 			};
 
 			ldo3_reg: ldo3 {
+<<<<<<< HEAD
 				regulator-min-microvolt = <600000>;
 				regulator-max-microvolt = <1800000>;
+=======
+				regulator-min-microvolt = <1725000>;
+				regulator-max-microvolt = <3300000>;
+>>>>>>> v4.9.227
 				regulator-always-on;
 			};
 
@@ -76,8 +81,13 @@
 			};
 
 			ldo5_reg: ldo5 {
+<<<<<<< HEAD
 				regulator-min-microvolt = <1725000>;
 				regulator-max-microvolt = <3300000>;
+=======
+				regulator-min-microvolt = <1200000>;
+				regulator-max-microvolt = <3600000>;
+>>>>>>> v4.9.227
 				regulator-always-on;
 			};
 
@@ -100,14 +110,23 @@
 			};
 
 			ldo9_reg: ldo9 {
+<<<<<<< HEAD
 				regulator-min-microvolt = <1200000>;
+=======
+				regulator-min-microvolt = <1250000>;
+>>>>>>> v4.9.227
 				regulator-max-microvolt = <3600000>;
 				regulator-always-on;
 			};
 
 			ldo10_reg: ldo10 {
+<<<<<<< HEAD
 				regulator-min-microvolt = <1250000>;
 				regulator-max-microvolt = <3650000>;
+=======
+				regulator-min-microvolt = <1200000>;
+				regulator-max-microvolt = <3600000>;
+>>>>>>> v4.9.227
 				regulator-always-on;
 			};
 		};

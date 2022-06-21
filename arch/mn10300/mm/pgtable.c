@@ -63,7 +63,11 @@ void set_pmd_pfn(unsigned long vaddr, unsigned long pfn, pgprot_t flags)
 
 pte_t *pte_alloc_one_kernel(struct mm_struct *mm, unsigned long address)
 {
+<<<<<<< HEAD
 	pte_t *pte = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_REPEAT);
+=======
+	pte_t *pte = (pte_t *)__get_free_page(GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (pte)
 		clear_page(pte);
 	return pte;
@@ -74,9 +78,15 @@ struct page *pte_alloc_one(struct mm_struct *mm, unsigned long address)
 	struct page *pte;
 
 #ifdef CONFIG_HIGHPTE
+<<<<<<< HEAD
 	pte = alloc_pages(GFP_KERNEL|__GFP_HIGHMEM|__GFP_REPEAT, 0);
 #else
 	pte = alloc_pages(GFP_KERNEL|__GFP_REPEAT, 0);
+=======
+	pte = alloc_pages(GFP_KERNEL|__GFP_HIGHMEM, 0);
+#else
+	pte = alloc_pages(GFP_KERNEL, 0);
+>>>>>>> v4.9.227
 #endif
 	if (!pte)
 		return NULL;

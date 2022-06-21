@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Unusual Devices File for devices based on the Cypress USB/ATA bridge
+=======
+/*
+ * Unusual Devices File for devices based on the Cypress USB/ATA bridge
+>>>>>>> v4.9.227
  *	with support for ATACB
  *
  * This program is free software; you can redistribute it and/or modify it

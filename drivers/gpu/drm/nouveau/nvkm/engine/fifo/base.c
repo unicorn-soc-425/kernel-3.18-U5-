@@ -129,9 +129,15 @@ nvkm_fifo_uevent_ctor(struct nvkm_object *object, void *data, u32 size,
 	union {
 		struct nvif_notify_uevent_req none;
 	} *req = data;
+<<<<<<< HEAD
 	int ret;
 
 	if (nvif_unvers(req->none)) {
+=======
+	int ret = -ENOSYS;
+
+	if (!(ret = nvif_unvers(ret, &data, &size, req->none))) {
+>>>>>>> v4.9.227
 		notify->size  = sizeof(struct nvif_notify_uevent_rep);
 		notify->types = 1;
 		notify->index = 0;
@@ -178,6 +184,20 @@ nvkm_fifo_class_get(struct nvkm_oclass *oclass, int index,
 	const struct nvkm_fifo_chan_oclass *sclass;
 	int c = 0;
 
+<<<<<<< HEAD
+=======
+	if (fifo->func->class_get) {
+		int ret = fifo->func->class_get(fifo, index, &sclass);
+		if (ret == 0) {
+			oclass->base = sclass->base;
+			oclass->engn = sclass;
+			*class = &nvkm_fifo_class;
+			return 0;
+		}
+		return ret;
+	}
+
+>>>>>>> v4.9.227
 	while ((sclass = fifo->func->chan[c])) {
 		if (c++ == index) {
 			oclass->base = sclass->base;
@@ -261,8 +281,12 @@ nvkm_fifo_ctor(const struct nvkm_fifo_func *func, struct nvkm_device *device,
 		fifo->nr = nr;
 	bitmap_clear(fifo->mask, 0, fifo->nr);
 
+<<<<<<< HEAD
 	ret = nvkm_engine_ctor(&nvkm_fifo, device, index, 0x00000100,
 			       true, &fifo->engine);
+=======
+	ret = nvkm_engine_ctor(&nvkm_fifo, device, index, true, &fifo->engine);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 

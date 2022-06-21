@@ -23,6 +23,7 @@ static struct sk_buff *mpls_gso_segment(struct sk_buff *skb,
 				       netdev_features_t features)
 {
 	struct sk_buff *segs = ERR_PTR(-EINVAL);
+<<<<<<< HEAD
 	netdev_features_t mpls_features;
 	__be16 mpls_protocol;
 
@@ -36,20 +37,39 @@ static struct sk_buff *mpls_gso_segment(struct sk_buff *skb,
 				  SKB_GSO_GRE_CSUM |
 				  SKB_GSO_IPIP |
 				  SKB_GSO_MPLS)))
+=======
+	u16 mac_offset = skb->mac_header;
+	netdev_features_t mpls_features;
+	u16 mac_len = skb->mac_len;
+	__be16 mpls_protocol;
+	unsigned int mpls_hlen;
+
+	skb_reset_network_header(skb);
+	mpls_hlen = skb_inner_network_header(skb) - skb_network_header(skb);
+	if (unlikely(!pskb_may_pull(skb, mpls_hlen)))
+>>>>>>> v4.9.227
 		goto out;
 
 	/* Setup inner SKB. */
 	mpls_protocol = skb->protocol;
 	skb->protocol = skb->inner_protocol;
 
+<<<<<<< HEAD
 	/* Push back the mac header that skb_mac_gso_segment() has pulled.
 	 * It will be re-pulled by the call to skb_mac_gso_segment() below
 	 */
 	__skb_push(skb, skb->mac_len);
+=======
+	__skb_pull(skb, mpls_hlen);
+
+	skb->mac_len = 0;
+	skb_reset_mac_header(skb);
+>>>>>>> v4.9.227
 
 	/* Segment inner packet. */
 	mpls_features = skb->dev->mpls_features & features;
 	segs = skb_mac_gso_segment(skb, mpls_features);
+<<<<<<< HEAD
 
 
 	/* Restore outer protocol. */
@@ -60,19 +80,53 @@ static struct sk_buff *mpls_gso_segment(struct sk_buff *skb,
 	 * skb_mac_gso_segment(), an indirect caller of this function.
 	 */
 	__skb_pull(skb, skb->data - skb_mac_header(skb));
+=======
+	if (IS_ERR_OR_NULL(segs)) {
+		skb_gso_error_unwind(skb, mpls_protocol, mpls_hlen, mac_offset,
+				     mac_len);
+		goto out;
+	}
+	skb = segs;
+
+	mpls_hlen += mac_len;
+	do {
+		skb->mac_len = mac_len;
+		skb->protocol = mpls_protocol;
+
+		skb_reset_inner_network_header(skb);
+
+		__skb_push(skb, mpls_hlen);
+
+		skb_reset_mac_header(skb);
+		skb_set_network_header(skb, mac_len);
+	} while ((skb = skb->next));
+
+>>>>>>> v4.9.227
 out:
 	return segs;
 }
 
+<<<<<<< HEAD
 static struct packet_offload mpls_mc_offload = {
 	.type = cpu_to_be16(ETH_P_MPLS_MC),
+=======
+static struct packet_offload mpls_mc_offload __read_mostly = {
+	.type = cpu_to_be16(ETH_P_MPLS_MC),
+	.priority = 15,
+>>>>>>> v4.9.227
 	.callbacks = {
 		.gso_segment    =	mpls_gso_segment,
 	},
 };
 
+<<<<<<< HEAD
 static struct packet_offload mpls_uc_offload = {
 	.type = cpu_to_be16(ETH_P_MPLS_UC),
+=======
+static struct packet_offload mpls_uc_offload __read_mostly = {
+	.type = cpu_to_be16(ETH_P_MPLS_UC),
+	.priority = 15,
+>>>>>>> v4.9.227
 	.callbacks = {
 		.gso_segment    =	mpls_gso_segment,
 	},

@@ -382,8 +382,13 @@ void prepare_ftrace_return(unsigned long *parent_ra_addr, unsigned long self_ra,
 	if (unlikely(faulted))
 		goto out;
 
+<<<<<<< HEAD
 	if (ftrace_push_return_trace(old_parent_ra, self_ra, &trace.depth, fp)
 	    == -EBUSY) {
+=======
+	if (ftrace_push_return_trace(old_parent_ra, self_ra, &trace.depth, fp,
+				     NULL) == -EBUSY) {
+>>>>>>> v4.9.227
 		*parent_ra_addr = old_parent_ra;
 		return;
 	}

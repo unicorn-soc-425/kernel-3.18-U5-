@@ -74,6 +74,10 @@
 #define ARM_INST_LDRB_I		0x05d00000
 #define ARM_INST_LDRB_R		0x07d00000
 #define ARM_INST_LDRH_I		0x01d000b0
+<<<<<<< HEAD
+=======
+#define ARM_INST_LDRH_R		0x019000b0
+>>>>>>> v4.9.227
 #define ARM_INST_LDR_I		0x05900000
 
 #define ARM_INST_LDM		0x08900000
@@ -114,6 +118,11 @@
 
 #define ARM_INST_UMULL		0x00800090
 
+<<<<<<< HEAD
+=======
+#define ARM_INST_MLS		0x00600090
+
+>>>>>>> v4.9.227
 /*
  * Use a suitable undefined instruction to use for ARM/Thumb2 faulting.
  * We need to be careful not to conflict with those used by other modules
@@ -160,6 +169,11 @@
 				 | (rm))
 #define ARM_LDRH_I(rt, rn, off)	(ARM_INST_LDRH_I | (rt) << 12 | (rn) << 16 \
 				 | (((off) & 0xf0) << 4) | ((off) & 0xf))
+<<<<<<< HEAD
+=======
+#define ARM_LDRH_R(rt, rn, rm)	(ARM_INST_LDRH_R | (rt) << 12 | (rn) << 16 \
+				 | (rm))
+>>>>>>> v4.9.227
 
 #define ARM_LDM(rn, regs)	(ARM_INST_LDM | (rn) << 16 | (regs))
 
@@ -207,4 +221,10 @@
 #define ARM_UMULL(rd_lo, rd_hi, rn, rm)	(ARM_INST_UMULL | (rd_hi) << 16 \
 					 | (rd_lo) << 12 | (rm) << 8 | rn)
 
+<<<<<<< HEAD
+=======
+#define ARM_MLS(rd, rn, rm, ra)	(ARM_INST_MLS | (rd) << 16 | (rn) | (rm) << 8 \
+				 | (ra) << 12)
+
+>>>>>>> v4.9.227
 #endif /* PFILTER_OPCODES_ARM_H */

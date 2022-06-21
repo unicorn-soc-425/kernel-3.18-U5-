@@ -31,9 +31,12 @@
  */
 #define TCE_VB			0
 #define TCE_PCI			1
+<<<<<<< HEAD
 #define TCE_PCI_SWINV_CREATE	2
 #define TCE_PCI_SWINV_FREE	4
 #define TCE_PCI_SWINV_PAIR	8
+=======
+>>>>>>> v4.9.227
 
 /* TCE page size is 4096 bytes (1 << 12) */
 

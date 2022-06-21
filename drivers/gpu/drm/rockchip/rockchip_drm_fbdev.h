@@ -15,7 +15,23 @@
 #ifndef _ROCKCHIP_DRM_FBDEV_H
 #define _ROCKCHIP_DRM_FBDEV_H
 
+<<<<<<< HEAD
 int rockchip_drm_fbdev_init(struct drm_device *dev);
 void rockchip_drm_fbdev_fini(struct drm_device *dev);
+=======
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+int rockchip_drm_fbdev_init(struct drm_device *dev);
+void rockchip_drm_fbdev_fini(struct drm_device *dev);
+#else
+static inline int rockchip_drm_fbdev_init(struct drm_device *dev)
+{
+	return 0;
+}
+
+static inline void rockchip_drm_fbdev_fini(struct drm_device *dev)
+{
+}
+#endif
+>>>>>>> v4.9.227
 
 #endif /* _ROCKCHIP_DRM_FBDEV_H */

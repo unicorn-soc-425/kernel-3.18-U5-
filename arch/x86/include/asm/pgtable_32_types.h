@@ -37,7 +37,11 @@ extern bool __vmalloc_start_set; /* set once high_memory is set */
 #define LAST_PKMAP 1024
 #endif
 
+<<<<<<< HEAD
 #define PKMAP_BASE ((FIXADDR_BOOT_START - PAGE_SIZE * (LAST_PKMAP + 1))	\
+=======
+#define PKMAP_BASE ((FIXADDR_START - PAGE_SIZE * (LAST_PKMAP + 1))	\
+>>>>>>> v4.9.227
 		    & PMD_MASK)
 
 #ifdef CONFIG_HIGHMEM

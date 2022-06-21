@@ -1,6 +1,10 @@
 #include <linux/init.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/bugs.h>
+>>>>>>> v4.9.227
 #include <asm/cacheflush.h>
 #include <asm/idmap.h>
 #include <asm/pgalloc.h>
@@ -9,6 +13,7 @@
 #include <asm/smp_plat.h>
 #include <asm/suspend.h>
 #include <asm/tlbflush.h>
+<<<<<<< HEAD
 #include <asm/psci.h>
 
 extern void cpu_resume_mmu(void);
@@ -19,6 +24,14 @@ extern void cpu_resume_mmu(void);
  * detail which platform code shouldn't have to know about.
  */
 int __cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
+=======
+
+extern int __cpu_suspend(unsigned long, int (*)(unsigned long), u32 cpuid);
+extern void cpu_resume_mmu(void);
+
+#ifdef CONFIG_MMU
+int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
+>>>>>>> v4.9.227
 {
 	struct mm_struct *mm = current->active_mm;
 	u32 __mpidr = cpu_logical_map(smp_processor_id());
@@ -33,20 +46,35 @@ int __cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
 	 * resume (indicated by a zero return code), we need to switch
 	 * back to the correct page tables.
 	 */
+<<<<<<< HEAD
 	ret = __cpu_suspend_enter(arg, fn, __mpidr);
+=======
+	ret = __cpu_suspend(arg, fn, __mpidr);
+>>>>>>> v4.9.227
 	if (ret == 0) {
 		cpu_switch_mm(mm->pgd, mm);
 		local_flush_bp_all();
 		local_flush_tlb_all();
+<<<<<<< HEAD
+=======
+		check_other_bugs();
+>>>>>>> v4.9.227
 	}
 
 	return ret;
 }
 #else
+<<<<<<< HEAD
 int __cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
 {
 	u32 __mpidr = cpu_logical_map(smp_processor_id());
 	return __cpu_suspend_enter(arg, fn, __mpidr);
+=======
+int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
+{
+	u32 __mpidr = cpu_logical_map(smp_processor_id());
+	return __cpu_suspend(arg, fn, __mpidr);
+>>>>>>> v4.9.227
 }
 #define	idmap_pgd	NULL
 #endif
@@ -88,6 +116,7 @@ void __cpu_suspend_save(u32 *ptr, u32 ptrsz, u32 sp, u32 *save_ptr)
 			  virt_to_phys(save_ptr) + sizeof(*save_ptr));
 }
 
+<<<<<<< HEAD
 int cpu_suspend(unsigned long arg)
 {
 #if defined(CONFIG_ARM_PSCI)
@@ -98,6 +127,8 @@ int cpu_suspend(unsigned long arg)
 #endif
 }
 
+=======
+>>>>>>> v4.9.227
 extern struct sleep_save_sp sleep_save_sp;
 
 static int cpu_suspend_alloc_sp(void)

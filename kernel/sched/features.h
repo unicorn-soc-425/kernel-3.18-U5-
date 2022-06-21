@@ -36,11 +36,14 @@ SCHED_FEAT(CACHE_HOT_BUDDY, true)
  */
 SCHED_FEAT(WAKEUP_PREEMPTION, true)
 
+<<<<<<< HEAD
 /*
  * Use arch dependent cpu capacity functions
  */
 SCHED_FEAT(ARCH_CAPACITY, false)
 
+=======
+>>>>>>> v4.9.227
 SCHED_FEAT(HRTICK, false)
 SCHED_FEAT(DOUBLE_TICK, false)
 SCHED_FEAT(LB_BIAS, true)
@@ -54,11 +57,34 @@ SCHED_FEAT(NONTASK_CAPACITY, true)
  * Queue remote wakeups on the target CPU and process them
  * using the scheduler IPI. Reduces rq->lock contention/bounces.
  */
+<<<<<<< HEAD
 SCHED_FEAT(TTWU_QUEUE, false)
+=======
+SCHED_FEAT(TTWU_QUEUE, true)
+
+/*
+ * When doing wakeups, attempt to limit superfluous scans of the LLC domain.
+ */
+SCHED_FEAT(SIS_AVG_CPU, false)
+
+#ifdef HAVE_RT_PUSH_IPI
+/*
+ * In order to avoid a thundering herd attack of CPUs that are
+ * lowering their priorities at the same time, and there being
+ * a single CPU that has an RT task that can migrate and is waiting
+ * to run, where the other CPUs will try to take that CPUs
+ * rq lock and possibly create a large contention, sending an
+ * IPI to that CPU and let that CPU push the RT task to where
+ * it should go may be a better scenario.
+ */
+SCHED_FEAT(RT_PUSH_IPI, true)
+#endif
+>>>>>>> v4.9.227
 
 SCHED_FEAT(FORCE_SD_OVERLAP, false)
 SCHED_FEAT(RT_RUNTIME_SHARE, true)
 SCHED_FEAT(LB_MIN, false)
+<<<<<<< HEAD
 
 /*
  * Apply the automatic NUMA scheduling policy. Enabled automatically
@@ -87,3 +113,7 @@ SCHED_FEAT(NUMA_RESIST_LOWER, false)
 #ifdef CONFIG_SCHED_QHMP
 SCHED_FEAT(FORCE_CPU_THROTTLING_IMMINENT, false)
 #endif
+=======
+SCHED_FEAT(ATTACH_AGE_LOAD, true)
+
+>>>>>>> v4.9.227

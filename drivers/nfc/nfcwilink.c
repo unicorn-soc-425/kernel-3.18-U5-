@@ -94,7 +94,11 @@ struct nfcwilink {
 	struct nci_dev			*ndev;
 	unsigned long			flags;
 
+<<<<<<< HEAD
 	char				st_register_cb_status;
+=======
+	int				st_register_cb_status;
+>>>>>>> v4.9.227
 	long				(*st_write) (struct sk_buff *);
 
 	struct completion		completed;
@@ -320,7 +324,11 @@ exit:
 }
 
 /* Called by ST when registration is complete */
+<<<<<<< HEAD
 static void nfcwilink_register_complete(void *priv_data, char data)
+=======
+static void nfcwilink_register_complete(void *priv_data, int data)
+>>>>>>> v4.9.227
 {
 	struct nfcwilink *drv = priv_data;
 
@@ -497,7 +505,11 @@ static struct nci_ops nfcwilink_ops = {
 
 static int nfcwilink_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	static struct nfcwilink *drv;
+=======
+	struct nfcwilink *drv;
+>>>>>>> v4.9.227
 	int rc;
 	__u32 protocols;
 
@@ -566,7 +578,10 @@ static struct platform_driver nfcwilink_driver = {
 	.remove = nfcwilink_remove,
 	.driver = {
 		.name = "nfcwilink",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

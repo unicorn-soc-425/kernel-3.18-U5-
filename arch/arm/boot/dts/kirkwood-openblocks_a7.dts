@@ -141,7 +141,11 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
+<<<<<<< HEAD
 		button@1 {
+=======
+		button {
+>>>>>>> v4.9.227
 			label = "Init Button";
 			linux,code = <KEY_POWER>;
 			gpios = <&gpio1 6 GPIO_ACTIVE_HIGH>;

@@ -42,7 +42,11 @@
 #include <linux/videodev2.h>
 #include <linux/io.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <media/tea575x.h>
+=======
+#include <media/drv-intf/tea575x.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-fh.h>
@@ -108,7 +112,11 @@ static void maxiradio_tea575x_set_direction(struct snd_tea575x *tea, bool output
 {
 }
 
+<<<<<<< HEAD
 static struct snd_tea575x_ops maxiradio_tea_ops = {
+=======
+static const struct snd_tea575x_ops maxiradio_tea_ops = {
+>>>>>>> v4.9.227
 	.set_pins = maxiradio_tea575x_set_pins,
 	.get_pins = maxiradio_tea575x_get_pins,
 	.set_direction = maxiradio_tea575x_set_direction,
@@ -183,6 +191,10 @@ static void maxiradio_remove(struct pci_dev *pdev)
 	outb(0, dev->io);
 	v4l2_device_unregister(v4l2_dev);
 	release_region(pci_resource_start(pdev, 0), pci_resource_len(pdev, 0));
+<<<<<<< HEAD
+=======
+	kfree(dev);
+>>>>>>> v4.9.227
 }
 
 static struct pci_device_id maxiradio_pci_tbl[] = {

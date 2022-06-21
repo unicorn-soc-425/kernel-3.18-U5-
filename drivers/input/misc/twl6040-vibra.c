@@ -45,9 +45,14 @@
 struct vibra_info {
 	struct device *dev;
 	struct input_dev *input_dev;
+<<<<<<< HEAD
 	struct workqueue_struct *workqueue;
 	struct work_struct play_work;
 	struct mutex mutex;
+=======
+	struct work_struct play_work;
+
+>>>>>>> v4.9.227
 	int irq;
 
 	bool enabled;
@@ -182,8 +187,19 @@ static void vibra_play_work(struct work_struct *work)
 {
 	struct vibra_info *info = container_of(work,
 				struct vibra_info, play_work);
+<<<<<<< HEAD
 
 	mutex_lock(&info->mutex);
+=======
+	int ret;
+
+	/* Do not allow effect, while the routing is set to use audio */
+	ret = twl6040_get_vibralr_status(info->twl6040);
+	if (ret & TWL6040_VIBSEL) {
+		dev_info(info->dev, "Vibra is configured for audio\n");
+		return;
+	}
+>>>>>>> v4.9.227
 
 	if (info->weak_speed || info->strong_speed) {
 		if (!info->enabled)
@@ -193,13 +209,17 @@ static void vibra_play_work(struct work_struct *work)
 	} else if (info->enabled)
 		twl6040_vibra_disable(info);
 
+<<<<<<< HEAD
 	mutex_unlock(&info->mutex);
+=======
+>>>>>>> v4.9.227
 }
 
 static int vibra_play(struct input_dev *input, void *data,
 		      struct ff_effect *effect)
 {
 	struct vibra_info *info = input_get_drvdata(input);
+<<<<<<< HEAD
 	int ret;
 
 	/* Do not allow effect, while the routing is set to use audio */
@@ -208,16 +228,22 @@ static int vibra_play(struct input_dev *input, void *data,
 		dev_info(&input->dev, "Vibra is configured for audio\n");
 		return -EBUSY;
 	}
+=======
+>>>>>>> v4.9.227
 
 	info->weak_speed = effect->u.rumble.weak_magnitude;
 	info->strong_speed = effect->u.rumble.strong_magnitude;
 	info->direction = effect->direction < EFFECT_DIR_180_DEG ? 1 : -1;
 
+<<<<<<< HEAD
 	ret = queue_work(info->workqueue, &info->play_work);
 	if (!ret) {
 		dev_info(&input->dev, "work is already on queue\n");
 		return ret;
 	}
+=======
+	schedule_work(&info->play_work);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -228,6 +254,7 @@ static void twl6040_vibra_close(struct input_dev *input)
 
 	cancel_work_sync(&info->play_work);
 
+<<<<<<< HEAD
 	mutex_lock(&info->mutex);
 
 	if (info->enabled)
@@ -238,20 +265,36 @@ static void twl6040_vibra_close(struct input_dev *input)
 
 #ifdef CONFIG_PM_SLEEP
 static int twl6040_vibra_suspend(struct device *dev)
+=======
+	if (info->enabled)
+		twl6040_vibra_disable(info);
+}
+
+static int __maybe_unused twl6040_vibra_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct vibra_info *info = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	mutex_lock(&info->mutex);
+=======
+	cancel_work_sync(&info->play_work);
+>>>>>>> v4.9.227
 
 	if (info->enabled)
 		twl6040_vibra_disable(info);
 
+<<<<<<< HEAD
 	mutex_unlock(&info->mutex);
 
 	return 0;
 }
 #endif
+=======
+	return 0;
+}
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(twl6040_vibra_pm_ops, twl6040_vibra_suspend, NULL);
 
@@ -307,10 +350,16 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	mutex_init(&info->mutex);
 
 	error = devm_request_threaded_irq(&pdev->dev, info->irq, NULL,
 					  twl6040_vib_irq_handler, 0,
+=======
+	error = devm_request_threaded_irq(&pdev->dev, info->irq, NULL,
+					  twl6040_vib_irq_handler,
+					  IRQF_ONESHOT,
+>>>>>>> v4.9.227
 					  "twl6040_irq_vib", info);
 	if (error) {
 		dev_err(info->dev, "VIB IRQ request failed: %d\n", error);
@@ -363,7 +412,10 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 
 	info->input_dev->name = "twl6040:vibrator";
 	info->input_dev->id.version = 1;
+<<<<<<< HEAD
 	info->input_dev->dev.parent = pdev->dev.parent;
+=======
+>>>>>>> v4.9.227
 	info->input_dev->close = twl6040_vibra_close;
 	__set_bit(FF_RUMBLE, info->input_dev->ffbit);
 
@@ -388,7 +440,10 @@ static struct platform_driver twl6040_vibra_driver = {
 	.probe		= twl6040_vibra_probe,
 	.driver		= {
 		.name	= "twl6040-vibra",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &twl6040_vibra_pm_ops,
 	},
 };

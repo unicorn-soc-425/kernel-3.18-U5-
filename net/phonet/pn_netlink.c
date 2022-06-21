@@ -121,7 +121,12 @@ static int fill_addr(struct sk_buff *skb, struct net_device *dev, u8 addr,
 	ifm->ifa_index = dev->ifindex;
 	if (nla_put_u8(skb, IFA_LOCAL, addr))
 		goto nla_put_failure;
+<<<<<<< HEAD
 	return nlmsg_end(skb, nlh);
+=======
+	nlmsg_end(skb, nlh);
+	return 0;
+>>>>>>> v4.9.227
 
 nla_put_failure:
 	nlmsg_cancel(skb, nlh);
@@ -190,7 +195,12 @@ static int fill_route(struct sk_buff *skb, struct net_device *dev, u8 dst,
 	if (nla_put_u8(skb, RTA_DST, dst) ||
 	    nla_put_u32(skb, RTA_OIF, dev->ifindex))
 		goto nla_put_failure;
+<<<<<<< HEAD
 	return nlmsg_end(skb, nlh);
+=======
+	nlmsg_end(skb, nlh);
+	return 0;
+>>>>>>> v4.9.227
 
 nla_put_failure:
 	nlmsg_cancel(skb, nlh);
@@ -270,6 +280,7 @@ static int route_doit(struct sk_buff *skb, struct nlmsghdr *nlh)
 static int route_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	struct net *net = sock_net(skb->sk);
+<<<<<<< HEAD
 	u8 addr, addr_idx = 0, addr_start_idx = cb->args[0];
 
 	rcu_read_lock();
@@ -284,13 +295,30 @@ static int route_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
 			continue;
 		if (fill_route(skb, dev, addr << 2, NETLINK_CB(cb->skb).portid,
 				cb->nlh->nlmsg_seq, RTM_NEWROUTE))
+=======
+	u8 addr;
+
+	rcu_read_lock();
+	for (addr = cb->args[0]; addr < 64; addr++) {
+		struct net_device *dev = phonet_route_get_rcu(net, addr << 2);
+
+		if (!dev)
+			continue;
+
+		if (fill_route(skb, dev, addr << 2, NETLINK_CB(cb->skb).portid,
+			       cb->nlh->nlmsg_seq, RTM_NEWROUTE) < 0)
+>>>>>>> v4.9.227
 			goto out;
 	}
 
 out:
 	rcu_read_unlock();
+<<<<<<< HEAD
 	cb->args[0] = addr_idx;
 	cb->args[1] = 0;
+=======
+	cb->args[0] = addr;
+>>>>>>> v4.9.227
 
 	return skb->len;
 }

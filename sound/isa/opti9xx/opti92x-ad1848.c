@@ -29,7 +29,11 @@
 #include <linux/delay.h>
 #include <linux/pnp.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <asm/dma.h>
 #include <sound/core.h>
 #include <sound/tlv.h>
@@ -327,10 +331,20 @@ static void snd_opti9xx_write(struct snd_opti9xx *chip, unsigned char reg,
 }
 
 
+<<<<<<< HEAD
 #define snd_opti9xx_write_mask(chip, reg, value, mask)	\
 	snd_opti9xx_write(chip, reg,			\
 		(snd_opti9xx_read(chip, reg) & ~(mask)) | ((value) & (mask)))
 
+=======
+static inline void snd_opti9xx_write_mask(struct snd_opti9xx *chip,
+		unsigned char reg, unsigned char value, unsigned char mask)
+{
+	unsigned char oldval = snd_opti9xx_read(chip, reg);
+
+	snd_opti9xx_write(chip, reg, (oldval & ~mask) | (value & mask));
+}
+>>>>>>> v4.9.227
 
 static int snd_opti9xx_configure(struct snd_opti9xx *chip,
 					   long port,
@@ -820,10 +834,13 @@ static int snd_opti9xx_probe(struct snd_card *card)
 	int xdma2;
 	struct snd_opti9xx *chip = card->private_data;
 	struct snd_wss *codec;
+<<<<<<< HEAD
 #ifdef CS4231
 	struct snd_timer *timer;
 #endif
 	struct snd_pcm *pcm;
+=======
+>>>>>>> v4.9.227
 	struct snd_rawmidi *rmidi;
 	struct snd_hwdep *synth;
 
@@ -855,7 +872,11 @@ static int snd_opti9xx_probe(struct snd_card *card)
 	if (error < 0)
 		return error;
 	chip->codec = codec;
+<<<<<<< HEAD
 	error = snd_wss_pcm(codec, 0, &pcm);
+=======
+	error = snd_wss_pcm(codec, 0);
+>>>>>>> v4.9.227
 	if (error < 0)
 		return error;
 	error = snd_wss_mixer(codec);
@@ -867,7 +888,11 @@ static int snd_opti9xx_probe(struct snd_card *card)
 		return error;
 #endif
 #ifdef CS4231
+<<<<<<< HEAD
 	error = snd_wss_timer(codec, 0, &timer);
+=======
+	error = snd_wss_timer(codec, 0);
+>>>>>>> v4.9.227
 	if (error < 0)
 		return error;
 #endif
@@ -884,11 +909,20 @@ static int snd_opti9xx_probe(struct snd_card *card)
 	sprintf(card->shortname, "OPTi %s", card->driver);
 #if defined(CS4231) || defined(OPTi93X)
 	sprintf(card->longname, "%s, %s at 0x%lx, irq %d, dma %d&%d",
+<<<<<<< HEAD
 		card->shortname, pcm->name,
 		chip->wss_base + 4, irq, dma1, xdma2);
 #else
 	sprintf(card->longname, "%s, %s at 0x%lx, irq %d, dma %d",
 		card->shortname, pcm->name, chip->wss_base + 4, irq, dma1);
+=======
+		card->shortname, codec->pcm->name,
+		chip->wss_base + 4, irq, dma1, xdma2);
+#else
+	sprintf(card->longname, "%s, %s at 0x%lx, irq %d, dma %d",
+		card->shortname, codec->pcm->name, chip->wss_base + 4, irq,
+		dma1);
+>>>>>>> v4.9.227
 #endif	/* CS4231 || OPTi93X */
 
 	if (mpu_port <= 0 || mpu_port == SNDRV_AUTO_PORT)

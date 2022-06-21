@@ -162,12 +162,24 @@ static int symbol__gtk_annotate(struct symbol *sym, struct map *map,
 	GtkWidget *notebook;
 	GtkWidget *scrolled_window;
 	GtkWidget *tab_label;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> v4.9.227
 
 	if (map->dso->annotate_warned)
 		return -1;
 
+<<<<<<< HEAD
 	if (symbol__annotate(sym, map, 0) < 0) {
 		ui__error("%s", ui_helpline__current);
+=======
+	err = symbol__disassemble(sym, map, 0);
+	if (err) {
+		char msg[BUFSIZ];
+		symbol__strerror_disassemble(sym, map, err, msg, sizeof(msg));
+		ui__error("Couldn't annotate %s: %s\n", sym->name, msg);
+>>>>>>> v4.9.227
 		return -1;
 	}
 

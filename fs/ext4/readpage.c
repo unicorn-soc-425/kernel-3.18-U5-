@@ -23,7 +23,11 @@
  *
  * then this code just gives up and calls the buffer_head-based read function.
  * It does handle a page which has holes at the end - that is a common case:
+<<<<<<< HEAD
  * the end-of-file on blocksize < PAGE_CACHE_SIZE setups.
+=======
+ * the end-of-file on blocksize < PAGE_SIZE setups.
+>>>>>>> v4.9.227
  *
  */
 
@@ -46,6 +50,7 @@
 
 #include "ext4.h"
 
+<<<<<<< HEAD
 /*
  * Call ext4_decrypt on every single page, reusing the encryption
  * context.
@@ -77,6 +82,8 @@ static void completion_pages(struct work_struct *work)
 #endif
 }
 
+=======
+>>>>>>> v4.9.227
 static inline bool ext4_bio_encrypted(struct bio *bio)
 {
 #ifdef CONFIG_EXT4_FS_ENCRYPTION
@@ -98,12 +105,17 @@ static inline bool ext4_bio_encrypted(struct bio *bio)
  * status of that page is hard.  See end_buffer_async_read() for the details.
  * There is no point in duplicating all that complexity.
  */
+<<<<<<< HEAD
 static void mpage_end_io(struct bio *bio, int err)
+=======
+static void mpage_end_io(struct bio *bio)
+>>>>>>> v4.9.227
 {
 	struct bio_vec *bv;
 	int i;
 
 	if (ext4_bio_encrypted(bio)) {
+<<<<<<< HEAD
 		struct ext4_crypto_ctx *ctx = bio->bi_private;
 
 		if (err) {
@@ -112,13 +124,23 @@ static void mpage_end_io(struct bio *bio, int err)
 			INIT_WORK(&ctx->r.work, completion_pages);
 			ctx->r.bio = bio;
 			queue_work(ext4_read_workqueue, &ctx->r.work);
+=======
+		if (bio->bi_error) {
+			fscrypt_release_ctx(bio->bi_private);
+		} else {
+			fscrypt_decrypt_bio_pages(bio->bi_private, bio);
+>>>>>>> v4.9.227
 			return;
 		}
 	}
 	bio_for_each_segment_all(bv, bio, i) {
 		struct page *page = bv->bv_page;
 
+<<<<<<< HEAD
 		if (!err) {
+=======
+		if (!bio->bi_error) {
+>>>>>>> v4.9.227
 			SetPageUptodate(page);
 		} else {
 			ClearPageUptodate(page);
@@ -135,12 +157,19 @@ int ext4_mpage_readpages(struct address_space *mapping,
 			 unsigned nr_pages)
 {
 	struct bio *bio = NULL;
+<<<<<<< HEAD
 	unsigned page_idx;
+=======
+>>>>>>> v4.9.227
 	sector_t last_block_in_bio = 0;
 
 	struct inode *inode = mapping->host;
 	const unsigned blkbits = inode->i_blkbits;
+<<<<<<< HEAD
 	const unsigned blocks_per_page = PAGE_CACHE_SIZE >> blkbits;
+=======
+	const unsigned blocks_per_page = PAGE_SIZE >> blkbits;
+>>>>>>> v4.9.227
 	const unsigned blocksize = 1 << blkbits;
 	sector_t block_in_file;
 	sector_t last_block;
@@ -157,7 +186,11 @@ int ext4_mpage_readpages(struct address_space *mapping,
 	map.m_len = 0;
 	map.m_flags = 0;
 
+<<<<<<< HEAD
 	for (page_idx = 0; nr_pages; page_idx++, nr_pages--) {
+=======
+	for (; nr_pages; nr_pages--) {
+>>>>>>> v4.9.227
 		int fully_mapped = 1;
 		unsigned first_hole = blocks_per_page;
 
@@ -165,15 +198,24 @@ int ext4_mpage_readpages(struct address_space *mapping,
 		if (pages) {
 			page = list_entry(pages->prev, struct page, lru);
 			list_del(&page->lru);
+<<<<<<< HEAD
 			if (add_to_page_cache_lru(page, mapping,
 						  page->index, GFP_KERNEL))
+=======
+			if (add_to_page_cache_lru(page, mapping, page->index,
+				  readahead_gfp_mask(mapping)))
+>>>>>>> v4.9.227
 				goto next_page;
 		}
 
 		if (page_has_buffers(page))
 			goto confused;
 
+<<<<<<< HEAD
 		block_in_file = (sector_t)page->index << (PAGE_CACHE_SHIFT - blkbits);
+=======
+		block_in_file = (sector_t)page->index << (PAGE_SHIFT - blkbits);
+>>>>>>> v4.9.227
 		last_block = block_in_file + nr_pages * blocks_per_page;
 		last_block_in_file = (i_size_read(inode) + blocksize - 1) >> blkbits;
 		if (last_block > last_block_in_file)
@@ -217,7 +259,11 @@ int ext4_mpage_readpages(struct address_space *mapping,
 				set_error_page:
 					SetPageError(page);
 					zero_user_segment(page, 0,
+<<<<<<< HEAD
 							  PAGE_CACHE_SIZE);
+=======
+							  PAGE_SIZE);
+>>>>>>> v4.9.227
 					unlock_page(page);
 					goto next_page;
 				}
@@ -250,7 +296,11 @@ int ext4_mpage_readpages(struct address_space *mapping,
 		}
 		if (first_hole != blocks_per_page) {
 			zero_user_segment(page, first_hole << blkbits,
+<<<<<<< HEAD
 					  PAGE_CACHE_SIZE);
+=======
+					  PAGE_SIZE);
+>>>>>>> v4.9.227
 			if (first_hole == 0) {
 				SetPageUptodate(page);
 				unlock_page(page);
@@ -271,6 +321,7 @@ int ext4_mpage_readpages(struct address_space *mapping,
 		 */
 		if (bio && (last_block_in_bio != blocks[0] - 1)) {
 		submit_and_realloc:
+<<<<<<< HEAD
 			submit_bio(READ, bio);
 			bio = NULL;
 		}
@@ -280,20 +331,42 @@ int ext4_mpage_readpages(struct address_space *mapping,
 			if (ext4_encrypted_inode(inode) &&
 			    S_ISREG(inode->i_mode)) {
 				ctx = ext4_get_crypto_ctx(inode, GFP_NOFS);
+=======
+			submit_bio(bio);
+			bio = NULL;
+		}
+		if (bio == NULL) {
+			struct fscrypt_ctx *ctx = NULL;
+
+			if (ext4_encrypted_inode(inode) &&
+			    S_ISREG(inode->i_mode)) {
+				ctx = fscrypt_get_ctx(inode, GFP_NOFS);
+>>>>>>> v4.9.227
 				if (IS_ERR(ctx))
 					goto set_error_page;
 			}
 			bio = bio_alloc(GFP_KERNEL,
+<<<<<<< HEAD
 				min_t(int, nr_pages, bio_get_nr_vecs(bdev)));
 			if (!bio) {
 				if (ctx)
 					ext4_release_crypto_ctx(ctx);
+=======
+				min_t(int, nr_pages, BIO_MAX_PAGES));
+			if (!bio) {
+				if (ctx)
+					fscrypt_release_ctx(ctx);
+>>>>>>> v4.9.227
 				goto set_error_page;
 			}
 			bio->bi_bdev = bdev;
 			bio->bi_iter.bi_sector = blocks[0] << (blkbits - 9);
 			bio->bi_end_io = mpage_end_io;
 			bio->bi_private = ctx;
+<<<<<<< HEAD
+=======
+			bio_set_op_attrs(bio, REQ_OP_READ, 0);
+>>>>>>> v4.9.227
 		}
 
 		length = first_hole << blkbits;
@@ -303,14 +376,22 @@ int ext4_mpage_readpages(struct address_space *mapping,
 		if (((map.m_flags & EXT4_MAP_BOUNDARY) &&
 		     (relative_block == map.m_len)) ||
 		    (first_hole != blocks_per_page)) {
+<<<<<<< HEAD
 			submit_bio(READ, bio);
+=======
+			submit_bio(bio);
+>>>>>>> v4.9.227
 			bio = NULL;
 		} else
 			last_block_in_bio = blocks[blocks_per_page - 1];
 		goto next_page;
 	confused:
 		if (bio) {
+<<<<<<< HEAD
 			submit_bio(READ, bio);
+=======
+			submit_bio(bio);
+>>>>>>> v4.9.227
 			bio = NULL;
 		}
 		if (!PageUptodate(page))
@@ -319,10 +400,18 @@ int ext4_mpage_readpages(struct address_space *mapping,
 			unlock_page(page);
 	next_page:
 		if (pages)
+<<<<<<< HEAD
 			page_cache_release(page);
 	}
 	BUG_ON(pages && !list_empty(pages));
 	if (bio)
 		submit_bio(READ, bio);
+=======
+			put_page(page);
+	}
+	BUG_ON(pages && !list_empty(pages));
+	if (bio)
+		submit_bio(bio);
+>>>>>>> v4.9.227
 	return 0;
 }

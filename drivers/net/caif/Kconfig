@@ -52,5 +52,9 @@ config CAIF_VIRTIO
 	The caif driver for CAIF over Virtio.
 
 if CAIF_VIRTIO
+<<<<<<< HEAD
 source "drivers/vhost/Kconfig"
+=======
+source "drivers/vhost/Kconfig.vringh"
+>>>>>>> v4.9.227
 endif

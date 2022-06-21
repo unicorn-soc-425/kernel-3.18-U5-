@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * at91sama5d3_gmac.dtsi - Device Tree Include file for AT91SAM9x5 SoC with
+=======
+ * sama5d3_gmac.dtsi - Device Tree Include file for SAMA5D3 SoC with
+>>>>>>> v4.9.227
  * Gigabit Ethernet.
  *
  * Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>

@@ -18,7 +18,11 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/crypto.h>
+<<<<<<< HEAD
 #include <asm/i387.h>
+=======
+#include <asm/fpu/api.h>
+>>>>>>> v4.9.227
 
 struct crypto_fpu_ctx {
 	struct crypto_blkcipher *child;
@@ -156,7 +160,11 @@ int __init crypto_fpu_init(void)
 	return crypto_register_template(&crypto_fpu_tmpl);
 }
 
+<<<<<<< HEAD
 void __exit crypto_fpu_exit(void)
+=======
+void crypto_fpu_exit(void)
+>>>>>>> v4.9.227
 {
 	crypto_unregister_template(&crypto_fpu_tmpl);
 }

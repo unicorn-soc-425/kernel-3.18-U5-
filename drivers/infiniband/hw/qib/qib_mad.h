@@ -36,6 +36,7 @@
 
 #include <rdma/ib_pma.h>
 
+<<<<<<< HEAD
 #define IB_SMP_UNSUP_VERSION    cpu_to_be16(0x0004)
 #define IB_SMP_UNSUP_METHOD     cpu_to_be16(0x0008)
 #define IB_SMP_UNSUP_METH_ATTR  cpu_to_be16(0x000C)
@@ -178,6 +179,19 @@ struct ib_vl_weight_elem {
 	u8      vl;     /* Only low 4 bits, upper 4 bits reserved */
 	u8      weight;
 };
+=======
+#define IB_SMP_UNSUP_VERSION \
+cpu_to_be16(IB_MGMT_MAD_STATUS_BAD_VERSION)
+
+#define IB_SMP_UNSUP_METHOD \
+cpu_to_be16(IB_MGMT_MAD_STATUS_UNSUPPORTED_METHOD)
+
+#define IB_SMP_UNSUP_METH_ATTR \
+cpu_to_be16(IB_MGMT_MAD_STATUS_UNSUPPORTED_METHOD_ATTRIB)
+
+#define IB_SMP_INVALID_FIELD \
+cpu_to_be16(IB_MGMT_MAD_STATUS_INVALID_ATTRIB_VALUE)
+>>>>>>> v4.9.227
 
 #define IB_VLARB_LOWPRI_0_31    1
 #define IB_VLARB_LOWPRI_32_63   2

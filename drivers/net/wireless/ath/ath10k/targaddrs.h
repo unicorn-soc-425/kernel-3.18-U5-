@@ -18,6 +18,11 @@
 #ifndef __TARGADDRS_H__
 #define __TARGADDRS_H__
 
+<<<<<<< HEAD
+=======
+#include "hw.h"
+
+>>>>>>> v4.9.227
 /*
  * xxx_HOST_INTEREST_ADDRESS is the address in Target RAM of the
  * host_interest structure.  It must match the address of the _host_interest
@@ -403,7 +408,11 @@ Fw Mode/SubMode Mask
  * 1. target firmware would check magic number and if it's a match, firmware
  *    would consider the bits[0:15] are valid and base on that to calculate
  *    the end of DRAM. Early allocation would be located at that area and
+<<<<<<< HEAD
  *    may be reclaimed when necesary
+=======
+ *    may be reclaimed when necessary
+>>>>>>> v4.9.227
  * 2. if no magic number is found, early allocation would happen at "_end"
  *    symbol of ROM which is located before the app-data and might NOT be
  *    re-claimable. If this is adopted, link script should keep this in
@@ -436,7 +445,11 @@ Fw Mode/SubMode Mask
 	((HOST_INTEREST->hi_pwr_save_flags & HI_PWR_SAVE_LPL_ENABLED))
 #define HI_DEV_LPL_TYPE_GET(_devix) \
 	(HOST_INTEREST->hi_pwr_save_flags & ((HI_PWR_SAVE_LPL_DEV_MASK) << \
+<<<<<<< HEAD
 	 (HI_PWR_SAVE_LPL_DEV0_LSB + (_devix)*2)))
+=======
+	 (HI_PWR_SAVE_LPL_DEV0_LSB + (_devix) * 2)))
+>>>>>>> v4.9.227
 
 #define HOST_INTEREST_SMPS_IS_ALLOWED() \
 	((HOST_INTEREST->hi_smps_options & HI_SMPS_ALLOW_MASK))
@@ -445,4 +458,22 @@ Fw Mode/SubMode Mask
 #define QCA988X_BOARD_DATA_SZ     7168
 #define QCA988X_BOARD_EXT_DATA_SZ 0
 
+<<<<<<< HEAD
+=======
+#define QCA9887_BOARD_DATA_SZ     7168
+#define QCA9887_BOARD_EXT_DATA_SZ 0
+
+#define QCA6174_BOARD_DATA_SZ     8192
+#define QCA6174_BOARD_EXT_DATA_SZ 0
+
+#define QCA9377_BOARD_DATA_SZ     QCA6174_BOARD_DATA_SZ
+#define QCA9377_BOARD_EXT_DATA_SZ 0
+
+#define QCA99X0_BOARD_DATA_SZ	  12288
+#define QCA99X0_BOARD_EXT_DATA_SZ 0
+
+#define QCA4019_BOARD_DATA_SZ	  12064
+#define QCA4019_BOARD_EXT_DATA_SZ 0
+
+>>>>>>> v4.9.227
 #endif /* __TARGADDRS_H__ */

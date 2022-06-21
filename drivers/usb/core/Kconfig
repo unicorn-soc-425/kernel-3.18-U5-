@@ -43,7 +43,11 @@ config USB_DYNAMIC_MINORS
 
 config USB_OTG
 	bool "OTG support"
+<<<<<<< HEAD
 	depends on PM_RUNTIME
+=======
+	depends on PM
+>>>>>>> v4.9.227
 	default n
 	help
 	  The most notable feature of USB OTG is support for a
@@ -66,6 +70,7 @@ config USB_OTG_WHITELIST
 	  "Targeted Peripherals List".  "Embedded Hosts" are likewise
 	  allowed to support only a limited number of peripherals.
 
+<<<<<<< HEAD
 config USB_OTG_WHITELIST_FOR_MDM
 	bool "Rely on OTG and EH Targeted Peripherals List"
 	depends on USB
@@ -77,6 +82,8 @@ config USB_OTG_WHITELIST_FOR_MDM
 	  "Targeted Peripherals List".  "Embedded Hosts" are likewise
 	  allowed to support only a limited number of peripherals.
 
+=======
+>>>>>>> v4.9.227
 config USB_OTG_BLACKLIST_HUB
 	bool "Disable external hubs"
 	depends on USB_OTG || EXPERT
@@ -88,10 +95,24 @@ config USB_OTG_BLACKLIST_HUB
 
 config USB_OTG_FSM
 	tristate "USB 2.0 OTG FSM implementation"
+<<<<<<< HEAD
 	depends on USB
 	select USB_OTG
+=======
+	depends on USB && USB_OTG
+>>>>>>> v4.9.227
 	select USB_PHY
 	help
 	  Implements OTG Finite State Machine as specified in On-The-Go
 	  and Embedded Host Supplement to the USB Revision 2.0 Specification.
 
+<<<<<<< HEAD
+=======
+config USB_LEDS_TRIGGER_USBPORT
+	tristate "USB port LED trigger"
+	depends on USB && LEDS_TRIGGERS
+	help
+	  This driver allows LEDs to be controlled by USB events. Enabling this
+	  trigger allows specifying list of USB ports that should turn on LED
+	  when some USB device gets connected.
+>>>>>>> v4.9.227

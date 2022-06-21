@@ -145,7 +145,11 @@ out:
 }
 
 static void __xen_pcibk_release_pci_dev(struct xen_pcibk_device *pdev,
+<<<<<<< HEAD
 					struct pci_dev *dev)
+=======
+					struct pci_dev *dev, bool lock)
+>>>>>>> v4.9.227
 {
 	int slot;
 	struct vpci_dev_data *vpci_dev = pdev->pci_dev_data;
@@ -169,8 +173,18 @@ static void __xen_pcibk_release_pci_dev(struct xen_pcibk_device *pdev,
 out:
 	mutex_unlock(&vpci_dev->lock);
 
+<<<<<<< HEAD
 	if (found_dev)
 		pcistub_put_pci_dev(found_dev);
+=======
+	if (found_dev) {
+		if (lock)
+			device_lock(&found_dev->dev);
+		pcistub_put_pci_dev(found_dev);
+		if (lock)
+			device_unlock(&found_dev->dev);
+	}
+>>>>>>> v4.9.227
 }
 
 static int __xen_pcibk_init_devices(struct xen_pcibk_device *pdev)
@@ -208,8 +222,16 @@ static void __xen_pcibk_release_devices(struct xen_pcibk_device *pdev)
 		struct pci_dev_entry *e, *tmp;
 		list_for_each_entry_safe(e, tmp, &vpci_dev->dev_list[slot],
 					 list) {
+<<<<<<< HEAD
 			list_del(&e->list);
 			pcistub_put_pci_dev(e->dev);
+=======
+			struct pci_dev *dev = e->dev;
+			list_del(&e->list);
+			device_lock(&dev->dev);
+			pcistub_put_pci_dev(dev);
+			device_unlock(&dev->dev);
+>>>>>>> v4.9.227
 			kfree(e);
 		}
 	}

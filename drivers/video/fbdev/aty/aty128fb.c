@@ -68,7 +68,10 @@
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
 #include <asm/prom.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> v4.9.227
 #include "../macmodes.h"
 #endif
 
@@ -80,10 +83,13 @@
 #include <asm/btext.h>
 #endif /* CONFIG_BOOTX_TEXT */
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 #include <asm/mtrr.h>
 #endif
 
+=======
+>>>>>>> v4.9.227
 #include <video/aty128.h>
 
 /* Debug flag */
@@ -98,7 +104,11 @@
 
 #ifndef CONFIG_PPC_PMAC
 /* default mode */
+<<<<<<< HEAD
 static struct fb_var_screeninfo default_var = {
+=======
+static const struct fb_var_screeninfo default_var = {
+>>>>>>> v4.9.227
 	/* 640x480, 60 Hz, Non-Interlaced (25.175 MHz dotclock) */
 	640, 480, 640, 480, 0, 0, 8, 0,
 	{0, 8, 0}, {0, 8, 0}, {0, 8, 0}, {0, 0, 0},
@@ -109,7 +119,11 @@ static struct fb_var_screeninfo default_var = {
 #else /* CONFIG_PPC_PMAC */
 /* default to 1024x768 at 75Hz on PPC - this will work
  * on the iMac, the usual 640x480 @ 60Hz doesn't. */
+<<<<<<< HEAD
 static struct fb_var_screeninfo default_var = {
+=======
+static const struct fb_var_screeninfo default_var = {
+>>>>>>> v4.9.227
 	/* 1024x768, 75 Hz, Non-Interlaced (78.75 MHz dotclock) */
 	1024, 768, 1024, 768, 0, 0, 8, 0,
 	{0, 8, 0}, {0, 8, 0}, {0, 8, 0}, {0, 0, 0},
@@ -380,7 +394,11 @@ static const struct aty128_meminfo ddr_sgram = {
 	.name = "64-bit DDR SGRAM",
 };
 
+<<<<<<< HEAD
 static struct fb_fix_screeninfo aty128fb_fix = {
+=======
+static const struct fb_fix_screeninfo aty128fb_fix = {
+>>>>>>> v4.9.227
 	.id		= "ATY Rage128",
 	.type		= FB_TYPE_PACKED_PIXELS,
 	.visual		= FB_VISUAL_PSEUDOCOLOR,
@@ -399,10 +417,14 @@ static int default_cmode = CMODE_8;
 
 static int default_crt_on = 0;
 static int default_lcd_on = 1;
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTRR
 static bool mtrr = true;
 #endif
+=======
+static bool mtrr = true;
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_FB_ATY128_BACKLIGHT
 #ifdef CONFIG_PMAC_BACKLIGHT
@@ -456,9 +478,13 @@ struct aty128fb_par {
 	u32 vram_size;                      /* onboard video ram   */
 	int chip_gen;
 	const struct aty128_meminfo *mem;   /* onboard mem info    */
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	struct { int vram; int vram_valid; } mtrr;
 #endif
+=======
+	int wc_cookie;
+>>>>>>> v4.9.227
 	int blitter_may_be_busy;
 	int fifo_slots;                 /* free slots in FIFO (64 max) */
 
@@ -965,7 +991,11 @@ static void __iomem *aty128_find_mem_vbios(struct aty128fb_par *par)
 /* fill in known card constants if pll_block is not available */
 static void aty128_timings(struct aty128fb_par *par)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
+=======
+#ifdef CONFIG_PPC
+>>>>>>> v4.9.227
 	/* instead of a table lookup, assume OF has properly
 	 * setup the PLL registers and use their values
 	 * to set the XCLK values and reference divider values */
@@ -979,7 +1009,11 @@ static void aty128_timings(struct aty128fb_par *par)
 	if (!par->constants.ref_clk)
 		par->constants.ref_clk = 2950;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
+=======
+#ifdef CONFIG_PPC
+>>>>>>> v4.9.227
 	x_mpll_ref_fb_div = aty_ld_pll(X_MPLL_REF_FB_DIV);
 	xclk_cntl = aty_ld_pll(XCLK_CNTL) & 0x7;
 	Nx = (x_mpll_ref_fb_div & 0x00ff00) >> 8;
@@ -1725,12 +1759,18 @@ static int aty128fb_setup(char *options)
 #endif
 			continue;
 		}
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
+=======
+>>>>>>> v4.9.227
 		if(!strncmp(this_opt, "nomtrr", 6)) {
 			mtrr = 0;
 			continue;
 		}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC_PMAC
 		/* vmode and cmode deprecated */
 		if (!strncmp(this_opt, "vmode:", 6)) {
@@ -2133,7 +2173,11 @@ static int aty128_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	par->vram_size = aty_ld_le32(CNFG_MEMSIZE) & 0x03FFFFFF;
 
 	/* Virtualize the framebuffer */
+<<<<<<< HEAD
 	info->screen_base = ioremap(fb_addr, par->vram_size);
+=======
+	info->screen_base = ioremap_wc(fb_addr, par->vram_size);
+>>>>>>> v4.9.227
 	if (!info->screen_base)
 		goto err_unmap_out;
 
@@ -2170,6 +2214,7 @@ static int aty128_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (!aty128_init(pdev, ent))
 		goto err_out;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	if (mtrr) {
 		par->mtrr.vram = mtrr_add(info->fix.smem_start,
@@ -2179,6 +2224,11 @@ static int aty128_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		printk(KERN_INFO "aty128fb: Rage128 MTRR set to ON\n");
 	}
 #endif /* CONFIG_MTRR */
+=======
+	if (mtrr)
+		par->wc_cookie = arch_phys_wc_add(info->fix.smem_start,
+						  par->vram_size);
+>>>>>>> v4.9.227
 	return 0;
 
 err_out:
@@ -2212,11 +2262,15 @@ static void aty128_remove(struct pci_dev *pdev)
 	aty128_bl_exit(info->bl_dev);
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	if (par->mtrr.vram_valid)
 		mtrr_del(par->mtrr.vram, info->fix.smem_start,
 			 par->vram_size);
 #endif /* CONFIG_MTRR */
+=======
+	arch_phys_wc_del(par->wc_cookie);
+>>>>>>> v4.9.227
 	iounmap(par->regbase);
 	iounmap(info->screen_base);
 
@@ -2625,8 +2679,13 @@ MODULE_DESCRIPTION("FBDev driver for ATI Rage128 / Pro cards");
 MODULE_LICENSE("GPL");
 module_param(mode_option, charp, 0);
 MODULE_PARM_DESC(mode_option, "Specify resolution as \"<xres>x<yres>[-<bpp>][@<refresh>]\" ");
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 module_param_named(nomtrr, mtrr, invbool, 0);
 MODULE_PARM_DESC(nomtrr, "bool: Disable MTRR support (0 or 1=disabled) (default=0)");
 #endif
 
+=======
+module_param_named(nomtrr, mtrr, invbool, 0);
+MODULE_PARM_DESC(nomtrr, "bool: Disable MTRR support (0 or 1=disabled) (default=0)");
+>>>>>>> v4.9.227

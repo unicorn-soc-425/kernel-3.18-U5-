@@ -17,12 +17,20 @@
 #include <linux/io.h>
 
 #include <asm/exception.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/irqdomain.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 
+<<<<<<< HEAD
 #include "irqchip.h"
+=======
+#include <linux/irqchip/irq-omap-intc.h>
+>>>>>>> v4.9.227
 
 /* Define these here for now until we drop all board-files */
 #define OMAP24XX_IC_BASE	0x480fe000
@@ -209,7 +217,10 @@ static int __init omap_alloc_gc_of(struct irq_domain *d, void __iomem *base)
 		ct = gc->chip_types;
 
 		ct->type = IRQ_TYPE_LEVEL_MASK;
+<<<<<<< HEAD
 		ct->handler = handle_level_irq;
+=======
+>>>>>>> v4.9.227
 
 		ct->chip.irq_ack = omap_mask_ack_irq;
 		ct->chip.irq_mask = irq_gc_mask_disable_reg;
@@ -364,6 +375,7 @@ omap_intc_handle_irq(struct pt_regs *regs)
 	handle_domain_irq(domain, irqnr, regs);
 }
 
+<<<<<<< HEAD
 void __init omap2_init_irq(void)
 {
 	omap_nr_irqs = 96;
@@ -372,6 +384,8 @@ void __init omap2_init_irq(void)
 	set_handle_irq(omap_intc_handle_irq);
 }
 
+=======
+>>>>>>> v4.9.227
 void __init omap3_init_irq(void)
 {
 	omap_nr_irqs = 96;
@@ -380,6 +394,7 @@ void __init omap3_init_irq(void)
 	set_handle_irq(omap_intc_handle_irq);
 }
 
+<<<<<<< HEAD
 void __init ti81xx_init_irq(void)
 {
 	omap_nr_irqs = 96;
@@ -388,6 +403,8 @@ void __init ti81xx_init_irq(void)
 	set_handle_irq(omap_intc_handle_irq);
 }
 
+=======
+>>>>>>> v4.9.227
 static int __init intc_of_init(struct device_node *node,
 			     struct device_node *parent)
 {
@@ -399,7 +416,13 @@ static int __init intc_of_init(struct device_node *node,
 	if (WARN_ON(!node))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (of_device_is_compatible(node, "ti,am33xx-intc")) {
+=======
+	if (of_device_is_compatible(node, "ti,dm814-intc") ||
+	    of_device_is_compatible(node, "ti,dm816-intc") ||
+	    of_device_is_compatible(node, "ti,am33xx-intc")) {
+>>>>>>> v4.9.227
 		omap_nr_irqs = 128;
 		omap_nr_pending = 4;
 	}
@@ -415,4 +438,9 @@ static int __init intc_of_init(struct device_node *node,
 
 IRQCHIP_DECLARE(omap2_intc, "ti,omap2-intc", intc_of_init);
 IRQCHIP_DECLARE(omap3_intc, "ti,omap3-intc", intc_of_init);
+<<<<<<< HEAD
+=======
+IRQCHIP_DECLARE(dm814x_intc, "ti,dm814-intc", intc_of_init);
+IRQCHIP_DECLARE(dm816x_intc, "ti,dm816-intc", intc_of_init);
+>>>>>>> v4.9.227
 IRQCHIP_DECLARE(am33xx_intc, "ti,am33xx-intc", intc_of_init);

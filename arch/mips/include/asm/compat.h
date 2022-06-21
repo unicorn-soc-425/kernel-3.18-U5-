@@ -130,6 +130,11 @@ typedef union compat_sigval {
 	compat_uptr_t	sival_ptr;
 } compat_sigval_t;
 
+<<<<<<< HEAD
+=======
+/* Can't use the generic version because si_code and si_errno are swapped */
+
+>>>>>>> v4.9.227
 #define SI_PAD_SIZE32	(128/sizeof(int) - 3)
 
 typedef struct compat_siginfo {
@@ -138,11 +143,16 @@ typedef struct compat_siginfo {
 	int si_errno;
 
 	union {
+<<<<<<< HEAD
 		int _pad[SI_PAD_SIZE32];
+=======
+		int _pad[128 / sizeof(int) - 3];
+>>>>>>> v4.9.227
 
 		/* kill() */
 		struct {
 			compat_pid_t _pid;	/* sender's pid */
+<<<<<<< HEAD
 			__compat_uid_t _uid;	/* sender's uid */
 		} _kill;
 
@@ -180,15 +190,65 @@ typedef struct compat_siginfo {
 			int _overrun;		/* overrun count */
 			compat_sigval_t _sigval;/* same as below */
 			int _sys_private;	/* not to be passed to user */
+=======
+			__compat_uid32_t _uid;	/* sender's uid */
+		} _kill;
+
+		/* POSIX.1b timers */
+		struct {
+			compat_timer_t _tid;	/* timer id */
+			int _overrun;		/* overrun count */
+			compat_sigval_t _sigval;	/* same as below */
+>>>>>>> v4.9.227
 		} _timer;
 
 		/* POSIX.1b signals */
 		struct {
 			compat_pid_t _pid;	/* sender's pid */
+<<<<<<< HEAD
 			__compat_uid_t _uid;	/* sender's uid */
 			compat_sigval_t _sigval;
 		} _rt;
 
+=======
+			__compat_uid32_t _uid;	/* sender's uid */
+			compat_sigval_t _sigval;
+		} _rt;
+
+		/* SIGCHLD */
+		struct {
+			compat_pid_t _pid;	/* which child */
+			__compat_uid32_t _uid;	/* sender's uid */
+			int _status;		/* exit code */
+			compat_clock_t _utime;
+			compat_clock_t _stime;
+		} _sigchld;
+
+		/* SIGILL, SIGFPE, SIGSEGV, SIGBUS */
+		struct {
+			compat_uptr_t _addr;	/* faulting insn/memory ref. */
+#ifdef __ARCH_SI_TRAPNO
+			int _trapno;	/* TRAP # which caused the signal */
+#endif
+			short _addr_lsb; /* LSB of the reported address */
+			struct {
+				compat_uptr_t _lower;
+				compat_uptr_t _upper;
+			} _addr_bnd;
+		} _sigfault;
+
+		/* SIGPOLL */
+		struct {
+			compat_long_t _band; /* POLL_IN, POLL_OUT, POLL_MSG */
+			int _fd;
+		} _sigpoll;
+
+		struct {
+			compat_uptr_t _call_addr; /* calling insn */
+			int _syscall;	/* triggering system call number */
+			compat_uint_t _arch;	/* AUDIT_ARCH_* of syscall */
+		} _sigsys;
+>>>>>>> v4.9.227
 	} _sifields;
 } compat_siginfo_t;
 

@@ -24,6 +24,10 @@
 # include "boot.h"
 #endif
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <asm/intel-family.h>
+>>>>>>> v4.9.227
 #include <asm/processor-flags.h>
 #include <asm/required-features.h>
 #include <asm/msr-index.h>
@@ -175,6 +179,11 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 			puts("WARNING: PAE disabled. Use parameter 'forcepae' to enable at your own risk!\n");
 		}
 	}
+<<<<<<< HEAD
+=======
+	if (!err)
+		err = check_knl_erratum();
+>>>>>>> v4.9.227
 
 	if (err_flags_ptr)
 		*err_flags_ptr = err ? err_flags : NULL;
@@ -185,3 +194,36 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 
 	return (cpu.level < req_level || err) ? -1 : 0;
 }
+<<<<<<< HEAD
+=======
+
+int check_knl_erratum(void)
+{
+	/*
+	 * First check for the affected model/family:
+	 */
+	if (!is_intel() ||
+	    cpu.family != 6 ||
+	    cpu.model != INTEL_FAM6_XEON_PHI_KNL)
+		return 0;
+
+	/*
+	 * This erratum affects the Accessed/Dirty bits, and can
+	 * cause stray bits to be set in !Present PTEs.  We have
+	 * enough bits in our 64-bit PTEs (which we have on real
+	 * 64-bit mode or PAE) to avoid using these troublesome
+	 * bits.  But, we do not have enough space in our 32-bit
+	 * PTEs.  So, refuse to run on 32-bit non-PAE kernels.
+	 */
+	if (IS_ENABLED(CONFIG_X86_64) || IS_ENABLED(CONFIG_X86_PAE))
+		return 0;
+
+	puts("This 32-bit kernel can not run on this Xeon Phi x200\n"
+	     "processor due to a processor erratum.  Use a 64-bit\n"
+	     "kernel, or enable PAE in this 32-bit kernel.\n\n");
+
+	return -1;
+}
+
+
+>>>>>>> v4.9.227

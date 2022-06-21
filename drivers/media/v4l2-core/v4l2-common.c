@@ -80,6 +80,7 @@ MODULE_LICENSE("GPL");
 
 /* Helper functions for control handling			     */
 
+<<<<<<< HEAD
 /* Check for correctness of the ctrl's value based on the data from
    struct v4l2_queryctrl and the available menu items. Note that
    menu_items may be NULL, in that case it is ignored. */
@@ -110,6 +111,8 @@ int v4l2_ctrl_check(struct v4l2_ext_control *ctrl, struct v4l2_queryctrl *qctrl,
 }
 EXPORT_SYMBOL(v4l2_ctrl_check);
 
+=======
+>>>>>>> v4.9.227
 /* Fill in a struct v4l2_queryctrl */
 int v4l2_ctrl_query_fill(struct v4l2_queryctrl *qctrl, s32 _min, s32 _max, s32 _step, s32 _def)
 {
@@ -135,6 +138,7 @@ int v4l2_ctrl_query_fill(struct v4l2_queryctrl *qctrl, s32 _min, s32 _max, s32 _
 }
 EXPORT_SYMBOL(v4l2_ctrl_query_fill);
 
+<<<<<<< HEAD
 /* Fill in a struct v4l2_querymenu based on the struct v4l2_queryctrl and
    the menu. The qctrl pointer may be NULL, in which case it is ignored.
    If menu_items is NULL, then the menu items are retrieved using
@@ -230,6 +234,8 @@ u32 v4l2_ctrl_next(const u32 * const * ctrl_classes, u32 id)
 }
 EXPORT_SYMBOL(v4l2_ctrl_next);
 
+=======
+>>>>>>> v4.9.227
 /* I2C Helper functions */
 
 #if IS_ENABLED(CONFIG_I2C)
@@ -416,7 +422,11 @@ struct v4l2_subdev *v4l2_spi_new_subdev(struct v4l2_device *v4l2_dev,
 error:
 	/* If we have a client but no subdev, then something went wrong and
 	   we must unregister the client. */
+<<<<<<< HEAD
 	if (spi && sd == NULL)
+=======
+	if (!sd)
+>>>>>>> v4.9.227
 		spi_unregister_device(spi);
 
 	return sd;

@@ -37,6 +37,10 @@ pen:	ldr	r7, [r6]
 	 * should now contain the SVC stack for this core
 	 */
 	b	secondary_startup
+<<<<<<< HEAD
+=======
+ENDPROC(sti_secondary_startup)
+>>>>>>> v4.9.227
 
 1:	.long	.
 	.long	pen_release

@@ -24,18 +24,29 @@
 #include <linux/kdebug.h>
 #include <linux/init.h>
 #include <linux/console.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/extable.h>
+>>>>>>> v4.9.227
 #include <linux/hardirq.h>
 #include <linux/kprobes.h>
 #include <linux/uaccess.h>
 #include <linux/hugetlb.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+#include <asm/diag.h>
+#include <asm/pgtable.h>
+#include <asm/gmap.h>
+>>>>>>> v4.9.227
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/facility.h>
 #include "../kernel/entry.h"
 
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 #define __FAIL_ADDR_MASK 0x7ffff000
 #define __SUBCODE_MASK 0x0200
@@ -45,6 +56,11 @@
 #define __SUBCODE_MASK 0x0600
 #define __PF_RES_FIELD 0x8000000000000000ULL
 #endif /* CONFIG_64BIT */
+=======
+#define __FAIL_ADDR_MASK -4096L
+#define __SUBCODE_MASK 0x0600
+#define __PF_RES_FIELD 0x8000000000000000ULL
+>>>>>>> v4.9.227
 
 #define VM_FAULT_BADCONTEXT	0x010000
 #define VM_FAULT_BADMAP		0x020000
@@ -54,7 +70,10 @@
 
 static unsigned long store_indication __read_mostly;
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 static int __init fault_init(void)
 {
 	if (test_facility(75))
@@ -62,7 +81,10 @@ static int __init fault_init(void)
 	return 0;
 }
 early_initcall(fault_init);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static inline int notify_page_fault(struct pt_regs *regs)
 {
@@ -133,7 +155,10 @@ static int bad_address(void *p)
 	return probe_kernel_address((unsigned long *)p, dummy);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 static void dump_pagetable(unsigned long asce, unsigned long address)
 {
 	unsigned long *table = __va(asce & PAGE_MASK);
@@ -171,7 +196,11 @@ static void dump_pagetable(unsigned long asce, unsigned long address)
 		table = table + ((address >> 20) & 0x7ff);
 		if (bad_address(table))
 			goto bad;
+<<<<<<< HEAD
 		pr_cont(KERN_CONT "S:%016lx ", *table);
+=======
+		pr_cont("S:%016lx ", *table);
+>>>>>>> v4.9.227
 		if (*table & (_SEGMENT_ENTRY_INVALID | _SEGMENT_ENTRY_LARGE))
 			goto out;
 		table = (unsigned long *)(*table & _SEGMENT_ENTRY_ORIGIN);
@@ -187,6 +216,7 @@ bad:
 	pr_cont("BAD\n");
 }
 
+<<<<<<< HEAD
 #else /* CONFIG_64BIT */
 
 static void dump_pagetable(unsigned long asce, unsigned long address)
@@ -214,10 +244,17 @@ bad:
 
 #endif /* CONFIG_64BIT */
 
+=======
+>>>>>>> v4.9.227
 static void dump_fault_info(struct pt_regs *regs)
 {
 	unsigned long asce;
 
+<<<<<<< HEAD
+=======
+	pr_alert("Failing address: %016lx TEID: %016lx\n",
+		 regs->int_parm_long & __FAIL_ADDR_MASK, regs->int_parm_long);
+>>>>>>> v4.9.227
 	pr_alert("Fault in ");
 	switch (regs->int_parm_long & 3) {
 	case 3:
@@ -253,7 +290,13 @@ static void dump_fault_info(struct pt_regs *regs)
 	dump_pagetable(asce, regs->int_parm_long & __FAIL_ADDR_MASK);
 }
 
+<<<<<<< HEAD
 static inline void report_user_fault(struct pt_regs *regs, long signr)
+=======
+int show_unhandled_signals = 1;
+
+void report_user_fault(struct pt_regs *regs, long signr, int is_mm_fault)
+>>>>>>> v4.9.227
 {
 	if ((task_pid_nr(current) > 1) && !show_unhandled_signals)
 		return;
@@ -261,6 +304,7 @@ static inline void report_user_fault(struct pt_regs *regs, long signr)
 		return;
 	if (!printk_ratelimit())
 		return;
+<<<<<<< HEAD
 	printk(KERN_ALERT "User process fault: interruption code 0x%X ",
 	       regs->int_code);
 	print_vma_addr(KERN_CONT "in ", regs->psw.addr & PSW_ADDR_INSN);
@@ -268,6 +312,14 @@ static inline void report_user_fault(struct pt_regs *regs, long signr)
 	printk(KERN_ALERT "failing address: %016lx TEID: %016lx\n",
 	       regs->int_parm_long & __FAIL_ADDR_MASK, regs->int_parm_long);
 	dump_fault_info(regs);
+=======
+	printk(KERN_ALERT "User process fault: interruption code %04x ilc:%d ",
+	       regs->int_code & 0xffff, regs->int_code >> 17);
+	print_vma_addr(KERN_CONT "in ", regs->psw.addr);
+	printk(KERN_CONT "\n");
+	if (is_mm_fault)
+		dump_fault_info(regs);
+>>>>>>> v4.9.227
 	show_regs(regs);
 }
 
@@ -279,8 +331,14 @@ static noinline void do_sigsegv(struct pt_regs *regs, int si_code)
 {
 	struct siginfo si;
 
+<<<<<<< HEAD
 	report_user_fault(regs, SIGSEGV);
 	si.si_signo = SIGSEGV;
+=======
+	report_user_fault(regs, SIGSEGV, 1);
+	si.si_signo = SIGSEGV;
+	si.si_errno = 0;
+>>>>>>> v4.9.227
 	si.si_code = si_code;
 	si.si_addr = (void __user *)(regs->int_parm_long & __FAIL_ADDR_MASK);
 	force_sig_info(SIGSEGV, &si, current);
@@ -289,12 +347,20 @@ static noinline void do_sigsegv(struct pt_regs *regs, int si_code)
 static noinline void do_no_context(struct pt_regs *regs)
 {
 	const struct exception_table_entry *fixup;
+<<<<<<< HEAD
 	unsigned long address;
 
 	/* Are we prepared to handle this kernel fault?  */
 	fixup = search_exception_tables(regs->psw.addr & PSW_ADDR_INSN);
 	if (fixup) {
 		regs->psw.addr = extable_fixup(fixup) | PSW_ADDR_AMODE;
+=======
+
+	/* Are we prepared to handle this kernel fault?  */
+	fixup = search_exception_tables(regs->psw.addr);
+	if (fixup) {
+		regs->psw.addr = extable_fixup(fixup);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -302,15 +368,21 @@ static noinline void do_no_context(struct pt_regs *regs)
 	 * Oops. The kernel tried to access some bad page. We'll have to
 	 * terminate things with extreme prejudice.
 	 */
+<<<<<<< HEAD
 	address = regs->int_parm_long & __FAIL_ADDR_MASK;
+=======
+>>>>>>> v4.9.227
 	if (!user_space_fault(regs))
 		printk(KERN_ALERT "Unable to handle kernel pointer dereference"
 		       " in virtual kernel address space\n");
 	else
 		printk(KERN_ALERT "Unable to handle kernel paging request"
 		       " in virtual user address space\n");
+<<<<<<< HEAD
 	printk(KERN_ALERT "failing address: %016lx TEID: %016lx\n",
 	       regs->int_parm_long & __FAIL_ADDR_MASK, regs->int_parm_long);
+=======
+>>>>>>> v4.9.227
 	dump_fault_info(regs);
 	die(regs, "Oops");
 	do_exit(SIGKILL);
@@ -435,7 +507,11 @@ static inline int do_exception(struct pt_regs *regs, int access)
 	 * user context.
 	 */
 	fault = VM_FAULT_BADCONTEXT;
+<<<<<<< HEAD
 	if (unlikely(!user_space_fault(regs) || in_atomic() || !mm))
+=======
+	if (unlikely(!user_space_fault(regs) || faulthandler_disabled() || !mm))
+>>>>>>> v4.9.227
 		goto out;
 
 	address = trans_exc_code & __FAIL_ADDR_MASK;
@@ -452,6 +528,11 @@ static inline int do_exception(struct pt_regs *regs, int access)
 		(struct gmap *) S390_lowcore.gmap : NULL;
 	if (gmap) {
 		current->thread.gmap_addr = address;
+<<<<<<< HEAD
+=======
+		current->thread.gmap_write_flag = !!(flags & FAULT_FLAG_WRITE);
+		current->thread.gmap_int_code = regs->int_code & 0xffff;
+>>>>>>> v4.9.227
 		address = __gmap_translate(gmap, address);
 		if (address == -EFAULT) {
 			fault = VM_FAULT_BADMAP;
@@ -490,7 +571,11 @@ retry:
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> v4.9.227
 	/* No reason to continue if interrupted by SIGKILL. */
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current)) {
 		fault = VM_FAULT_SIGNAL;
@@ -556,7 +641,11 @@ out:
 	return fault;
 }
 
+<<<<<<< HEAD
 void __kprobes do_protection_exception(struct pt_regs *regs)
+=======
+void do_protection_exception(struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	unsigned long trans_exc_code;
 	int fault;
@@ -582,8 +671,14 @@ void __kprobes do_protection_exception(struct pt_regs *regs)
 	if (unlikely(fault))
 		do_fault_error(regs, fault);
 }
+<<<<<<< HEAD
 
 void __kprobes do_dat_exception(struct pt_regs *regs)
+=======
+NOKPROBE_SYMBOL(do_protection_exception);
+
+void do_dat_exception(struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	int access, fault;
 
@@ -592,6 +687,10 @@ void __kprobes do_dat_exception(struct pt_regs *regs)
 	if (unlikely(fault))
 		do_fault_error(regs, fault);
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(do_dat_exception);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_PFAULT 
 /*
@@ -625,7 +724,11 @@ int pfault_init(void)
 		.reffcode = 0,
 		.refdwlen = 5,
 		.refversn = 2,
+<<<<<<< HEAD
 		.refgaddr = __LC_CURRENT_PID,
+=======
+		.refgaddr = __LC_LPP,
+>>>>>>> v4.9.227
 		.refselmk = 1ULL << 48,
 		.refcmpmk = 1ULL << 48,
 		.reserved = __PF_RES_FIELD };
@@ -633,6 +736,10 @@ int pfault_init(void)
 
 	if (pfault_disable)
 		return -1;
+<<<<<<< HEAD
+=======
+	diag_stat_inc(DIAG_STAT_X258);
+>>>>>>> v4.9.227
 	asm volatile(
 		"	diag	%1,%0,0x258\n"
 		"0:	j	2f\n"
@@ -654,9 +761,16 @@ void pfault_fini(void)
 
 	if (pfault_disable)
 		return;
+<<<<<<< HEAD
 	asm volatile(
 		"	diag	%0,0,0x258\n"
 		"0:\n"
+=======
+	diag_stat_inc(DIAG_STAT_X258);
+	asm volatile(
+		"	diag	%0,0,0x258\n"
+		"0:	nopr	%%r7\n"
+>>>>>>> v4.9.227
 		EX_TABLE(0b,0b)
 		: : "a" (&refbk), "m" (refbk) : "cc");
 }
@@ -664,6 +778,32 @@ void pfault_fini(void)
 static DEFINE_SPINLOCK(pfault_lock);
 static LIST_HEAD(pfault_list);
 
+<<<<<<< HEAD
+=======
+#define PF_COMPLETE	0x0080
+
+/*
+ * The mechanism of our pfault code: if Linux is running as guest, runs a user
+ * space process and the user space process accesses a page that the host has
+ * paged out we get a pfault interrupt.
+ *
+ * This allows us, within the guest, to schedule a different process. Without
+ * this mechanism the host would have to suspend the whole virtual cpu until
+ * the page has been paged in.
+ *
+ * So when we get such an interrupt then we set the state of the current task
+ * to uninterruptible and also set the need_resched flag. Both happens within
+ * interrupt context(!). If we later on want to return to user space we
+ * recognize the need_resched flag and then call schedule().  It's not very
+ * obvious how this works...
+ *
+ * Of course we have a lot of additional fun with the completion interrupt (->
+ * host signals that a page of a process has been paged in and the process can
+ * continue to run). This interrupt can arrive on any cpu and, since we have
+ * virtual cpus, actually appear before the interrupt that signals that a page
+ * is missing.
+ */
+>>>>>>> v4.9.227
 static void pfault_interrupt(struct ext_code ext_code,
 			     unsigned int param32, unsigned long param64)
 {
@@ -672,17 +812,27 @@ static void pfault_interrupt(struct ext_code ext_code,
 	pid_t pid;
 
 	/*
+<<<<<<< HEAD
 	 * Get the external interruption subcode & pfault
 	 * initial/completion signal bit. VM stores this 
 	 * in the 'cpu address' field associated with the
          * external interrupt. 
+=======
+	 * Get the external interruption subcode & pfault initial/completion
+	 * signal bit. VM stores this in the 'cpu address' field associated
+	 * with the external interrupt.
+>>>>>>> v4.9.227
 	 */
 	subcode = ext_code.subcode;
 	if ((subcode & 0xff00) != __SUBCODE_MASK)
 		return;
 	inc_irq_stat(IRQEXT_PFL);
 	/* Get the token (= pid of the affected task). */
+<<<<<<< HEAD
 	pid = sizeof(void *) == 4 ? param32 : param64;
+=======
+	pid = param64 & LPP_PFAULT_PID_MASK;
+>>>>>>> v4.9.227
 	rcu_read_lock();
 	tsk = find_task_by_pid_ns(pid, &init_pid_ns);
 	if (tsk)
@@ -691,7 +841,11 @@ static void pfault_interrupt(struct ext_code ext_code,
 	if (!tsk)
 		return;
 	spin_lock(&pfault_lock);
+<<<<<<< HEAD
 	if (subcode & 0x0080) {
+=======
+	if (subcode & PF_COMPLETE) {
+>>>>>>> v4.9.227
 		/* signal bit is set -> a page has been swapped in by VM */
 		if (tsk->thread.pfault_wait == 1) {
 			/* Initial interrupt was faster than the completion
@@ -720,8 +874,12 @@ static void pfault_interrupt(struct ext_code ext_code,
 			goto out;
 		if (tsk->thread.pfault_wait == 1) {
 			/* Already on the list with a reference: put to sleep */
+<<<<<<< HEAD
 			__set_task_state(tsk, TASK_UNINTERRUPTIBLE);
 			set_tsk_need_resched(tsk);
+=======
+			goto block;
+>>>>>>> v4.9.227
 		} else if (tsk->thread.pfault_wait == -1) {
 			/* Completion interrupt was faster than the initial
 			 * interrupt (pfault_wait == -1). Set pfault_wait
@@ -736,7 +894,15 @@ static void pfault_interrupt(struct ext_code ext_code,
 			get_task_struct(tsk);
 			tsk->thread.pfault_wait = 1;
 			list_add(&tsk->thread.list, &pfault_list);
+<<<<<<< HEAD
 			__set_task_state(tsk, TASK_UNINTERRUPTIBLE);
+=======
+block:
+			/* Since this must be a userspace fault, there
+			 * is no kernel task state to trample. Rely on the
+			 * return to userspace schedule() to block. */
+			__set_current_state(TASK_UNINTERRUPTIBLE);
+>>>>>>> v4.9.227
 			set_tsk_need_resched(tsk);
 		}
 	}
@@ -745,12 +911,17 @@ out:
 	put_task_struct(tsk);
 }
 
+<<<<<<< HEAD
 static int pfault_cpu_notify(struct notifier_block *self, unsigned long action,
 			     void *hcpu)
+=======
+static int pfault_cpu_dead(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 	struct thread_struct *thread, *next;
 	struct task_struct *tsk;
 
+<<<<<<< HEAD
 	switch (action & ~CPU_TASKS_FROZEN) {
 	case CPU_DEAD:
 		spin_lock_irq(&pfault_lock);
@@ -767,6 +938,18 @@ static int pfault_cpu_notify(struct notifier_block *self, unsigned long action,
 		break;
 	}
 	return NOTIFY_OK;
+=======
+	spin_lock_irq(&pfault_lock);
+	list_for_each_entry_safe(thread, next, &pfault_list, list) {
+		thread->pfault_wait = 0;
+		list_del(&thread->list);
+		tsk = container_of(thread, struct task_struct, thread);
+		wake_up_process(tsk);
+		put_task_struct(tsk);
+	}
+	spin_unlock_irq(&pfault_lock);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int __init pfault_irq_init(void)
@@ -780,7 +963,12 @@ static int __init pfault_irq_init(void)
 	if (rc)
 		goto out_pfault;
 	irq_subclass_register(IRQ_SUBCLASS_SERVICE_SIGNAL);
+<<<<<<< HEAD
 	hotcpu_notifier(pfault_cpu_notify, 0);
+=======
+	cpuhp_setup_state_nocalls(CPUHP_S390_PFAULT_DEAD, "s390/pfault:dead",
+				  NULL, pfault_cpu_dead);
+>>>>>>> v4.9.227
 	return 0;
 
 out_pfault:

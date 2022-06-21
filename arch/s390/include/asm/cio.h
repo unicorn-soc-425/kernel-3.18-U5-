@@ -5,6 +5,10 @@
 #define _ASM_S390_CIO_H_
 
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> v4.9.227
 #include <asm/types.h>
 
 #define LPM_ANYPATH 0xff
@@ -296,12 +300,28 @@ static inline int ccw_dev_id_is_equal(struct ccw_dev_id *dev_id1,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * pathmask_to_pos() - find the position of the left-most bit in a pathmask
+ * @mask: pathmask with at least one bit set
+ */
+static inline u8 pathmask_to_pos(u8 mask)
+{
+	return 8 - ffs(mask);
+}
+
+>>>>>>> v4.9.227
 void channel_subsystem_reinit(void);
 extern void css_schedule_reprobe(void);
 
 extern void reipl_ccw_dev(struct ccw_dev_id *id);
 
 struct cio_iplinfo {
+<<<<<<< HEAD
+=======
+	u8 ssid;
+>>>>>>> v4.9.227
 	u16 devno;
 	int is_qdio;
 };
@@ -309,7 +329,11 @@ struct cio_iplinfo {
 extern int cio_get_iplinfo(struct cio_iplinfo *iplinfo);
 
 /* Function from drivers/s390/cio/chsc.c */
+<<<<<<< HEAD
 int chsc_sstpc(void *page, unsigned int op, u16 ctrl);
+=======
+int chsc_sstpc(void *page, unsigned int op, u16 ctrl, u64 *clock_delta);
+>>>>>>> v4.9.227
 int chsc_sstpi(void *page, void *result, size_t size);
 
 #endif

@@ -18,11 +18,17 @@
 #include <linux/zpool.h>
 
 struct zpool {
+<<<<<<< HEAD
 	char *type;
 
 	struct zpool_driver *driver;
 	void *pool;
 	struct zpool_ops *ops;
+=======
+	struct zpool_driver *driver;
+	void *pool;
+	const struct zpool_ops *ops;
+>>>>>>> v4.9.227
 
 	struct list_head list;
 };
@@ -73,6 +79,7 @@ int zpool_unregister_driver(struct zpool_driver *driver)
 }
 EXPORT_SYMBOL(zpool_unregister_driver);
 
+<<<<<<< HEAD
 /**
  * zpool_evict() - evict callback from a zpool implementation.
  * @pool:	pool to evict from.
@@ -101,6 +108,10 @@ int zpool_evict(void *pool, unsigned long handle)
 EXPORT_SYMBOL(zpool_evict);
 
 static struct zpool_driver *zpool_get_driver(char *type)
+=======
+/* this assumes @type is null-terminated. */
+static struct zpool_driver *zpool_get_driver(const char *type)
+>>>>>>> v4.9.227
 {
 	struct zpool_driver *driver;
 
@@ -127,6 +138,44 @@ static void zpool_put_driver(struct zpool_driver *driver)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * zpool_has_pool() - Check if the pool driver is available
+ * @type	The type of the zpool to check (e.g. zbud, zsmalloc)
+ *
+ * This checks if the @type pool driver is available.  This will try to load
+ * the requested module, if needed, but there is no guarantee the module will
+ * still be loaded and available immediately after calling.  If this returns
+ * true, the caller should assume the pool is available, but must be prepared
+ * to handle the @zpool_create_pool() returning failure.  However if this
+ * returns false, the caller should assume the requested pool type is not
+ * available; either the requested pool type module does not exist, or could
+ * not be loaded, and calling @zpool_create_pool() with the pool type will
+ * fail.
+ *
+ * The @type string must be null-terminated.
+ *
+ * Returns: true if @type pool is available, false if not
+ */
+bool zpool_has_pool(char *type)
+{
+	struct zpool_driver *driver = zpool_get_driver(type);
+
+	if (!driver) {
+		request_module("zpool-%s", type);
+		driver = zpool_get_driver(type);
+	}
+
+	if (!driver)
+		return false;
+
+	zpool_put_driver(driver);
+	return true;
+}
+EXPORT_SYMBOL(zpool_has_pool);
+
+/**
+>>>>>>> v4.9.227
  * zpool_create_pool() - Create a new zpool
  * @type	The type of the zpool to create (e.g. zbud, zsmalloc)
  * @name	The name of the zpool (e.g. zram0, zswap)
@@ -139,15 +188,28 @@ static void zpool_put_driver(struct zpool_driver *driver)
  *
  * Implementations must guarantee this to be thread-safe.
  *
+<<<<<<< HEAD
  * Returns: New zpool on success, NULL on failure.
  */
 struct zpool *zpool_create_pool(char *type, char *name, gfp_t gfp,
 		struct zpool_ops *ops)
+=======
+ * The @type and @name strings must be null-terminated.
+ *
+ * Returns: New zpool on success, NULL on failure.
+ */
+struct zpool *zpool_create_pool(const char *type, const char *name, gfp_t gfp,
+		const struct zpool_ops *ops)
+>>>>>>> v4.9.227
 {
 	struct zpool_driver *driver;
 	struct zpool *zpool;
 
+<<<<<<< HEAD
 	pr_info("creating pool type %s\n", type);
+=======
+	pr_debug("creating pool type %s\n", type);
+>>>>>>> v4.9.227
 
 	driver = zpool_get_driver(type);
 
@@ -161,16 +223,25 @@ struct zpool *zpool_create_pool(char *type, char *name, gfp_t gfp,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	zpool = kmalloc(sizeof(*zpool), GFP_KERNEL);
+=======
+	zpool = kmalloc(sizeof(*zpool), gfp);
+>>>>>>> v4.9.227
 	if (!zpool) {
 		pr_err("couldn't create zpool - out of memory\n");
 		zpool_put_driver(driver);
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	zpool->type = driver->type;
 	zpool->driver = driver;
 	zpool->pool = driver->create(name, gfp, ops);
+=======
+	zpool->driver = driver;
+	zpool->pool = driver->create(name, gfp, ops, zpool);
+>>>>>>> v4.9.227
 	zpool->ops = ops;
 
 	if (!zpool->pool) {
@@ -180,7 +251,11 @@ struct zpool *zpool_create_pool(char *type, char *name, gfp_t gfp,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	pr_info("created %s pool\n", type);
+=======
+	pr_debug("created pool type %s\n", type);
+>>>>>>> v4.9.227
 
 	spin_lock(&pools_lock);
 	list_add(&zpool->list, &pools_head);
@@ -202,7 +277,11 @@ struct zpool *zpool_create_pool(char *type, char *name, gfp_t gfp,
  */
 void zpool_destroy_pool(struct zpool *zpool)
 {
+<<<<<<< HEAD
 	pr_info("destroying pool type %s\n", zpool->type);
+=======
+	pr_debug("destroying pool type %s\n", zpool->driver->type);
+>>>>>>> v4.9.227
 
 	spin_lock(&pools_lock);
 	list_del(&zpool->list);
@@ -222,9 +301,15 @@ void zpool_destroy_pool(struct zpool *zpool)
  *
  * Returns: The type of zpool.
  */
+<<<<<<< HEAD
 char *zpool_get_type(struct zpool *zpool)
 {
 	return zpool->type;
+=======
+const char *zpool_get_type(struct zpool *zpool)
+{
+	return zpool->driver->type;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -347,6 +432,7 @@ u64 zpool_get_total_size(struct zpool *zpool)
 	return zpool->driver->total_size(zpool->pool);
 }
 
+<<<<<<< HEAD
 unsigned long zpool_compact(struct zpool *zpool)
 {
 	return zpool->driver->compact(zpool->pool);
@@ -371,6 +457,8 @@ static void __exit exit_zpool(void)
 module_init(init_zpool);
 module_exit(exit_zpool);
 
+=======
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Dan Streetman <ddstreet@ieee.org>");
 MODULE_DESCRIPTION("Common API for compressed memory storage");

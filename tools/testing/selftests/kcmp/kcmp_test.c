@@ -17,6 +17,11 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
+<<<<<<< HEAD
+=======
+#include "../kselftest.h"
+
+>>>>>>> v4.9.227
 static long sys_kcmp(int pid1, int pid2, int type, int fd1, int fd2)
 {
 	return syscall(__NR_kcmp, pid1, pid2, type, fd1, fd2);
@@ -34,13 +39,21 @@ int main(int argc, char **argv)
 
 	if (fd1 < 0) {
 		perror("Can't create file");
+<<<<<<< HEAD
 		exit(1);
+=======
+		ksft_exit_fail();
+>>>>>>> v4.9.227
 	}
 
 	pid2 = fork();
 	if (pid2 < 0) {
 		perror("fork failed");
+<<<<<<< HEAD
 		exit(1);
+=======
+		ksft_exit_fail();
+>>>>>>> v4.9.227
 	}
 
 	if (!pid2) {
@@ -50,7 +63,11 @@ int main(int argc, char **argv)
 		fd2 = open(kpath, O_RDWR, 0644);
 		if (fd2 < 0) {
 			perror("Can't open file");
+<<<<<<< HEAD
 			exit(1);
+=======
+			ksft_exit_fail();
+>>>>>>> v4.9.227
 		}
 
 		/* An example of output and arguments */
@@ -74,23 +91,52 @@ int main(int argc, char **argv)
 		if (ret) {
 			printf("FAIL: 0 expected but %d returned (%s)\n",
 				ret, strerror(errno));
+<<<<<<< HEAD
 			ret = -1;
 		} else
 			printf("PASS: 0 returned as expected\n");
+=======
+			ksft_inc_fail_cnt();
+			ret = -1;
+		} else {
+			printf("PASS: 0 returned as expected\n");
+			ksft_inc_pass_cnt();
+		}
+>>>>>>> v4.9.227
 
 		/* Compare with self */
 		ret = sys_kcmp(pid1, pid1, KCMP_VM, 0, 0);
 		if (ret) {
 			printf("FAIL: 0 expected but %d returned (%s)\n",
 				ret, strerror(errno));
+<<<<<<< HEAD
 			ret = -1;
 		} else
 			printf("PASS: 0 returned as expected\n");
 
 		exit(ret);
+=======
+			ksft_inc_fail_cnt();
+			ret = -1;
+		} else {
+			printf("PASS: 0 returned as expected\n");
+			ksft_inc_pass_cnt();
+		}
+
+		ksft_print_cnts();
+
+		if (ret)
+			ksft_exit_fail();
+		else
+			ksft_exit_pass();
+>>>>>>> v4.9.227
 	}
 
 	waitpid(pid2, &status, P_ALL);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ksft_exit_pass();
+>>>>>>> v4.9.227
 }

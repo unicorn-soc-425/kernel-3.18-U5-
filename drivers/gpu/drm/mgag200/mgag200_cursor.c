@@ -75,7 +75,11 @@ int mga_crtc_cursor_set(struct drm_crtc *crtc,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file_priv, handle);
+=======
+	obj = drm_gem_object_lookup(file_priv, handle);
+>>>>>>> v4.9.227
 	if (!obj)
 		return -ENOENT;
 

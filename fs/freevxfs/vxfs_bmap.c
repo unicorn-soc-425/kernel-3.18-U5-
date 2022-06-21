@@ -68,8 +68,14 @@ vxfs_bmap_ext4(struct inode *ip, long bn)
 {
 	struct super_block *sb = ip->i_sb;
 	struct vxfs_inode_info *vip = VXFS_INO(ip);
+<<<<<<< HEAD
 	unsigned long bsize = sb->s_blocksize;
 	u32 indsize = vip->vii_ext4.ve4_indsize;
+=======
+	struct vxfs_sb_info *sbi = VXFS_SBI(sb);
+	unsigned long bsize = sb->s_blocksize;
+	u32 indsize = fs32_to_cpu(sbi, vip->vii_ext4.ve4_indsize);
+>>>>>>> v4.9.227
 	int i;
 
 	if (indsize > sb->s_blocksize)
@@ -77,14 +83,21 @@ vxfs_bmap_ext4(struct inode *ip, long bn)
 
 	for (i = 0; i < VXFS_NDADDR; i++) {
 		struct direct *d = vip->vii_ext4.ve4_direct + i;
+<<<<<<< HEAD
 		if (bn >= 0 && bn < d->size)
 			return (bn + d->extent);
 		bn -= d->size;
+=======
+		if (bn >= 0 && bn < fs32_to_cpu(sbi, d->size))
+			return (bn + fs32_to_cpu(sbi, d->extent));
+		bn -= fs32_to_cpu(sbi, d->size);
+>>>>>>> v4.9.227
 	}
 
 	if ((bn / (indsize * indsize * bsize / 4)) == 0) {
 		struct buffer_head *buf;
 		daddr_t	bno;
+<<<<<<< HEAD
 		u32 *indir;
 
 		buf = sb_bread(sb, vip->vii_ext4.ve4_indir[0]);
@@ -93,6 +106,18 @@ vxfs_bmap_ext4(struct inode *ip, long bn)
 
 		indir = (u32 *)buf->b_data;
 		bno = indir[(bn/indsize) % (indsize*bn)] + (bn%indsize);
+=======
+		__fs32 *indir;
+
+		buf = sb_bread(sb,
+			fs32_to_cpu(sbi, vip->vii_ext4.ve4_indir[0]));
+		if (!buf || !buffer_mapped(buf))
+			goto fail_buf;
+
+		indir = (__fs32 *)buf->b_data;
+		bno = fs32_to_cpu(sbi, indir[(bn / indsize) % (indsize * bn)]) +
+			(bn % indsize);
+>>>>>>> v4.9.227
 
 		brelse(buf);
 		return bno;
@@ -127,6 +152,10 @@ fail_buf:
 static daddr_t
 vxfs_bmap_indir(struct inode *ip, long indir, int size, long block)
 {
+<<<<<<< HEAD
+=======
+	struct vxfs_sb_info		*sbi = VXFS_SBI(ip->i_sb);
+>>>>>>> v4.9.227
 	struct buffer_head		*bp = NULL;
 	daddr_t				pblock = 0;
 	int				i;
@@ -142,24 +171,44 @@ vxfs_bmap_indir(struct inode *ip, long indir, int size, long block)
 
 		typ = ((struct vxfs_typed *)bp->b_data) +
 			(i % VXFS_TYPED_PER_BLOCK(ip->i_sb));
+<<<<<<< HEAD
 		off = (typ->vt_hdr & VXFS_TYPED_OFFSETMASK);
+=======
+		off = fs64_to_cpu(sbi, typ->vt_hdr) & VXFS_TYPED_OFFSETMASK;
+>>>>>>> v4.9.227
 
 		if (block < off) {
 			brelse(bp);
 			continue;
 		}
 
+<<<<<<< HEAD
 		switch ((u_int32_t)(typ->vt_hdr >> VXFS_TYPED_TYPESHIFT)) {
 		case VXFS_TYPED_INDIRECT:
 			pblock = vxfs_bmap_indir(ip, typ->vt_block,
 					typ->vt_size, block - off);
+=======
+		switch ((u_int32_t)(fs64_to_cpu(sbi, typ->vt_hdr) >>
+				VXFS_TYPED_TYPESHIFT)) {
+		case VXFS_TYPED_INDIRECT:
+			pblock = vxfs_bmap_indir(ip,
+					fs32_to_cpu(sbi, typ->vt_block),
+					fs32_to_cpu(sbi, typ->vt_size),
+					block - off);
+>>>>>>> v4.9.227
 			if (pblock == -2)
 				break;
 			goto out;
 		case VXFS_TYPED_DATA:
+<<<<<<< HEAD
 			if ((block - off) >= typ->vt_size)
 				break;
 			pblock = (typ->vt_block + block - off);
+=======
+			if ((block - off) >= fs32_to_cpu(sbi, typ->vt_size))
+				break;
+			pblock = fs32_to_cpu(sbi, typ->vt_block) + block - off;
+>>>>>>> v4.9.227
 			goto out;
 		case VXFS_TYPED_INDIRECT_DEV4:
 		case VXFS_TYPED_DATA_DEV4: {
@@ -167,6 +216,7 @@ vxfs_bmap_indir(struct inode *ip, long indir, int size, long block)
 				(struct vxfs_typed_dev4 *)typ;
 
 			printk(KERN_INFO "\n\nTYPED_DEV4 detected!\n");
+<<<<<<< HEAD
 			printk(KERN_INFO "block: %Lu\tsize: %Ld\tdev: %d\n",
 			       (unsigned long long) typ4->vd4_block,
 			       (unsigned long long) typ4->vd4_size,
@@ -174,6 +224,17 @@ vxfs_bmap_indir(struct inode *ip, long indir, int size, long block)
 			goto fail;
 		}
 		default:
+=======
+			printk(KERN_INFO "block: %llu\tsize: %lld\tdev: %d\n",
+			       fs64_to_cpu(sbi, typ4->vd4_block),
+			       fs64_to_cpu(sbi, typ4->vd4_size),
+			       fs32_to_cpu(sbi, typ4->vd4_dev));
+			goto fail;
+		}
+		default:
+			printk(KERN_ERR "%s:%d vt_hdr %llu\n", __func__,
+				__LINE__, fs64_to_cpu(sbi, typ->vt_hdr));
+>>>>>>> v4.9.227
 			BUG();
 		}
 		brelse(bp);
@@ -201,28 +262,52 @@ static daddr_t
 vxfs_bmap_typed(struct inode *ip, long iblock)
 {
 	struct vxfs_inode_info		*vip = VXFS_INO(ip);
+<<<<<<< HEAD
+=======
+	struct vxfs_sb_info		*sbi = VXFS_SBI(ip->i_sb);
+>>>>>>> v4.9.227
 	daddr_t				pblock = 0;
 	int				i;
 
 	for (i = 0; i < VXFS_NTYPED; i++) {
 		struct vxfs_typed	*typ = vip->vii_org.typed + i;
+<<<<<<< HEAD
 		int64_t			off = (typ->vt_hdr & VXFS_TYPED_OFFSETMASK);
+=======
+		u64			hdr = fs64_to_cpu(sbi, typ->vt_hdr);
+		int64_t			off = (hdr & VXFS_TYPED_OFFSETMASK);
+>>>>>>> v4.9.227
 
 #ifdef DIAGNOSTIC
 		vxfs_typdump(typ);
 #endif
 		if (iblock < off)
 			continue;
+<<<<<<< HEAD
 		switch ((u_int32_t)(typ->vt_hdr >> VXFS_TYPED_TYPESHIFT)) {
 		case VXFS_TYPED_INDIRECT:
 			pblock = vxfs_bmap_indir(ip, typ->vt_block,
 					typ->vt_size, iblock - off);
+=======
+		switch ((u32)(hdr >> VXFS_TYPED_TYPESHIFT)) {
+		case VXFS_TYPED_INDIRECT:
+			pblock = vxfs_bmap_indir(ip,
+					fs32_to_cpu(sbi, typ->vt_block),
+					fs32_to_cpu(sbi, typ->vt_size),
+					iblock - off);
+>>>>>>> v4.9.227
 			if (pblock == -2)
 				break;
 			return (pblock);
 		case VXFS_TYPED_DATA:
+<<<<<<< HEAD
 			if ((iblock - off) < typ->vt_size)
 				return (typ->vt_block + iblock - off);
+=======
+			if ((iblock - off) < fs32_to_cpu(sbi, typ->vt_size))
+				return (fs32_to_cpu(sbi, typ->vt_block) +
+						iblock - off);
+>>>>>>> v4.9.227
 			break;
 		case VXFS_TYPED_INDIRECT_DEV4:
 		case VXFS_TYPED_DATA_DEV4: {
@@ -230,10 +315,17 @@ vxfs_bmap_typed(struct inode *ip, long iblock)
 				(struct vxfs_typed_dev4 *)typ;
 
 			printk(KERN_INFO "\n\nTYPED_DEV4 detected!\n");
+<<<<<<< HEAD
 			printk(KERN_INFO "block: %Lu\tsize: %Ld\tdev: %d\n",
 			       (unsigned long long) typ4->vd4_block,
 			       (unsigned long long) typ4->vd4_size,
 			       typ4->vd4_dev);
+=======
+			printk(KERN_INFO "block: %llu\tsize: %lld\tdev: %d\n",
+			       fs64_to_cpu(sbi, typ4->vd4_block),
+			       fs64_to_cpu(sbi, typ4->vd4_size),
+			       fs32_to_cpu(sbi, typ4->vd4_dev));
+>>>>>>> v4.9.227
 			return 0;
 		}
 		default:

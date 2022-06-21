@@ -44,6 +44,10 @@
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -52,7 +56,10 @@
 #include <sound/initval.h>
 #include <sound/info.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/hardware.h>
 #include <asm/parisc-device.h>
 
@@ -776,6 +783,7 @@ static int
 snd_harmony_captureroute_info(struct snd_kcontrol *kc, 
 			      struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[2] = { "Line", "Mic" };
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
@@ -785,6 +793,11 @@ snd_harmony_captureroute_info(struct snd_kcontrol *kc,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[2] = { "Line", "Mic" };
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> v4.9.227
 }
 
 static int 
@@ -899,9 +912,13 @@ snd_harmony_free(struct snd_harmony *h)
 	if (h->irq >= 0)
 		free_irq(h->irq, h);
 
+<<<<<<< HEAD
 	if (h->iobase)
 		iounmap(h->iobase);
 
+=======
+	iounmap(h->iobase);
+>>>>>>> v4.9.227
 	kfree(h);
 	return 0;
 }

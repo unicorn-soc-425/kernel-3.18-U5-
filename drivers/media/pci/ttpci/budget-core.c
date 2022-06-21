@@ -31,7 +31,11 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org/ 
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> v4.9.227
  */
 
 
@@ -161,7 +165,12 @@ static int start_ts_capture(struct budget *budget)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int budget_read_fe_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int budget_read_fe_status(struct dvb_frontend *fe,
+				 enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct budget *budget = (struct budget *) fe->dvb->priv;
 	int synced;
@@ -231,6 +240,7 @@ static void vpeirq(unsigned long data)
 }
 
 
+<<<<<<< HEAD
 int ttpci_budget_debiread(struct budget *budget, u32 config, int addr, int count,
 			  int uselocks, int nobusyloop)
 {
@@ -249,12 +259,24 @@ int ttpci_budget_debiread(struct budget *budget, u32 config, int addr, int count
 			spin_unlock_irqrestore(&budget->debilock, flags);
 		return result;
 	}
+=======
+static int ttpci_budget_debiread_nolock(struct budget *budget, u32 config,
+		int addr, int count, int nobusyloop)
+{
+	struct saa7146_dev *saa = budget->dev;
+	int result;
+
+	result = saa7146_wait_for_debi_done(saa, nobusyloop);
+	if (result < 0)
+		return result;
+>>>>>>> v4.9.227
 
 	saa7146_write(saa, DEBI_COMMAND, (count << 17) | 0x10000 | (addr & 0xffff));
 	saa7146_write(saa, DEBI_CONFIG, config);
 	saa7146_write(saa, DEBI_PAGE, 0);
 	saa7146_write(saa, MC2, (2 << 16) | 2);
 
+<<<<<<< HEAD
 	if ((result = saa7146_wait_for_debi_done(saa, nobusyloop)) < 0) {
 		if (uselocks)
 			spin_unlock_irqrestore(&budget->debilock, flags);
@@ -288,6 +310,46 @@ int ttpci_budget_debiwrite(struct budget *budget, u32 config, int addr,
 			spin_unlock_irqrestore(&budget->debilock, flags);
 		return result;
 	}
+=======
+	result = saa7146_wait_for_debi_done(saa, nobusyloop);
+	if (result < 0)
+		return result;
+
+	result = saa7146_read(saa, DEBI_AD);
+	result &= (0xffffffffUL >> ((4 - count) * 8));
+	return result;
+}
+
+int ttpci_budget_debiread(struct budget *budget, u32 config, int addr, int count,
+			  int uselocks, int nobusyloop)
+{
+	if (count > 4 || count <= 0)
+		return 0;
+
+	if (uselocks) {
+		unsigned long flags;
+		int result;
+
+		spin_lock_irqsave(&budget->debilock, flags);
+		result = ttpci_budget_debiread_nolock(budget, config, addr,
+						      count, nobusyloop);
+		spin_unlock_irqrestore(&budget->debilock, flags);
+		return result;
+	}
+	return ttpci_budget_debiread_nolock(budget, config, addr,
+					    count, nobusyloop);
+}
+
+static int ttpci_budget_debiwrite_nolock(struct budget *budget, u32 config,
+		int addr, int count, u32 value, int nobusyloop)
+{
+	struct saa7146_dev *saa = budget->dev;
+	int result;
+
+	result = saa7146_wait_for_debi_done(saa, nobusyloop);
+	if (result < 0)
+		return result;
+>>>>>>> v4.9.227
 
 	saa7146_write(saa, DEBI_COMMAND, (count << 17) | 0x00000 | (addr & 0xffff));
 	saa7146_write(saa, DEBI_CONFIG, config);
@@ -295,6 +357,7 @@ int ttpci_budget_debiwrite(struct budget *budget, u32 config, int addr,
 	saa7146_write(saa, DEBI_AD, value);
 	saa7146_write(saa, MC2, (2 << 16) | 2);
 
+<<<<<<< HEAD
 	if ((result = saa7146_wait_for_debi_done(saa, nobusyloop)) < 0) {
 		if (uselocks)
 			spin_unlock_irqrestore(&budget->debilock, flags);
@@ -304,6 +367,30 @@ int ttpci_budget_debiwrite(struct budget *budget, u32 config, int addr,
 	if (uselocks)
 		spin_unlock_irqrestore(&budget->debilock, flags);
 	return 0;
+=======
+	result = saa7146_wait_for_debi_done(saa, nobusyloop);
+	return result < 0 ? result : 0;
+}
+
+int ttpci_budget_debiwrite(struct budget *budget, u32 config, int addr,
+			   int count, u32 value, int uselocks, int nobusyloop)
+{
+	if (count > 4 || count <= 0)
+		return 0;
+
+	if (uselocks) {
+		unsigned long flags;
+		int result;
+
+		spin_lock_irqsave(&budget->debilock, flags);
+		result = ttpci_budget_debiwrite_nolock(budget, config, addr,
+						count, value, nobusyloop);
+		spin_unlock_irqrestore(&budget->debilock, flags);
+		return result;
+	}
+	return ttpci_budget_debiwrite_nolock(budget, config, addr,
+					     count, value, nobusyloop);
+>>>>>>> v4.9.227
 }
 
 

@@ -172,13 +172,18 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 {
 	struct rt_sigframe __user *frame;
 	int err = 0;
+<<<<<<< HEAD
 	int signal, sig = ksig->sig;
+=======
+	int sig = ksig->sig;
+>>>>>>> v4.9.227
 
 	frame = get_sigframe(ksig, regs->spu, sizeof(*frame));
 
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	signal = current_thread_info()->exec_domain
 		&& current_thread_info()->exec_domain->signal_invmap
 		&& sig < 32
@@ -186,6 +191,9 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 		: sig;
 
 	err |= __put_user(signal, &frame->sig);
+=======
+	err |= __put_user(sig, &frame->sig);
+>>>>>>> v4.9.227
 	if (err)
 		return -EFAULT;
 
@@ -209,13 +217,20 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 
 	/* Set up registers for signal handler */
 	regs->spu = (unsigned long)frame;
+<<<<<<< HEAD
 	regs->r0 = signal;	/* Arg for signal handler */
+=======
+	regs->r0 = sig;	/* Arg for signal handler */
+>>>>>>> v4.9.227
 	regs->r1 = (unsigned long)&frame->info;
 	regs->r2 = (unsigned long)&frame->uc;
 	regs->bpc = (unsigned long)ksig->ka.sa.sa_handler;
 
+<<<<<<< HEAD
 	set_fs(USER_DS);
 
+=======
+>>>>>>> v4.9.227
 #if DEBUG_SIG
 	printk("SIG deliver (%s:%d): sp=%p pc=%p\n",
 		current->comm, current->pid, frame, regs->pc);

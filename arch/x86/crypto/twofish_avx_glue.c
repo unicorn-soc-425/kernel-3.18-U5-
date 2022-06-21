@@ -36,9 +36,13 @@
 #include <crypto/ctr.h>
 #include <crypto/lrw.h>
 #include <crypto/xts.h>
+<<<<<<< HEAD
 #include <asm/i387.h>
 #include <asm/xcr.h>
 #include <asm/xsave.h>
+=======
+#include <asm/fpu/api.h>
+>>>>>>> v4.9.227
 #include <asm/crypto/twofish.h>
 #include <asm/crypto/glue_helper.h>
 #include <crypto/scatterwalk.h>
@@ -340,7 +344,12 @@ static struct crypto_alg twofish_algs[10] = { {
 	.cra_name		= "__ecb-twofish-avx",
 	.cra_driver_name	= "__driver-ecb-twofish-avx",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= TF_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct twofish_ctx),
 	.cra_alignmask		= 0,
@@ -359,7 +368,12 @@ static struct crypto_alg twofish_algs[10] = { {
 	.cra_name		= "__cbc-twofish-avx",
 	.cra_driver_name	= "__driver-cbc-twofish-avx",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= TF_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct twofish_ctx),
 	.cra_alignmask		= 0,
@@ -378,7 +392,12 @@ static struct crypto_alg twofish_algs[10] = { {
 	.cra_name		= "__ctr-twofish-avx",
 	.cra_driver_name	= "__driver-ctr-twofish-avx",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= 1,
 	.cra_ctxsize		= sizeof(struct twofish_ctx),
 	.cra_alignmask		= 0,
@@ -398,7 +417,12 @@ static struct crypto_alg twofish_algs[10] = { {
 	.cra_name		= "__lrw-twofish-avx",
 	.cra_driver_name	= "__driver-lrw-twofish-avx",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= TF_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct twofish_lrw_ctx),
 	.cra_alignmask		= 0,
@@ -421,7 +445,12 @@ static struct crypto_alg twofish_algs[10] = { {
 	.cra_name		= "__xts-twofish-avx",
 	.cra_driver_name	= "__driver-xts-twofish-avx",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= TF_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct twofish_xts_ctx),
 	.cra_alignmask		= 0,
@@ -553,6 +582,7 @@ static struct crypto_alg twofish_algs[10] = { {
 
 static int __init twofish_init(void)
 {
+<<<<<<< HEAD
 	u64 xcr0;
 
 	if (!cpu_has_avx || !cpu_has_osxsave) {
@@ -563,6 +593,12 @@ static int __init twofish_init(void)
 	xcr0 = xgetbv(XCR_XFEATURE_ENABLED_MASK);
 	if ((xcr0 & (XSTATE_SSE | XSTATE_YMM)) != (XSTATE_SSE | XSTATE_YMM)) {
 		printk(KERN_INFO "AVX detected but unusable.\n");
+=======
+	const char *feature_name;
+
+	if (!cpu_has_xfeatures(XFEATURE_MASK_SSE | XFEATURE_MASK_YMM, &feature_name)) {
+		pr_info("CPU feature '%s' is not supported.\n", feature_name);
+>>>>>>> v4.9.227
 		return -ENODEV;
 	}
 

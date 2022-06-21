@@ -83,3 +83,10 @@
 &ipu1_di0_disp0 {
 	remote-endpoint = <&display0_in>;
 };
+<<<<<<< HEAD
+=======
+
+&pwm1 {
+	status = "okay";
+};
+>>>>>>> v4.9.227

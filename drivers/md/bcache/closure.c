@@ -112,7 +112,11 @@ bool closure_wait(struct closure_waitlist *waitlist, struct closure *cl)
 EXPORT_SYMBOL(closure_wait);
 
 /**
+<<<<<<< HEAD
  * closure_sync - sleep until a closure a closure has nothing left to wait on
+=======
+ * closure_sync - sleep until a closure has nothing left to wait on
+>>>>>>> v4.9.227
  *
  * Sleeps until the refcount hits 1 - the thread that's running the closure owns
  * the last refcount.
@@ -167,8 +171,11 @@ EXPORT_SYMBOL(closure_debug_destroy);
 
 static struct dentry *debug;
 
+<<<<<<< HEAD
 #define work_data_bits(work) ((unsigned long *)(&(work)->data))
 
+=======
+>>>>>>> v4.9.227
 static int debug_seq_show(struct seq_file *f, void *data)
 {
 	struct closure *cl;
@@ -182,7 +189,11 @@ static int debug_seq_show(struct seq_file *f, void *data)
 			   r & CLOSURE_REMAINING_MASK);
 
 		seq_printf(f, "%s%s%s%s\n",
+<<<<<<< HEAD
 			   test_bit(WORK_STRUCT_PENDING,
+=======
+			   test_bit(WORK_STRUCT_PENDING_BIT,
+>>>>>>> v4.9.227
 				    work_data_bits(&cl->work)) ? "Q" : "",
 			   r & CLOSURE_RUNNING	? "R" : "",
 			   r & CLOSURE_STACK	? "S" : "",

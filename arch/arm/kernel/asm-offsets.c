@@ -10,6 +10,10 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
+=======
+#include <linux/compiler.h>
+>>>>>>> v4.9.227
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <linux/dma-mapping.h>
@@ -40,10 +44,26 @@
  * GCC 3.2.x: miscompiles NEW_AUX_ENT in fs/binfmt_elf.c
  *            (http://gcc.gnu.org/PR8896) and incorrect structure
  *	      initialisation in fs/jffs2/erase.c
+<<<<<<< HEAD
  */
 #if (__GNUC__ == 3 && __GNUC_MINOR__ < 3)
 #error Your compiler is too buggy; it is known to miscompile kernels.
 #error    Known good compilers: 3.3
+=======
+ * GCC 4.8.0-4.8.2: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=58854
+ *	      miscompiles find_get_entry(), and can result in EXT3 and EXT4
+ *	      filesystem corruption (possibly other FS too).
+ */
+#ifdef __GNUC__
+#if (__GNUC__ == 3 && __GNUC_MINOR__ < 3)
+#error Your compiler is too buggy; it is known to miscompile kernels.
+#error    Known good compilers: 3.3, 4.x
+#endif
+#if GCC_VERSION >= 40800 && GCC_VERSION < 40803
+#error Your compiler is too buggy; it is known to miscompile kernels
+#error and result in filesystem corruption and oopses.
+#endif
+>>>>>>> v4.9.227
 #endif
 
 int main(void)
@@ -57,7 +77,10 @@ int main(void)
   DEFINE(TI_PREEMPT,		offsetof(struct thread_info, preempt_count));
   DEFINE(TI_ADDR_LIMIT,		offsetof(struct thread_info, addr_limit));
   DEFINE(TI_TASK,		offsetof(struct thread_info, task));
+<<<<<<< HEAD
   DEFINE(TI_EXEC_DOMAIN,	offsetof(struct thread_info, exec_domain));
+=======
+>>>>>>> v4.9.227
   DEFINE(TI_CPU,		offsetof(struct thread_info, cpu));
   DEFINE(TI_CPU_DOMAIN,		offsetof(struct thread_info, cpu_domain));
   DEFINE(TI_CPU_SAVE,		offsetof(struct thread_info, cpu_context));
@@ -98,7 +121,14 @@ int main(void)
   DEFINE(S_PC,			offsetof(struct pt_regs, ARM_pc));
   DEFINE(S_PSR,			offsetof(struct pt_regs, ARM_cpsr));
   DEFINE(S_OLD_R0,		offsetof(struct pt_regs, ARM_ORIG_r0));
+<<<<<<< HEAD
   DEFINE(S_FRAME_SIZE,		sizeof(struct pt_regs));
+=======
+  DEFINE(PT_REGS_SIZE,		sizeof(struct pt_regs));
+  DEFINE(SVC_DACR,		offsetof(struct svc_pt_regs, dacr));
+  DEFINE(SVC_ADDR_LIMIT,	offsetof(struct svc_pt_regs, addr_limit));
+  DEFINE(SVC_REGS_SIZE,		sizeof(struct svc_pt_regs));
+>>>>>>> v4.9.227
   BLANK();
 #ifdef CONFIG_CACHE_L2X0
   DEFINE(L2X0_R_PHY_BASE,	offsetof(struct l2x0_regs, phy_base));
@@ -161,6 +191,7 @@ int main(void)
   DEFINE(CACHE_WRITEBACK_GRANULE, __CACHE_WRITEBACK_GRANULE);
   BLANK();
 #ifdef CONFIG_KVM_ARM_HOST
+<<<<<<< HEAD
   DEFINE(VCPU_KVM,		offsetof(struct kvm_vcpu, kvm));
   DEFINE(VCPU_MIDR,		offsetof(struct kvm_vcpu, arch.midr));
   DEFINE(VCPU_CP15,		offsetof(struct kvm_vcpu, arch.cp15));
@@ -200,6 +231,13 @@ int main(void)
   DEFINE(KVM_VGIC_VCTRL,	offsetof(struct kvm, arch.vgic.vctrl_base));
 #endif
   DEFINE(KVM_VTTBR,		offsetof(struct kvm, arch.vttbr));
+=======
+  DEFINE(VCPU_GUEST_CTXT,	offsetof(struct kvm_vcpu, arch.ctxt));
+  DEFINE(VCPU_HOST_CTXT,	offsetof(struct kvm_vcpu, arch.host_cpu_context));
+  DEFINE(CPU_CTXT_VFP,		offsetof(struct kvm_cpu_context, vfp));
+  DEFINE(CPU_CTXT_GP_REGS,	offsetof(struct kvm_cpu_context, gp_regs));
+  DEFINE(GP_REGS_USR,		offsetof(struct kvm_regs, usr_regs));
+>>>>>>> v4.9.227
 #endif
   BLANK();
 #ifdef CONFIG_VDSO

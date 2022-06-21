@@ -30,10 +30,19 @@
 #include <linux/nfs_fs.h>
 #include <linux/nfs_page.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/sort.h>
+>>>>>>> v4.9.227
 #include "internal.h"
 #include "pnfs.h"
 #include "iostat.h"
 #include "nfs4trace.h"
+<<<<<<< HEAD
+=======
+#include "delegation.h"
+#include "nfs42.h"
+>>>>>>> v4.9.227
 
 #define NFSDBG_FACILITY		NFSDBG_PNFS
 #define PNFS_LAYOUTGET_RETRY_TIMEOUT (120*HZ)
@@ -50,6 +59,11 @@ static DEFINE_SPINLOCK(pnfs_spinlock);
  */
 static LIST_HEAD(pnfs_modules_tbl);
 
+<<<<<<< HEAD
+=======
+static void pnfs_layoutreturn_before_put_layout_hdr(struct pnfs_layout_hdr *lo);
+
+>>>>>>> v4.9.227
 /* Return the registered pnfs layout driver module matching given id */
 static struct pnfs_layoutdriver_type *
 find_pnfs_driver_locked(u32 id)
@@ -95,6 +109,7 @@ unset_pnfs_layoutdriver(struct nfs_server *nfss)
 }
 
 /*
+<<<<<<< HEAD
  * Try to set the server's pnfs module to the pnfs layout type specified by id.
  * Currently only one pNFS layout driver per filesystem is supported.
  *
@@ -124,6 +139,83 @@ set_pnfs_layoutdriver(struct nfs_server *server, const struct nfs_fh *mntfh,
 			goto out_no_driver;
 		}
 	}
+=======
+ * When the server sends a list of layout types, we choose one in the order
+ * given in the list below.
+ *
+ * FIXME: should this list be configurable in some fashion? module param?
+ * 	  mount option? something else?
+ */
+static const u32 ld_prefs[] = {
+	LAYOUT_SCSI,
+	LAYOUT_BLOCK_VOLUME,
+	LAYOUT_OSD2_OBJECTS,
+	LAYOUT_FLEX_FILES,
+	LAYOUT_NFSV4_1_FILES,
+	0
+};
+
+static int
+ld_cmp(const void *e1, const void *e2)
+{
+	u32 ld1 = *((u32 *)e1);
+	u32 ld2 = *((u32 *)e2);
+	int i;
+
+	for (i = 0; ld_prefs[i] != 0; i++) {
+		if (ld1 == ld_prefs[i])
+			return -1;
+
+		if (ld2 == ld_prefs[i])
+			return 1;
+	}
+	return 0;
+}
+
+/*
+ * Try to set the server's pnfs module to the pnfs layout type specified by id.
+ * Currently only one pNFS layout driver per filesystem is supported.
+ *
+ * @ids array of layout types supported by MDS.
+ */
+void
+set_pnfs_layoutdriver(struct nfs_server *server, const struct nfs_fh *mntfh,
+		      struct nfs_fsinfo *fsinfo)
+{
+	struct pnfs_layoutdriver_type *ld_type = NULL;
+	u32 id;
+	int i;
+
+	if (fsinfo->nlayouttypes == 0)
+		goto out_no_driver;
+	if (!(server->nfs_client->cl_exchange_flags &
+		 (EXCHGID4_FLAG_USE_NON_PNFS | EXCHGID4_FLAG_USE_PNFS_MDS))) {
+		printk(KERN_ERR "NFS: %s: cl_exchange_flags 0x%x\n",
+			__func__, server->nfs_client->cl_exchange_flags);
+		goto out_no_driver;
+	}
+
+	sort(fsinfo->layouttype, fsinfo->nlayouttypes,
+		sizeof(*fsinfo->layouttype), ld_cmp, NULL);
+
+	for (i = 0; i < fsinfo->nlayouttypes; i++) {
+		id = fsinfo->layouttype[i];
+		ld_type = find_pnfs_driver(id);
+		if (!ld_type) {
+			request_module("%s-%u", LAYOUT_NFSV4_1_MODULE_PREFIX,
+					id);
+			ld_type = find_pnfs_driver(id);
+		}
+		if (ld_type)
+			break;
+	}
+
+	if (!ld_type) {
+		dprintk("%s: No pNFS module found!\n", __func__);
+		goto out_no_driver;
+	}
+
+>>>>>>> v4.9.227
 	server->pnfs_curr_ld = ld_type;
 	if (ld_type->set_layoutdriver
 	    && ld_type->set_layoutdriver(server, mntfh)) {
@@ -237,13 +329,54 @@ pnfs_put_layout_hdr(struct pnfs_layout_hdr *lo)
 {
 	struct inode *inode = lo->plh_inode;
 
+<<<<<<< HEAD
 	if (atomic_dec_and_lock(&lo->plh_refcount, &inode->i_lock)) {
+=======
+	pnfs_layoutreturn_before_put_layout_hdr(lo);
+
+	if (atomic_dec_and_lock(&lo->plh_refcount, &inode->i_lock)) {
+		if (!list_empty(&lo->plh_segs))
+			WARN_ONCE(1, "NFS: BUG unfreed layout segments.\n");
+>>>>>>> v4.9.227
 		pnfs_detach_layout_hdr(lo);
 		spin_unlock(&inode->i_lock);
 		pnfs_free_layout_hdr(lo);
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void
+pnfs_clear_layoutreturn_info(struct pnfs_layout_hdr *lo)
+{
+	lo->plh_return_iomode = 0;
+	lo->plh_return_seq = 0;
+	clear_bit(NFS_LAYOUT_RETURN_REQUESTED, &lo->plh_flags);
+}
+
+/*
+ * Mark a pnfs_layout_hdr and all associated layout segments as invalid
+ *
+ * In order to continue using the pnfs_layout_hdr, a full recovery
+ * is required.
+ * Note that caller must hold inode->i_lock.
+ */
+int
+pnfs_mark_layout_stateid_invalid(struct pnfs_layout_hdr *lo,
+		struct list_head *lseg_list)
+{
+	struct pnfs_layout_range range = {
+		.iomode = IOMODE_ANY,
+		.offset = 0,
+		.length = NFS4_MAX_UINT64,
+	};
+
+	set_bit(NFS_LAYOUT_INVALID_STID, &lo->plh_flags);
+	pnfs_clear_layoutreturn_info(lo);
+	return pnfs_mark_matching_lsegs_invalid(lo, lseg_list, &range, 0);
+}
+
+>>>>>>> v4.9.227
 static int
 pnfs_iomode_to_fail_bit(u32 iomode)
 {
@@ -279,7 +412,11 @@ pnfs_layout_io_set_failed(struct pnfs_layout_hdr *lo, u32 iomode)
 
 	spin_lock(&inode->i_lock);
 	pnfs_layout_set_fail_bit(lo, pnfs_iomode_to_fail_bit(iomode));
+<<<<<<< HEAD
 	pnfs_mark_matching_lsegs_invalid(lo, &head, &range);
+=======
+	pnfs_mark_matching_lsegs_invalid(lo, &head, &range, 0);
+>>>>>>> v4.9.227
 	spin_unlock(&inode->i_lock);
 	pnfs_free_lseg_list(&head);
 	dprintk("%s Setting layout IOMODE_%s fail bit\n", __func__,
@@ -305,14 +442,27 @@ pnfs_layout_io_test_failed(struct pnfs_layout_hdr *lo, u32 iomode)
 }
 
 static void
+<<<<<<< HEAD
 init_lseg(struct pnfs_layout_hdr *lo, struct pnfs_layout_segment *lseg)
+=======
+pnfs_init_lseg(struct pnfs_layout_hdr *lo, struct pnfs_layout_segment *lseg,
+		const struct pnfs_layout_range *range,
+		const nfs4_stateid *stateid)
+>>>>>>> v4.9.227
 {
 	INIT_LIST_HEAD(&lseg->pls_list);
 	INIT_LIST_HEAD(&lseg->pls_lc_list);
 	atomic_set(&lseg->pls_refcount, 1);
+<<<<<<< HEAD
 	smp_mb();
 	set_bit(NFS_LSEG_VALID, &lseg->pls_flags);
 	lseg->pls_layout = lo;
+=======
+	set_bit(NFS_LSEG_VALID, &lseg->pls_flags);
+	lseg->pls_layout = lo;
+	lseg->pls_range = *range;
+	lseg->pls_seq = be32_to_cpu(stateid->seqid);
+>>>>>>> v4.9.227
 }
 
 static void pnfs_free_lseg(struct pnfs_layout_segment *lseg)
@@ -332,8 +482,18 @@ pnfs_layout_remove_lseg(struct pnfs_layout_hdr *lo,
 	list_del_init(&lseg->pls_list);
 	/* Matched by pnfs_get_layout_hdr in pnfs_layout_insert_lseg */
 	atomic_dec(&lo->plh_refcount);
+<<<<<<< HEAD
 	if (list_empty(&lo->plh_segs))
 		clear_bit(NFS_LAYOUT_BULK_RECALL, &lo->plh_flags);
+=======
+	if (list_empty(&lo->plh_segs) &&
+	    !test_bit(NFS_LAYOUT_RETURN_REQUESTED, &lo->plh_flags) &&
+	    !test_bit(NFS_LAYOUT_RETURN, &lo->plh_flags)) {
+		if (atomic_read(&lo->plh_outstanding) == 0)
+			set_bit(NFS_LAYOUT_INVALID_STID, &lo->plh_flags);
+		clear_bit(NFS_LAYOUT_BULK_RECALL, &lo->plh_flags);
+	}
+>>>>>>> v4.9.227
 	rpc_wake_up(&NFS_SERVER(inode)->roc_rpcwaitq);
 }
 
@@ -349,9 +509,21 @@ pnfs_put_lseg(struct pnfs_layout_segment *lseg)
 	dprintk("%s: lseg %p ref %d valid %d\n", __func__, lseg,
 		atomic_read(&lseg->pls_refcount),
 		test_bit(NFS_LSEG_VALID, &lseg->pls_flags));
+<<<<<<< HEAD
 	lo = lseg->pls_layout;
 	inode = lo->plh_inode;
 	if (atomic_dec_and_lock(&lseg->pls_refcount, &inode->i_lock)) {
+=======
+
+	lo = lseg->pls_layout;
+	inode = lo->plh_inode;
+
+	if (atomic_dec_and_lock(&lseg->pls_refcount, &inode->i_lock)) {
+		if (test_bit(NFS_LSEG_VALID, &lseg->pls_flags)) {
+			spin_unlock(&inode->i_lock);
+			return;
+		}
+>>>>>>> v4.9.227
 		pnfs_get_layout_hdr(lo);
 		pnfs_layout_remove_lseg(lo, lseg);
 		spin_unlock(&inode->i_lock);
@@ -392,6 +564,11 @@ pnfs_put_lseg_locked(struct pnfs_layout_segment *lseg)
 		test_bit(NFS_LSEG_VALID, &lseg->pls_flags));
 	if (atomic_dec_and_test(&lseg->pls_refcount)) {
 		struct pnfs_layout_hdr *lo = lseg->pls_layout;
+<<<<<<< HEAD
+=======
+		if (test_bit(NFS_LSEG_VALID, &lseg->pls_flags))
+			return;
+>>>>>>> v4.9.227
 		pnfs_get_layout_hdr(lo);
 		pnfs_layout_remove_lseg(lo, lseg);
 		pnfs_free_lseg_async(lseg);
@@ -447,6 +624,7 @@ pnfs_lseg_range_intersecting(const struct pnfs_layout_range *l1,
 	       (end2 == NFS4_MAX_UINT64 || end2 > start1);
 }
 
+<<<<<<< HEAD
 static bool
 should_free_lseg(const struct pnfs_layout_range *lseg_range,
 		 const struct pnfs_layout_range *recall_range)
@@ -456,6 +634,8 @@ should_free_lseg(const struct pnfs_layout_range *lseg_range,
 	       pnfs_lseg_range_intersecting(lseg_range, recall_range);
 }
 
+=======
+>>>>>>> v4.9.227
 static bool pnfs_lseg_dec_and_remove_zero(struct pnfs_layout_segment *lseg,
 		struct list_head *tmp_list)
 {
@@ -485,22 +665,78 @@ static int mark_lseg_invalid(struct pnfs_layout_segment *lseg,
 	return rv;
 }
 
+<<<<<<< HEAD
 /* Returns count of number of matching invalid lsegs remaining in list
  * after call.
+=======
+/*
+ * Compare 2 layout stateid sequence ids, to see which is newer,
+ * taking into account wraparound issues.
+ */
+static bool pnfs_seqid_is_newer(u32 s1, u32 s2)
+{
+	return (s32)(s1 - s2) > 0;
+}
+
+static bool
+pnfs_should_free_range(const struct pnfs_layout_range *lseg_range,
+		 const struct pnfs_layout_range *recall_range)
+{
+	return (recall_range->iomode == IOMODE_ANY ||
+		lseg_range->iomode == recall_range->iomode) &&
+	       pnfs_lseg_range_intersecting(lseg_range, recall_range);
+}
+
+static bool
+pnfs_match_lseg_recall(const struct pnfs_layout_segment *lseg,
+		const struct pnfs_layout_range *recall_range,
+		u32 seq)
+{
+	if (seq != 0 && pnfs_seqid_is_newer(lseg->pls_seq, seq))
+		return false;
+	if (recall_range == NULL)
+		return true;
+	return pnfs_should_free_range(&lseg->pls_range, recall_range);
+}
+
+/**
+ * pnfs_mark_matching_lsegs_invalid - tear down lsegs or mark them for later
+ * @lo: layout header containing the lsegs
+ * @tmp_list: list head where doomed lsegs should go
+ * @recall_range: optional recall range argument to match (may be NULL)
+ * @seq: only invalidate lsegs obtained prior to this sequence (may be 0)
+ *
+ * Walk the list of lsegs in the layout header, and tear down any that should
+ * be destroyed. If "recall_range" is specified then the segment must match
+ * that range. If "seq" is non-zero, then only match segments that were handed
+ * out at or before that sequence.
+ *
+ * Returns number of matching invalid lsegs remaining in list after scanning
+ * it and purging them.
+>>>>>>> v4.9.227
  */
 int
 pnfs_mark_matching_lsegs_invalid(struct pnfs_layout_hdr *lo,
 			    struct list_head *tmp_list,
+<<<<<<< HEAD
 			    struct pnfs_layout_range *recall_range)
 {
 	struct pnfs_layout_segment *lseg, *next;
 	int invalid = 0, removed = 0;
+=======
+			    const struct pnfs_layout_range *recall_range,
+			    u32 seq)
+{
+	struct pnfs_layout_segment *lseg, *next;
+	int remaining = 0;
+>>>>>>> v4.9.227
 
 	dprintk("%s:Begin lo %p\n", __func__, lo);
 
 	if (list_empty(&lo->plh_segs))
 		return 0;
 	list_for_each_entry_safe(lseg, next, &lo->plh_segs, pls_list)
+<<<<<<< HEAD
 		if (!recall_range ||
 		    should_free_lseg(&lseg->pls_range, recall_range)) {
 			dprintk("%s: freeing lseg %p iomode %d "
@@ -512,6 +748,18 @@ pnfs_mark_matching_lsegs_invalid(struct pnfs_layout_hdr *lo,
 		}
 	dprintk("%s:Return %i\n", __func__, invalid - removed);
 	return invalid - removed;
+=======
+		if (pnfs_match_lseg_recall(lseg, recall_range, seq)) {
+			dprintk("%s: freeing lseg %p iomode %d seq %u"
+				"offset %llu length %llu\n", __func__,
+				lseg, lseg->pls_range.iomode, lseg->pls_seq,
+				lseg->pls_range.offset, lseg->pls_range.length);
+			if (!mark_lseg_invalid(lseg, tmp_list))
+				remaining++;
+		}
+	dprintk("%s:Return %i\n", __func__, remaining);
+	return remaining;
+>>>>>>> v4.9.227
 }
 
 /* note free_me must contain lsegs from a single layout_hdr */
@@ -538,9 +786,14 @@ pnfs_destroy_layout(struct nfs_inode *nfsi)
 	spin_lock(&nfsi->vfs_inode.i_lock);
 	lo = nfsi->layout;
 	if (lo) {
+<<<<<<< HEAD
 		lo->plh_block_lgets++; /* permanently block new LAYOUTGETs */
 		pnfs_mark_matching_lsegs_invalid(lo, &tmp_list, NULL);
 		pnfs_get_layout_hdr(lo);
+=======
+		pnfs_get_layout_hdr(lo);
+		pnfs_mark_layout_stateid_invalid(lo, &tmp_list);
+>>>>>>> v4.9.227
 		pnfs_layout_clear_fail_bit(lo, NFS_LAYOUT_RO_FAILED);
 		pnfs_layout_clear_fail_bit(lo, NFS_LAYOUT_RW_FAILED);
 		spin_unlock(&nfsi->vfs_inode.i_lock);
@@ -601,11 +854,14 @@ pnfs_layout_free_bulk_destroy_list(struct list_head *layout_list,
 {
 	struct pnfs_layout_hdr *lo;
 	struct inode *inode;
+<<<<<<< HEAD
 	struct pnfs_layout_range range = {
 		.iomode = IOMODE_ANY,
 		.offset = 0,
 		.length = NFS4_MAX_UINT64,
 	};
+=======
+>>>>>>> v4.9.227
 	LIST_HEAD(lseg_list);
 	int ret = 0;
 
@@ -620,6 +876,7 @@ pnfs_layout_free_bulk_destroy_list(struct list_head *layout_list,
 
 		spin_lock(&inode->i_lock);
 		list_del_init(&lo->plh_bulk_destroy);
+<<<<<<< HEAD
 		lo->plh_block_lgets++; /* permanently block new LAYOUTGETs */
 		if (is_bulk_recall)
 			set_bit(NFS_LAYOUT_BULK_RECALL, &lo->plh_flags);
@@ -627,6 +884,17 @@ pnfs_layout_free_bulk_destroy_list(struct list_head *layout_list,
 			ret = -EAGAIN;
 		spin_unlock(&inode->i_lock);
 		pnfs_free_lseg_list(&lseg_list);
+=======
+		if (pnfs_mark_layout_stateid_invalid(lo, &lseg_list)) {
+			if (is_bulk_recall)
+				set_bit(NFS_LAYOUT_BULK_RECALL, &lo->plh_flags);
+			ret = -EAGAIN;
+		}
+		spin_unlock(&inode->i_lock);
+		pnfs_free_lseg_list(&lseg_list);
+		/* Free all lsegs that are attached to commit buckets */
+		nfs_commit_inode(inode, 0);
+>>>>>>> v4.9.227
 		pnfs_put_layout_hdr(lo);
 		iput(inode);
 	}
@@ -697,6 +965,7 @@ pnfs_destroy_all_layouts(struct nfs_client *clp)
 	pnfs_destroy_layouts_byclid(clp, false);
 }
 
+<<<<<<< HEAD
 /*
  * Compare 2 layout stateid sequence ids, to see which is newer,
  * taking into account wraparound issues.
@@ -706,11 +975,14 @@ static bool pnfs_seqid_is_newer(u32 s1, u32 s2)
 	return (s32)(s1 - s2) > 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /* update lo->plh_stateid with new if is more recent */
 void
 pnfs_set_layout_stateid(struct pnfs_layout_hdr *lo, const nfs4_stateid *new,
 			bool update_barrier)
 {
+<<<<<<< HEAD
 	u32 oldseq, newseq, new_barrier;
 	int empty = list_empty(&lo->plh_segs);
 
@@ -729,6 +1001,34 @@ pnfs_set_layout_stateid(struct pnfs_layout_hdr *lo, const nfs4_stateid *new,
 		if (empty || pnfs_seqid_is_newer(new_barrier, lo->plh_barrier))
 			lo->plh_barrier = new_barrier;
 	}
+=======
+	u32 oldseq, newseq, new_barrier = 0;
+
+	oldseq = be32_to_cpu(lo->plh_stateid.seqid);
+	newseq = be32_to_cpu(new->seqid);
+
+	if (!pnfs_layout_is_valid(lo)) {
+		nfs4_stateid_copy(&lo->plh_stateid, new);
+		lo->plh_barrier = newseq;
+		pnfs_clear_layoutreturn_info(lo);
+		clear_bit(NFS_LAYOUT_INVALID_STID, &lo->plh_flags);
+		return;
+	}
+	if (pnfs_seqid_is_newer(newseq, oldseq)) {
+		nfs4_stateid_copy(&lo->plh_stateid, new);
+		/*
+		 * Because of wraparound, we want to keep the barrier
+		 * "close" to the current seqids.
+		 */
+		new_barrier = newseq - atomic_read(&lo->plh_outstanding);
+	}
+	if (update_barrier)
+		new_barrier = be32_to_cpu(new->seqid);
+	else if (new_barrier == 0)
+		return;
+	if (pnfs_seqid_is_newer(new_barrier, lo->plh_barrier))
+		lo->plh_barrier = new_barrier;
+>>>>>>> v4.9.227
 }
 
 static bool
@@ -742,6 +1042,7 @@ pnfs_layout_stateid_blocked(const struct pnfs_layout_hdr *lo,
 
 /* lget is set to 1 if called from inside send_layoutget call chain */
 static bool
+<<<<<<< HEAD
 pnfs_layoutgets_blocked(const struct pnfs_layout_hdr *lo, int lget)
 {
 	return lo->plh_block_lgets ||
@@ -788,10 +1089,31 @@ send_layoutget(struct pnfs_layout_hdr *lo,
 	   struct nfs_open_context *ctx,
 	   struct pnfs_layout_range *range,
 	   gfp_t gfp_flags)
+=======
+pnfs_layoutgets_blocked(const struct pnfs_layout_hdr *lo)
+{
+	return lo->plh_block_lgets ||
+		test_bit(NFS_LAYOUT_BULK_RECALL, &lo->plh_flags);
+}
+
+/*
+ * Get layout from server.
+ *    for now, assume that whole file layouts are requested.
+ *    arg->offset: 0
+ *    arg->length: all ones
+ */
+static struct pnfs_layout_segment *
+send_layoutget(struct pnfs_layout_hdr *lo,
+	   struct nfs_open_context *ctx,
+	   nfs4_stateid *stateid,
+	   const struct pnfs_layout_range *range,
+	   long *timeout, gfp_t gfp_flags)
+>>>>>>> v4.9.227
 {
 	struct inode *ino = lo->plh_inode;
 	struct nfs_server *server = NFS_SERVER(ino);
 	struct nfs4_layoutget *lgp;
+<<<<<<< HEAD
 	struct pnfs_layout_segment *lseg;
 
 	dprintk("--> %s\n", __func__);
@@ -828,6 +1150,42 @@ send_layoutget(struct pnfs_layout_hdr *lo,
 	}
 
 	return lseg;
+=======
+	loff_t i_size;
+
+	dprintk("--> %s\n", __func__);
+
+	/*
+	 * Synchronously retrieve layout information from server and
+	 * store in lseg. If we race with a concurrent seqid morphing
+	 * op, then re-send the LAYOUTGET.
+	 */
+	lgp = kzalloc(sizeof(*lgp), gfp_flags);
+	if (lgp == NULL)
+		return ERR_PTR(-ENOMEM);
+
+	i_size = i_size_read(ino);
+
+	lgp->args.minlength = PAGE_SIZE;
+	if (lgp->args.minlength > range->length)
+		lgp->args.minlength = range->length;
+	if (range->iomode == IOMODE_READ) {
+		if (range->offset >= i_size)
+			lgp->args.minlength = 0;
+		else if (i_size - range->offset < lgp->args.minlength)
+			lgp->args.minlength = i_size - range->offset;
+	}
+	lgp->args.maxcount = PNFS_LAYOUT_MAXSIZE;
+	pnfs_copy_range(&lgp->args.range, range);
+	lgp->args.type = server->pnfs_curr_ld->id;
+	lgp->args.inode = ino;
+	lgp->args.ctx = get_nfs_open_context(ctx);
+	nfs4_stateid_copy(&lgp->args.stateid, stateid);
+	lgp->gfp_flags = gfp_flags;
+	lgp->cred = lo->plh_lc_cred;
+
+	return nfs4_proc_layoutget(lgp, timeout, gfp_flags);
+>>>>>>> v4.9.227
 }
 
 static void pnfs_clear_layoutcommit(struct inode *inode,
@@ -845,6 +1203,122 @@ static void pnfs_clear_layoutcommit(struct inode *inode,
 	}
 }
 
+<<<<<<< HEAD
+=======
+void pnfs_clear_layoutreturn_waitbit(struct pnfs_layout_hdr *lo)
+{
+	clear_bit_unlock(NFS_LAYOUT_RETURN, &lo->plh_flags);
+	clear_bit(NFS_LAYOUT_RETURN_LOCK, &lo->plh_flags);
+	smp_mb__after_atomic();
+	wake_up_bit(&lo->plh_flags, NFS_LAYOUT_RETURN);
+	rpc_wake_up(&NFS_SERVER(lo->plh_inode)->roc_rpcwaitq);
+}
+
+static bool
+pnfs_prepare_layoutreturn(struct pnfs_layout_hdr *lo,
+		nfs4_stateid *stateid,
+		enum pnfs_iomode *iomode)
+{
+	/* Serialise LAYOUTGET/LAYOUTRETURN */
+	if (atomic_read(&lo->plh_outstanding) != 0)
+		return false;
+	if (test_and_set_bit(NFS_LAYOUT_RETURN_LOCK, &lo->plh_flags))
+		return false;
+	set_bit(NFS_LAYOUT_RETURN, &lo->plh_flags);
+	pnfs_get_layout_hdr(lo);
+	if (test_bit(NFS_LAYOUT_RETURN_REQUESTED, &lo->plh_flags)) {
+		if (stateid != NULL) {
+			nfs4_stateid_copy(stateid, &lo->plh_stateid);
+			if (lo->plh_return_seq != 0)
+				stateid->seqid = cpu_to_be32(lo->plh_return_seq);
+		}
+		if (iomode != NULL)
+			*iomode = lo->plh_return_iomode;
+		pnfs_clear_layoutreturn_info(lo);
+		return true;
+	}
+	if (stateid != NULL)
+		nfs4_stateid_copy(stateid, &lo->plh_stateid);
+	if (iomode != NULL)
+		*iomode = IOMODE_ANY;
+	return true;
+}
+
+static int
+pnfs_send_layoutreturn(struct pnfs_layout_hdr *lo, const nfs4_stateid *stateid,
+		       enum pnfs_iomode iomode, bool sync)
+{
+	struct inode *ino = lo->plh_inode;
+	struct nfs4_layoutreturn *lrp;
+	int status = 0;
+
+	lrp = kzalloc(sizeof(*lrp), GFP_NOFS);
+	if (unlikely(lrp == NULL)) {
+		status = -ENOMEM;
+		spin_lock(&ino->i_lock);
+		pnfs_clear_layoutreturn_waitbit(lo);
+		spin_unlock(&ino->i_lock);
+		pnfs_put_layout_hdr(lo);
+		goto out;
+	}
+
+	nfs4_stateid_copy(&lrp->args.stateid, stateid);
+	lrp->args.layout_type = NFS_SERVER(ino)->pnfs_curr_ld->id;
+	lrp->args.inode = ino;
+	lrp->args.range.iomode = iomode;
+	lrp->args.range.offset = 0;
+	lrp->args.range.length = NFS4_MAX_UINT64;
+	lrp->args.layout = lo;
+	lrp->clp = NFS_SERVER(ino)->nfs_client;
+	lrp->cred = lo->plh_lc_cred;
+
+	status = nfs4_proc_layoutreturn(lrp, sync);
+out:
+	dprintk("<-- %s status: %d\n", __func__, status);
+	return status;
+}
+
+/* Return true if layoutreturn is needed */
+static bool
+pnfs_layout_need_return(struct pnfs_layout_hdr *lo)
+{
+	struct pnfs_layout_segment *s;
+
+	if (!test_bit(NFS_LAYOUT_RETURN_REQUESTED, &lo->plh_flags))
+		return false;
+
+	/* Defer layoutreturn until all lsegs are done */
+	list_for_each_entry(s, &lo->plh_segs, pls_list) {
+		if (test_bit(NFS_LSEG_LAYOUTRETURN, &s->pls_flags))
+			return false;
+	}
+
+	return true;
+}
+
+static void pnfs_layoutreturn_before_put_layout_hdr(struct pnfs_layout_hdr *lo)
+{
+	struct inode *inode= lo->plh_inode;
+
+	if (!test_bit(NFS_LAYOUT_RETURN_REQUESTED, &lo->plh_flags))
+		return;
+	spin_lock(&inode->i_lock);
+	if (pnfs_layout_need_return(lo)) {
+		nfs4_stateid stateid;
+		enum pnfs_iomode iomode;
+		bool send;
+
+		send = pnfs_prepare_layoutreturn(lo, &stateid, &iomode);
+		spin_unlock(&inode->i_lock);
+		if (send) {
+			/* Send an async layoutreturn so we dont deadlock */
+			pnfs_send_layoutreturn(lo, &stateid, iomode, false);
+		}
+	} else
+		spin_unlock(&inode->i_lock);
+}
+
+>>>>>>> v4.9.227
 /*
  * Initiates a LAYOUTRETURN(FILE), and removes the pnfs_layout_hdr
  * when the layout segment list is empty.
@@ -859,9 +1333,15 @@ _pnfs_return_layout(struct inode *ino)
 	struct pnfs_layout_hdr *lo = NULL;
 	struct nfs_inode *nfsi = NFS_I(ino);
 	LIST_HEAD(tmp_list);
+<<<<<<< HEAD
 	struct nfs4_layoutreturn *lrp;
 	nfs4_stateid stateid;
 	int status = 0, empty;
+=======
+	nfs4_stateid stateid;
+	int status = 0, empty;
+	bool send;
+>>>>>>> v4.9.227
 
 	dprintk("NFS: %s for inode %lu\n", __func__, ino->i_ino);
 
@@ -872,12 +1352,19 @@ _pnfs_return_layout(struct inode *ino)
 		dprintk("NFS: %s no layout to return\n", __func__);
 		goto out;
 	}
+<<<<<<< HEAD
 	stateid = nfsi->layout->plh_stateid;
+=======
+>>>>>>> v4.9.227
 	/* Reference matched in nfs4_layoutreturn_release */
 	pnfs_get_layout_hdr(lo);
 	empty = list_empty(&lo->plh_segs);
 	pnfs_clear_layoutcommit(ino, &tmp_list);
+<<<<<<< HEAD
 	pnfs_mark_matching_lsegs_invalid(lo, &tmp_list, NULL);
+=======
+	pnfs_mark_matching_lsegs_invalid(lo, &tmp_list, NULL, 0);
+>>>>>>> v4.9.227
 
 	if (NFS_SERVER(ino)->pnfs_curr_ld->return_range) {
 		struct pnfs_layout_range range = {
@@ -891,6 +1378,7 @@ _pnfs_return_layout(struct inode *ino)
 	/* Don't send a LAYOUTRETURN if list was initially empty */
 	if (empty) {
 		spin_unlock(&ino->i_lock);
+<<<<<<< HEAD
 		pnfs_put_layout_hdr(lo);
 		dprintk("NFS: %s no layout segments to return\n", __func__);
 		goto out;
@@ -919,6 +1407,19 @@ _pnfs_return_layout(struct inode *ino)
 	lrp->cred = lo->plh_lc_cred;
 
 	status = nfs4_proc_layoutreturn(lrp);
+=======
+		dprintk("NFS: %s no layout segments to return\n", __func__);
+		goto out_put_layout_hdr;
+	}
+
+	send = pnfs_prepare_layoutreturn(lo, &stateid, NULL);
+	spin_unlock(&ino->i_lock);
+	pnfs_free_lseg_list(&tmp_list);
+	if (send)
+		status = pnfs_send_layoutreturn(lo, &stateid, IOMODE_ANY, true);
+out_put_layout_hdr:
+	pnfs_put_layout_hdr(lo);
+>>>>>>> v4.9.227
 out:
 	dprintk("<-- %s status: %d\n", __func__, status);
 	return status;
@@ -954,6 +1455,7 @@ pnfs_commit_and_return_layout(struct inode *inode)
 
 bool pnfs_roc(struct inode *ino)
 {
+<<<<<<< HEAD
 	struct pnfs_layout_hdr *lo;
 	struct pnfs_layout_segment *lseg, *tmp;
 	LIST_HEAD(tmp_list);
@@ -980,6 +1482,61 @@ bool pnfs_roc(struct inode *ino)
 out_nolayout:
 	spin_unlock(&ino->i_lock);
 	return false;
+=======
+	struct nfs_inode *nfsi = NFS_I(ino);
+	struct nfs_open_context *ctx;
+	struct nfs4_state *state;
+	struct pnfs_layout_hdr *lo;
+	struct pnfs_layout_segment *lseg, *tmp;
+	nfs4_stateid stateid;
+	LIST_HEAD(tmp_list);
+	bool found = false, layoutreturn = false, roc = false;
+
+	spin_lock(&ino->i_lock);
+	lo = nfsi->layout;
+	if (!lo || test_bit(NFS_LAYOUT_BULK_RECALL, &lo->plh_flags))
+		goto out_noroc;
+
+	/* no roc if we hold a delegation */
+	if (nfs4_check_delegation(ino, FMODE_READ))
+		goto out_noroc;
+
+	list_for_each_entry(ctx, &nfsi->open_files, list) {
+		state = ctx->state;
+		/* Don't return layout if there is open file state */
+		if (state != NULL && state->state != 0)
+			goto out_noroc;
+	}
+
+	/* always send layoutreturn if being marked so */
+	if (test_bit(NFS_LAYOUT_RETURN_REQUESTED, &lo->plh_flags))
+		layoutreturn = pnfs_prepare_layoutreturn(lo,
+				&stateid, NULL);
+
+	list_for_each_entry_safe(lseg, tmp, &lo->plh_segs, pls_list)
+		/* If we are sending layoutreturn, invalidate all valid lsegs */
+		if (layoutreturn || test_bit(NFS_LSEG_ROC, &lseg->pls_flags)) {
+			mark_lseg_invalid(lseg, &tmp_list);
+			found = true;
+		}
+	/* ROC in two conditions:
+	 * 1. there are ROC lsegs
+	 * 2. we don't send layoutreturn
+	 */
+	if (found && !layoutreturn) {
+		/* lo ref dropped in pnfs_roc_release() */
+		pnfs_get_layout_hdr(lo);
+		roc = true;
+	}
+
+out_noroc:
+	spin_unlock(&ino->i_lock);
+	pnfs_free_lseg_list(&tmp_list);
+	pnfs_layoutcommit_inode(ino, true);
+	if (layoutreturn)
+		pnfs_send_layoutreturn(lo, &stateid, IOMODE_ANY, true);
+	return roc;
+>>>>>>> v4.9.227
 }
 
 void pnfs_roc_release(struct inode *ino)
@@ -988,7 +1545,11 @@ void pnfs_roc_release(struct inode *ino)
 
 	spin_lock(&ino->i_lock);
 	lo = NFS_I(ino)->layout;
+<<<<<<< HEAD
 	lo->plh_block_lgets--;
+=======
+	pnfs_clear_layoutreturn_waitbit(lo);
+>>>>>>> v4.9.227
 	if (atomic_dec_and_test(&lo->plh_refcount)) {
 		pnfs_detach_layout_hdr(lo);
 		spin_unlock(&ino->i_lock);
@@ -1006,6 +1567,7 @@ void pnfs_roc_set_barrier(struct inode *ino, u32 barrier)
 	if (pnfs_seqid_is_newer(barrier, lo->plh_barrier))
 		lo->plh_barrier = barrier;
 	spin_unlock(&ino->i_lock);
+<<<<<<< HEAD
 }
 
 bool pnfs_roc_drain(struct inode *ino, u32 *barrier, struct rpc_task *task)
@@ -1023,6 +1585,18 @@ bool pnfs_roc_drain(struct inode *ino, u32 *barrier, struct rpc_task *task)
 			found = true;
 			goto out;
 		}
+=======
+	trace_nfs4_layoutreturn_on_close(ino, 0);
+}
+
+void pnfs_roc_get_barrier(struct inode *ino, u32 *barrier)
+{
+	struct nfs_inode *nfsi = NFS_I(ino);
+	struct pnfs_layout_hdr *lo;
+	u32 current_seqid;
+
+	spin_lock(&ino->i_lock);
+>>>>>>> v4.9.227
 	lo = nfsi->layout;
 	current_seqid = be32_to_cpu(lo->plh_stateid.seqid);
 
@@ -1030,9 +1604,31 @@ bool pnfs_roc_drain(struct inode *ino, u32 *barrier, struct rpc_task *task)
 	 * a barrier, we choose the worst-case barrier.
 	 */
 	*barrier = current_seqid + atomic_read(&lo->plh_outstanding);
+<<<<<<< HEAD
 out:
 	spin_unlock(&ino->i_lock);
 	return found;
+=======
+	spin_unlock(&ino->i_lock);
+}
+
+bool pnfs_wait_on_layoutreturn(struct inode *ino, struct rpc_task *task)
+{
+	struct nfs_inode *nfsi = NFS_I(ino);
+        struct pnfs_layout_hdr *lo;
+        bool sleep = false;
+
+	/* we might not have grabbed lo reference. so need to check under
+	 * i_lock */
+        spin_lock(&ino->i_lock);
+        lo = nfsi->layout;
+        if (lo && test_bit(NFS_LAYOUT_RETURN, &lo->plh_flags)) {
+                rpc_sleep_on(&NFS_SERVER(ino)->roc_rpcwaitq, task, NULL);
+                sleep = true;
+	}
+        spin_unlock(&ino->i_lock);
+        return sleep;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1060,6 +1656,7 @@ pnfs_lseg_range_cmp(const struct pnfs_layout_range *l1,
 	return (int)(l1->iomode == IOMODE_READ) - (int)(l2->iomode == IOMODE_READ);
 }
 
+<<<<<<< HEAD
 static void
 pnfs_layout_insert_lseg(struct pnfs_layout_hdr *lo,
 		   struct pnfs_layout_segment *lseg)
@@ -1070,6 +1667,43 @@ pnfs_layout_insert_lseg(struct pnfs_layout_hdr *lo,
 
 	list_for_each_entry(lp, &lo->plh_segs, pls_list) {
 		if (pnfs_lseg_range_cmp(&lseg->pls_range, &lp->pls_range) > 0)
+=======
+static bool
+pnfs_lseg_range_is_after(const struct pnfs_layout_range *l1,
+		const struct pnfs_layout_range *l2)
+{
+	return pnfs_lseg_range_cmp(l1, l2) > 0;
+}
+
+static bool
+pnfs_lseg_no_merge(struct pnfs_layout_segment *lseg,
+		struct pnfs_layout_segment *old)
+{
+	return false;
+}
+
+void
+pnfs_generic_layout_insert_lseg(struct pnfs_layout_hdr *lo,
+		   struct pnfs_layout_segment *lseg,
+		   bool (*is_after)(const struct pnfs_layout_range *,
+			   const struct pnfs_layout_range *),
+		   bool (*do_merge)(struct pnfs_layout_segment *,
+			   struct pnfs_layout_segment *),
+		   struct list_head *free_me)
+{
+	struct pnfs_layout_segment *lp, *tmp;
+
+	dprintk("%s:Begin\n", __func__);
+
+	list_for_each_entry_safe(lp, tmp, &lo->plh_segs, pls_list) {
+		if (test_bit(NFS_LSEG_VALID, &lp->pls_flags) == 0)
+			continue;
+		if (do_merge(lseg, lp)) {
+			mark_lseg_invalid(lp, free_me);
+			continue;
+		}
+		if (is_after(&lseg->pls_range, &lp->pls_range))
+>>>>>>> v4.9.227
 			continue;
 		list_add_tail(&lseg->pls_list, &lp->pls_list);
 		dprintk("%s: inserted lseg %p "
@@ -1091,6 +1725,27 @@ out:
 
 	dprintk("%s:Return\n", __func__);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(pnfs_generic_layout_insert_lseg);
+
+static void
+pnfs_layout_insert_lseg(struct pnfs_layout_hdr *lo,
+		   struct pnfs_layout_segment *lseg,
+		   struct list_head *free_me)
+{
+	struct inode *inode = lo->plh_inode;
+	struct pnfs_layoutdriver_type *ld = NFS_SERVER(inode)->pnfs_curr_ld;
+
+	if (ld->add_lseg != NULL)
+		ld->add_lseg(lo, lseg, free_me);
+	else
+		pnfs_generic_layout_insert_lseg(lo, lseg,
+				pnfs_lseg_range_is_after,
+				pnfs_lseg_no_merge,
+				free_me);
+}
+>>>>>>> v4.9.227
 
 static struct pnfs_layout_hdr *
 alloc_init_layout_hdr(struct inode *ino,
@@ -1108,6 +1763,10 @@ alloc_init_layout_hdr(struct inode *ino,
 	INIT_LIST_HEAD(&lo->plh_bulk_destroy);
 	lo->plh_inode = ino;
 	lo->plh_lc_cred = get_rpccred(ctx->cred);
+<<<<<<< HEAD
+=======
+	lo->plh_flags |= 1 << NFS_LAYOUT_INVALID_STID;
+>>>>>>> v4.9.227
 	return lo;
 }
 
@@ -1115,6 +1774,11 @@ static struct pnfs_layout_hdr *
 pnfs_find_alloc_layout(struct inode *ino,
 		       struct nfs_open_context *ctx,
 		       gfp_t gfp_flags)
+<<<<<<< HEAD
+=======
+	__releases(&ino->i_lock)
+	__acquires(&ino->i_lock)
+>>>>>>> v4.9.227
 {
 	struct nfs_inode *nfsi = NFS_I(ino);
 	struct pnfs_layout_hdr *new = NULL;
@@ -1139,6 +1803,7 @@ out_existing:
 
 /*
  * iomode matching rules:
+<<<<<<< HEAD
  * iomode	lseg	match
  * -----	-----	-----
  * ANY		READ	true
@@ -1151,11 +1816,33 @@ out_existing:
 static bool
 pnfs_lseg_range_match(const struct pnfs_layout_range *ls_range,
 		 const struct pnfs_layout_range *range)
+=======
+ * iomode	lseg	strict match
+ *                      iomode
+ * -----	-----	------ -----
+ * ANY		READ	N/A    true
+ * ANY		RW	N/A    true
+ * RW		READ	N/A    false
+ * RW		RW	N/A    true
+ * READ		READ	N/A    true
+ * READ		RW	true   false
+ * READ		RW	false  true
+ */
+static bool
+pnfs_lseg_range_match(const struct pnfs_layout_range *ls_range,
+		 const struct pnfs_layout_range *range,
+		 bool strict_iomode)
+>>>>>>> v4.9.227
 {
 	struct pnfs_layout_range range1;
 
 	if ((range->iomode == IOMODE_RW &&
 	     ls_range->iomode != IOMODE_RW) ||
+<<<<<<< HEAD
+=======
+	    (range->iomode != ls_range->iomode &&
+	     strict_iomode) ||
+>>>>>>> v4.9.227
 	    !pnfs_lseg_range_intersecting(ls_range, range))
 		return 0;
 
@@ -1170,7 +1857,12 @@ pnfs_lseg_range_match(const struct pnfs_layout_range *ls_range,
  */
 static struct pnfs_layout_segment *
 pnfs_find_lseg(struct pnfs_layout_hdr *lo,
+<<<<<<< HEAD
 		struct pnfs_layout_range *range)
+=======
+		struct pnfs_layout_range *range,
+		bool strict_iomode)
+>>>>>>> v4.9.227
 {
 	struct pnfs_layout_segment *lseg, *ret = NULL;
 
@@ -1178,12 +1870,21 @@ pnfs_find_lseg(struct pnfs_layout_hdr *lo,
 
 	list_for_each_entry(lseg, &lo->plh_segs, pls_list) {
 		if (test_bit(NFS_LSEG_VALID, &lseg->pls_flags) &&
+<<<<<<< HEAD
 		    pnfs_lseg_range_match(&lseg->pls_range, range)) {
 			ret = pnfs_get_lseg(lseg);
 			break;
 		}
 		if (lseg->pls_range.offset > range->offset)
 			break;
+=======
+		    !test_bit(NFS_LSEG_LAYOUTRETURN, &lseg->pls_flags) &&
+		    pnfs_lseg_range_match(&lseg->pls_range, range,
+					  strict_iomode)) {
+			ret = pnfs_get_lseg(lseg);
+			break;
+		}
+>>>>>>> v4.9.227
 	}
 
 	dprintk("%s:Return lseg %p ref %d\n",
@@ -1266,6 +1967,30 @@ static bool pnfs_within_mdsthreshold(struct nfs_open_context *ctx,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static bool pnfs_prepare_to_retry_layoutget(struct pnfs_layout_hdr *lo)
+{
+	/*
+	 * send layoutcommit as it can hold up layoutreturn due to lseg
+	 * reference
+	 */
+	pnfs_layoutcommit_inode(lo->plh_inode, false);
+	return !wait_on_bit_action(&lo->plh_flags, NFS_LAYOUT_RETURN,
+				   nfs_wait_bit_killable,
+				   TASK_UNINTERRUPTIBLE);
+}
+
+static void pnfs_clear_first_layoutget(struct pnfs_layout_hdr *lo)
+{
+	unsigned long *bitlock = &lo->plh_flags;
+
+	clear_bit_unlock(NFS_LAYOUT_FIRST_LAYOUTGET, bitlock);
+	smp_mb__after_atomic();
+	wake_up_bit(bitlock, NFS_LAYOUT_FIRST_LAYOUTGET);
+}
+
+>>>>>>> v4.9.227
 /*
  * Layout segment is retreived from the server if not cached.
  * The appropriate layout segment is referenced and returned to the caller.
@@ -1276,6 +2001,10 @@ pnfs_update_layout(struct inode *ino,
 		   loff_t pos,
 		   u64 count,
 		   enum pnfs_iomode iomode,
+<<<<<<< HEAD
+=======
+		   bool strict_iomode,
+>>>>>>> v4.9.227
 		   gfp_t gfp_flags)
 {
 	struct pnfs_layout_range arg = {
@@ -1283,6 +2012,7 @@ pnfs_update_layout(struct inode *ino,
 		.offset = pos,
 		.length = count,
 	};
+<<<<<<< HEAD
 	unsigned pg_offset;
 	struct nfs_server *server = NFS_SERVER(ino);
 	struct nfs_client *clp = server->nfs_client;
@@ -1296,20 +2026,64 @@ pnfs_update_layout(struct inode *ino,
 	if (pnfs_within_mdsthreshold(ctx, ino, iomode))
 		goto out;
 
+=======
+	unsigned pg_offset, seq;
+	struct nfs_server *server = NFS_SERVER(ino);
+	struct nfs_client *clp = server->nfs_client;
+	struct pnfs_layout_hdr *lo = NULL;
+	struct pnfs_layout_segment *lseg = NULL;
+	nfs4_stateid stateid;
+	long timeout = 0;
+	unsigned long giveup = jiffies + (clp->cl_lease_time << 1);
+	bool first;
+
+	if (!pnfs_enabled_sb(NFS_SERVER(ino))) {
+		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				 PNFS_UPDATE_LAYOUT_NO_PNFS);
+		goto out;
+	}
+
+	if (iomode == IOMODE_READ && i_size_read(ino) == 0) {
+		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				 PNFS_UPDATE_LAYOUT_RD_ZEROLEN);
+		goto out;
+	}
+
+	if (pnfs_within_mdsthreshold(ctx, ino, iomode)) {
+		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				 PNFS_UPDATE_LAYOUT_MDSTHRESH);
+		goto out;
+	}
+
+lookup_again:
+	nfs4_client_recover_expired_lease(clp);
+	first = false;
+>>>>>>> v4.9.227
 	spin_lock(&ino->i_lock);
 	lo = pnfs_find_alloc_layout(ino, ctx, gfp_flags);
 	if (lo == NULL) {
 		spin_unlock(&ino->i_lock);
+<<<<<<< HEAD
+=======
+		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				 PNFS_UPDATE_LAYOUT_NOMEM);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
 	/* Do we even need to bother with this? */
 	if (test_bit(NFS_LAYOUT_BULK_RECALL, &lo->plh_flags)) {
+<<<<<<< HEAD
+=======
+		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				 PNFS_UPDATE_LAYOUT_BULK_RECALL);
+>>>>>>> v4.9.227
 		dprintk("%s matches recall, use MDS\n", __func__);
 		goto out_unlock;
 	}
 
 	/* if LAYOUTGET already failed once we don't try again */
+<<<<<<< HEAD
 	if (pnfs_layout_io_test_failed(lo, iomode))
 		goto out_unlock;
 
@@ -1326,32 +2100,175 @@ pnfs_update_layout(struct inode *ino,
 	spin_unlock(&ino->i_lock);
 
 	if (first) {
+=======
+	if (pnfs_layout_io_test_failed(lo, iomode)) {
+		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				 PNFS_UPDATE_LAYOUT_IO_TEST_FAIL);
+		goto out_unlock;
+	}
+
+	lseg = pnfs_find_lseg(lo, &arg, strict_iomode);
+	if (lseg) {
+		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				PNFS_UPDATE_LAYOUT_FOUND_CACHED);
+		goto out_unlock;
+	}
+
+	if (!nfs4_valid_open_stateid(ctx->state)) {
+		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				PNFS_UPDATE_LAYOUT_INVALID_OPEN);
+		goto out_unlock;
+	}
+
+	/*
+	 * Choose a stateid for the LAYOUTGET. If we don't have a layout
+	 * stateid, or it has been invalidated, then we must use the open
+	 * stateid.
+	 */
+	if (test_bit(NFS_LAYOUT_INVALID_STID, &lo->plh_flags)) {
+
+		/*
+		 * The first layoutget for the file. Need to serialize per
+		 * RFC 5661 Errata 3208.
+		 */
+		if (test_and_set_bit(NFS_LAYOUT_FIRST_LAYOUTGET,
+				     &lo->plh_flags)) {
+			spin_unlock(&ino->i_lock);
+			wait_on_bit(&lo->plh_flags, NFS_LAYOUT_FIRST_LAYOUTGET,
+				    TASK_UNINTERRUPTIBLE);
+			pnfs_put_layout_hdr(lo);
+			dprintk("%s retrying\n", __func__);
+			goto lookup_again;
+		}
+
+		first = true;
+		do {
+			seq = read_seqbegin(&ctx->state->seqlock);
+			nfs4_stateid_copy(&stateid, &ctx->state->stateid);
+		} while (read_seqretry(&ctx->state->seqlock, seq));
+	} else {
+		nfs4_stateid_copy(&stateid, &lo->plh_stateid);
+	}
+
+	/*
+	 * Because we free lsegs before sending LAYOUTRETURN, we need to wait
+	 * for LAYOUTRETURN even if first is true.
+	 */
+	if (test_bit(NFS_LAYOUT_RETURN, &lo->plh_flags)) {
+		spin_unlock(&ino->i_lock);
+		dprintk("%s wait for layoutreturn\n", __func__);
+		if (pnfs_prepare_to_retry_layoutget(lo)) {
+			if (first)
+				pnfs_clear_first_layoutget(lo);
+			pnfs_put_layout_hdr(lo);
+			dprintk("%s retrying\n", __func__);
+			trace_pnfs_update_layout(ino, pos, count, iomode, lo,
+					lseg, PNFS_UPDATE_LAYOUT_RETRY);
+			goto lookup_again;
+		}
+		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				PNFS_UPDATE_LAYOUT_RETURN);
+		goto out_put_layout_hdr;
+	}
+
+	if (pnfs_layoutgets_blocked(lo)) {
+		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				PNFS_UPDATE_LAYOUT_BLOCKED);
+		goto out_unlock;
+	}
+	atomic_inc(&lo->plh_outstanding);
+	spin_unlock(&ino->i_lock);
+
+	if (list_empty(&lo->plh_layouts)) {
+>>>>>>> v4.9.227
 		/* The lo must be on the clp list if there is any
 		 * chance of a CB_LAYOUTRECALL(FILE) coming in.
 		 */
 		spin_lock(&clp->cl_lock);
+<<<<<<< HEAD
 		list_add_tail(&lo->plh_layouts, &server->layouts);
 		spin_unlock(&clp->cl_lock);
 	}
 
 	pg_offset = arg.offset & ~PAGE_CACHE_MASK;
+=======
+		if (list_empty(&lo->plh_layouts))
+			list_add_tail(&lo->plh_layouts, &server->layouts);
+		spin_unlock(&clp->cl_lock);
+	}
+
+	pg_offset = arg.offset & ~PAGE_MASK;
+>>>>>>> v4.9.227
 	if (pg_offset) {
 		arg.offset -= pg_offset;
 		arg.length += pg_offset;
 	}
 	if (arg.length != NFS4_MAX_UINT64)
+<<<<<<< HEAD
 		arg.length = PAGE_CACHE_ALIGN(arg.length);
 
 	lseg = send_layoutget(lo, ctx, &arg, gfp_flags);
 	atomic_dec(&lo->plh_outstanding);
 out_put_layout_hdr:
+=======
+		arg.length = PAGE_ALIGN(arg.length);
+
+	lseg = send_layoutget(lo, ctx, &stateid, &arg, &timeout, gfp_flags);
+	trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+				 PNFS_UPDATE_LAYOUT_SEND_LAYOUTGET);
+	atomic_dec(&lo->plh_outstanding);
+	if (IS_ERR(lseg)) {
+		switch(PTR_ERR(lseg)) {
+		case -EBUSY:
+			if (time_after(jiffies, giveup))
+				lseg = NULL;
+			break;
+		case -ERECALLCONFLICT:
+			/* Huh? We hold no layouts, how is there a recall? */
+			if (first) {
+				lseg = NULL;
+				break;
+			}
+			/* Destroy the existing layout and start over */
+			if (time_after(jiffies, giveup))
+				pnfs_destroy_layout(NFS_I(ino));
+			/* Fallthrough */
+		case -EAGAIN:
+			break;
+		default:
+			if (!nfs_error_is_fatal(PTR_ERR(lseg))) {
+				pnfs_layout_clear_fail_bit(lo, pnfs_iomode_to_fail_bit(iomode));
+				lseg = NULL;
+			}
+			goto out_put_layout_hdr;
+		}
+		if (lseg) {
+			if (first)
+				pnfs_clear_first_layoutget(lo);
+			trace_pnfs_update_layout(ino, pos, count,
+				iomode, lo, lseg, PNFS_UPDATE_LAYOUT_RETRY);
+			pnfs_put_layout_hdr(lo);
+			goto lookup_again;
+		}
+	} else {
+		pnfs_layout_clear_fail_bit(lo, pnfs_iomode_to_fail_bit(iomode));
+	}
+
+out_put_layout_hdr:
+	if (first)
+		pnfs_clear_first_layoutget(lo);
+>>>>>>> v4.9.227
 	pnfs_put_layout_hdr(lo);
 out:
 	dprintk("%s: inode %s/%llu pNFS layout segment %s for "
 			"(%s, offset: %llu, length: %llu)\n",
 			__func__, ino->i_sb->s_id,
 			(unsigned long long)NFS_FILEID(ino),
+<<<<<<< HEAD
 			lseg == NULL ? "not found" : "found",
+=======
+			IS_ERR_OR_NULL(lseg) ? "not found" : "found",
+>>>>>>> v4.9.227
 			iomode==IOMODE_RW ?  "read/write" : "read-only",
 			(unsigned long long)pos,
 			(unsigned long long)count);
@@ -1362,6 +2279,29 @@ out_unlock:
 }
 EXPORT_SYMBOL_GPL(pnfs_update_layout);
 
+<<<<<<< HEAD
+=======
+static bool
+pnfs_sanity_check_layout_range(struct pnfs_layout_range *range)
+{
+	switch (range->iomode) {
+	case IOMODE_READ:
+	case IOMODE_RW:
+		break;
+	default:
+		return false;
+	}
+	if (range->offset == NFS4_MAX_UINT64)
+		return false;
+	if (range->length == 0)
+		return false;
+	if (range->length != NFS4_MAX_UINT64 &&
+	    range->length > NFS4_MAX_UINT64 - range->offset)
+		return false;
+	return true;
+}
+
+>>>>>>> v4.9.227
 struct pnfs_layout_segment *
 pnfs_layout_process(struct nfs4_layoutget *lgp)
 {
@@ -1370,6 +2310,7 @@ pnfs_layout_process(struct nfs4_layoutget *lgp)
 	struct pnfs_layout_segment *lseg;
 	struct inode *ino = lo->plh_inode;
 	LIST_HEAD(free_me);
+<<<<<<< HEAD
 	int status = 0;
 
 	/* Inject layout blob into I/O device driver */
@@ -1396,13 +2337,40 @@ pnfs_layout_process(struct nfs4_layoutget *lgp)
 	if (pnfs_layoutgets_blocked(lo, 1)) {
 		dprintk("%s forget reply due to state\n", __func__);
 		goto out_forget_reply;
+=======
+
+	if (!pnfs_sanity_check_layout_range(&res->range))
+		return ERR_PTR(-EINVAL);
+
+	/* Inject layout blob into I/O device driver */
+	lseg = NFS_SERVER(ino)->pnfs_curr_ld->alloc_lseg(lo, res, lgp->gfp_flags);
+	if (IS_ERR_OR_NULL(lseg)) {
+		if (!lseg)
+			lseg = ERR_PTR(-ENOMEM);
+
+		dprintk("%s: Could not allocate layout: error %ld\n",
+		       __func__, PTR_ERR(lseg));
+		return lseg;
+	}
+
+	pnfs_init_lseg(lo, lseg, &res->range, &res->stateid);
+
+	spin_lock(&ino->i_lock);
+	if (pnfs_layoutgets_blocked(lo)) {
+		dprintk("%s forget reply due to state\n", __func__);
+		goto out_forget;
+>>>>>>> v4.9.227
 	}
 
 	if (nfs4_stateid_match_other(&lo->plh_stateid, &res->stateid)) {
 		/* existing state ID, make sure the sequence number matches. */
 		if (pnfs_layout_stateid_blocked(lo, &res->stateid)) {
 			dprintk("%s forget reply due to sequence\n", __func__);
+<<<<<<< HEAD
 			goto out_forget_reply;
+=======
+			goto out_forget;
+>>>>>>> v4.9.227
 		}
 		pnfs_set_layout_stateid(lo, &res->stateid, false);
 	} else {
@@ -1411,6 +2379,7 @@ pnfs_layout_process(struct nfs4_layoutget *lgp)
 		 * inode invalid, and don't bother validating the stateid
 		 * sequence number.
 		 */
+<<<<<<< HEAD
 		pnfs_mark_matching_lsegs_invalid(lo, &free_me, NULL);
 
 		nfs4_stateid_copy(&lo->plh_stateid, &res->stateid);
@@ -1426,10 +2395,24 @@ pnfs_layout_process(struct nfs4_layoutget *lgp)
 		set_bit(NFS_LSEG_ROC, &lseg->pls_flags);
 		set_bit(NFS_LAYOUT_ROC, &lo->plh_flags);
 	}
+=======
+		pnfs_mark_layout_stateid_invalid(lo, &free_me);
+
+		pnfs_set_layout_stateid(lo, &res->stateid, true);
+	}
+
+	pnfs_get_lseg(lseg);
+	pnfs_layout_insert_lseg(lo, lseg, &free_me);
+
+
+	if (res->return_on_close)
+		set_bit(NFS_LSEG_ROC, &lseg->pls_flags);
+>>>>>>> v4.9.227
 
 	spin_unlock(&ino->i_lock);
 	pnfs_free_lseg_list(&free_me);
 	return lseg;
+<<<<<<< HEAD
 out:
 	return ERR_PTR(status);
 
@@ -1440,6 +2423,110 @@ out_forget_reply:
 	goto out;
 }
 
+=======
+
+out_forget:
+	spin_unlock(&ino->i_lock);
+	lseg->pls_layout = lo;
+	NFS_SERVER(ino)->pnfs_curr_ld->free_lseg(lseg);
+	return ERR_PTR(-EAGAIN);
+}
+
+static void
+pnfs_set_plh_return_info(struct pnfs_layout_hdr *lo, enum pnfs_iomode iomode,
+			 u32 seq)
+{
+	if (lo->plh_return_iomode != 0 && lo->plh_return_iomode != iomode)
+		iomode = IOMODE_ANY;
+	lo->plh_return_iomode = iomode;
+	set_bit(NFS_LAYOUT_RETURN_REQUESTED, &lo->plh_flags);
+	if (seq != 0) {
+		WARN_ON_ONCE(lo->plh_return_seq != 0 && lo->plh_return_seq != seq);
+		lo->plh_return_seq = seq;
+	}
+}
+
+/**
+ * pnfs_mark_matching_lsegs_return - Free or return matching layout segments
+ * @lo: pointer to layout header
+ * @tmp_list: list header to be used with pnfs_free_lseg_list()
+ * @return_range: describe layout segment ranges to be returned
+ *
+ * This function is mainly intended for use by layoutrecall. It attempts
+ * to free the layout segment immediately, or else to mark it for return
+ * as soon as its reference count drops to zero.
+ */
+int
+pnfs_mark_matching_lsegs_return(struct pnfs_layout_hdr *lo,
+				struct list_head *tmp_list,
+				const struct pnfs_layout_range *return_range,
+				u32 seq)
+{
+	struct pnfs_layout_segment *lseg, *next;
+	int remaining = 0;
+
+	dprintk("%s:Begin lo %p\n", __func__, lo);
+
+	if (list_empty(&lo->plh_segs))
+		return 0;
+
+	assert_spin_locked(&lo->plh_inode->i_lock);
+
+	list_for_each_entry_safe(lseg, next, &lo->plh_segs, pls_list)
+		if (pnfs_match_lseg_recall(lseg, return_range, seq)) {
+			dprintk("%s: marking lseg %p iomode %d "
+				"offset %llu length %llu\n", __func__,
+				lseg, lseg->pls_range.iomode,
+				lseg->pls_range.offset,
+				lseg->pls_range.length);
+			if (mark_lseg_invalid(lseg, tmp_list))
+				continue;
+			remaining++;
+			set_bit(NFS_LSEG_LAYOUTRETURN, &lseg->pls_flags);
+		}
+
+	if (remaining)
+		pnfs_set_plh_return_info(lo, return_range->iomode, seq);
+
+	return remaining;
+}
+
+void pnfs_error_mark_layout_for_return(struct inode *inode,
+				       struct pnfs_layout_segment *lseg)
+{
+	struct pnfs_layout_hdr *lo = NFS_I(inode)->layout;
+	struct pnfs_layout_range range = {
+		.iomode = lseg->pls_range.iomode,
+		.offset = 0,
+		.length = NFS4_MAX_UINT64,
+	};
+	LIST_HEAD(free_me);
+	bool return_now = false;
+
+	spin_lock(&inode->i_lock);
+	pnfs_set_plh_return_info(lo, range.iomode, 0);
+	/*
+	 * mark all matching lsegs so that we are sure to have no live
+	 * segments at hand when sending layoutreturn. See pnfs_put_lseg()
+	 * for how it works.
+	 */
+	if (!pnfs_mark_matching_lsegs_return(lo, &free_me, &range, 0)) {
+		nfs4_stateid stateid;
+		enum pnfs_iomode iomode;
+
+		return_now = pnfs_prepare_layoutreturn(lo, &stateid, &iomode);
+		spin_unlock(&inode->i_lock);
+		if (return_now)
+			pnfs_send_layoutreturn(lo, &stateid, iomode, false);
+	} else {
+		spin_unlock(&inode->i_lock);
+		nfs_commit_inode(inode, 0);
+	}
+	pnfs_free_lseg_list(&free_me);
+}
+EXPORT_SYMBOL_GPL(pnfs_error_mark_layout_for_return);
+
+>>>>>>> v4.9.227
 void
 pnfs_generic_pg_init_read(struct nfs_pageio_descriptor *pgio, struct nfs_page *req)
 {
@@ -1456,7 +2543,17 @@ pnfs_generic_pg_init_read(struct nfs_pageio_descriptor *pgio, struct nfs_page *r
 						   req_offset(req),
 						   rd_size,
 						   IOMODE_READ,
+<<<<<<< HEAD
 						   GFP_KERNEL);
+=======
+						   false,
+						   GFP_KERNEL);
+		if (IS_ERR(pgio->pg_lseg)) {
+			pgio->pg_error = PTR_ERR(pgio->pg_lseg);
+			pgio->pg_lseg = NULL;
+			return;
+		}
+>>>>>>> v4.9.227
 	}
 	/* If no lseg, fall back to read through mds */
 	if (pgio->pg_lseg == NULL)
@@ -1469,26 +2566,59 @@ void
 pnfs_generic_pg_init_write(struct nfs_pageio_descriptor *pgio,
 			   struct nfs_page *req, u64 wb_size)
 {
+<<<<<<< HEAD
 	if (pgio->pg_lseg == NULL)
+=======
+	if (pgio->pg_lseg == NULL) {
+>>>>>>> v4.9.227
 		pgio->pg_lseg = pnfs_update_layout(pgio->pg_inode,
 						   req->wb_context,
 						   req_offset(req),
 						   wb_size,
 						   IOMODE_RW,
+<<<<<<< HEAD
 						   GFP_NOFS);
+=======
+						   false,
+						   GFP_NOFS);
+		if (IS_ERR(pgio->pg_lseg)) {
+			pgio->pg_error = PTR_ERR(pgio->pg_lseg);
+			pgio->pg_lseg = NULL;
+			return;
+		}
+	}
+>>>>>>> v4.9.227
 	/* If no lseg, fall back to write through mds */
 	if (pgio->pg_lseg == NULL)
 		nfs_pageio_reset_write_mds(pgio);
 }
 EXPORT_SYMBOL_GPL(pnfs_generic_pg_init_write);
 
+<<<<<<< HEAD
+=======
+void
+pnfs_generic_pg_cleanup(struct nfs_pageio_descriptor *desc)
+{
+	if (desc->pg_lseg) {
+		pnfs_put_lseg(desc->pg_lseg);
+		desc->pg_lseg = NULL;
+	}
+}
+EXPORT_SYMBOL_GPL(pnfs_generic_pg_cleanup);
+
+>>>>>>> v4.9.227
 /*
  * Return 0 if @req cannot be coalesced into @pgio, otherwise return the number
  * of bytes (maximum @req->wb_bytes) that can be coalesced.
  */
 size_t
+<<<<<<< HEAD
 pnfs_generic_pg_test(struct nfs_pageio_descriptor *pgio, struct nfs_page *prev,
 		     struct nfs_page *req)
+=======
+pnfs_generic_pg_test(struct nfs_pageio_descriptor *pgio,
+		     struct nfs_page *prev, struct nfs_page *req)
+>>>>>>> v4.9.227
 {
 	unsigned int size;
 	u64 seg_end, req_start, seg_left;
@@ -1512,10 +2642,23 @@ pnfs_generic_pg_test(struct nfs_pageio_descriptor *pgio, struct nfs_page *prev,
 		seg_end = end_offset(pgio->pg_lseg->pls_range.offset,
 				     pgio->pg_lseg->pls_range.length);
 		req_start = req_offset(req);
+<<<<<<< HEAD
 		WARN_ON_ONCE(req_start > seg_end);
 		/* start of request is past the last byte of this segment */
 		if (req_start >= seg_end)
 			return 0;
+=======
+		WARN_ON_ONCE(req_start >= seg_end);
+		/* start of request is past the last byte of this segment */
+		if (req_start >= seg_end) {
+			/* reference the new lseg */
+			if (pgio->pg_ops->pg_cleanup)
+				pgio->pg_ops->pg_cleanup(pgio);
+			if (pgio->pg_ops->pg_init)
+				pgio->pg_ops->pg_init(pgio, req);
+			return 0;
+		}
+>>>>>>> v4.9.227
 
 		/* adjust 'size' iff there are fewer bytes left in the
 		 * segment than what nfs_generic_pg_test returned */
@@ -1557,11 +2700,21 @@ static void pnfs_ld_handle_write_error(struct nfs_pgio_header *hdr)
  */
 void pnfs_ld_write_done(struct nfs_pgio_header *hdr)
 {
+<<<<<<< HEAD
 	trace_nfs4_pnfs_write(hdr, hdr->pnfs_error);
 	if (!hdr->pnfs_error) {
 		pnfs_set_layoutcommit(hdr);
 		hdr->mds_ops->rpc_call_done(&hdr->task, hdr);
 	} else
+=======
+	if (likely(!hdr->pnfs_error)) {
+		pnfs_set_layoutcommit(hdr->inode, hdr->lseg,
+				hdr->mds_offset + hdr->res.count);
+		hdr->mds_ops->rpc_call_done(&hdr->task, hdr);
+	}
+	trace_nfs4_pnfs_write(hdr, hdr->pnfs_error);
+	if (unlikely(hdr->pnfs_error))
+>>>>>>> v4.9.227
 		pnfs_ld_handle_write_error(hdr);
 	hdr->mds_ops->rpc_release(hdr);
 }
@@ -1571,6 +2724,7 @@ static void
 pnfs_write_through_mds(struct nfs_pageio_descriptor *desc,
 		struct nfs_pgio_header *hdr)
 {
+<<<<<<< HEAD
 	if (!test_and_set_bit(NFS_IOHDR_REDO, &hdr->flags)) {
 		list_splice_tail_init(&hdr->pages, &desc->pg_list);
 		nfs_pageio_reset_write_mds(desc);
@@ -1578,6 +2732,16 @@ pnfs_write_through_mds(struct nfs_pageio_descriptor *desc,
 	}
 	nfs_pgio_data_destroy(hdr);
 	hdr->release(hdr);
+=======
+	struct nfs_pgio_mirror *mirror = nfs_pgio_current_mirror(desc);
+
+	if (!test_and_set_bit(NFS_IOHDR_REDO, &hdr->flags)) {
+		list_splice_tail_init(&hdr->pages, &mirror->pg_list);
+		nfs_pageio_reset_write_mds(desc);
+		mirror->pg_recoalesce = 1;
+	}
+	hdr->completion_ops->completion(hdr);
+>>>>>>> v4.9.227
 }
 
 static enum pnfs_try_status
@@ -1609,11 +2773,17 @@ pnfs_do_write(struct nfs_pageio_descriptor *desc,
 	struct pnfs_layout_segment *lseg = desc->pg_lseg;
 	enum pnfs_try_status trypnfs;
 
+<<<<<<< HEAD
 	desc->pg_lseg = NULL;
 	trypnfs = pnfs_try_to_write_data(hdr, call_ops, lseg, how);
 	if (trypnfs == PNFS_NOT_ATTEMPTED)
 		pnfs_write_through_mds(desc, hdr);
 	pnfs_put_lseg(lseg);
+=======
+	trypnfs = pnfs_try_to_write_data(hdr, call_ops, lseg, how);
+	if (trypnfs == PNFS_NOT_ATTEMPTED)
+		pnfs_write_through_mds(desc, hdr);
+>>>>>>> v4.9.227
 }
 
 static void pnfs_writehdr_free(struct nfs_pgio_header *hdr)
@@ -1621,7 +2791,10 @@ static void pnfs_writehdr_free(struct nfs_pgio_header *hdr)
 	pnfs_put_lseg(hdr->lseg);
 	nfs_pgio_header_free(hdr);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(pnfs_writehdr_free);
+=======
+>>>>>>> v4.9.227
 
 int
 pnfs_generic_pg_writepages(struct nfs_pageio_descriptor *desc)
@@ -1631,6 +2804,7 @@ pnfs_generic_pg_writepages(struct nfs_pageio_descriptor *desc)
 
 	hdr = nfs_pgio_header_alloc(desc->pg_rw_ops);
 	if (!hdr) {
+<<<<<<< HEAD
 		desc->pg_completion_ops->error_cleanup(&desc->pg_list);
 		pnfs_put_lseg(desc->pg_lseg);
 		desc->pg_lseg = NULL;
@@ -1644,6 +2818,18 @@ pnfs_generic_pg_writepages(struct nfs_pageio_descriptor *desc)
 		desc->pg_lseg = NULL;
 	} else
 		pnfs_do_write(desc, hdr, desc->pg_ioflags);
+=======
+		desc->pg_error = -ENOMEM;
+		return desc->pg_error;
+	}
+	nfs_pgheader_init(desc, hdr, pnfs_writehdr_free);
+
+	hdr->lseg = pnfs_get_lseg(desc->pg_lseg);
+	ret = nfs_generic_pgio(desc, hdr);
+	if (!ret)
+		pnfs_do_write(desc, hdr, desc->pg_ioflags);
+
+>>>>>>> v4.9.227
 	return ret;
 }
 EXPORT_SYMBOL_GPL(pnfs_generic_pg_writepages);
@@ -1674,11 +2860,18 @@ static void pnfs_ld_handle_read_error(struct nfs_pgio_header *hdr)
  */
 void pnfs_ld_read_done(struct nfs_pgio_header *hdr)
 {
+<<<<<<< HEAD
 	trace_nfs4_pnfs_read(hdr, hdr->pnfs_error);
 	if (likely(!hdr->pnfs_error)) {
 		__nfs4_read_done_cb(hdr);
 		hdr->mds_ops->rpc_call_done(&hdr->task, hdr);
 	} else
+=======
+	if (likely(!hdr->pnfs_error))
+		hdr->mds_ops->rpc_call_done(&hdr->task, hdr);
+	trace_nfs4_pnfs_read(hdr, hdr->pnfs_error);
+	if (unlikely(hdr->pnfs_error))
+>>>>>>> v4.9.227
 		pnfs_ld_handle_read_error(hdr);
 	hdr->mds_ops->rpc_release(hdr);
 }
@@ -1688,6 +2881,7 @@ static void
 pnfs_read_through_mds(struct nfs_pageio_descriptor *desc,
 		struct nfs_pgio_header *hdr)
 {
+<<<<<<< HEAD
 	if (!test_and_set_bit(NFS_IOHDR_REDO, &hdr->flags)) {
 		list_splice_tail_init(&hdr->pages, &desc->pg_list);
 		nfs_pageio_reset_read_mds(desc);
@@ -1695,6 +2889,16 @@ pnfs_read_through_mds(struct nfs_pageio_descriptor *desc,
 	}
 	nfs_pgio_data_destroy(hdr);
 	hdr->release(hdr);
+=======
+	struct nfs_pgio_mirror *mirror = nfs_pgio_current_mirror(desc);
+
+	if (!test_and_set_bit(NFS_IOHDR_REDO, &hdr->flags)) {
+		list_splice_tail_init(&hdr->pages, &mirror->pg_list);
+		nfs_pageio_reset_read_mds(desc);
+		mirror->pg_recoalesce = 1;
+	}
+	hdr->completion_ops->completion(hdr);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1721,6 +2925,26 @@ pnfs_try_to_read_data(struct nfs_pgio_header *hdr,
 	return trypnfs;
 }
 
+<<<<<<< HEAD
+=======
+/* Resend all requests through pnfs. */
+void pnfs_read_resend_pnfs(struct nfs_pgio_header *hdr)
+{
+	struct nfs_pageio_descriptor pgio;
+
+	if (!test_and_set_bit(NFS_IOHDR_REDO, &hdr->flags)) {
+		/* Prevent deadlocks with layoutreturn! */
+		pnfs_put_lseg(hdr->lseg);
+		hdr->lseg = NULL;
+
+		nfs_pageio_init_read(&pgio, hdr->inode, false,
+					hdr->completion_ops);
+		hdr->task.tk_status = nfs_pageio_resend(&pgio, hdr);
+	}
+}
+EXPORT_SYMBOL_GPL(pnfs_read_resend_pnfs);
+
+>>>>>>> v4.9.227
 static void
 pnfs_do_read(struct nfs_pageio_descriptor *desc, struct nfs_pgio_header *hdr)
 {
@@ -1728,11 +2952,29 @@ pnfs_do_read(struct nfs_pageio_descriptor *desc, struct nfs_pgio_header *hdr)
 	struct pnfs_layout_segment *lseg = desc->pg_lseg;
 	enum pnfs_try_status trypnfs;
 
+<<<<<<< HEAD
 	desc->pg_lseg = NULL;
 	trypnfs = pnfs_try_to_read_data(hdr, call_ops, lseg);
 	if (trypnfs == PNFS_NOT_ATTEMPTED)
 		pnfs_read_through_mds(desc, hdr);
 	pnfs_put_lseg(lseg);
+=======
+	trypnfs = pnfs_try_to_read_data(hdr, call_ops, lseg);
+	switch (trypnfs) {
+	case PNFS_NOT_ATTEMPTED:
+		pnfs_read_through_mds(desc, hdr);
+	case PNFS_ATTEMPTED:
+		break;
+	case PNFS_TRY_AGAIN:
+		/* cleanup hdr and prepare to redo pnfs */
+		if (!test_and_set_bit(NFS_IOHDR_REDO, &hdr->flags)) {
+			struct nfs_pgio_mirror *mirror = nfs_pgio_current_mirror(desc);
+			list_splice_init(&hdr->pages, &mirror->pg_list);
+			mirror->pg_recoalesce = 1;
+		}
+		hdr->mds_ops->rpc_release(hdr);
+	}
+>>>>>>> v4.9.227
 }
 
 static void pnfs_readhdr_free(struct nfs_pgio_header *hdr)
@@ -1740,7 +2982,10 @@ static void pnfs_readhdr_free(struct nfs_pgio_header *hdr)
 	pnfs_put_lseg(hdr->lseg);
 	nfs_pgio_header_free(hdr);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(pnfs_readhdr_free);
+=======
+>>>>>>> v4.9.227
 
 int
 pnfs_generic_pg_readpages(struct nfs_pageio_descriptor *desc)
@@ -1750,19 +2995,28 @@ pnfs_generic_pg_readpages(struct nfs_pageio_descriptor *desc)
 
 	hdr = nfs_pgio_header_alloc(desc->pg_rw_ops);
 	if (!hdr) {
+<<<<<<< HEAD
 		desc->pg_completion_ops->error_cleanup(&desc->pg_list);
 		ret = -ENOMEM;
 		pnfs_put_lseg(desc->pg_lseg);
 		desc->pg_lseg = NULL;
 		return ret;
+=======
+		desc->pg_error = -ENOMEM;
+		return desc->pg_error;
+>>>>>>> v4.9.227
 	}
 	nfs_pgheader_init(desc, hdr, pnfs_readhdr_free);
 	hdr->lseg = pnfs_get_lseg(desc->pg_lseg);
 	ret = nfs_generic_pgio(desc, hdr);
+<<<<<<< HEAD
 	if (ret != 0) {
 		pnfs_put_lseg(desc->pg_lseg);
 		desc->pg_lseg = NULL;
 	} else
+=======
+	if (!ret)
+>>>>>>> v4.9.227
 		pnfs_do_read(desc, hdr);
 	return ret;
 }
@@ -1811,15 +3065,23 @@ void pnfs_set_lo_fail(struct pnfs_layout_segment *lseg)
 EXPORT_SYMBOL_GPL(pnfs_set_lo_fail);
 
 void
+<<<<<<< HEAD
 pnfs_set_layoutcommit(struct nfs_pgio_header *hdr)
 {
 	struct inode *inode = hdr->inode;
 	struct nfs_inode *nfsi = NFS_I(inode);
 	loff_t end_pos = hdr->mds_offset + hdr->res.count;
+=======
+pnfs_set_layoutcommit(struct inode *inode, struct pnfs_layout_segment *lseg,
+		loff_t end_pos)
+{
+	struct nfs_inode *nfsi = NFS_I(inode);
+>>>>>>> v4.9.227
 	bool mark_as_dirty = false;
 
 	spin_lock(&inode->i_lock);
 	if (!test_and_set_bit(NFS_INO_LAYOUTCOMMIT, &nfsi->flags)) {
+<<<<<<< HEAD
 		mark_as_dirty = true;
 		dprintk("%s: Set layoutcommit for inode %lu ",
 			__func__, inode->i_ino);
@@ -1833,6 +3095,21 @@ pnfs_set_layoutcommit(struct nfs_pgio_header *hdr)
 	spin_unlock(&inode->i_lock);
 	dprintk("%s: lseg %p end_pos %llu\n",
 		__func__, hdr->lseg, nfsi->layout->plh_lwb);
+=======
+		nfsi->layout->plh_lwb = end_pos;
+		mark_as_dirty = true;
+		dprintk("%s: Set layoutcommit for inode %lu ",
+			__func__, inode->i_ino);
+	} else if (end_pos > nfsi->layout->plh_lwb)
+		nfsi->layout->plh_lwb = end_pos;
+	if (!test_and_set_bit(NFS_LSEG_LAYOUTCOMMIT, &lseg->pls_flags)) {
+		/* references matched in nfs4_layoutcommit_release */
+		pnfs_get_lseg(lseg);
+	}
+	spin_unlock(&inode->i_lock);
+	dprintk("%s: lseg %p end_pos %llu\n",
+		__func__, lseg, nfsi->layout->plh_lwb);
+>>>>>>> v4.9.227
 
 	/* if pnfs_layoutcommit_inode() runs between inode locks, the next one
 	 * will be a noop because NFS_INO_LAYOUTCOMMIT will not be set */
@@ -1841,6 +3118,7 @@ pnfs_set_layoutcommit(struct nfs_pgio_header *hdr)
 }
 EXPORT_SYMBOL_GPL(pnfs_set_layoutcommit);
 
+<<<<<<< HEAD
 void pnfs_commit_set_layoutcommit(struct nfs_commit_data *data)
 {
 	struct inode *inode = data->inode;
@@ -1870,6 +3148,8 @@ void pnfs_commit_set_layoutcommit(struct nfs_commit_data *data)
 }
 EXPORT_SYMBOL_GPL(pnfs_commit_set_layoutcommit);
 
+=======
+>>>>>>> v4.9.227
 void pnfs_cleanup_layoutcommit(struct nfs4_layoutcommit_data *data)
 {
 	struct nfs_server *nfss = NFS_SERVER(data->args.inode);
@@ -1928,7 +3208,10 @@ pnfs_layoutcommit_inode(struct inode *inode, bool sync)
 	pnfs_list_write_lseg(inode, &data->lseg_list);
 
 	end_pos = nfsi->layout->plh_lwb;
+<<<<<<< HEAD
 	nfsi->layout->plh_lwb = 0;
+=======
+>>>>>>> v4.9.227
 
 	nfs4_stateid_copy(&data->args.stateid, &nfsi->layout->plh_stateid);
 	spin_unlock(&inode->i_lock);
@@ -1938,12 +3221,20 @@ pnfs_layoutcommit_inode(struct inode *inode, bool sync)
 	nfs_fattr_init(&data->fattr);
 	data->args.bitmask = NFS_SERVER(inode)->cache_consistency_bitmask;
 	data->res.fattr = &data->fattr;
+<<<<<<< HEAD
 	data->args.lastbytewritten = end_pos - 1;
+=======
+	if (end_pos != 0)
+		data->args.lastbytewritten = end_pos - 1;
+	else
+		data->args.lastbytewritten = U64_MAX;
+>>>>>>> v4.9.227
 	data->res.server = NFS_SERVER(inode);
 
 	if (ld->prepare_layoutcommit) {
 		status = ld->prepare_layoutcommit(&data->args);
 		if (status) {
+<<<<<<< HEAD
 			spin_lock(&inode->i_lock);
 			if (end_pos < nfsi->layout->plh_lwb)
 				nfsi->layout->plh_lwb = end_pos;
@@ -1951,6 +3242,14 @@ pnfs_layoutcommit_inode(struct inode *inode, bool sync)
 			put_rpccred(data->cred);
 			set_bit(NFS_INO_LAYOUTCOMMIT, &nfsi->flags);
 			goto clear_layoutcommitting;
+=======
+			put_rpccred(data->cred);
+			spin_lock(&inode->i_lock);
+			set_bit(NFS_INO_LAYOUTCOMMIT, &nfsi->flags);
+			if (end_pos > nfsi->layout->plh_lwb)
+				nfsi->layout->plh_lwb = end_pos;
+			goto out_unlock;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -1968,6 +3267,17 @@ clear_layoutcommitting:
 	pnfs_clear_layoutcommitting(inode);
 	goto out;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(pnfs_layoutcommit_inode);
+
+int
+pnfs_generic_sync(struct inode *inode, bool datasync)
+{
+	return pnfs_layoutcommit_inode(inode, true);
+}
+EXPORT_SYMBOL_GPL(pnfs_generic_sync);
+>>>>>>> v4.9.227
 
 struct nfs4_threshold *pnfs_mdsthreshold_alloc(void)
 {
@@ -1980,3 +3290,70 @@ struct nfs4_threshold *pnfs_mdsthreshold_alloc(void)
 	}
 	return thp;
 }
+<<<<<<< HEAD
+=======
+
+#if IS_ENABLED(CONFIG_NFS_V4_2)
+int
+pnfs_report_layoutstat(struct inode *inode, gfp_t gfp_flags)
+{
+	struct pnfs_layoutdriver_type *ld = NFS_SERVER(inode)->pnfs_curr_ld;
+	struct nfs_server *server = NFS_SERVER(inode);
+	struct nfs_inode *nfsi = NFS_I(inode);
+	struct nfs42_layoutstat_data *data;
+	struct pnfs_layout_hdr *hdr;
+	int status = 0;
+
+	if (!pnfs_enabled_sb(server) || !ld->prepare_layoutstats)
+		goto out;
+
+	if (!nfs_server_capable(inode, NFS_CAP_LAYOUTSTATS))
+		goto out;
+
+	if (test_and_set_bit(NFS_INO_LAYOUTSTATS, &nfsi->flags))
+		goto out;
+
+	spin_lock(&inode->i_lock);
+	if (!NFS_I(inode)->layout) {
+		spin_unlock(&inode->i_lock);
+		goto out_clear_layoutstats;
+	}
+	hdr = NFS_I(inode)->layout;
+	pnfs_get_layout_hdr(hdr);
+	spin_unlock(&inode->i_lock);
+
+	data = kzalloc(sizeof(*data), gfp_flags);
+	if (!data) {
+		status = -ENOMEM;
+		goto out_put;
+	}
+
+	data->args.fh = NFS_FH(inode);
+	data->args.inode = inode;
+	status = ld->prepare_layoutstats(&data->args);
+	if (status)
+		goto out_free;
+
+	status = nfs42_proc_layoutstats_generic(NFS_SERVER(inode), data);
+
+out:
+	dprintk("%s returns %d\n", __func__, status);
+	return status;
+
+out_free:
+	kfree(data);
+out_put:
+	pnfs_put_layout_hdr(hdr);
+out_clear_layoutstats:
+	smp_mb__before_atomic();
+	clear_bit(NFS_INO_LAYOUTSTATS, &nfsi->flags);
+	smp_mb__after_atomic();
+	goto out;
+}
+EXPORT_SYMBOL_GPL(pnfs_report_layoutstat);
+#endif
+
+unsigned int layoutstats_timer;
+module_param(layoutstats_timer, uint, 0644);
+EXPORT_SYMBOL_GPL(layoutstats_timer);
+>>>>>>> v4.9.227

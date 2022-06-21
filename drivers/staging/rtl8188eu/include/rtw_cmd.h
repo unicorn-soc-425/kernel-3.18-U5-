@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __RTW_CMD_H_
 #define __RTW_CMD_H_
@@ -44,8 +47,13 @@ struct cmd_obj {
 };
 
 struct cmd_priv {
+<<<<<<< HEAD
 	struct semaphore cmd_queue_sema;
 	struct semaphore terminate_cmdthread_sema;
+=======
+	struct completion cmd_queue_comp;
+	struct completion terminate_cmdthread_comp;
+>>>>>>> v4.9.227
 	struct __queue cmd_queue;
 	u8 cmdthd_running;
 	struct adapter *padapter;
@@ -215,6 +223,7 @@ struct set_assocsta_rsp {
 };
 
 /*
+<<<<<<< HEAD
 	Caller Ad-Hoc/AP
 
 	Command mode
@@ -243,6 +252,8 @@ struct setstapwrstate_parm {
 };
 
 /*
+=======
+>>>>>>> v4.9.227
 	Notes: This command is used for H2C/C2H loopback testing
 
 	mac[0] == 0
@@ -317,8 +328,11 @@ struct SetChannelPlan_param {
 	u8 channel_plan;
 };
 
+<<<<<<< HEAD
 #define GEN_CMD_CODE(cmd)	cmd ## _CMD_
 
+=======
+>>>>>>> v4.9.227
 /*
 
 Result:
@@ -381,6 +395,7 @@ struct _cmd_callback {
 };
 
 enum rtw_h2c_cmd {
+<<<<<<< HEAD
 	GEN_CMD_CODE(_JoinBss),
 	GEN_CMD_CODE(_DisConnect),
 	GEN_CMD_CODE(_CreateBss),
@@ -396,12 +411,30 @@ enum rtw_h2c_cmd {
 	GEN_CMD_CODE(_Set_MLME_EVT),
 	GEN_CMD_CODE(_Set_Drv_Extra),
 	GEN_CMD_CODE(_SetChannelPlan),
+=======
+	_JoinBss_CMD_,
+	_DisConnect_CMD_,
+	_CreateBss_CMD_,
+	_SetOpMode_CMD_,
+	_SiteSurvey_CMD_,
+	_SetAuth_CMD_,
+	_SetKey_CMD_,
+	_SetStaKey_CMD_,
+	_SetAssocSta_CMD_,
+	_AddBAReq_CMD_,
+	_SetChannel_CMD_,
+	_TX_Beacon_CMD_,
+	_Set_MLME_EVT_CMD_,
+	_Set_Drv_Extra_CMD_,
+	_SetChannelPlan_CMD_,
+>>>>>>> v4.9.227
 
 	MAX_H2CCMD
 };
 
 #ifdef _RTW_CMD_C_
 static struct _cmd_callback	rtw_cmd_callback[] = {
+<<<<<<< HEAD
 	{GEN_CMD_CODE(_JoinBss), &rtw_joinbss_cmd_callback},
 	{GEN_CMD_CODE(_DisConnect), &rtw_disassoc_cmd_callback},
 	{GEN_CMD_CODE(_CreateBss), &rtw_createbss_cmd_callback},
@@ -417,6 +450,23 @@ static struct _cmd_callback	rtw_cmd_callback[] = {
 	{GEN_CMD_CODE(_Set_MLME_EVT), NULL},
 	{GEN_CMD_CODE(_Set_Drv_Extra), NULL},
 	{GEN_CMD_CODE(_SetChannelPlan), NULL},
+=======
+	{_JoinBss_CMD_, &rtw_joinbss_cmd_callback},
+	{_DisConnect_CMD_, &rtw_disassoc_cmd_callback},
+	{_CreateBss_CMD_, &rtw_createbss_cmd_callback},
+	{_SetOpMode_CMD_, NULL},
+	{_SiteSurvey_CMD_, &rtw_survey_cmd_callback},
+	{_SetAuth_CMD_, NULL},
+	{_SetKey_CMD_, NULL},
+	{_SetStaKey_CMD_, &rtw_setstaKey_cmdrsp_callback},
+	{_SetAssocSta_CMD_, &rtw_setassocsta_cmdrsp_callback},
+	{_AddBAReq_CMD_, NULL},
+	{_SetChannel_CMD_, NULL},
+	{_TX_Beacon_CMD_, NULL},
+	{_Set_MLME_EVT_CMD_, NULL},
+	{_Set_Drv_Extra_CMD_, NULL},
+	{_SetChannelPlan_CMD_, NULL},
+>>>>>>> v4.9.227
 };
 #endif
 

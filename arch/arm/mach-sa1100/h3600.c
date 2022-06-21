@@ -18,7 +18,11 @@
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <asm/mach/irda.h>
+=======
+#include <linux/platform_data/irda-sa11x0.h>
+>>>>>>> v4.9.227
 
 #include <mach/h3xxx.h>
 #include <mach/irqs.h>

@@ -126,6 +126,7 @@ static struct ctl_table irda_table[] = {
 		.mode		= 0644,
 		.proc_handler	= do_devname,
 	},
+<<<<<<< HEAD
 #ifdef CONFIG_IRDA_DEBUG
 	{
 		.procname	= "debug",
@@ -135,6 +136,8 @@ static struct ctl_table irda_table[] = {
 		.proc_handler	= proc_dointvec
 	},
 #endif
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_IRDA_FAST_RR
 	{
 		.procname	= "fast_poll_increase",

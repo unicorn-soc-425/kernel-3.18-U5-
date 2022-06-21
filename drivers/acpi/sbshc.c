@@ -14,7 +14,10 @@
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/dmi.h>
+=======
+>>>>>>> v4.9.227
 #include "sbshc.h"
 
 #define PREFIX "ACPI: "
@@ -30,6 +33,10 @@ struct acpi_smb_hc {
 	u8 query_bit;
 	smbus_alarm_callback callback;
 	void *context;
+<<<<<<< HEAD
+=======
+	bool done;
+>>>>>>> v4.9.227
 };
 
 static int acpi_smbus_hc_add(struct acpi_device *device);
@@ -88,8 +95,11 @@ enum acpi_smb_offset {
 	ACPI_SMB_ALARM_DATA = 0x26,	/* 2 bytes alarm data */
 };
 
+<<<<<<< HEAD
 static bool macbook;
 
+=======
+>>>>>>> v4.9.227
 static inline int smb_hc_read(struct acpi_smb_hc *hc, u8 address, u8 *data)
 {
 	return ec_read(hc->offset + address, data);
@@ -100,6 +110,7 @@ static inline int smb_hc_write(struct acpi_smb_hc *hc, u8 address, u8 data)
 	return ec_write(hc->offset + address, data);
 }
 
+<<<<<<< HEAD
 static inline int smb_check_done(struct acpi_smb_hc *hc)
 {
 	union acpi_smb_status status = {.raw = 0};
@@ -121,6 +132,13 @@ static int wait_transaction_complete(struct acpi_smb_hc *hc, int timeout)
 		return 0;
 	else
 		return -ETIME;
+=======
+static int wait_transaction_complete(struct acpi_smb_hc *hc, int timeout)
+{
+	if (wait_event_timeout(hc->wait, hc->done, msecs_to_jiffies(timeout)))
+		return 0;
+	return -ETIME;
+>>>>>>> v4.9.227
 }
 
 static int acpi_smbus_transaction(struct acpi_smb_hc *hc, u8 protocol,
@@ -135,8 +153,12 @@ static int acpi_smbus_transaction(struct acpi_smb_hc *hc, u8 protocol,
 	}
 
 	mutex_lock(&hc->lock);
+<<<<<<< HEAD
 	if (macbook)
 		udelay(5);
+=======
+	hc->done = false;
+>>>>>>> v4.9.227
 	if (smb_hc_read(hc, ACPI_SMB_PROTOCOL, &temp))
 		goto end;
 	if (temp) {
@@ -215,6 +237,10 @@ int acpi_smbus_unregister_callback(struct acpi_smb_hc *hc)
 	hc->callback = NULL;
 	hc->context = NULL;
 	mutex_unlock(&hc->lock);
+<<<<<<< HEAD
+=======
+	acpi_os_wait_events_complete();
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -235,8 +261,15 @@ static int smbus_alarm(void *context)
 	if (smb_hc_read(hc, ACPI_SMB_STATUS, &status.raw))
 		return 0;
 	/* Check if it is only a completion notify */
+<<<<<<< HEAD
 	if (status.fields.done)
 		wake_up(&hc->wait);
+=======
+	if (status.fields.done && status.fields.status == SMBUS_OK) {
+		hc->done = true;
+		wake_up(&hc->wait);
+	}
+>>>>>>> v4.9.227
 	if (!status.fields.alarm)
 		return 0;
 	mutex_lock(&hc->lock);
@@ -262,6 +295,7 @@ extern int acpi_ec_add_query_handler(struct acpi_ec *ec, u8 query_bit,
 			      acpi_handle handle, acpi_ec_query_func func,
 			      void *data);
 
+<<<<<<< HEAD
 static int macbook_dmi_match(const struct dmi_system_id *d)
 {
 	pr_debug("Detected MacBook, enabling workaround\n");
@@ -277,14 +311,19 @@ static struct dmi_system_id acpi_smbus_dmi_table[] = {
 	{ },
 };
 
+=======
+>>>>>>> v4.9.227
 static int acpi_smbus_hc_add(struct acpi_device *device)
 {
 	int status;
 	unsigned long long val;
 	struct acpi_smb_hc *hc;
 
+<<<<<<< HEAD
 	dmi_check_system(acpi_smbus_dmi_table);
 
+=======
+>>>>>>> v4.9.227
 	if (!device)
 		return -EINVAL;
 
@@ -326,6 +365,10 @@ static int acpi_smbus_hc_remove(struct acpi_device *device)
 
 	hc = acpi_driver_data(device);
 	acpi_ec_remove_query_handler(hc->ec, hc->query_bit);
+<<<<<<< HEAD
+=======
+	acpi_os_wait_events_complete();
+>>>>>>> v4.9.227
 	kfree(hc);
 	device->driver_data = NULL;
 	return 0;

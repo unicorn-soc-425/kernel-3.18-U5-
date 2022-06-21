@@ -108,6 +108,10 @@ config ETRAX_AXISFLASHMAP
 	select MTD_JEDECPROBE
 	select MTD_BLOCK
 	select MTD_COMPLEX_MAPPINGS
+<<<<<<< HEAD
+=======
+	select MTD_MTDRAM
+>>>>>>> v4.9.227
 	help
 	  This option enables MTD mapping of flash devices.  Needed to use
 	  flash memories.  If unsure, say Y.
@@ -148,6 +152,7 @@ config ETRAX_NANDBOOT
 	  Say Y if your boot code, kernel and root file system is in
 	  NAND flash. Say N if they are in NOR flash.
 
+<<<<<<< HEAD
 config ETRAX_I2C
 	bool "I2C driver"
 	depends on ETRAX_ARCH_V32
@@ -315,6 +320,8 @@ config ETRAX_PV_CHANGEABLE_BITS
 	  that a user can change the value on using ioctl's.
 	  Bit set = changeable.
 
+=======
+>>>>>>> v4.9.227
 config ETRAX_CARDBUS
         bool "Cardbus support"
         depends on ETRAX_ARCH_V32
@@ -358,6 +365,7 @@ config ETRAX_SPI_MMC
 	default MMC
 	select SPI
 	select MMC_SPI
+<<<<<<< HEAD
 	select ETRAX_SPI_MMC_BOARD
 
 # For the parts that can't be a module (due to restrictions in
@@ -365,6 +373,8 @@ config ETRAX_SPI_MMC
 config ETRAX_SPI_MMC_BOARD
        boolean
        default n
+=======
+>>>>>>> v4.9.227
 
 # While the board info is MMC_SPI only, the drivers are written to be
 # independent of MMC_SPI, so we'll keep SPI non-dependent on the

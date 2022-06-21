@@ -172,7 +172,11 @@ nv44_mpeg_intr(struct nvkm_engine *engine)
 		}
 
 		if (type == 0x00000010) {
+<<<<<<< HEAD
 			if (!nv44_mpeg_mthd(subdev->device, mthd, data))
+=======
+			if (nv44_mpeg_mthd(subdev->device, mthd, data))
+>>>>>>> v4.9.227
 				show &= ~0x01000000;
 		}
 	}
@@ -212,6 +216,10 @@ nv44_mpeg_new(struct nvkm_device *device, int index, struct nvkm_engine **pmpeg)
 	INIT_LIST_HEAD(&mpeg->chan);
 	*pmpeg = &mpeg->engine;
 
+<<<<<<< HEAD
 	return nvkm_engine_ctor(&nv44_mpeg, device, index, 0x00000002,
 				true, &mpeg->engine);
+=======
+	return nvkm_engine_ctor(&nv44_mpeg, device, index, true, &mpeg->engine);
+>>>>>>> v4.9.227
 }

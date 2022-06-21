@@ -4,7 +4,11 @@
  *  by the Free Software Foundation.
  *
  * Copyright (C) 2010 Thomas Langer <thomas.langer@lantiq.com>
+<<<<<<< HEAD
  * Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+ * Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  */
 #include <linux/io.h>
 #include <linux/export.h>
@@ -99,6 +103,26 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 }
 EXPORT_SYMBOL(clk_set_rate);
 
+<<<<<<< HEAD
+=======
+long clk_round_rate(struct clk *clk, unsigned long rate)
+{
+	if (unlikely(!clk_good(clk)))
+		return 0;
+	if (clk->rates && *clk->rates) {
+		unsigned long *r = clk->rates;
+
+		while (*r && (*r != rate))
+			r++;
+		if (!*r) {
+			return clk->rate;
+		}
+	}
+	return rate;
+}
+EXPORT_SYMBOL(clk_round_rate);
+
+>>>>>>> v4.9.227
 int clk_enable(struct clk *clk)
 {
 	if (unlikely(!clk_good(clk)))

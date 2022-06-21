@@ -35,11 +35,19 @@ struct rproc;
  * @get_boot_addr:	get boot address to entry point specified in firmware
  */
 struct rproc_fw_ops {
+<<<<<<< HEAD
 	struct resource_table *(*find_rsc_table) (struct rproc *rproc,
 						const struct firmware *fw,
 						int *tablesz);
 	struct resource_table *(*find_loaded_rsc_table)(struct rproc *rproc,
 						const struct firmware *fw);
+=======
+	struct resource_table *(*find_rsc_table)(struct rproc *rproc,
+						 const struct firmware *fw,
+						 int *tablesz);
+	struct resource_table *(*find_loaded_rsc_table)(
+				struct rproc *rproc, const struct firmware *fw);
+>>>>>>> v4.9.227
 	int (*load)(struct rproc *rproc, const struct firmware *fw);
 	int (*sanity_check)(struct rproc *rproc, const struct firmware *fw);
 	u32 (*get_boot_addr)(struct rproc *rproc, const struct firmware *fw);
@@ -48,6 +56,10 @@ struct rproc_fw_ops {
 /* from remoteproc_core.c */
 void rproc_release(struct kref *kref);
 irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
+<<<<<<< HEAD
+=======
+int rproc_boot_nowait(struct rproc *rproc);
+>>>>>>> v4.9.227
 
 /* from remoteproc_virtio.c */
 int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id);
@@ -56,7 +68,11 @@ void rproc_remove_virtio_dev(struct rproc_vdev *rvdev);
 /* from remoteproc_debugfs.c */
 void rproc_remove_trace_file(struct dentry *tfile);
 struct dentry *rproc_create_trace_file(const char *name, struct rproc *rproc,
+<<<<<<< HEAD
 					struct rproc_mem_entry *trace);
+=======
+				       struct rproc_mem_entry *trace);
+>>>>>>> v4.9.227
 void rproc_delete_debug_dir(struct rproc *rproc);
 void rproc_create_debug_dir(struct rproc *rproc);
 void rproc_init_debugfs(void);
@@ -97,7 +113,12 @@ int rproc_load_segments(struct rproc *rproc, const struct firmware *fw)
 
 static inline
 struct resource_table *rproc_find_rsc_table(struct rproc *rproc,
+<<<<<<< HEAD
 				const struct firmware *fw, int *tablesz)
+=======
+					    const struct firmware *fw,
+					    int *tablesz)
+>>>>>>> v4.9.227
 {
 	if (rproc->fw_ops->find_rsc_table)
 		return rproc->fw_ops->find_rsc_table(rproc, fw, tablesz);
@@ -107,7 +128,11 @@ struct resource_table *rproc_find_rsc_table(struct rproc *rproc,
 
 static inline
 struct resource_table *rproc_find_loaded_rsc_table(struct rproc *rproc,
+<<<<<<< HEAD
 						const struct firmware *fw)
+=======
+						   const struct firmware *fw)
+>>>>>>> v4.9.227
 {
 	if (rproc->fw_ops->find_loaded_rsc_table)
 		return rproc->fw_ops->find_loaded_rsc_table(rproc, fw);

@@ -6,6 +6,10 @@
 #include <linux/mm.h>
 #include <linux/sched.h>
 #include <asm/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <asm/ptrace-abi.h>
+>>>>>>> v4.9.227
 #include <skas.h>
 
 extern int arch_switch_tls(struct task_struct *to);
@@ -35,7 +39,12 @@ int is_syscall(unsigned long addr)
 		 * slow, but that doesn't matter, since it will be called only
 		 * in case of singlestepping, if copy_from_user failed.
 		 */
+<<<<<<< HEAD
 		n = access_process_vm(current, addr, &instr, sizeof(instr), 0);
+=======
+		n = access_process_vm(current, addr, &instr, sizeof(instr),
+				FOLL_FORCE);
+>>>>>>> v4.9.227
 		if (n != sizeof(instr)) {
 			printk(KERN_ERR "is_syscall : failed to read "
 			       "instruction from 0x%lx\n", addr);
@@ -67,6 +76,10 @@ static const int reg_offsets[] = {
 	[EFL] = HOST_EFLAGS,
 	[UESP] = HOST_SP,
 	[SS] = HOST_SS,
+<<<<<<< HEAD
+=======
+	[ORIG_EAX] = HOST_ORIG_AX,
+>>>>>>> v4.9.227
 };
 
 int putreg(struct task_struct *child, int regno, unsigned long value)
@@ -83,6 +96,13 @@ int putreg(struct task_struct *child, int regno, unsigned long value)
 	case EIP:
 	case UESP:
 		break;
+<<<<<<< HEAD
+=======
+	case ORIG_EAX:
+		/* Update the syscall number. */
+		UPT_SYSCALL_NR(&child->thread.regs.regs) = value;
+		break;
+>>>>>>> v4.9.227
 	case FS:
 		if (value && (value & 3) != 3)
 			return -EIO;
@@ -107,9 +127,12 @@ int putreg(struct task_struct *child, int regno, unsigned long value)
 		value &= FLAG_MASK;
 		child->thread.regs.regs.gp[HOST_EFLAGS] |= value;
 		return 0;
+<<<<<<< HEAD
 	case ORIG_EAX:
 		child->thread.regs.regs.syscall = value;
 		return 0;
+=======
+>>>>>>> v4.9.227
 	default :
 		panic("Bad register in putreg() : %d\n", regno);
 	}
@@ -142,8 +165,11 @@ unsigned long getreg(struct task_struct *child, int regno)
 
 	regno >>= 2;
 	switch (regno) {
+<<<<<<< HEAD
 	case ORIG_EAX:
 		return child->thread.regs.regs.syscall;
+=======
+>>>>>>> v4.9.227
 	case FS:
 	case GS:
 	case DS:
@@ -162,6 +188,10 @@ unsigned long getreg(struct task_struct *child, int regno)
 	case EDI:
 	case EBP:
 	case EFL:
+<<<<<<< HEAD
+=======
+	case ORIG_EAX:
+>>>>>>> v4.9.227
 		break;
 	default:
 		panic("Bad register in getreg() : %d\n", regno);
@@ -192,10 +222,18 @@ int peek_user(struct task_struct *child, long addr, long data)
 
 static int get_fpregs(struct user_i387_struct __user *buf, struct task_struct *child)
 {
+<<<<<<< HEAD
 	int err, n, cpu = ((struct thread_info *) child->stack)->cpu;
 	struct user_i387_struct fpregs;
 
 	err = save_fp_registers(userspace_pid[cpu], (unsigned long *) &fpregs);
+=======
+	int err, n, cpu = task_cpu(child);
+	struct user_i387_struct fpregs;
+
+	err = save_i387_registers(userspace_pid[cpu],
+				  (unsigned long *) &fpregs);
+>>>>>>> v4.9.227
 	if (err)
 		return err;
 
@@ -208,20 +246,32 @@ static int get_fpregs(struct user_i387_struct __user *buf, struct task_struct *c
 
 static int set_fpregs(struct user_i387_struct __user *buf, struct task_struct *child)
 {
+<<<<<<< HEAD
 	int n, cpu = ((struct thread_info *) child->stack)->cpu;
+=======
+	int n, cpu = task_cpu(child);
+>>>>>>> v4.9.227
 	struct user_i387_struct fpregs;
 
 	n = copy_from_user(&fpregs, buf, sizeof(fpregs));
 	if (n > 0)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	return restore_fp_registers(userspace_pid[cpu],
+=======
+	return restore_i387_registers(userspace_pid[cpu],
+>>>>>>> v4.9.227
 				    (unsigned long *) &fpregs);
 }
 
 static int get_fpxregs(struct user_fxsr_struct __user *buf, struct task_struct *child)
 {
+<<<<<<< HEAD
 	int err, n, cpu = ((struct thread_info *) child->stack)->cpu;
+=======
+	int err, n, cpu = task_cpu(child);
+>>>>>>> v4.9.227
 	struct user_fxsr_struct fpregs;
 
 	err = save_fpx_registers(userspace_pid[cpu], (unsigned long *) &fpregs);
@@ -237,7 +287,11 @@ static int get_fpxregs(struct user_fxsr_struct __user *buf, struct task_struct *
 
 static int set_fpxregs(struct user_fxsr_struct __user *buf, struct task_struct *child)
 {
+<<<<<<< HEAD
 	int n, cpu = ((struct thread_info *) child->stack)->cpu;
+=======
+	int n, cpu = task_cpu(child);
+>>>>>>> v4.9.227
 	struct user_fxsr_struct fpregs;
 
 	n = copy_from_user(&fpregs, buf, sizeof(fpregs));

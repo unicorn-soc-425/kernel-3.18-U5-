@@ -19,6 +19,7 @@ struct pci_bus;
 struct device;
 
 struct hw_pci {
+<<<<<<< HEAD
 #ifdef CONFIG_PCI_DOMAINS
 	int		domain;
 #endif
@@ -27,6 +28,12 @@ struct hw_pci {
 #endif
 	struct pci_ops	*ops;
 	int		nr_controllers;
+=======
+	struct msi_controller *msi_ctrl;
+	struct pci_ops	*ops;
+	int		nr_controllers;
+	unsigned int	io_optional:1;
+>>>>>>> v4.9.227
 	void		**private_data;
 	int		(*setup)(int nr, struct pci_sys_data *);
 	struct pci_bus *(*scan)(int nr, struct pci_sys_data *);
@@ -45,12 +52,15 @@ struct hw_pci {
  * Per-controller structure
  */
 struct pci_sys_data {
+<<<<<<< HEAD
 #ifdef CONFIG_PCI_DOMAINS
 	int		domain;
 #endif
 #ifdef CONFIG_PCI_MSI
 	struct msi_controller *msi_ctrl;
 #endif
+=======
+>>>>>>> v4.9.227
 	struct list_head node;
 	int		busnr;		/* primary bus number			*/
 	u64		mem_offset;	/* bus->cpu memory mapping offset	*/
@@ -63,12 +73,15 @@ struct pci_sys_data {
 	u8		(*swizzle)(struct pci_dev *, u8 *);
 					/* IRQ mapping				*/
 	int		(*map_irq)(const struct pci_dev *, u8, u8);
+<<<<<<< HEAD
 					/* Resource alignement requirements	*/
 	resource_size_t (*align_resource)(struct pci_dev *dev,
 					  const struct resource *res,
 					  resource_size_t start,
 					  resource_size_t size,
 					  resource_size_t align);
+=======
+>>>>>>> v4.9.227
 	void		*private_data;	/* platform controller private data	*/
 };
 

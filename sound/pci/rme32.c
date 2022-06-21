@@ -75,6 +75,10 @@
 #include <linux/interrupt.h>
 #include <linux/pci.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #include <sound/core.h>
 #include <sound/info.h>
@@ -85,8 +89,11 @@
 #include <sound/asoundef.h>
 #include <sound/initval.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
+=======
+>>>>>>> v4.9.227
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
 static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	/* Enable this card */
@@ -632,7 +639,11 @@ snd_rme32_setframelog(struct rme32 * rme32, int n_channels, int is_playback)
 	}
 }
 
+<<<<<<< HEAD
 static int snd_rme32_setformat(struct rme32 * rme32, int format)
+=======
+static int snd_rme32_setformat(struct rme32 *rme32, snd_pcm_format_t format)
+>>>>>>> v4.9.227
 {
 	switch (format) {
 	case SNDRV_PCM_FORMAT_S16_LE:
@@ -832,9 +843,15 @@ static struct snd_pcm_hw_constraint_list hw_constraints_period_bytes = {
 static void snd_rme32_set_buffer_constraint(struct rme32 *rme32, struct snd_pcm_runtime *runtime)
 {
 	if (! rme32->fullduplex_mode) {
+<<<<<<< HEAD
 		snd_pcm_hw_constraint_minmax(runtime,
 					     SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
 					     RME32_BUFFER_SIZE, RME32_BUFFER_SIZE);
+=======
+		snd_pcm_hw_constraint_single(runtime,
+					     SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
+					     RME32_BUFFER_SIZE);
+>>>>>>> v4.9.227
 		snd_pcm_hw_constraint_list(runtime, 0,
 					   SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
 					   &hw_constraints_period_bytes);
@@ -1197,7 +1214,11 @@ snd_rme32_capture_fd_pointer(struct snd_pcm_substream *substream)
 }
 
 /* for halfduplex mode */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme32_playback_spdif_ops = {
+=======
+static const struct snd_pcm_ops snd_rme32_playback_spdif_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_rme32_playback_spdif_open,
 	.close =	snd_rme32_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1211,7 +1232,11 @@ static struct snd_pcm_ops snd_rme32_playback_spdif_ops = {
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme32_capture_spdif_ops = {
+=======
+static const struct snd_pcm_ops snd_rme32_capture_spdif_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_rme32_capture_spdif_open,
 	.close =	snd_rme32_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1224,7 +1249,11 @@ static struct snd_pcm_ops snd_rme32_capture_spdif_ops = {
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme32_playback_adat_ops = {
+=======
+static const struct snd_pcm_ops snd_rme32_playback_adat_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_rme32_playback_adat_open,
 	.close =	snd_rme32_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1237,7 +1266,11 @@ static struct snd_pcm_ops snd_rme32_playback_adat_ops = {
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme32_capture_adat_ops = {
+=======
+static const struct snd_pcm_ops snd_rme32_capture_adat_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_rme32_capture_adat_open,
 	.close =	snd_rme32_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1250,7 +1283,11 @@ static struct snd_pcm_ops snd_rme32_capture_adat_ops = {
 };
 
 /* for fullduplex mode */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme32_playback_spdif_fd_ops = {
+=======
+static const struct snd_pcm_ops snd_rme32_playback_spdif_fd_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_rme32_playback_spdif_open,
 	.close =	snd_rme32_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1262,7 +1299,11 @@ static struct snd_pcm_ops snd_rme32_playback_spdif_fd_ops = {
 	.ack =		snd_rme32_playback_fd_ack,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme32_capture_spdif_fd_ops = {
+=======
+static const struct snd_pcm_ops snd_rme32_capture_spdif_fd_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_rme32_capture_spdif_open,
 	.close =	snd_rme32_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1274,7 +1315,11 @@ static struct snd_pcm_ops snd_rme32_capture_spdif_fd_ops = {
 	.ack =		snd_rme32_capture_fd_ack,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme32_playback_adat_fd_ops = {
+=======
+static const struct snd_pcm_ops snd_rme32_playback_adat_fd_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_rme32_playback_adat_open,
 	.close =	snd_rme32_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1285,7 +1330,11 @@ static struct snd_pcm_ops snd_rme32_playback_adat_fd_ops = {
 	.ack =		snd_rme32_playback_fd_ack,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme32_capture_adat_fd_ops = {
+=======
+static const struct snd_pcm_ops snd_rme32_capture_adat_fd_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_rme32_capture_adat_open,
 	.close =	snd_rme32_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1608,6 +1657,7 @@ snd_rme32_info_inputtype_control(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_info *uinfo)
 {
 	struct rme32 *rme32 = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	static char *texts[4] = { "Optical", "Coaxial", "Internal", "XLR" };
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1632,6 +1682,26 @@ snd_rme32_info_inputtype_control(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"Optical", "Coaxial", "Internal", "XLR"
+	};
+	int num_items;
+
+	switch (rme32->pci->device) {
+	case PCI_DEVICE_ID_RME_DIGI32:
+	case PCI_DEVICE_ID_RME_DIGI32_8:
+		num_items = 3;
+		break;
+	case PCI_DEVICE_ID_RME_DIGI32_PRO:
+		num_items = 4;
+		break;
+	default:
+		snd_BUG();
+		return -EINVAL;
+	}
+	return snd_ctl_enum_info(uinfo, 1, num_items, texts);
+>>>>>>> v4.9.227
 }
 static int
 snd_rme32_get_inputtype_control(struct snd_kcontrol *kcontrol,
@@ -1695,11 +1765,16 @@ static int
 snd_rme32_info_clockmode_control(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = { "AutoSync", 
+=======
+	static const char * const texts[4] = { "AutoSync",
+>>>>>>> v4.9.227
 				  "Internal 32.0kHz", 
 				  "Internal 44.1kHz", 
 				  "Internal 48.0kHz" };
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 4;
@@ -1709,6 +1784,9 @@ snd_rme32_info_clockmode_control(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 4, texts);
+>>>>>>> v4.9.227
 }
 static int
 snd_rme32_get_clockmode_control(struct snd_kcontrol *kcontrol,

@@ -20,6 +20,7 @@
 #include <linux/platform_data/atmel.h>
 #include <linux/io.h>
 #include <linux/sizes.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/of_gpio.h>
@@ -30,6 +31,17 @@
 #include <mach/at91_ramc.h>
 
 
+=======
+#include <linux/mfd/syscon.h>
+#include <linux/mfd/syscon/atmel-mc.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/of_gpio.h>
+#include <linux/regmap.h>
+
+#include <pcmcia/ss.h>
+
+>>>>>>> v4.9.227
 /*
  * A0..A10 work in each range; A23 indicates I/O space;  A25 is CFRNW;
  * some other bit in {A24,A22..A11} is nREG to flag memory access
@@ -40,6 +52,11 @@
 #define	CF_IO_PHYS	(1 << 23)
 #define	CF_MEM_PHYS	(0x017ff800)
 
+<<<<<<< HEAD
+=======
+struct regmap *mc;
+
+>>>>>>> v4.9.227
 /*--------------------------------------------------------------------------*/
 
 struct at91_cf_socket {
@@ -155,10 +172,14 @@ static int at91_cf_set_io_map(struct pcmcia_socket *s, struct pccard_io_map *io)
 
 	/*
 	 * Use 16 bit accesses unless/until we need 8-bit i/o space.
+<<<<<<< HEAD
 	 */
 	csr = at91_ramc_read(0, AT91_SMC_CSR(cf->board->chipselect)) & ~AT91_SMC_DBW;
 
 	/*
+=======
+	 *
+>>>>>>> v4.9.227
 	 * NOTE: this CF controller ignores IOIS16, so we can't really do
 	 * MAP_AUTOSZ.  The 16bit mode allows single byte access on either
 	 * D0-D7 (even addr) or D8-D15 (odd), so it's close enough for many
@@ -169,6 +190,7 @@ static int at91_cf_set_io_map(struct pcmcia_socket *s, struct pccard_io_map *io)
 	 * CF 3.0 spec table 35 also giving the D8-D15 option.
 	 */
 	if (!(io->flags & (MAP_16BIT | MAP_AUTOSZ))) {
+<<<<<<< HEAD
 		csr |= AT91_SMC_DBW_8;
 		dev_dbg(&cf->pdev->dev, "8bit i/o bus\n");
 	} else {
@@ -176,6 +198,16 @@ static int at91_cf_set_io_map(struct pcmcia_socket *s, struct pccard_io_map *io)
 		dev_dbg(&cf->pdev->dev, "16bit i/o bus\n");
 	}
 	at91_ramc_write(0, AT91_SMC_CSR(cf->board->chipselect), csr);
+=======
+		csr = AT91_MC_SMC_DBW_8;
+		dev_dbg(&cf->pdev->dev, "8bit i/o bus\n");
+	} else {
+		csr = AT91_MC_SMC_DBW_16;
+		dev_dbg(&cf->pdev->dev, "16bit i/o bus\n");
+	}
+	regmap_update_bits(mc, AT91_MC_SMC_CSR(cf->board->chipselect),
+			   AT91_MC_SMC_DBW, csr);
+>>>>>>> v4.9.227
 
 	io->start = cf->socket.io_offset;
 	io->stop = io->start + SZ_2K - 1;
@@ -236,6 +268,13 @@ static int at91_cf_dt_init(struct platform_device *pdev)
 
 	pdev->dev.platform_data = board;
 
+<<<<<<< HEAD
+=======
+	mc = syscon_regmap_lookup_by_compatible("atmel,at91rm9200-sdramc");
+	if (IS_ERR(mc))
+		return PTR_ERR(mc);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 #else
@@ -317,6 +356,7 @@ static int at91_cf_probe(struct platform_device *pdev)
 	} else
 		cf->socket.pci_irq = nr_irqs + 1;
 
+<<<<<<< HEAD
 	/* pcmcia layer only remaps "real" memory not iospace */
 	cf->socket.io_offset = (unsigned long) devm_ioremap(&pdev->dev,
 					cf->phys_baseaddr + CF_IO_PHYS, SZ_2K);
@@ -324,6 +364,16 @@ static int at91_cf_probe(struct platform_device *pdev)
 		status = -ENXIO;
 		goto fail0a;
 	}
+=======
+	/*
+	 * pcmcia layer only remaps "real" memory not iospace
+	 * io_offset is set to 0x10000 to avoid the check in static_find_io().
+	 * */
+	cf->socket.io_offset = 0x10000;
+	status = pci_ioremap_io(0x10000, cf->phys_baseaddr + CF_IO_PHYS);
+	if (status)
+		goto fail0a;
+>>>>>>> v4.9.227
 
 	/* reserve chip-select regions */
 	if (!devm_request_mem_region(&pdev->dev, io->start, resource_size(io), "at91_cf")) {
@@ -401,7 +451,10 @@ static int at91_cf_resume(struct platform_device *pdev)
 static struct platform_driver at91_cf_driver = {
 	.driver = {
 		.name		= "at91_cf",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(at91_cf_dt_ids),
 	},
 	.probe		= at91_cf_probe,

@@ -634,7 +634,11 @@ ath5k_hw_on_hold(struct ath5k_hw *ah)
 		ret = ath5k_hw_nic_reset(ah, AR5K_RESET_CTL_PCU |
 			AR5K_RESET_CTL_MAC | AR5K_RESET_CTL_DMA |
 			AR5K_RESET_CTL_PHY | AR5K_RESET_CTL_PCI);
+<<<<<<< HEAD
 			usleep_range(2000, 2500);
+=======
+		usleep_range(2000, 2500);
+>>>>>>> v4.9.227
 	} else {
 		ret = ath5k_hw_nic_reset(ah, AR5K_RESET_CTL_PCU |
 			AR5K_RESET_CTL_BASEBAND | bus_flags);
@@ -699,7 +703,11 @@ ath5k_hw_nic_wakeup(struct ath5k_hw *ah, struct ieee80211_channel *channel)
 		ret = ath5k_hw_nic_reset(ah, AR5K_RESET_CTL_PCU |
 			AR5K_RESET_CTL_MAC | AR5K_RESET_CTL_DMA |
 			AR5K_RESET_CTL_PHY | AR5K_RESET_CTL_PCI);
+<<<<<<< HEAD
 			usleep_range(2000, 2500);
+=======
+		usleep_range(2000, 2500);
+>>>>>>> v4.9.227
 	} else {
 		if (ath5k_get_bus_type(ah) == ATH_AHB)
 			ret = ath5k_hw_wisoc_reset(ah, AR5K_RESET_CTL_PCU |
@@ -752,7 +760,11 @@ ath5k_hw_nic_wakeup(struct ath5k_hw *ah, struct ieee80211_channel *channel)
 			clock = AR5K_PHY_PLL_RF5111;		/*Zero*/
 		}
 
+<<<<<<< HEAD
 		if (channel->band == IEEE80211_BAND_2GHZ) {
+=======
+		if (channel->band == NL80211_BAND_2GHZ) {
+>>>>>>> v4.9.227
 			mode |= AR5K_PHY_MODE_FREQ_2GHZ;
 			clock |= AR5K_PHY_PLL_44MHZ;
 
@@ -771,7 +783,11 @@ ath5k_hw_nic_wakeup(struct ath5k_hw *ah, struct ieee80211_channel *channel)
 				else
 					mode |= AR5K_PHY_MODE_MOD_DYN;
 			}
+<<<<<<< HEAD
 		} else if (channel->band == IEEE80211_BAND_5GHZ) {
+=======
+		} else if (channel->band == NL80211_BAND_5GHZ) {
+>>>>>>> v4.9.227
 			mode |= (AR5K_PHY_MODE_FREQ_5GHZ |
 				 AR5K_PHY_MODE_MOD_OFDM);
 
@@ -906,7 +922,11 @@ ath5k_hw_tweak_initval_settings(struct ath5k_hw *ah,
 		u32 data;
 		ath5k_hw_reg_write(ah, AR5K_PHY_CCKTXCTL_WORLD,
 				AR5K_PHY_CCKTXCTL);
+<<<<<<< HEAD
 		if (channel->band == IEEE80211_BAND_5GHZ)
+=======
+		if (channel->band == NL80211_BAND_5GHZ)
+>>>>>>> v4.9.227
 			data = 0xffb81020;
 		else
 			data = 0xffb80d20;
@@ -1169,6 +1189,7 @@ ath5k_hw_reset(struct ath5k_hw *ah, enum nl80211_iftype op_mode,
 	if (ah->ah_version == AR5K_AR5212)
 		ath5k_hw_set_sleep_clock(ah, false);
 
+<<<<<<< HEAD
 	/*
 	 * Stop PCU
 	 */
@@ -1193,6 +1214,8 @@ ath5k_hw_reset(struct ath5k_hw *ah, enum nl80211_iftype op_mode,
 		ret = 0;
 	}
 
+=======
+>>>>>>> v4.9.227
 	mode = channel->hw_value;
 	switch (mode) {
 	case AR5K_MODE_11A:

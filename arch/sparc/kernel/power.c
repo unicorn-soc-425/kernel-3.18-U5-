@@ -63,7 +63,10 @@ static struct platform_driver power_driver = {
 	.probe		= power_probe,
 	.driver = {
 		.name = "power",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = power_match,
 	},
 };

@@ -453,7 +453,10 @@ static struct platform_driver sch311x_wdt_driver = {
 	.remove		= sch311x_wdt_remove,
 	.shutdown	= sch311x_wdt_shutdown,
 	.driver		= {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = DRV_NAME,
 	},
 };

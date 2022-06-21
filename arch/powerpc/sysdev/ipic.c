@@ -20,7 +20,10 @@
 #include <linux/signal.h>
 #include <linux/syscore_ops.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/spinlock.h>
 #include <linux/fsl_devices.h>
 #include <asm/irq.h>
@@ -625,10 +628,17 @@ static int ipic_set_irq_type(struct irq_data *d, unsigned int flow_type)
 
 	irqd_set_trigger_type(d, flow_type);
 	if (flow_type & IRQ_TYPE_LEVEL_LOW)  {
+<<<<<<< HEAD
 		__irq_set_handler_locked(d->irq, handle_level_irq);
 		d->chip = &ipic_level_irq_chip;
 	} else {
 		__irq_set_handler_locked(d->irq, handle_edge_irq);
+=======
+		irq_set_handler_locked(d, handle_level_irq);
+		d->chip = &ipic_level_irq_chip;
+	} else {
+		irq_set_handler_locked(d, handle_edge_irq);
+>>>>>>> v4.9.227
 		d->chip = &ipic_edge_irq_chip;
 	}
 
@@ -676,7 +686,12 @@ static int ipic_host_match(struct irq_domain *h, struct device_node *node,
 			   enum irq_domain_bus_token bus_token)
 {
 	/* Exact match, unless ipic node is NULL */
+<<<<<<< HEAD
 	return h->of_node == NULL || h->of_node == node;
+=======
+	struct device_node *of_node = irq_domain_get_of_node(h);
+	return of_node == NULL || of_node == node;
+>>>>>>> v4.9.227
 }
 
 static int ipic_host_map(struct irq_domain *h, unsigned int virq,
@@ -693,7 +708,11 @@ static int ipic_host_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops ipic_host_ops = {
+=======
+static const struct irq_domain_ops ipic_host_ops = {
+>>>>>>> v4.9.227
 	.match	= ipic_host_match,
 	.map	= ipic_host_map,
 	.xlate	= irq_domain_xlate_onetwocell,
@@ -853,7 +872,11 @@ void ipic_clear_mcp_status(u32 mask)
 	ipic_write(primary_ipic->regs, IPIC_SERSR, mask);
 }
 
+<<<<<<< HEAD
 /* Return an interrupt vector or NO_IRQ if no interrupt is pending. */
+=======
+/* Return an interrupt vector or 0 if no interrupt is pending. */
+>>>>>>> v4.9.227
 unsigned int ipic_get_irq(void)
 {
 	int irq;
@@ -864,7 +887,11 @@ unsigned int ipic_get_irq(void)
 	irq = ipic_read(primary_ipic->regs, IPIC_SIVCR) & IPIC_SIVCR_VECTOR_MASK;
 
 	if (irq == 0)    /* 0 --> no irq is pending */
+<<<<<<< HEAD
 		return NO_IRQ;
+=======
+		return 0;
+>>>>>>> v4.9.227
 
 	return irq_linear_revmap(primary_ipic->irqhost, irq);
 }

@@ -820,9 +820,13 @@ static int sym53c8xx_slave_configure(struct scsi_device *sdev)
 	if (reqtags > SYM_CONF_MAX_TAG)
 		reqtags = SYM_CONF_MAX_TAG;
 	depth_to_use = reqtags ? reqtags : 1;
+<<<<<<< HEAD
 	scsi_adjust_queue_depth(sdev,
 				sdev->tagged_supported ? MSG_SIMPLE_TAG : 0,
 				depth_to_use);
+=======
+	scsi_change_queue_depth(sdev, depth_to_use);
+>>>>>>> v4.9.227
 	lp->s.scdev_depth = depth_to_use;
 	sym_tune_dev_queuing(tp, sdev->lun, reqtags);
 
@@ -1876,7 +1880,11 @@ static void sym2_io_resume(struct pci_dev *pdev)
 
 	spin_lock_irq(shost->host_lock);
 	if (sym_data->io_reset)
+<<<<<<< HEAD
 		complete_all(sym_data->io_reset);
+=======
+		complete(sym_data->io_reset);
+>>>>>>> v4.9.227
 	spin_unlock_irq(shost->host_lock);
 }
 

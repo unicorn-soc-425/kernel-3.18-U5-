@@ -14,12 +14,15 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
  *
+=======
+>>>>>>> v4.9.227
  */
 
 #ifndef __SMIAPP_QUIRK__
@@ -35,6 +38,12 @@ struct smiapp_sensor;
  * @post_poweron: Called always after the sensor has been fully powered on.
  * @pre_streamon: Called just before streaming is enabled.
  * @post_streamon: Called right after stopping streaming.
+<<<<<<< HEAD
+=======
+ * @pll_flags: Return flags for the PLL calculator.
+ * @init: Quirk initialisation, called the last in probe(). This is
+ *	  also appropriate for adding sensor specific controls, for instance.
+>>>>>>> v4.9.227
  * @reg_access: Register access quirk. The quirk may divert the access
  *		to another register, or no register at all.
  *
@@ -53,6 +62,10 @@ struct smiapp_quirk {
 	int (*pre_streamon)(struct smiapp_sensor *sensor);
 	int (*post_streamoff)(struct smiapp_sensor *sensor);
 	unsigned long (*pll_flags)(struct smiapp_sensor *sensor);
+<<<<<<< HEAD
+=======
+	int (*init)(struct smiapp_sensor *sensor);
+>>>>>>> v4.9.227
 	int (*reg_access)(struct smiapp_sensor *sensor, bool write, u32 *reg,
 			  u32 *val);
 	unsigned long flags;
@@ -74,6 +87,7 @@ void smiapp_replace_limit(struct smiapp_sensor *sensor,
 		.val = _val,		\
 	}
 
+<<<<<<< HEAD
 #define smiapp_call_quirk(_sensor, _quirk, ...)				\
 	(_sensor->minfo.quirk &&					\
 	 _sensor->minfo.quirk->_quirk ?					\
@@ -82,6 +96,16 @@ void smiapp_replace_limit(struct smiapp_sensor *sensor,
 #define smiapp_needs_quirk(_sensor, _quirk)		\
 	(_sensor->minfo.quirk ?				\
 	 _sensor->minfo.quirk->flags & _quirk : 0)
+=======
+#define smiapp_call_quirk(sensor, _quirk, ...)				\
+	((sensor)->minfo.quirk &&					\
+	 (sensor)->minfo.quirk->_quirk ?				\
+	 (sensor)->minfo.quirk->_quirk(sensor, ##__VA_ARGS__) : 0)
+
+#define smiapp_needs_quirk(sensor, _quirk)		\
+	((sensor)->minfo.quirk ?			\
+	 (sensor)->minfo.quirk->flags & _quirk : 0)
+>>>>>>> v4.9.227
 
 extern const struct smiapp_quirk smiapp_jt8ev1_quirk;
 extern const struct smiapp_quirk smiapp_imx125es_quirk;

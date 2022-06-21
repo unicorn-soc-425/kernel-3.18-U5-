@@ -127,6 +127,10 @@ typedef struct {
 typedef union {
 	uint64_t u64;
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> v4.9.227
 		/* Must CVMX_IO_SEG */
 		uint64_t mem_space:2;
 		/* Must be zero */
@@ -151,6 +155,20 @@ typedef union {
 		uint64_t queue:9;
 		/* Must be zero */
 		uint64_t reserved4:3;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t reserved4:3;
+	        uint64_t queue:9;
+	        uint64_t port:9;
+	        uint64_t reserved3:15;
+	        uint64_t reserved2:4;
+	        uint64_t did:8;
+	        uint64_t is_io:1;
+	        uint64_t reserved:13;
+	        uint64_t mem_space:2;
+#endif
+>>>>>>> v4.9.227
 	} s;
 } cvmx_pko_doorbell_address_t;
 
@@ -160,6 +178,10 @@ typedef union {
 typedef union {
 	uint64_t u64;
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> v4.9.227
 		/*
 		 * The size of the reg1 operation - could be 8, 16,
 		 * 32, or 64 bits.
@@ -229,6 +251,27 @@ typedef union {
 		uint64_t segs:6;
 		/* Including L2, but no trailing CRC */
 		uint64_t total_bytes:16;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t total_bytes:16;
+	        uint64_t segs:6;
+	        uint64_t dontfree:1;
+	        uint64_t ignore_i:1;
+	        uint64_t ipoffp1:7;
+	        uint64_t gather:1;
+	        uint64_t rsp:1;
+	        uint64_t wqp:1;
+	        uint64_t n2:1;
+	        uint64_t le:1;
+	        uint64_t reg0:11;
+	        uint64_t subone0:1;
+	        uint64_t reg1:11;
+	        uint64_t subone1:1;
+	        uint64_t size0:2;
+	        uint64_t size1:2;
+#endif
+>>>>>>> v4.9.227
 	} s;
 } cvmx_pko_command_word0_t;
 
@@ -511,6 +554,12 @@ static inline int cvmx_pko_get_base_queue_per_core(int port, int core)
  */
 static inline int cvmx_pko_get_base_queue(int port)
 {
+<<<<<<< HEAD
+=======
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		return port;
+
+>>>>>>> v4.9.227
 	return cvmx_pko_get_base_queue_per_core(port, 0);
 }
 
@@ -577,7 +626,11 @@ static inline void cvmx_pko_get_port_status(uint64_t port_num, uint64_t clear,
 		pko_reg_read_idx.s.index = cvmx_pko_get_base_queue(port_num);
 		cvmx_write_csr(CVMX_PKO_REG_READ_IDX, pko_reg_read_idx.u64);
 		debug8.u64 = cvmx_read_csr(CVMX_PKO_MEM_DEBUG8);
+<<<<<<< HEAD
 		status->doorbell = debug8.cn58xx.doorbell;
+=======
+		status->doorbell = debug8.cn50xx.doorbell;
+>>>>>>> v4.9.227
 	}
 }
 

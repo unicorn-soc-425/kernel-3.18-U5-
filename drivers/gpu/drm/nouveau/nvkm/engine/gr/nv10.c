@@ -1182,7 +1182,11 @@ nv10_gr_new_(const struct nvkm_gr_func *func, struct nvkm_device *device,
 	spin_lock_init(&gr->lock);
 	*pgr = &gr->base;
 
+<<<<<<< HEAD
 	return nvkm_gr_ctor(func, device, index, 0x00001000, true, &gr->base);
+=======
+	return nvkm_gr_ctor(func, device, index, true, &gr->base);
+>>>>>>> v4.9.227
 }
 
 static const struct nvkm_gr_func

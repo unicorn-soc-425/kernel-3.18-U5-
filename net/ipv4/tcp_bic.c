@@ -146,11 +146,19 @@ static void bictcp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 	if (!tcp_is_cwnd_limited(sk))
 		return;
 
+<<<<<<< HEAD
 	if (tp->snd_cwnd <= tp->snd_ssthresh)
 		tcp_slow_start(tp, acked);
 	else {
 		bictcp_update(ca, tp->snd_cwnd);
 		tcp_cong_avoid_ai(tp, ca->cnt);
+=======
+	if (tcp_in_slow_start(tp))
+		tcp_slow_start(tp, acked);
+	else {
+		bictcp_update(ca, tp->snd_cwnd);
+		tcp_cong_avoid_ai(tp, ca->cnt, 1);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -197,15 +205,24 @@ static void bictcp_state(struct sock *sk, u8 new_state)
 /* Track delayed acknowledgment ratio using sliding window
  * ratio = (15*ratio + sample) / 16
  */
+<<<<<<< HEAD
 static void bictcp_acked(struct sock *sk, u32 cnt, s32 rtt)
+=======
+static void bictcp_acked(struct sock *sk, const struct ack_sample *sample)
+>>>>>>> v4.9.227
 {
 	const struct inet_connection_sock *icsk = inet_csk(sk);
 
 	if (icsk->icsk_ca_state == TCP_CA_Open) {
 		struct bictcp *ca = inet_csk_ca(sk);
 
+<<<<<<< HEAD
 		cnt -= ca->delayed_ack >> ACK_RATIO_SHIFT;
 		ca->delayed_ack += cnt;
+=======
+		ca->delayed_ack += sample->pkts_acked -
+			(ca->delayed_ack >> ACK_RATIO_SHIFT);
+>>>>>>> v4.9.227
 	}
 }
 

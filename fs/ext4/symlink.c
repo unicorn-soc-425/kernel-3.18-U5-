@@ -18,11 +18,15 @@
  */
 
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/jbd2.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/namei.h>
 #include "ext4.h"
 #include "xattr.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_EXT4_FS_ENCRYPTION
 static void *ext4_follow_link(struct dentry *dentry, struct nameidata *nd)
 {
@@ -39,10 +43,28 @@ static void *ext4_follow_link(struct dentry *dentry, struct nameidata *nd)
 		return page_follow_link_light(dentry, nd);
 
 	res = ext4_get_encryption_info(inode);
+=======
+static const char *ext4_encrypted_get_link(struct dentry *dentry,
+					   struct inode *inode,
+					   struct delayed_call *done)
+{
+	struct page *cpage = NULL;
+	char *caddr, *paddr = NULL;
+	struct fscrypt_str cstr, pstr;
+	struct fscrypt_symlink_data *sd;
+	int res;
+	u32 max_size = inode->i_sb->s_blocksize;
+
+	if (!dentry)
+		return ERR_PTR(-ECHILD);
+
+	res = fscrypt_get_encryption_info(inode);
+>>>>>>> v4.9.227
 	if (res)
 		return ERR_PTR(res);
 
 	if (ext4_inode_is_fast_symlink(inode)) {
+<<<<<<< HEAD
 		caddr = (char *) EXT4_I(dentry->d_inode)->i_data;
 		max_size = sizeof(EXT4_I(dentry->d_inode)->i_data);
 	} else {
@@ -86,10 +108,50 @@ static void *ext4_follow_link(struct dentry *dentry, struct nameidata *nd)
 errout:
 	if (cpage)
 		page_cache_release(cpage);
+=======
+		caddr = (char *) EXT4_I(inode)->i_data;
+		max_size = sizeof(EXT4_I(inode)->i_data);
+	} else {
+		cpage = read_mapping_page(inode->i_mapping, 0, NULL);
+		if (IS_ERR(cpage))
+			return ERR_CAST(cpage);
+		caddr = page_address(cpage);
+	}
+
+	/* Symlink is encrypted */
+	sd = (struct fscrypt_symlink_data *)caddr;
+	cstr.name = sd->encrypted_path;
+	cstr.len  = le16_to_cpu(sd->len);
+	if ((cstr.len + sizeof(struct fscrypt_symlink_data) - 1) > max_size) {
+		/* Symlink data on the disk is corrupted */
+		res = -EFSCORRUPTED;
+		goto errout;
+	}
+
+	res = fscrypt_fname_alloc_buffer(inode, cstr.len, &pstr);
+	if (res)
+		goto errout;
+	paddr = pstr.name;
+
+	res = fscrypt_fname_disk_to_usr(inode, 0, 0, &cstr, &pstr);
+	if (res)
+		goto errout;
+
+	/* Null-terminate the name */
+	paddr[pstr.len] = '\0';
+	if (cpage)
+		put_page(cpage);
+	set_delayed_call(done, kfree_link, paddr);
+	return paddr;
+errout:
+	if (cpage)
+		put_page(cpage);
+>>>>>>> v4.9.227
 	kfree(paddr);
 	return ERR_PTR(res);
 }
 
+<<<<<<< HEAD
 static void ext4_put_link(struct dentry *dentry, struct nameidata *nd,
 			  void *cookie)
 {
@@ -125,14 +187,34 @@ const struct inode_operations ext4_symlink_inode_operations = {
 	.getxattr	= generic_getxattr,
 	.listxattr	= ext4_listxattr,
 	.removexattr	= generic_removexattr,
+=======
+const struct inode_operations ext4_encrypted_symlink_inode_operations = {
+	.readlink	= generic_readlink,
+	.get_link	= ext4_encrypted_get_link,
+	.setattr	= ext4_setattr,
+	.listxattr	= ext4_listxattr,
+};
+
+const struct inode_operations ext4_symlink_inode_operations = {
+	.readlink	= generic_readlink,
+	.get_link	= page_get_link,
+	.setattr	= ext4_setattr,
+	.listxattr	= ext4_listxattr,
+>>>>>>> v4.9.227
 };
 
 const struct inode_operations ext4_fast_symlink_inode_operations = {
 	.readlink	= generic_readlink,
+<<<<<<< HEAD
 	.follow_link    = ext4_follow_fast_link,
 	.setattr	= ext4_setattr,
 	.setxattr	= generic_setxattr,
 	.getxattr	= generic_getxattr,
 	.listxattr	= ext4_listxattr,
 	.removexattr	= generic_removexattr,
+=======
+	.get_link	= simple_get_link,
+	.setattr	= ext4_setattr,
+	.listxattr	= ext4_listxattr,
+>>>>>>> v4.9.227
 };

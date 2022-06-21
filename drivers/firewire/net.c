@@ -237,6 +237,7 @@ static int fwnet_header_create(struct sk_buff *skb, struct net_device *net,
 	return -net->hard_header_len;
 }
 
+<<<<<<< HEAD
 static int fwnet_header_rebuild(struct sk_buff *skb)
 {
 	struct fwnet_header *h = (struct fwnet_header *)skb->data;
@@ -249,6 +250,8 @@ static int fwnet_header_rebuild(struct sk_buff *skb)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int fwnet_header_cache(const struct neighbour *neigh,
 			      struct hh_cache *hh, __be16 type)
 {
@@ -261,7 +264,15 @@ static int fwnet_header_cache(const struct neighbour *neigh,
 	h = (struct fwnet_header *)((u8 *)hh->hh_data + HH_DATA_OFF(sizeof(*h)));
 	h->h_proto = type;
 	memcpy(h->h_dest, neigh->ha, net->addr_len);
+<<<<<<< HEAD
 	hh->hh_len = FWNET_HLEN;
+=======
+
+	/* Pairs with the READ_ONCE() in neigh_resolve_output(),
+	 * neigh_hh_output() and neigh_update_hhs().
+	 */
+	smp_store_release(&hh->hh_len, FWNET_HLEN);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -282,7 +293,10 @@ static int fwnet_header_parse(const struct sk_buff *skb, unsigned char *haddr)
 
 static const struct header_ops fwnet_header_ops = {
 	.create         = fwnet_header_create,
+<<<<<<< HEAD
 	.rebuild        = fwnet_header_rebuild,
+=======
+>>>>>>> v4.9.227
 	.cache		= fwnet_header_cache,
 	.cache_update	= fwnet_header_cache_update,
 	.parse          = fwnet_header_parse,
@@ -1055,7 +1069,11 @@ static int fwnet_send_packet(struct fwnet_packet_task *ptask)
 
 	spin_unlock_irqrestore(&dev->lock, flags);
 
+<<<<<<< HEAD
 	dev->netdev->trans_start = jiffies;
+=======
+	netif_trans_update(dev->netdev);
+>>>>>>> v4.9.227
  out:
 	if (free)
 		fwnet_free_ptask(ptask);

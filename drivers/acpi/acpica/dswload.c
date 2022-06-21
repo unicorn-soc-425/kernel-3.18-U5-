@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -137,8 +141,13 @@ acpi_ds_init_callbacks(struct acpi_walk_state *walk_state, u32 pass_number)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ds_load1_begin_op(struct acpi_walk_state * walk_state,
 		       union acpi_parse_object ** out_op)
+=======
+acpi_ds_load1_begin_op(struct acpi_walk_state *walk_state,
+		       union acpi_parse_object **out_op)
+>>>>>>> v4.9.227
 {
 	union acpi_parse_object *op;
 	struct acpi_namespace_node *node;
@@ -315,10 +324,26 @@ acpi_ds_load1_begin_op(struct acpi_walk_state * walk_state,
 		flags = ACPI_NS_NO_UPSEARCH;
 		if ((walk_state->opcode != AML_SCOPE_OP) &&
 		    (!(walk_state->parse_flags & ACPI_PARSE_DEFERRED_OP))) {
+<<<<<<< HEAD
 			flags |= ACPI_NS_ERROR_IF_FOUND;
 			ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 					  "[%s] Cannot already exist\n",
 					  acpi_ut_get_type_name(object_type)));
+=======
+			if (walk_state->namespace_override) {
+				flags |= ACPI_NS_OVERRIDE_IF_FOUND;
+				ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
+						  "[%s] Override allowed\n",
+						  acpi_ut_get_type_name
+						  (object_type)));
+			} else {
+				flags |= ACPI_NS_ERROR_IF_FOUND;
+				ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
+						  "[%s] Cannot already exist\n",
+						  acpi_ut_get_type_name
+						  (object_type)));
+			}
+>>>>>>> v4.9.227
 		} else {
 			ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 					  "[%s] Both Find or Create allowed\n",
@@ -379,7 +404,11 @@ acpi_ds_load1_begin_op(struct acpi_walk_state * walk_state,
 
 		/* Create a new op */
 
+<<<<<<< HEAD
 		op = acpi_ps_alloc_op(walk_state->opcode);
+=======
+		op = acpi_ps_alloc_op(walk_state->opcode, walk_state->aml);
+>>>>>>> v4.9.227
 		if (!op) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -431,6 +460,30 @@ acpi_status acpi_ds_load1_end_op(struct acpi_walk_state *walk_state)
 	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH, "Op=%p State=%p\n", op,
 			  walk_state));
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Disassembler: handle create field operators here.
+	 *
+	 * create_buffer_field is a deferred op that is typically processed in load
+	 * pass 2. However, disassembly of control method contents walk the parse
+	 * tree with ACPI_PARSE_LOAD_PASS1 and AML_CREATE operators are processed
+	 * in a later walk. This is a problem when there is a control method that
+	 * has the same name as the AML_CREATE object. In this case, any use of the
+	 * name segment will be detected as a method call rather than a reference
+	 * to a buffer field.
+	 *
+	 * This earlier creation during disassembly solves this issue by inserting
+	 * the named object in the ACPI namespace so that references to this name
+	 * would be a name string rather than a method call.
+	 */
+	if ((walk_state->parse_flags & ACPI_PARSE_DISASSEMBLE) &&
+	    (walk_state->op_info->flags & AML_CREATE)) {
+		status = acpi_ds_create_buffer_field(op, walk_state);
+		return_ACPI_STATUS(status);
+	}
+
+>>>>>>> v4.9.227
 	/* We are only interested in opcodes that have an associated name */
 
 	if (!(walk_state->op_info->flags & (AML_NAMED | AML_FIELD))) {
@@ -467,6 +520,7 @@ acpi_status acpi_ds_load1_end_op(struct acpi_walk_state *walk_state)
 			status =
 			    acpi_ex_create_region(op->named.data,
 						  op->named.length,
+<<<<<<< HEAD
 						  (acpi_adr_space_type) ((op->
 									  common.
 									  value.
@@ -474,6 +528,11 @@ acpi_status acpi_ds_load1_end_op(struct acpi_walk_state *walk_state)
 									 common.
 									 value.
 									 integer),
+=======
+						  (acpi_adr_space_type)
+						  ((op->common.value.arg)->
+						   common.value.integer),
+>>>>>>> v4.9.227
 						  walk_state);
 			if (ACPI_FAILURE(status)) {
 				return_ACPI_STATUS(status);

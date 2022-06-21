@@ -21,6 +21,10 @@
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-event.h>
+<<<<<<< HEAD
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/videobuf2-vmalloc.h>
 
 /* AirSpy USB API commands (from AirSpy Library) */
@@ -97,14 +101,24 @@ static const unsigned int NUM_FORMATS = ARRAY_SIZE(formats);
 
 /* intermediate buffers with raw data from the USB device */
 struct airspy_frame_buf {
+<<<<<<< HEAD
 	struct vb2_buffer vb;   /* common v4l buffer stuff -- must be first */
+=======
+	/* common v4l buffer stuff -- must be first */
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head list;
 };
 
 struct airspy {
+<<<<<<< HEAD
 #define POWER_ON           (1 << 1)
 #define URB_BUF            (1 << 2)
 #define USB_STATE_URB_BUF  (1 << 3)
+=======
+#define POWER_ON	   1
+#define USB_STATE_URB_BUF  2
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	struct device *dev;
@@ -132,7 +146,11 @@ struct airspy {
 	int            urbs_submitted;
 
 	/* USB control message buffer */
+<<<<<<< HEAD
 	#define BUF_SIZE 24
+=======
+	#define BUF_SIZE 128
+>>>>>>> v4.9.227
 	u8 buf[BUF_SIZE];
 
 	/* Current configuration */
@@ -310,6 +328,7 @@ static void airspy_urb_complete(struct urb *urb)
 		}
 
 		/* fill framebuffer */
+<<<<<<< HEAD
 		ptr = vb2_plane_vaddr(&fbuf->vb, 0);
 		len = airspy_convert_stream(s, ptr, urb->transfer_buffer,
 				urb->actual_length);
@@ -317,6 +336,15 @@ static void airspy_urb_complete(struct urb *urb)
 		v4l2_get_timestamp(&fbuf->vb.v4l2_buf.timestamp);
 		fbuf->vb.v4l2_buf.sequence = s->sequence++;
 		vb2_buffer_done(&fbuf->vb, VB2_BUF_STATE_DONE);
+=======
+		ptr = vb2_plane_vaddr(&fbuf->vb.vb2_buf, 0);
+		len = airspy_convert_stream(s, ptr, urb->transfer_buffer,
+				urb->actual_length);
+		vb2_set_plane_payload(&fbuf->vb.vb2_buf, 0, len);
+		fbuf->vb.vb2_buf.timestamp = ktime_get_ns();
+		fbuf->vb.sequence = s->sequence++;
+		vb2_buffer_done(&fbuf->vb.vb2_buf, VB2_BUF_STATE_DONE);
+>>>>>>> v4.9.227
 	}
 skip:
 	usb_submit_urb(urb, GFP_ATOMIC);
@@ -357,7 +385,11 @@ static int airspy_submit_urbs(struct airspy *s)
 
 static int airspy_free_stream_bufs(struct airspy *s)
 {
+<<<<<<< HEAD
 	if (s->flags & USB_STATE_URB_BUF) {
+=======
+	if (test_bit(USB_STATE_URB_BUF, &s->flags)) {
+>>>>>>> v4.9.227
 		while (s->buf_num) {
 			s->buf_num--;
 			dev_dbg(s->dev, "free buf=%d\n", s->buf_num);
@@ -366,7 +398,11 @@ static int airspy_free_stream_bufs(struct airspy *s)
 					  s->dma_addr[s->buf_num]);
 		}
 	}
+<<<<<<< HEAD
 	s->flags &= ~USB_STATE_URB_BUF;
+=======
+	clear_bit(USB_STATE_URB_BUF, &s->flags);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -392,7 +428,11 @@ static int airspy_alloc_stream_bufs(struct airspy *s)
 		dev_dbg(s->dev, "alloc buf=%d %p (dma %llu)\n", s->buf_num,
 				s->buf_list[s->buf_num],
 				(long long)s->dma_addr[s->buf_num]);
+<<<<<<< HEAD
 		s->flags |= USB_STATE_URB_BUF;
+=======
+		set_bit(USB_STATE_URB_BUF, &s->flags);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -425,7 +465,10 @@ static int airspy_alloc_urbs(struct airspy *s)
 		dev_dbg(s->dev, "alloc urb=%d\n", i);
 		s->urb_list[i] = usb_alloc_urb(0, GFP_ATOMIC);
 		if (!s->urb_list[i]) {
+<<<<<<< HEAD
 			dev_dbg(s->dev, "failed\n");
+=======
+>>>>>>> v4.9.227
 			for (j = 0; j < i; j++)
 				usb_free_urb(s->urb_list[j]);
 			return -ENOMEM;
@@ -459,7 +502,11 @@ static void airspy_cleanup_queued_bufs(struct airspy *s)
 		buf = list_entry(s->queued_bufs.next,
 				struct airspy_frame_buf, list);
 		list_del(&buf->list);
+<<<<<<< HEAD
 		vb2_buffer_done(&buf->vb, VB2_BUF_STATE_ERROR);
+=======
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&s->queued_bufs_lock, flags);
 }
@@ -486,8 +533,13 @@ static void airspy_disconnect(struct usb_interface *intf)
 
 /* Videobuf2 operations */
 static int airspy_queue_setup(struct vb2_queue *vq,
+<<<<<<< HEAD
 		const struct v4l2_format *fmt, unsigned int *nbuffers,
 		unsigned int *nplanes, unsigned int sizes[], void *alloc_ctxs[])
+=======
+		unsigned int *nbuffers,
+		unsigned int *nplanes, unsigned int sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	struct airspy *s = vb2_get_drv_priv(vq);
 
@@ -505,14 +557,25 @@ static int airspy_queue_setup(struct vb2_queue *vq,
 
 static void airspy_buf_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct airspy *s = vb2_get_drv_priv(vb->vb2_queue);
 	struct airspy_frame_buf *buf =
 			container_of(vb, struct airspy_frame_buf, vb);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct airspy *s = vb2_get_drv_priv(vb->vb2_queue);
+	struct airspy_frame_buf *buf =
+			container_of(vbuf, struct airspy_frame_buf, vb);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	/* Check the device has not disconnected between prep and queuing */
 	if (unlikely(!s->udev)) {
+<<<<<<< HEAD
 		vb2_buffer_done(&buf->vb, VB2_BUF_STATE_ERROR);
+=======
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -571,7 +634,12 @@ err_clear_bit:
 
 		list_for_each_entry_safe(buf, tmp, &s->queued_bufs, list) {
 			list_del(&buf->list);
+<<<<<<< HEAD
 			vb2_buffer_done(&buf->vb, VB2_BUF_STATE_QUEUED);
+=======
+			vb2_buffer_done(&buf->vb.vb2_buf,
+					VB2_BUF_STATE_QUEUED);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -603,7 +671,11 @@ static void airspy_stop_streaming(struct vb2_queue *vq)
 	mutex_unlock(&s->v4l2_lock);
 }
 
+<<<<<<< HEAD
 static struct vb2_ops airspy_vb2_ops = {
+=======
+static const struct vb2_ops airspy_vb2_ops = {
+>>>>>>> v4.9.227
 	.queue_setup            = airspy_queue_setup,
 	.buf_queue              = airspy_buf_queue,
 	.start_streaming        = airspy_start_streaming,
@@ -937,9 +1009,12 @@ static int airspy_set_if_gain(struct airspy *s)
 	ret = airspy_ctrl_msg(s, CMD_SET_VGA_GAIN, 0, s->if_gain->val,
 			&u8tmp, 1);
 	if (ret)
+<<<<<<< HEAD
 		goto err;
 err:
 	if (ret)
+=======
+>>>>>>> v4.9.227
 		dev_dbg(s->dev, "failed=%d\n", ret);
 
 	return ret;

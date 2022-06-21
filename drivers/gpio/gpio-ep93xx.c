@@ -16,10 +16,18 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/irq.h>
 #include <linux/slab.h>
 #include <linux/basic_mmio_gpio.h>
+=======
+#include <linux/irq.h>
+#include <linux/slab.h>
+#include <linux/gpio/driver.h>
+/* FIXME: this is here for gpio_to_irq() - get rid of this! */
+#include <linux/gpio.h>
+>>>>>>> v4.9.227
 
 #include <mach/hardware.h>
 #include <mach/gpio-ep93xx.h>
@@ -28,7 +36,11 @@
 
 struct ep93xx_gpio {
 	void __iomem		*mmio_base;
+<<<<<<< HEAD
 	struct bgpio_chip	bgc[8];
+=======
+	struct gpio_chip	gc[8];
+>>>>>>> v4.9.227
 };
 
 /*************************************************************************
@@ -78,7 +90,11 @@ static void ep93xx_gpio_int_debounce(unsigned int irq, bool enable)
 		EP93XX_GPIO_REG(int_debounce_register_offset[port]));
 }
 
+<<<<<<< HEAD
 static void ep93xx_gpio_ab_irq_handler(unsigned int irq, struct irq_desc *desc)
+=======
+static void ep93xx_gpio_ab_irq_handler(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	unsigned char status;
 	int i;
@@ -100,13 +116,21 @@ static void ep93xx_gpio_ab_irq_handler(unsigned int irq, struct irq_desc *desc)
 	}
 }
 
+<<<<<<< HEAD
 static void ep93xx_gpio_f_irq_handler(unsigned int irq, struct irq_desc *desc)
+=======
+static void ep93xx_gpio_f_irq_handler(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	/*
 	 * map discontiguous hw irq range to continuous sw irq range:
 	 *
 	 *  IRQ_EP93XX_GPIO{0..7}MUX -> gpio_to_irq(EP93XX_GPIO_LINE_F({0..7})
 	 */
+<<<<<<< HEAD
+=======
+	unsigned int irq = irq_desc_get_irq(desc);
+>>>>>>> v4.9.227
 	int port_f_idx = ((irq + 1) & 7) ^ 4; /* {19..22,47..50} -> {0..7} */
 	int gpio_irq = gpio_to_irq(EP93XX_GPIO_LINE_F(0)) + port_f_idx;
 
@@ -208,7 +232,11 @@ static int ep93xx_gpio_irq_type(struct irq_data *d, unsigned int type)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	__irq_set_handler_locked(d->irq, handler);
+=======
+	irq_set_handler_locked(d, handler);
+>>>>>>> v4.9.227
 
 	gpio_int_enabled[port] |= port_mask;
 
@@ -234,7 +262,11 @@ static void ep93xx_gpio_init_irq(void)
 	     gpio_irq <= gpio_to_irq(EP93XX_GPIO_LINE_MAX_IRQ); ++gpio_irq) {
 		irq_set_chip_and_handler(gpio_irq, &ep93xx_gpio_irq_chip,
 					 handle_level_irq);
+<<<<<<< HEAD
 		set_irq_flags(gpio_irq, IRQF_VALID);
+=======
+		irq_clear_status_flags(gpio_irq, IRQ_NOREQUEST);
+>>>>>>> v4.9.227
 	}
 
 	irq_set_chained_handler(IRQ_EP93XX_GPIO_AB,
@@ -318,13 +350,18 @@ static int ep93xx_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 	return 64 + gpio;
 }
 
+<<<<<<< HEAD
 static int ep93xx_gpio_add_bank(struct bgpio_chip *bgc, struct device *dev,
+=======
+static int ep93xx_gpio_add_bank(struct gpio_chip *gc, struct device *dev,
+>>>>>>> v4.9.227
 	void __iomem *mmio_base, struct ep93xx_gpio_bank *bank)
 {
 	void __iomem *data = mmio_base + bank->data;
 	void __iomem *dir =  mmio_base + bank->dir;
 	int err;
 
+<<<<<<< HEAD
 	err = bgpio_init(bgc, dev, 1, data, NULL, NULL, dir, NULL, 0);
 	if (err)
 		return err;
@@ -338,6 +375,21 @@ static int ep93xx_gpio_add_bank(struct bgpio_chip *bgc, struct device *dev,
 	}
 
 	return gpiochip_add(&bgc->gc);
+=======
+	err = bgpio_init(gc, dev, 1, data, NULL, NULL, dir, NULL, 0);
+	if (err)
+		return err;
+
+	gc->label = bank->label;
+	gc->base = bank->base;
+
+	if (bank->has_debounce) {
+		gc->set_debounce = ep93xx_gpio_set_debounce;
+		gc->to_irq = ep93xx_gpio_to_irq;
+	}
+
+	return devm_gpiochip_add_data(dev, gc, NULL);
+>>>>>>> v4.9.227
 }
 
 static int ep93xx_gpio_probe(struct platform_device *pdev)
@@ -357,10 +409,17 @@ static int ep93xx_gpio_probe(struct platform_device *pdev)
 		return PTR_ERR(ep93xx_gpio->mmio_base);
 
 	for (i = 0; i < ARRAY_SIZE(ep93xx_gpio_banks); i++) {
+<<<<<<< HEAD
 		struct bgpio_chip *bgc = &ep93xx_gpio->bgc[i];
 		struct ep93xx_gpio_bank *bank = &ep93xx_gpio_banks[i];
 
 		if (ep93xx_gpio_add_bank(bgc, &pdev->dev,
+=======
+		struct gpio_chip *gc = &ep93xx_gpio->gc[i];
+		struct ep93xx_gpio_bank *bank = &ep93xx_gpio_banks[i];
+
+		if (ep93xx_gpio_add_bank(gc, &pdev->dev,
+>>>>>>> v4.9.227
 					 ep93xx_gpio->mmio_base, bank))
 			dev_warn(&pdev->dev, "Unable to add gpio bank %s\n",
 				bank->label);
@@ -374,7 +433,10 @@ static int ep93xx_gpio_probe(struct platform_device *pdev)
 static struct platform_driver ep93xx_gpio_driver = {
 	.driver		= {
 		.name	= "gpio-ep93xx",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ep93xx_gpio_probe,
 };

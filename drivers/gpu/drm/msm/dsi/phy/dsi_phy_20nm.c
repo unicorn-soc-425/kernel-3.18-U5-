@@ -138,13 +138,24 @@ const struct msm_dsi_phy_cfg dsi_phy_20nm_cfgs = {
 	.reg_cfg = {
 		.num = 2,
 		.regs = {
+<<<<<<< HEAD
 			{"vddio", 1800000, 1800000, 100000, 100},
 			{"vcca", 1000000, 1000000, 10000, 100},
+=======
+			{"vddio", 100000, 100},	/* 1.8 V */
+			{"vcca", 10000, 100},	/* 1.0 V */
+>>>>>>> v4.9.227
 		},
 	},
 	.ops = {
 		.enable = dsi_20nm_phy_enable,
 		.disable = dsi_20nm_phy_disable,
+<<<<<<< HEAD
 	}
+=======
+	},
+	.io_start = { 0xfd998300, 0xfd9a0300 },
+	.num_dsi_phy = 2,
+>>>>>>> v4.9.227
 };
 

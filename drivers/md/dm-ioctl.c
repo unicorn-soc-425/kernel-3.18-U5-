@@ -5,7 +5,11 @@
  * This file is released under the GPL.
  */
 
+<<<<<<< HEAD
 #include "dm.h"
+=======
+#include "dm-core.h"
+>>>>>>> v4.9.227
 
 #include <linux/module.h>
 #include <linux/vmalloc.h>
@@ -639,8 +643,13 @@ static int check_name(const char *name)
 
 /*
  * On successful return, the caller must not attempt to acquire
+<<<<<<< HEAD
  * _hash_lock without first calling dm_table_put, because dm_table_destroy
  * waits for this dm_table_put and could be called under this lock.
+=======
+ * _hash_lock without first calling dm_put_live_table, because dm_table_destroy
+ * waits for this dm_put_live_table and could be called under this lock.
+>>>>>>> v4.9.227
  */
 static struct dm_table *dm_get_inactive_table(struct mapped_device *md, int *srcu_idx)
 {
@@ -684,11 +693,21 @@ static void __dev_status(struct mapped_device *md, struct dm_ioctl *param)
 	int srcu_idx;
 
 	param->flags &= ~(DM_SUSPEND_FLAG | DM_READONLY_FLAG |
+<<<<<<< HEAD
 			  DM_ACTIVE_PRESENT_FLAG);
+=======
+			  DM_ACTIVE_PRESENT_FLAG | DM_INTERNAL_SUSPEND_FLAG);
+>>>>>>> v4.9.227
 
 	if (dm_suspended_md(md))
 		param->flags |= DM_SUSPEND_FLAG;
 
+<<<<<<< HEAD
+=======
+	if (dm_suspended_internally_md(md))
+		param->flags |= DM_INTERNAL_SUSPEND_FLAG;
+
+>>>>>>> v4.9.227
 	if (dm_test_deferred_remove_flag(md))
 		param->flags |= DM_DEFERRED_REMOVE;
 
@@ -1264,6 +1283,18 @@ static int populate_table(struct dm_table *table,
 	return dm_table_complete(table);
 }
 
+<<<<<<< HEAD
+=======
+static bool is_valid_type(unsigned cur, unsigned new)
+{
+	if (cur == new ||
+	    (cur == DM_TYPE_BIO_BASED && new == DM_TYPE_DAX_BIO_BASED))
+		return true;
+
+	return false;
+}
+
+>>>>>>> v4.9.227
 static int table_load(struct dm_ioctl *param, size_t param_size)
 {
 	int r;
@@ -1288,28 +1319,50 @@ static int table_load(struct dm_ioctl *param, size_t param_size)
 
 	immutable_target_type = dm_get_immutable_target_type(md);
 	if (immutable_target_type &&
+<<<<<<< HEAD
 	    (immutable_target_type != dm_table_get_immutable_target_type(t))) {
+=======
+	    (immutable_target_type != dm_table_get_immutable_target_type(t)) &&
+	    !dm_table_get_wildcard_target(t)) {
+>>>>>>> v4.9.227
 		DMWARN("can't replace immutable target type %s",
 		       immutable_target_type->name);
 		r = -EINVAL;
 		goto err_unlock_md_type;
 	}
 
+<<<<<<< HEAD
 	if (dm_get_md_type(md) == DM_TYPE_NONE)
 		/* Initial table load: acquire type of table. */
 		dm_set_md_type(md, dm_table_get_type(t));
 	else if (dm_get_md_type(md) != dm_table_get_type(t)) {
+=======
+	if (dm_get_md_type(md) == DM_TYPE_NONE) {
+		/* Initial table load: acquire type of table. */
+		dm_set_md_type(md, dm_table_get_type(t));
+
+		/* setup md->queue to reflect md's type (may block) */
+		r = dm_setup_md_queue(md, t);
+		if (r) {
+			DMWARN("unable to set up device queue for new table.");
+			goto err_unlock_md_type;
+		}
+	} else if (!is_valid_type(dm_get_md_type(md), dm_table_get_type(t))) {
+>>>>>>> v4.9.227
 		DMWARN("can't change device type after initial table load.");
 		r = -EINVAL;
 		goto err_unlock_md_type;
 	}
 
+<<<<<<< HEAD
 	/* setup md->queue to reflect md's type (may block) */
 	r = dm_setup_md_queue(md);
 	if (r) {
 		DMWARN("unable to set up device queue for new table.");
 		goto err_unlock_md_type;
 	}
+=======
+>>>>>>> v4.9.227
 	dm_unlock_md_type(md);
 
 	/* stage inactive table */
@@ -1665,8 +1718,12 @@ static int check_version(unsigned int cmd, struct dm_ioctl __user *user)
 	return r;
 }
 
+<<<<<<< HEAD
 #define DM_PARAMS_KMALLOC	0x0001	/* Params alloced with kmalloc */
 #define DM_PARAMS_VMALLOC	0x0002	/* Params alloced with vmalloc */
+=======
+#define DM_PARAMS_MALLOC	0x0001	/* Params allocated with kvmalloc() */
+>>>>>>> v4.9.227
 #define DM_WIPE_BUFFER		0x0010	/* Wipe input buffer before returning from ioctl */
 
 static void free_params(struct dm_ioctl *param, size_t param_size, int param_flags)
@@ -1674,6 +1731,7 @@ static void free_params(struct dm_ioctl *param, size_t param_size, int param_fla
 	if (param_flags & DM_WIPE_BUFFER)
 		memset(param, 0, param_size);
 
+<<<<<<< HEAD
 	if (param_flags & DM_PARAMS_KMALLOC)
 		kfree(param);
 	if (param_flags & DM_PARAMS_VMALLOC)
@@ -1683,6 +1741,14 @@ static void free_params(struct dm_ioctl *param, size_t param_size, int param_fla
 static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kernel,
 		       int ioctl_flags,
 		       struct dm_ioctl **param, int *param_flags)
+=======
+	if (param_flags & DM_PARAMS_MALLOC)
+		kvfree(param);
+}
+
+static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kernel,
+		       int ioctl_flags, struct dm_ioctl **param, int *param_flags)
+>>>>>>> v4.9.227
 {
 	struct dm_ioctl *dmi;
 	int secure_data;
@@ -1709,19 +1775,29 @@ static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kern
 	 * Use kmalloc() rather than vmalloc() when we can.
 	 */
 	dmi = NULL;
+<<<<<<< HEAD
 	if (param_kernel->data_size <= KMALLOC_MAX_SIZE) {
 		dmi = kmalloc(param_kernel->data_size, GFP_NOIO | __GFP_NORETRY | __GFP_NOMEMALLOC | __GFP_NOWARN);
 		if (dmi)
 			*param_flags |= DM_PARAMS_KMALLOC;
 	}
+=======
+	if (param_kernel->data_size <= KMALLOC_MAX_SIZE)
+		dmi = kmalloc(param_kernel->data_size, GFP_NOIO | __GFP_NORETRY | __GFP_NOMEMALLOC | __GFP_NOWARN);
+>>>>>>> v4.9.227
 
 	if (!dmi) {
 		unsigned noio_flag;
 		noio_flag = memalloc_noio_save();
+<<<<<<< HEAD
 		dmi = __vmalloc(param_kernel->data_size, GFP_NOIO | __GFP_REPEAT | __GFP_HIGH | __GFP_HIGHMEM, PAGE_KERNEL);
 		memalloc_noio_restore(noio_flag);
 		if (dmi)
 			*param_flags |= DM_PARAMS_VMALLOC;
+=======
+		dmi = __vmalloc(param_kernel->data_size, GFP_NOIO | __GFP_HIGH | __GFP_HIGHMEM, PAGE_KERNEL);
+		memalloc_noio_restore(noio_flag);
+>>>>>>> v4.9.227
 	}
 
 	if (!dmi) {
@@ -1730,6 +1806,7 @@ static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kern
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	if (copy_from_user(dmi, user, param_kernel->data_size))
 		goto bad;
 
@@ -1742,6 +1819,17 @@ data_copied:
 		goto bad;
 	}
 
+=======
+	*param_flags |= DM_PARAMS_MALLOC;
+
+	/* Copy from param_kernel (which was already copied from user) */
+	memcpy(dmi, param_kernel, minimum_data_size);
+
+	if (copy_from_user(&dmi->data, (char __user *)user + minimum_data_size,
+			   param_kernel->data_size - minimum_data_size))
+		goto bad;
+data_copied:
+>>>>>>> v4.9.227
 	/* Wipe the user buffer so we do not return it to userspace */
 	if (secure_data && clear_user(user, param_kernel->data_size))
 		goto bad;
@@ -1769,12 +1857,20 @@ static int validate_params(uint cmd, struct dm_ioctl *param)
 	    cmd == DM_LIST_VERSIONS_CMD)
 		return 0;
 
+<<<<<<< HEAD
 	if ((cmd == DM_DEV_CREATE_CMD)) {
+=======
+	if (cmd == DM_DEV_CREATE_CMD) {
+>>>>>>> v4.9.227
 		if (!*param->name) {
 			DMWARN("name not supplied when creating device");
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 	} else if ((*param->uuid && *param->name)) {
+=======
+	} else if (*param->uuid && *param->name) {
+>>>>>>> v4.9.227
 		DMWARN("only supply one of name or uuid, cmd(%u)", cmd);
 		return -EINVAL;
 	}
@@ -1915,6 +2011,7 @@ int __init dm_interface_init(void)
 
 void dm_interface_exit(void)
 {
+<<<<<<< HEAD
 	if (misc_deregister(&_dm_misc) < 0)
 		DMERR("misc_deregister failed for control device");
 
@@ -1960,6 +2057,12 @@ int dm_ioctl_export(struct mapped_device *md, const char *name,
 out:
 	return r;
 }
+=======
+	misc_deregister(&_dm_misc);
+	dm_hash_exit();
+}
+
+>>>>>>> v4.9.227
 /**
  * dm_copy_name_and_uuid - Copy mapped device name & uuid into supplied buffers
  * @md: Pointer to mapped_device

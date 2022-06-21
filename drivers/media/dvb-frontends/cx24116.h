@@ -21,7 +21,10 @@
 #ifndef CX24116_H
 #define CX24116_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/dvb/frontend.h>
 
 struct cx24116_config {

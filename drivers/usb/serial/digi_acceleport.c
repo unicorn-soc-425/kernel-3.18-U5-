@@ -695,12 +695,20 @@ static void digi_set_termios(struct tty_struct *tty,
 		arg = -1;
 
 		/* reassert DTR and (maybe) RTS on transition from B0 */
+<<<<<<< HEAD
 		if ((old_cflag&CBAUD) == B0) {
 			/* don't set RTS if using hardware flow control */
 			/* and throttling input */
 			modem_signals = TIOCM_DTR;
 			if (!(tty->termios.c_cflag & CRTSCTS) ||
 			    !test_bit(TTY_THROTTLED, &tty->flags))
+=======
+		if ((old_cflag & CBAUD) == B0) {
+			/* don't set RTS if using hardware flow control */
+			/* and throttling input */
+			modem_signals = TIOCM_DTR;
+			if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+>>>>>>> v4.9.227
 				modem_signals |= TIOCM_RTS;
 			digi_set_modem_signals(port, modem_signals, 1);
 		}
@@ -1251,8 +1259,32 @@ static int digi_port_init(struct usb_serial_port *port, unsigned port_num)
 
 static int digi_startup(struct usb_serial *serial)
 {
+<<<<<<< HEAD
 	struct digi_serial *serial_priv;
 	int ret;
+=======
+	struct device *dev = &serial->interface->dev;
+	struct digi_serial *serial_priv;
+	int ret;
+	int i;
+
+	/* check whether the device has the expected number of endpoints */
+	if (serial->num_port_pointers < serial->type->num_ports + 1) {
+		dev_err(dev, "OOB endpoints missing\n");
+		return -ENODEV;
+	}
+
+	for (i = 0; i < serial->type->num_ports + 1 ; i++) {
+		if (!serial->port[i]->read_urb) {
+			dev_err(dev, "bulk-in endpoint missing\n");
+			return -ENODEV;
+		}
+		if (!serial->port[i]->write_urb) {
+			dev_err(dev, "bulk-out endpoint missing\n");
+			return -ENODEV;
+		}
+	}
+>>>>>>> v4.9.227
 
 	serial_priv = kzalloc(sizeof(*serial_priv), GFP_KERNEL);
 	if (!serial_priv)
@@ -1380,6 +1412,7 @@ static int digi_read_inb_callback(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
 	struct digi_port *priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
 	int opcode = ((unsigned char *)urb->transfer_buffer)[0];
 	int len = ((unsigned char *)urb->transfer_buffer)[1];
 	int port_status = ((unsigned char *)urb->transfer_buffer)[2];
@@ -1399,6 +1432,32 @@ static int digi_read_inb_callback(struct urb *urb)
 			"actual_length=%d, status=%d\n", __func__, status,
 			priv->dp_port_num, opcode, len, urb->actual_length,
 			port_status);
+=======
+	unsigned char *buf = urb->transfer_buffer;
+	int opcode;
+	int len;
+	int port_status;
+	unsigned char *data;
+	int flag, throttled;
+
+	/* short/multiple packet check */
+	if (urb->actual_length < 2) {
+		dev_warn(&port->dev, "short packet received\n");
+		return -1;
+	}
+
+	opcode = buf[0];
+	len = buf[1];
+
+	if (urb->actual_length != len + 2) {
+		dev_err(&port->dev, "malformed packet received: port=%d, opcode=%d, len=%d, actual_length=%u\n",
+			priv->dp_port_num, opcode, len, urb->actual_length);
+		return -1;
+	}
+
+	if (opcode == DIGI_CMD_RECEIVE_DATA && len < 1) {
+		dev_err(&port->dev, "malformed data packet received\n");
+>>>>>>> v4.9.227
 		return -1;
 	}
 
@@ -1412,6 +1471,12 @@ static int digi_read_inb_callback(struct urb *urb)
 
 	/* receive data */
 	if (opcode == DIGI_CMD_RECEIVE_DATA) {
+<<<<<<< HEAD
+=======
+		port_status = buf[2];
+		data = &buf[3];
+
+>>>>>>> v4.9.227
 		/* get flag from port_status */
 		flag = 0;
 
@@ -1464,16 +1529,32 @@ static int digi_read_oob_callback(struct urb *urb)
 	struct usb_serial *serial = port->serial;
 	struct tty_struct *tty;
 	struct digi_port *priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
+=======
+	unsigned char *buf = urb->transfer_buffer;
+>>>>>>> v4.9.227
 	int opcode, line, status, val;
 	int i;
 	unsigned int rts;
 
+<<<<<<< HEAD
 	/* handle each oob command */
 	for (i = 0; i < urb->actual_length - 3;) {
 		opcode = ((unsigned char *)urb->transfer_buffer)[i++];
 		line = ((unsigned char *)urb->transfer_buffer)[i++];
 		status = ((unsigned char *)urb->transfer_buffer)[i++];
 		val = ((unsigned char *)urb->transfer_buffer)[i++];
+=======
+	if (urb->actual_length < 4)
+		return -1;
+
+	/* handle each oob command */
+	for (i = 0; i < urb->actual_length - 3; i += 4) {
+		opcode = buf[i];
+		line = buf[i + 1];
+		status = buf[i + 2];
+		val = buf[i + 3];
+>>>>>>> v4.9.227
 
 		dev_dbg(&port->dev, "digi_read_oob_callback: opcode=%d, line=%d, status=%d, val=%d\n",
 			opcode, line, status, val);
@@ -1491,8 +1572,13 @@ static int digi_read_oob_callback(struct urb *urb)
 
 		rts = 0;
 		if (tty)
+<<<<<<< HEAD
 			rts = tty->termios.c_cflag & CRTSCTS;
 		
+=======
+			rts = C_CRTSCTS(tty);
+
+>>>>>>> v4.9.227
 		if (tty && opcode == DIGI_CMD_READ_INPUT_SIGNALS) {
 			spin_lock(&priv->dp_port_lock);
 			/* convert from digi flags to termiox flags */

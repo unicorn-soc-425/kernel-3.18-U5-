@@ -115,7 +115,10 @@ void flush_remote(unsigned long cache_pfn, unsigned long cache_control,
 	struct cpumask cache_cpumask_copy, tlb_cpumask_copy;
 	struct cpumask *cache_cpumask, *tlb_cpumask;
 	HV_PhysAddr cache_pa;
+<<<<<<< HEAD
 	char cache_buf[NR_CPUS*5], tlb_buf[NR_CPUS*5];
+=======
+>>>>>>> v4.9.227
 
 	mb();   /* provided just to simplify "magic hypervisor" mode */
 
@@ -149,6 +152,7 @@ void flush_remote(unsigned long cache_pfn, unsigned long cache_control,
 			     asids, asidcount);
 	if (rc == 0)
 		return;
+<<<<<<< HEAD
 	cpumask_scnprintf(cache_buf, sizeof(cache_buf), &cache_cpumask_copy);
 	cpumask_scnprintf(tlb_buf, sizeof(tlb_buf), &tlb_cpumask_copy);
 
@@ -158,6 +162,14 @@ void flush_remote(unsigned long cache_pfn, unsigned long cache_control,
 	       (unsigned long)tlb_va, tlb_length, tlb_pgsize,
 	       tlb_cpumask, tlb_buf,
 	       asids, asidcount, rc);
+=======
+
+	pr_err("hv_flush_remote(%#llx, %#lx, %p [%*pb], %#lx, %#lx, %#lx, %p [%*pb], %p, %d) = %d\n",
+	       cache_pa, cache_control, cache_cpumask,
+	       cpumask_pr_args(&cache_cpumask_copy),
+	       (unsigned long)tlb_va, tlb_length, tlb_pgsize, tlb_cpumask,
+	       cpumask_pr_args(&tlb_cpumask_copy), asids, asidcount, rc);
+>>>>>>> v4.9.227
 	panic("Unsafe to continue.");
 }
 
@@ -265,10 +277,13 @@ static int pte_to_home(pte_t pte)
 /* Update the home of a PTE if necessary (can also be used for a pgprot_t). */
 pte_t pte_set_home(pte_t pte, int home)
 {
+<<<<<<< HEAD
 	/* Check for non-linear file mapping "PTEs" and pass them through. */
 	if (pte_file(pte))
 		return pte;
 
+=======
+>>>>>>> v4.9.227
 #if CHIP_HAS_MMIO()
 	/* Check for MMIO mappings and pass them through. */
 	if (hv_pte_get_mode(pte) == HV_PTE_MODE_MMIO)

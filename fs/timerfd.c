@@ -163,7 +163,11 @@ static ktime_t timerfd_get_remaining(struct timerfd_ctx *ctx)
 	if (isalarm(ctx))
 		remaining = alarm_expires_remaining(&ctx->t.alarm);
 	else
+<<<<<<< HEAD
 		remaining = hrtimer_expires_remaining(&ctx->t.tmr);
+=======
+		remaining = hrtimer_expires_remaining_adjusted(&ctx->t.tmr);
+>>>>>>> v4.9.227
 
 	return remaining.tv64 < 0 ? ktime_set(0, 0): remaining;
 }
@@ -298,7 +302,11 @@ static ssize_t timerfd_read(struct file *file, char __user *buf, size_t count,
 }
 
 #ifdef CONFIG_PROC_FS
+<<<<<<< HEAD
 static int timerfd_show(struct seq_file *m, struct file *file)
+=======
+static void timerfd_show(struct seq_file *m, struct file *file)
+>>>>>>> v4.9.227
 {
 	struct timerfd_ctx *ctx = file->private_data;
 	struct itimerspec t;
@@ -308,6 +316,7 @@ static int timerfd_show(struct seq_file *m, struct file *file)
 	t.it_interval = ktime_to_timespec(ctx->tintv);
 	spin_unlock_irq(&ctx->wqh.lock);
 
+<<<<<<< HEAD
 	return seq_printf(m,
 			  "clockid: %d\n"
 			  "ticks: %llu\n"
@@ -320,6 +329,21 @@ static int timerfd_show(struct seq_file *m, struct file *file)
 			  (unsigned long long)t.it_value.tv_nsec,
 			  (unsigned long long)t.it_interval.tv_sec,
 			  (unsigned long long)t.it_interval.tv_nsec);
+=======
+	seq_printf(m,
+		   "clockid: %d\n"
+		   "ticks: %llu\n"
+		   "settime flags: 0%o\n"
+		   "it_value: (%llu, %llu)\n"
+		   "it_interval: (%llu, %llu)\n",
+		   ctx->clockid,
+		   (unsigned long long)ctx->ticks,
+		   ctx->settime_flags,
+		   (unsigned long long)t.it_value.tv_sec,
+		   (unsigned long long)t.it_value.tv_nsec,
+		   (unsigned long long)t.it_interval.tv_sec,
+		   (unsigned long long)t.it_interval.tv_nsec);
+>>>>>>> v4.9.227
 }
 #else
 #define timerfd_show NULL
@@ -399,6 +423,14 @@ SYSCALL_DEFINE2(timerfd_create, int, clockid, int, flags)
 	     clockid != CLOCK_BOOTTIME_ALARM))
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (!capable(CAP_WAKE_ALARM) &&
+	    (clockid == CLOCK_REALTIME_ALARM ||
+	     clockid == CLOCK_BOOTTIME_ALARM))
+		return -EPERM;
+
+>>>>>>> v4.9.227
 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
 	if (!ctx)
 		return -ENOMEM;
@@ -443,6 +475,14 @@ static int do_timerfd_settime(int ufd, int flags,
 		return ret;
 	ctx = f.file->private_data;
 
+<<<<<<< HEAD
+=======
+	if (!capable(CAP_WAKE_ALARM) && isalarm(ctx)) {
+		fdput(f);
+		return -EPERM;
+	}
+
+>>>>>>> v4.9.227
 	timerfd_setup_cancel(ctx, flags);
 
 	/*

@@ -24,13 +24,19 @@
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
 #include <linux/clkdev.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_device.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 
 #include <dt-bindings/clock/hip04-clock.h>
 
@@ -38,9 +44,15 @@
 
 /* fixed rate clocks */
 static struct hisi_fixed_rate_clock hip04_fixed_rate_clks[] __initdata = {
+<<<<<<< HEAD
 	{ HIP04_OSC50M,   "osc50m",   NULL, CLK_IS_ROOT, 50000000, },
 	{ HIP04_CLK_50M,  "clk50m",   NULL, CLK_IS_ROOT, 50000000, },
 	{ HIP04_CLK_168M, "clk168m",  NULL, CLK_IS_ROOT, 168750000, },
+=======
+	{ HIP04_OSC50M,   "osc50m",   NULL, 0, 50000000, },
+	{ HIP04_CLK_50M,  "clk50m",   NULL, 0, 50000000, },
+	{ HIP04_CLK_168M, "clk168m",  NULL, 0, 168750000, },
+>>>>>>> v4.9.227
 };
 
 static void __init hip04_clk_init(struct device_node *np)

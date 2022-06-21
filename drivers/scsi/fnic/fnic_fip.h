@@ -26,6 +26,7 @@
 
 #define FINC_MAX_FLOGI_REJECTS   8
 
+<<<<<<< HEAD
 /*
  * FIP_DT_VLAN descriptor.
  */
@@ -34,6 +35,8 @@ struct fip_vlan_desc {
 	__be16 fd_vlan;
 } __attribute__((packed));
 
+=======
+>>>>>>> v4.9.227
 struct vlan {
 	__be16 vid;
 	__be16 type;

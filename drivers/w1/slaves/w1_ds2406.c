@@ -153,6 +153,7 @@ static struct w1_family w1_family_12 = {
 	.fid = W1_FAMILY_DS2406,
 	.fops = &w1_f12_fops,
 };
+<<<<<<< HEAD
 
 static int __init w1_f12_init(void)
 {
@@ -166,3 +167,6 @@ static void __exit w1_f12_exit(void)
 
 module_init(w1_f12_init);
 module_exit(w1_f12_exit);
+=======
+module_w1_family(w1_family_12);
+>>>>>>> v4.9.227

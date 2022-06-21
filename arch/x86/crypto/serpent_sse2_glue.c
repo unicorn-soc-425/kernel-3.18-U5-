@@ -309,6 +309,7 @@ static int xts_serpent_setkey(struct crypto_tfm *tfm, const u8 *key,
 			      unsigned int keylen)
 {
 	struct serpent_xts_ctx *ctx = crypto_tfm_ctx(tfm);
+<<<<<<< HEAD
 	u32 *flags = &tfm->crt_flags;
 	int err;
 
@@ -319,6 +320,13 @@ static int xts_serpent_setkey(struct crypto_tfm *tfm, const u8 *key,
 		*flags |= CRYPTO_TFM_RES_BAD_KEY_LEN;
 		return -EINVAL;
 	}
+=======
+	int err;
+
+	err = xts_check_key(tfm, key, keylen);
+	if (err)
+		return err;
+>>>>>>> v4.9.227
 
 	/* first half of xts-key is for crypt */
 	err = __serpent_setkey(&ctx->crypt_ctx, key, keylen / 2);
@@ -387,7 +395,12 @@ static struct crypto_alg serpent_algs[10] = { {
 	.cra_name		= "__ecb-serpent-sse2",
 	.cra_driver_name	= "__driver-ecb-serpent-sse2",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= SERPENT_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct serpent_ctx),
 	.cra_alignmask		= 0,
@@ -406,7 +419,12 @@ static struct crypto_alg serpent_algs[10] = { {
 	.cra_name		= "__cbc-serpent-sse2",
 	.cra_driver_name	= "__driver-cbc-serpent-sse2",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= SERPENT_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct serpent_ctx),
 	.cra_alignmask		= 0,
@@ -425,7 +443,12 @@ static struct crypto_alg serpent_algs[10] = { {
 	.cra_name		= "__ctr-serpent-sse2",
 	.cra_driver_name	= "__driver-ctr-serpent-sse2",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= 1,
 	.cra_ctxsize		= sizeof(struct serpent_ctx),
 	.cra_alignmask		= 0,
@@ -445,7 +468,12 @@ static struct crypto_alg serpent_algs[10] = { {
 	.cra_name		= "__lrw-serpent-sse2",
 	.cra_driver_name	= "__driver-lrw-serpent-sse2",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= SERPENT_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct serpent_lrw_ctx),
 	.cra_alignmask		= 0,
@@ -468,7 +496,12 @@ static struct crypto_alg serpent_algs[10] = { {
 	.cra_name		= "__xts-serpent-sse2",
 	.cra_driver_name	= "__driver-xts-serpent-sse2",
 	.cra_priority		= 0,
+<<<<<<< HEAD
 	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER,
+=======
+	.cra_flags		= CRYPTO_ALG_TYPE_BLKCIPHER |
+				  CRYPTO_ALG_INTERNAL,
+>>>>>>> v4.9.227
 	.cra_blocksize		= SERPENT_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct serpent_xts_ctx),
 	.cra_alignmask		= 0,
@@ -600,7 +633,11 @@ static struct crypto_alg serpent_algs[10] = { {
 
 static int __init serpent_sse2_init(void)
 {
+<<<<<<< HEAD
 	if (!cpu_has_xmm2) {
+=======
+	if (!boot_cpu_has(X86_FEATURE_XMM2)) {
+>>>>>>> v4.9.227
 		printk(KERN_INFO "SSE2 instructions are not detected.\n");
 		return -ENODEV;
 	}

@@ -36,6 +36,10 @@
 #include <linux/init.h>
 #include <linux/mutex.h>
 #include <linux/moduleparam.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> v4.9.227
 
 #include <sound/core.h>
 #include <sound/tlv.h>
@@ -777,8 +781,12 @@ static void snd_emu10k1_ctl_private_free(struct snd_kcontrol *kctl)
 	kctl->private_value = 0;
 	list_del(&ctl->list);
 	kfree(ctl);
+<<<<<<< HEAD
 	if (kctl->tlv.p)
 		kfree(kctl->tlv.p);
+=======
+	kfree(kctl->tlv.p);
+>>>>>>> v4.9.227
 }
 
 static int snd_emu10k1_add_controls(struct snd_emu10k1 *emu,
@@ -1001,6 +1009,11 @@ static int snd_emu10k1_ipcm_poke(struct snd_emu10k1 *emu,
 
 	if (ipcm->substream >= EMU10K1_FX8010_PCM_COUNT)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	ipcm->substream = array_index_nospec(ipcm->substream,
+					     EMU10K1_FX8010_PCM_COUNT);
+>>>>>>> v4.9.227
 	if (ipcm->channels > 32)
 		return -EINVAL;
 	pcm = &emu->fx8010.pcm[ipcm->substream];
@@ -1047,6 +1060,11 @@ static int snd_emu10k1_ipcm_peek(struct snd_emu10k1 *emu,
 
 	if (ipcm->substream >= EMU10K1_FX8010_PCM_COUNT)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	ipcm->substream = array_index_nospec(ipcm->substream,
+					     EMU10K1_FX8010_PCM_COUNT);
+>>>>>>> v4.9.227
 	pcm = &emu->fx8010.pcm[ipcm->substream];
 	mutex_lock(&emu->fx8010.lock);
 	spin_lock_irq(&emu->reg_lock);
@@ -2642,14 +2660,21 @@ static int snd_emu10k1_fx8010_release(struct snd_hwdep * hw, struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 int snd_emu10k1_fx8010_new(struct snd_emu10k1 *emu, int device,
 			   struct snd_hwdep **rhwdep)
+=======
+int snd_emu10k1_fx8010_new(struct snd_emu10k1 *emu, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_hwdep *hw;
 	int err;
 	
+<<<<<<< HEAD
 	if (rhwdep)
 		*rhwdep = NULL;
+=======
+>>>>>>> v4.9.227
 	if ((err = snd_hwdep_new(emu->card, "FX8010", device, &hw)) < 0)
 		return err;
 	strcpy(hw->name, "EMU10K1 (FX8010)");
@@ -2658,8 +2683,11 @@ int snd_emu10k1_fx8010_new(struct snd_emu10k1 *emu, int device,
 	hw->ops.ioctl = snd_emu10k1_fx8010_ioctl;
 	hw->ops.release = snd_emu10k1_fx8010_release;
 	hw->private_data = emu;
+<<<<<<< HEAD
 	if (rhwdep)
 		*rhwdep = hw;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 

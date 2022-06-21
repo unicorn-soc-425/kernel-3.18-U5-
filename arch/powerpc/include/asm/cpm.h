@@ -5,6 +5,10 @@
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <soc/fsl/qe/qe.h>
+>>>>>>> v4.9.227
 
 /*
  * SPI Parameter RAM common to QE and CPM.
@@ -155,6 +159,7 @@ typedef struct cpm_buf_desc {
  */
 #define BD_I2C_START		(0x0400)
 
+<<<<<<< HEAD
 int cpm_muram_init(void);
 
 #if defined(CONFIG_CPM) || defined(CONFIG_QUICC_ENGINE)
@@ -198,6 +203,8 @@ static inline dma_addr_t cpm_muram_dma(void __iomem *addr)
 }
 #endif /* defined(CONFIG_CPM) || defined(CONFIG_QUICC_ENGINE) */
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_CPM
 int cpm_command(u32 command, u8 opcode);
 #else

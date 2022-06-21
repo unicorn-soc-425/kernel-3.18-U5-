@@ -35,8 +35,13 @@
 struct llc_conn_state_trans {
 	llc_conn_ev_t	   ev;
 	u8		   next_state;
+<<<<<<< HEAD
 	llc_conn_ev_qfyr_t *ev_qualifiers;
 	llc_conn_action_t  *ev_actions;
+=======
+	const llc_conn_ev_qfyr_t *ev_qualifiers;
+	const llc_conn_action_t  *ev_actions;
+>>>>>>> v4.9.227
 };
 
 struct llc_conn_state {

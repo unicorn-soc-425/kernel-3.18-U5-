@@ -636,7 +636,11 @@ const struct ubifs_lprops *ubifs_change_lp(struct ubifs_info *c,
 /**
  * ubifs_get_lp_stats - get lprops statistics.
  * @c: UBIFS file-system description object
+<<<<<<< HEAD
  * @st: return statistics
+=======
+ * @lst: return statistics
+>>>>>>> v4.9.227
  */
 void ubifs_get_lp_stats(struct ubifs_info *c, struct ubifs_lp_stats *lst)
 {

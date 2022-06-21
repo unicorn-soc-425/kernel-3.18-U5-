@@ -306,6 +306,15 @@ static int max8997_haptic_probe(struct platform_device *pdev)
 				error);
 			goto err_free_mem;
 		}
+<<<<<<< HEAD
+=======
+
+		/*
+		 * FIXME: pwm_apply_args() should be removed when switching to
+		 * the atomic PWM API.
+		 */
+		pwm_apply_args(chip->pwm);
+>>>>>>> v4.9.227
 		break;
 
 	default:
@@ -380,8 +389,12 @@ static int max8997_haptic_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int max8997_haptic_suspend(struct device *dev)
+=======
+static int __maybe_unused max8997_haptic_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct max8997_haptic *chip = platform_get_drvdata(pdev);
@@ -390,7 +403,10 @@ static int max8997_haptic_suspend(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(max8997_haptic_pm_ops, max8997_haptic_suspend, NULL);
 
@@ -398,12 +414,19 @@ static const struct platform_device_id max8997_haptic_id[] = {
 	{ "max8997-haptic", 0 },
 	{ },
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(i2c, max8997_haptic_id);
+=======
+MODULE_DEVICE_TABLE(platform, max8997_haptic_id);
+>>>>>>> v4.9.227
 
 static struct platform_driver max8997_haptic_driver = {
 	.driver	= {
 		.name	= "max8997-haptic",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &max8997_haptic_pm_ops,
 	},
 	.probe		= max8997_haptic_probe,
@@ -412,7 +435,10 @@ static struct platform_driver max8997_haptic_driver = {
 };
 module_platform_driver(max8997_haptic_driver);
 
+<<<<<<< HEAD
 MODULE_ALIAS("platform:max8997-haptic");
+=======
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Donggeun Kim <dg77.kim@samsung.com>");
 MODULE_DESCRIPTION("max8997_haptic driver");
 MODULE_LICENSE("GPL");

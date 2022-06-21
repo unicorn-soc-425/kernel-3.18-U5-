@@ -180,9 +180,15 @@
 #define RT5659_IRQ_CTRL_1			0x00b6
 #define RT5659_IRQ_CTRL_2			0x00b7
 #define RT5659_IRQ_CTRL_3			0x00b8
+<<<<<<< HEAD
 #define RT5659_IRQ_CTRL_4			0x00b9
 #define RT5659_IRQ_CTRL_5			0x00ba
 #define RT5659_IRQ_CTRL_6			0x00bb
+=======
+#define RT5659_IRQ_CTRL_4			0x00ba
+#define RT5659_IRQ_CTRL_5			0x00bb
+#define RT5659_IRQ_CTRL_6			0x00bc
+>>>>>>> v4.9.227
 #define RT5659_INT_ST_1				0x00be
 #define RT5659_INT_ST_2				0x00bf
 #define RT5659_GPIO_CTRL_1			0x00c0
@@ -589,6 +595,10 @@
 #define RT5659_JD_MODE_SFT			13
 #define RT5659_EXT_JD_EN			(0x1 << 11)
 #define RT5659_EXT_JD_EN_SFT			11
+<<<<<<< HEAD
+=======
+#define RT5659_EXT_JD_DIG			(0x1 << 9)
+>>>>>>> v4.9.227
 
 /* Embeeded Jack and Type Detection Control 2 (0x0011) */
 #define RT5659_EXT_JD_SRC			(0x7 << 4)
@@ -601,6 +611,14 @@
 #define RT5659_EXT_JD_SRC_JD3			(0x5 << 4)
 #define RT5659_EXT_JD_SRC_MANUAL		(0x6 << 4)
 
+<<<<<<< HEAD
+=======
+/* Slience Detection Control (0x0015) */
+#define RT5659_SIL_DET_MASK			(0x1 << 15)
+#define RT5659_SIL_DET_DIS			(0x0 << 15)
+#define RT5659_SIL_DET_EN			(0x1 << 15)
+
+>>>>>>> v4.9.227
 /* Sidetone Control (0x0018) */
 #define RT5659_ST_SEL_MASK			(0x7 << 9)
 #define RT5659_ST_SEL_SFT			9
@@ -1257,6 +1275,13 @@
 #define RT5659_DMIC_1_DP_IN2N			(0x3 << 0)
 
 /* TDM control 1 (0x0078)*/
+<<<<<<< HEAD
+=======
+#define RT5659_DS_ADC_SLOT01_SFT		14
+#define RT5659_DS_ADC_SLOT23_SFT		12
+#define RT5659_DS_ADC_SLOT45_SFT		10
+#define RT5659_DS_ADC_SLOT67_SFT		8
+>>>>>>> v4.9.227
 #define RT5659_ADCDAT_SRC_MASK			0x1f
 #define RT5659_ADCDAT_SRC_SFT			0
 
@@ -1547,6 +1572,14 @@
 #define RT5659_M_MONOVOL_RM2_R			(0x1)
 #define RT5659_M_MONOVOL_RM2_R_SFT		0
 
+<<<<<<< HEAD
+=======
+/* Class D Output Control (0x00a0) */
+#define RT5659_POW_CLSD_DB_MASK			(0x1 << 9)
+#define RT5659_POW_CLSD_DB_EN			(0x1 << 9)
+#define RT5659_POW_CLSD_DB_DIS			(0x0 << 9)
+
+>>>>>>> v4.9.227
 /* EQ Control 1 (0x00b0) */
 #define RT5659_EQ_SRC_DAC			(0x0 << 15)
 #define RT5659_EQ_SRC_ADC			(0x1 << 15)
@@ -1572,6 +1605,12 @@
 #define RT5659_JD1_2_EN_SFT			12
 #define RT5659_JD1_2_DIS			(0x0 << 12)
 #define RT5659_JD1_2_EN				(0x1 << 12)
+<<<<<<< HEAD
+=======
+#define RT5659_IL_IRQ_MASK			(0x1 << 3)
+#define RT5659_IL_IRQ_DIS			(0x0 << 3)
+#define RT5659_IL_IRQ_EN			(0x1 << 3)
+>>>>>>> v4.9.227
 
 /* IRQ Control 5 (0x00ba) */
 #define RT5659_IRQ_JD_EN			(0x1 << 3)
@@ -1680,6 +1719,14 @@
 #define RT5659_ZCD_HP_DIS			(0x0 << 15)
 #define RT5659_ZCD_HP_EN			(0x1 << 15)
 
+<<<<<<< HEAD
+=======
+/* 4 Button Inline Command Control 2 (0x00e0) */
+#define RT5659_4BTN_IL_MASK			(0x1 << 15)
+#define RT5659_4BTN_IL_EN			(0x1 << 15)
+#define RT5659_4BTN_IL_DIS			(0x0 << 15)
+
+>>>>>>> v4.9.227
 /* Analog JD Control 1 (0x00f0) */
 #define RT5659_JD1_MODE_MASK			(0x3 << 0)
 #define RT5659_JD1_MODE_0			(0x0 << 0)
@@ -1698,12 +1745,22 @@
 #define RT5659_JD_HPO_JD_D			(0x6)
 
 /* Digital Misc Control (0x00fa) */
+<<<<<<< HEAD
+=======
+#define RT5659_AM_MASK				(0x1 << 7)
+#define RT5659_AM_EN				(0x1 << 7)
+#define RT5659_AM_DIS				(0x1 << 7)
+>>>>>>> v4.9.227
 #define RT5659_DIG_GATE_CTRL			0x1
 #define RT5659_DIG_GATE_CTRL_SFT		(0)
 
 /* Chopper and Clock control for ADC (0x011c)*/
 #define RT5659_M_RF_DIG_MASK			(0x1 << 12)
 #define RT5659_M_RF_DIG_SFT			12
+<<<<<<< HEAD
+=======
+#define RT5659_M_RI_DIG				(0x1 << 11)
+>>>>>>> v4.9.227
 
 /* Chopper and Clock control for DAC (0x013a)*/
 #define RT5659_CKXEN_DAC1_MASK			(0x1 << 13)
@@ -1725,6 +1782,13 @@
 #define RT5659_AD2DA_LB_MASK			(0x1 << 9)
 #define RT5659_AD2DA_LB_SFT			9
 
+<<<<<<< HEAD
+=======
+/* Stereo Noise Gate Control 1 (0x0160) */
+#define RT5659_NG2_EN_MASK			(0x1 << 15)
+#define RT5659_NG2_EN				(0x1 << 15)
+#define RT5659_NG2_DIS				(0x0 << 15)
+>>>>>>> v4.9.227
 
 /* System Clock Source */
 enum {
@@ -1746,6 +1810,7 @@ enum {
 	RT5659_AIF1,
 	RT5659_AIF2,
 	RT5659_AIF3,
+<<<<<<< HEAD
 	RT5659_AIFS,
 };
 
@@ -1757,6 +1822,14 @@ enum {
 struct rt5659_pll_code {
 	bool m_bp;
 	bool k_bp;
+=======
+	RT5659_AIF4,
+	RT5659_AIFS,
+};
+
+struct rt5659_pll_code {
+	bool m_bp;
+>>>>>>> v4.9.227
 	int m_code;
 	int n_code;
 	int k_code;
@@ -1766,6 +1839,7 @@ struct rt5659_priv {
 	struct snd_soc_codec *codec;
 	struct rt5659_platform_data pdata;
 	struct regmap *regmap;
+<<<<<<< HEAD
 	struct i2c_client *i2c;
 	struct delayed_work i2s_switch_slave_work[RT5659_AIFS];
 	struct delayed_work dac1_depop_work, dac2l_depop_work, dac2r_depop_work;
@@ -1773,6 +1847,14 @@ struct rt5659_priv {
 	struct mutex calibrate_mutex;
 
 	int aif_pu;
+=======
+	struct gpio_desc *gpiod_ldo1_en;
+	struct gpio_desc *gpiod_reset;
+	struct snd_soc_jack *hs_jack;
+	struct delayed_work jack_detect_work;
+	struct clk *mclk;
+
+>>>>>>> v4.9.227
 	int sysclk;
 	int sysclk_src;
 	int lrck[RT5659_AIFS];
@@ -1784,6 +1866,7 @@ struct rt5659_priv {
 	int pll_in;
 	int pll_out;
 
+<<<<<<< HEAD
 	int dsp_sw; /* expected parameter setting */
 	int dsp_rate;
 	int jack_type;
@@ -1812,5 +1895,13 @@ void rt5659_micbias_output(int micbias, int on);
 void rt5659_stereo1_adc_mute(bool mute);
 unsigned int rt5659_imp_detect(struct snd_soc_codec *codec);
 void rt5659_imp_detect_jd_unplug(void);
+=======
+	int jack_type;
+
+};
+
+int rt5659_set_jack_detect(struct snd_soc_codec *codec,
+	struct snd_soc_jack *hs_jack);
+>>>>>>> v4.9.227
 
 #endif /* __RT5659_H__ */

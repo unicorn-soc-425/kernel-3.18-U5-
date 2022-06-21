@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
     comedi/drivers/amplc_dio.h
 
     Header for amplc_dio200.c, amplc_dio200_common.c and
@@ -19,10 +20,39 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
+=======
+ * comedi/drivers/amplc_dio.h
+ *
+ * Header for amplc_dio200.c, amplc_dio200_common.c and
+ * amplc_dio200_pci.c.
+ *
+ * Copyright (C) 2005-2013 MEV Ltd. <http://www.mev.co.uk/>
+ *
+ * COMEDI - Linux Control and Measurement Device Interface
+ * Copyright (C) 1998,2000 David A. Schleef <ds@schleef.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+>>>>>>> v4.9.227
 
 #ifndef AMPLC_DIO200_H_INCLUDED
 #define AMPLC_DIO200_H_INCLUDED
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+
+struct comedi_device;
+
+>>>>>>> v4.9.227
 /*
  * Subdevice types.
  */

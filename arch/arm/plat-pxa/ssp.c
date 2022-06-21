@@ -34,7 +34,10 @@
 #include <linux/of_device.h>
 
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
+=======
+>>>>>>> v4.9.227
 
 static DEFINE_MUTEX(ssp_lock);
 static LIST_HEAD(ssp_list);
@@ -107,7 +110,10 @@ static const struct of_device_id pxa_ssp_of_ids[] = {
 	{ .compatible = "mvrl,pxa168-ssp",	.data = (void *) PXA168_SSP },
 	{ .compatible = "mrvl,pxa910-ssp",	.data = (void *) PXA910_SSP },
 	{ .compatible = "mrvl,ce4100-ssp",	.data = (void *) CE4100_SSP },
+<<<<<<< HEAD
 	{ .compatible = "mrvl,lpss-ssp",	.data = (void *) LPSS_SSP },
+=======
+>>>>>>> v4.9.227
 	{ },
 };
 MODULE_DEVICE_TABLE(of, pxa_ssp_of_ids);
@@ -232,13 +238,17 @@ static int pxa_ssp_probe(struct platform_device *pdev)
 
 static int pxa_ssp_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource *res;
+=======
+>>>>>>> v4.9.227
 	struct ssp_device *ssp;
 
 	ssp = platform_get_drvdata(pdev);
 	if (ssp == NULL)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	iounmap(ssp->mmio_base);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -246,11 +256,16 @@ static int pxa_ssp_remove(struct platform_device *pdev)
 
 	clk_put(ssp->clk);
 
+=======
+>>>>>>> v4.9.227
 	mutex_lock(&ssp_lock);
 	list_del(&ssp->node);
 	mutex_unlock(&ssp_lock);
 
+<<<<<<< HEAD
 	kfree(ssp);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -268,7 +283,10 @@ static struct platform_driver pxa_ssp_driver = {
 	.probe		= pxa_ssp_probe,
 	.remove		= pxa_ssp_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name		= "pxa2xx-ssp",
 		.of_match_table	= of_match_ptr(pxa_ssp_of_ids),
 	},

@@ -35,7 +35,10 @@ gf100_msppp_init(struct nvkm_falcon *msppp)
 
 static const struct nvkm_falcon_func
 gf100_msppp = {
+<<<<<<< HEAD
 	.pmc_enable = 0x00000002,
+=======
+>>>>>>> v4.9.227
 	.init = gf100_msppp_init,
 	.sclass = {
 		{ -1, -1, GF100_MSPPP },

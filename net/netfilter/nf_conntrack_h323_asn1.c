@@ -846,9 +846,16 @@ int DecodeQ931(unsigned char *buf, size_t sz, Q931 *q931)
 	sz -= len;
 
 	/* Message Type */
+<<<<<<< HEAD
 	if (sz < 1)
 		return H323_ERROR_BOUND;
 	q931->MessageType = *p++;
+=======
+	if (sz < 2)
+		return H323_ERROR_BOUND;
+	q931->MessageType = *p++;
+	sz--;
+>>>>>>> v4.9.227
 	PRINT("MessageType = %02X\n", q931->MessageType);
 	if (*p & 0x80) {
 		p++;

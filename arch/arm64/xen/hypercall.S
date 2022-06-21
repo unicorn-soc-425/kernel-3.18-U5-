@@ -49,7 +49,10 @@
 
 #include <linux/linkage.h>
 #include <asm/assembler.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+>>>>>>> v4.9.227
 #include <xen/interface/xen.h>
 
 
@@ -81,7 +84,13 @@ HYPERCALL2(memory_op);
 HYPERCALL2(physdev_op);
 HYPERCALL3(vcpu_op);
 HYPERCALL1(tmem_op);
+<<<<<<< HEAD
 HYPERCALL2(multicall);
+=======
+HYPERCALL1(platform_op_raw);
+HYPERCALL2(multicall);
+HYPERCALL2(vm_assist);
+>>>>>>> v4.9.227
 
 ENTRY(privcmd_call)
 	mov x16, x0
@@ -90,6 +99,7 @@ ENTRY(privcmd_call)
 	mov x2, x3
 	mov x3, x4
 	mov x4, x5
+<<<<<<< HEAD
 	/*
 	 * Privcmd calls are issued by the userspace. The kernel needs to
 	 * enable access to TTBR0_EL1 as the hypervisor would issue stage 1
@@ -105,5 +115,8 @@ ENTRY(privcmd_call)
 	 * Disable userspace access from kernel once the hyp call completed.
 	 */
 	uaccess_ttbr0_disable x6, x7
+=======
+	hvc XEN_IMM
+>>>>>>> v4.9.227
 	ret
 ENDPROC(privcmd_call);

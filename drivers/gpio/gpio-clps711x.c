@@ -10,15 +10,21 @@
  */
 
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/module.h>
 #include <linux/basic_mmio_gpio.h>
+=======
+#include <linux/module.h>
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 
 static int clps711x_gpio_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
 	void __iomem *dat, *dir;
+<<<<<<< HEAD
 	struct bgpio_chip *bgc;
 	struct resource *res;
 	int err, id = np ? of_alias_get_id(np, "gpio") : pdev->id;
@@ -28,6 +34,21 @@ static int clps711x_gpio_probe(struct platform_device *pdev)
 
 	bgc = devm_kzalloc(&pdev->dev, sizeof(*bgc), GFP_KERNEL);
 	if (!bgc)
+=======
+	struct gpio_chip *gc;
+	struct resource *res;
+	int err, id;
+
+	if (!np)
+		return -ENODEV;
+
+	id = of_alias_get_id(np, "gpio");
+	if ((id < 0) || (id > 4))
+		return -ENODEV;
+
+	gc = devm_kzalloc(&pdev->dev, sizeof(*gc), GFP_KERNEL);
+	if (!gc)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -43,11 +64,19 @@ static int clps711x_gpio_probe(struct platform_device *pdev)
 	switch (id) {
 	case 3:
 		/* PORTD is inverted logic for direction register */
+<<<<<<< HEAD
 		err = bgpio_init(bgc, &pdev->dev, 1, dat, NULL, NULL,
 				 NULL, dir, 0);
 		break;
 	default:
 		err = bgpio_init(bgc, &pdev->dev, 1, dat, NULL, NULL,
+=======
+		err = bgpio_init(gc, &pdev->dev, 1, dat, NULL, NULL,
+				 NULL, dir, 0);
+		break;
+	default:
+		err = bgpio_init(gc, &pdev->dev, 1, dat, NULL, NULL,
+>>>>>>> v4.9.227
 				 dir, NULL, 0);
 		break;
 	}
@@ -58,12 +87,17 @@ static int clps711x_gpio_probe(struct platform_device *pdev)
 	switch (id) {
 	case 4:
 		/* PORTE is 3 lines only */
+<<<<<<< HEAD
 		bgc->gc.ngpio = 3;
+=======
+		gc->ngpio = 3;
+>>>>>>> v4.9.227
 		break;
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 	bgc->gc.base = id * 8;
 	bgc->gc.owner = THIS_MODULE;
 	platform_set_drvdata(pdev, bgc);
@@ -80,6 +114,17 @@ static int clps711x_gpio_remove(struct platform_device *pdev)
 
 static const struct of_device_id __maybe_unused clps711x_gpio_ids[] = {
 	{ .compatible = "cirrus,clps711x-gpio" },
+=======
+	gc->base = -1;
+	gc->owner = THIS_MODULE;
+	platform_set_drvdata(pdev, gc);
+
+	return devm_gpiochip_add_data(&pdev->dev, gc, NULL);
+}
+
+static const struct of_device_id __maybe_unused clps711x_gpio_ids[] = {
+	{ .compatible = "cirrus,ep7209-gpio" },
+>>>>>>> v4.9.227
 	{ }
 };
 MODULE_DEVICE_TABLE(of, clps711x_gpio_ids);
@@ -87,11 +132,17 @@ MODULE_DEVICE_TABLE(of, clps711x_gpio_ids);
 static struct platform_driver clps711x_gpio_driver = {
 	.driver	= {
 		.name		= "clps711x-gpio",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 		.of_match_table	= of_match_ptr(clps711x_gpio_ids),
 	},
 	.probe	= clps711x_gpio_probe,
 	.remove	= clps711x_gpio_remove,
+=======
+		.of_match_table	= of_match_ptr(clps711x_gpio_ids),
+	},
+	.probe	= clps711x_gpio_probe,
+>>>>>>> v4.9.227
 };
 module_platform_driver(clps711x_gpio_driver);
 

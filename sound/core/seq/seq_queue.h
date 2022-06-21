@@ -71,7 +71,11 @@ void snd_seq_queues_delete(void);
 
 
 /* create new queue (constructor) */
+<<<<<<< HEAD
 int snd_seq_queue_alloc(int client, int locked, unsigned int flags);
+=======
+struct snd_seq_queue *snd_seq_queue_alloc(int client, int locked, unsigned int flags);
+>>>>>>> v4.9.227
 
 /* delete queue (destructor) */
 int snd_seq_queue_delete(int client, int queueid);

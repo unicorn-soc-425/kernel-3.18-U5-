@@ -36,7 +36,13 @@
 #ifndef _TIPC_SERVER_H
 #define _TIPC_SERVER_H
 
+<<<<<<< HEAD
 #include "core.h"
+=======
+#include <linux/idr.h>
+#include <linux/tipc.h>
+#include <net/net_namespace.h>
+>>>>>>> v4.9.227
 
 #define TIPC_SERVER_NAME_LEN	32
 
@@ -45,12 +51,20 @@
  * @conn_idr: identifier set of connection
  * @idr_lock: protect the connection identifier set
  * @idr_in_use: amount of allocated identifier entry
+<<<<<<< HEAD
+=======
+ * @net: network namspace instance
+>>>>>>> v4.9.227
  * @rcvbuf_cache: memory cache of server receive buffer
  * @rcv_wq: receive workqueue
  * @send_wq: send workqueue
  * @max_rcvbuf_size: maximum permitted receive message length
  * @tipc_conn_new: callback will be called when new connection is incoming
+<<<<<<< HEAD
  * @tipc_conn_shutdown: callback will be called when connection is shut down
+=======
+ * @tipc_conn_release: callback will be called before releasing the connection
+>>>>>>> v4.9.227
  * @tipc_conn_recvmsg: callback will be called when message arrives
  * @saddr: TIPC server address
  * @name: server name
@@ -61,16 +75,30 @@ struct tipc_server {
 	struct idr conn_idr;
 	spinlock_t idr_lock;
 	int idr_in_use;
+<<<<<<< HEAD
+=======
+	struct net *net;
+>>>>>>> v4.9.227
 	struct kmem_cache *rcvbuf_cache;
 	struct workqueue_struct *rcv_wq;
 	struct workqueue_struct *send_wq;
 	int max_rcvbuf_size;
+<<<<<<< HEAD
 	void *(*tipc_conn_new) (int conid);
 	void (*tipc_conn_shutdown) (int conid, void *usr_data);
 	void (*tipc_conn_recvmsg) (int conid, struct sockaddr_tipc *addr,
 				   void *usr_data, void *buf, size_t len);
 	struct sockaddr_tipc *saddr;
 	const char name[TIPC_SERVER_NAME_LEN];
+=======
+	void *(*tipc_conn_new)(int conid);
+	void (*tipc_conn_release)(int conid, void *usr_data);
+	void (*tipc_conn_recvmsg)(struct net *net, int conid,
+				  struct sockaddr_tipc *addr, void *usr_data,
+				  void *buf, size_t len);
+	struct sockaddr_tipc *saddr;
+	char name[TIPC_SERVER_NAME_LEN];
+>>>>>>> v4.9.227
 	int imp;
 	int type;
 };

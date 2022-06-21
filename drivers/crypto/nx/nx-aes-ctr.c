@@ -72,7 +72,11 @@ static int ctr3686_aes_nx_set_key(struct crypto_tfm *tfm,
 	if (key_len < CTR_RFC3686_NONCE_SIZE)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	memcpy(nx_ctx->priv.ctr.iv,
+=======
+	memcpy(nx_ctx->priv.ctr.nonce,
+>>>>>>> v4.9.227
 	       in_key + key_len - CTR_RFC3686_NONCE_SIZE,
 	       CTR_RFC3686_NONCE_SIZE);
 
@@ -90,11 +94,15 @@ static int ctr_aes_nx_crypt(struct blkcipher_desc *desc,
 	struct nx_csbcpb *csbcpb = nx_ctx->csbcpb;
 	unsigned long irq_flags;
 	unsigned int processed = 0, to_process;
+<<<<<<< HEAD
 	u32 max_sg_len;
+=======
+>>>>>>> v4.9.227
 	int rc;
 
 	spin_lock_irqsave(&nx_ctx->lock, irq_flags);
 
+<<<<<<< HEAD
 	max_sg_len = min_t(u32, nx_driver.of.max_sg_len/sizeof(struct nx_sg),
 			   nx_ctx->ap->sglen);
 
@@ -106,6 +114,12 @@ static int ctr_aes_nx_crypt(struct blkcipher_desc *desc,
 		to_process = to_process & ~(AES_BLOCK_SIZE - 1);
 
 		rc = nx_build_sg_lists(nx_ctx, desc, dst, src, to_process,
+=======
+	do {
+		to_process = nbytes - processed;
+
+		rc = nx_build_sg_lists(nx_ctx, desc, dst, src, &to_process,
+>>>>>>> v4.9.227
 				       processed, csbcpb->cpb.aes_ctr.iv);
 		if (rc)
 			goto out;
@@ -139,6 +153,7 @@ static int ctr3686_aes_nx_crypt(struct blkcipher_desc *desc,
 				unsigned int           nbytes)
 {
 	struct nx_crypto_ctx *nx_ctx = crypto_blkcipher_ctx(desc->tfm);
+<<<<<<< HEAD
 	u8 *iv = nx_ctx->priv.ctr.iv;
 
 	memcpy(iv + CTR_RFC3686_NONCE_SIZE,
@@ -146,10 +161,22 @@ static int ctr3686_aes_nx_crypt(struct blkcipher_desc *desc,
 	iv[15] = 1;
 
 	desc->info = nx_ctx->priv.ctr.iv;
+=======
+	u8 iv[16];
+
+	memcpy(iv, nx_ctx->priv.ctr.nonce, CTR_RFC3686_IV_SIZE);
+	memcpy(iv + CTR_RFC3686_NONCE_SIZE,
+	       desc->info, CTR_RFC3686_IV_SIZE);
+	iv[12] = iv[13] = iv[14] = 0;
+	iv[15] = 1;
+
+	desc->info = iv;
+>>>>>>> v4.9.227
 
 	return ctr_aes_nx_crypt(desc, dst, src, nbytes);
 }
 
+<<<<<<< HEAD
 struct crypto_alg nx_ctr_aes_alg = {
 	.cra_name        = "ctr(aes)",
 	.cra_driver_name = "ctr-aes-nx",
@@ -171,6 +198,8 @@ struct crypto_alg nx_ctr_aes_alg = {
 	}
 };
 
+=======
+>>>>>>> v4.9.227
 struct crypto_alg nx_ctr3686_aes_alg = {
 	.cra_name        = "rfc3686(ctr(aes))",
 	.cra_driver_name = "rfc3686-ctr-aes-nx",

@@ -23,22 +23,62 @@
 #include <asm/kvm_asm.h>
 #include <asm/kvm_mmio.h>
 #include <asm/kvm_arm.h>
+<<<<<<< HEAD
+=======
+#include <asm/cputype.h>
+>>>>>>> v4.9.227
 
 unsigned long *vcpu_reg(struct kvm_vcpu *vcpu, u8 reg_num);
 unsigned long *vcpu_spsr(struct kvm_vcpu *vcpu);
 
+<<<<<<< HEAD
 bool kvm_condition_valid(struct kvm_vcpu *vcpu);
 void kvm_skip_instr(struct kvm_vcpu *vcpu, bool is_wide_instr);
 void kvm_inject_undefined(struct kvm_vcpu *vcpu);
 void kvm_inject_dabt(struct kvm_vcpu *vcpu, unsigned long addr);
 void kvm_inject_pabt(struct kvm_vcpu *vcpu, unsigned long addr);
 
+=======
+static inline unsigned long vcpu_get_reg(struct kvm_vcpu *vcpu,
+					 u8 reg_num)
+{
+	return *vcpu_reg(vcpu, reg_num);
+}
+
+static inline void vcpu_set_reg(struct kvm_vcpu *vcpu, u8 reg_num,
+				unsigned long val)
+{
+	*vcpu_reg(vcpu, reg_num) = val;
+}
+
+bool kvm_condition_valid32(const struct kvm_vcpu *vcpu);
+void kvm_skip_instr32(struct kvm_vcpu *vcpu, bool is_wide_instr);
+void kvm_inject_undefined(struct kvm_vcpu *vcpu);
+void kvm_inject_vabt(struct kvm_vcpu *vcpu);
+void kvm_inject_dabt(struct kvm_vcpu *vcpu, unsigned long addr);
+void kvm_inject_pabt(struct kvm_vcpu *vcpu, unsigned long addr);
+
+static inline bool kvm_condition_valid(const struct kvm_vcpu *vcpu)
+{
+	return kvm_condition_valid32(vcpu);
+}
+
+static inline void kvm_skip_instr(struct kvm_vcpu *vcpu, bool is_wide_instr)
+{
+	kvm_skip_instr32(vcpu, is_wide_instr);
+}
+
+>>>>>>> v4.9.227
 static inline void vcpu_reset_hcr(struct kvm_vcpu *vcpu)
 {
 	vcpu->arch.hcr = HCR_GUEST_MASK;
 }
 
+<<<<<<< HEAD
 static inline unsigned long vcpu_get_hcr(struct kvm_vcpu *vcpu)
+=======
+static inline unsigned long vcpu_get_hcr(const struct kvm_vcpu *vcpu)
+>>>>>>> v4.9.227
 {
 	return vcpu->arch.hcr;
 }
@@ -48,19 +88,32 @@ static inline void vcpu_set_hcr(struct kvm_vcpu *vcpu, unsigned long hcr)
 	vcpu->arch.hcr = hcr;
 }
 
+<<<<<<< HEAD
 static inline bool vcpu_mode_is_32bit(struct kvm_vcpu *vcpu)
+=======
+static inline bool vcpu_mode_is_32bit(const struct kvm_vcpu *vcpu)
+>>>>>>> v4.9.227
 {
 	return 1;
 }
 
 static inline unsigned long *vcpu_pc(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	return &vcpu->arch.regs.usr_regs.ARM_pc;
 }
 
 static inline unsigned long *vcpu_cpsr(struct kvm_vcpu *vcpu)
 {
 	return &vcpu->arch.regs.usr_regs.ARM_cpsr;
+=======
+	return &vcpu->arch.ctxt.gp_regs.usr_regs.ARM_pc;
+}
+
+static inline unsigned long *vcpu_cpsr(const struct kvm_vcpu *vcpu)
+{
+	return (unsigned long *)&vcpu->arch.ctxt.gp_regs.usr_regs.ARM_cpsr;
+>>>>>>> v4.9.227
 }
 
 static inline void vcpu_set_thumb(struct kvm_vcpu *vcpu)
@@ -70,21 +123,46 @@ static inline void vcpu_set_thumb(struct kvm_vcpu *vcpu)
 
 static inline bool mode_has_spsr(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	unsigned long cpsr_mode = vcpu->arch.regs.usr_regs.ARM_cpsr & MODE_MASK;
+=======
+	unsigned long cpsr_mode = vcpu->arch.ctxt.gp_regs.usr_regs.ARM_cpsr & MODE_MASK;
+>>>>>>> v4.9.227
 	return (cpsr_mode > USR_MODE && cpsr_mode < SYSTEM_MODE);
 }
 
 static inline bool vcpu_mode_priv(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	unsigned long cpsr_mode = vcpu->arch.regs.usr_regs.ARM_cpsr & MODE_MASK;
 	return cpsr_mode > USR_MODE;;
 }
 
 static inline u32 kvm_vcpu_get_hsr(struct kvm_vcpu *vcpu)
+=======
+	unsigned long cpsr_mode = vcpu->arch.ctxt.gp_regs.usr_regs.ARM_cpsr & MODE_MASK;
+	return cpsr_mode > USR_MODE;;
+}
+
+static inline u32 kvm_vcpu_get_hsr(const struct kvm_vcpu *vcpu)
+>>>>>>> v4.9.227
 {
 	return vcpu->arch.fault.hsr;
 }
 
+<<<<<<< HEAD
+=======
+static inline int kvm_vcpu_get_condition(const struct kvm_vcpu *vcpu)
+{
+	u32 hsr = kvm_vcpu_get_hsr(vcpu);
+
+	if (hsr & HSR_CV)
+		return (hsr & HSR_COND) >> HSR_COND_SHIFT;
+
+	return -1;
+}
+
+>>>>>>> v4.9.227
 static inline unsigned long kvm_vcpu_get_hfar(struct kvm_vcpu *vcpu)
 {
 	return vcpu->arch.fault.hxfar;
@@ -95,11 +173,14 @@ static inline phys_addr_t kvm_vcpu_get_fault_ipa(struct kvm_vcpu *vcpu)
 	return ((phys_addr_t)vcpu->arch.fault.hpfar & HPFAR_MASK) << 8;
 }
 
+<<<<<<< HEAD
 static inline unsigned long kvm_vcpu_get_hyp_pc(struct kvm_vcpu *vcpu)
 {
 	return vcpu->arch.fault.hyp_pc;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline bool kvm_vcpu_dabt_isvalid(struct kvm_vcpu *vcpu)
 {
 	return kvm_vcpu_get_hsr(vcpu) & HSR_ISV;
@@ -130,6 +211,14 @@ static inline bool kvm_vcpu_dabt_iss1tw(struct kvm_vcpu *vcpu)
 	return kvm_vcpu_get_hsr(vcpu) & HSR_DABT_S1PTW;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool kvm_vcpu_dabt_is_cm(struct kvm_vcpu *vcpu)
+{
+	return !!(kvm_vcpu_get_hsr(vcpu) & HSR_DABT_CM);
+}
+
+>>>>>>> v4.9.227
 /* Get Access Size from a data abort */
 static inline int kvm_vcpu_dabt_get_as(struct kvm_vcpu *vcpu)
 {
@@ -177,9 +266,15 @@ static inline u32 kvm_vcpu_hvc_get_imm(struct kvm_vcpu *vcpu)
 	return kvm_vcpu_get_hsr(vcpu) & HSR_HVC_IMM_MASK;
 }
 
+<<<<<<< HEAD
 static inline unsigned long kvm_vcpu_get_mpidr(struct kvm_vcpu *vcpu)
 {
 	return vcpu->arch.cp15[c0_MPIDR];
+=======
+static inline unsigned long kvm_vcpu_get_mpidr_aff(struct kvm_vcpu *vcpu)
+{
+	return vcpu_cp15(vcpu, c0_MPIDR) & MPIDR_HWID_BITMASK;
+>>>>>>> v4.9.227
 }
 
 static inline void kvm_vcpu_set_be(struct kvm_vcpu *vcpu)

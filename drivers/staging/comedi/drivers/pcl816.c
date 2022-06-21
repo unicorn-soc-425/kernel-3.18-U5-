@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
    comedi/drivers/pcl816.c
 
    Author:  Juan Grigera <juan@grigera.com.ar>
@@ -35,14 +36,55 @@ Configuration Options:
 #include <linux/module.h>
 #include "../comedidev.h"
 
+=======
+ * pcl816.c
+ * Comedi driver for Advantech PCL-816 cards
+ *
+ * Author:  Juan Grigera <juan@grigera.com.ar>
+ * based on pcl818 by Michal Dobes <dobes@tesnet.cz> and bits of pcl812
+ */
+
+/*
+ * Driver: pcl816
+ * Description: Advantech PCL-816 cards, PCL-814
+ * Devices: [Advantech] PCL-816 (pcl816), PCL-814B (pcl814b)
+ * Author: Juan Grigera <juan@grigera.com.ar>
+ * Status: works
+ * Updated: Tue,  2 Apr 2002 23:15:21 -0800
+ *
+ * PCL 816 and 814B have 16 SE/DIFF ADCs, 16 DACs, 16 DI and 16 DO.
+ * Differences are at resolution (16 vs 12 bits).
+ *
+ * The driver support AI command mode, other subdevices not written.
+ *
+ * Analog output and digital input and output are not supported.
+ *
+ * Configuration Options:
+ *   [0] - IO Base
+ *   [1] - IRQ	(0=disable, 2, 3, 4, 5, 6, 7)
+ *   [2] - DMA	(0=disable, 1, 3)
+ *   [3] - 0, 10=10MHz clock for 8254
+ *	       1= 1MHz clock for 8254
+ */
+
+#include <linux/module.h>
+>>>>>>> v4.9.227
 #include <linux/gfp.h>
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <asm/dma.h>
 
 #include "comedi_fc.h"
 #include "8253.h"
+=======
+
+#include "../comedidev.h"
+
+#include "comedi_isadma.h"
+#include "comedi_8254.h"
+>>>>>>> v4.9.227
 
 /*
  * Register I/O map
@@ -57,6 +99,7 @@ Configuration Options:
 #define PCL816_MUX_REG				0x0b
 #define PCL816_MUX_SCAN(_first, _last)		(((_last) << 4) | (_first))
 #define PCL816_CTRL_REG				0x0c
+<<<<<<< HEAD
 #define PCL816_CTRL_DISABLE_TRIG		(0 << 0)
 #define PCL816_CTRL_SOFT_TRIG			(1 << 0)
 #define PCL816_CTRL_PACER_TRIG			(1 << 1)
@@ -76,6 +119,22 @@ Configuration Options:
 #define PCL816_STATUS_INTSRC_DMA		(3 << 4)
 #define PCL816_STATUS_INTACT			(1 << 6)
 #define PCL816_STATUS_DRDY			(1 << 7)
+=======
+#define PCL816_CTRL_SOFT_TRIG			BIT(0)
+#define PCL816_CTRL_PACER_TRIG			BIT(1)
+#define PCL816_CTRL_EXT_TRIG			BIT(2)
+#define PCL816_CTRL_POE				BIT(3)
+#define PCL816_CTRL_DMAEN			BIT(4)
+#define PCL816_CTRL_INTEN			BIT(5)
+#define PCL816_CTRL_DMASRC_SLOT(x)		(((x) & 0x3) << 6)
+#define PCL816_STATUS_REG			0x0d
+#define PCL816_STATUS_NEXT_CHAN_MASK		(0xf << 0)
+#define PCL816_STATUS_INTSRC_SLOT(x)		(((x) & 0x3) << 4)
+#define PCL816_STATUS_INTSRC_DMA		PCL816_STATUS_INTSRC_SLOT(3)
+#define PCL816_STATUS_INTSRC_MASK		PCL816_STATUS_INTSRC_SLOT(3)
+#define PCL816_STATUS_INTACT			BIT(6)
+#define PCL816_STATUS_DRDY			BIT(7)
+>>>>>>> v4.9.227
 
 #define MAGIC_DMA_WORD 0x5a5a
 
@@ -95,7 +154,10 @@ static const struct comedi_lrange range_pcl816 = {
 struct pcl816_board {
 	const char *name;
 	int ai_maxdata;
+<<<<<<< HEAD
 	int ao_maxdata;
+=======
+>>>>>>> v4.9.227
 	int ai_chanlist;
 };
 
@@ -103,17 +165,24 @@ static const struct pcl816_board boardtypes[] = {
 	{
 		.name		= "pcl816",
 		.ai_maxdata	= 0xffff,
+<<<<<<< HEAD
 		.ao_maxdata	= 0xffff,
+=======
+>>>>>>> v4.9.227
 		.ai_chanlist	= 1024,
 	}, {
 		.name		= "pcl814b",
 		.ai_maxdata	= 0x3fff,
+<<<<<<< HEAD
 		.ao_maxdata	= 0x3fff,
+=======
+>>>>>>> v4.9.227
 		.ai_chanlist	= 1024,
 	},
 };
 
 struct pcl816_private {
+<<<<<<< HEAD
 	unsigned int dma;	/*  used DMA, 0=don't use DMA */
 	unsigned int dmapages;
 	unsigned int hwdmasize;
@@ -126,10 +195,15 @@ struct pcl816_private {
 	unsigned int ai_poll_ptr;	/*  how many sampes transfer poll */
 	unsigned int divisor1;
 	unsigned int divisor2;
+=======
+	struct comedi_isadma *dma;
+	unsigned int ai_poll_ptr;	/*  how many sampes transfer poll */
+>>>>>>> v4.9.227
 	unsigned int ai_cmd_running:1;
 	unsigned int ai_cmd_canceled:1;
 };
 
+<<<<<<< HEAD
 static void pcl816_start_pacer(struct comedi_device *dev, bool load_counters)
 {
 	struct pcl816_private *devpriv = dev->private;
@@ -207,6 +281,30 @@ static void pcl816_ai_setup_next_dma(struct comedi_device *dev,
 	}
 
 	devpriv->dma_runs_to_end--;
+=======
+static void pcl816_ai_setup_dma(struct comedi_device *dev,
+				struct comedi_subdevice *s,
+				unsigned int unread_samples)
+{
+	struct pcl816_private *devpriv = dev->private;
+	struct comedi_isadma *dma = devpriv->dma;
+	struct comedi_isadma_desc *desc = &dma->desc[dma->cur_dma];
+	unsigned int max_samples = comedi_bytes_to_samples(s, desc->maxsize);
+	unsigned int nsamples;
+
+	comedi_isadma_disable(dma->chan);
+
+	/*
+	 * Determine dma size based on the buffer maxsize plus the number of
+	 * unread samples and the number of samples remaining in the command.
+	 */
+	nsamples = comedi_nsamples_left(s, max_samples + unread_samples);
+	if (nsamples > unread_samples) {
+		nsamples -= unread_samples;
+		desc->size = comedi_samples_to_bytes(s, nsamples);
+		comedi_isadma_program(desc);
+	}
+>>>>>>> v4.9.227
 }
 
 static void pcl816_ai_set_chan_range(struct comedi_device *dev,
@@ -286,6 +384,7 @@ static int pcl816_ai_eoc(struct comedi_device *dev,
 static bool pcl816_ai_next_chan(struct comedi_device *dev,
 				struct comedi_subdevice *s)
 {
+<<<<<<< HEAD
 	struct pcl816_private *devpriv = dev->private;
 	struct comedi_cmd *cmd = &s->async->cmd;
 
@@ -301,6 +400,12 @@ static bool pcl816_ai_next_chan(struct comedi_device *dev,
 	if (cmd->stop_src == TRIG_COUNT &&
 	    devpriv->ai_act_scan >= cmd->stop_arg) {
 		/* all data sampled */
+=======
+	struct comedi_cmd *cmd = &s->async->cmd;
+
+	if (cmd->stop_src == TRIG_COUNT &&
+	    s->async->scans_done >= cmd->stop_arg) {
+>>>>>>> v4.9.227
 		s->async->events |= COMEDI_CB_EOA;
 		return false;
 	}
@@ -313,10 +418,19 @@ static void transfer_from_dma_buf(struct comedi_device *dev,
 				  unsigned short *ptr,
 				  unsigned int bufptr, unsigned int len)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < len; i++) {
 		comedi_buf_put(s, ptr[bufptr++]);
+=======
+	unsigned short val;
+	int i;
+
+	for (i = 0; i < len; i++) {
+		val = ptr[bufptr++];
+		comedi_buf_write_samples(s, &val, 1);
+>>>>>>> v4.9.227
 
 		if (!pcl816_ai_next_chan(dev, s))
 			return;
@@ -328,9 +442,16 @@ static irqreturn_t pcl816_interrupt(int irq, void *d)
 	struct comedi_device *dev = d;
 	struct comedi_subdevice *s = dev->read_subdev;
 	struct pcl816_private *devpriv = dev->private;
+<<<<<<< HEAD
 	unsigned short *ptr;
 	unsigned int bufptr;
 	unsigned int len;
+=======
+	struct comedi_isadma *dma = devpriv->dma;
+	struct comedi_isadma_desc *desc = &dma->desc[dma->cur_dma];
+	unsigned int nsamples;
+	unsigned int bufptr;
+>>>>>>> v4.9.227
 
 	if (!dev->attached || !devpriv->ai_cmd_running) {
 		pcl816_ai_clear_eoc(dev);
@@ -343,6 +464,7 @@ static irqreturn_t pcl816_interrupt(int irq, void *d)
 		return IRQ_HANDLED;
 	}
 
+<<<<<<< HEAD
 	ptr = (unsigned short *)devpriv->dmabuf[devpriv->next_dma_buf];
 
 	pcl816_ai_setup_next_dma(dev, s);
@@ -356,6 +478,22 @@ static irqreturn_t pcl816_interrupt(int irq, void *d)
 	pcl816_ai_clear_eoc(dev);
 
 	cfc_handle_events(dev, s);
+=======
+	nsamples = comedi_bytes_to_samples(s, desc->size) -
+		   devpriv->ai_poll_ptr;
+	bufptr = devpriv->ai_poll_ptr;
+	devpriv->ai_poll_ptr = 0;
+
+	/* restart dma with the next buffer */
+	dma->cur_dma = 1 - dma->cur_dma;
+	pcl816_ai_setup_dma(dev, s, nsamples);
+
+	transfer_from_dma_buf(dev, s, desc->virt_addr, bufptr, nsamples);
+
+	pcl816_ai_clear_eoc(dev);
+
+	comedi_handle_events(dev, s);
+>>>>>>> v4.9.227
 	return IRQ_HANDLED;
 }
 
@@ -378,7 +516,11 @@ static int check_channel_list(struct comedi_device *dev,
 		chansegment[0] = chanlist[0];
 		for (i = 1, seglen = 1; i < chanlen; i++, seglen++) {
 			/*  we detect loop, this must by finish */
+<<<<<<< HEAD
 			    if (chanlist[0] == chanlist[i])
+=======
+			if (chanlist[0] == chanlist[i])
+>>>>>>> v4.9.227
 				break;
 			nowmustbechan =
 			    (CR_CHAN(chansegment[i - 1]) + 1) % chanlen;
@@ -396,7 +538,11 @@ static int check_channel_list(struct comedi_device *dev,
 
 		/*  check whole chanlist */
 		for (i = 0, segpos = 0; i < chanlen; i++) {
+<<<<<<< HEAD
 			    if (chanlist[i] != chansegment[i % seglen]) {
+=======
+			if (chanlist[i] != chansegment[i % seglen]) {
+>>>>>>> v4.9.227
 				dev_dbg(dev->class_dev,
 					"bad channel or range number! chanlist[%i]=%d,%d,%d and not %d,%d,%d!\n",
 					i, CR_CHAN(chansegment[i]),
@@ -418,6 +564,7 @@ static int check_channel_list(struct comedi_device *dev,
 static int pcl816_ai_cmdtest(struct comedi_device *dev,
 			     struct comedi_subdevice *s, struct comedi_cmd *cmd)
 {
+<<<<<<< HEAD
 	struct pcl816_private *devpriv = dev->private;
 	int err = 0;
 	unsigned int arg;
@@ -429,20 +576,38 @@ static int pcl816_ai_cmdtest(struct comedi_device *dev,
 	err |= cfc_check_trigger_src(&cmd->convert_src, TRIG_EXT | TRIG_TIMER);
 	err |= cfc_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
 	err |= cfc_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+=======
+	int err = 0;
+
+	/* Step 1 : check if triggers are trivially valid */
+
+	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
+	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_FOLLOW);
+	err |= comedi_check_trigger_src(&cmd->convert_src,
+					TRIG_EXT | TRIG_TIMER);
+	err |= comedi_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
+	err |= comedi_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 1;
 
 	/* Step 2a : make sure trigger sources are unique */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_is_unique(cmd->convert_src);
 	err |= cfc_check_trigger_is_unique(cmd->stop_src);
+=======
+	err |= comedi_check_trigger_is_unique(cmd->convert_src);
+	err |= comedi_check_trigger_is_unique(cmd->stop_src);
+>>>>>>> v4.9.227
 
 	/* Step 2b : and mutually compatible */
 
 	if (err)
 		return 2;
 
+<<<<<<< HEAD
 
 	/* Step 3: check if arguments are trivially valid */
 
@@ -460,10 +625,30 @@ static int pcl816_ai_cmdtest(struct comedi_device *dev,
 		err |= cfc_check_trigger_arg_min(&cmd->stop_arg, 1);
 	else	/* TRIG_NONE */
 		err |= cfc_check_trigger_arg_is(&cmd->stop_arg, 0);
+=======
+	/* Step 3: check if arguments are trivially valid */
+
+	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
+
+	if (cmd->convert_src == TRIG_TIMER)
+		err |= comedi_check_trigger_arg_min(&cmd->convert_arg, 10000);
+	else	/* TRIG_EXT */
+		err |= comedi_check_trigger_arg_is(&cmd->convert_arg, 0);
+
+	err |= comedi_check_trigger_arg_is(&cmd->scan_end_arg,
+					   cmd->chanlist_len);
+
+	if (cmd->stop_src == TRIG_COUNT)
+		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
+	else	/* TRIG_NONE */
+		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 3;
 
+<<<<<<< HEAD
 
 	/* step 4: fix up any arguments */
 	if (cmd->convert_src == TRIG_TIMER) {
@@ -473,12 +658,23 @@ static int pcl816_ai_cmdtest(struct comedi_device *dev,
 					  &devpriv->divisor2,
 					  &arg, cmd->flags);
 		err |= cfc_check_trigger_arg_is(&cmd->convert_arg, arg);
+=======
+	/* step 4: fix up any arguments */
+	if (cmd->convert_src == TRIG_TIMER) {
+		unsigned int arg = cmd->convert_arg;
+
+		comedi_8254_cascade_ns_to_timer(dev->pacer, &arg, cmd->flags);
+		err |= comedi_check_trigger_arg_is(&cmd->convert_arg, arg);
+>>>>>>> v4.9.227
 	}
 
 	if (err)
 		return 4;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	/* step 5: complain about special chanlist considerations */
 
 	if (cmd->chanlist) {
@@ -493,6 +689,10 @@ static int pcl816_ai_cmdtest(struct comedi_device *dev,
 static int pcl816_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 {
 	struct pcl816_private *devpriv = dev->private;
+<<<<<<< HEAD
+=======
+	struct comedi_isadma *dma = devpriv->dma;
+>>>>>>> v4.9.227
 	struct comedi_cmd *cmd = &s->async->cmd;
 	unsigned int ctrl;
 	unsigned int seglen;
@@ -500,32 +700,58 @@ static int pcl816_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 	if (devpriv->ai_cmd_running)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	pcl816_start_pacer(dev, false);
 
+=======
+>>>>>>> v4.9.227
 	seglen = check_channel_list(dev, s, cmd->chanlist, cmd->chanlist_len);
 	if (seglen < 1)
 		return -EINVAL;
 	pcl816_ai_setup_chanlist(dev, cmd->chanlist, seglen);
 	udelay(1);
 
+<<<<<<< HEAD
 	devpriv->ai_act_scan = 0;
 	s->async->cur_chan = 0;
+=======
+>>>>>>> v4.9.227
 	devpriv->ai_cmd_running = 1;
 	devpriv->ai_poll_ptr = 0;
 	devpriv->ai_cmd_canceled = 0;
 
+<<<<<<< HEAD
 	pcl816_ai_setup_dma(dev, s);
 
 	pcl816_start_pacer(dev, true);
 
 	ctrl = PCL816_CTRL_INTEN | PCL816_CTRL_DMAEN | PCL816_CTRL_DMASRC_SLOT0;
+=======
+	/* setup and enable dma for the first buffer */
+	dma->cur_dma = 0;
+	pcl816_ai_setup_dma(dev, s, 0);
+
+	comedi_8254_set_mode(dev->pacer, 0, I8254_MODE1 | I8254_BINARY);
+	comedi_8254_write(dev->pacer, 0, 0x0ff);
+	udelay(1);
+	comedi_8254_update_divisors(dev->pacer);
+	comedi_8254_pacer_enable(dev->pacer, 1, 2, true);
+
+	ctrl = PCL816_CTRL_INTEN | PCL816_CTRL_DMAEN |
+	       PCL816_CTRL_DMASRC_SLOT(0);
+>>>>>>> v4.9.227
 	if (cmd->convert_src == TRIG_TIMER)
 		ctrl |= PCL816_CTRL_PACER_TRIG;
 	else	/* TRIG_EXT */
 		ctrl |= PCL816_CTRL_EXT_TRIG;
 
 	outb(ctrl, dev->iobase + PCL816_CTRL_REG);
+<<<<<<< HEAD
 	outb((devpriv->dma << 4) | dev->irq, dev->iobase + PCL816_STATUS_REG);
+=======
+	outb((dma->chan << 4) | dev->irq,
+	     dev->iobase + PCL816_STATUS_REG);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -533,6 +759,7 @@ static int pcl816_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 static int pcl816_ai_poll(struct comedi_device *dev, struct comedi_subdevice *s)
 {
 	struct pcl816_private *devpriv = dev->private;
+<<<<<<< HEAD
 	unsigned long flags;
 	unsigned int top1, top2, i;
 
@@ -569,6 +796,36 @@ static int pcl816_ai_poll(struct comedi_device *dev, struct comedi_subdevice *s)
 	cfc_handle_events(dev, s);
 
 	return comedi_buf_n_bytes_ready(s);
+=======
+	struct comedi_isadma *dma = devpriv->dma;
+	struct comedi_isadma_desc *desc;
+	unsigned long flags;
+	unsigned int poll;
+	int ret;
+
+	spin_lock_irqsave(&dev->spinlock, flags);
+
+	poll = comedi_isadma_poll(dma);
+	poll = comedi_bytes_to_samples(s, poll);
+	if (poll > devpriv->ai_poll_ptr) {
+		desc = &dma->desc[dma->cur_dma];
+		transfer_from_dma_buf(dev, s, desc->virt_addr,
+				      devpriv->ai_poll_ptr,
+				      poll - devpriv->ai_poll_ptr);
+		/* new buffer position */
+		devpriv->ai_poll_ptr = poll;
+
+		comedi_handle_events(dev, s);
+
+		ret = comedi_buf_n_bytes_ready(s);
+	} else {
+		/* no new samples */
+		ret = 0;
+	}
+	spin_unlock_irqrestore(&dev->spinlock, flags);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int pcl816_ai_cancel(struct comedi_device *dev,
@@ -579,6 +836,7 @@ static int pcl816_ai_cancel(struct comedi_device *dev,
 	if (!devpriv->ai_cmd_running)
 		return 0;
 
+<<<<<<< HEAD
 	outb(PCL816_CTRL_DISABLE_TRIG, dev->iobase + PCL816_CTRL_REG);
 	pcl816_ai_clear_eoc(dev);
 
@@ -587,6 +845,12 @@ static int pcl816_ai_cancel(struct comedi_device *dev,
 			2, I8254_MODE0 | I8254_BINARY);
 	i8254_set_mode(dev->iobase + PCL816_TIMER_BASE, 0,
 			1, I8254_MODE0 | I8254_BINARY);
+=======
+	outb(0, dev->iobase + PCL816_CTRL_REG);
+	pcl816_ai_clear_eoc(dev);
+
+	comedi_8254_pacer_enable(dev->pacer, 1, 2, false);
+>>>>>>> v4.9.227
 
 	devpriv->ai_cmd_running = 0;
 	devpriv->ai_cmd_canceled = 1;
@@ -619,7 +883,11 @@ static int pcl816_ai_insn_read(struct comedi_device *dev,
 
 		data[i] = pcl816_ai_get_sample(dev, s);
 	}
+<<<<<<< HEAD
 	outb(PCL816_CTRL_DISABLE_TRIG, dev->iobase + PCL816_CTRL_REG);
+=======
+	outb(0, dev->iobase + PCL816_CTRL_REG);
+>>>>>>> v4.9.227
 	pcl816_ai_clear_eoc(dev);
 
 	return ret ? ret : insn->n;
@@ -653,6 +921,7 @@ static int pcl816_do_insn_bits(struct comedi_device *dev,
 
 static void pcl816_reset(struct comedi_device *dev)
 {
+<<<<<<< HEAD
 	unsigned long timer_base = dev->iobase + PCL816_TIMER_BASE;
 
 	outb(PCL816_CTRL_DISABLE_TRIG, dev->iobase + PCL816_CTRL_REG);
@@ -664,18 +933,62 @@ static void pcl816_reset(struct comedi_device *dev)
 	i8254_set_mode(timer_base, 0, 1, I8254_MODE0 | I8254_BINARY);
 	i8254_set_mode(timer_base, 0, 0, I8254_MODE0 | I8254_BINARY);
 
+=======
+	outb(0, dev->iobase + PCL816_CTRL_REG);
+	pcl816_ai_set_chan_range(dev, 0, 0);
+	pcl816_ai_clear_eoc(dev);
+
+>>>>>>> v4.9.227
 	/* set all digital outputs low */
 	outb(0, dev->iobase + PCL816_DO_DI_LSB_REG);
 	outb(0, dev->iobase + PCL816_DO_DI_MSB_REG);
 }
 
+<<<<<<< HEAD
+=======
+static void pcl816_alloc_irq_and_dma(struct comedi_device *dev,
+				     struct comedi_devconfig *it)
+{
+	struct pcl816_private *devpriv = dev->private;
+	unsigned int irq_num = it->options[1];
+	unsigned int dma_chan = it->options[2];
+
+	/* only IRQs 2-7 and DMA channels 3 and 1 are valid */
+	if (!(irq_num >= 2 && irq_num <= 7) ||
+	    !(dma_chan == 3 || dma_chan == 1))
+		return;
+
+	if (request_irq(irq_num, pcl816_interrupt, 0, dev->board_name, dev))
+		return;
+
+	/* DMA uses two 16K buffers */
+	devpriv->dma = comedi_isadma_alloc(dev, 2, dma_chan, dma_chan,
+					   PAGE_SIZE * 4, COMEDI_ISADMA_READ);
+	if (!devpriv->dma)
+		free_irq(irq_num, dev);
+	else
+		dev->irq = irq_num;
+}
+
+static void pcl816_free_dma(struct comedi_device *dev)
+{
+	struct pcl816_private *devpriv = dev->private;
+
+	if (devpriv)
+		comedi_isadma_free(devpriv->dma);
+}
+
+>>>>>>> v4.9.227
 static int pcl816_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 {
 	const struct pcl816_board *board = dev->board_ptr;
 	struct pcl816_private *devpriv;
 	struct comedi_subdevice *s;
 	int ret;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> v4.9.227
 
 	devpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));
 	if (!devpriv)
@@ -685,6 +998,7 @@ static int pcl816_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	/* we can use IRQ 2-7 for async command support */
 	if (it->options[1] >= 2 && it->options[1] <= 7) {
 		ret = request_irq(it->options[1], pcl816_interrupt, 0,
@@ -718,6 +1032,15 @@ static int pcl816_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 			devpriv->hwdmaptr[i] = virt_to_bus((void *)dmabuf);
 		}
 	}
+=======
+	/* an IRQ and DMA are required to support async commands */
+	pcl816_alloc_irq_and_dma(dev, it);
+
+	dev->pacer = comedi_8254_init(dev->iobase + PCL816_TIMER_BASE,
+				      I8254_OSC_BASE_10MHZ, I8254_IO8, 0);
+	if (!dev->pacer)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	ret = comedi_alloc_subdevices(dev, 4);
 	if (ret)
@@ -730,7 +1053,11 @@ static int pcl816_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->maxdata	= board->ai_maxdata;
 	s->range_table	= &range_pcl816;
 	s->insn_read	= pcl816_ai_insn_read;
+<<<<<<< HEAD
 	if (devpriv->dma) {
+=======
+	if (dev->irq) {
+>>>>>>> v4.9.227
 		dev->read_subdev = s;
 		s->subdev_flags	|= SDF_CMD_READ;
 		s->len_chanlist	= board->ai_chanlist;
@@ -740,6 +1067,7 @@ static int pcl816_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		s->cancel	= pcl816_ai_cancel;
 	}
 
+<<<<<<< HEAD
 	/* Analog OUtput subdevice */
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_UNUSED;
@@ -750,6 +1078,11 @@ static int pcl816_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->maxdata = board->ao_maxdata;
 	s->range_table = &range_pcl816;
 #endif
+=======
+	/* Piggyback Slot1 subdevice */
+	s = &dev->subdevices[1];
+	s->type		= COMEDI_SUBD_UNUSED;
+>>>>>>> v4.9.227
 
 	/* Digital Input subdevice */
 	s = &dev->subdevices[2];
@@ -776,6 +1109,7 @@ static int pcl816_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 
 static void pcl816_detach(struct comedi_device *dev)
 {
+<<<<<<< HEAD
 	struct pcl816_private *devpriv = dev->private;
 
 	if (dev->private) {
@@ -788,6 +1122,13 @@ static void pcl816_detach(struct comedi_device *dev)
 		if (devpriv->dmabuf[1])
 			free_pages(devpriv->dmabuf[1], devpriv->dmapages);
 	}
+=======
+	if (dev->private) {
+		pcl816_ai_cancel(dev, dev->read_subdev);
+		pcl816_reset(dev);
+	}
+	pcl816_free_dma(dev);
+>>>>>>> v4.9.227
 	comedi_legacy_detach(dev);
 }
 

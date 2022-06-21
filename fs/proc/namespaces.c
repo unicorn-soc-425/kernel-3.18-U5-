@@ -1,10 +1,14 @@
 #include <linux/proc_fs.h>
 #include <linux/nsproxy.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
 #include <linux/ptrace.h>
 #include <linux/fs_struct.h>
 #include <linux/mount.h>
 #include <linux/path.h>
+=======
+#include <linux/ptrace.h>
+>>>>>>> v4.9.227
 #include <linux/namei.h>
 #include <linux/file.h>
 #include <linux/utsname.h>
@@ -32,6 +36,7 @@ static const struct proc_ns_operations *ns_entries[] = {
 	&userns_operations,
 #endif
 	&mntns_operations,
+<<<<<<< HEAD
 };
 
 static const struct file_operations ns_file_operations = {
@@ -111,10 +116,23 @@ static void *proc_ns_follow_link(struct dentry *dentry, struct nameidata *nd)
 	struct inode *inode = dentry->d_inode;
 	struct super_block *sb = inode->i_sb;
 	struct proc_inode *ei = PROC_I(inode);
+=======
+#ifdef CONFIG_CGROUPS
+	&cgroupns_operations,
+#endif
+};
+
+static const char *proc_ns_get_link(struct dentry *dentry,
+				    struct inode *inode,
+				    struct delayed_call *done)
+{
+	const struct proc_ns_operations *ns_ops = PROC_I(inode)->ns_ops;
+>>>>>>> v4.9.227
 	struct task_struct *task;
 	struct path ns_path;
 	void *error = ERR_PTR(-EACCES);
 
+<<<<<<< HEAD
 	task = get_proc_task(inode);
 	if (!task)
 		goto out;
@@ -135,21 +153,43 @@ static void *proc_ns_follow_link(struct dentry *dentry, struct nameidata *nd)
 out_put_task:
 	put_task_struct(task);
 out:
+=======
+	if (!dentry)
+		return ERR_PTR(-ECHILD);
+
+	task = get_proc_task(inode);
+	if (!task)
+		return error;
+
+	if (ptrace_may_access(task, PTRACE_MODE_READ_FSCREDS)) {
+		error = ns_get_path(&ns_path, task, ns_ops);
+		if (!error)
+			nd_jump_link(&ns_path);
+	}
+	put_task_struct(task);
+>>>>>>> v4.9.227
 	return error;
 }
 
 static int proc_ns_readlink(struct dentry *dentry, char __user *buffer, int buflen)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	struct proc_inode *ei = PROC_I(inode);
 	const struct proc_ns_operations *ns_ops = ei->ns.ns_ops;
 	struct task_struct *task;
 	void *ns;
+=======
+	struct inode *inode = d_inode(dentry);
+	const struct proc_ns_operations *ns_ops = PROC_I(inode)->ns_ops;
+	struct task_struct *task;
+>>>>>>> v4.9.227
 	char name[50];
 	int res = -EACCES;
 
 	task = get_proc_task(inode);
 	if (!task)
+<<<<<<< HEAD
 		goto out;
 
 	if (!ptrace_may_access(task, PTRACE_MODE_READ_FSCREDS))
@@ -166,12 +206,26 @@ static int proc_ns_readlink(struct dentry *dentry, char __user *buffer, int bufl
 out_put_task:
 	put_task_struct(task);
 out:
+=======
+		return res;
+
+	if (ptrace_may_access(task, PTRACE_MODE_READ_FSCREDS)) {
+		res = ns_get_name(name, sizeof(name), task, ns_ops);
+		if (res >= 0)
+			res = readlink_copy(buffer, buflen, name);
+	}
+	put_task_struct(task);
+>>>>>>> v4.9.227
 	return res;
 }
 
 static const struct inode_operations proc_ns_link_inode_operations = {
 	.readlink	= proc_ns_readlink,
+<<<<<<< HEAD
 	.follow_link	= proc_ns_follow_link,
+=======
+	.get_link	= proc_ns_get_link,
+>>>>>>> v4.9.227
 	.setattr	= proc_setattr,
 };
 
@@ -189,7 +243,11 @@ static int proc_ns_instantiate(struct inode *dir,
 	ei = PROC_I(inode);
 	inode->i_mode = S_IFLNK|S_IRWXUGO;
 	inode->i_op = &proc_ns_link_inode_operations;
+<<<<<<< HEAD
 	ei->ns.ns_ops = ns_ops;
+=======
+	ei->ns_ops = ns_ops;
+>>>>>>> v4.9.227
 
 	d_set_d_op(dentry, &pid_dentry_operations);
 	d_add(dentry, inode);
@@ -229,7 +287,12 @@ out:
 
 const struct file_operations proc_ns_dir_operations = {
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.iterate	= proc_ns_dir_readdir,
+=======
+	.iterate_shared	= proc_ns_dir_readdir,
+	.llseek		= generic_file_llseek,
+>>>>>>> v4.9.227
 };
 
 static struct dentry *proc_ns_dir_lookup(struct inode *dir,
@@ -267,6 +330,7 @@ const struct inode_operations proc_ns_dir_inode_operations = {
 	.getattr	= pid_getattr,
 	.setattr	= proc_setattr,
 };
+<<<<<<< HEAD
 
 struct file *proc_ns_fget(int fd)
 {
@@ -295,3 +359,5 @@ bool proc_ns_inode(struct inode *inode)
 {
 	return inode->i_fop == &ns_file_operations;
 }
+=======
+>>>>>>> v4.9.227

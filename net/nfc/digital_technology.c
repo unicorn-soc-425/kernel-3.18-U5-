@@ -1257,12 +1257,16 @@ static int digital_tg_config_nfcf(struct nfc_digital_dev *ddev, u8 rf_tech)
 int digital_tg_listen_nfcf(struct nfc_digital_dev *ddev, u8 rf_tech)
 {
 	int rc;
+<<<<<<< HEAD
 	u8 *nfcid2;
+=======
+>>>>>>> v4.9.227
 
 	rc = digital_tg_config_nfcf(ddev, rf_tech);
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	nfcid2 = kzalloc(NFC_NFCID2_MAXSIZE, GFP_KERNEL);
 	if (!nfcid2)
 		return -ENOMEM;
@@ -1272,6 +1276,9 @@ int digital_tg_listen_nfcf(struct nfc_digital_dev *ddev, u8 rf_tech)
 	get_random_bytes(nfcid2 + 2, NFC_NFCID2_MAXSIZE - 2);
 
 	return digital_tg_listen(ddev, 300, digital_tg_recv_sensf_req, nfcid2);
+=======
+	return digital_tg_listen(ddev, 300, digital_tg_recv_sensf_req, NULL);
+>>>>>>> v4.9.227
 }
 
 void digital_tg_recv_md_req(struct nfc_digital_dev *ddev, void *arg,

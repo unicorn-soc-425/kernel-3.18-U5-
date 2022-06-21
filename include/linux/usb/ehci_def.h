@@ -19,6 +19,11 @@
 #ifndef __LINUX_USB_EHCI_DEF_H
 #define __LINUX_USB_EHCI_DEF_H
 
+<<<<<<< HEAD
+=======
+#include <linux/usb/ehci-dbgp.h>
+
+>>>>>>> v4.9.227
 /* EHCI register interface, corresponds to EHCI Revision 0.95 specification */
 
 /* Section 2.2 Host Controller Capability Registers */
@@ -178,11 +183,19 @@ struct ehci_regs {
  * PORTSCx
  */
 	/* HOSTPC: offset 0x84 */
+<<<<<<< HEAD
 	u32		hostpc[1];	/* HOSTPC extension */
 #define HOSTPC_PHCD	(1<<22)		/* Phy clock disable */
 #define HOSTPC_PSPD	(3<<25)		/* Port speed detection */
 
 	u32		reserved5[16];
+=======
+	u32		hostpc[0];	/* HOSTPC extension */
+#define HOSTPC_PHCD	(1<<22)		/* Phy clock disable */
+#define HOSTPC_PSPD	(3<<25)		/* Port speed detection */
+
+	u32		reserved5[17];
+>>>>>>> v4.9.227
 
 	/* USBMODE_EX: offset 0xc8 */
 	u32		usbmode_ex;	/* USB Device mode extension */
@@ -190,6 +203,7 @@ struct ehci_regs {
 #define USBMODE_EX_HC	(3<<0)		/* host controller mode */
 };
 
+<<<<<<< HEAD
 /* Appendix C, Debug port ... intended for use with special "debug devices"
  * that can help if there's no serial console.  (nonstandard enumeration.)
  */
@@ -253,4 +267,6 @@ static inline int dbgp_external_startup(struct usb_hcd *hcd)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 #endif /* __LINUX_USB_EHCI_DEF_H */

@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -86,7 +90,12 @@ static inline void interval_set(struct interval_node *node,
 	node->in_max_high = end;
 }
 
+<<<<<<< HEAD
 /* Rules to write an interval callback.
+=======
+/*
+ * Rules to write an interval callback.
+>>>>>>> v4.9.227
  *  - the callback returns INTERVAL_ITER_STOP when it thinks the iteration
  *    should be stopped. It will then cause the iteration function to return
  *    immediately with return value INTERVAL_ITER_STOP.
@@ -102,12 +111,20 @@ struct interval_node *interval_insert(struct interval_node *node,
 				      struct interval_node **root);
 void interval_erase(struct interval_node *node, struct interval_node **root);
 
+<<<<<<< HEAD
 /* Search the extents in the tree and call @func for each overlapped
  * extents. */
+=======
+/*
+ * Search the extents in the tree and call @func for each overlapped
+ * extents.
+ */
+>>>>>>> v4.9.227
 enum interval_iter interval_search(struct interval_node *root,
 				   struct interval_node_extent *ex,
 				   interval_callback_t func, void *data);
 
+<<<<<<< HEAD
 /* Iterate every node in the tree - by reverse order or regular order. */
 enum interval_iter interval_iterate(struct interval_node *root,
 				    interval_callback_t func, void *data);
@@ -121,4 +138,6 @@ int interval_is_overlapped(struct interval_node *root,
 			   struct interval_node_extent *ex);
 struct interval_node *interval_find(struct interval_node *root,
 				    struct interval_node_extent *ex);
+=======
+>>>>>>> v4.9.227
 #endif

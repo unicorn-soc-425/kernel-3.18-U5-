@@ -3,8 +3,11 @@
 #
 obj-$(CONFIG_USB_PHY)			+= phy.o
 obj-$(CONFIG_OF)			+= of.o
+<<<<<<< HEAD
 obj-$(CONFIG_USB_OTG_WAKELOCK)		+= otg-wakelock.o
 obj-$(CONFIG_DUAL_ROLE_USB_INTF)	+= class-dual-role.o
+=======
+>>>>>>> v4.9.227
 
 # transceiver drivers, keep the list sorted
 
@@ -22,6 +25,7 @@ obj-$(CONFIG_USB_EHCI_TEGRA)		+= phy-tegra-usb.o
 obj-$(CONFIG_USB_GPIO_VBUS)		+= phy-gpio-vbus-usb.o
 obj-$(CONFIG_USB_ISP1301)		+= phy-isp1301.o
 obj-$(CONFIG_USB_MSM_OTG)		+= phy-msm-usb.o
+<<<<<<< HEAD
 obj-$(CONFIG_USB_MSM_HSPHY)     	+= phy-msm-hsusb.o
 obj-$(CONFIG_USB_MSM_SSPHY)     	+= phy-msm-ssusb.o
 obj-$(CONFIG_USB_MSM_SSPHY_QMP)     	+= phy-msm-ssusb-qmp.o
@@ -30,6 +34,11 @@ obj-$(CONFIG_USB_MV_OTG)		+= phy-mv-usb.o
 obj-$(CONFIG_USB_MXS_PHY)		+= phy-mxs-usb.o
 obj-$(CONFIG_USB_RCAR_PHY)		+= phy-rcar-usb.o
 obj-$(CONFIG_USB_RCAR_GEN2_PHY)		+= phy-rcar-gen2-usb.o
+=======
+obj-$(CONFIG_USB_QCOM_8X16_PHY)	+= phy-qcom-8x16-usb.o
+obj-$(CONFIG_USB_MV_OTG)		+= phy-mv-usb.o
+obj-$(CONFIG_USB_MXS_PHY)		+= phy-mxs-usb.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_USB_ULPI)			+= phy-ulpi.o
 obj-$(CONFIG_USB_ULPI_VIEWPORT)		+= phy-ulpi-viewport.o
 obj-$(CONFIG_KEYSTONE_USB_PHY)		+= phy-keystone.o

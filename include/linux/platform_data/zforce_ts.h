@@ -16,9 +16,12 @@
 #define _LINUX_INPUT_ZFORCE_TS_H
 
 struct zforce_ts_platdata {
+<<<<<<< HEAD
 	int gpio_int;
 	int gpio_rst;
 
+=======
+>>>>>>> v4.9.227
 	unsigned int x_max;
 	unsigned int y_max;
 };

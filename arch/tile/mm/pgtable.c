@@ -44,6 +44,7 @@ void show_mem(unsigned int filter)
 {
 	struct zone *zone;
 
+<<<<<<< HEAD
 	pr_err("Active:%lu inactive:%lu dirty:%lu writeback:%lu unstable:%lu"
 	       " free:%lu\n slab:%lu mapped:%lu pagetables:%lu bounce:%lu"
 	       " pagecache:%lu swap:%lu\n",
@@ -61,6 +62,23 @@ void show_mem(unsigned int filter)
 	       global_page_state(NR_PAGETABLE),
 	       global_page_state(NR_BOUNCE),
 	       global_page_state(NR_FILE_PAGES),
+=======
+	pr_err("Active:%lu inactive:%lu dirty:%lu writeback:%lu unstable:%lu free:%lu\n slab:%lu mapped:%lu pagetables:%lu bounce:%lu pagecache:%lu swap:%lu\n",
+	       (global_node_page_state(NR_ACTIVE_ANON) +
+		global_node_page_state(NR_ACTIVE_FILE)),
+	       (global_node_page_state(NR_INACTIVE_ANON) +
+		global_node_page_state(NR_INACTIVE_FILE)),
+	       global_node_page_state(NR_FILE_DIRTY),
+	       global_node_page_state(NR_WRITEBACK),
+	       global_node_page_state(NR_UNSTABLE_NFS),
+	       global_page_state(NR_FREE_PAGES),
+	       (global_page_state(NR_SLAB_RECLAIMABLE) +
+		global_page_state(NR_SLAB_UNRECLAIMABLE)),
+	       global_node_page_state(NR_FILE_MAPPED),
+	       global_page_state(NR_PAGETABLE),
+	       global_page_state(NR_BOUNCE),
+	       global_node_page_state(NR_FILE_PAGES),
+>>>>>>> v4.9.227
 	       get_nr_swap_pages());
 
 	for_each_zone(zone) {
@@ -233,7 +251,11 @@ void pgd_free(struct mm_struct *mm, pgd_t *pgd)
 struct page *pgtable_alloc_one(struct mm_struct *mm, unsigned long address,
 			       int order)
 {
+<<<<<<< HEAD
 	gfp_t flags = GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO;
+=======
+	gfp_t flags = GFP_KERNEL|__GFP_ZERO;
+>>>>>>> v4.9.227
 	struct page *p;
 	int i;
 

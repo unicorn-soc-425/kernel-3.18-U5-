@@ -1,5 +1,9 @@
 config EXT2_FS
 	tristate "Second extended fs support"
+<<<<<<< HEAD
+=======
+	select FS_IOMAP if FS_DAX
+>>>>>>> v4.9.227
 	help
 	  Ext2 is a standard Linux file system for hard disks.
 
@@ -42,6 +46,7 @@ config EXT2_FS_SECURITY
 
 	  If you are not using a security module that requires using
 	  extended attributes for file security labels, say N.
+<<<<<<< HEAD
 
 config EXT2_FS_XIP
 	bool "Ext2 execute in place support"
@@ -53,3 +58,5 @@ config EXT2_FS_XIP
 
 	  If you do not use a block device that is capable of using this,
 	  or if unsure, say N.
+=======
+>>>>>>> v4.9.227

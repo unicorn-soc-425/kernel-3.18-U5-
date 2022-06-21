@@ -35,7 +35,11 @@ _GLOBAL(slb_allocate_realmode)
 	 * check for bad kernel/user address
 	 * (ea & ~REGION_MASK) >= PGTABLE_RANGE
 	 */
+<<<<<<< HEAD
 	rldicr. r9,r3,4,(63 - PGTABLE_EADDR_SIZE - 4)
+=======
+	rldicr. r9,r3,4,(63 - H_PGTABLE_EADDR_SIZE - 4)
+>>>>>>> v4.9.227
 	bne-	8f
 
 	srdi	r9,r3,60		/* get region */
@@ -91,7 +95,11 @@ slb_miss_kernel_load_vmemmap:
 	 * can be demoted from 64K -> 4K dynamically on some machines
 	 */
 	clrldi	r11,r10,48
+<<<<<<< HEAD
 	cmpldi	r11,(VMALLOC_SIZE >> 28) - 1
+=======
+	cmpldi	r11,(H_VMALLOC_SIZE >> 28) - 1
+>>>>>>> v4.9.227
 	bgt	5f
 	lhz	r11,PACAVMALLOCSLLP(r13)
 	b	6f
@@ -178,6 +186,7 @@ BEGIN_FTR_SECTION
 END_MMU_FTR_SECTION_IFSET(MMU_FTR_1T_SEGMENT)
 	b	slb_finish_load
 
+<<<<<<< HEAD
 8:	/* invalid EA */
 	/*
 	 * It's possible the bad EA is too large to fit in the SLB cache, which
@@ -243,6 +252,11 @@ _GLOBAL(slb_allocate_user)
 
 #endif /* __DISABLED__ */
 
+=======
+8:	/* invalid EA - return an error indication */
+	crset	4*cr0+eq		/* indicate failure */
+	blr
+>>>>>>> v4.9.227
 
 /*
  * Finish loading of an SLB entry and return

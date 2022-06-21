@@ -17,7 +17,13 @@ OUTPUT_ARCH(mips)
 ENTRY(kernel_entry)
 PHDRS {
 	text PT_LOAD FLAGS(7);	/* RWX */
+<<<<<<< HEAD
 	note PT_NOTE FLAGS(4);	/* R__ */
+=======
+#ifndef CONFIG_CAVIUM_OCTEON_SOC
+	note PT_NOTE FLAGS(4);	/* R__ */
+#endif /* CAVIUM_OCTEON_SOC */
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_32BIT
@@ -53,9 +59,17 @@ SECTIONS
 	.text : {
 		TEXT_TEXT
 		SCHED_TEXT
+<<<<<<< HEAD
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
+=======
+		CPUIDLE_TEXT
+		LOCK_TEXT
+		KPROBES_TEXT
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+>>>>>>> v4.9.227
 		*(.text.*)
 		*(.fixup)
 		*(.gnu.warning)
@@ -71,7 +85,16 @@ SECTIONS
 		__stop___dbe_table = .;
 	}
 
+<<<<<<< HEAD
 	NOTES :text :note
+=======
+#ifdef CONFIG_CAVIUM_OCTEON_SOC
+#define NOTES_HEADER
+#else /* CONFIG_CAVIUM_OCTEON_SOC */
+#define NOTES_HEADER :note
+#endif /* CONFIG_CAVIUM_OCTEON_SOC */
+	NOTES :text NOTES_HEADER
+>>>>>>> v4.9.227
 	.dummy : { *(.dummy) } :text
 
 	_sdata = .;			/* Start of data section */
@@ -125,8 +148,47 @@ SECTIONS
 	.exit.data : {
 		EXIT_DATA
 	}
+<<<<<<< HEAD
 
 	PERCPU_SECTION(1 << CONFIG_MIPS_L1_CACHE_SHIFT)
+=======
+#ifdef CONFIG_SMP
+	PERCPU_SECTION(1 << CONFIG_MIPS_L1_CACHE_SHIFT)
+#endif
+
+#ifdef CONFIG_MIPS_ELF_APPENDED_DTB
+	.appended_dtb : AT(ADDR(.appended_dtb) - LOAD_OFFSET) {
+		*(.appended_dtb)
+		KEEP(*(.appended_dtb))
+	}
+#endif
+
+#ifdef CONFIG_RELOCATABLE
+	. = ALIGN(4);
+
+	.data.reloc : {
+		_relocation_start = .;
+		/*
+		 * Space for relocation table
+		 * This needs to be filled so that the
+		 * relocs tool can overwrite the content.
+		 * An invalid value is left at the start of the
+		 * section to abort relocation if the table
+		 * has not been filled in.
+		 */
+		LONG(0xFFFFFFFF);
+		FILL(0);
+		. += CONFIG_RELOCATION_TABLE_SIZE - 4;
+		_relocation_end = .;
+	}
+#endif
+
+#ifdef CONFIG_MIPS_RAW_APPENDED_DTB
+	__appended_dtb = .;
+	/* leave space for appended DTB */
+	. += 0x100000;
+#endif
+>>>>>>> v4.9.227
 	/*
 	 * Align to 64K in attempt to eliminate holes before the
 	 * .bss..swapper_pg_dir section at the start of .bss.  This
@@ -175,6 +237,10 @@ SECTIONS
 	DISCARDS
 	/DISCARD/ : {
 		/* ABI crap starts here */
+<<<<<<< HEAD
+=======
+		*(.MIPS.abiflags)
+>>>>>>> v4.9.227
 		*(.MIPS.options)
 		*(.options)
 		*(.pdr)

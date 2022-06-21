@@ -32,11 +32,18 @@
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/mc146818rtc.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/sfi.h>
 
+<<<<<<< HEAD
 #include <asm-generic/rtc.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/intel_scu_ipc.h>
 #include <asm/intel-mid.h>
 #include <asm/intel_mid_vrtc.h>
@@ -149,6 +156,7 @@ static int mrst_read_alarm(struct device *dev, struct rtc_wkalrm *t)
 	if (mrst->irq <= 0)
 		return -EIO;
 
+<<<<<<< HEAD
 	/* Basic alarms only support hour, minute, and seconds fields.
 	 * Some also support day and month, for alarms up to a year in
 	 * the future.
@@ -157,6 +165,8 @@ static int mrst_read_alarm(struct device *dev, struct rtc_wkalrm *t)
 	t->time.tm_mon = -1;
 	t->time.tm_year = -1;
 
+=======
+>>>>>>> v4.9.227
 	/* vRTC only supports binary mode */
 	spin_lock_irq(&rtc_lock);
 	t->time.tm_sec = vrtc_cmos_read(RTC_SECONDS_ALARM);
@@ -266,7 +276,11 @@ static int mrst_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 }
 
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_INTF_PROC) || defined(CONFIG_RTC_INTF_PROC_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_INTF_PROC)
+>>>>>>> v4.9.227
 
 static int mrst_procfs(struct device *dev, struct seq_file *seq)
 {
@@ -277,6 +291,7 @@ static int mrst_procfs(struct device *dev, struct seq_file *seq)
 	valid = vrtc_cmos_read(RTC_VALID);
 	spin_unlock_irq(&rtc_lock);
 
+<<<<<<< HEAD
 	return seq_printf(seq,
 			"periodic_IRQ\t: %s\n"
 			"alarm\t\t: %s\n"
@@ -284,6 +299,17 @@ static int mrst_procfs(struct device *dev, struct seq_file *seq)
 			"periodic_freq\t: daily (not adjustable)\n",
 			(rtc_control & RTC_PIE) ? "on" : "off",
 			(rtc_control & RTC_AIE) ? "on" : "off");
+=======
+	seq_printf(seq,
+		   "periodic_IRQ\t: %s\n"
+		   "alarm\t\t: %s\n"
+		   "BCD\t\t: no\n"
+		   "periodic_freq\t: daily (not adjustable)\n",
+		   (rtc_control & RTC_PIE) ? "on" : "off",
+		   (rtc_control & RTC_AIE) ? "on" : "off");
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 #else
@@ -413,8 +439,13 @@ static void rtc_mrst_do_remove(struct device *dev)
 	mrst->dev = NULL;
 }
 
+<<<<<<< HEAD
 #ifdef	CONFIG_PM
 static int mrst_suspend(struct device *dev, pm_message_t mesg)
+=======
+#ifdef CONFIG_PM_SLEEP
+static int mrst_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct mrst_rtc	*mrst = dev_get_drvdata(dev);
 	unsigned char	tmp;
@@ -453,7 +484,11 @@ static int mrst_suspend(struct device *dev, pm_message_t mesg)
  */
 static inline int mrst_poweroff(struct device *dev)
 {
+<<<<<<< HEAD
 	return mrst_suspend(dev, PMSG_HIBERNATE);
+=======
+	return mrst_suspend(dev);
+>>>>>>> v4.9.227
 }
 
 static int mrst_resume(struct device *dev)
@@ -490,9 +525,17 @@ static int mrst_resume(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #else
 #define	mrst_suspend	NULL
 #define	mrst_resume	NULL
+=======
+static SIMPLE_DEV_PM_OPS(mrst_pm_ops, mrst_suspend, mrst_resume);
+#define MRST_PM_OPS (&mrst_pm_ops)
+
+#else
+#define MRST_PM_OPS NULL
+>>>>>>> v4.9.227
 
 static inline int mrst_poweroff(struct device *dev)
 {
@@ -529,9 +572,14 @@ static struct platform_driver vrtc_mrst_platform_driver = {
 	.remove		= vrtc_mrst_platform_remove,
 	.shutdown	= vrtc_mrst_platform_shutdown,
 	.driver = {
+<<<<<<< HEAD
 		.name		= (char *) driver_name,
 		.suspend	= mrst_suspend,
 		.resume		= mrst_resume,
+=======
+		.name	= driver_name,
+		.pm	= MRST_PM_OPS,
+>>>>>>> v4.9.227
 	}
 };
 

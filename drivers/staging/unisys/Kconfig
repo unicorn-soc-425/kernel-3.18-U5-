@@ -3,12 +3,19 @@
 #
 menuconfig UNISYSSPAR
 	bool "Unisys SPAR driver support"
+<<<<<<< HEAD
 	depends on X86_64
+=======
+	depends on X86_64 && !UML
+	select PCI
+	select ACPI
+>>>>>>> v4.9.227
 	---help---
 	Support for the Unisys SPAR drivers
 
 if UNISYSSPAR
 
+<<<<<<< HEAD
 source "drivers/staging/unisys/visorutil/Kconfig"
 source "drivers/staging/unisys/visorchannel/Kconfig"
 source "drivers/staging/unisys/visorchipset/Kconfig"
@@ -16,5 +23,11 @@ source "drivers/staging/unisys/channels/Kconfig"
 source "drivers/staging/unisys/uislib/Kconfig"
 source "drivers/staging/unisys/virtpci/Kconfig"
 source "drivers/staging/unisys/virthba/Kconfig"
+=======
+source "drivers/staging/unisys/visorbus/Kconfig"
+source "drivers/staging/unisys/visornic/Kconfig"
+source "drivers/staging/unisys/visorinput/Kconfig"
+source "drivers/staging/unisys/visorhba/Kconfig"
+>>>>>>> v4.9.227
 
 endif # UNISYSSPAR

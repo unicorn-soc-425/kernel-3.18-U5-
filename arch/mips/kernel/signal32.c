@@ -6,6 +6,7 @@
  * Copyright (C) 1991, 1992  Linus Torvalds
  * Copyright (C) 1994 - 2000, 2006  Ralf Baechle
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
+<<<<<<< HEAD
  */
 #include <linux/cache.h>
 #include <linux/compat.h>
@@ -47,11 +48,29 @@ extern asmlinkage int _restore_fp_context32(struct sigcontext32 __user *sc);
  */
 #define __NR_O32_restart_syscall	4253
 
+=======
+ * Copyright (C) 2016, Imagination Technologies Ltd.
+ */
+#include <linux/compiler.h>
+#include <linux/errno.h>
+#include <linux/kernel.h>
+#include <linux/signal.h>
+#include <linux/syscalls.h>
+
+#include <asm/compat.h>
+#include <asm/compat-signal.h>
+#include <asm/uaccess.h>
+#include <asm/unistd.h>
+
+#include "signal-common.h"
+
+>>>>>>> v4.9.227
 /* 32-bit compatibility types */
 
 typedef unsigned int __sighandler32_t;
 typedef void (*vfptr_t)(void);
 
+<<<<<<< HEAD
 struct ucontext32 {
 	u32		    uc_flags;
 	s32		    uc_link;
@@ -304,6 +323,8 @@ static inline int get_sigset(sigset_t *kbuf, const compat_sigset_t __user *ubuf)
 	return err;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Atomically swap in the new signal mask, and wait for a signal.
  */
@@ -402,6 +423,15 @@ int copy_siginfo_to_user32(compat_siginfo_t __user *to, const siginfo_t *from)
 			err |= __put_user(from->si_uid, &to->si_uid);
 			err |= __put_user(from->si_int, &to->si_int);
 			break;
+<<<<<<< HEAD
+=======
+		case __SI_SYS >> 16:
+			err |= __copy_to_user(&to->si_call_addr, &from->si_call_addr,
+					      sizeof(compat_uptr_t));
+			err |= __put_user(from->si_syscall, &to->si_syscall);
+			err |= __put_user(from->si_arch, &to->si_arch);
+			break;
+>>>>>>> v4.9.227
 		}
 	}
 	return err;
@@ -416,6 +446,7 @@ int copy_siginfo_from_user32(siginfo_t *to, compat_siginfo_t __user *from)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 asmlinkage void sys32_sigreturn(nabi_no_regargs struct pt_regs regs)
 {
@@ -602,3 +633,5 @@ static int signal32_init(void)
 }
 
 arch_initcall(signal32_init);
+=======
+>>>>>>> v4.9.227

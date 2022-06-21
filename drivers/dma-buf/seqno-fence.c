@@ -24,24 +24,40 @@
 static const char *seqno_fence_get_driver_name(struct fence *fence)
 {
 	struct seqno_fence *seqno_fence = to_seqno_fence(fence);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return seqno_fence->ops->get_driver_name(fence);
 }
 
 static const char *seqno_fence_get_timeline_name(struct fence *fence)
 {
 	struct seqno_fence *seqno_fence = to_seqno_fence(fence);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return seqno_fence->ops->get_timeline_name(fence);
 }
 
 static bool seqno_enable_signaling(struct fence *fence)
 {
 	struct seqno_fence *seqno_fence = to_seqno_fence(fence);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return seqno_fence->ops->enable_signaling(fence);
 }
 
 static bool seqno_signaled(struct fence *fence)
 {
 	struct seqno_fence *seqno_fence = to_seqno_fence(fence);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return seqno_fence->ops->signaled && seqno_fence->ops->signaled(fence);
 }
 
@@ -56,9 +72,17 @@ static void seqno_release(struct fence *fence)
 		fence_free(&f->base);
 }
 
+<<<<<<< HEAD
 static signed long seqno_wait(struct fence *fence, bool intr, signed long timeout)
 {
 	struct seqno_fence *f = to_seqno_fence(fence);
+=======
+static signed long seqno_wait(struct fence *fence, bool intr,
+				signed long timeout)
+{
+	struct seqno_fence *f = to_seqno_fence(fence);
+
+>>>>>>> v4.9.227
 	return f->ops->wait(fence, intr, timeout);
 }
 

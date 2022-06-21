@@ -22,8 +22,11 @@
 #ifndef AF9033_H
 #define AF9033_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> v4.9.227
 /*
  * I2C address (TODO: are these in 8-bit format?)
  * 0x38, 0x3a, 0x3c, 0x3e

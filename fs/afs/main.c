@@ -14,6 +14,10 @@
 #include <linux/init.h>
 #include <linux/completion.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/random.h>
+>>>>>>> v4.9.227
 #include "internal.h"
 
 MODULE_DESCRIPTION("AFS Client File System");

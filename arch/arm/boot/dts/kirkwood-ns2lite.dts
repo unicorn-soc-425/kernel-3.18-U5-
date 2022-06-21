@@ -26,7 +26,11 @@
 		blue-sata {
 			label = "ns2:blue:sata";
 			gpios = <&gpio0 30 GPIO_ACTIVE_LOW>;
+<<<<<<< HEAD
 			linux,default-trigger = "ide-disk";
+=======
+			linux,default-trigger = "disk-activity";
+>>>>>>> v4.9.227
 		};
 	};
 };

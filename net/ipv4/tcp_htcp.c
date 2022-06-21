@@ -99,7 +99,11 @@ static inline void measure_rtt(struct sock *sk, u32 srtt)
 }
 
 static void measure_achieved_throughput(struct sock *sk,
+<<<<<<< HEAD
 					u32 pkts_acked, s32 rtt)
+=======
+					const struct ack_sample *sample)
+>>>>>>> v4.9.227
 {
 	const struct inet_connection_sock *icsk = inet_csk(sk);
 	const struct tcp_sock *tp = tcp_sk(sk);
@@ -107,10 +111,17 @@ static void measure_achieved_throughput(struct sock *sk,
 	u32 now = tcp_time_stamp;
 
 	if (icsk->icsk_ca_state == TCP_CA_Open)
+<<<<<<< HEAD
 		ca->pkts_acked = pkts_acked;
 
 	if (rtt > 0)
 		measure_rtt(sk, usecs_to_jiffies(rtt));
+=======
+		ca->pkts_acked = sample->pkts_acked;
+
+	if (sample->rtt_us > 0)
+		measure_rtt(sk, usecs_to_jiffies(sample->rtt_us));
+>>>>>>> v4.9.227
 
 	if (!use_bandwidth_switch)
 		return;
@@ -122,7 +133,11 @@ static void measure_achieved_throughput(struct sock *sk,
 		return;
 	}
 
+<<<<<<< HEAD
 	ca->packetcount += pkts_acked;
+=======
+	ca->packetcount += sample->pkts_acked;
+>>>>>>> v4.9.227
 
 	if (ca->packetcount >= tp->snd_cwnd - (ca->alpha >> 7 ? : 1) &&
 	    now - ca->lasttime >= ca->minRTT &&
@@ -236,7 +251,11 @@ static void htcp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 	if (!tcp_is_cwnd_limited(sk))
 		return;
 
+<<<<<<< HEAD
 	if (tp->snd_cwnd <= tp->snd_ssthresh)
+=======
+	if (tcp_in_slow_start(tp))
+>>>>>>> v4.9.227
 		tcp_slow_start(tp, acked);
 	else {
 		/* In dangerous area, increase slowly.

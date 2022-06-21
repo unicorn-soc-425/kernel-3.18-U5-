@@ -48,6 +48,11 @@ config CRYPTO_AEAD
 config CRYPTO_AEAD2
 	tristate
 	select CRYPTO_ALGAPI2
+<<<<<<< HEAD
+=======
+	select CRYPTO_NULL2
+	select CRYPTO_RNG2
+>>>>>>> v4.9.227
 
 config CRYPTO_BLKCIPHER
 	tristate
@@ -78,6 +83,7 @@ config CRYPTO_RNG2
 	tristate
 	select CRYPTO_ALGAPI2
 
+<<<<<<< HEAD
 config CRYPTO_PCOMP
 	tristate
 	select CRYPTO_PCOMP2
@@ -87,6 +93,52 @@ config CRYPTO_PCOMP2
 	tristate
 	select CRYPTO_ALGAPI2
 
+=======
+config CRYPTO_RNG_DEFAULT
+	tristate
+	select CRYPTO_DRBG_MENU
+
+config CRYPTO_AKCIPHER2
+	tristate
+	select CRYPTO_ALGAPI2
+
+config CRYPTO_AKCIPHER
+	tristate
+	select CRYPTO_AKCIPHER2
+	select CRYPTO_ALGAPI
+
+config CRYPTO_KPP2
+	tristate
+	select CRYPTO_ALGAPI2
+
+config CRYPTO_KPP
+	tristate
+	select CRYPTO_ALGAPI
+	select CRYPTO_KPP2
+
+config CRYPTO_RSA
+	tristate "RSA algorithm"
+	select CRYPTO_AKCIPHER
+	select CRYPTO_MANAGER
+	select MPILIB
+	select ASN1
+	help
+	  Generic implementation of the RSA public key algorithm.
+
+config CRYPTO_DH
+	tristate "Diffie-Hellman algorithm"
+	select CRYPTO_KPP
+	select MPILIB
+	help
+	  Generic implementation of the Diffie-Hellman algorithm.
+
+config CRYPTO_ECDH
+	tristate "ECDH algorithm"
+	select CRYPTO_KPP
+	help
+	  Generic implementation of the ECDH algorithm
+
+>>>>>>> v4.9.227
 config CRYPTO_MANAGER
 	tristate "Cryptographic algorithm manager"
 	select CRYPTO_MANAGER2
@@ -99,7 +151,12 @@ config CRYPTO_MANAGER2
 	select CRYPTO_AEAD2
 	select CRYPTO_HASH2
 	select CRYPTO_BLKCIPHER2
+<<<<<<< HEAD
 	select CRYPTO_PCOMP2
+=======
+	select CRYPTO_AKCIPHER2
+	select CRYPTO_KPP2
+>>>>>>> v4.9.227
 
 config CRYPTO_USER
 	tristate "Userspace cryptographic algorithm configuration"
@@ -128,12 +185,25 @@ config CRYPTO_GF128MUL
 
 config CRYPTO_NULL
 	tristate "Null algorithms"
+<<<<<<< HEAD
 	select CRYPTO_ALGAPI
 	select CRYPTO_BLKCIPHER
 	select CRYPTO_HASH
 	help
 	  These are 'Null' algorithms, used by IPsec, which do nothing.
 
+=======
+	select CRYPTO_NULL2
+	help
+	  These are 'Null' algorithms, used by IPsec, which do nothing.
+
+config CRYPTO_NULL2
+	tristate
+	select CRYPTO_ALGAPI2
+	select CRYPTO_BLKCIPHER2
+	select CRYPTO_HASH2
+
+>>>>>>> v4.9.227
 config CRYPTO_PCRYPT
 	tristate "Parallel crypto engine"
 	depends on SMP
@@ -178,6 +248,10 @@ config CRYPTO_AUTHENC
 	select CRYPTO_BLKCIPHER
 	select CRYPTO_MANAGER
 	select CRYPTO_HASH
+<<<<<<< HEAD
+=======
+	select CRYPTO_NULL
+>>>>>>> v4.9.227
 	help
 	  Authenc: Combined mode wrapper for IPsec.
 	  This is required for IPSec.
@@ -198,6 +272,12 @@ config CRYPTO_GLUE_HELPER_X86
 	depends on X86
 	select CRYPTO_ALGAPI
 
+<<<<<<< HEAD
+=======
+config CRYPTO_ENGINE
+	tristate
+
+>>>>>>> v4.9.227
 comment "Authenticated Encryption with Associated Data"
 
 config CRYPTO_CCM
@@ -217,15 +297,49 @@ config CRYPTO_GCM
 	  Support for Galois/Counter Mode (GCM) and Galois Message
 	  Authentication Code (GMAC). Required for IPSec.
 
+<<<<<<< HEAD
+=======
+config CRYPTO_CHACHA20POLY1305
+	tristate "ChaCha20-Poly1305 AEAD support"
+	select CRYPTO_CHACHA20
+	select CRYPTO_POLY1305
+	select CRYPTO_AEAD
+	help
+	  ChaCha20-Poly1305 AEAD support, RFC7539.
+
+	  Support for the AEAD wrapper using the ChaCha20 stream cipher combined
+	  with the Poly1305 authenticator. It is defined in RFC7539 for use in
+	  IETF protocols.
+
+>>>>>>> v4.9.227
 config CRYPTO_SEQIV
 	tristate "Sequence Number IV Generator"
 	select CRYPTO_AEAD
 	select CRYPTO_BLKCIPHER
+<<<<<<< HEAD
 	select CRYPTO_RNG
+=======
+	select CRYPTO_NULL
+	select CRYPTO_RNG_DEFAULT
+>>>>>>> v4.9.227
 	help
 	  This IV generator generates an IV based on a sequence number by
 	  xoring it with a salt.  This algorithm is mainly useful for CTR
 
+<<<<<<< HEAD
+=======
+config CRYPTO_ECHAINIV
+	tristate "Encrypted Chain IV Generator"
+	select CRYPTO_AEAD
+	select CRYPTO_NULL
+	select CRYPTO_RNG_DEFAULT
+	default m
+	help
+	  This IV generator generates an IV based on the encryption of
+	  a sequence number xored with a salt.  This is the default
+	  algorithm for CBC.
+
+>>>>>>> v4.9.227
 comment "Block modes"
 
 config CRYPTO_CBC
@@ -295,6 +409,16 @@ config CRYPTO_XTS
 	  key size 256, 384 or 512 bits. This implementation currently
 	  can't handle a sectorsize which is not a multiple of 16 bytes.
 
+<<<<<<< HEAD
+=======
+config CRYPTO_KEYWRAP
+	tristate "Key wrapping support"
+	select CRYPTO_BLKCIPHER
+	help
+	  Support for key wrapping (NIST SP800-38F / RFC3394) without
+	  padding.
+
+>>>>>>> v4.9.227
 comment "Hash modes"
 
 config CRYPTO_CMAC
@@ -360,6 +484,20 @@ config CRYPTO_CRC32C_INTEL
 	  gain performance compared with software implementation.
 	  Module will be crc32c-intel.
 
+<<<<<<< HEAD
+=======
+config CRYPT_CRC32C_VPMSUM
+	tristate "CRC32c CRC algorithm (powerpc64)"
+	depends on PPC64 && ALTIVEC
+	select CRYPTO_HASH
+	select CRC32
+	help
+	  CRC32c algorithm implemented using vector polynomial multiply-sum
+	  (vpmsum) instructions, introduced in POWER8. Enable on POWER8
+	  and newer processors for improved performance.
+
+
+>>>>>>> v4.9.227
 config CRYPTO_CRC32C_SPARC64
 	tristate "CRC32c CRC algorithm (SPARC64)"
 	depends on SPARC64
@@ -412,9 +550,38 @@ config CRYPTO_CRCT10DIF_PCLMUL
 config CRYPTO_GHASH
 	tristate "GHASH digest algorithm"
 	select CRYPTO_GF128MUL
+<<<<<<< HEAD
 	help
 	  GHASH is message digest algorithm for GCM (Galois/Counter Mode).
 
+=======
+	select CRYPTO_HASH
+	help
+	  GHASH is message digest algorithm for GCM (Galois/Counter Mode).
+
+config CRYPTO_POLY1305
+	tristate "Poly1305 authenticator algorithm"
+	select CRYPTO_HASH
+	help
+	  Poly1305 authenticator algorithm, RFC7539.
+
+	  Poly1305 is an authenticator algorithm designed by Daniel J. Bernstein.
+	  It is used for the ChaCha20-Poly1305 AEAD, specified in RFC7539 for use
+	  in IETF protocols. This is the portable C implementation of Poly1305.
+
+config CRYPTO_POLY1305_X86_64
+	tristate "Poly1305 authenticator algorithm (x86_64/SSE2/AVX2)"
+	depends on X86 && 64BIT
+	select CRYPTO_POLY1305
+	help
+	  Poly1305 authenticator algorithm, RFC7539.
+
+	  Poly1305 is an authenticator algorithm designed by Daniel J. Bernstein.
+	  It is used for the ChaCha20-Poly1305 AEAD, specified in RFC7539 for use
+	  in IETF protocols. This is the x86_64 assembler implementation using SIMD
+	  instructions.
+
+>>>>>>> v4.9.227
 config CRYPTO_MD4
 	tristate "MD4 digest algorithm"
 	select CRYPTO_HASH
@@ -427,6 +594,26 @@ config CRYPTO_MD5
 	help
 	  MD5 message digest algorithm (RFC1321).
 
+<<<<<<< HEAD
+=======
+config CRYPTO_MD5_OCTEON
+	tristate "MD5 digest algorithm (OCTEON)"
+	depends on CPU_CAVIUM_OCTEON
+	select CRYPTO_MD5
+	select CRYPTO_HASH
+	help
+	  MD5 message digest algorithm (RFC1321) implemented
+	  using OCTEON crypto instructions, when available.
+
+config CRYPTO_MD5_PPC
+	tristate "MD5 digest algorithm (PPC)"
+	depends on PPC
+	select CRYPTO_HASH
+	help
+	  MD5 message digest algorithm (RFC1321) implemented
+	  in PPC assembler.
+
+>>>>>>> v4.9.227
 config CRYPTO_MD5_SPARC64
 	tristate "MD5 digest algorithm (SPARC64)"
 	depends on SPARC64
@@ -506,17 +693,29 @@ config CRYPTO_SHA1
 	  SHA-1 secure hash standard (FIPS 180-1/DFIPS 180-2).
 
 config CRYPTO_SHA1_SSSE3
+<<<<<<< HEAD
 	tristate "SHA1 digest algorithm (SSSE3/AVX/AVX2)"
+=======
+	tristate "SHA1 digest algorithm (SSSE3/AVX/AVX2/SHA-NI)"
+>>>>>>> v4.9.227
 	depends on X86 && 64BIT
 	select CRYPTO_SHA1
 	select CRYPTO_HASH
 	help
 	  SHA-1 secure hash standard (FIPS 180-1/DFIPS 180-2) implemented
 	  using Supplemental SSE3 (SSSE3) instructions or Advanced Vector
+<<<<<<< HEAD
 	  Extensions (AVX/AVX2), when available.
 
 config CRYPTO_SHA256_SSSE3
 	tristate "SHA256 digest algorithm (SSSE3/AVX/AVX2)"
+=======
+	  Extensions (AVX/AVX2) or SHA-NI(SHA Extensions New Instructions),
+	  when available.
+
+config CRYPTO_SHA256_SSSE3
+	tristate "SHA256 digest algorithm (SSSE3/AVX/AVX2/SHA-NI)"
+>>>>>>> v4.9.227
 	depends on X86 && 64BIT
 	select CRYPTO_SHA256
 	select CRYPTO_HASH
@@ -524,7 +723,12 @@ config CRYPTO_SHA256_SSSE3
 	  SHA-256 secure hash standard (DFIPS 180-2) implemented
 	  using Supplemental SSE3 (SSSE3) instructions, or Advanced Vector
 	  Extensions version 1 (AVX1), or Advanced Vector Extensions
+<<<<<<< HEAD
 	  version 2 (AVX2) instructions, when available.
+=======
+	  version 2 (AVX2) instructions, or SHA-NI (SHA Extensions New
+	  Instructions) when available.
+>>>>>>> v4.9.227
 
 config CRYPTO_SHA512_SSSE3
 	tristate "SHA512 digest algorithm (SSSE3/AVX/AVX2)"
@@ -537,6 +741,18 @@ config CRYPTO_SHA512_SSSE3
 	  Extensions version 1 (AVX1), or Advanced Vector Extensions
 	  version 2 (AVX2) instructions, when available.
 
+<<<<<<< HEAD
+=======
+config CRYPTO_SHA1_OCTEON
+	tristate "SHA1 digest algorithm (OCTEON)"
+	depends on CPU_CAVIUM_OCTEON
+	select CRYPTO_SHA1
+	select CRYPTO_HASH
+	help
+	  SHA-1 secure hash standard (FIPS 180-1/DFIPS 180-2) implemented
+	  using OCTEON crypto instructions, when available.
+
+>>>>>>> v4.9.227
 config CRYPTO_SHA1_SPARC64
 	tristate "SHA1 digest algorithm (SPARC64)"
 	depends on SPARC64
@@ -553,6 +769,16 @@ config CRYPTO_SHA1_PPC
 	  This is the powerpc hardware accelerated implementation of the
 	  SHA-1 secure hash standard (FIPS 180-1/DFIPS 180-2).
 
+<<<<<<< HEAD
+=======
+config CRYPTO_SHA1_PPC_SPE
+	tristate "SHA1 digest algorithm (PPC SPE)"
+	depends on PPC && SPE
+	help
+	  SHA-1 secure hash standard (DFIPS 180-4) implemented
+	  using powerpc SPE SIMD instruction set.
+
+>>>>>>> v4.9.227
 config CRYPTO_SHA1_MB
 	tristate "SHA1 digest algorithm (x86_64 Multi-Buffer, Experimental)"
 	depends on X86 && 64BIT
@@ -569,6 +795,41 @@ config CRYPTO_SHA1_MB
 	  lanes remain unfilled, a flush operation will be initiated to
 	  process the crypto jobs, adding a slight latency.
 
+<<<<<<< HEAD
+=======
+config CRYPTO_SHA256_MB
+	tristate "SHA256 digest algorithm (x86_64 Multi-Buffer, Experimental)"
+	depends on X86 && 64BIT
+	select CRYPTO_SHA256
+	select CRYPTO_HASH
+	select CRYPTO_MCRYPTD
+	help
+	  SHA-256 secure hash standard (FIPS 180-1/DFIPS 180-2) implemented
+	  using multi-buffer technique.  This algorithm computes on
+	  multiple data lanes concurrently with SIMD instructions for
+	  better throughput.  It should not be enabled by default but
+	  used when there is significant amount of work to keep the keep
+	  the data lanes filled to get performance benefit.  If the data
+	  lanes remain unfilled, a flush operation will be initiated to
+	  process the crypto jobs, adding a slight latency.
+
+config CRYPTO_SHA512_MB
+        tristate "SHA512 digest algorithm (x86_64 Multi-Buffer, Experimental)"
+        depends on X86 && 64BIT
+        select CRYPTO_SHA512
+        select CRYPTO_HASH
+        select CRYPTO_MCRYPTD
+        help
+          SHA-512 secure hash standard (FIPS 180-1/DFIPS 180-2) implemented
+          using multi-buffer technique.  This algorithm computes on
+          multiple data lanes concurrently with SIMD instructions for
+          better throughput.  It should not be enabled by default but
+          used when there is significant amount of work to keep the keep
+          the data lanes filled to get performance benefit.  If the data
+          lanes remain unfilled, a flush operation will be initiated to
+          process the crypto jobs, adding a slight latency.
+
+>>>>>>> v4.9.227
 config CRYPTO_SHA256
 	tristate "SHA224 and SHA256 digest algorithm"
 	select CRYPTO_HASH
@@ -581,6 +842,27 @@ config CRYPTO_SHA256
 	  This code also includes SHA-224, a 224 bit hash with 112 bits
 	  of security against collision attacks.
 
+<<<<<<< HEAD
+=======
+config CRYPTO_SHA256_PPC_SPE
+	tristate "SHA224 and SHA256 digest algorithm (PPC SPE)"
+	depends on PPC && SPE
+	select CRYPTO_SHA256
+	select CRYPTO_HASH
+	help
+	  SHA224 and SHA256 secure hash standard (DFIPS 180-2)
+	  implemented using powerpc SPE SIMD instruction set.
+
+config CRYPTO_SHA256_OCTEON
+	tristate "SHA224 and SHA256 digest algorithm (OCTEON)"
+	depends on CPU_CAVIUM_OCTEON
+	select CRYPTO_SHA256
+	select CRYPTO_HASH
+	help
+	  SHA-256 secure hash standard (DFIPS 180-2) implemented
+	  using OCTEON crypto instructions, when available.
+
+>>>>>>> v4.9.227
 config CRYPTO_SHA256_SPARC64
 	tristate "SHA224 and SHA256 digest algorithm (SPARC64)"
 	depends on SPARC64
@@ -590,6 +872,7 @@ config CRYPTO_SHA256_SPARC64
 	  SHA-256 secure hash standard (DFIPS 180-2) implemented
 	  using sparc64 crypto instructions, when available.
 
+<<<<<<< HEAD
 config CRYPTO_SHA2_ARM_CE
 	tristate "SHA-224/256 digest algorithm (ARM v8 Crypto Extensions)"
 	depends on ARM && KERNEL_MODE_NEON
@@ -599,6 +882,8 @@ config CRYPTO_SHA2_ARM_CE
 	  SHA-256 secure hash standard (DFIPS 180-2) implemented
 	  using special ARMv8 Crypto Extensions.
 
+=======
+>>>>>>> v4.9.227
 config CRYPTO_SHA512
 	tristate "SHA384 and SHA512 digest algorithms"
 	select CRYPTO_HASH
@@ -611,6 +896,18 @@ config CRYPTO_SHA512
 	  This code also includes SHA-384, a 384 bit hash with 192 bits
 	  of security against collision attacks.
 
+<<<<<<< HEAD
+=======
+config CRYPTO_SHA512_OCTEON
+	tristate "SHA384 and SHA512 digest algorithms (OCTEON)"
+	depends on CPU_CAVIUM_OCTEON
+	select CRYPTO_SHA512
+	select CRYPTO_HASH
+	help
+	  SHA-512 secure hash standard (DFIPS 180-2) implemented
+	  using OCTEON crypto instructions, when available.
+
+>>>>>>> v4.9.227
 config CRYPTO_SHA512_SPARC64
 	tristate "SHA384 and SHA512 digest algorithm (SPARC64)"
 	depends on SPARC64
@@ -620,6 +917,19 @@ config CRYPTO_SHA512_SPARC64
 	  SHA-512 secure hash standard (DFIPS 180-2) implemented
 	  using sparc64 crypto instructions, when available.
 
+<<<<<<< HEAD
+=======
+config CRYPTO_SHA3
+	tristate "SHA3 digest algorithm"
+	select CRYPTO_HASH
+	help
+	  SHA-3 secure hash standard (DFIPS 202). It's based on
+	  cryptographic sponge function family called Keccak.
+
+	  References:
+	  http://keccak.noekeon.org/
+
+>>>>>>> v4.9.227
 config CRYPTO_TGR192
 	tristate "Tiger digest algorithms"
 	select CRYPTO_HASH
@@ -782,6 +1092,7 @@ config CRYPTO_AES_SPARC64
 	  for some popular block cipher mode is supported too, including
 	  ECB and CBC.
 
+<<<<<<< HEAD
 config CRYPTO_AES_ARM
 	tristate "AES cipher algorithms (ARM-asm)"
 	depends on ARM
@@ -830,6 +1141,20 @@ config CRYPTO_AES_ARM_CE
 	help
 	  Use an implementation of AES in CBC, CTR and XTS modes that uses
 	  ARMv8 Crypto Extensions
+=======
+config CRYPTO_AES_PPC_SPE
+	tristate "AES cipher algorithms (PPC SPE)"
+	depends on PPC && SPE
+	help
+	  AES cipher algorithms (FIPS-197). Additionally the acceleration
+	  for popular block cipher modes ECB, CBC, CTR and XTS is supported.
+	  This module should only be used for low power (router) devices
+	  without hardware AES acceleration (e.g. caam crypto). It reduces the
+	  size of the AES tables from 16KB to 8KB + 256 bytes and mitigates
+	  timining attacks. Nevertheless it might be not as secure as other
+	  architecture specific assembler implementations that work on 1KB
+	  tables or 256 bytes S-boxes.
+>>>>>>> v4.9.227
 
 config CRYPTO_ANUBIS
 	tristate "Anubis cipher algorithm"
@@ -1130,6 +1455,37 @@ config CRYPTO_SALSA20_X86_64
 	  The Salsa20 stream cipher algorithm is designed by Daniel J.
 	  Bernstein <djb@cr.yp.to>. See <http://cr.yp.to/snuffle.html>
 
+<<<<<<< HEAD
+=======
+config CRYPTO_CHACHA20
+	tristate "ChaCha20 cipher algorithm"
+	select CRYPTO_BLKCIPHER
+	help
+	  ChaCha20 cipher algorithm, RFC7539.
+
+	  ChaCha20 is a 256-bit high-speed stream cipher designed by Daniel J.
+	  Bernstein and further specified in RFC7539 for use in IETF protocols.
+	  This is the portable C implementation of ChaCha20.
+
+	  See also:
+	  <http://cr.yp.to/chacha/chacha-20080128.pdf>
+
+config CRYPTO_CHACHA20_X86_64
+	tristate "ChaCha20 cipher algorithm (x86_64/SSSE3/AVX2)"
+	depends on X86 && 64BIT
+	select CRYPTO_BLKCIPHER
+	select CRYPTO_CHACHA20
+	help
+	  ChaCha20 cipher algorithm, RFC7539.
+
+	  ChaCha20 is a 256-bit high-speed stream cipher designed by Daniel J.
+	  Bernstein and further specified in RFC7539 for use in IETF protocols.
+	  This is the x86_64 assembler implementation using SIMD instructions.
+
+	  See also:
+	  <http://cr.yp.to/chacha/chacha-20080128.pdf>
+
+>>>>>>> v4.9.227
 config CRYPTO_SEED
 	tristate "SEED cipher algorithm"
 	select CRYPTO_ALGAPI
@@ -1173,7 +1529,11 @@ config CRYPTO_SERPENT_SSE2_X86_64
 	  Keys are allowed to be from 0 to 256 bits in length, in steps
 	  of 8 bits.
 
+<<<<<<< HEAD
 	  This module provides Serpent cipher algorithm that processes eigth
+=======
+	  This module provides Serpent cipher algorithm that processes eight
+>>>>>>> v4.9.227
 	  blocks parallel using SSE2 instruction set.
 
 	  See also:
@@ -1246,6 +1606,7 @@ config CRYPTO_SERPENT_AVX2_X86_64
 	  See also:
 	  <http://www.cl.cam.ac.uk/~rja14/serpent.html>
 
+<<<<<<< HEAD
 config CRYPTO_SPECK
 	tristate "Speck cipher algorithm"
 	select CRYPTO_ALGAPI
@@ -1267,6 +1628,8 @@ config CRYPTO_SPECK_NEON
 	select CRYPTO_GF128MUL
 	select CRYPTO_SPECK
 
+=======
+>>>>>>> v4.9.227
 config CRYPTO_TEA
 	tristate "TEA, XTEA and XETA cipher algorithms"
 	select CRYPTO_ALGAPI
@@ -1399,6 +1762,7 @@ config CRYPTO_DEFLATE
 
 	  You will most probably want this if using IPSec.
 
+<<<<<<< HEAD
 config CRYPTO_ZLIB
 	tristate "Zlib compression algorithm"
 	select CRYPTO_PCOMP
@@ -1408,6 +1772,8 @@ config CRYPTO_ZLIB
 	help
 	  This is the zlib algorithm.
 
+=======
+>>>>>>> v4.9.227
 config CRYPTO_LZO
 	tristate "LZO compression algorithm"
 	select CRYPTO_ALGAPI
@@ -1418,10 +1784,16 @@ config CRYPTO_LZO
 
 config CRYPTO_842
 	tristate "842 compression algorithm"
+<<<<<<< HEAD
 	depends on CRYPTO_DEV_NX_COMPRESS
 	# 842 uses lzo if the hardware becomes unavailable
 	select LZO_COMPRESS
 	select LZO_DECOMPRESS
+=======
+	select CRYPTO_ALGAPI
+	select 842_COMPRESS
+	select 842_DECOMPRESS
+>>>>>>> v4.9.227
 	help
 	  This is the 842 algorithm.
 
@@ -1445,7 +1817,10 @@ comment "Random Number Generation"
 
 config CRYPTO_ANSI_CPRNG
 	tristate "Pseudo Random Number Generation for Cryptographic modules"
+<<<<<<< HEAD
 	default m
+=======
+>>>>>>> v4.9.227
 	select CRYPTO_AES
 	select CRYPTO_RNG
 	help
@@ -1463,6 +1838,7 @@ menuconfig CRYPTO_DRBG_MENU
 if CRYPTO_DRBG_MENU
 
 config CRYPTO_DRBG_HMAC
+<<<<<<< HEAD
 	bool "Enable HMAC DRBG"
 	default y
 	select CRYPTO_HMAC
@@ -1472,22 +1848,55 @@ config CRYPTO_DRBG_HMAC
 config CRYPTO_DRBG_HASH
 	bool "Enable Hash DRBG"
 	select CRYPTO_HASH
+=======
+	bool
+	default y
+	select CRYPTO_HMAC
+	select CRYPTO_SHA256
+
+config CRYPTO_DRBG_HASH
+	bool "Enable Hash DRBG"
+	select CRYPTO_SHA256
+>>>>>>> v4.9.227
 	help
 	  Enable the Hash DRBG variant as defined in NIST SP800-90A.
 
 config CRYPTO_DRBG_CTR
 	bool "Enable CTR DRBG"
 	select CRYPTO_AES
+<<<<<<< HEAD
+=======
+	depends on CRYPTO_CTR
+>>>>>>> v4.9.227
 	help
 	  Enable the CTR DRBG variant as defined in NIST SP800-90A.
 
 config CRYPTO_DRBG
 	tristate
+<<<<<<< HEAD
 	default CRYPTO_DRBG_MENU if (CRYPTO_DRBG_HMAC || CRYPTO_DRBG_HASH || CRYPTO_DRBG_CTR)
 	select CRYPTO_RNG
 
 endif	# if CRYPTO_DRBG_MENU
 
+=======
+	default CRYPTO_DRBG_MENU
+	select CRYPTO_RNG
+	select CRYPTO_JITTERENTROPY
+
+endif	# if CRYPTO_DRBG_MENU
+
+config CRYPTO_JITTERENTROPY
+	tristate "Jitterentropy Non-Deterministic Random Number Generator"
+	select CRYPTO_RNG
+	help
+	  The Jitterentropy RNG is a noise that is intended
+	  to provide seed to another RNG. The RNG does not
+	  perform any cryptographic whitening of the generated
+	  random numbers. This Jitterentropy RNG registers with
+	  the kernel crypto API and can be used by any caller.
+
+>>>>>>> v4.9.227
 config CRYPTO_USER_API
 	tristate
 
@@ -1509,10 +1918,35 @@ config CRYPTO_USER_API_SKCIPHER
 	  This option enables the user-spaces interface for symmetric
 	  key cipher algorithms.
 
+<<<<<<< HEAD
+=======
+config CRYPTO_USER_API_RNG
+	tristate "User-space interface for random number generator algorithms"
+	depends on NET
+	select CRYPTO_RNG
+	select CRYPTO_USER_API
+	help
+	  This option enables the user-spaces interface for random
+	  number generator algorithms.
+
+config CRYPTO_USER_API_AEAD
+	tristate "User-space interface for AEAD cipher algorithms"
+	depends on NET
+	select CRYPTO_AEAD
+	select CRYPTO_USER_API
+	help
+	  This option enables the user-spaces interface for AEAD
+	  cipher algorithms.
+
+>>>>>>> v4.9.227
 config CRYPTO_HASH_INFO
 	bool
 
 source "drivers/crypto/Kconfig"
 source crypto/asymmetric_keys/Kconfig
+<<<<<<< HEAD
+=======
+source certs/Kconfig
+>>>>>>> v4.9.227
 
 endif	# if CRYPTO

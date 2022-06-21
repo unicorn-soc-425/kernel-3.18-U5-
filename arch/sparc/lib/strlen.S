@@ -7,6 +7,10 @@
 
 #include <linux/linkage.h>
 #include <asm/asm.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 #define LO_MAGIC 0x01010101
 #define HI_MAGIC 0x80808080
@@ -78,3 +82,7 @@ ENTRY(strlen)
 	retl
 	 mov	2, %o0
 ENDPROC(strlen)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(strlen)
+>>>>>>> v4.9.227

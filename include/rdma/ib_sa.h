@@ -39,6 +39,10 @@
 #include <linux/compiler.h>
 
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/netdevice.h>
+>>>>>>> v4.9.227
 
 #include <rdma/ib_verbs.h>
 #include <rdma/ib_mad.h>
@@ -94,6 +98,24 @@ enum ib_sa_selector {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * There are 4 types of join states:
+ * FullMember, NonMember, SendOnlyNonMember, SendOnlyFullMember.
+ * The order corresponds to JoinState bits in MCMemberRecord.
+ */
+enum ib_sa_mc_join_states {
+	FULLMEMBER_JOIN,
+	NONMEMBER_JOIN,
+	SENDONLY_NONMEBER_JOIN,
+	SENDONLY_FULLMEMBER_JOIN,
+	NUM_JOIN_MEMBERSHIP_TYPES,
+};
+
+#define IB_SA_CAP_MASK2_SENDONLY_FULL_MEM_SUPPORT	BIT(12)
+
+/*
+>>>>>>> v4.9.227
  * Structures for SA records are named "struct ib_sa_xxx_rec."  No
  * attempt is made to pack structures to match the physical layout of
  * SA records in SA MADs; all packing and unpacking is handled by the
@@ -137,12 +159,20 @@ struct ib_sa_path_rec {
 	union ib_gid sgid;
 	__be16       dlid;
 	__be16       slid;
+<<<<<<< HEAD
 	int          raw_traffic;
+=======
+	u8           raw_traffic;
+>>>>>>> v4.9.227
 	/* reserved */
 	__be32       flow_label;
 	u8           hop_limit;
 	u8           traffic_class;
+<<<<<<< HEAD
 	int          reversible;
+=======
+	u8           reversible;
+>>>>>>> v4.9.227
 	u8           numb_path;
 	__be16       pkey;
 	__be16       qos_class;
@@ -154,11 +184,27 @@ struct ib_sa_path_rec {
 	u8           packet_life_time_selector;
 	u8           packet_life_time;
 	u8           preference;
+<<<<<<< HEAD
 	u8           smac[ETH_ALEN];
 	u8           dmac[ETH_ALEN];
 	u16	     vlan_id;
 };
 
+=======
+	u8           dmac[ETH_ALEN];
+	/* ignored in IB */
+	int	     ifindex;
+	/* ignored in IB */
+	struct net  *net;
+	enum ib_gid_type gid_type;
+};
+
+static inline struct net_device *ib_get_ndev_from_path(struct ib_sa_path_rec *rec)
+{
+	return rec->net ? dev_get_by_index(rec->net, rec->ifindex) : NULL;
+}
+
+>>>>>>> v4.9.227
 #define IB_SA_MCMEMBER_REC_MGID				IB_SA_COMP_MASK( 0)
 #define IB_SA_MCMEMBER_REC_PORT_GID			IB_SA_COMP_MASK( 1)
 #define IB_SA_MCMEMBER_REC_QKEY				IB_SA_COMP_MASK( 2)
@@ -196,7 +242,11 @@ struct ib_sa_mcmember_rec {
 	u8           hop_limit;
 	u8           scope;
 	u8           join_state;
+<<<<<<< HEAD
 	int          proxy_join;
+=======
+	u8           proxy_join;
+>>>>>>> v4.9.227
 };
 
 /* Service Record Component Mask Sec 15.2.5.14 Ver 1.1	*/
@@ -394,6 +444,11 @@ int ib_sa_get_mcmember_rec(struct ib_device *device, u8 port_num,
  */
 int ib_init_ah_from_mcmember(struct ib_device *device, u8 port_num,
 			     struct ib_sa_mcmember_rec *rec,
+<<<<<<< HEAD
+=======
+			     struct net_device *ndev,
+			     enum ib_gid_type gid_type,
+>>>>>>> v4.9.227
 			     struct ib_ah_attr *ah_attr);
 
 /**
@@ -428,4 +483,17 @@ int ib_sa_guid_info_rec_query(struct ib_sa_client *client,
 			      void *context,
 			      struct ib_sa_query **sa_query);
 
+<<<<<<< HEAD
+=======
+/* Support get SA ClassPortInfo */
+int ib_sa_classport_info_rec_query(struct ib_sa_client *client,
+				   struct ib_device *device, u8 port_num,
+				   int timeout_ms, gfp_t gfp_mask,
+				   void (*callback)(int status,
+						    struct ib_class_port_info *resp,
+						    void *context),
+				   void *context,
+				   struct ib_sa_query **sa_query);
+
+>>>>>>> v4.9.227
 #endif /* IB_SA_H */

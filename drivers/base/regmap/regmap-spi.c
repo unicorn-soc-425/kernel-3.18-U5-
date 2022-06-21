@@ -113,6 +113,7 @@ static struct regmap_bus regmap_spi = {
 	.val_format_endian_default = REGMAP_ENDIAN_BIG,
 };
 
+<<<<<<< HEAD
 /**
  * regmap_init_spi(): Initialise register map
  *
@@ -145,5 +146,26 @@ struct regmap *devm_regmap_init_spi(struct spi_device *spi,
 	return devm_regmap_init(&spi->dev, &regmap_spi, &spi->dev, config);
 }
 EXPORT_SYMBOL_GPL(devm_regmap_init_spi);
+=======
+struct regmap *__regmap_init_spi(struct spi_device *spi,
+				 const struct regmap_config *config,
+				 struct lock_class_key *lock_key,
+				 const char *lock_name)
+{
+	return __regmap_init(&spi->dev, &regmap_spi, &spi->dev, config,
+			     lock_key, lock_name);
+}
+EXPORT_SYMBOL_GPL(__regmap_init_spi);
+
+struct regmap *__devm_regmap_init_spi(struct spi_device *spi,
+				      const struct regmap_config *config,
+				      struct lock_class_key *lock_key,
+				      const char *lock_name)
+{
+	return __devm_regmap_init(&spi->dev, &regmap_spi, &spi->dev, config,
+				  lock_key, lock_name);
+}
+EXPORT_SYMBOL_GPL(__devm_regmap_init_spi);
+>>>>>>> v4.9.227
 
 MODULE_LICENSE("GPL");

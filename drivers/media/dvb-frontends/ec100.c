@@ -174,7 +174,11 @@ static int ec100_get_tune_settings(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ec100_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int ec100_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct ec100_state *state = fe->demodulator_priv;
 	int ret;

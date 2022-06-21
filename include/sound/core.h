@@ -99,6 +99,10 @@ struct snd_card {
 	char driver[16];		/* driver name */
 	char shortname[32];		/* short name of this soundcard */
 	char longname[80];		/* name of this soundcard */
+<<<<<<< HEAD
+=======
+	char irq_descr[32];		/* Interrupt description */
+>>>>>>> v4.9.227
 	char mixername[80];		/* mixer name */
 	char components[128];		/* card components delimited with
 								space */
@@ -109,6 +113,10 @@ struct snd_card {
 								private data */
 	struct list_head devices;	/* devices */
 
+<<<<<<< HEAD
+=======
+	struct device ctl_dev;		/* control device */
+>>>>>>> v4.9.227
 	unsigned int last_numid;	/* last used numeric ID */
 	struct rw_semaphore controls_rwsem;	/* controls list lock */
 	rwlock_t ctl_files_rwlock;	/* ctl_files list lock */
@@ -131,10 +139,15 @@ struct snd_card {
 	struct completion *release_completion;
 	struct device *dev;		/* device assigned to this card */
 	struct device card_dev;		/* cardX object for sysfs */
+<<<<<<< HEAD
 	bool registered;		/* card_dev is registered? */
 	int offline;			/* if this sound card is offline */
 	unsigned long offline_change;
 	wait_queue_head_t offline_poll_wait;
+=======
+	const struct attribute_group *dev_groups[4]; /* assigned sysfs attr */
+	bool registered;		/* card_dev is registered? */
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_PM
 	unsigned int power_state;	/* power state */
@@ -209,6 +222,7 @@ extern struct class *sound_class;
 
 void snd_request_card(int card);
 
+<<<<<<< HEAD
 int snd_register_device_for_dev(int type, struct snd_card *card,
 				int dev,
 				const struct file_operations *f_ops,
@@ -246,6 +260,15 @@ static inline int snd_register_device(int type, struct snd_card *card, int dev,
 int snd_unregister_device(int type, struct snd_card *card, int dev);
 void *snd_lookup_minor_data(unsigned int minor, int type);
 struct device *snd_get_device(int type, struct snd_card *card, int dev);
+=======
+void snd_device_initialize(struct device *dev, struct snd_card *card);
+
+int snd_register_device(int type, struct snd_card *card, int dev,
+			const struct file_operations *f_ops,
+			void *private_data, struct device *device);
+int snd_unregister_device(struct device *dev);
+void *snd_lookup_minor_data(unsigned int minor, int type);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_SND_OSSEMUL
 int snd_register_oss_device(int type, struct snd_card *card, int dev,
@@ -255,16 +278,24 @@ void *snd_lookup_oss_minor_data(unsigned int minor, int type);
 #endif
 
 int snd_minor_info_init(void);
+<<<<<<< HEAD
 int snd_minor_info_done(void);
+=======
+>>>>>>> v4.9.227
 
 /* sound_oss.c */
 
 #ifdef CONFIG_SND_OSSEMUL
 int snd_minor_info_oss_init(void);
+<<<<<<< HEAD
 int snd_minor_info_oss_done(void);
 #else
 static inline int snd_minor_info_oss_init(void) { return 0; }
 static inline int snd_minor_info_oss_done(void) { return 0; }
+=======
+#else
+static inline int snd_minor_info_oss_init(void) { return 0; }
+>>>>>>> v4.9.227
 #endif
 
 /* memory.c */
@@ -293,13 +324,21 @@ int snd_card_free_when_closed(struct snd_card *card);
 void snd_card_set_id(struct snd_card *card, const char *id);
 int snd_card_register(struct snd_card *card);
 int snd_card_info_init(void);
+<<<<<<< HEAD
 int snd_card_info_done(void);
+=======
+int snd_card_add_dev_attr(struct snd_card *card,
+			  const struct attribute_group *group);
+>>>>>>> v4.9.227
 int snd_component_add(struct snd_card *card, const char *component);
 int snd_card_file_add(struct snd_card *card, struct file *file);
 int snd_card_file_remove(struct snd_card *card, struct file *file);
 #define snd_card_unref(card)	put_device(&(card)->card_dev)
+<<<<<<< HEAD
 void snd_card_change_online_state(struct snd_card *card, int online);
 bool snd_card_is_online_state(struct snd_card *card);
+=======
+>>>>>>> v4.9.227
 
 #define snd_card_set_dev(card, devptr) ((card)->dev = (devptr))
 
@@ -309,7 +348,12 @@ int snd_device_new(struct snd_card *card, enum snd_device_type type,
 		   void *device_data, struct snd_device_ops *ops);
 int snd_device_register(struct snd_card *card, void *device_data);
 int snd_device_register_all(struct snd_card *card);
+<<<<<<< HEAD
 int snd_device_disconnect_all(struct snd_card *card);
+=======
+void snd_device_disconnect(struct snd_card *card, void *device_data);
+void snd_device_disconnect_all(struct snd_card *card);
+>>>>>>> v4.9.227
 void snd_device_free(struct snd_card *card, void *device_data);
 void snd_device_free_all(struct snd_card *card);
 

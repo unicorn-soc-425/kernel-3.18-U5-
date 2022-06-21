@@ -30,6 +30,7 @@
 #define __UPC_H__
 
 #include "device.h"
+<<<<<<< HEAD
 #include "ttype.h"
 
 /*---------------------  Export Definitions -------------------------*/
@@ -67,6 +68,32 @@ do {									\
 do {									\
 	iowrite32((u32)dwData, dwIOAddress);				\
 } while (0)
+=======
+
+/*---------------------  Export Definitions -------------------------*/
+
+
+/* For memory mapped IO */
+
+
+#define VNSvInPortB(dwIOAddress, pbyData) \
+	(*(pbyData) = ioread8(dwIOAddress))
+
+#define VNSvInPortW(dwIOAddress, pwData) \
+	(*(pwData) = ioread16(dwIOAddress))
+
+#define VNSvInPortD(dwIOAddress, pdwData) \
+	(*(pdwData) = ioread32(dwIOAddress))
+
+#define VNSvOutPortB(dwIOAddress, byData) \
+	iowrite8((u8)(byData), dwIOAddress)
+
+#define VNSvOutPortW(dwIOAddress, wData) \
+	iowrite16((u16)(wData), dwIOAddress)
+
+#define VNSvOutPortD(dwIOAddress, dwData) \
+	iowrite32((u32)(dwData), dwIOAddress)
+>>>>>>> v4.9.227
 
 #define PCAvDelayByIO(uDelayUnit)				\
 do {								\
@@ -87,4 +114,8 @@ do {								\
 
 /*---------------------  Export Functions  --------------------------*/
 
+<<<<<<< HEAD
 #endif // __UPC_H__
+=======
+#endif /* __UPC_H__ */
+>>>>>>> v4.9.227

@@ -25,12 +25,18 @@
 #define __AMDGPU_I2C_H__
 
 struct amdgpu_i2c_chan *amdgpu_i2c_create(struct drm_device *dev,
+<<<<<<< HEAD
 					    struct amdgpu_i2c_bus_rec *rec,
 					    const char *name);
+=======
+					  const struct amdgpu_i2c_bus_rec *rec,
+					  const char *name);
+>>>>>>> v4.9.227
 void amdgpu_i2c_destroy(struct amdgpu_i2c_chan *i2c);
 void amdgpu_i2c_init(struct amdgpu_device *adev);
 void amdgpu_i2c_fini(struct amdgpu_device *adev);
 void amdgpu_i2c_add(struct amdgpu_device *adev,
+<<<<<<< HEAD
 		     struct amdgpu_i2c_bus_rec *rec,
 		     const char *name);
 struct amdgpu_i2c_chan *
@@ -40,5 +46,16 @@ void
 amdgpu_i2c_router_select_ddc_port(struct amdgpu_connector *amdgpu_connector);
 void
 amdgpu_i2c_router_select_cd_port(struct amdgpu_connector *amdgpu_connector);
+=======
+		    const struct amdgpu_i2c_bus_rec *rec,
+		    const char *name);
+struct amdgpu_i2c_chan *
+amdgpu_i2c_lookup(struct amdgpu_device *adev,
+		  const struct amdgpu_i2c_bus_rec *i2c_bus);
+void
+amdgpu_i2c_router_select_ddc_port(const struct amdgpu_connector *connector);
+void
+amdgpu_i2c_router_select_cd_port(const struct amdgpu_connector *connector);
+>>>>>>> v4.9.227
 
 #endif

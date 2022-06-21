@@ -12,4 +12,8 @@ obj-y	+= netlabel_mgmt.o
 # protocol modules
 obj-y	+= netlabel_unlabeled.o
 obj-y	+= netlabel_cipso_v4.o
+<<<<<<< HEAD
 
+=======
+obj-$(subst m,y,$(CONFIG_IPV6)) += netlabel_calipso.o
+>>>>>>> v4.9.227

@@ -1343,7 +1343,11 @@ static int init_nic(struct s2io_nic *nic)
 		TX_PA_CFG_IGNORE_L2_ERR;
 	writeq(val64, &bar0->tx_pa_cfg);
 
+<<<<<<< HEAD
 	/* Rx DMA intialization. */
+=======
+	/* Rx DMA initialization. */
+>>>>>>> v4.9.227
 	val64 = 0;
 	for (i = 0; i < config->rx_ring_num; i++) {
 		struct rx_ring_config *rx_cfg = &config->rx_cfg[i];
@@ -2520,7 +2524,11 @@ static int fill_rx_buffers(struct s2io_nic *nic, struct ring_info *ring,
 			DBG_PRINT(INFO_DBG, "%s: Could not allocate skb\n",
 				  ring->dev->name);
 			if (first_rxdp) {
+<<<<<<< HEAD
 				wmb();
+=======
+				dma_wmb();
+>>>>>>> v4.9.227
 				first_rxdp->Control_1 |= RXD_OWN_XENA;
 			}
 			swstats->mem_alloc_fail_cnt++;
@@ -2634,7 +2642,11 @@ static int fill_rx_buffers(struct s2io_nic *nic, struct ring_info *ring,
 		rxdp->Control_2 |= SET_RXD_MARKER;
 		if (!(alloc_tab & ((1 << rxsync_frequency) - 1))) {
 			if (first_rxdp) {
+<<<<<<< HEAD
 				wmb();
+=======
+				dma_wmb();
+>>>>>>> v4.9.227
 				first_rxdp->Control_1 |= RXD_OWN_XENA;
 			}
 			first_rxdp = rxdp;
@@ -2649,7 +2661,11 @@ end:
 	 * and other fields are seen by adapter correctly.
 	 */
 	if (first_rxdp) {
+<<<<<<< HEAD
 		wmb();
+=======
+		dma_wmb();
+>>>>>>> v4.9.227
 		first_rxdp->Control_1 |= RXD_OWN_XENA;
 	}
 
@@ -4021,7 +4037,10 @@ static netdev_tx_t s2io_xmit(struct sk_buff *skb, struct net_device *dev)
 	unsigned long flags = 0;
 	u16 vlan_tag = 0;
 	struct fifo_info *fifo = NULL;
+<<<<<<< HEAD
 	int do_spin_lock = 1;
+=======
+>>>>>>> v4.9.227
 	int offload_type;
 	int enable_per_list_interrupt = 0;
 	struct config_param *config = &sp->config;
@@ -4045,8 +4064,13 @@ static netdev_tx_t s2io_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	queue = 0;
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb))
 		vlan_tag = vlan_tx_tag_get(skb);
+=======
+	if (skb_vlan_tag_present(skb))
+		vlan_tag = skb_vlan_tag_get(skb);
+>>>>>>> v4.9.227
 	if (sp->config.tx_steering_type == TX_DEFAULT_STEERING) {
 		if (skb->protocol == htons(ETH_P_IP)) {
 			struct iphdr *ip;
@@ -4074,7 +4098,10 @@ static netdev_tx_t s2io_xmit(struct sk_buff *skb, struct net_device *dev)
 					queue += sp->udp_fifo_idx;
 					if (skb->len > 1024)
 						enable_per_list_interrupt = 1;
+<<<<<<< HEAD
 					do_spin_lock = 0;
+=======
+>>>>>>> v4.9.227
 				}
 			}
 		}
@@ -4084,12 +4111,16 @@ static netdev_tx_t s2io_xmit(struct sk_buff *skb, struct net_device *dev)
 			[skb->priority & (MAX_TX_FIFOS - 1)];
 	fifo = &mac_control->fifos[queue];
 
+<<<<<<< HEAD
 	if (do_spin_lock)
 		spin_lock_irqsave(&fifo->tx_lock, flags);
 	else {
 		if (unlikely(!spin_trylock_irqsave(&fifo->tx_lock, flags)))
 			return NETDEV_TX_LOCKED;
 	}
+=======
+	spin_lock_irqsave(&fifo->tx_lock, flags);
+>>>>>>> v4.9.227
 
 	if (sp->config.multiq) {
 		if (__netif_subqueue_stopped(dev, fifo->fifo_no)) {
@@ -5308,7 +5339,12 @@ static int do_s2io_prog_unicast(struct net_device *dev, u8 *addr)
 
 /**
  * s2io_ethtool_sset - Sets different link parameters.
+<<<<<<< HEAD
  * @sp : private member of the device structure, which is a pointer to the  * s2io_nic structure.
+=======
+ * @sp : private member of the device structure, which is a pointer to the
+ * s2io_nic structure.
+>>>>>>> v4.9.227
  * @info: pointer to the structure with parameters given by ethtool to set
  * link information.
  * Description:
@@ -5388,8 +5424,11 @@ static void s2io_ethtool_gdrvinfo(struct net_device *dev,
 	strlcpy(info->driver, s2io_driver_name, sizeof(info->driver));
 	strlcpy(info->version, s2io_driver_version, sizeof(info->version));
 	strlcpy(info->bus_info, pci_name(sp->pdev), sizeof(info->bus_info));
+<<<<<<< HEAD
 	info->regdump_len = XENA_REG_SPACE;
 	info->eedump_len = XENA_EEPROM_SPACE;
+=======
+>>>>>>> v4.9.227
 }
 
 /**
@@ -5793,7 +5832,12 @@ static void s2io_vpd_read(struct s2io_nic *nic)
 
 /**
  *  s2io_ethtool_geeprom  - reads the value stored in the Eeprom.
+<<<<<<< HEAD
  *  @sp : private member of the device structure, which is a pointer to the *       s2io_nic structure.
+=======
+ *  @sp : private member of the device structure, which is a pointer to the
+ *  s2io_nic structure.
+>>>>>>> v4.9.227
  *  @eeprom : pointer to the user level structure provided by ethtool,
  *  containing all relevant information.
  *  @data_buf : user defined value to be written into Eeprom.
@@ -6950,7 +6994,11 @@ static  int rxd_owner_bit_reset(struct s2io_nic *sp)
 				}
 
 				set_rxd_buffer_size(sp, rxdp, size);
+<<<<<<< HEAD
 				wmb();
+=======
+				dma_wmb();
+>>>>>>> v4.9.227
 				/* flip the Ownership bit to Hardware */
 				rxdp->Control_1 |= RXD_OWN_XENA;
 			}
@@ -6987,7 +7035,13 @@ static int s2io_add_isr(struct s2io_nic *sp)
 			if (sp->s2io_entries[i].in_use == MSIX_FLG) {
 				if (sp->s2io_entries[i].type ==
 				    MSIX_RING_TYPE) {
+<<<<<<< HEAD
 					sprintf(sp->desc[i], "%s:MSI-X-%d-RX",
+=======
+					snprintf(sp->desc[i],
+						sizeof(sp->desc[i]),
+						"%s:MSI-X-%d-RX",
+>>>>>>> v4.9.227
 						dev->name, i);
 					err = request_irq(sp->entries[i].vector,
 							  s2io_msix_ring_handle,
@@ -6996,7 +7050,13 @@ static int s2io_add_isr(struct s2io_nic *sp)
 							  sp->s2io_entries[i].arg);
 				} else if (sp->s2io_entries[i].type ==
 					   MSIX_ALARM_TYPE) {
+<<<<<<< HEAD
 					sprintf(sp->desc[i], "%s:MSI-X-%d-TX",
+=======
+					snprintf(sp->desc[i],
+						sizeof(sp->desc[i]),
+						"%s:MSI-X-%d-TX",
+>>>>>>> v4.9.227
 						dev->name, i);
 					err = request_irq(sp->entries[i].vector,
 							  s2io_msix_fifo_handle,
@@ -7415,7 +7475,11 @@ static int rx_osm_handler(struct ring_info *ring_data, struct RxD_t * rxdp)
 
 	if ((rxdp->Control_1 & TCP_OR_UDP_FRAME) &&
 	    ((!ring_data->lro) ||
+<<<<<<< HEAD
 	     (ring_data->lro && (!(rxdp->Control_1 & RXD_FRAME_IP_FRAG)))) &&
+=======
+	     (!(rxdp->Control_1 & RXD_FRAME_IP_FRAG))) &&
+>>>>>>> v4.9.227
 	    (dev->features & NETIF_F_RXCSUM)) {
 		l3_csum = RXD_GET_L3_CKSUM(rxdp->Control_1);
 		l4_csum = RXD_GET_L4_CKSUM(rxdp->Control_1);
@@ -8154,7 +8218,12 @@ s2io_init_nic(struct pci_dev *pdev, const struct pci_device_id *pre)
 			  "%s: UDP Fragmentation Offload(UFO) enabled\n",
 			  dev->name);
 	/* Initialize device name */
+<<<<<<< HEAD
 	sprintf(sp->name, "%s Neterion %s", dev->name, sp->product_name);
+=======
+	snprintf(sp->name, sizeof(sp->name), "%s Neterion %s", dev->name,
+		 sp->product_name);
+>>>>>>> v4.9.227
 
 	if (vlan_tag_strip)
 		sp->vlan_strip_flag = 1;
@@ -8219,6 +8288,7 @@ static void s2io_rem_nic(struct pci_dev *pdev)
 	pci_disable_device(pdev);
 }
 
+<<<<<<< HEAD
 /**
  * s2io_starter - Entry point for the driver
  * Description: This function is the entry point for the driver. It verifies
@@ -8244,6 +8314,9 @@ static __exit void s2io_closer(void)
 
 module_init(s2io_starter);
 module_exit(s2io_closer);
+=======
+module_pci_driver(s2io_driver);
+>>>>>>> v4.9.227
 
 static int check_L2_lro_capable(u8 *buffer, struct iphdr **ip,
 				struct tcphdr **tcp, struct RxD_t *rxdp,

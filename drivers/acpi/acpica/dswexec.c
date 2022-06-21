@@ -6,7 +6,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -133,7 +137,12 @@ acpi_ds_get_predicate_value(struct acpi_walk_state *walk_state,
 	 * Result of predicate evaluation must be an Integer
 	 * object. Implicitly convert the argument if necessary.
 	 */
+<<<<<<< HEAD
 	status = acpi_ex_convert_to_integer(obj_desc, &local_obj_desc, 16);
+=======
+	status = acpi_ex_convert_to_integer(obj_desc, &local_obj_desc,
+					    ACPI_STRTOUL_BASE16);
+>>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 		goto cleanup;
 	}
@@ -172,14 +181,23 @@ acpi_ds_get_predicate_value(struct acpi_walk_state *walk_state,
 
 cleanup:
 
+<<<<<<< HEAD
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "Completed a predicate eval=%X Op=%p\n",
+=======
+	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
+			  "Completed a predicate eval=%X Op=%p\n",
+>>>>>>> v4.9.227
 			  walk_state->control_state->common.value,
 			  walk_state->op));
 
 	/* Break to debugger to display result */
 
+<<<<<<< HEAD
 	ACPI_DEBUGGER_EXEC(acpi_db_display_result_object
 			   (local_obj_desc, walk_state));
+=======
+	acpi_db_display_result_object(local_obj_desc, walk_state);
+>>>>>>> v4.9.227
 
 	/*
 	 * Delete the predicate result object (we know that
@@ -264,8 +282,13 @@ acpi_ds_exec_begin_op(struct acpi_walk_state *walk_state,
 	    (walk_state->control_state->common.state ==
 	     ACPI_CONTROL_CONDITIONAL_EXECUTING)) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
+<<<<<<< HEAD
 				  "Exec predicate Op=%p State=%p\n", op,
 				  walk_state));
+=======
+				  "Exec predicate Op=%p State=%p\n",
+				  op, walk_state));
+>>>>>>> v4.9.227
 
 		walk_state->control_state->common.state =
 		    ACPI_CONTROL_PREDICATE_EXECUTING;
@@ -386,11 +409,18 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 
 	/* Call debugger for single step support (DEBUG build only) */
 
+<<<<<<< HEAD
 	ACPI_DEBUGGER_EXEC(status =
 			   acpi_db_single_step(walk_state, op, op_class));
 	ACPI_DEBUGGER_EXEC(if (ACPI_FAILURE(status)) {
 			   return_ACPI_STATUS(status);}
 	) ;
+=======
+	status = acpi_db_single_step(walk_state, op, op_class);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+>>>>>>> v4.9.227
 
 	/* Decode the Opcode Class */
 
@@ -502,9 +532,14 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 						  "Method Reference in a Package, Op=%p\n",
 						  op));
 
+<<<<<<< HEAD
 				op->common.node =
 				    (struct acpi_namespace_node *)op->asl.value.
 				    arg->asl.node;
+=======
+				op->common.node = (struct acpi_namespace_node *)
+				    op->asl.value.arg->asl.node;
+>>>>>>> v4.9.227
 				acpi_ut_add_reference(op->asl.value.arg->asl.
 						      node->object);
 				return_ACPI_STATUS(AE_OK);
@@ -586,8 +621,13 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 				 * Put the Node on the object stack (Contains the ACPI Name
 				 * of this object)
 				 */
+<<<<<<< HEAD
 				walk_state->operands[0] =
 				    (void *)op->common.parent->common.node;
+=======
+				walk_state->operands[0] = (void *)
+				    op->common.parent->common.node;
+>>>>>>> v4.9.227
 				walk_state->num_operands = 1;
 
 				status = acpi_ds_create_node(walk_state,
@@ -692,7 +732,12 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 		default:
 
 			ACPI_ERROR((AE_INFO,
+<<<<<<< HEAD
 				    "Unimplemented opcode, class=0x%X type=0x%X Opcode=0x%X Op=%p",
+=======
+				    "Unimplemented opcode, class=0x%X "
+				    "type=0x%X Opcode=0x%X Op=%p",
+>>>>>>> v4.9.227
 				    op_class, op_type, op->common.aml_opcode,
 				    op));
 
@@ -728,8 +773,13 @@ cleanup:
 
 		/* Break to debugger to display result */
 
+<<<<<<< HEAD
 		ACPI_DEBUGGER_EXEC(acpi_db_display_result_object
 				   (walk_state->result_obj, walk_state));
+=======
+		acpi_db_display_result_object(walk_state->result_obj,
+					      walk_state);
+>>>>>>> v4.9.227
 
 		/*
 		 * Delete the result op if and only if:

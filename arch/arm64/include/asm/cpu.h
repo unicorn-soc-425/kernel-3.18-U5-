@@ -25,10 +25,18 @@
  */
 struct cpuinfo_arm64 {
 	struct cpu	cpu;
+<<<<<<< HEAD
+=======
+	struct kobject	kobj;
+>>>>>>> v4.9.227
 	u32		reg_ctr;
 	u32		reg_cntfrq;
 	u32		reg_dczid;
 	u32		reg_midr;
+<<<<<<< HEAD
+=======
+	u32		reg_revidr;
+>>>>>>> v4.9.227
 
 	u64		reg_id_aa64dfr0;
 	u64		reg_id_aa64dfr1;

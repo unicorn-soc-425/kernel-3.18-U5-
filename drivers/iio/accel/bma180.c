@@ -469,6 +469,7 @@ static int bma180_read_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
+<<<<<<< HEAD
 		mutex_lock(&data->mutex);
 		if (iio_buffer_enabled(indio_dev)) {
 			mutex_unlock(&data->mutex);
@@ -476,6 +477,16 @@ static int bma180_read_raw(struct iio_dev *indio_dev,
 		}
 		ret = bma180_get_data_reg(data, chan->scan_index);
 		mutex_unlock(&data->mutex);
+=======
+		ret = iio_device_claim_direct_mode(indio_dev);
+		if (ret)
+			return ret;
+
+		mutex_lock(&data->mutex);
+		ret = bma180_get_data_reg(data, chan->scan_index);
+		mutex_unlock(&data->mutex);
+		iio_device_release_direct_mode(indio_dev);
+>>>>>>> v4.9.227
 		if (ret < 0)
 			return ret;
 		*val = sign_extend32(ret >> chan->scan_type.shift,
@@ -654,12 +665,20 @@ static irqreturn_t bma180_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct bma180_data *data = iio_priv(indio_dev);
+<<<<<<< HEAD
 	int64_t time_ns = iio_get_time_ns();
+=======
+	s64 time_ns = iio_get_time_ns(indio_dev);
+>>>>>>> v4.9.227
 	int bit, ret, i = 0;
 
 	mutex_lock(&data->mutex);
 
+<<<<<<< HEAD
 	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
+=======
+	for_each_set_bit(bit, indio_dev->active_scan_mask,
+>>>>>>> v4.9.227
 			 indio_dev->masklength) {
 		ret = bma180_get_data_reg(data, bit);
 		if (ret < 0) {
@@ -846,7 +865,10 @@ MODULE_DEVICE_TABLE(i2c, bma180_ids);
 static struct i2c_driver bma180_driver = {
 	.driver = {
 		.name	= "bma180",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= BMA180_PM_OPS,
 	},
 	.probe		= bma180_probe,

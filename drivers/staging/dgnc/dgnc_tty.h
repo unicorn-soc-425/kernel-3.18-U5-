@@ -11,12 +11,15 @@
  * but WITHOUT ANY WARRANTY, EXPRESS OR IMPLIED; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE.  See the GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  *	NOTE: THIS IS A SHARED HEADER. DO NOT CHANGE CODING STYLE!!!
+=======
+>>>>>>> v4.9.227
  */
 
 #ifndef __DGNC_TTY_H
@@ -25,18 +28,29 @@
 #include "dgnc_driver.h"
 
 int	dgnc_tty_register(struct dgnc_board *brd);
+<<<<<<< HEAD
+=======
+void dgnc_tty_unregister(struct dgnc_board *brd);
+>>>>>>> v4.9.227
 
 int	dgnc_tty_preinit(void);
 int     dgnc_tty_init(struct dgnc_board *);
 
 void	dgnc_tty_post_uninit(void);
+<<<<<<< HEAD
 void	dgnc_tty_uninit(struct dgnc_board *);
+=======
+void	dgnc_cleanup_tty(struct dgnc_board *);
+>>>>>>> v4.9.227
 
 void	dgnc_input(struct channel_t *ch);
 void	dgnc_carrier(struct channel_t *ch);
 void	dgnc_wakeup_writes(struct channel_t *ch);
 void	dgnc_check_queue_flow_control(struct channel_t *ch);
 
+<<<<<<< HEAD
 void	dgnc_sniff_nowait_nolock(struct channel_t *ch, unsigned char *text, unsigned char *buf, int nbuf);
 
+=======
+>>>>>>> v4.9.227
 #endif

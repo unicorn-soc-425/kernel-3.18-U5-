@@ -478,7 +478,11 @@
 
 		clk32k_in: clock@0 {
 			compatible = "fixed-clock";
+<<<<<<< HEAD
 			reg=<0>;
+=======
+			reg = <0>;
+>>>>>>> v4.9.227
 			#clock-cells = <0>;
 			clock-frequency = <32768>;
 		};

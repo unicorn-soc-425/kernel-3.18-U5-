@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+#include <dt-bindings/input/input.h>
+>>>>>>> v4.9.227
 #include "tegra30.dtsi"
 
 /**
@@ -12,7 +16,11 @@
  * tegra30-cardhu-a04.dts.
  * The identification of board is done in two ways, by looking the sticker
  * on PCB and by reading board id eeprom.
+<<<<<<< HEAD
  * The stciker will have number like 600-81291-1000-002 C.3. In this 4th
+=======
+ * The sticker will have number like 600-81291-1000-002 C.3. In this 4th
+>>>>>>> v4.9.227
  * number is the fab version like here it is 002 and hence fab version A02.
  * The (downstream internal) U-Boot of Cardhu display the board-id as
  * follows:
@@ -34,6 +42,13 @@
 		serial1 = &uartc;
 	};
 
+<<<<<<< HEAD
+=======
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+>>>>>>> v4.9.227
 	memory {
 		reg = <0x80000000 0x40000000>;
 	};
@@ -419,7 +434,11 @@
 
 		clk32k_in: clock@0 {
 			compatible = "fixed-clock";
+<<<<<<< HEAD
 			reg=<0>;
+=======
+			reg = <0>;
+>>>>>>> v4.9.227
 			#clock-cells = <0>;
 			clock-frequency = <32768>;
 		};
@@ -616,4 +635,34 @@
 			 <&tegra_car TEGRA30_CLK_EXTERN1>;
 		clock-names = "pll_a", "pll_a_out0", "mclk";
 	};
+<<<<<<< HEAD
+=======
+
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		power {
+			label = "Power";
+			interrupt-parent = <&pmic>;
+			interrupts = <2 0>;
+			linux,code = <KEY_POWER>;
+			debounce-interval = <100>;
+			wakeup-source;
+		};
+
+		volume-down {
+			label = "Volume Down";
+			gpios = <&gpio TEGRA_GPIO(R, 0) GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEDOWN>;
+			debounce-interval = <10>;
+		};
+
+		volume-up {
+			label = "Volume Up";
+			gpios = <&gpio TEGRA_GPIO(R, 1) GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEUP>;
+			debounce-interval = <10>;
+		};
+	};
+>>>>>>> v4.9.227
 };

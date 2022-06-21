@@ -15,7 +15,11 @@
 #include <linux/pci_ids.h>
 #include <linux/edac.h>
 
+<<<<<<< HEAD
 #include <asm-generic/io-64-nonatomic-lo-hi.h>
+=======
+#include <linux/io-64-nonatomic-lo-hi.h>
+>>>>>>> v4.9.227
 #include "edac_core.h"
 
 #define X38_REVISION		"1.1"
@@ -500,8 +504,12 @@ fail1:
 	pci_unregister_driver(&x38_driver);
 
 fail0:
+<<<<<<< HEAD
 	if (mci_pdev)
 		pci_dev_put(mci_pdev);
+=======
+	pci_dev_put(mci_pdev);
+>>>>>>> v4.9.227
 
 	return pci_rc;
 }

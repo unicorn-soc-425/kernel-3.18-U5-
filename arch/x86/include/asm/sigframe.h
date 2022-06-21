@@ -1,15 +1,25 @@
 #ifndef _ASM_X86_SIGFRAME_H
 #define _ASM_X86_SIGFRAME_H
 
+<<<<<<< HEAD
 #include <asm/sigcontext.h>
 #include <asm/siginfo.h>
 #include <asm/ucontext.h>
+=======
+#include <uapi/asm/sigcontext.h>
+#include <asm/siginfo.h>
+#include <asm/ucontext.h>
+#include <linux/compat.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_X86_32
 #define sigframe_ia32		sigframe
 #define rt_sigframe_ia32	rt_sigframe
+<<<<<<< HEAD
 #define sigcontext_ia32		sigcontext
 #define _fpstate_ia32		_fpstate
+=======
+>>>>>>> v4.9.227
 #define ucontext_ia32		ucontext
 #else /* !CONFIG_X86_32 */
 
@@ -23,7 +33,11 @@
 struct sigframe_ia32 {
 	u32 pretcode;
 	int sig;
+<<<<<<< HEAD
 	struct sigcontext_ia32 sc;
+=======
+	struct sigcontext_32 sc;
+>>>>>>> v4.9.227
 	/*
 	 * fpstate is unused. fpstate is moved/allocated after
 	 * retcode[] below. This movement allows to have the FP state and the
@@ -32,7 +46,11 @@ struct sigframe_ia32 {
 	 * the offset of extramask[] in the sigframe and thus prevent any
 	 * legacy application accessing/modifying it.
 	 */
+<<<<<<< HEAD
 	struct _fpstate_ia32 fpstate_unused;
+=======
+	struct _fpstate_32 fpstate_unused;
+>>>>>>> v4.9.227
 #ifdef CONFIG_IA32_EMULATION
 	unsigned int extramask[_COMPAT_NSIG_WORDS-1];
 #else /* !CONFIG_IA32_EMULATION */
@@ -69,6 +87,18 @@ struct rt_sigframe {
 
 #ifdef CONFIG_X86_X32_ABI
 
+<<<<<<< HEAD
+=======
+struct ucontext_x32 {
+	unsigned int	  uc_flags;
+	unsigned int 	  uc_link;
+	compat_stack_t	  uc_stack;
+	unsigned int	  uc__pad0;     /* needed for alignment */
+	struct sigcontext uc_mcontext;  /* the 64-bit sigcontext type */
+	compat_sigset_t	  uc_sigmask;	/* mask last for extensibility */
+};
+
+>>>>>>> v4.9.227
 struct rt_sigframe_x32 {
 	u64 pretcode;
 	struct ucontext_x32 uc;

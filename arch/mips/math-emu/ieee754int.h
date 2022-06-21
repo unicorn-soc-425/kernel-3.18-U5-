@@ -26,6 +26,13 @@
 
 #define CLPAIR(x, y)	((x)*6+(y))
 
+<<<<<<< HEAD
+=======
+enum maddf_flags {
+	MADDF_NEGATE_PRODUCT	= 1 << 0,
+};
+
+>>>>>>> v4.9.227
 static inline void ieee754_clearcx(void)
 {
 	ieee754_csr.cx = 0;
@@ -44,12 +51,26 @@ static inline int ieee754_setandtestcx(const unsigned int x)
 	return ieee754_csr.mx & x;
 }
 
+<<<<<<< HEAD
+=======
+static inline int ieee754_class_nan(int xc)
+{
+	return xc >= IEEE754_CLASS_SNAN;
+}
+
+>>>>>>> v4.9.227
 #define COMPXSP \
 	unsigned xm; int xe; int xs __maybe_unused; int xc
 
 #define COMPYSP \
 	unsigned ym; int ye; int ys; int yc
 
+<<<<<<< HEAD
+=======
+#define COMPZSP \
+	unsigned zm; int ze; int zs; int zc
+
+>>>>>>> v4.9.227
 #define EXPLODESP(v, vc, vs, ve, vm)					\
 {									\
 	vs = SPSIGN(v);							\
@@ -58,10 +79,17 @@ static inline int ieee754_setandtestcx(const unsigned int x)
 	if (ve == SP_EMAX+1+SP_EBIAS) {					\
 		if (vm == 0)						\
 			vc = IEEE754_CLASS_INF;				\
+<<<<<<< HEAD
 		else if (vm & SP_MBIT(SP_FBITS-1))			\
 			vc = IEEE754_CLASS_SNAN;			\
 	else								\
 		vc = IEEE754_CLASS_QNAN;				\
+=======
+		else if (ieee754_csr.nan2008 ^ !(vm & SP_MBIT(SP_FBITS - 1))) \
+			vc = IEEE754_CLASS_QNAN;			\
+		else							\
+			vc = IEEE754_CLASS_SNAN;			\
+>>>>>>> v4.9.227
 	} else if (ve == SP_EMIN-1+SP_EBIAS) {				\
 		if (vm) {						\
 			ve = SP_EMIN;					\
@@ -76,6 +104,10 @@ static inline int ieee754_setandtestcx(const unsigned int x)
 }
 #define EXPLODEXSP EXPLODESP(x, xc, xs, xe, xm)
 #define EXPLODEYSP EXPLODESP(y, yc, ys, ye, ym)
+<<<<<<< HEAD
+=======
+#define EXPLODEZSP EXPLODESP(z, zc, zs, ze, zm)
+>>>>>>> v4.9.227
 
 
 #define COMPXDP \
@@ -84,6 +116,12 @@ static inline int ieee754_setandtestcx(const unsigned int x)
 #define COMPYDP \
 	u64 ym; int ye; int ys; int yc
 
+<<<<<<< HEAD
+=======
+#define COMPZDP \
+	u64 zm; int ze; int zs; int zc
+
+>>>>>>> v4.9.227
 #define EXPLODEDP(v, vc, vs, ve, vm)					\
 {									\
 	vm = DPMANT(v);							\
@@ -92,16 +130,28 @@ static inline int ieee754_setandtestcx(const unsigned int x)
 	if (ve == DP_EMAX+1+DP_EBIAS) {					\
 		if (vm == 0)						\
 			vc = IEEE754_CLASS_INF;				\
+<<<<<<< HEAD
 		else if (vm & DP_MBIT(DP_FBITS-1))			\
 			vc = IEEE754_CLASS_SNAN;			\
 		else							\
 			vc = IEEE754_CLASS_QNAN;			\
+=======
+		else if (ieee754_csr.nan2008 ^ !(vm & DP_MBIT(DP_FBITS - 1))) \
+			vc = IEEE754_CLASS_QNAN;			\
+		else							\
+			vc = IEEE754_CLASS_SNAN;			\
+>>>>>>> v4.9.227
 	} else if (ve == DP_EMIN-1+DP_EBIAS) {				\
 		if (vm) {						\
 			ve = DP_EMIN;					\
 			vc = IEEE754_CLASS_DNORM;			\
+<<<<<<< HEAD
 	} else								\
 		vc = IEEE754_CLASS_ZERO;				\
+=======
+		} else							\
+			vc = IEEE754_CLASS_ZERO;			\
+>>>>>>> v4.9.227
 	} else {							\
 		ve -= DP_EBIAS;						\
 		vm |= DP_HIDDEN_BIT;					\
@@ -110,6 +160,10 @@ static inline int ieee754_setandtestcx(const unsigned int x)
 }
 #define EXPLODEXDP EXPLODEDP(x, xc, xs, xe, xm)
 #define EXPLODEYDP EXPLODEDP(y, yc, ys, ye, ym)
+<<<<<<< HEAD
+=======
+#define EXPLODEZDP EXPLODEDP(z, zc, zs, ze, zm)
+>>>>>>> v4.9.227
 
 #define FLUSHDP(v, vc, vs, ve, vm)					\
 	if (vc==IEEE754_CLASS_DNORM) {					\
@@ -135,7 +189,14 @@ static inline int ieee754_setandtestcx(const unsigned int x)
 
 #define FLUSHXDP FLUSHDP(x, xc, xs, xe, xm)
 #define FLUSHYDP FLUSHDP(y, yc, ys, ye, ym)
+<<<<<<< HEAD
 #define FLUSHXSP FLUSHSP(x, xc, xs, xe, xm)
 #define FLUSHYSP FLUSHSP(y, yc, ys, ye, ym)
+=======
+#define FLUSHZDP FLUSHDP(z, zc, zs, ze, zm)
+#define FLUSHXSP FLUSHSP(x, xc, xs, xe, xm)
+#define FLUSHYSP FLUSHSP(y, yc, ys, ye, ym)
+#define FLUSHZSP FLUSHSP(z, zc, zs, ze, zm)
+>>>>>>> v4.9.227
 
 #endif /* __IEEE754INT_H  */

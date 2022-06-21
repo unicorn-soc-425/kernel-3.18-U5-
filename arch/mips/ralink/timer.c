@@ -1,12 +1,24 @@
 /*
+<<<<<<< HEAD
+=======
+ * Ralink RT2880 timer
+ * Author: John Crispin
+ *
+>>>>>>> v4.9.227
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
  *
+<<<<<<< HEAD
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
 */
 
 #include <linux/module.h>
+=======
+ * Copyright (C) 2013 John Crispin <john@phrozen.org>
+*/
+
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <linux/timer.h>
@@ -69,11 +81,14 @@ static int rt_timer_request(struct rt_timer *rt)
 	return err;
 }
 
+<<<<<<< HEAD
 static void rt_timer_free(struct rt_timer *rt)
 {
 	free_irq(rt->irq, rt);
 }
 
+=======
+>>>>>>> v4.9.227
 static int rt_timer_config(struct rt_timer *rt, unsigned long divisor)
 {
 	if (rt->timer_freq < divisor)
@@ -99,6 +114,7 @@ static int rt_timer_enable(struct rt_timer *rt)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void rt_timer_disable(struct rt_timer *rt)
 {
 	u32 t;
@@ -108,6 +124,8 @@ static void rt_timer_disable(struct rt_timer *rt)
 	rt_timer_w32(rt, TIMER_REG_TMR0CTL, t);
 }
 
+=======
+>>>>>>> v4.9.227
 static int rt_timer_probe(struct platform_device *pdev)
 {
 	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -152,6 +170,7 @@ static int rt_timer_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int rt_timer_remove(struct platform_device *pdev)
 {
 	struct rt_timer *rt = platform_get_drvdata(pdev);
@@ -162,10 +181,13 @@ static int rt_timer_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id rt_timer_match[] = {
 	{ .compatible = "ralink,rt2880-timer" },
 	{},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, rt_timer_match);
 
 static struct platform_driver rt_timer_driver = {
@@ -183,3 +205,15 @@ module_platform_driver(rt_timer_driver);
 MODULE_DESCRIPTION("Ralink RT2880 timer");
 MODULE_AUTHOR("John Crispin <blogic@openwrt.org");
 MODULE_LICENSE("GPL");
+=======
+
+static struct platform_driver rt_timer_driver = {
+	.probe = rt_timer_probe,
+	.driver = {
+		.name			= "rt-timer",
+		.of_match_table		= rt_timer_match,
+		.suppress_bind_attrs	= true,
+	},
+};
+builtin_platform_driver(rt_timer_driver);
+>>>>>>> v4.9.227

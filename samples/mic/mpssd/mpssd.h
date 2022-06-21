@@ -86,6 +86,10 @@ struct mic_info {
 	int		id;
 	char		*name;
 	pthread_t       config_thread;
+<<<<<<< HEAD
+=======
+	pthread_t       init_thread;
+>>>>>>> v4.9.227
 	pid_t		pid;
 	struct mic_console_info	mic_console;
 	struct mic_net_info	mic_net;

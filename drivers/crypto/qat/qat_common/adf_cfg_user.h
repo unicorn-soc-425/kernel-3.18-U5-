@@ -54,6 +54,7 @@ struct adf_user_cfg_key_val {
 	char key[ADF_CFG_MAX_KEY_LEN_IN_BYTES];
 	char val[ADF_CFG_MAX_VAL_LEN_IN_BYTES];
 	union {
+<<<<<<< HEAD
 		char *user_val_ptr;
 		uint64_t padding1;
 	};
@@ -62,11 +63,17 @@ struct adf_user_cfg_key_val {
 		uint64_t padding2;
 	};
 	union {
+=======
+>>>>>>> v4.9.227
 		struct adf_user_cfg_key_val *next;
 		uint64_t padding3;
 	};
 	enum adf_cfg_val_type type;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 struct adf_user_cfg_section {
 	char name[ADF_CFG_MAX_SECTION_LEN_IN_BYTES];
@@ -75,6 +82,7 @@ struct adf_user_cfg_section {
 		uint64_t padding1;
 	};
 	union {
+<<<<<<< HEAD
 		struct adf_user_cfg_section *prev;
 		uint64_t padding2;
 	};
@@ -83,6 +91,12 @@ struct adf_user_cfg_section {
 		uint64_t padding3;
 	};
 };
+=======
+		struct adf_user_cfg_section *next;
+		uint64_t padding3;
+	};
+} __packed;
+>>>>>>> v4.9.227
 
 struct adf_user_cfg_ctl_data {
 	union {
@@ -90,5 +104,9 @@ struct adf_user_cfg_ctl_data {
 		uint64_t padding;
 	};
 	uint8_t device_id;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 #endif

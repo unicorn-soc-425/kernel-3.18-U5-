@@ -24,6 +24,7 @@
 #include <linux/types.h>
 #include <linux/string.h>
 #include <crypto/sha.h>
+<<<<<<< HEAD
 #include <asm/byteorder.h>
 #include <asm/simd.h>
 #include <asm/neon.h>
@@ -183,6 +184,51 @@ static struct shash_alg algs[] = { {
 	.import		=	sha256_import,
 	.descsize	=	sizeof(struct sha256_state),
 	.statesize	=	sizeof(struct sha256_state),
+=======
+#include <crypto/sha256_base.h>
+#include <asm/simd.h>
+#include <asm/neon.h>
+
+#include "sha256_glue.h"
+
+asmlinkage void sha256_block_data_order(u32 *digest, const void *data,
+					unsigned int num_blks);
+
+int crypto_sha256_arm_update(struct shash_desc *desc, const u8 *data,
+			     unsigned int len)
+{
+	/* make sure casting to sha256_block_fn() is safe */
+	BUILD_BUG_ON(offsetof(struct sha256_state, state) != 0);
+
+	return sha256_base_do_update(desc, data, len,
+				(sha256_block_fn *)sha256_block_data_order);
+}
+EXPORT_SYMBOL(crypto_sha256_arm_update);
+
+static int sha256_final(struct shash_desc *desc, u8 *out)
+{
+	sha256_base_do_finalize(desc,
+				(sha256_block_fn *)sha256_block_data_order);
+	return sha256_base_finish(desc, out);
+}
+
+int crypto_sha256_arm_finup(struct shash_desc *desc, const u8 *data,
+			    unsigned int len, u8 *out)
+{
+	sha256_base_do_update(desc, data, len,
+			      (sha256_block_fn *)sha256_block_data_order);
+	return sha256_final(desc, out);
+}
+EXPORT_SYMBOL(crypto_sha256_arm_finup);
+
+static struct shash_alg algs[] = { {
+	.digestsize	=	SHA256_DIGEST_SIZE,
+	.init		=	sha256_base_init,
+	.update		=	crypto_sha256_arm_update,
+	.final		=	sha256_final,
+	.finup		=	crypto_sha256_arm_finup,
+	.descsize	=	sizeof(struct sha256_state),
+>>>>>>> v4.9.227
 	.base		=	{
 		.cra_name	=	"sha256",
 		.cra_driver_name =	"sha256-asm",
@@ -193,6 +239,7 @@ static struct shash_alg algs[] = { {
 	}
 }, {
 	.digestsize	=	SHA224_DIGEST_SIZE,
+<<<<<<< HEAD
 	.init		=	sha224_init,
 	.update		=	sha256_update,
 	.final		=	sha224_final,
@@ -200,6 +247,13 @@ static struct shash_alg algs[] = { {
 	.import		=	sha256_import,
 	.descsize	=	sizeof(struct sha256_state),
 	.statesize	=	sizeof(struct sha256_state),
+=======
+	.init		=	sha224_base_init,
+	.update		=	crypto_sha256_arm_update,
+	.final		=	sha256_final,
+	.finup		=	crypto_sha256_arm_finup,
+	.descsize	=	sizeof(struct sha256_state),
+>>>>>>> v4.9.227
 	.base		=	{
 		.cra_name	=	"sha224",
 		.cra_driver_name =	"sha224-asm",

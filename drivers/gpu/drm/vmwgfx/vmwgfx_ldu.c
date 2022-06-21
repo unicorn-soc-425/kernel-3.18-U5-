@@ -288,15 +288,24 @@ static int vmw_ldu_crtc_set_config(struct drm_mode_set *set)
 	crtc->y = set->y;
 	crtc->mode = *mode;
 	crtc->enabled = true;
+<<<<<<< HEAD
+=======
+	ldu->base.set_gui_x = set->x;
+	ldu->base.set_gui_y = set->y;
+>>>>>>> v4.9.227
 
 	vmw_ldu_add_active(dev_priv, ldu, vfb);
 
 	return vmw_ldu_commit_list(dev_priv);
 }
 
+<<<<<<< HEAD
 static struct drm_crtc_funcs vmw_legacy_crtc_funcs = {
 	.save = vmw_du_crtc_save,
 	.restore = vmw_du_crtc_restore,
+=======
+static const struct drm_crtc_funcs vmw_legacy_crtc_funcs = {
+>>>>>>> v4.9.227
 	.cursor_set2 = vmw_du_crtc_cursor_set2,
 	.cursor_move = vmw_du_crtc_cursor_move,
 	.gamma_set = vmw_du_crtc_gamma_set,
@@ -314,7 +323,11 @@ static void vmw_ldu_encoder_destroy(struct drm_encoder *encoder)
 	vmw_ldu_destroy(vmw_encoder_to_ldu(encoder));
 }
 
+<<<<<<< HEAD
 static struct drm_encoder_funcs vmw_legacy_encoder_funcs = {
+=======
+static const struct drm_encoder_funcs vmw_legacy_encoder_funcs = {
+>>>>>>> v4.9.227
 	.destroy = vmw_ldu_encoder_destroy,
 };
 
@@ -327,10 +340,15 @@ static void vmw_ldu_connector_destroy(struct drm_connector *connector)
 	vmw_ldu_destroy(vmw_connector_to_ldu(connector));
 }
 
+<<<<<<< HEAD
 static struct drm_connector_funcs vmw_legacy_connector_funcs = {
 	.dpms = vmw_du_connector_dpms,
 	.save = vmw_du_connector_save,
 	.restore = vmw_du_connector_restore,
+=======
+static const struct drm_connector_funcs vmw_legacy_connector_funcs = {
+	.dpms = vmw_du_connector_dpms,
+>>>>>>> v4.9.227
 	.detect = vmw_du_connector_detect,
 	.fill_modes = vmw_du_connector_fill_modes,
 	.set_property = vmw_du_connector_set_property,
@@ -367,7 +385,11 @@ static int vmw_ldu_init(struct vmw_private *dev_priv, unsigned unit)
 	connector->status = vmw_du_connector_detect(connector, true);
 
 	drm_encoder_init(dev, encoder, &vmw_legacy_encoder_funcs,
+<<<<<<< HEAD
 			 DRM_MODE_ENCODER_VIRTUAL);
+=======
+			 DRM_MODE_ENCODER_VIRTUAL, NULL);
+>>>>>>> v4.9.227
 	drm_mode_connector_attach_encoder(connector, encoder);
 	encoder->possible_crtcs = (1 << unit);
 	encoder->possible_clones = 0;
@@ -379,8 +401,21 @@ static int vmw_ldu_init(struct vmw_private *dev_priv, unsigned unit)
 	drm_mode_crtc_set_gamma_size(crtc, 256);
 
 	drm_object_attach_property(&connector->base,
+<<<<<<< HEAD
 				      dev->mode_config.dirty_info_property,
 				      1);
+=======
+				   dev_priv->hotplug_mode_update_property, 1);
+	drm_object_attach_property(&connector->base,
+				   dev->mode_config.suggested_x_property, 0);
+	drm_object_attach_property(&connector->base,
+				   dev->mode_config.suggested_y_property, 0);
+	if (dev_priv->implicit_placement_property)
+		drm_object_attach_property
+			(&connector->base,
+			 dev_priv->implicit_placement_property,
+			 1);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -412,9 +447,13 @@ int vmw_kms_ldu_init_display(struct vmw_private *dev_priv)
 	if (ret != 0)
 		goto err_free;
 
+<<<<<<< HEAD
 	ret = drm_mode_create_dirty_info_property(dev);
 	if (ret != 0)
 		goto err_vblank_cleanup;
+=======
+	vmw_kms_create_implicit_placement_property(dev_priv, true);
+>>>>>>> v4.9.227
 
 	if (dev_priv->capabilities & SVGA_CAP_MULTIMON)
 		for (i = 0; i < VMWGFX_NUM_DISPLAY_UNITS; ++i)
@@ -428,8 +467,11 @@ int vmw_kms_ldu_init_display(struct vmw_private *dev_priv)
 
 	return 0;
 
+<<<<<<< HEAD
 err_vblank_cleanup:
 	drm_vblank_cleanup(dev);
+=======
+>>>>>>> v4.9.227
 err_free:
 	kfree(dev_priv->ldu_priv);
 	dev_priv->ldu_priv = NULL;

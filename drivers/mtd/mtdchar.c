@@ -36,7 +36,10 @@
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/map.h>
+<<<<<<< HEAD
 #include <linux/mtd/partitions.h>
+=======
+>>>>>>> v4.9.227
 
 #include <asm/uaccess.h>
 
@@ -50,7 +53,10 @@ static DEFINE_MUTEX(mtd_mutex);
  */
 struct mtd_file_info {
 	struct mtd_info *mtd;
+<<<<<<< HEAD
 	struct inode *ino;
+=======
+>>>>>>> v4.9.227
 	enum mtd_file_modes mode;
 };
 
@@ -60,10 +66,13 @@ static loff_t mtdchar_lseek(struct file *file, loff_t offset, int orig)
 	return fixed_size_llseek(file, offset, orig, mfi->mtd->size);
 }
 
+<<<<<<< HEAD
 static int count;
 static struct vfsmount *mnt;
 static struct file_system_type mtd_inodefs_type;
 
+=======
+>>>>>>> v4.9.227
 static int mtdchar_open(struct inode *inode, struct file *file)
 {
 	int minor = iminor(inode);
@@ -71,7 +80,10 @@ static int mtdchar_open(struct inode *inode, struct file *file)
 	int ret = 0;
 	struct mtd_info *mtd;
 	struct mtd_file_info *mfi;
+<<<<<<< HEAD
 	struct inode *mtd_ino;
+=======
+>>>>>>> v4.9.227
 
 	pr_debug("MTD_open\n");
 
@@ -79,10 +91,13 @@ static int mtdchar_open(struct inode *inode, struct file *file)
 	if ((file->f_mode & FMODE_WRITE) && (minor & 1))
 		return -EACCES;
 
+<<<<<<< HEAD
 	ret = simple_pin_fs(&mtd_inodefs_type, &mnt, &count);
 	if (ret)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	mutex_lock(&mtd_mutex);
 	mtd = get_mtd_device(NULL, devnum);
 
@@ -96,6 +111,7 @@ static int mtdchar_open(struct inode *inode, struct file *file)
 		goto out1;
 	}
 
+<<<<<<< HEAD
 	mtd_ino = iget_locked(mnt->mnt_sb, devnum);
 	if (!mtd_ino) {
 		ret = -ENOMEM;
@@ -113,26 +129,43 @@ static int mtdchar_open(struct inode *inode, struct file *file)
 	if ((file->f_mode & FMODE_WRITE) && !(mtd->flags & MTD_WRITEABLE)) {
 		ret = -EACCES;
 		goto out2;
+=======
+	/* You can't open it RW if it's not a writeable device */
+	if ((file->f_mode & FMODE_WRITE) && !(mtd->flags & MTD_WRITEABLE)) {
+		ret = -EACCES;
+		goto out1;
+>>>>>>> v4.9.227
 	}
 
 	mfi = kzalloc(sizeof(*mfi), GFP_KERNEL);
 	if (!mfi) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto out2;
 	}
 	mfi->ino = mtd_ino;
+=======
+		goto out1;
+	}
+>>>>>>> v4.9.227
 	mfi->mtd = mtd;
 	file->private_data = mfi;
 	mutex_unlock(&mtd_mutex);
 	return 0;
 
+<<<<<<< HEAD
 out2:
 	iput(mtd_ino);
+=======
+>>>>>>> v4.9.227
 out1:
 	put_mtd_device(mtd);
 out:
 	mutex_unlock(&mtd_mutex);
+<<<<<<< HEAD
 	simple_release_fs(&mnt, &count);
+=======
+>>>>>>> v4.9.227
 	return ret;
 } /* mtdchar_open */
 
@@ -149,12 +182,18 @@ static int mtdchar_close(struct inode *inode, struct file *file)
 	if ((file->f_mode & FMODE_WRITE))
 		mtd_sync(mtd);
 
+<<<<<<< HEAD
 	iput(mfi->ino);
 
 	put_mtd_device(mtd);
 	file->private_data = NULL;
 	kfree(mfi);
 	simple_release_fs(&mnt, &count);
+=======
+	put_mtd_device(mtd);
+	file->private_data = NULL;
+	kfree(mfi);
+>>>>>>> v4.9.227
 
 	return 0;
 } /* mtdchar_close */
@@ -500,6 +539,7 @@ static int mtdchar_readoob(struct file *file, struct mtd_info *mtd,
 }
 
 /*
+<<<<<<< HEAD
  * Copies (and truncates, if necessary) data from the larger struct,
  * nand_ecclayout, to the smaller, deprecated layout struct,
  * nand_ecclayout_user. This is necessary only to support the deprecated
@@ -513,10 +553,27 @@ static int shrink_ecclayout(const struct nand_ecclayout *from,
 	int i;
 
 	if (!from || !to)
+=======
+ * Copies (and truncates, if necessary) OOB layout information to the
+ * deprecated layout struct, nand_ecclayout_user. This is necessary only to
+ * support the deprecated API ioctl ECCGETLAYOUT while allowing all new
+ * functionality to use mtd_ooblayout_ops flexibly (i.e. mtd_ooblayout_ops
+ * can describe any kind of OOB layout with almost zero overhead from a
+ * memory usage point of view).
+ */
+static int shrink_ecclayout(struct mtd_info *mtd,
+			    struct nand_ecclayout_user *to)
+{
+	struct mtd_oob_region oobregion;
+	int i, section = 0, ret;
+
+	if (!mtd || !to)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	memset(to, 0, sizeof(*to));
 
+<<<<<<< HEAD
 	to->eccbytes = min((int)from->eccbytes, MTD_MAX_ECCPOS_ENTRIES);
 	for (i = 0; i < to->eccbytes; i++)
 		to->eccpos[i] = from->eccpos[i];
@@ -527,20 +584,111 @@ static int shrink_ecclayout(const struct nand_ecclayout *from,
 			break;
 		to->oobavail += from->oobfree[i].length;
 		to->oobfree[i] = from->oobfree[i];
+=======
+	to->eccbytes = 0;
+	for (i = 0; i < MTD_MAX_ECCPOS_ENTRIES;) {
+		u32 eccpos;
+
+		ret = mtd_ooblayout_ecc(mtd, section++, &oobregion);
+		if (ret < 0) {
+			if (ret != -ERANGE)
+				return ret;
+
+			break;
+		}
+
+		eccpos = oobregion.offset;
+		for (; i < MTD_MAX_ECCPOS_ENTRIES &&
+		       eccpos < oobregion.offset + oobregion.length; i++) {
+			to->eccpos[i] = eccpos++;
+			to->eccbytes++;
+		}
+	}
+
+	for (i = 0; i < MTD_MAX_OOBFREE_ENTRIES; i++) {
+		ret = mtd_ooblayout_free(mtd, i, &oobregion);
+		if (ret < 0) {
+			if (ret != -ERANGE)
+				return ret;
+
+			break;
+		}
+
+		to->oobfree[i].offset = oobregion.offset;
+		to->oobfree[i].length = oobregion.length;
+		to->oobavail += to->oobfree[i].length;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mtdchar_blkpg_ioctl(struct mtd_info *mtd,
 			   struct blkpg_ioctl_arg __user *arg)
 {
 	struct blkpg_ioctl_arg a;
+=======
+static int get_oobinfo(struct mtd_info *mtd, struct nand_oobinfo *to)
+{
+	struct mtd_oob_region oobregion;
+	int i, section = 0, ret;
+
+	if (!mtd || !to)
+		return -EINVAL;
+
+	memset(to, 0, sizeof(*to));
+
+	to->eccbytes = 0;
+	for (i = 0; i < ARRAY_SIZE(to->eccpos);) {
+		u32 eccpos;
+
+		ret = mtd_ooblayout_ecc(mtd, section++, &oobregion);
+		if (ret < 0) {
+			if (ret != -ERANGE)
+				return ret;
+
+			break;
+		}
+
+		if (oobregion.length + i > ARRAY_SIZE(to->eccpos))
+			return -EINVAL;
+
+		eccpos = oobregion.offset;
+		for (; eccpos < oobregion.offset + oobregion.length; i++) {
+			to->eccpos[i] = eccpos++;
+			to->eccbytes++;
+		}
+	}
+
+	for (i = 0; i < 8; i++) {
+		ret = mtd_ooblayout_free(mtd, i, &oobregion);
+		if (ret < 0) {
+			if (ret != -ERANGE)
+				return ret;
+
+			break;
+		}
+
+		to->oobfree[i][0] = oobregion.offset;
+		to->oobfree[i][1] = oobregion.length;
+	}
+
+	to->useecc = MTD_NANDECC_AUTOPLACE;
+
+	return 0;
+}
+
+static int mtdchar_blkpg_ioctl(struct mtd_info *mtd,
+			       struct blkpg_ioctl_arg *arg)
+{
+>>>>>>> v4.9.227
 	struct blkpg_partition p;
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
+<<<<<<< HEAD
 	if (copy_from_user(&a, arg, sizeof(struct blkpg_ioctl_arg)))
 		return -EFAULT;
 
@@ -548,6 +696,12 @@ static int mtdchar_blkpg_ioctl(struct mtd_info *mtd,
 		return -EFAULT;
 
 	switch (a.op) {
+=======
+	if (copy_from_user(&p, arg->data, sizeof(p)))
+		return -EFAULT;
+
+	switch (arg->op) {
+>>>>>>> v4.9.227
 	case BLKPG_ADD_PARTITION:
 
 		/* Only master mtd device must be used to add partitions */
@@ -854,6 +1008,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 	{
 		struct nand_oobinfo oi;
 
+<<<<<<< HEAD
 		if (!mtd->ecclayout)
 			return -EOPNOTSUPP;
 		if (mtd->ecclayout->eccbytes > ARRAY_SIZE(oi.eccpos))
@@ -864,6 +1019,14 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 		memcpy(&oi.oobfree, mtd->ecclayout->oobfree,
 		       sizeof(oi.oobfree));
 		oi.eccbytes = mtd->ecclayout->eccbytes;
+=======
+		if (!mtd->ooblayout)
+			return -EOPNOTSUPP;
+
+		ret = get_oobinfo(mtd, &oi);
+		if (ret)
+			return ret;
+>>>>>>> v4.9.227
 
 		if (copy_to_user(argp, &oi, sizeof(struct nand_oobinfo)))
 			return -EFAULT;
@@ -952,14 +1115,22 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 	{
 		struct nand_ecclayout_user *usrlay;
 
+<<<<<<< HEAD
 		if (!mtd->ecclayout)
+=======
+		if (!mtd->ooblayout)
+>>>>>>> v4.9.227
 			return -EOPNOTSUPP;
 
 		usrlay = kmalloc(sizeof(*usrlay), GFP_KERNEL);
 		if (!usrlay)
 			return -ENOMEM;
 
+<<<<<<< HEAD
 		shrink_ecclayout(mtd->ecclayout, usrlay);
+=======
+		shrink_ecclayout(mtd, usrlay);
+>>>>>>> v4.9.227
 
 		if (copy_to_user(argp, usrlay, sizeof(*usrlay)))
 			ret = -EFAULT;
@@ -969,9 +1140,12 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 
 	case ECCGETSTATS:
 	{
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_LAZYECCSTATS
 		part_fill_badblockstats(mtd);
 #endif
+=======
+>>>>>>> v4.9.227
 		if (copy_to_user(argp, &mtd->ecc_stats,
 				 sizeof(struct mtd_ecc_stats)))
 			return -EFAULT;
@@ -1004,8 +1178,18 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 
 	case BLKPG:
 	{
+<<<<<<< HEAD
 		ret = mtdchar_blkpg_ioctl(mtd,
 		      (struct blkpg_ioctl_arg __user *)arg);
+=======
+		struct blkpg_ioctl_arg __user *blk_arg = argp;
+		struct blkpg_ioctl_arg a;
+
+		if (copy_from_user(&a, blk_arg, sizeof(a)))
+			ret = -EFAULT;
+		else
+			ret = mtdchar_blkpg_ioctl(mtd, &a);
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -1084,6 +1268,32 @@ static long mtdchar_compat_ioctl(struct file *file, unsigned int cmd,
 				&buf_user->start);
 		break;
 	}
+<<<<<<< HEAD
+=======
+
+	case BLKPG:
+	{
+		/* Convert from blkpg_compat_ioctl_arg to blkpg_ioctl_arg */
+		struct blkpg_compat_ioctl_arg __user *uarg = argp;
+		struct blkpg_compat_ioctl_arg compat_arg;
+		struct blkpg_ioctl_arg a;
+
+		if (copy_from_user(&compat_arg, uarg, sizeof(compat_arg))) {
+			ret = -EFAULT;
+			break;
+		}
+
+		memset(&a, 0, sizeof(a));
+		a.op = compat_arg.op;
+		a.flags = compat_arg.flags;
+		a.datalen = compat_arg.datalen;
+		a.data = compat_ptr(compat_arg.data);
+
+		ret = mtdchar_blkpg_ioctl(mtd, &a);
+		break;
+	}
+
+>>>>>>> v4.9.227
 	default:
 		ret = mtdchar_ioctl(file, cmd, (unsigned long)argp);
 	}
@@ -1125,6 +1335,16 @@ static unsigned long mtdchar_get_unmapped_area(struct file *file,
 	ret = mtd_get_unmapped_area(mtd, len, offset, flags);
 	return ret == -EOPNOTSUPP ? -ENODEV : ret;
 }
+<<<<<<< HEAD
+=======
+
+static unsigned mtdchar_mmap_capabilities(struct file *file)
+{
+	struct mtd_file_info *mfi = file->private_data;
+
+	return mtd_mmap_capabilities(mfi->mtd);
+}
+>>>>>>> v4.9.227
 #endif
 
 /*
@@ -1168,6 +1388,7 @@ static const struct file_operations mtd_fops = {
 	.mmap		= mtdchar_mmap,
 #ifndef CONFIG_MMU
 	.get_unmapped_area = mtdchar_get_unmapped_area,
+<<<<<<< HEAD
 #endif
 };
 
@@ -1189,6 +1410,12 @@ static struct file_system_type mtd_inodefs_type = {
 };
 MODULE_ALIAS_FS("mtd_inodefs");
 
+=======
+	.mmap_capabilities = mtdchar_mmap_capabilities,
+#endif
+};
+
+>>>>>>> v4.9.227
 int __init init_mtdchar(void)
 {
 	int ret;
@@ -1201,6 +1428,7 @@ int __init init_mtdchar(void)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = register_filesystem(&mtd_inodefs_type);
 	if (ret) {
 		pr_err("Can't register mtd_inodefs filesystem, error %d\n",
@@ -1212,12 +1440,17 @@ int __init init_mtdchar(void)
 
 err_unregister_chdev:
 	__unregister_chrdev(MTD_CHAR_MAJOR, 0, 1 << MINORBITS, "mtd");
+=======
+>>>>>>> v4.9.227
 	return ret;
 }
 
 void __exit cleanup_mtdchar(void)
 {
+<<<<<<< HEAD
 	unregister_filesystem(&mtd_inodefs_type);
+=======
+>>>>>>> v4.9.227
 	__unregister_chrdev(MTD_CHAR_MAJOR, 0, 1 << MINORBITS, "mtd");
 }
 

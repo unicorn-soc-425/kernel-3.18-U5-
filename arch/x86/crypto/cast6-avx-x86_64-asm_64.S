@@ -24,6 +24,10 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/frame.h>
+>>>>>>> v4.9.227
 #include "glue_helper-asm-avx.S"
 
 .file "cast6-avx-x86_64-asm_64.S"
@@ -349,6 +353,10 @@ ENTRY(cast6_ecb_enc_8way)
 	 *	%rsi: dst
 	 *	%rdx: src
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	movq %rsi, %r11;
 
@@ -358,6 +366,10 @@ ENTRY(cast6_ecb_enc_8way)
 
 	store_8way(%r11, RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2);
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(cast6_ecb_enc_8way)
 
@@ -367,6 +379,10 @@ ENTRY(cast6_ecb_dec_8way)
 	 *	%rsi: dst
 	 *	%rdx: src
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	movq %rsi, %r11;
 
@@ -376,6 +392,10 @@ ENTRY(cast6_ecb_dec_8way)
 
 	store_8way(%r11, RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2);
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(cast6_ecb_dec_8way)
 
@@ -385,6 +405,10 @@ ENTRY(cast6_cbc_dec_8way)
 	 *	%rsi: dst
 	 *	%rdx: src
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	pushq %r12;
 
@@ -399,6 +423,10 @@ ENTRY(cast6_cbc_dec_8way)
 
 	popq %r12;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(cast6_cbc_dec_8way)
 
@@ -409,6 +437,10 @@ ENTRY(cast6_ctr_8way)
 	 *	%rdx: src
 	 *	%rcx: iv (little endian, 128bit)
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	pushq %r12;
 
@@ -424,6 +456,10 @@ ENTRY(cast6_ctr_8way)
 
 	popq %r12;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(cast6_ctr_8way)
 
@@ -434,6 +470,10 @@ ENTRY(cast6_xts_enc_8way)
 	 *	%rdx: src
 	 *	%rcx: iv (t ⊕ αⁿ ∈ GF(2¹²⁸))
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	movq %rsi, %r11;
 
@@ -446,6 +486,10 @@ ENTRY(cast6_xts_enc_8way)
 	/* dst <= regs xor IVs(in dst) */
 	store_xts_8way(%r11, RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2);
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(cast6_xts_enc_8way)
 
@@ -456,6 +500,10 @@ ENTRY(cast6_xts_dec_8way)
 	 *	%rdx: src
 	 *	%rcx: iv (t ⊕ αⁿ ∈ GF(2¹²⁸))
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	movq %rsi, %r11;
 
@@ -468,5 +516,9 @@ ENTRY(cast6_xts_dec_8way)
 	/* dst <= regs xor IVs(in dst) */
 	store_xts_8way(%r11, RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2);
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(cast6_xts_dec_8way)

@@ -13,10 +13,17 @@
 #include <linux/kernel.h>
 #include <linux/irq.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <mach/bridge-regs.h>
 #include <plat/orion-gpio.h>
 #include <plat/irq.h>
 #include <asm/exception.h>
+=======
+#include <plat/orion-gpio.h>
+#include <plat/irq.h>
+#include <asm/exception.h>
+#include "bridge-regs.h"
+>>>>>>> v4.9.227
 #include "common.h"
 
 static int __initdata gpio0_irqs[4] = {
@@ -26,6 +33,7 @@ static int __initdata gpio0_irqs[4] = {
 	IRQ_ORION5X_GPIO_24_31,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_MULTI_IRQ_HANDLER
 /*
  * Compiling with both non-DT and DT support enabled, will
@@ -35,6 +43,9 @@ static int __initdata gpio0_irqs[4] = {
  */
 
 asmlinkage void
+=======
+static asmlinkage void
+>>>>>>> v4.9.227
 __exception_irq_entry orion5x_legacy_handle_irq(struct pt_regs *regs)
 {
 	u32 stat;
@@ -42,11 +53,16 @@ __exception_irq_entry orion5x_legacy_handle_irq(struct pt_regs *regs)
 	stat = readl_relaxed(MAIN_IRQ_CAUSE);
 	stat &= readl_relaxed(MAIN_IRQ_MASK);
 	if (stat) {
+<<<<<<< HEAD
 		unsigned int hwirq = __fls(stat);
+=======
+		unsigned int hwirq = 1 + __fls(stat);
+>>>>>>> v4.9.227
 		handle_IRQ(hwirq, regs);
 		return;
 	}
 }
+<<<<<<< HEAD
 #endif
 
 void __init orion5x_init_irq(void)
@@ -56,6 +72,14 @@ void __init orion5x_init_irq(void)
 #ifdef CONFIG_MULTI_IRQ_HANDLER
 	set_handle_irq(orion5x_legacy_handle_irq);
 #endif
+=======
+
+void __init orion5x_init_irq(void)
+{
+	orion_irq_init(1, MAIN_IRQ_MASK);
+
+	set_handle_irq(orion5x_legacy_handle_irq);
+>>>>>>> v4.9.227
 
 	/*
 	 * Initialize gpiolib for GPIOs 0-31.

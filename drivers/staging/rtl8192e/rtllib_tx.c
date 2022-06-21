@@ -1,4 +1,5 @@
 /******************************************************************************
+<<<<<<< HEAD
 
   Copyright(c) 2003 - 2004 Intel Corporation. All rights reserved.
 
@@ -30,6 +31,35 @@
   A special thanks goes to Realtek for their support !
 
 ******************************************************************************/
+=======
+ *
+ * Copyright(c) 2003 - 2004 Intel Corporation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * The full GNU General Public License is included in this distribution in the
+ * file called LICENSE.
+ *
+ * Contact Information:
+ * James P. Ketrenos <ipw2100-admin@linux.intel.com>
+ * Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
+ *
+ *****************************************************************************
+ *
+ * Few modifications for Realtek's Wi-Fi drivers by
+ * Andrea Merello <andrea.merello@gmail.com>
+ *
+ * A special thanks goes to Realtek for their support !
+ *
+ *****************************************************************************/
+>>>>>>> v4.9.227
 
 #include <linux/compiler.h>
 #include <linux/errno.h>
@@ -53,6 +83,7 @@
 
 #include "rtllib.h"
 
+<<<<<<< HEAD
 /*
 
 
@@ -149,11 +180,111 @@ payload of each frame is reduced to 492 bytes.
 *      SNAP HEADER
 *
 */
+=======
+/* 802.11 Data Frame
+ *
+ *
+ * 802.11 frame_control for data frames - 2 bytes
+ *      ,--------------------------------------------------------------------.
+ * bits | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |  9 |  a |  b  |  c  |  d  | e  |
+ *      |---|---|---|---|---|---|---|---|---|----|----|-----|-----|-----|----|
+ * val  | 0 | 0 | 0 | 1 | x | 0 | 0 | 0 | 1 |  0 |  x |  x  |  x  |  x  | x  |
+ *      |---|---|---|---|---|---|---|---|---|----|----|-----|-----|-----|----|
+ * desc |  ver  | type  |  ^-subtype-^  |to |from|more|retry| pwr |more |wep |
+ *      |       |       | x=0 data      |DS | DS |frag|     | mgm |data |    |
+ *      |       |       | x=1 data+ack  |   |    |    |     |     |     |    |
+ *      '--------------------------------------------------------------------'
+ *                                           /\
+ *                                           |
+ * 802.11 Data Frame                         |
+ *          ,--------- 'ctrl' expands to >---'
+ *          |
+ *       ,--'---,-------------------------------------------------------------.
+ * Bytes |  2   |  2   |    6    |    6    |    6    |  2   | 0..2312 |   4  |
+ *       |------|------|---------|---------|---------|------|---------|------|
+ * Desc. | ctrl | dura |  DA/RA  |   TA    |    SA   | Sequ |  Frame  |  fcs |
+ *       |      | tion | (BSSID) |         |         | ence |  data   |      |
+ *       `--------------------------------------------------|         |------'
+ * Total: 28 non-data bytes                                 `----.----'
+ *                                                               |
+ *        .- 'Frame data' expands to <---------------------------'
+ *        |
+ *        V
+ *       ,---------------------------------------------------.
+ * Bytes |  1   |  1   |    1    |    3     |  2   |  0-2304 |
+ *       |------|------|---------|----------|------|---------|
+ * Desc. | SNAP | SNAP | Control |Eth Tunnel| Type | IP      |
+ *       | DSAP | SSAP |         |          |      | Packet  |
+ *       | 0xAA | 0xAA |0x03 (UI)|0x00-00-F8|      |         |
+ *       `-----------------------------------------|         |
+ * Total: 8 non-data bytes                         `----.----'
+ *                                                      |
+ *        .- 'IP Packet' expands, if WEP enabled, to <--'
+ *        |
+ *        V
+ *       ,-----------------------.
+ * Bytes |  4  |   0-2296  |  4  |
+ *       |-----|-----------|-----|
+ * Desc. | IV  | Encrypted | ICV |
+ *       |     | IP Packet |     |
+ *       `-----------------------'
+ * Total: 8 non-data bytes
+ *
+ *
+ * 802.3 Ethernet Data Frame
+ *
+ *       ,-----------------------------------------.
+ * Bytes |   6   |   6   |  2   |  Variable |   4  |
+ *       |-------|-------|------|-----------|------|
+ * Desc. | Dest. | Source| Type | IP Packet |  fcs |
+ *       |  MAC  |  MAC  |      |	   |      |
+ *       `-----------------------------------------'
+ * Total: 18 non-data bytes
+ *
+ * In the event that fragmentation is required, the incoming payload is split
+ * into N parts of size ieee->fts.  The first fragment contains the SNAP header
+ * and the remaining packets are just data.
+ *
+ * If encryption is enabled, each fragment payload size is reduced by enough
+ * space to add the prefix and postfix (IV and ICV totalling 8 bytes in
+ * the case of WEP) So if you have 1500 bytes of payload with ieee->fts set to
+ * 500 without encryption it will take 3 frames.  With WEP it will take 4 frames
+ * as the payload of each frame is reduced to 492 bytes.
+ *
+ * SKB visualization
+ *
+ * ,- skb->data
+ * |
+ * |    ETHERNET HEADER        ,-<-- PAYLOAD
+ * |                           |     14 bytes from skb->data
+ * |  2 bytes for Type --> ,T. |     (sizeof ethhdr)
+ * |                       | | |
+ * |,-Dest.--. ,--Src.---. | | |
+ * |  6 bytes| | 6 bytes | | | |
+ * v         | |         | | | |
+ * 0         | v       1 | v | v           2
+ * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+ *     ^     | ^         | ^ |
+ *     |     | |         | | |
+ *     |     | |         | `T' <---- 2 bytes for Type
+ *     |     | |         |
+ *     |     | '---SNAP--' <-------- 6 bytes for SNAP
+ *     |     |
+ *     `-IV--' <-------------------- 4 bytes for IV (WEP)
+ *
+ *      SNAP HEADER
+ *
+ */
+>>>>>>> v4.9.227
 
 static u8 P802_1H_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0xf8 };
 static u8 RFC1042_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0x00 };
 
+<<<<<<< HEAD
 inline int rtllib_put_snap(u8 *data, u16 h_proto)
+=======
+static int rtllib_put_snap(u8 *data, u16 h_proto)
+>>>>>>> v4.9.227
 {
 	struct rtllib_snap_hdr *snap;
 	u8 *oui;
@@ -185,6 +316,7 @@ int rtllib_encrypt_fragment(struct rtllib_device *ieee, struct sk_buff *frag,
 	crypt = ieee->crypt_info.crypt[ieee->crypt_info.tx_keyidx];
 
 	if (!(crypt && crypt->ops)) {
+<<<<<<< HEAD
 		printk(KERN_INFO "=========>%s(), crypt is null\n", __func__);
 		return -1;
 	}
@@ -193,6 +325,19 @@ int rtllib_encrypt_fragment(struct rtllib_device *ieee, struct sk_buff *frag,
 
 	/* Host-based IEEE 802.11 fragmentation for TX is not yet supported, so
 	 * call both MSDU and MPDU encryption functions from here. */
+=======
+		netdev_info(ieee->dev, "=========>%s(), crypt is null\n",
+			    __func__);
+		return -1;
+	}
+	/* To encrypt, frame format is:
+	 * IV (4 bytes), clear payload (including SNAP), ICV (4 bytes)
+	 */
+
+	/* Host-based IEEE 802.11 fragmentation for TX is not yet supported, so
+	 * call both MSDU and MPDU encryption functions from here.
+	 */
+>>>>>>> v4.9.227
 	atomic_inc(&crypt->refcnt);
 	res = 0;
 	if (crypt->ops->encrypt_msdu)
@@ -202,9 +347,14 @@ int rtllib_encrypt_fragment(struct rtllib_device *ieee, struct sk_buff *frag,
 
 	atomic_dec(&crypt->refcnt);
 	if (res < 0) {
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: Encryption failed: len=%d.\n",
 		       ieee->dev->name, frag->len);
 		ieee->ieee_stats.tx_discards++;
+=======
+		netdev_info(ieee->dev, "%s: Encryption failed: len=%d.\n",
+			    ieee->dev->name, frag->len);
+>>>>>>> v4.9.227
 		return -1;
 	}
 
@@ -260,7 +410,14 @@ static int rtllib_classify(struct sk_buff *skb, u8 bIsAmsdu)
 	if (eth->h_proto != htons(ETH_P_IP))
 		return 0;
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG_DATA(RTLLIB_DL_DATA, skb->data, skb->len);
+=======
+#ifdef VERBOSE_DEBUG
+	print_hex_dump_bytes("rtllib_classify(): ", DUMP_PREFIX_NONE, skb->data,
+			     skb->len);
+#endif
+>>>>>>> v4.9.227
 	ip = ip_hdr(skb);
 	switch (ip->tos & 0xfc) {
 	case 0x20:
@@ -311,7 +468,11 @@ static void rtllib_tx_query_agg_cap(struct rtllib_device *ieee,
 	if (pHTInfo->bCurrentAMPDUEnable) {
 		if (!GetTs(ieee, (struct ts_common_info **)(&pTxTs), hdr->addr1,
 		    skb->priority, TX_DIR, true)) {
+<<<<<<< HEAD
 			printk(KERN_INFO "%s: can't get TS\n", __func__);
+=======
+			netdev_info(ieee->dev, "%s: can't get TS\n", __func__);
+>>>>>>> v4.9.227
 			return;
 		}
 		if (pTxTs->TxAdmittedBARecord.bValid == false) {
@@ -412,6 +573,11 @@ static void rtllib_query_protectionmode(struct rtllib_device *ieee,
 					struct cb_desc *tcb_desc,
 					struct sk_buff *skb)
 {
+<<<<<<< HEAD
+=======
+	struct rt_hi_throughput *pHTInfo;
+
+>>>>>>> v4.9.227
 	tcb_desc->bRTSSTBC			= false;
 	tcb_desc->bRTSUseShortGI		= false;
 	tcb_desc->bCTSEnable			= false;
@@ -434,6 +600,7 @@ static void rtllib_query_protectionmode(struct rtllib_device *ieee,
 			tcb_desc->rts_rate = MGN_24M;
 		}
 		return;
+<<<<<<< HEAD
 	} else {
 		struct rt_hi_throughput *pHTInfo = ieee->pHTInfo;
 
@@ -478,11 +645,61 @@ static void rtllib_query_protectionmode(struct rtllib_device *ieee,
 			}
 			goto NO_PROTECTION;
 		}
+=======
+	}
+
+	pHTInfo = ieee->pHTInfo;
+
+	while (true) {
+		if (pHTInfo->IOTAction & HT_IOT_ACT_FORCED_CTS2SELF) {
+			tcb_desc->bCTSEnable	= true;
+			tcb_desc->rts_rate  =	MGN_24M;
+			tcb_desc->bRTSEnable = true;
+			break;
+		} else if (pHTInfo->IOTAction & (HT_IOT_ACT_FORCED_RTS |
+			   HT_IOT_ACT_PURE_N_MODE)) {
+			tcb_desc->bRTSEnable = true;
+			tcb_desc->rts_rate  =	MGN_24M;
+			break;
+		}
+		if (ieee->current_network.buseprotection) {
+			tcb_desc->bRTSEnable = true;
+			tcb_desc->bCTSEnable = true;
+			tcb_desc->rts_rate = MGN_24M;
+			break;
+		}
+		if (pHTInfo->bCurrentHTSupport  && pHTInfo->bEnableHT) {
+			u8 HTOpMode = pHTInfo->CurrentOpMode;
+
+			if ((pHTInfo->bCurBW40MHz && (HTOpMode == 2 ||
+			     HTOpMode == 3)) ||
+			     (!pHTInfo->bCurBW40MHz && HTOpMode == 3)) {
+				tcb_desc->rts_rate = MGN_24M;
+				tcb_desc->bRTSEnable = true;
+				break;
+			}
+		}
+		if (skb->len > ieee->rts) {
+			tcb_desc->rts_rate = MGN_24M;
+			tcb_desc->bRTSEnable = true;
+			break;
+		}
+		if (tcb_desc->bAMPDUEnable) {
+			tcb_desc->rts_rate = MGN_24M;
+			tcb_desc->bRTSEnable = false;
+			break;
+		}
+		goto NO_PROTECTION;
+>>>>>>> v4.9.227
 	}
 	if (ieee->current_network.capability & WLAN_CAPABILITY_SHORT_PREAMBLE)
 		tcb_desc->bUseShortPreamble = true;
 	if (ieee->iw_mode == IW_MODE_MASTER)
+<<<<<<< HEAD
 			goto NO_PROTECTION;
+=======
+		goto NO_PROTECTION;
+>>>>>>> v4.9.227
 	return;
 NO_PROTECTION:
 	tcb_desc->bRTSEnable	= false;
@@ -509,8 +726,13 @@ static void rtllib_txrate_selectmode(struct rtllib_device *ieee,
 	}
 }
 
+<<<<<<< HEAD
 u16 rtllib_query_seqnum(struct rtllib_device *ieee, struct sk_buff *skb,
 			u8 *dst)
+=======
+static u16 rtllib_query_seqnum(struct rtllib_device *ieee, struct sk_buff *skb,
+			       u8 *dst)
+>>>>>>> v4.9.227
 {
 	u16 seqnum = 0;
 
@@ -549,7 +771,22 @@ static int wme_downgrade_ac(struct sk_buff *skb)
 	}
 }
 
+<<<<<<< HEAD
 int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
+=======
+static u8 rtllib_current_rate(struct rtllib_device *ieee)
+{
+	if (ieee->mode & IEEE_MODE_MASK)
+		return ieee->rate;
+
+	if (ieee->HTCurrentOperaRate)
+		return ieee->HTCurrentOperaRate;
+	else
+		return ieee->rate & 0x7F;
+}
+
+static int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct rtllib_device *ieee = (struct rtllib_device *)
 				     netdev_priv_rsl(dev);
@@ -566,8 +803,14 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 		.seq_ctl = 0,
 		.qos_ctl = 0
 	};
+<<<<<<< HEAD
 	u8 dest[ETH_ALEN], src[ETH_ALEN];
 	int qos_actived = ieee->current_network.qos_data.active;
+=======
+	int qos_actived = ieee->current_network.qos_data.active;
+	u8 dest[ETH_ALEN];
+	u8 src[ETH_ALEN];
+>>>>>>> v4.9.227
 	struct lib80211_crypt_data *crypt = NULL;
 	struct cb_desc *tcb_desc;
 	u8 bIsMulticast = false;
@@ -577,19 +820,29 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	/* If there is no driver handler to take the TXB, don't bother
+<<<<<<< HEAD
 	 * creating it... */
+=======
+	 * creating it...
+	 */
+>>>>>>> v4.9.227
 	if ((!ieee->hard_start_xmit && !(ieee->softmac_features &
 	   IEEE_SOFTMAC_TX_QUEUE)) ||
 	   ((!ieee->softmac_data_hard_start_xmit &&
 	   (ieee->softmac_features & IEEE_SOFTMAC_TX_QUEUE)))) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: No xmit handler.\n",
 		       ieee->dev->name);
+=======
+		netdev_warn(ieee->dev, "No xmit handler.\n");
+>>>>>>> v4.9.227
 		goto success;
 	}
 
 
 	if (likely(ieee->raw_tx == 0)) {
 		if (unlikely(skb->len < SNAP_SIZE + sizeof(u16))) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "%s: skb too small (%d).\n",
 			ieee->dev->name, skb->len);
 			goto success;
@@ -597,6 +850,15 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 		/* Save source and destination addresses */
 		memcpy(dest, skb->data, ETH_ALEN);
 		memcpy(src, skb->data+ETH_ALEN, ETH_ALEN);
+=======
+			netdev_warn(ieee->dev, "skb too small (%d).\n",
+				    skb->len);
+			goto success;
+		}
+		/* Save source and destination addresses */
+		ether_addr_copy(dest, skb->data);
+		ether_addr_copy(src, skb->data + ETH_ALEN);
+>>>>>>> v4.9.227
 
 		memset(skb->cb, 0, sizeof(skb->cb));
 		ether_type = ntohs(((struct ethhdr *)skb->data)->h_proto);
@@ -604,9 +866,14 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 		if (ieee->iw_mode == IW_MODE_MONITOR) {
 			txb = rtllib_alloc_txb(1, skb->len, GFP_ATOMIC);
 			if (unlikely(!txb)) {
+<<<<<<< HEAD
 				printk(KERN_WARNING "%s: Could not allocate "
 				       "TXB\n",
 				ieee->dev->name);
+=======
+				netdev_warn(ieee->dev,
+					    "Could not allocate TXB\n");
+>>>>>>> v4.9.227
 				goto failed;
 			}
 
@@ -619,10 +886,17 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 		}
 
 		if (skb->len > 282) {
+<<<<<<< HEAD
 			if (ETH_P_IP == ether_type) {
 				const struct iphdr *ip = (struct iphdr *)
 					((u8 *)skb->data+14);
 				if (IPPROTO_UDP == ip->protocol) {
+=======
+			if (ether_type == ETH_P_IP) {
+				const struct iphdr *ip = (struct iphdr *)
+					((u8 *)skb->data+14);
+				if (ip->protocol == IPPROTO_UDP) {
+>>>>>>> v4.9.227
 					struct udphdr *udp;
 
 					udp = (struct udphdr *)((u8 *)ip +
@@ -635,9 +909,15 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 						ieee->LPSDelayCnt = 200;
 					}
 				}
+<<<<<<< HEAD
 			} else if (ETH_P_ARP == ether_type) {
 				printk(KERN_INFO "=================>DHCP "
 				       "Protocol start tx ARP pkt!!\n");
+=======
+			} else if (ether_type == ETH_P_ARP) {
+				netdev_info(ieee->dev,
+					    "=================>DHCP Protocol start tx ARP pkt!!\n");
+>>>>>>> v4.9.227
 				bdhcp = true;
 				ieee->LPSDelayCnt =
 					 ieee->current_network.tim.tim_count;
@@ -657,8 +937,14 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 			struct eapol *eap = (struct eapol *)(skb->data +
 				sizeof(struct ethhdr) - SNAP_SIZE -
 				sizeof(u16));
+<<<<<<< HEAD
 			RTLLIB_DEBUG_EAP("TX: IEEE 802.11 EAPOL frame: %s\n",
 				eap_get_type(eap->type));
+=======
+			netdev_dbg(ieee->dev,
+				   "TX: IEEE 802.11 EAPOL frame: %s\n",
+				   eap_get_type(eap->type));
+>>>>>>> v4.9.227
 		}
 
 		/* Advance the SKB to the start of the payload */
@@ -680,6 +966,7 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 		if (ieee->iw_mode == IW_MODE_INFRA) {
 			fc |= RTLLIB_FCTL_TODS;
 			/* To DS: Addr1 = BSSID, Addr2 = SA,
+<<<<<<< HEAD
 			Addr3 = DA */
 			memcpy(&header.addr1, ieee->current_network.bssid,
 			       ETH_ALEN);
@@ -696,6 +983,26 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 			memcpy(&header.addr2, src, ETH_ALEN);
 			memcpy(&header.addr3, ieee->current_network.bssid,
 			       ETH_ALEN);
+=======
+			 * Addr3 = DA
+			 */
+			ether_addr_copy(header.addr1,
+					ieee->current_network.bssid);
+			ether_addr_copy(header.addr2, src);
+			if (IsAmsdu)
+				ether_addr_copy(header.addr3,
+						ieee->current_network.bssid);
+			else
+				ether_addr_copy(header.addr3, dest);
+		} else if (ieee->iw_mode == IW_MODE_ADHOC) {
+			/* not From/To DS: Addr1 = DA, Addr2 = SA,
+			 * Addr3 = BSSID
+			 */
+			ether_addr_copy(header.addr1, dest);
+			ether_addr_copy(header.addr2, src);
+			ether_addr_copy(header.addr3,
+					ieee->current_network.bssid);
+>>>>>>> v4.9.227
 		}
 
 		bIsMulticast = is_multicast_ether_addr(header.addr1);
@@ -703,7 +1010,12 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 		header.frame_ctl = cpu_to_le16(fc);
 
 		/* Determine fragmentation size based on destination (multicast
+<<<<<<< HEAD
 		* and broadcast are not fragmented) */
+=======
+		 * and broadcast are not fragmented)
+		 */
+>>>>>>> v4.9.227
 		if (bIsMulticast) {
 			frag_size = MAX_FRAG_THRESHOLD;
 			qos_ctl |= QOS_CTL_NOTCONTAIN_ACK;
@@ -715,6 +1027,7 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 		if (qos_actived) {
 			hdr_len = RTLLIB_3ADDR_LEN + 2;
 
+<<<<<<< HEAD
 		/* in case we are a client verify acm is not set for this ac */
 		while (unlikely(ieee->wmm_acm & (0x01 << skb->priority))) {
 			printk(KERN_INFO "skb->priority = %x\n", skb->priority);
@@ -725,20 +1038,45 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 		 }
 			qos_ctl |= skb->priority;
 			header.qos_ctl = cpu_to_le16(qos_ctl & RTLLIB_QOS_TID);
+=======
+			/* in case we are a client verify acm is not set for this ac */
+			while (unlikely(ieee->wmm_acm & (0x01 << skb->priority))) {
+				netdev_info(ieee->dev, "skb->priority = %x\n",
+						skb->priority);
+				if (wme_downgrade_ac(skb))
+					break;
+				netdev_info(ieee->dev, "converted skb->priority = %x\n",
+					   skb->priority);
+			}
+
+			qos_ctl |= skb->priority;
+			header.qos_ctl = cpu_to_le16(qos_ctl & RTLLIB_QOS_TID);
+
+>>>>>>> v4.9.227
 		} else {
 			hdr_len = RTLLIB_3ADDR_LEN;
 		}
 		/* Determine amount of payload per fragment.  Regardless of if
 		 * this stack is providing the full 802.11 header, one will
 		 * eventually be affixed to this fragment -- so we must account
+<<<<<<< HEAD
 		 * for it when determining the amount of payload space. */
+=======
+		 * for it when determining the amount of payload space.
+		 */
+>>>>>>> v4.9.227
 		bytes_per_frag = frag_size - hdr_len;
 		if (ieee->config &
 		   (CFG_RTLLIB_COMPUTE_FCS | CFG_RTLLIB_RESERVE_FCS))
 			bytes_per_frag -= RTLLIB_FCS_LEN;
 
 		/* Each fragment may need to have room for encrypting
+<<<<<<< HEAD
 		 * pre/postfix */
+=======
+		 * pre/postfix
+		 */
+>>>>>>> v4.9.227
 		if (encrypt) {
 			bytes_per_frag -= crypt->ops->extra_mpdu_prefix_len +
 				crypt->ops->extra_mpdu_postfix_len +
@@ -746,7 +1084,12 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 				crypt->ops->extra_msdu_postfix_len;
 		}
 		/* Number of fragments is the total bytes_per_frag /
+<<<<<<< HEAD
 		* payload_per_fragment */
+=======
+		 * payload_per_fragment
+		 */
+>>>>>>> v4.9.227
 		nr_frags = bytes / bytes_per_frag;
 		bytes_last_frag = bytes % bytes_per_frag;
 		if (bytes_last_frag)
@@ -756,12 +1099,21 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 
 		/* When we allocate the TXB we allocate enough space for the
 		 * reserve and full fragment bytes (bytes_per_frag doesn't
+<<<<<<< HEAD
 		 * include prefix, postfix, header, FCS, etc.) */
 		txb = rtllib_alloc_txb(nr_frags, frag_size +
 				       ieee->tx_headroom, GFP_ATOMIC);
 		if (unlikely(!txb)) {
 			printk(KERN_WARNING "%s: Could not allocate TXB\n",
 			ieee->dev->name);
+=======
+		 * include prefix, postfix, header, FCS, etc.)
+		 */
+		txb = rtllib_alloc_txb(nr_frags, frag_size +
+				       ieee->tx_headroom, GFP_ATOMIC);
+		if (unlikely(!txb)) {
+			netdev_warn(ieee->dev, "Could not allocate TXB\n");
+>>>>>>> v4.9.227
 			goto failed;
 		}
 		txb->encrypted = encrypt;
@@ -801,7 +1153,12 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 			memcpy(frag_hdr, &header, hdr_len);
 
 			/* If this is not the last fragment, then add the
+<<<<<<< HEAD
 			 * MOREFRAGS bit to the frame control */
+=======
+			 * MOREFRAGS bit to the frame control
+			 */
+>>>>>>> v4.9.227
 			if (i != nr_frags - 1) {
 				frag_hdr->frame_ctl = cpu_to_le16(
 					fc | RTLLIB_FCTL_MOREFRAGS);
@@ -836,7 +1193,12 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 
 			/* Encryption routine will move the header forward in
 			 * order to insert the IV between the header and the
+<<<<<<< HEAD
 			 * payload */
+=======
+			 * payload
+			 */
+>>>>>>> v4.9.227
 			if (encrypt)
 				rtllib_encrypt_fragment(ieee, skb_frag,
 							hdr_len);
@@ -858,15 +1220,24 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 		}
 	} else {
 		if (unlikely(skb->len < sizeof(struct rtllib_hdr_3addr))) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "%s: skb too small (%d).\n",
 			ieee->dev->name, skb->len);
+=======
+			netdev_warn(ieee->dev, "skb too small (%d).\n",
+				    skb->len);
+>>>>>>> v4.9.227
 			goto success;
 		}
 
 		txb = rtllib_alloc_txb(1, skb->len, GFP_ATOMIC);
 		if (!txb) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "%s: Could not allocate TXB\n",
 			ieee->dev->name);
+=======
+			netdev_warn(ieee->dev, "Could not allocate TXB\n");
+>>>>>>> v4.9.227
 			goto failed;
 		}
 
@@ -906,8 +1277,12 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 			if (tcb_desc->bMulticast ||  tcb_desc->bBroadcast)
 				tcb_desc->data_rate = ieee->basic_rate;
 			else
+<<<<<<< HEAD
 				tcb_desc->data_rate = CURRENT_RATE(ieee->mode,
 					ieee->rate, ieee->HTCurrentOperaRate);
+=======
+				tcb_desc->data_rate = rtllib_current_rate(ieee);
+>>>>>>> v4.9.227
 
 			if (bdhcp) {
 				if (ieee->pHTInfo->IOTAction &
@@ -961,6 +1336,10 @@ int rtllib_xmit_inter(struct sk_buff *skb, struct net_device *dev)
 	return 1;
 
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 int rtllib_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	memset(skb->cb, 0, sizeof(skb->cb));

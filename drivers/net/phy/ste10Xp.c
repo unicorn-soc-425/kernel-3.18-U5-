@@ -95,7 +95,10 @@ static struct phy_driver ste10xp_pdriver[] = {
 	.config_intr = ste10Xp_config_intr,
 	.suspend = genphy_suspend,
 	.resume = genphy_resume,
+<<<<<<< HEAD
 	.driver = {.owner = THIS_MODULE,}
+=======
+>>>>>>> v4.9.227
 }, {
 	.phy_id = STE100P_PHY_ID,
 	.phy_id_mask = 0xffffffff,
@@ -109,6 +112,7 @@ static struct phy_driver ste10xp_pdriver[] = {
 	.config_intr = ste10Xp_config_intr,
 	.suspend = genphy_suspend,
 	.resume = genphy_resume,
+<<<<<<< HEAD
 	.driver = {.owner = THIS_MODULE,}
 } };
 
@@ -126,6 +130,11 @@ static void __exit ste10Xp_exit(void)
 
 module_init(ste10Xp_init);
 module_exit(ste10Xp_exit);
+=======
+} };
+
+module_phy_driver(ste10xp_pdriver);
+>>>>>>> v4.9.227
 
 static struct mdio_device_id __maybe_unused ste10Xp_tbl[] = {
 	{ STE101P_PHY_ID, 0xfffffff0 },

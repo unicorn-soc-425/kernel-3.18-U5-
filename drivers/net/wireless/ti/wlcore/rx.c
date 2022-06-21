@@ -59,14 +59,24 @@ static u32 wlcore_rx_get_align_buf_size(struct wl1271 *wl, u32 pkt_len)
 static void wl1271_rx_status(struct wl1271 *wl,
 			     struct wl1271_rx_descriptor *desc,
 			     struct ieee80211_rx_status *status,
+<<<<<<< HEAD
 			     u8 beacon)
+=======
+			     u8 beacon, u8 probe_rsp)
+>>>>>>> v4.9.227
 {
 	memset(status, 0, sizeof(struct ieee80211_rx_status));
 
 	if ((desc->flags & WL1271_RX_DESC_BAND_MASK) == WL1271_RX_DESC_BAND_BG)
+<<<<<<< HEAD
 		status->band = IEEE80211_BAND_2GHZ;
 	else
 		status->band = IEEE80211_BAND_5GHZ;
+=======
+		status->band = NL80211_BAND_2GHZ;
+	else
+		status->band = NL80211_BAND_5GHZ;
+>>>>>>> v4.9.227
 
 	status->rate_idx = wlcore_rate_to_idx(wl, desc->rate, status->band);
 
@@ -74,7 +84,18 @@ static void wl1271_rx_status(struct wl1271 *wl,
 	if (desc->rate <= wl->hw_min_ht_rate)
 		status->flag |= RX_FLAG_HT;
 
+<<<<<<< HEAD
 	status->signal = desc->rssi;
+=======
+	/*
+	* Read the signal level and antenna diversity indication.
+	* The msb in the signal level is always set as it is a
+	* negative number.
+	* The antenna indication is the msb of the rssi.
+	*/
+	status->signal = ((desc->rssi & RSSI_LEVEL_BITMASK) | BIT(7));
+	status->antenna = ((desc->rssi & ANT_DIVERSITY_BITMASK) >> 7);
+>>>>>>> v4.9.227
 
 	/*
 	 * FIXME: In wl1251, the SNR should be divided by two.  In wl1271 we
@@ -99,6 +120,12 @@ static void wl1271_rx_status(struct wl1271 *wl,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (beacon || probe_rsp)
+		status->boottime_ns = ktime_get_boot_ns();
+
+>>>>>>> v4.9.227
 	if (beacon)
 		wlcore_set_pending_regdomain_ch(wl, (u16)desc->channel,
 						status->band);
@@ -142,7 +169,10 @@ static int wl1271_rx_handle_data(struct wl1271 *wl, u8 *data, u32 length,
 	if (desc->packet_class == WL12XX_RX_CLASS_LOGGER) {
 		size_t len = length - sizeof(*desc);
 		wl12xx_copy_fwlog(wl, data + sizeof(*desc), len);
+<<<<<<< HEAD
 		wake_up_interruptible(&wl->fwlog_waitq);
+=======
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -188,7 +218,12 @@ static int wl1271_rx_handle_data(struct wl1271 *wl, u8 *data, u32 length,
 	if (ieee80211_is_data_present(hdr->frame_control))
 		is_data = 1;
 
+<<<<<<< HEAD
 	wl1271_rx_status(wl, desc, IEEE80211_SKB_RXCB(skb), beacon);
+=======
+	wl1271_rx_status(wl, desc, IEEE80211_SKB_RXCB(skb), beacon,
+			 ieee80211_is_probe_resp(hdr->frame_control));
+>>>>>>> v4.9.227
 	wlcore_hw_set_rx_csum(wl, desc, skb);
 
 	seq_num = (le16_to_cpu(hdr->seq_ctrl) & IEEE80211_SCTL_SEQ) >> 4;
@@ -216,6 +251,16 @@ int wlcore_rx(struct wl1271 *wl, struct wl_fw_status *status)
 	enum wl_rx_buf_align rx_align;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	/* update rates per link */
+	hlid = status->counters.hlid;
+
+	if (hlid < WLCORE_MAX_LINKS)
+		wl->links[hlid].fw_rate_mbps =
+				status->counters.tx_last_rate_mbps;
+
+>>>>>>> v4.9.227
 	while (drv_rx_counter != fw_rx_counter) {
 		buf_size = 0;
 		rx_counter = drv_rx_counter;

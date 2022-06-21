@@ -126,6 +126,10 @@ gf117_gr = {
 	.mmio = gf117_gr_pack_mmio,
 	.fecs.ucode = &gf117_gr_fecs_ucode,
 	.gpccs.ucode = &gf117_gr_gpccs_ucode,
+<<<<<<< HEAD
+=======
+	.rops = gf100_gr_rops,
+>>>>>>> v4.9.227
 	.ppc_nr = 1,
 	.grctx = &gf117_grctx,
 	.sclass = {

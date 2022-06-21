@@ -13,6 +13,7 @@
 #include <uapi/linux/input.h>
 /* Implementation details, userspace should not care about these */
 #define ABS_MT_FIRST		ABS_MT_TOUCH_MAJOR
+<<<<<<< HEAD
 #define ABS_MT_LAST		ABS_MT_GRIP
 
 /*
@@ -21,6 +22,9 @@
 
 #define SW_FLIP                 0x15  /* set = flip cover */
 #define SW_CERTIFYHALL          0x1b    /* set = flip cover attach */
+=======
+#define ABS_MT_LAST		ABS_MT_TOOL_Y
+>>>>>>> v4.9.227
 
 /*
  * In-kernel definitions.
@@ -102,7 +106,11 @@ struct input_value {
  * @grab: input handle that currently has the device grabbed (via
  *	EVIOCGRAB ioctl). When a handle grabs a device it becomes sole
  *	recipient for all input events coming from the device
+<<<<<<< HEAD
  * @event_lock: this spinlock is is taken when input core receives
+=======
+ * @event_lock: this spinlock is taken when input core receives
+>>>>>>> v4.9.227
  *	and processes a new event for the device (in input_event()).
  *	Code that accesses and/or modifies parameters of a device
  *	(such as keymap or absmin, absmax, absfuzz, etc.) after device
@@ -183,9 +191,12 @@ struct input_dev {
 
 	unsigned int users;
 	bool going_away;
+<<<<<<< HEAD
 	unsigned int users_private;
 	bool disabled;
 	bool lowpower_mode;
+=======
+>>>>>>> v4.9.227
 
 	struct device dev;
 
@@ -479,6 +490,11 @@ int input_get_keycode(struct input_dev *dev, struct input_keymap_entry *ke);
 int input_set_keycode(struct input_dev *dev,
 		      const struct input_keymap_entry *ke);
 
+<<<<<<< HEAD
+=======
+void input_enable_softrepeat(struct input_dev *dev, int delay, int period);
+
+>>>>>>> v4.9.227
 extern struct class input_class;
 
 /**

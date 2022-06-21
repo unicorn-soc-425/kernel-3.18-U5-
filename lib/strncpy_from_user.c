@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/compiler.h>
+#include <linux/export.h>
+#include <linux/kasan-checks.h>
+>>>>>>> v4.9.227
 #include <linux/thread_info.h>
 #include <linux/uaccess.h>
 #include <linux/kernel.h>
@@ -14,18 +20,29 @@
 	(((long) dst | (long) src) & (sizeof(long) - 1))
 #endif
 
+<<<<<<< HEAD
 #define CHECK_ALIGN(v, a) ((((unsigned long)(v)) & ((a) - 1)) == 0)
 
+=======
+>>>>>>> v4.9.227
 /*
  * Do a strncpy, return length of string without final '\0'.
  * 'count' is the user-supplied count (return 'count' if we
  * hit it), 'max' is the address space maximum (and we return
  * -EFAULT if we hit it).
  */
+<<<<<<< HEAD
 static inline long do_strncpy_from_user(char *dst, const char __user *src, long count, unsigned long max)
 {
 	const struct word_at_a_time constants = WORD_AT_A_TIME_CONSTANTS;
 	long res = 0;
+=======
+static inline long do_strncpy_from_user(char *dst, const char __user *src,
+					unsigned long count, unsigned long max)
+{
+	const struct word_at_a_time constants = WORD_AT_A_TIME_CONSTANTS;
+	unsigned long res = 0;
+>>>>>>> v4.9.227
 
 	/*
 	 * Truncate 'max' to the user-specified limit, so that
@@ -37,6 +54,7 @@ static inline long do_strncpy_from_user(char *dst, const char __user *src, long 
 	if (IS_UNALIGNED(src, dst))
 		goto byte_at_a_time;
 
+<<<<<<< HEAD
 	/* Copy a byte at a time until we align to 8 bytes */
 	while (max && (!CHECK_ALIGN(src + res, 8))) {
 		char c;
@@ -52,6 +70,8 @@ static inline long do_strncpy_from_user(char *dst, const char __user *src, long 
 		max--;
 	}
 
+=======
+>>>>>>> v4.9.227
 	while (max >= sizeof(unsigned long)) {
 		unsigned long c, data;
 
@@ -126,6 +146,10 @@ long strncpy_from_user(char *dst, const char __user *src, long count)
 		unsigned long max = max_addr - src_addr;
 		long retval;
 
+<<<<<<< HEAD
+=======
+		kasan_check_write(dst, count);
+>>>>>>> v4.9.227
 		check_object_size(dst, count, false);
 		user_access_begin();
 		retval = do_strncpy_from_user(dst, src, count, max);

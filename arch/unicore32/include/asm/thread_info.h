@@ -24,7 +24,10 @@
 #ifndef __ASSEMBLY__
 
 struct task_struct;
+<<<<<<< HEAD
 struct exec_domain;
+=======
+>>>>>>> v4.9.227
 
 #include <asm/types.h>
 
@@ -71,7 +74,10 @@ struct thread_info {
 						/* <0 => bug */
 	mm_segment_t		addr_limit;	/* address limit */
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> v4.9.227
 	__u32			cpu;		/* cpu */
 	struct cpu_context_save	cpu_context;	/* cpu context */
 	__u32			syscall;	/* syscall number */
@@ -84,7 +90,10 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)						\
 {									\
 	.task		= &tsk,						\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,				\
+=======
+>>>>>>> v4.9.227
 	.flags		= 0,						\
 	.preempt_count	= INIT_PREEMPT_COUNT,				\
 	.addr_limit	= KERNEL_DS,					\

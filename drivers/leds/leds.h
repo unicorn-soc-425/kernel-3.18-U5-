@@ -13,6 +13,7 @@
 #ifndef __LEDS_H_INCLUDED
 #define __LEDS_H_INCLUDED
 
+<<<<<<< HEAD
 #include <linux/device.h>
 #include <linux/rwsem.h>
 #include <linux/leds.h>
@@ -27,11 +28,17 @@ static inline void __led_set_brightness(struct led_classdev *led_cdev,
 		led_cdev->brightness_set(led_cdev, value);
 }
 
+=======
+#include <linux/rwsem.h>
+#include <linux/leds.h>
+
+>>>>>>> v4.9.227
 static inline int led_get_brightness(struct led_classdev *led_cdev)
 {
 	return led_cdev->brightness;
 }
 
+<<<<<<< HEAD
 void led_stop_software_blink(struct led_classdev *led_cdev);
 
 extern struct rw_semaphore leds_list_lock;
@@ -76,5 +83,17 @@ ssize_t led_trigger_store(struct device *dev, struct device_attribute *attr,
 			const char *buf, size_t count);
 ssize_t led_trigger_show(struct device *dev, struct device_attribute *attr,
 			char *buf);
+=======
+void led_init_core(struct led_classdev *led_cdev);
+void led_stop_software_blink(struct led_classdev *led_cdev);
+void led_set_brightness_nopm(struct led_classdev *led_cdev,
+				enum led_brightness value);
+void led_set_brightness_nosleep(struct led_classdev *led_cdev,
+				enum led_brightness value);
+
+extern struct rw_semaphore leds_list_lock;
+extern struct list_head leds_list;
+extern struct list_head trigger_list;
+>>>>>>> v4.9.227
 
 #endif	/* __LEDS_H_INCLUDED */

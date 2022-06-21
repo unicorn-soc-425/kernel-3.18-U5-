@@ -346,7 +346,12 @@ static void lanai_buf_allocate(struct lanai_buffer *buf,
 		 * everything, but the way the lanai uses DMA memory would
 		 * make that a terrific pain.  This is much simpler.
 		 */
+<<<<<<< HEAD
 		buf->start = pci_alloc_consistent(pci, size, &buf->dmaaddr);
+=======
+		buf->start = dma_alloc_coherent(&pci->dev,
+						size, &buf->dmaaddr, GFP_KERNEL);
+>>>>>>> v4.9.227
 		if (buf->start != NULL) {	/* Success */
 			/* Lanai requires 256-byte alignment of DMA bufs */
 			APRINTK((buf->dmaaddr & ~0xFFFFFF00) == 0,
@@ -372,8 +377,13 @@ static void lanai_buf_deallocate(struct lanai_buffer *buf,
 	struct pci_dev *pci)
 {
 	if (buf->start != NULL) {
+<<<<<<< HEAD
 		pci_free_consistent(pci, lanai_buf_size(buf),
 		    buf->start, buf->dmaaddr);
+=======
+		dma_free_coherent(&pci->dev, lanai_buf_size(buf),
+				  buf->start, buf->dmaaddr);
+>>>>>>> v4.9.227
 		buf->start = buf->end = buf->ptr = NULL;
 	}
 }
@@ -681,6 +691,7 @@ static inline int aal5_size(int size)
 	return cells * 48;
 }
 
+<<<<<<< HEAD
 /* How many bytes can we send if we have "space" space, assuming we have
  * to send full cells
  */
@@ -690,6 +701,8 @@ static inline int aal5_spacefor(int space)
 	return cells * 48;
 }
 
+=======
+>>>>>>> v4.9.227
 /* -------------------- FREE AN ATM SKB: */
 
 static inline void lanai_free_skb(struct atm_vcc *atmvcc, struct sk_buff *skb)
@@ -1953,12 +1966,16 @@ static int lanai_pci_start(struct lanai_dev *lanai)
 		return -ENXIO;
 	}
 	pci_set_master(pci);
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(32)) != 0) {
 		printk(KERN_WARNING DEV_LABEL
 		    "(itf %d): No suitable DMA available.\n", lanai->number);
 		return -EBUSY;
 	}
 	if (pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(32)) != 0) {
+=======
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(32)) != 0) {
+>>>>>>> v4.9.227
 		printk(KERN_WARNING DEV_LABEL
 		    "(itf %d): No suitable DMA available.\n", lanai->number);
 		return -EBUSY;
@@ -2156,6 +2173,10 @@ static int lanai_dev_open(struct atm_dev *atmdev)
 	lanai->base = (bus_addr_t) ioremap(raw_base, LANAI_MAPPING_SIZE);
 	if (lanai->base == NULL) {
 		printk(KERN_ERR DEV_LABEL ": couldn't remap I/O space\n");
+<<<<<<< HEAD
+=======
+		result = -ENOMEM;
+>>>>>>> v4.9.227
 		goto error_pci;
 	}
 	/* 3.3: Reset lanai and PHY */

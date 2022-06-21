@@ -107,16 +107,28 @@ EXPORT_SYMBOL_GPL(tcp_vegas_init);
  *   o min-filter RTT samples from a much longer window (forever for now)
  *     to find the propagation delay (baseRTT)
  */
+<<<<<<< HEAD
 void tcp_vegas_pkts_acked(struct sock *sk, u32 cnt, s32 rtt_us)
+=======
+void tcp_vegas_pkts_acked(struct sock *sk, const struct ack_sample *sample)
+>>>>>>> v4.9.227
 {
 	struct vegas *vegas = inet_csk_ca(sk);
 	u32 vrtt;
 
+<<<<<<< HEAD
 	if (rtt_us < 0)
 		return;
 
 	/* Never allow zero rtt or baseRTT */
 	vrtt = rtt_us + 1;
+=======
+	if (sample->rtt_us < 0)
+		return;
+
+	/* Never allow zero rtt or baseRTT */
+	vrtt = sample->rtt_us + 1;
+>>>>>>> v4.9.227
 
 	/* Filter to find propagation delay: */
 	if (vrtt < vegas->baseRTT)
@@ -158,7 +170,11 @@ EXPORT_SYMBOL_GPL(tcp_vegas_cwnd_event);
 
 static inline u32 tcp_vegas_ssthresh(struct tcp_sock *tp)
 {
+<<<<<<< HEAD
 	return  min(tp->snd_ssthresh, tp->snd_cwnd-1);
+=======
+	return  min(tp->snd_ssthresh, tp->snd_cwnd);
+>>>>>>> v4.9.227
 }
 
 static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
@@ -225,7 +241,11 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 			 */
 			diff = tp->snd_cwnd * (rtt-vegas->baseRTT) / vegas->baseRTT;
 
+<<<<<<< HEAD
 			if (diff > gamma && tp->snd_cwnd <= tp->snd_ssthresh) {
+=======
+			if (diff > gamma && tcp_in_slow_start(tp)) {
+>>>>>>> v4.9.227
 				/* Going too fast. Time to slow down
 				 * and switch to congestion avoidance.
 				 */
@@ -240,7 +260,11 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 				tp->snd_cwnd = min(tp->snd_cwnd, (u32)target_cwnd+1);
 				tp->snd_ssthresh = tcp_vegas_ssthresh(tp);
 
+<<<<<<< HEAD
 			} else if (tp->snd_cwnd <= tp->snd_ssthresh) {
+=======
+			} else if (tcp_in_slow_start(tp)) {
+>>>>>>> v4.9.227
 				/* Slow start.  */
 				tcp_slow_start(tp, acked);
 			} else {
@@ -281,11 +305,16 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 		vegas->minRTT = 0x7fffffff;
 	}
 	/* Use normal slow start */
+<<<<<<< HEAD
 	else if (tp->snd_cwnd <= tp->snd_ssthresh)
+=======
+	else if (tcp_in_slow_start(tp))
+>>>>>>> v4.9.227
 		tcp_slow_start(tp, acked);
 }
 
 /* Extract info for Tcp socket info provided via netlink. */
+<<<<<<< HEAD
 void tcp_vegas_get_info(struct sock *sk, u32 ext, struct sk_buff *skb)
 {
 	const struct vegas *ca = inet_csk_ca(sk);
@@ -299,6 +328,23 @@ void tcp_vegas_get_info(struct sock *sk, u32 ext, struct sk_buff *skb)
 
 		nla_put(skb, INET_DIAG_VEGASINFO, sizeof(info), &info);
 	}
+=======
+size_t tcp_vegas_get_info(struct sock *sk, u32 ext, int *attr,
+			  union tcp_cc_info *info)
+{
+	const struct vegas *ca = inet_csk_ca(sk);
+
+	if (ext & (1 << (INET_DIAG_VEGASINFO - 1))) {
+		info->vegas.tcpv_enabled = ca->doing_vegas_now,
+		info->vegas.tcpv_rttcnt = ca->cntRTT,
+		info->vegas.tcpv_rtt = ca->baseRTT,
+		info->vegas.tcpv_minrtt = ca->minRTT,
+
+		*attr = INET_DIAG_VEGASINFO;
+		return sizeof(struct tcpvegas_info);
+	}
+	return 0;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(tcp_vegas_get_info);
 

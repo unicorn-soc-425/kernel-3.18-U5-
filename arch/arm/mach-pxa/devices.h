@@ -54,3 +54,7 @@ extern struct platform_device pxa3xx_device_gpio;
 extern struct platform_device pxa93x_device_gpio;
 
 void __init pxa_register_device(struct platform_device *dev, void *data);
+<<<<<<< HEAD
+=======
+void __init pxa2xx_set_dmac_info(int nb_channels, int nb_requestors);
+>>>>>>> v4.9.227

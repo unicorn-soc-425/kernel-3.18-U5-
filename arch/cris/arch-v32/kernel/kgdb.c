@@ -384,19 +384,25 @@ int getDebugChar(void);
 /* Serial port, writes one character. ETRAX 100 specific. from debugport.c */
 void putDebugChar(int val);
 
+<<<<<<< HEAD
 /* Returns the integer equivalent of a hexadecimal character. */
 static int hex(char ch);
 
+=======
+>>>>>>> v4.9.227
 /* Convert the memory, pointed to by mem into hexadecimal representation.
    Put the result in buf, and return a pointer to the last character
    in buf (null). */
 static char *mem2hex(char *buf, unsigned char *mem, int count);
 
+<<<<<<< HEAD
 /* Convert the array, in hexadecimal representation, pointed to by buf into
    binary representation. Put the result in mem, and return a pointer to
    the character after the last byte written. */
 static unsigned char *hex2mem(unsigned char *mem, char *buf, int count);
 
+=======
+>>>>>>> v4.9.227
 /* Put the content of the array, in binary representation, pointed to by buf
    into memory pointed to by mem, and return a pointer to
    the character after the last byte written. */
@@ -449,7 +455,11 @@ static char output_buffer[BUFMAX];
 /* Error and warning messages. */
 enum error_type
 {
+<<<<<<< HEAD
 	SUCCESS, E01, E02, E03, E04, E05, E06,
+=======
+	SUCCESS, E01, E02, E03, E04, E05, E06, E07, E08
+>>>>>>> v4.9.227
 };
 
 static char *error_message[] =
@@ -461,6 +471,11 @@ static char *error_message[] =
 	"E04 The command is not supported - [s,C,S,!,R,d,r] - internal error.",
 	"E05 Change register content - P - the register is not implemented..",
 	"E06 Change memory content - M - internal error.",
+<<<<<<< HEAD
+=======
+	"E07 Change register content - P - the register is not stored on the stack",
+	"E08 Invalid parameter"
+>>>>>>> v4.9.227
 };
 
 /********************************** Breakpoint *******************************/
@@ -539,7 +554,11 @@ gdb_cris_strtol(const char *s, char **endptr, int base)
 /********************************* Register image ****************************/
 
 /* Write a value to a specified register in the register image of the current
+<<<<<<< HEAD
    thread. Returns status code SUCCESS, E02 or E05. */
+=======
+   thread. Returns status code SUCCESS, E02, E05 or E08. */
+>>>>>>> v4.9.227
 static int
 write_register(int regno, char *val)
 {
@@ -547,8 +566,14 @@ write_register(int regno, char *val)
 
         if (regno >= R0 && regno <= ACR) {
 		/* Consecutive 32-bit registers. */
+<<<<<<< HEAD
 		hex2mem((unsigned char *)&reg.r0 + (regno - R0) * sizeof(unsigned int),
 			val, sizeof(unsigned int));
+=======
+		if (hex2bin((unsigned char *)&reg.r0 + (regno - R0) * sizeof(unsigned int),
+			    val, sizeof(unsigned int)))
+			status = E08;
+>>>>>>> v4.9.227
 
 	} else if (regno == BZ || regno == VR || regno == WZ || regno == DZ) {
 		/* Read-only registers. */
@@ -557,6 +582,7 @@ write_register(int regno, char *val)
 	} else if (regno == PID) {
 		/* 32-bit register. (Even though we already checked SRS and WZ, we cannot
 		   combine this with the EXS - SPC write since SRS and WZ have different size.) */
+<<<<<<< HEAD
 		hex2mem((unsigned char *)&reg.pid, val, sizeof(unsigned int));
 
 	} else if (regno == SRS) {
@@ -567,6 +593,21 @@ write_register(int regno, char *val)
 		/* Consecutive 32-bit registers. */
 		hex2mem((unsigned char *)&reg.exs + (regno - EXS) * sizeof(unsigned int),
 			 val, sizeof(unsigned int));
+=======
+		if (hex2bin((unsigned char *)&reg.pid, val, sizeof(unsigned int)))
+			status = E08;
+
+	} else if (regno == SRS) {
+		/* 8-bit register. */
+		if (hex2bin((unsigned char *)&reg.srs, val, sizeof(unsigned char)))
+			status = E08;
+
+	} else if (regno >= EXS && regno <= SPC) {
+		/* Consecutive 32-bit registers. */
+		if (hex2bin((unsigned char *)&reg.exs + (regno - EXS) * sizeof(unsigned int),
+			    val, sizeof(unsigned int)))
+			status = E08;
+>>>>>>> v4.9.227
 
        } else if (regno == PC) {
                /* Pseudo-register. Treat as read-only. */
@@ -574,7 +615,13 @@ write_register(int regno, char *val)
 
        } else if (regno >= S0 && regno <= S15) {
                /* 32-bit registers. */
+<<<<<<< HEAD
                hex2mem((unsigned char *)&sreg.s0_0 + (reg.srs * 16 * sizeof(unsigned int)) + (regno - S0) * sizeof(unsigned int), val, sizeof(unsigned int));
+=======
+               if (hex2bin((unsigned char *)&sreg.s0_0 + (reg.srs * 16 * sizeof(unsigned int)) + (regno - S0) * sizeof(unsigned int),
+			   val, sizeof(unsigned int)))
+			status = E08;
+>>>>>>> v4.9.227
 	} else {
 		/* Non-existing register. */
 		status = E05;
@@ -630,6 +677,7 @@ read_register(char regno, unsigned int *valptr)
 }
 
 /********************************** Packet I/O ******************************/
+<<<<<<< HEAD
 /* Returns the integer equivalent of a hexadecimal character. */
 static int
 hex(char ch)
@@ -643,6 +691,8 @@ hex(char ch)
 	return -1;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Convert the memory, pointed to by mem into hexadecimal representation.
    Put the result in buf, and return a pointer to the last character
    in buf (null). */
@@ -689,6 +739,7 @@ mem2hex_nbo(char *buf, unsigned char *mem, int count)
 	return buf;
 }
 
+<<<<<<< HEAD
 /* Convert the array, in hexadecimal representation, pointed to by buf into
    binary representation. Put the result in mem, and return a pointer to
    the character after the last byte written. */
@@ -705,6 +756,8 @@ hex2mem(unsigned char *mem, char *buf, int count)
 	return mem;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Put the content of the array, in binary representation, pointed to by buf
    into memory pointed to by mem, and return a pointer to the character after
    the last byte written.
@@ -763,8 +816,13 @@ getpacket(char *buffer)
 		buffer[count] = 0;
 
 		if (ch == '#') {
+<<<<<<< HEAD
 			xmitcsum = hex(getDebugChar()) << 4;
 			xmitcsum += hex(getDebugChar());
+=======
+			xmitcsum = hex_to_bin(getDebugChar()) << 4;
+			xmitcsum += hex_to_bin(getDebugChar());
+>>>>>>> v4.9.227
 			if (checksum != xmitcsum) {
 				/* Wrong checksum */
 				putDebugChar('-');
@@ -1304,6 +1362,7 @@ handle_exception(int sigval)
 				/* Write registers. GXX..XX
 				   Each byte of register data  is described by two hex digits.
 				   Success: OK
+<<<<<<< HEAD
 				   Failure: void. */
 				/* General and special registers. */
 				hex2mem((char *)&reg, &input_buffer[1], sizeof(registers));
@@ -1312,6 +1371,19 @@ handle_exception(int sigval)
 					&input_buffer[1] + sizeof(registers),
 					16 * sizeof(unsigned int));
 				gdb_cris_strcpy(output_buffer, "OK");
+=======
+				   Failure: E08. */
+				/* General and special registers. */
+				if (hex2bin((char *)&reg, &input_buffer[1], sizeof(registers)))
+					gdb_cris_strcpy(output_buffer, error_message[E08]);
+				/* Support registers. */
+				else if (hex2bin((char *)&sreg + (reg.srs * 16 * sizeof(unsigned int)),
+					&input_buffer[1] + sizeof(registers),
+					16 * sizeof(unsigned int)))
+					gdb_cris_strcpy(output_buffer, error_message[E08]);
+				else
+					gdb_cris_strcpy(output_buffer, "OK");
+>>>>>>> v4.9.227
 				break;
 
 			case 'P':
@@ -1338,6 +1410,13 @@ handle_exception(int sigval)
 							/* Do not support non-existing registers. */
 							gdb_cris_strcpy(output_buffer, error_message[E05]);
 							break;
+<<<<<<< HEAD
+=======
+						case E08:
+							/* Invalid parameter. */
+							gdb_cris_strcpy(output_buffer, error_message[E08]);
+							break;
+>>>>>>> v4.9.227
 						default:
 							/* Valid register number. */
 							gdb_cris_strcpy(output_buffer, "OK");
@@ -1380,7 +1459,11 @@ handle_exception(int sigval)
 				   AA..AA is the start address,  LLLL is the number of bytes, and
 				   XX..XX is the hexadecimal data.
 				   Success: OK
+<<<<<<< HEAD
 				   Failure: void. */
+=======
+				   Failure: E08. */
+>>>>>>> v4.9.227
 				{
 					char *lenptr;
 					char *dataptr;
@@ -1389,6 +1472,7 @@ handle_exception(int sigval)
 					int len = gdb_cris_strtol(lenptr+1, &dataptr, 16);
 					if (*lenptr == ',' && *dataptr == ':') {
 						if (input_buffer[0] == 'M') {
+<<<<<<< HEAD
 							hex2mem(addr, dataptr + 1, len);
 						} else /* X */ {
 							bin2mem(addr, dataptr + 1, len);
@@ -1396,6 +1480,17 @@ handle_exception(int sigval)
 						gdb_cris_strcpy(output_buffer, "OK");
 					}
 					else {
+=======
+							if (hex2bin(addr, dataptr + 1, len))
+								gdb_cris_strcpy(output_buffer, error_message[E08]);
+							else
+								gdb_cris_strcpy(output_buffer, "OK");
+						} else /* X */ {
+							bin2mem(addr, dataptr + 1, len);
+							gdb_cris_strcpy(output_buffer, "OK");
+						}
+					} else {
+>>>>>>> v4.9.227
 						gdb_cris_strcpy(output_buffer, error_message[E06]);
 					}
 				}

@@ -21,6 +21,10 @@
  */
 
 #ifndef _9P_CACHE_H
+<<<<<<< HEAD
+=======
+#define _9P_CACHE_H
+>>>>>>> v4.9.227
 #ifdef CONFIG_9P_FSCACHE
 #include <linux/fscache.h>
 #include <linux/spinlock.h>

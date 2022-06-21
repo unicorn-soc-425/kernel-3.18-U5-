@@ -58,6 +58,7 @@ extern int KBacktraceIterator_end(struct KBacktraceIterator *kbt);
 /* Advance to the next frame. */
 extern void KBacktraceIterator_next(struct KBacktraceIterator *kbt);
 
+<<<<<<< HEAD
 /*
  * Dump stack given complete register info. Use only from the
  * architecture-specific code; show_stack()
@@ -70,5 +71,16 @@ extern void dump_stack_regs(struct pt_regs *);
 
 /* Helper method for assembly dump_stack(). */
 extern void _dump_stack(int dummy, ulong pc, ulong lr, ulong sp, ulong r52);
+=======
+/* Dump just the contents of the pt_regs structure. */
+extern void tile_show_regs(struct pt_regs *);
+
+/*
+ * Dump stack given complete register info. Use only from the
+ * architecture-specific code; show_stack()
+ * and dump_stack() are architecture-independent entry points.
+ */
+extern void tile_show_stack(struct KBacktraceIterator *);
+>>>>>>> v4.9.227
 
 #endif /* _ASM_TILE_STACK_H */

@@ -29,8 +29,17 @@ SECTIONS
 		*(.image)
 		__image_end = .;
 		CONSTRUCTORS
+<<<<<<< HEAD
 	}
 	. = ALIGN(16);
+=======
+		. = ALIGN(16);
+	}
+	__appended_dtb = .;
+	/* leave space for appended DTB */
+	. += 0x100000;
+
+>>>>>>> v4.9.227
 	_edata = .;
 	/* End of data section */
 

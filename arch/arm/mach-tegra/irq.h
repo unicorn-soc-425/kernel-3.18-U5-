@@ -19,10 +19,13 @@
 
 bool tegra_pending_sgi(void);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 int tegra_legacy_irq_syscore_init(void);
 #else
 static inline int tegra_legacy_irq_syscore_init(void) { return 0; }
 #endif
 
+=======
+>>>>>>> v4.9.227
 #endif

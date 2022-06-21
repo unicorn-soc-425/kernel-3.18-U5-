@@ -75,7 +75,11 @@ coh901318_lli_alloc(struct coh901318_pool *pool, unsigned int len)
 	lli = head;
 	lli->phy_this = phy;
 	lli->link_addr = 0x00000000;
+<<<<<<< HEAD
 	lli->virt_link_addr = 0x00000000U;
+=======
+	lli->virt_link_addr = NULL;
+>>>>>>> v4.9.227
 
 	for (i = 1; i < len; i++) {
 		lli_prev = lli;
@@ -88,7 +92,11 @@ coh901318_lli_alloc(struct coh901318_pool *pool, unsigned int len)
 		DEBUGFS_POOL_COUNTER_ADD(pool, 1);
 		lli->phy_this = phy;
 		lli->link_addr = 0x00000000;
+<<<<<<< HEAD
 		lli->virt_link_addr = 0x00000000U;
+=======
+		lli->virt_link_addr = NULL;
+>>>>>>> v4.9.227
 
 		lli_prev->link_addr = phy;
 		lli_prev->virt_link_addr = lli;

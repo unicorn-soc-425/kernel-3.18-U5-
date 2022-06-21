@@ -59,9 +59,12 @@ MODULE_PARM_DESC(nfs4_disable_idmapping,
  * that.
  */
 
+<<<<<<< HEAD
 #define IDMAP_TYPE_USER  0
 #define IDMAP_TYPE_GROUP 1
 
+=======
+>>>>>>> v4.9.227
 struct ent {
 	struct cache_head h;
 	int               type;		       /* User / Group */

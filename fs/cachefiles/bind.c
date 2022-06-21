@@ -20,6 +20,10 @@
 #include <linux/mount.h>
 #include <linux/statfs.h>
 #include <linux/ctype.h>
+<<<<<<< HEAD
+=======
+#include <linux/xattr.h>
+>>>>>>> v4.9.227
 #include "internal.h"
 
 static int cachefiles_daemon_add_cache(struct cachefiles_cache *caches);
@@ -123,11 +127,18 @@ static int cachefiles_daemon_add_cache(struct cachefiles_cache *cache)
 
 	/* check parameters */
 	ret = -EOPNOTSUPP;
+<<<<<<< HEAD
 	if (!root->d_inode ||
 	    !root->d_inode->i_op->lookup ||
 	    !root->d_inode->i_op->mkdir ||
 	    !root->d_inode->i_op->setxattr ||
 	    !root->d_inode->i_op->getxattr ||
+=======
+	if (d_is_negative(root) ||
+	    !d_backing_inode(root)->i_op->lookup ||
+	    !d_backing_inode(root)->i_op->mkdir ||
+	    !(d_backing_inode(root)->i_opflags & IOP_XATTR) ||
+>>>>>>> v4.9.227
 	    !root->d_sb->s_op->statfs ||
 	    !root->d_sb->s_op->sync_fs)
 		goto error_unsupported;

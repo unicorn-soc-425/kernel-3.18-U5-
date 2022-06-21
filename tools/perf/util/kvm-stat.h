@@ -99,6 +99,10 @@ struct perf_kvm_stat {
 	int timerfd;
 	unsigned int display_time;
 	bool live;
+<<<<<<< HEAD
+=======
+	bool force;
+>>>>>>> v4.9.227
 };
 
 struct kvm_reg_events_ops {
@@ -121,6 +125,10 @@ void exit_event_decode_key(struct perf_kvm_stat *kvm,
 
 bool kvm_exit_event(struct perf_evsel *evsel);
 bool kvm_entry_event(struct perf_evsel *evsel);
+<<<<<<< HEAD
+=======
+int setup_kvm_events_tp(struct perf_kvm_stat *kvm);
+>>>>>>> v4.9.227
 
 #define define_exit_reasons_table(name, symbols)	\
 	static struct exit_reasons_table name[] = {	\
@@ -132,8 +140,19 @@ bool kvm_entry_event(struct perf_evsel *evsel);
  */
 int cpu_isa_init(struct perf_kvm_stat *kvm, const char *cpuid);
 
+<<<<<<< HEAD
 extern const char * const kvm_events_tp[];
 extern struct kvm_reg_events_ops kvm_reg_events_ops[];
 extern const char * const kvm_skip_events[];
+=======
+extern const char *kvm_events_tp[];
+extern struct kvm_reg_events_ops kvm_reg_events_ops[];
+extern const char * const kvm_skip_events[];
+extern const char *vcpu_id_str;
+extern const int decode_str_len;
+extern const char *kvm_exit_reason;
+extern const char *kvm_entry_trace;
+extern const char *kvm_exit_trace;
+>>>>>>> v4.9.227
 
 #endif /* __PERF_KVM_STAT_H */

@@ -28,9 +28,13 @@
 #include "sdio_cis.h"
 #include "sdio_bus.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 #include <linux/mmc/host.h>
 #endif
+=======
+#define to_sdio_driver(d)	container_of(d, struct sdio_driver, drv)
+>>>>>>> v4.9.227
 
 /* show configuration fields */
 #define sdio_config_attr(field, format_string)				\
@@ -139,6 +143,13 @@ static int sdio_bus_probe(struct device *dev)
 	if (!id)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	ret = dev_pm_domain_attach(dev, false);
+	if (ret == -EPROBE_DEFER)
+		return ret;
+
+>>>>>>> v4.9.227
 	/* Unbound SDIO functions are always suspended.
 	 * During probe, the function is set active and the usage count
 	 * is incremented.  If the driver supports runtime PM,
@@ -168,6 +179,10 @@ static int sdio_bus_probe(struct device *dev)
 disable_runtimepm:
 	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD)
 		pm_runtime_put_noidle(dev);
+<<<<<<< HEAD
+=======
+	dev_pm_domain_detach(dev, false);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -199,11 +214,19 @@ static int sdio_bus_remove(struct device *dev)
 	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD)
 		pm_runtime_put_sync(dev);
 
+<<<<<<< HEAD
 	return ret;
 }
 
 #ifdef CONFIG_PM
 
+=======
+	dev_pm_domain_detach(dev, false);
+
+	return ret;
+}
+
+>>>>>>> v4.9.227
 static const struct dev_pm_ops sdio_bus_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(pm_generic_suspend, pm_generic_resume)
 	SET_RUNTIME_PM_OPS(
@@ -213,6 +236,7 @@ static const struct dev_pm_ops sdio_bus_pm_ops = {
 	)
 };
 
+<<<<<<< HEAD
 #define SDIO_PM_OPS_PTR	(&sdio_bus_pm_ops)
 
 #else /* !CONFIG_PM */
@@ -221,6 +245,8 @@ static const struct dev_pm_ops sdio_bus_pm_ops = {
 
 #endif /* !CONFIG_PM */
 
+=======
+>>>>>>> v4.9.227
 static struct bus_type sdio_bus_type = {
 	.name		= "sdio",
 	.dev_groups	= sdio_dev_groups,
@@ -228,7 +254,11 @@ static struct bus_type sdio_bus_type = {
 	.uevent		= sdio_bus_uevent,
 	.probe		= sdio_bus_probe,
 	.remove		= sdio_bus_remove,
+<<<<<<< HEAD
 	.pm		= SDIO_PM_OPS_PTR,
+=======
+	.pm		= &sdio_bus_pm_ops,
+>>>>>>> v4.9.227
 };
 
 int sdio_register_bus(void)
@@ -268,6 +298,7 @@ static void sdio_release_func(struct device *dev)
 {
 	struct sdio_func *func = dev_to_sdio_func(dev);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 	/*
 	 * If this device is embedded then we never allocated
@@ -276,6 +307,9 @@ static void sdio_release_func(struct device *dev)
 	if (!func->card->host->embedded_sdio_data.funcs)
 #endif
 		sdio_free_func_cis(func);
+=======
+	sdio_free_func_cis(func);
+>>>>>>> v4.9.227
 
 	kfree(func->info);
 	kfree(func->tmpbuf);
@@ -318,7 +352,11 @@ struct sdio_func *sdio_alloc_func(struct mmc_card *card)
 static void sdio_acpi_set_handle(struct sdio_func *func)
 {
 	struct mmc_host *host = func->card->host;
+<<<<<<< HEAD
 	u64 addr = (host->slotno << 16) | func->num;
+=======
+	u64 addr = ((u64)host->slotno << 16) | func->num;
+>>>>>>> v4.9.227
 
 	acpi_preset_companion(&func->dev, ACPI_COMPANION(host->parent), addr);
 }
@@ -344,11 +382,18 @@ int sdio_add_func(struct sdio_func *func)
 
 	sdio_set_of_node(func);
 	sdio_acpi_set_handle(func);
+<<<<<<< HEAD
 	ret = device_add(&func->dev);
 	if (ret == 0) {
 		sdio_func_set_present(func);
 		dev_pm_domain_attach(&func->dev, false);
 	}
+=======
+	device_enable_async_suspend(&func->dev);
+	ret = device_add(&func->dev);
+	if (ret == 0)
+		sdio_func_set_present(func);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -364,7 +409,10 @@ void sdio_remove_func(struct sdio_func *func)
 	if (!sdio_func_present(func))
 		return;
 
+<<<<<<< HEAD
 	dev_pm_domain_detach(&func->dev, false);
+=======
+>>>>>>> v4.9.227
 	device_del(&func->dev);
 	of_node_put(func->dev.of_node);
 	put_device(&func->dev);

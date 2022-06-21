@@ -13,11 +13,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Ryusuke Konishi <ryusuke@osrg.net>
+=======
+ * Written by Ryusuke Konishi.
+>>>>>>> v4.9.227
  */
 
 #include <linux/buffer_head.h>
@@ -47,8 +51,15 @@ enum {
 
 /* work structure for recovery */
 struct nilfs_recovery_block {
+<<<<<<< HEAD
 	ino_t ino;		/* Inode number of the file that this block
 				   belongs to */
+=======
+	ino_t ino;		/*
+				 * Inode number of the file that this block
+				 * belongs to
+				 */
+>>>>>>> v4.9.227
 	sector_t blocknr;	/* block number */
 	__u64 vblocknr;		/* virtual block number */
 	unsigned long blkoff;	/* File offset of the data block (per block) */
@@ -56,6 +67,7 @@ struct nilfs_recovery_block {
 };
 
 
+<<<<<<< HEAD
 static int nilfs_warn_segment_error(int err)
 {
 	switch (err) {
@@ -88,6 +100,39 @@ static int nilfs_warn_segment_error(int err)
 		       "NILFS warning: No super root in the last segment\n");
 		break;
 	}
+=======
+static int nilfs_warn_segment_error(struct super_block *sb, int err)
+{
+	const char *msg = NULL;
+
+	switch (err) {
+	case NILFS_SEG_FAIL_IO:
+		nilfs_msg(sb, KERN_ERR, "I/O error reading segment");
+		return -EIO;
+	case NILFS_SEG_FAIL_MAGIC:
+		msg = "Magic number mismatch";
+		break;
+	case NILFS_SEG_FAIL_SEQ:
+		msg = "Sequence number mismatch";
+		break;
+	case NILFS_SEG_FAIL_CHECKSUM_SUPER_ROOT:
+		msg = "Checksum error in super root";
+		break;
+	case NILFS_SEG_FAIL_CHECKSUM_FULL:
+		msg = "Checksum error in segment payload";
+		break;
+	case NILFS_SEG_FAIL_CONSISTENCY:
+		msg = "Inconsistency found";
+		break;
+	case NILFS_SEG_NO_SUPER_ROOT:
+		msg = "No super root in the last segment";
+		break;
+	default:
+		nilfs_msg(sb, KERN_ERR, "unrecognized segment error %d", err);
+		return -EINVAL;
+	}
+	nilfs_msg(sb, KERN_WARNING, "invalid segment: %s", msg);
+>>>>>>> v4.9.227
 	return -EINVAL;
 }
 
@@ -156,7 +201,11 @@ int nilfs_read_super_root_block(struct the_nilfs *nilfs, sector_t sr_block,
 
 	sr = (struct nilfs_super_root *)bh_sr->b_data;
 	if (check) {
+<<<<<<< HEAD
 		unsigned bytes = le16_to_cpu(sr->sr_bytes);
+=======
+		unsigned int bytes = le16_to_cpu(sr->sr_bytes);
+>>>>>>> v4.9.227
 
 		if (bytes == 0 || bytes > nilfs->ns_blocksize) {
 			ret = NILFS_SEG_FAIL_CHECKSUM_SUPER_ROOT;
@@ -180,7 +229,11 @@ int nilfs_read_super_root_block(struct the_nilfs *nilfs, sector_t sr_block,
 	brelse(bh_sr);
 
  failed:
+<<<<<<< HEAD
 	return nilfs_warn_segment_error(ret);
+=======
+	return nilfs_warn_segment_error(nilfs->ns_sb, ret);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -508,7 +561,11 @@ static int nilfs_recover_dsync_blocks(struct the_nilfs *nilfs,
 {
 	struct inode *inode;
 	struct nilfs_recovery_block *rb, *n;
+<<<<<<< HEAD
 	unsigned blocksize = nilfs->ns_blocksize;
+=======
+	unsigned int blocksize = nilfs->ns_blocksize;
+>>>>>>> v4.9.227
 	struct page *page;
 	loff_t pos;
 	int err = 0, err2 = 0;
@@ -526,6 +583,10 @@ static int nilfs_recover_dsync_blocks(struct the_nilfs *nilfs,
 					0, &page, nilfs_get_block);
 		if (unlikely(err)) {
 			loff_t isize = inode->i_size;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			if (pos + blocksize > isize)
 				nilfs_write_failed(inode->i_mapping,
 							pos + blocksize);
@@ -544,13 +605,18 @@ static int nilfs_recover_dsync_blocks(struct the_nilfs *nilfs,
 				blocksize, page, NULL);
 
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> v4.9.227
 
 		(*nr_salvaged_blocks)++;
 		goto next;
 
  failed_page:
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
 
  failed_inode:
@@ -559,6 +625,15 @@ static int nilfs_recover_dsync_blocks(struct the_nilfs *nilfs,
 		       "(err=%d, ino=%lu, block-offset=%llu)\n",
 		       err, (unsigned long)rb->ino,
 		       (unsigned long long)rb->blkoff);
+=======
+		put_page(page);
+
+ failed_inode:
+		nilfs_msg(sb, KERN_WARNING,
+			  "error %d recovering data block (ino=%lu, block-offset=%llu)",
+			  err, (unsigned long)rb->ino,
+			  (unsigned long long)rb->blkoff);
+>>>>>>> v4.9.227
 		if (!err2)
 			err2 = err;
  next:
@@ -582,7 +657,11 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
 				 struct nilfs_recovery_info *ri)
 {
 	struct buffer_head *bh_sum = NULL;
+<<<<<<< HEAD
 	struct nilfs_segment_summary *sum;
+=======
+	struct nilfs_segment_summary *sum = NULL;
+>>>>>>> v4.9.227
 	sector_t pseg_start;
 	sector_t seg_start, seg_end;  /* Starting/ending DBN of full segment */
 	unsigned long nsalvaged_blocks = 0;
@@ -681,8 +760,13 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
 	}
 
 	if (nsalvaged_blocks) {
+<<<<<<< HEAD
 		printk(KERN_INFO "NILFS (device %s): salvaged %lu blocks\n",
 		       sb->s_id, nsalvaged_blocks);
+=======
+		nilfs_msg(sb, KERN_INFO, "salvaged %lu blocks",
+			  nsalvaged_blocks);
+>>>>>>> v4.9.227
 		ri->ri_need_recovery = NILFS_RECOVERY_ROLLFORWARD_DONE;
 	}
  out:
@@ -693,10 +777,16 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
  confused:
 	err = -EINVAL;
  failed:
+<<<<<<< HEAD
 	printk(KERN_ERR
 	       "NILFS (device %s): Error roll-forwarding "
 	       "(err=%d, pseg block=%llu). ",
 	       sb->s_id, err, (unsigned long long)pseg_start);
+=======
+	nilfs_msg(sb, KERN_ERR,
+		  "error %d roll-forwarding partial segment at blocknr = %llu",
+		  err, (unsigned long long)pseg_start);
+>>>>>>> v4.9.227
 	goto out;
 }
 
@@ -716,9 +806,14 @@ static void nilfs_finish_roll_forward(struct the_nilfs *nilfs,
 	set_buffer_dirty(bh);
 	err = sync_dirty_buffer(bh);
 	if (unlikely(err))
+<<<<<<< HEAD
 		printk(KERN_WARNING
 		       "NILFS warning: buffer sync write failed during "
 		       "post-cleaning of recovery.\n");
+=======
+		nilfs_msg(nilfs->ns_sb, KERN_WARNING,
+			  "buffer sync write failed during post-cleaning of recovery.");
+>>>>>>> v4.9.227
 	brelse(bh);
 }
 
@@ -753,8 +848,13 @@ int nilfs_salvage_orphan_logs(struct the_nilfs *nilfs,
 
 	err = nilfs_attach_checkpoint(sb, ri->ri_cno, true, &root);
 	if (unlikely(err)) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "NILFS: error loading the latest checkpoint.\n");
+=======
+		nilfs_msg(sb, KERN_ERR,
+			  "error %d loading the latest checkpoint", err);
+>>>>>>> v4.9.227
 		return err;
 	}
 
@@ -765,8 +865,14 @@ int nilfs_salvage_orphan_logs(struct the_nilfs *nilfs,
 	if (ri->ri_need_recovery == NILFS_RECOVERY_ROLLFORWARD_DONE) {
 		err = nilfs_prepare_segment_for_recovery(nilfs, sb, ri);
 		if (unlikely(err)) {
+<<<<<<< HEAD
 			printk(KERN_ERR "NILFS: Error preparing segments for "
 			       "recovery.\n");
+=======
+			nilfs_msg(sb, KERN_ERR,
+				  "error %d preparing segment for recovery",
+				  err);
+>>>>>>> v4.9.227
 			goto failed;
 		}
 
@@ -779,8 +885,14 @@ int nilfs_salvage_orphan_logs(struct the_nilfs *nilfs,
 		nilfs_detach_log_writer(sb);
 
 		if (unlikely(err)) {
+<<<<<<< HEAD
 			printk(KERN_ERR "NILFS: Oops! recovery failed. "
 			       "(err=%d)\n", err);
+=======
+			nilfs_msg(sb, KERN_ERR,
+				  "error %d writing segment for recovery",
+				  err);
+>>>>>>> v4.9.227
 			goto failed;
 		}
 
@@ -814,7 +926,11 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 			    struct nilfs_recovery_info *ri)
 {
 	struct buffer_head *bh_sum = NULL;
+<<<<<<< HEAD
 	struct nilfs_segment_summary *sum;
+=======
+	struct nilfs_segment_summary *sum = NULL;
+>>>>>>> v4.9.227
 	sector_t pseg_start, pseg_end, sr_pseg_start = 0;
 	sector_t seg_start, seg_end; /* range of full segment (block number) */
 	sector_t b, end;
@@ -872,9 +988,17 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 
 		flags = le16_to_cpu(sum->ss_flags);
 		if (!(flags & NILFS_SS_SR) && !scan_newer) {
+<<<<<<< HEAD
 			/* This will never happen because a superblock
 			   (last_segment) always points to a pseg
 			   having a super root. */
+=======
+			/*
+			 * This will never happen because a superblock
+			 * (last_segment) always points to a pseg with
+			 * a super root.
+			 */
+>>>>>>> v4.9.227
 			ret = NILFS_SEG_FAIL_CONSISTENCY;
 			goto failed;
 		}
@@ -960,5 +1084,9 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
  failed:
 	brelse(bh_sum);
 	nilfs_dispose_segment_list(&segments);
+<<<<<<< HEAD
 	return (ret < 0) ? ret : nilfs_warn_segment_error(ret);
+=======
+	return ret < 0 ? ret : nilfs_warn_segment_error(nilfs->ns_sb, ret);
+>>>>>>> v4.9.227
 }

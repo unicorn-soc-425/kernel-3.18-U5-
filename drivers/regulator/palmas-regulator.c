@@ -435,13 +435,23 @@ static int palmas_ldo_write(struct palmas *palmas, unsigned int reg,
 static int palmas_set_mode_smps(struct regulator_dev *dev, unsigned int mode)
 {
 	int id = rdev_get_id(dev);
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> v4.9.227
 	struct palmas_pmic *pmic = rdev_get_drvdata(dev);
 	struct palmas_pmic_driver_data *ddata = pmic->palmas->pmic_ddata;
 	struct palmas_regs_info *rinfo = &ddata->palmas_regs_info[id];
 	unsigned int reg;
 	bool rail_enable = true;
 
+<<<<<<< HEAD
 	palmas_smps_read(pmic->palmas, rinfo->ctrl_addr, &reg);
+=======
+	ret = palmas_smps_read(pmic->palmas, rinfo->ctrl_addr, &reg);
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 
 	reg &= ~PALMAS_SMPS12_CTRL_MODE_ACTIVE_MASK;
 
@@ -612,6 +622,21 @@ static struct regulator_ops palmas_ops_ldo = {
 	.map_voltage		= regulator_map_voltage_linear,
 };
 
+<<<<<<< HEAD
+=======
+static struct regulator_ops palmas_ops_ldo9 = {
+	.is_enabled		= palmas_is_enabled_ldo,
+	.enable			= regulator_enable_regmap,
+	.disable		= regulator_disable_regmap,
+	.get_voltage_sel	= regulator_get_voltage_sel_regmap,
+	.set_voltage_sel	= regulator_set_voltage_sel_regmap,
+	.list_voltage		= regulator_list_voltage_linear,
+	.map_voltage		= regulator_map_voltage_linear,
+	.set_bypass		= regulator_set_bypass_regmap,
+	.get_bypass		= regulator_get_bypass_regmap,
+};
+
+>>>>>>> v4.9.227
 static struct regulator_ops palmas_ops_ext_control_ldo = {
 	.get_voltage_sel	= regulator_get_voltage_sel_regmap,
 	.set_voltage_sel	= regulator_set_voltage_sel_regmap,
@@ -639,6 +664,22 @@ static struct regulator_ops tps65917_ops_ldo = {
 	.set_voltage_time_sel	= regulator_set_voltage_time_sel,
 };
 
+<<<<<<< HEAD
+=======
+static struct regulator_ops tps65917_ops_ldo_1_2 = {
+	.is_enabled		= palmas_is_enabled_ldo,
+	.enable			= regulator_enable_regmap,
+	.disable		= regulator_disable_regmap,
+	.get_voltage_sel	= regulator_get_voltage_sel_regmap,
+	.set_voltage_sel	= regulator_set_voltage_sel_regmap,
+	.list_voltage		= regulator_list_voltage_linear,
+	.map_voltage		= regulator_map_voltage_linear,
+	.set_voltage_time_sel	= regulator_set_voltage_time_sel,
+	.set_bypass		= regulator_set_bypass_regmap,
+	.get_bypass		= regulator_get_bypass_regmap,
+};
+
+>>>>>>> v4.9.227
 static int palmas_regulator_config_external(struct palmas *palmas, int id,
 		struct palmas_reg_init *reg_init)
 {
@@ -915,7 +956,23 @@ static int palmas_ldo_registration(struct palmas_pmic *pmic,
 			if (pdata && pdata->ldo6_vibrator &&
 			    (id == PALMAS_REG_LDO6))
 				desc->enable_time = 2000;
+<<<<<<< HEAD
 		} else {
+=======
+
+			if (id == PALMAS_REG_LDO9) {
+				desc->ops = &palmas_ops_ldo9;
+				desc->bypass_reg = desc->enable_reg;
+				desc->bypass_val_on =
+						PALMAS_LDO9_CTRL_LDO_BYPASS_EN;
+				desc->bypass_mask =
+						PALMAS_LDO9_CTRL_LDO_BYPASS_EN;
+			}
+		} else {
+			if (!ddata->has_regen3 && id == PALMAS_REG_REGEN3)
+				continue;
+
+>>>>>>> v4.9.227
 			desc->n_voltages = 1;
 			if (reg_init && reg_init->roof_floor)
 				desc->ops = &palmas_ops_ext_control_extreg;
@@ -1016,6 +1073,18 @@ static int tps65917_ldo_registration(struct palmas_pmic *pmic,
 			 * It is of the order of ~60mV/uS.
 			 */
 			desc->ramp_delay = 2500;
+<<<<<<< HEAD
+=======
+			if (id == TPS65917_REG_LDO1 ||
+			    id == TPS65917_REG_LDO2) {
+				desc->ops = &tps65917_ops_ldo_1_2;
+				desc->bypass_reg = desc->enable_reg;
+				desc->bypass_val_on =
+						TPS65917_LDO1_CTRL_BYPASS_EN;
+				desc->bypass_mask =
+						TPS65917_LDO1_CTRL_BYPASS_EN;
+			}
+>>>>>>> v4.9.227
 		} else {
 			desc->n_voltages = 1;
 			if (reg_init && reg_init->roof_floor)
@@ -1164,6 +1233,10 @@ static int palmas_smps_registration(struct palmas_pmic *pmic,
 				desc->enable_mask = SMPS10_BOOST_EN;
 			desc->bypass_reg = PALMAS_BASE_TO_REG(PALMAS_SMPS_BASE,
 							    PALMAS_SMPS10_CTRL);
+<<<<<<< HEAD
+=======
+			desc->bypass_val_on = SMPS10_BYPASS_EN;
+>>>>>>> v4.9.227
 			desc->bypass_mask = SMPS10_BYPASS_EN;
 			desc->min_uV = 3750000;
 			desc->uV_step = 1250000;
@@ -1398,6 +1471,10 @@ static struct palmas_pmic_driver_data palmas_ddata = {
 	.ldo_begin = PALMAS_REG_LDO1,
 	.ldo_end = PALMAS_REG_LDOUSB,
 	.max_reg = PALMAS_NUM_REGS,
+<<<<<<< HEAD
+=======
+	.has_regen3 = true,
+>>>>>>> v4.9.227
 	.palmas_regs_info = palmas_generic_regs_info,
 	.palmas_matches = palmas_matches,
 	.sleep_req_info = palma_sleep_req_info,
@@ -1411,6 +1488,10 @@ static struct palmas_pmic_driver_data tps65917_ddata = {
 	.ldo_begin = TPS65917_REG_LDO1,
 	.ldo_end = TPS65917_REG_LDO5,
 	.max_reg = TPS65917_NUM_REGS,
+<<<<<<< HEAD
+=======
+	.has_regen3 = true,
+>>>>>>> v4.9.227
 	.palmas_regs_info = tps65917_regs_info,
 	.palmas_matches = tps65917_matches,
 	.sleep_req_info = tps65917_sleep_req_info,
@@ -1418,10 +1499,17 @@ static struct palmas_pmic_driver_data tps65917_ddata = {
 	.ldo_register = tps65917_ldo_registration,
 };
 
+<<<<<<< HEAD
 static void palmas_dt_to_pdata(struct device *dev,
 			       struct device_node *node,
 			       struct palmas_pmic_platform_data *pdata,
 			       struct palmas_pmic_driver_data *ddata)
+=======
+static int palmas_dt_to_pdata(struct device *dev,
+			      struct device_node *node,
+			      struct palmas_pmic_platform_data *pdata,
+			      struct palmas_pmic_driver_data *ddata)
+>>>>>>> v4.9.227
 {
 	struct device_node *regulators;
 	u32 prop;
@@ -1430,7 +1518,11 @@ static void palmas_dt_to_pdata(struct device *dev,
 	regulators = of_get_child_by_name(node, "regulators");
 	if (!regulators) {
 		dev_info(dev, "regulator node not found\n");
+<<<<<<< HEAD
 		return;
+=======
+		return 0;
+>>>>>>> v4.9.227
 	}
 
 	ret = of_regulator_match(dev, regulators, ddata->palmas_matches,
@@ -1438,6 +1530,7 @@ static void palmas_dt_to_pdata(struct device *dev,
 	of_node_put(regulators);
 	if (ret < 0) {
 		dev_err(dev, "Error parsing regulator init data: %d\n", ret);
+<<<<<<< HEAD
 		return;
 	}
 
@@ -1457,6 +1550,31 @@ static void palmas_dt_to_pdata(struct device *dev,
 
 		ret = of_property_read_u32(ddata->palmas_matches[idx].of_node,
 					   "ti,roof-floor", &prop);
+=======
+		return 0;
+	}
+
+	for (idx = 0; idx < ddata->max_reg; idx++) {
+		static struct of_regulator_match *match;
+		struct palmas_reg_init *rinit;
+		struct device_node *np;
+
+		match = &ddata->palmas_matches[idx];
+		np = match->of_node;
+
+		if (!match->init_data || !np)
+			continue;
+
+		rinit = devm_kzalloc(dev, sizeof(*rinit), GFP_KERNEL);
+		if (!rinit)
+			return -ENOMEM;
+
+		pdata->reg_data[idx] = match->init_data;
+		pdata->reg_init[idx] = rinit;
+
+		rinit->warm_reset = of_property_read_bool(np, "ti,warm-reset");
+		ret = of_property_read_u32(np, "ti,roof-floor", &prop);
+>>>>>>> v4.9.227
 		/* EINVAL: Property not found */
 		if (ret != -EINVAL) {
 			int econtrol;
@@ -1478,6 +1596,7 @@ static void palmas_dt_to_pdata(struct device *dev,
 					WARN_ON(1);
 					dev_warn(dev,
 						 "%s: Invalid roof-floor option: %u\n",
+<<<<<<< HEAD
 					     palmas_matches[idx].name, prop);
 					break;
 				}
@@ -1506,6 +1625,34 @@ static void palmas_dt_to_pdata(struct device *dev,
 }
 
 static struct of_device_id of_palmas_match_tbl[] = {
+=======
+						 match->name, prop);
+					break;
+				}
+			}
+			rinit->roof_floor = econtrol;
+		}
+
+		ret = of_property_read_u32(np, "ti,mode-sleep", &prop);
+		if (!ret)
+			rinit->mode_sleep = prop;
+
+		ret = of_property_read_bool(np, "ti,smps-range");
+		if (ret)
+			rinit->vsel = PALMAS_SMPS12_VOLTAGE_RANGE;
+
+		if (idx == PALMAS_REG_LDO8)
+			pdata->enable_ldo8_tracking = of_property_read_bool(
+						np, "ti,enable-ldo8-tracking");
+	}
+
+	pdata->ldo6_vibrator = of_property_read_bool(node, "ti,ldo6-vibrator");
+
+	return 0;
+}
+
+static const struct of_device_id of_palmas_match_tbl[] = {
+>>>>>>> v4.9.227
 	{
 		.compatible = "ti,palmas-pmic",
 		.data = &palmas_ddata,
@@ -1572,9 +1719,17 @@ static int palmas_regulators_probe(struct platform_device *pdev)
 	if (!pmic)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (of_device_is_compatible(node, "ti,tps659038-pmic"))
 		palmas_generic_regs_info[PALMAS_REG_REGEN2].ctrl_addr =
 							TPS659038_REGEN2_CTRL;
+=======
+	if (of_device_is_compatible(node, "ti,tps659038-pmic")) {
+		palmas_generic_regs_info[PALMAS_REG_REGEN2].ctrl_addr =
+							TPS659038_REGEN2_CTRL;
+		palmas_ddata.has_regen3 = false;
+	}
+>>>>>>> v4.9.227
 
 	pmic->dev = &pdev->dev;
 	pmic->palmas = palmas;
@@ -1582,7 +1737,13 @@ static int palmas_regulators_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, pmic);
 	pmic->palmas->pmic_ddata = driver_data;
 
+<<<<<<< HEAD
 	palmas_dt_to_pdata(&pdev->dev, node, pdata, driver_data);
+=======
+	ret = palmas_dt_to_pdata(&pdev->dev, node, pdata, driver_data);
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 
 	ret = palmas_smps_read(palmas, PALMAS_SMPS_CTRL, &reg);
 	if (ret)
@@ -1614,7 +1775,10 @@ static struct platform_driver palmas_driver = {
 	.driver = {
 		.name = "palmas-pmic",
 		.of_match_table = of_palmas_match_tbl,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = palmas_regulators_probe,
 };

@@ -141,10 +141,17 @@ int spufs_handle_class1(struct spu_context *ctx)
 	/* we must not hold the lock when entering copro_handle_mm_fault */
 	spu_release(ctx);
 
+<<<<<<< HEAD
 	access = (_PAGE_PRESENT | _PAGE_USER);
 	access |= (dsisr & MFC_DSISR_ACCESS_PUT) ? _PAGE_RW : 0UL;
 	local_irq_save(flags);
 	ret = hash_page(ea, access, 0x300);
+=======
+	access = (_PAGE_PRESENT | _PAGE_READ);
+	access |= (dsisr & MFC_DSISR_ACCESS_PUT) ? _PAGE_WRITE : 0UL;
+	local_irq_save(flags);
+	ret = hash_page(ea, access, 0x300, dsisr);
+>>>>>>> v4.9.227
 	local_irq_restore(flags);
 
 	/* hashing failed, so try the actual fault handler */

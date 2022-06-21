@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -43,6 +51,12 @@
 #ifndef _LUSTRE_PARAM_H
 #define _LUSTRE_PARAM_H
 
+<<<<<<< HEAD
+=======
+#include "../../include/linux/libcfs/libcfs.h"
+#include "../../include/linux/lnet/types.h"
+
+>>>>>>> v4.9.227
 /** \defgroup param param
  *
  * @{
@@ -56,6 +70,7 @@ struct cfg_interop_param {
 
 /* obd_config.c */
 int class_find_param(char *buf, char *key, char **valp);
+<<<<<<< HEAD
 struct cfg_interop_param *class_find_old_param(const char *param,
 					       struct cfg_interop_param *ptr);
 int class_get_next_param(char **params, char *copy);
@@ -70,6 +85,10 @@ int do_lcfg(char *cfgname, lnet_nid_t nid, int cmd,
 	    char *s1, char *s2, char *s3, char *s4);
 
 
+=======
+int class_parse_nid(char *buf, lnet_nid_t *nid, char **endh);
+int class_parse_nid_quiet(char *buf, lnet_nid_t *nid, char **endh);
+>>>>>>> v4.9.227
 
 /****************** User-settable parameter keys *********************/
 /* e.g.
@@ -101,6 +120,10 @@ int do_lcfg(char *cfgname, lnet_nid_t nid, int cmd,
 
 /* Prefixes for parameters handled by obd's proc methods (XXX_process_config) */
 #define PARAM_OST		  "ost."
+<<<<<<< HEAD
+=======
+#define PARAM_OSD		"osd."
+>>>>>>> v4.9.227
 #define PARAM_OSC		  "osc."
 #define PARAM_MDT		  "mdt."
 #define PARAM_MDD		  "mdd."

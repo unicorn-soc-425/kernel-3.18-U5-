@@ -30,6 +30,11 @@ enum rcar_lvds_input {
 int rcar_du_lvdsenc_init(struct rcar_du_device *rcdu);
 int rcar_du_lvdsenc_enable(struct rcar_du_lvdsenc *lvds,
 			   struct drm_crtc *crtc, bool enable);
+<<<<<<< HEAD
+=======
+void rcar_du_lvdsenc_atomic_check(struct rcar_du_lvdsenc *lvds,
+				  struct drm_display_mode *mode);
+>>>>>>> v4.9.227
 #else
 static inline int rcar_du_lvdsenc_init(struct rcar_du_device *rcdu)
 {
@@ -40,6 +45,13 @@ static inline int rcar_du_lvdsenc_enable(struct rcar_du_lvdsenc *lvds,
 {
 	return 0;
 }
+<<<<<<< HEAD
+=======
+static inline void rcar_du_lvdsenc_atomic_check(struct rcar_du_lvdsenc *lvds,
+						struct drm_display_mode *mode)
+{
+}
+>>>>>>> v4.9.227
 #endif
 
 #endif /* __RCAR_DU_LVDSENC_H__ */

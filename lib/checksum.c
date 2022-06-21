@@ -191,9 +191,13 @@ static inline u32 from64to32(u64 x)
 }
 
 __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
+<<<<<<< HEAD
 			unsigned short len,
 			unsigned short proto,
 			__wsum sum)
+=======
+			  __u32 len, __u8 proto, __wsum sum)
+>>>>>>> v4.9.227
 {
 	unsigned long long s = (__force u32)sum;
 

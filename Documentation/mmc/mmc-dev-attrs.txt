@@ -8,6 +8,7 @@ The following attributes are read/write.
 
 	force_ro		Enforce read-only access even if write protect switch is off.
 
+<<<<<<< HEAD
 	num_wr_reqs_to_start_packing 	This attribute is used to determine
 	the trigger for activating the write packing, in case the write
 	packing control feature is enabled.
@@ -25,12 +26,18 @@ The following attributes are read/write.
 	running parallel lmdd write and lmdd read operations and calculating
 	the max number of packed writes requests.
 
+=======
+>>>>>>> v4.9.227
 SD and MMC Device Attributes
 ============================
 
 All attributes are read-only.
 
+<<<<<<< HEAD
 	cid			Card Identification Register
+=======
+	cid			Card Identifaction Register
+>>>>>>> v4.9.227
 	csd			Card Specific Data Register
 	scr			SD Card Configuration Register (SD only)
 	date			Manufacturing Date (from CID Register)
@@ -45,6 +52,11 @@ All attributes are read-only.
 	preferred_erase_size	Preferred erase size
 	raw_rpmb_size_mult	RPMB partition size
 	rel_sectors		Reliable write sector count
+<<<<<<< HEAD
+=======
+	ocr 			Operation Conditions Register
+	dsr			Driver Stage Register
+>>>>>>> v4.9.227
 
 Note on Erase Size and Preferred Erase Size:
 
@@ -89,6 +101,7 @@ Note on raw_rpmb_size_mult:
 	"raw_rpmb_size_mult" is a mutliple of 128kB block.
 	RPMB size in byte is calculated by using the following equation:
 	RPMB partition size = 128kB x raw_rpmb_size_mult
+<<<<<<< HEAD
 
 SD/MMC/SDIO Clock Gating Attribute
 ==================================
@@ -137,3 +150,5 @@ echo <desired value> > /sys/class/mmc_host/mmcX/clk_scaling/polling_interval
 echo <desired value> > /sys/class/mmc_host/mmcX/clk_scaling/up_threshold
 echo <desired value> > /sys/class/mmc_host/mmcX/clk_scaling/down_threshold
 echo <desired value> > /sys/class/mmc_host/mmcX/clk_scaling/enable
+=======
+>>>>>>> v4.9.227

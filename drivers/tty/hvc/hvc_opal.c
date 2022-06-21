@@ -29,6 +29,10 @@
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/interrupt.h>
+>>>>>>> v4.9.227
 
 #include <asm/hvconsole.h>
 #include <asm/prom.h>
@@ -41,7 +45,11 @@
 
 static const char hvc_opal_name[] = "hvc_opal";
 
+<<<<<<< HEAD
 static struct of_device_id hvc_opal_match[] = {
+=======
+static const struct of_device_id hvc_opal_match[] = {
+>>>>>>> v4.9.227
 	{ .name = "serial", .compatible = "ibm,opal-console-raw" },
 	{ .name = "serial", .compatible = "ibm,opal-console-hvsi" },
 	{ },
@@ -61,7 +69,10 @@ static struct hvc_opal_priv *hvc_opal_privs[MAX_NR_HVC_CONSOLES];
 /* For early boot console */
 static struct hvc_opal_priv hvc_opal_boot_priv;
 static u32 hvc_opal_boot_termno;
+<<<<<<< HEAD
 static bool hvc_opal_event_registered;
+=======
+>>>>>>> v4.9.227
 
 static const struct hv_ops hvc_opal_raw_ops = {
 	.get_chars = opal_get_chars,
@@ -162,6 +173,7 @@ static const struct hv_ops hvc_opal_hvsi_ops = {
 	.tiocmset = hvc_opal_hvsi_tiocmset,
 };
 
+<<<<<<< HEAD
 static int hvc_opal_console_event(struct notifier_block *nb,
 				  unsigned long events, void *change)
 {
@@ -174,16 +186,24 @@ static struct notifier_block hvc_opal_console_nb = {
 	.notifier_call	= hvc_opal_console_event,
 };
 
+=======
+>>>>>>> v4.9.227
 static int hvc_opal_probe(struct platform_device *dev)
 {
 	const struct hv_ops *ops;
 	struct hvc_struct *hp;
 	struct hvc_opal_priv *pv;
 	hv_protocol_t proto;
+<<<<<<< HEAD
 	unsigned int termno, boot = 0;
 	const __be32 *reg;
 
 
+=======
+	unsigned int termno, irq, boot = 0;
+	const __be32 *reg;
+
+>>>>>>> v4.9.227
 	if (of_device_is_compatible(dev->dev.of_node, "ibm,opal-console-raw")) {
 		proto = HV_PROTOCOL_RAW;
 		ops = &hvc_opal_raw_ops;
@@ -227,6 +247,7 @@ static int hvc_opal_probe(struct platform_device *dev)
 		dev->dev.of_node->full_name,
 		boot ? " (boot console)" : "");
 
+<<<<<<< HEAD
 	/* We don't do IRQ ... */
 	hp = hvc_alloc(termno, 0, ops, MAX_VIO_PUT_CHARS);
 	if (IS_ERR(hp))
@@ -238,6 +259,28 @@ static int hvc_opal_probe(struct platform_device *dev)
 		opal_notifier_register(&hvc_opal_console_nb);
 		hvc_opal_event_registered = true;
 	}
+=======
+	irq = irq_of_parse_and_map(dev->dev.of_node, 0);
+	if (!irq) {
+		pr_info("hvc%d: No interrupts property, using OPAL event\n",
+				termno);
+		irq = opal_event_request(ilog2(OPAL_EVENT_CONSOLE_INPUT));
+	}
+
+	if (!irq) {
+		pr_err("hvc_opal: Unable to map interrupt for device %s\n",
+			dev->dev.of_node->full_name);
+		return irq;
+	}
+
+	hp = hvc_alloc(termno, irq, ops, MAX_VIO_PUT_CHARS);
+	if (IS_ERR(hp))
+		return PTR_ERR(hp);
+
+	/* hvc consoles on powernv may need to share a single irq */
+	hp->flags = IRQF_SHARED;
+	dev_set_drvdata(&dev->dev, hp);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -262,7 +305,10 @@ static struct platform_driver hvc_opal_driver = {
 	.remove		= hvc_opal_remove,
 	.driver		= {
 		.name	= hvc_opal_name,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= hvc_opal_match,
 	}
 };

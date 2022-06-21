@@ -25,7 +25,11 @@
 
 #define DEBUG_VARIABLE debug
 
+<<<<<<< HEAD
 #include <media/saa7146_vv.h>
+=======
+#include <media/drv-intf/saa7146_vv.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 
 static int debug;
@@ -66,7 +70,11 @@ struct hexium
 {
 	int type;
 
+<<<<<<< HEAD
 	struct video_device	*video_dev;
+=======
+	struct video_device	video_dev;
+>>>>>>> v4.9.227
 	struct i2c_adapter	i2c_adapter;
 
 	int 		cur_input;	/* current input */
@@ -270,9 +278,14 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
 	/* enable i2c-port pins */
 	saa7146_write(dev, MC1, (MASK_08 | MASK_24 | MASK_10 | MASK_26));
 
+<<<<<<< HEAD
 	hexium->i2c_adapter = (struct i2c_adapter) {
 		.name = "hexium gemini",
 	};
+=======
+	strscpy(hexium->i2c_adapter.name, "hexium gemini",
+		sizeof(hexium->i2c_adapter.name));
+>>>>>>> v4.9.227
 	saa7146_i2c_adapter_prepare(dev, &hexium->i2c_adapter, SAA7146_I2C_BUS_BIT_RATE_480);
 	if (i2c_add_adapter(&hexium->i2c_adapter) < 0) {
 		DEB_S("cannot register i2c-device. skipping.\n");
@@ -305,6 +318,12 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
 	ret = saa7146_register_device(&hexium->video_dev, dev, "hexium gemini", VFL_TYPE_GRABBER);
 	if (ret < 0) {
 		pr_err("cannot register capture v4l2 device. skipping.\n");
+<<<<<<< HEAD
+=======
+		saa7146_vv_release(dev);
+		i2c_del_adapter(&hexium->i2c_adapter);
+		kfree(hexium);
+>>>>>>> v4.9.227
 		return ret;
 	}
 

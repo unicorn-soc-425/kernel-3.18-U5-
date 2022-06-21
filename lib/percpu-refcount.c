@@ -12,7 +12,11 @@
  * particular cpu can (and will) wrap - this is fine, when we go to shutdown the
  * percpu counters will all sum to the correct value
  *
+<<<<<<< HEAD
  * (More precisely: because moduler arithmatic is commutative the sum of all the
+=======
+ * (More precisely: because modular arithmetic is commutative the sum of all the
+>>>>>>> v4.9.227
  * percpu_count vars will be equal to what it would have been if all the gets
  * and puts were done to a single integer, even if some of the percpu integers
  * overflow or underflow).
@@ -33,6 +37,10 @@
 
 #define PERCPU_COUNT_BIAS	(1LU << (BITS_PER_LONG - 1))
 
+<<<<<<< HEAD
+=======
+static DEFINE_SPINLOCK(percpu_ref_switch_lock);
+>>>>>>> v4.9.227
 static DECLARE_WAIT_QUEUE_HEAD(percpu_ref_switch_waitq);
 
 static unsigned long __percpu *percpu_count_ptr(struct percpu_ref *ref)
@@ -82,6 +90,10 @@ int percpu_ref_init(struct percpu_ref *ref, percpu_ref_func_t *release,
 	atomic_long_set(&ref->count, start_count);
 
 	ref->release = release;
+<<<<<<< HEAD
+=======
+	ref->confirm_switch = NULL;
+>>>>>>> v4.9.227
 	return 0;
 }
 EXPORT_SYMBOL_GPL(percpu_ref_init);
@@ -101,6 +113,11 @@ void percpu_ref_exit(struct percpu_ref *ref)
 	unsigned long __percpu *percpu_count = percpu_count_ptr(ref);
 
 	if (percpu_count) {
+<<<<<<< HEAD
+=======
+		/* non-NULL confirm_switch indicates switching in progress */
+		WARN_ON_ONCE(ref->confirm_switch);
+>>>>>>> v4.9.227
 		free_percpu(percpu_count);
 		ref->percpu_count_ptr = __PERCPU_REF_ATOMIC_DEAD;
 	}
@@ -161,6 +178,7 @@ static void percpu_ref_noop_confirm_switch(struct percpu_ref *ref)
 static void __percpu_ref_switch_to_atomic(struct percpu_ref *ref,
 					  percpu_ref_func_t *confirm_switch)
 {
+<<<<<<< HEAD
 	if (!(ref->percpu_count_ptr & __PERCPU_REF_ATOMIC)) {
 		/* switching from percpu to atomic */
 		ref->percpu_count_ptr |= __PERCPU_REF_ATOMIC;
@@ -189,6 +207,69 @@ static void __percpu_ref_switch_to_atomic(struct percpu_ref *ref,
 		percpu_ref_get(ref);	/* put after confirmation */
 		call_rcu_sched(&ref->rcu, percpu_ref_call_confirm_rcu);
 	}
+=======
+	if (ref->percpu_count_ptr & __PERCPU_REF_ATOMIC) {
+		if (confirm_switch)
+			confirm_switch(ref);
+		return;
+	}
+
+	/* switching from percpu to atomic */
+	ref->percpu_count_ptr |= __PERCPU_REF_ATOMIC;
+
+	/*
+	 * Non-NULL ->confirm_switch is used to indicate that switching is
+	 * in progress.  Use noop one if unspecified.
+	 */
+	ref->confirm_switch = confirm_switch ?: percpu_ref_noop_confirm_switch;
+
+	percpu_ref_get(ref);	/* put after confirmation */
+	call_rcu_sched(&ref->rcu, percpu_ref_switch_to_atomic_rcu);
+}
+
+static void __percpu_ref_switch_to_percpu(struct percpu_ref *ref)
+{
+	unsigned long __percpu *percpu_count = percpu_count_ptr(ref);
+	int cpu;
+
+	BUG_ON(!percpu_count);
+
+	if (!(ref->percpu_count_ptr & __PERCPU_REF_ATOMIC))
+		return;
+
+	atomic_long_add(PERCPU_COUNT_BIAS, &ref->count);
+
+	/*
+	 * Restore per-cpu operation.  smp_store_release() is paired with
+	 * smp_read_barrier_depends() in __ref_is_percpu() and guarantees
+	 * that the zeroing is visible to all percpu accesses which can see
+	 * the following __PERCPU_REF_ATOMIC clearing.
+	 */
+	for_each_possible_cpu(cpu)
+		*per_cpu_ptr(percpu_count, cpu) = 0;
+
+	smp_store_release(&ref->percpu_count_ptr,
+			  ref->percpu_count_ptr & ~__PERCPU_REF_ATOMIC);
+}
+
+static void __percpu_ref_switch_mode(struct percpu_ref *ref,
+				     percpu_ref_func_t *confirm_switch)
+{
+	lockdep_assert_held(&percpu_ref_switch_lock);
+
+	/*
+	 * If the previous ATOMIC switching hasn't finished yet, wait for
+	 * its completion.  If the caller ensures that ATOMIC switching
+	 * isn't in progress, this function can be called from any context.
+	 */
+	wait_event_lock_irq(percpu_ref_switch_waitq, !ref->confirm_switch,
+			    percpu_ref_switch_lock);
+
+	if (ref->force_atomic || (ref->percpu_count_ptr & __PERCPU_REF_DEAD))
+		__percpu_ref_switch_to_atomic(ref, confirm_switch);
+	else
+		__percpu_ref_switch_to_percpu(ref);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -207,6 +288,7 @@ static void __percpu_ref_switch_to_atomic(struct percpu_ref *ref,
  * operations.  Note that @ref will stay in atomic mode across kill/reinit
  * cycles until percpu_ref_switch_to_percpu() is called.
  *
+<<<<<<< HEAD
  * This function normally doesn't block and can be called from any context
  * but it may block if @confirm_kill is specified and @ref is already in
  * the process of switching to atomic mode.  In such cases, @confirm_switch
@@ -215,10 +297,16 @@ static void __percpu_ref_switch_to_atomic(struct percpu_ref *ref,
  * Due to the way percpu_ref is implemented, @confirm_switch will be called
  * after at least one full sched RCU grace period has passed but this is an
  * implementation detail and must not be depended upon.
+=======
+ * This function may block if @ref is in the process of switching to atomic
+ * mode.  If the caller ensures that @ref is not in the process of
+ * switching to atomic mode, this function can be called from any context.
+>>>>>>> v4.9.227
  */
 void percpu_ref_switch_to_atomic(struct percpu_ref *ref,
 				 percpu_ref_func_t *confirm_switch)
 {
+<<<<<<< HEAD
 	ref->force_atomic = true;
 	__percpu_ref_switch_to_atomic(ref, confirm_switch);
 }
@@ -248,6 +336,16 @@ static void __percpu_ref_switch_to_percpu(struct percpu_ref *ref)
 
 	smp_store_release(&ref->percpu_count_ptr,
 			  ref->percpu_count_ptr & ~__PERCPU_REF_ATOMIC);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&percpu_ref_switch_lock, flags);
+
+	ref->force_atomic = true;
+	__percpu_ref_switch_mode(ref, confirm_switch);
+
+	spin_unlock_irqrestore(&percpu_ref_switch_lock, flags);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -264,6 +362,7 @@ static void __percpu_ref_switch_to_percpu(struct percpu_ref *ref)
  * dying or dead, the actual switching takes place on the following
  * percpu_ref_reinit().
  *
+<<<<<<< HEAD
  * This function normally doesn't block and can be called from any context
  * but it may block if @ref is in the process of switching to atomic mode
  * by percpu_ref_switch_atomic().
@@ -275,6 +374,22 @@ void percpu_ref_switch_to_percpu(struct percpu_ref *ref)
 	/* a dying or dead ref can't be switched to percpu mode w/o reinit */
 	if (!(ref->percpu_count_ptr & __PERCPU_REF_DEAD))
 		__percpu_ref_switch_to_percpu(ref);
+=======
+ * This function may block if @ref is in the process of switching to atomic
+ * mode.  If the caller ensures that @ref is not in the process of
+ * switching to atomic mode, this function can be called from any context.
+ */
+void percpu_ref_switch_to_percpu(struct percpu_ref *ref)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&percpu_ref_switch_lock, flags);
+
+	ref->force_atomic = false;
+	__percpu_ref_switch_mode(ref, NULL);
+
+	spin_unlock_irqrestore(&percpu_ref_switch_lock, flags);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -290,21 +405,39 @@ void percpu_ref_switch_to_percpu(struct percpu_ref *ref)
  *
  * This function normally doesn't block and can be called from any context
  * but it may block if @confirm_kill is specified and @ref is in the
+<<<<<<< HEAD
  * process of switching to atomic mode by percpu_ref_switch_atomic().
  *
  * Due to the way percpu_ref is implemented, @confirm_switch will be called
  * after at least one full sched RCU grace period has passed but this is an
  * implementation detail and must not be depended upon.
+=======
+ * process of switching to atomic mode by percpu_ref_switch_to_atomic().
+>>>>>>> v4.9.227
  */
 void percpu_ref_kill_and_confirm(struct percpu_ref *ref,
 				 percpu_ref_func_t *confirm_kill)
 {
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&percpu_ref_switch_lock, flags);
+
+>>>>>>> v4.9.227
 	WARN_ONCE(ref->percpu_count_ptr & __PERCPU_REF_DEAD,
 		  "%s called more than once on %pf!", __func__, ref->release);
 
 	ref->percpu_count_ptr |= __PERCPU_REF_DEAD;
+<<<<<<< HEAD
 	__percpu_ref_switch_to_atomic(ref, confirm_kill);
 	percpu_ref_put(ref);
+=======
+	__percpu_ref_switch_mode(ref, confirm_kill);
+	percpu_ref_put(ref);
+
+	spin_unlock_irqrestore(&percpu_ref_switch_lock, flags);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(percpu_ref_kill_and_confirm);
 
@@ -321,11 +454,24 @@ EXPORT_SYMBOL_GPL(percpu_ref_kill_and_confirm);
  */
 void percpu_ref_reinit(struct percpu_ref *ref)
 {
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&percpu_ref_switch_lock, flags);
+
+>>>>>>> v4.9.227
 	WARN_ON_ONCE(!percpu_ref_is_zero(ref));
 
 	ref->percpu_count_ptr &= ~__PERCPU_REF_DEAD;
 	percpu_ref_get(ref);
+<<<<<<< HEAD
 	if (!ref->force_atomic)
 		__percpu_ref_switch_to_percpu(ref);
+=======
+	__percpu_ref_switch_mode(ref, NULL);
+
+	spin_unlock_irqrestore(&percpu_ref_switch_lock, flags);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(percpu_ref_reinit);

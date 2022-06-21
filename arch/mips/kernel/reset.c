@@ -11,6 +11,10 @@
 #include <linux/pm.h>
 #include <linux/types.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> v4.9.227
 
 #include <asm/reboot.h>
 
@@ -29,16 +33,49 @@ void machine_restart(char *command)
 {
 	if (_machine_restart)
 		_machine_restart(command);
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_SMP
+	preempt_disable();
+	smp_send_stop();
+#endif
+	do_kernel_restart(command);
+	mdelay(1000);
+	pr_emerg("Reboot failed -- System halted\n");
+	local_irq_disable();
+	while (1);
+>>>>>>> v4.9.227
 }
 
 void machine_halt(void)
 {
 	if (_machine_halt)
 		_machine_halt();
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_SMP
+	preempt_disable();
+	smp_send_stop();
+#endif
+	local_irq_disable();
+	while (1);
+>>>>>>> v4.9.227
 }
 
 void machine_power_off(void)
 {
 	if (pm_power_off)
 		pm_power_off();
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_SMP
+	preempt_disable();
+	smp_send_stop();
+#endif
+	local_irq_disable();
+	while (1);
+>>>>>>> v4.9.227
 }

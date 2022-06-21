@@ -22,6 +22,11 @@
 #include <linux/of_address.h>
 #include <linux/clk/ti.h>
 
+<<<<<<< HEAD
+=======
+#include "clock.h"
+
+>>>>>>> v4.9.227
 #undef pr_fmt
 #define pr_fmt(fmt) "%s: " fmt, __func__
 

@@ -10,6 +10,7 @@
 #include <linux/list.h>
 
 /*
+<<<<<<< HEAD
  * We use the MSB mostly because its available; see <linux/preempt_mask.h> for
  * the other bits -- can't include that header due to inclusion hell.
  */
@@ -18,6 +19,8 @@
 #include <asm/preempt.h>
 
 /*
+=======
+>>>>>>> v4.9.227
  * We put the hardirq and softirq counter into the preemption
  * counter. The bitmask has the following meaning:
  *
@@ -30,11 +33,19 @@
  * there are a few palaeontologic drivers which reenable interrupts in
  * the handler, so we need more than one bit here.
  *
+<<<<<<< HEAD
  * PREEMPT_MASK:	0x000000ff
  * SOFTIRQ_MASK:	0x0000ff00
  * HARDIRQ_MASK:	0x000f0000
  *     NMI_MASK:	0x00100000
  * PREEMPT_ACTIVE:	0x00200000
+=======
+ *         PREEMPT_MASK:	0x000000ff
+ *         SOFTIRQ_MASK:	0x0000ff00
+ *         HARDIRQ_MASK:	0x000f0000
+ *             NMI_MASK:	0x00100000
+ * PREEMPT_NEED_RESCHED:	0x80000000
+>>>>>>> v4.9.227
  */
 #define PREEMPT_BITS	8
 #define SOFTIRQ_BITS	8
@@ -60,9 +71,17 @@
 
 #define SOFTIRQ_DISABLE_OFFSET	(2 * SOFTIRQ_OFFSET)
 
+<<<<<<< HEAD
 #define PREEMPT_ACTIVE_BITS	1
 #define PREEMPT_ACTIVE_SHIFT	(NMI_SHIFT + NMI_BITS)
 #define PREEMPT_ACTIVE	(__IRQ_MASK(PREEMPT_ACTIVE_BITS) << PREEMPT_ACTIVE_SHIFT)
+=======
+/* We use the MSB mostly because its available */
+#define PREEMPT_NEED_RESCHED	0x80000000
+
+/* preempt_count() and related functions, depends on PREEMPT_NEED_RESCHED */
+#include <asm/preempt.h>
+>>>>>>> v4.9.227
 
 #define hardirq_count()	(preempt_count() & HARDIRQ_MASK)
 #define softirq_count()	(preempt_count() & SOFTIRQ_MASK)
@@ -71,19 +90,38 @@
 
 /*
  * Are we doing bottom half or hardware interrupt processing?
+<<<<<<< HEAD
  * Are we in a softirq context? Interrupt context?
  * in_softirq - Are we currently processing softirq or have bh disabled?
  * in_serving_softirq - Are we currently processing softirq?
+=======
+ *
+ * in_irq()       - We're in (hard) IRQ context
+ * in_softirq()   - We have BH disabled, or are processing softirqs
+ * in_interrupt() - We're in NMI,IRQ,SoftIRQ context or have BH disabled
+ * in_serving_softirq() - We're in softirq context
+ * in_nmi()       - We're in NMI context
+ * in_task()	  - We're in task context
+ *
+ * Note: due to the BH disabled confusion: in_softirq(),in_interrupt() really
+ *       should not be used in new code.
+>>>>>>> v4.9.227
  */
 #define in_irq()		(hardirq_count())
 #define in_softirq()		(softirq_count())
 #define in_interrupt()		(irq_count())
 #define in_serving_softirq()	(softirq_count() & SOFTIRQ_OFFSET)
+<<<<<<< HEAD
 
 /*
  * Are we in NMI context?
  */
 #define in_nmi()	(preempt_count() & NMI_MASK)
+=======
+#define in_nmi()		(preempt_count() & NMI_MASK)
+#define in_task()		(!(preempt_count() & \
+				   (NMI_MASK | HARDIRQ_MASK | SOFTIRQ_OFFSET)))
+>>>>>>> v4.9.227
 
 /*
  * The preempt_count offset after preempt_disable();
@@ -121,6 +159,7 @@
  * used in the general case to determine whether sleeping is possible.
  * Do not use in_atomic() in driver code.
  */
+<<<<<<< HEAD
 #define in_atomic()	((preempt_count() & ~PREEMPT_ACTIVE) != 0)
 
 /*
@@ -135,6 +174,15 @@
 #else
 # define preemptible()	0
 #endif
+=======
+#define in_atomic()	(preempt_count() != 0)
+
+/*
+ * Check whether we were atomic before we did preempt_disable():
+ * (used by the scheduler)
+ */
+#define in_atomic_preempt_off() (preempt_count() != PREEMPT_DISABLE_OFFSET)
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_DEBUG_PREEMPT) || defined(CONFIG_PREEMPT_TRACER)
 extern void preempt_count_add(int val);
@@ -169,6 +217,11 @@ do { \
 
 #define preempt_enable_no_resched() sched_preempt_enable_no_resched()
 
+<<<<<<< HEAD
+=======
+#define preemptible()	(preempt_count() == 0 && !irqs_disabled())
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PREEMPT
 #define preempt_enable() \
 do { \
@@ -177,20 +230,46 @@ do { \
 		__preempt_schedule(); \
 } while (0)
 
+<<<<<<< HEAD
+=======
+#define preempt_enable_notrace() \
+do { \
+	barrier(); \
+	if (unlikely(__preempt_count_dec_and_test())) \
+		__preempt_schedule_notrace(); \
+} while (0)
+
+>>>>>>> v4.9.227
 #define preempt_check_resched() \
 do { \
 	if (should_resched(0)) \
 		__preempt_schedule(); \
 } while (0)
 
+<<<<<<< HEAD
 #else
+=======
+#else /* !CONFIG_PREEMPT */
+>>>>>>> v4.9.227
 #define preempt_enable() \
 do { \
 	barrier(); \
 	preempt_count_dec(); \
 } while (0)
+<<<<<<< HEAD
 #define preempt_check_resched() do { } while (0)
 #endif
+=======
+
+#define preempt_enable_notrace() \
+do { \
+	barrier(); \
+	__preempt_count_dec(); \
+} while (0)
+
+#define preempt_check_resched() do { } while (0)
+#endif /* CONFIG_PREEMPT */
+>>>>>>> v4.9.227
 
 #define preempt_disable_notrace() \
 do { \
@@ -204,6 +283,7 @@ do { \
 	__preempt_count_dec(); \
 } while (0)
 
+<<<<<<< HEAD
 #ifdef CONFIG_PREEMPT
 
 #ifndef CONFIG_CONTEXT_TRACKING
@@ -224,6 +304,8 @@ do { \
 } while (0)
 #endif
 
+=======
+>>>>>>> v4.9.227
 #else /* !CONFIG_PREEMPT_COUNT */
 
 /*
@@ -241,6 +323,10 @@ do { \
 #define preempt_disable_notrace()		barrier()
 #define preempt_enable_no_resched_notrace()	barrier()
 #define preempt_enable_notrace()		barrier()
+<<<<<<< HEAD
+=======
+#define preemptible()				0
+>>>>>>> v4.9.227
 
 #endif /* CONFIG_PREEMPT_COUNT */
 
@@ -300,6 +386,11 @@ struct preempt_notifier {
 	struct preempt_ops *ops;
 };
 
+<<<<<<< HEAD
+=======
+void preempt_notifier_inc(void);
+void preempt_notifier_dec(void);
+>>>>>>> v4.9.227
 void preempt_notifier_register(struct preempt_notifier *notifier);
 void preempt_notifier_unregister(struct preempt_notifier *notifier);
 

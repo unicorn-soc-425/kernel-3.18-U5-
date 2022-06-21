@@ -6,6 +6,12 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/kernel.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/spinlock.h>
 #include <linux/skbuff.h>
@@ -26,8 +32,13 @@ static struct nf_loginfo default_loginfo = {
 	.type	= NF_LOG_TYPE_LOG,
 	.u = {
 		.log = {
+<<<<<<< HEAD
 			.level	  = 5,
 			.logflags = NF_LOG_MASK,
+=======
+			.level	  = LOGLEVEL_NOTICE,
+			.logflags = NF_LOG_DEFAULT_MASK,
+>>>>>>> v4.9.227
 		},
 	},
 };
@@ -49,7 +60,11 @@ static void dump_ipv6_packet(struct nf_log_buf *m,
 	if (info->type == NF_LOG_TYPE_LOG)
 		logflags = info->u.log.logflags;
 	else
+<<<<<<< HEAD
 		logflags = NF_LOG_MASK;
+=======
+		logflags = NF_LOG_DEFAULT_MASK;
+>>>>>>> v4.9.227
 
 	ih = skb_header_pointer(skb, ip6hoff, sizeof(_ip6h), &_ip6h);
 	if (ih == NULL) {
@@ -81,7 +96,11 @@ static void dump_ipv6_packet(struct nf_log_buf *m,
 		}
 
 		/* Max length: 48 "OPT (...) " */
+<<<<<<< HEAD
 		if (logflags & XT_LOG_IPOPT)
+=======
+		if (logflags & NF_LOG_IPOPT)
+>>>>>>> v4.9.227
 			nf_log_buf_add(m, "OPT ( ");
 
 		switch (currenthdr) {
@@ -118,7 +137,11 @@ static void dump_ipv6_packet(struct nf_log_buf *m,
 		case IPPROTO_ROUTING:
 		case IPPROTO_HOPOPTS:
 			if (fragment) {
+<<<<<<< HEAD
 				if (logflags & XT_LOG_IPOPT)
+=======
+				if (logflags & NF_LOG_IPOPT)
+>>>>>>> v4.9.227
 					nf_log_buf_add(m, ")");
 				return;
 			}
@@ -126,7 +149,11 @@ static void dump_ipv6_packet(struct nf_log_buf *m,
 			break;
 		/* Max Length */
 		case IPPROTO_AH:
+<<<<<<< HEAD
 			if (logflags & XT_LOG_IPOPT) {
+=======
+			if (logflags & NF_LOG_IPOPT) {
+>>>>>>> v4.9.227
 				struct ip_auth_hdr _ahdr;
 				const struct ip_auth_hdr *ah;
 
@@ -158,7 +185,11 @@ static void dump_ipv6_packet(struct nf_log_buf *m,
 			hdrlen = (hp->hdrlen+2)<<2;
 			break;
 		case IPPROTO_ESP:
+<<<<<<< HEAD
 			if (logflags & XT_LOG_IPOPT) {
+=======
+			if (logflags & NF_LOG_IPOPT) {
+>>>>>>> v4.9.227
 				struct ip_esp_hdr _esph;
 				const struct ip_esp_hdr *eh;
 
@@ -191,7 +222,11 @@ static void dump_ipv6_packet(struct nf_log_buf *m,
 			nf_log_buf_add(m, "Unknown Ext Hdr %u", currenthdr);
 			return;
 		}
+<<<<<<< HEAD
 		if (logflags & XT_LOG_IPOPT)
+=======
+		if (logflags & NF_LOG_IPOPT)
+>>>>>>> v4.9.227
 			nf_log_buf_add(m, ") ");
 
 		currenthdr = hp->nexthdr;
@@ -274,7 +309,11 @@ static void dump_ipv6_packet(struct nf_log_buf *m,
 	}
 
 	/* Max length: 15 "UID=4294967295 " */
+<<<<<<< HEAD
 	if ((logflags & XT_LOG_UID) && recurse)
+=======
+	if ((logflags & NF_LOG_UID) && recurse)
+>>>>>>> v4.9.227
 		nf_log_dump_sk_uid_gid(m, skb->sk);
 
 	/* Max length: 16 "MARK=0xFFFFFFFF " */
@@ -292,7 +331,11 @@ static void dump_ipv6_mac_header(struct nf_log_buf *m,
 	if (info->type == NF_LOG_TYPE_LOG)
 		logflags = info->u.log.logflags;
 
+<<<<<<< HEAD
 	if (!(logflags & XT_LOG_MACDECODE))
+=======
+	if (!(logflags & NF_LOG_MACDECODE))
+>>>>>>> v4.9.227
 		goto fallback;
 
 	switch (dev->type) {
@@ -376,8 +419,12 @@ static struct nf_logger nf_ip6_logger __read_mostly = {
 
 static int __net_init nf_log_ipv6_net_init(struct net *net)
 {
+<<<<<<< HEAD
 	nf_log_set(net, NFPROTO_IPV6, &nf_ip6_logger);
 	return 0;
+=======
+	return nf_log_set(net, NFPROTO_IPV6, &nf_ip6_logger);
+>>>>>>> v4.9.227
 }
 
 static void __net_exit nf_log_ipv6_net_exit(struct net *net)
@@ -398,8 +445,22 @@ static int __init nf_log_ipv6_init(void)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	nf_log_register(NFPROTO_IPV6, &nf_ip6_logger);
 	return 0;
+=======
+	ret = nf_log_register(NFPROTO_IPV6, &nf_ip6_logger);
+	if (ret < 0) {
+		pr_err("failed to register logger\n");
+		goto err1;
+	}
+
+	return 0;
+
+err1:
+	unregister_pernet_subsys(&nf_log_ipv6_net_ops);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static void __exit nf_log_ipv6_exit(void)
@@ -412,6 +473,10 @@ module_init(nf_log_ipv6_init);
 module_exit(nf_log_ipv6_exit);
 
 MODULE_AUTHOR("Netfilter Core Team <coreteam@netfilter.org>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Netfilter IPv4 packet logging");
+=======
+MODULE_DESCRIPTION("Netfilter IPv6 packet logging");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_NF_LOGGER(AF_INET6, 0);

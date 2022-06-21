@@ -44,6 +44,10 @@
 #include "netlabel_mgmt.h"
 #include "netlabel_unlabeled.h"
 #include "netlabel_cipso_v4.h"
+<<<<<<< HEAD
+=======
+#include "netlabel_calipso.h"
+>>>>>>> v4.9.227
 #include "netlabel_user.h"
 
 /*
@@ -71,6 +75,13 @@ int __init netlbl_netlink_init(void)
 	if (ret_val != 0)
 		return ret_val;
 
+<<<<<<< HEAD
+=======
+	ret_val = netlbl_calipso_genl_init();
+	if (ret_val != 0)
+		return ret_val;
+
+>>>>>>> v4.9.227
 	return netlbl_unlabel_genl_init();
 }
 

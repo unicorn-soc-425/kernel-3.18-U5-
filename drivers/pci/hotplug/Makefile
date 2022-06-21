@@ -14,6 +14,10 @@ obj-$(CONFIG_HOTPLUG_PCI_PCIE)		+= pciehp.o
 obj-$(CONFIG_HOTPLUG_PCI_CPCI_ZT5550)	+= cpcihp_zt5550.o
 obj-$(CONFIG_HOTPLUG_PCI_CPCI_GENERIC)	+= cpcihp_generic.o
 obj-$(CONFIG_HOTPLUG_PCI_SHPC)		+= shpchp.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_HOTPLUG_PCI_POWERNV)	+= pnv-php.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_HOTPLUG_PCI_RPA)		+= rpaphp.o
 obj-$(CONFIG_HOTPLUG_PCI_RPA_DLPAR)	+= rpadlpar_io.o
 obj-$(CONFIG_HOTPLUG_PCI_SGI)		+= sgi_hotplug.o
@@ -50,6 +54,11 @@ ibmphp-objs		:=	ibmphp_core.o	\
 acpiphp-objs		:=	acpiphp_core.o	\
 				acpiphp_glue.o
 
+<<<<<<< HEAD
+=======
+pnv-php-objs		:=	pnv_php.o
+
+>>>>>>> v4.9.227
 rpaphp-objs		:=	rpaphp_core.o	\
 				rpaphp_pci.o	\
 				rpaphp_slot.o
@@ -61,9 +70,12 @@ pciehp-objs		:=	pciehp_core.o	\
 				pciehp_ctrl.o	\
 				pciehp_pci.o	\
 				pciehp_hpc.o
+<<<<<<< HEAD
 ifdef CONFIG_ACPI
 pciehp-objs		+=	pciehp_acpi.o
 endif
+=======
+>>>>>>> v4.9.227
 
 shpchp-objs		:=	shpchp_core.o	\
 				shpchp_ctrl.o	\

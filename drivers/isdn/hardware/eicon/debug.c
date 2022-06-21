@@ -192,8 +192,11 @@ static diva_os_spin_lock_t dbg_q_lock;
 static diva_os_spin_lock_t dbg_adapter_lock;
 static int                 dbg_q_busy;
 static volatile dword      dbg_sequence;
+<<<<<<< HEAD
 static dword               start_sec;
 static dword               start_usec;
+=======
+>>>>>>> v4.9.227
 
 /*
   INTERFACE:
@@ -215,8 +218,11 @@ int diva_maint_init(byte *base, unsigned long length, int do_init) {
 
 	dbg_base = base;
 
+<<<<<<< HEAD
 	diva_os_get_time(&start_sec, &start_usec);
 
+=======
+>>>>>>> v4.9.227
 	*(dword *)base  = (dword)DBG_MAGIC; /* Store Magic */
 	base   += sizeof(dword);
 	length -= sizeof(dword);

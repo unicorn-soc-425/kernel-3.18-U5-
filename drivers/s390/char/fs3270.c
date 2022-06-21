@@ -217,7 +217,11 @@ fs3270_deactivate(struct raw3270_view *view)
 		fp->init->callback(fp->init, NULL);
 }
 
+<<<<<<< HEAD
 static int
+=======
+static void
+>>>>>>> v4.9.227
 fs3270_irq(struct fs3270 *fp, struct raw3270_request *rq, struct irb *irb)
 {
 	/* Handle ATTN. Set indication and wake waiters for attention. */
@@ -233,7 +237,10 @@ fs3270_irq(struct fs3270 *fp, struct raw3270_request *rq, struct irb *irb)
 			/* Normal end. Copy residual count. */
 			rq->rescnt = irb->scsw.cmd.count;
 	}
+<<<<<<< HEAD
 	return RAW3270_IO_DONE;
+=======
+>>>>>>> v4.9.227
 }
 
 /*
@@ -463,7 +470,12 @@ fs3270_open(struct inode *inode, struct file *filp)
 
 	init_waitqueue_head(&fp->wait);
 	fp->fs_pid = get_pid(task_pid(current));
+<<<<<<< HEAD
 	rc = raw3270_add_view(&fp->view, &fs3270_fn, minor);
+=======
+	rc = raw3270_add_view(&fp->view, &fs3270_fn, minor,
+			      RAW3270_VIEW_LOCK_BH);
+>>>>>>> v4.9.227
 	if (rc) {
 		fs3270_free_view(&fp->view);
 		goto out;

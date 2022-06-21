@@ -25,8 +25,13 @@
 #include "comm.h"
 #include "chip.h"
 
+<<<<<<< HEAD
 static char *opt_coax_texts[2] = { "Optical", "Coax" };
 static char *line_phono_texts[2] = { "Line", "Phono" };
+=======
+static const char * const opt_coax_texts[2] = { "Optical", "Coax" };
+static const char * const line_phono_texts[2] = { "Line", "Phono" };
+>>>>>>> v4.9.227
 
 /*
  * data that needs to be sent to device. sets up card internal stuff.
@@ -327,6 +332,7 @@ static int usb6fire_control_input_vol_get(struct snd_kcontrol *kcontrol,
 static int usb6fire_control_line_phono_info(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 2;
@@ -335,6 +341,9 @@ static int usb6fire_control_line_phono_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 			line_phono_texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 2, line_phono_texts);
+>>>>>>> v4.9.227
 }
 
 static int usb6fire_control_line_phono_put(struct snd_kcontrol *kcontrol,
@@ -361,6 +370,7 @@ static int usb6fire_control_line_phono_get(struct snd_kcontrol *kcontrol,
 static int usb6fire_control_opt_coax_info(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 2;
@@ -369,6 +379,9 @@ static int usb6fire_control_opt_coax_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 			opt_coax_texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 2, opt_coax_texts);
+>>>>>>> v4.9.227
 }
 
 static int usb6fire_control_opt_coax_put(struct snd_kcontrol *kcontrol,

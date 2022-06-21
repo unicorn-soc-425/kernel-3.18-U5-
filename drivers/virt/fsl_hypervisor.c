@@ -215,6 +215,12 @@ static long ioctl_memcpy(struct fsl_hv_ioctl_memcpy __user *p)
 	 * hypervisor.
 	 */
 	lb_offset = param.local_vaddr & (PAGE_SIZE - 1);
+<<<<<<< HEAD
+=======
+	if (param.count == 0 ||
+	    param.count > U64_MAX - lb_offset - PAGE_SIZE + 1)
+		return -EINVAL;
+>>>>>>> v4.9.227
 	num_pages = (param.count + lb_offset + PAGE_SIZE - 1) >> PAGE_SHIFT;
 
 	/* Allocate the buffers we need */
@@ -244,10 +250,16 @@ static long ioctl_memcpy(struct fsl_hv_ioctl_memcpy __user *p)
 
 	/* Get the physical addresses of the source buffer */
 	down_read(&current->mm->mmap_sem);
+<<<<<<< HEAD
 	num_pinned = get_user_pages(current, current->mm,
 		param.local_vaddr - lb_offset, num_pages,
 		(param.source == -1) ? READ : WRITE,
 		0, pages, NULL);
+=======
+	num_pinned = get_user_pages(param.local_vaddr - lb_offset,
+		num_pages, (param.source == -1) ? 0 : FOLL_WRITE,
+		pages, NULL);
+>>>>>>> v4.9.227
 	up_read(&current->mm->mmap_sem);
 
 	if (num_pinned != num_pages) {
@@ -335,8 +347,13 @@ static long ioctl_dtprop(struct fsl_hv_ioctl_prop __user *p, int set)
 	struct fsl_hv_ioctl_prop param;
 	char __user *upath, *upropname;
 	void __user *upropval;
+<<<<<<< HEAD
 	char *path = NULL, *propname = NULL;
 	void *propval = NULL;
+=======
+	char *path, *propname;
+	void *propval;
+>>>>>>> v4.9.227
 	int ret = 0;
 
 	/* Get the parameters from the user. */
@@ -348,32 +365,53 @@ static long ioctl_dtprop(struct fsl_hv_ioctl_prop __user *p, int set)
 	upropval = (void __user *)(uintptr_t)param.propval;
 
 	path = strndup_user(upath, FH_DTPROP_MAX_PATHLEN);
+<<<<<<< HEAD
 	if (IS_ERR(path)) {
 		ret = PTR_ERR(path);
 		goto out;
 	}
+=======
+	if (IS_ERR(path))
+		return PTR_ERR(path);
+>>>>>>> v4.9.227
 
 	propname = strndup_user(upropname, FH_DTPROP_MAX_PATHLEN);
 	if (IS_ERR(propname)) {
 		ret = PTR_ERR(propname);
+<<<<<<< HEAD
 		goto out;
+=======
+		goto err_free_path;
+>>>>>>> v4.9.227
 	}
 
 	if (param.proplen > FH_DTPROP_MAX_PROPLEN) {
 		ret = -EINVAL;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto err_free_propname;
+>>>>>>> v4.9.227
 	}
 
 	propval = kmalloc(param.proplen, GFP_KERNEL);
 	if (!propval) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto err_free_propname;
+>>>>>>> v4.9.227
 	}
 
 	if (set) {
 		if (copy_from_user(propval, upropval, param.proplen)) {
 			ret = -EFAULT;
+<<<<<<< HEAD
 			goto out;
+=======
+			goto err_free_propval;
+>>>>>>> v4.9.227
 		}
 
 		param.ret = fh_partition_set_dtprop(param.handle,
@@ -392,7 +430,11 @@ static long ioctl_dtprop(struct fsl_hv_ioctl_prop __user *p, int set)
 			if (copy_to_user(upropval, propval, param.proplen) ||
 			    put_user(param.proplen, &p->proplen)) {
 				ret = -EFAULT;
+<<<<<<< HEAD
 				goto out;
+=======
+				goto err_free_propval;
+>>>>>>> v4.9.227
 			}
 		}
 	}
@@ -400,10 +442,19 @@ static long ioctl_dtprop(struct fsl_hv_ioctl_prop __user *p, int set)
 	if (put_user(param.ret, &p->ret))
 		ret = -EFAULT;
 
+<<<<<<< HEAD
 out:
 	kfree(path);
 	kfree(propval);
 	kfree(propname);
+=======
+err_free_propval:
+	kfree(propval);
+err_free_propname:
+	kfree(propname);
+err_free_path:
+	kfree(path);
+>>>>>>> v4.9.227
 
 	return ret;
 }

@@ -31,6 +31,7 @@
 #include <mach/serial.h>
 #include <mach/cputype.h>
 
+<<<<<<< HEAD
 static inline unsigned int serial_read_reg(struct plat_serial8250_port *up,
 					   int offset)
 {
@@ -41,6 +42,8 @@ static inline unsigned int serial_read_reg(struct plat_serial8250_port *up,
 	return (unsigned int)__raw_readl(up->membase + offset);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void serial_write_reg(struct plat_serial8250_port *p, int offset,
 				    int value)
 {

@@ -28,11 +28,16 @@
 #include <linux/rtnetlink.h>
 #include <linux/compat.h>
 #include <net/net_namespace.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> v4.9.227
 
 #include "datapath.h"
 #include "vport.h"
 #include "vport-internal_dev.h"
 
+<<<<<<< HEAD
 static void ovs_vport_record_error(struct vport *,
 				   enum vport_err_type err_type);
 
@@ -52,6 +57,9 @@ static const struct vport_ops *vport_ops_list[] = {
 	&ovs_geneve_vport_ops,
 #endif
 };
+=======
+static LIST_HEAD(vport_ops_list);
+>>>>>>> v4.9.227
 
 /* Protected by RCU read lock for reading, ovs_mutex for writing. */
 static struct hlist_head *dev_table;
@@ -82,12 +90,45 @@ void ovs_vport_exit(void)
 	kfree(dev_table);
 }
 
+<<<<<<< HEAD
 static struct hlist_head *hash_bucket(struct net *net, const char *name)
+=======
+static struct hlist_head *hash_bucket(const struct net *net, const char *name)
+>>>>>>> v4.9.227
 {
 	unsigned int hash = jhash(name, strlen(name), (unsigned long) net);
 	return &dev_table[hash & (VPORT_HASH_BUCKETS - 1)];
 }
 
+<<<<<<< HEAD
+=======
+int __ovs_vport_ops_register(struct vport_ops *ops)
+{
+	int err = -EEXIST;
+	struct vport_ops *o;
+
+	ovs_lock();
+	list_for_each_entry(o, &vport_ops_list, list)
+		if (ops->type == o->type)
+			goto errout;
+
+	list_add_tail(&ops->list, &vport_ops_list);
+	err = 0;
+errout:
+	ovs_unlock();
+	return err;
+}
+EXPORT_SYMBOL_GPL(__ovs_vport_ops_register);
+
+void ovs_vport_ops_unregister(struct vport_ops *ops)
+{
+	ovs_lock();
+	list_del(&ops->list);
+	ovs_unlock();
+}
+EXPORT_SYMBOL_GPL(ovs_vport_ops_unregister);
+
+>>>>>>> v4.9.227
 /**
  *	ovs_vport_locate - find a port that has already been created
  *
@@ -95,13 +136,21 @@ static struct hlist_head *hash_bucket(struct net *net, const char *name)
  *
  * Must be called with ovs or RCU read lock.
  */
+<<<<<<< HEAD
 struct vport *ovs_vport_locate(struct net *net, const char *name)
+=======
+struct vport *ovs_vport_locate(const struct net *net, const char *name)
+>>>>>>> v4.9.227
 {
 	struct hlist_head *bucket = hash_bucket(net, name);
 	struct vport *vport;
 
 	hlist_for_each_entry_rcu(vport, bucket, hash_node)
+<<<<<<< HEAD
 		if (!strcmp(name, vport->ops->get_name(vport)) &&
+=======
+		if (!strcmp(name, ovs_vport_name(vport)) &&
+>>>>>>> v4.9.227
 		    net_eq(ovs_dp_get_net(vport->dp), net))
 			return vport;
 
@@ -145,6 +194,7 @@ struct vport *ovs_vport_alloc(int priv_size, const struct vport_ops *ops,
 		return ERR_PTR(-EINVAL);
 	}
 
+<<<<<<< HEAD
 	vport->percpu_stats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
 	if (!vport->percpu_stats) {
 		kfree(vport);
@@ -153,6 +203,11 @@ struct vport *ovs_vport_alloc(int priv_size, const struct vport_ops *ops,
 
 	return vport;
 }
+=======
+	return vport;
+}
+EXPORT_SYMBOL_GPL(ovs_vport_alloc);
+>>>>>>> v4.9.227
 
 /**
  *	ovs_vport_free - uninitialize and free vport
@@ -170,9 +225,26 @@ void ovs_vport_free(struct vport *vport)
 	 * it is safe to use raw dereference.
 	 */
 	kfree(rcu_dereference_raw(vport->upcall_portids));
+<<<<<<< HEAD
 	free_percpu(vport->percpu_stats);
 	kfree(vport);
 }
+=======
+	kfree(vport);
+}
+EXPORT_SYMBOL_GPL(ovs_vport_free);
+
+static struct vport_ops *ovs_vport_lookup(const struct vport_parms *parms)
+{
+	struct vport_ops *ops;
+
+	list_for_each_entry(ops, &vport_ops_list, list)
+		if (ops->type == parms->type)
+			return ops;
+
+	return NULL;
+}
+>>>>>>> v4.9.227
 
 /**
  *	ovs_vport_add - add vport device (for kernel callers)
@@ -184,6 +256,7 @@ void ovs_vport_free(struct vport *vport)
  */
 struct vport *ovs_vport_add(const struct vport_parms *parms)
 {
+<<<<<<< HEAD
 	struct vport *vport;
 	int err = 0;
 	int i;
@@ -209,6 +282,42 @@ struct vport *ovs_vport_add(const struct vport_parms *parms)
 
 out:
 	return ERR_PTR(err);
+=======
+	struct vport_ops *ops;
+	struct vport *vport;
+
+	ops = ovs_vport_lookup(parms);
+	if (ops) {
+		struct hlist_head *bucket;
+
+		if (!try_module_get(ops->owner))
+			return ERR_PTR(-EAFNOSUPPORT);
+
+		vport = ops->create(parms);
+		if (IS_ERR(vport)) {
+			module_put(ops->owner);
+			return vport;
+		}
+
+		bucket = hash_bucket(ovs_dp_get_net(vport->dp),
+				     ovs_vport_name(vport));
+		hlist_add_head_rcu(&vport->hash_node, bucket);
+		return vport;
+	}
+
+	/* Unlock to attempt module load and return -EAGAIN if load
+	 * was successful as we need to restart the port addition
+	 * workflow.
+	 */
+	ovs_unlock();
+	request_module("vport-type-%d", parms->type);
+	ovs_lock();
+
+	if (!ovs_vport_lookup(parms))
+		return ERR_PTR(-EAFNOSUPPORT);
+	else
+		return ERR_PTR(-EAGAIN);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -232,15 +341,24 @@ int ovs_vport_set_options(struct vport *vport, struct nlattr *options)
  *
  * @vport: vport to delete.
  *
+<<<<<<< HEAD
  * Detaches @vport from its datapath and destroys it.  It is possible to fail
  * for reasons such as lack of memory.  ovs_mutex must be held.
+=======
+ * Detaches @vport from its datapath and destroys it.  ovs_mutex must
+ * be held.
+>>>>>>> v4.9.227
  */
 void ovs_vport_del(struct vport *vport)
 {
 	ASSERT_OVSL();
 
 	hlist_del_rcu(&vport->hash_node);
+<<<<<<< HEAD
 
+=======
+	module_put(vport->ops->owner);
+>>>>>>> v4.9.227
 	vport->ops->destroy(vport);
 }
 
@@ -256,6 +374,7 @@ void ovs_vport_del(struct vport *vport)
  */
 void ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
 {
+<<<<<<< HEAD
 	int i;
 
 	memset(stats, 0, sizeof(*stats));
@@ -291,6 +410,21 @@ void ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
 		stats->tx_bytes		+= local_stats.tx_bytes;
 		stats->tx_packets	+= local_stats.tx_packets;
 	}
+=======
+	const struct rtnl_link_stats64 *dev_stats;
+	struct rtnl_link_stats64 temp;
+
+	dev_stats = dev_get_stats(vport->dev, &temp);
+	stats->rx_errors  = dev_stats->rx_errors;
+	stats->tx_errors  = dev_stats->tx_errors;
+	stats->tx_dropped = dev_stats->tx_dropped;
+	stats->rx_dropped = dev_stats->rx_dropped;
+
+	stats->rx_bytes	  = dev_stats->rx_bytes;
+	stats->rx_packets = dev_stats->rx_packets;
+	stats->tx_bytes	  = dev_stats->tx_bytes;
+	stats->tx_packets = dev_stats->tx_packets;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -344,7 +478,11 @@ int ovs_vport_get_options(const struct vport *vport, struct sk_buff *skb)
  *
  * Must be called with ovs_mutex.
  */
+<<<<<<< HEAD
 int ovs_vport_set_upcall_portids(struct vport *vport,  struct nlattr *ids)
+=======
+int ovs_vport_set_upcall_portids(struct vport *vport, const struct nlattr *ids)
+>>>>>>> v4.9.227
 {
 	struct vport_portids *old, *vport_portids;
 
@@ -434,6 +572,7 @@ u32 ovs_vport_find_upcall_portid(const struct vport *vport, struct sk_buff *skb)
  * Must be called with rcu_read_lock.  The packet cannot be shared and
  * skb->data should point to the Ethernet header.
  */
+<<<<<<< HEAD
 void ovs_vport_receive(struct vport *vport, struct sk_buff *skb,
 		       struct ovs_tunnel_info *tun_info)
 {
@@ -449,10 +588,31 @@ void ovs_vport_receive(struct vport *vport, struct sk_buff *skb,
 
 	OVS_CB(skb)->input_vport = vport;
 	OVS_CB(skb)->egress_tun_info = NULL;
+=======
+int ovs_vport_receive(struct vport *vport, struct sk_buff *skb,
+		      const struct ip_tunnel_info *tun_info)
+{
+	struct sw_flow_key key;
+	int error;
+
+	OVS_CB(skb)->input_vport = vport;
+	OVS_CB(skb)->mru = 0;
+	OVS_CB(skb)->cutlen = 0;
+	if (unlikely(dev_net(skb->dev) != ovs_dp_get_net(vport->dp))) {
+		u32 mark;
+
+		mark = skb->mark;
+		skb_scrub_packet(skb, true);
+		skb->mark = mark;
+		tun_info = NULL;
+	}
+
+>>>>>>> v4.9.227
 	/* Extract flow from 'skb' into 'key'. */
 	error = ovs_flow_key_extract(tun_info, skb, &key);
 	if (unlikely(error)) {
 		kfree_skb(skb);
+<<<<<<< HEAD
 		return;
 	}
 	ovs_dp_process_packet(skb, &key);
@@ -520,6 +680,14 @@ static void ovs_vport_record_error(struct vport *vport,
 	}
 
 }
+=======
+		return error;
+	}
+	ovs_dp_process_packet(skb, &key);
+	return 0;
+}
+EXPORT_SYMBOL_GPL(ovs_vport_receive);
+>>>>>>> v4.9.227
 
 static void free_vport_rcu(struct rcu_head *rcu)
 {
@@ -535,3 +703,43 @@ void ovs_vport_deferred_free(struct vport *vport)
 
 	call_rcu(&vport->rcu, free_vport_rcu);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ovs_vport_deferred_free);
+
+static unsigned int packet_length(const struct sk_buff *skb)
+{
+	unsigned int length = skb->len - ETH_HLEN;
+
+	if (!skb_vlan_tag_present(skb) &&
+	    eth_type_vlan(skb->protocol))
+		length -= VLAN_HLEN;
+
+	/* Don't subtract for multiple VLAN tags. Most (all?) drivers allow
+	 * (ETH_LEN + VLAN_HLEN) in addition to the mtu value, but almost none
+	 * account for 802.1ad. e.g. is_skb_forwardable().
+	 */
+
+	return length;
+}
+
+void ovs_vport_send(struct vport *vport, struct sk_buff *skb)
+{
+	int mtu = vport->dev->mtu;
+
+	if (unlikely(packet_length(skb) > mtu && !skb_is_gso(skb))) {
+		net_warn_ratelimited("%s: dropped over-mtu packet: %d > %d\n",
+				     vport->dev->name,
+				     packet_length(skb), mtu);
+		vport->dev->stats.tx_errors++;
+		goto drop;
+	}
+
+	skb->dev = vport->dev;
+	vport->ops->send(skb);
+	return;
+
+drop:
+	kfree_skb(skb);
+}
+>>>>>>> v4.9.227

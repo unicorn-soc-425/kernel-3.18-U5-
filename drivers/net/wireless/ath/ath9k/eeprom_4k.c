@@ -177,6 +177,7 @@ static u32 ath9k_hw_4k_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 }
 #endif
 
+<<<<<<< HEAD
 
 #undef SIZE_EEPROM_4K
 
@@ -237,14 +238,38 @@ static int ath9k_hw_4k_check_eeprom(struct ath_hw *ah)
 
 	for (i = 0; i < el; i++)
 		sum ^= *eepdata++;
+=======
+static int ath9k_hw_4k_check_eeprom(struct ath_hw *ah)
+{
+	struct ar5416_eeprom_4k *eep = &ah->eeprom.map4k;
+	u32 el;
+	bool need_swap;
+	int i, err;
+
+	err = ath9k_hw_nvram_swap_data(ah, &need_swap, SIZE_EEPROM_4K);
+	if (err)
+		return err;
+
+	if (need_swap)
+		el = swab16(eep->baseEepHeader.length);
+	else
+		el = eep->baseEepHeader.length;
+
+	el = min(el / sizeof(u16), SIZE_EEPROM_4K);
+	if (!ath9k_hw_nvram_validate_checksum(ah, el))
+		return -EINVAL;
+>>>>>>> v4.9.227
 
 	if (need_swap) {
 		u32 integer;
 		u16 word;
 
+<<<<<<< HEAD
 		ath_dbg(common, EEPROM,
 			"EEPROM Endianness is not native.. Changing\n");
 
+=======
+>>>>>>> v4.9.227
 		word = swab16(eep->baseEepHeader.length);
 		eep->baseEepHeader.length = word;
 
@@ -283,6 +308,7 @@ static int ath9k_hw_4k_check_eeprom(struct ath_hw *ah)
 		}
 	}
 
+<<<<<<< HEAD
 	if (sum != 0xffff || ah->eep_ops->get_eeprom_ver(ah) != AR5416_EEP_VER ||
 	    ah->eep_ops->get_eeprom_rev(ah) < AR5416_EEP_NO_BACK_VER) {
 		ath_err(common, "Bad EEPROM checksum 0x%x or revision 0x%04x\n",
@@ -294,6 +320,17 @@ static int ath9k_hw_4k_check_eeprom(struct ath_hw *ah)
 #undef EEPROM_4K_SIZE
 }
 
+=======
+	if (!ath9k_hw_nvram_check_version(ah, AR5416_EEP_VER,
+	    AR5416_EEP_NO_BACK_VER))
+		return -EINVAL;
+
+	return 0;
+}
+
+#undef SIZE_EEPROM_4K
+
+>>>>>>> v4.9.227
 static u32 ath9k_hw_4k_get_eeprom(struct ath_hw *ah,
 				  enum eeprom_param param)
 {
@@ -389,6 +426,10 @@ static void ath9k_hw_set_4k_power_cal_table(struct ath_hw *ah,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	ENABLE_REG_RMW_BUFFER(ah);
+>>>>>>> v4.9.227
 	REG_RMW_FIELD(ah, AR_PHY_TPCRG1, AR_PHY_TPCRG1_NUM_PD_GAIN,
 		      (numXpdGain - 1) & 0x3);
 	REG_RMW_FIELD(ah, AR_PHY_TPCRG1, AR_PHY_TPCRG1_PD_GAIN_1,
@@ -396,6 +437,10 @@ static void ath9k_hw_set_4k_power_cal_table(struct ath_hw *ah,
 	REG_RMW_FIELD(ah, AR_PHY_TPCRG1, AR_PHY_TPCRG1_PD_GAIN_2,
 		      xpdGainValues[1]);
 	REG_RMW_FIELD(ah, AR_PHY_TPCRG1, AR_PHY_TPCRG1_PD_GAIN_3, 0);
+<<<<<<< HEAD
+=======
+	REG_RMW_BUFFER_FLUSH(ah);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < AR5416_EEP4K_MAX_CHAINS; i++) {
 		regChainOffset = i * 0x1000;
@@ -748,6 +793,23 @@ static void ath9k_hw_4k_set_txpower(struct ath_hw *ah,
 			  | ATH9K_POW_SM(ratesArray[rateDupCck], 0));
 	}
 
+<<<<<<< HEAD
+=======
+	/* TPC initializations */
+	if (ah->tpc_enabled) {
+		int ht40_delta;
+
+		ht40_delta = (IS_CHAN_HT40(chan)) ? ht40PowerIncForPdadc : 0;
+		ar5008_hw_init_rate_txpower(ah, ratesArray, chan, ht40_delta);
+		/* Enable TPC */
+		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX,
+			MAX_RATE_POWER | AR_PHY_POWER_TX_RATE_MAX_TPC_ENABLE);
+	} else {
+		/* Disable TPC */
+		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX, MAX_RATE_POWER);
+	}
+
+>>>>>>> v4.9.227
 	REGWRITE_BUFFER_FLUSH(ah);
 }
 
@@ -756,6 +818,7 @@ static void ath9k_hw_4k_set_gain(struct ath_hw *ah,
 				 struct ar5416_eeprom_4k *eep,
 				 u8 txRxAttenLocal)
 {
+<<<<<<< HEAD
 	REG_WRITE(ah, AR_PHY_SWITCH_CHAIN_0,
 		  pModal->antCtrlChain[0]);
 
@@ -765,6 +828,16 @@ static void ath9k_hw_4k_set_gain(struct ath_hw *ah,
 		     AR_PHY_TIMING_CTRL4_IQCORR_Q_I_COFF)) |
 		  SM(pModal->iqCalICh[0], AR_PHY_TIMING_CTRL4_IQCORR_Q_I_COFF) |
 		  SM(pModal->iqCalQCh[0], AR_PHY_TIMING_CTRL4_IQCORR_Q_Q_COFF));
+=======
+	ENABLE_REG_RMW_BUFFER(ah);
+	REG_RMW(ah, AR_PHY_SWITCH_CHAIN_0,
+		pModal->antCtrlChain[0], 0);
+
+	REG_RMW(ah, AR_PHY_TIMING_CTRL4(0),
+		SM(pModal->iqCalICh[0], AR_PHY_TIMING_CTRL4_IQCORR_Q_I_COFF) |
+		SM(pModal->iqCalQCh[0], AR_PHY_TIMING_CTRL4_IQCORR_Q_Q_COFF),
+		AR_PHY_TIMING_CTRL4_IQCORR_Q_Q_COFF | AR_PHY_TIMING_CTRL4_IQCORR_Q_I_COFF);
+>>>>>>> v4.9.227
 
 	if ((eep->baseEepHeader.version & AR5416_EEP_VER_MINOR_MASK) >=
 	    AR5416_EEP_MINOR_VER_3) {
@@ -803,6 +876,10 @@ static void ath9k_hw_4k_set_gain(struct ath_hw *ah,
 		      AR9280_PHY_RXGAIN_TXRX_ATTEN, txRxAttenLocal);
 	REG_RMW_FIELD(ah, AR_PHY_RXGAIN + 0x1000,
 		      AR9280_PHY_RXGAIN_TXRX_MARGIN, pModal->rxTxMarginCh[0]);
+<<<<<<< HEAD
+=======
+	REG_RMW_BUFFER_FLUSH(ah);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -914,6 +991,10 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	ENABLE_REG_RMW_BUFFER(ah);
+>>>>>>> v4.9.227
 	if (AR_SREV_9271(ah)) {
 		ath9k_hw_analog_shift_rmw(ah,
 					  AR9285_AN_RF2G3,
@@ -1018,18 +1099,32 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 					  AR9285_AN_RF2G4_DB2_4_S,
 					  db2[4]);
 	}
+<<<<<<< HEAD
 
 
+=======
+	REG_RMW_BUFFER_FLUSH(ah);
+
+	ENABLE_REG_RMW_BUFFER(ah);
+>>>>>>> v4.9.227
 	REG_RMW_FIELD(ah, AR_PHY_SETTLING, AR_PHY_SETTLING_SWITCH,
 		      pModal->switchSettling);
 	REG_RMW_FIELD(ah, AR_PHY_DESIRED_SZ, AR_PHY_DESIRED_SZ_ADC,
 		      pModal->adcDesiredSize);
 
+<<<<<<< HEAD
 	REG_WRITE(ah, AR_PHY_RF_CTL4,
 		  SM(pModal->txEndToXpaOff, AR_PHY_RF_CTL4_TX_END_XPAA_OFF) |
 		  SM(pModal->txEndToXpaOff, AR_PHY_RF_CTL4_TX_END_XPAB_OFF) |
 		  SM(pModal->txFrameToXpaOn, AR_PHY_RF_CTL4_FRAME_XPAA_ON)  |
 		  SM(pModal->txFrameToXpaOn, AR_PHY_RF_CTL4_FRAME_XPAB_ON));
+=======
+	REG_RMW(ah, AR_PHY_RF_CTL4,
+		SM(pModal->txEndToXpaOff, AR_PHY_RF_CTL4_TX_END_XPAA_OFF) |
+		SM(pModal->txEndToXpaOff, AR_PHY_RF_CTL4_TX_END_XPAB_OFF) |
+		SM(pModal->txFrameToXpaOn, AR_PHY_RF_CTL4_FRAME_XPAA_ON)  |
+		SM(pModal->txFrameToXpaOn, AR_PHY_RF_CTL4_FRAME_XPAB_ON), 0);
+>>>>>>> v4.9.227
 
 	REG_RMW_FIELD(ah, AR_PHY_RF_CTL3, AR_PHY_TX_END_TO_A2_RX_ON,
 		      pModal->txEndToRxOn);
@@ -1058,6 +1153,11 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 				      pModal->swSettleHt40);
 	}
 
+<<<<<<< HEAD
+=======
+	REG_RMW_BUFFER_FLUSH(ah);
+
+>>>>>>> v4.9.227
 	bb_desired_scale = (pModal->bb_scale_smrt_antenna &
 			EEP_4K_BB_DESIRED_SCALE_MASK);
 	if ((pBase->txGainType == 0) && (bb_desired_scale != 0)) {
@@ -1066,6 +1166,10 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 		mask = BIT(0)|BIT(5)|BIT(10)|BIT(15)|BIT(20)|BIT(25);
 		pwrctrl = mask * bb_desired_scale;
 		clr = mask * 0x1f;
+<<<<<<< HEAD
+=======
+		ENABLE_REG_RMW_BUFFER(ah);
+>>>>>>> v4.9.227
 		REG_RMW(ah, AR_PHY_TX_PWRCTRL8, pwrctrl, clr);
 		REG_RMW(ah, AR_PHY_TX_PWRCTRL10, pwrctrl, clr);
 		REG_RMW(ah, AR_PHY_CH0_TX_PWRCTRL12, pwrctrl, clr);
@@ -1080,6 +1184,10 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 		clr = mask * 0x1f;
 		REG_RMW(ah, AR_PHY_CH0_TX_PWRCTRL11, pwrctrl, clr);
 		REG_RMW(ah, AR_PHY_CH0_TX_PWRCTRL13, pwrctrl, clr);
+<<<<<<< HEAD
+=======
+		REG_RMW_BUFFER_FLUSH(ah);
+>>>>>>> v4.9.227
 	}
 }
 

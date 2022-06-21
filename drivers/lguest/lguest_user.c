@@ -2,20 +2,28 @@
  * launcher controls and communicates with the Guest.  For example,
  * the first write will tell us the Guest's memory layout and entry
  * point.  A read will run the Guest until something happens, such as
+<<<<<<< HEAD
  * a signal or the Guest doing a NOTIFY out to the Launcher.  There is
  * also a way for the Launcher to attach eventfds to particular NOTIFY
  * values instead of returning from the read() call.
+=======
+ * a signal or the Guest accessing a device.
+>>>>>>> v4.9.227
 :*/
 #include <linux/uaccess.h>
 #include <linux/miscdevice.h>
 #include <linux/fs.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/eventfd.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/file.h>
 #include <linux/slab.h>
 #include <linux/export.h>
 #include "lg.h"
 
+<<<<<<< HEAD
 /*L:056
  * Before we move on, let's jump ahead and look at what the kernel does when
  * it needs to look up the eventfds.  That will complete our picture of how we
@@ -171,6 +179,53 @@ static int attach_eventfd(struct lguest *lg, const unsigned long __user *input)
 	mutex_unlock(&lguest_lock);
 
 	return err;
+=======
+/*L:052
+  The Launcher can get the registers, and also set some of them.
+*/
+static int getreg_setup(struct lg_cpu *cpu, const unsigned long __user *input)
+{
+	unsigned long which;
+
+	/* We re-use the ptrace structure to specify which register to read. */
+	if (get_user(which, input) != 0)
+		return -EFAULT;
+
+	/*
+	 * We set up the cpu register pointer, and their next read will
+	 * actually get the value (instead of running the guest).
+	 *
+	 * The last argument 'true' says we can access any register.
+	 */
+	cpu->reg_read = lguest_arch_regptr(cpu, which, true);
+	if (!cpu->reg_read)
+		return -ENOENT;
+
+	/* And because this is a write() call, we return the length used. */
+	return sizeof(unsigned long) * 2;
+}
+
+static int setreg(struct lg_cpu *cpu, const unsigned long __user *input)
+{
+	unsigned long which, value, *reg;
+
+	/* We re-use the ptrace structure to specify which register to read. */
+	if (get_user(which, input) != 0)
+		return -EFAULT;
+	input++;
+	if (get_user(value, input) != 0)
+		return -EFAULT;
+
+	/* The last argument 'false' means we can't access all registers. */
+	reg = lguest_arch_regptr(cpu, which, false);
+	if (!reg)
+		return -ENOENT;
+
+	*reg = value;
+
+	/* And because this is a write() call, we return the length used. */
+	return sizeof(unsigned long) * 3;
+>>>>>>> v4.9.227
 }
 
 /*L:050
@@ -194,6 +249,26 @@ static int user_send_irq(struct lg_cpu *cpu, const unsigned long __user *input)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/*L:053
+ * Deliver a trap: this is used by the Launcher if it can't emulate
+ * an instruction.
+ */
+static int trap(struct lg_cpu *cpu, const unsigned long __user *input)
+{
+	unsigned long trapnum;
+
+	if (get_user(trapnum, input) != 0)
+		return -EFAULT;
+
+	if (!deliver_trap(cpu, trapnum))
+		return -EINVAL;
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /*L:040
  * Once our Guest is initialized, the Launcher makes it run by reading
  * from /dev/lguest.
@@ -237,8 +312,13 @@ static ssize_t read(struct file *file, char __user *user, size_t size,loff_t*o)
 	 * If we returned from read() last time because the Guest sent I/O,
 	 * clear the flag.
 	 */
+<<<<<<< HEAD
 	if (cpu->pending_notify)
 		cpu->pending_notify = 0;
+=======
+	if (cpu->pending.trap)
+		cpu->pending.trap = 0;
+>>>>>>> v4.9.227
 
 	/* Run the Guest until something interesting happens. */
 	return run_guest(cpu, (unsigned long __user *)user);
@@ -319,7 +399,11 @@ static int initialize(struct file *file, const unsigned long __user *input)
 	/* "struct lguest" contains all we (the Host) know about a Guest. */
 	struct lguest *lg;
 	int err;
+<<<<<<< HEAD
 	unsigned long args[3];
+=======
+	unsigned long args[4];
+>>>>>>> v4.9.227
 
 	/*
 	 * We grab the Big Lguest lock, which protects against multiple
@@ -343,6 +427,7 @@ static int initialize(struct file *file, const unsigned long __user *input)
 		goto unlock;
 	}
 
+<<<<<<< HEAD
 	lg->eventfds = kmalloc(sizeof(*lg->eventfds), GFP_KERNEL);
 	if (!lg->eventfds) {
 		err = -ENOMEM;
@@ -353,11 +438,21 @@ static int initialize(struct file *file, const unsigned long __user *input)
 	/* Populate the easy fields of our "struct lguest" */
 	lg->mem_base = (void __user *)args[0];
 	lg->pfn_limit = args[1];
+=======
+	/* Populate the easy fields of our "struct lguest" */
+	lg->mem_base = (void __user *)args[0];
+	lg->pfn_limit = args[1];
+	lg->device_limit = args[3];
+>>>>>>> v4.9.227
 
 	/* This is the first cpu (cpu 0) and it will start booting at args[2] */
 	err = lg_cpu_start(&lg->cpus[0], 0, args[2]);
 	if (err)
+<<<<<<< HEAD
 		goto free_eventfds;
+=======
+		goto free_lg;
+>>>>>>> v4.9.227
 
 	/*
 	 * Initialize the Guest's shadow page tables.  This allocates
@@ -378,8 +473,11 @@ static int initialize(struct file *file, const unsigned long __user *input)
 free_regs:
 	/* FIXME: This should be in free_vcpu */
 	free_page(lg->cpus[0].regs_page);
+<<<<<<< HEAD
 free_eventfds:
 	kfree(lg->eventfds);
+=======
+>>>>>>> v4.9.227
 free_lg:
 	kfree(lg);
 unlock:
@@ -432,13 +530,32 @@ static ssize_t write(struct file *file, const char __user *in,
 		return initialize(file, input);
 	case LHREQ_IRQ:
 		return user_send_irq(cpu, input);
+<<<<<<< HEAD
 	case LHREQ_EVENTFD:
 		return attach_eventfd(lg, input);
+=======
+	case LHREQ_GETREG:
+		return getreg_setup(cpu, input);
+	case LHREQ_SETREG:
+		return setreg(cpu, input);
+	case LHREQ_TRAP:
+		return trap(cpu, input);
+>>>>>>> v4.9.227
 	default:
 		return -EINVAL;
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int open(struct inode *inode, struct file *file)
+{
+	file->private_data = NULL;
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /*L:060
  * The final piece of interface code is the close() routine.  It reverses
  * everything done in initialize().  This is usually called because the
@@ -478,11 +595,14 @@ static int close(struct inode *inode, struct file *file)
 		mmput(lg->cpus[i].mm);
 	}
 
+<<<<<<< HEAD
 	/* Release any eventfds they registered. */
 	for (i = 0; i < lg->eventfds->num; i++)
 		eventfd_ctx_put(lg->eventfds->map[i].event);
 	kfree(lg->eventfds);
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * If lg->dead doesn't contain an error code it will be NULL or a
 	 * kmalloc()ed string, either of which is ok to hand to kfree().
@@ -514,6 +634,10 @@ static int close(struct inode *inode, struct file *file)
  */
 static const struct file_operations lguest_fops = {
 	.owner	 = THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.open	 = open,
+>>>>>>> v4.9.227
 	.release = close,
 	.write	 = write,
 	.read	 = read,

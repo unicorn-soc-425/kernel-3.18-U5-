@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
 Copyright (c) 2010 Werner Dittmann
 
@@ -23,6 +24,33 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 */
+=======
+/**
+ * Copyright (c) 2010 Werner Dittmann
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+
+ */
+>>>>>>> v4.9.227
 
 #ifndef SKEINAPI_H
 #define SKEINAPI_H
@@ -79,7 +107,11 @@ OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include "skein.h"
+=======
+#include "skein_base.h"
+>>>>>>> v4.9.227
 
 /**
  * Which Skein size to use
@@ -121,7 +153,11 @@ struct skein_ctx {
  * @param size
  *     Which Skein size to use.
  * @return
+<<<<<<< HEAD
  *     SKEIN_SUCESS of SKEIN_FAIL
+=======
+ *     SKEIN_SUCCESS of SKEIN_FAIL
+>>>>>>> v4.9.227
  */
 int skein_ctx_prepare(struct skein_ctx *ctx, enum skein_size size);
 
@@ -136,7 +172,11 @@ int skein_ctx_prepare(struct skein_ctx *ctx, enum skein_size size);
  * @param hash_bit_len
  *     Number of MAC hash bits to compute
  * @return
+<<<<<<< HEAD
  *     SKEIN_SUCESS of SKEIN_FAIL
+=======
+ *     SKEIN_SUCCESS of SKEIN_FAIL
+>>>>>>> v4.9.227
  * @see skein_reset
  */
 int skein_init(struct skein_ctx *ctx, size_t hash_bit_len);
@@ -171,7 +211,11 @@ void skein_reset(struct skein_ctx *ctx);
  * @param hash_bit_len
  *     Number of MAC hash bits to compute
  * @return
+<<<<<<< HEAD
  *     SKEIN_SUCESS of SKEIN_FAIL
+=======
+ *     SKEIN_SUCCESS of SKEIN_FAIL
+>>>>>>> v4.9.227
  */
 int skein_mac_init(struct skein_ctx *ctx, const u8 *key, size_t key_len,
 		   size_t hash_bit_len);

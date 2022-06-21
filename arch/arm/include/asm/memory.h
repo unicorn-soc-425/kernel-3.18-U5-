@@ -76,10 +76,18 @@
  */
 #define XIP_VIRT_ADDR(physaddr)  (MODULES_VADDR + ((physaddr) & 0x000fffff))
 
+<<<<<<< HEAD
+=======
+#if !defined(CONFIG_SMP) && !defined(CONFIG_ARM_LPAE)
+>>>>>>> v4.9.227
 /*
  * Allow 16MB-aligned ioremap pages
  */
 #define IOREMAP_MAX_ORDER	24
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 #else /* CONFIG_MMU */
 
@@ -132,6 +140,24 @@
  */
 #define PLAT_PHYS_OFFSET	UL(CONFIG_PHYS_OFFSET)
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_XIP_KERNEL
+/*
+ * When referencing data in RAM from the XIP region in a relative manner
+ * with the MMU off, we need the relative offset between the two physical
+ * addresses.  The macro below achieves this, which is:
+ *    __pa(v_data) - __xip_pa(v_text)
+ */
+#define PHYS_RELATIVE(v_data, v_text) \
+	(((v_data) - PAGE_OFFSET + PLAT_PHYS_OFFSET) - \
+	 ((v_text) - XIP_VIRT_ADDR(CONFIG_XIP_PHYS_ADDR) + \
+          CONFIG_XIP_PHYS_ADDR))
+#else
+#define PHYS_RELATIVE(v_data, v_text) ((v_data) - (v_text))
+#endif
+
+>>>>>>> v4.9.227
 #ifndef __ASSEMBLY__
 
 /*
@@ -142,6 +168,7 @@
  * PFNs are used to describe any physical page; this means
  * PFN 0 == physical address 0.
  */
+<<<<<<< HEAD
 #if defined(__virt_to_phys)
 #define PHYS_OFFSET	PLAT_PHYS_OFFSET
 #define PHYS_PFN_OFFSET	((unsigned long)(PHYS_OFFSET >> PAGE_SHIFT))
@@ -149,6 +176,10 @@
 #define virt_to_pfn(kaddr) (__pa(kaddr) >> PAGE_SHIFT)
 
 #elif defined(CONFIG_ARM_PATCH_PHYS_VIRT)
+=======
+
+#if defined(CONFIG_ARM_PATCH_PHYS_VIRT)
+>>>>>>> v4.9.227
 
 /*
  * Constants used to force the right instruction encodings and shifts
@@ -165,10 +196,13 @@ extern const void *__pv_table_begin, *__pv_table_end;
 #define PHYS_OFFSET	((phys_addr_t)__pv_phys_pfn_offset << PAGE_SHIFT)
 #define PHYS_PFN_OFFSET	(__pv_phys_pfn_offset)
 
+<<<<<<< HEAD
 #define virt_to_pfn(kaddr) \
 	((((unsigned long)(kaddr) - PAGE_OFFSET) >> PAGE_SHIFT) + \
 	 PHYS_PFN_OFFSET)
 
+=======
+>>>>>>> v4.9.227
 #define __pv_stub(from,to,instr,type)			\
 	__asm__("@ __pv_stub\n"				\
 	"1:	" instr "	%0, %1, %2\n"		\
@@ -240,23 +274,39 @@ static inline unsigned long __phys_to_virt(phys_addr_t x)
 	return x - PHYS_OFFSET + PAGE_OFFSET;
 }
 
+<<<<<<< HEAD
+=======
+#endif
+
+>>>>>>> v4.9.227
 #define virt_to_pfn(kaddr) \
 	((((unsigned long)(kaddr) - PAGE_OFFSET) >> PAGE_SHIFT) + \
 	 PHYS_PFN_OFFSET)
 
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * These are *only* valid on the kernel direct mapped RAM memory.
  * Note: Drivers should NOT use these.  They are the wrong
  * translation for translating DMA addresses.  Use the driver
  * DMA support - see dma-mapping.h.
  */
+<<<<<<< HEAD
+=======
+#define virt_to_phys virt_to_phys
+>>>>>>> v4.9.227
 static inline phys_addr_t virt_to_phys(const volatile void *x)
 {
 	return __virt_to_phys((unsigned long)(x));
 }
 
+<<<<<<< HEAD
+=======
+#define phys_to_virt phys_to_virt
+>>>>>>> v4.9.227
 static inline void *phys_to_virt(phys_addr_t x)
 {
 	return (void *)__phys_to_virt(x);
@@ -267,6 +317,7 @@ static inline void *phys_to_virt(phys_addr_t x)
  */
 #define __pa(x)			__virt_to_phys((unsigned long)(x))
 #define __va(x)			((void *)__phys_to_virt((phys_addr_t)(x)))
+<<<<<<< HEAD
 #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
 
 extern phys_addr_t (*arch_virt_to_idmap)(unsigned long x);
@@ -282,6 +333,47 @@ static inline phys_addr_t __virt_to_idmap(unsigned long x)
 		return arch_virt_to_idmap(x);
 	else
 		return __virt_to_phys(x);
+=======
+#define pfn_to_kaddr(pfn)	__va((phys_addr_t)(pfn) << PAGE_SHIFT)
+
+extern long long arch_phys_to_idmap_offset;
+
+/*
+ * These are for systems that have a hardware interconnect supported alias
+ * of physical memory for idmap purposes.  Most cases should leave these
+ * untouched.  Note: this can only return addresses less than 4GiB.
+ */
+static inline bool arm_has_idmap_alias(void)
+{
+	return IS_ENABLED(CONFIG_MMU) && arch_phys_to_idmap_offset != 0;
+}
+
+#define IDMAP_INVALID_ADDR ((u32)~0)
+
+static inline unsigned long phys_to_idmap(phys_addr_t addr)
+{
+	if (IS_ENABLED(CONFIG_MMU) && arch_phys_to_idmap_offset) {
+		addr += arch_phys_to_idmap_offset;
+		if (addr > (u32)~0)
+			addr = IDMAP_INVALID_ADDR;
+	}
+	return addr;
+}
+
+static inline phys_addr_t idmap_to_phys(unsigned long idmap)
+{
+	phys_addr_t addr = idmap;
+
+	if (IS_ENABLED(CONFIG_MMU) && arch_phys_to_idmap_offset)
+		addr -= arch_phys_to_idmap_offset;
+
+	return addr;
+}
+
+static inline unsigned long __virt_to_idmap(unsigned long x)
+{
+	return phys_to_idmap(__virt_to_phys(x));
+>>>>>>> v4.9.227
 }
 
 #define virt_to_idmap(x)	__virt_to_idmap((unsigned long)(x))
@@ -299,6 +391,7 @@ static inline phys_addr_t __virt_to_idmap(unsigned long x)
 #define __bus_to_pfn(x)	__phys_to_pfn(x)
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_VIRT_TO_BUS
 static inline __deprecated unsigned long virt_to_bus(void *x)
 {
@@ -311,6 +404,8 @@ static inline __deprecated void *bus_to_virt(unsigned long x)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * Conversion between a struct page and a physical address.
  *

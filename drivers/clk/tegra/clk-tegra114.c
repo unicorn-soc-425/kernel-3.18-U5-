@@ -15,9 +15,13 @@
  */
 
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
+=======
+#include <linux/clk-provider.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/delay.h>
@@ -115,6 +119,7 @@
 
 #define CCLKG_BURST_POLICY 0x368
 
+<<<<<<< HEAD
 #define UTMIP_PLL_CFG2 0x488
 #define UTMIP_PLL_CFG2_STABLE_COUNT(x) (((x) & 0xffff) << 6)
 #define UTMIP_PLL_CFG2_ACTIVE_DLY_COUNT(x) (((x) & 0x3f) << 18)
@@ -141,6 +146,8 @@
 #define UTMIPLL_HW_PWRDN_CFG0_IDDQ_OVERRIDE	BIT(1)
 #define UTMIPLL_HW_PWRDN_CFG0_IDDQ_SWCTL	BIT(0)
 
+=======
+>>>>>>> v4.9.227
 #define CLK_SOURCE_CSITE 0x1d4
 #define CLK_SOURCE_EMC 0x19c
 
@@ -173,6 +180,10 @@ static DEFINE_SPINLOCK(pll_d_lock);
 static DEFINE_SPINLOCK(pll_d2_lock);
 static DEFINE_SPINLOCK(pll_u_lock);
 static DEFINE_SPINLOCK(pll_re_lock);
+<<<<<<< HEAD
+=======
+static DEFINE_SPINLOCK(emc_lock);
+>>>>>>> v4.9.227
 
 static struct div_nmp pllxc_nmp = {
 	.divm_shift = 0,
@@ -183,6 +194,7 @@ static struct div_nmp pllxc_nmp = {
 	.divp_width = 4,
 };
 
+<<<<<<< HEAD
 static struct pdiv_map pllxc_p[] = {
 	{ .pdiv = 1, .hw_val = 0 },
 	{ .pdiv = 2, .hw_val = 1 },
@@ -194,11 +206,25 @@ static struct pdiv_map pllxc_p[] = {
 	{ .pdiv = 10, .hw_val = 7 },
 	{ .pdiv = 12, .hw_val = 8 },
 	{ .pdiv = 16, .hw_val = 9 },
+=======
+static const struct pdiv_map pllxc_p[] = {
+	{ .pdiv =  1, .hw_val =  0 },
+	{ .pdiv =  2, .hw_val =  1 },
+	{ .pdiv =  3, .hw_val =  2 },
+	{ .pdiv =  4, .hw_val =  3 },
+	{ .pdiv =  5, .hw_val =  4 },
+	{ .pdiv =  6, .hw_val =  5 },
+	{ .pdiv =  8, .hw_val =  6 },
+	{ .pdiv = 10, .hw_val =  7 },
+	{ .pdiv = 12, .hw_val =  8 },
+	{ .pdiv = 16, .hw_val =  9 },
+>>>>>>> v4.9.227
 	{ .pdiv = 12, .hw_val = 10 },
 	{ .pdiv = 16, .hw_val = 11 },
 	{ .pdiv = 20, .hw_val = 12 },
 	{ .pdiv = 24, .hw_val = 13 },
 	{ .pdiv = 32, .hw_val = 14 },
+<<<<<<< HEAD
 	{ .pdiv = 0, .hw_val = 0 },
 };
 
@@ -210,13 +236,30 @@ static struct tegra_clk_pll_freq_table pll_c_freq_table[] = {
 	{ 19200000, 600000000,  62, 0, 2},	/* actual: 595.2 MHz */
 	{ 26000000, 600000000,  92, 1, 2},	/* actual: 598.0 MHz */
 	{ 0, 0, 0, 0, 0, 0 },
+=======
+	{ .pdiv =  0, .hw_val =  0 },
+};
+
+static struct tegra_clk_pll_freq_table pll_c_freq_table[] = {
+	{ 12000000, 624000000, 104, 1, 2, 0 },
+	{ 12000000, 600000000, 100, 1, 2, 0 },
+	{ 13000000, 600000000,  92, 1, 2, 0 }, /* actual: 598.0 MHz */
+	{ 16800000, 600000000,  71, 1, 2, 0 }, /* actual: 596.4 MHz */
+	{ 19200000, 600000000,  62, 1, 2, 0 }, /* actual: 595.2 MHz */
+	{ 26000000, 600000000,  92, 2, 2, 0 }, /* actual: 598.0 MHz */
+	{        0,         0,   0, 0, 0, 0 },
+>>>>>>> v4.9.227
 };
 
 static struct tegra_clk_pll_params pll_c_params = {
 	.input_min = 12000000,
 	.input_max = 800000000,
 	.cf_min = 12000000,
+<<<<<<< HEAD
 	.cf_max = 19200000,	/* s/w policy, h/w capability 50 MHz */
+=======
+	.cf_max = 19200000, /* s/w policy, h/w capability 50 MHz */
+>>>>>>> v4.9.227
 	.vco_min = 600000000,
 	.vco_max = 1400000000,
 	.base_reg = PLLC_BASE,
@@ -233,7 +276,11 @@ static struct tegra_clk_pll_params pll_c_params = {
 	.pdiv_tohw = pllxc_p,
 	.div_nmp = &pllxc_nmp,
 	.freq_table = pll_c_freq_table,
+<<<<<<< HEAD
 	.flags = TEGRA_PLL_USE_LOCK,
+=======
+	.flags = TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
+>>>>>>> v4.9.227
 };
 
 static struct div_nmp pllcx_nmp = {
@@ -245,6 +292,7 @@ static struct div_nmp pllcx_nmp = {
 	.divp_width = 3,
 };
 
+<<<<<<< HEAD
 static struct pdiv_map pllc_p[] = {
 	{ .pdiv = 1, .hw_val = 0 },
 	{ .pdiv = 2, .hw_val = 1 },
@@ -261,6 +309,24 @@ static struct tegra_clk_pll_freq_table pll_cx_freq_table[] = {
 	{19200000, 600000000, 62, 0, 2},	/* actual: 595.2 MHz */
 	{26000000, 600000000, 92, 1, 2},	/* actual: 598.0 MHz */
 	{0, 0, 0, 0, 0, 0},
+=======
+static const struct pdiv_map pllc_p[] = {
+	{ .pdiv =  1, .hw_val = 0 },
+	{ .pdiv =  2, .hw_val = 1 },
+	{ .pdiv =  4, .hw_val = 3 },
+	{ .pdiv =  8, .hw_val = 5 },
+	{ .pdiv = 16, .hw_val = 7 },
+	{ .pdiv =  0, .hw_val = 0 },
+};
+
+static struct tegra_clk_pll_freq_table pll_cx_freq_table[] = {
+	{ 12000000, 600000000, 100, 1, 2, 0 },
+	{ 13000000, 600000000,  92, 1, 2, 0 }, /* actual: 598.0 MHz */
+	{ 16800000, 600000000,  71, 1, 2, 0 }, /* actual: 596.4 MHz */
+	{ 19200000, 600000000,  62, 1, 2, 0 }, /* actual: 595.2 MHz */
+	{ 26000000, 600000000,  92, 2, 2, 0 }, /* actual: 598.0 MHz */
+	{        0,         0,   0, 0, 0, 0 },
+>>>>>>> v4.9.227
 };
 
 static struct tegra_clk_pll_params pll_c2_params = {
@@ -319,26 +385,43 @@ static struct div_nmp pllm_nmp = {
 	.override_divp_shift = 27,
 };
 
+<<<<<<< HEAD
 static struct pdiv_map pllm_p[] = {
+=======
+static const struct pdiv_map pllm_p[] = {
+>>>>>>> v4.9.227
 	{ .pdiv = 1, .hw_val = 0 },
 	{ .pdiv = 2, .hw_val = 1 },
 	{ .pdiv = 0, .hw_val = 0 },
 };
 
 static struct tegra_clk_pll_freq_table pll_m_freq_table[] = {
+<<<<<<< HEAD
 	{12000000, 800000000, 66, 0, 1},	/* actual: 792.0 MHz */
 	{13000000, 800000000, 61, 0, 1},	/* actual: 793.0 MHz */
 	{16800000, 800000000, 47, 0, 1},	/* actual: 789.6 MHz */
 	{19200000, 800000000, 41, 0, 1},	/* actual: 787.2 MHz */
 	{26000000, 800000000, 61, 1, 1},	/* actual: 793.0 MHz */
 	{0, 0, 0, 0, 0, 0},
+=======
+	{ 12000000, 800000000, 66, 1, 1, 0 }, /* actual: 792.0 MHz */
+	{ 13000000, 800000000, 61, 1, 1, 0 }, /* actual: 793.0 MHz */
+	{ 16800000, 800000000, 47, 1, 1, 0 }, /* actual: 789.6 MHz */
+	{ 19200000, 800000000, 41, 1, 1, 0 }, /* actual: 787.2 MHz */
+	{ 26000000, 800000000, 61, 2, 1, 0 }, /* actual: 793.0 MHz */
+	{        0,         0,  0, 0, 0, 0 },
+>>>>>>> v4.9.227
 };
 
 static struct tegra_clk_pll_params pll_m_params = {
 	.input_min = 12000000,
 	.input_max = 500000000,
 	.cf_min = 12000000,
+<<<<<<< HEAD
 	.cf_max = 19200000,	/* s/w policy, h/w capability 50 MHz */
+=======
+	.cf_max = 19200000, /* s/w policy, h/w capability 50 MHz */
+>>>>>>> v4.9.227
 	.vco_min = 400000000,
 	.vco_max = 1066000000,
 	.base_reg = PLLM_BASE,
@@ -352,7 +435,12 @@ static struct tegra_clk_pll_params pll_m_params = {
 	.pmc_divnm_reg = PMC_PLLM_WB0_OVERRIDE,
 	.pmc_divp_reg = PMC_PLLM_WB0_OVERRIDE_2,
 	.freq_table = pll_m_freq_table,
+<<<<<<< HEAD
 	.flags = TEGRA_PLL_USE_LOCK,
+=======
+	.flags = TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE |
+		 TEGRA_PLL_FIXED,
+>>>>>>> v4.9.227
 };
 
 static struct div_nmp pllp_nmp = {
@@ -365,12 +453,21 @@ static struct div_nmp pllp_nmp = {
 };
 
 static struct tegra_clk_pll_freq_table pll_p_freq_table[] = {
+<<<<<<< HEAD
 	{12000000, 216000000, 432, 12, 1, 8},
 	{13000000, 216000000, 432, 13, 1, 8},
 	{16800000, 216000000, 360, 14, 1, 8},
 	{19200000, 216000000, 360, 16, 1, 8},
 	{26000000, 216000000, 432, 26, 1, 8},
 	{0, 0, 0, 0, 0, 0},
+=======
+	{ 12000000, 216000000, 432, 12, 2, 8 },
+	{ 13000000, 216000000, 432, 13, 2, 8 },
+	{ 16800000, 216000000, 360, 14, 2, 8 },
+	{ 19200000, 216000000, 360, 16, 2, 8 },
+	{ 26000000, 216000000, 432, 26, 2, 8 },
+	{        0,         0,   0,  0, 0, 0 },
+>>>>>>> v4.9.227
 };
 
 static struct tegra_clk_pll_params pll_p_params = {
@@ -387,11 +484,17 @@ static struct tegra_clk_pll_params pll_p_params = {
 	.lock_delay = 300,
 	.div_nmp = &pllp_nmp,
 	.freq_table = pll_p_freq_table,
+<<<<<<< HEAD
 	.flags = TEGRA_PLL_FIXED | TEGRA_PLL_USE_LOCK,
+=======
+	.flags = TEGRA_PLL_FIXED | TEGRA_PLL_USE_LOCK |
+		 TEGRA_PLL_HAS_LOCK_ENABLE,
+>>>>>>> v4.9.227
 	.fixed_rate = 408000000,
 };
 
 static struct tegra_clk_pll_freq_table pll_a_freq_table[] = {
+<<<<<<< HEAD
 	{9600000, 282240000, 147, 5, 0, 4},
 	{9600000, 368640000, 192, 5, 0, 4},
 	{9600000, 240000000, 200, 8, 0, 8},
@@ -400,6 +503,15 @@ static struct tegra_clk_pll_freq_table pll_a_freq_table[] = {
 	{28800000, 368640000, 320, 25, 0, 8},
 	{28800000, 240000000, 200, 24, 0, 8},
 	{0, 0, 0, 0, 0, 0},
+=======
+	{  9600000, 282240000, 147,  5, 1, 4 },
+	{  9600000, 368640000, 192,  5, 1, 4 },
+	{  9600000, 240000000, 200,  8, 1, 8 },
+	{ 28800000, 282240000, 245, 25, 1, 8 },
+	{ 28800000, 368640000, 320, 25, 1, 8 },
+	{ 28800000, 240000000, 200, 24, 1, 8 },
+	{        0,         0,   0,  0, 0, 0 },
+>>>>>>> v4.9.227
 };
 
 
@@ -417,6 +529,7 @@ static struct tegra_clk_pll_params pll_a_params = {
 	.lock_delay = 300,
 	.div_nmp = &pllp_nmp,
 	.freq_table = pll_a_freq_table,
+<<<<<<< HEAD
 	.flags = TEGRA_PLL_HAS_CPCON | TEGRA_PLL_USE_LOCK,
 };
 
@@ -439,6 +552,28 @@ static struct tegra_clk_pll_freq_table pll_d_freq_table[] = {
 	{26000000, 1000000000, 1000, 26, 0, 12},
 
 	{0, 0, 0, 0, 0, 0},
+=======
+	.flags = TEGRA_PLL_HAS_CPCON | TEGRA_PLL_USE_LOCK |
+		 TEGRA_PLL_HAS_LOCK_ENABLE,
+};
+
+static struct tegra_clk_pll_freq_table pll_d_freq_table[] = {
+	{ 12000000,  216000000,  864, 12, 4, 12 },
+	{ 13000000,  216000000,  864, 13, 4, 12 },
+	{ 16800000,  216000000,  720, 14, 4, 12 },
+	{ 19200000,  216000000,  720, 16, 4, 12 },
+	{ 26000000,  216000000,  864, 26, 4, 12 },
+	{ 12000000,  594000000,  594, 12, 1, 12 },
+	{ 13000000,  594000000,  594, 13, 1, 12 },
+	{ 16800000,  594000000,  495, 14, 1, 12 },
+	{ 19200000,  594000000,  495, 16, 1, 12 },
+	{ 26000000,  594000000,  594, 26, 1, 12 },
+	{ 12000000, 1000000000, 1000, 12, 1, 12 },
+	{ 13000000, 1000000000, 1000, 13, 1, 12 },
+	{ 19200000, 1000000000,  625, 12, 1, 12 },
+	{ 26000000, 1000000000, 1000, 26, 1, 12 },
+	{        0,          0,    0,  0, 0,  0 },
+>>>>>>> v4.9.227
 };
 
 static struct tegra_clk_pll_params pll_d_params = {
@@ -456,7 +591,11 @@ static struct tegra_clk_pll_params pll_d_params = {
 	.div_nmp = &pllp_nmp,
 	.freq_table = pll_d_freq_table,
 	.flags = TEGRA_PLL_HAS_CPCON | TEGRA_PLL_SET_LFCON |
+<<<<<<< HEAD
 		 TEGRA_PLL_USE_LOCK,
+=======
+		 TEGRA_PLL_HAS_LOCK_ENABLE,
+>>>>>>> v4.9.227
 };
 
 static struct tegra_clk_pll_params pll_d2_params = {
@@ -474,10 +613,17 @@ static struct tegra_clk_pll_params pll_d2_params = {
 	.div_nmp = &pllp_nmp,
 	.freq_table = pll_d_freq_table,
 	.flags = TEGRA_PLL_HAS_CPCON | TEGRA_PLL_SET_LFCON |
+<<<<<<< HEAD
 		 TEGRA_PLL_USE_LOCK,
 };
 
 static struct pdiv_map pllu_p[] = {
+=======
+		 TEGRA_PLL_HAS_LOCK_ENABLE,
+};
+
+static const struct pdiv_map pllu_p[] = {
+>>>>>>> v4.9.227
 	{ .pdiv = 1, .hw_val = 1 },
 	{ .pdiv = 2, .hw_val = 0 },
 	{ .pdiv = 0, .hw_val = 0 },
@@ -493,12 +639,21 @@ static struct div_nmp pllu_nmp = {
 };
 
 static struct tegra_clk_pll_freq_table pll_u_freq_table[] = {
+<<<<<<< HEAD
 	{12000000, 480000000, 960, 12, 0, 12},
 	{13000000, 480000000, 960, 13, 0, 12},
 	{16800000, 480000000, 400, 7, 0, 5},
 	{19200000, 480000000, 200, 4, 0, 3},
 	{26000000, 480000000, 960, 26, 0, 12},
 	{0, 0, 0, 0, 0, 0},
+=======
+	{ 12000000, 480000000, 960, 12, 2, 12 },
+	{ 13000000, 480000000, 960, 13, 2, 12 },
+	{ 16800000, 480000000, 400,  7, 2,  5 },
+	{ 19200000, 480000000, 200,  4, 2,  3 },
+	{ 26000000, 480000000, 960, 26, 2, 12 },
+	{        0,         0,   0,  0, 0,  0 },
+>>>>>>> v4.9.227
 };
 
 static struct tegra_clk_pll_params pll_u_params = {
@@ -517,11 +672,16 @@ static struct tegra_clk_pll_params pll_u_params = {
 	.div_nmp = &pllu_nmp,
 	.freq_table = pll_u_freq_table,
 	.flags = TEGRA_PLLU | TEGRA_PLL_HAS_CPCON | TEGRA_PLL_SET_LFCON |
+<<<<<<< HEAD
 		 TEGRA_PLL_USE_LOCK,
+=======
+		 TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
+>>>>>>> v4.9.227
 };
 
 static struct tegra_clk_pll_freq_table pll_x_freq_table[] = {
 	/* 1 GHz */
+<<<<<<< HEAD
 	{12000000, 1000000000, 83, 0, 1},	/* actual: 996.0 MHz */
 	{13000000, 1000000000, 76, 0, 1},	/* actual: 988.0 MHz */
 	{16800000, 1000000000, 59, 0, 1},	/* actual: 991.2 MHz */
@@ -529,13 +689,25 @@ static struct tegra_clk_pll_freq_table pll_x_freq_table[] = {
 	{26000000, 1000000000, 76, 1, 1},	/* actual: 988.0 MHz */
 
 	{0, 0, 0, 0, 0, 0},
+=======
+	{ 12000000, 1000000000, 83, 1, 1, 0 }, /* actual: 996.0 MHz */
+	{ 13000000, 1000000000, 76, 1, 1, 0 }, /* actual: 988.0 MHz */
+	{ 16800000, 1000000000, 59, 1, 1, 0 }, /* actual: 991.2 MHz */
+	{ 19200000, 1000000000, 52, 1, 1, 0 }, /* actual: 998.4 MHz */
+	{ 26000000, 1000000000, 76, 2, 1, 0 }, /* actual: 988.0 MHz */
+	{        0,          0,  0, 0, 0, 0 },
+>>>>>>> v4.9.227
 };
 
 static struct tegra_clk_pll_params pll_x_params = {
 	.input_min = 12000000,
 	.input_max = 800000000,
 	.cf_min = 12000000,
+<<<<<<< HEAD
 	.cf_max = 19200000,	/* s/w policy, h/w capability 50 MHz */
+=======
+	.cf_max = 19200000, /* s/w policy, h/w capability 50 MHz */
+>>>>>>> v4.9.227
 	.vco_min = 700000000,
 	.vco_max = 2400000000U,
 	.base_reg = PLLX_BASE,
@@ -552,15 +724,45 @@ static struct tegra_clk_pll_params pll_x_params = {
 	.pdiv_tohw = pllxc_p,
 	.div_nmp = &pllxc_nmp,
 	.freq_table = pll_x_freq_table,
+<<<<<<< HEAD
 	.flags = TEGRA_PLL_USE_LOCK,
+=======
+	.flags = TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
+>>>>>>> v4.9.227
 };
 
 static struct tegra_clk_pll_freq_table pll_e_freq_table[] = {
 	/* PLLE special case: use cpcon field to store cml divider value */
+<<<<<<< HEAD
 	{336000000, 100000000, 100, 21, 16, 11},
 	{312000000, 100000000, 200, 26, 24, 13},
 	{12000000, 100000000, 200,  1,  24, 13},
 	{0, 0, 0, 0, 0, 0},
+=======
+	{ 336000000, 100000000, 100, 21, 16, 11 },
+	{ 312000000, 100000000, 200, 26, 24, 13 },
+	{  12000000, 100000000, 200,  1, 24, 13 },
+	{         0,         0,   0,  0,  0,  0 },
+};
+
+static const struct pdiv_map plle_p[] = {
+	{ .pdiv =  1, .hw_val =  0 },
+	{ .pdiv =  2, .hw_val =  1 },
+	{ .pdiv =  3, .hw_val =  2 },
+	{ .pdiv =  4, .hw_val =  3 },
+	{ .pdiv =  5, .hw_val =  4 },
+	{ .pdiv =  6, .hw_val =  5 },
+	{ .pdiv =  8, .hw_val =  6 },
+	{ .pdiv = 10, .hw_val =  7 },
+	{ .pdiv = 12, .hw_val =  8 },
+	{ .pdiv = 16, .hw_val =  9 },
+	{ .pdiv = 12, .hw_val = 10 },
+	{ .pdiv = 16, .hw_val = 11 },
+	{ .pdiv = 20, .hw_val = 12 },
+	{ .pdiv = 24, .hw_val = 13 },
+	{ .pdiv = 32, .hw_val = 14 },
+	{ .pdiv =  0, .hw_val =  0 }
+>>>>>>> v4.9.227
 };
 
 static struct div_nmp plle_nmp = {
@@ -585,9 +787,16 @@ static struct tegra_clk_pll_params pll_e_params = {
 	.lock_mask = PLLE_MISC_LOCK,
 	.lock_enable_bit_idx = PLLE_MISC_LOCK_ENABLE,
 	.lock_delay = 300,
+<<<<<<< HEAD
 	.div_nmp = &plle_nmp,
 	.freq_table = pll_e_freq_table,
 	.flags = TEGRA_PLL_FIXED,
+=======
+	.pdiv_tohw = plle_p,
+	.div_nmp = &plle_nmp,
+	.freq_table = pll_e_freq_table,
+	.flags = TEGRA_PLL_FIXED | TEGRA_PLL_HAS_LOCK_ENABLE,
+>>>>>>> v4.9.227
 	.fixed_rate = 100000000,
 };
 
@@ -615,11 +824,17 @@ static struct tegra_clk_pll_params pll_re_vco_params = {
 	.iddq_reg = PLLRE_MISC,
 	.iddq_bit_idx = PLLRE_IDDQ_BIT,
 	.div_nmp = &pllre_nmp,
+<<<<<<< HEAD
 	.flags = TEGRA_PLL_USE_LOCK,
+=======
+	.flags = TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE |
+		 TEGRA_PLL_LOCK_MISC,
+>>>>>>> v4.9.227
 };
 
 /* possible OSC frequencies in Hz */
 static unsigned long tegra114_input_freq[] = {
+<<<<<<< HEAD
 	[0] = 13000000,
 	[1] = 16800000,
 	[4] = 19200000,
@@ -627,10 +842,20 @@ static unsigned long tegra114_input_freq[] = {
 	[8] = 12000000,
 	[9] = 48000000,
 	[12] = 260000000,
+=======
+	[ 0] = 13000000,
+	[ 1] = 16800000,
+	[ 4] = 19200000,
+	[ 5] = 38400000,
+	[ 8] = 12000000,
+	[ 9] = 48000000,
+	[12] = 26000000,
+>>>>>>> v4.9.227
 };
 
 #define MASK(x) (BIT(x) - 1)
 
+<<<<<<< HEAD
 struct utmi_clk_param {
 	/* Oscillator Frequency in KHz */
 	u32 osc_frequency;
@@ -662,6 +887,8 @@ static const struct utmi_clk_param utmi_parameters[] = {
 	 .xtal_freq_count = 0xA4},
 };
 
+=======
+>>>>>>> v4.9.227
 /* peripheral mux definitions */
 
 static const char *mux_plld_out0_plld2_out0[] = {
@@ -714,13 +941,19 @@ static struct tegra_clk tegra114_clks[tegra_clk_max] __initdata = {
 	[tegra_clk_sbc2_8] = { .dt_id = TEGRA114_CLK_SBC2, .present = true },
 	[tegra_clk_sbc3_8] = { .dt_id = TEGRA114_CLK_SBC3, .present = true },
 	[tegra_clk_i2c5] = { .dt_id = TEGRA114_CLK_I2C5, .present = true },
+<<<<<<< HEAD
 	[tegra_clk_dsia] = { .dt_id = TEGRA114_CLK_DSIA, .present = true },
+=======
+>>>>>>> v4.9.227
 	[tegra_clk_mipi] = { .dt_id = TEGRA114_CLK_MIPI, .present = true },
 	[tegra_clk_hdmi] = { .dt_id = TEGRA114_CLK_HDMI, .present = true },
 	[tegra_clk_csi] = { .dt_id = TEGRA114_CLK_CSI, .present = true },
 	[tegra_clk_i2c2] = { .dt_id = TEGRA114_CLK_I2C2, .present = true },
 	[tegra_clk_uartc] = { .dt_id = TEGRA114_CLK_UARTC, .present = true },
+<<<<<<< HEAD
 	[tegra_clk_mipi_cal] = { .dt_id = TEGRA114_CLK_MIPI_CAL, .present = true },
+=======
+>>>>>>> v4.9.227
 	[tegra_clk_emc] = { .dt_id = TEGRA114_CLK_EMC, .present = true },
 	[tegra_clk_usb2] = { .dt_id = TEGRA114_CLK_USB2, .present = true },
 	[tegra_clk_usb3] = { .dt_id = TEGRA114_CLK_USB3, .present = true },
@@ -738,7 +971,10 @@ static struct tegra_clk tegra114_clks[tegra_clk_max] __initdata = {
 	[tegra_clk_dtv] = { .dt_id = TEGRA114_CLK_DTV, .present = true },
 	[tegra_clk_ndspeed] = { .dt_id = TEGRA114_CLK_NDSPEED, .present = true },
 	[tegra_clk_i2cslow] = { .dt_id = TEGRA114_CLK_I2CSLOW, .present = true },
+<<<<<<< HEAD
 	[tegra_clk_dsib] = { .dt_id = TEGRA114_CLK_DSIB, .present = true },
+=======
+>>>>>>> v4.9.227
 	[tegra_clk_tsec] = { .dt_id = TEGRA114_CLK_TSEC, .present = true },
 	[tegra_clk_xusb_host] = { .dt_id = TEGRA114_CLK_XUSB_HOST, .present = true },
 	[tegra_clk_msenc] = { .dt_id = TEGRA114_CLK_MSENC, .present = true },
@@ -936,11 +1172,19 @@ static u32 mux_pllm_pllc2_c_c3_pllp_plla_idx[] = {
 	[0] = 0, [1] = 1, [2] = 2, [3] = 3, [4] = 4, [5] = 6,
 };
 
+<<<<<<< HEAD
+=======
+static struct tegra_audio_clk_info tegra114_audio_plls[] = {
+	{ "pll_a", &pll_a_params, tegra_clk_pll_a, "pll_p_out1" },
+};
+
+>>>>>>> v4.9.227
 static struct clk **clks;
 
 static unsigned long osc_freq;
 static unsigned long pll_ref_freq;
 
+<<<<<<< HEAD
 static int __init tegra114_osc_clk_init(void __iomem *clk_base)
 {
 	struct clk *clk;
@@ -971,13 +1215,19 @@ static int __init tegra114_osc_clk_init(void __iomem *clk_base)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static void __init tegra114_fixed_clk_init(void __iomem *clk_base)
 {
 	struct clk *clk;
 
 	/* clk_32k */
+<<<<<<< HEAD
 	clk = clk_register_fixed_rate(NULL, "clk_32k", NULL, CLK_IS_ROOT,
 				      32768);
+=======
+	clk = clk_register_fixed_rate(NULL, "clk_32k", NULL, 0, 32768);
+>>>>>>> v4.9.227
 	clks[TEGRA114_CLK_CLK_32K] = clk;
 
 	/* clk_m_div2 */
@@ -992,6 +1242,7 @@ static void __init tegra114_fixed_clk_init(void __iomem *clk_base)
 
 }
 
+<<<<<<< HEAD
 static __init void tegra114_utmi_param_configure(void __iomem *clk_base)
 {
 	u32 reg;
@@ -1078,6 +1329,11 @@ static void __init tegra114_pll_init(void __iomem *clk_base,
 				     void __iomem *pmc)
 {
 	u32 val;
+=======
+static void __init tegra114_pll_init(void __iomem *clk_base,
+				     void __iomem *pmc)
+{
+>>>>>>> v4.9.227
 	struct clk *clk;
 
 	/* PLLC */
@@ -1124,6 +1380,7 @@ static void __init tegra114_pll_init(void __iomem *clk_base,
 					CLK_SET_RATE_PARENT, 1, 1);
 
 	/* PLLU */
+<<<<<<< HEAD
 	val = readl(clk_base + pll_u_params.base_reg);
 	val &= ~BIT(24); /* disable PLLU_OVERRIDE */
 	writel(val, clk_base + pll_u_params.base_reg);
@@ -1134,6 +1391,12 @@ static void __init tegra114_pll_init(void __iomem *clk_base,
 
 	tegra114_utmi_param_configure(clk_base);
 
+=======
+	clk = tegra_clk_register_pllu_tegra114("pll_u", "pll_ref", clk_base, 0,
+					       &pll_u_params, &pll_u_lock);
+	clks[TEGRA114_CLK_PLL_U] = clk;
+
+>>>>>>> v4.9.227
 	/* PLLU_480M */
 	clk = clk_register_gate(NULL, "pll_u_480M", "pll_u",
 				CLK_SET_RATE_PARENT, clk_base + PLLU_BASE,
@@ -1202,7 +1465,11 @@ static __init void tegra114_periph_clk_init(void __iomem *clk_base,
 {
 	struct clk *clk;
 	struct tegra_periph_init_data *data;
+<<<<<<< HEAD
 	int i;
+=======
+	unsigned int i;
+>>>>>>> v4.9.227
 
 	/* xusb_ss_div2 */
 	clk = clk_register_fixed_factor(NULL, "xusb_ss_div2", "xusb_ss_src", 0,
@@ -1223,12 +1490,36 @@ static __init void tegra114_periph_clk_init(void __iomem *clk_base,
 			       clk_base + PLLD2_BASE, 25, 1, 0, &pll_d2_lock);
 	clks[TEGRA114_CLK_DSIB_MUX] = clk;
 
+<<<<<<< HEAD
+=======
+	clk = tegra_clk_register_periph_gate("dsia", "dsia_mux", 0, clk_base,
+					     0, 48, periph_clk_enb_refcnt);
+	clks[TEGRA114_CLK_DSIA] = clk;
+
+	clk = tegra_clk_register_periph_gate("dsib", "dsib_mux", 0, clk_base,
+					     0, 82, periph_clk_enb_refcnt);
+	clks[TEGRA114_CLK_DSIB] = clk;
+
+>>>>>>> v4.9.227
 	/* emc mux */
 	clk = clk_register_mux(NULL, "emc_mux", mux_pllmcp_clkm,
 			       ARRAY_SIZE(mux_pllmcp_clkm),
 			       CLK_SET_RATE_NO_REPARENT,
 			       clk_base + CLK_SOURCE_EMC,
+<<<<<<< HEAD
 			       29, 3, 0, NULL);
+=======
+			       29, 3, 0, &emc_lock);
+
+	clk = tegra_clk_register_mc("mc", "emc_mux", clk_base + CLK_SOURCE_EMC,
+				    &emc_lock);
+	clks[TEGRA114_CLK_MC] = clk;
+
+	clk = tegra_clk_register_periph_gate("mipi-cal", "clk_m", 0, clk_base,
+					     CLK_SET_RATE_PARENT, 56,
+					     periph_clk_enb_refcnt);
+	clks[TEGRA114_CLK_MIPI_CAL] = clk;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < ARRAY_SIZE(tegra_periph_clk_list); i++) {
 		data = &tegra_periph_clk_list[i];
@@ -1252,6 +1543,10 @@ static void tegra114_wait_cpu_in_reset(u32 cpu)
 		cpu_relax();
 	} while (!(reg & (1 << cpu)));  /* check CPU been reset or not */
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 static void tegra114_disable_cpu_clock(u32 cpu)
 {
 	/* flow controller would take care in the power sequence. */
@@ -1294,7 +1589,11 @@ static struct tegra_cpu_car_ops tegra114_cpu_car_ops = {
 
 static const struct of_device_id pmc_match[] __initconst = {
 	{ .compatible = "nvidia,tegra114-pmc" },
+<<<<<<< HEAD
 	{},
+=======
+	{ },
+>>>>>>> v4.9.227
 };
 
 /*
@@ -1302,6 +1601,7 @@ static const struct of_device_id pmc_match[] __initconst = {
  * breaks
  */
 static struct tegra_clk_init_table init_table[] __initdata = {
+<<<<<<< HEAD
 	{TEGRA114_CLK_UARTA, TEGRA114_CLK_PLL_P, 408000000, 0},
 	{TEGRA114_CLK_UARTB, TEGRA114_CLK_PLL_P, 408000000, 0},
 	{TEGRA114_CLK_UARTC, TEGRA114_CLK_PLL_P, 408000000, 0},
@@ -1333,6 +1633,39 @@ static struct tegra_clk_init_table init_table[] __initdata = {
 	{TEGRA114_CLK_XUSB_HOST_SRC, TEGRA114_CLK_PLL_P, 102000000, 0},
 	/* This MUST be the last entry. */
 	{TEGRA114_CLK_CLK_MAX, TEGRA114_CLK_CLK_MAX, 0, 0},
+=======
+	{ TEGRA114_CLK_UARTA, TEGRA114_CLK_PLL_P, 408000000, 0 },
+	{ TEGRA114_CLK_UARTB, TEGRA114_CLK_PLL_P, 408000000, 0 },
+	{ TEGRA114_CLK_UARTC, TEGRA114_CLK_PLL_P, 408000000, 0 },
+	{ TEGRA114_CLK_UARTD, TEGRA114_CLK_PLL_P, 408000000, 0 },
+	{ TEGRA114_CLK_PLL_A, TEGRA114_CLK_CLK_MAX, 564480000, 1 },
+	{ TEGRA114_CLK_PLL_A_OUT0, TEGRA114_CLK_CLK_MAX, 11289600, 1 },
+	{ TEGRA114_CLK_EXTERN1, TEGRA114_CLK_PLL_A_OUT0, 0, 1 },
+	{ TEGRA114_CLK_CLK_OUT_1_MUX, TEGRA114_CLK_EXTERN1, 0, 1 },
+	{ TEGRA114_CLK_CLK_OUT_1, TEGRA114_CLK_CLK_MAX, 0, 1 },
+	{ TEGRA114_CLK_I2S0, TEGRA114_CLK_PLL_A_OUT0, 11289600, 0 },
+	{ TEGRA114_CLK_I2S1, TEGRA114_CLK_PLL_A_OUT0, 11289600, 0 },
+	{ TEGRA114_CLK_I2S2, TEGRA114_CLK_PLL_A_OUT0, 11289600, 0 },
+	{ TEGRA114_CLK_I2S3, TEGRA114_CLK_PLL_A_OUT0, 11289600, 0 },
+	{ TEGRA114_CLK_I2S4, TEGRA114_CLK_PLL_A_OUT0, 11289600, 0 },
+	{ TEGRA114_CLK_HOST1X, TEGRA114_CLK_PLL_P, 136000000, 0 },
+	{ TEGRA114_CLK_DFLL_SOC, TEGRA114_CLK_PLL_P, 51000000, 1 },
+	{ TEGRA114_CLK_DFLL_REF, TEGRA114_CLK_PLL_P, 51000000, 1 },
+	{ TEGRA114_CLK_DISP1, TEGRA114_CLK_PLL_P, 0, 0 },
+	{ TEGRA114_CLK_DISP2, TEGRA114_CLK_PLL_P, 0, 0 },
+	{ TEGRA114_CLK_GR2D, TEGRA114_CLK_PLL_C2, 300000000, 0 },
+	{ TEGRA114_CLK_GR3D, TEGRA114_CLK_PLL_C2, 300000000, 0 },
+	{ TEGRA114_CLK_DSIALP, TEGRA114_CLK_PLL_P, 68000000, 0 },
+	{ TEGRA114_CLK_DSIBLP, TEGRA114_CLK_PLL_P, 68000000, 0 },
+	{ TEGRA114_CLK_PLL_RE_VCO, TEGRA114_CLK_CLK_MAX, 612000000, 0 },
+	{ TEGRA114_CLK_XUSB_SS_SRC, TEGRA114_CLK_PLL_RE_OUT, 122400000, 0 },
+	{ TEGRA114_CLK_XUSB_FS_SRC, TEGRA114_CLK_PLL_U_48M, 48000000, 0 },
+	{ TEGRA114_CLK_XUSB_HS_SRC, TEGRA114_CLK_XUSB_SS_DIV2, 61200000, 0 },
+	{ TEGRA114_CLK_XUSB_FALCON_SRC, TEGRA114_CLK_PLL_P, 204000000, 0 },
+	{ TEGRA114_CLK_XUSB_HOST_SRC, TEGRA114_CLK_PLL_P, 102000000, 0 },
+	/* must be the last entry */
+	{ TEGRA114_CLK_CLK_MAX, TEGRA114_CLK_CLK_MAX, 0, 0 },
+>>>>>>> v4.9.227
 };
 
 static void __init tegra114_clock_apply_init_table(void)
@@ -1340,7 +1673,10 @@ static void __init tegra114_clock_apply_init_table(void)
 	tegra_init_from_table(init_table, clks, TEGRA114_CLK_CLK_MAX);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /**
  * tegra114_car_barrier - wait for pending writes to the CAR to complete
  *
@@ -1494,13 +1830,25 @@ static void __init tegra114_clock_init(struct device_node *np)
 	if (!clks)
 		return;
 
+<<<<<<< HEAD
 	if (tegra114_osc_clk_init(clk_base) < 0)
+=======
+	if (tegra_osc_clk_init(clk_base, tegra114_clks, tegra114_input_freq,
+			       ARRAY_SIZE(tegra114_input_freq), 1, &osc_freq,
+			       &pll_ref_freq) < 0)
+>>>>>>> v4.9.227
 		return;
 
 	tegra114_fixed_clk_init(clk_base);
 	tegra114_pll_init(clk_base, pmc_base);
 	tegra114_periph_clk_init(clk_base, pmc_base);
+<<<<<<< HEAD
 	tegra_audio_clk_init(clk_base, pmc_base, tegra114_clks, &pll_a_params);
+=======
+	tegra_audio_clk_init(clk_base, pmc_base, tegra114_clks,
+			     tegra114_audio_plls,
+			     ARRAY_SIZE(tegra114_audio_plls));
+>>>>>>> v4.9.227
 	tegra_pmc_clk_init(pmc_base, tegra114_clks);
 	tegra_super_clk_gen4_init(clk_base, pmc_base, tegra114_clks,
 					&pll_x_params);

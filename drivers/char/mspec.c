@@ -93,14 +93,20 @@ struct vma_data {
 	spinlock_t lock;	/* Serialize access to this structure. */
 	int count;		/* Number of pages allocated. */
 	enum mspec_page_type type; /* Type of pages allocated. */
+<<<<<<< HEAD
 	int flags;		/* See VMD_xxx below. */
+=======
+>>>>>>> v4.9.227
 	unsigned long vm_start;	/* Original (unsplit) base. */
 	unsigned long vm_end;	/* Original (unsplit) end. */
 	unsigned long maddr[0];	/* Array of MSPEC addresses. */
 };
 
+<<<<<<< HEAD
 #define VMD_VMALLOCED 0x1	/* vmalloc'd rather than kmalloc'd */
 
+=======
+>>>>>>> v4.9.227
 /* used on shub2 to clear FOP cache in the HUB */
 static unsigned long scratch_page[MAX_NUMNODES];
 #define SH2_AMO_CACHE_ENTRIES	4
@@ -185,10 +191,14 @@ mspec_close(struct vm_area_struct *vma)
 			       "failed to zero page %ld\n", my_page);
 	}
 
+<<<<<<< HEAD
 	if (vdata->flags & VMD_VMALLOCED)
 		vfree(vdata);
 	else
 		kfree(vdata);
+=======
+	kvfree(vdata);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -256,7 +266,11 @@ mspec_mmap(struct file *file, struct vm_area_struct *vma,
 					enum mspec_page_type type)
 {
 	struct vma_data *vdata;
+<<<<<<< HEAD
 	int pages, vdata_size, flags = 0;
+=======
+	int pages, vdata_size;
+>>>>>>> v4.9.227
 
 	if (vma->vm_pgoff != 0)
 		return -EINVAL;
@@ -271,16 +285,24 @@ mspec_mmap(struct file *file, struct vm_area_struct *vma,
 	vdata_size = sizeof(struct vma_data) + pages * sizeof(long);
 	if (vdata_size <= PAGE_SIZE)
 		vdata = kzalloc(vdata_size, GFP_KERNEL);
+<<<<<<< HEAD
 	else {
 		vdata = vzalloc(vdata_size);
 		flags = VMD_VMALLOCED;
 	}
+=======
+	else
+		vdata = vzalloc(vdata_size);
+>>>>>>> v4.9.227
 	if (!vdata)
 		return -ENOMEM;
 
 	vdata->vm_start = vma->vm_start;
 	vdata->vm_end = vma->vm_end;
+<<<<<<< HEAD
 	vdata->flags = flags;
+=======
+>>>>>>> v4.9.227
 	vdata->type = type;
 	spin_lock_init(&vdata->lock);
 	atomic_set(&vdata->refcnt, 1);

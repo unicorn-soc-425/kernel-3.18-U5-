@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,6 +69,10 @@
 #define ACPI_SIG_DSDT           "DSDT"	/* Differentiated System Description Table */
 #define ACPI_SIG_FADT           "FACP"	/* Fixed ACPI Description Table */
 #define ACPI_SIG_FACS           "FACS"	/* Firmware ACPI Control Structure */
+<<<<<<< HEAD
+=======
+#define ACPI_SIG_OSDT           "OSDT"	/* Override System Description Table */
+>>>>>>> v4.9.227
 #define ACPI_SIG_PSDT           "PSDT"	/* Persistent System Description Table */
 #define ACPI_SIG_RSDP           "RSD PTR "	/* Root System Description Pointer */
 #define ACPI_SIG_RSDT           "RSDT"	/* Root System Description Table */
@@ -222,7 +230,11 @@ struct acpi_table_facs {
 /*******************************************************************************
  *
  * FADT - Fixed ACPI Description Table (Signature "FACP")
+<<<<<<< HEAD
  *        Version 4
+=======
+ *        Version 6
+>>>>>>> v4.9.227
  *
  ******************************************************************************/
 
@@ -284,6 +296,10 @@ struct acpi_table_fadt {
 	struct acpi_generic_address xgpe1_block;	/* 64-bit Extended General Purpose Event 1 Reg Blk address */
 	struct acpi_generic_address sleep_control;	/* 64-bit Sleep Control register (ACPI 5.0) */
 	struct acpi_generic_address sleep_status;	/* 64-bit Sleep Status register (ACPI 5.0) */
+<<<<<<< HEAD
+=======
+	u64 hypervisor_id;	/* Hypervisor Vendor ID (ACPI 6.0) */
+>>>>>>> v4.9.227
 };
 
 /* Masks for FADT IA-PC Boot Architecture Flags (boot_flags) [Vx]=Introduced in this FADT revision */
@@ -341,7 +357,11 @@ enum acpi_preferred_pm_profiles {
 	PM_TABLET = 8
 };
 
+<<<<<<< HEAD
 /* Values for sleep_status and sleep_control registers (V5 FADT) */
+=======
+/* Values for sleep_status and sleep_control registers (V5+ FADT) */
+>>>>>>> v4.9.227
 
 #define ACPI_X_WAKE_STATUS          0x80
 #define ACPI_X_SLEEP_TYPE_MASK      0x1C
@@ -398,15 +418,31 @@ struct acpi_table_desc {
  * FADT is the bottom line as to what the version really is.
  *
  * For reference, the values below are as follows:
+<<<<<<< HEAD
  *     FADT V1  size: 0x074
  *     FADT V2  size: 0x084
  *     FADT V3  size: 0x0F4
  *     FADT V4  size: 0x0F4
  *     FADT V5  size: 0x10C
+=======
+ *     FADT V1 size: 0x074
+ *     FADT V2 size: 0x084
+ *     FADT V3 size: 0x0F4
+ *     FADT V4 size: 0x0F4
+ *     FADT V5 size: 0x10C
+ *     FADT V6 size: 0x114
+>>>>>>> v4.9.227
  */
 #define ACPI_FADT_V1_SIZE       (u32) (ACPI_FADT_OFFSET (flags) + 4)
 #define ACPI_FADT_V2_SIZE       (u32) (ACPI_FADT_OFFSET (minor_revision) + 1)
 #define ACPI_FADT_V3_SIZE       (u32) (ACPI_FADT_OFFSET (sleep_control))
+<<<<<<< HEAD
 #define ACPI_FADT_V5_SIZE       (u32) (sizeof (struct acpi_table_fadt))
+=======
+#define ACPI_FADT_V5_SIZE       (u32) (ACPI_FADT_OFFSET (hypervisor_id))
+#define ACPI_FADT_V6_SIZE       (u32) (sizeof (struct acpi_table_fadt))
+
+#define ACPI_FADT_CONFORMANCE   "ACPI 6.1 (FADT version 6)"
+>>>>>>> v4.9.227
 
 #endif				/* __ACTBL_H__ */

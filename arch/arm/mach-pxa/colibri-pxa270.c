@@ -18,6 +18,10 @@
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/physmap.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/machine.h>
+>>>>>>> v4.9.227
 #include <linux/ucb1400.h>
 
 #include <asm/mach/arch.h>
@@ -26,8 +30,13 @@
 #include <asm/sizes.h>
 
 #include <mach/audio.h>
+<<<<<<< HEAD
 #include <mach/colibri.h>
 #include <mach/pxa27x.h>
+=======
+#include "colibri.h"
+#include "pxa27x.h"
+>>>>>>> v4.9.227
 
 #include "devices.h"
 #include "generic.h"
@@ -294,6 +303,11 @@ static void __init colibri_pxa270_init(void)
 		printk(KERN_ERR "Illegal colibri_pxa270_baseboard type %d\n",
 				colibri_pxa270_baseboard);
 	}
+<<<<<<< HEAD
+=======
+
+	regulator_has_full_constraints();
+>>>>>>> v4.9.227
 }
 
 /* The "Income s.r.o. SH-Dmaster PXA270 SBC" board can be booted either

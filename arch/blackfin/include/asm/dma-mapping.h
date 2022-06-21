@@ -8,6 +8,7 @@
 #define _BLACKFIN_DMA_MAPPING_H
 
 #include <asm/cacheflush.h>
+<<<<<<< HEAD
 struct scatterlist;
 
 void *dma_alloc_coherent(struct device *dev, size_t size,
@@ -38,6 +39,8 @@ dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 {
 	return 0;
 }
+=======
+>>>>>>> v4.9.227
 
 extern void
 __dma_sync(dma_addr_t addr, size_t size, enum dma_data_direction dir);
@@ -66,6 +69,7 @@ _dma_sync(dma_addr_t addr, size_t size, enum dma_data_direction dir)
 		__dma_sync(addr, size, dir);
 }
 
+<<<<<<< HEAD
 static inline dma_addr_t
 dma_map_single(struct device *dev, void *ptr, size_t size,
 	       enum dma_data_direction dir)
@@ -164,4 +168,13 @@ extern int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
 #define dma_mmap_coherent(d, v, c, h, s) dma_common_mmap(d, v, c, h, s)
 #define dma_get_sgtable(d, t, v, h, s) dma_common_get_sgtable(d, t, v, h, s)
 
+=======
+extern struct dma_map_ops bfin_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	return &bfin_dma_ops;
+}
+
+>>>>>>> v4.9.227
 #endif				/* _BLACKFIN_DMA_MAPPING_H */

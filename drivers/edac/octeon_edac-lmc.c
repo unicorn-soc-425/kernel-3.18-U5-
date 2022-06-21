@@ -210,6 +210,7 @@ static DEVICE_ATTR(row, S_IRUGO | S_IWUSR,
 static DEVICE_ATTR(col, S_IRUGO | S_IWUSR,
 		   octeon_mc_inject_col_show, octeon_mc_inject_col_store);
 
+<<<<<<< HEAD
 
 static int octeon_set_mc_sysfs_attributes(struct mem_ctl_info *mci)
 {
@@ -239,6 +240,20 @@ static int octeon_set_mc_sysfs_attributes(struct mem_ctl_info *mci)
 
 	return 0;
 }
+=======
+static struct attribute *octeon_dev_attrs[] = {
+	&dev_attr_inject.attr,
+	&dev_attr_error_type.attr,
+	&dev_attr_dimm.attr,
+	&dev_attr_rank.attr,
+	&dev_attr_bank.attr,
+	&dev_attr_row.attr,
+	&dev_attr_col.attr,
+	NULL
+};
+
+ATTRIBUTE_GROUPS(octeon_dev);
+>>>>>>> v4.9.227
 
 static int octeon_lmc_edac_probe(struct platform_device *pdev)
 {
@@ -252,7 +267,11 @@ static int octeon_lmc_edac_probe(struct platform_device *pdev)
 	layers[0].size = 1;
 	layers[0].is_virt_csrow = false;
 
+<<<<<<< HEAD
 	if (OCTEON_IS_MODEL(OCTEON_FAM_1_PLUS)) {
+=======
+	if (OCTEON_IS_OCTEON1PLUS()) {
+>>>>>>> v4.9.227
 		union cvmx_lmcx_mem_cfg0 cfg0;
 
 		cfg0.u64 = cvmx_read_csr(CVMX_LMCX_MEM_CFG0(0));
@@ -272,18 +291,25 @@ static int octeon_lmc_edac_probe(struct platform_device *pdev)
 		mci->ctl_name = "octeon-lmc-err";
 		mci->edac_check = octeon_lmc_edac_poll;
 
+<<<<<<< HEAD
 		if (edac_mc_add_mc(mci)) {
+=======
+		if (edac_mc_add_mc_with_groups(mci, octeon_dev_groups)) {
+>>>>>>> v4.9.227
 			dev_err(&pdev->dev, "edac_mc_add_mc() failed\n");
 			edac_mc_free(mci);
 			return -ENXIO;
 		}
 
+<<<<<<< HEAD
 		if (octeon_set_mc_sysfs_attributes(mci)) {
 			dev_err(&pdev->dev, "octeon_set_mc_sysfs_attributes() failed\n");
 			return -ENXIO;
 		}
 
 
+=======
+>>>>>>> v4.9.227
 		cfg0.u64 = cvmx_read_csr(CVMX_LMCX_MEM_CFG0(mc));
 		cfg0.s.intr_ded_ena = 0;	/* We poll */
 		cfg0.s.intr_sec_ena = 0;
@@ -310,18 +336,25 @@ static int octeon_lmc_edac_probe(struct platform_device *pdev)
 		mci->ctl_name = "co_lmc_err";
 		mci->edac_check = octeon_lmc_edac_poll_o2;
 
+<<<<<<< HEAD
 		if (edac_mc_add_mc(mci)) {
+=======
+		if (edac_mc_add_mc_with_groups(mci, octeon_dev_groups)) {
+>>>>>>> v4.9.227
 			dev_err(&pdev->dev, "edac_mc_add_mc() failed\n");
 			edac_mc_free(mci);
 			return -ENXIO;
 		}
 
+<<<<<<< HEAD
 		if (octeon_set_mc_sysfs_attributes(mci)) {
 			dev_err(&pdev->dev, "octeon_set_mc_sysfs_attributes() failed\n");
 			return -ENXIO;
 		}
 
 
+=======
+>>>>>>> v4.9.227
 		en.u64 = cvmx_read_csr(CVMX_LMCX_MEM_CFG0(mc));
 		en.s.intr_ded_ena = 0;	/* We poll */
 		en.s.intr_sec_ena = 0;

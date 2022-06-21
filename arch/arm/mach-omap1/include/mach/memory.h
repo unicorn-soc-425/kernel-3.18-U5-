@@ -5,6 +5,12 @@
 #ifndef __ASM_ARCH_MEMORY_H
 #define __ASM_ARCH_MEMORY_H
 
+<<<<<<< HEAD
+=======
+/* REVISIT: omap1 legacy drivers still rely on this */
+#include <mach/soc.h>
+
+>>>>>>> v4.9.227
 /*
  * Bus address is physical address, except for OMAP-1510 Local Bus.
  * OMAP-1510 bus address is translated into a Local Bus address if the
@@ -14,7 +20,10 @@
  * because of the strncmp().
  */
 #if defined(CONFIG_ARCH_OMAP15XX) && !defined(__ASSEMBLER__)
+<<<<<<< HEAD
 #include <mach/soc.h>
+=======
+>>>>>>> v4.9.227
 
 /*
  * OMAP-1510 Local Bus address offset

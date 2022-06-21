@@ -23,7 +23,11 @@
  * when going to sleep, when doing a PMU based cpufreq transition,
  * or when "offlining" a CPU on SMP machines. This code is over
  * paranoid, but I've had enough issues with various CPU revs and
+<<<<<<< HEAD
  * bugs that I decided it was worth beeing over cautious
+=======
+ * bugs that I decided it was worth being over cautious
+>>>>>>> v4.9.227
  */
 
 _GLOBAL(flush_disable_caches)

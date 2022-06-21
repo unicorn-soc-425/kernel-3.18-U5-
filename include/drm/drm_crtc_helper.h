@@ -40,6 +40,7 @@
 #include <linux/fb.h>
 
 #include <drm/drm_crtc.h>
+<<<<<<< HEAD
 
 enum mode_set_atomic {
 	LEAVE_ATOMIC_MODE_SET,
@@ -182,6 +183,10 @@ struct drm_connector_helper_funcs {
 	struct drm_encoder *(*atomic_best_encoder)(struct drm_connector *connector,
 						   struct drm_connector_state *connector_state);
 };
+=======
+#include <drm/drm_modeset_helper_vtables.h>
+#include <drm/drm_modeset_helper.h>
+>>>>>>> v4.9.227
 
 extern void drm_helper_disable_unused_functions(struct drm_device *dev);
 extern int drm_crtc_helper_set_config(struct drm_mode_set *set);
@@ -194,6 +199,7 @@ extern bool drm_helper_encoder_in_use(struct drm_encoder *encoder);
 
 extern int drm_helper_connector_dpms(struct drm_connector *connector, int mode);
 
+<<<<<<< HEAD
 extern void drm_helper_move_panel_connectors_to_head(struct drm_device *);
 
 extern void drm_helper_mode_fill_fb_struct(struct drm_framebuffer *fb,
@@ -217,6 +223,8 @@ static inline void drm_connector_helper_add(struct drm_connector *connector,
 	connector->helper_private = funcs;
 }
 
+=======
+>>>>>>> v4.9.227
 extern void drm_helper_resume_force_mode(struct drm_device *dev);
 
 int drm_helper_crtc_mode_set(struct drm_crtc *crtc, struct drm_display_mode *mode,
@@ -229,10 +237,13 @@ int drm_helper_crtc_mode_set_base(struct drm_crtc *crtc, int x, int y,
 extern int drm_helper_probe_single_connector_modes(struct drm_connector
 						   *connector, uint32_t maxX,
 						   uint32_t maxY);
+<<<<<<< HEAD
 extern int drm_helper_probe_single_connector_modes_nomerge(struct drm_connector
 							   *connector,
 							   uint32_t maxX,
 							   uint32_t maxY);
+=======
+>>>>>>> v4.9.227
 extern void drm_kms_helper_poll_init(struct drm_device *dev);
 extern void drm_kms_helper_poll_fini(struct drm_device *dev);
 extern bool drm_helper_hpd_irq_event(struct drm_device *dev);
@@ -241,5 +252,9 @@ extern void drm_kms_helper_hotplug_event(struct drm_device *dev);
 extern void drm_kms_helper_poll_disable(struct drm_device *dev);
 extern void drm_kms_helper_poll_enable(struct drm_device *dev);
 extern void drm_kms_helper_poll_enable_locked(struct drm_device *dev);
+<<<<<<< HEAD
+=======
+extern bool drm_kms_helper_is_poll_worker(void);
+>>>>>>> v4.9.227
 
 #endif

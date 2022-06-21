@@ -10,7 +10,44 @@
 #include <asm/mmu.h>
 
 extern void uml_setup_stubs(struct mm_struct *mm);
+<<<<<<< HEAD
 extern void arch_exit_mmap(struct mm_struct *mm);
+=======
+/*
+ * Needed since we do not use the asm-generic/mm_hooks.h:
+ */
+static inline void arch_dup_mmap(struct mm_struct *oldmm, struct mm_struct *mm)
+{
+	uml_setup_stubs(mm);
+}
+extern void arch_exit_mmap(struct mm_struct *mm);
+static inline void arch_unmap(struct mm_struct *mm,
+			struct vm_area_struct *vma,
+			unsigned long start, unsigned long end)
+{
+}
+static inline void arch_bprm_mm_init(struct mm_struct *mm,
+				     struct vm_area_struct *vma)
+{
+}
+
+static inline bool arch_vma_access_permitted(struct vm_area_struct *vma,
+		bool write, bool execute, bool foreign)
+{
+	/* by default, allow everything */
+	return true;
+}
+
+static inline bool arch_pte_access_permitted(pte_t pte, bool write)
+{
+	/* by default, allow everything */
+	return true;
+}
+
+/*
+ * end asm-generic/mm_hooks.h functions
+ */
+>>>>>>> v4.9.227
 
 #define deactivate_mm(tsk,mm)	do { } while (0)
 
@@ -23,7 +60,11 @@ static inline void activate_mm(struct mm_struct *old, struct mm_struct *new)
 	 * when the new ->mm is used for the first time.
 	 */
 	__switch_mm(&new->context.id);
+<<<<<<< HEAD
 	down_write(&new->mmap_sem);
+=======
+	down_write_nested(&new->mmap_sem, 1);
+>>>>>>> v4.9.227
 	uml_setup_stubs(new);
 	up_write(&new->mmap_sem);
 }
@@ -41,11 +82,14 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
 	}
 }
 
+<<<<<<< HEAD
 static inline void arch_dup_mmap(struct mm_struct *oldmm, struct mm_struct *mm)
 {
 	uml_setup_stubs(mm);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void enter_lazy_tlb(struct mm_struct *mm, 
 				  struct task_struct *tsk)
 {

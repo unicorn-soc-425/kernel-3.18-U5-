@@ -11,7 +11,11 @@
 #include <linux/mtd/map.h>
 
 #include <mach/tc.h>
+<<<<<<< HEAD
 #include <mach/flash.h>
+=======
+#include "flash.h"
+>>>>>>> v4.9.227
 
 #include <mach/hardware.h>
 

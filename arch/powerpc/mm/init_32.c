@@ -26,7 +26,10 @@
 #include <linux/mm.h>
 #include <linux/stddef.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/highmem.h>
 #include <linux/initrd.h>
 #include <linux/pagemap.h>
@@ -65,7 +68,11 @@ EXPORT_SYMBOL(memstart_addr);
 phys_addr_t kernstart_addr;
 EXPORT_SYMBOL(kernstart_addr);
 
+<<<<<<< HEAD
 #ifdef CONFIG_RELOCATABLE_PPC32
+=======
+#ifdef CONFIG_RELOCATABLE
+>>>>>>> v4.9.227
 /* Used in __va()/__pa() */
 long long virt_phys_offset;
 EXPORT_SYMBOL(virt_phys_offset);
@@ -81,9 +88,12 @@ EXPORT_SYMBOL(agp_special_page);
 
 void MMU_init(void);
 
+<<<<<<< HEAD
 /* XXX should be in current.h  -- paulus */
 extern struct task_struct *current_set[NR_CPUS];
 
+=======
+>>>>>>> v4.9.227
 /*
  * this tells the system to map all of ram with the segregs
  * (i.e. page tables) instead of the bats.
@@ -113,10 +123,17 @@ void __init MMU_setup(void)
 	if (strstr(boot_command_line, "noltlbs")) {
 		__map_without_ltlbs = 1;
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_PAGEALLOC
 	__map_without_bats = 1;
 	__map_without_ltlbs = 1;
 #endif
+=======
+	if (debug_pagealloc_enabled()) {
+		__map_without_bats = 1;
+		__map_without_ltlbs = 1;
+	}
+>>>>>>> v4.9.227
 }
 
 /*
@@ -141,7 +158,11 @@ void __init MMU_init(void)
 	if (memblock.memory.cnt > 1) {
 #ifndef CONFIG_WII
 		memblock_enforce_memory_limit(memblock.memory.regions[0].size);
+<<<<<<< HEAD
 		printk(KERN_WARNING "Only using first contiguous memory region");
+=======
+		pr_warn("Only using first contiguous memory region\n");
+>>>>>>> v4.9.227
 #else
 		wii_memory_fixups();
 #endif
@@ -179,10 +200,13 @@ void __init MMU_init(void)
 	/* Initialize early top-down ioremap allocator */
 	ioremap_bot = IOREMAP_TOP;
 
+<<<<<<< HEAD
 	/* Map in I/O resources */
 	if (ppc_md.progress)
 		ppc_md.progress("MMU:setio", 0x302);
 
+=======
+>>>>>>> v4.9.227
 	if (ppc_md.progress)
 		ppc_md.progress("MMU:exit", 0x211);
 
@@ -194,6 +218,7 @@ void __init MMU_init(void)
 	/* Shortly after that, the entire linear mapping will be available */
 	memblock_set_current_limit(lowmem_end_addr);
 }
+<<<<<<< HEAD
 
 /* This is only called until mem_init is done. */
 void __init *early_get_page(void)
@@ -222,3 +247,5 @@ void setup_initial_memory_limit(phys_addr_t first_memblock_base,
 #endif
 }
 #endif /* CONFIG_8xx */
+=======
+>>>>>>> v4.9.227

@@ -82,7 +82,10 @@ MODULE_DEVICE_TABLE(of, pmc_match);
 static struct platform_driver pmc_driver = {
 	.driver = {
 		.name = "pmc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = pmc_match,
 	},
 	.probe		= pmc_probe,

@@ -61,6 +61,11 @@ s32  igb_phy_has_link(struct e1000_hw *hw, u32 iterations,
 void igb_power_up_phy_copper(struct e1000_hw *hw);
 void igb_power_down_phy_copper(struct e1000_hw *hw);
 s32  igb_phy_init_script_igp3(struct e1000_hw *hw);
+<<<<<<< HEAD
+=======
+s32  igb_initialize_M88E1512_phy(struct e1000_hw *hw);
+s32  igb_initialize_M88E1543_phy(struct e1000_hw *hw);
+>>>>>>> v4.9.227
 s32  igb_read_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 *data);
 s32  igb_write_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 data);
 s32  igb_read_phy_reg_i2c(struct e1000_hw *hw, u32 offset, u16 *data);
@@ -70,8 +75,13 @@ s32  igb_copper_link_setup_82580(struct e1000_hw *hw);
 s32  igb_get_phy_info_82580(struct e1000_hw *hw);
 s32  igb_phy_force_speed_duplex_82580(struct e1000_hw *hw);
 s32  igb_get_cable_length_82580(struct e1000_hw *hw);
+<<<<<<< HEAD
 s32  igb_read_phy_reg_gs40g(struct e1000_hw *hw, u32 offset, u16 *data);
 s32  igb_write_phy_reg_gs40g(struct e1000_hw *hw, u32 offset, u16 data);
+=======
+s32  igb_read_phy_reg_82580(struct e1000_hw *hw, u32 offset, u16 *data);
+s32  igb_write_phy_reg_82580(struct e1000_hw *hw, u32 offset, u16 data);
+>>>>>>> v4.9.227
 s32  igb_check_polarity_m88(struct e1000_hw *hw);
 
 /* IGP01E1000 Specific Registers */
@@ -89,10 +99,17 @@ s32  igb_check_polarity_m88(struct e1000_hw *hw);
 
 #define I82580_ADDR_REG                   16
 #define I82580_CFG_REG                    22
+<<<<<<< HEAD
 #define I82580_CFG_ASSERT_CRS_ON_TX       (1 << 15)
 #define I82580_CFG_ENABLE_DOWNSHIFT       (3 << 10) /* auto downshift 100/10 */
 #define I82580_CTRL_REG                   23
 #define I82580_CTRL_DOWNSHIFT_MASK        (7 << 10)
+=======
+#define I82580_CFG_ASSERT_CRS_ON_TX       BIT(15)
+#define I82580_CFG_ENABLE_DOWNSHIFT       (3u << 10) /* auto downshift 100/10 */
+#define I82580_CTRL_REG                   23
+#define I82580_CTRL_DOWNSHIFT_MASK        (7u << 10)
+>>>>>>> v4.9.227
 
 /* 82580 specific PHY registers */
 #define I82580_PHY_CTRL_2            18
@@ -142,6 +159,7 @@ s32  igb_check_polarity_m88(struct e1000_hw *hw);
 
 #define E1000_CABLE_LENGTH_UNDEFINED      0xFF
 
+<<<<<<< HEAD
 /* GS40G - I210 PHY defines */
 #define GS40G_PAGE_SELECT		0x16
 #define GS40G_PAGE_SHIFT		16
@@ -153,6 +171,8 @@ s32  igb_check_polarity_m88(struct e1000_hw *hw);
 #define GS40G_COPPER_SPEC		0x0010
 #define GS40G_LINE_LB			0x4000
 
+=======
+>>>>>>> v4.9.227
 /* SFP modules ID memory locations */
 #define E1000_SFF_IDENTIFIER_OFFSET	0x00
 #define E1000_SFF_IDENTIFIER_SFF	0x02

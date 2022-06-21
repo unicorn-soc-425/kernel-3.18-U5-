@@ -8,9 +8,17 @@
  */
 
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/module.h>
+=======
+#include <linux/delay.h>
+#include <linux/err.h>
+#include <linux/io.h>
+#include <linux/module.h>
+#include <linux/mutex.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/platform_device.h>
@@ -21,6 +29,10 @@
 #define PWM_ENA			0x04
 #define PWM_DIS			0x08
 #define PWM_SR			0x0C
+<<<<<<< HEAD
+=======
+#define PWM_ISR			0x1C
+>>>>>>> v4.9.227
 /* Bit field in SR */
 #define PWM_SR_ALL_CH_ON	0x0F
 
@@ -60,6 +72,13 @@ struct atmel_pwm_chip {
 	struct clk *clk;
 	void __iomem *base;
 
+<<<<<<< HEAD
+=======
+	unsigned int updated_pwms;
+	/* ISR is cleared when read, ensure only one thread does that */
+	struct mutex isr_lock;
+
+>>>>>>> v4.9.227
 	void (*config)(struct pwm_chip *chip, struct pwm_device *pwm,
 		       unsigned long dty, unsigned long prd);
 };
@@ -108,7 +127,11 @@ static int atmel_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	u32 val;
 	int ret;
 
+<<<<<<< HEAD
 	if (test_bit(PWMF_ENABLED, &pwm->flags) && (period_ns != pwm->period)) {
+=======
+	if (pwm_is_enabled(pwm) && (period_ns != pwm_get_period(pwm))) {
+>>>>>>> v4.9.227
 		dev_err(chip->dev, "cannot change PWM period while enabled\n");
 		return -EBUSY;
 	}
@@ -144,6 +167,13 @@ static int atmel_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	val = (val & ~PWM_CMR_CPRE_MSK) | (pres & PWM_CMR_CPRE_MSK);
 	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
 	atmel_pwm->config(chip, pwm, dty, prd);
+<<<<<<< HEAD
+=======
+	mutex_lock(&atmel_pwm->isr_lock);
+	atmel_pwm->updated_pwms |= atmel_pwm_readl(atmel_pwm, PWM_ISR);
+	atmel_pwm->updated_pwms &= ~(1 << pwm->hwpwm);
+	mutex_unlock(&atmel_pwm->isr_lock);
+>>>>>>> v4.9.227
 
 	clk_disable(atmel_pwm->clk);
 	return ret;
@@ -155,6 +185,7 @@ static void atmel_pwm_config_v1(struct pwm_chip *chip, struct pwm_device *pwm,
 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
 	unsigned int val;
 
+<<<<<<< HEAD
 	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
 		/*
 		 * If the PWM channel is enabled, using the update register,
@@ -173,6 +204,27 @@ static void atmel_pwm_config_v1(struct pwm_chip *chip, struct pwm_device *pwm,
 		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CDTY, dty);
 		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CPRD, prd);
 	}
+=======
+
+	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CUPD, dty);
+
+	val = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
+	val &= ~PWM_CMR_UPD_CDTY;
+	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
+
+	/*
+	 * If the PWM channel is enabled, only update CDTY by using the update
+	 * register, it needs to set bit 10 of CMR to 0
+	 */
+	if (pwm_is_enabled(pwm))
+		return;
+	/*
+	 * If the PWM channel is disabled, write value to duty and period
+	 * registers directly.
+	 */
+	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CDTY, dty);
+	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CPRD, prd);
+>>>>>>> v4.9.227
 }
 
 static void atmel_pwm_config_v2(struct pwm_chip *chip, struct pwm_device *pwm,
@@ -180,7 +232,11 @@ static void atmel_pwm_config_v2(struct pwm_chip *chip, struct pwm_device *pwm,
 {
 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
 
+<<<<<<< HEAD
 	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+=======
+	if (pwm_is_enabled(pwm)) {
+>>>>>>> v4.9.227
 		/*
 		 * If the PWM channel is enabled, using the duty update register
 		 * to update the value.
@@ -242,9 +298,40 @@ static int atmel_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
 static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 {
 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
+<<<<<<< HEAD
 
 	atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
 
+=======
+	unsigned long timeout = jiffies + 2 * HZ;
+
+	/*
+	 * Wait for at least a complete period to have passed before disabling a
+	 * channel to be sure that CDTY has been updated
+	 */
+	mutex_lock(&atmel_pwm->isr_lock);
+	atmel_pwm->updated_pwms |= atmel_pwm_readl(atmel_pwm, PWM_ISR);
+
+	while (!(atmel_pwm->updated_pwms & (1 << pwm->hwpwm)) &&
+	       time_before(jiffies, timeout)) {
+		usleep_range(10, 100);
+		atmel_pwm->updated_pwms |= atmel_pwm_readl(atmel_pwm, PWM_ISR);
+	}
+
+	mutex_unlock(&atmel_pwm->isr_lock);
+	atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
+
+	/*
+	 * Wait for the PWM channel disable operation to be effective before
+	 * stopping the clock.
+	 */
+	timeout = jiffies + 2 * HZ;
+
+	while ((atmel_pwm_readl(atmel_pwm, PWM_SR) & (1 << pwm->hwpwm)) &&
+	       time_before(jiffies, timeout))
+		usleep_range(10, 100);
+
+>>>>>>> v4.9.227
 	clk_disable(atmel_pwm->clk);
 }
 
@@ -298,6 +385,7 @@ MODULE_DEVICE_TABLE(of, atmel_pwm_dt_ids);
 static inline const struct atmel_pwm_data *
 atmel_pwm_get_driver_data(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	if (pdev->dev.of_node) {
 		const struct of_device_id *match;
 
@@ -313,6 +401,16 @@ atmel_pwm_get_driver_data(struct platform_device *pdev)
 
 		return (struct atmel_pwm_data *)id->driver_data;
 	}
+=======
+	const struct platform_device_id *id;
+
+	if (pdev->dev.of_node)
+		return of_device_get_match_data(&pdev->dev);
+
+	id = platform_get_device_id(pdev);
+
+	return (struct atmel_pwm_data *)id->driver_data;
+>>>>>>> v4.9.227
 }
 
 static int atmel_pwm_probe(struct platform_device *pdev)
@@ -357,6 +455,11 @@ static int atmel_pwm_probe(struct platform_device *pdev)
 	atmel_pwm->chip.npwm = 4;
 	atmel_pwm->chip.can_sleep = true;
 	atmel_pwm->config = data->config;
+<<<<<<< HEAD
+=======
+	atmel_pwm->updated_pwms = 0;
+	mutex_init(&atmel_pwm->isr_lock);
+>>>>>>> v4.9.227
 
 	ret = pwmchip_add(&atmel_pwm->chip);
 	if (ret < 0) {
@@ -378,6 +481,10 @@ static int atmel_pwm_remove(struct platform_device *pdev)
 	struct atmel_pwm_chip *atmel_pwm = platform_get_drvdata(pdev);
 
 	clk_unprepare(atmel_pwm->clk);
+<<<<<<< HEAD
+=======
+	mutex_destroy(&atmel_pwm->isr_lock);
+>>>>>>> v4.9.227
 
 	return pwmchip_remove(&atmel_pwm->chip);
 }

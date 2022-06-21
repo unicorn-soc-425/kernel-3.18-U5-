@@ -235,7 +235,11 @@ void __init check_writebuffer_bugs(void)
 	const char *reason;
 	unsigned long v = 1;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "CPU: Testing write buffer coherency: ");
+=======
+	pr_info("CPU: Testing write buffer coherency: ");
+>>>>>>> v4.9.227
 
 	page = alloc_page(GFP_KERNEL);
 	if (page) {
@@ -261,9 +265,16 @@ void __init check_writebuffer_bugs(void)
 	}
 
 	if (v) {
+<<<<<<< HEAD
 		printk("failed, %s\n", reason);
 		shared_pte_mask = L_PTE_MT_UNCACHED;
 	} else {
 		printk("ok\n");
+=======
+		pr_cont("failed, %s\n", reason);
+		shared_pte_mask = L_PTE_MT_UNCACHED;
+	} else {
+		pr_cont("ok\n");
+>>>>>>> v4.9.227
 	}
 }

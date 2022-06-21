@@ -38,7 +38,11 @@ u32 os_info_csum(struct os_info *os_info);
 
 #ifdef CONFIG_CRASH_DUMP
 void *os_info_old_entry(int nr, unsigned long *size);
+<<<<<<< HEAD
 int copy_from_oldmem(void *dest, void *src, size_t count);
+=======
+int copy_oldmem_kernel(void *dst, void *src, size_t count);
+>>>>>>> v4.9.227
 #else
 static inline void *os_info_old_entry(int nr, unsigned long *size)
 {

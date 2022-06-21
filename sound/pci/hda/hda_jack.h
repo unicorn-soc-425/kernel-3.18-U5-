@@ -21,7 +21,11 @@ struct hda_jack_callback;
 typedef void (*hda_jack_callback_fn) (struct hda_codec *, struct hda_jack_callback *);
 
 struct hda_jack_callback {
+<<<<<<< HEAD
 	struct hda_jack_tbl *tbl;
+=======
+	hda_nid_t nid;
+>>>>>>> v4.9.227
 	hda_jack_callback_fn func;
 	unsigned int private_data;	/* arbitrary data */
 	struct hda_jack_callback *next;
@@ -39,11 +43,16 @@ struct hda_jack_tbl {
 	unsigned int block_report:1;    /* in a transitional state - do not report to userspace */
 	hda_nid_t gating_jack;		/* valid when gating jack plugged */
 	hda_nid_t gated_jack;		/* gated is dependent on this jack */
+<<<<<<< HEAD
 	struct snd_kcontrol *kctl;	/* assigned kctl for jack-detection */
 #ifdef CONFIG_SND_HDA_INPUT_JACK
 	int type;
 	struct snd_jack *jack;
 #endif
+=======
+	int type;
+	struct snd_jack *jack;
+>>>>>>> v4.9.227
 };
 
 struct hda_jack_tbl *
@@ -72,6 +81,14 @@ enum {
 
 int snd_hda_jack_detect_state(struct hda_codec *codec, hda_nid_t nid);
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_hda_jack_detect - Detect the jack
+ * @codec: the HDA codec
+ * @nid: pin NID to check jack detection
+ */
+>>>>>>> v4.9.227
 static inline bool snd_hda_jack_detect(struct hda_codec *codec, hda_nid_t nid)
 {
 	return snd_hda_jack_detect_state(codec, nid) != HDA_JACK_NOT_PRESENT;
@@ -80,7 +97,11 @@ static inline bool snd_hda_jack_detect(struct hda_codec *codec, hda_nid_t nid)
 bool is_jack_detectable(struct hda_codec *codec, hda_nid_t nid);
 
 int snd_hda_jack_add_kctl(struct hda_codec *codec, hda_nid_t nid,
+<<<<<<< HEAD
 			  const char *name, int idx);
+=======
+			  const char *name, bool phantom_jack);
+>>>>>>> v4.9.227
 int snd_hda_jack_add_kctls(struct hda_codec *codec,
 			   const struct auto_pin_cfg *cfg);
 

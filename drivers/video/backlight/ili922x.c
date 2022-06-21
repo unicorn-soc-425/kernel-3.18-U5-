@@ -536,7 +536,10 @@ static int ili922x_remove(struct spi_device *spi)
 static struct spi_driver ili922x_driver = {
 	.driver = {
 		.name = "ili922x",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = ili922x_probe,
 	.remove = ili922x_remove,

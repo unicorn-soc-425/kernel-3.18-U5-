@@ -24,18 +24,25 @@
  * Author: Jerry Chen
  *
  * Date: Jan 29, 2003
+<<<<<<< HEAD
  *
+=======
+>>>>>>> v4.9.227
  */
 
 #ifndef __SROM_H__
 #define __SROM_H__
 
+<<<<<<< HEAD
 #include "ttype.h"
 
+=======
+>>>>>>> v4.9.227
 /*---------------------  Export Definitions -------------------------*/
 
 #define EEP_MAX_CONTEXT_SIZE    256
 
+<<<<<<< HEAD
 #define CB_EEPROM_READBYTE_WAIT 900     //us
 
 #define W_MAX_I2CRETRY          0x0fff
@@ -52,17 +59,38 @@
 #define EEP_OFS_SIGNATURE   0x1E        //
 #define EEP_OFS_ZONETYPE    0x1F        //
 #define EEP_OFS_RFTABLE     0x20        // RF POWER TABLE
+=======
+#define CB_EEPROM_READBYTE_WAIT 900     /* us */
+
+#define W_MAX_I2CRETRY          0x0fff
+
+/* Contents in the EEPROM */
+#define EEP_OFS_PAR         0x00        /* physical address */
+#define EEP_OFS_ANTENNA     0x16
+#define EEP_OFS_RADIOCTL    0x17
+#define EEP_OFS_RFTYPE      0x1B        /* for select RF */
+#define EEP_OFS_MINCHANNEL  0x1C        /* Min Channel # */
+#define EEP_OFS_MAXCHANNEL  0x1D        /* Max Channel # */
+#define EEP_OFS_SIGNATURE   0x1E
+#define EEP_OFS_ZONETYPE    0x1F
+#define EEP_OFS_RFTABLE     0x20        /* RF POWER TABLE */
+>>>>>>> v4.9.227
 #define EEP_OFS_PWR_CCK     0x20
 #define EEP_OFS_SETPT_CCK   0x21
 #define EEP_OFS_PWR_OFDMG   0x23
 #define EEP_OFS_SETPT_OFDMG 0x24
+<<<<<<< HEAD
 #define EEP_OFS_PWR_FORMULA_OST  0x26   //
+=======
+#define EEP_OFS_PWR_FORMULA_OST  0x26
+>>>>>>> v4.9.227
 #define EEP_OFS_MAJOR_VER 0x2E
 #define EEP_OFS_MINOR_VER 0x2F
 #define EEP_OFS_CCK_PWR_TBL     0x30
 #define EEP_OFS_CCK_PWR_dBm     0x3F
 #define EEP_OFS_OFDM_PWR_TBL    0x40
 #define EEP_OFS_OFDM_PWR_dBm    0x4F
+<<<<<<< HEAD
 //{{ RobertYu: 20041124
 #define EEP_OFS_SETPT_OFDMA         0x4E
 #define EEP_OFS_OFDMA_PWR_TBL       0x50
@@ -79,18 +107,39 @@
 //
 // Bits in EEP_OFS_ANTENNA
 //
+=======
+/*{{ RobertYu: 20041124 */
+#define EEP_OFS_SETPT_OFDMA         0x4E
+#define EEP_OFS_OFDMA_PWR_TBL       0x50
+/*}}*/
+#define EEP_OFS_OFDMA_PWR_dBm       0xD2
+
+/*----------need to remove --------------------*/
+#define EEP_OFS_BBTAB_LEN   0x70        /* BB Table Length */
+#define EEP_OFS_BBTAB_ADR   0x71        /* BB Table Offset */
+#define EEP_OFS_CHECKSUM    0xFF        /* reserved area for baseband 28h~78h */
+
+#define EEP_I2C_DEV_ID      0x50        /* EEPROM device address on I2C bus */
+
+/* Bits in EEP_OFS_ANTENNA */
+>>>>>>> v4.9.227
 #define EEP_ANTENNA_MAIN    0x01
 #define EEP_ANTENNA_AUX     0x02
 #define EEP_ANTINV          0x04
 
+<<<<<<< HEAD
 //
 // Bits in EEP_OFS_RADIOCTL
 //
+=======
+/* Bits in EEP_OFS_RADIOCTL */
+>>>>>>> v4.9.227
 #define EEP_RADIOCTL_ENABLE 0x80
 #define EEP_RADIOCTL_INV    0x01
 
 /*---------------------  Export Types  ------------------------------*/
 
+<<<<<<< HEAD
 // AT24C02 eeprom contents
 //      2048 bits = 256 bytes = 128 words
 //
@@ -125,6 +174,8 @@ typedef struct tagSSromReg {
 	unsigned char abyCIS[128];                // 0x80 (unsigned short)
 } SSromReg, *PSSromReg;
 
+=======
+>>>>>>> v4.9.227
 /*---------------------  Export Macros ------------------------------*/
 
 /*---------------------  Export Classes  ----------------------------*/
@@ -133,6 +184,7 @@ typedef struct tagSSromReg {
 
 /*---------------------  Export Functions  --------------------------*/
 
+<<<<<<< HEAD
 unsigned char SROMbyReadEmbedded(void __iomem *dwIoBase, unsigned char byContntOffset);
 bool SROMbWriteEmbedded(void __iomem *dwIoBase, unsigned char byContntOffset, unsigned char byData);
 
@@ -153,3 +205,14 @@ void SROMvReadSubSysVenId(void __iomem *dwIoBase, unsigned long *pdwSubSysVenId)
 bool SROMbAutoLoad(void __iomem *dwIoBase);
 
 #endif // __EEPROM_H__
+=======
+unsigned char SROMbyReadEmbedded(void __iomem *dwIoBase,
+				 unsigned char byContntOffset);
+
+void SROMvReadAllContents(void __iomem *dwIoBase, unsigned char *pbyEepromRegs);
+
+void SROMvReadEtherAddress(void __iomem *dwIoBase,
+			   unsigned char *pbyEtherAddress);
+
+#endif /* __EEPROM_H__*/
+>>>>>>> v4.9.227

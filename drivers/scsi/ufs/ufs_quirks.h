@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/*
+ * Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,6 +22,7 @@
 /* return true if s1 is a prefix of s2 */
 #define STR_PRFX_EQUAL(s1, s2) !strncmp(s1, s2, strlen(s1))
 
+<<<<<<< HEAD
 #define UFS_ANY_VENDOR 0xffff
 #define UFS_ANY_MODEL  "ANY_MODEL"
 
@@ -59,6 +65,33 @@ struct ufs_card_fix {
 				.card.model = (_model),		  \
 				.quirk = (_quirk),		  \
 		}
+=======
+#define UFS_ANY_VENDOR 0xFFFF
+#define UFS_ANY_MODEL  "ANY_MODEL"
+
+#define UFS_VENDOR_TOSHIBA     0x198
+#define UFS_VENDOR_SAMSUNG     0x1CE
+#define UFS_VENDOR_SKHYNIX     0x1AD
+
+/**
+ * ufs_dev_fix - ufs device quirk info
+ * @card: ufs card details
+ * @quirk: device quirk
+ */
+struct ufs_dev_fix {
+	struct ufs_dev_desc card;
+	unsigned int quirk;
+};
+
+#define END_FIX { { 0 }, 0 }
+
+/* add specific device quirk */
+#define UFS_FIX(_vendor, _model, _quirk) { \
+	.card.wmanufacturerid = (_vendor),\
+	.card.model = (_model),		   \
+	.quirk = (_quirk),		   \
+}
+>>>>>>> v4.9.227
 
 /*
  * If UFS device is having issue in processing LCC (Line Control
@@ -124,10 +157,25 @@ struct ufs_card_fix {
 #define UFS_DEVICE_NO_FASTAUTO		(1 << 5)
 
 /*
+<<<<<<< HEAD
  * Some UFS devices require host PA_TACTIVATE to be lower than device
  * PA_TACTIVATE, enabling this quirk ensure this.
  */
 #define UFS_DEVICE_QUIRK_HOST_PA_TACTIVATE	(1 << 6)
+=======
+ * It seems some UFS devices may keep drawing more than sleep current
+ * (atleast for 500us) from UFS rails (especially from VCCQ rail).
+ * To avoid this situation, add 2ms delay before putting these UFS
+ * rails in LPM mode.
+ */
+#define UFS_DEVICE_QUIRK_DELAY_BEFORE_LPM	(1 << 6)
+
+/*
+ * Some UFS devices require host PA_TACTIVATE to be lower than device
+ * PA_TACTIVATE, enabling this quirk ensure this.
+ */
+#define UFS_DEVICE_QUIRK_HOST_PA_TACTIVATE	(1 << 7)
+>>>>>>> v4.9.227
 
 /*
  * The max. value PA_SaveConfigTime is 250 (10us) but this is not enough for
@@ -137,8 +185,13 @@ struct ufs_card_fix {
  * software delay will not help on this case so we need to increase
  * PA_SaveConfigTime to >32us as per vendor recommendation.
  */
+<<<<<<< HEAD
 #define UFS_DEVICE_QUIRK_HOST_PA_SAVECONFIGTIME	(1 << 7)
 
 struct ufs_hba;
 void ufs_advertise_fixup_device(struct ufs_hba *hba);
+=======
+#define UFS_DEVICE_QUIRK_HOST_PA_SAVECONFIGTIME	(1 << 8)
+
+>>>>>>> v4.9.227
 #endif /* UFS_QUIRKS_H_ */

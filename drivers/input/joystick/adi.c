@@ -535,8 +535,12 @@ static int adi_connect(struct gameport *gameport, struct gameport_driver *drv)
 		}
 	}
  fail2:	for (i = 0; i < 2; i++)
+<<<<<<< HEAD
 		if (port->adi[i].dev)
 			input_free_device(port->adi[i].dev);
+=======
+		input_free_device(port->adi[i].dev);
+>>>>>>> v4.9.227
 	gameport_close(gameport);
  fail1:	gameport_set_drvdata(gameport, NULL);
 	kfree(port);

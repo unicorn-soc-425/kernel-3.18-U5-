@@ -20,6 +20,11 @@
 #define _XT_OSF_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/ip.h>
+#include <linux/tcp.h>
+>>>>>>> v4.9.227
 
 #define MAXGENRELEN		32
 

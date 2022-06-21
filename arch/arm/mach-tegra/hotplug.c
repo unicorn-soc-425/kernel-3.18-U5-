@@ -17,6 +17,10 @@
 
 #include <asm/smp_plat.h>
 
+<<<<<<< HEAD
+=======
+#include "common.h"
+>>>>>>> v4.9.227
 #include "sleep.h"
 
 static void (*tegra_hotplug_shutdown)(void);
@@ -37,7 +41,11 @@ int tegra_cpu_kill(unsigned cpu)
  *
  * Called with IRQs disabled
  */
+<<<<<<< HEAD
 void __ref tegra_cpu_die(unsigned int cpu)
+=======
+void tegra_cpu_die(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 	if (!tegra_hotplug_shutdown) {
 		WARN(1, "hotplug is not yet initialized\n");

@@ -5,8 +5,11 @@
 # Rewritten to use lists instead of if-statements.
 #
 
+<<<<<<< HEAD
 obj-y	:= nonet.o
 
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_NET)		:= socket.o core/
 
 tmp-$(CONFIG_COMPAT) 		:= compat.o
@@ -36,6 +39,11 @@ obj-$(CONFIG_IRDA)		+= irda/
 obj-$(CONFIG_BT)		+= bluetooth/
 obj-$(CONFIG_SUNRPC)		+= sunrpc/
 obj-$(CONFIG_AF_RXRPC)		+= rxrpc/
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_AF_KCM)		+= kcm/
+obj-$(CONFIG_STREAM_PARSER)	+= strparser/
+>>>>>>> v4.9.227
 obj-$(CONFIG_ATM)		+= atm/
 obj-$(CONFIG_L2TP)		+= l2tp/
 obj-$(CONFIG_DECNET)		+= decnet/
@@ -71,9 +79,22 @@ obj-$(CONFIG_BATMAN_ADV)	+= batman-adv/
 obj-$(CONFIG_NFC)		+= nfc/
 obj-$(CONFIG_OPENVSWITCH)	+= openvswitch/
 obj-$(CONFIG_VSOCKETS)	+= vmw_vsock/
+<<<<<<< HEAD
 obj-$(CONFIG_NET_MPLS_GSO)	+= mpls/
 obj-$(CONFIG_HSR)		+= hsr/
 obj-$(CONFIG_NET_ACTIVITY_STATS)		+= activity_stats.o
 obj-$(CONFIG_IPC_ROUTER)        += ipc_router/
 obj-$(CONFIG_RMNET_DATA) += rmnet_data/
 obj-$(CONFIG_KNOX_NCM)	+= ncm/
+=======
+obj-$(CONFIG_MPLS)		+= mpls/
+obj-$(CONFIG_HSR)		+= hsr/
+ifneq ($(CONFIG_NET_SWITCHDEV),)
+obj-y				+= switchdev/
+endif
+ifneq ($(CONFIG_NET_L3_MASTER_DEV),)
+obj-y				+= l3mdev/
+endif
+obj-$(CONFIG_QRTR)		+= qrtr/
+obj-$(CONFIG_NET_NCSI)		+= ncsi/
+>>>>>>> v4.9.227

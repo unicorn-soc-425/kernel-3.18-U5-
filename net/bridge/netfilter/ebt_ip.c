@@ -36,6 +36,7 @@ ebt_ip_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	ih = skb_header_pointer(skb, 0, sizeof(_iph), &_iph);
 	if (ih == NULL)
 		return false;
+<<<<<<< HEAD
 	if (info->bitmask & EBT_IP_TOS &&
 	   FWINV(info->tos != ih->tos, EBT_IP_TOS))
 		return false;
@@ -49,6 +50,21 @@ ebt_ip_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		return false;
 	if (info->bitmask & EBT_IP_PROTO) {
 		if (FWINV(info->protocol != ih->protocol, EBT_IP_PROTO))
+=======
+	if ((info->bitmask & EBT_IP_TOS) &&
+	    NF_INVF(info, EBT_IP_TOS, info->tos != ih->tos))
+		return false;
+	if ((info->bitmask & EBT_IP_SOURCE) &&
+	    NF_INVF(info, EBT_IP_SOURCE,
+		    (ih->saddr & info->smsk) != info->saddr))
+		return false;
+	if ((info->bitmask & EBT_IP_DEST) &&
+	    NF_INVF(info, EBT_IP_DEST,
+		    (ih->daddr & info->dmsk) != info->daddr))
+		return false;
+	if (info->bitmask & EBT_IP_PROTO) {
+		if (NF_INVF(info, EBT_IP_PROTO, info->protocol != ih->protocol))
+>>>>>>> v4.9.227
 			return false;
 		if (!(info->bitmask & EBT_IP_DPORT) &&
 		    !(info->bitmask & EBT_IP_SPORT))
@@ -61,16 +77,28 @@ ebt_ip_mt(const struct sk_buff *skb, struct xt_action_param *par)
 			return false;
 		if (info->bitmask & EBT_IP_DPORT) {
 			u32 dst = ntohs(pptr->dst);
+<<<<<<< HEAD
 			if (FWINV(dst < info->dport[0] ||
 				  dst > info->dport[1],
 				  EBT_IP_DPORT))
+=======
+			if (NF_INVF(info, EBT_IP_DPORT,
+				    dst < info->dport[0] ||
+				    dst > info->dport[1]))
+>>>>>>> v4.9.227
 			return false;
 		}
 		if (info->bitmask & EBT_IP_SPORT) {
 			u32 src = ntohs(pptr->src);
+<<<<<<< HEAD
 			if (FWINV(src < info->sport[0] ||
 				  src > info->sport[1],
 				  EBT_IP_SPORT))
+=======
+			if (NF_INVF(info, EBT_IP_SPORT,
+				    src < info->sport[0] ||
+				    src > info->sport[1]))
+>>>>>>> v4.9.227
 			return false;
 		}
 	}

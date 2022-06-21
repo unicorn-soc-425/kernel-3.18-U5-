@@ -243,8 +243,12 @@ EXPORT_SYMBOL(mpc52xx_get_xtal_freq);
 /**
  * mpc52xx_restart: ppc_md->restart hook for mpc5200 using the watchdog timer
  */
+<<<<<<< HEAD
 void
 mpc52xx_restart(char *cmd)
+=======
+void __noreturn mpc52xx_restart(char *cmd)
+>>>>>>> v4.9.227
 {
 	local_irq_disable();
 

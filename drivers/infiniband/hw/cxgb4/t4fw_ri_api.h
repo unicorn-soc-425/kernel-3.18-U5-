@@ -162,6 +162,7 @@ struct fw_ri_tpte {
 	__be32 len_hi;
 };
 
+<<<<<<< HEAD
 #define S_FW_RI_TPTE_VALID		31
 #define M_FW_RI_TPTE_VALID		0x1
 #define V_FW_RI_TPTE_VALID(x)		((x) << S_FW_RI_TPTE_VALID)
@@ -258,6 +259,104 @@ struct fw_ri_tpte {
     ((x) << S_FW_RI_TPTE_MWBCNT_PSTAG)
 #define G_FW_RI_TPTE_MWBCNT_PSTAG(x)	\
     (((x) >> S_FW_RI_TPTE_MWBCNT_PSTAG) & M_FW_RI_TPTE_MWBCNT_PSTAG)
+=======
+#define FW_RI_TPTE_VALID_S		31
+#define FW_RI_TPTE_VALID_M		0x1
+#define FW_RI_TPTE_VALID_V(x)		((x) << FW_RI_TPTE_VALID_S)
+#define FW_RI_TPTE_VALID_G(x)		\
+	(((x) >> FW_RI_TPTE_VALID_S) & FW_RI_TPTE_VALID_M)
+#define FW_RI_TPTE_VALID_F		FW_RI_TPTE_VALID_V(1U)
+
+#define FW_RI_TPTE_STAGKEY_S		23
+#define FW_RI_TPTE_STAGKEY_M		0xff
+#define FW_RI_TPTE_STAGKEY_V(x)		((x) << FW_RI_TPTE_STAGKEY_S)
+#define FW_RI_TPTE_STAGKEY_G(x)		\
+	(((x) >> FW_RI_TPTE_STAGKEY_S) & FW_RI_TPTE_STAGKEY_M)
+
+#define FW_RI_TPTE_STAGSTATE_S		22
+#define FW_RI_TPTE_STAGSTATE_M		0x1
+#define FW_RI_TPTE_STAGSTATE_V(x)	((x) << FW_RI_TPTE_STAGSTATE_S)
+#define FW_RI_TPTE_STAGSTATE_G(x)	\
+	(((x) >> FW_RI_TPTE_STAGSTATE_S) & FW_RI_TPTE_STAGSTATE_M)
+#define FW_RI_TPTE_STAGSTATE_F		FW_RI_TPTE_STAGSTATE_V(1U)
+
+#define FW_RI_TPTE_STAGTYPE_S		20
+#define FW_RI_TPTE_STAGTYPE_M		0x3
+#define FW_RI_TPTE_STAGTYPE_V(x)	((x) << FW_RI_TPTE_STAGTYPE_S)
+#define FW_RI_TPTE_STAGTYPE_G(x)	\
+	(((x) >> FW_RI_TPTE_STAGTYPE_S) & FW_RI_TPTE_STAGTYPE_M)
+
+#define FW_RI_TPTE_PDID_S		0
+#define FW_RI_TPTE_PDID_M		0xfffff
+#define FW_RI_TPTE_PDID_V(x)		((x) << FW_RI_TPTE_PDID_S)
+#define FW_RI_TPTE_PDID_G(x)		\
+	(((x) >> FW_RI_TPTE_PDID_S) & FW_RI_TPTE_PDID_M)
+
+#define FW_RI_TPTE_PERM_S		28
+#define FW_RI_TPTE_PERM_M		0xf
+#define FW_RI_TPTE_PERM_V(x)		((x) << FW_RI_TPTE_PERM_S)
+#define FW_RI_TPTE_PERM_G(x)		\
+	(((x) >> FW_RI_TPTE_PERM_S) & FW_RI_TPTE_PERM_M)
+
+#define FW_RI_TPTE_REMINVDIS_S		27
+#define FW_RI_TPTE_REMINVDIS_M		0x1
+#define FW_RI_TPTE_REMINVDIS_V(x)	((x) << FW_RI_TPTE_REMINVDIS_S)
+#define FW_RI_TPTE_REMINVDIS_G(x)	\
+	(((x) >> FW_RI_TPTE_REMINVDIS_S) & FW_RI_TPTE_REMINVDIS_M)
+#define FW_RI_TPTE_REMINVDIS_F		FW_RI_TPTE_REMINVDIS_V(1U)
+
+#define FW_RI_TPTE_ADDRTYPE_S		26
+#define FW_RI_TPTE_ADDRTYPE_M		1
+#define FW_RI_TPTE_ADDRTYPE_V(x)	((x) << FW_RI_TPTE_ADDRTYPE_S)
+#define FW_RI_TPTE_ADDRTYPE_G(x)	\
+	(((x) >> FW_RI_TPTE_ADDRTYPE_S) & FW_RI_TPTE_ADDRTYPE_M)
+#define FW_RI_TPTE_ADDRTYPE_F		FW_RI_TPTE_ADDRTYPE_V(1U)
+
+#define FW_RI_TPTE_MWBINDEN_S		25
+#define FW_RI_TPTE_MWBINDEN_M		0x1
+#define FW_RI_TPTE_MWBINDEN_V(x)	((x) << FW_RI_TPTE_MWBINDEN_S)
+#define FW_RI_TPTE_MWBINDEN_G(x)	\
+	(((x) >> FW_RI_TPTE_MWBINDEN_S) & FW_RI_TPTE_MWBINDEN_M)
+#define FW_RI_TPTE_MWBINDEN_F		FW_RI_TPTE_MWBINDEN_V(1U)
+
+#define FW_RI_TPTE_PS_S			20
+#define FW_RI_TPTE_PS_M			0x1f
+#define FW_RI_TPTE_PS_V(x)		((x) << FW_RI_TPTE_PS_S)
+#define FW_RI_TPTE_PS_G(x)		\
+	(((x) >> FW_RI_TPTE_PS_S) & FW_RI_TPTE_PS_M)
+
+#define FW_RI_TPTE_QPID_S		0
+#define FW_RI_TPTE_QPID_M		0xfffff
+#define FW_RI_TPTE_QPID_V(x)		((x) << FW_RI_TPTE_QPID_S)
+#define FW_RI_TPTE_QPID_G(x)		\
+	(((x) >> FW_RI_TPTE_QPID_S) & FW_RI_TPTE_QPID_M)
+
+#define FW_RI_TPTE_NOSNOOP_S		30
+#define FW_RI_TPTE_NOSNOOP_M		0x1
+#define FW_RI_TPTE_NOSNOOP_V(x)		((x) << FW_RI_TPTE_NOSNOOP_S)
+#define FW_RI_TPTE_NOSNOOP_G(x)		\
+	(((x) >> FW_RI_TPTE_NOSNOOP_S) & FW_RI_TPTE_NOSNOOP_M)
+#define FW_RI_TPTE_NOSNOOP_F		FW_RI_TPTE_NOSNOOP_V(1U)
+
+#define FW_RI_TPTE_PBLADDR_S		0
+#define FW_RI_TPTE_PBLADDR_M		0x1fffffff
+#define FW_RI_TPTE_PBLADDR_V(x)		((x) << FW_RI_TPTE_PBLADDR_S)
+#define FW_RI_TPTE_PBLADDR_G(x)		\
+	(((x) >> FW_RI_TPTE_PBLADDR_S) & FW_RI_TPTE_PBLADDR_M)
+
+#define FW_RI_TPTE_DCA_S		24
+#define FW_RI_TPTE_DCA_M		0x1f
+#define FW_RI_TPTE_DCA_V(x)		((x) << FW_RI_TPTE_DCA_S)
+#define FW_RI_TPTE_DCA_G(x)		\
+	(((x) >> FW_RI_TPTE_DCA_S) & FW_RI_TPTE_DCA_M)
+
+#define FW_RI_TPTE_MWBCNT_PSTAG_S	0
+#define FW_RI_TPTE_MWBCNT_PSTAG_M	0xffffff
+#define FW_RI_TPTE_MWBCNT_PSTAT_V(x)	\
+	((x) << FW_RI_TPTE_MWBCNT_PSTAG_S)
+#define FW_RI_TPTE_MWBCNT_PSTAG_G(x)	\
+	(((x) >> FW_RI_TPTE_MWBCNT_PSTAG_S) & FW_RI_TPTE_MWBCNT_PSTAG_M)
+>>>>>>> v4.9.227
 
 enum fw_ri_res_type {
 	FW_RI_RES_TYPE_SQ,
@@ -308,6 +407,7 @@ struct fw_ri_res_wr {
 #endif
 };
 
+<<<<<<< HEAD
 #define S_FW_RI_RES_WR_NRES	0
 #define M_FW_RI_RES_WR_NRES	0xff
 #define V_FW_RI_RES_WR_NRES(x)	((x) << S_FW_RI_RES_WR_NRES)
@@ -524,6 +624,224 @@ struct fw_ri_res_wr {
 #define G_FW_RI_RES_WR_IQRO(x)	\
     (((x) >> S_FW_RI_RES_WR_IQRO) & M_FW_RI_RES_WR_IQRO)
 #define F_FW_RI_RES_WR_IQRO	V_FW_RI_RES_WR_IQRO(1U)
+=======
+#define FW_RI_RES_WR_NRES_S	0
+#define FW_RI_RES_WR_NRES_M	0xff
+#define FW_RI_RES_WR_NRES_V(x)	((x) << FW_RI_RES_WR_NRES_S)
+#define FW_RI_RES_WR_NRES_G(x)	\
+	(((x) >> FW_RI_RES_WR_NRES_S) & FW_RI_RES_WR_NRES_M)
+
+#define FW_RI_RES_WR_FETCHSZM_S		26
+#define FW_RI_RES_WR_FETCHSZM_M		0x1
+#define FW_RI_RES_WR_FETCHSZM_V(x)	((x) << FW_RI_RES_WR_FETCHSZM_S)
+#define FW_RI_RES_WR_FETCHSZM_G(x)	\
+	(((x) >> FW_RI_RES_WR_FETCHSZM_S) & FW_RI_RES_WR_FETCHSZM_M)
+#define FW_RI_RES_WR_FETCHSZM_F	FW_RI_RES_WR_FETCHSZM_V(1U)
+
+#define FW_RI_RES_WR_STATUSPGNS_S	25
+#define FW_RI_RES_WR_STATUSPGNS_M	0x1
+#define FW_RI_RES_WR_STATUSPGNS_V(x)	((x) << FW_RI_RES_WR_STATUSPGNS_S)
+#define FW_RI_RES_WR_STATUSPGNS_G(x)	\
+	(((x) >> FW_RI_RES_WR_STATUSPGNS_S) & FW_RI_RES_WR_STATUSPGNS_M)
+#define FW_RI_RES_WR_STATUSPGNS_F	FW_RI_RES_WR_STATUSPGNS_V(1U)
+
+#define FW_RI_RES_WR_STATUSPGRO_S	24
+#define FW_RI_RES_WR_STATUSPGRO_M	0x1
+#define FW_RI_RES_WR_STATUSPGRO_V(x)	((x) << FW_RI_RES_WR_STATUSPGRO_S)
+#define FW_RI_RES_WR_STATUSPGRO_G(x)	\
+	(((x) >> FW_RI_RES_WR_STATUSPGRO_S) & FW_RI_RES_WR_STATUSPGRO_M)
+#define FW_RI_RES_WR_STATUSPGRO_F	FW_RI_RES_WR_STATUSPGRO_V(1U)
+
+#define FW_RI_RES_WR_FETCHNS_S		23
+#define FW_RI_RES_WR_FETCHNS_M		0x1
+#define FW_RI_RES_WR_FETCHNS_V(x)	((x) << FW_RI_RES_WR_FETCHNS_S)
+#define FW_RI_RES_WR_FETCHNS_G(x)	\
+	(((x) >> FW_RI_RES_WR_FETCHNS_S) & FW_RI_RES_WR_FETCHNS_M)
+#define FW_RI_RES_WR_FETCHNS_F	FW_RI_RES_WR_FETCHNS_V(1U)
+
+#define FW_RI_RES_WR_FETCHRO_S		22
+#define FW_RI_RES_WR_FETCHRO_M		0x1
+#define FW_RI_RES_WR_FETCHRO_V(x)	((x) << FW_RI_RES_WR_FETCHRO_S)
+#define FW_RI_RES_WR_FETCHRO_G(x)	\
+	(((x) >> FW_RI_RES_WR_FETCHRO_S) & FW_RI_RES_WR_FETCHRO_M)
+#define FW_RI_RES_WR_FETCHRO_F	FW_RI_RES_WR_FETCHRO_V(1U)
+
+#define FW_RI_RES_WR_HOSTFCMODE_S	20
+#define FW_RI_RES_WR_HOSTFCMODE_M	0x3
+#define FW_RI_RES_WR_HOSTFCMODE_V(x)	((x) << FW_RI_RES_WR_HOSTFCMODE_S)
+#define FW_RI_RES_WR_HOSTFCMODE_G(x)	\
+	(((x) >> FW_RI_RES_WR_HOSTFCMODE_S) & FW_RI_RES_WR_HOSTFCMODE_M)
+
+#define FW_RI_RES_WR_CPRIO_S	19
+#define FW_RI_RES_WR_CPRIO_M	0x1
+#define FW_RI_RES_WR_CPRIO_V(x)	((x) << FW_RI_RES_WR_CPRIO_S)
+#define FW_RI_RES_WR_CPRIO_G(x)	\
+	(((x) >> FW_RI_RES_WR_CPRIO_S) & FW_RI_RES_WR_CPRIO_M)
+#define FW_RI_RES_WR_CPRIO_F	FW_RI_RES_WR_CPRIO_V(1U)
+
+#define FW_RI_RES_WR_ONCHIP_S		18
+#define FW_RI_RES_WR_ONCHIP_M		0x1
+#define FW_RI_RES_WR_ONCHIP_V(x)	((x) << FW_RI_RES_WR_ONCHIP_S)
+#define FW_RI_RES_WR_ONCHIP_G(x)	\
+	(((x) >> FW_RI_RES_WR_ONCHIP_S) & FW_RI_RES_WR_ONCHIP_M)
+#define FW_RI_RES_WR_ONCHIP_F	FW_RI_RES_WR_ONCHIP_V(1U)
+
+#define FW_RI_RES_WR_PCIECHN_S		16
+#define FW_RI_RES_WR_PCIECHN_M		0x3
+#define FW_RI_RES_WR_PCIECHN_V(x)	((x) << FW_RI_RES_WR_PCIECHN_S)
+#define FW_RI_RES_WR_PCIECHN_G(x)	\
+	(((x) >> FW_RI_RES_WR_PCIECHN_S) & FW_RI_RES_WR_PCIECHN_M)
+
+#define FW_RI_RES_WR_IQID_S	0
+#define FW_RI_RES_WR_IQID_M	0xffff
+#define FW_RI_RES_WR_IQID_V(x)	((x) << FW_RI_RES_WR_IQID_S)
+#define FW_RI_RES_WR_IQID_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQID_S) & FW_RI_RES_WR_IQID_M)
+
+#define FW_RI_RES_WR_DCAEN_S	31
+#define FW_RI_RES_WR_DCAEN_M	0x1
+#define FW_RI_RES_WR_DCAEN_V(x)	((x) << FW_RI_RES_WR_DCAEN_S)
+#define FW_RI_RES_WR_DCAEN_G(x)	\
+	(((x) >> FW_RI_RES_WR_DCAEN_S) & FW_RI_RES_WR_DCAEN_M)
+#define FW_RI_RES_WR_DCAEN_F	FW_RI_RES_WR_DCAEN_V(1U)
+
+#define FW_RI_RES_WR_DCACPU_S		26
+#define FW_RI_RES_WR_DCACPU_M		0x1f
+#define FW_RI_RES_WR_DCACPU_V(x)	((x) << FW_RI_RES_WR_DCACPU_S)
+#define FW_RI_RES_WR_DCACPU_G(x)	\
+	(((x) >> FW_RI_RES_WR_DCACPU_S) & FW_RI_RES_WR_DCACPU_M)
+
+#define FW_RI_RES_WR_FBMIN_S	23
+#define FW_RI_RES_WR_FBMIN_M	0x7
+#define FW_RI_RES_WR_FBMIN_V(x)	((x) << FW_RI_RES_WR_FBMIN_S)
+#define FW_RI_RES_WR_FBMIN_G(x)	\
+	(((x) >> FW_RI_RES_WR_FBMIN_S) & FW_RI_RES_WR_FBMIN_M)
+
+#define FW_RI_RES_WR_FBMAX_S	20
+#define FW_RI_RES_WR_FBMAX_M	0x7
+#define FW_RI_RES_WR_FBMAX_V(x)	((x) << FW_RI_RES_WR_FBMAX_S)
+#define FW_RI_RES_WR_FBMAX_G(x)	\
+	(((x) >> FW_RI_RES_WR_FBMAX_S) & FW_RI_RES_WR_FBMAX_M)
+
+#define FW_RI_RES_WR_CIDXFTHRESHO_S	19
+#define FW_RI_RES_WR_CIDXFTHRESHO_M	0x1
+#define FW_RI_RES_WR_CIDXFTHRESHO_V(x)	((x) << FW_RI_RES_WR_CIDXFTHRESHO_S)
+#define FW_RI_RES_WR_CIDXFTHRESHO_G(x)	\
+	(((x) >> FW_RI_RES_WR_CIDXFTHRESHO_S) & FW_RI_RES_WR_CIDXFTHRESHO_M)
+#define FW_RI_RES_WR_CIDXFTHRESHO_F	FW_RI_RES_WR_CIDXFTHRESHO_V(1U)
+
+#define FW_RI_RES_WR_CIDXFTHRESH_S	16
+#define FW_RI_RES_WR_CIDXFTHRESH_M	0x7
+#define FW_RI_RES_WR_CIDXFTHRESH_V(x)	((x) << FW_RI_RES_WR_CIDXFTHRESH_S)
+#define FW_RI_RES_WR_CIDXFTHRESH_G(x)	\
+	(((x) >> FW_RI_RES_WR_CIDXFTHRESH_S) & FW_RI_RES_WR_CIDXFTHRESH_M)
+
+#define FW_RI_RES_WR_EQSIZE_S		0
+#define FW_RI_RES_WR_EQSIZE_M		0xffff
+#define FW_RI_RES_WR_EQSIZE_V(x)	((x) << FW_RI_RES_WR_EQSIZE_S)
+#define FW_RI_RES_WR_EQSIZE_G(x)	\
+	(((x) >> FW_RI_RES_WR_EQSIZE_S) & FW_RI_RES_WR_EQSIZE_M)
+
+#define FW_RI_RES_WR_IQANDST_S		15
+#define FW_RI_RES_WR_IQANDST_M		0x1
+#define FW_RI_RES_WR_IQANDST_V(x)	((x) << FW_RI_RES_WR_IQANDST_S)
+#define FW_RI_RES_WR_IQANDST_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQANDST_S) & FW_RI_RES_WR_IQANDST_M)
+#define FW_RI_RES_WR_IQANDST_F	FW_RI_RES_WR_IQANDST_V(1U)
+
+#define FW_RI_RES_WR_IQANUS_S		14
+#define FW_RI_RES_WR_IQANUS_M		0x1
+#define FW_RI_RES_WR_IQANUS_V(x)	((x) << FW_RI_RES_WR_IQANUS_S)
+#define FW_RI_RES_WR_IQANUS_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQANUS_S) & FW_RI_RES_WR_IQANUS_M)
+#define FW_RI_RES_WR_IQANUS_F	FW_RI_RES_WR_IQANUS_V(1U)
+
+#define FW_RI_RES_WR_IQANUD_S		12
+#define FW_RI_RES_WR_IQANUD_M		0x3
+#define FW_RI_RES_WR_IQANUD_V(x)	((x) << FW_RI_RES_WR_IQANUD_S)
+#define FW_RI_RES_WR_IQANUD_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQANUD_S) & FW_RI_RES_WR_IQANUD_M)
+
+#define FW_RI_RES_WR_IQANDSTINDEX_S	0
+#define FW_RI_RES_WR_IQANDSTINDEX_M	0xfff
+#define FW_RI_RES_WR_IQANDSTINDEX_V(x)	((x) << FW_RI_RES_WR_IQANDSTINDEX_S)
+#define FW_RI_RES_WR_IQANDSTINDEX_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQANDSTINDEX_S) & FW_RI_RES_WR_IQANDSTINDEX_M)
+
+#define FW_RI_RES_WR_IQDROPRSS_S	15
+#define FW_RI_RES_WR_IQDROPRSS_M	0x1
+#define FW_RI_RES_WR_IQDROPRSS_V(x)	((x) << FW_RI_RES_WR_IQDROPRSS_S)
+#define FW_RI_RES_WR_IQDROPRSS_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQDROPRSS_S) & FW_RI_RES_WR_IQDROPRSS_M)
+#define FW_RI_RES_WR_IQDROPRSS_F	FW_RI_RES_WR_IQDROPRSS_V(1U)
+
+#define FW_RI_RES_WR_IQGTSMODE_S	14
+#define FW_RI_RES_WR_IQGTSMODE_M	0x1
+#define FW_RI_RES_WR_IQGTSMODE_V(x)	((x) << FW_RI_RES_WR_IQGTSMODE_S)
+#define FW_RI_RES_WR_IQGTSMODE_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQGTSMODE_S) & FW_RI_RES_WR_IQGTSMODE_M)
+#define FW_RI_RES_WR_IQGTSMODE_F	FW_RI_RES_WR_IQGTSMODE_V(1U)
+
+#define FW_RI_RES_WR_IQPCIECH_S		12
+#define FW_RI_RES_WR_IQPCIECH_M		0x3
+#define FW_RI_RES_WR_IQPCIECH_V(x)	((x) << FW_RI_RES_WR_IQPCIECH_S)
+#define FW_RI_RES_WR_IQPCIECH_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQPCIECH_S) & FW_RI_RES_WR_IQPCIECH_M)
+
+#define FW_RI_RES_WR_IQDCAEN_S		11
+#define FW_RI_RES_WR_IQDCAEN_M		0x1
+#define FW_RI_RES_WR_IQDCAEN_V(x)	((x) << FW_RI_RES_WR_IQDCAEN_S)
+#define FW_RI_RES_WR_IQDCAEN_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQDCAEN_S) & FW_RI_RES_WR_IQDCAEN_M)
+#define FW_RI_RES_WR_IQDCAEN_F	FW_RI_RES_WR_IQDCAEN_V(1U)
+
+#define FW_RI_RES_WR_IQDCACPU_S		6
+#define FW_RI_RES_WR_IQDCACPU_M		0x1f
+#define FW_RI_RES_WR_IQDCACPU_V(x)	((x) << FW_RI_RES_WR_IQDCACPU_S)
+#define FW_RI_RES_WR_IQDCACPU_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQDCACPU_S) & FW_RI_RES_WR_IQDCACPU_M)
+
+#define FW_RI_RES_WR_IQINTCNTTHRESH_S		4
+#define FW_RI_RES_WR_IQINTCNTTHRESH_M		0x3
+#define FW_RI_RES_WR_IQINTCNTTHRESH_V(x)	\
+	((x) << FW_RI_RES_WR_IQINTCNTTHRESH_S)
+#define FW_RI_RES_WR_IQINTCNTTHRESH_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQINTCNTTHRESH_S) & FW_RI_RES_WR_IQINTCNTTHRESH_M)
+
+#define FW_RI_RES_WR_IQO_S	3
+#define FW_RI_RES_WR_IQO_M	0x1
+#define FW_RI_RES_WR_IQO_V(x)	((x) << FW_RI_RES_WR_IQO_S)
+#define FW_RI_RES_WR_IQO_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQO_S) & FW_RI_RES_WR_IQO_M)
+#define FW_RI_RES_WR_IQO_F	FW_RI_RES_WR_IQO_V(1U)
+
+#define FW_RI_RES_WR_IQCPRIO_S		2
+#define FW_RI_RES_WR_IQCPRIO_M		0x1
+#define FW_RI_RES_WR_IQCPRIO_V(x)	((x) << FW_RI_RES_WR_IQCPRIO_S)
+#define FW_RI_RES_WR_IQCPRIO_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQCPRIO_S) & FW_RI_RES_WR_IQCPRIO_M)
+#define FW_RI_RES_WR_IQCPRIO_F	FW_RI_RES_WR_IQCPRIO_V(1U)
+
+#define FW_RI_RES_WR_IQESIZE_S		0
+#define FW_RI_RES_WR_IQESIZE_M		0x3
+#define FW_RI_RES_WR_IQESIZE_V(x)	((x) << FW_RI_RES_WR_IQESIZE_S)
+#define FW_RI_RES_WR_IQESIZE_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQESIZE_S) & FW_RI_RES_WR_IQESIZE_M)
+
+#define FW_RI_RES_WR_IQNS_S	31
+#define FW_RI_RES_WR_IQNS_M	0x1
+#define FW_RI_RES_WR_IQNS_V(x)	((x) << FW_RI_RES_WR_IQNS_S)
+#define FW_RI_RES_WR_IQNS_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQNS_S) & FW_RI_RES_WR_IQNS_M)
+#define FW_RI_RES_WR_IQNS_F	FW_RI_RES_WR_IQNS_V(1U)
+
+#define FW_RI_RES_WR_IQRO_S	30
+#define FW_RI_RES_WR_IQRO_M	0x1
+#define FW_RI_RES_WR_IQRO_V(x)	((x) << FW_RI_RES_WR_IQRO_S)
+#define FW_RI_RES_WR_IQRO_G(x)	\
+	(((x) >> FW_RI_RES_WR_IQRO_S) & FW_RI_RES_WR_IQRO_M)
+#define FW_RI_RES_WR_IQRO_F	FW_RI_RES_WR_IQRO_V(1U)
+>>>>>>> v4.9.227
 
 struct fw_ri_rdma_write_wr {
 	__u8   opcode;
@@ -562,11 +880,19 @@ struct fw_ri_send_wr {
 #endif
 };
 
+<<<<<<< HEAD
 #define S_FW_RI_SEND_WR_SENDOP		0
 #define M_FW_RI_SEND_WR_SENDOP		0xf
 #define V_FW_RI_SEND_WR_SENDOP(x)	((x) << S_FW_RI_SEND_WR_SENDOP)
 #define G_FW_RI_SEND_WR_SENDOP(x)	\
     (((x) >> S_FW_RI_SEND_WR_SENDOP) & M_FW_RI_SEND_WR_SENDOP)
+=======
+#define FW_RI_SEND_WR_SENDOP_S		0
+#define FW_RI_SEND_WR_SENDOP_M		0xf
+#define FW_RI_SEND_WR_SENDOP_V(x)	((x) << FW_RI_SEND_WR_SENDOP_S)
+#define FW_RI_SEND_WR_SENDOP_G(x)	\
+	(((x) >> FW_RI_SEND_WR_SENDOP_S) & FW_RI_SEND_WR_SENDOP_M)
+>>>>>>> v4.9.227
 
 struct fw_ri_rdma_read_wr {
 	__u8   opcode;
@@ -612,6 +938,7 @@ struct fw_ri_bind_mw_wr {
 	__be64 r4;
 };
 
+<<<<<<< HEAD
 #define S_FW_RI_BIND_MW_WR_QPBINDE	6
 #define M_FW_RI_BIND_MW_WR_QPBINDE	0x1
 #define V_FW_RI_BIND_MW_WR_QPBINDE(x)	((x) << S_FW_RI_BIND_MW_WR_QPBINDE)
@@ -631,6 +958,27 @@ struct fw_ri_bind_mw_wr {
 #define V_FW_RI_BIND_MW_WR_DCACPU(x)	((x) << S_FW_RI_BIND_MW_WR_DCACPU)
 #define G_FW_RI_BIND_MW_WR_DCACPU(x)	\
     (((x) >> S_FW_RI_BIND_MW_WR_DCACPU) & M_FW_RI_BIND_MW_WR_DCACPU)
+=======
+#define FW_RI_BIND_MW_WR_QPBINDE_S	6
+#define FW_RI_BIND_MW_WR_QPBINDE_M	0x1
+#define FW_RI_BIND_MW_WR_QPBINDE_V(x)	((x) << FW_RI_BIND_MW_WR_QPBINDE_S)
+#define FW_RI_BIND_MW_WR_QPBINDE_G(x)	\
+	(((x) >> FW_RI_BIND_MW_WR_QPBINDE_S) & FW_RI_BIND_MW_WR_QPBINDE_M)
+#define FW_RI_BIND_MW_WR_QPBINDE_F	FW_RI_BIND_MW_WR_QPBINDE_V(1U)
+
+#define FW_RI_BIND_MW_WR_NS_S		5
+#define FW_RI_BIND_MW_WR_NS_M		0x1
+#define FW_RI_BIND_MW_WR_NS_V(x)	((x) << FW_RI_BIND_MW_WR_NS_S)
+#define FW_RI_BIND_MW_WR_NS_G(x)	\
+	(((x) >> FW_RI_BIND_MW_WR_NS_S) & FW_RI_BIND_MW_WR_NS_M)
+#define FW_RI_BIND_MW_WR_NS_F	FW_RI_BIND_MW_WR_NS_V(1U)
+
+#define FW_RI_BIND_MW_WR_DCACPU_S	0
+#define FW_RI_BIND_MW_WR_DCACPU_M	0x1f
+#define FW_RI_BIND_MW_WR_DCACPU_V(x)	((x) << FW_RI_BIND_MW_WR_DCACPU_S)
+#define FW_RI_BIND_MW_WR_DCACPU_G(x)	\
+	(((x) >> FW_RI_BIND_MW_WR_DCACPU_S) & FW_RI_BIND_MW_WR_DCACPU_M)
+>>>>>>> v4.9.227
 
 struct fw_ri_fr_nsmr_wr {
 	__u8   opcode;
@@ -649,6 +997,7 @@ struct fw_ri_fr_nsmr_wr {
 	__be32 va_lo_fbo;
 };
 
+<<<<<<< HEAD
 #define S_FW_RI_FR_NSMR_WR_QPBINDE	6
 #define M_FW_RI_FR_NSMR_WR_QPBINDE	0x1
 #define V_FW_RI_FR_NSMR_WR_QPBINDE(x)	((x) << S_FW_RI_FR_NSMR_WR_QPBINDE)
@@ -668,6 +1017,39 @@ struct fw_ri_fr_nsmr_wr {
 #define V_FW_RI_FR_NSMR_WR_DCACPU(x)	((x) << S_FW_RI_FR_NSMR_WR_DCACPU)
 #define G_FW_RI_FR_NSMR_WR_DCACPU(x)	\
     (((x) >> S_FW_RI_FR_NSMR_WR_DCACPU) & M_FW_RI_FR_NSMR_WR_DCACPU)
+=======
+#define FW_RI_FR_NSMR_WR_QPBINDE_S	6
+#define FW_RI_FR_NSMR_WR_QPBINDE_M	0x1
+#define FW_RI_FR_NSMR_WR_QPBINDE_V(x)	((x) << FW_RI_FR_NSMR_WR_QPBINDE_S)
+#define FW_RI_FR_NSMR_WR_QPBINDE_G(x)	\
+	(((x) >> FW_RI_FR_NSMR_WR_QPBINDE_S) & FW_RI_FR_NSMR_WR_QPBINDE_M)
+#define FW_RI_FR_NSMR_WR_QPBINDE_F	FW_RI_FR_NSMR_WR_QPBINDE_V(1U)
+
+#define FW_RI_FR_NSMR_WR_NS_S		5
+#define FW_RI_FR_NSMR_WR_NS_M		0x1
+#define FW_RI_FR_NSMR_WR_NS_V(x)	((x) << FW_RI_FR_NSMR_WR_NS_S)
+#define FW_RI_FR_NSMR_WR_NS_G(x)	\
+	(((x) >> FW_RI_FR_NSMR_WR_NS_S) & FW_RI_FR_NSMR_WR_NS_M)
+#define FW_RI_FR_NSMR_WR_NS_F	FW_RI_FR_NSMR_WR_NS_V(1U)
+
+#define FW_RI_FR_NSMR_WR_DCACPU_S	0
+#define FW_RI_FR_NSMR_WR_DCACPU_M	0x1f
+#define FW_RI_FR_NSMR_WR_DCACPU_V(x)	((x) << FW_RI_FR_NSMR_WR_DCACPU_S)
+#define FW_RI_FR_NSMR_WR_DCACPU_G(x)	\
+	(((x) >> FW_RI_FR_NSMR_WR_DCACPU_S) & FW_RI_FR_NSMR_WR_DCACPU_M)
+
+struct fw_ri_fr_nsmr_tpte_wr {
+	__u8	opcode;
+	__u8   flags;
+	__u16  wrid;
+	__u8   r1[3];
+	__u8   len16;
+	__be32  r2;
+	__be32  stag;
+	struct fw_ri_tpte tpte;
+	__u64  pbl[2];
+};
+>>>>>>> v4.9.227
 
 struct fw_ri_inv_lstag_wr {
 	__u8   opcode;
@@ -740,6 +1122,7 @@ struct fw_ri_wr {
 	} u;
 };
 
+<<<<<<< HEAD
 #define S_FW_RI_WR_MPAREQBIT	7
 #define M_FW_RI_WR_MPAREQBIT	0x1
 #define V_FW_RI_WR_MPAREQBIT(x)	((x) << S_FW_RI_WR_MPAREQBIT)
@@ -849,5 +1232,19 @@ enum {                     /* TCP congestion control algorithms */
 #define G_CONG_CNTRL(x) (((x) >> S_CONG_CNTRL) & M_CONG_CNTRL)
 
 #define CONG_CNTRL_VALID   (1 << 18)
+=======
+#define FW_RI_WR_MPAREQBIT_S	7
+#define FW_RI_WR_MPAREQBIT_M	0x1
+#define FW_RI_WR_MPAREQBIT_V(x)	((x) << FW_RI_WR_MPAREQBIT_S)
+#define FW_RI_WR_MPAREQBIT_G(x)	\
+	(((x) >> FW_RI_WR_MPAREQBIT_S) & FW_RI_WR_MPAREQBIT_M)
+#define FW_RI_WR_MPAREQBIT_F	FW_RI_WR_MPAREQBIT_V(1U)
+
+#define FW_RI_WR_P2PTYPE_S	0
+#define FW_RI_WR_P2PTYPE_M	0xf
+#define FW_RI_WR_P2PTYPE_V(x)	((x) << FW_RI_WR_P2PTYPE_S)
+#define FW_RI_WR_P2PTYPE_G(x)	\
+	(((x) >> FW_RI_WR_P2PTYPE_S) & FW_RI_WR_P2PTYPE_M)
+>>>>>>> v4.9.227
 
 #endif /* _T4FW_RI_API_H_ */

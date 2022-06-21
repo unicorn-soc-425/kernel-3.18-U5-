@@ -2,6 +2,10 @@
 #define LINUX_MMC_IOCTL_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/major.h>
+>>>>>>> v4.9.227
 
 struct mmc_ioc_cmd {
 	/* Implies direction of data.  true = write, false = read */
@@ -57,14 +61,18 @@ struct mmc_ioc_multi_cmd {
 };
 
 #define MMC_IOC_CMD _IOWR(MMC_BLOCK_MAJOR, 0, struct mmc_ioc_cmd)
+<<<<<<< HEAD
 #define MMC_IOC_BUSWIDTH _IO(MMC_BLOCK_MAJOR, 0xCB)
 #define MMC_IOC_CLOCK _IO(MMC_BLOCK_MAJOR, 0xCC)
+=======
+>>>>>>> v4.9.227
 /*
  * MMC_IOC_MULTI_CMD: Used to send an array of MMC commands described by
  *	the structure mmc_ioc_multi_cmd. The MMC driver will issue all
  *	commands in array in sequence to card.
  */
 #define MMC_IOC_MULTI_CMD _IOWR(MMC_BLOCK_MAJOR, 1, struct mmc_ioc_multi_cmd)
+<<<<<<< HEAD
 
 
 /**
@@ -121,14 +129,21 @@ struct mmc_ioc_rpmb {
  */
 #define MMC_IOC_RPMB_CMD _IOWR(MMC_BLOCK_MAJOR, 0, struct mmc_ioc_rpmb)
 
+=======
+>>>>>>> v4.9.227
 /*
  * Since this ioctl is only meant to enhance (and not replace) normal access
  * to the mmc bus device, an upper data transfer limit of MMC_IOC_MAX_BYTES
  * is enforced per ioctl call.  For larger data transfers, use the normal
  * block device operations.
  */
+<<<<<<< HEAD
 
 #define MMC_IOC_MAX_BYTES  (512L * 512 * 2)
 #define MMC_IOC_MAX_CMDS    255
 
+=======
+#define MMC_IOC_MAX_BYTES  (512L * 256)
+#define MMC_IOC_MAX_CMDS    255
+>>>>>>> v4.9.227
 #endif /* LINUX_MMC_IOCTL_H */

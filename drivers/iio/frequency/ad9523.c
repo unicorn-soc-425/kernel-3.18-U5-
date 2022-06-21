@@ -284,7 +284,11 @@ struct ad9523_state {
 	} data[2] ____cacheline_aligned;
 };
 
+<<<<<<< HEAD
 static int ad9523_read(struct iio_dev *indio_dev, unsigned addr)
+=======
+static int ad9523_read(struct iio_dev *indio_dev, unsigned int addr)
+>>>>>>> v4.9.227
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
 	int ret;
@@ -318,7 +322,12 @@ static int ad9523_read(struct iio_dev *indio_dev, unsigned addr)
 	return ret;
 };
 
+<<<<<<< HEAD
 static int ad9523_write(struct iio_dev *indio_dev, unsigned addr, unsigned val)
+=======
+static int ad9523_write(struct iio_dev *indio_dev,
+		unsigned int addr, unsigned int val)
+>>>>>>> v4.9.227
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
 	int ret;
@@ -351,11 +360,19 @@ static int ad9523_io_update(struct iio_dev *indio_dev)
 }
 
 static int ad9523_vco_out_map(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 			      unsigned ch, unsigned out)
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
 	int ret;
 	unsigned mask;
+=======
+			      unsigned int ch, unsigned int out)
+{
+	struct ad9523_state *st = iio_priv(indio_dev);
+	int ret;
+	unsigned int mask;
+>>>>>>> v4.9.227
 
 	switch (ch) {
 	case 0 ... 3:
@@ -405,7 +422,11 @@ static int ad9523_vco_out_map(struct iio_dev *indio_dev,
 }
 
 static int ad9523_set_clock_provider(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 			      unsigned ch, unsigned long freq)
+=======
+			      unsigned int ch, unsigned long freq)
+>>>>>>> v4.9.227
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
 	long tmp1, tmp2;
@@ -445,7 +466,11 @@ static int ad9523_store_eeprom(struct iio_dev *indio_dev)
 
 	tmp = 4;
 	do {
+<<<<<<< HEAD
 		msleep(16);
+=======
+		msleep(20);
+>>>>>>> v4.9.227
 		ret = ad9523_read(indio_dev,
 				  AD9523_EEPROM_DATA_XFER_STATUS);
 		if (ret < 0)
@@ -619,7 +644,11 @@ static int ad9523_read_raw(struct iio_dev *indio_dev,
 			   long m)
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
+<<<<<<< HEAD
 	unsigned code;
+=======
+	unsigned int code;
+>>>>>>> v4.9.227
 	int ret;
 
 	mutex_lock(&indio_dev->mlock);
@@ -655,7 +684,11 @@ static int ad9523_write_raw(struct iio_dev *indio_dev,
 			    long mask)
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
+<<<<<<< HEAD
 	unsigned reg;
+=======
+	unsigned int reg;
+>>>>>>> v4.9.227
 	int ret, tmp, code;
 
 	mutex_lock(&indio_dev->mlock);
@@ -709,8 +742,13 @@ out:
 }
 
 static int ad9523_reg_access(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 			      unsigned reg, unsigned writeval,
 			      unsigned *readval)
+=======
+			      unsigned int reg, unsigned int writeval,
+			      unsigned int *readval)
+>>>>>>> v4.9.227
 {
 	int ret;
 
@@ -1027,7 +1065,10 @@ MODULE_DEVICE_TABLE(spi, ad9523_id);
 static struct spi_driver ad9523_driver = {
 	.driver = {
 		.name	= "ad9523",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ad9523_probe,
 	.remove		= ad9523_remove,

@@ -1,4 +1,102 @@
+<<<<<<< HEAD
 if ARCH_AT91
+=======
+menuconfig ARCH_AT91
+	bool "Atmel SoCs"
+	depends on ARCH_MULTI_V4T || ARCH_MULTI_V5 || ARCH_MULTI_V7
+	select COMMON_CLK_AT91
+	select GPIOLIB
+	select PINCTRL
+	select SOC_BUS
+
+if ARCH_AT91
+config SOC_SAMA5D2
+	bool "SAMA5D2 family"
+	depends on ARCH_MULTI_V7
+	select SOC_SAMA5
+	select CACHE_L2X0
+	select HAVE_FB_ATMEL
+	select HAVE_AT91_UTMI
+	select HAVE_AT91_USB_CLK
+	select HAVE_AT91_H32MX
+	select HAVE_AT91_GENERATED_CLK
+	select PINCTRL_AT91PIO4
+	help
+	  Select this if ou are using one of Atmel's SAMA5D2 family SoC.
+
+config SOC_SAMA5D3
+	bool "SAMA5D3 family"
+	depends on ARCH_MULTI_V7
+	select SOC_SAMA5
+	select HAVE_FB_ATMEL
+	select HAVE_AT91_UTMI
+	select HAVE_AT91_SMD
+	select HAVE_AT91_USB_CLK
+	select PINCTRL_AT91
+	help
+	  Select this if you are using one of Atmel's SAMA5D3 family SoC.
+	  This support covers SAMA5D31, SAMA5D33, SAMA5D34, SAMA5D35, SAMA5D36.
+
+config SOC_SAMA5D4
+	bool "SAMA5D4 family"
+	depends on ARCH_MULTI_V7
+	select SOC_SAMA5
+	select CACHE_L2X0
+	select HAVE_FB_ATMEL
+	select HAVE_AT91_UTMI
+	select HAVE_AT91_SMD
+	select HAVE_AT91_USB_CLK
+	select HAVE_AT91_H32MX
+	select PINCTRL_AT91
+	help
+	  Select this if you are using one of Atmel's SAMA5D4 family SoC.
+
+config SOC_AT91RM9200
+	bool "AT91RM9200"
+	depends on ARCH_MULTI_V4T
+	select ATMEL_AIC_IRQ
+	select ATMEL_ST
+	select CPU_ARM920T
+	select HAVE_AT91_USB_CLK
+	select PINCTRL_AT91
+	select SOC_SAM_V4_V5
+	select SRAM if PM
+	help
+	  Select this if you are using Atmel's AT91RM9200 SoC.
+
+config SOC_AT91SAM9
+	bool "AT91SAM9"
+	depends on ARCH_MULTI_V5
+	select ATMEL_AIC_IRQ
+	select ATMEL_SDRAMC
+	select CPU_ARM926T
+	select HAVE_AT91_SMD
+	select HAVE_AT91_USB_CLK
+	select HAVE_AT91_UTMI
+	select HAVE_FB_ATMEL
+	select MEMORY
+	select PINCTRL_AT91
+	select SOC_SAM_V4_V5
+	select SRAM if PM
+	help
+	  Select this if you are using one of those Atmel SoC:
+	    AT91SAM9260
+	    AT91SAM9261
+	    AT91SAM9263
+	    AT91SAM9G15
+	    AT91SAM9G20
+	    AT91SAM9G25
+	    AT91SAM9G35
+	    AT91SAM9G45
+	    AT91SAM9G46
+	    AT91SAM9M10
+	    AT91SAM9M11
+	    AT91SAM9N12
+	    AT91SAM9RL
+	    AT91SAM9X25
+	    AT91SAM9X35
+	    AT91SAM9XE
+>>>>>>> v4.9.227
 
 config HAVE_AT91_UTMI
 	bool
@@ -6,6 +104,7 @@ config HAVE_AT91_UTMI
 config HAVE_AT91_USB_CLK
 	bool
 
+<<<<<<< HEAD
 config HAVE_AT91_DBGU0
 	bool
 
@@ -35,6 +134,12 @@ config OLD_IRQ_AT91
 	bool
 	select MULTI_IRQ_HANDLER
 	select SPARSE_IRQ
+=======
+config COMMON_CLK_AT91
+	bool
+	select COMMON_CLK
+	select MFD_SYSCON
+>>>>>>> v4.9.227
 
 config HAVE_AT91_SMD
 	bool
@@ -42,6 +147,7 @@ config HAVE_AT91_SMD
 config HAVE_AT91_H32MX
 	bool
 
+<<<<<<< HEAD
 config SOC_AT91SAM9
 	bool
 	select ATMEL_AIC_IRQ if !OLD_IRQ_AT91
@@ -49,10 +155,21 @@ config SOC_AT91SAM9
 	select GENERIC_CLOCKEVENTS
 	select MEMORY if USE_OF
 	select ATMEL_SDRAMC if USE_OF
+=======
+config HAVE_AT91_GENERATED_CLK
+	bool
+
+config SOC_SAM_V4_V5
+	bool
+
+config SOC_SAM_V7
+	bool
+>>>>>>> v4.9.227
 
 config SOC_SAMA5
 	bool
 	select ATMEL_AIC5_IRQ
+<<<<<<< HEAD
 	select CPU_V7
 	select GENERIC_CLOCKEVENTS
 	select USE_OF
@@ -264,5 +381,11 @@ config AT91_TIMER_HZ
 	  problem so it can be safer to use a decimal values like 100.
 
 endmenu
+=======
+	select ATMEL_SDRAMC
+	select MEMORY
+	select SOC_SAM_V7
+	select SRAM if PM
+>>>>>>> v4.9.227
 
 endif

@@ -16,7 +16,11 @@ extra-y := head.o vmlinux.lds
 
 obj-y += dma.o exceptions.o \
 	hw_exception_handler.o intc.o irq.o \
+<<<<<<< HEAD
 	platform.o process.o prom.o prom_parse.o ptrace.o \
+=======
+	platform.o process.o prom.o ptrace.o \
+>>>>>>> v4.9.227
 	reset.o setup.o signal.o sys_microblaze.o timer.o traps.o unwind.o
 
 obj-y += cpu/

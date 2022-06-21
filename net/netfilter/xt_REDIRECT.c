@@ -26,12 +26,17 @@
 #include <net/checksum.h>
 #include <net/protocol.h>
 #include <net/netfilter/nf_nat.h>
+<<<<<<< HEAD
 
 static const struct in6_addr loopback_addr = IN6ADDR_LOOPBACK_INIT;
+=======
+#include <net/netfilter/nf_nat_redirect.h>
+>>>>>>> v4.9.227
 
 static unsigned int
 redirect_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 {
+<<<<<<< HEAD
 	const struct nf_nat_range *range = par->targinfo;
 	struct nf_nat_range newrange;
 	struct in6_addr newdst;
@@ -68,6 +73,9 @@ redirect_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 	newrange.max_proto	= range->max_proto;
 
 	return nf_nat_setup_info(ct, &newrange, NF_NAT_MANIP_DST);
+=======
+	return nf_nat_redirect_ipv6(skb, par->targinfo, par->hooknum);
+>>>>>>> v4.9.227
 }
 
 static int redirect_tg6_checkentry(const struct xt_tgchk_param *par)
@@ -98,6 +106,7 @@ static int redirect_tg4_check(const struct xt_tgchk_param *par)
 static unsigned int
 redirect_tg4(struct sk_buff *skb, const struct xt_action_param *par)
 {
+<<<<<<< HEAD
 	struct nf_conn *ct;
 	enum ip_conntrack_info ctinfo;
 	__be32 newdst;
@@ -140,6 +149,9 @@ redirect_tg4(struct sk_buff *skb, const struct xt_action_param *par)
 
 	/* Hand modified range to generic setup. */
 	return nf_nat_setup_info(ct, &newrange, NF_NAT_MANIP_DST);
+=======
+	return nf_nat_redirect_ipv4(skb, par->targinfo, par->hooknum);
+>>>>>>> v4.9.227
 }
 
 static struct xt_target redirect_tg_reg[] __read_mostly = {

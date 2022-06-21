@@ -1,9 +1,16 @@
 /*
  * AMD Cryptographic Coprocessor (CCP) driver
  *
+<<<<<<< HEAD
  * Copyright (C) 2013 Advanced Micro Devices, Inc.
  *
  * Author: Tom Lendacky <thomas.lendacky@amd.com>
+=======
+ * Copyright (C) 2013,2017 Advanced Micro Devices, Inc.
+ *
+ * Author: Tom Lendacky <thomas.lendacky@amd.com>
+ * Author: Gary R Hook <gary.hook@amd.com>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -33,6 +40,21 @@ struct ccp_cmd;
  */
 int ccp_present(void);
 
+<<<<<<< HEAD
+=======
+#define	CCP_VSIZE 16
+#define	CCP_VMASK		((unsigned int)((1 << CCP_VSIZE) - 1))
+#define	CCP_VERSION(v, r)	((unsigned int)((v << CCP_VSIZE) \
+					       | (r & CCP_VMASK)))
+
+/**
+ * ccp_version - get the version of the CCP
+ *
+ * Returns a positive version number, or zero if no CCP
+ */
+unsigned int ccp_version(void);
+
+>>>>>>> v4.9.227
 /**
  * ccp_enqueue_cmd - queue an operation for processing by the CCP
  *
@@ -65,6 +87,14 @@ static inline int ccp_present(void)
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned int ccp_version(void)
+{
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static inline int ccp_enqueue_cmd(struct ccp_cmd *cmd)
 {
 	return -ENODEV;
@@ -204,6 +234,10 @@ enum ccp_xts_aes_unit_size {
  * AES operation the new IV overwrites the old IV.
  */
 struct ccp_xts_aes_engine {
+<<<<<<< HEAD
+=======
+	enum ccp_aes_type type;
+>>>>>>> v4.9.227
 	enum ccp_aes_action action;
 	enum ccp_xts_aes_unit_size unit_size;
 
@@ -220,9 +254,12 @@ struct ccp_xts_aes_engine {
 };
 
 /***** SHA engine *****/
+<<<<<<< HEAD
 #define CCP_SHA_BLOCKSIZE               SHA256_BLOCK_SIZE
 #define CCP_SHA_CTXSIZE                 SHA256_DIGEST_SIZE
 
+=======
+>>>>>>> v4.9.227
 /**
  * ccp_sha_type - type of SHA operation
  *
@@ -364,6 +401,38 @@ struct ccp_passthru_engine {
 	u32 final;
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * struct ccp_passthru_nomap_engine - CCP pass-through operation
+ *   without performing DMA mapping
+ * @bit_mod: bitwise operation to perform
+ * @byte_swap: byteswap operation to perform
+ * @mask: mask to be applied to data
+ * @mask_len: length in bytes of mask
+ * @src: data to be used for this operation
+ * @dst: data produced by this operation
+ * @src_len: length in bytes of data used for this operation
+ * @final: indicate final pass-through operation
+ *
+ * Variables required to be set when calling ccp_enqueue_cmd():
+ *   - bit_mod, byte_swap, src, dst, src_len
+ *   - mask, mask_len if bit_mod is not CCP_PASSTHRU_BITWISE_NOOP
+ */
+struct ccp_passthru_nomap_engine {
+	enum ccp_passthru_bitwise bit_mod;
+	enum ccp_passthru_byteswap byte_swap;
+
+	dma_addr_t mask;
+	u32 mask_len;		/* In bytes */
+
+	dma_addr_t src_dma, dst_dma;
+	u64 src_len;		/* In bytes */
+
+	u32 final;
+};
+
+>>>>>>> v4.9.227
 /***** ECC engine *****/
 #define CCP_ECC_MODULUS_BYTES	48	/* 384-bits */
 #define CCP_ECC_MAX_OPERANDS	6
@@ -505,13 +574,22 @@ enum ccp_engine {
 };
 
 /* Flag values for flags member of ccp_cmd */
+<<<<<<< HEAD
 #define CCP_CMD_MAY_BACKLOG	0x00000001
+=======
+#define CCP_CMD_MAY_BACKLOG		0x00000001
+#define CCP_CMD_PASSTHRU_NO_DMA_MAP	0x00000002
+>>>>>>> v4.9.227
 
 /**
  * struct ccp_cmd - CPP operation request
  * @entry: list element (ccp driver use only)
  * @work: work element used for callbacks (ccp driver use only)
+<<<<<<< HEAD
  * @ccp: CCP device to be run on (ccp driver use only)
+=======
+ * @ccp: CCP device to be run on
+>>>>>>> v4.9.227
  * @ret: operation return code (ccp driver use only)
  * @flags: cmd processing flags
  * @engine: CCP operation to perform
@@ -545,6 +623,10 @@ struct ccp_cmd {
 		struct ccp_sha_engine sha;
 		struct ccp_rsa_engine rsa;
 		struct ccp_passthru_engine passthru;
+<<<<<<< HEAD
+=======
+		struct ccp_passthru_nomap_engine passthru_nomap;
+>>>>>>> v4.9.227
 		struct ccp_ecc_engine ecc;
 	} u;
 

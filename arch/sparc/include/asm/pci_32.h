@@ -22,6 +22,7 @@
 
 struct pci_dev;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 					enum pci_dma_burst_strategy *strat,
@@ -32,6 +33,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 #endif /* __KERNEL__ */
 
 #ifndef CONFIG_LEON_PCI

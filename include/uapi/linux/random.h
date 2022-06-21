@@ -34,6 +34,12 @@
 /* Clear the entropy pool and associated counters.  (Superuser only.) */
 #define RNDCLEARPOOL	_IO( 'R', 0x06 )
 
+<<<<<<< HEAD
+=======
+/* Reseed CRNG.  (Superuser only.) */
+#define RNDRESEEDCRNG	_IO( 'R', 0x07 )
+
+>>>>>>> v4.9.227
 struct rand_pool_info {
 	int	entropy_count;
 	int	buf_size;

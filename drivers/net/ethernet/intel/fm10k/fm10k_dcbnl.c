@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /* Intel Ethernet Switch Host Interface Driver
  * Copyright(c) 2013 - 2014 Intel Corporation.
+=======
+/* Intel(R) Ethernet Switch Host Interface Driver
+ * Copyright(c) 2013 - 2016 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -20,7 +25,10 @@
 
 #include "fm10k.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_DCB
+=======
+>>>>>>> v4.9.227
 /**
  * fm10k_dcbnl_ieee_getets - get the ETS configuration for the device
  * @dev: netdev interface for the device
@@ -128,7 +136,11 @@ static int fm10k_dcbnl_ieee_setpfc(struct net_device *dev, struct ieee_pfc *pfc)
  *
  * Returns that we support only IEEE DCB for this interface
  **/
+<<<<<<< HEAD
 static u8 fm10k_dcbnl_getdcbx(struct net_device *dev)
+=======
+static u8 fm10k_dcbnl_getdcbx(struct net_device __always_unused *dev)
+>>>>>>> v4.9.227
 {
 	return DCB_CAP_DCBX_HOST | DCB_CAP_DCBX_VER_IEEE;
 }
@@ -140,7 +152,11 @@ static u8 fm10k_dcbnl_getdcbx(struct net_device *dev)
  *
  * Returns error on attempt to enable anything but IEEE DCB for this interface
  **/
+<<<<<<< HEAD
 static u8 fm10k_dcbnl_setdcbx(struct net_device *dev, u8 mode)
+=======
+static u8 fm10k_dcbnl_setdcbx(struct net_device __always_unused *dev, u8 mode)
+>>>>>>> v4.9.227
 {
 	return (mode != (DCB_CAP_DCBX_HOST | DCB_CAP_DCBX_VER_IEEE)) ? 1 : 0;
 }
@@ -155,7 +171,10 @@ static const struct dcbnl_rtnl_ops fm10k_dcbnl_ops = {
 	.setdcbx	= fm10k_dcbnl_setdcbx,
 };
 
+<<<<<<< HEAD
 #endif /* CONFIG_DCB */
+=======
+>>>>>>> v4.9.227
 /**
  * fm10k_dcbnl_set_ops - Configures dcbnl ops pointer for netdev
  * @dev: netdev interface for the device
@@ -164,11 +183,17 @@ static const struct dcbnl_rtnl_ops fm10k_dcbnl_ops = {
  **/
 void fm10k_dcbnl_set_ops(struct net_device *dev)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_DCB
+=======
+>>>>>>> v4.9.227
 	struct fm10k_intfc *interface = netdev_priv(dev);
 	struct fm10k_hw *hw = &interface->hw;
 
 	if (hw->mac.type == fm10k_mac_pf)
 		dev->dcbnl_ops = &fm10k_dcbnl_ops;
+<<<<<<< HEAD
 #endif /* CONFIG_DCB */
+=======
+>>>>>>> v4.9.227
 }

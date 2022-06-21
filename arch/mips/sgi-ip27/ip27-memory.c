@@ -7,7 +7,11 @@
  * Copyright (C) 2000 by Silicon Graphics, Inc.
  * Copyright (C) 2004 by Christoph Hellwig
  *
+<<<<<<< HEAD
  * On SGI IP27 the ARC memory configuration data is completly bogus but
+=======
+ * On SGI IP27 the ARC memory configuration data is completely bogus but
+>>>>>>> v4.9.227
  * alternate easier to use mechanisms are available.
  */
 #include <linux/init.h>
@@ -42,8 +46,12 @@ static int fine_mode;
 
 static int is_fine_dirmode(void)
 {
+<<<<<<< HEAD
 	return (((LOCAL_HUB_L(NI_STATUS_REV_ID) & NSRI_REGIONSIZE_MASK)
 		>> NSRI_REGIONSIZE_SHFT) & REGIONSIZE_FINE);
+=======
+	return ((LOCAL_HUB_L(NI_STATUS_REV_ID) & NSRI_REGIONSIZE_MASK) >> NSRI_REGIONSIZE_SHFT) & REGIONSIZE_FINE;
+>>>>>>> v4.9.227
 }
 
 static hubreg_t get_region(cnodeid_t cnode)
@@ -288,7 +296,11 @@ static unsigned long __init slot_psize_compute(cnodeid_t node, int slot)
 	if (size <= 128) {
 		if (slot % 4 == 0) {
 			size <<= 20;		/* size in bytes */
+<<<<<<< HEAD
 			return(size >> PAGE_SHIFT);
+=======
+			return size >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 		} else
 			return 0;
 	} else {
@@ -405,7 +417,11 @@ static void __init node_mem_init(cnodeid_t node)
 	NODE_DATA(node)->node_start_pfn = start_pfn;
 	NODE_DATA(node)->node_spanned_pages = end_pfn - start_pfn;
 
+<<<<<<< HEAD
 	cpus_clear(hub_data(node)->h_cpus);
+=======
+	cpumask_clear(&hub_data(node)->h_cpus);
+>>>>>>> v4.9.227
 
 	slot_freepfn += PFN_UP(sizeof(struct pglist_data) +
 			       sizeof(struct hub_data));

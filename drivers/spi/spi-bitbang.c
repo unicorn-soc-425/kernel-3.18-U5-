@@ -10,10 +10,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/spinlock.h>
@@ -28,6 +31,11 @@
 #include <linux/spi/spi.h>
 #include <linux/spi/spi_bitbang.h>
 
+<<<<<<< HEAD
+=======
+#define SPI_BITBANG_CS_DELAY	100
+
+>>>>>>> v4.9.227
 
 /*----------------------------------------------------------------------*/
 
@@ -184,7 +192,10 @@ int spi_bitbang_setup(struct spi_device *spi)
 {
 	struct spi_bitbang_cs	*cs = spi->controller_state;
 	struct spi_bitbang	*bitbang;
+<<<<<<< HEAD
 	unsigned long		flags;
+=======
+>>>>>>> v4.9.227
 
 	bitbang = spi_master_get_devdata(spi->master);
 
@@ -214,12 +225,20 @@ int spi_bitbang_setup(struct spi_device *spi)
 	 */
 
 	/* deselect chip (low or high) */
+<<<<<<< HEAD
 	spin_lock_irqsave(&bitbang->lock, flags);
+=======
+	mutex_lock(&bitbang->lock);
+>>>>>>> v4.9.227
 	if (!bitbang->busy) {
 		bitbang->chipselect(spi, BITBANG_CS_INACTIVE);
 		ndelay(cs->nsecs);
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&bitbang->lock, flags);
+=======
+	mutex_unlock(&bitbang->lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -259,6 +278,7 @@ static int spi_bitbang_bufs(struct spi_device *spi, struct spi_transfer *t)
 static int spi_bitbang_prepare_hardware(struct spi_master *spi)
 {
 	struct spi_bitbang	*bitbang;
+<<<<<<< HEAD
 	unsigned long		flags;
 
 	bitbang = spi_master_get_devdata(spi);
@@ -266,11 +286,20 @@ static int spi_bitbang_prepare_hardware(struct spi_master *spi)
 	spin_lock_irqsave(&bitbang->lock, flags);
 	bitbang->busy = 1;
 	spin_unlock_irqrestore(&bitbang->lock, flags);
+=======
+
+	bitbang = spi_master_get_devdata(spi);
+
+	mutex_lock(&bitbang->lock);
+	bitbang->busy = 1;
+	mutex_unlock(&bitbang->lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static int spi_bitbang_transfer_one(struct spi_master *master,
+<<<<<<< HEAD
 				    struct spi_message *m)
 {
 	struct spi_bitbang	*bitbang;
@@ -375,6 +404,30 @@ static int spi_bitbang_transfer_one(struct spi_master *master,
 	}
 
 	spi_finalize_current_message(master);
+=======
+				    struct spi_device *spi,
+				    struct spi_transfer *transfer)
+{
+	struct spi_bitbang *bitbang = spi_master_get_devdata(master);
+	int status = 0;
+
+	if (bitbang->setup_transfer) {
+		status = bitbang->setup_transfer(spi, transfer);
+		if (status < 0)
+			goto out;
+	}
+
+	if (transfer->len)
+		status = bitbang->txrx_bufs(spi, transfer);
+
+	if (status == transfer->len)
+		status = 0;
+	else if (status >= 0)
+		status = -EREMOTEIO;
+
+out:
+	spi_finalize_current_transfer(master);
+>>>>>>> v4.9.227
 
 	return status;
 }
@@ -382,6 +435,7 @@ static int spi_bitbang_transfer_one(struct spi_master *master,
 static int spi_bitbang_unprepare_hardware(struct spi_master *spi)
 {
 	struct spi_bitbang	*bitbang;
+<<<<<<< HEAD
 	unsigned long		flags;
 
 	bitbang = spi_master_get_devdata(spi);
@@ -389,10 +443,37 @@ static int spi_bitbang_unprepare_hardware(struct spi_master *spi)
 	spin_lock_irqsave(&bitbang->lock, flags);
 	bitbang->busy = 0;
 	spin_unlock_irqrestore(&bitbang->lock, flags);
+=======
+
+	bitbang = spi_master_get_devdata(spi);
+
+	mutex_lock(&bitbang->lock);
+	bitbang->busy = 0;
+	mutex_unlock(&bitbang->lock);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void spi_bitbang_set_cs(struct spi_device *spi, bool enable)
+{
+	struct spi_bitbang *bitbang = spi_master_get_devdata(spi->master);
+
+	/* SPI core provides CS high / low, but bitbang driver
+	 * expects CS active
+	 * spi device driver takes care of handling SPI_CS_HIGH
+	 */
+	enable = (!!(spi->mode & SPI_CS_HIGH) == enable);
+
+	ndelay(SPI_BITBANG_CS_DELAY);
+	bitbang->chipselect(spi, enable ? BITBANG_CS_ACTIVE :
+			    BITBANG_CS_INACTIVE);
+	ndelay(SPI_BITBANG_CS_DELAY);
+}
+
+>>>>>>> v4.9.227
 /*----------------------------------------------------------------------*/
 
 /**
@@ -431,7 +512,11 @@ int spi_bitbang_start(struct spi_bitbang *bitbang)
 	if (!master || !bitbang->chipselect)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	spin_lock_init(&bitbang->lock);
+=======
+	mutex_init(&bitbang->lock);
+>>>>>>> v4.9.227
 
 	if (!master->mode_bits)
 		master->mode_bits = SPI_CPOL | SPI_CPHA | bitbang->flags;
@@ -441,7 +526,12 @@ int spi_bitbang_start(struct spi_bitbang *bitbang)
 
 	master->prepare_transfer_hardware = spi_bitbang_prepare_hardware;
 	master->unprepare_transfer_hardware = spi_bitbang_unprepare_hardware;
+<<<<<<< HEAD
 	master->transfer_one_message = spi_bitbang_transfer_one;
+=======
+	master->transfer_one = spi_bitbang_transfer_one;
+	master->set_cs = spi_bitbang_set_cs;
+>>>>>>> v4.9.227
 
 	if (!bitbang->txrx_bufs) {
 		bitbang->use_dma = 0;
@@ -462,7 +552,11 @@ int spi_bitbang_start(struct spi_bitbang *bitbang)
 	if (ret)
 		spi_master_put(master);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(spi_bitbang_start);
 

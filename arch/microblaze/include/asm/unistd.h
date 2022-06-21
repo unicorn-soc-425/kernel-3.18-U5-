@@ -38,6 +38,10 @@
 
 #endif /* __ASSEMBLY__ */
 
+<<<<<<< HEAD
 #define __NR_syscalls         388
+=======
+#define __NR_syscalls         392
+>>>>>>> v4.9.227
 
 #endif /* _ASM_MICROBLAZE_UNISTD_H */

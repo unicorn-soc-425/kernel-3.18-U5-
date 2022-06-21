@@ -66,7 +66,11 @@
 
    NOTES.
 
+<<<<<<< HEAD
    * avbps is scaled by 2^5, avpps is scaled by 2^10.
+=======
+   * avbps and avpps are scaled by 2^5.
+>>>>>>> v4.9.227
    * both values are reported as 32 bit unsigned values. bps can
      overflow for fast links : max speed being 34360Mbit/sec
    * Minimal interval is HZ/4=250msec (it is the greatest common divisor
@@ -84,11 +88,20 @@ struct gen_estimator
 	struct gnet_stats_basic_packed	*bstats;
 	struct gnet_stats_rate_est64	*rate_est;
 	spinlock_t		*stats_lock;
+<<<<<<< HEAD
 	int			ewma_log;
 	u64			last_bytes;
 	u64			avbps;
 	u32			last_packets;
 	u32			avpps;
+=======
+	seqcount_t		*running;
+	int			ewma_log;
+	u32			last_packets;
+	unsigned long		avpps;
+	u64			last_bytes;
+	u64			avbps;
+>>>>>>> v4.9.227
 	struct rcu_head		e_rcu;
 	struct rb_node		node;
 	struct gnet_stats_basic_cpu __percpu *cpu_bstats;
@@ -118,19 +131,32 @@ static void est_timer(unsigned long arg)
 	rcu_read_lock();
 	list_for_each_entry_rcu(e, &elist[idx].list, list) {
 		struct gnet_stats_basic_packed b = {0};
+<<<<<<< HEAD
 		u64 brate;
 		u32 rate;
 
 		spin_lock(e->stats_lock);
+=======
+		unsigned long rate;
+		u64 brate;
+
+		if (e->stats_lock)
+			spin_lock(e->stats_lock);
+>>>>>>> v4.9.227
 		read_lock(&est_lock);
 		if (e->bstats == NULL)
 			goto skip;
 
+<<<<<<< HEAD
 		__gnet_stats_copy_basic(&b, e->cpu_bstats, e->bstats);
+=======
+		__gnet_stats_copy_basic(e->running, &b, e->cpu_bstats, e->bstats);
+>>>>>>> v4.9.227
 
 		brate = (b.bytes - e->last_bytes)<<(7 - idx);
 		e->last_bytes = b.bytes;
 		e->avbps += (brate >> e->ewma_log) - (e->avbps >> e->ewma_log);
+<<<<<<< HEAD
 		e->rate_est->bps = (e->avbps+0xF)>>5;
 
 		rate = (b.packets - e->last_packets)<<(12 - idx);
@@ -140,6 +166,19 @@ static void est_timer(unsigned long arg)
 skip:
 		read_unlock(&est_lock);
 		spin_unlock(e->stats_lock);
+=======
+		WRITE_ONCE(e->rate_est->bps, (e->avbps + 0xF) >> 5);
+
+		rate = b.packets - e->last_packets;
+		rate <<= (7 - idx);
+		e->last_packets = b.packets;
+		e->avpps += (rate >> e->ewma_log) - (e->avpps >> e->ewma_log);
+		WRITE_ONCE(e->rate_est->pps, (e->avpps + 0xF) >> 5);
+skip:
+		read_unlock(&est_lock);
+		if (e->stats_lock)
+			spin_unlock(e->stats_lock);
+>>>>>>> v4.9.227
 	}
 
 	if (!list_empty(&elist[idx].list))
@@ -190,8 +229,15 @@ struct gen_estimator *gen_find_node(const struct gnet_stats_basic_packed *bstats
 /**
  * gen_new_estimator - create a new rate estimator
  * @bstats: basic statistics
+<<<<<<< HEAD
  * @rate_est: rate estimator statistics
  * @stats_lock: statistics lock
+=======
+ * @cpu_bstats: bstats per cpu
+ * @rate_est: rate estimator statistics
+ * @stats_lock: statistics lock
+ * @running: qdisc running seqcount
+>>>>>>> v4.9.227
  * @opt: rate estimator configuration TLV
  *
  * Creates a new rate estimator with &bstats as source and &rate_est
@@ -207,6 +253,10 @@ int gen_new_estimator(struct gnet_stats_basic_packed *bstats,
 		      struct gnet_stats_basic_cpu __percpu *cpu_bstats,
 		      struct gnet_stats_rate_est64 *rate_est,
 		      spinlock_t *stats_lock,
+<<<<<<< HEAD
+=======
+		      seqcount_t *running,
+>>>>>>> v4.9.227
 		      struct nlattr *opt)
 {
 	struct gen_estimator *est;
@@ -224,12 +274,20 @@ int gen_new_estimator(struct gnet_stats_basic_packed *bstats,
 	if (est == NULL)
 		return -ENOBUFS;
 
+<<<<<<< HEAD
 	__gnet_stats_copy_basic(&b, cpu_bstats, bstats);
+=======
+	__gnet_stats_copy_basic(running, &b, cpu_bstats, bstats);
+>>>>>>> v4.9.227
 
 	idx = parm->interval + 2;
 	est->bstats = bstats;
 	est->rate_est = rate_est;
 	est->stats_lock = stats_lock;
+<<<<<<< HEAD
+=======
+	est->running  = running;
+>>>>>>> v4.9.227
 	est->ewma_log = parm->ewma_log;
 	est->last_bytes = b.bytes;
 	est->avbps = rate_est->bps<<5;
@@ -286,8 +344,15 @@ EXPORT_SYMBOL(gen_kill_estimator);
 /**
  * gen_replace_estimator - replace rate estimator configuration
  * @bstats: basic statistics
+<<<<<<< HEAD
  * @rate_est: rate estimator statistics
  * @stats_lock: statistics lock
+=======
+ * @cpu_bstats: bstats per cpu
+ * @rate_est: rate estimator statistics
+ * @stats_lock: statistics lock
+ * @running: qdisc running seqcount (might be NULL)
+>>>>>>> v4.9.227
  * @opt: rate estimator configuration TLV
  *
  * Replaces the configuration of a rate estimator by calling
@@ -298,10 +363,18 @@ EXPORT_SYMBOL(gen_kill_estimator);
 int gen_replace_estimator(struct gnet_stats_basic_packed *bstats,
 			  struct gnet_stats_basic_cpu __percpu *cpu_bstats,
 			  struct gnet_stats_rate_est64 *rate_est,
+<<<<<<< HEAD
 			  spinlock_t *stats_lock, struct nlattr *opt)
 {
 	gen_kill_estimator(bstats, rate_est);
 	return gen_new_estimator(bstats, cpu_bstats, rate_est, stats_lock, opt);
+=======
+			  spinlock_t *stats_lock,
+			  seqcount_t *running, struct nlattr *opt)
+{
+	gen_kill_estimator(bstats, rate_est);
+	return gen_new_estimator(bstats, cpu_bstats, rate_est, stats_lock, running, opt);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(gen_replace_estimator);
 

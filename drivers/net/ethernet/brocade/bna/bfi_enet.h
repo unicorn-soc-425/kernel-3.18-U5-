@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Linux network driver for Brocade Converged Network Adapter.
+=======
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -11,9 +15,16 @@
  * General Public License for more details.
  */
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2011 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> v4.9.227
  */
 
 /* BNA Hardware and Firmware Interface */
@@ -35,8 +46,11 @@
 #include "bfa_defs.h"
 #include "bfi.h"
 
+<<<<<<< HEAD
 #pragma pack(1)
 
+=======
+>>>>>>> v4.9.227
 #define BFI_ENET_CFG_MAX		32	/* Max resources per PF */
 
 #define BFI_ENET_TXQ_PRIO_MAX		8
@@ -58,8 +72,13 @@ union bfi_addr_be_u {
 	struct {
 		u32	addr_hi;	/* Most Significant 32-bits */
 		u32	addr_lo;	/* Least Significant 32-Bits */
+<<<<<<< HEAD
 	} a32;
 };
+=======
+	} __packed a32;
+} __packed;
+>>>>>>> v4.9.227
 
 /*	T X   Q U E U E   D E F I N E S      */
 /* TxQ Vector (a.k.a. Tx-Buffer Descriptor) */
@@ -69,6 +88,7 @@ union bfi_addr_be_u {
 #define BFI_ENET_TXQ_WI_EXTENSION	(0x104)	/* Extension WI */
 
 /* TxQ Entry Control Flags */
+<<<<<<< HEAD
 #define BFI_ENET_TXQ_WI_CF_FCOE_CRC	(1 << 8)
 #define BFI_ENET_TXQ_WI_CF_IPID_MODE	(1 << 5)
 #define BFI_ENET_TXQ_WI_CF_INS_PRIO	(1 << 4)
@@ -76,6 +96,15 @@ union bfi_addr_be_u {
 #define BFI_ENET_TXQ_WI_CF_UDP_CKSUM	(1 << 2)
 #define BFI_ENET_TXQ_WI_CF_TCP_CKSUM	(1 << 1)
 #define BFI_ENET_TXQ_WI_CF_IP_CKSUM	(1 << 0)
+=======
+#define BFI_ENET_TXQ_WI_CF_FCOE_CRC	BIT(8)
+#define BFI_ENET_TXQ_WI_CF_IPID_MODE	BIT(5)
+#define BFI_ENET_TXQ_WI_CF_INS_PRIO	BIT(4)
+#define BFI_ENET_TXQ_WI_CF_INS_VLAN	BIT(3)
+#define BFI_ENET_TXQ_WI_CF_UDP_CKSUM	BIT(2)
+#define BFI_ENET_TXQ_WI_CF_TCP_CKSUM	BIT(1)
+#define BFI_ENET_TXQ_WI_CF_IP_CKSUM	BIT(0)
+>>>>>>> v4.9.227
 
 struct bfi_enet_txq_wi_base {
 	u8			reserved;
@@ -87,28 +116,46 @@ struct bfi_enet_txq_wi_base {
 	u16			vlan_tag;
 	u16			lso_mss;	/* Only 14 LSB are valid */
 	u32			frame_length;	/* Only 24 LSB are valid */
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 struct bfi_enet_txq_wi_ext {
 	u16			reserved;
 	u16			opcode;		/* BFI_ENET_TXQ_WI_EXTENSION */
 	u32			reserved2[3];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 struct bfi_enet_txq_wi_vector {			/* Tx Buffer Descriptor */
 	u16			reserved;
 	u16			length;		/* Only 14 LSB are valid */
 	union bfi_addr_be_u	addr;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /*  TxQ Entry Structure  */
 struct bfi_enet_txq_entry {
 	union {
 		struct bfi_enet_txq_wi_base	base;
 		struct bfi_enet_txq_wi_ext	ext;
+<<<<<<< HEAD
 	} wi;
 	struct bfi_enet_txq_wi_vector vector[BFI_ENET_TXQ_WI_VECT_MAX];
 };
+=======
+	} __packed wi;
+	struct bfi_enet_txq_wi_vector vector[BFI_ENET_TXQ_WI_VECT_MAX];
+} __packed;
+>>>>>>> v4.9.227
 
 #define wi_hdr		wi.base
 #define wi_ext_hdr	wi.ext
@@ -119,6 +166,7 @@ struct bfi_enet_txq_entry {
 /*   R X   Q U E U E   D E F I N E S   */
 struct bfi_enet_rxq_entry {
 	union bfi_addr_be_u  rx_buffer;
+<<<<<<< HEAD
 };
 
 /*   R X   C O M P L E T I O N   Q U E U E   D E F I N E S   */
@@ -149,6 +197,38 @@ struct bfi_enet_rxq_entry {
 #define	BFI_ENET_CQ_EF_REMOTE		(1 << 19)
 
 #define	BFI_ENET_CQ_EF_LOCAL		(1 << 20)
+=======
+} __packed;
+
+/*   R X   C O M P L E T I O N   Q U E U E   D E F I N E S   */
+/* CQ Entry Flags */
+#define BFI_ENET_CQ_EF_MAC_ERROR	BIT(0)
+#define BFI_ENET_CQ_EF_FCS_ERROR	BIT(1)
+#define BFI_ENET_CQ_EF_TOO_LONG		BIT(2)
+#define BFI_ENET_CQ_EF_FC_CRC_OK	BIT(3)
+
+#define BFI_ENET_CQ_EF_RSVD1		BIT(4)
+#define BFI_ENET_CQ_EF_L4_CKSUM_OK	BIT(5)
+#define BFI_ENET_CQ_EF_L3_CKSUM_OK	BIT(6)
+#define BFI_ENET_CQ_EF_HDS_HEADER	BIT(7)
+
+#define BFI_ENET_CQ_EF_UDP		BIT(8)
+#define BFI_ENET_CQ_EF_TCP		BIT(9)
+#define BFI_ENET_CQ_EF_IP_OPTIONS	BIT(10)
+#define BFI_ENET_CQ_EF_IPV6		BIT(11)
+
+#define BFI_ENET_CQ_EF_IPV4		BIT(12)
+#define BFI_ENET_CQ_EF_VLAN		BIT(13)
+#define BFI_ENET_CQ_EF_RSS		BIT(14)
+#define BFI_ENET_CQ_EF_RSVD2		BIT(15)
+
+#define BFI_ENET_CQ_EF_MCAST_MATCH	BIT(16)
+#define BFI_ENET_CQ_EF_MCAST		BIT(17)
+#define BFI_ENET_CQ_EF_BCAST		BIT(18)
+#define BFI_ENET_CQ_EF_REMOTE		BIT(19)
+
+#define BFI_ENET_CQ_EF_LOCAL		BIT(20)
+>>>>>>> v4.9.227
 
 /* CQ Entry Structure */
 struct bfi_enet_cq_entry {
@@ -160,7 +240,11 @@ struct bfi_enet_cq_entry {
 	u8	reserved1;
 	u8	reserved2;
 	u8	rxq_id;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /*   E N E T   C O N T R O L   P A T H   C O M M A N D S   */
 struct bfi_enet_q {
@@ -168,23 +252,39 @@ struct bfi_enet_q {
 	union bfi_addr_u	first_entry;
 	u16		pages;	/* # of pages */
 	u16		page_sz;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 struct bfi_enet_txq {
 	struct bfi_enet_q	q;
 	u8			priority;
 	u8			rsvd[3];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 struct bfi_enet_rxq {
 	struct bfi_enet_q	q;
 	u16		rx_buffer_size;
 	u16		rsvd;
+<<<<<<< HEAD
 };
 
 struct bfi_enet_cq {
 	struct bfi_enet_q	q;
 };
+=======
+} __packed;
+
+struct bfi_enet_cq {
+	struct bfi_enet_q	q;
+} __packed;
+>>>>>>> v4.9.227
 
 struct bfi_enet_ib_cfg {
 	u8		int_pkt_dma;
@@ -197,16 +297,26 @@ struct bfi_enet_ib_cfg {
 	u32	inter_pkt_timeout;
 	u8		inter_pkt_count;
 	u8		rsvd1[3];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 struct bfi_enet_ib {
 	union bfi_addr_u	index_addr;
 	union {
 		u16	msix_index;
 		u16	intx_bitmask;
+<<<<<<< HEAD
 	} intr;
 	u16		rsvd;
 };
+=======
+	} __packed intr;
+	u16		rsvd;
+} __packed;
+>>>>>>> v4.9.227
 
 /* ENET command messages */
 enum bfi_enet_h2i_msgs {
@@ -354,7 +464,11 @@ enum bfi_enet_err {
  */
 struct bfi_enet_req {
 	struct bfi_msgq_mhdr mh;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* Enable/Disable Request
  *
@@ -369,7 +483,11 @@ struct bfi_enet_enable_req {
 	struct		bfi_msgq_mhdr mh;
 	u8		enable;		/* 1 = enable;  0 = disable */
 	u8		rsvd[3];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* Generic Response */
 struct bfi_enet_rsp {
@@ -377,7 +495,11 @@ struct bfi_enet_rsp {
 	u8		error;		/*!< if error see cmd_offset */
 	u8		rsvd;
 	u16		cmd_offset;	/*!< offset to invalid parameter */
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* GLOBAL CONFIGURATION */
 
@@ -386,7 +508,11 @@ struct bfi_enet_rsp {
  */
 struct bfi_enet_attr_req {
 	struct bfi_msgq_mhdr	mh;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* bfi_enet_attr_rsp is used by:
  *	BFI_ENET_I2H_GET_ATTR_RSP
@@ -399,7 +525,11 @@ struct bfi_enet_attr_rsp {
 	u32		max_cfg;
 	u32		max_ucmac;
 	u32		rit_size;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* Tx Configuration
  *
@@ -420,7 +550,11 @@ struct bfi_enet_tx_cfg {
 	u8		apply_vlan_filter;
 	u8		add_to_vswitch;
 	u8		rsvd1[1];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 struct bfi_enet_tx_cfg_req {
 	struct bfi_msgq_mhdr mh;
@@ -430,7 +564,11 @@ struct bfi_enet_tx_cfg_req {
 	struct {
 		struct bfi_enet_txq	q;
 		struct bfi_enet_ib	ib;
+<<<<<<< HEAD
 	} q_cfg[BFI_ENET_TXQ_PRIO_MAX];
+=======
+	} __packed q_cfg[BFI_ENET_TXQ_PRIO_MAX];
+>>>>>>> v4.9.227
 
 	struct bfi_enet_ib_cfg	ib_cfg;
 
@@ -447,7 +585,11 @@ struct bfi_enet_tx_cfg_rsp {
 		u32	i_dbell;	/* PCI base address offset */
 		u8	hw_qid;		/* For debugging */
 		u8	rsvd[3];
+<<<<<<< HEAD
 	} q_handles[BFI_ENET_TXQ_PRIO_MAX];
+=======
+	} __packed q_handles[BFI_ENET_TXQ_PRIO_MAX];
+>>>>>>> v4.9.227
 };
 
 /* Rx Configuration
@@ -480,13 +622,21 @@ struct bfi_enet_rx_cfg {
 		u8			force_offset;
 		u8			type;
 		u8			rsvd1;
+<<<<<<< HEAD
 	} hds;
+=======
+	} __packed hds;
+>>>>>>> v4.9.227
 
 	u8		multi_buffer;
 	u8		strip_vlan;
 	u8		drop_untagged;
 	u8		rsvd2;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /*
  * Multicast frames are received on the ql of q-set index zero.
@@ -503,12 +653,20 @@ struct bfi_enet_rx_cfg_req {
 		struct bfi_enet_rxq	qs;	/* small/header buffers */
 		struct bfi_enet_cq	cq;
 		struct bfi_enet_ib	ib;
+<<<<<<< HEAD
 	} q_cfg[BFI_ENET_RX_QSET_MAX];
+=======
+	} __packed q_cfg[BFI_ENET_RX_QSET_MAX];
+>>>>>>> v4.9.227
 
 	struct bfi_enet_ib_cfg	ib_cfg;
 
 	struct bfi_enet_rx_cfg	rx_cfg;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 struct bfi_enet_rx_cfg_rsp {
 	struct bfi_msgq_mhdr mh;
@@ -523,8 +681,13 @@ struct bfi_enet_rx_cfg_rsp {
 		u8		hw_sqid;  /* For debugging */
 		u8		hw_cqid;  /* For debugging */
 		u8		rsvd;
+<<<<<<< HEAD
 	} q_handles[BFI_ENET_RX_QSET_MAX];
 };
+=======
+	} __packed q_handles[BFI_ENET_RX_QSET_MAX];
+} __packed;
+>>>>>>> v4.9.227
 
 /* RIT
  *
@@ -536,7 +699,11 @@ struct bfi_enet_rit_req {
 	u16	size;			/* number of table-entries used */
 	u8	rsvd[2];
 	u8	table[BFI_ENET_RSS_RIT_MAX];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* RSS
  *
@@ -555,12 +722,20 @@ struct bfi_enet_rss_cfg {
 	u8	mask;
 	u8	rsvd[2];
 	u32	key[BFI_ENET_RSS_KEY_LEN];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 struct bfi_enet_rss_cfg_req {
 	struct bfi_msgq_mhdr	mh;
 	struct bfi_enet_rss_cfg	cfg;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* MAC Unicast
  *
@@ -572,16 +747,27 @@ struct bfi_enet_rss_cfg_req {
  */
 struct bfi_enet_ucast_req {
 	struct bfi_msgq_mhdr	mh;
+<<<<<<< HEAD
 	mac_t			mac_addr;
 	u8			rsvd[2];
 };
+=======
+	u8			mac_addr[ETH_ALEN];
+	u8			rsvd[2];
+} __packed;
+>>>>>>> v4.9.227
 
 /* MAC Unicast + VLAN */
 struct bfi_enet_mac_n_vlan_req {
 	struct bfi_msgq_mhdr	mh;
 	u16			vlan_id;
+<<<<<<< HEAD
 	mac_t			mac_addr;
 };
+=======
+	u8			mac_addr[ETH_ALEN];
+} __packed;
+>>>>>>> v4.9.227
 
 /* MAC Multicast
  *
@@ -590,9 +776,15 @@ struct bfi_enet_mac_n_vlan_req {
  */
 struct bfi_enet_mcast_add_req {
 	struct bfi_msgq_mhdr	mh;
+<<<<<<< HEAD
 	mac_t			mac_addr;
 	u8			rsvd[2];
 };
+=======
+	u8			mac_addr[ETH_ALEN];
+	u8			rsvd[2];
+} __packed;
+>>>>>>> v4.9.227
 
 /* bfi_enet_mac_mfilter_add_rsp is used by:
  *	BFI_ENET_I2H_MAC_MCAST_ADD_RSP
@@ -604,7 +796,11 @@ struct bfi_enet_mcast_add_rsp {
 	u16			cmd_offset;
 	u16			handle;
 	u8			rsvd1[2];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* bfi_enet_mac_mfilter_del_req is used by:
  *	BFI_ENET_H2I_MAC_MCAST_DEL_REQ
@@ -613,7 +809,11 @@ struct bfi_enet_mcast_del_req {
 	struct bfi_msgq_mhdr	mh;
 	u16			handle;
 	u8			rsvd[2];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* VLAN
  *
@@ -625,7 +825,11 @@ struct bfi_enet_rx_vlan_req {
 	u8			block_idx;
 	u8			rsvd[3];
 	u32			bit_mask[BFI_ENET_VLAN_WORDS_MAX];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* PAUSE
  *
@@ -637,7 +841,11 @@ struct bfi_enet_set_pause_req {
 	u8			rsvd[2];
 	u8			tx_pause;	/* 1 = enable;  0 = disable */
 	u8			rx_pause;	/* 1 = enable;  0 = disable */
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* DIAGNOSTICS
  *
@@ -649,7 +857,11 @@ struct bfi_enet_diag_lb_req {
 	u8			rsvd[2];
 	u8			mode;		/* cable or Serdes */
 	u8			enable;		/* 1 = enable;  0 = disable */
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* enum for Loopback opmodes */
 enum {
@@ -670,6 +882,7 @@ struct bfi_enet_stats_req {
 	u32			rx_enet_mask;
 	u32			tx_enet_mask;
 	union bfi_addr_u	host_buffer;
+<<<<<<< HEAD
 };
 
 /* defines for "stats_mask" above. */
@@ -678,6 +891,16 @@ struct bfi_enet_stats_req {
 #define BFI_ENET_STATS_RAD    (1 << 2)    /* !< Rx Admission Statistics */
 #define BFI_ENET_STATS_RX_FC  (1 << 3)    /* !< Rx FC Stats from RxA */
 #define BFI_ENET_STATS_TX_FC  (1 << 4)    /* !< Tx FC Stats from TxA */
+=======
+} __packed;
+
+/* defines for "stats_mask" above. */
+#define BFI_ENET_STATS_MAC    BIT(0)    /* !< MAC Statistics */
+#define BFI_ENET_STATS_BPC    BIT(1)    /* !< Pause Stats from BPC */
+#define BFI_ENET_STATS_RAD    BIT(2)    /* !< Rx Admission Statistics */
+#define BFI_ENET_STATS_RX_FC  BIT(3)    /* !< Rx FC Stats from RxA */
+#define BFI_ENET_STATS_TX_FC  BIT(4)    /* !< Tx FC Stats from TxA */
+>>>>>>> v4.9.227
 
 #define BFI_ENET_STATS_ALL    0x1f
 
@@ -698,7 +921,11 @@ struct bfi_enet_stats_txf {
 	u64 errors;
 	u64 filter_vlan;      /* frames filtered due to VLAN */
 	u64 filter_mac_sa;    /* frames filtered due to SA check */
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* RxF Frame Statistics */
 struct bfi_enet_stats_rxf {
@@ -714,7 +941,11 @@ struct bfi_enet_stats_rxf {
 	u64 bcast;
 	u64 bcast_vlan;
 	u64 frame_drops;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* FC Tx Frame Statistics */
 struct bfi_enet_stats_fc_tx {
@@ -733,7 +964,11 @@ struct bfi_enet_stats_fc_tx {
 	u64 txf_parity_errors;
 	u64 txf_timeout;
 	u64 txf_fid_parity_errors;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* FC Rx Frame Statistics */
 struct bfi_enet_stats_fc_rx {
@@ -748,7 +983,11 @@ struct bfi_enet_stats_fc_rx {
 	u64 rxf_bcast_octets;
 	u64 rxf_bcast;
 	u64 rxf_bcast_vlan;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* RAD Frame Statistics */
 struct bfi_enet_stats_rad {
@@ -769,7 +1008,11 @@ struct bfi_enet_stats_rad {
 	u64 rx_bcast_vlan;
 
 	u64 rx_drops;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* BPC Tx Registers */
 struct bfi_enet_stats_bpc {
@@ -784,7 +1027,11 @@ struct bfi_enet_stats_bpc {
 	u64 rx_zero_pause[8];	/*!< Pause cancellation */
 	/*!<Pause initiation rather than retention */
 	u64 rx_first_pause[8];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* MAC Rx Statistics */
 struct bfi_enet_stats_mac {
@@ -837,7 +1084,11 @@ struct bfi_enet_stats_mac {
 	u64 tx_oversize;
 	u64 tx_undersize;
 	u64 tx_fragments;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* Complete statistics, DMAed from fw to host followed by
  * BFI_ENET_I2H_STATS_GET_RSP
@@ -851,8 +1102,12 @@ struct bfi_enet_stats {
 	struct bfi_enet_stats_fc_tx	fc_tx_stats;
 	struct bfi_enet_stats_rxf	rxf_stats[BFI_ENET_CFG_MAX];
 	struct bfi_enet_stats_txf	txf_stats[BFI_ENET_CFG_MAX];
+<<<<<<< HEAD
 };
 
 #pragma pack()
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 #endif  /* __BFI_ENET_H__ */

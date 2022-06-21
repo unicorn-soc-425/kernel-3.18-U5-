@@ -18,16 +18,36 @@
 /* empty control block to disable RI by loading it */
 struct runtime_instr_cb runtime_instr_empty_cb;
 
+<<<<<<< HEAD
 static int runtime_instr_avail(void)
 {
 	return test_facility(64);
+=======
+void runtime_instr_release(struct task_struct *tsk)
+{
+	kfree(tsk->thread.ri_cb);
+>>>>>>> v4.9.227
 }
 
 static void disable_runtime_instr(void)
 {
+<<<<<<< HEAD
 	struct pt_regs *regs = task_pt_regs(current);
 
 	load_runtime_instr_cb(&runtime_instr_empty_cb);
+=======
+	struct task_struct *task = current;
+	struct pt_regs *regs;
+
+	if (!task->thread.ri_cb)
+		return;
+	regs = task_pt_regs(task);
+	preempt_disable();
+	load_runtime_instr_cb(&runtime_instr_empty_cb);
+	kfree(task->thread.ri_cb);
+	task->thread.ri_cb = NULL;
+	preempt_enable();
+>>>>>>> v4.9.227
 
 	/*
 	 * Make sure the RI bit is deleted from the PSW. If the user did not
@@ -40,7 +60,10 @@ static void disable_runtime_instr(void)
 static void init_runtime_instr_cb(struct runtime_instr_cb *cb)
 {
 	cb->buf_limit = 0xfff;
+<<<<<<< HEAD
 	cb->int_requested = 1;
+=======
+>>>>>>> v4.9.227
 	cb->pstate = 1;
 	cb->pstate_set_buf = 1;
 	cb->pstate_sample = 1;
@@ -49,6 +72,7 @@ static void init_runtime_instr_cb(struct runtime_instr_cb *cb)
 	cb->valid = 1;
 }
 
+<<<<<<< HEAD
 void exit_thread_runtime_instr(void)
 {
 	struct task_struct *task = current;
@@ -108,6 +132,21 @@ SYSCALL_DEFINE2(s390_runtime_instr, int, command, int, signum)
 
 	if (command != S390_RUNTIME_INSTR_START ||
 	    (signum < SIGRTMIN || signum > SIGRTMAX))
+=======
+SYSCALL_DEFINE1(s390_runtime_instr, int, command)
+{
+	struct runtime_instr_cb *cb;
+
+	if (!test_facility(64))
+		return -EOPNOTSUPP;
+
+	if (command == S390_RUNTIME_INSTR_STOP) {
+		disable_runtime_instr();
+		return 0;
+	}
+
+	if (command != S390_RUNTIME_INSTR_START)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	if (!current->thread.ri_cb) {
@@ -120,7 +159,10 @@ SYSCALL_DEFINE2(s390_runtime_instr, int, command, int, signum)
 	}
 
 	init_runtime_instr_cb(cb);
+<<<<<<< HEAD
 	current->thread.ri_signum = signum;
+=======
+>>>>>>> v4.9.227
 
 	/* now load the control block to make it available */
 	preempt_disable();
@@ -129,6 +171,7 @@ SYSCALL_DEFINE2(s390_runtime_instr, int, command, int, signum)
 	preempt_enable();
 	return 0;
 }
+<<<<<<< HEAD
 
 static int __init runtime_instr_init(void)
 {
@@ -147,3 +190,5 @@ static int __init runtime_instr_init(void)
 	return rc;
 }
 device_initcall(runtime_instr_init);
+=======
+>>>>>>> v4.9.227

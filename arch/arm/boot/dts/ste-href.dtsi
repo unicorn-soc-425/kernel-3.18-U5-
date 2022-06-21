@@ -32,11 +32,18 @@
 			status = "okay";
 		};
 
+<<<<<<< HEAD
+=======
+		/* This UART is unused and thus left disabled */
+>>>>>>> v4.9.227
 		uart@80121000 {
 			pinctrl-names = "default", "sleep";
 			pinctrl-0 = <&uart1_default_mode>;
 			pinctrl-1 = <&uart1_sleep_mode>;
+<<<<<<< HEAD
 			status = "okay";
+=======
+>>>>>>> v4.9.227
 		};
 
 		uart@80007000 {
@@ -223,7 +230,10 @@
 		prcmu@80157000 {
 			ab8500 {
 				ab8500-gpio {
+<<<<<<< HEAD
 					compatible = "stericsson,ab8500-gpio";
+=======
+>>>>>>> v4.9.227
 				};
 
 				ab8500-regulators {

@@ -60,6 +60,10 @@ struct aer_rpc {
 	struct pcie_device *rpd;	/* Root Port device */
 	struct work_struct dpc_handler;
 	struct aer_err_source e_sources[AER_ERROR_SOURCES_MAX];
+<<<<<<< HEAD
+=======
+	struct aer_err_info e_info;
+>>>>>>> v4.9.227
 	unsigned short prod_idx;	/* Error Producer Index */
 	unsigned short cons_idx;	/* Error Consumer Index */
 	int isr;
@@ -105,7 +109,10 @@ static inline pci_ers_result_t merge_result(enum pci_ers_result orig,
 }
 
 extern struct bus_type pcie_port_bus_type;
+<<<<<<< HEAD
 int aer_init(struct pcie_device *dev);
+=======
+>>>>>>> v4.9.227
 void aer_isr(struct work_struct *work);
 void aer_print_error(struct pci_dev *dev, struct aer_err_info *info);
 void aer_print_port_info(struct pci_dev *dev, struct aer_err_info *info);
@@ -121,6 +128,7 @@ static inline int pcie_aer_get_firmware_first(struct pci_dev *pci_dev)
 	return 0;
 }
 #endif
+<<<<<<< HEAD
 
 static inline void pcie_aer_force_firmware_first(struct pci_dev *pci_dev,
 						 int enable)
@@ -128,4 +136,6 @@ static inline void pcie_aer_force_firmware_first(struct pci_dev *pci_dev,
 	pci_dev->__aer_firmware_first = !!enable;
 	pci_dev->__aer_firmware_first_valid = 1;
 }
+=======
+>>>>>>> v4.9.227
 #endif /* _AERDRV_H_ */

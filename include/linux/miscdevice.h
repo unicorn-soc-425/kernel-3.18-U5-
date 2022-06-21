@@ -3,6 +3,10 @@
 #include <linux/major.h>
 #include <linux/list.h>
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> v4.9.227
 
 /*
  *	These allocations are managed by device@lanana.org. If you use an
@@ -49,9 +53,17 @@
 #define LOOP_CTRL_MINOR		237
 #define VHOST_NET_MINOR		238
 #define UHID_MINOR		239
+<<<<<<< HEAD
 #define MISC_DYNAMIC_MINOR	255
 
 struct device;
+=======
+#define USERIO_MINOR		240
+#define MISC_DYNAMIC_MINOR	255
+
+struct device;
+struct attribute_group;
+>>>>>>> v4.9.227
 
 struct miscdevice  {
 	int minor;
@@ -60,12 +72,27 @@ struct miscdevice  {
 	struct list_head list;
 	struct device *parent;
 	struct device *this_device;
+<<<<<<< HEAD
+=======
+	const struct attribute_group **groups;
+>>>>>>> v4.9.227
 	const char *nodename;
 	umode_t mode;
 };
 
 extern int misc_register(struct miscdevice *misc);
+<<<<<<< HEAD
 extern int misc_deregister(struct miscdevice *misc);
+=======
+extern void misc_deregister(struct miscdevice *misc);
+
+/*
+ * Helper macro for drivers that don't do anything special in module init / exit
+ * call. This helps in eleminating of boilerplate code.
+ */
+#define module_misc_device(__misc_device) \
+	module_driver(__misc_device, misc_register, misc_deregister)
+>>>>>>> v4.9.227
 
 #define MODULE_ALIAS_MISCDEV(minor)				\
 	MODULE_ALIAS("char-major-" __stringify(MISC_MAJOR)	\

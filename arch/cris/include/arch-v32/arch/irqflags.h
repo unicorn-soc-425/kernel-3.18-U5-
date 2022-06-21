@@ -2,7 +2,11 @@
 #define __ASM_CRIS_ARCH_IRQFLAGS_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <arch/ptrace.h>
+=======
+#include <asm/ptrace.h>
+>>>>>>> v4.9.227
 
 static inline unsigned long arch_local_save_flags(void)
 {

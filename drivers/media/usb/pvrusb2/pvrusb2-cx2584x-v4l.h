@@ -40,6 +40,7 @@ void pvr2_cx25840_subdev_update(struct pvr2_hdw *, struct v4l2_subdev *sd);
 
 
 #endif /* __PVRUSB2_CX2584X_V4L_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -50,3 +51,5 @@ void pvr2_cx25840_subdev_update(struct pvr2_hdw *, struct v4l2_subdev *sd);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

@@ -132,7 +132,11 @@
 
 /* This one _might_ return the CPU number of the CPU reading it;
  * the bootROM decides whether to boot or to sleep/spinloop depending
+<<<<<<< HEAD
  * on this register beeing 0 or not
+=======
+ * on this register being 0 or not
+>>>>>>> v4.9.227
  */
 #define UNI_N_CPU_NUMBER		0x0050
 

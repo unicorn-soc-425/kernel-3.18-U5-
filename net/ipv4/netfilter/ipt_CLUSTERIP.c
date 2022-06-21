@@ -367,6 +367,14 @@ static int clusterip_tg_check(const struct xt_tgchk_param *par)
 	struct clusterip_config *config;
 	int ret, i;
 
+<<<<<<< HEAD
+=======
+	if (par->nft_compat) {
+		pr_err("cannot use CLUSTERIP target from nftables compat\n");
+		return -EOPNOTSUPP;
+	}
+
+>>>>>>> v4.9.227
 	if (cipinfo->hash_mode != CLUSTERIP_HASHMODE_SIP &&
 	    cipinfo->hash_mode != CLUSTERIP_HASHMODE_SIP_SPT &&
 	    cipinfo->hash_mode != CLUSTERIP_HASHMODE_SIP_SPT_DPT) {
@@ -428,6 +436,16 @@ static int clusterip_tg_check(const struct xt_tgchk_param *par)
 	if (ret < 0)
 		pr_info("cannot load conntrack support for proto=%u\n",
 			par->family);
+<<<<<<< HEAD
+=======
+
+	if (!par->net->xt.clusterip_deprecated_warning) {
+		pr_info("ipt_CLUSTERIP is deprecated and it will removed soon, "
+			"use xt_cluster instead\n");
+		par->net->xt.clusterip_deprecated_warning = true;
+	}
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -490,6 +508,7 @@ static void arp_print(struct arp_payload *payload)
 {
 #define HBUFFERLEN 30
 	char hbuffer[HBUFFERLEN];
+<<<<<<< HEAD
 	int j,k;
 
 	for (k=0, j=0; k < HBUFFERLEN-3 && j < ETH_ALEN; j++) {
@@ -498,6 +517,16 @@ static void arp_print(struct arp_payload *payload)
 		hbuffer[k++]=':';
 	}
 	hbuffer[--k]='\0';
+=======
+	int j, k;
+
+	for (k = 0, j = 0; k < HBUFFERLEN - 3 && j < ETH_ALEN; j++) {
+		hbuffer[k++] = hex_asc_hi(payload->src_hw[j]);
+		hbuffer[k++] = hex_asc_lo(payload->src_hw[j]);
+		hbuffer[k++] = ':';
+	}
+	hbuffer[--k] = '\0';
+>>>>>>> v4.9.227
 
 	pr_debug("src %pI4@%s, dst %pI4\n",
 		 &payload->src_ip, hbuffer, &payload->dst_ip);
@@ -505,16 +534,26 @@ static void arp_print(struct arp_payload *payload)
 #endif
 
 static unsigned int
+<<<<<<< HEAD
 arp_mangle(const struct nf_hook_ops *ops,
 	   struct sk_buff *skb,
 	   const struct net_device *in,
 	   const struct net_device *out,
 	   int (*okfn)(struct sk_buff *))
+=======
+arp_mangle(void *priv,
+	   struct sk_buff *skb,
+	   const struct nf_hook_state *state)
+>>>>>>> v4.9.227
 {
 	struct arphdr *arp = arp_hdr(skb);
 	struct arp_payload *payload;
 	struct clusterip_config *c;
+<<<<<<< HEAD
 	struct net *net = dev_net(in ? in : out);
+=======
+	struct net *net = state->net;
+>>>>>>> v4.9.227
 
 	/* we don't care about non-ethernet and non-ipv4 ARP */
 	if (arp->ar_hrd != htons(ARPHRD_ETHER) ||
@@ -539,10 +578,17 @@ arp_mangle(const struct nf_hook_ops *ops,
 	 * addresses on different interfacs.  However, in the CLUSTERIP case
 	 * this wouldn't work, since we didn't subscribe the mcast group on
 	 * other interfaces */
+<<<<<<< HEAD
 	if (c->dev != out) {
 		pr_debug("not mangling arp reply on different "
 			 "interface: cip'%s'-skb'%s'\n",
 			 c->dev->name, out->name);
+=======
+	if (c->dev != state->out) {
+		pr_debug("not mangling arp reply on different "
+			 "interface: cip'%s'-skb'%s'\n",
+			 c->dev->name, state->out->name);
+>>>>>>> v4.9.227
 		clusterip_config_put(c);
 		return NF_ACCEPT;
 	}

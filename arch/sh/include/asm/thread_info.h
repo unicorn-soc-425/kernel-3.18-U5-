@@ -27,7 +27,10 @@
 
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> v4.9.227
 	unsigned long		flags;		/* low level flags */
 	__u32			status;		/* thread synchronous flags */
 	__u32			cpu;
@@ -56,7 +59,10 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> v4.9.227
 	.flags		= 0,			\
 	.status		= 0,			\
 	.cpu		= 0,			\
@@ -153,11 +159,15 @@ extern void init_thread_xstate(void);
  * ever touches our thread-synchronous status, so we don't
  * have to worry about atomic accesses.
  */
+<<<<<<< HEAD
 #define TS_RESTORE_SIGMASK	0x0001	/* restore signal mask in do_signal() */
+=======
+>>>>>>> v4.9.227
 #define TS_USEDFPU		0x0002	/* FPU used by this task this quantum */
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 #define HAVE_SET_RESTORE_SIGMASK	1
 static inline void set_restore_sigmask(void)
 {
@@ -166,6 +176,8 @@ static inline void set_restore_sigmask(void)
 	WARN_ON(!test_bit(TIF_SIGPENDING, (unsigned long *)&ti->flags));
 }
 
+=======
+>>>>>>> v4.9.227
 #define TI_FLAG_FAULT_CODE_SHIFT	24
 
 /*
@@ -184,6 +196,7 @@ static inline unsigned int get_thread_fault_code(void)
 	return ti->flags >> TI_FLAG_FAULT_CODE_SHIFT;
 }
 
+<<<<<<< HEAD
 static inline void clear_restore_sigmask(void)
 {
 	current_thread_info()->status &= ~TS_RESTORE_SIGMASK;
@@ -201,6 +214,8 @@ static inline bool test_and_clear_restore_sigmask(void)
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 #endif	/* !__ASSEMBLY__ */
 
 #endif /* __KERNEL__ */

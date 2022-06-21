@@ -258,6 +258,7 @@ static int qxl_device_init(struct qxl_device *qdev,
 		 (unsigned long)qdev->surfaceram_size);
 
 
+<<<<<<< HEAD
 	qdev->gc_queue = create_singlethread_workqueue("qxl_gc");
 	INIT_WORK(&qdev->gc_work, qxl_gc_work);
 
@@ -265,6 +266,10 @@ static int qxl_device_init(struct qxl_device *qdev,
 	if (r)
 		return r;
 
+=======
+	INIT_WORK(&qdev->gc_work, qxl_gc_work);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -274,10 +279,14 @@ static void qxl_device_fini(struct qxl_device *qdev)
 		qxl_bo_unref(&qdev->current_release_bo[0]);
 	if (qdev->current_release_bo[1])
 		qxl_bo_unref(&qdev->current_release_bo[1]);
+<<<<<<< HEAD
 	flush_workqueue(qdev->gc_queue);
 	destroy_workqueue(qdev->gc_queue);
 	qdev->gc_queue = NULL;
 
+=======
+	flush_work(&qdev->gc_work);
+>>>>>>> v4.9.227
 	qxl_ring_free(qdev->command_ring);
 	qxl_ring_free(qdev->cursor_ring);
 	qxl_ring_free(qdev->release_ring);
@@ -314,10 +323,13 @@ int qxl_driver_load(struct drm_device *dev, unsigned long flags)
 	struct qxl_device *qdev;
 	int r;
 
+<<<<<<< HEAD
 	/* require kms */
 	if (!drm_core_check_feature(dev, DRIVER_MODESET))
 		return -ENODEV;
 
+=======
+>>>>>>> v4.9.227
 	qdev = kzalloc(sizeof(struct qxl_device), GFP_KERNEL);
 	if (qdev == NULL)
 		return -ENOMEM;

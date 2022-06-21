@@ -40,7 +40,11 @@
 #include <linux/seq_file.h>
 #include <linux/root_dev.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/kexec.h>
+=======
+#include <linux/of_pci.h>
+>>>>>>> v4.9.227
 
 #include <asm/mmu.h>
 #include <asm/processor.h>
@@ -56,7 +60,10 @@
 #include <asm/time.h>
 #include <asm/nvram.h>
 #include <asm/pmc.h>
+<<<<<<< HEAD
 #include <asm/mpic.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/xics.h>
 #include <asm/ppc-pci.h>
 #include <asm/i8259.h>
@@ -66,6 +73,11 @@
 #include <asm/eeh.h>
 #include <asm/reg.h>
 #include <asm/plpar_wrappers.h>
+<<<<<<< HEAD
+=======
+#include <asm/kexec.h>
+#include <asm/security_features.h>
+>>>>>>> v4.9.227
 
 #include "pseries.h"
 
@@ -76,8 +88,11 @@ EXPORT_SYMBOL(CMO_PageSize);
 
 int fwnmi_active;  /* TRUE if an FWNMI handler is present */
 
+<<<<<<< HEAD
 static struct device_node *pSeries_mpic_node;
 
+=======
+>>>>>>> v4.9.227
 static void pSeries_show_cpuinfo(struct seq_file *m)
 {
 	struct device_node *root;
@@ -111,12 +126,20 @@ static void __init fwnmi_init(void)
 		fwnmi_active = 1;
 }
 
+<<<<<<< HEAD
 static void pseries_8259_cascade(unsigned int irq, struct irq_desc *desc)
+=======
+static void pseries_8259_cascade(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int cascade_irq = i8259_irq();
 
+<<<<<<< HEAD
 	if (cascade_irq != NO_IRQ)
+=======
+	if (cascade_irq)
+>>>>>>> v4.9.227
 		generic_handle_irq(cascade_irq);
 
 	chip->irq_eoi(&desc->irq_data);
@@ -143,7 +166,11 @@ static void __init pseries_setup_i8259_cascade(void)
 	}
 
 	cascade = irq_of_parse_and_map(found, 0);
+<<<<<<< HEAD
 	if (cascade == NO_IRQ) {
+=======
+	if (!cascade) {
+>>>>>>> v4.9.227
 		printk(KERN_ERR "pic: failed to map cascade interrupt");
 		return;
 	}
@@ -171,6 +198,7 @@ static void __init pseries_setup_i8259_cascade(void)
 	irq_set_chained_handler(cascade, pseries_8259_cascade);
 }
 
+<<<<<<< HEAD
 static void __init pseries_mpic_init_IRQ(void)
 {
 	struct device_node *np;
@@ -213,6 +241,9 @@ static void __init pseries_mpic_init_IRQ(void)
 }
 
 static void __init pseries_xics_init_IRQ(void)
+=======
+static void __init pseries_init_irq(void)
+>>>>>>> v4.9.227
 {
 	xics_init();
 	pseries_setup_i8259_cascade();
@@ -227,6 +258,7 @@ static void pseries_lpar_enable_pmcs(void)
 	plpar_hcall_norets(H_PERFMON, set, reset);
 }
 
+<<<<<<< HEAD
 static void __init pseries_discover_pic(void)
 {
 	struct device_node *np;
@@ -256,10 +288,18 @@ static int pci_dn_reconfig_notifier(struct notifier_block *nb, unsigned long act
 	struct of_reconfig_data *rd = data;
 	struct device_node *np = rd->dn;
 	struct pci_dn *pci = NULL;
+=======
+static int pci_dn_reconfig_notifier(struct notifier_block *nb, unsigned long action, void *data)
+{
+	struct of_reconfig_data *rd = data;
+	struct device_node *parent, *np = rd->dn;
+	struct pci_dn *pdn;
+>>>>>>> v4.9.227
 	int err = NOTIFY_OK;
 
 	switch (action) {
 	case OF_RECONFIG_ATTACH_NODE:
+<<<<<<< HEAD
 		pci = np->parent->data;
 		if (pci) {
 			update_dn_pci_info(np, pci->phb);
@@ -267,6 +307,19 @@ static int pci_dn_reconfig_notifier(struct notifier_block *nb, unsigned long act
 			/* Create EEH device for the OF node */
 			eeh_dev_init(np, pci->phb);
 		}
+=======
+		parent = of_get_parent(np);
+		pdn = parent ? PCI_DN(parent) : NULL;
+		if (pdn)
+			pci_add_device_node_info(pdn->phb, np);
+
+		of_node_put(parent);
+		break;
+	case OF_RECONFIG_DETACH_NODE:
+		pdn = PCI_DN(np);
+		if (pdn)
+			list_del(&pdn->list);
+>>>>>>> v4.9.227
 		break;
 	default:
 		err = NOTIFY_DONE;
@@ -357,9 +410,18 @@ static void pseries_lpar_idle(void)
 {
 	/*
 	 * Default handler to go into low thread priority and possibly
+<<<<<<< HEAD
 	 * low power mode by cedeing processor to hypervisor
 	 */
 
+=======
+	 * low power mode by ceding processor to hypervisor
+	 */
+
+	if (!prep_irq_for_idle())
+		return;
+
+>>>>>>> v4.9.227
 	/* Indicate to hypervisor that we are idle. */
 	get_lppaca()->idle = 1;
 
@@ -382,15 +444,32 @@ static void pseries_lpar_idle(void)
  * to ever be a problem in practice we can move this into a kernel thread to
  * finish off the process later in boot.
  */
+<<<<<<< HEAD
 long pSeries_enable_reloc_on_exc(void)
+=======
+void pseries_enable_reloc_on_exc(void)
+>>>>>>> v4.9.227
 {
 	long rc;
 	unsigned int delay, total_delay = 0;
 
 	while (1) {
 		rc = enable_reloc_on_exceptions();
+<<<<<<< HEAD
 		if (!H_IS_LONG_BUSY(rc))
 			return rc;
+=======
+		if (!H_IS_LONG_BUSY(rc)) {
+			if (rc == H_P2) {
+				pr_info("Relocation on exceptions not"
+					" supported\n");
+			} else if (rc != H_SUCCESS) {
+				pr_warn("Unable to enable relocation"
+					" on exceptions: %ld\n", rc);
+			}
+			break;
+		}
+>>>>>>> v4.9.227
 
 		delay = get_longbusy_msecs(rc);
 		total_delay += delay;
@@ -398,30 +477,52 @@ long pSeries_enable_reloc_on_exc(void)
 			pr_warn("Warning: Giving up waiting to enable "
 				"relocation on exceptions (%u msec)!\n",
 				total_delay);
+<<<<<<< HEAD
 			return rc;
+=======
+			return;
+>>>>>>> v4.9.227
 		}
 
 		mdelay(delay);
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(pSeries_enable_reloc_on_exc);
 
 long pSeries_disable_reloc_on_exc(void)
+=======
+EXPORT_SYMBOL(pseries_enable_reloc_on_exc);
+
+void pseries_disable_reloc_on_exc(void)
+>>>>>>> v4.9.227
 {
 	long rc;
 
 	while (1) {
 		rc = disable_reloc_on_exceptions();
 		if (!H_IS_LONG_BUSY(rc))
+<<<<<<< HEAD
 			return rc;
 		mdelay(get_longbusy_msecs(rc));
 	}
 }
 EXPORT_SYMBOL(pSeries_disable_reloc_on_exc);
+=======
+			break;
+		mdelay(get_longbusy_msecs(rc));
+	}
+	if (rc != H_SUCCESS)
+		pr_warning("Warning: Failed to disable relocation on "
+			   "exceptions: %ld\n", rc);
+}
+EXPORT_SYMBOL(pseries_disable_reloc_on_exc);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_KEXEC
 static void pSeries_machine_kexec(struct kimage *image)
 {
+<<<<<<< HEAD
 	long rc;
 
 	if (firmware_has_feature(FW_FEATURE_SET_MODE)) {
@@ -430,43 +531,204 @@ static void pSeries_machine_kexec(struct kimage *image)
 			pr_warning("Warning: Failed to disable relocation on "
 				   "exceptions: %ld\n", rc);
 	}
+=======
+	if (firmware_has_feature(FW_FEATURE_SET_MODE))
+		pseries_disable_reloc_on_exc();
+>>>>>>> v4.9.227
 
 	default_machine_kexec(image);
 }
 #endif
 
 #ifdef __LITTLE_ENDIAN__
+<<<<<<< HEAD
 long pseries_big_endian_exceptions(void)
+=======
+void pseries_big_endian_exceptions(void)
+>>>>>>> v4.9.227
 {
 	long rc;
 
 	while (1) {
 		rc = enable_big_endian_exceptions();
 		if (!H_IS_LONG_BUSY(rc))
+<<<<<<< HEAD
 			return rc;
 		mdelay(get_longbusy_msecs(rc));
 	}
 }
 
 static long pseries_little_endian_exceptions(void)
+=======
+			break;
+		mdelay(get_longbusy_msecs(rc));
+	}
+
+	/*
+	 * At this point it is unlikely panic() will get anything
+	 * out to the user, since this is called very late in kexec
+	 * but at least this will stop us from continuing on further
+	 * and creating an even more difficult to debug situation.
+	 *
+	 * There is a known problem when kdump'ing, if cpus are offline
+	 * the above call will fail. Rather than panicking again, keep
+	 * going and hope the kdump kernel is also little endian, which
+	 * it usually is.
+	 */
+	if (rc && !kdump_in_progress())
+		panic("Could not enable big endian exceptions");
+}
+
+void pseries_little_endian_exceptions(void)
+>>>>>>> v4.9.227
 {
 	long rc;
 
 	while (1) {
 		rc = enable_little_endian_exceptions();
 		if (!H_IS_LONG_BUSY(rc))
+<<<<<<< HEAD
 			return rc;
 		mdelay(get_longbusy_msecs(rc));
 	}
 }
 #endif
 
+=======
+			break;
+		mdelay(get_longbusy_msecs(rc));
+	}
+	if (rc) {
+		ppc_md.progress("H_SET_MODE LE exception fail", 0);
+		panic("Could not enable little endian exceptions");
+	}
+}
+#endif
+
+static void __init find_and_init_phbs(void)
+{
+	struct device_node *node;
+	struct pci_controller *phb;
+	struct device_node *root = of_find_node_by_path("/");
+
+	for_each_child_of_node(root, node) {
+		if (node->type == NULL || (strcmp(node->type, "pci") != 0 &&
+					   strcmp(node->type, "pciex") != 0))
+			continue;
+
+		phb = pcibios_alloc_controller(node);
+		if (!phb)
+			continue;
+		rtas_setup_phb(phb);
+		pci_process_bridge_OF_ranges(phb, node, 0);
+		isa_bridge_find_early(phb);
+		phb->controller_ops = pseries_pci_controller_ops;
+	}
+
+	of_node_put(root);
+
+	/*
+	 * PCI_PROBE_ONLY and PCI_REASSIGN_ALL_BUS can be set via properties
+	 * in chosen.
+	 */
+	of_pci_check_probe_only();
+}
+
+static void init_cpu_char_feature_flags(struct h_cpu_char_result *result)
+{
+	/*
+	 * The features below are disabled by default, so we instead look to see
+	 * if firmware has *enabled* them, and set them if so.
+	 */
+	if (result->character & H_CPU_CHAR_SPEC_BAR_ORI31)
+		security_ftr_set(SEC_FTR_SPEC_BAR_ORI31);
+
+	if (result->character & H_CPU_CHAR_BCCTRL_SERIALISED)
+		security_ftr_set(SEC_FTR_BCCTRL_SERIALISED);
+
+	if (result->character & H_CPU_CHAR_L1D_FLUSH_ORI30)
+		security_ftr_set(SEC_FTR_L1D_FLUSH_ORI30);
+
+	if (result->character & H_CPU_CHAR_L1D_FLUSH_TRIG2)
+		security_ftr_set(SEC_FTR_L1D_FLUSH_TRIG2);
+
+	if (result->character & H_CPU_CHAR_L1D_THREAD_PRIV)
+		security_ftr_set(SEC_FTR_L1D_THREAD_PRIV);
+
+	if (result->character & H_CPU_CHAR_COUNT_CACHE_DISABLED)
+		security_ftr_set(SEC_FTR_COUNT_CACHE_DISABLED);
+
+	if (result->character & H_CPU_CHAR_BCCTR_FLUSH_ASSIST)
+		security_ftr_set(SEC_FTR_BCCTR_FLUSH_ASSIST);
+
+	if (result->behaviour & H_CPU_BEHAV_FLUSH_COUNT_CACHE)
+		security_ftr_set(SEC_FTR_FLUSH_COUNT_CACHE);
+
+	/*
+	 * The features below are enabled by default, so we instead look to see
+	 * if firmware has *disabled* them, and clear them if so.
+	 */
+	if (!(result->behaviour & H_CPU_BEHAV_FAVOUR_SECURITY))
+		security_ftr_clear(SEC_FTR_FAVOUR_SECURITY);
+
+	if (!(result->behaviour & H_CPU_BEHAV_L1D_FLUSH_PR))
+		security_ftr_clear(SEC_FTR_L1D_FLUSH_PR);
+
+	if (!(result->behaviour & H_CPU_BEHAV_BNDS_CHK_SPEC_BAR))
+		security_ftr_clear(SEC_FTR_BNDS_CHK_SPEC_BAR);
+}
+
+void pseries_setup_rfi_flush(void)
+{
+	struct h_cpu_char_result result;
+	enum l1d_flush_type types;
+	bool enable;
+	long rc;
+
+	/*
+	 * Set features to the defaults assumed by init_cpu_char_feature_flags()
+	 * so it can set/clear again any features that might have changed after
+	 * migration, and in case the hypercall fails and it is not even called.
+	 */
+	powerpc_security_features = SEC_FTR_DEFAULT;
+
+	rc = plpar_get_cpu_characteristics(&result);
+	if (rc == H_SUCCESS)
+		init_cpu_char_feature_flags(&result);
+
+	/*
+	 * We're the guest so this doesn't apply to us, clear it to simplify
+	 * handling of it elsewhere.
+	 */
+	security_ftr_clear(SEC_FTR_L1D_FLUSH_HV);
+
+	types = L1D_FLUSH_FALLBACK;
+
+	if (security_ftr_enabled(SEC_FTR_L1D_FLUSH_TRIG2))
+		types |= L1D_FLUSH_MTTRIG;
+
+	if (security_ftr_enabled(SEC_FTR_L1D_FLUSH_ORI30))
+		types |= L1D_FLUSH_ORI;
+
+	enable = security_ftr_enabled(SEC_FTR_FAVOUR_SECURITY) && \
+		 security_ftr_enabled(SEC_FTR_L1D_FLUSH_PR);
+
+	setup_rfi_flush(types, enable);
+	setup_count_cache_flush();
+}
+
+>>>>>>> v4.9.227
 static void __init pSeries_setup_arch(void)
 {
 	set_arch_panic_timeout(10, ARCH_PANIC_TIMEOUT);
 
 	/* Discover PIC type and setup ppc_md accordingly */
+<<<<<<< HEAD
 	pseries_discover_pic();
+=======
+	smp_init_pseries();
+
+>>>>>>> v4.9.227
 
 	/* openpic global configuration register (64-bit format). */
 	/* openpic Interrupt Source Unit pointer (64-bit format). */
@@ -477,7 +739,14 @@ static void __init pSeries_setup_arch(void)
 
 	fwnmi_init();
 
+<<<<<<< HEAD
 	/* By default, only probe PCI (can be overriden by rtas_pci) */
+=======
+	pseries_setup_rfi_flush();
+	setup_stf_barrier();
+
+	/* By default, only probe PCI (can be overridden by rtas_pci) */
+>>>>>>> v4.9.227
 	pci_add_flags(PCI_PROBE_ONLY);
 
 	/* Find and initialize PCI host bridges */
@@ -497,6 +766,7 @@ static void __init pSeries_setup_arch(void)
 	}
 
 	ppc_md.pcibios_root_bridge_prepare = pseries_root_bridge_prepare;
+<<<<<<< HEAD
 
 	if (firmware_has_feature(FW_FEATURE_SET_MODE)) {
 		long rc;
@@ -505,6 +775,8 @@ static void __init pSeries_setup_arch(void)
 				"%ld\n", rc);
 		}
 	}
+=======
+>>>>>>> v4.9.227
 }
 
 static int __init pSeries_init_panel(void)
@@ -638,9 +910,15 @@ static void pSeries_cmo_feature_init(void)
 /*
  * Early initialization.  Relocation is on but do not reference unbolted pages
  */
+<<<<<<< HEAD
 static void __init pSeries_init_early(void)
 {
 	pr_debug(" -> pSeries_init_early()\n");
+=======
+static void __init pseries_init(void)
+{
+	pr_debug(" -> pseries_init()\n");
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_HVC_CONSOLE
 	if (firmware_has_feature(FW_FEATURE_LPAR))
@@ -657,6 +935,7 @@ static void __init pSeries_init_early(void)
 	pSeries_cmo_feature_init();
 	iommu_init_early_pSeries();
 
+<<<<<<< HEAD
 	pr_debug(" <- pSeries_init_early()\n");
 }
 
@@ -757,6 +1036,13 @@ static int pSeries_pci_probe_mode(struct pci_bus *bus)
 
 /**
  * pSeries_power_off - tell firmware about how to power off the system.
+=======
+	pr_debug(" <- pseries_init()\n");
+}
+
+/**
+ * pseries_power_off - tell firmware about how to power off the system.
+>>>>>>> v4.9.227
  *
  * This function calls either the power-off rtas token in normal cases
  * or the ibm,power-off-ups token (if present & requested) in case of
@@ -764,7 +1050,11 @@ static int pSeries_pci_probe_mode(struct pci_bus *bus)
  * possible with power button press. If ibm,power-off-ups token is used
  * it will allow auto poweron after power is restored.
  */
+<<<<<<< HEAD
 static void pSeries_power_off(void)
+=======
+static void pseries_power_off(void)
+>>>>>>> v4.9.227
 {
 	int rc;
 	int rtas_poweroff_ups_token = rtas_token("ibm,power-off-ups");
@@ -783,14 +1073,54 @@ static void pSeries_power_off(void)
 	for (;;);
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_PCI
 void pSeries_final_fixup(void) { }
 #endif
+=======
+static int __init pSeries_probe(void)
+{
+	const char *dtype = of_get_property(of_root, "device_type", NULL);
+
+ 	if (dtype == NULL)
+ 		return 0;
+ 	if (strcmp(dtype, "chrp"))
+		return 0;
+
+	/* Cell blades firmware claims to be chrp while it's not. Until this
+	 * is fixed, we need to avoid those here.
+	 */
+	if (of_machine_is_compatible("IBM,CPBW-1.0") ||
+	    of_machine_is_compatible("IBM,CBEA"))
+		return 0;
+
+	pm_power_off = pseries_power_off;
+
+	pr_debug("Machine is%s LPAR !\n",
+	         (powerpc_firmware_features & FW_FEATURE_LPAR) ? "" : " not");
+
+	pseries_init();
+
+	return 1;
+}
+
+static int pSeries_pci_probe_mode(struct pci_bus *bus)
+{
+	if (firmware_has_feature(FW_FEATURE_LPAR))
+		return PCI_PROBE_DEVTREE;
+	return PCI_PROBE_NORMAL;
+}
+
+struct pci_controller_ops pseries_pci_controller_ops = {
+	.probe_mode		= pSeries_pci_probe_mode,
+};
+>>>>>>> v4.9.227
 
 define_machine(pseries) {
 	.name			= "pSeries",
 	.probe			= pSeries_probe,
 	.setup_arch		= pSeries_setup_arch,
+<<<<<<< HEAD
 	.init_early		= pSeries_init_early,
 	.show_cpuinfo		= pSeries_show_cpuinfo,
 	.log_error		= pSeries_log_error,
@@ -798,6 +1128,13 @@ define_machine(pseries) {
 	.pci_probe_mode		= pSeries_pci_probe_mode,
 	.restart		= rtas_restart,
 	.power_off		= pSeries_power_off,
+=======
+	.init_IRQ		= pseries_init_irq,
+	.show_cpuinfo		= pSeries_show_cpuinfo,
+	.log_error		= pSeries_log_error,
+	.pcibios_fixup		= pSeries_final_fixup,
+	.restart		= rtas_restart,
+>>>>>>> v4.9.227
 	.halt			= rtas_halt,
 	.panic			= rtas_os_term,
 	.get_boot_time		= rtas_get_boot_time,
@@ -809,6 +1146,10 @@ define_machine(pseries) {
 	.machine_check_exception = pSeries_machine_check_exception,
 #ifdef CONFIG_KEXEC
 	.machine_kexec          = pSeries_machine_kexec,
+<<<<<<< HEAD
+=======
+	.kexec_cpu_down         = pseries_kexec_cpu_down,
+>>>>>>> v4.9.227
 #endif
 #ifdef CONFIG_MEMORY_HOTPLUG_SPARSE
 	.memory_block_size	= pseries_memory_block_size,

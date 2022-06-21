@@ -56,7 +56,10 @@ struct xfs_trans_resv {
 	struct xfs_trans_res	tr_growrtalloc;	/* grow realtime allocations */
 	struct xfs_trans_res	tr_growrtzero;	/* grow realtime zeroing */
 	struct xfs_trans_res	tr_growrtfree;	/* grow realtime freeing */
+<<<<<<< HEAD
 	struct xfs_trans_res	tr_qm_sbchange;	/* change quota flags */
+=======
+>>>>>>> v4.9.227
 	struct xfs_trans_res	tr_qm_setqlim;	/* adjust quota limits */
 	struct xfs_trans_res	tr_qm_dqalloc;	/* allocate quota on disk */
 	struct xfs_trans_res	tr_qm_quotaoff;	/* turn quota off */
@@ -69,6 +72,7 @@ struct xfs_trans_resv {
 #define M_RES(mp)	(&(mp)->m_resv)
 
 /*
+<<<<<<< HEAD
  * Per-extent log reservation for the allocation btree changes
  * involved in freeing or allocating an extent.
  * 2 trees * (2 blocks/level * max depth - 1) * block size
@@ -79,6 +83,8 @@ struct xfs_trans_resv {
 	((nx) * (2 * (2 * XFS_AG_MAXLEVELS(mp) - 1)))
 
 /*
+=======
+>>>>>>> v4.9.227
  * Per-directory log reservation for any directory change.
  * dir blocks: (1 btree block per level + data block + free block) * dblock size
  * bmap btree: (levels + 2) * max depth * block size
@@ -98,6 +104,10 @@ struct xfs_trans_resv {
 #define	XFS_DEFAULT_LOG_COUNT		1
 #define	XFS_DEFAULT_PERM_LOG_COUNT	2
 #define	XFS_ITRUNCATE_LOG_COUNT		2
+<<<<<<< HEAD
+=======
+#define	XFS_ITRUNCATE_LOG_COUNT_REFLINK	8
+>>>>>>> v4.9.227
 #define XFS_INACTIVE_LOG_COUNT		2
 #define	XFS_CREATE_LOG_COUNT		2
 #define	XFS_CREATE_TMPFILE_LOG_COUNT	2
@@ -107,11 +117,19 @@ struct xfs_trans_resv {
 #define	XFS_LINK_LOG_COUNT		2
 #define	XFS_RENAME_LOG_COUNT		2
 #define	XFS_WRITE_LOG_COUNT		2
+<<<<<<< HEAD
+=======
+#define	XFS_WRITE_LOG_COUNT_REFLINK	8
+>>>>>>> v4.9.227
 #define	XFS_ADDAFORK_LOG_COUNT		2
 #define	XFS_ATTRINVAL_LOG_COUNT		1
 #define	XFS_ATTRSET_LOG_COUNT		3
 #define	XFS_ATTRRM_LOG_COUNT		3
 
 void xfs_trans_resv_calc(struct xfs_mount *mp, struct xfs_trans_resv *resp);
+<<<<<<< HEAD
+=======
+uint xfs_allocfree_log_count(struct xfs_mount *mp, uint num_ops);
+>>>>>>> v4.9.227
 
 #endif	/* __XFS_TRANS_RESV_H__ */

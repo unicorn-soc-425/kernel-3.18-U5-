@@ -212,14 +212,24 @@ static int dasd_stats_proc_show(struct seq_file *m, void *v)
 	struct dasd_profile_info *prof;
 	int factor;
 
+<<<<<<< HEAD
 	/* check for active profiling */
 	if (!dasd_global_profile_level) {
+=======
+	spin_lock_bh(&dasd_global_profile.lock);
+	prof = dasd_global_profile.data;
+	if (!prof) {
+		spin_unlock_bh(&dasd_global_profile.lock);
+>>>>>>> v4.9.227
 		seq_printf(m, "Statistics are off - they might be "
 				    "switched on using 'echo set on > "
 				    "/proc/dasd/statistics'\n");
 		return 0;
 	}
+<<<<<<< HEAD
 	prof = &dasd_global_profile_data;
+=======
+>>>>>>> v4.9.227
 
 	/* prevent counter 'overflow' on output */
 	for (factor = 1; (prof->dasd_io_reqs / factor) > 9999999;
@@ -255,6 +265,10 @@ static int dasd_stats_proc_show(struct seq_file *m, void *v)
 	dasd_statistics_array(m, prof->dasd_io_time3, factor);
 	seq_printf(m, "# of req in chanq at enqueuing (1..32) \n");
 	dasd_statistics_array(m, prof->dasd_io_nr_req, factor);
+<<<<<<< HEAD
+=======
+	spin_unlock_bh(&dasd_global_profile.lock);
+>>>>>>> v4.9.227
 #else
 	seq_printf(m, "Statistics are not activated in this kernel\n");
 #endif
@@ -291,14 +305,29 @@ static ssize_t dasd_stats_proc_write(struct file *file,
 				dasd_stats_all_block_off();
 				goto out_error;
 			}
+<<<<<<< HEAD
 			dasd_global_profile_reset();
+=======
+			rc = dasd_profile_on(&dasd_global_profile);
+			if (rc) {
+				dasd_stats_all_block_off();
+				goto out_error;
+			}
+			dasd_profile_reset(&dasd_global_profile);
+>>>>>>> v4.9.227
 			dasd_global_profile_level = DASD_PROFILE_ON;
 			pr_info("The statistics feature has been switched "
 				"on\n");
 		} else if (strcmp(str, "off") == 0) {
+<<<<<<< HEAD
 			/* switch off and reset statistics profiling */
 			dasd_global_profile_level = DASD_PROFILE_OFF;
 			dasd_global_profile_reset();
+=======
+			/* switch off statistics profiling */
+			dasd_global_profile_level = DASD_PROFILE_OFF;
+			dasd_profile_off(&dasd_global_profile);
+>>>>>>> v4.9.227
 			dasd_stats_all_block_off();
 			pr_info("The statistics feature has been switched "
 				"off\n");
@@ -306,7 +335,11 @@ static ssize_t dasd_stats_proc_write(struct file *file,
 			goto out_parse_error;
 	} else if (strncmp(str, "reset", 5) == 0) {
 		/* reset the statistics */
+<<<<<<< HEAD
 		dasd_global_profile_reset();
+=======
+		dasd_profile_reset(&dasd_global_profile);
+>>>>>>> v4.9.227
 		dasd_stats_all_block_reset();
 		pr_info("The statistics have been reset\n");
 	} else
@@ -315,13 +348,21 @@ static ssize_t dasd_stats_proc_write(struct file *file,
 	return user_len;
 out_parse_error:
 	rc = -EINVAL;
+<<<<<<< HEAD
 	pr_warning("%s is not a supported value for /proc/dasd/statistics\n",
 		str);
+=======
+	pr_warn("%s is not a supported value for /proc/dasd/statistics\n", str);
+>>>>>>> v4.9.227
 out_error:
 	vfree(buffer);
 	return rc;
 #else
+<<<<<<< HEAD
 	pr_warning("/proc/dasd/statistics: is not activated in this kernel\n");
+=======
+	pr_warn("/proc/dasd/statistics: is not activated in this kernel\n");
+>>>>>>> v4.9.227
 	return user_len;
 #endif				/* CONFIG_DASD_PROFILE */
 }

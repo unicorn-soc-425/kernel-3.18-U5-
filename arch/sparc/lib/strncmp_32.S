@@ -4,6 +4,10 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	.text
 ENTRY(strncmp)
@@ -116,3 +120,7 @@ ENTRY(strncmp)
 	retl
 	 sub	%o3, %o0, %o0
 ENDPROC(strncmp)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(strncmp)
+>>>>>>> v4.9.227

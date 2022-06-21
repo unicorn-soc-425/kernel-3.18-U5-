@@ -25,6 +25,10 @@
 #include <linux/gpio.h>
 #include <linux/input.h>
 #include <linux/gpio_keys.h>
+<<<<<<< HEAD
+=======
+#include <linux/pwm.h>
+>>>>>>> v4.9.227
 #include <linux/pwm_backlight.h>
 #include <linux/i2c.h>
 #include <linux/leds.h>
@@ -359,10 +363,18 @@ static struct platform_device h1940_battery = {
 
 static DEFINE_SPINLOCK(h1940_blink_spin);
 
+<<<<<<< HEAD
 int h1940_led_blink_set(unsigned gpio, int state,
 	unsigned long *delay_on, unsigned long *delay_off)
 {
 	int blink_gpio, check_gpio1, check_gpio2;
+=======
+int h1940_led_blink_set(struct gpio_desc *desc, int state,
+	unsigned long *delay_on, unsigned long *delay_off)
+{
+	int blink_gpio, check_gpio1, check_gpio2;
+	int gpio = desc ? desc_to_gpio(desc) : -EINVAL;
+>>>>>>> v4.9.227
 
 	switch (gpio) {
 	case H1940_LATCH_LED_GREEN:
@@ -468,6 +480,14 @@ static struct s3c24xx_mci_pdata h1940_mmc_cfg __initdata = {
 	.ocr_avail     = MMC_VDD_32_33,
 };
 
+<<<<<<< HEAD
+=======
+static struct pwm_lookup h1940_pwm_lookup[] = {
+	PWM_LOOKUP("samsung-pwm", 0, "pwm-backlight", NULL, 36296,
+		   PWM_POLARITY_NORMAL),
+};
+
+>>>>>>> v4.9.227
 static int h1940_backlight_init(struct device *dev)
 {
 	gpio_request(S3C2410_GPB(0), "Backlight");
@@ -502,11 +522,16 @@ static void h1940_backlight_exit(struct device *dev)
 
 
 static struct platform_pwm_backlight_data backlight_data = {
+<<<<<<< HEAD
 	.pwm_id         = 0,
 	.max_brightness = 100,
 	.dft_brightness = 50,
 	/* tcnt = 0x31 */
 	.pwm_period_ns  = 36296,
+=======
+	.max_brightness = 100,
+	.dft_brightness = 50,
+>>>>>>> v4.9.227
 	.enable_gpio    = -1,
 	.init           = h1940_backlight_init,
 	.notify		= h1940_backlight_notify,
@@ -660,7 +685,11 @@ static void __init h1940_map_io(void)
 
 	/* Add latch gpio chip, set latch initial value */
 	h1940_latch_control(0, 0);
+<<<<<<< HEAD
 	WARN_ON(gpiochip_add(&h1940_latch_gpiochip));
+=======
+	WARN_ON(gpiochip_add_data(&h1940_latch_gpiochip, NULL));
+>>>>>>> v4.9.227
 }
 
 static void __init h1940_init_time(void)
@@ -724,6 +753,10 @@ static void __init h1940_init(void)
 	gpio_request(H1940_LATCH_SD_POWER, "SD power");
 	gpio_direction_output(H1940_LATCH_SD_POWER, 0);
 
+<<<<<<< HEAD
+=======
+	pwm_add_table(h1940_pwm_lookup, ARRAY_SIZE(h1940_pwm_lookup));
+>>>>>>> v4.9.227
 	platform_add_devices(h1940_devices, ARRAY_SIZE(h1940_devices));
 
 	gpio_request(S3C2410_GPA(1), "Red LED blink");

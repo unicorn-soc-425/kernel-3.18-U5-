@@ -43,19 +43,29 @@ static void msm_framebuffer_destroy(struct drm_framebuffer *fb)
 	struct msm_framebuffer *msm_fb = to_msm_framebuffer(fb);
 	int i, n = drm_format_num_planes(fb->pixel_format);
 
+<<<<<<< HEAD
 	DBG("destroy: FB ID: %d (%pK)", fb->base.id, fb);
+=======
+	DBG("destroy: FB ID: %d (%p)", fb->base.id, fb);
+>>>>>>> v4.9.227
 
 	drm_framebuffer_cleanup(fb);
 
 	for (i = 0; i < n; i++) {
 		struct drm_gem_object *bo = msm_fb->planes[i];
+<<<<<<< HEAD
 		if (bo)
 			drm_gem_object_unreference_unlocked(bo);
+=======
+
+		drm_gem_object_unreference_unlocked(bo);
+>>>>>>> v4.9.227
 	}
 
 	kfree(msm_fb);
 }
 
+<<<<<<< HEAD
 static int msm_framebuffer_dirty(struct drm_framebuffer *fb,
 		struct drm_file *file_priv, unsigned flags, unsigned color,
 		struct drm_clip_rect *clips, unsigned num_clips)
@@ -67,6 +77,11 @@ static const struct drm_framebuffer_funcs msm_framebuffer_funcs = {
 	.create_handle = msm_framebuffer_create_handle,
 	.destroy = msm_framebuffer_destroy,
 	.dirty = msm_framebuffer_dirty,
+=======
+static const struct drm_framebuffer_funcs msm_framebuffer_funcs = {
+	.create_handle = msm_framebuffer_create_handle,
+	.destroy = msm_framebuffer_destroy,
+>>>>>>> v4.9.227
 };
 
 #ifdef CONFIG_DEBUG_FS
@@ -77,7 +92,11 @@ void msm_framebuffer_describe(struct drm_framebuffer *fb, struct seq_file *m)
 
 	seq_printf(m, "fb: %dx%d@%4.4s (%2d, ID:%d)\n",
 			fb->width, fb->height, (char *)&fb->pixel_format,
+<<<<<<< HEAD
 			fb->refcount.refcount.counter, fb->base.id);
+=======
+			drm_framebuffer_read_refcount(fb), fb->base.id);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < n; i++) {
 		seq_printf(m, "   %d: offset=%d pitch=%d, obj: ",
@@ -133,19 +152,32 @@ struct drm_gem_object *msm_framebuffer_bo(struct drm_framebuffer *fb, int plane)
 
 const struct msm_format *msm_framebuffer_format(struct drm_framebuffer *fb)
 {
+<<<<<<< HEAD
 	return fb ? (to_msm_framebuffer(fb))->format : NULL;
 }
 
 struct drm_framebuffer *msm_framebuffer_create(struct drm_device *dev,
 		struct drm_file *file, struct drm_mode_fb_cmd2 *mode_cmd)
+=======
+	struct msm_framebuffer *msm_fb = to_msm_framebuffer(fb);
+	return msm_fb->format;
+}
+
+struct drm_framebuffer *msm_framebuffer_create(struct drm_device *dev,
+		struct drm_file *file, const struct drm_mode_fb_cmd2 *mode_cmd)
+>>>>>>> v4.9.227
 {
 	struct drm_gem_object *bos[4] = {0};
 	struct drm_framebuffer *fb;
 	int ret, i, n = drm_format_num_planes(mode_cmd->pixel_format);
 
 	for (i = 0; i < n; i++) {
+<<<<<<< HEAD
 		bos[i] = drm_gem_object_lookup(dev, file,
 				mode_cmd->handles[i]);
+=======
+		bos[i] = drm_gem_object_lookup(file, mode_cmd->handles[i]);
+>>>>>>> v4.9.227
 		if (!bos[i]) {
 			ret = -ENXIO;
 			goto out_unref;
@@ -167,13 +199,18 @@ out_unref:
 }
 
 struct drm_framebuffer *msm_framebuffer_init(struct drm_device *dev,
+<<<<<<< HEAD
 		struct drm_mode_fb_cmd2 *mode_cmd, struct drm_gem_object **bos)
+=======
+		const struct drm_mode_fb_cmd2 *mode_cmd, struct drm_gem_object **bos)
+>>>>>>> v4.9.227
 {
 	struct msm_drm_private *priv = dev->dev_private;
 	struct msm_kms *kms = priv->kms;
 	struct msm_framebuffer *msm_fb = NULL;
 	struct drm_framebuffer *fb;
 	const struct msm_format *format;
+<<<<<<< HEAD
 	int ret, i, num_planes;
 	unsigned int hsub, vsub;
 	bool is_modified = false;
@@ -188,6 +225,20 @@ struct drm_framebuffer *msm_framebuffer_init(struct drm_device *dev,
 
 	format = kms->funcs->get_format(kms, mode_cmd->pixel_format,
 			mode_cmd->modifier, num_planes);
+=======
+	int ret, i, n;
+	unsigned int hsub, vsub;
+
+	DBG("create framebuffer: dev=%p, mode_cmd=%p (%dx%d@%4.4s)",
+			dev, mode_cmd, mode_cmd->width, mode_cmd->height,
+			(char *)&mode_cmd->pixel_format);
+
+	n = drm_format_num_planes(mode_cmd->pixel_format);
+	hsub = drm_format_horz_chroma_subsampling(mode_cmd->pixel_format);
+	vsub = drm_format_vert_chroma_subsampling(mode_cmd->pixel_format);
+
+	format = kms->funcs->get_format(kms, mode_cmd->pixel_format);
+>>>>>>> v4.9.227
 	if (!format) {
 		dev_err(dev->dev, "unsupported pixel format: %4.4s\n",
 				(char *)&mode_cmd->pixel_format);
@@ -205,6 +256,7 @@ struct drm_framebuffer *msm_framebuffer_init(struct drm_device *dev,
 
 	msm_fb->format = format;
 
+<<<<<<< HEAD
 	if (mode_cmd->flags & DRM_MODE_FB_MODIFIERS) {
 		for (i = 0; i < ARRAY_SIZE(mode_cmd->modifier); i++) {
 			if (mode_cmd->modifier[i]) {
@@ -215,10 +267,14 @@ struct drm_framebuffer *msm_framebuffer_init(struct drm_device *dev,
 	}
 
 	if (num_planes > ARRAY_SIZE(msm_fb->planes)) {
+=======
+	if (n > ARRAY_SIZE(msm_fb->planes)) {
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	if (is_modified) {
 		if (!kms->funcs->check_modified_format) {
 			dev_err(dev->dev, "can't check modified fb format\n");
@@ -252,6 +308,24 @@ struct drm_framebuffer *msm_framebuffer_init(struct drm_device *dev,
 
 	for (i = 0; i < num_planes; i++)
 		msm_fb->planes[i] = bos[i];
+=======
+	for (i = 0; i < n; i++) {
+		unsigned int width = mode_cmd->width / (i ? hsub : 1);
+		unsigned int height = mode_cmd->height / (i ? vsub : 1);
+		unsigned int min_size;
+
+		min_size = (height - 1) * mode_cmd->pitches[i]
+			 + width * drm_format_plane_cpp(mode_cmd->pixel_format, i)
+			 + mode_cmd->offsets[i];
+
+		if (bos[i]->size < min_size) {
+			ret = -EINVAL;
+			goto fail;
+		}
+
+		msm_fb->planes[i] = bos[i];
+	}
+>>>>>>> v4.9.227
 
 	drm_helper_mode_fill_fb_struct(fb, mode_cmd);
 
@@ -261,7 +335,11 @@ struct drm_framebuffer *msm_framebuffer_init(struct drm_device *dev,
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	DBG("create: FB ID: %d (%pK)", fb->base.id, fb);
+=======
+	DBG("create: FB ID: %d (%p)", fb->base.id, fb);
+>>>>>>> v4.9.227
 
 	return fb;
 

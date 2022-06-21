@@ -22,6 +22,12 @@
 
 #include "vsock_addr.h"
 
+<<<<<<< HEAD
+=======
+/* vsock-specific sock->sk_state constants */
+#define VSOCK_SS_LISTEN 255
+
+>>>>>>> v4.9.227
 #define LAST_RESERVED_PORT 1023
 
 #define vsock_sk(__sk)    ((struct vsock_sock *)__sk)
@@ -61,6 +67,11 @@ struct vsock_sock {
 	bool rejected;
 	struct delayed_work connect_work;
 	struct delayed_work pending_work;
+<<<<<<< HEAD
+=======
+	struct delayed_work close_work;
+	bool close_work_scheduled;
+>>>>>>> v4.9.227
 	u32 peer_shutdown;
 	bool sent_request;
 	bool ignore_connecting_rst;
@@ -74,7 +85,11 @@ s64 vsock_stream_has_space(struct vsock_sock *vsk);
 struct sock *__vsock_create(struct net *net,
 			    struct socket *sock,
 			    struct sock *parent,
+<<<<<<< HEAD
 			    gfp_t priority, unsigned short type);
+=======
+			    gfp_t priority, unsigned short type, int kern);
+>>>>>>> v4.9.227
 
 /**** TRANSPORT ****/
 
@@ -95,22 +110,41 @@ struct vsock_transport {
 	void (*destruct)(struct vsock_sock *);
 	void (*release)(struct vsock_sock *);
 
+<<<<<<< HEAD
+=======
+	/* Cancel all pending packets sent on vsock. */
+	int (*cancel_pkt)(struct vsock_sock *vsk);
+
+>>>>>>> v4.9.227
 	/* Connections. */
 	int (*connect)(struct vsock_sock *);
 
 	/* DGRAM. */
 	int (*dgram_bind)(struct vsock_sock *, struct sockaddr_vm *);
+<<<<<<< HEAD
 	int (*dgram_dequeue)(struct kiocb *kiocb, struct vsock_sock *vsk,
 			     struct msghdr *msg, size_t len, int flags);
 	int (*dgram_enqueue)(struct vsock_sock *, struct sockaddr_vm *,
 			     struct iovec *, size_t len);
+=======
+	int (*dgram_dequeue)(struct vsock_sock *vsk, struct msghdr *msg,
+			     size_t len, int flags);
+	int (*dgram_enqueue)(struct vsock_sock *, struct sockaddr_vm *,
+			     struct msghdr *, size_t len);
+>>>>>>> v4.9.227
 	bool (*dgram_allow)(u32 cid, u32 port);
 
 	/* STREAM. */
 	/* TODO: stream_bind() */
+<<<<<<< HEAD
 	ssize_t (*stream_dequeue)(struct vsock_sock *, struct iovec *,
 				  size_t len, int flags);
 	ssize_t (*stream_enqueue)(struct vsock_sock *, struct iovec *,
+=======
+	ssize_t (*stream_dequeue)(struct vsock_sock *, struct msghdr *,
+				  size_t len, int flags);
+	ssize_t (*stream_enqueue)(struct vsock_sock *, struct msghdr *,
+>>>>>>> v4.9.227
 				  size_t len);
 	s64 (*stream_has_data)(struct vsock_sock *);
 	s64 (*stream_has_space)(struct vsock_sock *);
@@ -162,6 +196,12 @@ static inline int vsock_core_init(const struct vsock_transport *t)
 }
 void vsock_core_exit(void);
 
+<<<<<<< HEAD
+=======
+/* The transport may downcast this to access transport-specific functions */
+const struct vsock_transport *vsock_core_get_transport(void);
+
+>>>>>>> v4.9.227
 /**** UTILS ****/
 
 void vsock_release_pending(struct sock *pending);
@@ -174,6 +214,10 @@ void vsock_remove_connected(struct vsock_sock *vsk);
 struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
 struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
 					 struct sockaddr_vm *dst);
+<<<<<<< HEAD
+=======
+void vsock_remove_sock(struct vsock_sock *vsk);
+>>>>>>> v4.9.227
 void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
 
 #endif /* __AF_VSOCK_H__ */

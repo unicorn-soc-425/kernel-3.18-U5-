@@ -9,6 +9,11 @@ Copyright (C) 2014 STMicroelectronics
 #ifndef __CLKGEN_INFO_H
 #define __CLKGEN_INFO_H
 
+<<<<<<< HEAD
+=======
+extern spinlock_t clkgen_a9_lock;
+
+>>>>>>> v4.9.227
 struct clkgen_field {
 	unsigned int offset;
 	unsigned int mask;

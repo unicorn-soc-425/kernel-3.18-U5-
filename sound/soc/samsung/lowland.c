@@ -56,6 +56,7 @@ static int lowland_wm5100_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = snd_soc_jack_new(codec, "Headset",
 			       SND_JACK_LINEOUT | SND_JACK_HEADSET |
 			       SND_JACK_BTN_0,
@@ -66,6 +67,12 @@ static int lowland_wm5100_init(struct snd_soc_pcm_runtime *rtd)
 	ret = snd_soc_jack_add_pins(&lowland_headset,
 				    ARRAY_SIZE(lowland_headset_pins),
 				    lowland_headset_pins);
+=======
+	ret = snd_soc_card_jack_new(rtd->card, "Headset", SND_JACK_LINEOUT |
+				    SND_JACK_HEADSET | SND_JACK_BTN_0,
+				    &lowland_headset, lowland_headset_pins,
+				    ARRAY_SIZE(lowland_headset_pins));
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -78,7 +85,11 @@ static int lowland_wm9081_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
 
+<<<<<<< HEAD
 	snd_soc_dapm_nc_pin(&codec->dapm, "LINEOUT");
+=======
+	snd_soc_dapm_nc_pin(&rtd->card->dapm, "LINEOUT");
+>>>>>>> v4.9.227
 
 	/* At any time the WM9081 is active it will have this clock */
 	return snd_soc_codec_set_sysclk(codec, WM9081_SYSCLK_MCLK, 0,
@@ -198,7 +209,10 @@ static int lowland_probe(struct platform_device *pdev)
 static struct platform_driver lowland_driver = {
 	.driver = {
 		.name = "lowland",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &snd_soc_pm_ops,
 	},
 	.probe = lowland_probe,

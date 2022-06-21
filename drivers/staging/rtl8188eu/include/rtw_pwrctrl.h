@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __RTW_PWRCTRL_H_
 #define __RTW_PWRCTRL_H_
@@ -97,6 +100,7 @@ struct reportpwrstate_parm {
 	unsigned short rsvd;
 };
 
+<<<<<<< HEAD
 static inline void _init_pwrlock(struct semaphore  *plock)
 {
 	sema_init(plock, 1);
@@ -112,6 +116,8 @@ static inline void _exit_pwrlock(struct semaphore  *plock)
 	up(plock);
 }
 
+=======
+>>>>>>> v4.9.227
 #define LPS_DELAY_TIME	1*HZ /*  1 sec */
 
 #define EXE_PWR_NONE	0x01
@@ -162,7 +168,11 @@ enum { /*  for ips_mode */
 };
 
 struct pwrctrl_priv {
+<<<<<<< HEAD
 	struct semaphore lock;
+=======
+	struct mutex mutex_lock;
+>>>>>>> v4.9.227
 	volatile u8 rpwm; /*  requested power state for fw */
 	volatile u8 cpwm; /*  fw current power state. updated when
 			   * 1. read from HCPWM 2. driver lowers power level */
@@ -233,9 +243,14 @@ struct pwrctrl_priv {
 #define RTW_PWR_STATE_CHK_INTERVAL 2000
 
 #define _rtw_set_pwr_state_check_timer(pwrctrlpriv, ms) \
+<<<<<<< HEAD
 	do { \
 		_set_timer(&(pwrctrlpriv)->pwr_state_check_timer, (ms)); \
 	} while (0)
+=======
+	mod_timer(&pwrctrlpriv->pwr_state_check_timer,	\
+		  jiffies + msecs_to_jiffies(ms))
+>>>>>>> v4.9.227
 
 #define rtw_set_pwr_state_check_timer(pwrctrl)			\
 	_rtw_set_pwr_state_check_timer((pwrctrl),		\
@@ -258,7 +273,10 @@ s32 LPS_RF_ON_check(struct adapter *adapter, u32 delay_ms);
 void LPS_Enter(struct adapter *adapter);
 void LPS_Leave(struct adapter *adapter);
 
+<<<<<<< HEAD
 void rtw_set_ips_deny(struct adapter *adapter, u32 ms);
+=======
+>>>>>>> v4.9.227
 int _rtw_pwr_wakeup(struct adapter *adapter, u32 ips_defer_ms,
 		    const char *caller);
 #define rtw_pwr_wakeup(adapter)						\

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * CAN bus driver for Microchip 251x CAN Controller with SPI Interface
+=======
+ * CAN bus driver for Microchip 251x/25625 CAN Controller with SPI Interface
+>>>>>>> v4.9.227
  *
  * MCP2510 support and bug fixes by Christian Pellegrin
  * <chripell@evolware.org>
@@ -41,7 +45,11 @@
  * static struct spi_board_info spi_board_info[] = {
  *         {
  *                 .modalias = "mcp2510",
+<<<<<<< HEAD
  *			// or "mcp2515" depending on your controller
+=======
+ *			// "mcp2515" or "mcp25625" depending on your controller
+>>>>>>> v4.9.227
  *                 .platform_data = &mcp251x_info,
  *                 .irq = IRQ_EINT13,
  *                 .max_speed_hz = 2*1000*1000,
@@ -190,10 +198,18 @@
 #define RXBEID0_OFF 4
 #define RXBDLC_OFF  5
 #define RXBDAT_OFF  6
+<<<<<<< HEAD
 #define RXFSIDH(n) ((n) * 4)
 #define RXFSIDL(n) ((n) * 4 + 1)
 #define RXFEID8(n) ((n) * 4 + 2)
 #define RXFEID0(n) ((n) * 4 + 3)
+=======
+#define RXFSID(n) ((n < 3) ? 0 : 4)
+#define RXFSIDH(n) ((n) * 4 + RXFSID(n))
+#define RXFSIDL(n) ((n) * 4 + 1 + RXFSID(n))
+#define RXFEID8(n) ((n) * 4 + 2 + RXFSID(n))
+#define RXFEID0(n) ((n) * 4 + 3 + RXFSID(n))
+>>>>>>> v4.9.227
 #define RXMSIDH(n) ((n) * 4 + 0x20)
 #define RXMSIDL(n) ((n) * 4 + 0x21)
 #define RXMEID8(n) ((n) * 4 + 0x22)
@@ -237,6 +253,10 @@ static const struct can_bittiming_const mcp251x_bittiming_const = {
 enum mcp251x_model {
 	CAN_MCP251X_MCP2510	= 0x2510,
 	CAN_MCP251X_MCP2515	= 0x2515,
+<<<<<<< HEAD
+=======
+	CAN_MCP251X_MCP25625	= 0x25625,
+>>>>>>> v4.9.227
 };
 
 struct mcp251x_priv {
@@ -279,7 +299,10 @@ static inline int mcp251x_is_##_model(struct spi_device *spi) \
 }
 
 MCP251X_IS(2510);
+<<<<<<< HEAD
 MCP251X_IS(2515);
+=======
+>>>>>>> v4.9.227
 
 static void mcp251x_clean(struct net_device *net)
 {
@@ -626,7 +649,11 @@ static int mcp251x_setup(struct net_device *net, struct mcp251x_priv *priv,
 static int mcp251x_hw_reset(struct spi_device *spi)
 {
 	struct mcp251x_priv *priv = spi_get_drvdata(spi);
+<<<<<<< HEAD
 	u8 reg;
+=======
+	unsigned long timeout;
+>>>>>>> v4.9.227
 	int ret;
 
 	/* Wait for oscillator startup timer after power up */
@@ -639,11 +666,28 @@ static int mcp251x_hw_reset(struct spi_device *spi)
 
 	/* Wait for oscillator startup timer after reset */
 	mdelay(MCP251X_OST_DELAY_MS);
+<<<<<<< HEAD
 	
 	reg = mcp251x_read_reg(spi, CANSTAT);
 	if ((reg & CANCTRL_REQOP_MASK) != CANCTRL_REQOP_CONF)
 		return -ENODEV;
 
+=======
+
+	/* Wait for reset to finish */
+	timeout = jiffies + HZ;
+	while ((mcp251x_read_reg(spi, CANSTAT) & CANCTRL_REQOP_MASK) !=
+	       CANCTRL_REQOP_CONF) {
+		usleep_range(MCP251X_OST_DELAY_MS * 1000,
+			     MCP251X_OST_DELAY_MS * 1000 * 2);
+
+		if (time_after(jiffies, timeout)) {
+			dev_err(&spi->dev,
+				"MCP251x didn't enter in conf mode after reset\n");
+			return -EBUSY;
+		}
+	}
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -820,9 +864,14 @@ static irqreturn_t mcp251x_can_ist(int irq, void *dev_id)
 		/* receive buffer 0 */
 		if (intf & CANINTF_RX0IF) {
 			mcp251x_hw_rx(spi, 0);
+<<<<<<< HEAD
 			/*
 			 * Free one buffer ASAP
 			 * (The MCP2515 does this automatically.)
+=======
+			/* Free one buffer ASAP
+			 * (The MCP2515/25625 does this automatically.)
+>>>>>>> v4.9.227
 			 */
 			if (mcp251x_is_2510(spi))
 				mcp251x_write_bits(spi, CANINTF, CANINTF_RX0IF, 0x00);
@@ -831,7 +880,11 @@ static irqreturn_t mcp251x_can_ist(int irq, void *dev_id)
 		/* receive buffer 1 */
 		if (intf & CANINTF_RX1IF) {
 			mcp251x_hw_rx(spi, 1);
+<<<<<<< HEAD
 			/* the MCP2515 does this automatically */
+=======
+			/* The MCP2515/25625 does this automatically. */
+>>>>>>> v4.9.227
 			if (mcp251x_is_2510(spi))
 				clear_intf |= CANINTF_RX1IF;
 		}
@@ -842,7 +895,11 @@ static irqreturn_t mcp251x_can_ist(int irq, void *dev_id)
 		if (clear_intf)
 			mcp251x_write_bits(spi, CANINTF, clear_intf, 0x00);
 
+<<<<<<< HEAD
 		if (eflag)
+=======
+		if (eflag & (EFLG_RX0OVR | EFLG_RX1OVR))
+>>>>>>> v4.9.227
 			mcp251x_write_bits(spi, EFLG, eflag, 0x00);
 
 		/* Update can state */
@@ -905,6 +962,10 @@ static irqreturn_t mcp251x_can_ist(int irq, void *dev_id)
 		if (priv->can.state == CAN_STATE_BUS_OFF) {
 			if (priv->can.restart_ms == 0) {
 				priv->force_quit = 1;
+<<<<<<< HEAD
+=======
+				priv->can.can_stats.bus_off++;
+>>>>>>> v4.9.227
 				can_bus_off(net);
 				mcp251x_hw_sleep(spi);
 				break;
@@ -959,7 +1020,12 @@ static int mcp251x_open(struct net_device *net)
 		goto open_unlock;
 	}
 
+<<<<<<< HEAD
 	priv->wq = create_freezable_workqueue("mcp251x_wq");
+=======
+	priv->wq = alloc_workqueue("mcp251x_wq", WQ_FREEZABLE | WQ_MEM_RECLAIM,
+				   0);
+>>>>>>> v4.9.227
 	INIT_WORK(&priv->tx_work, mcp251x_tx_work_handler);
 	INIT_WORK(&priv->restart_work, mcp251x_restart_work_handler);
 
@@ -1004,6 +1070,13 @@ static const struct of_device_id mcp251x_of_match[] = {
 		.compatible	= "microchip,mcp2515",
 		.data		= (void *)CAN_MCP251X_MCP2515,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.compatible	= "microchip,mcp25625",
+		.data		= (void *)CAN_MCP251X_MCP25625,
+	},
+>>>>>>> v4.9.227
 	{ }
 };
 MODULE_DEVICE_TABLE(of, mcp251x_of_match);
@@ -1017,6 +1090,13 @@ static const struct spi_device_id mcp251x_id_table[] = {
 		.name		= "mcp2515",
 		.driver_data	= (kernel_ulong_t)CAN_MCP251X_MCP2515,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.name		= "mcp25625",
+		.driver_data	= (kernel_ulong_t)CAN_MCP251X_MCP25625,
+	},
+>>>>>>> v4.9.227
 	{ }
 };
 MODULE_DEVICE_TABLE(spi, mcp251x_id_table);
@@ -1084,8 +1164,13 @@ static int mcp251x_can_probe(struct spi_device *spi)
 	if (ret)
 		goto out_clk;
 
+<<<<<<< HEAD
 	priv->power = devm_regulator_get(&spi->dev, "vdd");
 	priv->transceiver = devm_regulator_get(&spi->dev, "xceiver");
+=======
+	priv->power = devm_regulator_get_optional(&spi->dev, "vdd");
+	priv->transceiver = devm_regulator_get_optional(&spi->dev, "xceiver");
+>>>>>>> v4.9.227
 	if ((PTR_ERR(priv->power) == -EPROBE_DEFER) ||
 	    (PTR_ERR(priv->transceiver) == -EPROBE_DEFER)) {
 		ret = -EPROBE_DEFER;
@@ -1142,8 +1227,16 @@ static int mcp251x_can_probe(struct spi_device *spi)
 
 	/* Here is OK to not lock the MCP, no one knows about it yet */
 	ret = mcp251x_hw_probe(spi);
+<<<<<<< HEAD
 	if (ret)
 		goto error_probe;
+=======
+	if (ret) {
+		if (ret == -ENODEV)
+			dev_err(&spi->dev, "Cannot initialize MCP%x. Wrong wiring?\n", priv->model);
+		goto error_probe;
+	}
+>>>>>>> v4.9.227
 
 	mcp251x_hw_sleep(spi);
 
@@ -1153,6 +1246,10 @@ static int mcp251x_can_probe(struct spi_device *spi)
 
 	devm_can_led_init(net);
 
+<<<<<<< HEAD
+=======
+	netdev_info(net, "MCP%x successfully initialized.\n", priv->model);
+>>>>>>> v4.9.227
 	return 0;
 
 error_probe:
@@ -1165,6 +1262,10 @@ out_clk:
 out_free:
 	free_candev(net);
 
+<<<<<<< HEAD
+=======
+	dev_err(&spi->dev, "Probe failed, err=%d\n", -ret);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -1220,6 +1321,7 @@ static int __maybe_unused mcp251x_can_resume(struct device *dev)
 	struct spi_device *spi = to_spi_device(dev);
 	struct mcp251x_priv *priv = spi_get_drvdata(spi);
 
+<<<<<<< HEAD
 	if (priv->after_suspend & AFTER_SUSPEND_POWER) {
 		mcp251x_power_enable(priv->power, 1);
 		queue_work(priv->wq, &priv->restart_work);
@@ -1231,6 +1333,18 @@ static int __maybe_unused mcp251x_can_resume(struct device *dev)
 			priv->after_suspend = 0;
 		}
 	}
+=======
+	if (priv->after_suspend & AFTER_SUSPEND_POWER)
+		mcp251x_power_enable(priv->power, 1);
+
+	if (priv->after_suspend & AFTER_SUSPEND_UP) {
+		mcp251x_power_enable(priv->transceiver, 1);
+		queue_work(priv->wq, &priv->restart_work);
+	} else {
+		priv->after_suspend = 0;
+	}
+
+>>>>>>> v4.9.227
 	priv->force_quit = 0;
 	enable_irq(spi->irq);
 	return 0;
@@ -1242,7 +1356,10 @@ static SIMPLE_DEV_PM_OPS(mcp251x_can_pm_ops, mcp251x_can_suspend,
 static struct spi_driver mcp251x_can_driver = {
 	.driver = {
 		.name = DEVICE_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = mcp251x_of_match,
 		.pm = &mcp251x_can_pm_ops,
 	},
@@ -1254,5 +1371,9 @@ module_spi_driver(mcp251x_can_driver);
 
 MODULE_AUTHOR("Chris Elston <celston@katalix.com>, "
 	      "Christian Pellegrin <chripell@evolware.org>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Microchip 251x CAN driver");
+=======
+MODULE_DESCRIPTION("Microchip 251x/25625 CAN driver");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL v2");

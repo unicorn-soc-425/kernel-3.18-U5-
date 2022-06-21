@@ -376,6 +376,7 @@ static int tw68_buffer_count(unsigned int size, unsigned int count)
 /* ------------------------------------------------------------- */
 /* vb2 queue operations                                          */
 
+<<<<<<< HEAD
 static int tw68_queue_setup(struct vb2_queue *q, const struct v4l2_format *fmt,
 			   unsigned int *num_buffers, unsigned int *num_planes,
 			   unsigned int sizes[], void *alloc_ctxs[])
@@ -396,6 +397,29 @@ static int tw68_queue_setup(struct vb2_queue *q, const struct v4l2_format *fmt,
 		tot_bufs = 2;
 	tot_bufs = tw68_buffer_count(sizes[0], tot_bufs);
 	*num_buffers = tot_bufs - q->num_buffers;
+=======
+static int tw68_queue_setup(struct vb2_queue *q,
+			   unsigned int *num_buffers, unsigned int *num_planes,
+			   unsigned int sizes[], struct device *alloc_devs[])
+{
+	struct tw68_dev *dev = vb2_get_drv_priv(q);
+	unsigned tot_bufs = q->num_buffers + *num_buffers;
+	unsigned size = (dev->fmt->depth * dev->width * dev->height) >> 3;
+
+	if (tot_bufs < 2)
+		tot_bufs = 2;
+	tot_bufs = tw68_buffer_count(size, tot_bufs);
+	*num_buffers = tot_bufs - q->num_buffers;
+	/*
+	 * We allow create_bufs, but only if the sizeimage is >= as the
+	 * current sizeimage. The tw68_buffer_count calculation becomes quite
+	 * difficult otherwise.
+	 */
+	if (*num_planes)
+		return sizes[0] < size ? -EINVAL : 0;
+	*num_planes = 1;
+	sizes[0] = size;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -422,9 +446,16 @@ static int tw68_queue_setup(struct vb2_queue *q, const struct v4l2_format *fmt,
  */
 static void tw68_buf_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct vb2_queue *vq = vb->vb2_queue;
 	struct tw68_dev *dev = vb2_get_drv_priv(vq);
 	struct tw68_buf *buf = container_of(vb, struct tw68_buf, vb);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct vb2_queue *vq = vb->vb2_queue;
+	struct tw68_dev *dev = vb2_get_drv_priv(vq);
+	struct tw68_buf *buf = container_of(vbuf, struct tw68_buf, vb);
+>>>>>>> v4.9.227
 	struct tw68_buf *prev;
 	unsigned long flags;
 
@@ -456,22 +487,34 @@ static void tw68_buf_queue(struct vb2_buffer *vb)
  */
 static int tw68_buf_prepare(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct vb2_queue *vq = vb->vb2_queue;
 	struct tw68_dev *dev = vb2_get_drv_priv(vq);
 	struct tw68_buf *buf = container_of(vb, struct tw68_buf, vb);
 	struct sg_table *dma = vb2_dma_sg_plane_desc(vb, 0);
 	unsigned size, bpl;
 	int rc;
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct vb2_queue *vq = vb->vb2_queue;
+	struct tw68_dev *dev = vb2_get_drv_priv(vq);
+	struct tw68_buf *buf = container_of(vbuf, struct tw68_buf, vb);
+	struct sg_table *dma = vb2_dma_sg_plane_desc(vb, 0);
+	unsigned size, bpl;
+>>>>>>> v4.9.227
 
 	size = (dev->width * dev->height * dev->fmt->depth) >> 3;
 	if (vb2_plane_size(vb, 0) < size)
 		return -EINVAL;
 	vb2_set_plane_payload(vb, 0, size);
 
+<<<<<<< HEAD
 	rc = dma_map_sg(&dev->pci->dev, dma->sgl, dma->nents, DMA_FROM_DEVICE);
 	if (!rc)
 		return -EIO;
 
+=======
+>>>>>>> v4.9.227
 	bpl = (dev->width * dev->fmt->depth) >> 3;
 	switch (dev->field) {
 	case V4L2_FIELD_TOP:
@@ -503,12 +546,19 @@ static int tw68_buf_prepare(struct vb2_buffer *vb)
 
 static void tw68_buf_finish(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct vb2_queue *vq = vb->vb2_queue;
 	struct tw68_dev *dev = vb2_get_drv_priv(vq);
 	struct sg_table *dma = vb2_dma_sg_plane_desc(vb, 0);
 	struct tw68_buf *buf = container_of(vb, struct tw68_buf, vb);
 
 	dma_unmap_sg(&dev->pci->dev, dma->sgl, dma->nents, DMA_FROM_DEVICE);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct vb2_queue *vq = vb->vb2_queue;
+	struct tw68_dev *dev = vb2_get_drv_priv(vq);
+	struct tw68_buf *buf = container_of(vbuf, struct tw68_buf, vb);
+>>>>>>> v4.9.227
 
 	pci_free_consistent(dev->pci, buf->size, buf->cpu, buf->dma);
 }
@@ -535,11 +585,19 @@ static void tw68_stop_streaming(struct vb2_queue *q)
 			container_of(dev->active.next, struct tw68_buf, list);
 
 		list_del(&buf->list);
+<<<<<<< HEAD
 		vb2_buffer_done(&buf->vb, VB2_BUF_STATE_ERROR);
 	}
 }
 
 static struct vb2_ops tw68_video_qops = {
+=======
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+	}
+}
+
+static const struct vb2_ops tw68_video_qops = {
+>>>>>>> v4.9.227
 	.queue_setup	= tw68_queue_setup,
 	.buf_queue	= tw68_buf_queue,
 	.buf_prepare	= tw68_buf_prepare,
@@ -982,10 +1040,18 @@ int tw68_video_init2(struct tw68_dev *dev, int video_nr)
 	dev->vidq.ops = &tw68_video_qops;
 	dev->vidq.mem_ops = &vb2_dma_sg_memops;
 	dev->vidq.drv_priv = dev;
+<<<<<<< HEAD
 	dev->vidq.gfp_flags = __GFP_DMA32;
 	dev->vidq.buf_struct_size = sizeof(struct tw68_buf);
 	dev->vidq.lock = &dev->lock;
 	dev->vidq.min_buffers_needed = 2;
+=======
+	dev->vidq.gfp_flags = __GFP_DMA32 | __GFP_KSWAPD_RECLAIM;
+	dev->vidq.buf_struct_size = sizeof(struct tw68_buf);
+	dev->vidq.lock = &dev->lock;
+	dev->vidq.min_buffers_needed = 2;
+	dev->vidq.dev = &dev->pci->dev;
+>>>>>>> v4.9.227
 	ret = vb2_queue_init(&dev->vidq);
 	if (ret)
 		return ret;
@@ -1019,10 +1085,17 @@ void tw68_irq_video_done(struct tw68_dev *dev, unsigned long status)
 		buf = list_entry(dev->active.next, struct tw68_buf, list);
 		list_del(&buf->list);
 		spin_unlock(&dev->slock);
+<<<<<<< HEAD
 		v4l2_get_timestamp(&buf->vb.v4l2_buf.timestamp);
 		buf->vb.v4l2_buf.field = dev->field;
 		buf->vb.v4l2_buf.sequence = dev->seqnr++;
 		vb2_buffer_done(&buf->vb, VB2_BUF_STATE_DONE);
+=======
+		buf->vb.vb2_buf.timestamp = ktime_get_ns();
+		buf->vb.field = dev->field;
+		buf->vb.sequence = dev->seqnr++;
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_DONE);
+>>>>>>> v4.9.227
 		status &= ~(TW68_DMAPI);
 		if (0 == status)
 			return;

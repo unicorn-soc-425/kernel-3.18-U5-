@@ -35,6 +35,10 @@
 #include <linux/hiddev.h>
 #include <linux/compat.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> v4.9.227
 #include "usbhid.h"
 
 #ifdef CONFIG_USB_DYNAMIC_MINORS
@@ -490,10 +494,20 @@ static noinline int hiddev_ioctl_usage(struct hiddev *hiddev, unsigned int cmd, 
 
 		if (uref->field_index >= report->maxfield)
 			goto inval;
+<<<<<<< HEAD
+=======
+		uref->field_index = array_index_nospec(uref->field_index,
+						       report->maxfield);
+>>>>>>> v4.9.227
 
 		field = report->field[uref->field_index];
 		if (uref->usage_index >= field->maxusage)
 			goto inval;
+<<<<<<< HEAD
+=======
+		uref->usage_index = array_index_nospec(uref->usage_index,
+						       field->maxusage);
+>>>>>>> v4.9.227
 
 		uref->usage_code = field->usage[uref->usage_index].hid;
 
@@ -520,12 +534,18 @@ static noinline int hiddev_ioctl_usage(struct hiddev *hiddev, unsigned int cmd, 
 
 			if (uref->field_index >= report->maxfield)
 				goto inval;
+<<<<<<< HEAD
+=======
+			uref->field_index = array_index_nospec(uref->field_index,
+							       report->maxfield);
+>>>>>>> v4.9.227
 
 			field = report->field[uref->field_index];
 
 			if (cmd == HIDIOCGCOLLECTIONINDEX) {
 				if (uref->usage_index >= field->maxusage)
 					goto inval;
+<<<<<<< HEAD
 			} else if (uref->usage_index >= field->report_count)
 				goto inval;
 		}
@@ -535,6 +555,27 @@ static noinline int hiddev_ioctl_usage(struct hiddev *hiddev, unsigned int cmd, 
 			  uref->usage_index + uref_multi->num_values > field->report_count))
 				goto inval;
 
+=======
+				uref->usage_index =
+					array_index_nospec(uref->usage_index,
+							   field->maxusage);
+			} else if (uref->usage_index >= field->report_count)
+				goto inval;
+		}
+
+		if (cmd == HIDIOCGUSAGES || cmd == HIDIOCSUSAGES) {
+			if (uref_multi->num_values > HID_MAX_MULTI_USAGES ||
+			    uref->usage_index + uref_multi->num_values >
+			    field->report_count)
+				goto inval;
+
+			uref->usage_index =
+				array_index_nospec(uref->usage_index,
+						   field->report_count -
+						   uref_multi->num_values);
+		}
+
+>>>>>>> v4.9.227
 		switch (cmd) {
 		case HIDIOCGUSAGE:
 			uref->value = field->value[uref->usage_index];
@@ -773,6 +814,11 @@ static long hiddev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		if (finfo.field_index >= report->maxfield)
 			break;
+<<<<<<< HEAD
+=======
+		finfo.field_index = array_index_nospec(finfo.field_index,
+						       report->maxfield);
+>>>>>>> v4.9.227
 
 		field = report->field[finfo.field_index];
 		memset(&finfo, 0, sizeof(finfo));
@@ -813,6 +859,11 @@ static long hiddev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		if (cinfo.index >= hid->maxcollection)
 			break;
+<<<<<<< HEAD
+=======
+		cinfo.index = array_index_nospec(cinfo.index,
+						 hid->maxcollection);
+>>>>>>> v4.9.227
 
 		cinfo.type = hid->collection[cinfo.index].type;
 		cinfo.usage = hid->collection[cinfo.index].usage;
@@ -941,9 +992,15 @@ void hiddev_disconnect(struct hid_device *hid)
 	hiddev->exist = 0;
 
 	if (hiddev->open) {
+<<<<<<< HEAD
 		mutex_unlock(&hiddev->existancelock);
 		usbhid_close(hiddev->hid);
 		wake_up_interruptible(&hiddev->wait);
+=======
+		usbhid_close(hiddev->hid);
+		wake_up_interruptible(&hiddev->wait);
+		mutex_unlock(&hiddev->existancelock);
+>>>>>>> v4.9.227
 	} else {
 		mutex_unlock(&hiddev->existancelock);
 		kfree(hiddev);

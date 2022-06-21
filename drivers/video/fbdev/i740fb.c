@@ -27,6 +27,7 @@
 #include <linux/console.h>
 #include <video/vga.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 #include <asm/mtrr.h>
 #endif
@@ -38,13 +39,23 @@ static char *mode_option;
 #ifdef CONFIG_MTRR
 static int mtrr = 1;
 #endif
+=======
+#include "i740_reg.h"
+
+static char *mode_option;
+static int mtrr = 1;
+>>>>>>> v4.9.227
 
 struct i740fb_par {
 	unsigned char __iomem *regs;
 	bool has_sgram;
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	int mtrr_reg;
 #endif
+=======
+	int wc_cookie;
+>>>>>>> v4.9.227
 	bool ddc_registered;
 	struct i2c_adapter ddc_adapter;
 	struct i2c_algo_bit_data ddc_algo;
@@ -91,7 +102,11 @@ struct i740fb_par {
 #define DACSPEED24_SD	128
 #define DACSPEED32	86
 
+<<<<<<< HEAD
 static struct fb_fix_screeninfo i740fb_fix = {
+=======
+static const struct fb_fix_screeninfo i740fb_fix = {
+>>>>>>> v4.9.227
 	.id =		"i740fb",
 	.type =		FB_TYPE_PACKED_PIXELS,
 	.visual =	FB_VISUAL_TRUECOLOR,
@@ -355,11 +370,18 @@ static void i740_calc_vclk(u32 freq, struct i740fb_par *par)
 	const u32 err_target = freq / (1000 * I740_RFREQ / I740_FFIX);
 	u32 err_best = 512 * I740_FFIX;
 	u32 f_err, f_vco;
+<<<<<<< HEAD
 	int m_best = 0, n_best = 0, p_best = 0, d_best = 0;
 	int m, n;
 
 	p_best = min(15, ilog2(I740_MAX_VCO_FREQ / (freq / I740_RFREQ_FIX)));
 	d_best = 0;
+=======
+	int m_best = 0, n_best = 0, p_best = 0;
+	int m, n;
+
+	p_best = min(15, ilog2(I740_MAX_VCO_FREQ / (freq / I740_RFREQ_FIX)));
+>>>>>>> v4.9.227
 	f_vco = (freq * (1 << p_best)) / I740_RFREQ_FIX;
 	freq = freq / I740_RFREQ_FIX;
 
@@ -372,7 +394,11 @@ static void i740_calc_vclk(u32 freq, struct i740fb_par *par)
 			m = 3;
 
 		{
+<<<<<<< HEAD
 			u32 f_out = (((m * I740_REF_FREQ * (4 << 2 * d_best))
+=======
+			u32 f_out = (((m * I740_REF_FREQ * 4)
+>>>>>>> v4.9.227
 				 / n) + ((1 << p_best) / 2)) / (1 << p_best);
 
 			f_err = (freq - f_out);
@@ -395,8 +421,12 @@ static void i740_calc_vclk(u32 freq, struct i740fb_par *par)
 	par->video_clk2_n = (n_best - 2) & 0xFF;
 	par->video_clk2_mn_msbs = ((((n_best - 2) >> 4) & VCO_N_MSBS)
 				 | (((m_best - 2) >> 8) & VCO_M_MSBS));
+<<<<<<< HEAD
 	par->video_clk2_div_sel =
 		((p_best << 4) | (d_best ? 4 : 0) | REF_DIV_1);
+=======
+	par->video_clk2_div_sel = ((p_best << 4) | REF_DIV_1);
+>>>>>>> v4.9.227
 }
 
 static int i740fb_decode_var(const struct fb_var_screeninfo *var,
@@ -1040,7 +1070,11 @@ static int i740fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
 		goto err_request_regions;
 	}
 
+<<<<<<< HEAD
 	info->screen_base = pci_ioremap_bar(dev, 0);
+=======
+	info->screen_base = pci_ioremap_wc_bar(dev, 0);
+>>>>>>> v4.9.227
 	if (!info->screen_base) {
 		dev_err(info->device, "error remapping base\n");
 		ret = -ENOMEM;
@@ -1144,6 +1178,7 @@ static int i740fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
 
 	fb_info(info, "%s frame buffer device\n", info->fix.id);
 	pci_set_drvdata(dev, info);
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	if (mtrr) {
 		par->mtrr_reg = -1;
@@ -1151,6 +1186,11 @@ static int i740fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
 				info->fix.smem_len, MTRR_TYPE_WRCOMB, 1);
 	}
 #endif
+=======
+	if (mtrr)
+		par->wc_cookie = arch_phys_wc_add(info->fix.smem_start,
+						  info->fix.smem_len);
+>>>>>>> v4.9.227
 	return 0;
 
 err_reg_framebuffer:
@@ -1177,6 +1217,7 @@ static void i740fb_remove(struct pci_dev *dev)
 
 	if (info) {
 		struct i740fb_par *par = info->par;
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTRR
 		if (par->mtrr_reg >= 0) {
@@ -1184,6 +1225,9 @@ static void i740fb_remove(struct pci_dev *dev)
 			par->mtrr_reg = -1;
 		}
 #endif
+=======
+		arch_phys_wc_del(par->wc_cookie);
+>>>>>>> v4.9.227
 		unregister_framebuffer(info);
 		fb_dealloc_cmap(&info->cmap);
 		if (par->ddc_registered)
@@ -1287,10 +1331,15 @@ static int  __init i740fb_setup(char *options)
 	while ((opt = strsep(&options, ",")) != NULL) {
 		if (!*opt)
 			continue;
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 		else if (!strncmp(opt, "mtrr:", 5))
 			mtrr = simple_strtoul(opt + 5, NULL, 0);
 #endif
+=======
+		else if (!strncmp(opt, "mtrr:", 5))
+			mtrr = simple_strtoul(opt + 5, NULL, 0);
+>>>>>>> v4.9.227
 		else
 			mode_option = opt;
 	}
@@ -1327,7 +1376,12 @@ MODULE_DESCRIPTION("fbdev driver for Intel740");
 module_param(mode_option, charp, 0444);
 MODULE_PARM_DESC(mode_option, "Default video mode ('640x480-8@60', etc)");
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 module_param(mtrr, int, 0444);
 MODULE_PARM_DESC(mtrr, "Enable write-combining with MTRR (1=enable, 0=disable, default=1)");
 #endif
+=======
+module_param(mtrr, int, 0444);
+MODULE_PARM_DESC(mtrr, "Enable write-combining with MTRR (1=enable, 0=disable, default=1)");
+>>>>>>> v4.9.227

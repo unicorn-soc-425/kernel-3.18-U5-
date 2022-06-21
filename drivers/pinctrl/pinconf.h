@@ -92,16 +92,23 @@ static inline void pinconf_init_device_debugfs(struct dentry *devroot,
 
 #if defined(CONFIG_GENERIC_PINCONF) && defined(CONFIG_DEBUG_FS)
 
+<<<<<<< HEAD
 void pinconf_generic_dump_pin(struct pinctrl_dev *pctldev,
 			      struct seq_file *s, unsigned pin);
 
 void pinconf_generic_dump_group(struct pinctrl_dev *pctldev,
 			      struct seq_file *s, const char *gname);
+=======
+void pinconf_generic_dump_pins(struct pinctrl_dev *pctldev,
+			       struct seq_file *s, const char *gname,
+			       unsigned pin);
+>>>>>>> v4.9.227
 
 void pinconf_generic_dump_config(struct pinctrl_dev *pctldev,
 				 struct seq_file *s, unsigned long config);
 #else
 
+<<<<<<< HEAD
 static inline void pinconf_generic_dump_pin(struct pinctrl_dev *pctldev,
 					    struct seq_file *s,
 					    unsigned pin)
@@ -112,6 +119,11 @@ static inline void pinconf_generic_dump_pin(struct pinctrl_dev *pctldev,
 static inline void pinconf_generic_dump_group(struct pinctrl_dev *pctldev,
 					      struct seq_file *s,
 					      const char *gname)
+=======
+static inline void pinconf_generic_dump_pins(struct pinctrl_dev *pctldev,
+					     struct seq_file *s,
+					     const char *gname, unsigned pin)
+>>>>>>> v4.9.227
 {
 	return;
 }
@@ -126,6 +138,10 @@ static inline void pinconf_generic_dump_config(struct pinctrl_dev *pctldev,
 
 #if defined(CONFIG_GENERIC_PINCONF) && defined(CONFIG_OF)
 int pinconf_generic_parse_dt_config(struct device_node *np,
+<<<<<<< HEAD
+=======
+				    struct pinctrl_dev *pctldev,
+>>>>>>> v4.9.227
 				    unsigned long **configs,
 				    unsigned int *nconfigs);
 #endif

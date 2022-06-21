@@ -84,9 +84,15 @@ static int _fdt_rw_check_header(void *fdt)
 
 #define FDT_RW_CHECK_HEADER(fdt) \
 	{ \
+<<<<<<< HEAD
 		int err; \
 		if ((err = _fdt_rw_check_header(fdt)) != 0) \
 			return err; \
+=======
+		int __err; \
+		if ((__err = _fdt_rw_check_header(fdt)) != 0) \
+			return __err; \
+>>>>>>> v4.9.227
 	}
 
 static inline int _fdt_data_size(void *fdt)
@@ -101,6 +107,11 @@ static int _fdt_splice(void *fdt, void *splicepoint, int oldlen, int newlen)
 
 	if (((p + oldlen) < p) || ((p + oldlen) > end))
 		return -FDT_ERR_BADOFFSET;
+<<<<<<< HEAD
+=======
+	if ((p < (char *)fdt) || ((end - oldlen + newlen) < (char *)fdt))
+		return -FDT_ERR_BADOFFSET;
+>>>>>>> v4.9.227
 	if ((end - oldlen + newlen) > ((char *)fdt + fdt_totalsize(fdt)))
 		return -FDT_ERR_NOSPACE;
 	memmove(p + newlen, p + oldlen, end - p - oldlen);
@@ -339,7 +350,11 @@ int fdt_add_subnode_namelen(void *fdt, int parentoffset,
 	int nodelen;
 	int err;
 	uint32_t tag;
+<<<<<<< HEAD
 	uint32_t *endtag;
+=======
+	fdt32_t *endtag;
+>>>>>>> v4.9.227
 
 	FDT_RW_CHECK_HEADER(fdt);
 
@@ -366,7 +381,11 @@ int fdt_add_subnode_namelen(void *fdt, int parentoffset,
 	nh->tag = cpu_to_fdt32(FDT_BEGIN_NODE);
 	memset(nh->name, 0, FDT_TAGALIGN(namelen+1));
 	memcpy(nh->name, name, namelen);
+<<<<<<< HEAD
 	endtag = (uint32_t *)((char *)nh + nodelen - FDT_TAGSIZE);
+=======
+	endtag = (fdt32_t *)((char *)nh + nodelen - FDT_TAGSIZE);
+>>>>>>> v4.9.227
 	*endtag = cpu_to_fdt32(FDT_END_NODE);
 
 	return offset;
@@ -394,7 +413,11 @@ int fdt_del_node(void *fdt, int nodeoffset)
 static void _fdt_packblocks(const char *old, char *new,
 			    int mem_rsv_size, int struct_size)
 {
+<<<<<<< HEAD
 	uint32_t mem_rsv_off, struct_off, strings_off;
+=======
+	int mem_rsv_off, struct_off, strings_off;
+>>>>>>> v4.9.227
 
 	mem_rsv_off = FDT_ALIGN(sizeof(struct fdt_header), 8);
 	struct_off = mem_rsv_off + mem_rsv_size;

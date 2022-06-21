@@ -10,6 +10,10 @@
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 #include <asm/delay.h>
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		.text
 
 .LC0:		.word	loops_per_jiffy
@@ -17,7 +21,10 @@
 
 /*
  * r0  <= 2000
+<<<<<<< HEAD
  * lpj <= 0x01ffffff (max. 3355 bogomips)
+=======
+>>>>>>> v4.9.227
  * HZ  <= 1000
  */
 
@@ -25,6 +32,7 @@ ENTRY(__loop_udelay)
 		ldr	r2, .LC1
 		mul	r0, r2, r0
 ENTRY(__loop_const_udelay)			@ 0 <= r0 <= 0x7fffff06
+<<<<<<< HEAD
 		mov	r1, #-1
 		ldr	r2, .LC0
 		ldr	r2, [r2]		@ max = 0x01ffffff
@@ -35,6 +43,13 @@ ENTRY(__loop_const_udelay)			@ 0 <= r0 <= 0x7fffff06
 		mul	r0, r2, r0		@ max = 2^32-1
 		add	r0, r0, r1, lsr #32-6
 		movs	r0, r0, lsr #6
+=======
+		ldr	r2, .LC0
+		ldr	r2, [r2]
+		umull	r1, r0, r2, r0
+		adds	r1, r1, #0xffffffff
+		adcs	r0, r0, r0
+>>>>>>> v4.9.227
 		reteq	lr
 
 /*

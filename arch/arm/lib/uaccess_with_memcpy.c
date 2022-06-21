@@ -52,14 +52,22 @@ pin_page_for_write(const void __user *_addr, pte_t **ptep, spinlock_t **ptlp)
 	 *
 	 * Lock the page table for the destination and check
 	 * to see that it's still huge and whether or not we will
+<<<<<<< HEAD
 	 * need to fault on write, or if we have a splitting THP.
+=======
+	 * need to fault on write.
+>>>>>>> v4.9.227
 	 */
 	if (unlikely(pmd_thp_or_huge(*pmd))) {
 		ptl = &current->mm->page_table_lock;
 		spin_lock(ptl);
 		if (unlikely(!pmd_thp_or_huge(*pmd)
+<<<<<<< HEAD
 			|| pmd_hugewillfault(*pmd)
 			|| pmd_trans_splitting(*pmd))) {
+=======
+			|| pmd_hugewillfault(*pmd))) {
+>>>>>>> v4.9.227
 			spin_unlock(ptl);
 			return 0;
 		}
@@ -97,7 +105,11 @@ __copy_to_user_memcpy(void __user *to, const void *from, unsigned long n)
 	}
 
 	/* the mmap semaphore is taken only if not in an atomic context */
+<<<<<<< HEAD
 	atomic = in_atomic();
+=======
+	atomic = faulthandler_disabled();
+>>>>>>> v4.9.227
 
 	if (!atomic)
 		down_read(&current->mm->mmap_sem);
@@ -153,7 +165,12 @@ arm_copy_to_user(void __user *to, const void *from, unsigned long n)
 		n = __copy_to_user_std(to, from, n);
 		uaccess_restore(ua_flags);
 	} else {
+<<<<<<< HEAD
 		n = __copy_to_user_memcpy(to, from, n);
+=======
+		n = __copy_to_user_memcpy(uaccess_mask_range_ptr(to, n),
+					  from, n);
+>>>>>>> v4.9.227
 	}
 	return n;
 }

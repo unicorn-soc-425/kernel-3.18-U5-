@@ -11,8 +11,12 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
 			     int index, unsigned long *busno, dma_addr_t *addr,
 			     size_t *size);
 
+<<<<<<< HEAD
 extern void of_iommu_init(void);
 extern struct iommu_ops *of_iommu_configure(struct device *dev,
+=======
+extern const struct iommu_ops *of_iommu_configure(struct device *dev,
+>>>>>>> v4.9.227
 					struct device_node *master_np);
 
 #else
@@ -24,8 +28,12 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static inline void of_iommu_init(void) { }
 static inline struct iommu_ops *of_iommu_configure(struct device *dev,
+=======
+static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
+>>>>>>> v4.9.227
 					 struct device_node *master_np)
 {
 	return NULL;
@@ -33,8 +41,13 @@ static inline struct iommu_ops *of_iommu_configure(struct device *dev,
 
 #endif	/* CONFIG_OF_IOMMU */
 
+<<<<<<< HEAD
 void of_iommu_set_ops(struct device_node *np, struct iommu_ops *ops);
 struct iommu_ops *of_iommu_get_ops(struct device_node *np);
+=======
+void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
+const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
+>>>>>>> v4.9.227
 
 extern struct of_device_id __iommu_of_table;
 

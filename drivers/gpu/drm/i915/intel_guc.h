@@ -26,6 +26,7 @@
 
 #include "intel_guc_fwif.h"
 #include "i915_guc_reg.h"
+<<<<<<< HEAD
 
 struct i915_guc_client {
 	struct drm_i915_gem_object *client_obj;
@@ -51,6 +52,71 @@ struct i915_guc_client {
 	uint32_t q_fail;
 	uint32_t b_fail;
 	int retcode;
+=======
+#include "intel_ringbuffer.h"
+
+struct drm_i915_gem_request;
+
+/*
+ * This structure primarily describes the GEM object shared with the GuC.
+ * The GEM object is held for the entire lifetime of our interaction with
+ * the GuC, being allocated before the GuC is loaded with its firmware.
+ * Because there's no way to update the address used by the GuC after
+ * initialisation, the shared object must stay pinned into the GGTT as
+ * long as the GuC is in use. We also keep the first page (only) mapped
+ * into kernel address space, as it includes shared data that must be
+ * updated on every request submission.
+ *
+ * The single GEM object described here is actually made up of several
+ * separate areas, as far as the GuC is concerned. The first page (kept
+ * kmap'd) includes the "process decriptor" which holds sequence data for
+ * the doorbell, and one cacheline which actually *is* the doorbell; a
+ * write to this will "ring the doorbell" (i.e. send an interrupt to the
+ * GuC). The subsequent  pages of the client object constitute the work
+ * queue (a circular array of work items), again described in the process
+ * descriptor. Work queue pages are mapped momentarily as required.
+ *
+ * We also keep a few statistics on failures. Ideally, these should all
+ * be zero!
+ *   no_wq_space: times that the submission pre-check found no space was
+ *                available in the work queue (note, the queue is shared,
+ *                not per-engine). It is OK for this to be nonzero, but
+ *                it should not be huge!
+ *   q_fail: failed to enqueue a work item. This should never happen,
+ *           because we check for space beforehand.
+ *   b_fail: failed to ring the doorbell. This should never happen, unless
+ *           somehow the hardware misbehaves, or maybe if the GuC firmware
+ *           crashes? We probably need to reset the GPU to recover.
+ *   retcode: errno from last guc_submit()
+ */
+struct i915_guc_client {
+	struct i915_vma *vma;
+	void *client_base;		/* first page (only) of above	*/
+	struct i915_gem_context *owner;
+	struct intel_guc *guc;
+
+	uint32_t engines;		/* bitmap of (host) engine ids	*/
+	uint32_t priority;
+	uint32_t ctx_index;
+	uint32_t proc_desc_offset;
+
+	uint32_t doorbell_offset;
+	uint32_t cookie;
+	uint16_t doorbell_id;
+	uint16_t padding[3];		/* Maintain alignment		*/
+
+	spinlock_t wq_lock;
+	uint32_t wq_offset;
+	uint32_t wq_size;
+	uint32_t wq_tail;
+	uint32_t wq_rsvd;
+	uint32_t no_wq_space;
+	uint32_t b_fail;
+	int retcode;
+
+	/* Per-engine counts of GuC submissions */
+	uint64_t submissions[I915_NUM_ENGINES];
+>>>>>>> v4.9.227
 };
 
 enum intel_guc_fw_status {
@@ -76,21 +142,42 @@ struct intel_guc_fw {
 	uint16_t			guc_fw_minor_wanted;
 	uint16_t			guc_fw_major_found;
 	uint16_t			guc_fw_minor_found;
+<<<<<<< HEAD
+=======
+
+	uint32_t header_size;
+	uint32_t header_offset;
+	uint32_t rsa_size;
+	uint32_t rsa_offset;
+	uint32_t ucode_size;
+	uint32_t ucode_offset;
+>>>>>>> v4.9.227
 };
 
 struct intel_guc {
 	struct intel_guc_fw guc_fw;
+<<<<<<< HEAD
 
 	uint32_t log_flags;
 	struct drm_i915_gem_object *log_obj;
 
 	struct drm_i915_gem_object *ctx_pool_obj;
+=======
+	uint32_t log_flags;
+	struct i915_vma *log_vma;
+
+	struct i915_vma *ads_vma;
+	struct i915_vma *ctx_pool_vma;
+>>>>>>> v4.9.227
 	struct ida ctx_ids;
 
 	struct i915_guc_client *execbuf_client;
 
+<<<<<<< HEAD
 	spinlock_t host2guc_lock;	/* Protects all data below	*/
 
+=======
+>>>>>>> v4.9.227
 	DECLARE_BITMAP(doorbell_bitmap, GUC_MAX_DOORBELLS);
 	uint32_t db_cacheline;		/* Cyclic counter mod pagesize	*/
 
@@ -101,6 +188,7 @@ struct intel_guc {
 	uint32_t action_fail;		/* Total number of failures	*/
 	int32_t action_err;		/* Last error code		*/
 
+<<<<<<< HEAD
 	uint64_t submissions[I915_NUM_RINGS];
 	uint32_t last_seqno[I915_NUM_RINGS];
 };
@@ -109,16 +197,35 @@ struct intel_guc {
 extern void intel_guc_ucode_init(struct drm_device *dev);
 extern int intel_guc_ucode_load(struct drm_device *dev);
 extern void intel_guc_ucode_fini(struct drm_device *dev);
+=======
+	uint64_t submissions[I915_NUM_ENGINES];
+	uint32_t last_seqno[I915_NUM_ENGINES];
+};
+
+/* intel_guc_loader.c */
+extern void intel_guc_init(struct drm_device *dev);
+extern int intel_guc_setup(struct drm_device *dev);
+extern void intel_guc_fini(struct drm_device *dev);
+>>>>>>> v4.9.227
 extern const char *intel_guc_fw_status_repr(enum intel_guc_fw_status status);
 extern int intel_guc_suspend(struct drm_device *dev);
 extern int intel_guc_resume(struct drm_device *dev);
 
 /* i915_guc_submission.c */
+<<<<<<< HEAD
 int i915_guc_submission_init(struct drm_device *dev);
 int i915_guc_submission_enable(struct drm_device *dev);
 int i915_guc_submit(struct i915_guc_client *client,
 		    struct drm_i915_gem_request *rq);
 void i915_guc_submission_disable(struct drm_device *dev);
 void i915_guc_submission_fini(struct drm_device *dev);
+=======
+int i915_guc_submission_init(struct drm_i915_private *dev_priv);
+int i915_guc_submission_enable(struct drm_i915_private *dev_priv);
+int i915_guc_wq_reserve(struct drm_i915_gem_request *rq);
+void i915_guc_wq_unreserve(struct drm_i915_gem_request *request);
+void i915_guc_submission_disable(struct drm_i915_private *dev_priv);
+void i915_guc_submission_fini(struct drm_i915_private *dev_priv);
+>>>>>>> v4.9.227
 
 #endif

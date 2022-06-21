@@ -27,7 +27,10 @@
 
 #include <asm/io.h>
 #include <asm/setup.h>
+<<<<<<< HEAD
 #include <asm/gpio.h>
+=======
+>>>>>>> v4.9.227
 
 #include <mach/at32ap700x.h>
 #include <mach/board.h>

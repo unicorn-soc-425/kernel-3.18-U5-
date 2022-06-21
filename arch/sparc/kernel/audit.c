@@ -5,27 +5,47 @@
 
 #include "kernel.h"
 
+<<<<<<< HEAD
 static unsigned dir_class[] = {
+=======
+static unsigned int dir_class[] = {
+>>>>>>> v4.9.227
 #include <asm-generic/audit_dir_write.h>
 ~0U
 };
 
+<<<<<<< HEAD
 static unsigned read_class[] = {
+=======
+static unsigned int read_class[] = {
+>>>>>>> v4.9.227
 #include <asm-generic/audit_read.h>
 ~0U
 };
 
+<<<<<<< HEAD
 static unsigned write_class[] = {
+=======
+static unsigned int write_class[] = {
+>>>>>>> v4.9.227
 #include <asm-generic/audit_write.h>
 ~0U
 };
 
+<<<<<<< HEAD
 static unsigned chattr_class[] = {
+=======
+static unsigned int chattr_class[] = {
+>>>>>>> v4.9.227
 #include <asm-generic/audit_change_attr.h>
 ~0U
 };
 
+<<<<<<< HEAD
 static unsigned signal_class[] = {
+=======
+static unsigned int signal_class[] = {
+>>>>>>> v4.9.227
 #include <asm-generic/audit_signal.h>
 ~0U
 };
@@ -39,7 +59,11 @@ int audit_classify_arch(int arch)
 	return 0;
 }
 
+<<<<<<< HEAD
 int audit_classify_syscall(int abi, unsigned syscall)
+=======
+int audit_classify_syscall(int abi, unsigned int syscall)
+>>>>>>> v4.9.227
 {
 #ifdef CONFIG_COMPAT
 	if (abi == AUDIT_ARCH_SPARC)

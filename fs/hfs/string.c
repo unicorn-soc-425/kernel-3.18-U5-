@@ -59,7 +59,11 @@ int hfs_hash_dentry(const struct dentry *dentry, struct qstr *this)
 	if (len > HFS_NAMELEN)
 		len = HFS_NAMELEN;
 
+<<<<<<< HEAD
 	hash = init_name_hash();
+=======
+	hash = init_name_hash(dentry);
+>>>>>>> v4.9.227
 	for (; len; len--)
 		hash = partial_name_hash(caseorder[*name++], hash);
 	this->hash = end_name_hash(hash);
@@ -92,7 +96,11 @@ int hfs_strcmp(const unsigned char *s1, unsigned int len1,
  * Test for equality of two strings in the HFS filename character ordering.
  * return 1 on failure and 0 on success
  */
+<<<<<<< HEAD
 int hfs_compare_dentry(const struct dentry *parent, const struct dentry *dentry,
+=======
+int hfs_compare_dentry(const struct dentry *dentry,
+>>>>>>> v4.9.227
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	const unsigned char *n1, *n2;

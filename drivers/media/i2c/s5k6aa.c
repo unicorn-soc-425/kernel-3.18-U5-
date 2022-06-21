@@ -28,7 +28,11 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
 #include <media/v4l2-mediabus.h>
+<<<<<<< HEAD
 #include <media/s5k6aa.h>
+=======
+#include <media/i2c/s5k6aa.h>
+>>>>>>> v4.9.227
 
 static int debug;
 module_param(debug, int, 0644);
@@ -191,7 +195,11 @@ struct s5k6aa_regval {
 };
 
 struct s5k6aa_pixfmt {
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode code;
+=======
+	u32 code;
+>>>>>>> v4.9.227
 	u32 colorspace;
 	/* REG_P_FMT(x) register value */
 	u16 reg_p_fmt;
@@ -285,10 +293,17 @@ static struct s5k6aa_regval s5k6aa_analog_config[] = {
 
 /* TODO: Add RGB888 and Bayer format */
 static const struct s5k6aa_pixfmt s5k6aa_formats[] = {
+<<<<<<< HEAD
 	{ V4L2_MBUS_FMT_YUYV8_2X8,	V4L2_COLORSPACE_JPEG,	5 },
 	/* range 16-240 */
 	{ V4L2_MBUS_FMT_YUYV8_2X8,	V4L2_COLORSPACE_REC709,	6 },
 	{ V4L2_MBUS_FMT_RGB565_2X8_BE,	V4L2_COLORSPACE_JPEG,	0 },
+=======
+	{ MEDIA_BUS_FMT_YUYV8_2X8,	V4L2_COLORSPACE_JPEG,	5 },
+	/* range 16-240 */
+	{ MEDIA_BUS_FMT_YUYV8_2X8,	V4L2_COLORSPACE_REC709,	6 },
+	{ MEDIA_BUS_FMT_RGB565_2X8_BE,	V4L2_COLORSPACE_JPEG,	0 },
+>>>>>>> v4.9.227
 };
 
 static const struct s5k6aa_interval s5k6aa_intervals[] = {
@@ -348,7 +363,11 @@ static int s5k6aa_i2c_read(struct i2c_client *client, u16 addr, u16 *val)
 	msg[1].buf = rbuf;
 
 	ret = i2c_transfer(client->adapter, msg, 2);
+<<<<<<< HEAD
 	*val = be16_to_cpu(*((u16 *)rbuf));
+=======
+	*val = be16_to_cpu(*((__be16 *)rbuf));
+>>>>>>> v4.9.227
 
 	v4l2_dbg(3, debug, client, "i2c_read: 0x%04X : 0x%04x\n", addr, *val);
 
@@ -880,7 +899,11 @@ static int s5k6aa_set_power(struct v4l2_subdev *sd, int on)
 
 	mutex_lock(&s5k6aa->lock);
 
+<<<<<<< HEAD
 	if (!on == s5k6aa->power) {
+=======
+	if (s5k6aa->power == !on) {
+>>>>>>> v4.9.227
 		if (on) {
 			ret = __s5k6aa_power_on(s5k6aa);
 			if (!ret)
@@ -1001,7 +1024,11 @@ static int s5k6aa_s_frame_interval(struct v4l2_subdev *sd,
  * V4L2 subdev pad level and video operations
  */
 static int s5k6aa_enum_frame_interval(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			      struct v4l2_subdev_fh *fh,
+=======
+			      struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			      struct v4l2_subdev_frame_interval_enum *fie)
 {
 	struct s5k6aa *s5k6aa = to_s5k6aa(sd);
@@ -1028,7 +1055,11 @@ static int s5k6aa_enum_frame_interval(struct v4l2_subdev *sd,
 }
 
 static int s5k6aa_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				 struct v4l2_subdev_fh *fh,
+=======
+				 struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 				 struct v4l2_subdev_mbus_code_enum *code)
 {
 	if (code->index >= ARRAY_SIZE(s5k6aa_formats))
@@ -1039,7 +1070,11 @@ static int s5k6aa_enum_mbus_code(struct v4l2_subdev *sd,
 }
 
 static int s5k6aa_enum_frame_size(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				  struct v4l2_subdev_fh *fh,
+=======
+				  struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 				  struct v4l2_subdev_frame_size_enum *fse)
 {
 	int i = ARRAY_SIZE(s5k6aa_formats);
@@ -1061,14 +1096,22 @@ static int s5k6aa_enum_frame_size(struct v4l2_subdev *sd,
 }
 
 static struct v4l2_rect *
+<<<<<<< HEAD
 __s5k6aa_get_crop_rect(struct s5k6aa *s5k6aa, struct v4l2_subdev_fh *fh,
+=======
+__s5k6aa_get_crop_rect(struct s5k6aa *s5k6aa, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 		       enum v4l2_subdev_format_whence which)
 {
 	if (which == V4L2_SUBDEV_FORMAT_ACTIVE)
 		return &s5k6aa->ccd_rect;
 
 	WARN_ON(which != V4L2_SUBDEV_FORMAT_TRY);
+<<<<<<< HEAD
 	return v4l2_subdev_get_try_crop(fh, 0);
+=======
+	return v4l2_subdev_get_try_crop(&s5k6aa->sd, cfg, 0);
+>>>>>>> v4.9.227
 }
 
 static void s5k6aa_try_format(struct s5k6aa *s5k6aa,
@@ -1092,7 +1135,11 @@ static void s5k6aa_try_format(struct s5k6aa *s5k6aa,
 	mf->field	= V4L2_FIELD_NONE;
 }
 
+<<<<<<< HEAD
 static int s5k6aa_get_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
+=======
+static int s5k6aa_get_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			  struct v4l2_subdev_format *fmt)
 {
 	struct s5k6aa *s5k6aa = to_s5k6aa(sd);
@@ -1101,7 +1148,11 @@ static int s5k6aa_get_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 	memset(fmt->reserved, 0, sizeof(fmt->reserved));
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+<<<<<<< HEAD
 		mf = v4l2_subdev_get_try_format(fh, 0);
+=======
+		mf = v4l2_subdev_get_try_format(sd, cfg, 0);
+>>>>>>> v4.9.227
 		fmt->format = *mf;
 		return 0;
 	}
@@ -1113,7 +1164,11 @@ static int s5k6aa_get_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s5k6aa_set_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
+=======
+static int s5k6aa_set_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			  struct v4l2_subdev_format *fmt)
 {
 	struct s5k6aa *s5k6aa = to_s5k6aa(sd);
@@ -1126,8 +1181,13 @@ static int s5k6aa_set_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 	s5k6aa_try_format(s5k6aa, &fmt->format);
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+<<<<<<< HEAD
 		mf = v4l2_subdev_get_try_format(fh, fmt->pad);
 		crop = v4l2_subdev_get_try_crop(fh, 0);
+=======
+		mf = v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+		crop = v4l2_subdev_get_try_crop(sd, cfg, 0);
+>>>>>>> v4.9.227
 	} else {
 		if (s5k6aa->streaming) {
 			ret = -EBUSY;
@@ -1166,17 +1226,34 @@ static int s5k6aa_set_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int s5k6aa_get_crop(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 			   struct v4l2_subdev_crop *crop)
+=======
+static int s5k6aa_get_selection(struct v4l2_subdev *sd,
+				struct v4l2_subdev_pad_config *cfg,
+				struct v4l2_subdev_selection *sel)
+>>>>>>> v4.9.227
 {
 	struct s5k6aa *s5k6aa = to_s5k6aa(sd);
 	struct v4l2_rect *rect;
 
+<<<<<<< HEAD
 	memset(crop->reserved, 0, sizeof(crop->reserved));
 
 	mutex_lock(&s5k6aa->lock);
 	rect = __s5k6aa_get_crop_rect(s5k6aa, fh, crop->which);
 	crop->rect = *rect;
+=======
+	if (sel->target != V4L2_SEL_TGT_CROP)
+		return -EINVAL;
+
+	memset(sel->reserved, 0, sizeof(sel->reserved));
+
+	mutex_lock(&s5k6aa->lock);
+	rect = __s5k6aa_get_crop_rect(s5k6aa, cfg, sel->which);
+	sel->r = *rect;
+>>>>>>> v4.9.227
 	mutex_unlock(&s5k6aa->lock);
 
 	v4l2_dbg(1, debug, sd, "Current crop rectangle: (%d,%d)/%dx%d\n",
@@ -1185,14 +1262,21 @@ static int s5k6aa_get_crop(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s5k6aa_set_crop(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 			   struct v4l2_subdev_crop *crop)
+=======
+static int s5k6aa_set_selection(struct v4l2_subdev *sd,
+				struct v4l2_subdev_pad_config *cfg,
+				struct v4l2_subdev_selection *sel)
+>>>>>>> v4.9.227
 {
 	struct s5k6aa *s5k6aa = to_s5k6aa(sd);
 	struct v4l2_mbus_framefmt *mf;
 	unsigned int max_x, max_y;
 	struct v4l2_rect *crop_r;
 
+<<<<<<< HEAD
 	mutex_lock(&s5k6aa->lock);
 	crop_r = __s5k6aa_get_crop_rect(s5k6aa, fh, crop->which);
 
@@ -1214,6 +1298,32 @@ static int s5k6aa_set_crop(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 	crop->rect.top  = clamp_t(unsigned int, crop->rect.top, 0, max_y);
 
 	*crop_r = crop->rect;
+=======
+	if (sel->target != V4L2_SEL_TGT_CROP)
+		return -EINVAL;
+
+	mutex_lock(&s5k6aa->lock);
+	crop_r = __s5k6aa_get_crop_rect(s5k6aa, cfg, sel->which);
+
+	if (sel->which == V4L2_SUBDEV_FORMAT_ACTIVE) {
+		mf = &s5k6aa->preset->mbus_fmt;
+		s5k6aa->apply_crop = 1;
+	} else {
+		mf = v4l2_subdev_get_try_format(sd, cfg, 0);
+	}
+	v4l_bound_align_image(&sel->r.width, mf->width,
+			      S5K6AA_WIN_WIDTH_MAX, 1,
+			      &sel->r.height, mf->height,
+			      S5K6AA_WIN_HEIGHT_MAX, 1, 0);
+
+	max_x = (S5K6AA_WIN_WIDTH_MAX - sel->r.width) & ~1;
+	max_y = (S5K6AA_WIN_HEIGHT_MAX - sel->r.height) & ~1;
+
+	sel->r.left = clamp_t(unsigned int, sel->r.left, 0, max_x);
+	sel->r.top  = clamp_t(unsigned int, sel->r.top, 0, max_y);
+
+	*crop_r = sel->r;
+>>>>>>> v4.9.227
 
 	mutex_unlock(&s5k6aa->lock);
 
@@ -1229,8 +1339,13 @@ static const struct v4l2_subdev_pad_ops s5k6aa_pad_ops = {
 	.enum_frame_interval	= s5k6aa_enum_frame_interval,
 	.get_fmt		= s5k6aa_get_fmt,
 	.set_fmt		= s5k6aa_set_fmt,
+<<<<<<< HEAD
 	.get_crop		= s5k6aa_get_crop,
 	.set_crop		= s5k6aa_set_crop,
+=======
+	.get_selection		= s5k6aa_get_selection,
+	.set_selection		= s5k6aa_set_selection,
+>>>>>>> v4.9.227
 };
 
 static const struct v4l2_subdev_video_ops s5k6aa_video_ops = {
@@ -1421,8 +1536,13 @@ static int s5k6aa_initialize_ctrls(struct s5k6aa *s5k6aa)
  */
 static int s5k6aa_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
+<<<<<<< HEAD
 	struct v4l2_mbus_framefmt *format = v4l2_subdev_get_try_format(fh, 0);
 	struct v4l2_rect *crop = v4l2_subdev_get_try_crop(fh, 0);
+=======
+	struct v4l2_mbus_framefmt *format = v4l2_subdev_get_try_format(sd, fh->pad, 0);
+	struct v4l2_rect *crop = v4l2_subdev_get_try_crop(sd, fh->pad, 0);
+>>>>>>> v4.9.227
 
 	format->colorspace = s5k6aa_formats[0].colorspace;
 	format->code = s5k6aa_formats[0].code;
@@ -1574,8 +1694,13 @@ static int s5k6aa_probe(struct i2c_client *client,
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
 	s5k6aa->pad.flags = MEDIA_PAD_FL_SOURCE;
+<<<<<<< HEAD
 	sd->entity.type = MEDIA_ENT_T_V4L2_SUBDEV_SENSOR;
 	ret = media_entity_init(&sd->entity, 1, &s5k6aa->pad, 0);
+=======
+	sd->entity.function = MEDIA_ENT_F_CAM_SENSOR;
+	ret = media_entity_pads_init(&sd->entity, 1, &s5k6aa->pad);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 

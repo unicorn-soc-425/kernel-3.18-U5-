@@ -24,6 +24,15 @@
 
 #include <sound/dmaengine_pcm.h>
 
+<<<<<<< HEAD
+=======
+/*
+ * The platforms dmaengine driver does not support reporting the amount of
+ * bytes that are still left to transfer.
+ */
+#define SND_DMAENGINE_PCM_FLAG_NO_RESIDUE BIT(31)
+
+>>>>>>> v4.9.227
 struct dmaengine_pcm {
 	struct dma_chan *chan[SNDRV_PCM_STREAM_LAST + 1];
 	const struct snd_dmaengine_pcm_config *config;
@@ -151,12 +160,17 @@ static int dmaengine_pcm_set_runtime_hwparams(struct snd_pcm_substream *substrea
 			hw.info |= SNDRV_PCM_INFO_BATCH;
 
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+<<<<<<< HEAD
 			addr_widths = dma_caps.dstn_addr_widths;
+=======
+			addr_widths = dma_caps.dst_addr_widths;
+>>>>>>> v4.9.227
 		else
 			addr_widths = dma_caps.src_addr_widths;
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Prepare formats mask for valid/allowed sample types. If the dma does
 	 * not have support for the given physical word size, it needs to be
 	 * masked out so user space can not use the format which produces
@@ -182,6 +196,44 @@ static int dmaengine_pcm_set_runtime_hwparams(struct snd_pcm_substream *substrea
 			break;
 		}
 	}
+=======
+	 * If SND_DMAENGINE_PCM_DAI_FLAG_PACK is set keep
+	 * hw.formats set to 0, meaning no restrictions are in place.
+	 * In this case it's the responsibility of the DAI driver to
+	 * provide the supported format information.
+	 */
+	if (!(dma_data->flags & SND_DMAENGINE_PCM_DAI_FLAG_PACK))
+		/*
+		 * Prepare formats mask for valid/allowed sample types. If the
+		 * dma does not have support for the given physical word size,
+		 * it needs to be masked out so user space can not use the
+		 * format which produces corrupted audio.
+		 * In case the dma driver does not implement the slave_caps the
+		 * default assumption is that it supports 1, 2 and 4 bytes
+		 * widths.
+		 */
+		for (i = 0; i <= SNDRV_PCM_FORMAT_LAST; i++) {
+			int bits = snd_pcm_format_physical_width(i);
+
+			/*
+			 * Enable only samples with DMA supported physical
+			 * widths
+			 */
+			switch (bits) {
+			case 8:
+			case 16:
+			case 24:
+			case 32:
+			case 64:
+				if (addr_widths & (1 << (bits / 8)))
+					hw.formats |= (1LL << i);
+				break;
+			default:
+				/* Unsupported types */
+				break;
+			}
+		}
+>>>>>>> v4.9.227
 
 	return snd_soc_set_runtime_hwparams(substream, &hw);
 }
@@ -200,11 +252,14 @@ static int dmaengine_pcm_open(struct snd_pcm_substream *substream)
 	return snd_dmaengine_pcm_open(substream, chan);
 }
 
+<<<<<<< HEAD
 static void dmaengine_pcm_free(struct snd_pcm *pcm)
 {
 	snd_pcm_lib_preallocate_free_for_all(pcm);
 }
 
+=======
+>>>>>>> v4.9.227
 static struct dma_chan *dmaengine_pcm_compat_request_channel(
 	struct snd_soc_pcm_runtime *rtd,
 	struct snd_pcm_substream *substream)
@@ -227,14 +282,27 @@ static struct dma_chan *dmaengine_pcm_compat_request_channel(
 	return snd_dmaengine_pcm_request_channel(fn, dma_data->filter_data);
 }
 
+<<<<<<< HEAD
 static bool dmaengine_pcm_can_report_residue(struct dma_chan *chan)
+=======
+static bool dmaengine_pcm_can_report_residue(struct device *dev,
+	struct dma_chan *chan)
+>>>>>>> v4.9.227
 {
 	struct dma_slave_caps dma_caps;
 	int ret;
 
 	ret = dma_get_slave_caps(chan, &dma_caps);
+<<<<<<< HEAD
 	if (ret != 0)
 		return true;
+=======
+	if (ret != 0) {
+		dev_warn(dev, "Failed to get DMA channel capabilities, falling back to period counting: %d\n",
+			 ret);
+		return false;
+	}
+>>>>>>> v4.9.227
 
 	if (dma_caps.residue_granularity == DMA_RESIDUE_GRANULARITY_DESCRIPTOR)
 		return false;
@@ -283,8 +351,12 @@ static int dmaengine_pcm_new(struct snd_soc_pcm_runtime *rtd)
 		if (!pcm->chan[i]) {
 			dev_err(rtd->platform->dev,
 				"Missing dma channel for stream: %d\n", i);
+<<<<<<< HEAD
 			ret = -EINVAL;
 			goto err_free;
+=======
+			return -EINVAL;
+>>>>>>> v4.9.227
 		}
 
 		ret = snd_pcm_lib_preallocate_pages(substream,
@@ -293,6 +365,7 @@ static int dmaengine_pcm_new(struct snd_soc_pcm_runtime *rtd)
 				prealloc_buffer_size,
 				max_buffer_size);
 		if (ret)
+<<<<<<< HEAD
 			goto err_free;
 
 		/*
@@ -311,6 +384,21 @@ static int dmaengine_pcm_new(struct snd_soc_pcm_runtime *rtd)
 err_free:
 	dmaengine_pcm_free(rtd->pcm);
 	return ret;
+=======
+			return ret;
+
+		if (!dmaengine_pcm_can_report_residue(dev, pcm->chan[i]))
+			pcm->flags |= SND_DMAENGINE_PCM_FLAG_NO_RESIDUE;
+
+		if (rtd->pcm->streams[i].pcm->name[0] == '\0') {
+			strncpy(rtd->pcm->streams[i].pcm->name,
+				rtd->pcm->streams[i].pcm->id,
+				sizeof(rtd->pcm->streams[i].pcm->name));
+		}
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static snd_pcm_uframes_t dmaengine_pcm_pointer(
@@ -341,7 +429,10 @@ static const struct snd_soc_platform_driver dmaengine_pcm_platform = {
 	},
 	.ops		= &dmaengine_pcm_ops,
 	.pcm_new	= dmaengine_pcm_new,
+<<<<<<< HEAD
 	.pcm_free	= dmaengine_pcm_free,
+=======
+>>>>>>> v4.9.227
 };
 
 static const char * const dmaengine_pcm_dma_channel_names[] = {

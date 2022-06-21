@@ -19,6 +19,10 @@ obj-$(CONFIG_KEYS_COMPAT) += compat.o
 obj-$(CONFIG_PROC_FS) += proc.o
 obj-$(CONFIG_SYSCTL) += sysctl.o
 obj-$(CONFIG_PERSISTENT_KEYRINGS) += persistent.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_KEY_DH_OPERATIONS) += dh.o
+>>>>>>> v4.9.227
 
 #
 # Key types

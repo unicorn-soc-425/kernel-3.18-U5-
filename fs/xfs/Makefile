@@ -33,11 +33,19 @@ xfs-y				+= $(addprefix libxfs/, \
 				   xfs_attr.o \
 				   xfs_attr_leaf.o \
 				   xfs_attr_remote.o \
+<<<<<<< HEAD
+=======
+				   xfs_bit.o \
+>>>>>>> v4.9.227
 				   xfs_bmap.o \
 				   xfs_bmap_btree.o \
 				   xfs_btree.o \
 				   xfs_da_btree.o \
 				   xfs_da_format.o \
+<<<<<<< HEAD
+=======
+				   xfs_defer.o \
+>>>>>>> v4.9.227
 				   xfs_dir2.o \
 				   xfs_dir2_block.o \
 				   xfs_dir2_data.o \
@@ -50,6 +58,14 @@ xfs-y				+= $(addprefix libxfs/, \
 				   xfs_inode_fork.o \
 				   xfs_inode_buf.o \
 				   xfs_log_rlimit.o \
+<<<<<<< HEAD
+=======
+				   xfs_ag_resv.o \
+				   xfs_rmap.o \
+				   xfs_rmap_btree.o \
+				   xfs_refcount.o \
+				   xfs_refcount_btree.o \
+>>>>>>> v4.9.227
 				   xfs_sb.o \
 				   xfs_symlink_remote.o \
 				   xfs_trans_resv.o \
@@ -63,7 +79,10 @@ xfs-$(CONFIG_XFS_RT)		+= $(addprefix libxfs/, \
 xfs-y				+= xfs_aops.o \
 				   xfs_attr_inactive.o \
 				   xfs_attr_list.o \
+<<<<<<< HEAD
 				   xfs_bit.o \
+=======
+>>>>>>> v4.9.227
 				   xfs_bmap_util.o \
 				   xfs_buf.o \
 				   xfs_dir2_readdir.o \
@@ -84,6 +103,11 @@ xfs-y				+= xfs_aops.o \
 				   xfs_message.o \
 				   xfs_mount.o \
 				   xfs_mru_cache.o \
+<<<<<<< HEAD
+=======
+				   xfs_reflink.o \
+				   xfs_stats.o \
+>>>>>>> v4.9.227
 				   xfs_super.o \
 				   xfs_symlink.o \
 				   xfs_sysfs.o \
@@ -95,15 +119,32 @@ xfs-y				+= xfs_aops.o \
 # low-level transaction/log code
 xfs-y				+= xfs_log.o \
 				   xfs_log_cil.o \
+<<<<<<< HEAD
+=======
+				   xfs_bmap_item.o \
+>>>>>>> v4.9.227
 				   xfs_buf_item.o \
 				   xfs_extfree_item.o \
 				   xfs_icreate_item.o \
 				   xfs_inode_item.o \
+<<<<<<< HEAD
 				   xfs_log_recover.o \
 				   xfs_trans_ail.o \
 				   xfs_trans_buf.o \
 				   xfs_trans_extfree.o \
 				   xfs_trans_inode.o \
+=======
+				   xfs_refcount_item.o \
+				   xfs_rmap_item.o \
+				   xfs_log_recover.o \
+				   xfs_trans_ail.o \
+				   xfs_trans_bmap.o \
+				   xfs_trans_buf.o \
+				   xfs_trans_extfree.o \
+				   xfs_trans_inode.o \
+				   xfs_trans_refcount.o \
+				   xfs_trans_rmap.o \
+>>>>>>> v4.9.227
 
 # optional features
 xfs-$(CONFIG_XFS_QUOTA)		+= xfs_dquot.o \
@@ -118,6 +159,12 @@ xfs-$(CONFIG_XFS_QUOTA)		+= xfs_dquot.o \
 xfs-$(CONFIG_XFS_RT)		+= xfs_rtalloc.o
 
 xfs-$(CONFIG_XFS_POSIX_ACL)	+= xfs_acl.o
+<<<<<<< HEAD
 xfs-$(CONFIG_PROC_FS)		+= xfs_stats.o
 xfs-$(CONFIG_SYSCTL)		+= xfs_sysctl.o
 xfs-$(CONFIG_COMPAT)		+= xfs_ioctl32.o
+=======
+xfs-$(CONFIG_SYSCTL)		+= xfs_sysctl.o
+xfs-$(CONFIG_COMPAT)		+= xfs_ioctl32.o
+xfs-$(CONFIG_EXPORTFS_BLOCK_OPS)	+= xfs_pnfs.o
+>>>>>>> v4.9.227

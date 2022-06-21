@@ -144,11 +144,18 @@ static const struct file_operations acpi_system_wakeup_device_fops = {
 	.release = single_release,
 };
 
+<<<<<<< HEAD
 int __init acpi_sleep_proc_init(void)
+=======
+void __init acpi_sleep_proc_init(void)
+>>>>>>> v4.9.227
 {
 	/* 'wakeup device' [R/W] */
 	proc_create("wakeup", S_IFREG | S_IRUGO | S_IWUSR,
 		    acpi_root_dir, &acpi_system_wakeup_device_fops);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> v4.9.227
 }

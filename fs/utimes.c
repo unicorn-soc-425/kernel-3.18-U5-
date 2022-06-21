@@ -81,12 +81,17 @@ static int utimes_common(struct path *path, struct timespec *times)
 			newattrs.ia_valid |= ATTR_MTIME_SET;
 		}
 		/*
+<<<<<<< HEAD
 		 * Tell inode_change_ok(), that this is an explicit time
+=======
+		 * Tell setattr_prepare(), that this is an explicit time
+>>>>>>> v4.9.227
 		 * update, even if neither ATTR_ATIME_SET nor ATTR_MTIME_SET
 		 * were used.
 		 */
 		newattrs.ia_valid |= ATTR_TIMES_SET;
 	} else {
+<<<<<<< HEAD
 		/*
 		 * If times is NULL (or both times are UTIME_NOW),
 		 * then we need to check permissions, because
@@ -106,13 +111,24 @@ retry_deleg:
 	mutex_lock(&inode->i_mutex);
 	error = notify_change2(path->mnt, path->dentry, &newattrs, &delegated_inode);
 	mutex_unlock(&inode->i_mutex);
+=======
+		newattrs.ia_valid |= ATTR_TOUCH;
+	}
+retry_deleg:
+	inode_lock(inode);
+	error = notify_change(path->dentry, &newattrs, &delegated_inode);
+	inode_unlock(inode);
+>>>>>>> v4.9.227
 	if (delegated_inode) {
 		error = break_deleg_wait(&delegated_inode);
 		if (!error)
 			goto retry_deleg;
 	}
 
+<<<<<<< HEAD
 mnt_drop_write_and_out:
+=======
+>>>>>>> v4.9.227
 	mnt_drop_write(path->mnt);
 out:
 	return error;

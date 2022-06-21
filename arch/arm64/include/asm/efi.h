@@ -1,9 +1,17 @@
 #ifndef _ASM_EFI_H
 #define _ASM_EFI_H
 
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
 #include <asm/io.h>
 #include <asm/neon.h>
+=======
+#include <asm/io.h>
+#include <asm/mmu_context.h>
+#include <asm/neon.h>
+#include <asm/ptrace.h>
+#include <asm/tlbflush.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_EFI
 extern void efi_init(void);
@@ -11,6 +19,7 @@ extern void efi_init(void);
 #define efi_init()
 #endif
 
+<<<<<<< HEAD
 #define efi_call_virt(f, ...)						\
 ({									\
 	efi_##f##_t *__f;						\
@@ -33,10 +42,35 @@ extern void efi_init(void);
 	efi_virtmap_load();						\
 	__f = efi.systab->runtime->f;					\
 	__f(__VA_ARGS__);						\
+=======
+int efi_create_mapping(struct mm_struct *mm, efi_memory_desc_t *md);
+int efi_set_mapping_permissions(struct mm_struct *mm, efi_memory_desc_t *md);
+
+#define arch_efi_call_virt_setup()					\
+({									\
+	kernel_neon_begin();						\
+	efi_virtmap_load();						\
+})
+
+#define arch_efi_call_virt(p, f, args...)				\
+({									\
+	efi_##f##_t *__f;						\
+	__f = p->f;							\
+	__f(args);							\
+})
+
+#define arch_efi_call_virt_teardown()					\
+({									\
+>>>>>>> v4.9.227
 	efi_virtmap_unload();						\
 	kernel_neon_end();						\
 })
 
+<<<<<<< HEAD
+=======
+#define ARCH_EFI_IRQ_FLAGS_MASK (PSR_D_BIT | PSR_A_BIT | PSR_I_BIT | PSR_F_BIT)
+
+>>>>>>> v4.9.227
 /* arch specific definitions used by the stub code */
 
 /*
@@ -47,7 +81,27 @@ extern void efi_init(void);
 #define EFI_FDT_ALIGN	SZ_2M   /* used by allocate_new_fdt_and_exit_boot() */
 #define MAX_FDT_OFFSET	SZ_512M
 
+<<<<<<< HEAD
 #define efi_call_early(f, ...) sys_table_arg->boottime->f(__VA_ARGS__)
+=======
+#define efi_call_early(f, ...)		sys_table_arg->boottime->f(__VA_ARGS__)
+#define __efi_call_early(f, ...)	f(__VA_ARGS__)
+#define efi_is_64bit()			(true)
+
+#define alloc_screen_info(x...)		&screen_info
+
+static inline void free_screen_info(efi_system_table_t *sys_table_arg,
+				    struct screen_info *si)
+{
+}
+
+/* redeclare as 'hidden' so the compiler will generate relative references */
+extern struct screen_info screen_info __attribute__((__visibility__("hidden")));
+
+static inline void efifb_setup_from_dmi(struct screen_info *si, const char *opt)
+{
+}
+>>>>>>> v4.9.227
 
 #define EFI_ALLOC_ALIGN		SZ_64K
 
@@ -64,6 +118,14 @@ extern void efi_init(void);
  *   Services are enabled and the EFI_RUNTIME_SERVICES bit set.
  */
 
+<<<<<<< HEAD
+=======
+static inline void efi_set_pgd(struct mm_struct *mm)
+{
+	switch_mm(NULL, mm, NULL);
+}
+
+>>>>>>> v4.9.227
 void efi_virtmap_load(void);
 void efi_virtmap_unload(void);
 

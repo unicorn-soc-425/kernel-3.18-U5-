@@ -1,7 +1,11 @@
 /*
  *  Driver for the NXP SAA7164 PCIe bridge
  *
+<<<<<<< HEAD
  *  Copyright (c) 2010 Steven Toth <stoth@kernellabs.com>
+=======
+ *  Copyright (c) 2010-2015 Steven Toth <stoth@kernellabs.com>
+>>>>>>> v4.9.227
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,7 +76,11 @@ static int saa7164_dl_wait_clr(struct saa7164_dev *dev, u32 reg)
 /* TODO: move dlflags into dev-> and change to write/readl/b */
 /* TODO: Excessive levels of debug */
 static int saa7164_downloadimage(struct saa7164_dev *dev, u8 *src, u32 srcsize,
+<<<<<<< HEAD
 				 u32 dlflags, u8 *dst, u32 dstsize)
+=======
+				 u32 dlflags, u8 __iomem *dst, u32 dstsize)
+>>>>>>> v4.9.227
 {
 	u32 reg, timeout, offset;
 	u8 *srcbuf = NULL;
@@ -136,7 +144,11 @@ static int saa7164_downloadimage(struct saa7164_dev *dev, u8 *src, u32 srcsize,
 		srcsize -= dstsize, offset += dstsize) {
 
 		dprintk(DBGLVL_FW, "%s() memcpy %d\n", __func__, dstsize);
+<<<<<<< HEAD
 		memcpy(dst, srcbuf + offset, dstsize);
+=======
+		memcpy_toio(dst, srcbuf + offset, dstsize);
+>>>>>>> v4.9.227
 
 		/* Flag the data as ready */
 		saa7164_writel(drflag, 1);
@@ -154,7 +166,11 @@ static int saa7164_downloadimage(struct saa7164_dev *dev, u8 *src, u32 srcsize,
 
 	dprintk(DBGLVL_FW, "%s() memcpy(l) %d\n", __func__, dstsize);
 	/* Write last block to the device */
+<<<<<<< HEAD
 	memcpy(dst, srcbuf+offset, srcsize);
+=======
+	memcpy_toio(dst, srcbuf+offset, srcsize);
+>>>>>>> v4.9.227
 
 	/* Flag the data as ready */
 	saa7164_writel(drflag, 1);

@@ -41,6 +41,13 @@ static const struct of_device_id st_gyro_of_match[] = {
 		.data = L3GD20_GYRO_DEV_NAME,
 	},
 	{
+<<<<<<< HEAD
+=======
+		.compatible = "st,l3gd20h-gyro",
+		.data = L3GD20H_GYRO_DEV_NAME,
+	},
+	{
+>>>>>>> v4.9.227
 		.compatible = "st,l3g4is-gyro",
 		.data = L3G4IS_GYRO_DEV_NAME,
 	},
@@ -48,6 +55,13 @@ static const struct of_device_id st_gyro_of_match[] = {
 		.compatible = "st,lsm330-gyro",
 		.data = LSM330_GYRO_DEV_NAME,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.compatible = "st,lsm9ds0-gyro",
+		.data = LSM9DS0_GYRO_DEV_NAME,
+	},
+>>>>>>> v4.9.227
 	{},
 };
 MODULE_DEVICE_TABLE(of, st_gyro_of_match);
@@ -67,13 +81,20 @@ static int st_gyro_i2c_probe(struct i2c_client *client,
 		return -ENOMEM;
 
 	gdata = iio_priv(indio_dev);
+<<<<<<< HEAD
 	gdata->dev = &client->dev;
+=======
+>>>>>>> v4.9.227
 	st_sensors_of_i2c_probe(client, st_gyro_of_match);
 
 	st_sensors_i2c_configure(indio_dev, client, gdata);
 
+<<<<<<< HEAD
 	err = st_gyro_common_probe(indio_dev,
 				(struct st_sensors_platform_data *)&gyro_pdata);
+=======
+	err = st_gyro_common_probe(indio_dev);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return err;
 
@@ -93,15 +114,25 @@ static const struct i2c_device_id st_gyro_id_table[] = {
 	{ LSM330DL_GYRO_DEV_NAME },
 	{ LSM330DLC_GYRO_DEV_NAME },
 	{ L3GD20_GYRO_DEV_NAME },
+<<<<<<< HEAD
 	{ L3G4IS_GYRO_DEV_NAME },
 	{ LSM330_GYRO_DEV_NAME },
+=======
+	{ L3GD20H_GYRO_DEV_NAME },
+	{ L3G4IS_GYRO_DEV_NAME },
+	{ LSM330_GYRO_DEV_NAME },
+	{ LSM9DS0_GYRO_DEV_NAME },
+>>>>>>> v4.9.227
 	{},
 };
 MODULE_DEVICE_TABLE(i2c, st_gyro_id_table);
 
 static struct i2c_driver st_gyro_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "st-gyro-i2c",
 		.of_match_table = of_match_ptr(st_gyro_of_match),
 	},

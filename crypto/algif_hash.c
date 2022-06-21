@@ -34,6 +34,7 @@ struct hash_ctx {
 	struct ahash_request req;
 };
 
+<<<<<<< HEAD
 struct algif_hash_tfm {
 	struct crypto_ahash *hash;
 	bool has_key;
@@ -41,13 +42,51 @@ struct algif_hash_tfm {
 
 static int hash_sendmsg(struct kiocb *unused, struct socket *sock,
 			struct msghdr *msg, size_t ignored)
+=======
+static int hash_alloc_result(struct sock *sk, struct hash_ctx *ctx)
+{
+	unsigned ds;
+
+	if (ctx->result)
+		return 0;
+
+	ds = crypto_ahash_digestsize(crypto_ahash_reqtfm(&ctx->req));
+
+	ctx->result = sock_kmalloc(sk, ds, GFP_KERNEL);
+	if (!ctx->result)
+		return -ENOMEM;
+
+	memset(ctx->result, 0, ds);
+
+	return 0;
+}
+
+static void hash_free_result(struct sock *sk, struct hash_ctx *ctx)
+{
+	unsigned ds;
+
+	if (!ctx->result)
+		return;
+
+	ds = crypto_ahash_digestsize(crypto_ahash_reqtfm(&ctx->req));
+
+	sock_kzfree_s(sk, ctx->result, ds);
+	ctx->result = NULL;
+}
+
+static int hash_sendmsg(struct socket *sock, struct msghdr *msg,
+			size_t ignored)
+>>>>>>> v4.9.227
 {
 	int limit = ALG_MAX_PAGES * PAGE_SIZE;
 	struct sock *sk = sock->sk;
 	struct alg_sock *ask = alg_sk(sk);
 	struct hash_ctx *ctx = ask->private;
+<<<<<<< HEAD
 	unsigned long iovlen;
 	struct iovec *iov;
+=======
+>>>>>>> v4.9.227
 	long copied = 0;
 	int err;
 
@@ -56,6 +95,12 @@ static int hash_sendmsg(struct kiocb *unused, struct socket *sock,
 
 	lock_sock(sk);
 	if (!ctx->more) {
+<<<<<<< HEAD
+=======
+		if ((msg->msg_flags & MSG_MORE))
+			hash_free_result(sk, ctx);
+
+>>>>>>> v4.9.227
 		err = af_alg_wait_for_completion(crypto_ahash_init(&ctx->req),
 						&ctx->completion);
 		if (err)
@@ -64,6 +109,7 @@ static int hash_sendmsg(struct kiocb *unused, struct socket *sock,
 
 	ctx->more = 0;
 
+<<<<<<< HEAD
 	for (iov = msg->msg_iov, iovlen = msg->msg_iovlen; iovlen > 0;
 	     iovlen--, iov++) {
 		unsigned long seglen = iov->iov_len;
@@ -95,12 +141,43 @@ static int hash_sendmsg(struct kiocb *unused, struct socket *sock,
 			from += newlen;
 			copied += newlen;
 		}
+=======
+	while (msg_data_left(msg)) {
+		int len = msg_data_left(msg);
+
+		if (len > limit)
+			len = limit;
+
+		len = af_alg_make_sg(&ctx->sgl, &msg->msg_iter, len);
+		if (len < 0) {
+			err = copied ? 0 : len;
+			goto unlock;
+		}
+
+		ahash_request_set_crypt(&ctx->req, ctx->sgl.sg, NULL, len);
+
+		err = af_alg_wait_for_completion(crypto_ahash_update(&ctx->req),
+						 &ctx->completion);
+		af_alg_free_sg(&ctx->sgl);
+		if (err)
+			goto unlock;
+
+		copied += len;
+		iov_iter_advance(&msg->msg_iter, len);
+>>>>>>> v4.9.227
 	}
 
 	err = 0;
 
 	ctx->more = msg->msg_flags & MSG_MORE;
 	if (!ctx->more) {
+<<<<<<< HEAD
+=======
+		err = hash_alloc_result(sk, ctx);
+		if (err)
+			goto unlock;
+
+>>>>>>> v4.9.227
 		ahash_request_set_crypt(&ctx->req, NULL, ctx->result, 0);
 		err = af_alg_wait_for_completion(crypto_ahash_final(&ctx->req),
 						 &ctx->completion);
@@ -127,6 +204,16 @@ static ssize_t hash_sendpage(struct socket *sock, struct page *page,
 	sg_init_table(ctx->sgl.sg, 1);
 	sg_set_page(ctx->sgl.sg, page, size, offset);
 
+<<<<<<< HEAD
+=======
+	if (!(flags & MSG_MORE)) {
+		err = hash_alloc_result(sk, ctx);
+		if (err)
+			goto unlock;
+	} else if (!ctx->more)
+		hash_free_result(sk, ctx);
+
+>>>>>>> v4.9.227
 	ahash_request_set_crypt(&ctx->req, ctx->sgl.sg, ctx->result, size);
 
 	if (!(flags & MSG_MORE)) {
@@ -157,13 +244,22 @@ unlock:
 	return err ?: size;
 }
 
+<<<<<<< HEAD
 static int hash_recvmsg(struct kiocb *unused, struct socket *sock,
 			struct msghdr *msg, size_t len, int flags)
+=======
+static int hash_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+			int flags)
+>>>>>>> v4.9.227
 {
 	struct sock *sk = sock->sk;
 	struct alg_sock *ask = alg_sk(sk);
 	struct hash_ctx *ctx = ask->private;
 	unsigned ds = crypto_ahash_digestsize(crypto_ahash_reqtfm(&ctx->req));
+<<<<<<< HEAD
+=======
+	bool result;
+>>>>>>> v4.9.227
 	int err;
 
 	if (len > ds)
@@ -172,18 +268,45 @@ static int hash_recvmsg(struct kiocb *unused, struct socket *sock,
 		msg->msg_flags |= MSG_TRUNC;
 
 	lock_sock(sk);
+<<<<<<< HEAD
 	if (ctx->more) {
 		ctx->more = 0;
 		ahash_request_set_crypt(&ctx->req, NULL, ctx->result, 0);
+=======
+	result = ctx->result;
+	err = hash_alloc_result(sk, ctx);
+	if (err)
+		goto unlock;
+
+	ahash_request_set_crypt(&ctx->req, NULL, ctx->result, 0);
+
+	if (!result && !ctx->more) {
+		err = af_alg_wait_for_completion(
+				crypto_ahash_init(&ctx->req),
+				&ctx->completion);
+		if (err)
+			goto unlock;
+	}
+
+	if (!result || ctx->more) {
+		ctx->more = 0;
+>>>>>>> v4.9.227
 		err = af_alg_wait_for_completion(crypto_ahash_final(&ctx->req),
 						 &ctx->completion);
 		if (err)
 			goto unlock;
 	}
 
+<<<<<<< HEAD
 	err = memcpy_toiovec(msg->msg_iov, ctx->result, len);
 
 unlock:
+=======
+	err = memcpy_to_msg(msg, ctx->result, len);
+
+unlock:
+	hash_free_result(sk, ctx);
+>>>>>>> v4.9.227
 	release_sock(sk);
 
 	return err ?: len;
@@ -199,9 +322,20 @@ static int hash_accept(struct socket *sock, struct socket *newsock, int flags)
 	struct sock *sk2;
 	struct alg_sock *ask2;
 	struct hash_ctx *ctx2;
+<<<<<<< HEAD
 	int err;
 
 	err = crypto_ahash_export(req, state);
+=======
+	bool more;
+	int err;
+
+	lock_sock(sk);
+	more = ctx->more;
+	err = more ? crypto_ahash_export(req, state) : 0;
+	release_sock(sk);
+
+>>>>>>> v4.9.227
 	if (err)
 		return err;
 
@@ -212,7 +346,14 @@ static int hash_accept(struct socket *sock, struct socket *newsock, int flags)
 	sk2 = newsock->sk;
 	ask2 = alg_sk(sk2);
 	ctx2 = ask2->private;
+<<<<<<< HEAD
 	ctx2->more = 1;
+=======
+	ctx2->more = more;
+
+	if (!more)
+		return err;
+>>>>>>> v4.9.227
 
 	err = crypto_ahash_import(&ctx2->req, state);
 	if (err) {
@@ -250,7 +391,11 @@ static int hash_check_key(struct socket *sock)
 	int err = 0;
 	struct sock *psk;
 	struct alg_sock *pask;
+<<<<<<< HEAD
 	struct algif_hash_tfm *tfm;
+=======
+	struct crypto_ahash *tfm;
+>>>>>>> v4.9.227
 	struct sock *sk = sock->sk;
 	struct alg_sock *ask = alg_sk(sk);
 
@@ -264,7 +409,11 @@ static int hash_check_key(struct socket *sock)
 
 	err = -ENOKEY;
 	lock_sock_nested(psk, SINGLE_DEPTH_NESTING);
+<<<<<<< HEAD
 	if (!tfm->has_key)
+=======
+	if (crypto_ahash_get_flags(tfm) & CRYPTO_TFM_NEED_KEY)
+>>>>>>> v4.9.227
 		goto unlock;
 
 	if (!pask->refcnt++)
@@ -283,8 +432,13 @@ unlock_child:
 	return err;
 }
 
+<<<<<<< HEAD
 static int hash_sendmsg_nokey(struct kiocb *unused, struct socket *sock,
 			      struct msghdr *msg, size_t size)
+=======
+static int hash_sendmsg_nokey(struct socket *sock, struct msghdr *msg,
+			      size_t size)
+>>>>>>> v4.9.227
 {
 	int err;
 
@@ -292,7 +446,11 @@ static int hash_sendmsg_nokey(struct kiocb *unused, struct socket *sock,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	return hash_sendmsg(NULL, sock, msg, size);
+=======
+	return hash_sendmsg(sock, msg, size);
+>>>>>>> v4.9.227
 }
 
 static ssize_t hash_sendpage_nokey(struct socket *sock, struct page *page,
@@ -307,8 +465,13 @@ static ssize_t hash_sendpage_nokey(struct socket *sock, struct page *page,
 	return hash_sendpage(sock, page, offset, size, flags);
 }
 
+<<<<<<< HEAD
 static int hash_recvmsg_nokey(struct kiocb *unused, struct socket *sock,
 			      struct msghdr *msg, size_t ignored, int flags)
+=======
+static int hash_recvmsg_nokey(struct socket *sock, struct msghdr *msg,
+			      size_t ignored, int flags)
+>>>>>>> v4.9.227
 {
 	int err;
 
@@ -316,7 +479,11 @@ static int hash_recvmsg_nokey(struct kiocb *unused, struct socket *sock,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	return hash_recvmsg(NULL, sock, msg, ignored, flags);
+=======
+	return hash_recvmsg(sock, msg, ignored, flags);
+>>>>>>> v4.9.227
 }
 
 static int hash_accept_nokey(struct socket *sock, struct socket *newsock,
@@ -355,6 +522,7 @@ static struct proto_ops algif_hash_ops_nokey = {
 
 static void *hash_bind(const char *name, u32 type, u32 mask)
 {
+<<<<<<< HEAD
 	struct algif_hash_tfm *tfm;
 	struct crypto_ahash *hash;
 
@@ -371,18 +539,26 @@ static void *hash_bind(const char *name, u32 type, u32 mask)
 	tfm->hash = hash;
 
 	return tfm;
+=======
+	return crypto_alloc_ahash(name, type, mask);
+>>>>>>> v4.9.227
 }
 
 static void hash_release(void *private)
 {
+<<<<<<< HEAD
 	struct algif_hash_tfm *tfm = private;
 
 	crypto_free_ahash(tfm->hash);
 	kfree(tfm);
+=======
+	crypto_free_ahash(private);
+>>>>>>> v4.9.227
 }
 
 static int hash_setkey(void *private, const u8 *key, unsigned int keylen)
 {
+<<<<<<< HEAD
 	struct algif_hash_tfm *tfm = private;
 	int err;
 
@@ -390,6 +566,9 @@ static int hash_setkey(void *private, const u8 *key, unsigned int keylen)
 	tfm->has_key = !err;
 
 	return err;
+=======
+	return crypto_ahash_setkey(private, key, keylen);
+>>>>>>> v4.9.227
 }
 
 static void hash_sock_destruct(struct sock *sk)
@@ -397,25 +576,37 @@ static void hash_sock_destruct(struct sock *sk)
 	struct alg_sock *ask = alg_sk(sk);
 	struct hash_ctx *ctx = ask->private;
 
+<<<<<<< HEAD
 	sock_kfree_s(sk, ctx->result,
 		     crypto_ahash_digestsize(crypto_ahash_reqtfm(&ctx->req)));
+=======
+	hash_free_result(sk, ctx);
+>>>>>>> v4.9.227
 	sock_kfree_s(sk, ctx, ctx->len);
 	af_alg_release_parent(sk);
 }
 
 static int hash_accept_parent_nokey(void *private, struct sock *sk)
 {
+<<<<<<< HEAD
 	struct hash_ctx *ctx;
 	struct alg_sock *ask = alg_sk(sk);
 	struct algif_hash_tfm *tfm = private;
 	struct crypto_ahash *hash = tfm->hash;
 	unsigned len = sizeof(*ctx) + crypto_ahash_reqsize(hash);
 	unsigned ds = crypto_ahash_digestsize(hash);
+=======
+	struct crypto_ahash *tfm = private;
+	struct alg_sock *ask = alg_sk(sk);
+	struct hash_ctx *ctx;
+	unsigned int len = sizeof(*ctx) + crypto_ahash_reqsize(tfm);
+>>>>>>> v4.9.227
 
 	ctx = sock_kmalloc(sk, len, GFP_KERNEL);
 	if (!ctx)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	ctx->result = sock_kmalloc(sk, ds, GFP_KERNEL);
 	if (!ctx->result) {
 		sock_kfree_s(sk, ctx, len);
@@ -424,13 +615,20 @@ static int hash_accept_parent_nokey(void *private, struct sock *sk)
 
 	memset(ctx->result, 0, ds);
 
+=======
+	ctx->result = NULL;
+>>>>>>> v4.9.227
 	ctx->len = len;
 	ctx->more = 0;
 	af_alg_init_completion(&ctx->completion);
 
 	ask->private = ctx;
 
+<<<<<<< HEAD
 	ahash_request_set_tfm(&ctx->req, hash);
+=======
+	ahash_request_set_tfm(&ctx->req, tfm);
+>>>>>>> v4.9.227
 	ahash_request_set_callback(&ctx->req, CRYPTO_TFM_REQ_MAY_BACKLOG,
 				   af_alg_complete, &ctx->completion);
 
@@ -441,9 +639,15 @@ static int hash_accept_parent_nokey(void *private, struct sock *sk)
 
 static int hash_accept_parent(void *private, struct sock *sk)
 {
+<<<<<<< HEAD
 	struct algif_hash_tfm *tfm = private;
 
 	if (!tfm->has_key && crypto_ahash_has_setkey(tfm->hash))
+=======
+	struct crypto_ahash *tfm = private;
+
+	if (crypto_ahash_get_flags(tfm) & CRYPTO_TFM_NEED_KEY)
+>>>>>>> v4.9.227
 		return -ENOKEY;
 
 	return hash_accept_parent_nokey(private, sk);

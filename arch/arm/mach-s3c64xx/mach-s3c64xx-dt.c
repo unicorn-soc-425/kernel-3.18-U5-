@@ -8,18 +8,28 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 
+=======
+>>>>>>> v4.9.227
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 #include <asm/system_misc.h>
 
 #include <plat/cpu.h>
+<<<<<<< HEAD
 #include <plat/watchdog-reset.h>
 
 #include <mach/map.h>
 
 #include "common.h"
+=======
+#include <mach/map.h>
+
+#include "common.h"
+#include "watchdog-reset.h"
+>>>>>>> v4.9.227
 
 /*
  * IO mapping for shared system controller IP.
@@ -49,7 +59,10 @@ static void __init s3c64xx_dt_map_io(void)
 static void __init s3c64xx_dt_init_machine(void)
 {
 	samsung_wdt_reset_of_init();
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+=======
+>>>>>>> v4.9.227
 }
 
 static void s3c64xx_dt_restart(enum reboot_mode mode, const char *cmd)
@@ -61,7 +74,11 @@ static void s3c64xx_dt_restart(enum reboot_mode mode, const char *cmd)
 	soft_restart(0);
 }
 
+<<<<<<< HEAD
 static char const *s3c64xx_dt_compat[] __initdata = {
+=======
+static const char *const s3c64xx_dt_compat[] __initconst = {
+>>>>>>> v4.9.227
 	"samsung,s3c6400",
 	"samsung,s3c6410",
 	NULL

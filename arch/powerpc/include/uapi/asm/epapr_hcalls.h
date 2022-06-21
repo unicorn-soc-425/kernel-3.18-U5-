@@ -78,7 +78,11 @@
 #define EV_SUCCESS		0
 #define EV_EPERM		1	/* Operation not permitted */
 #define EV_ENOENT		2	/*  Entry Not Found */
+<<<<<<< HEAD
 #define EV_EIO			3	/* I/O error occured */
+=======
+#define EV_EIO			3	/* I/O error occurred */
+>>>>>>> v4.9.227
 #define EV_EAGAIN		4	/* The operation had insufficient
 					 * resources to complete and should be
 					 * retried
@@ -89,7 +93,11 @@
 #define EV_ENODEV		7	/* No such device */
 #define EV_EINVAL		8	/* An argument supplied to the hcall
 					   was out of range or invalid */
+<<<<<<< HEAD
 #define EV_INTERNAL		9	/* An internal error occured */
+=======
+#define EV_INTERNAL		9	/* An internal error occurred */
+>>>>>>> v4.9.227
 #define EV_CONFIG		10	/* A configuration error was detected */
 #define EV_INVALID_STATE	11	/* The object is in an invalid state */
 #define EV_UNIMPLEMENTED	12	/* Unimplemented hypercall */

@@ -206,8 +206,13 @@ static int au1xpsc_pcm_hw_params(struct snd_pcm_substream *substream,
 	stype = substream->stream;
 	pcd = to_dmadata(substream);
 
+<<<<<<< HEAD
 	DBG("runtime->dma_area = 0x%08lx dma_addr_t = 0x%08lx dma_size = %d "
 	    "runtime->min_align %d\n",
+=======
+	DBG("runtime->dma_area = 0x%08lx dma_addr_t = 0x%08lx dma_size = %zu "
+	    "runtime->min_align %lu\n",
+>>>>>>> v4.9.227
 		(unsigned long)runtime->dma_area,
 		(unsigned long)runtime->dma_addr, runtime->dma_bytes,
 		runtime->min_align);
@@ -315,11 +320,14 @@ static struct snd_pcm_ops au1xpsc_pcm_ops = {
 	.pointer	= au1xpsc_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static void au1xpsc_pcm_free_dma_buffers(struct snd_pcm *pcm)
 {
 	snd_pcm_lib_preallocate_free_for_all(pcm);
 }
 
+=======
+>>>>>>> v4.9.227
 static int au1xpsc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
@@ -335,7 +343,10 @@ static int au1xpsc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 static struct snd_soc_platform_driver au1xpsc_soc_platform = {
 	.ops		= &au1xpsc_pcm_ops,
 	.pcm_new	= au1xpsc_pcm_new,
+<<<<<<< HEAD
 	.pcm_free	= au1xpsc_pcm_free_dma_buffers,
+=======
+>>>>>>> v4.9.227
 };
 
 static int au1xpsc_pcm_drvprobe(struct platform_device *pdev)
@@ -350,6 +361,7 @@ static int au1xpsc_pcm_drvprobe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, dmadata);
 
+<<<<<<< HEAD
 	return snd_soc_register_platform(&pdev->dev, &au1xpsc_soc_platform);
 }
 
@@ -358,15 +370,24 @@ static int au1xpsc_pcm_drvremove(struct platform_device *pdev)
 	snd_soc_unregister_platform(&pdev->dev);
 
 	return 0;
+=======
+	return devm_snd_soc_register_platform(&pdev->dev,
+					      &au1xpsc_soc_platform);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver au1xpsc_pcm_driver = {
 	.driver	= {
 		.name	= "au1xpsc-pcm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= au1xpsc_pcm_drvprobe,
 	.remove		= au1xpsc_pcm_drvremove,
+=======
+	},
+	.probe		= au1xpsc_pcm_drvprobe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(au1xpsc_pcm_driver);

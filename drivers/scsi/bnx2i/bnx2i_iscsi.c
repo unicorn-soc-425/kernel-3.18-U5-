@@ -675,7 +675,11 @@ bnx2i_find_ep_in_ofld_list(struct bnx2i_hba *hba, u32 iscsi_cid)
 {
 	struct list_head *list;
 	struct list_head *tmp;
+<<<<<<< HEAD
 	struct bnx2i_endpoint *ep;
+=======
+	struct bnx2i_endpoint *ep = NULL;
+>>>>>>> v4.9.227
 
 	read_lock_bh(&hba->ep_rdwr_lock);
 	list_for_each_safe(list, tmp, &hba->ep_ofld_list) {
@@ -703,7 +707,11 @@ bnx2i_find_ep_in_destroy_list(struct bnx2i_hba *hba, u32 iscsi_cid)
 {
 	struct list_head *list;
 	struct list_head *tmp;
+<<<<<<< HEAD
 	struct bnx2i_endpoint *ep;
+=======
+	struct bnx2i_endpoint *ep = NULL;
+>>>>>>> v4.9.227
 
 	read_lock_bh(&hba->ep_rdwr_lock);
 	list_for_each_safe(list, tmp, &hba->ep_destroy_list) {
@@ -915,12 +923,19 @@ void bnx2i_free_hba(struct bnx2i_hba *hba)
 	INIT_LIST_HEAD(&hba->ep_ofld_list);
 	INIT_LIST_HEAD(&hba->ep_active_list);
 	INIT_LIST_HEAD(&hba->ep_destroy_list);
+<<<<<<< HEAD
 	pci_dev_put(hba->pcidev);
+=======
+>>>>>>> v4.9.227
 
 	if (hba->regview) {
 		pci_iounmap(hba->pcidev, hba->regview);
 		hba->regview = NULL;
 	}
+<<<<<<< HEAD
+=======
+	pci_dev_put(hba->pcidev);
+>>>>>>> v4.9.227
 	bnx2i_free_mp_bdt(hba);
 	bnx2i_release_free_cid_que(hba);
 	iscsi_host_free(shost);
@@ -1173,8 +1188,15 @@ static void bnx2i_cleanup_task(struct iscsi_task *task)
 		bnx2i_send_cmd_cleanup_req(hba, task->dd_data);
 
 		spin_unlock_bh(&conn->session->back_lock);
+<<<<<<< HEAD
 		wait_for_completion_timeout(&bnx2i_conn->cmd_cleanup_cmpl,
 				msecs_to_jiffies(ISCSI_CMD_CLEANUP_TIMEOUT));
+=======
+		spin_unlock_bh(&conn->session->frwd_lock);
+		wait_for_completion_timeout(&bnx2i_conn->cmd_cleanup_cmpl,
+				msecs_to_jiffies(ISCSI_CMD_CLEANUP_TIMEOUT));
+		spin_lock_bh(&conn->session->frwd_lock);
+>>>>>>> v4.9.227
 		spin_lock_bh(&conn->session->back_lock);
 	}
 	bnx2i_iscsi_unmap_sg_list(task->dd_data);
@@ -2093,7 +2115,12 @@ int bnx2i_hw_ep_disconnect(struct bnx2i_endpoint *bnx2i_ep)
 	else
 		/* wait for option-2 conn teardown */
 		wait_event_interruptible(bnx2i_ep->ofld_wait,
+<<<<<<< HEAD
 				 bnx2i_ep->state != EP_STATE_DISCONN_START);
+=======
+				((bnx2i_ep->state != EP_STATE_DISCONN_START)
+				&& (bnx2i_ep->state != EP_STATE_TCP_FIN_RCVD)));
+>>>>>>> v4.9.227
 
 	if (signal_pending(current))
 		flush_signals(current);
@@ -2259,7 +2286,11 @@ static struct scsi_host_template bnx2i_host_template = {
 	.eh_abort_handler	= iscsi_eh_abort,
 	.eh_device_reset_handler = iscsi_eh_device_reset,
 	.eh_target_reset_handler = iscsi_eh_recover_target,
+<<<<<<< HEAD
 	.change_queue_depth	= iscsi_change_queue_depth,
+=======
+	.change_queue_depth	= scsi_change_queue_depth,
+>>>>>>> v4.9.227
 	.target_alloc		= iscsi_target_alloc,
 	.can_queue		= 2048,
 	.max_sectors		= 127,
@@ -2268,6 +2299,10 @@ static struct scsi_host_template bnx2i_host_template = {
 	.use_clustering		= ENABLE_CLUSTERING,
 	.sg_tablesize		= ISCSI_MAX_BDS_PER_CMD,
 	.shost_attrs		= bnx2i_dev_attributes,
+<<<<<<< HEAD
+=======
+	.track_queue_depth	= 1,
+>>>>>>> v4.9.227
 };
 
 struct iscsi_transport bnx2i_iscsi_transport = {

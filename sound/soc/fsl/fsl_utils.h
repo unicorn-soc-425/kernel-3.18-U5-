@@ -22,7 +22,10 @@ int fsl_asoc_get_dma_channel(struct device_node *ssi_np, const char *name,
 			     struct snd_soc_dai_link *dai,
 			     unsigned int *dma_channel_id,
 			     unsigned int *dma_id);
+<<<<<<< HEAD
 int fsl_asoc_xlate_tdm_slot_mask(unsigned int slots,
 				    unsigned int *tx_mask,
 				    unsigned int *rx_mask);
+=======
+>>>>>>> v4.9.227
 #endif /* _FSL_UTILS_H */

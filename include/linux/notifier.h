@@ -47,6 +47,11 @@
  * runtime initialization.
  */
 
+<<<<<<< HEAD
+=======
+struct notifier_block;
+
+>>>>>>> v4.9.227
 typedef	int (*notifier_fn_t)(struct notifier_block *nb,
 			unsigned long action, void *data);
 
@@ -211,9 +216,12 @@ static inline int notifier_to_errno(int ret)
 
 extern struct blocking_notifier_head reboot_notifier_list;
 
+<<<<<<< HEAD
 extern int show_mem_extra_notifier_register(struct notifier_block *nb);
 extern int show_mem_extra_notifier_unregister(struct notifier_block *nb);
 extern void show_mem_extra_call_notifiers(void);
 
+=======
+>>>>>>> v4.9.227
 #endif /* __KERNEL__ */
 #endif /* _LINUX_NOTIFIER_H */

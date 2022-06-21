@@ -56,8 +56,13 @@
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
 #include <media/msp3400.h>
 #include <media/tvaudio.h>
+=======
+#include <media/drv-intf/msp3400.h>
+#include <media/i2c/tvaudio.h>
+>>>>>>> v4.9.227
 #include "msp3400-driver.h"
 
 /* ---------------------------------------------------------------------- */
@@ -642,6 +647,7 @@ static const struct v4l2_ctrl_ops msp_ctrl_ops = {
 
 static const struct v4l2_subdev_core_ops msp_core_ops = {
 	.log_status = msp_log_status,
+<<<<<<< HEAD
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
 	.s_ext_ctrls = v4l2_subdev_s_ext_ctrls,
@@ -649,6 +655,8 @@ static const struct v4l2_subdev_core_ops msp_core_ops = {
 	.s_ctrl = v4l2_subdev_s_ctrl,
 	.queryctrl = v4l2_subdev_queryctrl,
 	.querymenu = v4l2_subdev_querymenu,
+=======
+>>>>>>> v4.9.227
 };
 
 static const struct v4l2_subdev_video_ops msp_video_ops = {
@@ -688,6 +696,12 @@ static int msp_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	int msp_revision;
 	int msp_product, msp_prod_hi, msp_prod_lo;
 	int msp_rom;
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_MEDIA_CONTROLLER)
+	int ret;
+#endif
+>>>>>>> v4.9.227
 
 	if (!id)
 		strlcpy(client->name, "msp3400", sizeof(client->name));
@@ -704,6 +718,20 @@ static int msp_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	sd = &state->sd;
 	v4l2_i2c_subdev_init(sd, client, &msp_ops);
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_MEDIA_CONTROLLER)
+	state->pads[IF_AUD_DEC_PAD_IF_INPUT].flags = MEDIA_PAD_FL_SINK;
+	state->pads[IF_AUD_DEC_PAD_OUT].flags = MEDIA_PAD_FL_SOURCE;
+
+	sd->entity.function = MEDIA_ENT_F_IF_AUD_DECODER;
+
+	ret = media_entity_pads_init(&sd->entity, 2, state->pads);
+	if (ret < 0)
+		return ret;
+#endif
+
+>>>>>>> v4.9.227
 	state->v4l2_std = V4L2_STD_NTSC;
 	state->detected_std = V4L2_STD_ALL;
 	state->audmode = V4L2_TUNER_MODE_STEREO;
@@ -894,7 +922,10 @@ MODULE_DEVICE_TABLE(i2c, msp_id);
 
 static struct i2c_driver msp_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "msp3400",
 		.pm	= &msp3400_pm_ops,
 	},
@@ -904,6 +935,7 @@ static struct i2c_driver msp_driver = {
 };
 
 module_i2c_driver(msp_driver);
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -912,3 +944,5 @@ module_i2c_driver(msp_driver);
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

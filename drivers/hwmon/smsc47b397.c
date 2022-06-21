@@ -72,14 +72,28 @@ static inline void superio_select(int ld)
 	superio_outb(0x07, ld);
 }
 
+<<<<<<< HEAD
 static inline void superio_enter(void)
 {
 	outb(0x55, REG);
+=======
+static inline int superio_enter(void)
+{
+	if (!request_muxed_region(REG, 2, DRVNAME))
+		return -EBUSY;
+
+	outb(0x55, REG);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static inline void superio_exit(void)
 {
 	outb(0xAA, REG);
+<<<<<<< HEAD
+=======
+	release_region(REG, 2);
+>>>>>>> v4.9.227
 }
 
 #define SUPERIO_REG_DEVID	0x20
@@ -219,7 +233,10 @@ static int smsc47b397_probe(struct platform_device *pdev);
 
 static struct platform_driver smsc47b397_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DRVNAME,
 	},
 	.probe		= smsc47b397_probe,
@@ -301,8 +318,17 @@ static int __init smsc47b397_find(void)
 	u8 id, rev;
 	char *name;
 	unsigned short addr;
+<<<<<<< HEAD
 
 	superio_enter();
+=======
+	int err;
+
+	err = superio_enter();
+	if (err)
+		return err;
+
+>>>>>>> v4.9.227
 	id = force_id ? force_id : superio_inb(SUPERIO_REG_DEVID);
 
 	switch (id) {

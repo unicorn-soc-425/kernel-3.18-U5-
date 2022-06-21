@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (ST) 2012 Rajeev Kumar (rajeev-dlh.kumar@st.com)
+=======
+ * Copyright (ST) 2012 Rajeev Kumar (rajeevkumar.linux@gmail.com)
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,11 +42,25 @@ struct i2s_clk_config_data {
 struct i2s_platform_data {
 	#define DWC_I2S_PLAY	(1 << 0)
 	#define DWC_I2S_RECORD	(1 << 1)
+<<<<<<< HEAD
+=======
+	#define DW_I2S_SLAVE	(1 << 2)
+	#define DW_I2S_MASTER	(1 << 3)
+>>>>>>> v4.9.227
 	unsigned int cap;
 	int channel;
 	u32 snd_fmts;
 	u32 snd_rates;
 
+<<<<<<< HEAD
+=======
+	#define DW_I2S_QUIRK_COMP_REG_OFFSET	(1 << 0)
+	#define DW_I2S_QUIRK_COMP_PARAM1	(1 << 1)
+	unsigned int quirks;
+	unsigned int i2s_reg_comp1;
+	unsigned int i2s_reg_comp2;
+
+>>>>>>> v4.9.227
 	void *play_dma_data;
 	void *capture_dma_data;
 	bool (*filter)(struct dma_chan *chan, void *slave);

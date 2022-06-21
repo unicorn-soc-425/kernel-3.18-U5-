@@ -3,7 +3,11 @@
 
 #include <linux/kthread.h>
 
+<<<<<<< HEAD
 #include "iodev.h"
+=======
+#include <kvm/iodev.h>
+>>>>>>> v4.9.227
 
 struct kvm_kpit_channel_state {
 	u32 count; /* can be 65536 */
@@ -22,11 +26,16 @@ struct kvm_kpit_channel_state {
 };
 
 struct kvm_kpit_state {
+<<<<<<< HEAD
+=======
+	/* All members before "struct mutex lock" are protected by the lock. */
+>>>>>>> v4.9.227
 	struct kvm_kpit_channel_state channels[3];
 	u32 flags;
 	bool is_periodic;
 	s64 period; 				/* unit: ns */
 	struct hrtimer timer;
+<<<<<<< HEAD
 	atomic_t pending;			/* accumulated triggered timers */
 	bool reinject;
 	struct kvm *kvm;
@@ -35,6 +44,14 @@ struct kvm_kpit_state {
 	struct kvm_pit *pit;
 	spinlock_t inject_lock;
 	unsigned long irq_ack;
+=======
+	u32    speaker_data_on;
+
+	struct mutex lock;
+	atomic_t reinject;
+	atomic_t pending; /* accumulated triggered timers */
+	atomic_t irq_ack;
+>>>>>>> v4.9.227
 	struct kvm_irq_ack_notifier irq_ack_notifier;
 };
 
@@ -57,9 +74,18 @@ struct kvm_pit {
 #define KVM_MAX_PIT_INTR_INTERVAL   HZ / 100
 #define KVM_PIT_CHANNEL_MASK	    0x3
 
+<<<<<<< HEAD
 void kvm_pit_load_count(struct kvm *kvm, int channel, u32 val, int hpet_legacy_start);
 struct kvm_pit *kvm_create_pit(struct kvm *kvm, u32 flags);
 void kvm_free_pit(struct kvm *kvm);
 void kvm_pit_reset(struct kvm_pit *pit);
+=======
+struct kvm_pit *kvm_create_pit(struct kvm *kvm, u32 flags);
+void kvm_free_pit(struct kvm *kvm);
+
+void kvm_pit_load_count(struct kvm_pit *pit, int channel, u32 val,
+		int hpet_legacy_start);
+void kvm_pit_set_reinject(struct kvm_pit *pit, bool reinject);
+>>>>>>> v4.9.227
 
 #endif

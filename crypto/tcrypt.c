@@ -22,8 +22,16 @@
  *
  */
 
+<<<<<<< HEAD
 #include <crypto/hash.h>
 #include <linux/err.h>
+=======
+#include <crypto/aead.h>
+#include <crypto/hash.h>
+#include <crypto/skcipher.h>
+#include <linux/err.h>
+#include <linux/fips.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/gfp.h>
 #include <linux/module.h>
@@ -34,7 +42,10 @@
 #include <linux/timex.h>
 #include <linux/interrupt.h>
 #include "tcrypt.h"
+<<<<<<< HEAD
 #include "internal.h"
+=======
+>>>>>>> v4.9.227
 
 /*
  * Need slab memory for testing (size in number of pages).
@@ -47,6 +58,11 @@
 #define ENCRYPT 1
 #define DECRYPT 0
 
+<<<<<<< HEAD
+=======
+#define MAX_DIGEST_SIZE		64
+
+>>>>>>> v4.9.227
 /*
  * return a string with the driver name
  */
@@ -69,6 +85,7 @@ static char *check[] = {
 	"cast6", "arc4", "michael_mic", "deflate", "crc32c", "tea", "xtea",
 	"khazad", "wp512", "wp384", "wp256", "tnepres", "xeta",  "fcrypt",
 	"camellia", "seed", "salsa20", "rmd128", "rmd160", "rmd256", "rmd320",
+<<<<<<< HEAD
 	"lzo", "cts", "zlib", NULL
 };
 
@@ -139,6 +156,39 @@ out:
 		printk("1 operation in %lu cycles (%d bytes)\n",
 		       (cycles + 4) / 8, blen);
 
+=======
+	"lzo", "cts", "zlib", "sha3-224", "sha3-256", "sha3-384", "sha3-512",
+	NULL
+};
+
+struct tcrypt_result {
+	struct completion completion;
+	int err;
+};
+
+static void tcrypt_complete(struct crypto_async_request *req, int err)
+{
+	struct tcrypt_result *res = req->data;
+
+	if (err == -EINPROGRESS)
+		return;
+
+	res->err = err;
+	complete(&res->completion);
+}
+
+static inline int do_one_aead_op(struct aead_request *req, int ret)
+{
+	if (ret == -EINPROGRESS || ret == -EBUSY) {
+		struct tcrypt_result *tr = req->base.data;
+
+		ret = wait_for_completion_interruptible(&tr->completion);
+		if (!ret)
+			ret = tr->err;
+		reinit_completion(&tr->completion);
+	}
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -152,9 +202,15 @@ static int test_aead_jiffies(struct aead_request *req, int enc,
 	for (start = jiffies, end = start + secs * HZ, bcount = 0;
 	     time_before(jiffies, end); bcount++) {
 		if (enc)
+<<<<<<< HEAD
 			ret = crypto_aead_encrypt(req);
 		else
 			ret = crypto_aead_decrypt(req);
+=======
+			ret = do_one_aead_op(req, crypto_aead_encrypt(req));
+		else
+			ret = do_one_aead_op(req, crypto_aead_decrypt(req));
+>>>>>>> v4.9.227
 
 		if (ret)
 			return ret;
@@ -176,9 +232,15 @@ static int test_aead_cycles(struct aead_request *req, int enc, int blen)
 	/* Warm-up run. */
 	for (i = 0; i < 4; i++) {
 		if (enc)
+<<<<<<< HEAD
 			ret = crypto_aead_encrypt(req);
 		else
 			ret = crypto_aead_decrypt(req);
+=======
+			ret = do_one_aead_op(req, crypto_aead_encrypt(req));
+		else
+			ret = do_one_aead_op(req, crypto_aead_decrypt(req));
+>>>>>>> v4.9.227
 
 		if (ret)
 			goto out;
@@ -190,9 +252,15 @@ static int test_aead_cycles(struct aead_request *req, int enc, int blen)
 
 		start = get_cycles();
 		if (enc)
+<<<<<<< HEAD
 			ret = crypto_aead_encrypt(req);
 		else
 			ret = crypto_aead_decrypt(req);
+=======
+			ret = do_one_aead_op(req, crypto_aead_encrypt(req));
+		else
+			ret = do_one_aead_op(req, crypto_aead_decrypt(req));
+>>>>>>> v4.9.227
 		end = get_cycles();
 
 		if (ret)
@@ -250,6 +318,7 @@ static void sg_init_aead(struct scatterlist *sg, char *xbuf[XBUFSIZE],
 	int np = (buflen + PAGE_SIZE - 1)/PAGE_SIZE;
 	int k, rem;
 
+<<<<<<< HEAD
 	np = (np > XBUFSIZE) ? XBUFSIZE : np;
 	rem = buflen % PAGE_SIZE;
 	if (np > XBUFSIZE) {
@@ -263,6 +332,23 @@ static void sg_init_aead(struct scatterlist *sg, char *xbuf[XBUFSIZE],
 		else
 			sg_set_buf(&sg[k], xbuf[k], PAGE_SIZE);
 	}
+=======
+	if (np > XBUFSIZE) {
+		rem = PAGE_SIZE;
+		np = XBUFSIZE;
+	} else {
+		rem = buflen % PAGE_SIZE;
+	}
+
+	sg_init_table(sg, np + 1);
+	if (rem)
+		np--;
+	for (k = 0; k < np; k++)
+		sg_set_buf(&sg[k + 1], xbuf[k], PAGE_SIZE);
+
+	if (rem)
+		sg_set_buf(&sg[k + 1], xbuf[k], rem);
+>>>>>>> v4.9.227
 }
 
 static void test_aead_speed(const char *algo, int enc, unsigned int secs,
@@ -276,20 +362,39 @@ static void test_aead_speed(const char *algo, int enc, unsigned int secs,
 	const char *key;
 	struct aead_request *req;
 	struct scatterlist *sg;
+<<<<<<< HEAD
 	struct scatterlist *asg;
 	struct scatterlist *sgout;
 	const char *e;
 	void *assoc;
 	char iv[MAX_IVLEN];
+=======
+	struct scatterlist *sgout;
+	const char *e;
+	void *assoc;
+	char *iv;
+>>>>>>> v4.9.227
 	char *xbuf[XBUFSIZE];
 	char *xoutbuf[XBUFSIZE];
 	char *axbuf[XBUFSIZE];
 	unsigned int *b_size;
 	unsigned int iv_len;
+<<<<<<< HEAD
 
 	if (aad_size >= PAGE_SIZE) {
 		pr_err("associate data length (%u) too big\n", aad_size);
 		return;
+=======
+	struct tcrypt_result result;
+
+	iv = kzalloc(MAX_IVLEN, GFP_KERNEL);
+	if (!iv)
+		return;
+
+	if (aad_size >= PAGE_SIZE) {
+		pr_err("associate data length (%u) too big\n", aad_size);
+		goto out_noxbuf;
+>>>>>>> v4.9.227
 	}
 
 	if (enc == ENCRYPT)
@@ -304,11 +409,18 @@ static void test_aead_speed(const char *algo, int enc, unsigned int secs,
 	if (testmgr_alloc_buf(xoutbuf))
 		goto out_nooutbuf;
 
+<<<<<<< HEAD
 	sg = kmalloc(sizeof(*sg) * 8 * 3, GFP_KERNEL);
 	if (!sg)
 		goto out_nosg;
 	asg = &sg[8];
 	sgout = &asg[8];
+=======
+	sg = kmalloc(sizeof(*sg) * 9 * 2, GFP_KERNEL);
+	if (!sg)
+		goto out_nosg;
+	sgout = &sg[9];
+>>>>>>> v4.9.227
 
 	tfm = crypto_alloc_aead(algo, 0, 0);
 
@@ -318,6 +430,10 @@ static void test_aead_speed(const char *algo, int enc, unsigned int secs,
 		goto out_notfm;
 	}
 
+<<<<<<< HEAD
+=======
+	init_completion(&result.completion);
+>>>>>>> v4.9.227
 	printk(KERN_INFO "\ntesting speed of %s (%s) %s\n", algo,
 			get_driver_name(crypto_aead, tfm), e);
 
@@ -328,13 +444,22 @@ static void test_aead_speed(const char *algo, int enc, unsigned int secs,
 		goto out_noreq;
 	}
 
+<<<<<<< HEAD
+=======
+	aead_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG,
+				  tcrypt_complete, &result);
+
+>>>>>>> v4.9.227
 	i = 0;
 	do {
 		b_size = aead_sizes;
 		do {
 			assoc = axbuf[0];
 			memset(assoc, 0xff, aad_size);
+<<<<<<< HEAD
 			sg_init_one(&asg[0], assoc, aad_size);
+=======
+>>>>>>> v4.9.227
 
 			if ((*keysize + *b_size) > TVMEMSIZE * PAGE_SIZE) {
 				pr_err("template (%u) too big for tvmem (%lu)\n",
@@ -355,7 +480,11 @@ static void test_aead_speed(const char *algo, int enc, unsigned int secs,
 
 			iv_len = crypto_aead_ivsize(tfm);
 			if (iv_len)
+<<<<<<< HEAD
 				memset(&iv, 0xff, iv_len);
+=======
+				memset(iv, 0xff, iv_len);
+>>>>>>> v4.9.227
 
 			crypto_aead_clear_flags(tfm, ~0);
 			printk(KERN_INFO "test %u (%d bit key, %d byte blocks): ",
@@ -370,6 +499,7 @@ static void test_aead_speed(const char *algo, int enc, unsigned int secs,
 				goto out;
 			}
 
+<<<<<<< HEAD
 			sg_init_aead(&sg[0], xbuf,
 				    *b_size + (enc ? authsize : 0));
 
@@ -378,6 +508,21 @@ static void test_aead_speed(const char *algo, int enc, unsigned int secs,
 
 			aead_request_set_crypt(req, sg, sgout, *b_size, iv);
 			aead_request_set_assoc(req, asg, aad_size);
+=======
+			sg_init_aead(sg, xbuf,
+				    *b_size + (enc ? 0 : authsize));
+
+			sg_init_aead(sgout, xoutbuf,
+				    *b_size + (enc ? authsize : 0));
+
+			sg_set_buf(&sg[0], assoc, aad_size);
+			sg_set_buf(&sgout[0], assoc, aad_size);
+
+			aead_request_set_crypt(req, sg, sgout,
+					       *b_size + (enc ? 0 : authsize),
+					       iv);
+			aead_request_set_ad(req, aad_size);
+>>>>>>> v4.9.227
 
 			if (secs)
 				ret = test_aead_jiffies(req, enc, *b_size,
@@ -408,6 +553,7 @@ out_nooutbuf:
 out_noaxbuf:
 	testmgr_free_buf(xbuf);
 out_noxbuf:
+<<<<<<< HEAD
 	return;
 }
 
@@ -669,6 +815,12 @@ out:
 	return 0;
 }
 
+=======
+	kfree(iv);
+	return;
+}
+
+>>>>>>> v4.9.227
 static void test_hash_sg_init(struct scatterlist *sg)
 {
 	int i;
@@ -680,6 +832,7 @@ static void test_hash_sg_init(struct scatterlist *sg)
 	}
 }
 
+<<<<<<< HEAD
 static void test_hash_speed(const char *algo, unsigned int secs,
 			    struct hash_speed *speed)
 {
@@ -759,19 +912,151 @@ static void tcrypt_complete(struct crypto_async_request *req, int err)
 	complete(&res->completion);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int do_one_ahash_op(struct ahash_request *req, int ret)
 {
 	if (ret == -EINPROGRESS || ret == -EBUSY) {
 		struct tcrypt_result *tr = req->base.data;
 
+<<<<<<< HEAD
 		ret = wait_for_completion_interruptible(&tr->completion);
 		if (!ret)
 			ret = tr->err;
 		reinit_completion(&tr->completion);
+=======
+		wait_for_completion(&tr->completion);
+		reinit_completion(&tr->completion);
+		ret = tr->err;
+>>>>>>> v4.9.227
 	}
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+struct test_mb_ahash_data {
+	struct scatterlist sg[TVMEMSIZE];
+	char result[64];
+	struct ahash_request *req;
+	struct tcrypt_result tresult;
+	char *xbuf[XBUFSIZE];
+};
+
+static void test_mb_ahash_speed(const char *algo, unsigned int sec,
+				struct hash_speed *speed)
+{
+	struct test_mb_ahash_data *data;
+	struct crypto_ahash *tfm;
+	unsigned long start, end;
+	unsigned long cycles;
+	unsigned int i, j, k;
+	int ret;
+
+	data = kzalloc(sizeof(*data) * 8, GFP_KERNEL);
+	if (!data)
+		return;
+
+	tfm = crypto_alloc_ahash(algo, 0, 0);
+	if (IS_ERR(tfm)) {
+		pr_err("failed to load transform for %s: %ld\n",
+			algo, PTR_ERR(tfm));
+		goto free_data;
+	}
+
+	for (i = 0; i < 8; ++i) {
+		if (testmgr_alloc_buf(data[i].xbuf))
+			goto out;
+
+		init_completion(&data[i].tresult.completion);
+
+		data[i].req = ahash_request_alloc(tfm, GFP_KERNEL);
+		if (!data[i].req) {
+			pr_err("alg: hash: Failed to allocate request for %s\n",
+			       algo);
+			goto out;
+		}
+
+		ahash_request_set_callback(data[i].req, 0,
+					   tcrypt_complete, &data[i].tresult);
+		test_hash_sg_init(data[i].sg);
+	}
+
+	pr_info("\ntesting speed of multibuffer %s (%s)\n", algo,
+		get_driver_name(crypto_ahash, tfm));
+
+	for (i = 0; speed[i].blen != 0; i++) {
+		/* For some reason this only tests digests. */
+		if (speed[i].blen != speed[i].plen)
+			continue;
+
+		if (speed[i].blen > TVMEMSIZE * PAGE_SIZE) {
+			pr_err("template (%u) too big for tvmem (%lu)\n",
+			       speed[i].blen, TVMEMSIZE * PAGE_SIZE);
+			goto out;
+		}
+
+		if (speed[i].klen)
+			crypto_ahash_setkey(tfm, tvmem[0], speed[i].klen);
+
+		for (k = 0; k < 8; k++)
+			ahash_request_set_crypt(data[k].req, data[k].sg,
+						data[k].result, speed[i].blen);
+
+		pr_info("test%3u "
+			"(%5u byte blocks,%5u bytes per update,%4u updates): ",
+			i, speed[i].blen, speed[i].plen,
+			speed[i].blen / speed[i].plen);
+
+		start = get_cycles();
+
+		for (k = 0; k < 8; k++) {
+			ret = crypto_ahash_digest(data[k].req);
+			if (ret == -EINPROGRESS) {
+				ret = 0;
+				continue;
+			}
+
+			if (ret)
+				break;
+
+			complete(&data[k].tresult.completion);
+			data[k].tresult.err = 0;
+		}
+
+		for (j = 0; j < k; j++) {
+			struct tcrypt_result *tr = &data[j].tresult;
+
+			wait_for_completion(&tr->completion);
+			if (tr->err)
+				ret = tr->err;
+		}
+
+		end = get_cycles();
+		cycles = end - start;
+		pr_cont("%6lu cycles/operation, %4lu cycles/byte\n",
+			cycles, cycles / (8 * speed[i].blen));
+
+		if (ret) {
+			pr_err("At least one hashing failed ret=%d\n", ret);
+			break;
+		}
+	}
+
+out:
+	for (k = 0; k < 8; ++k)
+		ahash_request_free(data[k].req);
+
+	for (k = 0; k < 8; ++k)
+		testmgr_free_buf(data[k].xbuf);
+
+	crypto_free_ahash(tfm);
+
+free_data:
+	kfree(data);
+}
+
+>>>>>>> v4.9.227
 static int test_ahash_jiffies_digest(struct ahash_request *req, int blen,
 				     char *out, int secs)
 {
@@ -804,7 +1089,11 @@ static int test_ahash_jiffies(struct ahash_request *req, int blen,
 
 	for (start = jiffies, end = start + secs * HZ, bcount = 0;
 	     time_before(jiffies, end); bcount++) {
+<<<<<<< HEAD
 		ret = crypto_ahash_init(req);
+=======
+		ret = do_one_ahash_op(req, crypto_ahash_init(req));
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 		for (pcount = 0; pcount < blen; pcount += plen) {
@@ -873,7 +1162,11 @@ static int test_ahash_cycles(struct ahash_request *req, int blen,
 
 	/* Warm-up run. */
 	for (i = 0; i < 4; i++) {
+<<<<<<< HEAD
 		ret = crypto_ahash_init(req);
+=======
+		ret = do_one_ahash_op(req, crypto_ahash_init(req));
+>>>>>>> v4.9.227
 		if (ret)
 			goto out;
 		for (pcount = 0; pcount < blen; pcount += plen) {
@@ -892,7 +1185,11 @@ static int test_ahash_cycles(struct ahash_request *req, int blen,
 
 		start = get_cycles();
 
+<<<<<<< HEAD
 		ret = crypto_ahash_init(req);
+=======
+		ret = do_one_ahash_op(req, crypto_ahash_init(req));
+>>>>>>> v4.9.227
 		if (ret)
 			goto out;
 		for (pcount = 0; pcount < blen; pcount += plen) {
@@ -919,17 +1216,29 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 static void test_ahash_speed(const char *algo, unsigned int secs,
 			     struct hash_speed *speed)
+=======
+static void test_ahash_speed_common(const char *algo, unsigned int secs,
+				    struct hash_speed *speed, unsigned mask)
+>>>>>>> v4.9.227
 {
 	struct scatterlist sg[TVMEMSIZE];
 	struct tcrypt_result tresult;
 	struct ahash_request *req;
 	struct crypto_ahash *tfm;
+<<<<<<< HEAD
 	static char output[1024];
 	int i, ret;
 
 	tfm = crypto_alloc_ahash(algo, 0, 0);
+=======
+	char *output;
+	int i, ret;
+
+	tfm = crypto_alloc_ahash(algo, 0, mask);
+>>>>>>> v4.9.227
 	if (IS_ERR(tfm)) {
 		pr_err("failed to load transform for %s: %ld\n",
 		       algo, PTR_ERR(tfm));
@@ -939,9 +1248,15 @@ static void test_ahash_speed(const char *algo, unsigned int secs,
 	printk(KERN_INFO "\ntesting speed of async %s (%s)\n", algo,
 			get_driver_name(crypto_ahash, tfm));
 
+<<<<<<< HEAD
 	if (crypto_ahash_digestsize(tfm) > sizeof(output)) {
 		pr_err("digestsize(%u) > outputbuffer(%zu)\n",
 		       crypto_ahash_digestsize(tfm), sizeof(output));
+=======
+	if (crypto_ahash_digestsize(tfm) > MAX_DIGEST_SIZE) {
+		pr_err("digestsize(%u) > %d\n", crypto_ahash_digestsize(tfm),
+		       MAX_DIGEST_SIZE);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -956,6 +1271,13 @@ static void test_ahash_speed(const char *algo, unsigned int secs,
 	ahash_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG,
 				   tcrypt_complete, &tresult);
 
+<<<<<<< HEAD
+=======
+	output = kmalloc(MAX_DIGEST_SIZE, GFP_KERNEL);
+	if (!output)
+		goto out_nomem;
+
+>>>>>>> v4.9.227
 	for (i = 0; speed[i].blen != 0; i++) {
 		if (speed[i].blen > TVMEMSIZE * PAGE_SIZE) {
 			pr_err("template (%u) too big for tvmem (%lu)\n",
@@ -963,6 +1285,12 @@ static void test_ahash_speed(const char *algo, unsigned int secs,
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		if (speed[i].klen)
+			crypto_ahash_setkey(tfm, tvmem[0], speed[i].klen);
+
+>>>>>>> v4.9.227
 		pr_info("test%3u "
 			"(%5u byte blocks,%5u bytes per update,%4u updates): ",
 			i, speed[i].blen, speed[i].plen, speed[i].blen / speed[i].plen);
@@ -982,27 +1310,59 @@ static void test_ahash_speed(const char *algo, unsigned int secs,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	kfree(output);
+
+out_nomem:
+>>>>>>> v4.9.227
 	ahash_request_free(req);
 
 out:
 	crypto_free_ahash(tfm);
 }
 
+<<<<<<< HEAD
 static inline int do_one_acipher_op(struct ablkcipher_request *req, int ret)
+=======
+static void test_ahash_speed(const char *algo, unsigned int secs,
+			     struct hash_speed *speed)
+{
+	return test_ahash_speed_common(algo, secs, speed, 0);
+}
+
+static void test_hash_speed(const char *algo, unsigned int secs,
+			    struct hash_speed *speed)
+{
+	return test_ahash_speed_common(algo, secs, speed, CRYPTO_ALG_ASYNC);
+}
+
+static inline int do_one_acipher_op(struct skcipher_request *req, int ret)
+>>>>>>> v4.9.227
 {
 	if (ret == -EINPROGRESS || ret == -EBUSY) {
 		struct tcrypt_result *tr = req->base.data;
 
+<<<<<<< HEAD
 		ret = wait_for_completion_interruptible(&tr->completion);
 		if (!ret)
 			ret = tr->err;
 		reinit_completion(&tr->completion);
+=======
+		wait_for_completion(&tr->completion);
+		reinit_completion(&tr->completion);
+		ret = tr->err;
+>>>>>>> v4.9.227
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int test_acipher_jiffies(struct ablkcipher_request *req, int enc,
+=======
+static int test_acipher_jiffies(struct skcipher_request *req, int enc,
+>>>>>>> v4.9.227
 				int blen, int secs)
 {
 	unsigned long start, end;
@@ -1013,10 +1373,17 @@ static int test_acipher_jiffies(struct ablkcipher_request *req, int enc,
 	     time_before(jiffies, end); bcount++) {
 		if (enc)
 			ret = do_one_acipher_op(req,
+<<<<<<< HEAD
 						crypto_ablkcipher_encrypt(req));
 		else
 			ret = do_one_acipher_op(req,
 						crypto_ablkcipher_decrypt(req));
+=======
+						crypto_skcipher_encrypt(req));
+		else
+			ret = do_one_acipher_op(req,
+						crypto_skcipher_decrypt(req));
+>>>>>>> v4.9.227
 
 		if (ret)
 			return ret;
@@ -1027,7 +1394,11 @@ static int test_acipher_jiffies(struct ablkcipher_request *req, int enc,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int test_acipher_cycles(struct ablkcipher_request *req, int enc,
+=======
+static int test_acipher_cycles(struct skcipher_request *req, int enc,
+>>>>>>> v4.9.227
 			       int blen)
 {
 	unsigned long cycles = 0;
@@ -1038,10 +1409,17 @@ static int test_acipher_cycles(struct ablkcipher_request *req, int enc,
 	for (i = 0; i < 4; i++) {
 		if (enc)
 			ret = do_one_acipher_op(req,
+<<<<<<< HEAD
 						crypto_ablkcipher_encrypt(req));
 		else
 			ret = do_one_acipher_op(req,
 						crypto_ablkcipher_decrypt(req));
+=======
+						crypto_skcipher_encrypt(req));
+		else
+			ret = do_one_acipher_op(req,
+						crypto_skcipher_decrypt(req));
+>>>>>>> v4.9.227
 
 		if (ret)
 			goto out;
@@ -1054,10 +1432,17 @@ static int test_acipher_cycles(struct ablkcipher_request *req, int enc,
 		start = get_cycles();
 		if (enc)
 			ret = do_one_acipher_op(req,
+<<<<<<< HEAD
 						crypto_ablkcipher_encrypt(req));
 		else
 			ret = do_one_acipher_op(req,
 						crypto_ablkcipher_decrypt(req));
+=======
+						crypto_skcipher_encrypt(req));
+		else
+			ret = do_one_acipher_op(req,
+						crypto_skcipher_decrypt(req));
+>>>>>>> v4.9.227
 		end = get_cycles();
 
 		if (ret)
@@ -1074,16 +1459,27 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void test_acipher_speed(const char *algo, int enc, unsigned int secs,
 			       struct cipher_speed_template *template,
 			       unsigned int tcount, u8 *keysize)
+=======
+static void test_skcipher_speed(const char *algo, int enc, unsigned int secs,
+				struct cipher_speed_template *template,
+				unsigned int tcount, u8 *keysize, bool async)
+>>>>>>> v4.9.227
 {
 	unsigned int ret, i, j, k, iv_len;
 	struct tcrypt_result tresult;
 	const char *key;
 	char iv[128];
+<<<<<<< HEAD
 	struct ablkcipher_request *req;
 	struct crypto_ablkcipher *tfm;
+=======
+	struct skcipher_request *req;
+	struct crypto_skcipher *tfm;
+>>>>>>> v4.9.227
 	const char *e;
 	u32 *b_size;
 
@@ -1094,7 +1490,11 @@ static void test_acipher_speed(const char *algo, int enc, unsigned int secs,
 
 	init_completion(&tresult.completion);
 
+<<<<<<< HEAD
 	tfm = crypto_alloc_ablkcipher(algo, 0, 0);
+=======
+	tfm = crypto_alloc_skcipher(algo, 0, async ? 0 : CRYPTO_ALG_ASYNC);
+>>>>>>> v4.9.227
 
 	if (IS_ERR(tfm)) {
 		pr_err("failed to load transform for %s: %ld\n", algo,
@@ -1103,17 +1503,28 @@ static void test_acipher_speed(const char *algo, int enc, unsigned int secs,
 	}
 
 	pr_info("\ntesting speed of async %s (%s) %s\n", algo,
+<<<<<<< HEAD
 			get_driver_name(crypto_ablkcipher, tfm), e);
 
 	req = ablkcipher_request_alloc(tfm, GFP_KERNEL);
+=======
+			get_driver_name(crypto_skcipher, tfm), e);
+
+	req = skcipher_request_alloc(tfm, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!req) {
 		pr_err("tcrypt: skcipher: Failed to allocate request for %s\n",
 		       algo);
 		goto out;
 	}
 
+<<<<<<< HEAD
 	ablkcipher_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG,
 					tcrypt_complete, &tresult);
+=======
+	skcipher_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG,
+				      tcrypt_complete, &tresult);
+>>>>>>> v4.9.227
 
 	i = 0;
 	do {
@@ -1143,6 +1554,7 @@ static void test_acipher_speed(const char *algo, int enc, unsigned int secs,
 				}
 			}
 
+<<<<<<< HEAD
 			crypto_ablkcipher_clear_flags(tfm, ~0);
 
 			ret = crypto_ablkcipher_setkey(tfm, key, *keysize);
@@ -1155,6 +1567,20 @@ static void test_acipher_speed(const char *algo, int enc, unsigned int secs,
 			sg_init_table(sg, TVMEMSIZE);
 
 			k = *keysize + *b_size;
+=======
+			crypto_skcipher_clear_flags(tfm, ~0);
+
+			ret = crypto_skcipher_setkey(tfm, key, *keysize);
+			if (ret) {
+				pr_err("setkey() failed flags=%x\n",
+					crypto_skcipher_get_flags(tfm));
+				goto out_free_req;
+			}
+
+			k = *keysize + *b_size;
+			sg_init_table(sg, DIV_ROUND_UP(k, PAGE_SIZE));
+
+>>>>>>> v4.9.227
 			if (k > PAGE_SIZE) {
 				sg_set_buf(sg, tvmem[0] + *keysize,
 				   PAGE_SIZE - *keysize);
@@ -1172,11 +1598,19 @@ static void test_acipher_speed(const char *algo, int enc, unsigned int secs,
 				sg_set_buf(sg, tvmem[0] + *keysize, *b_size);
 			}
 
+<<<<<<< HEAD
 			iv_len = crypto_ablkcipher_ivsize(tfm);
 			if (iv_len)
 				memset(&iv, 0xff, iv_len);
 
 			ablkcipher_request_set_crypt(req, sg, sg, *b_size, iv);
+=======
+			iv_len = crypto_skcipher_ivsize(tfm);
+			if (iv_len)
+				memset(&iv, 0xff, iv_len);
+
+			skcipher_request_set_crypt(req, sg, sg, *b_size, iv);
+>>>>>>> v4.9.227
 
 			if (secs)
 				ret = test_acipher_jiffies(req, enc,
@@ -1187,7 +1621,11 @@ static void test_acipher_speed(const char *algo, int enc, unsigned int secs,
 
 			if (ret) {
 				pr_err("%s() failed flags=%x\n", e,
+<<<<<<< HEAD
 					crypto_ablkcipher_get_flags(tfm));
+=======
+				       crypto_skcipher_get_flags(tfm));
+>>>>>>> v4.9.227
 				break;
 			}
 			b_size++;
@@ -1197,9 +1635,31 @@ static void test_acipher_speed(const char *algo, int enc, unsigned int secs,
 	} while (*keysize);
 
 out_free_req:
+<<<<<<< HEAD
 	ablkcipher_request_free(req);
 out:
 	crypto_free_ablkcipher(tfm);
+=======
+	skcipher_request_free(req);
+out:
+	crypto_free_skcipher(tfm);
+}
+
+static void test_acipher_speed(const char *algo, int enc, unsigned int secs,
+			       struct cipher_speed_template *template,
+			       unsigned int tcount, u8 *keysize)
+{
+	return test_skcipher_speed(algo, enc, secs, template, tcount, keysize,
+				   true);
+}
+
+static void test_cipher_speed(const char *algo, int enc, unsigned int secs,
+			      struct cipher_speed_template *template,
+			      unsigned int tcount, u8 *keysize)
+{
+	return test_skcipher_speed(algo, enc, secs, template, tcount, keysize,
+				   false);
+>>>>>>> v4.9.227
 }
 
 static void test_available(void)
@@ -1225,15 +1685,31 @@ static inline int tcrypt_test(const char *alg)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int do_test(int m)
+=======
+static int do_test(const char *alg, u32 type, u32 mask, int m)
+>>>>>>> v4.9.227
 {
 	int i;
 	int ret = 0;
 
 	switch (m) {
 	case 0:
+<<<<<<< HEAD
 		for (i = 1; i < 200; i++)
 			ret += do_test(i);
+=======
+		if (alg) {
+			if (!crypto_has_alg(alg, type,
+					    mask ?: CRYPTO_ALG_TYPE_MASK))
+				ret = -ENOENT;
+			break;
+		}
+
+		for (i = 1; i < 200; i++)
+			ret += do_test(NULL, 0, 0, i);
+>>>>>>> v4.9.227
 		break;
 
 	case 1:
@@ -1454,6 +1930,25 @@ static int do_test(int m)
 		ret += tcrypt_test("crct10dif");
 		break;
 
+<<<<<<< HEAD
+=======
+	case 48:
+		ret += tcrypt_test("sha3-224");
+		break;
+
+	case 49:
+		ret += tcrypt_test("sha3-256");
+		break;
+
+	case 50:
+		ret += tcrypt_test("sha3-384");
+		break;
+
+	case 51:
+		ret += tcrypt_test("sha3-512");
+		break;
+
+>>>>>>> v4.9.227
 	case 100:
 		ret += tcrypt_test("hmac(md5)");
 		break;
@@ -1498,6 +1993,25 @@ static int do_test(int m)
 		ret += tcrypt_test("hmac(crc32)");
 		break;
 
+<<<<<<< HEAD
+=======
+	case 111:
+		ret += tcrypt_test("hmac(sha3-224)");
+		break;
+
+	case 112:
+		ret += tcrypt_test("hmac(sha3-256)");
+		break;
+
+	case 113:
+		ret += tcrypt_test("hmac(sha3-384)");
+		break;
+
+	case 114:
+		ret += tcrypt_test("hmac(sha3-512)");
+		break;
+
+>>>>>>> v4.9.227
 	case 150:
 		ret += tcrypt_test("ansi_cprng");
 		break;
@@ -1576,6 +2090,13 @@ static int do_test(int m)
 				speed_template_32_48_64);
 		test_cipher_speed("xts(aes)", DECRYPT, sec, NULL, 0,
 				speed_template_32_48_64);
+<<<<<<< HEAD
+=======
+		test_cipher_speed("cts(cbc(aes))", ENCRYPT, sec, NULL, 0,
+				speed_template_16_24_32);
+		test_cipher_speed("cts(cbc(aes))", DECRYPT, sec, NULL, 0,
+				speed_template_16_24_32);
+>>>>>>> v4.9.227
 		test_cipher_speed("ctr(aes)", ENCRYPT, sec, NULL, 0,
 				speed_template_16_24_32);
 		test_cipher_speed("ctr(aes)", DECRYPT, sec, NULL, 0,
@@ -1748,10 +2269,40 @@ static int do_test(int m)
 
 	case 211:
 		test_aead_speed("rfc4106(gcm(aes))", ENCRYPT, sec,
+<<<<<<< HEAD
 				NULL, 0, 16, 8, aead_speed_template_20);
 		break;
 
 	case 300:
+=======
+				NULL, 0, 16, 16, aead_speed_template_20);
+		test_aead_speed("gcm(aes)", ENCRYPT, sec,
+				NULL, 0, 16, 8, speed_template_16_24_32);
+		break;
+
+	case 212:
+		test_aead_speed("rfc4309(ccm(aes))", ENCRYPT, sec,
+				NULL, 0, 16, 16, aead_speed_template_19);
+		break;
+
+	case 213:
+		test_aead_speed("rfc7539esp(chacha20,poly1305)", ENCRYPT, sec,
+				NULL, 0, 16, 8, aead_speed_template_36);
+		break;
+
+	case 214:
+		test_cipher_speed("chacha20", ENCRYPT, sec, NULL, 0,
+				  speed_template_32);
+		break;
+
+
+	case 300:
+		if (alg) {
+			test_hash_speed(alg, sec, generic_hash_speed_template);
+			break;
+		}
+
+>>>>>>> v4.9.227
 		/* fall through */
 
 	case 301:
@@ -1834,10 +2385,41 @@ static int do_test(int m)
 		test_hash_speed("crct10dif", sec, generic_hash_speed_template);
 		if (mode > 300 && mode < 400) break;
 
+<<<<<<< HEAD
+=======
+	case 321:
+		test_hash_speed("poly1305", sec, poly1305_speed_template);
+		if (mode > 300 && mode < 400) break;
+
+	case 322:
+		test_hash_speed("sha3-224", sec, generic_hash_speed_template);
+		if (mode > 300 && mode < 400) break;
+
+	case 323:
+		test_hash_speed("sha3-256", sec, generic_hash_speed_template);
+		if (mode > 300 && mode < 400) break;
+
+	case 324:
+		test_hash_speed("sha3-384", sec, generic_hash_speed_template);
+		if (mode > 300 && mode < 400) break;
+
+	case 325:
+		test_hash_speed("sha3-512", sec, generic_hash_speed_template);
+		if (mode > 300 && mode < 400) break;
+
+>>>>>>> v4.9.227
 	case 399:
 		break;
 
 	case 400:
+<<<<<<< HEAD
+=======
+		if (alg) {
+			test_ahash_speed(alg, sec, generic_hash_speed_template);
+			break;
+		}
+
+>>>>>>> v4.9.227
 		/* fall through */
 
 	case 401:
@@ -1908,6 +2490,38 @@ static int do_test(int m)
 		test_ahash_speed("rmd320", sec, generic_hash_speed_template);
 		if (mode > 400 && mode < 500) break;
 
+<<<<<<< HEAD
+=======
+	case 418:
+		test_ahash_speed("sha3-224", sec, generic_hash_speed_template);
+		if (mode > 400 && mode < 500) break;
+
+	case 419:
+		test_ahash_speed("sha3-256", sec, generic_hash_speed_template);
+		if (mode > 400 && mode < 500) break;
+
+	case 420:
+		test_ahash_speed("sha3-384", sec, generic_hash_speed_template);
+		if (mode > 400 && mode < 500) break;
+
+
+	case 421:
+		test_ahash_speed("sha3-512", sec, generic_hash_speed_template);
+		if (mode > 400 && mode < 500) break;
+
+	case 422:
+		test_mb_ahash_speed("sha1", sec, generic_hash_speed_template);
+		if (mode > 400 && mode < 500) break;
+
+	case 423:
+		test_mb_ahash_speed("sha256", sec, generic_hash_speed_template);
+		if (mode > 400 && mode < 500) break;
+
+	case 424:
+		test_mb_ahash_speed("sha512", sec, generic_hash_speed_template);
+		if (mode > 400 && mode < 500) break;
+
+>>>>>>> v4.9.227
 	case 499:
 		break;
 
@@ -1928,6 +2542,13 @@ static int do_test(int m)
 				   speed_template_32_48_64);
 		test_acipher_speed("xts(aes)", DECRYPT, sec, NULL, 0,
 				   speed_template_32_48_64);
+<<<<<<< HEAD
+=======
+		test_acipher_speed("cts(cbc(aes))", ENCRYPT, sec, NULL, 0,
+				   speed_template_16_24_32);
+		test_acipher_speed("cts(cbc(aes))", DECRYPT, sec, NULL, 0,
+				   speed_template_16_24_32);
+>>>>>>> v4.9.227
 		test_acipher_speed("ctr(aes)", ENCRYPT, sec, NULL, 0,
 				   speed_template_16_24_32);
 		test_acipher_speed("ctr(aes)", DECRYPT, sec, NULL, 0,
@@ -2127,12 +2748,15 @@ static int do_test(int m)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int do_alg_test(const char *alg, u32 type, u32 mask)
 {
 	return crypto_has_alg(alg, type, mask ?: CRYPTO_ALG_TYPE_MASK) ?
 	       0 : -ENOENT;
 }
 
+=======
+>>>>>>> v4.9.227
 static int __init tcrypt_mod_init(void)
 {
 	int err = -ENOMEM;
@@ -2144,10 +2768,14 @@ static int __init tcrypt_mod_init(void)
 			goto err_free_tv;
 	}
 
+<<<<<<< HEAD
 	if (alg)
 		err = do_alg_test(alg, type, mask);
 	else
 		err = do_test(mode);
+=======
+	err = do_test(alg, type, mask, mode);
+>>>>>>> v4.9.227
 
 	if (err) {
 		printk(KERN_ERR "tcrypt: one or more tests failed!\n");

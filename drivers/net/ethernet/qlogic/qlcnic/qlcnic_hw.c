@@ -5,13 +5,22 @@
  * See LICENSE.qlcnic for copyright and licensing details.
  */
 
+<<<<<<< HEAD
 #include "qlcnic.h"
 #include "qlcnic_hdr.h"
 
+=======
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <net/ip.h>
 #include <linux/bitops.h>
 
+<<<<<<< HEAD
+=======
+#include "qlcnic.h"
+#include "qlcnic_hdr.h"
+
+>>>>>>> v4.9.227
 #define MASK(n) ((1ULL<<(n))-1)
 #define OCM_WIN_P3P(addr) (addr & 0xffc0000)
 
@@ -487,7 +496,12 @@ int qlcnic_nic_del_mac(struct qlcnic_adapter *adapter, const u8 *addr)
 	return err;
 }
 
+<<<<<<< HEAD
 int qlcnic_nic_add_mac(struct qlcnic_adapter *adapter, const u8 *addr, u16 vlan)
+=======
+int qlcnic_nic_add_mac(struct qlcnic_adapter *adapter, const u8 *addr, u16 vlan,
+		       enum qlcnic_mac_type mac_type)
+>>>>>>> v4.9.227
 {
 	struct qlcnic_mac_vlan_list *cur;
 	struct list_head *head;
@@ -513,10 +527,35 @@ int qlcnic_nic_add_mac(struct qlcnic_adapter *adapter, const u8 *addr, u16 vlan)
 	}
 
 	cur->vlan_id = vlan;
+<<<<<<< HEAD
+=======
+	cur->mac_type = mac_type;
+
+>>>>>>> v4.9.227
 	list_add_tail(&cur->list, &adapter->mac_list);
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+void qlcnic_flush_mcast_mac(struct qlcnic_adapter *adapter)
+{
+	struct qlcnic_mac_vlan_list *cur;
+	struct list_head *head, *tmp;
+
+	list_for_each_safe(head, tmp, &adapter->mac_list) {
+		cur = list_entry(head, struct qlcnic_mac_vlan_list, list);
+		if (cur->mac_type != QLCNIC_MULTICAST_MAC)
+			continue;
+
+		qlcnic_sre_macaddr_change(adapter, cur->mac_addr,
+					  cur->vlan_id, QLCNIC_MAC_DEL);
+		list_del(&cur->list);
+		kfree(cur);
+	}
+}
+
+>>>>>>> v4.9.227
 static void __qlcnic_set_multi(struct net_device *netdev, u16 vlan)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
@@ -530,8 +569,14 @@ static void __qlcnic_set_multi(struct net_device *netdev, u16 vlan)
 	if (!test_bit(__QLCNIC_FW_ATTACHED, &adapter->state))
 		return;
 
+<<<<<<< HEAD
 	qlcnic_nic_add_mac(adapter, adapter->mac_addr, vlan);
 	qlcnic_nic_add_mac(adapter, bcast_addr, vlan);
+=======
+	qlcnic_nic_add_mac(adapter, adapter->mac_addr, vlan,
+			   QLCNIC_UNICAST_MAC);
+	qlcnic_nic_add_mac(adapter, bcast_addr, vlan, QLCNIC_BROADCAST_MAC);
+>>>>>>> v4.9.227
 
 	if (netdev->flags & IFF_PROMISC) {
 		if (!(adapter->flags & QLCNIC_PROMISC_DISABLED))
@@ -540,8 +585,15 @@ static void __qlcnic_set_multi(struct net_device *netdev, u16 vlan)
 		   (netdev_mc_count(netdev) > ahw->max_mc_count)) {
 		mode = VPORT_MISS_MODE_ACCEPT_MULTI;
 	} else if (!netdev_mc_empty(netdev)) {
+<<<<<<< HEAD
 		netdev_for_each_mc_addr(ha, netdev)
 			qlcnic_nic_add_mac(adapter, ha->addr, vlan);
+=======
+		qlcnic_flush_mcast_mac(adapter);
+		netdev_for_each_mc_addr(ha, netdev)
+			qlcnic_nic_add_mac(adapter, ha->addr, vlan,
+					   QLCNIC_MULTICAST_MAC);
+>>>>>>> v4.9.227
 	}
 
 	/* configure unicast MAC address, if there is not sufficient space
@@ -551,7 +603,12 @@ static void __qlcnic_set_multi(struct net_device *netdev, u16 vlan)
 		mode = VPORT_MISS_MODE_ACCEPT_ALL;
 	} else if (!netdev_uc_empty(netdev)) {
 		netdev_for_each_uc_addr(ha, netdev)
+<<<<<<< HEAD
 			qlcnic_nic_add_mac(adapter, ha->addr, vlan);
+=======
+			qlcnic_nic_add_mac(adapter, ha->addr, vlan,
+					   QLCNIC_UNICAST_MAC);
+>>>>>>> v4.9.227
 	}
 
 	if (mode == VPORT_MISS_MODE_ACCEPT_ALL &&
@@ -794,7 +851,11 @@ int qlcnic_82xx_config_intr_coalesce(struct qlcnic_adapter *adapter,
 
 	if (rv)
 		netdev_err(adapter->netdev,
+<<<<<<< HEAD
 			   "Failed to set Rx coalescing parametrs\n");
+=======
+			   "Failed to set Rx coalescing parameters\n");
+>>>>>>> v4.9.227
 
 	return rv;
 }

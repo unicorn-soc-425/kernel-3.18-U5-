@@ -325,6 +325,9 @@ static struct platform_driver ehci_hcd_msp_driver = {
 	.remove		= ehci_hcd_msp_drv_remove,
 	.driver		= {
 		.name	= "pmcmsp-ehci",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };

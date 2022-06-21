@@ -12,7 +12,11 @@
 	model = "Gumstix Duovero";
 	compatible = "gumstix,omap4-duovero", "ti,omap4430", "ti,omap4";
 
+<<<<<<< HEAD
 	memory {
+=======
+	memory@80000000 {
+>>>>>>> v4.9.227
 		device_type = "memory";
 		reg = <0x80000000 0x40000000>; /* 1 GB */
 	};
@@ -173,14 +177,23 @@
 	twl: twl@48 {
 		reg = <0x48>;
 		interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;		/* IRQ_SYS_1N cascaded to gic */
+<<<<<<< HEAD
 		interrupt-parent = <&gic>;
+=======
+>>>>>>> v4.9.227
 	};
 
 	twl6040: twl@4b {
 		compatible = "ti,twl6040";
+<<<<<<< HEAD
 		reg = <0x4b>;
 		interrupts = <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>;		/* IRQ_SYS_2N cascaded to gic */
 		interrupt-parent = <&gic>;
+=======
+		#clock-cells = <0>;
+		reg = <0x4b>;
+		interrupts = <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>;		/* IRQ_SYS_2N cascaded to gic */
+>>>>>>> v4.9.227
 		ti,audpwron-gpio = <&gpio6 0 GPIO_ACTIVE_HIGH>;		/* gpio_160 */
 
 		vio-supply = <&v1v8>;
@@ -209,6 +222,13 @@
 &mcpdm {
 	pinctrl-names = "default";
 	pinctrl-0 = <&mcpdm_pins>;
+<<<<<<< HEAD
+=======
+
+	clocks = <&twl6040>;
+	clock-names = "pdmclk";
+
+>>>>>>> v4.9.227
 	status = "okay";
 };
 

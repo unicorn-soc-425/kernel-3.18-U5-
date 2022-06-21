@@ -38,6 +38,11 @@ static inline char *check_image_kernel(struct swsusp_info *info)
 }
 #endif /* CONFIG_ARCH_HIBERNATION_HEADER */
 
+<<<<<<< HEAD
+=======
+extern int hibernate_resume_nonboot_cpu_disable(void);
+
+>>>>>>> v4.9.227
 /*
  * Keep some memory free so that I/O operations can succeed without paging
  * [Might this be more than 4 MB?]
@@ -59,6 +64,16 @@ extern int hibernation_snapshot(int platform_mode);
 extern int hibernation_restore(int platform_mode);
 extern int hibernation_platform_enter(void);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DEBUG_RODATA
+/* kernel/power/snapshot.c */
+extern void enable_restore_image_protection(void);
+#else
+static inline void enable_restore_image_protection(void) {}
+#endif /* CONFIG_DEBUG_RODATA */
+
+>>>>>>> v4.9.227
 #else /* !CONFIG_HIBERNATION */
 
 static inline void hibernate_reserved_size_init(void) {}
@@ -77,6 +92,18 @@ static struct kobj_attribute _name##_attr = {	\
 	.store	= _name##_store,		\
 }
 
+<<<<<<< HEAD
+=======
+#define power_attr_ro(_name) \
+static struct kobj_attribute _name##_attr = {	\
+	.attr	= {				\
+		.name = __stringify(_name),	\
+		.mode = S_IRUGO,		\
+	},					\
+	.show	= _name##_show,			\
+}
+
+>>>>>>> v4.9.227
 /* Preferred image size in bytes (default 500 MB) */
 extern unsigned long image_size;
 /* Size of memory reserved for drivers (default SPARE_PAGES x PAGE_SIZE) */
@@ -89,6 +116,11 @@ extern int create_basic_memory_bitmaps(void);
 extern void free_basic_memory_bitmaps(void);
 extern int hibernate_preallocate_memory(void);
 
+<<<<<<< HEAD
+=======
+extern void clear_free_pages(void);
+
+>>>>>>> v4.9.227
 /**
  *	Auxiliary structure used for reading the snapshot image data and
  *	metadata from and writing them to the list of page backup entries
@@ -160,6 +192,7 @@ extern void swsusp_close(fmode_t);
 extern int swsusp_unmark(void);
 #endif
 
+<<<<<<< HEAD
 /* kernel/power/block_io.c */
 extern struct block_device *hib_resume_bdev;
 
@@ -173,6 +206,11 @@ struct timeval;
 /* kernel/power/swsusp.c */
 extern void swsusp_show_speed(struct timeval *, struct timeval *,
 				unsigned int, char *);
+=======
+struct timeval;
+/* kernel/power/swsusp.c */
+extern void swsusp_show_speed(ktime_t, ktime_t, unsigned int, char *);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_SUSPEND
 /* kernel/power/suspend.c */

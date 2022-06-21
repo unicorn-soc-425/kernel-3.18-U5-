@@ -19,7 +19,10 @@
 #include <linux/sched.h>
 #include <linux/signal.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/spinlock.h>
 #include <linux/irq.h>
 #include <linux/interrupt.h>
@@ -159,6 +162,10 @@ static int uic_set_irq_type(struct irq_data *d, unsigned int flow_type)
 
 	mtdcr(uic->dcrbase + UIC_PR, pr);
 	mtdcr(uic->dcrbase + UIC_TR, tr);
+<<<<<<< HEAD
+=======
+	mtdcr(uic->dcrbase + UIC_SR, ~mask);
+>>>>>>> v4.9.227
 
 	raw_spin_unlock_irqrestore(&uic->lock, flags);
 
@@ -190,16 +197,28 @@ static int uic_host_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops uic_host_ops = {
+=======
+static const struct irq_domain_ops uic_host_ops = {
+>>>>>>> v4.9.227
 	.map	= uic_host_map,
 	.xlate	= irq_domain_xlate_twocell,
 };
 
+<<<<<<< HEAD
 void uic_irq_cascade(unsigned int virq, struct irq_desc *desc)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	struct irq_data *idata = irq_desc_get_irq_data(desc);
 	struct uic *uic = irq_get_handler_data(virq);
+=======
+static void uic_irq_cascade(struct irq_desc *desc)
+{
+	struct irq_chip *chip = irq_desc_get_chip(desc);
+	struct irq_data *idata = irq_desc_get_irq_data(desc);
+	struct uic *uic = irq_desc_get_handler_data(desc);
+>>>>>>> v4.9.227
 	u32 msr;
 	int src;
 	int subvirq;
@@ -320,7 +339,11 @@ void __init uic_init_tree(void)
 	}
 }
 
+<<<<<<< HEAD
 /* Return an interrupt vector or NO_IRQ if no interrupt is pending. */
+=======
+/* Return an interrupt vector or 0 if no interrupt is pending. */
+>>>>>>> v4.9.227
 unsigned int uic_get_irq(void)
 {
 	u32 msr;

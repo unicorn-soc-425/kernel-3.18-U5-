@@ -122,7 +122,11 @@ int pinctrl_utils_add_config(struct pinctrl_dev *pctldev,
 }
 EXPORT_SYMBOL_GPL(pinctrl_utils_add_config);
 
+<<<<<<< HEAD
 void pinctrl_utils_dt_free_map(struct pinctrl_dev *pctldev,
+=======
+void pinctrl_utils_free_map(struct pinctrl_dev *pctldev,
+>>>>>>> v4.9.227
 	      struct pinctrl_map *map, unsigned num_maps)
 {
 	int i;
@@ -139,4 +143,8 @@ void pinctrl_utils_dt_free_map(struct pinctrl_dev *pctldev,
 	}
 	kfree(map);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(pinctrl_utils_dt_free_map);
+=======
+EXPORT_SYMBOL_GPL(pinctrl_utils_free_map);
+>>>>>>> v4.9.227

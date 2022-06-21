@@ -1,5 +1,9 @@
 
+<<<<<<< HEAD
 #include <asm/i387.h>
+=======
+#include <asm/fpu/api.h>
+>>>>>>> v4.9.227
 
 /*
  * may_use_simd - whether it is allowable at this time to issue SIMD

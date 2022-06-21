@@ -24,7 +24,10 @@
 
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> v4.9.227
 	unsigned long		flags;		/* low level flags */
 	unsigned long		status;		/* thread-synchronous flags */
 	__u32			cpu;		/* current CPU */
@@ -38,6 +41,7 @@ struct thread_info {
 	__u8			supervisor_stack[0];
 };
 
+<<<<<<< HEAD
 #else /* !__ASSEMBLY__ */
 
 /* offsets into the thread_info struct for assembly code access */
@@ -50,6 +54,9 @@ struct thread_info {
 #define TI_ADDR_LIMIT	0x00000018
 
 #endif
+=======
+#endif /* !__ASSEMBLY__ */
+>>>>>>> v4.9.227
 
 #define THREAD_SIZE		(PAGE_SIZE << 1)
 #define THREAD_SIZE_ORDER	1
@@ -61,7 +68,10 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> v4.9.227
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\

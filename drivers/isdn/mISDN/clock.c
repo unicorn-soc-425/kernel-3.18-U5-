@@ -37,6 +37,10 @@
 #include <linux/types.h>
 #include <linux/stddef.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <linux/mISDNif.h>
 #include <linux/export.h>
 #include "core.h"
@@ -45,15 +49,24 @@ static u_int *debug;
 static LIST_HEAD(iclock_list);
 static DEFINE_RWLOCK(iclock_lock);
 static u16 iclock_count;		/* counter of last clock */
+<<<<<<< HEAD
 static struct timeval iclock_tv;	/* time stamp of last clock */
 static int iclock_tv_valid;		/* already received one timestamp */
+=======
+static ktime_t iclock_timestamp;	/* time stamp of last clock */
+static int iclock_timestamp_valid;	/* already received one timestamp */
+>>>>>>> v4.9.227
 static struct mISDNclock *iclock_current;
 
 void
 mISDN_init_clock(u_int *dp)
 {
 	debug = dp;
+<<<<<<< HEAD
 	do_gettimeofday(&iclock_tv);
+=======
+	iclock_timestamp = ktime_get();
+>>>>>>> v4.9.227
 }
 
 static void
@@ -86,7 +99,11 @@ select_iclock(void)
 	}
 	if (bestclock != iclock_current) {
 		/* no clock received yet */
+<<<<<<< HEAD
 		iclock_tv_valid = 0;
+=======
+		iclock_timestamp_valid = 0;
+>>>>>>> v4.9.227
 	}
 	iclock_current = bestclock;
 }
@@ -139,12 +156,20 @@ mISDN_unregister_clock(struct mISDNclock *iclock)
 EXPORT_SYMBOL(mISDN_unregister_clock);
 
 void
+<<<<<<< HEAD
 mISDN_clock_update(struct mISDNclock *iclock, int samples, struct timeval *tv)
 {
 	u_long		flags;
 	struct timeval	tv_now;
 	time_t		elapsed_sec;
 	int		elapsed_8000th;
+=======
+mISDN_clock_update(struct mISDNclock *iclock, int samples, ktime_t *timestamp)
+{
+	u_long		flags;
+	ktime_t		timestamp_now;
+	u16		delta;
+>>>>>>> v4.9.227
 
 	write_lock_irqsave(&iclock_lock, flags);
 	if (iclock_current != iclock) {
@@ -156,6 +181,7 @@ mISDN_clock_update(struct mISDNclock *iclock, int samples, struct timeval *tv)
 		write_unlock_irqrestore(&iclock_lock, flags);
 		return;
 	}
+<<<<<<< HEAD
 	if (iclock_tv_valid) {
 		/* increment sample counter by given samples */
 		iclock_count += samples;
@@ -183,6 +209,29 @@ mISDN_clock_update(struct mISDNclock *iclock, int samples, struct timeval *tv)
 		iclock_tv.tv_sec = tv_now.tv_sec;
 		iclock_tv.tv_usec = tv_now.tv_usec;
 		iclock_tv_valid = 1;
+=======
+	if (iclock_timestamp_valid) {
+		/* increment sample counter by given samples */
+		iclock_count += samples;
+		if (timestamp) { /* timestamp must be set, if function call is delayed */
+			iclock_timestamp = *timestamp;
+		} else	{
+			iclock_timestamp = ktime_get();
+		}
+	} else {
+		/* calc elapsed time by system clock */
+		if (timestamp) { /* timestamp must be set, if function call is delayed */
+			timestamp_now = *timestamp;
+		} else {
+			timestamp_now = ktime_get();
+		}
+		delta = ktime_divns(ktime_sub(timestamp_now, iclock_timestamp),
+				(NSEC_PER_SEC / 8000));
+		/* add elapsed time to counter and set new timestamp */
+		iclock_count += delta;
+		iclock_timestamp = timestamp_now;
+		iclock_timestamp_valid = 1;
+>>>>>>> v4.9.227
 		if (*debug & DEBUG_CLOCK)
 			printk("Received first clock from source '%s'.\n",
 			       iclock_current ? iclock_current->name : "nothing");
@@ -195,13 +244,19 @@ unsigned short
 mISDN_clock_get(void)
 {
 	u_long		flags;
+<<<<<<< HEAD
 	struct timeval	tv_now;
 	time_t		elapsed_sec;
 	int		elapsed_8000th;
+=======
+	ktime_t		timestamp_now;
+	u16		delta;
+>>>>>>> v4.9.227
 	u16		count;
 
 	read_lock_irqsave(&iclock_lock, flags);
 	/* calc elapsed time by system clock */
+<<<<<<< HEAD
 	do_gettimeofday(&tv_now);
 	elapsed_sec = tv_now.tv_sec - iclock_tv.tv_sec;
 	elapsed_8000th = (tv_now.tv_usec / 125) - (iclock_tv.tv_usec / 125);
@@ -211,6 +266,13 @@ mISDN_clock_get(void)
 	}
 	/* add elapsed time to counter */
 	count =	iclock_count + elapsed_sec * 8000 + elapsed_8000th;
+=======
+	timestamp_now = ktime_get();
+	delta = ktime_divns(ktime_sub(timestamp_now, iclock_timestamp),
+			(NSEC_PER_SEC / 8000));
+	/* add elapsed time to counter */
+	count =	iclock_count + delta;
+>>>>>>> v4.9.227
 	read_unlock_irqrestore(&iclock_lock, flags);
 	return count;
 }

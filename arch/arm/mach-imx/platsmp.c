@@ -11,7 +11,14 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/smp.h>
+=======
+#include <linux/of_address.h>
+#include <linux/of.h>
+#include <linux/smp.h>
+
+>>>>>>> v4.9.227
 #include <asm/cacheflush.h>
 #include <asm/page.h>
 #include <asm/smp_scu.h>
@@ -85,7 +92,11 @@ static void __init imx_smp_prepare_cpus(unsigned int max_cpus)
 	sync_cache_w(&g_diag_reg);
 }
 
+<<<<<<< HEAD
 struct smp_operations  imx_smp_ops __initdata = {
+=======
+const struct smp_operations imx_smp_ops __initconst = {
+>>>>>>> v4.9.227
 	.smp_init_cpus		= imx_smp_init_cpus,
 	.smp_prepare_cpus	= imx_smp_prepare_cpus,
 	.smp_boot_secondary	= imx_boot_secondary,
@@ -94,3 +105,36 @@ struct smp_operations  imx_smp_ops __initdata = {
 	.cpu_kill		= imx_cpu_kill,
 #endif
 };
+<<<<<<< HEAD
+=======
+
+#define DCFG_CCSR_SCRATCHRW1	0x200
+
+static int ls1021a_boot_secondary(unsigned int cpu, struct task_struct *idle)
+{
+	arch_send_wakeup_ipi_mask(cpumask_of(cpu));
+
+	return 0;
+}
+
+static void __init ls1021a_smp_prepare_cpus(unsigned int max_cpus)
+{
+	struct device_node *np;
+	void __iomem *dcfg_base;
+	unsigned long paddr;
+
+	np = of_find_compatible_node(NULL, NULL, "fsl,ls1021a-dcfg");
+	dcfg_base = of_iomap(np, 0);
+	BUG_ON(!dcfg_base);
+
+	paddr = virt_to_phys(secondary_startup);
+	writel_relaxed(cpu_to_be32(paddr), dcfg_base + DCFG_CCSR_SCRATCHRW1);
+
+	iounmap(dcfg_base);
+}
+
+const struct smp_operations ls1021a_smp_ops __initconst = {
+	.smp_prepare_cpus	= ls1021a_smp_prepare_cpus,
+	.smp_boot_secondary	= ls1021a_boot_secondary,
+};
+>>>>>>> v4.9.227

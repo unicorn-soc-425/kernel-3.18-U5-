@@ -68,7 +68,11 @@ match_packet(const struct sk_buff *skb,
 			 ++i, offset, sch->type, htons(sch->length),
 			 sch->flags);
 #endif
+<<<<<<< HEAD
 		offset += WORD_ROUND(ntohs(sch->length));
+=======
+		offset += SCTP_PAD4(ntohs(sch->length));
+>>>>>>> v4.9.227
 
 		pr_debug("skb->len: %d\toffset: %d\n", skb->len, offset);
 

@@ -124,7 +124,11 @@ static inline int splice_branch(struct inode *inode,
 
 	/* We are done with atomic stuff, now do the rest of housekeeping */
 
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 
 	/* had we spliced it onto indirect block? */
 	if (where->bh)
@@ -343,7 +347,11 @@ do_indirects:
 		}
 		first_whole++;
 	}
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> v4.9.227
 	mark_inode_dirty(inode);
 }
 

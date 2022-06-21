@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +52,7 @@
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utstring")
 
+<<<<<<< HEAD
 /*
  * Non-ANSI C library functions - strlwr, strupr, stricmp, and a 64-bit
  * version of strtoul.
@@ -328,6 +333,8 @@ error_exit:
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_print_string
@@ -342,7 +349,10 @@ error_exit:
  *              sequences.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 void acpi_ut_print_string(char *string, u16 max_length)
 {
 	u32 i;
@@ -404,18 +414,30 @@ void acpi_ut_print_string(char *string, u16 max_length)
 
 			/* Check for printable character or hex escape */
 
+<<<<<<< HEAD
 			if (ACPI_IS_PRINT(string[i])) {
+=======
+			if (isprint((int)string[i])) {
+>>>>>>> v4.9.227
 				/* This is a normal character */
 
 				acpi_os_printf("%c", (int)string[i]);
 			} else {
 				/* All others will be Hex escapes */
 
+<<<<<<< HEAD
 				acpi_os_printf("\\x%2.2X", (s32) string[i]);
+=======
+				acpi_os_printf("\\x%2.2X", (s32)string[i]);
+>>>>>>> v4.9.227
 			}
 			break;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	acpi_os_printf("\"");
 
 	if (i == max_length && string[i]) {
@@ -425,6 +447,7 @@ void acpi_ut_print_string(char *string, u16 max_length)
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_valid_acpi_char
  *
  * PARAMETERS:  char            - The character to be examined
@@ -492,6 +515,8 @@ u8 acpi_ut_valid_acpi_name(char *name)
 
 /*******************************************************************************
  *
+=======
+>>>>>>> v4.9.227
  * FUNCTION:    acpi_ut_repair_name
  *
  * PARAMETERS:  name            - The ACPI name to be repaired
@@ -520,12 +545,27 @@ void acpi_ut_repair_name(char *name)
 
 	ACPI_FUNCTION_NAME(ut_repair_name);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Special case for the root node. This can happen if we get an
+	 * error during the execution of module-level code.
+	 */
+	if (ACPI_COMPARE_NAME(name, "\\___")) {
+		return;
+	}
+
+>>>>>>> v4.9.227
 	ACPI_MOVE_NAME(&original_name, name);
 
 	/* Check each character in the name */
 
 	for (i = 0; i < ACPI_NAME_SIZE; i++) {
+<<<<<<< HEAD
 		if (acpi_ut_valid_acpi_char(name[i], i)) {
+=======
+		if (acpi_ut_valid_name_char(name[i], i)) {
+>>>>>>> v4.9.227
 			continue;
 		}
 
@@ -584,6 +624,7 @@ void ut_convert_backslashes(char *pathname)
 	}
 }
 #endif
+<<<<<<< HEAD
 
 #if defined (ACPI_DEBUGGER) || defined (ACPI_APPLICATION)
 /*******************************************************************************
@@ -646,3 +687,5 @@ acpi_ut_safe_strncat(char *dest,
 	return (FALSE);
 }
 #endif
+=======
+>>>>>>> v4.9.227

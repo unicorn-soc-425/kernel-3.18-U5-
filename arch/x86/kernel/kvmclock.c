@@ -24,13 +24,24 @@
 #include <linux/percpu.h>
 #include <linux/hardirq.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched.h>
+>>>>>>> v4.9.227
 
 #include <asm/x86_init.h>
 #include <asm/reboot.h>
 
+<<<<<<< HEAD
 static int kvmclock = 1;
 static int msr_kvm_system_time = MSR_KVM_SYSTEM_TIME;
 static int msr_kvm_wall_clock = MSR_KVM_WALL_CLOCK;
+=======
+static int kvmclock __ro_after_init = 1;
+static int msr_kvm_system_time = MSR_KVM_SYSTEM_TIME;
+static int msr_kvm_wall_clock = MSR_KVM_WALL_CLOCK;
+static cycle_t kvm_sched_clock_offset;
+>>>>>>> v4.9.227
 
 static int parse_no_kvmclock(char *arg)
 {
@@ -43,6 +54,14 @@ early_param("no-kvmclock", parse_no_kvmclock);
 static struct pvclock_vsyscall_time_info *hv_clock;
 static struct pvclock_wall_clock wall_clock;
 
+<<<<<<< HEAD
+=======
+struct pvclock_vsyscall_time_info *pvclock_pvti_cpu0_va(void)
+{
+	return hv_clock;
+}
+
+>>>>>>> v4.9.227
 /*
  * The wallclock is the time of day when we booted. Since then, some time may
  * have elapsed since the hypervisor wrote the data. So we try to account for
@@ -59,13 +78,21 @@ static void kvm_get_wallclock(struct timespec *now)
 
 	native_write_msr(msr_kvm_wall_clock, low, high);
 
+<<<<<<< HEAD
 	preempt_disable();
 	cpu = smp_processor_id();
+=======
+	cpu = get_cpu();
+>>>>>>> v4.9.227
 
 	vcpu_time = &hv_clock[cpu].pvti;
 	pvclock_read_wallclock(&wall_clock, vcpu_time, now);
 
+<<<<<<< HEAD
 	preempt_enable();
+=======
+	put_cpu();
+>>>>>>> v4.9.227
 }
 
 static int kvm_set_wallclock(const struct timespec *now)
@@ -92,6 +119,32 @@ static cycle_t kvm_clock_get_cycles(struct clocksource *cs)
 	return kvm_clock_read();
 }
 
+<<<<<<< HEAD
+=======
+static cycle_t kvm_sched_clock_read(void)
+{
+	return kvm_clock_read() - kvm_sched_clock_offset;
+}
+
+static inline void kvm_sched_clock_init(bool stable)
+{
+	if (!stable) {
+		pv_time_ops.sched_clock = kvm_clock_read;
+		return;
+	}
+
+	kvm_sched_clock_offset = kvm_clock_read();
+	pv_time_ops.sched_clock = kvm_sched_clock_read;
+	set_sched_clock_stable();
+
+	printk(KERN_INFO "kvm-clock: using sched offset of %llu cycles\n",
+			kvm_sched_clock_offset);
+
+	BUILD_BUG_ON(sizeof(kvm_sched_clock_offset) >
+	         sizeof(((struct pvclock_vcpu_time_info *)NULL)->system_time));
+}
+
+>>>>>>> v4.9.227
 /*
  * If we don't do that, there is the possibility that the guest
  * will calibrate under heavy load - thus, getting a lower lpj -
@@ -107,11 +160,18 @@ static unsigned long kvm_get_tsc_khz(void)
 	int cpu;
 	unsigned long tsc_khz;
 
+<<<<<<< HEAD
 	preempt_disable();
 	cpu = smp_processor_id();
 	src = &hv_clock[cpu].pvti;
 	tsc_khz = pvclock_tsc_khz(src);
 	preempt_enable();
+=======
+	cpu = get_cpu();
+	src = &hv_clock[cpu].pvti;
+	tsc_khz = pvclock_tsc_khz(src);
+	put_cpu();
+>>>>>>> v4.9.227
 	return tsc_khz;
 }
 
@@ -198,10 +258,17 @@ static void kvm_setup_secondary_clock(void)
  * registered memory location. If the guest happens to shutdown, this memory
  * won't be valid. In cases like kexec, in which you install a new kernel, this
  * means a random memory location will be kept being written. So before any
+<<<<<<< HEAD
  * kind of shutdown from our side, we unregister the clock by writting anything
  * that does not have the 'enable' bit set in the msr
  */
 #ifdef CONFIG_KEXEC
+=======
+ * kind of shutdown from our side, we unregister the clock by writing anything
+ * that does not have the 'enable' bit set in the msr
+ */
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> v4.9.227
 static void kvm_crash_shutdown(struct pt_regs *regs)
 {
 	native_write_msr(msr_kvm_system_time, 0, 0);
@@ -219,8 +286,15 @@ static void kvm_shutdown(void)
 
 void __init kvmclock_init(void)
 {
+<<<<<<< HEAD
 	unsigned long mem;
 	int size;
+=======
+	struct pvclock_vcpu_time_info *vcpu_time;
+	unsigned long mem;
+	int size, cpu;
+	u8 flags;
+>>>>>>> v4.9.227
 
 	size = PAGE_ALIGN(sizeof(struct pvclock_vsyscall_time_info)*NR_CPUS);
 
@@ -247,8 +321,24 @@ void __init kvmclock_init(void)
 		memblock_free(mem, size);
 		return;
 	}
+<<<<<<< HEAD
 	pv_time_ops.sched_clock = kvm_clock_read;
 	x86_platform.calibrate_tsc = kvm_get_tsc_khz;
+=======
+
+	if (kvm_para_has_feature(KVM_FEATURE_CLOCKSOURCE_STABLE_BIT))
+		pvclock_set_flags(PVCLOCK_TSC_STABLE_BIT);
+
+	cpu = get_cpu();
+	vcpu_time = &hv_clock[cpu].pvti;
+	flags = pvclock_read_flags(vcpu_time);
+
+	kvm_sched_clock_init(flags & PVCLOCK_TSC_STABLE_BIT);
+	put_cpu();
+
+	x86_platform.calibrate_tsc = kvm_get_tsc_khz;
+	x86_platform.calibrate_cpu = kvm_get_tsc_khz;
+>>>>>>> v4.9.227
 	x86_platform.get_wallclock = kvm_get_wallclock;
 	x86_platform.set_wallclock = kvm_set_wallclock;
 #ifdef CONFIG_X86_LOCAL_APIC
@@ -258,22 +348,32 @@ void __init kvmclock_init(void)
 	x86_platform.save_sched_clock_state = kvm_save_sched_clock_state;
 	x86_platform.restore_sched_clock_state = kvm_restore_sched_clock_state;
 	machine_ops.shutdown  = kvm_shutdown;
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> v4.9.227
 	machine_ops.crash_shutdown  = kvm_crash_shutdown;
 #endif
 	kvm_get_preset_lpj();
 	clocksource_register_hz(&kvm_clock, NSEC_PER_SEC);
 	pv_info.name = "KVM";
+<<<<<<< HEAD
 
 	if (kvm_para_has_feature(KVM_FEATURE_CLOCKSOURCE_STABLE_BIT))
 		pvclock_set_flags(PVCLOCK_TSC_STABLE_BIT);
+=======
+>>>>>>> v4.9.227
 }
 
 int __init kvm_setup_vsyscall_timeinfo(void)
 {
 #ifdef CONFIG_X86_64
 	int cpu;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> v4.9.227
 	u8 flags;
 	struct pvclock_vcpu_time_info *vcpu_time;
 	unsigned int size;
@@ -283,13 +383,18 @@ int __init kvm_setup_vsyscall_timeinfo(void)
 
 	size = PAGE_ALIGN(sizeof(struct pvclock_vsyscall_time_info)*NR_CPUS);
 
+<<<<<<< HEAD
 	preempt_disable();
 	cpu = smp_processor_id();
+=======
+	cpu = get_cpu();
+>>>>>>> v4.9.227
 
 	vcpu_time = &hv_clock[cpu].pvti;
 	flags = pvclock_read_flags(vcpu_time);
 
 	if (!(flags & PVCLOCK_TSC_STABLE_BIT)) {
+<<<<<<< HEAD
 		preempt_enable();
 		return 1;
 	}
@@ -300,6 +405,13 @@ int __init kvm_setup_vsyscall_timeinfo(void)
 	}
 
 	preempt_enable();
+=======
+		put_cpu();
+		return 1;
+	}
+
+	put_cpu();
+>>>>>>> v4.9.227
 
 	kvm_clock.archdata.vclock_mode = VCLOCK_PVCLOCK;
 #endif

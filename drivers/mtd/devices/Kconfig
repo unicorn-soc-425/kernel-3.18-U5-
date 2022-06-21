@@ -50,6 +50,7 @@ config MTD_MS02NV
 	  say M here and read <file:Documentation/kbuild/modules.txt>.
 	  The module will be called ms02-nv.
 
+<<<<<<< HEAD
 config MTD_MSM_QPIC_NAND
 	tristate "MSM QPIC NAND Device Support"
 	depends on MTD && ARCH_MSM && !MTD_MSM_NAND
@@ -63,6 +64,8 @@ config MTD_MSM_QPIC_NAND
 	  supports BAM mode and BCH error correction mechanism. Based on the
 	  device capabilities either 4 bit or 8 bit BCH ECC will be used.
 
+=======
+>>>>>>> v4.9.227
 config MTD_DATAFLASH
 	tristate "Support for AT45xxx DataFlash"
 	depends on SPI_MASTER
@@ -126,12 +129,21 @@ config MTD_SST25L
 	  if you want to specify device partitioning.
 
 config MTD_BCM47XXSFLASH
+<<<<<<< HEAD
 	tristate "R/O support for serial flash on BCMA bus"
 	depends on BCMA_SFLASH
 	help
 	  BCMA bus can have various flash memories attached, they are
 	  registered by bcma as platform devices. This enables driver for
 	  serial flash memories (only read-only mode is implemented).
+=======
+	tristate "Support for serial flash on BCMA bus"
+	depends on BCMA_SFLASH && (MIPS || ARM)
+	help
+	  BCMA bus can have various flash memories attached, they are
+	  registered by bcma as platform devices. This enables driver for
+	  serial flash memories.
+>>>>>>> v4.9.227
 
 config MTD_SLRAM
 	tristate "Uncached system RAM"
@@ -184,6 +196,7 @@ config MTDRAM_ERASE_SIZE
 	  as a module, it is also possible to specify this as a parameter when
 	  loading the module.
 
+<<<<<<< HEAD
 #If not a module (I don't want to test it as a module)
 config MTDRAM_ABS_POS
 	hex "SRAM Hexadecimal Absolute position or 0"
@@ -196,6 +209,8 @@ config MTDRAM_ABS_POS
 	  allocating space from Linux's available memory. Otherwise, leave
 	  this set to zero. Most people will want to leave this as zero.
 
+=======
+>>>>>>> v4.9.227
 config MTD_BLOCK2MTD
 	tristate "MTD using block device"
 	depends on BLOCK
@@ -208,12 +223,27 @@ config MTD_BLOCK2MTD
 	  Testing MTD users (eg JFFS2) on large media and media that might
 	  be removed during a write (using the floppy drive).
 
+<<<<<<< HEAD
+=======
+config MTD_POWERNV_FLASH
+	tristate "powernv flash MTD driver"
+	depends on PPC_POWERNV
+	help
+	  This provides an MTD device to access flash on powernv OPAL
+	  platforms from Linux. This device abstracts away the
+	  firmware interface for flash access.
+
+>>>>>>> v4.9.227
 comment "Disk-On-Chip Device Drivers"
 
 config MTD_DOCG3
 	tristate "M-Systems Disk-On-Chip G3"
 	select BCH
+<<<<<<< HEAD
 	select BCH_CONST_PARAMS
+=======
+	select BCH_CONST_PARAMS if !MTD_NAND_BCH
+>>>>>>> v4.9.227
 	select BITREVERSE
 	---help---
 	  This provides an MTD device driver for the M-Systems DiskOnChip

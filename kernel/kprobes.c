@@ -49,7 +49,11 @@
 #include <linux/cpu.h>
 #include <linux/jump_label.h>
 
+<<<<<<< HEAD
 #include <asm-generic/sections.h>
+=======
+#include <asm/sections.h>
+>>>>>>> v4.9.227
 #include <asm/cacheflush.h>
 #include <asm/errno.h>
 #include <asm/uaccess.h>
@@ -514,8 +518,19 @@ static void do_free_cleaned_kprobes(void)
 	struct optimized_kprobe *op, *tmp;
 
 	list_for_each_entry_safe(op, tmp, &freeing_list, list) {
+<<<<<<< HEAD
 		BUG_ON(!kprobe_unused(&op->kp));
 		list_del_init(&op->list);
+=======
+		list_del_init(&op->list);
+		if (WARN_ON_ONCE(!kprobe_unused(&op->kp))) {
+			/*
+			 * This must not happen, but if there is a kprobe
+			 * still in use, keep it on kprobes hash list.
+			 */
+			continue;
+		}
+>>>>>>> v4.9.227
 		free_aggr_kprobe(&op->kp);
 	}
 }
@@ -665,7 +680,11 @@ static void unoptimize_kprobe(struct kprobe *p, bool force)
 }
 
 /* Cancel unoptimizing for reusing */
+<<<<<<< HEAD
 static void reuse_unused_kprobe(struct kprobe *ap)
+=======
+static int reuse_unused_kprobe(struct kprobe *ap)
+>>>>>>> v4.9.227
 {
 	struct optimized_kprobe *op;
 
@@ -681,8 +700,16 @@ static void reuse_unused_kprobe(struct kprobe *ap)
 	/* Enable the probe again */
 	ap->flags &= ~KPROBE_FLAG_DISABLED;
 	/* Optimize it again (remove from op->list) */
+<<<<<<< HEAD
 	BUG_ON(!kprobe_optready(ap));
 	optimize_kprobe(ap);
+=======
+	if (!kprobe_optready(ap))
+		return -EINVAL;
+
+	optimize_kprobe(ap);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /* Remove optimized instructions */
@@ -717,7 +744,11 @@ static void prepare_optimized_kprobe(struct kprobe *p)
 	struct optimized_kprobe *op;
 
 	op = container_of(p, struct optimized_kprobe, kp);
+<<<<<<< HEAD
 	arch_prepare_optimized_kprobe(op);
+=======
+	arch_prepare_optimized_kprobe(op, p);
+>>>>>>> v4.9.227
 }
 
 /* Allocate new optimized_kprobe and try to prepare optimized instructions */
@@ -731,7 +762,11 @@ static struct kprobe *alloc_aggr_kprobe(struct kprobe *p)
 
 	INIT_LIST_HEAD(&op->list);
 	op->kp.addr = p->addr;
+<<<<<<< HEAD
 	arch_prepare_optimized_kprobe(op);
+=======
+	arch_prepare_optimized_kprobe(op, p);
+>>>>>>> v4.9.227
 
 	return &op->kp;
 }
@@ -869,7 +904,12 @@ static void __disarm_kprobe(struct kprobe *p, bool reopt)
 {
 	struct kprobe *_p;
 
+<<<<<<< HEAD
 	unoptimize_kprobe(p, false);	/* Try to unoptimize */
+=======
+	/* Try to unoptimize */
+	unoptimize_kprobe(p, kprobes_all_disarmed);
+>>>>>>> v4.9.227
 
 	if (!kprobe_queued(p)) {
 		arch_disarm_kprobe(p);
@@ -893,11 +933,24 @@ static void __disarm_kprobe(struct kprobe *p, bool reopt)
 #define kprobe_disarmed(p)			kprobe_disabled(p)
 #define wait_for_kprobe_optimizer()		do {} while (0)
 
+<<<<<<< HEAD
 /* There should be no unused kprobes can be reused without optimization */
 static void reuse_unused_kprobe(struct kprobe *ap)
 {
 	printk(KERN_ERR "Error: There should be no unused kprobe here.\n");
 	BUG_ON(kprobe_unused(ap));
+=======
+static int reuse_unused_kprobe(struct kprobe *ap)
+{
+	/*
+	 * If the optimized kprobe is NOT supported, the aggr kprobe is
+	 * released at the same time that the last aggregated kprobe is
+	 * unregistered.
+	 * Thus there should be no chance to reuse unused kprobe.
+	 */
+	printk(KERN_ERR "Error: There should be no unused kprobe here.\n");
+	return -EINVAL;
+>>>>>>> v4.9.227
 }
 
 static void free_aggr_kprobe(struct kprobe *p)
@@ -915,7 +968,11 @@ static struct kprobe *alloc_aggr_kprobe(struct kprobe *p)
 #ifdef CONFIG_KPROBES_ON_FTRACE
 static struct ftrace_ops kprobe_ftrace_ops __read_mostly = {
 	.func = kprobe_ftrace_handler,
+<<<<<<< HEAD
 	.flags = FTRACE_OPS_FL_SAVE_REGS,
+=======
+	.flags = FTRACE_OPS_FL_SAVE_REGS | FTRACE_OPS_FL_IPMODIFY,
+>>>>>>> v4.9.227
 };
 static int kprobe_ftrace_enabled;
 
@@ -1275,9 +1332,18 @@ static int register_aggr_kprobe(struct kprobe *orig_p, struct kprobe *p)
 			goto out;
 		}
 		init_aggr_kprobe(ap, orig_p);
+<<<<<<< HEAD
 	} else if (kprobe_unused(ap))
 		/* This probe is going to die. Rescue it */
 		reuse_unused_kprobe(ap);
+=======
+	} else if (kprobe_unused(ap)) {
+		/* This probe is going to die. Rescue it */
+		ret = reuse_unused_kprobe(ap);
+		if (ret)
+			goto out;
+	}
+>>>>>>> v4.9.227
 
 	if (kprobe_gone(ap)) {
 		/*
@@ -1331,7 +1397,11 @@ bool __weak arch_within_kprobe_blacklist(unsigned long addr)
 	       addr < (unsigned long)__kprobes_text_end;
 }
 
+<<<<<<< HEAD
 static bool within_kprobe_blacklist(unsigned long addr)
+=======
+bool within_kprobe_blacklist(unsigned long addr)
+>>>>>>> v4.9.227
 {
 	struct kprobe_blacklist_entry *ent;
 
@@ -1410,6 +1480,7 @@ static inline int check_kprobe_rereg(struct kprobe *p)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int check_kprobe_address_safe(struct kprobe *p,
 				     struct module **probed_mod)
 {
@@ -1420,6 +1491,12 @@ static int check_kprobe_address_safe(struct kprobe *p,
 	 * If the address is located on a ftrace nop, set the
 	 * breakpoint to the following instruction.
 	 */
+=======
+int __weak arch_check_ftrace_location(struct kprobe *p)
+{
+	unsigned long ftrace_addr;
+
+>>>>>>> v4.9.227
 	ftrace_addr = ftrace_location((unsigned long)p->addr);
 	if (ftrace_addr) {
 #ifdef CONFIG_KPROBES_ON_FTRACE
@@ -1431,14 +1508,33 @@ static int check_kprobe_address_safe(struct kprobe *p,
 		return -EINVAL;
 #endif
 	}
+<<<<<<< HEAD
 
+=======
+	return 0;
+}
+
+static int check_kprobe_address_safe(struct kprobe *p,
+				     struct module **probed_mod)
+{
+	int ret;
+
+	ret = arch_check_ftrace_location(p);
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 	jump_label_lock();
 	preempt_disable();
 
 	/* Ensure it is not in reserved area nor out of text */
 	if (!kernel_text_address((unsigned long) p->addr) ||
 	    within_kprobe_blacklist((unsigned long) p->addr) ||
+<<<<<<< HEAD
 	    jump_label_text_reserved(p->addr, p->addr)) {
+=======
+	    jump_label_text_reserved(p->addr, p->addr) ||
+	    find_bug((unsigned long)p->addr)) {
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 		goto out;
 	}
@@ -1567,7 +1663,17 @@ static struct kprobe *__disable_kprobe(struct kprobe *p)
 
 		/* Try to disarm and disable this/parent probe */
 		if (p == orig_p || aggr_kprobe_disabled(orig_p)) {
+<<<<<<< HEAD
 			disarm_kprobe(orig_p, true);
+=======
+			/*
+			 * If kprobes_all_disarmed is set, orig_p
+			 * should have already been disarmed, so
+			 * skip unneed disarming process.
+			 */
+			if (!kprobes_all_disarmed)
+				disarm_kprobe(orig_p, true);
+>>>>>>> v4.9.227
 			orig_p->flags |= KPROBE_FLAG_DISABLED;
 		}
 	}
@@ -2316,6 +2422,15 @@ static void arm_all_kprobes(void)
 	if (!kprobes_all_disarmed)
 		goto already_enabled;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * optimize_kprobe() called by arm_kprobe() checks
+	 * kprobes_all_disarmed, so set kprobes_all_disarmed before
+	 * arm_kprobe.
+	 */
+	kprobes_all_disarmed = false;
+>>>>>>> v4.9.227
 	/* Arming kprobes doesn't optimize kprobe itself */
 	for (i = 0; i < KPROBE_TABLE_SIZE; i++) {
 		head = &kprobe_table[i];
@@ -2324,7 +2439,10 @@ static void arm_all_kprobes(void)
 				arm_kprobe(p);
 	}
 
+<<<<<<< HEAD
 	kprobes_all_disarmed = false;
+=======
+>>>>>>> v4.9.227
 	printk(KERN_INFO "Kprobes globally enabled\n");
 
 already_enabled:

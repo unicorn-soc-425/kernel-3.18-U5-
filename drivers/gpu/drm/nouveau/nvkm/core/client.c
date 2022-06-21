@@ -28,6 +28,10 @@
 
 #include <nvif/class.h>
 #include <nvif/event.h>
+<<<<<<< HEAD
+=======
+#include <nvif/if0000.h>
+>>>>>>> v4.9.227
 #include <nvif/unpack.h>
 
 struct nvkm_client_notify {
@@ -96,7 +100,11 @@ nvkm_client_notify_new(struct nvkm_object *object,
 		struct nvif_notify_req_v0 v0;
 	} *req = data;
 	u8  index, reply;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = -ENOSYS;
+>>>>>>> v4.9.227
 
 	for (index = 0; index < ARRAY_SIZE(client->notify); index++) {
 		if (!client->notify[index])
@@ -111,7 +119,11 @@ nvkm_client_notify_new(struct nvkm_object *object,
 		return -ENOMEM;
 
 	nvif_ioctl(object, "notify new size %d\n", size);
+<<<<<<< HEAD
 	if (nvif_unpack(req->v0, 0, 0, true)) {
+=======
+	if (!(ret = nvif_unpack(ret, &data, &size, req->v0, 0, 0, true))) {
+>>>>>>> v4.9.227
 		nvif_ioctl(object, "notify new vers %d reply %d route %02x "
 				   "token %llx\n", req->v0.version,
 			   req->v0.reply, req->v0.route, req->v0.token);
@@ -143,10 +155,17 @@ nvkm_client_mthd_devlist(struct nvkm_object *object, void *data, u32 size)
 	union {
 		struct nv_client_devlist_v0 v0;
 	} *args = data;
+<<<<<<< HEAD
 	int ret;
 
 	nvif_ioctl(object, "client devlist size %d\n", size);
 	if (nvif_unpack(args->v0, 0, 0, true)) {
+=======
+	int ret = -ENOSYS;
+
+	nvif_ioctl(object, "client devlist size %d\n", size);
+	if (!(ret = nvif_unpack(ret, &data, &size, args->v0, 0, 0, true))) {
+>>>>>>> v4.9.227
 		nvif_ioctl(object, "client devlist vers %d count %d\n",
 			   args->v0.version, args->v0.count);
 		if (size == sizeof(args->v0.device[0]) * args->v0.count) {

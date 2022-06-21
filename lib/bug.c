@@ -45,11 +45,14 @@
 #include <linux/kernel.h>
 #include <linux/bug.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/sec_debug.h>
 
 #ifdef CONFIG_USER_RESET_DEBUG
 #include <linux/user_reset/sec_debug_user_reset.h>
 #endif
+=======
+>>>>>>> v4.9.227
 
 extern const struct bug_entry __start___bug_table[], __stop___bug_table[];
 
@@ -69,6 +72,7 @@ static LIST_HEAD(module_bug_list);
 static const struct bug_entry *module_find_bug(unsigned long bugaddr)
 {
 	struct module *mod;
+<<<<<<< HEAD
 
 	list_for_each_entry(mod, &module_bug_list, bug_list) {
 		const struct bug_entry *bug = mod->bug_table;
@@ -79,6 +83,24 @@ static const struct bug_entry *module_find_bug(unsigned long bugaddr)
 				return bug;
 	}
 	return NULL;
+=======
+	const struct bug_entry *bug = NULL;
+
+	rcu_read_lock_sched();
+	list_for_each_entry_rcu(mod, &module_bug_list, bug_list) {
+		unsigned i;
+
+		bug = mod->bug_table;
+		for (i = 0; i < mod->num_bugs; ++i, ++bug)
+			if (bugaddr == bug_addr(bug))
+				goto out;
+	}
+	bug = NULL;
+out:
+	rcu_read_unlock_sched();
+
+	return bug;
+>>>>>>> v4.9.227
 }
 
 void module_bug_finalize(const Elf_Ehdr *hdr, const Elf_Shdr *sechdrs,
@@ -87,6 +109,11 @@ void module_bug_finalize(const Elf_Ehdr *hdr, const Elf_Shdr *sechdrs,
 	char *secstrings;
 	unsigned int i;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&module_mutex);
+
+>>>>>>> v4.9.227
 	mod->bug_table = NULL;
 	mod->num_bugs = 0;
 
@@ -104,13 +131,25 @@ void module_bug_finalize(const Elf_Ehdr *hdr, const Elf_Shdr *sechdrs,
 	 * Strictly speaking this should have a spinlock to protect against
 	 * traversals, but since we only traverse on BUG()s, a spinlock
 	 * could potentially lead to deadlock and thus be counter-productive.
+<<<<<<< HEAD
 	 */
 	list_add(&mod->bug_list, &module_bug_list);
+=======
+	 * Thus, this uses RCU to safely manipulate the bug list, since BUG
+	 * must run in non-interruptive state.
+	 */
+	list_add_rcu(&mod->bug_list, &module_bug_list);
+>>>>>>> v4.9.227
 }
 
 void module_bug_cleanup(struct module *mod)
 {
+<<<<<<< HEAD
 	list_del(&mod->bug_list);
+=======
+	lockdep_assert_held(&module_mutex);
+	list_del_rcu(&mod->bug_list);
+>>>>>>> v4.9.227
 }
 
 #else
@@ -161,6 +200,7 @@ enum bug_trap_type report_bug(unsigned long bugaddr, struct pt_regs *regs)
 
 	if (warning) {
 		/* this is a WARN_ON rather than BUG/BUG_ON */
+<<<<<<< HEAD
 		pr_warn("------------[ cut here ]------------\n");
 
 		if (file)
@@ -199,6 +239,13 @@ enum bug_trap_type report_bug(unsigned long bugaddr, struct pt_regs *regs)
 	}
 #endif
 
+=======
+		__warn(file, line, (void *)bugaddr, BUG_GET_TAINT(bug), regs,
+		       NULL);
+		return BUG_TRAP_TYPE_WARN;
+	}
+
+>>>>>>> v4.9.227
 	printk(KERN_DEFAULT "------------[ cut here ]------------\n");
 
 	if (file)

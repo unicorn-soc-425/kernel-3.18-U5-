@@ -30,8 +30,12 @@ struct otg_device {
 	void __iomem			*base;
 	bool				id;
 	bool				vbus;
+<<<<<<< HEAD
 	struct extcon_specific_cable_nb	vbus_dev;
 	struct extcon_specific_cable_nb	id_dev;
+=======
+	struct extcon_dev		*extcon;
+>>>>>>> v4.9.227
 	struct notifier_block		vbus_nb;
 	struct notifier_block		id_nb;
 };
@@ -115,6 +119,7 @@ static int omap_otg_probe(struct platform_device *pdev)
 	if (IS_ERR(otg_dev->base))
 		return PTR_ERR(otg_dev->base);
 
+<<<<<<< HEAD
 	otg_dev->id_nb.notifier_call = omap_otg_id_notifier;
 	otg_dev->vbus_nb.notifier_call = omap_otg_vbus_notifier;
 
@@ -132,6 +137,25 @@ static int omap_otg_probe(struct platform_device *pdev)
 
 	otg_dev->id = extcon_get_cable_state(extcon, "USB-HOST");
 	otg_dev->vbus = extcon_get_cable_state(extcon, "USB");
+=======
+	otg_dev->extcon = extcon;
+	otg_dev->id_nb.notifier_call = omap_otg_id_notifier;
+	otg_dev->vbus_nb.notifier_call = omap_otg_vbus_notifier;
+
+	ret = extcon_register_notifier(extcon, EXTCON_USB_HOST, &otg_dev->id_nb);
+	if (ret)
+		return ret;
+
+	ret = extcon_register_notifier(extcon, EXTCON_USB, &otg_dev->vbus_nb);
+	if (ret) {
+		extcon_unregister_notifier(extcon, EXTCON_USB_HOST,
+					&otg_dev->id_nb);
+		return ret;
+	}
+
+	otg_dev->id = extcon_get_cable_state_(extcon, EXTCON_USB_HOST);
+	otg_dev->vbus = extcon_get_cable_state_(extcon, EXTCON_USB);
+>>>>>>> v4.9.227
 	omap_otg_set_mode(otg_dev);
 
 	rev = readl(otg_dev->base);
@@ -141,15 +165,27 @@ static int omap_otg_probe(struct platform_device *pdev)
 		 (rev >> 4) & 0xf, rev & 0xf, config->extcon, otg_dev->id,
 		 otg_dev->vbus);
 
+<<<<<<< HEAD
+=======
+	platform_set_drvdata(pdev, otg_dev);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int omap_otg_remove(struct platform_device *pdev)
 {
 	struct otg_device *otg_dev = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 
 	extcon_unregister_interest(&otg_dev->id_dev);
 	extcon_unregister_interest(&otg_dev->vbus_dev);
+=======
+	struct extcon_dev *edev = otg_dev->extcon;
+
+	extcon_unregister_notifier(edev, EXTCON_USB_HOST, &otg_dev->id_nb);
+	extcon_unregister_notifier(edev, EXTCON_USB, &otg_dev->vbus_nb);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -158,7 +194,10 @@ static struct platform_driver omap_otg_driver = {
 	.probe		= omap_otg_probe,
 	.remove		= omap_otg_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "omap_otg",
 	},
 };

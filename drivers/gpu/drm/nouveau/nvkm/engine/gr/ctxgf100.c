@@ -1181,20 +1181,32 @@ gf100_grctx_generate_r418bb8(struct gf100_gr *gr)
 
 	/* GPC_BROADCAST */
 	nvkm_wr32(device, 0x418bb8, (gr->tpc_total << 8) |
+<<<<<<< HEAD
 				 gr->magic_not_rop_nr);
+=======
+				     gr->screen_tile_row_offset);
+>>>>>>> v4.9.227
 	for (i = 0; i < 6; i++)
 		nvkm_wr32(device, 0x418b08 + (i * 4), data[i]);
 
 	/* GPC_BROADCAST.TP_BROADCAST */
 	nvkm_wr32(device, 0x419bd0, (gr->tpc_total << 8) |
+<<<<<<< HEAD
 				 gr->magic_not_rop_nr | data2[0]);
+=======
+				     gr->screen_tile_row_offset | data2[0]);
+>>>>>>> v4.9.227
 	nvkm_wr32(device, 0x419be4, data2[1]);
 	for (i = 0; i < 6; i++)
 		nvkm_wr32(device, 0x419b00 + (i * 4), data[i]);
 
 	/* UNK78xx */
 	nvkm_wr32(device, 0x4078bc, (gr->tpc_total << 8) |
+<<<<<<< HEAD
 				 gr->magic_not_rop_nr);
+=======
+				     gr->screen_tile_row_offset);
+>>>>>>> v4.9.227
 	for (i = 0; i < 6; i++)
 		nvkm_wr32(device, 0x40780c + (i * 4), data[i]);
 }
@@ -1238,8 +1250,14 @@ gf100_grctx_generate_main(struct gf100_gr *gr, struct gf100_grctx *info)
 {
 	struct nvkm_device *device = gr->base.engine.subdev.device;
 	const struct gf100_grctx_func *grctx = gr->func->grctx;
+<<<<<<< HEAD
 
 	nvkm_mc_unk260(device->mc, 0);
+=======
+	u32 idle_timeout;
+
+	nvkm_mc_unk260(device, 0);
+>>>>>>> v4.9.227
 
 	gf100_gr_mmio(gr, grctx->hub);
 	gf100_gr_mmio(gr, grctx->gpc);
@@ -1247,7 +1265,11 @@ gf100_grctx_generate_main(struct gf100_gr *gr, struct gf100_grctx *info)
 	gf100_gr_mmio(gr, grctx->tpc);
 	gf100_gr_mmio(gr, grctx->ppc);
 
+<<<<<<< HEAD
 	nvkm_wr32(device, 0x404154, 0x00000000);
+=======
+	idle_timeout = nvkm_mask(device, 0x404154, 0xffffffff, 0x00000000);
+>>>>>>> v4.9.227
 
 	grctx->bundle(info);
 	grctx->pagepool(info);
@@ -1261,9 +1283,15 @@ gf100_grctx_generate_main(struct gf100_gr *gr, struct gf100_grctx *info)
 	gf100_grctx_generate_r406800(gr);
 
 	gf100_gr_icmd(gr, grctx->icmd);
+<<<<<<< HEAD
 	nvkm_wr32(device, 0x404154, 0x00000400);
 	gf100_gr_mthd(gr, grctx->mthd);
 	nvkm_mc_unk260(device->mc, 1);
+=======
+	nvkm_wr32(device, 0x404154, idle_timeout);
+	gf100_gr_mthd(gr, grctx->mthd);
+	nvkm_mc_unk260(device, 1);
+>>>>>>> v4.9.227
 }
 
 int

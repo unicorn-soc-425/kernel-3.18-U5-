@@ -283,6 +283,7 @@ extern pgd_t swapper_pg_dir[PTRS_PER_PGD];
 #define MAX_SWAPFILES_CHECK()	\
 	BUILD_BUG_ON(MAX_SWAPFILES_SHIFT > __SWP_TYPE_BITS)
 
+<<<<<<< HEAD
 /*
  * Encode and decode a file entry.  File entries are stored in the Linux
  * page tables as follows:
@@ -297,6 +298,8 @@ extern pgd_t swapper_pg_dir[PTRS_PER_PGD];
 
 #define PTE_FILE_MAX_BITS	28
 
+=======
+>>>>>>> v4.9.227
 /* Needs to be defined here and not in linux/mm.h, as it is arch dependent */
 /* FIXME: this is not correct */
 #define kern_addr_valid(addr)	(1)

@@ -106,8 +106,12 @@ struct wlcore_ops {
 			      struct wl12xx_vif *wlvif,
 			      struct ieee80211_channel_switch *ch_switch);
 	u32 (*pre_pkt_send)(struct wl1271 *wl, u32 buf_offset, u32 last_len);
+<<<<<<< HEAD
 	void (*sta_rc_update)(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 			      struct ieee80211_sta *sta, u32 changed);
+=======
+	void (*sta_rc_update)(struct wl1271 *wl, struct wl12xx_vif *wlvif);
+>>>>>>> v4.9.227
 	int (*set_peer_cap)(struct wl1271 *wl,
 			    struct ieee80211_sta_ht_cap *ht_cap,
 			    bool allow_ht_operation,
@@ -117,12 +121,22 @@ struct wlcore_ops {
 			      struct wl1271_link *lnk);
 	bool (*lnk_low_prio)(struct wl1271 *wl, u8 hlid,
 			     struct wl1271_link *lnk);
+<<<<<<< HEAD
+=======
+	int (*interrupt_notify)(struct wl1271 *wl, bool action);
+	int (*rx_ba_filter)(struct wl1271 *wl, bool action);
+	int (*ap_sleep)(struct wl1271 *wl);
+>>>>>>> v4.9.227
 	int (*smart_config_start)(struct wl1271 *wl, u32 group_bitmap);
 	int (*smart_config_stop)(struct wl1271 *wl);
 	int (*smart_config_set_group_key)(struct wl1271 *wl, u16 group_id,
 					  u8 key_len, u8 *key);
 	int (*set_cac)(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 		       bool start);
+<<<<<<< HEAD
+=======
+	int (*dfs_master_restart)(struct wl1271 *wl, struct wl12xx_vif *wlvif);
+>>>>>>> v4.9.227
 };
 
 enum wlcore_partitions {
@@ -307,15 +321,22 @@ struct wl1271 {
 	/* FW memory block size */
 	u32 fw_mem_block_size;
 
+<<<<<<< HEAD
 	/* Sysfs FW log entry readers wait queue */
 	wait_queue_head_t fwlog_waitq;
 
+=======
+>>>>>>> v4.9.227
 	/* Hardware recovery work */
 	struct work_struct recovery_work;
 	bool watchdog_recovery;
 
 	/* Reg domain last configuration */
+<<<<<<< HEAD
 	u32 reg_ch_conf_last[2];
+=======
+	u32 reg_ch_conf_last[2]  __aligned(8);
+>>>>>>> v4.9.227
 	/* Reg domain pending configuration */
 	u32 reg_ch_conf_pending[2];
 
@@ -342,7 +363,11 @@ struct wl1271 {
 	struct wl12xx_vif *sched_vif;
 
 	/* The current band */
+<<<<<<< HEAD
 	enum ieee80211_band band;
+=======
+	enum nl80211_band band;
+>>>>>>> v4.9.227
 
 	struct completion *elp_compl;
 	struct delayed_work elp_work;
@@ -461,6 +486,13 @@ struct wl1271 {
 	/* HW HT (11n) capabilities */
 	struct ieee80211_sta_ht_cap ht_cap[WLCORE_NUM_BANDS];
 
+<<<<<<< HEAD
+=======
+	/* the current dfs region */
+	enum nl80211_dfs_regions dfs_region;
+	bool radar_debug_mode;
+
+>>>>>>> v4.9.227
 	/* size of the private FW status data */
 	size_t fw_status_len;
 	size_t fw_status_priv_len;
@@ -494,6 +526,15 @@ struct wl1271 {
 	/* interface combinations supported by the hw */
 	const struct ieee80211_iface_combination *iface_combinations;
 	u8 n_iface_combinations;
+<<<<<<< HEAD
+=======
+
+	/* dynamic fw traces */
+	u32 dynamic_fw_traces;
+
+	/* time sync zone master */
+	u8 zone_master_mac_addr[ETH_ALEN];
+>>>>>>> v4.9.227
 };
 
 int wlcore_probe(struct wl1271 *wl, struct platform_device *pdev);
@@ -510,7 +551,11 @@ void wlcore_update_inconn_sta(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 			      struct wl1271_station *wl_sta, bool in_conn);
 
 static inline void
+<<<<<<< HEAD
 wlcore_set_ht_cap(struct wl1271 *wl, enum ieee80211_band band,
+=======
+wlcore_set_ht_cap(struct wl1271 *wl, enum nl80211_band band,
+>>>>>>> v4.9.227
 		  struct ieee80211_sta_ht_cap *ht_cap)
 {
 	memcpy(&wl->ht_cap[band], ht_cap, sizeof(*ht_cap));

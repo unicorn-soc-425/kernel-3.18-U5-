@@ -31,11 +31,18 @@
 static int stmmac_jumbo_frm(void *p, struct sk_buff *skb, int csum)
 {
 	struct stmmac_priv *priv = (struct stmmac_priv *)p;
+<<<<<<< HEAD
 	unsigned int txsize = priv->dma_tx_size;
 	unsigned int entry = priv->cur_tx % txsize;
 	struct dma_desc *desc;
 	unsigned int nopaged_len = skb_headlen(skb);
 	unsigned int bmax, len;
+=======
+	unsigned int entry = priv->cur_tx;
+	struct dma_desc *desc;
+	unsigned int nopaged_len = skb_headlen(skb);
+	unsigned int bmax, len, des2;
+>>>>>>> v4.9.227
 
 	if (priv->extend_desc)
 		desc = (struct dma_desc *)(priv->dma_etx + entry);
@@ -51,6 +58,7 @@ static int stmmac_jumbo_frm(void *p, struct sk_buff *skb, int csum)
 
 	if (nopaged_len > BUF_SIZE_8KiB) {
 
+<<<<<<< HEAD
 		desc->des2 = dma_map_single(priv->device, skb->data,
 					    bmax, DMA_TO_DEVICE);
 		if (dma_mapping_error(priv->device, desc->des2))
@@ -63,12 +71,30 @@ static int stmmac_jumbo_frm(void *p, struct sk_buff *skb, int csum)
 		wmb();
 		priv->tx_skbuff[entry] = NULL;
 		entry = (++priv->cur_tx) % txsize;
+=======
+		des2 = dma_map_single(priv->device, skb->data, bmax,
+				      DMA_TO_DEVICE);
+		desc->des2 = cpu_to_le32(des2);
+		if (dma_mapping_error(priv->device, des2))
+			return -1;
+
+		priv->tx_skbuff_dma[entry].buf = des2;
+		priv->tx_skbuff_dma[entry].len = bmax;
+		priv->tx_skbuff_dma[entry].is_jumbo = true;
+
+		desc->des3 = cpu_to_le32(des2 + BUF_SIZE_4KiB);
+		priv->hw->desc->prepare_tx_desc(desc, 1, bmax, csum,
+						STMMAC_RING_MODE, 0, false);
+		priv->tx_skbuff[entry] = NULL;
+		entry = STMMAC_GET_ENTRY(entry, DMA_TX_SIZE);
+>>>>>>> v4.9.227
 
 		if (priv->extend_desc)
 			desc = (struct dma_desc *)(priv->dma_etx + entry);
 		else
 			desc = priv->dma_tx + entry;
 
+<<<<<<< HEAD
 		desc->des2 = dma_map_single(priv->device, skb->data + bmax,
 					    len, DMA_TO_DEVICE);
 		if (dma_mapping_error(priv->device, desc->des2))
@@ -90,6 +116,36 @@ static int stmmac_jumbo_frm(void *p, struct sk_buff *skb, int csum)
 						STMMAC_RING_MODE);
 	}
 
+=======
+		des2 = dma_map_single(priv->device, skb->data + bmax, len,
+				      DMA_TO_DEVICE);
+		desc->des2 = cpu_to_le32(des2);
+		if (dma_mapping_error(priv->device, des2))
+			return -1;
+		priv->tx_skbuff_dma[entry].buf = des2;
+		priv->tx_skbuff_dma[entry].len = len;
+		priv->tx_skbuff_dma[entry].is_jumbo = true;
+
+		desc->des3 = cpu_to_le32(des2 + BUF_SIZE_4KiB);
+		priv->hw->desc->prepare_tx_desc(desc, 0, len, csum,
+						STMMAC_RING_MODE, 1, true);
+	} else {
+		des2 = dma_map_single(priv->device, skb->data,
+				      nopaged_len, DMA_TO_DEVICE);
+		desc->des2 = cpu_to_le32(des2);
+		if (dma_mapping_error(priv->device, des2))
+			return -1;
+		priv->tx_skbuff_dma[entry].buf = des2;
+		priv->tx_skbuff_dma[entry].len = nopaged_len;
+		priv->tx_skbuff_dma[entry].is_jumbo = true;
+		desc->des3 = cpu_to_le32(des2 + BUF_SIZE_4KiB);
+		priv->hw->desc->prepare_tx_desc(desc, 1, nopaged_len, csum,
+						STMMAC_RING_MODE, 0, true);
+	}
+
+	priv->cur_tx = entry;
+
+>>>>>>> v4.9.227
 	return entry;
 }
 
@@ -109,18 +165,36 @@ static void stmmac_refill_desc3(void *priv_ptr, struct dma_desc *p)
 
 	/* Fill DES3 in case of RING mode */
 	if (priv->dma_buf_sz >= BUF_SIZE_8KiB)
+<<<<<<< HEAD
 		p->des3 = p->des2 + BUF_SIZE_8KiB;
+=======
+		p->des3 = cpu_to_le32(le32_to_cpu(p->des2) + BUF_SIZE_8KiB);
+>>>>>>> v4.9.227
 }
 
 /* In ring mode we need to fill the desc3 because it is used as buffer */
 static void stmmac_init_desc3(struct dma_desc *p)
 {
+<<<<<<< HEAD
 	p->des3 = p->des2 + BUF_SIZE_8KiB;
+=======
+	p->des3 = cpu_to_le32(le32_to_cpu(p->des2) + BUF_SIZE_8KiB);
+>>>>>>> v4.9.227
 }
 
 static void stmmac_clean_desc3(void *priv_ptr, struct dma_desc *p)
 {
+<<<<<<< HEAD
 	if (unlikely(p->des3))
+=======
+	struct stmmac_priv *priv = (struct stmmac_priv *)priv_ptr;
+	unsigned int entry = priv->dirty_tx;
+
+	/* des3 is only used for jumbo frames tx or time stamping */
+	if (unlikely(priv->tx_skbuff_dma[entry].is_jumbo ||
+		     (priv->tx_skbuff_dma[entry].last_segment &&
+		      !priv->extend_desc && priv->hwts_tx_en)))
+>>>>>>> v4.9.227
 		p->des3 = 0;
 }
 

@@ -25,10 +25,15 @@
 #include <linux/acpi.h>
 #include <linux/slab.h>
 #include <linux/power_supply.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> v4.9.227
 #include <acpi/video.h>
 #include <drm/drmP.h>
 #include <drm/drm_crtc_helper.h>
 #include "amdgpu.h"
+<<<<<<< HEAD
 #include "amdgpu_acpi.h"
 #include "atom.h"
 
@@ -89,6 +94,12 @@ struct atcs_pref_req_output {
 	u8 ret_val;		/* return value */
 } __packed;
 
+=======
+#include "amd_acpi.h"
+#include "atom.h"
+
+extern void amdgpu_pm_acpi_event_handler(struct amdgpu_device *adev);
+>>>>>>> v4.9.227
 /* Call the ATIF method
  */
 /**
@@ -389,6 +400,19 @@ int amdgpu_atif_handler(struct amdgpu_device *adev,
 #endif
 		}
 	}
+<<<<<<< HEAD
+=======
+	if (req.pending & ATIF_DGPU_DISPLAY_EVENT) {
+		if ((adev->flags & AMD_IS_PX) &&
+		    amdgpu_atpx_dgpu_req_power_for_displays()) {
+			pm_runtime_get_sync(adev->ddev->dev);
+			/* Just fire off a uevent and let userspace tell us what to do */
+			drm_helper_hpd_irq_event(adev->ddev);
+			pm_runtime_mark_last_busy(adev->ddev->dev);
+			pm_runtime_put_autosuspend(adev->ddev->dev);
+		}
+	}
+>>>>>>> v4.9.227
 	/* TODO: check other events */
 
 	/* We've handled the event, stop the notifier chain. The ACPI interface
@@ -585,6 +609,12 @@ int amdgpu_acpi_pcie_performance_request(struct amdgpu_device *adev,
 	size_t size;
 	u32 retry = 3;
 
+<<<<<<< HEAD
+=======
+	if (amdgpu_acpi_pcie_notify_device_ready(adev))
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	/* Get the device handle */
 	handle = ACPI_HANDLE(&adev->pdev->dev);
 	if (!handle)

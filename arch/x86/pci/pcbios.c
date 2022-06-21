@@ -120,9 +120,18 @@ static unsigned long __init bios32_service(unsigned long service)
 static struct {
 	unsigned long address;
 	unsigned short segment;
+<<<<<<< HEAD
 } pci_indirect = { 0, __KERNEL_CS };
 
 static int pci_bios_present;
+=======
+} pci_indirect __ro_after_init = {
+	.address = 0,
+	.segment = __KERNEL_CS,
+};
+
+static int pci_bios_present __ro_after_init;
+>>>>>>> v4.9.227
 
 static int __init check_pcibios(void)
 {
@@ -180,6 +189,10 @@ static int pci_bios_read(unsigned int seg, unsigned int bus,
 	unsigned long result = 0;
 	unsigned long flags;
 	unsigned long bx = (bus << 8) | devfn;
+<<<<<<< HEAD
+=======
+	u16 number = 0, mask = 0;
+>>>>>>> v4.9.227
 
 	WARN_ON(seg);
 	if (!value || (bus > 255) || (devfn > 255) || (reg > 255))
@@ -189,6 +202,7 @@ static int pci_bios_read(unsigned int seg, unsigned int bus,
 
 	switch (len) {
 	case 1:
+<<<<<<< HEAD
 		__asm__("lcall *(%%esi); cld\n\t"
 			"jc 1f\n\t"
 			"xor %%ah, %%ah\n"
@@ -236,6 +250,37 @@ static int pci_bios_read(unsigned int seg, unsigned int bus,
 		break;
 	}
 
+=======
+		number = PCIBIOS_READ_CONFIG_BYTE;
+		mask = 0xff;
+		break;
+	case 2:
+		number = PCIBIOS_READ_CONFIG_WORD;
+		mask = 0xffff;
+		break;
+	case 4:
+		number = PCIBIOS_READ_CONFIG_DWORD;
+		break;
+	}
+
+	__asm__("lcall *(%%esi); cld\n\t"
+		"jc 1f\n\t"
+		"xor %%ah, %%ah\n"
+		"1:"
+		: "=c" (*value),
+		  "=a" (result)
+		: "1" (number),
+		  "b" (bx),
+		  "D" ((long)reg),
+		  "S" (&pci_indirect));
+	/*
+	 * Zero-extend the result beyond 8 or 16 bits, do not trust the
+	 * BIOS having done it:
+	 */
+	if (mask)
+		*value &= mask;
+
+>>>>>>> v4.9.227
 	raw_spin_unlock_irqrestore(&pci_config_lock, flags);
 
 	return (int)((result & 0xff00) >> 8);
@@ -247,6 +292,10 @@ static int pci_bios_write(unsigned int seg, unsigned int bus,
 	unsigned long result = 0;
 	unsigned long flags;
 	unsigned long bx = (bus << 8) | devfn;
+<<<<<<< HEAD
+=======
+	u16 number = 0;
+>>>>>>> v4.9.227
 
 	WARN_ON(seg);
 	if ((bus > 255) || (devfn > 255) || (reg > 255)) 
@@ -256,6 +305,7 @@ static int pci_bios_write(unsigned int seg, unsigned int bus,
 
 	switch (len) {
 	case 1:
+<<<<<<< HEAD
 		__asm__("lcall *(%%esi); cld\n\t"
 			"jc 1f\n\t"
 			"xor %%ah, %%ah\n"
@@ -293,6 +343,29 @@ static int pci_bios_write(unsigned int seg, unsigned int bus,
 		break;
 	}
 
+=======
+		number = PCIBIOS_WRITE_CONFIG_BYTE;
+		break;
+	case 2:
+		number = PCIBIOS_WRITE_CONFIG_WORD;
+		break;
+	case 4:
+		number = PCIBIOS_WRITE_CONFIG_DWORD;
+		break;
+	}
+
+	__asm__("lcall *(%%esi); cld\n\t"
+		"jc 1f\n\t"
+		"xor %%ah, %%ah\n"
+		"1:"
+		: "=a" (result)
+		: "0" (number),
+		  "c" (value),
+		  "b" (bx),
+		  "D" ((long)reg),
+		  "S" (&pci_indirect));
+
+>>>>>>> v4.9.227
 	raw_spin_unlock_irqrestore(&pci_config_lock, flags);
 
 	return (int)((result & 0xff00) >> 8);

@@ -95,7 +95,11 @@ struct musb_hdrc_config {
 	/* musb CLKIN in Blackfin in MHZ */
 	unsigned char   clkin;
 #endif
+<<<<<<< HEAD
 
+=======
+	u32		maximum_speed;
+>>>>>>> v4.9.227
 };
 
 struct musb_hdrc_platform_data {
@@ -124,7 +128,11 @@ struct musb_hdrc_platform_data {
 	int		(*set_power)(int state);
 
 	/* MUSB configuration-specific details */
+<<<<<<< HEAD
 	struct musb_hdrc_config	*config;
+=======
+	const struct musb_hdrc_config *config;
+>>>>>>> v4.9.227
 
 	/* Architecture specific board data	*/
 	void		*board_data;
@@ -133,6 +141,25 @@ struct musb_hdrc_platform_data {
 	const void	*platform_ops;
 };
 
+<<<<<<< HEAD
+=======
+enum musb_vbus_id_status {
+	MUSB_UNKNOWN = 0,
+	MUSB_ID_GROUND,
+	MUSB_ID_FLOAT,
+	MUSB_VBUS_VALID,
+	MUSB_VBUS_OFF,
+};
+
+#if IS_ENABLED(CONFIG_USB_MUSB_HDRC)
+int musb_mailbox(enum musb_vbus_id_status status);
+#else
+static inline int musb_mailbox(enum musb_vbus_id_status status)
+{
+	return 0;
+}
+#endif
+>>>>>>> v4.9.227
 
 /* TUSB 6010 support */
 

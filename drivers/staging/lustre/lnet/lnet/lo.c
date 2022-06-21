@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -35,7 +39,11 @@
 #define DEBUG_SUBSYSTEM S_LNET
 #include "../../include/linux/lnet/lib-lnet.h"
 
+<<<<<<< HEAD
 int
+=======
+static int
+>>>>>>> v4.9.227
 lolnd_send(lnet_ni_t *ni, void *private, lnet_msg_t *lntmsg)
 {
 	LASSERT(!lntmsg->msg_routing);
@@ -44,6 +52,7 @@ lolnd_send(lnet_ni_t *ni, void *private, lnet_msg_t *lntmsg)
 	return lnet_parse(ni, &lntmsg->msg_hdr, ni->ni_nid, lntmsg, 0);
 }
 
+<<<<<<< HEAD
 int
 lolnd_recv(lnet_ni_t *ni, void *private, lnet_msg_t *lntmsg,
 	    int delayed, unsigned int niov,
@@ -76,6 +85,27 @@ lolnd_recv(lnet_ni_t *ni, void *private, lnet_msg_t *lntmsg,
 						    sendmsg->msg_kiov,
 						    sendmsg->msg_offset, mlen);
 		}
+=======
+static int
+lolnd_recv(lnet_ni_t *ni, void *private, lnet_msg_t *lntmsg,
+	   int delayed, struct iov_iter *to, unsigned int rlen)
+{
+	lnet_msg_t *sendmsg = private;
+
+	if (lntmsg) {		   /* not discarding */
+		if (sendmsg->msg_iov)
+			lnet_copy_iov2iter(to,
+					   sendmsg->msg_niov,
+					   sendmsg->msg_iov,
+					   sendmsg->msg_offset,
+					   iov_iter_count(to));
+		else
+			lnet_copy_kiov2iter(to,
+					    sendmsg->msg_niov,
+					    sendmsg->msg_kiov,
+					    sendmsg->msg_offset,
+					    iov_iter_count(to));
+>>>>>>> v4.9.227
 
 		lnet_finalize(ni, lntmsg, 0);
 	}
@@ -86,7 +116,11 @@ lolnd_recv(lnet_ni_t *ni, void *private, lnet_msg_t *lntmsg,
 
 static int lolnd_instanced;
 
+<<<<<<< HEAD
 void
+=======
+static void
+>>>>>>> v4.9.227
 lolnd_shutdown(lnet_ni_t *ni)
 {
 	CDEBUG(D_NET, "shutdown\n");
@@ -95,7 +129,11 @@ lolnd_shutdown(lnet_ni_t *ni)
 	lolnd_instanced = 0;
 }
 
+<<<<<<< HEAD
 int
+=======
+static int
+>>>>>>> v4.9.227
 lolnd_startup(lnet_ni_t *ni)
 {
 	LASSERT(ni->ni_lnd == &the_lolnd);
@@ -111,7 +149,11 @@ lnd_t the_lolnd = {
 	/* .lnd_type       = */ LOLND,
 	/* .lnd_startup    = */ lolnd_startup,
 	/* .lnd_shutdown   = */ lolnd_shutdown,
+<<<<<<< HEAD
 	/* .lnt_ctl	= */ NULL,
+=======
+	/* .lnt_ctl        = */ NULL,
+>>>>>>> v4.9.227
 	/* .lnd_send       = */ lolnd_send,
 	/* .lnd_recv       = */ lolnd_recv,
 	/* .lnd_eager_recv = */ NULL,

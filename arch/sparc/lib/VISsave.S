@@ -6,14 +6,23 @@
  * Copyright (C) 1998 Jakub Jelinek (jj@ultra.linux.cz)
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/linkage.h>
+
+>>>>>>> v4.9.227
 #include <asm/asi.h>
 #include <asm/page.h>
 #include <asm/ptrace.h>
 #include <asm/visasm.h>
 #include <asm/thread_info.h>
+<<<<<<< HEAD
 
 	.text
 	.globl		VISenter, VISenterhalf
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	/* On entry: %o5=current FPRS value, %g7 is callers address */
 	/* May clobber %o5, %g1, %g2, %g3, %g7, %icc, %xcc */
@@ -21,9 +30,15 @@
 	/* Nothing special need be done here to handle pre-emption, this
 	 * FPU save/restore mechanism is already preemption safe.
 	 */
+<<<<<<< HEAD
 
 	.align		32
 VISenter:
+=======
+	.text
+	.align		32
+ENTRY(VISenter)
+>>>>>>> v4.9.227
 	ldub		[%g6 + TI_FPDEPTH], %g1
 	brnz,a,pn	%g1, 1f
 	 cmp		%g1, 1
@@ -79,3 +94,8 @@ vis1:	ldub		[%g6 + TI_FPSAVED], %g3
 	.align		32
 80:	jmpl		%g7 + %g0, %g0
 	 nop
+<<<<<<< HEAD
+=======
+ENDPROC(VISenter)
+EXPORT_SYMBOL(VISenter)
+>>>>>>> v4.9.227

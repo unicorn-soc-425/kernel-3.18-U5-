@@ -411,8 +411,12 @@ struct of_dev_auxdata spear6xx_auxdata_lookup[] __initdata = {
 
 static void __init spear600_dt_init(void)
 {
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table,
 			spear6xx_auxdata_lookup, NULL);
+=======
+	of_platform_default_populate(NULL, spear6xx_auxdata_lookup, NULL);
+>>>>>>> v4.9.227
 }
 
 static const char *spear600_dt_board_compat[] = {

@@ -97,7 +97,11 @@ static int ide_floppy_callback(ide_drive_t *drive, int dsc)
 			       "Aborting request!\n");
 	}
 
+<<<<<<< HEAD
 	if (rq->cmd_type == REQ_TYPE_SPECIAL)
+=======
+	if (rq->cmd_type == REQ_TYPE_DRV_PRIV)
+>>>>>>> v4.9.227
 		rq->errors = uptodate ? 0 : IDE_DRV_ERROR_GENERAL;
 
 	return uptodate;
@@ -206,7 +210,11 @@ static void idefloppy_create_rw_cmd(ide_drive_t *drive,
 	memcpy(rq->cmd, pc->c, 12);
 
 	pc->rq = rq;
+<<<<<<< HEAD
 	if (rq->cmd_flags & REQ_WRITE)
+=======
+	if (cmd == WRITE)
+>>>>>>> v4.9.227
 		pc->flags |= PC_FLAG_WRITING;
 
 	pc->flags |= PC_FLAG_DMA_OK;
@@ -246,7 +254,11 @@ static ide_startstop_t ide_floppy_do_request(ide_drive_t *drive,
 		} else
 			printk(KERN_ERR PFX "%s: I/O error\n", drive->name);
 
+<<<<<<< HEAD
 		if (rq->cmd_type == REQ_TYPE_SPECIAL) {
+=======
+		if (rq->cmd_type == REQ_TYPE_DRV_PRIV) {
+>>>>>>> v4.9.227
 			rq->errors = 0;
 			ide_complete_rq(drive, 0, blk_rq_bytes(rq));
 			return ide_stopped;
@@ -265,8 +277,13 @@ static ide_startstop_t ide_floppy_do_request(ide_drive_t *drive,
 		pc = &floppy->queued_pc;
 		idefloppy_create_rw_cmd(drive, pc, rq, (unsigned long)block);
 		break;
+<<<<<<< HEAD
 	case REQ_TYPE_SPECIAL:
 	case REQ_TYPE_SENSE:
+=======
+	case REQ_TYPE_DRV_PRIV:
+	case REQ_TYPE_ATA_SENSE:
+>>>>>>> v4.9.227
 		pc = (struct ide_atapi_pc *)rq->special;
 		break;
 	case REQ_TYPE_BLOCK_PC:
@@ -487,7 +504,11 @@ static void ide_floppy_setup(ide_drive_t *drive)
 	 * it. It should be fixed as of version 1.9, but to be on the safe side
 	 * we'll leave the limitation below for the 2.2.x tree.
 	 */
+<<<<<<< HEAD
 	if (!strncmp((char *)&id[ATA_ID_PROD], "IOMEGA ZIP 100 ATAPI", 20)) {
+=======
+	if (strstarts((char *)&id[ATA_ID_PROD], "IOMEGA ZIP 100 ATAPI")) {
+>>>>>>> v4.9.227
 		drive->atapi_flags |= IDE_AFLAG_ZIP_DRIVE;
 		/* This value will be visible in the /proc/ide/hdx/settings */
 		drive->pc_delay = IDEFLOPPY_PC_DELAY;
@@ -498,7 +519,11 @@ static void ide_floppy_setup(ide_drive_t *drive)
 	 * Guess what? The IOMEGA Clik! drive also needs the above fix. It makes
 	 * nasty clicking noises without it, so please don't remove this.
 	 */
+<<<<<<< HEAD
 	if (strncmp((char *)&id[ATA_ID_PROD], "IOMEGA Clik!", 11) == 0) {
+=======
+	if (strstarts((char *)&id[ATA_ID_PROD], "IOMEGA Clik!")) {
+>>>>>>> v4.9.227
 		blk_queue_max_hw_sectors(drive->queue, 64);
 		drive->atapi_flags |= IDE_AFLAG_CLIK_DRIVE;
 		/* IOMEGA Clik! drives do not support lock/unlock commands */

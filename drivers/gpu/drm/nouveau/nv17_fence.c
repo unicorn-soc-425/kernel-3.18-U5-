@@ -24,8 +24,14 @@
 
 #include <nvif/os.h>
 #include <nvif/class.h>
+<<<<<<< HEAD
 
 #include "nouveau_drm.h"
+=======
+#include <nvif/cl0002.h>
+
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 #include "nv10_fence.h"
 

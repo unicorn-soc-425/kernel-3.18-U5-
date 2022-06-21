@@ -23,7 +23,11 @@
 
 int ivtv_streams_setup(struct ivtv *itv);
 int ivtv_streams_register(struct ivtv *itv);
+<<<<<<< HEAD
 void ivtv_streams_cleanup(struct ivtv *itv, int unregister);
+=======
+void ivtv_streams_cleanup(struct ivtv *itv);
+>>>>>>> v4.9.227
 
 /* Capture related */
 int ivtv_start_v4l2_encode_stream(struct ivtv_stream *s);

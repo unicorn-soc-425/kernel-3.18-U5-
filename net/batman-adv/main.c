@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2007-2014 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2007-2016  B.A.T.M.A.N. contributors:
+>>>>>>> v4.9.227
  *
  * Marek Lindner, Simon Wunderlich
  *
@@ -15,6 +19,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 #include <linux/crc32c.h>
 #include <linux/highmem.h>
 #include <linux/if_vlan.h>
@@ -41,6 +46,59 @@
 #include "network-coding.h"
 #include "fragmentation.h"
 
+=======
+#include "main.h"
+
+#include <linux/atomic.h>
+#include <linux/bug.h>
+#include <linux/byteorder/generic.h>
+#include <linux/crc32c.h>
+#include <linux/errno.h>
+#include <linux/fs.h>
+#include <linux/if_ether.h>
+#include <linux/if_vlan.h>
+#include <linux/init.h>
+#include <linux/ip.h>
+#include <linux/ipv6.h>
+#include <linux/kernel.h>
+#include <linux/kref.h>
+#include <linux/list.h>
+#include <linux/module.h>
+#include <linux/netdevice.h>
+#include <linux/printk.h>
+#include <linux/rculist.h>
+#include <linux/rcupdate.h>
+#include <linux/seq_file.h>
+#include <linux/skbuff.h>
+#include <linux/spinlock.h>
+#include <linux/stddef.h>
+#include <linux/string.h>
+#include <linux/workqueue.h>
+#include <net/dsfield.h>
+#include <net/rtnetlink.h>
+
+#include "bat_algo.h"
+#include "bat_iv_ogm.h"
+#include "bat_v.h"
+#include "bridge_loop_avoidance.h"
+#include "debugfs.h"
+#include "distributed-arp-table.h"
+#include "gateway_client.h"
+#include "gateway_common.h"
+#include "hard-interface.h"
+#include "icmp_socket.h"
+#include "log.h"
+#include "multicast.h"
+#include "netlink.h"
+#include "network-coding.h"
+#include "originator.h"
+#include "packet.h"
+#include "routing.h"
+#include "send.h"
+#include "soft-interface.h"
+#include "tp_meter.h"
+#include "translation-table.h"
+>>>>>>> v4.9.227
 
 /* List manipulations on hardif_list have to be rtnl_lock()'ed,
  * list traversals just rcu-locked
@@ -48,8 +106,11 @@
 struct list_head batadv_hardif_list;
 static int (*batadv_rx_handler[256])(struct sk_buff *,
 				     struct batadv_hard_iface *);
+<<<<<<< HEAD
 char batadv_routing_algo[20] = "BATMAN_IV";
 static struct hlist_head batadv_algo_list;
+=======
+>>>>>>> v4.9.227
 
 unsigned char batadv_broadcast_addr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
@@ -59,6 +120,7 @@ static void batadv_recv_handler_init(void);
 
 static int __init batadv_init(void)
 {
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&batadv_hardif_list);
 	INIT_HLIST_HEAD(&batadv_algo_list);
 
@@ -71,22 +133,59 @@ static int __init batadv_init(void)
 
 	if (!batadv_event_workqueue)
 		return -ENOMEM;
+=======
+	int ret;
+
+	ret = batadv_tt_cache_init();
+	if (ret < 0)
+		return ret;
+
+	INIT_LIST_HEAD(&batadv_hardif_list);
+	batadv_algo_init();
+
+	batadv_recv_handler_init();
+
+	batadv_v_init();
+	batadv_iv_init();
+	batadv_nc_init();
+	batadv_tp_meter_init();
+
+	batadv_event_workqueue = create_singlethread_workqueue("bat_events");
+	if (!batadv_event_workqueue)
+		goto err_create_wq;
+>>>>>>> v4.9.227
 
 	batadv_socket_init();
 	batadv_debugfs_init();
 
 	register_netdevice_notifier(&batadv_hard_if_notifier);
 	rtnl_link_register(&batadv_link_ops);
+<<<<<<< HEAD
+=======
+	batadv_netlink_register();
+>>>>>>> v4.9.227
 
 	pr_info("B.A.T.M.A.N. advanced %s (compatibility version %i) loaded\n",
 		BATADV_SOURCE_VERSION, BATADV_COMPAT_VERSION);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_create_wq:
+	batadv_tt_cache_destroy();
+
+	return -ENOMEM;
+>>>>>>> v4.9.227
 }
 
 static void __exit batadv_exit(void)
 {
 	batadv_debugfs_destroy();
+<<<<<<< HEAD
+=======
+	batadv_netlink_unregister();
+>>>>>>> v4.9.227
 	rtnl_link_unregister(&batadv_link_ops);
 	unregister_netdevice_notifier(&batadv_hard_if_notifier);
 	batadv_hardif_remove_interfaces();
@@ -96,6 +195,11 @@ static void __exit batadv_exit(void)
 	batadv_event_workqueue = NULL;
 
 	rcu_barrier();
+<<<<<<< HEAD
+=======
+
+	batadv_tt_cache_destroy();
+>>>>>>> v4.9.227
 }
 
 int batadv_mesh_init(struct net_device *soft_iface)
@@ -117,6 +221,10 @@ int batadv_mesh_init(struct net_device *soft_iface)
 	spin_lock_init(&bat_priv->tvlv.container_list_lock);
 	spin_lock_init(&bat_priv->tvlv.handler_list_lock);
 	spin_lock_init(&bat_priv->softif_vlan_list_lock);
+<<<<<<< HEAD
+=======
+	spin_lock_init(&bat_priv->tp_list_lock);
+>>>>>>> v4.9.227
 
 	INIT_HLIST_HEAD(&bat_priv->forw_bat_list);
 	INIT_HLIST_HEAD(&bat_priv->forw_bcast_list);
@@ -127,7 +235,11 @@ int batadv_mesh_init(struct net_device *soft_iface)
 	INIT_HLIST_HEAD(&bat_priv->mcast.want_all_ipv6_list);
 #endif
 	INIT_LIST_HEAD(&bat_priv->tt.changes_list);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&bat_priv->tt.req_list);
+=======
+	INIT_HLIST_HEAD(&bat_priv->tt.req_list);
+>>>>>>> v4.9.227
 	INIT_LIST_HEAD(&bat_priv->tt.roam_list);
 #ifdef CONFIG_BATMAN_ADV_MCAST
 	INIT_HLIST_HEAD(&bat_priv->mcast.mla_list);
@@ -135,6 +247,14 @@ int batadv_mesh_init(struct net_device *soft_iface)
 	INIT_HLIST_HEAD(&bat_priv->tvlv.container_list);
 	INIT_HLIST_HEAD(&bat_priv->tvlv.handler_list);
 	INIT_HLIST_HEAD(&bat_priv->softif_vlan_list);
+<<<<<<< HEAD
+=======
+	INIT_HLIST_HEAD(&bat_priv->tp_list);
+
+	ret = batadv_v_mesh_init(bat_priv);
+	if (ret < 0)
+		goto err;
+>>>>>>> v4.9.227
 
 	ret = batadv_originator_init(bat_priv);
 	if (ret < 0)
@@ -177,7 +297,13 @@ void batadv_mesh_free(struct net_device *soft_iface)
 
 	batadv_purge_outstanding_packets(bat_priv, NULL);
 
+<<<<<<< HEAD
 	batadv_gw_node_purge(bat_priv);
+=======
+	batadv_gw_node_free(bat_priv);
+
+	batadv_v_mesh_free(bat_priv);
+>>>>>>> v4.9.227
 	batadv_nc_mesh_free(bat_priv);
 	batadv_dat_free(bat_priv);
 	batadv_bla_free(bat_priv);
@@ -210,10 +336,20 @@ void batadv_mesh_free(struct net_device *soft_iface)
  * interfaces in the current mesh
  * @bat_priv: the bat priv with all the soft interface information
  * @addr: the address to check
+<<<<<<< HEAD
  */
 int batadv_is_my_mac(struct batadv_priv *bat_priv, const uint8_t *addr)
 {
 	const struct batadv_hard_iface *hard_iface;
+=======
+ *
+ * Return: 'true' if the mac address was found, false otherwise.
+ */
+bool batadv_is_my_mac(struct batadv_priv *bat_priv, const u8 *addr)
+{
+	const struct batadv_hard_iface *hard_iface;
+	bool is_my_mac = false;
+>>>>>>> v4.9.227
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(hard_iface, &batadv_hardif_list, list) {
@@ -224,6 +360,7 @@ int batadv_is_my_mac(struct batadv_priv *bat_priv, const uint8_t *addr)
 			continue;
 
 		if (batadv_compare_eth(hard_iface->net_dev->dev_addr, addr)) {
+<<<<<<< HEAD
 			rcu_read_unlock();
 			return 1;
 		}
@@ -232,12 +369,27 @@ int batadv_is_my_mac(struct batadv_priv *bat_priv, const uint8_t *addr)
 	return 0;
 }
 
+=======
+			is_my_mac = true;
+			break;
+		}
+	}
+	rcu_read_unlock();
+	return is_my_mac;
+}
+
+#ifdef CONFIG_BATMAN_ADV_DEBUGFS
+>>>>>>> v4.9.227
 /**
  * batadv_seq_print_text_primary_if_get - called from debugfs table printing
  *  function that requires the primary interface
  * @seq: debugfs table seq_file struct
  *
+<<<<<<< HEAD
  * Returns primary interface if found or NULL otherwise.
+=======
+ * Return: primary interface if found or NULL otherwise.
+>>>>>>> v4.9.227
  */
 struct batadv_hard_iface *
 batadv_seq_print_text_primary_if_get(struct seq_file *seq)
@@ -261,18 +413,30 @@ batadv_seq_print_text_primary_if_get(struct seq_file *seq)
 	seq_printf(seq,
 		   "BATMAN mesh %s disabled - primary interface not active\n",
 		   net_dev->name);
+<<<<<<< HEAD
 	batadv_hardif_free_ref(primary_if);
+=======
+	batadv_hardif_put(primary_if);
+>>>>>>> v4.9.227
 	primary_if = NULL;
 
 out:
 	return primary_if;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 /**
  * batadv_max_header_len - calculate maximum encapsulation overhead for a
  *  payload packet
  *
+<<<<<<< HEAD
  * Return the maximum encapsulation overhead in bytes.
+=======
+ * Return: the maximum encapsulation overhead in bytes.
+>>>>>>> v4.9.227
  */
 int batadv_max_header_len(void)
 {
@@ -363,16 +527,35 @@ int batadv_batman_skb_recv(struct sk_buff *skb, struct net_device *dev,
 	struct batadv_priv *bat_priv;
 	struct batadv_ogm_packet *batadv_ogm_packet;
 	struct batadv_hard_iface *hard_iface;
+<<<<<<< HEAD
 	uint8_t idx;
+=======
+	u8 idx;
+>>>>>>> v4.9.227
 	int ret;
 
 	hard_iface = container_of(ptype, struct batadv_hard_iface,
 				  batman_adv_ptype);
+<<<<<<< HEAD
+=======
+
+	/* Prevent processing a packet received on an interface which is getting
+	 * shut down otherwise the packet may trigger de-reference errors
+	 * further down in the receive path.
+	 */
+	if (!kref_get_unless_zero(&hard_iface->refcount))
+		goto err_out;
+
+>>>>>>> v4.9.227
 	skb = skb_share_check(skb, GFP_ATOMIC);
 
 	/* skb was released by skb_share_check() */
 	if (!skb)
+<<<<<<< HEAD
 		goto err_out;
+=======
+		goto err_put;
+>>>>>>> v4.9.227
 
 	/* packet should hold at least type and version */
 	if (unlikely(!pskb_may_pull(skb, 2)))
@@ -403,6 +586,12 @@ int batadv_batman_skb_recv(struct sk_buff *skb, struct net_device *dev,
 		goto err_free;
 	}
 
+<<<<<<< HEAD
+=======
+	/* reset control block to avoid left overs from previous users */
+	memset(skb->cb, 0, sizeof(struct batadv_skb_cb));
+
+>>>>>>> v4.9.227
 	/* all receive handlers return whether they received or reused
 	 * the supplied skb. if not, we have to free the skb.
 	 */
@@ -412,6 +601,11 @@ int batadv_batman_skb_recv(struct sk_buff *skb, struct net_device *dev,
 	if (ret == NET_RX_DROP)
 		kfree_skb(skb);
 
+<<<<<<< HEAD
+=======
+	batadv_hardif_put(hard_iface);
+
+>>>>>>> v4.9.227
 	/* return NET_RX_SUCCESS in any case as we
 	 * most probably dropped the packet for
 	 * routing-logical reasons.
@@ -420,6 +614,11 @@ int batadv_batman_skb_recv(struct sk_buff *skb, struct net_device *dev,
 
 err_free:
 	kfree_skb(skb);
+<<<<<<< HEAD
+=======
+err_put:
+	batadv_hardif_put(hard_iface);
+>>>>>>> v4.9.227
 err_out:
 	return NET_RX_DROP;
 }
@@ -469,7 +668,11 @@ static void batadv_recv_handler_init(void)
 }
 
 int
+<<<<<<< HEAD
 batadv_recv_handler_register(uint8_t packet_type,
+=======
+batadv_recv_handler_register(u8 packet_type,
+>>>>>>> v4.9.227
 			     int (*recv_handler)(struct sk_buff *,
 						 struct batadv_hard_iface *))
 {
@@ -485,11 +688,16 @@ batadv_recv_handler_register(uint8_t packet_type,
 	return 0;
 }
 
+<<<<<<< HEAD
 void batadv_recv_handler_unregister(uint8_t packet_type)
+=======
+void batadv_recv_handler_unregister(u8 packet_type)
+>>>>>>> v4.9.227
 {
 	batadv_rx_handler[packet_type] = batadv_recv_unhandled_packet;
 }
 
+<<<<<<< HEAD
 static struct batadv_algo_ops *batadv_algo_get(char *name)
 {
 	struct batadv_algo_ops *bat_algo_ops = NULL, *bat_algo_ops_tmp;
@@ -570,6 +778,8 @@ int batadv_algo_seq_print_text(struct seq_file *seq, void *offset)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * batadv_skb_crc32 - calculate CRC32 of the whole packet and skip bytes in
  *  the header
@@ -579,6 +789,11 @@ int batadv_algo_seq_print_text(struct seq_file *seq, void *offset)
  *
  * payload_ptr must always point to an address in the skb head buffer and not to
  * a fragment.
+<<<<<<< HEAD
+=======
+ *
+ * Return: big endian crc32c of the checksummed data
+>>>>>>> v4.9.227
  */
 __be32 batadv_skb_crc32(struct sk_buff *skb, u8 *payload_ptr)
 {
@@ -602,6 +817,7 @@ __be32 batadv_skb_crc32(struct sk_buff *skb, u8 *payload_ptr)
 }
 
 /**
+<<<<<<< HEAD
  * batadv_tvlv_handler_free_ref - decrement the tvlv handler refcounter and
  *  possibly free it
  * @tvlv_handler: the tvlv handler to free
@@ -1170,12 +1386,19 @@ out:
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * batadv_get_vid - extract the VLAN identifier from skb if any
  * @skb: the buffer containing the packet
  * @header_len: length of the batman header preceding the ethernet header
  *
+<<<<<<< HEAD
  * If the packet embedded in the skb is vlan tagged this function returns the
  * VID with the BATADV_VLAN_HAS_TAG flag. Otherwise BATADV_NO_FLAGS is returned.
+=======
+ * Return: VID with the BATADV_VLAN_HAS_TAG flag when the packet embedded in the
+ * skb is vlan tagged. Otherwise BATADV_NO_FLAGS.
+>>>>>>> v4.9.227
  */
 unsigned short batadv_get_vid(struct sk_buff *skb, size_t header_len)
 {
@@ -1202,7 +1425,11 @@ unsigned short batadv_get_vid(struct sk_buff *skb, size_t header_len)
  * @vid: the VLAN identifier for which the AP isolation attributed as to be
  *  looked up
  *
+<<<<<<< HEAD
  * Returns true if AP isolation is on for the VLAN idenfied by vid, false
+=======
+ * Return: true if AP isolation is on for the VLAN idenfied by vid, false
+>>>>>>> v4.9.227
  * otherwise
  */
 bool batadv_vlan_ap_isola_get(struct batadv_priv *bat_priv, unsigned short vid)
@@ -1216,12 +1443,17 @@ bool batadv_vlan_ap_isola_get(struct batadv_priv *bat_priv, unsigned short vid)
 	vlan = batadv_softif_vlan_get(bat_priv, vid);
 	if (vlan) {
 		ap_isolation_enabled = atomic_read(&vlan->ap_isolation);
+<<<<<<< HEAD
 		batadv_softif_vlan_free_ref(vlan);
+=======
+		batadv_softif_vlan_put(vlan);
+>>>>>>> v4.9.227
 	}
 
 	return ap_isolation_enabled;
 }
 
+<<<<<<< HEAD
 static int batadv_param_set_ra(const char *val, const struct kernel_param *kp)
 {
 	struct batadv_algo_ops *bat_algo_ops;
@@ -1252,6 +1484,8 @@ static struct kparam_string batadv_param_string_ra = {
 
 module_param_cb(routing_algo, &batadv_param_ops_ra, &batadv_param_string_ra,
 		0644);
+=======
+>>>>>>> v4.9.227
 module_init(batadv_init);
 module_exit(batadv_exit);
 
@@ -1261,3 +1495,7 @@ MODULE_AUTHOR(BATADV_DRIVER_AUTHOR);
 MODULE_DESCRIPTION(BATADV_DRIVER_DESC);
 MODULE_SUPPORTED_DEVICE(BATADV_DRIVER_DEVICE);
 MODULE_VERSION(BATADV_SOURCE_VERSION);
+<<<<<<< HEAD
+=======
+MODULE_ALIAS_RTNL_LINK("batadv");
+>>>>>>> v4.9.227

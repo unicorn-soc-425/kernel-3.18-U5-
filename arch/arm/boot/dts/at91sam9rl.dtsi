@@ -70,6 +70,14 @@
 		};
 	};
 
+<<<<<<< HEAD
+=======
+	sram: sram@00300000 {
+		compatible = "mmio-sram";
+		reg = <0x00300000 0x10000>;
+	};
+
+>>>>>>> v4.9.227
 	ahb {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -116,8 +124,13 @@
 				interrupts = <16 IRQ_TYPE_LEVEL_HIGH 0>,
 					     <17 IRQ_TYPE_LEVEL_HIGH 0>,
 					     <18 IRQ_TYPE_LEVEL_HIGH 0>;
+<<<<<<< HEAD
 				clocks = <&tc0_clk>, <&tc1_clk>, <&tc2_clk>;
 				clock-names = "t0_clk", "t1_clk", "t2_clk";
+=======
+				clocks = <&tc0_clk>, <&tc1_clk>, <&tc2_clk>, <&clk32k>;
+				clock-names = "t0_clk", "t1_clk", "t2_clk", "slow_clk";
+>>>>>>> v4.9.227
 			};
 
 			mmc0: mmc@fffa4000 {
@@ -260,6 +273,7 @@
 				atmel,adc-res-names = "lowres", "highres";
 				atmel,adc-use-res = "highres";
 
+<<<<<<< HEAD
 				trigger@0 {
 					reg = <0>;
 					trigger-name = "timer-counter-0";
@@ -267,18 +281,33 @@
 				};
 				trigger@1 {
 					reg = <1>;
+=======
+				trigger0 {
+					trigger-name = "timer-counter-0";
+					trigger-value = <0x1>;
+				};
+				trigger1 {
+>>>>>>> v4.9.227
 					trigger-name = "timer-counter-1";
 					trigger-value = <0x3>;
 				};
 
+<<<<<<< HEAD
 				trigger@2 {
 					reg = <2>;
+=======
+				trigger2 {
+>>>>>>> v4.9.227
 					trigger-name = "timer-counter-2";
 					trigger-value = <0x5>;
 				};
 
+<<<<<<< HEAD
 				trigger@3 {
 					reg = <3>;
+=======
+				trigger3 {
+>>>>>>> v4.9.227
 					trigger-name = "external";
 					trigger-value = <0x13>;
 					trigger-external;
@@ -296,13 +325,21 @@
 				clock-names = "pclk", "hclk";
 				status = "disabled";
 
+<<<<<<< HEAD
 				ep0 {
+=======
+				ep@0 {
+>>>>>>> v4.9.227
 					reg = <0>;
 					atmel,fifo-size = <64>;
 					atmel,nb-banks = <1>;
 				};
 
+<<<<<<< HEAD
 				ep1 {
+=======
+				ep@1 {
+>>>>>>> v4.9.227
 					reg = <1>;
 					atmel,fifo-size = <1024>;
 					atmel,nb-banks = <2>;
@@ -310,7 +347,11 @@
 					atmel,can-isoc;
 				};
 
+<<<<<<< HEAD
 				ep2 {
+=======
+				ep@2 {
+>>>>>>> v4.9.227
 					reg = <2>;
 					atmel,fifo-size = <1024>;
 					atmel,nb-banks = <2>;
@@ -318,21 +359,33 @@
 					atmel,can-isoc;
 				};
 
+<<<<<<< HEAD
 				ep3 {
+=======
+				ep@3 {
+>>>>>>> v4.9.227
 					reg = <3>;
 					atmel,fifo-size = <1024>;
 					atmel,nb-banks = <3>;
 					atmel,can-dma;
 				};
 
+<<<<<<< HEAD
 				ep4 {
+=======
+				ep@4 {
+>>>>>>> v4.9.227
 					reg = <4>;
 					atmel,fifo-size = <1024>;
 					atmel,nb-banks = <3>;
 					atmel,can-dma;
 				};
 
+<<<<<<< HEAD
 				ep5 {
+=======
+				ep@5 {
+>>>>>>> v4.9.227
 					reg = <5>;
 					atmel,fifo-size = <1024>;
 					atmel,nb-banks = <3>;
@@ -340,7 +393,11 @@
 					atmel,can-isoc;
 				};
 
+<<<<<<< HEAD
 				ep6 {
+=======
+				ep@6 {
+>>>>>>> v4.9.227
 					reg = <6>;
 					atmel,fifo-size = <1024>;
 					atmel,nb-banks = <3>;
@@ -372,7 +429,11 @@
 			};
 
 			dbgu: serial@fffff200 {
+<<<<<<< HEAD
 				compatible = "atmel,at91sam9260-usart";
+=======
+				compatible = "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+>>>>>>> v4.9.227
 				reg = <0xfffff200 0x200>;
 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
 				pinctrl-names = "default";
@@ -809,7 +870,11 @@
 			};
 
 			pmc: pmc@fffffc00 {
+<<<<<<< HEAD
 				compatible = "atmel,at91sam9g45-pmc";
+=======
+				compatible = "atmel,at91sam9g45-pmc", "syscon";
+>>>>>>> v4.9.227
 				reg = <0xfffffc00 0x100>;
 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
 				interrupt-controller;
@@ -1013,11 +1078,19 @@
 			rstc@fffffd00 {
 				compatible = "atmel,at91sam9260-rstc";
 				reg = <0xfffffd00 0x10>;
+<<<<<<< HEAD
+=======
+				clocks = <&clk32k>;
+>>>>>>> v4.9.227
 			};
 
 			shdwc@fffffd10 {
 				compatible = "atmel,at91sam9260-shdwc";
 				reg = <0xfffffd10 0x10>;
+<<<<<<< HEAD
+=======
+				clocks = <&clk32k>;
+>>>>>>> v4.9.227
 			};
 
 			pit: timer@fffffd30 {
@@ -1031,6 +1104,10 @@
 				compatible = "atmel,at91sam9260-wdt";
 				reg = <0xfffffd40 0x10>;
 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
+<<<<<<< HEAD
+=======
+				clocks = <&clk32k>;
+>>>>>>> v4.9.227
 				status = "disabled";
 			};
 
@@ -1059,10 +1136,40 @@
 					clocks = <&slow_rc_osc &slow_osc>;
 				};
 			};
+<<<<<<< HEAD
 		};
 	};
 
 	i2c@0 {
+=======
+
+			rtc@fffffd20 {
+				compatible = "atmel,at91sam9260-rtt";
+				reg = <0xfffffd20 0x10>;
+				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
+				clocks = <&clk32k>;
+				status = "disabled";
+			};
+
+			gpbr: syscon@fffffd60 {
+				compatible = "atmel,at91sam9260-gpbr", "syscon";
+				reg = <0xfffffd60 0x10>;
+				status = "disabled";
+			};
+
+			rtc@fffffe00 {
+				compatible = "atmel,at91rm9200-rtc";
+				reg = <0xfffffe00 0x40>;
+				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
+				clocks = <&clk32k>;
+				status = "disabled";
+			};
+
+		};
+	};
+
+	i2c-gpio-0 {
+>>>>>>> v4.9.227
 		compatible = "i2c-gpio";
 		gpios = <&pioA 23 GPIO_ACTIVE_HIGH>, /* sda */
 			<&pioA 24 GPIO_ACTIVE_HIGH>; /* scl */
@@ -1076,7 +1183,11 @@
 		status = "disabled";
 	};
 
+<<<<<<< HEAD
 	i2c@1 {
+=======
+	i2c-gpio-1 {
+>>>>>>> v4.9.227
 		compatible = "i2c-gpio";
 		gpios = <&pioD 10 GPIO_ACTIVE_HIGH>, /* sda */
 			<&pioD 11 GPIO_ACTIVE_HIGH>; /* scl */

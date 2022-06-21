@@ -34,7 +34,11 @@
  * pre-calculated schedule data to make appending to the queue be quick.
  */
 
+<<<<<<< HEAD
 static int ehci_get_frame (struct usb_hcd *hcd);
+=======
+static int ehci_get_frame(struct usb_hcd *hcd);
+>>>>>>> v4.9.227
 
 /*
  * periodic_next_shadow - return "next" pointer on shadow list
@@ -52,7 +56,11 @@ periodic_next_shadow(struct ehci_hcd *ehci, union ehci_shadow *periodic,
 		return &periodic->fstn->fstn_next;
 	case Q_TYPE_ITD:
 		return &periodic->itd->itd_next;
+<<<<<<< HEAD
 	// case Q_TYPE_SITD:
+=======
+	/* case Q_TYPE_SITD: */
+>>>>>>> v4.9.227
 	default:
 		return &periodic->sitd->sitd_next;
 	}
@@ -73,7 +81,11 @@ shadow_next_periodic(struct ehci_hcd *ehci, union ehci_shadow *periodic,
 }
 
 /* caller must hold ehci->lock */
+<<<<<<< HEAD
 static void periodic_unlink (struct ehci_hcd *ehci, unsigned frame, void *ptr)
+=======
+static void periodic_unlink(struct ehci_hcd *ehci, unsigned frame, void *ptr)
+>>>>>>> v4.9.227
 {
 	union ehci_shadow	*prev_p = &ehci->pshadow[frame];
 	__hc32			*hw_p = &ehci->periodic[frame];
@@ -296,10 +308,16 @@ static void compute_tt_budget(u8 budget_table[EHCI_BANDWIDTH_SIZE],
 				if (x <= 125) {
 					budget_line[uf] = x;
 					break;
+<<<<<<< HEAD
 				} else {
 					budget_line[uf] = 125;
 					x -= 125;
 				}
+=======
+				}
+				budget_line[uf] = 125;
+				x -= 125;
+>>>>>>> v4.9.227
 			}
 		}
 	}
@@ -330,7 +348,12 @@ static int __maybe_unused same_tt(struct usb_device *dev1,
  */
 static inline unsigned char tt_start_uframe(struct ehci_hcd *ehci, __hc32 mask)
 {
+<<<<<<< HEAD
 	unsigned char smask = QH_SMASK & hc32_to_cpu(ehci, mask);
+=======
+	unsigned char smask = hc32_to_cpu(ehci, mask) & QH_SMASK;
+
+>>>>>>> v4.9.227
 	if (!smask) {
 		ehci_err(ehci, "invalid empty smask!\n");
 		/* uframe 7 can't have bw so this will indicate failure */
@@ -346,7 +369,12 @@ max_tt_usecs[] = { 125, 125, 125, 125, 125, 125, 30, 0 };
 static inline void carryover_tt_bandwidth(unsigned short tt_usecs[8])
 {
 	int i;
+<<<<<<< HEAD
 	for (i=0; i<7; i++) {
+=======
+
+	for (i = 0; i < 7; i++) {
+>>>>>>> v4.9.227
 		if (max_tt_usecs[i] < tt_usecs[i]) {
 			tt_usecs[i+1] += tt_usecs[i] - max_tt_usecs[i];
 			tt_usecs[i] = max_tt_usecs[i];
@@ -375,7 +403,11 @@ static inline void carryover_tt_bandwidth(unsigned short tt_usecs[8])
  * limit of 16, specified in USB 2.0 spec section 11.18.4 requirement #4,
  * since proper scheduling limits ssplits to less than 16 per uframe.
  */
+<<<<<<< HEAD
 static int tt_available (
+=======
+static int tt_available(
+>>>>>>> v4.9.227
 	struct ehci_hcd		*ehci,
 	struct ehci_per_sched	*ps,
 	struct ehci_tt		*tt,
@@ -409,11 +441,19 @@ static int tt_available (
 		 * must be empty, so as to not illegally delay
 		 * already scheduled transactions
 		 */
+<<<<<<< HEAD
 		if (125 < usecs) {
 			int ufs = (usecs / 125);
 
 			for (i = uframe; i < (uframe + ufs) && i < 8; i++)
 				if (0 < tt_usecs[i])
+=======
+		if (usecs > 125) {
+			int ufs = (usecs / 125);
+
+			for (i = uframe; i < (uframe + ufs) && i < 8; i++)
+				if (tt_usecs[i] > 0)
+>>>>>>> v4.9.227
 					return 0;
 		}
 
@@ -435,7 +475,11 @@ static int tt_available (
  * for a periodic transfer starting at the specified frame, using
  * all the uframes in the mask.
  */
+<<<<<<< HEAD
 static int tt_no_collision (
+=======
+static int tt_no_collision(
+>>>>>>> v4.9.227
 	struct ehci_hcd		*ehci,
 	unsigned		period,
 	struct usb_device	*dev,
@@ -455,8 +499,13 @@ static int tt_no_collision (
 		__hc32			type;
 		struct ehci_qh_hw	*hw;
 
+<<<<<<< HEAD
 		here = ehci->pshadow [frame];
 		type = Q_NEXT_TYPE(ehci, ehci->periodic [frame]);
+=======
+		here = ehci->pshadow[frame];
+		type = Q_NEXT_TYPE(ehci, ehci->periodic[frame]);
+>>>>>>> v4.9.227
 		while (here.ptr) {
 			switch (hc32_to_cpu(ehci, type)) {
 			case Q_TYPE_ITD:
@@ -479,7 +528,11 @@ static int tt_no_collision (
 				here = here.qh->qh_next;
 				continue;
 			case Q_TYPE_SITD:
+<<<<<<< HEAD
 				if (same_tt (dev, here.sitd->urb->dev)) {
+=======
+				if (same_tt(dev, here.sitd->urb->dev)) {
+>>>>>>> v4.9.227
 					u16		mask;
 
 					mask = hc32_to_cpu(ehci, here.sitd
@@ -492,9 +545,15 @@ static int tt_no_collision (
 				type = Q_NEXT_TYPE(ehci, here.sitd->hw_next);
 				here = here.sitd->sitd_next;
 				continue;
+<<<<<<< HEAD
 			// case Q_TYPE_FSTN:
 			default:
 				ehci_dbg (ehci,
+=======
+			/* case Q_TYPE_FSTN: */
+			default:
+				ehci_dbg(ehci,
+>>>>>>> v4.9.227
 					"periodic frame %d bogus type %d\n",
 					frame, type);
 			}
@@ -548,7 +607,11 @@ static void qh_link_periodic(struct ehci_hcd *ehci, struct ehci_qh *qh)
 	unsigned	period = qh->ps.period;
 
 	dev_dbg(&qh->ps.udev->dev,
+<<<<<<< HEAD
 		"link qh%d-%04x/%pK start %d [%d/%d us]\n",
+=======
+		"link qh%d-%04x/%p start %d [%d/%d us]\n",
+>>>>>>> v4.9.227
 		period, hc32_to_cpup(ehci, &qh->hw->hw_info2)
 			& (QH_CMASK | QH_SMASK),
 		qh, qh->ps.phase, qh->ps.usecs, qh->ps.c_usecs);
@@ -588,14 +651,24 @@ static void qh_link_periodic(struct ehci_hcd *ehci, struct ehci_qh *qh)
 			qh->qh_next = here;
 			if (here.qh)
 				qh->hw->hw_next = *hw_p;
+<<<<<<< HEAD
 			wmb ();
 			prev->qh = qh;
 			*hw_p = QH_NEXT (ehci, qh->qh_dma);
+=======
+			wmb();
+			prev->qh = qh;
+			*hw_p = QH_NEXT(ehci, qh->qh_dma);
+>>>>>>> v4.9.227
 		}
 	}
 	qh->qh_state = QH_STATE_LINKED;
 	qh->xacterrs = 0;
+<<<<<<< HEAD
 	qh->exception = 0;
+=======
+	qh->unlink_reason = 0;
+>>>>>>> v4.9.227
 
 	/* update per-qh bandwidth for debugfs */
 	ehci_to_hcd(ehci)->self.bandwidth_allocated += qh->ps.bw_period
@@ -633,7 +706,11 @@ static void qh_unlink_periodic(struct ehci_hcd *ehci, struct ehci_qh *qh)
 	period = qh->ps.period ? : 1;
 
 	for (i = qh->ps.phase; i < ehci->periodic_size; i += period)
+<<<<<<< HEAD
 		periodic_unlink (ehci, i, qh);
+=======
+		periodic_unlink(ehci, i, qh);
+>>>>>>> v4.9.227
 
 	/* update per-qh bandwidth for debugfs */
 	ehci_to_hcd(ehci)->self.bandwidth_allocated -= qh->ps.bw_period
@@ -641,7 +718,11 @@ static void qh_unlink_periodic(struct ehci_hcd *ehci, struct ehci_qh *qh)
 		: (qh->ps.usecs * 8);
 
 	dev_dbg(&qh->ps.udev->dev,
+<<<<<<< HEAD
 		"unlink qh%d-%04x/%pK start %d [%d/%d us]\n",
+=======
+		"unlink qh%d-%04x/%p start %d [%d/%d us]\n",
+>>>>>>> v4.9.227
 		qh->ps.period,
 		hc32_to_cpup(ehci, &qh->hw->hw_info2) & (QH_CMASK | QH_SMASK),
 		qh, qh->ps.phase, qh->ps.usecs, qh->ps.c_usecs);
@@ -679,7 +760,11 @@ static void start_unlink_intr(struct ehci_hcd *ehci, struct ehci_qh *qh)
 	/* if the qh is waiting for unlink, cancel it now */
 	cancel_unlink_wait_intr(ehci, qh);
 
+<<<<<<< HEAD
 	qh_unlink_periodic (ehci, qh);
+=======
+	qh_unlink_periodic(ehci, qh);
+>>>>>>> v4.9.227
 
 	/* Make sure the unlinks are visible before starting the timer */
 	wmb();
@@ -751,7 +836,11 @@ static void end_unlink_intr(struct ehci_hcd *ehci, struct ehci_qh *qh)
 		 * FIXME kill the now-dysfunctional queued urbs
 		 */
 		else {
+<<<<<<< HEAD
 			ehci_err(ehci, "can't reschedule qh %pK, err %d\n",
+=======
+			ehci_err(ehci, "can't reschedule qh %p, err %d\n",
+>>>>>>> v4.9.227
 					qh, rc);
 		}
 	}
@@ -763,7 +852,11 @@ static void end_unlink_intr(struct ehci_hcd *ehci, struct ehci_qh *qh)
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int check_period (
+=======
+static int check_period(
+>>>>>>> v4.9.227
 	struct ehci_hcd *ehci,
 	unsigned	frame,
 	unsigned	uframe,
@@ -785,11 +878,19 @@ static int check_period (
 			return 0;
 	}
 
+<<<<<<< HEAD
 	// success!
 	return 1;
 }
 
 static int check_intr_schedule (
+=======
+	/* success! */
+	return 1;
+}
+
+static int check_intr_schedule(
+>>>>>>> v4.9.227
 	struct ehci_hcd		*ehci,
 	unsigned		frame,
 	unsigned		uframe,
@@ -869,7 +970,11 @@ static int qh_schedule(struct ehci_hcd *ehci, struct ehci_qh *qh)
 
 	/* reuse the previous schedule slots, if we can */
 	if (qh->ps.phase != NO_FRAME) {
+<<<<<<< HEAD
 		ehci_dbg(ehci, "reused qh %pK schedule\n", qh);
+=======
+		ehci_dbg(ehci, "reused qh %p schedule\n", qh);
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -925,7 +1030,11 @@ done:
 	return status;
 }
 
+<<<<<<< HEAD
 static int intr_submit (
+=======
+static int intr_submit(
+>>>>>>> v4.9.227
 	struct ehci_hcd		*ehci,
 	struct urb		*urb,
 	struct list_head	*qtd_list,
@@ -940,7 +1049,11 @@ static int intr_submit (
 	/* get endpoint and transfer/schedule data */
 	epnum = urb->ep->desc.bEndpointAddress;
 
+<<<<<<< HEAD
 	spin_lock_irqsave (&ehci->lock, flags);
+=======
+	spin_lock_irqsave(&ehci->lock, flags);
+>>>>>>> v4.9.227
 
 	if (unlikely(!HCD_HW_ACCESSIBLE(ehci_to_hcd(ehci)))) {
 		status = -ESHUTDOWN;
@@ -951,20 +1064,33 @@ static int intr_submit (
 		goto done_not_linked;
 
 	/* get qh and force any scheduling errors */
+<<<<<<< HEAD
 	INIT_LIST_HEAD (&empty);
+=======
+	INIT_LIST_HEAD(&empty);
+>>>>>>> v4.9.227
 	qh = qh_append_tds(ehci, urb, &empty, epnum, &urb->ep->hcpriv);
 	if (qh == NULL) {
 		status = -ENOMEM;
 		goto done;
 	}
 	if (qh->qh_state == QH_STATE_IDLE) {
+<<<<<<< HEAD
 		if ((status = qh_schedule (ehci, qh)) != 0)
+=======
+		status = qh_schedule(ehci, qh);
+		if (status)
+>>>>>>> v4.9.227
 			goto done;
 	}
 
 	/* then queue the urb's tds to the qh */
 	qh = qh_append_tds(ehci, urb, qtd_list, epnum, &urb->ep->hcpriv);
+<<<<<<< HEAD
 	BUG_ON (qh == NULL);
+=======
+	BUG_ON(qh == NULL);
+>>>>>>> v4.9.227
 
 	/* stuff into the periodic schedule */
 	if (qh->qh_state == QH_STATE_IDLE) {
@@ -982,9 +1108,15 @@ done:
 	if (unlikely(status))
 		usb_hcd_unlink_urb_from_ep(ehci_to_hcd(ehci), urb);
 done_not_linked:
+<<<<<<< HEAD
 	spin_unlock_irqrestore (&ehci->lock, flags);
 	if (status)
 		qtd_list_free (ehci, urb, qtd_list);
+=======
+	spin_unlock_irqrestore(&ehci->lock, flags);
+	if (status)
+		qtd_list_free(ehci, urb, qtd_list);
+>>>>>>> v4.9.227
 
 	return status;
 }
@@ -1022,12 +1154,21 @@ static void scan_intr(struct ehci_hcd *ehci)
 /* ehci_iso_stream ops work with both ITD and SITD */
 
 static struct ehci_iso_stream *
+<<<<<<< HEAD
 iso_stream_alloc (gfp_t mem_flags)
 {
 	struct ehci_iso_stream *stream;
 
 	stream = kzalloc(sizeof *stream, mem_flags);
 	if (likely (stream != NULL)) {
+=======
+iso_stream_alloc(gfp_t mem_flags)
+{
+	struct ehci_iso_stream *stream;
+
+	stream = kzalloc(sizeof(*stream), mem_flags);
+	if (likely(stream != NULL)) {
+>>>>>>> v4.9.227
 		INIT_LIST_HEAD(&stream->td_list);
 		INIT_LIST_HEAD(&stream->free_list);
 		stream->next_uframe = NO_FRAME;
@@ -1037,13 +1178,21 @@ iso_stream_alloc (gfp_t mem_flags)
 }
 
 static void
+<<<<<<< HEAD
 iso_stream_init (
+=======
+iso_stream_init(
+>>>>>>> v4.9.227
 	struct ehci_hcd		*ehci,
 	struct ehci_iso_stream	*stream,
 	struct urb		*urb
 )
 {
+<<<<<<< HEAD
 	static const u8 smask_out [] = { 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f };
+=======
+	static const u8 smask_out[] = { 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f };
+>>>>>>> v4.9.227
 
 	struct usb_device	*dev = urb->dev;
 	u32			buf1;
@@ -1058,11 +1207,15 @@ iso_stream_init (
 	epnum = usb_pipeendpoint(urb->pipe);
 	is_input = usb_pipein(urb->pipe) ? USB_DIR_IN : 0;
 	maxp = usb_endpoint_maxp(&urb->ep->desc);
+<<<<<<< HEAD
 	if (is_input) {
 		buf1 = (1 << 11);
 	} else {
 		buf1 = 0;
 	}
+=======
+	buf1 = is_input ? 1 << 11 : 0;
+>>>>>>> v4.9.227
 
 	/* knows about ITD vs SITD */
 	if (dev->speed == USB_SPEED_HIGH) {
@@ -1111,7 +1264,11 @@ iso_stream_init (
 		think_time = dev->tt ? dev->tt->think_time : 0;
 		stream->ps.tt_usecs = NS_TO_US(think_time + usb_calc_bus_time(
 				dev->speed, is_input, 1, maxp));
+<<<<<<< HEAD
 		hs_transfers = max (1u, (maxp + 187) / 188);
+=======
+		hs_transfers = max(1u, (maxp + 187) / 188);
+>>>>>>> v4.9.227
 		if (is_input) {
 			u32	tmp;
 
@@ -1151,7 +1308,11 @@ iso_stream_init (
 }
 
 static struct ehci_iso_stream *
+<<<<<<< HEAD
 iso_stream_find (struct ehci_hcd *ehci, struct urb *urb)
+=======
+iso_stream_find(struct ehci_hcd *ehci, struct urb *urb)
+>>>>>>> v4.9.227
 {
 	unsigned		epnum;
 	struct ehci_iso_stream	*stream;
@@ -1164,25 +1325,43 @@ iso_stream_find (struct ehci_hcd *ehci, struct urb *urb)
 	else
 		ep = urb->dev->ep_out[epnum];
 
+<<<<<<< HEAD
 	spin_lock_irqsave (&ehci->lock, flags);
 	stream = ep->hcpriv;
 
 	if (unlikely (stream == NULL)) {
 		stream = iso_stream_alloc(GFP_ATOMIC);
 		if (likely (stream != NULL)) {
+=======
+	spin_lock_irqsave(&ehci->lock, flags);
+	stream = ep->hcpriv;
+
+	if (unlikely(stream == NULL)) {
+		stream = iso_stream_alloc(GFP_ATOMIC);
+		if (likely(stream != NULL)) {
+>>>>>>> v4.9.227
 			ep->hcpriv = stream;
 			iso_stream_init(ehci, stream, urb);
 		}
 
 	/* if dev->ep [epnum] is a QH, hw is set */
+<<<<<<< HEAD
 	} else if (unlikely (stream->hw != NULL)) {
 		ehci_dbg (ehci, "dev %s ep%d%s, not iso??\n",
+=======
+	} else if (unlikely(stream->hw != NULL)) {
+		ehci_dbg(ehci, "dev %s ep%d%s, not iso??\n",
+>>>>>>> v4.9.227
 			urb->dev->devpath, epnum,
 			usb_pipein(urb->pipe) ? "in" : "out");
 		stream = NULL;
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore (&ehci->lock, flags);
+=======
+	spin_unlock_irqrestore(&ehci->lock, flags);
+>>>>>>> v4.9.227
 	return stream;
 }
 
@@ -1191,6 +1370,7 @@ iso_stream_find (struct ehci_hcd *ehci, struct urb *urb)
 /* ehci_iso_sched ops can be ITD-only or SITD-only */
 
 static struct ehci_iso_sched *
+<<<<<<< HEAD
 iso_sched_alloc (unsigned packets, gfp_t mem_flags)
 {
 	struct ehci_iso_sched	*iso_sched;
@@ -1201,6 +1381,18 @@ iso_sched_alloc (unsigned packets, gfp_t mem_flags)
 	if (likely (iso_sched != NULL)) {
 		INIT_LIST_HEAD (&iso_sched->td_list);
 	}
+=======
+iso_sched_alloc(unsigned packets, gfp_t mem_flags)
+{
+	struct ehci_iso_sched	*iso_sched;
+	int			size = sizeof(*iso_sched);
+
+	size += packets * sizeof(struct ehci_iso_packet);
+	iso_sched = kzalloc(size, mem_flags);
+	if (likely(iso_sched != NULL))
+		INIT_LIST_HEAD(&iso_sched->td_list);
+
+>>>>>>> v4.9.227
 	return iso_sched;
 }
 
@@ -1222,17 +1414,30 @@ itd_sched_init(
 	 * when we fit new itds into the schedule.
 	 */
 	for (i = 0; i < urb->number_of_packets; i++) {
+<<<<<<< HEAD
 		struct ehci_iso_packet	*uframe = &iso_sched->packet [i];
+=======
+		struct ehci_iso_packet	*uframe = &iso_sched->packet[i];
+>>>>>>> v4.9.227
 		unsigned		length;
 		dma_addr_t		buf;
 		u32			trans;
 
+<<<<<<< HEAD
 		length = urb->iso_frame_desc [i].length;
 		buf = dma + urb->iso_frame_desc [i].offset;
 
 		trans = EHCI_ISOC_ACTIVE;
 		trans |= buf & 0x0fff;
 		if (unlikely (((i + 1) == urb->number_of_packets))
+=======
+		length = urb->iso_frame_desc[i].length;
+		buf = dma + urb->iso_frame_desc[i].offset;
+
+		trans = EHCI_ISOC_ACTIVE;
+		trans |= buf & 0x0fff;
+		if (unlikely(((i + 1) == urb->number_of_packets))
+>>>>>>> v4.9.227
 				&& !(urb->transfer_flags & URB_NO_INTERRUPT))
 			trans |= EHCI_ITD_IOC;
 		trans |= length << 16;
@@ -1241,19 +1446,28 @@ itd_sched_init(
 		/* might need to cross a buffer page within a uframe */
 		uframe->bufp = (buf & ~(u64)0x0fff);
 		buf += length;
+<<<<<<< HEAD
 		if (unlikely ((uframe->bufp != (buf & ~(u64)0x0fff))))
+=======
+		if (unlikely((uframe->bufp != (buf & ~(u64)0x0fff))))
+>>>>>>> v4.9.227
 			uframe->cross = 1;
 	}
 }
 
 static void
+<<<<<<< HEAD
 iso_sched_free (
+=======
+iso_sched_free(
+>>>>>>> v4.9.227
 	struct ehci_iso_stream	*stream,
 	struct ehci_iso_sched	*iso_sched
 )
 {
 	if (!iso_sched)
 		return;
+<<<<<<< HEAD
 	// caller must hold ehci->lock!
 	list_splice (&iso_sched->td_list, &stream->free_list);
 	kfree (iso_sched);
@@ -1261,6 +1475,15 @@ iso_sched_free (
 
 static int
 itd_urb_transaction (
+=======
+	/* caller must hold ehci->lock! */
+	list_splice(&iso_sched->td_list, &stream->free_list);
+	kfree(iso_sched);
+}
+
+static int
+itd_urb_transaction(
+>>>>>>> v4.9.227
 	struct ehci_iso_stream	*stream,
 	struct ehci_hcd		*ehci,
 	struct urb		*urb,
@@ -1274,8 +1497,13 @@ itd_urb_transaction (
 	struct ehci_iso_sched	*sched;
 	unsigned long		flags;
 
+<<<<<<< HEAD
 	sched = iso_sched_alloc (urb->number_of_packets, mem_flags);
 	if (unlikely (sched == NULL))
+=======
+	sched = iso_sched_alloc(urb->number_of_packets, mem_flags);
+	if (unlikely(sched == NULL))
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	itd_sched_init(ehci, sched, stream, urb);
@@ -1286,7 +1514,11 @@ itd_urb_transaction (
 		num_itds = urb->number_of_packets;
 
 	/* allocate/init ITDs */
+<<<<<<< HEAD
 	spin_lock_irqsave (&ehci->lock, flags);
+=======
+	spin_lock_irqsave(&ehci->lock, flags);
+>>>>>>> v4.9.227
 	for (i = 0; i < num_itds; i++) {
 
 		/*
@@ -1298,6 +1530,7 @@ itd_urb_transaction (
 					struct ehci_itd, itd_list);
 			if (itd->frame == ehci->now_frame)
 				goto alloc_itd;
+<<<<<<< HEAD
 			list_del (&itd->itd_list);
 			itd_dma = itd->itd_dma;
 		} else {
@@ -1306,6 +1539,16 @@ itd_urb_transaction (
 			itd = dma_pool_alloc (ehci->itd_pool, mem_flags,
 					&itd_dma);
 			spin_lock_irqsave (&ehci->lock, flags);
+=======
+			list_del(&itd->itd_list);
+			itd_dma = itd->itd_dma;
+		} else {
+ alloc_itd:
+			spin_unlock_irqrestore(&ehci->lock, flags);
+			itd = dma_pool_alloc(ehci->itd_pool, mem_flags,
+					&itd_dma);
+			spin_lock_irqsave(&ehci->lock, flags);
+>>>>>>> v4.9.227
 			if (!itd) {
 				iso_sched_free(stream, sched);
 				spin_unlock_irqrestore(&ehci->lock, flags);
@@ -1313,12 +1556,21 @@ itd_urb_transaction (
 			}
 		}
 
+<<<<<<< HEAD
 		memset (itd, 0, sizeof *itd);
 		itd->itd_dma = itd_dma;
 		itd->frame = NO_FRAME;
 		list_add (&itd->itd_list, &sched->td_list);
 	}
 	spin_unlock_irqrestore (&ehci->lock, flags);
+=======
+		memset(itd, 0, sizeof(*itd));
+		itd->itd_dma = itd_dma;
+		itd->frame = NO_FRAME;
+		list_add(&itd->itd_list, &sched->td_list);
+	}
+	spin_unlock_irqrestore(&ehci->lock, flags);
+>>>>>>> v4.9.227
 
 	/* temporarily store schedule info in hcpriv */
 	urb->hcpriv = sched;
@@ -1385,7 +1637,11 @@ static void reserve_release_iso_bandwidth(struct ehci_hcd *ehci,
 }
 
 static inline int
+<<<<<<< HEAD
 itd_slot_ok (
+=======
+itd_slot_ok(
+>>>>>>> v4.9.227
 	struct ehci_hcd		*ehci,
 	struct ehci_iso_stream	*stream,
 	unsigned		uframe
@@ -1405,7 +1661,11 @@ itd_slot_ok (
 }
 
 static inline int
+<<<<<<< HEAD
 sitd_slot_ok (
+=======
+sitd_slot_ok(
+>>>>>>> v4.9.227
 	struct ehci_hcd		*ehci,
 	struct ehci_iso_stream	*stream,
 	unsigned		uframe,
@@ -1492,7 +1752,11 @@ sitd_slot_ok (
  */
 
 static int
+<<<<<<< HEAD
 iso_stream_schedule (
+=======
+iso_stream_schedule(
+>>>>>>> v4.9.227
 	struct ehci_hcd		*ehci,
 	struct urb		*urb,
 	struct ehci_iso_stream	*stream
@@ -1552,7 +1816,11 @@ iso_stream_schedule (
 
 			/* no room in the schedule */
 			if (!done) {
+<<<<<<< HEAD
 				ehci_dbg(ehci, "iso sched full %pK", urb);
+=======
+				ehci_dbg(ehci, "iso sched full %p", urb);
+>>>>>>> v4.9.227
 				status = -ENOSPC;
 				goto fail;
 			}
@@ -1604,11 +1872,19 @@ iso_stream_schedule (
 	 */
 	now2 = (now - base) & (mod - 1);
 
+<<<<<<< HEAD
 	/* Is the schedule already full? */
 	if (unlikely(!empty && start < period)) {
 		ehci_dbg(ehci, "iso sched full %pK (%u-%u < %u mod %u)\n",
 				urb, stream->next_uframe, base, period, mod);
 		status = -ENOSPC;
+=======
+	/* Is the schedule about to wrap around? */
+	if (unlikely(!empty && start < period)) {
+		ehci_dbg(ehci, "request %p would overflow (%u-%u < %u mod %u)\n",
+				urb, stream->next_uframe, base, period, mod);
+		status = -EFBIG;
+>>>>>>> v4.9.227
 		goto fail;
 	}
 
@@ -1635,7 +1911,11 @@ iso_stream_schedule (
 	/* How many uframes and packets do we need to skip? */
 	skip = (now2 - start + period - 1) & -period;
 	if (skip >= span) {		/* Entirely in the past? */
+<<<<<<< HEAD
 		ehci_dbg(ehci, "iso underrun %pK (%u+%u < %u) [%u]\n",
+=======
+		ehci_dbg(ehci, "iso underrun %p (%u+%u < %u) [%u]\n",
+>>>>>>> v4.9.227
 				urb, start + base, span - period, now2 + base,
 				base);
 
@@ -1662,7 +1942,11 @@ iso_stream_schedule (
  use_start:
 	/* Tried to schedule too far into the future? */
 	if (unlikely(start + span - period >= mod + wrap)) {
+<<<<<<< HEAD
 		ehci_dbg(ehci, "request %pK would overflow (%u+%u >= %u)\n",
+=======
+		ehci_dbg(ehci, "request %p would overflow (%u+%u >= %u)\n",
+>>>>>>> v4.9.227
 				urb, start, span - period, mod + wrap);
 		status = -EFBIG;
 		goto fail;
@@ -1693,9 +1977,15 @@ itd_init(struct ehci_hcd *ehci, struct ehci_iso_stream *stream,
 
 	/* it's been recently zeroed */
 	itd->hw_next = EHCI_LIST_END(ehci);
+<<<<<<< HEAD
 	itd->hw_bufp [0] = stream->buf0;
 	itd->hw_bufp [1] = stream->buf1;
 	itd->hw_bufp [2] = stream->buf2;
+=======
+	itd->hw_bufp[0] = stream->buf0;
+	itd->hw_bufp[1] = stream->buf1;
+	itd->hw_bufp[2] = stream->buf2;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < 8; i++)
 		itd->index[i] = -1;
@@ -1712,6 +2002,7 @@ itd_patch(
 	u16			uframe
 )
 {
+<<<<<<< HEAD
 	struct ehci_iso_packet	*uf = &iso_sched->packet [index];
 	unsigned		pg = itd->pg;
 
@@ -1719,6 +2010,15 @@ itd_patch(
 
 	uframe &= 0x07;
 	itd->index [uframe] = index;
+=======
+	struct ehci_iso_packet	*uf = &iso_sched->packet[index];
+	unsigned		pg = itd->pg;
+
+	/* BUG_ON(pg == 6 && uf->cross); */
+
+	uframe &= 0x07;
+	itd->index[uframe] = index;
+>>>>>>> v4.9.227
 
 	itd->hw_transaction[uframe] = uf->transaction;
 	itd->hw_transaction[uframe] |= cpu_to_hc32(ehci, pg << 12);
@@ -1726,7 +2026,11 @@ itd_patch(
 	itd->hw_bufp_hi[pg] |= cpu_to_hc32(ehci, (u32)(uf->bufp >> 32));
 
 	/* iso_frame_desc[].offset must be strictly increasing */
+<<<<<<< HEAD
 	if (unlikely (uf->cross)) {
+=======
+	if (unlikely(uf->cross)) {
+>>>>>>> v4.9.227
 		u64	bufp = uf->bufp + 4096;
 
 		itd->pg = ++pg;
@@ -1736,7 +2040,11 @@ itd_patch(
 }
 
 static inline void
+<<<<<<< HEAD
 itd_link (struct ehci_hcd *ehci, unsigned frame, struct ehci_itd *itd)
+=======
+itd_link(struct ehci_hcd *ehci, unsigned frame, struct ehci_itd *itd)
+>>>>>>> v4.9.227
 {
 	union ehci_shadow	*prev = &ehci->pshadow[frame];
 	__hc32			*hw_p = &ehci->periodic[frame];
@@ -1757,7 +2065,11 @@ itd_link (struct ehci_hcd *ehci, unsigned frame, struct ehci_itd *itd)
 	itd->hw_next = *hw_p;
 	prev->itd = itd;
 	itd->frame = frame;
+<<<<<<< HEAD
 	wmb ();
+=======
+	wmb();
+>>>>>>> v4.9.227
 	*hw_p = cpu_to_hc32(ehci, itd->itd_dma | Q_TYPE_ITD);
 }
 
@@ -1776,7 +2088,11 @@ static void itd_link_urb(
 
 	next_uframe = stream->next_uframe & (mod - 1);
 
+<<<<<<< HEAD
 	if (unlikely (list_empty(&stream->td_list)))
+=======
+	if (unlikely(list_empty(&stream->td_list)))
+>>>>>>> v4.9.227
 		ehci_to_hcd(ehci)->self.bandwidth_allocated
 				+= stream->bandwidth;
 
@@ -1792,6 +2108,7 @@ static void itd_link_urb(
 			packet < urb->number_of_packets;) {
 		if (itd == NULL) {
 			/* ASSERT:  we have all necessary itds */
+<<<<<<< HEAD
 			// BUG_ON (list_empty (&iso_sched->td_list));
 
 			/* ASSERT:  no itds for this endpoint in this uframe */
@@ -1802,6 +2119,18 @@ static void itd_link_urb(
 			itd->stream = stream;
 			itd->urb = urb;
 			itd_init (ehci, stream, itd);
+=======
+			/* BUG_ON(list_empty(&iso_sched->td_list)); */
+
+			/* ASSERT:  no itds for this endpoint in this uframe */
+
+			itd = list_entry(iso_sched->td_list.next,
+					struct ehci_itd, itd_list);
+			list_move_tail(&itd->itd_list, &stream->td_list);
+			itd->stream = stream;
+			itd->urb = urb;
+			itd_init(ehci, stream, itd);
+>>>>>>> v4.9.227
 		}
 
 		uframe = next_uframe & 0x07;
@@ -1823,7 +2152,11 @@ static void itd_link_urb(
 	stream->next_uframe = next_uframe;
 
 	/* don't need that schedule data any more */
+<<<<<<< HEAD
 	iso_sched_free (stream, iso_sched);
+=======
+	iso_sched_free(stream, iso_sched);
+>>>>>>> v4.9.227
 	urb->hcpriv = stream;
 
 	++ehci->isoc_count;
@@ -1855,6 +2188,7 @@ static bool itd_complete(struct ehci_hcd *ehci, struct ehci_itd *itd)
 
 	/* for each uframe with a packet */
 	for (uframe = 0; uframe < 8; uframe++) {
+<<<<<<< HEAD
 		if (likely (itd->index[uframe] == -1))
 			continue;
 		urb_index = itd->index[uframe];
@@ -1868,6 +2202,21 @@ static bool itd_complete(struct ehci_hcd *ehci, struct ehci_itd *itd)
 			urb->error_count++;
 			if (t & EHCI_ISOC_BUF_ERR)
 				desc->status = usb_pipein (urb->pipe)
+=======
+		if (likely(itd->index[uframe] == -1))
+			continue;
+		urb_index = itd->index[uframe];
+		desc = &urb->iso_frame_desc[urb_index];
+
+		t = hc32_to_cpup(ehci, &itd->hw_transaction[uframe]);
+		itd->hw_transaction[uframe] = 0;
+
+		/* report transfer status */
+		if (unlikely(t & ISO_ERRS)) {
+			urb->error_count++;
+			if (t & EHCI_ISOC_BUF_ERR)
+				desc->status = usb_pipein(urb->pipe)
+>>>>>>> v4.9.227
 					? -ENOSR  /* hc couldn't read */
 					: -ECOMM; /* hc couldn't write */
 			else if (t & EHCI_ISOC_BABBLE)
@@ -1880,7 +2229,11 @@ static bool itd_complete(struct ehci_hcd *ehci, struct ehci_itd *itd)
 				desc->actual_length = EHCI_ITD_LENGTH(t);
 				urb->actual_length += desc->actual_length;
 			}
+<<<<<<< HEAD
 		} else if (likely ((t & EHCI_ISOC_ACTIVE) == 0)) {
+=======
+		} else if (likely((t & EHCI_ISOC_ACTIVE) == 0)) {
+>>>>>>> v4.9.227
 			desc->status = 0;
 			desc->actual_length = EHCI_ITD_LENGTH(t);
 			urb->actual_length += desc->actual_length;
@@ -1891,12 +2244,22 @@ static bool itd_complete(struct ehci_hcd *ehci, struct ehci_itd *itd)
 	}
 
 	/* handle completion now? */
+<<<<<<< HEAD
 	if (likely ((urb_index + 1) != urb->number_of_packets))
 		goto done;
 
 	/* ASSERT: it's really the last itd for this urb
 	list_for_each_entry (itd, &stream->td_list, itd_list)
 		BUG_ON (itd->urb == urb);
+=======
+	if (likely((urb_index + 1) != urb->number_of_packets))
+		goto done;
+
+	/*
+	 * ASSERT: it's really the last itd for this urb
+	 * list_for_each_entry (itd, &stream->td_list, itd_list)
+	 *	 BUG_ON(itd->urb == urb);
+>>>>>>> v4.9.227
 	 */
 
 	/* give urb back to the driver; completion often (re)submits */
@@ -1936,7 +2299,11 @@ done:
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int itd_submit (struct ehci_hcd *ehci, struct urb *urb,
+=======
+static int itd_submit(struct ehci_hcd *ehci, struct urb *urb,
+>>>>>>> v4.9.227
 	gfp_t mem_flags)
 {
 	int			status = -EINVAL;
@@ -1944,6 +2311,7 @@ static int itd_submit (struct ehci_hcd *ehci, struct urb *urb,
 	struct ehci_iso_stream	*stream;
 
 	/* Get iso_stream head */
+<<<<<<< HEAD
 	stream = iso_stream_find (ehci, urb);
 	if (unlikely (stream == NULL)) {
 		ehci_dbg (ehci, "can't get iso stream\n");
@@ -1951,30 +2319,57 @@ static int itd_submit (struct ehci_hcd *ehci, struct urb *urb,
 	}
 	if (unlikely(urb->interval != stream->uperiod)) {
 		ehci_dbg (ehci, "can't change iso interval %d --> %d\n",
+=======
+	stream = iso_stream_find(ehci, urb);
+	if (unlikely(stream == NULL)) {
+		ehci_dbg(ehci, "can't get iso stream\n");
+		return -ENOMEM;
+	}
+	if (unlikely(urb->interval != stream->uperiod)) {
+		ehci_dbg(ehci, "can't change iso interval %d --> %d\n",
+>>>>>>> v4.9.227
 			stream->uperiod, urb->interval);
 		goto done;
 	}
 
 #ifdef EHCI_URB_TRACE
+<<<<<<< HEAD
 	ehci_dbg (ehci,
 		"%s %s urb %pK ep%d%s len %d, %d pkts %d uframes [%pK]\n",
 		__func__, urb->dev->devpath, urb,
 		usb_pipeendpoint (urb->pipe),
 		usb_pipein (urb->pipe) ? "in" : "out",
+=======
+	ehci_dbg(ehci,
+		"%s %s urb %p ep%d%s len %d, %d pkts %d uframes [%p]\n",
+		__func__, urb->dev->devpath, urb,
+		usb_pipeendpoint(urb->pipe),
+		usb_pipein(urb->pipe) ? "in" : "out",
+>>>>>>> v4.9.227
 		urb->transfer_buffer_length,
 		urb->number_of_packets, urb->interval,
 		stream);
 #endif
 
 	/* allocate ITDs w/o locking anything */
+<<<<<<< HEAD
 	status = itd_urb_transaction (stream, ehci, urb, mem_flags);
 	if (unlikely (status < 0)) {
 		ehci_dbg (ehci, "can't init itds\n");
+=======
+	status = itd_urb_transaction(stream, ehci, urb, mem_flags);
+	if (unlikely(status < 0)) {
+		ehci_dbg(ehci, "can't init itds\n");
+>>>>>>> v4.9.227
 		goto done;
 	}
 
 	/* schedule ... need to lock */
+<<<<<<< HEAD
 	spin_lock_irqsave (&ehci->lock, flags);
+=======
+	spin_lock_irqsave(&ehci->lock, flags);
+>>>>>>> v4.9.227
 	if (unlikely(!HCD_HW_ACCESSIBLE(ehci_to_hcd(ehci)))) {
 		status = -ESHUTDOWN;
 		goto done_not_linked;
@@ -1984,7 +2379,11 @@ static int itd_submit (struct ehci_hcd *ehci, struct urb *urb,
 		goto done_not_linked;
 	status = iso_stream_schedule(ehci, urb, stream);
 	if (likely(status == 0)) {
+<<<<<<< HEAD
 		itd_link_urb (ehci, urb, ehci->periodic_size << 3, stream);
+=======
+		itd_link_urb(ehci, urb, ehci->periodic_size << 3, stream);
+>>>>>>> v4.9.227
 	} else if (status > 0) {
 		status = 0;
 		ehci_urb_done(ehci, urb, 0);
@@ -1992,7 +2391,11 @@ static int itd_submit (struct ehci_hcd *ehci, struct urb *urb,
 		usb_hcd_unlink_urb_from_ep(ehci_to_hcd(ehci), urb);
 	}
  done_not_linked:
+<<<<<<< HEAD
 	spin_unlock_irqrestore (&ehci->lock, flags);
+=======
+	spin_unlock_irqrestore(&ehci->lock, flags);
+>>>>>>> v4.9.227
  done:
 	return status;
 }
@@ -2022,13 +2425,22 @@ sitd_sched_init(
 	 * when we fit new sitds into the schedule.
 	 */
 	for (i = 0; i < urb->number_of_packets; i++) {
+<<<<<<< HEAD
 		struct ehci_iso_packet	*packet = &iso_sched->packet [i];
+=======
+		struct ehci_iso_packet	*packet = &iso_sched->packet[i];
+>>>>>>> v4.9.227
 		unsigned		length;
 		dma_addr_t		buf;
 		u32			trans;
 
+<<<<<<< HEAD
 		length = urb->iso_frame_desc [i].length & 0x03ff;
 		buf = dma + urb->iso_frame_desc [i].offset;
+=======
+		length = urb->iso_frame_desc[i].length & 0x03ff;
+		buf = dma + urb->iso_frame_desc[i].offset;
+>>>>>>> v4.9.227
 
 		trans = SITD_STS_ACTIVE;
 		if (((i + 1) == urb->number_of_packets)
@@ -2054,7 +2466,11 @@ sitd_sched_init(
 }
 
 static int
+<<<<<<< HEAD
 sitd_urb_transaction (
+=======
+sitd_urb_transaction(
+>>>>>>> v4.9.227
 	struct ehci_iso_stream	*stream,
 	struct ehci_hcd		*ehci,
 	struct urb		*urb,
@@ -2067,14 +2483,22 @@ sitd_urb_transaction (
 	struct ehci_iso_sched	*iso_sched;
 	unsigned long		flags;
 
+<<<<<<< HEAD
 	iso_sched = iso_sched_alloc (urb->number_of_packets, mem_flags);
+=======
+	iso_sched = iso_sched_alloc(urb->number_of_packets, mem_flags);
+>>>>>>> v4.9.227
 	if (iso_sched == NULL)
 		return -ENOMEM;
 
 	sitd_sched_init(ehci, iso_sched, stream, urb);
 
 	/* allocate/init sITDs */
+<<<<<<< HEAD
 	spin_lock_irqsave (&ehci->lock, flags);
+=======
+	spin_lock_irqsave(&ehci->lock, flags);
+>>>>>>> v4.9.227
 	for (i = 0; i < urb->number_of_packets; i++) {
 
 		/* NOTE:  for now, we don't try to handle wraparound cases
@@ -2091,6 +2515,7 @@ sitd_urb_transaction (
 					 struct ehci_sitd, sitd_list);
 			if (sitd->frame == ehci->now_frame)
 				goto alloc_sitd;
+<<<<<<< HEAD
 			list_del (&sitd->sitd_list);
 			sitd_dma = sitd->sitd_dma;
 		} else {
@@ -2099,6 +2524,16 @@ sitd_urb_transaction (
 			sitd = dma_pool_alloc (ehci->sitd_pool, mem_flags,
 					&sitd_dma);
 			spin_lock_irqsave (&ehci->lock, flags);
+=======
+			list_del(&sitd->sitd_list);
+			sitd_dma = sitd->sitd_dma;
+		} else {
+ alloc_sitd:
+			spin_unlock_irqrestore(&ehci->lock, flags);
+			sitd = dma_pool_alloc(ehci->sitd_pool, mem_flags,
+					&sitd_dma);
+			spin_lock_irqsave(&ehci->lock, flags);
+>>>>>>> v4.9.227
 			if (!sitd) {
 				iso_sched_free(stream, iso_sched);
 				spin_unlock_irqrestore(&ehci->lock, flags);
@@ -2106,17 +2541,28 @@ sitd_urb_transaction (
 			}
 		}
 
+<<<<<<< HEAD
 		memset (sitd, 0, sizeof *sitd);
 		sitd->sitd_dma = sitd_dma;
 		sitd->frame = NO_FRAME;
 		list_add (&sitd->sitd_list, &iso_sched->td_list);
+=======
+		memset(sitd, 0, sizeof(*sitd));
+		sitd->sitd_dma = sitd_dma;
+		sitd->frame = NO_FRAME;
+		list_add(&sitd->sitd_list, &iso_sched->td_list);
+>>>>>>> v4.9.227
 	}
 
 	/* temporarily store schedule info in hcpriv */
 	urb->hcpriv = iso_sched;
 	urb->error_count = 0;
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore (&ehci->lock, flags);
+=======
+	spin_unlock_irqrestore(&ehci->lock, flags);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -2131,8 +2577,13 @@ sitd_patch(
 	unsigned		index
 )
 {
+<<<<<<< HEAD
 	struct ehci_iso_packet	*uf = &iso_sched->packet [index];
 	u64			bufp = uf->bufp;
+=======
+	struct ehci_iso_packet	*uf = &iso_sched->packet[index];
+	u64			bufp;
+>>>>>>> v4.9.227
 
 	sitd->hw_next = EHCI_LIST_END(ehci);
 	sitd->hw_fullspeed_ep = stream->address;
@@ -2152,6 +2603,7 @@ sitd_patch(
 }
 
 static inline void
+<<<<<<< HEAD
 sitd_link (struct ehci_hcd *ehci, unsigned frame, struct ehci_sitd *sitd)
 {
 	/* note: sitd ordering could matter (CSPLIT then SSPLIT) */
@@ -2160,6 +2612,16 @@ sitd_link (struct ehci_hcd *ehci, unsigned frame, struct ehci_sitd *sitd)
 	ehci->pshadow [frame].sitd = sitd;
 	sitd->frame = frame;
 	wmb ();
+=======
+sitd_link(struct ehci_hcd *ehci, unsigned frame, struct ehci_sitd *sitd)
+{
+	/* note: sitd ordering could matter (CSPLIT then SSPLIT) */
+	sitd->sitd_next = ehci->pshadow[frame];
+	sitd->hw_next = ehci->periodic[frame];
+	ehci->pshadow[frame].sitd = sitd;
+	sitd->frame = frame;
+	wmb();
+>>>>>>> v4.9.227
 	ehci->periodic[frame] = cpu_to_hc32(ehci, sitd->sitd_dma | Q_TYPE_SITD);
 }
 
@@ -2196,6 +2658,7 @@ static void sitd_link_urb(
 			packet++) {
 
 		/* ASSERT:  we have all necessary sitds */
+<<<<<<< HEAD
 		BUG_ON (list_empty (&sched->td_list));
 
 		/* ASSERT:  no itds for this endpoint in this frame */
@@ -2203,6 +2666,15 @@ static void sitd_link_urb(
 		sitd = list_entry (sched->td_list.next,
 				struct ehci_sitd, sitd_list);
 		list_move_tail (&sitd->sitd_list, &stream->td_list);
+=======
+		BUG_ON(list_empty(&sched->td_list));
+
+		/* ASSERT:  no itds for this endpoint in this frame */
+
+		sitd = list_entry(sched->td_list.next,
+				struct ehci_sitd, sitd_list);
+		list_move_tail(&sitd->sitd_list, &stream->td_list);
+>>>>>>> v4.9.227
 		sitd->stream = stream;
 		sitd->urb = urb;
 
@@ -2215,7 +2687,11 @@ static void sitd_link_urb(
 	stream->next_uframe = next_uframe & (mod - 1);
 
 	/* don't need that schedule data any more */
+<<<<<<< HEAD
 	iso_sched_free (stream, sched);
+=======
+	iso_sched_free(stream, sched);
+>>>>>>> v4.9.227
 	urb->hcpriv = stream;
 
 	++ehci->isoc_count;
@@ -2242,20 +2718,32 @@ static bool sitd_complete(struct ehci_hcd *ehci, struct ehci_sitd *sitd)
 	struct urb				*urb = sitd->urb;
 	struct usb_iso_packet_descriptor	*desc;
 	u32					t;
+<<<<<<< HEAD
 	int					urb_index = -1;
+=======
+	int					urb_index;
+>>>>>>> v4.9.227
 	struct ehci_iso_stream			*stream = sitd->stream;
 	struct usb_device			*dev;
 	bool					retval = false;
 
 	urb_index = sitd->index;
+<<<<<<< HEAD
 	desc = &urb->iso_frame_desc [urb_index];
+=======
+	desc = &urb->iso_frame_desc[urb_index];
+>>>>>>> v4.9.227
 	t = hc32_to_cpup(ehci, &sitd->hw_results);
 
 	/* report transfer status */
 	if (unlikely(t & SITD_ERRS)) {
 		urb->error_count++;
 		if (t & SITD_STS_DBE)
+<<<<<<< HEAD
 			desc->status = usb_pipein (urb->pipe)
+=======
+			desc->status = usb_pipein(urb->pipe)
+>>>>>>> v4.9.227
 				? -ENOSR  /* hc couldn't read */
 				: -ECOMM; /* hc couldn't write */
 		else if (t & SITD_STS_BABBLE)
@@ -2275,9 +2763,16 @@ static bool sitd_complete(struct ehci_hcd *ehci, struct ehci_sitd *sitd)
 	if ((urb_index + 1) != urb->number_of_packets)
 		goto done;
 
+<<<<<<< HEAD
 	/* ASSERT: it's really the last sitd for this urb
 	list_for_each_entry (sitd, &stream->td_list, sitd_list)
 		BUG_ON (sitd->urb == urb);
+=======
+	/*
+	 * ASSERT: it's really the last sitd for this urb
+	 * list_for_each_entry (sitd, &stream->td_list, sitd_list)
+	 *	 BUG_ON(sitd->urb == urb);
+>>>>>>> v4.9.227
 	 */
 
 	/* give urb back to the driver; completion often (re)submits */
@@ -2316,7 +2811,11 @@ done:
 }
 
 
+<<<<<<< HEAD
 static int sitd_submit (struct ehci_hcd *ehci, struct urb *urb,
+=======
+static int sitd_submit(struct ehci_hcd *ehci, struct urb *urb,
+>>>>>>> v4.9.227
 	gfp_t mem_flags)
 {
 	int			status = -EINVAL;
@@ -2324,6 +2823,7 @@ static int sitd_submit (struct ehci_hcd *ehci, struct urb *urb,
 	struct ehci_iso_stream	*stream;
 
 	/* Get iso_stream head */
+<<<<<<< HEAD
 	stream = iso_stream_find (ehci, urb);
 	if (stream == NULL) {
 		ehci_dbg (ehci, "can't get iso stream\n");
@@ -2331,28 +2831,55 @@ static int sitd_submit (struct ehci_hcd *ehci, struct urb *urb,
 	}
 	if (urb->interval != stream->ps.period) {
 		ehci_dbg (ehci, "can't change iso interval %d --> %d\n",
+=======
+	stream = iso_stream_find(ehci, urb);
+	if (stream == NULL) {
+		ehci_dbg(ehci, "can't get iso stream\n");
+		return -ENOMEM;
+	}
+	if (urb->interval != stream->ps.period) {
+		ehci_dbg(ehci, "can't change iso interval %d --> %d\n",
+>>>>>>> v4.9.227
 			stream->ps.period, urb->interval);
 		goto done;
 	}
 
 #ifdef EHCI_URB_TRACE
+<<<<<<< HEAD
 	ehci_dbg (ehci,
 		"submit %pK dev%s ep%d%s-iso len %d\n",
 		urb, urb->dev->devpath,
 		usb_pipeendpoint (urb->pipe),
 		usb_pipein (urb->pipe) ? "in" : "out",
+=======
+	ehci_dbg(ehci,
+		"submit %p dev%s ep%d%s-iso len %d\n",
+		urb, urb->dev->devpath,
+		usb_pipeendpoint(urb->pipe),
+		usb_pipein(urb->pipe) ? "in" : "out",
+>>>>>>> v4.9.227
 		urb->transfer_buffer_length);
 #endif
 
 	/* allocate SITDs */
+<<<<<<< HEAD
 	status = sitd_urb_transaction (stream, ehci, urb, mem_flags);
 	if (status < 0) {
 		ehci_dbg (ehci, "can't init sitds\n");
+=======
+	status = sitd_urb_transaction(stream, ehci, urb, mem_flags);
+	if (status < 0) {
+		ehci_dbg(ehci, "can't init sitds\n");
+>>>>>>> v4.9.227
 		goto done;
 	}
 
 	/* schedule ... need to lock */
+<<<<<<< HEAD
 	spin_lock_irqsave (&ehci->lock, flags);
+=======
+	spin_lock_irqsave(&ehci->lock, flags);
+>>>>>>> v4.9.227
 	if (unlikely(!HCD_HW_ACCESSIBLE(ehci_to_hcd(ehci)))) {
 		status = -ESHUTDOWN;
 		goto done_not_linked;
@@ -2362,7 +2889,11 @@ static int sitd_submit (struct ehci_hcd *ehci, struct urb *urb,
 		goto done_not_linked;
 	status = iso_stream_schedule(ehci, urb, stream);
 	if (likely(status == 0)) {
+<<<<<<< HEAD
 		sitd_link_urb (ehci, urb, ehci->periodic_size << 3, stream);
+=======
+		sitd_link_urb(ehci, urb, ehci->periodic_size << 3, stream);
+>>>>>>> v4.9.227
 	} else if (status > 0) {
 		status = 0;
 		ehci_urb_done(ehci, urb, 0);
@@ -2370,7 +2901,11 @@ static int sitd_submit (struct ehci_hcd *ehci, struct urb *urb,
 		usb_hcd_unlink_urb_from_ep(ehci_to_hcd(ehci), urb);
 	}
  done_not_linked:
+<<<<<<< HEAD
 	spin_unlock_irqrestore (&ehci->lock, flags);
+=======
+	spin_unlock_irqrestore(&ehci->lock, flags);
+>>>>>>> v4.9.227
  done:
 	return status;
 }
@@ -2379,9 +2914,17 @@ static int sitd_submit (struct ehci_hcd *ehci, struct urb *urb,
 
 static void scan_isoc(struct ehci_hcd *ehci)
 {
+<<<<<<< HEAD
 	unsigned	uf, now_frame, frame;
 	unsigned	fmask = ehci->periodic_size - 1;
 	bool		modified, live;
+=======
+	unsigned		uf, now_frame, frame;
+	unsigned		fmask = ehci->periodic_size - 1;
+	bool			modified, live;
+	union ehci_shadow	q, *q_p;
+	__hc32			type, *hw_p;
+>>>>>>> v4.9.227
 
 	/*
 	 * When running, scan from last scan point up to "now"
@@ -2399,6 +2942,7 @@ static void scan_isoc(struct ehci_hcd *ehci)
 	ehci->now_frame = now_frame;
 
 	frame = ehci->last_iso_frame;
+<<<<<<< HEAD
 	for (;;) {
 		union ehci_shadow	q, *q_p;
 		__hc32			type, *hw_p;
@@ -2514,4 +3058,119 @@ restart:
 		ehci->last_iso_frame = frame;
 		frame = (frame + 1) & fmask;
 	}
+=======
+
+restart:
+	/* Scan each element in frame's queue for completions */
+	q_p = &ehci->pshadow[frame];
+	hw_p = &ehci->periodic[frame];
+	q.ptr = q_p->ptr;
+	type = Q_NEXT_TYPE(ehci, *hw_p);
+	modified = false;
+
+	while (q.ptr != NULL) {
+		switch (hc32_to_cpu(ehci, type)) {
+		case Q_TYPE_ITD:
+			/*
+			 * If this ITD is still active, leave it for
+			 * later processing ... check the next entry.
+			 * No need to check for activity unless the
+			 * frame is current.
+			 */
+			if (frame == now_frame && live) {
+				rmb();
+				for (uf = 0; uf < 8; uf++) {
+					if (q.itd->hw_transaction[uf] &
+							ITD_ACTIVE(ehci))
+						break;
+				}
+				if (uf < 8) {
+					q_p = &q.itd->itd_next;
+					hw_p = &q.itd->hw_next;
+					type = Q_NEXT_TYPE(ehci,
+							q.itd->hw_next);
+					q = *q_p;
+					break;
+				}
+			}
+
+			/*
+			 * Take finished ITDs out of the schedule
+			 * and process them:  recycle, maybe report
+			 * URB completion.  HC won't cache the
+			 * pointer for much longer, if at all.
+			 */
+			*q_p = q.itd->itd_next;
+			if (!ehci->use_dummy_qh ||
+					q.itd->hw_next != EHCI_LIST_END(ehci))
+				*hw_p = q.itd->hw_next;
+			else
+				*hw_p = cpu_to_hc32(ehci, ehci->dummy->qh_dma);
+			type = Q_NEXT_TYPE(ehci, q.itd->hw_next);
+			wmb();
+			modified = itd_complete(ehci, q.itd);
+			q = *q_p;
+			break;
+		case Q_TYPE_SITD:
+			/*
+			 * If this SITD is still active, leave it for
+			 * later processing ... check the next entry.
+			 * No need to check for activity unless the
+			 * frame is current.
+			 */
+			if (((frame == now_frame) ||
+					(((frame + 1) & fmask) == now_frame))
+				&& live
+				&& (q.sitd->hw_results & SITD_ACTIVE(ehci))) {
+
+				q_p = &q.sitd->sitd_next;
+				hw_p = &q.sitd->hw_next;
+				type = Q_NEXT_TYPE(ehci, q.sitd->hw_next);
+				q = *q_p;
+				break;
+			}
+
+			/*
+			 * Take finished SITDs out of the schedule
+			 * and process them:  recycle, maybe report
+			 * URB completion.
+			 */
+			*q_p = q.sitd->sitd_next;
+			if (!ehci->use_dummy_qh ||
+					q.sitd->hw_next != EHCI_LIST_END(ehci))
+				*hw_p = q.sitd->hw_next;
+			else
+				*hw_p = cpu_to_hc32(ehci, ehci->dummy->qh_dma);
+			type = Q_NEXT_TYPE(ehci, q.sitd->hw_next);
+			wmb();
+			modified = sitd_complete(ehci, q.sitd);
+			q = *q_p;
+			break;
+		default:
+			ehci_dbg(ehci, "corrupt type %d frame %d shadow %p\n",
+					type, frame, q.ptr);
+			/* BUG(); */
+			/* FALL THROUGH */
+		case Q_TYPE_QH:
+		case Q_TYPE_FSTN:
+			/* End of the iTDs and siTDs */
+			q.ptr = NULL;
+			break;
+		}
+
+		/* Assume completion callbacks modify the queue */
+		if (unlikely(modified && ehci->isoc_count > 0))
+			goto restart;
+	}
+
+	/* Stop when we have reached the current frame */
+	if (frame == now_frame)
+		return;
+
+	/* The last frame may still have active siTDs */
+	ehci->last_iso_frame = frame;
+	frame = (frame + 1) & fmask;
+
+	goto restart;
+>>>>>>> v4.9.227
 }

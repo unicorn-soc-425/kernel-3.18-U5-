@@ -142,7 +142,11 @@ static void blk_set_cmd_filter_defaults(struct blk_cmd_filter *filter)
 	__set_bit(GPCMD_VERIFY_10, filter->read_ok);
 	__set_bit(VERIFY_16, filter->read_ok);
 	__set_bit(REPORT_LUNS, filter->read_ok);
+<<<<<<< HEAD
 	__set_bit(SERVICE_ACTION_IN, filter->read_ok);
+=======
+	__set_bit(SERVICE_ACTION_IN_16, filter->read_ok);
+>>>>>>> v4.9.227
 	__set_bit(RECEIVE_DIAGNOSTIC, filter->read_ok);
 	__set_bit(MAINTENANCE_IN, filter->read_ok);
 	__set_bit(GPCMD_READ_BUFFER_CAPACITY, filter->read_ok);
@@ -329,12 +333,18 @@ static int sg_io(struct request_queue *q, struct gendisk *bd_disk,
 			goto out_put_request;
 	}
 
+<<<<<<< HEAD
 	ret = -EFAULT;
 	if (blk_fill_sghdr_rq(q, rq, hdr, mode))
+=======
+	ret = blk_fill_sghdr_rq(q, rq, hdr, mode);
+	if (ret < 0)
+>>>>>>> v4.9.227
 		goto out_free_cdb;
 
 	ret = 0;
 	if (hdr->iovec_count) {
+<<<<<<< HEAD
 		size_t iov_data_len;
 		struct iovec *iov = NULL;
 
@@ -359,6 +369,21 @@ static int sg_io(struct request_queue *q, struct gendisk *bd_disk,
 		ret = blk_rq_map_user_iov(q, rq, NULL, (struct sg_iovec *) iov,
 					  hdr->iovec_count,
 					  iov_data_len, GFP_KERNEL);
+=======
+		struct iov_iter i;
+		struct iovec *iov = NULL;
+
+		ret = import_iovec(rq_data_dir(rq),
+				   hdr->dxferp, hdr->iovec_count,
+				   0, &iov, &i);
+		if (ret < 0)
+			goto out_free_cdb;
+
+		/* SG_IO howto says that the shorter of the two wins */
+		iov_iter_truncate(&i, hdr->dxfer_len);
+
+		ret = blk_rq_map_user_iov(q, rq, NULL, &i, GFP_KERNEL);
+>>>>>>> v4.9.227
 		kfree(iov);
 	} else if (hdr->dxfer_len)
 		ret = blk_rq_map_user(q, rq, NULL, hdr->dxferp, hdr->dxfer_len,
@@ -458,7 +483,11 @@ int sg_scsi_ioctl(struct request_queue *q, struct gendisk *disk, fmode_t mode,
 
 	}
 
+<<<<<<< HEAD
 	rq = blk_get_request(q, in_len ? WRITE : READ, __GFP_WAIT);
+=======
+	rq = blk_get_request(q, in_len ? WRITE : READ, __GFP_RECLAIM);
+>>>>>>> v4.9.227
 	if (IS_ERR(rq)) {
 		err = PTR_ERR(rq);
 		goto error_free_buffer;
@@ -509,7 +538,11 @@ int sg_scsi_ioctl(struct request_queue *q, struct gendisk *disk, fmode_t mode,
 		break;
 	}
 
+<<<<<<< HEAD
 	if (bytes && blk_rq_map_kern(q, rq, buffer, bytes, __GFP_WAIT)) {
+=======
+	if (bytes && blk_rq_map_kern(q, rq, buffer, bytes, __GFP_RECLAIM)) {
+>>>>>>> v4.9.227
 		err = DRIVER_ERROR << 24;
 		goto error;
 	}
@@ -550,7 +583,11 @@ static int __blk_send_generic(struct request_queue *q, struct gendisk *bd_disk,
 	struct request *rq;
 	int err;
 
+<<<<<<< HEAD
 	rq = blk_get_request(q, WRITE, __GFP_WAIT);
+=======
+	rq = blk_get_request(q, WRITE, __GFP_RECLAIM);
+>>>>>>> v4.9.227
 	if (IS_ERR(rq))
 		return PTR_ERR(rq);
 	blk_rq_set_block_pc(rq);

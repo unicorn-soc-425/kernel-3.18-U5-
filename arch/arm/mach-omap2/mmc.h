@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 #include <linux/mmc/host.h>
 #include <linux/platform_data/mmc-omap.h>
+=======
+>>>>>>> v4.9.227
 
 #define OMAP24XX_NR_MMC		2
 #define OMAP2420_MMC_SIZE	OMAP1_MMC_SIZE
@@ -7,6 +10,7 @@
 
 #define OMAP4_MMC_REG_OFFSET	0x100
 
+<<<<<<< HEAD
 #if defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE)
 void omap242x_init_mmc(struct omap_mmc_platform_data **mmc_data);
 #else
@@ -15,6 +19,8 @@ static inline void omap242x_init_mmc(struct omap_mmc_platform_data **mmc_data)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 struct omap_hwmod;
 int omap_msdi_reset(struct omap_hwmod *oh);
 

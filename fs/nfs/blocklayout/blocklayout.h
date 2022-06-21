@@ -40,12 +40,18 @@
 #include "../pnfs.h"
 #include "../netns.h"
 
+<<<<<<< HEAD
 #define PAGE_CACHE_SECTORS (PAGE_CACHE_SIZE >> SECTOR_SHIFT)
 #define PAGE_CACHE_SECTOR_SHIFT (PAGE_CACHE_SHIFT - SECTOR_SHIFT)
+=======
+#define PAGE_CACHE_SECTORS (PAGE_SIZE >> SECTOR_SHIFT)
+#define PAGE_CACHE_SECTOR_SHIFT (PAGE_SHIFT - SECTOR_SHIFT)
+>>>>>>> v4.9.227
 #define SECTOR_SIZE (1 << SECTOR_SHIFT)
 
 struct pnfs_block_dev;
 
+<<<<<<< HEAD
 enum pnfs_block_volume_type {
 	PNFS_BLOCK_VOLUME_SIMPLE	= 0,
 	PNFS_BLOCK_VOLUME_SLICE		= 1,
@@ -53,6 +59,8 @@ enum pnfs_block_volume_type {
 	PNFS_BLOCK_VOLUME_STRIPE	= 3,
 };
 
+=======
+>>>>>>> v4.9.227
 #define PNFS_BLOCK_MAX_UUIDS	4
 #define PNFS_BLOCK_MAX_DEVICES	64
 
@@ -62,7 +70,10 @@ enum pnfs_block_volume_type {
  */
 #define PNFS_BLOCK_UUID_LEN	128
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 struct pnfs_block_volume {
 	enum pnfs_block_volume_type	type;
 	union {
@@ -89,6 +100,16 @@ struct pnfs_block_volume {
 			u32		volumes_count;
 			u32		volumes[PNFS_BLOCK_MAX_DEVICES];
 		} stripe;
+<<<<<<< HEAD
+=======
+		struct {
+			enum scsi_code_set		code_set;
+			enum scsi_designator_type	designator_type;
+			int				designator_len;
+			u8				designator[256];
+			u64				pr_key;
+		} scsi;
+>>>>>>> v4.9.227
 	};
 };
 
@@ -113,10 +134,17 @@ struct pnfs_block_dev {
 	struct block_device		*bdev;
 	u64				disk_offset;
 
+<<<<<<< HEAD
+=======
+	u64				pr_key;
+	bool				pr_registered;
+
+>>>>>>> v4.9.227
 	bool (*map)(struct pnfs_block_dev *dev, u64 offset,
 			struct pnfs_block_dev_map *map);
 };
 
+<<<<<<< HEAD
 enum exstate4 {
 	PNFS_BLOCK_READWRITE_DATA	= 0,
 	PNFS_BLOCK_READ_DATA		= 1,
@@ -124,6 +152,8 @@ enum exstate4 {
 	PNFS_BLOCK_NONE_DATA		= 3  /* unmapped, it's a hole */
 };
 
+=======
+>>>>>>> v4.9.227
 /* sector_t fields are all in 512-byte sectors */
 struct pnfs_block_extent {
 	union {
@@ -134,20 +164,32 @@ struct pnfs_block_extent {
 	sector_t	be_f_offset;	/* the starting offset in the file */
 	sector_t	be_length;	/* the size of the extent */
 	sector_t	be_v_offset;	/* the starting offset in the volume */
+<<<<<<< HEAD
 	enum exstate4	be_state;	/* the state of this extent */
+=======
+	enum pnfs_block_extent_state be_state;	/* the state of this extent */
+>>>>>>> v4.9.227
 #define EXTENT_WRITTEN		1
 #define EXTENT_COMMITTING	2
 	unsigned int	be_tag;
 };
 
+<<<<<<< HEAD
 /* on the wire size of the extent */
 #define BL_EXTENT_SIZE	(7 * sizeof(__be32) + NFS4_DEVICEID4_SIZE)
 
+=======
+>>>>>>> v4.9.227
 struct pnfs_block_layout {
 	struct pnfs_layout_hdr	bl_layout;
 	struct rb_root		bl_ext_rw;
 	struct rb_root		bl_ext_ro;
 	spinlock_t		bl_ext_lock;   /* Protects list manipulation */
+<<<<<<< HEAD
+=======
+	bool			bl_scsi_layout;
+	u64			bl_lwb;
+>>>>>>> v4.9.227
 };
 
 static inline struct pnfs_block_layout *
@@ -189,7 +231,11 @@ int ext_tree_insert(struct pnfs_block_layout *bl,
 int ext_tree_remove(struct pnfs_block_layout *bl, bool rw, sector_t start,
 		sector_t end);
 int ext_tree_mark_written(struct pnfs_block_layout *bl, sector_t start,
+<<<<<<< HEAD
 		sector_t len);
+=======
+		sector_t len, u64 lwb);
+>>>>>>> v4.9.227
 bool ext_tree_lookup(struct pnfs_block_layout *bl, sector_t isect,
 		struct pnfs_block_extent *ret, bool rw);
 int ext_tree_prepare_commit(struct nfs4_layoutcommit_args *arg);
@@ -199,6 +245,10 @@ void ext_tree_mark_committed(struct nfs4_layoutcommit_args *arg, int status);
 dev_t bl_resolve_deviceid(struct nfs_server *server,
 		struct pnfs_block_volume *b, gfp_t gfp_mask);
 int __init bl_init_pipefs(void);
+<<<<<<< HEAD
 void __exit bl_cleanup_pipefs(void);
+=======
+void bl_cleanup_pipefs(void);
+>>>>>>> v4.9.227
 
 #endif /* FS_NFS_NFS4BLOCKLAYOUT_H */

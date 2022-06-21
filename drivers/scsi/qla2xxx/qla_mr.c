@@ -6,6 +6,10 @@
  */
 #include "qla_def.h"
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <linux/pci.h>
 #include <linux/ratelimit.h>
 #include <linux/vmalloc.h>
@@ -862,7 +866,11 @@ qlafx00_config_queues(struct scsi_qla_host *vha)
 	dma_addr_t bar2_hdl = pci_resource_start(ha->pdev, 2);
 
 	req->length = ha->req_que_len;
+<<<<<<< HEAD
 	req->ring = (void *)ha->iobase + ha->req_que_off;
+=======
+	req->ring = (void __force *)ha->iobase + ha->req_que_off;
+>>>>>>> v4.9.227
 	req->dma = bar2_hdl + ha->req_que_off;
 	if ((!req->ring) || (req->length == 0)) {
 		ql_log_pci(ql_log_info, ha->pdev, 0x012f,
@@ -877,7 +885,11 @@ qlafx00_config_queues(struct scsi_qla_host *vha)
 	    ha->req_que_off, (u64)req->dma);
 
 	rsp->length = ha->rsp_que_len;
+<<<<<<< HEAD
 	rsp->ring = (void *)ha->iobase + ha->rsp_que_off;
+=======
+	rsp->ring = (void __force *)ha->iobase + ha->rsp_que_off;
+>>>>>>> v4.9.227
 	rsp->dma = bar2_hdl + ha->rsp_que_off;
 	if ((!rsp->ring) || (rsp->length == 0)) {
 		ql_log_pci(ql_log_info, ha->pdev, 0x0131,
@@ -1317,10 +1329,17 @@ int
 qlafx00_configure_devices(scsi_qla_host_t *vha)
 {
 	int  rval;
+<<<<<<< HEAD
 	unsigned long flags, save_flags;
 	rval = QLA_SUCCESS;
 
 	save_flags = flags = vha->dpc_flags;
+=======
+	unsigned long flags;
+	rval = QLA_SUCCESS;
+
+	flags = vha->dpc_flags;
+>>>>>>> v4.9.227
 
 	ql_dbg(ql_dbg_disc, vha, 0x2090,
 	    "Configure devices -- dpc flags =0x%lx\n", flags);
@@ -1425,7 +1444,11 @@ qlafx00_init_response_q_entries(struct rsp_que *rsp)
 	pkt = rsp->ring_ptr;
 	for (cnt = 0; cnt < rsp->length; cnt++) {
 		pkt->signature = RESPONSE_PROCESSED;
+<<<<<<< HEAD
 		WRT_REG_DWORD((void __iomem *)&pkt->signature,
+=======
+		WRT_REG_DWORD((void __force __iomem *)&pkt->signature,
+>>>>>>> v4.9.227
 		    RESPONSE_PROCESSED);
 		pkt++;
 	}
@@ -1812,7 +1835,10 @@ qlafx00_fx_disc(scsi_qla_host_t *vha, fc_port_t *fcport, uint16_t fx_type)
 	struct host_system_info *phost_info;
 	struct register_host_info *preg_hsi;
 	struct new_utsname *p_sysid = NULL;
+<<<<<<< HEAD
 	struct timeval tv;
+=======
+>>>>>>> v4.9.227
 
 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
 	if (!sp)
@@ -1886,8 +1912,12 @@ qlafx00_fx_disc(scsi_qla_host_t *vha, fc_port_t *fcport, uint16_t fx_type)
 			    p_sysid->domainname, DOMNAME_LENGTH);
 			strncpy(phost_info->hostdriver,
 			    QLA2XXX_VERSION, VERSION_LENGTH);
+<<<<<<< HEAD
 			do_gettimeofday(&tv);
 			preg_hsi->utc = (uint64_t)tv.tv_sec;
+=======
+			preg_hsi->utc = (uint64_t)ktime_get_real_seconds();
+>>>>>>> v4.9.227
 			ql_dbg(ql_dbg_init, vha, 0x0149,
 			    "ISP%04X: Host registration with firmware\n",
 			    ha->pdev->device);
@@ -2279,7 +2309,10 @@ qlafx00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 	struct sts_entry_fx00 *sts;
 	__le16		comp_status;
 	__le16		scsi_status;
+<<<<<<< HEAD
 	uint16_t	ox_id;
+=======
+>>>>>>> v4.9.227
 	__le16		lscsi_status;
 	int32_t		resid;
 	uint32_t	sense_len, par_sense_len, rsp_info_len, resid_len,
@@ -2344,7 +2377,10 @@ qlafx00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 
 	fcport = sp->fcport;
 
+<<<<<<< HEAD
 	ox_id = 0;
+=======
+>>>>>>> v4.9.227
 	sense_len = par_sense_len = rsp_info_len = resid_len =
 		fw_resid_len = 0;
 	if (scsi_status & cpu_to_le16((uint16_t)SS_SENSE_LEN_VALID))
@@ -2528,12 +2564,20 @@ check_scsi_status:
 		ql_dbg(ql_dbg_io, fcport->vha, 0x3058,
 		    "FCP command status: 0x%x-0x%x (0x%x) nexus=%ld:%d:%llu "
 		    "tgt_id: 0x%x lscsi_status: 0x%x cdb=%10phN len=0x%x "
+<<<<<<< HEAD
 		    "rsp_info=0x%x resid=0x%x fw_resid=0x%x sense_len=0x%x, "
+=======
+		    "rsp_info=%p resid=0x%x fw_resid=0x%x sense_len=0x%x, "
+>>>>>>> v4.9.227
 		    "par_sense_len=0x%x, rsp_info_len=0x%x\n",
 		    comp_status, scsi_status, res, vha->host_no,
 		    cp->device->id, cp->device->lun, fcport->tgt_id,
 		    lscsi_status, cp->cmnd, scsi_bufflen(cp),
+<<<<<<< HEAD
 		    rsp_info_len, resid_len, fw_resid_len, sense_len,
+=======
+		    rsp_info, resid_len, fw_resid_len, sense_len,
+>>>>>>> v4.9.227
 		    par_sense_len, rsp_info_len);
 
 	if (rsp->status_srb == NULL)
@@ -3009,7 +3053,11 @@ qlafx00_build_scsi_iocbs(srb_t *sp, struct cmd_type_7_fx00 *cmd_pkt,
 
 	/* No data transfer */
 	if (!scsi_bufflen(cmd) || cmd->sc_data_direction == DMA_NONE) {
+<<<<<<< HEAD
 		lcmd_pkt->byte_count = __constant_cpu_to_le32(0);
+=======
+		lcmd_pkt->byte_count = cpu_to_le32(0);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -3071,7 +3119,11 @@ qlafx00_build_scsi_iocbs(srb_t *sp, struct cmd_type_7_fx00 *cmd_pkt,
 int
 qlafx00_start_scsi(srb_t *sp)
 {
+<<<<<<< HEAD
 	int		ret, nseg;
+=======
+	int		nseg;
+>>>>>>> v4.9.227
 	unsigned long   flags;
 	uint32_t        index;
 	uint32_t	handle;
@@ -3086,11 +3138,16 @@ qlafx00_start_scsi(srb_t *sp)
 	struct cmd_type_7_fx00 *cmd_pkt;
 	struct cmd_type_7_fx00 lcmd_pkt;
 	struct scsi_lun llun;
+<<<<<<< HEAD
 	char		tag[2];
 
 	/* Setup device pointers. */
 	ret = 0;
 
+=======
+
+	/* Setup device pointers. */
+>>>>>>> v4.9.227
 	rsp = ha->rsp_q_map[0];
 	req = vha->req;
 
@@ -3157,6 +3214,7 @@ qlafx00_start_scsi(srb_t *sp)
 	host_to_adap((uint8_t *)&llun, (uint8_t *)&lcmd_pkt.lun,
 	    sizeof(lcmd_pkt.lun));
 
+<<<<<<< HEAD
 	/* Update tagged queuing modifier -- default is TSK_SIMPLE (0). */
 	if (scsi_populate_tag_msg(cmd, tag)) {
 		switch (tag[0]) {
@@ -3169,6 +3227,8 @@ qlafx00_start_scsi(srb_t *sp)
 		}
 	}
 
+=======
+>>>>>>> v4.9.227
 	/* Load SCSI command packet. */
 	host_to_adap(cmd->cmnd, lcmd_pkt.fcp_cdb, sizeof(lcmd_pkt.fcp_cdb));
 	lcmd_pkt.byte_count = cpu_to_le32((uint32_t)scsi_bufflen(cmd));

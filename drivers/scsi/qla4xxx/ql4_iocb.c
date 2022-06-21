@@ -280,7 +280,10 @@ int qla4xxx_send_command_to_isp(struct scsi_qla_host *ha, struct srb * srb)
 	uint16_t req_cnt;
 	unsigned long flags;
 	uint32_t index;
+<<<<<<< HEAD
 	char tag[2];
+=======
+>>>>>>> v4.9.227
 
 	/* Get real lun and adapter */
 	ddb_entry = srb->ddb;
@@ -352,6 +355,7 @@ int qla4xxx_send_command_to_isp(struct scsi_qla_host *ha, struct srb * srb)
 
 	/* Set tagged queueing control flags */
 	cmd_entry->control_flags |= CF_SIMPLE_TAG;
+<<<<<<< HEAD
 	if (scsi_populate_tag_msg(cmd, tag))
 		switch (tag[0]) {
 		case MSG_HEAD_TAG:
@@ -361,6 +365,8 @@ int qla4xxx_send_command_to_isp(struct scsi_qla_host *ha, struct srb * srb)
 			cmd_entry->control_flags |= CF_ORDERED_TAG;
 			break;
 		}
+=======
+>>>>>>> v4.9.227
 
 	qla4xxx_advance_req_ring_ptr(ha);
 	qla4xxx_build_scsi_iocbs(srb, cmd_entry, tot_dsds);

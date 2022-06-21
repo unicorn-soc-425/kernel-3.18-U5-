@@ -17,6 +17,7 @@
 
 #define DEBUG 1
 
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -24,6 +25,15 @@
 #include <linux/errno.h>
 #include <linux/i2c.h>
 #include <linux/list.h>
+=======
+#include <linux/errno.h>
+#include <linux/i2c.h>
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/list.h>
+#include <linux/module.h>
+#include <linux/slab.h>
+>>>>>>> v4.9.227
 
 #define MAX_CHIPS 10
 

@@ -96,8 +96,13 @@ menf21bmc_probe(struct i2c_client *client, const struct i2c_device_id *ids)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = mfd_add_devices(&client->dev, 0, menf21bmc_cell,
 			      ARRAY_SIZE(menf21bmc_cell), NULL, 0, NULL);
+=======
+	ret = devm_mfd_add_devices(&client->dev, 0, menf21bmc_cell,
+				   ARRAY_SIZE(menf21bmc_cell), NULL, 0, NULL);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(&client->dev, "failed to add BMC sub-devices\n");
 		return ret;
@@ -106,12 +111,15 @@ menf21bmc_probe(struct i2c_client *client, const struct i2c_device_id *ids)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int menf21bmc_remove(struct i2c_client *client)
 {
 	mfd_remove_devices(&client->dev);
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct i2c_device_id menf21bmc_id_table[] = {
 	{ "menf21bmc" },
 	{ }
@@ -122,7 +130,10 @@ static struct i2c_driver menf21bmc_driver = {
 	.driver.name	= "menf21bmc",
 	.id_table	= menf21bmc_id_table,
 	.probe		= menf21bmc_probe,
+<<<<<<< HEAD
 	.remove		= menf21bmc_remove,
+=======
+>>>>>>> v4.9.227
 };
 
 module_i2c_driver(menf21bmc_driver);

@@ -19,6 +19,7 @@
 #ifndef __ASM_PAGE_H
 #define __ASM_PAGE_H
 
+<<<<<<< HEAD
 /* PAGE_SHIFT determines the page size */
 /* CONT_SHIFT determines the number of pages which can be tracked together  */
 #ifdef CONFIG_ARM64_64K_PAGES
@@ -28,6 +29,14 @@
 #define PAGE_SHIFT		12
 #define CONT_SHIFT		4
 #endif
+=======
+#include <linux/const.h>
+
+/* PAGE_SHIFT determines the page size */
+/* CONT_SHIFT determines the number of pages which can be tracked together  */
+#define PAGE_SHIFT		CONFIG_ARM64_PAGE_SHIFT
+#define CONT_SHIFT		CONFIG_ARM64_CONT_SHIFT
+>>>>>>> v4.9.227
 #define PAGE_SIZE		(_AC(1, UL) << PAGE_SHIFT)
 #define PAGE_MASK		(~(PAGE_SIZE-1))
 
@@ -36,6 +45,10 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
+=======
+#include <linux/personality.h> /* for READ_IMPLIES_EXEC */
+>>>>>>> v4.9.227
 #include <asm/pgtable-types.h>
 
 extern void __cpu_clear_user_page(void *p, unsigned long user);

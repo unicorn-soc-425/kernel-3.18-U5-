@@ -41,7 +41,11 @@ config USB_STORAGE_REALTEK
 
 config REALTEK_AUTOPM
 	bool "Realtek Card Reader autosuspend support"
+<<<<<<< HEAD
 	depends on USB_STORAGE_REALTEK && PM_RUNTIME
+=======
+	depends on USB_STORAGE_REALTEK && PM
+>>>>>>> v4.9.227
 	default y
 
 config USB_STORAGE_DATAFAB
@@ -212,9 +216,12 @@ config USB_UAS
 	  say 'Y' or 'M' here and the kernel will use the right driver.
 
 	  If you compile this driver as a module, it will be named uas.
+<<<<<<< HEAD
 
 config USB_STORAGE_DETECT
 	bool "Detect inserting sdcard"
 	depends on USB
 	help
 	  This is samsung patch
+=======
+>>>>>>> v4.9.227

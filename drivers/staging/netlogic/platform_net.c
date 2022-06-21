@@ -58,7 +58,10 @@
 #define MAX_NUM_XLS_GMAC	8
 #define MAX_NUM_XLR_GMAC	4
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static u32 xlr_gmac_offsets[] = {
 	NETLOGIC_IO_GMAC_0_OFFSET, NETLOGIC_IO_GMAC_1_OFFSET,
 	NETLOGIC_IO_GMAC_2_OFFSET, NETLOGIC_IO_GMAC_3_OFFSET,
@@ -87,7 +90,12 @@ static void xlr_resource_init(struct resource *res, int offset, int irq)
 
 	res++;
 	res->name = "gmac";
+<<<<<<< HEAD
 	res->start = res->end = irq;
+=======
+	res->start = irq;
+	res->end = irq;
+>>>>>>> v4.9.227
 	res->flags = IORESOURCE_IRQ;
 }
 
@@ -122,8 +130,13 @@ static struct platform_device *gmac_controller2_init(void *gmac0_addr)
 		ndata1.phy_addr[mac] = mac + 4 + 0x10;
 
 		xlr_resource_init(&xlr_net1_res[mac * 2],
+<<<<<<< HEAD
 				xlr_gmac_offsets[mac + 4],
 				xlr_gmac_irqs[mac + 4]);
+=======
+				  xlr_gmac_offsets[mac + 4],
+				  xlr_gmac_irqs[mac + 4]);
+>>>>>>> v4.9.227
 	}
 	xlr_net_dev1.num_resources = 8;
 
@@ -163,14 +176,22 @@ static void xls_gmac_init(void)
 	switch (nlm_prom_info.board_major_version) {
 	case 12:
 		/* first block RGMII or XAUI, use RGMII */
+<<<<<<< HEAD
 		ndata0.phy_interface = PHY_INTERFACE_MODE_RGMII,
+=======
+		ndata0.phy_interface = PHY_INTERFACE_MODE_RGMII;
+>>>>>>> v4.9.227
 		ndata0.tx_stnid[0] = FMN_STNID_GMAC0_TX0;
 		ndata0.phy_addr[0] = 0;
 
 		xlr_net_dev0.num_resources = 2;
 
 		xlr_resource_init(&xlr_net0_res[0], xlr_gmac_offsets[0],
+<<<<<<< HEAD
 				xlr_gmac_irqs[0]);
+=======
+				  xlr_gmac_irqs[0]);
+>>>>>>> v4.9.227
 		platform_device_register(&xlr_net_dev0);
 
 		/* second block is XAUI, not supported yet */
@@ -183,7 +204,11 @@ static void xls_gmac_init(void)
 			ndata0.phy_addr[mac] = mac + 0x10;
 
 			xlr_resource_init(&xlr_net0_res[mac * 2],
+<<<<<<< HEAD
 					xlr_gmac_offsets[mac],
+=======
+					  xlr_gmac_offsets[mac],
+>>>>>>> v4.9.227
 					xlr_gmac_irqs[mac]);
 		}
 		xlr_net_dev0.num_resources = 8;
@@ -209,7 +234,10 @@ static void xlr_gmac_init(void)
 		.gpio_addr	= NULL,
 	};
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	static struct platform_device xlr_net_dev0 = {
 		.name		= "xlr-net",
 		.id		= 0,
@@ -224,7 +252,11 @@ static void xlr_gmac_init(void)
 		ndata0.tx_stnid[mac] = FMN_STNID_GMAC0_TX0 + mac;
 		ndata0.phy_addr[mac] = mac;
 		xlr_resource_init(&xlr_net0_res[mac * 2], xlr_gmac_offsets[mac],
+<<<<<<< HEAD
 				xlr_gmac_irqs[mac]);
+=======
+				  xlr_gmac_irqs[mac]);
+>>>>>>> v4.9.227
 	}
 	xlr_net_dev0.num_resources = 8;
 	xlr_net_dev0.resource = xlr_net0_res;

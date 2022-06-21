@@ -28,7 +28,11 @@
 #include <subdev/fb.h>
 #include <subdev/instmem.h>
 
+<<<<<<< HEAD
 #include <nvif/class.h>
+=======
+#include <nvif/cl0002.h>
+>>>>>>> v4.9.227
 #include <nvif/unpack.h>
 
 static int
@@ -69,7 +73,11 @@ nvkm_dmaobj_ctor(const struct nvkm_dmaobj_func *func, struct nvkm_dma *dma,
 	struct nvkm_fb *fb = device->fb;
 	void *data = *pdata;
 	u32 size = *psize;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = -ENOSYS;
+>>>>>>> v4.9.227
 
 	nvkm_object_ctor(&nvkm_dmaobj_func, oclass, &dmaobj->object);
 	dmaobj->func = func;
@@ -77,7 +85,11 @@ nvkm_dmaobj_ctor(const struct nvkm_dmaobj_func *func, struct nvkm_dma *dma,
 	RB_CLEAR_NODE(&dmaobj->rb);
 
 	nvif_ioctl(parent, "create dma size %d\n", *psize);
+<<<<<<< HEAD
 	if (nvif_unpack(args->v0, 0, 0, true)) {
+=======
+	if (!(ret = nvif_unpack(ret, &data, &size, args->v0, 0, 0, true))) {
+>>>>>>> v4.9.227
 		nvif_ioctl(parent, "create dma vers %d target %d access %d "
 				   "start %016llx limit %016llx\n",
 			   args->v0.version, args->v0.target, args->v0.access,

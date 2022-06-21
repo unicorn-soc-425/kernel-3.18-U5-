@@ -11,10 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in
  * the file called "COPYING".
  *
@@ -35,7 +38,10 @@
 
 #include "dma.h"
 #include "registers.h"
+<<<<<<< HEAD
 #include "dma_v2.h"
+=======
+>>>>>>> v4.9.227
 
 /*
  * Bit 7 of a tag map entry is the "valid" bit, if it is set then bits 0:6
@@ -75,6 +81,7 @@ static inline int dca2_tag_map_valid(u8 *tag_map)
 #define APICID_BIT(x)		(DCA_TAG_MAP_VALID | (x))
 #define IOAT_TAG_MAP_LEN	8
 
+<<<<<<< HEAD
 static u8 ioat_tag_map_BNB[IOAT_TAG_MAP_LEN] = {
 	1, APICID_BIT(1), APICID_BIT(2), APICID_BIT(2), };
 static u8 ioat_tag_map_SCNB[IOAT_TAG_MAP_LEN] = {
@@ -83,6 +90,8 @@ static u8 ioat_tag_map_CNB[IOAT_TAG_MAP_LEN] = {
 	1, APICID_BIT(1), APICID_BIT(3), APICID_BIT(4), APICID_BIT(2), };
 static u8 ioat_tag_map_UNISYS[IOAT_TAG_MAP_LEN] = { 0 };
 
+=======
+>>>>>>> v4.9.227
 /* pack PCI B/D/F into a u16 */
 static inline u16 dcaid_from_pcidev(struct pci_dev *pci)
 {
@@ -130,6 +139,7 @@ struct ioat_dca_priv {
 	struct ioat_dca_slot 	 req_slots[0];
 };
 
+<<<<<<< HEAD
 /* 5000 series chipset DCA Port Requester ID Table Entry Format
  * [15:8]	PCI-Express Bus Number
  * [7:3]	PCI-Express Device Number
@@ -220,6 +230,8 @@ static u8 ioat_dca_get_tag(struct dca_provider *dca,
 	return tag;
 }
 
+=======
+>>>>>>> v4.9.227
 static int ioat_dca_dev_managed(struct dca_provider *dca,
 				struct device *dev)
 {
@@ -235,6 +247,7 @@ static int ioat_dca_dev_managed(struct dca_provider *dca,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dca_ops ioat_dca_ops = {
 	.add_requester		= ioat_dca_add_requester,
 	.remove_requester	= ioat_dca_remove_requester,
@@ -489,6 +502,9 @@ struct dca_provider *ioat2_dca_init(struct pci_dev *pdev, void __iomem *iobase)
 }
 
 static int ioat3_dca_add_requester(struct dca_provider *dca, struct device *dev)
+=======
+static int ioat_dca_add_requester(struct dca_provider *dca, struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct ioat_dca_priv *ioatdca = dca_priv(dca);
 	struct pci_dev *pdev;
@@ -522,7 +538,11 @@ static int ioat3_dca_add_requester(struct dca_provider *dca, struct device *dev)
 	return -EFAULT;
 }
 
+<<<<<<< HEAD
 static int ioat3_dca_remove_requester(struct dca_provider *dca,
+=======
+static int ioat_dca_remove_requester(struct dca_provider *dca,
+>>>>>>> v4.9.227
 				      struct device *dev)
 {
 	struct ioat_dca_priv *ioatdca = dca_priv(dca);
@@ -549,7 +569,11 @@ static int ioat3_dca_remove_requester(struct dca_provider *dca,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static u8 ioat3_dca_get_tag(struct dca_provider *dca,
+=======
+static u8 ioat_dca_get_tag(struct dca_provider *dca,
+>>>>>>> v4.9.227
 			    struct device *dev,
 			    int cpu)
 {
@@ -580,6 +604,7 @@ static u8 ioat3_dca_get_tag(struct dca_provider *dca,
 	return tag;
 }
 
+<<<<<<< HEAD
 static struct dca_ops ioat3_dca_ops = {
 	.add_requester		= ioat3_dca_add_requester,
 	.remove_requester	= ioat3_dca_remove_requester,
@@ -588,6 +613,16 @@ static struct dca_ops ioat3_dca_ops = {
 };
 
 static int ioat3_dca_count_dca_slots(void *iobase, u16 dca_offset)
+=======
+static const struct dca_ops ioat_dca_ops = {
+	.add_requester		= ioat_dca_add_requester,
+	.remove_requester	= ioat_dca_remove_requester,
+	.get_tag		= ioat_dca_get_tag,
+	.dev_managed		= ioat_dca_dev_managed,
+};
+
+static int ioat_dca_count_dca_slots(void *iobase, u16 dca_offset)
+>>>>>>> v4.9.227
 {
 	int slots = 0;
 	u32 req;
@@ -622,7 +657,11 @@ static inline int dca3_tag_map_invalid(u8 *tag_map)
 		(tag_map[4] == DCA_TAG_MAP_VALID));
 }
 
+<<<<<<< HEAD
 struct dca_provider *ioat3_dca_init(struct pci_dev *pdev, void __iomem *iobase)
+=======
+struct dca_provider *ioat_dca_init(struct pci_dev *pdev, void __iomem *iobase)
+>>>>>>> v4.9.227
 {
 	struct dca_provider *dca;
 	struct ioat_dca_priv *ioatdca;
@@ -649,11 +688,19 @@ struct dca_provider *ioat3_dca_init(struct pci_dev *pdev, void __iomem *iobase)
 	if (dca_offset == 0)
 		return NULL;
 
+<<<<<<< HEAD
 	slots = ioat3_dca_count_dca_slots(iobase, dca_offset);
 	if (slots == 0)
 		return NULL;
 
 	dca = alloc_dca_provider(&ioat3_dca_ops,
+=======
+	slots = ioat_dca_count_dca_slots(iobase, dca_offset);
+	if (slots == 0)
+		return NULL;
+
+	dca = alloc_dca_provider(&ioat_dca_ops,
+>>>>>>> v4.9.227
 				 sizeof(*ioatdca)
 				      + (sizeof(struct ioat_dca_slot) * slots));
 	if (!dca)

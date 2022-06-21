@@ -27,6 +27,11 @@ extern void usb_release_interface_cache(struct kref *ref);
 extern void usb_disable_device(struct usb_device *dev, int skip_ep0);
 extern int usb_deauthorize_device(struct usb_device *);
 extern int usb_authorize_device(struct usb_device *);
+<<<<<<< HEAD
+=======
+extern void usb_deauthorize_interface(struct usb_interface *);
+extern void usb_authorize_interface(struct usb_interface *);
+>>>>>>> v4.9.227
 extern void usb_detect_quirks(struct usb_device *udev);
 extern void usb_detect_interface_quirks(struct usb_device *udev);
 extern int usb_remove_device(struct usb_device *udev);
@@ -43,7 +48,11 @@ static inline unsigned usb_get_max_power(struct usb_device *udev,
 		struct usb_host_config *c)
 {
 	/* SuperSpeed power is in 8 mA units; others are in 2 mA units */
+<<<<<<< HEAD
 	unsigned mul = (udev->speed == USB_SPEED_SUPER ? 8 : 2);
+=======
+	unsigned mul = (udev->speed >= USB_SPEED_SUPER ? 8 : 2);
+>>>>>>> v4.9.227
 
 	return c->desc.bMaxPower * mul;
 }
@@ -65,6 +74,10 @@ extern int  usb_hub_init(void);
 extern void usb_hub_cleanup(void);
 extern int usb_major_init(void);
 extern void usb_major_cleanup(void);
+<<<<<<< HEAD
+=======
+extern int usb_device_supports_lpm(struct usb_device *udev);
+>>>>>>> v4.9.227
 
 #ifdef	CONFIG_PM
 
@@ -75,6 +88,18 @@ extern int usb_resume_complete(struct device *dev);
 extern int usb_port_suspend(struct usb_device *dev, pm_message_t msg);
 extern int usb_port_resume(struct usb_device *dev, pm_message_t msg);
 
+<<<<<<< HEAD
+=======
+extern void usb_autosuspend_device(struct usb_device *udev);
+extern int usb_autoresume_device(struct usb_device *udev);
+extern int usb_remote_wakeup(struct usb_device *dev);
+extern int usb_runtime_suspend(struct device *dev);
+extern int usb_runtime_resume(struct device *dev);
+extern int usb_runtime_idle(struct device *dev);
+extern int usb_enable_usb2_hardware_lpm(struct usb_device *udev);
+extern int usb_disable_usb2_hardware_lpm(struct usb_device *udev);
+
+>>>>>>> v4.9.227
 #else
 
 static inline int usb_port_suspend(struct usb_device *udev, pm_message_t msg)
@@ -87,6 +112,7 @@ static inline int usb_port_resume(struct usb_device *udev, pm_message_t msg)
 	return 0;
 }
 
+<<<<<<< HEAD
 #endif
 
 #ifdef CONFIG_PM_RUNTIME
@@ -101,16 +127,31 @@ extern int usb_set_usb2_hardware_lpm(struct usb_device *udev, int enable);
 
 #else
 
+=======
+>>>>>>> v4.9.227
 #define usb_autosuspend_device(udev)		do {} while (0)
 static inline int usb_autoresume_device(struct usb_device *udev)
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int usb_set_usb2_hardware_lpm(struct usb_device *udev, int enable)
 {
 	return 0;
 }
+=======
+static inline int usb_enable_usb2_hardware_lpm(struct usb_device *udev)
+{
+	return 0;
+}
+
+static inline int usb_disable_usb2_hardware_lpm(struct usb_device *udev)
+{
+	return 0;
+}
+
+>>>>>>> v4.9.227
 #endif
 
 extern struct bus_type usb_bus_type;
@@ -177,7 +218,10 @@ extern void usb_notify_add_device(struct usb_device *udev);
 extern void usb_notify_remove_device(struct usb_device *udev);
 extern void usb_notify_add_bus(struct usb_bus *ubus);
 extern void usb_notify_remove_bus(struct usb_bus *ubus);
+<<<<<<< HEAD
 extern void usb_atomic_notify_dead_bus(struct usb_bus *ubus);
+=======
+>>>>>>> v4.9.227
 extern void usb_hub_adjust_deviceremovable(struct usb_device *hdev,
 		struct usb_hub_descriptor *desc);
 

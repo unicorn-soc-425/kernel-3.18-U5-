@@ -95,7 +95,11 @@ static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai)
 
 	/* all units must be in a single group */
 	if (ai->nr_groups != 1) {
+<<<<<<< HEAD
 		printk(KERN_CRIT "percpu: can't handle more than one groups\n");
+=======
+		pr_crit("can't handle more than one group\n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
@@ -103,8 +107,13 @@ static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai)
 	alloc_pages = roundup_pow_of_two(nr_pages);
 
 	if (alloc_pages > nr_pages)
+<<<<<<< HEAD
 		printk(KERN_WARNING "percpu: wasting %zu pages per chunk\n",
 		       alloc_pages - nr_pages);
+=======
+		pr_warn("wasting %zu pages per chunk\n",
+			alloc_pages - nr_pages);
+>>>>>>> v4.9.227
 
 	return 0;
 }

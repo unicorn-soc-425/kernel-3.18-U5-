@@ -27,6 +27,10 @@ static int init_state_node(struct cpuidle_state *idle_state,
 {
 	int err;
 	const struct of_device_id *match_id;
+<<<<<<< HEAD
+=======
+	const char *desc;
+>>>>>>> v4.9.227
 
 	match_id = of_match_node(matches, state_node);
 	if (!match_id)
@@ -73,7 +77,15 @@ static int init_state_node(struct cpuidle_state *idle_state,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	idle_state->flags = CPUIDLE_FLAG_TIME_VALID;
+=======
+	err = of_property_read_string(state_node, "idle-state-name", &desc);
+	if (err)
+		desc = state_node->name;
+
+	idle_state->flags = 0;
+>>>>>>> v4.9.227
 	if (of_property_read_bool(state_node, "local-timer-stop"))
 		idle_state->flags |= CPUIDLE_FLAG_TIMER_STOP;
 	/*
@@ -82,7 +94,11 @@ static int init_state_node(struct cpuidle_state *idle_state,
 	 *	and desc become string pointers
 	 */
 	strncpy(idle_state->name, state_node->name, CPUIDLE_NAME_LEN - 1);
+<<<<<<< HEAD
 	strncpy(idle_state->desc, state_node->name, CPUIDLE_DESC_LEN - 1);
+=======
+	strncpy(idle_state->desc, desc, CPUIDLE_DESC_LEN - 1);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -169,6 +185,14 @@ int dt_init_idle_driver(struct cpuidle_driver *drv,
 		if (!state_node)
 			break;
 
+<<<<<<< HEAD
+=======
+		if (!of_device_is_available(state_node)) {
+			of_node_put(state_node);
+			continue;
+		}
+
+>>>>>>> v4.9.227
 		if (!idle_state_valid(state_node, i, cpumask)) {
 			pr_warn("%s idle state not valid, bailing out\n",
 				state_node->full_name);

@@ -29,9 +29,15 @@ static inline void free_pgd_fast(pgd_t *pgd)
 
 static inline void pgd_set(pgd_t * pgdp, pmd_t * pmdp)
 {
+<<<<<<< HEAD
 	unsigned long pa = __nocache_pa((unsigned long)pmdp);
 
 	set_pte((pte_t *)pgdp, (SRMMU_ET_PTD | (pa >> 4)));
+=======
+	unsigned long pa = __nocache_pa(pmdp);
+
+	set_pte((pte_t *)pgdp, __pte((SRMMU_ET_PTD | (pa >> 4))));
+>>>>>>> v4.9.227
 }
 
 #define pgd_populate(MM, PGD, PMD)      pgd_set(PGD, PMD)

@@ -53,7 +53,10 @@
 #include <linux/random.h>
 #include <linux/kernel.h>
 
+<<<<<<< HEAD
 /* #define WEP_DEBUG	*/
+=======
+>>>>>>> v4.9.227
 
 #include "p80211hdr.h"
 #include "p80211types.h"
@@ -120,7 +123,11 @@ static const u32 wep_crc32_table[256] = {
 
 /* keylen in bytes! */
 
+<<<<<<< HEAD
 int wep_change_key(wlandevice_t *wlandev, int keynum, u8 *key, int keylen)
+=======
+int wep_change_key(struct wlandevice *wlandev, int keynum, u8 *key, int keylen)
+>>>>>>> v4.9.227
 {
 	if (keylen < 0)
 		return -1;
@@ -133,10 +140,13 @@ int wep_change_key(wlandevice_t *wlandev, int keynum, u8 *key, int keylen)
 	if (keynum >= NUM_WEPKEYS)
 		return -1;
 
+<<<<<<< HEAD
 #ifdef WEP_DEBUG
 	pr_debug("WEP key %d len %d = %*phC\n", keynum, keylen,
 			  8, key);
 #endif
+=======
+>>>>>>> v4.9.227
 
 	wlandev->wep_keylens[keynum] = keylen;
 	memcpy(wlandev->wep_keys[keynum], key, keylen);
@@ -145,10 +155,17 @@ int wep_change_key(wlandevice_t *wlandev, int keynum, u8 *key, int keylen)
 }
 
 /*
+<<<<<<< HEAD
   4-byte IV at start of buffer, 4-byte ICV at end of buffer.
   if successful, buf start is payload begin, length -= 8;
  */
 int wep_decrypt(wlandevice_t *wlandev, u8 *buf, u32 len, int key_override,
+=======
+ * 4-byte IV at start of buffer, 4-byte ICV at end of buffer.
+ * if successful, buf start is payload begin, length -= 8;
+ */
+int wep_decrypt(struct wlandevice *wlandev, u8 *buf, u32 len, int key_override,
+>>>>>>> v4.9.227
 		u8 *iv, u8 *icv)
 {
 	u32 i, j, k, crc, keylen;
@@ -181,10 +198,13 @@ int wep_decrypt(wlandevice_t *wlandev, u8 *buf, u32 len, int key_override,
 
 	keylen += 3;		/* add in IV bytes */
 
+<<<<<<< HEAD
 #ifdef WEP_DEBUG
 	pr_debug("D %d: %*ph (%d %d) %*phC\n", len, 3, key,
 			  keyidx, keylen, 5, key + 3);
 #endif
+=======
+>>>>>>> v4.9.227
 
 	/* set up the RC4 state */
 	for (i = 0; i < 256; i++)
@@ -197,7 +217,12 @@ int wep_decrypt(wlandevice_t *wlandev, u8 *buf, u32 len, int key_override,
 
 	/* Apply the RC4 to the data, update the CRC32 */
 	crc = ~0;
+<<<<<<< HEAD
 	i = j = 0;
+=======
+	i = 0;
+	j = 0;
+>>>>>>> v4.9.227
 	for (k = 0; k < len; k++) {
 		i = (i + 1) & 0xff;
 		j = (j + s[i]) & 0xff;
@@ -225,7 +250,11 @@ int wep_decrypt(wlandevice_t *wlandev, u8 *buf, u32 len, int key_override,
 }
 
 /* encrypts in-place. */
+<<<<<<< HEAD
 int wep_encrypt(wlandevice_t *wlandev, u8 *buf, u8 *dst, u32 len, int keynum,
+=======
+int wep_encrypt(struct wlandevice *wlandev, u8 *buf, u8 *dst, u32 len, int keynum,
+>>>>>>> v4.9.227
 		u8 *iv, u8 *icv)
 {
 	u32 i, j, k, crc, keylen;
@@ -258,11 +287,14 @@ int wep_encrypt(wlandevice_t *wlandev, u8 *buf, u8 *dst, u32 len, int keynum,
 
 	keylen += 3;		/* add in IV bytes */
 
+<<<<<<< HEAD
 #ifdef WEP_DEBUG
 	pr_debug("E %d (%d/%d %d) %*ph %*phC\n", len,
 			  iv[3], keynum, keylen, 3, key, 5, key + 3);
 #endif
 
+=======
+>>>>>>> v4.9.227
 	/* set up the RC4 state */
 	for (i = 0; i < 256; i++)
 		s[i] = i;
@@ -274,7 +306,12 @@ int wep_encrypt(wlandevice_t *wlandev, u8 *buf, u8 *dst, u32 len, int keynum,
 
 	/* Update CRC32 then apply RC4 to the data */
 	crc = ~0;
+<<<<<<< HEAD
 	i = j = 0;
+=======
+	i = 0;
+	j = 0;
+>>>>>>> v4.9.227
 	for (k = 0; k < len; k++) {
 		crc = wep_crc32_table[(crc ^ buf[k]) & 0xff] ^ (crc >> 8);
 		i = (i + 1) & 0xff;

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -108,6 +112,7 @@ unlock_and_exit:
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ev_valid_gpe_event
  *
  * PARAMETERS:  gpe_event_info              - Info for this GPE
@@ -155,6 +160,8 @@ u8 acpi_ev_valid_gpe_event(struct acpi_gpe_event_info *gpe_event_info)
 
 /*******************************************************************************
  *
+=======
+>>>>>>> v4.9.227
  * FUNCTION:    acpi_ev_get_gpe_device
  *
  * PARAMETERS:  GPE_WALK_CALLBACK
@@ -210,7 +217,11 @@ acpi_ev_get_gpe_device(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
 
 acpi_status
 acpi_ev_get_gpe_xrupt_block(u32 interrupt_number,
+<<<<<<< HEAD
 			    struct acpi_gpe_xrupt_info ** gpe_xrupt_block)
+=======
+			    struct acpi_gpe_xrupt_info **gpe_xrupt_block)
+>>>>>>> v4.9.227
 {
 	struct acpi_gpe_xrupt_info *next_gpe_xrupt;
 	struct acpi_gpe_xrupt_info *gpe_xrupt;
@@ -367,12 +378,23 @@ acpi_ev_delete_gpe_handlers(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
 		/* Now look at the individual GPEs in this byte register */
 
 		for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++) {
+<<<<<<< HEAD
 			gpe_event_info = &gpe_block->event_info[((acpi_size) i *
 								 ACPI_GPE_REGISTER_WIDTH)
 								+ j];
 
 			if ((gpe_event_info->flags & ACPI_GPE_DISPATCH_MASK) ==
 			    ACPI_GPE_DISPATCH_HANDLER) {
+=======
+			gpe_event_info = &gpe_block->event_info[((acpi_size)i *
+								 ACPI_GPE_REGISTER_WIDTH)
+								+ j];
+
+			if ((ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+			     ACPI_GPE_DISPATCH_HANDLER) ||
+			    (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+			     ACPI_GPE_DISPATCH_RAW_HANDLER)) {
+>>>>>>> v4.9.227
 
 				/* Delete an installed handler block */
 
@@ -380,10 +402,15 @@ acpi_ev_delete_gpe_handlers(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
 				gpe_event_info->dispatch.handler = NULL;
 				gpe_event_info->flags &=
 				    ~ACPI_GPE_DISPATCH_MASK;
+<<<<<<< HEAD
 			} else
 			    if ((gpe_event_info->
 				 flags & ACPI_GPE_DISPATCH_MASK) ==
 				ACPI_GPE_DISPATCH_NOTIFY) {
+=======
+			} else if (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags)
+				   == ACPI_GPE_DISPATCH_NOTIFY) {
+>>>>>>> v4.9.227
 
 				/* Delete the implicit notification device list */
 
@@ -393,6 +420,10 @@ acpi_ev_delete_gpe_handlers(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
 					ACPI_FREE(notify);
 					notify = next;
 				}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 				gpe_event_info->dispatch.notify_list = NULL;
 				gpe_event_info->flags &=
 				    ~ACPI_GPE_DISPATCH_MASK;

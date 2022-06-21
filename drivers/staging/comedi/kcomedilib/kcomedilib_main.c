@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
     kcomedilib/kcomedilib.c
     a comedlib interface for kernel modules
 
@@ -15,6 +16,24 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
+=======
+ * kcomedilib/kcomedilib.c
+ * a comedlib interface for kernel modules
+ *
+ * COMEDI - Linux Control and Measurement Device Interface
+ * Copyright (C) 1997-2000 David A. Schleef <ds@schleef.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+>>>>>>> v4.9.227
 
 #include <linux/module.h>
 
@@ -58,7 +77,11 @@ struct comedi_device *comedi_open(const char *filename)
 		retval = NULL;
 	up_read(&dev->attach_lock);
 
+<<<<<<< HEAD
 	if (retval == NULL)
+=======
+	if (!retval)
+>>>>>>> v4.9.227
 		comedi_dev_put(dev);
 
 	return retval;
@@ -95,7 +118,11 @@ static int comedi_do_insn(struct comedi_device *dev,
 
 	if (s->type == COMEDI_SUBD_UNUSED) {
 		dev_err(dev->class_dev,
+<<<<<<< HEAD
 			"%d not useable subdevice\n", insn->subdev);
+=======
+			"%d not usable subdevice\n", insn->subdev);
+>>>>>>> v4.9.227
 		ret = -EIO;
 		goto error;
 	}

@@ -31,7 +31,11 @@
  *      modems.
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -804,7 +808,11 @@ static int snd_via82xx_pcm_close(struct snd_pcm_substream *substream)
 
 
 /* via686 playback callbacks */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_via686_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_via686_playback_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_via82xx_playback_open,
 	.close =	snd_via82xx_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -817,7 +825,11 @@ static struct snd_pcm_ops snd_via686_playback_ops = {
 };
 
 /* via686 capture callbacks */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_via686_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_via686_capture_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_via82xx_capture_open,
 	.close =	snd_via82xx_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1031,7 +1043,10 @@ static int snd_via82xx_chip_init(struct via82xx_modem *chip)
  */
 static int snd_via82xx_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct via82xx_modem *chip = card->private_data;
 	int i;
@@ -1043,20 +1058,27 @@ static int snd_via82xx_suspend(struct device *dev)
 		snd_via82xx_channel_reset(chip, &chip->devs[i]);
 	synchronize_irq(chip->irq);
 	snd_ac97_suspend(chip->ac97);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int snd_via82xx_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct via82xx_modem *chip = card->private_data;
 	int i;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -1066,6 +1088,8 @@ static int snd_via82xx_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> v4.9.227
 	snd_via82xx_chip_init(chip);
 
 	snd_ac97_resume(chip->ac97);

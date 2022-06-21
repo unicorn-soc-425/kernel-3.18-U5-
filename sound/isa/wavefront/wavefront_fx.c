@@ -16,7 +16,11 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/time.h>
 #include <linux/wait.h>
@@ -79,13 +83,21 @@ wavefront_fx_memset (snd_wavefront_t *dev,
 	if (page < 0 || page > 7) {
 		snd_printk ("FX memset: "
 			"page must be >= 0 and <= 7\n");
+<<<<<<< HEAD
 		return -(EINVAL);
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	if (addr < 0 || addr > 0x7f) {
 		snd_printk ("FX memset: "
 			"addr must be >= 0 and <= 7f\n");
+<<<<<<< HEAD
 		return -(EINVAL);
+=======
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	if (cnt == 1) {
@@ -118,7 +130,11 @@ wavefront_fx_memset (snd_wavefront_t *dev,
 			snd_printk ("FX memset "
 				    "(0x%x, 0x%x, 0x%lx, %d) incomplete\n",
 				    page, addr, (unsigned long) data, cnt);
+<<<<<<< HEAD
 			return -(EIO);
+=======
+			return -EIO;
+>>>>>>> v4.9.227
 		}
 	}
 

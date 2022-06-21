@@ -288,10 +288,13 @@ static int vprbrd_i2c_xfer(struct i2c_adapter *i2c, struct i2c_msg *msgs,
 			i, pmsg->flags & I2C_M_RD ? "read" : "write",
 			pmsg->flags, pmsg->len, pmsg->addr);
 
+<<<<<<< HEAD
 		/* msgs longer than 2048 bytes are not supported by adapter */
 		if (pmsg->len > 2048)
 			return -EINVAL;
 
+=======
+>>>>>>> v4.9.227
 		mutex_lock(&vb->lock);
 		/* directly send the message */
 		if (pmsg->flags & I2C_M_RD) {
@@ -341,7 +344,11 @@ static int vprbrd_i2c_xfer(struct i2c_adapter *i2c, struct i2c_msg *msgs,
 		}
 		mutex_unlock(&vb->lock);
 	}
+<<<<<<< HEAD
 	return num;
+=======
+	return 0;
+>>>>>>> v4.9.227
 error:
 	mutex_unlock(&vb->lock);
 	return error;
@@ -358,6 +365,14 @@ static const struct i2c_algorithm vprbrd_algorithm = {
 	.functionality	= vprbrd_i2c_func,
 };
 
+<<<<<<< HEAD
+=======
+static struct i2c_adapter_quirks vprbrd_quirks = {
+	.max_read_len = 2048,
+	.max_write_len = 2048,
+};
+
+>>>>>>> v4.9.227
 static int vprbrd_i2c_probe(struct platform_device *pdev)
 {
 	struct vprbrd *vb = dev_get_drvdata(pdev->dev.parent);
@@ -373,6 +388,10 @@ static int vprbrd_i2c_probe(struct platform_device *pdev)
 	vb_i2c->i2c.owner = THIS_MODULE;
 	vb_i2c->i2c.class = I2C_CLASS_HWMON;
 	vb_i2c->i2c.algo = &vprbrd_algorithm;
+<<<<<<< HEAD
+=======
+	vb_i2c->i2c.quirks = &vprbrd_quirks;
+>>>>>>> v4.9.227
 	vb_i2c->i2c.algo_data = vb;
 	/* save the param in usb capabable memory */
 	vb_i2c->bus_freq_param = i2c_bus_param;
@@ -389,11 +408,19 @@ static int vprbrd_i2c_probe(struct platform_device *pdev)
 			VPRBRD_USB_REQUEST_I2C_FREQ, VPRBRD_USB_TYPE_OUT,
 			0x0000, 0x0000, &vb_i2c->bus_freq_param, 1,
 			VPRBRD_USB_TIMEOUT_MS);
+<<<<<<< HEAD
 	    if (ret != 1) {
 		dev_err(&pdev->dev,
 			"failure setting i2c_bus_freq to %d\n", i2c_bus_freq);
 		return -EIO;
 	    }
+=======
+		if (ret != 1) {
+			dev_err(&pdev->dev, "failure setting i2c_bus_freq to %d\n",
+				i2c_bus_freq);
+			return -EIO;
+		}
+>>>>>>> v4.9.227
 	} else {
 		dev_err(&pdev->dev,
 			"invalid i2c_bus_freq setting:%d\n", i2c_bus_freq);

@@ -27,13 +27,21 @@
 #include <acpi/button.h>
 
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
+=======
+#include <linux/vga_switcheroo.h>
+>>>>>>> v4.9.227
 
 #include <drm/drmP.h>
 #include <drm/drm_edid.h>
 #include <drm/drm_crtc_helper.h>
 
 #include "nouveau_reg.h"
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "dispnv04/hw.h"
 #include "nouveau_acpi.h"
 
@@ -42,6 +50,11 @@
 #include "nouveau_encoder.h"
 #include "nouveau_crtc.h"
 
+<<<<<<< HEAD
+=======
+#include <nvif/class.h>
+#include <nvif/cl0046.h>
+>>>>>>> v4.9.227
 #include <nvif/event.h>
 
 MODULE_PARM_DESC(tv_disable, "Disable TV-out detection");
@@ -56,6 +69,13 @@ MODULE_PARM_DESC(duallink, "Allow dual-link TMDS (default: enabled)");
 int nouveau_duallink = 1;
 module_param_named(duallink, nouveau_duallink, int, 0400);
 
+<<<<<<< HEAD
+=======
+MODULE_PARM_DESC(hdmimhz, "Force a maximum HDMI pixel clock (in MHz)");
+int nouveau_hdmimhz = 0;
+module_param_named(hdmimhz, nouveau_hdmimhz, int, 0400);
+
+>>>>>>> v4.9.227
 struct nouveau_encoder *
 find_encoder(struct drm_connector *connector, int type)
 {
@@ -147,6 +167,20 @@ nouveau_connector_ddc_detect(struct drm_connector *connector)
 			if (ret == 0)
 				break;
 		} else
+<<<<<<< HEAD
+=======
+		if ((vga_switcheroo_handler_flags() &
+		     VGA_SWITCHEROO_CAN_SWITCH_DDC) &&
+		    nv_encoder->dcb->type == DCB_OUTPUT_LVDS &&
+		    nv_encoder->i2c) {
+			int ret;
+			vga_switcheroo_lock_ddc(dev->pdev);
+			ret = nvkm_probe_i2c(nv_encoder->i2c, 0x50);
+			vga_switcheroo_unlock_ddc(dev->pdev);
+			if (ret)
+				break;
+		} else
+>>>>>>> v4.9.227
 		if (nv_encoder->i2c) {
 			if (nvkm_probe_i2c(nv_encoder->i2c, 0x50))
 				break;
@@ -253,6 +287,7 @@ nouveau_connector_detect(struct drm_connector *connector, bool force)
 		nv_connector->edid = NULL;
 	}
 
+<<<<<<< HEAD
 	ret = pm_runtime_get_sync(connector->dev->dev);
 	if (ret < 0 && ret != -EACCES)
 		return conn_status;
@@ -260,6 +295,32 @@ nouveau_connector_detect(struct drm_connector *connector, bool force)
 	nv_encoder = nouveau_connector_ddc_detect(connector);
 	if (nv_encoder && (i2c = nv_encoder->i2c) != NULL) {
 		nv_connector->edid = drm_get_edid(connector, i2c);
+=======
+	/* Outputs are only polled while runtime active, so resuming the
+	 * device here is unnecessary (and would deadlock upon runtime suspend
+	 * because it waits for polling to finish). We do however, want to
+	 * prevent the autosuspend timer from elapsing during this operation
+	 * if possible.
+	 */
+	if (drm_kms_helper_is_poll_worker()) {
+		pm_runtime_get_noresume(dev->dev);
+	} else {
+		ret = pm_runtime_get_sync(dev->dev);
+		if (ret < 0 && ret != -EACCES)
+			return conn_status;
+	}
+
+	nv_encoder = nouveau_connector_ddc_detect(connector);
+	if (nv_encoder && (i2c = nv_encoder->i2c) != NULL) {
+		if ((vga_switcheroo_handler_flags() &
+		     VGA_SWITCHEROO_CAN_SWITCH_DDC) &&
+		    nv_connector->type == DCB_CONNECTOR_LVDS)
+			nv_connector->edid = drm_get_edid_switcheroo(connector,
+								     i2c);
+		else
+			nv_connector->edid = drm_get_edid(connector, i2c);
+
+>>>>>>> v4.9.227
 		drm_mode_connector_update_edid_property(connector,
 							nv_connector->edid);
 		if (!nv_connector->edid) {
@@ -323,8 +384,13 @@ detect_analog:
 
  out:
 
+<<<<<<< HEAD
 	pm_runtime_mark_last_busy(connector->dev->dev);
 	pm_runtime_put_autosuspend(connector->dev->dev);
+=======
+	pm_runtime_mark_last_busy(dev->dev);
+	pm_runtime_put_autosuspend(dev->dev);
+>>>>>>> v4.9.227
 
 	return conn_status;
 }
@@ -809,12 +875,30 @@ nouveau_connector_get_modes(struct drm_connector *connector)
 }
 
 static unsigned
+<<<<<<< HEAD
 get_tmds_link_bandwidth(struct drm_connector *connector)
+=======
+get_tmds_link_bandwidth(struct drm_connector *connector, bool hdmi)
+>>>>>>> v4.9.227
 {
 	struct nouveau_connector *nv_connector = nouveau_connector(connector);
 	struct nouveau_drm *drm = nouveau_drm(connector->dev);
 	struct dcb_output *dcb = nv_connector->detected_encoder->dcb;
 
+<<<<<<< HEAD
+=======
+	if (hdmi) {
+		if (nouveau_hdmimhz > 0)
+			return nouveau_hdmimhz * 1000;
+		/* Note: these limits are conservative, some Fermi's
+		 * can do 297 MHz. Unclear how this can be determined.
+		 */
+		if (drm->device.info.family >= NV_DEVICE_INFO_V0_KEPLER)
+			return 297000;
+		if (drm->device.info.family >= NV_DEVICE_INFO_V0_FERMI)
+			return 225000;
+	}
+>>>>>>> v4.9.227
 	if (dcb->location != DCB_LOC_ON_CHIP ||
 	    drm->device.info.chipset >= 0x46)
 		return 165000;
@@ -835,6 +919,10 @@ nouveau_connector_mode_valid(struct drm_connector *connector,
 	struct drm_encoder *encoder = to_drm_encoder(nv_encoder);
 	unsigned min_clock = 25000, max_clock = min_clock;
 	unsigned clock = mode->clock;
+<<<<<<< HEAD
+=======
+	bool hdmi;
+>>>>>>> v4.9.227
 
 	switch (nv_encoder->dcb->type) {
 	case DCB_OUTPUT_LVDS:
@@ -847,8 +935,15 @@ nouveau_connector_mode_valid(struct drm_connector *connector,
 		max_clock = 400000;
 		break;
 	case DCB_OUTPUT_TMDS:
+<<<<<<< HEAD
 		max_clock = get_tmds_link_bandwidth(connector);
 		if (nouveau_duallink && nv_encoder->dcb->duallink_possible)
+=======
+		hdmi = drm_detect_hdmi_monitor(nv_connector->edid);
+		max_clock = get_tmds_link_bandwidth(connector, hdmi);
+		if (!hdmi && nouveau_duallink &&
+		    nv_encoder->dcb->duallink_possible)
+>>>>>>> v4.9.227
 			max_clock *= 2;
 		break;
 	case DCB_OUTPUT_ANALOG:
@@ -898,8 +993,11 @@ nouveau_connector_helper_funcs = {
 static const struct drm_connector_funcs
 nouveau_connector_funcs = {
 	.dpms = drm_helper_connector_dpms,
+<<<<<<< HEAD
 	.save = NULL,
 	.restore = NULL,
+=======
+>>>>>>> v4.9.227
 	.detect = nouveau_connector_detect,
 	.destroy = nouveau_connector_destroy,
 	.fill_modes = drm_helper_probe_single_connector_modes,
@@ -910,8 +1008,11 @@ nouveau_connector_funcs = {
 static const struct drm_connector_funcs
 nouveau_connector_funcs_lvds = {
 	.dpms = drm_helper_connector_dpms,
+<<<<<<< HEAD
 	.save = NULL,
 	.restore = NULL,
+=======
+>>>>>>> v4.9.227
 	.detect = nouveau_connector_detect_lvds,
 	.destroy = nouveau_connector_destroy,
 	.fill_modes = drm_helper_probe_single_connector_modes,
@@ -944,8 +1045,11 @@ nouveau_connector_dp_dpms(struct drm_connector *connector, int mode)
 static const struct drm_connector_funcs
 nouveau_connector_funcs_dp = {
 	.dpms = nouveau_connector_dp_dpms,
+<<<<<<< HEAD
 	.save = NULL,
 	.restore = NULL,
+=======
+>>>>>>> v4.9.227
 	.detect = nouveau_connector_detect,
 	.destroy = nouveau_connector_destroy,
 	.fill_modes = drm_helper_probe_single_connector_modes,
@@ -1243,18 +1347,31 @@ nouveau_connector_create(struct drm_device *dev, int index)
 		break;
 	default:
 		if (disp->dithering_mode) {
+<<<<<<< HEAD
+=======
+			nv_connector->dithering_mode = DITHERING_MODE_AUTO;
+>>>>>>> v4.9.227
 			drm_object_attach_property(&connector->base,
 						   disp->dithering_mode,
 						   nv_connector->
 						   dithering_mode);
+<<<<<<< HEAD
 			nv_connector->dithering_mode = DITHERING_MODE_AUTO;
 		}
 		if (disp->dithering_depth) {
+=======
+		}
+		if (disp->dithering_depth) {
+			nv_connector->dithering_depth = DITHERING_DEPTH_AUTO;
+>>>>>>> v4.9.227
 			drm_object_attach_property(&connector->base,
 						   disp->dithering_depth,
 						   nv_connector->
 						   dithering_depth);
+<<<<<<< HEAD
 			nv_connector->dithering_depth = DITHERING_DEPTH_AUTO;
+=======
+>>>>>>> v4.9.227
 		}
 		break;
 	}

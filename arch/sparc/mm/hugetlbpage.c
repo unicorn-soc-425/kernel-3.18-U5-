@@ -12,6 +12,10 @@
 
 #include <asm/mman.h>
 #include <asm/pgalloc.h>
+<<<<<<< HEAD
+=======
+#include <asm/pgtable.h>
+>>>>>>> v4.9.227
 #include <asm/tlb.h>
 #include <asm/tlbflush.h>
 #include <asm/cacheflush.h>
@@ -131,6 +135,7 @@ pte_t *huge_pte_alloc(struct mm_struct *mm,
 {
 	pgd_t *pgd;
 	pud_t *pud;
+<<<<<<< HEAD
 	pmd_t *pmd;
 	pte_t *pte = NULL;
 
@@ -148,6 +153,15 @@ pte_t *huge_pte_alloc(struct mm_struct *mm,
 		if (pmd)
 			pte = pte_alloc_map(mm, NULL, pmd, addr);
 	}
+=======
+	pte_t *pte = NULL;
+
+	pgd = pgd_offset(mm, addr);
+	pud = pud_alloc(mm, pgd, addr);
+	if (pud)
+		pte = (pte_t *)pmd_alloc(mm, pud, addr);
+
+>>>>>>> v4.9.227
 	return pte;
 }
 
@@ -155,6 +169,7 @@ pte_t *huge_pte_offset(struct mm_struct *mm, unsigned long addr)
 {
 	pgd_t *pgd;
 	pud_t *pud;
+<<<<<<< HEAD
 	pmd_t *pmd;
 	pte_t *pte = NULL;
 
@@ -168,10 +183,20 @@ pte_t *huge_pte_offset(struct mm_struct *mm, unsigned long addr)
 			if (!pmd_none(*pmd))
 				pte = pte_offset_map(pmd, addr);
 		}
+=======
+	pte_t *pte = NULL;
+
+	pgd = pgd_offset(mm, addr);
+	if (!pgd_none(*pgd)) {
+		pud = pud_offset(pgd, addr);
+		if (!pud_none(*pud))
+			pte = (pte_t *)pmd_offset(pud, addr);
+>>>>>>> v4.9.227
 	}
 	return pte;
 }
 
+<<<<<<< HEAD
 int huge_pmd_unshare(struct mm_struct *mm, unsigned long *addr, pte_t *ptep)
 {
 	return 0;
@@ -192,12 +217,30 @@ void set_huge_pte_at(struct mm_struct *mm, unsigned long addr,
 		addr += PAGE_SIZE;
 		pte_val(entry) += PAGE_SIZE;
 	}
+=======
+void set_huge_pte_at(struct mm_struct *mm, unsigned long addr,
+		     pte_t *ptep, pte_t entry)
+{
+	pte_t orig;
+
+	if (!pte_present(*ptep) && pte_present(entry))
+		mm->context.hugetlb_pte_count++;
+
+	addr &= HPAGE_MASK;
+	orig = *ptep;
+	*ptep = entry;
+
+	/* Issue TLB flush at REAL_HPAGE_SIZE boundaries */
+	maybe_tlb_batch_add(mm, addr, ptep, orig, 0);
+	maybe_tlb_batch_add(mm, addr + REAL_HPAGE_SIZE, ptep, orig, 0);
+>>>>>>> v4.9.227
 }
 
 pte_t huge_ptep_get_and_clear(struct mm_struct *mm, unsigned long addr,
 			      pte_t *ptep)
 {
 	pte_t entry;
+<<<<<<< HEAD
 	int i;
 
 	entry = *ptep;
@@ -211,16 +254,134 @@ pte_t huge_ptep_get_and_clear(struct mm_struct *mm, unsigned long addr,
 		addr += PAGE_SIZE;
 		ptep++;
 	}
+=======
+
+	entry = *ptep;
+	if (pte_present(entry))
+		mm->context.hugetlb_pte_count--;
+
+	addr &= HPAGE_MASK;
+	*ptep = __pte(0UL);
+
+	/* Issue TLB flush at REAL_HPAGE_SIZE boundaries */
+	maybe_tlb_batch_add(mm, addr, ptep, entry, 0);
+	maybe_tlb_batch_add(mm, addr + REAL_HPAGE_SIZE, ptep, entry, 0);
+>>>>>>> v4.9.227
 
 	return entry;
 }
 
 int pmd_huge(pmd_t pmd)
 {
+<<<<<<< HEAD
 	return 0;
+=======
+	return !pmd_none(pmd) &&
+		(pmd_val(pmd) & (_PAGE_VALID|_PAGE_PMD_HUGE)) != _PAGE_VALID;
+>>>>>>> v4.9.227
 }
 
 int pud_huge(pud_t pud)
 {
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+static void hugetlb_free_pte_range(struct mmu_gather *tlb, pmd_t *pmd,
+			   unsigned long addr)
+{
+	pgtable_t token = pmd_pgtable(*pmd);
+
+	pmd_clear(pmd);
+	pte_free_tlb(tlb, token, addr);
+	atomic_long_dec(&tlb->mm->nr_ptes);
+}
+
+static void hugetlb_free_pmd_range(struct mmu_gather *tlb, pud_t *pud,
+				   unsigned long addr, unsigned long end,
+				   unsigned long floor, unsigned long ceiling)
+{
+	pmd_t *pmd;
+	unsigned long next;
+	unsigned long start;
+
+	start = addr;
+	pmd = pmd_offset(pud, addr);
+	do {
+		next = pmd_addr_end(addr, end);
+		if (pmd_none(*pmd))
+			continue;
+		if (is_hugetlb_pmd(*pmd))
+			pmd_clear(pmd);
+		else
+			hugetlb_free_pte_range(tlb, pmd, addr);
+	} while (pmd++, addr = next, addr != end);
+
+	start &= PUD_MASK;
+	if (start < floor)
+		return;
+	if (ceiling) {
+		ceiling &= PUD_MASK;
+		if (!ceiling)
+			return;
+	}
+	if (end - 1 > ceiling - 1)
+		return;
+
+	pmd = pmd_offset(pud, start);
+	pud_clear(pud);
+	pmd_free_tlb(tlb, pmd, start);
+	mm_dec_nr_pmds(tlb->mm);
+}
+
+static void hugetlb_free_pud_range(struct mmu_gather *tlb, pgd_t *pgd,
+				   unsigned long addr, unsigned long end,
+				   unsigned long floor, unsigned long ceiling)
+{
+	pud_t *pud;
+	unsigned long next;
+	unsigned long start;
+
+	start = addr;
+	pud = pud_offset(pgd, addr);
+	do {
+		next = pud_addr_end(addr, end);
+		if (pud_none_or_clear_bad(pud))
+			continue;
+		hugetlb_free_pmd_range(tlb, pud, addr, next, floor,
+				       ceiling);
+	} while (pud++, addr = next, addr != end);
+
+	start &= PGDIR_MASK;
+	if (start < floor)
+		return;
+	if (ceiling) {
+		ceiling &= PGDIR_MASK;
+		if (!ceiling)
+			return;
+	}
+	if (end - 1 > ceiling - 1)
+		return;
+
+	pud = pud_offset(pgd, start);
+	pgd_clear(pgd);
+	pud_free_tlb(tlb, pud, start);
+}
+
+void hugetlb_free_pgd_range(struct mmu_gather *tlb,
+			    unsigned long addr, unsigned long end,
+			    unsigned long floor, unsigned long ceiling)
+{
+	pgd_t *pgd;
+	unsigned long next;
+
+	pgd = pgd_offset(tlb->mm, addr);
+	do {
+		next = pgd_addr_end(addr, end);
+		if (pgd_none_or_clear_bad(pgd))
+			continue;
+		hugetlb_free_pud_range(tlb, pgd, addr, next, floor, ceiling);
+	} while (pgd++, addr = next, addr != end);
+}
+>>>>>>> v4.9.227

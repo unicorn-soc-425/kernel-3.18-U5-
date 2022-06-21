@@ -18,12 +18,21 @@
 #include <linux/io.h>
 #include <linux/interrupt.h>
 #include <asm/mach-types.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <mach/cputype.h>
 #include <mach/addr-map.h>
 #include <mach/pm-mmp2.h>
 #include <mach/regs-icu.h>
 #include <mach/irqs.h>
+=======
+
+#include "cputype.h"
+#include "addr-map.h"
+#include "pm-mmp2.h"
+#include "regs-icu.h"
+#include "irqs.h"
+>>>>>>> v4.9.227
 
 int mmp2_set_wake(struct irq_data *d, unsigned int on)
 {

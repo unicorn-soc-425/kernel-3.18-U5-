@@ -74,12 +74,15 @@ void __init tboot_probe(void)
 		return;
 	}
 
+<<<<<<< HEAD
 	/* only a natively booted kernel should be using TXT */
 	if (paravirt_enabled()) {
 		pr_warning("non-0 tboot_addr but pv_ops is enabled\n");
 		return;
 	}
 
+=======
+>>>>>>> v4.9.227
 	/* Map and check for tboot UUID. */
 	set_fixmap(FIX_TBOOT_BASE, boot_params.tboot_addr);
 	tboot = (struct tboot *)fix_to_virt(FIX_TBOOT_BASE);
@@ -135,11 +138,28 @@ static int map_tboot_page(unsigned long vaddr, unsigned long pfn,
 	pmd = pmd_alloc(&tboot_mm, pud, vaddr);
 	if (!pmd)
 		return -1;
+<<<<<<< HEAD
 	pte = pte_alloc_map(&tboot_mm, NULL, pmd, vaddr);
+=======
+	pte = pte_alloc_map(&tboot_mm, pmd, vaddr);
+>>>>>>> v4.9.227
 	if (!pte)
 		return -1;
 	set_pte_at(&tboot_mm, vaddr, pte, pfn_pte(pfn, prot));
 	pte_unmap(pte);
+<<<<<<< HEAD
+=======
+
+	/*
+	 * PTI poisons low addresses in the kernel page tables in the
+	 * name of making them unusable for userspace.  To execute
+	 * code at such a low address, the poison must be cleared.
+	 *
+	 * Note: 'pgd' actually gets set in pud_alloc().
+	 */
+	pgd->pgd &= ~_PAGE_NX;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -194,12 +214,21 @@ static int tboot_setup_sleep(void)
 
 	tboot->num_mac_regions = 0;
 
+<<<<<<< HEAD
 	for (i = 0; i < e820.nr_map; i++) {
 		if ((e820.map[i].type != E820_RAM)
 		 && (e820.map[i].type != E820_RESERVED_KERN))
 			continue;
 
 		add_mac_region(e820.map[i].addr, e820.map[i].size);
+=======
+	for (i = 0; i < e820->nr_map; i++) {
+		if ((e820->map[i].type != E820_RAM)
+		 && (e820->map[i].type != E820_RESERVED_KERN))
+			continue;
+
+		add_mac_region(e820->map[i].addr, e820->map[i].size);
+>>>>>>> v4.9.227
 	}
 
 	tboot->acpi_sinfo.kernel_s3_resume_vector =
@@ -329,6 +358,7 @@ static int tboot_wait_for_aps(int num_aps)
 	return !(atomic_read((atomic_t *)&tboot->num_in_wfs) == num_aps);
 }
 
+<<<<<<< HEAD
 static int tboot_cpu_callback(struct notifier_block *nfb, unsigned long action,
 			      void *hcpu)
 {
@@ -348,6 +378,18 @@ static struct notifier_block tboot_cpu_notifier =
 	.notifier_call = tboot_cpu_callback,
 };
 
+=======
+static int tboot_dying_cpu(unsigned int cpu)
+{
+	atomic_inc(&ap_wfs_count);
+	if (num_online_cpus() == 1) {
+		if (tboot_wait_for_aps(atomic_read(&ap_wfs_count)))
+			return -EBUSY;
+	}
+	return 0;
+}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_DEBUG_FS
 
 #define TBOOT_LOG_UUID	{ 0x26, 0x25, 0x19, 0xc0, 0x30, 0x6b, 0xb4, 0x4d, \
@@ -423,8 +465,13 @@ static __init int tboot_late_init(void)
 	tboot_create_trampoline();
 
 	atomic_set(&ap_wfs_count, 0);
+<<<<<<< HEAD
 	register_hotcpu_notifier(&tboot_cpu_notifier);
 
+=======
+	cpuhp_setup_state(CPUHP_AP_X86_TBOOT_DYING, "AP_X86_TBOOT_DYING", NULL,
+			  tboot_dying_cpu);
+>>>>>>> v4.9.227
 #ifdef CONFIG_DEBUG_FS
 	debugfs_create_file("tboot_log", S_IRUSR,
 			arch_debugfs_dir, NULL, &tboot_log_fops);

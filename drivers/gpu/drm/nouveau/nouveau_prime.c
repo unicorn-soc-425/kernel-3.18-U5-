@@ -25,7 +25,11 @@
 #include <drm/drmP.h>
 #include <linux/dma-buf.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_gem.h"
 
 struct sg_table *nouveau_gem_prime_get_sg_table(struct drm_gem_object *obj)

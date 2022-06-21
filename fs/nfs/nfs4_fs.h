@@ -39,11 +39,19 @@ enum nfs4_client_state {
 	NFS4CLNT_BIND_CONN_TO_SESSION,
 	NFS4CLNT_MOVED,
 	NFS4CLNT_LEASE_MOVED,
+<<<<<<< HEAD
+=======
+	NFS4CLNT_DELEGATION_EXPIRED,
+>>>>>>> v4.9.227
 };
 
 #define NFS4_RENEW_TIMEOUT		0x01
 #define NFS4_RENEW_DELEGATION_CB	0x02
 
+<<<<<<< HEAD
+=======
+struct nfs_seqid_counter;
+>>>>>>> v4.9.227
 struct nfs4_minor_version_ops {
 	u32	minor_version;
 	unsigned init_caps;
@@ -56,6 +64,14 @@ struct nfs4_minor_version_ops {
 			struct nfs_fsinfo *);
 	void	(*free_lock_state)(struct nfs_server *,
 			struct nfs4_lock_state *);
+<<<<<<< HEAD
+=======
+	int	(*test_and_free_expired)(struct nfs_server *,
+			nfs4_stateid *, struct rpc_cred *);
+	struct nfs_seqid *
+		(*alloc_seqid)(struct nfs_seqid_counter *, gfp_t);
+	int	(*session_trunk)(struct rpc_clnt *, struct rpc_xprt *, void *);
+>>>>>>> v4.9.227
 	const struct rpc_call_ops *call_sync_ops;
 	const struct nfs4_state_recovery_ops *reboot_recovery_ops;
 	const struct nfs4_state_recovery_ops *nograce_recovery_ops;
@@ -153,6 +169,10 @@ enum {
 	NFS_STATE_RECLAIM_NOGRACE,	/* OPEN stateid needs to recover state */
 	NFS_STATE_POSIX_LOCKS,		/* Posix locks are supported */
 	NFS_STATE_RECOVERY_FAILED,	/* OPEN stateid state recovery failed */
+<<<<<<< HEAD
+=======
+	NFS_STATE_MAY_NOTIFY_LOCK,	/* server may CB_NOTIFY_LOCK */
+>>>>>>> v4.9.227
 };
 
 struct nfs4_state {
@@ -180,10 +200,20 @@ struct nfs4_state {
 
 
 struct nfs4_exception {
+<<<<<<< HEAD
 	long timeout;
 	int retry;
 	struct nfs4_state *state;
 	struct inode *inode;
+=======
+	struct nfs4_state *state;
+	struct inode *inode;
+	nfs4_stateid *stateid;
+	long timeout;
+	unsigned char delay : 1,
+		      recovering : 1,
+		      retry : 1;
+>>>>>>> v4.9.227
 };
 
 struct nfs4_state_recovery_ops {
@@ -197,6 +227,14 @@ struct nfs4_state_recovery_ops {
 		struct rpc_cred *);
 };
 
+<<<<<<< HEAD
+=======
+struct nfs4_add_xprt_data {
+	struct nfs_client	*clp;
+	struct rpc_cred		*cred;
+};
+
+>>>>>>> v4.9.227
 struct nfs4_state_maintenance_ops {
 	int (*sched_state_renewal)(struct nfs_client *, struct rpc_cred *, unsigned);
 	struct rpc_cred * (*get_state_renewal_cred_locked)(struct nfs_client *);
@@ -219,16 +257,29 @@ int nfs_atomic_open(struct inode *, struct dentry *, struct file *,
 extern struct file_system_type nfs4_fs_type;
 
 /* nfs4namespace.c */
+<<<<<<< HEAD
 struct rpc_clnt *nfs4_negotiate_security(struct rpc_clnt *, struct inode *, struct qstr *);
+=======
+struct rpc_clnt *nfs4_negotiate_security(struct rpc_clnt *, struct inode *,
+					 const struct qstr *);
+>>>>>>> v4.9.227
 struct vfsmount *nfs4_submount(struct nfs_server *, struct dentry *,
 			       struct nfs_fh *, struct nfs_fattr *);
 int nfs4_replace_transport(struct nfs_server *server,
 				const struct nfs4_fs_locations *locations);
 
 /* nfs4proc.c */
+<<<<<<< HEAD
 extern int nfs4_call_sync(struct rpc_clnt *, struct nfs_server *,
 			  struct rpc_message *, struct nfs4_sequence_args *,
 			  struct nfs4_sequence_res *, int);
+=======
+extern int nfs4_handle_exception(struct nfs_server *, int, struct nfs4_exception *);
+extern int nfs4_call_sync(struct rpc_clnt *, struct nfs_server *,
+			  struct rpc_message *, struct nfs4_sequence_args *,
+			  struct nfs4_sequence_res *, int);
+extern void nfs4_init_sequence(struct nfs4_sequence_args *, struct nfs4_sequence_res *, int);
+>>>>>>> v4.9.227
 extern int nfs4_proc_setclientid(struct nfs_client *, u32, unsigned short, struct rpc_cred *, struct nfs4_setclientid_res *);
 extern int nfs4_proc_setclientid_confirm(struct nfs_client *, struct nfs4_setclientid_res *arg, struct rpc_cred *);
 extern int nfs4_proc_get_rootfh(struct nfs_server *, struct nfs_fh *, struct nfs_fsinfo *, bool);
@@ -244,7 +295,11 @@ extern int nfs4_proc_fs_locations(struct rpc_clnt *, struct inode *, const struc
 extern int nfs4_proc_get_locations(struct inode *, struct nfs4_fs_locations *,
 		struct page *page, struct rpc_cred *);
 extern int nfs4_proc_fsid_present(struct inode *, struct rpc_cred *);
+<<<<<<< HEAD
 extern struct rpc_clnt *nfs4_proc_lookup_mountpoint(struct inode *, struct qstr *,
+=======
+extern struct rpc_clnt *nfs4_proc_lookup_mountpoint(struct inode *, const struct qstr *,
+>>>>>>> v4.9.227
 			    struct nfs_fh *, struct nfs_fattr *);
 extern int nfs4_proc_secinfo(struct inode *, const struct qstr *, struct nfs4_secinfo_flavors *);
 extern const struct xattr_handler *nfs4_xattr_handlers[];
@@ -269,6 +324,11 @@ extern int nfs4_proc_get_lease_time(struct nfs_client *clp,
 		struct nfs_fsinfo *fsinfo);
 extern int nfs4_proc_layoutcommit(struct nfs4_layoutcommit_data *data,
 				  bool sync);
+<<<<<<< HEAD
+=======
+extern int nfs4_detect_session_trunking(struct nfs_client *clp,
+		struct nfs41_exchange_id_res *res, struct rpc_xprt *xprt);
+>>>>>>> v4.9.227
 
 static inline bool
 is_ds_only_client(struct nfs_client *clp)
@@ -387,6 +447,13 @@ extern void nfs4_schedule_state_renewal(struct nfs_client *);
 extern void nfs4_renewd_prepare_shutdown(struct nfs_server *);
 extern void nfs4_kill_renewd(struct nfs_client *);
 extern void nfs4_renew_state(struct work_struct *);
+<<<<<<< HEAD
+=======
+extern void nfs4_set_lease_period(struct nfs_client *clp,
+		unsigned long lease,
+		unsigned long lastrenewed);
+
+>>>>>>> v4.9.227
 
 /* nfs4state.c */
 struct rpc_cred *nfs4_get_clid_cred(struct nfs_client *clp);
@@ -400,9 +467,13 @@ int nfs40_discover_server_trunking(struct nfs_client *clp,
 int nfs41_discover_server_trunking(struct nfs_client *clp,
 			struct nfs_client **, struct rpc_cred *);
 extern void nfs4_schedule_session_recovery(struct nfs4_session *, int);
+<<<<<<< HEAD
 extern void nfs41_server_notify_target_slotid_update(struct nfs_client *clp);
 extern void nfs41_server_notify_highest_slotid_update(struct nfs_client *clp);
 
+=======
+extern void nfs41_notify_server(struct nfs_client *);
+>>>>>>> v4.9.227
 #else
 static inline void nfs4_schedule_session_recovery(struct nfs4_session *session, int err)
 {
@@ -411,7 +482,12 @@ static inline void nfs4_schedule_session_recovery(struct nfs4_session *session, 
 
 extern struct nfs4_state_owner *nfs4_get_state_owner(struct nfs_server *, struct rpc_cred *, gfp_t);
 extern void nfs4_put_state_owner(struct nfs4_state_owner *);
+<<<<<<< HEAD
 extern void nfs4_purge_state_owners(struct nfs_server *);
+=======
+extern void nfs4_purge_state_owners(struct nfs_server *, struct list_head *);
+extern void nfs4_free_state_owners(struct list_head *head);
+>>>>>>> v4.9.227
 extern struct nfs4_state * nfs4_get_open_state(struct inode *, struct nfs4_state_owner *);
 extern void nfs4_put_open_state(struct nfs4_state *);
 extern void nfs4_close_state(struct nfs4_state *, fmode_t);
@@ -428,13 +504,23 @@ extern void nfs4_schedule_path_down_recovery(struct nfs_client *clp);
 extern int nfs4_schedule_stateid_recovery(const struct nfs_server *, struct nfs4_state *);
 extern int nfs4_schedule_migration_recovery(const struct nfs_server *);
 extern void nfs4_schedule_lease_moved_recovery(struct nfs_client *);
+<<<<<<< HEAD
 extern void nfs41_handle_sequence_flag_errors(struct nfs_client *clp, u32 flags);
+=======
+extern void nfs41_handle_sequence_flag_errors(struct nfs_client *clp, u32 flags, bool);
+>>>>>>> v4.9.227
 extern void nfs41_handle_server_scope(struct nfs_client *,
 				      struct nfs41_server_scope **);
 extern void nfs4_put_lock_state(struct nfs4_lock_state *lsp);
 extern int nfs4_set_lock_state(struct nfs4_state *state, struct file_lock *fl);
+<<<<<<< HEAD
 extern int nfs4_select_rw_stateid(nfs4_stateid *, struct nfs4_state *,
 		fmode_t, const struct nfs_lockowner *);
+=======
+extern int nfs4_select_rw_stateid(struct nfs4_state *, fmode_t,
+		const struct nfs_lockowner *, nfs4_stateid *,
+		struct rpc_cred **);
+>>>>>>> v4.9.227
 
 extern struct nfs_seqid *nfs_alloc_seqid(struct nfs_seqid_counter *counter, gfp_t gfp_mask);
 extern int nfs_wait_on_sequence(struct nfs_seqid *seqid, struct rpc_task *task);
@@ -442,6 +528,15 @@ extern void nfs_increment_open_seqid(int status, struct nfs_seqid *seqid);
 extern void nfs_increment_lock_seqid(int status, struct nfs_seqid *seqid);
 extern void nfs_release_seqid(struct nfs_seqid *seqid);
 extern void nfs_free_seqid(struct nfs_seqid *seqid);
+<<<<<<< HEAD
+=======
+extern int nfs40_setup_sequence(struct nfs4_slot_table *tbl,
+				struct nfs4_sequence_args *args,
+				struct nfs4_sequence_res *res,
+				struct rpc_task *task);
+extern int nfs4_sequence_done(struct rpc_task *task,
+			      struct nfs4_sequence_res *res);
+>>>>>>> v4.9.227
 
 extern void nfs4_free_lock_state(struct nfs_server *server, struct nfs4_lock_state *lsp);
 
@@ -453,6 +548,10 @@ extern struct nfs_subversion nfs_v4;
 struct dentry *nfs4_try_mount(int, const char *, struct nfs_mount_info *, struct nfs_subversion *);
 extern bool nfs4_disable_idmapping;
 extern unsigned short max_session_slots;
+<<<<<<< HEAD
+=======
+extern unsigned short max_session_cb_slots;
+>>>>>>> v4.9.227
 extern unsigned short send_implementation_id;
 extern bool recover_lost_locks;
 
@@ -485,12 +584,23 @@ extern struct svc_version nfs4_callback_version4;
 
 static inline void nfs4_stateid_copy(nfs4_stateid *dst, const nfs4_stateid *src)
 {
+<<<<<<< HEAD
 	memcpy(dst, src, sizeof(*dst));
+=======
+	memcpy(dst->data, src->data, sizeof(dst->data));
+	dst->type = src->type;
+>>>>>>> v4.9.227
 }
 
 static inline bool nfs4_stateid_match(const nfs4_stateid *dst, const nfs4_stateid *src)
 {
+<<<<<<< HEAD
 	return memcmp(dst, src, sizeof(*dst)) == 0;
+=======
+	if (dst->type != src->type)
+		return false;
+	return memcmp(dst->data, src->data, sizeof(dst->data)) == 0;
+>>>>>>> v4.9.227
 }
 
 static inline bool nfs4_stateid_match_other(const nfs4_stateid *dst, const nfs4_stateid *src)
@@ -508,6 +618,16 @@ static inline bool nfs4_valid_open_stateid(const struct nfs4_state *state)
 	return test_bit(NFS_STATE_RECOVERY_FAILED, &state->flags) == 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool nfs4_state_match_open_stateid_other(const struct nfs4_state *state,
+		const nfs4_stateid *stateid)
+{
+	return test_bit(NFS_OPEN_STATE, &state->flags) &&
+		nfs4_stateid_match_other(&state->open_stateid, stateid);
+}
+
+>>>>>>> v4.9.227
 #else
 
 #define nfs4_close_state(a, b) do { } while (0)

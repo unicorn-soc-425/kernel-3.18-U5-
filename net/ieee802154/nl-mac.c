@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Netlink inteface for IEEE 802.15.4 stack
+=======
+ * Netlink interface for IEEE 802.15.4 stack
+>>>>>>> v4.9.227
  *
  * Copyright 2007, 2008 Siemens AG
  *
@@ -12,10 +16,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  * Written by:
  * Sergey Lapin <slapin@ossfans.org>
  * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
@@ -26,12 +33,17 @@
 #include <linux/kernel.h>
 #include <linux/if_arp.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
+=======
+#include <linux/ieee802154.h>
+>>>>>>> v4.9.227
 #include <net/netlink.h>
 #include <net/genetlink.h>
 #include <net/sock.h>
 #include <linux/nl802154.h>
 #include <linux/export.h>
 #include <net/af_ieee802154.h>
+<<<<<<< HEAD
 #include <net/nl802154.h>
 #include <net/ieee802154.h>
 #include <net/ieee802154_netdev.h>
@@ -42,6 +54,18 @@
 static int nla_put_hwaddr(struct sk_buff *msg, int type, __le64 hwaddr)
 {
 	return nla_put_u64(msg, type, swab64((__force u64)hwaddr));
+=======
+#include <net/ieee802154_netdev.h>
+#include <net/cfg802154.h>
+
+#include "ieee802154.h"
+
+static int nla_put_hwaddr(struct sk_buff *msg, int type, __le64 hwaddr,
+			  int padattr)
+{
+	return nla_put_u64_64bit(msg, type, swab64((__force u64)hwaddr),
+				 padattr);
+>>>>>>> v4.9.227
 }
 
 static __le64 nla_get_hwaddr(const struct nlattr *nla)
@@ -59,6 +83,7 @@ static __le16 nla_get_shortaddr(const struct nlattr *nla)
 	return cpu_to_le16(nla_get_u16(nla));
 }
 
+<<<<<<< HEAD
 int ieee802154_nl_assoc_indic(struct net_device *dev,
 			      struct ieee802154_addr *addr,
 			      u8 cap)
@@ -239,6 +264,9 @@ nla_put_failure:
 EXPORT_SYMBOL(ieee802154_nl_scan_confirm);
 
 int ieee802154_nl_start_confirm(struct net_device *dev, u8 status)
+=======
+static int ieee802154_nl_start_confirm(struct net_device *dev, u8 status)
+>>>>>>> v4.9.227
 {
 	struct sk_buff *msg;
 
@@ -260,7 +288,10 @@ nla_put_failure:
 	nlmsg_free(msg);
 	return -ENOBUFS;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ieee802154_nl_start_confirm);
+=======
+>>>>>>> v4.9.227
 
 static int ieee802154_nl_fill_iface(struct sk_buff *msg, u32 portid,
 				    u32 seq, int flags, struct net_device *dev)
@@ -278,11 +309,22 @@ static int ieee802154_nl_fill_iface(struct sk_buff *msg, u32 portid,
 		goto out;
 
 	ops = ieee802154_mlme_ops(dev);
+<<<<<<< HEAD
 	phy = ops->get_phy(dev);
 	BUG_ON(!phy);
 
 	short_addr = ops->get_short_addr(dev);
 	pan_id = ops->get_pan_id(dev);
+=======
+	phy = dev->ieee802154_ptr->wpan_phy;
+	BUG_ON(!phy);
+	get_device(&phy->dev);
+
+	rtnl_lock();
+	short_addr = dev->ieee802154_ptr->short_addr;
+	pan_id = dev->ieee802154_ptr->pan_id;
+	rtnl_unlock();
+>>>>>>> v4.9.227
 
 	if (nla_put_string(msg, IEEE802154_ATTR_DEV_NAME, dev->name) ||
 	    nla_put_string(msg, IEEE802154_ATTR_PHY_NAME, wpan_phy_name(phy)) ||
@@ -296,6 +338,7 @@ static int ieee802154_nl_fill_iface(struct sk_buff *msg, u32 portid,
 	if (ops->get_mac_params) {
 		struct ieee802154_mac_params params;
 
+<<<<<<< HEAD
 		ops->get_mac_params(dev, &params);
 
 		if (nla_put_s8(msg, IEEE802154_ATTR_TXPOWER,
@@ -305,6 +348,19 @@ static int ieee802154_nl_fill_iface(struct sk_buff *msg, u32 portid,
 			       params.cca_mode) ||
 		    nla_put_s32(msg, IEEE802154_ATTR_CCA_ED_LEVEL,
 				params.cca_ed_level) ||
+=======
+		rtnl_lock();
+		ops->get_mac_params(dev, &params);
+		rtnl_unlock();
+
+		if (nla_put_s8(msg, IEEE802154_ATTR_TXPOWER,
+			       params.transmit_power / 100) ||
+		    nla_put_u8(msg, IEEE802154_ATTR_LBT_ENABLED, params.lbt) ||
+		    nla_put_u8(msg, IEEE802154_ATTR_CCA_MODE,
+			       params.cca.mode) ||
+		    nla_put_s32(msg, IEEE802154_ATTR_CCA_ED_LEVEL,
+				params.cca_ed_level / 100) ||
+>>>>>>> v4.9.227
 		    nla_put_u8(msg, IEEE802154_ATTR_CSMA_RETRIES,
 			       params.csma_retries) ||
 		    nla_put_u8(msg, IEEE802154_ATTR_CSMA_MIN_BE,
@@ -317,7 +373,12 @@ static int ieee802154_nl_fill_iface(struct sk_buff *msg, u32 portid,
 	}
 
 	wpan_phy_put(phy);
+<<<<<<< HEAD
 	return genlmsg_end(msg, hdr);
+=======
+	genlmsg_end(msg, hdr);
+	return 0;
+>>>>>>> v4.9.227
 
 nla_put_failure:
 	wpan_phy_put(phy);
@@ -422,7 +483,13 @@ int ieee802154_associate_resp(struct sk_buff *skb, struct genl_info *info)
 	addr.mode = IEEE802154_ADDR_LONG;
 	addr.extended_addr = nla_get_hwaddr(
 			info->attrs[IEEE802154_ATTR_DEST_HW_ADDR]);
+<<<<<<< HEAD
 	addr.pan_id = ieee802154_mlme_ops(dev)->get_pan_id(dev);
+=======
+	rtnl_lock();
+	addr.pan_id = dev->ieee802154_ptr->pan_id;
+	rtnl_unlock();
+>>>>>>> v4.9.227
 
 	ret = ieee802154_mlme_ops(dev)->assoc_resp(dev, &addr,
 		nla_get_shortaddr(info->attrs[IEEE802154_ATTR_DEST_SHORT_ADDR]),
@@ -459,7 +526,13 @@ int ieee802154_disassociate_req(struct sk_buff *skb, struct genl_info *info)
 		addr.short_addr = nla_get_shortaddr(
 				info->attrs[IEEE802154_ATTR_DEST_SHORT_ADDR]);
 	}
+<<<<<<< HEAD
 	addr.pan_id = ieee802154_mlme_ops(dev)->get_pan_id(dev);
+=======
+	rtnl_lock();
+	addr.pan_id = dev->ieee802154_ptr->pan_id;
+	rtnl_unlock();
+>>>>>>> v4.9.227
 
 	ret = ieee802154_mlme_ops(dev)->disassoc_req(dev, &addr,
 			nla_get_u8(info->attrs[IEEE802154_ATTR_REASON]));
@@ -481,7 +554,11 @@ int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
 	u8 channel, bcn_ord, sf_ord;
 	u8 page;
 	int pan_coord, blx, coord_realign;
+<<<<<<< HEAD
 	int ret = -EOPNOTSUPP;
+=======
+	int ret = -EBUSY;
+>>>>>>> v4.9.227
 
 	if (!info->attrs[IEEE802154_ATTR_COORD_PAN_ID] ||
 	    !info->attrs[IEEE802154_ATTR_COORD_SHORT_ADDR] ||
@@ -497,9 +574,21 @@ int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
 	dev = ieee802154_nl_get_dev(info);
 	if (!dev)
 		return -ENODEV;
+<<<<<<< HEAD
 	if (!ieee802154_mlme_ops(dev)->start_req)
 		goto out;
 
+=======
+
+	if (netif_running(dev))
+		goto out;
+
+	if (!ieee802154_mlme_ops(dev)->start_req) {
+		ret = -EOPNOTSUPP;
+		goto out;
+	}
+
+>>>>>>> v4.9.227
 	addr.mode = IEEE802154_ADDR_SHORT;
 	addr.short_addr = nla_get_shortaddr(
 			info->attrs[IEEE802154_ATTR_COORD_SHORT_ADDR]);
@@ -518,15 +607,30 @@ int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
 	else
 		page = 0;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	if (addr.short_addr == cpu_to_le16(IEEE802154_ADDR_BROADCAST)) {
 		ieee802154_nl_start_confirm(dev, IEEE802154_NO_SHORT_ADDRESS);
 		dev_put(dev);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	ret = ieee802154_mlme_ops(dev)->start_req(dev, &addr, channel, page,
 		bcn_ord, sf_ord, pan_coord, blx, coord_realign);
+=======
+	rtnl_lock();
+	ret = ieee802154_mlme_ops(dev)->start_req(dev, &addr, channel, page,
+		bcn_ord, sf_ord, pan_coord, blx, coord_realign);
+	rtnl_unlock();
+
+	/* FIXME: add validation for unused parameters to be sane
+	 * for SoftMAC
+	 */
+	ieee802154_nl_start_confirm(dev, IEEE802154_SUCCESS);
+>>>>>>> v4.9.227
 
 out:
 	dev_put(dev);
@@ -562,7 +666,10 @@ int ieee802154_scan_req(struct sk_buff *skb, struct genl_info *info)
 	else
 		page = 0;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	ret = ieee802154_mlme_ops(dev)->scan_req(dev, type, channels,
 						 page, duration);
 
@@ -616,7 +723,11 @@ int ieee802154_dump_iface(struct sk_buff *skb, struct netlink_callback *cb)
 
 	idx = 0;
 	for_each_netdev(net, dev) {
+<<<<<<< HEAD
 		if (idx < s_idx || (dev->type != ARPHRD_IEEE802154))
+=======
+		if (idx < s_idx || dev->type != ARPHRD_IEEE802154)
+>>>>>>> v4.9.227
 			goto cont;
 
 		if (ieee802154_nl_fill_iface(skb, NETLINK_CB(cb->skb).portid,
@@ -666,6 +777,7 @@ int ieee802154_set_macparams(struct sk_buff *skb, struct genl_info *info)
 	    !info->attrs[IEEE802154_ATTR_FRAME_RETRIES])
 		goto out;
 
+<<<<<<< HEAD
 	phy = ops->get_phy(dev);
 
 	if ((!phy->set_lbt && info->attrs[IEEE802154_ATTR_LBT_ENABLED]) ||
@@ -686,15 +798,32 @@ int ieee802154_set_macparams(struct sk_buff *skb, struct genl_info *info)
 
 	if (info->attrs[IEEE802154_ATTR_TXPOWER])
 		params.transmit_power = nla_get_s8(info->attrs[IEEE802154_ATTR_TXPOWER]);
+=======
+	phy = dev->ieee802154_ptr->wpan_phy;
+	get_device(&phy->dev);
+
+	rtnl_lock();
+	ops->get_mac_params(dev, &params);
+
+	if (info->attrs[IEEE802154_ATTR_TXPOWER])
+		params.transmit_power = nla_get_s8(info->attrs[IEEE802154_ATTR_TXPOWER]) * 100;
+>>>>>>> v4.9.227
 
 	if (info->attrs[IEEE802154_ATTR_LBT_ENABLED])
 		params.lbt = nla_get_u8(info->attrs[IEEE802154_ATTR_LBT_ENABLED]);
 
 	if (info->attrs[IEEE802154_ATTR_CCA_MODE])
+<<<<<<< HEAD
 		params.cca_mode = nla_get_u8(info->attrs[IEEE802154_ATTR_CCA_MODE]);
 
 	if (info->attrs[IEEE802154_ATTR_CCA_ED_LEVEL])
 		params.cca_ed_level = nla_get_s32(info->attrs[IEEE802154_ATTR_CCA_ED_LEVEL]);
+=======
+		params.cca.mode = nla_get_u8(info->attrs[IEEE802154_ATTR_CCA_MODE]);
+
+	if (info->attrs[IEEE802154_ATTR_CCA_ED_LEVEL])
+		params.cca_ed_level = nla_get_s32(info->attrs[IEEE802154_ATTR_CCA_ED_LEVEL]) * 100;
+>>>>>>> v4.9.227
 
 	if (info->attrs[IEEE802154_ATTR_CSMA_RETRIES])
 		params.csma_retries = nla_get_u8(info->attrs[IEEE802154_ATTR_CSMA_RETRIES]);
@@ -709,6 +838,7 @@ int ieee802154_set_macparams(struct sk_buff *skb, struct genl_info *info)
 		params.frame_retries = nla_get_s8(info->attrs[IEEE802154_ATTR_FRAME_RETRIES]);
 
 	rc = ops->set_mac_params(dev, &params);
+<<<<<<< HEAD
 
 	wpan_phy_put(phy);
 	dev_put(dev);
@@ -716,13 +846,25 @@ int ieee802154_set_macparams(struct sk_buff *skb, struct genl_info *info)
 
 out_phy:
 	wpan_phy_put(phy);
+=======
+	rtnl_unlock();
+
+	wpan_phy_put(phy);
+	dev_put(dev);
+
+	return 0;
+
+>>>>>>> v4.9.227
 out:
 	dev_put(dev);
 	return rc;
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> v4.9.227
 static int
 ieee802154_llsec_parse_key_id(struct genl_info *info,
 			      struct ieee802154_llsec_key_id *desc)
@@ -801,7 +943,12 @@ ieee802154_llsec_fill_key_id(struct sk_buff *msg,
 
 		if (desc->device_addr.mode == IEEE802154_ADDR_LONG &&
 		    nla_put_hwaddr(msg, IEEE802154_ATTR_HW_ADDR,
+<<<<<<< HEAD
 				   desc->device_addr.extended_addr))
+=======
+				   desc->device_addr.extended_addr,
+				   IEEE802154_ATTR_PAD))
+>>>>>>> v4.9.227
 			return -EMSGSIZE;
 	}
 
@@ -816,7 +963,11 @@ ieee802154_llsec_fill_key_id(struct sk_buff *msg,
 
 	if (desc->mode == IEEE802154_SCF_KEY_HW_INDEX &&
 	    nla_put_hwaddr(msg, IEEE802154_ATTR_LLSEC_KEY_SOURCE_EXTENDED,
+<<<<<<< HEAD
 			   desc->extended_source))
+=======
+			   desc->extended_source, IEEE802154_ATTR_PAD))
+>>>>>>> v4.9.227
 		return -EMSGSIZE;
 
 	return 0;
@@ -938,8 +1089,11 @@ out:
 	return rc;
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> v4.9.227
 struct llsec_dump_data {
 	struct sk_buff *skb;
 	int s_idx, s_idx2;
@@ -1012,8 +1166,11 @@ ieee802154_nl_llsec_change(struct sk_buff *skb, struct genl_info *info,
 	return rc;
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> v4.9.227
 static int
 ieee802154_llsec_parse_key(struct genl_info *info,
 			   struct ieee802154_llsec_key *key)
@@ -1158,8 +1315,11 @@ int ieee802154_llsec_dump_keys(struct sk_buff *skb, struct netlink_callback *cb)
 	return ieee802154_llsec_dump_table(skb, cb, llsec_iter_keys);
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> v4.9.227
 static int
 llsec_parse_dev(struct genl_info *info,
 		struct ieee802154_llsec_device *dev)
@@ -1247,7 +1407,12 @@ ieee802154_nl_fill_dev(struct sk_buff *msg, u32 portid, u32 seq,
 	    nla_put_shortaddr(msg, IEEE802154_ATTR_PAN_ID, desc->pan_id) ||
 	    nla_put_shortaddr(msg, IEEE802154_ATTR_SHORT_ADDR,
 			      desc->short_addr) ||
+<<<<<<< HEAD
 	    nla_put_hwaddr(msg, IEEE802154_ATTR_HW_ADDR, desc->hwaddr) ||
+=======
+	    nla_put_hwaddr(msg, IEEE802154_ATTR_HW_ADDR, desc->hwaddr,
+			   IEEE802154_ATTR_PAD) ||
+>>>>>>> v4.9.227
 	    nla_put_u32(msg, IEEE802154_ATTR_LLSEC_FRAME_COUNTER,
 			desc->frame_counter) ||
 	    nla_put_u8(msg, IEEE802154_ATTR_LLSEC_DEV_OVERRIDE,
@@ -1290,8 +1455,11 @@ int ieee802154_llsec_dump_devs(struct sk_buff *skb, struct netlink_callback *cb)
 	return ieee802154_llsec_dump_table(skb, cb, llsec_iter_devs);
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> v4.9.227
 static int llsec_add_devkey(struct net_device *dev, struct genl_info *info)
 {
 	struct ieee802154_mlme_ops *ops = ieee802154_mlme_ops(dev);
@@ -1353,7 +1521,12 @@ ieee802154_nl_fill_devkey(struct sk_buff *msg, u32 portid, u32 seq,
 
 	if (nla_put_string(msg, IEEE802154_ATTR_DEV_NAME, dev->name) ||
 	    nla_put_u32(msg, IEEE802154_ATTR_DEV_INDEX, dev->ifindex) ||
+<<<<<<< HEAD
 	    nla_put_hwaddr(msg, IEEE802154_ATTR_HW_ADDR, devaddr) ||
+=======
+	    nla_put_hwaddr(msg, IEEE802154_ATTR_HW_ADDR, devaddr,
+			   IEEE802154_ATTR_PAD) ||
+>>>>>>> v4.9.227
 	    nla_put_u32(msg, IEEE802154_ATTR_LLSEC_FRAME_COUNTER,
 			devkey->frame_counter) ||
 	    ieee802154_llsec_fill_key_id(msg, &devkey->key_id))
@@ -1406,8 +1579,11 @@ int ieee802154_llsec_dump_devkeys(struct sk_buff *skb,
 	return ieee802154_llsec_dump_table(skb, cb, llsec_iter_devkeys);
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> v4.9.227
 static int
 llsec_parse_seclevel(struct genl_info *info,
 		     struct ieee802154_llsec_seclevel *sl)

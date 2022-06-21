@@ -134,7 +134,11 @@ struct vpfe_ipipeif_device {
 	unsigned int output;
 	struct vpfe_video_device video_in;
 	struct v4l2_ctrl_handler ctrls;
+<<<<<<< HEAD
 	void *__iomem ipipeif_base_addr;
+=======
+	void __iomem *ipipeif_base_addr;
+>>>>>>> v4.9.227
 	struct ipipeif_params config;
 	int dpcm_predictor;
 	int gain;

@@ -156,7 +156,11 @@ setup_7410_workarounds:
 	blr
 
 /* 740/750/7400/7410
+<<<<<<< HEAD
  * Enable Store Gathering (SGE), Address Brodcast (ABE),
+=======
+ * Enable Store Gathering (SGE), Address Broadcast (ABE),
+>>>>>>> v4.9.227
  * Branch History Table (BHTE), Branch Target ICache (BTIC)
  * Dynamic Power Management (DPM), Speculative (SPD)
  * Clear Instruction cache throttling (ICTC)

@@ -19,7 +19,11 @@
 
 int aic_common_set_type(struct irq_data *d, unsigned type, unsigned *val);
 
+<<<<<<< HEAD
 int aic_common_set_priority(int priority, unsigned *val);
+=======
+void aic_common_set_priority(int priority, unsigned *val);
+>>>>>>> v4.9.227
 
 int aic_common_irq_domain_xlate(struct irq_domain *d,
 				struct device_node *ctrlr,
@@ -30,10 +34,19 @@ int aic_common_irq_domain_xlate(struct irq_domain *d,
 
 struct irq_domain *__init aic_common_of_init(struct device_node *node,
 					     const struct irq_domain_ops *ops,
+<<<<<<< HEAD
 					     const char *name, int nirqs);
 
 void __init aic_common_rtc_irq_fixup(struct device_node *root);
 
 void __init aic_common_irq_fixup(const struct of_device_id *matches);
+=======
+					     const char *name, int nirqs,
+					     const struct of_device_id *matches);
+
+void __init aic_common_rtc_irq_fixup(struct device_node *root);
+
+void __init aic_common_rtt_irq_fixup(struct device_node *root);
+>>>>>>> v4.9.227
 
 #endif /* __IRQ_ATMEL_AIC_COMMON_H */

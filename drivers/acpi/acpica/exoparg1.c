@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -484,22 +488,42 @@ acpi_status acpi_ex_opcode_1A_1T_1R(struct acpi_walk_state *walk_state)
 
 	case AML_TO_DECSTRING_OP:	/* to_decimal_string (Data, Result) */
 
+<<<<<<< HEAD
 		status = acpi_ex_convert_to_string(operand[0], &return_desc,
 						   ACPI_EXPLICIT_CONVERT_DECIMAL);
 		if (return_desc == operand[0]) {
 
 			/* No conversion performed, add ref to handle return value */
+=======
+		status =
+		    acpi_ex_convert_to_string(operand[0], &return_desc,
+					      ACPI_EXPLICIT_CONVERT_DECIMAL);
+		if (return_desc == operand[0]) {
+
+			/* No conversion performed, add ref to handle return value */
+
+>>>>>>> v4.9.227
 			acpi_ut_add_reference(return_desc);
 		}
 		break;
 
 	case AML_TO_HEXSTRING_OP:	/* to_hex_string (Data, Result) */
 
+<<<<<<< HEAD
 		status = acpi_ex_convert_to_string(operand[0], &return_desc,
 						   ACPI_EXPLICIT_CONVERT_HEX);
 		if (return_desc == operand[0]) {
 
 			/* No conversion performed, add ref to handle return value */
+=======
+		status =
+		    acpi_ex_convert_to_string(operand[0], &return_desc,
+					      ACPI_EXPLICIT_CONVERT_HEX);
+		if (return_desc == operand[0]) {
+
+			/* No conversion performed, add ref to handle return value */
+
+>>>>>>> v4.9.227
 			acpi_ut_add_reference(return_desc);
 		}
 		break;
@@ -510,17 +534,32 @@ acpi_status acpi_ex_opcode_1A_1T_1R(struct acpi_walk_state *walk_state)
 		if (return_desc == operand[0]) {
 
 			/* No conversion performed, add ref to handle return value */
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 			acpi_ut_add_reference(return_desc);
 		}
 		break;
 
 	case AML_TO_INTEGER_OP:	/* to_integer (Data, Result) */
 
+<<<<<<< HEAD
 		status = acpi_ex_convert_to_integer(operand[0], &return_desc,
 						    ACPI_ANY_BASE);
 		if (return_desc == operand[0]) {
 
 			/* No conversion performed, add ref to handle return value */
+=======
+		/* Perform "explicit" conversion */
+
+		status =
+		    acpi_ex_convert_to_integer(operand[0], &return_desc, 0);
+		if (return_desc == operand[0]) {
+
+			/* No conversion performed, add ref to handle return value */
+
+>>>>>>> v4.9.227
 			acpi_ut_add_reference(return_desc);
 		}
 		break;
@@ -679,7 +718,11 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
 		status = acpi_ex_store(return_desc, operand[0], walk_state);
 		break;
 
+<<<<<<< HEAD
 	case AML_TYPE_OP:	/* object_type (source_object) */
+=======
+	case AML_OBJECT_TYPE_OP:	/* object_type (source_object) */
+>>>>>>> v4.9.227
 		/*
 		 * Note: The operand is not resolved at this point because we want to
 		 * get the associated object, not its value. For example, we don't
@@ -713,9 +756,15 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
 
 		/* Get the base object */
 
+<<<<<<< HEAD
 		status = acpi_ex_resolve_multiple(walk_state,
 						  operand[0], &type,
 						  &temp_desc);
+=======
+		status =
+		    acpi_ex_resolve_multiple(walk_state, operand[0], &type,
+					     &temp_desc);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			goto cleanup;
 		}
@@ -759,8 +808,15 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
 		default:
 
 			ACPI_ERROR((AE_INFO,
+<<<<<<< HEAD
 				    "Operand must be Buffer/Integer/String/Package - found type %s",
 				    acpi_ut_get_type_name(type)));
+=======
+				    "Operand must be Buffer/Integer/String/Package"
+				    " - found type %s",
+				    acpi_ut_get_type_name(type)));
+
+>>>>>>> v4.9.227
 			status = AE_AML_OPERAND_TYPE;
 			goto cleanup;
 		}
@@ -881,6 +937,7 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
 				 *    Field, so we need to resolve the node to a value.
 				 */
 				status =
+<<<<<<< HEAD
 				    acpi_ns_get_node(walk_state->scope_info->
 						     scope.node,
 						     operand[0]->string.pointer,
@@ -889,6 +946,18 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
 						     (struct
 						      acpi_namespace_node,
 						      &return_desc));
+=======
+				    acpi_ns_get_node_unlocked(walk_state->
+							      scope_info->scope.
+							      node,
+							      operand[0]->
+							      string.pointer,
+							      ACPI_NS_SEARCH_PARENT,
+							      ACPI_CAST_INDIRECT_PTR
+							      (struct
+							       acpi_namespace_node,
+							       &return_desc));
+>>>>>>> v4.9.227
 				if (ACPI_FAILURE(status)) {
 					goto cleanup;
 				}
@@ -981,6 +1050,10 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
 						    "Unknown Index TargetType 0x%X in reference object %p",
 						    operand[0]->reference.
 						    target_type, operand[0]));
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 					status = AE_AML_OPERAND_TYPE;
 					goto cleanup;
 				}
@@ -1050,6 +1123,10 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
 
 		ACPI_ERROR((AE_INFO, "Unknown AML opcode 0x%X",
 			    walk_state->opcode));
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		status = AE_AML_BAD_OPCODE;
 		goto cleanup;
 	}

@@ -26,7 +26,11 @@ typedef struct {
  * For historical reasons (Data Segment Register?), these macros are misnamed.
  */
 #define MAKE_MM_SEG(s)	((mm_segment_t) { (s) })
+<<<<<<< HEAD
 #define segment_eq(a,b)	((a).is_user_space == (b).is_user_space)
+=======
+#define segment_eq(a, b)	((a).is_user_space == (b).is_user_space)
+>>>>>>> v4.9.227
 
 #define USER_ADDR_LIMIT 0x80000000
 
@@ -106,7 +110,12 @@ static inline __kernel_size_t copy_from_user(void *to,
  * @x:   Value to copy to user space.
  * @ptr: Destination address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -117,15 +126,25 @@ static inline __kernel_size_t copy_from_user(void *to,
  *
  * Returns zero on success, or -EFAULT on error.
  */
+<<<<<<< HEAD
 #define put_user(x,ptr)	\
 	__put_user_check((x),(ptr),sizeof(*(ptr)))
+=======
+#define put_user(x, ptr)	\
+	__put_user_check((x), (ptr), sizeof(*(ptr)))
+>>>>>>> v4.9.227
 
 /*
  * get_user: - Get a simple variable from user space.
  * @x:   Variable to store result.
  * @ptr: Source address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -137,15 +156,25 @@ static inline __kernel_size_t copy_from_user(void *to,
  * Returns zero on success, or -EFAULT on error.
  * On error, the variable @x is set to zero.
  */
+<<<<<<< HEAD
 #define get_user(x,ptr) \
 	__get_user_check((x),(ptr),sizeof(*(ptr)))
+=======
+#define get_user(x, ptr) \
+	__get_user_check((x), (ptr), sizeof(*(ptr)))
+>>>>>>> v4.9.227
 
 /*
  * __put_user: - Write a simple value into user space, with less checking.
  * @x:   Value to copy to user space.
  * @ptr: Destination address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -159,15 +188,25 @@ static inline __kernel_size_t copy_from_user(void *to,
  *
  * Returns zero on success, or -EFAULT on error.
  */
+<<<<<<< HEAD
 #define __put_user(x,ptr) \
 	__put_user_nocheck((x),(ptr),sizeof(*(ptr)))
+=======
+#define __put_user(x, ptr) \
+	__put_user_nocheck((x), (ptr), sizeof(*(ptr)))
+>>>>>>> v4.9.227
 
 /*
  * __get_user: - Get a simple variable from user space, with less checking.
  * @x:   Variable to store result.
  * @ptr: Source address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -182,8 +221,13 @@ static inline __kernel_size_t copy_from_user(void *to,
  * Returns zero on success, or -EFAULT on error.
  * On error, the variable @x is set to zero.
  */
+<<<<<<< HEAD
 #define __get_user(x,ptr) \
 	__get_user_nocheck((x),(ptr),sizeof(*(ptr)))
+=======
+#define __get_user(x, ptr) \
+	__get_user_nocheck((x), (ptr), sizeof(*(ptr)))
+>>>>>>> v4.9.227
 
 extern int __get_user_bad(void);
 extern int __put_user_bad(void);
@@ -200,7 +244,11 @@ extern int __put_user_bad(void);
 	default: __gu_err = __get_user_bad(); break;			\
 	}								\
 									\
+<<<<<<< HEAD
 	x = (typeof(*(ptr)))__gu_val;					\
+=======
+	x = (__force typeof(*(ptr)))__gu_val;				\
+>>>>>>> v4.9.227
 	__gu_err;							\
 })
 
@@ -231,7 +279,11 @@ extern int __put_user_bad(void);
 	} else {							\
 		__gu_err = -EFAULT;					\
 	}								\
+<<<<<<< HEAD
 	x = (typeof(*(ptr)))__gu_val;					\
+=======
+	x = (__force typeof(*(ptr)))__gu_val;				\
+>>>>>>> v4.9.227
 	__gu_err;							\
 })
 
@@ -287,7 +339,11 @@ extern int __put_user_bad(void);
 				       __pu_err);			\
 			break;						\
 		case 8:							\
+<<<<<<< HEAD
 			__put_user_asm("d", __pu_addr, __pu_val,		\
+=======
+			__put_user_asm("d", __pu_addr, __pu_val,	\
+>>>>>>> v4.9.227
 				       __pu_err);			\
 			break;						\
 		default:						\

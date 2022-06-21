@@ -12,6 +12,10 @@
 #ifndef _RT5640_H
 #define _RT5640_H
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <sound/rt5640.h>
 
 /* Info */
@@ -983,6 +987,10 @@
 #define RT5640_SCLK_SRC_SFT			14
 #define RT5640_SCLK_SRC_MCLK			(0x0 << 14)
 #define RT5640_SCLK_SRC_PLL1			(0x1 << 14)
+<<<<<<< HEAD
+=======
+#define RT5640_SCLK_SRC_RCCLK			(0x2 << 14)
+>>>>>>> v4.9.227
 #define RT5640_PLL1_SRC_MASK			(0x3 << 12)
 #define RT5640_PLL1_SRC_SFT			12
 #define RT5640_PLL1_SRC_MCLK			(0x0 << 12)
@@ -1033,6 +1041,13 @@
 #define RT5640_DMIC_2_M_NOR			(0x0 << 8)
 #define RT5640_DMIC_2_M_ASYN			(0x1 << 8)
 
+<<<<<<< HEAD
+=======
+/* ASRC clock source selection (0x84) */
+#define RT5640_CLK_SEL_SYS			(0x0)
+#define RT5640_CLK_SEL_ASRC			(0x1)
+
+>>>>>>> v4.9.227
 /* ASRC Control 2 (0x84) */
 #define RT5640_MDA_L_M_MASK			(0x1 << 15)
 #define RT5640_MDA_L_M_SFT			15
@@ -2079,10 +2094,27 @@ enum {
 	RT5640_DMIC2,
 };
 
+<<<<<<< HEAD
+=======
+/* filter mask */
+enum {
+	RT5640_DA_STEREO_FILTER = 0x1,
+	RT5640_DA_MONO_L_FILTER = (0x1 << 1),
+	RT5640_DA_MONO_R_FILTER = (0x1 << 2),
+	RT5640_AD_STEREO_FILTER = (0x1 << 3),
+	RT5640_AD_MONO_L_FILTER = (0x1 << 4),
+	RT5640_AD_MONO_R_FILTER = (0x1 << 5),
+};
+
+>>>>>>> v4.9.227
 struct rt5640_priv {
 	struct snd_soc_codec *codec;
 	struct rt5640_platform_data pdata;
 	struct regmap *regmap;
+<<<<<<< HEAD
+=======
+	struct clk *mclk;
+>>>>>>> v4.9.227
 
 	int sysclk;
 	int sysclk_src;
@@ -2095,9 +2127,18 @@ struct rt5640_priv {
 	int pll_out;
 
 	bool hp_mute;
+<<<<<<< HEAD
+=======
+	bool asrc_en;
+>>>>>>> v4.9.227
 };
 
 int rt5640_dmic_enable(struct snd_soc_codec *codec,
 		       bool dmic1_data_pin, bool dmic2_data_pin);
+<<<<<<< HEAD
+=======
+int rt5640_sel_asrc_clk_src(struct snd_soc_codec *codec,
+		unsigned int filter_mask, unsigned int clk_src);
+>>>>>>> v4.9.227
 
 #endif

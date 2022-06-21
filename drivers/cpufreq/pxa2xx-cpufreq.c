@@ -29,6 +29,11 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -56,7 +61,11 @@ module_param(pxa27x_maxfreq, uint, 0);
 MODULE_PARM_DESC(pxa27x_maxfreq, "Set the pxa27x maxfreq in MHz"
 		 "(typically 624=>pxa270, 416=>pxa271, 520=>pxa272)");
 
+<<<<<<< HEAD
 typedef struct {
+=======
+struct pxa_freqs {
+>>>>>>> v4.9.227
 	unsigned int khz;
 	unsigned int membus;
 	unsigned int cccr;
@@ -64,7 +73,11 @@ typedef struct {
 	unsigned int cclkcfg;
 	int vmin;
 	int vmax;
+<<<<<<< HEAD
 } pxa_freqs_t;
+=======
+};
+>>>>>>> v4.9.227
 
 /* Define the refresh period in mSec for the SDRAM and the number of rows */
 #define SDRAM_TREF	64	/* standard 64ms SDRAM */
@@ -86,7 +99,11 @@ static unsigned int sdram_rows;
 /* Use the run mode frequencies for the CPUFREQ_POLICY_PERFORMANCE policy */
 #define CCLKCFG			CCLKCFG_TURBO | CCLKCFG_FCS
 
+<<<<<<< HEAD
 static pxa_freqs_t pxa255_run_freqs[] =
+=======
+static const struct pxa_freqs pxa255_run_freqs[] =
+>>>>>>> v4.9.227
 {
 	/* CPU   MEMBUS  CCCR  DIV2 CCLKCFG	           run  turbo PXbus SDRAM */
 	{ 99500,  99500, 0x121, 1,  CCLKCFG, -1, -1},	/*  99,   99,   50,   50  */
@@ -98,7 +115,11 @@ static pxa_freqs_t pxa255_run_freqs[] =
 };
 
 /* Use the turbo mode frequencies for the CPUFREQ_POLICY_POWERSAVE policy */
+<<<<<<< HEAD
 static pxa_freqs_t pxa255_turbo_freqs[] =
+=======
+static const struct pxa_freqs pxa255_turbo_freqs[] =
+>>>>>>> v4.9.227
 {
 	/* CPU   MEMBUS  CCCR  DIV2 CCLKCFG	   run  turbo PXbus SDRAM */
 	{ 99500, 99500,  0x121, 1,  CCLKCFG, -1, -1},	/*  99,   99,   50,   50  */
@@ -153,7 +174,11 @@ MODULE_PARM_DESC(pxa255_turbo_table, "Selects the frequency table (0 = run table
    ((HT) ? CCLKCFG_HALFTURBO : 0) | \
    ((T)  ? CCLKCFG_TURBO : 0))
 
+<<<<<<< HEAD
 static pxa_freqs_t pxa27x_freqs[] = {
+=======
+static struct pxa_freqs pxa27x_freqs[] = {
+>>>>>>> v4.9.227
 	{104000, 104000, PXA27x_CCCR(1,	 8, 2), 0, CCLKCFG2(1, 0, 1),  900000, 1705000 },
 	{156000, 104000, PXA27x_CCCR(1,	 8, 3), 0, CCLKCFG2(1, 0, 1), 1000000, 1705000 },
 	{208000, 208000, PXA27x_CCCR(0, 16, 2), 1, CCLKCFG2(0, 0, 1), 1180000, 1705000 },
@@ -171,7 +196,11 @@ extern unsigned get_clk_frequency_khz(int info);
 
 #ifdef CONFIG_REGULATOR
 
+<<<<<<< HEAD
 static int pxa_cpufreq_change_voltage(pxa_freqs_t *pxa_freq)
+=======
+static int pxa_cpufreq_change_voltage(const struct pxa_freqs *pxa_freq)
+>>>>>>> v4.9.227
 {
 	int ret = 0;
 	int vmin, vmax;
@@ -186,6 +215,7 @@ static int pxa_cpufreq_change_voltage(pxa_freqs_t *pxa_freq)
 
 	ret = regulator_set_voltage(vcc_core, vmin, vmax);
 	if (ret)
+<<<<<<< HEAD
 		pr_err("cpufreq: Failed to set vcc_core in [%dmV..%dmV]\n",
 		       vmin, vmax);
 	return ret;
@@ -203,15 +233,41 @@ static void __init pxa_cpufreq_init_voltages(void)
 }
 #else
 static int pxa_cpufreq_change_voltage(pxa_freqs_t *pxa_freq)
+=======
+		pr_err("Failed to set vcc_core in [%dmV..%dmV]\n", vmin, vmax);
+	return ret;
+}
+
+static void pxa_cpufreq_init_voltages(void)
+{
+	vcc_core = regulator_get(NULL, "vcc_core");
+	if (IS_ERR(vcc_core)) {
+		pr_info("Didn't find vcc_core regulator\n");
+		vcc_core = NULL;
+	} else {
+		pr_info("Found vcc_core regulator\n");
+	}
+}
+#else
+static int pxa_cpufreq_change_voltage(const struct pxa_freqs *pxa_freq)
+>>>>>>> v4.9.227
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __init pxa_cpufreq_init_voltages(void) { }
 #endif
 
 static void find_freq_tables(struct cpufreq_frequency_table **freq_table,
 			     pxa_freqs_t **pxa_freqs)
+=======
+static void pxa_cpufreq_init_voltages(void) { }
+#endif
+
+static void find_freq_tables(struct cpufreq_frequency_table **freq_table,
+			     const struct pxa_freqs **pxa_freqs)
+>>>>>>> v4.9.227
 {
 	if (cpu_is_pxa25x()) {
 		if (!pxa255_turbo_table) {
@@ -233,9 +289,14 @@ static void pxa27x_guess_max_freq(void)
 {
 	if (!pxa27x_maxfreq) {
 		pxa27x_maxfreq = 416000;
+<<<<<<< HEAD
 		printk(KERN_INFO "PXA CPU 27x max frequency not defined "
 		       "(pxa27x_maxfreq), assuming pxa271 with %dkHz maxfreq\n",
 		       pxa27x_maxfreq);
+=======
+		pr_info("PXA CPU 27x max frequency not defined (pxa27x_maxfreq), assuming pxa271 with %dkHz maxfreq\n",
+			pxa27x_maxfreq);
+>>>>>>> v4.9.227
 	} else {
 		pxa27x_maxfreq *= 1000;
 	}
@@ -270,7 +331,11 @@ static unsigned int pxa_cpufreq_get(unsigned int cpu)
 static int pxa_set_target(struct cpufreq_policy *policy, unsigned int idx)
 {
 	struct cpufreq_frequency_table *pxa_freqs_table;
+<<<<<<< HEAD
 	pxa_freqs_t *pxa_freq_settings;
+=======
+	const struct pxa_freqs *pxa_freq_settings;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	unsigned int new_freq_cpu, new_freq_mem;
 	unsigned int unused, preset_mdrefr, postset_mdrefr, cclkcfg;
@@ -319,7 +384,11 @@ static int pxa_set_target(struct cpufreq_policy *policy, unsigned int idx)
 	local_irq_save(flags);
 
 	/* Set new the CCCR and prepare CCLKCFG */
+<<<<<<< HEAD
 	CCCR = pxa_freq_settings[idx].cccr;
+=======
+	writel(pxa_freq_settings[idx].cccr, CCCR);
+>>>>>>> v4.9.227
 	cclkcfg = pxa_freq_settings[idx].cclkcfg;
 
 	asm volatile("							\n\
@@ -361,7 +430,11 @@ static int pxa_cpufreq_init(struct cpufreq_policy *policy)
 	int i;
 	unsigned int freq;
 	struct cpufreq_frequency_table *pxa255_freq_table;
+<<<<<<< HEAD
 	pxa_freqs_t *pxa255_freqs;
+=======
+	const struct pxa_freqs *pxa255_freqs;
+>>>>>>> v4.9.227
 
 	/* try to guess pxa27x cpu */
 	if (cpu_is_pxa27x())
@@ -408,7 +481,11 @@ static int pxa_cpufreq_init(struct cpufreq_policy *policy)
 	 */
 	if (cpu_is_pxa25x()) {
 		find_freq_tables(&pxa255_freq_table, &pxa255_freqs);
+<<<<<<< HEAD
 		pr_info("PXA255 cpufreq using %s frequency table\n",
+=======
+		pr_info("using %s frequency table\n",
+>>>>>>> v4.9.227
 			pxa255_turbo_table ? "turbo" : "run");
 
 		cpufreq_table_validate_and_show(policy, pxa255_freq_table);
@@ -417,7 +494,11 @@ static int pxa_cpufreq_init(struct cpufreq_policy *policy)
 		cpufreq_table_validate_and_show(policy, pxa27x_freq_table);
 	}
 
+<<<<<<< HEAD
 	printk(KERN_INFO "PXA CPU frequency change support initialized\n");
+=======
+	pr_info("frequency change support initialized\n");
+>>>>>>> v4.9.227
 
 	return 0;
 }

@@ -6,7 +6,10 @@
  * for more details. No warranty for anything given at all.
  */
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/dwarf2.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/errno.h>
 #include <asm/asm.h>
 
@@ -47,12 +50,16 @@
 
 
 ENTRY(csum_partial_copy_generic)
+<<<<<<< HEAD
 	CFI_STARTPROC
+=======
+>>>>>>> v4.9.227
 	cmpl	$3*64, %edx
 	jle	.Lignore
 
 .Lignore:
 	subq  $7*8, %rsp
+<<<<<<< HEAD
 	CFI_ADJUST_CFA_OFFSET 7*8
 	movq  %rbx, 2*8(%rsp)
 	CFI_REL_OFFSET rbx, 2*8
@@ -64,6 +71,13 @@ ENTRY(csum_partial_copy_generic)
 	CFI_REL_OFFSET r13, 5*8
 	movq  %rbp, 6*8(%rsp)
 	CFI_REL_OFFSET rbp, 6*8
+=======
+	movq  %rbx, 2*8(%rsp)
+	movq  %r12, 3*8(%rsp)
+	movq  %r14, 4*8(%rsp)
+	movq  %r13, 5*8(%rsp)
+	movq  %r15, 6*8(%rsp)
+>>>>>>> v4.9.227
 
 	movq  %r8, (%rsp)
 	movq  %r9, 1*8(%rsp)
@@ -82,7 +96,11 @@ ENTRY(csum_partial_copy_generic)
 	/* main loop. clear in 64 byte blocks */
 	/* r9: zero, r8: temp2, rbx: temp1, rax: sum, rcx: saved length */
 	/* r11:	temp3, rdx: temp4, r12 loopcnt */
+<<<<<<< HEAD
 	/* r10:	temp5, rbp: temp6, r14 temp7, r13 temp8 */
+=======
+	/* r10:	temp5, r15: temp6, r14 temp7, r13 temp8 */
+>>>>>>> v4.9.227
 	.p2align 4
 .Lloop:
 	source
@@ -97,7 +115,11 @@ ENTRY(csum_partial_copy_generic)
 	source
 	movq  32(%rdi), %r10
 	source
+<<<<<<< HEAD
 	movq  40(%rdi), %rbp
+=======
+	movq  40(%rdi), %r15
+>>>>>>> v4.9.227
 	source
 	movq  48(%rdi), %r14
 	source
@@ -111,7 +133,11 @@ ENTRY(csum_partial_copy_generic)
 	adcq  %r11, %rax
 	adcq  %rdx, %rax
 	adcq  %r10, %rax
+<<<<<<< HEAD
 	adcq  %rbp, %rax
+=======
+	adcq  %r15, %rax
+>>>>>>> v4.9.227
 	adcq  %r14, %rax
 	adcq  %r13, %rax
 
@@ -129,7 +155,11 @@ ENTRY(csum_partial_copy_generic)
 	dest
 	movq %r10, 32(%rsi)
 	dest
+<<<<<<< HEAD
 	movq %rbp, 40(%rsi)
+=======
+	movq %r15, 40(%rsi)
+>>>>>>> v4.9.227
 	dest
 	movq %r14, 48(%rsi)
 	dest
@@ -196,7 +226,11 @@ ENTRY(csum_partial_copy_generic)
 
 	/* handle last odd byte */
 .Lhandle_1:
+<<<<<<< HEAD
 	testl $1, %r10d
+=======
+	testb $1, %r10b
+>>>>>>> v4.9.227
 	jz    .Lende
 	xorl  %ebx, %ebx
 	source
@@ -206,6 +240,7 @@ ENTRY(csum_partial_copy_generic)
 	addl %ebx, %eax
 	adcl %r9d, %eax		/* carry */
 
+<<<<<<< HEAD
 	CFI_REMEMBER_STATE
 .Lende:
 	movq 2*8(%rsp), %rbx
@@ -222,6 +257,16 @@ ENTRY(csum_partial_copy_generic)
 	CFI_ADJUST_CFA_OFFSET -7*8
 	ret
 	CFI_RESTORE_STATE
+=======
+.Lende:
+	movq 2*8(%rsp), %rbx
+	movq 3*8(%rsp), %r12
+	movq 4*8(%rsp), %r14
+	movq 5*8(%rsp), %r13
+	movq 6*8(%rsp), %r15
+	addq $7*8, %rsp
+	ret
+>>>>>>> v4.9.227
 
 	/* Exception handlers. Very simple, zeroing is done in the wrappers */
 .Lbad_source:
@@ -237,5 +282,8 @@ ENTRY(csum_partial_copy_generic)
 	jz   .Lende
 	movl $-EFAULT, (%rax)
 	jmp .Lende
+<<<<<<< HEAD
 	CFI_ENDPROC
+=======
+>>>>>>> v4.9.227
 ENDPROC(csum_partial_copy_generic)

@@ -23,11 +23,17 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 
 #include "../comedidev.h"
 #include "addi_watchdog.h"
 #include "comedi_fc.h"
+=======
+
+#include "../comedi_pci.h"
+#include "addi_watchdog.h"
+>>>>>>> v4.9.227
 
 /*
  * PCI bar 1 I/O Register map - Digital input/output
@@ -102,10 +108,17 @@ static int apci1516_do_insn_bits(struct comedi_device *dev,
 
 static int apci1516_reset(struct comedi_device *dev)
 {
+<<<<<<< HEAD
 	const struct apci1516_boardinfo *this_board = dev->board_ptr;
 	struct apci1516_private *devpriv = dev->private;
 
 	if (!this_board->has_wdog)
+=======
+	const struct apci1516_boardinfo *board = dev->board_ptr;
+	struct apci1516_private *devpriv = dev->private;
+
+	if (!board->has_wdog)
+>>>>>>> v4.9.227
 		return 0;
 
 	outw(0x0, dev->iobase + APCI1516_DO_REG);
@@ -119,17 +132,29 @@ static int apci1516_auto_attach(struct comedi_device *dev,
 				unsigned long context)
 {
 	struct pci_dev *pcidev = comedi_to_pci_dev(dev);
+<<<<<<< HEAD
 	const struct apci1516_boardinfo *this_board = NULL;
+=======
+	const struct apci1516_boardinfo *board = NULL;
+>>>>>>> v4.9.227
 	struct apci1516_private *devpriv;
 	struct comedi_subdevice *s;
 	int ret;
 
 	if (context < ARRAY_SIZE(apci1516_boardtypes))
+<<<<<<< HEAD
 		this_board = &apci1516_boardtypes[context];
 	if (!this_board)
 		return -ENODEV;
 	dev->board_ptr = this_board;
 	dev->board_name = this_board->name;
+=======
+		board = &apci1516_boardtypes[context];
+	if (!board)
+		return -ENODEV;
+	dev->board_ptr = board;
+	dev->board_name = board->name;
+>>>>>>> v4.9.227
 
 	devpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));
 	if (!devpriv)
@@ -148,10 +173,17 @@ static int apci1516_auto_attach(struct comedi_device *dev,
 
 	/* Initialize the digital input subdevice */
 	s = &dev->subdevices[0];
+<<<<<<< HEAD
 	if (this_board->di_nchan) {
 		s->type		= COMEDI_SUBD_DI;
 		s->subdev_flags	= SDF_READABLE;
 		s->n_chan	= this_board->di_nchan;
+=======
+	if (board->di_nchan) {
+		s->type		= COMEDI_SUBD_DI;
+		s->subdev_flags	= SDF_READABLE;
+		s->n_chan	= board->di_nchan;
+>>>>>>> v4.9.227
 		s->maxdata	= 1;
 		s->range_table	= &range_digital;
 		s->insn_bits	= apci1516_di_insn_bits;
@@ -161,10 +193,17 @@ static int apci1516_auto_attach(struct comedi_device *dev,
 
 	/* Initialize the digital output subdevice */
 	s = &dev->subdevices[1];
+<<<<<<< HEAD
 	if (this_board->do_nchan) {
 		s->type		= COMEDI_SUBD_DO;
 		s->subdev_flags	= SDF_WRITEABLE;
 		s->n_chan	= this_board->do_nchan;
+=======
+	if (board->do_nchan) {
+		s->type		= COMEDI_SUBD_DO;
+		s->subdev_flags	= SDF_WRITABLE;
+		s->n_chan	= board->do_nchan;
+>>>>>>> v4.9.227
 		s->maxdata	= 1;
 		s->range_table	= &range_digital;
 		s->insn_bits	= apci1516_do_insn_bits;
@@ -174,7 +213,11 @@ static int apci1516_auto_attach(struct comedi_device *dev,
 
 	/* Initialize the watchdog subdevice */
 	s = &dev->subdevices[2];
+<<<<<<< HEAD
 	if (this_board->has_wdog) {
+=======
+	if (board->has_wdog) {
+>>>>>>> v4.9.227
 		ret = addi_watchdog_init(s, devpriv->wdog_iobase);
 		if (ret)
 			return ret;

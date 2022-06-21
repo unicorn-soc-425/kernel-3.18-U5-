@@ -1,6 +1,9 @@
 /*
+<<<<<<< HEAD
  * arch/xtensa/kernel/entry.S
  *
+=======
+>>>>>>> v4.9.227
  * Low-level exception handling
  *
  * This file is subject to the terms and conditions of the GNU General Public
@@ -8,6 +11,10 @@
  * for more details.
  *
  * Copyright (C) 2004 - 2008 by Tensilica Inc.
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2015 Cadence Design Systems Inc.
+>>>>>>> v4.9.227
  *
  * Chris Zankel <chris@zankel.net>
  *
@@ -18,7 +25,11 @@
 #include <asm/processor.h>
 #include <asm/coprocessor.h>
 #include <asm/thread_info.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <asm/asm-uaccess.h>
+>>>>>>> v4.9.227
 #include <asm/unistd.h>
 #include <asm/ptrace.h>
 #include <asm/current.h>
@@ -75,6 +86,30 @@
 #endif
 	.endm
 
+<<<<<<< HEAD
+=======
+
+	.macro	irq_save flags tmp
+#if XTENSA_FAKE_NMI
+#if defined(CONFIG_DEBUG_KERNEL) && (LOCKLEVEL | TOPLEVEL) >= XCHAL_DEBUGLEVEL
+	rsr	\flags, ps
+	extui	\tmp, \flags, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
+	bgei	\tmp, LOCKLEVEL, 99f
+	rsil	\tmp, LOCKLEVEL
+99:
+#else
+	movi	\tmp, LOCKLEVEL
+	rsr	\flags, ps
+	or	\flags, \flags, \tmp
+	xsr	\flags, ps
+	rsync
+#endif
+#else
+	rsil	\flags, LOCKLEVEL
+#endif
+	.endm
+
+>>>>>>> v4.9.227
 /* ----------------- DEFAULT FIRST LEVEL EXCEPTION HANDLERS ----------------- */
 
 /*
@@ -122,6 +157,10 @@ _user_exception:
 	/* Save SAR and turn off single stepping */
 
 	movi	a2, 0
+<<<<<<< HEAD
+=======
+	wsr	a2, depc		# terminate user stack trace with 0
+>>>>>>> v4.9.227
 	rsr	a3, sar
 	xsr	a2, icountlevel
 	s32i	a3, a1, PT_SAR
@@ -301,7 +340,22 @@ _kernel_exception:
 	s32i	a14, a1, PT_AREG14
 	s32i	a15, a1, PT_AREG15
 
+<<<<<<< HEAD
 1:
+=======
+	_bnei	a2, 1, 1f
+
+	/* Copy spill slots of a0 and a1 to imitate movsp
+	 * in order to keep exception stack continuous
+	 */
+	l32i	a3, a1, PT_SIZE
+	l32i	a0, a1, PT_SIZE + 4
+	s32e	a3, a1, -16
+	s32e	a0, a1, -12
+1:
+	l32i	a0, a1, PT_AREG0	# restore saved a0
+	wsr	a0, depc
+>>>>>>> v4.9.227
 
 #ifdef KERNEL_STACK_OVERFLOW_CHECK
 
@@ -335,6 +389,7 @@ common_exception:
 	s32i	a2, a1, PT_SYSCALL
 	movi	a2, 0
 	s32i	a3, a1, PT_EXCVADDR
+<<<<<<< HEAD
 	xsr	a2, lcount
 	s32i	a2, a1, PT_LCOUNT
 
@@ -373,16 +428,94 @@ common_exception:
 	rsr	a3, lend
 	s32i	a2, a1, PT_LBEG
 	s32i	a3, a1, PT_LEND
+=======
+#if XCHAL_HAVE_LOOPS
+	xsr	a2, lcount
+	s32i	a2, a1, PT_LCOUNT
+#endif
+
+	/* It is now save to restore the EXC_TABLE_FIXUP variable. */
+
+	rsr	a2, exccause
+	movi	a3, 0
+	rsr	a0, excsave1
+	s32i	a2, a1, PT_EXCCAUSE
+	s32i	a3, a0, EXC_TABLE_FIXUP
+
+	/* All unrecoverable states are saved on stack, now, and a1 is valid.
+	 * Now we can allow exceptions again. In case we've got an interrupt
+	 * PS.INTLEVEL is set to LOCKLEVEL disabling furhter interrupts,
+	 * otherwise it's left unchanged.
+	 *
+	 * Set PS(EXCM = 0, UM = 0, RING = 0, OWB = 0, WOE = 1, INTLEVEL = X)
+	 */
+
+	rsr	a3, ps
+	s32i	a3, a1, PT_PS		# save ps
+
+#if XTENSA_FAKE_NMI
+	/* Correct PS needs to be saved in the PT_PS:
+	 * - in case of exception or level-1 interrupt it's in the PS,
+	 *   and is already saved.
+	 * - in case of medium level interrupt it's in the excsave2.
+	 */
+	movi	a0, EXCCAUSE_MAPPED_NMI
+	extui	a3, a3, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
+	beq	a2, a0, .Lmedium_level_irq
+	bnei	a2, EXCCAUSE_LEVEL1_INTERRUPT, .Lexception
+	beqz	a3, .Llevel1_irq	# level-1 IRQ sets ps.intlevel to 0
+
+.Lmedium_level_irq:
+	rsr	a0, excsave2
+	s32i	a0, a1, PT_PS		# save medium-level interrupt ps
+	bgei	a3, LOCKLEVEL, .Lexception
+
+.Llevel1_irq:
+	movi	a3, LOCKLEVEL
+
+.Lexception:
+	movi	a0, 1 << PS_WOE_BIT
+	or	a3, a3, a0
+#else
+	addi	a2, a2, -EXCCAUSE_LEVEL1_INTERRUPT
+	movi	a0, LOCKLEVEL
+	extui	a3, a3, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
+					# a3 = PS.INTLEVEL
+	moveqz	a3, a0, a2		# a3 = LOCKLEVEL iff interrupt
+	movi	a2, 1 << PS_WOE_BIT
+	or	a3, a3, a2
+	rsr	a2, exccause
+#endif
+
+	/* restore return address (or 0 if return to userspace) */
+	rsr	a0, depc
+	wsr	a3, ps
+	rsync				# PS.WOE => rsync => overflow
+
+	/* Save lbeg, lend */
+#if XCHAL_HAVE_LOOPS
+	rsr	a4, lbeg
+	rsr	a3, lend
+	s32i	a4, a1, PT_LBEG
+	s32i	a3, a1, PT_LEND
+#endif
+>>>>>>> v4.9.227
 
 	/* Save SCOMPARE1 */
 
 #if XCHAL_HAVE_S32C1I
+<<<<<<< HEAD
 	rsr     a2, scompare1
 	s32i    a2, a1, PT_SCOMPARE1
+=======
+	rsr     a3, scompare1
+	s32i    a3, a1, PT_SCOMPARE1
+>>>>>>> v4.9.227
 #endif
 
 	/* Save optional registers. */
 
+<<<<<<< HEAD
 	save_xtregs_opt a1 a2 a4 a5 a6 a7 PT_XTREGS_OPT
 	
 #ifdef CONFIG_TRACE_IRQFLAGS
@@ -401,14 +534,23 @@ common_exception:
 1:
 #endif
 
+=======
+	save_xtregs_opt a1 a3 a4 a5 a6 a7 PT_XTREGS_OPT
+	
+>>>>>>> v4.9.227
 	/* Go to second-level dispatcher. Set up parameters to pass to the
 	 * exception handler and call the exception handler.
 	 */
 
 	rsr	a4, excsave1
 	mov	a6, a1			# pass stack frame
+<<<<<<< HEAD
 	mov	a7, a0			# pass EXCCAUSE
 	addx4	a4, a0, a4
+=======
+	mov	a7, a2			# pass EXCCAUSE
+	addx4	a4, a2, a4
+>>>>>>> v4.9.227
 	l32i	a4, a4, EXC_TABLE_DEFAULT		# load handler
 
 	/* Call the second-level handler */
@@ -419,8 +561,22 @@ common_exception:
 	.global common_exception_return
 common_exception_return:
 
+<<<<<<< HEAD
 1:
 	rsil	a2, LOCKLEVEL
+=======
+#if XTENSA_FAKE_NMI
+	l32i	a2, a1, PT_EXCCAUSE
+	movi	a3, EXCCAUSE_MAPPED_NMI
+	beq	a2, a3, .LNMIexit
+#endif
+1:
+	irq_save a2, a3
+#ifdef CONFIG_TRACE_IRQFLAGS
+	movi	a4, trace_hardirqs_off
+	callx4	a4
+#endif
+>>>>>>> v4.9.227
 
 	/* Jump if we are returning from kernel exceptions. */
 
@@ -445,6 +601,13 @@ common_exception_return:
 
 	/* Call do_signal() */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_TRACE_IRQFLAGS
+	movi	a4, trace_hardirqs_on
+	callx4	a4
+#endif
+>>>>>>> v4.9.227
 	rsil	a2, 0
 	movi	a4, do_notify_resume	# int do_notify_resume(struct pt_regs*)
 	mov	a6, a1
@@ -453,6 +616,13 @@ common_exception_return:
 
 3:	/* Reschedule */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_TRACE_IRQFLAGS
+	movi	a4, trace_hardirqs_on
+	callx4	a4
+#endif
+>>>>>>> v4.9.227
 	rsil	a2, 0
 	movi	a4, schedule	# void schedule (void)
 	callx4	a4
@@ -471,7 +641,23 @@ common_exception_return:
 	j	1b
 #endif
 
+<<<<<<< HEAD
 5:
+=======
+#if XTENSA_FAKE_NMI
+.LNMIexit:
+	l32i	a3, a1, PT_PS
+	_bbci.l	a3, PS_UM_BIT, 4f
+#endif
+
+5:
+#ifdef CONFIG_HAVE_HW_BREAKPOINT
+	_bbci.l	a4, TIF_DB_DISABLED, 7f
+	movi	a4, restore_dbreak
+	callx4	a4
+7:
+#endif
+>>>>>>> v4.9.227
 #ifdef CONFIG_DEBUG_TLB_SANITY
 	l32i	a4, a1, PT_DEPC
 	bgeui	a4, VALID_DOUBLE_EXCEPTION_ADDRESS, 4f
@@ -481,6 +667,7 @@ common_exception_return:
 6:
 4:
 #ifdef CONFIG_TRACE_IRQFLAGS
+<<<<<<< HEAD
 	l32i	a4, a1, PT_DEPC
 	/* Double exception means we came here with an exception
 	 * while PS.EXCM was set, i.e. interrupts disabled.
@@ -491,6 +678,10 @@ common_exception_return:
 	/* We came here with an interrupt means interrupts were enabled
 	 * and we'll reenable them on return.
 	 */
+=======
+	extui	a4, a3, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
+	bgei	a4, LOCKLEVEL, 1f
+>>>>>>> v4.9.227
 	movi	a4, trace_hardirqs_on
 	callx4	a4
 1:
@@ -664,13 +855,21 @@ common_exception_exit:
 	wsr	a3, sar
 
 	/* Restore LBEG, LEND, LCOUNT */
+<<<<<<< HEAD
 
+=======
+#if XCHAL_HAVE_LOOPS
+>>>>>>> v4.9.227
 	l32i	a2, a1, PT_LBEG
 	l32i	a3, a1, PT_LEND
 	wsr	a2, lbeg
 	l32i	a2, a1, PT_LCOUNT
 	wsr	a3, lend
 	wsr	a2, lcount
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 	/* We control single stepping through the ICOUNTLEVEL register. */
 
@@ -725,27 +924,60 @@ ENTRY(debug_exception)
 
 	movi	a2, 1 << PS_EXCM_BIT
 	or	a2, a0, a2
+<<<<<<< HEAD
 	movi	a0, debug_exception	# restore a3, debug jump vector
 	wsr	a2, ps
 	xsr	a0, SREG_EXCSAVE + XCHAL_DEBUGLEVEL
+=======
+	wsr	a2, ps
+>>>>>>> v4.9.227
 
 	/* Switch to kernel/user stack, restore jump vector, and save a0 */
 
 	bbsi.l	a2, PS_UM_BIT, 2f	# jump if user mode
 
 	addi	a2, a1, -16-PT_SIZE	# assume kernel stack
+<<<<<<< HEAD
 	s32i	a0, a2, PT_AREG0
 	movi	a0, 0
 	s32i	a1, a2, PT_AREG1
 	s32i	a0, a2, PT_DEPC		# mark it as a regular exception
+=======
+3:
+	l32i	a0, a3, DT_DEBUG_SAVE
+	s32i	a1, a2, PT_AREG1
+	s32i	a0, a2, PT_AREG0
+	movi	a0, 0
+	s32i	a0, a2, PT_DEPC		# mark it as a regular exception
+	xsr	a3, SREG_EXCSAVE + XCHAL_DEBUGLEVEL
+>>>>>>> v4.9.227
 	xsr	a0, depc
 	s32i	a3, a2, PT_AREG3
 	s32i	a0, a2, PT_AREG2
 	mov	a1, a2
+<<<<<<< HEAD
+=======
+
+	/* Debug exception is handled as an exception, so interrupts will
+	 * likely be enabled in the common exception handler. Disable
+	 * preemption if we have HW breakpoints to preserve DEBUGCAUSE.DBNUM
+	 * meaning.
+	 */
+#if defined(CONFIG_PREEMPT_COUNT) && defined(CONFIG_HAVE_HW_BREAKPOINT)
+	GET_THREAD_INFO(a2, a1)
+	l32i	a3, a2, TI_PRE_COUNT
+	addi	a3, a3, 1
+	s32i	a3, a2, TI_PRE_COUNT
+#endif
+
+	rsr	a2, ps
+	bbsi.l	a2, PS_UM_BIT, _user_exception
+>>>>>>> v4.9.227
 	j	_kernel_exception
 
 2:	rsr	a2, excsave1
 	l32i	a2, a2, EXC_TABLE_KSTK	# load kernel stack pointer
+<<<<<<< HEAD
 	s32i	a0, a2, PT_AREG0
 	movi	a0, 0
 	s32i	a1, a2, PT_AREG1
@@ -758,6 +990,64 @@ ENTRY(debug_exception)
 
 	/* Debug exception while in exception mode. */
 1:	j	1b	// FIXME!!
+=======
+	j	3b
+
+#ifdef CONFIG_HAVE_HW_BREAKPOINT
+	/* Debug exception while in exception mode. This may happen when
+	 * window overflow/underflow handler or fast exception handler hits
+	 * data breakpoint, in which case save and disable all data
+	 * breakpoints, single-step faulting instruction and restore data
+	 * breakpoints.
+	 */
+1:
+	bbci.l	a0, PS_UM_BIT, 1b	# jump if kernel mode
+
+	rsr	a0, debugcause
+	bbsi.l	a0, DEBUGCAUSE_DBREAK_BIT, .Ldebug_save_dbreak
+
+	.set	_index, 0
+	.rept	XCHAL_NUM_DBREAK
+	l32i	a0, a3, DT_DBREAKC_SAVE + _index * 4
+	wsr	a0, SREG_DBREAKC + _index
+	.set	_index, _index + 1
+	.endr
+
+	l32i	a0, a3, DT_ICOUNT_LEVEL_SAVE
+	wsr	a0, icountlevel
+
+	l32i	a0, a3, DT_ICOUNT_SAVE
+	xsr	a0, icount
+
+	l32i	a0, a3, DT_DEBUG_SAVE
+	xsr	a3, SREG_EXCSAVE + XCHAL_DEBUGLEVEL
+	rfi	XCHAL_DEBUGLEVEL
+
+.Ldebug_save_dbreak:
+	.set	_index, 0
+	.rept	XCHAL_NUM_DBREAK
+	movi	a0, 0
+	xsr	a0, SREG_DBREAKC + _index
+	s32i	a0, a3, DT_DBREAKC_SAVE + _index * 4
+	.set	_index, _index + 1
+	.endr
+
+	movi	a0, XCHAL_EXCM_LEVEL + 1
+	xsr	a0, icountlevel
+	s32i	a0, a3, DT_ICOUNT_LEVEL_SAVE
+
+	movi	a0, 0xfffffffe
+	xsr	a0, icount
+	s32i	a0, a3, DT_ICOUNT_SAVE
+
+	l32i	a0, a3, DT_DEBUG_SAVE
+	xsr	a3, SREG_EXCSAVE + XCHAL_DEBUGLEVEL
+	rfi	XCHAL_DEBUGLEVEL
+#else
+	/* Debug exception while in exception mode. Should not happen. */
+1:	j	1b	// FIXME!!
+#endif
+>>>>>>> v4.9.227
 
 ENDPROC(debug_exception)
 
@@ -1502,10 +1792,18 @@ ENTRY(fast_second_level_miss)
 	 * The messy computation for 'pteval' above really simplifies
 	 * into the following:
 	 *
+<<<<<<< HEAD
 	 * pteval = ((pmdval - PAGE_OFFSET) & PAGE_MASK) | PAGE_DIRECTORY
 	 */
 
 	movi	a1, (-PAGE_OFFSET) & 0xffffffff
+=======
+	 * pteval = ((pmdval - PAGE_OFFSET + PHYS_OFFSET) & PAGE_MASK)
+	 *                 | PAGE_DIRECTORY
+	 */
+
+	movi	a1, (PHYS_OFFSET - PAGE_OFFSET) & 0xffffffff
+>>>>>>> v4.9.227
 	add	a0, a0, a1		# pmdval - PAGE_OFFSET
 	extui	a1, a0, 0, PAGE_SHIFT	# ... & PAGE_MASK
 	xor	a0, a0, a1
@@ -1562,6 +1860,16 @@ ENTRY(fast_second_level_miss)
 	rfde
 
 9:	l32i	a0, a1, TASK_ACTIVE_MM	# unlikely case mm == 0
+<<<<<<< HEAD
+=======
+	bnez	a0, 8b
+
+	/* Even more unlikely case active_mm == 0.
+	 * We can get here with NMI in the middle of context_switch that
+	 * touches vmalloc area.
+	 */
+	movi	a0, init_mm
+>>>>>>> v4.9.227
 	j	8b
 
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
@@ -1865,10 +2173,15 @@ ENTRY(_switch_to)
 
 	/* Disable ints while we manipulate the stack pointer. */
 
+<<<<<<< HEAD
 	rsil	a14, LOCKLEVEL
 	rsr	a3, excsave1
 	rsync
 	s32i	a3, a3, EXC_TABLE_FIXUP	/* enter critical section */
+=======
+	irq_save a14, a3
+	rsync
+>>>>>>> v4.9.227
 
 	/* Switch CPENABLE */
 
@@ -1889,9 +2202,13 @@ ENTRY(_switch_to)
 	 */
 
 	rsr	a3, excsave1		# exc_table
+<<<<<<< HEAD
 	movi	a6, 0
 	addi	a7, a5, PT_REGS_OFFSET
 	s32i	a6, a3, EXC_TABLE_FIXUP
+=======
+	addi	a7, a5, PT_REGS_OFFSET
+>>>>>>> v4.9.227
 	s32i	a7, a3, EXC_TABLE_KSTK
 
 	/* restore context of the task 'next' */

@@ -16,6 +16,7 @@
 #include <linux/usb/composite.h>
 #include <linux/usb/gadget.h>
 #include <linux/usb/storage.h>
+<<<<<<< HEAD
 #include <scsi/scsi.h>
 #include <scsi/scsi_tcq.h>
 #include <target/target_core_base.h>
@@ -2180,26 +2181,49 @@ static struct usb_descriptor_header *uasp_ss_function_desc[] = {
 	NULL,
 };
 
+=======
+#include <scsi/scsi_tcq.h>
+#include <target/target_core_base.h>
+#include <target/target_core_fabric.h>
+#include <asm/unaligned.h>
+
+#include "u_tcm.h"
+
+USB_GADGET_COMPOSITE_OPTIONS();
+
+>>>>>>> v4.9.227
 #define UAS_VENDOR_ID	0x0525	/* NetChip */
 #define UAS_PRODUCT_ID	0xa4a5	/* Linux-USB File-backed Storage Gadget */
 
 static struct usb_device_descriptor usbg_device_desc = {
 	.bLength =		sizeof(usbg_device_desc),
 	.bDescriptorType =	USB_DT_DEVICE,
+<<<<<<< HEAD
 	.bcdUSB =		cpu_to_le16(0x0200),
+=======
+	/* .bcdUSB = DYNAMIC */
+>>>>>>> v4.9.227
 	.bDeviceClass =		USB_CLASS_PER_INTERFACE,
 	.idVendor =		cpu_to_le16(UAS_VENDOR_ID),
 	.idProduct =		cpu_to_le16(UAS_PRODUCT_ID),
 	.bNumConfigurations =   1,
 };
 
+<<<<<<< HEAD
+=======
+#define USB_G_STR_CONFIG USB_GADGET_FIRST_AVAIL_IDX
+
+>>>>>>> v4.9.227
 static struct usb_string	usbg_us_strings[] = {
 	[USB_GADGET_MANUFACTURER_IDX].s	= "Target Manufactor",
 	[USB_GADGET_PRODUCT_IDX].s	= "Target Product",
 	[USB_GADGET_SERIAL_IDX].s	= "000000000001",
 	[USB_G_STR_CONFIG].s		= "default config",
+<<<<<<< HEAD
 	[USB_G_STR_INT_UAS].s		= "USB Attached SCSI",
 	[USB_G_STR_INT_BBB].s		= "Bulk Only Transport",
+=======
+>>>>>>> v4.9.227
 	{ },
 };
 
@@ -2213,8 +2237,36 @@ static struct usb_gadget_strings *usbg_strings[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static int guas_unbind(struct usb_composite_dev *cdev)
 {
+=======
+static struct usb_function_instance *fi_tcm;
+static struct usb_function *f_tcm;
+
+static int guas_unbind(struct usb_composite_dev *cdev)
+{
+	if (!IS_ERR_OR_NULL(f_tcm))
+		usb_put_function(f_tcm);
+
+	return 0;
+}
+
+static int tcm_do_config(struct usb_configuration *c)
+{
+	int status;
+
+	f_tcm = usb_get_function(fi_tcm);
+	if (IS_ERR(f_tcm))
+		return PTR_ERR(f_tcm);
+
+	status = usb_add_function(c, f_tcm);
+	if (status < 0) {
+		usb_put_function(f_tcm);
+		return status;
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -2224,6 +2276,7 @@ static struct usb_configuration usbg_config_driver = {
 	.bmAttributes           = USB_CONFIG_ATT_SELFPOWER,
 };
 
+<<<<<<< HEAD
 static void give_back_ep(struct usb_ep **pep)
 {
 	struct usb_ep *ep = *pep;
@@ -2409,6 +2462,10 @@ err:
 	kfree(fu);
 	return ret;
 }
+=======
+static int usbg_attach(struct usb_function_instance *f);
+static void usbg_detach(struct usb_function_instance *f);
+>>>>>>> v4.9.227
 
 static int usb_target_bind(struct usb_composite_dev *cdev)
 {
@@ -2426,15 +2483,23 @@ static int usb_target_bind(struct usb_composite_dev *cdev)
 	usbg_config_driver.iConfiguration =
 		usbg_us_strings[USB_G_STR_CONFIG].id;
 
+<<<<<<< HEAD
 	ret = usb_add_config(cdev, &usbg_config_driver,
 			usbg_cfg_bind);
+=======
+	ret = usb_add_config(cdev, &usbg_config_driver, tcm_do_config);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 	usb_composite_overwrite_options(cdev, &coverwrite);
 	return 0;
 }
 
+<<<<<<< HEAD
 static __refdata struct usb_composite_driver usbg_driver = {
+=======
+static struct usb_composite_driver usbg_driver = {
+>>>>>>> v4.9.227
 	.name           = "g_target",
 	.dev            = &usbg_device_desc,
 	.strings        = usbg_strings,
@@ -2443,28 +2508,63 @@ static __refdata struct usb_composite_driver usbg_driver = {
 	.unbind         = guas_unbind,
 };
 
+<<<<<<< HEAD
 static int usbg_attach(struct usbg_tpg *tpg)
+=======
+static int usbg_attach(struct usb_function_instance *f)
+>>>>>>> v4.9.227
 {
 	return usb_composite_probe(&usbg_driver);
 }
 
+<<<<<<< HEAD
 static void usbg_detach(struct usbg_tpg *tpg)
+=======
+static void usbg_detach(struct usb_function_instance *f)
+>>>>>>> v4.9.227
 {
 	usb_composite_unregister(&usbg_driver);
 }
 
 static int __init usb_target_gadget_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = usbg_register_configfs();
 	return ret;
+=======
+	struct f_tcm_opts *tcm_opts;
+
+	fi_tcm = usb_get_function_instance("tcm");
+	if (IS_ERR(fi_tcm))
+		return PTR_ERR(fi_tcm);
+
+	tcm_opts = container_of(fi_tcm, struct f_tcm_opts, func_inst);
+	mutex_lock(&tcm_opts->dep_lock);
+	tcm_opts->tcm_register_callback = usbg_attach;
+	tcm_opts->tcm_unregister_callback = usbg_detach;
+	tcm_opts->dependent = THIS_MODULE;
+	tcm_opts->can_attach = true;
+	tcm_opts->has_dep = true;
+	mutex_unlock(&tcm_opts->dep_lock);
+
+	fi_tcm->set_inst_name(fi_tcm, "tcm-legacy");
+
+	return 0;
+>>>>>>> v4.9.227
 }
 module_init(usb_target_gadget_init);
 
 static void __exit usb_target_gadget_exit(void)
 {
+<<<<<<< HEAD
 	usbg_deregister_configfs();
+=======
+	if (!IS_ERR_OR_NULL(fi_tcm))
+		usb_put_function_instance(fi_tcm);
+
+>>>>>>> v4.9.227
 }
 module_exit(usb_target_gadget_exit);
 

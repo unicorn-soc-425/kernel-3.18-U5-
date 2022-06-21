@@ -338,10 +338,19 @@ ENTRY(sun4v_mach_set_watchdog)
 	mov	%o1, %o4
 	mov	HV_FAST_MACH_SET_WATCHDOG, %o5
 	ta	HV_FAST_TRAP
+<<<<<<< HEAD
 	stx	%o1, [%o4]
 	retl
 	 nop
 ENDPROC(sun4v_mach_set_watchdog)
+=======
+	brnz,a,pn %o4, 0f
+	stx	%o1, [%o4]
+0:	retl
+	 nop
+ENDPROC(sun4v_mach_set_watchdog)
+EXPORT_SYMBOL(sun4v_mach_set_watchdog)
+>>>>>>> v4.9.227
 
 	/* No inputs and does not return.  */
 ENTRY(sun4v_mach_sir)
@@ -775,6 +784,10 @@ ENTRY(sun4v_niagara_getperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara_getperf)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(sun4v_niagara_getperf)
+>>>>>>> v4.9.227
 
 ENTRY(sun4v_niagara_setperf)
 	mov	HV_FAST_SET_PERFREG, %o5
@@ -782,6 +795,10 @@ ENTRY(sun4v_niagara_setperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara_setperf)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(sun4v_niagara_setperf)
+>>>>>>> v4.9.227
 
 ENTRY(sun4v_niagara2_getperf)
 	mov	%o0, %o4
@@ -791,6 +808,10 @@ ENTRY(sun4v_niagara2_getperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara2_getperf)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(sun4v_niagara2_getperf)
+>>>>>>> v4.9.227
 
 ENTRY(sun4v_niagara2_setperf)
 	mov	HV_FAST_N2_SET_PERFREG, %o5
@@ -798,6 +819,10 @@ ENTRY(sun4v_niagara2_setperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara2_setperf)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(sun4v_niagara2_setperf)
+>>>>>>> v4.9.227
 
 ENTRY(sun4v_reboot_data_set)
 	mov	HV_FAST_REBOOT_DATA_SET, %o5
@@ -837,3 +862,22 @@ ENTRY(sun4v_t5_set_perfreg)
 	retl
 	 nop
 ENDPROC(sun4v_t5_set_perfreg)
+<<<<<<< HEAD
+=======
+
+ENTRY(sun4v_m7_get_perfreg)
+	mov	%o1, %o4
+	mov	HV_FAST_M7_GET_PERFREG, %o5
+	ta	HV_FAST_TRAP
+	stx	%o1, [%o4]
+	retl
+	nop
+ENDPROC(sun4v_m7_get_perfreg)
+
+ENTRY(sun4v_m7_set_perfreg)
+	mov	HV_FAST_M7_SET_PERFREG, %o5
+	ta	HV_FAST_TRAP
+	retl
+	nop
+ENDPROC(sun4v_m7_set_perfreg)
+>>>>>>> v4.9.227

@@ -10,6 +10,13 @@
 		serial0 = &uartd;
 	};
 
+<<<<<<< HEAD
+=======
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+>>>>>>> v4.9.227
 	pwm@7000a000 {
 		status = "okay";
 	};

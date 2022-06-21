@@ -40,7 +40,10 @@ struct s3c2410_nand_set {
 	char			*name;
 	int			*nr_map;
 	struct mtd_partition	*partitions;
+<<<<<<< HEAD
 	struct nand_ecclayout	*ecc_layout;
+=======
+>>>>>>> v4.9.227
 };
 
 struct s3c2410_platform_nand {

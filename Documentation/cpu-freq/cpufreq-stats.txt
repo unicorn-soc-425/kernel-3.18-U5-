@@ -103,7 +103,11 @@ Config Main Menu
 	Power management options (ACPI, APM)  --->
 		CPU Frequency scaling  --->
 			[*] CPU Frequency scaling
+<<<<<<< HEAD
 			<*>   CPU frequency translation statistics 
+=======
+			[*]   CPU frequency translation statistics
+>>>>>>> v4.9.227
 			[*]     CPU frequency translation statistics details
 
 

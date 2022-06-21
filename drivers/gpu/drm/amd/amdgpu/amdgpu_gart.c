@@ -221,7 +221,11 @@ void amdgpu_gart_table_vram_free(struct amdgpu_device *adev)
  * Unbinds the requested pages from the gart page table and
  * replaces them with the dummy page (all asics).
  */
+<<<<<<< HEAD
 void amdgpu_gart_unbind(struct amdgpu_device *adev, unsigned offset,
+=======
+void amdgpu_gart_unbind(struct amdgpu_device *adev, uint64_t offset,
+>>>>>>> v4.9.227
 			int pages)
 {
 	unsigned t;
@@ -238,6 +242,7 @@ void amdgpu_gart_unbind(struct amdgpu_device *adev, unsigned offset,
 	t = offset / AMDGPU_GPU_PAGE_SIZE;
 	p = t / (PAGE_SIZE / AMDGPU_GPU_PAGE_SIZE);
 	for (i = 0; i < pages; i++, p++) {
+<<<<<<< HEAD
 		if (adev->gart.pages[p]) {
 			adev->gart.pages[p] = NULL;
 			adev->gart.pages_addr[p] = adev->dummy_page.addr;
@@ -250,6 +255,19 @@ void amdgpu_gart_unbind(struct amdgpu_device *adev, unsigned offset,
 							t, page_base, flags);
 				page_base += AMDGPU_GPU_PAGE_SIZE;
 			}
+=======
+#ifdef CONFIG_DRM_AMDGPU_GART_DEBUGFS
+		adev->gart.pages[p] = NULL;
+#endif
+		page_base = adev->dummy_page.addr;
+		if (!adev->gart.ptr)
+			continue;
+
+		for (j = 0; j < (PAGE_SIZE / AMDGPU_GPU_PAGE_SIZE); j++, t++) {
+			amdgpu_gart_set_pte_pde(adev, adev->gart.ptr,
+						t, page_base, flags);
+			page_base += AMDGPU_GPU_PAGE_SIZE;
+>>>>>>> v4.9.227
 		}
 	}
 	mb();
@@ -269,7 +287,11 @@ void amdgpu_gart_unbind(struct amdgpu_device *adev, unsigned offset,
  * (all asics).
  * Returns 0 for success, -EINVAL for failure.
  */
+<<<<<<< HEAD
 int amdgpu_gart_bind(struct amdgpu_device *adev, unsigned offset,
+=======
+int amdgpu_gart_bind(struct amdgpu_device *adev, uint64_t offset,
+>>>>>>> v4.9.227
 		     int pages, struct page **pagelist, dma_addr_t *dma_addr,
 		     uint32_t flags)
 {
@@ -287,10 +309,18 @@ int amdgpu_gart_bind(struct amdgpu_device *adev, unsigned offset,
 	p = t / (PAGE_SIZE / AMDGPU_GPU_PAGE_SIZE);
 
 	for (i = 0; i < pages; i++, p++) {
+<<<<<<< HEAD
 		adev->gart.pages_addr[p] = dma_addr[i];
 		adev->gart.pages[p] = pagelist[i];
 		if (adev->gart.ptr) {
 			page_base = adev->gart.pages_addr[p];
+=======
+#ifdef CONFIG_DRM_AMDGPU_GART_DEBUGFS
+		adev->gart.pages[p] = pagelist[i];
+#endif
+		if (adev->gart.ptr) {
+			page_base = dma_addr[i];
+>>>>>>> v4.9.227
 			for (j = 0; j < (PAGE_SIZE / AMDGPU_GPU_PAGE_SIZE); j++, t++) {
 				amdgpu_gart_set_pte_pde(adev, adev->gart.ptr, t, page_base, flags);
 				page_base += AMDGPU_GPU_PAGE_SIZE;
@@ -312,11 +342,19 @@ int amdgpu_gart_bind(struct amdgpu_device *adev, unsigned offset,
  */
 int amdgpu_gart_init(struct amdgpu_device *adev)
 {
+<<<<<<< HEAD
 	int r, i;
 
 	if (adev->gart.pages) {
 		return 0;
 	}
+=======
+	int r;
+
+	if (adev->dummy_page.page)
+		return 0;
+
+>>>>>>> v4.9.227
 	/* We need PAGE_SIZE >= AMDGPU_GPU_PAGE_SIZE */
 	if (PAGE_SIZE < AMDGPU_GPU_PAGE_SIZE) {
 		DRM_ERROR("Page size is smaller than GPU page size!\n");
@@ -330,12 +368,18 @@ int amdgpu_gart_init(struct amdgpu_device *adev)
 	adev->gart.num_gpu_pages = adev->mc.gtt_size / AMDGPU_GPU_PAGE_SIZE;
 	DRM_INFO("GART: num cpu pages %u, num gpu pages %u\n",
 		 adev->gart.num_cpu_pages, adev->gart.num_gpu_pages);
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_DRM_AMDGPU_GART_DEBUGFS
+>>>>>>> v4.9.227
 	/* Allocate pages table */
 	adev->gart.pages = vzalloc(sizeof(void *) * adev->gart.num_cpu_pages);
 	if (adev->gart.pages == NULL) {
 		amdgpu_gart_fini(adev);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	adev->gart.pages_addr = vzalloc(sizeof(dma_addr_t) *
 					adev->gart.num_cpu_pages);
 	if (adev->gart.pages_addr == NULL) {
@@ -346,6 +390,10 @@ int amdgpu_gart_init(struct amdgpu_device *adev)
 	for (i = 0; i < adev->gart.num_cpu_pages; i++) {
 		adev->gart.pages_addr[i] = adev->dummy_page.addr;
 	}
+=======
+#endif
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -358,15 +406,26 @@ int amdgpu_gart_init(struct amdgpu_device *adev)
  */
 void amdgpu_gart_fini(struct amdgpu_device *adev)
 {
+<<<<<<< HEAD
 	if (adev->gart.pages && adev->gart.pages_addr && adev->gart.ready) {
+=======
+	if (adev->gart.ready) {
+>>>>>>> v4.9.227
 		/* unbind pages */
 		amdgpu_gart_unbind(adev, 0, adev->gart.num_cpu_pages);
 	}
 	adev->gart.ready = false;
+<<<<<<< HEAD
 	vfree(adev->gart.pages);
 	vfree(adev->gart.pages_addr);
 	adev->gart.pages = NULL;
 	adev->gart.pages_addr = NULL;
 
+=======
+#ifdef CONFIG_DRM_AMDGPU_GART_DEBUGFS
+	vfree(adev->gart.pages);
+	adev->gart.pages = NULL;
+#endif
+>>>>>>> v4.9.227
 	amdgpu_dummy_page_fini(adev);
 }

@@ -241,6 +241,10 @@ struct iscsi_cls_session {
 
 	/* recovery fields */
 	int recovery_tmo;
+<<<<<<< HEAD
+=======
+	bool recovery_tmo_sysfs_override;
+>>>>>>> v4.9.227
 	struct delayed_work recovery_work;
 
 	unsigned int target_id;

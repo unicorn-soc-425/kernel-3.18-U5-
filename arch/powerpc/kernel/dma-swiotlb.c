@@ -47,8 +47,13 @@ static u64 swiotlb_powerpc_get_required(struct device *dev)
  * for everything else.
  */
 struct dma_map_ops swiotlb_dma_ops = {
+<<<<<<< HEAD
 	.alloc = dma_direct_alloc_coherent,
 	.free = dma_direct_free_coherent,
+=======
+	.alloc = __dma_direct_alloc_coherent,
+	.free = __dma_direct_free_coherent,
+>>>>>>> v4.9.227
 	.mmap = dma_direct_mmap_coherent,
 	.map_sg = swiotlb_map_sg_attrs,
 	.unmap_sg = swiotlb_unmap_sg_attrs,
@@ -116,6 +121,7 @@ void __init swiotlb_detect_4g(void)
 	}
 }
 
+<<<<<<< HEAD
 static int __init swiotlb_late_init(void)
 {
 	if (ppc_swiotlb_enable) {
@@ -129,3 +135,15 @@ static int __init swiotlb_late_init(void)
 	return 0;
 }
 subsys_initcall(swiotlb_late_init);
+=======
+static int __init check_swiotlb_enabled(void)
+{
+	if (ppc_swiotlb_enable)
+		swiotlb_print_info();
+	else
+		swiotlb_free();
+
+	return 0;
+}
+subsys_initcall(check_swiotlb_enabled);
+>>>>>>> v4.9.227

@@ -110,6 +110,7 @@ static const struct reg_default cs42l52_reg_defaults[] = {
 static bool cs42l52_readable_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
+<<<<<<< HEAD
 	case CS42L52_CHIP:
 	case CS42L52_PWRCTL1:
 	case CS42L52_PWRCTL2:
@@ -162,6 +163,9 @@ static bool cs42l52_readable_register(struct device *dev, unsigned int reg)
 	case CS42L52_TEM_CTL:
 	case CS42L52_THE_FOLDBACK:
 	case CS42L52_CHARGE_PUMP:
+=======
+	case CS42L52_CHIP ... CS42L52_CHARGE_PUMP:
+>>>>>>> v4.9.227
 		return true;
 	default:
 		return false;
@@ -196,11 +200,18 @@ static DECLARE_TLV_DB_SCALE(mix_tlv, -50, 50, 0);
 
 static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
 
+<<<<<<< HEAD
 static const unsigned int limiter_tlv[] = {
 	TLV_DB_RANGE_HEAD(2),
 	0, 2, TLV_DB_SCALE_ITEM(-3000, 600, 0),
 	3, 7, TLV_DB_SCALE_ITEM(-1200, 300, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(limiter_tlv,
+	0, 2, TLV_DB_SCALE_ITEM(-3000, 600, 0),
+	3, 7, TLV_DB_SCALE_ITEM(-1200, 300, 0)
+);
+>>>>>>> v4.9.227
 
 static const char * const cs42l52_adca_text[] = {
 	"Input1A", "Input2A", "Input3A", "Input4A", "PGA Input Left"};
@@ -897,7 +908,11 @@ static int cs42l52_set_bias_level(struct snd_soc_codec *codec,
 				    CS42L52_PWRCTL1_PDN_CODEC, 0);
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			regcache_cache_only(cs42l52->regmap, false);
 			regcache_sync(cs42l52->regmap);
 		}
@@ -908,7 +923,10 @@ static int cs42l52_set_bias_level(struct snd_soc_codec *codec,
 		regcache_cache_only(cs42l52->regmap, true);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -920,7 +938,11 @@ static int cs42l52_set_bias_level(struct snd_soc_codec *codec,
 			SNDRV_PCM_FMTBIT_S20_3LE | SNDRV_PCM_FMTBIT_U20_3LE | \
 			SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_U24_LE)
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops cs42l52_ops = {
+=======
+static const struct snd_soc_dai_ops cs42l52_ops = {
+>>>>>>> v4.9.227
 	.hw_params	= cs42l52_pcm_hw_params,
 	.digital_mute	= cs42l52_digital_mute,
 	.set_fmt	= cs42l52_set_fmt,
@@ -956,7 +978,11 @@ static void cs42l52_beep_work(struct work_struct *work)
 	struct cs42l52_private *cs42l52 =
 		container_of(work, struct cs42l52_private, beep_work);
 	struct snd_soc_codec *codec = cs42l52->codec;
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 	int i;
 	int val = 0;
 	int best = 0;
@@ -1103,12 +1129,17 @@ static int cs42l52_remove(struct snd_soc_codec *codec)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_cs42l52 = {
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_cs42l52 = {
+>>>>>>> v4.9.227
 	.probe = cs42l52_probe,
 	.remove = cs42l52_remove,
 	.set_bias_level = cs42l52_set_bias_level,
 	.suspend_bias_off = true,
 
+<<<<<<< HEAD
 	.dapm_widgets = cs42l52_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(cs42l52_dapm_widgets),
 	.dapm_routes = cs42l52_audio_map,
@@ -1120,6 +1151,20 @@ static struct snd_soc_codec_driver soc_codec_dev_cs42l52 = {
 
 /* Current and threshold powerup sequence Pg37 */
 static const struct reg_default cs42l52_threshold_patch[] = {
+=======
+	.component_driver = {
+		.controls		= cs42l52_snd_controls,
+		.num_controls		= ARRAY_SIZE(cs42l52_snd_controls),
+		.dapm_widgets		= cs42l52_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(cs42l52_dapm_widgets),
+		.dapm_routes		= cs42l52_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(cs42l52_audio_map),
+	},
+};
+
+/* Current and threshold powerup sequence Pg37 */
+static const struct reg_sequence cs42l52_threshold_patch[] = {
+>>>>>>> v4.9.227
 
 	{ 0x00, 0x99 },
 	{ 0x3E, 0xBA },
@@ -1130,7 +1175,11 @@ static const struct reg_default cs42l52_threshold_patch[] = {
 
 };
 
+<<<<<<< HEAD
 static struct regmap_config cs42l52_regmap = {
+=======
+static const struct regmap_config cs42l52_regmap = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 
@@ -1286,7 +1335,10 @@ MODULE_DEVICE_TABLE(i2c, cs42l52_id);
 static struct i2c_driver cs42l52_i2c_driver = {
 	.driver = {
 		.name = "cs42l52",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = cs42l52_of_match,
 	},
 	.id_table = cs42l52_id,

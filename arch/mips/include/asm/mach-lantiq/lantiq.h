@@ -3,7 +3,11 @@
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
+<<<<<<< HEAD
  *  Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+ *  Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  */
 #ifndef _LANTIQ_H__
 #define _LANTIQ_H__
@@ -48,6 +52,11 @@ extern struct clk *clk_get_ppe(void);
 extern unsigned char ltq_boot_select(void);
 /* find out what caused the last cpu reset */
 extern int ltq_reset_cause(void);
+<<<<<<< HEAD
+=======
+/* find out the soc type */
+extern int ltq_soc_type(void);
+>>>>>>> v4.9.227
 
 #define IOPORT_RESOURCE_START	0x10000000
 #define IOPORT_RESOURCE_END	0xffffffff

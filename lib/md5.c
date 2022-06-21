@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #include <linux/kernel.h>
+=======
+#include <linux/compiler.h>
+>>>>>>> v4.9.227
 #include <linux/export.h>
 #include <linux/cryptohash.h>
 

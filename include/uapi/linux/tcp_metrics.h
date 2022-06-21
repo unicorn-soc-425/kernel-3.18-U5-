@@ -40,6 +40,10 @@ enum {
 	TCP_METRICS_ATTR_FOPEN_COOKIE,		/* binary */
 	TCP_METRICS_ATTR_SADDR_IPV4,		/* u32 */
 	TCP_METRICS_ATTR_SADDR_IPV6,		/* binary */
+<<<<<<< HEAD
+=======
+	TCP_METRICS_ATTR_PAD,
+>>>>>>> v4.9.227
 
 	__TCP_METRICS_ATTR_MAX,
 };

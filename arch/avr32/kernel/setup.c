@@ -49,13 +49,21 @@ static struct resource __initdata kernel_data = {
 	.name	= "Kernel data",
 	.start	= 0,
 	.end	= 0,
+<<<<<<< HEAD
 	.flags	= IORESOURCE_MEM,
+=======
+	.flags	= IORESOURCE_SYSTEM_RAM,
+>>>>>>> v4.9.227
 };
 static struct resource __initdata kernel_code = {
 	.name	= "Kernel code",
 	.start	= 0,
 	.end	= 0,
+<<<<<<< HEAD
 	.flags	= IORESOURCE_MEM,
+=======
+	.flags	= IORESOURCE_SYSTEM_RAM,
+>>>>>>> v4.9.227
 	.sibling = &kernel_data,
 };
 
@@ -134,7 +142,11 @@ add_physical_memory(resource_size_t start, resource_size_t end)
 	new->start = start;
 	new->end = end;
 	new->name = "System RAM";
+<<<<<<< HEAD
 	new->flags = IORESOURCE_MEM;
+=======
+	new->flags = IORESOURCE_SYSTEM_RAM;
+>>>>>>> v4.9.227
 
 	*pprev = new;
 }

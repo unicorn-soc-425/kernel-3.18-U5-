@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -55,7 +59,12 @@ void obdo_set_parent_fid(struct obdo *dst, const struct lu_fid *parent)
 EXPORT_SYMBOL(obdo_set_parent_fid);
 
 /* WARNING: the file systems must take care not to tinker with
+<<<<<<< HEAD
    attributes they don't manage (such as blocks). */
+=======
+ * attributes they don't manage (such as blocks).
+ */
+>>>>>>> v4.9.227
 void obdo_from_inode(struct obdo *dst, struct inode *src, u32 valid)
 {
 	u32 newvalid = 0;
@@ -115,6 +124,7 @@ void obdo_from_inode(struct obdo *dst, struct inode *src, u32 valid)
 }
 EXPORT_SYMBOL(obdo_from_inode);
 
+<<<<<<< HEAD
 void obdo_cpy_md(struct obdo *dst, struct obdo *src, u32 valid)
 {
 	CDEBUG(D_INODE, "src obdo "DOSTID" valid %#llx, dst obdo "DOSTID"\n",
@@ -200,17 +210,26 @@ int obdo_cmp_md(struct obdo *dst, struct obdo *src, u32 compare)
 EXPORT_SYMBOL(obdo_cmp_md);
 
 void obdo_to_ioobj(struct obdo *oa, struct obd_ioobj *ioobj)
+=======
+void obdo_to_ioobj(const struct obdo *oa, struct obd_ioobj *ioobj)
+>>>>>>> v4.9.227
 {
 	ioobj->ioo_oid = oa->o_oi;
 	if (unlikely(!(oa->o_valid & OBD_MD_FLGROUP)))
 		ostid_set_seq_mdt0(&ioobj->ioo_oid);
 
 	/* Since 2.4 this does not contain o_mode in the low 16 bits.
+<<<<<<< HEAD
 	 * Instead, it holds (bd_md_max_brw - 1) for multi-bulk BRW RPCs */
+=======
+	 * Instead, it holds (bd_md_max_brw - 1) for multi-bulk BRW RPCs
+	 */
+>>>>>>> v4.9.227
 	ioobj->ioo_max_brw = 0;
 }
 EXPORT_SYMBOL(obdo_to_ioobj);
 
+<<<<<<< HEAD
 void obdo_from_iattr(struct obdo *oa, struct iattr *attr, unsigned int ia_valid)
 {
 	if (ia_valid & ATTR_ATIME) {
@@ -248,6 +267,10 @@ void obdo_from_iattr(struct obdo *oa, struct iattr *attr, unsigned int ia_valid)
 EXPORT_SYMBOL(obdo_from_iattr);
 
 void iattr_from_obdo(struct iattr *attr, struct obdo *oa, u32 valid)
+=======
+static void iattr_from_obdo(struct iattr *attr, const struct obdo *oa,
+			    u32 valid)
+>>>>>>> v4.9.227
 {
 	valid &= oa->o_valid;
 
@@ -274,12 +297,22 @@ void iattr_from_obdo(struct iattr *attr, struct obdo *oa, u32 valid)
 	}
 #if 0   /* you shouldn't be able to change a file's type with setattr */
 	if (valid & OBD_MD_FLTYPE) {
+<<<<<<< HEAD
 		attr->ia_mode = (attr->ia_mode & ~S_IFMT)|(oa->o_mode & S_IFMT);
+=======
+		attr->ia_mode = (attr->ia_mode & ~S_IFMT) |
+				(oa->o_mode & S_IFMT);
+>>>>>>> v4.9.227
 		attr->ia_valid |= ATTR_MODE;
 	}
 #endif
 	if (valid & OBD_MD_FLMODE) {
+<<<<<<< HEAD
 		attr->ia_mode = (attr->ia_mode & S_IFMT)|(oa->o_mode & ~S_IFMT);
+=======
+		attr->ia_mode = (attr->ia_mode & S_IFMT) |
+				(oa->o_mode & ~S_IFMT);
+>>>>>>> v4.9.227
 		attr->ia_valid |= ATTR_MODE;
 		if (!in_group_p(make_kgid(&init_user_ns, oa->o_gid)) &&
 		    !capable(CFS_CAP_FSETID))
@@ -294,9 +327,14 @@ void iattr_from_obdo(struct iattr *attr, struct obdo *oa, u32 valid)
 		attr->ia_valid |= ATTR_GID;
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(iattr_from_obdo);
 
 void md_from_obdo(struct md_op_data *op_data, struct obdo *oa, u32 valid)
+=======
+
+void md_from_obdo(struct md_op_data *op_data, const struct obdo *oa, u32 valid)
+>>>>>>> v4.9.227
 {
 	iattr_from_obdo(&op_data->op_attr, oa, valid);
 	if (valid & OBD_MD_FLBLOCKS) {
@@ -304,12 +342,17 @@ void md_from_obdo(struct md_op_data *op_data, struct obdo *oa, u32 valid)
 		op_data->op_attr.ia_valid |= ATTR_BLOCKS;
 	}
 	if (valid & OBD_MD_FLFLAGS) {
+<<<<<<< HEAD
 		((struct ll_iattr *)&op_data->op_attr)->ia_attr_flags =
 			oa->o_flags;
+=======
+		op_data->op_attr_flags = oa->o_flags;
+>>>>>>> v4.9.227
 		op_data->op_attr.ia_valid |= ATTR_ATTR_FLAG;
 	}
 }
 EXPORT_SYMBOL(md_from_obdo);
+<<<<<<< HEAD
 
 void obdo_from_md(struct obdo *oa, struct md_op_data *op_data,
 		  unsigned int valid)
@@ -360,3 +403,5 @@ void obdo_le_to_cpu(struct obdo *dobdo, struct obdo *sobdo)
 	dobdo->o_valid = le64_to_cpu(sobdo->o_valid);
 }
 EXPORT_SYMBOL(obdo_le_to_cpu);
+=======
+>>>>>>> v4.9.227

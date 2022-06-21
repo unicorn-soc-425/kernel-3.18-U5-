@@ -9,7 +9,11 @@
  */
 
 &prcm_clocks {
+<<<<<<< HEAD
 	sys_clkout2_src_gate: sys_clkout2_src_gate {
+=======
+	sys_clkout2_src_gate: sys_clkout2_src_gate@70 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,composite-no-wait-gate-clock";
 		clocks = <&core_ck>;
@@ -17,7 +21,11 @@
 		reg = <0x0070>;
 	};
 
+<<<<<<< HEAD
 	sys_clkout2_src_mux: sys_clkout2_src_mux {
+=======
+	sys_clkout2_src_mux: sys_clkout2_src_mux@70 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,composite-mux-clock";
 		clocks = <&core_ck>, <&sys_ck>, <&func_96m_ck>, <&func_54m_ck>;
@@ -31,7 +39,11 @@
 		clocks = <&sys_clkout2_src_gate>, <&sys_clkout2_src_mux>;
 	};
 
+<<<<<<< HEAD
 	sys_clkout2: sys_clkout2 {
+=======
+	sys_clkout2: sys_clkout2@70 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,divider-clock";
 		clocks = <&sys_clkout2_src>;
@@ -41,7 +53,11 @@
 		ti,index-power-of-two;
 	};
 
+<<<<<<< HEAD
 	dsp_gate_ick: dsp_gate_ick {
+=======
+	dsp_gate_ick: dsp_gate_ick@810 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,composite-interface-clock";
 		clocks = <&dsp_fck>;
@@ -49,7 +65,11 @@
 		reg = <0x0810>;
 	};
 
+<<<<<<< HEAD
 	dsp_div_ick: dsp_div_ick {
+=======
+	dsp_div_ick: dsp_div_ick@840 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,composite-divider-clock";
 		clocks = <&dsp_fck>;
@@ -65,7 +85,11 @@
 		clocks = <&dsp_gate_ick>, <&dsp_div_ick>;
 	};
 
+<<<<<<< HEAD
 	iva1_gate_ifck: iva1_gate_ifck {
+=======
+	iva1_gate_ifck: iva1_gate_ifck@800 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,composite-gate-clock";
 		clocks = <&core_ck>;
@@ -73,7 +97,11 @@
 		reg = <0x0800>;
 	};
 
+<<<<<<< HEAD
 	iva1_div_ifck: iva1_div_ifck {
+=======
+	iva1_div_ifck: iva1_div_ifck@840 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,composite-divider-clock";
 		clocks = <&core_ck>;
@@ -96,7 +124,11 @@
 		clock-div = <2>;
 	};
 
+<<<<<<< HEAD
 	iva1_mpu_int_ifck: iva1_mpu_int_ifck {
+=======
+	iva1_mpu_int_ifck: iva1_mpu_int_ifck@800 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
 		clocks = <&iva1_ifck_div>;
@@ -104,7 +136,11 @@
 		reg = <0x0800>;
 	};
 
+<<<<<<< HEAD
 	wdt3_ick: wdt3_ick {
+=======
+	wdt3_ick: wdt3_ick@210 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&l4_ck>;
@@ -112,7 +148,11 @@
 		reg = <0x0210>;
 	};
 
+<<<<<<< HEAD
 	wdt3_fck: wdt3_fck {
+=======
+	wdt3_fck: wdt3_fck@200 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
 		clocks = <&func_32k_ck>;
@@ -120,7 +160,11 @@
 		reg = <0x0200>;
 	};
 
+<<<<<<< HEAD
 	mmc_ick: mmc_ick {
+=======
+	mmc_ick: mmc_ick@210 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&l4_ck>;
@@ -128,7 +172,11 @@
 		reg = <0x0210>;
 	};
 
+<<<<<<< HEAD
 	mmc_fck: mmc_fck {
+=======
+	mmc_fck: mmc_fck@200 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
 		clocks = <&func_96m_ck>;
@@ -136,7 +184,11 @@
 		reg = <0x0200>;
 	};
 
+<<<<<<< HEAD
 	eac_ick: eac_ick {
+=======
+	eac_ick: eac_ick@210 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&l4_ck>;
@@ -144,7 +196,11 @@
 		reg = <0x0210>;
 	};
 
+<<<<<<< HEAD
 	eac_fck: eac_fck {
+=======
+	eac_fck: eac_fck@200 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
 		clocks = <&func_96m_ck>;
@@ -152,7 +208,11 @@
 		reg = <0x0200>;
 	};
 
+<<<<<<< HEAD
 	i2c1_fck: i2c1_fck {
+=======
+	i2c1_fck: i2c1_fck@200 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
 		clocks = <&func_12m_ck>;
@@ -160,7 +220,11 @@
 		reg = <0x0200>;
 	};
 
+<<<<<<< HEAD
 	i2c2_fck: i2c2_fck {
+=======
+	i2c2_fck: i2c2_fck@200 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
 		clocks = <&func_12m_ck>;
@@ -168,7 +232,11 @@
 		reg = <0x0200>;
 	};
 
+<<<<<<< HEAD
 	vlynq_ick: vlynq_ick {
+=======
+	vlynq_ick: vlynq_ick@210 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,omap3-interface-clock";
 		clocks = <&core_l3_ck>;
@@ -176,7 +244,11 @@
 		reg = <0x0210>;
 	};
 
+<<<<<<< HEAD
 	vlynq_gate_fck: vlynq_gate_fck {
+=======
+	vlynq_gate_fck: vlynq_gate_fck@200 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,composite-gate-clock";
 		clocks = <&core_ck>;
@@ -192,7 +264,11 @@
 		clock-div = <18>;
 	};
 
+<<<<<<< HEAD
 	vlynq_mux_fck: vlynq_mux_fck {
+=======
+	vlynq_mux_fck: vlynq_mux_fck@240 {
+>>>>>>> v4.9.227
 		#clock-cells = <0>;
 		compatible = "ti,composite-mux-clock";
 		clocks = <&func_96m_ck>, <&core_ck>, <&core_d2_ck>, <&core_d3_ck>, <&core_d4_ck>, <&dummy_ck>, <&core_d6_ck>, <&dummy_ck>, <&core_d8_ck>, <&core_d9_ck>, <&dummy_ck>, <&dummy_ck>, <&core_d12_ck>, <&dummy_ck>, <&dummy_ck>, <&dummy_ck>, <&core_d16_ck>, <&dummy_ck>, <&core_d18_ck>;

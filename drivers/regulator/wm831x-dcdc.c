@@ -327,8 +327,13 @@ static int wm831x_buckv_get_voltage_sel(struct regulator_dev *rdev)
 }
 
 /* Current limit options */
+<<<<<<< HEAD
 static u16 wm831x_dcdc_ilim[] = {
 	125, 250, 375, 500, 625, 750, 875, 1000
+=======
+static const unsigned int wm831x_dcdc_ilim[] = {
+	125000, 250000, 375000, 500000, 625000, 750000, 875000, 1000000
+>>>>>>> v4.9.227
 };
 
 static int wm831x_buckv_set_current_limit(struct regulator_dev *rdev,
@@ -365,7 +370,11 @@ static int wm831x_buckv_get_current_limit(struct regulator_dev *rdev)
 	return wm831x_dcdc_ilim[val];
 }
 
+<<<<<<< HEAD
 static struct regulator_ops wm831x_buckv_ops = {
+=======
+static const struct regulator_ops wm831x_buckv_ops = {
+>>>>>>> v4.9.227
 	.set_voltage_sel = wm831x_buckv_set_voltage_sel,
 	.get_voltage_sel = wm831x_buckv_get_voltage_sel,
 	.list_voltage = wm831x_buckv_list_voltage,
@@ -533,7 +542,12 @@ static int wm831x_buckv_probe(struct platform_device *pdev)
 	irq = wm831x_irq(wm831x, platform_get_irq_byname(pdev, "UV"));
 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
 					wm831x_dcdc_uv_irq,
+<<<<<<< HEAD
 					IRQF_TRIGGER_RISING, dcdc->name, dcdc);
+=======
+					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+					dcdc->name, dcdc);
+>>>>>>> v4.9.227
 	if (ret != 0) {
 		dev_err(&pdev->dev, "Failed to request UV IRQ %d: %d\n",
 			irq, ret);
@@ -543,7 +557,12 @@ static int wm831x_buckv_probe(struct platform_device *pdev)
 	irq = wm831x_irq(wm831x, platform_get_irq_byname(pdev, "HC"));
 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
 					wm831x_dcdc_oc_irq,
+<<<<<<< HEAD
 					IRQF_TRIGGER_RISING, dcdc->name, dcdc);
+=======
+					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+					dcdc->name, dcdc);
+>>>>>>> v4.9.227
 	if (ret != 0) {
 		dev_err(&pdev->dev, "Failed to request HC IRQ %d: %d\n",
 			irq, ret);
@@ -562,7 +581,10 @@ static struct platform_driver wm831x_buckv_driver = {
 	.probe = wm831x_buckv_probe,
 	.driver		= {
 		.name	= "wm831x-buckv",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -584,7 +606,11 @@ static int wm831x_buckp_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 	return wm831x_set_bits(wm831x, reg, WM831X_DC3_ON_VSEL_MASK, sel);
 }
 
+<<<<<<< HEAD
 static struct regulator_ops wm831x_buckp_ops = {
+=======
+static const struct regulator_ops wm831x_buckp_ops = {
+>>>>>>> v4.9.227
 	.set_voltage_sel = regulator_set_voltage_sel_regmap,
 	.get_voltage_sel = regulator_get_voltage_sel_regmap,
 	.list_voltage = regulator_list_voltage_linear,
@@ -670,7 +696,12 @@ static int wm831x_buckp_probe(struct platform_device *pdev)
 	irq = wm831x_irq(wm831x, platform_get_irq_byname(pdev, "UV"));
 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
 					wm831x_dcdc_uv_irq,
+<<<<<<< HEAD
 					IRQF_TRIGGER_RISING, dcdc->name, dcdc);
+=======
+					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+					dcdc->name, dcdc);
+>>>>>>> v4.9.227
 	if (ret != 0) {
 		dev_err(&pdev->dev, "Failed to request UV IRQ %d: %d\n",
 			irq, ret);
@@ -689,7 +720,10 @@ static struct platform_driver wm831x_buckp_driver = {
 	.probe = wm831x_buckp_probe,
 	.driver		= {
 		.name	= "wm831x-buckp",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -724,7 +758,11 @@ static int wm831x_boostp_get_status(struct regulator_dev *rdev)
 		return REGULATOR_STATUS_OFF;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops wm831x_boostp_ops = {
+=======
+static const struct regulator_ops wm831x_boostp_ops = {
+>>>>>>> v4.9.227
 	.get_status = wm831x_boostp_get_status,
 
 	.is_enabled = regulator_is_enabled_regmap,
@@ -787,7 +825,12 @@ static int wm831x_boostp_probe(struct platform_device *pdev)
 	irq = wm831x_irq(wm831x, platform_get_irq_byname(pdev, "UV"));
 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
 					wm831x_dcdc_uv_irq,
+<<<<<<< HEAD
 					IRQF_TRIGGER_RISING, dcdc->name,
+=======
+					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+					dcdc->name,
+>>>>>>> v4.9.227
 					dcdc);
 	if (ret != 0) {
 		dev_err(&pdev->dev, "Failed to request UV IRQ %d: %d\n",
@@ -804,7 +847,10 @@ static struct platform_driver wm831x_boostp_driver = {
 	.probe = wm831x_boostp_probe,
 	.driver		= {
 		.name	= "wm831x-boostp",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -817,7 +863,11 @@ static struct platform_driver wm831x_boostp_driver = {
 
 #define WM831X_EPE_BASE 6
 
+<<<<<<< HEAD
 static struct regulator_ops wm831x_epe_ops = {
+=======
+static const struct regulator_ops wm831x_epe_ops = {
+>>>>>>> v4.9.227
 	.is_enabled = regulator_is_enabled_regmap,
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
@@ -880,6 +930,7 @@ static struct platform_driver wm831x_epe_driver = {
 	.probe = wm831x_epe_probe,
 	.driver		= {
 		.name	= "wm831x-epe",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 };
@@ -904,15 +955,34 @@ static int __init wm831x_dcdc_init(void)
 		pr_err("Failed to register WM831x EPE driver: %d\n", ret);
 
 	return 0;
+=======
+	},
+};
+
+static struct platform_driver * const drivers[] = {
+	&wm831x_buckv_driver,
+	&wm831x_buckp_driver,
+	&wm831x_boostp_driver,
+	&wm831x_epe_driver,
+};
+
+static int __init wm831x_dcdc_init(void)
+{
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 subsys_initcall(wm831x_dcdc_init);
 
 static void __exit wm831x_dcdc_exit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&wm831x_epe_driver);
 	platform_driver_unregister(&wm831x_boostp_driver);
 	platform_driver_unregister(&wm831x_buckp_driver);
 	platform_driver_unregister(&wm831x_buckv_driver);
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 module_exit(wm831x_dcdc_exit);
 

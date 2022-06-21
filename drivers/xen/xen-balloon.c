@@ -33,7 +33,13 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/errno.h>
+#include <linux/mm_types.h>
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/capability.h>
 
 #include <xen/xen.h>
@@ -109,6 +115,7 @@ static int __init balloon_init(void)
 }
 subsys_initcall(balloon_init);
 
+<<<<<<< HEAD
 static void balloon_exit(void)
 {
     /* XXX - release balloon here */
@@ -117,6 +124,8 @@ static void balloon_exit(void)
 
 module_exit(balloon_exit);
 
+=======
+>>>>>>> v4.9.227
 #define BALLOON_SHOW(name, format, args...)				\
 	static ssize_t show_##name(struct device *dev,			\
 				   struct device_attribute *attr,	\
@@ -193,6 +202,7 @@ static DEVICE_ATTR(target, S_IRUGO | S_IWUSR,
 		   show_target, store_target);
 
 
+<<<<<<< HEAD
 static struct device_attribute *balloon_attrs[] = {
 	&dev_attr_target_kb,
 	&dev_attr_target,
@@ -200,6 +210,20 @@ static struct device_attribute *balloon_attrs[] = {
 	&dev_attr_max_schedule_delay.attr,
 	&dev_attr_retry_count.attr,
 	&dev_attr_max_retry_count.attr
+=======
+static struct attribute *balloon_attrs[] = {
+	&dev_attr_target_kb.attr,
+	&dev_attr_target.attr,
+	&dev_attr_schedule_delay.attr.attr,
+	&dev_attr_max_schedule_delay.attr.attr,
+	&dev_attr_retry_count.attr.attr,
+	&dev_attr_max_retry_count.attr.attr,
+	NULL
+};
+
+static const struct attribute_group balloon_group = {
+	.attrs = balloon_attrs
+>>>>>>> v4.9.227
 };
 
 static struct attribute *balloon_info_attrs[] = {
@@ -214,6 +238,15 @@ static const struct attribute_group balloon_info_group = {
 	.attrs = balloon_info_attrs
 };
 
+<<<<<<< HEAD
+=======
+static const struct attribute_group *balloon_groups[] = {
+	&balloon_group,
+	&balloon_info_group,
+	NULL
+};
+
+>>>>>>> v4.9.227
 static struct bus_type balloon_subsys = {
 	.name = BALLOON_CLASS_NAME,
 	.dev_name = BALLOON_CLASS_NAME,
@@ -221,7 +254,11 @@ static struct bus_type balloon_subsys = {
 
 static int register_balloon(struct device *dev)
 {
+<<<<<<< HEAD
 	int i, error;
+=======
+	int error;
+>>>>>>> v4.9.227
 
 	error = subsys_system_register(&balloon_subsys, NULL);
 	if (error)
@@ -229,6 +266,10 @@ static int register_balloon(struct device *dev)
 
 	dev->id = 0;
 	dev->bus = &balloon_subsys;
+<<<<<<< HEAD
+=======
+	dev->groups = balloon_groups;
+>>>>>>> v4.9.227
 
 	error = device_register(dev);
 	if (error) {
@@ -236,6 +277,7 @@ static int register_balloon(struct device *dev)
 		return error;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(balloon_attrs); i++) {
 		error = device_create_file(dev, balloon_attrs[i]);
 		if (error)
@@ -257,3 +299,7 @@ static int register_balloon(struct device *dev)
 }
 
 MODULE_LICENSE("GPL");
+=======
+	return 0;
+}
+>>>>>>> v4.9.227

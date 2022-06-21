@@ -5,6 +5,10 @@
 config X86_INTEL_PSTATE
        bool "Intel P state control"
        depends on X86
+<<<<<<< HEAD
+=======
+       select ACPI_PROCESSOR if ACPI
+>>>>>>> v4.9.227
        help
           This driver provides a P state for Intel core processors.
 	  The driver implements an internal governor and will become
@@ -57,6 +61,19 @@ config X86_ACPI_CPUFREQ_CPB
 	  By enabling this option the acpi_cpufreq driver provides the old
 	  entry in addition to the new boost ones, for compatibility reasons.
 
+<<<<<<< HEAD
+=======
+config X86_SFI_CPUFREQ
+	tristate "SFI Performance-States driver"
+	depends on X86_INTEL_MID && SFI
+	help
+	  This adds a CPUFreq driver for some Silvermont based Intel Atom
+	  architectures like Z34xx and Z35xx which enumerate processor
+	  performance states through SFI.
+
+	  If in doubt, say N.
+
+>>>>>>> v4.9.227
 config ELAN_CPUFREQ
 	tristate "AMD Elan SC400 and SC410"
 	depends on MELAN

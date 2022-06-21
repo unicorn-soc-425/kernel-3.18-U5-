@@ -147,7 +147,11 @@ long arch_ptrace(struct task_struct *child, long request,
 				/* The trampoline page is globally mapped, no page table to traverse.*/
 				tmp = *(unsigned long*)addr;
 			} else {
+<<<<<<< HEAD
 				copied = access_process_vm(child, addr, &tmp, sizeof(tmp), 0);
+=======
+				copied = ptrace_access_vm(child, addr, &tmp, sizeof(tmp), FOLL_FORCE);
+>>>>>>> v4.9.227
 
 				if (copied != sizeof(tmp))
 					break;
@@ -279,7 +283,11 @@ static int insn_size(struct task_struct *child, unsigned long pc)
   int opsize = 0;
 
   /* Read the opcode at pc (do what PTRACE_PEEKTEXT would do). */
+<<<<<<< HEAD
   copied = access_process_vm(child, pc, &opcode, sizeof(opcode), 0);
+=======
+  copied = access_process_vm(child, pc, &opcode, sizeof(opcode), FOLL_FORCE);
+>>>>>>> v4.9.227
   if (copied != sizeof(opcode))
     return 0;
 

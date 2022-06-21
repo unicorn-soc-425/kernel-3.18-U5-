@@ -71,6 +71,7 @@ int fdt_check_header(const void *fdt)
 		return -FDT_ERR_BADMAGIC;
 	}
 
+<<<<<<< HEAD
 	if (fdt_off_dt_struct(fdt) > (UINT_MAX - fdt_size_dt_struct(fdt)))
 		return FDT_ERR_BADOFFSET;
 
@@ -85,28 +86,47 @@ int fdt_check_header(const void *fdt)
 	    > fdt_totalsize(fdt))
 		return FDT_ERR_BADOFFSET;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 const void *fdt_offset_ptr(const void *fdt, int offset, unsigned int len)
 {
+<<<<<<< HEAD
 	const char *p;
+=======
+	unsigned absoffset = offset + fdt_off_dt_struct(fdt);
+
+	if ((absoffset < offset)
+	    || ((absoffset + len) < absoffset)
+	    || (absoffset + len) > fdt_totalsize(fdt))
+		return NULL;
+>>>>>>> v4.9.227
 
 	if (fdt_version(fdt) >= 0x11)
 		if (((offset + len) < offset)
 		    || ((offset + len) > fdt_size_dt_struct(fdt)))
 			return NULL;
 
+<<<<<<< HEAD
 	p = _fdt_offset_ptr(fdt, offset);
 
 	if (p + len < p)
 		return NULL;
 	return p;
+=======
+	return _fdt_offset_ptr(fdt, offset);
+>>>>>>> v4.9.227
 }
 
 uint32_t fdt_next_tag(const void *fdt, int startoffset, int *nextoffset)
 {
+<<<<<<< HEAD
 	const uint32_t *tagp, *lenp;
+=======
+	const fdt32_t *tagp, *lenp;
+>>>>>>> v4.9.227
 	uint32_t tag;
 	int offset = startoffset;
 	const char *p;
@@ -212,6 +232,37 @@ int fdt_next_node(const void *fdt, int offset, int *depth)
 	return offset;
 }
 
+<<<<<<< HEAD
+=======
+int fdt_first_subnode(const void *fdt, int offset)
+{
+	int depth = 0;
+
+	offset = fdt_next_node(fdt, offset, &depth);
+	if (offset < 0 || depth != 1)
+		return -FDT_ERR_NOTFOUND;
+
+	return offset;
+}
+
+int fdt_next_subnode(const void *fdt, int offset)
+{
+	int depth = 1;
+
+	/*
+	 * With respect to the parent, the depth of the next subnode will be
+	 * the same as the last.
+	 */
+	do {
+		offset = fdt_next_node(fdt, offset, &depth);
+		if (offset < 0 || depth < 1)
+			return -FDT_ERR_NOTFOUND;
+	} while (depth > 1);
+
+	return offset;
+}
+
+>>>>>>> v4.9.227
 const char *_fdt_find_string(const char *strtab, int tabsize, const char *s)
 {
 	int len = strlen(s) + 1;

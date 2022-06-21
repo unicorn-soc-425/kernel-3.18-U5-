@@ -26,4 +26,11 @@ static inline void ui__exit(bool wait_for_ok __maybe_unused) {}
 
 void ui__refresh_dimensions(bool force);
 
+<<<<<<< HEAD
+=======
+struct option;
+
+int stdio__config_color(const struct option *opt, const char *mode, int unset);
+
+>>>>>>> v4.9.227
 #endif /* _PERF_UI_H_ */

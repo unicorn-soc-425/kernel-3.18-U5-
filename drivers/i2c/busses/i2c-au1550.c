@@ -48,7 +48,10 @@ struct i2c_au1550_data {
 	void __iomem *psc_base;
 	int	xfer_timeout;
 	struct i2c_adapter adap;
+<<<<<<< HEAD
 	struct resource *ioarea;
+=======
+>>>>>>> v4.9.227
 };
 
 static inline void WR(struct i2c_au1550_data *a, int r, unsigned long v)
@@ -284,10 +287,17 @@ static void i2c_au1550_setup(struct i2c_au1550_data *priv)
 	/* Set the protocol timer values.  See Table 71 in the
 	 * Au1550 Data Book for standard timing values.
 	 */
+<<<<<<< HEAD
 	WR(priv, PSC_SMBTMR, PSC_SMBTMR_SET_TH(0) | PSC_SMBTMR_SET_PS(15) | \
 		PSC_SMBTMR_SET_PU(15) | PSC_SMBTMR_SET_SH(15) | \
 		PSC_SMBTMR_SET_SU(15) | PSC_SMBTMR_SET_CL(15) | \
 		PSC_SMBTMR_SET_CH(15));
+=======
+	WR(priv, PSC_SMBTMR, PSC_SMBTMR_SET_TH(0) | PSC_SMBTMR_SET_PS(20) | \
+		PSC_SMBTMR_SET_PU(20) | PSC_SMBTMR_SET_SH(20) | \
+		PSC_SMBTMR_SET_SU(20) | PSC_SMBTMR_SET_CL(20) | \
+		PSC_SMBTMR_SET_CH(20));
+>>>>>>> v4.9.227
 
 	cfg |= PSC_SMBCFG_DE_ENABLE;
 	WR(priv, PSC_SMBCFG, cfg);
@@ -315,6 +325,7 @@ i2c_au1550_probe(struct platform_device *pdev)
 	struct resource *r;
 	int ret;
 
+<<<<<<< HEAD
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!r) {
 		ret = -ENODEV;
@@ -339,6 +350,18 @@ i2c_au1550_probe(struct platform_device *pdev)
 		ret = -EIO;
 		goto out_map;
 	}
+=======
+	priv = devm_kzalloc(&pdev->dev, sizeof(struct i2c_au1550_data),
+			    GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	priv->psc_base = devm_ioremap_resource(&pdev->dev, r);
+	if (IS_ERR(priv->psc_base))
+		return PTR_ERR(priv->psc_base);
+
+>>>>>>> v4.9.227
 	priv->xfer_timeout = 200;
 
 	priv->adap.nr = pdev->id;
@@ -351,6 +374,7 @@ i2c_au1550_probe(struct platform_device *pdev)
 	i2c_au1550_setup(priv);
 
 	ret = i2c_add_numbered_adapter(&priv->adap);
+<<<<<<< HEAD
 	if (ret == 0) {
 		platform_set_drvdata(pdev, priv);
 		return 0;
@@ -365,6 +389,15 @@ out_mem:
 	kfree(priv);
 out:
 	return ret;
+=======
+	if (ret) {
+		i2c_au1550_disable(priv);
+		return ret;
+	}
+
+	platform_set_drvdata(pdev, priv);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int i2c_au1550_remove(struct platform_device *pdev)
@@ -373,10 +406,13 @@ static int i2c_au1550_remove(struct platform_device *pdev)
 
 	i2c_del_adapter(&priv->adap);
 	i2c_au1550_disable(priv);
+<<<<<<< HEAD
 	iounmap(priv->psc_base);
 	release_resource(priv->ioarea);
 	kfree(priv->ioarea);
 	kfree(priv);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -413,7 +449,10 @@ static const struct dev_pm_ops i2c_au1550_pmops = {
 static struct platform_driver au1xpsc_smbus_driver = {
 	.driver = {
 		.name	= "au1xpsc_smbus",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= AU1XPSC_SMBUS_PMOPS,
 	},
 	.probe		= i2c_au1550_probe,

@@ -276,7 +276,10 @@ static struct platform_driver amiga_a3000_scsi_driver = {
 	.remove = __exit_p(amiga_a3000_scsi_remove),
 	.driver   = {
 		.name	= "amiga-a3000-scsi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

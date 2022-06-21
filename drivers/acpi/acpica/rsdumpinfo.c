@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -183,6 +187,7 @@ struct acpi_rsdump_info acpi_rs_dump_address16[8] = {
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_address16),
 	 "16-Bit WORD Address Space", NULL},
 	{ACPI_RSD_ADDRESS, 0, NULL, NULL},
+<<<<<<< HEAD
 	{ACPI_RSD_UINT16, ACPI_RSD_OFFSET(address16.granularity), "Granularity",
 	 NULL},
 	{ACPI_RSD_UINT16, ACPI_RSD_OFFSET(address16.minimum), "Address Minimum",
@@ -192,6 +197,17 @@ struct acpi_rsdump_info acpi_rs_dump_address16[8] = {
 	{ACPI_RSD_UINT16, ACPI_RSD_OFFSET(address16.translation_offset),
 	 "Translation Offset", NULL},
 	{ACPI_RSD_UINT16, ACPI_RSD_OFFSET(address16.address_length),
+=======
+	{ACPI_RSD_UINT16, ACPI_RSD_OFFSET(address16.address.granularity),
+	 "Granularity", NULL},
+	{ACPI_RSD_UINT16, ACPI_RSD_OFFSET(address16.address.minimum),
+	 "Address Minimum", NULL},
+	{ACPI_RSD_UINT16, ACPI_RSD_OFFSET(address16.address.maximum),
+	 "Address Maximum", NULL},
+	{ACPI_RSD_UINT16, ACPI_RSD_OFFSET(address16.address.translation_offset),
+	 "Translation Offset", NULL},
+	{ACPI_RSD_UINT16, ACPI_RSD_OFFSET(address16.address.address_length),
+>>>>>>> v4.9.227
 	 "Address Length", NULL},
 	{ACPI_RSD_SOURCE, ACPI_RSD_OFFSET(address16.resource_source), NULL, NULL}
 };
@@ -200,6 +216,7 @@ struct acpi_rsdump_info acpi_rs_dump_address32[8] = {
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_address32),
 	 "32-Bit DWORD Address Space", NULL},
 	{ACPI_RSD_ADDRESS, 0, NULL, NULL},
+<<<<<<< HEAD
 	{ACPI_RSD_UINT32, ACPI_RSD_OFFSET(address32.granularity), "Granularity",
 	 NULL},
 	{ACPI_RSD_UINT32, ACPI_RSD_OFFSET(address32.minimum), "Address Minimum",
@@ -209,6 +226,17 @@ struct acpi_rsdump_info acpi_rs_dump_address32[8] = {
 	{ACPI_RSD_UINT32, ACPI_RSD_OFFSET(address32.translation_offset),
 	 "Translation Offset", NULL},
 	{ACPI_RSD_UINT32, ACPI_RSD_OFFSET(address32.address_length),
+=======
+	{ACPI_RSD_UINT32, ACPI_RSD_OFFSET(address32.address.granularity),
+	 "Granularity", NULL},
+	{ACPI_RSD_UINT32, ACPI_RSD_OFFSET(address32.address.minimum),
+	 "Address Minimum", NULL},
+	{ACPI_RSD_UINT32, ACPI_RSD_OFFSET(address32.address.maximum),
+	 "Address Maximum", NULL},
+	{ACPI_RSD_UINT32, ACPI_RSD_OFFSET(address32.address.translation_offset),
+	 "Translation Offset", NULL},
+	{ACPI_RSD_UINT32, ACPI_RSD_OFFSET(address32.address.address_length),
+>>>>>>> v4.9.227
 	 "Address Length", NULL},
 	{ACPI_RSD_SOURCE, ACPI_RSD_OFFSET(address32.resource_source), NULL, NULL}
 };
@@ -217,6 +245,7 @@ struct acpi_rsdump_info acpi_rs_dump_address64[8] = {
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_address64),
 	 "64-Bit QWORD Address Space", NULL},
 	{ACPI_RSD_ADDRESS, 0, NULL, NULL},
+<<<<<<< HEAD
 	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(address64.granularity), "Granularity",
 	 NULL},
 	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(address64.minimum), "Address Minimum",
@@ -226,6 +255,17 @@ struct acpi_rsdump_info acpi_rs_dump_address64[8] = {
 	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(address64.translation_offset),
 	 "Translation Offset", NULL},
 	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(address64.address_length),
+=======
+	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(address64.address.granularity),
+	 "Granularity", NULL},
+	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(address64.address.minimum),
+	 "Address Minimum", NULL},
+	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(address64.address.maximum),
+	 "Address Maximum", NULL},
+	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(address64.address.translation_offset),
+	 "Translation Offset", NULL},
+	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(address64.address.address_length),
+>>>>>>> v4.9.227
 	 "Address Length", NULL},
 	{ACPI_RSD_SOURCE, ACPI_RSD_OFFSET(address64.resource_source), NULL, NULL}
 };
@@ -234,6 +274,7 @@ struct acpi_rsdump_info acpi_rs_dump_ext_address64[8] = {
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_ext_address64),
 	 "64-Bit Extended Address Space", NULL},
 	{ACPI_RSD_ADDRESS, 0, NULL, NULL},
+<<<<<<< HEAD
 	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(ext_address64.granularity),
 	 "Granularity", NULL},
 	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(ext_address64.minimum),
@@ -243,6 +284,18 @@ struct acpi_rsdump_info acpi_rs_dump_ext_address64[8] = {
 	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(ext_address64.translation_offset),
 	 "Translation Offset", NULL},
 	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(ext_address64.address_length),
+=======
+	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(ext_address64.address.granularity),
+	 "Granularity", NULL},
+	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(ext_address64.address.minimum),
+	 "Address Minimum", NULL},
+	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(ext_address64.address.maximum),
+	 "Address Maximum", NULL},
+	{ACPI_RSD_UINT64,
+	 ACPI_RSD_OFFSET(ext_address64.address.translation_offset),
+	 "Translation Offset", NULL},
+	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(ext_address64.address.address_length),
+>>>>>>> v4.9.227
 	 "Address Length", NULL},
 	{ACPI_RSD_UINT64, ACPI_RSD_OFFSET(ext_address64.type_specific),
 	 "Type-Specific Attribute", NULL}
@@ -329,19 +382,31 @@ struct acpi_rsdump_info acpi_rs_dump_fixed_dma[4] = {
 	{ACPI_RSD_UINT8,    ACPI_RSD_OFFSET (common_serial_bus.type),           "Type",                     acpi_gbl_sbt_decode}, \
 	{ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET (common_serial_bus.producer_consumer), "ProducerConsumer",      acpi_gbl_consume_decode}, \
 	{ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET (common_serial_bus.slave_mode),     "SlaveMode",                acpi_gbl_sm_decode}, \
+<<<<<<< HEAD
+=======
+	{ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET (common_serial_bus.connection_sharing),"ConnectionSharing",     acpi_gbl_shr_decode}, \
+>>>>>>> v4.9.227
 	{ACPI_RSD_UINT8,    ACPI_RSD_OFFSET (common_serial_bus.type_revision_id), "TypeRevisionId",         NULL}, \
 	{ACPI_RSD_UINT16,   ACPI_RSD_OFFSET (common_serial_bus.type_data_length), "TypeDataLength",         NULL}, \
 	{ACPI_RSD_SOURCE,   ACPI_RSD_OFFSET (common_serial_bus.resource_source), "ResourceSource",          NULL}, \
 	{ACPI_RSD_UINT16,   ACPI_RSD_OFFSET (common_serial_bus.vendor_length),  "VendorLength",             NULL}, \
 	{ACPI_RSD_SHORTLISTX,ACPI_RSD_OFFSET (common_serial_bus.vendor_data),   "VendorData",               NULL},
 
+<<<<<<< HEAD
 struct acpi_rsdump_info acpi_rs_dump_common_serial_bus[10] = {
+=======
+struct acpi_rsdump_info acpi_rs_dump_common_serial_bus[11] = {
+>>>>>>> v4.9.227
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_common_serial_bus),
 	 "Common Serial Bus", NULL},
 	ACPI_RS_DUMP_COMMON_SERIAL_BUS
 };
 
+<<<<<<< HEAD
 struct acpi_rsdump_info acpi_rs_dump_i2c_serial_bus[13] = {
+=======
+struct acpi_rsdump_info acpi_rs_dump_i2c_serial_bus[14] = {
+>>>>>>> v4.9.227
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_i2c_serial_bus),
 	 "I2C Serial Bus", NULL},
 	ACPI_RS_DUMP_COMMON_SERIAL_BUS {ACPI_RSD_1BITFLAG,
@@ -354,7 +419,11 @@ struct acpi_rsdump_info acpi_rs_dump_i2c_serial_bus[13] = {
 	 "SlaveAddress", NULL},
 };
 
+<<<<<<< HEAD
 struct acpi_rsdump_info acpi_rs_dump_spi_serial_bus[17] = {
+=======
+struct acpi_rsdump_info acpi_rs_dump_spi_serial_bus[18] = {
+>>>>>>> v4.9.227
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_spi_serial_bus),
 	 "Spi Serial Bus", NULL},
 	ACPI_RS_DUMP_COMMON_SERIAL_BUS {ACPI_RSD_1BITFLAG,
@@ -375,7 +444,11 @@ struct acpi_rsdump_info acpi_rs_dump_spi_serial_bus[17] = {
 	 "ConnectionSpeed", NULL},
 };
 
+<<<<<<< HEAD
 struct acpi_rsdump_info acpi_rs_dump_uart_serial_bus[19] = {
+=======
+struct acpi_rsdump_info acpi_rs_dump_uart_serial_bus[20] = {
+>>>>>>> v4.9.227
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_uart_serial_bus),
 	 "Uart Serial Bus", NULL},
 	ACPI_RS_DUMP_COMMON_SERIAL_BUS {ACPI_RSD_2BITFLAG,

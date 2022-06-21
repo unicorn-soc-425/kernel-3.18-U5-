@@ -1,6 +1,11 @@
 / {
+<<<<<<< HEAD
 	mbus {
 		pciec: pcie-controller {
+=======
+	mbus@f1000000 {
+		pciec: pcie-controller@82000000 {
+>>>>>>> v4.9.227
 			compatible = "marvell,kirkwood-pcie";
 			status = "disabled";
 			device_type = "pci";

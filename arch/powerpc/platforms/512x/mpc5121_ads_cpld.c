@@ -97,26 +97,44 @@ cpld_pic_get_irq(int offset, u8 ignore, u8 __iomem *statusp,
 	status |= (ignore | mask);
 
 	if (status == 0xff)
+<<<<<<< HEAD
 		return NO_IRQ;
+=======
+		return 0;
+>>>>>>> v4.9.227
 
 	cpld_irq = ffz(status) + offset;
 
 	return irq_linear_revmap(cpld_pic_host, cpld_irq);
 }
 
+<<<<<<< HEAD
 static void
 cpld_pic_cascade(unsigned int irq, struct irq_desc *desc)
 {
 	irq = cpld_pic_get_irq(0, PCI_IGNORE, &cpld_regs->pci_status,
 		&cpld_regs->pci_mask);
 	if (irq != NO_IRQ) {
+=======
+static void cpld_pic_cascade(struct irq_desc *desc)
+{
+	unsigned int irq;
+
+	irq = cpld_pic_get_irq(0, PCI_IGNORE, &cpld_regs->pci_status,
+		&cpld_regs->pci_mask);
+	if (irq) {
+>>>>>>> v4.9.227
 		generic_handle_irq(irq);
 		return;
 	}
 
 	irq = cpld_pic_get_irq(8, MISC_IGNORE, &cpld_regs->misc_status,
 		&cpld_regs->misc_mask);
+<<<<<<< HEAD
 	if (irq != NO_IRQ) {
+=======
+	if (irq) {
+>>>>>>> v4.9.227
 		generic_handle_irq(irq);
 		return;
 	}
@@ -176,7 +194,11 @@ mpc5121_ads_cpld_pic_init(void)
 		goto end;
 
 	cascade_irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (cascade_irq == NO_IRQ)
+=======
+	if (!cascade_irq)
+>>>>>>> v4.9.227
 		goto end;
 
 	/*

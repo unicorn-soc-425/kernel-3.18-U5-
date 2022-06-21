@@ -1,6 +1,10 @@
 config NFS_FS
 	tristate "NFS client support"
+<<<<<<< HEAD
 	depends on INET && FILE_LOCKING
+=======
+	depends on INET && FILE_LOCKING && MULTIUSER
+>>>>>>> v4.9.227
 	select LOCKD
 	select SUNRPC
 	select NFS_ACL_SUPPORT if NFS_V3_ACL
@@ -89,7 +93,11 @@ config NFS_V4
 config NFS_SWAP
 	bool "Provide swap over NFS support"
 	default n
+<<<<<<< HEAD
 	depends on NFS_FS
+=======
+	depends on NFS_FS && SWAP
+>>>>>>> v4.9.227
 	select SUNRPC_SWAP
 	help
 	  This option enables swapon to work on files located on NFS mounts.
@@ -129,6 +137,14 @@ config PNFS_OBJLAYOUT
 	depends on NFS_V4_1 && SCSI_OSD_ULD
 	default NFS_V4
 
+<<<<<<< HEAD
+=======
+config PNFS_FLEXFILE_LAYOUT
+	tristate
+	depends on NFS_V4_1 && NFS_V3
+	default m
+
+>>>>>>> v4.9.227
 config NFS_V4_1_IMPLEMENTATION_ID_DOMAIN
 	string "NFSv4.1 Implementation ID Domain"
 	depends on NFS_V4_1

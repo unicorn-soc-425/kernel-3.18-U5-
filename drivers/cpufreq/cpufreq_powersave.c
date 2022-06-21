@@ -16,6 +16,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 static int cpufreq_governor_powersave(struct cpufreq_policy *policy,
 					unsigned int event)
 {
@@ -39,6 +40,17 @@ static
 struct cpufreq_governor cpufreq_gov_powersave = {
 	.name		= "powersave",
 	.governor	= cpufreq_governor_powersave,
+=======
+static void cpufreq_gov_powersave_limits(struct cpufreq_policy *policy)
+{
+	pr_debug("setting to %u kHz\n", policy->min);
+	__cpufreq_driver_target(policy, policy->min, CPUFREQ_RELATION_L);
+}
+
+static struct cpufreq_governor cpufreq_gov_powersave = {
+	.name		= "powersave",
+	.limits		= cpufreq_gov_powersave_limits,
+>>>>>>> v4.9.227
 	.owner		= THIS_MODULE,
 };
 
@@ -57,6 +69,14 @@ MODULE_DESCRIPTION("CPUfreq policy governor 'powersave'");
 MODULE_LICENSE("GPL");
 
 #ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE
+<<<<<<< HEAD
+=======
+struct cpufreq_governor *cpufreq_default_governor(void)
+{
+	return &cpufreq_gov_powersave;
+}
+
+>>>>>>> v4.9.227
 fs_initcall(cpufreq_gov_powersave_init);
 #else
 module_init(cpufreq_gov_powersave_init);

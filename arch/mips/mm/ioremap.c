@@ -6,9 +6,16 @@
  * (C) Copyright 1995 1996 Linus Torvalds
  * (C) Copyright 2001, 2002 Ralf Baechle
  */
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <asm/addrspace.h>
 #include <asm/byteorder.h>
+=======
+#include <linux/export.h>
+#include <asm/addrspace.h>
+#include <asm/byteorder.h>
+#include <linux/ioport.h>
+>>>>>>> v4.9.227
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
@@ -17,9 +24,15 @@
 #include <asm/tlbflush.h>
 
 static inline void remap_area_pte(pte_t * pte, unsigned long address,
+<<<<<<< HEAD
 	phys_t size, phys_t phys_addr, unsigned long flags)
 {
 	phys_t end;
+=======
+	phys_addr_t size, phys_addr_t phys_addr, unsigned long flags)
+{
+	phys_addr_t end;
+>>>>>>> v4.9.227
 	unsigned long pfn;
 	pgprot_t pgprot = __pgprot(_PAGE_GLOBAL | _PAGE_PRESENT | __READABLE
 				   | __WRITEABLE | flags);
@@ -43,9 +56,15 @@ static inline void remap_area_pte(pte_t * pte, unsigned long address,
 }
 
 static inline int remap_area_pmd(pmd_t * pmd, unsigned long address,
+<<<<<<< HEAD
 	phys_t size, phys_t phys_addr, unsigned long flags)
 {
 	phys_t end;
+=======
+	phys_addr_t size, phys_addr_t phys_addr, unsigned long flags)
+{
+	phys_addr_t end;
+>>>>>>> v4.9.227
 
 	address &= ~PGDIR_MASK;
 	end = address + size;
@@ -64,8 +83,13 @@ static inline int remap_area_pmd(pmd_t * pmd, unsigned long address,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int remap_area_pages(unsigned long address, phys_t phys_addr,
 	phys_t size, unsigned long flags)
+=======
+static int remap_area_pages(unsigned long address, phys_addr_t phys_addr,
+	phys_addr_t size, unsigned long flags)
+>>>>>>> v4.9.227
 {
 	int error;
 	pgd_t * dir;
@@ -97,6 +121,23 @@ static int remap_area_pages(unsigned long address, phys_t phys_addr,
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+static int __ioremap_check_ram(unsigned long start_pfn, unsigned long nr_pages,
+			       void *arg)
+{
+	unsigned long i;
+
+	for (i = 0; i < nr_pages; i++) {
+		if (pfn_valid(start_pfn + i) &&
+		    !PageReserved(pfn_to_page(start_pfn + i)))
+			return 1;
+	}
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /*
  * Generic mapping function (not visible outside):
  */
@@ -111,6 +152,7 @@ static int remap_area_pages(unsigned long address, phys_t phys_addr,
  * caller shouldn't need to know that small detail.
  */
 
+<<<<<<< HEAD
 #define IS_LOW512(addr) (!((phys_t)(addr) & (phys_t) ~0x1fffffffULL))
 
 void __iomem * __ioremap(phys_t phys_addr, phys_t size, unsigned long flags)
@@ -118,6 +160,15 @@ void __iomem * __ioremap(phys_t phys_addr, phys_t size, unsigned long flags)
 	struct vm_struct * area;
 	unsigned long offset;
 	phys_t last_addr;
+=======
+#define IS_LOW512(addr) (!((phys_addr_t)(addr) & (phys_addr_t) ~0x1fffffffULL))
+
+void __iomem * __ioremap(phys_addr_t phys_addr, phys_addr_t size, unsigned long flags)
+{
+	unsigned long offset, pfn, last_pfn;
+	struct vm_struct * area;
+	phys_addr_t last_addr;
+>>>>>>> v4.9.227
 	void * addr;
 
 	phys_addr = fixup_bigphys_addr(phys_addr, size);
@@ -136,6 +187,7 @@ void __iomem * __ioremap(phys_t phys_addr, phys_t size, unsigned long flags)
 		return (void __iomem *) CKSEG1ADDR(phys_addr);
 
 	/*
+<<<<<<< HEAD
 	 * Don't allow anybody to remap normal RAM that we're using..
 	 */
 	if (phys_addr < virt_to_phys(high_memory)) {
@@ -148,6 +200,18 @@ void __iomem * __ioremap(phys_t phys_addr, phys_t size, unsigned long flags)
 		for(page = virt_to_page(t_addr); page <= virt_to_page(t_end); page++)
 			if(!PageReserved(page))
 				return NULL;
+=======
+	 * Don't allow anybody to remap RAM that may be allocated by the page
+	 * allocator, since that could lead to races & data clobbering.
+	 */
+	pfn = PFN_DOWN(phys_addr);
+	last_pfn = PFN_DOWN(last_addr);
+	if (walk_system_ram_range(pfn, last_pfn - pfn + 1, NULL,
+				  __ioremap_check_ram) == 1) {
+		WARN_ONCE(1, "ioremap on RAM at %pa - %pa\n",
+			  &phys_addr, &last_addr);
+		return NULL;
+>>>>>>> v4.9.227
 	}
 
 	/*

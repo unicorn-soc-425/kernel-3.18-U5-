@@ -129,6 +129,10 @@ struct elantech_data {
 	unsigned char reg_26;
 	unsigned char debug;
 	unsigned char capabilities[3];
+<<<<<<< HEAD
+=======
+	unsigned char samples[3];
+>>>>>>> v4.9.227
 	bool paritycheck;
 	bool jumpy_cursor;
 	bool reports_pressure;

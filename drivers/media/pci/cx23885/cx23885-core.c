@@ -427,12 +427,22 @@ static void cx23885_wakeup(struct cx23885_tsport *port,
 	buf = list_entry(q->active.next,
 			 struct cx23885_buffer, queue);
 
+<<<<<<< HEAD
 	v4l2_get_timestamp(&buf->vb.v4l2_buf.timestamp);
 	buf->vb.v4l2_buf.sequence = q->count++;
 	dprintk(1, "[%p/%d] wakeup reg=%d buf=%d\n", buf, buf->vb.v4l2_buf.index,
 		count, q->count);
 	list_del(&buf->queue);
 	vb2_buffer_done(&buf->vb, VB2_BUF_STATE_DONE);
+=======
+	buf->vb.vb2_buf.timestamp = ktime_get_ns();
+	buf->vb.sequence = q->count++;
+	dprintk(1, "[%p/%d] wakeup reg=%d buf=%d\n", buf,
+		buf->vb.vb2_buf.index,
+		count, q->count);
+	list_del(&buf->queue);
+	vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_DONE);
+>>>>>>> v4.9.227
 }
 
 int cx23885_sram_channel_setup(struct cx23885_dev *dev,
@@ -825,6 +835,10 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	int i;
 
 	spin_lock_init(&dev->pci_irqmask_lock);
+<<<<<<< HEAD
+=======
+	spin_lock_init(&dev->slock);
+>>>>>>> v4.9.227
 
 	mutex_init(&dev->lock);
 	mutex_init(&dev->gpio_lock);
@@ -976,6 +990,19 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	call_all(dev, core, s_power, 0);
 	cx23885_ir_init(dev);
 
+<<<<<<< HEAD
+=======
+	if (dev->board == CX23885_BOARD_VIEWCAST_460E) {
+		/*
+		 * GPIOs 9/8 are input detection bits for the breakout video
+		 * (gpio 8) and audio (gpio 9) cables. When they're attached,
+		 * this gpios are pulled high. Make sure these GPIOs are marked
+		 * as inputs.
+		 */
+		cx23885_gpio_enable(dev, 0x300, 0);
+	}
+
+>>>>>>> v4.9.227
 	if (cx23885_boards[dev->board].porta == CX23885_ANALOG_VIDEO) {
 		if (cx23885_video_register(dev) < 0) {
 			printk(KERN_ERR "%s() Failed to register analog "
@@ -1462,6 +1489,7 @@ int cx23885_buf_prepare(struct cx23885_buffer *buf, struct cx23885_tsport *port)
 {
 	struct cx23885_dev *dev = port->dev;
 	int size = port->ts_packet_size * port->ts_packet_count;
+<<<<<<< HEAD
 	struct sg_table *sgt = vb2_dma_sg_plane_desc(&buf->vb, 0);
 	int rc;
 
@@ -1473,6 +1501,14 @@ int cx23885_buf_prepare(struct cx23885_buffer *buf, struct cx23885_tsport *port)
 	rc = dma_map_sg(&dev->pci->dev, sgt->sgl, sgt->nents, DMA_FROM_DEVICE);
 	if (!rc)
 		return -EIO;
+=======
+	struct sg_table *sgt = vb2_dma_sg_plane_desc(&buf->vb.vb2_buf, 0);
+
+	dprintk(1, "%s: %p\n", __func__, buf);
+	if (vb2_plane_size(&buf->vb.vb2_buf, 0) < size)
+		return -EINVAL;
+	vb2_set_plane_payload(&buf->vb.vb2_buf, 0, size);
+>>>>>>> v4.9.227
 
 	cx23885_risc_databuffer(dev->pci, &buf->risc,
 				sgt->sgl,
@@ -1517,7 +1553,11 @@ void cx23885_buf_queue(struct cx23885_tsport *port, struct cx23885_buffer *buf)
 	if (list_empty(&cx88q->active)) {
 		list_add_tail(&buf->queue, &cx88q->active);
 		dprintk(1, "[%p/%d] %s - first active\n",
+<<<<<<< HEAD
 			buf, buf->vb.v4l2_buf.index, __func__);
+=======
+			buf, buf->vb.vb2_buf.index, __func__);
+>>>>>>> v4.9.227
 	} else {
 		buf->risc.cpu[0] |= cpu_to_le32(RISC_IRQ1);
 		prev = list_entry(cx88q->active.prev, struct cx23885_buffer,
@@ -1525,7 +1565,11 @@ void cx23885_buf_queue(struct cx23885_tsport *port, struct cx23885_buffer *buf)
 		list_add_tail(&buf->queue, &cx88q->active);
 		prev->risc.jmp[1] = cpu_to_le32(buf->risc.dma);
 		dprintk(1, "[%p/%d] %s - append to active\n",
+<<<<<<< HEAD
 			 buf, buf->vb.v4l2_buf.index, __func__);
+=======
+			 buf, buf->vb.vb2_buf.index, __func__);
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&dev->slock, flags);
 }
@@ -1544,9 +1588,16 @@ static void do_cancel_buffers(struct cx23885_tsport *port, char *reason)
 		buf = list_entry(q->active.next, struct cx23885_buffer,
 				 queue);
 		list_del(&buf->queue);
+<<<<<<< HEAD
 		vb2_buffer_done(&buf->vb, VB2_BUF_STATE_ERROR);
 		dprintk(1, "[%p/%d] %s - dma=0x%08lx\n",
 			buf, buf->vb.v4l2_buf.index, reason, (unsigned long)buf->risc.dma);
+=======
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+		dprintk(1, "[%p/%d] %s - dma=0x%08lx\n",
+			buf, buf->vb.vb2_buf.index, reason,
+			(unsigned long)buf->risc.dma);
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&port->slock, flags);
 }
@@ -2004,10 +2055,17 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
 		(unsigned long long)pci_resource_start(pci_dev, 0));
 
 	pci_set_master(pci_dev);
+<<<<<<< HEAD
 	if (!pci_dma_supported(pci_dev, 0xffffffff)) {
 		printk("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
 		err = -EIO;
 		goto fail_irq;
+=======
+	err = pci_set_dma_mask(pci_dev, 0xffffffff);
+	if (err) {
+		printk("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
+		goto fail_ctrl;
+>>>>>>> v4.9.227
 	}
 
 	err = request_irq(pci_dev->irq, cx23885_irq,
@@ -2057,11 +2115,19 @@ static void cx23885_finidev(struct pci_dev *pci_dev)
 
 	cx23885_shutdown(dev);
 
+<<<<<<< HEAD
 	pci_disable_device(pci_dev);
 
 	/* unregister stuff */
 	free_irq(pci_dev->irq, dev);
 
+=======
+	/* unregister stuff */
+	free_irq(pci_dev->irq, dev);
+
+	pci_disable_device(pci_dev);
+
+>>>>>>> v4.9.227
 	cx23885_dev_unregister(dev);
 	v4l2_ctrl_handler_free(&dev->ctrl_handler);
 	v4l2_device_unregister(v4l2_dev);

@@ -59,7 +59,11 @@ static void goldfish_tty_do_write(int line, const char *buf, unsigned count)
 	struct goldfish_tty *qtty = &goldfish_ttys[line];
 	void __iomem *base = qtty->base;
 	spin_lock_irqsave(&qtty->lock, irq_flags);
+<<<<<<< HEAD
 	gf_write64((u64)buf, base + GOLDFISH_TTY_DATA_PTR,
+=======
+	gf_write_ptr(buf, base + GOLDFISH_TTY_DATA_PTR,
+>>>>>>> v4.9.227
 				base + GOLDFISH_TTY_DATA_PTR_HIGH);
 	writel(count, base + GOLDFISH_TTY_DATA_LEN);
 	writel(GOLDFISH_TTY_CMD_WRITE_BUFFER, base + GOLDFISH_TTY_CMD);
@@ -68,8 +72,12 @@ static void goldfish_tty_do_write(int line, const char *buf, unsigned count)
 
 static irqreturn_t goldfish_tty_interrupt(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = dev_id;
 	struct goldfish_tty *qtty = &goldfish_ttys[pdev->id];
+=======
+	struct goldfish_tty *qtty = dev_id;
+>>>>>>> v4.9.227
 	void __iomem *base = qtty->base;
 	unsigned long irq_flags;
 	unsigned char *buf;
@@ -81,7 +89,11 @@ static irqreturn_t goldfish_tty_interrupt(int irq, void *dev_id)
 
 	count = tty_prepare_flip_string(&qtty->port, &buf, count);
 	spin_lock_irqsave(&qtty->lock, irq_flags);
+<<<<<<< HEAD
 	gf_write64((u64)buf, base + GOLDFISH_TTY_DATA_PTR,
+=======
+	gf_write_ptr(buf, base + GOLDFISH_TTY_DATA_PTR,
+>>>>>>> v4.9.227
 				base + GOLDFISH_TTY_DATA_PTR_HIGH);
 	writel(count, base + GOLDFISH_TTY_DATA_LEN);
 	writel(GOLDFISH_TTY_CMD_READ_BUFFER, base + GOLDFISH_TTY_CMD);
@@ -155,14 +167,24 @@ static struct tty_driver *goldfish_tty_console_device(struct console *c,
 
 static int goldfish_tty_console_setup(struct console *co, char *options)
 {
+<<<<<<< HEAD
 	if ((unsigned)co->index > goldfish_tty_line_count)
 		return -ENODEV;
 	if (goldfish_ttys[co->index].base == 0)
+=======
+	if ((unsigned)co->index >= goldfish_tty_line_count)
+		return -ENODEV;
+	if (!goldfish_ttys[co->index].base)
+>>>>>>> v4.9.227
 		return -ENODEV;
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct tty_port_operations goldfish_port_ops = {
+=======
+static const struct tty_port_operations goldfish_port_ops = {
+>>>>>>> v4.9.227
 	.activate = goldfish_tty_activate,
 	.shutdown = goldfish_tty_shutdown
 };
@@ -229,11 +251,18 @@ static int goldfish_tty_probe(struct platform_device *pdev)
 {
 	struct goldfish_tty *qtty;
 	int ret = -EINVAL;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> v4.9.227
 	struct resource *r;
 	struct device *ttydev;
 	void __iomem *base;
 	u32 irq;
+<<<<<<< HEAD
+=======
+	unsigned int line;
+>>>>>>> v4.9.227
 
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (r == NULL)
@@ -249,10 +278,23 @@ static int goldfish_tty_probe(struct platform_device *pdev)
 
 	irq = r->start;
 
+<<<<<<< HEAD
 	if (pdev->id >= goldfish_tty_line_count)
 		goto err_unmap;
 
 	mutex_lock(&goldfish_tty_lock);
+=======
+	mutex_lock(&goldfish_tty_lock);
+
+	if (pdev->id == PLATFORM_DEVID_NONE)
+		line = goldfish_tty_current_line_count;
+	else
+		line = pdev->id;
+
+	if (line >= goldfish_tty_line_count)
+		goto err_create_driver_failed;
+
+>>>>>>> v4.9.227
 	if (goldfish_tty_current_line_count == 0) {
 		ret = goldfish_tty_create_driver();
 		if (ret)
@@ -260,7 +302,11 @@ static int goldfish_tty_probe(struct platform_device *pdev)
 	}
 	goldfish_tty_current_line_count++;
 
+<<<<<<< HEAD
 	qtty = &goldfish_ttys[pdev->id];
+=======
+	qtty = &goldfish_ttys[line];
+>>>>>>> v4.9.227
 	spin_lock_init(&qtty->lock);
 	tty_port_init(&qtty->port);
 	qtty->port.ops = &goldfish_port_ops;
@@ -270,13 +316,21 @@ static int goldfish_tty_probe(struct platform_device *pdev)
 	writel(GOLDFISH_TTY_CMD_INT_DISABLE, base + GOLDFISH_TTY_CMD);
 
 	ret = request_irq(irq, goldfish_tty_interrupt, IRQF_SHARED,
+<<<<<<< HEAD
 						"goldfish_tty", pdev);
+=======
+						"goldfish_tty", qtty);
+>>>>>>> v4.9.227
 	if (ret)
 		goto err_request_irq_failed;
 
 
 	ttydev = tty_port_register_device(&qtty->port, goldfish_tty_driver,
+<<<<<<< HEAD
 							pdev->id, &pdev->dev);
+=======
+							line, &pdev->dev);
+>>>>>>> v4.9.227
 	if (IS_ERR(ttydev)) {
 		ret = PTR_ERR(ttydev);
 		goto err_tty_register_device_failed;
@@ -287,15 +341,26 @@ static int goldfish_tty_probe(struct platform_device *pdev)
 	qtty->console.device = goldfish_tty_console_device;
 	qtty->console.setup = goldfish_tty_console_setup;
 	qtty->console.flags = CON_PRINTBUFFER;
+<<<<<<< HEAD
 	qtty->console.index = pdev->id;
 	register_console(&qtty->console);
+=======
+	qtty->console.index = line;
+	register_console(&qtty->console);
+	platform_set_drvdata(pdev, qtty);
+>>>>>>> v4.9.227
 
 	mutex_unlock(&goldfish_tty_lock);
 	return 0;
 
+<<<<<<< HEAD
 	tty_unregister_device(goldfish_tty_driver, i);
 err_tty_register_device_failed:
 	free_irq(irq, pdev);
+=======
+err_tty_register_device_failed:
+	free_irq(irq, qtty);
+>>>>>>> v4.9.227
 err_request_irq_failed:
 	goldfish_tty_current_line_count--;
 	if (goldfish_tty_current_line_count == 0)
@@ -309,6 +374,7 @@ err_unmap:
 
 static int goldfish_tty_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct goldfish_tty *qtty;
 
 	mutex_lock(&goldfish_tty_lock);
@@ -318,6 +384,16 @@ static int goldfish_tty_remove(struct platform_device *pdev)
 	tty_unregister_device(goldfish_tty_driver, pdev->id);
 	iounmap(qtty->base);
 	qtty->base = 0;
+=======
+	struct goldfish_tty *qtty = platform_get_drvdata(pdev);
+
+	mutex_lock(&goldfish_tty_lock);
+
+	unregister_console(&qtty->console);
+	tty_unregister_device(goldfish_tty_driver, qtty->console.index);
+	iounmap(qtty->base);
+	qtty->base = NULL;
+>>>>>>> v4.9.227
 	free_irq(qtty->irq, pdev);
 	goldfish_tty_current_line_count--;
 	if (goldfish_tty_current_line_count == 0)
@@ -326,11 +402,26 @@ static int goldfish_tty_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id goldfish_tty_of_match[] = {
+	{ .compatible = "google,goldfish-tty", },
+	{},
+};
+
+MODULE_DEVICE_TABLE(of, goldfish_tty_of_match);
+
+>>>>>>> v4.9.227
 static struct platform_driver goldfish_tty_platform_driver = {
 	.probe = goldfish_tty_probe,
 	.remove = goldfish_tty_remove,
 	.driver = {
+<<<<<<< HEAD
 		.name = "goldfish_tty"
+=======
+		.name = "goldfish_tty",
+		.of_match_table = goldfish_tty_of_match,
+>>>>>>> v4.9.227
 	}
 };
 

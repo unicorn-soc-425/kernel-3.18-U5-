@@ -402,7 +402,11 @@ static int mal_poll(struct napi_struct *napi, int budget)
 	unsigned long flags;
 
 	MAL_DBG2(mal, "poll(%d)" NL, budget);
+<<<<<<< HEAD
  again:
+=======
+
+>>>>>>> v4.9.227
 	/* Process TX skbs */
 	list_for_each(l, &mal->poll_list) {
 		struct mal_commac *mc =
@@ -451,7 +455,10 @@ static int mal_poll(struct napi_struct *napi, int budget)
 			spin_lock_irqsave(&mal->lock, flags);
 			mal_disable_eob_irq(mal);
 			spin_unlock_irqrestore(&mal->lock, flags);
+<<<<<<< HEAD
 			goto again;
+=======
+>>>>>>> v4.9.227
 		}
 		mc->ops->poll_tx(mc->dev);
 	}
@@ -597,9 +604,14 @@ static int mal_probe(struct platform_device *ofdev)
 		mal->rxde_irq = irq_of_parse_and_map(ofdev->dev.of_node, 4);
 	}
 
+<<<<<<< HEAD
 	if (mal->txeob_irq == NO_IRQ || mal->rxeob_irq == NO_IRQ ||
 	    mal->serr_irq == NO_IRQ || mal->txde_irq == NO_IRQ ||
 	    mal->rxde_irq == NO_IRQ) {
+=======
+	if (!mal->txeob_irq || !mal->rxeob_irq || !mal->serr_irq ||
+	    !mal->txde_irq  || !mal->rxde_irq) {
+>>>>>>> v4.9.227
 		printk(KERN_ERR
 		       "mal%d: failed to map interrupts !\n", index);
 		err = -ENODEV;
@@ -753,7 +765,11 @@ static int mal_remove(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id mal_platform_match[] =
+=======
+static const struct of_device_id mal_platform_match[] =
+>>>>>>> v4.9.227
 {
 	{
 		.compatible	= "ibm,mcmal",
@@ -776,7 +792,10 @@ static struct of_device_id mal_platform_match[] =
 static struct platform_driver mal_of_driver = {
 	.driver = {
 		.name = "mcmal",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = mal_platform_match,
 	},
 	.probe = mal_probe,

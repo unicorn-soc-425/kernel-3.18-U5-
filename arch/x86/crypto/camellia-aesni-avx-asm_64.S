@@ -16,6 +16,11 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/frame.h>
+#include <asm/nospec-branch.h>
+>>>>>>> v4.9.227
 
 #define CAMELLIA_TABLE_BYTE_LEN 272
 
@@ -726,6 +731,10 @@ __camellia_enc_blk16:
 	 *	%xmm0..%xmm15: 16 encrypted blocks, order swapped:
 	 *       7, 8, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	leaq 8 * 16(%rax), %rcx;
 
@@ -780,6 +789,10 @@ __camellia_enc_blk16:
 		    %xmm8, %xmm9, %xmm10, %xmm11, %xmm12, %xmm13, %xmm14,
 		    %xmm15, (key_table)(CTX, %r8, 8), (%rax), 1 * 16(%rax));
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 
 .align 8
@@ -812,6 +825,10 @@ __camellia_dec_blk16:
 	 *	%xmm0..%xmm15: 16 plaintext blocks, order swapped:
 	 *       7, 8, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	leaq 8 * 16(%rax), %rcx;
 
@@ -865,6 +882,10 @@ __camellia_dec_blk16:
 		    %xmm8, %xmm9, %xmm10, %xmm11, %xmm12, %xmm13, %xmm14,
 		    %xmm15, (key_table)(CTX), (%rax), 1 * 16(%rax));
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 
 .align 8
@@ -890,6 +911,10 @@ ENTRY(camellia_ecb_enc_16way)
 	 *	%rsi: dst (16 blocks)
 	 *	%rdx: src (16 blocks)
 	 */
+<<<<<<< HEAD
+=======
+	 FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	inpack16_pre(%xmm0, %xmm1, %xmm2, %xmm3, %xmm4, %xmm5, %xmm6, %xmm7,
 		     %xmm8, %xmm9, %xmm10, %xmm11, %xmm12, %xmm13, %xmm14,
@@ -904,6 +929,10 @@ ENTRY(camellia_ecb_enc_16way)
 		     %xmm15, %xmm14, %xmm13, %xmm12, %xmm11, %xmm10, %xmm9,
 		     %xmm8, %rsi);
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(camellia_ecb_enc_16way)
 
@@ -913,6 +942,10 @@ ENTRY(camellia_ecb_dec_16way)
 	 *	%rsi: dst (16 blocks)
 	 *	%rdx: src (16 blocks)
 	 */
+<<<<<<< HEAD
+=======
+	 FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	cmpl $16, key_length(CTX);
 	movl $32, %r8d;
@@ -932,6 +965,10 @@ ENTRY(camellia_ecb_dec_16way)
 		     %xmm15, %xmm14, %xmm13, %xmm12, %xmm11, %xmm10, %xmm9,
 		     %xmm8, %rsi);
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(camellia_ecb_dec_16way)
 
@@ -941,6 +978,10 @@ ENTRY(camellia_cbc_dec_16way)
 	 *	%rsi: dst (16 blocks)
 	 *	%rdx: src (16 blocks)
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	cmpl $16, key_length(CTX);
 	movl $32, %r8d;
@@ -981,6 +1022,10 @@ ENTRY(camellia_cbc_dec_16way)
 		     %xmm15, %xmm14, %xmm13, %xmm12, %xmm11, %xmm10, %xmm9,
 		     %xmm8, %rsi);
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(camellia_cbc_dec_16way)
 
@@ -997,6 +1042,10 @@ ENTRY(camellia_ctr_16way)
 	 *	%rdx: src (16 blocks)
 	 *	%rcx: iv (little endian, 128bit)
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	subq $(16 * 16), %rsp;
 	movq %rsp, %rax;
@@ -1092,6 +1141,10 @@ ENTRY(camellia_ctr_16way)
 		     %xmm15, %xmm14, %xmm13, %xmm12, %xmm11, %xmm10, %xmm9,
 		     %xmm8, %rsi);
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(camellia_ctr_16way)
 
@@ -1112,6 +1165,10 @@ camellia_xts_crypt_16way:
 	 *	%r8: index for input whitening key
 	 *	%r9: pointer to  __camellia_enc_blk16 or __camellia_dec_blk16
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	subq $(16 * 16), %rsp;
 	movq %rsp, %rax;
@@ -1210,7 +1267,11 @@ camellia_xts_crypt_16way:
 	vpxor 14 * 16(%rax), %xmm15, %xmm14;
 	vpxor 15 * 16(%rax), %xmm15, %xmm15;
 
+<<<<<<< HEAD
 	call *%r9;
+=======
+	CALL_NOSPEC %r9;
+>>>>>>> v4.9.227
 
 	addq $(16 * 16), %rsp;
 
@@ -1234,6 +1295,10 @@ camellia_xts_crypt_16way:
 		     %xmm15, %xmm14, %xmm13, %xmm12, %xmm11, %xmm10, %xmm9,
 		     %xmm8, %rsi);
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(camellia_xts_crypt_16way)
 

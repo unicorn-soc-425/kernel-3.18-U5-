@@ -1,6 +1,7 @@
 #ifndef __LINUX__AIO_H
 #define __LINUX__AIO_H
 
+<<<<<<< HEAD
 #include <linux/list.h>
 #include <linux/workqueue.h>
 #include <linux/aio_abi.h>
@@ -73,14 +74,31 @@ static inline void init_sync_kiocb(struct kiocb *kiocb, struct file *filp)
 extern ssize_t wait_on_sync_kiocb(struct kiocb *iocb);
 extern void aio_complete(struct kiocb *iocb, long res, long res2);
 struct mm_struct;
+=======
+#include <linux/aio_abi.h>
+
+struct kioctx;
+struct kiocb;
+struct mm_struct;
+
+#define KIOCB_KEY		0
+
+typedef int (kiocb_cancel_fn)(struct kiocb *);
+
+/* prototypes */
+#ifdef CONFIG_AIO
+>>>>>>> v4.9.227
 extern void exit_aio(struct mm_struct *mm);
 extern long do_io_submit(aio_context_t ctx_id, long nr,
 			 struct iocb __user *__user *iocbpp, bool compat);
 void kiocb_set_cancel_fn(struct kiocb *req, kiocb_cancel_fn *cancel);
 #else
+<<<<<<< HEAD
 static inline ssize_t wait_on_sync_kiocb(struct kiocb *iocb) { return 0; }
 static inline void aio_complete(struct kiocb *iocb, long res, long res2) { }
 struct mm_struct;
+=======
+>>>>>>> v4.9.227
 static inline void exit_aio(struct mm_struct *mm) { }
 static inline long do_io_submit(aio_context_t ctx_id, long nr,
 				struct iocb __user * __user *iocbpp,
@@ -89,11 +107,14 @@ static inline void kiocb_set_cancel_fn(struct kiocb *req,
 				       kiocb_cancel_fn *cancel) { }
 #endif /* CONFIG_AIO */
 
+<<<<<<< HEAD
 static inline struct kiocb *list_kiocb(struct list_head *h)
 {
 	return list_entry(h, struct kiocb, ki_list);
 }
 
+=======
+>>>>>>> v4.9.227
 /* for sysctl: */
 extern unsigned long aio_nr;
 extern unsigned long aio_max_nr;

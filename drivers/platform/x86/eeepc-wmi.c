@@ -204,6 +204,7 @@ static void eeepc_wmi_key_filter(struct asus_wmi_driver *asus_wmi, int *code,
 	}
 }
 
+<<<<<<< HEAD
 static acpi_status eeepc_wmi_parse_device(acpi_handle handle, u32 level,
 						 void *context, void **retval)
 {
@@ -228,6 +229,12 @@ static int eeepc_wmi_check_atkd(void)
 static int eeepc_wmi_probe(struct platform_device *pdev)
 {
 	if (eeepc_wmi_check_atkd()) {
+=======
+static int eeepc_wmi_probe(struct platform_device *pdev)
+{
+	if (acpi_dev_found(EEEPC_ACPI_HID)) {
+		pr_warn("Found legacy ATKD device (%s)\n", EEEPC_ACPI_HID);
+>>>>>>> v4.9.227
 		pr_warn("WMI device present, but legacy ATKD device is also "
 			"present and enabled\n");
 		pr_warn("You probably booted with acpi_osi=\"Linux\" or "

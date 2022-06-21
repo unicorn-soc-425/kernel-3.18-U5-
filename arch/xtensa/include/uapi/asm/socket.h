@@ -91,4 +91,17 @@
 
 #define SO_BPF_EXTENSIONS	48
 
+<<<<<<< HEAD
+=======
+#define SO_INCOMING_CPU		49
+
+#define SO_ATTACH_BPF		50
+#define SO_DETACH_BPF		SO_DETACH_FILTER
+
+#define SO_ATTACH_REUSEPORT_CBPF	51
+#define SO_ATTACH_REUSEPORT_EBPF	52
+
+#define SO_CNX_ADVICE		53
+
+>>>>>>> v4.9.227
 #endif	/* _XTENSA_SOCKET_H */

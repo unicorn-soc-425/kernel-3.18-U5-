@@ -10,11 +10,15 @@
 #include <mach/common.h>
 #include <mach/irqs.h>
 #include <mach/cputype.h>
+<<<<<<< HEAD
 #include <mach/da8xx.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/platform_data/usb-davinci.h>
 
 #define DAVINCI_USB_OTG_BASE	0x01c64000
 
+<<<<<<< HEAD
 #define DA8XX_USB0_BASE 	0x01e00000
 #define DA8XX_USB1_BASE 	0x01e25000
 
@@ -40,6 +44,14 @@ static struct musb_hdrc_config musb_config = {
 	.dma_channels	= 8,
 	.ram_bits	= 10,
 	.eps_bits	= musb_eps,
+=======
+#if IS_ENABLED(CONFIG_USB_MUSB_HDRC)
+static struct musb_hdrc_config musb_config = {
+	.multipoint	= true,
+
+	.num_eps	= 5,
+	.ram_bits	= 10,
+>>>>>>> v4.9.227
 };
 
 static struct musb_hdrc_platform_data usb_data = {
@@ -97,6 +109,7 @@ void __init davinci_setup_usb(unsigned mA, unsigned potpgt_ms)
 	platform_device_register(&usb_dev);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_DAVINCI_DA8XX
 static struct resource da8xx_usb20_resources[] = {
 	{
@@ -125,12 +138,15 @@ int __init da8xx_register_usb20(unsigned mA, unsigned potpgt)
 }
 #endif	/* CONFIG_DAVINCI_DA8XX */
 
+=======
+>>>>>>> v4.9.227
 #else
 
 void __init davinci_setup_usb(unsigned mA, unsigned potpgt_ms)
 {
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_DAVINCI_DA8XX
 int __init da8xx_register_usb20(unsigned mA, unsigned potpgt)
 {
@@ -173,3 +189,6 @@ int __init da8xx_register_usb11(struct da8xx_ohci_root_hub *pdata)
 	return platform_device_register(&da8xx_usb11_device);
 }
 #endif	/* CONFIG_DAVINCI_DA8XX */
+=======
+#endif  /* CONFIG_USB_MUSB_HDRC */
+>>>>>>> v4.9.227

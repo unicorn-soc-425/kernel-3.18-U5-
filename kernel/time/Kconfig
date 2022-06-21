@@ -33,12 +33,15 @@ config ARCH_USES_GETTIMEOFFSET
 config GENERIC_CLOCKEVENTS
 	bool
 
+<<<<<<< HEAD
 # Migration helper. Builds, but does not invoke
 config GENERIC_CLOCKEVENTS_BUILD
 	bool
 	default y
 	depends on GENERIC_CLOCKEVENTS
 
+=======
+>>>>>>> v4.9.227
 # Architecture can handle broadcast in a driver-agnostic way
 config ARCH_HAS_TICK_BROADCAST
 	bool
@@ -98,12 +101,18 @@ config NO_HZ_FULL
 	depends on !ARCH_USES_GETTIMEOFFSET && GENERIC_CLOCKEVENTS
 	# We need at least one periodic CPU for timekeeping
 	depends on SMP
+<<<<<<< HEAD
 	# RCU_USER_QS dependency
+=======
+>>>>>>> v4.9.227
 	depends on HAVE_CONTEXT_TRACKING
 	# VIRT_CPU_ACCOUNTING_GEN dependency
 	depends on HAVE_VIRT_CPU_ACCOUNTING_GEN
 	select NO_HZ_COMMON
+<<<<<<< HEAD
 	select RCU_USER_QS
+=======
+>>>>>>> v4.9.227
 	select RCU_NOCB_CPU
 	select VIRT_CPU_ACCOUNTING_GEN
 	select IRQ_WORK

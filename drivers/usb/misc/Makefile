@@ -15,9 +15,13 @@ obj-$(CONFIG_USB_IOWARRIOR)		+= iowarrior.o
 obj-$(CONFIG_USB_ISIGHTFW)		+= isight_firmware.o
 obj-$(CONFIG_USB_LCD)			+= usblcd.o
 obj-$(CONFIG_USB_LD)			+= ldusb.o
+<<<<<<< HEAD
 obj-$(CONFIG_USB_LED)			+= usbled.o
 obj-$(CONFIG_USB_LEGOTOWER)		+= legousbtower.o
 obj-$(CONFIG_USB_RIO500)		+= rio500.o
+=======
+obj-$(CONFIG_USB_LEGOTOWER)		+= legousbtower.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_USB_TEST)			+= usbtest.o
 obj-$(CONFIG_USB_EHSET_TEST_FIXTURE)    += ehset.o
 obj-$(CONFIG_USB_TRANCEVIBRATOR)	+= trancevibrator.o
@@ -25,9 +29,18 @@ obj-$(CONFIG_USB_USS720)		+= uss720.o
 obj-$(CONFIG_USB_SEVSEG)		+= usbsevseg.o
 obj-$(CONFIG_USB_YUREX)			+= yurex.o
 obj-$(CONFIG_USB_HSIC_USB3503)		+= usb3503.o
+<<<<<<< HEAD
 obj-$(CONFIG_MICROCHIP_USB2533)		+= usb2533.o
 
 obj-$(CONFIG_USB_SISUSBVGA)		+= sisusbvga/
 obj-$(CONFIG_USB_LINK_LAYER_TEST)	+= lvstest.o
 
 obj-$(CONFIG_USB_QTI_KS_BRIDGE)		+= ks_bridge.o
+=======
+obj-$(CONFIG_USB_HSIC_USB4604)		+= usb4604.o
+obj-$(CONFIG_USB_CHAOSKEY)		+= chaoskey.o
+obj-$(CONFIG_UCSI)			+= ucsi.o
+
+obj-$(CONFIG_USB_SISUSBVGA)		+= sisusbvga/
+obj-$(CONFIG_USB_LINK_LAYER_TEST)	+= lvstest.o
+>>>>>>> v4.9.227

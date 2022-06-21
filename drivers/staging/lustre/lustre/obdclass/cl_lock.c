@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -36,6 +40,10 @@
  * Client Extent Lock.
  *
  *   Author: Nikita Danilov <nikita.danilov@sun.com>
+<<<<<<< HEAD
+=======
+ *   Author: Jinshan Xiong <jinshan.xiong@intel.com>
+>>>>>>> v4.9.227
  */
 
 #define DEBUG_SUBSYSTEM S_CLASS
@@ -47,6 +55,7 @@
 #include "../include/cl_object.h"
 #include "cl_internal.h"
 
+<<<<<<< HEAD
 /** Lock class of cl_lock::cll_guard */
 static struct lock_class_key cl_lock_guard_class;
 static struct kmem_cache *cl_lock_kmem;
@@ -124,11 +133,14 @@ static struct cl_thread_counters *cl_lock_counters(const struct lu_env *env,
 	return &info->clt_counters[nesting];
 }
 
+=======
+>>>>>>> v4.9.227
 static void cl_lock_trace0(int level, const struct lu_env *env,
 			   const char *prefix, const struct cl_lock *lock,
 			   const char *func, const int line)
 {
 	struct cl_object_header *h = cl_object_header(lock->cll_descr.cld_obj);
+<<<<<<< HEAD
 	CDEBUG(level, "%s: %p@(%d %p %d %d %d %d %d %lx)"
 		      "(%p/%d/%d) at %s():%d\n",
 	       prefix, lock, atomic_read(&lock->cll_ref),
@@ -178,6 +190,15 @@ static void cl_lock_lockdep_release(const struct lu_env *env,
 
 #endif /* !CONFIG_LOCKDEP */
 
+=======
+
+	CDEBUG(level, "%s: %p (%p/%d) at %s():%d\n",
+	       prefix, lock, env, h->coh_nesting, func, line);
+}
+#define cl_lock_trace(level, env, prefix, lock)				\
+	cl_lock_trace0(level, env, prefix, lock, __func__, __LINE__)
+
+>>>>>>> v4.9.227
 /**
  * Adds lock slice to the compound lock.
  *
@@ -198,6 +219,7 @@ void cl_lock_slice_add(struct cl_lock *lock, struct cl_lock_slice *slice,
 }
 EXPORT_SYMBOL(cl_lock_slice_add);
 
+<<<<<<< HEAD
 /**
  * Returns true iff a lock with the mode \a has provides at least the same
  * guarantees as a lock with the mode \a need.
@@ -254,10 +276,17 @@ static void cl_lock_free(const struct lu_env *env, struct cl_lock *lock)
 
 	cl_lock_trace(D_DLMTRACE, env, "free lock", lock);
 	might_sleep();
+=======
+void cl_lock_fini(const struct lu_env *env, struct cl_lock *lock)
+{
+	cl_lock_trace(D_DLMTRACE, env, "destroy lock", lock);
+
+>>>>>>> v4.9.227
 	while (!list_empty(&lock->cll_layers)) {
 		struct cl_lock_slice *slice;
 
 		slice = list_entry(lock->cll_layers.next,
+<<<<<<< HEAD
 				       struct cl_lock_slice, cls_linkage);
 		list_del_init(lock->cll_layers.next);
 		slice->cls_ops->clo_fini(env, slice);
@@ -609,6 +638,42 @@ EXPORT_SYMBOL(cl_lock_peek);
 
 /**
  * Returns a slice within a lock, corresponding to the given layer in the
+=======
+				   struct cl_lock_slice, cls_linkage);
+		list_del_init(lock->cll_layers.next);
+		slice->cls_ops->clo_fini(env, slice);
+	}
+	POISON(lock, 0x5a, sizeof(*lock));
+}
+EXPORT_SYMBOL(cl_lock_fini);
+
+int cl_lock_init(const struct lu_env *env, struct cl_lock *lock,
+		 const struct cl_io *io)
+{
+	struct cl_object *obj = lock->cll_descr.cld_obj;
+	struct cl_object *scan;
+	int result = 0;
+
+	/* Make sure cl_lock::cll_descr is initialized. */
+	LASSERT(obj);
+
+	INIT_LIST_HEAD(&lock->cll_layers);
+	list_for_each_entry(scan, &obj->co_lu.lo_header->loh_layers,
+			    co_lu.lo_linkage) {
+		result = scan->co_ops->coo_lock_init(env, scan, lock, io);
+		if (result != 0) {
+			cl_lock_fini(env, lock);
+			break;
+		}
+	}
+
+	return result;
+}
+EXPORT_SYMBOL(cl_lock_init);
+
+/**
+ * Returns a slice with a lock, corresponding to the given layer in the
+>>>>>>> v4.9.227
  * device stack.
  *
  * \see cl_page_at()
@@ -618,8 +683,11 @@ const struct cl_lock_slice *cl_lock_at(const struct cl_lock *lock,
 {
 	const struct cl_lock_slice *slice;
 
+<<<<<<< HEAD
 	LINVRNT(cl_lock_invariant_trusted(NULL, lock));
 
+=======
+>>>>>>> v4.9.227
 	list_for_each_entry(slice, &lock->cll_layers, cls_linkage) {
 		if (slice->cls_obj->co_lu.lo_dev->ld_type == dtype)
 			return slice;
@@ -628,6 +696,7 @@ const struct cl_lock_slice *cl_lock_at(const struct cl_lock *lock,
 }
 EXPORT_SYMBOL(cl_lock_at);
 
+<<<<<<< HEAD
 static void cl_lock_mutex_tail(const struct lu_env *env, struct cl_lock *lock)
 {
 	struct cl_thread_counters *counters;
@@ -1782,10 +1851,22 @@ void cl_lock_cancel(const struct lu_env *env, struct cl_lock *lock)
 		cl_lock_cancel0(env, lock);
 	else
 		lock->cll_flags |= CLF_CANCELPEND;
+=======
+void cl_lock_cancel(const struct lu_env *env, struct cl_lock *lock)
+{
+	const struct cl_lock_slice *slice;
+
+	cl_lock_trace(D_DLMTRACE, env, "cancel lock", lock);
+	list_for_each_entry_reverse(slice, &lock->cll_layers, cls_linkage) {
+		if (slice->cls_ops->clo_cancel)
+			slice->cls_ops->clo_cancel(env, slice);
+	}
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(cl_lock_cancel);
 
 /**
+<<<<<<< HEAD
  * Finds an existing lock covering given index and optionally different from a
  * given \a except lock.
  */
@@ -2058,11 +2139,37 @@ struct cl_lock *cl_lock_hold(const struct lu_env *env, const struct cl_io *io,
 	return lock;
 }
 EXPORT_SYMBOL(cl_lock_hold);
+=======
+ * Enqueue a lock.
+ * \param anchor: if we need to wait for resources before getting the lock,
+ *		  use @anchor for the purpose.
+ * \retval 0  enqueue successfully
+ * \retval <0 error code
+ */
+int cl_lock_enqueue(const struct lu_env *env, struct cl_io *io,
+		    struct cl_lock *lock, struct cl_sync_io *anchor)
+{
+	const struct cl_lock_slice *slice;
+	int rc = -ENOSYS;
+
+	list_for_each_entry(slice, &lock->cll_layers, cls_linkage) {
+		if (!slice->cls_ops->clo_enqueue)
+			continue;
+
+		rc = slice->cls_ops->clo_enqueue(env, slice, io, anchor);
+		if (rc != 0)
+			break;
+		}
+	return rc;
+}
+EXPORT_SYMBOL(cl_lock_enqueue);
+>>>>>>> v4.9.227
 
 /**
  * Main high-level entry point of cl_lock interface that finds existing or
  * enqueues new lock matching given description.
  */
+<<<<<<< HEAD
 struct cl_lock *cl_lock_request(const struct lu_env *env, struct cl_io *io,
 				const struct cl_lock_descr *need,
 				const char *scope, const void *source)
@@ -2103,10 +2210,45 @@ struct cl_lock *cl_lock_request(const struct lu_env *env, struct cl_io *io,
 		}
 	} while (rc == 0);
 	return lock;
+=======
+int cl_lock_request(const struct lu_env *env, struct cl_io *io,
+		    struct cl_lock *lock)
+{
+	struct cl_sync_io *anchor = NULL;
+	__u32 enq_flags = lock->cll_descr.cld_enq_flags;
+	int rc;
+
+	rc = cl_lock_init(env, lock, io);
+	if (rc < 0)
+		return rc;
+
+	if ((enq_flags & CEF_ASYNC) && !(enq_flags & CEF_AGL)) {
+		anchor = &cl_env_info(env)->clt_anchor;
+		cl_sync_io_init(anchor, 1, cl_sync_io_end);
+	}
+
+	rc = cl_lock_enqueue(env, io, lock, anchor);
+
+	if (anchor) {
+		int rc2;
+
+		/* drop the reference count held at initialization time */
+		cl_sync_io_note(env, anchor, 0);
+		rc2 = cl_sync_io_wait(env, anchor, 0);
+		if (rc2 < 0 && rc == 0)
+			rc = rc2;
+	}
+
+	if (rc < 0)
+		cl_lock_release(env, lock);
+
+	return rc;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(cl_lock_request);
 
 /**
+<<<<<<< HEAD
  * Adds a hold to a known lock.
  */
 void cl_lock_hold_add(const struct lu_env *env, struct cl_lock *lock,
@@ -2178,6 +2320,21 @@ const char *cl_lock_mode_name(const enum cl_lock_mode mode)
 {
 	static const char *names[] = {
 		[CLM_PHANTOM] = "P",
+=======
+ * Releases a hold and a reference on a lock, obtained by cl_lock_hold().
+ */
+void cl_lock_release(const struct lu_env *env, struct cl_lock *lock)
+{
+	cl_lock_trace(D_DLMTRACE, env, "release lock", lock);
+	cl_lock_cancel(env, lock);
+	cl_lock_fini(env, lock);
+}
+EXPORT_SYMBOL(cl_lock_release);
+
+const char *cl_lock_mode_name(const enum cl_lock_mode mode)
+{
+	static const char *names[] = {
+>>>>>>> v4.9.227
 		[CLM_READ]    = "R",
 		[CLM_WRITE]   = "W",
 		[CLM_GROUP]   = "G"
@@ -2193,8 +2350,13 @@ EXPORT_SYMBOL(cl_lock_mode_name);
  * Prints human readable representation of a lock description.
  */
 void cl_lock_descr_print(const struct lu_env *env, void *cookie,
+<<<<<<< HEAD
 		       lu_printer_t printer,
 		       const struct cl_lock_descr *descr)
+=======
+			 lu_printer_t printer,
+			 const struct cl_lock_descr *descr)
+>>>>>>> v4.9.227
 {
 	const struct lu_fid  *fid;
 
@@ -2210,10 +2372,15 @@ void cl_lock_print(const struct lu_env *env, void *cookie,
 		   lu_printer_t printer, const struct cl_lock *lock)
 {
 	const struct cl_lock_slice *slice;
+<<<<<<< HEAD
 	(*printer)(env, cookie, "lock@%p[%d %d %d %d %d %08lx] ",
 		   lock, atomic_read(&lock->cll_ref),
 		   lock->cll_state, lock->cll_error, lock->cll_holds,
 		   lock->cll_users, lock->cll_flags);
+=======
+
+	(*printer)(env, cookie, "lock@%p", lock);
+>>>>>>> v4.9.227
 	cl_lock_descr_print(env, cookie, printer, &lock->cll_descr);
 	(*printer)(env, cookie, " {\n");
 
@@ -2221,13 +2388,18 @@ void cl_lock_print(const struct lu_env *env, void *cookie,
 		(*printer)(env, cookie, "    %s@%p: ",
 			   slice->cls_obj->co_lu.lo_dev->ld_type->ldt_name,
 			   slice);
+<<<<<<< HEAD
 		if (slice->cls_ops->clo_print != NULL)
+=======
+		if (slice->cls_ops->clo_print)
+>>>>>>> v4.9.227
 			slice->cls_ops->clo_print(env, cookie, printer, slice);
 		(*printer)(env, cookie, "\n");
 	}
 	(*printer)(env, cookie, "} lock@%p\n", lock);
 }
 EXPORT_SYMBOL(cl_lock_print);
+<<<<<<< HEAD
 
 int cl_lock_init(void)
 {
@@ -2238,3 +2410,5 @@ void cl_lock_fini(void)
 {
 	lu_kmem_fini(cl_lock_caches);
 }
+=======
+>>>>>>> v4.9.227

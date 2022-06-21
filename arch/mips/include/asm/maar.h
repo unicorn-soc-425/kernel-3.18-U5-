@@ -26,7 +26,11 @@
  *
  * Return:	The number of MAAR pairs configured.
  */
+<<<<<<< HEAD
 unsigned __weak platform_maar_init(unsigned num_pairs);
+=======
+unsigned platform_maar_init(unsigned num_pairs);
+>>>>>>> v4.9.227
 
 /**
  * write_maar_pair() - write to a pair of MAARs
@@ -66,6 +70,18 @@ static inline void write_maar_pair(unsigned idx, phys_addr_t lower,
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * maar_init() - initialise MAARs
+ *
+ * Performs initialisation of MAARs for the current CPU, making use of the
+ * platforms implementation of platform_maar_init where necessary and
+ * duplicating the setup it provides on secondary CPUs.
+ */
+extern void maar_init(void);
+
+/**
+>>>>>>> v4.9.227
  * struct maar_config - MAAR configuration data
  * @lower:	The lowest address that the MAAR pair will affect. Must be
  *		aligned to a 2^16 byte boundary.

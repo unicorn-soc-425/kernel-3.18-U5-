@@ -69,10 +69,17 @@ static acpi_status find_csr_space(struct acpi_resource *resource, void *data)
 	status = acpi_resource_to_address64(resource, &addr);
 	if (ACPI_SUCCESS(status) &&
 	    addr.resource_type == ACPI_MEMORY_RANGE &&
+<<<<<<< HEAD
 	    addr.address_length &&
 	    addr.producer_consumer == ACPI_CONSUMER) {
 		space->base = addr.minimum;
 		space->length = addr.address_length;
+=======
+	    addr.address.address_length &&
+	    addr.producer_consumer == ACPI_CONSUMER) {
+		space->base = addr.address.minimum;
+		space->length = addr.address.address_length;
+>>>>>>> v4.9.227
 		return AE_CTRL_TERMINATE;
 	}
 	return AE_OK;		/* keep looking */

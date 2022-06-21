@@ -14,6 +14,25 @@
 #include <linux/slab.h>
 #include "cpufreq_governor.h"
 
+<<<<<<< HEAD
+=======
+struct cs_policy_dbs_info {
+	struct policy_dbs_info policy_dbs;
+	unsigned int down_skip;
+	unsigned int requested_freq;
+};
+
+static inline struct cs_policy_dbs_info *to_dbs_info(struct policy_dbs_info *policy_dbs)
+{
+	return container_of(policy_dbs, struct cs_policy_dbs_info, policy_dbs);
+}
+
+struct cs_dbs_tuners {
+	unsigned int down_threshold;
+	unsigned int freq_step;
+};
+
+>>>>>>> v4.9.227
 /* Conservative governor macros */
 #define DEF_FREQUENCY_UP_THRESHOLD		(80)
 #define DEF_FREQUENCY_DOWN_THRESHOLD		(20)
@@ -21,8 +40,11 @@
 #define DEF_SAMPLING_DOWN_FACTOR		(1)
 #define MAX_SAMPLING_DOWN_FACTOR		(10)
 
+<<<<<<< HEAD
 static DEFINE_PER_CPU(struct cs_cpu_dbs_info_s, cs_cpu_dbs_info);
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned int get_freq_target(struct cs_dbs_tuners *cs_tuners,
 					   struct cpufreq_policy *policy)
 {
@@ -44,18 +66,30 @@ static inline unsigned int get_freq_target(struct cs_dbs_tuners *cs_tuners,
  * Any frequency increase takes it to the maximum frequency. Frequency reduction
  * happens at minimum steps of 5% (default) of maximum frequency
  */
+<<<<<<< HEAD
 static void cs_check_cpu(int cpu, unsigned int load)
 {
 	struct cs_cpu_dbs_info_s *dbs_info = &per_cpu(cs_cpu_dbs_info, cpu);
 	struct cpufreq_policy *policy = dbs_info->cdbs.cur_policy;
 	struct dbs_data *dbs_data = policy->governor_data;
 	struct cs_dbs_tuners *cs_tuners = dbs_data->tuners;
+=======
+static unsigned int cs_dbs_timer(struct cpufreq_policy *policy)
+{
+	struct policy_dbs_info *policy_dbs = policy->governor_data;
+	struct cs_policy_dbs_info *dbs_info = to_dbs_info(policy_dbs);
+	unsigned int requested_freq = dbs_info->requested_freq;
+	struct dbs_data *dbs_data = policy_dbs->dbs_data;
+	struct cs_dbs_tuners *cs_tuners = dbs_data->tuners;
+	unsigned int load = dbs_update(policy);
+>>>>>>> v4.9.227
 
 	/*
 	 * break out if we 'cannot' reduce the speed as the user might
 	 * want freq_step to be zero
 	 */
 	if (cs_tuners->freq_step == 0)
+<<<<<<< HEAD
 		return;
 
 	/* Check for frequency increase */
@@ -79,6 +113,38 @@ static void cs_check_cpu(int cpu, unsigned int load)
 	/* if sampling_down_factor is active break out early */
 	if (++dbs_info->down_skip < cs_tuners->sampling_down_factor)
 		return;
+=======
+		goto out;
+
+	/*
+	 * If requested_freq is out of range, it is likely that the limits
+	 * changed in the meantime, so fall back to current frequency in that
+	 * case.
+	 */
+	if (requested_freq > policy->max || requested_freq < policy->min)
+		requested_freq = policy->cur;
+
+	/* Check for frequency increase */
+	if (load > dbs_data->up_threshold) {
+		dbs_info->down_skip = 0;
+
+		/* if we are already at full speed then break out early */
+		if (requested_freq == policy->max)
+			goto out;
+
+		requested_freq += get_freq_target(cs_tuners, policy);
+		if (requested_freq > policy->max)
+			requested_freq = policy->max;
+
+		__cpufreq_driver_target(policy, requested_freq, CPUFREQ_RELATION_H);
+		dbs_info->requested_freq = requested_freq;
+		goto out;
+	}
+
+	/* if sampling_down_factor is active break out early */
+	if (++dbs_info->down_skip < dbs_data->sampling_down_factor)
+		goto out;
+>>>>>>> v4.9.227
 	dbs_info->down_skip = 0;
 
 	/* Check for frequency decrease */
@@ -87,6 +153,7 @@ static void cs_check_cpu(int cpu, unsigned int load)
 		/*
 		 * if we cannot reduce the frequency anymore, break out early
 		 */
+<<<<<<< HEAD
 		if (policy->cur == policy->min)
 			return;
 
@@ -155,6 +222,31 @@ static ssize_t store_sampling_down_factor(struct dbs_data *dbs_data,
 		const char *buf, size_t count)
 {
 	struct cs_dbs_tuners *cs_tuners = dbs_data->tuners;
+=======
+		if (requested_freq == policy->min)
+			goto out;
+
+		freq_target = get_freq_target(cs_tuners, policy);
+		if (requested_freq > freq_target)
+			requested_freq -= freq_target;
+		else
+			requested_freq = policy->min;
+
+		__cpufreq_driver_target(policy, requested_freq, CPUFREQ_RELATION_L);
+		dbs_info->requested_freq = requested_freq;
+	}
+
+ out:
+	return dbs_data->sampling_rate;
+}
+
+/************************** sysfs interface ************************/
+
+static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
+					  const char *buf, size_t count)
+{
+	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+>>>>>>> v4.9.227
 	unsigned int input;
 	int ret;
 	ret = sscanf(buf, "%u", &input);
@@ -162,6 +254,7 @@ static ssize_t store_sampling_down_factor(struct dbs_data *dbs_data,
 	if (ret != 1 || input > MAX_SAMPLING_DOWN_FACTOR || input < 1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	cs_tuners->sampling_down_factor = input;
 	return count;
 }
@@ -184,6 +277,16 @@ static ssize_t store_sampling_rate(struct dbs_data *dbs_data, const char *buf,
 static ssize_t store_up_threshold(struct dbs_data *dbs_data, const char *buf,
 		size_t count)
 {
+=======
+	dbs_data->sampling_down_factor = input;
+	return count;
+}
+
+static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
+				  const char *buf, size_t count)
+{
+	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+>>>>>>> v4.9.227
 	struct cs_dbs_tuners *cs_tuners = dbs_data->tuners;
 	unsigned int input;
 	int ret;
@@ -192,6 +295,7 @@ static ssize_t store_up_threshold(struct dbs_data *dbs_data, const char *buf,
 	if (ret != 1 || input > 100 || input <= cs_tuners->down_threshold)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	cs_tuners->up_threshold = input;
 	return count;
 }
@@ -199,6 +303,16 @@ static ssize_t store_up_threshold(struct dbs_data *dbs_data, const char *buf,
 static ssize_t store_down_threshold(struct dbs_data *dbs_data, const char *buf,
 		size_t count)
 {
+=======
+	dbs_data->up_threshold = input;
+	return count;
+}
+
+static ssize_t store_down_threshold(struct gov_attr_set *attr_set,
+				    const char *buf, size_t count)
+{
+	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+>>>>>>> v4.9.227
 	struct cs_dbs_tuners *cs_tuners = dbs_data->tuners;
 	unsigned int input;
 	int ret;
@@ -206,18 +320,30 @@ static ssize_t store_down_threshold(struct dbs_data *dbs_data, const char *buf,
 
 	/* cannot be lower than 1 otherwise freq will not fall */
 	if (ret != 1 || input < 1 || input > 100 ||
+<<<<<<< HEAD
 			input >= cs_tuners->up_threshold)
+=======
+			input >= dbs_data->up_threshold)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	cs_tuners->down_threshold = input;
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t store_ignore_nice_load(struct dbs_data *dbs_data,
 		const char *buf, size_t count)
 {
 	struct cs_dbs_tuners *cs_tuners = dbs_data->tuners;
 	unsigned int input, j;
+=======
+static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
+				      const char *buf, size_t count)
+{
+	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+	unsigned int input;
+>>>>>>> v4.9.227
 	int ret;
 
 	ret = sscanf(buf, "%u", &input);
@@ -227,6 +353,7 @@ static ssize_t store_ignore_nice_load(struct dbs_data *dbs_data,
 	if (input > 1)
 		input = 1;
 
+<<<<<<< HEAD
 	if (input == cs_tuners->ignore_nice_load) /* nothing to do */
 		return count;
 
@@ -248,6 +375,23 @@ static ssize_t store_ignore_nice_load(struct dbs_data *dbs_data,
 static ssize_t store_freq_step(struct dbs_data *dbs_data, const char *buf,
 		size_t count)
 {
+=======
+	if (input == dbs_data->ignore_nice_load) /* nothing to do */
+		return count;
+
+	dbs_data->ignore_nice_load = input;
+
+	/* we need to re-evaluate prev_cpu_idle */
+	gov_update_cpu_data(dbs_data);
+
+	return count;
+}
+
+static ssize_t store_freq_step(struct gov_attr_set *attr_set, const char *buf,
+			       size_t count)
+{
+	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+>>>>>>> v4.9.227
 	struct cs_dbs_tuners *cs_tuners = dbs_data->tuners;
 	unsigned int input;
 	int ret;
@@ -267,6 +411,7 @@ static ssize_t store_freq_step(struct dbs_data *dbs_data, const char *buf,
 	return count;
 }
 
+<<<<<<< HEAD
 show_store_one(cs, sampling_rate);
 show_store_one(cs, sampling_down_factor);
 show_store_one(cs, up_threshold);
@@ -317,11 +462,56 @@ static struct attribute_group cs_attr_group_gov_pol = {
 
 /************************** sysfs end ************************/
 
+=======
+gov_show_one_common(sampling_rate);
+gov_show_one_common(sampling_down_factor);
+gov_show_one_common(up_threshold);
+gov_show_one_common(ignore_nice_load);
+gov_show_one_common(min_sampling_rate);
+gov_show_one(cs, down_threshold);
+gov_show_one(cs, freq_step);
+
+gov_attr_rw(sampling_rate);
+gov_attr_rw(sampling_down_factor);
+gov_attr_rw(up_threshold);
+gov_attr_rw(ignore_nice_load);
+gov_attr_ro(min_sampling_rate);
+gov_attr_rw(down_threshold);
+gov_attr_rw(freq_step);
+
+static struct attribute *cs_attributes[] = {
+	&min_sampling_rate.attr,
+	&sampling_rate.attr,
+	&sampling_down_factor.attr,
+	&up_threshold.attr,
+	&down_threshold.attr,
+	&ignore_nice_load.attr,
+	&freq_step.attr,
+	NULL
+};
+
+/************************** sysfs end ************************/
+
+static struct policy_dbs_info *cs_alloc(void)
+{
+	struct cs_policy_dbs_info *dbs_info;
+
+	dbs_info = kzalloc(sizeof(*dbs_info), GFP_KERNEL);
+	return dbs_info ? &dbs_info->policy_dbs : NULL;
+}
+
+static void cs_free(struct policy_dbs_info *policy_dbs)
+{
+	kfree(to_dbs_info(policy_dbs));
+}
+
+>>>>>>> v4.9.227
 static int cs_init(struct dbs_data *dbs_data)
 {
 	struct cs_dbs_tuners *tuners;
 
 	tuners = kzalloc(sizeof(*tuners), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!tuners) {
 		pr_err("%s: kzalloc failed\n", __func__);
 		return -ENOMEM;
@@ -332,11 +522,25 @@ static int cs_init(struct dbs_data *dbs_data)
 	tuners->sampling_down_factor = DEF_SAMPLING_DOWN_FACTOR;
 	tuners->ignore_nice_load = 0;
 	tuners->freq_step = DEF_FREQUENCY_STEP;
+=======
+	if (!tuners)
+		return -ENOMEM;
+
+	tuners->down_threshold = DEF_FREQUENCY_DOWN_THRESHOLD;
+	tuners->freq_step = DEF_FREQUENCY_STEP;
+	dbs_data->up_threshold = DEF_FREQUENCY_UP_THRESHOLD;
+	dbs_data->sampling_down_factor = DEF_SAMPLING_DOWN_FACTOR;
+	dbs_data->ignore_nice_load = 0;
+>>>>>>> v4.9.227
 
 	dbs_data->tuners = tuners;
 	dbs_data->min_sampling_rate = MIN_SAMPLING_RATE_RATIO *
 		jiffies_to_usecs(10);
+<<<<<<< HEAD
 	mutex_init(&dbs_data->mutex);
+=======
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -345,6 +549,7 @@ static void cs_exit(struct dbs_data *dbs_data)
 	kfree(dbs_data->tuners);
 }
 
+<<<<<<< HEAD
 define_get_cpu_dbs_routines(cs_cpu_dbs_info);
 
 static struct notifier_block cs_cpufreq_notifier_block = {
@@ -387,11 +592,41 @@ struct cpufreq_governor cpufreq_gov_conservative = {
 static int __init cpufreq_gov_dbs_init(void)
 {
 	return cpufreq_register_governor(&cpufreq_gov_conservative);
+=======
+static void cs_start(struct cpufreq_policy *policy)
+{
+	struct cs_policy_dbs_info *dbs_info = to_dbs_info(policy->governor_data);
+
+	dbs_info->down_skip = 0;
+	dbs_info->requested_freq = policy->cur;
+}
+
+static struct dbs_governor cs_governor = {
+	.gov = CPUFREQ_DBS_GOVERNOR_INITIALIZER("conservative"),
+	.kobj_type = { .default_attrs = cs_attributes },
+	.gov_dbs_timer = cs_dbs_timer,
+	.alloc = cs_alloc,
+	.free = cs_free,
+	.init = cs_init,
+	.exit = cs_exit,
+	.start = cs_start,
+};
+
+#define CPU_FREQ_GOV_CONSERVATIVE	(&cs_governor.gov)
+
+static int __init cpufreq_gov_dbs_init(void)
+{
+	return cpufreq_register_governor(CPU_FREQ_GOV_CONSERVATIVE);
+>>>>>>> v4.9.227
 }
 
 static void __exit cpufreq_gov_dbs_exit(void)
 {
+<<<<<<< HEAD
 	cpufreq_unregister_governor(&cpufreq_gov_conservative);
+=======
+	cpufreq_unregister_governor(CPU_FREQ_GOV_CONSERVATIVE);
+>>>>>>> v4.9.227
 }
 
 MODULE_AUTHOR("Alexander Clouter <alex@digriz.org.uk>");
@@ -401,6 +636,14 @@ MODULE_DESCRIPTION("'cpufreq_conservative' - A dynamic cpufreq governor for "
 MODULE_LICENSE("GPL");
 
 #ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
+<<<<<<< HEAD
+=======
+struct cpufreq_governor *cpufreq_default_governor(void)
+{
+	return CPU_FREQ_GOV_CONSERVATIVE;
+}
+
+>>>>>>> v4.9.227
 fs_initcall(cpufreq_gov_dbs_init);
 #else
 module_init(cpufreq_gov_dbs_init);

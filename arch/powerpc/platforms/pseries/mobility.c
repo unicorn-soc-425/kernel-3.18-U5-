@@ -11,6 +11,10 @@
 
 #include <linux/kernel.h>
 #include <linux/kobject.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched.h>
+>>>>>>> v4.9.227
 #include <linux/smp.h>
 #include <linux/stat.h>
 #include <linux/completion.h>
@@ -191,8 +195,13 @@ static int update_dt_node(__be32 phandle, s32 scope)
 				break;
 
 			case 0x80000000:
+<<<<<<< HEAD
 				prop = of_find_property(dn, prop_name, NULL);
 				of_remove_property(dn, prop);
+=======
+				of_remove_property(dn, of_find_property(dn,
+							prop_name, NULL));
+>>>>>>> v4.9.227
 				prop = NULL;
 				break;
 
@@ -206,7 +215,15 @@ static int update_dt_node(__be32 phandle, s32 scope)
 
 				prop_data += vd;
 			}
+<<<<<<< HEAD
 		}
+=======
+
+			cond_resched();
+		}
+
+		cond_resched();
+>>>>>>> v4.9.227
 	} while (rtas_rc == 1);
 
 	of_node_put(dn);
@@ -282,8 +299,17 @@ int pseries_devicetree_update(s32 scope)
 					add_dt_node(phandle, drc_index);
 					break;
 				}
+<<<<<<< HEAD
 			}
 		}
+=======
+
+				cond_resched();
+			}
+		}
+
+		cond_resched();
+>>>>>>> v4.9.227
 	} while (rc == 1);
 
 	kfree(rtas_buf);
@@ -314,13 +340,22 @@ void post_mobility_fixup(void)
 		printk(KERN_ERR "Post-mobility device tree update "
 			"failed: %d\n", rc);
 
+<<<<<<< HEAD
+=======
+	/* Possibly switch to a new RFI flush type */
+	pseries_setup_rfi_flush();
+
+>>>>>>> v4.9.227
 	return;
 }
 
 static ssize_t migrate_store(struct class *class, struct class_attribute *attr,
 			     const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct rtas_args args;
+=======
+>>>>>>> v4.9.227
 	u64 streamid;
 	int rc;
 
@@ -328,6 +363,7 @@ static ssize_t migrate_store(struct class *class, struct class_attribute *attr,
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	memset(&args, 0, sizeof(args));
 	args.token = rtas_token("ibm,suspend-me");
 	args.nargs = 2;
@@ -348,12 +384,35 @@ static ssize_t migrate_store(struct class *class, struct class_attribute *attr,
 		return rc;
 	else if (args.rets[0])
 		return args.rets[0];
+=======
+	do {
+		rc = rtas_ibm_suspend_me(streamid);
+		if (rc == -EAGAIN)
+			ssleep(1);
+	} while (rc == -EAGAIN);
+
+	if (rc)
+		return rc;
+>>>>>>> v4.9.227
 
 	post_mobility_fixup();
 	return count;
 }
 
+<<<<<<< HEAD
 static CLASS_ATTR(migration, S_IWUSR, NULL, migrate_store);
+=======
+/*
+ * Used by drmgr to determine the kernel behavior of the migration interface.
+ *
+ * Version 1: Performs all PAPR requirements for migration including
+ *	firmware activation and device tree update.
+ */
+#define MIGRATION_API_VERSION	1
+
+static CLASS_ATTR(migration, S_IWUSR, NULL, migrate_store);
+static CLASS_ATTR_STRING(api_version, S_IRUGO, __stringify(MIGRATION_API_VERSION));
+>>>>>>> v4.9.227
 
 static int __init mobility_sysfs_init(void)
 {
@@ -364,7 +423,18 @@ static int __init mobility_sysfs_init(void)
 		return -ENOMEM;
 
 	rc = sysfs_create_file(mobility_kobj, &class_attr_migration.attr);
+<<<<<<< HEAD
 
 	return rc;
+=======
+	if (rc)
+		pr_err("mobility: unable to create migration sysfs file (%d)\n", rc);
+
+	rc = sysfs_create_file(mobility_kobj, &class_attr_api_version.attr.attr);
+	if (rc)
+		pr_err("mobility: unable to create api_version sysfs file (%d)\n", rc);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 machine_device_initcall(pseries, mobility_sysfs_init);

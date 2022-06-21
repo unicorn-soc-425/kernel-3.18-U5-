@@ -28,7 +28,11 @@ static void dccp_write_err(struct sock *sk)
 
 	dccp_send_reset(sk, DCCP_RESET_CODE_ABORTED);
 	dccp_done(sk);
+<<<<<<< HEAD
 	DCCP_INC_STATS_BH(DCCP_MIB_ABORTONTIMEOUT);
+=======
+	__DCCP_INC_STATS(DCCP_MIB_ABORTONTIMEOUT);
+>>>>>>> v4.9.227
 }
 
 /* A write timeout has occurred. Process the after effects. */
@@ -100,7 +104,11 @@ static void dccp_retransmit_timer(struct sock *sk)
 	 * total number of retransmissions of clones of original packets.
 	 */
 	if (icsk->icsk_retransmits == 0)
+<<<<<<< HEAD
 		DCCP_INC_STATS_BH(DCCP_MIB_TIMEOUTS);
+=======
+		__DCCP_INC_STATS(DCCP_MIB_TIMEOUTS);
+>>>>>>> v4.9.227
 
 	if (dccp_retransmit_skb(sk) != 0) {
 		/*
@@ -161,6 +169,7 @@ out:
 	sock_put(sk);
 }
 
+<<<<<<< HEAD
 /*
  *	Timer for listening sockets
  */
@@ -170,10 +179,13 @@ static void dccp_response_timer(struct sock *sk)
 				   DCCP_RTO_MAX);
 }
 
+=======
+>>>>>>> v4.9.227
 static void dccp_keepalive_timer(unsigned long data)
 {
 	struct sock *sk = (struct sock *)data;
 
+<<<<<<< HEAD
 	/* Only process if socket is not in use. */
 	bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
@@ -188,6 +200,9 @@ static void dccp_keepalive_timer(unsigned long data)
 	}
 out:
 	bh_unlock_sock(sk);
+=======
+	pr_err("dccp should not use a keepalive timer !\n");
+>>>>>>> v4.9.227
 	sock_put(sk);
 }
 
@@ -201,7 +216,11 @@ static void dccp_delack_timer(unsigned long data)
 	if (sock_owned_by_user(sk)) {
 		/* Try again later. */
 		icsk->icsk_ack.blocked = 1;
+<<<<<<< HEAD
 		NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_DELAYEDACKLOCKED);
+=======
+		__NET_INC_STATS(sock_net(sk), LINUX_MIB_DELAYEDACKLOCKED);
+>>>>>>> v4.9.227
 		sk_reset_timer(sk, &icsk->icsk_delack_timer,
 			       jiffies + TCP_DELACK_MIN);
 		goto out;
@@ -231,7 +250,11 @@ static void dccp_delack_timer(unsigned long data)
 			icsk->icsk_ack.ato = TCP_ATO_MIN;
 		}
 		dccp_send_ack(sk);
+<<<<<<< HEAD
 		NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_DELAYEDACKS);
+=======
+		__NET_INC_STATS(sock_net(sk), LINUX_MIB_DELAYEDACKS);
+>>>>>>> v4.9.227
 	}
 out:
 	bh_unlock_sock(sk);

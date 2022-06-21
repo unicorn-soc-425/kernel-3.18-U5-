@@ -56,7 +56,11 @@ gk104_volt_set(struct nvkm_volt *base, u32 uv)
 
 	/* the blob uses this crystal frequency, let's use it too. */
 	div = 27648000 / bios->pwm_freq;
+<<<<<<< HEAD
 	duty = (uv - bios->base) * div / bios->pwm_range;
+=======
+	duty = DIV_ROUND_UP((uv - bios->base) * div, bios->pwm_range);
+>>>>>>> v4.9.227
 
 	nvkm_wr32(device, 0x20340, div);
 	nvkm_wr32(device, 0x20344, 0x80000000 | duty);

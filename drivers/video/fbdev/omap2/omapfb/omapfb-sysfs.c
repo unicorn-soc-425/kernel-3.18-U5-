@@ -29,7 +29,11 @@
 #include <linux/mm.h>
 #include <linux/omapfb.h>
 
+<<<<<<< HEAD
 #include <video/omapdss.h>
+=======
+#include <video/omapfb_dss.h>
+>>>>>>> v4.9.227
 #include <video/omapvrfb.h>
 
 #include "omapfb.h"

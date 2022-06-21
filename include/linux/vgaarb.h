@@ -65,6 +65,7 @@ struct pci_dev;
  *     out of the arbitration process (and can be safe to take
  *     interrupts at any time.
  */
+<<<<<<< HEAD
 extern void vga_set_legacy_decoding(struct pci_dev *pdev,
 				    unsigned int decodes);
 
@@ -95,6 +96,15 @@ extern void vga_set_legacy_decoding(struct pci_dev *pdev,
  *     If the card already owns the resources, the function succeeds.
  *     Nested calls are supported (a per-resource counter is maintained)
  */
+=======
+#if defined(CONFIG_VGA_ARB)
+extern void vga_set_legacy_decoding(struct pci_dev *pdev,
+				    unsigned int decodes);
+#else
+static inline void vga_set_legacy_decoding(struct pci_dev *pdev,
+					   unsigned int decodes) { };
+#endif
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_VGA_ARB)
 extern int vga_get(struct pci_dev *pdev, unsigned int rsrc, int interruptible);
@@ -103,11 +113,22 @@ static inline int vga_get(struct pci_dev *pdev, unsigned int rsrc, int interrupt
 #endif
 
 /**
+<<<<<<< HEAD
  *     vga_get_interruptible
  *
  *     Shortcut to vga_get
  */
 
+=======
+ * vga_get_interruptible
+ * @pdev: pci device of the VGA card or NULL for the system default
+ * @rsrc: bit mask of resources to acquire and lock
+ *
+ * Shortcut to vga_get with interruptible set to true.
+ *
+ * On success, release the VGA resource again with vga_put().
+ */
+>>>>>>> v4.9.227
 static inline int vga_get_interruptible(struct pci_dev *pdev,
 					unsigned int rsrc)
 {
@@ -115,17 +136,29 @@ static inline int vga_get_interruptible(struct pci_dev *pdev,
 }
 
 /**
+<<<<<<< HEAD
  *     vga_get_uninterruptible
  *
  *     Shortcut to vga_get
  */
 
+=======
+ * vga_get_uninterruptible - shortcut to vga_get()
+ * @pdev: pci device of the VGA card or NULL for the system default
+ * @rsrc: bit mask of resources to acquire and lock
+ *
+ * Shortcut to vga_get with interruptible set to false.
+ *
+ * On success, release the VGA resource again with vga_put().
+ */
+>>>>>>> v4.9.227
 static inline int vga_get_uninterruptible(struct pci_dev *pdev,
 					  unsigned int rsrc)
 {
        return vga_get(pdev, rsrc, 0);
 }
 
+<<<<<<< HEAD
 /**
  *     vga_tryget      - try to acquire & lock legacy VGA resources
  *
@@ -137,12 +170,15 @@ static inline int vga_get_uninterruptible(struct pci_dev *pdev,
  *     are already locked by another card. It can be called in any context
  */
 
+=======
+>>>>>>> v4.9.227
 #if defined(CONFIG_VGA_ARB)
 extern int vga_tryget(struct pci_dev *pdev, unsigned int rsrc);
 #else
 static inline int vga_tryget(struct pci_dev *pdev, unsigned int rsrc) { return 0; }
 #endif
 
+<<<<<<< HEAD
 /**
  *     vga_put         - release lock on legacy VGA resources
  *
@@ -156,6 +192,8 @@ static inline int vga_tryget(struct pci_dev *pdev, unsigned int rsrc) { return 0
  *     released if the counter reaches 0.
  */
 
+=======
+>>>>>>> v4.9.227
 #if defined(CONFIG_VGA_ARB)
 extern void vga_put(struct pci_dev *pdev, unsigned int rsrc);
 #else
@@ -163,6 +201,7 @@ extern void vga_put(struct pci_dev *pdev, unsigned int rsrc);
 #endif
 
 
+<<<<<<< HEAD
 /**
  *     vga_default_device
  *
@@ -182,6 +221,8 @@ extern void vga_put(struct pci_dev *pdev, unsigned int rsrc);
  *     vga_get()...
  */
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_VGA_ARB
 extern struct pci_dev *vga_default_device(void);
 extern void vga_set_default_device(struct pci_dev *pdev);
@@ -190,6 +231,7 @@ static inline struct pci_dev *vga_default_device(void) { return NULL; };
 static inline void vga_set_default_device(struct pci_dev *pdev) { };
 #endif
 
+<<<<<<< HEAD
 /**
  *     vga_conflicts
  *
@@ -198,6 +240,13 @@ static inline void vga_set_default_device(struct pci_dev *pdev) { };
  *     decoding
  */
 
+=======
+/*
+ * Architectures should define this if they have several
+ * independent PCI domains that can afford concurrent VGA
+ * decoding
+ */
+>>>>>>> v4.9.227
 #ifndef __ARCH_HAS_VGA_CONFLICT
 static inline int vga_conflicts(struct pci_dev *p1, struct pci_dev *p2)
 {
@@ -205,6 +254,7 @@ static inline int vga_conflicts(struct pci_dev *p1, struct pci_dev *p2)
 }
 #endif
 
+<<<<<<< HEAD
 /**
  *	vga_client_register
  *
@@ -233,6 +283,8 @@ static inline int vga_conflicts(struct pci_dev *p1, struct pci_dev *p2)
  * They driver will get a callback when VGA arbitration is first used
  * by userspace since we some older X servers have issues.
  */
+=======
+>>>>>>> v4.9.227
 #if defined(CONFIG_VGA_ARB)
 int vga_client_register(struct pci_dev *pdev, void *cookie,
 			void (*irq_set_state)(void *cookie, bool state),

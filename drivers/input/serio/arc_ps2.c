@@ -266,7 +266,10 @@ MODULE_DEVICE_TABLE(of, arc_ps2_match);
 static struct platform_driver arc_ps2_driver = {
 	.driver	= {
 		.name		= "arc_ps2",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= of_match_ptr(arc_ps2_match),
 	},
 	.probe	= arc_ps2_probe,

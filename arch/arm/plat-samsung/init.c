@@ -152,6 +152,14 @@ static int __init s3c_arch_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
+=======
+	/* init is only needed for ATAGS based platforms */
+	if (!IS_ENABLED(CONFIG_ATAGS) ||
+	    (!soc_is_s3c24xx() && !soc_is_s3c64xx()))
+		return 0;
+
+>>>>>>> v4.9.227
 	// do the correct init for cpu
 
 	if (cpu == NULL) {

@@ -32,8 +32,12 @@
 #include <linux/spinlock_types.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #include <video/s1d13xxxfb.h>
 
@@ -84,7 +88,11 @@ static const char *s1d13xxxfb_prod_names[] = {
 /*
  * here we define the default struct fb_fix_screeninfo
  */
+<<<<<<< HEAD
 static struct fb_fix_screeninfo s1d13xxxfb_fix = {
+=======
+static const struct fb_fix_screeninfo s1d13xxxfb_fix = {
+>>>>>>> v4.9.227
 	.id		= S1D_FBID,
 	.type		= FB_TYPE_PACKED_PIXELS,
 	.visual		= FB_VISUAL_PSEUDOCOLOR,
@@ -930,7 +938,11 @@ static int s1d13xxxfb_suspend(struct platform_device *dev, pm_message_t state)
 		s1dfb->disp_save = kmalloc(info->fix.smem_len, GFP_KERNEL);
 
 	if (!s1dfb->disp_save) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "no memory to save screen");
+=======
+		printk(KERN_ERR PFX "no memory to save screen\n");
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	}
 

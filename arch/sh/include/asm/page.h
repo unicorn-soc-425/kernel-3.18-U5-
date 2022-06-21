@@ -59,6 +59,10 @@ pages_do_alias(unsigned long addr1, unsigned long addr2)
 
 #define clear_page(page)	memset((void *)(page), 0, PAGE_SIZE)
 extern void copy_page(void *to, void *from);
+<<<<<<< HEAD
+=======
+#define copy_user_page(to, from, vaddr, pg)  __copy_user(to, from, PAGE_SIZE)
+>>>>>>> v4.9.227
 
 struct page;
 struct vm_area_struct;

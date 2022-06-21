@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+OBJECT_FILES_NON_STANDARD_xen-asm_$(BITS).o := y
+OBJECT_FILES_NON_STANDARD_xen-pvh.o := y
+
+>>>>>>> v4.9.227
 ifdef CONFIG_FUNCTION_TRACER
 # Do not profile debug and lowlevel utilities
 CFLAGS_REMOVE_spinlock.o = -pg
@@ -13,7 +19,11 @@ CFLAGS_mmu.o			:= $(nostackp)
 obj-y		:= enlighten.o setup.o multicalls.o mmu.o irq.o \
 			time.o xen-asm.o xen-asm_$(BITS).o \
 			grant-table.o suspend.o platform-pci-unplug.o \
+<<<<<<< HEAD
 			p2m.o apic.o
+=======
+			p2m.o apic.o pmu.o
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_EVENT_TRACING) += trace.o
 

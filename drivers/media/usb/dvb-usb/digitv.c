@@ -1,7 +1,11 @@
 /* DVB USB compliant linux driver for Nebula Electronics uDigiTV DVB-T USB2.0
  * receiver
  *
+<<<<<<< HEAD
  * Copyright (C) 2005 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2005 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  *
  * partly based on the SDK published by Nebula Electronics
  *
@@ -28,6 +32,7 @@ DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 static int digitv_ctrl_msg(struct dvb_usb_device *d,
 		u8 cmd, u8 vv, u8 *wbuf, int wlen, u8 *rbuf, int rlen)
 {
+<<<<<<< HEAD
 	int wo = (rbuf == NULL || rlen == 0); /* write-only */
 	u8 sndbuf[7],rcvbuf[7];
 	memset(sndbuf,0,7); memset(rcvbuf,0,7);
@@ -44,6 +49,31 @@ static int digitv_ctrl_msg(struct dvb_usb_device *d,
 		memcpy(rbuf,&rcvbuf[3],rlen);
 	}
 	return 0;
+=======
+	struct digitv_state *st = d->priv;
+	int ret, wo;
+
+	wo = (rbuf == NULL || rlen == 0); /* write-only */
+
+	if (wlen > 4 || rlen > 4)
+		return -EIO;
+
+	memset(st->sndbuf, 0, 7);
+	memset(st->rcvbuf, 0, 7);
+
+	st->sndbuf[0] = cmd;
+	st->sndbuf[1] = vv;
+	st->sndbuf[2] = wo ? wlen : rlen;
+
+	if (wo) {
+		memcpy(&st->sndbuf[3], wbuf, wlen);
+		ret = dvb_usb_generic_write(d, st->sndbuf, 7);
+	} else {
+		ret = dvb_usb_generic_rw(d, st->sndbuf, 7, st->rcvbuf, 7, 10);
+		memcpy(rbuf, &st->rcvbuf[3], rlen);
+	}
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /* I2C */
@@ -226,18 +256,34 @@ static struct rc_map_table rc_map_digitv_table[] = {
 
 static int digitv_rc_query(struct dvb_usb_device *d, u32 *event, int *state)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	int ret, i;
+>>>>>>> v4.9.227
 	u8 key[5];
 	u8 b[4] = { 0 };
 
 	*event = 0;
 	*state = REMOTE_NO_KEY_PRESSED;
 
+<<<<<<< HEAD
 	digitv_ctrl_msg(d,USB_READ_REMOTE,0,NULL,0,&key[1],4);
 
 	/* Tell the device we've read the remote. Not sure how necessary
 	   this is, but the Nebula SDK does it. */
 	digitv_ctrl_msg(d,USB_WRITE_REMOTE,0,b,4,NULL,0);
+=======
+	ret = digitv_ctrl_msg(d, USB_READ_REMOTE, 0, NULL, 0, &key[1], 4);
+	if (ret)
+		return ret;
+
+	/* Tell the device we've read the remote. Not sure how necessary
+	   this is, but the Nebula SDK does it. */
+	ret = digitv_ctrl_msg(d, USB_WRITE_REMOTE, 0, b, 4, NULL, 0);
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 
 	/* if something is inside the buffer, simulate key press */
 	if (key[1] != 0)
@@ -348,7 +394,11 @@ static struct usb_driver digitv_driver = {
 
 module_usb_driver(digitv_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@desy.de>");
+=======
+MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@posteo.de>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Driver for Nebula Electronics uDigiTV DVB-T USB2.0");
 MODULE_VERSION("1.0-alpha");
 MODULE_LICENSE("GPL");

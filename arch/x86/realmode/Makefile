@@ -6,7 +6,13 @@
 # for more details.
 #
 #
+<<<<<<< HEAD
 KASAN_SANITIZE := n
+=======
+KASAN_SANITIZE			:= n
+OBJECT_FILES_NON_STANDARD	:= y
+
+>>>>>>> v4.9.227
 subdir- := rm
 
 obj-y += init.o

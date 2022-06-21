@@ -1,7 +1,11 @@
 # SPEAr pinmux support
 
 obj-$(CONFIG_PINCTRL_SPEAR_PLGPIO)	+= pinctrl-plgpio.o
+<<<<<<< HEAD
 obj-$(CONFIG_PINCTRL_SPEAR)	+= pinctrl-spear.o
+=======
+obj-y				+= pinctrl-spear.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_PINCTRL_SPEAR3XX)	+= pinctrl-spear3xx.o
 obj-$(CONFIG_PINCTRL_SPEAR300)	+= pinctrl-spear300.o
 obj-$(CONFIG_PINCTRL_SPEAR310)	+= pinctrl-spear310.o

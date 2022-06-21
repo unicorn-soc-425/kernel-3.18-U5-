@@ -3,8 +3,13 @@
  *
  * Copyright 2012 Dialog Semiconductor Ltd.
  *
+<<<<<<< HEAD
  * Author: Michal Hajduk <michal.hajduk@diasemi.com>
  * Author: Krystian Garbaciak <krystian.garbaciak@diasemi.com>
+=======
+ * Author: Michal Hajduk, Dialog Semiconductor
+ * Author: Krystian Garbaciak, Dialog Semiconductor
+>>>>>>> v4.9.227
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
@@ -103,6 +108,10 @@ struct da9063;
 struct da9063_pdata {
 	int				(*init)(struct da9063 *da9063);
 	int				irq_base;
+<<<<<<< HEAD
+=======
+	bool				key_power;
+>>>>>>> v4.9.227
 	unsigned			flags;
 	struct da9063_regulators_pdata	*regulators_pdata;
 	struct led_platform_data	*leds_pdata;

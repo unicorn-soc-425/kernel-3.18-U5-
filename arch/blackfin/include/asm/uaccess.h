@@ -27,7 +27,11 @@ static inline void set_fs(mm_segment_t fs)
 	current_thread_info()->addr_limit = fs;
 }
 
+<<<<<<< HEAD
 #define segment_eq(a,b) ((a) == (b))
+=======
+#define segment_eq(a, b) ((a) == (b))
+>>>>>>> v4.9.227
 
 #define VERIFY_READ	0
 #define VERIFY_WRITE	1
@@ -68,11 +72,19 @@ struct exception_table_entry {
  * use the right size if we just have the right pointer type.
  */
 
+<<<<<<< HEAD
 #define put_user(x,p)						\
 	({							\
 		int _err = 0;					\
 		typeof(*(p)) _x = (x);				\
 		typeof(*(p)) __user *_p = (p);				\
+=======
+#define put_user(x, p)						\
+	({							\
+		int _err = 0;					\
+		typeof(*(p)) _x = (x);				\
+		typeof(*(p)) __user *_p = (p);			\
+>>>>>>> v4.9.227
 		if (!access_ok(VERIFY_WRITE, _p, sizeof(*(_p)))) {\
 			_err = -EFAULT;				\
 		}						\
@@ -89,10 +101,17 @@ struct exception_table_entry {
 			break;					\
 		case 8: {					\
 			long _xl, _xh;				\
+<<<<<<< HEAD
 			_xl = ((long *)&_x)[0];			\
 			_xh = ((long *)&_x)[1];			\
 			__put_user_asm(_xl, ((long __user *)_p)+0, );	\
 			__put_user_asm(_xh, ((long __user *)_p)+1, );	\
+=======
+			_xl = ((__force long *)&_x)[0];		\
+			_xh = ((__force long *)&_x)[1];		\
+			__put_user_asm(_xl, ((__force long __user *)_p)+0, );\
+			__put_user_asm(_xh, ((__force long __user *)_p)+1, );\
+>>>>>>> v4.9.227
 		} break;					\
 		default:					\
 			_err = __put_user_bad();		\
@@ -102,7 +121,11 @@ struct exception_table_entry {
 		_err;						\
 	})
 
+<<<<<<< HEAD
 #define __put_user(x,p) put_user(x,p)
+=======
+#define __put_user(x, p) put_user(x, p)
+>>>>>>> v4.9.227
 static inline int bad_user_access_length(void)
 {
 	panic("bad_user_access_length");
@@ -121,10 +144,17 @@ static inline int bad_user_access_length(void)
 
 #define __ptr(x) ((unsigned long __force *)(x))
 
+<<<<<<< HEAD
 #define __put_user_asm(x,p,bhw)				\
 	__asm__ (#bhw"[%1] = %0;\n\t"			\
 		 : /* no outputs */			\
 		 :"d" (x),"a" (__ptr(p)) : "memory")
+=======
+#define __put_user_asm(x, p, bhw)			\
+	__asm__ (#bhw"[%1] = %0;\n\t"			\
+		 : /* no outputs */			\
+		 :"d" (x), "a" (__ptr(p)) : "memory")
+>>>>>>> v4.9.227
 
 #define get_user(x, ptr)					\
 ({								\
@@ -136,10 +166,17 @@ static inline int bad_user_access_length(void)
 		BUILD_BUG_ON(ptr_size >= 8);			\
 		switch (ptr_size) {				\
 		case 1:						\
+<<<<<<< HEAD
 			__get_user_asm(_val, _p, B,(Z));	\
 			break;					\
 		case 2:						\
 			__get_user_asm(_val, _p, W,(Z));	\
+=======
+			__get_user_asm(_val, _p, B, (Z));	\
+			break;					\
+		case 2:						\
+			__get_user_asm(_val, _p, W, (Z));	\
+>>>>>>> v4.9.227
 			break;					\
 		case 4:						\
 			__get_user_asm(_val, _p,  , );		\
@@ -147,11 +184,19 @@ static inline int bad_user_access_length(void)
 		}						\
 	} else							\
 		_err = -EFAULT;					\
+<<<<<<< HEAD
 	x = (typeof(*(ptr)))_val;				\
 	_err;							\
 })
 
 #define __get_user(x,p) get_user(x,p)
+=======
+	x = (__force typeof(*(ptr)))_val;			\
+	_err;							\
+})
+
+#define __get_user(x, p) get_user(x, p)
+>>>>>>> v4.9.227
 
 #define __get_user_bad() (bad_user_access_length(), (-EFAULT))
 
@@ -163,6 +208,7 @@ static inline int bad_user_access_length(void)
 		: "a" (__ptr(ptr)));		\
 })
 
+<<<<<<< HEAD
 #define __copy_from_user(to, from, n) copy_from_user(to, from, n)
 #define __copy_to_user(to, from, n) copy_to_user(to, from, n)
 #define __copy_to_user_inatomic __copy_to_user
@@ -173,14 +219,38 @@ static inline int bad_user_access_length(void)
 
 #define copy_from_user_ret(to,from,n,retval) ({ if (copy_from_user(to,from,n))\
                                                    return retval; })
+=======
+#define __copy_to_user_inatomic __copy_to_user
+#define __copy_from_user_inatomic __copy_from_user
+
+static inline unsigned long __must_check
+__copy_from_user(void *to, const void __user *from, unsigned long n)
+{
+	memcpy(to, (const void __force *)from, n);
+	return 0;
+}
+
+static inline unsigned long __must_check
+__copy_to_user(void __user *to, const void *from, unsigned long n)
+{
+	memcpy((void __force *)to, from, n);
+	SSYNC();
+	return 0;
+}
+>>>>>>> v4.9.227
 
 static inline unsigned long __must_check
 copy_from_user(void *to, const void __user *from, unsigned long n)
 {
+<<<<<<< HEAD
 	if (likely(access_ok(VERIFY_READ, from, n))) {
 		memcpy(to, (const void __force *)from, n);
 		return 0;
 	}
+=======
+	if (likely(access_ok(VERIFY_READ, from, n)))
+		return __copy_from_user(to, from, n);
+>>>>>>> v4.9.227
 	memset(to, 0, n);
 	return n;
 }
@@ -188,12 +258,18 @@ copy_from_user(void *to, const void __user *from, unsigned long n)
 static inline unsigned long __must_check
 copy_to_user(void __user *to, const void *from, unsigned long n)
 {
+<<<<<<< HEAD
 	if (access_ok(VERIFY_WRITE, to, n))
 		memcpy((void __force *)to, from, n);
 	else
 		return n;
 	SSYNC();
 	return 0;
+=======
+	if (likely(access_ok(VERIFY_WRITE, to, n)))
+		return __copy_to_user(to, from, n);
+	return n;
+>>>>>>> v4.9.227
 }
 
 /*

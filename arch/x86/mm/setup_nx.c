@@ -4,6 +4,10 @@
 
 #include <asm/pgtable.h>
 #include <asm/proto.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpufeature.h>
+>>>>>>> v4.9.227
 
 static int disable_nx;
 
@@ -31,7 +35,11 @@ early_param("noexec", noexec_setup);
 
 void x86_configure_nx(void)
 {
+<<<<<<< HEAD
 	if (cpu_has_nx && !disable_nx)
+=======
+	if (boot_cpu_has(X86_FEATURE_NX) && !disable_nx)
+>>>>>>> v4.9.227
 		__supported_pte_mask |= _PAGE_NX;
 	else
 		__supported_pte_mask &= ~_PAGE_NX;
@@ -39,7 +47,11 @@ void x86_configure_nx(void)
 
 void __init x86_report_nx(void)
 {
+<<<<<<< HEAD
 	if (!cpu_has_nx) {
+=======
+	if (!boot_cpu_has(X86_FEATURE_NX)) {
+>>>>>>> v4.9.227
 		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
 		       "missing in CPU!\n");
 	} else {

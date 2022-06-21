@@ -45,7 +45,11 @@ static volatile unsigned long flushcache_cpumask = 0;
 /*
  * For flush_tlb_others()
  */
+<<<<<<< HEAD
 static volatile cpumask_t flush_cpumask;
+=======
+static cpumask_t flush_cpumask;
+>>>>>>> v4.9.227
 static struct mm_struct *flush_mm;
 static struct vm_area_struct *flush_vma;
 static volatile unsigned long flush_va;
@@ -156,7 +160,11 @@ void smp_flush_cache_all(void)
 	cpumask_clear_cpu(smp_processor_id(), &cpumask);
 	spin_lock(&flushcache_lock);
 	mask=cpumask_bits(&cpumask);
+<<<<<<< HEAD
 	atomic_set_mask(*mask, (atomic_t *)&flushcache_cpumask);
+=======
+	atomic_or(*mask, (atomic_t *)&flushcache_cpumask);
+>>>>>>> v4.9.227
 	send_IPI_mask(&cpumask, INVALIDATE_CACHE_IPI, 0);
 	_flush_cache_copyback_all();
 	while (flushcache_cpumask)
@@ -164,6 +172,10 @@ void smp_flush_cache_all(void)
 	spin_unlock(&flushcache_lock);
 	preempt_enable();
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(smp_flush_cache_all);
+>>>>>>> v4.9.227
 
 void smp_flush_cache_all_interrupt(void)
 {
@@ -407,7 +419,11 @@ static void flush_tlb_others(cpumask_t cpumask, struct mm_struct *mm,
 	flush_vma = vma;
 	flush_va = va;
 	mask=cpumask_bits(&cpumask);
+<<<<<<< HEAD
 	atomic_set_mask(*mask, (atomic_t *)&flush_cpumask);
+=======
+	atomic_or(*mask, (atomic_t *)&flush_cpumask);
+>>>>>>> v4.9.227
 
 	/*
 	 * We have to send the IPI only to
@@ -415,7 +431,11 @@ static void flush_tlb_others(cpumask_t cpumask, struct mm_struct *mm,
 	 */
 	send_IPI_mask(&cpumask, INVALIDATE_TLB_IPI, 0);
 
+<<<<<<< HEAD
 	while (!cpumask_empty((cpumask_t*)&flush_cpumask)) {
+=======
+	while (!cpumask_empty(&flush_cpumask)) {
+>>>>>>> v4.9.227
 		/* nothing. lockup detection does not belong here */
 		mb();
 	}
@@ -468,7 +488,11 @@ void smp_invalidate_interrupt(void)
 			__flush_tlb_page(va);
 		}
 	}
+<<<<<<< HEAD
 	cpumask_clear_cpu(cpu_id, (cpumask_t*)&flush_cpumask);
+=======
+	cpumask_clear_cpu(cpu_id, &flush_cpumask);
+>>>>>>> v4.9.227
 }
 
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/

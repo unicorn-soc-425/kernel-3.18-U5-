@@ -41,7 +41,11 @@ struct octeon_gpio {
 
 static int octeon_gpio_dir_in(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct octeon_gpio *gpio = container_of(chip, struct octeon_gpio, chip);
+=======
+	struct octeon_gpio *gpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	cvmx_write_csr(gpio->register_base + bit_cfg_reg(offset), 0);
 	return 0;
@@ -49,7 +53,11 @@ static int octeon_gpio_dir_in(struct gpio_chip *chip, unsigned offset)
 
 static void octeon_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct octeon_gpio *gpio = container_of(chip, struct octeon_gpio, chip);
+=======
+	struct octeon_gpio *gpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u64 mask = 1ull << offset;
 	u64 reg = gpio->register_base + (value ? TX_SET : TX_CLEAR);
 	cvmx_write_csr(reg, mask);
@@ -58,7 +66,11 @@ static void octeon_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 static int octeon_gpio_dir_out(struct gpio_chip *chip, unsigned offset,
 			       int value)
 {
+<<<<<<< HEAD
 	struct octeon_gpio *gpio = container_of(chip, struct octeon_gpio, chip);
+=======
+	struct octeon_gpio *gpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	union cvmx_gpio_bit_cfgx cfgx;
 
 	octeon_gpio_set(chip, offset, value);
@@ -72,7 +84,11 @@ static int octeon_gpio_dir_out(struct gpio_chip *chip, unsigned offset,
 
 static int octeon_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct octeon_gpio *gpio = container_of(chip, struct octeon_gpio, chip);
+=======
+	struct octeon_gpio *gpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u64 read_bits = cvmx_read_csr(gpio->register_base + RX_DAT);
 
 	return ((1ull << offset) & read_bits) != 0;
@@ -83,6 +99,10 @@ static int octeon_gpio_probe(struct platform_device *pdev)
 	struct octeon_gpio *gpio;
 	struct gpio_chip *chip;
 	struct resource *res_mem;
+<<<<<<< HEAD
+=======
+	void __iomem *reg_base;
+>>>>>>> v4.9.227
 	int err = 0;
 
 	gpio = devm_kzalloc(&pdev->dev, sizeof(*gpio), GFP_KERNEL);
@@ -91,6 +111,7 @@ static int octeon_gpio_probe(struct platform_device *pdev)
 	chip = &gpio->chip;
 
 	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (res_mem == NULL) {
 		dev_err(&pdev->dev, "found no memory resource\n");
 		err = -ENXIO;
@@ -109,6 +130,16 @@ static int octeon_gpio_probe(struct platform_device *pdev)
 	pdev->dev.platform_data = chip;
 	chip->label = "octeon-gpio";
 	chip->dev = &pdev->dev;
+=======
+	reg_base = devm_ioremap_resource(&pdev->dev, res_mem);
+	if (IS_ERR(reg_base))
+		return PTR_ERR(reg_base);
+
+	gpio->register_base = (u64)reg_base;
+	pdev->dev.platform_data = chip;
+	chip->label = "octeon-gpio";
+	chip->parent = &pdev->dev;
+>>>>>>> v4.9.227
 	chip->owner = THIS_MODULE;
 	chip->base = 0;
 	chip->can_sleep = false;
@@ -117,6 +148,7 @@ static int octeon_gpio_probe(struct platform_device *pdev)
 	chip->get = octeon_gpio_get;
 	chip->direction_output = octeon_gpio_dir_out;
 	chip->set = octeon_gpio_set;
+<<<<<<< HEAD
 	err = gpiochip_add(chip);
 	if (err)
 		goto out;
@@ -134,6 +166,17 @@ static int octeon_gpio_remove(struct platform_device *pdev)
 }
 
 static struct of_device_id octeon_gpio_match[] = {
+=======
+	err = devm_gpiochip_add_data(&pdev->dev, chip, gpio);
+	if (err)
+		return err;
+
+	dev_info(&pdev->dev, "OCTEON GPIO driver probed.\n");
+	return 0;
+}
+
+static const struct of_device_id octeon_gpio_match[] = {
+>>>>>>> v4.9.227
 	{
 		.compatible = "cavium,octeon-3860-gpio",
 	},
@@ -144,11 +187,17 @@ MODULE_DEVICE_TABLE(of, octeon_gpio_match);
 static struct platform_driver octeon_gpio_driver = {
 	.driver = {
 		.name		= "octeon_gpio",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 		.of_match_table = octeon_gpio_match,
 	},
 	.probe		= octeon_gpio_probe,
 	.remove		= octeon_gpio_remove,
+=======
+		.of_match_table = octeon_gpio_match,
+	},
+	.probe		= octeon_gpio_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(octeon_gpio_driver);

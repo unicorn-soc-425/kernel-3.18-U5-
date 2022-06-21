@@ -2,6 +2,7 @@ ccflags-y += -I$(src)			# needed for trace events
 
 obj-y					+= ion/
 
+<<<<<<< HEAD
 obj-$(CONFIG_ANDROID_BINDER_IPC)	+= binder.o binder_alloc.o
 obj-$(CONFIG_ANDROID_BINDER_IPC_SELFTEST) += binder_alloc_selftest.o
 obj-$(CONFIG_ASHMEM)			+= ashmem.o
@@ -16,3 +17,7 @@ obj-$(CONFIG_ONESHOT_SYNC)		+= oneshot_sync.o
 obj-$(CONFIG_ANDROID_VSOC)		+= vsoc.o
 obj-$(CONFIG_SAMSUNG_FREECESS)		+= freecess.o
 obj-$(CONFIG_SAMSUNG_FREECESS)		+= freecess_pkg.o
+=======
+obj-$(CONFIG_ASHMEM)			+= ashmem.o
+obj-$(CONFIG_ANDROID_LOW_MEMORY_KILLER)	+= lowmemorykiller.o
+>>>>>>> v4.9.227

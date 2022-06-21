@@ -9,7 +9,10 @@ struct scsi_cmnd;
 struct scsi_device;
 
 struct scsi_driver {
+<<<<<<< HEAD
 	struct module		*owner;
+=======
+>>>>>>> v4.9.227
 	struct device_driver	gendrv;
 
 	void (*rescan)(struct device *);

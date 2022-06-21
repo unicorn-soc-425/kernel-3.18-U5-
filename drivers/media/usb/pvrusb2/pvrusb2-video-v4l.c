@@ -35,7 +35,11 @@
 #include "pvrusb2-debug.h"
 #include <linux/videodev2.h>
 #include <media/v4l2-common.h>
+<<<<<<< HEAD
 #include <media/saa7115.h>
+=======
+#include <media/i2c/saa7115.h>
+>>>>>>> v4.9.227
 #include <linux/errno.h>
 
 struct routing_scheme {
@@ -101,6 +105,7 @@ void pvr2_saa7115_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)
 		sd->ops->video->s_routing(sd, input, 0, 0);
 	}
 }
+<<<<<<< HEAD
 
 
 /*
@@ -112,3 +117,5 @@ void pvr2_saa7115_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

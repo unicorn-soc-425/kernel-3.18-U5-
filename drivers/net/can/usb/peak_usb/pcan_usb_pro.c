@@ -27,6 +27,7 @@
 
 MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB Pro adapter");
 
+<<<<<<< HEAD
 /* PCAN-USB Pro Endpoints */
 #define PCAN_USBPRO_EP_CMDOUT		1
 #define PCAN_USBPRO_EP_CMDIN		(PCAN_USBPRO_EP_CMDOUT | USB_DIR_IN)
@@ -35,6 +36,8 @@ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB Pro adapter");
 #define PCAN_USBPRO_EP_MSGOUT_1		3
 #define PCAN_USBPRO_EP_UNUSED		(PCAN_USBPRO_EP_MSGOUT_1 | USB_DIR_IN)
 
+=======
+>>>>>>> v4.9.227
 #define PCAN_USBPRO_CHANNEL_COUNT	2
 
 /* PCAN-USB Pro adapter internal clock (MHz) */
@@ -78,8 +81,13 @@ struct pcan_usb_pro_msg {
 	int rec_buffer_size;
 	int rec_buffer_len;
 	union {
+<<<<<<< HEAD
 		u16 *rec_cnt_rd;
 		u32 *rec_cnt;
+=======
+		__le16 *rec_cnt_rd;
+		__le32 *rec_cnt;
+>>>>>>> v4.9.227
 		u8 *rec_buffer;
 	} u;
 };
@@ -155,7 +163,11 @@ static int pcan_msg_add_rec(struct pcan_usb_pro_msg *pm, u8 id, ...)
 		*pc++ = va_arg(ap, int);
 		*pc++ = va_arg(ap, int);
 		*pc++ = va_arg(ap, int);
+<<<<<<< HEAD
 		*(u32 *)pc = cpu_to_le32(va_arg(ap, u32));
+=======
+		*(__le32 *)pc = cpu_to_le32(va_arg(ap, u32));
+>>>>>>> v4.9.227
 		pc += 4;
 		memcpy(pc, va_arg(ap, int *), i);
 		pc += i;
@@ -165,7 +177,11 @@ static int pcan_msg_add_rec(struct pcan_usb_pro_msg *pm, u8 id, ...)
 	case PCAN_USBPRO_GETDEVID:
 		*pc++ = va_arg(ap, int);
 		pc += 2;
+<<<<<<< HEAD
 		*(u32 *)pc = cpu_to_le32(va_arg(ap, u32));
+=======
+		*(__le32 *)pc = cpu_to_le32(va_arg(ap, u32));
+>>>>>>> v4.9.227
 		pc += 4;
 		break;
 
@@ -173,21 +189,35 @@ static int pcan_msg_add_rec(struct pcan_usb_pro_msg *pm, u8 id, ...)
 	case PCAN_USBPRO_SETBUSACT:
 	case PCAN_USBPRO_SETSILENT:
 		*pc++ = va_arg(ap, int);
+<<<<<<< HEAD
 		*(u16 *)pc = cpu_to_le16(va_arg(ap, int));
+=======
+		*(__le16 *)pc = cpu_to_le16(va_arg(ap, int));
+>>>>>>> v4.9.227
 		pc += 2;
 		break;
 
 	case PCAN_USBPRO_SETLED:
 		*pc++ = va_arg(ap, int);
+<<<<<<< HEAD
 		*(u16 *)pc = cpu_to_le16(va_arg(ap, int));
 		pc += 2;
 		*(u32 *)pc = cpu_to_le32(va_arg(ap, u32));
+=======
+		*(__le16 *)pc = cpu_to_le16(va_arg(ap, int));
+		pc += 2;
+		*(__le32 *)pc = cpu_to_le32(va_arg(ap, u32));
+>>>>>>> v4.9.227
 		pc += 4;
 		break;
 
 	case PCAN_USBPRO_SETTS:
 		pc++;
+<<<<<<< HEAD
 		*(u16 *)pc = cpu_to_le16(va_arg(ap, int));
+=======
+		*(__le16 *)pc = cpu_to_le16(va_arg(ap, int));
+>>>>>>> v4.9.227
 		pc += 2;
 		break;
 
@@ -200,7 +230,11 @@ static int pcan_msg_add_rec(struct pcan_usb_pro_msg *pm, u8 id, ...)
 
 	len = pc - pm->rec_ptr;
 	if (len > 0) {
+<<<<<<< HEAD
 		*pm->u.rec_cnt = cpu_to_le32(*pm->u.rec_cnt+1);
+=======
+		*pm->u.rec_cnt = cpu_to_le32(le32_to_cpu(*pm->u.rec_cnt) + 1);
+>>>>>>> v4.9.227
 		*pm->rec_ptr = id;
 
 		pm->rec_ptr = pc;
@@ -322,8 +356,13 @@ static int pcan_usb_pro_wait_rsp(struct peak_usb_device *dev,
 	return (i >= PCAN_USBPRO_RSP_SUBMIT_MAX) ? -ERANGE : err;
 }
 
+<<<<<<< HEAD
 static int pcan_usb_pro_send_req(struct peak_usb_device *dev, int req_id,
 				 int req_value, void *req_addr, int req_size)
+=======
+int pcan_usb_pro_send_req(struct peak_usb_device *dev, int req_id,
+			  int req_value, void *req_addr, int req_size)
+>>>>>>> v4.9.227
 {
 	int err;
 	u8 req_type;
@@ -475,7 +514,11 @@ static int pcan_usb_pro_set_bittiming(struct peak_usb_device *dev,
 	return pcan_usb_pro_set_bitrate(dev, ccbt);
 }
 
+<<<<<<< HEAD
 static void pcan_usb_pro_restart_complete(struct urb *urb)
+=======
+void pcan_usb_pro_restart_complete(struct urb *urb)
+>>>>>>> v4.9.227
 {
 	/* can delete usb resources */
 	peak_usb_async_complete(urb);
@@ -561,9 +604,15 @@ static int pcan_usb_pro_handle_canmsg(struct pcan_usb_pro_interface *usb_if,
 	hwts = skb_hwtstamps(skb);
 	hwts->hwtstamp = timeval_to_ktime(tv);
 
+<<<<<<< HEAD
 	netif_rx(skb);
 	netdev->stats.rx_packets++;
 	netdev->stats.rx_bytes += can_frame->can_dlc;
+=======
+	netdev->stats.rx_packets++;
+	netdev->stats.rx_bytes += can_frame->can_dlc;
+	netif_rx(skb);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -571,7 +620,11 @@ static int pcan_usb_pro_handle_canmsg(struct pcan_usb_pro_interface *usb_if,
 static int pcan_usb_pro_handle_error(struct pcan_usb_pro_interface *usb_if,
 				     struct pcan_usb_pro_rxstatus *er)
 {
+<<<<<<< HEAD
 	const u32 raw_status = le32_to_cpu(er->status);
+=======
+	const u16 raw_status = le16_to_cpu(er->status);
+>>>>>>> v4.9.227
 	const unsigned int ctrl_idx = (er->channel >> 4) & 0x0f;
 	struct peak_usb_device *dev = usb_if->dev[ctrl_idx];
 	struct net_device *netdev = dev->netdev;
@@ -634,6 +687,10 @@ static int pcan_usb_pro_handle_error(struct pcan_usb_pro_interface *usb_if,
 	switch (new_state) {
 	case CAN_STATE_BUS_OFF:
 		can_frame->can_id |= CAN_ERR_BUSOFF;
+<<<<<<< HEAD
+=======
+		dev->can.can_stats.bus_off++;
+>>>>>>> v4.9.227
 		can_bus_off(netdev);
 		break;
 
@@ -677,9 +734,15 @@ static int pcan_usb_pro_handle_error(struct pcan_usb_pro_interface *usb_if,
 	peak_usb_get_ts_tv(&usb_if->time_ref, le32_to_cpu(er->ts32), &tv);
 	hwts = skb_hwtstamps(skb);
 	hwts->hwtstamp = timeval_to_ktime(tv);
+<<<<<<< HEAD
 	netif_rx(skb);
 	netdev->stats.rx_packets++;
 	netdev->stats.rx_bytes += can_frame->can_dlc;
+=======
+	netdev->stats.rx_packets++;
+	netdev->stats.rx_bytes += can_frame->can_dlc;
+	netif_rx(skb);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -977,7 +1040,11 @@ static void pcan_usb_pro_free(struct peak_usb_device *dev)
 /*
  * probe function for new PCAN-USB Pro usb interface
  */
+<<<<<<< HEAD
 static int pcan_usb_pro_probe(struct usb_interface *intf)
+=======
+int pcan_usb_pro_probe(struct usb_interface *intf)
+>>>>>>> v4.9.227
 {
 	struct usb_host_interface *if_desc;
 	int i;
@@ -1011,6 +1078,7 @@ static int pcan_usb_pro_probe(struct usb_interface *intf)
 /*
  * describe the PCAN-USB Pro adapter
  */
+<<<<<<< HEAD
 struct peak_usb_adapter pcan_usb_pro = {
 	.name = "PCAN-USB Pro",
 	.device_id = PCAN_USBPRO_PRODUCT_ID,
@@ -1029,6 +1097,29 @@ struct peak_usb_adapter pcan_usb_pro = {
 		.brp_max = 1024,
 		.brp_inc = 1,
 	},
+=======
+static const struct can_bittiming_const pcan_usb_pro_const = {
+	.name = "pcan_usb_pro",
+	.tseg1_min = 1,
+	.tseg1_max = 16,
+	.tseg2_min = 1,
+	.tseg2_max = 8,
+	.sjw_max = 4,
+	.brp_min = 1,
+	.brp_max = 1024,
+	.brp_inc = 1,
+};
+
+const struct peak_usb_adapter pcan_usb_pro = {
+	.name = "PCAN-USB Pro",
+	.device_id = PCAN_USBPRO_PRODUCT_ID,
+	.ctrl_count = PCAN_USBPRO_CHANNEL_COUNT,
+	.ctrlmode_supported = CAN_CTRLMODE_3_SAMPLES | CAN_CTRLMODE_LISTENONLY,
+	.clock = {
+		.freq = PCAN_USBPRO_CRYSTAL_HZ,
+	},
+	.bittiming_const = &pcan_usb_pro_const,
+>>>>>>> v4.9.227
 
 	/* size of device private data */
 	.sizeof_dev_private = sizeof(struct pcan_usb_pro_device),

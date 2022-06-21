@@ -195,7 +195,11 @@ int bcm63xx_timer_init(void)
 	irq = bcm63xx_get_irq_number(IRQ_TIMER);
 	ret = request_irq(irq, timer_interrupt, 0, "bcm63xx_timer", NULL);
 	if (ret) {
+<<<<<<< HEAD
 		printk(KERN_ERR "bcm63xx_timer: failed to register irq\n");
+=======
+		pr_err("%s: failed to register irq\n", __func__);
+>>>>>>> v4.9.227
 		return ret;
 	}
 

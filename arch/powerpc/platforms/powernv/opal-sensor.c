@@ -20,7 +20,13 @@
 
 #include <linux/delay.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <asm/opal.h>
+=======
+#include <linux/of_platform.h>
+#include <asm/opal.h>
+#include <asm/machdep.h>
+>>>>>>> v4.9.227
 
 static DEFINE_MUTEX(opal_sensor_mutex);
 
@@ -44,6 +50,7 @@ int opal_get_sensor_data(u32 sensor_hndl, u32 *sensor_data)
 
 	mutex_lock(&opal_sensor_mutex);
 	ret = opal_sensor_read(sensor_hndl, token, &data);
+<<<<<<< HEAD
 	if (ret != OPAL_ASYNC_COMPLETION)
 		goto out_token;
 
@@ -57,6 +64,31 @@ int opal_get_sensor_data(u32 sensor_hndl, u32 *sensor_data)
 	*sensor_data = be32_to_cpu(data);
 	ret = be64_to_cpu(msg.params[1]);
 
+=======
+	switch (ret) {
+	case OPAL_ASYNC_COMPLETION:
+		ret = opal_async_wait_response(token, &msg);
+		if (ret) {
+			pr_err("%s: Failed to wait for the async response, %d\n",
+			       __func__, ret);
+			goto out_token;
+		}
+
+		ret = opal_error_code(opal_get_async_rc(msg));
+		*sensor_data = be32_to_cpu(data);
+		break;
+
+	case OPAL_SUCCESS:
+		ret = 0;
+		*sensor_data = be32_to_cpu(data);
+		break;
+
+	default:
+		ret = opal_error_code(ret);
+		break;
+	}
+
+>>>>>>> v4.9.227
 out_token:
 	mutex_unlock(&opal_sensor_mutex);
 	opal_async_release_token(token);
@@ -64,3 +96,23 @@ out:
 	return ret;
 }
 EXPORT_SYMBOL_GPL(opal_get_sensor_data);
+<<<<<<< HEAD
+=======
+
+int __init opal_sensor_init(void)
+{
+	struct platform_device *pdev;
+	struct device_node *sensor;
+
+	sensor = of_find_node_by_path("/ibm,opal/sensors");
+	if (!sensor) {
+		pr_err("Opal node 'sensors' not found\n");
+		return -ENODEV;
+	}
+
+	pdev = of_platform_device_create(sensor, "opal-sensor", NULL);
+	of_node_put(sensor);
+
+	return PTR_ERR_OR_ZERO(pdev);
+}
+>>>>>>> v4.9.227

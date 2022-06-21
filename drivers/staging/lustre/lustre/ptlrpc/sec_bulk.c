@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -41,7 +49,10 @@
 #define DEBUG_SUBSYSTEM S_SEC
 
 #include "../../include/linux/libcfs/libcfs.h"
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+>>>>>>> v4.9.227
 
 #include "../include/obd.h"
 #include "../include/obd_cksum.h"
@@ -58,11 +69,18 @@
  * bulk encryption page pools	   *
  ****************************************/
 
+<<<<<<< HEAD
 
 #define POINTERS_PER_PAGE	(PAGE_CACHE_SIZE / sizeof(void *))
 #define PAGES_PER_POOL		(POINTERS_PER_PAGE)
 
 #define IDLE_IDX_MAX	    (100)
+=======
+#define POINTERS_PER_PAGE	(PAGE_SIZE / sizeof(void *))
+#define PAGES_PER_POOL		(POINTERS_PER_PAGE)
+
+#define IDLE_IDX_MAX	 (100)
+>>>>>>> v4.9.227
 #define IDLE_IDX_WEIGHT	 (3)
 
 #define CACHE_QUIESCENT_PERIOD  (20)
@@ -92,8 +110,13 @@ static struct ptlrpc_enc_page_pool {
 	unsigned long    epp_idle_idx;
 
 	/* last shrink time due to mem tight */
+<<<<<<< HEAD
 	long	     epp_last_shrink;
 	long	     epp_last_access;
+=======
+	time64_t         epp_last_shrink;
+	time64_t         epp_last_access;
+>>>>>>> v4.9.227
 
 	/*
 	 * in-pool pages bookkeeping
@@ -121,6 +144,7 @@ static struct ptlrpc_enc_page_pool {
 } page_pools;
 
 /*
+<<<<<<< HEAD
  * /proc/fs/lustre/sptlrpc/encrypt_page_pools
  */
 int sptlrpc_proc_enc_pool_seq_show(struct seq_file *m, void *v)
@@ -171,12 +195,67 @@ int sptlrpc_proc_enc_pool_seq_show(struct seq_file *m, void *v)
 
 	spin_unlock(&page_pools.epp_lock);
 	return rc;
+=======
+ * /sys/kernel/debug/lustre/sptlrpc/encrypt_page_pools
+ */
+int sptlrpc_proc_enc_pool_seq_show(struct seq_file *m, void *v)
+{
+	spin_lock(&page_pools.epp_lock);
+
+	seq_printf(m,
+		   "physical pages:	  %lu\n"
+		   "pages per pool:	  %lu\n"
+		   "max pages:	       %lu\n"
+		   "max pools:	       %u\n"
+		   "total pages:	     %lu\n"
+		   "total free:	      %lu\n"
+		   "idle index:	      %lu/100\n"
+		   "last shrink:	     %lds\n"
+		   "last access:	     %lds\n"
+		   "max pages reached:       %lu\n"
+		   "grows:		   %u\n"
+		   "grows failure:	   %u\n"
+		   "shrinks:		 %u\n"
+		   "cache access:	    %lu\n"
+		   "cache missing:	   %lu\n"
+		   "low free mark:	   %lu\n"
+		   "max waitqueue depth:     %u\n"
+		   "max wait time:	   %ld/%lu\n",
+		   totalram_pages,
+		   PAGES_PER_POOL,
+		   page_pools.epp_max_pages,
+		   page_pools.epp_max_pools,
+		   page_pools.epp_total_pages,
+		   page_pools.epp_free_pages,
+		   page_pools.epp_idle_idx,
+		   (long)(ktime_get_seconds() - page_pools.epp_last_shrink),
+		   (long)(ktime_get_seconds() - page_pools.epp_last_access),
+		   page_pools.epp_st_max_pages,
+		   page_pools.epp_st_grows,
+		   page_pools.epp_st_grow_fails,
+		   page_pools.epp_st_shrinks,
+		   page_pools.epp_st_access,
+		   page_pools.epp_st_missings,
+		   page_pools.epp_st_lowfree,
+		   page_pools.epp_st_max_wqlen,
+		   page_pools.epp_st_max_wait,
+		   msecs_to_jiffies(MSEC_PER_SEC));
+
+	spin_unlock(&page_pools.epp_lock);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void enc_pools_release_free_pages(long npages)
 {
+<<<<<<< HEAD
 	int     p_idx, g_idx;
 	int     p_idx_max1, p_idx_max2;
+=======
+	int p_idx, g_idx;
+	int p_idx_max1, p_idx_max2;
+>>>>>>> v4.9.227
 
 	LASSERT(npages > 0);
 	LASSERT(npages <= page_pools.epp_free_pages);
@@ -198,7 +277,11 @@ static void enc_pools_release_free_pages(long npages)
 
 	while (npages--) {
 		LASSERT(page_pools.epp_pools[p_idx]);
+<<<<<<< HEAD
 		LASSERT(page_pools.epp_pools[p_idx][g_idx] != NULL);
+=======
+		LASSERT(page_pools.epp_pools[p_idx][g_idx]);
+>>>>>>> v4.9.227
 
 		__free_page(page_pools.epp_pools[p_idx][g_idx]);
 		page_pools.epp_pools[p_idx][g_idx] = NULL;
@@ -212,7 +295,11 @@ static void enc_pools_release_free_pages(long npages)
 	/* free unused pools */
 	while (p_idx_max1 < p_idx_max2) {
 		LASSERT(page_pools.epp_pools[p_idx_max2]);
+<<<<<<< HEAD
 		OBD_FREE(page_pools.epp_pools[p_idx_max2], PAGE_CACHE_SIZE);
+=======
+		kfree(page_pools.epp_pools[p_idx_max2]);
+>>>>>>> v4.9.227
 		page_pools.epp_pools[p_idx_max2] = NULL;
 		p_idx_max2--;
 	}
@@ -228,7 +315,11 @@ static unsigned long enc_pools_shrink_count(struct shrinker *s,
 	 * if no pool access for a long time, we consider it's fully idle.
 	 * a little race here is fine.
 	 */
+<<<<<<< HEAD
 	if (unlikely(get_seconds() - page_pools.epp_last_access >
+=======
+	if (unlikely(ktime_get_seconds() - page_pools.epp_last_access >
+>>>>>>> v4.9.227
 		     CACHE_QUIESCENT_PERIOD)) {
 		spin_lock(&page_pools.epp_lock);
 		page_pools.epp_idle_idx = IDLE_IDX_MAX;
@@ -255,7 +346,11 @@ static unsigned long enc_pools_shrink_scan(struct shrinker *s,
 		       (long)sc->nr_to_scan, page_pools.epp_free_pages);
 
 		page_pools.epp_st_shrinks++;
+<<<<<<< HEAD
 		page_pools.epp_last_shrink = get_seconds();
+=======
+		page_pools.epp_last_shrink = ktime_get_seconds();
+>>>>>>> v4.9.227
 	}
 	spin_unlock(&page_pools.epp_lock);
 
@@ -263,7 +358,11 @@ static unsigned long enc_pools_shrink_scan(struct shrinker *s,
 	 * if no pool access for a long time, we consider it's fully idle.
 	 * a little race here is fine.
 	 */
+<<<<<<< HEAD
 	if (unlikely(get_seconds() - page_pools.epp_last_access >
+=======
+	if (unlikely(ktime_get_seconds() - page_pools.epp_last_access >
+>>>>>>> v4.9.227
 		     CACHE_QUIESCENT_PERIOD)) {
 		spin_lock(&page_pools.epp_lock);
 		page_pools.epp_idle_idx = IDLE_IDX_MAX;
@@ -277,7 +376,11 @@ static unsigned long enc_pools_shrink_scan(struct shrinker *s,
 static inline
 int npages_to_npools(unsigned long npages)
 {
+<<<<<<< HEAD
 	return (int) ((npages + PAGES_PER_POOL - 1) / PAGES_PER_POOL);
+=======
+	return (int)((npages + PAGES_PER_POOL - 1) / PAGES_PER_POOL);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -286,7 +389,11 @@ int npages_to_npools(unsigned long npages)
 static unsigned long enc_pools_cleanup(struct page ***pools, int npools)
 {
 	unsigned long cleaned = 0;
+<<<<<<< HEAD
 	int	   i, j;
+=======
+	int i, j;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < npools; i++) {
 		if (pools[i]) {
@@ -296,7 +403,11 @@ static unsigned long enc_pools_cleanup(struct page ***pools, int npools)
 					cleaned++;
 				}
 			}
+<<<<<<< HEAD
 			OBD_FREE(pools[i], PAGE_CACHE_SIZE);
+=======
+			kfree(pools[i]);
+>>>>>>> v4.9.227
 			pools[i] = NULL;
 		}
 	}
@@ -304,6 +415,7 @@ static unsigned long enc_pools_cleanup(struct page ***pools, int npools)
 	return cleaned;
 }
 
+<<<<<<< HEAD
 /*
  * merge @npools pointed by @pools which contains @npages new pages
  * into current pools.
@@ -452,6 +564,11 @@ static inline void enc_pools_wakeup(void)
 {
 	assert_spin_locked(&page_pools.epp_lock);
 	LASSERT(page_pools.epp_waitqlen >= 0);
+=======
+static inline void enc_pools_wakeup(void)
+{
+	assert_spin_locked(&page_pools.epp_lock);
+>>>>>>> v4.9.227
 
 	if (unlikely(page_pools.epp_waitqlen)) {
 		LASSERT(waitqueue_active(&page_pools.epp_waitq));
@@ -459,6 +576,7 @@ static inline void enc_pools_wakeup(void)
 	}
 }
 
+<<<<<<< HEAD
 static int enc_pools_should_grow(int page_needed, long now)
 {
 	/* don't grow if someone else is growing the pools right now,
@@ -615,6 +733,14 @@ void sptlrpc_enc_pool_put_pages(struct ptlrpc_bulk_desc *desc)
 	int     i;
 
 	if (desc->bd_enc_iov == NULL)
+=======
+void sptlrpc_enc_pool_put_pages(struct ptlrpc_bulk_desc *desc)
+{
+	int p_idx, g_idx;
+	int i;
+
+	if (!desc->bd_enc_iov)
+>>>>>>> v4.9.227
 		return;
 
 	LASSERT(desc->bd_iov_count > 0);
@@ -629,12 +755,21 @@ void sptlrpc_enc_pool_put_pages(struct ptlrpc_bulk_desc *desc)
 	LASSERT(page_pools.epp_pools[p_idx]);
 
 	for (i = 0; i < desc->bd_iov_count; i++) {
+<<<<<<< HEAD
 		LASSERT(desc->bd_enc_iov[i].kiov_page != NULL);
 		LASSERT(g_idx != 0 || page_pools.epp_pools[p_idx]);
 		LASSERT(page_pools.epp_pools[p_idx][g_idx] == NULL);
 
 		page_pools.epp_pools[p_idx][g_idx] =
 					desc->bd_enc_iov[i].kiov_page;
+=======
+		LASSERT(desc->bd_enc_iov[i].bv_page);
+		LASSERT(g_idx != 0 || page_pools.epp_pools[p_idx]);
+		LASSERT(!page_pools.epp_pools[p_idx][g_idx]);
+
+		page_pools.epp_pools[p_idx][g_idx] =
+					desc->bd_enc_iov[i].bv_page;
+>>>>>>> v4.9.227
 
 		if (++g_idx == PAGES_PER_POOL) {
 			p_idx++;
@@ -648,6 +783,7 @@ void sptlrpc_enc_pool_put_pages(struct ptlrpc_bulk_desc *desc)
 
 	spin_unlock(&page_pools.epp_lock);
 
+<<<<<<< HEAD
 	OBD_FREE(desc->bd_enc_iov,
 		 desc->bd_iov_count * sizeof(*desc->bd_enc_iov));
 	desc->bd_enc_iov = NULL;
@@ -688,13 +824,25 @@ int sptlrpc_enc_pool_del_user(void)
 	return 0;
 }
 EXPORT_SYMBOL(sptlrpc_enc_pool_del_user);
+=======
+	kfree(desc->bd_enc_iov);
+	desc->bd_enc_iov = NULL;
+}
+>>>>>>> v4.9.227
 
 static inline void enc_pools_alloc(void)
 {
 	LASSERT(page_pools.epp_max_pools);
+<<<<<<< HEAD
 	OBD_ALLOC_LARGE(page_pools.epp_pools,
 			page_pools.epp_max_pools *
 			sizeof(*page_pools.epp_pools));
+=======
+	page_pools.epp_pools =
+		libcfs_kvzalloc(page_pools.epp_max_pools *
+				sizeof(*page_pools.epp_pools),
+				GFP_NOFS);
+>>>>>>> v4.9.227
 }
 
 static inline void enc_pools_free(void)
@@ -702,9 +850,13 @@ static inline void enc_pools_free(void)
 	LASSERT(page_pools.epp_max_pools);
 	LASSERT(page_pools.epp_pools);
 
+<<<<<<< HEAD
 	OBD_FREE_LARGE(page_pools.epp_pools,
 		       page_pools.epp_max_pools *
 		       sizeof(*page_pools.epp_pools));
+=======
+	kvfree(page_pools.epp_pools);
+>>>>>>> v4.9.227
 }
 
 static struct shrinker pools_shrinker = {
@@ -729,8 +881,13 @@ int sptlrpc_enc_pool_init(void)
 	page_pools.epp_growing = 0;
 
 	page_pools.epp_idle_idx = 0;
+<<<<<<< HEAD
 	page_pools.epp_last_shrink = get_seconds();
 	page_pools.epp_last_access = get_seconds();
+=======
+	page_pools.epp_last_shrink = ktime_get_seconds();
+	page_pools.epp_last_access = ktime_get_seconds();
+>>>>>>> v4.9.227
 
 	spin_lock_init(&page_pools.epp_lock);
 	page_pools.epp_total_pages = 0;
@@ -747,7 +904,11 @@ int sptlrpc_enc_pool_init(void)
 	page_pools.epp_st_max_wait = 0;
 
 	enc_pools_alloc();
+<<<<<<< HEAD
 	if (page_pools.epp_pools == NULL)
+=======
+	if (!page_pools.epp_pools)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	register_shrinker(&pools_shrinker);
@@ -772,18 +933,30 @@ void sptlrpc_enc_pool_fini(void)
 
 	if (page_pools.epp_st_access > 0) {
 		CDEBUG(D_SEC,
+<<<<<<< HEAD
 		       "max pages %lu, grows %u, grow fails %u, shrinks %u, "
 		       "access %lu, missing %lu, max qlen %u, max wait "
 		       CFS_TIME_T"/%d\n",
+=======
+		       "max pages %lu, grows %u, grow fails %u, shrinks %u, access %lu, missing %lu, max qlen %u, max wait %ld/%ld\n",
+>>>>>>> v4.9.227
 		       page_pools.epp_st_max_pages, page_pools.epp_st_grows,
 		       page_pools.epp_st_grow_fails,
 		       page_pools.epp_st_shrinks, page_pools.epp_st_access,
 		       page_pools.epp_st_missings, page_pools.epp_st_max_wqlen,
+<<<<<<< HEAD
 		       page_pools.epp_st_max_wait, HZ);
 	}
 }
 
 
+=======
+		       page_pools.epp_st_max_wait,
+		       msecs_to_jiffies(MSEC_PER_SEC));
+	}
+}
+
+>>>>>>> v4.9.227
 static int cfs_hash_alg_id[] = {
 	[BULK_HASH_ALG_NULL]	= CFS_HASH_ALG_NULL,
 	[BULK_HASH_ALG_ADLER32]	= CFS_HASH_ALG_ADLER32,
@@ -794,17 +967,27 @@ static int cfs_hash_alg_id[] = {
 	[BULK_HASH_ALG_SHA384]	= CFS_HASH_ALG_SHA384,
 	[BULK_HASH_ALG_SHA512]	= CFS_HASH_ALG_SHA512,
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 const char *sptlrpc_get_hash_name(__u8 hash_alg)
 {
 	return cfs_crypto_hash_name(cfs_hash_alg_id[hash_alg]);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(sptlrpc_get_hash_name);
+=======
+>>>>>>> v4.9.227
 
 __u8 sptlrpc_get_hash_alg(const char *algname)
 {
 	return cfs_crypto_hash_alg(algname);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(sptlrpc_get_hash_alg);
+=======
+>>>>>>> v4.9.227
 
 int bulk_sec_desc_unpack(struct lustre_msg *msg, int offset, int swabbed)
 {
@@ -812,14 +995,23 @@ int bulk_sec_desc_unpack(struct lustre_msg *msg, int offset, int swabbed)
 	int			  size = msg->lm_buflens[offset];
 
 	bsd = lustre_msg_buf(msg, offset, sizeof(*bsd));
+<<<<<<< HEAD
 	if (bsd == NULL) {
+=======
+	if (!bsd) {
+>>>>>>> v4.9.227
 		CERROR("Invalid bulk sec desc: size %d\n", size);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (swabbed) {
 		__swab32s(&bsd->bsd_nob);
 	}
+=======
+	if (swabbed)
+		__swab32s(&bsd->bsd_nob);
+>>>>>>> v4.9.227
 
 	if (unlikely(bsd->bsd_version != 0)) {
 		CERROR("Unexpected version %u\n", bsd->bsd_version);
@@ -847,11 +1039,18 @@ EXPORT_SYMBOL(bulk_sec_desc_unpack);
 int sptlrpc_get_bulk_checksum(struct ptlrpc_bulk_desc *desc, __u8 alg,
 			      void *buf, int buflen)
 {
+<<<<<<< HEAD
 	struct cfs_crypto_hash_desc	*hdesc;
 	int				hashsize;
 	char				hashbuf[64];
 	unsigned int			bufsize;
 	int				i, err;
+=======
+	struct cfs_crypto_hash_desc *hdesc;
+	int hashsize;
+	unsigned int bufsize;
+	int i, err;
+>>>>>>> v4.9.227
 
 	LASSERT(alg > BULK_HASH_ALG_NULL && alg < BULK_HASH_ALG_MAX);
 	LASSERT(buflen >= 4);
@@ -866,6 +1065,7 @@ int sptlrpc_get_bulk_checksum(struct ptlrpc_bulk_desc *desc, __u8 alg,
 	hashsize = cfs_crypto_hash_digestsize(cfs_hash_alg_id[alg]);
 
 	for (i = 0; i < desc->bd_iov_count; i++) {
+<<<<<<< HEAD
 		cfs_crypto_hash_update_page(hdesc, desc->bd_iov[i].kiov_page,
 				  desc->bd_iov[i].kiov_offset & ~CFS_PAGE_MASK,
 				  desc->bd_iov[i].kiov_len);
@@ -886,3 +1086,26 @@ int sptlrpc_get_bulk_checksum(struct ptlrpc_bulk_desc *desc, __u8 alg,
 	return err;
 }
 EXPORT_SYMBOL(sptlrpc_get_bulk_checksum);
+=======
+		cfs_crypto_hash_update_page(hdesc, desc->bd_iov[i].bv_page,
+					    desc->bd_iov[i].bv_offset &
+					    ~PAGE_MASK,
+					    desc->bd_iov[i].bv_len);
+	}
+
+	if (hashsize > buflen) {
+		unsigned char hashbuf[CFS_CRYPTO_HASH_DIGESTSIZE_MAX];
+
+		bufsize = sizeof(hashbuf);
+		LASSERTF(bufsize >= hashsize, "bufsize = %u < hashsize %u\n",
+			 bufsize, hashsize);
+		err = cfs_crypto_hash_final(hdesc, hashbuf, &bufsize);
+		memcpy(buf, hashbuf, buflen);
+	} else {
+		bufsize = buflen;
+		err = cfs_crypto_hash_final(hdesc, buf, &bufsize);
+	}
+
+	return err;
+}
+>>>>>>> v4.9.227

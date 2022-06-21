@@ -1,5 +1,9 @@
 /*
  * Copyright (c) 2000-2001 Christoph Hellwig.
+<<<<<<< HEAD
+=======
+ * Copyright (c) 2016 Krzysztof Blaszkowski
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +49,11 @@
 /*
  * Number of VxFS blocks per page.
  */
+<<<<<<< HEAD
 #define VXFS_BLOCK_PER_PAGE(sbp)  ((PAGE_CACHE_SIZE / (sbp)->s_blocksize))
+=======
+#define VXFS_BLOCK_PER_PAGE(sbp)  ((PAGE_SIZE / (sbp)->s_blocksize))
+>>>>>>> v4.9.227
 
 
 static struct dentry *	vxfs_lookup(struct inode *, struct dentry *, unsigned int);
@@ -58,6 +66,7 @@ const struct inode_operations vxfs_dir_inode_ops = {
 const struct file_operations vxfs_dir_operations = {
 	.llseek =		generic_file_llseek,
 	.read =			generic_read_dir,
+<<<<<<< HEAD
 	.iterate =		vxfs_readdir,
 };
 
@@ -95,6 +104,11 @@ vxfs_next_entry(struct vxfs_direct *de)
 {
 	return ((struct vxfs_direct *)((char*)de + de->d_reclen));
 }
+=======
+	.iterate_shared =	vxfs_readdir,
+};
+
+>>>>>>> v4.9.227
 
 /**
  * vxfs_find_entry - find a mathing directory entry for a dentry
@@ -113,6 +127,7 @@ vxfs_next_entry(struct vxfs_direct *de)
 static struct vxfs_direct *
 vxfs_find_entry(struct inode *ip, struct dentry *dp, struct page **ppp)
 {
+<<<<<<< HEAD
 	u_long				npages, page, nblocks, pblocks, block;
 	u_long				bsize = ip->i_sb->s_blocksize;
 	const char			*name = dp->d_name.name;
@@ -157,6 +172,66 @@ vxfs_find_entry(struct inode *ip, struct dentry *dp, struct page **ppp)
 	}
 
 	return NULL;
+=======
+	u_long bsize = ip->i_sb->s_blocksize;
+	const char *name = dp->d_name.name;
+	int namelen = dp->d_name.len;
+	loff_t limit = VXFS_DIRROUND(ip->i_size);
+	struct vxfs_direct *de_exit = NULL;
+	loff_t pos = 0;
+	struct vxfs_sb_info *sbi = VXFS_SBI(ip->i_sb);
+
+	while (pos < limit) {
+		struct page *pp;
+		char *kaddr;
+		int pg_ofs = pos & ~PAGE_MASK;
+
+		pp = vxfs_get_page(ip->i_mapping, pos >> PAGE_SHIFT);
+		if (IS_ERR(pp))
+			return NULL;
+		kaddr = (char *)page_address(pp);
+
+		while (pg_ofs < PAGE_SIZE && pos < limit) {
+			struct vxfs_direct *de;
+
+			if ((pos & (bsize - 1)) < 4) {
+				struct vxfs_dirblk *dbp =
+					(struct vxfs_dirblk *)
+					 (kaddr + (pos & ~PAGE_MASK));
+				int overhead = VXFS_DIRBLKOV(sbi, dbp);
+
+				pos += overhead;
+				pg_ofs += overhead;
+			}
+			de = (struct vxfs_direct *)(kaddr + pg_ofs);
+
+			if (!de->d_reclen) {
+				pos += bsize - 1;
+				pos &= ~(bsize - 1);
+				break;
+			}
+
+			pg_ofs += fs16_to_cpu(sbi, de->d_reclen);
+			pos += fs16_to_cpu(sbi, de->d_reclen);
+			if (!de->d_ino)
+				continue;
+
+			if (namelen != fs16_to_cpu(sbi, de->d_namelen))
+				continue;
+			if (!memcmp(name, de->d_name, namelen)) {
+				*ppp = pp;
+				de_exit = de;
+				break;
+			}
+		}
+		if (!de_exit)
+			vxfs_put_page(pp);
+		else
+			break;
+	}
+
+	return de_exit;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -180,9 +255,15 @@ vxfs_inode_by_name(struct inode *dip, struct dentry *dp)
 
 	de = vxfs_find_entry(dip, dp, &pp);
 	if (de) {
+<<<<<<< HEAD
 		ino = de->d_ino;
 		kunmap(pp);
 		page_cache_release(pp);
+=======
+		ino = fs32_to_cpu(VXFS_SBI(dip->i_sb), de->d_ino);
+		kunmap(pp);
+		put_page(pp);
+>>>>>>> v4.9.227
 	}
 	
 	return (ino);
@@ -199,7 +280,11 @@ vxfs_inode_by_name(struct inode *dip, struct dentry *dp)
  *   by @dp in @dip.
  *
  * Returns:
+<<<<<<< HEAD
  *   A NULL-pointer on success, else an negative error code encoded
+=======
+ *   A NULL-pointer on success, else a negative error code encoded
+>>>>>>> v4.9.227
  *   in the return pointer.
  */
 static struct dentry *
@@ -240,6 +325,7 @@ vxfs_readdir(struct file *fp, struct dir_context *ctx)
 	struct inode		*ip = file_inode(fp);
 	struct super_block	*sbp = ip->i_sb;
 	u_long			bsize = sbp->s_blocksize;
+<<<<<<< HEAD
 	u_long			page, npages, block, pblocks, nblocks, offset;
 	loff_t			pos;
 
@@ -309,5 +395,82 @@ vxfs_readdir(struct file *fp, struct dir_context *ctx)
 		offset = 0;
 	}
 	ctx->pos = ((page << PAGE_CACHE_SHIFT) | offset) + 2;
+=======
+	loff_t			pos, limit;
+	struct vxfs_sb_info	*sbi = VXFS_SBI(sbp);
+
+	if (ctx->pos == 0) {
+		if (!dir_emit_dot(fp, ctx))
+			goto out;
+		ctx->pos++;
+	}
+	if (ctx->pos == 1) {
+		if (!dir_emit(ctx, "..", 2, VXFS_INO(ip)->vii_dotdot, DT_DIR))
+			goto out;
+		ctx->pos++;
+	}
+
+	limit = VXFS_DIRROUND(ip->i_size);
+	if (ctx->pos > limit)
+		goto out;
+
+	pos = ctx->pos & ~3L;
+
+	while (pos < limit) {
+		struct page *pp;
+		char *kaddr;
+		int pg_ofs = pos & ~PAGE_MASK;
+		int rc = 0;
+
+		pp = vxfs_get_page(ip->i_mapping, pos >> PAGE_SHIFT);
+		if (IS_ERR(pp))
+			return -ENOMEM;
+
+		kaddr = (char *)page_address(pp);
+
+		while (pg_ofs < PAGE_SIZE && pos < limit) {
+			struct vxfs_direct *de;
+
+			if ((pos & (bsize - 1)) < 4) {
+				struct vxfs_dirblk *dbp =
+					(struct vxfs_dirblk *)
+					 (kaddr + (pos & ~PAGE_MASK));
+				int overhead = VXFS_DIRBLKOV(sbi, dbp);
+
+				pos += overhead;
+				pg_ofs += overhead;
+			}
+			de = (struct vxfs_direct *)(kaddr + pg_ofs);
+
+			if (!de->d_reclen) {
+				pos += bsize - 1;
+				pos &= ~(bsize - 1);
+				break;
+			}
+
+			pg_ofs += fs16_to_cpu(sbi, de->d_reclen);
+			pos += fs16_to_cpu(sbi, de->d_reclen);
+			if (!de->d_ino)
+				continue;
+
+			rc = dir_emit(ctx, de->d_name,
+					fs16_to_cpu(sbi, de->d_namelen),
+					fs32_to_cpu(sbi, de->d_ino),
+					DT_UNKNOWN);
+			if (!rc) {
+				/* the dir entry was not read, fix pos. */
+				pos -= fs16_to_cpu(sbi, de->d_reclen);
+				break;
+			}
+		}
+		vxfs_put_page(pp);
+		if (!rc)
+			break;
+	}
+
+	ctx->pos = pos | 2;
+
+out:
+>>>>>>> v4.9.227
 	return 0;
 }

@@ -316,7 +316,11 @@ static int usb6fire_fw_fpga_upload(
 
 	while (c != end) {
 		for (i = 0; c != end && i < FPGA_BUFSIZE; i++, c++)
+<<<<<<< HEAD
 			buffer[i] = byte_rev_table[(u8) *c];
+=======
+			buffer[i] = bitrev8((u8)*c);
+>>>>>>> v4.9.227
 
 		ret = usb6fire_fw_fpga_write(device, buffer, i);
 		if (ret < 0) {
@@ -350,7 +354,11 @@ static int usb6fire_fw_check(struct usb_interface *intf, const u8 *version)
 		if (!memcmp(version, known_fw_versions + i, 2))
 			return 0;
 
+<<<<<<< HEAD
 	dev_err(&intf->dev, "invalid fimware version in device: %4ph. "
+=======
+	dev_err(&intf->dev, "invalid firmware version in device: %4ph. "
+>>>>>>> v4.9.227
 			"please reconnect to power. if this failure "
 			"still happens, check your firmware installation.",
 			version);

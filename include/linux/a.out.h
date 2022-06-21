@@ -4,6 +4,7 @@
 #include <uapi/linux/a.out.h>
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
 #if defined (M_OLDSUN2)
 #else
 #endif
@@ -42,6 +43,8 @@
 #endif
 #if defined(m68k) && defined(PORTAR)
 #endif
+=======
+>>>>>>> v4.9.227
 #ifdef linux
 #include <asm/page.h>
 #if defined(__i386__) || defined(__mc68000__)
@@ -51,6 +54,7 @@
 #endif
 #endif
 #endif
+<<<<<<< HEAD
 #ifndef N_DATADDR
 #endif
 #if !defined (N_BSSADDR)
@@ -80,5 +84,7 @@
 #else
 #endif
 #endif /* no N_RELOCATION_INFO_DECLARED.  */
+=======
+>>>>>>> v4.9.227
 #endif /*__ASSEMBLY__ */
 #endif /* __A_OUT_GNU_H__ */

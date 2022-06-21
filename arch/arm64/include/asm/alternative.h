@@ -1,6 +1,7 @@
 #ifndef __ASM_ALTERNATIVE_H
 #define __ASM_ALTERNATIVE_H
 
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
 #include <asm/insn.h>
 
@@ -8,10 +9,25 @@
 
 #include <linux/init.h>
 #include <linux/kconfig.h>
+=======
+#include <asm/cpucaps.h>
+#include <asm/insn.h>
+
+#define ARM64_CB_PATCH ARM64_NCAPS
+
+#ifndef __ASSEMBLY__
+
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/stddef.h>
 #include <linux/stringify.h>
 
+<<<<<<< HEAD
+=======
+extern int alternatives_applied;
+
+>>>>>>> v4.9.227
 struct alt_instr {
 	s32 orig_offset;	/* offset to original instruction */
 	s32 alt_offset;		/* offset to replacement instruction */
@@ -20,17 +36,37 @@ struct alt_instr {
 	u8  alt_len;		/* size of new instruction(s), <= orig_len */
 };
 
+<<<<<<< HEAD
 void __init apply_alternatives_all(void);
 void apply_alternatives(void *start, size_t length);
 void free_alternatives_memory(void);
 
 #define ALTINSTR_ENTRY(feature)						      \
+=======
+typedef void (*alternative_cb_t)(struct alt_instr *alt,
+				 __le32 *origptr, __le32 *updptr, int nr_inst);
+
+void __init apply_alternatives_all(void);
+void apply_alternatives(void *start, size_t length);
+
+#define ALTINSTR_ENTRY(feature)					              \
+>>>>>>> v4.9.227
 	" .word 661b - .\n"				/* label           */ \
 	" .word 663f - .\n"				/* new instruction */ \
 	" .hword " __stringify(feature) "\n"		/* feature bit     */ \
 	" .byte 662b-661b\n"				/* source len      */ \
 	" .byte 664f-663f\n"				/* replacement len */
 
+<<<<<<< HEAD
+=======
+#define ALTINSTR_ENTRY_CB(feature, cb)					      \
+	" .word 661b - .\n"				/* label           */ \
+	" .word " __stringify(cb) "- .\n"		/* callback */	      \
+	" .hword " __stringify(feature) "\n"		/* feature bit     */ \
+	" .byte 662b-661b\n"				/* source len      */ \
+	" .byte 664f-663f\n"				/* replacement len */
+
+>>>>>>> v4.9.227
 /*
  * alternative assembly primitive:
  *
@@ -44,6 +80,11 @@ void free_alternatives_memory(void);
  * but most assemblers die if insn1 or insn2 have a .inst. This should
  * be fixed in a binutils release posterior to 2.25.51.0.2 (anything
  * containing commit 4e4d08cf7399b606 or c1baaddf8861).
+<<<<<<< HEAD
+=======
+ *
+ * Alternatives with callbacks do not generate replacement instructions.
+>>>>>>> v4.9.227
  */
 #define __ALTERNATIVE_CFG(oldinstr, newinstr, feature, cfg_enabled)	\
 	".if "__stringify(cfg_enabled)" == 1\n"				\
@@ -62,9 +103,29 @@ void free_alternatives_memory(void);
 	".org	. - (662b-661b) + (664b-663b)\n"			\
 	".endif\n"
 
+<<<<<<< HEAD
 #define _ALTERNATIVE_CFG(oldinstr, newinstr, feature, cfg, ...)	\
 	__ALTERNATIVE_CFG(oldinstr, newinstr, feature, IS_ENABLED(cfg))
 
+=======
+#define __ALTERNATIVE_CFG_CB(oldinstr, feature, cfg_enabled, cb)	\
+	".if "__stringify(cfg_enabled)" == 1\n"				\
+	"661:\n\t"							\
+	oldinstr "\n"							\
+	"662:\n"							\
+	".pushsection .altinstructions,\"a\"\n"				\
+	ALTINSTR_ENTRY_CB(feature, cb)					\
+	".popsection\n"							\
+	"663:\n\t"							\
+	"664:\n\t"							\
+	".endif\n"
+
+#define _ALTERNATIVE_CFG(oldinstr, newinstr, feature, cfg, ...)	\
+	__ALTERNATIVE_CFG(oldinstr, newinstr, feature, IS_ENABLED(cfg))
+
+#define ALTERNATIVE_CB(oldinstr, cb) \
+	__ALTERNATIVE_CFG_CB(oldinstr, ARM64_CB_PATCH, 1, cb)
+>>>>>>> v4.9.227
 #else
 
 #include <asm/assembler.h>
@@ -131,6 +192,17 @@ void free_alternatives_memory(void);
 661:
 .endm
 
+<<<<<<< HEAD
+=======
+.macro alternative_cb cb
+	.set .Lasm_alt_mode, 0
+	.pushsection .altinstructions, "a"
+	altinstruction_entry 661f, \cb, ARM64_CB_PATCH, 662f-661f, 0
+	.popsection
+661:
+.endm
+
+>>>>>>> v4.9.227
 /*
  * Provide the other half of the alternative code sequence.
  */
@@ -157,6 +229,16 @@ void free_alternatives_memory(void);
 .endm
 
 /*
+<<<<<<< HEAD
+=======
+ * Callback-based alternative epilogue
+ */
+.macro alternative_cb_end
+662:
+.endm
+
+/*
+>>>>>>> v4.9.227
  * Provides a trivial alternative or default sequence consisting solely
  * of NOPs. The number of NOPs is chosen automatically to match the
  * previous case.
@@ -170,6 +252,13 @@ alternative_endif
 #define _ALTERNATIVE_CFG(insn1, insn2, cap, cfg, ...)	\
 	alternative_insn insn1, insn2, cap, IS_ENABLED(cfg)
 
+<<<<<<< HEAD
+=======
+.macro user_alt, label, oldinstr, newinstr, cond
+9999:	alternative_insn "\oldinstr", "\newinstr", \cond
+	_asm_extable 9999b, \label
+.endm
+>>>>>>> v4.9.227
 
 /*
  * Generate the assembly for UAO alternatives with exception table entries.
@@ -188,11 +277,16 @@ alternative_endif
 			add	\addr, \addr, \post_inc;
 		alternative_endif
 
+<<<<<<< HEAD
 		.section __ex_table,"a";
 		.align	3;
 		.quad	8888b,\l;
 		.quad	8889b,\l;
 		.previous;
+=======
+		_asm_extable	8888b,\l;
+		_asm_extable	8889b,\l;
+>>>>>>> v4.9.227
 	.endm
 
 	.macro uao_stp l, reg1, reg2, addr, post_inc
@@ -206,11 +300,16 @@ alternative_endif
 			add	\addr, \addr, \post_inc;
 		alternative_endif
 
+<<<<<<< HEAD
 		.section __ex_table,"a";
 		.align	3;
 		.quad	8888b,\l;
 		.quad	8889b,\l;
 		.previous
+=======
+		_asm_extable	8888b,\l;
+		_asm_extable	8889b,\l;
+>>>>>>> v4.9.227
 	.endm
 
 	.macro uao_user_alternative l, inst, alt_inst, reg, addr, post_inc
@@ -222,10 +321,14 @@ alternative_endif
 			add		\addr, \addr, \post_inc;
 		alternative_endif
 
+<<<<<<< HEAD
 		.section __ex_table,"a";
 		.align	3;
 		.quad	8888b,\l;
 		.previous
+=======
+		_asm_extable	8888b,\l;
+>>>>>>> v4.9.227
 	.endm
 #else
 	.macro uao_ldp l, reg1, reg2, addr, post_inc

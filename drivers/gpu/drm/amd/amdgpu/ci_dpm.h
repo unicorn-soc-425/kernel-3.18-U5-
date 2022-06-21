@@ -193,6 +193,10 @@ struct ci_pt_defaults {
 
 struct ci_power_info {
 	struct ci_dpm_table dpm_table;
+<<<<<<< HEAD
+=======
+	struct ci_dpm_table golden_dpm_table;
+>>>>>>> v4.9.227
 	u32 voltage_control;
 	u32 mvdd_control;
 	u32 vddci_control;

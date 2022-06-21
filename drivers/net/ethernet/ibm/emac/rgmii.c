@@ -305,7 +305,11 @@ static int rgmii_remove(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id rgmii_match[] =
+=======
+static const struct of_device_id rgmii_match[] =
+>>>>>>> v4.9.227
 {
 	{
 		.compatible	= "ibm,rgmii",
@@ -319,7 +323,10 @@ static struct of_device_id rgmii_match[] =
 static struct platform_driver rgmii_driver = {
 	.driver = {
 		.name = "emac-rgmii",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = rgmii_match,
 	},
 	.probe = rgmii_probe,

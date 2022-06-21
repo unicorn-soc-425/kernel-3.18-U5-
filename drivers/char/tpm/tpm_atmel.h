@@ -22,12 +22,27 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+struct tpm_atmel_priv {
+	int region_size;
+	int have_region;
+	unsigned long base;
+	void __iomem *iobase;
+};
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PPC64
 
 #include <asm/prom.h>
 
+<<<<<<< HEAD
 #define atmel_getb(chip, offset) readb(chip->vendor->iobase + offset);
 #define atmel_putb(val, chip, offset) writeb(val, chip->vendor->iobase + offset)
+=======
+#define atmel_getb(priv, offset) readb(priv->iobase + offset)
+#define atmel_putb(val, priv, offset) writeb(val, priv->iobase + offset)
+>>>>>>> v4.9.227
 #define atmel_request_region request_mem_region
 #define atmel_release_region release_mem_region
 
@@ -78,8 +93,14 @@ static void __iomem * atmel_get_base_addr(unsigned long *base, int *region_size)
 	return ioremap(*base, *region_size);
 }
 #else
+<<<<<<< HEAD
 #define atmel_getb(chip, offset) inb(chip->vendor->base + offset)
 #define atmel_putb(val, chip, offset) outb(val, chip->vendor->base + offset)
+=======
+#define atmel_getb(chip, offset) inb(atmel_get_priv(chip)->base + offset)
+#define atmel_putb(val, chip, offset) \
+	outb(val, atmel_get_priv(chip)->base + offset)
+>>>>>>> v4.9.227
 #define atmel_request_region request_region
 #define atmel_release_region release_region
 /* Atmel definitions */

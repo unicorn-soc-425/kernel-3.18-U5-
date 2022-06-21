@@ -18,7 +18,11 @@
 #include <linux/videodev2.h>
 #include <media/v4l2-subdev.h>
 #include <media/soc_camera.h>
+<<<<<<< HEAD
 #include <media/soc_camera_platform.h>
+=======
+#include <linux/platform_data/media/soc_camera_platform.h>
+>>>>>>> v4.9.227
 
 struct soc_camera_platform_priv {
 	struct v4l2_subdev subdev;
@@ -37,9 +41,17 @@ static int soc_camera_platform_s_stream(struct v4l2_subdev *sd, int enable)
 }
 
 static int soc_camera_platform_fill_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 					struct v4l2_mbus_framefmt *mf)
 {
 	struct soc_camera_platform_info *p = v4l2_get_subdevdata(sd);
+=======
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct soc_camera_platform_info *p = v4l2_get_subdevdata(sd);
+	struct v4l2_mbus_framefmt *mf = &format->format;
+>>>>>>> v4.9.227
 
 	mf->width	= p->format.width;
 	mf->height	= p->format.height;
@@ -61,6 +73,7 @@ static struct v4l2_subdev_core_ops platform_subdev_core_ops = {
 	.s_power = soc_camera_platform_s_power,
 };
 
+<<<<<<< HEAD
 static int soc_camera_platform_enum_fmt(struct v4l2_subdev *sd, unsigned int index,
 					enum v4l2_mbus_pixelcode *code)
 {
@@ -102,6 +115,42 @@ static int soc_camera_platform_cropcap(struct v4l2_subdev *sd,
 	a->pixelaspect.denominator	= 1;
 
 	return 0;
+=======
+static int soc_camera_platform_enum_mbus_code(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_mbus_code_enum *code)
+{
+	struct soc_camera_platform_info *p = v4l2_get_subdevdata(sd);
+
+	if (code->pad || code->index)
+		return -EINVAL;
+
+	code->code = p->format.code;
+	return 0;
+}
+
+static int soc_camera_platform_get_selection(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_selection *sel)
+{
+	struct soc_camera_platform_info *p = v4l2_get_subdevdata(sd);
+
+	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE)
+		return -EINVAL;
+
+	switch (sel->target) {
+	case V4L2_SEL_TGT_CROP_BOUNDS:
+	case V4L2_SEL_TGT_CROP_DEFAULT:
+	case V4L2_SEL_TGT_CROP:
+		sel->r.left = 0;
+		sel->r.top = 0;
+		sel->r.width = p->format.width;
+		sel->r.height = p->format.height;
+		return 0;
+	default:
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 }
 
 static int soc_camera_platform_g_mbus_config(struct v4l2_subdev *sd,
@@ -117,6 +166,7 @@ static int soc_camera_platform_g_mbus_config(struct v4l2_subdev *sd,
 
 static struct v4l2_subdev_video_ops platform_subdev_video_ops = {
 	.s_stream	= soc_camera_platform_s_stream,
+<<<<<<< HEAD
 	.enum_mbus_fmt	= soc_camera_platform_enum_fmt,
 	.cropcap	= soc_camera_platform_cropcap,
 	.g_crop		= soc_camera_platform_g_crop,
@@ -129,6 +179,22 @@ static struct v4l2_subdev_video_ops platform_subdev_video_ops = {
 static struct v4l2_subdev_ops platform_subdev_ops = {
 	.core	= &platform_subdev_core_ops,
 	.video	= &platform_subdev_video_ops,
+=======
+	.g_mbus_config	= soc_camera_platform_g_mbus_config,
+};
+
+static const struct v4l2_subdev_pad_ops platform_subdev_pad_ops = {
+	.enum_mbus_code = soc_camera_platform_enum_mbus_code,
+	.get_selection	= soc_camera_platform_get_selection,
+	.get_fmt	= soc_camera_platform_fill_fmt,
+	.set_fmt	= soc_camera_platform_fill_fmt,
+};
+
+static struct v4l2_subdev_ops platform_subdev_ops = {
+	.core	= &platform_subdev_core_ops,
+	.video	= &platform_subdev_video_ops,
+	.pad	= &platform_subdev_pad_ops,
+>>>>>>> v4.9.227
 };
 
 static int soc_camera_platform_probe(struct platform_device *pdev)
@@ -180,7 +246,10 @@ static int soc_camera_platform_remove(struct platform_device *pdev)
 static struct platform_driver soc_camera_platform_driver = {
 	.driver		= {
 		.name	= "soc_camera_platform",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= soc_camera_platform_probe,
 	.remove		= soc_camera_platform_remove,

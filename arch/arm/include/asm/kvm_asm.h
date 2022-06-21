@@ -19,6 +19,7 @@
 #ifndef __ARM_KVM_ASM_H__
 #define __ARM_KVM_ASM_H__
 
+<<<<<<< HEAD
 /* 0 is reserved as an invalid value. */
 #define c0_MPIDR	1	/* MultiProcessor ID Register */
 #define c0_CSSELR	2	/* Cache Size Selection Register */
@@ -51,6 +52,13 @@
 #define c10_AMAIR0	29	/* Auxilary Memory Attribute Indirection Reg0 */
 #define c10_AMAIR1	30	/* Auxilary Memory Attribute Indirection Reg1 */
 #define NR_CP15_REGS	31	/* Number of regs (incl. invalid) */
+=======
+#include <asm/virt.h>
+
+#define ARM_EXIT_WITH_ABORT_BIT  31
+#define ARM_EXCEPTION_CODE(x)	  ((x) & ~(1U << ARM_EXIT_WITH_ABORT_BIT))
+#define ARM_ABORT_PENDING(x)	  !!((x) & (1U << ARM_EXIT_WITH_ABORT_BIT))
+>>>>>>> v4.9.227
 
 #define ARM_EXCEPTION_RESET	  0
 #define ARM_EXCEPTION_UNDEFINED   1
@@ -79,6 +87,11 @@
 #define rr_lo_hi(a1, a2) a1, a2
 #endif
 
+<<<<<<< HEAD
+=======
+#define kvm_ksym_ref(kva)	(kva)
+
+>>>>>>> v4.9.227
 #ifndef __ASSEMBLY__
 struct kvm;
 struct kvm_vcpu;
@@ -86,6 +99,7 @@ struct kvm_vcpu;
 extern char __kvm_hyp_init[];
 extern char __kvm_hyp_init_end[];
 
+<<<<<<< HEAD
 extern char __kvm_hyp_exit[];
 extern char __kvm_hyp_exit_end[];
 
@@ -98,6 +112,21 @@ extern void __kvm_flush_vm_context(void);
 extern void __kvm_tlb_flush_vmid_ipa(struct kvm *kvm, phys_addr_t ipa);
 
 extern int __kvm_vcpu_run(struct kvm_vcpu *vcpu);
+=======
+extern void __kvm_flush_vm_context(void);
+extern void __kvm_tlb_flush_vmid_ipa(struct kvm *kvm, phys_addr_t ipa);
+extern void __kvm_tlb_flush_vmid(struct kvm *kvm);
+extern void __kvm_tlb_flush_local_vmid(struct kvm_vcpu *vcpu);
+
+extern int __kvm_vcpu_run(struct kvm_vcpu *vcpu);
+
+extern void __init_stage2_translation(void);
+
+extern void __kvm_hyp_reset(unsigned long);
+
+extern u64 __vgic_v3_get_ich_vtr_el2(void);
+extern void __vgic_v3_init_lrs(void);
+>>>>>>> v4.9.227
 #endif
 
 #endif /* __ARM_KVM_ASM_H__ */

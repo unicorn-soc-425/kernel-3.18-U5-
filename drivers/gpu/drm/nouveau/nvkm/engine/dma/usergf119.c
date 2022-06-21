@@ -28,7 +28,11 @@
 #include <core/gpuobj.h>
 #include <subdev/fb.h>
 
+<<<<<<< HEAD
 #include <nvif/class.h>
+=======
+#include <nvif/cl0002.h>
+>>>>>>> v4.9.227
 #include <nvif/unpack.h>
 
 struct gf119_dmaobj {
@@ -85,10 +89,18 @@ gf119_dmaobj_new(struct nvkm_dma *dma, const struct nvkm_oclass *oclass,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	args = data;
 
 	nvif_ioctl(parent, "create gf119 dma size %d\n", size);
 	if (nvif_unpack(args->v0, 0, 0, false)) {
+=======
+	ret  = -ENOSYS;
+	args = data;
+
+	nvif_ioctl(parent, "create gf119 dma size %d\n", size);
+	if (!(ret = nvif_unpack(ret, &data, &size, args->v0, 0, 0, false))) {
+>>>>>>> v4.9.227
 		nvif_ioctl(parent,
 			   "create gf100 dma vers %d page %d kind %02x\n",
 			   args->v0.version, args->v0.page, args->v0.kind);

@@ -27,10 +27,19 @@
 
 #include <linux/seq_file.h>
 #include <linux/ktime.h>
+<<<<<<< HEAD
+=======
+#include <linux/spinlock.h>
+>>>>>>> v4.9.227
 
 #define RPC_IOSTATS_VERS	"1.0"
 
 struct rpc_iostats {
+<<<<<<< HEAD
+=======
+	spinlock_t		om_lock;
+
+>>>>>>> v4.9.227
 	/*
 	 * These counters give an idea about how many request
 	 * transmissions are required, on average, to complete that
@@ -76,6 +85,11 @@ struct rpc_clnt;
 struct rpc_iostats *	rpc_alloc_iostats(struct rpc_clnt *);
 void			rpc_count_iostats(const struct rpc_task *,
 					  struct rpc_iostats *);
+<<<<<<< HEAD
+=======
+void			rpc_count_iostats_metrics(const struct rpc_task *,
+					  struct rpc_iostats *);
+>>>>>>> v4.9.227
 void			rpc_print_iostats(struct seq_file *, struct rpc_clnt *);
 void			rpc_free_iostats(struct rpc_iostats *);
 
@@ -84,6 +98,14 @@ void			rpc_free_iostats(struct rpc_iostats *);
 static inline struct rpc_iostats *rpc_alloc_iostats(struct rpc_clnt *clnt) { return NULL; }
 static inline void rpc_count_iostats(const struct rpc_task *task,
 				     struct rpc_iostats *stats) {}
+<<<<<<< HEAD
+=======
+static inline void rpc_count_iostats_metrics(const struct rpc_task *task,
+					     struct rpc_iostats *stats)
+{
+}
+
+>>>>>>> v4.9.227
 static inline void rpc_print_iostats(struct seq_file *seq, struct rpc_clnt *clnt) {}
 static inline void rpc_free_iostats(struct rpc_iostats *stats) {}
 

@@ -11,9 +11,16 @@
 #include <linux/kernel.h>
 #include <linux/irq.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <mach/bridge-regs.h>
 #include <plat/orion-gpio.h>
 #include <plat/irq.h>
+=======
+#include <asm/exception.h>
+#include <plat/orion-gpio.h>
+#include <plat/irq.h>
+#include "bridge-regs.h"
+>>>>>>> v4.9.227
 #include "common.h"
 
 static int __initdata gpio0_irqs[4] = {
@@ -23,12 +30,50 @@ static int __initdata gpio0_irqs[4] = {
 	IRQ_MV78XX0_GPIO_24_31,
 };
 
+<<<<<<< HEAD
+=======
+static void __iomem *mv78xx0_irq_base = IRQ_VIRT_BASE;
+
+static asmlinkage void
+__exception_irq_entry mv78xx0_legacy_handle_irq(struct pt_regs *regs)
+{
+	u32 stat;
+
+	stat = readl_relaxed(mv78xx0_irq_base + IRQ_CAUSE_LOW_OFF);
+	stat &= readl_relaxed(mv78xx0_irq_base + IRQ_MASK_LOW_OFF);
+	if (stat) {
+		unsigned int hwirq = __fls(stat);
+		handle_IRQ(hwirq, regs);
+		return;
+	}
+	stat = readl_relaxed(mv78xx0_irq_base + IRQ_CAUSE_HIGH_OFF);
+	stat &= readl_relaxed(mv78xx0_irq_base + IRQ_MASK_HIGH_OFF);
+	if (stat) {
+		unsigned int hwirq = 32 + __fls(stat);
+		handle_IRQ(hwirq, regs);
+		return;
+	}
+	stat = readl_relaxed(mv78xx0_irq_base + IRQ_CAUSE_ERR_OFF);
+	stat &= readl_relaxed(mv78xx0_irq_base + IRQ_MASK_ERR_OFF);
+	if (stat) {
+		unsigned int hwirq = 64 + __fls(stat);
+		handle_IRQ(hwirq, regs);
+		return;
+	}
+}
+
+>>>>>>> v4.9.227
 void __init mv78xx0_init_irq(void)
 {
 	orion_irq_init(0, IRQ_VIRT_BASE + IRQ_MASK_LOW_OFF);
 	orion_irq_init(32, IRQ_VIRT_BASE + IRQ_MASK_HIGH_OFF);
 	orion_irq_init(64, IRQ_VIRT_BASE + IRQ_MASK_ERR_OFF);
 
+<<<<<<< HEAD
+=======
+	set_handle_irq(mv78xx0_legacy_handle_irq);
+
+>>>>>>> v4.9.227
 	/*
 	 * Initialize gpiolib for GPIOs 0-31.  (The GPIO interrupt mask
 	 * registers for core #1 are at an offset of 0x18 from those of

@@ -39,8 +39,13 @@
 #include "pvrusb2-hdw.h"
 #include "pvrusb2-io.h"
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/cx2341x.h>
 #include <media/ir-kbd-i2c.h>
+=======
+#include <media/drv-intf/cx2341x.h>
+#include <media/i2c/ir-kbd-i2c.h>
+>>>>>>> v4.9.227
 #include "pvrusb2-devattr.h"
 
 /* Legal values for PVR2_CID_HSM */
@@ -170,7 +175,10 @@ struct pvr2_hdw {
 	const struct pvr2_device_desc *hdw_desc;
 
 	/* Kernel worker thread handling */
+<<<<<<< HEAD
 	struct workqueue_struct *workqueue;
+=======
+>>>>>>> v4.9.227
 	struct work_struct workpoll;     /* Update driver state */
 
 	/* Video spigot */
@@ -394,6 +402,7 @@ unsigned long pvr2_hdw_get_cur_freq(struct pvr2_hdw *);
 void pvr2_hdw_status_poll(struct pvr2_hdw *);
 
 #endif /* __PVRUSB2_HDW_INTERNAL_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -404,3 +413,5 @@ void pvr2_hdw_status_poll(struct pvr2_hdw *);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

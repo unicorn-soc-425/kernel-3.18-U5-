@@ -31,6 +31,10 @@ static const struct i2c_device_id isp1301_id[] = {
 	{ "isp1301", 0 },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, isp1301_id);
+>>>>>>> v4.9.227
 
 static const struct of_device_id isp1301_of_match[] = {
 	{.compatible = "nxp,isp1301" },

@@ -80,7 +80,11 @@ tcpoptstrip_mangle_packet(struct sk_buff *skb,
 				n <<= 8;
 			}
 			inet_proto_csum_replace2(&tcph->check, skb, htons(o),
+<<<<<<< HEAD
 						 htons(n), 0);
+=======
+						 htons(n), false);
+>>>>>>> v4.9.227
 		}
 		memset(opt + i, TCPOPT_NOP, optl);
 	}

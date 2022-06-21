@@ -7,6 +7,10 @@
  */
 
 /dts-v1/;
+<<<<<<< HEAD
+=======
+#include <dt-bindings/gpio/gpio.h>
+>>>>>>> v4.9.227
 #include "imx6q.dtsi"
 
 / {
@@ -43,7 +47,11 @@
 			label = "recovery";
 			gpios = <&gpio3 16 1>;
 			linux,code = <0x198>; /* KEY_RESTART */
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 	};
 };
@@ -161,7 +169,11 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc3>;
 	bus-width = <4>;
+<<<<<<< HEAD
 	cd-gpios = <&gpio6 11 0>;
+=======
+	cd-gpios = <&gpio6 11 GPIO_ACTIVE_LOW>;
+>>>>>>> v4.9.227
 	vmmc-supply = <&reg_3p3v>;
 	status = "okay";
 };

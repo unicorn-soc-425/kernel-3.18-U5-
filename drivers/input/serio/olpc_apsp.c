@@ -273,7 +273,10 @@ static struct platform_driver olpc_apsp_driver = {
 	.remove		= olpc_apsp_remove,
 	.driver		= {
 		.name	= "olpc-apsp",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = olpc_apsp_dt_ids,
 	},
 };

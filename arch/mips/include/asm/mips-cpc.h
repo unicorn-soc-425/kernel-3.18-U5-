@@ -25,6 +25,7 @@ extern void __iomem *mips_cpc_base;
  * memory mapped registers. This is platform dependant & must therefore be
  * implemented per-platform.
  */
+<<<<<<< HEAD
 extern phys_t mips_cpc_default_phys_base(void);
 
 /**
@@ -36,6 +37,9 @@ extern phys_t mips_cpc_default_phys_base(void);
  * this address in a different way.
  */
 extern phys_t __weak mips_cpc_phys_base(void);
+=======
+extern phys_addr_t mips_cpc_default_phys_base(void);
+>>>>>>> v4.9.227
 
 /**
  * mips_cpc_probe - probe for a Cluster Power Controller
@@ -116,6 +120,12 @@ BUILD_CPC_R_(revision,		MIPS_CPC_GCB_OFS + 0x20)
 BUILD_CPC_Cx_RW(cmd,		0x00)
 BUILD_CPC_Cx_RW(stat_conf,	0x08)
 BUILD_CPC_Cx_RW(other,		0x10)
+<<<<<<< HEAD
+=======
+BUILD_CPC_Cx_RW(vp_stop,	0x20)
+BUILD_CPC_Cx_RW(vp_run,		0x28)
+BUILD_CPC_Cx_RW(vp_running,	0x30)
+>>>>>>> v4.9.227
 
 /* CPC_Cx_CMD register fields */
 #define CPC_Cx_CMD_SHF				0
@@ -159,7 +169,12 @@ BUILD_CPC_Cx_RW(other,		0x10)
  * core: the other core to be accessed
  *
  * Call before operating upon a core via the 'other' register region in
+<<<<<<< HEAD
  * order to prevent the region being moved during access. Must be followed
+=======
+ * order to prevent the region being moved during access. Must be called
+ * within the bounds of a mips_cm_{lock,unlock}_other pair, and followed
+>>>>>>> v4.9.227
  * by a call to mips_cpc_unlock_other.
  */
 extern void mips_cpc_lock_other(unsigned int core);

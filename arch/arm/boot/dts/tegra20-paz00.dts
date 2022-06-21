@@ -14,6 +14,13 @@
 		serial1 = &uartc;
 	};
 
+<<<<<<< HEAD
+=======
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+>>>>>>> v4.9.227
 	memory {
 		reg = <0x00000000 0x20000000>;
 	};
@@ -508,7 +515,11 @@
 
 		clk32k_in: clock@0 {
 			compatible = "fixed-clock";
+<<<<<<< HEAD
 			reg=<0>;
+=======
+			reg = <0>;
+>>>>>>> v4.9.227
 			#clock-cells = <0>;
 			clock-frequency = <32768>;
 		};
@@ -517,11 +528,19 @@
 	gpio-keys {
 		compatible = "gpio-keys";
 
+<<<<<<< HEAD
 		power {
 			label = "Power";
 			gpios = <&gpio TEGRA_GPIO(J, 7) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
 			gpio-key,wakeup;
+=======
+		wakeup {
+			label = "Wakeup";
+			gpios = <&gpio TEGRA_GPIO(J, 7) GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_WAKEUP>;
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 	};
 
@@ -565,6 +584,10 @@
 			regulator-name = "+3VS,vdd_pnl";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
+<<<<<<< HEAD
+=======
+			regulator-boot-on;
+>>>>>>> v4.9.227
 			gpio = <&gpio TEGRA_GPIO(A, 4) GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 		};

@@ -250,8 +250,12 @@ static void ip_vs_lblc_flush(struct ip_vs_service *svc)
 static int sysctl_lblc_expiration(struct ip_vs_service *svc)
 {
 #ifdef CONFIG_SYSCTL
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(svc->net);
 	return ipvs->sysctl_lblc_expiration;
+=======
+	return svc->ipvs->sysctl_lblc_expiration;
+>>>>>>> v4.9.227
 #else
 	return DEFAULT_EXPIRATION;
 #endif

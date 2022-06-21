@@ -13,6 +13,7 @@
 	};
 
 	clocks {
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
@@ -24,6 +25,8 @@
 	};
 
 	clocks {
+=======
+>>>>>>> v4.9.227
 		slow_xtal {
 			clock-frequency = <32768>;
 		};
@@ -42,6 +45,13 @@
 					};
 				};
 			};
+<<<<<<< HEAD
+=======
+
+			rtc@fffffeb0 {
+				status = "okay";
+			};
+>>>>>>> v4.9.227
 		};
 
 		nand0: nand@40000000 {

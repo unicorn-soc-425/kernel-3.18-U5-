@@ -10,7 +10,11 @@ How overlays work
 -----------------
 
 A Device Tree's overlay purpose is to modify the kernel's live tree, and
+<<<<<<< HEAD
 have the modification affecting the state of the the kernel in a way that
+=======
+have the modification affecting the state of the kernel in a way that
+>>>>>>> v4.9.227
 is reflecting the changes.
 Since the kernel mainly deals with devices, any new device node that result
 in an active device should have it created while if the device node is either
@@ -80,7 +84,11 @@ result in foo+bar.dts
 	};
 ---- foo+bar.dts -------------------------------------------------------------
 
+<<<<<<< HEAD
 As a result of the the overlay, a new device node (bar) has been created
+=======
+As a result of the overlay, a new device node (bar) has been created
+>>>>>>> v4.9.227
 so a bar platform device will be registered and if a matching device driver
 is loaded the device will be created as expected.
 

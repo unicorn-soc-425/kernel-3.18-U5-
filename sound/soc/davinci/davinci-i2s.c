@@ -4,9 +4,21 @@
  * Author:      Vladimir Barinov, <vbarinov@embeddedalley.com>
  * Copyright:   (C) 2007 MontaVista Software, Inc., <source@mvista.com>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+ * DT support	(c) 2016 Petr Kulhavy, Barix AG <petr@barix.com>
+ *		based on davinci-mcasp.c DT support
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * TODO:
+ * on DA850 implement HW FIFOs instead of DMA into DXR and DRR registers
+>>>>>>> v4.9.227
  */
 
 #include <linux/init.h>
@@ -23,8 +35,14 @@
 #include <sound/pcm_params.h>
 #include <sound/initval.h>
 #include <sound/soc.h>
+<<<<<<< HEAD
 
 #include "davinci-pcm.h"
+=======
+#include <sound/dmaengine_pcm.h>
+
+#include "edma-pcm.h"
+>>>>>>> v4.9.227
 #include "davinci-i2s.h"
 
 
@@ -122,7 +140,12 @@ static const unsigned char double_fmt[SNDRV_PCM_FORMAT_S32_LE + 1] = {
 
 struct davinci_mcbsp_dev {
 	struct device *dev;
+<<<<<<< HEAD
 	struct davinci_pcm_dma_params	dma_params[2];
+=======
+	struct snd_dmaengine_dai_dma_data dma_data[2];
+	int dma_request[2];
+>>>>>>> v4.9.227
 	void __iomem			*base;
 #define MOD_DSP_A	0
 #define MOD_DSP_B	1
@@ -419,8 +442,11 @@ static int davinci_i2s_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_soc_dai *dai)
 {
 	struct davinci_mcbsp_dev *dev = snd_soc_dai_get_drvdata(dai);
+<<<<<<< HEAD
 	struct davinci_pcm_dma_params *dma_params =
 					&dev->dma_params[substream->stream];
+=======
+>>>>>>> v4.9.227
 	struct snd_interval *i = NULL;
 	int mcbsp_word_length, master;
 	unsigned int rcr, xcr, srgr, clk_div, freq, framesize;
@@ -532,8 +558,11 @@ static int davinci_i2s_hw_params(struct snd_pcm_substream *substream,
 			return -EINVAL;
 		}
 	}
+<<<<<<< HEAD
 	dma_params->acnt = dma_params->data_type = data_type[fmt];
 	dma_params->fifo_level = 0;
+=======
+>>>>>>> v4.9.227
 	mcbsp_word_length = asp_word_length[fmt];
 
 	switch (master) {
@@ -600,6 +629,7 @@ static int davinci_i2s_trigger(struct snd_pcm_substream *substream, int cmd,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int davinci_i2s_startup(struct snd_pcm_substream *substream,
 			       struct snd_soc_dai *dai)
 {
@@ -609,6 +639,8 @@ static int davinci_i2s_startup(struct snd_pcm_substream *substream,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static void davinci_i2s_shutdown(struct snd_pcm_substream *substream,
 		struct snd_soc_dai *dai)
 {
@@ -620,7 +652,10 @@ static void davinci_i2s_shutdown(struct snd_pcm_substream *substream,
 #define DAVINCI_I2S_RATES	SNDRV_PCM_RATE_8000_96000
 
 static const struct snd_soc_dai_ops davinci_i2s_dai_ops = {
+<<<<<<< HEAD
 	.startup	= davinci_i2s_startup,
+=======
+>>>>>>> v4.9.227
 	.shutdown	= davinci_i2s_shutdown,
 	.prepare	= davinci_i2s_prepare,
 	.trigger	= davinci_i2s_trigger,
@@ -630,7 +665,22 @@ static const struct snd_soc_dai_ops davinci_i2s_dai_ops = {
 
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_driver davinci_i2s_dai = {
+=======
+static int davinci_i2s_dai_probe(struct snd_soc_dai *dai)
+{
+	struct davinci_mcbsp_dev *dev = snd_soc_dai_get_drvdata(dai);
+
+	dai->playback_dma_data = &dev->dma_data[SNDRV_PCM_STREAM_PLAYBACK];
+	dai->capture_dma_data = &dev->dma_data[SNDRV_PCM_STREAM_CAPTURE];
+
+	return 0;
+}
+
+static struct snd_soc_dai_driver davinci_i2s_dai = {
+	.probe = davinci_i2s_dai_probe,
+>>>>>>> v4.9.227
 	.playback = {
 		.channels_min = 2,
 		.channels_max = 2,
@@ -651,6 +701,7 @@ static const struct snd_soc_component_driver davinci_i2s_component = {
 
 static int davinci_i2s_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct snd_platform_data *pdata = pdev->dev.platform_data;
 	struct davinci_mcbsp_dev *dev;
 	struct resource *mem, *ioarea, *res;
@@ -671,11 +722,35 @@ static int davinci_i2s_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "McBSP region already claimed\n");
 		return -EBUSY;
 	}
+=======
+	struct snd_dmaengine_dai_dma_data *dma_data;
+	struct davinci_mcbsp_dev *dev;
+	struct resource *mem, *res;
+	void __iomem *io_base;
+	int *dma;
+	int ret;
+
+	mem = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mpu");
+	if (!mem) {
+		dev_warn(&pdev->dev,
+			 "\"mpu\" mem resource not found, using index 0\n");
+		mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+		if (!mem) {
+			dev_err(&pdev->dev, "no mem resource?\n");
+			return -ENODEV;
+		}
+	}
+
+	io_base = devm_ioremap_resource(&pdev->dev, mem);
+	if (IS_ERR(io_base))
+		return PTR_ERR(io_base);
+>>>>>>> v4.9.227
 
 	dev = devm_kzalloc(&pdev->dev, sizeof(struct davinci_mcbsp_dev),
 			   GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
+<<<<<<< HEAD
 	if (pdata) {
 		dev->enable_channel_combine = pdata->enable_channel_combine;
 		dev->dma_params[SNDRV_PCM_STREAM_PLAYBACK].sram_size =
@@ -692,12 +767,48 @@ static int davinci_i2s_probe(struct platform_device *pdev)
 	dev->dma_params[SNDRV_PCM_STREAM_PLAYBACK].ram_chan_q	= ram_chan_q;
 	dev->dma_params[SNDRV_PCM_STREAM_CAPTURE].asp_chan_q	= asp_chan_q;
 	dev->dma_params[SNDRV_PCM_STREAM_CAPTURE].ram_chan_q	= ram_chan_q;
+=======
+
+	dev->base = io_base;
+
+	/* setup DMA, first TX, then RX */
+	dma_data = &dev->dma_data[SNDRV_PCM_STREAM_PLAYBACK];
+	dma_data->addr = (dma_addr_t)(mem->start + DAVINCI_MCBSP_DXR_REG);
+
+	res = platform_get_resource(pdev, IORESOURCE_DMA, 0);
+	if (res) {
+		dma = &dev->dma_request[SNDRV_PCM_STREAM_PLAYBACK];
+		*dma = res->start;
+		dma_data->filter_data = dma;
+	} else if (IS_ENABLED(CONFIG_OF) && pdev->dev.of_node) {
+		dma_data->filter_data = "tx";
+	} else {
+		dev_err(&pdev->dev, "Missing DMA tx resource\n");
+		return -ENODEV;
+	}
+
+	dma_data = &dev->dma_data[SNDRV_PCM_STREAM_CAPTURE];
+	dma_data->addr = (dma_addr_t)(mem->start + DAVINCI_MCBSP_DRR_REG);
+
+	res = platform_get_resource(pdev, IORESOURCE_DMA, 1);
+	if (res) {
+		dma = &dev->dma_request[SNDRV_PCM_STREAM_CAPTURE];
+		*dma = res->start;
+		dma_data->filter_data = dma;
+	} else if (IS_ENABLED(CONFIG_OF) && pdev->dev.of_node) {
+		dma_data->filter_data = "rx";
+	} else {
+		dev_err(&pdev->dev, "Missing DMA rx resource\n");
+		return -ENODEV;
+	}
+>>>>>>> v4.9.227
 
 	dev->clk = clk_get(&pdev->dev, NULL);
 	if (IS_ERR(dev->clk))
 		return -ENODEV;
 	clk_enable(dev->clk);
 
+<<<<<<< HEAD
 	dev->base = devm_ioremap(&pdev->dev, mem->start, resource_size(mem));
 	if (!dev->base) {
 		dev_err(&pdev->dev, "ioremap failed\n");
@@ -729,6 +840,9 @@ static int davinci_i2s_probe(struct platform_device *pdev)
 	dev->dma_params[SNDRV_PCM_STREAM_CAPTURE].channel = res->start;
 	dev->dev = &pdev->dev;
 
+=======
+	dev->dev = &pdev->dev;
+>>>>>>> v4.9.227
 	dev_set_drvdata(&pdev->dev, dev);
 
 	ret = snd_soc_register_component(&pdev->dev, &davinci_i2s_component,
@@ -736,7 +850,11 @@ static int davinci_i2s_probe(struct platform_device *pdev)
 	if (ret != 0)
 		goto err_release_clk;
 
+<<<<<<< HEAD
 	ret = davinci_soc_platform_register(&pdev->dev);
+=======
+	ret = edma_pcm_platform_register(&pdev->dev);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(&pdev->dev, "register PCM failed: %d\n", ret);
 		goto err_unregister_component;
@@ -765,12 +883,25 @@ static int davinci_i2s_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id davinci_i2s_match[] = {
+	{ .compatible = "ti,da850-mcbsp" },
+	{},
+};
+MODULE_DEVICE_TABLE(of, davinci_i2s_match);
+
+>>>>>>> v4.9.227
 static struct platform_driver davinci_mcbsp_driver = {
 	.probe		= davinci_i2s_probe,
 	.remove		= davinci_i2s_remove,
 	.driver		= {
 		.name	= "davinci-mcbsp",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(davinci_i2s_match),
+>>>>>>> v4.9.227
 	},
 };
 

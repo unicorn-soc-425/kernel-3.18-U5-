@@ -19,6 +19,10 @@
 	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> v4.9.227
 #include "stb0899_drv.h"
 #include "stb0899_priv.h"
 #include "stb0899_reg.h"
@@ -1490,9 +1494,13 @@ enum stb0899_status stb0899_dvbs2_algo(struct stb0899_state *state)
 		/* Store signal parameters	*/
 		offsetfreq = STB0899_READ_S2REG(STB0899_S2DEMOD, CRL_FREQ);
 
+<<<<<<< HEAD
 		/* sign extend 30 bit value before using it in calculations */
 		if (offsetfreq & (1 << 29))
 			offsetfreq |= -1 << 30;
+=======
+		offsetfreq = sign_extend32(offsetfreq, 29);
+>>>>>>> v4.9.227
 
 		offsetfreq = offsetfreq / ((1 << 30) / 1000);
 		offsetfreq *= (internal->master_clk / 1000000);

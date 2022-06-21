@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2005 - 2014 Emulex
+=======
+ * Copyright (C) 2005 - 2016 Broadcom
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
@@ -60,9 +64,13 @@ struct ocrdma_driver {
 	void (*state_change_handler) (struct ocrdma_dev *, u32 new_state);
 };
 
+<<<<<<< HEAD
 enum {
 	BE_DEV_UP	= 0,
 	BE_DEV_DOWN	= 1,
+=======
+enum be_roce_event {
+>>>>>>> v4.9.227
 	BE_DEV_SHUTDOWN = 2
 };
 

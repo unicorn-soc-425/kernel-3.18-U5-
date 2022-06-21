@@ -35,17 +35,49 @@
 #define VMW_RES_HT_ORDER 12
 
 /**
+<<<<<<< HEAD
+=======
+ * enum vmw_resource_relocation_type - Relocation type for resources
+ *
+ * @vmw_res_rel_normal: Traditional relocation. The resource id in the
+ * command stream is replaced with the actual id after validation.
+ * @vmw_res_rel_nop: NOP relocation. The command is unconditionally replaced
+ * with a NOP.
+ * @vmw_res_rel_cond_nop: Conditional NOP relocation. If the resource id
+ * after validation is -1, the command is replaced with a NOP. Otherwise no
+ * action.
+ */
+enum vmw_resource_relocation_type {
+	vmw_res_rel_normal,
+	vmw_res_rel_nop,
+	vmw_res_rel_cond_nop,
+	vmw_res_rel_max
+};
+
+/**
+>>>>>>> v4.9.227
  * struct vmw_resource_relocation - Relocation info for resources
  *
  * @head: List head for the software context's relocation list.
  * @res: Non-ref-counted pointer to the resource.
+<<<<<<< HEAD
  * @offset: Offset of 4 byte entries into the command buffer where the
  * id that needs fixup is located.
+=======
+ * @offset: Offset of single byte entries into the command buffer where the
+ * id that needs fixup is located.
+ * @rel_type: Type of relocation.
+>>>>>>> v4.9.227
  */
 struct vmw_resource_relocation {
 	struct list_head head;
 	const struct vmw_resource *res;
+<<<<<<< HEAD
 	unsigned long offset;
+=======
+	u32 offset:29;
+	enum vmw_resource_relocation_type rel_type:3;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -109,7 +141,22 @@ static int vmw_bo_to_validate_list(struct vmw_sw_context *sw_context,
 				   struct vmw_dma_buffer *vbo,
 				   bool validate_as_mob,
 				   uint32_t *p_val_node);
+<<<<<<< HEAD
 
+=======
+/**
+ * vmw_ptr_diff - Compute the offset from a to b in bytes
+ *
+ * @a: A starting pointer.
+ * @b: A pointer offset in the same address space.
+ *
+ * Returns: The offset in bytes between the two pointers.
+ */
+static size_t vmw_ptr_diff(void *a, void *b)
+{
+	return (unsigned long) b - (unsigned long) a;
+}
+>>>>>>> v4.9.227
 
 /**
  * vmw_resources_unreserve - unreserve resources previously reserved for
@@ -409,11 +456,22 @@ static int vmw_resource_context_res_add(struct vmw_private *dev_priv,
  * @list: Pointer to head of relocation list.
  * @res: The resource.
  * @offset: Offset into the command buffer currently being parsed where the
+<<<<<<< HEAD
  * id that needs fixup is located. Granularity is 4 bytes.
  */
 static int vmw_resource_relocation_add(struct list_head *list,
 				       const struct vmw_resource *res,
 				       unsigned long offset)
+=======
+ * id that needs fixup is located. Granularity is one byte.
+ * @rel_type: Relocation type.
+ */
+static int vmw_resource_relocation_add(struct list_head *list,
+				       const struct vmw_resource *res,
+				       unsigned long offset,
+				       enum vmw_resource_relocation_type
+				       rel_type)
+>>>>>>> v4.9.227
 {
 	struct vmw_resource_relocation *rel;
 
@@ -425,6 +483,10 @@ static int vmw_resource_relocation_add(struct list_head *list,
 
 	rel->res = res;
 	rel->offset = offset;
+<<<<<<< HEAD
+=======
+	rel->rel_type = rel_type;
+>>>>>>> v4.9.227
 	list_add_tail(&rel->head, list);
 
 	return 0;
@@ -459,11 +521,32 @@ static void vmw_resource_relocations_apply(uint32_t *cb,
 {
 	struct vmw_resource_relocation *rel;
 
+<<<<<<< HEAD
 	list_for_each_entry(rel, list, head) {
 		if (likely(rel->res != NULL))
 			cb[rel->offset] = rel->res->id;
 		else
 			cb[rel->offset] = SVGA_3D_CMD_NOP;
+=======
+	/* Validate the struct vmw_resource_relocation member size */
+	BUILD_BUG_ON(SVGA_CB_MAX_SIZE >= (1 << 29));
+	BUILD_BUG_ON(vmw_res_rel_max >= (1 << 3));
+
+	list_for_each_entry(rel, list, head) {
+		u32 *addr = (u32 *)((unsigned long) cb + rel->offset);
+		switch (rel->rel_type) {
+		case vmw_res_rel_normal:
+			*addr = rel->res->id;
+			break;
+		case vmw_res_rel_nop:
+			*addr = SVGA_3D_CMD_NOP;
+			break;
+		default:
+			if (rel->res->id == -1)
+				*addr = SVGA_3D_CMD_NOP;
+			break;
+		}
+>>>>>>> v4.9.227
 	}
 }
 
@@ -655,7 +738,13 @@ static int vmw_cmd_res_reloc_add(struct vmw_private *dev_priv,
 	*p_val = NULL;
 	ret = vmw_resource_relocation_add(&sw_context->res_relocations,
 					  res,
+<<<<<<< HEAD
 					  id_loc - sw_context->buf_start);
+=======
+					  vmw_ptr_diff(sw_context->buf_start,
+						       id_loc),
+					  vmw_res_rel_normal);
+>>>>>>> v4.9.227
 	if (unlikely(ret != 0))
 		return ret;
 
@@ -721,7 +810,12 @@ vmw_cmd_res_check(struct vmw_private *dev_priv,
 
 		return vmw_resource_relocation_add
 			(&sw_context->res_relocations, res,
+<<<<<<< HEAD
 			 id_loc - sw_context->buf_start);
+=======
+			 vmw_ptr_diff(sw_context->buf_start, id_loc),
+			 vmw_res_rel_normal);
+>>>>>>> v4.9.227
 	}
 
 	ret = vmw_user_resource_lookup_handle(dev_priv,
@@ -2143,10 +2237,17 @@ static int vmw_cmd_shader_define(struct vmw_private *dev_priv,
 		return ret;
 
 	return vmw_resource_relocation_add(&sw_context->res_relocations,
+<<<<<<< HEAD
 					   NULL, &cmd->header.id -
 					   sw_context->buf_start);
 
 	return 0;
+=======
+					   NULL,
+					   vmw_ptr_diff(sw_context->buf_start,
+							&cmd->header.id),
+					   vmw_res_rel_nop);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -2188,10 +2289,17 @@ static int vmw_cmd_shader_destroy(struct vmw_private *dev_priv,
 		return ret;
 
 	return vmw_resource_relocation_add(&sw_context->res_relocations,
+<<<<<<< HEAD
 					   NULL, &cmd->header.id -
 					   sw_context->buf_start);
 
 	return 0;
+=======
+					   NULL,
+					   vmw_ptr_diff(sw_context->buf_start,
+							&cmd->header.id),
+					   vmw_res_rel_nop);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -2442,7 +2550,12 @@ static int vmw_cmd_dx_set_shader(struct vmw_private *dev_priv,
 
 	cmd = container_of(header, typeof(*cmd), header);
 
+<<<<<<< HEAD
 	if (cmd->body.type >= SVGA3D_SHADERTYPE_DX10_MAX) {
+=======
+	if (cmd->body.type >= SVGA3D_SHADERTYPE_DX10_MAX ||
+	    cmd->body.type < SVGA3D_SHADERTYPE_MIN) {
+>>>>>>> v4.9.227
 		DRM_ERROR("Illegal shader type %u.\n",
 			  (unsigned) cmd->body.type);
 		return -EINVAL;
@@ -2678,7 +2791,17 @@ static int vmw_cmd_dx_view_define(struct vmw_private *dev_priv,
 	}
 
 	view_type = vmw_view_cmd_to_type(header->id);
+<<<<<<< HEAD
 	cmd = container_of(header, typeof(*cmd), header);
+=======
+	if (view_type == vmw_view_max)
+		return -EINVAL;
+	cmd = container_of(header, typeof(*cmd), header);
+	if (unlikely(cmd->sid == SVGA3D_INVALID_ID)) {
+		DRM_ERROR("Invalid surface id.\n");
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 	ret = vmw_cmd_res_check(dev_priv, sw_context, vmw_res_surface,
 				user_surface_converter,
 				&cmd->sid, &srf_node);
@@ -2848,8 +2971,12 @@ static int vmw_cmd_dx_cid_check(struct vmw_private *dev_priv,
  * @header: Pointer to the command header in the command stream.
  *
  * Check that the view exists, and if it was not created using this
+<<<<<<< HEAD
  * command batch, make sure it's validated (present in the device) so that
  * the remove command will not confuse the device.
+=======
+ * command batch, conditionally make this command a NOP.
+>>>>>>> v4.9.227
  */
 static int vmw_cmd_dx_view_remove(struct vmw_private *dev_priv,
 				  struct vmw_sw_context *sw_context,
@@ -2877,10 +3004,23 @@ static int vmw_cmd_dx_view_remove(struct vmw_private *dev_priv,
 		return ret;
 
 	/*
+<<<<<<< HEAD
 	 * Add view to the validate list iff it was not created using this
 	 * command batch.
 	 */
 	return vmw_view_res_val_add(sw_context, view);
+=======
+	 * If the view wasn't created during this command batch, it might
+	 * have been removed due to a context swapout, so add a
+	 * relocation to conditionally make this command a NOP to avoid
+	 * device errors.
+	 */
+	return vmw_resource_relocation_add(&sw_context->res_relocations,
+					   view,
+					   vmw_ptr_diff(sw_context->buf_start,
+							&cmd->header.id),
+					   vmw_res_rel_cond_nop);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -3009,6 +3149,58 @@ out_unref:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * vmw_cmd_dx_genmips - Validate an SVGA_3D_CMD_DX_GENMIPS command
+ *
+ * @dev_priv: Pointer to a device private struct.
+ * @sw_context: The software context being used for this batch.
+ * @header: Pointer to the command header in the command stream.
+ */
+static int vmw_cmd_dx_genmips(struct vmw_private *dev_priv,
+			      struct vmw_sw_context *sw_context,
+			      SVGA3dCmdHeader *header)
+{
+	struct {
+		SVGA3dCmdHeader header;
+		SVGA3dCmdDXGenMips body;
+	} *cmd = container_of(header, typeof(*cmd), header);
+
+	return vmw_view_id_val_add(sw_context, vmw_view_sr,
+				   cmd->body.shaderResourceViewId);
+}
+
+/**
+ * vmw_cmd_dx_transfer_from_buffer -
+ * Validate an SVGA_3D_CMD_DX_TRANSFER_FROM_BUFFER command
+ *
+ * @dev_priv: Pointer to a device private struct.
+ * @sw_context: The software context being used for this batch.
+ * @header: Pointer to the command header in the command stream.
+ */
+static int vmw_cmd_dx_transfer_from_buffer(struct vmw_private *dev_priv,
+					   struct vmw_sw_context *sw_context,
+					   SVGA3dCmdHeader *header)
+{
+	struct {
+		SVGA3dCmdHeader header;
+		SVGA3dCmdDXTransferFromBuffer body;
+	} *cmd = container_of(header, typeof(*cmd), header);
+	int ret;
+
+	ret = vmw_cmd_res_check(dev_priv, sw_context, vmw_res_surface,
+				user_surface_converter,
+				&cmd->body.srcSid, NULL);
+	if (ret != 0)
+		return ret;
+
+	return vmw_cmd_res_check(dev_priv, sw_context, vmw_res_surface,
+				 user_surface_converter,
+				 &cmd->body.destSid, NULL);
+}
+
+>>>>>>> v4.9.227
 static int vmw_cmd_check_not_3d(struct vmw_private *dev_priv,
 				struct vmw_sw_context *sw_context,
 				void *buf, uint32_t *size)
@@ -3297,7 +3489,11 @@ static const struct vmw_cmd_entry vmw_cmd_entries[SVGA_3D_CMD_MAX] = {
 		    &vmw_cmd_dx_clear_depthstencil_view, true, false, true),
 	VMW_CMD_DEF(SVGA_3D_CMD_DX_PRED_COPY, &vmw_cmd_invalid,
 		    true, false, true),
+<<<<<<< HEAD
 	VMW_CMD_DEF(SVGA_3D_CMD_DX_GENMIPS, &vmw_cmd_invalid,
+=======
+	VMW_CMD_DEF(SVGA_3D_CMD_DX_GENMIPS, &vmw_cmd_dx_genmips,
+>>>>>>> v4.9.227
 		    true, false, true),
 	VMW_CMD_DEF(SVGA_3D_CMD_DX_UPDATE_SUBRESOURCE,
 		    &vmw_cmd_dx_check_subresource, true, false, true),
@@ -3359,6 +3555,12 @@ static const struct vmw_cmd_entry vmw_cmd_entries[SVGA_3D_CMD_MAX] = {
 		    &vmw_cmd_buffer_copy_check, true, false, true),
 	VMW_CMD_DEF(SVGA_3D_CMD_DX_PRED_COPY_REGION,
 		    &vmw_cmd_pred_copy_check, true, false, true),
+<<<<<<< HEAD
+=======
+	VMW_CMD_DEF(SVGA_3D_CMD_DX_TRANSFER_FROM_BUFFER,
+		    &vmw_cmd_dx_transfer_from_buffer,
+		    true, false, true),
+>>>>>>> v4.9.227
 };
 
 static int vmw_cmd_check(struct vmw_private *dev_priv,
@@ -3605,9 +3807,13 @@ static int vmw_resize_cmd_bounce(struct vmw_sw_context *sw_context,
 				   (sw_context->cmd_bounce_size >> 1));
 	}
 
+<<<<<<< HEAD
 	if (sw_context->cmd_bounce != NULL)
 		vfree(sw_context->cmd_bounce);
 
+=======
+	vfree(sw_context->cmd_bounce);
+>>>>>>> v4.9.227
 	sw_context->cmd_bounce = vmalloc(sw_context->cmd_bounce_size);
 
 	if (sw_context->cmd_bounce == NULL) {
@@ -3661,7 +3867,11 @@ int vmw_execbuf_fence_commands(struct drm_file *file_priv,
 		*p_fence = NULL;
 	}
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -3830,14 +4040,23 @@ static void *vmw_execbuf_cmdbuf(struct vmw_private *dev_priv,
 	int ret;
 
 	*header = NULL;
+<<<<<<< HEAD
 	if (!dev_priv->cman || kernel_commands)
 		return kernel_commands;
 
+=======
+>>>>>>> v4.9.227
 	if (command_size > SVGA_CB_MAX_SIZE) {
 		DRM_ERROR("Command buffer is too large.\n");
 		return ERR_PTR(-EINVAL);
 	}
 
+<<<<<<< HEAD
+=======
+	if (!dev_priv->cman || kernel_commands)
+		return kernel_commands;
+
+>>>>>>> v4.9.227
 	/* If possible, add a little space for fencing. */
 	cmdbuf_size = command_size + 512;
 	cmdbuf_size = min_t(size_t, cmdbuf_size, SVGA_CB_MAX_SIZE);
@@ -4214,9 +4433,12 @@ void __vmw_execbuf_release_pinned_bo(struct vmw_private *dev_priv,
 	ttm_bo_unref(&query_val.bo);
 	ttm_bo_unref(&pinned_val.bo);
 	vmw_dmabuf_unreference(&dev_priv->pinned_bo);
+<<<<<<< HEAD
 	DRM_INFO("Dummy query bo pin count: %d\n",
 		 dev_priv->dummy_query_bo->pin_count);
 
+=======
+>>>>>>> v4.9.227
 out_unlock:
 	return;
 

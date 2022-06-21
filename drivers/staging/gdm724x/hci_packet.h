@@ -58,7 +58,11 @@ struct sdu_header {
 struct sdu {
 	u16 cmd_evt;
 	u16 len;
+<<<<<<< HEAD
 	u32 dftEpsId;
+=======
+	u32 dft_eps_ID;
+>>>>>>> v4.9.227
 	u32 bearer_ID;
 	u32 nic_type;
 	u8 data[0];
@@ -89,5 +93,8 @@ struct hci_connect_ind {
 	u32 connect;
 } __packed;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #endif /* _HCI_PACKET_H_ */

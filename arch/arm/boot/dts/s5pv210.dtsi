@@ -19,11 +19,20 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
 #include "skeleton.dtsi"
+=======
+>>>>>>> v4.9.227
 #include <dt-bindings/clock/s5pv210.h>
 #include <dt-bindings/clock/s5pv210-audss.h>
 
 / {
+<<<<<<< HEAD
+=======
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+>>>>>>> v4.9.227
 	aliases {
 		csis0 = &csis0;
 		fimc0 = &fimc0;
@@ -130,7 +139,11 @@
 		amba {
 			#address-cells = <1>;
 			#size-cells = <1>;
+<<<<<<< HEAD
 			compatible = "arm,amba-bus";
+=======
+			compatible = "simple-bus";
+>>>>>>> v4.9.227
 			ranges;
 
 			pdma0: dma@e0900000 {

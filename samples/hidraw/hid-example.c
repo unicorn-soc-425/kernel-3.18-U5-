@@ -46,10 +46,21 @@ int main(int argc, char **argv)
 	char buf[256];
 	struct hidraw_report_descriptor rpt_desc;
 	struct hidraw_devinfo info;
+<<<<<<< HEAD
 
 	/* Open the Device with non-blocking reads. In real life,
 	   don't use a hard coded path; use libudev instead. */
 	fd = open("/dev/hidraw0", O_RDWR|O_NONBLOCK);
+=======
+	char *device = "/dev/hidraw0";
+
+	if (argc > 1)
+		device = argv[1];
+
+	/* Open the Device with non-blocking reads. In real life,
+	   don't use a hard coded path; use libudev instead. */
+	fd = open(device, O_RDWR|O_NONBLOCK);
+>>>>>>> v4.9.227
 
 	if (fd < 0) {
 		perror("Unable to open device");

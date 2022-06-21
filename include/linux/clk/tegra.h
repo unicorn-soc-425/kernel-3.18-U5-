@@ -17,7 +17,12 @@
 #ifndef __LINUX_CLK_TEGRA_H_
 #define __LINUX_CLK_TEGRA_H_
 
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+#include <linux/types.h>
+#include <linux/bug.h>
+>>>>>>> v4.9.227
 
 /*
  * Tegra CPU clock and reset control ops
@@ -120,6 +125,13 @@ static inline void tegra_cpu_clock_resume(void)
 }
 #endif
 
+<<<<<<< HEAD
 void tegra_clocks_apply_init_table(void);
+=======
+extern void tegra210_xusb_pll_hw_control_enable(void);
+extern void tegra210_xusb_pll_hw_sequence_start(void);
+extern void tegra210_sata_pll_hw_control_enable(void);
+extern void tegra210_sata_pll_hw_sequence_start(void);
+>>>>>>> v4.9.227
 
 #endif /* __LINUX_CLK_TEGRA_H_ */

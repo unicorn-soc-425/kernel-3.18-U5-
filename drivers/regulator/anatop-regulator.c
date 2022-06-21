@@ -30,6 +30,10 @@
 #include <linux/regmap.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/of_regulator.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/machine.h>
+>>>>>>> v4.9.227
 
 #define LDO_RAMP_UP_UNIT_IN_CYCLES      64 /* 64 cycles per step */
 #define LDO_RAMP_UP_FREQ_IN_MHZ         24 /* cycle based on 24M OSC */
@@ -189,17 +193,30 @@ static int anatop_regulator_probe(struct platform_device *pdev)
 	int ret = 0;
 	u32 val;
 
+<<<<<<< HEAD
 	initdata = of_get_regulator_init_data(dev, np);
 	sreg = devm_kzalloc(dev, sizeof(*sreg), GFP_KERNEL);
 	if (!sreg)
 		return -ENOMEM;
 	sreg->initdata = initdata;
+=======
+	sreg = devm_kzalloc(dev, sizeof(*sreg), GFP_KERNEL);
+	if (!sreg)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	sreg->name = of_get_property(np, "regulator-name", NULL);
 	rdesc = &sreg->rdesc;
 	rdesc->name = sreg->name;
 	rdesc->type = REGULATOR_VOLTAGE;
 	rdesc->owner = THIS_MODULE;
 
+<<<<<<< HEAD
+=======
+	initdata = of_get_regulator_init_data(dev, np, rdesc);
+	initdata->supply_regulator = "vin";
+	sreg->initdata = initdata;
+
+>>>>>>> v4.9.227
 	anatop_np = of_get_parent(np);
 	if (!anatop_np)
 		return -ENODEV;
@@ -261,6 +278,10 @@ static int anatop_regulator_probe(struct platform_device *pdev)
 	rdesc->vsel_reg = sreg->control_reg;
 	rdesc->vsel_mask = ((1 << sreg->vol_bit_width) - 1) <<
 			   sreg->vol_bit_shift;
+<<<<<<< HEAD
+=======
+	rdesc->min_dropout_uV = 125000;
+>>>>>>> v4.9.227
 
 	config.dev = &pdev->dev;
 	config.init_data = initdata;
@@ -291,6 +312,19 @@ static int anatop_regulator_probe(struct platform_device *pdev)
 		 */
 		if (!sreg->sel && !strcmp(sreg->name, "vddpu"))
 			sreg->sel = 22;
+<<<<<<< HEAD
+=======
+
+		/* set the default voltage of the pcie phy to be 1.100v */
+		if (!sreg->sel && rdesc->name &&
+		    !strcmp(rdesc->name, "vddpcie"))
+			sreg->sel = 0x10;
+
+		if (!sreg->bypass && !sreg->sel) {
+			dev_err(&pdev->dev, "Failed to read a valid default voltage selector.\n");
+			return -EINVAL;
+		}
+>>>>>>> v4.9.227
 	} else {
 		rdesc->ops = &anatop_rops;
 	}
@@ -312,11 +346,18 @@ static const struct of_device_id of_anatop_regulator_match_tbl[] = {
 	{ .compatible = "fsl,anatop-regulator", },
 	{ /* end */ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, of_anatop_regulator_match_tbl);
+>>>>>>> v4.9.227
 
 static struct platform_driver anatop_regulator_driver = {
 	.driver = {
 		.name	= "anatop_regulator",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_anatop_regulator_match_tbl,
 	},
 	.probe	= anatop_regulator_probe,

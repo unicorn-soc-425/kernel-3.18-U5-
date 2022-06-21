@@ -12,7 +12,10 @@
  */
 
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/miscdevice.h>
@@ -43,7 +46,11 @@
 /*
  * The High Precision Event Timer driver.
  * This driver is closely modelled after the rtc.c driver.
+<<<<<<< HEAD
  * http://www.intel.com/hardwaredesign/hpetspec_1.pdf
+=======
+ * See HPET spec revision 1.
+>>>>>>> v4.9.227
  */
 #define	HPET_USER_FREQ	(64)
 #define	HPET_DRIFT	(500)
@@ -377,7 +384,11 @@ static __init int hpet_mmap_enable(char *str)
 	pr_info("HPET mmap %s\n", hpet_mmap_enabled ? "enabled" : "disabled");
 	return 1;
 }
+<<<<<<< HEAD
 __setup("hpet_mmap", hpet_mmap_enable);
+=======
+__setup("hpet_mmap=", hpet_mmap_enable);
+>>>>>>> v4.9.227
 
 static int hpet_mmap(struct file *file, struct vm_area_struct *vma)
 {
@@ -570,12 +581,20 @@ static inline unsigned long hpet_time_div(struct hpets *hpets,
 	unsigned long long m;
 
 	m = hpets->hp_tick_freq + (dis >> 1);
+<<<<<<< HEAD
 	do_div(m, dis);
 	return (unsigned long)m;
 }
 
 static int
 hpet_ioctl_common(struct hpet_dev *devp, int cmd, unsigned long arg,
+=======
+	return div64_ul(m, dis);
+}
+
+static int
+hpet_ioctl_common(struct hpet_dev *devp, unsigned int cmd, unsigned long arg,
+>>>>>>> v4.9.227
 		  struct hpet_info *info)
 {
 	struct hpet_timer __iomem *timer;
@@ -976,8 +995,13 @@ static acpi_status hpet_resources(struct acpi_resource *res, void *data)
 	status = acpi_resource_to_address64(res, &addr);
 
 	if (ACPI_SUCCESS(status)) {
+<<<<<<< HEAD
 		hdp->hd_phys_address = addr.minimum;
 		hdp->hd_address = ioremap(addr.minimum, addr.address_length);
+=======
+		hdp->hd_phys_address = addr.address.minimum;
+		hdp->hd_address = ioremap(addr.address.minimum, addr.address.address_length);
+>>>>>>> v4.9.227
 
 		if (hpet_is_known(hdp)) {
 			iounmap(hdp->hd_address);
@@ -1043,24 +1067,33 @@ static int hpet_acpi_add(struct acpi_device *device)
 	return hpet_alloc(&data);
 }
 
+<<<<<<< HEAD
 static int hpet_acpi_remove(struct acpi_device *device)
 {
 	/* XXX need to unregister clocksource, dealloc mem, etc */
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct acpi_device_id hpet_device_ids[] = {
 	{"PNP0103", 0},
 	{"", 0},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(acpi, hpet_device_ids);
+=======
+>>>>>>> v4.9.227
 
 static struct acpi_driver hpet_acpi_driver = {
 	.name = "hpet",
 	.ids = hpet_device_ids,
 	.ops = {
 		.add = hpet_acpi_add,
+<<<<<<< HEAD
 		.remove = hpet_acpi_remove,
+=======
+>>>>>>> v4.9.227
 		},
 };
 
@@ -1086,6 +1119,7 @@ static int __init hpet_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static void __exit hpet_exit(void)
 {
@@ -1102,3 +1136,11 @@ module_init(hpet_init);
 module_exit(hpet_exit);
 MODULE_AUTHOR("Bob Picco <Robert.Picco@hp.com>");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(hpet_init);
+
+/*
+MODULE_AUTHOR("Bob Picco <Robert.Picco@hp.com>");
+MODULE_LICENSE("GPL");
+*/
+>>>>>>> v4.9.227

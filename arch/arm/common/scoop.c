@@ -69,7 +69,11 @@ static void __scoop_gpio_set(struct scoop_dev *sdev,
 
 static void scoop_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
+=======
+	struct scoop_dev *sdev = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	spin_lock_irqsave(&sdev->scoop_lock, flags);
@@ -81,16 +85,27 @@ static void scoop_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 
 static int scoop_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
 
 	/* XXX: I'm unsure, but it seems so */
 	return ioread16(sdev->base + SCOOP_GPRR) & (1 << (offset + 1));
+=======
+	struct scoop_dev *sdev = gpiochip_get_data(chip);
+
+	/* XXX: I'm unsure, but it seems so */
+	return !!(ioread16(sdev->base + SCOOP_GPRR) & (1 << (offset + 1)));
+>>>>>>> v4.9.227
 }
 
 static int scoop_gpio_direction_input(struct gpio_chip *chip,
 			unsigned offset)
 {
+<<<<<<< HEAD
 	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
+=======
+	struct scoop_dev *sdev = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	unsigned short gpcr;
 
@@ -108,7 +123,11 @@ static int scoop_gpio_direction_input(struct gpio_chip *chip,
 static int scoop_gpio_direction_output(struct gpio_chip *chip,
 			unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
+=======
+	struct scoop_dev *sdev = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	unsigned short gpcr;
 
@@ -224,7 +243,11 @@ static int scoop_probe(struct platform_device *pdev)
 		devptr->gpio.direction_input = scoop_gpio_direction_input;
 		devptr->gpio.direction_output = scoop_gpio_direction_output;
 
+<<<<<<< HEAD
 		ret = gpiochip_add(&devptr->gpio);
+=======
+		ret = gpiochip_add_data(&devptr->gpio, devptr);
+>>>>>>> v4.9.227
 		if (ret)
 			goto err_gpio;
 	}

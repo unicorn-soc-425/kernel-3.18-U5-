@@ -14,10 +14,13 @@ static inline int is_hugepage_only_range(struct mm_struct *mm,
 int prepare_hugepage_range(struct file *file, unsigned long addr,
 						unsigned long len);
 
+<<<<<<< HEAD
 static inline void hugetlb_prefault_arch_hook(struct mm_struct *mm)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void hugetlb_free_pgd_range(struct mmu_gather *tlb,
 					  unsigned long addr, unsigned long end,
 					  unsigned long floor,
@@ -71,6 +74,7 @@ static inline pte_t huge_ptep_get(pte_t *ptep)
 	return *ptep;
 }
 
+<<<<<<< HEAD
 static inline int arch_prepare_hugepage(struct page *page)
 {
 	return 0;
@@ -80,6 +84,8 @@ static inline void arch_release_hugepage(struct page *page)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void arch_clear_hugepage_flags(struct page *page)
 {
 }

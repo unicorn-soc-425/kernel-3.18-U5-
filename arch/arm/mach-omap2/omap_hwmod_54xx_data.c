@@ -19,6 +19,10 @@
 
 #include <linux/io.h>
 #include <linux/platform_data/gpio-omap.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/hsmmc-omap.h>
+>>>>>>> v4.9.227
 #include <linux/power/smartreflex.h>
 #include <linux/i2c-omap.h>
 
@@ -33,7 +37,10 @@
 #include "cm2_54xx.h"
 #include "prm54xx.h"
 #include "i2c.h"
+<<<<<<< HEAD
 #include "mmc.h"
+=======
+>>>>>>> v4.9.227
 #include "wd_timer.h"
 
 /* Base offset for all OMAP5 interrupts external to MPUSS */
@@ -288,6 +295,10 @@ static struct omap_hwmod omap54xx_dma_system_hwmod = {
 	.class		= &omap54xx_dma_hwmod_class,
 	.clkdm_name	= "dma_clkdm",
 	.mpu_irqs	= omap54xx_dma_system_irqs,
+<<<<<<< HEAD
+=======
+	.xlate_irq	= omap4_xlate_irq,
+>>>>>>> v4.9.227
 	.main_clk	= "l3_iclk_div",
 	.prcm = {
 		.omap4 = {
@@ -421,6 +432,10 @@ static struct omap_hwmod omap54xx_dss_dispc_hwmod = {
 	.opt_clks	= dss_dispc_opt_clks,
 	.opt_clks_cnt	= ARRAY_SIZE(dss_dispc_opt_clks),
 	.dev_attr	= &dss_dispc_dev_attr,
+<<<<<<< HEAD
+=======
+	.parent_hwmod	= &omap54xx_dss_hwmod,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -462,6 +477,10 @@ static struct omap_hwmod omap54xx_dss_dsi1_a_hwmod = {
 	},
 	.opt_clks	= dss_dsi1_a_opt_clks,
 	.opt_clks_cnt	= ARRAY_SIZE(dss_dsi1_a_opt_clks),
+<<<<<<< HEAD
+=======
+	.parent_hwmod	= &omap54xx_dss_hwmod,
+>>>>>>> v4.9.227
 };
 
 /* dss_dsi1_c */
@@ -482,6 +501,10 @@ static struct omap_hwmod omap54xx_dss_dsi1_c_hwmod = {
 	},
 	.opt_clks	= dss_dsi1_c_opt_clks,
 	.opt_clks_cnt	= ARRAY_SIZE(dss_dsi1_c_opt_clks),
+<<<<<<< HEAD
+=======
+	.parent_hwmod	= &omap54xx_dss_hwmod,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -521,6 +544,10 @@ static struct omap_hwmod omap54xx_dss_hdmi_hwmod = {
 	},
 	.opt_clks	= dss_hdmi_opt_clks,
 	.opt_clks_cnt	= ARRAY_SIZE(dss_hdmi_opt_clks),
+<<<<<<< HEAD
+=======
+	.parent_hwmod	= &omap54xx_dss_hwmod,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -560,6 +587,10 @@ static struct omap_hwmod omap54xx_dss_rfbi_hwmod = {
 	},
 	.opt_clks	= dss_rfbi_opt_clks,
 	.opt_clks_cnt	= ARRAY_SIZE(dss_rfbi_opt_clks),
+<<<<<<< HEAD
+=======
+	.parent_hwmod	= &omap54xx_dss_hwmod,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -1269,7 +1300,11 @@ static struct omap_hwmod_opt_clk mmc1_opt_clks[] = {
 };
 
 /* mmc1 dev_attr */
+<<<<<<< HEAD
 static struct omap_mmc_dev_attr mmc1_dev_attr = {
+=======
+static struct omap_hsmmc_dev_attr mmc1_dev_attr = {
+>>>>>>> v4.9.227
 	.flags	= OMAP_HSMMC_SUPPORTS_DUAL_VOLT,
 };
 
@@ -1838,8 +1873,12 @@ static struct omap_hwmod_class_sysconfig omap54xx_usb_host_hs_sysc = {
 	.rev_offs	= 0x0000,
 	.sysc_offs	= 0x0010,
 	.sysc_flags	= (SYSC_HAS_MIDLEMODE | SYSC_HAS_RESET_STATUS |
+<<<<<<< HEAD
 			   SYSC_HAS_SIDLEMODE | SYSC_HAS_SOFTRESET |
 			   SYSC_HAS_RESET_STATUS),
+=======
+			   SYSC_HAS_SIDLEMODE | SYSC_HAS_SOFTRESET),
+>>>>>>> v4.9.227
 	.idlemodes	= (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART |
 			   SIDLE_SMART_WKUP | MSTANDBY_FORCE | MSTANDBY_NO |
 			   MSTANDBY_SMART | MSTANDBY_SMART_WKUP),

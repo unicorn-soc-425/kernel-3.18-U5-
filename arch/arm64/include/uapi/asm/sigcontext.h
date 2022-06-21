@@ -16,7 +16,10 @@
 #ifndef _UAPI__ASM_SIGCONTEXT_H
 #define _UAPI__ASM_SIGCONTEXT_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> v4.9.227
 #include <linux/types.h>
 
 /*
@@ -62,6 +65,7 @@ struct esr_context {
 	__u64 esr;
 };
 
+<<<<<<< HEAD
 #else /* CONFIG_64BIT */
 
 /*
@@ -93,4 +97,6 @@ struct sigcontext {
 	unsigned long fault_address;
 };
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> v4.9.227
 #endif /* _UAPI__ASM_SIGCONTEXT_H */

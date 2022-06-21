@@ -81,13 +81,21 @@ static int i2c_read_reg16(struct i2c_adapter *adapter, u8 adr,
 static int ddb_i2c_cmd(struct ddb_i2c *i2c, u32 adr, u32 cmd)
 {
 	struct ddb *dev = i2c->dev;
+<<<<<<< HEAD
 	int stat;
+=======
+	long stat;
+>>>>>>> v4.9.227
 	u32 val;
 
 	i2c->done = 0;
 	ddbwritel((adr << 9) | cmd, i2c->regs + I2C_COMMAND);
 	stat = wait_event_timeout(i2c->wq, i2c->done == 1, HZ);
+<<<<<<< HEAD
 	if (stat <= 0) {
+=======
+	if (stat == 0) {
+>>>>>>> v4.9.227
 		printk(KERN_ERR "I2C timeout\n");
 		{ /* MSI debugging*/
 			u32 istat = ddbreadl(INTERRUPT_STATUS);
@@ -690,7 +698,11 @@ static int tuner_attach_stv6110(struct ddb_input *input, int type)
 	struct stv090x_config *feconf = type ? &stv0900_aa : &stv0900;
 	struct stv6110x_config *tunerconf = (input->nr & 1) ?
 		&stv6110b : &stv6110a;
+<<<<<<< HEAD
 	struct stv6110x_devctl *ctl;
+=======
+	const struct stv6110x_devctl *ctl;
+>>>>>>> v4.9.227
 
 	ctl = dvb_attach(stv6110x_attach, input->fe, tunerconf, i2c);
 	if (!ctl) {
@@ -1065,7 +1077,11 @@ static int ddb_ci_attach(struct ddb_port *port)
 			    port->en, 0, 1);
 	ret = dvb_register_device(&port->output->adap, &port->output->dev,
 				  &dvbdev_ci, (void *) port->output,
+<<<<<<< HEAD
 				  DVB_DEVICE_SEC);
+=======
+				  DVB_DEVICE_SEC, 0);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -1118,8 +1134,12 @@ static void ddb_ports_detach(struct ddb *dev)
 			dvb_input_detach(port->input[1]);
 			break;
 		case DDB_PORT_CI:
+<<<<<<< HEAD
 			if (port->output->dev)
 				dvb_unregister_device(port->output->dev);
+=======
+			dvb_unregister_device(port->output->dev);
+>>>>>>> v4.9.227
 			if (port->en) {
 				ddb_input_stop(port->input[0]);
 				ddb_output_stop(port->output);
@@ -1570,10 +1590,16 @@ static int ddb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (pci_enable_device(pdev) < 0)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	dev = vmalloc(sizeof(struct ddb));
 	if (dev == NULL)
 		return -ENOMEM;
 	memset(dev, 0, sizeof(struct ddb));
+=======
+	dev = vzalloc(sizeof(struct ddb));
+	if (dev == NULL)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	dev->pdev = pdev;
 	pci_set_drvdata(pdev, dev);
@@ -1631,7 +1657,12 @@ fail1:
 	printk(KERN_ERR "fail1\n");
 	if (dev->msi)
 		pci_disable_msi(dev->pdev);
+<<<<<<< HEAD
 	free_irq(dev->pdev->irq, dev);
+=======
+	if (stat == 0)
+		free_irq(dev->pdev->irq, dev);
+>>>>>>> v4.9.227
 fail:
 	printk(KERN_ERR "fail\n");
 	ddb_unmap(dev);
@@ -1644,53 +1675,89 @@ fail:
 /******************************************************************************/
 /******************************************************************************/
 
+<<<<<<< HEAD
 static struct ddb_info ddb_none = {
+=======
+static const struct ddb_info ddb_none = {
+>>>>>>> v4.9.227
 	.type     = DDB_NONE,
 	.name     = "Digital Devices PCIe bridge",
 };
 
+<<<<<<< HEAD
 static struct ddb_info ddb_octopus = {
+=======
+static const struct ddb_info ddb_octopus = {
+>>>>>>> v4.9.227
 	.type     = DDB_OCTOPUS,
 	.name     = "Digital Devices Octopus DVB adapter",
 	.port_num = 4,
 };
 
+<<<<<<< HEAD
 static struct ddb_info ddb_octopus_le = {
+=======
+static const struct ddb_info ddb_octopus_le = {
+>>>>>>> v4.9.227
 	.type     = DDB_OCTOPUS,
 	.name     = "Digital Devices Octopus LE DVB adapter",
 	.port_num = 2,
 };
 
+<<<<<<< HEAD
 static struct ddb_info ddb_octopus_mini = {
+=======
+static const struct ddb_info ddb_octopus_mini = {
+>>>>>>> v4.9.227
 	.type     = DDB_OCTOPUS,
 	.name     = "Digital Devices Octopus Mini",
 	.port_num = 4,
 };
 
+<<<<<<< HEAD
 static struct ddb_info ddb_v6 = {
+=======
+static const struct ddb_info ddb_v6 = {
+>>>>>>> v4.9.227
 	.type     = DDB_OCTOPUS,
 	.name     = "Digital Devices Cine S2 V6 DVB adapter",
 	.port_num = 3,
 };
+<<<<<<< HEAD
 static struct ddb_info ddb_v6_5 = {
+=======
+static const struct ddb_info ddb_v6_5 = {
+>>>>>>> v4.9.227
 	.type     = DDB_OCTOPUS,
 	.name     = "Digital Devices Cine S2 V6.5 DVB adapter",
 	.port_num = 4,
 };
 
+<<<<<<< HEAD
 static struct ddb_info ddb_dvbct = {
+=======
+static const struct ddb_info ddb_dvbct = {
+>>>>>>> v4.9.227
 	.type     = DDB_OCTOPUS,
 	.name     = "Digital Devices DVBCT V6.1 DVB adapter",
 	.port_num = 3,
 };
 
+<<<<<<< HEAD
 static struct ddb_info ddb_satixS2v3 = {
+=======
+static const struct ddb_info ddb_satixS2v3 = {
+>>>>>>> v4.9.227
 	.type     = DDB_OCTOPUS,
 	.name     = "Mystique SaTiX-S2 V3 DVB adapter",
 	.port_num = 3,
 };
 
+<<<<<<< HEAD
 static struct ddb_info ddb_octopusv3 = {
+=======
+static const struct ddb_info ddb_octopusv3 = {
+>>>>>>> v4.9.227
 	.type     = DDB_OCTOPUS,
 	.name     = "Digital Devices Octopus V3 DVB adapter",
 	.port_num = 4,

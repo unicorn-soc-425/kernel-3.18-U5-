@@ -25,6 +25,7 @@ int cfg80211_wext_giwname(struct net_device *dev,
 			  struct iw_request_info *info,
 			  char *name, char *extra)
 {
+<<<<<<< HEAD
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct ieee80211_supported_band *sband;
 	bool is_ht = false, is_a = false, is_b = false, is_g = false;
@@ -64,6 +65,12 @@ int cfg80211_wext_giwname(struct net_device *dev,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(cfg80211_wext_giwname);
+=======
+	strcpy(name, "IEEE 802.11");
+	return 0;
+}
+EXPORT_WEXT_HANDLER(cfg80211_wext_giwname);
+>>>>>>> v4.9.227
 
 int cfg80211_wext_siwmode(struct net_device *dev, struct iw_request_info *info,
 			  u32 *mode, char *extra)
@@ -99,7 +106,11 @@ int cfg80211_wext_siwmode(struct net_device *dev, struct iw_request_info *info,
 
 	return cfg80211_change_iface(rdev, dev, type, NULL, &vifparams);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(cfg80211_wext_siwmode);
+=======
+EXPORT_WEXT_HANDLER(cfg80211_wext_siwmode);
+>>>>>>> v4.9.227
 
 int cfg80211_wext_giwmode(struct net_device *dev, struct iw_request_info *info,
 			  u32 *mode, char *extra)
@@ -134,7 +145,11 @@ int cfg80211_wext_giwmode(struct net_device *dev, struct iw_request_info *info,
 	}
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(cfg80211_wext_giwmode);
+=======
+EXPORT_WEXT_HANDLER(cfg80211_wext_giwmode);
+>>>>>>> v4.9.227
 
 
 int cfg80211_wext_giwrange(struct net_device *dev,
@@ -143,7 +158,11 @@ int cfg80211_wext_giwrange(struct net_device *dev,
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct iw_range *range = (struct iw_range *) extra;
+<<<<<<< HEAD
 	enum ieee80211_band band;
+=======
+	enum nl80211_band band;
+>>>>>>> v4.9.227
 	int i, c = 0;
 
 	if (!wdev)
@@ -215,7 +234,11 @@ int cfg80211_wext_giwrange(struct net_device *dev,
 		}
 	}
 
+<<<<<<< HEAD
 	for (band = 0; band < IEEE80211_NUM_BANDS; band ++) {
+=======
+	for (band = 0; band < NUM_NL80211_BANDS; band ++) {
+>>>>>>> v4.9.227
 		struct ieee80211_supported_band *sband;
 
 		sband = wdev->wiphy->bands[band];
@@ -248,7 +271,11 @@ int cfg80211_wext_giwrange(struct net_device *dev,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(cfg80211_wext_giwrange);
+=======
+EXPORT_WEXT_HANDLER(cfg80211_wext_giwrange);
+>>>>>>> v4.9.227
 
 
 /**
@@ -265,11 +292,19 @@ int cfg80211_wext_freq(struct iw_freq *freq)
 	 * -EINVAL for impossible things.
 	 */
 	if (freq->e == 0) {
+<<<<<<< HEAD
 		enum ieee80211_band band = IEEE80211_BAND_2GHZ;
 		if (freq->m < 0)
 			return 0;
 		if (freq->m > 14)
 			band = IEEE80211_BAND_5GHZ;
+=======
+		enum nl80211_band band = NL80211_BAND_2GHZ;
+		if (freq->m < 0)
+			return 0;
+		if (freq->m > 14)
+			band = NL80211_BAND_5GHZ;
+>>>>>>> v4.9.227
 		return ieee80211_channel_to_frequency(freq->m, band);
 	} else {
 		int i, div = 1000000;
@@ -303,7 +338,11 @@ int cfg80211_wext_siwrts(struct net_device *dev,
 
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(cfg80211_wext_siwrts);
+=======
+EXPORT_WEXT_HANDLER(cfg80211_wext_siwrts);
+>>>>>>> v4.9.227
 
 int cfg80211_wext_giwrts(struct net_device *dev,
 			 struct iw_request_info *info,
@@ -317,7 +356,11 @@ int cfg80211_wext_giwrts(struct net_device *dev,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(cfg80211_wext_giwrts);
+=======
+EXPORT_WEXT_HANDLER(cfg80211_wext_giwrts);
+>>>>>>> v4.9.227
 
 int cfg80211_wext_siwfrag(struct net_device *dev,
 			  struct iw_request_info *info,
@@ -343,7 +386,11 @@ int cfg80211_wext_siwfrag(struct net_device *dev,
 
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(cfg80211_wext_siwfrag);
+=======
+EXPORT_WEXT_HANDLER(cfg80211_wext_siwfrag);
+>>>>>>> v4.9.227
 
 int cfg80211_wext_giwfrag(struct net_device *dev,
 			  struct iw_request_info *info,
@@ -357,7 +404,11 @@ int cfg80211_wext_giwfrag(struct net_device *dev,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(cfg80211_wext_giwfrag);
+=======
+EXPORT_WEXT_HANDLER(cfg80211_wext_giwfrag);
+>>>>>>> v4.9.227
 
 static int cfg80211_wext_siwretry(struct net_device *dev,
 				  struct iw_request_info *info,
@@ -427,7 +478,11 @@ int cfg80211_wext_giwretry(struct net_device *dev,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(cfg80211_wext_giwretry);
+=======
+EXPORT_WEXT_HANDLER(cfg80211_wext_giwretry);
+>>>>>>> v4.9.227
 
 static int __cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 				     struct net_device *dev, bool pairwise,
@@ -441,12 +496,25 @@ static int __cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 	if (pairwise && !addr)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (!wdev->wext.keys) {
 		wdev->wext.keys = kzalloc(sizeof(*wdev->wext.keys),
 					      GFP_KERNEL);
 		if (!wdev->wext.keys)
 			return -ENOMEM;
 		for (i = 0; i < 6; i++)
+=======
+	/*
+	 * In many cases we won't actually need this, but it's better
+	 * to do it first in case the allocation fails. Don't use wext.
+	 */
+	if (!wdev->wext.keys) {
+		wdev->wext.keys = kzalloc(sizeof(*wdev->wext.keys),
+					  GFP_KERNEL);
+		if (!wdev->wext.keys)
+			return -ENOMEM;
+		for (i = 0; i < CFG80211_MAX_WEP_KEYS; i++)
+>>>>>>> v4.9.227
 			wdev->wext.keys->params[i].key =
 				wdev->wext.keys->data[i];
 	}
@@ -495,7 +563,11 @@ static int __cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 		if (err == -ENOENT)
 			err = 0;
 		if (!err) {
+<<<<<<< HEAD
 			if (!addr) {
+=======
+			if (!addr && idx < 4) {
+>>>>>>> v4.9.227
 				memset(wdev->wext.keys->data[idx], 0,
 				       sizeof(wdev->wext.keys->data[idx]));
 				wdev->wext.keys->params[idx].key_len = 0;
@@ -522,10 +594,26 @@ static int __cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 	err = 0;
 	if (wdev->current_bss)
 		err = rdev_add_key(rdev, dev, idx, pairwise, addr, params);
+<<<<<<< HEAD
 	if (err)
 		return err;
 
 	if (!addr) {
+=======
+	else if (params->cipher != WLAN_CIPHER_SUITE_WEP40 &&
+		 params->cipher != WLAN_CIPHER_SUITE_WEP104)
+		return -EINVAL;
+	if (err)
+		return err;
+
+	/*
+	 * We only need to store WEP keys, since they're the only keys that
+	 * can be be set before a connection is established and persist after
+	 * disconnecting.
+	 */
+	if (!addr && (params->cipher == WLAN_CIPHER_SUITE_WEP40 ||
+		      params->cipher == WLAN_CIPHER_SUITE_WEP104)) {
+>>>>>>> v4.9.227
 		wdev->wext.keys->params[idx] = *params;
 		memcpy(wdev->wext.keys->data[idx],
 			params->key, params->key_len);
@@ -821,7 +909,11 @@ static int cfg80211_wext_giwfreq(struct net_device *dev,
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
+<<<<<<< HEAD
 	struct cfg80211_chan_def chandef;
+=======
+	struct cfg80211_chan_def chandef = {};
+>>>>>>> v4.9.227
 	int ret;
 
 	switch (wdev->iftype) {
@@ -1245,7 +1337,11 @@ static int cfg80211_wext_siwrate(struct net_device *dev,
 		maxrate = rate->value / 100000;
 	}
 
+<<<<<<< HEAD
 	for (band = 0; band < IEEE80211_NUM_BANDS; band++) {
+=======
+	for (band = 0; band < NUM_NL80211_BANDS; band++) {
+>>>>>>> v4.9.227
 		sband = wdev->wiphy->bands[band];
 		if (sband == NULL)
 			continue;
@@ -1300,7 +1396,11 @@ static int cfg80211_wext_giwrate(struct net_device *dev,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	if (!(sinfo.filled & STATION_INFO_TX_BITRATE))
+=======
+	if (!(sinfo.filled & BIT(NL80211_STA_INFO_TX_BITRATE)))
+>>>>>>> v4.9.227
 		return -EOPNOTSUPP;
 
 	rate->value = 100000 * cfg80211_calculate_bitrate(&sinfo.txrate);
@@ -1342,7 +1442,11 @@ static struct iw_statistics *cfg80211_wireless_stats(struct net_device *dev)
 
 	switch (rdev->wiphy.signal_type) {
 	case CFG80211_SIGNAL_TYPE_MBM:
+<<<<<<< HEAD
 		if (sinfo.filled & STATION_INFO_SIGNAL) {
+=======
+		if (sinfo.filled & BIT(NL80211_STA_INFO_SIGNAL)) {
+>>>>>>> v4.9.227
 			int sig = sinfo.signal;
 			wstats.qual.updated |= IW_QUAL_LEVEL_UPDATED;
 			wstats.qual.updated |= IW_QUAL_QUAL_UPDATED;
@@ -1356,7 +1460,11 @@ static struct iw_statistics *cfg80211_wireless_stats(struct net_device *dev)
 			break;
 		}
 	case CFG80211_SIGNAL_TYPE_UNSPEC:
+<<<<<<< HEAD
 		if (sinfo.filled & STATION_INFO_SIGNAL) {
+=======
+		if (sinfo.filled & BIT(NL80211_STA_INFO_SIGNAL)) {
+>>>>>>> v4.9.227
 			wstats.qual.updated |= IW_QUAL_LEVEL_UPDATED;
 			wstats.qual.updated |= IW_QUAL_QUAL_UPDATED;
 			wstats.qual.level = sinfo.signal;
@@ -1369,9 +1477,15 @@ static struct iw_statistics *cfg80211_wireless_stats(struct net_device *dev)
 	}
 
 	wstats.qual.updated |= IW_QUAL_NOISE_INVALID;
+<<<<<<< HEAD
 	if (sinfo.filled & STATION_INFO_RX_DROP_MISC)
 		wstats.discard.misc = sinfo.rx_dropped_misc;
 	if (sinfo.filled & STATION_INFO_TX_FAILED)
+=======
+	if (sinfo.filled & BIT(NL80211_STA_INFO_RX_DROP_MISC))
+		wstats.discard.misc = sinfo.rx_dropped_misc;
+	if (sinfo.filled & BIT(NL80211_STA_INFO_TX_FAILED))
+>>>>>>> v4.9.227
 		wstats.discard.retries = sinfo.tx_failed;
 
 	return &wstats;

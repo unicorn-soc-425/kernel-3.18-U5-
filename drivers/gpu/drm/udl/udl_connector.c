@@ -122,13 +122,21 @@ static void udl_connector_destroy(struct drm_connector *connector)
 	kfree(connector);
 }
 
+<<<<<<< HEAD
 static struct drm_connector_helper_funcs udl_connector_helper_funcs = {
+=======
+static const struct drm_connector_helper_funcs udl_connector_helper_funcs = {
+>>>>>>> v4.9.227
 	.get_modes = udl_get_modes,
 	.mode_valid = udl_mode_valid,
 	.best_encoder = udl_best_single_encoder,
 };
 
+<<<<<<< HEAD
 static struct drm_connector_funcs udl_connector_funcs = {
+=======
+static const struct drm_connector_funcs udl_connector_funcs = {
+>>>>>>> v4.9.227
 	.dpms = drm_helper_connector_dpms,
 	.detect = udl_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,
@@ -150,8 +158,11 @@ int udl_connector_init(struct drm_device *dev, struct drm_encoder *encoder)
 	drm_connector_register(connector);
 	drm_mode_connector_attach_encoder(connector, encoder);
 
+<<<<<<< HEAD
 	drm_object_attach_property(&connector->base,
 				      dev->mode_config.dirty_info_property,
 				      1);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }

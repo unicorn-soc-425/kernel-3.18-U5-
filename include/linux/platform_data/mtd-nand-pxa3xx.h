@@ -4,6 +4,7 @@
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 
+<<<<<<< HEAD
 struct pxa3xx_nand_timing {
 	unsigned int	tCH;  /* Enable signal hold time */
 	unsigned int	tCS;  /* Enable signal setup time */
@@ -28,6 +29,8 @@ struct pxa3xx_nand_flash {
 	struct pxa3xx_nand_timing *timing;	/* NAND Flash timing */
 };
 
+=======
+>>>>>>> v4.9.227
 /*
  * Current pxa3xx_nand controller has two chip select which
  * both be workable.
@@ -63,9 +66,12 @@ struct pxa3xx_nand_platform_data {
 
 	const struct mtd_partition		*parts[NUM_CHIP_SELECT];
 	unsigned int				nr_parts[NUM_CHIP_SELECT];
+<<<<<<< HEAD
 
 	const struct pxa3xx_nand_flash * 	flash;
 	size_t					num_flash;
+=======
+>>>>>>> v4.9.227
 };
 
 extern void pxa3xx_set_nand_info(struct pxa3xx_nand_platform_data *info);

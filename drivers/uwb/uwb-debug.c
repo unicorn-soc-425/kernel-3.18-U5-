@@ -55,7 +55,11 @@
 struct uwb_dbg {
 	struct uwb_pal pal;
 
+<<<<<<< HEAD
 	u32 accept;
+=======
+	bool accept;
+>>>>>>> v4.9.227
 	struct list_head rsvs;
 
 	struct dentry *root_d;
@@ -217,7 +221,10 @@ static int reservations_print(struct seq_file *s, void *p)
 		struct uwb_dev_addr devaddr;
 		char owner[UWB_ADDR_STRSIZE], target[UWB_ADDR_STRSIZE];
 		bool is_owner;
+<<<<<<< HEAD
 		char buf[72];
+=======
+>>>>>>> v4.9.227
 
 		uwb_dev_addr_print(owner, sizeof(owner), &rsv->owner->dev_addr);
 		if (rsv->target.type == UWB_RSV_TARGET_DEV) {
@@ -234,8 +241,12 @@ static int reservations_print(struct seq_file *s, void *p)
 			   owner, target, uwb_rsv_state_str(rsv->state));
 		seq_printf(s, "  stream: %d  type: %s\n",
 			   rsv->stream, uwb_rsv_type_str(rsv->type));
+<<<<<<< HEAD
 		bitmap_scnprintf(buf, sizeof(buf), rsv->mas.bm, UWB_NUM_MAS);
 		seq_printf(s, "  %s\n", buf);
+=======
+		seq_printf(s, "  %*pb\n", UWB_NUM_MAS, rsv->mas.bm);
+>>>>>>> v4.9.227
 	}
 
 	mutex_unlock(&rc->rsvs_mutex);
@@ -259,6 +270,7 @@ static const struct file_operations reservations_fops = {
 static int drp_avail_print(struct seq_file *s, void *p)
 {
 	struct uwb_rc *rc = s->private;
+<<<<<<< HEAD
 	char buf[72];
 
 	bitmap_scnprintf(buf, sizeof(buf), rc->drp_avail.global, UWB_NUM_MAS);
@@ -267,6 +279,12 @@ static int drp_avail_print(struct seq_file *s, void *p)
 	seq_printf(s, "local:   %s\n", buf);
 	bitmap_scnprintf(buf, sizeof(buf), rc->drp_avail.pending, UWB_NUM_MAS);
 	seq_printf(s, "pending: %s\n", buf);
+=======
+
+	seq_printf(s, "global:  %*pb\n", UWB_NUM_MAS, rc->drp_avail.global);
+	seq_printf(s, "local:   %*pb\n", UWB_NUM_MAS, rc->drp_avail.local);
+	seq_printf(s, "pending: %*pb\n", UWB_NUM_MAS, rc->drp_avail.pending);
+>>>>>>> v4.9.227
 
 	return 0;
 }

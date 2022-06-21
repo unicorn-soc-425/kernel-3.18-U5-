@@ -56,7 +56,11 @@ static int check_data(int data)
 	/* it should be odd */
 	if (!(parity & 0x01)) {
 		dev_warn(&ams_delta_serio->dev,
+<<<<<<< HEAD
 				"paritiy check failed, data=0x%X parity=0x%X\n",
+=======
+				"parity check failed, data=0x%X parity=0x%X\n",
+>>>>>>> v4.9.227
 				data, parity);
 		return SERIO_PARITY;
 	}

@@ -17,8 +17,13 @@
 #define MAX_LEGACY_HOST_IRQS		4
 
 struct keystone_pcie {
+<<<<<<< HEAD
 	struct	clk		*clk;
 	struct	pcie_port	pp;
+=======
+	struct	pcie_port	pp;		/* pp.dbi_base is DT 0th res */
+	struct	clk		*clk;
+>>>>>>> v4.9.227
 	/* PCI Device ID */
 	u32			device_id;
 	int			num_legacy_host_irqs;
@@ -29,19 +34,37 @@ struct keystone_pcie {
 	int			msi_host_irqs[MAX_MSI_HOST_IRQS];
 	struct			device_node *msi_intc_np;
 	struct irq_domain	*legacy_irq_domain;
+<<<<<<< HEAD
 
 	/* Application register space */
 	void __iomem		*va_app_base;
+=======
+	struct device_node	*np;
+
+	int error_irq;
+
+	/* Application register space */
+	void __iomem		*va_app_base;	/* DT 1st resource */
+>>>>>>> v4.9.227
 	struct resource		app;
 };
 
 /* Keystone DW specific MSI controller APIs/definitions */
 void ks_dw_pcie_handle_msi_irq(struct keystone_pcie *ks_pcie, int offset);
+<<<<<<< HEAD
 u32 ks_dw_pcie_get_msi_addr(struct pcie_port *pp);
+=======
+phys_addr_t ks_dw_pcie_get_msi_addr(struct pcie_port *pp);
+>>>>>>> v4.9.227
 
 /* Keystone specific PCI controller APIs */
 void ks_dw_pcie_enable_legacy_irqs(struct keystone_pcie *ks_pcie);
 void ks_dw_pcie_handle_legacy_irq(struct keystone_pcie *ks_pcie, int offset);
+<<<<<<< HEAD
+=======
+void ks_dw_pcie_enable_error_irq(struct keystone_pcie *ks_pcie);
+irqreturn_t ks_dw_pcie_handle_error_irq(struct keystone_pcie *ks_pcie);
+>>>>>>> v4.9.227
 int  ks_dw_pcie_host_init(struct keystone_pcie *ks_pcie,
 			struct device_node *msi_intc_np);
 int ks_dw_pcie_wr_other_conf(struct pcie_port *pp, struct pci_bus *bus,

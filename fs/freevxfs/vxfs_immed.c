@@ -32,13 +32,17 @@
  */
 #include <linux/fs.h>
 #include <linux/pagemap.h>
+<<<<<<< HEAD
 #include <linux/namei.h>
+=======
+>>>>>>> v4.9.227
 
 #include "vxfs.h"
 #include "vxfs_extern.h"
 #include "vxfs_inode.h"
 
 
+<<<<<<< HEAD
 static void *	vxfs_immed_follow_link(struct dentry *, struct nameidata *);
 
 static int	vxfs_immed_readpage(struct file *, struct page *);
@@ -55,6 +59,11 @@ const struct inode_operations vxfs_immed_symlink_iops = {
 };
 
 /*
+=======
+static int	vxfs_immed_readpage(struct file *, struct page *);
+
+/*
+>>>>>>> v4.9.227
  * Address space operations for immed files and directories.
  */
 const struct address_space_operations vxfs_immed_aops = {
@@ -62,6 +71,7 @@ const struct address_space_operations vxfs_immed_aops = {
 };
 
 /**
+<<<<<<< HEAD
  * vxfs_immed_follow_link - follow immed symlink
  * @dp:		dentry for the link
  * @np:		pathname lookup data for the current path walk
@@ -82,6 +92,8 @@ vxfs_immed_follow_link(struct dentry *dp, struct nameidata *np)
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * vxfs_immed_readpage - read part of an immed inode into pagecache
  * @file:	file context (unused)
  * @page:	page frame to fill in.
@@ -100,11 +112,19 @@ static int
 vxfs_immed_readpage(struct file *fp, struct page *pp)
 {
 	struct vxfs_inode_info	*vip = VXFS_INO(pp->mapping->host);
+<<<<<<< HEAD
 	u_int64_t	offset = (u_int64_t)pp->index << PAGE_CACHE_SHIFT;
 	caddr_t		kaddr;
 
 	kaddr = kmap(pp);
 	memcpy(kaddr, vip->vii_immed.vi_immed + offset, PAGE_CACHE_SIZE);
+=======
+	u_int64_t	offset = (u_int64_t)pp->index << PAGE_SHIFT;
+	caddr_t		kaddr;
+
+	kaddr = kmap(pp);
+	memcpy(kaddr, vip->vii_immed.vi_immed + offset, PAGE_SIZE);
+>>>>>>> v4.9.227
 	kunmap(pp);
 	
 	flush_dcache_page(pp);

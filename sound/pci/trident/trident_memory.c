@@ -23,7 +23,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/pci.h>
 #include <linux/time.h>
 #include <linux/mutex.h>

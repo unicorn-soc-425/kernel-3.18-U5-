@@ -20,6 +20,7 @@
 #include <linux/scatterlist.h>
 #include <linux/irq.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
 #include <linux/of_irq.h>
@@ -30,6 +31,14 @@
 #include <asm/sizes.h>
 #include <asm/unaligned.h>
 #include <linux/platform_data/mmc-mvsdio.h>
+=======
+#include <linux/of_irq.h>
+#include <linux/mmc/host.h>
+#include <linux/mmc/slot-gpio.h>
+
+#include <asm/sizes.h>
+#include <asm/unaligned.h>
+>>>>>>> v4.9.227
 
 #include "mvsdio.h"
 
@@ -111,10 +120,22 @@ static int mvsd_setup_data(struct mvsd_host *host, struct mmc_data *data)
 	mvsd_write(MVSD_BLK_COUNT, data->blocks);
 	mvsd_write(MVSD_BLK_SIZE, data->blksz);
 
+<<<<<<< HEAD
 	if (nodma || (data->blksz | data->sg->offset) & 3) {
 		/*
 		 * We cannot do DMA on a buffer which offset or size
 		 * is not aligned on a 4-byte boundary.
+=======
+	if (nodma || (data->blksz | data->sg->offset) & 3 ||
+	    ((!(data->flags & MMC_DATA_READ) && data->sg->offset & 0x3f))) {
+		/*
+		 * We cannot do DMA on a buffer which offset or size
+		 * is not aligned on a 4-byte boundary.
+		 *
+		 * It also appears the host to card DMA can corrupt
+		 * data when the buffer is not aligned on a 64 byte
+		 * boundary.
+>>>>>>> v4.9.227
 		 */
 		host->pio_size = data->blocks * data->blksz;
 		host->pio_ptr = sg_virt(data->sg);
@@ -699,8 +720,16 @@ static int mvsd_probe(struct platform_device *pdev)
 	const struct mbus_dram_target_info *dram;
 	struct resource *r;
 	int ret, irq;
+<<<<<<< HEAD
 	struct pinctrl *pinctrl;
 
+=======
+
+	if (!np) {
+		dev_err(&pdev->dev, "no DT node\n");
+		return -ENODEV;
+	}
+>>>>>>> v4.9.227
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	irq = platform_get_irq(pdev, 0);
 	if (!r || irq < 0)
@@ -716,10 +745,13 @@ static int mvsd_probe(struct platform_device *pdev)
 	host->mmc = mmc;
 	host->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
 	if (IS_ERR(pinctrl))
 		dev_warn(&pdev->dev, "no pins associated\n");
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * Some non-DT platforms do not pass a clock, and the clock
 	 * frequency is passed through platform_data. On DT platforms,
@@ -728,8 +760,17 @@ static int mvsd_probe(struct platform_device *pdev)
 	 * fixed rate clock).
 	 */
 	host->clk = devm_clk_get(&pdev->dev, NULL);
+<<<<<<< HEAD
 	if (!IS_ERR(host->clk))
 		clk_prepare_enable(host->clk);
+=======
+	if (IS_ERR(host->clk)) {
+		dev_err(&pdev->dev, "no clock associated\n");
+		ret = -EINVAL;
+		goto out;
+	}
+	clk_prepare_enable(host->clk);
+>>>>>>> v4.9.227
 
 	mmc->ops = &mvsd_ops;
 
@@ -745,6 +786,7 @@ static int mvsd_probe(struct platform_device *pdev)
 	mmc->max_seg_size = mmc->max_blk_size * mmc->max_blk_count;
 	mmc->max_req_size = mmc->max_blk_size * mmc->max_blk_count;
 
+<<<<<<< HEAD
 	if (np) {
 		if (IS_ERR(host->clk)) {
 			dev_err(&pdev->dev, "DT platforms must have a clock associated\n");
@@ -784,6 +826,12 @@ static int mvsd_probe(struct platform_device *pdev)
 			mmc_gpio_request_ro(mmc, mvsd_data->gpio_write_protect);
 	}
 
+=======
+	host->base_clock = clk_get_rate(host->clk) / 2;
+	ret = mmc_of_parse(mmc);
+	if (ret < 0)
+		goto out;
+>>>>>>> v4.9.227
 	if (maxfreq)
 		mmc->f_max = maxfreq;
 
@@ -823,8 +871,11 @@ static int mvsd_probe(struct platform_device *pdev)
 
 out:
 	if (mmc) {
+<<<<<<< HEAD
 		mmc_gpio_free_cd(mmc);
 		mmc_gpio_free_ro(mmc);
+=======
+>>>>>>> v4.9.227
 		if (!IS_ERR(host->clk))
 			clk_disable_unprepare(host->clk);
 		mmc_free_host(mmc);
@@ -839,8 +890,11 @@ static int mvsd_remove(struct platform_device *pdev)
 
 	struct mvsd_host *host = mmc_priv(mmc);
 
+<<<<<<< HEAD
 	mmc_gpio_free_cd(mmc);
 	mmc_gpio_free_ro(mmc);
+=======
+>>>>>>> v4.9.227
 	mmc_remove_host(mmc);
 	del_timer_sync(&host->timer);
 	mvsd_power_down(host);

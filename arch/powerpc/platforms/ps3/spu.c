@@ -205,7 +205,11 @@ static void spu_unmap(struct spu *spu)
 static int __init setup_areas(struct spu *spu)
 {
 	struct table {char* name; unsigned long addr; unsigned long size;};
+<<<<<<< HEAD
 	static const unsigned long shadow_flags = _PAGE_NO_CACHE | 3;
+=======
+	unsigned long shadow_flags = pgprot_val(pgprot_noncached_wc(PAGE_KERNEL_RO));
+>>>>>>> v4.9.227
 
 	spu_pdata(spu)->shadow = __ioremap(spu_pdata(spu)->shadow_addr,
 					   sizeof(struct spe_shadow),
@@ -216,7 +220,11 @@ static int __init setup_areas(struct spu *spu)
 	}
 
 	spu->local_store = (__force void *)ioremap_prot(spu->local_store_phys,
+<<<<<<< HEAD
 		LS_SIZE, _PAGE_NO_CACHE);
+=======
+		LS_SIZE, pgprot_val(pgprot_noncached_wc(__pgprot(0))));
+>>>>>>> v4.9.227
 
 	if (!spu->local_store) {
 		pr_debug("%s:%d: ioremap local_store failed\n",
@@ -284,7 +292,11 @@ fail_alloc_2:
 fail_alloc_1:
 	ps3_spe_irq_destroy(spu->irqs[0]);
 fail_alloc_0:
+<<<<<<< HEAD
 	spu->irqs[0] = spu->irqs[1] = spu->irqs[2] = NO_IRQ;
+=======
+	spu->irqs[0] = spu->irqs[1] = spu->irqs[2] = 0;
+>>>>>>> v4.9.227
 	return result;
 }
 
@@ -334,7 +346,11 @@ static int ps3_destroy_spu(struct spu *spu)
 	ps3_spe_irq_destroy(spu->irqs[1]);
 	ps3_spe_irq_destroy(spu->irqs[0]);
 
+<<<<<<< HEAD
 	spu->irqs[0] = spu->irqs[1] = spu->irqs[2] = NO_IRQ;
+=======
+	spu->irqs[0] = spu->irqs[1] = spu->irqs[2] = 0;
+>>>>>>> v4.9.227
 
 	spu_unmap(spu);
 

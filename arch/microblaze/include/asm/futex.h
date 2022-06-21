@@ -29,6 +29,7 @@
 })
 
 static inline int
+<<<<<<< HEAD
 futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 {
 	int op = (encoded_op >> 28) & 7;
@@ -41,6 +42,11 @@ futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 
 	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
 		return -EFAULT;
+=======
+arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
+{
+	int oldval = 0, ret;
+>>>>>>> v4.9.227
 
 	pagefault_disable();
 
@@ -66,6 +72,7 @@ futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 
 	pagefault_enable();
 
+<<<<<<< HEAD
 	if (!ret) {
 		switch (cmp) {
 		case FUTEX_OP_CMP_EQ:
@@ -90,6 +97,11 @@ futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 			ret = -ENOSYS;
 		}
 	}
+=======
+	if (!ret)
+		*oval = oldval;
+
+>>>>>>> v4.9.227
 	return ret;
 }
 

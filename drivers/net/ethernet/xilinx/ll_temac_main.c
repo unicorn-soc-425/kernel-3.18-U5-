@@ -62,12 +62,20 @@
 
 u32 temac_ior(struct temac_local *lp, int offset)
 {
+<<<<<<< HEAD
 	return in_be32((u32 *)(lp->regs + offset));
+=======
+	return in_be32(lp->regs + offset);
+>>>>>>> v4.9.227
 }
 
 void temac_iow(struct temac_local *lp, int offset, u32 value)
 {
+<<<<<<< HEAD
 	out_be32((u32 *) (lp->regs + offset), value);
+=======
+	out_be32(lp->regs + offset, value);
+>>>>>>> v4.9.227
 }
 
 int temac_indirect_busywait(struct temac_local *lp)
@@ -124,7 +132,11 @@ void temac_indirect_out32(struct temac_local *lp, int reg, u32 value)
  */
 static u32 temac_dma_in32(struct temac_local *lp, int reg)
 {
+<<<<<<< HEAD
 	return in_be32((u32 *)(lp->sdma_regs + (reg << 2)));
+=======
+	return in_be32(lp->sdma_regs + (reg << 2));
+>>>>>>> v4.9.227
 }
 
 /**
@@ -134,7 +146,11 @@ static u32 temac_dma_in32(struct temac_local *lp, int reg)
  */
 static void temac_dma_out32(struct temac_local *lp, int reg, u32 value)
 {
+<<<<<<< HEAD
 	out_be32((u32 *)(lp->sdma_regs + (reg << 2)), value);
+=======
+	out_be32(lp->sdma_regs + (reg << 2), value);
+>>>>>>> v4.9.227
 }
 
 /* DMA register access functions can be DCR based or memory mapped.
@@ -224,8 +240,12 @@ static void temac_dma_bd_release(struct net_device *ndev)
 		dma_free_coherent(ndev->dev.parent,
 				sizeof(*lp->tx_bd_v) * TX_BD_NUM,
 				lp->tx_bd_v, lp->tx_bd_p);
+<<<<<<< HEAD
 	if (lp->rx_skb)
 		kfree(lp->rx_skb);
+=======
+	kfree(lp->rx_skb);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -401,7 +421,11 @@ static void temac_set_multicast_list(struct net_device *ndev)
 	mutex_unlock(&lp->indirect_mutex);
 }
 
+<<<<<<< HEAD
 struct temac_option {
+=======
+static struct temac_option {
+>>>>>>> v4.9.227
 	int flg;
 	u32 opt;
 	u32 reg;
@@ -585,6 +609,7 @@ static void temac_device_reset(struct net_device *ndev)
 		dev_err(&ndev->dev, "Error setting TEMAC options\n");
 
 	/* Init Driver variable */
+<<<<<<< HEAD
 	ndev->trans_start = jiffies; /* prevent tx timeout */
 }
 
@@ -592,6 +617,15 @@ void temac_adjust_link(struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
 	struct phy_device *phy = lp->phy_dev;
+=======
+	netif_trans_update(ndev); /* prevent tx timeout */
+}
+
+static void temac_adjust_link(struct net_device *ndev)
+{
+	struct temac_local *lp = netdev_priv(ndev);
+	struct phy_device *phy = ndev->phydev;
+>>>>>>> v4.9.227
 	u32 mii_speed;
 	int link_state;
 
@@ -674,7 +708,12 @@ static inline int temac_check_tx_bd_space(struct temac_local *lp, int num_frag)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+=======
+static netdev_tx_t
+temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+>>>>>>> v4.9.227
 {
 	struct temac_local *lp = netdev_priv(ndev);
 	struct cdmac_bd *cur_p;
@@ -689,10 +728,15 @@ static int temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
 
 	if (temac_check_tx_bd_space(lp, num_frag)) {
+<<<<<<< HEAD
 		if (!netif_queue_stopped(ndev)) {
 			netif_stop_queue(ndev);
 			return NETDEV_TX_BUSY;
 		}
+=======
+		if (!netif_queue_stopped(ndev))
+			netif_stop_queue(ndev);
+>>>>>>> v4.9.227
 		return NETDEV_TX_BUSY;
 	}
 
@@ -708,8 +752,13 @@ static int temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 
 	cur_p->app0 |= STS_CTRL_APP0_SOP;
 	cur_p->len = skb_headlen(skb);
+<<<<<<< HEAD
 	cur_p->phys = dma_map_single(ndev->dev.parent, skb->data, skb->len,
 				     DMA_TO_DEVICE);
+=======
+	cur_p->phys = dma_map_single(ndev->dev.parent, skb->data,
+				     skb_headlen(skb), DMA_TO_DEVICE);
+>>>>>>> v4.9.227
 	cur_p->app4 = (unsigned long)skb;
 
 	for (ii = 0; ii < num_frag; ii++) {
@@ -846,19 +895,33 @@ static irqreturn_t ll_temac_rx_irq(int irq, void *_ndev)
 static int temac_open(struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
+<<<<<<< HEAD
+=======
+	struct phy_device *phydev = NULL;
+>>>>>>> v4.9.227
 	int rc;
 
 	dev_dbg(&ndev->dev, "temac_open()\n");
 
 	if (lp->phy_node) {
+<<<<<<< HEAD
 		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
 					     temac_adjust_link, 0, 0);
 		if (!lp->phy_dev) {
+=======
+		phydev = of_phy_connect(lp->ndev, lp->phy_node,
+					temac_adjust_link, 0, 0);
+		if (!phydev) {
+>>>>>>> v4.9.227
 			dev_err(lp->dev, "of_phy_connect() failed\n");
 			return -ENODEV;
 		}
 
+<<<<<<< HEAD
 		phy_start(lp->phy_dev);
+=======
+		phy_start(phydev);
+>>>>>>> v4.9.227
 	}
 
 	temac_device_reset(ndev);
@@ -875,9 +938,14 @@ static int temac_open(struct net_device *ndev)
  err_rx_irq:
 	free_irq(lp->tx_irq, ndev);
  err_tx_irq:
+<<<<<<< HEAD
 	if (lp->phy_dev)
 		phy_disconnect(lp->phy_dev);
 	lp->phy_dev = NULL;
+=======
+	if (phydev)
+		phy_disconnect(phydev);
+>>>>>>> v4.9.227
 	dev_err(lp->dev, "request_irq() failed\n");
 	return rc;
 }
@@ -885,15 +953,24 @@ static int temac_open(struct net_device *ndev)
 static int temac_stop(struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
+<<<<<<< HEAD
+=======
+	struct phy_device *phydev = ndev->phydev;
+>>>>>>> v4.9.227
 
 	dev_dbg(&ndev->dev, "temac_close()\n");
 
 	free_irq(lp->tx_irq, ndev);
 	free_irq(lp->rx_irq, ndev);
 
+<<<<<<< HEAD
 	if (lp->phy_dev)
 		phy_disconnect(lp->phy_dev);
 	lp->phy_dev = NULL;
+=======
+	if (phydev)
+		phy_disconnect(phydev);
+>>>>>>> v4.9.227
 
 	temac_dma_bd_release(ndev);
 
@@ -919,6 +996,7 @@ temac_poll_controller(struct net_device *ndev)
 
 static int temac_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
 {
+<<<<<<< HEAD
 	struct temac_local *lp = netdev_priv(ndev);
 
 	if (!netif_running(ndev))
@@ -928,6 +1006,15 @@ static int temac_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
 		return -EINVAL;
 
 	return phy_mii_ioctl(lp->phy_dev, rq, cmd);
+=======
+	if (!netif_running(ndev))
+		return -EINVAL;
+
+	if (!ndev->phydev)
+		return -EINVAL;
+
+	return phy_mii_ioctl(ndev->phydev, rq, cmd);
+>>>>>>> v4.9.227
 }
 
 static const struct net_device_ops temac_netdev_ops = {
@@ -972,6 +1059,7 @@ static const struct attribute_group temac_attr_group = {
 };
 
 /* ethtool support */
+<<<<<<< HEAD
 static int temac_get_settings(struct net_device *ndev, struct ethtool_cmd *cmd)
 {
 	struct temac_local *lp = netdev_priv(ndev);
@@ -996,6 +1084,19 @@ static const struct ethtool_ops temac_ethtool_ops = {
 	.nway_reset = temac_nway_reset,
 	.get_link = ethtool_op_get_link,
 	.get_ts_info = ethtool_op_get_ts_info,
+=======
+static int temac_nway_reset(struct net_device *ndev)
+{
+	return phy_start_aneg(ndev->phydev);
+}
+
+static const struct ethtool_ops temac_ethtool_ops = {
+	.nway_reset = temac_nway_reset,
+	.get_link = ethtool_op_get_link,
+	.get_ts_info = ethtool_op_get_ts_info,
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 static int temac_of_probe(struct platform_device *op)
@@ -1044,6 +1145,10 @@ static int temac_of_probe(struct platform_device *op)
 	lp->regs = of_iomap(op->dev.of_node, 0);
 	if (!lp->regs) {
 		dev_err(&op->dev, "could not map temac regs.\n");
+<<<<<<< HEAD
+=======
+		rc = -ENOMEM;
+>>>>>>> v4.9.227
 		goto nodev;
 	}
 
@@ -1063,6 +1168,10 @@ static int temac_of_probe(struct platform_device *op)
 	np = of_parse_phandle(op->dev.of_node, "llink-connected", 0);
 	if (!np) {
 		dev_err(&op->dev, "could not find DMA node\n");
+<<<<<<< HEAD
+=======
+		rc = -ENODEV;
+>>>>>>> v4.9.227
 		goto err_iounmap;
 	}
 
@@ -1156,7 +1265,11 @@ static int temac_of_remove(struct platform_device *op)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id temac_of_match[] = {
+=======
+static const struct of_device_id temac_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "xlnx,xps-ll-temac-1.01.b", },
 	{ .compatible = "xlnx,xps-ll-temac-2.00.a", },
 	{ .compatible = "xlnx,xps-ll-temac-2.02.a", },

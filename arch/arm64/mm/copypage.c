@@ -24,8 +24,14 @@
 
 void __cpu_copy_user_page(void *kto, const void *kfrom, unsigned long vaddr)
 {
+<<<<<<< HEAD
 	copy_page(kto, kfrom);
 	__flush_dcache_area(kto, PAGE_SIZE);
+=======
+	struct page *page = virt_to_page(kto);
+	copy_page(kto, kfrom);
+	flush_dcache_page(page);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(__cpu_copy_user_page);
 

@@ -78,7 +78,11 @@ static u16 bcma_pcie_mdio_read(struct bcma_drv_pci *pc, u16 device, u8 address)
 		v |= (address << BCMA_CORE_PCI_MDIODATA_REGADDR_SHF_OLD);
 	}
 
+<<<<<<< HEAD
 	v = BCMA_CORE_PCI_MDIODATA_START;
+=======
+	v |= BCMA_CORE_PCI_MDIODATA_START;
+>>>>>>> v4.9.227
 	v |= BCMA_CORE_PCI_MDIODATA_READ;
 	v |= BCMA_CORE_PCI_MDIODATA_TA;
 
@@ -121,7 +125,11 @@ static void bcma_pcie_mdio_write(struct bcma_drv_pci *pc, u16 device,
 		v |= (address << BCMA_CORE_PCI_MDIODATA_REGADDR_SHF_OLD);
 	}
 
+<<<<<<< HEAD
 	v = BCMA_CORE_PCI_MDIODATA_START;
+=======
+	v |= BCMA_CORE_PCI_MDIODATA_START;
+>>>>>>> v4.9.227
 	v |= BCMA_CORE_PCI_MDIODATA_WRITE;
 	v |= BCMA_CORE_PCI_MDIODATA_TA;
 	v |= data;
@@ -145,6 +153,50 @@ static u16 bcma_pcie_mdio_writeread(struct bcma_drv_pci *pc, u16 device,
 }
 
 /**************************************************
+<<<<<<< HEAD
+=======
+ * Early init.
+ **************************************************/
+
+static void bcma_core_pci_fixcfg(struct bcma_drv_pci *pc)
+{
+	struct bcma_device *core = pc->core;
+	u16 val16, core_index;
+	uint regoff;
+
+	regoff = BCMA_CORE_PCI_SPROM(BCMA_CORE_PCI_SPROM_PI_OFFSET);
+	core_index = (u16)core->core_index;
+
+	val16 = pcicore_read16(pc, regoff);
+	if (((val16 & BCMA_CORE_PCI_SPROM_PI_MASK) >> BCMA_CORE_PCI_SPROM_PI_SHIFT)
+	     != core_index) {
+		val16 = (core_index << BCMA_CORE_PCI_SPROM_PI_SHIFT) |
+			(val16 & ~BCMA_CORE_PCI_SPROM_PI_MASK);
+		pcicore_write16(pc, regoff, val16);
+	}
+}
+
+/*
+ * Apply some early fixes required before accessing SPROM.
+ * See also si_pci_fixcfg.
+ */
+void bcma_core_pci_early_init(struct bcma_drv_pci *pc)
+{
+	if (pc->early_setup_done)
+		return;
+
+	pc->hostmode = bcma_core_pci_is_in_hostmode(pc);
+	if (pc->hostmode)
+		goto out;
+
+	bcma_core_pci_fixcfg(pc);
+
+out:
+	pc->early_setup_done = true;
+}
+
+/**************************************************
+>>>>>>> v4.9.227
  * Workarounds.
  **************************************************/
 
@@ -175,6 +227,7 @@ static void bcma_pcicore_serdes_workaround(struct bcma_drv_pci *pc)
 		                     tmp & ~BCMA_CORE_PCI_PLL_CTRL_FREQDET_EN);
 }
 
+<<<<<<< HEAD
 static void bcma_core_pci_fixcfg(struct bcma_drv_pci *pc)
 {
 	struct bcma_device *core = pc->core;
@@ -193,6 +246,8 @@ static void bcma_core_pci_fixcfg(struct bcma_drv_pci *pc)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 /* Fix MISC config to allow coming out of L2/L3-Ready state w/o PRST */
 /* Needs to happen when coming out of 'standby'/'hibernate' */
 static void bcma_core_pci_config_fixup(struct bcma_drv_pci *pc)
@@ -216,7 +271,10 @@ static void bcma_core_pci_config_fixup(struct bcma_drv_pci *pc)
 
 static void bcma_core_pci_clientmode_init(struct bcma_drv_pci *pc)
 {
+<<<<<<< HEAD
 	bcma_core_pci_fixcfg(pc);
+=======
+>>>>>>> v4.9.227
 	bcma_pcicore_serdes_workaround(pc);
 	bcma_core_pci_config_fixup(pc);
 }
@@ -226,6 +284,7 @@ void bcma_core_pci_init(struct bcma_drv_pci *pc)
 	if (pc->setup_done)
 		return;
 
+<<<<<<< HEAD
 #ifdef CONFIG_BCMA_DRIVER_PCI_HOSTMODE
 	pc->hostmode = bcma_core_pci_is_in_hostmode(pc);
 	if (pc->hostmode)
@@ -233,6 +292,13 @@ void bcma_core_pci_init(struct bcma_drv_pci *pc)
 #endif /* CONFIG_BCMA_DRIVER_PCI_HOSTMODE */
 
 	if (!pc->hostmode)
+=======
+	bcma_core_pci_early_init(pc);
+
+	if (pc->hostmode)
+		bcma_core_pci_hostmode_init(pc);
+	else
+>>>>>>> v4.9.227
 		bcma_core_pci_clientmode_init(pc);
 }
 
@@ -262,6 +328,7 @@ void bcma_core_pci_power_save(struct bcma_bus *bus, bool up)
 }
 EXPORT_SYMBOL_GPL(bcma_core_pci_power_save);
 
+<<<<<<< HEAD
 int bcma_core_pci_irq_ctl(struct bcma_drv_pci *pc, struct bcma_device *core,
 			  bool enable)
 {
@@ -295,6 +362,8 @@ out:
 }
 EXPORT_SYMBOL_GPL(bcma_core_pci_irq_ctl);
 
+=======
+>>>>>>> v4.9.227
 static void bcma_core_pci_extend_L1timer(struct bcma_drv_pci *pc, bool extend)
 {
 	u32 w;
@@ -308,6 +377,7 @@ static void bcma_core_pci_extend_L1timer(struct bcma_drv_pci *pc, bool extend)
 	bcma_pcie_read(pc, BCMA_CORE_PCI_DLLP_PMTHRESHREG);
 }
 
+<<<<<<< HEAD
 void bcma_core_pci_up(struct bcma_bus *bus)
 {
 	struct bcma_drv_pci *pc;
@@ -333,3 +403,14 @@ void bcma_core_pci_down(struct bcma_bus *bus)
 	bcma_core_pci_extend_L1timer(pc, false);
 }
 EXPORT_SYMBOL_GPL(bcma_core_pci_down);
+=======
+void bcma_core_pci_up(struct bcma_drv_pci *pc)
+{
+	bcma_core_pci_extend_L1timer(pc, true);
+}
+
+void bcma_core_pci_down(struct bcma_drv_pci *pc)
+{
+	bcma_core_pci_extend_L1timer(pc, false);
+}
+>>>>>>> v4.9.227

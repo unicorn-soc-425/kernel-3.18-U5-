@@ -17,8 +17,13 @@
 
 #define ATOMIC_INIT(i)	{ (i) }
 
+<<<<<<< HEAD
 #define atomic_read(v)		ACCESS_ONCE((v)->counter)
 #define atomic_set(v, i)	(((v)->counter) = i)
+=======
+#define atomic_read(v)		READ_ONCE((v)->counter)
+#define atomic_set(v, i)	WRITE_ONCE(((v)->counter), (i))
+>>>>>>> v4.9.227
 
 /*
  * The ColdFire parts cannot do some immediate to memory operations,
@@ -53,6 +58,24 @@ static inline int atomic_##op##_return(int i, atomic_t *v)		\
 	return t;							\
 }
 
+<<<<<<< HEAD
+=======
+#define ATOMIC_FETCH_OP(op, c_op, asm_op)				\
+static inline int atomic_fetch_##op(int i, atomic_t *v)			\
+{									\
+	int t, tmp;							\
+									\
+	__asm__ __volatile__(						\
+			"1:	movel %2,%1\n"				\
+			"	" #asm_op "l %3,%1\n"			\
+			"	casl %2,%1,%0\n"			\
+			"	jne 1b"					\
+			: "+m" (*v), "=&d" (t), "=&d" (tmp)		\
+			: "g" (i), "2" (atomic_read(v)));		\
+	return tmp;							\
+}
+
+>>>>>>> v4.9.227
 #else
 
 #define ATOMIC_OP_RETURN(op, c_op, asm_op)				\
@@ -68,16 +91,51 @@ static inline int atomic_##op##_return(int i, atomic_t * v)		\
 	return t;							\
 }
 
+<<<<<<< HEAD
+=======
+#define ATOMIC_FETCH_OP(op, c_op, asm_op)				\
+static inline int atomic_fetch_##op(int i, atomic_t * v)		\
+{									\
+	unsigned long flags;						\
+	int t;								\
+									\
+	local_irq_save(flags);						\
+	t = v->counter;							\
+	v->counter c_op i;						\
+	local_irq_restore(flags);					\
+									\
+	return t;							\
+}
+
+>>>>>>> v4.9.227
 #endif /* CONFIG_RMW_INSNS */
 
 #define ATOMIC_OPS(op, c_op, asm_op)					\
 	ATOMIC_OP(op, c_op, asm_op)					\
+<<<<<<< HEAD
 	ATOMIC_OP_RETURN(op, c_op, asm_op)
+=======
+	ATOMIC_OP_RETURN(op, c_op, asm_op)				\
+	ATOMIC_FETCH_OP(op, c_op, asm_op)
+>>>>>>> v4.9.227
 
 ATOMIC_OPS(add, +=, add)
 ATOMIC_OPS(sub, -=, sub)
 
 #undef ATOMIC_OPS
+<<<<<<< HEAD
+=======
+#define ATOMIC_OPS(op, c_op, asm_op)					\
+	ATOMIC_OP(op, c_op, asm_op)					\
+	ATOMIC_FETCH_OP(op, c_op, asm_op)
+
+ATOMIC_OPS(and, &=, and)
+ATOMIC_OPS(or, |=, or)
+ATOMIC_OPS(xor, ^=, eor)
+
+#undef ATOMIC_OPS
+#undef ATOMIC_FETCH_OP
+>>>>>>> v4.9.227
 #undef ATOMIC_OP_RETURN
 #undef ATOMIC_OP
 
@@ -170,6 +228,7 @@ static inline int atomic_add_negative(int i, atomic_t *v)
 	return c != 0;
 }
 
+<<<<<<< HEAD
 static inline void atomic_clear_mask(unsigned long mask, unsigned long *v)
 {
 	__asm__ __volatile__("andl %1,%0" : "+m" (*v) : ASM_DI (~(mask)));
@@ -180,6 +239,8 @@ static inline void atomic_set_mask(unsigned long mask, unsigned long *v)
 	__asm__ __volatile__("orl %1,%0" : "+m" (*v) : ASM_DI (mask));
 }
 
+=======
+>>>>>>> v4.9.227
 static __inline__ int __atomic_add_unless(atomic_t *v, int a, int u)
 {
 	int c, old;

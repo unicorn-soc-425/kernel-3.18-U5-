@@ -20,6 +20,10 @@
 #include <linux/fcntl.h>
 #include <linux/init.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/pagemap.h>
+>>>>>>> v4.9.227
 #include <asm/uaccess.h>
 #include <asm/nvram.h>
 #ifdef CONFIG_PPC_PMAC
@@ -33,6 +37,7 @@ static ssize_t nvram_len;
 
 static loff_t nvram_llseek(struct file *file, loff_t offset, int origin)
 {
+<<<<<<< HEAD
 	switch (origin) {
 	case 0:
 		break;
@@ -51,6 +56,10 @@ static loff_t nvram_llseek(struct file *file, loff_t offset, int origin)
 	file->f_pos = offset;
 
 	return file->f_pos;
+=======
+	return generic_file_llseek_size(file, offset, origin,
+					MAX_LFS_FILESIZE, nvram_len);
+>>>>>>> v4.9.227
 }
 
 static ssize_t read_nvram(struct file *file, char __user *buf,

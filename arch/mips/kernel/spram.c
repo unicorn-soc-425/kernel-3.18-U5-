@@ -208,6 +208,12 @@ void spram_config(void)
 	case CPU_INTERAPTIV:
 	case CPU_PROAPTIV:
 	case CPU_P5600:
+<<<<<<< HEAD
+=======
+	case CPU_QEMU_GENERIC:
+	case CPU_I6400:
+	case CPU_P6600:
+>>>>>>> v4.9.227
 		config0 = read_c0_config();
 		/* FIXME: addresses are Malta specific */
 		if (config0 & (1<<24)) {

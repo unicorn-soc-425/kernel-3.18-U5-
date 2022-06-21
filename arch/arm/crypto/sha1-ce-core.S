@@ -61,8 +61,13 @@
 	.word		0xca62c1d6, 0xca62c1d6, 0xca62c1d6, 0xca62c1d6
 
 	/*
+<<<<<<< HEAD
 	 * void sha1_ce_transform(int blocks, u8 const *src, u32 *state,
 	 *			  u8 *head);
+=======
+	 * void sha1_ce_transform(struct sha1_state *sst, u8 const *src,
+	 *			  int blocks);
+>>>>>>> v4.9.227
 	 */
 ENTRY(sha1_ce_transform)
 	/* load round constants */
@@ -71,6 +76,7 @@ ENTRY(sha1_ce_transform)
 	vld1.32		{k2-k3}, [ip, :128]
 
 	/* load state */
+<<<<<<< HEAD
 	vld1.32		{dga}, [r2]
 	vldr		dgbs, [r2, #16]
 
@@ -81,13 +87,22 @@ ENTRY(sha1_ce_transform)
 	vld1.32		{q10-q11}, [r3]
 	teq		r0, #0
 	b		1f
+=======
+	vld1.32		{dga}, [r0]
+	vldr		dgbs, [r0, #16]
+>>>>>>> v4.9.227
 
 	/* load input */
 0:	vld1.32		{q8-q9}, [r1]!
 	vld1.32		{q10-q11}, [r1]!
+<<<<<<< HEAD
 	subs		r0, r0, #1
 
 1:
+=======
+	subs		r2, r2, #1
+
+>>>>>>> v4.9.227
 #ifndef CONFIG_CPU_BIG_ENDIAN
 	vrev32.8	q8, q8
 	vrev32.8	q9, q9
@@ -128,7 +143,12 @@ ENTRY(sha1_ce_transform)
 	bne		0b
 
 	/* store new state */
+<<<<<<< HEAD
 	vst1.32		{dga}, [r2]
 	vstr		dgbs, [r2, #16]
+=======
+	vst1.32		{dga}, [r0]
+	vstr		dgbs, [r0, #16]
+>>>>>>> v4.9.227
 	bx		lr
 ENDPROC(sha1_ce_transform)

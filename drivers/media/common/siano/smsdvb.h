@@ -40,7 +40,11 @@ struct smsdvb_client_t {
 	struct dmxdev           dmxdev;
 	struct dvb_frontend     frontend;
 
+<<<<<<< HEAD
 	fe_status_t             fe_status;
+=======
+	enum fe_status          fe_status;
+>>>>>>> v4.9.227
 
 	struct completion       tune_done;
 	struct completion       stats_done;

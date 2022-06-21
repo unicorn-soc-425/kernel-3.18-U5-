@@ -43,7 +43,12 @@ struct screen_info {
 	__u16 pages;		/* 0x32 */
 	__u16 vesa_attributes;	/* 0x34 */
 	__u32 capabilities;     /* 0x36 */
+<<<<<<< HEAD
 	__u8  _reserved[6];	/* 0x3a */
+=======
+	__u32 ext_lfb_base;	/* 0x3a */
+	__u8  _reserved[2];	/* 0x3e */
+>>>>>>> v4.9.227
 } __attribute__((packed));
 
 #define VIDEO_TYPE_MDA		0x10	/* Monochrome Text Display	*/
@@ -69,6 +74,10 @@ struct screen_info {
 #define VIDEO_FLAGS_NOCURSOR	(1 << 0) /* The video mode has no cursor set */
 
 #define VIDEO_CAPABILITY_SKIP_QUIRKS	(1 << 0)
+<<<<<<< HEAD
 
+=======
+#define VIDEO_CAPABILITY_64BIT_BASE	(1 << 1)	/* Frame buffer base is 64-bit */
+>>>>>>> v4.9.227
 
 #endif /* _UAPI_SCREEN_INFO_H */

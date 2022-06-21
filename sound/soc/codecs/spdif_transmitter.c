@@ -38,10 +38,19 @@ static const struct snd_soc_dapm_route dit_routes[] = {
 };
 
 static struct snd_soc_codec_driver soc_codec_spdif_dit = {
+<<<<<<< HEAD
 	.dapm_widgets = dit_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(dit_widgets),
 	.dapm_routes = dit_routes,
 	.num_dapm_routes = ARRAY_SIZE(dit_routes),
+=======
+	.component_driver = {
+		.dapm_widgets		= dit_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(dit_widgets),
+		.dapm_routes		= dit_routes,
+		.num_dapm_routes	= ARRAY_SIZE(dit_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static struct snd_soc_dai_driver dit_stub_dai = {
@@ -80,7 +89,10 @@ static struct platform_driver spdif_dit_driver = {
 	.remove		= spdif_dit_remove,
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(spdif_dit_dt_ids),
 	},
 };

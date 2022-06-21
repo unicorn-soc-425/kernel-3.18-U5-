@@ -2,7 +2,10 @@
 #include <linux/compiler.h>
 #include <linux/string.h>
 #include "ordered-events.h"
+<<<<<<< HEAD
 #include "evlist.h"
+=======
+>>>>>>> v4.9.227
 #include "session.h"
 #include "asm/bug.h"
 #include "debug.h"
@@ -131,8 +134,13 @@ static struct ordered_event *alloc_event(struct ordered_events *oe,
 	return new;
 }
 
+<<<<<<< HEAD
 struct ordered_event *
 ordered_events__new(struct ordered_events *oe, u64 timestamp,
+=======
+static struct ordered_event *
+ordered_events__new_event(struct ordered_events *oe, u64 timestamp,
+>>>>>>> v4.9.227
 		    union perf_event *event)
 {
 	struct ordered_event *new;
@@ -154,6 +162,7 @@ void ordered_events__delete(struct ordered_events *oe, struct ordered_event *eve
 	event->event = NULL;
 }
 
+<<<<<<< HEAD
 static int __ordered_events__flush(struct perf_session *s,
 				   struct perf_tool *tool)
 {
@@ -161,13 +170,53 @@ static int __ordered_events__flush(struct perf_session *s,
 	struct list_head *head = &oe->events;
 	struct ordered_event *tmp, *iter;
 	struct perf_sample sample;
+=======
+int ordered_events__queue(struct ordered_events *oe, union perf_event *event,
+			  struct perf_sample *sample, u64 file_offset)
+{
+	u64 timestamp = sample->time;
+	struct ordered_event *oevent;
+
+	if (!timestamp || timestamp == ~0ULL)
+		return -ETIME;
+
+	if (timestamp < oe->last_flush) {
+		pr_oe_time(timestamp,      "out of order event\n");
+		pr_oe_time(oe->last_flush, "last flush, last_flush_type %d\n",
+			   oe->last_flush_type);
+
+		oe->nr_unordered_events++;
+	}
+
+	oevent = ordered_events__new_event(oe, timestamp, event);
+	if (!oevent) {
+		ordered_events__flush(oe, OE_FLUSH__HALF);
+		oevent = ordered_events__new_event(oe, timestamp, event);
+	}
+
+	if (!oevent)
+		return -ENOMEM;
+
+	oevent->file_offset = file_offset;
+	return 0;
+}
+
+static int __ordered_events__flush(struct ordered_events *oe)
+{
+	struct list_head *head = &oe->events;
+	struct ordered_event *tmp, *iter;
+>>>>>>> v4.9.227
 	u64 limit = oe->next_flush;
 	u64 last_ts = oe->last ? oe->last->timestamp : 0ULL;
 	bool show_progress = limit == ULLONG_MAX;
 	struct ui_progress prog;
 	int ret;
 
+<<<<<<< HEAD
 	if (!tool->ordered_events || !limit)
+=======
+	if (!limit)
+>>>>>>> v4.9.227
 		return 0;
 
 	if (show_progress)
@@ -179,6 +228,7 @@ static int __ordered_events__flush(struct perf_session *s,
 
 		if (iter->timestamp > limit)
 			break;
+<<<<<<< HEAD
 
 		ret = perf_evlist__parse_sample(s->evlist, iter->event, &sample);
 		if (ret)
@@ -189,6 +239,11 @@ static int __ordered_events__flush(struct perf_session *s,
 			if (ret)
 				return ret;
 		}
+=======
+		ret = oe->deliver(oe, iter);
+		if (ret)
+			return ret;
+>>>>>>> v4.9.227
 
 		ordered_events__delete(oe, iter);
 		oe->last_flush = iter->timestamp;
@@ -202,6 +257,7 @@ static int __ordered_events__flush(struct perf_session *s,
 	else if (last_ts <= limit)
 		oe->last = list_entry(head->prev, struct ordered_event, list);
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -209,6 +265,16 @@ int ordered_events__flush(struct perf_session *s, struct perf_tool *tool,
 			  enum oe_flush how)
 {
 	struct ordered_events *oe = &s->ordered_events;
+=======
+	if (show_progress)
+		ui_progress__finish();
+
+	return 0;
+}
+
+int ordered_events__flush(struct ordered_events *oe, enum oe_flush how)
+{
+>>>>>>> v4.9.227
 	static const char * const str[] = {
 		"NONE",
 		"FINAL",
@@ -217,6 +283,12 @@ int ordered_events__flush(struct perf_session *s, struct perf_tool *tool,
 	};
 	int err;
 
+<<<<<<< HEAD
+=======
+	if (oe->nr_events == 0)
+		return 0;
+
+>>>>>>> v4.9.227
 	switch (how) {
 	case OE_FLUSH__FINAL:
 		oe->next_flush = ULLONG_MAX;
@@ -249,7 +321,11 @@ int ordered_events__flush(struct perf_session *s, struct perf_tool *tool,
 		   str[how], oe->nr_events);
 	pr_oe_time(oe->max_timestamp, "max_timestamp\n");
 
+<<<<<<< HEAD
 	err = __ordered_events__flush(s, tool);
+=======
+	err = __ordered_events__flush(oe);
+>>>>>>> v4.9.227
 
 	if (!err) {
 		if (how == OE_FLUSH__ROUND)
@@ -265,13 +341,21 @@ int ordered_events__flush(struct perf_session *s, struct perf_tool *tool,
 	return err;
 }
 
+<<<<<<< HEAD
 void ordered_events__init(struct ordered_events *oe)
+=======
+void ordered_events__init(struct ordered_events *oe, ordered_events__deliver_t deliver)
+>>>>>>> v4.9.227
 {
 	INIT_LIST_HEAD(&oe->events);
 	INIT_LIST_HEAD(&oe->cache);
 	INIT_LIST_HEAD(&oe->to_free);
 	oe->max_alloc_size = (u64) -1;
 	oe->cur_alloc_size = 0;
+<<<<<<< HEAD
+=======
+	oe->deliver	   = deliver;
+>>>>>>> v4.9.227
 }
 
 void ordered_events__free(struct ordered_events *oe)
@@ -285,3 +369,15 @@ void ordered_events__free(struct ordered_events *oe)
 		free(event);
 	}
 }
+<<<<<<< HEAD
+=======
+
+void ordered_events__reinit(struct ordered_events *oe)
+{
+	ordered_events__deliver_t old_deliver = oe->deliver;
+
+	ordered_events__free(oe);
+	memset(oe, '\0', sizeof(*oe));
+	ordered_events__init(oe, old_deliver);
+}
+>>>>>>> v4.9.227

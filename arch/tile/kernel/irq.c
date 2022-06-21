@@ -107,9 +107,14 @@ void tile_dev_intr(struct pt_regs *regs, int intnum)
 	{
 		long sp = stack_pointer - (long) current_thread_info();
 		if (unlikely(sp < (sizeof(struct thread_info) + STACK_WARN))) {
+<<<<<<< HEAD
 			pr_emerg("tile_dev_intr: "
 			       "stack overflow: %ld\n",
 			       sp - sizeof(struct thread_info));
+=======
+			pr_emerg("%s: stack overflow: %ld\n",
+				 __func__, sp - sizeof(struct thread_info));
+>>>>>>> v4.9.227
 			dump_stack();
 		}
 	}

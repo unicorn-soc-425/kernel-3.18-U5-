@@ -21,6 +21,7 @@
 
 #include "soc.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 static int omap1_pm_runtime_suspend(struct device *dev)
 {
@@ -63,6 +64,17 @@ static struct dev_pm_domain default_pm_domain = {
 
 static struct pm_clk_notifier_block platform_bus_notifier = {
 	.pm_domain = OMAP1_PM_DOMAIN,
+=======
+static struct dev_pm_domain default_pm_domain = {
+	.ops = {
+		USE_PM_CLK_RUNTIME_OPS
+		USE_PLATFORM_PM_SLEEP_OPS
+	},
+};
+
+static struct pm_clk_notifier_block platform_bus_notifier = {
+	.pm_domain = &default_pm_domain,
+>>>>>>> v4.9.227
 	.con_ids = { "ick", "fck", NULL, },
 };
 

@@ -45,6 +45,7 @@ struct palmas_rtc {
 /* Total number of RTC registers needed to set time*/
 #define PALMAS_NUM_TIME_REGS	(PALMAS_YEARS_REG - PALMAS_SECONDS_REG + 1)
 
+<<<<<<< HEAD
 /*
  * Special bin2bcd mapping to deal with bcd storage of year.
  *
@@ -81,6 +82,8 @@ static int year_bcd2bin(unsigned char val)
 	return bcd2bin(val) + 100;
 }
 
+=======
+>>>>>>> v4.9.227
 static int palmas_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	unsigned char rtc_data[PALMAS_NUM_TIME_REGS];
@@ -107,7 +110,11 @@ static int palmas_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_hour = bcd2bin(rtc_data[2]);
 	tm->tm_mday = bcd2bin(rtc_data[3]);
 	tm->tm_mon = bcd2bin(rtc_data[4]) - 1;
+<<<<<<< HEAD
 	tm->tm_year = year_bcd2bin(rtc_data[5]);
+=======
+	tm->tm_year = bcd2bin(rtc_data[5]) + 100;
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -123,7 +130,11 @@ static int palmas_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	rtc_data[2] = bin2bcd(tm->tm_hour);
 	rtc_data[3] = bin2bcd(tm->tm_mday);
 	rtc_data[4] = bin2bcd(tm->tm_mon + 1);
+<<<<<<< HEAD
 	rtc_data[5] = year_bin2bcd(tm->tm_year);
+=======
+	rtc_data[5] = bin2bcd(tm->tm_year - 100);
+>>>>>>> v4.9.227
 
 	/* Stop RTC while updating the RTC time registers */
 	ret = palmas_update_bits(palmas, PALMAS_RTC_BASE, PALMAS_RTC_CTRL_REG,
@@ -178,7 +189,11 @@ static int palmas_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	alm->time.tm_hour = bcd2bin(alarm_data[2]);
 	alm->time.tm_mday = bcd2bin(alarm_data[3]);
 	alm->time.tm_mon = bcd2bin(alarm_data[4]) - 1;
+<<<<<<< HEAD
 	alm->time.tm_year = year_bcd2bin(alarm_data[5]);
+=======
+	alm->time.tm_year = bcd2bin(alarm_data[5]) + 100;
+>>>>>>> v4.9.227
 
 	ret = palmas_read(palmas, PALMAS_RTC_BASE, PALMAS_RTC_INTERRUPTS_REG,
 			&int_val);
@@ -209,7 +224,11 @@ static int palmas_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	alarm_data[2] = bin2bcd(alm->time.tm_hour);
 	alarm_data[3] = bin2bcd(alm->time.tm_mday);
 	alarm_data[4] = bin2bcd(alm->time.tm_mon + 1);
+<<<<<<< HEAD
 	alarm_data[5] = year_bin2bcd(alm->time.tm_year);
+=======
+	alarm_data[5] = bin2bcd(alm->time.tm_year - 100);
+>>>>>>> v4.9.227
 
 	ret = palmas_bulk_write(palmas, PALMAS_RTC_BASE,
 		PALMAS_ALARM_SECONDS_REG, alarm_data, PALMAS_NUM_TIME_REGS);
@@ -261,7 +280,11 @@ static irqreturn_t palmas_rtc_interrupt(int irq, void *context)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops palmas_rtc_ops = {
+=======
+static const struct rtc_class_ops palmas_rtc_ops = {
+>>>>>>> v4.9.227
 	.read_time	= palmas_rtc_read_time,
 	.set_time	= palmas_rtc_set_time,
 	.read_alarm	= palmas_rtc_read_alarm,
@@ -275,7 +298,11 @@ static int palmas_rtc_probe(struct platform_device *pdev)
 	struct palmas_rtc *palmas_rtc = NULL;
 	int ret;
 	bool enable_bb_charging = false;
+<<<<<<< HEAD
 	bool high_bb_charging;
+=======
+	bool high_bb_charging = false;
+>>>>>>> v4.9.227
 
 	if (pdev->dev.of_node) {
 		enable_bb_charging = of_property_read_bool(pdev->dev.of_node,
@@ -347,8 +374,12 @@ static int palmas_rtc_probe(struct platform_device *pdev)
 
 	ret = devm_request_threaded_irq(&pdev->dev, palmas_rtc->irq, NULL,
 			palmas_rtc_interrupt,
+<<<<<<< HEAD
 			IRQF_TRIGGER_LOW | IRQF_ONESHOT |
 			IRQF_EARLY_RESUME,
+=======
+			IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+>>>>>>> v4.9.227
 			dev_name(&pdev->dev), palmas_rtc);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "IRQ request failed, err = %d\n", ret);
@@ -399,7 +430,10 @@ static struct platform_driver palmas_rtc_driver = {
 	.probe		= palmas_rtc_probe,
 	.remove		= palmas_rtc_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "palmas-rtc",
 		.pm	= &palmas_rtc_pm_ops,
 		.of_match_table = of_match_ptr(of_palmas_rtc_match),

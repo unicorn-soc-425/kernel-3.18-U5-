@@ -74,7 +74,11 @@ struct data data_copy_escape_string(const char *s, int len)
 	struct data d;
 	char *q;
 
+<<<<<<< HEAD
 	d = data_grow_for(empty_data, strlen(s)+1);
+=======
+	d = data_grow_for(empty_data, len + 1);
+>>>>>>> v4.9.227
 
 	q = d.val;
 	while (i < len) {
@@ -250,12 +254,17 @@ struct data data_add_marker(struct data d, enum markertype type, char *ref)
 	return data_append_markers(d, m);
 }
 
+<<<<<<< HEAD
 int data_is_one_string(struct data d)
+=======
+bool data_is_one_string(struct data d)
+>>>>>>> v4.9.227
 {
 	int i;
 	int len = d.len;
 
 	if (len == 0)
+<<<<<<< HEAD
 		return 0;
 
 	for (i = 0; i < len-1; i++)
@@ -266,4 +275,16 @@ int data_is_one_string(struct data d)
 		return 0;
 
 	return 1;
+=======
+		return false;
+
+	for (i = 0; i < len-1; i++)
+		if (d.val[i] == '\0')
+			return false;
+
+	if (d.val[len-1] != '\0')
+		return false;
+
+	return true;
+>>>>>>> v4.9.227
 }

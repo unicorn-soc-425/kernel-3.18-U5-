@@ -15,7 +15,11 @@
 #include <asm/irq.h>
 #include <asm/mach/pci.h>
 #include <plat/pcie.h>
+<<<<<<< HEAD
 #include <mach/mv78xx0.h>
+=======
+#include "mv78xx0.h"
+>>>>>>> v4.9.227
 #include "common.h"
 
 #define MV78XX0_MBUS_PCIE_MEM_TARGET(port, lane) ((port) ? 8 : 4)
@@ -197,6 +201,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL, PCI_ANY_ID, rc_pci_fixup);
 static struct pci_bus __init *
 mv78xx0_pcie_scan_bus(int nr, struct pci_sys_data *sys)
 {
+<<<<<<< HEAD
 	struct pci_bus *bus;
 
 	if (nr < num_pcie_ports) {
@@ -208,6 +213,15 @@ mv78xx0_pcie_scan_bus(int nr, struct pci_sys_data *sys)
 	}
 
 	return bus;
+=======
+	if (nr >= num_pcie_ports) {
+		BUG();
+		return NULL;
+	}
+
+	return pci_scan_root_bus(NULL, sys->busnr, &pcie_ops, sys,
+				 &sys->resources);
+>>>>>>> v4.9.227
 }
 
 static int __init mv78xx0_pcie_map_irq(const struct pci_dev *dev, u8 slot,

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2005 - 2014 Emulex
+=======
+ * Copyright (C) 2005 - 2016 Broadcom
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
@@ -123,7 +127,10 @@ static const struct be_ethtool_stat et_stats[] = {
 	{DRVSTAT_INFO(dma_map_errors)},
 	/* Number of packets dropped due to random early drop function */
 	{DRVSTAT_INFO(eth_red_drops)},
+<<<<<<< HEAD
 	{DRVSTAT_INFO(be_on_die_temperature)},
+=======
+>>>>>>> v4.9.227
 	{DRVSTAT_INFO(rx_roce_bytes_lsd)},
 	{DRVSTAT_INFO(rx_roce_bytes_msd)},
 	{DRVSTAT_INFO(rx_roce_frames)},
@@ -139,6 +146,10 @@ static const struct be_ethtool_stat et_stats[] = {
 static const struct be_ethtool_stat et_rx_stats[] = {
 	{DRVSTAT_RX_INFO(rx_bytes)},/* If moving this member see above note */
 	{DRVSTAT_RX_INFO(rx_pkts)}, /* If moving this member see above note */
+<<<<<<< HEAD
+=======
+	{DRVSTAT_RX_INFO(rx_vxlan_offload_pkts)},
+>>>>>>> v4.9.227
 	{DRVSTAT_RX_INFO(rx_compl)},
 	{DRVSTAT_RX_INFO(rx_compl_err)},
 	{DRVSTAT_RX_INFO(rx_mcast_pkts)},
@@ -191,10 +202,16 @@ static const struct be_ethtool_stat et_tx_stats[] = {
 	{DRVSTAT_TX_INFO(tx_internal_parity_err)},
 	{DRVSTAT_TX_INFO(tx_bytes)},
 	{DRVSTAT_TX_INFO(tx_pkts)},
+<<<<<<< HEAD
 	/* Number of skbs queued for trasmission by the driver */
 	{DRVSTAT_TX_INFO(tx_reqs)},
 	/* Number of TX work request blocks DMAed to HW */
 	{DRVSTAT_TX_INFO(tx_wrbs)},
+=======
+	{DRVSTAT_TX_INFO(tx_vxlan_offload_pkts)},
+	/* Number of skbs queued for trasmission by the driver */
+	{DRVSTAT_TX_INFO(tx_reqs)},
+>>>>>>> v4.9.227
 	/* Number of times the TX queue was stopped due to lack
 	 * of spaces in the TXQ.
 	 */
@@ -235,9 +252,12 @@ static void be_get_drvinfo(struct net_device *netdev,
 
 	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->testinfo_len = 0;
 	drvinfo->regdump_len = 0;
 	drvinfo->eedump_len = 0;
+=======
+>>>>>>> v4.9.227
 }
 
 static u32 lancer_cmd_get_file_len(struct be_adapter *adapter, u8 *file_name)
@@ -245,6 +265,7 @@ static u32 lancer_cmd_get_file_len(struct be_adapter *adapter, u8 *file_name)
 	u32 data_read = 0, eof;
 	u8 addn_status;
 	struct be_dma_mem data_len_cmd;
+<<<<<<< HEAD
 	int status;
 
 	memset(&data_len_cmd, 0, sizeof(data_len_cmd));
@@ -252,10 +273,33 @@ static u32 lancer_cmd_get_file_len(struct be_adapter *adapter, u8 *file_name)
 	status = lancer_cmd_read_object(adapter, &data_len_cmd, 0, 0,
 					file_name, &data_read, &eof,
 					&addn_status);
+=======
+
+	memset(&data_len_cmd, 0, sizeof(data_len_cmd));
+	/* data_offset and data_size should be 0 to get reg len */
+	lancer_cmd_read_object(adapter, &data_len_cmd, 0, 0, file_name,
+			       &data_read, &eof, &addn_status);
+>>>>>>> v4.9.227
 
 	return data_read;
 }
 
+<<<<<<< HEAD
+=======
+static int be_get_dump_len(struct be_adapter *adapter)
+{
+	u32 dump_size = 0;
+
+	if (lancer_chip(adapter))
+		dump_size = lancer_cmd_get_file_len(adapter,
+						    LANCER_FW_DUMP_FILE);
+	else
+		dump_size = adapter->fat_dump_len;
+
+	return dump_size;
+}
+
+>>>>>>> v4.9.227
 static int lancer_cmd_read_file(struct be_adapter *adapter, u8 *file_name,
 				u32 buf_len, void *buf)
 {
@@ -297,6 +341,7 @@ static int lancer_cmd_read_file(struct be_adapter *adapter, u8 *file_name,
 	return status;
 }
 
+<<<<<<< HEAD
 static int be_get_reg_len(struct net_device *netdev)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
@@ -328,6 +373,20 @@ be_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *buf)
 		else
 			be_cmd_get_regs(adapter, regs->len, buf);
 	}
+=======
+static int be_read_dump_data(struct be_adapter *adapter, u32 dump_len,
+			     void *buf)
+{
+	int status = 0;
+
+	if (lancer_chip(adapter))
+		status = lancer_cmd_read_file(adapter, LANCER_FW_DUMP_FILE,
+					      dump_len, buf);
+	else
+		status = be_cmd_get_fat_dump(adapter, dump_len, buf);
+
+	return status;
+>>>>>>> v4.9.227
 }
 
 static int be_get_coalesce(struct net_device *netdev,
@@ -370,6 +429,17 @@ static int be_set_coalesce(struct net_device *netdev,
 		aic++;
 	}
 
+<<<<<<< HEAD
+=======
+	/* For Skyhawk, the EQD setting happens via EQ_DB when AIC is enabled.
+	 * When AIC is disabled, persistently force set EQD value via the
+	 * FW cmd, so that we don't have to calculate the delay multiplier
+	 * encode value each time EQ_DB is rung
+	 */
+	if (!et->use_adaptive_rx_coalesce && skyhawk_chip(adapter))
+		be_eqd_update(adapter, true);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -425,6 +495,13 @@ static void be_get_ethtool_stats(struct net_device *netdev,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static const char be_priv_flags[][ETH_GSTRING_LEN] = {
+	"disable-tpe-recovery"
+};
+
+>>>>>>> v4.9.227
 static void be_get_stat_strings(struct net_device *netdev, uint32_t stringset,
 				uint8_t *data)
 {
@@ -458,6 +535,13 @@ static void be_get_stat_strings(struct net_device *netdev, uint32_t stringset,
 			data += ETH_GSTRING_LEN;
 		}
 		break;
+<<<<<<< HEAD
+=======
+	case ETH_SS_PRIV_FLAGS:
+		for (i = 0; i < ARRAY_SIZE(be_priv_flags); i++)
+			strcpy(data + i * ETH_GSTRING_LEN, be_priv_flags[i]);
+		break;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -472,6 +556,11 @@ static int be_get_sset_count(struct net_device *netdev, int stringset)
 		return ETHTOOL_STATS_NUM +
 			adapter->num_rx_qs * ETHTOOL_RXSTATS_NUM +
 			adapter->num_tx_qs * ETHTOOL_TXSTATS_NUM;
+<<<<<<< HEAD
+=======
+	case ETH_SS_PRIV_FLAGS:
+		return ARRAY_SIZE(be_priv_flags);
+>>>>>>> v4.9.227
 	default:
 		return -EINVAL;
 	}
@@ -707,6 +796,7 @@ be_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *ecmd)
 
 	if (ecmd->autoneg != adapter->phy.fc_autoneg)
 		return -EINVAL;
+<<<<<<< HEAD
 	adapter->tx_fc = ecmd->tx_pause;
 	adapter->rx_fc = ecmd->rx_pause;
 
@@ -716,12 +806,26 @@ be_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *ecmd)
 		dev_warn(&adapter->pdev->dev, "Pause param set failed\n");
 
 	return be_cmd_status(status);
+=======
+
+	status = be_cmd_set_flow_control(adapter, ecmd->tx_pause,
+					 ecmd->rx_pause);
+	if (status) {
+		dev_warn(&adapter->pdev->dev, "Pause param set failed\n");
+		return be_cmd_status(status);
+	}
+
+	adapter->tx_fc = ecmd->tx_pause;
+	adapter->rx_fc = ecmd->rx_pause;
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int be_set_phys_id(struct net_device *netdev,
 			  enum ethtool_phys_id_state state)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
 
 	switch (state) {
 	case ETHTOOL_ID_ACTIVE:
@@ -745,6 +849,34 @@ static int be_set_phys_id(struct net_device *netdev,
 	}
 
 	return 0;
+=======
+	int status = 0;
+
+	switch (state) {
+	case ETHTOOL_ID_ACTIVE:
+		status = be_cmd_get_beacon_state(adapter, adapter->hba_port_num,
+						 &adapter->beacon_state);
+		if (status)
+			return be_cmd_status(status);
+		return 1;       /* cycle on/off once per second */
+
+	case ETHTOOL_ID_ON:
+		status = be_cmd_set_beacon_state(adapter, adapter->hba_port_num,
+						 0, 0, BEACON_STATE_ENABLED);
+		break;
+
+	case ETHTOOL_ID_OFF:
+		status = be_cmd_set_beacon_state(adapter, adapter->hba_port_num,
+						 0, 0, BEACON_STATE_DISABLED);
+		break;
+
+	case ETHTOOL_ID_INACTIVE:
+		status = be_cmd_set_beacon_state(adapter, adapter->hba_port_num,
+						 0, 0, adapter->beacon_state);
+	}
+
+	return be_cmd_status(status);
+>>>>>>> v4.9.227
 }
 
 static int be_set_dump(struct net_device *netdev, struct ethtool_dump *dump)
@@ -792,6 +924,14 @@ static void be_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 static int be_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
+=======
+	struct device *dev = &adapter->pdev->dev;
+	struct be_dma_mem cmd;
+	u8 mac[ETH_ALEN];
+	bool enable;
+	int status;
+>>>>>>> v4.9.227
 
 	if (wol->wolopts & ~WAKE_MAGIC)
 		return -EOPNOTSUPP;
@@ -801,12 +941,41 @@ static int be_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 		return -EOPNOTSUPP;
 	}
 
+<<<<<<< HEAD
 	if (wol->wolopts & WAKE_MAGIC)
 		adapter->wol_en = true;
 	else
 		adapter->wol_en = false;
 
 	return 0;
+=======
+	cmd.size = sizeof(struct be_cmd_req_acpi_wol_magic_config);
+	cmd.va = dma_zalloc_coherent(dev, cmd.size, &cmd.dma, GFP_KERNEL);
+	if (!cmd.va)
+		return -ENOMEM;
+
+	eth_zero_addr(mac);
+
+	enable = wol->wolopts & WAKE_MAGIC;
+	if (enable)
+		ether_addr_copy(mac, adapter->netdev->dev_addr);
+
+	status = be_cmd_enable_magic_wol(adapter, mac, &cmd);
+	if (status) {
+		dev_err(dev, "Could not set Wake-on-lan mac address\n");
+		status = be_cmd_status(status);
+		goto err;
+	}
+
+	pci_enable_wake(adapter->pdev, PCI_D3hot, enable);
+	pci_enable_wake(adapter->pdev, PCI_D3cold, enable);
+
+	adapter->wol_en = enable ? true : false;
+
+err:
+	dma_free_coherent(dev, cmd.size, cmd.va, cmd.dma);
+	return status;
+>>>>>>> v4.9.227
 }
 
 static int be_test_ddr_dma(struct be_adapter *adapter)
@@ -840,10 +1009,28 @@ err:
 static u64 be_loopback_test(struct be_adapter *adapter, u8 loopback_type,
 			    u64 *status)
 {
+<<<<<<< HEAD
 	be_cmd_set_loopback(adapter, adapter->hba_port_num, loopback_type, 1);
 	*status = be_cmd_loopback_test(adapter, adapter->hba_port_num,
 				       loopback_type, 1500, 2, 0xabc);
 	be_cmd_set_loopback(adapter, adapter->hba_port_num, BE_NO_LOOPBACK, 1);
+=======
+	int ret;
+
+	ret = be_cmd_set_loopback(adapter, adapter->hba_port_num,
+				  loopback_type, 1);
+	if (ret)
+		return ret;
+
+	*status = be_cmd_loopback_test(adapter, adapter->hba_port_num,
+				       loopback_type, 1500, 2, 0xabc);
+
+	ret = be_cmd_set_loopback(adapter, adapter->hba_port_num,
+				  BE_NO_LOOPBACK, 1);
+	if (ret)
+		return ret;
+
+>>>>>>> v4.9.227
 	return *status;
 }
 
@@ -851,7 +1038,11 @@ static void be_self_test(struct net_device *netdev, struct ethtool_test *test,
 			 u64 *data)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
 	int status;
+=======
+	int status, cnt;
+>>>>>>> v4.9.227
 	u8 link_status = 0;
 
 	if (adapter->function_caps & BE_FUNCTION_CAPS_SUPER_NIC) {
@@ -862,6 +1053,12 @@ static void be_self_test(struct net_device *netdev, struct ethtool_test *test,
 
 	memset(data, 0, sizeof(u64) * ETHTOOL_TESTS_NUM);
 
+<<<<<<< HEAD
+=======
+	/* check link status before offline tests */
+	link_status = netif_carrier_ok(netdev);
+
+>>>>>>> v4.9.227
 	if (test->flags & ETH_TEST_FL_OFFLINE) {
 		if (be_loopback_test(adapter, BE_MAC_LOOPBACK, &data[0]) != 0)
 			test->flags |= ETH_TEST_FL_FAILED;
@@ -882,6 +1079,7 @@ static void be_self_test(struct net_device *netdev, struct ethtool_test *test,
 		test->flags |= ETH_TEST_FL_FAILED;
 	}
 
+<<<<<<< HEAD
 	status = be_cmd_link_status_query(adapter, NULL, &link_status, 0);
 	if (status) {
 		test->flags |= ETH_TEST_FL_FAILED;
@@ -889,6 +1087,28 @@ static void be_self_test(struct net_device *netdev, struct ethtool_test *test,
 	} else if (!link_status) {
 		test->flags |= ETH_TEST_FL_FAILED;
 		data[4] = 1;
+=======
+	/* link status was down prior to test */
+	if (!link_status) {
+		test->flags |= ETH_TEST_FL_FAILED;
+		data[4] = 1;
+		return;
+	}
+
+	for (cnt = 10; cnt; cnt--) {
+		status = be_cmd_link_status_query(adapter, NULL, &link_status,
+						  0);
+		if (status) {
+			test->flags |= ETH_TEST_FL_FAILED;
+			data[4] = -1;
+			break;
+		}
+
+		if (link_status)
+			break;
+
+		msleep_interruptible(500);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -899,6 +1119,37 @@ static int be_do_flash(struct net_device *netdev, struct ethtool_flash *efl)
 	return be_load_fw(adapter, efl->data);
 }
 
+<<<<<<< HEAD
+=======
+static int
+be_get_dump_flag(struct net_device *netdev, struct ethtool_dump *dump)
+{
+	struct be_adapter *adapter = netdev_priv(netdev);
+
+	if (!check_privilege(adapter, MAX_PRIVILEGES))
+		return -EOPNOTSUPP;
+
+	dump->len = be_get_dump_len(adapter);
+	dump->version = 1;
+	dump->flag = 0x1;	/* FW dump is enabled */
+	return 0;
+}
+
+static int
+be_get_dump_data(struct net_device *netdev, struct ethtool_dump *dump,
+		 void *buf)
+{
+	struct be_adapter *adapter = netdev_priv(netdev);
+	int status;
+
+	if (!check_privilege(adapter, MAX_PRIVILEGES))
+		return -EOPNOTSUPP;
+
+	status = be_read_dump_data(adapter, dump->len, buf);
+	return be_cmd_status(status);
+}
+
+>>>>>>> v4.9.227
 static int be_get_eeprom_len(struct net_device *netdev)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
@@ -1033,7 +1284,11 @@ static int be_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd,
 		cmd->data = be_get_rss_hash_opts(adapter, cmd->flow_type);
 		break;
 	case ETHTOOL_GRXRINGS:
+<<<<<<< HEAD
 		cmd->data = adapter->num_rx_qs - 1;
+=======
+		cmd->data = adapter->num_rx_qs;
+>>>>>>> v4.9.227
 		break;
 	default:
 		return -EINVAL;
@@ -1045,9 +1300,13 @@ static int be_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd,
 static int be_set_rss_hash_opts(struct be_adapter *adapter,
 				struct ethtool_rxnfc *cmd)
 {
+<<<<<<< HEAD
 	struct be_rx_obj *rxo;
 	int status = 0, i, j;
 	u8 rsstable[128];
+=======
+	int status;
+>>>>>>> v4.9.227
 	u32 rss_flags = adapter->rss_info.rss_flags;
 
 	if (cmd->data != L3_RSS_FLAGS &&
@@ -1096,6 +1355,7 @@ static int be_set_rss_hash_opts(struct be_adapter *adapter,
 	}
 
 	if (rss_flags == adapter->rss_info.rss_flags)
+<<<<<<< HEAD
 		return status;
 
 	if (be_multi_rxq(adapter)) {
@@ -1110,6 +1370,13 @@ static int be_set_rss_hash_opts(struct be_adapter *adapter,
 
 	status = be_cmd_rss_config(adapter, adapter->rss_info.rsstable,
 				   rss_flags, 128, adapter->rss_info.rss_hkey);
+=======
+		return 0;
+
+	status = be_cmd_rss_config(adapter, adapter->rss_info.rsstable,
+				   rss_flags, RSS_INDIR_TABLE_LEN,
+				   adapter->rss_info.rss_hkey);
+>>>>>>> v4.9.227
 	if (!status)
 		adapter->rss_info.rss_flags = rss_flags;
 
@@ -1142,9 +1409,23 @@ static void be_get_channels(struct net_device *netdev,
 			    struct ethtool_channels *ch)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
 
 	ch->combined_count = adapter->num_evt_qs;
 	ch->max_combined = be_max_qs(adapter);
+=======
+	u16 num_rx_irqs = max_t(u16, adapter->num_rss_qs, 1);
+
+	/* num_tx_qs is always same as the number of irqs used for TX */
+	ch->combined_count = min(adapter->num_tx_qs, num_rx_irqs);
+	ch->rx_count = num_rx_irqs - ch->combined_count;
+	ch->tx_count = adapter->num_tx_qs - ch->combined_count;
+
+	ch->max_combined = be_max_qp_irqs(adapter);
+	/* The user must create atleast one combined channel */
+	ch->max_rx = be_max_rx_irqs(adapter) - 1;
+	ch->max_tx = be_max_tx_irqs(adapter) - 1;
+>>>>>>> v4.9.227
 }
 
 static int be_set_channels(struct net_device  *netdev,
@@ -1153,11 +1434,30 @@ static int be_set_channels(struct net_device  *netdev,
 	struct be_adapter *adapter = netdev_priv(netdev);
 	int status;
 
+<<<<<<< HEAD
 	if (ch->rx_count || ch->tx_count || ch->other_count ||
 	    !ch->combined_count || ch->combined_count > be_max_qs(adapter))
 		return -EINVAL;
 
 	adapter->cfg_num_qs = ch->combined_count;
+=======
+	/* we support either only combined channels or a combination of
+	 * combined and either RX-only or TX-only channels.
+	 */
+	if (ch->other_count || !ch->combined_count ||
+	    (ch->rx_count && ch->tx_count))
+		return -EINVAL;
+
+	if (ch->combined_count > be_max_qp_irqs(adapter) ||
+	    (ch->rx_count &&
+	     (ch->rx_count + ch->combined_count) > be_max_rx_irqs(adapter)) ||
+	    (ch->tx_count &&
+	     (ch->tx_count + ch->combined_count) > be_max_tx_irqs(adapter)))
+		return -EINVAL;
+
+	adapter->cfg_num_rx_irqs = ch->combined_count + ch->rx_count;
+	adapter->cfg_num_tx_irqs = ch->combined_count + ch->tx_count;
+>>>>>>> v4.9.227
 
 	status = be_update_queues(adapter);
 	return be_cmd_status(status);
@@ -1173,7 +1473,12 @@ static u32 be_get_rxfh_key_size(struct net_device *netdev)
 	return RSS_HASH_KEY_LEN;
 }
 
+<<<<<<< HEAD
 static int be_get_rxfh(struct net_device *netdev, u32 *indir, u8 *hkey)
+=======
+static int be_get_rxfh(struct net_device *netdev, u32 *indir, u8 *hkey,
+		       u8 *hfunc)
+>>>>>>> v4.9.227
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
 	int i;
@@ -1187,16 +1492,33 @@ static int be_get_rxfh(struct net_device *netdev, u32 *indir, u8 *hkey)
 	if (hkey)
 		memcpy(hkey, rss->rss_hkey, RSS_HASH_KEY_LEN);
 
+<<<<<<< HEAD
+=======
+	if (hfunc)
+		*hfunc = ETH_RSS_HASH_TOP;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int be_set_rxfh(struct net_device *netdev, const u32 *indir,
+<<<<<<< HEAD
 		       const u8 *hkey)
+=======
+		       const u8 *hkey, const u8 hfunc)
+>>>>>>> v4.9.227
 {
 	int rc = 0, i, j;
 	struct be_adapter *adapter = netdev_priv(netdev);
 	u8 rsstable[RSS_INDIR_TABLE_LEN];
 
+<<<<<<< HEAD
+=======
+	/* We do not allow change in unsupported parameters */
+	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
+		return -EOPNOTSUPP;
+
+>>>>>>> v4.9.227
 	if (indir) {
 		struct be_rx_obj *rxo;
 
@@ -1279,6 +1601,37 @@ err:
 	return be_cmd_status(status);
 }
 
+<<<<<<< HEAD
+=======
+static u32 be_get_priv_flags(struct net_device *netdev)
+{
+	struct be_adapter *adapter = netdev_priv(netdev);
+
+	return adapter->priv_flags;
+}
+
+static int be_set_priv_flags(struct net_device *netdev, u32 flags)
+{
+	struct be_adapter *adapter = netdev_priv(netdev);
+	bool tpe_old = !!(adapter->priv_flags & BE_DISABLE_TPE_RECOVERY);
+	bool tpe_new = !!(flags & BE_DISABLE_TPE_RECOVERY);
+
+	if (tpe_old != tpe_new) {
+		if (tpe_new) {
+			adapter->priv_flags |= BE_DISABLE_TPE_RECOVERY;
+			dev_info(&adapter->pdev->dev,
+				 "HW error recovery is disabled\n");
+		} else {
+			adapter->priv_flags &= ~BE_DISABLE_TPE_RECOVERY;
+			dev_info(&adapter->pdev->dev,
+				 "HW error recovery is enabled\n");
+		}
+	}
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 const struct ethtool_ops be_ethtool_ops = {
 	.get_settings = be_get_settings,
 	.get_drvinfo = be_get_drvinfo,
@@ -1292,6 +1645,11 @@ const struct ethtool_ops be_ethtool_ops = {
 	.get_ringparam = be_get_ringparam,
 	.get_pauseparam = be_get_pauseparam,
 	.set_pauseparam = be_set_pauseparam,
+<<<<<<< HEAD
+=======
+	.set_priv_flags = be_set_priv_flags,
+	.get_priv_flags = be_get_priv_flags,
+>>>>>>> v4.9.227
 	.get_strings = be_get_stat_strings,
 	.set_phys_id = be_set_phys_id,
 	.set_dump = be_set_dump,
@@ -1299,8 +1657,11 @@ const struct ethtool_ops be_ethtool_ops = {
 	.set_msglevel = be_set_msg_level,
 	.get_sset_count = be_get_sset_count,
 	.get_ethtool_stats = be_get_ethtool_stats,
+<<<<<<< HEAD
 	.get_regs_len = be_get_reg_len,
 	.get_regs = be_get_regs,
+=======
+>>>>>>> v4.9.227
 	.flash_device = be_do_flash,
 	.self_test = be_self_test,
 	.get_rxnfc = be_get_rxnfc,
@@ -1309,6 +1670,11 @@ const struct ethtool_ops be_ethtool_ops = {
 	.get_rxfh_key_size = be_get_rxfh_key_size,
 	.get_rxfh = be_get_rxfh,
 	.set_rxfh = be_set_rxfh,
+<<<<<<< HEAD
+=======
+	.get_dump_flag = be_get_dump_flag,
+	.get_dump_data = be_get_dump_data,
+>>>>>>> v4.9.227
 	.get_channels = be_get_channels,
 	.set_channels = be_set_channels,
 	.get_module_info = be_get_module_info,

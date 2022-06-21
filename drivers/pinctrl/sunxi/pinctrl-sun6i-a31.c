@@ -134,24 +134,40 @@ static const struct sunxi_desc_pin sun6i_a31_pins[] = {
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
 		  SUNXI_FUNCTION(0x2, "gmac"),		/* RXD4 */
 		  SUNXI_FUNCTION(0x3, "lcd1"),		/* D15 */
+<<<<<<< HEAD
+=======
+		  SUNXI_FUNCTION(0x4, "clk_out_a"),
+>>>>>>> v4.9.227
 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 15)),	/* PA_EINT15 */
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(A, 16),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
 		  SUNXI_FUNCTION(0x2, "gmac"),		/* RXD5 */
 		  SUNXI_FUNCTION(0x3, "lcd1"),		/* D16 */
+<<<<<<< HEAD
+=======
+		  SUNXI_FUNCTION(0x4, "dmic"),		/* CLK */
+>>>>>>> v4.9.227
 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 16)),	/* PA_EINT16 */
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(A, 17),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
 		  SUNXI_FUNCTION(0x2, "gmac"),		/* RXD6 */
 		  SUNXI_FUNCTION(0x3, "lcd1"),		/* D17 */
+<<<<<<< HEAD
+=======
+		  SUNXI_FUNCTION(0x4, "dmic"),		/* DIN */
+>>>>>>> v4.9.227
 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 17)),	/* PA_EINT17 */
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(A, 18),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
 		  SUNXI_FUNCTION(0x2, "gmac"),		/* RXD7 */
 		  SUNXI_FUNCTION(0x3, "lcd1"),		/* D18 */
+<<<<<<< HEAD
+=======
+		  SUNXI_FUNCTION(0x4, "clk_out_b"),
+>>>>>>> v4.9.227
 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 18)),	/* PA_EINT18 */
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(A, 19),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
@@ -207,6 +223,10 @@ static const struct sunxi_desc_pin sun6i_a31_pins[] = {
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
 		  SUNXI_FUNCTION(0x2, "gmac"),		/* MDC */
 		  SUNXI_FUNCTION(0x3, "lcd1"),		/* HSYNC */
+<<<<<<< HEAD
+=======
+		  SUNXI_FUNCTION(0x4, "clk_out_c"),
+>>>>>>> v4.9.227
 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 26)),	/* PA_EINT26 */
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(A, 27),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
@@ -891,10 +911,25 @@ static const struct sunxi_desc_pin sun6i_a31_pins[] = {
 		  SUNXI_FUNCTION(0x1, "gpio_out")),
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(H, 27),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+<<<<<<< HEAD
 		  SUNXI_FUNCTION(0x1, "gpio_out")),
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(H, 28),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out")),
+=======
+		  SUNXI_FUNCTION(0x1, "gpio_out"),
+		/*
+		 * The SPDIF block is not referenced at all in the A31 user
+		 * manual. However it is described in the code leaked and the
+		 * configuration files supplied by vendors.
+		 */
+		  SUNXI_FUNCTION(0x3, "spdif")),        /* SPDIF IN */
+	SUNXI_PIN(SUNXI_PINCTRL_PIN(H, 28),
+		  SUNXI_FUNCTION(0x0, "gpio_in"),
+		  SUNXI_FUNCTION(0x1, "gpio_out"),
+		/* Undocumented mux function - see above */
+		  SUNXI_FUNCTION(0x3, "spdif")),        /* SPDIF OUT */
+>>>>>>> v4.9.227
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(H, 29),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
@@ -917,7 +952,11 @@ static int sun6i_a31_pinctrl_probe(struct platform_device *pdev)
 				  &sun6i_a31_pinctrl_data);
 }
 
+<<<<<<< HEAD
 static struct of_device_id sun6i_a31_pinctrl_match[] = {
+=======
+static const struct of_device_id sun6i_a31_pinctrl_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "allwinner,sun6i-a31-pinctrl", },
 	{}
 };
@@ -927,7 +966,10 @@ static struct platform_driver sun6i_a31_pinctrl_driver = {
 	.probe	= sun6i_a31_pinctrl_probe,
 	.driver	= {
 		.name		= "sun6i-a31-pinctrl",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= sun6i_a31_pinctrl_match,
 	},
 };

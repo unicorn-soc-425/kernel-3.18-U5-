@@ -17,7 +17,10 @@
  */
 
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
 #include <linux/clkdev.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/slab.h>
@@ -53,6 +56,14 @@ static DEFINE_SPINLOCK(gmac_lock);
 #define SUN7I_A20_GMAC_MASK	0x3
 #define SUN7I_A20_GMAC_PARENTS	2
 
+<<<<<<< HEAD
+=======
+static u32 sun7i_a20_gmac_mux_table[SUN7I_A20_GMAC_PARENTS] = {
+	0x00, /* Select mii_phy_tx_clk */
+	0x02, /* Select gmac_int_tx_clk */
+};
+
+>>>>>>> v4.9.227
 static void __init sun7i_a20_gmac_clk_setup(struct device_node *node)
 {
 	struct clk *clk;
@@ -75,9 +86,13 @@ static void __init sun7i_a20_gmac_clk_setup(struct device_node *node)
 		goto free_mux;
 
 	/* gmac clock requires exactly 2 parents */
+<<<<<<< HEAD
 	parents[0] = of_clk_get_parent_name(node, 0);
 	parents[1] = of_clk_get_parent_name(node, 1);
 	if (!parents[0] || !parents[1])
+=======
+	if (of_clk_parent_fill(node, parents, 2) != 2)
+>>>>>>> v4.9.227
 		goto free_gate;
 
 	reg = of_iomap(node, 0);
@@ -90,7 +105,11 @@ static void __init sun7i_a20_gmac_clk_setup(struct device_node *node)
 	gate->lock = &gmac_lock;
 	mux->reg = reg;
 	mux->mask = SUN7I_A20_GMAC_MASK;
+<<<<<<< HEAD
 	mux->flags = CLK_MUX_INDEX_BIT;
+=======
+	mux->table = sun7i_a20_gmac_mux_table;
+>>>>>>> v4.9.227
 	mux->lock = &gmac_lock;
 
 	clk = clk_register_composite(NULL, clk_name,
@@ -104,7 +123,10 @@ static void __init sun7i_a20_gmac_clk_setup(struct device_node *node)
 		goto iounmap_reg;
 
 	of_clk_add_provider(node, of_clk_src_simple_get, clk);
+<<<<<<< HEAD
 	clk_register_clkdev(clk, clk_name, NULL);
+=======
+>>>>>>> v4.9.227
 
 	return;
 

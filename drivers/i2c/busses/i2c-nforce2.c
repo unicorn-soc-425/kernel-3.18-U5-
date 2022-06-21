@@ -127,7 +127,11 @@ static struct pci_driver nforce2_driver;
 
 /* For multiplexing support, we need a global reference to the 1st
    SMBus channel */
+<<<<<<< HEAD
 #if defined CONFIG_I2C_NFORCE2_S4985 || defined CONFIG_I2C_NFORCE2_S4985_MODULE
+=======
+#if IS_ENABLED(CONFIG_I2C_NFORCE2_S4985)
+>>>>>>> v4.9.227
 struct i2c_adapter *nforce2_smbus;
 EXPORT_SYMBOL_GPL(nforce2_smbus);
 
@@ -366,7 +370,10 @@ static int nforce2_probe_smb(struct pci_dev *dev, int bar, int alt_reg,
 
 	error = i2c_add_adapter(&smbus->adapter);
 	if (error) {
+<<<<<<< HEAD
 		dev_err(&smbus->adapter.dev, "Failed to register adapter.\n");
+=======
+>>>>>>> v4.9.227
 		release_region(smbus->base, smbus->size);
 		return error;
 	}

@@ -11,7 +11,10 @@ void cm_clear_irqs(void);
 #define CM_CTRL_LED			(1 << 0)
 #define CM_CTRL_nMBDET			(1 << 1)
 #define CM_CTRL_REMAP			(1 << 2)
+<<<<<<< HEAD
 #define CM_CTRL_RESET			(1 << 3)
+=======
+>>>>>>> v4.9.227
 
 /*
  * Integrator/AP,PP2 specific

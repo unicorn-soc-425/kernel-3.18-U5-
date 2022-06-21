@@ -218,8 +218,14 @@ static int pdc_irq_set_wake(struct irq_data *data, unsigned int on)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void pdc_intc_perip_isr(unsigned int irq, struct irq_desc *desc)
 {
+=======
+static void pdc_intc_perip_isr(struct irq_desc *desc)
+{
+	unsigned int irq = irq_desc_get_irq(desc);
+>>>>>>> v4.9.227
 	struct pdc_intc_priv *priv;
 	unsigned int i, irq_no;
 
@@ -239,7 +245,11 @@ found:
 	generic_handle_irq(irq_no);
 }
 
+<<<<<<< HEAD
 static void pdc_intc_syswake_isr(unsigned int irq, struct irq_desc *desc)
+=======
+static void pdc_intc_syswake_isr(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct pdc_intc_priv *priv;
 	unsigned int syswake, irq_no;
@@ -451,6 +461,7 @@ static int pdc_intc_probe(struct platform_device *pdev)
 	/* Setup chained handlers for the peripheral IRQs */
 	for (i = 0; i < priv->nr_perips; ++i) {
 		irq = priv->perip_irqs[i];
+<<<<<<< HEAD
 		irq_set_handler_data(irq, priv);
 		irq_set_chained_handler(irq, pdc_intc_perip_isr);
 	}
@@ -458,6 +469,15 @@ static int pdc_intc_probe(struct platform_device *pdev)
 	/* Setup chained handler for the syswake IRQ */
 	irq_set_handler_data(priv->syswake_irq, priv);
 	irq_set_chained_handler(priv->syswake_irq, pdc_intc_syswake_isr);
+=======
+		irq_set_chained_handler_and_data(irq, pdc_intc_perip_isr,
+						 priv);
+	}
+
+	/* Setup chained handler for the syswake IRQ */
+	irq_set_chained_handler_and_data(priv->syswake_irq,
+					 pdc_intc_syswake_isr, priv);
+>>>>>>> v4.9.227
 
 	dev_info(&pdev->dev,
 		 "PDC IRQ controller initialised (%u perip IRQs, %u syswake IRQs)\n",

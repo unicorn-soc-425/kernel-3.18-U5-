@@ -19,12 +19,18 @@ wil6210-y += wil_platform.o
 wil6210-y += ethtool.o
 wil6210-y += wil_crash_dump.o
 wil6210-y += p2p.o
+<<<<<<< HEAD
 wil6210-y += ftm.o
+=======
+>>>>>>> v4.9.227
 
 # for tracing framework to find trace.h
 CFLAGS_trace.o := -I$(src)
 
 subdir-ccflags-y += -D__CHECK_ENDIAN__
+<<<<<<< HEAD
 
 MSM_11AD_PATH = drivers/platform/msm/msm_11ad
 CFLAGS_wil_platform.o := -I$(MSM_11AD_PATH)
+=======
+>>>>>>> v4.9.227

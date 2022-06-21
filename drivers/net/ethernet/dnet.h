@@ -216,7 +216,10 @@ struct dnet {
 
 	/* PHY stuff */
 	struct mii_bus			*mii_bus;
+<<<<<<< HEAD
 	struct phy_device		*phy_dev;
+=======
+>>>>>>> v4.9.227
 	unsigned int			link;
 	unsigned int			speed;
 	unsigned int			duplex;

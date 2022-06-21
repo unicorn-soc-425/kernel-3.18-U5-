@@ -24,7 +24,11 @@ ebt_nflog_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ebt_nflog_info *info = par->targinfo;
 	struct nf_loginfo li;
+<<<<<<< HEAD
 	struct net *net = dev_net(par->in ? par->in : par->out);
+=======
+	struct net *net = par->net;
+>>>>>>> v4.9.227
 
 	li.type = NF_LOG_TYPE_ULOG;
 	li.u.ulog.copy_len = info->len;

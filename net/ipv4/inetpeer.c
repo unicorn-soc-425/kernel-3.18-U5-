@@ -157,6 +157,7 @@ void __init inet_initpeers(void)
 	INIT_DEFERRABLE_WORK(&gc_work, inetpeer_gc_worker);
 }
 
+<<<<<<< HEAD
 static int addr_compare(const struct inetpeer_addr *a,
 			const struct inetpeer_addr *b)
 {
@@ -173,6 +174,8 @@ static int addr_compare(const struct inetpeer_addr *a,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 #define rcu_deref_locked(X, BASE)				\
 	rcu_dereference_protected(X, lockdep_is_held(&(BASE)->lock.lock))
 
@@ -188,7 +191,11 @@ static int addr_compare(const struct inetpeer_addr *a,
 	*stackptr++ = &_base->root;				\
 	for (u = rcu_deref_locked(_base->root, _base);		\
 	     u != peer_avl_empty;) {				\
+<<<<<<< HEAD
 		int cmp = addr_compare(_daddr, &u->daddr);	\
+=======
+		int cmp = inetpeer_addr_cmp(_daddr, &u->daddr);	\
+>>>>>>> v4.9.227
 		if (cmp == 0)					\
 			break;					\
 		if (cmp == -1)					\
@@ -215,7 +222,11 @@ static struct inet_peer *lookup_rcu(const struct inetpeer_addr *daddr,
 	int count = 0;
 
 	while (u != peer_avl_empty) {
+<<<<<<< HEAD
 		int cmp = addr_compare(daddr, &u->daddr);
+=======
+		int cmp = inetpeer_addr_cmp(daddr, &u->daddr);
+>>>>>>> v4.9.227
 		if (cmp == 0) {
 			/* Before taking a reference, check if this entry was
 			 * deleted (refcnt=-1)
@@ -464,6 +475,10 @@ relookup:
 		atomic_set(&p->rid, 0);
 		p->metrics[RTAX_LOCK-1] = INETPEER_METRICS_NEW;
 		p->rate_tokens = 0;
+<<<<<<< HEAD
+=======
+		p->n_redirects = 0;
+>>>>>>> v4.9.227
 		/* 60*HZ is arbitrary, but chosen enough high so that the first
 		 * calculation of tokens is at its maximum.
 		 */

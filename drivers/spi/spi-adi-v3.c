@@ -972,7 +972,10 @@ MODULE_ALIAS("platform:adi-spi3");
 static struct platform_driver adi_spi_driver = {
 	.driver	= {
 		.name	= "adi-spi3",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm     = &adi_spi_pm_ops,
 	},
 	.remove		= adi_spi_remove,

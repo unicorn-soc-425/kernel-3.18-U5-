@@ -7,6 +7,10 @@
  */
 
 #include "at91sam9x5.dtsi"
+<<<<<<< HEAD
+=======
+#include "at91sam9x5_isi.dtsi"
+>>>>>>> v4.9.227
 #include "at91sam9x5_usart3.dtsi"
 #include "at91sam9x5_macb0.dtsi"
 

@@ -43,9 +43,14 @@
 #define I40E_PTP_10GB_INCVAL 0x0333333333ULL
 #define I40E_PTP_1GB_INCVAL  0x2000000000ULL
 
+<<<<<<< HEAD
 #define I40E_PRTTSYN_CTL1_TSYNTYPE_V1  (0x1 << \
 					I40E_PRTTSYN_CTL1_TSYNTYPE_SHIFT)
 #define I40E_PRTTSYN_CTL1_TSYNTYPE_V2  (0x2 << \
+=======
+#define I40E_PRTTSYN_CTL1_TSYNTYPE_V1  BIT(I40E_PRTTSYN_CTL1_TSYNTYPE_SHIFT)
+#define I40E_PRTTSYN_CTL1_TSYNTYPE_V2  (2 << \
+>>>>>>> v4.9.227
 					I40E_PRTTSYN_CTL1_TSYNTYPE_SHIFT)
 
 /**
@@ -57,7 +62,11 @@
  * timespec. However, since the registers are 64 bits of nanoseconds, we must
  * convert the result to a timespec before we can return.
  **/
+<<<<<<< HEAD
 static void i40e_ptp_read(struct i40e_pf *pf, struct timespec *ts)
+=======
+static void i40e_ptp_read(struct i40e_pf *pf, struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	struct i40e_hw *hw = &pf->hw;
 	u32 hi, lo;
@@ -69,7 +78,11 @@ static void i40e_ptp_read(struct i40e_pf *pf, struct timespec *ts)
 
 	ns = (((u64)hi) << 32) | lo;
 
+<<<<<<< HEAD
 	*ts = ns_to_timespec(ns);
+=======
+	*ts = ns_to_timespec64(ns);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -81,10 +94,17 @@ static void i40e_ptp_read(struct i40e_pf *pf, struct timespec *ts)
  * we receive a timespec from the stack, we must convert that timespec into
  * nanoseconds before programming the registers.
  **/
+<<<<<<< HEAD
 static void i40e_ptp_write(struct i40e_pf *pf, const struct timespec *ts)
 {
 	struct i40e_hw *hw = &pf->hw;
 	u64 ns = timespec_to_ns(ts);
+=======
+static void i40e_ptp_write(struct i40e_pf *pf, const struct timespec64 *ts)
+{
+	struct i40e_hw *hw = &pf->hw;
+	u64 ns = timespec64_to_ns(ts);
+>>>>>>> v4.9.227
 
 	/* The timer will not update until the high register is written, so
 	 * write the low register first.
@@ -159,6 +179,7 @@ static int i40e_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
 static int i40e_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 {
 	struct i40e_pf *pf = container_of(ptp, struct i40e_pf, ptp_caps);
+<<<<<<< HEAD
 	struct timespec now, then = ns_to_timespec(delta);
 	unsigned long flags;
 
@@ -167,6 +188,17 @@ static int i40e_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	i40e_ptp_read(pf, &now);
 	now = timespec_add(now, then);
 	i40e_ptp_write(pf, (const struct timespec *)&now);
+=======
+	struct timespec64 now, then;
+	unsigned long flags;
+
+	then = ns_to_timespec64(delta);
+	spin_lock_irqsave(&pf->tmreg_lock, flags);
+
+	i40e_ptp_read(pf, &now);
+	now = timespec64_add(now, then);
+	i40e_ptp_write(pf, (const struct timespec64 *)&now);
+>>>>>>> v4.9.227
 
 	spin_unlock_irqrestore(&pf->tmreg_lock, flags);
 
@@ -181,7 +213,11 @@ static int i40e_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
  * Read the device clock and return the correct value on ns, after converting it
  * into a timespec struct.
  **/
+<<<<<<< HEAD
 static int i40e_ptp_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
+=======
+static int i40e_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	struct i40e_pf *pf = container_of(ptp, struct i40e_pf, ptp_caps);
 	unsigned long flags;
@@ -202,7 +238,11 @@ static int i40e_ptp_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
  * to ns happens in the write function.
  **/
 static int i40e_ptp_settime(struct ptp_clock_info *ptp,
+<<<<<<< HEAD
 			    const struct timespec *ts)
+=======
+			    const struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	struct i40e_pf *pf = container_of(ptp, struct i40e_pf, ptp_caps);
 	unsigned long flags;
@@ -247,7 +287,16 @@ void i40e_ptp_rx_hang(struct i40e_vsi *vsi)
 	u32 prttsyn_stat;
 	int n;
 
+<<<<<<< HEAD
 	if (!(pf->flags & I40E_FLAG_PTP))
+=======
+	/* Since we cannot turn off the Rx timestamp logic if the device is
+	 * configured for Tx timestamping, we check if Rx timestamping is
+	 * configured. We don't want to spuriously warn about Rx timestamp
+	 * hangs if we don't care about the timestamps.
+	 */
+	if (!(pf->flags & I40E_FLAG_PTP) || !pf->ptp_rx)
+>>>>>>> v4.9.227
 		return;
 
 	prttsyn_stat = rd32(hw, I40E_PRTTSYN_STAT_1);
@@ -284,9 +333,13 @@ void i40e_ptp_rx_hang(struct i40e_vsi *vsi)
 		rd32(hw, I40E_PRTTSYN_RXTIME_H(3));
 		pf->last_rx_ptp_check = jiffies;
 		pf->rx_hwtstamp_cleared++;
+<<<<<<< HEAD
 		dev_warn(&vsi->back->pdev->dev,
 			 "%s: clearing Rx timestamp hang\n",
 			 __func__);
+=======
+		WARN_ONCE(1, "Detected Rx timestamp register hang\n");
+>>>>>>> v4.9.227
 	}
 }
 
@@ -305,6 +358,16 @@ void i40e_ptp_tx_hwtstamp(struct i40e_pf *pf)
 	u32 hi, lo;
 	u64 ns;
 
+<<<<<<< HEAD
+=======
+	if (!(pf->flags & I40E_FLAG_PTP) || !pf->ptp_tx)
+		return;
+
+	/* don't attempt to timestamp if we don't have an skb */
+	if (!pf->ptp_tx_skb)
+		return;
+
+>>>>>>> v4.9.227
 	lo = rd32(hw, I40E_PRTTSYN_TXTIME_L);
 	hi = rd32(hw, I40E_PRTTSYN_TXTIME_H);
 
@@ -338,14 +401,22 @@ void i40e_ptp_rx_hwtstamp(struct i40e_pf *pf, struct sk_buff *skb, u8 index)
 	/* Since we cannot turn off the Rx timestamp logic if the device is
 	 * doing Tx timestamping, check if Rx timestamping is configured.
 	 */
+<<<<<<< HEAD
 	if (!pf->ptp_rx)
+=======
+	if (!(pf->flags & I40E_FLAG_PTP) || !pf->ptp_rx)
+>>>>>>> v4.9.227
 		return;
 
 	hw = &pf->hw;
 
 	prttsyn_stat = rd32(hw, I40E_PRTTSYN_STAT_1);
 
+<<<<<<< HEAD
 	if (!(prttsyn_stat & (1 << index)))
+=======
+	if (!(prttsyn_stat & BIT(index)))
+>>>>>>> v4.9.227
 		return;
 
 	lo = rd32(hw, I40E_PRTTSYN_RXTIME_L(index));
@@ -382,11 +453,25 @@ void i40e_ptp_set_increment(struct i40e_pf *pf)
 		incval = I40E_PTP_1GB_INCVAL;
 		break;
 	case I40E_LINK_SPEED_100MB:
+<<<<<<< HEAD
 		dev_warn(&pf->pdev->dev,
 			 "%s: 1588 functionality is not supported at 100 Mbps. Stopping the PHC.\n",
 			 __func__);
 		incval = 0;
 		break;
+=======
+	{
+		static int warn_once;
+
+		if (!warn_once) {
+			dev_warn(&pf->pdev->dev,
+				 "1588 functionality is not supported at 100 Mbps. Stopping the PHC.\n");
+			warn_once++;
+		}
+		incval = 0;
+		break;
+	}
+>>>>>>> v4.9.227
 	case I40E_LINK_SPEED_40GB:
 	default:
 		incval = I40E_PTP_40GB_INCVAL;
@@ -418,6 +503,12 @@ int i40e_ptp_get_ts_config(struct i40e_pf *pf, struct ifreq *ifr)
 {
 	struct hwtstamp_config *config = &pf->tstamp_config;
 
+<<<<<<< HEAD
+=======
+	if (!(pf->flags & I40E_FLAG_PTP))
+		return -EOPNOTSUPP;
+
+>>>>>>> v4.9.227
 	return copy_to_user(ifr->ifr_data, config, sizeof(*config)) ?
 		-EFAULT : 0;
 }
@@ -438,12 +529,17 @@ static int i40e_ptp_set_timestamp_mode(struct i40e_pf *pf,
 				       struct hwtstamp_config *config)
 {
 	struct i40e_hw *hw = &pf->hw;
+<<<<<<< HEAD
 	u32 pf_id, tsyntype, regval;
+=======
+	u32 tsyntype, regval;
+>>>>>>> v4.9.227
 
 	/* Reserved for future extensions. */
 	if (config->flags)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* Confirm that 1588 is supported on this PF. */
 	pf_id = (rd32(hw, I40E_PRTTSYN_CTL0) & I40E_PRTTSYN_CTL0_PF_ID_MASK) >>
 		I40E_PRTTSYN_CTL0_PF_ID_SHIFT;
@@ -454,6 +550,8 @@ static int i40e_ptp_set_timestamp_mode(struct i40e_pf *pf,
 		return -EPERM;
 	}
 
+=======
+>>>>>>> v4.9.227
 	switch (config->tx_type) {
 	case HWTSTAMP_TX_OFF:
 		pf->ptp_tx = false;
@@ -468,7 +566,16 @@ static int i40e_ptp_set_timestamp_mode(struct i40e_pf *pf,
 	switch (config->rx_filter) {
 	case HWTSTAMP_FILTER_NONE:
 		pf->ptp_rx = false;
+<<<<<<< HEAD
 		tsyntype = 0;
+=======
+		/* We set the type to V1, but do not enable UDP packet
+		 * recognition. In this way, we should be as close to
+		 * disabling PTP Rx timestamps as possible since V1 packets
+		 * are always UDP, since L2 packets are a V2 feature.
+		 */
+		tsyntype = I40E_PRTTSYN_CTL1_TSYNTYPE_V1;
+>>>>>>> v4.9.227
 		break;
 	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
 	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
@@ -522,6 +629,7 @@ static int i40e_ptp_set_timestamp_mode(struct i40e_pf *pf,
 		regval &= ~I40E_PFINT_ICR0_ENA_TIMESYNC_MASK;
 	wr32(hw, I40E_PFINT_ICR0_ENA, regval);
 
+<<<<<<< HEAD
 	/* There is no simple on/off switch for Rx. To "disable" Rx support,
 	 * ignore any received timestamps, rather than turn off the clock.
 	 */
@@ -533,6 +641,20 @@ static int i40e_ptp_set_timestamp_mode(struct i40e_pf *pf,
 		regval |= tsyntype;
 		wr32(hw, I40E_PRTTSYN_CTL1, regval);
 	}
+=======
+	/* Although there is no simple on/off switch for Rx, we "disable" Rx
+	 * timestamps by setting to V1 only mode and clear the UDP
+	 * recognition. This ought to disable all PTP Rx timestamps as V1
+	 * packets are always over UDP. Note that software is configured to
+	 * ignore Rx timestamps via the pf->ptp_rx flag.
+	 */
+	regval = rd32(hw, I40E_PRTTSYN_CTL1);
+	/* clear everything but the enable bit */
+	regval &= I40E_PRTTSYN_CTL1_TSYNENA_MASK;
+	/* now enable bits for desired Rx timestamps */
+	regval |= tsyntype;
+	wr32(hw, I40E_PRTTSYN_CTL1, regval);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -556,6 +678,12 @@ int i40e_ptp_set_ts_config(struct i40e_pf *pf, struct ifreq *ifr)
 	struct hwtstamp_config config;
 	int err;
 
+<<<<<<< HEAD
+=======
+	if (!(pf->flags & I40E_FLAG_PTP))
+		return -EOPNOTSUPP;
+
+>>>>>>> v4.9.227
 	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
 		return -EFAULT;
 
@@ -586,22 +714,37 @@ static long i40e_ptp_create_clock(struct i40e_pf *pf)
 	if (!IS_ERR_OR_NULL(pf->ptp_clock))
 		return 0;
 
+<<<<<<< HEAD
 	strncpy(pf->ptp_caps.name, i40e_driver_name, sizeof(pf->ptp_caps.name));
+=======
+	strncpy(pf->ptp_caps.name, i40e_driver_name,
+		sizeof(pf->ptp_caps.name) - 1);
+>>>>>>> v4.9.227
 	pf->ptp_caps.owner = THIS_MODULE;
 	pf->ptp_caps.max_adj = 999999999;
 	pf->ptp_caps.n_ext_ts = 0;
 	pf->ptp_caps.pps = 0;
 	pf->ptp_caps.adjfreq = i40e_ptp_adjfreq;
 	pf->ptp_caps.adjtime = i40e_ptp_adjtime;
+<<<<<<< HEAD
 	pf->ptp_caps.gettime = i40e_ptp_gettime;
 	pf->ptp_caps.settime = i40e_ptp_settime;
+=======
+	pf->ptp_caps.gettime64 = i40e_ptp_gettime;
+	pf->ptp_caps.settime64 = i40e_ptp_settime;
+>>>>>>> v4.9.227
 	pf->ptp_caps.enable = i40e_ptp_feature_enable;
 
 	/* Attempt to register the clock before enabling the hardware. */
 	pf->ptp_clock = ptp_clock_register(&pf->ptp_caps, &pf->pdev->dev);
+<<<<<<< HEAD
 	if (IS_ERR(pf->ptp_clock)) {
 		return PTR_ERR(pf->ptp_clock);
 	}
+=======
+	if (IS_ERR(pf->ptp_clock))
+		return PTR_ERR(pf->ptp_clock);
+>>>>>>> v4.9.227
 
 	/* clear the hwtstamp settings here during clock create, instead of
 	 * during regular init, so that we can maintain settings across a
@@ -625,8 +768,27 @@ void i40e_ptp_init(struct i40e_pf *pf)
 {
 	struct net_device *netdev = pf->vsi[pf->lan_vsi]->netdev;
 	struct i40e_hw *hw = &pf->hw;
+<<<<<<< HEAD
 	long err;
 
+=======
+	u32 pf_id;
+	long err;
+
+	/* Only one PF is assigned to control 1588 logic per port. Do not
+	 * enable any support for PFs not assigned via PRTTSYN_CTL0.PF_ID
+	 */
+	pf_id = (rd32(hw, I40E_PRTTSYN_CTL0) & I40E_PRTTSYN_CTL0_PF_ID_MASK) >>
+		I40E_PRTTSYN_CTL0_PF_ID_SHIFT;
+	if (hw->pf_id != pf_id) {
+		pf->flags &= ~I40E_FLAG_PTP;
+		dev_info(&pf->pdev->dev, "%s: PTP not supported on %s\n",
+			 __func__,
+			 netdev->name);
+		return;
+	}
+
+>>>>>>> v4.9.227
 	/* we have to initialize the lock first, since we can't control
 	 * when the user will enter the PHC device entry points
 	 */
@@ -638,12 +800,21 @@ void i40e_ptp_init(struct i40e_pf *pf)
 		pf->ptp_clock = NULL;
 		dev_err(&pf->pdev->dev, "%s: ptp_clock_register failed\n",
 			__func__);
+<<<<<<< HEAD
 	} else {
 		struct timespec ts;
 		u32 regval;
 
 		dev_info(&pf->pdev->dev, "%s: added PHC on %s\n", __func__,
 			 netdev->name);
+=======
+	} else if (pf->ptp_clock) {
+		struct timespec64 ts;
+		u32 regval;
+
+		if (pf->hw.debug_mask & I40E_DEBUG_LAN)
+			dev_info(&pf->pdev->dev, "PHC enabled\n");
+>>>>>>> v4.9.227
 		pf->flags |= I40E_FLAG_PTP;
 
 		/* Ensure the clocks are running. */
@@ -661,7 +832,11 @@ void i40e_ptp_init(struct i40e_pf *pf)
 		i40e_ptp_set_timestamp_mode(pf, &pf->tstamp_config);
 
 		/* Set the clock value. */
+<<<<<<< HEAD
 		ts = ktime_to_timespec(ktime_get_real());
+=======
+		ts = ktime_to_timespec64(ktime_get_real());
+>>>>>>> v4.9.227
 		i40e_ptp_settime(&pf->ptp_caps, &ts);
 	}
 }

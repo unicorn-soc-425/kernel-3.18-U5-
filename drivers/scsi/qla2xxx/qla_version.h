@@ -7,7 +7,11 @@
 /*
  * Driver version
  */
+<<<<<<< HEAD
 #define QLA2XXX_VERSION      "8.07.00.16-k"
+=======
+#define QLA2XXX_VERSION      "8.07.00.38-k"
+>>>>>>> v4.9.227
 
 #define QLA_DRIVER_MAJOR_VER	8
 #define QLA_DRIVER_MINOR_VER	7

@@ -35,6 +35,7 @@
 static void *videomemory;
 static u_long videomemorysize = VIDEOMEMSIZE;
 module_param(videomemorysize, ulong, 0);
+<<<<<<< HEAD
 static char *mode_option;
 static int bpp = 8;
 
@@ -105,6 +106,25 @@ static struct fb_var_screeninfo vfb_default = {
       	.hsync_len =	64,
       	.vsync_len =	2,
       	.vmode =	FB_VMODE_NONINTERLACED,
+=======
+MODULE_PARM_DESC(videomemorysize, "RAM available to frame buffer (in bytes)");
+
+static char *mode_option = NULL;
+module_param(mode_option, charp, 0);
+MODULE_PARM_DESC(mode_option, "Preferred video mode (e.g. 640x480-8@60)");
+
+static const struct fb_videomode vfb_default = {
+	.xres =		640,
+	.yres =		480,
+	.pixclock =	20000,
+	.left_margin =	64,
+	.right_margin =	64,
+	.upper_margin =	32,
+	.lower_margin =	32,
+	.hsync_len =	64,
+	.vsync_len =	2,
+	.vmode =	FB_VMODE_NONINTERLACED,
+>>>>>>> v4.9.227
 };
 
 static struct fb_fix_screeninfo vfb_fix = {
@@ -119,6 +139,10 @@ static struct fb_fix_screeninfo vfb_fix = {
 
 static bool vfb_enable __initdata = 0;	/* disabled by default */
 module_param(vfb_enable, bool, 0);
+<<<<<<< HEAD
+=======
+MODULE_PARM_DESC(vfb_enable, "Enable Virtual FB driver");
+>>>>>>> v4.9.227
 
 static int vfb_check_var(struct fb_var_screeninfo *var,
 			 struct fb_info *info);
@@ -436,6 +460,7 @@ static int vfb_pan_display(struct fb_var_screeninfo *var,
 static int vfb_mmap(struct fb_info *info,
 		    struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	unsigned long start = vma->vm_start;
 	unsigned long size = vma->vm_end - vma->vm_start;
 	unsigned long offset = vma->vm_pgoff << PAGE_SHIFT;
@@ -465,6 +490,9 @@ static int vfb_mmap(struct fb_info *info,
 
 	return 0;
 
+=======
+	return remap_vmalloc_range(vma, (void *)info->fix.smem_start, vma->vm_pgoff);
+>>>>>>> v4.9.227
 }
 
 #ifndef MODULE
@@ -492,6 +520,7 @@ static int __init vfb_setup(char *options)
 		/* Test disable for backwards compatibility */
 		if (!strcmp(this_opt, "disable"))
 			vfb_enable = 0;
+<<<<<<< HEAD
 		else if (!strncmp(this_opt, "bpp=", 4)) {
 			if (kstrtoint(this_opt + 4, 0, &bpp) < 0)
 				bpp = 8;
@@ -499,6 +528,9 @@ static int __init vfb_setup(char *options)
 			if (kstrtoul(this_opt + 8, 0, &videomemorysize) < 0)
 				videomemorysize = VIDEOMEMSIZE;
 		} else
+=======
+		else
+>>>>>>> v4.9.227
 			mode_option = this_opt;
 	}
 	return 1;
@@ -512,11 +544,16 @@ static int __init vfb_setup(char *options)
 static int vfb_probe(struct platform_device *dev)
 {
 	struct fb_info *info;
+<<<<<<< HEAD
+=======
+	unsigned int size = PAGE_ALIGN(videomemorysize);
+>>>>>>> v4.9.227
 	int retval = -ENOMEM;
 
 	/*
 	 * For real video cards we use ioremap.
 	 */
+<<<<<<< HEAD
 	if (!(videomemory = rvmalloc(videomemorysize)))
 		return retval;
 
@@ -528,6 +565,11 @@ static int vfb_probe(struct platform_device *dev)
 	 */
 	memset(videomemory, 0, videomemorysize);
 
+=======
+	if (!(videomemory = vmalloc_32_user(size)))
+		return retval;
+
+>>>>>>> v4.9.227
 	info = framebuffer_alloc(sizeof(u32) * 256, &dev->dev);
 	if (!info)
 		goto err;
@@ -535,11 +577,21 @@ static int vfb_probe(struct platform_device *dev)
 	info->screen_base = (char __iomem *)videomemory;
 	info->fbops = &vfb_ops;
 
+<<<<<<< HEAD
 	retval = fb_find_mode(&info->var, info, mode_option,
 			      NULL, 0, NULL, bpp);
 
 	if (!retval || (retval == 4))
 		info->var = vfb_default;
+=======
+	if (!fb_find_mode(&info->var, info, mode_option,
+			  NULL, 0, &vfb_default, 8)){
+		fb_err(info, "Unable to find usable video mode.\n");
+		retval = -EINVAL;
+		goto err1;
+	}
+
+>>>>>>> v4.9.227
 	vfb_fix.smem_start = (unsigned long) videomemory;
 	vfb_fix.smem_len = videomemorysize;
 	info->fix = vfb_fix;
@@ -566,7 +618,11 @@ err2:
 err1:
 	framebuffer_release(info);
 err:
+<<<<<<< HEAD
 	rvfree(videomemory, videomemorysize);
+=======
+	vfree(videomemory);
+>>>>>>> v4.9.227
 	return retval;
 }
 
@@ -576,7 +632,11 @@ static int vfb_remove(struct platform_device *dev)
 
 	if (info) {
 		unregister_framebuffer(info);
+<<<<<<< HEAD
 		rvfree(videomemory, videomemorysize);
+=======
+		vfree(videomemory);
+>>>>>>> v4.9.227
 		fb_dealloc_cmap(&info->cmap);
 		framebuffer_release(info);
 	}

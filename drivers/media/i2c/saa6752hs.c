@@ -554,25 +554,57 @@ static int saa6752hs_init(struct v4l2_subdev *sd, u32 leading_null_bytes)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int saa6752hs_g_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *f)
 {
 	struct saa6752hs_state *h = to_state(sd);
 
+=======
+static int saa6752hs_get_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *f = &format->format;
+	struct saa6752hs_state *h = to_state(sd);
+
+	if (format->pad)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	if (h->video_format == SAA6752HS_VF_UNKNOWN)
 		h->video_format = SAA6752HS_VF_D1;
 	f->width = v4l2_format_table[h->video_format].fmt.pix.width;
 	f->height = v4l2_format_table[h->video_format].fmt.pix.height;
+<<<<<<< HEAD
 	f->code = V4L2_MBUS_FMT_FIXED;
+=======
+	f->code = MEDIA_BUS_FMT_FIXED;
+>>>>>>> v4.9.227
 	f->field = V4L2_FIELD_INTERLACED;
 	f->colorspace = V4L2_COLORSPACE_SMPTE170M;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int saa6752hs_try_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *f)
 {
 	int dist_352, dist_480, dist_720;
 
 	f->code = V4L2_MBUS_FMT_FIXED;
+=======
+static int saa6752hs_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *f = &format->format;
+	struct saa6752hs_state *h = to_state(sd);
+	int dist_352, dist_480, dist_720;
+
+	if (format->pad)
+		return -EINVAL;
+
+	f->code = MEDIA_BUS_FMT_FIXED;
+>>>>>>> v4.9.227
 
 	dist_352 = abs(f->width - 352);
 	dist_480 = abs(f->width - 480);
@@ -592,6 +624,7 @@ static int saa6752hs_try_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_frame
 	}
 	f->field = V4L2_FIELD_INTERLACED;
 	f->colorspace = V4L2_COLORSPACE_SMPTE170M;
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -601,6 +634,13 @@ static int saa6752hs_s_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefm
 
 	if (f->code != V4L2_MBUS_FMT_FIXED)
 		return -EINVAL;
+=======
+
+	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
+		cfg->try_fmt = *f;
+		return 0;
+	}
+>>>>>>> v4.9.227
 
 	/*
 	  FIXME: translate and round width/height into EMPRESS
@@ -614,7 +654,13 @@ static int saa6752hs_s_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefm
 	  D1     | 720x576 | 720x480
 	*/
 
+<<<<<<< HEAD
 	saa6752hs_try_mbus_fmt(sd, f);
+=======
+	if (f->code != MEDIA_BUS_FMT_FIXED)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	if (f->width == 720)
 		h->video_format = SAA6752HS_VF_D1;
 	else if (f->width == 480)
@@ -647,14 +693,26 @@ static const struct v4l2_subdev_core_ops saa6752hs_core_ops = {
 
 static const struct v4l2_subdev_video_ops saa6752hs_video_ops = {
 	.s_std = saa6752hs_s_std,
+<<<<<<< HEAD
 	.s_mbus_fmt = saa6752hs_s_mbus_fmt,
 	.try_mbus_fmt = saa6752hs_try_mbus_fmt,
 	.g_mbus_fmt = saa6752hs_g_mbus_fmt,
+=======
+};
+
+static const struct v4l2_subdev_pad_ops saa6752hs_pad_ops = {
+	.get_fmt = saa6752hs_get_fmt,
+	.set_fmt = saa6752hs_set_fmt,
+>>>>>>> v4.9.227
 };
 
 static const struct v4l2_subdev_ops saa6752hs_ops = {
 	.core = &saa6752hs_core_ops,
 	.video = &saa6752hs_video_ops,
+<<<<<<< HEAD
+=======
+	.pad = &saa6752hs_pad_ops,
+>>>>>>> v4.9.227
 };
 
 static int saa6752hs_probe(struct i2c_client *client,
@@ -779,7 +837,10 @@ MODULE_DEVICE_TABLE(i2c, saa6752hs_id);
 
 static struct i2c_driver saa6752hs_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "saa6752hs",
 	},
 	.probe		= saa6752hs_probe,

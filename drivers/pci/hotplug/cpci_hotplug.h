@@ -52,6 +52,7 @@ struct slot {
 };
 
 struct cpci_hp_controller_ops {
+<<<<<<< HEAD
 	int (*query_enum) (void);
 	int (*enable_irq) (void);
 	int (*disable_irq) (void);
@@ -59,6 +60,15 @@ struct cpci_hp_controller_ops {
 	int (*hardware_test) (struct slot *slot, u32 value);
 	u8  (*get_power) (struct slot *slot);
 	int (*set_power) (struct slot *slot, int value);
+=======
+	int (*query_enum)(void);
+	int (*enable_irq)(void);
+	int (*disable_irq)(void);
+	int (*check_irq)(void *dev_id);
+	int (*hardware_test)(struct slot *slot, u32 value);
+	u8  (*get_power)(struct slot *slot);
+	int (*set_power)(struct slot *slot, int value);
+>>>>>>> v4.9.227
 };
 
 struct cpci_hp_controller {
@@ -101,10 +111,15 @@ int cpci_unconfigure_slot(struct slot *slot);
 
 #ifdef CONFIG_HOTPLUG_PCI_CPCI
 int cpci_hotplug_init(int debug);
+<<<<<<< HEAD
 void cpci_hotplug_exit(void);
 #else
 static inline int cpci_hotplug_init(int debug) { return 0; }
 static inline void cpci_hotplug_exit(void) { }
+=======
+#else
+static inline int cpci_hotplug_init(int debug) { return 0; }
+>>>>>>> v4.9.227
 #endif
 
 #endif	/* _CPCI_HOTPLUG_H */

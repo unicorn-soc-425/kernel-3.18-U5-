@@ -172,7 +172,11 @@ static inline char *rtl819x_translate_scan(struct ieee80211_device *ieee,
 	iwe.cmd = IWEVCUSTOM;
 	iwe.u.data.length = p - custom;
 	if (iwe.u.data.length)
+<<<<<<< HEAD
 	start = iwe_stream_add_point(info, start, stop, &iwe, custom);
+=======
+		start = iwe_stream_add_point(info, start, stop, &iwe, custom);
+>>>>>>> v4.9.227
 	/* Add quality statistics */
 	/* TODO: Fix these values... */
 	iwe.cmd = IWEVQUAL;
@@ -253,7 +257,11 @@ int ieee80211_wx_get_scan(struct ieee80211_device *ieee,
 	int i = 0;
 	int err = 0;
 	IEEE80211_DEBUG_WX("Getting scan\n");
+<<<<<<< HEAD
 	down(&ieee->wx_sem);
+=======
+	mutex_lock(&ieee->wx_mutex);
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	list_for_each_entry(network, &ieee->network_list, list) {
@@ -262,7 +270,11 @@ int ieee80211_wx_get_scan(struct ieee80211_device *ieee,
 		{
 			err = -E2BIG;
 			break;
+<<<<<<< HEAD
 												}
+=======
+		}
+>>>>>>> v4.9.227
 		if (ieee->scan_age == 0 ||
 		    time_after(network->last_scanned + ieee->scan_age, jiffies))
 			ev = rtl819x_translate_scan(ieee, ev, stop, network, info);
@@ -277,7 +289,11 @@ int ieee80211_wx_get_scan(struct ieee80211_device *ieee,
 	}
 
 	spin_unlock_irqrestore(&ieee->lock, flags);
+<<<<<<< HEAD
 	up(&ieee->wx_sem);
+=======
+	mutex_unlock(&ieee->wx_mutex);
+>>>>>>> v4.9.227
 	wrqu->data.length = ev -  extra;
 	wrqu->data.flags = 0;
 
@@ -522,7 +538,10 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
 	struct ieee80211_security sec = {
 		.flags = 0,
 	};
+<<<<<<< HEAD
 	//printk("======>encoding flag:%x,ext flag:%x, ext alg:%d\n", encoding->flags,ext->ext_flags, ext->alg);
+=======
+>>>>>>> v4.9.227
 	idx = encoding->flags & IW_ENCODE_INDEX;
 	if (idx) {
 		if (idx < 1 || idx > WEP_KEYS)
@@ -538,7 +557,10 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
 		group_key = 1;
 	} else {
 		/* some Cisco APs use idx>0 for unicast in dynamic WEP */
+<<<<<<< HEAD
 		//printk("not group key, flags:%x, ext->alg:%d\n", ext->ext_flags, ext->alg);
+=======
+>>>>>>> v4.9.227
 		if (idx != 0 && ext->alg != IW_ENCODE_ALG_WEP)
 			return -EINVAL;
 		if (ieee->iw_mode == IW_MODE_INFRA)
@@ -567,7 +589,10 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
 			sec.level = SEC_LEVEL_0;
 			sec.flags |= SEC_LEVEL;
 		}
+<<<<<<< HEAD
 		//printk("disabled: flag:%x\n", encoding->flags);
+=======
+>>>>>>> v4.9.227
 		goto done;
 	}
 
@@ -638,7 +663,10 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
 		goto done;
 	}
  //skip_host_crypt:
+<<<<<<< HEAD
 	//printk("skip_host_crypt:ext_flags:%x\n", ext->ext_flags);
+=======
+>>>>>>> v4.9.227
 	if (ext->ext_flags & IW_ENCODE_EXT_SET_TX_KEY) {
 		ieee->tx_keyidx = idx;
 		sec.active_key = idx;
@@ -760,7 +788,10 @@ int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 	switch (data->flags & IW_AUTH_INDEX) {
 	case IW_AUTH_WPA_VERSION:
 	     /*need to support wpa2 here*/
+<<<<<<< HEAD
 		//printk("wpa version:%x\n", data->value);
+=======
+>>>>>>> v4.9.227
 		break;
 	case IW_AUTH_CIPHER_PAIRWISE:
 	case IW_AUTH_CIPHER_GROUP:
@@ -791,16 +822,25 @@ int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 		else if(data->value & IW_AUTH_ALG_LEAP){
 			ieee->open_wep = 1;
 			ieee->auth_mode = 2;
+<<<<<<< HEAD
 			//printk("hahahaa:LEAP\n");
 		}
 		else
 			return -EINVAL;
 		//printk("open_wep:%d\n", ieee->open_wep);
+=======
+		}
+		else
+			return -EINVAL;
+>>>>>>> v4.9.227
 		break;
 
 	case IW_AUTH_WPA_ENABLED:
 		ieee->wpa_enabled = (data->value)?1:0;
+<<<<<<< HEAD
 		//printk("enalbe wpa:%d\n", ieee->wpa_enabled);
+=======
+>>>>>>> v4.9.227
 		break;
 
 	case IW_AUTH_RX_UNENCRYPTED_EAPOL:

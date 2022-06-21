@@ -4,3 +4,9 @@
 
 obj-y					:= socfpga.o
 obj-$(CONFIG_SMP)	+= headsmp.o platsmp.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_SOCFPGA_SUSPEND)	+= pm.o self-refresh.o
+obj-$(CONFIG_EDAC_ALTERA_L2C)	+= l2_cache.o
+obj-$(CONFIG_EDAC_ALTERA_OCRAM)	+= ocram.o
+>>>>>>> v4.9.227

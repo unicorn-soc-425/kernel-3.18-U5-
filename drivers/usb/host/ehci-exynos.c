@@ -74,14 +74,25 @@ static int exynos_ehci_get_phy(struct device *dev,
 
 		phy = devm_of_phy_get(dev, child, NULL);
 		exynos_ehci->phy[phy_number] = phy;
+<<<<<<< HEAD
 		of_node_put(child);
 		if (IS_ERR(phy)) {
 			ret = PTR_ERR(phy);
 			if (ret == -EPROBE_DEFER) {
+=======
+		if (IS_ERR(phy)) {
+			ret = PTR_ERR(phy);
+			if (ret == -EPROBE_DEFER) {
+				of_node_put(child);
+>>>>>>> v4.9.227
 				return ret;
 			} else if (ret != -ENOSYS && ret != -ENODEV) {
 				dev_err(dev,
 					"Error retrieving usb2 phy: %d\n", ret);
+<<<<<<< HEAD
+=======
+				of_node_put(child);
+>>>>>>> v4.9.227
 				return ret;
 			}
 		}
@@ -188,6 +199,7 @@ skip_phy:
 		goto fail_clk;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res) {
 		dev_err(&pdev->dev, "Failed to get I/O memory\n");
 		err = -ENXIO;
@@ -196,12 +208,20 @@ skip_phy:
 
 	hcd->rsrc_start = res->start;
 	hcd->rsrc_len = resource_size(res);
+=======
+>>>>>>> v4.9.227
 	hcd->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(hcd->regs)) {
 		err = PTR_ERR(hcd->regs);
 		goto fail_io;
 	}
 
+<<<<<<< HEAD
+=======
+	hcd->rsrc_start = res->start;
+	hcd->rsrc_len = resource_size(res);
+
+>>>>>>> v4.9.227
 	irq = platform_get_irq(pdev, 0);
 	if (!irq) {
 		dev_err(&pdev->dev, "Failed to get IRQ\n");
@@ -323,12 +343,19 @@ static struct platform_driver exynos_ehci_driver = {
 	.shutdown	= usb_hcd_platform_shutdown,
 	.driver = {
 		.name	= "exynos-ehci",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &exynos_ehci_pm_ops,
 		.of_match_table = of_match_ptr(exynos_ehci_match),
 	}
 };
+<<<<<<< HEAD
 static const struct ehci_driver_overrides exynos_overrides __initdata = {
+=======
+static const struct ehci_driver_overrides exynos_overrides __initconst = {
+>>>>>>> v4.9.227
 	.extra_priv_size = sizeof(struct exynos_ehci_hcd),
 };
 

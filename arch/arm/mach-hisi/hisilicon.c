@@ -11,7 +11,10 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
 #include <linux/clk-provider.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clocksource.h>
 #include <linux/irqchip.h>
 
@@ -45,7 +48,11 @@ static void __init hi3620_map_io(void)
 	iotable_init(hi3620_io_desc, ARRAY_SIZE(hi3620_io_desc));
 }
 
+<<<<<<< HEAD
 static const char *hi3xxx_compat[] __initconst = {
+=======
+static const char *const hi3xxx_compat[] __initconst = {
+>>>>>>> v4.9.227
 	"hisilicon,hi3620-hi4511",
 	NULL,
 };
@@ -54,6 +61,7 @@ DT_MACHINE_START(HI3620, "Hisilicon Hi3620 (Flattened Device Tree)")
 	.map_io		= hi3620_map_io,
 	.dt_compat	= hi3xxx_compat,
 MACHINE_END
+<<<<<<< HEAD
 
 static const char *hix5hd2_compat[] __initconst = {
 	"hisilicon,hix5hd2",
@@ -72,3 +80,5 @@ static const char *hip04_compat[] __initconst = {
 DT_MACHINE_START(HIP04, "Hisilicon HiP04 (Flattened Device Tree)")
 	.dt_compat	= hip04_compat,
 MACHINE_END
+=======
+>>>>>>> v4.9.227

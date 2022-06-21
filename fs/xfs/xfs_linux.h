@@ -32,6 +32,7 @@ typedef unsigned int		__uint32_t;
 typedef signed long long int	__int64_t;
 typedef unsigned long long int	__uint64_t;
 
+<<<<<<< HEAD
 typedef __uint32_t		inst_t;		/* an instruction */
 
 typedef __s64			xfs_off_t;	/* <file offset> type */
@@ -52,6 +53,14 @@ typedef __uint64_t __psunsigned_t;
 #error BITS_PER_LONG must be 32 or 64
 #endif
 
+=======
+typedef __s64			xfs_off_t;	/* <file offset> type */
+typedef unsigned long long	xfs_ino_t;	/* <inode> type */
+typedef __s64			xfs_daddr_t;	/* <disk address> type */
+typedef __u32			xfs_dev_t;
+typedef __u32			xfs_nlink_t;
+
+>>>>>>> v4.9.227
 #include "xfs_types.h"
 
 #include "kmem.h"
@@ -116,6 +125,7 @@ typedef __uint64_t __psunsigned_t;
 #undef XFS_NATIVE_HOST
 #endif
 
+<<<<<<< HEAD
 /*
  * Feature macros (disable/enable)
  */
@@ -125,6 +135,8 @@ typedef __uint64_t __psunsigned_t;
 #undef  HAVE_PERCPU_SB	/* per cpu superblock counters are a 2.6 feature */
 #endif
 
+=======
+>>>>>>> v4.9.227
 #define irix_sgid_inherit	xfs_params.sgid_inherit.val
 #define irix_symlink_mode	xfs_params.symlink_mode.val
 #define xfs_panic_mask		xfs_params.panic_mask.val
@@ -139,6 +151,10 @@ typedef __uint64_t __psunsigned_t;
 #define xfs_inherit_nodefrag	xfs_params.inherit_nodfrg.val
 #define xfs_fstrm_centisecs	xfs_params.fstrm_timer.val
 #define xfs_eofb_secs		xfs_params.eofb_timer.val
+<<<<<<< HEAD
+=======
+#define xfs_cowb_secs		xfs_params.cowb_timer.val
+>>>>>>> v4.9.227
 
 #define current_cpu()		(raw_smp_processor_id())
 #define current_pid()		(current->pid)
@@ -158,7 +174,11 @@ typedef __uint64_t __psunsigned_t;
  * Size of block device i/o is parameterized here.
  * Currently the system supports page-sized i/o.
  */
+<<<<<<< HEAD
 #define	BLKDEV_IOSHIFT		PAGE_CACHE_SHIFT
+=======
+#define	BLKDEV_IOSHIFT		PAGE_SHIFT
+>>>>>>> v4.9.227
 #define	BLKDEV_IOSIZE		(1<<BLKDEV_IOSHIFT)
 /* number of BB's per block device block */
 #define	BLKDEV_BB		BTOBB(BLKDEV_IOSIZE)
@@ -194,6 +214,16 @@ struct xfs_kobj {
 	struct completion	complete;
 };
 
+<<<<<<< HEAD
+=======
+struct xstats {
+	struct xfsstats __percpu	*xs_stats;
+	struct xfs_kobj			xs_kobj;
+};
+
+extern struct xstats xfsstats;
+
+>>>>>>> v4.9.227
 /* Kernel uid/gid conversion. These are used to convert to/from the on disk
  * uid_t/gid_t types to the kuid_t/kgid_t types that the kernel uses internally.
  * The conversion here is type only, the value will remain the same since we
@@ -344,6 +374,7 @@ static inline __uint64_t howmany_64(__uint64_t x, __uint32_t y)
 	return x;
 }
 
+<<<<<<< HEAD
 /* ARM old ABI has some weird alignment/padding */
 #if defined(__arm__) && !defined(__ARM_EABI__)
 #define __arch_pack __attribute__((packed))
@@ -357,6 +388,14 @@ static inline __uint64_t howmany_64(__uint64_t x, __uint32_t y)
 #ifdef DEBUG
 #define ASSERT(expr)	\
 	(unlikely(expr) ? (void)0 : assfail(#expr, __FILE__, __LINE__))
+=======
+#define ASSERT_ALWAYS(expr)	\
+	(likely(expr) ? (void)0 : assfail(#expr, __FILE__, __LINE__))
+
+#ifdef DEBUG
+#define ASSERT(expr)	\
+	(likely(expr) ? (void)0 : assfail(#expr, __FILE__, __LINE__))
+>>>>>>> v4.9.227
 
 #ifndef STATIC
 # define STATIC noinline
@@ -367,7 +406,11 @@ static inline __uint64_t howmany_64(__uint64_t x, __uint32_t y)
 #ifdef XFS_WARN
 
 #define ASSERT(expr)	\
+<<<<<<< HEAD
 	(unlikely(expr) ? (void)0 : asswarn(#expr, __FILE__, __LINE__))
+=======
+	(likely(expr) ? (void)0 : asswarn(#expr, __FILE__, __LINE__))
+>>>>>>> v4.9.227
 
 #ifndef STATIC
 # define STATIC static noinline
@@ -384,4 +427,20 @@ static inline __uint64_t howmany_64(__uint64_t x, __uint32_t y)
 #endif /* XFS_WARN */
 #endif /* DEBUG */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_XFS_RT
+
+/*
+ * make sure we ignore the inode flag if the filesystem doesn't have a
+ * configured realtime device.
+ */
+#define XFS_IS_REALTIME_INODE(ip)			\
+	(((ip)->i_d.di_flags & XFS_DIFLAG_REALTIME) &&	\
+	 (ip)->i_mount->m_rtdev_targp)
+#else
+#define XFS_IS_REALTIME_INODE(ip) (0)
+#endif
+
+>>>>>>> v4.9.227
 #endif /* __XFS_LINUX__ */

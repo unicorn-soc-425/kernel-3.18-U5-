@@ -212,11 +212,14 @@ int pwrdm_for_each_nolock(int (*fn)(struct powerdomain *pwrdm, void *user),
 			void *user);
 
 int pwrdm_add_clkdm(struct powerdomain *pwrdm, struct clockdomain *clkdm);
+<<<<<<< HEAD
 int pwrdm_del_clkdm(struct powerdomain *pwrdm, struct clockdomain *clkdm);
 int pwrdm_for_each_clkdm(struct powerdomain *pwrdm,
 			 int (*fn)(struct powerdomain *pwrdm,
 				   struct clockdomain *clkdm));
 struct voltagedomain *pwrdm_get_voltdm(struct powerdomain *pwrdm);
+=======
+>>>>>>> v4.9.227
 
 int pwrdm_get_mem_bank_count(struct powerdomain *pwrdm);
 

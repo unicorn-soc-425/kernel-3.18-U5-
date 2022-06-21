@@ -9,6 +9,10 @@
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/etherdevice.h>
+>>>>>>> v4.9.227
 
 #include <asm/oplib.h>
 #include <asm/idprom.h>
@@ -60,6 +64,15 @@ static void __init display_system_type(unsigned char machtype)
 {
 }
 #endif
+<<<<<<< HEAD
+=======
+
+unsigned char *arch_get_platform_mac_address(void)
+{
+	return idprom->id_ethaddr;
+}
+
+>>>>>>> v4.9.227
 /* Calculate the IDPROM checksum (xor of the data bytes). */
 static unsigned char __init calc_idprom_cksum(struct idprom *idprom)
 {

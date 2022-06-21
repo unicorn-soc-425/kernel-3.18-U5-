@@ -17,12 +17,19 @@
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 #include <linux/hash.h>
+<<<<<<< HEAD
 #include <linux/kmemleak.h>
+=======
+>>>>>>> v4.9.227
 
 #define ODEBUG_HASH_BITS	14
 #define ODEBUG_HASH_SIZE	(1 << ODEBUG_HASH_BITS)
 
+<<<<<<< HEAD
 #define ODEBUG_POOL_SIZE	512
+=======
+#define ODEBUG_POOL_SIZE	1024
+>>>>>>> v4.9.227
 #define ODEBUG_POOL_MIN_LEVEL	256
 
 #define ODEBUG_CHUNK_SHIFT	PAGE_SHIFT
@@ -101,7 +108,10 @@ static void fill_pool(void)
 		if (!new)
 			return;
 
+<<<<<<< HEAD
 		kmemleak_not_leak(new);
+=======
+>>>>>>> v4.9.227
 		raw_spin_lock_irqsave(&pool_lock, flags);
 		hlist_add_head(&new->node, &obj_pool);
 		obj_pool_free++;
@@ -271,6 +281,7 @@ static void debug_print_object(struct debug_obj *obj, char *msg)
  * Try to repair the damage, so we have a better chance to get useful
  * debug output.
  */
+<<<<<<< HEAD
 static int
 debug_object_fixup(int (*fixup)(void *addr, enum debug_obj_state state),
 		   void * addr, enum debug_obj_state state)
@@ -281,6 +292,17 @@ debug_object_fixup(int (*fixup)(void *addr, enum debug_obj_state state),
 		fixed = fixup(addr, state);
 	debug_objects_fixups += fixed;
 	return fixed;
+=======
+static bool
+debug_object_fixup(bool (*fixup)(void *addr, enum debug_obj_state state),
+		   void * addr, enum debug_obj_state state)
+{
+	if (fixup && fixup(addr, state)) {
+		debug_objects_fixups++;
+		return true;
+	}
+	return false;
+>>>>>>> v4.9.227
 }
 
 static void debug_object_is_on_stack(void *addr, int onstack)
@@ -368,6 +390,10 @@ void debug_object_init(void *addr, struct debug_obj_descr *descr)
 
 	__debug_object_init(addr, descr, 0);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_object_init);
+>>>>>>> v4.9.227
 
 /**
  * debug_object_init_on_stack - debug checks when an object on stack is
@@ -382,6 +408,10 @@ void debug_object_init_on_stack(void *addr, struct debug_obj_descr *descr)
 
 	__debug_object_init(addr, descr, 1);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_object_init_on_stack);
+>>>>>>> v4.9.227
 
 /**
  * debug_object_activate - debug checks when an object is activated
@@ -421,7 +451,11 @@ int debug_object_activate(void *addr, struct debug_obj_descr *descr)
 			state = obj->state;
 			raw_spin_unlock_irqrestore(&db->lock, flags);
 			ret = debug_object_fixup(descr->fixup_activate, addr, state);
+<<<<<<< HEAD
 			return ret ? -EINVAL : 0;
+=======
+			return ret ? 0 : -EINVAL;
+>>>>>>> v4.9.227
 
 		case ODEBUG_STATE_DESTROYED:
 			debug_print_object(obj, "activate");
@@ -437,6 +471,7 @@ int debug_object_activate(void *addr, struct debug_obj_descr *descr)
 
 	raw_spin_unlock_irqrestore(&db->lock, flags);
 	/*
+<<<<<<< HEAD
 	 * This happens when a static object is activated. We
 	 * let the type specific code decide whether this is
 	 * true or not.
@@ -448,6 +483,27 @@ int debug_object_activate(void *addr, struct debug_obj_descr *descr)
 	}
 	return 0;
 }
+=======
+	 * We are here when a static object is activated. We
+	 * let the type specific code confirm whether this is
+	 * true or not. if true, we just make sure that the
+	 * static object is tracked in the object tracker. If
+	 * not, this must be a bug, so we try to fix it up.
+	 */
+	if (descr->is_static_object && descr->is_static_object(addr)) {
+		/* track this static object */
+		debug_object_init(addr, descr);
+		debug_object_activate(addr, descr);
+	} else {
+		debug_print_object(&o, "activate");
+		ret = debug_object_fixup(descr->fixup_activate, addr,
+					ODEBUG_STATE_NOTAVAILABLE);
+		return ret ? 0 : -EINVAL;
+	}
+	return 0;
+}
+EXPORT_SYMBOL_GPL(debug_object_activate);
+>>>>>>> v4.9.227
 
 /**
  * debug_object_deactivate - debug checks when an object is deactivated
@@ -495,6 +551,10 @@ void debug_object_deactivate(void *addr, struct debug_obj_descr *descr)
 
 	raw_spin_unlock_irqrestore(&db->lock, flags);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_object_deactivate);
+>>>>>>> v4.9.227
 
 /**
  * debug_object_destroy - debug checks when an object is destroyed
@@ -541,6 +601,10 @@ void debug_object_destroy(void *addr, struct debug_obj_descr *descr)
 out_unlock:
 	raw_spin_unlock_irqrestore(&db->lock, flags);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_object_destroy);
+>>>>>>> v4.9.227
 
 /**
  * debug_object_free - debug checks when an object is freed
@@ -581,6 +645,10 @@ void debug_object_free(void *addr, struct debug_obj_descr *descr)
 out_unlock:
 	raw_spin_unlock_irqrestore(&db->lock, flags);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_object_free);
+>>>>>>> v4.9.227
 
 /**
  * debug_object_assert_init - debug checks when object should be init-ed
@@ -608,17 +676,36 @@ void debug_object_assert_init(void *addr, struct debug_obj_descr *descr)
 
 		raw_spin_unlock_irqrestore(&db->lock, flags);
 		/*
+<<<<<<< HEAD
 		 * Maybe the object is static.  Let the type specific
 		 * code decide what to do.
 		 */
 		if (debug_object_fixup(descr->fixup_assert_init, addr,
 				       ODEBUG_STATE_NOTAVAILABLE))
 			debug_print_object(&o, "assert_init");
+=======
+		 * Maybe the object is static, and we let the type specific
+		 * code confirm. Track this static object if true, else invoke
+		 * fixup.
+		 */
+		if (descr->is_static_object && descr->is_static_object(addr)) {
+			/* Track this static object */
+			debug_object_init(addr, descr);
+		} else {
+			debug_print_object(&o, "assert_init");
+			debug_object_fixup(descr->fixup_assert_init, addr,
+					   ODEBUG_STATE_NOTAVAILABLE);
+		}
+>>>>>>> v4.9.227
 		return;
 	}
 
 	raw_spin_unlock_irqrestore(&db->lock, flags);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_object_assert_init);
+>>>>>>> v4.9.227
 
 /**
  * debug_object_active_state - debug checks object usage state machine
@@ -666,6 +753,10 @@ debug_object_active_state(void *addr, struct debug_obj_descr *descr,
 
 	raw_spin_unlock_irqrestore(&db->lock, flags);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_object_active_state);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_DEBUG_OBJECTS_FREE
 static void __debug_check_no_obj_freed(const void *address, unsigned long size)
@@ -798,11 +889,25 @@ struct self_test {
 
 static __initdata struct debug_obj_descr descr_type_test;
 
+<<<<<<< HEAD
+=======
+static bool __init is_static_object(void *addr)
+{
+	struct self_test *obj = addr;
+
+	return obj->static_init;
+}
+
+>>>>>>> v4.9.227
 /*
  * fixup_init is called when:
  * - an active object is initialized
  */
+<<<<<<< HEAD
 static int __init fixup_init(void *addr, enum debug_obj_state state)
+=======
+static bool __init fixup_init(void *addr, enum debug_obj_state state)
+>>>>>>> v4.9.227
 {
 	struct self_test *obj = addr;
 
@@ -810,23 +915,36 @@ static int __init fixup_init(void *addr, enum debug_obj_state state)
 	case ODEBUG_STATE_ACTIVE:
 		debug_object_deactivate(obj, &descr_type_test);
 		debug_object_init(obj, &descr_type_test);
+<<<<<<< HEAD
 		return 1;
 	default:
 		return 0;
+=======
+		return true;
+	default:
+		return false;
+>>>>>>> v4.9.227
 	}
 }
 
 /*
  * fixup_activate is called when:
  * - an active object is activated
+<<<<<<< HEAD
  * - an unknown object is activated (might be a statically initialized object)
  */
 static int __init fixup_activate(void *addr, enum debug_obj_state state)
+=======
+ * - an unknown non-static object is activated
+ */
+static bool __init fixup_activate(void *addr, enum debug_obj_state state)
+>>>>>>> v4.9.227
 {
 	struct self_test *obj = addr;
 
 	switch (state) {
 	case ODEBUG_STATE_NOTAVAILABLE:
+<<<<<<< HEAD
 		if (obj->static_init == 1) {
 			debug_object_init(obj, &descr_type_test);
 			debug_object_activate(obj, &descr_type_test);
@@ -841,6 +959,16 @@ static int __init fixup_activate(void *addr, enum debug_obj_state state)
 
 	default:
 		return 0;
+=======
+		return true;
+	case ODEBUG_STATE_ACTIVE:
+		debug_object_deactivate(obj, &descr_type_test);
+		debug_object_activate(obj, &descr_type_test);
+		return true;
+
+	default:
+		return false;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -848,7 +976,11 @@ static int __init fixup_activate(void *addr, enum debug_obj_state state)
  * fixup_destroy is called when:
  * - an active object is destroyed
  */
+<<<<<<< HEAD
 static int __init fixup_destroy(void *addr, enum debug_obj_state state)
+=======
+static bool __init fixup_destroy(void *addr, enum debug_obj_state state)
+>>>>>>> v4.9.227
 {
 	struct self_test *obj = addr;
 
@@ -856,9 +988,15 @@ static int __init fixup_destroy(void *addr, enum debug_obj_state state)
 	case ODEBUG_STATE_ACTIVE:
 		debug_object_deactivate(obj, &descr_type_test);
 		debug_object_destroy(obj, &descr_type_test);
+<<<<<<< HEAD
 		return 1;
 	default:
 		return 0;
+=======
+		return true;
+	default:
+		return false;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -866,7 +1004,11 @@ static int __init fixup_destroy(void *addr, enum debug_obj_state state)
  * fixup_free is called when:
  * - an active object is freed
  */
+<<<<<<< HEAD
 static int __init fixup_free(void *addr, enum debug_obj_state state)
+=======
+static bool __init fixup_free(void *addr, enum debug_obj_state state)
+>>>>>>> v4.9.227
 {
 	struct self_test *obj = addr;
 
@@ -874,9 +1016,15 @@ static int __init fixup_free(void *addr, enum debug_obj_state state)
 	case ODEBUG_STATE_ACTIVE:
 		debug_object_deactivate(obj, &descr_type_test);
 		debug_object_free(obj, &descr_type_test);
+<<<<<<< HEAD
 		return 1;
 	default:
 		return 0;
+=======
+		return true;
+	default:
+		return false;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -922,6 +1070,10 @@ out:
 
 static __initdata struct debug_obj_descr descr_type_test = {
 	.name			= "selftest",
+<<<<<<< HEAD
+=======
+	.is_static_object	= is_static_object,
+>>>>>>> v4.9.227
 	.fixup_init		= fixup_init,
 	.fixup_activate		= fixup_activate,
 	.fixup_destroy		= fixup_destroy,
@@ -1090,7 +1242,12 @@ void __init debug_objects_mem_init(void)
 
 	obj_cache = kmem_cache_create("debug_objects_cache",
 				      sizeof (struct debug_obj), 0,
+<<<<<<< HEAD
 				      SLAB_DEBUG_OBJECTS, NULL);
+=======
+				      SLAB_DEBUG_OBJECTS | SLAB_NOLEAKTRACE,
+				      NULL);
+>>>>>>> v4.9.227
 
 	if (!obj_cache || debug_objects_replace_static_objects()) {
 		debug_objects_enabled = 0;

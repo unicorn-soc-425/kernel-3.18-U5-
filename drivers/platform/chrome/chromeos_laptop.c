@@ -23,7 +23,11 @@
 
 #include <linux/dmi.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/i2c/atmel_mxt_ts.h>
+=======
+#include <linux/platform_data/atmel_mxt_ts.h>
+>>>>>>> v4.9.227
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -34,6 +38,10 @@
 #define ATMEL_TS_I2C_ADDR	0x4a
 #define ATMEL_TS_I2C_BL_ADDR	0x26
 #define CYAPA_TP_I2C_ADDR	0x67
+<<<<<<< HEAD
+=======
+#define ELAN_TP_I2C_ADDR	0x15
+>>>>>>> v4.9.227
 #define ISL_ALS_I2C_ADDR	0x44
 #define TAOS_ALS_I2C_ADDR	0x29
 
@@ -47,8 +55,13 @@ static const char *i2c_adapter_names[] = {
 	"SMBus I801 adapter",
 	"i915 gmbus vga",
 	"i915 gmbus panel",
+<<<<<<< HEAD
 	"i2c-designware-pci",
 	"i2c-designware-pci",
+=======
+	"Synopsys DesignWare I2C adapter",
+	"Synopsys DesignWare I2C adapter",
+>>>>>>> v4.9.227
 };
 
 /* Keep this enum consistent with i2c_adapter_names */
@@ -73,7 +86,11 @@ struct i2c_peripheral {
 	int tries;
 };
 
+<<<<<<< HEAD
 #define MAX_I2C_PERIPHERALS 3
+=======
+#define MAX_I2C_PERIPHERALS 4
+>>>>>>> v4.9.227
 
 struct chromeos_laptop {
 	struct i2c_peripheral i2c_peripherals[MAX_I2C_PERIPHERALS];
@@ -86,6 +103,14 @@ static struct i2c_board_info cyapa_device = {
 	.flags		= I2C_CLIENT_WAKE,
 };
 
+<<<<<<< HEAD
+=======
+static struct i2c_board_info elantech_device = {
+	I2C_BOARD_INFO("elan_i2c", ELAN_TP_I2C_ADDR),
+	.flags		= I2C_CLIENT_WAKE,
+};
+
+>>>>>>> v4.9.227
 static struct i2c_board_info isl_als_device = {
 	I2C_BOARD_INFO("isl29018", ISL_ALS_I2C_ADDR),
 };
@@ -111,6 +136,10 @@ static struct mxt_platform_data atmel_224s_tp_platform_data = {
 	.irqflags		= IRQF_TRIGGER_FALLING,
 	.t19_num_keys		= ARRAY_SIZE(mxt_t19_keys),
 	.t19_keymap		= mxt_t19_keys,
+<<<<<<< HEAD
+=======
+	.suspend_mode		= MXT_SUSPEND_T9_CTRL,
+>>>>>>> v4.9.227
 };
 
 static struct i2c_board_info atmel_224s_tp_device = {
@@ -121,6 +150,10 @@ static struct i2c_board_info atmel_224s_tp_device = {
 
 static struct mxt_platform_data atmel_1664s_platform_data = {
 	.irqflags		= IRQF_TRIGGER_FALLING,
+<<<<<<< HEAD
+=======
+	.suspend_mode		= MXT_SUSPEND_T9_CTRL,
+>>>>>>> v4.9.227
 };
 
 static struct i2c_board_info atmel_1664s_device = {
@@ -133,12 +166,21 @@ static struct i2c_client *__add_probed_i2c_device(
 		const char *name,
 		int bus,
 		struct i2c_board_info *info,
+<<<<<<< HEAD
 		const unsigned short *addrs)
+=======
+		const unsigned short *alt_addr_list)
+>>>>>>> v4.9.227
 {
 	const struct dmi_device *dmi_dev;
 	const struct dmi_dev_onboard *dev_data;
 	struct i2c_adapter *adapter;
+<<<<<<< HEAD
 	struct i2c_client *client;
+=======
+	struct i2c_client *client = NULL;
+	const unsigned short addr_list[] = { info->addr, I2C_CLIENT_END };
+>>>>>>> v4.9.227
 
 	if (bus < 0)
 		return NULL;
@@ -169,8 +211,33 @@ static struct i2c_client *__add_probed_i2c_device(
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	/* add the i2c device */
 	client = i2c_new_probed_device(adapter, info, addrs, NULL);
+=======
+	/*
+	 * Add the i2c device. If we can't detect it at the primary
+	 * address we scan secondary addresses. In any case the client
+	 * structure gets assigned primary address.
+	 */
+	client = i2c_new_probed_device(adapter, info, addr_list, NULL);
+	if (!client && alt_addr_list) {
+		struct i2c_board_info dummy_info = {
+			I2C_BOARD_INFO("dummy", info->addr),
+		};
+		struct i2c_client *dummy;
+
+		dummy = i2c_new_probed_device(adapter, &dummy_info,
+					      alt_addr_list, NULL);
+		if (dummy) {
+			pr_debug("%s %d-%02x is probed at %02x\n",
+				  __func__, bus, info->addr, dummy->addr);
+			i2c_unregister_device(dummy);
+			client = i2c_new_device(adapter, info);
+		}
+	}
+
+>>>>>>> v4.9.227
 	if (!client)
 		pr_notice("%s failed to register device %d-%02x\n",
 			  __func__, bus, info->addr);
@@ -254,12 +321,19 @@ static struct i2c_client *add_i2c_device(const char *name,
 						enum i2c_adapter_type type,
 						struct i2c_board_info *info)
 {
+<<<<<<< HEAD
 	const unsigned short addr_list[] = { info->addr, I2C_CLIENT_END };
 
 	return __add_probed_i2c_device(name,
 				       find_i2c_adapter_num(type),
 				       info,
 				       addr_list);
+=======
+	return __add_probed_i2c_device(name,
+				       find_i2c_adapter_num(type),
+				       info,
+				       NULL);
+>>>>>>> v4.9.227
 }
 
 static int setup_cyapa_tp(enum i2c_adapter_type type)
@@ -275,7 +349,10 @@ static int setup_cyapa_tp(enum i2c_adapter_type type)
 static int setup_atmel_224s_tp(enum i2c_adapter_type type)
 {
 	const unsigned short addr_list[] = { ATMEL_TP_I2C_BL_ADDR,
+<<<<<<< HEAD
 					     ATMEL_TP_I2C_ADDR,
+=======
+>>>>>>> v4.9.227
 					     I2C_CLIENT_END };
 	if (tp)
 		return 0;
@@ -286,10 +363,26 @@ static int setup_atmel_224s_tp(enum i2c_adapter_type type)
 	return (!tp) ? -EAGAIN : 0;
 }
 
+<<<<<<< HEAD
 static int setup_atmel_1664s_ts(enum i2c_adapter_type type)
 {
 	const unsigned short addr_list[] = { ATMEL_TS_I2C_BL_ADDR,
 					     ATMEL_TS_I2C_ADDR,
+=======
+static int setup_elantech_tp(enum i2c_adapter_type type)
+{
+	if (tp)
+		return 0;
+
+	/* add elantech touchpad */
+	tp = add_i2c_device("trackpad", type, &elantech_device);
+	return (!tp) ? -EAGAIN : 0;
+}
+
+static int setup_atmel_1664s_ts(enum i2c_adapter_type type)
+{
+	const unsigned short addr_list[] = { ATMEL_TS_I2C_BL_ADDR,
+>>>>>>> v4.9.227
 					     I2C_CLIENT_END };
 	if (ts)
 		return 0;
@@ -426,6 +519,11 @@ static struct chromeos_laptop dell_chromebook_11 = {
 	.i2c_peripherals = {
 		/* Touchpad. */
 		{ .add = setup_cyapa_tp, I2C_ADAPTER_DESIGNWARE_0 },
+<<<<<<< HEAD
+=======
+		/* Elan Touchpad option. */
+		{ .add = setup_elantech_tp, I2C_ADAPTER_DESIGNWARE_0 },
+>>>>>>> v4.9.227
 	},
 };
 
@@ -456,6 +554,11 @@ static struct chromeos_laptop acer_c720 = {
 		{ .add = setup_atmel_1664s_ts, I2C_ADAPTER_DESIGNWARE_1 },
 		/* Touchpad. */
 		{ .add = setup_cyapa_tp, I2C_ADAPTER_DESIGNWARE_0 },
+<<<<<<< HEAD
+=======
+		/* Elan Touchpad option. */
+		{ .add = setup_elantech_tp, I2C_ADAPTER_DESIGNWARE_0 },
+>>>>>>> v4.9.227
 		/* Light Sensor. */
 		{ .add = setup_isl29018_als, I2C_ADAPTER_DESIGNWARE_1 },
 	},
@@ -571,7 +674,10 @@ static struct platform_device *cros_platform_device;
 static struct platform_driver cros_platform_driver = {
 	.driver = {
 		.name = "chromeos_laptop",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = chromeos_laptop_probe,
 };

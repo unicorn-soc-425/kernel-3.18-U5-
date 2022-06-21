@@ -958,6 +958,7 @@ void alx_configure_basic(struct alx_hw *hw)
 	alx_write_mem32(hw, ALX_TINT_TPD_THRSHLD, hw->ith_tpd);
 	alx_write_mem32(hw, ALX_TINT_TIMER, hw->imt);
 
+<<<<<<< HEAD
 	raw_mtu = hw->mtu + ETH_HLEN;
 	alx_write_mem32(hw, ALX_MTU, raw_mtu + 8);
 	if (raw_mtu > ALX_MTU_JUMBO_TH)
@@ -965,6 +966,15 @@ void alx_configure_basic(struct alx_hw *hw)
 
 	if ((raw_mtu + 8) < ALX_TXQ1_JUMBO_TSO_TH)
 		val = (raw_mtu + 8 + 7) >> 3;
+=======
+	raw_mtu = ALX_RAW_MTU(hw->mtu);
+	alx_write_mem32(hw, ALX_MTU, raw_mtu);
+	if (raw_mtu > (ALX_MTU_JUMBO_TH + ETH_FCS_LEN + VLAN_HLEN))
+		hw->rx_ctrl &= ~ALX_MAC_CTRL_FAST_PAUSE;
+
+	if (raw_mtu < ALX_TXQ1_JUMBO_TSO_TH)
+		val = (raw_mtu + 7) >> 3;
+>>>>>>> v4.9.227
 	else
 		val = ALX_TXQ1_JUMBO_TSO_TH >> 3;
 	alx_write_mem32(hw, ALX_TXQ1, val | ALX_TXQ1_ERRLGPKT_DROP_EN);
@@ -1031,6 +1041,23 @@ void alx_configure_basic(struct alx_hw *hw)
 	alx_write_mem32(hw, ALX_WRR, val);
 }
 
+<<<<<<< HEAD
+=======
+void alx_mask_msix(struct alx_hw *hw, int index, bool mask)
+{
+	u32 reg, val;
+
+	reg = ALX_MSIX_ENTRY_BASE + index * PCI_MSIX_ENTRY_SIZE +
+		PCI_MSIX_ENTRY_VECTOR_CTRL;
+
+	val = mask ? PCI_MSIX_ENTRY_CTRL_MASKBIT : 0;
+
+	alx_write_mem32(hw, reg, val);
+	alx_post_write(hw);
+}
+
+
+>>>>>>> v4.9.227
 bool alx_get_phy_info(struct alx_hw *hw)
 {
 	u16  devs1, devs2;

@@ -80,7 +80,11 @@ static void pvr2_context_set_notify(struct pvr2_context *mp, int fl)
 static void pvr2_context_destroy(struct pvr2_context *mp)
 {
 	pvr2_trace(PVR2_TRACE_CTXT,"pvr2_context %p (destroy)",mp);
+<<<<<<< HEAD
 	if (mp->hdw) pvr2_hdw_destroy(mp->hdw);
+=======
+	pvr2_hdw_destroy(mp->hdw);
+>>>>>>> v4.9.227
 	pvr2_context_set_notify(mp, 0);
 	mutex_lock(&pvr2_context_mutex);
 	if (mp->exist_next) {
@@ -196,7 +200,11 @@ int pvr2_context_global_init(void)
 	pvr2_context_thread_ptr = kthread_run(pvr2_context_thread_func,
 					      NULL,
 					      "pvrusb2-context");
+<<<<<<< HEAD
 	return (pvr2_context_thread_ptr ? 0 : -ENOMEM);
+=======
+	return IS_ERR(pvr2_context_thread_ptr) ? -ENOMEM : 0;
+>>>>>>> v4.9.227
 }
 
 
@@ -398,7 +406,12 @@ int pvr2_channel_claim_stream(struct pvr2_channel *cp,
 		if (!sp) break;
 		sp->user = cp;
 		cp->stream = sp;
+<<<<<<< HEAD
 	} while (0); pvr2_context_exit(cp->mc_head);
+=======
+	} while (0);
+	pvr2_context_exit(cp->mc_head);
+>>>>>>> v4.9.227
 	return code;
 }
 
@@ -418,6 +431,7 @@ struct pvr2_ioread *pvr2_channel_create_mpeg_stream(
 	pvr2_ioread_set_sync_key(cp,stream_sync_key,sizeof(stream_sync_key));
 	return cp;
 }
+<<<<<<< HEAD
 
 
 /*
@@ -429,3 +443,5 @@ struct pvr2_ioread *pvr2_channel_create_mpeg_stream(
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

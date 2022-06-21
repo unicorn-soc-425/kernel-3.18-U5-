@@ -3,7 +3,10 @@
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
 #include <asm/reg.h>
+=======
+>>>>>>> v4.9.227
 
 /* bytes per L1 cache line */
 #if defined(CONFIG_8xx) || defined(CONFIG_403GCX)
@@ -40,12 +43,15 @@ struct ppc64_caches {
 };
 
 extern struct ppc64_caches ppc64_caches;
+<<<<<<< HEAD
 
 static inline void logmpp(u64 x)
 {
 	asm volatile(PPC_LOGMPP(R1) : : "r" (x));
 }
 
+=======
+>>>>>>> v4.9.227
 #endif /* __powerpc64__ && ! __ASSEMBLY__ */
 
 #if defined(__ASSEMBLY__)
@@ -76,9 +82,31 @@ extern void _set_L3CR(unsigned long);
 #define _set_L3CR(val)	do { } while(0)
 #endif
 
+<<<<<<< HEAD
 extern void cacheable_memzero(void *p, unsigned int nb);
 extern void *cacheable_memcpy(void *, const void *, unsigned int);
 
+=======
+static inline void dcbz(void *addr)
+{
+	__asm__ __volatile__ ("dcbz 0, %0" : : "r"(addr) : "memory");
+}
+
+static inline void dcbi(void *addr)
+{
+	__asm__ __volatile__ ("dcbi 0, %0" : : "r"(addr) : "memory");
+}
+
+static inline void dcbf(void *addr)
+{
+	__asm__ __volatile__ ("dcbf 0, %0" : : "r"(addr) : "memory");
+}
+
+static inline void dcbst(void *addr)
+{
+	__asm__ __volatile__ ("dcbst 0, %0" : : "r"(addr) : "memory");
+}
+>>>>>>> v4.9.227
 #endif /* !__ASSEMBLY__ */
 #endif /* __KERNEL__ */
 #endif /* _ASM_POWERPC_CACHE_H */

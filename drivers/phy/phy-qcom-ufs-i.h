@@ -15,13 +15,39 @@
 #ifndef UFS_QCOM_PHY_I_H_
 #define UFS_QCOM_PHY_I_H_
 
+<<<<<<< HEAD
 #include <linux/iopoll.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/clk.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <linux/phy/phy-qcom-ufs.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+#include <linux/delay.h>
+
+#define readl_poll_timeout(addr, val, cond, sleep_us, timeout_us) \
+({ \
+	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
+	might_sleep_if(timeout_us); \
+	for (;;) { \
+		(val) = readl(addr); \
+		if (cond) \
+			break; \
+		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) { \
+			(val) = readl(addr); \
+			break; \
+		} \
+		if (sleep_us) \
+			usleep_range(DIV_ROUND_UP(sleep_us, 4), sleep_us); \
+	} \
+	(cond) ? 0 : -ETIMEDOUT; \
+})
+>>>>>>> v4.9.227
 
 #define UFS_QCOM_PHY_CAL_ENTRY(reg, val)	\
 	{				\
@@ -88,6 +114,7 @@ struct ufs_qcom_phy {
 	*/
 	#define UFS_QCOM_PHY_QUIRK_HIBERN8_EXIT_AFTER_PHY_PWR_COLLAPSE	BIT(0)
 
+<<<<<<< HEAD
 	/*
 	 * On some UFS PHY HW revisions, UFS PHY power up calibration sequence
 	 * cannot have SVS mode configuration otherwise calibration result
@@ -105,6 +132,8 @@ struct ufs_qcom_phy {
 	 */
 	#define UFS_QCOM_PHY_QUIRK_VCO_MANUAL_TUNING	BIT(2)
 
+=======
+>>>>>>> v4.9.227
 	u8 host_ctrl_rev_major;
 	u16 host_ctrl_rev_minor;
 	u16 host_ctrl_rev_step;
@@ -114,7 +143,10 @@ struct ufs_qcom_phy {
 	int cached_regs_table_size;
 	bool is_powered_on;
 	struct ufs_qcom_phy_specific_ops *phy_spec_ops;
+<<<<<<< HEAD
 	u32 vco_tune1_mode1;
+=======
+>>>>>>> v4.9.227
 };
 
 /**
@@ -126,8 +158,11 @@ struct ufs_qcom_phy {
  * @is_physical_coding_sublayer_ready: pointer to a function that
  * checks pcs readiness. returns 0 for success and non-zero for error.
  * @set_tx_lane_enable: pointer to a function that enable tx lanes
+<<<<<<< HEAD
  * @ctrl_rx_linecfg: pointer to a function that controls the Host Rx LineCfg
  * state.
+=======
+>>>>>>> v4.9.227
  * @power_control: pointer to a function that controls analog rail of phy
  * and writes to QSERDES_RX_SIGDET_CNTRL attribute
  */
@@ -136,7 +171,10 @@ struct ufs_qcom_phy_specific_ops {
 	void (*start_serdes)(struct ufs_qcom_phy *phy);
 	int (*is_physical_coding_sublayer_ready)(struct ufs_qcom_phy *phy);
 	void (*set_tx_lane_enable)(struct ufs_qcom_phy *phy, u32 val);
+<<<<<<< HEAD
 	void (*ctrl_rx_linecfg)(struct ufs_qcom_phy *phy, bool ctrl);
+=======
+>>>>>>> v4.9.227
 	void (*power_control)(struct ufs_qcom_phy *phy, bool val);
 };
 
@@ -152,7 +190,11 @@ int ufs_qcom_phy_remove(struct phy *generic_phy,
 		       struct ufs_qcom_phy *ufs_qcom_phy);
 struct phy *ufs_qcom_phy_generic_probe(struct platform_device *pdev,
 			struct ufs_qcom_phy *common_cfg,
+<<<<<<< HEAD
 			struct phy_ops *ufs_qcom_phy_gen_ops,
+=======
+			const struct phy_ops *ufs_qcom_phy_gen_ops,
+>>>>>>> v4.9.227
 			struct ufs_qcom_phy_specific_ops *phy_spec_ops);
 int ufs_qcom_phy_calibrate(struct ufs_qcom_phy *ufs_qcom_phy,
 			struct ufs_qcom_phy_calibration *tbl_A, int tbl_size_A,

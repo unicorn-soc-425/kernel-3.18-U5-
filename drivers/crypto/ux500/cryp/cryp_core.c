@@ -479,13 +479,21 @@ static void cryp_dma_setup_channel(struct cryp_device_data *device_data,
 		.dst_addr = device_data->phybase + CRYP_DMA_TX_FIFO,
 		.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES,
 		.dst_maxburst = 4,
+<<<<<<< HEAD
         };
+=======
+	};
+>>>>>>> v4.9.227
 	struct dma_slave_config cryp2mem = {
 		.direction = DMA_DEV_TO_MEM,
 		.src_addr = device_data->phybase + CRYP_DMA_RX_FIFO,
 		.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES,
 		.src_maxburst = 4,
+<<<<<<< HEAD
         };
+=======
+	};
+>>>>>>> v4.9.227
 
 	dma_cap_zero(device_data->dma.mask);
 	dma_cap_set(DMA_SLAVE, device_data->dma.mask);
@@ -555,7 +563,11 @@ static int cryp_set_dma_transfer(struct cryp_ctx *ctx,
 		desc = dmaengine_prep_slave_sg(channel,
 				ctx->device->dma.sg_src,
 				ctx->device->dma.sg_src_len,
+<<<<<<< HEAD
 				direction, DMA_CTRL_ACK);
+=======
+				DMA_MEM_TO_DEV, DMA_CTRL_ACK);
+>>>>>>> v4.9.227
 		break;
 
 	case DMA_FROM_DEVICE:
@@ -579,7 +591,11 @@ static int cryp_set_dma_transfer(struct cryp_ctx *ctx,
 		desc = dmaengine_prep_slave_sg(channel,
 				ctx->device->dma.sg_dst,
 				ctx->device->dma.sg_dst_len,
+<<<<<<< HEAD
 				direction,
+=======
+				DMA_DEV_TO_MEM,
+>>>>>>> v4.9.227
 				DMA_CTRL_ACK |
 				DMA_PREP_INTERRUPT);
 
@@ -606,12 +622,20 @@ static void cryp_dma_done(struct cryp_ctx *ctx)
 	dev_dbg(ctx->device->dev, "[%s]: ", __func__);
 
 	chan = ctx->device->dma.chan_mem2cryp;
+<<<<<<< HEAD
 	dmaengine_device_control(chan, DMA_TERMINATE_ALL, 0);
+=======
+	dmaengine_terminate_all(chan);
+>>>>>>> v4.9.227
 	dma_unmap_sg(chan->device->dev, ctx->device->dma.sg_src,
 		     ctx->device->dma.sg_src_len, DMA_TO_DEVICE);
 
 	chan = ctx->device->dma.chan_cryp2mem;
+<<<<<<< HEAD
 	dmaengine_device_control(chan, DMA_TERMINATE_ALL, 0);
+=======
+	dmaengine_terminate_all(chan);
+>>>>>>> v4.9.227
 	dma_unmap_sg(chan->device->dev, ctx->device->dma.sg_dst,
 		     ctx->device->dma.sg_dst_len, DMA_FROM_DEVICE);
 }
@@ -814,7 +838,11 @@ static int get_nents(struct scatterlist *sg, int nbytes)
 
 	while (nbytes > 0) {
 		nbytes -= sg->length;
+<<<<<<< HEAD
 		sg = scatterwalk_sg_next(sg);
+=======
+		sg = sg_next(sg);
+>>>>>>> v4.9.227
 		nents++;
 	}
 
@@ -1414,7 +1442,11 @@ static int ux500_cryp_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 
 	dev_dbg(dev, "[%s]", __func__);
+<<<<<<< HEAD
 	device_data = kzalloc(sizeof(struct cryp_device_data), GFP_ATOMIC);
+=======
+	device_data = devm_kzalloc(dev, sizeof(*device_data), GFP_ATOMIC);
+>>>>>>> v4.9.227
 	if (!device_data) {
 		dev_err(dev, "[%s]: kzalloc() failed!", __func__);
 		ret = -ENOMEM;
@@ -1435,6 +1467,7 @@ static int ux500_cryp_probe(struct platform_device *pdev)
 		dev_err(dev, "[%s]: platform_get_resource() failed",
 				__func__);
 		ret = -ENODEV;
+<<<<<<< HEAD
 		goto out_kfree;
 	}
 
@@ -1452,6 +1485,17 @@ static int ux500_cryp_probe(struct platform_device *pdev)
 		dev_err(dev, "[%s]: ioremap failed!", __func__);
 		ret = -ENOMEM;
 		goto out_free_mem;
+=======
+		goto out;
+	}
+
+	device_data->phybase = res->start;
+	device_data->base = devm_ioremap_resource(dev, res);
+	if (IS_ERR(device_data->base)) {
+		dev_err(dev, "[%s]: ioremap failed!", __func__);
+		ret = PTR_ERR(device_data->base);
+		goto out;
+>>>>>>> v4.9.227
 	}
 
 	spin_lock_init(&device_data->ctx_lock);
@@ -1463,11 +1507,19 @@ static int ux500_cryp_probe(struct platform_device *pdev)
 		dev_err(dev, "[%s]: could not get cryp regulator", __func__);
 		ret = PTR_ERR(device_data->pwr_regulator);
 		device_data->pwr_regulator = NULL;
+<<<<<<< HEAD
 		goto out_unmap;
 	}
 
 	/* Enable the clk for CRYP hardware block */
 	device_data->clk = clk_get(&pdev->dev, NULL);
+=======
+		goto out;
+	}
+
+	/* Enable the clk for CRYP hardware block */
+	device_data->clk = devm_clk_get(&pdev->dev, NULL);
+>>>>>>> v4.9.227
 	if (IS_ERR(device_data->clk)) {
 		dev_err(dev, "[%s]: clk_get() failed!", __func__);
 		ret = PTR_ERR(device_data->clk);
@@ -1477,7 +1529,11 @@ static int ux500_cryp_probe(struct platform_device *pdev)
 	ret = clk_prepare(device_data->clk);
 	if (ret) {
 		dev_err(dev, "[%s]: clk_prepare() failed!", __func__);
+<<<<<<< HEAD
 		goto out_clk;
+=======
+		goto out_regulator;
+>>>>>>> v4.9.227
 	}
 
 	/* Enable device power (and clock) */
@@ -1510,11 +1566,16 @@ static int ux500_cryp_probe(struct platform_device *pdev)
 		goto out_power;
 	}
 
+<<<<<<< HEAD
 	ret = request_irq(res_irq->start,
 			  cryp_interrupt_handler,
 			  0,
 			  "cryp1",
 			  device_data);
+=======
+	ret = devm_request_irq(&pdev->dev, res_irq->start,
+			       cryp_interrupt_handler, 0, "cryp1", device_data);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(dev, "[%s]: Unable to request IRQ", __func__);
 		goto out_power;
@@ -1550,6 +1611,7 @@ out_power:
 out_clk_unprepare:
 	clk_unprepare(device_data->clk);
 
+<<<<<<< HEAD
 out_clk:
 	clk_put(device_data->clk);
 
@@ -1564,14 +1626,22 @@ out_free_mem:
 
 out_kfree:
 	kfree(device_data);
+=======
+out_regulator:
+	regulator_put(device_data->pwr_regulator);
+
+>>>>>>> v4.9.227
 out:
 	return ret;
 }
 
 static int ux500_cryp_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource *res = NULL;
 	struct resource *res_irq = NULL;
+=======
+>>>>>>> v4.9.227
 	struct cryp_device_data *device_data;
 
 	dev_dbg(&pdev->dev, "[%s]", __func__);
@@ -1607,6 +1677,7 @@ static int ux500_cryp_remove(struct platform_device *pdev)
 	if (list_empty(&driver_data.device_list.k_list))
 		cryp_algs_unregister_all();
 
+<<<<<<< HEAD
 	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (!res_irq)
 		dev_err(&pdev->dev, "[%s]: IORESOURCE_IRQ, unavailable",
@@ -1616,11 +1687,14 @@ static int ux500_cryp_remove(struct platform_device *pdev)
 		free_irq(res_irq->start, device_data);
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (cryp_disable_power(&pdev->dev, device_data, false))
 		dev_err(&pdev->dev, "[%s]: cryp_disable_power() failed",
 			__func__);
 
 	clk_unprepare(device_data->clk);
+<<<<<<< HEAD
 	clk_put(device_data->clk);
 	regulator_put(device_data->pwr_regulator);
 
@@ -1632,12 +1706,19 @@ static int ux500_cryp_remove(struct platform_device *pdev)
 
 	kfree(device_data);
 
+=======
+	regulator_put(device_data->pwr_regulator);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static void ux500_cryp_shutdown(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource *res_irq = NULL;
+=======
+>>>>>>> v4.9.227
 	struct cryp_device_data *device_data;
 
 	dev_dbg(&pdev->dev, "[%s]", __func__);
@@ -1673,6 +1754,7 @@ static void ux500_cryp_shutdown(struct platform_device *pdev)
 	if (list_empty(&driver_data.device_list.k_list))
 		cryp_algs_unregister_all();
 
+<<<<<<< HEAD
 	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (!res_irq)
 		dev_err(&pdev->dev, "[%s]: IORESOURCE_IRQ, unavailable",
@@ -1682,12 +1764,18 @@ static void ux500_cryp_shutdown(struct platform_device *pdev)
 		free_irq(res_irq->start, device_data);
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (cryp_disable_power(&pdev->dev, device_data, false))
 		dev_err(&pdev->dev, "[%s]: cryp_disable_power() failed",
 			__func__);
 
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 static int ux500_cryp_suspend(struct device *dev)
 {
 	int ret;
@@ -1768,20 +1856,34 @@ static int ux500_cryp_resume(struct device *dev)
 
 	return ret;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(ux500_cryp_pm, ux500_cryp_suspend, ux500_cryp_resume);
 
 static const struct of_device_id ux500_cryp_match[] = {
+<<<<<<< HEAD
         { .compatible = "stericsson,ux500-cryp" },
         { },
 };
+=======
+	{ .compatible = "stericsson,ux500-cryp" },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, ux500_cryp_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver cryp_driver = {
 	.probe  = ux500_cryp_probe,
 	.remove = ux500_cryp_remove,
 	.shutdown = ux500_cryp_shutdown,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name  = "cryp1",
 		.of_match_table = ux500_cryp_match,
 		.pm    = &ux500_cryp_pm,

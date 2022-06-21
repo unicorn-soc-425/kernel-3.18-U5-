@@ -100,6 +100,10 @@ int snd_ak4114_create(struct snd_card *card,
 	chip->private_data = private_data;
 	INIT_DELAYED_WORK(&chip->work, ak4114_stats);
 	atomic_set(&chip->wq_processing, 0);
+<<<<<<< HEAD
+=======
+	mutex_init(&chip->reinit_mutex);
+>>>>>>> v4.9.227
 
 	for (reg = 0; reg < 6; reg++)
 		chip->regmap[reg] = pgm[reg];
@@ -120,8 +124,14 @@ int snd_ak4114_create(struct snd_card *card,
 
       __fail:
 	snd_ak4114_free(chip);
+<<<<<<< HEAD
 	return err < 0 ? err : -EIO;
 }
+=======
+	return err;
+}
+EXPORT_SYMBOL(snd_ak4114_create);
+>>>>>>> v4.9.227
 
 void snd_ak4114_reg_write(struct ak4114 *chip, unsigned char reg, unsigned char mask, unsigned char val)
 {
@@ -131,6 +141,10 @@ void snd_ak4114_reg_write(struct ak4114 *chip, unsigned char reg, unsigned char 
 		reg_write(chip, reg,
 			  (chip->txcsb[reg-AK4114_REG_TXCSB0] & ~mask) | val);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_ak4114_reg_write);
+>>>>>>> v4.9.227
 
 static void ak4114_init_regs(struct ak4114 *chip)
 {
@@ -154,11 +168,21 @@ void snd_ak4114_reinit(struct ak4114 *chip)
 {
 	if (atomic_inc_return(&chip->wq_processing) == 1)
 		cancel_delayed_work_sync(&chip->work);
+<<<<<<< HEAD
 	ak4114_init_regs(chip);
+=======
+	mutex_lock(&chip->reinit_mutex);
+	ak4114_init_regs(chip);
+	mutex_unlock(&chip->reinit_mutex);
+>>>>>>> v4.9.227
 	/* bring up statistics / event queing */
 	if (atomic_dec_and_test(&chip->wq_processing))
 		schedule_delayed_work(&chip->work, HZ / 10);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_ak4114_reinit);
+>>>>>>> v4.9.227
 
 static unsigned int external_rate(unsigned char rcs1)
 {
@@ -503,6 +527,10 @@ int snd_ak4114_build(struct ak4114 *ak4114,
 	schedule_delayed_work(&ak4114->work, HZ / 10);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_ak4114_build);
+>>>>>>> v4.9.227
 
 /* notify kcontrols if any parameters are changed */
 static void ak4114_notify(struct ak4114 *ak4114,
@@ -558,6 +586,10 @@ int snd_ak4114_external_rate(struct ak4114 *ak4114)
 	rcs1 = reg_read(ak4114, AK4114_REG_RCS1);
 	return external_rate(rcs1);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_ak4114_external_rate);
+>>>>>>> v4.9.227
 
 int snd_ak4114_check_rate_and_errors(struct ak4114 *ak4114, unsigned int flags)
 {
@@ -605,6 +637,10 @@ int snd_ak4114_check_rate_and_errors(struct ak4114 *ak4114, unsigned int flags)
 	}
 	return res;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_ak4114_check_rate_and_errors);
+>>>>>>> v4.9.227
 
 static void ak4114_stats(struct work_struct *work)
 {
@@ -616,9 +652,27 @@ static void ak4114_stats(struct work_struct *work)
 		schedule_delayed_work(&chip->work, HZ / 10);
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(snd_ak4114_create);
 EXPORT_SYMBOL(snd_ak4114_reg_write);
 EXPORT_SYMBOL(snd_ak4114_reinit);
 EXPORT_SYMBOL(snd_ak4114_build);
 EXPORT_SYMBOL(snd_ak4114_external_rate);
 EXPORT_SYMBOL(snd_ak4114_check_rate_and_errors);
+=======
+#ifdef CONFIG_PM
+void snd_ak4114_suspend(struct ak4114 *chip)
+{
+	atomic_inc(&chip->wq_processing); /* don't schedule new work */
+	cancel_delayed_work_sync(&chip->work);
+}
+EXPORT_SYMBOL(snd_ak4114_suspend);
+
+void snd_ak4114_resume(struct ak4114 *chip)
+{
+	atomic_dec(&chip->wq_processing);
+	snd_ak4114_reinit(chip);
+}
+EXPORT_SYMBOL(snd_ak4114_resume);
+#endif
+>>>>>>> v4.9.227

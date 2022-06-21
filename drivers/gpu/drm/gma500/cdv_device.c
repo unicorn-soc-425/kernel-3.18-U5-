@@ -619,6 +619,11 @@ const struct psb_ops cdv_chip_ops = {
 	.init_pm = cdv_init_pm,
 	.save_regs = cdv_save_display_registers,
 	.restore_regs = cdv_restore_display_registers,
+<<<<<<< HEAD
+=======
+	.save_crtc = gma_crtc_save,
+	.restore_crtc = gma_crtc_restore,
+>>>>>>> v4.9.227
 	.power_down = cdv_power_down,
 	.power_up = cdv_power_up,
 	.update_wm = cdv_update_wm,

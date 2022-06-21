@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 
 #include <linux/module.h>
@@ -79,7 +82,11 @@ int rtw_android_cmdstr_to_num(char *cmdstr)
 {
 	int cmd_num;
 	for (cmd_num = 0; cmd_num < ANDROID_WIFI_CMD_MAX; cmd_num++)
+<<<<<<< HEAD
 		if (0 == strncasecmp(cmdstr , android_wifi_cmd_str[cmd_num],
+=======
+		if (0 == strncasecmp(cmdstr, android_wifi_cmd_str[cmd_num],
+>>>>>>> v4.9.227
 				  strlen(android_wifi_cmd_str[cmd_num])))
 			break;
 	return cmd_num;
@@ -148,11 +155,16 @@ static int rtw_android_set_block(struct net_device *net, char *command,
 int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	char *command = NULL;
+=======
+	char *command;
+>>>>>>> v4.9.227
 	int cmd_num;
 	int bytes_written = 0;
 	struct android_wifi_priv_cmd priv_cmd;
 
+<<<<<<< HEAD
 	if (!ifr->ifr_data) {
 		ret = -EINVAL;
 		goto exit;
@@ -178,6 +190,18 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		ret = -EFAULT;
 		goto exit;
 	}
+=======
+	if (!ifr->ifr_data)
+		return -EINVAL;
+	if (copy_from_user(&priv_cmd, ifr->ifr_data, sizeof(priv_cmd)))
+		return -EFAULT;
+	if (priv_cmd.total_len < 1)
+		return -EINVAL;
+	command = memdup_user(priv_cmd.buf, priv_cmd.total_len);
+	if (IS_ERR(command))
+		return PTR_ERR(command);
+	command[priv_cmd.total_len - 1] = 0;
+>>>>>>> v4.9.227
 	DBG_88E("%s: Android private cmd \"%s\" on %s\n",
 		__func__, command, ifr->ifr_name);
 	cmd_num = rtw_android_cmdstr_to_num(command);
@@ -191,7 +215,11 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		DBG_88E("%s: Ignore private cmd \"%s\" - iface %s is down\n",
 			__func__, command, ifr->ifr_name);
 		ret = 0;
+<<<<<<< HEAD
 		goto exit;
+=======
+		goto free;
+>>>>>>> v4.9.227
 	}
 	switch (cmd_num) {
 	case ANDROID_WIFI_CMD_STOP:
@@ -279,7 +307,11 @@ response:
 	} else {
 		ret = bytes_written;
 	}
+<<<<<<< HEAD
 exit:
+=======
+free:
+>>>>>>> v4.9.227
 	kfree(command);
 	return ret;
 }

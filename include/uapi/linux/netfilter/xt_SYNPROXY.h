@@ -1,6 +1,11 @@
 #ifndef _XT_SYNPROXY_H
 #define _XT_SYNPROXY_H
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+
+>>>>>>> v4.9.227
 #define XT_SYNPROXY_OPT_MSS		0x01
 #define XT_SYNPROXY_OPT_WSCALE		0x02
 #define XT_SYNPROXY_OPT_SACK_PERM	0x04

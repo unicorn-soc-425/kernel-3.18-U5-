@@ -56,7 +56,11 @@ static void mips_cpu_restore(void)
 		write_c0_userlocal(current_thread_info()->tp_value);
 
 	/* Restore watch registers */
+<<<<<<< HEAD
 	__restore_watch();
+=======
+	__restore_watch(current);
+>>>>>>> v4.9.227
 }
 
 /**

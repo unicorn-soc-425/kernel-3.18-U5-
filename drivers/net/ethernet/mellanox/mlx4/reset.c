@@ -76,19 +76,33 @@ int mlx4_reset(struct mlx4_dev *dev)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	pcie_cap = pci_pcie_cap(dev->pdev);
+=======
+	pcie_cap = pci_pcie_cap(dev->persist->pdev);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < 64; ++i) {
 		if (i == 22 || i == 23)
 			continue;
+<<<<<<< HEAD
 		if (pci_read_config_dword(dev->pdev, i * 4, hca_header + i)) {
+=======
+		if (pci_read_config_dword(dev->persist->pdev, i * 4,
+					  hca_header + i)) {
+>>>>>>> v4.9.227
 			err = -ENODEV;
 			mlx4_err(dev, "Couldn't save HCA PCI header, aborting\n");
 			goto out;
 		}
 	}
 
+<<<<<<< HEAD
 	reset = ioremap(pci_resource_start(dev->pdev, 0) + MLX4_RESET_BASE,
+=======
+	reset = ioremap(pci_resource_start(dev->persist->pdev, 0) +
+			MLX4_RESET_BASE,
+>>>>>>> v4.9.227
 			MLX4_RESET_SIZE);
 	if (!reset) {
 		err = -ENOMEM;
@@ -122,8 +136,13 @@ int mlx4_reset(struct mlx4_dev *dev)
 
 	end = jiffies + MLX4_RESET_TIMEOUT_JIFFIES;
 	do {
+<<<<<<< HEAD
 		if (!pci_read_config_word(dev->pdev, PCI_VENDOR_ID, &vendor) &&
 		    vendor != 0xffff)
+=======
+		if (!pci_read_config_word(dev->persist->pdev, PCI_VENDOR_ID,
+					  &vendor) && vendor != 0xffff)
+>>>>>>> v4.9.227
 			break;
 
 		msleep(1);
@@ -138,14 +157,24 @@ int mlx4_reset(struct mlx4_dev *dev)
 	/* Now restore the PCI headers */
 	if (pcie_cap) {
 		devctl = hca_header[(pcie_cap + PCI_EXP_DEVCTL) / 4];
+<<<<<<< HEAD
 		if (pcie_capability_write_word(dev->pdev, PCI_EXP_DEVCTL,
+=======
+		if (pcie_capability_write_word(dev->persist->pdev,
+					       PCI_EXP_DEVCTL,
+>>>>>>> v4.9.227
 					       devctl)) {
 			err = -ENODEV;
 			mlx4_err(dev, "Couldn't restore HCA PCI Express Device Control register, aborting\n");
 			goto out;
 		}
 		linkctl = hca_header[(pcie_cap + PCI_EXP_LNKCTL) / 4];
+<<<<<<< HEAD
 		if (pcie_capability_write_word(dev->pdev, PCI_EXP_LNKCTL,
+=======
+		if (pcie_capability_write_word(dev->persist->pdev,
+					       PCI_EXP_LNKCTL,
+>>>>>>> v4.9.227
 					       linkctl)) {
 			err = -ENODEV;
 			mlx4_err(dev, "Couldn't restore HCA PCI Express Link control register, aborting\n");
@@ -157,7 +186,12 @@ int mlx4_reset(struct mlx4_dev *dev)
 		if (i * 4 == PCI_COMMAND)
 			continue;
 
+<<<<<<< HEAD
 		if (pci_write_config_dword(dev->pdev, i * 4, hca_header[i])) {
+=======
+		if (pci_write_config_dword(dev->persist->pdev, i * 4,
+					   hca_header[i])) {
+>>>>>>> v4.9.227
 			err = -ENODEV;
 			mlx4_err(dev, "Couldn't restore HCA reg %x, aborting\n",
 				 i);
@@ -165,7 +199,11 @@ int mlx4_reset(struct mlx4_dev *dev)
 		}
 	}
 
+<<<<<<< HEAD
 	if (pci_write_config_dword(dev->pdev, PCI_COMMAND,
+=======
+	if (pci_write_config_dword(dev->persist->pdev, PCI_COMMAND,
+>>>>>>> v4.9.227
 				   hca_header[PCI_COMMAND / 4])) {
 		err = -ENODEV;
 		mlx4_err(dev, "Couldn't restore HCA COMMAND, aborting\n");

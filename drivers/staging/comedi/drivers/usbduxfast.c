@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  *  Copyright (C) 2004 Bernd Porr, Bernd.Porr@f2s.com
+=======
+ *  Copyright (C) 2004-2019 Bernd Porr, mail@berndporr.me.uk
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,6 +17,18 @@
  */
 
 /*
+<<<<<<< HEAD
+=======
+ * Driver: usbduxfast
+ * Description: University of Stirling USB DAQ & INCITE Technology Limited
+ * Devices: [ITL] USB-DUX-FAST (usbduxfast)
+ * Author: Bernd Porr <mail@berndporr.me.uk>
+ * Updated: 16 Nov 2019
+ * Status: stable
+ */
+
+/*
+>>>>>>> v4.9.227
  * I must give credit here to Chris Baugher who
  * wrote the driver for AT-MIO-16d. I used some parts of this
  * driver. I also must give credits to David Brownell
@@ -22,6 +38,10 @@
  *
  *
  * Revision history:
+<<<<<<< HEAD
+=======
+ * 1.0: Fixed a rounding error in usbduxfast_ai_cmdtest
+>>>>>>> v4.9.227
  * 0.9: Dropping the first data packet which seems to be from the last transfer.
  *      Buffer overflows in the FX2 are handed over to comedi.
  * 0.92: Dropping now 4 packets. The quad buffer has to be emptied.
@@ -37,11 +57,17 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
 #include <linux/fcntl.h>
 #include <linux/compiler.h>
 #include "comedi_fc.h"
 #include "../comedidev.h"
+=======
+#include <linux/fcntl.h>
+#include <linux/compiler.h>
+#include "../comedi_usb.h"
+>>>>>>> v4.9.227
 
 /*
  * timeout for the USB-transfer
@@ -90,7 +116,11 @@
 /*
  * size of one A/D value
  */
+<<<<<<< HEAD
 #define SIZEADIN	(sizeof(int16_t))
+=======
+#define SIZEADIN	(sizeof(s16))
+>>>>>>> v4.9.227
 
 /*
  * size of the input-buffer IN BYTES
@@ -149,6 +179,7 @@ static const struct comedi_lrange range_usbduxfast_ai_range = {
  */
 struct usbduxfast_private {
 	struct urb *urb;	/* BULK-transfer handling: urb */
+<<<<<<< HEAD
 	uint8_t *duxbuf;
 	int8_t *inbuf;
 	short int ai_cmd_running;	/* asynchronous command is running */
@@ -156,6 +187,13 @@ struct usbduxfast_private {
 	int ignore;		/* counter which ignores the first
 				   buffers */
 	struct semaphore sem;
+=======
+	u8 *duxbuf;
+	s8 *inbuf;
+	short int ai_cmd_running;	/* asynchronous command is running */
+	int ignore;		/* counter which ignores the first buffers */
+	struct mutex mut;
+>>>>>>> v4.9.227
 };
 
 /*
@@ -184,8 +222,12 @@ static int usbduxfast_send_cmd(struct comedi_device *dev, int cmd_type)
 }
 
 static void usbduxfast_cmd_data(struct comedi_device *dev, int index,
+<<<<<<< HEAD
 				uint8_t len, uint8_t op, uint8_t out,
 				uint8_t log)
+=======
+				u8 len, u8 op, u8 out, u8 log)
+>>>>>>> v4.9.227
 {
 	struct usbduxfast_private *devpriv = dev->private;
 
@@ -217,25 +259,70 @@ static int usbduxfast_ai_cancel(struct comedi_device *dev,
 	struct usbduxfast_private *devpriv = dev->private;
 	int ret;
 
+<<<<<<< HEAD
 	if (!devpriv)
 		return -EFAULT;
 
 	down(&devpriv->sem);
 	ret = usbduxfast_ai_stop(dev, 1);
 	up(&devpriv->sem);
+=======
+	mutex_lock(&devpriv->mut);
+	ret = usbduxfast_ai_stop(dev, 1);
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return ret;
 }
 
+<<<<<<< HEAD
 /*
  * analogue IN
  * interrupt service routine
  */
+=======
+static void usbduxfast_ai_handle_urb(struct comedi_device *dev,
+				     struct comedi_subdevice *s,
+				     struct urb *urb)
+{
+	struct usbduxfast_private *devpriv = dev->private;
+	struct comedi_async *async = s->async;
+	struct comedi_cmd *cmd = &async->cmd;
+	int ret;
+
+	if (devpriv->ignore) {
+		devpriv->ignore--;
+	} else {
+		unsigned int nsamples;
+
+		nsamples = comedi_bytes_to_samples(s, urb->actual_length);
+		nsamples = comedi_nsamples_left(s, nsamples);
+		comedi_buf_write_samples(s, urb->transfer_buffer, nsamples);
+
+		if (cmd->stop_src == TRIG_COUNT &&
+		    async->scans_done >= cmd->stop_arg)
+			async->events |= COMEDI_CB_EOA;
+	}
+
+	/* if command is still running, resubmit urb for BULK transfer */
+	if (!(async->events & COMEDI_CB_CANCEL_MASK)) {
+		urb->dev = comedi_to_usb_dev(dev);
+		urb->status = 0;
+		ret = usb_submit_urb(urb, GFP_ATOMIC);
+		if (ret < 0) {
+			dev_err(dev->class_dev, "urb resubm failed: %d", ret);
+			async->events |= COMEDI_CB_ERROR;
+		}
+	}
+}
+
+>>>>>>> v4.9.227
 static void usbduxfast_ai_interrupt(struct urb *urb)
 {
 	struct comedi_device *dev = urb->context;
 	struct comedi_subdevice *s = dev->read_subdev;
 	struct comedi_async *async = s->async;
+<<<<<<< HEAD
 	struct comedi_cmd *cmd = &async->cmd;
 	struct usb_device *usb = comedi_to_usb_dev(dev);
 	struct usbduxfast_private *devpriv = dev->private;
@@ -260,10 +347,24 @@ static void usbduxfast_ai_interrupt(struct urb *urb)
 		 * happens after an unlink command or when the device
 		 * is plugged out
 		 */
+=======
+	struct usbduxfast_private *devpriv = dev->private;
+
+	/* exit if not running a command, do not resubmit urb */
+	if (!devpriv->ai_cmd_running)
+		return;
+
+	switch (urb->status) {
+	case 0:
+		usbduxfast_ai_handle_urb(dev, s, urb);
+		break;
+
+>>>>>>> v4.9.227
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
 	case -ECONNABORTED:
+<<<<<<< HEAD
 		/* tell this comedi */
 		async->events |= COMEDI_CB_EOA;
 		async->events |= COMEDI_CB_ERROR;
@@ -335,6 +436,29 @@ static void usbduxfast_ai_interrupt(struct urb *urb)
 		comedi_event(dev, s);
 		usbduxfast_ai_stop(dev, 0);
 	}
+=======
+		/* after an unlink command, unplug, ... etc */
+		async->events |= COMEDI_CB_ERROR;
+		break;
+
+	default:
+		/* a real error */
+		dev_err(dev->class_dev,
+			"non-zero urb status received in ai intr context: %d\n",
+			urb->status);
+		async->events |= COMEDI_CB_ERROR;
+		break;
+	}
+
+	/*
+	 * comedi_handle_events() cannot be used in this driver. The (*cancel)
+	 * operation would unlink the urb.
+	 */
+	if (async->events & COMEDI_CB_CANCEL_MASK)
+		usbduxfast_ai_stop(dev, 0);
+
+	comedi_event(dev, s);
+>>>>>>> v4.9.227
 }
 
 static int usbduxfast_submit_urb(struct comedi_device *dev)
@@ -343,9 +467,12 @@ static int usbduxfast_submit_urb(struct comedi_device *dev)
 	struct usbduxfast_private *devpriv = dev->private;
 	int ret;
 
+<<<<<<< HEAD
 	if (!devpriv)
 		return -EFAULT;
 
+=======
+>>>>>>> v4.9.227
 	usb_fill_bulk_urb(devpriv->urb, usb, usb_rcvbulkpipe(usb, BULKINEP),
 			  devpriv->inbuf, SIZEINBUF,
 			  usbduxfast_ai_interrupt, dev);
@@ -358,11 +485,45 @@ static int usbduxfast_submit_urb(struct comedi_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int usbduxfast_ai_check_chanlist(struct comedi_device *dev,
+					struct comedi_subdevice *s,
+					struct comedi_cmd *cmd)
+{
+	unsigned int gain0 = CR_RANGE(cmd->chanlist[0]);
+	int i;
+
+	if (cmd->chanlist_len > 3 && cmd->chanlist_len != 16) {
+		dev_err(dev->class_dev, "unsupported combination of channels\n");
+		return -EINVAL;
+	}
+
+	for (i = 0; i < cmd->chanlist_len; ++i) {
+		unsigned int chan = CR_CHAN(cmd->chanlist[i]);
+		unsigned int gain = CR_RANGE(cmd->chanlist[i]);
+
+		if (chan != i) {
+			dev_err(dev->class_dev,
+				"channels are not consecutive\n");
+			return -EINVAL;
+		}
+		if (gain != gain0 && cmd->chanlist_len > 3) {
+			dev_err(dev->class_dev,
+				"gain must be the same for all channels\n");
+			return -EINVAL;
+		}
+	}
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int usbduxfast_ai_cmdtest(struct comedi_device *dev,
 				 struct comedi_subdevice *s,
 				 struct comedi_cmd *cmd)
 {
 	int err = 0;
+<<<<<<< HEAD
 	long int steps, tmp;
 	int min_sample_period;
 
@@ -375,12 +536,27 @@ static int usbduxfast_ai_cmdtest(struct comedi_device *dev,
 	err |= cfc_check_trigger_src(&cmd->convert_src, TRIG_TIMER | TRIG_EXT);
 	err |= cfc_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
 	err |= cfc_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+=======
+	int err2 = 0;
+	unsigned int steps;
+	unsigned int arg;
+
+	/* Step 1 : check if triggers are trivially valid */
+
+	err |= comedi_check_trigger_src(&cmd->start_src,
+					TRIG_NOW | TRIG_EXT | TRIG_INT);
+	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_FOLLOW);
+	err |= comedi_check_trigger_src(&cmd->convert_src, TRIG_TIMER);
+	err |= comedi_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
+	err |= comedi_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 1;
 
 	/* Step 2a : make sure trigger sources are unique */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_is_unique(cmd->start_src);
 	err |= cfc_check_trigger_is_unique(cmd->scan_begin_src);
 	err |= cfc_check_trigger_is_unique(cmd->convert_src);
@@ -392,16 +568,28 @@ static int usbduxfast_ai_cmdtest(struct comedi_device *dev,
 	if (cmd->start_src == TRIG_EXT && cmd->stop_src == TRIG_EXT)
 		err |= -EINVAL;
 
+=======
+	err |= comedi_check_trigger_is_unique(cmd->start_src);
+	err |= comedi_check_trigger_is_unique(cmd->stop_src);
+
+	/* Step 2b : and mutually compatible */
+
+>>>>>>> v4.9.227
 	if (err)
 		return 2;
 
 	/* Step 3: check if arguments are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_arg_is(&cmd->start_arg, 0);
+=======
+	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
+>>>>>>> v4.9.227
 
 	if (!cmd->chanlist_len)
 		err |= -EINVAL;
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_arg_is(&cmd->scan_end_arg, cmd->chanlist_len);
 
 	if (cmd->chanlist_len == 1)
@@ -437,14 +625,60 @@ static int usbduxfast_ai_cmdtest(struct comedi_device *dev,
 	default:
 		break;
 	}
+=======
+	/* external start trigger is only valid for 1 or 16 channels */
+	if (cmd->start_src == TRIG_EXT &&
+	    cmd->chanlist_len != 1 && cmd->chanlist_len != 16)
+		err |= -EINVAL;
+
+	err |= comedi_check_trigger_arg_is(&cmd->scan_end_arg,
+					   cmd->chanlist_len);
+
+	/*
+	 * Validate the conversion timing:
+	 * for 1 channel the timing in 30MHz "steps" is:
+	 *	steps <= MAX_SAMPLING_PERIOD
+	 * for all other chanlist_len it is:
+	 *	MIN_SAMPLING_PERIOD <= steps <= MAX_SAMPLING_PERIOD
+	 */
+	steps = (cmd->convert_arg * 30) / 1000;
+	if (cmd->chanlist_len !=  1)
+		err2 |= comedi_check_trigger_arg_min(&steps,
+						     MIN_SAMPLING_PERIOD);
+	else
+		err2 |= comedi_check_trigger_arg_min(&steps, 1);
+	err2 |= comedi_check_trigger_arg_max(&steps, MAX_SAMPLING_PERIOD);
+	if (err2) {
+		err |= err2;
+		arg = (steps * 1000) / 30;
+		err |= comedi_check_trigger_arg_is(&cmd->convert_arg, arg);
+	}
+
+	if (cmd->stop_src == TRIG_COUNT)
+		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
+	else	/* TRIG_NONE */
+		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 3;
 
+<<<<<<< HEAD
 	/* step 4: fix up any arguments */
 
 	return 0;
 
+=======
+	/* Step 4: fix up any arguments */
+
+	/* Step 5: check channel list if it exists */
+	if (cmd->chanlist && cmd->chanlist_len > 0)
+		err |= usbduxfast_ai_check_chanlist(dev, s, cmd);
+	if (err)
+		return 5;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int usbduxfast_ai_inttrig(struct comedi_device *dev,
@@ -455,6 +689,7 @@ static int usbduxfast_ai_inttrig(struct comedi_device *dev,
 	struct comedi_cmd *cmd = &s->async->cmd;
 	int ret;
 
+<<<<<<< HEAD
 	if (!devpriv)
 		return -EFAULT;
 
@@ -462,6 +697,12 @@ static int usbduxfast_ai_inttrig(struct comedi_device *dev,
 		return -EINVAL;
 
 	down(&devpriv->sem);
+=======
+	if (trig_num != cmd->start_arg)
+		return -EINVAL;
+
+	mutex_lock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	if (!devpriv->ai_cmd_running) {
 		devpriv->ai_cmd_running = 1;
@@ -469,14 +710,22 @@ static int usbduxfast_ai_inttrig(struct comedi_device *dev,
 		if (ret < 0) {
 			dev_err(dev->class_dev, "urbSubmit: err=%d\n", ret);
 			devpriv->ai_cmd_running = 0;
+<<<<<<< HEAD
 			up(&devpriv->sem);
+=======
+			mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 			return ret;
 		}
 		s->async->inttrig = NULL;
 	} else {
 		dev_err(dev->class_dev, "ai is already running\n");
 	}
+<<<<<<< HEAD
 	up(&devpriv->sem);
+=======
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 	return 1;
 }
 
@@ -485,6 +734,7 @@ static int usbduxfast_ai_cmd(struct comedi_device *dev,
 {
 	struct usbduxfast_private *devpriv = dev->private;
 	struct comedi_cmd *cmd = &s->async->cmd;
+<<<<<<< HEAD
 	unsigned int chan, gain, rngmask = 0xff;
 	int i, j, ret;
 	int result;
@@ -501,6 +751,17 @@ static int usbduxfast_ai_cmd(struct comedi_device *dev,
 	}
 	/* set current channel of the running acquisition to zero */
 	s->async->cur_chan = 0;
+=======
+	unsigned int rngmask = 0xff;
+	int j, ret;
+	long steps, steps_tmp;
+
+	mutex_lock(&devpriv->mut);
+	if (devpriv->ai_cmd_running) {
+		ret = -EBUSY;
+		goto cmd_exit;
+	}
+>>>>>>> v4.9.227
 
 	/*
 	 * ignore the first buffers from the device if there
@@ -508,6 +769,7 @@ static int usbduxfast_ai_cmd(struct comedi_device *dev,
 	 */
 	devpriv->ignore = PACKETS_TO_IGNORE;
 
+<<<<<<< HEAD
 	gain = CR_RANGE(cmd->chanlist[0]);
 	for (i = 0; i < cmd->chanlist_len; ++i) {
 		chan = CR_CHAN(cmd->chanlist[i]);
@@ -552,6 +814,9 @@ static int usbduxfast_ai_cmd(struct comedi_device *dev,
 		up(&devpriv->sem);
 		return -EINVAL;
 	}
+=======
+	steps = (cmd->convert_arg * 30) / 1000;
+>>>>>>> v4.9.227
 
 	switch (cmd->chanlist_len) {
 	case 1:
@@ -796,6 +1061,7 @@ static int usbduxfast_ai_cmd(struct comedi_device *dev,
 		usbduxfast_cmd_data(dev, 4, 0x09, 0x01, rngmask, 0xff);
 
 		break;
+<<<<<<< HEAD
 
 	default:
 		dev_err(dev->class_dev, "unsupported combination of channels\n");
@@ -814,6 +1080,14 @@ static int usbduxfast_ai_cmd(struct comedi_device *dev,
 		devpriv->ai_sample_count = cmd->stop_arg * cmd->scan_end_arg;
 	else	/* TRIG_NONE */
 		devpriv->ai_sample_count = 0;
+=======
+	}
+
+	/* 0 means that the AD commands are sent */
+	ret = usbduxfast_send_cmd(dev, SENDADCOMMANDS);
+	if (ret < 0)
+		goto cmd_exit;
+>>>>>>> v4.9.227
 
 	if ((cmd->start_src == TRIG_NOW) || (cmd->start_src == TRIG_EXT)) {
 		/* enable this acquisition operation */
@@ -822,16 +1096,28 @@ static int usbduxfast_ai_cmd(struct comedi_device *dev,
 		if (ret < 0) {
 			devpriv->ai_cmd_running = 0;
 			/* fixme: unlink here?? */
+<<<<<<< HEAD
 			up(&devpriv->sem);
 			return ret;
+=======
+			goto cmd_exit;
+>>>>>>> v4.9.227
 		}
 		s->async->inttrig = NULL;
 	} else {	/* TRIG_INT */
 		s->async->inttrig = usbduxfast_ai_inttrig;
 	}
+<<<<<<< HEAD
 	up(&devpriv->sem);
 
 	return 0;
+=======
+
+cmd_exit:
+	mutex_unlock(&devpriv->mut);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -846,16 +1132,28 @@ static int usbduxfast_ai_insn_read(struct comedi_device *dev,
 	struct usbduxfast_private *devpriv = dev->private;
 	unsigned int chan = CR_CHAN(insn->chanspec);
 	unsigned int range = CR_RANGE(insn->chanspec);
+<<<<<<< HEAD
 	uint8_t rngmask = range ? (0xff - 0x04) : 0xff;
 	int i, j, n, actual_length;
 	int ret;
 
 	down(&devpriv->sem);
+=======
+	u8 rngmask = range ? (0xff - 0x04) : 0xff;
+	int i, j, n, actual_length;
+	int ret;
+
+	mutex_lock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	if (devpriv->ai_cmd_running) {
 		dev_err(dev->class_dev,
 			"ai_insn_read not possible, async cmd is running\n");
+<<<<<<< HEAD
 		up(&devpriv->sem);
+=======
+		mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 		return -EBUSY;
 	}
 
@@ -877,7 +1175,11 @@ static int usbduxfast_ai_insn_read(struct comedi_device *dev,
 
 	ret = usbduxfast_send_cmd(dev, SENDADCOMMANDS);
 	if (ret < 0) {
+<<<<<<< HEAD
 		up(&devpriv->sem);
+=======
+		mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 		return ret;
 	}
 
@@ -887,7 +1189,11 @@ static int usbduxfast_ai_insn_read(struct comedi_device *dev,
 				   &actual_length, 10000);
 		if (ret < 0) {
 			dev_err(dev->class_dev, "insn timeout, no data\n");
+<<<<<<< HEAD
 			up(&devpriv->sem);
+=======
+			mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 			return ret;
 		}
 	}
@@ -898,6 +1204,7 @@ static int usbduxfast_ai_insn_read(struct comedi_device *dev,
 				   &actual_length, 10000);
 		if (ret < 0) {
 			dev_err(dev->class_dev, "insn data error: %d\n", ret);
+<<<<<<< HEAD
 			up(&devpriv->sem);
 			return ret;
 		}
@@ -909,15 +1216,33 @@ static int usbduxfast_ai_insn_read(struct comedi_device *dev,
 		}
 		for (j = chan; (j < n) && (i < insn->n); j = j + 16) {
 			data[i] = ((uint16_t *) (devpriv->inbuf))[j];
+=======
+			mutex_unlock(&devpriv->mut);
+			return ret;
+		}
+		n = actual_length / sizeof(u16);
+		if ((n % 16) != 0) {
+			dev_err(dev->class_dev, "insn data packet corrupted\n");
+			mutex_unlock(&devpriv->mut);
+			return -EINVAL;
+		}
+		for (j = chan; (j < n) && (i < insn->n); j = j + 16) {
+			data[i] = ((u16 *)(devpriv->inbuf))[j];
+>>>>>>> v4.9.227
 			i++;
 		}
 	}
 
+<<<<<<< HEAD
 	up(&devpriv->sem);
+=======
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return insn->n;
 }
 
+<<<<<<< HEAD
 static int usbduxfast_attach_common(struct comedi_device *dev)
 {
 	struct usbduxfast_private *devpriv = dev->private;
@@ -951,12 +1276,18 @@ static int usbduxfast_attach_common(struct comedi_device *dev)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int usbduxfast_upload_firmware(struct comedi_device *dev,
 				      const u8 *data, size_t size,
 				      unsigned long context)
 {
 	struct usb_device *usb = comedi_to_usb_dev(dev);
+<<<<<<< HEAD
 	uint8_t *buf;
+=======
+	u8 *buf;
+>>>>>>> v4.9.227
 	unsigned char *tmp;
 	int ret;
 
@@ -1028,6 +1359,10 @@ static int usbduxfast_auto_attach(struct comedi_device *dev,
 	struct usb_interface *intf = comedi_to_usb_interface(dev);
 	struct usb_device *usb = comedi_to_usb_dev(dev);
 	struct usbduxfast_private *devpriv;
+<<<<<<< HEAD
+=======
+	struct comedi_subdevice *s;
+>>>>>>> v4.9.227
 	int ret;
 
 	if (usb->speed != USB_SPEED_HIGH) {
@@ -1040,7 +1375,11 @@ static int usbduxfast_auto_attach(struct comedi_device *dev,
 	if (!devpriv)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	sema_init(&devpriv->sem, 1);
+=======
+	mutex_init(&devpriv->mut);
+>>>>>>> v4.9.227
 	usb_set_intfdata(intf, devpriv);
 
 	devpriv->duxbuf = kmalloc(SIZEOFDUXBUF, GFP_KERNEL);
@@ -1056,10 +1395,15 @@ static int usbduxfast_auto_attach(struct comedi_device *dev,
 	}
 
 	devpriv->urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!devpriv->urb) {
 		dev_err(dev->class_dev, "Could not alloc. urb\n");
 		return -ENOMEM;
 	}
+=======
+	if (!devpriv->urb)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	devpriv->inbuf = kmalloc(SIZEINBUF, GFP_KERNEL);
 	if (!devpriv->inbuf)
@@ -1070,7 +1414,29 @@ static int usbduxfast_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	return usbduxfast_attach_common(dev);
+=======
+	ret = comedi_alloc_subdevices(dev, 1);
+	if (ret)
+		return ret;
+
+	/* Analog Input subdevice */
+	s = &dev->subdevices[0];
+	dev->read_subdev = s;
+	s->type		= COMEDI_SUBD_AI;
+	s->subdev_flags	= SDF_READABLE | SDF_GROUND | SDF_CMD_READ;
+	s->n_chan	= 16;
+	s->maxdata	= 0x1000;	/* 12-bit + 1 overflow bit */
+	s->range_table	= &range_usbduxfast_ai_range;
+	s->insn_read	= usbduxfast_ai_insn_read;
+	s->len_chanlist	= s->n_chan;
+	s->do_cmdtest	= usbduxfast_ai_cmdtest;
+	s->do_cmd	= usbduxfast_ai_cmd;
+	s->cancel	= usbduxfast_ai_cancel;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void usbduxfast_detach(struct comedi_device *dev)
@@ -1081,7 +1447,11 @@ static void usbduxfast_detach(struct comedi_device *dev)
 	if (!devpriv)
 		return;
 
+<<<<<<< HEAD
 	down(&devpriv->sem);
+=======
+	mutex_lock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	usb_set_intfdata(intf, NULL);
 
@@ -1090,6 +1460,7 @@ static void usbduxfast_detach(struct comedi_device *dev)
 		usb_kill_urb(devpriv->urb);
 
 		kfree(devpriv->inbuf);
+<<<<<<< HEAD
 		devpriv->inbuf = NULL;
 
 		usb_free_urb(devpriv->urb);
@@ -1102,6 +1473,14 @@ static void usbduxfast_detach(struct comedi_device *dev)
 	devpriv->ai_cmd_running = 0;
 
 	up(&devpriv->sem);
+=======
+		usb_free_urb(devpriv->urb);
+	}
+
+	kfree(devpriv->duxbuf);
+
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 }
 
 static struct comedi_driver usbduxfast_driver = {

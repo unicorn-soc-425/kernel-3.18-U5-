@@ -84,6 +84,7 @@ static const struct reg_default wm8983_defaults[] = {
 	{ 0x3D, 0x0000 },      /* R61 - BIAS CTRL */
 };
 
+<<<<<<< HEAD
 static const struct wm8983_reg_access {
 	u16 read; /* Mask of readable bits */
 	u16 write; /* Mask of writable bits */
@@ -144,6 +145,8 @@ static const struct wm8983_reg_access {
 	[0x3D] = { 0x0000, 0x0100 }  /* R61 - BIAS CTRL */
 };
 
+=======
+>>>>>>> v4.9.227
 /* vol/gain update regs */
 static const int vol_update_regs[] = {
 	WM8983_LEFT_DAC_DIGITAL_VOL,
@@ -557,9 +560,15 @@ static int eqmode_get(struct snd_kcontrol *kcontrol,
 
 	reg = snd_soc_read(codec, WM8983_EQ1_LOW_SHELF);
 	if (reg & WM8983_EQ3DMODE)
+<<<<<<< HEAD
 		ucontrol->value.integer.value[0] = 1;
 	else
 		ucontrol->value.integer.value[0] = 0;
+=======
+		ucontrol->value.enumerated.item[0] = 1;
+	else
+		ucontrol->value.enumerated.item[0] = 0;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -571,18 +580,31 @@ static int eqmode_put(struct snd_kcontrol *kcontrol,
 	unsigned int regpwr2, regpwr3;
 	unsigned int reg_eq;
 
+<<<<<<< HEAD
 	if (ucontrol->value.integer.value[0] != 0
 	    && ucontrol->value.integer.value[0] != 1)
+=======
+	if (ucontrol->value.enumerated.item[0] != 0
+	    && ucontrol->value.enumerated.item[0] != 1)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	reg_eq = snd_soc_read(codec, WM8983_EQ1_LOW_SHELF);
 	switch ((reg_eq & WM8983_EQ3DMODE) >> WM8983_EQ3DMODE_SHIFT) {
 	case 0:
+<<<<<<< HEAD
 		if (!ucontrol->value.integer.value[0])
 			return 0;
 		break;
 	case 1:
 		if (ucontrol->value.integer.value[0])
+=======
+		if (!ucontrol->value.enumerated.item[0])
+			return 0;
+		break;
+	case 1:
+		if (ucontrol->value.enumerated.item[0])
+>>>>>>> v4.9.227
 			return 0;
 		break;
 	}
@@ -597,7 +619,11 @@ static int eqmode_put(struct snd_kcontrol *kcontrol,
 	/* set the desired eqmode */
 	snd_soc_update_bits(codec, WM8983_EQ1_LOW_SHELF,
 			    WM8983_EQ3DMODE_MASK,
+<<<<<<< HEAD
 			    ucontrol->value.integer.value[0]
+=======
+			    ucontrol->value.enumerated.item[0]
+>>>>>>> v4.9.227
 			    << WM8983_EQ3DMODE_SHIFT);
 	/* restore DAC/ADC configuration */
 	snd_soc_write(codec, WM8983_POWER_MANAGEMENT_2, regpwr2);
@@ -605,12 +631,28 @@ static int eqmode_put(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool wm8983_readable(struct device *dev, unsigned int reg)
 {
 	if (reg > WM8983_MAX_REGISTER)
 		return 0;
 
 	return wm8983_access_masks[reg].read != 0;
+=======
+static bool wm8983_writeable(struct device *dev, unsigned int reg)
+{
+	switch (reg) {
+	case WM8983_SOFTWARE_RESET ... WM8983_RIGHT_ADC_DIGITAL_VOL:
+	case WM8983_EQ1_LOW_SHELF ... WM8983_DAC_LIMITER_2:
+	case WM8983_NOTCH_FILTER_1 ... WM8983_NOTCH_FILTER_4:
+	case WM8983_ALC_CONTROL_1 ... WM8983_PLL_K_3:
+	case WM8983_3D_CONTROL ... WM8983_OUT4_MONO_MIX_CTRL:
+	case WM8983_BIAS_CTRL:
+		return true;
+	default:
+		return false;
+	}
+>>>>>>> v4.9.227
 }
 
 static int wm8983_dac_mute(struct snd_soc_dai *dai, int mute)
@@ -915,7 +957,11 @@ static int wm8983_set_bias_level(struct snd_soc_codec *codec,
 				    1 << WM8983_VMIDSEL_SHIFT);
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			ret = regcache_sync(wm8983->regmap);
 			if (ret < 0) {
 				dev_err(codec->dev, "Failed to sync cache: %d\n", ret);
@@ -963,6 +1009,7 @@ static int wm8983_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 	return 0;
 }
@@ -987,6 +1034,8 @@ static int wm8983_resume(struct snd_soc_codec *codec)
 static int wm8983_remove(struct snd_soc_codec *codec)
 {
 	wm8983_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1053,6 +1102,7 @@ static struct snd_soc_dai_driver wm8983_dai = {
 	.symmetric_rates = 1
 };
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_wm8983 = {
 	.probe = wm8983_probe,
 	.remove = wm8983_remove,
@@ -1065,6 +1115,20 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8983 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8983_dapm_widgets),
 	.dapm_routes = wm8983_audio_map,
 	.num_dapm_routes = ARRAY_SIZE(wm8983_audio_map),
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8983 = {
+	.probe = wm8983_probe,
+	.set_bias_level = wm8983_set_bias_level,
+	.suspend_bias_off = true,
+	.component_driver = {
+		.controls		= wm8983_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8983_snd_controls),
+		.dapm_widgets		= wm8983_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8983_dapm_widgets),
+		.dapm_routes		= wm8983_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(wm8983_audio_map),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config wm8983_regmap = {
@@ -1074,8 +1138,14 @@ static const struct regmap_config wm8983_regmap = {
 	.reg_defaults = wm8983_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm8983_defaults),
 	.cache_type = REGCACHE_RBTREE,
+<<<<<<< HEAD
 
 	.readable_reg = wm8983_readable,
+=======
+	.max_register = WM8983_MAX_REGISTER,
+
+	.writeable_reg = wm8983_writeable,
+>>>>>>> v4.9.227
 };
 
 #if defined(CONFIG_SPI_MASTER)
@@ -1111,7 +1181,10 @@ static int wm8983_spi_remove(struct spi_device *spi)
 static struct spi_driver wm8983_spi_driver = {
 	.driver = {
 		.name = "wm8983",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = wm8983_spi_probe,
 	.remove = wm8983_spi_remove
@@ -1159,7 +1232,10 @@ MODULE_DEVICE_TABLE(i2c, wm8983_i2c_id);
 static struct i2c_driver wm8983_i2c_driver = {
 	.driver = {
 		.name = "wm8983",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = wm8983_i2c_probe,
 	.remove = wm8983_i2c_remove,

@@ -30,8 +30,14 @@ int static_init(struct pcmcia_socket *s)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct resource *pcmcia_make_resource(unsigned long start, unsigned long end,
 				int flags, const char *name)
+=======
+struct resource *pcmcia_make_resource(resource_size_t start,
+					resource_size_t end,
+					unsigned long flags, const char *name)
+>>>>>>> v4.9.227
 {
 	struct resource *res = kzalloc(sizeof(*res), GFP_KERNEL);
 

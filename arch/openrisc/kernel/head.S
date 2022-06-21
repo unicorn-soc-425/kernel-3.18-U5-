@@ -754,11 +754,14 @@ _dc_enable:
 
 /* ===============================================[ page table masks ]=== */
 
+<<<<<<< HEAD
 /* bit 4 is used in hardware as write back cache bit. we never use this bit
  * explicitly, so we can reuse it as _PAGE_FILE bit and mask it out when
  * writing into hardware pte's
  */
 
+=======
+>>>>>>> v4.9.227
 #define DTLB_UP_CONVERT_MASK  0x3fa
 #define ITLB_UP_CONVERT_MASK  0x3a
 
@@ -1601,7 +1604,11 @@ _string_esr_irq_bug:
 
 /*
  * .data section should be page aligned
+<<<<<<< HEAD
  *	(look into arch/or32/kernel/vmlinux.lds)
+=======
+ *	(look into arch/openrisc/kernel/vmlinux.lds.S)
+>>>>>>> v4.9.227
  */
 	.section .data,"aw"
 	.align	8192

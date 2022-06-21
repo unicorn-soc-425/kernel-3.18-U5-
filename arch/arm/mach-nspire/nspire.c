@@ -22,12 +22,19 @@
 #include <asm/mach-types.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <asm/hardware/timer-sp.h>
 
 #include "mmio.h"
 #include "clcd.h"
 
 static const char *nspire_dt_match[] __initconst = {
+=======
+#include "mmio.h"
+#include "clcd.h"
+
+static const char *const nspire_dt_match[] __initconst = {
+>>>>>>> v4.9.227
 	"ti,nspire",
 	"ti,nspire-cx",
 	"ti,nspire-tp",
@@ -59,8 +66,12 @@ static struct of_dev_auxdata nspire_auxdata[] __initdata = {
 
 static void __init nspire_init(void)
 {
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table,
 			nspire_auxdata, NULL);
+=======
+	of_platform_default_populate(NULL, nspire_auxdata, NULL);
+>>>>>>> v4.9.227
 }
 
 static void nspire_restart(enum reboot_mode mode, const char *cmd)

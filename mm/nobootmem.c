@@ -11,11 +11,15 @@
 #include <linux/init.h>
 #include <linux/pfn.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/export.h>
 #include <linux/kmemleak.h>
 #include <linux/range.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
 
 #include <asm/bug.h>
 #include <asm/io.h>
@@ -23,6 +27,19 @@
 
 #include "internal.h"
 
+=======
+#include <linux/bootmem.h>
+
+#include <asm/bug.h>
+#include <asm/io.h>
+
+#include "internal.h"
+
+#ifndef CONFIG_HAVE_MEMBLOCK
+#error CONFIG_HAVE_MEMBLOCK not defined
+#endif
+
+>>>>>>> v4.9.227
 #ifndef CONFIG_NEED_MULTIPLE_NODES
 struct pglist_data __refdata contig_page_data;
 EXPORT_SYMBOL(contig_page_data);
@@ -31,17 +48,37 @@ EXPORT_SYMBOL(contig_page_data);
 unsigned long max_low_pfn;
 unsigned long min_low_pfn;
 unsigned long max_pfn;
+<<<<<<< HEAD
+=======
+unsigned long long max_possible_pfn;
+>>>>>>> v4.9.227
 
 static void * __init __alloc_memory_core_early(int nid, u64 size, u64 align,
 					u64 goal, u64 limit)
 {
 	void *ptr;
 	u64 addr;
+<<<<<<< HEAD
+=======
+	ulong flags = choose_memblock_flags();
+>>>>>>> v4.9.227
 
 	if (limit > memblock.current_limit)
 		limit = memblock.current_limit;
 
+<<<<<<< HEAD
 	addr = memblock_find_in_range_node(size, align, goal, limit, nid);
+=======
+again:
+	addr = memblock_find_in_range_node(size, align, goal, limit, nid,
+					   flags);
+	if (!addr && (flags & MEMBLOCK_MIRROR)) {
+		flags &= ~MEMBLOCK_MIRROR;
+		pr_warn("Could not allocate %pap bytes of mirrored memory\n",
+			&size);
+		goto again;
+	}
+>>>>>>> v4.9.227
 	if (!addr)
 		return NULL;
 
@@ -67,11 +104,19 @@ static void * __init __alloc_memory_core_early(int nid, u64 size, u64 align,
  * down, but we are still initializing the system.  Pages are given directly
  * to the page allocator, no bootmem metadata is updated because it is gone.
  */
+<<<<<<< HEAD
 void free_bootmem_late(unsigned long addr, unsigned long size)
 {
 	unsigned long cursor, end;
 
 	kmemleak_free_part(__va(addr), size);
+=======
+void __init free_bootmem_late(unsigned long addr, unsigned long size)
+{
+	unsigned long cursor, end;
+
+	kmemleak_free_part_phys(addr, size);
+>>>>>>> v4.9.227
 
 	cursor = PFN_UP(addr);
 	end = PFN_DOWN(addr + size);
@@ -121,6 +166,7 @@ static unsigned long __init free_low_memory_core_early(void)
 
 	memblock_clear_hotplug(0, -1);
 
+<<<<<<< HEAD
 	for_each_free_mem_range(i, NUMA_NO_NODE, &start, &end, NULL)
 		count += __free_memory_core(start, end);
 
@@ -140,6 +186,20 @@ static unsigned long __init free_low_memory_core_early(void)
 	}
 #endif
 
+=======
+	for_each_reserved_mem_region(i, &start, &end)
+		reserve_bootmem_region(start, end);
+
+	/*
+	 * We need to use NUMA_NO_NODE instead of NODE_DATA(0)->node_id
+	 *  because in some case like Node0 doesn't have RAM installed
+	 *  low ram will be on Node1
+	 */
+	for_each_free_mem_range(i, NUMA_NO_NODE, MEMBLOCK_NONE, &start, &end,
+				NULL)
+		count += __free_memory_core(start, end);
+
+>>>>>>> v4.9.227
 	return count;
 }
 
@@ -177,11 +237,14 @@ unsigned long __init free_all_bootmem(void)
 
 	reset_all_zones_managed_pages();
 
+<<<<<<< HEAD
 	/*
 	 * We need to use NUMA_NO_NODE instead of NODE_DATA(0)->node_id
 	 *  because in some case like Node0 doesn't have RAM installed
 	 *  low ram will be on Node1
 	 */
+=======
+>>>>>>> v4.9.227
 	pages = free_low_memory_core_early();
 	totalram_pages += pages;
 
@@ -274,7 +337,11 @@ static void * __init ___alloc_bootmem(unsigned long size, unsigned long align,
 	/*
 	 * Whoops, we cannot satisfy the allocation request.
 	 */
+<<<<<<< HEAD
 	printk(KERN_ALERT "bootmem alloc of %lu bytes failed!\n", size);
+=======
+	pr_alert("bootmem alloc of %lu bytes failed!\n", size);
+>>>>>>> v4.9.227
 	panic("Out of memory");
 	return NULL;
 }
@@ -346,7 +413,11 @@ static void * __init ___alloc_bootmem_node(pg_data_t *pgdat, unsigned long size,
 	if (ptr)
 		return ptr;
 
+<<<<<<< HEAD
 	printk(KERN_ALERT "bootmem alloc of %lu bytes failed!\n", size);
+=======
+	pr_alert("bootmem alloc of %lu bytes failed!\n", size);
+>>>>>>> v4.9.227
 	panic("Out of memory");
 	return NULL;
 }
@@ -381,9 +452,12 @@ void * __init __alloc_bootmem_node_high(pg_data_t *pgdat, unsigned long size,
 	return __alloc_bootmem_node(pgdat, size, align, goal);
 }
 
+<<<<<<< HEAD
 #ifndef ARCH_LOW_ADDRESS_LIMIT
 #define ARCH_LOW_ADDRESS_LIMIT	0xffffffffUL
 #endif
+=======
+>>>>>>> v4.9.227
 
 /**
  * __alloc_bootmem_low - allocate low boot memory

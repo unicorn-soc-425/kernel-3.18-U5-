@@ -42,7 +42,11 @@
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 
+<<<<<<< HEAD
 static bool enable[SNDRV_CARDS] = {1, [1 ... (SNDRV_CARDS - 1)] = 1};
+=======
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;
+>>>>>>> v4.9.227
 
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable tm6000x soundcard. default enabled.");
@@ -388,7 +392,11 @@ static struct page *snd_pcm_get_vmalloc_page(struct snd_pcm_substream *subs,
 /*
  * operators
  */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_tm6000_pcm_ops = {
+=======
+static const struct snd_pcm_ops snd_tm6000_pcm_ops = {
+>>>>>>> v4.9.227
 	.open = snd_tm6000_pcm_open,
 	.close = snd_tm6000_close,
 	.ioctl = snd_pcm_lib_ioctl,

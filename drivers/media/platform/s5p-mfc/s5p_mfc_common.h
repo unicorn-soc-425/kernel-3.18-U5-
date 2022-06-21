@@ -21,10 +21,19 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
 #include "regs-mfc.h"
 #include "regs-mfc-v8.h"
 
+=======
+#include <media/videobuf2-v4l2.h>
+#include "regs-mfc.h"
+#include "regs-mfc-v8.h"
+
+#define S5P_MFC_NAME		"s5p-mfc"
+
+>>>>>>> v4.9.227
 /* Definitions related to MFC memory */
 
 /* Offset base used to differentiate between CAPTURE and OUTPUT
@@ -179,8 +188,13 @@ struct s5p_mfc_ctx;
  * struct s5p_mfc_buf - MFC buffer
  */
 struct s5p_mfc_buf {
+<<<<<<< HEAD
 	struct list_head list;
 	struct vb2_buffer *b;
+=======
+	struct vb2_v4l2_buffer *b;
+	struct list_head list;
+>>>>>>> v4.9.227
 	union {
 		struct {
 			size_t luma;
@@ -237,8 +251,11 @@ struct s5p_mfc_variant {
 
 /**
  * struct s5p_mfc_priv_buf - represents internal used buffer
+<<<<<<< HEAD
  * @alloc:		allocation-specific context for each buffer
  *			(videobuf2 allocator)
+=======
+>>>>>>> v4.9.227
  * @ofs:		offset of each buffer, will be used for MFC
  * @virt:		kernel virtual address, only valid when the
  *			buffer accessed by driver
@@ -246,7 +263,10 @@ struct s5p_mfc_variant {
  * @size:		size of the buffer
  */
 struct s5p_mfc_priv_buf {
+<<<<<<< HEAD
 	void		*alloc;
+=======
+>>>>>>> v4.9.227
 	unsigned long	ofs;
 	void		*virt;
 	dma_addr_t	dma;
@@ -288,13 +308,22 @@ struct s5p_mfc_priv_buf {
  * @watchdog_cnt:	counter for the watchdog
  * @watchdog_workqueue:	workqueue for the watchdog
  * @watchdog_work:	worker for the watchdog
+<<<<<<< HEAD
  * @alloc_ctx:		videobuf2 allocator contexts for two memory banks
+=======
+>>>>>>> v4.9.227
  * @enter_suspend:	flag set when entering suspend
  * @ctx_buf:		common context memory (MFCv6)
  * @warn_start:		hardware error code from which warnings start
  * @mfc_ops:		ops structure holding HW operation function pointers
  * @mfc_cmds:		cmd structure holding HW commands function pointers
+<<<<<<< HEAD
  * @fw_ver:		loaded firmware sub-version
+=======
+ * @mfc_regs:		structure holding MFC registers
+ * @fw_ver:		loaded firmware sub-version
+ * risc_on:		flag indicates RISC is on or off
+>>>>>>> v4.9.227
  *
  */
 struct s5p_mfc_dev {
@@ -311,7 +340,11 @@ struct s5p_mfc_dev {
 	struct s5p_mfc_pm	pm;
 	struct s5p_mfc_variant	*variant;
 	int num_inst;
+<<<<<<< HEAD
 	spinlock_t irqlock;	/* lock when operating on videobuf2 queues */
+=======
+	spinlock_t irqlock;	/* lock when operating on context */
+>>>>>>> v4.9.227
 	spinlock_t condlock;	/* lock when changing/checking if a context is
 					ready to be processed */
 	struct mutex mfc_mutex; /* video_device lock */
@@ -331,7 +364,10 @@ struct s5p_mfc_dev {
 	struct timer_list watchdog_timer;
 	struct workqueue_struct *watchdog_workqueue;
 	struct work_struct watchdog_work;
+<<<<<<< HEAD
 	void *alloc_ctx[2];
+=======
+>>>>>>> v4.9.227
 	unsigned long enter_suspend;
 
 	struct s5p_mfc_priv_buf ctx_buf;
@@ -340,6 +376,10 @@ struct s5p_mfc_dev {
 	struct s5p_mfc_hw_cmds *mfc_cmds;
 	const struct s5p_mfc_regs *mfc_regs;
 	enum s5p_mfc_fw_ver fw_ver;
+<<<<<<< HEAD
+=======
+	bool risc_on; /* indicates if RISC is on or off */
+>>>>>>> v4.9.227
 };
 
 /**
@@ -655,7 +695,11 @@ struct s5p_mfc_ctx {
 		unsigned int bits;
 	} slice_size;
 
+<<<<<<< HEAD
 	struct s5p_mfc_codec_ops *c_ops;
+=======
+	const struct s5p_mfc_codec_ops *c_ops;
+>>>>>>> v4.9.227
 
 	struct v4l2_ctrl *ctrls[MFC_MAX_CTRLS];
 	struct v4l2_ctrl_handler ctrl_handler;
@@ -696,6 +740,7 @@ struct mfc_control {
 
 /* Macro for making hardware specific calls */
 #define s5p_mfc_hw_call(f, op, args...) \
+<<<<<<< HEAD
 	((f && f->op) ? f->op(args) : -ENODEV)
 
 #define s5p_mfc_hw_call_void(f, op, args...) \
@@ -703,6 +748,9 @@ do { \
 	if (f && f->op) \
 		f->op(args); \
 } while (0)
+=======
+	((f && f->op) ? f->op(args) : (typeof(f->op(args)))(-ENODEV))
+>>>>>>> v4.9.227
 
 #define fh_to_ctx(__fh) container_of(__fh, struct s5p_mfc_ctx, fh)
 #define ctrl_to_ctx(__ctrl) \
@@ -712,6 +760,11 @@ void clear_work_bit(struct s5p_mfc_ctx *ctx);
 void set_work_bit(struct s5p_mfc_ctx *ctx);
 void clear_work_bit_irqsave(struct s5p_mfc_ctx *ctx);
 void set_work_bit_irqsave(struct s5p_mfc_ctx *ctx);
+<<<<<<< HEAD
+=======
+int s5p_mfc_get_new_ctx(struct s5p_mfc_dev *dev);
+void s5p_mfc_cleanup_queue(struct list_head *lh, struct vb2_queue *vq);
+>>>>>>> v4.9.227
 
 #define HAS_PORTNUM(dev)	(dev ? (dev->variant ? \
 				(dev->variant->port_num ? 1 : 0) : 0) : 0)

@@ -31,10 +31,17 @@ static void issue_park_cmd(ide_drive_t *drive, unsigned long timeout)
 	}
 	spin_unlock_irq(&hwif->lock);
 
+<<<<<<< HEAD
 	rq = blk_get_request(q, READ, __GFP_WAIT);
 	rq->cmd[0] = REQ_PARK_HEADS;
 	rq->cmd_len = 1;
 	rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	rq = blk_get_request(q, READ, __GFP_RECLAIM);
+	rq->cmd[0] = REQ_PARK_HEADS;
+	rq->cmd_len = 1;
+	rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> v4.9.227
 	rq->special = &timeout;
 	rc = blk_execute_rq(q, NULL, rq, 1);
 	blk_put_request(rq);
@@ -51,7 +58,11 @@ static void issue_park_cmd(ide_drive_t *drive, unsigned long timeout)
 
 	rq->cmd[0] = REQ_UNPARK_HEADS;
 	rq->cmd_len = 1;
+<<<<<<< HEAD
 	rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> v4.9.227
 	elv_add_request(q, rq, ELEVATOR_INSERT_FRONT);
 
 out:

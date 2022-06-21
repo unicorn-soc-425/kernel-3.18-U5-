@@ -11,10 +11,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/delay.h>
@@ -137,8 +140,11 @@ struct pch_spi_dma_ctrl {
  * @io_remap_addr:		The remapped PCI base address
  * @master:			Pointer to the SPI master structure
  * @work:			Reference to work queue handler
+<<<<<<< HEAD
  * @wk:				Workqueue for carrying out execution of the
  *				requests
+=======
+>>>>>>> v4.9.227
  * @wait:			Wait queue for waking up upon receiving an
  *				interrupt.
  * @transfer_complete:		Status of SPI Transfer
@@ -173,7 +179,10 @@ struct pch_spi_data {
 	unsigned long io_base_addr;
 	struct spi_master *master;
 	struct work_struct work;
+<<<<<<< HEAD
 	struct workqueue_struct *wk;
+=======
+>>>>>>> v4.9.227
 	wait_queue_head_t wait;
 	u8 transfer_complete;
 	u8 bcurrent_msg_processing;
@@ -521,8 +530,12 @@ static int pch_spi_transfer(struct spi_device *pspi, struct spi_message *pmsg)
 
 	dev_dbg(&pspi->dev, "%s - Invoked list_add_tail\n", __func__);
 
+<<<<<<< HEAD
 	/* schedule work queue to run */
 	queue_work(data->wk, &data->work);
+=======
+	schedule_work(&data->work);
+>>>>>>> v4.9.227
 	dev_dbg(&pspi->dev, "%s - Invoked queue work\n", __func__);
 
 	retval = 0;
@@ -678,7 +691,11 @@ static void pch_spi_nomore_transfer(struct pch_spi_data *data)
 		 *more messages)
 		 */
 		dev_dbg(&data->master->dev, "%s:Invoke queue_work\n", __func__);
+<<<<<<< HEAD
 		queue_work(data->wk, &data->work);
+=======
+		schedule_work(&data->work);
+>>>>>>> v4.9.227
 	} else if (data->board_dat->suspend_sts ||
 		   data->status == STATUS_EXITING) {
 		dev_dbg(&data->master->dev,
@@ -1270,6 +1287,7 @@ static void pch_spi_free_resources(struct pch_spi_board_data *board_dat,
 {
 	dev_dbg(&board_dat->pdev->dev, "%s ENTRY\n", __func__);
 
+<<<<<<< HEAD
 	/* free workqueue */
 	if (data->wk != NULL) {
 		destroy_workqueue(data->wk);
@@ -1278,6 +1296,9 @@ static void pch_spi_free_resources(struct pch_spi_board_data *board_dat,
 			"%s destroy_workqueue invoked successfully\n",
 			__func__);
 	}
+=======
+	flush_work(&data->work);
+>>>>>>> v4.9.227
 }
 
 static int pch_spi_get_resources(struct pch_spi_board_data *board_dat,
@@ -1287,6 +1308,7 @@ static int pch_spi_get_resources(struct pch_spi_board_data *board_dat,
 
 	dev_dbg(&board_dat->pdev->dev, "%s ENTRY\n", __func__);
 
+<<<<<<< HEAD
 	/* create workqueue */
 	data->wk = create_singlethread_workqueue(KBUILD_MODNAME);
 	if (!data->wk) {
@@ -1295,6 +1317,8 @@ static int pch_spi_get_resources(struct pch_spi_board_data *board_dat,
 		retval = -EBUSY;
 		goto err_return;
 	}
+=======
+>>>>>>> v4.9.227
 
 	/* reset PCH SPI h/w */
 	pch_spi_reset(data->master);
@@ -1303,7 +1327,10 @@ static int pch_spi_get_resources(struct pch_spi_board_data *board_dat,
 
 	dev_dbg(&board_dat->pdev->dev, "%s data->irq_reg_sts=true\n", __func__);
 
+<<<<<<< HEAD
 err_return:
+=======
+>>>>>>> v4.9.227
 	if (retval != 0) {
 		dev_err(&board_dat->pdev->dev,
 			"%s FAIL:invoking pch_spi_free_resources\n", __func__);
@@ -1330,6 +1357,7 @@ static void pch_free_dma_buf(struct pch_spi_board_data *board_dat,
 	return;
 }
 
+<<<<<<< HEAD
 static void pch_alloc_dma_buf(struct pch_spi_board_data *board_dat,
 			      struct pch_spi_data *data)
 {
@@ -1342,6 +1370,29 @@ static void pch_alloc_dma_buf(struct pch_spi_board_data *board_dat,
 	/* Get Consistent memory for Rx DMA */
 	dma->rx_buf_virt = dma_alloc_coherent(&board_dat->pdev->dev,
 				PCH_BUF_SIZE, &dma->rx_buf_dma, GFP_KERNEL);
+=======
+static int pch_alloc_dma_buf(struct pch_spi_board_data *board_dat,
+			      struct pch_spi_data *data)
+{
+	struct pch_spi_dma_ctrl *dma;
+	int ret;
+
+	dma = &data->dma;
+	ret = 0;
+	/* Get Consistent memory for Tx DMA */
+	dma->tx_buf_virt = dma_alloc_coherent(&board_dat->pdev->dev,
+				PCH_BUF_SIZE, &dma->tx_buf_dma, GFP_KERNEL);
+	if (!dma->tx_buf_virt)
+		ret = -ENOMEM;
+
+	/* Get Consistent memory for Rx DMA */
+	dma->rx_buf_virt = dma_alloc_coherent(&board_dat->pdev->dev,
+				PCH_BUF_SIZE, &dma->rx_buf_dma, GFP_KERNEL);
+	if (!dma->rx_buf_virt)
+		ret = -ENOMEM;
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int pch_spi_pd_probe(struct platform_device *plat_dev)
@@ -1418,7 +1469,13 @@ static int pch_spi_pd_probe(struct platform_device *plat_dev)
 
 	if (use_dma) {
 		dev_info(&plat_dev->dev, "Use DMA for data transfers\n");
+<<<<<<< HEAD
 		pch_alloc_dma_buf(board_dat, data);
+=======
+		ret = pch_alloc_dma_buf(board_dat, data);
+		if (ret)
+			goto err_spi_register_master;
+>>>>>>> v4.9.227
 	}
 
 	ret = spi_register_master(master);
@@ -1561,7 +1618,10 @@ static int pch_spi_pd_resume(struct platform_device *pd_dev)
 static struct platform_driver pch_spi_pd_driver = {
 	.driver = {
 		.name = "pch-spi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = pch_spi_pd_probe,
 	.remove = pch_spi_pd_remove,

@@ -119,7 +119,11 @@ static int sun8i_a23_r_pinctrl_probe(struct platform_device *pdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct of_device_id sun8i_a23_r_pinctrl_match[] = {
+=======
+static const struct of_device_id sun8i_a23_r_pinctrl_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "allwinner,sun8i-a23-r-pinctrl", },
 	{}
 };
@@ -129,7 +133,10 @@ static struct platform_driver sun8i_a23_r_pinctrl_driver = {
 	.probe	= sun8i_a23_r_pinctrl_probe,
 	.driver	= {
 		.name		= "sun8i-a23-r-pinctrl",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= sun8i_a23_r_pinctrl_match,
 	},
 };

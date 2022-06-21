@@ -14,7 +14,11 @@
 #ifndef OMAP4_ISS_CSI_PHY_H
 #define OMAP4_ISS_CSI_PHY_H
 
+<<<<<<< HEAD
 #include <media/omap4iss.h>
+=======
+#include <linux/platform_data/media/omap4iss.h>
+>>>>>>> v4.9.227
 
 struct iss_csi2_device;
 

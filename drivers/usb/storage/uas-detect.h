@@ -10,7 +10,11 @@ static int uas_is_interface(struct usb_host_interface *intf)
 }
 
 static struct usb_host_interface *uas_find_uas_alt_setting(
+<<<<<<< HEAD
 	struct usb_interface *intf)
+=======
+		struct usb_interface *intf)
+>>>>>>> v4.9.227
 {
 	int i;
 
@@ -71,6 +75,7 @@ static int uas_use_uas_driver(struct usb_interface *intf,
 		return 0;
 
 	/*
+<<<<<<< HEAD
 	 * ASM1051 and older ASM1053 devices have the same usb-id, and UAS is
 	 * broken on the ASM1051, use the number of streams to differentiate.
 	 * New ASM1053-s also support 32 streams, but have a different prod-id.
@@ -81,6 +86,41 @@ static int uas_use_uas_driver(struct usb_interface *intf,
 			/* No streams info, assume ASM1051 */
 			flags |= US_FL_IGNORE_UAS;
 		} else if (usb_ss_max_streams(&eps[1]->ss_ep_comp) == 32) {
+=======
+	 * ASMedia has a number of usb3 to sata bridge chips, at the time of
+	 * this writing the following versions exist:
+	 * ASM1051 - no uas support version
+	 * ASM1051 - with broken (*) uas support
+	 * ASM1053 - with working uas support, but problems with large xfers
+	 * ASM1153 - with working uas support
+	 *
+	 * Devices with these chips re-use a number of device-ids over the
+	 * entire line, so the device-id is useless to determine if we're
+	 * dealing with an ASM1051 (which we want to avoid).
+	 *
+	 * The ASM1153 can be identified by config.MaxPower == 0,
+	 * where as the ASM105x models have config.MaxPower == 36.
+	 *
+	 * Differentiating between the ASM1053 and ASM1051 is trickier, when
+	 * connected over USB-3 we can look at the number of streams supported,
+	 * ASM1051 supports 32 streams, where as early ASM1053 versions support
+	 * 16 streams, newer ASM1053-s also support 32 streams, but have a
+	 * different prod-id.
+	 *
+	 * (*) ASM1051 chips do work with UAS with some disks (with the
+	 *     US_FL_NO_REPORT_OPCODES quirk), but are broken with other disks
+	 */
+	if (le16_to_cpu(udev->descriptor.idVendor) == 0x174c &&
+			(le16_to_cpu(udev->descriptor.idProduct) == 0x5106 ||
+			 le16_to_cpu(udev->descriptor.idProduct) == 0x55aa)) {
+		if (udev->actconfig->desc.bMaxPower == 0) {
+			/* ASM1153, do nothing */
+		} else if (udev->speed < USB_SPEED_SUPER) {
+			/* No streams info, assume ASM1051 */
+			flags |= US_FL_IGNORE_UAS;
+		} else if (usb_ss_max_streams(&eps[1]->ss_ep_comp) == 32) {
+			/* Possibly an ASM1051, disable uas */
+>>>>>>> v4.9.227
 			flags |= US_FL_IGNORE_UAS;
 		} else {
 			/* ASM1053, these have issues with large transfers */
@@ -88,6 +128,13 @@ static int uas_use_uas_driver(struct usb_interface *intf,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* All Seagate disk enclosures have broken ATA pass-through support */
+	if (le16_to_cpu(udev->descriptor.idVendor) == 0x0bc2)
+		flags |= US_FL_NO_ATA_1X;
+
+>>>>>>> v4.9.227
 	usb_stor_adjust_quirks(udev, &flags);
 
 	if (flags & US_FL_IGNORE_UAS) {

@@ -27,10 +27,17 @@
 #include <linux/io.h>
 
 #include <asm/mach-types.h>
+<<<<<<< HEAD
 #include <mach/pm.h>
 #include <mach/pxa2xx-regs.h>
 #include <mach/regs-rtc.h>
 #include <mach/sharpsl_pm.h>
+=======
+#include "pm.h"
+#include <mach/pxa2xx-regs.h>
+#include "regs-rtc.h"
+#include "sharpsl_pm.h"
+>>>>>>> v4.9.227
 
 /*
  * Constants
@@ -744,7 +751,11 @@ static int sharpsl_off_charge_battery(void)
 		time = RCNR;
 		while (1) {
 			/* Check if any wakeup event had occurred */
+<<<<<<< HEAD
 			if (sharpsl_pm.machinfo->charger_wakeup() != 0)
+=======
+			if (sharpsl_pm.machinfo->charger_wakeup())
+>>>>>>> v4.9.227
 				return 0;
 			/* Check for timeout */
 			if ((RCNR - time) > SHARPSL_WAIT_CO_TIME)
@@ -841,11 +852,17 @@ static int sharpsl_pm_probe(struct platform_device *pdev)
 	sharpsl_pm.charge_mode = CHRG_OFF;
 	sharpsl_pm.flags = 0;
 
+<<<<<<< HEAD
 	init_timer(&sharpsl_pm.ac_timer);
 	sharpsl_pm.ac_timer.function = sharpsl_ac_timer;
 
 	init_timer(&sharpsl_pm.chrg_full_timer);
 	sharpsl_pm.chrg_full_timer.function = sharpsl_chrg_full_timer;
+=======
+	setup_timer(&sharpsl_pm.ac_timer, sharpsl_ac_timer, 0UL);
+
+	setup_timer(&sharpsl_pm.chrg_full_timer, sharpsl_chrg_full_timer, 0UL);
+>>>>>>> v4.9.227
 
 	led_trigger_register_simple("sharpsl-charge", &sharpsl_charge_led_trigger);
 

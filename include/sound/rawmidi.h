@@ -28,6 +28,10 @@
 #include <linux/wait.h>
 #include <linux/mutex.h>
 #include <linux/workqueue.h>
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_SND_SEQUENCER) || defined(CONFIG_SND_SEQUENCER_MODULE)
 #include <sound/seq_device.h>
@@ -75,9 +79,15 @@ struct snd_rawmidi_runtime {
 	size_t avail_min;	/* min avail for wakeup */
 	size_t avail;		/* max used buffer for wakeup */
 	size_t xruns;		/* over/underruns counter */
+<<<<<<< HEAD
 	/* misc */
 	spinlock_t lock;
 	struct mutex realloc_mutex;
+=======
+	int buffer_ref;		/* buffer reference count */
+	/* misc */
+	spinlock_t lock;
+>>>>>>> v4.9.227
 	wait_queue_head_t sleep;
 	/* event handler (new bytes, input only) */
 	void (*event)(struct snd_rawmidi_substream *substream);
@@ -92,9 +102,15 @@ struct snd_rawmidi_substream {
 	struct list_head list;		/* list of all substream for given stream */
 	int stream;			/* direction */
 	int number;			/* substream number */
+<<<<<<< HEAD
 	unsigned int opened: 1,		/* open flag */
 		     append: 1,		/* append flag (merge more streams) */
 		     active_sensing: 1; /* send active sensing when close */
+=======
+	bool opened;			/* open flag */
+	bool append;			/* append flag (merge more streams) */
+	bool active_sensing;		/* send active sensing when close */
+>>>>>>> v4.9.227
 	int use_count;			/* use counter (for output) */
 	size_t bytes;
 	struct snd_rawmidi *rmidi;
@@ -130,7 +146,11 @@ struct snd_rawmidi {
 	int ossreg;
 #endif
 
+<<<<<<< HEAD
 	struct snd_rawmidi_global_ops *ops;
+=======
+	const struct snd_rawmidi_global_ops *ops;
+>>>>>>> v4.9.227
 
 	struct snd_rawmidi_str streams[2];
 
@@ -140,7 +160,12 @@ struct snd_rawmidi {
 	struct mutex open_mutex;
 	wait_queue_head_t open_wait;
 
+<<<<<<< HEAD
 	struct snd_info_entry *dev;
+=======
+	struct device dev;
+
+>>>>>>> v4.9.227
 	struct snd_info_entry *proc_entry;
 
 #if defined(CONFIG_SND_SEQUENCER) || defined(CONFIG_SND_SEQUENCER_MODULE)

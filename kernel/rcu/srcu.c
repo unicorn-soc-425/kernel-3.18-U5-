@@ -151,7 +151,11 @@ static unsigned long srcu_readers_seq_idx(struct srcu_struct *sp, int idx)
 	unsigned long t;
 
 	for_each_possible_cpu(cpu) {
+<<<<<<< HEAD
 		t = ACCESS_ONCE(per_cpu_ptr(sp->per_cpu_ref, cpu)->seq[idx]);
+=======
+		t = READ_ONCE(per_cpu_ptr(sp->per_cpu_ref, cpu)->seq[idx]);
+>>>>>>> v4.9.227
 		sum += t;
 	}
 	return sum;
@@ -168,7 +172,11 @@ static unsigned long srcu_readers_active_idx(struct srcu_struct *sp, int idx)
 	unsigned long t;
 
 	for_each_possible_cpu(cpu) {
+<<<<<<< HEAD
 		t = ACCESS_ONCE(per_cpu_ptr(sp->per_cpu_ref, cpu)->c[idx]);
+=======
+		t = READ_ONCE(per_cpu_ptr(sp->per_cpu_ref, cpu)->c[idx]);
+>>>>>>> v4.9.227
 		sum += t;
 	}
 	return sum;
@@ -252,21 +260,35 @@ static bool srcu_readers_active_idx_check(struct srcu_struct *sp, int idx)
 }
 
 /**
+<<<<<<< HEAD
  * srcu_readers_active - returns approximate number of readers.
+=======
+ * srcu_readers_active - returns true if there are readers. and false
+ *                       otherwise
+>>>>>>> v4.9.227
  * @sp: which srcu_struct to count active readers (holding srcu_read_lock).
  *
  * Note that this is not an atomic primitive, and can therefore suffer
  * severe errors when invoked on an active srcu_struct.  That said, it
  * can be useful as an error check at cleanup time.
  */
+<<<<<<< HEAD
 static int srcu_readers_active(struct srcu_struct *sp)
+=======
+static bool srcu_readers_active(struct srcu_struct *sp)
+>>>>>>> v4.9.227
 {
 	int cpu;
 	unsigned long sum = 0;
 
 	for_each_possible_cpu(cpu) {
+<<<<<<< HEAD
 		sum += ACCESS_ONCE(per_cpu_ptr(sp->per_cpu_ref, cpu)->c[0]);
 		sum += ACCESS_ONCE(per_cpu_ptr(sp->per_cpu_ref, cpu)->c[1]);
+=======
+		sum += READ_ONCE(per_cpu_ptr(sp->per_cpu_ref, cpu)->c[0]);
+		sum += READ_ONCE(per_cpu_ptr(sp->per_cpu_ref, cpu)->c[1]);
+>>>>>>> v4.9.227
 	}
 	return sum;
 }
@@ -296,12 +318,19 @@ int __srcu_read_lock(struct srcu_struct *sp)
 {
 	int idx;
 
+<<<<<<< HEAD
 	idx = ACCESS_ONCE(sp->completed) & 0x1;
 	preempt_disable();
 	__this_cpu_inc(sp->per_cpu_ref->c[idx]);
 	smp_mb(); /* B */  /* Avoid leaking the critical section. */
 	__this_cpu_inc(sp->per_cpu_ref->seq[idx]);
 	preempt_enable();
+=======
+	idx = READ_ONCE(sp->completed) & 0x1;
+	__this_cpu_inc(sp->per_cpu_ref->c[idx]);
+	smp_mb(); /* B */  /* Avoid leaking the critical section. */
+	__this_cpu_inc(sp->per_cpu_ref->seq[idx]);
+>>>>>>> v4.9.227
 	return idx;
 }
 EXPORT_SYMBOL_GPL(__srcu_read_lock);
@@ -386,7 +415,11 @@ static void srcu_flip(struct srcu_struct *sp)
  * srcu_struct structure.
  */
 void call_srcu(struct srcu_struct *sp, struct rcu_head *head,
+<<<<<<< HEAD
 		void (*func)(struct rcu_head *head))
+=======
+	       rcu_callback_t func)
+>>>>>>> v4.9.227
 {
 	unsigned long flags;
 
@@ -402,6 +435,7 @@ void call_srcu(struct srcu_struct *sp, struct rcu_head *head,
 }
 EXPORT_SYMBOL_GPL(call_srcu);
 
+<<<<<<< HEAD
 struct rcu_synchronize {
 	struct rcu_head head;
 	struct completion completion;
@@ -419,6 +453,8 @@ static void wakeme_after_rcu(struct rcu_head *head)
 	complete(&rcu->completion);
 }
 
+=======
+>>>>>>> v4.9.227
 static void srcu_advance_batches(struct srcu_struct *sp, int trycount);
 static void srcu_reschedule(struct srcu_struct *sp);
 
@@ -431,11 +467,19 @@ static void __synchronize_srcu(struct srcu_struct *sp, int trycount)
 	struct rcu_head *head = &rcu.head;
 	bool done = false;
 
+<<<<<<< HEAD
 	rcu_lockdep_assert(!lock_is_held(&sp->dep_map) &&
 			   !lock_is_held(&rcu_bh_lock_map) &&
 			   !lock_is_held(&rcu_lock_map) &&
 			   !lock_is_held(&rcu_sched_lock_map),
 			   "Illegal synchronize_srcu() in same-type SRCU (or RCU) read-side critical section");
+=======
+	RCU_LOCKDEP_WARN(lock_is_held(&sp->dep_map) ||
+			 lock_is_held(&rcu_bh_lock_map) ||
+			 lock_is_held(&rcu_lock_map) ||
+			 lock_is_held(&rcu_sched_lock_map),
+			 "Illegal synchronize_srcu() in same-type SRCU (or in RCU) read-side critical section");
+>>>>>>> v4.9.227
 
 	might_sleep();
 	init_completion(&rcu.completion);
@@ -507,7 +551,11 @@ static void __synchronize_srcu(struct srcu_struct *sp, int trycount)
  */
 void synchronize_srcu(struct srcu_struct *sp)
 {
+<<<<<<< HEAD
 	__synchronize_srcu(sp, rcu_expedited
+=======
+	__synchronize_srcu(sp, (rcu_gp_is_expedited() && !rcu_gp_is_normal())
+>>>>>>> v4.9.227
 			   ? SYNCHRONIZE_SRCU_EXP_TRYCOUNT
 			   : SYNCHRONIZE_SRCU_TRYCOUNT);
 }
@@ -546,7 +594,11 @@ EXPORT_SYMBOL_GPL(srcu_barrier);
  * Report the number of batches, correlated with, but not necessarily
  * precisely the same as, the number of grace periods that have elapsed.
  */
+<<<<<<< HEAD
 long srcu_batches_completed(struct srcu_struct *sp)
+=======
+unsigned long srcu_batches_completed(struct srcu_struct *sp)
+>>>>>>> v4.9.227
 {
 	return sp->completed;
 }

@@ -45,6 +45,7 @@ static void cerf_pcmcia_hw_shutdown(struct soc_pcmcia_socket *skt)
 	gpio_free(CERF_GPIO_CF_RESET);
 }
 
+<<<<<<< HEAD
 static void
 cerf_pcmcia_socket_state(struct soc_pcmcia_socket *skt, struct pcmcia_state *state)
 {
@@ -52,6 +53,8 @@ cerf_pcmcia_socket_state(struct soc_pcmcia_socket *skt, struct pcmcia_state *sta
 	state->vs_Xv	= 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int
 cerf_pcmcia_configure_socket(struct soc_pcmcia_socket *skt,
 			     const socket_state_t *state)
@@ -77,7 +80,11 @@ static struct pcmcia_low_level cerf_pcmcia_ops = {
 	.owner			= THIS_MODULE,
 	.hw_init		= cerf_pcmcia_hw_init,
 	.hw_shutdown		= cerf_pcmcia_hw_shutdown,
+<<<<<<< HEAD
 	.socket_state		= cerf_pcmcia_socket_state,
+=======
+	.socket_state		= soc_common_cf_socket_state,
+>>>>>>> v4.9.227
 	.configure_socket	= cerf_pcmcia_configure_socket,
 };
 

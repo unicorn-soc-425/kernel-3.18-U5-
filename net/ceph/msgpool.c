@@ -5,6 +5,10 @@
 #include <linux/types.h>
 #include <linux/vmalloc.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/ceph/messenger.h>
+>>>>>>> v4.9.227
 #include <linux/ceph/msgpool.h>
 
 static void *msgpool_alloc(gfp_t gfp_mask, void *arg)

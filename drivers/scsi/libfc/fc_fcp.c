@@ -191,7 +191,11 @@ static void fc_fcp_pkt_hold(struct fc_fcp_pkt *fsp)
 }
 
 /**
+<<<<<<< HEAD
  * fc_fcp_pkt_destory() - Release hold on a fcp_pkt
+=======
+ * fc_fcp_pkt_destroy() - Release hold on a fcp_pkt
+>>>>>>> v4.9.227
  * @seq: The sequence that the FCP packet is on (required by destructor API)
  * @fsp: The FCP packet to be released
  *
@@ -2175,17 +2179,22 @@ int fc_slave_alloc(struct scsi_device *sdev)
 	if (!rport || fc_remote_port_chkready(rport))
 		return -ENXIO;
 
+<<<<<<< HEAD
 	if (sdev->tagged_supported)
 		scsi_activate_tcq(sdev, FC_FCP_DFLT_QUEUE_DEPTH);
 	else
 		scsi_adjust_queue_depth(sdev, scsi_get_tag_type(sdev),
 					FC_FCP_DFLT_QUEUE_DEPTH);
 
+=======
+	scsi_change_queue_depth(sdev, FC_FCP_DFLT_QUEUE_DEPTH);
+>>>>>>> v4.9.227
 	return 0;
 }
 EXPORT_SYMBOL(fc_slave_alloc);
 
 /**
+<<<<<<< HEAD
  * fc_change_queue_depth() - Change a device's queue depth
  * @sdev:   The SCSI device whose queue depth is to change
  * @qdepth: The new queue depth
@@ -2231,6 +2240,8 @@ int fc_change_queue_type(struct scsi_device *sdev, int tag_type)
 EXPORT_SYMBOL(fc_change_queue_type);
 
 /**
+=======
+>>>>>>> v4.9.227
  * fc_fcp_destory() - Tear down the FCP layer for a given local port
  * @lport: The local port that no longer needs the FCP layer
  */

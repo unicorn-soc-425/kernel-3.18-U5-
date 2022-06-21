@@ -15,6 +15,10 @@
 #include <linux/sched.h>
 #include <linux/key-type.h>
 #include <linux/task_work.h>
+<<<<<<< HEAD
+=======
+#include <linux/keyctl.h>
+>>>>>>> v4.9.227
 
 struct iovec;
 
@@ -243,9 +247,16 @@ extern long keyctl_instantiate_key_iov(key_serial_t,
 				       unsigned, key_serial_t);
 extern long keyctl_invalidate_key(key_serial_t);
 
+<<<<<<< HEAD
 extern long keyctl_instantiate_key_common(key_serial_t,
 					  const struct iovec *,
 					  unsigned, size_t, key_serial_t);
+=======
+struct iov_iter;
+extern long keyctl_instantiate_key_common(key_serial_t,
+					  struct iov_iter *,
+					  key_serial_t);
+>>>>>>> v4.9.227
 #ifdef CONFIG_PERSISTENT_KEYRINGS
 extern long keyctl_get_persistent(uid_t, key_serial_t);
 extern unsigned persistent_keyring_expiry;
@@ -256,6 +267,21 @@ static inline long keyctl_get_persistent(uid_t uid, key_serial_t destring)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_KEY_DH_OPERATIONS
+extern long keyctl_dh_compute(struct keyctl_dh_params __user *, char __user *,
+			      size_t, void __user *);
+#else
+static inline long keyctl_dh_compute(struct keyctl_dh_params __user *params,
+				     char __user *buffer, size_t buflen,
+				     void __user *reserved)
+{
+	return -EOPNOTSUPP;
+}
+#endif
+
+>>>>>>> v4.9.227
 /*
  * Debugging key validation
  */

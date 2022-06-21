@@ -41,9 +41,15 @@
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <mach/udc.h>
+=======
+#include "pxa25x.h"
+#include <linux/platform_data/mmc-pxamci.h>
+#include "udc.h"
+>>>>>>> v4.9.227
 #include <linux/platform_data/irda-pxaficp.h>
 #include <mach/poodle.h>
 #include <linux/platform_data/video-pxafb.h>
@@ -447,7 +453,11 @@ static void __init poodle_init(void)
 
 	ret = platform_add_devices(devices, ARRAY_SIZE(devices));
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("poodle: Unable to register LoCoMo device\n");
+=======
+		pr_warn("poodle: Unable to register LoCoMo device\n");
+>>>>>>> v4.9.227
 
 	pxa_set_fb_info(&poodle_locomo_device.dev, &poodle_fb_info);
 	pxa_set_udc_info(&udc_info);

@@ -95,8 +95,13 @@ static inline int map_pte_uncached(pte_t * pte,
 
 		if (!pte_none(*pte))
 			printk(KERN_ERR "map_pte_uncached: page already exists\n");
+<<<<<<< HEAD
 		set_pte(pte, __mk_pte(*paddr_ptr, PAGE_KERNEL_UNC));
 		purge_tlb_start(flags);
+=======
+		purge_tlb_start(flags);
+		set_pte(pte, __mk_pte(*paddr_ptr, PAGE_KERNEL_UNC));
+>>>>>>> v4.9.227
 		pdtlb_kernel(orig_vaddr);
 		purge_tlb_end(flags);
 		vaddr += PAGE_SIZE;
@@ -413,7 +418,12 @@ pcxl_dma_init(void)
 
 __initcall(pcxl_dma_init);
 
+<<<<<<< HEAD
 static void * pa11_dma_alloc_consistent (struct device *dev, size_t size, dma_addr_t *dma_handle, gfp_t flag)
+=======
+static void *pa11_dma_alloc(struct device *dev, size_t size,
+		dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	unsigned long vaddr;
 	unsigned long paddr;
@@ -439,7 +449,12 @@ static void * pa11_dma_alloc_consistent (struct device *dev, size_t size, dma_ad
 	return (void *)vaddr;
 }
 
+<<<<<<< HEAD
 static void pa11_dma_free_consistent (struct device *dev, size_t size, void *vaddr, dma_addr_t dma_handle)
+=======
+static void pa11_dma_free(struct device *dev, size_t size, void *vaddr,
+		dma_addr_t dma_handle, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	int order;
 
@@ -450,15 +465,29 @@ static void pa11_dma_free_consistent (struct device *dev, size_t size, void *vad
 	free_pages((unsigned long)__va(dma_handle), order);
 }
 
+<<<<<<< HEAD
 static dma_addr_t pa11_dma_map_single(struct device *dev, void *addr, size_t size, enum dma_data_direction direction)
 {
+=======
+static dma_addr_t pa11_dma_map_page(struct device *dev, struct page *page,
+		unsigned long offset, size_t size,
+		enum dma_data_direction direction, unsigned long attrs)
+{
+	void *addr = page_address(page) + offset;
+>>>>>>> v4.9.227
 	BUG_ON(direction == DMA_NONE);
 
 	flush_kernel_dcache_range((unsigned long) addr, size);
 	return virt_to_phys(addr);
 }
 
+<<<<<<< HEAD
 static void pa11_dma_unmap_single(struct device *dev, dma_addr_t dma_handle, size_t size, enum dma_data_direction direction)
+=======
+static void pa11_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
+		size_t size, enum dma_data_direction direction,
+		unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	BUG_ON(direction == DMA_NONE);
 
@@ -475,6 +504,7 @@ static void pa11_dma_unmap_single(struct device *dev, dma_addr_t dma_handle, siz
 	return;
 }
 
+<<<<<<< HEAD
 static int pa11_dma_map_sg(struct device *dev, struct scatterlist *sglist, int nents, enum dma_data_direction direction)
 {
 	int i;
@@ -486,13 +516,39 @@ static int pa11_dma_map_sg(struct device *dev, struct scatterlist *sglist, int n
 		sg_dma_address(sglist) = (dma_addr_t) virt_to_phys(vaddr);
 		sg_dma_len(sglist) = sglist->length;
 		flush_kernel_dcache_range(vaddr, sglist->length);
+=======
+static int pa11_dma_map_sg(struct device *dev, struct scatterlist *sglist,
+		int nents, enum dma_data_direction direction,
+		unsigned long attrs)
+{
+	int i;
+	struct scatterlist *sg;
+
+	BUG_ON(direction == DMA_NONE);
+
+	for_each_sg(sglist, sg, nents, i) {
+		unsigned long vaddr = (unsigned long)sg_virt(sg);
+
+		sg_dma_address(sg) = (dma_addr_t) virt_to_phys(vaddr);
+		sg_dma_len(sg) = sg->length;
+		flush_kernel_dcache_range(vaddr, sg->length);
+>>>>>>> v4.9.227
 	}
 	return nents;
 }
 
+<<<<<<< HEAD
 static void pa11_dma_unmap_sg(struct device *dev, struct scatterlist *sglist, int nents, enum dma_data_direction direction)
 {
 	int i;
+=======
+static void pa11_dma_unmap_sg(struct device *dev, struct scatterlist *sglist,
+		int nents, enum dma_data_direction direction,
+		unsigned long attrs)
+{
+	int i;
+	struct scatterlist *sg;
+>>>>>>> v4.9.227
 
 	BUG_ON(direction == DMA_NONE);
 
@@ -501,6 +557,7 @@ static void pa11_dma_unmap_sg(struct device *dev, struct scatterlist *sglist, in
 
 	/* once we do combining we'll need to use phys_to_virt(sg_dma_address(sglist)) */
 
+<<<<<<< HEAD
 	for (i = 0; i < nents; i++, sglist++ )
 		flush_kernel_dcache_range(sg_virt_addr(sglist), sglist->length);
 	return;
@@ -518,21 +575,56 @@ static void pa11_dma_sync_single_for_device(struct device *dev, dma_addr_t dma_h
 	BUG_ON(direction == DMA_NONE);
 
 	flush_kernel_dcache_range((unsigned long) phys_to_virt(dma_handle) + offset, size);
+=======
+	for_each_sg(sglist, sg, nents, i)
+		flush_kernel_vmap_range(sg_virt(sg), sg->length);
+	return;
+}
+
+static void pa11_dma_sync_single_for_cpu(struct device *dev,
+		dma_addr_t dma_handle, size_t size,
+		enum dma_data_direction direction)
+{
+	BUG_ON(direction == DMA_NONE);
+
+	flush_kernel_dcache_range((unsigned long) phys_to_virt(dma_handle),
+			size);
+}
+
+static void pa11_dma_sync_single_for_device(struct device *dev,
+		dma_addr_t dma_handle, size_t size,
+		enum dma_data_direction direction)
+{
+	BUG_ON(direction == DMA_NONE);
+
+	flush_kernel_dcache_range((unsigned long) phys_to_virt(dma_handle),
+			size);
+>>>>>>> v4.9.227
 }
 
 static void pa11_dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sglist, int nents, enum dma_data_direction direction)
 {
 	int i;
+<<<<<<< HEAD
 
 	/* once we do combining we'll need to use phys_to_virt(sg_dma_address(sglist)) */
 
 	for (i = 0; i < nents; i++, sglist++ )
 		flush_kernel_dcache_range(sg_virt_addr(sglist), sglist->length);
+=======
+	struct scatterlist *sg;
+
+	/* once we do combining we'll need to use phys_to_virt(sg_dma_address(sglist)) */
+
+	for_each_sg(sglist, sg, nents, i)
+		flush_kernel_vmap_range(sg_virt(sg), sg->length);
+>>>>>>> v4.9.227
 }
 
 static void pa11_dma_sync_sg_for_device(struct device *dev, struct scatterlist *sglist, int nents, enum dma_data_direction direction)
 {
 	int i;
+<<<<<<< HEAD
 
 	/* once we do combining we'll need to use phys_to_virt(sg_dma_address(sglist)) */
 
@@ -566,6 +658,38 @@ static void *pa11_dma_alloc_noncoherent(struct device *dev, size_t size,
 {
 	void *addr;
 
+=======
+	struct scatterlist *sg;
+
+	/* once we do combining we'll need to use phys_to_virt(sg_dma_address(sglist)) */
+
+	for_each_sg(sglist, sg, nents, i)
+		flush_kernel_vmap_range(sg_virt(sg), sg->length);
+}
+
+struct dma_map_ops pcxl_dma_ops = {
+	.dma_supported =	pa11_dma_supported,
+	.alloc =		pa11_dma_alloc,
+	.free =			pa11_dma_free,
+	.map_page =		pa11_dma_map_page,
+	.unmap_page =		pa11_dma_unmap_page,
+	.map_sg =		pa11_dma_map_sg,
+	.unmap_sg =		pa11_dma_unmap_sg,
+	.sync_single_for_cpu =	pa11_dma_sync_single_for_cpu,
+	.sync_single_for_device = pa11_dma_sync_single_for_device,
+	.sync_sg_for_cpu =	pa11_dma_sync_sg_for_cpu,
+	.sync_sg_for_device =	pa11_dma_sync_sg_for_device,
+};
+
+static void *pcx_dma_alloc(struct device *dev, size_t size,
+		dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs)
+{
+	void *addr;
+
+	if ((attrs & DMA_ATTR_NON_CONSISTENT) == 0)
+		return NULL;
+
+>>>>>>> v4.9.227
 	addr = (void *)__get_free_pages(flag, get_order(size));
 	if (addr)
 		*dma_handle = (dma_addr_t)virt_to_phys(addr);
@@ -573,13 +697,19 @@ static void *pa11_dma_alloc_noncoherent(struct device *dev, size_t size,
 	return addr;
 }
 
+<<<<<<< HEAD
 static void pa11_dma_free_noncoherent(struct device *dev, size_t size,
 					void *vaddr, dma_addr_t iova)
+=======
+static void pcx_dma_free(struct device *dev, size_t size, void *vaddr,
+		dma_addr_t iova, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	free_pages((unsigned long)vaddr, get_order(size));
 	return;
 }
 
+<<<<<<< HEAD
 struct hppa_dma_ops pcx_dma_ops = {
 	.dma_supported =	pa11_dma_supported,
 	.alloc_consistent =	fail_alloc_consistent,
@@ -593,4 +723,18 @@ struct hppa_dma_ops pcx_dma_ops = {
 	.dma_sync_single_for_device =	pa11_dma_sync_single_for_device,
 	.dma_sync_sg_for_cpu =		pa11_dma_sync_sg_for_cpu,
 	.dma_sync_sg_for_device =	pa11_dma_sync_sg_for_device,
+=======
+struct dma_map_ops pcx_dma_ops = {
+	.dma_supported =	pa11_dma_supported,
+	.alloc =		pcx_dma_alloc,
+	.free =			pcx_dma_free,
+	.map_page =		pa11_dma_map_page,
+	.unmap_page =		pa11_dma_unmap_page,
+	.map_sg =		pa11_dma_map_sg,
+	.unmap_sg =		pa11_dma_unmap_sg,
+	.sync_single_for_cpu =	pa11_dma_sync_single_for_cpu,
+	.sync_single_for_device = pa11_dma_sync_single_for_device,
+	.sync_sg_for_cpu =	pa11_dma_sync_sg_for_cpu,
+	.sync_sg_for_device =	pa11_dma_sync_sg_for_device,
+>>>>>>> v4.9.227
 };

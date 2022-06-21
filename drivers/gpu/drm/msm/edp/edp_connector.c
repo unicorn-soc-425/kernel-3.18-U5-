@@ -37,7 +37,11 @@ static void edp_connector_destroy(struct drm_connector *connector)
 	struct edp_connector *edp_connector = to_edp_connector(connector);
 
 	DBG("");
+<<<<<<< HEAD
 	drm_connector_unregister(connector);
+=======
+
+>>>>>>> v4.9.227
 	drm_connector_cleanup(connector);
 
 	kfree(edp_connector);
@@ -91,6 +95,7 @@ static int edp_connector_mode_valid(struct drm_connector *connector,
 	return MODE_OK;
 }
 
+<<<<<<< HEAD
 static struct drm_encoder *
 edp_connector_best_encoder(struct drm_connector *connector)
 {
@@ -100,6 +105,8 @@ edp_connector_best_encoder(struct drm_connector *connector)
 	return edp_connector->edp->encoder;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct drm_connector_funcs edp_connector_funcs = {
 	.dpms = drm_atomic_helper_connector_dpms,
 	.detect = edp_connector_detect,
@@ -113,7 +120,10 @@ static const struct drm_connector_funcs edp_connector_funcs = {
 static const struct drm_connector_helper_funcs edp_connector_helper_funcs = {
 	.get_modes = edp_connector_get_modes,
 	.mode_valid = edp_connector_mode_valid,
+<<<<<<< HEAD
 	.best_encoder = edp_connector_best_encoder,
+=======
+>>>>>>> v4.9.227
 };
 
 /* initialize connector */
@@ -124,10 +134,15 @@ struct drm_connector *msm_edp_connector_init(struct msm_edp *edp)
 	int ret;
 
 	edp_connector = kzalloc(sizeof(*edp_connector), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!edp_connector) {
 		ret = -ENOMEM;
 		goto fail;
 	}
+=======
+	if (!edp_connector)
+		return ERR_PTR(-ENOMEM);
+>>>>>>> v4.9.227
 
 	edp_connector->edp = edp;
 
@@ -136,7 +151,11 @@ struct drm_connector *msm_edp_connector_init(struct msm_edp *edp)
 	ret = drm_connector_init(edp->dev, connector, &edp_connector_funcs,
 			DRM_MODE_CONNECTOR_eDP);
 	if (ret)
+<<<<<<< HEAD
 		goto fail;
+=======
+		return ERR_PTR(ret);
+>>>>>>> v4.9.227
 
 	drm_connector_helper_add(connector, &edp_connector_helper_funcs);
 
@@ -147,6 +166,7 @@ struct drm_connector *msm_edp_connector_init(struct msm_edp *edp)
 	connector->interlace_allowed = false;
 	connector->doublescan_allowed = false;
 
+<<<<<<< HEAD
 	ret = drm_connector_register(connector);
 	if (ret)
 		goto fail;
@@ -160,4 +180,9 @@ fail:
 		edp_connector_destroy(connector);
 
 	return ERR_PTR(ret);
+=======
+	drm_mode_connector_attach_encoder(connector, edp->encoder);
+
+	return connector;
+>>>>>>> v4.9.227
 }

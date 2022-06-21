@@ -28,9 +28,21 @@ extern const struct nft_expr_ops nft_cmp_fast_ops;
 int nft_cmp_module_init(void);
 void nft_cmp_module_exit(void);
 
+<<<<<<< HEAD
 int nft_lookup_module_init(void);
 void nft_lookup_module_exit(void);
 
+=======
+int nft_range_module_init(void);
+void nft_range_module_exit(void);
+
+int nft_lookup_module_init(void);
+void nft_lookup_module_exit(void);
+
+int nft_dynset_module_init(void);
+void nft_dynset_module_exit(void);
+
+>>>>>>> v4.9.227
 int nft_bitwise_module_init(void);
 void nft_bitwise_module_exit(void);
 
@@ -44,7 +56,21 @@ struct nft_payload {
 	enum nft_registers	dreg:8;
 };
 
+<<<<<<< HEAD
 extern const struct nft_expr_ops nft_payload_fast_ops;
+=======
+struct nft_payload_set {
+	enum nft_payload_bases	base:8;
+	u8			offset;
+	u8			len;
+	enum nft_registers	sreg:8;
+	u8			csum_type;
+	u8			csum_offset;
+};
+
+extern const struct nft_expr_ops nft_payload_fast_ops;
+extern struct static_key_false nft_trace_enabled;
+>>>>>>> v4.9.227
 
 int nft_payload_module_init(void);
 void nft_payload_module_exit(void);

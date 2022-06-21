@@ -56,7 +56,11 @@ udplite_manip_pkt(struct sk_buff *skb,
 	}
 
 	l3proto->csum_update(skb, iphdroff, &hdr->check, tuple, maniptype);
+<<<<<<< HEAD
 	inet_proto_csum_replace2(&hdr->check, skb, *portptr, newport, 0);
+=======
+	inet_proto_csum_replace2(&hdr->check, skb, *portptr, newport, false);
+>>>>>>> v4.9.227
 	if (!hdr->check)
 		hdr->check = CSUM_MANGLED_0;
 

@@ -110,6 +110,7 @@ source "drivers/block/mtip32xx/Kconfig"
 
 source "drivers/block/zram/Kconfig"
 
+<<<<<<< HEAD
 config BLK_CPQ_DA
 	tristate "Compaq SMART2 support"
 	depends on PCI && VIRT_TO_BUS && 0
@@ -120,6 +121,8 @@ config BLK_CPQ_DA
 	  boards supported by this driver, and for further information on the
 	  use of this driver.
 
+=======
+>>>>>>> v4.9.227
 config BLK_CPQ_CISS_DA
 	tristate "Compaq Smart Array 5xxx support"
 	depends on PCI
@@ -310,6 +313,7 @@ config BLK_DEV_NBD
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
 config BLK_DEV_NVME
 	tristate "NVM Express block device"
 	depends on PCI
@@ -321,6 +325,8 @@ config BLK_DEV_NVME
 	  To compile this driver as a module, choose M here: the
 	  module will be called nvme.
 
+=======
+>>>>>>> v4.9.227
 config BLK_DEV_SKD
 	tristate "STEC S1120 Block Driver"
 	depends on PCI
@@ -393,6 +399,7 @@ config BLK_DEV_RAM_SIZE
 	  The default value is 4096 kilobytes. Only change this if you know
 	  what you are doing.
 
+<<<<<<< HEAD
 config BLK_DEV_XIP
 	bool "Support XIP filesystems on RAM block device"
 	depends on BLK_DEV_RAM
@@ -401,6 +408,17 @@ config BLK_DEV_XIP
 	  Support XIP filesystems (such as ext2 with XIP support on) on
 	  top of block ram device. This will slightly enlarge the kernel, and
 	  will prevent RAM block device backing store memory from being
+=======
+config BLK_DEV_RAM_DAX
+	bool "Support Direct Access (DAX) to RAM block devices"
+	depends on BLK_DEV_RAM && FS_DAX
+	default n
+	help
+	  Support filesystems using DAX to access RAM block devices.  This
+	  avoids double-buffering data in the page cache before copying it
+	  to the block device.  Answering Y will slightly enlarge the kernel,
+	  and will prevent RAM block device backing store memory from being
+>>>>>>> v4.9.227
 	  allocated from highmem (only a problem for highmem systems).
 
 config CDROM_PKTCDVD

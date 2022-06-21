@@ -1,8 +1,12 @@
 ccflags-y := -I$(src)/../qat_common
 obj-$(CONFIG_CRYPTO_DEV_QAT_DH895xCC) += qat_dh895xcc.o
+<<<<<<< HEAD
 qat_dh895xcc-objs := adf_drv.o \
 		adf_isr.o \
 		adf_dh895xcc_hw_data.o \
 		adf_hw_arbiter.o \
 		qat_admin.o \
 		adf_admin.o
+=======
+qat_dh895xcc-objs := adf_drv.o adf_dh895xcc_hw_data.o
+>>>>>>> v4.9.227

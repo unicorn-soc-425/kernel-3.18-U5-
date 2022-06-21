@@ -22,7 +22,11 @@
  * Authors: Ben Skeggs
  */
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 #include "nouveau_fbcon.h"
 

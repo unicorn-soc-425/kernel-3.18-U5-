@@ -1,5 +1,9 @@
 ///
+<<<<<<< HEAD
 /// Removes unneeded variable used to store return value.
+=======
+/// Remove unneeded variable used to store return value.
+>>>>>>> v4.9.227
 ///
 // Confidence: Moderate
 // Copyright: (C) 2012 Peter Senna Tschudin, INRIA/LIP6.  GPLv2.

@@ -13,9 +13,16 @@
 #include <asm/page.h>
 #include <asm/pci_io.h>
 
+<<<<<<< HEAD
 void *xlate_dev_mem_ptr(unsigned long phys);
 #define xlate_dev_mem_ptr xlate_dev_mem_ptr
 void unxlate_dev_mem_ptr(unsigned long phys, void *addr);
+=======
+#define xlate_dev_mem_ptr xlate_dev_mem_ptr
+void *xlate_dev_mem_ptr(phys_addr_t phys);
+#define unxlate_dev_mem_ptr unxlate_dev_mem_ptr
+void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr);
+>>>>>>> v4.9.227
 
 /*
  * Convert a virtual cached pointer to an uncached pointer
@@ -28,6 +35,10 @@ void unxlate_dev_mem_ptr(unsigned long phys, void *addr);
 
 #define ioremap_nocache(addr, size)	ioremap(addr, size)
 #define ioremap_wc			ioremap_nocache
+<<<<<<< HEAD
+=======
+#define ioremap_wt			ioremap_nocache
+>>>>>>> v4.9.227
 
 static inline void __iomem *ioremap(unsigned long offset, unsigned long size)
 {
@@ -38,6 +49,18 @@ static inline void iounmap(volatile void __iomem *addr)
 {
 }
 
+<<<<<<< HEAD
+=======
+static inline void __iomem *ioport_map(unsigned long port, unsigned int nr)
+{
+	return NULL;
+}
+
+static inline void ioport_unmap(void __iomem *p)
+{
+}
+
+>>>>>>> v4.9.227
 /*
  * s390 needs a private implementation of pci_iomap since ioremap with its
  * offset parameter isn't sufficient. That's because BAR spaces are not
@@ -46,6 +69,11 @@ static inline void iounmap(volatile void __iomem *addr)
  */
 #define pci_iomap pci_iomap
 #define pci_iounmap pci_iounmap
+<<<<<<< HEAD
+=======
+#define pci_iomap_wc pci_iomap
+#define pci_iomap_wc_range pci_iomap_range
+>>>>>>> v4.9.227
 
 #define memcpy_fromio(dst, src, count)	zpci_memcpy_fromio(dst, src, count)
 #define memcpy_toio(dst, src, count)	zpci_memcpy_toio(dst, src, count)
@@ -60,11 +88,14 @@ static inline void iounmap(volatile void __iomem *addr)
 #define __raw_writel	zpci_write_u32
 #define __raw_writeq	zpci_write_u64
 
+<<<<<<< HEAD
 #define readb_relaxed	readb
 #define readw_relaxed	readw
 #define readl_relaxed	readl
 #define readq_relaxed	readq
 
+=======
+>>>>>>> v4.9.227
 #endif /* CONFIG_PCI */
 
 #include <asm-generic/io.h>

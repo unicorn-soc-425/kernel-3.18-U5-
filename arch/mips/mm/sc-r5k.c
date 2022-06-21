@@ -81,7 +81,11 @@ static inline int __init r5k_sc_probe(void)
 	unsigned long config = read_c0_config();
 
 	if (config & CONF_SC)
+<<<<<<< HEAD
 		return(0);
+=======
+		return 0;
+>>>>>>> v4.9.227
 
 	scache_size = (512 * 1024) << ((config & R5K_CONF_SS) >> 20);
 

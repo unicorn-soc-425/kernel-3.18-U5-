@@ -8,6 +8,13 @@
  */
 / {
 	soc {
+<<<<<<< HEAD
+=======
+		mmc0: sdhci@fe81e000 {
+			status = "okay";
+		};
+
+>>>>>>> v4.9.227
 		spifsm: spifsm@fe902000 {
 			#address-cells = <1>;
 			#size-cells    = <1>;

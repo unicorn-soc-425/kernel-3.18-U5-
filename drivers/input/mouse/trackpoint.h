@@ -71,6 +71,12 @@
 #define TP_UP_THRESH		0x5A	/* Used to generate a 'click' on Z-axis */
 #define TP_Z_TIME		0x5E	/* How sharp of a press */
 #define TP_JENKS_CURV		0x5D	/* Minimum curvature for double click */
+<<<<<<< HEAD
+=======
+#define TP_DRIFT_TIME		0x5F	/* How long a 'hands off' condition */
+					/* must last (x*107ms) for drift */
+					/* correction to occur */
+>>>>>>> v4.9.227
 
 /*
  * Toggling Flag bits
@@ -121,6 +127,10 @@
 #define TP_DEF_UP_THRESH	0xFF
 #define TP_DEF_Z_TIME		0x26
 #define TP_DEF_JENKS_CURV	0x87
+<<<<<<< HEAD
+=======
+#define TP_DEF_DRIFT_TIME	0x05
+>>>>>>> v4.9.227
 
 /* Toggles */
 #define TP_DEF_MB		0x00
@@ -138,6 +148,10 @@ struct trackpoint_data
 	unsigned char draghys, mindrag;
 	unsigned char thresh, upthresh;
 	unsigned char ztime, jenks;
+<<<<<<< HEAD
+=======
+	unsigned char drift_time;
+>>>>>>> v4.9.227
 
 	/* toggles */
 	unsigned char press_to_select;
@@ -148,7 +162,12 @@ struct trackpoint_data
 #ifdef CONFIG_MOUSE_PS2_TRACKPOINT
 int trackpoint_detect(struct psmouse *psmouse, bool set_properties);
 #else
+<<<<<<< HEAD
 inline int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
+=======
+static inline int trackpoint_detect(struct psmouse *psmouse,
+				    bool set_properties)
+>>>>>>> v4.9.227
 {
 	return -ENOSYS;
 }

@@ -5,6 +5,10 @@
 
 #ifdef CONFIG_SMP
 void __init mpc85xx_smp_init(void);
+<<<<<<< HEAD
+=======
+int __init mpc85xx_setup_pmc(void);
+>>>>>>> v4.9.227
 #else
 static inline void mpc85xx_smp_init(void)
 {

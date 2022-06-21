@@ -92,6 +92,7 @@ static inline void mga_wait_busy(struct mga_device *mdev)
 	} while ((status & 0x01) && time_before(jiffies, timeout));
 }
 
+<<<<<<< HEAD
 /*
  * The core passes the desired mode to the CRTC code to see whether any
  * CRTC-specific modifications need to be made to it. We're in a position
@@ -104,6 +105,8 @@ static bool mga_crtc_mode_fixup(struct drm_crtc *crtc,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 #define P_ARRAY_SIZE 9
 
 static int mga_g200se_set_plls(struct mga_device *mdev, long clock)
@@ -1364,6 +1367,7 @@ static void mga_crtc_commit(struct drm_crtc *crtc)
  * use this for 8-bit mode so can't perform smooth fades on deeper modes,
  * but it's a requirement that we provide the function
  */
+<<<<<<< HEAD
 static void mga_crtc_gamma_set(struct drm_crtc *crtc, u16 *red, u16 *green,
 				  u16 *blue, uint32_t start, uint32_t size)
 {
@@ -1372,11 +1376,25 @@ static void mga_crtc_gamma_set(struct drm_crtc *crtc, u16 *red, u16 *green,
 	int i;
 
 	for (i = start; i < end; i++) {
+=======
+static int mga_crtc_gamma_set(struct drm_crtc *crtc, u16 *red, u16 *green,
+			      u16 *blue, uint32_t size)
+{
+	struct mga_crtc *mga_crtc = to_mga_crtc(crtc);
+	int i;
+
+	for (i = 0; i < size; i++) {
+>>>>>>> v4.9.227
 		mga_crtc->lut_r[i] = red[i] >> 8;
 		mga_crtc->lut_g[i] = green[i] >> 8;
 		mga_crtc->lut_b[i] = blue[i] >> 8;
 	}
 	mga_crtc_load_lut(crtc);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /* Simple cleanup function */
@@ -1418,7 +1436,10 @@ static const struct drm_crtc_funcs mga_crtc_funcs = {
 static const struct drm_crtc_helper_funcs mga_helper_funcs = {
 	.disable = mga_crtc_disable,
 	.dpms = mga_crtc_dpms,
+<<<<<<< HEAD
 	.mode_fixup = mga_crtc_mode_fixup,
+=======
+>>>>>>> v4.9.227
 	.mode_set = mga_crtc_mode_set,
 	.mode_set_base = mga_crtc_mode_set_base,
 	.prepare = mga_crtc_prepare,
@@ -1487,6 +1508,7 @@ void mga_crtc_fb_gamma_get(struct drm_crtc *crtc, u16 *red, u16 *green,
  * These functions are analagous to those in the CRTC code, but are intended
  * to handle any encoder-specific limitations
  */
+<<<<<<< HEAD
 static bool mga_encoder_mode_fixup(struct drm_encoder *encoder,
 				   const struct drm_display_mode *mode,
 				   struct drm_display_mode *adjusted_mode)
@@ -1494,6 +1516,8 @@ static bool mga_encoder_mode_fixup(struct drm_encoder *encoder,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 static void mga_encoder_mode_set(struct drm_encoder *encoder,
 				struct drm_display_mode *mode,
 				struct drm_display_mode *adjusted_mode)
@@ -1523,7 +1547,10 @@ static void mga_encoder_destroy(struct drm_encoder *encoder)
 
 static const struct drm_encoder_helper_funcs mga_encoder_helper_funcs = {
 	.dpms = mga_encoder_dpms,
+<<<<<<< HEAD
 	.mode_fixup = mga_encoder_mode_fixup,
+=======
+>>>>>>> v4.9.227
 	.mode_set = mga_encoder_mode_set,
 	.prepare = mga_encoder_prepare,
 	.commit = mga_encoder_commit,
@@ -1546,7 +1573,11 @@ static struct drm_encoder *mga_encoder_init(struct drm_device *dev)
 	encoder->possible_crtcs = 0x1;
 
 	drm_encoder_init(dev, encoder, &mga_encoder_encoder_funcs,
+<<<<<<< HEAD
 			 DRM_MODE_ENCODER_DAC);
+=======
+			 DRM_MODE_ENCODER_DAC, NULL);
+>>>>>>> v4.9.227
 	drm_encoder_helper_add(encoder, &mga_encoder_helper_funcs);
 
 	return encoder;
@@ -1572,7 +1603,11 @@ static uint32_t mga_vga_calculate_mode_bandwidth(struct drm_display_mode *mode,
 							int bits_per_pixel)
 {
 	uint32_t total_area, divisor;
+<<<<<<< HEAD
 	int64_t active_area, pixels_per_second, bandwidth;
+=======
+	uint64_t active_area, pixels_per_second, bandwidth;
+>>>>>>> v4.9.227
 	uint64_t bytes_per_pixel = (bits_per_pixel + 7) / 8;
 
 	divisor = 1024;
@@ -1692,13 +1727,21 @@ static void mga_connector_destroy(struct drm_connector *connector)
 	kfree(connector);
 }
 
+<<<<<<< HEAD
 struct drm_connector_helper_funcs mga_vga_connector_helper_funcs = {
+=======
+static const struct drm_connector_helper_funcs mga_vga_connector_helper_funcs = {
+>>>>>>> v4.9.227
 	.get_modes = mga_vga_get_modes,
 	.mode_valid = mga_vga_mode_valid,
 	.best_encoder = mga_connector_best_encoder,
 };
 
+<<<<<<< HEAD
 struct drm_connector_funcs mga_vga_connector_funcs = {
+=======
+static const struct drm_connector_funcs mga_vga_connector_funcs = {
+>>>>>>> v4.9.227
 	.dpms = drm_helper_connector_dpms,
 	.detect = mga_vga_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,

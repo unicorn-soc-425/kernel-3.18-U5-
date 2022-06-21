@@ -196,7 +196,11 @@ struct tdfx_par {
 	u32 palette[16];
 	void __iomem *regbase_virt;
 	unsigned long iobase;
+<<<<<<< HEAD
 	int mtrr_handle;
+=======
+	int wc_cookie;
+>>>>>>> v4.9.227
 #ifdef CONFIG_FB_3DFX_I2C
 	struct tdfxfb_i2c_chan chan[2];
 #endif

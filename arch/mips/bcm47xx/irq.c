@@ -22,6 +22,11 @@
  *  675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
+=======
+#include "bcm47xx_private.h"
+
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -65,6 +70,15 @@ DEFINE_HWx_IRQDISPATCH(7)
 
 void __init arch_init_irq(void)
 {
+<<<<<<< HEAD
+=======
+	/*
+	 * This is the first arch callback after mm_init (we can use kmalloc),
+	 * so let's finish bus initialization now.
+	 */
+	bcm47xx_bus_setup();
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_BCM47XX_BCMA
 	if (bcm47xx_bus_type == BCM47XX_BUS_TYPE_BCMA) {
 		bcma_write32(bcm47xx_bus.bcma.bus.drv_mips.core,

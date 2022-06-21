@@ -6,11 +6,19 @@
 #include <sysdep/stub.h>
 #include <sysdep/faultinfo.h>
 #include <sysdep/mcontext.h>
+<<<<<<< HEAD
+=======
+#include <sys/ucontext.h>
+>>>>>>> v4.9.227
 
 void __attribute__ ((__section__ (".__syscall_stub")))
 stub_segv_handler(int sig, siginfo_t *info, void *p)
 {
+<<<<<<< HEAD
 	struct ucontext *uc = p;
+=======
+	ucontext_t *uc = p;
+>>>>>>> v4.9.227
 
 	GET_FAULTINFO_FROM_MC(*((struct faultinfo *) STUB_DATA),
 			      &uc->uc_mcontext);

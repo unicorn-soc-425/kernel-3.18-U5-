@@ -148,6 +148,7 @@ static inline u32 pmcmsptwi_clock_to_reg(
 	return ((clock->filter & 0xf) << 12) | (clock->clock & 0x03ff);
 }
 
+<<<<<<< HEAD
 static inline void pmcmsptwi_reg_to_clock(
 			u32 reg, struct pmcmsptwi_clock *clock)
 {
@@ -155,6 +156,8 @@ static inline void pmcmsptwi_reg_to_clock(
 	clock->clock = reg & 0x03ff;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline u32 pmcmsptwi_cfg_to_reg(const struct pmcmsptwi_cfg *cfg)
 {
 	return ((cfg->arbf & 0xf) << 12) |
@@ -336,10 +339,15 @@ static int pmcmsptwi_probe(struct platform_device *pldev)
 	i2c_set_adapdata(&pmcmsptwi_adapter, &pmcmsptwi_data);
 
 	rc = i2c_add_adapter(&pmcmsptwi_adapter);
+<<<<<<< HEAD
 	if (rc) {
 		dev_err(&pldev->dev, "Unable to register I2C adapter\n");
 		goto ret_unmap;
 	}
+=======
+	if (rc)
+		goto ret_unmap;
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -463,6 +471,7 @@ static enum pmcmsptwi_xfer_result pmcmsptwi_xfer_cmd(
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (cmd->read_len > MSP_MAX_BYTES_PER_RW ||
 	    cmd->write_len > MSP_MAX_BYTES_PER_RW) {
 		dev_err(&pmcmsptwi_adapter.dev,
@@ -471,6 +480,8 @@ static enum pmcmsptwi_xfer_result pmcmsptwi_xfer_cmd(
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> v4.9.227
 	mutex_lock(&data->lock);
 	dev_dbg(&pmcmsptwi_adapter.dev,
 		"Setting address to 0x%04x\n", cmd->addr);
@@ -527,6 +538,7 @@ static int pmcmsptwi_master_xfer(struct i2c_adapter *adap,
 	struct pmcmsptwi_cfg oldcfg, newcfg;
 	int ret;
 
+<<<<<<< HEAD
 	if (num > 2) {
 		dev_dbg(&adap->dev, "%d messages unsupported\n", num);
 		return -EINVAL;
@@ -546,6 +558,16 @@ static int pmcmsptwi_master_xfer(struct i2c_adapter *adap,
 				"Non write-read dual messages unsupported\n");
 			return -EINVAL;
 		}
+=======
+	if (num == 2) {
+		struct i2c_msg *nextmsg = msg + 1;
+
+		cmd.type = MSP_TWI_CMD_WRITE_READ;
+		cmd.write_len = msg->len;
+		cmd.write_data = msg->buf;
+		cmd.read_len = nextmsg->len;
+		cmd.read_data = nextmsg->buf;
+>>>>>>> v4.9.227
 	} else if (msg->flags & I2C_M_RD) {
 		cmd.type = MSP_TWI_CMD_READ;
 		cmd.read_len = msg->len;
@@ -592,10 +614,17 @@ static int pmcmsptwi_master_xfer(struct i2c_adapter *adap,
 		 * TODO: We could potentially loop and retry in the case
 		 * of MSP_TWI_XFER_TIMEOUT.
 		 */
+<<<<<<< HEAD
 		return -EIO;
 	}
 
 	return num;
+=======
+		return -1;
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static u32 pmcmsptwi_i2c_func(struct i2c_adapter *adapter)
@@ -605,6 +634,17 @@ static u32 pmcmsptwi_i2c_func(struct i2c_adapter *adapter)
 		I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_PROC_CALL;
 }
 
+<<<<<<< HEAD
+=======
+static struct i2c_adapter_quirks pmcmsptwi_i2c_quirks = {
+	.flags = I2C_AQ_COMB_WRITE_THEN_READ,
+	.max_write_len = MSP_MAX_BYTES_PER_RW,
+	.max_read_len = MSP_MAX_BYTES_PER_RW,
+	.max_comb_1st_msg_len = MSP_MAX_BYTES_PER_RW,
+	.max_comb_2nd_msg_len = MSP_MAX_BYTES_PER_RW,
+};
+
+>>>>>>> v4.9.227
 /* -- Initialization -- */
 
 static struct i2c_algorithm pmcmsptwi_algo = {
@@ -616,6 +656,10 @@ static struct i2c_adapter pmcmsptwi_adapter = {
 	.owner		= THIS_MODULE,
 	.class		= I2C_CLASS_HWMON | I2C_CLASS_SPD,
 	.algo		= &pmcmsptwi_algo,
+<<<<<<< HEAD
+=======
+	.quirks		= &pmcmsptwi_i2c_quirks,
+>>>>>>> v4.9.227
 	.name		= DRV_NAME,
 };
 
@@ -624,7 +668,10 @@ static struct platform_driver pmcmsptwi_driver = {
 	.remove	= pmcmsptwi_remove,
 	.driver = {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

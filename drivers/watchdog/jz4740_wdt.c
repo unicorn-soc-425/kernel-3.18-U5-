@@ -24,6 +24,10 @@
 #include <linux/clk.h>
 #include <linux/slab.h>
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 
 #include <asm/mach-jz4740/timer.h>
 
@@ -142,6 +146,17 @@ static const struct watchdog_ops jz4740_wdt_ops = {
 	.set_timeout = jz4740_wdt_set_timeout,
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id jz4740_wdt_of_matches[] = {
+	{ .compatible = "ingenic,jz4740-watchdog", },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, jz4740_wdt_of_matches)
+#endif
+
+>>>>>>> v4.9.227
 static int jz4740_wdt_probe(struct platform_device *pdev)
 {
 	struct jz4740_wdt_drvdata *drvdata;
@@ -151,10 +166,15 @@ static int jz4740_wdt_probe(struct platform_device *pdev)
 
 	drvdata = devm_kzalloc(&pdev->dev, sizeof(struct jz4740_wdt_drvdata),
 			       GFP_KERNEL);
+<<<<<<< HEAD
 	if (!drvdata) {
 		dev_err(&pdev->dev, "Unable to alloacate watchdog device\n");
 		return -ENOMEM;
 	}
+=======
+	if (!drvdata)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	if (heartbeat < 1 || heartbeat > MAX_HEARTBEAT)
 		heartbeat = DEFAULT_HEARTBEAT;
@@ -165,6 +185,10 @@ static int jz4740_wdt_probe(struct platform_device *pdev)
 	jz4740_wdt->timeout = heartbeat;
 	jz4740_wdt->min_timeout = 1;
 	jz4740_wdt->max_timeout = MAX_HEARTBEAT;
+<<<<<<< HEAD
+=======
+	jz4740_wdt->parent = &pdev->dev;
+>>>>>>> v4.9.227
 	watchdog_set_nowayout(jz4740_wdt, nowayout);
 	watchdog_set_drvdata(jz4740_wdt, drvdata);
 
@@ -211,7 +235,11 @@ static struct platform_driver jz4740_wdt_driver = {
 	.remove = jz4740_wdt_remove,
 	.driver = {
 		.name = "jz4740-wdt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(jz4740_wdt_of_matches),
+>>>>>>> v4.9.227
 	},
 };
 

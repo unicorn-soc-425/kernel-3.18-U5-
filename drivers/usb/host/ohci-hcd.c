@@ -72,7 +72,12 @@
 static const char	hcd_name [] = "ohci_hcd";
 
 #define	STATECHANGE_DELAY	msecs_to_jiffies(300)
+<<<<<<< HEAD
 #define	IO_WATCHDOG_DELAY	msecs_to_jiffies(250)
+=======
+#define	IO_WATCHDOG_DELAY	msecs_to_jiffies(275)
+#define	IO_WATCHDOG_OFF		0xffffff00
+>>>>>>> v4.9.227
 
 #include "ohci.h"
 #include "pci-quirks.h"
@@ -99,13 +104,21 @@ static void io_watchdog_func(unsigned long _ohci);
 
 
 /* Some boards misreport power switching/overcurrent */
+<<<<<<< HEAD
 static bool distrust_firmware = 1;
+=======
+static bool distrust_firmware = true;
+>>>>>>> v4.9.227
 module_param (distrust_firmware, bool, 0);
 MODULE_PARM_DESC (distrust_firmware,
 	"true to distrust firmware power/overcurrent setup");
 
 /* Some boards leave IR set wrongly, since they fail BIOS/SMM handshakes */
+<<<<<<< HEAD
 static bool no_handshake = 0;
+=======
+static bool no_handshake;
+>>>>>>> v4.9.227
 module_param (no_handshake, bool, 0);
 MODULE_PARM_DESC (no_handshake, "true (not default) disables BIOS handshake");
 
@@ -155,7 +168,12 @@ static int ohci_urb_enqueue (
 	int		retval = 0;
 
 	/* every endpoint has a ed, locate and maybe (re)initialize it */
+<<<<<<< HEAD
 	if (! (ed = ed_get (ohci, urb->ep, urb->dev, pipe, urb->interval)))
+=======
+	ed = ed_get(ohci, urb->ep, urb->dev, pipe, urb->interval);
+	if (! ed)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	/* for the private part of the URB we need the number of TDs (size) */
@@ -229,8 +247,14 @@ static int ohci_urb_enqueue (
 		}
 
 		/* Start up the I/O watchdog timer, if it's not running */
+<<<<<<< HEAD
 		if (!timer_pending(&ohci->io_watchdog) &&
 				list_empty(&ohci->eds_in_use)) {
+=======
+		if (ohci->prev_frame_no == IO_WATCHDOG_OFF &&
+				list_empty(&ohci->eds_in_use) &&
+				!(ohci->flags & OHCI_QUIRK_QEMU)) {
+>>>>>>> v4.9.227
 			ohci->prev_frame_no = ohci_frame_no(ohci);
 			mod_timer(&ohci->io_watchdog,
 					jiffies + IO_WATCHDOG_DELAY);
@@ -414,8 +438,12 @@ static void ohci_usb_reset (struct ohci_hcd *ohci)
  * other cases where the next software may expect clean state from the
  * "firmware".  this is bus-neutral, unlike shutdown() methods.
  */
+<<<<<<< HEAD
 static void
 ohci_shutdown (struct usb_hcd *hcd)
+=======
+static void _ohci_shutdown(struct usb_hcd *hcd)
+>>>>>>> v4.9.227
 {
 	struct ohci_hcd *ohci;
 
@@ -431,6 +459,19 @@ ohci_shutdown (struct usb_hcd *hcd)
 	ohci->rh_state = OHCI_RH_HALTED;
 }
 
+<<<<<<< HEAD
+=======
+static void ohci_shutdown(struct usb_hcd *hcd)
+{
+	struct ohci_hcd	*ohci = hcd_to_ohci(hcd);
+	unsigned long flags;
+
+	spin_lock_irqsave(&ohci->lock, flags);
+	_ohci_shutdown(hcd);
+	spin_unlock_irqrestore(&ohci->lock, flags);
+}
+
+>>>>>>> v4.9.227
 /*-------------------------------------------------------------------------*
  * HC functions
  *-------------------------------------------------------------------------*/
@@ -500,7 +541,11 @@ static int ohci_init (struct ohci_hcd *ohci)
 
 	setup_timer(&ohci->io_watchdog, io_watchdog_func,
 			(unsigned long) ohci);
+<<<<<<< HEAD
 	set_timer_slack(&ohci->io_watchdog, msecs_to_jiffies(20));
+=======
+	ohci->prev_frame_no = IO_WATCHDOG_OFF;
+>>>>>>> v4.9.227
 
 	ohci->hcca = dma_alloc_coherent (hcd->self.controller,
 			sizeof(*ohci->hcca), &ohci->hcca_dma, GFP_KERNEL);
@@ -730,7 +775,11 @@ static void io_watchdog_func(unsigned long _ohci)
 	u32		head;
 	struct ed	*ed;
 	struct td	*td, *td_start, *td_next;
+<<<<<<< HEAD
 	unsigned	frame_no;
+=======
+	unsigned	frame_no, prev_frame_no = IO_WATCHDOG_OFF;
+>>>>>>> v4.9.227
 	unsigned long	flags;
 
 	spin_lock_irqsave(&ohci->lock, flags);
@@ -749,7 +798,11 @@ static void io_watchdog_func(unsigned long _ohci)
  died:
 			usb_hc_died(ohci_to_hcd(ohci));
 			ohci_dump(ohci);
+<<<<<<< HEAD
 			ohci_shutdown(ohci_to_hcd(ohci));
+=======
+			_ohci_shutdown(ohci_to_hcd(ohci));
+>>>>>>> v4.9.227
 			goto done;
 		} else {
 			/* No write back because the done queue was empty */
@@ -835,7 +888,11 @@ static void io_watchdog_func(unsigned long _ohci)
 			}
 		}
 		if (!list_empty(&ohci->eds_in_use)) {
+<<<<<<< HEAD
 			ohci->prev_frame_no = frame_no;
+=======
+			prev_frame_no = frame_no;
+>>>>>>> v4.9.227
 			ohci->prev_wdh_cnt = ohci->wdh_cnt;
 			ohci->prev_donehead = ohci_readl(ohci,
 					&ohci->regs->donehead);
@@ -845,6 +902,10 @@ static void io_watchdog_func(unsigned long _ohci)
 	}
 
  done:
+<<<<<<< HEAD
+=======
+	ohci->prev_frame_no = prev_frame_no;
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&ohci->lock, flags);
 }
 
@@ -973,6 +1034,10 @@ static void ohci_stop (struct usb_hcd *hcd)
 	if (quirk_nec(ohci))
 		flush_work(&ohci->nec_work);
 	del_timer_sync(&ohci->io_watchdog);
+<<<<<<< HEAD
+=======
+	ohci->prev_frame_no = IO_WATCHDOG_OFF;
+>>>>>>> v4.9.227
 
 	ohci_writel (ohci, OHCI_INTR_MIE, &ohci->regs->intrdisable);
 	ohci_usb_reset(ohci);
@@ -1245,6 +1310,7 @@ MODULE_LICENSE ("GPL");
 #define TMIO_OHCI_DRIVER	ohci_hcd_tmio_driver
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MACH_JZ4740
 #include "ohci-jz4740.c"
 #define PLATFORM_DRIVER	ohci_hcd_jz4740_driver
@@ -1255,6 +1321,8 @@ MODULE_LICENSE ("GPL");
 #define PLATFORM_DRIVER		ohci_octeon_driver
 #endif
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_TILE_USB
 #include "ohci-tilegx.c"
 #define PLATFORM_DRIVER		ohci_hcd_tilegx_driver

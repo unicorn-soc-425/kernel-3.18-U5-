@@ -14,7 +14,11 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/i2c.h>
+=======
+#include <linux/regmap.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
 #include <linux/mfd/core.h>
@@ -27,6 +31,7 @@ static const unsigned int tps6105x_voltages[] = {
 	5000000, /* There is an additional 5V */
 };
 
+<<<<<<< HEAD
 static int tps6105x_regulator_enable(struct regulator_dev *rdev)
 {
 	struct tps6105x *tps6105x = rdev_get_drvdata(rdev);
@@ -111,6 +116,14 @@ static struct regulator_ops tps6105x_regulator_ops = {
 	.is_enabled	= tps6105x_regulator_is_enabled,
 	.get_voltage_sel = tps6105x_regulator_get_voltage_sel,
 	.set_voltage_sel = tps6105x_regulator_set_voltage_sel,
+=======
+static struct regulator_ops tps6105x_regulator_ops = {
+	.enable		= regulator_enable_regmap,
+	.disable	= regulator_disable_regmap,
+	.is_enabled	= regulator_is_enabled_regmap,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+>>>>>>> v4.9.227
 	.list_voltage	= regulator_list_voltage_table,
 };
 
@@ -122,6 +135,15 @@ static const struct regulator_desc tps6105x_regulator_desc = {
 	.owner		= THIS_MODULE,
 	.n_voltages	= ARRAY_SIZE(tps6105x_voltages),
 	.volt_table	= tps6105x_voltages,
+<<<<<<< HEAD
+=======
+	.vsel_reg	= TPS6105X_REG_0,
+	.vsel_mask	= TPS6105X_REG0_VOLTAGE_MASK,
+	.enable_reg	= TPS6105X_REG_0,
+	.enable_mask	= TPS6105X_REG0_MODE_MASK,
+	.enable_val	= TPS6105X_REG0_MODE_VOLTAGE <<
+			  TPS6105X_REG0_MODE_SHIFT,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -144,6 +166,10 @@ static int tps6105x_regulator_probe(struct platform_device *pdev)
 	config.dev = &tps6105x->client->dev;
 	config.init_data = pdata->regulator_data;
 	config.driver_data = tps6105x;
+<<<<<<< HEAD
+=======
+	config.regmap = tps6105x->regmap;
+>>>>>>> v4.9.227
 
 	/* Register regulator with framework */
 	tps6105x->regulator = devm_regulator_register(&pdev->dev,
@@ -163,7 +189,10 @@ static int tps6105x_regulator_probe(struct platform_device *pdev)
 static struct platform_driver tps6105x_regulator_driver = {
 	.driver = {
 		.name  = "tps6105x-regulator",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = tps6105x_regulator_probe,
 };

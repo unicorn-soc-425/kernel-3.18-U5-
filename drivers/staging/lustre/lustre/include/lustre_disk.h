@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -52,6 +56,7 @@
 #include "../../include/linux/lnet/types.h"
 #include <linux/backing-dev.h>
 
+<<<<<<< HEAD
 /****************** on-disk files *********************/
 
 #define MDT_LOGS_DIR		"LOGS"  /* COMPAT_146 */
@@ -70,6 +75,8 @@
 #define QSD_DIR			"quota_slave"
 #define HSM_ACTIONS		"hsm_actions"
 
+=======
+>>>>>>> v4.9.227
 /****************** persistent mount data *********************/
 
 #define LDD_F_SV_TYPE_MDT   0x0001
@@ -79,6 +86,7 @@
 			    LDD_F_SV_TYPE_OST  | \
 			    LDD_F_SV_TYPE_MGS)
 #define LDD_F_SV_ALL	0x0008
+<<<<<<< HEAD
 /** need an index assignment */
 #define LDD_F_NEED_INDEX    0x0010
 /** never registered */
@@ -203,13 +211,23 @@ static inline int server_make_name(__u32 flags, __u16 index, char *fs,
 	}
 	return 0;
 }
+=======
+>>>>>>> v4.9.227
 
 /****************** mount command *********************/
 
 /* The lmd is only used internally by Lustre; mount simply passes
+<<<<<<< HEAD
    everything as string options */
 
 #define LMD_MAGIC    0xbdacbd03
+=======
+ * everything as string options
+ */
+
+#define LMD_MAGIC    0xbdacbd03
+#define LMD_PARAMS_MAXLEN	4096
+>>>>>>> v4.9.227
 
 /* gleaned from the mount command - no persistent info here */
 struct lustre_mount_data {
@@ -220,6 +238,7 @@ struct lustre_mount_data {
 	int	lmd_recovery_time_soft;
 	int	lmd_recovery_time_hard;
 	char      *lmd_dev;	   /* device name */
+<<<<<<< HEAD
 	char      *lmd_profile;       /* client only */
 	char      *lmd_mgssec;	/* sptlrpc flavor to mgs */
 	char      *lmd_opts;	  /* lustre mount options (as opposed to
@@ -228,15 +247,34 @@ struct lustre_mount_data {
 	__u32     *lmd_exclude;       /* array of OSTs to ignore */
 	char	*lmd_mgs;	   /* MGS nid */
 	char	*lmd_osd_type;      /* OSD type */
+=======
+	char      *lmd_profile;    /* client only */
+	char      *lmd_mgssec;	/* sptlrpc flavor to mgs */
+	char      *lmd_opts;	/* lustre mount options (as opposed to
+				 * _device_ mount options)
+				 */
+	char      *lmd_params;	/* lustre params */
+	__u32     *lmd_exclude; /* array of OSTs to ignore */
+	char	*lmd_mgs;	/* MGS nid */
+	char	*lmd_osd_type;  /* OSD type */
+>>>>>>> v4.9.227
 };
 
 #define LMD_FLG_SERVER		0x0001	/* Mounting a server */
 #define LMD_FLG_CLIENT		0x0002	/* Mounting a client */
 #define LMD_FLG_ABORT_RECOV	0x0008	/* Abort recovery */
 #define LMD_FLG_NOSVC		0x0010	/* Only start MGS/MGC for servers,
+<<<<<<< HEAD
 					   no other services */
 #define LMD_FLG_NOMGS		0x0020	/* Only start target for servers, reusing
 					   existing MGS services */
+=======
+					 * no other services
+					 */
+#define LMD_FLG_NOMGS		0x0020	/* Only start target for servers,
+					 * reusing existing MGS services
+					 */
+>>>>>>> v4.9.227
 #define LMD_FLG_WRITECONF	0x0040	/* Rewrite config log */
 #define LMD_FLG_NOIR		0x0080	/* NO imperative recovery */
 #define LMD_FLG_NOSCRUB		0x0100	/* Do not trigger scrub automatically */
@@ -249,7 +287,10 @@ struct lustre_mount_data {
 
 #define lmd_is_client(x) ((x)->lmd_flags & LMD_FLG_CLIENT)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /****************** last_rcvd file *********************/
 
 /** version recovery epoch */
@@ -258,6 +299,7 @@ struct lustre_mount_data {
 #define LR_EXPIRE_INTERVALS 16 /**< number of intervals to track transno */
 #define ENOENT_VERSION 1 /** 'virtual' version of non-existent object */
 
+<<<<<<< HEAD
 #define LR_SERVER_SIZE   512
 #define LR_CLIENT_START 8192
 #define LR_CLIENT_SIZE   128
@@ -481,6 +523,8 @@ static inline __u64 lcd_last_xid(struct lsd_client_data *lcd)
 		lcd->lcd_last_xid : lcd->lcd_last_close_xid);
 }
 
+=======
+>>>>>>> v4.9.227
 /****************** superblock additional info *********************/
 
 struct ll_sb_info;
@@ -491,7 +535,10 @@ struct lustre_sb_info {
 	struct lustre_mount_data *lsi_lmd;     /* mount command info */
 	struct ll_sb_info	*lsi_llsbi;   /* add'l client sbi info */
 	struct dt_device	 *lsi_dt_dev;  /* dt device to access disk fs*/
+<<<<<<< HEAD
 	struct vfsmount	  *lsi_srv_mnt; /* the one server mount */
+=======
+>>>>>>> v4.9.227
 	atomic_t	      lsi_mounts;  /* references to the srv_mnt */
 	char			  lsi_svname[MTI_NAME_MAXLEN];
 	char			  lsi_osd_obdname[64];
@@ -500,7 +547,12 @@ struct lustre_sb_info {
 	char			  lsi_osd_type[16];
 	char			  lsi_fstype[16];
 	struct backing_dev_info   lsi_bdi;     /* each client mountpoint needs
+<<<<<<< HEAD
 						  own backing_dev_info */
+=======
+						* own backing_dev_info
+						*/
+>>>>>>> v4.9.227
 };
 
 #define LSI_UMOUNT_FAILOVER	      0x00200000
@@ -513,19 +565,26 @@ struct lustre_sb_info {
 #define	    get_mount_flags(sb)	   (s2lsi(sb)->lsi_lmd->lmd_flags)
 #define	    get_mntdev_name(sb)	   (s2lsi(sb)->lsi_lmd->lmd_dev)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /****************** mount lookup info *********************/
 
 struct lustre_mount_info {
 	char		 *lmi_name;
 	struct super_block   *lmi_sb;
+<<<<<<< HEAD
 	struct vfsmount      *lmi_mnt;
+=======
+>>>>>>> v4.9.227
 	struct list_head	    lmi_list_chain;
 };
 
 /****************** prototypes *********************/
 
 /* obd_mount.c */
+<<<<<<< HEAD
 int server_name2fsname(const char *svname, char *fsname, const char **endptr);
 int server_name2index(const char *svname, __u32 *idx, const char **endptr);
 int server_name2svname(const char *label, char *svname, const char **endptr,
@@ -534,13 +593,19 @@ int server_name2svname(const char *label, char *svname, const char **endptr,
 int lustre_put_lsi(struct super_block *sb);
 int lustre_start_simple(char *obdname, char *type, char *uuid,
 			char *s1, char *s2, char *s3, char *s4);
+=======
+
+>>>>>>> v4.9.227
 int lustre_start_mgc(struct super_block *sb);
 void lustre_register_client_fill_super(int (*cfs)(struct super_block *sb,
 						  struct vfsmount *mnt));
 void lustre_register_kill_super_cb(void (*cfs)(struct super_block *sb));
 int lustre_common_put_super(struct super_block *sb);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 int mgc_fsname2resid(char *fsname, struct ldlm_res_id *res_id, int type);
 
 /** @} disk */

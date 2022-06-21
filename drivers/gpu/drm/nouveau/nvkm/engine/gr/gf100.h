@@ -31,7 +31,12 @@
 #include <subdev/mmu.h>
 
 #define GPC_MAX 32
+<<<<<<< HEAD
 #define TPC_MAX (GPC_MAX * 8)
+=======
+#define TPC_MAX_PER_GPC 8
+#define TPC_MAX (GPC_MAX * TPC_MAX_PER_GPC)
+>>>>>>> v4.9.227
 
 #define ROP_BCAST(r)      (0x408800 + (r))
 #define ROP_UNIT(u, r)    (0x410000 + (u) * 0x400 + (r))
@@ -82,7 +87,11 @@ struct gf100_gr {
 
 	/*
 	 * Used if the register packs are loaded from NVIDIA fw instead of
+<<<<<<< HEAD
 	 * using hardcoded arrays.
+=======
+	 * using hardcoded arrays. To be allocated with vzalloc().
+>>>>>>> v4.9.227
 	 */
 	struct gf100_gr_pack *fuc_sw_nonctx;
 	struct gf100_gr_pack *fuc_sw_ctx;
@@ -100,15 +109,22 @@ struct gf100_gr {
 	u8 ppc_mask[GPC_MAX];
 	u8 ppc_tpc_nr[GPC_MAX][4];
 
+<<<<<<< HEAD
 	struct nvkm_memory *unk4188b4;
 	struct nvkm_memory *unk4188b8;
 
+=======
+>>>>>>> v4.9.227
 	struct gf100_gr_data mmio_data[4];
 	struct gf100_gr_mmio mmio_list[4096/8];
 	u32  size;
 	u32 *data;
 
+<<<<<<< HEAD
 	u8 magic_not_rop_nr;
+=======
+	u8 screen_tile_row_offset;
+>>>>>>> v4.9.227
 };
 
 int gf100_gr_ctor(const struct gf100_gr_func *, struct nvkm_device *,
@@ -121,6 +137,11 @@ struct gf100_gr_func {
 	void (*dtor)(struct gf100_gr *);
 	int (*init)(struct gf100_gr *);
 	void (*init_gpc_mmu)(struct gf100_gr *);
+<<<<<<< HEAD
+=======
+	void (*init_rop_active_fbps)(struct gf100_gr *);
+	void (*init_ppc_exceptions)(struct gf100_gr *);
+>>>>>>> v4.9.227
 	void (*set_hww_esr_report_mask)(struct gf100_gr *);
 	const struct gf100_gr_pack *mmio;
 	struct {
@@ -129,12 +150,17 @@ struct gf100_gr_func {
 	struct {
 		struct gf100_gr_ucode *ucode;
 	} gpccs;
+<<<<<<< HEAD
+=======
+	int (*rops)(struct gf100_gr *);
+>>>>>>> v4.9.227
 	int ppc_nr;
 	const struct gf100_grctx_func *grctx;
 	struct nvkm_sclass sclass[];
 };
 
 int gf100_gr_init(struct gf100_gr *);
+<<<<<<< HEAD
 
 int gk104_gr_init(struct gf100_gr *);
 
@@ -144,6 +170,18 @@ void gk20a_gr_dtor(struct gf100_gr *);
 int gk20a_gr_init(struct gf100_gr *);
 
 int gm204_gr_init(struct gf100_gr *);
+=======
+int gf100_gr_rops(struct gf100_gr *);
+
+int gk104_gr_init(struct gf100_gr *);
+void gk104_gr_init_rop_active_fbps(struct gf100_gr *);
+void gk104_gr_init_ppc_exceptions(struct gf100_gr *);
+
+int gk20a_gr_init(struct gf100_gr *);
+
+int gm200_gr_init(struct gf100_gr *);
+int gm200_gr_rops(struct gf100_gr *);
+>>>>>>> v4.9.227
 
 #define gf100_gr_chan(p) container_of((p), struct gf100_gr_chan, object)
 
@@ -204,6 +242,20 @@ void gf100_gr_icmd(struct gf100_gr *, const struct gf100_gr_pack *);
 void gf100_gr_mthd(struct gf100_gr *, const struct gf100_gr_pack *);
 int  gf100_gr_init_ctxctl(struct gf100_gr *);
 
+<<<<<<< HEAD
+=======
+/* external bundles loading functions */
+int gk20a_gr_av_to_init(struct gf100_gr *, const char *,
+			struct gf100_gr_pack **);
+int gk20a_gr_aiv_to_init(struct gf100_gr *, const char *,
+			 struct gf100_gr_pack **);
+int gk20a_gr_av_to_method(struct gf100_gr *, const char *,
+			  struct gf100_gr_pack **);
+
+int gm200_gr_new_(const struct gf100_gr_func *, struct nvkm_device *, int,
+		  struct nvkm_gr **);
+
+>>>>>>> v4.9.227
 /* register init value lists */
 
 extern const struct gf100_gr_init gf100_gr_init_main_0[];
@@ -280,5 +332,9 @@ extern const struct gf100_gr_init gm107_gr_init_wwdx_0[];
 extern const struct gf100_gr_init gm107_gr_init_cbm_0[];
 void gm107_gr_init_bios(struct gf100_gr *);
 
+<<<<<<< HEAD
 extern const struct gf100_gr_pack gm204_gr_pack_mmio[];
+=======
+void gm200_gr_init_gpc_mmu(struct gf100_gr *);
+>>>>>>> v4.9.227
 #endif

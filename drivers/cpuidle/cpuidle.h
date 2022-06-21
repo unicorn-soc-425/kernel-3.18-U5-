@@ -34,19 +34,37 @@ extern int cpuidle_add_sysfs(struct cpuidle_device *dev);
 extern void cpuidle_remove_sysfs(struct cpuidle_device *dev);
 
 #ifdef CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED
+<<<<<<< HEAD
 bool cpuidle_state_is_coupled(struct cpuidle_device *dev,
 		struct cpuidle_driver *drv, int state);
+=======
+bool cpuidle_state_is_coupled(struct cpuidle_driver *drv, int state);
+int cpuidle_coupled_state_verify(struct cpuidle_driver *drv);
+>>>>>>> v4.9.227
 int cpuidle_enter_state_coupled(struct cpuidle_device *dev,
 		struct cpuidle_driver *drv, int next_state);
 int cpuidle_coupled_register_device(struct cpuidle_device *dev);
 void cpuidle_coupled_unregister_device(struct cpuidle_device *dev);
 #else
+<<<<<<< HEAD
 static inline bool cpuidle_state_is_coupled(struct cpuidle_device *dev,
 		struct cpuidle_driver *drv, int state)
+=======
+static inline
+bool cpuidle_state_is_coupled(struct cpuidle_driver *drv, int state)
+>>>>>>> v4.9.227
 {
 	return false;
 }
 
+<<<<<<< HEAD
+=======
+static inline int cpuidle_coupled_state_verify(struct cpuidle_driver *drv)
+{
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static inline int cpuidle_enter_state_coupled(struct cpuidle_device *dev,
 		struct cpuidle_driver *drv, int next_state)
 {

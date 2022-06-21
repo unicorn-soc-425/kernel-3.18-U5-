@@ -192,6 +192,13 @@ static char mv643xx_eth_driver_version[] = "1.4";
 #define IS_TSO_HEADER(txq, addr) \
 	((addr >= txq->tso_hdrs_dma) && \
 	 (addr < txq->tso_hdrs_dma + txq->tx_ring_size * TSO_HEADER_SIZE))
+<<<<<<< HEAD
+=======
+
+#define DESC_DMA_MAP_SINGLE 0
+#define DESC_DMA_MAP_PAGE 1
+
+>>>>>>> v4.9.227
 /*
  * RX/TX descriptors.
  */
@@ -362,6 +369,10 @@ struct tx_queue {
 	dma_addr_t tso_hdrs_dma;
 
 	struct tx_desc *tx_desc_area;
+<<<<<<< HEAD
+=======
+	char *tx_desc_mapping; /* array to track the type of the dma mapping */
+>>>>>>> v4.9.227
 	dma_addr_t tx_desc_dma;
 	int tx_desc_area_size;
 
@@ -750,6 +761,7 @@ txq_put_data_tso(struct net_device *dev, struct tx_queue *txq,
 	if (txq->tx_curr_desc == txq->tx_ring_size)
 		txq->tx_curr_desc = 0;
 	desc = &txq->tx_desc_area[tx_index];
+<<<<<<< HEAD
 
 	desc->l4i_chk = 0;
 	desc->byte_cnt = length;
@@ -758,6 +770,29 @@ txq_put_data_tso(struct net_device *dev, struct tx_queue *txq,
 	if (unlikely(dma_mapping_error(dev->dev.parent, desc->buf_ptr))) {
 		WARN(1, "dma_map_single failed!\n");
 		return -ENOMEM;
+=======
+	txq->tx_desc_mapping[tx_index] = DESC_DMA_MAP_SINGLE;
+
+	desc->l4i_chk = 0;
+	desc->byte_cnt = length;
+
+	if (length <= 8 && (uintptr_t)data & 0x7) {
+		/* Copy unaligned small data fragment to TSO header data area */
+		memcpy(txq->tso_hdrs + tx_index * TSO_HEADER_SIZE,
+		       data, length);
+		desc->buf_ptr = txq->tso_hdrs_dma
+			+ tx_index * TSO_HEADER_SIZE;
+	} else {
+		/* Alignment is okay, map buffer and hand off to hardware */
+		txq->tx_desc_mapping[tx_index] = DESC_DMA_MAP_SINGLE;
+		desc->buf_ptr = dma_map_single(dev->dev.parent, data,
+			length, DMA_TO_DEVICE);
+		if (unlikely(dma_mapping_error(dev->dev.parent,
+					       desc->buf_ptr))) {
+			WARN(1, "dma_map_single failed!\n");
+			return -ENOMEM;
+		}
+>>>>>>> v4.9.227
 	}
 
 	cmd_sts = BUFFER_OWNED_BY_DMA;
@@ -773,7 +808,12 @@ txq_put_data_tso(struct net_device *dev, struct tx_queue *txq,
 }
 
 static inline void
+<<<<<<< HEAD
 txq_put_hdr_tso(struct sk_buff *skb, struct tx_queue *txq, int length)
+=======
+txq_put_hdr_tso(struct sk_buff *skb, struct tx_queue *txq, int length,
+		u32 *first_cmd_sts, bool first_desc)
+>>>>>>> v4.9.227
 {
 	struct mv643xx_eth_private *mp = txq_to_mp(txq);
 	int hdr_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
@@ -782,6 +822,10 @@ txq_put_hdr_tso(struct sk_buff *skb, struct tx_queue *txq, int length)
 	int ret;
 	u32 cmd_csum = 0;
 	u16 l4i_chk = 0;
+<<<<<<< HEAD
+=======
+	u32 cmd_sts;
+>>>>>>> v4.9.227
 
 	tx_index = txq->tx_curr_desc;
 	desc = &txq->tx_desc_area[tx_index];
@@ -797,9 +841,23 @@ txq_put_hdr_tso(struct sk_buff *skb, struct tx_queue *txq, int length)
 	desc->byte_cnt = hdr_len;
 	desc->buf_ptr = txq->tso_hdrs_dma +
 			txq->tx_curr_desc * TSO_HEADER_SIZE;
+<<<<<<< HEAD
 	desc->cmd_sts = cmd_csum | BUFFER_OWNED_BY_DMA  | TX_FIRST_DESC |
 				   GEN_CRC;
 
+=======
+	cmd_sts = cmd_csum | BUFFER_OWNED_BY_DMA  | TX_FIRST_DESC |
+				   GEN_CRC;
+
+	/* Defer updating the first command descriptor until all
+	 * following descriptors have been written.
+	 */
+	if (first_desc)
+		*first_cmd_sts = cmd_sts;
+	else
+		desc->cmd_sts = cmd_sts;
+
+>>>>>>> v4.9.227
 	txq->tx_curr_desc++;
 	if (txq->tx_curr_desc == txq->tx_ring_size)
 		txq->tx_curr_desc = 0;
@@ -813,6 +871,11 @@ static int txq_submit_tso(struct tx_queue *txq, struct sk_buff *skb,
 	int desc_count = 0;
 	struct tso_t tso;
 	int hdr_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
+<<<<<<< HEAD
+=======
+	struct tx_desc *first_tx_desc;
+	u32 first_cmd_sts = 0;
+>>>>>>> v4.9.227
 
 	/* Count needed descriptors */
 	if ((txq->tx_desc_count + tso_count_descs(skb)) >= txq->tx_ring_size) {
@@ -820,11 +883,20 @@ static int txq_submit_tso(struct tx_queue *txq, struct sk_buff *skb,
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
+=======
+	first_tx_desc = &txq->tx_desc_area[txq->tx_curr_desc];
+
+>>>>>>> v4.9.227
 	/* Initialize the TSO handler, and prepare the first payload */
 	tso_start(skb, &tso);
 
 	total_len = skb->len - hdr_len;
 	while (total_len > 0) {
+<<<<<<< HEAD
+=======
+		bool first_desc = (desc_count == 0);
+>>>>>>> v4.9.227
 		char *hdr;
 
 		data_left = min_t(int, skb_shinfo(skb)->gso_size, total_len);
@@ -834,7 +906,12 @@ static int txq_submit_tso(struct tx_queue *txq, struct sk_buff *skb,
 		/* prepare packet headers: MAC + IP + TCP */
 		hdr = txq->tso_hdrs + txq->tx_curr_desc * TSO_HEADER_SIZE;
 		tso_build_hdr(skb, hdr, &tso, data_left, total_len == 0);
+<<<<<<< HEAD
 		txq_put_hdr_tso(skb, txq, data_left);
+=======
+		txq_put_hdr_tso(skb, txq, data_left, &first_cmd_sts,
+				first_desc);
+>>>>>>> v4.9.227
 
 		while (data_left > 0) {
 			int size;
@@ -854,6 +931,13 @@ static int txq_submit_tso(struct tx_queue *txq, struct sk_buff *skb,
 	__skb_queue_tail(&txq->tx_skb, skb);
 	skb_tx_timestamp(skb);
 
+<<<<<<< HEAD
+=======
+	/* ensure all other descriptors are written before first cmd_sts */
+	wmb();
+	first_tx_desc->cmd_sts = first_cmd_sts;
+
+>>>>>>> v4.9.227
 	/* clear TX_END status */
 	mp->work_tx_end &= ~(1 << txq->index);
 
@@ -879,14 +963,23 @@ static void txq_submit_frag_skb(struct tx_queue *txq, struct sk_buff *skb)
 		skb_frag_t *this_frag;
 		int tx_index;
 		struct tx_desc *desc;
+<<<<<<< HEAD
 		void *addr;
 
 		this_frag = &skb_shinfo(skb)->frags[frag];
 		addr = page_address(this_frag->page.p) + this_frag->page_offset;
+=======
+
+		this_frag = &skb_shinfo(skb)->frags[frag];
+>>>>>>> v4.9.227
 		tx_index = txq->tx_curr_desc++;
 		if (txq->tx_curr_desc == txq->tx_ring_size)
 			txq->tx_curr_desc = 0;
 		desc = &txq->tx_desc_area[tx_index];
+<<<<<<< HEAD
+=======
+		txq->tx_desc_mapping[tx_index] = DESC_DMA_MAP_PAGE;
+>>>>>>> v4.9.227
 
 		/*
 		 * The last fragment will generate an interrupt
@@ -902,8 +995,14 @@ static void txq_submit_frag_skb(struct tx_queue *txq, struct sk_buff *skb)
 
 		desc->l4i_chk = 0;
 		desc->byte_cnt = skb_frag_size(this_frag);
+<<<<<<< HEAD
 		desc->buf_ptr = dma_map_single(mp->dev->dev.parent, addr,
 					       desc->byte_cnt, DMA_TO_DEVICE);
+=======
+		desc->buf_ptr = skb_frag_dma_map(mp->dev->dev.parent,
+						 this_frag, 0, desc->byte_cnt,
+						 DMA_TO_DEVICE);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -936,6 +1035,10 @@ static int txq_submit_skb(struct tx_queue *txq, struct sk_buff *skb,
 	if (txq->tx_curr_desc == txq->tx_ring_size)
 		txq->tx_curr_desc = 0;
 	desc = &txq->tx_desc_area[tx_index];
+<<<<<<< HEAD
+=======
+	txq->tx_desc_mapping[tx_index] = DESC_DMA_MAP_SINGLE;
+>>>>>>> v4.9.227
 
 	if (nr_frags) {
 		txq_submit_frag_skb(txq, skb);
@@ -1047,9 +1150,18 @@ static int txq_reclaim(struct tx_queue *txq, int budget, int force)
 		int tx_index;
 		struct tx_desc *desc;
 		u32 cmd_sts;
+<<<<<<< HEAD
 
 		tx_index = txq->tx_used_desc;
 		desc = &txq->tx_desc_area[tx_index];
+=======
+		char desc_dma_map;
+
+		tx_index = txq->tx_used_desc;
+		desc = &txq->tx_desc_area[tx_index];
+		desc_dma_map = txq->tx_desc_mapping[tx_index];
+
+>>>>>>> v4.9.227
 		cmd_sts = desc->cmd_sts;
 
 		if (cmd_sts & BUFFER_OWNED_BY_DMA) {
@@ -1065,9 +1177,25 @@ static int txq_reclaim(struct tx_queue *txq, int budget, int force)
 		reclaimed++;
 		txq->tx_desc_count--;
 
+<<<<<<< HEAD
 		if (!IS_TSO_HEADER(txq, desc->buf_ptr))
 			dma_unmap_single(mp->dev->dev.parent, desc->buf_ptr,
 					 desc->byte_cnt, DMA_TO_DEVICE);
+=======
+		if (!IS_TSO_HEADER(txq, desc->buf_ptr)) {
+
+			if (desc_dma_map == DESC_DMA_MAP_PAGE)
+				dma_unmap_page(mp->dev->dev.parent,
+					       desc->buf_ptr,
+					       desc->byte_cnt,
+					       DMA_TO_DEVICE);
+			else
+				dma_unmap_single(mp->dev->dev.parent,
+						 desc->buf_ptr,
+						 desc->byte_cnt,
+						 DMA_TO_DEVICE);
+		}
+>>>>>>> v4.9.227
 
 		if (cmd_sts & TX_ENABLE_INTERRUPT) {
 			struct sk_buff *skb = __skb_dequeue(&txq->tx_skb);
@@ -1329,6 +1457,10 @@ static unsigned int get_rx_coal(struct mv643xx_eth_private *mp)
 		temp = (val & 0x003fff00) >> 8;
 
 	temp *= 64000000;
+<<<<<<< HEAD
+=======
+	temp += mp->t_clk / 2;
+>>>>>>> v4.9.227
 	do_div(temp, mp->t_clk);
 
 	return (unsigned int)temp;
@@ -1365,6 +1497,10 @@ static unsigned int get_tx_coal(struct mv643xx_eth_private *mp)
 
 	temp = (rdlp(mp, TX_FIFO_URGENT_THRESHOLD) & 0x3fff0) >> 4;
 	temp *= 64000000;
+<<<<<<< HEAD
+=======
+	temp += mp->t_clk / 2;
+>>>>>>> v4.9.227
 	do_div(temp, mp->t_clk);
 
 	return (unsigned int)temp;
@@ -1566,7 +1702,10 @@ static void mv643xx_eth_get_drvinfo(struct net_device *dev,
 		sizeof(drvinfo->version));
 	strlcpy(drvinfo->fw_version, "N/A", sizeof(drvinfo->fw_version));
 	strlcpy(drvinfo->bus_info, "platform", sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->n_stats = ARRAY_SIZE(mv643xx_eth_stats);
+=======
+>>>>>>> v4.9.227
 }
 
 static int mv643xx_eth_nway_reset(struct net_device *dev)
@@ -1825,6 +1964,7 @@ static void mv643xx_eth_program_multicast_filter(struct net_device *dev)
 	struct netdev_hw_addr *ha;
 	int i;
 
+<<<<<<< HEAD
 	if (dev->flags & (IFF_PROMISC | IFF_ALLMULTI)) {
 		int port_num;
 		u32 accept;
@@ -1846,11 +1986,25 @@ oom:
 
 	memset(mc_spec, 0, 0x100);
 	memset(mc_other, 0, 0x100);
+=======
+	if (dev->flags & (IFF_PROMISC | IFF_ALLMULTI))
+		goto promiscuous;
+
+	/* Allocate both mc_spec and mc_other tables */
+	mc_spec = kcalloc(128, sizeof(u32), GFP_ATOMIC);
+	if (!mc_spec)
+		goto promiscuous;
+	mc_other = &mc_spec[64];
+>>>>>>> v4.9.227
 
 	netdev_for_each_mc_addr(ha, dev) {
 		u8 *a = ha->addr;
 		u32 *table;
+<<<<<<< HEAD
 		int entry;
+=======
+		u8 entry;
+>>>>>>> v4.9.227
 
 		if (memcmp(a, "\x01\x00\x5e\x00\x00", 5) == 0) {
 			table = mc_spec;
@@ -1863,12 +2017,32 @@ oom:
 		table[entry >> 2] |= 1 << (8 * (entry & 3));
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < 0x100; i += 4) {
 		wrl(mp, SPECIAL_MCAST_TABLE(mp->port_num) + i, mc_spec[i >> 2]);
 		wrl(mp, OTHER_MCAST_TABLE(mp->port_num) + i, mc_other[i >> 2]);
 	}
 
 	kfree(mc_spec);
+=======
+	for (i = 0; i < 64; i++) {
+		wrl(mp, SPECIAL_MCAST_TABLE(mp->port_num) + i * sizeof(u32),
+		    mc_spec[i]);
+		wrl(mp, OTHER_MCAST_TABLE(mp->port_num) + i * sizeof(u32),
+		    mc_other[i]);
+	}
+
+	kfree(mc_spec);
+	return;
+
+promiscuous:
+	for (i = 0; i < 64; i++) {
+		wrl(mp, SPECIAL_MCAST_TABLE(mp->port_num) + i * sizeof(u32),
+		    0x01010101u);
+		wrl(mp, OTHER_MCAST_TABLE(mp->port_num) + i * sizeof(u32),
+		    0x01010101u);
+	}
+>>>>>>> v4.9.227
 }
 
 static void mv643xx_eth_set_rx_mode(struct net_device *dev)
@@ -1996,6 +2170,10 @@ static int txq_init(struct mv643xx_eth_private *mp, int index)
 	struct tx_queue *txq = mp->txq + index;
 	struct tx_desc *tx_desc;
 	int size;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> v4.9.227
 	int i;
 
 	txq->index = index;
@@ -2048,18 +2226,46 @@ static int txq_init(struct mv643xx_eth_private *mp, int index)
 					nexti * sizeof(struct tx_desc);
 	}
 
+<<<<<<< HEAD
+=======
+	txq->tx_desc_mapping = kcalloc(txq->tx_ring_size, sizeof(char),
+				       GFP_KERNEL);
+	if (!txq->tx_desc_mapping) {
+		ret = -ENOMEM;
+		goto err_free_desc_area;
+	}
+
+>>>>>>> v4.9.227
 	/* Allocate DMA buffers for TSO MAC/IP/TCP headers */
 	txq->tso_hdrs = dma_alloc_coherent(mp->dev->dev.parent,
 					   txq->tx_ring_size * TSO_HEADER_SIZE,
 					   &txq->tso_hdrs_dma, GFP_KERNEL);
 	if (txq->tso_hdrs == NULL) {
+<<<<<<< HEAD
 		dma_free_coherent(mp->dev->dev.parent, txq->tx_desc_area_size,
 				  txq->tx_desc_area, txq->tx_desc_dma);
 		return -ENOMEM;
+=======
+		ret = -ENOMEM;
+		goto err_free_desc_mapping;
+>>>>>>> v4.9.227
 	}
 	skb_queue_head_init(&txq->tx_skb);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_free_desc_mapping:
+	kfree(txq->tx_desc_mapping);
+err_free_desc_area:
+	if (index == 0 && size <= mp->tx_desc_sram_size)
+		iounmap(txq->tx_desc_area);
+	else
+		dma_free_coherent(mp->dev->dev.parent, txq->tx_desc_area_size,
+				  txq->tx_desc_area, txq->tx_desc_dma);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static void txq_deinit(struct tx_queue *txq)
@@ -2077,6 +2283,11 @@ static void txq_deinit(struct tx_queue *txq)
 	else
 		dma_free_coherent(mp->dev->dev.parent, txq->tx_desc_area_size,
 				  txq->tx_desc_area, txq->tx_desc_dma);
+<<<<<<< HEAD
+=======
+	kfree(txq->tx_desc_mapping);
+
+>>>>>>> v4.9.227
 	if (txq->tso_hdrs)
 		dma_free_coherent(mp->dev->dev.parent,
 				  txq->tx_ring_size * TSO_HEADER_SIZE,
@@ -2749,8 +2960,15 @@ static int mv643xx_eth_shared_of_probe(struct platform_device *pdev)
 
 	for_each_available_child_of_node(np, pnp) {
 		ret = mv643xx_eth_shared_of_add_port(pdev, pnp);
+<<<<<<< HEAD
 		if (ret)
 			return ret;
+=======
+		if (ret) {
+			of_node_put(pnp);
+			return ret;
+		}
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -2814,7 +3032,11 @@ static int mv643xx_eth_shared_probe(struct platform_device *pdev)
 
 	ret = mv643xx_eth_shared_of_probe(pdev);
 	if (ret)
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_put_clk;
+>>>>>>> v4.9.227
 	pd = dev_get_platdata(&pdev->dev);
 
 	msp->tx_csum_limit = (pd != NULL && pd->tx_csum_limit) ?
@@ -2822,6 +3044,14 @@ static int mv643xx_eth_shared_probe(struct platform_device *pdev)
 	infer_hw_params(msp);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_put_clk:
+	if (!IS_ERR(msp->clk))
+		clk_disable_unprepare(msp->clk);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int mv643xx_eth_shared_remove(struct platform_device *pdev)
@@ -2839,7 +3069,10 @@ static struct platform_driver mv643xx_eth_shared_driver = {
 	.remove		= mv643xx_eth_shared_remove,
 	.driver = {
 		.name	= MV643XX_ETH_SHARED_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(mv643xx_eth_shared_ids),
 	},
 };
@@ -2899,6 +3132,25 @@ static void set_params(struct mv643xx_eth_private *mp,
 	mp->txq_count = pd->tx_queue_count ? : 1;
 }
 
+<<<<<<< HEAD
+=======
+static int get_phy_mode(struct mv643xx_eth_private *mp)
+{
+	struct device *dev = mp->dev->dev.parent;
+	int iface = -1;
+
+	if (dev->of_node)
+		iface = of_get_phy_mode(dev->of_node);
+
+	/* Historical default if unspecified. We could also read/write
+	 * the interface state in the PSC1
+	 */
+	if (iface < 0)
+		iface = PHY_INTERFACE_MODE_GMII;
+	return iface;
+}
+
+>>>>>>> v4.9.227
 static struct phy_device *phy_scan(struct mv643xx_eth_private *mp,
 				   int phy_addr)
 {
@@ -2925,7 +3177,11 @@ static struct phy_device *phy_scan(struct mv643xx_eth_private *mp,
 				"orion-mdio-mii", addr);
 
 		phydev = phy_connect(mp->dev, phy_id, mv643xx_eth_adjust_link,
+<<<<<<< HEAD
 				PHY_INTERFACE_MODE_GMII);
+=======
+				     get_phy_mode(mp));
+>>>>>>> v4.9.227
 		if (!IS_ERR(phydev)) {
 			phy_addr_set(mp, addr);
 			break;
@@ -3021,6 +3277,10 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
 	if (!dev)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	SET_NETDEV_DEV(dev, &pdev->dev);
+>>>>>>> v4.9.227
 	mp = netdev_priv(dev);
 	platform_set_drvdata(pdev, mp);
 
@@ -3060,11 +3320,19 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
 	if (pd->phy_node) {
 		mp->phy = of_phy_connect(mp->dev, pd->phy_node,
 					 mv643xx_eth_adjust_link, 0,
+<<<<<<< HEAD
 					 PHY_INTERFACE_MODE_GMII);
 		if (!mp->phy)
 			err = -ENODEV;
 		else
 			phy_addr_set(mp, mp->phy->addr);
+=======
+					 get_phy_mode(mp));
+		if (!mp->phy)
+			err = -ENODEV;
+		else
+			phy_addr_set(mp, mp->phy->mdio.addr);
+>>>>>>> v4.9.227
 	} else if (pd->phy_addr != MV643XX_ETH_PHY_NONE) {
 		mp->phy = phy_scan(mp, pd->phy_addr);
 
@@ -3087,9 +3355,14 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
 
 	mib_counters_clear(mp);
 
+<<<<<<< HEAD
 	init_timer(&mp->mib_counters_timer);
 	mp->mib_counters_timer.data = (unsigned long)mp;
 	mp->mib_counters_timer.function = mib_counters_timer_wrapper;
+=======
+	setup_timer(&mp->mib_counters_timer, mib_counters_timer_wrapper,
+		    (unsigned long)mp);
+>>>>>>> v4.9.227
 	mp->mib_counters_timer.expires = jiffies + 30 * HZ;
 
 	spin_lock_init(&mp->mib_counters_lock);
@@ -3098,9 +3371,13 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
 
 	netif_napi_add(dev, &mp->napi, mv643xx_eth_poll, NAPI_POLL_WEIGHT);
 
+<<<<<<< HEAD
 	init_timer(&mp->rx_oom);
 	mp->rx_oom.data = (unsigned long)mp;
 	mp->rx_oom.function = oom_timer_wrapper;
+=======
+	setup_timer(&mp->rx_oom, oom_timer_wrapper, (unsigned long)mp);
+>>>>>>> v4.9.227
 
 
 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
@@ -3121,8 +3398,11 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
 	dev->priv_flags |= IFF_UNICAST_FLT;
 	dev->gso_max_segs = MV643XX_MAX_TSO_SEGS;
 
+<<<<<<< HEAD
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
+=======
+>>>>>>> v4.9.227
 	if (mp->shared->win_protect)
 		wrl(mp, WINDOW_PROTECT(mp->port_num), mp->shared->win_protect);
 
@@ -3188,6 +3468,7 @@ static struct platform_driver mv643xx_eth_driver = {
 	.shutdown	= mv643xx_eth_shutdown,
 	.driver = {
 		.name	= MV643XX_ETH_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 };
@@ -3204,13 +3485,30 @@ static int __init mv643xx_eth_init_module(void)
 	}
 
 	return rc;
+=======
+	},
+};
+
+static struct platform_driver * const drivers[] = {
+	&mv643xx_eth_shared_driver,
+	&mv643xx_eth_driver,
+};
+
+static int __init mv643xx_eth_init_module(void)
+{
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 module_init(mv643xx_eth_init_module);
 
 static void __exit mv643xx_eth_cleanup_module(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&mv643xx_eth_driver);
 	platform_driver_unregister(&mv643xx_eth_shared_driver);
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 module_exit(mv643xx_eth_cleanup_module);
 

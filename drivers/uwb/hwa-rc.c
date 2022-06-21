@@ -701,10 +701,15 @@ static int hwarc_neep_init(struct uwb_rc *rc)
 		goto error_rd_buffer;
 	}
 	hwarc->neep_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (hwarc->neep_urb == NULL) {
 		dev_err(dev, "Unable to allocate notification URB\n");
 		goto error_urb_alloc;
 	}
+=======
+	if (hwarc->neep_urb == NULL)
+		goto error_urb_alloc;
+>>>>>>> v4.9.227
 	usb_fill_int_urb(hwarc->neep_urb, usb_dev,
 			 usb_rcvintpipe(usb_dev, epd->bEndpointAddress),
 			 hwarc->rd_buffer, PAGE_SIZE,

@@ -31,6 +31,11 @@ struct mdp5_kms {
 
 	struct drm_device *dev;
 
+<<<<<<< HEAD
+=======
+	struct platform_device *pdev;
+
+>>>>>>> v4.9.227
 	struct mdp5_cfg_handler *cfg;
 	uint32_t caps;	/* MDP capabilities (MDP_CAP_XXX bits) */
 
@@ -43,6 +48,7 @@ struct mdp5_kms {
 	struct mdp5_ctl_manager *ctlm;
 
 	/* io/register spaces: */
+<<<<<<< HEAD
 	void __iomem *mmio, *vbif;
 
 	struct regulator *vdd;
@@ -50,12 +56,19 @@ struct mdp5_kms {
 	struct clk *axi_clk;
 	struct clk *ahb_clk;
 	struct clk *src_clk;
+=======
+	void __iomem *mmio;
+
+	struct clk *axi_clk;
+	struct clk *ahb_clk;
+>>>>>>> v4.9.227
 	struct clk *core_clk;
 	struct clk *lut_clk;
 	struct clk *vsync_clk;
 
 	/*
 	 * lock to protect access to global resources: ie., following register:
+<<<<<<< HEAD
 	 *	- REG_MDP5_MDP_DISP_INTF_SEL
 	 */
 	spinlock_t resource_lock;
@@ -66,6 +79,15 @@ struct mdp5_kms {
 		volatile unsigned long enabled_mask;
 		struct irq_domain *domain;
 	} irqcontroller;
+=======
+	 *	- REG_MDP5_DISP_INTF_SEL
+	 */
+	spinlock_t resource_lock;
+
+	bool rpm_enabled;
+
+	struct mdp_irq error_handler;
+>>>>>>> v4.9.227
 };
 #define to_mdp5_kms(x) container_of(x, struct mdp5_kms, base)
 
@@ -211,7 +233,10 @@ struct drm_plane *mdp5_plane_init(struct drm_device *dev,
 uint32_t mdp5_crtc_vblank(struct drm_crtc *crtc);
 
 int mdp5_crtc_get_lm(struct drm_crtc *crtc);
+<<<<<<< HEAD
 void mdp5_crtc_cancel_pending_flip(struct drm_crtc *crtc, struct drm_file *file);
+=======
+>>>>>>> v4.9.227
 void mdp5_crtc_set_pipeline(struct drm_crtc *crtc,
 		struct mdp5_interface *intf, struct mdp5_ctl *ctl);
 void mdp5_crtc_wait_for_commit_done(struct drm_crtc *crtc);
@@ -222,6 +247,11 @@ struct drm_encoder *mdp5_encoder_init(struct drm_device *dev,
 		struct mdp5_interface *intf, struct mdp5_ctl *ctl);
 int mdp5_encoder_set_split_display(struct drm_encoder *encoder,
 					struct drm_encoder *slave_encoder);
+<<<<<<< HEAD
+=======
+int mdp5_encoder_get_linecount(struct drm_encoder *encoder);
+u32 mdp5_encoder_get_framecount(struct drm_encoder *encoder);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_DRM_MSM_DSI
 struct drm_encoder *mdp5_cmd_encoder_init(struct drm_device *dev,

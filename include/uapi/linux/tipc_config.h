@@ -272,6 +272,29 @@ static inline int TLV_CHECK(const void *tlv, __u16 space, __u16 exp_type)
 		(ntohs(((struct tlv_desc *)tlv)->tlv_type) == exp_type);
 }
 
+<<<<<<< HEAD
+=======
+static inline int TLV_GET_LEN(struct tlv_desc *tlv)
+{
+	return ntohs(tlv->tlv_len);
+}
+
+static inline void TLV_SET_LEN(struct tlv_desc *tlv, __u16 len)
+{
+	tlv->tlv_len = htons(len);
+}
+
+static inline int TLV_CHECK_TYPE(struct tlv_desc *tlv,  __u16 type)
+{
+	return (ntohs(tlv->tlv_type) == type);
+}
+
+static inline void TLV_SET_TYPE(struct tlv_desc *tlv, __u16 type)
+{
+	tlv->tlv_type = htons(type);
+}
+
+>>>>>>> v4.9.227
 static inline int TLV_SET(void *tlv, __u16 type, void *data, __u16 len)
 {
 	struct tlv_desc *tlv_ptr;
@@ -281,8 +304,15 @@ static inline int TLV_SET(void *tlv, __u16 type, void *data, __u16 len)
 	tlv_ptr = (struct tlv_desc *)tlv;
 	tlv_ptr->tlv_type = htons(type);
 	tlv_ptr->tlv_len  = htons(tlv_len);
+<<<<<<< HEAD
 	if (len && data)
 		memcpy(TLV_DATA(tlv_ptr), data, tlv_len);
+=======
+	if (len && data) {
+		memcpy(TLV_DATA(tlv_ptr), data, len);
+		memset(TLV_DATA(tlv_ptr) + len, 0, TLV_SPACE(len) - tlv_len);
+	}
+>>>>>>> v4.9.227
 	return TLV_SPACE(len);
 }
 
@@ -379,8 +409,15 @@ static inline int TCM_SET(void *msg, __u16 cmd, __u16 flags,
 	tcm_hdr->tcm_len   = htonl(msg_len);
 	tcm_hdr->tcm_type  = htons(cmd);
 	tcm_hdr->tcm_flags = htons(flags);
+<<<<<<< HEAD
 	if (data_len && data)
 		memcpy(TCM_DATA(msg), data, data_len);
+=======
+	if (data_len && data) {
+		memcpy(TCM_DATA(msg), data, data_len);
+		memset(TCM_DATA(msg) + data_len, 0, TCM_SPACE(data_len) - msg_len);
+	}
+>>>>>>> v4.9.227
 	return TCM_SPACE(data_len);
 }
 

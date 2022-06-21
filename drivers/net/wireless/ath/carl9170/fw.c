@@ -286,7 +286,11 @@ static int carl9170_fw(struct ar9170 *ar, const __u8 *data, size_t len)
 	}
 
 	if (SUPP(CARL9170FW_PSM) && SUPP(CARL9170FW_FIXED_5GHZ_PSM))
+<<<<<<< HEAD
 		ar->hw->flags |= IEEE80211_HW_SUPPORTS_PS;
+=======
+		ieee80211_hw_set(ar->hw, SUPPORTS_PS);
+>>>>>>> v4.9.227
 
 	if (!SUPP(CARL9170FW_USB_INIT_FIRMWARE)) {
 		dev_err(&ar->udev->dev, "firmware does not provide "
@@ -310,8 +314,12 @@ static int carl9170_fw(struct ar9170 *ar, const __u8 *data, size_t len)
 	if (SUPP(CARL9170FW_RX_FILTER)) {
 		ar->fw.rx_filter = true;
 		ar->rx_filter_caps = FIF_FCSFAIL | FIF_PLCPFAIL |
+<<<<<<< HEAD
 			FIF_CONTROL | FIF_PSPOLL | FIF_OTHER_BSS |
 			FIF_PROMISC_IN_BSS;
+=======
+			FIF_CONTROL | FIF_PSPOLL | FIF_OTHER_BSS;
+>>>>>>> v4.9.227
 	}
 
 	if (SUPP(CARL9170FW_HW_COUNTERS))

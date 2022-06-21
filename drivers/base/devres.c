@@ -82,12 +82,20 @@ static struct devres_group * node_to_group(struct devres_node *node)
 }
 
 static __always_inline struct devres * alloc_dr(dr_release_t release,
+<<<<<<< HEAD
 						size_t size, gfp_t gfp)
+=======
+						size_t size, gfp_t gfp, int nid)
+>>>>>>> v4.9.227
 {
 	size_t tot_size = sizeof(struct devres) + size;
 	struct devres *dr;
 
+<<<<<<< HEAD
 	dr = kmalloc_track_caller(tot_size, gfp);
+=======
+	dr = kmalloc_node_track_caller(tot_size, gfp, nid);
+>>>>>>> v4.9.227
 	if (unlikely(!dr))
 		return NULL;
 
@@ -106,24 +114,40 @@ static void add_dr(struct device *dev, struct devres_node *node)
 }
 
 #ifdef CONFIG_DEBUG_DEVRES
+<<<<<<< HEAD
 void * __devres_alloc(dr_release_t release, size_t size, gfp_t gfp,
+=======
+void * __devres_alloc_node(dr_release_t release, size_t size, gfp_t gfp, int nid,
+>>>>>>> v4.9.227
 		      const char *name)
 {
 	struct devres *dr;
 
+<<<<<<< HEAD
 	dr = alloc_dr(release, size, gfp | __GFP_ZERO);
+=======
+	dr = alloc_dr(release, size, gfp | __GFP_ZERO, nid);
+>>>>>>> v4.9.227
 	if (unlikely(!dr))
 		return NULL;
 	set_node_dbginfo(&dr->node, name, size);
 	return dr->data;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(__devres_alloc);
+=======
+EXPORT_SYMBOL_GPL(__devres_alloc_node);
+>>>>>>> v4.9.227
 #else
 /**
  * devres_alloc - Allocate device resource data
  * @release: Release function devres will be associated with
  * @size: Allocation size
  * @gfp: Allocation flags
+<<<<<<< HEAD
+=======
+ * @nid: NUMA node
+>>>>>>> v4.9.227
  *
  * Allocate devres of @size bytes.  The allocated area is zeroed, then
  * associated with @release.  The returned pointer can be passed to
@@ -132,16 +156,28 @@ EXPORT_SYMBOL_GPL(__devres_alloc);
  * RETURNS:
  * Pointer to allocated devres on success, NULL on failure.
  */
+<<<<<<< HEAD
 void * devres_alloc(dr_release_t release, size_t size, gfp_t gfp)
 {
 	struct devres *dr;
 
 	dr = alloc_dr(release, size, gfp | __GFP_ZERO);
+=======
+void * devres_alloc_node(dr_release_t release, size_t size, gfp_t gfp, int nid)
+{
+	struct devres *dr;
+
+	dr = alloc_dr(release, size, gfp | __GFP_ZERO, nid);
+>>>>>>> v4.9.227
 	if (unlikely(!dr))
 		return NULL;
 	return dr->data;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(devres_alloc);
+=======
+EXPORT_SYMBOL_GPL(devres_alloc_node);
+>>>>>>> v4.9.227
 #endif
 
 /**
@@ -776,7 +812,11 @@ void * devm_kmalloc(struct device *dev, size_t size, gfp_t gfp)
 	struct devres *dr;
 
 	/* use raw alloc_dr for kmalloc caller tracing */
+<<<<<<< HEAD
 	dr = alloc_dr(devm_kmalloc_release, size, gfp);
+=======
+	dr = alloc_dr(devm_kmalloc_release, size, gfp, dev_to_node(dev));
+>>>>>>> v4.9.227
 	if (unlikely(!dr))
 		return NULL;
 

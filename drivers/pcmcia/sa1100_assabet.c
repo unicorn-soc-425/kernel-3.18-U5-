@@ -31,6 +31,7 @@ static int assabet_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void
 assabet_pcmcia_socket_state(struct soc_pcmcia_socket *skt, struct pcmcia_state *state)
 {
@@ -38,6 +39,8 @@ assabet_pcmcia_socket_state(struct soc_pcmcia_socket *skt, struct pcmcia_state *
 	state->vs_Xv  = 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int
 assabet_pcmcia_configure_socket(struct soc_pcmcia_socket *skt, const socket_state_t *state)
 {
@@ -90,7 +93,11 @@ static void assabet_pcmcia_socket_suspend(struct soc_pcmcia_socket *skt)
 static struct pcmcia_low_level assabet_pcmcia_ops = { 
 	.owner			= THIS_MODULE,
 	.hw_init		= assabet_pcmcia_hw_init,
+<<<<<<< HEAD
 	.socket_state		= assabet_pcmcia_socket_state,
+=======
+	.socket_state		= soc_common_cf_socket_state,
+>>>>>>> v4.9.227
 	.configure_socket	= assabet_pcmcia_configure_socket,
 	.socket_suspend		= assabet_pcmcia_socket_suspend,
 };

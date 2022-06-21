@@ -84,7 +84,11 @@ static int xicor_read(uint8_t addr)
 		return -1;
 	}
 
+<<<<<<< HEAD
 	return (__raw_readq(SMB_CSR(R_SMB_DATA)) & 0xff);
+=======
+	return __raw_readq(SMB_CSR(R_SMB_DATA)) & 0xff;
+>>>>>>> v4.9.227
 }
 
 static int xicor_write(uint8_t addr, int b)
@@ -206,5 +210,9 @@ unsigned long xicor_get_time(void)
 
 int xicor_probe(void)
 {
+<<<<<<< HEAD
 	return (xicor_read(X1241REG_SC) != -1);
+=======
+	return xicor_read(X1241REG_SC) != -1;
+>>>>>>> v4.9.227
 }

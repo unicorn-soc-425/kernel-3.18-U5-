@@ -97,8 +97,12 @@ static void arizona_haptics_work(struct work_struct *work)
 
 		ret = regmap_update_bits(arizona->regmap,
 					 ARIZONA_HAPTICS_CONTROL_1,
+<<<<<<< HEAD
 					 ARIZONA_HAP_CTRL_MASK,
 					 1 << ARIZONA_HAP_CTRL_SHIFT);
+=======
+					 ARIZONA_HAP_CTRL_MASK, 0);
+>>>>>>> v4.9.227
 		if (ret != 0) {
 			dev_err(arizona->dev, "Failed to stop haptics: %d\n",
 				ret);
@@ -170,8 +174,13 @@ static int arizona_haptics_probe(struct platform_device *pdev)
 
 	INIT_WORK(&haptics->work, arizona_haptics_work);
 
+<<<<<<< HEAD
 	haptics->input_dev = input_allocate_device();
 	if (haptics->input_dev == NULL) {
+=======
+	haptics->input_dev = devm_input_allocate_device(&pdev->dev);
+	if (!haptics->input_dev) {
+>>>>>>> v4.9.227
 		dev_err(arizona->dev, "Failed to allocate input device\n");
 		return -ENOMEM;
 	}
@@ -179,7 +188,10 @@ static int arizona_haptics_probe(struct platform_device *pdev)
 	input_set_drvdata(haptics->input_dev, haptics);
 
 	haptics->input_dev->name = "arizona:haptics";
+<<<<<<< HEAD
 	haptics->input_dev->dev.parent = pdev->dev.parent;
+=======
+>>>>>>> v4.9.227
 	haptics->input_dev->close = arizona_haptics_close;
 	__set_bit(FF_RUMBLE, haptics->input_dev->ffbit);
 
@@ -188,19 +200,28 @@ static int arizona_haptics_probe(struct platform_device *pdev)
 	if (ret < 0) {
 		dev_err(arizona->dev, "input_ff_create_memless() failed: %d\n",
 			ret);
+<<<<<<< HEAD
 		goto err_ialloc;
+=======
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	ret = input_register_device(haptics->input_dev);
 	if (ret < 0) {
 		dev_err(arizona->dev, "couldn't register input device: %d\n",
 			ret);
+<<<<<<< HEAD
 		goto err_iff;
+=======
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	platform_set_drvdata(pdev, haptics);
 
 	return 0;
+<<<<<<< HEAD
 
 err_iff:
 	if (haptics->input_dev)
@@ -218,14 +239,21 @@ static int arizona_haptics_remove(struct platform_device *pdev)
 	input_unregister_device(haptics->input_dev);
 
 	return 0;
+=======
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver arizona_haptics_driver = {
 	.probe		= arizona_haptics_probe,
+<<<<<<< HEAD
 	.remove		= arizona_haptics_remove,
 	.driver		= {
 		.name	= "arizona-haptics",
 		.owner	= THIS_MODULE,
+=======
+	.driver		= {
+		.name	= "arizona-haptics",
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(arizona_haptics_driver);

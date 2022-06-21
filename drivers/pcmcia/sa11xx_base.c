@@ -135,19 +135,30 @@ sa1100_pcmcia_frequency_change(struct soc_pcmcia_socket *skt,
 static int
 sa1100_pcmcia_set_timing(struct soc_pcmcia_socket *skt)
 {
+<<<<<<< HEAD
 	return sa1100_pcmcia_set_mecr(skt, cpufreq_get(0));
+=======
+	unsigned long clk = clk_get_rate(skt->clk);
+
+	return sa1100_pcmcia_set_mecr(skt, clk / 1000);
+>>>>>>> v4.9.227
 }
 
 static int
 sa1100_pcmcia_show_timing(struct soc_pcmcia_socket *skt, char *buf)
 {
 	struct soc_pcmcia_timing timing;
+<<<<<<< HEAD
 	unsigned int clock = cpufreq_get(0);
+=======
+	unsigned int clock = clk_get_rate(skt->clk) / 1000;
+>>>>>>> v4.9.227
 	unsigned long mecr = MECR;
 	char *p = buf;
 
 	soc_common_pcmcia_get_timing(skt, &timing);
 
+<<<<<<< HEAD
 	p+=sprintf(p, "I/O      : %u (%u)\n", timing.io,
 		   sa1100_pcmcia_cmd_time(clock, MECR_BSIO_GET(mecr, skt->nr)));
 
@@ -155,6 +166,15 @@ sa1100_pcmcia_show_timing(struct soc_pcmcia_socket *skt, char *buf)
 		   sa1100_pcmcia_cmd_time(clock, MECR_BSA_GET(mecr, skt->nr)));
 
 	p+=sprintf(p, "common   : %u (%u)\n", timing.mem,
+=======
+	p+=sprintf(p, "I/O      : %uns (%uns)\n", timing.io,
+		   sa1100_pcmcia_cmd_time(clock, MECR_BSIO_GET(mecr, skt->nr)));
+
+	p+=sprintf(p, "attribute: %uns (%uns)\n", timing.attr,
+		   sa1100_pcmcia_cmd_time(clock, MECR_BSA_GET(mecr, skt->nr)));
+
+	p+=sprintf(p, "common   : %uns (%uns)\n", timing.mem,
+>>>>>>> v4.9.227
 		   sa1100_pcmcia_cmd_time(clock, MECR_BSM_GET(mecr, skt->nr)));
 
 	return p - buf;
@@ -218,10 +238,22 @@ int sa11xx_drv_pcmcia_probe(struct device *dev, struct pcmcia_low_level *ops,
 	struct skt_dev_info *sinfo;
 	struct soc_pcmcia_socket *skt;
 	int i, ret = 0;
+<<<<<<< HEAD
 
 	sa11xx_drv_pcmcia_ops(ops);
 
 	sinfo = kzalloc(SKT_DEV_INFO_SIZE(nr), GFP_KERNEL);
+=======
+	struct clk *clk;
+
+	clk = devm_clk_get(dev, NULL);
+	if (IS_ERR(clk))
+		return PTR_ERR(clk);
+
+	sa11xx_drv_pcmcia_ops(ops);
+
+	sinfo = devm_kzalloc(dev, SKT_DEV_INFO_SIZE(nr), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!sinfo)
 		return -ENOMEM;
 
@@ -232,6 +264,10 @@ int sa11xx_drv_pcmcia_probe(struct device *dev, struct pcmcia_low_level *ops,
 		skt = &sinfo->skt[i];
 
 		skt->nr = first + i;
+<<<<<<< HEAD
+=======
+		skt->clk = clk;
+>>>>>>> v4.9.227
 		soc_pcmcia_init_one(skt, ops, dev);
 
 		ret = sa11xx_drv_pcmcia_add_one(skt);
@@ -242,7 +278,10 @@ int sa11xx_drv_pcmcia_probe(struct device *dev, struct pcmcia_low_level *ops,
 	if (ret) {
 		while (--i >= 0)
 			soc_pcmcia_remove_one(&sinfo->skt[i]);
+<<<<<<< HEAD
 		kfree(sinfo);
+=======
+>>>>>>> v4.9.227
 	} else {
 		dev_set_drvdata(dev, sinfo);
 	}
@@ -251,6 +290,7 @@ int sa11xx_drv_pcmcia_probe(struct device *dev, struct pcmcia_low_level *ops,
 }
 EXPORT_SYMBOL(sa11xx_drv_pcmcia_probe);
 
+<<<<<<< HEAD
 static int __init sa11xx_pcmcia_init(void)
 {
 	return 0;
@@ -261,6 +301,8 @@ static void __exit sa11xx_pcmcia_exit(void) {}
 
 module_exit(sa11xx_pcmcia_exit);
 
+=======
+>>>>>>> v4.9.227
 MODULE_AUTHOR("John Dorsey <john+@cs.cmu.edu>");
 MODULE_DESCRIPTION("Linux PCMCIA Card Services: SA-11xx core socket driver");
 MODULE_LICENSE("Dual MPL/GPL");

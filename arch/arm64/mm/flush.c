@@ -25,8 +25,11 @@
 #include <asm/cachetype.h>
 #include <asm/tlbflush.h>
 
+<<<<<<< HEAD
 #include "mm.h"
 
+=======
+>>>>>>> v4.9.227
 void flush_cache_range(struct vm_area_struct *vma, unsigned long start,
 		       unsigned long end)
 {
@@ -34,10 +37,26 @@ void flush_cache_range(struct vm_area_struct *vma, unsigned long start,
 		__flush_icache_all();
 }
 
+<<<<<<< HEAD
+=======
+static void sync_icache_aliases(void *kaddr, unsigned long len)
+{
+	unsigned long addr = (unsigned long)kaddr;
+
+	if (icache_is_aliasing()) {
+		__clean_dcache_area_pou(kaddr, len);
+		__flush_icache_all();
+	} else {
+		flush_icache_range(addr, addr + len);
+	}
+}
+
+>>>>>>> v4.9.227
 static void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
 				unsigned long uaddr, void *kaddr,
 				unsigned long len)
 {
+<<<<<<< HEAD
 	if (vma->vm_flags & VM_EXEC) {
 		unsigned long addr = (unsigned long)kaddr;
 		if (icache_is_aliasing()) {
@@ -47,29 +66,42 @@ static void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
 			flush_icache_range(addr, addr + len);
 		}
 	}
+=======
+	if (vma->vm_flags & VM_EXEC)
+		sync_icache_aliases(kaddr, len);
+>>>>>>> v4.9.227
 }
 
 /*
  * Copy user data from/to a page which is mapped into a different processes
  * address space.  Really, we want to allow our "user space" model to handle
  * this.
+<<<<<<< HEAD
  *
  * Note that this code needs to run on the current CPU.
+=======
+>>>>>>> v4.9.227
  */
 void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 		       unsigned long uaddr, void *dst, const void *src,
 		       unsigned long len)
 {
+<<<<<<< HEAD
 	preempt_disable();
 	memcpy(dst, src, len);
 	flush_ptrace_access(vma, page, uaddr, dst, len);
 	preempt_enable();
+=======
+	memcpy(dst, src, len);
+	flush_ptrace_access(vma, page, uaddr, dst, len);
+>>>>>>> v4.9.227
 }
 
 void __sync_icache_dcache(pte_t pte, unsigned long addr)
 {
 	struct page *page = pte_page(pte);
 
+<<<<<<< HEAD
 	if (!test_and_set_bit(PG_dcache_clean, &page->flags)) {
 		__flush_dcache_area(page_address(page),
 				PAGE_SIZE << compound_order(page));
@@ -77,6 +109,13 @@ void __sync_icache_dcache(pte_t pte, unsigned long addr)
 	} else if (icache_is_aivivt()) {
 		__flush_icache_all();
 	}
+=======
+	if (!test_and_set_bit(PG_dcache_clean, &page->flags))
+		sync_icache_aliases(page_address(page),
+				    PAGE_SIZE << compound_order(page));
+	else if (icache_is_aivivt())
+		__flush_icache_all();
+>>>>>>> v4.9.227
 }
 
 /*
@@ -95,6 +134,7 @@ EXPORT_SYMBOL(flush_dcache_page);
  * Additional functions defined in assembly.
  */
 EXPORT_SYMBOL(flush_icache_range);
+<<<<<<< HEAD
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 #ifdef CONFIG_HAVE_RCU_TABLE_FREE
@@ -111,3 +151,5 @@ void pmdp_splitting_flush(struct vm_area_struct *vma, unsigned long address,
 }
 #endif /* CONFIG_HAVE_RCU_TABLE_FREE */
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+=======
+>>>>>>> v4.9.227

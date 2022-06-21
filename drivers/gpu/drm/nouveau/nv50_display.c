@@ -28,10 +28,25 @@
 #include <drm/drm_crtc_helper.h>
 #include <drm/drm_plane_helper.h>
 #include <drm/drm_dp_helper.h>
+<<<<<<< HEAD
 
 #include <nvif/class.h>
 
 #include "nouveau_drm.h"
+=======
+#include <drm/drm_fb_helper.h>
+
+#include <nvif/class.h>
+#include <nvif/cl0002.h>
+#include <nvif/cl5070.h>
+#include <nvif/cl507a.h>
+#include <nvif/cl507b.h>
+#include <nvif/cl507c.h>
+#include <nvif/cl507d.h>
+#include <nvif/cl507e.h>
+
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 #include "nouveau_gem.h"
 #include "nouveau_connector.h"
@@ -289,7 +304,13 @@ nv50_core_create(struct nvif_device *device, struct nvif_object *disp,
 		.pushbuf = 0xb0007d00,
 	};
 	static const s32 oclass[] = {
+<<<<<<< HEAD
 		GM204_DISP_CORE_CHANNEL_DMA,
+=======
+		GP104_DISP_CORE_CHANNEL_DMA,
+		GP100_DISP_CORE_CHANNEL_DMA,
+		GM200_DISP_CORE_CHANNEL_DMA,
+>>>>>>> v4.9.227
 		GM107_DISP_CORE_CHANNEL_DMA,
 		GK110_DISP_CORE_CHANNEL_DMA,
 		GK104_DISP_CORE_CHANNEL_DMA,
@@ -773,7 +794,10 @@ nv50_crtc_set_scale(struct nouveau_crtc *nv_crtc, bool update)
 	 */
 	if (nv_connector && ( nv_connector->underscan == UNDERSCAN_ON ||
 			     (nv_connector->underscan == UNDERSCAN_AUTO &&
+<<<<<<< HEAD
 			      nv_connector->edid &&
+=======
+>>>>>>> v4.9.227
 			      drm_detect_hdmi_monitor(nv_connector->edid)))) {
 		u32 bX = nv_connector->underscan_hborder;
 		u32 bY = nv_connector->underscan_vborder;
@@ -1298,7 +1322,10 @@ nv50_crtc_cursor_set(struct drm_crtc *crtc, struct drm_file *file_priv,
 		     uint32_t handle, uint32_t width, uint32_t height)
 {
 	struct nouveau_crtc *nv_crtc = nouveau_crtc(crtc);
+<<<<<<< HEAD
 	struct drm_device *dev = crtc->dev;
+=======
+>>>>>>> v4.9.227
 	struct drm_gem_object *gem = NULL;
 	struct nouveau_bo *nvbo = NULL;
 	int ret = 0;
@@ -1307,7 +1334,11 @@ nv50_crtc_cursor_set(struct drm_crtc *crtc, struct drm_file *file_priv,
 		if (width != 64 || height != 64)
 			return -EINVAL;
 
+<<<<<<< HEAD
 		gem = drm_gem_object_lookup(dev, file_priv, handle);
+=======
+		gem = drm_gem_object_lookup(file_priv, handle);
+>>>>>>> v4.9.227
 		if (unlikely(!gem))
 			return -ENOENT;
 		nvbo = nouveau_gem_object(gem);
@@ -1340,6 +1371,7 @@ nv50_crtc_cursor_move(struct drm_crtc *crtc, int x, int y)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void
 nv50_crtc_gamma_set(struct drm_crtc *crtc, u16 *r, u16 *g, u16 *b,
 		    uint32_t start, uint32_t size)
@@ -1349,12 +1381,27 @@ nv50_crtc_gamma_set(struct drm_crtc *crtc, u16 *r, u16 *g, u16 *b,
 	u32 i;
 
 	for (i = start; i < end; i++) {
+=======
+static int
+nv50_crtc_gamma_set(struct drm_crtc *crtc, u16 *r, u16 *g, u16 *b,
+		    uint32_t size)
+{
+	struct nouveau_crtc *nv_crtc = nouveau_crtc(crtc);
+	u32 i;
+
+	for (i = 0; i < size; i++) {
+>>>>>>> v4.9.227
 		nv_crtc->lut.r[i] = r[i];
 		nv_crtc->lut.g[i] = g[i];
 		nv_crtc->lut.b[i] = b[i];
 	}
 
 	nv50_crtc_lut_load(crtc);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void
@@ -1717,7 +1764,11 @@ nv50_dac_create(struct drm_connector *connector, struct dcb_output *dcbe)
 	encoder = to_drm_encoder(nv_encoder);
 	encoder->possible_crtcs = dcbe->heads;
 	encoder->possible_clones = 0;
+<<<<<<< HEAD
 	drm_encoder_init(connector->dev, encoder, &nv50_dac_func, type);
+=======
+	drm_encoder_init(connector->dev, encoder, &nv50_dac_func, type, NULL);
+>>>>>>> v4.9.227
 	drm_encoder_helper_add(encoder, &nv50_dac_hfunc);
 
 	drm_mode_connector_attach_encoder(connector, encoder);
@@ -1961,10 +2012,24 @@ nv50_sor_mode_set(struct drm_encoder *encoder, struct drm_display_mode *umode,
 	switch (nv_encoder->dcb->type) {
 	case DCB_OUTPUT_TMDS:
 		if (nv_encoder->dcb->sorconf.link & 1) {
+<<<<<<< HEAD
 			if (mode->clock < 165000)
 				proto = 0x1;
 			else
 				proto = 0x5;
+=======
+			proto = 0x1;
+			/* Only enable dual-link if:
+			 *  - Need to (i.e. rate > 165MHz)
+			 *  - DCB says we can
+			 *  - Not an HDMI monitor, since there's no dual-link
+			 *    on HDMI.
+			 */
+			if (mode->clock >= 165000 &&
+			    nv_encoder->dcb->duallink_possible &&
+			    !drm_detect_hdmi_monitor(nv_connector->edid))
+				proto |= 0x4;
+>>>>>>> v4.9.227
 		} else {
 			proto = 0x2;
 		}
@@ -2125,7 +2190,11 @@ nv50_sor_create(struct drm_connector *connector, struct dcb_output *dcbe)
 	encoder = to_drm_encoder(nv_encoder);
 	encoder->possible_crtcs = dcbe->heads;
 	encoder->possible_clones = 0;
+<<<<<<< HEAD
 	drm_encoder_init(connector->dev, encoder, &nv50_sor_func, type);
+=======
+	drm_encoder_init(connector->dev, encoder, &nv50_sor_func, type, NULL);
+>>>>>>> v4.9.227
 	drm_encoder_helper_add(encoder, &nv50_sor_hfunc);
 
 	drm_mode_connector_attach_encoder(connector, encoder);
@@ -2305,7 +2374,11 @@ nv50_pior_create(struct drm_connector *connector, struct dcb_output *dcbe)
 	encoder = to_drm_encoder(nv_encoder);
 	encoder->possible_crtcs = dcbe->heads;
 	encoder->possible_clones = 0;
+<<<<<<< HEAD
 	drm_encoder_init(connector->dev, encoder, &nv50_pior_func, type);
+=======
+	drm_encoder_init(connector->dev, encoder, &nv50_pior_func, type, NULL);
+>>>>>>> v4.9.227
 	drm_encoder_helper_add(encoder, &nv50_pior_hfunc);
 
 	drm_mode_connector_attach_encoder(connector, encoder);

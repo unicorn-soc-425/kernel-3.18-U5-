@@ -28,6 +28,12 @@
 
 #include "stac9766.h"
 
+<<<<<<< HEAD
+=======
+#define STAC9766_VENDOR_ID 0x83847666
+#define STAC9766_VENDOR_ID_MASK 0xffffffff
+
+>>>>>>> v4.9.227
 /*
  * STAC9766 register cache
  */
@@ -82,10 +88,17 @@ static SOC_ENUM_SINGLE_DECL(stac9766_boost2_enum,
 static SOC_ENUM_SINGLE_DECL(stac9766_stereo_mic_enum,
 			    AC97_STAC_STEREO_MIC, 2, stac9766_stereo_mic);
 
+<<<<<<< HEAD
 static const DECLARE_TLV_DB_LINEAR(master_tlv, -4600, 0);
 static const DECLARE_TLV_DB_LINEAR(record_tlv, 0, 2250);
 static const DECLARE_TLV_DB_LINEAR(beep_tlv, -4500, 0);
 static const DECLARE_TLV_DB_LINEAR(mix_tlv, -3450, 1200);
+=======
+static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(master_tlv, -4650, 150, 0);
+static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(record_tlv,     0, 150, 0);
+static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(beep_tlv,   -4500, 300, 0);
+static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(mix_tlv,    -3450, 150, 0);
+>>>>>>> v4.9.227
 
 static const struct snd_kcontrol_new stac9766_snd_ac97_controls[] = {
 	SOC_DOUBLE_TLV("Speaker Volume", AC97_MASTER, 8, 0, 31, 1, master_tlv),
@@ -139,18 +152,30 @@ static const struct snd_kcontrol_new stac9766_snd_ac97_controls[] = {
 static int stac9766_ac97_write(struct snd_soc_codec *codec, unsigned int reg,
 			       unsigned int val)
 {
+<<<<<<< HEAD
+=======
+	struct snd_ac97 *ac97 = snd_soc_codec_get_drvdata(codec);
+>>>>>>> v4.9.227
 	u16 *cache = codec->reg_cache;
 
 	if (reg > AC97_STAC_PAGE0) {
 		stac9766_ac97_write(codec, AC97_INT_PAGING, 0);
+<<<<<<< HEAD
 		soc_ac97_ops->write(codec->ac97, reg, val);
+=======
+		soc_ac97_ops->write(ac97, reg, val);
+>>>>>>> v4.9.227
 		stac9766_ac97_write(codec, AC97_INT_PAGING, 1);
 		return 0;
 	}
 	if (reg / 2 >= ARRAY_SIZE(stac9766_reg))
 		return -EIO;
 
+<<<<<<< HEAD
 	soc_ac97_ops->write(codec->ac97, reg, val);
+=======
+	soc_ac97_ops->write(ac97, reg, val);
+>>>>>>> v4.9.227
 	cache[reg / 2] = val;
 	return 0;
 }
@@ -158,11 +183,19 @@ static int stac9766_ac97_write(struct snd_soc_codec *codec, unsigned int reg,
 static unsigned int stac9766_ac97_read(struct snd_soc_codec *codec,
 				       unsigned int reg)
 {
+<<<<<<< HEAD
+=======
+	struct snd_ac97 *ac97 = snd_soc_codec_get_drvdata(codec);
+>>>>>>> v4.9.227
 	u16 val = 0, *cache = codec->reg_cache;
 
 	if (reg > AC97_STAC_PAGE0) {
 		stac9766_ac97_write(codec, AC97_INT_PAGING, 0);
+<<<<<<< HEAD
 		val = soc_ac97_ops->read(codec->ac97, reg - AC97_STAC_PAGE0);
+=======
+		val = soc_ac97_ops->read(ac97, reg - AC97_STAC_PAGE0);
+>>>>>>> v4.9.227
 		stac9766_ac97_write(codec, AC97_INT_PAGING, 1);
 		return val;
 	}
@@ -173,7 +206,11 @@ static unsigned int stac9766_ac97_read(struct snd_soc_codec *codec,
 		reg == AC97_INT_PAGING || reg == AC97_VENDOR_ID1 ||
 		reg == AC97_VENDOR_ID2) {
 
+<<<<<<< HEAD
 		val = soc_ac97_ops->read(codec->ac97, reg);
+=======
+		val = soc_ac97_ops->read(ac97, reg);
+>>>>>>> v4.9.227
 		return val;
 	}
 	return cache[reg / 2];
@@ -234,6 +271,7 @@ static int stac9766_set_bias_level(struct snd_soc_codec *codec,
 		stac9766_ac97_write(codec, AC97_POWERDOWN, 0xffff);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 	return 0;
 }
@@ -257,11 +295,14 @@ static int stac9766_reset(struct snd_soc_codec *codec, int try_warm)
 static int stac9766_codec_suspend(struct snd_soc_codec *codec)
 {
 	stac9766_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int stac9766_codec_resume(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	u16 id, reset;
 
 	reset = 0;
@@ -281,6 +322,12 @@ reset:
 	stac9766_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
 	return 0;
+=======
+	struct snd_ac97 *ac97 = snd_soc_codec_get_drvdata(codec);
+
+	return snd_ac97_reset(ac97, true, STAC9766_VENDOR_ID,
+		STAC9766_VENDOR_ID_MASK);
+>>>>>>> v4.9.227
 }
 
 static const struct snd_soc_dai_ops stac9766_dai_ops_analog = {
@@ -294,7 +341,10 @@ static const struct snd_soc_dai_ops stac9766_dai_ops_digital = {
 static struct snd_soc_dai_driver stac9766_dai[] = {
 {
 	.name = "stac9766-hifi-analog",
+<<<<<<< HEAD
 	.ac97_control = 1,
+=======
+>>>>>>> v4.9.227
 
 	/* stream cababilities */
 	.playback = {
@@ -316,7 +366,10 @@ static struct snd_soc_dai_driver stac9766_dai[] = {
 },
 {
 	.name = "stac9766-hifi-IEC958",
+<<<<<<< HEAD
 	.ac97_control = 1,
+=======
+>>>>>>> v4.9.227
 
 	/* stream cababilities */
 	.playback = {
@@ -325,7 +378,11 @@ static struct snd_soc_dai_driver stac9766_dai[] = {
 		.channels_max = 2,
 		.rates = SNDRV_PCM_RATE_32000 | \
 			SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000,
+<<<<<<< HEAD
 		.formats = SNDRV_PCM_FORMAT_IEC958_SUBFRAME_BE,
+=======
+		.formats = SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_BE,
+>>>>>>> v4.9.227
 	},
 	/* alsa ops */
 	.ops = &stac9766_dai_ops_digital,
@@ -334,6 +391,7 @@ static struct snd_soc_dai_driver stac9766_dai[] = {
 
 static int stac9766_codec_probe(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
 	ret = snd_soc_new_ac97_codec(codec, soc_ac97_ops, 0);
@@ -359,21 +417,52 @@ static int stac9766_codec_probe(struct snd_soc_codec *codec)
 codec_err:
 	snd_soc_free_ac97_codec(codec);
 	return ret;
+=======
+	struct snd_ac97 *ac97;
+
+	ac97 = snd_soc_new_ac97_codec(codec, STAC9766_VENDOR_ID,
+			STAC9766_VENDOR_ID_MASK);
+	if (IS_ERR(ac97))
+		return PTR_ERR(ac97);
+
+	snd_soc_codec_set_drvdata(codec, ac97);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int stac9766_codec_remove(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	snd_soc_free_ac97_codec(codec);
+=======
+	struct snd_ac97 *ac97 = snd_soc_codec_get_drvdata(codec);
+
+	snd_soc_free_ac97_codec(ac97);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static struct snd_soc_codec_driver soc_codec_dev_stac9766 = {
+<<<<<<< HEAD
 	.write = stac9766_ac97_write,
 	.read = stac9766_ac97_read,
 	.set_bias_level = stac9766_set_bias_level,
 	.probe = stac9766_codec_probe,
 	.remove = stac9766_codec_remove,
 	.suspend = stac9766_codec_suspend,
+=======
+	.component_driver = {
+		.controls		= stac9766_snd_ac97_controls,
+		.num_controls		= ARRAY_SIZE(stac9766_snd_ac97_controls),
+	},
+	.write = stac9766_ac97_write,
+	.read = stac9766_ac97_read,
+	.set_bias_level = stac9766_set_bias_level,
+	.suspend_bias_off = true,
+	.probe = stac9766_codec_probe,
+	.remove = stac9766_codec_remove,
+>>>>>>> v4.9.227
 	.resume = stac9766_codec_resume,
 	.reg_cache_size = ARRAY_SIZE(stac9766_reg),
 	.reg_word_size = sizeof(u16),
@@ -396,7 +485,10 @@ static int stac9766_remove(struct platform_device *pdev)
 static struct platform_driver stac9766_codec_driver = {
 	.driver = {
 			.name = "stac9766-codec",
+<<<<<<< HEAD
 			.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 
 	.probe = stac9766_probe,

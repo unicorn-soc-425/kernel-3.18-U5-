@@ -275,16 +275,26 @@ static void zfcp_free_low_mem_buffers(struct zfcp_adapter *adapter)
  */
 int zfcp_status_read_refill(struct zfcp_adapter *adapter)
 {
+<<<<<<< HEAD
 	while (atomic_read(&adapter->stat_miss) > 0)
 		if (zfcp_fsf_status_read(adapter->qdio)) {
+=======
+	while (atomic_add_unless(&adapter->stat_miss, -1, 0))
+		if (zfcp_fsf_status_read(adapter->qdio)) {
+			atomic_inc(&adapter->stat_miss); /* undo add -1 */
+>>>>>>> v4.9.227
 			if (atomic_read(&adapter->stat_miss) >=
 			    adapter->stat_read_buf_num) {
 				zfcp_erp_adapter_reopen(adapter, 0, "axsref1");
 				return 1;
 			}
 			break;
+<<<<<<< HEAD
 		} else
 			atomic_dec(&adapter->stat_miss);
+=======
+		}
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -310,7 +320,11 @@ static int zfcp_setup_adapter_work_queue(struct zfcp_adapter *adapter)
 
 	snprintf(name, sizeof(name), "zfcp_q_%s",
 		 dev_name(&adapter->ccw_device->dev));
+<<<<<<< HEAD
 	adapter->work_queue = create_singlethread_workqueue(name);
+=======
+	adapter->work_queue = alloc_ordered_workqueue(name, WQ_MEM_RECLAIM);
+>>>>>>> v4.9.227
 
 	if (adapter->work_queue)
 		return 0;
@@ -353,9 +367,17 @@ struct zfcp_adapter *zfcp_adapter_enqueue(struct ccw_device *ccw_device)
 	adapter->ccw_device = ccw_device;
 
 	INIT_WORK(&adapter->stat_work, _zfcp_status_read_scheduler);
+<<<<<<< HEAD
 	INIT_WORK(&adapter->scan_work, zfcp_fc_scan_ports);
 	INIT_WORK(&adapter->ns_up_work, zfcp_fc_sym_name_update);
 
+=======
+	INIT_DELAYED_WORK(&adapter->scan_work, zfcp_fc_scan_ports);
+	INIT_WORK(&adapter->ns_up_work, zfcp_fc_sym_name_update);
+
+	adapter->next_port_scan = jiffies;
+
+>>>>>>> v4.9.227
 	adapter->erp_action.adapter = adapter;
 
 	if (zfcp_qdio_setup(adapter))
@@ -422,7 +444,11 @@ void zfcp_adapter_unregister(struct zfcp_adapter *adapter)
 {
 	struct ccw_device *cdev = adapter->ccw_device;
 
+<<<<<<< HEAD
 	cancel_work_sync(&adapter->scan_work);
+=======
+	cancel_delayed_work_sync(&adapter->scan_work);
+>>>>>>> v4.9.227
 	cancel_work_sync(&adapter->stat_work);
 	cancel_work_sync(&adapter->ns_up_work);
 	zfcp_destroy_adapter_work_queue(adapter);
@@ -532,7 +558,11 @@ struct zfcp_port *zfcp_port_enqueue(struct zfcp_adapter *adapter, u64 wwpn,
 	list_add_tail(&port->list, &adapter->port_list);
 	write_unlock_irq(&adapter->port_list_lock);
 
+<<<<<<< HEAD
 	atomic_set_mask(status | ZFCP_STATUS_COMMON_RUNNING, &port->status);
+=======
+	atomic_or(status | ZFCP_STATUS_COMMON_RUNNING, &port->status);
+>>>>>>> v4.9.227
 
 	return port;
 

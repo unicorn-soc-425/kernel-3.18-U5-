@@ -21,6 +21,10 @@ extern void *set_vi_handler(int n, vi_handler_t addr);
 
 extern void *set_except_vector(int n, void *addr);
 extern unsigned long ebase;
+<<<<<<< HEAD
+=======
+extern unsigned int hwrena;
+>>>>>>> v4.9.227
 extern void per_cpu_trap_init(bool);
 extern void cpu_cache_init(void);
 

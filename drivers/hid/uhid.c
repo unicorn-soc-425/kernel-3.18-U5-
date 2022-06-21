@@ -12,6 +12,10 @@
 
 #include <linux/atomic.h>
 #include <linux/compat.h>
+<<<<<<< HEAD
+=======
+#include <linux/cred.h>
+>>>>>>> v4.9.227
 #include <linux/device.h>
 #include <linux/fs.h>
 #include <linux/hid.h>
@@ -24,13 +28,21 @@
 #include <linux/spinlock.h>
 #include <linux/uhid.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
+=======
+#include <linux/uaccess.h>
+#include <linux/eventpoll.h>
+>>>>>>> v4.9.227
 
 #define UHID_NAME	"uhid"
 #define UHID_BUFSIZE	32
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(uhid_open_mutex);
 
+=======
+>>>>>>> v4.9.227
 struct uhid_device {
 	struct mutex devlock;
 	bool running;
@@ -73,7 +85,10 @@ static void uhid_device_add_worker(struct work_struct *work)
 		uhid->running = false;
 	}
 }
+<<<<<<< HEAD
 bool lcd_is_on = true;
+=======
+>>>>>>> v4.9.227
 
 static void uhid_queue(struct uhid_device *uhid, struct uhid_event *ev)
 {
@@ -146,6 +161,7 @@ static void uhid_hid_stop(struct hid_device *hid)
 static int uhid_hid_open(struct hid_device *hid)
 {
 	struct uhid_device *uhid = hid->driver_data;
+<<<<<<< HEAD
 	int retval = 0;
 
 	mutex_lock(&uhid_open_mutex);
@@ -156,16 +172,24 @@ static int uhid_hid_open(struct hid_device *hid)
 	}
 	mutex_unlock(&uhid_open_mutex);
 	return retval;
+=======
+
+	return uhid_queue_event(uhid, UHID_OPEN);
+>>>>>>> v4.9.227
 }
 
 static void uhid_hid_close(struct hid_device *hid)
 {
 	struct uhid_device *uhid = hid->driver_data;
 
+<<<<<<< HEAD
 	mutex_lock(&uhid_open_mutex);
 	if (!--hid->open)
 		uhid_queue_event(uhid, UHID_CLOSE);
 	mutex_unlock(&uhid_open_mutex);
+=======
+	uhid_queue_event(uhid, UHID_CLOSE);
+>>>>>>> v4.9.227
 }
 
 static int uhid_hid_parse(struct hid_device *hid)
@@ -415,7 +439,11 @@ struct uhid_create_req_compat {
 static int uhid_event_from_user(const char __user *buffer, size_t len,
 				struct uhid_event *event)
 {
+<<<<<<< HEAD
 	if (is_compat_task()) {
+=======
+	if (in_compat_syscall()) {
+>>>>>>> v4.9.227
 		u32 type;
 
 		if (get_user(type, buffer))
@@ -736,6 +764,20 @@ static ssize_t uhid_char_write(struct file *file, const char __user *buffer,
 
 	switch (uhid->input_buf.type) {
 	case UHID_CREATE:
+<<<<<<< HEAD
+=======
+		/*
+		 * 'struct uhid_create_req' contains a __user pointer which is
+		 * copied from, so it's unsafe to allow this with elevated
+		 * privileges (e.g. from a setuid binary) or via kernel_write().
+		 */
+		if (file->f_cred != current_cred() || uaccess_kernel()) {
+			pr_err_once("UHID_CREATE from different security context by process %d (%s), this is not allowed.\n",
+				    task_tgid_vnr(current), current->comm);
+			ret = -EACCES;
+			goto unlock;
+		}
+>>>>>>> v4.9.227
 		ret = uhid_dev_create(uhid, &uhid->input_buf);
 		break;
 	case UHID_CREATE2:
@@ -770,13 +812,23 @@ unlock:
 static unsigned int uhid_char_poll(struct file *file, poll_table *wait)
 {
 	struct uhid_device *uhid = file->private_data;
+<<<<<<< HEAD
+=======
+	unsigned int mask = POLLOUT | POLLWRNORM; /* uhid is always writable */
+>>>>>>> v4.9.227
 
 	poll_wait(file, &uhid->waitq, wait);
 
 	if (uhid->head != uhid->tail)
+<<<<<<< HEAD
 		return POLLIN | POLLRDNORM;
 
 	return 0;
+=======
+		mask |= POLLIN | POLLRDNORM;
+
+	return mask;
+>>>>>>> v4.9.227
 }
 
 static const struct file_operations uhid_fops = {
@@ -794,6 +846,7 @@ static struct miscdevice uhid_misc = {
 	.minor		= UHID_MINOR,
 	.name		= UHID_NAME,
 };
+<<<<<<< HEAD
 
 static int fb_state_change(struct notifier_block *nb,
     unsigned long val, void *data)
@@ -837,6 +890,10 @@ static void __exit uhid_exit(void)
 
 module_init(uhid_init);
 module_exit(uhid_exit);
+=======
+module_misc_device(uhid_misc);
+
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("David Herrmann <dh.herrmann@gmail.com>");
 MODULE_DESCRIPTION("User-space I/O driver support for HID subsystem");

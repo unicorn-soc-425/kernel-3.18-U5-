@@ -99,4 +99,13 @@
 		compatible = "ti,twl6030-pwmled";
 		#pwm-cells = <2>;
 	};
+<<<<<<< HEAD
+=======
+
+	gpadc {
+		compatible = "ti,twl6030-gpadc";
+		interrupts = <3>;
+		#io-channel-cells = <1>;
+	};
+>>>>>>> v4.9.227
 };

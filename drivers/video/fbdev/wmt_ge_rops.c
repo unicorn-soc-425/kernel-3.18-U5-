@@ -167,7 +167,10 @@ static struct platform_driver wmt_ge_rops_driver = {
 	.probe		= wmt_ge_rops_probe,
 	.remove		= wmt_ge_rops_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "wmt_ge_rops",
 		.of_match_table = wmt_dt_ids,
 	},

@@ -13,6 +13,10 @@
 #include <linux/clk-provider.h>
 #include <linux/clocksource.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_device.h>
+>>>>>>> v4.9.227
 
 #include <asm/mach/arch.h>
 
@@ -20,15 +24,28 @@ static const char * const sunxi_board_dt_compat[] = {
 	"allwinner,sun4i-a10",
 	"allwinner,sun5i-a10s",
 	"allwinner,sun5i-a13",
+<<<<<<< HEAD
 	NULL,
 };
 
 DT_MACHINE_START(SUNXI_DT, "Allwinner A1X (Device Tree)")
+=======
+	"allwinner,sun5i-r8",
+	"nextthing,gr8",
+	NULL,
+};
+
+DT_MACHINE_START(SUNXI_DT, "Allwinner sun4i/sun5i Families")
+>>>>>>> v4.9.227
 	.dt_compat	= sunxi_board_dt_compat,
 MACHINE_END
 
 static const char * const sun6i_board_dt_compat[] = {
 	"allwinner,sun6i-a31",
+<<<<<<< HEAD
+=======
+	"allwinner,sun6i-a31s",
+>>>>>>> v4.9.227
 	NULL,
 };
 
@@ -38,7 +55,11 @@ static void __init sun6i_timer_init(void)
 	of_clk_init(NULL);
 	if (IS_ENABLED(CONFIG_RESET_CONTROLLER))
 		sun6i_reset_init();
+<<<<<<< HEAD
 	clocksource_of_init();
+=======
+	clocksource_probe();
+>>>>>>> v4.9.227
 }
 
 DT_MACHINE_START(SUN6I_DT, "Allwinner sun6i (A31) Family")
@@ -57,9 +78,31 @@ MACHINE_END
 
 static const char * const sun8i_board_dt_compat[] = {
 	"allwinner,sun8i-a23",
+<<<<<<< HEAD
 	NULL,
 };
 
 DT_MACHINE_START(SUN8I_DT, "Allwinner sun8i (A23) Family")
 	.dt_compat	= sun8i_board_dt_compat,
 MACHINE_END
+=======
+	"allwinner,sun8i-a33",
+	"allwinner,sun8i-a83t",
+	"allwinner,sun8i-h3",
+	NULL,
+};
+
+DT_MACHINE_START(SUN8I_DT, "Allwinner sun8i Family")
+	.init_time	= sun6i_timer_init,
+	.dt_compat	= sun8i_board_dt_compat,
+MACHINE_END
+
+static const char * const sun9i_board_dt_compat[] = {
+	"allwinner,sun9i-a80",
+	NULL,
+};
+
+DT_MACHINE_START(SUN9I_DT, "Allwinner sun9i Family")
+	.dt_compat	= sun9i_board_dt_compat,
+MACHINE_END
+>>>>>>> v4.9.227

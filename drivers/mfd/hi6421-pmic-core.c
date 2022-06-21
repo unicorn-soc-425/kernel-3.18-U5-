@@ -35,7 +35,11 @@ static const struct mfd_cell hi6421_devs[] = {
 	{ .name = "hi6421-regulator", },
 };
 
+<<<<<<< HEAD
 static struct regmap_config hi6421_regmap_config = {
+=======
+static const struct regmap_config hi6421_regmap_config = {
+>>>>>>> v4.9.227
 	.reg_bits = 32,
 	.reg_stride = 4,
 	.val_bits = 8,
@@ -76,8 +80,13 @@ static int hi6421_pmic_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, pmic);
 
+<<<<<<< HEAD
 	ret = mfd_add_devices(&pdev->dev, 0, hi6421_devs,
 			ARRAY_SIZE(hi6421_devs), NULL, 0, NULL);
+=======
+	ret = devm_mfd_add_devices(&pdev->dev, 0, hi6421_devs,
+				   ARRAY_SIZE(hi6421_devs), NULL, 0, NULL);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(&pdev->dev, "add mfd devices failed: %d\n", ret);
 		return ret;
@@ -86,6 +95,7 @@ static int hi6421_pmic_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int hi6421_pmic_remove(struct platform_device *pdev)
 {
 	mfd_remove_devices(&pdev->dev);
@@ -97,6 +107,13 @@ static struct of_device_id of_hi6421_pmic_match_tbl[] = {
 	{ .compatible = "hisilicon,hi6421-pmic", },
 	{ },
 };
+=======
+static const struct of_device_id of_hi6421_pmic_match_tbl[] = {
+	{ .compatible = "hisilicon,hi6421-pmic", },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, of_hi6421_pmic_match_tbl);
+>>>>>>> v4.9.227
 
 static struct platform_driver hi6421_pmic_driver = {
 	.driver = {
@@ -104,7 +121,10 @@ static struct platform_driver hi6421_pmic_driver = {
 		.of_match_table = of_hi6421_pmic_match_tbl,
 	},
 	.probe	= hi6421_pmic_probe,
+<<<<<<< HEAD
 	.remove	= hi6421_pmic_remove,
+=======
+>>>>>>> v4.9.227
 };
 module_platform_driver(hi6421_pmic_driver);
 

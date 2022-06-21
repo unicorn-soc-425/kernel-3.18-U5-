@@ -308,17 +308,28 @@ static int magician_set_spk(struct snd_kcontrol *kcontrol,
 static int magician_get_input(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] = magician_in_sel;
+=======
+	ucontrol->value.enumerated.item[0] = magician_in_sel;
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int magician_set_input(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	if (magician_in_sel == ucontrol->value.integer.value[0])
 		return 0;
 
 	magician_in_sel = ucontrol->value.integer.value[0];
+=======
+	if (magician_in_sel == ucontrol->value.enumerated.item[0])
+		return 0;
+
+	magician_in_sel = ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 
 	switch (magician_in_sel) {
 	case MAGICIAN_MIC:
@@ -391,6 +402,7 @@ static const struct snd_kcontrol_new uda1380_magician_controls[] = {
 			magician_get_input, magician_set_input),
 };
 
+<<<<<<< HEAD
 /*
  * Logic for a uda1380 as connected on a HTC Magician
  */
@@ -410,6 +422,8 @@ static int magician_uda1380_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /* magician digital audio interface glue - connects codec <--> CPU */
 static struct snd_soc_dai_link magician_dai[] = {
 {
@@ -419,7 +433,10 @@ static struct snd_soc_dai_link magician_dai[] = {
 	.codec_dai_name = "uda1380-hifi-playback",
 	.platform_name = "pxa-pcm-audio",
 	.codec_name = "uda1380-codec.0-0018",
+<<<<<<< HEAD
 	.init = magician_uda1380_init,
+=======
+>>>>>>> v4.9.227
 	.ops = &magician_playback_ops,
 },
 {
@@ -446,6 +463,10 @@ static struct snd_soc_card snd_soc_card_magician = {
 	.num_dapm_widgets = ARRAY_SIZE(uda1380_dapm_widgets),
 	.dapm_routes = audio_map,
 	.num_dapm_routes = ARRAY_SIZE(audio_map),
+<<<<<<< HEAD
+=======
+	.fully_routed = true,
+>>>>>>> v4.9.227
 };
 
 static struct platform_device *magician_snd_device;

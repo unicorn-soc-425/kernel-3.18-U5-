@@ -28,6 +28,10 @@
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_cmnd.h>
@@ -605,7 +609,11 @@ static long pdc_detect_pll_input_clock(struct ata_host *host)
 	void __iomem *mmio_base = host->iomap[PDC_MMIO_BAR];
 	u32 scr;
 	long start_count, end_count;
+<<<<<<< HEAD
 	struct timeval start_time, end_time;
+=======
+	ktime_t start_time, end_time;
+>>>>>>> v4.9.227
 	long pll_clock, usec_elapsed;
 
 	/* Start the test mode */
@@ -616,14 +624,22 @@ static long pdc_detect_pll_input_clock(struct ata_host *host)
 
 	/* Read current counter value */
 	start_count = pdc_read_counter(host);
+<<<<<<< HEAD
 	do_gettimeofday(&start_time);
+=======
+	start_time = ktime_get();
+>>>>>>> v4.9.227
 
 	/* Let the counter run for 100 ms. */
 	mdelay(100);
 
 	/* Read the counter values again */
 	end_count = pdc_read_counter(host);
+<<<<<<< HEAD
 	do_gettimeofday(&end_time);
+=======
+	end_time = ktime_get();
+>>>>>>> v4.9.227
 
 	/* Stop the test mode */
 	scr = ioread32(mmio_base + PDC_SYS_CTL);
@@ -632,8 +648,12 @@ static long pdc_detect_pll_input_clock(struct ata_host *host)
 	ioread32(mmio_base + PDC_SYS_CTL); /* flush */
 
 	/* calculate the input clock in Hz */
+<<<<<<< HEAD
 	usec_elapsed = (end_time.tv_sec - start_time.tv_sec) * 1000000 +
 		(end_time.tv_usec - start_time.tv_usec);
+=======
+	usec_elapsed = (long) ktime_us_delta(end_time, start_time);
+>>>>>>> v4.9.227
 
 	pll_clock = ((start_count - end_count) & 0x3fffffff) / 100 *
 		(100000000 / usec_elapsed);
@@ -730,11 +750,19 @@ static int pdc2027x_init_one(struct pci_dev *pdev,
 		return rc;
 	host->iomap = pcim_iomap_table(pdev);
 
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
 	if (rc)
 		return rc;
 
 	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
+=======
+	rc = dma_set_mask(&pdev->dev, ATA_DMA_MASK);
+	if (rc)
+		return rc;
+
+	rc = dma_set_coherent_mask(&pdev->dev, ATA_DMA_MASK);
+>>>>>>> v4.9.227
 	if (rc)
 		return rc;
 

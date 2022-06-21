@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* sysfs.c: Toplogy sysfs support code for sparc64.
+=======
+/* sysfs.c: Topology sysfs support code for sparc64.
+>>>>>>> v4.9.227
  *
  * Copyright (C) 2007 David S. Miller <davem@davemloft.net>
  */

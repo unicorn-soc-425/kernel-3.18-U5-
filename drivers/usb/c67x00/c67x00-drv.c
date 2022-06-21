@@ -221,7 +221,10 @@ static struct platform_driver c67x00_driver = {
 	.probe	= c67x00_drv_probe,
 	.remove	= c67x00_drv_remove,
 	.driver	= {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "c67x00",
 	},
 };

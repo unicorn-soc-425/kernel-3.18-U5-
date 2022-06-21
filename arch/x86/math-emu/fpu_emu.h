@@ -71,7 +71,11 @@
 
 #include "fpu_system.h"
 
+<<<<<<< HEAD
 #include <asm/sigcontext.h>	/* for struct _fpstate */
+=======
+#include <uapi/asm/sigcontext.h>	/* for struct _fpstate */
+>>>>>>> v4.9.227
 #include <asm/math_emu.h>
 #include <linux/linkage.h>
 
@@ -176,7 +180,11 @@ static inline void reg_copy(FPU_REG const *x, FPU_REG *y)
 #define setexponentpos(x,y) { (*(short *)&((x)->exp)) = \
   ((y) + EXTENDED_Ebias) & 0x7fff; }
 #define exponent16(x)         (*(short *)&((x)->exp))
+<<<<<<< HEAD
 #define setexponent16(x,y)  { (*(short *)&((x)->exp)) = (y); }
+=======
+#define setexponent16(x,y)  { (*(short *)&((x)->exp)) = (u16)(y); }
+>>>>>>> v4.9.227
 #define addexponent(x,y)    { (*(short *)&((x)->exp)) += (y); }
 #define stdexp(x)           { (*(short *)&((x)->exp)) += EXTENDED_Ebias; }
 

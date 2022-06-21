@@ -205,6 +205,7 @@ static int ks8695_gpio_to_irq(struct gpio_chip *gc, unsigned int pin)
 	return gpio_irq[pin];
 }
 
+<<<<<<< HEAD
 /*
  * Map IRQ number to GPIO line.
  */
@@ -217,6 +218,8 @@ int irq_to_gpio(unsigned int irq)
 }
 EXPORT_SYMBOL(irq_to_gpio);
 
+=======
+>>>>>>> v4.9.227
 /* GPIOLIB interface */
 
 static struct gpio_chip ks8695_gpio_chip = {
@@ -234,7 +237,11 @@ static struct gpio_chip ks8695_gpio_chip = {
 /* Register the GPIOs */
 void ks8695_register_gpios(void)
 {
+<<<<<<< HEAD
 	if (gpiochip_add(&ks8695_gpio_chip))
+=======
+	if (gpiochip_add_data(&ks8695_gpio_chip, NULL))
+>>>>>>> v4.9.227
 		printk(KERN_ERR "Unable to register core GPIOs\n");
 }
 

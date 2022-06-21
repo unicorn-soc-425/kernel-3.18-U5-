@@ -26,10 +26,15 @@
 #include <linux/irq.h>
 #include <linux/dma-mapping.h>
 #include <linux/of_irq.h>
+<<<<<<< HEAD
 #include <linux/of_gpio.h>
 #include <linux/of_address.h>
 #include <linux/of_platform.h>
 #include <linux/gpio.h>
+=======
+#include <linux/of_address.h>
+#include <linux/of_platform.h>
+>>>>>>> v4.9.227
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
@@ -109,6 +114,7 @@ static void cpu8815_restart(enum reboot_mode mode, const char *cmd)
 	writel(1, srcbase + 0x18);
 }
 
+<<<<<<< HEAD
 /*
  * This GPIO pin turns on a line that is used to detect card insertion
  * on this board.
@@ -144,14 +150,23 @@ static int __init cpu8815_mmcsd_init(void)
 device_initcall(cpu8815_mmcsd_init);
 
 static const char * cpu8815_board_compat[] = {
+=======
+static const char * cpu8815_board_compat[] = {
+	"st,nomadik-nhk-15",
+>>>>>>> v4.9.227
 	"calaosystems,usb-s8815",
 	NULL,
 };
 
 DT_MACHINE_START(NOMADIK_DT, "Nomadik STn8815")
+<<<<<<< HEAD
 	/* At full speed latency must be >=2, so 0x249 in low bits */
 	.l2c_aux_val	= 0x00700249,
 	.l2c_aux_mask	= 0xfe0fefff,
+=======
+	.l2c_aux_val	= 0,
+	.l2c_aux_mask	= ~0,
+>>>>>>> v4.9.227
 	.map_io		= cpu8815_map_io,
 	.restart	= cpu8815_restart,
 	.dt_compat      = cpu8815_board_compat,

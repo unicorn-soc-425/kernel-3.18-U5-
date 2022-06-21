@@ -75,15 +75,24 @@ static int gfs2_unstuffer_page(struct gfs2_inode *ip, struct buffer_head *dibh,
 			dsize = dibh->b_size - sizeof(struct gfs2_dinode);
 
 		memcpy(kaddr, dibh->b_data + sizeof(struct gfs2_dinode), dsize);
+<<<<<<< HEAD
 		memset(kaddr + dsize, 0, PAGE_CACHE_SIZE - dsize);
+=======
+		memset(kaddr + dsize, 0, PAGE_SIZE - dsize);
+>>>>>>> v4.9.227
 		kunmap(page);
 
 		SetPageUptodate(page);
 	}
 
 	if (!page_has_buffers(page))
+<<<<<<< HEAD
 		create_empty_buffers(page, 1 << inode->i_blkbits,
 				     (1 << BH_Uptodate));
+=======
+		create_empty_buffers(page, BIT(inode->i_blkbits),
+				     BIT(BH_Uptodate));
+>>>>>>> v4.9.227
 
 	bh = page_buffers(page);
 
@@ -98,7 +107,11 @@ static int gfs2_unstuffer_page(struct gfs2_inode *ip, struct buffer_head *dibh,
 
 	if (release) {
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -285,7 +298,12 @@ static void gfs2_metapath_ra(struct gfs2_glock *gl,
 		if (trylock_buffer(rabh)) {
 			if (!buffer_uptodate(rabh)) {
 				rabh->b_end_io = end_buffer_read_sync;
+<<<<<<< HEAD
 				submit_bh(READA | REQ_META, rabh);
+=======
+				submit_bh(REQ_OP_READ, REQ_RAHEAD | REQ_META,
+						rabh);
+>>>>>>> v4.9.227
 				continue;
 			}
 			unlock_buffer(rabh);
@@ -689,7 +707,11 @@ int gfs2_extent_map(struct inode *inode, u64 lblock, int *new, u64 *dblock, unsi
 	BUG_ON(!dblock);
 	BUG_ON(!new);
 
+<<<<<<< HEAD
 	bh.b_size = 1 << (inode->i_blkbits + (create ? 0 : 5));
+=======
+	bh.b_size = BIT(inode->i_blkbits + (create ? 0 : 5));
+>>>>>>> v4.9.227
 	ret = gfs2_block_map(inode, lblock, &bh, create);
 	*extlen = bh.b_size >> inode->i_blkbits;
 	*dblock = bh.b_blocknr;
@@ -787,8 +809,13 @@ static int do_strip(struct gfs2_inode *ip, struct buffer_head *dibh,
 	if (error)
 		goto out_rlist;
 
+<<<<<<< HEAD
 	if (gfs2_rs_active(ip->i_res)) /* needs to be done with the rgrp glock held */
 		gfs2_rs_deltree(ip->i_res);
+=======
+	if (gfs2_rs_active(&ip->i_res)) /* needs to be done with the rgrp glock held */
+		gfs2_rs_deltree(&ip->i_res);
+>>>>>>> v4.9.227
 
 	error = gfs2_trans_begin(sdp, rg_blocks + RES_DINODE +
 				 RES_INDIRECT + RES_STATFS + RES_QUOTA,
@@ -835,7 +862,11 @@ static int do_strip(struct gfs2_inode *ip, struct buffer_head *dibh,
 	gfs2_quota_change(ip, -(s64)btotal, ip->i_inode.i_uid,
 			  ip->i_inode.i_gid);
 
+<<<<<<< HEAD
 	ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
+=======
+	ip->i_inode.i_mtime = ip->i_inode.i_ctime = current_time(&ip->i_inode);
+>>>>>>> v4.9.227
 
 	gfs2_dinode_out(ip, dibh->b_data);
 
@@ -932,8 +963,13 @@ static int gfs2_block_truncate_page(struct address_space *mapping, loff_t from)
 {
 	struct inode *inode = mapping->host;
 	struct gfs2_inode *ip = GFS2_I(inode);
+<<<<<<< HEAD
 	unsigned long index = from >> PAGE_CACHE_SHIFT;
 	unsigned offset = from & (PAGE_CACHE_SIZE-1);
+=======
+	unsigned long index = from >> PAGE_SHIFT;
+	unsigned offset = from & (PAGE_SIZE-1);
+>>>>>>> v4.9.227
 	unsigned blocksize, iblock, length, pos;
 	struct buffer_head *bh;
 	struct page *page;
@@ -945,7 +981,11 @@ static int gfs2_block_truncate_page(struct address_space *mapping, loff_t from)
 
 	blocksize = inode->i_sb->s_blocksize;
 	length = blocksize - (offset & (blocksize - 1));
+<<<<<<< HEAD
 	iblock = index << (PAGE_CACHE_SHIFT - inode->i_sb->s_blocksize_bits);
+=======
+	iblock = index << (PAGE_SHIFT - inode->i_sb->s_blocksize_bits);
+>>>>>>> v4.9.227
 
 	if (!page_has_buffers(page))
 		create_empty_buffers(page, blocksize, 0);
@@ -974,7 +1014,11 @@ static int gfs2_block_truncate_page(struct address_space *mapping, loff_t from)
 
 	if (!buffer_uptodate(bh)) {
 		err = -EIO;
+<<<<<<< HEAD
 		ll_rw_block(READ, 1, &bh);
+=======
+		ll_rw_block(REQ_OP_READ, 0, 1, &bh);
+>>>>>>> v4.9.227
 		wait_on_buffer(bh);
 		/* Uhhuh. Read error. Complain and punt. */
 		if (!buffer_uptodate(bh))
@@ -989,7 +1033,11 @@ static int gfs2_block_truncate_page(struct address_space *mapping, loff_t from)
 	mark_buffer_dirty(bh);
 unlock:
 	unlock_page(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -1062,7 +1110,11 @@ static int trunc_start(struct inode *inode, u64 oldsize, u64 newsize)
 	}
 
 	i_size_write(inode, newsize);
+<<<<<<< HEAD
 	ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
+=======
+	ip->i_inode.i_mtime = ip->i_inode.i_ctime = current_time(&ip->i_inode);
+>>>>>>> v4.9.227
 	gfs2_dinode_out(ip, dibh->b_data);
 
 	if (journaled)
@@ -1141,7 +1193,11 @@ static int trunc_end(struct gfs2_inode *ip)
 		gfs2_buffer_clear_tail(dibh, sizeof(struct gfs2_dinode));
 		gfs2_ordered_del_inode(ip);
 	}
+<<<<<<< HEAD
 	ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
+=======
+	ip->i_inode.i_mtime = ip->i_inode.i_ctime = current_time(&ip->i_inode);
+>>>>>>> v4.9.227
 	ip->i_diskflags &= ~GFS2_DIF_TRUNC_IN_PROG;
 
 	gfs2_trans_add_meta(ip->i_gl, dibh);
@@ -1224,7 +1280,11 @@ static int do_grow(struct inode *inode, u64 size)
 
 	if (gfs2_is_stuffed(ip) &&
 	    (size > (sdp->sd_sb.sb_bsize - sizeof(struct gfs2_dinode)))) {
+<<<<<<< HEAD
 		error = gfs2_quota_lock_check(ip);
+=======
+		error = gfs2_quota_lock_check(ip, &ap);
+>>>>>>> v4.9.227
 		if (error)
 			return error;
 
@@ -1235,6 +1295,11 @@ static int do_grow(struct inode *inode, u64 size)
 	}
 
 	error = gfs2_trans_begin(sdp, RES_DINODE + RES_STATFS + RES_RG_BIT +
+<<<<<<< HEAD
+=======
+				 (unstuff &&
+				  gfs2_is_jdata(ip) ? RES_JDATA : 0) +
+>>>>>>> v4.9.227
 				 (sdp->sd_args.ar_quota == GFS2_QUOTA_OFF ?
 				  0 : RES_QUOTA), 0);
 	if (error)
@@ -1251,7 +1316,11 @@ static int do_grow(struct inode *inode, u64 size)
 		goto do_end_trans;
 
 	i_size_write(inode, size);
+<<<<<<< HEAD
 	ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
+=======
+	ip->i_inode.i_mtime = ip->i_inode.i_ctime = current_time(&ip->i_inode);
+>>>>>>> v4.9.227
 	gfs2_trans_add_meta(ip->i_gl, dibh);
 	gfs2_dinode_out(ip, dibh->b_data);
 	brelse(dibh);
@@ -1291,6 +1360,7 @@ int gfs2_setattr_size(struct inode *inode, u64 newsize)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = get_write_access(inode);
 	if (ret)
 		return ret;
@@ -1298,6 +1368,11 @@ int gfs2_setattr_size(struct inode *inode, u64 newsize)
 	inode_dio_wait(inode);
 
 	ret = gfs2_rs_alloc(ip);
+=======
+	inode_dio_wait(inode);
+
+	ret = gfs2_rsqa_alloc(ip);
+>>>>>>> v4.9.227
 	if (ret)
 		goto out;
 
@@ -1307,10 +1382,16 @@ int gfs2_setattr_size(struct inode *inode, u64 newsize)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	gfs2_rs_deltree(ip->i_res);
 	ret = do_shrink(inode, oldsize, newsize);
 out:
 	put_write_access(inode);
+=======
+	ret = do_shrink(inode, oldsize, newsize);
+out:
+	gfs2_rsqa_delete(ip, NULL);
+>>>>>>> v4.9.227
 	return ret;
 }
 

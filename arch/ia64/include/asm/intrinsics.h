@@ -7,6 +7,7 @@
 #ifndef _ASM_IA64_INTRINSICS_H
 #define _ASM_IA64_INTRINSICS_H
 
+<<<<<<< HEAD
 #include <asm/paravirt_privop.h>
 #include <uapi/asm/intrinsics.h>
 
@@ -22,4 +23,8 @@
 #define IA64_INTRINSIC_MACRO(name)	paravirt_ ## name
 #endif
 #endif /* !__ASSEMBLY__ */
+=======
+#include <uapi/asm/intrinsics.h>
+
+>>>>>>> v4.9.227
 #endif /* _ASM_IA64_INTRINSICS_H */

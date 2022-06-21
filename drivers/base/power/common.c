@@ -14,6 +14,11 @@
 #include <linux/acpi.h>
 #include <linux/pm_domain.h>
 
+<<<<<<< HEAD
+=======
+#include "power.h"
+
+>>>>>>> v4.9.227
 /**
  * dev_pm_get_subsys_data - Create or refcount power.subsys_data for device.
  * @dev: Device to handle.
@@ -112,7 +117,11 @@ EXPORT_SYMBOL_GPL(dev_pm_domain_attach);
 
 /**
  * dev_pm_domain_detach - Detach a device from its PM domain.
+<<<<<<< HEAD
  * @dev: Device to attach.
+=======
+ * @dev: Device to detach.
+>>>>>>> v4.9.227
  * @power_off: Used to indicate whether we should power off the device.
  *
  * This functions will reverse the actions from dev_pm_domain_attach() and thus
@@ -128,3 +137,28 @@ void dev_pm_domain_detach(struct device *dev, bool power_off)
 		dev->pm_domain->detach(dev, power_off);
 }
 EXPORT_SYMBOL_GPL(dev_pm_domain_detach);
+<<<<<<< HEAD
+=======
+
+/**
+ * dev_pm_domain_set - Set PM domain of a device.
+ * @dev: Device whose PM domain is to be set.
+ * @pd: PM domain to be set, or NULL.
+ *
+ * Sets the PM domain the device belongs to. The PM domain of a device needs
+ * to be set before its probe finishes (it's bound to a driver).
+ *
+ * This function must be called with the device lock held.
+ */
+void dev_pm_domain_set(struct device *dev, struct dev_pm_domain *pd)
+{
+	if (dev->pm_domain == pd)
+		return;
+
+	WARN(pd && device_is_bound(dev),
+	     "PM domains can only be changed for unbound devices\n");
+	dev->pm_domain = pd;
+	device_pm_check_callbacks(dev);
+}
+EXPORT_SYMBOL_GPL(dev_pm_domain_set);
+>>>>>>> v4.9.227

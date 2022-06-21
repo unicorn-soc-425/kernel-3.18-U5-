@@ -280,7 +280,11 @@ struct tc35815_regs {
  * Descriptors
  */
 
+<<<<<<< HEAD
 /* Frame descripter */
+=======
+/* Frame descriptor */
+>>>>>>> v4.9.227
 struct FDesc {
 	volatile __u32 FDNext;
 	volatile __u32 FDSystem;
@@ -288,7 +292,11 @@ struct FDesc {
 	volatile __u32 FDCtl;
 };
 
+<<<<<<< HEAD
 /* Buffer descripter */
+=======
+/* Buffer descriptor */
+>>>>>>> v4.9.227
 struct BDesc {
 	volatile __u32 BuffData;
 	volatile __u32 BDCtl;
@@ -296,7 +304,11 @@ struct BDesc {
 
 #define FD_ALIGN	16
 
+<<<<<<< HEAD
 /* Frame Descripter bit assign ---------------------------------------------- */
+=======
+/* Frame Descriptor bit assign ---------------------------------------------- */
+>>>>>>> v4.9.227
 #define FD_FDLength_MASK       0x0000FFFF /* Length MASK		     */
 #define FD_BDCnt_MASK	       0x001F0000 /* BD count MASK in FD	     */
 #define FD_FrmOpt_MASK	       0x7C000000 /* Frame option MASK		     */
@@ -309,7 +321,11 @@ struct BDesc {
 #define FD_Next_EOL	       0x00000001 /* FD EOL indicator		     */
 #define FD_BDCnt_SHIFT	       16
 
+<<<<<<< HEAD
 /* Buffer Descripter bit assign --------------------------------------------- */
+=======
+/* Buffer Descriptor bit assign --------------------------------------------- */
+>>>>>>> v4.9.227
 #define BD_BuffLength_MASK     0x0000FFFF /* Receive Data Size		     */
 #define BD_RxBDID_MASK	       0x00FF0000 /* BD ID Number MASK		     */
 #define BD_RxBDSeqN_MASK       0x7F000000 /* Rx BD Sequence Number	     */
@@ -405,7 +421,10 @@ struct tc35815_local {
 	spinlock_t rx_lock;
 
 	struct mii_bus *mii_bus;
+<<<<<<< HEAD
 	struct phy_device *phy_dev;
+=======
+>>>>>>> v4.9.227
 	int duplex;
 	int speed;
 	int link;
@@ -475,7 +494,12 @@ static void free_rxbuf_skb(struct pci_dev *hwdev, struct sk_buff *skb, dma_addr_
 /* Index to functions, as function prototypes. */
 
 static int	tc35815_open(struct net_device *dev);
+<<<<<<< HEAD
 static int	tc35815_send_packet(struct sk_buff *skb, struct net_device *dev);
+=======
+static netdev_tx_t	tc35815_send_packet(struct sk_buff *skb,
+					    struct net_device *dev);
+>>>>>>> v4.9.227
 static irqreturn_t	tc35815_interrupt(int irq, void *dev_id);
 static int	tc35815_rx(struct net_device *dev, int limit);
 static int	tc35815_poll(struct napi_struct *napi, int budget);
@@ -539,7 +563,11 @@ static int tc_mdio_write(struct mii_bus *bus, int mii_id, int regnum, u16 val)
 static void tc_handle_link_change(struct net_device *dev)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = lp->phy_dev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	int status_change = 0;
 
@@ -608,6 +636,7 @@ static void tc_handle_link_change(struct net_device *dev)
 static int tc_mii_probe(struct net_device *dev)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = NULL;
 	int phy_addr;
 	u32 dropmask;
@@ -625,23 +654,38 @@ static int tc_mii_probe(struct net_device *dev)
 		}
 	}
 
+=======
+	struct phy_device *phydev;
+	u32 dropmask;
+
+	phydev = phy_find_first(lp->mii_bus);
+>>>>>>> v4.9.227
 	if (!phydev) {
 		printk(KERN_ERR "%s: no PHY found\n", dev->name);
 		return -ENODEV;
 	}
 
 	/* attach the mac to the phy */
+<<<<<<< HEAD
 	phydev = phy_connect(dev, dev_name(&phydev->dev),
+=======
+	phydev = phy_connect(dev, phydev_name(phydev),
+>>>>>>> v4.9.227
 			     &tc_handle_link_change,
 			     lp->chiptype == TC35815_TX4939 ? PHY_INTERFACE_MODE_RMII : PHY_INTERFACE_MODE_MII);
 	if (IS_ERR(phydev)) {
 		printk(KERN_ERR "%s: Could not attach to PHY\n", dev->name);
 		return PTR_ERR(phydev);
 	}
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: attached PHY driver [%s] "
 		"(mii_bus:phy_addr=%s, id=%x)\n",
 		dev->name, phydev->drv->name, dev_name(&phydev->dev),
 		phydev->phy_id);
+=======
+
+	phy_attached_info(phydev);
+>>>>>>> v4.9.227
 
 	/* mask with MAC supported features */
 	phydev->supported &= PHY_BASIC_FEATURES;
@@ -660,7 +704,10 @@ static int tc_mii_probe(struct net_device *dev)
 	lp->link = 0;
 	lp->speed = 0;
 	lp->duplex = -1;
+<<<<<<< HEAD
 	lp->phy_dev = phydev;
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -669,7 +716,10 @@ static int tc_mii_init(struct net_device *dev)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
 	int err;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> v4.9.227
 
 	lp->mii_bus = mdiobus_alloc();
 	if (lp->mii_bus == NULL) {
@@ -684,6 +734,7 @@ static int tc_mii_init(struct net_device *dev)
 		 (lp->pci_dev->bus->number << 8) | lp->pci_dev->devfn);
 	lp->mii_bus->priv = dev;
 	lp->mii_bus->parent = &lp->pci_dev->dev;
+<<<<<<< HEAD
 	lp->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (!lp->mii_bus->irq) {
 		err = -ENOMEM;
@@ -696,6 +747,11 @@ static int tc_mii_init(struct net_device *dev)
 	err = mdiobus_register(lp->mii_bus);
 	if (err)
 		goto err_out_free_mdio_irq;
+=======
+	err = mdiobus_register(lp->mii_bus);
+	if (err)
+		goto err_out_free_mii_bus;
+>>>>>>> v4.9.227
 	err = tc_mii_probe(dev);
 	if (err)
 		goto err_out_unregister_bus;
@@ -703,8 +759,11 @@ static int tc_mii_init(struct net_device *dev)
 
 err_out_unregister_bus:
 	mdiobus_unregister(lp->mii_bus);
+<<<<<<< HEAD
 err_out_free_mdio_irq:
 	kfree(lp->mii_bus->irq);
+=======
+>>>>>>> v4.9.227
 err_out_free_mii_bus:
 	mdiobus_free(lp->mii_bus);
 err_out:
@@ -880,9 +939,14 @@ static void tc35815_remove_one(struct pci_dev *pdev)
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct tc35815_local *lp = netdev_priv(dev);
 
+<<<<<<< HEAD
 	phy_disconnect(lp->phy_dev);
 	mdiobus_unregister(lp->mii_bus);
 	kfree(lp->mii_bus->irq);
+=======
+	phy_disconnect(dev->phydev);
+	mdiobus_unregister(lp->mii_bus);
+>>>>>>> v4.9.227
 	mdiobus_free(lp->mii_bus);
 	unregister_netdev(dev);
 	free_netdev(dev);
@@ -1171,8 +1235,13 @@ static void tc35815_restart(struct net_device *dev)
 	struct tc35815_local *lp = netdev_priv(dev);
 	int ret;
 
+<<<<<<< HEAD
 	if (lp->phy_dev) {
 		ret = phy_init_hw(lp->phy_dev);
+=======
+	if (dev->phydev) {
+		ret = phy_init_hw(dev->phydev);
+>>>>>>> v4.9.227
 		if (ret)
 			printk(KERN_ERR "%s: PHY init failed.\n", dev->name);
 	}
@@ -1264,7 +1333,11 @@ tc35815_open(struct net_device *dev)
 
 	netif_carrier_off(dev);
 	/* schedule a link state check */
+<<<<<<< HEAD
 	phy_start(lp->phy_dev);
+=======
+	phy_start(dev->phydev);
+>>>>>>> v4.9.227
 
 	/* We are now ready to accept transmit requeusts from
 	 * the queueing layer of the networking.
@@ -1279,7 +1352,12 @@ tc35815_open(struct net_device *dev)
  * invariant will hold if you make sure that the netif_*_queue()
  * calls are done at the proper times.
  */
+<<<<<<< HEAD
 static int tc35815_send_packet(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+tc35815_send_packet(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct tc35815_local *lp = netdev_priv(dev);
 	struct TxFD *txfd;
@@ -1415,7 +1493,11 @@ static int tc35815_do_interrupt(struct net_device *dev, u32 status, int limit)
 	if (status & Int_IntExBD) {
 		if (netif_msg_rx_err(lp))
 			dev_warn(&dev->dev,
+<<<<<<< HEAD
 				 "Excessive Buffer Descriptiors (%#x).\n",
+=======
+				 "Excessive Buffer Descriptors (%#x).\n",
+>>>>>>> v4.9.227
 				 status);
 		dev->stats.rx_length_errors++;
 		ret = 0;
@@ -1528,7 +1610,11 @@ tc35815_rx(struct net_device *dev, int limit)
 			pci_unmap_single(lp->pci_dev,
 					 lp->rx_skbs[cur_bd].skb_dma,
 					 RX_BUF_SIZE, PCI_DMA_FROMDEVICE);
+<<<<<<< HEAD
 			if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN)
+=======
+			if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN != 0)
+>>>>>>> v4.9.227
 				memmove(skb->data, skb->data - NET_IP_ALIGN,
 					pkt_len);
 			data = skb_put(skb, pkt_len);
@@ -1847,8 +1933,13 @@ tc35815_close(struct net_device *dev)
 
 	netif_stop_queue(dev);
 	napi_disable(&lp->napi);
+<<<<<<< HEAD
 	if (lp->phy_dev)
 		phy_stop(lp->phy_dev);
+=======
+	if (dev->phydev)
+		phy_stop(dev->phydev);
+>>>>>>> v4.9.227
 	cancel_work_sync(&lp->restart_work);
 
 	/* Flush the Tx and disable Rx here. */
@@ -1974,6 +2065,7 @@ static void tc35815_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *
 	strlcpy(info->bus_info, pci_name(lp->pci_dev), sizeof(info->bus_info));
 }
 
+<<<<<<< HEAD
 static int tc35815_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
@@ -1992,6 +2084,8 @@ static int tc35815_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 	return phy_ethtool_sset(lp->phy_dev, cmd);
 }
 
+=======
+>>>>>>> v4.9.227
 static u32 tc35815_get_msglevel(struct net_device *dev)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
@@ -2041,18 +2135,27 @@ static void tc35815_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 
 static const struct ethtool_ops tc35815_ethtool_ops = {
 	.get_drvinfo		= tc35815_get_drvinfo,
+<<<<<<< HEAD
 	.get_settings		= tc35815_get_settings,
 	.set_settings		= tc35815_set_settings,
+=======
+>>>>>>> v4.9.227
 	.get_link		= ethtool_op_get_link,
 	.get_msglevel		= tc35815_get_msglevel,
 	.set_msglevel		= tc35815_set_msglevel,
 	.get_strings		= tc35815_get_strings,
 	.get_sset_count		= tc35815_get_sset_count,
 	.get_ethtool_stats	= tc35815_get_ethtool_stats,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 static int tc35815_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
+<<<<<<< HEAD
 	struct tc35815_local *lp = netdev_priv(dev);
 
 	if (!netif_running(dev))
@@ -2060,6 +2163,13 @@ static int tc35815_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	if (!lp->phy_dev)
 		return -ENODEV;
 	return phy_mii_ioctl(lp->phy_dev, rq, cmd);
+=======
+	if (!netif_running(dev))
+		return -EINVAL;
+	if (!dev->phydev)
+		return -ENODEV;
+	return phy_mii_ioctl(dev->phydev, rq, cmd);
+>>>>>>> v4.9.227
 }
 
 static void tc35815_chip_reset(struct net_device *dev)
@@ -2144,7 +2254,11 @@ static void tc35815_chip_init(struct net_device *dev)
 	if (lp->chiptype == TC35815_TX4939)
 		txctl &= ~Tx_EnLCarr;
 	/* WORKAROUND: ignore LostCrS in full duplex operation */
+<<<<<<< HEAD
 	if (!lp->phy_dev || !lp->link || lp->duplex == DUPLEX_FULL)
+=======
+	if (!dev->phydev || !lp->link || lp->duplex == DUPLEX_FULL)
+>>>>>>> v4.9.227
 		txctl &= ~Tx_EnLCarr;
 	tc_writel(txctl, &tr->Tx_Ctl);
 }
@@ -2160,8 +2274,13 @@ static int tc35815_suspend(struct pci_dev *pdev, pm_message_t state)
 	if (!netif_running(dev))
 		return 0;
 	netif_device_detach(dev);
+<<<<<<< HEAD
 	if (lp->phy_dev)
 		phy_stop(lp->phy_dev);
+=======
+	if (dev->phydev)
+		phy_stop(dev->phydev);
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&lp->lock, flags);
 	tc35815_chip_reset(dev);
 	spin_unlock_irqrestore(&lp->lock, flags);
@@ -2172,7 +2291,10 @@ static int tc35815_suspend(struct pci_dev *pdev, pm_message_t state)
 static int tc35815_resume(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct tc35815_local *lp = netdev_priv(dev);
+=======
+>>>>>>> v4.9.227
 
 	pci_restore_state(pdev);
 	if (!netif_running(dev))
@@ -2180,8 +2302,13 @@ static int tc35815_resume(struct pci_dev *pdev)
 	pci_set_power_state(pdev, PCI_D0);
 	tc35815_restart(dev);
 	netif_carrier_off(dev);
+<<<<<<< HEAD
 	if (lp->phy_dev)
 		phy_start(lp->phy_dev);
+=======
+	if (dev->phydev)
+		phy_start(dev->phydev);
+>>>>>>> v4.9.227
 	netif_device_attach(dev);
 	return 0;
 }

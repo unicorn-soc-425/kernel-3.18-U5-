@@ -201,6 +201,7 @@ static int sgio2audio_gain_put(struct snd_kcontrol *kcontrol,
 static int sgio2audio_source_info(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static const char *texts[3] = {
 		"Cam Mic", "Mic", "Line"
 	};
@@ -212,6 +213,12 @@ static int sgio2audio_source_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {
+		"Cam Mic", "Mic", "Line"
+	};
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> v4.9.227
 }
 
 static int sgio2audio_source_get(struct snd_kcontrol *kcontrol,
@@ -970,7 +977,10 @@ static struct platform_driver sgio2audio_driver = {
 	.remove	= snd_sgio2audio_remove,
 	.driver = {
 		.name	= "sgio2audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	}
 };
 

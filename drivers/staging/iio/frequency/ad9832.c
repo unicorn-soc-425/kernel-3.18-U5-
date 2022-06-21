@@ -24,14 +24,23 @@
 
 static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned long fout)
 {
+<<<<<<< HEAD
 	unsigned long long freqreg = (u64) fout *
 				     (u64) ((u64) 1L << AD9832_FREQ_BITS);
+=======
+	unsigned long long freqreg = (u64)fout *
+				     (u64)((u64)1L << AD9832_FREQ_BITS);
+>>>>>>> v4.9.227
 	do_div(freqreg, mclk);
 	return freqreg;
 }
 
 static int ad9832_write_frequency(struct ad9832_state *st,
+<<<<<<< HEAD
 				  unsigned addr, unsigned long fout)
+=======
+				  unsigned int addr, unsigned long fout)
+>>>>>>> v4.9.227
 {
 	unsigned long regval;
 
@@ -59,7 +68,11 @@ static int ad9832_write_frequency(struct ad9832_state *st,
 static int ad9832_write_phase(struct ad9832_state *st,
 			      unsigned long addr, unsigned long phase)
 {
+<<<<<<< HEAD
 	if (phase > (1 << AD9832_PHASE_BITS))
+=======
+	if (phase > BIT(AD9832_PHASE_BITS))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	st->phase_data[0] = cpu_to_be16((AD9832_CMD_PHA8BITSW << CMD_SHIFT) |
@@ -86,7 +99,11 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
 		goto error_ret;
 
 	mutex_lock(&indio_dev->mlock);
+<<<<<<< HEAD
 	switch ((u32) this_attr->address) {
+=======
+	switch ((u32)this_attr->address) {
+>>>>>>> v4.9.227
 	case AD9832_FREQ0HM:
 	case AD9832_FREQ1HM:
 		ret = ad9832_write_frequency(st, this_attr->address, val);
@@ -201,7 +218,11 @@ static const struct iio_info ad9832_info = {
 
 static int ad9832_probe(struct spi_device *spi)
 {
+<<<<<<< HEAD
 	struct ad9832_platform_data *pdata = spi->dev.platform_data;
+=======
+	struct ad9832_platform_data *pdata = dev_get_platdata(&spi->dev);
+>>>>>>> v4.9.227
 	struct iio_dev *indio_dev;
 	struct ad9832_state *st;
 	struct regulator *reg;
@@ -220,7 +241,11 @@ static int ad9832_probe(struct spi_device *spi)
 	}
 
 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+<<<<<<< HEAD
 	if (indio_dev == NULL) {
+=======
+	if (!indio_dev) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto error_disable_reg;
 	}
@@ -339,7 +364,10 @@ MODULE_DEVICE_TABLE(spi, ad9832_id);
 static struct spi_driver ad9832_driver = {
 	.driver = {
 		.name	= "ad9832",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= ad9832_probe,
 	.remove		= ad9832_remove,

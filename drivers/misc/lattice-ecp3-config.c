@@ -235,7 +235,10 @@ MODULE_DEVICE_TABLE(spi, lattice_ecp3_id);
 static struct spi_driver lattice_ecp3_driver = {
 	.driver = {
 		.name = "lattice-ecp3",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = lattice_ecp3_probe,
 	.remove = lattice_ecp3_remove,

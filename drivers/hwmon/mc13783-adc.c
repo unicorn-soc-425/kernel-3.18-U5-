@@ -267,7 +267,10 @@ MODULE_DEVICE_TABLE(platform, mc13783_adc_idtable);
 static struct platform_driver mc13783_adc_driver = {
 	.remove		= mc13783_adc_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DRIVER_NAME,
 	},
 	.id_table	= mc13783_adc_idtable,

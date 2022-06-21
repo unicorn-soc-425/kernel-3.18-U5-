@@ -615,6 +615,13 @@ wbcir_txmask(struct rc_dev *dev, u32 mask)
 	unsigned long flags;
 	u8 val;
 
+<<<<<<< HEAD
+=======
+	/* return the number of transmitters */
+	if (mask > 15)
+		return 4;
+
+>>>>>>> v4.9.227
 	/* Four outputs, only one output can be enabled at a time */
 	switch (mask) {
 	case 0x1:

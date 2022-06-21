@@ -3,13 +3,25 @@
 
 #include <linux/io.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/acpi.h>
+
+#ifndef acpi_os_ioremap
+>>>>>>> v4.9.227
 static inline void __iomem *acpi_os_ioremap(acpi_physical_address phys,
 					    acpi_size size)
 {
        return ioremap_cache(phys, size);
 }
+<<<<<<< HEAD
 
 void __iomem *__init_refok
+=======
+#endif
+
+void __iomem *__ref
+>>>>>>> v4.9.227
 acpi_os_map_iomem(acpi_physical_address phys, acpi_size size);
 void __ref acpi_os_unmap_iomem(void __iomem *virt, acpi_size size);
 void __iomem *acpi_os_get_iomem(acpi_physical_address phys, unsigned int size);

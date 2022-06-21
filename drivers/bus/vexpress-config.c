@@ -107,7 +107,11 @@ struct regmap *devm_regmap_init_vexpress_config(struct device *dev)
 	if (!res)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
 	regmap = bridge->ops->regmap_init(dev, bridge->context);
+=======
+	regmap = (bridge->ops->regmap_init)(dev, bridge->context);
+>>>>>>> v4.9.227
 	if (IS_ERR(regmap)) {
 		devres_free(res);
 		return regmap;
@@ -171,6 +175,10 @@ static int vexpress_config_populate(struct device_node *node)
 {
 	struct device_node *bridge;
 	struct device *parent;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	bridge = of_parse_phandle(node, "arm,vexpress,config-bridge", 0);
 	if (!bridge)
@@ -178,10 +186,22 @@ static int vexpress_config_populate(struct device_node *node)
 
 	parent = class_find_device(vexpress_config_class, NULL, bridge,
 			vexpress_config_node_match);
+<<<<<<< HEAD
 	if (WARN_ON(!parent))
 		return -ENODEV;
 
 	return of_platform_populate(node, NULL, NULL, parent);
+=======
+	of_node_put(bridge);
+	if (WARN_ON(!parent))
+		return -ENODEV;
+
+	ret = of_platform_populate(node, NULL, NULL, parent);
+
+	put_device(parent);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int __init vexpress_config_init(void)
@@ -192,8 +212,15 @@ static int __init vexpress_config_init(void)
 	/* Need the config devices early, before the "normal" devices... */
 	for_each_compatible_node(node, NULL, "arm,vexpress,config-bus") {
 		err = vexpress_config_populate(node);
+<<<<<<< HEAD
 		if (err)
 			break;
+=======
+		if (err) {
+			of_node_put(node);
+			break;
+		}
+>>>>>>> v4.9.227
 	}
 
 	return err;

@@ -18,10 +18,18 @@
 #include <linux/serial.h>
 #include <linux/tty.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 struct ttyprintk_port {
 	struct tty_port port;
 	struct mutex port_write_mutex;
+=======
+#include <linux/spinlock.h>
+
+struct ttyprintk_port {
+	struct tty_port port;
+	spinlock_t spinlock;
+>>>>>>> v4.9.227
 };
 
 static struct ttyprintk_port tpk_port;
@@ -31,12 +39,18 @@ static struct ttyprintk_port tpk_port;
  * printk messages (also suitable for logging service):
  * - any cr is replaced by nl
  * - adds a ttyprintk source tag in front of each line
+<<<<<<< HEAD
  * - too long message is fragmeted, with '\'nl between fragments
  * - TPK_STR_SIZE isn't really the write_room limiting factor, bcause
+=======
+ * - too long message is fragmented, with '\'nl between fragments
+ * - TPK_STR_SIZE isn't really the write_room limiting factor, because
+>>>>>>> v4.9.227
  *   it is emptied on the fly during preformatting.
  */
 #define TPK_STR_SIZE 508 /* should be bigger then max expected line length */
 #define TPK_MAX_ROOM 4096 /* we could assume 4K for instance */
+<<<<<<< HEAD
 static const char *tpk_tag = "[U] "; /* U for User */
 static int tpk_curr;
 
@@ -54,10 +68,32 @@ static int tpk_printk(const unsigned char *buf, int count)
 			printk(KERN_INFO "%s%s", tpk_tag, tmp);
 			tpk_curr = 0;
 		}
+=======
+static int tpk_curr;
+
+static char tpk_buffer[TPK_STR_SIZE + 4];
+
+static void tpk_flush(void)
+{
+	if (tpk_curr > 0) {
+		tpk_buffer[tpk_curr] = '\0';
+		pr_info("[U] %s\n", tpk_buffer);
+		tpk_curr = 0;
+	}
+}
+
+static int tpk_printk(const unsigned char *buf, int count)
+{
+	int i = tpk_curr;
+
+	if (buf == NULL) {
+		tpk_flush();
+>>>>>>> v4.9.227
 		return i;
 	}
 
 	for (i = 0; i < count; i++) {
+<<<<<<< HEAD
 		tmp[tpk_curr] = buf[i];
 		if (tpk_curr < TPK_STR_SIZE) {
 			switch (buf[i]) {
@@ -85,6 +121,26 @@ static int tpk_printk(const unsigned char *buf, int count)
 			tmp[tpk_curr + 3] = '\0';
 			printk(KERN_INFO "%s%s", tpk_tag, tmp);
 			tpk_curr = 0;
+=======
+		if (tpk_curr >= TPK_STR_SIZE) {
+			/* end of tmp buffer reached: cut the message in two */
+			tpk_buffer[tpk_curr++] = '\\';
+			tpk_flush();
+		}
+
+		switch (buf[i]) {
+		case '\r':
+			tpk_flush();
+			if ((i + 1) < count && buf[i + 1] == '\n')
+				i++;
+			break;
+		case '\n':
+			tpk_flush();
+			break;
+		default:
+			tpk_buffer[tpk_curr++] = buf[i];
+			break;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -107,11 +163,20 @@ static int tpk_open(struct tty_struct *tty, struct file *filp)
 static void tpk_close(struct tty_struct *tty, struct file *filp)
 {
 	struct ttyprintk_port *tpkp = tty->driver_data;
+<<<<<<< HEAD
 
 	mutex_lock(&tpkp->port_write_mutex);
 	/* flush tpk_printk buffer */
 	tpk_printk(NULL, 0);
 	mutex_unlock(&tpkp->port_write_mutex);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&tpkp->spinlock, flags);
+	/* flush tpk_printk buffer */
+	tpk_printk(NULL, 0);
+	spin_unlock_irqrestore(&tpkp->spinlock, flags);
+>>>>>>> v4.9.227
 
 	tty_port_close(&tpkp->port, tty, filp);
 }
@@ -123,13 +188,23 @@ static int tpk_write(struct tty_struct *tty,
 		const unsigned char *buf, int count)
 {
 	struct ttyprintk_port *tpkp = tty->driver_data;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> v4.9.227
 	int ret;
 
 
 	/* exclusive use of tpk_printk within this tty */
+<<<<<<< HEAD
 	mutex_lock(&tpkp->port_write_mutex);
 	ret = tpk_printk(buf, count);
 	mutex_unlock(&tpkp->port_write_mutex);
+=======
+	spin_lock_irqsave(&tpkp->spinlock, flags);
+	ret = tpk_printk(buf, count);
+	spin_unlock_irqrestore(&tpkp->spinlock, flags);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -171,7 +246,11 @@ static const struct tty_operations ttyprintk_ops = {
 	.ioctl = tpk_ioctl,
 };
 
+<<<<<<< HEAD
 static struct tty_port_operations null_ops = { };
+=======
+static const struct tty_port_operations null_ops = { };
+>>>>>>> v4.9.227
 
 static struct tty_driver *ttyprintk_driver;
 
@@ -179,7 +258,11 @@ static int __init ttyprintk_init(void)
 {
 	int ret = -ENOMEM;
 
+<<<<<<< HEAD
 	mutex_init(&tpk_port.port_write_mutex);
+=======
+	spin_lock_init(&tpk_port.spinlock);
+>>>>>>> v4.9.227
 
 	ttyprintk_driver = tty_alloc_driver(1,
 			TTY_DRIVER_RESET_TERMIOS |

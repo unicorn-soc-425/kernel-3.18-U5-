@@ -920,6 +920,7 @@ void __init nubus_probe_slot(int slot)
 	rp = nubus_rom_addr(slot);	
 	for(i = 4; i; i--)
 	{
+<<<<<<< HEAD
 		unsigned long flags;
 		int card_present;
 
@@ -928,6 +929,12 @@ void __init nubus_probe_slot(int slot)
 		card_present = hwreg_present(rp);
 		local_irq_restore(flags);
 	       
+=======
+		int card_present;
+
+		rp--;
+		card_present = hwreg_present(rp);
+>>>>>>> v4.9.227
 		if (!card_present)
 			continue;
 

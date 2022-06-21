@@ -354,7 +354,11 @@ struct cmd_desc_type0 {
 
 } __attribute__ ((aligned(64)));
 
+<<<<<<< HEAD
 /* Note: sizeof(rcv_desc) should always be a mutliple of 2 */
+=======
+/* Note: sizeof(rcv_desc) should always be a multiple of 2 */
+>>>>>>> v4.9.227
 struct rcv_desc {
 	__le16 reference_handle;
 	__le16 reserved;
@@ -499,7 +503,11 @@ struct uni_data_desc{
 #define NETXEN_IMAGE_START	0x43000	/* compressed image */
 #define NETXEN_SECONDARY_START	0x200000	/* backup images */
 #define NETXEN_PXE_START	0x3E0000	/* PXE boot rom */
+<<<<<<< HEAD
 #define NETXEN_USER_START	0x3E8000	/* Firmare info */
+=======
+#define NETXEN_USER_START	0x3E8000	/* Firmware info */
+>>>>>>> v4.9.227
 #define NETXEN_FIXED_START	0x3F0000	/* backup of crbinit */
 #define NETXEN_USER_START_OLD	NETXEN_PXE_START /* very old flash */
 

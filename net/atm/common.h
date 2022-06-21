@@ -10,6 +10,7 @@
 #include <linux/poll.h> /* for poll_table */
 
 
+<<<<<<< HEAD
 int vcc_create(struct net *net, struct socket *sock, int protocol, int family);
 int vcc_release(struct socket *sock);
 int vcc_connect(struct socket *sock, int itf, short vpi, int vci);
@@ -17,6 +18,14 @@ int vcc_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 		size_t size, int flags);
 int vcc_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *m,
 		size_t total_len);
+=======
+int vcc_create(struct net *net, struct socket *sock, int protocol, int family, int kern);
+int vcc_release(struct socket *sock);
+int vcc_connect(struct socket *sock, int itf, short vpi, int vci);
+int vcc_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+		int flags);
+int vcc_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len);
+>>>>>>> v4.9.227
 unsigned int vcc_poll(struct file *file, struct socket *sock, poll_table *wait);
 int vcc_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
 int vcc_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);

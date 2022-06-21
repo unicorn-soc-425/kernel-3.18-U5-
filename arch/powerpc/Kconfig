@@ -12,11 +12,14 @@ config 64BIT
 	bool
 	default y if PPC64
 
+<<<<<<< HEAD
 config WORD_SIZE
 	int
 	default 64 if PPC64
 	default 32 if !PPC64
 
+=======
+>>>>>>> v4.9.227
 config ARCH_PHYS_ADDR_T_64BIT
        def_bool PPC64 || PHYS_64BIT
 
@@ -47,9 +50,12 @@ config STACKTRACE_SUPPORT
 	bool
 	default y
 
+<<<<<<< HEAD
 config HAVE_LATENCYTOP_SUPPORT
 	def_bool y
 
+=======
+>>>>>>> v4.9.227
 config TRACE_IRQFLAGS_SUPPORT
 	bool
 	default y
@@ -82,6 +88,12 @@ config GENERIC_HWEIGHT
 	bool
 	default y
 
+<<<<<<< HEAD
+=======
+config ARCH_HAS_DMA_SET_COHERENT_MASK
+        bool
+
+>>>>>>> v4.9.227
 config PPC
 	bool
 	default y
@@ -90,10 +102,15 @@ config PPC
 	select BINFMT_ELF
 	select ARCH_HAS_ELF_RANDOMIZE
 	select OF
+<<<<<<< HEAD
+=======
+	select OF_DMA_DEFAULT_COHERENT		if !NOT_COHERENT_CACHE
+>>>>>>> v4.9.227
 	select OF_EARLY_FLATTREE
 	select OF_RESERVED_MEM
 	select HAVE_FTRACE_MCOUNT_RECORD
 	select HAVE_DYNAMIC_FTRACE
+<<<<<<< HEAD
 	select HAVE_FUNCTION_TRACER
 	select HAVE_FUNCTION_GRAPH_TRACER
 	select SYSCTL_EXCEPTION_TRACE
@@ -102,20 +119,39 @@ config PPC
 	select HAVE_IDE
 	select HAVE_IOREMAP_PROT
 	select HAVE_EFFICIENT_UNALIGNED_ACCESS if !CPU_LITTLE_ENDIAN
+=======
+	select HAVE_DYNAMIC_FTRACE_WITH_REGS if MPROFILE_KERNEL
+	select HAVE_FUNCTION_TRACER
+	select HAVE_FUNCTION_GRAPH_TRACER
+	select SYSCTL_EXCEPTION_TRACE
+	select VIRT_TO_BUS if !PPC64
+	select HAVE_IDE
+	select HAVE_IOREMAP_PROT
+	select HAVE_EFFICIENT_UNALIGNED_ACCESS if !(CPU_LITTLE_ENDIAN && POWER7_CPU)
+>>>>>>> v4.9.227
 	select HAVE_KPROBES
 	select HAVE_ARCH_KGDB
 	select HAVE_KRETPROBES
 	select HAVE_ARCH_TRACEHOOK
 	select HAVE_MEMBLOCK
 	select HAVE_MEMBLOCK_NODE_MAP
+<<<<<<< HEAD
 	select HAVE_DMA_ATTRS
+=======
+>>>>>>> v4.9.227
 	select HAVE_DMA_API_DEBUG
 	select HAVE_OPROFILE
 	select HAVE_DEBUG_KMEMLEAK
 	select ARCH_HAS_SG_CHAIN
 	select GENERIC_ATOMIC64 if PPC32
+<<<<<<< HEAD
 	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
 	select HAVE_PERF_EVENTS
+=======
+	select HAVE_PERF_EVENTS
+	select HAVE_PERF_REGS
+	select HAVE_PERF_USER_STACK_DUMP
+>>>>>>> v4.9.227
 	select HAVE_REGS_AND_STACK_ACCESS_API
 	select HAVE_HW_BREAKPOINT if PERF_EVENTS && PPC_BOOK3S_64
 	select ARCH_WANT_IPC_PARSE_VERSION
@@ -126,11 +162,22 @@ config PPC
 	select IRQ_FORCED_THREADING
 	select HAVE_RCU_TABLE_FREE if SMP
 	select HAVE_SYSCALL_TRACEPOINTS
+<<<<<<< HEAD
 	select HAVE_BPF_JIT if PPC64
 	select HAVE_ARCH_JUMP_LABEL
 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
 	select GENERIC_SMP_IDLE_THREAD
 	select GENERIC_CMOS_UPDATE
+=======
+	select HAVE_CBPF_JIT if !PPC64
+	select HAVE_EBPF_JIT if PPC64
+	select HAVE_ARCH_JUMP_LABEL
+	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+	select ARCH_HAS_GCOV_PROFILE_ALL
+	select GENERIC_SMP_IDLE_THREAD
+	select GENERIC_CMOS_UPDATE
+	select GENERIC_CPU_VULNERABILITIES	if PPC_BARRIER_NOSPEC
+>>>>>>> v4.9.227
 	select GENERIC_TIME_VSYSCALL_OLD
 	select GENERIC_CLOCKEVENTS
 	select GENERIC_CLOCKEVENTS_BROADCAST if SMP
@@ -149,6 +196,30 @@ config PPC
 	select HAVE_ARCH_AUDITSYSCALL
 	select ARCH_SUPPORTS_ATOMIC_RMW
 	select DCACHE_WORD_ACCESS if PPC64 && CPU_LITTLE_ENDIAN
+<<<<<<< HEAD
+=======
+	select NO_BOOTMEM
+	select HAVE_GENERIC_RCU_GUP
+	select HAVE_PERF_EVENTS_NMI if PPC64
+	select HAVE_NMI if PERF_EVENTS
+	select EDAC_SUPPORT
+	select EDAC_ATOMIC_SCRUB
+	select ARCH_HAS_DMA_SET_COHERENT_MASK
+	select ARCH_HAS_DEVMEM_IS_ALLOWED
+	select HAVE_ARCH_SECCOMP_FILTER
+	select ARCH_HAS_UBSAN_SANITIZE_ALL
+	select ARCH_SUPPORTS_DEFERRED_STRUCT_PAGE_INIT
+	select HAVE_LIVEPATCH if HAVE_DYNAMIC_FTRACE_WITH_REGS
+	select GENERIC_CPU_AUTOPROBE
+	select HAVE_VIRT_CPU_ACCOUNTING
+	select HAVE_ARCH_HARDENED_USERCOPY
+	select HAVE_KERNEL_GZIP
+
+config PPC_BARRIER_NOSPEC
+    bool
+    default y
+    depends on PPC_BOOK3S_64 || PPC_FSL_BOOK3E
+>>>>>>> v4.9.227
 
 config GENERIC_CSUM
 	def_bool CPU_LITTLE_ENDIAN
@@ -186,9 +257,12 @@ config ARCH_MAY_HAVE_PC_FDC
 	bool
 	default PCI
 
+<<<<<<< HEAD
 config PPC_OF
 	def_bool y
 
+=======
+>>>>>>> v4.9.227
 config PPC_UDBG_16550
 	bool
 	default n
@@ -253,6 +327,10 @@ config PPC_OF_PLATFORM_PCI
 	default n
 
 config ARCH_SUPPORTS_DEBUG_PAGEALLOC
+<<<<<<< HEAD
+=======
+	depends on PPC32 || PPC_STD_MMU_64
+>>>>>>> v4.9.227
 	def_bool y
 
 config ARCH_SUPPORTS_UPROBES
@@ -293,6 +371,15 @@ config ZONE_DMA32
 	bool
 	default y if PPC64
 
+<<<<<<< HEAD
+=======
+config PGTABLE_LEVELS
+	int
+	default 2 if !PPC64
+	default 3 if PPC_64K_PAGES && !PPC_BOOK3S_64
+	default 4
+
+>>>>>>> v4.9.227
 source "init/Kconfig"
 
 source "kernel/Kconfig.freezer"
@@ -360,6 +447,27 @@ config PPC_TRANSACTIONAL_MEM
        ---help---
          Support user-mode Transactional Memory on POWERPC.
 
+<<<<<<< HEAD
+=======
+config DISABLE_MPROFILE_KERNEL
+	bool "Disable use of mprofile-kernel for kernel tracing"
+	depends on PPC64 && CPU_LITTLE_ENDIAN
+	default y
+	help
+	  Selecting this options disables use of the mprofile-kernel ABI for
+	  kernel tracing. That will cause options such as live patching
+	  (CONFIG_LIVEPATCH) which depend on CONFIG_DYNAMIC_FTRACE_WITH_REGS to
+	  be disabled also.
+
+	  If you have a toolchain which supports mprofile-kernel, then you can
+	  disable this. Otherwise leave it enabled. If you're not sure, say
+	  "Y".
+
+config MPROFILE_KERNEL
+	depends on PPC64 && CPU_LITTLE_ENDIAN
+	def_bool !DISABLE_MPROFILE_KERNEL
+
+>>>>>>> v4.9.227
 config IOMMU_HELPER
 	def_bool PPC64
 
@@ -376,7 +484,11 @@ config SWIOTLB
 config HOTPLUG_CPU
 	bool "Support for enabling/disabling CPUs"
 	depends on SMP && (PPC_PSERIES || \
+<<<<<<< HEAD
 	PPC_PMAC || PPC_POWERNV || (PPC_85xx && !PPC_E500MC))
+=======
+	PPC_PMAC || PPC_POWERNV || FSL_SOC_BOOKE)
+>>>>>>> v4.9.227
 	---help---
 	  Say Y here to be able to disable and re-enable individual
 	  CPUs at runtime on SMP machines.
@@ -404,7 +516,12 @@ config PPC64_SUPPORTS_MEMORY_FAILURE
 
 config KEXEC
 	bool "kexec system call"
+<<<<<<< HEAD
 	depends on (PPC_BOOK3S || FSL_BOOKE || (44x && !SMP))
+=======
+	depends on (PPC_BOOK3S || FSL_BOOKE || (44x && !SMP)) || PPC_BOOK3E
+	select KEXEC_CORE
+>>>>>>> v4.9.227
 	help
 	  kexec is a system call that implements the ability to shutdown your
 	  current kernel, and to start another kernel.  It is like a reboot
@@ -419,6 +536,32 @@ config KEXEC
 	  interface is strongly in flux, so no good recommendation can be
 	  made.
 
+<<<<<<< HEAD
+=======
+config RELOCATABLE
+	bool "Build a relocatable kernel"
+	depends on (PPC64 && !COMPILE_TEST) || (FLATMEM && (44x || FSL_BOOKE))
+	select NONSTATIC_KERNEL
+	help
+	  This builds a kernel image that is capable of running at the
+	  location the kernel is loaded at. For ppc32, there is no any
+	  alignment restrictions, and this feature is a superset of
+	  DYNAMIC_MEMSTART and hence overrides it. For ppc64, we should use
+	  16k-aligned base address. The kernel is linked as a
+	  position-independent executable (PIE) and contains dynamic relocations
+	  which are processed early in the bootup process.
+
+	  One use is for the kexec on panic case where the recovery kernel
+	  must live at a different physical address than the primary
+	  kernel.
+
+	  Note: If CONFIG_RELOCATABLE=y, then the kernel runs from the address
+	  it has been loaded at and the compile time physical addresses
+	  CONFIG_PHYSICAL_START is ignored.  However CONFIG_PHYSICAL_START
+	  setting can still be useful to bootwrappers that need to know the
+	  load address of the kernel (eg. u-boot/mkimage).
+
+>>>>>>> v4.9.227
 config CRASH_DUMP
 	bool "Build a kdump crash kernel"
 	depends on PPC64 || 6xx || FSL_BOOKE || (44x && !SMP)
@@ -504,11 +647,14 @@ config NODES_SPAN_OTHER_NODES
 	def_bool y
 	depends on NEED_MULTIPLE_NODES
 
+<<<<<<< HEAD
 config PPC_HAS_HASH_64K
 	bool
 	depends on PPC64
 	default n
 
+=======
+>>>>>>> v4.9.227
 config STDBINUTILS
 	bool "Using standard binutils settings"
 	depends on 44x
@@ -548,6 +694,7 @@ choice
 
 config PPC_4K_PAGES
 	bool "4k page size"
+<<<<<<< HEAD
 
 config PPC_16K_PAGES
 	bool "16k page size" if 44x
@@ -560,6 +707,22 @@ config PPC_64K_PAGES
 config PPC_256K_PAGES
 	bool "256k page size" if 44x
 	depends on !STDBINUTILS
+=======
+	select HAVE_ARCH_SOFT_DIRTY if PPC_BOOK3S_64
+
+config PPC_16K_PAGES
+	bool "16k page size"
+	depends on 44x || PPC_8xx
+
+config PPC_64K_PAGES
+	bool "64k page size"
+	depends on !PPC_FSL_BOOK3E && (44x || PPC_STD_MMU_64 || PPC_BOOK3E_64)
+	select HAVE_ARCH_SOFT_DIRTY if PPC_BOOK3S_64
+
+config PPC_256K_PAGES
+	bool "256k page size"
+	depends on 44x && !STDBINUTILS
+>>>>>>> v4.9.227
 	help
 	  Make the page size 256k.
 
@@ -574,9 +737,15 @@ endchoice
 
 config FORCE_MAX_ZONEORDER
 	int "Maximum zone order"
+<<<<<<< HEAD
 	range 9 64 if PPC64 && PPC_64K_PAGES
 	default "9" if PPC64 && PPC_64K_PAGES
 	range 13 64 if PPC64 && !PPC_64K_PAGES
+=======
+	range 8 9 if PPC64 && PPC_64K_PAGES
+	default "9" if PPC64 && PPC_64K_PAGES
+	range 13 13 if PPC64 && !PPC_64K_PAGES
+>>>>>>> v4.9.227
 	default "13" if PPC64 && !PPC_64K_PAGES
 	range 9 64 if PPC32 && PPC_16K_PAGES
 	default "9" if PPC32 && PPC_16K_PAGES
@@ -763,7 +932,10 @@ config 4xx_SOC
 
 config FSL_LBC
 	bool "Freescale Local Bus support"
+<<<<<<< HEAD
 	depends on FSL_SOC
+=======
+>>>>>>> v4.9.227
 	help
 	  Enables reporting of errors from the Freescale local bus
 	  controller.  Also contains some common code used by
@@ -817,14 +989,20 @@ config PCI_8260
 	select PPC_INDIRECT_PCI
 	default y
 
+<<<<<<< HEAD
 source "drivers/pci/pcie/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 source "drivers/pci/Kconfig"
 
 source "drivers/pcmcia/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/pci/hotplug/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 config HAS_RAPIDIO
 	bool
 	default n
@@ -919,6 +1097,7 @@ config DYNAMIC_MEMSTART
 
 	  This option is overridden by CONFIG_RELOCATABLE
 
+<<<<<<< HEAD
 config RELOCATABLE
 	bool "Build a relocatable kernel"
 	depends on ADVANCED_OPTIONS && FLATMEM && (44x || FSL_BOOKE)
@@ -942,6 +1121,8 @@ config RELOCATABLE_PPC32
 	def_bool y
 	depends on PPC32 && RELOCATABLE
 
+=======
+>>>>>>> v4.9.227
 config PAGE_OFFSET_BOOL
 	bool "Set custom page offset address"
 	depends on ADVANCED_OPTIONS
@@ -1024,6 +1205,7 @@ config CONSISTENT_SIZE
 config PIN_TLB
 	bool "Pinned Kernel TLBs (860 ONLY)"
 	depends on ADVANCED_OPTIONS && 8xx
+<<<<<<< HEAD
 endmenu
 
 if PPC64
@@ -1042,6 +1224,16 @@ config RELOCATABLE
 	  must live at a different physical address than the primary
 	  kernel.
 
+=======
+
+config PIN_TLB_IMMR
+	bool "Pinned TLB for IMMR"
+	depends on PIN_TLB
+	default y
+endmenu
+
+if PPC64
+>>>>>>> v4.9.227
 # This value must have zeroes in the bottom 60 bits otherwise lots will break
 config PAGE_OFFSET
 	hex
@@ -1063,8 +1255,11 @@ source "drivers/Kconfig"
 
 source "fs/Kconfig"
 
+<<<<<<< HEAD
 source "arch/powerpc/sysdev/qe_lib/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 source "lib/Kconfig"
 
 source "arch/powerpc/Kconfig.debug"
@@ -1077,3 +1272,8 @@ config PPC_LIB_RHEAP
 	bool
 
 source "arch/powerpc/kvm/Kconfig"
+<<<<<<< HEAD
+=======
+
+source "kernel/livepatch/Kconfig"
+>>>>>>> v4.9.227

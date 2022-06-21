@@ -629,7 +629,12 @@ static struct attribute_group ocfs2_attr_group = {
 	.attrs = ocfs2_attrs,
 };
 
+<<<<<<< HEAD
 static struct kset *ocfs2_kset;
+=======
+struct kset *ocfs2_kset;
+EXPORT_SYMBOL_GPL(ocfs2_kset);
+>>>>>>> v4.9.227
 
 static void ocfs2_sysfs_exit(void)
 {
@@ -734,8 +739,11 @@ static void __exit ocfs2_stack_glue_exit(void)
 {
 	memset(&locking_max_version, 0,
 	       sizeof(struct ocfs2_protocol_version));
+<<<<<<< HEAD
 	locking_max_version.pv_major = 0;
 	locking_max_version.pv_minor = 0;
+=======
+>>>>>>> v4.9.227
 	ocfs2_sysfs_exit();
 	if (ocfs2_table_header)
 		unregister_sysctl_table(ocfs2_table_header);

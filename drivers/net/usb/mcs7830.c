@@ -445,7 +445,10 @@ static int mcs7830_get_regs_len(struct net_device *net)
 static void mcs7830_get_drvinfo(struct net_device *net, struct ethtool_drvinfo *drvinfo)
 {
 	usbnet_get_drvinfo(net, drvinfo);
+<<<<<<< HEAD
 	drvinfo->regdump_len = mcs7830_get_regs_len(net);
+=======
+>>>>>>> v4.9.227
 }
 
 static void mcs7830_get_regs(struct net_device *net, struct ethtool_regs *regs, void *data)

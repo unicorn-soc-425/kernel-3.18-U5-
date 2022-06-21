@@ -232,6 +232,7 @@ static int mmp_pcm_probe(struct platform_device *pdev)
 		mmp_pcm_hardware[SNDRV_PCM_STREAM_CAPTURE].period_bytes_max =
 						pdata->period_max_capture;
 	}
+<<<<<<< HEAD
 	return snd_soc_register_platform(&pdev->dev, &mmp_soc_platform);
 }
 
@@ -239,16 +240,25 @@ static int mmp_pcm_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_platform(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_platform(&pdev->dev, &mmp_soc_platform);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver mmp_pcm_driver = {
 	.driver = {
 		.name = "mmp-pcm-audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 
 	.probe = mmp_pcm_probe,
 	.remove = mmp_pcm_remove,
+=======
+	},
+
+	.probe = mmp_pcm_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(mmp_pcm_driver);
@@ -256,3 +266,7 @@ module_platform_driver(mmp_pcm_driver);
 MODULE_AUTHOR("Leo Yan <leoy@marvell.com>");
 MODULE_DESCRIPTION("MMP Soc Audio DMA module");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:mmp-pcm-audio");
+>>>>>>> v4.9.227

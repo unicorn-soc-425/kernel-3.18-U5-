@@ -47,8 +47,11 @@ int seq_default_timer_card = -1;
 int seq_default_timer_device =
 #ifdef CONFIG_SND_SEQ_HRTIMER_DEFAULT
 	SNDRV_TIMER_GLOBAL_HRTIMER
+<<<<<<< HEAD
 #elif defined(CONFIG_SND_SEQ_RTCTIMER_DEFAULT)
 	SNDRV_TIMER_GLOBAL_RTC
+=======
+>>>>>>> v4.9.227
 #else
 	SNDRV_TIMER_GLOBAL_SYSTEM
 #endif
@@ -86,7 +89,10 @@ static int __init alsa_seq_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	snd_seq_autoload_lock();
+=======
+>>>>>>> v4.9.227
 	if ((err = client_init_data()) < 0)
 		goto error;
 
@@ -110,8 +116,13 @@ static int __init alsa_seq_init(void)
 	if ((err = snd_seq_system_client_init()) < 0)
 		goto error;
 
+<<<<<<< HEAD
  error:
 	snd_seq_autoload_unlock();
+=======
+	snd_seq_autoload_init();
+ error:
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -131,6 +142,11 @@ static void __exit alsa_seq_exit(void)
 
 	/* release event memory */
 	snd_sequencer_memory_done();
+<<<<<<< HEAD
+=======
+
+	snd_seq_autoload_exit();
+>>>>>>> v4.9.227
 }
 
 module_init(alsa_seq_init)

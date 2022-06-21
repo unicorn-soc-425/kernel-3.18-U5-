@@ -29,9 +29,14 @@
 
 #include <asm/uaccess.h>
 #include <asm/traps.h>
+<<<<<<< HEAD
 #include <asm/desc.h>
 #include <asm/user.h>
 #include <asm/i387.h>
+=======
+#include <asm/user.h>
+#include <asm/fpu/internal.h>
+>>>>>>> v4.9.227
 
 #include "fpu_system.h"
 #include "fpu_emu.h"
@@ -41,6 +46,7 @@
 
 #define __BAD__ FPU_illegal	/* Illegal on an 80486, causes SIGILL */
 
+<<<<<<< HEAD
 #ifndef NO_UNDOC_CODE		/* Un-documented FPU op-codes supported by default. */
 
 /* WARNING: These codes are not documented by Intel in their 80486 manual
@@ -84,6 +90,35 @@ static FUNC const st_instr_table[64] = {
 
 #endif /* NO_UNDOC_CODE */
 
+=======
+/* fcmovCC and f(u)comi(p) are enabled if CPUID(1).EDX(15) "cmov" is set */
+
+/* WARNING: "u" entries are not documented by Intel in their 80486 manual
+   and may not work on FPU clones or later Intel FPUs.
+   Changes to support them provided by Linus Torvalds. */
+
+static FUNC const st_instr_table[64] = {
+/* Opcode:	d8		d9		da		db */
+/*		dc		dd		de		df */
+/* c0..7 */	fadd__,		fld_i_,		fcmovb,		fcmovnb,
+/* c0..7 */	fadd_i,		ffree_,		faddp_,		ffreep,/*u*/
+/* c8..f */	fmul__,		fxch_i,		fcmove,		fcmovne,
+/* c8..f */	fmul_i,		fxch_i,/*u*/	fmulp_,		fxch_i,/*u*/
+/* d0..7 */	fcom_st,	fp_nop,		fcmovbe,	fcmovnbe,
+/* d0..7 */	fcom_st,/*u*/	fst_i_,		fcompst,/*u*/	fstp_i,/*u*/
+/* d8..f */	fcompst,	fstp_i,/*u*/	fcmovu,		fcmovnu,
+/* d8..f */	fcompst,/*u*/	fstp_i,		fcompp,		fstp_i,/*u*/
+/* e0..7 */	fsub__,		FPU_etc,	__BAD__,	finit_,
+/* e0..7 */	fsubri,		fucom_,		fsubrp,		fstsw_,
+/* e8..f */	fsubr_,		fconst,		fucompp,	fucomi_,
+/* e8..f */	fsub_i,		fucomp,		fsubp_,		fucomip,
+/* f0..7 */	fdiv__,		FPU_triga,	__BAD__,	fcomi_,
+/* f0..7 */	fdivri,		__BAD__,	fdivrp,		fcomip,
+/* f8..f */	fdivr_,		FPU_trigb,	__BAD__,	__BAD__,
+/* f8..f */	fdiv_i,		__BAD__,	fdivp_,		__BAD__,
+};
+
+>>>>>>> v4.9.227
 #define _NONE_ 0		/* Take no special action */
 #define _REG0_ 1		/* Need to check for not empty st(0) */
 #define _REGI_ 2		/* Need to check for not empty st(0) and st(rm) */
@@ -95,6 +130,7 @@ static FUNC const st_instr_table[64] = {
 #define _REGIc 0		/* Compare st(0) and st(rm) */
 #define _REGIn 0		/* Uses st(0) and st(rm), but handle checks later */
 
+<<<<<<< HEAD
 #ifndef NO_UNDOC_CODE
 
 /* Un-documented FPU op-codes supported by default. (see above) */
@@ -125,6 +161,20 @@ static u_char const type_table[64] = {
 
 #endif /* NO_UNDOC_CODE */
 
+=======
+static u_char const type_table[64] = {
+/* Opcode:	d8	d9	da	db	dc	dd	de	df */
+/* c0..7 */	_REGI_, _NONE_, _REGIn, _REGIn, _REGIi, _REGi_, _REGIp, _REGi_,
+/* c8..f */	_REGI_, _REGIn, _REGIn, _REGIn, _REGIi, _REGI_, _REGIp, _REGI_,
+/* d0..7 */	_REGIc, _NONE_, _REGIn, _REGIn, _REGIc, _REG0_, _REGIc, _REG0_,
+/* d8..f */	_REGIc, _REG0_, _REGIn, _REGIn, _REGIc, _REG0_, _REGIc, _REG0_,
+/* e0..7 */	_REGI_, _NONE_, _null_, _NONE_, _REGIi, _REGIc, _REGIp, _NONE_,
+/* e8..f */	_REGI_, _NONE_, _REGIc, _REGIc, _REGIi, _REGIc, _REGIp, _REGIc,
+/* f0..7 */	_REGI_, _NONE_, _null_, _REGIc, _REGIi, _null_, _REGIp, _REGIc,
+/* f8..f */	_REGI_, _NONE_, _null_, _null_, _REGIi, _null_, _REGIp, _null_,
+};
+
+>>>>>>> v4.9.227
 #ifdef RE_ENTRANT_CHECKING
 u_char emulating = 0;
 #endif /* RE_ENTRANT_CHECKING */
@@ -147,6 +197,7 @@ void math_emulate(struct math_emu_info *info)
 	unsigned long code_base = 0;
 	unsigned long code_limit = 0;	/* Initialized to stop compiler warnings */
 	struct desc_struct code_descriptor;
+<<<<<<< HEAD
 
 	if (!used_math()) {
 		if (init_fpu(current)) {
@@ -154,6 +205,11 @@ void math_emulate(struct math_emu_info *info)
 			return;
 		}
 	}
+=======
+	struct fpu *fpu = &current->thread.fpu;
+
+	fpu__activate_curr(fpu);
+>>>>>>> v4.9.227
 
 #ifdef RE_ENTRANT_CHECKING
 	if (emulating) {
@@ -185,7 +241,11 @@ void math_emulate(struct math_emu_info *info)
 			math_abort(FPU_info, SIGILL);
 		}
 
+<<<<<<< HEAD
 		code_descriptor = LDT_DESCRIPTOR(FPU_CS);
+=======
+		code_descriptor = FPU_get_ldt_descriptor(FPU_CS);
+>>>>>>> v4.9.227
 		if (SEG_D_SIZE(code_descriptor)) {
 			/* The above test may be wrong, the book is not clear */
 			/* Segmented 32 bit protected mode */
@@ -673,7 +733,11 @@ void math_abort(struct math_emu_info *info, unsigned int signal)
 #endif /* PARANOID */
 }
 
+<<<<<<< HEAD
 #define S387 ((struct i387_soft_struct *)s387)
+=======
+#define S387 ((struct swregs_state *)s387)
+>>>>>>> v4.9.227
 #define sstatus_word() \
   ((S387->swd & ~SW_Top & 0xffff) | ((S387->ftop << SW_Top_Shift) & SW_Top))
 
@@ -682,14 +746,22 @@ int fpregs_soft_set(struct task_struct *target,
 		    unsigned int pos, unsigned int count,
 		    const void *kbuf, const void __user *ubuf)
 {
+<<<<<<< HEAD
 	struct i387_soft_struct *s387 = &target->thread.fpu.state->soft;
+=======
+	struct swregs_state *s387 = &target->thread.fpu.state.soft;
+>>>>>>> v4.9.227
 	void *space = s387->st_space;
 	int ret;
 	int offset, other, i, tags, regnr, tag, newtop;
 
 	RE_ENTRANT_CHECK_OFF;
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf, s387, 0,
+<<<<<<< HEAD
 				 offsetof(struct i387_soft_struct, st_space));
+=======
+				 offsetof(struct swregs_state, st_space));
+>>>>>>> v4.9.227
 	RE_ENTRANT_CHECK_ON;
 
 	if (ret)
@@ -734,7 +806,11 @@ int fpregs_soft_get(struct task_struct *target,
 		    unsigned int pos, unsigned int count,
 		    void *kbuf, void __user *ubuf)
 {
+<<<<<<< HEAD
 	struct i387_soft_struct *s387 = &target->thread.fpu.state->soft;
+=======
+	struct swregs_state *s387 = &target->thread.fpu.state.soft;
+>>>>>>> v4.9.227
 	const void *space = s387->st_space;
 	int ret;
 	int offset = (S387->ftop & 7) * 10, other = 80 - offset;
@@ -752,7 +828,11 @@ int fpregs_soft_get(struct task_struct *target,
 #endif /* PECULIAR_486 */
 
 	ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf, s387, 0,
+<<<<<<< HEAD
 				  offsetof(struct i387_soft_struct, st_space));
+=======
+				  offsetof(struct swregs_state, st_space));
+>>>>>>> v4.9.227
 
 	/* Copy all registers in stack order. */
 	if (!ret)

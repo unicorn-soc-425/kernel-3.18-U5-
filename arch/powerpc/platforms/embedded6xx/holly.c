@@ -26,7 +26,11 @@
 #include <linux/tty.h>
 #include <linux/serial_core.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/extable.h>
+>>>>>>> v4.9.227
 
 #include <asm/time.h>
 #include <asm/machdep.h>
@@ -193,7 +197,11 @@ void holly_show_cpuinfo(struct seq_file *m)
 	seq_printf(m, "machine\t\t: PPC750 GX/CL\n");
 }
 
+<<<<<<< HEAD
 void holly_restart(char *cmd)
+=======
+void __noreturn holly_restart(char *cmd)
+>>>>>>> v4.9.227
 {
 	__be32 __iomem *ocn_bar1 = NULL;
 	unsigned long bar;
@@ -250,9 +258,13 @@ void holly_halt(void)
  */
 static int __init holly_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (!of_flat_dt_is_compatible(root, "ibm,holly"))
+=======
+	if (!of_machine_is_compatible("ibm,holly"))
+>>>>>>> v4.9.227
 		return 0;
 	return 1;
 }

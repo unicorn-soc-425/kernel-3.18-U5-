@@ -10,6 +10,7 @@
 #include <os.h>
 #include <skas.h>
 
+<<<<<<< HEAD
 int new_mm(unsigned long stack)
 {
 	int fd, err;
@@ -29,6 +30,8 @@ int new_mm(unsigned long stack)
 	return fd;
 }
 
+=======
+>>>>>>> v4.9.227
 extern void start_kernel(void);
 
 static int __init start_kernel_proc(void *unused)
@@ -40,9 +43,13 @@ static int __init start_kernel_proc(void *unused)
 
 	cpu_tasks[0].pid = pid;
 	cpu_tasks[0].task = current;
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	init_cpu_online(get_cpu_mask(0));
 #endif
+=======
+
+>>>>>>> v4.9.227
 	start_kernel();
 	return 0;
 }
@@ -55,6 +62,7 @@ int __init start_uml(void)
 {
 	stack_protections((unsigned long) &cpu0_irqstack);
 	set_sigstack(cpu0_irqstack, THREAD_SIZE);
+<<<<<<< HEAD
 	if (proc_mm) {
 		userspace_pid[0] = start_userspace(0);
 		if (userspace_pid[0] < 0) {
@@ -63,6 +71,8 @@ int __init start_uml(void)
 			exit(1);
 		}
 	}
+=======
+>>>>>>> v4.9.227
 
 	init_new_thread_signals();
 

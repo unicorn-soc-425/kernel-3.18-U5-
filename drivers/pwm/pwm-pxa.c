@@ -160,7 +160,11 @@ pxa_pwm_of_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
 	if (IS_ERR(pwm))
 		return pwm;
 
+<<<<<<< HEAD
 	pwm_set_period(pwm, args->args[0]);
+=======
+	pwm->args.period = args->args[0];
+>>>>>>> v4.9.227
 
 	return pwm;
 }
@@ -225,7 +229,10 @@ static int pwm_remove(struct platform_device *pdev)
 static struct platform_driver pwm_driver = {
 	.driver		= {
 		.name	= "pxa25x-pwm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = pwm_of_match,
 	},
 	.probe		= pwm_probe,

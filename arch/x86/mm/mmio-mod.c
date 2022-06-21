@@ -24,7 +24,11 @@
 
 #define DEBUG 1
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> v4.9.227
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
@@ -385,7 +389,11 @@ static void enter_uniprocessor(void)
 	int cpu;
 	int err;
 
+<<<<<<< HEAD
 	if (downed_cpus == NULL &&
+=======
+	if (!cpumask_available(downed_cpus) &&
+>>>>>>> v4.9.227
 	    !alloc_cpumask_var(&downed_cpus, GFP_KERNEL)) {
 		pr_notice("Failed to allocate mask\n");
 		goto out;
@@ -415,7 +423,11 @@ static void leave_uniprocessor(void)
 	int cpu;
 	int err;
 
+<<<<<<< HEAD
 	if (downed_cpus == NULL || cpumask_weight(downed_cpus) == 0)
+=======
+	if (!cpumask_available(downed_cpus) || cpumask_weight(downed_cpus) == 0)
+>>>>>>> v4.9.227
 		return;
 	pr_notice("Re-enabling CPUs...\n");
 	for_each_cpu(cpu, downed_cpus) {

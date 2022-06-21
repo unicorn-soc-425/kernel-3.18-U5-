@@ -6,6 +6,10 @@
 #include <linux/msi.h>
 #include <linux/irq.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqdomain.h>
+>>>>>>> v4.9.227
 
 #include <asm/hw_irq.h>
 #include <asm/irq_remapping.h>
@@ -17,12 +21,16 @@
 #include "irq_remapping.h"
 
 int irq_remapping_enabled;
+<<<<<<< HEAD
 
 int disable_irq_remap;
+=======
+>>>>>>> v4.9.227
 int irq_remap_broken;
 int disable_sourceid_checking;
 int no_x2apic_optout;
 
+<<<<<<< HEAD
 static struct irq_remap_ops *remap_ops;
 
 static int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec);
@@ -37,6 +45,13 @@ static bool irq_remapped(struct irq_cfg *cfg)
 	return (cfg->remapped == 1);
 }
 
+=======
+int disable_irq_post = 0;
+
+static int disable_irq_remap;
+static struct irq_remap_ops *remap_ops;
+
+>>>>>>> v4.9.227
 static void irq_remapping_disable_io_apic(void)
 {
 	/*
@@ -46,6 +61,7 @@ static void irq_remapping_disable_io_apic(void)
 	 * As this gets called during crash dump, keep this simple for
 	 * now.
 	 */
+<<<<<<< HEAD
 	if (cpu_has_apic || apic_from_smp_config())
 		disconnect_bsp_APIC(0);
 }
@@ -161,6 +177,15 @@ static void __init irq_remapping_modify_x86_ops(void)
 	x86_msi.setup_msi_irqs		= irq_remapping_setup_msi_irqs;
 	x86_msi.setup_hpet_msi		= setup_hpet_msi_remapped;
 	x86_msi.compose_msi_msg		= compose_remapped_msi_msg;
+=======
+	if (boot_cpu_has(X86_FEATURE_APIC) || apic_from_smp_config())
+		disconnect_bsp_APIC(0);
+}
+
+static void __init irq_remapping_modify_x86_ops(void)
+{
+	x86_io_apic_ops.disable		= irq_remapping_disable_io_apic;
+>>>>>>> v4.9.227
 }
 
 static __init int setup_nointremap(char *str)
@@ -176,6 +201,7 @@ static __init int setup_irqremap(char *str)
 		return -EINVAL;
 
 	while (*str) {
+<<<<<<< HEAD
 		if (!strncmp(str, "on", 2))
 			disable_irq_remap = 0;
 		else if (!strncmp(str, "off", 3))
@@ -184,6 +210,20 @@ static __init int setup_irqremap(char *str)
 			disable_sourceid_checking = 1;
 		else if (!strncmp(str, "no_x2apic_optout", 16))
 			no_x2apic_optout = 1;
+=======
+		if (!strncmp(str, "on", 2)) {
+			disable_irq_remap = 0;
+			disable_irq_post = 0;
+		} else if (!strncmp(str, "off", 3)) {
+			disable_irq_remap = 1;
+			disable_irq_post = 1;
+		} else if (!strncmp(str, "nosid", 5))
+			disable_sourceid_checking = 1;
+		else if (!strncmp(str, "no_x2apic_optout", 16))
+			no_x2apic_optout = 1;
+		else if (!strncmp(str, "nopost", 6))
+			disable_irq_post = 1;
+>>>>>>> v4.9.227
 
 		str += strcspn(str, ",");
 		while (*str == ',')
@@ -194,6 +234,7 @@ static __init int setup_irqremap(char *str)
 }
 early_param("intremap", setup_irqremap);
 
+<<<<<<< HEAD
 void __init setup_irq_remapping_ops(void)
 {
 	remap_ops = &intel_irq_remap_ops;
@@ -204,11 +245,14 @@ void __init setup_irq_remapping_ops(void)
 #endif
 }
 
+=======
+>>>>>>> v4.9.227
 void set_irq_remapping_broken(void)
 {
 	irq_remap_broken = 1;
 }
 
+<<<<<<< HEAD
 int irq_remapping_supported(void)
 {
 	if (disable_irq_remap)
@@ -226,13 +270,42 @@ int __init irq_remapping_prepare(void)
 		return -ENODEV;
 
 	return remap_ops->prepare();
+=======
+bool irq_remapping_cap(enum irq_remap_cap cap)
+{
+	if (!remap_ops || disable_irq_post)
+		return false;
+
+	return (remap_ops->capability & (1 << cap));
+}
+EXPORT_SYMBOL_GPL(irq_remapping_cap);
+
+int __init irq_remapping_prepare(void)
+{
+	if (disable_irq_remap)
+		return -ENOSYS;
+
+	if (intel_irq_remap_ops.prepare() == 0)
+		remap_ops = &intel_irq_remap_ops;
+	else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
+		 amd_iommu_irq_ops.prepare() == 0)
+		remap_ops = &amd_iommu_irq_ops;
+	else
+		return -ENOSYS;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 int __init irq_remapping_enable(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (!remap_ops || !remap_ops->enable)
+=======
+	if (!remap_ops->enable)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	ret = remap_ops->enable();
@@ -245,22 +318,34 @@ int __init irq_remapping_enable(void)
 
 void irq_remapping_disable(void)
 {
+<<<<<<< HEAD
 	if (!irq_remapping_enabled ||
 	    !remap_ops ||
 	    !remap_ops->disable)
 		return;
 
 	remap_ops->disable();
+=======
+	if (irq_remapping_enabled && remap_ops->disable)
+		remap_ops->disable();
+>>>>>>> v4.9.227
 }
 
 int irq_remapping_reenable(int mode)
 {
+<<<<<<< HEAD
 	if (!irq_remapping_enabled ||
 	    !remap_ops ||
 	    !remap_ops->reenable)
 		return 0;
 
 	return remap_ops->reenable(mode);
+=======
+	if (irq_remapping_enabled && remap_ops->reenable)
+		return remap_ops->reenable(mode);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 int __init irq_remap_enable_fault_handling(void)
@@ -268,12 +353,17 @@ int __init irq_remap_enable_fault_handling(void)
 	if (!irq_remapping_enabled)
 		return 0;
 
+<<<<<<< HEAD
 	if (!remap_ops || !remap_ops->enable_faulting)
+=======
+	if (!remap_ops->enable_faulting)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	return remap_ops->enable_faulting();
 }
 
+<<<<<<< HEAD
 int setup_ioapic_remapped_entry(int irq,
 				struct IO_APIC_route_entry *entry,
 				unsigned int destination, int vector,
@@ -350,17 +440,24 @@ int setup_hpet_msi_remapped(unsigned int irq, unsigned int id)
 	return default_setup_hpet_msi(irq, id);
 }
 
+=======
+>>>>>>> v4.9.227
 void panic_if_irq_remap(const char *msg)
 {
 	if (irq_remapping_enabled)
 		panic(msg);
 }
 
+<<<<<<< HEAD
 static void ir_ack_apic_edge(struct irq_data *data)
+=======
+void ir_ack_apic_edge(struct irq_data *data)
+>>>>>>> v4.9.227
 {
 	ack_APIC_irq();
 }
 
+<<<<<<< HEAD
 static void ir_ack_apic_level(struct irq_data *data)
 {
 	ack_APIC_irq();
@@ -387,4 +484,39 @@ bool setup_remapped_irq(int irq, struct irq_cfg *cfg, struct irq_chip *chip)
 	irq_set_status_flags(irq, IRQ_MOVE_PCNTXT);
 	irq_remap_modify_chip_defaults(chip);
 	return true;
+=======
+/**
+ * irq_remapping_get_ir_irq_domain - Get the irqdomain associated with the IOMMU
+ *				     device serving request @info
+ * @info: interrupt allocation information, used to identify the IOMMU device
+ *
+ * It's used to get parent irqdomain for HPET and IOAPIC irqdomains.
+ * Returns pointer to IRQ domain, or NULL on failure.
+ */
+struct irq_domain *
+irq_remapping_get_ir_irq_domain(struct irq_alloc_info *info)
+{
+	if (!remap_ops || !remap_ops->get_ir_irq_domain)
+		return NULL;
+
+	return remap_ops->get_ir_irq_domain(info);
+}
+
+/**
+ * irq_remapping_get_irq_domain - Get the irqdomain serving the request @info
+ * @info: interrupt allocation information, used to identify the IOMMU device
+ *
+ * There will be one PCI MSI/MSIX irqdomain associated with each interrupt
+ * remapping device, so this interface is used to retrieve the PCI MSI/MSIX
+ * irqdomain serving request @info.
+ * Returns pointer to IRQ domain, or NULL on failure.
+ */
+struct irq_domain *
+irq_remapping_get_irq_domain(struct irq_alloc_info *info)
+{
+	if (!remap_ops || !remap_ops->get_irq_domain)
+		return NULL;
+
+	return remap_ops->get_irq_domain(info);
+>>>>>>> v4.9.227
 }

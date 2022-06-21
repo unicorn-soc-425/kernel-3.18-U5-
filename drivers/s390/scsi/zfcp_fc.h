@@ -212,8 +212,11 @@ static inline
 void zfcp_fc_scsi_to_fcp(struct fcp_cmnd *fcp, struct scsi_cmnd *scsi,
 			 u8 tm_flags)
 {
+<<<<<<< HEAD
 	char tag[2];
 
+=======
+>>>>>>> v4.9.227
 	int_to_scsilun(scsi->device->lun, (struct scsi_lun *) &fcp->fc_lun);
 
 	if (unlikely(tm_flags)) {
@@ -221,6 +224,7 @@ void zfcp_fc_scsi_to_fcp(struct fcp_cmnd *fcp, struct scsi_cmnd *scsi,
 		return;
 	}
 
+<<<<<<< HEAD
 	if (scsi_populate_tag_msg(scsi, tag)) {
 		switch (tag[0]) {
 		case MSG_ORDERED_TAG:
@@ -232,6 +236,9 @@ void zfcp_fc_scsi_to_fcp(struct fcp_cmnd *fcp, struct scsi_cmnd *scsi,
 		};
 	} else
 		fcp->fc_pri_ta = FCP_PTA_SIMPLE;
+=======
+	fcp->fc_pri_ta = FCP_PTA_SIMPLE;
+>>>>>>> v4.9.227
 
 	if (scsi->sc_data_direction == DMA_FROM_DEVICE)
 		fcp->fc_flags |= FCP_CFL_RDDATA;

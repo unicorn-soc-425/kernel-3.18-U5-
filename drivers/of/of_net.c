@@ -38,6 +38,18 @@ int of_get_phy_mode(struct device_node *np)
 }
 EXPORT_SYMBOL_GPL(of_get_phy_mode);
 
+<<<<<<< HEAD
+=======
+static const void *of_get_mac_addr(struct device_node *np, const char *name)
+{
+	struct property *pp = of_find_property(np, name, NULL);
+
+	if (pp && pp->length == ETH_ALEN && is_valid_ether_addr(pp->value))
+		return pp->value;
+	return NULL;
+}
+
+>>>>>>> v4.9.227
 /**
  * Search the device tree for the best MAC address to use.  'mac-address' is
  * checked first, because that is supposed to contain to "most recent" MAC
@@ -58,6 +70,7 @@ EXPORT_SYMBOL_GPL(of_get_phy_mode);
 */
 const void *of_get_mac_address(struct device_node *np)
 {
+<<<<<<< HEAD
 	struct property *pp;
 
 	pp = of_find_property(np, "mac-address", NULL);
@@ -73,5 +86,18 @@ const void *of_get_mac_address(struct device_node *np)
 		return pp->value;
 
 	return NULL;
+=======
+	const void *addr;
+
+	addr = of_get_mac_addr(np, "mac-address");
+	if (addr)
+		return addr;
+
+	addr = of_get_mac_addr(np, "local-mac-address");
+	if (addr)
+		return addr;
+
+	return of_get_mac_addr(np, "address");
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(of_get_mac_address);

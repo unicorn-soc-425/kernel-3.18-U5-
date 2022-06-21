@@ -8,7 +8,10 @@
 
 #include <linux/fs.h>
 #include <linux/time.h>
+<<<<<<< HEAD
 #include <linux/jbd2.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/highuid.h>
 #include <linux/pagemap.h>
 #include <linux/quotaops.h>
@@ -18,15 +21,23 @@
 #include <linux/pagevec.h>
 #include <linux/mpage.h>
 #include <linux/namei.h>
+<<<<<<< HEAD
 #include <linux/aio.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/uio.h>
 #include <linux/bio.h>
 #include <linux/workqueue.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/ratelimit.h>
 #include <linux/backing-dev.h>
+=======
+#include <linux/backing-dev.h>
+#include <linux/fscrypto.h>
+>>>>>>> v4.9.227
 
 #include "ext4_jbd2.h"
 #include "xattr.h"
@@ -56,23 +67,34 @@ void ext4_exit_pageio(void)
  */
 static void buffer_io_error(struct buffer_head *bh)
 {
+<<<<<<< HEAD
 	char b[BDEVNAME_SIZE];
 	printk_ratelimited(KERN_ERR "Buffer I/O error on device %s, logical block %llu\n",
 			bdevname(bh->b_bdev, b),
+=======
+	printk_ratelimited(KERN_ERR "Buffer I/O error on device %pg, logical block %llu\n",
+		       bh->b_bdev,
+>>>>>>> v4.9.227
 			(unsigned long long)bh->b_blocknr);
 }
 
 static void ext4_finish_bio(struct bio *bio)
 {
 	int i;
+<<<<<<< HEAD
 	int error = !test_bit(BIO_UPTODATE, &bio->bi_flags);
+=======
+>>>>>>> v4.9.227
 	struct bio_vec *bvec;
 
 	bio_for_each_segment_all(bvec, bio, i) {
 		struct page *page = bvec->bv_page;
 #ifdef CONFIG_EXT4_FS_ENCRYPTION
 		struct page *data_page = NULL;
+<<<<<<< HEAD
 		struct ext4_crypto_ctx *ctx = NULL;
+=======
+>>>>>>> v4.9.227
 #endif
 		struct buffer_head *bh, *head;
 		unsigned bio_start = bvec->bv_offset;
@@ -87,6 +109,7 @@ static void ext4_finish_bio(struct bio *bio)
 		if (!page->mapping) {
 			/* The bounce data pages are unmapped. */
 			data_page = page;
+<<<<<<< HEAD
 			ctx = (struct ext4_crypto_ctx *)page_private(data_page);
 			page = ctx->w.control_page;
 		}
@@ -95,6 +118,15 @@ static void ext4_finish_bio(struct bio *bio)
 		if (error) {
 			SetPageError(page);
 			set_bit(AS_EIO, &page->mapping->flags);
+=======
+			fscrypt_pullback_bio_page(&page, false);
+		}
+#endif
+
+		if (bio->bi_error) {
+			SetPageError(page);
+			mapping_set_error(page->mapping, -EIO);
+>>>>>>> v4.9.227
 		}
 		bh = head = page_buffers(page);
 		/*
@@ -111,15 +143,24 @@ static void ext4_finish_bio(struct bio *bio)
 				continue;
 			}
 			clear_buffer_async_write(bh);
+<<<<<<< HEAD
 			if (error)
+=======
+			if (bio->bi_error)
+>>>>>>> v4.9.227
 				buffer_io_error(bh);
 		} while ((bh = bh->b_this_page) != head);
 		bit_spin_unlock(BH_Uptodate_Lock, &head->b_state);
 		local_irq_restore(flags);
 		if (!under_io) {
 #ifdef CONFIG_EXT4_FS_ENCRYPTION
+<<<<<<< HEAD
 			if (ctx)
 				ext4_restore_control_page(data_page);
+=======
+			if (data_page)
+				fscrypt_restore_control_page(data_page);
+>>>>>>> v4.9.227
 #endif
 			end_page_writeback(page);
 		}
@@ -134,9 +175,12 @@ static void ext4_release_io_end(ext4_io_end_t *io_end)
 	BUG_ON(io_end->flag & EXT4_IO_END_UNWRITTEN);
 	WARN_ON(io_end->handle);
 
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&EXT4_I(io_end->inode)->i_ioend_count))
 		wake_up_all(ext4_ioend_wq(io_end->inode));
 
+=======
+>>>>>>> v4.9.227
 	for (bio = io_end->bio; bio; bio = next_bio) {
 		next_bio = bio->bi_private;
 		ext4_finish_bio(bio);
@@ -145,6 +189,7 @@ static void ext4_release_io_end(ext4_io_end_t *io_end)
 	kmem_cache_free(io_end_cachep, io_end);
 }
 
+<<<<<<< HEAD
 static void ext4_clear_io_unwritten_flag(ext4_io_end_t *io_end)
 {
 	struct inode *inode = io_end->inode;
@@ -155,6 +200,8 @@ static void ext4_clear_io_unwritten_flag(ext4_io_end_t *io_end)
 		wake_up_all(ext4_ioend_wq(inode));
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Check a range of space and convert unwritten extents to written. Note that
  * we are protected from truncate touching same part of extent tree by the
@@ -271,7 +318,10 @@ ext4_io_end_t *ext4_init_io_end(struct inode *inode, gfp_t flags)
 {
 	ext4_io_end_t *io = kmem_cache_zalloc(io_end_cachep, flags);
 	if (io) {
+<<<<<<< HEAD
 		atomic_inc(&EXT4_I(inode)->i_ioend_count);
+=======
+>>>>>>> v4.9.227
 		io->inode = inode;
 		INIT_LIST_HEAD(&io->list);
 		atomic_set(&io->count, 1);
@@ -314,27 +364,44 @@ ext4_io_end_t *ext4_get_io_end(ext4_io_end_t *io_end)
 }
 
 /* BIO completion function for page writeback */
+<<<<<<< HEAD
 static void ext4_end_bio(struct bio *bio, int error)
+=======
+static void ext4_end_bio(struct bio *bio)
+>>>>>>> v4.9.227
 {
 	ext4_io_end_t *io_end = bio->bi_private;
 	sector_t bi_sector = bio->bi_iter.bi_sector;
 
 	BUG_ON(!io_end);
 	bio->bi_end_io = NULL;
+<<<<<<< HEAD
 	if (test_bit(BIO_UPTODATE, &bio->bi_flags))
 		error = 0;
 
 	if (error) {
+=======
+
+	if (bio->bi_error) {
+>>>>>>> v4.9.227
 		struct inode *inode = io_end->inode;
 
 		ext4_warning(inode->i_sb, "I/O error %d writing to inode %lu "
 			     "(offset %llu size %ld starting block %llu)",
+<<<<<<< HEAD
 			     error, inode->i_ino,
+=======
+			     bio->bi_error, inode->i_ino,
+>>>>>>> v4.9.227
 			     (unsigned long long) io_end->offset,
 			     (long) io_end->size,
 			     (unsigned long long)
 			     bi_sector >> (inode->i_blkbits - 9));
+<<<<<<< HEAD
 		mapping_set_error(inode->i_mapping, error);
+=======
+		mapping_set_error(inode->i_mapping, bio->bi_error);
+>>>>>>> v4.9.227
 	}
 
 	if (io_end->flag & EXT4_IO_END_UNWRITTEN) {
@@ -361,10 +428,17 @@ void ext4_io_submit(struct ext4_io_submit *io)
 	struct bio *bio = io->io_bio;
 
 	if (bio) {
+<<<<<<< HEAD
 		bio_get(io->io_bio);
 		submit_bio(io->io_op, io->io_bio);
 		BUG_ON(bio_flagged(io->io_bio, BIO_EOPNOTSUPP));
 		bio_put(io->io_bio);
+=======
+		int io_op_flags = io->io_wbc->sync_mode == WB_SYNC_ALL ?
+				  WRITE_SYNC : 0;
+		bio_set_op_attrs(io->io_bio, REQ_OP_WRITE, io_op_flags);
+		submit_bio(io->io_bio);
+>>>>>>> v4.9.227
 	}
 	io->io_bio = NULL;
 }
@@ -372,7 +446,11 @@ void ext4_io_submit(struct ext4_io_submit *io)
 void ext4_io_submit_init(struct ext4_io_submit *io,
 			 struct writeback_control *wbc)
 {
+<<<<<<< HEAD
 	io->io_op = (wbc->sync_mode == WB_SYNC_ALL ?  WRITE_SYNC : WRITE);
+=======
+	io->io_wbc = wbc;
+>>>>>>> v4.9.227
 	io->io_bio = NULL;
 	io->io_end = NULL;
 }
@@ -380,12 +458,21 @@ void ext4_io_submit_init(struct ext4_io_submit *io,
 static int io_submit_init_bio(struct ext4_io_submit *io,
 			      struct buffer_head *bh)
 {
+<<<<<<< HEAD
 	int nvecs = bio_get_nr_vecs(bh->b_bdev);
 	struct bio *bio;
 
 	bio = bio_alloc(GFP_NOIO, min(nvecs, BIO_MAX_PAGES));
 	if (!bio)
 		return -ENOMEM;
+=======
+	struct bio *bio;
+
+	bio = bio_alloc(GFP_NOIO, BIO_MAX_PAGES);
+	if (!bio)
+		return -ENOMEM;
+	wbc_init_bio(io->io_wbc, bio);
+>>>>>>> v4.9.227
 	bio->bi_iter.bi_sector = bh->b_blocknr * (bh->b_size >> 9);
 	bio->bi_bdev = bh->b_bdev;
 	bio->bi_end_io = ext4_end_bio;
@@ -414,6 +501,10 @@ submit_and_retry:
 	ret = bio_add_page(io->io_bio, page, bh->b_size, bh_offset(bh));
 	if (ret != bh->b_size)
 		goto submit_and_retry;
+<<<<<<< HEAD
+=======
+	wbc_account_io(io->io_wbc, page, bh->b_size);
+>>>>>>> v4.9.227
 	io->io_next_block++;
 	return 0;
 }
@@ -426,14 +517,21 @@ int ext4_bio_write_page(struct ext4_io_submit *io,
 {
 	struct page *data_page = NULL;
 	struct inode *inode = page->mapping->host;
+<<<<<<< HEAD
 	unsigned block_start, blocksize;
+=======
+	unsigned block_start;
+>>>>>>> v4.9.227
 	struct buffer_head *bh, *head;
 	int ret = 0;
 	int nr_submitted = 0;
 	int nr_to_submit = 0;
 
+<<<<<<< HEAD
 	blocksize = 1 << inode->i_blkbits;
 
+=======
+>>>>>>> v4.9.227
 	BUG_ON(!PageLocked(page));
 	BUG_ON(PageWriteback(page));
 
@@ -452,8 +550,13 @@ int ext4_bio_write_page(struct ext4_io_submit *io,
 	 * the page size, the remaining memory is zeroed when mapped, and
 	 * writes to that region are not written out to the file."
 	 */
+<<<<<<< HEAD
 	if (len < PAGE_CACHE_SIZE)
 		zero_user_segment(page, len, PAGE_CACHE_SIZE);
+=======
+	if (len < PAGE_SIZE)
+		zero_user_segment(page, len, PAGE_SIZE);
+>>>>>>> v4.9.227
 	/*
 	 * In the first loop we prepare and mark buffers to submit. We have to
 	 * mark all buffers in the page before submitting so that
@@ -492,6 +595,7 @@ int ext4_bio_write_page(struct ext4_io_submit *io,
 	    nr_to_submit) {
 		gfp_t gfp_flags = GFP_NOFS;
 
+<<<<<<< HEAD
 	retry_encrypt:
 		data_page = ext4_encrypt(inode, page, gfp_flags);
 		if (IS_ERR(data_page)) {
@@ -502,6 +606,27 @@ int ext4_bio_write_page(struct ext4_io_submit *io,
 					congestion_wait(BLK_RW_ASYNC, HZ/50);
 				}
 				gfp_flags |= __GFP_NOFAIL;
+=======
+		/*
+		 * Since bounce page allocation uses a mempool, we can only use
+		 * a waiting mask (i.e. request guaranteed allocation) on the
+		 * first page of the bio.  Otherwise it can deadlock.
+		 */
+		if (io->io_bio)
+			gfp_flags = GFP_NOWAIT | __GFP_NOWARN;
+	retry_encrypt:
+		data_page = fscrypt_encrypt_page(inode, page, gfp_flags);
+		if (IS_ERR(data_page)) {
+			ret = PTR_ERR(data_page);
+			if (ret == -ENOMEM &&
+			    (io->io_bio || wbc->sync_mode == WB_SYNC_ALL)) {
+				gfp_flags = GFP_NOFS;
+				if (io->io_bio)
+					ext4_io_submit(io);
+				else
+					gfp_flags |= __GFP_NOFAIL;
+				congestion_wait(BLK_RW_ASYNC, HZ/50);
+>>>>>>> v4.9.227
 				goto retry_encrypt;
 			}
 			data_page = NULL;
@@ -531,7 +656,11 @@ int ext4_bio_write_page(struct ext4_io_submit *io,
 	if (ret) {
 	out:
 		if (data_page)
+<<<<<<< HEAD
 			ext4_restore_control_page(data_page);
+=======
+			fscrypt_restore_control_page(data_page);
+>>>>>>> v4.9.227
 		printk_ratelimited(KERN_ERR "%s: ret = %d\n", __func__, ret);
 		redirty_page_for_writepage(wbc, page);
 		do {

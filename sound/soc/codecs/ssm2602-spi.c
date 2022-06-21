@@ -35,7 +35,10 @@ MODULE_DEVICE_TABLE(of, ssm2602_of_match);
 static struct spi_driver ssm2602_spi_driver = {
 	.driver = {
 		.name	= "ssm2602",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ssm2602_of_match,
 	},
 	.probe		= ssm2602_spi_probe,

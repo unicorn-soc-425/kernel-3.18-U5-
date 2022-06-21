@@ -1,6 +1,12 @@
 Unisys s-Par drivers
+<<<<<<< HEAD
 M:	Ben Romer <sparmaintainer@unisys.com>
 S:	Maintained
 F:	Documentation/s-Par/overview.txt
 F:	Documentation/s-Par/proc-entries.txt
+=======
+M:	David Kershner <sparmaintainer@unisys.com>
+S:	Maintained
+F:	Documentation/s-Par/overview.txt
+>>>>>>> v4.9.227
 F:	drivers/staging/unisys/

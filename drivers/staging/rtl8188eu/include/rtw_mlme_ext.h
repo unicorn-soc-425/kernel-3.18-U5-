@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __RTW_MLME_EXT_H_
 #define __RTW_MLME_EXT_H_
@@ -191,6 +194,17 @@ struct rt_channel_plan_map {
 	unsigned char	Index2G;
 };
 
+<<<<<<< HEAD
+=======
+static const struct {
+	int channel_plan;
+	char *name;
+} channel_table[] = { { RT_CHANNEL_DOMAIN_FCC, "US" },
+	{ RT_CHANNEL_DOMAIN_ETSI, "EU" },
+	{ RT_CHANNEL_DOMAIN_MKK, "JP" },
+	{ RT_CHANNEL_DOMAIN_CHINA, "CN"} };
+
+>>>>>>> v4.9.227
 enum Associated_AP {
 	atherosAP	= 0,
 	broadcomAP	= 1,
@@ -340,13 +354,21 @@ struct mlme_ext_info {
 	u8	candidate_tid_bitmap;
 	u8	dialogToken;
 	/*  Accept ADDBA Request */
+<<<<<<< HEAD
 	bool bAcceptAddbaReq;
+=======
+	bool accept_addba_req;
+>>>>>>> v4.9.227
 	u8	bwmode_updated;
 	u8	hidden_ssid_mode;
 
 	struct ADDBA_request	ADDBA_req;
 	struct WMM_para_element	WMM_param;
+<<<<<<< HEAD
 	struct HT_caps_element	HT_caps;
+=======
+	struct ieee80211_ht_cap HT_caps;
+>>>>>>> v4.9.227
 	struct HT_info_element	HT_info;
 	struct wlan_bssid_ex	network;/* join network or bss_network,
 					 * if in ap mode, it is the same
@@ -448,10 +470,17 @@ struct mlme_ext_priv {
 
 int init_mlme_ext_priv(struct adapter *adapter);
 int init_hw_mlme_ext(struct adapter *padapter);
+<<<<<<< HEAD
 void free_mlme_ext_priv (struct mlme_ext_priv *pmlmeext);
 extern void init_mlme_ext_timer(struct adapter *padapter);
 extern void init_addba_retry_timer(struct adapter *adapt, struct sta_info *sta);
 extern struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv);
+=======
+void free_mlme_ext_priv(struct mlme_ext_priv *pmlmeext);
+void init_mlme_ext_timer(struct adapter *padapter);
+void init_addba_retry_timer(struct adapter *adapt, struct sta_info *sta);
+struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv);
+>>>>>>> v4.9.227
 
 unsigned char networktype_to_raid(unsigned char network_type);
 u8 judge_network_type(struct adapter *padapter, unsigned char *rate, int len);
@@ -489,14 +518,20 @@ void CAM_empty_entry(struct adapter *Adapter, u8 ucIndex);
 int allocate_fw_sta_entry(struct adapter *padapter);
 void flush_all_cam_entry(struct adapter *padapter);
 
+<<<<<<< HEAD
 void site_survey(struct adapter *padapter);
 u8 collect_bss_info(struct adapter *padapter, struct recv_frame *precv_frame,
 		    struct wlan_bssid_ex *bssid);
+=======
+>>>>>>> v4.9.227
 void update_network(struct wlan_bssid_ex *dst, struct wlan_bssid_ex *src,
 		    struct adapter *adapter, bool update_ie);
 
 int get_bsstype(unsigned short capability);
+<<<<<<< HEAD
 u8 *get_my_bssid(struct wlan_bssid_ex *pnetwork);
+=======
+>>>>>>> v4.9.227
 u16 get_beacon_interval(struct wlan_bssid_ex *bss);
 
 int is_client_associated_to_ap(struct adapter *padapter);
@@ -516,7 +551,11 @@ void ERP_IE_handler(struct adapter *padapter, struct ndis_802_11_var_ie *pIE);
 void VCS_update(struct adapter *padapter, struct sta_info *psta);
 
 void update_beacon_info(struct adapter *padapter, u8 *pframe, uint len,
+<<<<<<< HEAD
 		        struct sta_info *psta);
+=======
+			struct sta_info *psta);
+>>>>>>> v4.9.227
 int rtw_check_bcn_info(struct adapter  *Adapter, u8 *pframe, u32 packet_len);
 void update_IOT_info(struct adapter *padapter);
 void update_capinfo(struct adapter *adapter, u16 updatecap);
@@ -530,6 +569,7 @@ int update_sta_support_rate(struct adapter *padapter, u8 *pvar_ie,
 void update_sta_info(struct adapter *padapter, struct sta_info *psta);
 unsigned int update_basic_rate(unsigned char *ptn, unsigned int ptn_sz);
 unsigned int update_supported_rate(unsigned char *ptn, unsigned int ptn_sz);
+<<<<<<< HEAD
 unsigned int update_MSC_rate(struct HT_caps_element *pHT_caps);
 void Update_RA_Entry(struct adapter *padapter, u32 mac_id);
 void set_sta_rate(struct adapter *padapter, struct sta_info *psta);
@@ -539,6 +579,14 @@ unsigned int receive_disconnect(struct adapter *padapter,
 
 unsigned char get_highest_rate_idx(u32 mask);
 int support_short_GI(struct adapter *padapter, struct HT_caps_element *caps);
+=======
+unsigned int update_MSC_rate(struct ieee80211_ht_cap *pHT_caps);
+void Update_RA_Entry(struct adapter *padapter, u32 mac_id);
+void set_sta_rate(struct adapter *padapter, struct sta_info *psta);
+
+unsigned char get_highest_rate_idx(u32 mask);
+int support_short_GI(struct adapter *padapter, struct ieee80211_ht_cap *caps);
+>>>>>>> v4.9.227
 unsigned int is_ap_in_tkip(struct adapter *padapter);
 unsigned int is_ap_in_wep(struct adapter *padapter);
 unsigned int should_forbid_n_rate(struct adapter *padapter);
@@ -553,12 +601,17 @@ void report_add_sta_event(struct adapter *padapter, unsigned char *addr,
 			  int cam_idx);
 
 void beacon_timing_control(struct adapter *padapter);
+<<<<<<< HEAD
 extern u8 set_tx_beacon_cmd(struct adapter *padapter);
+=======
+u8 set_tx_beacon_cmd(struct adapter *padapter);
+>>>>>>> v4.9.227
 unsigned int setup_beacon_frame(struct adapter *padapter,
 				unsigned char *beacon_frame);
 void update_mgnt_tx_rate(struct adapter *padapter, u8 rate);
 void update_mgntframe_attrib(struct adapter *padapter,
 			     struct pkt_attrib *pattrib);
+<<<<<<< HEAD
 void dump_mgntframe(struct adapter *padapter, struct xmit_frame *pmgntframe);
 s32 dump_mgntframe_and_wait(struct adapter *padapter,
 			    struct xmit_frame *pmgntframe, int timeout_ms);
@@ -577,12 +630,16 @@ void issue_probereq(struct adapter *padapter, struct ndis_802_11_ssid *pssid,
 		    u8 *da);
 s32 issue_probereq_ex(struct adapter *adapter, struct ndis_802_11_ssid *pssid,
 		      u8 *da, int try_cnt, int wait_ms);
+=======
+
+>>>>>>> v4.9.227
 int issue_nulldata(struct adapter *padapter, unsigned char *da,
 		   unsigned int power_mode, int try_cnt, int wait_ms);
 int issue_qos_nulldata(struct adapter *padapter, unsigned char *da,
 		       u16 tid, int try_cnt, int wait_ms);
 int issue_deauth(struct adapter *padapter, unsigned char *da,
 		 unsigned short reason);
+<<<<<<< HEAD
 int issue_deauth_ex(struct adapter *padapter, u8 *da, unsigned short reason,
 		    int try_cnt, int wait_ms);
 void issue_action_spct_ch_switch(struct adapter *padapter, u8 *ra, u8 new_ch,
@@ -639,6 +696,11 @@ unsigned int OnAction_wmm(struct adapter *padapter,
 unsigned int OnAction_p2p(struct adapter *padapter,
 			  struct recv_frame *precv_frame);
 
+=======
+unsigned int send_delba(struct adapter *padapter, u8 initiator, u8 *addr);
+unsigned int send_beacon(struct adapter *padapter);
+
+>>>>>>> v4.9.227
 void mlmeext_joinbss_event_callback(struct adapter *padapter, int join_res);
 void mlmeext_sta_del_event_callback(struct adapter *padapter);
 void mlmeext_sta_add_event_callback(struct adapter *padapter,
@@ -646,6 +708,7 @@ void mlmeext_sta_add_event_callback(struct adapter *padapter,
 
 void linked_status_chk(struct adapter *padapter);
 
+<<<<<<< HEAD
 void survey_timer_hdl (void *function_context);
 void link_timer_hdl (void *funtion_context);
 void addba_timer_hdl(void *function_context);
@@ -659,6 +722,19 @@ void addba_timer_hdl(void *function_context);
 	do { \
 		_set_timer(&(mlmeext)->link_timer, (ms)); \
 	} while (0)
+=======
+void survey_timer_hdl(unsigned long data);
+void link_timer_hdl(unsigned long data);
+void addba_timer_hdl(unsigned long data);
+
+#define set_survey_timer(mlmeext, ms) \
+	mod_timer(&mlmeext->survey_timer, jiffies +	\
+		  msecs_to_jiffies(ms))
+
+#define set_link_timer(mlmeext, ms) \
+	mod_timer(&mlmeext->link_timer, jiffies +	\
+		  msecs_to_jiffies(ms))
+>>>>>>> v4.9.227
 
 int cckrates_included(unsigned char *rate, int ratelen);
 int cckratesonly_included(unsigned char *rate, int ratelen);
@@ -679,7 +755,10 @@ u8 read_bbreg_hdl(struct adapter *padapter, u8 *pbuf);
 u8 write_bbreg_hdl(struct adapter *padapter, u8 *pbuf);
 u8 read_rfreg_hdl(struct adapter *padapter, u8 *pbuf);
 u8 write_rfreg_hdl(struct adapter *padapter, u8 *pbuf);
+<<<<<<< HEAD
 u8 NULL_hdl(struct adapter *padapter, u8 *pbuf);
+=======
+>>>>>>> v4.9.227
 u8 join_cmd_hdl(struct adapter *padapter, u8 *pbuf);
 u8 disconnect_hdl(struct adapter *padapter, u8 *pbuf);
 u8 createbss_hdl(struct adapter *padapter, u8 *pbuf);
@@ -702,6 +781,7 @@ u8 led_blink_hdl(struct adapter *padapter, unsigned char *pbuf);
 u8 set_csa_hdl(struct adapter *padapter, unsigned char *pbuf);
 u8 tdls_hdl(struct adapter *padapter, unsigned char *pbuf);
 
+<<<<<<< HEAD
 #define GEN_DRV_CMD_HANDLER(size, cmd)	{size, &cmd ## _hdl},
 #define GEN_MLME_EXT_HANDLER(size, cmd)	{size, cmd},
 
@@ -723,6 +803,26 @@ static struct cmd_hdl wlancmds[] = {
 	GEN_MLME_EXT_HANDLER(0, mlme_evt_hdl)
 	GEN_MLME_EXT_HANDLER(0, rtw_drvextra_cmd_hdl)
 	GEN_MLME_EXT_HANDLER(sizeof(struct SetChannelPlan_param), set_chplan_hdl)
+=======
+#ifdef _RTW_CMD_C_
+
+static struct cmd_hdl wlancmds[] = {
+	{sizeof(struct wlan_bssid_ex), join_cmd_hdl},
+	{sizeof(struct disconnect_parm), disconnect_hdl},
+	{sizeof(struct wlan_bssid_ex), createbss_hdl},
+	{sizeof(struct setopmode_parm), setopmode_hdl},
+	{sizeof(struct sitesurvey_parm), sitesurvey_cmd_hdl},
+	{sizeof(struct setauth_parm), setauth_hdl},
+	{sizeof(struct setkey_parm), setkey_hdl},
+	{sizeof(struct set_stakey_parm), set_stakey_hdl},
+	{sizeof(struct set_assocsta_parm), NULL},
+	{sizeof(struct addBaReq_parm), add_ba_hdl},
+	{sizeof(struct set_ch_parm), set_ch_hdl},
+	{sizeof(struct wlan_bssid_ex), tx_beacon_hdl},
+	{0, mlme_evt_hdl},
+	{0, rtw_drvextra_cmd_hdl},
+	{sizeof(struct SetChannelPlan_param), set_chplan_hdl}
+>>>>>>> v4.9.227
 };
 
 #endif
@@ -744,6 +844,7 @@ void rtw_dummy_event_callback(struct adapter *adapter, u8 *pbuf);
 void rtw_fwdbg_event_callback(struct adapter *adapter, u8 *pbuf);
 
 enum rtw_c2h_event {
+<<<<<<< HEAD
 	GEN_EVT_CODE(_Read_MACREG) = 0, /*0*/
 	GEN_EVT_CODE(_Read_BBREG),
 	GEN_EVT_CODE(_Read_RFREG),
@@ -770,6 +871,34 @@ enum rtw_c2h_event {
 	GEN_EVT_CODE(_C2HBCN),
 	GEN_EVT_CODE(_ReportPwrState),	/* filen: only for PCIE, USB */
 	GEN_EVT_CODE(_CloseRF),		/* filen: only for PCIE,
+=======
+	_Read_MACREG_EVT_ = 0, /*0*/
+	_Read_BBREG_EVT_,
+	_Read_RFREG_EVT_,
+	_Read_EEPROM_EVT_,
+	_Read_EFUSE_EVT_,
+	_Read_CAM_EVT_,	/*5*/
+	_Get_BasicRate_EVT_,
+	_Get_DataRate_EVT_,
+	_Survey_EVT_,	 /*8*/
+	_SurveyDone_EVT_,	 /*9*/
+
+	_JoinBss_EVT_, /*10*/
+	_AddSTA_EVT_,
+	_DelSTA_EVT_,
+	_AtimDone_EVT_,
+	_TX_Report_EVT_,
+	_CCX_Report_EVT_,		/*15*/
+	_DTM_Report_EVT_,
+	_TX_Rate_Statistics_EVT_,
+	_C2HLBK_EVT_,
+	_FWDBG_EVT_,
+	_C2HFEEDBACK_EVT_,             /*20*/
+	_ADDBA_EVT_,
+	_C2HBCN_EVT_,
+	_ReportPwrState_EVT_,	/* filen: only for PCIE, USB */
+	_CloseRF_EVT_,		/* filen: only for PCIE,
+>>>>>>> v4.9.227
 					 * work around ASPM */
 	MAX_C2HEVT
 };
@@ -787,7 +916,11 @@ static struct fwevent wlanevents[] = {
 	{0, NULL},
 	{0, NULL},
 	{0, &rtw_survey_event_callback},		/*8*/
+<<<<<<< HEAD
 	{sizeof (struct surveydone_event), &rtw_surveydone_event_callback},/*9*/
+=======
+	{sizeof(struct surveydone_event), &rtw_surveydone_event_callback},/*9*/
+>>>>>>> v4.9.227
 	{0, &rtw_joinbss_event_callback},		/*10*/
 	{sizeof(struct stassoc_event), &rtw_stassoc_event_callback},
 	{sizeof(struct stadel_event), &rtw_stadel_event_callback},

@@ -94,8 +94,12 @@ void picolcd_exit_backlight(struct picolcd_data *data)
 	struct backlight_device *bdev = data->backlight;
 
 	data->backlight = NULL;
+<<<<<<< HEAD
 	if (bdev)
 		backlight_device_unregister(bdev);
+=======
+	backlight_device_unregister(bdev);
+>>>>>>> v4.9.227
 }
 
 int picolcd_resume_backlight(struct picolcd_data *data)

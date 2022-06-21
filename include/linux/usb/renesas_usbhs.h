@@ -105,12 +105,34 @@ struct renesas_usbhs_platform_callback {
  * some register needs USB chip specific parameters.
  * This struct show it to driver
  */
+<<<<<<< HEAD
+=======
+
+struct renesas_usbhs_driver_pipe_config {
+	u8 type;	/* USB_ENDPOINT_XFER_xxx */
+	u16 bufsize;
+	u8 bufnum;
+	bool double_buf;
+};
+#define RENESAS_USBHS_PIPE(_type, _size, _num, _double_buf)	{	\
+			.type = (_type),		\
+			.bufsize = (_size),		\
+			.bufnum = (_num),		\
+			.double_buf = (_double_buf),	\
+	}
+
+>>>>>>> v4.9.227
 struct renesas_usbhs_driver_param {
 	/*
 	 * pipe settings
 	 */
+<<<<<<< HEAD
 	u32 *pipe_type; /* array of USB_ENDPOINT_XFER_xxx (from ep0) */
 	int pipe_size; /* pipe_type array size */
+=======
+	struct renesas_usbhs_driver_pipe_config *pipe_configs;
+	int pipe_size; /* pipe_configs array size */
+>>>>>>> v4.9.227
 
 	/*
 	 * option:
@@ -145,6 +167,13 @@ struct renesas_usbhs_driver_param {
 	int d0_rx_id;
 	int d1_tx_id;
 	int d1_rx_id;
+<<<<<<< HEAD
+=======
+	int d2_tx_id;
+	int d2_rx_id;
+	int d3_tx_id;
+	int d3_rx_id;
+>>>>>>> v4.9.227
 
 	/*
 	 * option:
@@ -153,7 +182,11 @@ struct renesas_usbhs_driver_param {
 	 */
 	int pio_dma_border; /* default is 64byte */
 
+<<<<<<< HEAD
 	u32 type;
+=======
+	uintptr_t type;
+>>>>>>> v4.9.227
 	u32 enable_gpio;
 
 	/*
@@ -161,10 +194,19 @@ struct renesas_usbhs_driver_param {
 	 */
 	u32 has_otg:1; /* for controlling PWEN/EXTLP */
 	u32 has_sudmac:1; /* for SUDMAC */
+<<<<<<< HEAD
 };
 
 #define USBHS_TYPE_R8A7790 1
 #define USBHS_TYPE_R8A7791 2
+=======
+	u32 has_usb_dmac:1; /* for USB-DMAC */
+#define USBHS_USB_DMAC_XFER_SIZE	32	/* hardcode the xfer size */
+};
+
+#define USBHS_TYPE_RCAR_GEN2	1
+#define USBHS_TYPE_RCAR_GEN3	2
+>>>>>>> v4.9.227
 
 /*
  * option:

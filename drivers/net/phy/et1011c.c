@@ -87,7 +87,11 @@ static int et1011c_read_status(struct phy_device *phydev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct phy_driver et1011c_driver = {
+=======
+static struct phy_driver et1011c_driver[] = { {
+>>>>>>> v4.9.227
 	.phy_id		= 0x0282f014,
 	.name		= "ET1011C",
 	.phy_id_mask	= 0xfffffff0,
@@ -95,6 +99,7 @@ static struct phy_driver et1011c_driver = {
 	.flags		= PHY_POLL,
 	.config_aneg	= et1011c_config_aneg,
 	.read_status	= et1011c_read_status,
+<<<<<<< HEAD
 	.driver 	= { .owner = THIS_MODULE,},
 };
 
@@ -110,6 +115,11 @@ static void __exit et1011c_exit(void)
 
 module_init(et1011c_init);
 module_exit(et1011c_exit);
+=======
+} };
+
+module_phy_driver(et1011c_driver);
+>>>>>>> v4.9.227
 
 static struct mdio_device_id __maybe_unused et1011c_tbl[] = {
 	{ 0x0282f014, 0xfffffff0 },

@@ -25,8 +25,13 @@
 #include <asm/time.h>
 #include <asm/ipic.h>
 #include <asm/udbg.h>
+<<<<<<< HEAD
 #include <asm/qe.h>
 #include <asm/qe_ic.h>
+=======
+#include <soc/fsl/qe/qe.h>
+#include <soc/fsl/qe/qe_ic.h>
+>>>>>>> v4.9.227
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
 
@@ -89,7 +94,11 @@ static int __init of_fsl_spi_probe(char *type, char *compatible, u32 sysclk,
 			goto err;
 
 		ret = of_irq_to_resource(np, 0, &res[1]);
+<<<<<<< HEAD
 		if (ret == NO_IRQ)
+=======
+		if (!ret)
+>>>>>>> v4.9.227
 			goto err;
 
 		pdev = platform_device_alloc("mpc83xx_spi", i);
@@ -197,6 +206,7 @@ static void __init mpc832x_rdb_setup_arch(void)
 	struct device_node *np;
 #endif
 
+<<<<<<< HEAD
 	if (ppc_md.progress)
 		ppc_md.progress("mpc832x_rdb_setup_arch()", 0);
 
@@ -205,6 +215,11 @@ static void __init mpc832x_rdb_setup_arch(void)
 #ifdef CONFIG_QUICC_ENGINE
 	qe_reset();
 
+=======
+	mpc83xx_setup_arch();
+
+#ifdef CONFIG_QUICC_ENGINE
+>>>>>>> v4.9.227
 	if ((np = of_find_node_by_name(NULL, "par_io")) != NULL) {
 		par_io_init(np);
 		of_node_put(np);
@@ -222,9 +237,13 @@ machine_device_initcall(mpc832x_rdb, mpc83xx_declare_of_platform_devices);
  */
 static int __init mpc832x_rdb_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "MPC832xRDB");
+=======
+	return of_machine_is_compatible("MPC832xRDB");
+>>>>>>> v4.9.227
 }
 
 define_machine(mpc832x_rdb) {

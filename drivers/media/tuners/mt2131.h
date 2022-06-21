@@ -47,8 +47,11 @@ static inline struct dvb_frontend* mt2131_attach(struct dvb_frontend *fe,
 #endif /* CONFIG_MEDIA_TUNER_MT2131 */
 
 #endif /* __MT2131_H__ */
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  */
+=======
+>>>>>>> v4.9.227

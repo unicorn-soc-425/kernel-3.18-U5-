@@ -19,7 +19,10 @@ obj-$(CONFIG_VIA_FIR)		+= via-ircc.o
 obj-$(CONFIG_PXA_FICP)	        += pxaficp_ir.o
 obj-$(CONFIG_MCS_FIR)	        += mcs7780.o
 obj-$(CONFIG_AU1000_FIR)	+= au1k_ir.o
+<<<<<<< HEAD
 obj-$(CONFIG_SH_IRDA)		+= sh_irda.o
+=======
+>>>>>>> v4.9.227
 # SIR drivers
 obj-$(CONFIG_IRTTY_SIR)		+= irtty-sir.o	sir-dev.o
 obj-$(CONFIG_BFIN_SIR)		+= bfin_sir.o

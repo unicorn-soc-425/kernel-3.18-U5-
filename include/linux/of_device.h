@@ -33,6 +33,11 @@ extern int of_device_add(struct platform_device *pdev);
 extern int of_device_register(struct platform_device *ofdev);
 extern void of_device_unregister(struct platform_device *ofdev);
 
+<<<<<<< HEAD
+=======
+extern const void *of_device_get_match_data(const struct device *dev);
+
+>>>>>>> v4.9.227
 extern ssize_t of_device_get_modalias(struct device *dev,
 					char *str, ssize_t len);
 
@@ -57,7 +62,11 @@ void of_dma_configure(struct device *dev, struct device_node *np);
 #else /* CONFIG_OF */
 
 static inline int of_driver_match_device(struct device *dev,
+<<<<<<< HEAD
 					 struct device_driver *drv)
+=======
+					 const struct device_driver *drv)
+>>>>>>> v4.9.227
 {
 	return 0;
 }
@@ -65,6 +74,14 @@ static inline int of_driver_match_device(struct device *dev,
 static inline void of_device_uevent(struct device *dev,
 			struct kobj_uevent_env *env) { }
 
+<<<<<<< HEAD
+=======
+static inline const void *of_device_get_match_data(const struct device *dev)
+{
+	return NULL;
+}
+
+>>>>>>> v4.9.227
 static inline int of_device_get_modalias(struct device *dev,
 				   char *str, ssize_t len)
 {

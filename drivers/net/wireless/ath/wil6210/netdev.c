@@ -14,15 +14,21 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <linux/moduleparam.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/etherdevice.h>
 #include "wil6210.h"
 #include "txrx.h"
 
+<<<<<<< HEAD
 static bool alt_ifname; /* = false; */
 module_param(alt_ifname, bool, S_IRUGO);
 MODULE_PARM_DESC(alt_ifname, " use an alternate interface name wigigN instead of wlanN");
 
+=======
+>>>>>>> v4.9.227
 static int wil_open(struct net_device *ndev)
 {
 	struct wil6210_priv *wil = ndev_to_wil(ndev);
@@ -141,7 +147,10 @@ void *wil_if_alloc(struct device *dev)
 	struct wil6210_priv *wil;
 	struct ieee80211_channel *ch;
 	int rc = 0;
+<<<<<<< HEAD
 	const char *ifname = alt_ifname ? "wigig%d" : "wlan%d";
+=======
+>>>>>>> v4.9.227
 
 	wdev = wil_cfg80211_init(dev);
 	if (IS_ERR(wdev)) {
@@ -163,10 +172,17 @@ void *wil_if_alloc(struct device *dev)
 
 	wdev->iftype = NL80211_IFTYPE_STATION; /* TODO */
 	/* default monitor channel */
+<<<<<<< HEAD
 	ch = wdev->wiphy->bands[IEEE80211_BAND_60GHZ]->channels;
 	cfg80211_chandef_create(&wdev->preset_chandef, ch, NL80211_CHAN_NO_HT);
 
 	ndev = alloc_netdev(0, ifname, NET_NAME_UNKNOWN, wil_dev_setup);
+=======
+	ch = wdev->wiphy->bands[NL80211_BAND_60GHZ]->channels;
+	cfg80211_chandef_create(&wdev->preset_chandef, ch, NL80211_CHAN_NO_HT);
+
+	ndev = alloc_netdev(0, "wlan%d", NET_NAME_UNKNOWN, wil_dev_setup);
+>>>>>>> v4.9.227
 	if (!ndev) {
 		dev_err(dev, "alloc_netdev_mqs failed\n");
 		rc = -ENOMEM;
@@ -178,7 +194,12 @@ void *wil_if_alloc(struct device *dev)
 	ndev->ieee80211_ptr = wdev;
 	ndev->hw_features = NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
 			    NETIF_F_SG | NETIF_F_GRO |
+<<<<<<< HEAD
 			    NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_RXHASH;
+=======
+			    NETIF_F_TSO | NETIF_F_TSO6 |
+			    NETIF_F_RXHASH;
+>>>>>>> v4.9.227
 
 	ndev->features |= ndev->hw_features;
 	SET_NETDEV_DEV(ndev, wiphy_dev(wdev->wiphy));
@@ -231,8 +252,13 @@ int wil_if_add(struct wil6210_priv *wil)
 
 	netif_napi_add(ndev, &wil->napi_rx, wil6210_netdev_poll_rx,
 		       WIL6210_NAPI_BUDGET);
+<<<<<<< HEAD
 	netif_napi_add(ndev, &wil->napi_tx, wil6210_netdev_poll_tx,
 		       WIL6210_NAPI_BUDGET);
+=======
+	netif_tx_napi_add(ndev, &wil->napi_tx, wil6210_netdev_poll_tx,
+			  WIL6210_NAPI_BUDGET);
+>>>>>>> v4.9.227
 
 	netif_tx_stop_all_queues(ndev);
 

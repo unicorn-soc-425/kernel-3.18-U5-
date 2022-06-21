@@ -12,6 +12,7 @@
 #ifndef __ASM_MACH_IRQS_H
 #define __ASM_MACH_IRQS_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_PXA_HAVE_ISA_IRQS
 #define PXA_ISA_IRQ(x)	(x)
 #define PXA_ISA_IRQ_NUM	(16)
@@ -20,6 +21,12 @@
 #endif
 
 #define PXA_IRQ(x)	(PXA_ISA_IRQ_NUM + (x))
+=======
+#include <asm/irq.h>
+
+#define PXA_ISA_IRQ(x)	(x)
+#define PXA_IRQ(x)	(NR_IRQS_LEGACY + (x))
+>>>>>>> v4.9.227
 
 #define IRQ_SSP3	PXA_IRQ(0)	/* SSP3 service request */
 #define IRQ_MSL		PXA_IRQ(1)	/* MSL Interface interrupt */

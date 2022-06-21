@@ -68,8 +68,11 @@ struct screen_info screen_info = {
  * prints out pretty messages and returns.
  */
 
+<<<<<<< HEAD
 extern unsigned long trapbase;
 
+=======
+>>>>>>> v4.9.227
 /* Pretty sick eh? */
 static void prom_sync_me(void)
 {
@@ -109,7 +112,11 @@ unsigned long cmdline_memory_size __initdata = 0;
 unsigned char boot_cpu_id = 0xff; /* 0xff will make it into DATA section... */
 
 static void
+<<<<<<< HEAD
 prom_console_write(struct console *con, const char *s, unsigned n)
+=======
+prom_console_write(struct console *con, const char *s, unsigned int n)
+>>>>>>> v4.9.227
 {
 	prom_write(s, n);
 }
@@ -300,7 +307,11 @@ void __init setup_arch(char **cmdline_p)
 	int i;
 	unsigned long highest_paddr;
 
+<<<<<<< HEAD
 	sparc_ttable = (struct tt_entry *) &trapbase;
+=======
+	sparc_ttable = &trapbase;
+>>>>>>> v4.9.227
 
 	/* Initialize PROM console and command line. */
 	*cmdline_p = prom_getbootargs();

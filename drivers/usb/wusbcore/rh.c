@@ -182,12 +182,21 @@ static int wusbhc_rh_get_hub_descr(struct wusbhc *wusbhc, u16 wValue,
 	if (wLength < length)
 		return -ENOSPC;
 	descr->bDescLength = 7 + 2 * temp;
+<<<<<<< HEAD
 	descr->bDescriptorType = 0x29;	/* HUB type */
 	descr->bNbrPorts = wusbhc->ports_max;
 	descr->wHubCharacteristics = cpu_to_le16(
 		0x00			/* All ports power at once */
 		| 0x00			/* not part of compound device */
 		| 0x10			/* No overcurrent protection */
+=======
+	descr->bDescriptorType = USB_DT_HUB; /* HUB type */
+	descr->bNbrPorts = wusbhc->ports_max;
+	descr->wHubCharacteristics = cpu_to_le16(
+		HUB_CHAR_COMMON_LPSM	/* All ports power at once */
+		| 0x00			/* not part of compound device */
+		| HUB_CHAR_NO_OCPM	/* No overcurrent protection */
+>>>>>>> v4.9.227
 		| 0x00			/* 8 FS think time FIXME ?? */
 		| 0x00);		/* No port indicators */
 	descr->bPwrOn2PwrGood = 0;

@@ -53,7 +53,11 @@ u32 _r8712_init_sta_priv(struct	sta_priv *pstapriv)
 
 	pstapriv->pallocated_stainfo_buf = kmalloc(sizeof(struct sta_info) *
 						   NUM_STA + 4, GFP_ATOMIC);
+<<<<<<< HEAD
 	if (pstapriv->pallocated_stainfo_buf == NULL)
+=======
+	if (!pstapriv->pallocated_stainfo_buf)
+>>>>>>> v4.9.227
 		return _FAIL;
 	pstapriv->pstainfo_buf = pstapriv->pallocated_stainfo_buf + 4 -
 		((addr_t)(pstapriv->pallocated_stainfo_buf) & 3);
@@ -79,19 +83,28 @@ static void mfree_all_stainfo(struct sta_priv *pstapriv)
 {
 	unsigned long irqL;
 	struct list_head *plist, *phead;
+<<<<<<< HEAD
 	struct sta_info *psta = NULL;
+=======
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&pstapriv->sta_hash_lock, irqL);
 	phead = &pstapriv->free_sta_queue.queue;
 	plist = phead->next;
+<<<<<<< HEAD
 	while ((end_of_queue_search(phead, plist)) == false) {
 		psta = LIST_CONTAINOR(plist, struct sta_info, list);
 		plist = plist->next;
 	}
+=======
+	while (!end_of_queue_search(phead, plist))
+		plist = plist->next;
+>>>>>>> v4.9.227
 
 	spin_unlock_irqrestore(&pstapriv->sta_hash_lock, irqL);
 }
 
+<<<<<<< HEAD
 
 static void mfree_sta_priv_lock(struct	sta_priv *pstapriv)
 {
@@ -102,6 +115,13 @@ u32 _r8712_free_sta_priv(struct sta_priv *pstapriv)
 {
 	if (pstapriv) {
 		mfree_sta_priv_lock(pstapriv);
+=======
+u32 _r8712_free_sta_priv(struct sta_priv *pstapriv)
+{
+	if (pstapriv) {
+		/* be done before free sta_hash_lock */
+		mfree_all_stainfo(pstapriv);
+>>>>>>> v4.9.227
 		kfree(pstapriv->pallocated_stainfo_buf);
 	}
 	return _SUCCESS;
@@ -109,7 +129,10 @@ u32 _r8712_free_sta_priv(struct sta_priv *pstapriv)
 
 struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 {
+<<<<<<< HEAD
 	uint tmp_aid;
+=======
+>>>>>>> v4.9.227
 	s32	index;
 	struct list_head *phash_list;
 	struct sta_info	*psta;
@@ -120,6 +143,7 @@ struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 	unsigned long flags;
 
 	pfree_sta_queue = &pstapriv->free_sta_queue;
+<<<<<<< HEAD
 	spin_lock_irqsave(&(pfree_sta_queue->lock), flags);
 	if (list_empty(&pfree_sta_queue->queue))
 		psta = NULL;
@@ -128,6 +152,13 @@ struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 				      struct sta_info, list);
 		list_del_init(&(psta->list));
 		tmp_aid = psta->aid;
+=======
+	spin_lock_irqsave(&pfree_sta_queue->lock, flags);
+	psta = list_first_entry_or_null(&pfree_sta_queue->queue,
+					struct sta_info, list);
+	if (psta) {
+		list_del_init(&psta->list);
+>>>>>>> v4.9.227
 		_init_stainfo(psta);
 		memcpy(psta->hwaddr, hwaddr, ETH_ALEN);
 		index = wifi_mac_hash(hwaddr);
@@ -135,7 +166,11 @@ struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 			psta = NULL;
 			goto exit;
 		}
+<<<<<<< HEAD
 		phash_list = &(pstapriv->sta_hash[index]);
+=======
+		phash_list = &pstapriv->sta_hash[index];
+>>>>>>> v4.9.227
 		list_add_tail(&psta->hash_list, phash_list);
 		pstapriv->asoc_sta_count++;
 
@@ -159,7 +194,11 @@ struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 		}
 	}
 exit:
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&(pfree_sta_queue->lock), flags);
+=======
+	spin_unlock_irqrestore(&pfree_sta_queue->lock, flags);
+>>>>>>> v4.9.227
 	return psta;
 }
 
@@ -200,10 +239,18 @@ void r8712_free_stainfo(struct _adapter *padapter, struct sta_info *psta)
 	_r8712_init_sta_xmit_priv(&psta->sta_xmitpriv);
 	_r8712_init_sta_recv_priv(&psta->sta_recvpriv);
 	/* for A-MPDU Rx reordering buffer control,
+<<<<<<< HEAD
 	 * cancel reordering_ctrl_timer */
 	for (i = 0; i < 16; i++) {
 		preorder_ctrl = &psta->recvreorder_ctrl[i];
 		_cancel_timer_ex(&preorder_ctrl->reordering_ctrl_timer);
+=======
+	 * cancel reordering_ctrl_timer
+	 */
+	for (i = 0; i < 16; i++) {
+		preorder_ctrl = &psta->recvreorder_ctrl[i];
+		del_timer(&preorder_ctrl->reordering_ctrl_timer);
+>>>>>>> v4.9.227
 	}
 	spin_lock(&(pfree_sta_queue->lock));
 	/* insert into free_sta_queue; 20061114 */
@@ -227,12 +274,21 @@ void r8712_free_all_stainfo(struct _adapter *padapter)
 	for (index = 0; index < NUM_STA; index++) {
 		phead = &(pstapriv->sta_hash[index]);
 		plist = phead->next;
+<<<<<<< HEAD
 		while ((end_of_queue_search(phead, plist)) == false) {
 			psta = LIST_CONTAINOR(plist,
 					      struct sta_info, hash_list);
 			plist = plist->next;
 			if (pbcmc_stainfo != psta)
 				r8712_free_stainfo(padapter , psta);
+=======
+		while (!end_of_queue_search(phead, plist)) {
+			psta = container_of(plist,
+					    struct sta_info, hash_list);
+			plist = plist->next;
+			if (pbcmc_stainfo != psta)
+				r8712_free_stainfo(padapter, psta);
+>>>>>>> v4.9.227
 		}
 	}
 	spin_unlock_irqrestore(&pstapriv->sta_hash_lock, irqL);
@@ -252,8 +308,13 @@ struct sta_info *r8712_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 	spin_lock_irqsave(&pstapriv->sta_hash_lock, irqL);
 	phead = &(pstapriv->sta_hash[index]);
 	plist = phead->next;
+<<<<<<< HEAD
 	while ((end_of_queue_search(phead, plist)) == false) {
 		psta = LIST_CONTAINOR(plist, struct sta_info, hash_list);
+=======
+	while (!end_of_queue_search(phead, plist)) {
+		psta = container_of(plist, struct sta_info, hash_list);
+>>>>>>> v4.9.227
 		if ((!memcmp(psta->hwaddr, hwaddr, ETH_ALEN))) {
 			/* if found the matched address */
 			break;
@@ -267,6 +328,7 @@ struct sta_info *r8712_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 
 void r8712_init_bcmc_stainfo(struct _adapter *padapter)
 {
+<<<<<<< HEAD
 	struct sta_info	*psta;
 	struct tx_servq	*ptxservq;
 	unsigned char bcast_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -276,16 +338,29 @@ void r8712_init_bcmc_stainfo(struct _adapter *padapter)
 	if (psta == NULL)
 		return;
 	ptxservq = &(psta->sta_xmitpriv.be_q);
+=======
+	unsigned char bcast_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+	struct	sta_priv *pstapriv = &padapter->stapriv;
+
+	r8712_alloc_stainfo(pstapriv, bcast_addr);
+>>>>>>> v4.9.227
 }
 
 struct sta_info *r8712_get_bcmc_stainfo(struct _adapter *padapter)
 {
+<<<<<<< HEAD
 	struct sta_info *psta;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	u8 bc_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 	psta = r8712_get_stainfo(pstapriv, bc_addr);
 	return psta;
+=======
+	struct sta_priv *pstapriv = &padapter->stapriv;
+	u8 bc_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+
+	return r8712_get_stainfo(pstapriv, bc_addr);
+>>>>>>> v4.9.227
 }
 
 

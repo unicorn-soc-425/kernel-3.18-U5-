@@ -1146,10 +1146,15 @@ static int snd_cs4231_playback_open(struct snd_pcm_substream *substream)
 	runtime->hw = snd_cs4231_playback;
 
 	err = snd_cs4231_open(chip, CS4231_MODE_PLAY);
+<<<<<<< HEAD
 	if (err < 0) {
 		snd_free_pages(runtime->dma_area, runtime->dma_bytes);
 		return err;
 	}
+=======
+	if (err < 0)
+		return err;
+>>>>>>> v4.9.227
 	chip->playback_substream = substream;
 	chip->p_periods_sent = 0;
 	snd_pcm_set_sync(substream);
@@ -1167,10 +1172,15 @@ static int snd_cs4231_capture_open(struct snd_pcm_substream *substream)
 	runtime->hw = snd_cs4231_capture;
 
 	err = snd_cs4231_open(chip, CS4231_MODE_RECORD);
+<<<<<<< HEAD
 	if (err < 0) {
 		snd_free_pages(runtime->dma_area, runtime->dma_bytes);
 		return err;
 	}
+=======
+	if (err < 0)
+		return err;
+>>>>>>> v4.9.227
 	chip->capture_substream = substream;
 	chip->c_periods_sent = 0;
 	snd_pcm_set_sync(substream);
@@ -1285,6 +1295,7 @@ static int snd_cs4231_timer(struct snd_card *card)
 static int snd_cs4231_info_mux(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = {
 		"Line", "CD", "Mic", "Mix"
 	};
@@ -1298,6 +1309,13 @@ static int snd_cs4231_info_mux(struct snd_kcontrol *kcontrol,
 		texts[uinfo->value.enumerated.item]);
 
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"Line", "CD", "Mic", "Mix"
+	};
+
+	return snd_ctl_enum_info(uinfo, 2, 4, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_cs4231_get_mux(struct snd_kcontrol *kcontrol,
@@ -2119,7 +2137,10 @@ MODULE_DEVICE_TABLE(of, cs4231_match);
 static struct platform_driver cs4231_driver = {
 	.driver = {
 		.name = "audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = cs4231_match,
 	},
 	.probe		= cs4231_probe,

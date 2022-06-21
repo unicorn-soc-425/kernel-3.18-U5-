@@ -10,6 +10,19 @@ struct dev_archdata {
 #endif
 };
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_X86_DEV_DMA_OPS) && defined(CONFIG_PCI_DOMAINS)
+struct dma_domain {
+	struct list_head node;
+	struct dma_map_ops *dma_ops;
+	int domain_nr;
+};
+void add_dma_domain(struct dma_domain *domain);
+void del_dma_domain(struct dma_domain *domain);
+#endif
+
+>>>>>>> v4.9.227
 struct pdev_archdata {
 };
 

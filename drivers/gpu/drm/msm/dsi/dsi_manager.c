@@ -198,9 +198,19 @@ static enum drm_connector_status dsi_mgr_connector_detect(
 
 static void dsi_mgr_connector_destroy(struct drm_connector *connector)
 {
+<<<<<<< HEAD
 	DBG("");
 	drm_connector_unregister(connector);
 	drm_connector_cleanup(connector);
+=======
+	struct dsi_connector *dsi_connector = to_dsi_connector(connector);
+
+	DBG("");
+
+	drm_connector_cleanup(connector);
+
+	kfree(dsi_connector);
+>>>>>>> v4.9.227
 }
 
 static void dsi_dual_connector_fix_modes(struct drm_connector *connector)
@@ -302,7 +312,11 @@ static int dsi_mgr_connector_get_modes(struct drm_connector *connector)
 	return num;
 }
 
+<<<<<<< HEAD
 static int dsi_mgr_connector_mode_valid(struct drm_connector *connector,
+=======
+static enum drm_mode_status dsi_mgr_connector_mode_valid(struct drm_connector *connector,
+>>>>>>> v4.9.227
 				struct drm_display_mode *mode)
 {
 	int id = dsi_mgr_connector_get_id(connector);
@@ -434,6 +448,10 @@ static void dsi_mgr_bridge_post_disable(struct drm_bridge *bridge)
 	struct msm_dsi *msm_dsi1 = dsi_mgr_get_dsi(DSI_1);
 	struct mipi_dsi_host *host = msm_dsi->host;
 	struct drm_panel *panel = msm_dsi->panel;
+<<<<<<< HEAD
+=======
+	struct msm_dsi_pll *src_pll;
+>>>>>>> v4.9.227
 	bool is_dual_dsi = IS_DUAL_DSI();
 	int ret;
 
@@ -467,6 +485,13 @@ static void dsi_mgr_bridge_post_disable(struct drm_bridge *bridge)
 								id, ret);
 	}
 
+<<<<<<< HEAD
+=======
+	/* Save PLL status if it is a clock source */
+	src_pll = msm_dsi_phy_get_pll(msm_dsi->phy);
+	msm_dsi_pll_save_state(src_pll);
+
+>>>>>>> v4.9.227
 	ret = msm_dsi_host_power_off(host);
 	if (ret)
 		pr_err("%s: host %d power off failed,%d\n", __func__, id, ret);
@@ -538,12 +563,18 @@ struct drm_connector *msm_dsi_manager_connector_init(u8 id)
 	struct dsi_connector *dsi_connector;
 	int ret, i;
 
+<<<<<<< HEAD
 	dsi_connector = devm_kzalloc(msm_dsi->dev->dev,
 				sizeof(*dsi_connector), GFP_KERNEL);
 	if (!dsi_connector) {
 		ret = -ENOMEM;
 		goto fail;
 	}
+=======
+	dsi_connector = kzalloc(sizeof(*dsi_connector), GFP_KERNEL);
+	if (!dsi_connector)
+		return ERR_PTR(-ENOMEM);
+>>>>>>> v4.9.227
 
 	dsi_connector->id = id;
 
@@ -552,7 +583,11 @@ struct drm_connector *msm_dsi_manager_connector_init(u8 id)
 	ret = drm_connector_init(msm_dsi->dev, connector,
 			&dsi_mgr_connector_funcs, DRM_MODE_CONNECTOR_DSI);
 	if (ret)
+<<<<<<< HEAD
 		goto fail;
+=======
+		return ERR_PTR(ret);
+>>>>>>> v4.9.227
 
 	drm_connector_helper_add(connector, &dsi_mgr_conn_helper_funcs);
 
@@ -565,21 +600,27 @@ struct drm_connector *msm_dsi_manager_connector_init(u8 id)
 	connector->interlace_allowed = 0;
 	connector->doublescan_allowed = 0;
 
+<<<<<<< HEAD
 	ret = drm_connector_register(connector);
 	if (ret)
 		goto fail;
 
+=======
+>>>>>>> v4.9.227
 	for (i = 0; i < MSM_DSI_ENCODER_NUM; i++)
 		drm_mode_connector_attach_encoder(connector,
 						msm_dsi->encoders[i]);
 
 	return connector;
+<<<<<<< HEAD
 
 fail:
 	if (connector)
 		dsi_mgr_connector_destroy(connector);
 
 	return ERR_PTR(ret);
+=======
+>>>>>>> v4.9.227
 }
 
 /* initialize bridge */
@@ -774,7 +815,11 @@ restore_host0:
 	return ret;
 }
 
+<<<<<<< HEAD
 bool msm_dsi_manager_cmd_xfer_trigger(int id, u32 iova, u32 len)
+=======
+bool msm_dsi_manager_cmd_xfer_trigger(int id, u32 dma_base, u32 len)
+>>>>>>> v4.9.227
 {
 	struct msm_dsi *msm_dsi = dsi_mgr_get_dsi(id);
 	struct msm_dsi *msm_dsi0 = dsi_mgr_get_dsi(DSI_0);
@@ -784,9 +829,15 @@ bool msm_dsi_manager_cmd_xfer_trigger(int id, u32 iova, u32 len)
 		return false;
 
 	if (IS_SYNC_NEEDED() && msm_dsi0)
+<<<<<<< HEAD
 		msm_dsi_host_cmd_xfer_commit(msm_dsi0->host, iova, len);
 
 	msm_dsi_host_cmd_xfer_commit(host, iova, len);
+=======
+		msm_dsi_host_cmd_xfer_commit(msm_dsi0->host, dma_base, len);
+
+	msm_dsi_host_cmd_xfer_commit(host, dma_base, len);
+>>>>>>> v4.9.227
 
 	return true;
 }

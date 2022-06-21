@@ -19,10 +19,16 @@
 #include "xfs_format.h"
 #include "xfs_log_format.h"
 #include "xfs_trans_resv.h"
+<<<<<<< HEAD
 #include "xfs_sb.h"
 #include "xfs_ag.h"
 #include "xfs_mount.h"
 #include "xfs_da_format.h"
+=======
+#include "xfs_mount.h"
+#include "xfs_da_format.h"
+#include "xfs_da_btree.h"
+>>>>>>> v4.9.227
 #include "xfs_dir2.h"
 #include "xfs_export.h"
 #include "xfs_inode.h"
@@ -31,6 +37,10 @@
 #include "xfs_trace.h"
 #include "xfs_icache.h"
 #include "xfs_log.h"
+<<<<<<< HEAD
+=======
+#include "xfs_pnfs.h"
+>>>>>>> v4.9.227
 
 /*
  * Note that we only accept fileids which are long enough rather than allow
@@ -152,7 +162,11 @@ xfs_nfs_get_inode(
 		return ERR_PTR(error);
 	}
 
+<<<<<<< HEAD
 	if (ip->i_d.di_gen != generation) {
+=======
+	if (VFS_I(ip)->i_generation != generation) {
+>>>>>>> v4.9.227
 		IRELE(ip);
 		return ERR_PTR(-ESTALE);
 	}
@@ -215,7 +229,11 @@ xfs_fs_get_parent(
 	int			error;
 	struct xfs_inode	*cip;
 
+<<<<<<< HEAD
 	error = xfs_lookup(XFS_I(child->d_inode), &xfs_name_dotdot, &cip, NULL);
+=======
+	error = xfs_lookup(XFS_I(d_inode(child)), &xfs_name_dotdot, &cip, NULL);
+>>>>>>> v4.9.227
 	if (unlikely(error))
 		return ERR_PTR(error);
 
@@ -246,4 +264,12 @@ const struct export_operations xfs_export_operations = {
 	.fh_to_parent		= xfs_fs_fh_to_parent,
 	.get_parent		= xfs_fs_get_parent,
 	.commit_metadata	= xfs_fs_nfs_commit_metadata,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EXPORTFS_BLOCK_OPS
+	.get_uuid		= xfs_fs_get_uuid,
+	.map_blocks		= xfs_fs_map_blocks,
+	.commit_blocks		= xfs_fs_commit_blocks,
+#endif
+>>>>>>> v4.9.227
 };

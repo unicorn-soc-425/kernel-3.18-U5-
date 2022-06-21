@@ -56,7 +56,10 @@ struct uvc_event
 #include <linux/usb/composite.h>
 #include <linux/usb/gadget.h>
 #include <linux/videodev2.h>
+<<<<<<< HEAD
 #include <linux/version.h>
+=======
+>>>>>>> v4.9.227
 #include <media/v4l2-fh.h>
 #include <media/v4l2-device.h>
 
@@ -115,6 +118,10 @@ struct uvc_video
 	unsigned int width;
 	unsigned int height;
 	unsigned int imagesize;
+<<<<<<< HEAD
+=======
+	struct mutex mutex;	/* protects frame parameters */
+>>>>>>> v4.9.227
 
 	/* Requests */
 	unsigned int req_size;
@@ -143,7 +150,11 @@ enum uvc_state
 
 struct uvc_device
 {
+<<<<<<< HEAD
 	struct video_device *vdev;
+=======
+	struct video_device vdev;
+>>>>>>> v4.9.227
 	struct v4l2_device v4l2_dev;
 	enum uvc_state state;
 	struct usb_function func;

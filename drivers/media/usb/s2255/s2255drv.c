@@ -45,6 +45,10 @@
 #include <linux/mm.h>
 #include <linux/vmalloc.h>
 #include <linux/usb.h>
+<<<<<<< HEAD
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/videobuf2-vmalloc.h>
 #include <media/v4l2-common.h>
 #include <media/v4l2-device.h>
@@ -293,7 +297,11 @@ struct s2255_fmt {
 /* buffer for one video frame */
 struct s2255_buffer {
 	/* common v4l buffer stuff -- must be first */
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head list;
 };
 
@@ -558,27 +566,52 @@ static void s2255_fwchunk_complete(struct urb *urb)
 
 }
 
+<<<<<<< HEAD
 static int s2255_got_frame(struct s2255_vc *vc, int jpgsize)
+=======
+static void s2255_got_frame(struct s2255_vc *vc, int jpgsize)
+>>>>>>> v4.9.227
 {
 	struct s2255_buffer *buf;
 	struct s2255_dev *dev = to_s2255_dev(vc->vdev.v4l2_dev);
 	unsigned long flags = 0;
+<<<<<<< HEAD
 	int rc = 0;
 	spin_lock_irqsave(&vc->qlock, flags);
 	if (list_empty(&vc->buf_list)) {
 		dprintk(dev, 1, "No active queue to serve\n");
 		rc = -1;
 		goto unlock;
+=======
+
+	spin_lock_irqsave(&vc->qlock, flags);
+	if (list_empty(&vc->buf_list)) {
+		dprintk(dev, 1, "No active queue to serve\n");
+		spin_unlock_irqrestore(&vc->qlock, flags);
+		return;
+>>>>>>> v4.9.227
 	}
 	buf = list_entry(vc->buf_list.next,
 			 struct s2255_buffer, list);
 	list_del(&buf->list);
+<<<<<<< HEAD
 	v4l2_get_timestamp(&buf->vb.v4l2_buf.timestamp);
 	s2255_fillbuff(vc, buf, jpgsize);
 	dprintk(dev, 2, "%s: [buf] [%p]\n", __func__, buf);
 unlock:
 	spin_unlock_irqrestore(&vc->qlock, flags);
 	return rc;
+=======
+	buf->vb.vb2_buf.timestamp = ktime_get_ns();
+	buf->vb.field = vc->field;
+	buf->vb.sequence = vc->frame_count;
+	spin_unlock_irqrestore(&vc->qlock, flags);
+
+	s2255_fillbuff(vc, buf, jpgsize);
+	/* tell v4l buffer was filled */
+	vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_DONE);
+	dprintk(dev, 2, "%s: [buf] [%p]\n", __func__, buf);
+>>>>>>> v4.9.227
 }
 
 static const struct s2255_fmt *format_by_fourcc(int fourcc)
@@ -609,7 +642,11 @@ static void s2255_fillbuff(struct s2255_vc *vc,
 {
 	int pos = 0;
 	const char *tmpbuf;
+<<<<<<< HEAD
 	char *vbuf = vb2_plane_vaddr(&buf->vb, 0);
+=======
+	char *vbuf = vb2_plane_vaddr(&buf->vb.vb2_buf, 0);
+>>>>>>> v4.9.227
 	unsigned long last_frame;
 	struct s2255_dev *dev = vc->dev;
 
@@ -632,7 +669,11 @@ static void s2255_fillbuff(struct s2255_vc *vc,
 			break;
 		case V4L2_PIX_FMT_JPEG:
 		case V4L2_PIX_FMT_MJPEG:
+<<<<<<< HEAD
 			vb2_set_plane_payload(&buf->vb, 0, jpgsize);
+=======
+			vb2_set_plane_payload(&buf->vb.vb2_buf, 0, jpgsize);
+>>>>>>> v4.9.227
 			memcpy(vbuf, tmpbuf, jpgsize);
 			break;
 		case V4L2_PIX_FMT_YUV422P:
@@ -649,11 +690,14 @@ static void s2255_fillbuff(struct s2255_vc *vc,
 	}
 	dprintk(dev, 2, "s2255fill at : Buffer 0x%08lx size= %d\n",
 		(unsigned long)vbuf, pos);
+<<<<<<< HEAD
 	/* tell v4l buffer was filled */
 	buf->vb.v4l2_buf.field = vc->field;
 	buf->vb.v4l2_buf.sequence = vc->frame_count;
 	v4l2_get_timestamp(&buf->vb.v4l2_buf.timestamp);
 	vb2_buffer_done(&buf->vb, VB2_BUF_STATE_DONE);
+=======
+>>>>>>> v4.9.227
 }
 
 
@@ -661,9 +705,15 @@ static void s2255_fillbuff(struct s2255_vc *vc,
    Videobuf operations
    ------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int queue_setup(struct vb2_queue *vq, const struct v4l2_format *fmt,
 		       unsigned int *nbuffers, unsigned int *nplanes,
 		       unsigned int sizes[], void *alloc_ctxs[])
+=======
+static int queue_setup(struct vb2_queue *vq,
+		       unsigned int *nbuffers, unsigned int *nplanes,
+		       unsigned int sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	struct s2255_vc *vc = vb2_get_drv_priv(vq);
 	if (*nbuffers < S2255_MIN_BUFS)
@@ -676,7 +726,12 @@ static int queue_setup(struct vb2_queue *vq, const struct v4l2_format *fmt,
 static int buffer_prepare(struct vb2_buffer *vb)
 {
 	struct s2255_vc *vc = vb2_get_drv_priv(vb->vb2_queue);
+<<<<<<< HEAD
 	struct s2255_buffer *buf = container_of(vb, struct s2255_buffer, vb);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct s2255_buffer *buf = container_of(vbuf, struct s2255_buffer, vb);
+>>>>>>> v4.9.227
 	int w = vc->width;
 	int h = vc->height;
 	unsigned long size;
@@ -698,13 +753,22 @@ static int buffer_prepare(struct vb2_buffer *vb)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	vb2_set_plane_payload(&buf->vb, 0, size);
+=======
+	vb2_set_plane_payload(&buf->vb.vb2_buf, 0, size);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static void buffer_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct s2255_buffer *buf = container_of(vb, struct s2255_buffer, vb);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct s2255_buffer *buf = container_of(vbuf, struct s2255_buffer, vb);
+>>>>>>> v4.9.227
 	struct s2255_vc *vc = vb2_get_drv_priv(vb->vb2_queue);
 	unsigned long flags = 0;
 	dprintk(vc->dev, 1, "%s\n", __func__);
@@ -716,7 +780,11 @@ static void buffer_queue(struct vb2_buffer *vb)
 static int start_streaming(struct vb2_queue *vq, unsigned int count);
 static void stop_streaming(struct vb2_queue *vq);
 
+<<<<<<< HEAD
 static struct vb2_ops s2255_video_qops = {
+=======
+static const struct vb2_ops s2255_video_qops = {
+>>>>>>> v4.9.227
 	.queue_setup = queue_setup,
 	.buf_prepare = buffer_prepare,
 	.buf_queue = buffer_queue,
@@ -1118,9 +1186,15 @@ static void stop_streaming(struct vb2_queue *vq)
 	spin_lock_irqsave(&vc->qlock, flags);
 	list_for_each_entry_safe(buf, node, &vc->buf_list, list) {
 		list_del(&buf->list);
+<<<<<<< HEAD
 		vb2_buffer_done(&buf->vb, VB2_BUF_STATE_ERROR);
 		dprintk(vc->dev, 2, "[%p/%d] done\n",
 			buf, buf->vb.v4l2_buf.index);
+=======
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+		dprintk(vc->dev, 2, "[%p/%d] done\n",
+			buf, buf->vb.vb2_buf.index);
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&vc->qlock, flags);
 }
@@ -1900,11 +1974,21 @@ static long s2255_vendor_req(struct s2255_dev *dev, unsigned char Request,
 			     s32 TransferBufferLength, int bOut)
 {
 	int r;
+<<<<<<< HEAD
+=======
+	unsigned char *buf;
+
+	buf = kmalloc(TransferBufferLength, GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+
+>>>>>>> v4.9.227
 	if (!bOut) {
 		r = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
 				    Request,
 				    USB_TYPE_VENDOR | USB_RECIP_DEVICE |
 				    USB_DIR_IN,
+<<<<<<< HEAD
 				    Value, Index, TransferBuffer,
 				    TransferBufferLength, HZ * 5);
 	} else {
@@ -1913,6 +1997,21 @@ static long s2255_vendor_req(struct s2255_dev *dev, unsigned char Request,
 				    Value, Index, TransferBuffer,
 				    TransferBufferLength, HZ * 5);
 	}
+=======
+				    Value, Index, buf,
+				    TransferBufferLength, HZ * 5);
+
+		if (r >= 0)
+			memcpy(TransferBuffer, buf, TransferBufferLength);
+	} else {
+		memcpy(buf, TransferBuffer, TransferBufferLength);
+		r = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
+				    Request, USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+				    Value, Index, buf,
+				    TransferBufferLength, HZ * 5);
+	}
+	kfree(buf);
+>>>>>>> v4.9.227
 	return r;
 }
 
@@ -1976,8 +2075,12 @@ static int s2255_release_sys_buffers(struct s2255_vc *vc)
 {
 	unsigned long i;
 	for (i = 0; i < SYS_FRAMES; i++) {
+<<<<<<< HEAD
 		if (vc->buffer.frame[i].lpvbits)
 			vfree(vc->buffer.frame[i].lpvbits);
+=======
+		vfree(vc->buffer.frame[i].lpvbits);
+>>>>>>> v4.9.227
 		vc->buffer.frame[i].lpvbits = NULL;
 	}
 	return 0;
@@ -2113,11 +2216,16 @@ static int s2255_start_readpipe(struct s2255_dev *dev)
 	pipe_info->state = 1;
 	pipe_info->err_count = 0;
 	pipe_info->stream_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pipe_info->stream_urb) {
 		dev_err(&dev->udev->dev,
 			"ReadStream: Unable to alloc URB\n");
 		return -ENOMEM;
 	}
+=======
+	if (!pipe_info->stream_urb)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	/* transfer buffer allocated in board_init */
 	usb_fill_bulk_urb(pipe_info->stream_urb, dev->udev,
 			  pipe,
@@ -2277,9 +2385,13 @@ static int s2255_probe(struct usb_interface *interface,
 		dev_err(&interface->dev, "Could not find bulk-in endpoint\n");
 		goto errorEP;
 	}
+<<<<<<< HEAD
 	init_timer(&dev->timer);
 	dev->timer.function = s2255_timer;
 	dev->timer.data = (unsigned long)dev->fw_data;
+=======
+	setup_timer(&dev->timer, s2255_timer, (unsigned long)dev->fw_data);
+>>>>>>> v4.9.227
 	init_waitqueue_head(&dev->fw_data->wait_fw);
 	for (i = 0; i < MAX_CHANNELS; i++) {
 		struct s2255_vc *vc = &dev->vc[i];
@@ -2292,10 +2404,15 @@ static int s2255_probe(struct usb_interface *interface,
 	}
 
 	dev->fw_data->fw_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!dev->fw_data->fw_urb) {
 		dev_err(&interface->dev, "out of memory!\n");
 		goto errorFWURB;
 	}
+=======
+	if (!dev->fw_data->fw_urb)
+		goto errorFWURB;
+>>>>>>> v4.9.227
 
 	dev->fw_data->pfw_data = kzalloc(CHUNK_SIZE, GFP_KERNEL);
 	if (!dev->fw_data->pfw_data) {

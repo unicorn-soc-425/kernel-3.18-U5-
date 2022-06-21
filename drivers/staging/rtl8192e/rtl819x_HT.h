@@ -6,10 +6,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -19,6 +22,7 @@
 #ifndef _RTL819XU_HTTYPE_H_
 #define _RTL819XU_HTTYPE_H_
 
+<<<<<<< HEAD
 
 #define HT_OPMODE_NO_PROTECT		0
 #define HT_OPMODE_OPTIONAL		1
@@ -58,6 +62,12 @@ enum ht_mcs_rate {
 	HT_MCS15 = 0x00008000,
 };
 
+=======
+#define MIMO_PS_STATIC				0
+
+#define sHTCLng	4
+
+>>>>>>> v4.9.227
 enum ht_channel_width {
 	HT_CHANNEL_WIDTH_20 = 0,
 	HT_CHANNEL_WIDTH_20_40 = 1,
@@ -70,6 +80,7 @@ enum ht_extchnl_offset {
 	HT_EXTCHNL_OFFSET_LOWER = 3,
 };
 
+<<<<<<< HEAD
 enum chnl_op {
 	CHNLOP_NONE = 0,
 	CHNLOP_SCAN = 1,
@@ -135,6 +146,8 @@ enum ht_bw40_sc {
 	SC_MODE_FULL40MHZ = 3,
 };
 
+=======
+>>>>>>> v4.9.227
 struct ht_capab_ele {
 
 	u8	AdvCoding:1;
@@ -195,12 +208,15 @@ struct ht_info_ele {
 	u8	BasicMSC[16];
 } __packed;
 
+<<<<<<< HEAD
 struct mimops_ctrl {
 	u8	MimoPsEnable:1;
 	u8	MimoPsMode:1;
 	u8	Reserved:6;
 };
 
+=======
+>>>>>>> v4.9.227
 enum ht_spec_ver {
 	HT_SPEC_VER_IEEE = 0,
 	HT_SPEC_VER_EWC = 1,
@@ -270,7 +286,10 @@ struct rt_hi_throughput {
 	u8				PeerBandwidth;
 
 	u8				bSwBwInProgress;
+<<<<<<< HEAD
 	enum chnl_op ChnlOp;
+=======
+>>>>>>> v4.9.227
 	u8				SwBwStep;
 
 	u8				bRegRT2RTAggregation;
@@ -297,6 +316,7 @@ struct rt_hi_throughput {
 	u8				bAcceptAddbaReq;
 } __packed;
 
+<<<<<<< HEAD
 
 
 struct rt_htinfo_sta_entry {
@@ -334,6 +354,8 @@ struct rt_htinfo_sta_entry {
 
 
 
+=======
+>>>>>>> v4.9.227
 struct bss_ht {
 
 	u8				bdSupportHT;
@@ -352,6 +374,7 @@ struct bss_ht {
 	u8					bdHT1R;
 };
 
+<<<<<<< HEAD
 struct mimo_rssi {
 	u32	EnableAntenna;
 	u32	AntennaA;
@@ -390,12 +413,20 @@ extern u8 MCS_FILTER_1SS[16];
 
 
 
+=======
+extern u8 MCS_FILTER_ALL[16];
+extern u8 MCS_FILTER_1SS[16];
+
+>>>>>>> v4.9.227
 #define	RATE_ADPT_1SS_MASK		0xFF
 #define	RATE_ADPT_2SS_MASK		0xF0
 #define	RATE_ADPT_MCS32_MASK		0x01
 
+<<<<<<< HEAD
 #define		IS_11N_MCS_RATE(rate)		(rate&0x80)
 
+=======
+>>>>>>> v4.9.227
 enum ht_aggre_size {
 	HT_AGG_SIZE_8K = 0,
 	HT_AGG_SIZE_16K = 1,
@@ -418,10 +449,13 @@ enum ht_iot_peer {
 	HT_IOT_PEER_MAX = 11,
 };
 
+<<<<<<< HEAD
 enum ht_iot_peer_subtype {
 	HT_IOT_PEER_ATHEROS_DIR635 = 0,
 };
 
+=======
+>>>>>>> v4.9.227
 enum ht_iot_action {
 	HT_IOT_ACT_TX_USE_AMSDU_4K = 0x00000001,
 	HT_IOT_ACT_TX_USE_AMSDU_8K = 0x00000002,

@@ -78,7 +78,11 @@ static inline u32 arch_timer_get_cntfrq(void)
 	return val;
 }
 
+<<<<<<< HEAD
 static inline u64 arch_counter_get_cntpct_cp15(void)
+=======
+static inline u64 arch_counter_get_cntpct(void)
+>>>>>>> v4.9.227
 {
 	u64 cval;
 
@@ -87,7 +91,11 @@ static inline u64 arch_counter_get_cntpct_cp15(void)
 	return cval;
 }
 
+<<<<<<< HEAD
 static inline u64 arch_counter_get_cntvct_cp15(void)
+=======
+static inline u64 arch_counter_get_cntvct(void)
+>>>>>>> v4.9.227
 {
 	u64 cval;
 

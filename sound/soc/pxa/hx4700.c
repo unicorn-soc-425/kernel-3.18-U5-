@@ -126,6 +126,7 @@ static const struct snd_soc_dapm_route hx4700_audio_map[] = {
  */
 static int hx4700_ak4641_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 	int err;
@@ -144,6 +145,14 @@ static int hx4700_ak4641_init(struct snd_soc_pcm_runtime *rtd)
 
 	err = snd_soc_jack_add_pins(&hs_jack, ARRAY_SIZE(hs_jack_pin),
 					hs_jack_pin);
+=======
+	int err;
+
+	/* Jack detection API stuff */
+	err = snd_soc_card_jack_new(rtd->card, "Headphone Jack",
+				    SND_JACK_HEADPHONE, &hs_jack, hs_jack_pin,
+				    ARRAY_SIZE(hs_jack_pin));
+>>>>>>> v4.9.227
 	if (err)
 		return err;
 
@@ -184,6 +193,10 @@ static struct snd_soc_card snd_soc_card_hx4700 = {
 	.num_dapm_widgets	= ARRAY_SIZE(hx4700_dapm_widgets),
 	.dapm_routes		= hx4700_audio_map,
 	.num_dapm_routes	= ARRAY_SIZE(hx4700_audio_map),
+<<<<<<< HEAD
+=======
+	.fully_routed		= true,
+>>>>>>> v4.9.227
 };
 
 static struct gpio hx4700_audio_gpios[] = {
@@ -204,7 +217,11 @@ static int hx4700_audio_probe(struct platform_device *pdev)
 		return ret;
 
 	snd_soc_card_hx4700.dev = &pdev->dev;
+<<<<<<< HEAD
 	ret = snd_soc_register_card(&snd_soc_card_hx4700);
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, &snd_soc_card_hx4700);
+>>>>>>> v4.9.227
 	if (ret)
 		gpio_free_array(hx4700_audio_gpios,
 				ARRAY_SIZE(hx4700_audio_gpios));
@@ -214,8 +231,11 @@ static int hx4700_audio_probe(struct platform_device *pdev)
 
 static int hx4700_audio_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	snd_soc_unregister_card(&snd_soc_card_hx4700);
 
+=======
+>>>>>>> v4.9.227
 	gpio_set_value(GPIO92_HX4700_HP_DRIVER, 0);
 	gpio_set_value(GPIO107_HX4700_SPK_nSD, 0);
 
@@ -226,7 +246,10 @@ static int hx4700_audio_remove(struct platform_device *pdev)
 static struct platform_driver hx4700_audio_driver = {
 	.driver	= {
 		.name = "hx4700-audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &snd_soc_pm_ops,
 	},
 	.probe	= hx4700_audio_probe,

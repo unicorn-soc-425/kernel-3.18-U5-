@@ -29,7 +29,10 @@
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/irq.h>
+<<<<<<< HEAD
 #include <linux/sec_debug.h>
+=======
+>>>>>>> v4.9.227
 
 /*
    - No shared variables, all the data are CPU local.
@@ -59,7 +62,11 @@ static struct softirq_action softirq_vec[NR_SOFTIRQS] __cacheline_aligned_in_smp
 DEFINE_PER_CPU(struct task_struct *, ksoftirqd);
 
 const char * const softirq_to_name[NR_SOFTIRQS] = {
+<<<<<<< HEAD
 	"HI", "TIMER", "NET_TX", "NET_RX", "BLOCK", "BLOCK_IOPOLL",
+=======
+	"HI", "TIMER", "NET_TX", "NET_RX", "BLOCK", "IRQ_POLL",
+>>>>>>> v4.9.227
 	"TASKLET", "SCHED", "HRTIMER", "RCU"
 };
 
@@ -79,6 +86,24 @@ static void wakeup_softirqd(void)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * If ksoftirqd is scheduled, we do not want to process pending softirqs
+ * right now. Let ksoftirqd handle this at its own rate, to get fairness,
+ * unless we're doing some of the synchronous softirqs.
+ */
+#define SOFTIRQ_NOW_MASK ((1 << HI_SOFTIRQ) | (1 << TASKLET_SOFTIRQ))
+static bool ksoftirqd_running(unsigned long pending)
+{
+	struct task_struct *tsk = __this_cpu_read(ksoftirqd);
+
+	if (pending & SOFTIRQ_NOW_MASK)
+		return false;
+	return tsk && (tsk->state == TASK_RUNNING);
+}
+
+/*
+>>>>>>> v4.9.227
  * preempt_count and SOFTIRQ_OFFSET usage:
  * - preempt_count is changed by SOFTIRQ_OFFSET on entering or leaving
  *   softirq processing.
@@ -115,8 +140,17 @@ void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)
 		trace_softirqs_off(ip);
 	raw_local_irq_restore(flags);
 
+<<<<<<< HEAD
 	if (preempt_count() == cnt)
 		trace_preempt_off(CALLER_ADDR0, get_parent_ip(CALLER_ADDR1));
+=======
+	if (preempt_count() == cnt) {
+#ifdef CONFIG_DEBUG_PREEMPT
+		current->preempt_disable_ip = get_lock_parent_ip();
+#endif
+		trace_preempt_off(CALLER_ADDR0, get_lock_parent_ip());
+	}
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(__local_bh_disable_ip);
 #endif /* CONFIG_TRACE_IRQFLAGS */
@@ -224,7 +258,11 @@ static inline bool lockdep_softirq_start(void) { return false; }
 static inline void lockdep_softirq_end(bool in_hardirq) { }
 #endif
 
+<<<<<<< HEAD
 asmlinkage __visible void __do_softirq(void)
+=======
+asmlinkage __visible void __softirq_entry __do_softirq(void)
+>>>>>>> v4.9.227
 {
 	unsigned long end = jiffies + MAX_SOFTIRQ_TIME;
 	unsigned long old_flags = current->flags;
@@ -267,10 +305,14 @@ restart:
 		kstat_incr_softirqs_this_cpu(vec_nr);
 
 		trace_softirq_entry(vec_nr);
+<<<<<<< HEAD
 
 		sec_debug_irq_sched_log(vec_nr, h->action, "softirq", SOFTIRQ_ENTRY);
 		h->action(h);
 		sec_debug_irq_sched_log(vec_nr, h->action, "softirq", SOFTIRQ_EXIT);
+=======
+		h->action(h);
+>>>>>>> v4.9.227
 		trace_softirq_exit(vec_nr);
 		if (unlikely(prev_count != preempt_count())) {
 			pr_err("huh, entered softirq %u %s %p with preempt_count %08x, exited with %08x?\n",
@@ -313,7 +355,11 @@ asmlinkage __visible void do_softirq(void)
 
 	pending = local_softirq_pending();
 
+<<<<<<< HEAD
 	if (pending)
+=======
+	if (pending && !ksoftirqd_running(pending))
+>>>>>>> v4.9.227
 		do_softirq_own_stack();
 
 	local_irq_restore(flags);
@@ -340,6 +386,12 @@ void irq_enter(void)
 
 static inline void invoke_softirq(void)
 {
+<<<<<<< HEAD
+=======
+	if (ksoftirqd_running(local_softirq_pending()))
+		return;
+
+>>>>>>> v4.9.227
 	if (!force_irqthreads) {
 #ifdef CONFIG_HAVE_IRQ_EXIT_ON_IRQ_STACK
 		/*
@@ -393,7 +445,10 @@ void irq_exit(void)
 	tick_irq_exit();
 	rcu_irq_exit();
 	trace_hardirq_exit(); /* must be last! */
+<<<<<<< HEAD
 	secdbg_msg("hardirq exit");
+=======
+>>>>>>> v4.9.227
 }
 
 /*
@@ -483,7 +538,11 @@ void __tasklet_hi_schedule_first(struct tasklet_struct *t)
 }
 EXPORT_SYMBOL(__tasklet_hi_schedule_first);
 
+<<<<<<< HEAD
 static void tasklet_action(struct softirq_action *a)
+=======
+static __latent_entropy void tasklet_action(struct softirq_action *a)
+>>>>>>> v4.9.227
 {
 	struct tasklet_struct *list;
 
@@ -503,10 +562,14 @@ static void tasklet_action(struct softirq_action *a)
 				if (!test_and_clear_bit(TASKLET_STATE_SCHED,
 							&t->state))
 					BUG();
+<<<<<<< HEAD
 				sec_debug_irq_sched_log(-1, t->func, "tasket_actoin", SOFTIRQ_ENTRY);
 				t->func(t->data);
 				sec_debug_irq_sched_log(-1, t->func, "tasket_actoin", SOFTIRQ_EXIT);
 
+=======
+				t->func(t->data);
+>>>>>>> v4.9.227
 				tasklet_unlock(t);
 				continue;
 			}
@@ -522,7 +585,11 @@ static void tasklet_action(struct softirq_action *a)
 	}
 }
 
+<<<<<<< HEAD
 static void tasklet_hi_action(struct softirq_action *a)
+=======
+static __latent_entropy void tasklet_hi_action(struct softirq_action *a)
+>>>>>>> v4.9.227
 {
 	struct tasklet_struct *list;
 
@@ -665,12 +732,16 @@ static void run_ksoftirqd(unsigned int cpu)
 		 */
 		__do_softirq();
 		local_irq_enable();
+<<<<<<< HEAD
 		cond_resched();
 
 		preempt_disable();
 		rcu_note_context_switch(cpu);
 		preempt_enable();
 
+=======
+		cond_resched_rcu_qs();
+>>>>>>> v4.9.227
 		return;
 	}
 	local_irq_enable();
@@ -709,7 +780,11 @@ void tasklet_kill_immediate(struct tasklet_struct *t, unsigned int cpu)
 	BUG();
 }
 
+<<<<<<< HEAD
 static void takeover_tasklets(unsigned int cpu)
+=======
+static int takeover_tasklets(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 	/* CPU is dead, so no lock needed. */
 	local_irq_disable();
@@ -732,6 +807,7 @@ static void takeover_tasklets(unsigned int cpu)
 	raise_softirq_irqoff(HI_SOFTIRQ);
 
 	local_irq_enable();
+<<<<<<< HEAD
 }
 #endif /* CONFIG_HOTPLUG_CPU */
 
@@ -753,6 +829,14 @@ static struct notifier_block cpu_nfb = {
 	.notifier_call = cpu_callback
 };
 
+=======
+	return 0;
+}
+#else
+#define takeover_tasklets	NULL
+#endif /* CONFIG_HOTPLUG_CPU */
+
+>>>>>>> v4.9.227
 static struct smp_hotplug_thread softirq_threads = {
 	.store			= &ksoftirqd,
 	.thread_should_run	= ksoftirqd_should_run,
@@ -762,8 +846,13 @@ static struct smp_hotplug_thread softirq_threads = {
 
 static __init int spawn_ksoftirqd(void)
 {
+<<<<<<< HEAD
 	register_cpu_notifier(&cpu_nfb);
 
+=======
+	cpuhp_setup_state_nocalls(CPUHP_SOFTIRQ_DEAD, "softirq:dead", NULL,
+				  takeover_tasklets);
+>>>>>>> v4.9.227
 	BUG_ON(smpboot_register_percpu_thread(&softirq_threads));
 
 	return 0;

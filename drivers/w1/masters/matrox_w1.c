@@ -40,7 +40,11 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Evgeniy Polyakov <zbr@ioremap.net>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Driver for transport(Dallas 1-wire prtocol) over VGA DDC(matrox gpio).");
+=======
+MODULE_DESCRIPTION("Driver for transport(Dallas 1-wire protocol) over VGA DDC(matrox gpio).");
+>>>>>>> v4.9.227
 
 static struct pci_device_id matrox_w1_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_MATROX, PCI_DEVICE_ID_MATROX_G400) },
@@ -232,6 +236,7 @@ static void matrox_w1_remove(struct pci_dev *pdev)
 	}
 	kfree(dev);
 }
+<<<<<<< HEAD
 
 static int __init matrox_w1_init(void)
 {
@@ -245,3 +250,6 @@ static void __exit matrox_w1_fini(void)
 
 module_init(matrox_w1_init);
 module_exit(matrox_w1_fini);
+=======
+module_pci_driver(matrox_w1_pci_driver);
+>>>>>>> v4.9.227

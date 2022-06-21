@@ -496,7 +496,11 @@ i2c_pnx_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 	struct i2c_msg *pmsg;
 	int rc = 0, completed = 0, i;
 	struct i2c_pnx_algo_data *alg_data = adap->algo_data;
+<<<<<<< HEAD
 	u32 stat = ioread32(I2C_REG_STS(alg_data));
+=======
+	u32 stat;
+>>>>>>> v4.9.227
 
 	dev_dbg(&alg_data->adapter.dev,
 		"%s(): entering: %d messages, stat = %04x.\n",
@@ -600,7 +604,11 @@ static int i2c_pnx_controller_suspend(struct device *dev)
 {
 	struct i2c_pnx_algo_data *alg_data = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	clk_disable(alg_data->clk);
+=======
+	clk_disable_unprepare(alg_data->clk);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -609,7 +617,11 @@ static int i2c_pnx_controller_resume(struct device *dev)
 {
 	struct i2c_pnx_algo_data *alg_data = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return clk_enable(alg_data->clk);
+=======
+	return clk_prepare_enable(alg_data->clk);
+>>>>>>> v4.9.227
 }
 
 static SIMPLE_DEV_PM_OPS(i2c_pnx_pm,
@@ -659,9 +671,14 @@ static int i2c_pnx_probe(struct platform_device *pdev)
 	if (IS_ERR(alg_data->clk))
 		return PTR_ERR(alg_data->clk);
 
+<<<<<<< HEAD
 	init_timer(&alg_data->mif.timer);
 	alg_data->mif.timer.function = i2c_pnx_timeout;
 	alg_data->mif.timer.data = (unsigned long)alg_data;
+=======
+	setup_timer(&alg_data->mif.timer, i2c_pnx_timeout,
+			(unsigned long)alg_data);
+>>>>>>> v4.9.227
 
 	snprintf(alg_data->adapter.name, sizeof(alg_data->adapter.name),
 		 "%s", pdev->name);
@@ -672,7 +689,11 @@ static int i2c_pnx_probe(struct platform_device *pdev)
 	if (IS_ERR(alg_data->ioaddr))
 		return PTR_ERR(alg_data->ioaddr);
 
+<<<<<<< HEAD
 	ret = clk_enable(alg_data->clk);
+=======
+	ret = clk_prepare_enable(alg_data->clk);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -715,10 +736,15 @@ static int i2c_pnx_probe(struct platform_device *pdev)
 
 	/* Register this adapter with the I2C subsystem */
 	ret = i2c_add_numbered_adapter(&alg_data->adapter);
+<<<<<<< HEAD
 	if (ret < 0) {
 		dev_err(&pdev->dev, "I2C: Failed to add bus\n");
 		goto out_clock;
 	}
+=======
+	if (ret < 0)
+		goto out_clock;
+>>>>>>> v4.9.227
 
 	dev_dbg(&pdev->dev, "%s: Master at %#8x, irq %d.\n",
 		alg_data->adapter.name, res->start, alg_data->irq);
@@ -726,7 +752,11 @@ static int i2c_pnx_probe(struct platform_device *pdev)
 	return 0;
 
 out_clock:
+<<<<<<< HEAD
 	clk_disable(alg_data->clk);
+=======
+	clk_disable_unprepare(alg_data->clk);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -735,7 +765,11 @@ static int i2c_pnx_remove(struct platform_device *pdev)
 	struct i2c_pnx_algo_data *alg_data = platform_get_drvdata(pdev);
 
 	i2c_del_adapter(&alg_data->adapter);
+<<<<<<< HEAD
 	clk_disable(alg_data->clk);
+=======
+	clk_disable_unprepare(alg_data->clk);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -751,7 +785,10 @@ MODULE_DEVICE_TABLE(of, i2c_pnx_of_match);
 static struct platform_driver i2c_pnx_driver = {
 	.driver = {
 		.name = "pnx-i2c",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(i2c_pnx_of_match),
 		.pm = PNX_I2C_PM,
 	},

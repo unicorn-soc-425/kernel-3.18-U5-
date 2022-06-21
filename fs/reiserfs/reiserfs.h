@@ -97,6 +97,13 @@ struct reiserfs_inode_info {
 #ifdef CONFIG_REISERFS_FS_XATTR
 	struct rw_semaphore i_xattr_sem;
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_QUOTA
+	struct dquot *i_dquot[MAXQUOTAS];
+#endif
+
+>>>>>>> v4.9.227
 	struct inode vfs_inode;
 };
 
@@ -906,7 +913,10 @@ do {									\
 	if (!(cond))							\
 		reiserfs_panic(NULL, "assertion failure", "(" #cond ") at " \
 			       __FILE__ ":%i:%s: " format "\n",		\
+<<<<<<< HEAD
 			       in_interrupt() ? -1 : task_pid_nr(current), \
+=======
+>>>>>>> v4.9.227
 			       __LINE__, __func__ , ##args);		\
 } while (0)
 
@@ -1164,6 +1174,11 @@ static inline int bmap_would_wrap(unsigned bmap_nr)
 	return bmap_nr > ((1LL << 16) - 1);
 }
 
+<<<<<<< HEAD
+=======
+extern const struct xattr_handler *reiserfs_xattr_handlers[];
+
+>>>>>>> v4.9.227
 /*
  * this says about version of key of all items (but stat data) the
  * object consists of
@@ -1323,7 +1338,10 @@ struct cpu_key {
 #define KEY_NOT_FOUND 0
 
 #define KEY_SIZE (sizeof(struct reiserfs_key))
+<<<<<<< HEAD
 #define SHORT_KEY_SIZE (sizeof (__u32) + sizeof (__u32))
+=======
+>>>>>>> v4.9.227
 
 /* return values for search_by_key and clones */
 #define ITEM_FOUND 1

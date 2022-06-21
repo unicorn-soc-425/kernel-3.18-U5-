@@ -1,14 +1,22 @@
 #ifndef _TSTYPE_H_
 #define _TSTYPE_H_
 #include "rtl819x_Qos.h"
+<<<<<<< HEAD
 #define TS_SETUP_TIMEOUT	60  // In millisecond
+=======
+#define TS_SETUP_TIMEOUT	60  /*  In millisecond */
+>>>>>>> v4.9.227
 #define TS_INACT_TIMEOUT	60
 #define TS_ADDBA_DELAY		60
 
 #define TOTAL_TS_NUM		16
 #define TCLAS_NUM		4
 
+<<<<<<< HEAD
 // This define the Tx/Rx directions
+=======
+/*  This define the Tx/Rx directions */
+>>>>>>> v4.9.227
 typedef enum _TR_SELECT {
 	TX_DIR = 0,
 	RX_DIR = 1,
@@ -28,9 +36,15 @@ typedef struct _TS_COMMON_INFO{
 typedef struct _TX_TS_RECORD{
 	TS_COMMON_INFO		TsCommonInfo;
 	u16				TxCurSeq;
+<<<<<<< HEAD
 	BA_RECORD			TxPendingBARecord;	// For BA Originator
 	BA_RECORD			TxAdmittedBARecord;	// For BA Originator
 //	QOS_DL_RECORD		DLRecord;
+=======
+	BA_RECORD			TxPendingBARecord;	/*  For BA Originator */
+	BA_RECORD			TxAdmittedBARecord;	/*  For BA Originator */
+/* 	QOS_DL_RECORD		DLRecord; */
+>>>>>>> v4.9.227
 	u8				bAddBaReqInProgress;
 	u8				bAddBaReqDelayed;
 	u8				bUsingBa;
@@ -44,11 +58,19 @@ typedef struct _RX_TS_RECORD {
 	u16				RxTimeoutIndicateSeq;
 	struct list_head		RxPendingPktList;
 	struct timer_list		RxPktPendingTimer;
+<<<<<<< HEAD
 	BA_RECORD			RxAdmittedBARecord;	 // For BA Recipient
 	u16				RxLastSeqNum;
 	u8				RxLastFragNum;
 	u8				num;
 //	QOS_DL_RECORD		DLRecord;
+=======
+	BA_RECORD			RxAdmittedBARecord;	 /*  For BA Recipient */
+	u16				RxLastSeqNum;
+	u8				RxLastFragNum;
+	u8				num;
+/* 	QOS_DL_RECORD		DLRecord; */
+>>>>>>> v4.9.227
 } RX_TS_RECORD, *PRX_TS_RECORD;
 
 

@@ -20,6 +20,10 @@
 
 #define sys_mmap2 sys_mmap_pgoff
 
+<<<<<<< HEAD
+=======
+#define __ARCH_WANT_RENAMEAT
+>>>>>>> v4.9.227
 #define __ARCH_WANT_SYS_FORK
 #define __ARCH_WANT_SYS_CLONE
 

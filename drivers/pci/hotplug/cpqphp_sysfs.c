@@ -39,7 +39,11 @@
 #include "cpqphp.h"
 
 static DEFINE_MUTEX(cpqphp_mutex);
+<<<<<<< HEAD
 static int show_ctrl (struct controller *ctrl, char *buf)
+=======
+static int show_ctrl(struct controller *ctrl, char *buf)
+>>>>>>> v4.9.227
 {
 	char *out = buf;
 	int index;
@@ -77,7 +81,11 @@ static int show_ctrl (struct controller *ctrl, char *buf)
 	return out - buf;
 }
 
+<<<<<<< HEAD
 static int show_dev (struct controller *ctrl, char *buf)
+=======
+static int show_dev(struct controller *ctrl, char *buf)
+>>>>>>> v4.9.227
 {
 	char *out = buf;
 	int index;
@@ -119,7 +127,11 @@ static int show_dev (struct controller *ctrl, char *buf)
 			out += sprintf(out, "start = %8.8x, length = %8.8x\n", res->base, res->length);
 			res = res->next;
 		}
+<<<<<<< HEAD
 		slot=slot->next;
+=======
+		slot = slot->next;
+>>>>>>> v4.9.227
 	}
 
 	return out - buf;

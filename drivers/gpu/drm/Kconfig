@@ -8,7 +8,10 @@ menuconfig DRM
 	tristate "Direct Rendering Manager (XFree86 4.1.0 and higher DRI support)"
 	depends on (AGP || AGP=n) && !EMULATED_CMPXCHG && MMU && HAS_DMA
 	select HDMI
+<<<<<<< HEAD
 	select FB
+=======
+>>>>>>> v4.9.227
 	select FB_CMDLINE
 	select I2C
 	select I2C_ALGOBIT
@@ -26,6 +29,17 @@ config DRM_MIPI_DSI
 	bool
 	depends on DRM
 
+<<<<<<< HEAD
+=======
+config DRM_DP_AUX_CHARDEV
+	bool "DRM DP AUX Interface"
+	depends on DRM
+	help
+	  Choose this option to enable a /dev/drm_dp_auxN node that allows to
+	  read and write values to arbitrary DPCD registers on the DP aux
+	  channel.
+
+>>>>>>> v4.9.227
 config DRM_KMS_HELPER
 	tristate
 	depends on DRM
@@ -45,6 +59,10 @@ config DRM_KMS_FB_HELPER
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
+<<<<<<< HEAD
+=======
+	select FB_DEFERRED_IO
+>>>>>>> v4.9.227
 	help
 	  FBDEV helpers for KMS drivers.
 
@@ -53,7 +71,11 @@ config DRM_FBDEV_EMULATION
 	depends on DRM
 	select DRM_KMS_HELPER
 	select DRM_KMS_FB_HELPER
+<<<<<<< HEAD
 	default n
+=======
+	default y
+>>>>>>> v4.9.227
 	help
 	  Choose this option if you have a need for the legacy fbdev
 	  support. Note that this support also provides the linux console
@@ -83,13 +105,21 @@ config DRM_TTM
 
 config DRM_GEM_CMA_HELPER
 	bool
+<<<<<<< HEAD
 	depends on DRM && HAVE_DMA_ATTRS
+=======
+	depends on DRM
+>>>>>>> v4.9.227
 	help
 	  Choose this if you need the GEM CMA helper functions
 
 config DRM_KMS_CMA_HELPER
 	bool
+<<<<<<< HEAD
 	depends on DRM && HAVE_DMA_ATTRS
+=======
+	depends on DRM
+>>>>>>> v4.9.227
 	select DRM_GEM_CMA_HELPER
 	select DRM_KMS_FB_HELPER
 	select FB_SYS_FILLRECT
@@ -100,6 +130,7 @@ config DRM_KMS_CMA_HELPER
 
 source "drivers/gpu/drm/i2c/Kconfig"
 
+<<<<<<< HEAD
 config DRM_TDFX
 	tristate "3dfx Banshee/Voodoo3+"
 	depends on DRM && PCI
@@ -115,16 +146,24 @@ config DRM_R128
 	  Choose this option if you have an ATI Rage 128 graphics card.  If M
 	  is selected, the module will be called r128.  AGP support for
 	  this card is strongly suggested (unless you have a PCI version).
+=======
+source "drivers/gpu/drm/arm/Kconfig"
+>>>>>>> v4.9.227
 
 config DRM_RADEON
 	tristate "ATI Radeon"
 	depends on DRM && PCI
+<<<<<<< HEAD
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
 	select FW_LOADER
         select DRM_KMS_HELPER
 	select DRM_KMS_FB_HELPER
+=======
+	select FW_LOADER
+        select DRM_KMS_HELPER
+>>>>>>> v4.9.227
         select DRM_TTM
 	select POWER_SUPPLY
 	select HWMON
@@ -143,12 +182,17 @@ source "drivers/gpu/drm/radeon/Kconfig"
 config DRM_AMDGPU
 	tristate "AMD GPU"
 	depends on DRM && PCI
+<<<<<<< HEAD
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
 	select FW_LOADER
         select DRM_KMS_HELPER
 	select DRM_KMS_FB_HELPER
+=======
+	select FW_LOADER
+        select DRM_KMS_HELPER
+>>>>>>> v4.9.227
         select DRM_TTM
 	select POWER_SUPPLY
 	select HWMON
@@ -164,6 +208,7 @@ source "drivers/gpu/drm/amd/amdgpu/Kconfig"
 
 source "drivers/gpu/drm/nouveau/Kconfig"
 
+<<<<<<< HEAD
 config DRM_I810
 	tristate "Intel I810"
 	# !PREEMPT because of missing ioctl locking
@@ -207,6 +252,10 @@ config DRM_SAVAGE
 	  Choose this option if you have a Savage3D/4/SuperSavage/Pro/Twister
 	  chipset. If M is selected the module will be called savage.
 
+=======
+source "drivers/gpu/drm/i915/Kconfig"
+
+>>>>>>> v4.9.227
 config DRM_VGEM
 	tristate "Virtual GEM provider"
 	depends on DRM
@@ -240,6 +289,11 @@ source "drivers/gpu/drm/rcar-du/Kconfig"
 
 source "drivers/gpu/drm/shmobile/Kconfig"
 
+<<<<<<< HEAD
+=======
+source "drivers/gpu/drm/sun4i/Kconfig"
+
+>>>>>>> v4.9.227
 source "drivers/gpu/drm/omapdrm/Kconfig"
 
 source "drivers/gpu/drm/tilcdc/Kconfig"
@@ -267,3 +321,92 @@ source "drivers/gpu/drm/amd/amdkfd/Kconfig"
 source "drivers/gpu/drm/imx/Kconfig"
 
 source "drivers/gpu/drm/vc4/Kconfig"
+<<<<<<< HEAD
+=======
+
+source "drivers/gpu/drm/etnaviv/Kconfig"
+
+source "drivers/gpu/drm/arc/Kconfig"
+
+source "drivers/gpu/drm/hisilicon/Kconfig"
+
+source "drivers/gpu/drm/mediatek/Kconfig"
+
+# Keep legacy drivers last
+
+menuconfig DRM_LEGACY
+	bool "Enable legacy drivers (DANGEROUS)"
+	depends on DRM
+	help
+	  Enable legacy DRI1 drivers. Those drivers expose unsafe and dangerous
+	  APIs to user-space, which can be used to circumvent access
+	  restrictions and other security measures. For backwards compatibility
+	  those drivers are still available, but their use is highly
+	  inadvisable and might harm your system.
+
+	  You are recommended to use the safe modeset-only drivers instead, and
+	  perform 3D emulation in user-space.
+
+	  Unless you have strong reasons to go rogue, say "N".
+
+if DRM_LEGACY
+
+config DRM_TDFX
+	tristate "3dfx Banshee/Voodoo3+"
+	depends on DRM && PCI
+	help
+	  Choose this option if you have a 3dfx Banshee or Voodoo3 (or later),
+	  graphics card.  If M is selected, the module will be called tdfx.
+
+config DRM_R128
+	tristate "ATI Rage 128"
+	depends on DRM && PCI
+	select FW_LOADER
+	help
+	  Choose this option if you have an ATI Rage 128 graphics card.  If M
+	  is selected, the module will be called r128.  AGP support for
+	  this card is strongly suggested (unless you have a PCI version).
+
+config DRM_I810
+	tristate "Intel I810"
+	# !PREEMPT because of missing ioctl locking
+	depends on DRM && AGP && AGP_INTEL && (!PREEMPT || BROKEN)
+	help
+	  Choose this option if you have an Intel I810 graphics card.  If M is
+	  selected, the module will be called i810.  AGP support is required
+	  for this driver to work.
+
+config DRM_MGA
+	tristate "Matrox g200/g400"
+	depends on DRM && PCI
+	select FW_LOADER
+	help
+	  Choose this option if you have a Matrox G200, G400 or G450 graphics
+	  card.  If M is selected, the module will be called mga.  AGP
+	  support is required for this driver to work.
+
+config DRM_SIS
+	tristate "SiS video cards"
+	depends on DRM && AGP
+	depends on FB_SIS || FB_SIS=n
+	help
+	  Choose this option if you have a SiS 630 or compatible video
+	  chipset. If M is selected the module will be called sis. AGP
+	  support is required for this driver to work.
+
+config DRM_VIA
+	tristate "Via unichrome video cards"
+	depends on DRM && PCI
+	help
+	  Choose this option if you have a Via unichrome or compatible video
+	  chipset. If M is selected the module will be called via.
+
+config DRM_SAVAGE
+	tristate "Savage video cards"
+	depends on DRM && PCI
+	help
+	  Choose this option if you have a Savage3D/4/SuperSavage/Pro/Twister
+	  chipset. If M is selected the module will be called savage.
+
+endif # DRM_LEGACY
+>>>>>>> v4.9.227

@@ -8,6 +8,7 @@
 #include "ext2.h"
 #include "xattr.h"
 
+<<<<<<< HEAD
 static size_t
 ext2_xattr_trusted_list(struct dentry *dentry, char *list, size_t list_size,
 		const char *name, size_t name_len, int type)
@@ -33,16 +34,39 @@ ext2_xattr_trusted_get(struct dentry *dentry, const char *name,
 	if (strcmp(name, "") == 0)
 		return -EINVAL;
 	return ext2_xattr_get(dentry->d_inode, EXT2_XATTR_INDEX_TRUSTED, name,
+=======
+static bool
+ext2_xattr_trusted_list(struct dentry *dentry)
+{
+	return capable(CAP_SYS_ADMIN);
+}
+
+static int
+ext2_xattr_trusted_get(const struct xattr_handler *handler,
+		       struct dentry *unused, struct inode *inode,
+		       const char *name, void *buffer, size_t size)
+{
+	return ext2_xattr_get(inode, EXT2_XATTR_INDEX_TRUSTED, name,
+>>>>>>> v4.9.227
 			      buffer, size);
 }
 
 static int
+<<<<<<< HEAD
 ext2_xattr_trusted_set(struct dentry *dentry, const char *name,
 		const void *value, size_t size, int flags, int type)
 {
 	if (strcmp(name, "") == 0)
 		return -EINVAL;
 	return ext2_xattr_set(dentry->d_inode, EXT2_XATTR_INDEX_TRUSTED, name,
+=======
+ext2_xattr_trusted_set(const struct xattr_handler *handler,
+		       struct dentry *unused, struct inode *inode,
+		       const char *name, const void *value,
+		       size_t size, int flags)
+{
+	return ext2_xattr_set(inode, EXT2_XATTR_INDEX_TRUSTED, name,
+>>>>>>> v4.9.227
 			      value, size, flags);
 }
 

@@ -756,7 +756,10 @@ static struct platform_driver bfin_bf54x_driver = {
 	.resume = bfin_bf54x_resume,
 	.driver = {
 		   .name = DRIVER_NAME,
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   },
 };
 module_platform_driver(bfin_bf54x_driver);

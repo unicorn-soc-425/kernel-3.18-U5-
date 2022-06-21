@@ -19,12 +19,16 @@
 #include <asm/smp_scu.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/motherboard.h>
 
+=======
+>>>>>>> v4.9.227
 #include <plat/platsmp.h>
 
 #include "core.h"
 
+<<<<<<< HEAD
 /*
  * Initialise the CPU possible map early - this describes the CPUs
  * which may be present or become present in the system.
@@ -61,6 +65,8 @@ struct smp_operations __initdata vexpress_smp_ops = {
 #endif
 };
 
+=======
+>>>>>>> v4.9.227
 bool __init vexpress_smp_init_ops(void)
 {
 #ifdef CONFIG_MCPM
@@ -79,8 +85,11 @@ bool __init vexpress_smp_init_ops(void)
 	return false;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_OF)
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id vexpress_smp_dt_scu_match[] __initconst = {
 	{ .compatible = "arm,cortex-a5-scu", },
 	{ .compatible = "arm,cortex-a9-scu", },
@@ -104,7 +113,11 @@ static void __init vexpress_smp_dt_prepare_cpus(unsigned int max_cpus)
 	vexpress_flags_set(virt_to_phys(versatile_secondary_startup));
 }
 
+<<<<<<< HEAD
 struct smp_operations __initdata vexpress_smp_dt_ops = {
+=======
+const struct smp_operations vexpress_smp_dt_ops __initconst = {
+>>>>>>> v4.9.227
 	.smp_prepare_cpus	= vexpress_smp_dt_prepare_cpus,
 	.smp_secondary_init	= versatile_secondary_init,
 	.smp_boot_secondary	= versatile_boot_secondary,
@@ -112,5 +125,8 @@ struct smp_operations __initdata vexpress_smp_dt_ops = {
 	.cpu_die		= vexpress_cpu_die,
 #endif
 };
+<<<<<<< HEAD
 
 #endif
+=======
+>>>>>>> v4.9.227

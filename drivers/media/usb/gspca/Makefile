@@ -39,6 +39,10 @@ obj-$(CONFIG_USB_GSPCA_STK1135)  += gspca_stk1135.o
 obj-$(CONFIG_USB_GSPCA_STV0680)  += gspca_stv0680.o
 obj-$(CONFIG_USB_GSPCA_T613)     += gspca_t613.o
 obj-$(CONFIG_USB_GSPCA_TOPRO)    += gspca_topro.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_USB_GSPCA_TOUPTEK)  += gspca_touptek.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_USB_GSPCA_TV8532)   += gspca_tv8532.o
 obj-$(CONFIG_USB_GSPCA_VC032X)   += gspca_vc032x.o
 obj-$(CONFIG_USB_GSPCA_VICAM)    += gspca_vicam.o
@@ -86,6 +90,10 @@ gspca_stv0680-objs  := stv0680.o
 gspca_sunplus-objs  := sunplus.o
 gspca_t613-objs     := t613.o
 gspca_topro-objs    := topro.o
+<<<<<<< HEAD
+=======
+gspca_touptek-objs  := touptek.o
+>>>>>>> v4.9.227
 gspca_tv8532-objs   := tv8532.o
 gspca_vc032x-objs   := vc032x.o
 gspca_vicam-objs    := vicam.o

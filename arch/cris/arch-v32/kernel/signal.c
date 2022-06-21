@@ -19,7 +19,10 @@
 #include <asm/processor.h>
 #include <asm/ucontext.h>
 #include <asm/uaccess.h>
+<<<<<<< HEAD
 #include <arch/ptrace.h>
+=======
+>>>>>>> v4.9.227
 #include <arch/hwregs/cpu_vect.h>
 
 extern unsigned long cris_signal_return_page;
@@ -72,6 +75,12 @@ restore_sigcontext(struct pt_regs *regs, struct sigcontext __user *sc)
 	/* Make that the user-mode flag is set. */
 	regs->ccs |= (1 << (U_CCS_BITNR + CCS_SHIFT));
 
+<<<<<<< HEAD
+=======
+	/* Don't perform syscall restarting */
+	regs->exs = -1;
+
+>>>>>>> v4.9.227
 	/* Restore the old USP. */
 	err |= __get_user(old_usp, &sc->usp);
 	wrusp(old_usp);
@@ -287,8 +296,11 @@ setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	/* TODO: what is the current->exec_domain stuff and invmap ? */
 
+=======
+>>>>>>> v4.9.227
 	err |= __put_user(&frame->info, &frame->pinfo);
 	err |= __put_user(&frame->uc, &frame->puc);
 	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
@@ -427,6 +439,11 @@ do_signal(int canrestart, struct pt_regs *regs)
 {
 	struct ksignal ksig;
 
+<<<<<<< HEAD
+=======
+	canrestart = canrestart && ((int)regs->exs >= 0);
+
+>>>>>>> v4.9.227
 	/*
 	 * The common case should go fast, which is why this point is
 	 * reached from kernel-mode. If that's the case, just return

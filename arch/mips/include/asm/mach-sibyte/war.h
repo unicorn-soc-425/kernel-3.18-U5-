@@ -13,8 +13,12 @@
 #define R4600_V2_HIT_CACHEOP_WAR	0
 #define R5432_CP0_INTERRUPT_WAR		0
 
+<<<<<<< HEAD
 #if defined(CONFIG_SB1_PASS_1_WORKAROUNDS) || \
     defined(CONFIG_SB1_PASS_2_WORKAROUNDS)
+=======
+#if defined(CONFIG_SB1_PASS_2_WORKAROUNDS)
+>>>>>>> v4.9.227
 
 #ifndef __ASSEMBLY__
 extern int sb1250_m3_workaround_needed(void);

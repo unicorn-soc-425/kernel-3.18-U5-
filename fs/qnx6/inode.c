@@ -182,7 +182,11 @@ static const char *qnx6_checkroot(struct super_block *s)
 	static char match_root[2][3] = {".\0\0", "..\0"};
 	int i, error = 0;
 	struct qnx6_dir_entry *dir_entry;
+<<<<<<< HEAD
 	struct inode *root = s->s_root->d_inode;
+=======
+	struct inode *root = d_inode(s->s_root);
+>>>>>>> v4.9.227
 	struct address_space *mapping = root->i_mapping;
 	struct page *page = read_mapping_page(mapping, 0, NULL);
 	if (IS_ERR(page))
@@ -542,8 +546,13 @@ struct inode *qnx6_iget(struct super_block *sb, unsigned ino)
 		iget_failed(inode);
 		return ERR_PTR(-EIO);
 	}
+<<<<<<< HEAD
 	n = (ino - 1) >> (PAGE_CACHE_SHIFT - QNX6_INODE_SIZE_BITS);
 	offs = (ino - 1) & (~PAGE_CACHE_MASK >> QNX6_INODE_SIZE_BITS);
+=======
+	n = (ino - 1) >> (PAGE_SHIFT - QNX6_INODE_SIZE_BITS);
+	offs = (ino - 1) & (~PAGE_MASK >> QNX6_INODE_SIZE_BITS);
+>>>>>>> v4.9.227
 	mapping = sbi->inodes->i_mapping;
 	page = read_mapping_page(mapping, n, NULL);
 	if (IS_ERR(page)) {
@@ -582,6 +591,10 @@ struct inode *qnx6_iget(struct super_block *sb, unsigned ino)
 		inode->i_mapping->a_ops = &qnx6_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &page_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> v4.9.227
 		inode->i_mapping->a_ops = &qnx6_aops;
 	} else
 		init_special_inode(inode, inode->i_mode, 0);
@@ -624,7 +637,11 @@ static int init_inodecache(void)
 	qnx6_inode_cachep = kmem_cache_create("qnx6_inode_cache",
 					     sizeof(struct qnx6_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> v4.9.227
 					     init_once);
 	if (!qnx6_inode_cachep)
 		return -ENOMEM;

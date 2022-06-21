@@ -11,6 +11,10 @@ struct nvkm_device_tegra {
 
 	struct reset_control *rst;
 	struct clk *clk;
+<<<<<<< HEAD
+=======
+	struct clk *clk_ref;
+>>>>>>> v4.9.227
 	struct clk *clk_pwr;
 
 	struct regulator *vdd;
@@ -27,6 +31,10 @@ struct nvkm_device_tegra {
 	} iommu;
 
 	int gpu_speedo;
+<<<<<<< HEAD
+=======
+	int gpu_speedo_id;
+>>>>>>> v4.9.227
 };
 
 struct nvkm_device_tegra_func {
@@ -36,6 +44,13 @@ struct nvkm_device_tegra_func {
 	 * bypassed). A value of 0 means an IOMMU is never used.
 	 */
 	u8 iommu_bit;
+<<<<<<< HEAD
+=======
+	/*
+	 * Whether the chip requires a reference clock
+	 */
+	bool require_ref_clk;
+>>>>>>> v4.9.227
 };
 
 int nvkm_device_tegra_new(const struct nvkm_device_tegra_func *,

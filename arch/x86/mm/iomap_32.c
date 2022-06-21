@@ -18,7 +18,11 @@
 
 #include <asm/iomap.h>
 #include <asm/pat.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/highmem.h>
 
 static int is_io_mapping_possible(resource_size_t base, unsigned long size)
@@ -33,17 +37,29 @@ static int is_io_mapping_possible(resource_size_t base, unsigned long size)
 
 int iomap_create_wc(resource_size_t base, unsigned long size, pgprot_t *prot)
 {
+<<<<<<< HEAD
 	unsigned long flag = _PAGE_CACHE_WC;
+=======
+	enum page_cache_mode pcm = _PAGE_CACHE_MODE_WC;
+>>>>>>> v4.9.227
 	int ret;
 
 	if (!is_io_mapping_possible(base, size))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = io_reserve_memtype(base, base + size, &flag);
 	if (ret)
 		return ret;
 
 	*prot = __pgprot(__PAGE_KERNEL | flag);
+=======
+	ret = io_reserve_memtype(base, base + size, &pcm);
+	if (ret)
+		return ret;
+
+	*prot = __pgprot(__PAGE_KERNEL | cachemode2protval(pcm));
+>>>>>>> v4.9.227
 	return 0;
 }
 EXPORT_SYMBOL_GPL(iomap_create_wc);
@@ -59,6 +75,10 @@ void *kmap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot)
 	unsigned long vaddr;
 	int idx, type;
 
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> v4.9.227
 	pagefault_disable();
 
 	type = kmap_atomic_idx_push();
@@ -77,6 +97,7 @@ void __iomem *
 iomap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot)
 {
 	/*
+<<<<<<< HEAD
 	 * For non-PAT systems, promote PAGE_KERNEL_WC to PAGE_KERNEL_UC_MINUS.
 	 * PAGE_KERNEL_WC maps to PWT, which translates to uncached if the
 	 * MTRR is UC or WC.  UC_MINUS gets the real intention, of the
@@ -84,6 +105,17 @@ iomap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot)
 	 */
 	if (!pat_enabled && pgprot_val(prot) == pgprot_val(PAGE_KERNEL_WC))
 		prot = PAGE_KERNEL_UC_MINUS;
+=======
+	 * For non-PAT systems, translate non-WB request to UC- just in
+	 * case the caller set the PWT bit to prot directly without using
+	 * pgprot_writecombine(). UC- translates to uncached if the MTRR
+	 * is UC or WC. UC- gets the real intention, of the user, which is
+	 * "WC if the MTRR is WC, UC if you can't do that."
+	 */
+	if (!pat_enabled() && pgprot2cachemode(prot) != _PAGE_CACHE_MODE_WB)
+		prot = __pgprot(__PAGE_KERNEL |
+				cachemode2protval(_PAGE_CACHE_MODE_UC_MINUS));
+>>>>>>> v4.9.227
 
 	return (void __force __iomem *) kmap_atomic_prot_pfn(pfn, prot);
 }
@@ -115,5 +147,9 @@ iounmap_atomic(void __iomem *kvaddr)
 	}
 
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(iounmap_atomic);

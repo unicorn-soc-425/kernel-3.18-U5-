@@ -725,7 +725,12 @@ The kernel interface functions are as follows:
 
  (*) End a client call.
 
+<<<<<<< HEAD
 	void rxrpc_kernel_end_call(struct rxrpc_call *call);
+=======
+	void rxrpc_kernel_end_call(struct socket *sock,
+				   struct rxrpc_call *call);
+>>>>>>> v4.9.227
 
      This is used to end a previously begun call.  The user_call_ID is expunged
      from AF_RXRPC's knowledge and will not be seen again in association with
@@ -733,7 +738,13 @@ The kernel interface functions are as follows:
 
  (*) Send data through a call.
 
+<<<<<<< HEAD
 	int rxrpc_kernel_send_data(struct rxrpc_call *call, struct msghdr *msg,
+=======
+	int rxrpc_kernel_send_data(struct socket *sock,
+				   struct rxrpc_call *call,
+				   struct msghdr *msg,
+>>>>>>> v4.9.227
 				   size_t len);
 
      This is used to supply either the request part of a client call or the
@@ -745,9 +756,48 @@ The kernel interface functions are as follows:
      The msg must not specify a destination address, control data or any flags
      other than MSG_MORE.  len is the total amount of data to transmit.
 
+<<<<<<< HEAD
  (*) Abort a call.
 
 	void rxrpc_kernel_abort_call(struct rxrpc_call *call, u32 abort_code);
+=======
+ (*) Receive data from a call.
+
+	int rxrpc_kernel_recv_data(struct socket *sock,
+				   struct rxrpc_call *call,
+				   void *buf,
+				   size_t size,
+				   size_t *_offset,
+				   bool want_more,
+				   u32 *_abort)
+
+      This is used to receive data from either the reply part of a client call
+      or the request part of a service call.  buf and size specify how much
+      data is desired and where to store it.  *_offset is added on to buf and
+      subtracted from size internally; the amount copied into the buffer is
+      added to *_offset before returning.
+
+      want_more should be true if further data will be required after this is
+      satisfied and false if this is the last item of the receive phase.
+
+      There are three normal returns: 0 if the buffer was filled and want_more
+      was true; 1 if the buffer was filled, the last DATA packet has been
+      emptied and want_more was false; and -EAGAIN if the function needs to be
+      called again.
+
+      If the last DATA packet is processed but the buffer contains less than
+      the amount requested, EBADMSG is returned.  If want_more wasn't set, but
+      more data was available, EMSGSIZE is returned.
+
+      If a remote ABORT is detected, the abort code received will be stored in
+      *_abort and ECONNABORTED will be returned.
+
+ (*) Abort a call.
+
+	void rxrpc_kernel_abort_call(struct socket *sock,
+				     struct rxrpc_call *call,
+				     u32 abort_code);
+>>>>>>> v4.9.227
 
      This is used to abort a call if it's still in an abortable state.  The
      abort code specified will be placed in the ABORT message sent.
@@ -790,6 +840,7 @@ The kernel interface functions are as follows:
      Data messages can have their contents extracted with the usual bunch of
      socket buffer manipulation functions.  A data message can be determined to
      be the last one in a sequence with rxrpc_kernel_is_data_last().  When a
+<<<<<<< HEAD
      data message has been used up, rxrpc_kernel_data_delivered() should be
      called on it..
 
@@ -797,6 +848,14 @@ The kernel interface functions are as follows:
      of.  It is possible to get extra refs on all types of message for later
      freeing, but this may pin the state of a call until the message is finally
      freed.
+=======
+     data message has been used up, rxrpc_kernel_data_consumed() should be
+     called on it.
+
+     Messages should be handled to rxrpc_kernel_free_skb() to dispose of.  It
+     is possible to get extra refs on all types of message for later freeing,
+     but this may pin the state of a call until the message is finally freed.
+>>>>>>> v4.9.227
 
  (*) Accept an incoming call.
 
@@ -821,6 +880,7 @@ The kernel interface functions are as follows:
      Other errors may be returned if the call had been aborted (-ECONNABORTED)
      or had timed out (-ETIME).
 
+<<<<<<< HEAD
  (*) Record the delivery of a data message and free it.
 
 	void rxrpc_kernel_data_delivered(struct sk_buff *skb);
@@ -860,6 +920,8 @@ The kernel interface functions are as follows:
      This is used to extract the error number from a message indicating either
      a local error occurred or a network error occurred.
 
+=======
+>>>>>>> v4.9.227
  (*) Allocate a null key for doing anonymous security.
 
 	struct key *rxrpc_get_null_key(const char *keyname);
@@ -867,6 +929,16 @@ The kernel interface functions are as follows:
      This is used to allocate a null RxRPC key that can be used to indicate
      anonymous security for a particular domain.
 
+<<<<<<< HEAD
+=======
+ (*) Get the peer address of a call.
+
+	void rxrpc_kernel_get_peer(struct socket *sock, struct rxrpc_call *call,
+				   struct sockaddr_rxrpc *_srx);
+
+     This is used to find the remote peer address of a call.
+
+>>>>>>> v4.9.227
 
 =======================
 CONFIGURABLE PARAMETERS

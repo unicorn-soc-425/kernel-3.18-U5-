@@ -204,7 +204,11 @@ struct drv260x_data {
 	int overdrive_voltage;
 };
 
+<<<<<<< HEAD
 static struct reg_default drv260x_reg_defs[] = {
+=======
+static const struct reg_default drv260x_reg_defs[] = {
+>>>>>>> v4.9.227
 	{ DRV260X_STATUS, 0xe0 },
 	{ DRV260X_MODE, 0x40 },
 	{ DRV260X_RT_PB_IN, 0x00 },
@@ -313,14 +317,22 @@ static void drv260x_close(struct input_dev *input)
 	gpiod_set_value(haptics->enable_gpio, 0);
 }
 
+<<<<<<< HEAD
 static const struct reg_default drv260x_lra_cal_regs[] = {
+=======
+static const struct reg_sequence drv260x_lra_cal_regs[] = {
+>>>>>>> v4.9.227
 	{ DRV260X_MODE, DRV260X_AUTO_CAL },
 	{ DRV260X_CTRL3, DRV260X_NG_THRESH_2 },
 	{ DRV260X_FEEDBACK_CTRL, DRV260X_FB_REG_LRA_MODE |
 		DRV260X_BRAKE_FACTOR_4X | DRV260X_LOOP_GAIN_HIGH },
 };
 
+<<<<<<< HEAD
 static const struct reg_default drv260x_lra_init_regs[] = {
+=======
+static const struct reg_sequence drv260x_lra_init_regs[] = {
+>>>>>>> v4.9.227
 	{ DRV260X_MODE, DRV260X_RT_PLAYBACK },
 	{ DRV260X_A_TO_V_CTRL, DRV260X_AUDIO_HAPTICS_PEAK_20MS |
 		DRV260X_AUDIO_HAPTICS_FILTER_125HZ },
@@ -337,7 +349,11 @@ static const struct reg_default drv260x_lra_init_regs[] = {
 	{ DRV260X_CTRL4, DRV260X_AUTOCAL_TIME_500MS },
 };
 
+<<<<<<< HEAD
 static const struct reg_default drv260x_erm_cal_regs[] = {
+=======
+static const struct reg_sequence drv260x_erm_cal_regs[] = {
+>>>>>>> v4.9.227
 	{ DRV260X_MODE, DRV260X_AUTO_CAL },
 	{ DRV260X_A_TO_V_MIN_INPUT, DRV260X_AUDIO_HAPTICS_MIN_IN_VOLT },
 	{ DRV260X_A_TO_V_MAX_INPUT, DRV260X_AUDIO_HAPTICS_MAX_IN_VOLT },
@@ -521,7 +537,11 @@ static int drv260x_probe(struct i2c_client *client,
 	if (!haptics)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	haptics->rated_voltage = DRV260X_DEF_OD_CLAMP_VOLT;
+=======
+	haptics->overdrive_voltage = DRV260X_DEF_OD_CLAMP_VOLT;
+>>>>>>> v4.9.227
 	haptics->rated_voltage = DRV260X_DEF_RATED_VOLT;
 
 	if (pdata) {
@@ -580,6 +600,7 @@ static int drv260x_probe(struct i2c_client *client,
 		return error;
 	}
 
+<<<<<<< HEAD
 	haptics->enable_gpio = devm_gpiod_get(&client->dev, "enable");
 	if (IS_ERR(haptics->enable_gpio)) {
 		error = PTR_ERR(haptics->enable_gpio);
@@ -589,6 +610,12 @@ static int drv260x_probe(struct i2c_client *client,
 	} else {
 		gpiod_direction_output(haptics->enable_gpio, 1);
 	}
+=======
+	haptics->enable_gpio = devm_gpiod_get_optional(&client->dev, "enable",
+						       GPIOD_OUT_HIGH);
+	if (IS_ERR(haptics->enable_gpio))
+		return PTR_ERR(haptics->enable_gpio);
+>>>>>>> v4.9.227
 
 	haptics->input_dev = devm_input_allocate_device(&client->dev);
 	if (!haptics->input_dev) {
@@ -638,8 +665,12 @@ static int drv260x_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int drv260x_suspend(struct device *dev)
+=======
+static int __maybe_unused drv260x_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct drv260x_data *haptics = dev_get_drvdata(dev);
 	int ret = 0;
@@ -671,7 +702,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int drv260x_resume(struct device *dev)
+=======
+static int __maybe_unused drv260x_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct drv260x_data *haptics = dev_get_drvdata(dev);
 	int ret = 0;
@@ -701,7 +736,10 @@ out:
 	mutex_unlock(&haptics->input_dev->mutex);
 	return ret;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(drv260x_pm_ops, drv260x_suspend, drv260x_resume);
 
@@ -726,7 +764,10 @@ static struct i2c_driver drv260x_driver = {
 	.probe		= drv260x_probe,
 	.driver		= {
 		.name	= "drv260x-haptics",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(drv260x_of_match),
 		.pm	= &drv260x_pm_ops,
 	},
@@ -734,7 +775,10 @@ static struct i2c_driver drv260x_driver = {
 };
 module_i2c_driver(drv260x_driver);
 
+<<<<<<< HEAD
 MODULE_ALIAS("platform:drv260x-haptics");
+=======
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("TI DRV260x haptics driver");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Dan Murphy <dmurphy@ti.com>");

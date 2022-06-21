@@ -20,6 +20,10 @@ int  gf100_devinit_ctor(struct nvkm_object *, struct nvkm_object *,
 			struct nvkm_oclass *, void *, u32,
 			struct nvkm_object **);
 int  gf100_devinit_pll_set(struct nvkm_devinit *, u32, u32);
+<<<<<<< HEAD
+=======
+void gf100_devinit_preinit(struct nvkm_devinit *);
+>>>>>>> v4.9.227
 
 u64  gm107_devinit_disable(struct nvkm_devinit *);
 #endif

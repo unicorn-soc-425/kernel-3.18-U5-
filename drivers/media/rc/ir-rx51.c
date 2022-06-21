@@ -12,6 +12,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
@@ -19,12 +20,17 @@
  *
  */
 
+=======
+ */
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/uaccess.h>
 #include <linux/platform_device.h>
 #include <linux/sched.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
 
 #include <plat/dmtimer.h>
 #include <plat/clock.h>
@@ -32,6 +38,15 @@
 #include <media/lirc.h>
 #include <media/lirc_dev.h>
 #include <media/ir-rx51.h>
+=======
+#include <linux/pwm.h>
+#include <linux/of.h>
+#include <linux/hrtimer.h>
+
+#include <media/lirc.h>
+#include <media/lirc_dev.h>
+#include <linux/platform_data/media/ir-rx51.h>
+>>>>>>> v4.9.227
 
 #define LIRC_RX51_DRIVER_FEATURES (LIRC_CAN_SET_SEND_DUTY_CYCLE |	\
 				   LIRC_CAN_SET_SEND_CARRIER |		\
@@ -41,15 +56,22 @@
 
 #define WBUF_LEN 256
 
+<<<<<<< HEAD
 #define TIMER_MAX_VALUE 0xffffffff
 
 struct lirc_rx51 {
 	struct omap_dm_timer *pwm_timer;
 	struct omap_dm_timer *pulse_timer;
+=======
+struct lirc_rx51 {
+	struct pwm_device *pwm;
+	struct hrtimer timer;
+>>>>>>> v4.9.227
 	struct device	     *dev;
 	struct lirc_rx51_platform_data *pdata;
 	wait_queue_head_t     wqueue;
 
+<<<<<<< HEAD
 	unsigned long	fclk_khz;
 	unsigned int	freq;		/* carrier frequency */
 	unsigned int	duty_cycle;	/* carrier duty cycle */
@@ -71,10 +93,28 @@ static void lirc_rx51_off(struct lirc_rx51 *lirc_rx51)
 {
 	omap_dm_timer_set_pwm(lirc_rx51->pwm_timer, 0, 1,
 			      OMAP_TIMER_TRIGGER_NONE);
+=======
+	unsigned int	freq;		/* carrier frequency */
+	unsigned int	duty_cycle;	/* carrier duty cycle */
+	int		wbuf[WBUF_LEN];
+	int		wbuf_index;
+	unsigned long	device_is_open;
+};
+
+static inline void lirc_rx51_on(struct lirc_rx51 *lirc_rx51)
+{
+	pwm_enable(lirc_rx51->pwm);
+}
+
+static inline void lirc_rx51_off(struct lirc_rx51 *lirc_rx51)
+{
+	pwm_disable(lirc_rx51->pwm);
+>>>>>>> v4.9.227
 }
 
 static int init_timing_params(struct lirc_rx51 *lirc_rx51)
 {
+<<<<<<< HEAD
 	u32 load, match;
 
 	load = -(lirc_rx51->fclk_khz * 1000 / lirc_rx51->freq);
@@ -87,10 +127,19 @@ static int init_timing_params(struct lirc_rx51 *lirc_rx51)
 	omap_dm_timer_start(lirc_rx51->pulse_timer);
 
 	lirc_rx51->match = 0;
+=======
+	struct pwm_device *pwm = lirc_rx51->pwm;
+	int duty, period = DIV_ROUND_CLOSEST(NSEC_PER_SEC, lirc_rx51->freq);
+
+	duty = DIV_ROUND_CLOSEST(lirc_rx51->duty_cycle * period, 100);
+
+	pwm_config(pwm, duty, period);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #define tics_after(a, b) ((long)(b) - (long)(a) < 0)
 
 static int pulse_timer_set_timeout(struct lirc_rx51 *lirc_rx51, int usec)
@@ -135,6 +184,17 @@ static irqreturn_t lirc_rx51_interrupt_handler(int irq, void *ptr)
 	if (lirc_rx51->wbuf_index < 0) {
 		dev_err_ratelimited(lirc_rx51->dev,
 				": BUG wbuf_index has value of %i\n",
+=======
+static enum hrtimer_restart lirc_rx51_timer_cb(struct hrtimer *timer)
+{
+	struct lirc_rx51 *lirc_rx51 =
+			container_of(timer, struct lirc_rx51, timer);
+	ktime_t now;
+
+	if (lirc_rx51->wbuf_index < 0) {
+		dev_err_ratelimited(lirc_rx51->dev,
+				"BUG wbuf_index has value of %i\n",
+>>>>>>> v4.9.227
 				lirc_rx51->wbuf_index);
 		goto end;
 	}
@@ -144,6 +204,11 @@ static irqreturn_t lirc_rx51_interrupt_handler(int irq, void *ptr)
 	 * pulses until we catch up.
 	 */
 	do {
+<<<<<<< HEAD
+=======
+		u64 ns;
+
+>>>>>>> v4.9.227
 		if (lirc_rx51->wbuf_index >= WBUF_LEN)
 			goto end;
 		if (lirc_rx51->wbuf[lirc_rx51->wbuf_index] == -1)
@@ -154,6 +219,7 @@ static irqreturn_t lirc_rx51_interrupt_handler(int irq, void *ptr)
 		else
 			lirc_rx51_on(lirc_rx51);
 
+<<<<<<< HEAD
 		retval = pulse_timer_set_timeout(lirc_rx51,
 					lirc_rx51->wbuf[lirc_rx51->wbuf_index]);
 		lirc_rx51->wbuf_index++;
@@ -161,10 +227,23 @@ static irqreturn_t lirc_rx51_interrupt_handler(int irq, void *ptr)
 	} while (retval);
 
 	return IRQ_HANDLED;
+=======
+		ns = 1000 * lirc_rx51->wbuf[lirc_rx51->wbuf_index];
+		hrtimer_add_expires_ns(timer, ns);
+
+		lirc_rx51->wbuf_index++;
+
+		now = timer->base->get_time();
+
+	} while (hrtimer_get_expires_tv64(timer) < now.tv64);
+
+	return HRTIMER_RESTART;
+>>>>>>> v4.9.227
 end:
 	/* Stop TX here */
 	lirc_rx51_off(lirc_rx51);
 	lirc_rx51->wbuf_index = -1;
+<<<<<<< HEAD
 	omap_dm_timer_stop(lirc_rx51->pwm_timer);
 	omap_dm_timer_stop(lirc_rx51->pulse_timer);
 	omap_dm_timer_set_int_enable(lirc_rx51->pulse_timer, 0);
@@ -232,6 +311,12 @@ static int lirc_rx51_free_port(struct lirc_rx51 *lirc_rx51)
 	lirc_rx51->wbuf_index = -1;
 
 	return 0;
+=======
+
+	wake_up_interruptible(&lirc_rx51->wqueue);
+
+	return HRTIMER_NORESTART;
+>>>>>>> v4.9.227
 }
 
 static ssize_t lirc_rx51_write(struct file *file, const char *buf,
@@ -270,8 +355,14 @@ static ssize_t lirc_rx51_write(struct file *file, const char *buf,
 
 	lirc_rx51_on(lirc_rx51);
 	lirc_rx51->wbuf_index = 1;
+<<<<<<< HEAD
 	pulse_timer_set_timeout(lirc_rx51, lirc_rx51->wbuf[0]);
 
+=======
+	hrtimer_start(&lirc_rx51->timer,
+		      ns_to_ktime(1000 * lirc_rx51->wbuf[0]),
+		      HRTIMER_MODE_REL);
+>>>>>>> v4.9.227
 	/*
 	 * Don't return back to the userspace until the transfer has
 	 * finished
@@ -371,14 +462,32 @@ static int lirc_rx51_open(struct inode *inode, struct file *file)
 	if (test_and_set_bit(1, &lirc_rx51->device_is_open))
 		return -EBUSY;
 
+<<<<<<< HEAD
 	return lirc_rx51_init_port(lirc_rx51);
+=======
+	lirc_rx51->pwm = pwm_get(lirc_rx51->dev, NULL);
+	if (IS_ERR(lirc_rx51->pwm)) {
+		int res = PTR_ERR(lirc_rx51->pwm);
+
+		dev_err(lirc_rx51->dev, "pwm_get failed: %d\n", res);
+		return res;
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int lirc_rx51_release(struct inode *inode, struct file *file)
 {
 	struct lirc_rx51 *lirc_rx51 = file->private_data;
 
+<<<<<<< HEAD
 	lirc_rx51_free_port(lirc_rx51);
+=======
+	hrtimer_cancel(&lirc_rx51->timer);
+	lirc_rx51_off(lirc_rx51);
+	pwm_put(lirc_rx51->pwm);
+>>>>>>> v4.9.227
 
 	clear_bit(1, &lirc_rx51->device_is_open);
 
@@ -386,7 +495,10 @@ static int lirc_rx51_release(struct inode *inode, struct file *file)
 }
 
 static struct lirc_rx51 lirc_rx51 = {
+<<<<<<< HEAD
 	.freq		= 38000,
+=======
+>>>>>>> v4.9.227
 	.duty_cycle	= 50,
 	.wbuf_index	= -1,
 };
@@ -444,9 +556,38 @@ static int lirc_rx51_resume(struct platform_device *dev)
 
 static int lirc_rx51_probe(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	lirc_rx51_driver.features = LIRC_RX51_DRIVER_FEATURES;
 	lirc_rx51.pdata = dev->dev.platform_data;
 	lirc_rx51.pwm_timer_num = lirc_rx51.pdata->pwm_timer;
+=======
+	struct pwm_device *pwm;
+
+	lirc_rx51_driver.features = LIRC_RX51_DRIVER_FEATURES;
+	lirc_rx51.pdata = dev->dev.platform_data;
+
+	if (!lirc_rx51.pdata) {
+		dev_err(&dev->dev, "Platform Data is missing\n");
+		return -ENXIO;
+	}
+
+	pwm = pwm_get(&dev->dev, NULL);
+	if (IS_ERR(pwm)) {
+		int err = PTR_ERR(pwm);
+
+		if (err != -EPROBE_DEFER)
+			dev_err(&dev->dev, "pwm_get failed: %d\n", err);
+		return err;
+	}
+
+	/* Use default, in case userspace does not set the carrier */
+	lirc_rx51.freq = DIV_ROUND_CLOSEST(pwm_get_period(pwm), NSEC_PER_SEC);
+	pwm_put(pwm);
+
+	hrtimer_init(&lirc_rx51.timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+	lirc_rx51.timer.function = lirc_rx51_timer_cb;
+
+>>>>>>> v4.9.227
 	lirc_rx51.dev = &dev->dev;
 	lirc_rx51_driver.dev = &dev->dev;
 	lirc_rx51_driver.minor = lirc_register_driver(&lirc_rx51_driver);
@@ -457,8 +598,11 @@ static int lirc_rx51_probe(struct platform_device *dev)
 		       lirc_rx51_driver.minor);
 		return lirc_rx51_driver.minor;
 	}
+<<<<<<< HEAD
 	dev_info(lirc_rx51.dev, "registration ok, minor: %d, pwm: %d\n",
 		 lirc_rx51_driver.minor, lirc_rx51.pwm_timer_num);
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -468,6 +612,17 @@ static int lirc_rx51_remove(struct platform_device *dev)
 	return lirc_unregister_driver(lirc_rx51_driver.minor);
 }
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id lirc_rx51_match[] = {
+	{
+		.compatible = "nokia,n900-ir",
+	},
+	{},
+};
+MODULE_DEVICE_TABLE(of, lirc_rx51_match);
+
+>>>>>>> v4.9.227
 struct platform_driver lirc_rx51_platform_driver = {
 	.probe		= lirc_rx51_probe,
 	.remove		= lirc_rx51_remove,
@@ -475,7 +630,11 @@ struct platform_driver lirc_rx51_platform_driver = {
 	.resume		= lirc_rx51_resume,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(lirc_rx51_match),
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(lirc_rx51_platform_driver);

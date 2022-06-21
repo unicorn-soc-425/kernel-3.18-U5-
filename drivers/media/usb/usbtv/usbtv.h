@@ -1,10 +1,15 @@
 /*
+<<<<<<< HEAD
  * Fushicai USBTV007 Audio-Video Grabber Driver
  *
  * Copyright (c) 2013 Lubomir Rintel
  * All rights reserved.
  * No physical hardware was harmed running Windows during the
  * reverse-engineering activity
+=======
+ * Copyright (c) 2013 Lubomir Rintel
+ * All rights reserved.
+>>>>>>> v4.9.227
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,6 +22,27 @@
  *
  * Alternatively, this software may be distributed under the terms of the
  * GNU General Public License ("GPL").
+<<<<<<< HEAD
+=======
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*
+ * Fushicai USBTV007 Audio-Video Grabber Driver
+ *
+ * No physical hardware was harmed running Windows during the
+ * reverse-engineering activity
+>>>>>>> v4.9.227
  */
 
 #include <linux/module.h>
@@ -24,6 +50,10 @@
 #include <linux/usb.h>
 
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/videobuf2-vmalloc.h>
 
 /* Hardware. */
@@ -61,7 +91,11 @@ struct usbtv_norm_params {
 
 /* A single videobuf2 frame buffer. */
 struct usbtv_buf {
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head list;
 };
 
@@ -94,6 +128,10 @@ struct usbtv {
 	int width, height;
 	int n_chunks;
 	int iso_size;
+<<<<<<< HEAD
+=======
+	int last_odd;
+>>>>>>> v4.9.227
 	unsigned int sequence;
 	struct urb *isoc_urbs[USBTV_ISOC_TRANSFERS];
 

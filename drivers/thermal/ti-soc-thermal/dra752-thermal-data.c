@@ -420,7 +420,12 @@ const struct ti_bandgap_data dra752_data = {
 			TI_BANDGAP_FEATURE_FREEZE_BIT |
 			TI_BANDGAP_FEATURE_TALERT |
 			TI_BANDGAP_FEATURE_COUNTER_DELAY |
+<<<<<<< HEAD
 			TI_BANDGAP_FEATURE_HISTORY_BUFFER,
+=======
+			TI_BANDGAP_FEATURE_HISTORY_BUFFER |
+			TI_BANDGAP_FEATURE_ERRATA_814,
+>>>>>>> v4.9.227
 	.fclock_name = "l3instr_ts_gclk_div",
 	.div_ck_name = "l3instr_ts_gclk_div",
 	.conv_table = dra752_adc_to_temp,

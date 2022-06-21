@@ -4,11 +4,26 @@
 #include <asm/processor-flags.h>
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
+=======
+
+#include <asm/nospec-branch.h>
+
+/* Provide __cpuidle; we can't safely include <linux/cpu.h> */
+#define __cpuidle __attribute__((__section__(".cpuidle.text")))
+
+>>>>>>> v4.9.227
 /*
  * Interrupt control:
  */
 
+<<<<<<< HEAD
 static inline unsigned long native_save_fl(void)
+=======
+/* Declaration required for gcc < 4.9 to prevent -Werror=missing-prototypes */
+extern inline unsigned long native_save_fl(void);
+extern inline unsigned long native_save_fl(void)
+>>>>>>> v4.9.227
 {
 	unsigned long flags;
 
@@ -26,7 +41,12 @@ static inline unsigned long native_save_fl(void)
 	return flags;
 }
 
+<<<<<<< HEAD
 static inline void native_restore_fl(unsigned long flags)
+=======
+extern inline void native_restore_fl(unsigned long flags);
+extern inline void native_restore_fl(unsigned long flags)
+>>>>>>> v4.9.227
 {
 	asm volatile("push %0 ; popf"
 		     : /* no output */
@@ -44,6 +64,7 @@ static inline void native_irq_enable(void)
 	asm volatile("sti": : :"memory");
 }
 
+<<<<<<< HEAD
 static inline void native_safe_halt(void)
 {
 	asm volatile("sti; hlt": : :"memory");
@@ -51,6 +72,17 @@ static inline void native_safe_halt(void)
 
 static inline void native_halt(void)
 {
+=======
+static inline __cpuidle void native_safe_halt(void)
+{
+	mds_idle_clear_cpu_buffers();
+	asm volatile("sti; hlt": : :"memory");
+}
+
+static inline __cpuidle void native_halt(void)
+{
+	mds_idle_clear_cpu_buffers();
+>>>>>>> v4.9.227
 	asm volatile("hlt": : :"memory");
 }
 
@@ -86,7 +118,11 @@ static inline notrace void arch_local_irq_enable(void)
  * Used in the idle loop; sti takes one instruction cycle
  * to complete:
  */
+<<<<<<< HEAD
 static inline void arch_safe_halt(void)
+=======
+static inline __cpuidle void arch_safe_halt(void)
+>>>>>>> v4.9.227
 {
 	native_safe_halt();
 }
@@ -95,7 +131,11 @@ static inline void arch_safe_halt(void)
  * Used when interrupts are already enabled or to
  * shutdown the processor:
  */
+<<<<<<< HEAD
 static inline void halt(void)
+=======
+static inline __cpuidle void halt(void)
+>>>>>>> v4.9.227
 {
 	native_halt();
 }
@@ -136,10 +176,13 @@ static inline notrace unsigned long arch_local_irq_save(void)
 #define USERGS_SYSRET32				\
 	swapgs;					\
 	sysretl
+<<<<<<< HEAD
 #define ENABLE_INTERRUPTS_SYSEXIT32		\
 	swapgs;					\
 	sti;					\
 	sysexit
+=======
+>>>>>>> v4.9.227
 
 #else
 #define INTERRUPT_RETURN		iret
@@ -163,6 +206,7 @@ static inline int arch_irqs_disabled(void)
 
 	return arch_irqs_disabled_flags(flags);
 }
+<<<<<<< HEAD
 
 #else
 
@@ -190,6 +234,11 @@ static inline int arch_irqs_disabled(void)
 #define ARCH_LOCKDEP_SYS_EXIT_IRQ
 #endif
 
+=======
+#endif /* !__ASSEMBLY__ */
+
+#ifdef __ASSEMBLY__
+>>>>>>> v4.9.227
 #ifdef CONFIG_TRACE_IRQFLAGS
 #  define TRACE_IRQS_ON		call trace_hardirqs_on_thunk;
 #  define TRACE_IRQS_OFF	call trace_hardirqs_off_thunk;
@@ -198,6 +247,7 @@ static inline int arch_irqs_disabled(void)
 #  define TRACE_IRQS_OFF
 #endif
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
+<<<<<<< HEAD
 #  define LOCKDEP_SYS_EXIT	ARCH_LOCKDEP_SYS_EXIT
 #  define LOCKDEP_SYS_EXIT_IRQ	ARCH_LOCKDEP_SYS_EXIT_IRQ
 # else
@@ -206,4 +256,31 @@ static inline int arch_irqs_disabled(void)
 # endif
 
 #endif /* __ASSEMBLY__ */
+=======
+#  ifdef CONFIG_X86_64
+#    define LOCKDEP_SYS_EXIT		call lockdep_sys_exit_thunk
+#    define LOCKDEP_SYS_EXIT_IRQ \
+	TRACE_IRQS_ON; \
+	sti; \
+	call lockdep_sys_exit_thunk; \
+	cli; \
+	TRACE_IRQS_OFF;
+#  else
+#    define LOCKDEP_SYS_EXIT \
+	pushl %eax;				\
+	pushl %ecx;				\
+	pushl %edx;				\
+	call lockdep_sys_exit;			\
+	popl %edx;				\
+	popl %ecx;				\
+	popl %eax;
+#    define LOCKDEP_SYS_EXIT_IRQ
+#  endif
+#else
+#  define LOCKDEP_SYS_EXIT
+#  define LOCKDEP_SYS_EXIT_IRQ
+#endif
+#endif /* __ASSEMBLY__ */
+
+>>>>>>> v4.9.227
 #endif

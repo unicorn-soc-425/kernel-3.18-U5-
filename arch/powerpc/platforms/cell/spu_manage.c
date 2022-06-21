@@ -105,7 +105,14 @@ static int __init spu_map_interrupts_old(struct spu *spu,
 	spu->irqs[2] = irq_create_mapping(NULL, IIC_IRQ_CLASS_2 | isrc);
 
 	/* Right now, we only fail if class 2 failed */
+<<<<<<< HEAD
 	return spu->irqs[2] == NO_IRQ ? -EINVAL : 0;
+=======
+	if (!spu->irqs[2])
+		return -EINVAL;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void __iomem * __init spu_map_prop_old(struct spu *spu,
@@ -191,7 +198,11 @@ static int __init spu_map_interrupts(struct spu *spu, struct device_node *np)
 		pr_debug("  irq %d no 0x%x on %s\n", i, oirq.args[0],
 			 oirq.np->full_name);
 		spu->irqs[i] = irq_create_of_mapping(&oirq);
+<<<<<<< HEAD
 		if (spu->irqs[i] == NO_IRQ) {
+=======
+		if (!spu->irqs[i]) {
+>>>>>>> v4.9.227
 			pr_debug("spu_new: failed to map it !\n");
 			goto err;
 		}
@@ -202,7 +213,11 @@ err:
 	pr_debug("failed to map irq %x for spu %s\n", *oirq.args,
 		spu->name);
 	for (; i >= 0; i--) {
+<<<<<<< HEAD
 		if (spu->irqs[i] != NO_IRQ)
+=======
+		if (spu->irqs[i])
+>>>>>>> v4.9.227
 			irq_dispose_mapping(spu->irqs[i]);
 	}
 	return ret;
@@ -535,8 +550,12 @@ static int __init init_affinity(void)
 	if (of_has_vicinity()) {
 		init_affinity_fw();
 	} else {
+<<<<<<< HEAD
 		long root = of_get_flat_dt_root();
 		if (of_flat_dt_is_compatible(root, "IBM,CPBW-1.0"))
+=======
+		if (of_machine_is_compatible("IBM,CPBW-1.0"))
+>>>>>>> v4.9.227
 			init_affinity_qs20_harcoded();
 		else
 			printk("No affinity configuration found\n");

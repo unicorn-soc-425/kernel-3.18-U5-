@@ -40,8 +40,15 @@ SECTIONS
 	_stext = .;
 	__stext = .;
 	.text : {
+<<<<<<< HEAD
 		TEXT_TEXT
 		SCHED_TEXT
+=======
+		HEAD_TEXT
+		TEXT_TEXT
+		SCHED_TEXT
+		CPUIDLE_TEXT
+>>>>>>> v4.9.227
 		LOCK_TEXT
 		*(.fixup)
 		*(.text.__*)

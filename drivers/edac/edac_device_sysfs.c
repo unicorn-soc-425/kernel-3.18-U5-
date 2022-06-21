@@ -62,6 +62,7 @@ static ssize_t edac_device_ctl_log_ce_store(struct edac_device_ctl_info
 	return count;
 }
 
+<<<<<<< HEAD
 /* 'panic_on_ce' */
 static ssize_t edac_device_ctl_panic_on_ce_show(struct edac_device_ctl_info
 						*ctl_info, char *data)
@@ -69,6 +70,8 @@ static ssize_t edac_device_ctl_panic_on_ce_show(struct edac_device_ctl_info
 	return snprintf(data, PAGE_SIZE, "%u\n", ctl_info->panic_on_ce);
 }
 
+=======
+>>>>>>> v4.9.227
 /* 'panic_on_ue' */
 static ssize_t edac_device_ctl_panic_on_ue_show(struct edac_device_ctl_info
 						*ctl_info, char *data)
@@ -76,6 +79,7 @@ static ssize_t edac_device_ctl_panic_on_ue_show(struct edac_device_ctl_info
 	return sprintf(data, "%u\n", ctl_info->panic_on_ue);
 }
 
+<<<<<<< HEAD
 static ssize_t edac_device_ctl_panic_on_ce_store(struct edac_device_ctl_info
 						 *ctl_info, const char *data,
 						 size_t count)
@@ -91,6 +95,8 @@ static ssize_t edac_device_ctl_panic_on_ce_store(struct edac_device_ctl_info
 	return count;
 }
 
+=======
+>>>>>>> v4.9.227
 static ssize_t edac_device_ctl_panic_on_ue_store(struct edac_device_ctl_info
 						 *ctl_info, const char *data,
 						 size_t count)
@@ -178,9 +184,12 @@ CTL_INFO_ATTR(log_ue, S_IRUGO | S_IWUSR,
 	edac_device_ctl_log_ue_show, edac_device_ctl_log_ue_store);
 CTL_INFO_ATTR(log_ce, S_IRUGO | S_IWUSR,
 	edac_device_ctl_log_ce_show, edac_device_ctl_log_ce_store);
+<<<<<<< HEAD
 CTL_INFO_ATTR(panic_on_ce, S_IRUGO | S_IWUSR,
 	edac_device_ctl_panic_on_ce_show,
 	edac_device_ctl_panic_on_ce_store);
+=======
+>>>>>>> v4.9.227
 CTL_INFO_ATTR(panic_on_ue, S_IRUGO | S_IWUSR,
 	edac_device_ctl_panic_on_ue_show,
 	edac_device_ctl_panic_on_ue_store);
@@ -189,7 +198,10 @@ CTL_INFO_ATTR(poll_msec, S_IRUGO | S_IWUSR,
 
 /* Base Attributes of the EDAC_DEVICE ECC object */
 static struct ctl_info_attribute *device_ctrl_attr[] = {
+<<<<<<< HEAD
 	&attr_ctl_info_panic_on_ce,
+=======
+>>>>>>> v4.9.227
 	&attr_ctl_info_panic_on_ue,
 	&attr_ctl_info_log_ue,
 	&attr_ctl_info_log_ce,
@@ -263,11 +275,14 @@ int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 
 	/* get the /sys/devices/system/edac reference */
 	edac_subsys = edac_get_sysfs_subsys();
+<<<<<<< HEAD
 	if (edac_subsys == NULL) {
 		edac_dbg(1, "no edac_subsys error\n");
 		err = -ENODEV;
 		goto err_out;
 	}
+=======
+>>>>>>> v4.9.227
 
 	/* Point to the 'edac_subsys' this instance 'reports' to */
 	edac_dev->edac_subsys = edac_subsys;
@@ -282,7 +297,11 @@ int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 
 	if (!try_module_get(edac_dev->owner)) {
 		err = -ENODEV;
+<<<<<<< HEAD
 		goto err_mod_get;
+=======
+		goto err_out;
+>>>>>>> v4.9.227
 	}
 
 	/* register */
@@ -308,9 +327,12 @@ int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 err_kobj_reg:
 	module_put(edac_dev->owner);
 
+<<<<<<< HEAD
 err_mod_get:
 	edac_put_sysfs_subsys();
 
+=======
+>>>>>>> v4.9.227
 err_out:
 	return err;
 }
@@ -332,7 +354,10 @@ void edac_device_unregister_sysfs_main_kobj(struct edac_device_ctl_info *dev)
 	 *   b) 'kfree' the memory
 	 */
 	kobject_put(&dev->kobj);
+<<<<<<< HEAD
 	edac_put_sysfs_subsys();
+=======
+>>>>>>> v4.9.227
 }
 
 /* edac_dev -> instance information */

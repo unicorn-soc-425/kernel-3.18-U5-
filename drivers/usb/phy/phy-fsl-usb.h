@@ -298,7 +298,11 @@
 /* SE0 Time Before SRP */
 #define TB_SE0_SRP	(2)	/* b_idle,minimum 2 ms, section:5.3.2 */
 
+<<<<<<< HEAD
 #define SET_OTG_STATE(otg_ptr, newstate)	((otg_ptr)->state = newstate)
+=======
+#define SET_OTG_STATE(phy, newstate)	((phy)->otg->state = newstate)
+>>>>>>> v4.9.227
 
 struct usb_dr_mmap {
 	/* Capability register */

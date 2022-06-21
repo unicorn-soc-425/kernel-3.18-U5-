@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2008, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2012, Intel Corporation.
+=======
+ * Copyright (c) 2012, 2015 Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -63,6 +71,7 @@ int lovsub_object_init(const struct lu_env *env, struct lu_object *obj,
 
 	under = &dev->acid_next->cd_lu_dev;
 	below = under->ld_ops->ldo_object_alloc(env, obj->lo_header, under);
+<<<<<<< HEAD
 	if (below != NULL) {
 		lu_object_add(obj, below);
 		cl_object_page_init(lu2cl(obj), sizeof(struct lovsub_page));
@@ -71,6 +80,16 @@ int lovsub_object_init(const struct lu_env *env, struct lu_object *obj,
 		result = -ENOMEM;
 	return result;
 
+=======
+	if (below) {
+		lu_object_add(obj, below);
+		cl_object_page_init(lu2cl(obj), sizeof(struct lovsub_page));
+		result = 0;
+	} else {
+		result = -ENOMEM;
+	}
+	return result;
+>>>>>>> v4.9.227
 }
 
 static void lovsub_object_free(const struct lu_env *env, struct lu_object *obj)
@@ -91,7 +110,11 @@ static void lovsub_object_free(const struct lu_env *env, struct lu_object *obj)
 
 	lu_object_fini(obj);
 	lu_object_header_fini(&los->lso_header.coh_lu);
+<<<<<<< HEAD
 	OBD_SLAB_FREE_PTR(los, lovsub_object_kmem);
+=======
+	kmem_cache_free(lovsub_object_kmem, los);
+>>>>>>> v4.9.227
 }
 
 static int lovsub_object_print(const struct lu_env *env, void *cookie,
@@ -102,8 +125,13 @@ static int lovsub_object_print(const struct lu_env *env, void *cookie,
 	return (*p)(env, cookie, "[%d]", los->lso_index);
 }
 
+<<<<<<< HEAD
 static int lovsub_attr_set(const struct lu_env *env, struct cl_object *obj,
 			   const struct cl_attr *attr, unsigned valid)
+=======
+static int lovsub_attr_update(const struct lu_env *env, struct cl_object *obj,
+			      const struct cl_attr *attr, unsigned int valid)
+>>>>>>> v4.9.227
 {
 	struct lov_object *lov = cl2lovsub(obj)->lso_super;
 
@@ -120,12 +148,19 @@ static int lovsub_object_glimpse(const struct lu_env *env,
 	return cl_object_glimpse(env, &los->lso_super->lo_cl, lvb);
 }
 
+<<<<<<< HEAD
 
 
 static const struct cl_object_operations lovsub_ops = {
 	.coo_page_init = lovsub_page_init,
 	.coo_lock_init = lovsub_lock_init,
 	.coo_attr_set  = lovsub_attr_set,
+=======
+static const struct cl_object_operations lovsub_ops = {
+	.coo_page_init = lovsub_page_init,
+	.coo_lock_init = lovsub_lock_init,
+	.coo_attr_update = lovsub_attr_update,
+>>>>>>> v4.9.227
 	.coo_glimpse   = lovsub_object_glimpse
 };
 
@@ -145,8 +180,13 @@ struct lu_object *lovsub_object_alloc(const struct lu_env *env,
 	struct lovsub_object *los;
 	struct lu_object     *obj;
 
+<<<<<<< HEAD
 	OBD_SLAB_ALLOC_PTR_GFP(los, lovsub_object_kmem, GFP_NOFS);
 	if (los != NULL) {
+=======
+	los = kmem_cache_zalloc(lovsub_object_kmem, GFP_NOFS);
+	if (los) {
+>>>>>>> v4.9.227
 		struct cl_object_header *hdr;
 
 		obj = lovsub2lu(los);
@@ -156,8 +196,14 @@ struct lu_object *lovsub_object_alloc(const struct lu_env *env,
 		lu_object_add_top(&hdr->coh_lu, obj);
 		los->lso_cl.co_ops = &lovsub_ops;
 		obj->lo_ops = &lovsub_lu_obj_ops;
+<<<<<<< HEAD
 	} else
 		obj = NULL;
+=======
+	} else {
+		obj = NULL;
+	}
+>>>>>>> v4.9.227
 	return obj;
 }
 

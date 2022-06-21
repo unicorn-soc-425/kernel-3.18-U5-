@@ -272,6 +272,7 @@ static void lp8501_firmware_loaded(struct lp55xx_chip *chip)
 	lp8501_update_program_memory(chip, fw->data, fw->size);
 }
 
+<<<<<<< HEAD
 static void lp8501_led_brightness_work(struct work_struct *work)
 {
 	struct lp55xx_led *led = container_of(work, struct lp55xx_led,
@@ -282,6 +283,19 @@ static void lp8501_led_brightness_work(struct work_struct *work)
 	lp55xx_write(chip, LP8501_REG_LED_PWM_BASE + led->chan_nr,
 		     led->brightness);
 	mutex_unlock(&chip->lock);
+=======
+static int lp8501_led_brightness(struct lp55xx_led *led)
+{
+	struct lp55xx_chip *chip = led->chip;
+	int ret;
+
+	mutex_lock(&chip->lock);
+	ret = lp55xx_write(chip, LP8501_REG_LED_PWM_BASE + led->chan_nr,
+		     led->brightness);
+	mutex_unlock(&chip->lock);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /* Chip specific configurations */
@@ -296,7 +310,11 @@ static struct lp55xx_device_config lp8501_cfg = {
 	},
 	.max_channel  = LP8501_MAX_LEDS,
 	.post_init_device   = lp8501_post_init_device,
+<<<<<<< HEAD
 	.brightness_work_fn = lp8501_led_brightness_work,
+=======
+	.brightness_fn      = lp8501_led_brightness,
+>>>>>>> v4.9.227
 	.set_led_current    = lp8501_set_led_current,
 	.firmware_cb        = lp8501_firmware_loaded,
 	.run_engine         = lp8501_run_engine,
@@ -308,6 +326,7 @@ static int lp8501_probe(struct i2c_client *client,
 	int ret;
 	struct lp55xx_chip *chip;
 	struct lp55xx_led *led;
+<<<<<<< HEAD
 	struct lp55xx_platform_data *pdata;
 	struct device_node *np = client->dev.of_node;
 
@@ -316,12 +335,25 @@ static int lp8501_probe(struct i2c_client *client,
 			ret = lp55xx_of_populate_pdata(&client->dev, np);
 			if (ret < 0)
 				return ret;
+=======
+	struct lp55xx_platform_data *pdata = dev_get_platdata(&client->dev);
+	struct device_node *np = client->dev.of_node;
+
+	if (!pdata) {
+		if (np) {
+			pdata = lp55xx_of_populate_pdata(&client->dev, np);
+			if (IS_ERR(pdata))
+				return PTR_ERR(pdata);
+>>>>>>> v4.9.227
 		} else {
 			dev_err(&client->dev, "no platform data\n");
 			return -EINVAL;
 		}
 	}
+<<<<<<< HEAD
 	pdata = dev_get_platdata(&client->dev);
+=======
+>>>>>>> v4.9.227
 
 	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
 	if (!chip)
@@ -406,6 +438,10 @@ static struct i2c_driver lp8501_driver = {
 
 module_i2c_driver(lp8501_driver);
 
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Texas Instruments LP8501 LED drvier");
+=======
+MODULE_DESCRIPTION("Texas Instruments LP8501 LED driver");
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Milo Kim");
 MODULE_LICENSE("GPL");

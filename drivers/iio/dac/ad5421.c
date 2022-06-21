@@ -242,7 +242,11 @@ static irqreturn_t ad5421_fault_handler(int irq, void *data)
 					0,
 					IIO_EV_TYPE_THRESH,
 					IIO_EV_DIR_RISING),
+<<<<<<< HEAD
 			iio_get_time_ns());
+=======
+			iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 		}
 
 		if (events & AD5421_FAULT_UNDER_CURRENT) {
@@ -251,7 +255,11 @@ static irqreturn_t ad5421_fault_handler(int irq, void *data)
 					0,
 					IIO_EV_TYPE_THRESH,
 					IIO_EV_DIR_FALLING),
+<<<<<<< HEAD
 				iio_get_time_ns());
+=======
+				iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 		}
 
 		if (events & AD5421_FAULT_TEMP_OVER_140) {
@@ -260,7 +268,11 @@ static irqreturn_t ad5421_fault_handler(int irq, void *data)
 					0,
 					IIO_EV_TYPE_MAG,
 					IIO_EV_DIR_RISING),
+<<<<<<< HEAD
 				iio_get_time_ns());
+=======
+				iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 		}
 
 		old_fault = fault;
@@ -524,7 +536,10 @@ static int ad5421_probe(struct spi_device *spi)
 static struct spi_driver ad5421_driver = {
 	.driver = {
 		   .name = "ad5421",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = ad5421_probe,
 };

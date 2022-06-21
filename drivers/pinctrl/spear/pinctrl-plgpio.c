@@ -107,7 +107,11 @@ static inline void plgpio_reg_reset(void __iomem *base, u32 pin, u32 reg)
 /* gpio framework specific routines */
 static int plgpio_direction_input(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct plgpio *plgpio = container_of(chip, struct plgpio, chip);
+=======
+	struct plgpio *plgpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	/* get correct offset for "offset" pin */
@@ -127,7 +131,11 @@ static int plgpio_direction_input(struct gpio_chip *chip, unsigned offset)
 static int plgpio_direction_output(struct gpio_chip *chip, unsigned offset,
 		int value)
 {
+<<<<<<< HEAD
 	struct plgpio *plgpio = container_of(chip, struct plgpio, chip);
+=======
+	struct plgpio *plgpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	unsigned dir_offset = offset, wdata_offset = offset, tmp;
 
@@ -159,7 +167,11 @@ static int plgpio_direction_output(struct gpio_chip *chip, unsigned offset,
 
 static int plgpio_get_value(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct plgpio *plgpio = container_of(chip, struct plgpio, chip);
+=======
+	struct plgpio *plgpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	if (offset >= chip->ngpio)
 		return -EINVAL;
@@ -176,7 +188,11 @@ static int plgpio_get_value(struct gpio_chip *chip, unsigned offset)
 
 static void plgpio_set_value(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct plgpio *plgpio = container_of(chip, struct plgpio, chip);
+=======
+	struct plgpio *plgpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	if (offset >= chip->ngpio)
 		return;
@@ -196,7 +212,11 @@ static void plgpio_set_value(struct gpio_chip *chip, unsigned offset, int value)
 
 static int plgpio_request(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct plgpio *plgpio = container_of(chip, struct plgpio, chip);
+=======
+	struct plgpio *plgpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	int gpio = chip->base + offset;
 	unsigned long flags;
 	int ret = 0;
@@ -248,7 +268,11 @@ err0:
 
 static void plgpio_free(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct plgpio *plgpio = container_of(chip, struct plgpio, chip);
+=======
+	struct plgpio *plgpio = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	int gpio = chip->base + offset;
 	unsigned long flags;
 
@@ -280,7 +304,11 @@ disable_clk:
 static void plgpio_irq_disable(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	struct plgpio *plgpio = container_of(gc, struct plgpio, chip);
+=======
+	struct plgpio *plgpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	int offset = d->hwirq;
 	unsigned long flags;
 
@@ -299,7 +327,11 @@ static void plgpio_irq_disable(struct irq_data *d)
 static void plgpio_irq_enable(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	struct plgpio *plgpio = container_of(gc, struct plgpio, chip);
+=======
+	struct plgpio *plgpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	int offset = d->hwirq;
 	unsigned long flags;
 
@@ -318,7 +350,11 @@ static void plgpio_irq_enable(struct irq_data *d)
 static int plgpio_irq_set_type(struct irq_data *d, unsigned trigger)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	struct plgpio *plgpio = container_of(gc, struct plgpio, chip);
+=======
+	struct plgpio *plgpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	int offset = d->hwirq;
 	void __iomem *reg_off;
 	unsigned int supported_type = 0, val;
@@ -356,10 +392,17 @@ static struct irq_chip plgpio_irqchip = {
 	.irq_set_type	= plgpio_irq_set_type,
 };
 
+<<<<<<< HEAD
 static void plgpio_irq_handler(unsigned irq, struct irq_desc *desc)
 {
 	struct gpio_chip *gc = irq_desc_get_handler_data(desc);
 	struct plgpio *plgpio = container_of(gc, struct plgpio, chip);
+=======
+static void plgpio_irq_handler(struct irq_desc *desc)
+{
+	struct gpio_chip *gc = irq_desc_get_handler_data(desc);
+	struct plgpio *plgpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	struct irq_chip *irqchip = irq_desc_get_chip(desc);
 	int regs_count, count, pin, offset, i = 0;
 	unsigned long pending;
@@ -561,7 +604,11 @@ static int plgpio_probe(struct platform_device *pdev)
 	plgpio->chip.get = plgpio_get_value;
 	plgpio->chip.set = plgpio_set_value;
 	plgpio->chip.label = dev_name(&pdev->dev);
+<<<<<<< HEAD
 	plgpio->chip.dev = &pdev->dev;
+=======
+	plgpio->chip.parent = &pdev->dev;
+>>>>>>> v4.9.227
 	plgpio->chip.owner = THIS_MODULE;
 	plgpio->chip.of_node = pdev->dev.of_node;
 
@@ -573,7 +620,11 @@ static int plgpio_probe(struct platform_device *pdev)
 		}
 	}
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&plgpio->chip);
+=======
+	ret = gpiochip_add_data(&plgpio->chip, plgpio);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(&pdev->dev, "unable to add gpio chip\n");
 		goto unprepare_clk;
@@ -710,7 +761,10 @@ MODULE_DEVICE_TABLE(of, plgpio_of_match);
 static struct platform_driver plgpio_driver = {
 	.probe = plgpio_probe,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "spear-plgpio",
 		.pm = &plgpio_dev_pm_ops,
 		.of_match_table = plgpio_of_match,
@@ -724,5 +778,9 @@ static int __init plgpio_init(void)
 subsys_initcall(plgpio_init);
 
 MODULE_AUTHOR("Viresh Kumar <viresh.kumar@linaro.org>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("ST Microlectronics SPEAr PLGPIO driver");
+=======
+MODULE_DESCRIPTION("STMicroelectronics SPEAr PLGPIO driver");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");

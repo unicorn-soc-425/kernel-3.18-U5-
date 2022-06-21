@@ -32,7 +32,10 @@
 #include <linux/export.h>
 
 #include <drm/drmP.h>
+<<<<<<< HEAD
 #include <drm/drm_core.h>
+=======
+>>>>>>> v4.9.227
 
 #define DRM_IOCTL_VERSION32		DRM_IOWR(0x00, drm_version32_t)
 #define DRM_IOCTL_GET_UNIQUE32		DRM_IOWR(0x01, drm_unique32_t)
@@ -346,6 +349,10 @@ static int compat_drm_getstats(struct file *file, unsigned int cmd,
 	struct drm_stats __user *stats;
 	int i, err;
 
+<<<<<<< HEAD
+=======
+	memset(&s32, 0, sizeof(drm_stats32_t));
+>>>>>>> v4.9.227
 	stats = compat_alloc_user_space(sizeof(*stats));
 	if (!stats)
 		return -EFAULT;
@@ -1015,6 +1022,10 @@ static int compat_drm_wait_vblank(struct file *file, unsigned int cmd,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_X86) || defined(CONFIG_IA64)
+>>>>>>> v4.9.227
 typedef struct drm_mode_fb_cmd232 {
 	u32 fb_id;
 	u32 width;
@@ -1071,6 +1082,10 @@ static int compat_drm_mode_addfb2(struct file *file, unsigned int cmd,
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 static drm_ioctl_compat_t *drm_compat_ioctls[] = {
 	[DRM_IOCTL_NR(DRM_IOCTL_VERSION32)] = compat_drm_version,
@@ -1104,7 +1119,13 @@ static drm_ioctl_compat_t *drm_compat_ioctls[] = {
 	[DRM_IOCTL_NR(DRM_IOCTL_UPDATE_DRAW32)] = compat_drm_update_draw,
 #endif
 	[DRM_IOCTL_NR(DRM_IOCTL_WAIT_VBLANK32)] = compat_drm_wait_vblank,
+<<<<<<< HEAD
 	[DRM_IOCTL_NR(DRM_IOCTL_MODE_ADDFB232)] = compat_drm_mode_addfb2,
+=======
+#if defined(CONFIG_X86) || defined(CONFIG_IA64)
+	[DRM_IOCTL_NR(DRM_IOCTL_MODE_ADDFB232)] = compat_drm_mode_addfb2,
+#endif
+>>>>>>> v4.9.227
 };
 
 /**

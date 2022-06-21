@@ -35,7 +35,11 @@ struct uio_map;
 struct uio_mem {
 	const char		*name;
 	phys_addr_t		addr;
+<<<<<<< HEAD
 	unsigned long		size;
+=======
+	resource_size_t		size;
+>>>>>>> v4.9.227
 	int			memtype;
 	void __iomem		*internal_addr;
 	struct uio_map		*map;

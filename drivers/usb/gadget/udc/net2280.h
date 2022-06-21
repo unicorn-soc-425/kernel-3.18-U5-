@@ -47,6 +47,10 @@ set_idx_reg(struct net2280_regs __iomem *regs, u32 index, u32 value)
 #define PLX_LEGACY		BIT(0)
 #define PLX_2280		BIT(1)
 #define PLX_SUPERSPEED		BIT(2)
+<<<<<<< HEAD
+=======
+#define PLX_PCIE		BIT(3)
+>>>>>>> v4.9.227
 
 #define REG_DIAG		0x0
 #define     RETRY_COUNTER                                       16
@@ -96,11 +100,17 @@ struct net2280_ep {
 	struct net2280_ep_regs			__iomem *regs;
 	struct net2280_dma_regs			__iomem *dma;
 	struct net2280_dma			*dummy;
+<<<<<<< HEAD
 	struct usb338x_fifo_regs __iomem *fiforegs;
 	dma_addr_t				td_dma;	/* of dummy */
 	struct net2280				*dev;
 	unsigned long				irqs;
 	unsigned is_halt:1, dma_started:1;
+=======
+	dma_addr_t				td_dma;	/* of dummy */
+	struct net2280				*dev;
+	unsigned long				irqs;
+>>>>>>> v4.9.227
 
 	/* analogous to a host-side qh */
 	struct list_head			queue;
@@ -126,7 +136,11 @@ static inline void allow_status(struct net2280_ep *ep)
 	ep->stopped = 1;
 }
 
+<<<<<<< HEAD
 static void allow_status_338x(struct net2280_ep *ep)
+=======
+static inline void allow_status_338x(struct net2280_ep *ep)
+>>>>>>> v4.9.227
 {
 	/*
 	 * Control Status Phase Handshake was set by the chip when the setup
@@ -165,8 +179,13 @@ struct net2280 {
 					u2_enable:1,
 					ltm_enable:1,
 					wakeup_enable:1,
+<<<<<<< HEAD
 					selfpowered:1,
 					addressed_state:1;
+=======
+					addressed_state:1,
+					bug7734_patched:1;
+>>>>>>> v4.9.227
 	u16				chiprev;
 	int enhanced_mode;
 	int n_ep;
@@ -182,7 +201,10 @@ struct net2280 {
 	struct net2280_dma_regs		__iomem *dma;
 	struct net2280_dep_regs		__iomem *dep;
 	struct net2280_ep_regs		__iomem *epregs;
+<<<<<<< HEAD
 	struct usb338x_fifo_regs	__iomem *fiforegs;
+=======
+>>>>>>> v4.9.227
 	struct usb338x_ll_regs		__iomem *llregs;
 	struct usb338x_ll_lfps_regs	__iomem *ll_lfps_regs;
 	struct usb338x_ll_tsn_regs	__iomem *ll_tsn_regs;
@@ -356,6 +378,7 @@ static inline void start_out_naking(struct net2280_ep *ep)
 	readl(&ep->regs->ep_rsp);
 }
 
+<<<<<<< HEAD
 #ifdef DEBUG
 static inline void assert_out_naking(struct net2280_ep *ep, const char *where)
 {
@@ -373,6 +396,8 @@ static inline void assert_out_naking(struct net2280_ep *ep, const char *where)
 #define ASSERT_OUT_NAKING(ep) do {} while (0)
 #endif
 
+=======
+>>>>>>> v4.9.227
 static inline void stop_out_naking(struct net2280_ep *ep)
 {
 	u32	tmp;
@@ -389,9 +414,26 @@ static inline void set_max_speed(struct net2280_ep *ep, u32 max)
 	static const u32 ep_enhanced[9] = { 0x10, 0x60, 0x30, 0x80,
 					  0x50, 0x20, 0x70, 0x40, 0x90 };
 
+<<<<<<< HEAD
 	if (ep->dev->enhanced_mode)
 		reg = ep_enhanced[ep->num];
 	else{
+=======
+	if (ep->dev->enhanced_mode) {
+		reg = ep_enhanced[ep->num];
+		switch (ep->dev->gadget.speed) {
+		case USB_SPEED_SUPER:
+			reg += 2;
+			break;
+		case USB_SPEED_FULL:
+			reg += 1;
+			break;
+		case USB_SPEED_HIGH:
+		default:
+			break;
+		}
+	} else {
+>>>>>>> v4.9.227
 		reg = (ep->num + 1) * 0x10;
 		if (ep->dev->gadget.speed != USB_SPEED_HIGH)
 			reg += 1;

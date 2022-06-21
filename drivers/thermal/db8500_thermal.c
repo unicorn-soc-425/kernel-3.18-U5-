@@ -107,8 +107,12 @@ static int db8500_cdev_unbind(struct thermal_zone_device *thermal,
 }
 
 /* Callback to get current temperature */
+<<<<<<< HEAD
 static int db8500_sys_get_temp(struct thermal_zone_device *thermal,
 		unsigned long *temp)
+=======
+static int db8500_sys_get_temp(struct thermal_zone_device *thermal, int *temp)
+>>>>>>> v4.9.227
 {
 	struct db8500_thermal_zone *pzone = thermal->devdata;
 
@@ -180,7 +184,11 @@ static int db8500_sys_get_trip_type(struct thermal_zone_device *thermal,
 
 /* Callback to get trip point temperature */
 static int db8500_sys_get_trip_temp(struct thermal_zone_device *thermal,
+<<<<<<< HEAD
 		int trip, unsigned long *temp)
+=======
+		int trip, int *temp)
+>>>>>>> v4.9.227
 {
 	struct db8500_thermal_zone *pzone = thermal->devdata;
 	struct db8500_thsens_platform_data *ptrips = pzone->trip_tab;
@@ -195,7 +203,11 @@ static int db8500_sys_get_trip_temp(struct thermal_zone_device *thermal,
 
 /* Callback to get critical trip point temperature */
 static int db8500_sys_get_crit_temp(struct thermal_zone_device *thermal,
+<<<<<<< HEAD
 		unsigned long *temp)
+=======
+		int *temp)
+>>>>>>> v4.9.227
 {
 	struct db8500_thermal_zone *pzone = thermal->devdata;
 	struct db8500_thsens_platform_data *ptrips = pzone->trip_tab;
@@ -307,7 +319,11 @@ static void db8500_thermal_work(struct work_struct *work)
 	if (cur_mode == THERMAL_DEVICE_DISABLED)
 		return;
 
+<<<<<<< HEAD
 	thermal_zone_device_update(pzone->therm_dev);
+=======
+	thermal_zone_device_update(pzone->therm_dev, THERMAL_EVENT_UNSPECIFIED);
+>>>>>>> v4.9.227
 	dev_dbg(&pzone->therm_dev->device, "thermal work finished.\n");
 }
 
@@ -517,7 +533,10 @@ static const struct of_device_id db8500_thermal_match[] = {
 
 static struct platform_driver db8500_thermal_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "db8500-thermal",
 		.of_match_table = of_match_ptr(db8500_thermal_match),
 	},

@@ -93,6 +93,7 @@ static inline struct dvb_frontend *mxl5007t_attach(struct dvb_frontend *fe,
 #endif
 
 #endif /* __MXL5007T_H__ */
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -102,3 +103,5 @@ static inline struct dvb_frontend *mxl5007t_attach(struct dvb_frontend *fe,
  * End:
  */
 
+=======
+>>>>>>> v4.9.227

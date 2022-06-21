@@ -27,7 +27,13 @@
 static const struct nvkm_fb_func
 gk104_fb = {
 	.dtor = gf100_fb_dtor,
+<<<<<<< HEAD
 	.init = gf100_fb_init,
+=======
+	.oneinit = gf100_fb_oneinit,
+	.init = gf100_fb_init,
+	.init_page = gf100_fb_init_page,
+>>>>>>> v4.9.227
 	.intr = gf100_fb_intr,
 	.ram_new = gk104_ram_new,
 	.memtype_valid = gf100_fb_memtype_valid,

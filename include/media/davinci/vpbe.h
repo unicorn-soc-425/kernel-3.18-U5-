@@ -63,7 +63,11 @@ struct vpbe_output {
 	 * output basis. If per mode is needed, we may have to move this to
 	 * mode_info structure
 	 */
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode if_params;
+=======
+	u32 if_params;
+>>>>>>> v4.9.227
 };
 
 /* encoder configuration info */
@@ -96,7 +100,11 @@ struct vpbe_config {
 	struct encoder_config_info *ext_encoders;
 	/* amplifier information goes here */
 	struct amp_config_info *amp;
+<<<<<<< HEAD
 	int num_outputs;
+=======
+	unsigned int num_outputs;
+>>>>>>> v4.9.227
 	/* Order is venc outputs followed by LCD and then external encoders */
 	struct vpbe_output *outputs;
 };

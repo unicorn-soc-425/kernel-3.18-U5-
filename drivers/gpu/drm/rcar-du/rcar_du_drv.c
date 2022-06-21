@@ -1,7 +1,11 @@
 /*
  * rcar_du_drv.c  --  R-Car Display Unit DRM driver
  *
+<<<<<<< HEAD
  * Copyright (C) 2013-2014 Renesas Electronics Corporation
+=======
+ * Copyright (C) 2013-2015 Renesas Electronics Corporation
+>>>>>>> v4.9.227
  *
  * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
  *
@@ -36,6 +40,10 @@
  */
 
 static const struct rcar_du_device_info rcar_du_r8a7779_info = {
+<<<<<<< HEAD
+=======
+	.gen = 2,
+>>>>>>> v4.9.227
 	.features = 0,
 	.num_crtcs = 2,
 	.routes = {
@@ -57,6 +65,10 @@ static const struct rcar_du_device_info rcar_du_r8a7779_info = {
 };
 
 static const struct rcar_du_device_info rcar_du_r8a7790_info = {
+<<<<<<< HEAD
+=======
+	.gen = 2,
+>>>>>>> v4.9.227
 	.features = RCAR_DU_FEATURE_CRTC_IRQ_CLOCK
 		  | RCAR_DU_FEATURE_EXT_CTRL_REGS,
 	.quirks = RCAR_DU_QUIRK_ALIGN_128B | RCAR_DU_QUIRK_LVDS_LANES,
@@ -86,6 +98,10 @@ static const struct rcar_du_device_info rcar_du_r8a7790_info = {
 
 /* M2-W (r8a7791) and M2-N (r8a7793) are identical */
 static const struct rcar_du_device_info rcar_du_r8a7791_info = {
+<<<<<<< HEAD
+=======
+	.gen = 2,
+>>>>>>> v4.9.227
 	.features = RCAR_DU_FEATURE_CRTC_IRQ_CLOCK
 		  | RCAR_DU_FEATURE_EXT_CTRL_REGS,
 	.num_crtcs = 2,
@@ -108,6 +124,10 @@ static const struct rcar_du_device_info rcar_du_r8a7791_info = {
 };
 
 static const struct rcar_du_device_info rcar_du_r8a7794_info = {
+<<<<<<< HEAD
+=======
+	.gen = 2,
+>>>>>>> v4.9.227
 	.features = RCAR_DU_FEATURE_CRTC_IRQ_CLOCK
 		  | RCAR_DU_FEATURE_EXT_CTRL_REGS,
 	.num_crtcs = 2,
@@ -129,12 +149,43 @@ static const struct rcar_du_device_info rcar_du_r8a7794_info = {
 	.num_lvds = 0,
 };
 
+<<<<<<< HEAD
+=======
+static const struct rcar_du_device_info rcar_du_r8a7795_info = {
+	.gen = 3,
+	.features = RCAR_DU_FEATURE_CRTC_IRQ_CLOCK
+		  | RCAR_DU_FEATURE_EXT_CTRL_REGS
+		  | RCAR_DU_FEATURE_VSP1_SOURCE,
+	.num_crtcs = 4,
+	.routes = {
+		/* R8A7795 has one RGB output, one LVDS output and two
+		 * (currently unsupported) HDMI outputs.
+		 */
+		[RCAR_DU_OUTPUT_DPAD0] = {
+			.possible_crtcs = BIT(3),
+			.encoder_type = DRM_MODE_ENCODER_NONE,
+			.port = 0,
+		},
+		[RCAR_DU_OUTPUT_LVDS0] = {
+			.possible_crtcs = BIT(0),
+			.encoder_type = DRM_MODE_ENCODER_LVDS,
+			.port = 3,
+		},
+	},
+	.num_lvds = 1,
+};
+
+>>>>>>> v4.9.227
 static const struct of_device_id rcar_du_of_table[] = {
 	{ .compatible = "renesas,du-r8a7779", .data = &rcar_du_r8a7779_info },
 	{ .compatible = "renesas,du-r8a7790", .data = &rcar_du_r8a7790_info },
 	{ .compatible = "renesas,du-r8a7791", .data = &rcar_du_r8a7791_info },
 	{ .compatible = "renesas,du-r8a7793", .data = &rcar_du_r8a7791_info },
 	{ .compatible = "renesas,du-r8a7794", .data = &rcar_du_r8a7794_info },
+<<<<<<< HEAD
+=======
+	{ .compatible = "renesas,du-r8a7795", .data = &rcar_du_r8a7795_info },
+>>>>>>> v4.9.227
 	{ }
 };
 
@@ -144,6 +195,7 @@ MODULE_DEVICE_TABLE(of, rcar_du_of_table);
  * DRM operations
  */
 
+<<<<<<< HEAD
 static int rcar_du_unload(struct drm_device *dev)
 {
 	struct rcar_du_device *rcdu = dev->dev_private;
@@ -229,6 +281,8 @@ static void rcar_du_preclose(struct drm_device *dev, struct drm_file *file)
 		rcar_du_crtc_cancel_page_flip(&rcdu->crtcs[i], file);
 }
 
+=======
+>>>>>>> v4.9.227
 static void rcar_du_lastclose(struct drm_device *dev)
 {
 	struct rcar_du_device *rcdu = dev->dev_private;
@@ -269,6 +323,7 @@ static const struct file_operations rcar_du_fops = {
 static struct drm_driver rcar_du_driver = {
 	.driver_features	= DRIVER_GEM | DRIVER_MODESET | DRIVER_PRIME
 				| DRIVER_ATOMIC,
+<<<<<<< HEAD
 	.load			= rcar_du_load,
 	.unload			= rcar_du_unload,
 	.preclose		= rcar_du_preclose,
@@ -278,6 +333,13 @@ static struct drm_driver rcar_du_driver = {
 	.enable_vblank		= rcar_du_enable_vblank,
 	.disable_vblank		= rcar_du_disable_vblank,
 	.gem_free_object	= drm_gem_cma_free_object,
+=======
+	.lastclose		= rcar_du_lastclose,
+	.get_vblank_counter	= drm_vblank_no_hw_counter,
+	.enable_vblank		= rcar_du_enable_vblank,
+	.disable_vblank		= rcar_du_disable_vblank,
+	.gem_free_object_unlocked = drm_gem_cma_free_object,
+>>>>>>> v4.9.227
 	.gem_vm_ops		= &drm_gem_cma_vm_ops,
 	.prime_handle_to_fd	= drm_gem_prime_handle_to_fd,
 	.prime_fd_to_handle	= drm_gem_prime_fd_to_handle,
@@ -333,6 +395,7 @@ static const struct dev_pm_ops rcar_du_pm_ops = {
  * Platform driver
  */
 
+<<<<<<< HEAD
 static int rcar_du_probe(struct platform_device *pdev)
 {
 	return drm_platform_init(&rcar_du_driver, pdev);
@@ -343,10 +406,95 @@ static int rcar_du_remove(struct platform_device *pdev)
 	struct rcar_du_device *rcdu = platform_get_drvdata(pdev);
 
 	drm_put_dev(rcdu->ddev);
+=======
+static int rcar_du_remove(struct platform_device *pdev)
+{
+	struct rcar_du_device *rcdu = platform_get_drvdata(pdev);
+	struct drm_device *ddev = rcdu->ddev;
+
+	drm_dev_unregister(ddev);
+
+	if (rcdu->fbdev)
+		drm_fbdev_cma_fini(rcdu->fbdev);
+
+	drm_kms_helper_poll_fini(ddev);
+	drm_mode_config_cleanup(ddev);
+
+	drm_dev_unref(ddev);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int rcar_du_probe(struct platform_device *pdev)
+{
+	struct device_node *np = pdev->dev.of_node;
+	struct rcar_du_device *rcdu;
+	struct drm_device *ddev;
+	struct resource *mem;
+	int ret;
+
+	if (np == NULL) {
+		dev_err(&pdev->dev, "no device tree node\n");
+		return -ENODEV;
+	}
+
+	/* Allocate and initialize the R-Car device structure. */
+	rcdu = devm_kzalloc(&pdev->dev, sizeof(*rcdu), GFP_KERNEL);
+	if (rcdu == NULL)
+		return -ENOMEM;
+
+	init_waitqueue_head(&rcdu->commit.wait);
+
+	rcdu->dev = &pdev->dev;
+	rcdu->info = of_match_device(rcar_du_of_table, rcdu->dev)->data;
+
+	platform_set_drvdata(pdev, rcdu);
+
+	/* I/O resources */
+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	rcdu->mmio = devm_ioremap_resource(&pdev->dev, mem);
+	if (IS_ERR(rcdu->mmio))
+		return PTR_ERR(rcdu->mmio);
+
+	/* DRM/KMS objects */
+	ddev = drm_dev_alloc(&rcar_du_driver, &pdev->dev);
+	if (IS_ERR(ddev))
+		return PTR_ERR(ddev);
+
+	rcdu->ddev = ddev;
+	ddev->dev_private = rcdu;
+
+	ret = rcar_du_modeset_init(rcdu);
+	if (ret < 0) {
+		if (ret != -EPROBE_DEFER)
+			dev_err(&pdev->dev,
+				"failed to initialize DRM/KMS (%d)\n", ret);
+		goto error;
+	}
+
+	ddev->irq_enabled = 1;
+
+	/* Register the DRM device with the core and the connectors with
+	 * sysfs.
+	 */
+	ret = drm_dev_register(ddev, 0);
+	if (ret)
+		goto error;
+
+	DRM_INFO("Device %s probed\n", dev_name(&pdev->dev));
+
+	return 0;
+
+error:
+	rcar_du_remove(pdev);
+
+	return ret;
+}
+
+>>>>>>> v4.9.227
 static struct platform_driver rcar_du_platform_driver = {
 	.probe		= rcar_du_probe,
 	.remove		= rcar_du_remove,

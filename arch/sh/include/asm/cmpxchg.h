@@ -13,6 +13,11 @@
 #include <asm/cmpxchg-grb.h>
 #elif defined(CONFIG_CPU_SH4A)
 #include <asm/cmpxchg-llsc.h>
+<<<<<<< HEAD
+=======
+#elif defined(CONFIG_CPU_J2) && defined(CONFIG_SMP)
+#include <asm/cmpxchg-cas.h>
+>>>>>>> v4.9.227
 #else
 #include <asm/cmpxchg-irq.h>
 #endif
@@ -27,6 +32,12 @@ extern void __xchg_called_with_bad_pointer(void);
 	case 4:						\
 		__xchg__res = xchg_u32(__xchg_ptr, x);	\
 		break;					\
+<<<<<<< HEAD
+=======
+	case 2:						\
+		__xchg__res = xchg_u16(__xchg_ptr, x);	\
+		break;					\
+>>>>>>> v4.9.227
 	case 1:						\
 		__xchg__res = xchg_u8(__xchg_ptr, x);	\
 		break;					\
@@ -46,8 +57,11 @@ extern void __xchg_called_with_bad_pointer(void);
  * if something tries to do an invalid cmpxchg(). */
 extern void __cmpxchg_called_with_bad_pointer(void);
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG 1
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned long __cmpxchg(volatile void * ptr, unsigned long old,
 		unsigned long new, int size)
 {

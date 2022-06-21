@@ -34,8 +34,13 @@ from64to16 (unsigned long x)
  * returns a 16-bit checksum, already complemented.
  */
 __sum16
+<<<<<<< HEAD
 csum_tcpudp_magic (__be32 saddr, __be32 daddr, unsigned short len,
 		   unsigned short proto, __wsum sum)
+=======
+csum_tcpudp_magic(__be32 saddr, __be32 daddr, __u32 len,
+		  __u8 proto, __wsum sum)
+>>>>>>> v4.9.227
 {
 	return (__force __sum16)~from64to16(
 		(__force u64)saddr + (__force u64)daddr +
@@ -45,8 +50,13 @@ csum_tcpudp_magic (__be32 saddr, __be32 daddr, unsigned short len,
 EXPORT_SYMBOL(csum_tcpudp_magic);
 
 __wsum
+<<<<<<< HEAD
 csum_tcpudp_nofold (__be32 saddr, __be32 daddr, unsigned short len,
 		    unsigned short proto, __wsum sum)
+=======
+csum_tcpudp_nofold(__be32 saddr, __be32 daddr, __u32 len,
+		   __u8 proto, __wsum sum)
+>>>>>>> v4.9.227
 {
 	unsigned long result;
 

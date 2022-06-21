@@ -84,6 +84,18 @@
 			regulator-max-microvolt = <5000000>;
 			gpio = <&gpio1 2 0>;
 		};
+<<<<<<< HEAD
+=======
+
+		reg_usb_otg_vbus: regulator@4 {
+			compatible = "regulator-fixed";
+			reg = <4>;
+			regulator-name = "usb_otg_vbus";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			gpio = <&gpio1 4 0>;
+		};
+>>>>>>> v4.9.227
 	};
 
 	sound {
@@ -168,6 +180,15 @@
 			>;
 		};
 
+<<<<<<< HEAD
+=======
+		pinctrl_usbotg: usbotggrp {
+			fsl,pins = <
+				MX53_PAD_GPIO_4__GPIO1_4		0x000b0
+			>;
+		};
+
+>>>>>>> v4.9.227
 		led_pin_gpio: led_gpio@0 {
 			fsl,pins = <
 				MX53_PAD_PATA_DATA8__GPIO2_8		0x80000000
@@ -351,6 +372,14 @@
 };
 
 &usbotg {
+<<<<<<< HEAD
 	dr_mode = "peripheral";
+=======
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usbotg>;
+	dr_mode = "otg";
+	vbus-supply = <&reg_usb_otg_vbus>;
+	disable-over-current;
+>>>>>>> v4.9.227
 	status = "okay";
 };

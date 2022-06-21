@@ -8,6 +8,10 @@
  */
 
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 
 	/*
@@ -60,6 +64,10 @@ GLOBAL_ENTRY(flush_icache_range)
 	mov	ar.lc=r3		// restore ar.lc
 	br.ret.sptk.many rp
 END(flush_icache_range)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(flush_icache_range)
+>>>>>>> v4.9.227
 
 	/*
 	 * clflush_cache_range(start,size)

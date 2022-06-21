@@ -21,6 +21,7 @@
 	};
 
 	clocks {
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
@@ -30,6 +31,8 @@
 			clock-frequency = <12000000>;
 		};
 
+=======
+>>>>>>> v4.9.227
 		slow_xtal {
 		      clock-frequency = <32768>;
 		};

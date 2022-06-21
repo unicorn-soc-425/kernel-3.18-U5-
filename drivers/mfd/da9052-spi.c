@@ -32,7 +32,11 @@ static int da9052_spi_probe(struct spi_device *spi)
 	if (!da9052)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spi->mode = SPI_MODE_0 | SPI_CPOL;
+=======
+	spi->mode = SPI_MODE_0;
+>>>>>>> v4.9.227
 	spi->bits_per_word = 8;
 	spi_setup(spi);
 
@@ -43,6 +47,13 @@ static int da9052_spi_probe(struct spi_device *spi)
 
 	config = da9052_regmap_config;
 	config.read_flag_mask = 1;
+<<<<<<< HEAD
+=======
+	config.reg_bits = 7;
+	config.pad_bits = 1;
+	config.val_bits = 8;
+	config.use_single_rw = 1;
+>>>>>>> v4.9.227
 
 	da9052->regmap = devm_regmap_init_spi(spi, &config);
 	if (IS_ERR(da9052->regmap)) {
@@ -52,11 +63,15 @@ static int da9052_spi_probe(struct spi_device *spi)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = da9052_device_init(da9052, id->driver_data);
 	if (ret != 0)
 		return ret;
 
 	return 0;
+=======
+	return da9052_device_init(da9052, id->driver_data);
+>>>>>>> v4.9.227
 }
 
 static int da9052_spi_remove(struct spi_device *spi)
@@ -82,7 +97,10 @@ static struct spi_driver da9052_spi_driver = {
 	.id_table = da9052_spi_id,
 	.driver = {
 		.name = "da9052",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

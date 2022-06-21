@@ -2,8 +2,11 @@
 	- this file (info on some of the filesystems supported by linux).
 Locking
 	- info on locking rules as they pertain to Linux VFS.
+<<<<<<< HEAD
 Makefile
 	- Makefile for building the filsystems-part of DocBook.
+=======
+>>>>>>> v4.9.227
 9p.txt
 	- 9p (v9fs) is an implementation of the Plan 9 remote fs protocol.
 adfs.txt
@@ -34,6 +37,12 @@ configfs/
 	- directory containing configfs documentation and example code.
 cramfs.txt
 	- info on the cram filesystem for small storage (ROMs etc).
+<<<<<<< HEAD
+=======
+dax.txt
+	- info on avoiding the page cache for files stored on CPU-addressable
+	  storage devices.
+>>>>>>> v4.9.227
 debugfs.txt
 	- info on the debugfs filesystem.
 devpts.txt
@@ -154,5 +163,8 @@ xfs-self-describing-metadata.txt
 	- info on XFS Self Describing Metadata.
 xfs.txt
 	- info and mount options for the XFS filesystem.
+<<<<<<< HEAD
 xip.txt
 	- info on execute-in-place for file mappings.
+=======
+>>>>>>> v4.9.227

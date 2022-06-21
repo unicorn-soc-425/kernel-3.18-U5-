@@ -87,7 +87,10 @@ static int simtec_audio_tlv320aic23_probe(struct platform_device *pd)
 
 static struct platform_driver simtec_audio_tlv320aic23_driver = {
 	.driver	= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "s3c24xx-simtec-tlv320aic23",
 		.pm	= simtec_audio_pm,
 	},

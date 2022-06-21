@@ -7,4 +7,8 @@ Required properties:
   - bit 0 specifies polarity (0 for normal, 1 for inverted)
 - gpio-controller : Marks the device node as a GPIO controller.
 - interrupts : Interrupt mapping for GPIO IRQ.
+<<<<<<< HEAD
 
+=======
+- gpio-ranges : Interaction with the PINCTRL subsystem.
+>>>>>>> v4.9.227

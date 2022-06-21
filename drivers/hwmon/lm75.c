@@ -26,9 +26,14 @@
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/mutex.h>
 #include <linux/of.h>
 #include <linux/thermal.h>
+=======
+#include <linux/of.h>
+#include <linux/regmap.h>
+>>>>>>> v4.9.227
 #include "lm75.h"
 
 
@@ -44,6 +49,10 @@ enum lm75_type {		/* keep sorted in alphabetical order */
 	g751,
 	lm75,
 	lm75a,
+<<<<<<< HEAD
+=======
+	lm75b,
+>>>>>>> v4.9.227
 	max6625,
 	max6626,
 	mcp980x,
@@ -56,6 +65,10 @@ enum lm75_type {		/* keep sorted in alphabetical order */
 	tmp175,
 	tmp275,
 	tmp75,
+<<<<<<< HEAD
+=======
+	tmp75c,
+>>>>>>> v4.9.227
 };
 
 /* Addresses scanned */
@@ -64,16 +77,24 @@ static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4b, 0x4c,
 
 
 /* The LM75 registers */
+<<<<<<< HEAD
 #define LM75_REG_CONF		0x01
 static const u8 LM75_REG_TEMP[3] = {
 	0x00,		/* input */
 	0x03,		/* max */
 	0x02,		/* hyst */
 };
+=======
+#define LM75_REG_TEMP		0x00
+#define LM75_REG_CONF		0x01
+#define LM75_REG_HYST		0x02
+#define LM75_REG_MAX		0x03
+>>>>>>> v4.9.227
 
 /* Each client has this additional data */
 struct lm75_data {
 	struct i2c_client	*client;
+<<<<<<< HEAD
 	struct device		*hwmon_dev;
 	struct thermal_zone_device	*tz;
 	struct mutex		update_lock;
@@ -94,6 +115,15 @@ static int lm75_write_value(struct i2c_client *client, u8 reg, u16 value);
 static struct lm75_data *lm75_update_device(struct device *dev);
 
 
+=======
+	struct regmap		*regmap;
+	u8			orig_conf;
+	u8			resolution;	/* In bits, between 9 and 12 */
+	u8			resolution_limits;
+	unsigned int		sample_time;	/* In ms */
+};
+
+>>>>>>> v4.9.227
 /*-----------------------------------------------------------------------*/
 
 static inline long lm75_reg_to_mc(s16 temp, u8 resolution)
@@ -101,6 +131,7 @@ static inline long lm75_reg_to_mc(s16 temp, u8 resolution)
 	return ((temp >> (16 - resolution)) * 1000) >> (resolution - 8);
 }
 
+<<<<<<< HEAD
 /* sysfs attributes for hwmon */
 
 static int lm75_read_temp(void *dev, long *temp)
@@ -142,16 +173,86 @@ static ssize_t set_temp(struct device *dev, struct device_attribute *da,
 	error = kstrtol(buf, 10, &temp);
 	if (error)
 		return error;
+=======
+static int lm75_read(struct device *dev, enum hwmon_sensor_types type,
+		     u32 attr, int channel, long *val)
+{
+	struct lm75_data *data = dev_get_drvdata(dev);
+	unsigned int regval;
+	int err, reg;
+
+	switch (type) {
+	case hwmon_chip:
+		switch (attr) {
+		case hwmon_chip_update_interval:
+			*val = data->sample_time;
+			break;;
+		default:
+			return -EINVAL;
+		}
+		break;
+	case hwmon_temp:
+		switch (attr) {
+		case hwmon_temp_input:
+			reg = LM75_REG_TEMP;
+			break;
+		case hwmon_temp_max:
+			reg = LM75_REG_MAX;
+			break;
+		case hwmon_temp_max_hyst:
+			reg = LM75_REG_HYST;
+			break;
+		default:
+			return -EINVAL;
+		}
+		err = regmap_read(data->regmap, reg, &regval);
+		if (err < 0)
+			return err;
+
+		*val = lm75_reg_to_mc(regval, data->resolution);
+		break;
+	default:
+		return -EINVAL;
+	}
+	return 0;
+}
+
+static int lm75_write(struct device *dev, enum hwmon_sensor_types type,
+		      u32 attr, int channel, long temp)
+{
+	struct lm75_data *data = dev_get_drvdata(dev);
+	u8 resolution;
+	int reg;
+
+	if (type != hwmon_temp)
+		return -EINVAL;
+
+	switch (attr) {
+	case hwmon_temp_max:
+		reg = LM75_REG_MAX;
+		break;
+	case hwmon_temp_max_hyst:
+		reg = LM75_REG_HYST;
+		break;
+	default:
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 
 	/*
 	 * Resolution of limit registers is assumed to be the same as the
 	 * temperature input register resolution unless given explicitly.
 	 */
+<<<<<<< HEAD
 	if (attr->index && data->resolution_limits)
+=======
+	if (data->resolution_limits)
+>>>>>>> v4.9.227
 		resolution = data->resolution_limits;
 	else
 		resolution = data->resolution;
 
+<<<<<<< HEAD
 	mutex_lock(&data->update_lock);
 	temp = clamp_val(temp, LM75_TEMP_MIN, LM75_TEMP_MAX);
 	data->temp[nr] = DIV_ROUND_CLOSEST(temp  << (resolution - 8),
@@ -179,17 +280,127 @@ ATTRIBUTE_GROUPS(lm75);
 static const struct thermal_zone_of_device_ops lm75_of_thermal_ops = {
 	.get_temp = lm75_read_temp,
 };
+=======
+	temp = clamp_val(temp, LM75_TEMP_MIN, LM75_TEMP_MAX);
+	temp = DIV_ROUND_CLOSEST(temp  << (resolution - 8),
+				 1000) << (16 - resolution);
+
+	return regmap_write(data->regmap, reg, (u16)temp);
+}
+
+static umode_t lm75_is_visible(const void *data, enum hwmon_sensor_types type,
+			       u32 attr, int channel)
+{
+	switch (type) {
+	case hwmon_chip:
+		switch (attr) {
+		case hwmon_chip_update_interval:
+			return S_IRUGO;
+		}
+		break;
+	case hwmon_temp:
+		switch (attr) {
+		case hwmon_temp_input:
+			return S_IRUGO;
+		case hwmon_temp_max:
+		case hwmon_temp_max_hyst:
+			return S_IRUGO | S_IWUSR;
+		}
+		break;
+	default:
+		break;
+	}
+	return 0;
+}
+>>>>>>> v4.9.227
 
 /*-----------------------------------------------------------------------*/
 
 /* device probe and removal */
 
+<<<<<<< HEAD
+=======
+/* chip configuration */
+
+static const u32 lm75_chip_config[] = {
+	HWMON_C_REGISTER_TZ | HWMON_C_UPDATE_INTERVAL,
+	0
+};
+
+static const struct hwmon_channel_info lm75_chip = {
+	.type = hwmon_chip,
+	.config = lm75_chip_config,
+};
+
+static const u32 lm75_temp_config[] = {
+	HWMON_T_INPUT | HWMON_T_MAX | HWMON_T_MAX_HYST,
+	0
+};
+
+static const struct hwmon_channel_info lm75_temp = {
+	.type = hwmon_temp,
+	.config = lm75_temp_config,
+};
+
+static const struct hwmon_channel_info *lm75_info[] = {
+	&lm75_chip,
+	&lm75_temp,
+	NULL
+};
+
+static const struct hwmon_ops lm75_hwmon_ops = {
+	.is_visible = lm75_is_visible,
+	.read = lm75_read,
+	.write = lm75_write,
+};
+
+static const struct hwmon_chip_info lm75_chip_info = {
+	.ops = &lm75_hwmon_ops,
+	.info = lm75_info,
+};
+
+static bool lm75_is_writeable_reg(struct device *dev, unsigned int reg)
+{
+	return reg != LM75_REG_TEMP;
+}
+
+static bool lm75_is_volatile_reg(struct device *dev, unsigned int reg)
+{
+	return reg == LM75_REG_TEMP;
+}
+
+static const struct regmap_config lm75_regmap_config = {
+	.reg_bits = 8,
+	.val_bits = 16,
+	.max_register = LM75_REG_MAX,
+	.writeable_reg = lm75_is_writeable_reg,
+	.volatile_reg = lm75_is_volatile_reg,
+	.val_format_endian = REGMAP_ENDIAN_BIG,
+	.cache_type = REGCACHE_RBTREE,
+	.use_single_rw = true,
+};
+
+static void lm75_remove(void *data)
+{
+	struct lm75_data *lm75 = data;
+	struct i2c_client *client = lm75->client;
+
+	i2c_smbus_write_byte_data(client, LM75_REG_CONF, lm75->orig_conf);
+}
+
+>>>>>>> v4.9.227
 static int
 lm75_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
 	struct device *dev = &client->dev;
+<<<<<<< HEAD
 	struct lm75_data *data;
 	int status;
+=======
+	struct device *hwmon_dev;
+	struct lm75_data *data;
+	int status, err;
+>>>>>>> v4.9.227
 	u8 set_mask, clr_mask;
 	int new;
 	enum lm75_type kind = id->driver_data;
@@ -203,8 +414,15 @@ lm75_probe(struct i2c_client *client, const struct i2c_device_id *id)
 		return -ENOMEM;
 
 	data->client = client;
+<<<<<<< HEAD
 	i2c_set_clientdata(client, data);
 	mutex_init(&data->update_lock);
+=======
+
+	data->regmap = devm_regmap_init_i2c(client, &lm75_regmap_config);
+	if (IS_ERR(data->regmap))
+		return PTR_ERR(data->regmap);
+>>>>>>> v4.9.227
 
 	/* Set to LM75 resolution (9 bits, 1/2 degree C) and range.
 	 * Then tweak to be more precise when appropriate.
@@ -216,7 +434,11 @@ lm75_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	case adt75:
 		clr_mask |= 1 << 5;		/* not one-shot mode */
 		data->resolution = 12;
+<<<<<<< HEAD
 		data->sample_time = HZ / 8;
+=======
+		data->sample_time = MSEC_PER_SEC / 8;
+>>>>>>> v4.9.227
 		break;
 	case ds1775:
 	case ds75:
@@ -224,31 +446,59 @@ lm75_probe(struct i2c_client *client, const struct i2c_device_id *id)
 		clr_mask |= 3 << 5;
 		set_mask |= 2 << 5;		/* 11-bit mode */
 		data->resolution = 11;
+<<<<<<< HEAD
 		data->sample_time = HZ;
+=======
+		data->sample_time = MSEC_PER_SEC;
+>>>>>>> v4.9.227
 		break;
 	case ds7505:
 		set_mask |= 3 << 5;		/* 12-bit mode */
 		data->resolution = 12;
+<<<<<<< HEAD
 		data->sample_time = HZ / 4;
+=======
+		data->sample_time = MSEC_PER_SEC / 4;
+>>>>>>> v4.9.227
 		break;
 	case g751:
 	case lm75:
 	case lm75a:
 		data->resolution = 9;
+<<<<<<< HEAD
 		data->sample_time = HZ / 2;
 		break;
 	case max6625:
 		data->resolution = 9;
 		data->sample_time = HZ / 4;
+=======
+		data->sample_time = MSEC_PER_SEC / 2;
+		break;
+	case lm75b:
+		data->resolution = 11;
+		data->sample_time = MSEC_PER_SEC / 4;
+		break;
+	case max6625:
+		data->resolution = 9;
+		data->sample_time = MSEC_PER_SEC / 4;
+>>>>>>> v4.9.227
 		break;
 	case max6626:
 		data->resolution = 12;
 		data->resolution_limits = 9;
+<<<<<<< HEAD
 		data->sample_time = HZ / 4;
 		break;
 	case tcn75:
 		data->resolution = 9;
 		data->sample_time = HZ / 8;
+=======
+		data->sample_time = MSEC_PER_SEC / 4;
+		break;
+	case tcn75:
+		data->resolution = 9;
+		data->sample_time = MSEC_PER_SEC / 8;
+>>>>>>> v4.9.227
 		break;
 	case mcp980x:
 		data->resolution_limits = 9;
@@ -257,14 +507,22 @@ lm75_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	case tmp101:
 		set_mask |= 3 << 5;		/* 12-bit mode */
 		data->resolution = 12;
+<<<<<<< HEAD
 		data->sample_time = HZ;
+=======
+		data->sample_time = MSEC_PER_SEC;
+>>>>>>> v4.9.227
 		clr_mask |= 1 << 7;		/* not one-shot mode */
 		break;
 	case tmp112:
 		set_mask |= 3 << 5;		/* 12-bit mode */
 		clr_mask |= 1 << 7;		/* not one-shot mode */
 		data->resolution = 12;
+<<<<<<< HEAD
 		data->sample_time = HZ / 4;
+=======
+		data->sample_time = MSEC_PER_SEC / 4;
+>>>>>>> v4.9.227
 		break;
 	case tmp105:
 	case tmp175:
@@ -273,12 +531,25 @@ lm75_probe(struct i2c_client *client, const struct i2c_device_id *id)
 		set_mask |= 3 << 5;		/* 12-bit mode */
 		clr_mask |= 1 << 7;		/* not one-shot mode */
 		data->resolution = 12;
+<<<<<<< HEAD
 		data->sample_time = HZ / 2;
+=======
+		data->sample_time = MSEC_PER_SEC / 2;
+		break;
+	case tmp75c:
+		clr_mask |= 1 << 5;		/* not one-shot mode */
+		data->resolution = 12;
+		data->sample_time = MSEC_PER_SEC / 4;
+>>>>>>> v4.9.227
 		break;
 	}
 
 	/* configure as specified */
+<<<<<<< HEAD
 	status = lm75_read_value(client, LM75_REG_CONF);
+=======
+	status = i2c_smbus_read_byte_data(client, LM75_REG_CONF);
+>>>>>>> v4.9.227
 	if (status < 0) {
 		dev_dbg(dev, "Can't read config? %d\n", status);
 		return status;
@@ -287,6 +558,7 @@ lm75_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	new = status & ~clr_mask;
 	new |= set_mask;
 	if (status != new)
+<<<<<<< HEAD
 		lm75_write_value(client, LM75_REG_CONF, new);
 	dev_dbg(dev, "Config %02x\n", new);
 
@@ -314,6 +586,24 @@ static int lm75_remove(struct i2c_client *client)
 	thermal_zone_of_sensor_unregister(data->hwmon_dev, data->tz);
 	hwmon_device_unregister(data->hwmon_dev);
 	lm75_write_value(client, LM75_REG_CONF, data->orig_conf);
+=======
+		i2c_smbus_write_byte_data(client, LM75_REG_CONF, new);
+
+	err = devm_add_action_or_reset(dev, lm75_remove, data);
+	if (err)
+		return err;
+
+	dev_dbg(dev, "Config %02x\n", new);
+
+	hwmon_dev = devm_hwmon_device_register_with_info(dev, client->name,
+							 data, &lm75_chip_info,
+							 NULL);
+	if (IS_ERR(hwmon_dev))
+		return PTR_ERR(hwmon_dev);
+
+	dev_info(dev, "%s: sensor '%s'\n", dev_name(hwmon_dev), client->name);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -325,6 +615,10 @@ static const struct i2c_device_id lm75_ids[] = {
 	{ "g751", g751, },
 	{ "lm75", lm75, },
 	{ "lm75a", lm75a, },
+<<<<<<< HEAD
+=======
+	{ "lm75b", lm75b, },
+>>>>>>> v4.9.227
 	{ "max6625", max6625, },
 	{ "max6626", max6626, },
 	{ "mcp980x", mcp980x, },
@@ -337,6 +631,10 @@ static const struct i2c_device_id lm75_ids[] = {
 	{ "tmp175", tmp175, },
 	{ "tmp275", tmp275, },
 	{ "tmp75", tmp75, },
+<<<<<<< HEAD
+=======
+	{ "tmp75c", tmp75c, },
+>>>>>>> v4.9.227
 	{ /* LIST END */ }
 };
 MODULE_DEVICE_TABLE(i2c, lm75_ids);
@@ -412,6 +710,15 @@ static int lm75_detect(struct i2c_client *new_client,
 		 || i2c_smbus_read_byte_data(new_client, 7) != os)
 			return -ENODEV;
 	}
+<<<<<<< HEAD
+=======
+	/*
+	 * It is very unlikely that this is a LM75 if both
+	 * hysteresis and temperature limit registers are 0.
+	 */
+	if (hyst == 0 && os == 0)
+		return -ENODEV;
+>>>>>>> v4.9.227
 
 	/* Addresses cycling */
 	for (i = 8; i <= 248; i += 40) {
@@ -434,13 +741,21 @@ static int lm75_suspend(struct device *dev)
 {
 	int status;
 	struct i2c_client *client = to_i2c_client(dev);
+<<<<<<< HEAD
 	status = lm75_read_value(client, LM75_REG_CONF);
+=======
+	status = i2c_smbus_read_byte_data(client, LM75_REG_CONF);
+>>>>>>> v4.9.227
 	if (status < 0) {
 		dev_dbg(&client->dev, "Can't read config? %d\n", status);
 		return status;
 	}
 	status = status | LM75_SHUTDOWN;
+<<<<<<< HEAD
 	lm75_write_value(client, LM75_REG_CONF, status);
+=======
+	i2c_smbus_write_byte_data(client, LM75_REG_CONF, status);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -448,13 +763,21 @@ static int lm75_resume(struct device *dev)
 {
 	int status;
 	struct i2c_client *client = to_i2c_client(dev);
+<<<<<<< HEAD
 	status = lm75_read_value(client, LM75_REG_CONF);
+=======
+	status = i2c_smbus_read_byte_data(client, LM75_REG_CONF);
+>>>>>>> v4.9.227
 	if (status < 0) {
 		dev_dbg(&client->dev, "Can't read config? %d\n", status);
 		return status;
 	}
 	status = status & ~LM75_SHUTDOWN;
+<<<<<<< HEAD
 	lm75_write_value(client, LM75_REG_CONF, status);
+=======
+	i2c_smbus_write_byte_data(client, LM75_REG_CONF, status);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -474,12 +797,16 @@ static struct i2c_driver lm75_driver = {
 		.pm	= LM75_DEV_PM_OPS,
 	},
 	.probe		= lm75_probe,
+<<<<<<< HEAD
 	.remove		= lm75_remove,
+=======
+>>>>>>> v4.9.227
 	.id_table	= lm75_ids,
 	.detect		= lm75_detect,
 	.address_list	= normal_i2c,
 };
 
+<<<<<<< HEAD
 /*-----------------------------------------------------------------------*/
 
 /* register access */
@@ -541,6 +868,8 @@ abort:
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 module_i2c_driver(lm75_driver);
 
 MODULE_AUTHOR("Frodo Looijaard <frodol@dds.nl>");

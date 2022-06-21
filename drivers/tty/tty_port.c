@@ -22,7 +22,10 @@ void tty_port_init(struct tty_port *port)
 	memset(port, 0, sizeof(*port));
 	tty_buffer_init(port);
 	init_waitqueue_head(&port->open_wait);
+<<<<<<< HEAD
 	init_waitqueue_head(&port->close_wait);
+=======
+>>>>>>> v4.9.227
 	init_waitqueue_head(&port->delta_msr_wait);
 	mutex_init(&port->mutex);
 	mutex_init(&port->buf_mutex);
@@ -131,7 +134,11 @@ EXPORT_SYMBOL(tty_port_free_xmit_buf);
  */
 void tty_port_destroy(struct tty_port *port)
 {
+<<<<<<< HEAD
 	cancel_work_sync(&port->buf.work);
+=======
+	tty_buffer_cancel_work(port);
+>>>>>>> v4.9.227
 	tty_buffer_free_all(port);
 }
 EXPORT_SYMBOL(tty_port_destroy);
@@ -193,8 +200,12 @@ void tty_port_tty_set(struct tty_port *port, struct tty_struct *tty)
 	unsigned long flags;
 
 	spin_lock_irqsave(&port->lock, flags);
+<<<<<<< HEAD
 	if (port->tty)
 		tty_kref_put(port->tty);
+=======
+	tty_kref_put(port->tty);
+>>>>>>> v4.9.227
 	port->tty = tty_kref_get(tty);
 	spin_unlock_irqrestore(&port->lock, flags);
 }
@@ -206,7 +217,12 @@ static void tty_port_shutdown(struct tty_port *port, struct tty_struct *tty)
 	if (port->console)
 		goto out;
 
+<<<<<<< HEAD
 	if (test_and_clear_bit(ASYNCB_INITIALIZED, &port->flags)) {
+=======
+	if (tty_port_initialized(port)) {
+		tty_port_set_initialized(port, 0);
+>>>>>>> v4.9.227
 		/*
 		 * Drop DTR/RTS if HUPCL is set. This causes any attached
 		 * modem to hang up the line.
@@ -238,12 +254,19 @@ void tty_port_hangup(struct tty_port *port)
 
 	spin_lock_irqsave(&port->lock, flags);
 	port->count = 0;
+<<<<<<< HEAD
 	port->flags &= ~ASYNC_NORMAL_ACTIVE;
+=======
+>>>>>>> v4.9.227
 	tty = port->tty;
 	if (tty)
 		set_bit(TTY_IO_ERROR, &tty->flags);
 	port->tty = NULL;
 	spin_unlock_irqrestore(&port->lock, flags);
+<<<<<<< HEAD
+=======
+	tty_port_set_active(port, 0);
+>>>>>>> v4.9.227
 	tty_port_shutdown(port, tty);
 	tty_kref_put(tty);
 	wake_up_interruptible(&port->open_wait);
@@ -364,6 +387,7 @@ int tty_port_block_til_ready(struct tty_port *port,
 	unsigned long flags;
 	DEFINE_WAIT(wait);
 
+<<<<<<< HEAD
 	/* block if port is in the process of being closed */
 	if (port->flags & ASYNC_CLOSING) {
 		wait_event_interruptible_tty(tty, port->close_wait,
@@ -378,13 +402,25 @@ int tty_port_block_til_ready(struct tty_port *port,
 	   the port has just hung up or is in another error state */
 	if (tty->flags & (1 << TTY_IO_ERROR)) {
 		port->flags |= ASYNC_NORMAL_ACTIVE;
+=======
+	/* if non-blocking mode is set we can pass directly to open unless
+	   the port has just hung up or is in another error state */
+	if (tty_io_error(tty)) {
+		tty_port_set_active(port, 1);
+>>>>>>> v4.9.227
 		return 0;
 	}
 	if (filp->f_flags & O_NONBLOCK) {
 		/* Indicate we are open */
+<<<<<<< HEAD
 		if (tty->termios.c_cflag & CBAUD)
 			tty_port_raise_dtr_rts(port);
 		port->flags |= ASYNC_NORMAL_ACTIVE;
+=======
+		if (C_BAUD(tty))
+			tty_port_raise_dtr_rts(port);
+		tty_port_set_active(port, 1);
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -405,13 +441,21 @@ int tty_port_block_til_ready(struct tty_port *port,
 
 	while (1) {
 		/* Indicate we are open */
+<<<<<<< HEAD
 		if (C_BAUD(tty) && test_bit(ASYNCB_INITIALIZED, &port->flags))
+=======
+		if (C_BAUD(tty) && tty_port_initialized(port))
+>>>>>>> v4.9.227
 			tty_port_raise_dtr_rts(port);
 
 		prepare_to_wait(&port->open_wait, &wait, TASK_INTERRUPTIBLE);
 		/* Check for a hangup or uninitialised port.
 							Return accordingly */
+<<<<<<< HEAD
 		if (tty_hung_up_p(filp) || !(port->flags & ASYNC_INITIALIZED)) {
+=======
+		if (tty_hung_up_p(filp) || !tty_port_initialized(port)) {
+>>>>>>> v4.9.227
 			if (port->flags & ASYNC_HUP_NOTIFY)
 				retval = -EAGAIN;
 			else
@@ -424,8 +468,12 @@ int tty_port_block_til_ready(struct tty_port *port,
 		 * Never ask drivers if CLOCAL is set, this causes troubles
 		 * on some hardware.
 		 */
+<<<<<<< HEAD
 		if (!(port->flags & ASYNC_CLOSING) &&
 				(do_clocal || tty_port_carrier_raised(port)))
+=======
+		if (do_clocal || tty_port_carrier_raised(port))
+>>>>>>> v4.9.227
 			break;
 		if (signal_pending(current)) {
 			retval = -ERESTARTSYS;
@@ -443,9 +491,15 @@ int tty_port_block_til_ready(struct tty_port *port,
 	if (!tty_hung_up_p(filp))
 		port->count++;
 	port->blocked_open--;
+<<<<<<< HEAD
 	if (retval == 0)
 		port->flags |= ASYNC_NORMAL_ACTIVE;
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	spin_unlock_irqrestore(&port->lock, flags);
+	if (retval == 0)
+		tty_port_set_active(port, 1);
+>>>>>>> v4.9.227
 	return retval;
 }
 EXPORT_SYMBOL(tty_port_block_til_ready);
@@ -464,15 +518,20 @@ static void tty_port_drain_delay(struct tty_port *port, struct tty_struct *tty)
 	schedule_timeout_interruptible(timeout);
 }
 
+<<<<<<< HEAD
 /* Caller holds tty lock.
  * NB: may drop and reacquire tty lock (in tty_wait_until_sent_from_close())
  * so tty and tty port may have changed state (but not hung up or reopened).
  */
+=======
+/* Caller holds tty lock. */
+>>>>>>> v4.9.227
 int tty_port_close_start(struct tty_port *port,
 				struct tty_struct *tty, struct file *filp)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
 	if (tty_hung_up_p(filp)) {
 		spin_unlock_irqrestore(&port->lock, flags);
@@ -488,6 +547,20 @@ int tty_port_close_start(struct tty_port *port,
 	if (--port->count < 0) {
 		printk(KERN_WARNING "tty_port_close_start: count = %d\n",
 								port->count);
+=======
+	if (tty_hung_up_p(filp))
+		return 0;
+
+	spin_lock_irqsave(&port->lock, flags);
+	if (tty->count == 1 && port->count != 1) {
+		tty_warn(tty, "%s: tty->count = 1 port count = %d\n", __func__,
+			 port->count);
+		port->count = 1;
+	}
+	if (--port->count < 0) {
+		tty_warn(tty, "%s: bad port count (%d)\n", __func__,
+			 port->count);
+>>>>>>> v4.9.227
 		port->count = 0;
 	}
 
@@ -495,17 +568,28 @@ int tty_port_close_start(struct tty_port *port,
 		spin_unlock_irqrestore(&port->lock, flags);
 		return 0;
 	}
+<<<<<<< HEAD
 	set_bit(ASYNCB_CLOSING, &port->flags);
+=======
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&port->lock, flags);
 
 	tty->closing = 1;
 
+<<<<<<< HEAD
 	if (test_bit(ASYNCB_INITIALIZED, &port->flags)) {
+=======
+	if (tty_port_initialized(port)) {
+>>>>>>> v4.9.227
 		/* Don't block on a stalled port, just pull the chain */
 		if (tty->flow_stopped)
 			tty_driver_flush_buffer(tty);
 		if (port->closing_wait != ASYNC_CLOSING_WAIT_NONE)
+<<<<<<< HEAD
 			tty_wait_until_sent_from_close(tty, port->closing_wait);
+=======
+			tty_wait_until_sent(tty, port->closing_wait);
+>>>>>>> v4.9.227
 		if (port->drain_delay)
 			tty_port_drain_delay(port, tty);
 	}
@@ -522,12 +606,17 @@ void tty_port_close_end(struct tty_port *port, struct tty_struct *tty)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	tty_ldisc_flush(tty);
+>>>>>>> v4.9.227
 	tty->closing = 0;
 
 	spin_lock_irqsave(&port->lock, flags);
 
 	if (port->blocked_open) {
 		spin_unlock_irqrestore(&port->lock, flags);
+<<<<<<< HEAD
 		if (port->close_delay) {
 			msleep_interruptible(
 				jiffies_to_msecs(port->close_delay));
@@ -538,6 +627,15 @@ void tty_port_close_end(struct tty_port *port, struct tty_struct *tty)
 	port->flags &= ~(ASYNC_NORMAL_ACTIVE | ASYNC_CLOSING);
 	wake_up_interruptible(&port->close_wait);
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+		if (port->close_delay)
+			msleep_interruptible(jiffies_to_msecs(port->close_delay));
+		spin_lock_irqsave(&port->lock, flags);
+		wake_up_interruptible(&port->open_wait);
+	}
+	spin_unlock_irqrestore(&port->lock, flags);
+	tty_port_set_active(port, 0);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(tty_port_close_end);
 
@@ -545,10 +643,13 @@ EXPORT_SYMBOL(tty_port_close_end);
  * tty_port_close
  *
  * Caller holds tty lock
+<<<<<<< HEAD
  *
  * NB: may drop and reacquire tty lock (in tty_port_close_start()->
  * tty_wait_until_sent_from_close()) so tty and tty_port may have changed
  * state (but not hung up or reopened).
+=======
+>>>>>>> v4.9.227
  */
 void tty_port_close(struct tty_port *port, struct tty_struct *tty,
 							struct file *filp)
@@ -556,7 +657,12 @@ void tty_port_close(struct tty_port *port, struct tty_struct *tty,
 	if (tty_port_close_start(port, tty, filp) == 0)
 		return;
 	tty_port_shutdown(port, tty);
+<<<<<<< HEAD
 	set_bit(TTY_IO_ERROR, &tty->flags);
+=======
+	if (!port->console)
+		set_bit(TTY_IO_ERROR, &tty->flags);
+>>>>>>> v4.9.227
 	tty_port_close_end(port, tty);
 	tty_port_tty_set(port, NULL);
 }
@@ -604,7 +710,11 @@ int tty_port_open(struct tty_port *port, struct tty_struct *tty,
 
 	mutex_lock(&port->mutex);
 
+<<<<<<< HEAD
 	if (!test_bit(ASYNCB_INITIALIZED, &port->flags)) {
+=======
+	if (!tty_port_initialized(port)) {
+>>>>>>> v4.9.227
 		clear_bit(TTY_IO_ERROR, &tty->flags);
 		if (port->ops->activate) {
 			int retval = port->ops->activate(port, tty);
@@ -613,7 +723,11 @@ int tty_port_open(struct tty_port *port, struct tty_struct *tty,
 				return retval;
 			}
 		}
+<<<<<<< HEAD
 		set_bit(ASYNCB_INITIALIZED, &port->flags);
+=======
+		tty_port_set_initialized(port, 1);
+>>>>>>> v4.9.227
 	}
 	mutex_unlock(&port->mutex);
 	return tty_port_block_til_ready(port, tty, filp);

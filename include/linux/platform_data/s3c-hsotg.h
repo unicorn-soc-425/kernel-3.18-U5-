@@ -17,19 +17,32 @@
 
 struct platform_device;
 
+<<<<<<< HEAD
 enum s3c_hsotg_dmamode {
+=======
+enum dwc2_hsotg_dmamode {
+>>>>>>> v4.9.227
 	S3C_HSOTG_DMA_NONE,	/* do not use DMA at-all */
 	S3C_HSOTG_DMA_ONLY,	/* always use DMA */
 	S3C_HSOTG_DMA_DRV,	/* DMA is chosen by driver */
 };
 
 /**
+<<<<<<< HEAD
  * struct s3c_hsotg_plat - platform data for high-speed otg/udc
  * @dma: Whether to use DMA or not.
  * @is_osc: The clock source is an oscillator, not a crystal
  */
 struct s3c_hsotg_plat {
 	enum s3c_hsotg_dmamode	dma;
+=======
+ * struct dwc2_hsotg_plat - platform data for high-speed otg/udc
+ * @dma: Whether to use DMA or not.
+ * @is_osc: The clock source is an oscillator, not a crystal
+ */
+struct dwc2_hsotg_plat {
+	enum dwc2_hsotg_dmamode	dma;
+>>>>>>> v4.9.227
 	unsigned int		is_osc:1;
 	int                     phy_type;
 
@@ -37,6 +50,10 @@ struct s3c_hsotg_plat {
 	int (*phy_exit)(struct platform_device *pdev, int type);
 };
 
+<<<<<<< HEAD
 extern void s3c_hsotg_set_platdata(struct s3c_hsotg_plat *pd);
+=======
+extern void dwc2_hsotg_set_platdata(struct dwc2_hsotg_plat *pd);
+>>>>>>> v4.9.227
 
 #endif /* __LINUX_USB_S3C_HSOTG_H */

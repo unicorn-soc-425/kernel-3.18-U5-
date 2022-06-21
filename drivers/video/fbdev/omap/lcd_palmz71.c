@@ -105,7 +105,10 @@ static struct platform_driver palmz71_panel_driver = {
 	.resume		= palmz71_panel_resume,
 	.driver		= {
 		.name	= "lcd_palmz71",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

@@ -54,6 +54,10 @@ extern struct trap_per_cpu trap_block[NR_CPUS];
 void init_cur_cpu_trap(struct thread_info *);
 void setup_tba(void);
 extern int ncpus_probed;
+<<<<<<< HEAD
+=======
+extern u64 cpu_mondo_counter[NR_CPUS];
+>>>>>>> v4.9.227
 
 unsigned long real_hard_smp_processor_id(void);
 
@@ -79,6 +83,11 @@ struct sun4v_2insn_patch_entry {
 };
 extern struct sun4v_2insn_patch_entry __sun4v_2insn_patch,
 	__sun4v_2insn_patch_end;
+<<<<<<< HEAD
+=======
+extern struct sun4v_2insn_patch_entry __sun_m7_2insn_patch,
+	__sun_m7_2insn_patch_end;
+>>>>>>> v4.9.227
 
 
 #endif /* !(__ASSEMBLY__) */

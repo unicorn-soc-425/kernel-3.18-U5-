@@ -77,6 +77,7 @@ struct adf_ctl_drv_info {
 	struct class *drv_class;
 };
 
+<<<<<<< HEAD
 static struct adf_ctl_drv_info adt_ctl_drv;
 
 static void adf_chr_drv_destroy(void)
@@ -85,6 +86,16 @@ static void adf_chr_drv_destroy(void)
 	cdev_del(&adt_ctl_drv.drv_cdev);
 	class_destroy(adt_ctl_drv.drv_class);
 	unregister_chrdev_region(MKDEV(adt_ctl_drv.major, 0), 1);
+=======
+static struct adf_ctl_drv_info adf_ctl_drv;
+
+static void adf_chr_drv_destroy(void)
+{
+	device_destroy(adf_ctl_drv.drv_class, MKDEV(adf_ctl_drv.major, 0));
+	cdev_del(&adf_ctl_drv.drv_cdev);
+	class_destroy(adf_ctl_drv.drv_class);
+	unregister_chrdev_region(MKDEV(adf_ctl_drv.major, 0), 1);
+>>>>>>> v4.9.227
 }
 
 static int adf_chr_drv_create(void)
@@ -97,6 +108,7 @@ static int adf_chr_drv_create(void)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	adt_ctl_drv.drv_class = class_create(THIS_MODULE, DEVICE_NAME);
 	if (IS_ERR(adt_ctl_drv.drv_class)) {
 		pr_err("QAT: class_create failed for adf_ctl\n");
@@ -105,12 +117,27 @@ static int adf_chr_drv_create(void)
 	adt_ctl_drv.major = MAJOR(dev_id);
 	cdev_init(&adt_ctl_drv.drv_cdev, &adf_ctl_ops);
 	if (cdev_add(&adt_ctl_drv.drv_cdev, dev_id, 1)) {
+=======
+	adf_ctl_drv.drv_class = class_create(THIS_MODULE, DEVICE_NAME);
+	if (IS_ERR(adf_ctl_drv.drv_class)) {
+		pr_err("QAT: class_create failed for adf_ctl\n");
+		goto err_chrdev_unreg;
+	}
+	adf_ctl_drv.major = MAJOR(dev_id);
+	cdev_init(&adf_ctl_drv.drv_cdev, &adf_ctl_ops);
+	if (cdev_add(&adf_ctl_drv.drv_cdev, dev_id, 1)) {
+>>>>>>> v4.9.227
 		pr_err("QAT: cdev add failed\n");
 		goto err_class_destr;
 	}
 
+<<<<<<< HEAD
 	drv_device = device_create(adt_ctl_drv.drv_class, NULL,
 				   MKDEV(adt_ctl_drv.major, 0),
+=======
+	drv_device = device_create(adf_ctl_drv.drv_class, NULL,
+				   MKDEV(adf_ctl_drv.major, 0),
+>>>>>>> v4.9.227
 				   NULL, DEVICE_NAME);
 	if (IS_ERR(drv_device)) {
 		pr_err("QAT: failed to create device\n");
@@ -118,9 +145,15 @@ static int adf_chr_drv_create(void)
 	}
 	return 0;
 err_cdev_del:
+<<<<<<< HEAD
 	cdev_del(&adt_ctl_drv.drv_cdev);
 err_class_destr:
 	class_destroy(adt_ctl_drv.drv_class);
+=======
+	cdev_del(&adf_ctl_drv.drv_cdev);
+err_class_destr:
+	class_destroy(adf_ctl_drv.drv_class);
+>>>>>>> v4.9.227
 err_chrdev_unreg:
 	unregister_chrdev_region(dev_id, 1);
 	return -EFAULT;
@@ -159,14 +192,24 @@ static int adf_add_key_value_data(struct adf_accel_dev *accel_dev,
 		if (adf_cfg_add_key_value_param(accel_dev, section,
 						key_val->key, (void *)val,
 						key_val->type)) {
+<<<<<<< HEAD
 			pr_err("QAT: failed to add keyvalue.\n");
+=======
+			dev_err(&GET_DEV(accel_dev),
+				"failed to add hex keyvalue.\n");
+>>>>>>> v4.9.227
 			return -EFAULT;
 		}
 	} else {
 		if (adf_cfg_add_key_value_param(accel_dev, section,
 						key_val->key, key_val->val,
 						key_val->type)) {
+<<<<<<< HEAD
 			pr_err("QAT: failed to add keyvalue.\n");
+=======
+			dev_err(&GET_DEV(accel_dev),
+				"failed to add keyvalue.\n");
+>>>>>>> v4.9.227
 			return -EFAULT;
 		}
 	}
@@ -185,21 +228,40 @@ static int adf_copy_key_value_data(struct adf_accel_dev *accel_dev,
 	while (section_head) {
 		if (copy_from_user(&section, (void __user *)section_head,
 				   sizeof(*section_head))) {
+<<<<<<< HEAD
 			pr_err("QAT: failed to copy section info\n");
+=======
+			dev_err(&GET_DEV(accel_dev),
+				"failed to copy section info\n");
+>>>>>>> v4.9.227
 			goto out_err;
 		}
 
 		if (adf_cfg_section_add(accel_dev, section.name)) {
+<<<<<<< HEAD
 			pr_err("QAT: failed to add section.\n");
 			goto out_err;
 		}
 
 		params_head = section_head->params;
+=======
+			dev_err(&GET_DEV(accel_dev),
+				"failed to add section.\n");
+			goto out_err;
+		}
+
+		params_head = section.params;
+>>>>>>> v4.9.227
 
 		while (params_head) {
 			if (copy_from_user(&key_val, (void __user *)params_head,
 					   sizeof(key_val))) {
+<<<<<<< HEAD
 				pr_err("QAT: Failed to copy keyvalue.\n");
+=======
+				dev_err(&GET_DEV(accel_dev),
+					"Failed to copy keyvalue.\n");
+>>>>>>> v4.9.227
 				goto out_err;
 			}
 			if (adf_add_key_value_data(accel_dev, section.name,
@@ -250,6 +312,7 @@ out:
 
 static int adf_ctl_is_device_in_use(int id)
 {
+<<<<<<< HEAD
 	struct list_head *itr, *head = adf_devmgr_get_head();
 
 	list_for_each(itr, head) {
@@ -260,6 +323,16 @@ static int adf_ctl_is_device_in_use(int id)
 			if (adf_devmgr_in_reset(dev) || adf_dev_in_use(dev)) {
 				pr_info("QAT: device qat_dev%d is busy\n",
 					dev->accel_id);
+=======
+	struct adf_accel_dev *dev;
+
+	list_for_each_entry(dev, adf_devmgr_get_head(), list) {
+		if (id == dev->accel_id || id == ADF_CFG_ALL_DEVICES) {
+			if (adf_devmgr_in_reset(dev) || adf_dev_in_use(dev)) {
+				dev_info(&GET_DEV(dev),
+					 "device qat_dev%d is busy\n",
+					 dev->accel_id);
+>>>>>>> v4.9.227
 				return -EBUSY;
 			}
 		}
@@ -267,6 +340,7 @@ static int adf_ctl_is_device_in_use(int id)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int adf_ctl_stop_devices(uint32_t id)
 {
 	struct list_head *itr, *head = adf_devmgr_get_head();
@@ -275,10 +349,18 @@ static int adf_ctl_stop_devices(uint32_t id)
 	list_for_each(itr, head) {
 		struct adf_accel_dev *accel_dev =
 				list_entry(itr, struct adf_accel_dev, list);
+=======
+static void adf_ctl_stop_devices(uint32_t id)
+{
+	struct adf_accel_dev *accel_dev;
+
+	list_for_each_entry(accel_dev, adf_devmgr_get_head(), list) {
+>>>>>>> v4.9.227
 		if (id == accel_dev->accel_id || id == ADF_CFG_ALL_DEVICES) {
 			if (!adf_dev_started(accel_dev))
 				continue;
 
+<<<<<<< HEAD
 			if (adf_dev_stop(accel_dev)) {
 				pr_err("QAT: Failed to stop qat_dev%d\n", id);
 				ret = -EFAULT;
@@ -286,6 +368,26 @@ static int adf_ctl_stop_devices(uint32_t id)
 		}
 	}
 	return ret;
+=======
+			/* First stop all VFs */
+			if (!accel_dev->is_vf)
+				continue;
+
+			adf_dev_stop(accel_dev);
+			adf_dev_shutdown(accel_dev);
+		}
+	}
+
+	list_for_each_entry(accel_dev, adf_devmgr_get_head(), list) {
+		if (id == accel_dev->accel_id || id == ADF_CFG_ALL_DEVICES) {
+			if (!adf_dev_started(accel_dev))
+				continue;
+
+			adf_dev_stop(accel_dev);
+			adf_dev_shutdown(accel_dev);
+		}
+	}
+>>>>>>> v4.9.227
 }
 
 static int adf_ctl_ioctl_dev_stop(struct file *fp, unsigned int cmd,
@@ -314,9 +416,14 @@ static int adf_ctl_ioctl_dev_stop(struct file *fp, unsigned int cmd,
 		pr_info("QAT: Stopping acceleration device qat_dev%d.\n",
 			ctl_data->device_id);
 
+<<<<<<< HEAD
 	ret = adf_ctl_stop_devices(ctl_data->device_id);
 	if (ret)
 		pr_err("QAT: failed to stop device.\n");
+=======
+	adf_ctl_stop_devices(ctl_data->device_id);
+
+>>>>>>> v4.9.227
 out:
 	kfree(ctl_data);
 	return ret;
@@ -333,6 +440,7 @@ static int adf_ctl_ioctl_dev_start(struct file *fp, unsigned int cmd,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	accel_dev = adf_devmgr_get_dev_by_id(ctl_data->device_id);
 	if (!accel_dev) {
 		pr_err("QAT: Device %d not found\n", ctl_data->device_id);
@@ -351,6 +459,30 @@ static int adf_ctl_ioctl_dev_start(struct file *fp, unsigned int cmd,
 	if (ret) {
 		pr_err("QAT: Failed to start qat_dev%d\n", ctl_data->device_id);
 		adf_dev_stop(accel_dev);
+=======
+	ret = -ENODEV;
+	accel_dev = adf_devmgr_get_dev_by_id(ctl_data->device_id);
+	if (!accel_dev)
+		goto out;
+
+	if (!adf_dev_started(accel_dev)) {
+		dev_info(&GET_DEV(accel_dev),
+			 "Starting acceleration device qat_dev%d.\n",
+			 ctl_data->device_id);
+		ret = adf_dev_init(accel_dev);
+		if (!ret)
+			ret = adf_dev_start(accel_dev);
+	} else {
+		dev_info(&GET_DEV(accel_dev),
+			 "Acceleration device qat_dev%d already started.\n",
+			 ctl_data->device_id);
+	}
+	if (ret) {
+		dev_err(&GET_DEV(accel_dev), "Failed to start qat_dev%d\n",
+			ctl_data->device_id);
+		adf_dev_stop(accel_dev);
+		adf_dev_shutdown(accel_dev);
+>>>>>>> v4.9.227
 	}
 out:
 	kfree(ctl_data);
@@ -383,10 +515,16 @@ static int adf_ctl_ioctl_get_status(struct file *fp, unsigned int cmd,
 	}
 
 	accel_dev = adf_devmgr_get_dev_by_id(dev_info.accel_id);
+<<<<<<< HEAD
 	if (!accel_dev) {
 		pr_err("QAT: Device %d not found\n", dev_info.accel_id);
 		return -ENODEV;
 	}
+=======
+	if (!accel_dev)
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	hw_data = accel_dev->hw_device;
 	dev_info.state = adf_dev_started(accel_dev) ? DEV_UP : DEV_DOWN;
 	dev_info.num_ae = hw_data->get_num_aes(hw_data);
@@ -403,7 +541,11 @@ static int adf_ctl_ioctl_get_status(struct file *fp, unsigned int cmd,
 
 	if (copy_to_user((void __user *)arg, &dev_info,
 			 sizeof(struct adf_dev_status_info))) {
+<<<<<<< HEAD
 		pr_err("QAT: failed to copy status.\n");
+=======
+		dev_err(&GET_DEV(accel_dev), "failed to copy status.\n");
+>>>>>>> v4.9.227
 		return -EFAULT;
 	}
 	return 0;
@@ -449,27 +591,49 @@ static int __init adf_register_ctl_device_driver(void)
 {
 	mutex_init(&adf_ctl_lock);
 
+<<<<<<< HEAD
 	if (qat_algs_init())
 		goto err_algs_init;
 
+=======
+>>>>>>> v4.9.227
 	if (adf_chr_drv_create())
 		goto err_chr_dev;
 
 	if (adf_init_aer())
 		goto err_aer;
 
+<<<<<<< HEAD
+=======
+	if (adf_init_pf_wq())
+		goto err_pf_wq;
+
+	if (adf_init_vf_wq())
+		goto err_vf_wq;
+
+>>>>>>> v4.9.227
 	if (qat_crypto_register())
 		goto err_crypto_register;
 
 	return 0;
 
 err_crypto_register:
+<<<<<<< HEAD
+=======
+	adf_exit_vf_wq();
+err_vf_wq:
+	adf_exit_pf_wq();
+err_pf_wq:
+>>>>>>> v4.9.227
 	adf_exit_aer();
 err_aer:
 	adf_chr_drv_destroy();
 err_chr_dev:
+<<<<<<< HEAD
 	qat_algs_exit();
 err_algs_init:
+=======
+>>>>>>> v4.9.227
 	mutex_destroy(&adf_ctl_lock);
 	return -EFAULT;
 }
@@ -478,8 +642,15 @@ static void __exit adf_unregister_ctl_device_driver(void)
 {
 	adf_chr_drv_destroy();
 	adf_exit_aer();
+<<<<<<< HEAD
 	qat_crypto_unregister();
 	qat_algs_exit();
+=======
+	adf_exit_vf_wq();
+	adf_exit_pf_wq();
+	qat_crypto_unregister();
+	adf_clean_vf_map(false);
+>>>>>>> v4.9.227
 	mutex_destroy(&adf_ctl_lock);
 }
 
@@ -489,3 +660,7 @@ MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Intel");
 MODULE_DESCRIPTION("Intel(R) QuickAssist Technology");
 MODULE_ALIAS_CRYPTO("intel_qat");
+<<<<<<< HEAD
+=======
+MODULE_VERSION(ADF_DRV_VERSION);
+>>>>>>> v4.9.227

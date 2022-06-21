@@ -196,14 +196,22 @@ static u32 sbus_hme_read32(void __iomem *reg)
 static void sbus_hme_write_rxd(struct happy_meal_rxd *rxd, u32 flags, u32 addr)
 {
 	rxd->rx_addr = (__force hme32)addr;
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> v4.9.227
 	rxd->rx_flags = (__force hme32)flags;
 }
 
 static void sbus_hme_write_txd(struct happy_meal_txd *txd, u32 flags, u32 addr)
 {
 	txd->tx_addr = (__force hme32)addr;
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> v4.9.227
 	txd->tx_flags = (__force hme32)flags;
 }
 
@@ -225,14 +233,22 @@ static u32 pci_hme_read32(void __iomem *reg)
 static void pci_hme_write_rxd(struct happy_meal_rxd *rxd, u32 flags, u32 addr)
 {
 	rxd->rx_addr = (__force hme32)cpu_to_le32(addr);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> v4.9.227
 	rxd->rx_flags = (__force hme32)cpu_to_le32(flags);
 }
 
 static void pci_hme_write_txd(struct happy_meal_txd *txd, u32 flags, u32 addr)
 {
 	txd->tx_addr = (__force hme32)cpu_to_le32(addr);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> v4.9.227
 	txd->tx_flags = (__force hme32)cpu_to_le32(flags);
 }
 
@@ -268,12 +284,20 @@ static u32 pci_hme_read_desc32(hme32 *p)
 	sbus_readl(__reg)
 #define hme_write_rxd(__hp, __rxd, __flags, __addr) \
 do {	(__rxd)->rx_addr = (__force hme32)(u32)(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> v4.9.227
 	(__rxd)->rx_flags = (__force hme32)(u32)(__flags); \
 } while(0)
 #define hme_write_txd(__hp, __txd, __flags, __addr) \
 do {	(__txd)->tx_addr = (__force hme32)(u32)(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> v4.9.227
 	(__txd)->tx_flags = (__force hme32)(u32)(__flags); \
 } while(0)
 #define hme_read_desc32(__hp, __p)	((__force u32)(hme32)*(__p))
@@ -293,12 +317,20 @@ do {	(__txd)->tx_addr = (__force hme32)(u32)(__addr); \
 	readl(__reg)
 #define hme_write_rxd(__hp, __rxd, __flags, __addr) \
 do {	(__rxd)->rx_addr = (__force hme32)cpu_to_le32(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> v4.9.227
 	(__rxd)->rx_flags = (__force hme32)cpu_to_le32(__flags); \
 } while(0)
 #define hme_write_txd(__hp, __txd, __flags, __addr) \
 do {	(__txd)->tx_addr = (__force hme32)cpu_to_le32(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> v4.9.227
 	(__txd)->tx_flags = (__force hme32)cpu_to_le32(__flags); \
 } while(0)
 static inline u32 hme_read_desc32(struct happy_meal *hp, hme32 *p)
@@ -3323,7 +3355,10 @@ MODULE_DEVICE_TABLE(of, hme_sbus_match);
 static struct platform_driver hme_sbus_driver = {
 	.driver = {
 		.name = "hme",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = hme_sbus_match,
 	},
 	.probe		= hme_sbus_probe,

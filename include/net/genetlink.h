@@ -27,10 +27,24 @@ struct genl_info;
  * @maxattr: maximum number of attributes supported
  * @netnsok: set to true if the family can handle network
  *	namespaces and should be presented in all of them
+<<<<<<< HEAD
+=======
+ * @parallel_ops: operations can be called in parallel and aren't
+ *	synchronized by the core genetlink code
+>>>>>>> v4.9.227
  * @pre_doit: called before an operation's doit callback, it may
  *	do additional, common, filtering and return an error
  * @post_doit: called after an operation's doit callback, it may
  *	undo operations done by pre_doit, for example release locks
+<<<<<<< HEAD
+=======
+ * @mcast_bind: a socket bound to the given multicast group (which
+ *	is given as the offset into the groups array)
+ * @mcast_unbind: a socket was unbound from the given multicast group.
+ *	Note that unbind() will not be called symmetrically if the
+ *	generic netlink family is removed while there are still open
+ *	sockets.
+>>>>>>> v4.9.227
  * @attrbuf: buffer to store parsed attributes
  * @family_list: family list
  * @mcgrps: multicast groups used by this family (private)
@@ -53,6 +67,11 @@ struct genl_family {
 	void			(*post_doit)(const struct genl_ops *ops,
 					     struct sk_buff *skb,
 					     struct genl_info *info);
+<<<<<<< HEAD
+=======
+	int			(*mcast_bind)(struct net *net, int group);
+	void			(*mcast_unbind)(struct net *net, int group);
+>>>>>>> v4.9.227
 	struct nlattr **	attrbuf;	/* private */
 	const struct genl_ops *	ops;		/* private */
 	const struct genl_multicast_group *mcgrps; /* private */
@@ -73,7 +92,10 @@ struct genl_family {
  * @attrs: netlink attributes
  * @_net: network namespace
  * @user_ptr: user pointers
+<<<<<<< HEAD
  * @dst_sk: destination socket
+=======
+>>>>>>> v4.9.227
  */
 struct genl_info {
 	u32			snd_seq;
@@ -82,11 +104,16 @@ struct genl_info {
 	struct genlmsghdr *	genlhdr;
 	void *			userhdr;
 	struct nlattr **	attrs;
+<<<<<<< HEAD
 #ifdef CONFIG_NET_NS
 	struct net *		_net;
 #endif
 	void *			user_ptr[2];
 	struct sock *		dst_sk;
+=======
+	possible_net_t		_net;
+	void *			user_ptr[2];
+>>>>>>> v4.9.227
 };
 
 static inline struct net *genl_info_net(struct genl_info *info)
@@ -177,12 +204,18 @@ _genl_register_family_with_ops_grps(struct genl_family *family,
 					    (grps), ARRAY_SIZE(grps))
 
 int genl_unregister_family(struct genl_family *family);
+<<<<<<< HEAD
 void genl_notify(struct genl_family *family,
 		 struct sk_buff *skb, struct net *net, u32 portid,
 		 u32 group, struct nlmsghdr *nlh, gfp_t flags);
 
 struct sk_buff *genlmsg_new_unicast(size_t payload, struct genl_info *info,
 				    gfp_t flags);
+=======
+void genl_notify(struct genl_family *family, struct sk_buff *skb,
+		 struct genl_info *info, u32 group, gfp_t flags);
+
+>>>>>>> v4.9.227
 void *genlmsg_put(struct sk_buff *skb, u32 portid, u32 seq,
 		  struct genl_family *family, int flags, u8 cmd);
 
@@ -203,6 +236,26 @@ static inline struct nlmsghdr *genlmsg_nlhdr(void *user_hdr,
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * genlmsg_parse - parse attributes of a genetlink message
+ * @nlh: netlink message header
+ * @family: genetlink message family
+ * @tb: destination array with maxtype+1 elements
+ * @maxtype: maximum attribute type to be expected
+ * @policy: validation policy
+ * */
+static inline int genlmsg_parse(const struct nlmsghdr *nlh,
+				const struct genl_family *family,
+				struct nlattr *tb[], int maxtype,
+				const struct nla_policy *policy)
+{
+	return nlmsg_parse(nlh, family->hdrsize + GENL_HDRLEN, tb, maxtype,
+			   policy);
+}
+
+/**
+>>>>>>> v4.9.227
  * genl_dump_check_consistent - check if sequence is consistent and advertise if not
  * @cb: netlink callback structure that stores the sequence number
  * @user_hdr: user header as returned from genlmsg_put()
@@ -242,9 +295,15 @@ static inline void *genlmsg_put_reply(struct sk_buff *skb,
  * @skb: socket buffer the message is stored in
  * @hdr: user specific header
  */
+<<<<<<< HEAD
 static inline int genlmsg_end(struct sk_buff *skb, void *hdr)
 {
 	return nlmsg_end(skb, hdr - GENL_HDRLEN - NLMSG_HDRLEN);
+=======
+static inline void genlmsg_end(struct sk_buff *skb, void *hdr)
+{
+	nlmsg_end(skb, hdr - GENL_HDRLEN - NLMSG_HDRLEN);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -397,11 +456,19 @@ static inline int genl_set_err(struct genl_family *family, struct net *net,
 }
 
 static inline int genl_has_listeners(struct genl_family *family,
+<<<<<<< HEAD
 				     struct sock *sk, unsigned int group)
+=======
+				     struct net *net, unsigned int group)
+>>>>>>> v4.9.227
 {
 	if (WARN_ON_ONCE(group >= family->n_mcgrps))
 		return -EINVAL;
 	group = family->mcgrp_offset + group;
+<<<<<<< HEAD
 	return netlink_has_listeners(sk, group);
+=======
+	return netlink_has_listeners(net->genl_sock, group);
+>>>>>>> v4.9.227
 }
 #endif	/* __NET_GENERIC_NETLINK_H */

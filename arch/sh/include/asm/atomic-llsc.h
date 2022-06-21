@@ -48,12 +48,36 @@ static inline int atomic_##op##_return(int i, atomic_t *v)		\
 	return temp;							\
 }
 
+<<<<<<< HEAD
 #define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_OP_RETURN(op)
+=======
+#define ATOMIC_FETCH_OP(op)						\
+static inline int atomic_fetch_##op(int i, atomic_t *v)			\
+{									\
+	unsigned long res, temp;					\
+									\
+	__asm__ __volatile__ (						\
+"1:	movli.l @%3, %0		! atomic_fetch_" #op "	\n"		\
+"	mov %0, %1					\n"		\
+"	" #op "	%2, %0					\n"		\
+"	movco.l	%0, @%3					\n"		\
+"	bf	1b					\n"		\
+"	synco						\n"		\
+	: "=&z" (temp), "=&r" (res)					\
+	: "r" (i), "r" (&v->counter)					\
+	: "t");								\
+									\
+	return res;							\
+}
+
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_OP_RETURN(op) ATOMIC_FETCH_OP(op)
+>>>>>>> v4.9.227
 
 ATOMIC_OPS(add)
 ATOMIC_OPS(sub)
 
 #undef ATOMIC_OPS
+<<<<<<< HEAD
 #undef ATOMIC_OP_RETURN
 #undef ATOMIC_OP
 
@@ -85,4 +109,17 @@ static inline void atomic_set_mask(unsigned int mask, atomic_t *v)
 	: "t");
 }
 
+=======
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_FETCH_OP(op)
+
+ATOMIC_OPS(and)
+ATOMIC_OPS(or)
+ATOMIC_OPS(xor)
+
+#undef ATOMIC_OPS
+#undef ATOMIC_FETCH_OP
+#undef ATOMIC_OP_RETURN
+#undef ATOMIC_OP
+
+>>>>>>> v4.9.227
 #endif /* __ASM_SH_ATOMIC_LLSC_H */

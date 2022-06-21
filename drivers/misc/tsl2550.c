@@ -446,7 +446,10 @@ MODULE_DEVICE_TABLE(i2c, tsl2550_id);
 static struct i2c_driver tsl2550_driver = {
 	.driver = {
 		.name	= TSL2550_DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= TSL2550_PM_OPS,
 	},
 	.probe	= tsl2550_probe,

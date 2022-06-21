@@ -14,7 +14,11 @@
 #ifndef __SOC_TEGRA_CPUIDLE_H__
 #define __SOC_TEGRA_CPUIDLE_H__
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_IDLE
+=======
+#if defined(CONFIG_ARM) && defined(CONFIG_CPU_IDLE)
+>>>>>>> v4.9.227
 void tegra_cpuidle_pcie_irqs_in_use(void);
 #else
 static inline void tegra_cpuidle_pcie_irqs_in_use(void)

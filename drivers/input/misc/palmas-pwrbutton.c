@@ -260,7 +260,10 @@ static int palmas_pwron_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
+=======
+>>>>>>> v4.9.227
 /**
  * palmas_pwron_suspend() - suspend handler
  * @dev:	power button device
@@ -269,7 +272,11 @@ static int palmas_pwron_remove(struct platform_device *pdev)
  *
  * Return: 0
  */
+<<<<<<< HEAD
 static int palmas_pwron_suspend(struct device *dev)
+=======
+static int __maybe_unused palmas_pwron_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct palmas_pwron *pwron = platform_get_drvdata(pdev);
@@ -290,7 +297,11 @@ static int palmas_pwron_suspend(struct device *dev)
  *
  * Return: 0
  */
+<<<<<<< HEAD
 static int palmas_pwron_resume(struct device *dev)
+=======
+static int __maybe_unused palmas_pwron_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct palmas_pwron *pwron = platform_get_drvdata(pdev);
@@ -300,13 +311,20 @@ static int palmas_pwron_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(palmas_pwron_pm,
 			 palmas_pwron_suspend, palmas_pwron_resume);
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static struct of_device_id of_palmas_pwr_match[] = {
+=======
+static const struct of_device_id of_palmas_pwr_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "ti,palmas-pwrbutton" },
 	{ },
 };
@@ -319,7 +337,10 @@ static struct platform_driver palmas_pwron_driver = {
 	.remove	= palmas_pwron_remove,
 	.driver	= {
 		.name	= "palmas_pwrbutton",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(of_palmas_pwr_match),
 		.pm	= &palmas_pwron_pm,
 	},

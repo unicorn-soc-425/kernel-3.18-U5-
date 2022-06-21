@@ -12,6 +12,7 @@ struct pci_dev;
 #ifdef CONFIG_PCI
 extern void pnv_pci_init(void);
 extern void pnv_pci_shutdown(void);
+<<<<<<< HEAD
 extern int pnv_pci_dma_set_mask(struct pci_dev *pdev, u64 dma_mask);
 extern u64 pnv_pci_dma_get_required_mask(struct pci_dev *pdev);
 #else
@@ -31,6 +32,21 @@ static inline u64 pnv_pci_dma_get_required_mask(struct pci_dev *pdev)
 
 extern void pnv_lpc_init(void);
 
+=======
+#else
+static inline void pnv_pci_init(void) { }
+static inline void pnv_pci_shutdown(void) { }
+#endif
+
+extern u32 pnv_get_supported_cpuidle_states(void);
+extern u64 pnv_deepest_stop_state;
+
+extern void pnv_lpc_init(void);
+
+extern void opal_handle_events(uint64_t events);
+extern void opal_event_shutdown(void);
+
+>>>>>>> v4.9.227
 bool cpu_core_split_required(void);
 
 #endif /* _POWERNV_H */

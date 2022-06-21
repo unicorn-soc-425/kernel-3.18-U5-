@@ -321,12 +321,23 @@ static int aic26_probe(struct snd_soc_codec *codec)
 
 static struct snd_soc_codec_driver aic26_soc_codec_dev = {
 	.probe = aic26_probe,
+<<<<<<< HEAD
 	.controls = aic26_snd_controls,
 	.num_controls = ARRAY_SIZE(aic26_snd_controls),
 	.dapm_widgets = tlv320aic26_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(tlv320aic26_dapm_widgets),
 	.dapm_routes = tlv320aic26_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(tlv320aic26_dapm_routes),
+=======
+	.component_driver = {
+		.controls		= aic26_snd_controls,
+		.num_controls		= ARRAY_SIZE(aic26_snd_controls),
+		.dapm_widgets		= tlv320aic26_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(tlv320aic26_dapm_widgets),
+		.dapm_routes		= tlv320aic26_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(tlv320aic26_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config aic26_regmap = {
@@ -373,7 +384,10 @@ static int aic26_spi_remove(struct spi_device *spi)
 static struct spi_driver aic26_spi = {
 	.driver = {
 		.name = "tlv320aic26-codec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = aic26_spi_probe,
 	.remove = aic26_spi_remove,

@@ -358,7 +358,11 @@ SYSCALL_SPU(setns)
 COMPAT_SYS(process_vm_readv)
 COMPAT_SYS(process_vm_writev)
 SYSCALL(finit_module)
+<<<<<<< HEAD
 SYSCALL(ni_syscall) /* sys_kcmp */
+=======
+SYSCALL(kcmp) /* sys_kcmp */
+>>>>>>> v4.9.227
 SYSCALL_SPU(sched_setattr)
 SYSCALL_SPU(sched_getattr)
 SYSCALL_SPU(renameat2)
@@ -366,3 +370,26 @@ SYSCALL_SPU(seccomp)
 SYSCALL_SPU(getrandom)
 SYSCALL_SPU(memfd_create)
 SYSCALL_SPU(bpf)
+<<<<<<< HEAD
+=======
+COMPAT_SYS(execveat)
+PPC64ONLY(switch_endian)
+SYSCALL_SPU(userfaultfd)
+SYSCALL_SPU(membarrier)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(ni_syscall)
+SYSCALL(mlock2)
+SYSCALL(copy_file_range)
+COMPAT_SYS_SPU(preadv2)
+COMPAT_SYS_SPU(pwritev2)
+>>>>>>> v4.9.227

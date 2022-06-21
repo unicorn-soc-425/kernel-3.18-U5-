@@ -40,7 +40,11 @@ const char * const irlan_state[] = {
 
 void irlan_next_client_state(struct irlan_cb *self, IRLAN_STATE state)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), %s\n", __func__ , irlan_state[state]);
+=======
+	pr_debug("%s(), %s\n", __func__ , irlan_state[state]);
+>>>>>>> v4.9.227
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRLAN_MAGIC, return;);
@@ -50,7 +54,11 @@ void irlan_next_client_state(struct irlan_cb *self, IRLAN_STATE state)
 
 void irlan_next_provider_state(struct irlan_cb *self, IRLAN_STATE state)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), %s\n", __func__ , irlan_state[state]);
+=======
+	pr_debug("%s(), %s\n", __func__ , irlan_state[state]);
+>>>>>>> v4.9.227
 
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRLAN_MAGIC, return;);

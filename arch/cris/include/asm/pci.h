@@ -29,7 +29,11 @@ int pcibios_set_irq_routing(struct pci_dev *dev, int pin, int irq);
 
 #include <linux/types.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+>>>>>>> v4.9.227
 #include <linux/string.h>
 #include <asm/io.h>
 
@@ -48,9 +52,12 @@ extern int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 
 #endif /* __KERNEL__ */
 
+<<<<<<< HEAD
 /* implement the pci_ DMA API in terms of the generic device dma_ one */
 #include <asm-generic/pci-dma-compat.h>
 
+=======
+>>>>>>> v4.9.227
 /* generic pci stuff */
 #include <asm-generic/pci.h>
 

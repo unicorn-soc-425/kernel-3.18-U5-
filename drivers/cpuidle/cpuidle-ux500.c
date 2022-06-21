@@ -9,7 +9,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/cpuidle.h>
 #include <linux/spinlock.h>
 #include <linux/atomic.h>
@@ -19,7 +23,10 @@
 #include <linux/platform_device.h>
 
 #include <asm/cpuidle.h>
+<<<<<<< HEAD
 #include <asm/proc-fns.h>
+=======
+>>>>>>> v4.9.227
 
 static atomic_t master = ATOMIC_INIT(0);
 static DEFINE_SPINLOCK(master_lock);
@@ -101,8 +108,12 @@ static struct cpuidle_driver ux500_idle_driver = {
 			.enter		  = ux500_enter_idle,
 			.exit_latency	  = 70,
 			.target_residency = 260,
+<<<<<<< HEAD
 			.flags		  = CPUIDLE_FLAG_TIME_VALID |
 			                    CPUIDLE_FLAG_TIMER_STOP,
+=======
+			.flags		  = CPUIDLE_FLAG_TIMER_STOP,
+>>>>>>> v4.9.227
 			.name		  = "ApIdle",
 			.desc		  = "ARM Retention",
 		},
@@ -123,9 +134,16 @@ static int dbx500_cpuidle_probe(struct platform_device *pdev)
 static struct platform_driver dbx500_cpuidle_plat_driver = {
 	.driver = {
 		.name = "cpuidle-dbx500",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = dbx500_cpuidle_probe,
 };
 
 module_platform_driver(dbx500_cpuidle_plat_driver);
+=======
+	},
+	.probe = dbx500_cpuidle_probe,
+};
+builtin_platform_driver(dbx500_cpuidle_plat_driver);
+>>>>>>> v4.9.227

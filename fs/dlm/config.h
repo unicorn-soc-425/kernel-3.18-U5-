@@ -31,6 +31,10 @@ struct dlm_config_info {
 	int ci_toss_secs;
 	int ci_scan_secs;
 	int ci_log_debug;
+<<<<<<< HEAD
+=======
+	int ci_log_info;
+>>>>>>> v4.9.227
 	int ci_protocol;
 	int ci_timewarn_cs;
 	int ci_waitwarn_us;

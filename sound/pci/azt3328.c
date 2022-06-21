@@ -179,7 +179,11 @@
  *  - use MMIO (memory-mapped I/O)? Slightly faster access, e.g. for gameport.
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/bug.h> /* WARN_ONCE */
 #include <linux/pci.h>
@@ -1034,11 +1038,14 @@ snd_azf3328_info_mixer_enum(struct snd_kcontrol *kcontrol,
 	const char * const *p = NULL;
 
 	snd_azf3328_mixer_reg_decode(&reg, kcontrol->private_value);
+<<<<<<< HEAD
         uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
         uinfo->count = (reg.reg == IDX_MIXER_REC_SELECT) ? 2 : 1;
         uinfo->value.enumerated.items = reg.enum_c;
         if (uinfo->value.enumerated.item > reg.enum_c - 1U)
                 uinfo->value.enumerated.item = reg.enum_c - 1U;
+=======
+>>>>>>> v4.9.227
 	if (reg.reg == IDX_MIXER_ADVCTL2) {
 		switch(reg.lchan_shift) {
 		case 8: /* modem out sel */
@@ -1051,12 +1058,21 @@ snd_azf3328_info_mixer_enum(struct snd_kcontrol *kcontrol,
 			p = texts4;
 			break;
 		}
+<<<<<<< HEAD
 	} else
 	if (reg.reg == IDX_MIXER_REC_SELECT)
 		p = texts3;
 
 	strcpy(uinfo->value.enumerated.name, p[uinfo->value.enumerated.item]);
         return 0;
+=======
+	} else if (reg.reg == IDX_MIXER_REC_SELECT)
+		p = texts3;
+
+	return snd_ctl_enum_info(uinfo,
+				 (reg.reg == IDX_MIXER_REC_SELECT) ? 2 : 1,
+				 reg.enum_c, p);
+>>>>>>> v4.9.227
 }
 
 static int
@@ -1390,8 +1406,13 @@ snd_azf3328_ctrl_codec_activity(struct snd_azf3328 *chip,
 					.running)
 			     &&  (!chip->codecs[peer_codecs[codec_type].other2]
 					.running));
+<<<<<<< HEAD
 		 }
 		 if (call_function)
+=======
+		}
+		if (call_function)
+>>>>>>> v4.9.227
 			snd_azf3328_ctrl_enable_codecs(chip, enable);
 
 		/* ...and adjust clock, too
@@ -2095,7 +2116,11 @@ snd_azf3328_pcm_close(struct snd_pcm_substream *substream
 
 /******************************************************************/
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_azf3328_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_azf3328_playback_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_azf3328_pcm_playback_open,
 	.close =	snd_azf3328_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -2106,7 +2131,11 @@ static struct snd_pcm_ops snd_azf3328_playback_ops = {
 	.pointer =	snd_azf3328_pcm_pointer
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_azf3328_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_azf3328_capture_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_azf3328_pcm_capture_open,
 	.close =	snd_azf3328_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -2117,7 +2146,11 @@ static struct snd_pcm_ops snd_azf3328_capture_ops = {
 	.pointer =	snd_azf3328_pcm_pointer
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_azf3328_i2s_out_ops = {
+=======
+static const struct snd_pcm_ops snd_azf3328_i2s_out_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_azf3328_pcm_i2s_out_open,
 	.close =	snd_azf3328_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -2131,7 +2164,12 @@ static struct snd_pcm_ops snd_azf3328_i2s_out_ops = {
 static int
 snd_azf3328_pcm(struct snd_azf3328 *chip)
 {
+<<<<<<< HEAD
 enum { AZF_PCMDEV_STD, AZF_PCMDEV_I2S_OUT, NUM_AZF_PCMDEVS }; /* pcm devices */
+=======
+	/* pcm devices */
+	enum { AZF_PCMDEV_STD, AZF_PCMDEV_I2S_OUT, NUM_AZF_PCMDEVS };
+>>>>>>> v4.9.227
 
 	struct snd_pcm *pcm;
 	int err;
@@ -2298,8 +2336,11 @@ snd_azf3328_free(struct snd_azf3328 *chip)
 	snd_azf3328_timer_stop(chip->timer);
 	snd_azf3328_gameport_free(chip);
 
+<<<<<<< HEAD
 	if (chip->irq >= 0)
 		synchronize_irq(chip->irq);
+=======
+>>>>>>> v4.9.227
 __end_hw:
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
@@ -2424,8 +2465,13 @@ snd_azf3328_create(struct snd_card *card,
 	chip->irq = -1;
 
 	/* check if we can restrict PCI DMA transfers to 24 bits */
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(24)) < 0 ||
 	    pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(24)) < 0) {
+=======
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(24)) < 0 ||
+	    dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(24)) < 0) {
+>>>>>>> v4.9.227
 		dev_err(card->dev,
 			"architecture does not support 24bit PCI busmaster DMA\n"
 		);
@@ -2699,7 +2745,10 @@ snd_azf3328_resume_ac97(const struct snd_azf3328 *chip)
 static int
 snd_azf3328_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_azf3328 *chip = card->private_data;
 	u16 *saved_regs_ctrl_u16;
@@ -2725,16 +2774,20 @@ snd_azf3328_suspend(struct device *dev)
 		ARRAY_SIZE(chip->saved_regs_mpu), chip->saved_regs_mpu);
 	snd_azf3328_suspend_regs(chip, chip->opl3_io,
 		ARRAY_SIZE(chip->saved_regs_opl3), chip->saved_regs_opl3);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int
 snd_azf3328_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
 	struct snd_card *card = dev_get_drvdata(dev);
 	const struct snd_azf3328 *chip = card->private_data;
@@ -2748,6 +2801,11 @@ snd_azf3328_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+	struct snd_card *card = dev_get_drvdata(dev);
+	const struct snd_azf3328 *chip = card->private_data;
+
+>>>>>>> v4.9.227
 	snd_azf3328_resume_regs(chip, chip->saved_regs_game, chip->game_io,
 					ARRAY_SIZE(chip->saved_regs_game));
 	snd_azf3328_resume_regs(chip, chip->saved_regs_mpu, chip->mpu_io,

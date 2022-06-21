@@ -203,6 +203,10 @@ static int st1232_ts_probe(struct i2c_client *client,
 	input_dev->id.bustype = BUS_I2C;
 	input_dev->dev.parent = &client->dev;
 
+<<<<<<< HEAD
+=======
+	__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
+>>>>>>> v4.9.227
 	__set_bit(EV_SYN, input_dev->evbit);
 	__set_bit(EV_KEY, input_dev->evbit);
 	__set_bit(EV_ABS, input_dev->evbit);
@@ -243,8 +247,12 @@ static int st1232_ts_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int st1232_ts_suspend(struct device *dev)
+=======
+static int __maybe_unused st1232_ts_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct st1232_ts_data *ts = i2c_get_clientdata(client);
@@ -259,7 +267,11 @@ static int st1232_ts_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int st1232_ts_resume(struct device *dev)
+=======
+static int __maybe_unused st1232_ts_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct st1232_ts_data *ts = i2c_get_clientdata(client);
@@ -274,8 +286,11 @@ static int st1232_ts_resume(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> v4.9.227
 static SIMPLE_DEV_PM_OPS(st1232_ts_pm_ops,
 			 st1232_ts_suspend, st1232_ts_resume);
 
@@ -299,7 +314,10 @@ static struct i2c_driver st1232_ts_driver = {
 	.id_table	= st1232_ts_id,
 	.driver = {
 		.name	= ST1232_TS_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(st1232_ts_dt_ids),
 		.pm	= &st1232_ts_pm_ops,
 	},

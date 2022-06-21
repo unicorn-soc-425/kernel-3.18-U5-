@@ -22,7 +22,11 @@ static const char cpu_ver_string[] = CONFIG_XILINX_MICROBLAZE0_HW_VER;
 
 void __init set_cpuinfo_static(struct cpuinfo *ci, struct device_node *cpu)
 {
+<<<<<<< HEAD
 	int i = 0;
+=======
+	u32 i = 0;
+>>>>>>> v4.9.227
 
 	ci->use_instr =
 		(fcpu(cpu, "xlnx,use-barrel") ? PVR0_USE_BARREL_MASK : 0) |

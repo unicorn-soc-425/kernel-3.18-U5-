@@ -35,31 +35,52 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 {
 	int err;
 
+<<<<<<< HEAD
 	DE_INIT(("init_hw() - Indigo IOx\n"));
+=======
+>>>>>>> v4.9.227
 	if (snd_BUG_ON((subdevice_id & 0xfff0) != INDIGO_IOX))
 		return -ENODEV;
 
 	err = init_dsp_comm_page(chip);
 	if (err < 0) {
+<<<<<<< HEAD
 		DE_INIT(("init_hw - could not initialize DSP comm page\n"));
+=======
+		dev_err(chip->card->dev,
+			"init_hw - could not initialize DSP comm page\n");
+>>>>>>> v4.9.227
 		return err;
 	}
 
 	chip->device_id = device_id;
 	chip->subdevice_id = subdevice_id;
+<<<<<<< HEAD
 	chip->bad_board = TRUE;
 	chip->dsp_code_to_load = FW_INDIGO_IOX_DSP;
 	/* Since this card has no ASIC, mark it as loaded so everything
 	   works OK */
 	chip->asic_loaded = TRUE;
+=======
+	chip->bad_board = true;
+	chip->dsp_code_to_load = FW_INDIGO_IOX_DSP;
+	/* Since this card has no ASIC, mark it as loaded so everything
+	   works OK */
+	chip->asic_loaded = true;
+>>>>>>> v4.9.227
 	chip->input_clock_types = ECHO_CLOCK_BIT_INTERNAL;
 
 	err = load_firmware(chip);
 	if (err < 0)
 		return err;
+<<<<<<< HEAD
 	chip->bad_board = FALSE;
 
 	DE_INIT(("init_hw done\n"));
+=======
+	chip->bad_board = false;
+
+>>>>>>> v4.9.227
 	return err;
 }
 

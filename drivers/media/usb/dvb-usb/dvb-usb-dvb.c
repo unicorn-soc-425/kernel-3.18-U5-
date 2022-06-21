@@ -1,12 +1,20 @@
 /* dvb-usb-dvb.c is part of the DVB USB library.
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-6 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004-6 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  * see dvb-usb-init.c for copyright information.
  *
  * This file contains functions for initializing and handling the
  * linux-dvb API.
  */
 #include "dvb-usb-common.h"
+<<<<<<< HEAD
+=======
+#include <media/media-device.h>
+>>>>>>> v4.9.227
 
 /* does the complete input transfer handling */
 static int dvb_usb_ctrl_feed(struct dvb_demux_feed *dvbdmxfeed, int onoff)
@@ -84,14 +92,66 @@ static int dvb_usb_ctrl_feed(struct dvb_demux_feed *dvbdmxfeed, int onoff)
 
 static int dvb_usb_start_feed(struct dvb_demux_feed *dvbdmxfeed)
 {
+<<<<<<< HEAD
 	deb_ts("start pid: 0x%04x, feedtype: %d\n", dvbdmxfeed->pid,dvbdmxfeed->type);
 	return dvb_usb_ctrl_feed(dvbdmxfeed,1);
+=======
+	deb_ts("start pid: 0x%04x, feedtype: %d\n", dvbdmxfeed->pid,
+	       dvbdmxfeed->type);
+	return dvb_usb_ctrl_feed(dvbdmxfeed, 1);
+>>>>>>> v4.9.227
 }
 
 static int dvb_usb_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
 {
 	deb_ts("stop pid: 0x%04x, feedtype: %d\n", dvbdmxfeed->pid, dvbdmxfeed->type);
+<<<<<<< HEAD
 	return dvb_usb_ctrl_feed(dvbdmxfeed,0);
+=======
+	return dvb_usb_ctrl_feed(dvbdmxfeed, 0);
+}
+
+static int dvb_usb_media_device_init(struct dvb_usb_adapter *adap)
+{
+#ifdef CONFIG_MEDIA_CONTROLLER_DVB
+	struct media_device *mdev;
+	struct dvb_usb_device *d = adap->dev;
+	struct usb_device *udev = d->udev;
+
+	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
+	if (!mdev)
+		return -ENOMEM;
+
+	media_device_usb_init(mdev, udev, d->desc->name);
+
+	dvb_register_media_controller(&adap->dvb_adap, mdev);
+
+	dev_info(&d->udev->dev, "media controller created\n");
+#endif
+	return 0;
+}
+
+static int  dvb_usb_media_device_register(struct dvb_usb_adapter *adap)
+{
+#ifdef CONFIG_MEDIA_CONTROLLER_DVB
+	return media_device_register(adap->dvb_adap.mdev);
+#else
+	return 0;
+#endif
+}
+
+static void dvb_usb_media_device_unregister(struct dvb_usb_adapter *adap)
+{
+#ifdef CONFIG_MEDIA_CONTROLLER_DVB
+	if (!adap->dvb_adap.mdev)
+		return;
+
+	media_device_unregister(adap->dvb_adap.mdev);
+	media_device_cleanup(adap->dvb_adap.mdev);
+	kfree(adap->dvb_adap.mdev);
+	adap->dvb_adap.mdev = NULL;
+#endif
+>>>>>>> v4.9.227
 }
 
 int dvb_usb_adapter_dvb_init(struct dvb_usb_adapter *adap, short *adapter_nums)
@@ -107,9 +167,21 @@ int dvb_usb_adapter_dvb_init(struct dvb_usb_adapter *adap, short *adapter_nums)
 	}
 	adap->dvb_adap.priv = adap;
 
+<<<<<<< HEAD
 	if (adap->dev->props.read_mac_address) {
 		if (adap->dev->props.read_mac_address(adap->dev,adap->dvb_adap.proposed_mac) == 0)
 			info("MAC address: %pM",adap->dvb_adap.proposed_mac);
+=======
+	ret = dvb_usb_media_device_init(adap);
+	if (ret < 0) {
+		deb_info("dvb_usb_media_device_init failed: error %d", ret);
+		goto err_mc;
+	}
+
+	if (adap->dev->props.read_mac_address) {
+		if (adap->dev->props.read_mac_address(adap->dev, adap->dvb_adap.proposed_mac) == 0)
+			info("MAC address: %pM", adap->dvb_adap.proposed_mac);
+>>>>>>> v4.9.227
 		else
 			err("MAC address reading failed.");
 	}
@@ -128,7 +200,11 @@ int dvb_usb_adapter_dvb_init(struct dvb_usb_adapter *adap, short *adapter_nums)
 	adap->demux.stop_feed        = dvb_usb_stop_feed;
 	adap->demux.write_to_decoder = NULL;
 	if ((ret = dvb_dmx_init(&adap->demux)) < 0) {
+<<<<<<< HEAD
 		err("dvb_dmx_init failed: error %d",ret);
+=======
+		err("dvb_dmx_init failed: error %d", ret);
+>>>>>>> v4.9.227
 		goto err_dmx;
 	}
 
@@ -136,13 +212,21 @@ int dvb_usb_adapter_dvb_init(struct dvb_usb_adapter *adap, short *adapter_nums)
 	adap->dmxdev.demux           = &adap->demux.dmx;
 	adap->dmxdev.capabilities    = 0;
 	if ((ret = dvb_dmxdev_init(&adap->dmxdev, &adap->dvb_adap)) < 0) {
+<<<<<<< HEAD
 		err("dvb_dmxdev_init failed: error %d",ret);
+=======
+		err("dvb_dmxdev_init failed: error %d", ret);
+>>>>>>> v4.9.227
 		goto err_dmx_dev;
 	}
 
 	if ((ret = dvb_net_init(&adap->dvb_adap, &adap->dvb_net,
 						&adap->demux.dmx)) < 0) {
+<<<<<<< HEAD
 		err("dvb_net_init failed: error %d",ret);
+=======
+		err("dvb_net_init failed: error %d", ret);
+>>>>>>> v4.9.227
 		goto err_net_init;
 	}
 
@@ -154,6 +238,11 @@ err_net_init:
 err_dmx_dev:
 	dvb_dmx_release(&adap->demux);
 err_dmx:
+<<<<<<< HEAD
+=======
+	dvb_usb_media_device_unregister(adap);
+err_mc:
+>>>>>>> v4.9.227
 	dvb_unregister_adapter(&adap->dvb_adap);
 err:
 	return ret;
@@ -167,6 +256,10 @@ int dvb_usb_adapter_dvb_exit(struct dvb_usb_adapter *adap)
 		adap->demux.dmx.close(&adap->demux.dmx);
 		dvb_dmxdev_release(&adap->dmxdev);
 		dvb_dmx_release(&adap->demux);
+<<<<<<< HEAD
+=======
+		dvb_usb_media_device_unregister(adap);
+>>>>>>> v4.9.227
 		dvb_unregister_adapter(&adap->dvb_adap);
 		adap->state &= ~DVB_USB_ADAP_STATE_DVB;
 	}
@@ -268,7 +361,17 @@ int dvb_usb_adapter_frontend_init(struct dvb_usb_adapter *adap)
 		adap->num_frontends_initialized++;
 	}
 
+<<<<<<< HEAD
 	return 0;
+=======
+	ret = dvb_create_media_graph(&adap->dvb_adap, true);
+	if (ret)
+		return ret;
+
+	ret = dvb_usb_media_device_register(adap);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 int dvb_usb_adapter_frontend_exit(struct dvb_usb_adapter *adap)

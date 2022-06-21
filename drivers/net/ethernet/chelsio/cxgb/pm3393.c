@@ -570,7 +570,11 @@ static void pm3393_destroy(struct cmac *cmac)
 	kfree(cmac);
 }
 
+<<<<<<< HEAD
 static struct cmac_ops pm3393_ops = {
+=======
+static const struct cmac_ops pm3393_ops = {
+>>>>>>> v4.9.227
 	.destroy                 = pm3393_destroy,
 	.reset                   = pm3393_reset,
 	.interrupt_enable        = pm3393_interrupt_enable,

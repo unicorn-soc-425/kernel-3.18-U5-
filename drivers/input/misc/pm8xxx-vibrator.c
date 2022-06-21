@@ -199,8 +199,12 @@ static int pm8xxx_vib_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int pm8xxx_vib_suspend(struct device *dev)
+=======
+static int __maybe_unused pm8xxx_vib_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct pm8xxx_vib *vib = dev_get_drvdata(dev);
 
@@ -209,7 +213,10 @@ static int pm8xxx_vib_suspend(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(pm8xxx_vib_pm_ops, pm8xxx_vib_suspend, NULL);
 
@@ -224,7 +231,10 @@ static struct platform_driver pm8xxx_vib_driver = {
 	.probe		= pm8xxx_vib_probe,
 	.driver		= {
 		.name	= "pm8xxx-vib",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &pm8xxx_vib_pm_ops,
 		.of_match_table = pm8xxx_vib_id_table,
 	},

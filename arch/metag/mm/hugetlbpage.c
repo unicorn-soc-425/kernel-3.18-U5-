@@ -67,7 +67,11 @@ pte_t *huge_pte_alloc(struct mm_struct *mm,
 	pgd = pgd_offset(mm, addr);
 	pud = pud_offset(pgd, addr);
 	pmd = pmd_offset(pud, addr);
+<<<<<<< HEAD
 	pte = pte_alloc_map(mm, NULL, pmd, addr);
+=======
+	pte = pte_alloc_map(mm, pmd, addr);
+>>>>>>> v4.9.227
 	pgd->pgd &= ~_PAGE_SZ_MASK;
 	pgd->pgd |= _PAGE_SZHUGE;
 
@@ -89,11 +93,14 @@ pte_t *huge_pte_offset(struct mm_struct *mm, unsigned long addr)
 	return pte;
 }
 
+<<<<<<< HEAD
 int huge_pmd_unshare(struct mm_struct *mm, unsigned long *addr, pte_t *ptep)
 {
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 int pmd_huge(pmd_t pmd)
 {
 	return pmd_page_shift(pmd) > PAGE_SHIFT;
@@ -244,6 +251,10 @@ static __init int setup_hugepagesz(char *opt)
 	if (ps == (1 << HPAGE_SHIFT)) {
 		hugetlb_add_hstate(HPAGE_SHIFT - PAGE_SHIFT);
 	} else {
+<<<<<<< HEAD
+=======
+		hugetlb_bad_size();
+>>>>>>> v4.9.227
 		pr_err("hugepagesz: Unsupported page size %lu M\n",
 		       ps >> 20);
 		return 0;

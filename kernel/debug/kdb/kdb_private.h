@@ -83,7 +83,11 @@ typedef struct __ksymtab {
 		unsigned long sym_start;
 		unsigned long sym_end;
 		} kdb_symtab_t;
+<<<<<<< HEAD
 extern int kallsyms_symbol_next(char *prefix_name, int flag);
+=======
+extern int kallsyms_symbol_next(char *prefix_name, int flag, int buf_size);
+>>>>>>> v4.9.227
 extern int kallsyms_symbol_complete(char *prefix_name, int max_len);
 
 /* Exported Symbols for kernel loadable modules to use. */
@@ -172,10 +176,16 @@ typedef struct _kdbtab {
 	kdb_func_t cmd_func;		/* Function to execute command */
 	char    *cmd_usage;		/* Usage String for this command */
 	char    *cmd_help;		/* Help message for this command */
+<<<<<<< HEAD
 	short    cmd_flags;		/* Parsing flags */
 	short    cmd_minlen;		/* Minimum legal # command
 					 * chars required */
 	kdb_repeat_t cmd_repeat;	/* Does command auto repeat on enter? */
+=======
+	short    cmd_minlen;		/* Minimum legal # command
+					 * chars required */
+	kdb_cmdflags_t cmd_flags;	/* Command behaviour flags */
+>>>>>>> v4.9.227
 } kdbtab_t;
 
 extern int kdb_bt(int, const char **);	/* KDB display back trace */
@@ -197,7 +207,13 @@ extern int kdb_main_loop(kdb_reason_t, kdb_reason_t,
 
 /* Miscellaneous functions and data areas */
 extern int kdb_grepping_flag;
+<<<<<<< HEAD
 extern char kdb_grep_string[];
+=======
+#define KDB_GREPPING_FLAG_SEARCH 0x8000
+extern char kdb_grep_string[];
+#define KDB_GREP_STRLEN 256
+>>>>>>> v4.9.227
 extern int kdb_grep_leading;
 extern int kdb_grep_trailing;
 extern char *kdb_cmds[];
@@ -210,7 +226,11 @@ extern void kdb_ps1(const struct task_struct *p);
 extern void kdb_print_nameval(const char *name, unsigned long val);
 extern void kdb_send_sig_info(struct task_struct *p, struct siginfo *info);
 extern void kdb_meminfo_proc_show(void);
+<<<<<<< HEAD
 extern char *kdb_getstr(char *, size_t, char *);
+=======
+extern char *kdb_getstr(char *, size_t, const char *);
+>>>>>>> v4.9.227
 extern void kdb_gdb_state_pass(char *buf);
 
 /* Defines for kdb_symbol_print */

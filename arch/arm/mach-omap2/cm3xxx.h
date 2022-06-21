@@ -68,6 +68,7 @@
 
 #ifndef __ASSEMBLER__
 
+<<<<<<< HEAD
 extern void omap3xxx_cm_clkdm_enable_hwsup(s16 module, u32 mask);
 extern void omap3xxx_cm_clkdm_disable_hwsup(s16 module, u32 mask);
 extern void omap3xxx_cm_clkdm_force_sleep(s16 module, u32 mask);
@@ -80,11 +81,17 @@ extern int omap3xxx_cm_wait_module_ready(s16 prcm_mod, u8 idlest_id,
 extern int omap3xxx_cm_split_idlest_reg(void __iomem *idlest_reg,
 					s16 *prcm_inst, u8 *idlest_reg_id);
 
+=======
+>>>>>>> v4.9.227
 extern void omap3_cm_save_context(void);
 extern void omap3_cm_restore_context(void);
 extern void omap3_cm_save_scratchpad_contents(u32 *ptr);
 
+<<<<<<< HEAD
 extern int __init omap3xxx_cm_init(void);
+=======
+int __init omap3xxx_cm_init(const struct omap_prcm_init_data *data);
+>>>>>>> v4.9.227
 
 #endif
 

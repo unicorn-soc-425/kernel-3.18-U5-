@@ -15,12 +15,21 @@
 /* The protocol version */
 #define IPSET_PROTOCOL		6
 
+<<<<<<< HEAD
 /* The maximum permissible comment length we will accept over netlink */
 #define IPSET_MAX_COMMENT_SIZE	255
 
 /* The max length of strings including NUL: set and type identifiers */
 #define IPSET_MAXNAMELEN	32
 
+=======
+/* The max length of strings including NUL: set and type identifiers */
+#define IPSET_MAXNAMELEN	32
+
+/* The maximum permissible comment length we will accept over netlink */
+#define IPSET_MAX_COMMENT_SIZE	255
+
+>>>>>>> v4.9.227
 /* Message types and commands */
 enum ipset_cmd {
 	IPSET_CMD_NONE,
@@ -118,6 +127,10 @@ enum {
 	IPSET_ATTR_SKBMARK,
 	IPSET_ATTR_SKBPRIO,
 	IPSET_ATTR_SKBQUEUE,
+<<<<<<< HEAD
+=======
+	IPSET_ATTR_PAD,
+>>>>>>> v4.9.227
 	__IPSET_ATTR_ADT_MAX,
 };
 #define IPSET_ATTR_ADT_MAX	(__IPSET_ATTR_ADT_MAX - 1)
@@ -256,11 +269,24 @@ enum {
 	IPSET_COUNTER_GT,
 };
 
+<<<<<<< HEAD
 struct ip_set_counter_match {
+=======
+/* Backward compatibility for set match v3 */
+struct ip_set_counter_match0 {
+>>>>>>> v4.9.227
 	__u8 op;
 	__u64 value;
 };
 
+<<<<<<< HEAD
+=======
+struct ip_set_counter_match {
+	__aligned_u64 value;
+	__u8 op;
+};
+
+>>>>>>> v4.9.227
 /* Interface to iptables/ip6tables */
 
 #define SO_IP_SET		83

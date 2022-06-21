@@ -214,6 +214,11 @@ static int ppi_set_params(struct ppi_if *ppi, struct ppi_params *params)
 	if (params->dlen > 24 || params->dlen <= 0)
 		return -EINVAL;
 	pctrl = devm_pinctrl_get(ppi->dev);
+<<<<<<< HEAD
+=======
+	if (IS_ERR(pctrl))
+		return PTR_ERR(pctrl);
+>>>>>>> v4.9.227
 	pstate = pinctrl_lookup_state(pctrl,
 				      pin_state[(params->dlen + 7) / 8 - 1]);
 	if (pinctrl_select_state(pctrl, pstate))

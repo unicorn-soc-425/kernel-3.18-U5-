@@ -4,6 +4,7 @@
 		stdout-path = &uart0;
 	};
 
+<<<<<<< HEAD
 	mbus {
 		pcie-controller {
 			status = "okay";
@@ -14,6 +15,8 @@
 		};
 	};
 
+=======
+>>>>>>> v4.9.227
 	ocp@f1000000 {
 		pinctrl: pin-controller@10000 {
 			pinctrl-0 = < &pmx_i2c_gpio_sda &pmx_i2c_gpio_scl >;
@@ -34,7 +37,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	i2c@0 {
+=======
+	i2c {
+>>>>>>> v4.9.227
 		compatible = "i2c-gpio";
 		gpios = < &gpio0 8 GPIO_ACTIVE_HIGH		/* sda */
 			  &gpio0 9 GPIO_ACTIVE_HIGH>;		/* scl */
@@ -46,3 +53,14 @@
 	status = "okay";
 	chip-delay = <25>;
 };
+<<<<<<< HEAD
+=======
+
+&pciec {
+        status = "okay";
+};
+
+&pcie0 {
+	status = "okay";
+};
+>>>>>>> v4.9.227

@@ -100,7 +100,10 @@ void output_thread_info_defines(void)
 {
 	COMMENT("SCORE thread_info offsets.");
 	OFFSET(TI_TASK, thread_info, task);
+<<<<<<< HEAD
 	OFFSET(TI_EXEC_DOMAIN, thread_info, exec_domain);
+=======
+>>>>>>> v4.9.227
 	OFFSET(TI_FLAGS, thread_info, flags);
 	OFFSET(TI_TP_VALUE, thread_info, tp_value);
 	OFFSET(TI_CPU, thread_info, cpu);

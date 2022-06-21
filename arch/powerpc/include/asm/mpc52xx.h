@@ -275,7 +275,11 @@ extern int mpc5200_psc_ac97_gpio_reset(int psc_number);
 extern void mpc52xx_map_common_devices(void);
 extern int mpc52xx_set_psc_clkdiv(int psc_id, int clkdiv);
 extern unsigned int mpc52xx_get_xtal_freq(struct device_node *node);
+<<<<<<< HEAD
 extern void mpc52xx_restart(char *cmd);
+=======
+extern void __noreturn mpc52xx_restart(char *cmd);
+>>>>>>> v4.9.227
 
 /* mpc52xx_gpt.c */
 struct mpc52xx_gpt_priv;

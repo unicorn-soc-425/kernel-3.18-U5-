@@ -144,6 +144,19 @@ static void tunnel6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 			break;
 }
 
+<<<<<<< HEAD
+=======
+static void tunnel46_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+			 u8 type, u8 code, int offset, __be32 info)
+{
+	struct xfrm6_tunnel *handler;
+
+	for_each_tunnel_rcu(tunnel46_handlers, handler)
+		if (!handler->err_handler(skb, opt, type, code, offset, info))
+			break;
+}
+
+>>>>>>> v4.9.227
 static const struct inet6_protocol tunnel6_protocol = {
 	.handler	= tunnel6_rcv,
 	.err_handler	= tunnel6_err,
@@ -152,7 +165,11 @@ static const struct inet6_protocol tunnel6_protocol = {
 
 static const struct inet6_protocol tunnel46_protocol = {
 	.handler	= tunnel46_rcv,
+<<<<<<< HEAD
 	.err_handler	= tunnel6_err,
+=======
+	.err_handler	= tunnel46_err,
+>>>>>>> v4.9.227
 	.flags          = INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
 };
 

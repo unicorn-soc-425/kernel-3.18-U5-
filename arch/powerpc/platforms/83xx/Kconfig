@@ -116,7 +116,10 @@ endif
 # used for usb & gpio
 config PPC_MPC831x
 	bool
+<<<<<<< HEAD
 	select ARCH_WANT_OPTIONAL_GPIOLIB
+=======
+>>>>>>> v4.9.227
 
 # used for math-emu
 config PPC_MPC832x
@@ -125,9 +128,15 @@ config PPC_MPC832x
 # used for usb & gpio
 config PPC_MPC834x
 	bool
+<<<<<<< HEAD
 	select ARCH_WANT_OPTIONAL_GPIOLIB
+=======
+>>>>>>> v4.9.227
 
 # used for usb & gpio
 config PPC_MPC837x
 	bool
+<<<<<<< HEAD
 	select ARCH_WANT_OPTIONAL_GPIOLIB
+=======
+>>>>>>> v4.9.227

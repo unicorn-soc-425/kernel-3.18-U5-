@@ -16,6 +16,7 @@
 
 static DEFINE_PER_CPU(struct clock_event_device, dummy_timer_evt);
 
+<<<<<<< HEAD
 static void dummy_timer_set_mode(enum clock_event_mode mode,
 			   struct clock_event_device *evt)
 {
@@ -29,12 +30,18 @@ static void dummy_timer_setup(void)
 {
 	int cpu = smp_processor_id();
 	struct clock_event_device *evt = raw_cpu_ptr(&dummy_timer_evt);
+=======
+static int dummy_timer_starting_cpu(unsigned int cpu)
+{
+	struct clock_event_device *evt = per_cpu_ptr(&dummy_timer_evt, cpu);
+>>>>>>> v4.9.227
 
 	evt->name	= "dummy_timer";
 	evt->features	= CLOCK_EVT_FEAT_PERIODIC |
 			  CLOCK_EVT_FEAT_ONESHOT |
 			  CLOCK_EVT_FEAT_DUMMY;
 	evt->rating	= 100;
+<<<<<<< HEAD
 	evt->set_mode	= dummy_timer_set_mode;
 	evt->cpumask	= cpumask_of(cpu);
 
@@ -70,5 +77,18 @@ static int __init dummy_timer_register(void)
 out:
 	cpu_notifier_register_done();
 	return err;
+=======
+	evt->cpumask	= cpumask_of(cpu);
+
+	clockevents_register_device(evt);
+	return 0;
+}
+
+static int __init dummy_timer_register(void)
+{
+	return cpuhp_setup_state(CPUHP_AP_DUMMY_TIMER_STARTING,
+				 "AP_DUMMY_TIMER_STARTING",
+				 dummy_timer_starting_cpu, NULL);
+>>>>>>> v4.9.227
 }
 early_initcall(dummy_timer_register);

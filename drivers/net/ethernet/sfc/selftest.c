@@ -114,7 +114,14 @@ static int efx_test_nvram(struct efx_nic *efx, struct efx_self_tests *tests)
 
 	if (efx->type->test_nvram) {
 		rc = efx->type->test_nvram(efx);
+<<<<<<< HEAD
 		tests->nvram = rc ? -1 : 1;
+=======
+		if (rc == -EPERM)
+			rc = 0;
+		else
+			tests->nvram = rc ? -1 : 1;
+>>>>>>> v4.9.227
 	}
 
 	return rc;
@@ -132,11 +139,26 @@ static int efx_test_interrupts(struct efx_nic *efx,
 {
 	unsigned long timeout, wait;
 	int cpu;
+<<<<<<< HEAD
+=======
+	int rc;
+>>>>>>> v4.9.227
 
 	netif_dbg(efx, drv, efx->net_dev, "testing interrupts\n");
 	tests->interrupt = -1;
 
+<<<<<<< HEAD
 	efx_nic_irq_test_start(efx);
+=======
+	rc = efx_nic_irq_test_start(efx);
+	if (rc == -ENOTSUPP) {
+		netif_dbg(efx, drv, efx->net_dev,
+			  "direct interrupt testing not supported\n");
+		tests->interrupt = 0;
+		return 0;
+	}
+
+>>>>>>> v4.9.227
 	timeout = jiffies + IRQ_TIMEOUT;
 	wait = 1;
 
@@ -253,6 +275,15 @@ static int efx_test_phy(struct efx_nic *efx, struct efx_self_tests *tests,
 	mutex_lock(&efx->mac_lock);
 	rc = efx->phy_op->run_tests(efx, tests->phy_ext, flags);
 	mutex_unlock(&efx->mac_lock);
+<<<<<<< HEAD
+=======
+	if (rc == -EPERM)
+		rc = 0;
+	else
+		netif_info(efx, drv, efx->net_dev,
+			   "%s phy selftest\n", rc ? "Failed" : "Passed");
+
+>>>>>>> v4.9.227
 	return rc;
 }
 
@@ -661,6 +692,12 @@ static int efx_test_loopbacks(struct efx_nic *efx, struct efx_self_tests *tests,
 	wmb();
 	kfree(state);
 
+<<<<<<< HEAD
+=======
+	if (rc == -EPERM)
+		rc = 0;
+
+>>>>>>> v4.9.227
 	return rc;
 }
 

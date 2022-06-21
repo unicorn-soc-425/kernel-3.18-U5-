@@ -34,10 +34,17 @@ void ceph_fscache_unregister(void);
 int ceph_fscache_register_fs(struct ceph_fs_client* fsc);
 void ceph_fscache_unregister_fs(struct ceph_fs_client* fsc);
 
+<<<<<<< HEAD
 void ceph_fscache_inode_init(struct ceph_inode_info *ci);
 void ceph_fscache_register_inode_cookie(struct ceph_fs_client* fsc,
 					struct ceph_inode_info* ci);
 void ceph_fscache_unregister_inode_cookie(struct ceph_inode_info* ci);
+=======
+void ceph_fscache_register_inode_cookie(struct inode *inode);
+void ceph_fscache_unregister_inode_cookie(struct ceph_inode_info* ci);
+void ceph_fscache_file_set_cookie(struct inode *inode, struct file *filp);
+void ceph_fscache_revalidate_cookie(struct ceph_inode_info *ci);
+>>>>>>> v4.9.227
 
 int ceph_readpage_from_fscache(struct inode *inode, struct page *page);
 int ceph_readpages_from_fscache(struct inode *inode,
@@ -46,12 +53,20 @@ int ceph_readpages_from_fscache(struct inode *inode,
 				unsigned *nr_pages);
 void ceph_readpage_to_fscache(struct inode *inode, struct page *page);
 void ceph_invalidate_fscache_page(struct inode* inode, struct page *page);
+<<<<<<< HEAD
 void ceph_queue_revalidate(struct inode *inode);
 
 static inline void ceph_fscache_update_objectsize(struct inode *inode)
 {
 	struct ceph_inode_info *ci = ceph_inode(inode);
 	fscache_attr_changed(ci->fscache);
+=======
+
+static inline void ceph_fscache_inode_init(struct ceph_inode_info *ci)
+{
+	ci->fscache = NULL;
+	ci->i_fscache_gen = 0;
+>>>>>>> v4.9.227
 }
 
 static inline void ceph_fscache_invalidate(struct inode *inode)
@@ -88,6 +103,14 @@ static inline void ceph_fscache_readpages_cancel(struct inode *inode,
 	return fscache_readpages_cancel(ci->fscache, pages);
 }
 
+<<<<<<< HEAD
+=======
+static inline void ceph_disable_fscache_readpage(struct ceph_inode_info *ci)
+{
+	ci->i_fscache_gen = ci->i_rdcache_gen - 1;
+}
+
+>>>>>>> v4.9.227
 #else
 
 static inline int ceph_fscache_register(void)
@@ -112,8 +135,25 @@ static inline void ceph_fscache_inode_init(struct ceph_inode_info *ci)
 {
 }
 
+<<<<<<< HEAD
 static inline void ceph_fscache_register_inode_cookie(struct ceph_fs_client* parent_fsc,
 						      struct ceph_inode_info* ci)
+=======
+static inline void ceph_fscache_register_inode_cookie(struct inode *inode)
+{
+}
+
+static inline void ceph_fscache_unregister_inode_cookie(struct ceph_inode_info* ci)
+{
+}
+
+static inline void ceph_fscache_file_set_cookie(struct inode *inode,
+						struct file *filp)
+{
+}
+
+static inline void ceph_fscache_revalidate_cookie(struct ceph_inode_info *ci)
+>>>>>>> v4.9.227
 {
 }
 
@@ -141,10 +181,13 @@ static inline void ceph_readpage_to_fscache(struct inode *inode,
 {
 }
 
+<<<<<<< HEAD
 static inline void ceph_fscache_update_objectsize(struct inode *inode)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void ceph_fscache_invalidate(struct inode *inode)
 {
 }
@@ -154,10 +197,13 @@ static inline void ceph_invalidate_fscache_page(struct inode *inode,
 {
 }
 
+<<<<<<< HEAD
 static inline void ceph_fscache_unregister_inode_cookie(struct ceph_inode_info* ci)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int ceph_release_fscache_page(struct page *page, gfp_t gfp)
 {
 	return 1;
@@ -173,7 +219,11 @@ static inline void ceph_fscache_readpages_cancel(struct inode *inode,
 {
 }
 
+<<<<<<< HEAD
 static inline void ceph_queue_revalidate(struct inode *inode)
+=======
+static inline void ceph_disable_fscache_readpage(struct ceph_inode_info *ci)
+>>>>>>> v4.9.227
 {
 }
 

@@ -10,8 +10,13 @@
 
 #include <linux/kernel_stat.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/seq_file.h>
 #include <linux/module.h>
+=======
+#include <linux/irq.h>
+#include <linux/seq_file.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/ftrace.h>
 #include <linux/uaccess.h>
@@ -20,20 +25,38 @@
 #include <asm/idle.h>
 #include <asm/apic.h>
 
+<<<<<<< HEAD
 DEFINE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
 EXPORT_PER_CPU_SYMBOL(irq_stat);
 
 DEFINE_PER_CPU(struct pt_regs *, irq_regs);
 EXPORT_PER_CPU_SYMBOL(irq_regs);
 
+=======
+>>>>>>> v4.9.227
 int sysctl_panic_on_stackoverflow;
 
 /*
  * Probabilistic stack overflow check:
  *
+<<<<<<< HEAD
  * Only check the stack in process context, because everything else
  * runs on the big interrupt stacks. Checking reliably is too expensive,
  * so we just check from interrupts.
+=======
+ * Regular device interrupts can enter on the following stacks:
+ *
+ * - User stack
+ *
+ * - Kernel task stack
+ *
+ * - Interrupt stack if a device driver reenables interrupts
+ *   which should only happen in really old drivers.
+ *
+ * - Debug IST stack
+ *
+ * All other contexts are invalid.
+>>>>>>> v4.9.227
  */
 static inline void stack_overflow_check(struct pt_regs *regs)
 {
@@ -44,11 +67,18 @@ static inline void stack_overflow_check(struct pt_regs *regs)
 	u64 estack_top, estack_bottom;
 	u64 curbase = (u64)task_stack_page(current);
 
+<<<<<<< HEAD
 	if (user_mode_vm(regs))
 		return;
 
 	if (regs->sp >= curbase + sizeof(struct thread_info) +
 				  sizeof(struct pt_regs) + STACK_TOP_MARGIN &&
+=======
+	if (user_mode(regs))
+		return;
+
+	if (regs->sp >= curbase + sizeof(struct pt_regs) + STACK_TOP_MARGIN &&
+>>>>>>> v4.9.227
 	    regs->sp <= curbase + THREAD_SIZE)
 		return;
 
@@ -59,8 +89,13 @@ static inline void stack_overflow_check(struct pt_regs *regs)
 		return;
 
 	oist = this_cpu_ptr(&orig_ist);
+<<<<<<< HEAD
 	estack_top = (u64)oist->ist[0] - EXCEPTION_STKSZ + STACK_TOP_MARGIN;
 	estack_bottom = (u64)oist->ist[N_EXCEPTION_STACKS - 1];
+=======
+	estack_bottom = (u64)oist->ist[DEBUG_STACK];
+	estack_top = estack_bottom - DEBUG_STKSZ + STACK_TOP_MARGIN;
+>>>>>>> v4.9.227
 	if (regs->sp >= estack_top && regs->sp <= estack_bottom)
 		return;
 
@@ -74,6 +109,7 @@ static inline void stack_overflow_check(struct pt_regs *regs)
 #endif
 }
 
+<<<<<<< HEAD
 bool handle_irq(unsigned irq, struct pt_regs *regs)
 {
 	struct irq_desc *desc;
@@ -85,5 +121,15 @@ bool handle_irq(unsigned irq, struct pt_regs *regs)
 		return false;
 
 	generic_handle_irq_desc(irq, desc);
+=======
+bool handle_irq(struct irq_desc *desc, struct pt_regs *regs)
+{
+	stack_overflow_check(regs);
+
+	if (IS_ERR_OR_NULL(desc))
+		return false;
+
+	generic_handle_irq_desc(desc);
+>>>>>>> v4.9.227
 	return true;
 }

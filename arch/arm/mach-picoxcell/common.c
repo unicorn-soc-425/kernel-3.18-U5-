@@ -10,7 +10,10 @@
 #include <linux/delay.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/reboot.h>
 
 #include <asm/mach/arch.h>
@@ -54,7 +57,10 @@ static void __init picoxcell_map_io(void)
 
 static void __init picoxcell_init_machine(void)
 {
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+=======
+>>>>>>> v4.9.227
 	picoxcell_setup_restart();
 }
 

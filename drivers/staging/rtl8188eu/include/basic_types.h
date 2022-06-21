@@ -11,15 +11,19 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __BASIC_TYPES_H__
 #define __BASIC_TYPES_H__
 
+<<<<<<< HEAD
 #define SUCCESS	0
 #define FAIL	(-1)
 
@@ -33,6 +37,11 @@ typedef void (*proc_t)(void *);
 #define MEM_ALIGNMENT_OFFSET	(sizeof(size_t))
 #define MEM_ALIGNMENT_PADDING	(sizeof(size_t) - 1)
 
+=======
+#include <linux/types.h>
+#define NDIS_OID uint
+
+>>>>>>> v4.9.227
 /* port from fw */
 /*  TODO: Macros Below are Sync from SD7-Driver. It is necessary
  * to check correctness */
@@ -52,6 +61,7 @@ typedef void (*proc_t)(void *);
 #define EF4BYTE(_val)		\
 	(le32_to_cpu(_val))
 
+<<<<<<< HEAD
 /* Read data from memory */
 #define READEF1BYTE(_ptr)	\
 	EF1BYTE(*((u8 *)(_ptr)))
@@ -77,6 +87,8 @@ typedef void (*proc_t)(void *);
 		(*((u32 *)(_ptr))) = EF2BYTE(_val)	\
 	} while (0)
 
+=======
+>>>>>>> v4.9.227
 /* Create a bit mask
  * Examples:
  * BIT_LEN_MASK_32(0) => 0x00000000
@@ -177,8 +189,11 @@ value to host byte ordering.*/
 		((((u8)__val) & BIT_LEN_MASK_8(__bitlen)) << (__bitoffset)) \
 		)
 
+<<<<<<< HEAD
 /*  Get the N-bytes aligment offset from the current length */
 #define	N_BYTE_ALIGMENT(__value, __aligment) ((__aligment == 1) ? \
 	(__value) : (((__value + __aligment - 1) / __aligment) * __aligment))
 
+=======
+>>>>>>> v4.9.227
 #endif /* __BASIC_TYPES_H__ */

@@ -12,9 +12,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> v4.9.227
  *
  * File: rxtx.c
  *
@@ -36,6 +39,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/etherdevice.h>
+>>>>>>> v4.9.227
 #include "device.h"
 #include "rxtx.h"
 #include "card.h"
@@ -44,8 +51,16 @@
 #include "usbpipe.h"
 
 static const u16 vnt_time_stampoff[2][MAX_RATE] = {
+<<<<<<< HEAD
 	{384, 288, 226, 209, 54, 43, 37, 31, 28, 25, 24, 23},/* Long Preamble */
 	{384, 192, 130, 113, 54, 43, 37, 31, 28, 25, 24, 23},/* Short Preamble */
+=======
+	/* Long Preamble */
+	{384, 288, 226, 209, 54, 43, 37, 31, 28, 25, 24, 23},
+
+	/* Short Preamble */
+	{384, 192, 130, 113, 54, 43, 37, 31, 28, 25, 24, 23},
+>>>>>>> v4.9.227
 };
 
 static const u16 vnt_fb_opt0[2][5] = {
@@ -55,7 +70,11 @@ static const u16 vnt_fb_opt0[2][5] = {
 
 static const u16 vnt_fb_opt1[2][5] = {
 	{RATE_12M, RATE_18M, RATE_24M, RATE_24M, RATE_36M}, /* fallback_rate0 */
+<<<<<<< HEAD
 	{RATE_6M , RATE_6M,  RATE_12M, RATE_12M, RATE_18M}, /* fallback_rate1 */
+=======
+	{RATE_6M,  RATE_6M,  RATE_12M, RATE_12M, RATE_18M}, /* fallback_rate1 */
+>>>>>>> v4.9.227
 };
 
 #define RTSDUR_BB       0
@@ -86,7 +105,11 @@ static struct vnt_usb_send_context
 			return NULL;
 
 		context = priv->tx_context[ii];
+<<<<<<< HEAD
 		if (context->in_use == false) {
+=======
+		if (!context->in_use) {
+>>>>>>> v4.9.227
 			context->in_use = true;
 			memset(context->data, 0,
 					MAX_TOTAL_SIZE_WITH_ALL_HEADERS);
@@ -97,9 +120,18 @@ static struct vnt_usb_send_context
 		}
 	}
 
+<<<<<<< HEAD
 	if (ii == priv->num_tx_context)
 		dev_dbg(&priv->usb->dev, "%s No Free Tx Context\n", __func__);
 
+=======
+	if (ii == priv->num_tx_context) {
+		dev_dbg(&priv->usb->dev, "%s No Free Tx Context\n", __func__);
+
+		ieee80211_stop_queues(priv->hw);
+	}
+
+>>>>>>> v4.9.227
 	return NULL;
 }
 
@@ -273,11 +305,17 @@ static u16 vnt_rxtx_datahead_g(struct vnt_usb_send_context *tx_context,
 							PK_TYPE_11B, &buf->b);
 
 	/* Get Duration and TimeStamp */
+<<<<<<< HEAD
 	if (ieee80211_is_pspoll(hdr->frame_control)) {
 		__le16 dur = cpu_to_le16(priv->current_aid | BIT(14) | BIT(15));
 
 		buf->duration_a = dur;
 		buf->duration_b = dur;
+=======
+	if (ieee80211_is_nullfunc(hdr->frame_control)) {
+		buf->duration_a = hdr->duration_id;
+		buf->duration_b = hdr->duration_id;
+>>>>>>> v4.9.227
 	} else {
 		buf->duration_a = vnt_get_duration_le(priv,
 						tx_context->pkt_type, need_ack);
@@ -366,10 +404,15 @@ static u16 vnt_rxtx_datahead_ab(struct vnt_usb_send_context *tx_context,
 			  tx_context->pkt_type, &buf->ab);
 
 	/* Get Duration and TimeStampOff */
+<<<<<<< HEAD
 	if (ieee80211_is_pspoll(hdr->frame_control)) {
 		__le16 dur = cpu_to_le16(priv->current_aid | BIT(14) | BIT(15));
 
 		buf->duration = dur;
+=======
+	if (ieee80211_is_nullfunc(hdr->frame_control)) {
+		buf->duration = hdr->duration_id;
+>>>>>>> v4.9.227
 	} else {
 		buf->duration = vnt_get_duration_le(priv, tx_context->pkt_type,
 						    need_ack);
@@ -392,8 +435,13 @@ static int vnt_fill_ieee80211_rts(struct vnt_usb_send_context *tx_context,
 	rts->frame_control =
 		cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_RTS);
 
+<<<<<<< HEAD
 	memcpy(rts->ra, hdr->addr1, ETH_ALEN);
 	memcpy(rts->ta, hdr->addr2, ETH_ALEN);
+=======
+	ether_addr_copy(rts->ra, hdr->addr1);
+	ether_addr_copy(rts->ta, hdr->addr2);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -517,6 +565,7 @@ static u16 vnt_rxtx_rts_a_fb_head(struct vnt_usb_send_context *tx_context,
 	return vnt_rxtx_datahead_a_fb(tx_context, &buf->data_head);
 }
 
+<<<<<<< HEAD
 static u16 vnt_fill_cts_head(struct vnt_usb_send_context *tx_context,
 	union vnt_tx_data_head *head)
 {
@@ -576,6 +625,68 @@ static u16 vnt_fill_cts_head(struct vnt_usb_send_context *tx_context,
 	}
 
 	return 0;
+=======
+static u16 vnt_fill_cts_fb_head(struct vnt_usb_send_context *tx_context,
+				union vnt_tx_data_head *head)
+{
+	struct vnt_private *priv = tx_context->priv;
+	struct vnt_cts_fb *buf = &head->cts_g_fb;
+	u32 cts_frame_len = 14;
+	u16 current_rate = tx_context->tx_rate;
+
+	/* Get SignalField,ServiceField,Length */
+	vnt_get_phy_field(priv, cts_frame_len, priv->top_cck_basic_rate,
+			  PK_TYPE_11B, &buf->b);
+
+	buf->duration_ba =
+		vnt_get_rtscts_duration_le(tx_context, CTSDUR_BA,
+					   tx_context->pkt_type,
+					   current_rate);
+	/* Get CTSDuration_ba_f0 */
+	buf->cts_duration_ba_f0 =
+		vnt_get_rtscts_duration_le(tx_context, CTSDUR_BA_F0,
+					   tx_context->pkt_type,
+					   priv->tx_rate_fb0);
+	/* Get CTSDuration_ba_f1 */
+	buf->cts_duration_ba_f1 =
+		vnt_get_rtscts_duration_le(tx_context, CTSDUR_BA_F1,
+					   tx_context->pkt_type,
+					   priv->tx_rate_fb1);
+	/* Get CTS Frame body */
+	buf->data.duration = buf->duration_ba;
+	buf->data.frame_control =
+		cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_CTS);
+
+	ether_addr_copy(buf->data.ra, priv->current_net_addr);
+
+	return vnt_rxtx_datahead_g_fb(tx_context, &buf->data_head);
+}
+
+static u16 vnt_fill_cts_head(struct vnt_usb_send_context *tx_context,
+			     union vnt_tx_data_head *head)
+{
+	struct vnt_private *priv = tx_context->priv;
+	struct vnt_cts *buf = &head->cts_g;
+	u32 cts_frame_len = 14;
+	u16 current_rate = tx_context->tx_rate;
+
+	/* Get SignalField,ServiceField,Length */
+	vnt_get_phy_field(priv, cts_frame_len, priv->top_cck_basic_rate,
+			  PK_TYPE_11B, &buf->b);
+	/* Get CTSDuration_ba */
+	buf->duration_ba =
+		vnt_get_rtscts_duration_le(tx_context, CTSDUR_BA,
+					   tx_context->pkt_type,
+					   current_rate);
+	/*Get CTS Frame body*/
+	buf->data.duration = buf->duration_ba;
+	buf->data.frame_control =
+		cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_CTS);
+
+	ether_addr_copy(buf->data.ra, priv->current_net_addr);
+
+	return vnt_rxtx_datahead_g(tx_context, &buf->data_head);
+>>>>>>> v4.9.227
 }
 
 static u16 vnt_rxtx_rts(struct vnt_usb_send_context *tx_context,
@@ -632,6 +743,12 @@ static u16 vnt_rxtx_cts(struct vnt_usb_send_context *tx_context,
 		head = &tx_head->tx_cts.tx.mic.head;
 
 	/* Fill CTS */
+<<<<<<< HEAD
+=======
+	if (tx_context->fb_option)
+		return vnt_fill_cts_fb_head(tx_context, head);
+
+>>>>>>> v4.9.227
 	return vnt_fill_cts_head(tx_context, head);
 }
 
@@ -708,7 +825,11 @@ static void vnt_fill_txkey(struct vnt_usb_send_context *tx_context,
 	u16 payload_len, struct vnt_mic_hdr *mic_hdr)
 {
 	struct ieee80211_hdr *hdr = tx_context->hdr;
+<<<<<<< HEAD
 	struct ieee80211_key_seq seq;
+=======
+	u64 pn64;
+>>>>>>> v4.9.227
 	u8 *iv = ((u8 *)hdr + ieee80211_get_hdrlen_from_skb(skb));
 
 	/* strip header and icv len from payload */
@@ -739,20 +860,38 @@ static void vnt_fill_txkey(struct vnt_usb_send_context *tx_context,
 
 		mic_hdr->id = 0x59;
 		mic_hdr->payload_len = cpu_to_be16(payload_len);
+<<<<<<< HEAD
 		memcpy(mic_hdr->mic_addr2, hdr->addr2, ETH_ALEN);
 
 		ieee80211_get_key_tx_seq(tx_key, &seq);
 
 		memcpy(mic_hdr->ccmp_pn, seq.ccmp.pn, IEEE80211_CCMP_PN_LEN);
+=======
+		ether_addr_copy(mic_hdr->mic_addr2, hdr->addr2);
+
+		pn64 = atomic64_read(&tx_key->tx_pn);
+		mic_hdr->ccmp_pn[5] = pn64;
+		mic_hdr->ccmp_pn[4] = pn64 >> 8;
+		mic_hdr->ccmp_pn[3] = pn64 >> 16;
+		mic_hdr->ccmp_pn[2] = pn64 >> 24;
+		mic_hdr->ccmp_pn[1] = pn64 >> 32;
+		mic_hdr->ccmp_pn[0] = pn64 >> 40;
+>>>>>>> v4.9.227
 
 		if (ieee80211_has_a4(hdr->frame_control))
 			mic_hdr->hlen = cpu_to_be16(28);
 		else
 			mic_hdr->hlen = cpu_to_be16(22);
 
+<<<<<<< HEAD
 		memcpy(mic_hdr->addr1, hdr->addr1, ETH_ALEN);
 		memcpy(mic_hdr->addr2, hdr->addr2, ETH_ALEN);
 		memcpy(mic_hdr->addr3, hdr->addr3, ETH_ALEN);
+=======
+		ether_addr_copy(mic_hdr->addr1, hdr->addr1);
+		ether_addr_copy(mic_hdr->addr2, hdr->addr2);
+		ether_addr_copy(mic_hdr->addr3, hdr->addr3);
+>>>>>>> v4.9.227
 
 		mic_hdr->frame_control = cpu_to_le16(
 			le16_to_cpu(hdr->frame_control) & 0xc78f);
@@ -760,7 +899,11 @@ static void vnt_fill_txkey(struct vnt_usb_send_context *tx_context,
 				le16_to_cpu(hdr->seq_ctrl) & 0xf);
 
 		if (ieee80211_has_a4(hdr->frame_control))
+<<<<<<< HEAD
 			memcpy(mic_hdr->addr4, hdr->addr4, ETH_ALEN);
+=======
+			ether_addr_copy(mic_hdr->addr4, hdr->addr4);
+>>>>>>> v4.9.227
 
 
 		memcpy(key_buffer, tx_key->key, WLAN_KEY_LEN_CCMP);
@@ -801,6 +944,7 @@ int vnt_tx_packet(struct vnt_private *priv, struct sk_buff *skb)
 	}
 
 	if (current_rate > RATE_11M) {
+<<<<<<< HEAD
 		if (info->band == IEEE80211_BAND_5GHZ) {
 			pkt_type = PK_TYPE_11A;
 		} else {
@@ -808,6 +952,19 @@ int vnt_tx_packet(struct vnt_private *priv, struct sk_buff *skb)
 				pkt_type = PK_TYPE_11GB;
 			else
 				pkt_type = PK_TYPE_11GA;
+=======
+		if (info->band == NL80211_BAND_5GHZ) {
+			pkt_type = PK_TYPE_11A;
+		} else {
+			if (tx_rate->flags & IEEE80211_TX_RC_USE_CTS_PROTECT) {
+				if (priv->basic_rates & VNT_B_RATES)
+					pkt_type = PK_TYPE_11GB;
+				else
+					pkt_type = PK_TYPE_11GA;
+			} else {
+				pkt_type = PK_TYPE_11A;
+			}
+>>>>>>> v4.9.227
 		}
 	} else {
 		pkt_type = PK_TYPE_11B;

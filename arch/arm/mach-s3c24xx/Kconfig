@@ -11,10 +11,18 @@ if ARCH_S3C24XX
 
 config PLAT_S3C24XX
 	def_bool y
+<<<<<<< HEAD
 	select ARCH_REQUIRE_GPIOLIB
 	select NO_IOPORT_MAP
 	select S3C_DEV_NAND
 	select IRQ_DOMAIN
+=======
+	select GPIOLIB
+	select NO_IOPORT_MAP
+	select S3C_DEV_NAND
+	select IRQ_DOMAIN
+	select COMMON_CLK
+>>>>>>> v4.9.227
 	help
 	  Base platform code for any Samsung S3C24XX device
 
@@ -29,7 +37,10 @@ config CPU_S3C2410
 	default y
 	select CPU_ARM920T
 	select S3C2410_COMMON_CLK
+<<<<<<< HEAD
 	select S3C2410_DMA if S3C24XX_DMA
+=======
+>>>>>>> v4.9.227
 	select ARM_S3C2410_CPUFREQ if ARM_S3C24XX_CPUFREQ
 	select S3C2410_PM if PM
 	help
@@ -40,17 +51,26 @@ config CPU_S3C2412
 	bool "SAMSUNG S3C2412"
 	select CPU_ARM926T
 	select S3C2412_COMMON_CLK
+<<<<<<< HEAD
 	select S3C2412_DMA if S3C24XX_DMA
 	select S3C2412_PM if PM
+=======
+	select S3C2412_PM if PM_SLEEP
+>>>>>>> v4.9.227
 	help
 	  Support for the S3C2412 and S3C2413 SoCs from the S3C24XX line
 
 config CPU_S3C2416
 	bool "SAMSUNG S3C2416/S3C2450"
 	select CPU_ARM926T
+<<<<<<< HEAD
 	select S3C2416_PM if PM
 	select S3C2443_COMMON_CLK
 	select S3C2443_DMA if S3C24XX_DMA
+=======
+	select S3C2416_PM if PM_SLEEP
+	select S3C2443_COMMON_CLK
+>>>>>>> v4.9.227
 	help
 	  Support for the S3C2416 SoC from the S3C24XX line
 
@@ -58,8 +78,12 @@ config CPU_S3C2440
 	bool "SAMSUNG S3C2440"
 	select CPU_ARM920T
 	select S3C2410_COMMON_CLK
+<<<<<<< HEAD
 	select S3C2410_PM if PM
 	select S3C2440_DMA if S3C24XX_DMA
+=======
+	select S3C2410_PM if PM_SLEEP
+>>>>>>> v4.9.227
 	help
 	  Support for S3C2440 Samsung Mobile CPU based systems.
 
@@ -67,8 +91,12 @@ config CPU_S3C2442
 	bool "SAMSUNG S3C2442"
 	select CPU_ARM920T
 	select S3C2410_COMMON_CLK
+<<<<<<< HEAD
 	select S3C2410_DMA if S3C24XX_DMA
 	select S3C2410_PM if PM
+=======
+	select S3C2410_PM if PM_SLEEP
+>>>>>>> v4.9.227
 	help
 	  Support for S3C2442 Samsung Mobile CPU based systems.
 
@@ -80,7 +108,10 @@ config CPU_S3C2443
 	bool "SAMSUNG S3C2443"
 	select CPU_ARM920T
 	select S3C2443_COMMON_CLK
+<<<<<<< HEAD
 	select S3C2443_DMA if S3C24XX_DMA
+=======
+>>>>>>> v4.9.227
 	help
 	  Support for the S3C2443 SoC from the S3C24XX line
 
@@ -114,6 +145,7 @@ config S3C24XX_SETUP_TS
 	help
 	  Compile in platform device definition for Samsung TouchScreen.
 
+<<<<<<< HEAD
 config S3C24XX_DMA
 	bool "S3C2410 DMA support (deprecated)"
 	select S3C_DMA
@@ -135,6 +167,8 @@ config S3C2410_DMA
 	help
 	  DMA device selection for S3C2410 and compatible CPUs
 
+=======
+>>>>>>> v4.9.227
 config S3C2410_PM
 	bool
 	help
@@ -151,6 +185,14 @@ config S3C24XX_PLL
 	  This also means that the PLL tables for the selected CPU(s) will
 	  be built which may increase the size of the kernel image.
 
+<<<<<<< HEAD
+=======
+config S3C_SETUP_CAMIF
+	bool
+	help
+	  Compile in common setup code for S3C CAMIF devices
+
+>>>>>>> v4.9.227
 # cpu frequency items common between s3c2410 and s3c2440/s3c2442
 
 config S3C2410_IOTIMING
@@ -255,11 +297,14 @@ config H1940BT
 	  This is a simple driver that is able to control
 	  the state of built in bluetooth chip on h1940.
 
+<<<<<<< HEAD
 config PM_H1940
 	bool
 	help
 	  Internal node for H1940 and related PM
 
+=======
+>>>>>>> v4.9.227
 config MACH_N30
 	bool "Acer N30 family"
 	select S3C_DEV_NAND
@@ -325,11 +370,14 @@ config CPU_S3C2412_ONLY
 		   !CPU_S3C2442 && !CPU_S3C2443
 	default y
 
+<<<<<<< HEAD
 config S3C2412_DMA
 	bool
 	help
 	  Internal config node for S3C2412 DMA support
 
+=======
+>>>>>>> v4.9.227
 config S3C2412_PM
 	bool
 	select S3C2412_PM_SLEEP
@@ -394,6 +442,10 @@ if CPU_S3C2416
 config S3C2416_PM
 	bool
 	select S3C2412_PM_SLEEP
+<<<<<<< HEAD
+=======
+	select SAMSUNG_WAKEMASK
+>>>>>>> v4.9.227
 	help
 	  Internal config node to apply S3C2416 power management
 
@@ -436,12 +488,16 @@ config MACH_S3C2416_DT
 
 endif	# CPU_S3C2416
 
+<<<<<<< HEAD
 if CPU_S3C2440
 
 config S3C2440_DMA
 	bool
 	help
 	  Support for S3C2440 specific DMA code5A
+=======
+if CPU_S3C2440 || CPU_S3C2442
+>>>>>>> v4.9.227
 
 config S3C2440_XTAL_12000000
 	bool
@@ -468,6 +524,12 @@ config S3C2440_PLL_16934400
 	default y if S3C24XX_PLL
 	help
 	  PLL tables for S3C2440 or S3C2442 CPUs with 16.934MHz crystals.
+<<<<<<< HEAD
+=======
+endif
+
+if CPU_S3C2440
+>>>>>>> v4.9.227
 
 comment "S3C2440 Boards"
 
@@ -496,7 +558,10 @@ config MACH_AT2440EVB
 
 config MACH_MINI2440
 	bool "MINI2440 development board"
+<<<<<<< HEAD
 	select EEPROM_AT24 if I2C
+=======
+>>>>>>> v4.9.227
 	select LEDS_CLASS
 	select LEDS_TRIGGERS
 	select LEDS_TRIGGER_BACKLIGHT
@@ -601,11 +666,14 @@ endif	# CPU_S3C2442
 
 if CPU_S3C2443 || CPU_S3C2416
 
+<<<<<<< HEAD
 config S3C2443_DMA
 	bool
 	help
 	  Internal config node for S3C2443 DMA support
 
+=======
+>>>>>>> v4.9.227
 config S3C2443_SETUP_SPI
 	bool
 	help
@@ -626,6 +694,14 @@ config MACH_SMDK2443
 
 endif	# CPU_S3C2443
 
+<<<<<<< HEAD
+=======
+config PM_H1940
+	bool
+	help
+	  Internal node for H1940 and related PM
+
+>>>>>>> v4.9.227
 endmenu	# SAMSUNG S3C24XX SoCs Support
 
 endif	# ARCH_S3C24XX

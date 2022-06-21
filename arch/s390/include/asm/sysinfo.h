@@ -15,6 +15,10 @@
 #define __ASM_S390_SYSINFO_H
 
 #include <asm/bitsperlong.h>
+<<<<<<< HEAD
+=======
+#include <linux/uuid.h>
+>>>>>>> v4.9.227
 
 struct sysinfo_1_1_1 {
 	unsigned char p:1;
@@ -55,7 +59,16 @@ struct sysinfo_1_2_2 {
 	char format;
 	char reserved_0[1];
 	unsigned short acc_offset;
+<<<<<<< HEAD
 	char reserved_1[20];
+=======
+	unsigned char mt_installed :1;
+	unsigned char :2;
+	unsigned char mt_stid :5;
+	unsigned char :3;
+	unsigned char mt_gtid :5;
+	char reserved_1[18];
+>>>>>>> v4.9.227
 	unsigned int nominal_cap;
 	unsigned int secondary_cap;
 	unsigned int capability;
@@ -90,7 +103,19 @@ struct sysinfo_2_2_2 {
 	unsigned short cpus_reserved;
 	char name[8];
 	unsigned int caf;
+<<<<<<< HEAD
 	char reserved_2[16];
+=======
+	char reserved_2[8];
+	unsigned char mt_installed :1;
+	unsigned char :2;
+	unsigned char mt_stid :5;
+	unsigned char :3;
+	unsigned char mt_gtid :5;
+	unsigned char :3;
+	unsigned char mt_psmtid :5;
+	char reserved_3[5];
+>>>>>>> v4.9.227
 	unsigned short cpus_dedicated;
 	unsigned short cpus_shared;
 };
@@ -112,34 +137,66 @@ struct sysinfo_3_2_2 {
 		char name[8];
 		unsigned int caf;
 		char cpi[16];
+<<<<<<< HEAD
 		char reserved_1[24];
 
 	} vm[8];
 	char reserved_544[3552];
+=======
+		char reserved_1[3];
+		char ext_name_encoding;
+		unsigned int reserved_2;
+		uuid_be uuid;
+	} vm[8];
+	char reserved_3[1504];
+	char ext_names[8][256];
+>>>>>>> v4.9.227
 };
 
 extern int topology_max_mnest;
 
+<<<<<<< HEAD
 #define TOPOLOGY_CPU_BITS	64
 #define TOPOLOGY_NR_MAG		6
 
 struct topology_cpu {
 	unsigned char reserved0[4];
+=======
+#define TOPOLOGY_CORE_BITS	64
+#define TOPOLOGY_NR_MAG		6
+
+struct topology_core {
+	unsigned char nl;
+	unsigned char reserved0[3];
+>>>>>>> v4.9.227
 	unsigned char :6;
 	unsigned char pp:2;
 	unsigned char reserved1;
 	unsigned short origin;
+<<<<<<< HEAD
 	unsigned long mask[TOPOLOGY_CPU_BITS / BITS_PER_LONG];
 };
 
 struct topology_container {
 	unsigned char reserved[7];
+=======
+	unsigned long mask[TOPOLOGY_CORE_BITS / BITS_PER_LONG];
+};
+
+struct topology_container {
+	unsigned char nl;
+	unsigned char reserved[6];
+>>>>>>> v4.9.227
 	unsigned char id;
 };
 
 union topology_entry {
 	unsigned char nl;
+<<<<<<< HEAD
 	struct topology_cpu cpu;
+=======
+	struct topology_core cpu;
+>>>>>>> v4.9.227
 	struct topology_container container;
 };
 

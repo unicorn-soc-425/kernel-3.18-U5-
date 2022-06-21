@@ -13,10 +13,29 @@ struct str_node {
 
 struct strlist {
 	struct rblist rblist;
+<<<<<<< HEAD
 	bool	       dupstr;
 };
 
 struct strlist *strlist__new(bool dupstr, const char *slist);
+=======
+	bool	      dupstr;
+	bool	      file_only;
+};
+
+/*
+ * @file_only: When dirname is present, only consider entries as filenames,
+ *             that should not be added to the list if dirname/entry is not
+ *             found
+ */
+struct strlist_config {
+	bool dont_dupstr;
+	bool file_only;
+	const char *dirname;
+};
+
+struct strlist *strlist__new(const char *slist, const struct strlist_config *config);
+>>>>>>> v4.9.227
 void strlist__delete(struct strlist *slist);
 
 void strlist__remove(struct strlist *slist, struct str_node *sn);
@@ -61,7 +80,11 @@ static inline struct str_node *strlist__next(struct str_node *sn)
  * @pos:	the &struct str_node to use as a loop cursor.
  * @slist:	the &struct strlist for loop.
  */
+<<<<<<< HEAD
 #define strlist__for_each(pos, slist)	\
+=======
+#define strlist__for_each_entry(pos, slist)	\
+>>>>>>> v4.9.227
 	for (pos = strlist__first(slist); pos; pos = strlist__next(pos))
 
 /**
@@ -71,9 +94,15 @@ static inline struct str_node *strlist__next(struct str_node *sn)
  * @n:		another &struct str_node to use as temporary storage.
  * @slist:	the &struct strlist for loop.
  */
+<<<<<<< HEAD
 #define strlist__for_each_safe(pos, n, slist)	\
 	for (pos = strlist__first(slist), n = strlist__next(pos); pos;\
 	     pos = n, n = strlist__next(n))
 
 int strlist__parse_list(struct strlist *slist, const char *s);
+=======
+#define strlist__for_each_entry_safe(pos, n, slist)	\
+	for (pos = strlist__first(slist), n = strlist__next(pos); pos;\
+	     pos = n, n = strlist__next(n))
+>>>>>>> v4.9.227
 #endif /* __PERF_STRLIST_H */

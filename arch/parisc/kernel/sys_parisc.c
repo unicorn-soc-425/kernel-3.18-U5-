@@ -371,6 +371,7 @@ asmlinkage long parisc_fallocate(int fd, int mode, u32 offhi, u32 offlo,
                              ((u64)lenhi << 32) | lenlo);
 }
 
+<<<<<<< HEAD
 asmlinkage unsigned long sys_alloc_hugepages(int key, unsigned long addr, unsigned long len, int prot, int flag)
 {
 	return -ENOMEM;
@@ -381,6 +382,8 @@ asmlinkage int sys_free_hugepages(unsigned long addr)
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 long parisc_personality(unsigned long personality)
 {
 	long err;

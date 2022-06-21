@@ -189,6 +189,7 @@ static int proc_print_scsidevice(struct device *dev, void *data)
 		sdev->host->host_no, sdev->channel, sdev->id, sdev->lun);
 	for (i = 0; i < 8; i++) {
 		if (sdev->vendor[i] >= 0x20)
+<<<<<<< HEAD
 			seq_printf(s, "%c", sdev->vendor[i]);
 		else
 			seq_printf(s, " ");
@@ -211,14 +212,44 @@ static int proc_print_scsidevice(struct device *dev, void *data)
 	}
 
 	seq_printf(s, "\n");
+=======
+			seq_putc(s, sdev->vendor[i]);
+		else
+			seq_putc(s, ' ');
+	}
+
+	seq_puts(s, " Model: ");
+	for (i = 0; i < 16; i++) {
+		if (sdev->model[i] >= 0x20)
+			seq_putc(s, sdev->model[i]);
+		else
+			seq_putc(s, ' ');
+	}
+
+	seq_puts(s, " Rev: ");
+	for (i = 0; i < 4; i++) {
+		if (sdev->rev[i] >= 0x20)
+			seq_putc(s, sdev->rev[i]);
+		else
+			seq_putc(s, ' ');
+	}
+
+	seq_putc(s, '\n');
+>>>>>>> v4.9.227
 
 	seq_printf(s, "  Type:   %s ", scsi_device_type(sdev->type));
 	seq_printf(s, "               ANSI  SCSI revision: %02x",
 			sdev->scsi_level - (sdev->scsi_level > 1));
 	if (sdev->scsi_level == 2)
+<<<<<<< HEAD
 		seq_printf(s, " CCS\n");
 	else
 		seq_printf(s, "\n");
+=======
+		seq_puts(s, " CCS\n");
+	else
+		seq_putc(s, '\n');
+>>>>>>> v4.9.227
 
 out:
 	return 0;
@@ -251,7 +282,12 @@ static int scsi_add_single_device(uint host, uint channel, uint id, uint lun)
 	if (shost->transportt->user_scan)
 		error = shost->transportt->user_scan(shost, channel, id, lun);
 	else
+<<<<<<< HEAD
 		error = scsi_scan_host_selected(shost, channel, id, lun, 1);
+=======
+		error = scsi_scan_host_selected(shost, channel, id, lun,
+						SCSI_SCAN_MANUAL);
+>>>>>>> v4.9.227
 	scsi_host_put(shost);
 	return error;
 }

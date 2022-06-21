@@ -43,9 +43,12 @@ static int ir_xmp_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct xmp_dec *data = &dev->raw->xmp;
 
+<<<<<<< HEAD
 	if (!(dev->enabled_protocols & RC_BIT_XMP))
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	if (!is_timing_event(ev)) {
 		if (ev.reset)
 			data->state = STATE_INACTIVE;

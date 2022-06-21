@@ -193,18 +193,29 @@ static int ppc4xx_edac_remove(struct platform_device *device);
  * Device tree node type and compatible tuples this driver can match
  * on.
  */
+<<<<<<< HEAD
 static struct of_device_id ppc4xx_edac_match[] = {
+=======
+static const struct of_device_id ppc4xx_edac_match[] = {
+>>>>>>> v4.9.227
 	{
 		.compatible	= "ibm,sdram-4xx-ddr2"
 	},
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, ppc4xx_edac_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver ppc4xx_edac_driver = {
 	.probe			= ppc4xx_edac_probe,
 	.remove			= ppc4xx_edac_remove,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = PPC4XX_EDAC_MODULE_NAME,
 		.of_match_table = ppc4xx_edac_match,
 	},
@@ -1029,8 +1040,11 @@ static int ppc4xx_edac_mc_init(struct mem_ctl_info *mci,
 	pdata			= mci->pvt_info;
 
 	pdata->dcr_host		= *dcr_host;
+<<<<<<< HEAD
 	pdata->irqs.sec		= NO_IRQ;
 	pdata->irqs.ded		= NO_IRQ;
+=======
+>>>>>>> v4.9.227
 
 	/* Initialize controller capabilities and configuration */
 
@@ -1111,7 +1125,11 @@ static int ppc4xx_edac_register_irq(struct platform_device *op,
 	ded_irq = irq_of_parse_and_map(np, INTMAP_ECCDED_INDEX);
 	sec_irq = irq_of_parse_and_map(np, INTMAP_ECCSEC_INDEX);
 
+<<<<<<< HEAD
 	if (ded_irq == NO_IRQ || sec_irq == NO_IRQ) {
+=======
+	if (!ded_irq || !sec_irq) {
+>>>>>>> v4.9.227
 		ppc4xx_edac_mc_printk(KERN_ERR, mci,
 				      "Unable to map interrupts.\n");
 		status = -ENODEV;
@@ -1120,7 +1138,11 @@ static int ppc4xx_edac_register_irq(struct platform_device *op,
 
 	status = request_irq(ded_irq,
 			     ppc4xx_edac_isr,
+<<<<<<< HEAD
 			     IRQF_DISABLED,
+=======
+			     0,
+>>>>>>> v4.9.227
 			     "[EDAC] MC ECCDED",
 			     mci);
 
@@ -1134,7 +1156,11 @@ static int ppc4xx_edac_register_irq(struct platform_device *op,
 
 	status = request_irq(sec_irq,
 			     ppc4xx_edac_isr,
+<<<<<<< HEAD
 			     IRQF_DISABLED,
+=======
+			     0,
+>>>>>>> v4.9.227
 			     "[EDAC] MC ECCSEC",
 			     mci);
 

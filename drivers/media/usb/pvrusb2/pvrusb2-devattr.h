@@ -187,6 +187,7 @@ struct pvr2_device_desc {
 extern struct usb_device_id pvr2_device_table[];
 
 #endif /* __PVRUSB2_HDW_INTERNAL_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -197,3 +198,5 @@ extern struct usb_device_id pvr2_device_table[];
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

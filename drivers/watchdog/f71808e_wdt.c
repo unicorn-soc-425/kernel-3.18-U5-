@@ -38,16 +38,28 @@
 
 #define SIO_F71808FG_LD_WDT	0x07	/* Watchdog timer logical device */
 #define SIO_UNLOCK_KEY		0x87	/* Key to enable Super-I/O */
+<<<<<<< HEAD
 #define SIO_LOCK_KEY		0xAA	/* Key to diasble Super-I/O */
+=======
+#define SIO_LOCK_KEY		0xAA	/* Key to disable Super-I/O */
+>>>>>>> v4.9.227
 
 #define SIO_REG_LDSEL		0x07	/* Logical device select */
 #define SIO_REG_DEVID		0x20	/* Device ID (2 bytes) */
 #define SIO_REG_DEVREV		0x22	/* Device revision */
 #define SIO_REG_MANID		0x23	/* Fintek ID (2 bytes) */
 #define SIO_REG_ROM_ADDR_SEL	0x27	/* ROM address select */
+<<<<<<< HEAD
 #define SIO_REG_MFUNCT1		0x29	/* Multi function select 1 */
 #define SIO_REG_MFUNCT2		0x2a	/* Multi function select 2 */
 #define SIO_REG_MFUNCT3		0x2b	/* Multi function select 3 */
+=======
+#define SIO_F81866_REG_PORT_SEL	0x27	/* F81866 Multi-Function Register */
+#define SIO_REG_MFUNCT1		0x29	/* Multi function select 1 */
+#define SIO_REG_MFUNCT2		0x2a	/* Multi function select 2 */
+#define SIO_REG_MFUNCT3		0x2b	/* Multi function select 3 */
+#define SIO_F81866_REG_GPIO1	0x2c	/* F81866 GPIO1 Enable Register */
+>>>>>>> v4.9.227
 #define SIO_REG_ENABLE		0x30	/* Logical device enable */
 #define SIO_REG_ADDR		0x60	/* Logical device address (2 bytes) */
 
@@ -55,10 +67,19 @@
 #define SIO_F71808_ID		0x0901	/* Chipset ID */
 #define SIO_F71858_ID		0x0507	/* Chipset ID */
 #define SIO_F71862_ID		0x0601	/* Chipset ID */
+<<<<<<< HEAD
+=======
+#define SIO_F71868_ID		0x1106	/* Chipset ID */
+>>>>>>> v4.9.227
 #define SIO_F71869_ID		0x0814	/* Chipset ID */
 #define SIO_F71869A_ID		0x1007	/* Chipset ID */
 #define SIO_F71882_ID		0x0541	/* Chipset ID */
 #define SIO_F71889_ID		0x0723	/* Chipset ID */
+<<<<<<< HEAD
+=======
+#define SIO_F81865_ID		0x0704	/* Chipset ID */
+#define SIO_F81866_ID		0x1010	/* Chipset ID */
+>>>>>>> v4.9.227
 
 #define F71808FG_REG_WDO_CONF		0xf0
 #define F71808FG_REG_WDT_CONF		0xf5
@@ -66,11 +87,21 @@
 
 #define F71808FG_FLAG_WDOUT_EN		7
 
+<<<<<<< HEAD
 #define F71808FG_FLAG_WDTMOUT_STS	5
+=======
+#define F71808FG_FLAG_WDTMOUT_STS	6
+>>>>>>> v4.9.227
 #define F71808FG_FLAG_WD_EN		5
 #define F71808FG_FLAG_WD_PULSE		4
 #define F71808FG_FLAG_WD_UNIT		3
 
+<<<<<<< HEAD
+=======
+#define F81865_REG_WDO_CONF		0xfa
+#define F81865_FLAG_WDOUT_EN		0
+
+>>>>>>> v4.9.227
 /* Default values */
 #define WATCHDOG_TIMEOUT	60	/* 1 minute default timeout */
 #define WATCHDOG_MAX_TIMEOUT	(60 * 255)
@@ -94,7 +125,11 @@ MODULE_PARM_DESC(timeout,
 static unsigned int pulse_width = WATCHDOG_PULSE_WIDTH;
 module_param(pulse_width, uint, 0);
 MODULE_PARM_DESC(pulse_width,
+<<<<<<< HEAD
 	"Watchdog signal pulse width. 0(=level), 1 ms, 25 ms, 125 ms or 5000 ms"
+=======
+	"Watchdog signal pulse width. 0(=level), 1, 25, 30, 125, 150, 5000 or 6000 ms"
+>>>>>>> v4.9.227
 			" (default=" __MODULE_STRING(WATCHDOG_PULSE_WIDTH) ")");
 
 static unsigned int f71862fg_pin = WATCHDOG_F71862FG_PIN;
@@ -112,15 +147,29 @@ module_param(start_withtimeout, uint, 0);
 MODULE_PARM_DESC(start_withtimeout, "Start watchdog timer on module load with"
 	" given initial timeout. Zero (default) disables this feature.");
 
+<<<<<<< HEAD
 enum chips { f71808fg, f71858fg, f71862fg, f71869, f71882fg, f71889fg };
+=======
+enum chips { f71808fg, f71858fg, f71862fg, f71868, f71869, f71882fg, f71889fg,
+	     f81865, f81866};
+>>>>>>> v4.9.227
 
 static const char *f71808e_names[] = {
 	"f71808fg",
 	"f71858fg",
 	"f71862fg",
+<<<<<<< HEAD
 	"f71869",
 	"f71882fg",
 	"f71889fg",
+=======
+	"f71868",
+	"f71869",
+	"f71882fg",
+	"f71889fg",
+	"f81865",
+	"f81866",
+>>>>>>> v4.9.227
 };
 
 /* Super-I/O Function prototypes */
@@ -242,6 +291,7 @@ static int watchdog_set_timeout(int timeout)
 static int watchdog_set_pulse_width(unsigned int pw)
 {
 	int err = 0;
+<<<<<<< HEAD
 
 	mutex_lock(&watchdog.lock);
 
@@ -252,6 +302,25 @@ static int watchdog_set_pulse_width(unsigned int pw)
 	} else if (pw <=  125) {
 		watchdog.pulse_val = 2;
 	} else if (pw <= 5000) {
+=======
+	unsigned int t1 = 25, t2 = 125, t3 = 5000;
+
+	if (watchdog.type == f71868) {
+		t1 = 30;
+		t2 = 150;
+		t3 = 6000;
+	}
+
+	mutex_lock(&watchdog.lock);
+
+	if        (pw <=  1) {
+		watchdog.pulse_val = 0;
+	} else if (pw <= t1) {
+		watchdog.pulse_val = 1;
+	} else if (pw <= t2) {
+		watchdog.pulse_val = 2;
+	} else if (pw <= t3) {
+>>>>>>> v4.9.227
 		watchdog.pulse_val = 3;
 	} else {
 		pr_err("pulse width out of range\n");
@@ -344,6 +413,10 @@ static int watchdog_start(void)
 			goto exit_superio;
 		break;
 
+<<<<<<< HEAD
+=======
+	case f71868:
+>>>>>>> v4.9.227
 	case f71869:
 		/* GPIO14 --> WDTRST# */
 		superio_clear_bit(watchdog.sioaddr, SIO_REG_MFUNCT1, 4);
@@ -360,6 +433,30 @@ static int watchdog_start(void)
 			superio_inb(watchdog.sioaddr, SIO_REG_MFUNCT3) & 0xcf);
 		break;
 
+<<<<<<< HEAD
+=======
+	case f81865:
+		/* Set pin 70 to WDTRST# */
+		superio_clear_bit(watchdog.sioaddr, SIO_REG_MFUNCT3, 5);
+		break;
+
+	case f81866:
+		/* Set pin 70 to WDTRST# */
+		superio_clear_bit(watchdog.sioaddr, SIO_F81866_REG_PORT_SEL,
+				  BIT(3) | BIT(0));
+		superio_set_bit(watchdog.sioaddr, SIO_F81866_REG_PORT_SEL,
+				BIT(2));
+		/*
+		 * GPIO1 Control Register when 27h BIT3:2 = 01 & BIT0 = 0.
+		 * The PIN 70(GPIO15/WDTRST) is controlled by 2Ch:
+		 *     BIT5: 0 -> WDTRST#
+		 *           1 -> GPIO15
+		 */
+		superio_clear_bit(watchdog.sioaddr, SIO_F81866_REG_GPIO1,
+				  BIT(5));
+		break;
+
+>>>>>>> v4.9.227
 	default:
 		/*
 		 * 'default' label to shut up the compiler and catch
@@ -371,8 +468,18 @@ static int watchdog_start(void)
 
 	superio_select(watchdog.sioaddr, SIO_F71808FG_LD_WDT);
 	superio_set_bit(watchdog.sioaddr, SIO_REG_ENABLE, 0);
+<<<<<<< HEAD
 	superio_set_bit(watchdog.sioaddr, F71808FG_REG_WDO_CONF,
 			F71808FG_FLAG_WDOUT_EN);
+=======
+
+	if (watchdog.type == f81865 || watchdog.type == f81866)
+		superio_set_bit(watchdog.sioaddr, F81865_REG_WDO_CONF,
+				F81865_FLAG_WDOUT_EN);
+	else
+		superio_set_bit(watchdog.sioaddr, F71808FG_REG_WDO_CONF,
+				F71808FG_FLAG_WDOUT_EN);
+>>>>>>> v4.9.227
 
 	superio_set_bit(watchdog.sioaddr, F71808FG_REG_WDT_CONF,
 			F71808FG_FLAG_WD_EN);
@@ -656,7 +763,11 @@ static int __init watchdog_init(int sioaddr)
 	superio_select(watchdog.sioaddr, SIO_F71808FG_LD_WDT);
 
 	wdt_conf = superio_inb(sioaddr, F71808FG_REG_WDT_CONF);
+<<<<<<< HEAD
 	watchdog.caused_reboot = wdt_conf & F71808FG_FLAG_WDTMOUT_STS;
+=======
+	watchdog.caused_reboot = wdt_conf & BIT(F71808FG_FLAG_WDTMOUT_STS);
+>>>>>>> v4.9.227
 
 	superio_exit(sioaddr);
 
@@ -757,6 +868,12 @@ static int __init f71808e_find(int sioaddr)
 		watchdog.type = f71862fg;
 		err = f71862fg_pin_configure(0); /* validate module parameter */
 		break;
+<<<<<<< HEAD
+=======
+	case SIO_F71868_ID:
+		watchdog.type = f71868;
+		break;
+>>>>>>> v4.9.227
 	case SIO_F71869_ID:
 	case SIO_F71869A_ID:
 		watchdog.type = f71869;
@@ -771,6 +888,15 @@ static int __init f71808e_find(int sioaddr)
 		/* Confirmed (by datasheet) not to have a watchdog. */
 		err = -ENODEV;
 		goto exit;
+<<<<<<< HEAD
+=======
+	case SIO_F81865_ID:
+		watchdog.type = f81865;
+		break;
+	case SIO_F81866_ID:
+		watchdog.type = f81866;
+		break;
+>>>>>>> v4.9.227
 	default:
 		pr_info("Unrecognized Fintek device: %04x\n",
 			(unsigned int)devid);

@@ -35,11 +35,18 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 	unsigned int tmp;
 #endif
 
+<<<<<<< HEAD
 	smp_mb();
+=======
+>>>>>>> v4.9.227
 	prefetchw((const void *)ptr);
 
 	switch (size) {
 #if __LINUX_ARM_ARCH__ >= 6
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_CPU_V6 /* MIN ARCH >= V6K */
+>>>>>>> v4.9.227
 	case 1:
 		asm volatile("@	__xchg1\n"
 		"1:	ldrexb	%0, [%3]\n"
@@ -50,6 +57,20 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 			: "r" (x), "r" (ptr)
 			: "memory", "cc");
 		break;
+<<<<<<< HEAD
+=======
+	case 2:
+		asm volatile("@	__xchg2\n"
+		"1:	ldrexh	%0, [%3]\n"
+		"	strexh	%1, %2, [%3]\n"
+		"	teq	%1, #0\n"
+		"	bne	1b"
+			: "=&r" (ret), "=&r" (tmp)
+			: "r" (x), "r" (ptr)
+			: "memory", "cc");
+		break;
+#endif
+>>>>>>> v4.9.227
 	case 4:
 		asm volatile("@	__xchg4\n"
 		"1:	ldrex	%0, [%3]\n"
@@ -94,16 +115,30 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 		break;
 #endif
 	default:
+<<<<<<< HEAD
 		__bad_xchg(ptr, size), ret = 0;
 		break;
 	}
 	smp_mb();
+=======
+		/* Cause a link-time error, the xchg() size is not supported */
+		__bad_xchg(ptr, size), ret = 0;
+		break;
+	}
+>>>>>>> v4.9.227
 
 	return ret;
 }
 
+<<<<<<< HEAD
 #define xchg(ptr,x) \
 	((__typeof__(*(ptr)))__xchg((unsigned long)(x),(ptr),sizeof(*(ptr))))
+=======
+#define xchg_relaxed(ptr, x) ({						\
+	(__typeof__(*(ptr)))__xchg((unsigned long)(x), (ptr),		\
+				   sizeof(*(ptr)));			\
+})
+>>>>>>> v4.9.227
 
 #include <asm-generic/cmpxchg-local.h>
 
@@ -114,10 +149,16 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 #error "SMP is not supported on this platform"
 #endif
 
+<<<<<<< HEAD
+=======
+#define xchg xchg_relaxed
+
+>>>>>>> v4.9.227
 /*
  * cmpxchg_local and cmpxchg64_local are atomic wrt current CPU. Always make
  * them available.
  */
+<<<<<<< HEAD
 #define cmpxchg_local(ptr, o, n)				  	       \
 	((__typeof__(*(ptr)))__cmpxchg_local_generic((ptr), (unsigned long)(o),\
 			(unsigned long)(n), sizeof(*(ptr))))
@@ -126,6 +167,18 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 #ifndef CONFIG_SMP
 #include <asm-generic/cmpxchg.h>
 #endif
+=======
+#define cmpxchg_local(ptr, o, n) ({					\
+	(__typeof(*ptr))__cmpxchg_local_generic((ptr),			\
+					        (unsigned long)(o),	\
+					        (unsigned long)(n),	\
+					        sizeof(*(ptr)));	\
+})
+
+#define cmpxchg64_local(ptr, o, n) __cmpxchg64_local_generic((ptr), (o), (n))
+
+#include <asm-generic/cmpxchg.h>
+>>>>>>> v4.9.227
 
 #else	/* min ARCH >= ARMv6 */
 
@@ -189,6 +242,7 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 	return oldval;
 }
 
+<<<<<<< HEAD
 static inline unsigned long __cmpxchg_mb(volatile void *ptr, unsigned long old,
 					 unsigned long new, int size)
 {
@@ -206,6 +260,14 @@ static inline unsigned long __cmpxchg_mb(volatile void *ptr, unsigned long old,
 					  (unsigned long)(o),		\
 					  (unsigned long)(n),		\
 					  sizeof(*(ptr))))
+=======
+#define cmpxchg_relaxed(ptr,o,n) ({					\
+	(__typeof__(*(ptr)))__cmpxchg((ptr),				\
+				      (unsigned long)(o),		\
+				      (unsigned long)(n),		\
+				      sizeof(*(ptr)));			\
+})
+>>>>>>> v4.9.227
 
 static inline unsigned long __cmpxchg_local(volatile void *ptr,
 					    unsigned long old,
@@ -227,6 +289,16 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+#define cmpxchg_local(ptr, o, n) ({					\
+	(__typeof(*ptr))__cmpxchg_local((ptr),				\
+				        (unsigned long)(o),		\
+				        (unsigned long)(n),		\
+				        sizeof(*(ptr)));		\
+})
+
+>>>>>>> v4.9.227
 static inline unsigned long long __cmpxchg64(unsigned long long *ptr,
 					     unsigned long long old,
 					     unsigned long long new)
@@ -252,6 +324,7 @@ static inline unsigned long long __cmpxchg64(unsigned long long *ptr,
 	return oldval;
 }
 
+<<<<<<< HEAD
 static inline unsigned long long __cmpxchg64_mb(unsigned long long *ptr,
 						unsigned long long old,
 						unsigned long long new)
@@ -282,6 +355,15 @@ static inline unsigned long long __cmpxchg64_mb(unsigned long long *ptr,
 					(unsigned long long)(n)))
 
 #define cmpxchg64_local(ptr, o, n)	cmpxchg64_relaxed((ptr), (o), (n))
+=======
+#define cmpxchg64_relaxed(ptr, o, n) ({					\
+	(__typeof__(*(ptr)))__cmpxchg64((ptr),				\
+					(unsigned long long)(o),	\
+					(unsigned long long)(n));	\
+})
+
+#define cmpxchg64_local(ptr, o, n) cmpxchg64_relaxed((ptr), (o), (n))
+>>>>>>> v4.9.227
 
 #endif	/* __LINUX_ARM_ARCH__ >= 6 */
 

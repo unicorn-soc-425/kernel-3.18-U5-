@@ -37,8 +37,11 @@
  */
 void start_thread(struct pt_regs *regs, unsigned long pc, unsigned long sp)
 {
+<<<<<<< HEAD
 	/* Set to run with user-mode data segmentation */
 	set_fs(USER_DS);
+=======
+>>>>>>> v4.9.227
 	/* We want to zero all data-containing registers. Is this overkill? */
 	memset(regs, 0, sizeof(*regs));
 	/* We might want to also zero all Processor registers here */
@@ -139,6 +142,7 @@ void release_thread(struct task_struct *dead_task)
 }
 
 /*
+<<<<<<< HEAD
  * Free any architecture-specific thread data structures, etc.
  */
 void exit_thread(void)
@@ -146,6 +150,8 @@ void exit_thread(void)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Some archs flush debug and FPU info here
  */
 void flush_thread(void)

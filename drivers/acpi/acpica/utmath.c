@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -111,6 +115,10 @@ acpi_ut_short_divide(u64 dividend,
 	 */
 	ACPI_DIV_64_BY_32(0, dividend_ovl.part.hi, divisor,
 			  quotient.part.hi, remainder32);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	ACPI_DIV_64_BY_32(remainder32, dividend_ovl.part.lo, divisor,
 			  quotient.part.lo, remainder32);
 
@@ -179,6 +187,10 @@ acpi_ut_divide(u64 in_dividend,
 		 */
 		ACPI_DIV_64_BY_32(0, dividend.part.hi, divisor.part.lo,
 				  quotient.part.hi, partial1);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 		ACPI_DIV_64_BY_32(partial1, dividend.part.lo, divisor.part.lo,
 				  quotient.part.lo, remainder.part.lo);
 	}
@@ -206,12 +218,21 @@ acpi_ut_divide(u64 in_dividend,
 
 		ACPI_DIV_64_BY_32(normalized_dividend.part.hi,
 				  normalized_dividend.part.lo,
+<<<<<<< HEAD
 				  normalized_divisor.part.lo,
 				  quotient.part.lo, partial1);
 
 		/*
 		 * The quotient is always 32 bits, and simply requires adjustment.
 		 * The 64-bit remainder must be generated.
+=======
+				  normalized_divisor.part.lo, quotient.part.lo,
+				  partial1);
+
+		/*
+		 * The quotient is always 32 bits, and simply requires
+		 * adjustment. The 64-bit remainder must be generated.
+>>>>>>> v4.9.227
 		 */
 		partial1 = quotient.part.lo * divisor.part.hi;
 		partial2.full = (u64) quotient.part.lo * divisor.part.lo;
@@ -234,8 +255,13 @@ acpi_ut_divide(u64 in_dividend,
 			}
 
 			remainder.full = remainder.full - dividend.full;
+<<<<<<< HEAD
 			remainder.part.hi = (u32) - ((s32) remainder.part.hi);
 			remainder.part.lo = (u32) - ((s32) remainder.part.lo);
+=======
+			remainder.part.hi = (u32)-((s32)remainder.part.hi);
+			remainder.part.lo = (u32)-((s32)remainder.part.lo);
+>>>>>>> v4.9.227
 
 			if (remainder.part.lo) {
 				remainder.part.hi--;

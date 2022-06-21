@@ -311,9 +311,15 @@ static int mt352_set_parameters(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mt352_get_parameters(struct dvb_frontend* fe)
 {
 	struct dtv_frontend_properties *op = &fe->dtv_property_cache;
+=======
+static int mt352_get_parameters(struct dvb_frontend* fe,
+				struct dtv_frontend_properties *op)
+{
+>>>>>>> v4.9.227
 	struct mt352_state* state = fe->demodulator_priv;
 	u16 tps;
 	u16 div;
@@ -417,7 +423,11 @@ static int mt352_get_parameters(struct dvb_frontend* fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mt352_read_status(struct dvb_frontend* fe, fe_status_t* status)
+=======
+static int mt352_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct mt352_state* state = fe->demodulator_priv;
 	int s0, s1, s3;

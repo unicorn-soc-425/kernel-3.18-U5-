@@ -195,7 +195,11 @@ static int llc_seq_core_show(struct seq_file *seq, void *v)
 		   timer_pending(&llc->pf_cycle_timer.timer),
 		   timer_pending(&llc->rej_sent_timer.timer),
 		   timer_pending(&llc->busy_state_timer.timer),
+<<<<<<< HEAD
 		   !!sk->sk_backlog.tail, !!sock_owned_by_user(sk));
+=======
+		   !!sk->sk_backlog.tail, !!sk->sk_lock.owned);
+>>>>>>> v4.9.227
 out:
 	return 0;
 }

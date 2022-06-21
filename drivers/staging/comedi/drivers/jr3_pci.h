@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Helper types to take care of the fact that the DSP card memory
+=======
+/*
+ * Helper types to take care of the fact that the DSP card memory
+>>>>>>> v4.9.227
  * is 16 bits, but aligned on a 32 bit PCI boundary
  */
 
@@ -22,7 +27,12 @@ static inline void set_s16(s32 __iomem *p, s16 val)
 	writel(val, p);
 }
 
+<<<<<<< HEAD
 /* The raw data is stored in a format which facilitates rapid
+=======
+/*
+ * The raw data is stored in a format which facilitates rapid
+>>>>>>> v4.9.227
  * processing by the JR3 DSP chip. The raw_channel structure shows the
  * format for a single channel of data. Each channel takes four,
  * two-byte words.
@@ -47,7 +57,12 @@ struct raw_channel {
 	s32 reserved[2];
 };
 
+<<<<<<< HEAD
 /* The force_array structure shows the layout for the decoupled and
+=======
+/*
+ * The force_array structure shows the layout for the decoupled and
+>>>>>>> v4.9.227
  * filtered force data.
  */
 struct force_array {
@@ -61,7 +76,12 @@ struct force_array {
 	s32 v2;
 };
 
+<<<<<<< HEAD
 /* The six_axis_array structure shows the layout for the offsets and
+=======
+/*
+ * The six_axis_array structure shows the layout for the offsets and
+>>>>>>> v4.9.227
  * the full scales.
  */
 struct six_axis_array {
@@ -74,7 +94,12 @@ struct six_axis_array {
 };
 
 /* VECT_BITS */
+<<<<<<< HEAD
 /* The vect_bits structure shows the layout for indicating
+=======
+/*
+ * The vect_bits structure shows the layout for indicating
+>>>>>>> v4.9.227
  * which axes to use in computing the vectors. Each bit signifies
  * selection of a single axis. The V1x axis bit corresponds to a hex
  * value of 0x0001 and the V2z bit corresponds to a hex value of
@@ -100,12 +125,23 @@ enum {
 };
 
 /* WARNING_BITS */
+<<<<<<< HEAD
 /* The warning_bits structure shows the bit pattern for the warning
  * word. The bit fields are shown from bit 0 (lsb) to bit 15 (msb).
  */
 
 /*  XX_NEAR_SET */
 /* The xx_near_sat bits signify that the indicated axis has reached or
+=======
+/*
+ * The warning_bits structure shows the bit pattern for the warning
+ * word. The bit fields are shown from bit 0 (lsb) to bit 15 (msb).
+ */
+
+/* XX_NEAR_SET */
+/*
+ * The xx_near_sat bits signify that the indicated axis has reached or
+>>>>>>> v4.9.227
  * exceeded the near saturation value.
  */
 
@@ -118,12 +154,22 @@ enum {
 	mz_near_sat = 0x0020
 };
 
+<<<<<<< HEAD
 /*  ERROR_BITS */
 /*  XX_SAT */
 /*  MEMORY_ERROR */
 /*  SENSOR_CHANGE */
 
 /* The error_bits structure shows the bit pattern for the error word.
+=======
+/* ERROR_BITS */
+/* XX_SAT */
+/* MEMORY_ERROR */
+/* SENSOR_CHANGE */
+
+/*
+ * The error_bits structure shows the bit pattern for the error word.
+>>>>>>> v4.9.227
  * The bit fields are shown from bit 0 (lsb) to bit 15 (msb). The
  * xx_sat bits signify that the indicated axis has reached or exceeded
  * the saturation value. The memory_error bit indicates that a problem
@@ -134,9 +180,16 @@ enum {
  *
  */
 
+<<<<<<< HEAD
 /*  SYSTEM_BUSY */
 
 /* The system_busy bit indicates that the JR3 DSP is currently busy
+=======
+/* SYSTEM_BUSY */
+
+/*
+ * The system_busy bit indicates that the JR3 DSP is currently busy
+>>>>>>> v4.9.227
  * and is not calculating force data. This occurs when a new
  * coordinate transformation, or new sensor full scale is set by the
  * user. A very fast system using the force data for feedback might
@@ -146,9 +199,16 @@ enum {
  * calibration CRC.
  */
 
+<<<<<<< HEAD
 /*  CAL_CRC_BAD */
 
 /* The cal_crc_bad bit indicates that the calibration CRC has not
+=======
+/* CAL_CRC_BAD */
+
+/*
+ * The cal_crc_bad bit indicates that the calibration CRC has not
+>>>>>>> v4.9.227
  * calculated to zero. CRC is short for cyclic redundancy code. It is
  * a method for determining the integrity of messages in data
  * communication. The calibration data stored inside the sensor is
@@ -168,7 +228,12 @@ enum {
 /* WATCH_DOG */
 /* WATCH_DOG2 */
 
+<<<<<<< HEAD
 /* The watch_dog and watch_dog2 bits are sensor, not processor, watch
+=======
+/*
+ * The watch_dog and watch_dog2 bits are sensor, not processor, watch
+>>>>>>> v4.9.227
  * dog bits. Watch_dog indicates that the sensor data line seems to be
  * acting correctly, while watch_dog2 indicates that sensor data and
  * clock are being received. It is possible for watch_dog2 to go off
@@ -192,9 +257,16 @@ enum error_bits_t {
 	watch_dog = 0x8000
 };
 
+<<<<<<< HEAD
 /*  THRESH_STRUCT */
 
 /* This structure shows the layout for a single threshold packet inside of a
+=======
+/* THRESH_STRUCT */
+
+/*
+ * This structure shows the layout for a single threshold packet inside of a
+>>>>>>> v4.9.227
  * load envelope. Each load envelope can contain several threshold structures.
  * 1. data_address contains the address of the data for that threshold. This
  *    includes filtered, unfiltered, raw, rate, counters, error and warning data
@@ -210,9 +282,16 @@ struct thresh_struct {
 	s32 bit_pattern;
 };
 
+<<<<<<< HEAD
 /*  LE_STRUCT */
 
 /* Layout of a load enveloped packet. Four thresholds are showed ... for more
+=======
+/* LE_STRUCT */
+
+/*
+ * Layout of a load enveloped packet. Four thresholds are showed ... for more
+>>>>>>> v4.9.227
  * see manual (pag.25)
  * 1. latch_bits is a bit pattern that show which bits the user wants to latch.
  *    The latched bits will not be reset once the threshold which set them is
@@ -228,8 +307,14 @@ struct le_struct {
 	s32 reserved;
 };
 
+<<<<<<< HEAD
 /*  LINK_TYPES */
 /* Link types is an enumerated value showing the different possible transform
+=======
+/* LINK_TYPES */
+/*
+ * Link types is an enumerated value showing the different possible transform
+>>>>>>> v4.9.227
  * link types.
  * 0 - end transform packet
  * 1 - translate along X axis (TX)
@@ -252,8 +337,13 @@ enum link_types {
 	neg
 };
 
+<<<<<<< HEAD
 /*  TRANSFORM */
 /*  Structure used to describe a transform. */
+=======
+/* TRANSFORM */
+/* Structure used to describe a transform. */
+>>>>>>> v4.9.227
 struct intern_transform {
 	struct {
 		u32 link_type;
@@ -261,6 +351,7 @@ struct intern_transform {
 	} link[8];
 };
 
+<<<<<<< HEAD
 /*  JR3 force/torque sensor data definition. For more information see sensor and */
 /*  hardware manuals. */
 
@@ -272,11 +363,35 @@ struct jr3_channel {
 
 	/*  Copyright is a null terminated ASCII string containing the JR3 */
 	/*  copyright notice. */
+=======
+/*
+ * JR3 force/torque sensor data definition. For more information see sensor
+ * and hardware manuals.
+ */
+
+struct jr3_channel {
+	/*
+	 * Raw_channels is the area used to store the raw data coming from
+	 * the sensor.
+	 */
+
+	struct raw_channel raw_channels[16];	/* offset 0x0000 */
+
+	/*
+	 * Copyright is a null terminated ASCII string containing the JR3
+	 * copyright notice.
+	 */
+>>>>>>> v4.9.227
 
 	u32 copyright[0x0018];	/* offset 0x0040 */
 	s32 reserved1[0x0008];	/* offset 0x0058 */
 
+<<<<<<< HEAD
 	/* Shunts contains the sensor shunt readings. Some JR3 sensors have
+=======
+	/*
+	 * Shunts contains the sensor shunt readings. Some JR3 sensors have
+>>>>>>> v4.9.227
 	 * the ability to have their gains adjusted. This allows the
 	 * hardware full scales to be adjusted to potentially allow
 	 * better resolution or dynamic range. For sensors that have
@@ -297,6 +412,7 @@ struct jr3_channel {
 	 * command (10) set new full scales (pg. 38).
 	 */
 
+<<<<<<< HEAD
 	struct six_axis_array shunts;	/* offset 0x0060 */
 	s32 reserved2[2];	/* offset 0x0066 */
 
@@ -307,15 +423,39 @@ struct jr3_channel {
 	s32 reserved3;		/* offset 0x006e */
 
 	/* Load_envelope_num is the load envelope number that is currently
+=======
+	struct six_axis_array shunts;		/* offset 0x0060 */
+	s32 reserved2[2];			/* offset 0x0066 */
+
+	/*
+	 * Default_FS contains the full scale that is used if the user does
+	 * not set a full scale.
+	 */
+
+	struct six_axis_array default_FS;	/* offset 0x0068 */
+	s32 reserved3;				/* offset 0x006e */
+
+	/*
+	 * Load_envelope_num is the load envelope number that is currently
+>>>>>>> v4.9.227
 	 * in use. This value is set by the user after one of the load
 	 * envelopes has been initialized.
 	 */
 
+<<<<<<< HEAD
 	s32 load_envelope_num;	/* offset 0x006f */
 
 	/* Min_full_scale is the recommend minimum full scale. */
 
 	/* These values in conjunction with max_full_scale (pg. 9) helps
+=======
+	s32 load_envelope_num;			/* offset 0x006f */
+
+	/* Min_full_scale is the recommend minimum full scale. */
+
+	/*
+	 * These values in conjunction with max_full_scale (pg. 9) helps
+>>>>>>> v4.9.227
 	 * determine the appropriate value for setting the full scales. The
 	 * software allows the user to set the sensor full scale to an
 	 * arbitrary value. But setting the full scales has some hazards. If
@@ -341,13 +481,21 @@ struct jr3_channel {
 	 */
 
 	struct six_axis_array min_full_scale;	/* offset 0x0070 */
+<<<<<<< HEAD
 	s32 reserved4;		/* offset 0x0076 */
 
 	/* Transform_num is the transform number that is currently in use.
+=======
+	s32 reserved4;				/* offset 0x0076 */
+
+	/*
+	 * Transform_num is the transform number that is currently in use.
+>>>>>>> v4.9.227
 	 * This value is set by the JR3 DSP after the user has used command
 	 * (5) use transform # (pg. 33).
 	 */
 
+<<<<<<< HEAD
 	s32 transform_num;	/* offset 0x0077 */
 
 	/*  Max_full_scale is the recommended maximum full scale. See */
@@ -357,14 +505,35 @@ struct jr3_channel {
 	s32 reserved5;		/* offset 0x007e */
 
 	/* Peak_address is the address of the data which will be monitored
+=======
+	s32 transform_num;			/* offset 0x0077 */
+
+	/*
+	 * Max_full_scale is the recommended maximum full scale.
+	 * See min_full_scale (pg. 9) for more details.
+	 */
+
+	struct six_axis_array max_full_scale;	/* offset 0x0078 */
+	s32 reserved5;				/* offset 0x007e */
+
+	/*
+	 * Peak_address is the address of the data which will be monitored
+>>>>>>> v4.9.227
 	 * by the peak routine. This value is set by the user. The peak
 	 * routine will monitor any 8 contiguous addresses for peak values.
 	 * (ex. to watch filter3 data for peaks, set this value to 0x00a8).
 	 */
 
+<<<<<<< HEAD
 	s32 peak_address;	/* offset 0x007f */
 
 	/* Full_scale is the sensor full scales which are currently in use.
+=======
+	s32 peak_address;			/* offset 0x007f */
+
+	/*
+	 * Full_scale is the sensor full scales which are currently in use.
+>>>>>>> v4.9.227
 	 * Decoupled and filtered data is scaled so that +/- 16384 is equal
 	 * to the full scales. The engineering units used are indicated by
 	 * the units value discussed on page 16. The full scales for Fx, Fy,
@@ -376,9 +545,16 @@ struct jr3_channel {
 	 * axes used for each vector respectively.
 	 */
 
+<<<<<<< HEAD
 	struct force_array full_scale;	/* offset 0x0080 */
 
 	/* Offsets contains the sensor offsets. These values are subtracted from
+=======
+	struct force_array full_scale;		/* offset 0x0080 */
+
+	/*
+	 * Offsets contains the sensor offsets. These values are subtracted from
+>>>>>>> v4.9.227
 	 * the sensor data to obtain the decoupled data. The offsets are set a
 	 * few seconds (< 10) after the calibration data has been received.
 	 * They are set so that the output data will be zero. These values
@@ -391,23 +567,44 @@ struct jr3_channel {
 	 * about Z by 90 degrees, FY would be 5 and all others would be zero.
 	 */
 
+<<<<<<< HEAD
 	struct six_axis_array offsets;	/* offset 0x0088 */
 
 	/* Offset_num is the number of the offset currently in use. This
+=======
+	struct six_axis_array offsets;		/* offset 0x0088 */
+
+	/*
+	 * Offset_num is the number of the offset currently in use. This
+>>>>>>> v4.9.227
 	 * value is set by the JR3 DSP after the user has executed the use
 	 * offset # command (pg. 34). It can vary between 0 and 15.
 	 */
 
+<<<<<<< HEAD
 	s32 offset_num;		/* offset 0x008e */
 
 	/* Vect_axes is a bit map showing which of the axes are being used
+=======
+	s32 offset_num;				/* offset 0x008e */
+
+	/*
+	 * Vect_axes is a bit map showing which of the axes are being used
+>>>>>>> v4.9.227
 	 * in the vector calculations. This value is set by the JR3 DSP
 	 * after the user has executed the set vector axes command (pg. 37).
 	 */
 
+<<<<<<< HEAD
 	u32 vect_axes;		/* offset 0x008f */
 
 	/* Filter0 is the decoupled, unfiltered data from the JR3 sensor.
+=======
+	u32 vect_axes;				/* offset 0x008f */
+
+	/*
+	 * Filter0 is the decoupled, unfiltered data from the JR3 sensor.
+>>>>>>> v4.9.227
 	 * This data has had the offsets removed.
 	 *
 	 * These force_arrays hold the filtered data. The decoupled data is
@@ -419,6 +616,7 @@ struct jr3_channel {
 	 * cutoff at 125 Hz, 31.25 Hz, 7.813 Hz, 1.953 Hz and 0.4883 Hz.
 	 */
 
+<<<<<<< HEAD
 	struct force_array filter[7];	/* offset 0x0090,
 					   offset 0x0098,
 					   offset 0x00a0,
@@ -428,14 +626,35 @@ struct jr3_channel {
 					   offset 0x00c0 */
 
 	/* Rate_data is the calculated rate data. It is a first derivative
+=======
+	struct force_array filter[7];		/*
+						 * offset 0x0090,
+						 * offset 0x0098,
+						 * offset 0x00a0,
+						 * offset 0x00a8,
+						 * offset 0x00b0,
+						 * offset 0x00b8,
+						 * offset 0x00c0
+						 */
+
+	/*
+	 * Rate_data is the calculated rate data. It is a first derivative
+>>>>>>> v4.9.227
 	 * calculation. It is calculated at a frequency specified by the
 	 * variable rate_divisor (pg. 12). The data on which the rate is
 	 * calculated is specified by the variable rate_address (pg. 12).
 	 */
 
+<<<<<<< HEAD
 	struct force_array rate_data;	/* offset 0x00c8 */
 
 	/* Minimum_data & maximum_data are the minimum and maximum (peak)
+=======
+	struct force_array rate_data;		/* offset 0x00c8 */
+
+	/*
+	 * Minimum_data & maximum_data are the minimum and maximum (peak)
+>>>>>>> v4.9.227
 	 * data values. The JR3 DSP can monitor any 8 contiguous data items
 	 * for minimums and maximums at full sensor bandwidth. This area is
 	 * only updated at user request. This is done so that the user does
@@ -450,7 +669,12 @@ struct jr3_channel {
 	struct force_array minimum_data;	/* offset 0x00d0 */
 	struct force_array maximum_data;	/* offset 0x00d8 */
 
+<<<<<<< HEAD
 	/* Near_sat_value & sat_value contain the value used to determine if
+=======
+	/*
+	 * Near_sat_value & sat_value contain the value used to determine if
+>>>>>>> v4.9.227
 	 * the raw sensor is saturated. Because of decoupling and offset
 	 * removal, it is difficult to tell from the processed data if the
 	 * sensor is saturated. These values, in conjunction with the error
@@ -464,10 +688,18 @@ struct jr3_channel {
 	 *   sat_value = 32768 - 2^(16 - ADC bits)
 	 */
 
+<<<<<<< HEAD
 	s32 near_sat_value;	/* offset 0x00e0 */
 	s32 sat_value;		/* offset 0x00e1 */
 
 	/* Rate_address, rate_divisor & rate_count contain the data used to
+=======
+	s32 near_sat_value;			/* offset 0x00e0 */
+	s32 sat_value;				/* offset 0x00e1 */
+
+	/*
+	 * Rate_address, rate_divisor & rate_count contain the data used to
+>>>>>>> v4.9.227
 	 * control the calculations of the rates. Rate_address is the
 	 * address of the data used for the rate calculation. The JR3 DSP
 	 * will calculate rates for any 8 contiguous values (ex. to
@@ -484,11 +716,20 @@ struct jr3_channel {
 	 * will minimize the time necessary to start the rate calculations.
 	 */
 
+<<<<<<< HEAD
 	s32 rate_address;	/* offset 0x00e2 */
 	u32 rate_divisor;	/* offset 0x00e3 */
 	u32 rate_count;		/* offset 0x00e4 */
 
 	/* Command_word2 through command_word0 are the locations used to
+=======
+	s32 rate_address;			/* offset 0x00e2 */
+	u32 rate_divisor;			/* offset 0x00e3 */
+	u32 rate_count;				/* offset 0x00e4 */
+
+	/*
+	 * Command_word2 through command_word0 are the locations used to
+>>>>>>> v4.9.227
 	 * send commands to the JR3 DSP. Their usage varies with the command
 	 * and is detailed later in the Command Definitions section (pg.
 	 * 29). In general the user places values into various memory
@@ -501,11 +742,20 @@ struct jr3_channel {
 	 * command_word1).
 	 */
 
+<<<<<<< HEAD
 	s32 command_word2;	/* offset 0x00e5 */
 	s32 command_word1;	/* offset 0x00e6 */
 	s32 command_word0;	/* offset 0x00e7 */
 
 	/* Count1 through count6 are unsigned counters which are incremented
+=======
+	s32 command_word2;			/* offset 0x00e5 */
+	s32 command_word1;			/* offset 0x00e6 */
+	s32 command_word0;			/* offset 0x00e7 */
+
+	/*
+	 * Count1 through count6 are unsigned counters which are incremented
+>>>>>>> v4.9.227
 	 * every time the matching filters are calculated. Filter1 is
 	 * calculated at the sensor data bandwidth. So this counter would
 	 * increment at 8 kHz for a typical sensor. The rest of the counters
@@ -517,6 +767,7 @@ struct jr3_channel {
 	 * once.
 	 */
 
+<<<<<<< HEAD
 	u32 count1;		/* offset 0x00e8 */
 	u32 count2;		/* offset 0x00e9 */
 	u32 count3;		/* offset 0x00ea */
@@ -525,6 +776,17 @@ struct jr3_channel {
 	u32 count6;		/* offset 0x00ed */
 
 	/* Error_count is a running count of data reception errors. If this
+=======
+	u32 count1;				/* offset 0x00e8 */
+	u32 count2;				/* offset 0x00e9 */
+	u32 count3;				/* offset 0x00ea */
+	u32 count4;				/* offset 0x00eb */
+	u32 count5;				/* offset 0x00ec */
+	u32 count6;				/* offset 0x00ed */
+
+	/*
+	 * Error_count is a running count of data reception errors. If this
+>>>>>>> v4.9.227
 	 * counter is changing rapidly, it probably indicates a bad sensor
 	 * cable connection or other hardware problem. In most installations
 	 * error_count should not change at all. But it is possible in an
@@ -534,75 +796,143 @@ struct jr3_channel {
 	 * where this counter counts a bad sample, that sample is ignored.
 	 */
 
+<<<<<<< HEAD
 	u32 error_count;	/* offset 0x00ee */
 
 	/* Count_x is a counter which is incremented every time the JR3 DSP
+=======
+	u32 error_count;			/* offset 0x00ee */
+
+	/*
+	 * Count_x is a counter which is incremented every time the JR3 DSP
+>>>>>>> v4.9.227
 	 * searches its job queues and finds nothing to do. It indicates the
 	 * amount of idle time the JR3 DSP has available. It can also be
 	 * used to determine if the JR3 DSP is alive. See the Performance
 	 * Issues section on pg. 49 for more details.
 	 */
 
+<<<<<<< HEAD
 	u32 count_x;		/* offset 0x00ef */
 
 	/* Warnings & errors contain the warning and error bits
+=======
+	u32 count_x;				/* offset 0x00ef */
+
+	/*
+	 * Warnings & errors contain the warning and error bits
+>>>>>>> v4.9.227
 	 * respectively. The format of these two words is discussed on page
 	 * 21 under the headings warnings_bits and error_bits.
 	 */
 
+<<<<<<< HEAD
 	u32 warnings;		/* offset 0x00f0 */
 	u32 errors;		/* offset 0x00f1 */
 
 	/* Threshold_bits is a word containing the bits that are set by the
+=======
+	u32 warnings;				/* offset 0x00f0 */
+	u32 errors;				/* offset 0x00f1 */
+
+	/*
+	 * Threshold_bits is a word containing the bits that are set by the
+>>>>>>> v4.9.227
 	 * load envelopes. See load_envelopes (pg. 17) and thresh_struct
 	 * (pg. 23) for more details.
 	 */
 
+<<<<<<< HEAD
 	s32 threshold_bits;	/* offset 0x00f2 */
 
 	/* Last_crc is the value that shows the actual calculated CRC. CRC
+=======
+	s32 threshold_bits;			/* offset 0x00f2 */
+
+	/*
+	 * Last_crc is the value that shows the actual calculated CRC. CRC
+>>>>>>> v4.9.227
 	 * is short for cyclic redundancy code. It should be zero. See the
 	 * description for cal_crc_bad (pg. 21) for more information.
 	 */
 
+<<<<<<< HEAD
 	s32 last_CRC;		/* offset 0x00f3 */
 
 	/* EEProm_ver_no contains the version number of the sensor EEProm.
+=======
+	s32 last_CRC;				/* offset 0x00f3 */
+
+	/*
+	 * EEProm_ver_no contains the version number of the sensor EEProm.
+>>>>>>> v4.9.227
 	 * EEProm version numbers can vary between 0 and 255.
 	 * Software_ver_no contains the software version number. Version
 	 * 3.02 would be stored as 302.
 	 */
 
+<<<<<<< HEAD
 	s32 eeprom_ver_no;	/* offset 0x00f4 */
 	s32 software_ver_no;	/* offset 0x00f5 */
 
 	/* Software_day & software_year are the release date of the software
+=======
+	s32 eeprom_ver_no;			/* offset 0x00f4 */
+	s32 software_ver_no;			/* offset 0x00f5 */
+
+	/*
+	 * Software_day & software_year are the release date of the software
+>>>>>>> v4.9.227
 	 * the JR3 DSP is currently running. Day is the day of the year,
 	 * with January 1 being 1, and December 31, being 365 for non leap
 	 * years.
 	 */
 
+<<<<<<< HEAD
 	s32 software_day;	/* offset 0x00f6 */
 	s32 software_year;	/* offset 0x00f7 */
 
 	/* Serial_no & model_no are the two values which uniquely identify a
+=======
+	s32 software_day;			/* offset 0x00f6 */
+	s32 software_year;			/* offset 0x00f7 */
+
+	/*
+	 * Serial_no & model_no are the two values which uniquely identify a
+>>>>>>> v4.9.227
 	 * sensor. This model number does not directly correspond to the JR3
 	 * model number, but it will provide a unique identifier for
 	 * different sensor configurations.
 	 */
 
+<<<<<<< HEAD
 	u32 serial_no;		/* offset 0x00f8 */
 	u32 model_no;		/* offset 0x00f9 */
 
 	/* Cal_day & cal_year are the sensor calibration date. Day is the
+=======
+	u32 serial_no;				/* offset 0x00f8 */
+	u32 model_no;				/* offset 0x00f9 */
+
+	/*
+	 * Cal_day & cal_year are the sensor calibration date. Day is the
+>>>>>>> v4.9.227
 	 * day of the year, with January 1 being 1, and December 31, being
 	 * 366 for leap years.
 	 */
 
+<<<<<<< HEAD
 	s32 cal_day;		/* offset 0x00fa */
 	s32 cal_year;		/* offset 0x00fb */
 
 	/* Units is an enumerated read only value defining the engineering
+=======
+	s32 cal_day;				/* offset 0x00fa */
+	s32 cal_year;				/* offset 0x00fb */
+
+	/*
+	 * Units is an enumerated read only value defining the engineering
+>>>>>>> v4.9.227
 	 * units used in the sensor full scale. The meanings of particular
 	 * values are discussed in the section detailing the force_units
 	 * structure on page 22. The engineering units are setto customer
@@ -625,20 +955,36 @@ struct jr3_channel {
 	 * received.
 	 */
 
+<<<<<<< HEAD
 	u32 units;		/* offset 0x00fc */
 	s32 bits;		/* offset 0x00fd */
 	s32 channels;		/* offset 0x00fe */
 
 	/* Thickness specifies the overall thickness of the sensor from
+=======
+	u32 units;				/* offset 0x00fc */
+	s32 bits;				/* offset 0x00fd */
+	s32 channels;				/* offset 0x00fe */
+
+	/*
+	 * Thickness specifies the overall thickness of the sensor from
+>>>>>>> v4.9.227
 	 * flange to flange. The engineering units for this value are
 	 * contained in units (pg. 16). The sensor calibration is relative
 	 * to the center of the sensor. This value allows easy coordinate
 	 * transformation from the center of the sensor to either flange.
 	 */
 
+<<<<<<< HEAD
 	s32 thickness;		/* offset 0x00ff */
 
 	/* Load_envelopes is a table containing the load envelope
+=======
+	s32 thickness;				/* offset 0x00ff */
+
+	/*
+	 * Load_envelopes is a table containing the load envelope
+>>>>>>> v4.9.227
 	 * descriptions. There are 16 possible load envelope slots in the
 	 * table. The slots are on 16 word boundaries and are numbered 0-15.
 	 * Each load envelope needs to start at the beginning of a slot but
@@ -654,7 +1000,12 @@ struct jr3_channel {
 
 	struct le_struct load_envelopes[0x10];	/* offset 0x0100 */
 
+<<<<<<< HEAD
 	/* Transforms is a table containing the transform descriptions.
+=======
+	/*
+	 * Transforms is a table containing the transform descriptions.
+>>>>>>> v4.9.227
 	 * There are 16 possible transform slots in the table. The slots are
 	 * on 16 word boundaries and are numbered 0-15. Each transform needs
 	 * to start at the beginning of a slot but need not be fully

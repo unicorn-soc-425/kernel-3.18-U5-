@@ -1,6 +1,7 @@
 #ifndef _ASM_X86_FTRACE_H
 #define _ASM_X86_FTRACE_H
 
+<<<<<<< HEAD
 #ifdef __ASSEMBLY__
 
 	/* skip is set if the stack was already partially adjusted */
@@ -39,6 +40,14 @@
 # define MCOUNT_ADDR		((long)(__fentry__))
 #else
 # define MCOUNT_ADDR		((long)(mcount))
+=======
+#ifdef CONFIG_FUNCTION_TRACER
+#ifdef CC_USING_FENTRY
+# define MCOUNT_ADDR		((unsigned long)(__fentry__))
+#else
+# define MCOUNT_ADDR		((unsigned long)(mcount))
+# define HAVE_FUNCTION_GRAPH_FP_TEST
+>>>>>>> v4.9.227
 #endif
 #define MCOUNT_INSN_SIZE	5 /* sizeof mcount call */
 
@@ -46,6 +55,11 @@
 #define ARCH_SUPPORTS_FTRACE_OPS 1
 #endif
 
+<<<<<<< HEAD
+=======
+#define HAVE_FUNCTION_GRAPH_RET_ADDR_PTR
+
+>>>>>>> v4.9.227
 #ifndef __ASSEMBLY__
 extern void mcount(void);
 extern atomic_t modifying_ftrace_code;
@@ -85,13 +99,21 @@ int ftrace_int3_handler(struct pt_regs *regs);
  * this screws up the trace output when tracing a ia32 task.
  * Instead of reporting bogus syscalls, just do not trace them.
  *
+<<<<<<< HEAD
  * If the user realy wants these, then they should use the
+=======
+ * If the user really wants these, then they should use the
+>>>>>>> v4.9.227
  * raw syscall tracepoints with filtering.
  */
 #define ARCH_TRACE_IGNORE_COMPAT_SYSCALLS 1
 static inline bool arch_trace_is_compat_syscall(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	if (is_compat_task())
+=======
+	if (in_compat_syscall())
+>>>>>>> v4.9.227
 		return true;
 	return false;
 }

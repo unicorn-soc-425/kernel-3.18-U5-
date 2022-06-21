@@ -33,6 +33,78 @@
 #include "host.h"
 
 static struct hc_driver __read_mostly ci_ehci_hc_driver;
+<<<<<<< HEAD
+=======
+static int (*orig_bus_suspend)(struct usb_hcd *hcd);
+
+struct ehci_ci_priv {
+	struct regulator *reg_vbus;
+	bool enabled;
+};
+
+static int ehci_ci_portpower(struct usb_hcd *hcd, int portnum, bool enable)
+{
+	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
+	struct ehci_ci_priv *priv = (struct ehci_ci_priv *)ehci->priv;
+	struct device *dev = hcd->self.controller;
+	struct ci_hdrc *ci = dev_get_drvdata(dev);
+	int ret = 0;
+	int port = HCS_N_PORTS(ehci->hcs_params);
+
+	if (priv->reg_vbus && enable != priv->enabled) {
+		if (port > 1) {
+			dev_warn(dev,
+				"Not support multi-port regulator control\n");
+			return 0;
+		}
+		if (enable)
+			ret = regulator_enable(priv->reg_vbus);
+		else
+			ret = regulator_disable(priv->reg_vbus);
+		if (ret) {
+			dev_err(dev,
+				"Failed to %s vbus regulator, ret=%d\n",
+				enable ? "enable" : "disable", ret);
+			return ret;
+		}
+		priv->enabled = enable;
+	}
+
+	if (enable && (ci->platdata->phy_mode == USBPHY_INTERFACE_MODE_HSIC)) {
+		/*
+		 * Marvell 28nm HSIC PHY requires forcing the port to HS mode.
+		 * As HSIC is always HS, this should be safe for others.
+		 */
+		hw_port_test_set(ci, 5);
+		hw_port_test_set(ci, 0);
+	}
+	return 0;
+};
+
+static int ehci_ci_reset(struct usb_hcd *hcd)
+{
+	struct device *dev = hcd->self.controller;
+	struct ci_hdrc *ci = dev_get_drvdata(dev);
+	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
+	int ret;
+
+	ret = ehci_setup(hcd);
+	if (ret)
+		return ret;
+
+	ehci->need_io_watchdog = 0;
+
+	ci_platform_configure(ci);
+
+	return ret;
+}
+
+static const struct ehci_driver_overrides ehci_ci_overrides = {
+	.extra_priv_size = sizeof(struct ehci_ci_priv),
+	.port_power	 = ehci_ci_portpower,
+	.reset		 = ehci_ci_reset,
+};
+>>>>>>> v4.9.227
 
 static irqreturn_t host_irq(struct ci_hdrc *ci)
 {
@@ -43,6 +115,10 @@ static int host_start(struct ci_hdrc *ci)
 {
 	struct usb_hcd *hcd;
 	struct ehci_hcd *ehci;
+<<<<<<< HEAD
+=======
+	struct ehci_ci_priv *priv;
+>>>>>>> v4.9.227
 	int ret;
 
 	if (usb_disabled())
@@ -59,8 +135,16 @@ static int host_start(struct ci_hdrc *ci)
 	hcd->has_tt = 1;
 
 	hcd->power_budget = ci->platdata->power_budget;
+<<<<<<< HEAD
 	hcd->usb_phy = ci->transceiver;
 	hcd->tpl_support = ci->platdata->tpl_support;
+=======
+	hcd->tpl_support = ci->platdata->tpl_support;
+	if (ci->phy)
+		hcd->phy = ci->phy;
+	else
+		hcd->usb_phy = ci->usb_phy;
+>>>>>>> v4.9.227
 
 	ehci = hcd_to_ehci(hcd);
 	ehci->caps = ci->hw_bank.cap;
@@ -68,6 +152,7 @@ static int host_start(struct ci_hdrc *ci)
 	ehci->has_tdi_phy_lpm = ci->hw_bank.lpm;
 	ehci->imx28_write_fix = ci->imx28_write_fix;
 
+<<<<<<< HEAD
 	/*
 	 * vbus is always on if host is not in OTG FSM mode,
 	 * otherwise should be controlled by OTG FSM
@@ -79,6 +164,22 @@ static int host_start(struct ci_hdrc *ci)
 				"Failed to enable vbus regulator, ret=%d\n",
 				ret);
 			goto put_hcd;
+=======
+	priv = (struct ehci_ci_priv *)ehci->priv;
+	priv->reg_vbus = NULL;
+
+	if (ci->platdata->reg_vbus && !ci_otg_is_fsm_mode(ci)) {
+		if (ci->platdata->flags & CI_HDRC_TURN_VBUS_EARLY_ON) {
+			ret = regulator_enable(ci->platdata->reg_vbus);
+			if (ret) {
+				dev_err(ci->dev,
+				"Failed to enable vbus regulator, ret=%d\n",
+									ret);
+				goto put_hcd;
+			}
+		} else {
+			priv->reg_vbus = ci->platdata->reg_vbus;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -86,15 +187,24 @@ static int host_start(struct ci_hdrc *ci)
 	if (ret) {
 		goto disable_reg;
 	} else {
+<<<<<<< HEAD
 		struct usb_otg *otg = ci->transceiver->otg;
 
 		ci->hcd = hcd;
 		if (otg) {
+=======
+		struct usb_otg *otg = &ci->otg;
+
+		ci->hcd = hcd;
+
+		if (ci_otg_is_fsm_mode(ci)) {
+>>>>>>> v4.9.227
 			otg->host = &hcd->self;
 			hcd->self.otg_port = 1;
 		}
 	}
 
+<<<<<<< HEAD
 	if (ci->platdata->flags & CI_HDRC_DISABLE_STREAMING)
 		hw_write(ci, OP_USBMODE, USBMODE_CI_SDIS, USBMODE_CI_SDIS);
 
@@ -104,6 +214,14 @@ disable_reg:
 	if (ci->platdata->reg_vbus && !ci_otg_is_fsm_mode(ci))
 		regulator_disable(ci->platdata->reg_vbus);
 
+=======
+	return ret;
+
+disable_reg:
+	if (ci->platdata->reg_vbus && !ci_otg_is_fsm_mode(ci) &&
+			(ci->platdata->flags & CI_HDRC_TURN_VBUS_EARLY_ON))
+		regulator_disable(ci->platdata->reg_vbus);
+>>>>>>> v4.9.227
 put_hcd:
 	usb_put_hcd(hcd);
 
@@ -116,10 +234,22 @@ static void host_stop(struct ci_hdrc *ci)
 
 	if (hcd) {
 		usb_remove_hcd(hcd);
+<<<<<<< HEAD
 		usb_put_hcd(hcd);
 		if (ci->platdata->reg_vbus && !ci_otg_is_fsm_mode(ci))
 			regulator_disable(ci->platdata->reg_vbus);
 	}
+=======
+		ci->role = CI_ROLE_END;
+		synchronize_irq(ci->irq);
+		usb_put_hcd(hcd);
+		if (ci->platdata->reg_vbus && !ci_otg_is_fsm_mode(ci) &&
+			(ci->platdata->flags & CI_HDRC_TURN_VBUS_EARLY_ON))
+				regulator_disable(ci->platdata->reg_vbus);
+	}
+	ci->hcd = NULL;
+	ci->otg.host = NULL;
+>>>>>>> v4.9.227
 }
 
 
@@ -129,6 +259,50 @@ void ci_hdrc_host_destroy(struct ci_hdrc *ci)
 		host_stop(ci);
 }
 
+<<<<<<< HEAD
+=======
+static int ci_ehci_bus_suspend(struct usb_hcd *hcd)
+{
+	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
+	int port;
+	u32 tmp;
+
+	int ret = orig_bus_suspend(hcd);
+
+	if (ret)
+		return ret;
+
+	port = HCS_N_PORTS(ehci->hcs_params);
+	while (port--) {
+		u32 __iomem *reg = &ehci->regs->port_status[port];
+		u32 portsc = ehci_readl(ehci, reg);
+
+		if (portsc & PORT_CONNECT) {
+			/*
+			 * For chipidea, the resume signal will be ended
+			 * automatically, so for remote wakeup case, the
+			 * usbcmd.rs may not be set before the resume has
+			 * ended if other resume paths consumes too much
+			 * time (~24ms), in that case, the SOF will not
+			 * send out within 3ms after resume ends, then the
+			 * high speed device will enter full speed mode.
+			 */
+
+			tmp = ehci_readl(ehci, &ehci->regs->command);
+			tmp |= CMD_RUN;
+			ehci_writel(ehci, tmp, &ehci->regs->command);
+			/*
+			 * It needs a short delay between set RS bit and PHCD.
+			 */
+			usleep_range(150, 200);
+			break;
+		}
+	}
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 int ci_hdrc_host_init(struct ci_hdrc *ci)
 {
 	struct ci_role_driver *rdrv;
@@ -146,7 +320,19 @@ int ci_hdrc_host_init(struct ci_hdrc *ci)
 	rdrv->name	= "host";
 	ci->roles[CI_ROLE_HOST] = rdrv;
 
+<<<<<<< HEAD
 	ehci_init_driver(&ci_ehci_hc_driver, NULL);
 
 	return 0;
 }
+=======
+	return 0;
+}
+
+void ci_hdrc_host_driver_init(void)
+{
+	ehci_init_driver(&ci_ehci_hc_driver, &ehci_ci_overrides);
+	orig_bus_suspend = ci_ehci_hc_driver.bus_suspend;
+	ci_ehci_hc_driver.bus_suspend = ci_ehci_bus_suspend;
+}
+>>>>>>> v4.9.227

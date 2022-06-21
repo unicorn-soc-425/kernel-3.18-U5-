@@ -6,7 +6,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +51,10 @@
 #include "amlcode.h"
 #include "acdispat.h"
 #include "acinterp.h"
+<<<<<<< HEAD
+=======
+#include "acdebug.h"
+>>>>>>> v4.9.227
 
 #define _COMPONENT          ACPI_DISPATCHER
 ACPI_MODULE_NAME("dscontrol")
@@ -162,8 +170,13 @@ acpi_ds_exec_begin_control_op(struct acpi_walk_state *walk_state,
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ds_exec_end_control_op(struct acpi_walk_state * walk_state,
 			    union acpi_parse_object * op)
+=======
+acpi_ds_exec_end_control_op(struct acpi_walk_state *walk_state,
+			    union acpi_parse_object *op)
+>>>>>>> v4.9.227
 {
 	acpi_status status = AE_OK;
 	union acpi_generic_state *control_state;
@@ -212,7 +225,11 @@ acpi_ds_exec_end_control_op(struct acpi_walk_state * walk_state,
 			 */
 			control_state->control.loop_count++;
 			if (control_state->control.loop_count >
+<<<<<<< HEAD
 			    ACPI_MAX_LOOP_ITERATIONS) {
+=======
+			    acpi_gbl_max_loop_iterations) {
+>>>>>>> v4.9.227
 				status = AE_AML_INFINITE_LOOP;
 				break;
 			}
@@ -348,6 +365,7 @@ acpi_ds_exec_end_control_op(struct acpi_walk_state * walk_state,
 
 	case AML_BREAK_POINT_OP:
 
+<<<<<<< HEAD
 		/*
 		 * Set the single-step flag. This will cause the debugger (if present)
 		 * to break to the console within the AML debugger at the start of the
@@ -356,6 +374,9 @@ acpi_ds_exec_end_control_op(struct acpi_walk_state * walk_state,
 		ACPI_DEBUGGER_EXEC(acpi_gbl_cm_single_step = TRUE);
 		ACPI_DEBUGGER_EXEC(acpi_os_printf
 				   ("**break** Executed AML BreakPoint opcode\n"));
+=======
+		acpi_db_signal_break_point(walk_state);
+>>>>>>> v4.9.227
 
 		/* Call to the OSL in case OS wants a piece of the action */
 

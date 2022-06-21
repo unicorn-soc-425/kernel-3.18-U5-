@@ -337,7 +337,11 @@ static void mv88e1xxx_destroy(struct cphy *cphy)
 	kfree(cphy);
 }
 
+<<<<<<< HEAD
 static struct cphy_ops mv88e1xxx_ops = {
+=======
+static const struct cphy_ops mv88e1xxx_ops = {
+>>>>>>> v4.9.227
 	.destroy              = mv88e1xxx_destroy,
 	.reset                = mv88e1xxx_reset,
 	.interrupt_enable     = mv88e1xxx_interrupt_enable,

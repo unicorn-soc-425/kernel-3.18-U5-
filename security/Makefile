@@ -8,20 +8,29 @@ subdir-$(CONFIG_SECURITY_SMACK)		+= smack
 subdir-$(CONFIG_SECURITY_TOMOYO)        += tomoyo
 subdir-$(CONFIG_SECURITY_APPARMOR)	+= apparmor
 subdir-$(CONFIG_SECURITY_YAMA)		+= yama
+<<<<<<< HEAD
 subdir-$(CONFIG_ARCH_MSM)		+= pfe
 subdir-$(CONFIG_SECURITY_DEFEX)		+= samsung/defex_lsm
 subdir-$(CONFIG_SECURITY_DSMS)		+= samsung/dsms
+=======
+subdir-$(CONFIG_SECURITY_LOADPIN)	+= loadpin
+>>>>>>> v4.9.227
 
 # always enable default capabilities
 obj-y					+= commoncap.o
 obj-$(CONFIG_MMU)			+= min_addr.o
 
 # Object file lists
+<<<<<<< HEAD
 obj-$(CONFIG_SECURITY)			+= security.o capability.o
+=======
+obj-$(CONFIG_SECURITY)			+= security.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_SECURITYFS)		+= inode.o
 obj-$(CONFIG_SECURITY_SELINUX)		+= selinux/
 obj-$(CONFIG_SECURITY_SMACK)		+= smack/
 obj-$(CONFIG_AUDIT)			+= lsm_audit.o
+<<<<<<< HEAD
 
 obj-$(CONFIG_SECURITY_TOMOYO)		+= tomoyo/
 obj-$(CONFIG_SECURITY_APPARMOR)		+= apparmor/
@@ -30,10 +39,18 @@ obj-$(CONFIG_ARCH_MSM)		        += pfe/
 obj-$(CONFIG_CGROUP_DEVICE)		+= device_cgroup.o
 obj-$(CONFIG_SECURITY_DEFEX)		+= samsung/defex_lsm/built-in.o
 obj-$(CONFIG_SECURITY_DSMS)		+= samsung/dsms/
+=======
+obj-$(CONFIG_SECURITY_TOMOYO)		+= tomoyo/
+obj-$(CONFIG_SECURITY_APPARMOR)		+= apparmor/
+obj-$(CONFIG_SECURITY_YAMA)		+= yama/
+obj-$(CONFIG_SECURITY_LOADPIN)		+= loadpin/
+obj-$(CONFIG_CGROUP_DEVICE)		+= device_cgroup.o
+>>>>>>> v4.9.227
 
 # Object integrity file lists
 subdir-$(CONFIG_INTEGRITY)		+= integrity
 obj-$(CONFIG_INTEGRITY)			+= integrity/
+<<<<<<< HEAD
 
 # PROCA module
 subdir-$(CONFIG_PROCA)			+= proca
@@ -59,3 +76,5 @@ obj-$(CONFIG_KNOX_TEST)     += knox_test/
 # FIVE
 subdir-$(CONFIG_FIVE)			+= samsung/five
 obj-$(CONFIG_FIVE)			+= samsung/five/
+=======
+>>>>>>> v4.9.227

@@ -32,9 +32,12 @@
 #include <linux/fb.h>
 #include <linux/init.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 #include <asm/mtrr.h>
 #endif
+=======
+>>>>>>> v4.9.227
 
 #include <video/pm3fb.h>
 
@@ -58,11 +61,15 @@
 static int hwcursor = 1;
 static char *mode_option;
 static bool noaccel;
+<<<<<<< HEAD
 
 /* mtrr option */
 #ifdef CONFIG_MTRR
 static bool nomtrr;
 #endif
+=======
+static bool nomtrr;
+>>>>>>> v4.9.227
 
 /*
  * This structure defines the hardware state of the graphics card. Normally
@@ -76,7 +83,11 @@ struct pm3_par {
 	u32		video;		/* video flags before blanking */
 	u32		base;		/* screen base in 128 bits unit */
 	u32		palette[16];
+<<<<<<< HEAD
 	int		mtrr_handle;
+=======
+	int		wc_cookie;
+>>>>>>> v4.9.227
 };
 
 /*
@@ -1374,8 +1385,13 @@ static int pm3fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
 		printk(KERN_WARNING "pm3fb: Can't reserve smem.\n");
 		goto err_exit_mmio;
 	}
+<<<<<<< HEAD
 	info->screen_base =
 		ioremap_nocache(pm3fb_fix.smem_start, pm3fb_fix.smem_len);
+=======
+	info->screen_base = ioremap_wc(pm3fb_fix.smem_start,
+				       pm3fb_fix.smem_len);
+>>>>>>> v4.9.227
 	if (!info->screen_base) {
 		printk(KERN_WARNING "pm3fb: Can't ioremap smem area.\n");
 		release_mem_region(pm3fb_fix.smem_start, pm3fb_fix.smem_len);
@@ -1383,12 +1399,18 @@ static int pm3fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
 	}
 	info->screen_size = pm3fb_fix.smem_len;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	if (!nomtrr)
 		par->mtrr_handle = mtrr_add(pm3fb_fix.smem_start,
 						pm3fb_fix.smem_len,
 						MTRR_TYPE_WRCOMB, 1);
 #endif
+=======
+	if (!nomtrr)
+		par->wc_cookie = arch_phys_wc_add(pm3fb_fix.smem_start,
+						  pm3fb_fix.smem_len);
+>>>>>>> v4.9.227
 	info->fbops = &pm3fb_ops;
 
 	par->video = PM3_READ_REG(par, PM3VideoControl);
@@ -1478,11 +1500,15 @@ static void pm3fb_remove(struct pci_dev *dev)
 		unregister_framebuffer(info);
 		fb_dealloc_cmap(&info->cmap);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	if (par->mtrr_handle >= 0)
 		mtrr_del(par->mtrr_handle, info->fix.smem_start,
 			 info->fix.smem_len);
 #endif /* CONFIG_MTRR */
+=======
+		arch_phys_wc_del(par->wc_cookie);
+>>>>>>> v4.9.227
 		iounmap(info->screen_base);
 		release_mem_region(fix->smem_start, fix->smem_len);
 		iounmap(par->v_regs);
@@ -1533,10 +1559,15 @@ static int __init pm3fb_setup(char *options)
 			noaccel = 1;
 		else if (!strncmp(this_opt, "hwcursor=", 9))
 			hwcursor = simple_strtoul(this_opt + 9, NULL, 0);
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 		else if (!strncmp(this_opt, "nomtrr", 6))
 			nomtrr = 1;
 #endif
+=======
+		else if (!strncmp(this_opt, "nomtrr", 6))
+			nomtrr = 1;
+>>>>>>> v4.9.227
 		else
 			mode_option = this_opt;
 	}
@@ -1577,10 +1608,15 @@ MODULE_PARM_DESC(noaccel, "Disable acceleration");
 module_param(hwcursor, int, 0644);
 MODULE_PARM_DESC(hwcursor, "Enable hardware cursor "
 			"(1=enable, 0=disable, default=1)");
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 module_param(nomtrr, bool, 0);
 MODULE_PARM_DESC(nomtrr, "Disable MTRR support (0 or 1=disabled) (default=0)");
 #endif
+=======
+module_param(nomtrr, bool, 0);
+MODULE_PARM_DESC(nomtrr, "Disable MTRR support (0 or 1=disabled) (default=0)");
+>>>>>>> v4.9.227
 
 MODULE_DESCRIPTION("Permedia3 framebuffer device driver");
 MODULE_LICENSE("GPL");

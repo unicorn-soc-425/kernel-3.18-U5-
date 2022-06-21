@@ -214,7 +214,11 @@ static int nuc900_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops nuc900_rtc_ops = {
+=======
+static const struct rtc_class_ops nuc900_rtc_ops = {
+>>>>>>> v4.9.227
 	.read_time = nuc900_rtc_read_time,
 	.set_time = nuc900_rtc_set_time,
 	.read_alarm = nuc900_rtc_read_alarm,
@@ -262,7 +266,10 @@ static int __init nuc900_rtc_probe(struct platform_device *pdev)
 static struct platform_driver nuc900_rtc_driver = {
 	.driver		= {
 		.name	= "nuc900-rtc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

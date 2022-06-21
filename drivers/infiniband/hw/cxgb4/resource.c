@@ -260,12 +260,28 @@ u32 c4iw_pblpool_alloc(struct c4iw_rdev *rdev, int size)
 		rdev->stats.pbl.cur += roundup(size, 1 << MIN_PBL_SHIFT);
 		if (rdev->stats.pbl.cur > rdev->stats.pbl.max)
 			rdev->stats.pbl.max = rdev->stats.pbl.cur;
+<<<<<<< HEAD
+=======
+		kref_get(&rdev->pbl_kref);
+>>>>>>> v4.9.227
 	} else
 		rdev->stats.pbl.fail++;
 	mutex_unlock(&rdev->stats.lock);
 	return (u32)addr;
 }
 
+<<<<<<< HEAD
+=======
+static void destroy_pblpool(struct kref *kref)
+{
+	struct c4iw_rdev *rdev;
+
+	rdev = container_of(kref, struct c4iw_rdev, pbl_kref);
+	gen_pool_destroy(rdev->pbl_pool);
+	complete(&rdev->pbl_compl);
+}
+
+>>>>>>> v4.9.227
 void c4iw_pblpool_free(struct c4iw_rdev *rdev, u32 addr, int size)
 {
 	PDBG("%s addr 0x%x size %d\n", __func__, addr, size);
@@ -273,6 +289,10 @@ void c4iw_pblpool_free(struct c4iw_rdev *rdev, u32 addr, int size)
 	rdev->stats.pbl.cur -= roundup(size, 1 << MIN_PBL_SHIFT);
 	mutex_unlock(&rdev->stats.lock);
 	gen_pool_free(rdev->pbl_pool, (unsigned long)addr, size);
+<<<<<<< HEAD
+=======
+	kref_put(&rdev->pbl_kref, destroy_pblpool);
+>>>>>>> v4.9.227
 }
 
 int c4iw_pblpool_create(struct c4iw_rdev *rdev)
@@ -312,7 +332,11 @@ int c4iw_pblpool_create(struct c4iw_rdev *rdev)
 
 void c4iw_pblpool_destroy(struct c4iw_rdev *rdev)
 {
+<<<<<<< HEAD
 	gen_pool_destroy(rdev->pbl_pool);
+=======
+	kref_put(&rdev->pbl_kref, destroy_pblpool);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -333,12 +357,28 @@ u32 c4iw_rqtpool_alloc(struct c4iw_rdev *rdev, int size)
 		rdev->stats.rqt.cur += roundup(size << 6, 1 << MIN_RQT_SHIFT);
 		if (rdev->stats.rqt.cur > rdev->stats.rqt.max)
 			rdev->stats.rqt.max = rdev->stats.rqt.cur;
+<<<<<<< HEAD
+=======
+		kref_get(&rdev->rqt_kref);
+>>>>>>> v4.9.227
 	} else
 		rdev->stats.rqt.fail++;
 	mutex_unlock(&rdev->stats.lock);
 	return (u32)addr;
 }
 
+<<<<<<< HEAD
+=======
+static void destroy_rqtpool(struct kref *kref)
+{
+	struct c4iw_rdev *rdev;
+
+	rdev = container_of(kref, struct c4iw_rdev, rqt_kref);
+	gen_pool_destroy(rdev->rqt_pool);
+	complete(&rdev->rqt_compl);
+}
+
+>>>>>>> v4.9.227
 void c4iw_rqtpool_free(struct c4iw_rdev *rdev, u32 addr, int size)
 {
 	PDBG("%s addr 0x%x size %d\n", __func__, addr, size << 6);
@@ -346,6 +386,10 @@ void c4iw_rqtpool_free(struct c4iw_rdev *rdev, u32 addr, int size)
 	rdev->stats.rqt.cur -= roundup(size << 6, 1 << MIN_RQT_SHIFT);
 	mutex_unlock(&rdev->stats.lock);
 	gen_pool_free(rdev->rqt_pool, (unsigned long)addr, size << 6);
+<<<<<<< HEAD
+=======
+	kref_put(&rdev->rqt_kref, destroy_rqtpool);
+>>>>>>> v4.9.227
 }
 
 int c4iw_rqtpool_create(struct c4iw_rdev *rdev)
@@ -383,7 +427,11 @@ int c4iw_rqtpool_create(struct c4iw_rdev *rdev)
 
 void c4iw_rqtpool_destroy(struct c4iw_rdev *rdev)
 {
+<<<<<<< HEAD
 	gen_pool_destroy(rdev->rqt_pool);
+=======
+	kref_put(&rdev->rqt_kref, destroy_rqtpool);
+>>>>>>> v4.9.227
 }
 
 /*

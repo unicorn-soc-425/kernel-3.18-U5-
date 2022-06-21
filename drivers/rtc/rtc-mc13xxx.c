@@ -83,20 +83,32 @@ static int mc13xxx_rtc_read_time(struct device *dev, struct rtc_time *tm)
 			return ret;
 	} while (days1 != days2);
 
+<<<<<<< HEAD
 	rtc_time_to_tm(days1 * SEC_PER_DAY + seconds, tm);
+=======
+	rtc_time64_to_tm((time64_t)days1 * SEC_PER_DAY + seconds, tm);
+>>>>>>> v4.9.227
 
 	return rtc_valid_tm(tm);
 }
 
+<<<<<<< HEAD
 static int mc13xxx_rtc_set_mmss(struct device *dev, unsigned long secs)
+=======
+static int mc13xxx_rtc_set_mmss(struct device *dev, time64_t secs)
+>>>>>>> v4.9.227
 {
 	struct mc13xxx_rtc *priv = dev_get_drvdata(dev);
 	unsigned int seconds, days;
 	unsigned int alarmseconds;
 	int ret;
 
+<<<<<<< HEAD
 	seconds = secs % SEC_PER_DAY;
 	days = secs / SEC_PER_DAY;
+=======
+	days = div_s64_rem(secs, SEC_PER_DAY, &seconds);
+>>>>>>> v4.9.227
 
 	mc13xxx_lock(priv->mc13xxx);
 
@@ -159,7 +171,11 @@ static int mc13xxx_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 {
 	struct mc13xxx_rtc *priv = dev_get_drvdata(dev);
 	unsigned seconds, days;
+<<<<<<< HEAD
 	unsigned long s1970;
+=======
+	time64_t s1970;
+>>>>>>> v4.9.227
 	int enabled, pending;
 	int ret;
 
@@ -189,10 +205,17 @@ out:
 	alarm->enabled = enabled;
 	alarm->pending = pending;
 
+<<<<<<< HEAD
 	s1970 = days * SEC_PER_DAY + seconds;
 
 	rtc_time_to_tm(s1970, &alarm->time);
 	dev_dbg(dev, "%s: %lu\n", __func__, s1970);
+=======
+	s1970 = (time64_t)days * SEC_PER_DAY + seconds;
+
+	rtc_time64_to_tm(s1970, &alarm->time);
+	dev_dbg(dev, "%s: %lld\n", __func__, (long long)s1970);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -200,8 +223,13 @@ out:
 static int mc13xxx_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 {
 	struct mc13xxx_rtc *priv = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	unsigned long s1970;
 	unsigned seconds, days;
+=======
+	time64_t s1970;
+	u32 seconds, days;
+>>>>>>> v4.9.227
 	int ret;
 
 	mc13xxx_lock(priv->mc13xxx);
@@ -215,20 +243,31 @@ static int mc13xxx_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	if (unlikely(ret))
 		goto out;
 
+<<<<<<< HEAD
 	ret = rtc_tm_to_time(&alarm->time, &s1970);
 	if (unlikely(ret))
 		goto out;
 
 	dev_dbg(dev, "%s: o%2.s %lu\n", __func__, alarm->enabled ? "n" : "ff",
 			s1970);
+=======
+	s1970 = rtc_tm_to_time64(&alarm->time);
+
+	dev_dbg(dev, "%s: %s %lld\n", __func__, alarm->enabled ? "on" : "off",
+			(long long)s1970);
+>>>>>>> v4.9.227
 
 	ret = mc13xxx_rtc_irq_enable_unlocked(dev, alarm->enabled,
 			MC13XXX_IRQ_TODA);
 	if (unlikely(ret))
 		goto out;
 
+<<<<<<< HEAD
 	seconds = s1970 % SEC_PER_DAY;
 	days = s1970 / SEC_PER_DAY;
+=======
+	days = div_s64_rem(s1970, SEC_PER_DAY, &seconds);
+>>>>>>> v4.9.227
 
 	ret = mc13xxx_reg_write(priv->mc13xxx, MC13XXX_RTCDAYA, days);
 	if (unlikely(ret))
@@ -254,6 +293,7 @@ static irqreturn_t mc13xxx_rtc_alarm_handler(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static irqreturn_t mc13xxx_rtc_update_handler(int irq, void *dev)
 {
 	struct mc13xxx_rtc *priv = dev;
@@ -269,6 +309,11 @@ static irqreturn_t mc13xxx_rtc_update_handler(int irq, void *dev)
 static const struct rtc_class_ops mc13xxx_rtc_ops = {
 	.read_time = mc13xxx_rtc_read_time,
 	.set_mmss = mc13xxx_rtc_set_mmss,
+=======
+static const struct rtc_class_ops mc13xxx_rtc_ops = {
+	.read_time = mc13xxx_rtc_read_time,
+	.set_mmss64 = mc13xxx_rtc_set_mmss,
+>>>>>>> v4.9.227
 	.read_alarm = mc13xxx_rtc_read_alarm,
 	.set_alarm = mc13xxx_rtc_set_alarm,
 	.alarm_irq_enable = mc13xxx_rtc_alarm_irq_enable,
@@ -311,11 +356,14 @@ static int __init mc13xxx_rtc_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_irq_request;
 
+<<<<<<< HEAD
 	ret = mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_1HZ,
 			mc13xxx_rtc_update_handler, DRIVER_NAME, priv);
 	if (ret)
 		goto err_irq_request;
 
+=======
+>>>>>>> v4.9.227
 	ret = mc13xxx_irq_request_nounmask(mc13xxx, MC13XXX_IRQ_TODA,
 			mc13xxx_rtc_alarm_handler, DRIVER_NAME, priv);
 	if (ret)
@@ -330,7 +378,10 @@ static int __init mc13xxx_rtc_probe(struct platform_device *pdev)
 
 err_irq_request:
 	mc13xxx_irq_free(mc13xxx, MC13XXX_IRQ_TODA, priv);
+<<<<<<< HEAD
 	mc13xxx_irq_free(mc13xxx, MC13XXX_IRQ_1HZ, priv);
+=======
+>>>>>>> v4.9.227
 	mc13xxx_irq_free(mc13xxx, MC13XXX_IRQ_RTCRST, priv);
 
 	mc13xxx_unlock(mc13xxx);
@@ -345,7 +396,10 @@ static int mc13xxx_rtc_remove(struct platform_device *pdev)
 	mc13xxx_lock(priv->mc13xxx);
 
 	mc13xxx_irq_free(priv->mc13xxx, MC13XXX_IRQ_TODA, priv);
+<<<<<<< HEAD
 	mc13xxx_irq_free(priv->mc13xxx, MC13XXX_IRQ_1HZ, priv);
+=======
+>>>>>>> v4.9.227
 	mc13xxx_irq_free(priv->mc13xxx, MC13XXX_IRQ_RTCRST, priv);
 
 	mc13xxx_unlock(priv->mc13xxx);
@@ -370,7 +424,10 @@ static struct platform_driver mc13xxx_rtc_driver = {
 	.remove = mc13xxx_rtc_remove,
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

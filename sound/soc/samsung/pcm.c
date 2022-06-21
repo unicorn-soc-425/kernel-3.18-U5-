@@ -127,6 +127,7 @@ struct s3c_pcm_info {
 	struct clk	*pclk;
 	struct clk	*cclk;
 
+<<<<<<< HEAD
 	struct s3c_dma_params	*dma_playback;
 	struct s3c_dma_params	*dma_capture;
 };
@@ -146,6 +147,27 @@ static struct s3c_dma_params s3c_pcm_stereo_in[] = {
 	},
 	[1] = {
 		.dma_size	= 4,
+=======
+	struct snd_dmaengine_dai_dma_data *dma_playback;
+	struct snd_dmaengine_dai_dma_data *dma_capture;
+};
+
+static struct snd_dmaengine_dai_dma_data s3c_pcm_stereo_out[] = {
+	[0] = {
+		.addr_width	= 4,
+	},
+	[1] = {
+		.addr_width	= 4,
+	},
+};
+
+static struct snd_dmaengine_dai_dma_data s3c_pcm_stereo_in[] = {
+	[0] = {
+		.addr_width	= 4,
+	},
+	[1] = {
+		.addr_width	= 4,
+>>>>>>> v4.9.227
 	},
 };
 
@@ -488,6 +510,10 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	struct s3c_pcm_info *pcm;
 	struct resource *mem_res;
 	struct s3c_audio_pdata *pcm_pdata;
+<<<<<<< HEAD
+=======
+	dma_filter_fn filter;
+>>>>>>> v4.9.227
 	int ret;
 
 	/* Check for valid device index */
@@ -551,6 +577,7 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	}
 	clk_prepare_enable(pcm->pclk);
 
+<<<<<<< HEAD
 	s3c_pcm_stereo_in[pdev->id].dma_addr = mem_res->start
 							+ S3C_PCM_RXFIFO;
 	s3c_pcm_stereo_out[pdev->id].dma_addr = mem_res->start
@@ -559,17 +586,38 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	if (pcm_pdata) {
 		s3c_pcm_stereo_in[pdev->id].slave = pcm_pdata->dma_capture;
 		s3c_pcm_stereo_out[pdev->id].slave = pcm_pdata->dma_playback;
+=======
+	s3c_pcm_stereo_in[pdev->id].addr = mem_res->start + S3C_PCM_RXFIFO;
+	s3c_pcm_stereo_out[pdev->id].addr = mem_res->start + S3C_PCM_TXFIFO;
+
+	filter = NULL;
+	if (pcm_pdata) {
+		s3c_pcm_stereo_in[pdev->id].filter_data = pcm_pdata->dma_capture;
+		s3c_pcm_stereo_out[pdev->id].filter_data = pcm_pdata->dma_playback;
+		filter = pcm_pdata->dma_filter;
+>>>>>>> v4.9.227
 	}
 
 	pcm->dma_capture = &s3c_pcm_stereo_in[pdev->id];
 	pcm->dma_playback = &s3c_pcm_stereo_out[pdev->id];
 
+<<<<<<< HEAD
+=======
+	ret = samsung_asoc_dma_platform_register(&pdev->dev, filter,
+						 NULL, NULL);
+	if (ret) {
+		dev_err(&pdev->dev, "failed to get register DMA: %d\n", ret);
+		goto err5;
+	}
+
+>>>>>>> v4.9.227
 	pm_runtime_enable(&pdev->dev);
 
 	ret = devm_snd_soc_register_component(&pdev->dev, &s3c_pcm_component,
 					 &s3c_pcm_dai[pdev->id], 1);
 	if (ret != 0) {
 		dev_err(&pdev->dev, "failed to get register DAI: %d\n", ret);
+<<<<<<< HEAD
 		goto err5;
 	}
 
@@ -581,6 +629,14 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 
 	return 0;
 
+=======
+		goto err6;
+	}
+
+	return 0;
+err6:
+	pm_runtime_disable(&pdev->dev);
+>>>>>>> v4.9.227
 err5:
 	clk_disable_unprepare(pcm->pclk);
 err4:
@@ -616,7 +672,10 @@ static struct platform_driver s3c_pcm_driver = {
 	.remove = s3c_pcm_dev_remove,
 	.driver = {
 		.name = "samsung-pcm",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

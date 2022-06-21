@@ -64,7 +64,10 @@
 #include "btree.h"
 
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <linux/freezer.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kthread.h>
 #include <linux/random.h>
 #include <trace/events/bcache.h>
@@ -290,7 +293,10 @@ do {									\
 			return 0;					\
 		}							\
 									\
+<<<<<<< HEAD
 		try_to_freeze();					\
+=======
+>>>>>>> v4.9.227
 		schedule();						\
 		mutex_lock(&(ca)->set->bucket_lock);			\
 	}								\
@@ -324,10 +330,18 @@ static int bch_allocator_thread(void *arg)
 		 * possibly issue discards to them, then we add the bucket to
 		 * the free list:
 		 */
+<<<<<<< HEAD
 		while (!fifo_empty(&ca->free_inc)) {
 			long bucket;
 
 			fifo_pop(&ca->free_inc, bucket);
+=======
+		while (1) {
+			long bucket;
+
+			if (!fifo_pop(&ca->free_inc, bucket))
+				break;
+>>>>>>> v4.9.227
 
 			if (ca->discard) {
 				mutex_unlock(&ca->set->bucket_lock);
@@ -481,7 +495,11 @@ int __bch_bucket_alloc_set(struct cache_set *c, unsigned reserve,
 		if (b == -1)
 			goto err;
 
+<<<<<<< HEAD
 		k->ptr[i] = PTR(ca->buckets[b].gen,
+=======
+		k->ptr[i] = MAKE_PTR(ca->buckets[b].gen,
+>>>>>>> v4.9.227
 				bucket_to_sector(c, b),
 				ca->sb.nr_this_dev);
 

@@ -119,7 +119,11 @@ static void flush_tlb_others(cpumask_t cpumask, struct mm_struct *mm,
 	flush_mm = mm;
 	flush_va = va;
 #if NR_CPUS <= BITS_PER_LONG
+<<<<<<< HEAD
 	atomic_set_mask(cpumask.bits[0], &flush_cpumask.bits[0]);
+=======
+	atomic_or(cpumask.bits[0], (atomic_t *)&flush_cpumask.bits[0]);
+>>>>>>> v4.9.227
 #else
 #error Not supported.
 #endif

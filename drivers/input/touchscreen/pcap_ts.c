@@ -87,7 +87,11 @@ static void pcap_ts_read_xy(void *data, u16 res[2])
 
 static void pcap_ts_work(struct work_struct *work)
 {
+<<<<<<< HEAD
 	struct delayed_work *dw = container_of(work, struct delayed_work, work);
+=======
+	struct delayed_work *dw = to_delayed_work(work);
+>>>>>>> v4.9.227
 	struct pcap_ts *pcap_ts = container_of(dw, struct pcap_ts, work);
 	u8 ch[2];
 
@@ -247,7 +251,10 @@ static struct platform_driver pcap_ts_driver = {
 	.remove		= pcap_ts_remove,
 	.driver		= {
 		.name	= "pcap-ts",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= PCAP_TS_PM_OPS,
 	},
 };

@@ -35,7 +35,11 @@
 
 #else /* !CONFIG_MMU */
 		.macro	addruart_current, rx, tmp1, tmp2
+<<<<<<< HEAD
 		addruart	\rx, \tmp1
+=======
+		addruart	\rx, \tmp1, \tmp2
+>>>>>>> v4.9.227
 		.endm
 
 #endif /* CONFIG_MMU */

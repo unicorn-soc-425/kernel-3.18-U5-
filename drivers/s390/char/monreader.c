@@ -95,7 +95,11 @@ static void dcss_mkname(char *ascii_name, char *ebcdic_name)
 		if (ascii_name[i] == '\0')
 			break;
 		ebcdic_name[i] = toupper(ascii_name[i]);
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> v4.9.227
 	for (; i < 8; i++)
 		ebcdic_name[i] = ' ';
 	ASCEBC(ebcdic_name, 8);
@@ -229,7 +233,11 @@ static struct mon_msg *mon_next_message(struct mon_private *monpriv)
 /******************************************************************************
  *                               IUCV handler                                 *
  *****************************************************************************/
+<<<<<<< HEAD
 static void mon_iucv_path_complete(struct iucv_path *path, u8 ipuser[16])
+=======
+static void mon_iucv_path_complete(struct iucv_path *path, u8 *ipuser)
+>>>>>>> v4.9.227
 {
 	struct mon_private *monpriv = path->private;
 
@@ -237,7 +245,11 @@ static void mon_iucv_path_complete(struct iucv_path *path, u8 ipuser[16])
 	wake_up(&mon_conn_wait_queue);
 }
 
+<<<<<<< HEAD
 static void mon_iucv_path_severed(struct iucv_path *path, u8 ipuser[16])
+=======
+static void mon_iucv_path_severed(struct iucv_path *path, u8 *ipuser)
+>>>>>>> v4.9.227
 {
 	struct mon_private *monpriv = path->private;
 
@@ -257,7 +269,11 @@ static void mon_iucv_message_pending(struct iucv_path *path,
 	memcpy(&monpriv->msg_array[monpriv->write_index]->msg,
 	       msg, sizeof(*msg));
 	if (atomic_inc_return(&monpriv->msglim_count) == MON_MSGLIM) {
+<<<<<<< HEAD
 		pr_warning("The read queue for monitor data is full\n");
+=======
+		pr_warn("The read queue for monitor data is full\n");
+>>>>>>> v4.9.227
 		monpriv->msg_array[monpriv->write_index]->msglim_reached = 1;
 	}
 	monpriv->write_index = (monpriv->write_index + 1) % MON_MSGLIM;
@@ -342,8 +358,13 @@ static int mon_close(struct inode *inode, struct file *filp)
 	if (monpriv->path) {
 		rc = iucv_path_sever(monpriv->path, user_data_sever);
 		if (rc)
+<<<<<<< HEAD
 			pr_warning("Disconnecting the z/VM *MONITOR system "
 				   "service failed with rc=%i\n", rc);
+=======
+			pr_warn("Disconnecting the z/VM *MONITOR system service failed with rc=%i\n",
+				rc);
+>>>>>>> v4.9.227
 		iucv_path_free(monpriv->path);
 	}
 
@@ -469,8 +490,13 @@ static int monreader_freeze(struct device *dev)
 	if (monpriv->path) {
 		rc = iucv_path_sever(monpriv->path, user_data_sever);
 		if (rc)
+<<<<<<< HEAD
 			pr_warning("Disconnecting the z/VM *MONITOR system "
 				   "service failed with rc=%i\n", rc);
+=======
+			pr_warn("Disconnecting the z/VM *MONITOR system service failed with rc=%i\n",
+				rc);
+>>>>>>> v4.9.227
 		iucv_path_free(monpriv->path);
 	}
 	atomic_set(&monpriv->iucv_severed, 0);

@@ -620,9 +620,13 @@ static const unsigned int stdclock_rate_list[16] = {
 
 static unsigned int stdclock_get_rate(struct snd_ice1712 *ice)
 {
+<<<<<<< HEAD
 	unsigned int rate;
 	rate = stdclock_rate_list[inb(ICEMT1724(ice, RATE)) & 15];
 	return rate;
+=======
+	return stdclock_rate_list[inb(ICEMT1724(ice, RATE)) & 15];
+>>>>>>> v4.9.227
 }
 
 static void stdclock_set_rate(struct snd_ice1712 *ice, unsigned int rate)
@@ -663,6 +667,10 @@ static int snd_vt1724_set_pro_rate(struct snd_ice1712 *ice, unsigned int rate,
 	unsigned long flags;
 	unsigned char mclk_change;
 	unsigned int i, old_rate;
+<<<<<<< HEAD
+=======
+	bool call_set_rate = false;
+>>>>>>> v4.9.227
 
 	if (rate > ice->hw_rates->list[ice->hw_rates->count - 1])
 		return -EINVAL;
@@ -686,7 +694,11 @@ static int snd_vt1724_set_pro_rate(struct snd_ice1712 *ice, unsigned int rate,
 		 * setting clock rate for internal clock mode */
 		old_rate = ice->get_rate(ice);
 		if (force || (old_rate != rate))
+<<<<<<< HEAD
 			ice->set_rate(ice, rate);
+=======
+			call_set_rate = true;
+>>>>>>> v4.9.227
 		else if (rate == ice->cur_rate) {
 			spin_unlock_irqrestore(&ice->reg_lock, flags);
 			return 0;
@@ -694,12 +706,22 @@ static int snd_vt1724_set_pro_rate(struct snd_ice1712 *ice, unsigned int rate,
 	}
 
 	ice->cur_rate = rate;
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&ice->reg_lock, flags);
+
+	if (call_set_rate)
+		ice->set_rate(ice, rate);
+>>>>>>> v4.9.227
 
 	/* setting master clock */
 	mclk_change = ice->set_mclk(ice, rate);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&ice->reg_lock, flags);
 
+=======
+>>>>>>> v4.9.227
 	if (mclk_change && ice->gpio.i2s_mclk_changed)
 		ice->gpio.i2s_mclk_changed(ice);
 	if (ice->gpio.set_pro_rate)
@@ -1113,7 +1135,11 @@ static int snd_vt1724_capture_pro_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_vt1724_playback_pro_ops = {
+=======
+static const struct snd_pcm_ops snd_vt1724_playback_pro_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_vt1724_playback_pro_open,
 	.close =	snd_vt1724_playback_pro_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1124,7 +1150,11 @@ static struct snd_pcm_ops snd_vt1724_playback_pro_ops = {
 	.pointer =	snd_vt1724_playback_pro_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_vt1724_capture_pro_ops = {
+=======
+static const struct snd_pcm_ops snd_vt1724_capture_pro_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_vt1724_capture_pro_open,
 	.close =	snd_vt1724_capture_pro_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1292,7 +1322,11 @@ static int snd_vt1724_capture_spdif_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_vt1724_playback_spdif_ops = {
+=======
+static const struct snd_pcm_ops snd_vt1724_playback_spdif_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_vt1724_playback_spdif_open,
 	.close =	snd_vt1724_playback_spdif_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1303,7 +1337,11 @@ static struct snd_pcm_ops snd_vt1724_playback_spdif_ops = {
 	.pointer =	snd_vt1724_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_vt1724_capture_spdif_ops = {
+=======
+static const struct snd_pcm_ops snd_vt1724_capture_spdif_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_vt1724_capture_spdif_open,
 	.close =	snd_vt1724_capture_spdif_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1437,7 +1475,11 @@ static int snd_vt1724_playback_indep_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_vt1724_playback_indep_ops = {
+=======
+static const struct snd_pcm_ops snd_vt1724_playback_indep_ops = {
+>>>>>>> v4.9.227
 	.open =		snd_vt1724_playback_indep_open,
 	.close =	snd_vt1724_playback_indep_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -2049,6 +2091,7 @@ static int snd_vt1724_pro_route_info(struct snd_kcontrol *kcontrol,
 		"IEC958 In L", "IEC958 In R", /* 3-4 */
 	};
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 5;
@@ -2056,6 +2099,9 @@ static int snd_vt1724_pro_route_info(struct snd_kcontrol *kcontrol,
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 5, texts);
+>>>>>>> v4.9.227
 }
 
 static inline int analog_route_shift(int idx)
@@ -2503,11 +2549,16 @@ static int snd_vt1724_build_controls(struct snd_ice1712 *ice)
 			return err;
 	}
 
+<<<<<<< HEAD
 	err = snd_ctl_add(ice->card, snd_ctl_new1(&snd_vt1724_mixer_pro_peak, ice));
 	if (err < 0)
 		return err;
 
 	return 0;
+=======
+	return snd_ctl_add(ice->card,
+			   snd_ctl_new1(&snd_vt1724_mixer_pro_peak, ice));
+>>>>>>> v4.9.227
 }
 
 static int snd_vt1724_free(struct snd_ice1712 *ice)
@@ -2807,7 +2858,10 @@ static void snd_vt1724_remove(struct pci_dev *pci)
 #ifdef CONFIG_PM_SLEEP
 static int snd_vt1724_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_ice1712 *ice = card->private_data;
 
@@ -2830,22 +2884,29 @@ static int snd_vt1724_suspend(struct device *dev)
 
 	if (ice->pm_suspend)
 		ice->pm_suspend(ice);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int snd_vt1724_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_ice1712 *ice = card->private_data;
 
 	if (!ice->pm_suspend_enabled)
 		return 0;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 
@@ -2856,6 +2917,8 @@ static int snd_vt1724_resume(struct device *dev)
 
 	pci_set_master(pci);
 
+=======
+>>>>>>> v4.9.227
 	snd_vt1724_chip_reset(ice);
 
 	if (snd_vt1724_chip_init(ice) < 0) {
@@ -2884,8 +2947,12 @@ static int snd_vt1724_resume(struct device *dev)
 	outb(ice->pm_saved_spdif_cfg, ICEREG1724(ice, SPDIF_CFG));
 	outl(ice->pm_saved_route, ICEMT1724(ice, ROUTE_PLAYBACK));
 
+<<<<<<< HEAD
 	if (ice->ac97)
 		snd_ac97_resume(ice->ac97);
+=======
+	snd_ac97_resume(ice->ac97);
+>>>>>>> v4.9.227
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;

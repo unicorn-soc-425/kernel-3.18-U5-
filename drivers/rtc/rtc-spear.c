@@ -343,7 +343,11 @@ static int spear_alarm_irq_enable(struct device *dev, unsigned int enabled)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops spear_rtc_ops = {
+=======
+static const struct rtc_class_ops spear_rtc_ops = {
+>>>>>>> v4.9.227
 	.read_time = spear_rtc_read_time,
 	.set_time = spear_rtc_set_time,
 	.read_alarm = spear_rtc_read_alarm,
@@ -358,12 +362,15 @@ static int spear_rtc_probe(struct platform_device *pdev)
 	int status = 0;
 	int irq;
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "no resource defined\n");
 		return -EBUSY;
 	}
 
+=======
+>>>>>>> v4.9.227
 	config = devm_kzalloc(&pdev->dev, sizeof(*config), GFP_KERNEL);
 	if (!config)
 		return -ENOMEM;
@@ -383,6 +390,10 @@ static int spear_rtc_probe(struct platform_device *pdev)
 		return status;
 	}
 
+<<<<<<< HEAD
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> v4.9.227
 	config->ioaddr = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(config->ioaddr))
 		return PTR_ERR(config->ioaddr);

@@ -64,7 +64,11 @@ static int qibfs_mknod(struct inode *dir, struct dentry *dentry,
 	inode->i_uid = GLOBAL_ROOT_UID;
 	inode->i_gid = GLOBAL_ROOT_GID;
 	inode->i_blocks = 0;
+<<<<<<< HEAD
 	inode->i_atime = CURRENT_TIME;
+=======
+	inode->i_atime = current_time(inode);
+>>>>>>> v4.9.227
 	inode->i_mtime = inode->i_atime;
 	inode->i_ctime = inode->i_atime;
 	inode->i_private = data;
@@ -89,6 +93,7 @@ static int create_file(const char *name, umode_t mode,
 {
 	int error;
 
+<<<<<<< HEAD
 	mutex_lock(&parent->d_inode->i_mutex);
 	*dentry = lookup_one_len(name, parent, strlen(name));
 	if (!IS_ERR(*dentry))
@@ -97,6 +102,16 @@ static int create_file(const char *name, umode_t mode,
 	else
 		error = PTR_ERR(*dentry);
 	mutex_unlock(&parent->d_inode->i_mutex);
+=======
+	inode_lock(d_inode(parent));
+	*dentry = lookup_one_len(name, parent, strlen(name));
+	if (!IS_ERR(*dentry))
+		error = qibfs_mknod(d_inode(parent), *dentry,
+				    mode, fops, data);
+	else
+		error = PTR_ERR(*dentry);
+	inode_unlock(d_inode(parent));
+>>>>>>> v4.9.227
 
 	return error;
 }
@@ -106,7 +121,11 @@ static ssize_t driver_stats_read(struct file *file, char __user *buf,
 {
 	qib_stats.sps_ints = qib_sps_ints();
 	return simple_read_from_buffer(buf, count, ppos, &qib_stats,
+<<<<<<< HEAD
 				       sizeof qib_stats);
+=======
+				       sizeof(qib_stats));
+>>>>>>> v4.9.227
 }
 
 /*
@@ -133,7 +152,11 @@ static ssize_t driver_names_read(struct file *file, char __user *buf,
 				 size_t count, loff_t *ppos)
 {
 	return simple_read_from_buffer(buf, count, ppos, qib_statnames,
+<<<<<<< HEAD
 		sizeof qib_statnames - 1); /* no null */
+=======
+		sizeof(qib_statnames) - 1); /* no null */
+>>>>>>> v4.9.227
 }
 
 static const struct file_operations driver_ops[] = {
@@ -328,6 +351,7 @@ static ssize_t flash_write(struct file *file, const char __user *buf,
 
 	pos = *ppos;
 
+<<<<<<< HEAD
 	if (pos != 0) {
 		ret = -EINVAL;
 		goto bail;
@@ -348,6 +372,14 @@ static ssize_t flash_write(struct file *file, const char __user *buf,
 		ret = -EFAULT;
 		goto bail_tmp;
 	}
+=======
+	if (pos != 0 || count != sizeof(struct qib_flash))
+		return -EINVAL;
+
+	tmp = memdup_user(buf, count);
+	if (IS_ERR(tmp))
+		return PTR_ERR(tmp);
+>>>>>>> v4.9.227
 
 	dd = private2dd(file);
 	if (qib_eeprom_write(dd, pos, tmp, count)) {
@@ -361,8 +393,11 @@ static ssize_t flash_write(struct file *file, const char __user *buf,
 
 bail_tmp:
 	kfree(tmp);
+<<<<<<< HEAD
 
 bail:
+=======
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -379,7 +414,11 @@ static int add_cntr_files(struct super_block *sb, struct qib_devdata *dd)
 	int ret, i;
 
 	/* create the per-unit directory */
+<<<<<<< HEAD
 	snprintf(unit, sizeof unit, "%u", dd->unit);
+=======
+	snprintf(unit, sizeof(unit), "%u", dd->unit);
+>>>>>>> v4.9.227
 	ret = create_file(unit, S_IFDIR|S_IRUGO|S_IXUGO, sb->s_root, &dir,
 			  &simple_dir_operations, dd);
 	if (ret) {
@@ -455,10 +494,17 @@ static int remove_file(struct dentry *parent, char *name)
 	}
 
 	spin_lock(&tmp->d_lock);
+<<<<<<< HEAD
 	if (!(d_unhashed(tmp) && tmp->d_inode)) {
 		__d_drop(tmp);
 		spin_unlock(&tmp->d_lock);
 		simple_unlink(parent->d_inode, tmp);
+=======
+	if (simple_positive(tmp)) {
+		__d_drop(tmp);
+		spin_unlock(&tmp->d_lock);
+		simple_unlink(d_inode(parent), tmp);
+>>>>>>> v4.9.227
 	} else {
 		spin_unlock(&tmp->d_lock);
 	}
@@ -481,8 +527,13 @@ static int remove_device_files(struct super_block *sb,
 	int ret, i;
 
 	root = dget(sb->s_root);
+<<<<<<< HEAD
 	mutex_lock(&root->d_inode->i_mutex);
 	snprintf(unit, sizeof unit, "%u", dd->unit);
+=======
+	inode_lock(d_inode(root));
+	snprintf(unit, sizeof(unit), "%u", dd->unit);
+>>>>>>> v4.9.227
 	dir = lookup_one_len(unit, root, strlen(unit));
 
 	if (IS_ERR(dir)) {
@@ -491,7 +542,11 @@ static int remove_device_files(struct super_block *sb,
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&dir->d_inode->i_mutex);
+=======
+	inode_lock(d_inode(dir));
+>>>>>>> v4.9.227
 	remove_file(dir, "counters");
 	remove_file(dir, "counter_names");
 	remove_file(dir, "portcounter_names");
@@ -506,13 +561,22 @@ static int remove_device_files(struct super_block *sb,
 		}
 	}
 	remove_file(dir, "flash");
+<<<<<<< HEAD
 	mutex_unlock(&dir->d_inode->i_mutex);
 	ret = simple_rmdir(root->d_inode, dir);
+=======
+	inode_unlock(d_inode(dir));
+	ret = simple_rmdir(d_inode(root), dir);
+>>>>>>> v4.9.227
 	d_delete(dir);
 	dput(dir);
 
 bail:
+<<<<<<< HEAD
 	mutex_unlock(&root->d_inode->i_mutex);
+=======
+	inode_unlock(d_inode(root));
+>>>>>>> v4.9.227
 	dput(root);
 	return ret;
 }
@@ -560,6 +624,10 @@ static struct dentry *qibfs_mount(struct file_system_type *fs_type, int flags,
 			const char *dev_name, void *data)
 {
 	struct dentry *ret;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	ret = mount_single(fs_type, flags, data, qibfs_fill_super);
 	if (!IS_ERR(ret))
 		qib_super = ret->d_sb;

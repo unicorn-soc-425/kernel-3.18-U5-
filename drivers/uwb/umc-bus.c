@@ -163,6 +163,7 @@ static int umc_device_remove(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int umc_device_suspend(struct device *dev, pm_message_t state)
 {
 	struct umc_dev *umc;
@@ -195,6 +196,8 @@ static int umc_device_resume(struct device *dev)
 	return err;
 }
 
+=======
+>>>>>>> v4.9.227
 static ssize_t capability_id_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct umc_dev *umc = to_umc_dev(dev);
@@ -223,8 +226,11 @@ struct bus_type umc_bus_type = {
 	.match		= umc_bus_match,
 	.probe		= umc_device_probe,
 	.remove		= umc_device_remove,
+<<<<<<< HEAD
 	.suspend        = umc_device_suspend,
 	.resume         = umc_device_resume,
+=======
+>>>>>>> v4.9.227
 	.dev_groups	= umc_dev_groups,
 };
 EXPORT_SYMBOL_GPL(umc_bus_type);

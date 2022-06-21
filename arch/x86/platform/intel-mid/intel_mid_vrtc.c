@@ -22,6 +22,10 @@
 #include <linux/init.h>
 #include <linux/sfi.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/mc146818rtc.h>
+>>>>>>> v4.9.227
 
 #include <asm/intel-mid.h>
 #include <asm/intel_mid_vrtc.h>
@@ -110,7 +114,11 @@ int vrtc_set_mmss(const struct timespec *now)
 		spin_unlock_irqrestore(&rtc_lock, flags);
 	} else {
 		pr_err("%s: Invalid vRTC value: write of %lx to vRTC failed\n",
+<<<<<<< HEAD
 			__FUNCTION__, now->tv_sec);
+=======
+			__func__, now->tv_sec);
+>>>>>>> v4.9.227
 		retval = -EINVAL;
 	}
 	return retval;
@@ -173,5 +181,9 @@ static int __init intel_mid_device_create(void)
 
 	return platform_device_register(&vrtc_device);
 }
+<<<<<<< HEAD
 
 module_init(intel_mid_device_create);
+=======
+device_initcall(intel_mid_device_create);
+>>>>>>> v4.9.227

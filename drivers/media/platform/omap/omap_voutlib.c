@@ -26,7 +26,11 @@
 
 #include <linux/dma-mapping.h>
 
+<<<<<<< HEAD
 #include <video/omapdss.h>
+=======
+#include <video/omapfb_dss.h>
+>>>>>>> v4.9.227
 
 #include "omap_voutlib.h"
 

@@ -285,7 +285,16 @@
  */
 #define DEFAULT_SSP_REG_IMSC  0x0UL
 #define DISABLE_ALL_INTERRUPTS DEFAULT_SSP_REG_IMSC
+<<<<<<< HEAD
 #define ENABLE_ALL_INTERRUPTS (~DEFAULT_SSP_REG_IMSC)
+=======
+#define ENABLE_ALL_INTERRUPTS ( \
+	SSP_IMSC_MASK_RORIM | \
+	SSP_IMSC_MASK_RTIM | \
+	SSP_IMSC_MASK_RXIM | \
+	SSP_IMSC_MASK_TXIM \
+)
+>>>>>>> v4.9.227
 
 #define CLEAR_ALL_INTERRUPTS  0x3
 
@@ -341,6 +350,7 @@ struct vendor_data {
  * @clk: outgoing clock "SPICLK" for the SPI bus
  * @master: SPI framework hookup
  * @master_info: controller-specific data from machine setup
+<<<<<<< HEAD
  * @kworker: thread struct for message pump
  * @kworker_task: pointer to task for message pump kworker thread
  * @pump_messages: work struct for scheduling work to the message pump
@@ -348,6 +358,8 @@ struct vendor_data {
  * @queue: message queue
  * @busy: message pump is busy
  * @running: message pump is running
+=======
+>>>>>>> v4.9.227
  * @pump_transfers: Tasklet used in Interrupt Transfer mode
  * @cur_msg: Pointer to current spi_message being processed
  * @cur_transfer: Pointer to current spi_transfer
@@ -1166,6 +1178,7 @@ err_no_rxchan:
 static int pl022_dma_autoprobe(struct pl022 *pl022)
 {
 	struct device *dev = &pl022->adev->dev;
+<<<<<<< HEAD
 
 	/* automatically configure DMA channels from platform, normally using DT */
 	pl022->dma_rx_channel = dma_request_slave_channel(dev, "rx");
@@ -1179,6 +1192,33 @@ static int pl022_dma_autoprobe(struct pl022 *pl022)
 	pl022->dummypage = kmalloc(PAGE_SIZE, GFP_KERNEL);
 	if (!pl022->dummypage)
 		goto err_no_dummypage;
+=======
+	struct dma_chan *chan;
+	int err;
+
+	/* automatically configure DMA channels from platform, normally using DT */
+	chan = dma_request_slave_channel_reason(dev, "rx");
+	if (IS_ERR(chan)) {
+		err = PTR_ERR(chan);
+		goto err_no_rxchan;
+	}
+
+	pl022->dma_rx_channel = chan;
+
+	chan = dma_request_slave_channel_reason(dev, "tx");
+	if (IS_ERR(chan)) {
+		err = PTR_ERR(chan);
+		goto err_no_txchan;
+	}
+
+	pl022->dma_tx_channel = chan;
+
+	pl022->dummypage = kmalloc(PAGE_SIZE, GFP_KERNEL);
+	if (!pl022->dummypage) {
+		err = -ENOMEM;
+		goto err_no_dummypage;
+	}
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -1189,7 +1229,11 @@ err_no_txchan:
 	dma_release_channel(pl022->dma_rx_channel);
 	pl022->dma_rx_channel = NULL;
 err_no_rxchan:
+<<<<<<< HEAD
 	return -ENODEV;
+=======
+	return err;
+>>>>>>> v4.9.227
 }
 		
 static void terminate_dma(struct pl022 *pl022)
@@ -1251,7 +1295,10 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 	struct pl022 *pl022 = dev_id;
 	struct spi_message *msg = pl022->cur_msg;
 	u16 irq_status = 0;
+<<<<<<< HEAD
 	u16 flag = 0;
+=======
+>>>>>>> v4.9.227
 
 	if (unlikely(!msg)) {
 		dev_err(&pl022->adev->dev,
@@ -1280,9 +1327,12 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 		if (readw(SSP_SR(pl022->virtbase)) & SSP_SR_MASK_RFF)
 			dev_err(&pl022->adev->dev,
 				"RXFIFO is full\n");
+<<<<<<< HEAD
 		if (readw(SSP_SR(pl022->virtbase)) & SSP_SR_MASK_TNF)
 			dev_err(&pl022->adev->dev,
 				"TXFIFO is full\n");
+=======
+>>>>>>> v4.9.227
 
 		/*
 		 * Disable and clear interrupts, disable SSP,
@@ -1303,8 +1353,12 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 
 	readwriter(pl022);
 
+<<<<<<< HEAD
 	if ((pl022->tx == pl022->tx_end) && (flag == 0)) {
 		flag = 1;
+=======
+	if (pl022->tx == pl022->tx_end) {
+>>>>>>> v4.9.227
 		/* Disable Transmit interrupt, enable receive interrupt */
 		writew((readw(SSP_IMSC(pl022->virtbase)) &
 		       ~SSP_IMSC_MASK_TXIM) | SSP_IMSC_MASK_RXIM,
@@ -2236,6 +2290,13 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 
 	/* Get DMA channels, try autoconfiguration first */
 	status = pl022_dma_autoprobe(pl022);
+<<<<<<< HEAD
+=======
+	if (status == -EPROBE_DEFER) {
+		dev_dbg(dev, "deferring probe to get DMA channel\n");
+		goto err_no_irq;
+	}
+>>>>>>> v4.9.227
 
 	/* If that failed, use channels from platform_info */
 	if (status == 0)
@@ -2377,7 +2438,11 @@ static int pl022_runtime_resume(struct device *dev)
 
 static const struct dev_pm_ops pl022_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(pl022_suspend, pl022_resume)
+<<<<<<< HEAD
 	SET_PM_RUNTIME_PM_OPS(pl022_runtime_suspend, pl022_runtime_resume, NULL)
+=======
+	SET_RUNTIME_PM_OPS(pl022_runtime_suspend, pl022_runtime_resume, NULL)
+>>>>>>> v4.9.227
 };
 
 static struct vendor_data vendor_arm = {

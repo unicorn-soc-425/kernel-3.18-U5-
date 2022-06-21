@@ -22,6 +22,10 @@
 #include <linux/memblock.h>
 #include <linux/dma-contiguous.h>
 #include <linux/sizes.h>
+<<<<<<< HEAD
+=======
+#include <linux/stop_machine.h>
+>>>>>>> v4.9.227
 
 #include <asm/cp15.h>
 #include <asm/mach-types.h>
@@ -68,7 +72,11 @@ early_param("initrd", early_initrd);
 
 static int __init parse_tag_initrd(const struct tag *tag)
 {
+<<<<<<< HEAD
 	printk(KERN_WARNING "ATAG_INITRD is deprecated; "
+=======
+	pr_warn("ATAG_INITRD is deprecated; "
+>>>>>>> v4.9.227
 		"please update your bootloader.\n");
 	phys_initrd_start = __virt_to_phys(tag->u.initrd.start);
 	phys_initrd_size = tag->u.initrd.size;
@@ -86,6 +94,7 @@ static int __init parse_tag_initrd2(const struct tag *tag)
 
 __tagtable(ATAG_INITRD2, parse_tag_initrd2);
 
+<<<<<<< HEAD
 /*
  * This keeps memory configuration data used by a couple memory
  * initialization functions, as well as show_mem() for the skipping
@@ -135,6 +144,8 @@ void show_mem(unsigned int filter)
 	printk("%d pages swap cached\n", cached);
 }
 
+=======
+>>>>>>> v4.9.227
 static void __init find_limits(unsigned long *min, unsigned long *max_low,
 			       unsigned long *max_high)
 {
@@ -244,7 +255,12 @@ int pfn_valid(unsigned long pfn)
 
 	if (__phys_to_pfn(addr) != pfn)
 		return 0;
+<<<<<<< HEAD
 	return memblock_is_memory(addr);
+=======
+
+	return memblock_is_map_memory(__pfn_to_phys(pfn));
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(pfn_valid);
 #endif
@@ -282,15 +298,21 @@ phys_addr_t __init arm_memblock_steal(phys_addr_t size, phys_addr_t align)
 void __init arm_memblock_init(const struct machine_desc *mdesc)
 {
 	/* Register the kernel text, kernel data and initrd with memblock. */
+<<<<<<< HEAD
 	set_memsize_kernel_type(MEMSIZE_KERNEL_KERNEL);
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_XIP_KERNEL
 	memblock_reserve(__pa(_sdata), _end - _sdata);
 #else
 	memblock_reserve(__pa(_stext), _end - _stext);
 #endif
+<<<<<<< HEAD
 	set_memsize_kernel_type(MEMSIZE_KERNEL_STOP);
 	record_memsize_reserved("initmem", __pa(__init_begin),
 				__init_end - __init_begin, false, false);
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_BLK_DEV_INITRD
 	/* FDT scan will populate initrd_start */
 	if (initrd_start && !phys_initrd_size) {
@@ -311,6 +333,7 @@ void __init arm_memblock_init(const struct machine_desc *mdesc)
 		phys_initrd_start = phys_initrd_size = 0;
 	}
 	if (phys_initrd_size) {
+<<<<<<< HEAD
 		phys_addr_t start_down, end_up;
 
 		memblock_reserve(phys_initrd_start, phys_initrd_size);
@@ -318,6 +341,9 @@ void __init arm_memblock_init(const struct machine_desc *mdesc)
 		end_up = PAGE_ALIGN(phys_initrd_start + phys_initrd_size);
 		record_memsize_reserved("initrd", start_down, end_up - start_down,
 					false, false);
+=======
+		memblock_reserve(phys_initrd_start, phys_initrd_size);
+>>>>>>> v4.9.227
 
 		/* Now convert initrd to virtual addresses */
 		initrd_start = __phys_to_virt(phys_initrd_start);
@@ -325,13 +351,17 @@ void __init arm_memblock_init(const struct machine_desc *mdesc)
 	}
 #endif
 
+<<<<<<< HEAD
 	set_memsize_kernel_type(MEMSIZE_KERNEL_OTHERS);
+=======
+>>>>>>> v4.9.227
 	arm_mm_memblock_reserve();
 
 	/* reserve any platform specific memblock areas */
 	if (mdesc->reserve)
 		mdesc->reserve();
 
+<<<<<<< HEAD
 	set_memsize_kernel_type(MEMSIZE_KERNEL_STOP);
 	early_init_fdt_scan_reserved_mem();
 
@@ -341,6 +371,13 @@ void __init arm_memblock_init(const struct machine_desc *mdesc)
 	 */
 	dma_contiguous_reserve(arm_dma_limit);
 	set_memsize_kernel_type(MEMSIZE_KERNEL_OTHERS);
+=======
+	early_init_fdt_reserve_self();
+	early_init_fdt_scan_reserved_mem();
+
+	/* reserve memory for DMA contiguous allocations */
+	dma_contiguous_reserve(arm_dma_limit);
+>>>>>>> v4.9.227
 
 	arm_memblock_steal_permitted = false;
 	memblock_dump_all();
@@ -432,7 +469,10 @@ static void __init free_unused_memmap(void)
 	unsigned long start, prev_end = 0;
 	struct memblock_region *reg;
 
+<<<<<<< HEAD
 	set_memsize_kernel_type(MEMSIZE_KERNEL_PAGING);
+=======
+>>>>>>> v4.9.227
 	/*
 	 * This relies on each bank being in address order.
 	 * The banks are sorted previously in bootmem_init().
@@ -476,7 +516,10 @@ static void __init free_unused_memmap(void)
 		free_memmap(prev_end,
 			    ALIGN(prev_end, PAGES_PER_SECTION));
 #endif
+<<<<<<< HEAD
 	set_memsize_kernel_type(MEMSIZE_KERNEL_MM_INIT);
+=======
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_HIGHMEM
@@ -502,6 +545,12 @@ static void __init free_highpages(void)
 		if (end <= max_low)
 			continue;
 
+<<<<<<< HEAD
+=======
+		if (memblock_is_nomap(mem))
+			continue;
+
+>>>>>>> v4.9.227
 		/* Truncate partial highmem entries */
 		if (start < max_low)
 			start = max_low;
@@ -535,6 +584,7 @@ static void __init free_highpages(void)
 #endif
 }
 
+<<<<<<< HEAD
 #define MLK(b, t) (b), (t), (((t) - (b)) >> 10)
 #define MLM(b, t) (b), (t), (((t) - (b)) >> 20)
 #define MLK_ROUNDUP(b, t) (b), (t), (DIV_ROUND_UP(((t) - (b)), SZ_1K))
@@ -583,6 +633,8 @@ static void print_vmalloc_lowmem_info(void)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * mem_init() marks the free areas in the mem_map and tells us how much
  * memory is free.  This is done after various parts of the system have
@@ -611,19 +663,45 @@ void __init mem_init(void)
 
 	mem_init_print_info(NULL);
 
+<<<<<<< HEAD
 	printk(KERN_NOTICE "Virtual kernel memory layout:\n"
+=======
+#define MLK(b, t) b, t, ((t) - (b)) >> 10
+#define MLM(b, t) b, t, ((t) - (b)) >> 20
+#define MLK_ROUNDUP(b, t) b, t, DIV_ROUND_UP(((t) - (b)), SZ_1K)
+
+	pr_notice("Virtual kernel memory layout:\n"
+>>>>>>> v4.9.227
 			"    vector  : 0x%08lx - 0x%08lx   (%4ld kB)\n"
 #ifdef CONFIG_HAVE_TCM
 			"    DTCM    : 0x%08lx - 0x%08lx   (%4ld kB)\n"
 			"    ITCM    : 0x%08lx - 0x%08lx   (%4ld kB)\n"
 #endif
+<<<<<<< HEAD
 			"    fixmap  : 0x%08lx - 0x%08lx   (%4ld kB)\n",
+=======
+			"    fixmap  : 0x%08lx - 0x%08lx   (%4ld kB)\n"
+			"    vmalloc : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+			"    lowmem  : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+#ifdef CONFIG_HIGHMEM
+			"    pkmap   : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+#endif
+#ifdef CONFIG_MODULES
+			"    modules : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+#endif
+			"      .text : 0x%p" " - 0x%p" "   (%4td kB)\n"
+			"      .init : 0x%p" " - 0x%p" "   (%4td kB)\n"
+			"      .data : 0x%p" " - 0x%p" "   (%4td kB)\n"
+			"       .bss : 0x%p" " - 0x%p" "   (%4td kB)\n",
+
+>>>>>>> v4.9.227
 			MLK(UL(CONFIG_VECTORS_BASE), UL(CONFIG_VECTORS_BASE) +
 				(PAGE_SIZE)),
 #ifdef CONFIG_HAVE_TCM
 			MLK(DTCM_OFFSET, (unsigned long) dtcm_end),
 			MLK(ITCM_OFFSET, (unsigned long) itcm_end),
 #endif
+<<<<<<< HEAD
 			MLK(FIXADDR_START, FIXADDR_END));
 #ifdef CONFIG_ENABLE_VMALLOC_SAVING
 	print_vmalloc_lowmem_info();
@@ -645,6 +723,11 @@ void __init mem_init(void)
 		   "      .init : 0x%p" " - 0x%p" "   (%4d kB)\n"
 		   "      .data : 0x%p" " - 0x%p" "   (%4d kB)\n"
 		   "       .bss : 0x%p" " - 0x%p" "   (%4d kB)\n",
+=======
+			MLK(FIXADDR_START, FIXADDR_END),
+			MLM(VMALLOC_START, VMALLOC_END),
+			MLM(PAGE_OFFSET, (unsigned long)high_memory),
+>>>>>>> v4.9.227
 #ifdef CONFIG_HIGHMEM
 			MLM(PKMAP_BASE, (PKMAP_BASE) + (LAST_PKMAP) *
 				(PAGE_SIZE)),
@@ -658,6 +741,13 @@ void __init mem_init(void)
 			MLK_ROUNDUP(_sdata, _edata),
 			MLK_ROUNDUP(__bss_start, __bss_stop));
 
+<<<<<<< HEAD
+=======
+#undef MLK
+#undef MLM
+#undef MLK_ROUNDUP
+
+>>>>>>> v4.9.227
 	/*
 	 * Check boundaries twice: Some fundamental inconsistencies can
 	 * be detected at build time already.
@@ -683,17 +773,24 @@ void __init mem_init(void)
 	}
 }
 
+<<<<<<< HEAD
 #undef MLK
 #undef MLM
 #undef MLK_ROUNDUP
 
 #ifdef CONFIG_ARM_KERNMEM_PERMS
 struct section_perm {
+=======
+#ifdef CONFIG_DEBUG_RODATA
+struct section_perm {
+	const char *name;
+>>>>>>> v4.9.227
 	unsigned long start;
 	unsigned long end;
 	pmdval_t mask;
 	pmdval_t prot;
 	pmdval_t clear;
+<<<<<<< HEAD
 	pteval_t ptemask;
 	pteval_t pteprot;
 	pteval_t pteclear;
@@ -702,19 +799,38 @@ struct section_perm {
 static struct section_perm nx_perms[] = {
 	/* Make pages tables, etc before _stext RW (set NX). */
 	{
+=======
+};
+
+/* First section-aligned location at or after __start_rodata. */
+extern char __start_rodata_section_aligned[];
+
+static struct section_perm nx_perms[] = {
+	/* Make pages tables, etc before _stext RW (set NX). */
+	{
+		.name	= "pre-text NX",
+>>>>>>> v4.9.227
 		.start	= PAGE_OFFSET,
 		.end	= (unsigned long)_stext,
 		.mask	= ~PMD_SECT_XN,
 		.prot	= PMD_SECT_XN,
+<<<<<<< HEAD
 		.ptemask = ~L_PTE_XN,
 		.pteprot = L_PTE_XN,
 	},
 	/* Make init RW (set NX). */
 	{
+=======
+	},
+	/* Make init RW (set NX). */
+	{
+		.name	= "init NX",
+>>>>>>> v4.9.227
 		.start	= (unsigned long)__init_begin,
 		.end	= (unsigned long)_sdata,
 		.mask	= ~PMD_SECT_XN,
 		.prot	= PMD_SECT_XN,
+<<<<<<< HEAD
 		.ptemask = ~L_PTE_XN,
 		.pteprot = L_PTE_XN,
 	},
@@ -740,22 +856,50 @@ static struct section_perm ro_perms[] = {
 #ifdef CONFIG_ARM_LPAE
 		.mask   = ~PMD_SECT_RDONLY,
 		.prot   = PMD_SECT_RDONLY,
+=======
+	},
+	/* Make rodata NX (set RO in ro_perms below). */
+	{
+		.name	= "rodata NX",
+		.start  = (unsigned long)__start_rodata_section_aligned,
+		.end    = (unsigned long)__init_begin,
+		.mask   = ~PMD_SECT_XN,
+		.prot   = PMD_SECT_XN,
+	},
+};
+
+static struct section_perm ro_perms[] = {
+	/* Make kernel code and rodata RX (set RO). */
+	{
+		.name	= "text/rodata RO",
+		.start  = (unsigned long)_stext,
+		.end    = (unsigned long)__init_begin,
+#ifdef CONFIG_ARM_LPAE
+		.mask   = ~(L_PMD_SECT_RDONLY | PMD_SECT_AP2),
+		.prot   = L_PMD_SECT_RDONLY | PMD_SECT_AP2,
+>>>>>>> v4.9.227
 #else
 		.mask   = ~(PMD_SECT_APX | PMD_SECT_AP_WRITE),
 		.prot   = PMD_SECT_APX | PMD_SECT_AP_WRITE,
 		.clear  = PMD_SECT_AP_WRITE,
 #endif
+<<<<<<< HEAD
 		.ptemask = ~L_PTE_RDONLY,
 		.pteprot = L_PTE_RDONLY,
 	},
 };
 #endif
+=======
+	},
+};
+>>>>>>> v4.9.227
 
 /*
  * Updates section permissions only for the current mm (sections are
  * copied into each mm). During startup, this is the init_mm. Is only
  * safe to be called with preemption disabled, as under stop_machine().
  */
+<<<<<<< HEAD
 struct pte_data {
 	pteval_t mask;
 	pteval_t val;
@@ -794,6 +938,13 @@ static inline void section_update(unsigned long addr, pmdval_t mask,
 	pmd_t *pmd;
 
 	mm = current->active_mm;
+=======
+static inline void section_update(unsigned long addr, pmdval_t mask,
+				  pmdval_t prot, struct mm_struct *mm)
+{
+	pmd_t *pmd;
+
+>>>>>>> v4.9.227
 	pmd = pmd_offset(pud_offset(pgd_offset(mm, addr), addr), addr);
 
 #ifdef CONFIG_ARM_LPAE
@@ -817,6 +968,7 @@ static inline bool arch_has_strict_perms(void)
 	return !!(get_cr() & CR_XP);
 }
 
+<<<<<<< HEAD
 #define set_section_perms(perms, field)	{				\
 	size_t i;							\
 	unsigned long addr;						\
@@ -861,15 +1013,93 @@ static inline void fix_kernmem_perms(void)
 void mark_rodata_ro(void)
 {
 	set_section_perms(ro_perms, prot);
+=======
+void set_section_perms(struct section_perm *perms, int n, bool set,
+			struct mm_struct *mm)
+{
+	size_t i;
+	unsigned long addr;
+
+	if (!arch_has_strict_perms())
+		return;
+
+	for (i = 0; i < n; i++) {
+		if (!IS_ALIGNED(perms[i].start, SECTION_SIZE) ||
+		    !IS_ALIGNED(perms[i].end, SECTION_SIZE)) {
+			pr_err("BUG: %s section %lx-%lx not aligned to %lx\n",
+				perms[i].name, perms[i].start, perms[i].end,
+				SECTION_SIZE);
+			continue;
+		}
+
+		for (addr = perms[i].start;
+		     addr < perms[i].end;
+		     addr += SECTION_SIZE)
+			section_update(addr, perms[i].mask,
+				set ? perms[i].prot : perms[i].clear, mm);
+	}
+
+}
+
+static void update_sections_early(struct section_perm perms[], int n)
+{
+	struct task_struct *t, *s;
+
+	read_lock(&tasklist_lock);
+	for_each_process(t) {
+		if (t->flags & PF_KTHREAD)
+			continue;
+		for_each_thread(t, s)
+			if (s->mm)
+				set_section_perms(perms, n, true, s->mm);
+	}
+	read_unlock(&tasklist_lock);
+	set_section_perms(perms, n, true, current->active_mm);
+	set_section_perms(perms, n, true, &init_mm);
+}
+
+int __fix_kernmem_perms(void *unused)
+{
+	update_sections_early(nx_perms, ARRAY_SIZE(nx_perms));
+	return 0;
+}
+
+void fix_kernmem_perms(void)
+{
+	stop_machine(__fix_kernmem_perms, NULL, NULL);
+}
+
+int __mark_rodata_ro(void *unused)
+{
+	update_sections_early(ro_perms, ARRAY_SIZE(ro_perms));
+	return 0;
+}
+
+static int kernel_set_to_readonly __read_mostly;
+
+void mark_rodata_ro(void)
+{
+	kernel_set_to_readonly = 1;
+	stop_machine(__mark_rodata_ro, NULL, NULL);
+>>>>>>> v4.9.227
 }
 
 void set_kernel_text_rw(void)
 {
+<<<<<<< HEAD
 	set_section_perms(ro_perms, clear);
+=======
+	if (!kernel_set_to_readonly)
+		return;
+
+	set_section_perms(ro_perms, ARRAY_SIZE(ro_perms), false,
+				current->active_mm);
+>>>>>>> v4.9.227
 }
 
 void set_kernel_text_ro(void)
 {
+<<<<<<< HEAD
 	set_section_perms(ro_perms, prot);
 }
 #endif /* CONFIG_DEBUG_RODATA */
@@ -877,6 +1107,18 @@ void set_kernel_text_ro(void)
 #else
 static inline void fix_kernmem_perms(void) { }
 #endif /* CONFIG_ARM_KERNMEM_PERMS */
+=======
+	if (!kernel_set_to_readonly)
+		return;
+
+	set_section_perms(ro_perms, ARRAY_SIZE(ro_perms), true,
+				current->active_mm);
+}
+
+#else
+static inline void fix_kernmem_perms(void) { }
+#endif /* CONFIG_DEBUG_RODATA */
+>>>>>>> v4.9.227
 
 void free_tcmmem(void)
 {

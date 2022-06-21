@@ -6,7 +6,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +57,7 @@ ACPI_MODULE_NAME("nsxfobj")
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_get_id
  *
  * PARAMETERS:  Handle          - Handle of object whose id is desired
@@ -97,6 +102,8 @@ ACPI_EXPORT_SYMBOL(acpi_get_id)
 
 /*******************************************************************************
  *
+=======
+>>>>>>> v4.9.227
  * FUNCTION:    acpi_get_type
  *
  * PARAMETERS:  handle          - Handle of object whose type is desired
@@ -107,7 +114,11 @@ ACPI_EXPORT_SYMBOL(acpi_get_id)
  * DESCRIPTION: This routine returns the type associatd with a particular handle
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_get_type(acpi_handle handle, acpi_object_type * ret_type)
+=======
+acpi_status acpi_get_type(acpi_handle handle, acpi_object_type *ret_type)
+>>>>>>> v4.9.227
 {
 	struct acpi_namespace_node *node;
 	acpi_status status;
@@ -118,10 +129,15 @@ acpi_status acpi_get_type(acpi_handle handle, acpi_object_type * ret_type)
 		return (AE_BAD_PARAMETER);
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Special case for the predefined Root Node
 	 * (return type ANY)
 	 */
+=======
+	/* Special case for the predefined Root Node (return type ANY) */
+
+>>>>>>> v4.9.227
 	if (handle == ACPI_ROOT_OBJECT) {
 		*ret_type = ACPI_TYPE_ANY;
 		return (AE_OK);
@@ -161,7 +177,11 @@ ACPI_EXPORT_SYMBOL(acpi_get_type)
  *              Handle.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_get_parent(acpi_handle handle, acpi_handle * ret_handle)
+=======
+acpi_status acpi_get_parent(acpi_handle handle, acpi_handle *ret_handle)
+>>>>>>> v4.9.227
 {
 	struct acpi_namespace_node *node;
 	struct acpi_namespace_node *parent_node;
@@ -229,7 +249,11 @@ ACPI_EXPORT_SYMBOL(acpi_get_parent)
 acpi_status
 acpi_get_next_object(acpi_object_type type,
 		     acpi_handle parent,
+<<<<<<< HEAD
 		     acpi_handle child, acpi_handle * ret_handle)
+=======
+		     acpi_handle child, acpi_handle *ret_handle)
+>>>>>>> v4.9.227
 {
 	acpi_status status;
 	struct acpi_namespace_node *node;

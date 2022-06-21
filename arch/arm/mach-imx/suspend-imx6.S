@@ -45,7 +45,11 @@
  */
 #define PM_INFO_PBASE_OFFSET			0x0
 #define PM_INFO_RESUME_ADDR_OFFSET		0x4
+<<<<<<< HEAD
 #define PM_INFO_CPU_TYPE_OFFSET			0x8
+=======
+#define PM_INFO_DDR_TYPE_OFFSET			0x8
+>>>>>>> v4.9.227
 #define PM_INFO_PM_INFO_SIZE_OFFSET		0xC
 #define PM_INFO_MX6Q_MMDC_P_OFFSET		0x10
 #define PM_INFO_MX6Q_MMDC_V_OFFSET		0x14
@@ -79,12 +83,21 @@
 	/* sync L2 cache to drain L2's buffers to DRAM. */
 #ifdef CONFIG_CACHE_L2X0
 	ldr	r11, [r0, #PM_INFO_MX6Q_L2_V_OFFSET]
+<<<<<<< HEAD
+=======
+	teq	r11, #0
+	beq	6f
+>>>>>>> v4.9.227
 	mov	r6, #0x0
 	str	r6, [r11, #L2X0_CACHE_SYNC]
 1:
 	ldr	r6, [r11, #L2X0_CACHE_SYNC]
 	ands	r6, r6, #0x1
 	bne	1b
+<<<<<<< HEAD
+=======
+6:
+>>>>>>> v4.9.227
 #endif
 
 	.endm
@@ -110,7 +123,11 @@
 	ldreq	r11, [r0, #PM_INFO_MX6Q_MMDC_V_OFFSET]
 	ldrne	r11, [r0, #PM_INFO_MX6Q_MMDC_P_OFFSET]
 
+<<<<<<< HEAD
 	cmp 	r3, #MXC_CPU_IMX6SL
+=======
+	cmp	r3, #IMX_DDR_TYPE_LPDDR2
+>>>>>>> v4.9.227
 	bne	4f
 
 	/* reset read FIFO, RST_RD_FIFO */
@@ -151,7 +168,11 @@
 ENTRY(imx6_suspend)
 	ldr	r1, [r0, #PM_INFO_PBASE_OFFSET]
 	ldr	r2, [r0, #PM_INFO_RESUME_ADDR_OFFSET]
+<<<<<<< HEAD
 	ldr	r3, [r0, #PM_INFO_CPU_TYPE_OFFSET]
+=======
+	ldr	r3, [r0, #PM_INFO_DDR_TYPE_OFFSET]
+>>>>>>> v4.9.227
 	ldr	r4, [r0, #PM_INFO_PM_INFO_SIZE_OFFSET]
 
 	/*
@@ -209,8 +230,13 @@ poll_dvfs_set:
 	ldr	r7, [r0, #PM_INFO_MMDC_IO_NUM_OFFSET]
 	ldr	r8, =PM_INFO_MMDC_IO_VAL_OFFSET
 	add	r8, r8, r0
+<<<<<<< HEAD
 	/* i.MX6SL's last 3 IOs need special setting */
 	cmp	r3, #MXC_CPU_IMX6SL
+=======
+	/* LPDDR2's last 3 IOs need special setting */
+	cmp	r3, #IMX_DDR_TYPE_LPDDR2
+>>>>>>> v4.9.227
 	subeq	r7, r7, #0x3
 set_mmdc_io_lpm:
 	ldr	r9, [r8], #0x8
@@ -218,7 +244,11 @@ set_mmdc_io_lpm:
 	subs	r7, r7, #0x1
 	bne	set_mmdc_io_lpm
 
+<<<<<<< HEAD
 	cmp 	r3, #MXC_CPU_IMX6SL
+=======
+	cmp 	r3, #IMX_DDR_TYPE_LPDDR2
+>>>>>>> v4.9.227
 	bne	set_mmdc_io_lpm_done
 	ldr	r6, =0x1000
 	ldr	r9, [r8], #0x8
@@ -324,12 +354,17 @@ resume:
 	str	r7, [r11, #MX6Q_SRC_GPR1]
 	str	r7, [r11, #MX6Q_SRC_GPR2]
 
+<<<<<<< HEAD
 	ldr	r3, [r0, #PM_INFO_CPU_TYPE_OFFSET]
+=======
+	ldr	r3, [r0, #PM_INFO_DDR_TYPE_OFFSET]
+>>>>>>> v4.9.227
 	mov	r5, #0x1
 	resume_mmdc
 
 	ret	lr
 ENDPROC(imx6_suspend)
+<<<<<<< HEAD
 
 /*
  * The following code must assume it is running from physical address
@@ -344,3 +379,5 @@ ENTRY(v7_cpu_resume)
 #endif
 	b	cpu_resume
 ENDPROC(v7_cpu_resume)
+=======
+>>>>>>> v4.9.227

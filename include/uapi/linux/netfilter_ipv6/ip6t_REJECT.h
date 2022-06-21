@@ -10,7 +10,13 @@ enum ip6t_reject_with {
 	IP6T_ICMP6_ADDR_UNREACH,
 	IP6T_ICMP6_PORT_UNREACH,
 	IP6T_ICMP6_ECHOREPLY,
+<<<<<<< HEAD
 	IP6T_TCP_RESET
+=======
+	IP6T_TCP_RESET,
+	IP6T_ICMP6_POLICY_FAIL,
+	IP6T_ICMP6_REJECT_ROUTE
+>>>>>>> v4.9.227
 };
 
 struct ip6t_reject_info {

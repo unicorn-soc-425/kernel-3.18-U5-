@@ -79,6 +79,7 @@ static int lzo_uncompress(struct squashfs_sb_info *msblk, void *strm,
 	struct buffer_head **bh, int b, int offset, int length,
 	struct squashfs_page_actor *output)
 {
+<<<<<<< HEAD
 	int res;
 	size_t out_len = output->length;
 	struct squashfs_lzo *stream = strm;
@@ -92,6 +93,47 @@ static int lzo_uncompress(struct squashfs_sb_info *msblk, void *strm,
 	squashfs_buf_to_actor(stream->output, output, out_len);
 
 	return out_len;
+=======
+	struct squashfs_lzo *stream = strm;
+	void *buff = stream->input, *data;
+	int avail, i, bytes = length, res;
+	size_t out_len = output->length;
+
+	for (i = 0; i < b; i++) {
+		avail = min(bytes, msblk->devblksize - offset);
+		memcpy(buff, bh[i]->b_data + offset, avail);
+		buff += avail;
+		bytes -= avail;
+		offset = 0;
+		put_bh(bh[i]);
+	}
+
+	res = lzo1x_decompress_safe(stream->input, (size_t)length,
+					stream->output, &out_len);
+	if (res != LZO_E_OK)
+		goto failed;
+
+	res = bytes = (int)out_len;
+	data = squashfs_first_page(output);
+	buff = stream->output;
+	while (data) {
+		if (bytes <= PAGE_SIZE) {
+			memcpy(data, buff, bytes);
+			break;
+		} else {
+			memcpy(data, buff, PAGE_SIZE);
+			buff += PAGE_SIZE;
+			bytes -= PAGE_SIZE;
+			data = squashfs_next_page(output);
+		}
+	}
+	squashfs_finish_page(output);
+
+	return res;
+
+failed:
+	return -EIO;
+>>>>>>> v4.9.227
 }
 
 const struct squashfs_decompressor squashfs_lzo_comp_ops = {

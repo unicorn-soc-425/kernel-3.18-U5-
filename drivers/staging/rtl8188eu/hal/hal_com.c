@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #include <osdep_service.h>
 #include <drv_types.h>
@@ -31,6 +34,7 @@ void dump_chip_info(struct HAL_VERSION	chip_vers)
 	uint cnt = 0;
 	char buf[128];
 
+<<<<<<< HEAD
 	if (IS_81XXC(chip_vers)) {
 		cnt += sprintf((buf+cnt), "Chip Version Info: %s_",
 			       IS_92C_SERIAL(chip_vers) ?
@@ -56,10 +60,27 @@ void dump_chip_info(struct HAL_VERSION	chip_vers)
 	else if (IS_D_CUT(chip_vers))
 		cnt += sprintf((buf+cnt), "D_CUT_");
 	else if (IS_E_CUT(chip_vers))
+=======
+	cnt += sprintf((buf+cnt), "Chip Version Info: CHIP_8188E_");
+	cnt += sprintf((buf+cnt), "%s_", chip_vers.ChipType == NORMAL_CHIP ?
+		       "Normal_Chip" : "Test_Chip");
+	cnt += sprintf((buf+cnt), "%s_", chip_vers.VendorType == CHIP_VENDOR_TSMC ?
+		       "TSMC" : "UMC");
+	if (chip_vers.CUTVersion == A_CUT_VERSION)
+		cnt += sprintf((buf+cnt), "A_CUT_");
+	else if (chip_vers.CUTVersion == B_CUT_VERSION)
+		cnt += sprintf((buf+cnt), "B_CUT_");
+	else if (chip_vers.CUTVersion == C_CUT_VERSION)
+		cnt += sprintf((buf+cnt), "C_CUT_");
+	else if (chip_vers.CUTVersion == D_CUT_VERSION)
+		cnt += sprintf((buf+cnt), "D_CUT_");
+	else if (chip_vers.CUTVersion == E_CUT_VERSION)
+>>>>>>> v4.9.227
 		cnt += sprintf((buf+cnt), "E_CUT_");
 	else
 		cnt += sprintf((buf+cnt), "UNKNOWN_CUT(%d)_",
 			       chip_vers.CUTVersion);
+<<<<<<< HEAD
 
 	if (IS_1T1R(chip_vers))
 		cnt += sprintf((buf+cnt), "1T1R_");
@@ -72,6 +93,10 @@ void dump_chip_info(struct HAL_VERSION	chip_vers)
 			       chip_vers.RFType);
 
 	cnt += sprintf((buf+cnt), "RomVer(%d)\n", chip_vers.ROMVer);
+=======
+	cnt += sprintf((buf+cnt), "1T1R_");
+	cnt += sprintf((buf+cnt), "RomVer(0)\n");
+>>>>>>> v4.9.227
 
 	pr_info("%s", buf);
 }

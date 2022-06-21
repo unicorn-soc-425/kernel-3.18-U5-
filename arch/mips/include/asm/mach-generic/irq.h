@@ -18,7 +18,11 @@
 #endif
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_IRQ_CPU
+=======
+#ifdef CONFIG_IRQ_MIPS_CPU
+>>>>>>> v4.9.227
 
 #ifndef MIPS_CPU_IRQ_BASE
 #ifdef CONFIG_I8259
@@ -34,6 +38,16 @@
 #endif
 #endif
 
+<<<<<<< HEAD
 #endif /* CONFIG_IRQ_CPU */
+=======
+#endif /* CONFIG_IRQ_MIPS_CPU */
+
+#ifdef CONFIG_MIPS_GIC
+#ifndef MIPS_GIC_IRQ_BASE
+#define MIPS_GIC_IRQ_BASE (MIPS_CPU_IRQ_BASE + 8)
+#endif
+#endif /* CONFIG_MIPS_GIC */
+>>>>>>> v4.9.227
 
 #endif /* __ASM_MACH_GENERIC_IRQ_H */

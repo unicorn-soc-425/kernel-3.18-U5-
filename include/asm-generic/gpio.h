@@ -5,7 +5,10 @@
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/pinctrl/pinctrl.h>
+=======
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_GPIOLIB
 
@@ -27,8 +30,17 @@
  */
 
 #ifndef ARCH_NR_GPIOS
+<<<<<<< HEAD
 #define ARCH_NR_GPIOS		512
 #endif
+=======
+#if defined(CONFIG_ARCH_NR_GPIO) && CONFIG_ARCH_NR_GPIO > 0
+#define ARCH_NR_GPIOS CONFIG_ARCH_NR_GPIO
+#else
+#define ARCH_NR_GPIOS		512
+#endif
+#endif
+>>>>>>> v4.9.227
 
 /*
  * "valid" GPIO numbers are nonnegative and may be passed to
@@ -129,16 +141,20 @@ static inline int gpio_export_link(struct device *dev, const char *name,
 	return gpiod_export_link(dev, name, gpio_to_desc(gpio));
 }
 
+<<<<<<< HEAD
 static inline int gpio_sysfs_set_active_low(unsigned gpio, int value)
 {
 	return gpiod_sysfs_set_active_low(gpio_to_desc(gpio), value);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void gpio_unexport(unsigned gpio)
 {
 	gpiod_unexport(gpio_to_desc(gpio));
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PINCTRL
 
 /**
@@ -186,6 +202,8 @@ gpiochip_remove_pin_ranges(struct gpio_chip *chip)
 
 #endif /* CONFIG_PINCTRL */
 
+=======
+>>>>>>> v4.9.227
 #else	/* !CONFIG_GPIOLIB */
 
 static inline bool gpio_is_valid(int number)

@@ -90,9 +90,12 @@ static int sxgbe_platform_probe(struct platform_device *pdev)
 
 	/* Get memory resource */
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res)
 		goto err_out;
 
+=======
+>>>>>>> v4.9.227
 	addr = devm_ioremap_resource(dev, res);
 	if (IS_ERR(addr))
 		return PTR_ERR(addr);
@@ -111,10 +114,13 @@ static int sxgbe_platform_probe(struct platform_device *pdev)
 		}
 	}
 
+<<<<<<< HEAD
 	/* Get MAC address if available (DT) */
 	if (mac)
 		ether_addr_copy(priv->dev->dev_addr, mac);
 
+=======
+>>>>>>> v4.9.227
 	priv = sxgbe_drv_probe(&(pdev->dev), plat_dat, addr);
 	if (!priv) {
 		pr_err("%s: main driver probe failed\n", __func__);
@@ -128,6 +134,13 @@ static int sxgbe_platform_probe(struct platform_device *pdev)
 		goto err_drv_remove;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Get MAC address if available (DT) */
+	if (mac)
+		ether_addr_copy(priv->dev->dev_addr, mac);
+
+>>>>>>> v4.9.227
 	/* Get the TX/RX IRQ numbers */
 	for (i = 0, chan = 1; i < SXGBE_TX_QUEUES; i++) {
 		priv->txq[i]->irq_no = irq_of_parse_and_map(node, chan++);
@@ -158,11 +171,19 @@ static int sxgbe_platform_probe(struct platform_device *pdev)
 	return 0;
 
 err_rx_irq_unmap:
+<<<<<<< HEAD
 	while (--i)
 		irq_dispose_mapping(priv->rxq[i]->irq_no);
 	i = SXGBE_TX_QUEUES;
 err_tx_irq_unmap:
 	while (--i)
+=======
+	while (i--)
+		irq_dispose_mapping(priv->rxq[i]->irq_no);
+	i = SXGBE_TX_QUEUES;
+err_tx_irq_unmap:
+	while (i--)
+>>>>>>> v4.9.227
 		irq_dispose_mapping(priv->txq[i]->irq_no);
 	irq_dispose_mapping(priv->irq);
 err_drv_remove:
@@ -236,7 +257,10 @@ static struct platform_driver sxgbe_platform_driver = {
 	.remove	= sxgbe_platform_remove,
 	.driver	= {
 		.name		= SXGBE_RESOURCE_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm		= &sxgbe_platform_pm_ops,
 		.of_match_table	= of_match_ptr(sxgbe_dt_ids),
 	},

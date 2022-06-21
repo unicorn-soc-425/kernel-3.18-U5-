@@ -51,6 +51,7 @@ enum dma_ch {
 	DMACH_MAX = 32
 };
 
+<<<<<<< HEAD
 struct s3c2410_dma_client {
 	char	*name;
 };
@@ -67,5 +68,8 @@ static inline bool samsung_dma_is_dmadev(void)
 
 #include <linux/amba/pl08x.h>
 #include <plat/dma-ops.h>
+=======
+#include <linux/amba/pl08x.h>
+>>>>>>> v4.9.227
 
 #endif /* __ASM_ARCH_IRQ_H */

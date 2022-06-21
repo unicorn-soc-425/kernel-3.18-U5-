@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -55,7 +59,10 @@
 #include "lustre_cfg.h"
 
 /* target.c */
+<<<<<<< HEAD
 struct kstatfs;
+=======
+>>>>>>> v4.9.227
 struct ptlrpc_request;
 struct obd_export;
 struct lu_target;
@@ -78,6 +85,7 @@ int do_set_info_async(struct obd_import *imp,
 		      u32 vallen, void *val,
 		      struct ptlrpc_request_set *set);
 
+<<<<<<< HEAD
 #define OBD_RECOVERY_MAX_TIME (obd_timeout * 18) /* b13079 */
 #define OBD_MAX_IOCTL_BUFFER CONFIG_LUSTRE_OBD_MAX_IOCTL_BUFFER
 
@@ -398,6 +406,10 @@ static inline void obd_ioctl_freedata(char *buf, int len)
 
 /* #define POISON_BULK 0 */
 
+=======
+void target_send_reply(struct ptlrpc_request *req, int rc, int fail_id);
+
+>>>>>>> v4.9.227
 /*
  * l_wait_event is a flexible sleeping function, permitting simple caller
  * configuration of interrupt and timeout sensitivity along with actions to
@@ -453,7 +465,11 @@ static inline void obd_ioctl_freedata(char *buf, int len)
  *					 __wake_up_common(q, ...);     (2.2)
  *					 spin_unlock(&q->lock, flags); (2.3)
  *
+<<<<<<< HEAD
  *   OBD_FREE_PTR(obj);						  (3)
+=======
+ *   kfree(obj);						  (3)
+>>>>>>> v4.9.227
  *
  * As l_wait_event() may "short-cut" execution and return without taking
  * wait-queue spin-lock, some additional synchronization is necessary to
@@ -523,6 +539,30 @@ struct l_wait_info {
 			   sigmask(SIGTERM) | sigmask(SIGQUIT) |	\
 			   sigmask(SIGALRM))
 
+<<<<<<< HEAD
+=======
+/**
+ * wait_queue_t of Linux (version < 2.6.34) is a FIFO list for exclusively
+ * waiting threads, which is not always desirable because all threads will
+ * be waken up again and again, even user only needs a few of them to be
+ * active most time. This is not good for performance because cache can
+ * be polluted by different threads.
+ *
+ * LIFO list can resolve this problem because we always wakeup the most
+ * recent active thread by default.
+ *
+ * NB: please don't call non-exclusive & exclusive wait on the same
+ * waitq if add_wait_queue_exclusive_head is used.
+ */
+#define add_wait_queue_exclusive_head(waitq, link)		\
+{								\
+	unsigned long flags;					\
+								\
+	spin_lock_irqsave(&((waitq)->lock), flags);		\
+	__add_wait_queue_exclusive(waitq, link);		\
+	spin_unlock_irqrestore(&((waitq)->lock), flags);	\
+}
+>>>>>>> v4.9.227
 
 /*
  * wait for @condition to become true, but no longer than timeout, specified
@@ -543,12 +583,17 @@ do {									   \
 	l_add_wait(&wq, &__wait);					      \
 									       \
 	/* Block all signals (just the non-fatal ones if no timeout). */       \
+<<<<<<< HEAD
 	if (info->lwi_on_signal != NULL && (__timeout == 0 || __allow_intr))   \
+=======
+	if (info->lwi_on_signal && (__timeout == 0 || __allow_intr))   \
+>>>>>>> v4.9.227
 		__blocked = cfs_block_sigsinv(LUSTRE_FATAL_SIGS);	      \
 	else								   \
 		__blocked = cfs_block_sigsinv(0);			      \
 									       \
 	for (;;) {							     \
+<<<<<<< HEAD
 		unsigned       __wstate;				       \
 									       \
 		__wstate = info->lwi_on_signal != NULL &&		      \
@@ -566,26 +611,56 @@ do {									   \
 			long interval = info->lwi_interval?	  \
 					     min_t(long,	     \
 						 info->lwi_interval,__timeout):\
+=======
+		if (condition)						 \
+			break;						 \
+									       \
+		set_current_state(TASK_INTERRUPTIBLE);			       \
+									       \
+		if (__timeout == 0) {					  \
+			schedule();					       \
+		} else {						       \
+			long interval = info->lwi_interval ?	  \
+					     min_t(long,	     \
+						 info->lwi_interval, __timeout) : \
+>>>>>>> v4.9.227
 					     __timeout;			\
 			long remaining = schedule_timeout(interval);\
 			__timeout = cfs_time_sub(__timeout,		    \
 					    cfs_time_sub(interval, remaining));\
 			if (__timeout == 0) {				  \
+<<<<<<< HEAD
 				if (info->lwi_on_timeout == NULL ||	    \
+=======
+				if (!info->lwi_on_timeout ||		      \
+>>>>>>> v4.9.227
 				    info->lwi_on_timeout(info->lwi_cb_data)) { \
 					ret = -ETIMEDOUT;		      \
 					break;				 \
 				}					      \
 				/* Take signals after the timeout expires. */  \
+<<<<<<< HEAD
 				if (info->lwi_on_signal != NULL)	       \
+=======
+				if (info->lwi_on_signal)		       \
+>>>>>>> v4.9.227
 				    (void)cfs_block_sigsinv(LUSTRE_FATAL_SIGS);\
 			}						      \
 		}							      \
 									       \
+<<<<<<< HEAD
 		if (condition)						 \
 			break;						 \
 		if (cfs_signal_pending()) {				    \
 			if (info->lwi_on_signal != NULL &&		     \
+=======
+		set_current_state(TASK_RUNNING);			       \
+									       \
+		if (condition)						 \
+			break;						 \
+		if (signal_pending(current)) {				    \
+			if (info->lwi_on_signal &&		     \
+>>>>>>> v4.9.227
 			    (__timeout == 0 || __allow_intr)) {		\
 				if (info->lwi_on_signal != LWI_ON_SIGNAL_NOOP) \
 					info->lwi_on_signal(info->lwi_cb_data);\
@@ -605,12 +680,18 @@ do {									   \
 									       \
 	cfs_restore_sigs(__blocked);					   \
 									       \
+<<<<<<< HEAD
 	set_current_state(TASK_RUNNING);			       \
 	remove_wait_queue(&wq, &__wait);					   \
 } while (0)
 
 
 
+=======
+	remove_wait_queue(&wq, &__wait);					   \
+} while (0)
+
+>>>>>>> v4.9.227
 #define l_wait_event(wq, condition, info)		       \
 ({							      \
 	int		 __ret;			      \

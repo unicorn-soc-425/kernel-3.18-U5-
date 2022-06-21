@@ -13,6 +13,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -578,12 +579,42 @@ void __init r8a7778_init_delay(void)
 }
 
 #ifdef CONFIG_USE_OF
+=======
+ */
+
+#include <linux/clk/renesas.h>
+#include <linux/io.h>
+#include <linux/irqchip.h>
+
+#include <asm/mach/arch.h>
+
+#include "common.h"
+
+#define MODEMR 0xffcc0020
+
+static void __init r8a7778_timer_init(void)
+{
+	u32 mode;
+	void __iomem *modemr = ioremap_nocache(MODEMR, 4);
+
+	BUG_ON(!modemr);
+	mode = ioread32(modemr);
+	iounmap(modemr);
+	r8a7778_clocks_init(mode);
+}
+
+>>>>>>> v4.9.227
 #define INT2SMSKCR0	0x82288 /* 0xfe782288 */
 #define INT2SMSKCR1	0x8228c /* 0xfe78228c */
 
 #define INT2NTSR0	0x00018 /* 0xfe700018 */
 #define INT2NTSR1	0x0002c /* 0xfe70002c */
+<<<<<<< HEAD
 void __init r8a7778_init_irq_dt(void)
+=======
+
+static void __init r8a7778_init_irq_dt(void)
+>>>>>>> v4.9.227
 {
 	void __iomem *base = ioremap_nocache(0xfe700000, 0x00100000);
 
@@ -602,12 +633,17 @@ void __init r8a7778_init_irq_dt(void)
 	iounmap(base);
 }
 
+<<<<<<< HEAD
 static const char *r8a7778_compat_dt[] __initdata = {
+=======
+static const char *const r8a7778_compat_dt[] __initconst = {
+>>>>>>> v4.9.227
 	"renesas,r8a7778",
 	NULL,
 };
 
 DT_MACHINE_START(R8A7778_DT, "Generic R8A7778 (Flattened Device Tree)")
+<<<<<<< HEAD
 	.init_early	= r8a7778_init_delay,
 	.init_irq	= r8a7778_init_irq_dt,
 	.init_late	= shmobile_init_late,
@@ -615,3 +651,11 @@ DT_MACHINE_START(R8A7778_DT, "Generic R8A7778 (Flattened Device Tree)")
 MACHINE_END
 
 #endif /* CONFIG_USE_OF */
+=======
+	.init_early	= shmobile_init_delay,
+	.init_irq	= r8a7778_init_irq_dt,
+	.init_late	= shmobile_init_late,
+	.init_time	= r8a7778_timer_init,
+	.dt_compat	= r8a7778_compat_dt,
+MACHINE_END
+>>>>>>> v4.9.227

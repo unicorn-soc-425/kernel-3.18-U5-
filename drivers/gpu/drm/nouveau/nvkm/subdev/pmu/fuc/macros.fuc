@@ -169,7 +169,11 @@
 */	.b32 0 /*
 */	.skip 64
 
+<<<<<<< HEAD
 #if NV_PPWR_CHIPSET < GK208
+=======
+#if NVKM_PPWR_CHIPSET < GK208
+>>>>>>> v4.9.227
 #define imm32(reg,val) /*
 */	movw reg  ((val) & 0x0000ffff) /*
 */	sethi reg ((val) & 0xffff0000)
@@ -252,12 +256,20 @@
 #endif
 
 #define st(size, addr, reg) /*
+<<<<<<< HEAD
 */	movw $r0 addr /*
+=======
+*/	imm32($r0, addr) /*
+>>>>>>> v4.9.227
 */	st size D[$r0] reg /*
 */	clear b32 $r0
 
 #define ld(size, reg, addr) /*
+<<<<<<< HEAD
 */	movw $r0 addr /*
+=======
+*/	imm32($r0, addr)  /*
+>>>>>>> v4.9.227
 */	ld size reg D[$r0] /*
 */	clear b32 $r0
 

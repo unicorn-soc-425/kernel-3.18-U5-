@@ -324,7 +324,10 @@ static struct platform_driver ar7_wdt_driver = {
 	.remove = ar7_wdt_remove,
 	.shutdown = ar7_wdt_shutdown,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "ar7_wdt",
 	},
 };

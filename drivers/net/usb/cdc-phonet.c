@@ -130,7 +130,11 @@ static int rx_submit(struct usbpn_dev *pnd, struct urb *req, gfp_t gfp_flags)
 	struct page *page;
 	int err;
 
+<<<<<<< HEAD
 	page = __skb_alloc_page(gfp_flags | __GFP_NOMEMALLOC, NULL);
+=======
+	page = __dev_alloc_page(gfp_flags | __GFP_NOMEMALLOC);
+>>>>>>> v4.9.227
 	if (!page)
 		return -ENOMEM;
 
@@ -212,7 +216,11 @@ resubmit:
 	if (page)
 		put_page(page);
 	if (req)
+<<<<<<< HEAD
 		rx_submit(pnd, req, GFP_ATOMIC | __GFP_COLD);
+=======
+		rx_submit(pnd, req, GFP_ATOMIC);
+>>>>>>> v4.9.227
 }
 
 static int usbpn_close(struct net_device *dev);
@@ -231,7 +239,11 @@ static int usbpn_open(struct net_device *dev)
 	for (i = 0; i < rxq_size; i++) {
 		struct urb *req = usb_alloc_urb(0, GFP_KERNEL);
 
+<<<<<<< HEAD
 		if (!req || rx_submit(pnd, req, GFP_KERNEL | __GFP_COLD)) {
+=======
+		if (!req || rx_submit(pnd, req, GFP_KERNEL)) {
+>>>>>>> v4.9.227
 			usb_free_urb(req);
 			usbpn_close(dev);
 			return -ENOMEM;
@@ -340,6 +352,7 @@ static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *i
 	u8 *data;
 	int phonet = 0;
 	int len, err;
+<<<<<<< HEAD
 
 	data = intf->altsetting->extra;
 	len = intf->altsetting->extralen;
@@ -366,6 +379,15 @@ static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *i
 		data += dlen;
 		len -= dlen;
 	}
+=======
+	struct usb_cdc_parsed_header hdr;
+
+	data = intf->altsetting->extra;
+	len = intf->altsetting->extralen;
+	cdc_parse_cdc_header(&hdr, intf, data, len);
+	union_header = hdr.usb_cdc_union_desc;
+	phonet = hdr.phonet_magic_present;
+>>>>>>> v4.9.227
 
 	if (!union_header || !phonet)
 		return -EINVAL;

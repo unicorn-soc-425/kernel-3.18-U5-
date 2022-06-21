@@ -290,7 +290,11 @@ static int overwrite_test(void)
 
 	while (opno < max_overwrite) {
 
+<<<<<<< HEAD
 		err = rewrite_page(0);
+=======
+		err = write_page(0);
+>>>>>>> v4.9.227
 		if (err)
 			break;
 
@@ -320,6 +324,13 @@ static int overwrite_test(void)
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		err = mtdtest_relax();
+		if (err)
+			break;
+
+>>>>>>> v4.9.227
 		opno++;
 	}
 

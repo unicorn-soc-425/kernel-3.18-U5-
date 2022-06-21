@@ -15,7 +15,11 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/highmem.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <asm/sections.h>
 
@@ -125,7 +129,11 @@ static inline const char *check_kernel_text_object(const void *ptr,
 static inline const char *check_bogus_address(const void *ptr, unsigned long n)
 {
 	/* Reject if object wraps past end of memory. */
+<<<<<<< HEAD
 	if ((unsigned long)ptr + n < (unsigned long)ptr)
+=======
+	if ((unsigned long)ptr + (n - 1) < (unsigned long)ptr)
+>>>>>>> v4.9.227
 		return "<wrapped address>";
 
 	/* Reject if NULL or ZERO-allocation. */
@@ -208,6 +216,12 @@ static inline const char *check_heap_object(const void *ptr, unsigned long n,
 	 * Some architectures (arm64) return true for virt_addr_valid() on
 	 * vmalloced addresses. Work around this by checking for vmalloc
 	 * first.
+<<<<<<< HEAD
+=======
+	 *
+	 * We also need to check for module addresses explicitly since we
+	 * may copy static data from modules to userspace
+>>>>>>> v4.9.227
 	 */
 	if (is_vmalloc_or_module_addr(ptr))
 		return NULL;
@@ -215,7 +229,16 @@ static inline const char *check_heap_object(const void *ptr, unsigned long n,
 	if (!virt_addr_valid(ptr))
 		return NULL;
 
+<<<<<<< HEAD
 	page = virt_to_head_page(ptr);
+=======
+	/*
+	 * When CONFIG_HIGHMEM=y, kmap_to_page() will give either the
+	 * highmem page or fallback to virt_to_page(). The following
+	 * is effectively a highmem-aware virt_to_head_page().
+	 */
+	page = compound_head(kmap_to_page((void *)ptr));
+>>>>>>> v4.9.227
 
 	/* Check slab allocator for flags and size. */
 	if (PageSlab(page))

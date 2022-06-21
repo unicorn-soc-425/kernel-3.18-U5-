@@ -11,6 +11,7 @@
  * but WITHOUT ANY WARRANTY, EXPRESS OR IMPLIED; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE.  See the GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -27,6 +28,8 @@
  *	Send any bug fixes/changes to:  Eng.Linux at digi dot com.
  *	Thank you.
  *
+=======
+>>>>>>> v4.9.227
  */
 
 /************************************************************************
@@ -46,15 +49,22 @@
 
 #include "dgnc_driver.h"
 #include "dgnc_pci.h"
+<<<<<<< HEAD
 #include "dgnc_kcompat.h"	/* Kernel 2.4/2.6 compat includes */
 #include "dgnc_mgmt.h"
 #include "dpacompat.h"
 
+=======
+#include "dgnc_mgmt.h"
+>>>>>>> v4.9.227
 
 /* Our "in use" variables, to enforce 1 open only */
 static int dgnc_mgmt_in_use[MAXMGMTDEVICES];
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  * dgnc_mgmt_open()
  *
@@ -85,7 +95,10 @@ int dgnc_mgmt_open(struct inode *inode, struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  * dgnc_mgmt_close()
  *
@@ -108,7 +121,10 @@ int dgnc_mgmt_close(struct inode *inode, struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  * dgnc_mgmt_ioctl()
  *
@@ -118,10 +134,16 @@ int dgnc_mgmt_close(struct inode *inode, struct file *file)
 long dgnc_mgmt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	void __user *uarg = (void __user *) arg;
 
 	switch (cmd) {
 
+=======
+	void __user *uarg = (void __user *)arg;
+
+	switch (cmd) {
+>>>>>>> v4.9.227
 	case DIGI_GETDD:
 	{
 		/*
@@ -133,7 +155,12 @@ long dgnc_mgmt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		spin_lock_irqsave(&dgnc_global_lock, flags);
 
+<<<<<<< HEAD
 		ddi.dinfo_nboards = dgnc_NumBoards;
+=======
+		memset(&ddi, 0, sizeof(ddi));
+		ddi.dinfo_nboards = dgnc_num_boards;
+>>>>>>> v4.9.227
 		sprintf(ddi.dinfo_version, "%s", DG_PART);
 
 		spin_unlock_irqrestore(&dgnc_global_lock, flags);
@@ -153,14 +180,19 @@ long dgnc_mgmt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (copy_from_user(&brd, uarg, sizeof(int)))
 			return -EFAULT;
 
+<<<<<<< HEAD
 		if ((brd < 0) || (brd > dgnc_NumBoards) ||
 		    (dgnc_NumBoards == 0))
+=======
+		if (brd < 0 || brd >= dgnc_num_boards)
+>>>>>>> v4.9.227
 			return -ENODEV;
 
 		memset(&di, 0, sizeof(di));
 
 		di.info_bdnum = brd;
 
+<<<<<<< HEAD
 		spin_lock_irqsave(&dgnc_Board[brd]->bd_lock, flags);
 
 		di.info_bdtype = dgnc_Board[brd]->dpatype;
@@ -174,6 +206,22 @@ long dgnc_mgmt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			di.info_nports = 0;
 
 		spin_unlock_irqrestore(&dgnc_Board[brd]->bd_lock, flags);
+=======
+		spin_lock_irqsave(&dgnc_board[brd]->bd_lock, flags);
+
+		di.info_bdtype = dgnc_board[brd]->dpatype;
+		di.info_bdstate = dgnc_board[brd]->dpastatus;
+		di.info_ioport = 0;
+		di.info_physaddr = (ulong)dgnc_board[brd]->membase;
+		di.info_physsize = (ulong)dgnc_board[brd]->membase
+			- dgnc_board[brd]->membase_end;
+		if (dgnc_board[brd]->state != BOARD_FAILED)
+			di.info_nports = dgnc_board[brd]->nasync;
+		else
+			di.info_nports = 0;
+
+		spin_unlock_irqrestore(&dgnc_board[brd]->bd_lock, flags);
+>>>>>>> v4.9.227
 
 		if (copy_to_user(uarg, &di, sizeof(di)))
 			return -EFAULT;
@@ -196,6 +244,7 @@ long dgnc_mgmt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		channel = ni.channel;
 
 		/* Verify boundaries on board */
+<<<<<<< HEAD
 		if ((board > dgnc_NumBoards) || (dgnc_NumBoards == 0))
 			return -ENODEV;
 
@@ -204,6 +253,16 @@ long dgnc_mgmt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			return -ENODEV;
 
 		ch = dgnc_Board[board]->channels[channel];
+=======
+		if (board >= dgnc_num_boards)
+			return -ENODEV;
+
+		/* Verify boundaries on channel */
+		if (channel >= dgnc_board[board]->nasync)
+			return -ENODEV;
+
+		ch = dgnc_board[board]->channels[channel];
+>>>>>>> v4.9.227
 
 		if (!ch || ch->magic != DGNC_CHANNEL_MAGIC)
 			return -ENODEV;
@@ -214,7 +273,11 @@ long dgnc_mgmt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		spin_lock_irqsave(&ch->ch_lock, flags);
 
+<<<<<<< HEAD
 		mstat = (ch->ch_mostat | ch->ch_mistat);
+=======
+		mstat = ch->ch_mostat | ch->ch_mistat;
+>>>>>>> v4.9.227
 
 		if (mstat & UART_MCR_DTR) {
 			ni.mstat |= TIOCM_DTR;
@@ -273,8 +336,11 @@ long dgnc_mgmt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		break;
 	}
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> v4.9.227
 	}
 
 	return 0;

@@ -1,7 +1,11 @@
 /*
 * linux/spear_dma.h
 *
+<<<<<<< HEAD
 * Copyright (ST) 2012 Rajeev Kumar (rajeev-dlh.kumar@st.com)
+=======
+* Copyright (ST) 2012 Rajeev Kumar (rajeevkumar.linux@gmail.com)
+>>>>>>> v4.9.227
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by

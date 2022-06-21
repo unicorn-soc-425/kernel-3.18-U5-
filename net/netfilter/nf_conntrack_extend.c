@@ -77,7 +77,11 @@ void *__nf_ct_ext_add_length(struct nf_conn *ct, enum nf_ct_ext_id id,
 			     size_t var_alloc_len, gfp_t gfp)
 {
 	struct nf_ct_ext *old, *new;
+<<<<<<< HEAD
 	int i, newlen, newoff;
+=======
+	int newlen, newoff;
+>>>>>>> v4.9.227
 	struct nf_ct_ext_type *t;
 
 	/* Conntrack must not be confirmed to avoid races on reallocation. */
@@ -106,6 +110,7 @@ void *__nf_ct_ext_add_length(struct nf_conn *ct, enum nf_ct_ext_id id,
 		return NULL;
 
 	if (new != old) {
+<<<<<<< HEAD
 		for (i = 0; i < NF_CT_EXT_NUM; i++) {
 			if (!__nf_ct_ext_exist(old, i))
 				continue;
@@ -119,6 +124,10 @@ void *__nf_ct_ext_add_length(struct nf_conn *ct, enum nf_ct_ext_id id,
 		}
 		kfree_rcu(old, rcu);
 		ct->ext = new;
+=======
+		kfree_rcu(old, rcu);
+		rcu_assign_pointer(ct->ext, new);
+>>>>>>> v4.9.227
 	}
 
 	new->offset[id] = newoff;

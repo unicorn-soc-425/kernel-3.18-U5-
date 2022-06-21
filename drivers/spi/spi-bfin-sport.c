@@ -64,8 +64,11 @@ struct bfin_sport_spi_master_data {
 	/* Pin request list */
 	u16 *pin_req;
 
+<<<<<<< HEAD
 	/* Driver message queue */
 	struct workqueue_struct *workqueue;
+=======
+>>>>>>> v4.9.227
 	struct work_struct pump_messages;
 	spinlock_t lock;
 	struct list_head queue;
@@ -300,7 +303,11 @@ bfin_sport_spi_giveback(struct bfin_sport_spi_master_data *drv_data)
 	drv_data->cur_msg = NULL;
 	drv_data->cur_transfer = NULL;
 	drv_data->cur_chip = NULL;
+<<<<<<< HEAD
 	queue_work(drv_data->workqueue, &drv_data->pump_messages);
+=======
+	schedule_work(&drv_data->pump_messages);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&drv_data->lock, flags);
 
 	if (!drv_data->cs_change)
@@ -352,10 +359,14 @@ bfin_sport_spi_pump_transfers(unsigned long data)
 	transfer = drv_data->cur_transfer;
 	chip = drv_data->cur_chip;
 
+<<<<<<< HEAD
 	if (transfer->speed_hz)
 		transfer_speed = bfin_sport_hz_to_spi_baud(transfer->speed_hz);
 	else
 		transfer_speed = chip->baud;
+=======
+	transfer_speed = bfin_sport_hz_to_spi_baud(transfer->speed_hz);
+>>>>>>> v4.9.227
 	bfin_write(&drv_data->regs->tclkdiv, transfer_speed);
 	SSYNC();
 
@@ -559,7 +570,11 @@ bfin_sport_spi_transfer(struct spi_device *spi, struct spi_message *msg)
 	list_add_tail(&msg->queue, &drv_data->queue);
 
 	if (drv_data->run && !drv_data->busy)
+<<<<<<< HEAD
 		queue_work(drv_data->workqueue, &drv_data->pump_messages);
+=======
+		schedule_work(&drv_data->pump_messages);
+>>>>>>> v4.9.227
 
 	spin_unlock_irqrestore(&drv_data->lock, flags);
 
@@ -669,12 +684,16 @@ bfin_sport_spi_init_queue(struct bfin_sport_spi_master_data *drv_data)
 	tasklet_init(&drv_data->pump_transfers,
 		     bfin_sport_spi_pump_transfers, (unsigned long)drv_data);
 
+<<<<<<< HEAD
 	/* init messages workqueue */
 	INIT_WORK(&drv_data->pump_messages, bfin_sport_spi_pump_messages);
 	drv_data->workqueue =
 	    create_singlethread_workqueue(dev_name(drv_data->master->dev.parent));
 	if (drv_data->workqueue == NULL)
 		return -EBUSY;
+=======
+	INIT_WORK(&drv_data->pump_messages, bfin_sport_spi_pump_messages);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -697,7 +716,11 @@ bfin_sport_spi_start_queue(struct bfin_sport_spi_master_data *drv_data)
 	drv_data->cur_chip = NULL;
 	spin_unlock_irqrestore(&drv_data->lock, flags);
 
+<<<<<<< HEAD
 	queue_work(drv_data->workqueue, &drv_data->pump_messages);
+=======
+	schedule_work(&drv_data->pump_messages);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -741,7 +764,11 @@ bfin_sport_spi_destroy_queue(struct bfin_sport_spi_master_data *drv_data)
 	if (status)
 		return status;
 
+<<<<<<< HEAD
 	destroy_workqueue(drv_data->workqueue);
+=======
+	flush_work(&drv_data->pump_messages);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -921,7 +948,10 @@ static SIMPLE_DEV_PM_OPS(bfin_sport_spi_pm_ops, bfin_sport_spi_suspend,
 static struct platform_driver bfin_sport_spi_driver = {
 	.driver	= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= BFIN_SPORT_SPI_PM_OPS,
 	},
 	.probe   = bfin_sport_spi_probe,

@@ -1,9 +1,18 @@
+<<<<<<< HEAD
 /* s3d.c: Sun 3DLABS XVR-2500 et al. driver for sparc64 systems
+=======
+/* sunxvr2500.c: Sun 3DLABS XVR-2500 et al. fb driver for sparc64 systems
+ *
+ * License: GPL
+>>>>>>> v4.9.227
  *
  * Copyright (C) 2007 David S. Miller (davem@davemloft.net)
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/fb.h>
 #include <linux/pci.h>
@@ -219,6 +228,7 @@ err_out:
 	return err;
 }
 
+<<<<<<< HEAD
 static void s3d_pci_unregister(struct pci_dev *pdev)
 {
 	struct fb_info *info = pci_get_drvdata(pdev);
@@ -235,6 +245,8 @@ static void s3d_pci_unregister(struct pci_dev *pdev)
 	pci_disable_device(pdev);
 }
 
+=======
+>>>>>>> v4.9.227
 static struct pci_device_id s3d_pci_table[] = {
 	{	PCI_DEVICE(PCI_VENDOR_ID_3DLABS, 0x002c),	},
 	{	PCI_DEVICE(PCI_VENDOR_ID_3DLABS, 0x002d),	},
@@ -248,10 +260,19 @@ static struct pci_device_id s3d_pci_table[] = {
 };
 
 static struct pci_driver s3d_driver = {
+<<<<<<< HEAD
 	.name		= "s3d",
 	.id_table	= s3d_pci_table,
 	.probe		= s3d_pci_register,
 	.remove		= s3d_pci_unregister,
+=======
+	.driver = {
+		.suppress_bind_attrs = true,
+	},
+	.name		= "s3d",
+	.id_table	= s3d_pci_table,
+	.probe		= s3d_pci_register,
+>>>>>>> v4.9.227
 };
 
 static int __init s3d_init(void)
@@ -261,6 +282,7 @@ static int __init s3d_init(void)
 
 	return pci_register_driver(&s3d_driver);
 }
+<<<<<<< HEAD
 
 static void __exit s3d_exit(void)
 {
@@ -274,3 +296,6 @@ MODULE_DESCRIPTION("framebuffer driver for Sun XVR-2500 graphics");
 MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(s3d_init);
+>>>>>>> v4.9.227

@@ -65,3 +65,7 @@ void pci_fixup_irqs(u8 (*swizzle)(struct pci_dev *, u8 *),
 	for_each_pci_dev(dev)
 		pdev_fixup_irq(dev, swizzle, map_irq);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(pci_fixup_irqs);
+>>>>>>> v4.9.227

@@ -106,6 +106,10 @@
 #define SDMA_CMD_ERD		(1 << 7)
 
 /* Bit definitions of the Port Config Reg */
+<<<<<<< HEAD
+=======
+#define PCR_DUPLEX_FULL		(1 << 15)
+>>>>>>> v4.9.227
 #define PCR_HS			(1 << 12)
 #define PCR_EN			(1 << 7)
 #define PCR_PM			(1 << 0)
@@ -113,11 +117,24 @@
 /* Bit definitions of the Port Config Extend Reg */
 #define PCXR_2BSM		(1 << 28)
 #define PCXR_DSCP_EN		(1 << 21)
+<<<<<<< HEAD
+=======
+#define PCXR_RMII_EN		(1 << 20)
+#define PCXR_AN_SPEED_DIS	(1 << 19)
+#define PCXR_SPEED_100		(1 << 18)
+>>>>>>> v4.9.227
 #define PCXR_MFL_1518		(0 << 14)
 #define PCXR_MFL_1536		(1 << 14)
 #define PCXR_MFL_2048		(2 << 14)
 #define PCXR_MFL_64K		(3 << 14)
+<<<<<<< HEAD
 #define PCXR_FLP		(1 << 11)
+=======
+#define PCXR_FLOWCTL_DIS	(1 << 12)
+#define PCXR_FLP		(1 << 11)
+#define PCXR_AN_FLOWCTL_DIS	(1 << 10)
+#define PCXR_AN_DUPLEX_DIS	(1 << 9)
+>>>>>>> v4.9.227
 #define PCXR_PRIO_TX_OFF	3
 #define PCXR_TX_HIGH_PRI	(7 << PCXR_PRIO_TX_OFF)
 
@@ -170,7 +187,10 @@
 #define LINK_UP			(1 << 3)
 
 /* Bit definitions for work to be done */
+<<<<<<< HEAD
 #define WORK_LINK		(1 << 0)
+=======
+>>>>>>> v4.9.227
 #define WORK_TX_DONE		(1 << 1)
 
 /*
@@ -197,6 +217,12 @@ struct tx_desc {
 struct pxa168_eth_private {
 	int port_num;		/* User Ethernet port number    */
 	int phy_addr;
+<<<<<<< HEAD
+=======
+	int phy_speed;
+	int phy_duplex;
+	phy_interface_t phy_intf;
+>>>>>>> v4.9.227
 
 	int rx_resource_err;	/* Rx ring resource error flag */
 
@@ -238,7 +264,10 @@ struct pxa168_eth_private {
 	 */
 	struct timer_list timeout;
 	struct mii_bus *smi_bus;
+<<<<<<< HEAD
 	struct phy_device *phy;
+=======
+>>>>>>> v4.9.227
 
 	/* clock */
 	struct clk *clk;
@@ -266,23 +295,41 @@ enum hash_table_entry {
 	HASH_ENTRY_RECEIVE_DISCARD_BIT = 2
 };
 
+<<<<<<< HEAD
 static int pxa168_get_settings(struct net_device *dev, struct ethtool_cmd *cmd);
 static int pxa168_set_settings(struct net_device *dev, struct ethtool_cmd *cmd);
 static int pxa168_init_hw(struct pxa168_eth_private *pep);
+=======
+static int pxa168_get_link_ksettings(struct net_device *dev,
+				     struct ethtool_link_ksettings *cmd);
+static int pxa168_init_hw(struct pxa168_eth_private *pep);
+static int pxa168_init_phy(struct net_device *dev);
+>>>>>>> v4.9.227
 static void eth_port_reset(struct net_device *dev);
 static void eth_port_start(struct net_device *dev);
 static int pxa168_eth_open(struct net_device *dev);
 static int pxa168_eth_stop(struct net_device *dev);
+<<<<<<< HEAD
 static int ethernet_phy_setup(struct net_device *dev);
 
 static inline u32 rdl(struct pxa168_eth_private *pep, int offset)
 {
 	return readl(pep->base + offset);
+=======
+
+static inline u32 rdl(struct pxa168_eth_private *pep, int offset)
+{
+	return readl_relaxed(pep->base + offset);
+>>>>>>> v4.9.227
 }
 
 static inline void wrl(struct pxa168_eth_private *pep, int offset, u32 data)
 {
+<<<<<<< HEAD
 	writel(data, pep->base + offset);
+=======
+	writel_relaxed(data, pep->base + offset);
+>>>>>>> v4.9.227
 }
 
 static void abort_dma(struct pxa168_eth_private *pep)
@@ -305,6 +352,7 @@ static void abort_dma(struct pxa168_eth_private *pep)
 		netdev_err(pep->dev, "%s : DMA Stuck\n", __func__);
 }
 
+<<<<<<< HEAD
 static int ethernet_phy_get(struct pxa168_eth_private *pep)
 {
 	unsigned int reg_data;
@@ -325,6 +373,8 @@ static void ethernet_phy_set_addr(struct pxa168_eth_private *pep, int phy_addr)
 	wrl(pep, PHY_ADDRESS, reg_data);
 }
 
+=======
+>>>>>>> v4.9.227
 static void rxq_refill(struct net_device *dev)
 {
 	struct pxa168_eth_private *pep = netdev_priv(dev);
@@ -353,9 +403,15 @@ static void rxq_refill(struct net_device *dev)
 		pep->rx_skb[used_rx_desc] = skb;
 
 		/* Return the descriptor to DMA ownership */
+<<<<<<< HEAD
 		wmb();
 		p_used_rx_desc->cmd_sts = BUF_OWNED_BY_DMA | RX_EN_INT;
 		wmb();
+=======
+		dma_wmb();
+		p_used_rx_desc->cmd_sts = BUF_OWNED_BY_DMA | RX_EN_INT;
+		dma_wmb();
+>>>>>>> v4.9.227
 
 		/* Move the used descriptor pointer to the next descriptor */
 		pep->rx_used_desc_q = (used_rx_desc + 1) % pep->rx_ring_size;
@@ -655,6 +711,7 @@ static void eth_port_start(struct net_device *dev)
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 	int tx_curr_desc, rx_curr_desc;
 
+<<<<<<< HEAD
 	/* Perform PHY reset, if there is a PHY. */
 	if (pep->phy != NULL) {
 		struct ethtool_cmd cmd;
@@ -663,6 +720,9 @@ static void eth_port_start(struct net_device *dev)
 		phy_init_hw(pep->phy);
 		pxa168_set_settings(pep->dev, &cmd);
 	}
+=======
+	phy_start(dev->phydev);
+>>>>>>> v4.9.227
 
 	/* Assignment of Tx CTRP of given queue */
 	tx_curr_desc = pep->tx_curr_desc_q;
@@ -717,6 +777,11 @@ static void eth_port_reset(struct net_device *dev)
 	val = rdl(pep, PORT_CONFIG);
 	val &= ~PCR_EN;
 	wrl(pep, PORT_CONFIG, val);
+<<<<<<< HEAD
+=======
+
+	phy_stop(dev->phydev);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -810,7 +875,11 @@ static int rxq_process(struct net_device *dev, int budget)
 		rx_used_desc = pep->rx_used_desc_q;
 		rx_desc = &pep->p_rx_desc_area[rx_curr_desc];
 		cmd_sts = rx_desc->cmd_sts;
+<<<<<<< HEAD
 		rmb();
+=======
+		dma_rmb();
+>>>>>>> v4.9.227
 		if (cmd_sts & (BUF_OWNED_BY_DMA))
 			break;
 		skb = pep->rx_skb[rx_curr_desc];
@@ -884,6 +953,7 @@ static int pxa168_eth_collect_events(struct pxa168_eth_private *pep,
 	}
 	if (icr & ICR_RXBUF)
 		ret = 1;
+<<<<<<< HEAD
 	if (icr & ICR_MII_CH) {
 		pep->work_todo |= WORK_LINK;
 		ret = 1;
@@ -921,6 +991,11 @@ static void handle_link_event(struct pxa168_eth_private *pep)
 		netif_carrier_on(dev);
 }
 
+=======
+	return ret;
+}
+
+>>>>>>> v4.9.227
 static irqreturn_t pxa168_eth_int_handler(int irq, void *dev_id)
 {
 	struct net_device *dev = (struct net_device *)dev_id;
@@ -978,8 +1053,16 @@ static int set_port_config_ext(struct pxa168_eth_private *pep)
 		skb_size = PCXR_MFL_64K;
 
 	/* Extended Port Configuration */
+<<<<<<< HEAD
 	wrl(pep,
 	    PORT_CONFIG_EXT, PCXR_2BSM | /* Two byte prefix aligns IP hdr */
+=======
+	wrl(pep, PORT_CONFIG_EXT,
+	    PCXR_AN_SPEED_DIS |		 /* Disable HW AN */
+	    PCXR_AN_DUPLEX_DIS |
+	    PCXR_AN_FLOWCTL_DIS |
+	    PCXR_2BSM |			 /* Two byte prefix aligns IP hdr */
+>>>>>>> v4.9.227
 	    PCXR_DSCP_EN |		 /* Enable DSCP in IP */
 	    skb_size | PCXR_FLP |	 /* do not force link pass */
 	    PCXR_TX_HIGH_PRI);		 /* Transmit - high priority queue */
@@ -987,6 +1070,74 @@ static int set_port_config_ext(struct pxa168_eth_private *pep)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void pxa168_eth_adjust_link(struct net_device *dev)
+{
+	struct pxa168_eth_private *pep = netdev_priv(dev);
+	struct phy_device *phy = dev->phydev;
+	u32 cfg, cfg_o = rdl(pep, PORT_CONFIG);
+	u32 cfgext, cfgext_o = rdl(pep, PORT_CONFIG_EXT);
+
+	cfg = cfg_o & ~PCR_DUPLEX_FULL;
+	cfgext = cfgext_o & ~(PCXR_SPEED_100 | PCXR_FLOWCTL_DIS | PCXR_RMII_EN);
+
+	if (phy->interface == PHY_INTERFACE_MODE_RMII)
+		cfgext |= PCXR_RMII_EN;
+	if (phy->speed == SPEED_100)
+		cfgext |= PCXR_SPEED_100;
+	if (phy->duplex)
+		cfg |= PCR_DUPLEX_FULL;
+	if (!phy->pause)
+		cfgext |= PCXR_FLOWCTL_DIS;
+
+	/* Bail out if there has nothing changed */
+	if (cfg == cfg_o && cfgext == cfgext_o)
+		return;
+
+	wrl(pep, PORT_CONFIG, cfg);
+	wrl(pep, PORT_CONFIG_EXT, cfgext);
+
+	phy_print_status(phy);
+}
+
+static int pxa168_init_phy(struct net_device *dev)
+{
+	struct pxa168_eth_private *pep = netdev_priv(dev);
+	struct ethtool_link_ksettings cmd;
+	struct phy_device *phy = NULL;
+	int err;
+
+	if (dev->phydev)
+		return 0;
+
+	phy = mdiobus_scan(pep->smi_bus, pep->phy_addr);
+	if (IS_ERR(phy))
+		return PTR_ERR(phy);
+
+	err = phy_connect_direct(dev, phy, pxa168_eth_adjust_link,
+				 pep->phy_intf);
+	if (err)
+		return err;
+
+	err = pxa168_get_link_ksettings(dev, &cmd);
+	if (err)
+		return err;
+
+	cmd.base.phy_address = pep->phy_addr;
+	cmd.base.speed = pep->phy_speed;
+	cmd.base.duplex = pep->phy_duplex;
+	ethtool_convert_legacy_u32_to_link_mode(cmd.link_modes.advertising,
+						PHY_BASIC_FEATURES);
+	cmd.base.autoneg = AUTONEG_ENABLE;
+
+	if (cmd.base.speed != 0)
+		cmd.base.autoneg = AUTONEG_DISABLE;
+
+	return phy_ethtool_set_link_ksettings(dev, &cmd);
+}
+
+>>>>>>> v4.9.227
 static int pxa168_init_hw(struct pxa168_eth_private *pep)
 {
 	int err = 0;
@@ -1133,6 +1284,13 @@ static int pxa168_eth_open(struct net_device *dev)
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 	int err;
 
+<<<<<<< HEAD
+=======
+	err = pxa168_init_phy(dev);
+	if (err)
+		return err;
+
+>>>>>>> v4.9.227
 	err = request_irq(dev->irq, pxa168_eth_int_handler, 0, dev->name, dev);
 	if (err) {
 		dev_err(&dev->dev, "can't assign irq\n");
@@ -1153,8 +1311,13 @@ static int pxa168_eth_open(struct net_device *dev)
 	pep->rx_used_desc_q = 0;
 	pep->rx_curr_desc_q = 0;
 	netif_carrier_off(dev);
+<<<<<<< HEAD
 	eth_port_start(dev);
 	napi_enable(&pep->napi);
+=======
+	napi_enable(&pep->napi);
+	eth_port_start(dev);
+>>>>>>> v4.9.227
 	return 0;
 out_free_rx_skb:
 	rxq_deinit(dev);
@@ -1231,10 +1394,13 @@ static int pxa168_rx_poll(struct napi_struct *napi, int budget)
 	struct net_device *dev = pep->dev;
 	int work_done = 0;
 
+<<<<<<< HEAD
 	if (unlikely(pep->work_todo & WORK_LINK)) {
 		pep->work_todo &= ~(WORK_LINK);
 		handle_link_event(pep);
 	}
+=======
+>>>>>>> v4.9.227
 	/*
 	 * We call txq_reclaim every time since in NAPI interupts are disabled
 	 * and due to this we miss the TX_DONE interrupt,which is not updated in
@@ -1271,7 +1437,11 @@ static int pxa168_eth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	skb_tx_timestamp(skb);
 
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> v4.9.227
 	desc->cmd_sts = BUF_OWNED_BY_DMA | TX_GEN_CRC | TX_FIRST_DESC |
 			TX_ZERO_PADDING | TX_LAST_DESC | TX_EN_INT;
 	wmb();
@@ -1279,7 +1449,11 @@ static int pxa168_eth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	stats->tx_bytes += length;
 	stats->tx_packets++;
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> v4.9.227
 	if (pep->tx_ring_size - pep->tx_desc_count <= 1) {
 		/* We handled the current skb, but now we are out of space.*/
 		netif_stop_queue(dev);
@@ -1350,13 +1524,19 @@ static int pxa168_smi_write(struct mii_bus *bus, int phy_addr, int regnum,
 static int pxa168_eth_do_ioctl(struct net_device *dev, struct ifreq *ifr,
 			       int cmd)
 {
+<<<<<<< HEAD
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 	if (pep->phy != NULL)
 		return phy_mii_ioctl(pep->phy, ifr, cmd);
+=======
+	if (dev->phydev != NULL)
+		return phy_mii_ioctl(dev->phydev, ifr, cmd);
+>>>>>>> v4.9.227
 
 	return -EOPNOTSUPP;
 }
 
+<<<<<<< HEAD
 static struct phy_device *phy_scan(struct pxa168_eth_private *pep, int phy_addr)
 {
 	struct mii_bus *bus = pep->smi_bus;
@@ -1436,10 +1616,21 @@ static int pxa168_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 	err = phy_read_status(pep->phy);
 	if (err == 0)
 		err = phy_ethtool_gset(pep->phy, cmd);
+=======
+static int pxa168_get_link_ksettings(struct net_device *dev,
+				     struct ethtool_link_ksettings *cmd)
+{
+	int err;
+
+	err = phy_read_status(dev->phydev);
+	if (err == 0)
+		err = phy_ethtool_ksettings_get(dev->phydev, cmd);
+>>>>>>> v4.9.227
 
 	return err;
 }
 
+<<<<<<< HEAD
 static int pxa168_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct pxa168_eth_private *pep = netdev_priv(dev);
@@ -1447,6 +1638,8 @@ static int pxa168_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 	return phy_ethtool_sset(pep->phy, cmd);
 }
 
+=======
+>>>>>>> v4.9.227
 static void pxa168_get_drvinfo(struct net_device *dev,
 			       struct ethtool_drvinfo *info)
 {
@@ -1457,11 +1650,19 @@ static void pxa168_get_drvinfo(struct net_device *dev,
 }
 
 static const struct ethtool_ops pxa168_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings	= pxa168_get_settings,
 	.set_settings	= pxa168_set_settings,
 	.get_drvinfo	= pxa168_get_drvinfo,
 	.get_link	= ethtool_op_get_link,
 	.get_ts_info	= ethtool_op_get_ts_info,
+=======
+	.get_drvinfo	= pxa168_get_drvinfo,
+	.get_link	= ethtool_op_get_link,
+	.get_ts_info	= ethtool_op_get_ts_info,
+	.get_link_ksettings = pxa168_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 static const struct net_device_ops pxa168_eth_netdev_ops = {
@@ -1505,16 +1706,25 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 	pep = netdev_priv(dev);
 	pep->dev = dev;
 	pep->clk = clk;
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res == NULL) {
 		err = -ENODEV;
 		goto err_netdev;
 	}
+=======
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> v4.9.227
 	pep->base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(pep->base)) {
 		err = -ENOMEM;
 		goto err_netdev;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	BUG_ON(!res);
 	dev->irq = res->start;
@@ -1552,13 +1762,33 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 
 		pep->port_num = pep->pd->port_number;
 		pep->phy_addr = pep->pd->phy_addr;
+<<<<<<< HEAD
+=======
+		pep->phy_speed = pep->pd->speed;
+		pep->phy_duplex = pep->pd->duplex;
+		pep->phy_intf = pep->pd->intf;
+
+		if (pep->pd->init)
+			pep->pd->init();
+>>>>>>> v4.9.227
 	} else if (pdev->dev.of_node) {
 		of_property_read_u32(pdev->dev.of_node, "port-id",
 				     &pep->port_num);
 
 		np = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+<<<<<<< HEAD
 		if (np)
 			of_property_read_u32(np, "reg", &pep->phy_addr);
+=======
+		if (!np) {
+			dev_err(&pdev->dev, "missing phy-handle\n");
+			err = -EINVAL;
+			goto err_netdev;
+		}
+		of_property_read_u32(np, "reg", &pep->phy_addr);
+		pep->phy_intf = of_get_phy_mode(pdev->dev.of_node);
+		of_node_put(np);
+>>>>>>> v4.9.227
 	}
 
 	/* Hardware supports only 3 ports */
@@ -1573,7 +1803,11 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 	pep->smi_bus = mdiobus_alloc();
 	if (pep->smi_bus == NULL) {
 		err = -ENOMEM;
+<<<<<<< HEAD
 		goto err_base;
+=======
+		goto err_netdev;
+>>>>>>> v4.9.227
 	}
 	pep->smi_bus->priv = pep;
 	pep->smi_bus->name = "pxa168_eth smi";
@@ -1587,11 +1821,16 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 	if (err)
 		goto err_free_mdio;
 
+<<<<<<< HEAD
 	pxa168_init_hw(pep);
 	err = ethernet_phy_setup(dev);
 	if (err)
 		goto err_mdiobus;
 	SET_NETDEV_DEV(dev, &pdev->dev);
+=======
+	SET_NETDEV_DEV(dev, &pdev->dev);
+	pxa168_init_hw(pep);
+>>>>>>> v4.9.227
 	err = register_netdev(dev);
 	if (err)
 		goto err_mdiobus;
@@ -1601,6 +1840,7 @@ err_mdiobus:
 	mdiobus_unregister(pep->smi_bus);
 err_free_mdio:
 	mdiobus_free(pep->smi_bus);
+<<<<<<< HEAD
 err_base:
 	iounmap(pep->base);
 err_netdev:
@@ -1608,6 +1848,12 @@ err_netdev:
 err_clk:
 	clk_disable(clk);
 	clk_put(clk);
+=======
+err_netdev:
+	free_netdev(dev);
+err_clk:
+	clk_disable_unprepare(clk);
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -1621,6 +1867,7 @@ static int pxa168_eth_remove(struct platform_device *pdev)
 				  pep->htpr, pep->htpr_dma);
 		pep->htpr = NULL;
 	}
+<<<<<<< HEAD
 	if (pep->clk) {
 		clk_disable(pep->clk);
 		clk_put(pep->clk);
@@ -1631,6 +1878,14 @@ static int pxa168_eth_remove(struct platform_device *pdev)
 
 	iounmap(pep->base);
 	pep->base = NULL;
+=======
+	if (dev->phydev)
+		phy_disconnect(dev->phydev);
+	if (pep->clk) {
+		clk_disable_unprepare(pep->clk);
+	}
+
+>>>>>>> v4.9.227
 	mdiobus_unregister(pep->smi_bus);
 	mdiobus_free(pep->smi_bus);
 	unregister_netdev(dev);

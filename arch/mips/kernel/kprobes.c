@@ -32,7 +32,12 @@
 #include <asm/ptrace.h>
 #include <asm/branch.h>
 #include <asm/break.h>
+<<<<<<< HEAD
 #include <asm/inst.h>
+=======
+
+#include "probes-common.h"
+>>>>>>> v4.9.227
 
 static const union mips_instruction breakpoint_insn = {
 	.b_format = {
@@ -55,6 +60,7 @@ DEFINE_PER_CPU(struct kprobe_ctlblk, kprobe_ctlblk);
 
 static int __kprobes insn_has_delayslot(union mips_instruction insn)
 {
+<<<<<<< HEAD
 	switch (insn.i_format.opcode) {
 
 		/*
@@ -112,6 +118,9 @@ static int __kprobes insn_has_delayslot(union mips_instruction insn)
 	}
 insn_ok:
 	return 0;
+=======
+	return __insn_has_delay_slot(insn);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -161,6 +170,15 @@ int __kprobes arch_prepare_kprobe(struct kprobe *p)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	if (__insn_is_compact_branch(insn)) {
+		pr_notice("Kprobes for compact branches are not supported\n");
+		ret = -EINVAL;
+		goto out;
+	}
+
+>>>>>>> v4.9.227
 	/* insn: must be on special executable page on mips. */
 	p->ainsn.insn = get_insn_slot();
 	if (!p->ainsn.insn) {

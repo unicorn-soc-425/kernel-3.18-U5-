@@ -1,7 +1,11 @@
 /*******************************************************************************
  *
  * Intel Ethernet Controller XL710 Family Linux Driver
+<<<<<<< HEAD
  * Copyright(c) 2013 - 2014 Intel Corporation.
+=======
+ * Copyright(c) 2013 - 2015 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -29,8 +33,11 @@
 
 #include "i40e.h"
 
+<<<<<<< HEAD
 #define I40E_MAX_MACVLAN_FILTERS 256
 #define I40E_MAX_VLAN_FILTERS 256
+=======
+>>>>>>> v4.9.227
 #define I40E_MAX_VLANID 4095
 
 #define I40E_VIRTCHNL_SUPPORTED_QTYPES 2
@@ -42,6 +49,12 @@
 #define I40E_VLAN_MASK			0xFFF
 #define I40E_PRIORITY_MASK		0x7000
 
+<<<<<<< HEAD
+=======
+#define VF_IS_V10(_v) (((_v)->vf_ver.major == 1) && ((_v)->vf_ver.minor == 0))
+#define VF_IS_V11(_v) (((_v)->vf_ver.major == 1) && ((_v)->vf_ver.minor == 1))
+
+>>>>>>> v4.9.227
 /* Various queue ctrls */
 enum i40e_queue_ctrl {
 	I40E_QUEUE_CTRL_UNKNOWN = 0,
@@ -57,68 +70,129 @@ enum i40e_queue_ctrl {
 enum i40e_vf_states {
 	I40E_VF_STAT_INIT = 0,
 	I40E_VF_STAT_ACTIVE,
+<<<<<<< HEAD
 	I40E_VF_STAT_FCOEENA,
 	I40E_VF_STAT_DISABLED,
+=======
+	I40E_VF_STAT_IWARPENA,
+	I40E_VF_STAT_FCOEENA,
+	I40E_VF_STAT_DISABLED,
+	I40E_VF_STAT_MC_PROMISC,
+	I40E_VF_STAT_UC_PROMISC,
+>>>>>>> v4.9.227
 };
 
 /* VF capabilities */
 enum i40e_vf_capabilities {
 	I40E_VIRTCHNL_VF_CAP_PRIVILEGE = 0,
 	I40E_VIRTCHNL_VF_CAP_L2,
+<<<<<<< HEAD
+=======
+	I40E_VIRTCHNL_VF_CAP_IWARP,
+>>>>>>> v4.9.227
 };
 
 /* VF information structure */
 struct i40e_vf {
 	struct i40e_pf *pf;
 
+<<<<<<< HEAD
 	/* vf id in the pf space */
 	u16 vf_id;
 	/* all vf vsis connect to the same parent */
 	enum i40e_switch_element_types parent_type;
 
 	/* vf Port Extender (PE) stag if used */
+=======
+	/* VF id in the PF space */
+	s16 vf_id;
+	/* all VF vsis connect to the same parent */
+	enum i40e_switch_element_types parent_type;
+	struct i40e_virtchnl_version_info vf_ver;
+	u32 driver_caps; /* reported by VF driver */
+
+	/* VF Port Extender (PE) stag if used */
+>>>>>>> v4.9.227
 	u16 stag;
 
 	struct i40e_virtchnl_ether_addr default_lan_addr;
 	struct i40e_virtchnl_ether_addr default_fcoe_addr;
 	u16 port_vlan_id;
 	bool pf_set_mac;	/* The VMM admin set the VF MAC address */
+<<<<<<< HEAD
+=======
+	bool trusted;
+>>>>>>> v4.9.227
 
 	/* VSI indices - actual VSI pointers are maintained in the PF structure
 	 * When assigned, these will be non-zero, because VSI 0 is always
 	 * the main LAN VSI for the PF.
 	 */
+<<<<<<< HEAD
 	u8 lan_vsi_index;	/* index into PF struct */
 	u8 lan_vsi_id;		/* ID as used by firmware */
 
 	u8 num_queue_pairs;	/* num of qps assigned to vf vsis */
 	u64 num_mdd_events;	/* num of mdd events detected */
 	u64 num_invalid_msgs;	/* num of malformed or invalid msgs detected */
+=======
+	u16 lan_vsi_idx;	/* index into PF struct */
+	u16 lan_vsi_id;		/* ID as used by firmware */
+
+	u8 num_queue_pairs;	/* num of qps assigned to VF vsis */
+	u64 num_mdd_events;	/* num of mdd events detected */
+	/* num of continuous malformed or invalid msgs detected */
+	u64 num_invalid_msgs;
+>>>>>>> v4.9.227
 	u64 num_valid_msgs;	/* num of valid msgs detected */
 
 	unsigned long vf_caps;	/* vf's adv. capabilities */
 	unsigned long vf_states;	/* vf's runtime states */
 	unsigned int tx_rate;	/* Tx bandwidth limit in Mbps */
 	bool link_forced;
+<<<<<<< HEAD
 	bool link_up;		/* only valid if vf link is forced */
 	bool spoofchk;
+=======
+	bool link_up;		/* only valid if VF link is forced */
+	bool spoofchk;
+	u16 num_mac;
+	u16 num_vlan;
+
+	/* RDMA Client */
+	struct i40e_virtchnl_iwarp_qvlist_info *qvlist_info;
+>>>>>>> v4.9.227
 };
 
 void i40e_free_vfs(struct i40e_pf *pf);
 int i40e_pci_sriov_configure(struct pci_dev *dev, int num_vfs);
 int i40e_alloc_vfs(struct i40e_pf *pf, u16 num_alloc_vfs);
+<<<<<<< HEAD
 int i40e_vc_process_vf_msg(struct i40e_pf *pf, u16 vf_id, u32 v_opcode,
+=======
+int i40e_vc_process_vf_msg(struct i40e_pf *pf, s16 vf_id, u32 v_opcode,
+>>>>>>> v4.9.227
 			   u32 v_retval, u8 *msg, u16 msglen);
 int i40e_vc_process_vflr_event(struct i40e_pf *pf);
 void i40e_reset_vf(struct i40e_vf *vf, bool flr);
 void i40e_vc_notify_vf_reset(struct i40e_vf *vf);
 
+<<<<<<< HEAD
 /* vf configuration related iplink handlers */
 int i40e_ndo_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac);
 int i40e_ndo_set_vf_port_vlan(struct net_device *netdev,
 			      int vf_id, u16 vlan_id, u8 qos);
 int i40e_ndo_set_vf_bw(struct net_device *netdev, int vf_id, int min_tx_rate,
 		       int max_tx_rate);
+=======
+/* VF configuration related iplink handlers */
+int i40e_ndo_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac);
+int i40e_ndo_set_vf_port_vlan(struct net_device *netdev, int vf_id,
+			      u16 vlan_id, u8 qos, __be16 vlan_proto);
+int i40e_ndo_set_vf_bw(struct net_device *netdev, int vf_id, int min_tx_rate,
+		       int max_tx_rate);
+int i40e_ndo_set_vf_trust(struct net_device *netdev, int vf_id, bool setting);
+>>>>>>> v4.9.227
 int i40e_ndo_get_vf_config(struct net_device *netdev,
 			   int vf_id, struct ifla_vf_info *ivi);
 int i40e_ndo_set_vf_link_state(struct net_device *netdev, int vf_id, int link);

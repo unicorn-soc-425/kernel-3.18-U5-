@@ -201,7 +201,11 @@ struct sctp_chunk *sctp_make_cwr(const struct sctp_association *,
 struct sctp_chunk * sctp_make_datafrag_empty(struct sctp_association *,
 					const struct sctp_sndrcvinfo *sinfo,
 					int len, const __u8 flags,
+<<<<<<< HEAD
 					__u16 ssn);
+=======
+					__u16 ssn, gfp_t gfp);
+>>>>>>> v4.9.227
 struct sctp_chunk *sctp_make_ecne(const struct sctp_association *,
 				  const __u32);
 struct sctp_chunk *sctp_make_sack(const struct sctp_association *);
@@ -219,7 +223,11 @@ struct sctp_chunk *sctp_make_abort_no_data(const struct sctp_association *,
 				      const struct sctp_chunk *,
 				      __u32 tsn);
 struct sctp_chunk *sctp_make_abort_user(const struct sctp_association *,
+<<<<<<< HEAD
 					const struct msghdr *, size_t msg_len);
+=======
+					struct msghdr *, size_t msg_len);
+>>>>>>> v4.9.227
 struct sctp_chunk *sctp_make_abort_violation(const struct sctp_association *,
 				   const struct sctp_chunk *,
 				   const __u8 *,
@@ -307,6 +315,7 @@ static inline __u16 sctp_data_size(struct sctp_chunk *chunk)
 }
 
 /* Compare two TSNs */
+<<<<<<< HEAD
 
 /* RFC 1982 - Serial Number Arithmetic
  *
@@ -386,6 +395,29 @@ static inline int ADDIP_SERIAL_gte(__u16 s, __u16 t)
 {
 	return ((s) == (t)) || (((t) - (s)) & ADDIP_SERIAL_SIGN_BIT);
 }
+=======
+#define TSN_lt(a,b)	\
+	(typecheck(__u32, a) && \
+	 typecheck(__u32, b) && \
+	 ((__s32)((a) - (b)) < 0))
+
+#define TSN_lte(a,b)	\
+	(typecheck(__u32, a) && \
+	 typecheck(__u32, b) && \
+	 ((__s32)((a) - (b)) <= 0))
+
+/* Compare two SSNs */
+#define SSN_lt(a,b)		\
+	(typecheck(__u16, a) && \
+	 typecheck(__u16, b) && \
+	 ((__s16)((a) - (b)) < 0))
+
+/* ADDIP 3.1.1 */
+#define ADDIP_SERIAL_gte(a,b)	\
+	(typecheck(__u32, a) && \
+	 typecheck(__u32, b) && \
+	 ((__s32)((b) - (a)) <= 0))
+>>>>>>> v4.9.227
 
 /* Check VTAG of the packet matches the sender's own tag. */
 static inline int

@@ -1,9 +1,20 @@
+<<<<<<< HEAD
+=======
+#ifndef __LINUX_KBUILD_H
+# error "Please do not build this file directly, build asm-offsets.c instead"
+#endif
+
+>>>>>>> v4.9.227
 #include <asm/ucontext.h>
 
 #include <linux/lguest.h>
 #include "../../../drivers/lguest/lg.h"
 
+<<<<<<< HEAD
 #define __SYSCALL_I386(nr, sym, compat) [nr] = 1,
+=======
+#define __SYSCALL_I386(nr, sym, qual) [nr] = 1,
+>>>>>>> v4.9.227
 static char syscalls[] = {
 #include <asm/syscalls_32.h>
 };
@@ -13,6 +24,7 @@ void foo(void);
 
 void foo(void)
 {
+<<<<<<< HEAD
 	OFFSET(IA32_SIGCONTEXT_ax, sigcontext, ax);
 	OFFSET(IA32_SIGCONTEXT_bx, sigcontext, bx);
 	OFFSET(IA32_SIGCONTEXT_cx, sigcontext, cx);
@@ -28,15 +40,24 @@ void foo(void)
 	OFFSET(CPUINFO_x86_vendor, cpuinfo_x86, x86_vendor);
 	OFFSET(CPUINFO_x86_model, cpuinfo_x86, x86_model);
 	OFFSET(CPUINFO_x86_mask, cpuinfo_x86, x86_mask);
+=======
+	OFFSET(CPUINFO_x86, cpuinfo_x86, x86);
+	OFFSET(CPUINFO_x86_vendor, cpuinfo_x86, x86_vendor);
+	OFFSET(CPUINFO_x86_model, cpuinfo_x86, x86_model);
+	OFFSET(CPUINFO_x86_stepping, cpuinfo_x86, x86_stepping);
+>>>>>>> v4.9.227
 	OFFSET(CPUINFO_cpuid_level, cpuinfo_x86, cpuid_level);
 	OFFSET(CPUINFO_x86_capability, cpuinfo_x86, x86_capability);
 	OFFSET(CPUINFO_x86_vendor_id, cpuinfo_x86, x86_vendor_id);
 	BLANK();
 
+<<<<<<< HEAD
 	OFFSET(TI_sysenter_return, thread_info, sysenter_return);
 	OFFSET(TI_cpu, thread_info, cpu);
 	BLANK();
 
+=======
+>>>>>>> v4.9.227
 	OFFSET(PT_EBX, pt_regs, bx);
 	OFFSET(PT_ECX, pt_regs, cx);
 	OFFSET(PT_EDX, pt_regs, dx);
@@ -56,15 +77,32 @@ void foo(void)
 	OFFSET(PT_OLDSS,  pt_regs, ss);
 	BLANK();
 
+<<<<<<< HEAD
 	OFFSET(IA32_RT_SIGFRAME_sigcontext, rt_sigframe, uc.uc_mcontext);
 	BLANK();
 
+=======
+>>>>>>> v4.9.227
 	OFFSET(saved_context_gdt_desc, saved_context, gdt_desc);
 	BLANK();
 
 	/* Offset from the sysenter stack to tss.sp0 */
 	DEFINE(TSS_sysenter_sp0, offsetof(struct tss_struct, x86_tss.sp0) -
+<<<<<<< HEAD
 		 sizeof(struct tss_struct));
+=======
+	       offsetofend(struct tss_struct, SYSENTER_stack));
+
+	/* Offset from cpu_tss to SYSENTER_stack */
+	OFFSET(CPU_TSS_SYSENTER_stack, tss_struct, SYSENTER_stack);
+	/* Size of SYSENTER_stack */
+	DEFINE(SIZEOF_SYSENTER_stack, sizeof(((struct tss_struct *)0)->SYSENTER_stack));
+
+#ifdef CONFIG_CC_STACKPROTECTOR
+	BLANK();
+	OFFSET(stack_canary_offset, stack_canary, canary);
+#endif
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_LGUEST) || defined(CONFIG_LGUEST_GUEST) || defined(CONFIG_LGUEST_MODULE)
 	BLANK();

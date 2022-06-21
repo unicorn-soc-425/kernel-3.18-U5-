@@ -24,6 +24,10 @@
 /* ethtool support for e1000 */
 
 #include "e1000.h"
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> v4.9.227
 #include <linux/uaccess.h>
 
 enum {NETDEV_STATS, E1000_STATS};
@@ -558,8 +562,11 @@ static void e1000_get_drvinfo(struct net_device *netdev,
 
 	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->regdump_len = e1000_get_regs_len(netdev);
 	drvinfo->eedump_len = e1000_get_eeprom_len(netdev);
+=======
+>>>>>>> v4.9.227
 }
 
 static void e1000_get_ringparam(struct net_device *netdev,
@@ -629,6 +636,10 @@ static int e1000_set_ringparam(struct net_device *netdev,
 	for (i = 0; i < adapter->num_rx_queues; i++)
 		rxdr[i].count = rxdr->count;
 
+<<<<<<< HEAD
+=======
+	err = 0;
+>>>>>>> v4.9.227
 	if (netif_running(adapter->netdev)) {
 		/* Try to get new resources before deleting old */
 		err = e1000_setup_all_rx_resources(adapter);
@@ -649,14 +660,22 @@ static int e1000_set_ringparam(struct net_device *netdev,
 		adapter->rx_ring = rxdr;
 		adapter->tx_ring = txdr;
 		err = e1000_up(adapter);
+<<<<<<< HEAD
 		if (err)
 			goto err_setup;
+=======
+>>>>>>> v4.9.227
 	}
 	kfree(tx_old);
 	kfree(rx_old);
 
 	clear_bit(__E1000_RESETTING, &adapter->flags);
+<<<<<<< HEAD
 	return 0;
+=======
+	return err;
+
+>>>>>>> v4.9.227
 err_setup_tx:
 	e1000_free_all_rx_resources(adapter);
 err_setup_rx:
@@ -668,7 +687,10 @@ err_alloc_rx:
 err_alloc_tx:
 	if (netif_running(adapter->netdev))
 		e1000_up(adapter);
+<<<<<<< HEAD
 err_setup:
+=======
+>>>>>>> v4.9.227
 	clear_bit(__E1000_RESETTING, &adapter->flags);
 	return err;
 }
@@ -1461,7 +1483,11 @@ static int e1000_run_loopback_test(struct e1000_adapter *adapter)
 			ret_val = 13; /* ret_val is the same as mis-compare */
 			break;
 		}
+<<<<<<< HEAD
 		if (jiffies >= (time + 2)) {
+=======
+		if (time_after_eq(jiffies, time + 2)) {
+>>>>>>> v4.9.227
 			ret_val = 14; /* error code for time out error */
 			break;
 		}
@@ -1555,7 +1581,11 @@ static void e1000_diag_test(struct net_device *netdev,
 
 		if (if_running)
 			/* indicate we're in test mode */
+<<<<<<< HEAD
 			dev_close(netdev);
+=======
+			e1000_close(netdev);
+>>>>>>> v4.9.227
 		else
 			e1000_reset(adapter);
 
@@ -1584,7 +1614,11 @@ static void e1000_diag_test(struct net_device *netdev,
 		e1000_reset(adapter);
 		clear_bit(__E1000_TESTING, &adapter->flags);
 		if (if_running)
+<<<<<<< HEAD
 			dev_open(netdev);
+=======
+			e1000_open(netdev);
+>>>>>>> v4.9.227
 	} else {
 		e_info(hw, "online testing starting\n");
 		/* Online tests */
@@ -1827,11 +1861,20 @@ static void e1000_get_ethtool_stats(struct net_device *netdev,
 {
 	struct e1000_adapter *adapter = netdev_priv(netdev);
 	int i;
+<<<<<<< HEAD
 	char *p = NULL;
 	const struct e1000_stats *stat = e1000_gstrings_stats;
 
 	e1000_update_stats(adapter);
 	for (i = 0; i < E1000_GLOBAL_STATS_LEN; i++) {
+=======
+	const struct e1000_stats *stat = e1000_gstrings_stats;
+
+	e1000_update_stats(adapter);
+	for (i = 0; i < E1000_GLOBAL_STATS_LEN; i++, stat++) {
+		char *p;
+
+>>>>>>> v4.9.227
 		switch (stat->type) {
 		case NETDEV_STATS:
 			p = (char *)netdev + stat->stat_offset;
@@ -1842,15 +1885,22 @@ static void e1000_get_ethtool_stats(struct net_device *netdev,
 		default:
 			WARN_ONCE(1, "Invalid E1000 stat type: %u index %d\n",
 				  stat->type, i);
+<<<<<<< HEAD
 			break;
+=======
+			continue;
+>>>>>>> v4.9.227
 		}
 
 		if (stat->sizeof_stat == sizeof(u64))
 			data[i] = *(u64 *)p;
 		else
 			data[i] = *(u32 *)p;
+<<<<<<< HEAD
 
 		stat++;
+=======
+>>>>>>> v4.9.227
 	}
 /* BUG_ON(i != E1000_STATS_LEN); */
 }

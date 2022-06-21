@@ -385,12 +385,15 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	signal = current_thread_info()->exec_domain
 		&& current_thread_info()->exec_domain->signal_invmap
 		&& sig < 32
 		? current_thread_info()->exec_domain->signal_invmap[sig]
 		: sig;
 
+=======
+>>>>>>> v4.9.227
 	err |= setup_sigcontext(&frame->sc, regs, set->sig[0]);
 
 	/* Give up earlier as i386, in case */
@@ -441,7 +444,11 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs
 	 * All edited pointers are subject to NEFF.
 	 */
 	regs->regs[REG_SP] = neff_sign_extend((unsigned long)frame);
+<<<<<<< HEAD
 	regs->regs[REG_ARG1] = signal; /* Arg for signal handler */
+=======
+	regs->regs[REG_ARG1] = sig; /* Arg for signal handler */
+>>>>>>> v4.9.227
 
         /* FIXME:
            The glibc profiling support for SH-5 needs to be passed a sigcontext
@@ -457,11 +464,17 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs
 
 	regs->pc = neff_sign_extend((unsigned long)ksig->ka.sa.sa_handler);
 
+<<<<<<< HEAD
 	set_fs(USER_DS);
 
 	/* Broken %016Lx */
 	pr_debug("SIG deliver (#%d,%s:%d): sp=%p pc=%08Lx%08Lx link=%08Lx%08Lx\n",
 		 signal, current->comm, current->pid, frame,
+=======
+	/* Broken %016Lx */
+	pr_debug("SIG deliver (#%d,%s:%d): sp=%p pc=%08Lx%08Lx link=%08Lx%08Lx\n",
+		 sig, current->comm, current->pid, frame,
+>>>>>>> v4.9.227
 		 regs->pc >> 32, regs->pc & 0xffffffff,
 		 DEREF_REG_PR >> 32, DEREF_REG_PR & 0xffffffff);
 
@@ -473,19 +486,25 @@ static int setup_rt_frame(struct ksignal *kig, sigset_t *set,
 {
 	struct rt_sigframe __user *frame;
 	int err = 0, sig = ksig->sig;
+<<<<<<< HEAD
 	int signal;
+=======
+>>>>>>> v4.9.227
 
 	frame = get_sigframe(&ksig->ka, regs->regs[REG_SP], sizeof(*frame));
 
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	signal = current_thread_info()->exec_domain
 		&& current_thread_info()->exec_domain->signal_invmap
 		&& sig < 32
 		? current_thread_info()->exec_domain->signal_invmap[sig]
 		: sig;
 
+=======
+>>>>>>> v4.9.227
 	err |= __put_user(&frame->info, &frame->pinfo);
 	err |= __put_user(&frame->uc, &frame->puc);
 	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
@@ -542,15 +561,24 @@ static int setup_rt_frame(struct ksignal *kig, sigset_t *set,
 	 * All edited pointers are subject to NEFF.
 	 */
 	regs->regs[REG_SP] = neff_sign_extend((unsigned long)frame);
+<<<<<<< HEAD
 	regs->regs[REG_ARG1] = signal; /* Arg for signal handler */
+=======
+	regs->regs[REG_ARG1] = sig; /* Arg for signal handler */
+>>>>>>> v4.9.227
 	regs->regs[REG_ARG2] = (unsigned long long)(unsigned long)(signed long)&frame->info;
 	regs->regs[REG_ARG3] = (unsigned long long)(unsigned long)(signed long)&frame->uc.uc_mcontext;
 	regs->pc = neff_sign_extend((unsigned long)ksig->ka.sa.sa_handler);
 
+<<<<<<< HEAD
 	set_fs(USER_DS);
 
 	pr_debug("SIG deliver (#%d,%s:%d): sp=%p pc=%08Lx%08Lx link=%08Lx%08Lx\n",
 		 signal, current->comm, current->pid, frame,
+=======
+	pr_debug("SIG deliver (#%d,%s:%d): sp=%p pc=%08Lx%08Lx link=%08Lx%08Lx\n",
+		 sig, current->comm, current->pid, frame,
+>>>>>>> v4.9.227
 		 regs->pc >> 32, regs->pc & 0xffffffff,
 		 DEREF_REG_PR >> 32, DEREF_REG_PR & 0xffffffff);
 

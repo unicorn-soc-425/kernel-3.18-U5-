@@ -22,12 +22,21 @@
 #include "ivtv-cards.h"
 #include "ivtv-i2c.h"
 
+<<<<<<< HEAD
 #include <media/msp3400.h>
 #include <media/m52790.h>
 #include <media/wm8775.h>
 #include <media/cs53l32a.h>
 #include <media/cx25840.h>
 #include <media/upd64031a.h>
+=======
+#include <media/drv-intf/msp3400.h>
+#include <media/i2c/m52790.h>
+#include <media/i2c/wm8775.h>
+#include <media/i2c/cs53l32a.h>
+#include <media/drv-intf/cx25840.h>
+#include <media/i2c/upd64031a.h>
+>>>>>>> v4.9.227
 
 #define MSP_TUNER  MSP_INPUT(MSP_IN_SCART1, MSP_IN_TUNER1, \
 				MSP_DSP_IN_TUNER, MSP_DSP_IN_TUNER)

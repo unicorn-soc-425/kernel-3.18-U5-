@@ -11,10 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 
 #include <pwrseqcmd.h>
@@ -23,8 +26,13 @@
 /* This routine deals with the Power Configuration CMDs parsing
  * for RTL8723/RTL8188E Series IC.
  */
+<<<<<<< HEAD
 u8 rtl88eu_pwrseqcmdparsing(struct adapter *padapter, u8 cut_vers, u8 fab_vers,
 			    u8 ifacetype, struct wl_pwr_cfg pwrseqcmd[])
+=======
+u8 rtl88eu_pwrseqcmdparsing(struct adapter *padapter, u8 cut_vers,
+			    struct wl_pwr_cfg pwrseqcmd[])
+>>>>>>> v4.9.227
 {
 	struct wl_pwr_cfg pwrcfgcmd = {0};
 	u8 poll_bit = false;
@@ -37,6 +45,7 @@ u8 rtl88eu_pwrseqcmdparsing(struct adapter *padapter, u8 cut_vers, u8 fab_vers,
 	do {
 		pwrcfgcmd = pwrseqcmd[aryidx];
 
+<<<<<<< HEAD
 		RT_TRACE(_module_hal_init_c_ , _drv_info_,
 			 ("rtl88eu_pwrseqcmdparsing: offset(%#x) cut_msk(%#x)"
 			  "fab_msk(%#x) interface_msk(%#x) base(%#x) cmd(%#x)"
@@ -46,14 +55,27 @@ u8 rtl88eu_pwrseqcmdparsing(struct adapter *padapter, u8 cut_vers, u8 fab_vers,
 			 GET_PWR_CFG_FAB_MASK(pwrcfgcmd),
 			 GET_PWR_CFG_INTF_MASK(pwrcfgcmd),
 			 GET_PWR_CFG_BASE(pwrcfgcmd),
+=======
+		RT_TRACE(_module_hal_init_c_, _drv_info_,
+			 ("rtl88eu_pwrseqcmdparsing: offset(%#x) cut_msk(%#x)"
+			  " cmd(%#x)"
+			  "msk(%#x) value(%#x)\n",
+			 GET_PWR_CFG_OFFSET(pwrcfgcmd),
+			 GET_PWR_CFG_CUT_MASK(pwrcfgcmd),
+>>>>>>> v4.9.227
 			 GET_PWR_CFG_CMD(pwrcfgcmd),
 			 GET_PWR_CFG_MASK(pwrcfgcmd),
 			 GET_PWR_CFG_VALUE(pwrcfgcmd)));
 
+<<<<<<< HEAD
 		/* Only Handle the command whose FAB, CUT, and Interface are matched */
 		if ((GET_PWR_CFG_FAB_MASK(pwrcfgcmd) & fab_vers) &&
 		    (GET_PWR_CFG_CUT_MASK(pwrcfgcmd) & cut_vers) &&
 		    (GET_PWR_CFG_INTF_MASK(pwrcfgcmd) & ifacetype)) {
+=======
+		/* Only Handle the command whose CUT is matched */
+		if (GET_PWR_CFG_CUT_MASK(pwrcfgcmd) & cut_vers) {
+>>>>>>> v4.9.227
 			switch (GET_PWR_CFG_CMD(pwrcfgcmd)) {
 			case PWR_CMD_READ:
 				RT_TRACE(_module_hal_init_c_, _drv_info_,
@@ -109,7 +131,10 @@ u8 rtl88eu_pwrseqcmdparsing(struct adapter *padapter, u8 cut_vers, u8 fab_vers,
 				RT_TRACE(_module_hal_init_c_, _drv_info_,
 					 ("rtl88eu_pwrseqcmdparsing: PWR_CMD_END\n"));
 				return true;
+<<<<<<< HEAD
 				break;
+=======
+>>>>>>> v4.9.227
 			default:
 				RT_TRACE(_module_hal_init_c_, _drv_err_,
 					 ("rtl88eu_pwrseqcmdparsing: Unknown CMD!!\n"));

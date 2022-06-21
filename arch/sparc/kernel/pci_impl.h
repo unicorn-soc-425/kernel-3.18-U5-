@@ -97,6 +97,10 @@ struct pci_pbm_info {
 	/* PBM I/O and Memory space resources. */
 	struct resource			io_space;
 	struct resource			mem_space;
+<<<<<<< HEAD
+=======
+	struct resource			mem64_space;
+>>>>>>> v4.9.227
 	struct resource			busn;
 
 	/* Base of PCI Config space, can be per-PBM or shared. */

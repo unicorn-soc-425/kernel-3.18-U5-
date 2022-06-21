@@ -1,5 +1,9 @@
 /* Intel PRO/1000 Linux driver
+<<<<<<< HEAD
  * Copyright(c) 1999 - 2014 Intel Corporation.
+=======
+ * Copyright(c) 1999 - 2015 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -346,7 +350,11 @@ void e1000e_update_mc_addr_list_generic(struct e1000_hw *hw,
 		hash_reg = (hash_value >> 5) & (hw->mac.mta_reg_count - 1);
 		hash_bit = hash_value & 0x1F;
 
+<<<<<<< HEAD
 		hw->mac.mta_shadow[hash_reg] |= (1 << hash_bit);
+=======
+		hw->mac.mta_shadow[hash_reg] |= BIT(hash_bit);
+>>>>>>> v4.9.227
 		mc_addr_list += (ETH_ALEN);
 	}
 
@@ -410,9 +418,12 @@ void e1000e_clear_hw_cntrs_base(struct e1000_hw *hw)
  *  Checks to see of the link status of the hardware has changed.  If a
  *  change in link status has been detected, then we read the PHY registers
  *  to get the current speed/duplex if link exists.
+<<<<<<< HEAD
  *
  *  Returns a negative error code (-E1000_ERR_*) or 0 (link down) or 1 (link
  *  up).
+=======
+>>>>>>> v4.9.227
  **/
 s32 e1000e_check_for_copper_link(struct e1000_hw *hw)
 {
@@ -426,13 +437,19 @@ s32 e1000e_check_for_copper_link(struct e1000_hw *hw)
 	 * Change or Rx Sequence Error interrupt.
 	 */
 	if (!mac->get_link_status)
+<<<<<<< HEAD
 		return 1;
+=======
+		return 0;
+	mac->get_link_status = false;
+>>>>>>> v4.9.227
 
 	/* First we want to see if the MII Status Register reports
 	 * link.  If so, then we want to get the current speed/duplex
 	 * of the PHY.
 	 */
 	ret_val = e1000e_phy_has_link_generic(hw, 1, 0, &link);
+<<<<<<< HEAD
 	if (ret_val)
 		return ret_val;
 
@@ -440,6 +457,10 @@ s32 e1000e_check_for_copper_link(struct e1000_hw *hw)
 		return 0;	/* No link detected */
 
 	mac->get_link_status = false;
+=======
+	if (ret_val || !link)
+		goto out;
+>>>>>>> v4.9.227
 
 	/* Check if there was DownShift, must be checked
 	 * immediately after link-up
@@ -450,7 +471,11 @@ s32 e1000e_check_for_copper_link(struct e1000_hw *hw)
 	 * we have already determined whether we have link or not.
 	 */
 	if (!mac->autoneg)
+<<<<<<< HEAD
 		return 1;
+=======
+		return -E1000_ERR_CONFIG;
+>>>>>>> v4.9.227
 
 	/* Auto-Neg is enabled.  Auto Speed Detection takes care
 	 * of MAC speed/duplex configuration.  So we only need to
@@ -464,12 +489,23 @@ s32 e1000e_check_for_copper_link(struct e1000_hw *hw)
 	 * different link partner.
 	 */
 	ret_val = e1000e_config_fc_after_link_up(hw);
+<<<<<<< HEAD
 	if (ret_val) {
 		e_dbg("Error configuring flow control\n");
 		return ret_val;
 	}
 
 	return 1;
+=======
+	if (ret_val)
+		e_dbg("Error configuring flow control\n");
+
+	return ret_val;
+
+out:
+	mac->get_link_status = true;
+	return ret_val;
+>>>>>>> v4.9.227
 }
 
 /**

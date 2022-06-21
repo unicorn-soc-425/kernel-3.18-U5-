@@ -50,7 +50,11 @@
 
 / {
 	model = "Geniatech ATV1200";
+<<<<<<< HEAD
 	compatible = "geniatech,atv1200";
+=======
+	compatible = "geniatech,atv1200", "amlogic,meson6";
+>>>>>>> v4.9.227
 
 	aliases {
 		serial0 = &uart_AO;
@@ -64,3 +68,10 @@
 &uart_AO {
 	status = "okay";
 };
+<<<<<<< HEAD
+=======
+
+&ethmac {
+	status = "okay";
+};
+>>>>>>> v4.9.227

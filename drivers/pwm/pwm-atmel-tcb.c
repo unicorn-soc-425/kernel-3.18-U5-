@@ -305,7 +305,11 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	 */
 	if (i == 5) {
 		i = slowclk;
+<<<<<<< HEAD
 		rate = 32768;
+=======
+		rate = clk_get_rate(tc->slow_clk);
+>>>>>>> v4.9.227
 		min = div_u64(NSEC_PER_SEC, rate);
 		max = min << tc->tcb_config->counter_width;
 
@@ -347,7 +351,11 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	tcbpwm->duty = duty;
 
 	/* If the PWM is enabled, call enable to apply the new conf */
+<<<<<<< HEAD
 	if (test_bit(PWMF_ENABLED, &pwm->flags))
+=======
+	if (pwm_is_enabled(pwm))
+>>>>>>> v4.9.227
 		atmel_tcb_pwm_enable(chip, pwm);
 
 	return 0;
@@ -387,9 +395,15 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
 
 	tcbpwm = devm_kzalloc(&pdev->dev, sizeof(*tcbpwm), GFP_KERNEL);
 	if (tcbpwm == NULL) {
+<<<<<<< HEAD
 		atmel_tc_free(tc);
 		dev_err(&pdev->dev, "failed to allocate memory\n");
 		return -ENOMEM;
+=======
+		err = -ENOMEM;
+		dev_err(&pdev->dev, "failed to allocate memory\n");
+		goto err_free_tc;
+>>>>>>> v4.9.227
 	}
 
 	tcbpwm->chip.dev = &pdev->dev;
@@ -400,6 +414,7 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
 	tcbpwm->chip.npwm = NPWM;
 	tcbpwm->tc = tc;
 
+<<<<<<< HEAD
 	spin_lock_init(&tcbpwm->lock);
 
 	err = pwmchip_add(&tcbpwm->chip);
@@ -407,10 +422,32 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
 		atmel_tc_free(tc);
 		return err;
 	}
+=======
+	err = clk_prepare_enable(tc->slow_clk);
+	if (err)
+		goto err_free_tc;
+
+	spin_lock_init(&tcbpwm->lock);
+
+	err = pwmchip_add(&tcbpwm->chip);
+	if (err < 0)
+		goto err_disable_clk;
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, tcbpwm);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_disable_clk:
+	clk_disable_unprepare(tcbpwm->tc->slow_clk);
+
+err_free_tc:
+	atmel_tc_free(tc);
+
+	return err;
+>>>>>>> v4.9.227
 }
 
 static int atmel_tcb_pwm_remove(struct platform_device *pdev)
@@ -418,6 +455,11 @@ static int atmel_tcb_pwm_remove(struct platform_device *pdev)
 	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
 	int err;
 
+<<<<<<< HEAD
+=======
+	clk_disable_unprepare(tcbpwm->tc->slow_clk);
+
+>>>>>>> v4.9.227
 	err = pwmchip_remove(&tcbpwm->chip);
 	if (err < 0)
 		return err;
@@ -436,7 +478,10 @@ MODULE_DEVICE_TABLE(of, atmel_tcb_pwm_dt_ids);
 static struct platform_driver atmel_tcb_pwm_driver = {
 	.driver = {
 		.name = "atmel-tcb-pwm",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = atmel_tcb_pwm_dt_ids,
 	},
 	.probe = atmel_tcb_pwm_probe,

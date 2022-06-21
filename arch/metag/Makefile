@@ -72,7 +72,11 @@ $(boot_targets): vmlinux
 	$(Q)$(MAKE) $(build)=$(boot)/dts $(boot)/dts/$@
 
 dtbs: scripts
+<<<<<<< HEAD
 	$(Q)$(MAKE) $(build)=$(boot)/dts dtbs
+=======
+	$(Q)$(MAKE) $(build)=$(boot)/dts
+>>>>>>> v4.9.227
 
 archclean:
 	$(Q)$(MAKE) $(clean)=$(boot)

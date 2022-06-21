@@ -29,11 +29,18 @@ static int st_magn_spi_probe(struct spi_device *spi)
 		return -ENOMEM;
 
 	mdata = iio_priv(indio_dev);
+<<<<<<< HEAD
 	mdata->dev = &spi->dev;
 
 	st_sensors_spi_configure(indio_dev, spi, mdata);
 
 	err = st_magn_common_probe(indio_dev, NULL);
+=======
+
+	st_sensors_spi_configure(indio_dev, spi, mdata);
+
+	err = st_magn_common_probe(indio_dev);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return err;
 
@@ -50,13 +57,20 @@ static int st_magn_spi_remove(struct spi_device *spi)
 
 static const struct spi_device_id st_magn_id_table[] = {
 	{ LIS3MDL_MAGN_DEV_NAME },
+<<<<<<< HEAD
+=======
+	{ LSM303AGR_MAGN_DEV_NAME },
+>>>>>>> v4.9.227
 	{},
 };
 MODULE_DEVICE_TABLE(spi, st_magn_id_table);
 
 static struct spi_driver st_magn_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "st-magn-spi",
 	},
 	.probe = st_magn_spi_probe,

@@ -379,7 +379,11 @@ static int tegra30_i2s_platform_probe(struct platform_device *pdev)
 	struct tegra30_i2s *i2s;
 	const struct of_device_id *match;
 	u32 cif_ids[2];
+<<<<<<< HEAD
 	struct resource *mem, *memregion;
+=======
+	struct resource *mem;
+>>>>>>> v4.9.227
 	void __iomem *regs;
 	int ret;
 
@@ -419,6 +423,7 @@ static int tegra30_i2s_platform_probe(struct platform_device *pdev)
 	}
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!mem) {
 		dev_err(&pdev->dev, "No memory resource\n");
 		ret = -ENODEV;
@@ -437,6 +442,11 @@ static int tegra30_i2s_platform_probe(struct platform_device *pdev)
 	if (!regs) {
 		dev_err(&pdev->dev, "ioremap failed\n");
 		ret = -ENOMEM;
+=======
+	regs = devm_ioremap_resource(&pdev->dev, mem);
+	if (IS_ERR(regs)) {
+		ret = PTR_ERR(regs);
+>>>>>>> v4.9.227
 		goto err_clk_put;
 	}
 
@@ -585,7 +595,10 @@ static const struct dev_pm_ops tegra30_i2s_pm_ops = {
 static struct platform_driver tegra30_i2s_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = tegra30_i2s_of_match,
 		.pm = &tegra30_i2s_pm_ops,
 	},

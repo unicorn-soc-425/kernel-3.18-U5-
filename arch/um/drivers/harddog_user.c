@@ -9,8 +9,13 @@
 #include <os.h>
 
 struct dog_data {
+<<<<<<< HEAD
 	int stdin;
 	int stdout;
+=======
+	int stdin_fd;
+	int stdout_fd;
+>>>>>>> v4.9.227
 	int close_me[2];
 };
 
@@ -18,11 +23,19 @@ static void pre_exec(void *d)
 {
 	struct dog_data *data = d;
 
+<<<<<<< HEAD
 	dup2(data->stdin, 0);
 	dup2(data->stdout, 1);
 	dup2(data->stdout, 2);
 	close(data->stdin);
 	close(data->stdout);
+=======
+	dup2(data->stdin_fd, 0);
+	dup2(data->stdout_fd, 1);
+	dup2(data->stdout_fd, 2);
+	close(data->stdin_fd);
+	close(data->stdout_fd);
+>>>>>>> v4.9.227
 	close(data->close_me[0]);
 	close(data->close_me[1]);
 }
@@ -49,8 +62,13 @@ int start_watchdog(int *in_fd_ret, int *out_fd_ret, char *sock)
 		goto out_close_in;
 	}
 
+<<<<<<< HEAD
 	data.stdin = out_fds[0];
 	data.stdout = in_fds[1];
+=======
+	data.stdin_fd = out_fds[0];
+	data.stdout_fd = in_fds[1];
+>>>>>>> v4.9.227
 	data.close_me[0] = out_fds[1];
 	data.close_me[1] = in_fds[0];
 

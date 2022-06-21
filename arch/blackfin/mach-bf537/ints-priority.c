@@ -89,8 +89,12 @@ static struct irq_chip bf537_generic_error_irqchip = {
 	.irq_unmask = bf537_generic_error_unmask_irq,
 };
 
+<<<<<<< HEAD
 static void bf537_demux_error_irq(unsigned int int_err_irq,
 				  struct irq_desc *inta_desc)
+=======
+static void bf537_demux_error_irq(struct irq_desc *inta_desc)
+>>>>>>> v4.9.227
 {
 	int irq = 0;
 
@@ -182,13 +186,21 @@ static struct irq_chip bf537_mac_rx_irqchip = {
 	.irq_unmask = bf537_mac_rx_unmask_irq,
 };
 
+<<<<<<< HEAD
 static void bf537_demux_mac_rx_irq(unsigned int int_irq,
 				   struct irq_desc *desc)
+=======
+static void bf537_demux_mac_rx_irq(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	if (bfin_read_DMA1_IRQ_STATUS() & (DMA_DONE | DMA_ERR))
 		bfin_handle_irq(IRQ_MAC_RX);
 	else
+<<<<<<< HEAD
 		bfin_demux_gpio_irq(int_irq, desc);
+=======
+		bfin_demux_gpio_irq(desc);
+>>>>>>> v4.9.227
 }
 #endif
 

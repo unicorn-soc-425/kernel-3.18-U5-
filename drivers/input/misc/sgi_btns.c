@@ -157,7 +157,10 @@ static struct platform_driver sgi_buttons_driver = {
 	.remove	= sgi_buttons_remove,
 	.driver	= {
 		.name	= "sgibtns",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(sgi_buttons_driver);

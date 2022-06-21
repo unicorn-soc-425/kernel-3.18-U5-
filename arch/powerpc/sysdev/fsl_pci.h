@@ -130,6 +130,7 @@ void fsl_pci_assign_primary(void);
 static inline void fsl_pci_assign_primary(void) {}
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_EDAC_MPC85XX
 int mpc85xx_pci_err_probe(struct platform_device *op);
 #else
@@ -139,6 +140,8 @@ static inline int mpc85xx_pci_err_probe(struct platform_device *op)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_FSL_PCI
 extern int fsl_pci_mcheck_exception(struct pt_regs *);
 #else

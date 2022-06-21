@@ -91,7 +91,11 @@ int __init afs_fs_init(void)
 	afs_inode_cachep = kmem_cache_create("afs_inode_cache",
 					     sizeof(struct afs_vnode),
 					     0,
+<<<<<<< HEAD
 					     SLAB_HWCACHE_ALIGN,
+=======
+					     SLAB_HWCACHE_ALIGN|SLAB_ACCOUNT,
+>>>>>>> v4.9.227
 					     afs_i_init_once);
 	if (!afs_inode_cachep) {
 		printk(KERN_NOTICE "kAFS: Failed to allocate inode cache\n");
@@ -315,8 +319,14 @@ static int afs_fill_super(struct super_block *sb,
 	_enter("");
 
 	/* fill in the superblock */
+<<<<<<< HEAD
 	sb->s_blocksize		= PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits	= PAGE_CACHE_SHIFT;
+=======
+	sb->s_blocksize		= PAGE_SIZE;
+	sb->s_blocksize_bits	= PAGE_SHIFT;
+	sb->s_maxbytes		= MAX_LFS_FILESIZE;
+>>>>>>> v4.9.227
 	sb->s_magic		= AFS_FS_MAGIC;
 	sb->s_op		= &afs_super_ops;
 	sb->s_bdi		= &as->volume->bdi;
@@ -529,7 +539,11 @@ static void afs_destroy_inode(struct inode *inode)
 static int afs_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
 	struct afs_volume_status vs;
+<<<<<<< HEAD
 	struct afs_vnode *vnode = AFS_FS_I(dentry->d_inode);
+=======
+	struct afs_vnode *vnode = AFS_FS_I(d_inode(dentry));
+>>>>>>> v4.9.227
 	struct key *key;
 	int ret;
 

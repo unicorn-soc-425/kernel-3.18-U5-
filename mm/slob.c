@@ -45,7 +45,11 @@
  * NUMA support in SLOB is fairly simplistic, pushing most of the real
  * logic down to the page allocator, and simply doing the node accounting
  * on the upper levels. In the event that a node id is explicitly
+<<<<<<< HEAD
  * provided, alloc_pages_exact_node() with the specified node id is used
+=======
+ * provided, __alloc_pages_node() with the specified node id is used
+>>>>>>> v4.9.227
  * instead. The common case (or when the node id isn't explicitly provided)
  * will default to the current node, as per numa_node_id().
  *
@@ -193,7 +197,11 @@ static void *slob_new_pages(gfp_t gfp, int order, int node)
 
 #ifdef CONFIG_NUMA
 	if (node != NUMA_NO_NODE)
+<<<<<<< HEAD
 		page = alloc_pages_exact_node(node, gfp, order);
+=======
+		page = __alloc_pages_node(node, gfp, order);
+>>>>>>> v4.9.227
 	else
 #endif
 		page = alloc_pages(gfp, order);
@@ -532,7 +540,11 @@ int __kmem_cache_create(struct kmem_cache *c, unsigned long flags)
 	return 0;
 }
 
+<<<<<<< HEAD
 void *slob_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
+=======
+static void *slob_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
+>>>>>>> v4.9.227
 {
 	void *b;
 
@@ -558,7 +570,10 @@ void *slob_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
 	kmemleak_alloc_recursive(b, c->size, 1, c->flags, flags);
 	return b;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(slob_alloc_node);
+=======
+>>>>>>> v4.9.227
 
 void *kmem_cache_alloc(struct kmem_cache *cachep, gfp_t flags)
 {
@@ -612,12 +627,35 @@ void kmem_cache_free(struct kmem_cache *c, void *b)
 }
 EXPORT_SYMBOL(kmem_cache_free);
 
+<<<<<<< HEAD
+=======
+void kmem_cache_free_bulk(struct kmem_cache *s, size_t size, void **p)
+{
+	__kmem_cache_free_bulk(s, size, p);
+}
+EXPORT_SYMBOL(kmem_cache_free_bulk);
+
+int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+								void **p)
+{
+	return __kmem_cache_alloc_bulk(s, flags, size, p);
+}
+EXPORT_SYMBOL(kmem_cache_alloc_bulk);
+
+>>>>>>> v4.9.227
 int __kmem_cache_shutdown(struct kmem_cache *c)
 {
 	/* No way to check for remaining objects */
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+void __kmem_cache_release(struct kmem_cache *c)
+{
+}
+
+>>>>>>> v4.9.227
 int __kmem_cache_shrink(struct kmem_cache *d)
 {
 	return 0;

@@ -156,7 +156,11 @@ struct baycom_state {
 
 /* --------------------------------------------------------------------- */
 
+<<<<<<< HEAD
 static void __inline__ baycom_int_freq(struct baycom_state *bc)
+=======
+static inline void baycom_int_freq(struct baycom_state *bc)
+>>>>>>> v4.9.227
 {
 #ifdef BAYCOM_DEBUG
 	unsigned long cur_jiffies = jiffies;
@@ -192,7 +196,11 @@ static void __inline__ baycom_int_freq(struct baycom_state *bc)
 
 /* --------------------------------------------------------------------- */
 
+<<<<<<< HEAD
 static __inline__ void par96_tx(struct net_device *dev, struct baycom_state *bc)
+=======
+static inline void par96_tx(struct net_device *dev, struct baycom_state *bc)
+>>>>>>> v4.9.227
 {
 	int i;
 	unsigned int data = hdlcdrv_getbits(&bc->hdrv);
@@ -216,7 +224,11 @@ static __inline__ void par96_tx(struct net_device *dev, struct baycom_state *bc)
 
 /* --------------------------------------------------------------------- */
 
+<<<<<<< HEAD
 static __inline__ void par96_rx(struct net_device *dev, struct baycom_state *bc)
+=======
+static inline void par96_rx(struct net_device *dev, struct baycom_state *bc)
+>>>>>>> v4.9.227
 {
 	int i;
 	unsigned int data, mask, mask2, descx;

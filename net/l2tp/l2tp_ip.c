@@ -24,7 +24,10 @@
 #include <net/icmp.h>
 #include <net/udp.h>
 #include <net/inet_common.h>
+<<<<<<< HEAD
 #include <net/inet_hashtables.h>
+=======
+>>>>>>> v4.9.227
 #include <net/tcp_states.h>
 #include <net/protocol.h>
 #include <net/xfrm.h>
@@ -48,7 +51,12 @@ static inline struct l2tp_ip_sock *l2tp_ip_sk(const struct sock *sk)
 	return (struct l2tp_ip_sock *)sk;
 }
 
+<<<<<<< HEAD
 static struct sock *__l2tp_ip_bind_lookup(struct net *net, __be32 laddr, int dif, u32 tunnel_id)
+=======
+static struct sock *__l2tp_ip_bind_lookup(const struct net *net, __be32 laddr,
+					  __be32 raddr, int dif, u32 tunnel_id)
+>>>>>>> v4.9.227
 {
 	struct sock *sk;
 
@@ -62,7 +70,13 @@ static struct sock *__l2tp_ip_bind_lookup(struct net *net, __be32 laddr, int dif
 		if ((l2tp->conn_id == tunnel_id) &&
 		    net_eq(sock_net(sk), net) &&
 		    !(inet->inet_rcv_saddr && inet->inet_rcv_saddr != laddr) &&
+<<<<<<< HEAD
 		    !(sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif))
+=======
+		    (!inet->inet_daddr || !raddr || inet->inet_daddr == raddr) &&
+		    (!sk->sk_bound_dev_if || !dif ||
+		     sk->sk_bound_dev_if == dif))
+>>>>>>> v4.9.227
 			goto found;
 	}
 
@@ -71,6 +85,7 @@ found:
 	return sk;
 }
 
+<<<<<<< HEAD
 static inline struct sock *l2tp_ip_bind_lookup(struct net *net, __be32 laddr, int dif, u32 tunnel_id)
 {
 	struct sock *sk = __l2tp_ip_bind_lookup(net, laddr, dif, tunnel_id);
@@ -80,6 +95,8 @@ static inline struct sock *l2tp_ip_bind_lookup(struct net *net, __be32 laddr, in
 	return sk;
 }
 
+=======
+>>>>>>> v4.9.227
 /* When processing receive frames, there are two cases to
  * consider. Data frames consist of a non-zero session-id and an
  * optional cookie. Control frames consist of a regular L2TP header
@@ -122,6 +139,10 @@ static int l2tp_ip_recv(struct sk_buff *skb)
 	unsigned char *ptr, *optr;
 	struct l2tp_session *session;
 	struct l2tp_tunnel *tunnel = NULL;
+<<<<<<< HEAD
+=======
+	struct iphdr *iph;
+>>>>>>> v4.9.227
 	int length;
 
 	if (!pskb_may_pull(skb, 4))
@@ -142,6 +163,7 @@ static int l2tp_ip_recv(struct sk_buff *skb)
 	}
 
 	/* Ok, this is a data packet. Lookup the session. */
+<<<<<<< HEAD
 	session = l2tp_session_find(net, NULL, session_id);
 	if (session == NULL)
 		goto discard;
@@ -149,12 +171,25 @@ static int l2tp_ip_recv(struct sk_buff *skb)
 	tunnel = session->tunnel;
 	if (tunnel == NULL)
 		goto discard;
+=======
+	session = l2tp_session_get(net, NULL, session_id, true);
+	if (!session)
+		goto discard;
+
+	tunnel = session->tunnel;
+	if (!tunnel)
+		goto discard_sess;
+>>>>>>> v4.9.227
 
 	/* Trace packet contents, if enabled */
 	if (tunnel->debug & L2TP_MSG_DATA) {
 		length = min(32u, skb->len);
 		if (!pskb_may_pull(skb, length))
+<<<<<<< HEAD
 			goto discard;
+=======
+			goto discard_sess;
+>>>>>>> v4.9.227
 
 		/* Point to L2TP header */
 		optr = ptr = skb->data;
@@ -163,7 +198,15 @@ static int l2tp_ip_recv(struct sk_buff *skb)
 		print_hex_dump_bytes("", DUMP_PREFIX_OFFSET, ptr, length);
 	}
 
+<<<<<<< HEAD
 	l2tp_recv_common(session, skb, ptr, optr, 0, skb->len, tunnel->recv_payload_hook);
+=======
+	if (l2tp_v3_ensure_opt_in_linear(session, skb, &ptr, &optr))
+		goto discard_sess;
+
+	l2tp_recv_common(session, skb, ptr, optr, 0, skb->len, tunnel->recv_payload_hook);
+	l2tp_session_dec_refcount(session);
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -176,6 +219,7 @@ pass_up:
 		goto discard;
 
 	tunnel_id = ntohl(*(__be32 *) &skb->data[4]);
+<<<<<<< HEAD
 	tunnel = l2tp_tunnel_find(net, tunnel_id);
 	if (tunnel != NULL)
 		sk = tunnel->sock;
@@ -191,6 +235,19 @@ pass_up:
 		goto discard;
 
 	sock_hold(sk);
+=======
+	iph = (struct iphdr *)skb_network_header(skb);
+
+	read_lock_bh(&l2tp_ip_lock);
+	sk = __l2tp_ip_bind_lookup(net, iph->daddr, iph->saddr, inet_iif(skb),
+				   tunnel_id);
+	if (!sk) {
+		read_unlock_bh(&l2tp_ip_lock);
+		goto discard;
+	}
+	sock_hold(sk);
+	read_unlock_bh(&l2tp_ip_lock);
+>>>>>>> v4.9.227
 
 	if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb))
 		goto discard_put;
@@ -199,6 +256,15 @@ pass_up:
 
 	return sk_receive_skb(sk, skb, 1);
 
+<<<<<<< HEAD
+=======
+discard_sess:
+	if (session->deref)
+		session->deref(session);
+	l2tp_session_dec_refcount(session);
+	goto discard;
+
+>>>>>>> v4.9.227
 discard_put:
 	sock_put(sk);
 
@@ -207,15 +273,41 @@ discard:
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int l2tp_ip_hash(struct sock *sk)
+{
+	if (sk_unhashed(sk)) {
+		write_lock_bh(&l2tp_ip_lock);
+		sk_add_node(sk, &l2tp_ip_table);
+		write_unlock_bh(&l2tp_ip_lock);
+	}
+	return 0;
+}
+
+static void l2tp_ip_unhash(struct sock *sk)
+{
+	if (sk_unhashed(sk))
+		return;
+	write_lock_bh(&l2tp_ip_lock);
+	sk_del_node_init(sk);
+	write_unlock_bh(&l2tp_ip_lock);
+}
+
+>>>>>>> v4.9.227
 static int l2tp_ip_open(struct sock *sk)
 {
 	/* Prevent autobind. We don't have ports. */
 	inet_sk(sk)->inet_num = IPPROTO_L2TP;
 
+<<<<<<< HEAD
 	write_lock_bh(&l2tp_ip_lock);
 	sk_add_node(sk, &l2tp_ip_table);
 	write_unlock_bh(&l2tp_ip_lock);
 
+=======
+	l2tp_ip_hash(sk);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -257,6 +349,7 @@ static int l2tp_ip_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	if (addr->l2tp_family != AF_INET)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = -EADDRINUSE;
 	read_lock_bh(&l2tp_ip_lock);
 	if (__l2tp_ip_bind_lookup(net, addr->l2tp_addr.s_addr,
@@ -266,6 +359,11 @@ static int l2tp_ip_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	read_unlock_bh(&l2tp_ip_lock);
 
 	lock_sock(sk);
+=======
+	lock_sock(sk);
+
+	ret = -EINVAL;
+>>>>>>> v4.9.227
 	if (!sock_flag(sk, SOCK_ZAPPED))
 		goto out;
 
@@ -282,6 +380,7 @@ static int l2tp_ip_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 		inet->inet_rcv_saddr = inet->inet_saddr = addr->l2tp_addr.s_addr;
 	if (chk_addr_ret == RTN_MULTICAST || chk_addr_ret == RTN_BROADCAST)
 		inet->inet_saddr = 0;  /* Use device */
+<<<<<<< HEAD
 	sk_dst_reset(sk);
 
 	l2tp_ip_sk(sk)->conn_id = addr->l2tp_conn_id;
@@ -290,6 +389,24 @@ static int l2tp_ip_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	sk_add_bind_node(sk, &l2tp_ip_bind_table);
 	sk_del_node_init(sk);
 	write_unlock_bh(&l2tp_ip_lock);
+=======
+
+	write_lock_bh(&l2tp_ip_lock);
+	if (__l2tp_ip_bind_lookup(net, addr->l2tp_addr.s_addr, 0,
+				  sk->sk_bound_dev_if, addr->l2tp_conn_id)) {
+		write_unlock_bh(&l2tp_ip_lock);
+		ret = -EADDRINUSE;
+		goto out;
+	}
+
+	sk_dst_reset(sk);
+	l2tp_ip_sk(sk)->conn_id = addr->l2tp_conn_id;
+
+	sk_add_bind_node(sk, &l2tp_ip_bind_table);
+	sk_del_node_init(sk);
+	write_unlock_bh(&l2tp_ip_lock);
+
+>>>>>>> v4.9.227
 	ret = 0;
 	sock_reset_flag(sk, SOCK_ZAPPED);
 
@@ -297,11 +414,14 @@ out:
 	release_sock(sk);
 
 	return ret;
+<<<<<<< HEAD
 
 out_in_use:
 	read_unlock_bh(&l2tp_ip_lock);
 
 	return ret;
+=======
+>>>>>>> v4.9.227
 }
 
 static int l2tp_ip_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
@@ -309,21 +429,39 @@ static int l2tp_ip_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
 	struct sockaddr_l2tpip *lsa = (struct sockaddr_l2tpip *) uaddr;
 	int rc;
 
+<<<<<<< HEAD
 	if (sock_flag(sk, SOCK_ZAPPED)) /* Must bind first - autobinding does not work */
 		return -EINVAL;
 
+=======
+>>>>>>> v4.9.227
 	if (addr_len < sizeof(*lsa))
 		return -EINVAL;
 
 	if (ipv4_is_multicast(lsa->l2tp_addr.s_addr))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	rc = ip4_datagram_connect(sk, uaddr, addr_len);
 	if (rc < 0)
 		return rc;
 
 	lock_sock(sk);
 
+=======
+	lock_sock(sk);
+
+	/* Must bind first - autobinding does not work */
+	if (sock_flag(sk, SOCK_ZAPPED)) {
+		rc = -EINVAL;
+		goto out_sk;
+	}
+
+	rc = __ip4_datagram_connect(sk, uaddr, addr_len);
+	if (rc < 0)
+		goto out_sk;
+
+>>>>>>> v4.9.227
 	l2tp_ip_sk(sk)->peer_conn_id = lsa->l2tp_conn_id;
 
 	write_lock_bh(&l2tp_ip_lock);
@@ -331,7 +469,13 @@ static int l2tp_ip_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
 	sk_add_bind_node(sk, &l2tp_ip_bind_table);
 	write_unlock_bh(&l2tp_ip_lock);
 
+<<<<<<< HEAD
 	release_sock(sk);
+=======
+out_sk:
+	release_sock(sk);
+
+>>>>>>> v4.9.227
 	return rc;
 }
 
@@ -340,7 +484,11 @@ static int l2tp_ip_disconnect(struct sock *sk, int flags)
 	if (sock_flag(sk, SOCK_ZAPPED))
 		return 0;
 
+<<<<<<< HEAD
 	return udp_disconnect(sk, flags);
+=======
+	return __udp_disconnect(sk, flags);
+>>>>>>> v4.9.227
 }
 
 static int l2tp_ip_getname(struct socket *sock, struct sockaddr *uaddr,
@@ -389,7 +537,11 @@ drop:
 /* Userspace will call sendmsg() on the tunnel socket to send L2TP
  * control frames.
  */
+<<<<<<< HEAD
 static int l2tp_ip_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, size_t len)
+=======
+static int l2tp_ip_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>>>>>>> v4.9.227
 {
 	struct sk_buff *skb;
 	int rc;
@@ -445,7 +597,11 @@ static int l2tp_ip_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *m
 	*((__be32 *) skb_put(skb, 4)) = 0;
 
 	/* Copy user data into skb */
+<<<<<<< HEAD
 	rc = memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len);
+=======
+	rc = memcpy_from_msg(skb_put(skb, len), msg, len);
+>>>>>>> v4.9.227
 	if (rc < 0) {
 		kfree_skb(skb);
 		goto error;
@@ -510,7 +666,11 @@ no_route:
 	goto out;
 }
 
+<<<<<<< HEAD
 static int l2tp_ip_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
+=======
+static int l2tp_ip_recvmsg(struct sock *sk, struct msghdr *msg,
+>>>>>>> v4.9.227
 			   size_t len, int noblock, int flags, int *addr_len)
 {
 	struct inet_sock *inet = inet_sk(sk);
@@ -532,7 +692,11 @@ static int l2tp_ip_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *m
 		copied = len;
 	}
 
+<<<<<<< HEAD
 	err = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
+=======
+	err = skb_copy_datagram_msg(skb, 0, msg, copied);
+>>>>>>> v4.9.227
 	if (err)
 		goto done;
 
@@ -595,8 +759,13 @@ static struct proto l2tp_ip_prot = {
 	.sendmsg	   = l2tp_ip_sendmsg,
 	.recvmsg	   = l2tp_ip_recvmsg,
 	.backlog_rcv	   = l2tp_ip_backlog_recv,
+<<<<<<< HEAD
 	.hash		   = inet_hash,
 	.unhash		   = inet_unhash,
+=======
+	.hash		   = l2tp_ip_hash,
+	.unhash		   = l2tp_ip_unhash,
+>>>>>>> v4.9.227
 	.obj_size	   = sizeof(struct l2tp_ip_sock),
 #ifdef CONFIG_COMPAT
 	.compat_setsockopt = compat_ip_setsockopt,
@@ -683,3 +852,7 @@ MODULE_VERSION("1.0");
  * enums
  */
 MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 2, IPPROTO_L2TP);
+<<<<<<< HEAD
+=======
+MODULE_ALIAS_NET_PF_PROTO(PF_INET, IPPROTO_L2TP);
+>>>>>>> v4.9.227

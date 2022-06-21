@@ -23,6 +23,7 @@ extern void machvec_dma_sync_single(struct device *, dma_addr_t, size_t,
 extern void machvec_dma_sync_sg(struct device *, struct scatterlist *, int,
 				enum dma_data_direction);
 
+<<<<<<< HEAD
 #define dma_alloc_coherent(d,s,h,f)	dma_alloc_attrs(d,s,h,f,NULL)
 
 static inline void *dma_alloc_attrs(struct device *dev, size_t size,
@@ -77,6 +78,10 @@ dma_set_mask (struct device *dev, u64 mask)
 	return 0;
 }
 
+=======
+#define get_dma_ops(dev) platform_dma_get_ops(dev)
+
+>>>>>>> v4.9.227
 static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
 {
 	if (!dev->dma_mask)

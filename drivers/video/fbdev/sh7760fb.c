@@ -578,7 +578,10 @@ static int sh7760fb_remove(struct platform_device *dev)
 static struct platform_driver sh7760_lcdc_driver = {
 	.driver = {
 		   .name = "sh7760-lcdc",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   },
 	.probe = sh7760fb_probe,
 	.remove = sh7760fb_remove,

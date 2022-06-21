@@ -652,6 +652,12 @@ static int ti_hecc_rx_poll(struct napi_struct *napi, int quota)
 		mbx_mask = hecc_read(priv, HECC_CANMIM);
 		mbx_mask |= HECC_TX_MBOX_MASK;
 		hecc_write(priv, HECC_CANMIM, mbx_mask);
+<<<<<<< HEAD
+=======
+	} else {
+		/* repoll is done only if whole budget is used */
+		num_pkts = quota;
+>>>>>>> v4.9.227
 	}
 
 	return num_pkts;
@@ -715,13 +721,20 @@ static int ti_hecc_error(struct net_device *ndev, int int_status,
 		hecc_clear_bit(priv, HECC_CANMC, HECC_CANMC_CCR);
 		/* Disable all interrupts in bus-off to avoid int hog */
 		hecc_write(priv, HECC_CANGIM, 0);
+<<<<<<< HEAD
+=======
+		++priv->can.can_stats.bus_off;
+>>>>>>> v4.9.227
 		can_bus_off(ndev);
 	}
 
 	if (err_status & HECC_BUS_ERROR) {
 		++priv->can.can_stats.bus_error;
 		cf->can_id |= CAN_ERR_BUSERROR | CAN_ERR_PROT;
+<<<<<<< HEAD
 		cf->data[2] |= CAN_ERR_PROT_UNSPEC;
+=======
+>>>>>>> v4.9.227
 		if (err_status & HECC_CANES_FE) {
 			hecc_set_bit(priv, HECC_CANES, HECC_CANES_FE);
 			cf->data[2] |= CAN_ERR_PROT_FORM;
@@ -736,6 +749,7 @@ static int ti_hecc_error(struct net_device *ndev, int int_status,
 		}
 		if (err_status & HECC_CANES_CRCE) {
 			hecc_set_bit(priv, HECC_CANES, HECC_CANES_CRCE);
+<<<<<<< HEAD
 			cf->data[3] |= CAN_ERR_PROT_LOC_CRC_SEQ |
 					CAN_ERR_PROT_LOC_CRC_DEL;
 		}
@@ -749,6 +763,19 @@ static int ti_hecc_error(struct net_device *ndev, int int_status,
 	netif_rx(skb);
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+			cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
+		}
+		if (err_status & HECC_CANES_ACKE) {
+			hecc_set_bit(priv, HECC_CANES, HECC_CANES_ACKE);
+			cf->data[3] = CAN_ERR_PROT_LOC_ACK;
+		}
+	}
+
+	stats->rx_packets++;
+	stats->rx_bytes += cf->can_dlc;
+	netif_rx(skb);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -950,7 +977,16 @@ static int ti_hecc_probe(struct platform_device *pdev)
 	netif_napi_add(ndev, &priv->napi, ti_hecc_rx_poll,
 		HECC_DEF_NAPI_WEIGHT);
 
+<<<<<<< HEAD
 	clk_enable(priv->clk);
+=======
+	err = clk_prepare_enable(priv->clk);
+	if (err) {
+		dev_err(&pdev->dev, "clk_prepare_enable() failed\n");
+		goto probe_exit_clk;
+	}
+
+>>>>>>> v4.9.227
 	err = register_candev(ndev);
 	if (err) {
 		dev_err(&pdev->dev, "register_candev() failed\n");
@@ -983,7 +1019,11 @@ static int ti_hecc_remove(struct platform_device *pdev)
 	struct ti_hecc_priv *priv = netdev_priv(ndev);
 
 	unregister_candev(ndev);
+<<<<<<< HEAD
 	clk_disable(priv->clk);
+=======
+	clk_disable_unprepare(priv->clk);
+>>>>>>> v4.9.227
 	clk_put(priv->clk);
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	iounmap(priv->base);
@@ -1008,7 +1048,11 @@ static int ti_hecc_suspend(struct platform_device *pdev, pm_message_t state)
 	hecc_set_bit(priv, HECC_CANMC, HECC_CANMC_PDR);
 	priv->can.state = CAN_STATE_SLEEPING;
 
+<<<<<<< HEAD
 	clk_disable(priv->clk);
+=======
+	clk_disable_unprepare(priv->clk);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1017,8 +1061,16 @@ static int ti_hecc_resume(struct platform_device *pdev)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
 	struct ti_hecc_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 
 	clk_enable(priv->clk);
+=======
+	int err;
+
+	err = clk_prepare_enable(priv->clk);
+	if (err)
+		return err;
+>>>>>>> v4.9.227
 
 	hecc_clear_bit(priv, HECC_CANMC, HECC_CANMC_PDR);
 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
@@ -1039,7 +1091,10 @@ static int ti_hecc_resume(struct platform_device *pdev)
 static struct platform_driver ti_hecc_driver = {
 	.driver = {
 		.name    = DRV_NAME,
+<<<<<<< HEAD
 		.owner   = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = ti_hecc_probe,
 	.remove = ti_hecc_remove,

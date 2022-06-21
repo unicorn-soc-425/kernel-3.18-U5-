@@ -10,7 +10,10 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/cpu.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/highmem.h>
 #include <linux/interrupt.h>
@@ -60,6 +63,10 @@ void *kmap_atomic(struct page *page)
 	void *kmap;
 	int type;
 
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> v4.9.227
 	pagefault_disable();
 	if (!PageHighMem(page))
 		return page_address(page);
@@ -115,7 +122,10 @@ void __kunmap_atomic(void *kvaddr)
 		set_fixmap_pte(idx, __pte(0));
 #else
 		(void) idx;  /* to kill a warning */
+<<<<<<< HEAD
 		set_fixmap_pte(idx, __pte(0));
+=======
+>>>>>>> v4.9.227
 #endif
 		kmap_atomic_idx_pop();
 	} else if (vaddr >= PKMAP_ADDR(0) && vaddr < PKMAP_ADDR(LAST_PKMAP)) {
@@ -123,6 +133,10 @@ void __kunmap_atomic(void *kvaddr)
 		kunmap_high(pte_page(pkmap_page_table[PKMAP_NR(vaddr)]));
 	}
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(__kunmap_atomic);
 
@@ -132,6 +146,10 @@ void *kmap_atomic_pfn(unsigned long pfn)
 	int idx, type;
 	struct page *page = pfn_to_page(pfn);
 
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> v4.9.227
 	pagefault_disable();
 	if (!PageHighMem(page))
 		return page_address(page);
@@ -146,6 +164,7 @@ void *kmap_atomic_pfn(unsigned long pfn)
 
 	return (void *)vaddr;
 }
+<<<<<<< HEAD
 
 struct page *kmap_atomic_to_page(const void *ptr)
 {
@@ -211,3 +230,5 @@ static int __init init_kmap_atomic(void)
 }
 early_initcall(init_kmap_atomic);
 #endif
+=======
+>>>>>>> v4.9.227

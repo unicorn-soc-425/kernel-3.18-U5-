@@ -188,7 +188,11 @@ static int pt3_set_lna(struct dvb_frontend *fe)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int pt3_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t volt)
+=======
+static int pt3_set_voltage(struct dvb_frontend *fe, enum fe_sec_voltage volt)
+>>>>>>> v4.9.227
 {
 	struct pt3_adapter *adap;
 	struct pt3_board *pt3;
@@ -255,7 +259,11 @@ static int pt3_fe_init(struct pt3_board *pt3)
 	pt3_i2c_reset(pt3);
 	ret = pt3_init_all_demods(pt3);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_warn(&pt3->pdev->dev, "Failed to init demod chips.");
+=======
+		dev_warn(&pt3->pdev->dev, "Failed to init demod chips\n");
+>>>>>>> v4.9.227
 		return ret;
 	}
 
@@ -271,7 +279,11 @@ static int pt3_fe_init(struct pt3_board *pt3)
 					      init0_ter, ARRAY_SIZE(init0_ter));
 		if (ret < 0) {
 			dev_warn(&pt3->pdev->dev,
+<<<<<<< HEAD
 				 "demod[%d] faild in init sequence0.", i);
+=======
+				 "demod[%d] failed in init sequence0\n", i);
+>>>>>>> v4.9.227
 			return ret;
 		}
 		ret = fe->ops.init(fe);
@@ -282,7 +294,11 @@ static int pt3_fe_init(struct pt3_board *pt3)
 	usleep_range(2000, 4000);
 	ret = pt3_set_tuner_power(pt3, true, false);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_warn(&pt3->pdev->dev, "Failed to control tuner module.");
+=======
+		dev_warn(&pt3->pdev->dev, "Failed to control tuner module\n");
+>>>>>>> v4.9.227
 		return ret;
 	}
 
@@ -297,7 +313,11 @@ static int pt3_fe_init(struct pt3_board *pt3)
 						cfg_ter, ARRAY_SIZE(cfg_ter));
 		if (ret < 0) {
 			dev_warn(&pt3->pdev->dev,
+<<<<<<< HEAD
 				 "demod[%d] faild in init sequence1.", i);
+=======
+				 "demod[%d] failed in init sequence1\n", i);
+>>>>>>> v4.9.227
 			return ret;
 		}
 	}
@@ -311,19 +331,31 @@ static int pt3_fe_init(struct pt3_board *pt3)
 		ret = fe->ops.tuner_ops.init(fe);
 		if (ret < 0) {
 			dev_warn(&pt3->pdev->dev,
+<<<<<<< HEAD
 				 "Failed to init SAT-tuner[%d].", i);
+=======
+				 "Failed to init SAT-tuner[%d]\n", i);
+>>>>>>> v4.9.227
 			return ret;
 		}
 	}
 	ret = pt3_init_all_mxl301rf(pt3);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_warn(&pt3->pdev->dev, "Failed to init TERR-tuners.");
+=======
+		dev_warn(&pt3->pdev->dev, "Failed to init TERR-tuners\n");
+>>>>>>> v4.9.227
 		return ret;
 	}
 
 	ret = pt3_set_tuner_power(pt3, true, true);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_warn(&pt3->pdev->dev, "Failed to control tuner module.");
+=======
+		dev_warn(&pt3->pdev->dev, "Failed to control tuner module\n");
+>>>>>>> v4.9.227
 		return ret;
 	}
 
@@ -344,7 +376,11 @@ static int pt3_fe_init(struct pt3_board *pt3)
 		}
 		if (ret < 0) {
 			dev_warn(&pt3->pdev->dev,
+<<<<<<< HEAD
 				 "Failed in initial tuning of tuner[%d].", i);
+=======
+				 "Failed in initial tuning of tuner[%d]\n", i);
+>>>>>>> v4.9.227
 			return ret;
 		}
 	}
@@ -366,7 +402,11 @@ static int pt3_fe_init(struct pt3_board *pt3)
 			fe->ops.set_lna = &pt3_set_lna;
 	}
 	if (i < PT3_NUM_FE) {
+<<<<<<< HEAD
 		dev_warn(&pt3->pdev->dev, "FE[%d] failed to standby.", i);
+=======
+		dev_warn(&pt3->pdev->dev, "FE[%d] failed to standby\n", i);
+>>>>>>> v4.9.227
 		return ret;
 	}
 	return 0;
@@ -395,7 +435,12 @@ static int pt3_attach_fe(struct pt3_board *pt3, int i)
 	if (!try_module_get(cl->dev.driver->owner))
 		goto err_demod_i2c_unregister_device;
 
+<<<<<<< HEAD
 	if (!strncmp(cl->name, TC90522_I2C_DEV_SAT, sizeof(cl->name))) {
+=======
+	if (!strncmp(cl->name, TC90522_I2C_DEV_SAT,
+		     strlen(TC90522_I2C_DEV_SAT))) {
+>>>>>>> v4.9.227
 		struct qm1d1c0042_config tcfg;
 
 		tcfg = adap_conf[i].tuner_cfg.qm1d1c0042;
@@ -453,8 +498,13 @@ static int pt3_fetch_thread(void *data)
 	pt3_init_dmabuf(adap);
 	adap->num_discard = PT3_INITIAL_BUF_DROPS;
 
+<<<<<<< HEAD
 	dev_dbg(adap->dvb_adap.device,
 		"PT3: [%s] started.\n", adap->thread->comm);
+=======
+	dev_dbg(adap->dvb_adap.device, "PT3: [%s] started\n",
+		adap->thread->comm);
+>>>>>>> v4.9.227
 	set_freezable();
 	while (!kthread_freezable_should_stop(&was_frozen)) {
 		if (was_frozen)
@@ -468,8 +518,13 @@ static int pt3_fetch_thread(void *data)
 					PT3_FETCH_DELAY_DELTA * NSEC_PER_MSEC,
 					HRTIMER_MODE_REL);
 	}
+<<<<<<< HEAD
 	dev_dbg(adap->dvb_adap.device,
 		"PT3: [%s] exited.\n", adap->thread->comm);
+=======
+	dev_dbg(adap->dvb_adap.device, "PT3: [%s] exited\n",
+		adap->thread->comm);
+>>>>>>> v4.9.227
 	adap->thread = NULL;
 	return 0;
 }
@@ -485,8 +540,13 @@ static int pt3_start_streaming(struct pt3_adapter *adap)
 		int ret = PTR_ERR(thread);
 
 		dev_warn(adap->dvb_adap.device,
+<<<<<<< HEAD
 			"PT3 (adap:%d, dmx:%d): failed to start kthread.\n",
 			adap->dvb_adap.num, adap->dmxdev.dvbdev->id);
+=======
+			 "PT3 (adap:%d, dmx:%d): failed to start kthread\n",
+			 adap->dvb_adap.num, adap->dmxdev.dvbdev->id);
+>>>>>>> v4.9.227
 		return ret;
 	}
 	adap->thread = thread;
@@ -501,8 +561,13 @@ static int pt3_stop_streaming(struct pt3_adapter *adap)
 	ret = pt3_stop_dma(adap);
 	if (ret)
 		dev_warn(adap->dvb_adap.device,
+<<<<<<< HEAD
 			"PT3: failed to stop streaming of adap:%d/FE:%d\n",
 			adap->dvb_adap.num, adap->fe->id);
+=======
+			 "PT3: failed to stop streaming of adap:%d/FE:%d\n",
+			 adap->dvb_adap.num, adap->fe->id);
+>>>>>>> v4.9.227
 
 	/* kill the fetching thread */
 	ret = kthread_stop(adap->thread);
@@ -522,8 +587,13 @@ static int pt3_start_feed(struct dvb_demux_feed *feed)
 		return 0;
 	if (adap->num_feeds != 1) {
 		dev_warn(adap->dvb_adap.device,
+<<<<<<< HEAD
 			"%s: unmatched start/stop_feed in adap:%i/dmx:%i.\n",
 			__func__, adap->dvb_adap.num, adap->dmxdev.dvbdev->id);
+=======
+			 "%s: unmatched start/stop_feed in adap:%i/dmx:%i\n",
+			 __func__, adap->dvb_adap.num, adap->dmxdev.dvbdev->id);
+>>>>>>> v4.9.227
 		adap->num_feeds = 1;
 	}
 
@@ -553,10 +623,16 @@ static int pt3_alloc_adapter(struct pt3_board *pt3, int index)
 	struct dvb_adapter *da;
 
 	adap = kzalloc(sizeof(*adap), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!adap) {
 		dev_err(&pt3->pdev->dev, "failed to alloc mem for adapter.\n");
 		return -ENOMEM;
 	}
+=======
+	if (!adap)
+		return -ENOMEM;
+
+>>>>>>> v4.9.227
 	pt3->adaps[index] = adap;
 	adap->adap_idx = index;
 
@@ -565,7 +641,11 @@ static int pt3_alloc_adapter(struct pt3_board *pt3, int index)
 				THIS_MODULE, &pt3->pdev->dev, adapter_nr);
 		if (ret < 0) {
 			dev_err(&pt3->pdev->dev,
+<<<<<<< HEAD
 				"failed to register adapter dev.\n");
+=======
+				"failed to register adapter dev\n");
+>>>>>>> v4.9.227
 			goto err_mem;
 		}
 		da = &adap->dvb_adap;
@@ -581,7 +661,11 @@ static int pt3_alloc_adapter(struct pt3_board *pt3, int index)
 	adap->demux.stop_feed = pt3_stop_feed;
 	ret = dvb_dmx_init(&adap->demux);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_err(&pt3->pdev->dev, "failed to init dmx dev.\n");
+=======
+		dev_err(&pt3->pdev->dev, "failed to init dmx dev\n");
+>>>>>>> v4.9.227
 		goto err_adap;
 	}
 
@@ -589,13 +673,21 @@ static int pt3_alloc_adapter(struct pt3_board *pt3, int index)
 	adap->dmxdev.demux = &adap->demux.dmx;
 	ret = dvb_dmxdev_init(&adap->dmxdev, da);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_err(&pt3->pdev->dev, "failed to init dmxdev.\n");
+=======
+		dev_err(&pt3->pdev->dev, "failed to init dmxdev\n");
+>>>>>>> v4.9.227
 		goto err_demux;
 	}
 
 	ret = pt3_alloc_dmabuf(adap);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(&pt3->pdev->dev, "failed to alloc DMA buffers.\n");
+=======
+		dev_err(&pt3->pdev->dev, "failed to alloc DMA buffers\n");
+>>>>>>> v4.9.227
 		goto err_dmabuf;
 	}
 
@@ -695,7 +787,11 @@ static int pt3_resume(struct device *dev)
 		dvb_frontend_resume(adap->fe);
 		ret = pt3_alloc_dmabuf(adap);
 		if (ret) {
+<<<<<<< HEAD
 			dev_err(&pt3->pdev->dev, "failed to alloc DMA bufs.\n");
+=======
+			dev_err(&pt3->pdev->dev, "failed to alloc DMA bufs\n");
+>>>>>>> v4.9.227
 			continue;
 		}
 		if (adap->num_feeds > 0)
@@ -753,15 +849,25 @@ static int pt3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		if (ret == 0)
 			dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
 		else {
+<<<<<<< HEAD
 			dev_err(&pdev->dev, "Failed to set DMA mask.\n");
 			goto err_release_regions;
 		}
 		dev_info(&pdev->dev, "Use 32bit DMA.\n");
+=======
+			dev_err(&pdev->dev, "Failed to set DMA mask\n");
+			goto err_release_regions;
+		}
+		dev_info(&pdev->dev, "Use 32bit DMA\n");
+>>>>>>> v4.9.227
 	}
 
 	pt3 = kzalloc(sizeof(*pt3), GFP_KERNEL);
 	if (!pt3) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Failed to alloc mem for this dev.\n");
+=======
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto err_release_regions;
 	}
@@ -771,15 +877,24 @@ static int pt3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	pt3->regs[0] = pci_ioremap_bar(pdev, 0);
 	pt3->regs[1] = pci_ioremap_bar(pdev, 2);
 	if (pt3->regs[0] == NULL || pt3->regs[1] == NULL) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Failed to ioremap.\n");
+=======
+		dev_err(&pdev->dev, "Failed to ioremap\n");
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto err_kfree;
 	}
 
 	ver = ioread32(pt3->regs[0] + REG_VERSION);
 	if ((ver >> 16) != 0x0301) {
+<<<<<<< HEAD
 		dev_warn(&pdev->dev, "PT%d, I/F-ver.:%d not supported",
 			ver >> 24, (ver & 0x00ff0000) >> 16);
+=======
+		dev_warn(&pdev->dev, "PT%d, I/F-ver.:%d not supported\n",
+			 ver >> 24, (ver & 0x00ff0000) >> 16);
+>>>>>>> v4.9.227
 		ret = -ENODEV;
 		goto err_iounmap;
 	}
@@ -788,7 +903,10 @@ static int pt3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pt3->i2c_buf = kmalloc(sizeof(*pt3->i2c_buf), GFP_KERNEL);
 	if (pt3->i2c_buf == NULL) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Failed to alloc mem for i2c.\n");
+=======
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto err_iounmap;
 	}
@@ -800,10 +918,15 @@ static int pt3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	strlcpy(i2c->name, DRV_NAME, sizeof(i2c->name));
 	i2c_set_adapdata(i2c, pt3);
 	ret = i2c_add_adapter(i2c);
+<<<<<<< HEAD
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Failed to add i2c adapter.\n");
 		goto err_i2cbuf;
 	}
+=======
+	if (ret < 0)
+		goto err_i2cbuf;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < PT3_NUM_FE; i++) {
 		ret = pt3_alloc_adapter(pt3, i);
@@ -815,20 +938,33 @@ static int pt3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			break;
 	}
 	if (i < PT3_NUM_FE) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Failed to create FE%d.\n", i);
+=======
+		dev_err(&pdev->dev, "Failed to create FE%d\n", i);
+>>>>>>> v4.9.227
 		goto err_cleanup_adapters;
 	}
 
 	ret = pt3_fe_init(pt3);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Failed to init frontends.\n");
+=======
+		dev_err(&pdev->dev, "Failed to init frontends\n");
+>>>>>>> v4.9.227
 		i = PT3_NUM_FE - 1;
 		goto err_cleanup_adapters;
 	}
 
 	dev_info(&pdev->dev,
+<<<<<<< HEAD
 		"successfully init'ed PT%d (fw:0x%02x, I/F:0x%02x).\n",
 		ver >> 24, (ver >> 8) & 0xff, (ver >> 16) & 0xff);
+=======
+		 "successfully init'ed PT%d (fw:0x%02x, I/F:0x%02x)\n",
+		 ver >> 24, (ver >> 8) & 0xff, (ver >> 16) & 0xff);
+>>>>>>> v4.9.227
 	return 0;
 
 err_cleanup_adapters:

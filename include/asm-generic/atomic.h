@@ -61,6 +61,21 @@ static inline int atomic_##op##_return(int i, atomic_t *v)		\
 	return c c_op i;						\
 }
 
+<<<<<<< HEAD
+=======
+#define ATOMIC_FETCH_OP(op, c_op)					\
+static inline int atomic_fetch_##op(int i, atomic_t *v)			\
+{									\
+	int c, old;							\
+									\
+	c = v->counter;							\
+	while ((old = cmpxchg(&v->counter, c, c c_op i)) != c)		\
+		c = old;						\
+									\
+	return c;							\
+}
+
+>>>>>>> v4.9.227
 #else
 
 #include <linux/irqflags.h>
@@ -88,6 +103,23 @@ static inline int atomic_##op##_return(int i, atomic_t *v)		\
 	return ret;							\
 }
 
+<<<<<<< HEAD
+=======
+#define ATOMIC_FETCH_OP(op, c_op)					\
+static inline int atomic_fetch_##op(int i, atomic_t *v)			\
+{									\
+	unsigned long flags;						\
+	int ret;							\
+									\
+	raw_local_irq_save(flags);					\
+	ret = v->counter;						\
+	v->counter = v->counter c_op i;					\
+	raw_local_irq_restore(flags);					\
+									\
+	return ret;							\
+}
+
+>>>>>>> v4.9.227
 #endif /* CONFIG_SMP */
 
 #ifndef atomic_add_return
@@ -98,6 +130,7 @@ ATOMIC_OP_RETURN(add, +)
 ATOMIC_OP_RETURN(sub, -)
 #endif
 
+<<<<<<< HEAD
 #ifndef atomic_clear_mask
 ATOMIC_OP(and, &)
 #define atomic_clear_mask(i, v) atomic_and(~(i), (v))
@@ -109,6 +142,41 @@ ATOMIC_OP(or, |)
 #define atomic_set_mask(i, v)	atomic_or((i), (v))
 #endif
 
+=======
+#ifndef atomic_fetch_add
+ATOMIC_FETCH_OP(add, +)
+#endif
+
+#ifndef atomic_fetch_sub
+ATOMIC_FETCH_OP(sub, -)
+#endif
+
+#ifndef atomic_fetch_and
+ATOMIC_FETCH_OP(and, &)
+#endif
+
+#ifndef atomic_fetch_or
+ATOMIC_FETCH_OP(or, |)
+#endif
+
+#ifndef atomic_fetch_xor
+ATOMIC_FETCH_OP(xor, ^)
+#endif
+
+#ifndef atomic_and
+ATOMIC_OP(and, &)
+#endif
+
+#ifndef atomic_or
+ATOMIC_OP(or, |)
+#endif
+
+#ifndef atomic_xor
+ATOMIC_OP(xor, ^)
+#endif
+
+#undef ATOMIC_FETCH_OP
+>>>>>>> v4.9.227
 #undef ATOMIC_OP_RETURN
 #undef ATOMIC_OP
 
@@ -126,7 +194,11 @@ ATOMIC_OP(or, |)
  * Atomically reads the value of @v.
  */
 #ifndef atomic_read
+<<<<<<< HEAD
 #define atomic_read(v)	ACCESS_ONCE((v)->counter)
+=======
+#define atomic_read(v)	READ_ONCE((v)->counter)
+>>>>>>> v4.9.227
 #endif
 
 /**
@@ -136,7 +208,11 @@ ATOMIC_OP(or, |)
  *
  * Atomically sets the value of @v to @i.
  */
+<<<<<<< HEAD
 #define atomic_set(v, i) (((v)->counter) = (i))
+=======
+#define atomic_set(v, i) WRITE_ONCE(((v)->counter), (i))
+>>>>>>> v4.9.227
 
 #include <linux/irqflags.h>
 

@@ -93,6 +93,13 @@ MODULE_DESCRIPTION("sysfs interface to BIOS iBFT information");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(IBFT_ISCSI_VERSION);
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_ISCSI_IBFT_FIND
+struct acpi_table_ibft *ibft_addr;
+#endif
+
+>>>>>>> v4.9.227
 struct ibft_hdr {
 	u8 id;
 	u8 version;
@@ -186,8 +193,25 @@ struct ibft_kobject {
 
 static struct iscsi_boot_kset *boot_kset;
 
+<<<<<<< HEAD
 static const char nulls[16];
 
+=======
+/* fully null address */
+static const char nulls[16];
+
+/* IPv4-mapped IPv6 ::ffff:0.0.0.0 */
+static const char mapped_nulls[16] = { 0x00, 0x00, 0x00, 0x00,
+                                       0x00, 0x00, 0x00, 0x00,
+                                       0x00, 0x00, 0xff, 0xff,
+                                       0x00, 0x00, 0x00, 0x00 };
+
+static int address_not_null(u8 *ip)
+{
+	return (memcmp(ip, nulls, 16) && memcmp(ip, mapped_nulls, 16));
+}
+
+>>>>>>> v4.9.227
 /*
  * Helper functions to parse data properly.
  */
@@ -307,6 +331,12 @@ static ssize_t ibft_attr_show_nic(void *data, int type, char *buf)
 		val = cpu_to_be32(~((1 << (32-nic->subnet_mask_prefix))-1));
 		str += sprintf(str, "%pI4", &val);
 		break;
+<<<<<<< HEAD
+=======
+	case ISCSI_BOOT_ETH_PREFIX_LEN:
+		str += sprintf(str, "%d\n", nic->subnet_mask_prefix);
+		break;
+>>>>>>> v4.9.227
 	case ISCSI_BOOT_ETH_ORIGIN:
 		str += sprintf(str, "%d\n", nic->origin);
 		break;
@@ -403,6 +433,34 @@ static ssize_t ibft_attr_show_target(void *data, int type, char *buf)
 	return str - buf;
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t ibft_attr_show_acpitbl(void *data, int type, char *buf)
+{
+	struct ibft_kobject *entry = data;
+	char *str = buf;
+
+	switch (type) {
+	case ISCSI_BOOT_ACPITBL_SIGNATURE:
+		str += sprintf_string(str, ACPI_NAME_SIZE,
+				      entry->header->header.signature);
+		break;
+	case ISCSI_BOOT_ACPITBL_OEM_ID:
+		str += sprintf_string(str, ACPI_OEM_ID_SIZE,
+				      entry->header->header.oem_id);
+		break;
+	case ISCSI_BOOT_ACPITBL_OEM_TABLE_ID:
+		str += sprintf_string(str, ACPI_OEM_TABLE_ID_SIZE,
+				      entry->header->header.oem_table_id);
+		break;
+	default:
+		break;
+	}
+
+	return str - buf;
+}
+
+>>>>>>> v4.9.227
 static int __init ibft_check_device(void)
 {
 	int len;
@@ -445,9 +503,16 @@ static umode_t ibft_check_nic_for(void *data, int type)
 		rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_ETH_IP_ADDR:
+<<<<<<< HEAD
 		if (memcmp(nic->ip_addr, nulls, sizeof(nic->ip_addr)))
 			rc = S_IRUGO;
 		break;
+=======
+		if (address_not_null(nic->ip_addr))
+			rc = S_IRUGO;
+		break;
+	case ISCSI_BOOT_ETH_PREFIX_LEN:
+>>>>>>> v4.9.227
 	case ISCSI_BOOT_ETH_SUBNET_MASK:
 		if (nic->subnet_mask_prefix)
 			rc = S_IRUGO;
@@ -456,6 +521,7 @@ static umode_t ibft_check_nic_for(void *data, int type)
 		rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_ETH_GATEWAY:
+<<<<<<< HEAD
 		if (memcmp(nic->gateway, nulls, sizeof(nic->gateway)))
 			rc = S_IRUGO;
 		break;
@@ -471,6 +537,21 @@ static umode_t ibft_check_nic_for(void *data, int type)
 		break;
 	case ISCSI_BOOT_ETH_DHCP:
 		if (memcmp(nic->dhcp, nulls, sizeof(nic->dhcp)))
+=======
+		if (address_not_null(nic->gateway))
+			rc = S_IRUGO;
+		break;
+	case ISCSI_BOOT_ETH_PRIMARY_DNS:
+		if (address_not_null(nic->primary_dns))
+			rc = S_IRUGO;
+		break;
+	case ISCSI_BOOT_ETH_SECONDARY_DNS:
+		if (address_not_null(nic->secondary_dns))
+			rc = S_IRUGO;
+		break;
+	case ISCSI_BOOT_ETH_DHCP:
+		if (address_not_null(nic->dhcp))
+>>>>>>> v4.9.227
 			rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_ETH_VLAN:
@@ -503,6 +584,10 @@ static umode_t __init ibft_check_tgt_for(void *data, int type)
 	case ISCSI_BOOT_TGT_NIC_ASSOC:
 	case ISCSI_BOOT_TGT_CHAP_TYPE:
 		rc = S_IRUGO;
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> v4.9.227
 	case ISCSI_BOOT_TGT_NAME:
 		if (tgt->tgt_name_len)
 			rc = S_IRUGO;
@@ -536,6 +621,7 @@ static umode_t __init ibft_check_initiator_for(void *data, int type)
 		rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_INI_ISNS_SERVER:
+<<<<<<< HEAD
 		if (memcmp(init->isns_server, nulls,
 			   sizeof(init->isns_server)))
 			rc = S_IRUGO;
@@ -553,6 +639,21 @@ static umode_t __init ibft_check_initiator_for(void *data, int type)
 	case ISCSI_BOOT_INI_SEC_RADIUS_SERVER:
 		if (memcmp(init->sec_radius_server, nulls,
 			   sizeof(init->sec_radius_server)))
+=======
+		if (address_not_null(init->isns_server))
+			rc = S_IRUGO;
+		break;
+	case ISCSI_BOOT_INI_SLP_SERVER:
+		if (address_not_null(init->slp_server))
+			rc = S_IRUGO;
+		break;
+	case ISCSI_BOOT_INI_PRI_RADIUS_SERVER:
+		if (address_not_null(init->pri_radius_server))
+			rc = S_IRUGO;
+		break;
+	case ISCSI_BOOT_INI_SEC_RADIUS_SERVER:
+		if (address_not_null(init->sec_radius_server))
+>>>>>>> v4.9.227
 			rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_INI_INITIATOR_NAME:
@@ -566,6 +667,27 @@ static umode_t __init ibft_check_initiator_for(void *data, int type)
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+static umode_t __init ibft_check_acpitbl_for(void *data, int type)
+{
+
+	umode_t rc = 0;
+
+	switch (type) {
+	case ISCSI_BOOT_ACPITBL_SIGNATURE:
+	case ISCSI_BOOT_ACPITBL_OEM_ID:
+	case ISCSI_BOOT_ACPITBL_OEM_TABLE_ID:
+		rc = S_IRUGO;
+		break;
+	default:
+		break;
+	}
+
+	return rc;
+}
+
+>>>>>>> v4.9.227
 static void ibft_kobj_release(void *data)
 {
 	kfree(data);
@@ -689,6 +811,11 @@ free_ibft_obj:
 static int __init ibft_register_kobjects(struct acpi_table_ibft *header)
 {
 	struct ibft_control *control = NULL;
+<<<<<<< HEAD
+=======
+	struct iscsi_boot_kobj *boot_kobj;
+	struct ibft_kobject *ibft_kobj;
+>>>>>>> v4.9.227
 	void *ptr, *end;
 	int rc = 0;
 	u16 offset;
@@ -716,6 +843,28 @@ static int __init ibft_register_kobjects(struct acpi_table_ibft *header)
 				break;
 		}
 	}
+<<<<<<< HEAD
+=======
+	if (rc)
+		return rc;
+
+	ibft_kobj = kzalloc(sizeof(*ibft_kobj), GFP_KERNEL);
+	if (!ibft_kobj)
+		return -ENOMEM;
+
+	ibft_kobj->header = header;
+	ibft_kobj->hdr = NULL; /*for ibft_unregister*/
+
+	boot_kobj = iscsi_boot_create_acpitbl(boot_kset, 0,
+					ibft_kobj,
+					ibft_attr_show_acpitbl,
+					ibft_check_acpitbl_for,
+					ibft_kobj_release);
+	if (!boot_kobj)  {
+		kfree(ibft_kobj);
+		rc = -ENOMEM;
+	}
+>>>>>>> v4.9.227
 
 	return rc;
 }
@@ -728,7 +877,11 @@ static void ibft_unregister(void)
 	list_for_each_entry_safe(boot_kobj, tmp_kobj,
 				 &boot_kset->kobj_list, list) {
 		ibft_kobj = boot_kobj->data;
+<<<<<<< HEAD
 		if (ibft_kobj->hdr->id == id_nic)
+=======
+		if (ibft_kobj->hdr && ibft_kobj->hdr->id == id_nic)
+>>>>>>> v4.9.227
 			sysfs_remove_link(&boot_kobj->kobj, "device");
 	};
 }

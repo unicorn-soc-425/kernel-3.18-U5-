@@ -43,9 +43,15 @@ typedef u16 kprobe_opcode_t;
 #define MAX_INSN_SIZE		0x0003
 #define MAX_STACK_SIZE		64
 #define MIN_STACK_SIZE(ADDR) (((MAX_STACK_SIZE) < \
+<<<<<<< HEAD
 	(((unsigned long)current_thread_info()) + THREAD_SIZE - (ADDR))) \
 	? (MAX_STACK_SIZE) \
 	: (((unsigned long)current_thread_info()) + THREAD_SIZE - (ADDR)))
+=======
+	(((unsigned long)task_stack_page(current)) + THREAD_SIZE - (ADDR))) \
+	? (MAX_STACK_SIZE) \
+	: (((unsigned long)task_stack_page(current)) + THREAD_SIZE - (ADDR)))
+>>>>>>> v4.9.227
 
 #define kretprobe_blacklist_size 0
 
@@ -60,6 +66,10 @@ typedef u16 kprobe_opcode_t;
 struct arch_specific_insn {
 	/* copy of original instruction */
 	kprobe_opcode_t *insn;
+<<<<<<< HEAD
+=======
+	unsigned int is_ftrace_insn : 1;
+>>>>>>> v4.9.227
 };
 
 struct prev_kprobe {

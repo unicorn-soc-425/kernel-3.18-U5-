@@ -11,6 +11,11 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -66,7 +71,11 @@ static int s3c2440_cpufreq_calcdivs(struct s3c_cpufreq_config *cfg)
 		     __func__, fclk, armclk, hclk_max);
 
 	if (armclk > fclk) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: armclk > fclk\n", __func__);
+=======
+		pr_warn("%s: armclk > fclk\n", __func__);
+>>>>>>> v4.9.227
 		armclk = fclk;
 	}
 
@@ -273,7 +282,11 @@ static int s3c2440_cpufreq_add(struct device *dev,
 	armclk = s3c_cpufreq_clk_get(NULL, "armclk");
 
 	if (IS_ERR(xtal) || IS_ERR(hclk) || IS_ERR(fclk) || IS_ERR(armclk)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: failed to get clocks\n", __func__);
+=======
+		pr_err("%s: failed to get clocks\n", __func__);
+>>>>>>> v4.9.227
 		return -ENOENT;
 	}
 

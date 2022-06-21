@@ -31,7 +31,11 @@ int xfrm_input_register_afinfo(struct xfrm_input_afinfo *afinfo)
 		return -EAFNOSUPPORT;
 	spin_lock_bh(&xfrm_input_afinfo_lock);
 	if (unlikely(xfrm_input_afinfo[afinfo->family] != NULL))
+<<<<<<< HEAD
 		err = -ENOBUFS;
+=======
+		err = -EEXIST;
+>>>>>>> v4.9.227
 	else
 		rcu_assign_pointer(xfrm_input_afinfo[afinfo->family], afinfo);
 	spin_unlock_bh(&xfrm_input_afinfo_lock);
@@ -207,6 +211,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 	family = XFRM_SPI_SKB_CB(skb)->family;
 
 	/* if tunnel is present override skb->mark value with tunnel i_key */
+<<<<<<< HEAD
 	if (XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4) {
 		switch (family) {
 		case AF_INET:
@@ -216,6 +221,17 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 			mark = be32_to_cpu(XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6->parms.i_key);
 			break;
 		}
+=======
+	switch (family) {
+	case AF_INET:
+		if (XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4)
+			mark = be32_to_cpu(XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4->parms.i_key);
+		break;
+	case AF_INET6:
+		if (XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6)
+			mark = be32_to_cpu(XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6->parms.i_key);
+		break;
+>>>>>>> v4.9.227
 	}
 
 	/* Allocate new secpath or COW existing one. */
@@ -253,6 +269,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 
 		skb->sp->xvec[skb->sp->len++] = x;
 
+<<<<<<< HEAD
 		if (xfrm_tunnel_check(skb, x, family)) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMODEERROR);
 			goto drop;
@@ -266,6 +283,16 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 
 		if (unlikely(x->km.state != XFRM_STATE_VALID)) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEINVALID);
+=======
+		spin_lock(&x->lock);
+
+		if (unlikely(x->km.state != XFRM_STATE_VALID)) {
+			if (x->km.state == XFRM_STATE_ACQ)
+				XFRM_INC_STATS(net, LINUX_MIB_XFRMACQUIREERROR);
+			else
+				XFRM_INC_STATS(net,
+					       LINUX_MIB_XFRMINSTATEINVALID);
+>>>>>>> v4.9.227
 			goto drop_unlock;
 		}
 
@@ -286,6 +313,14 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 
 		spin_unlock(&x->lock);
 
+<<<<<<< HEAD
+=======
+		if (xfrm_tunnel_check(skb, x, family)) {
+			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMODEERROR);
+			goto drop;
+		}
+
+>>>>>>> v4.9.227
 		seq_hi = htonl(xfrm_replay_seqhi(x, seq));
 
 		XFRM_SKB_CB(skb)->seq.input.low = seq;
@@ -302,7 +337,11 @@ resume:
 		dev_put(skb->dev);
 
 		spin_lock(&x->lock);
+<<<<<<< HEAD
 		if (nexthdr <= 0) {
+=======
+		if (nexthdr < 0) {
+>>>>>>> v4.9.227
 			if (nexthdr == -EBADMSG) {
 				xfrm_audit_state_icvfail(x, skb,
 							 x->type->proto);
@@ -333,8 +372,15 @@ resume:
 
 		if (x->sel.family == AF_UNSPEC) {
 			inner_mode = xfrm_ip2inner_mode(x, XFRM_MODE_SKB_CB(skb)->protocol);
+<<<<<<< HEAD
 			if (inner_mode == NULL)
 				goto drop;
+=======
+			if (inner_mode == NULL) {
+				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMODEERROR);
+				goto drop;
+			}
+>>>>>>> v4.9.227
 		}
 
 		if (inner_mode->input(x, skb)) {

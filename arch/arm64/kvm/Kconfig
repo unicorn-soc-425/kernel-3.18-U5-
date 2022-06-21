@@ -16,18 +16,47 @@ menuconfig VIRTUALIZATION
 
 if VIRTUALIZATION
 
+<<<<<<< HEAD
 config KVM
 	bool "Kernel-based Virtual Machine (KVM) support"
+=======
+config KVM_ARM_VGIC_V3_ITS
+	bool
+
+config KVM
+	bool "Kernel-based Virtual Machine (KVM) support"
+	depends on OF
+>>>>>>> v4.9.227
 	select MMU_NOTIFIER
 	select PREEMPT_NOTIFIERS
 	select ANON_INODES
 	select HAVE_KVM_CPU_RELAX_INTERCEPT
+<<<<<<< HEAD
 	select KVM_MMIO
 	select KVM_ARM_HOST
 	select KVM_ARM_VGIC
 	select KVM_ARM_TIMER
 	---help---
 	  Support hosting virtualized guest machines.
+=======
+	select HAVE_KVM_ARCH_TLB_FLUSH_ALL
+	select KVM_MMIO
+	select KVM_ARM_HOST
+	select KVM_GENERIC_DIRTYLOG_READ_PROTECT
+	select SRCU
+	select KVM_VFIO
+	select HAVE_KVM_EVENTFD
+	select HAVE_KVM_IRQFD
+	select KVM_ARM_VGIC_V3_ITS
+	select KVM_ARM_PMU if HW_PERF_EVENTS
+	select HAVE_KVM_MSI
+	select HAVE_KVM_IRQCHIP
+	select HAVE_KVM_IRQ_ROUTING
+	---help---
+	  Support hosting virtualized guest machines.
+	  We don't support KVM with 16K page tables yet, due to the multiple
+	  levels of fake page tables.
+>>>>>>> v4.9.227
 
 	  If unsure, say N.
 
@@ -36,6 +65,7 @@ config KVM_ARM_HOST
 	---help---
 	  Provides host support for ARM processors.
 
+<<<<<<< HEAD
 config KVM_ARM_MAX_VCPUS
 	int "Number maximum supported virtual CPUs per VM"
 	depends on KVM_ARM_HOST
@@ -59,5 +89,14 @@ config KVM_ARM_TIMER
 	depends on KVM_ARM_VGIC
 	---help---
 	  Adds support for the Architected Timers in virtual machines.
+=======
+config KVM_ARM_PMU
+	bool
+	---help---
+	  Adds support for a virtual Performance Monitoring Unit (PMU) in
+	  virtual machines.
+
+source drivers/vhost/Kconfig
+>>>>>>> v4.9.227
 
 endif # VIRTUALIZATION

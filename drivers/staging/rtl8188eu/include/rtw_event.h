@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef _RTW_EVENT_H_
 #define _RTW_EVENT_H_
@@ -23,7 +26,11 @@
 #include <osdep_service.h>
 
 #include <wlan_bssdef.h>
+<<<<<<< HEAD
 #include <linux/semaphore.h>
+=======
+#include <linux/mutex.h>
+>>>>>>> v4.9.227
 #include <linux/sem.h>
 
 /*
@@ -76,12 +83,15 @@ struct stadel_event {
 	int mac_id;
 };
 
+<<<<<<< HEAD
 struct addba_event {
 	unsigned int tid;
 };
 
 #define GEN_EVT_CODE(event)	event ## _EVT_
 
+=======
+>>>>>>> v4.9.227
 struct fwevent {
 	u32	parmsize;
 	void (*event_callback)(struct adapter *dev, u8 *pbuf);
@@ -89,6 +99,7 @@ struct fwevent {
 
 #define C2HEVENT_SZ			32
 
+<<<<<<< HEAD
 struct event_node {
 	unsigned char *node;
 	unsigned char evt_code;
@@ -104,6 +115,8 @@ struct c2hevent_queue {
 	unsigned char	seq;
 };
 
+=======
+>>>>>>> v4.9.227
 #define NETWORK_QUEUE_SZ	4
 
 struct network_queue {

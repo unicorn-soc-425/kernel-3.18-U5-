@@ -36,6 +36,10 @@
  */
 #define MCL_CURRENT	1		/* lock all current mappings */
 #define MCL_FUTURE	2		/* lock all future mappings */
+<<<<<<< HEAD
+=======
+#define MCL_ONFAULT	4		/* lock all pages that are faulted in */
+>>>>>>> v4.9.227
 
 
 #endif /* _ASM_TILE_MMAN_H */

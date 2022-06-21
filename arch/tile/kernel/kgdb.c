@@ -125,13 +125,19 @@ int dbg_set_reg(int regno, void *mem, struct pt_regs *regs)
 void
 sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 {
+<<<<<<< HEAD
 	int reg;
 	struct pt_regs *thread_regs;
 	unsigned long *ptr = gdb_regs;
+=======
+	struct pt_regs *thread_regs;
+	const int NGPRS = TREG_LAST_GPR + 1;
+>>>>>>> v4.9.227
 
 	if (task == NULL)
 		return;
 
+<<<<<<< HEAD
 	/* Initialize to zero. */
 	memset(gdb_regs, 0, NUMREGBYTES);
 
@@ -139,6 +145,12 @@ sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 	for (reg = 0; reg <= TREG_LAST_GPR; reg++)
 		*(ptr++) = thread_regs->regs[reg];
 
+=======
+	thread_regs = task_pt_regs(task);
+	memcpy(gdb_regs, thread_regs, NGPRS * sizeof(unsigned long));
+	memset(&gdb_regs[NGPRS], 0,
+	       (TILEGX_PC_REGNUM - NGPRS) * sizeof(unsigned long));
+>>>>>>> v4.9.227
 	gdb_regs[TILEGX_PC_REGNUM] = thread_regs->pc;
 	gdb_regs[TILEGX_FAULTNUM_REGNUM] = thread_regs->faultnum;
 }
@@ -168,7 +180,11 @@ static unsigned long writable_address(unsigned long addr)
 	unsigned long ret = 0;
 
 	if (core_kernel_text(addr))
+<<<<<<< HEAD
 		ret = addr - MEM_SV_START + PAGE_OFFSET;
+=======
+		ret = ktext_writable_addr(addr);
+>>>>>>> v4.9.227
 	else if (is_module_text_address(addr))
 		ret = addr;
 	else
@@ -437,9 +453,15 @@ int kgdb_arch_handle_exception(int vector, int signo, int err_code,
 struct kgdb_arch arch_kgdb_ops;
 
 /*
+<<<<<<< HEAD
  * kgdb_arch_init - Perform any architecture specific initalization.
  *
  * This function will handle the initalization of any architecture
+=======
+ * kgdb_arch_init - Perform any architecture specific initialization.
+ *
+ * This function will handle the initialization of any architecture
+>>>>>>> v4.9.227
  * specific callbacks.
  */
 int kgdb_arch_init(void)
@@ -451,9 +473,15 @@ int kgdb_arch_init(void)
 }
 
 /*
+<<<<<<< HEAD
  * kgdb_arch_exit - Perform any architecture specific uninitalization.
  *
  * This function will handle the uninitalization of any architecture
+=======
+ * kgdb_arch_exit - Perform any architecture specific uninitialization.
+ *
+ * This function will handle the uninitialization of any architecture
+>>>>>>> v4.9.227
  * specific callbacks, for dynamic registration and unregistration.
  */
 void kgdb_arch_exit(void)

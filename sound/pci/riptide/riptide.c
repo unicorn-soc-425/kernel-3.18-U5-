@@ -99,7 +99,11 @@
 #include <linux/firmware.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/core.h>
 #include <sound/info.h>
 #include <sound/control.h>
@@ -644,7 +648,11 @@ static struct lbuspath lbus_play_paths[] = {
 	 .mono = lbus_play_mono3,
 	 },
 };
+<<<<<<< HEAD
 static struct lbuspath lbus_rec_path = {
+=======
+static const struct lbuspath lbus_rec_path = {
+>>>>>>> v4.9.227
 	.noconv = lbus_rec_noconv1,
 	.stereo = lbus_rec_stereo1,
 	.mono = lbus_rec_mono1,
@@ -1153,7 +1161,10 @@ static void riptide_handleirq(unsigned long dev_id)
 #ifdef CONFIG_PM_SLEEP
 static int riptide_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_riptide *chip = card->private_data;
 
@@ -1161,14 +1172,18 @@ static int riptide_suspend(struct device *dev)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	snd_pcm_suspend_all(chip->pcm);
 	snd_ac97_suspend(chip->ac97);
+<<<<<<< HEAD
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int riptide_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_riptide *chip = card->private_data;
@@ -1182,6 +1197,11 @@ static int riptide_resume(struct device *dev)
 		return -EIO;
 	}
 	pci_set_master(pci);
+=======
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_riptide *chip = card->private_data;
+
+>>>>>>> v4.9.227
 	snd_riptide_initialize(chip);
 	snd_ac97_resume(chip->ac97);
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
@@ -1510,7 +1530,11 @@ static int snd_riptide_prepare(struct snd_pcm_substream *substream)
 		f = PAGE_SIZE;
 		while ((size + (f >> 1) - 1) <= (f << 7) && (f << 1) > period)
 			f = f >> 1;
+<<<<<<< HEAD
 		pages = (size + f - 1) / f;
+=======
+		pages = DIV_ROUND_UP(size, f);
+>>>>>>> v4.9.227
 		data->size = size;
 		data->pages = pages;
 		snd_printdd
@@ -1683,7 +1707,11 @@ static int snd_riptide_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_riptide_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_riptide_playback_ops = {
+>>>>>>> v4.9.227
 	.open = snd_riptide_playback_open,
 	.close = snd_riptide_playback_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -1694,7 +1722,11 @@ static struct snd_pcm_ops snd_riptide_playback_ops = {
 	.trigger = snd_riptide_trigger,
 	.pointer = snd_riptide_pointer,
 };
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_riptide_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_riptide_capture_ops = {
+>>>>>>> v4.9.227
 	.open = snd_riptide_capture_open,
 	.close = snd_riptide_capture_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -1706,14 +1738,21 @@ static struct snd_pcm_ops snd_riptide_capture_ops = {
 	.pointer = snd_riptide_pointer,
 };
 
+<<<<<<< HEAD
 static int
 snd_riptide_pcm(struct snd_riptide *chip, int device, struct snd_pcm **rpcm)
+=======
+static int snd_riptide_pcm(struct snd_riptide *chip, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
+=======
+>>>>>>> v4.9.227
 	if ((err =
 	     snd_pcm_new(chip->card, "RIPTIDE", device, PLAYBACK_SUBSTREAMS, 1,
 			 &pcm)) < 0)
@@ -1729,8 +1768,11 @@ snd_riptide_pcm(struct snd_riptide *chip, int device, struct snd_pcm **rpcm)
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
 					      snd_dma_pci_data(chip->pci),
 					      64 * 1024, 128 * 1024);
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -2103,7 +2145,11 @@ snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 	if (err < 0)
 		goto error;
 	card->private_data = chip;
+<<<<<<< HEAD
 	err = snd_riptide_pcm(chip, 0, NULL);
+=======
+	err = snd_riptide_pcm(chip, 0);
+>>>>>>> v4.9.227
 	if (err < 0)
 		goto error;
 	err = snd_riptide_mixer(chip);

@@ -248,11 +248,18 @@ static struct uhci_qh *uhci_alloc_qh(struct uhci_hcd *uhci,
 	dma_addr_t dma_handle;
 	struct uhci_qh *qh;
 
+<<<<<<< HEAD
 	qh = dma_pool_alloc(uhci->qh_pool, GFP_ATOMIC, &dma_handle);
 	if (!qh)
 		return NULL;
 
 	memset(qh, 0, sizeof(*qh));
+=======
+	qh = dma_pool_zalloc(uhci->qh_pool, GFP_ATOMIC, &dma_handle);
+	if (!qh)
+		return NULL;
+
+>>>>>>> v4.9.227
 	qh->dma_handle = dma_handle;
 
 	qh->element = UHCI_PTR_TERM(uhci);

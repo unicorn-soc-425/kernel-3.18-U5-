@@ -21,6 +21,10 @@
 #include <stdarg.h>
 
 #include <linux/compat.h>
+<<<<<<< HEAD
+=======
+#include <linux/efi.h>
+>>>>>>> v4.9.227
 #include <linux/export.h>
 #include <linux/sched.h>
 #include <linux/kernel.h>
@@ -43,6 +47,7 @@
 #include <linux/hw_breakpoint.h>
 #include <linux/personality.h>
 #include <linux/notifier.h>
+<<<<<<< HEAD
 
 #ifdef CONFIG_THREAD_INFO_IN_TASK
 #include <linux/percpu.h>
@@ -50,6 +55,14 @@
 #include <asm/alternative.h>
 #include <asm/compat.h>
 #include <asm/cacheflush.h>
+=======
+#include <trace/events/power.h>
+
+#include <asm/alternative.h>
+#include <asm/compat.h>
+#include <asm/cacheflush.h>
+#include <asm/exec.h>
+>>>>>>> v4.9.227
 #include <asm/fpsimd.h>
 #include <asm/mmu_context.h>
 #include <asm/processor.h>
@@ -78,6 +91,7 @@ void arch_cpu_idle(void)
 	 * This should do all the clock switching and wait for interrupt
 	 * tricks
 	 */
+<<<<<<< HEAD
 	cpu_do_idle();
 	local_irq_enable();
 }
@@ -90,6 +104,12 @@ void arch_cpu_idle_enter(void)
 void arch_cpu_idle_exit(void)
 {
 	idle_notifier_call_chain(IDLE_END);
+=======
+	trace_cpu_idle_rcuidle(1, smp_processor_id());
+	cpu_do_idle();
+	local_irq_enable();
+	trace_cpu_idle_rcuidle(PWR_EVENT_EXIT, smp_processor_id());
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_HOTPLUG_CPU
@@ -154,6 +174,16 @@ void machine_restart(char *cmd)
 	local_irq_disable();
 	smp_send_stop();
 
+<<<<<<< HEAD
+=======
+	/*
+	 * UpdateCapsule() depends on the system being reset via
+	 * ResetSystem().
+	 */
+	if (efi_enabled(EFI_RUNTIME_SERVICES))
+		efi_reboot(reboot_mode, NULL);
+
+>>>>>>> v4.9.227
 	/* Now call the architecture specific reboot code. */
 	if (arm_pm_restart)
 		arm_pm_restart(reboot_mode, cmd);
@@ -167,6 +197,7 @@ void machine_restart(char *cmd)
 	while (1);
 }
 
+<<<<<<< HEAD
 /*
  * dump a block of kernel memory from around the given address
  */
@@ -225,6 +256,8 @@ static void show_extra_register_data(struct pt_regs *regs, int nbytes)
 	set_fs(fs);
 }
 
+=======
+>>>>>>> v4.9.227
 void __show_regs(struct pt_regs *regs)
 {
 	int i, top_reg;
@@ -246,6 +279,7 @@ void __show_regs(struct pt_regs *regs)
 	printk("pc : [<%016llx>] lr : [<%016llx>] pstate: %08llx\n",
 	       regs->pc, lr, regs->pstate);
 	printk("sp : %016llx\n", sp);
+<<<<<<< HEAD
 	for (i = top_reg; i >= 0; i--) {
 		printk("x%-2d: %016llx ", i, regs->regs[i]);
 		if (i % 2 == 0)
@@ -253,6 +287,22 @@ void __show_regs(struct pt_regs *regs)
 	}
 	if (!user_mode(regs))
 		show_extra_register_data(regs, 256);
+=======
+
+	i = top_reg;
+
+	while (i >= 0) {
+		printk("x%-2d: %016llx ", i, regs->regs[i]);
+		i--;
+
+		if (i % 2 == 0) {
+			pr_cont("x%-2d: %016llx ", i, regs->regs[i]);
+			i--;
+		}
+
+		pr_cont("\n");
+	}
+>>>>>>> v4.9.227
 	printk("\n");
 }
 
@@ -262,6 +312,7 @@ void show_regs(struct pt_regs * regs)
 	__show_regs(regs);
 }
 
+<<<<<<< HEAD
 /*
  * Free current thread data structures etc..
  */
@@ -272,6 +323,11 @@ void exit_thread(void)
 static void tls_thread_flush(void)
 {
 	asm ("msr tpidr_el0, xzr");
+=======
+static void tls_thread_flush(void)
+{
+	write_sysreg(0, tpidr_el0);
+>>>>>>> v4.9.227
 
 	if (is_compat_task()) {
 		current->thread.tp_value = 0;
@@ -282,7 +338,11 @@ static void tls_thread_flush(void)
 		 * with a stale shadow state during context switch.
 		 */
 		barrier();
+<<<<<<< HEAD
 		asm ("msr tpidrro_el0, xzr");
+=======
+		write_sysreg(0, tpidrro_el0);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -311,7 +371,10 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
 		unsigned long stk_sz, struct task_struct *p)
 {
 	struct pt_regs *childregs = task_pt_regs(p);
+<<<<<<< HEAD
 	unsigned long tls = p->thread.tp_value;
+=======
+>>>>>>> v4.9.227
 
 	memset(&p->thread.cpu_context, 0, sizeof(struct cpu_context));
 
@@ -327,6 +390,7 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
 	if (likely(!(p->flags & PF_KTHREAD))) {
 		*childregs = *current_pt_regs();
 		childregs->regs[0] = 0;
+<<<<<<< HEAD
 		if (is_compat_thread(task_thread_info(p))) {
 			if (stack_start)
 				childregs->compat_sp = stack_start;
@@ -343,24 +407,51 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
 				childregs->sp = stack_start;
 			}
 		}
+=======
+
+		/*
+		 * Read the current TLS pointer from tpidr_el0 as it may be
+		 * out-of-sync with the saved value.
+		 */
+		*task_user_tls(p) = read_sysreg(tpidr_el0);
+
+		if (stack_start) {
+			if (is_compat_thread(task_thread_info(p)))
+				childregs->compat_sp = stack_start;
+			else
+				childregs->sp = stack_start;
+		}
+
+>>>>>>> v4.9.227
 		/*
 		 * If a TLS pointer was passed to clone (4th argument), use it
 		 * for the new thread.
 		 */
 		if (clone_flags & CLONE_SETTLS)
+<<<<<<< HEAD
 			tls = childregs->regs[3];
+=======
+			p->thread.tp_value = childregs->regs[3];
+>>>>>>> v4.9.227
 	} else {
 		memset(childregs, 0, sizeof(struct pt_regs));
 		childregs->pstate = PSR_MODE_EL1h;
 		if (IS_ENABLED(CONFIG_ARM64_UAO) &&
+<<<<<<< HEAD
 		    cpus_have_cap(ARM64_HAS_UAO))
+=======
+		    cpus_have_const_cap(ARM64_HAS_UAO))
+>>>>>>> v4.9.227
 			childregs->pstate |= PSR_UAO_BIT;
 		p->thread.cpu_context.x19 = stack_start;
 		p->thread.cpu_context.x20 = stk_sz;
 	}
 	p->thread.cpu_context.pc = (unsigned long)ret_from_fork;
 	p->thread.cpu_context.sp = (unsigned long)childregs;
+<<<<<<< HEAD
 	p->thread.tp_value = tls;
+=======
+>>>>>>> v4.9.227
 
 	ptrace_hw_copy_thread(p);
 
@@ -369,22 +460,37 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
 
 static void tls_thread_switch(struct task_struct *next)
 {
+<<<<<<< HEAD
 	if (!is_compat_task()) {
 		unsigned long tpidr;
 		asm("mrs %0, tpidr_el0" : "=r" (tpidr));
 		current->thread.tp_value = tpidr;
 	}
+=======
+	unsigned long tpidr;
+
+	tpidr = read_sysreg(tpidr_el0);
+	*task_user_tls(current) = tpidr;
+>>>>>>> v4.9.227
 
 	if (is_compat_thread(task_thread_info(next)))
 		write_sysreg(next->thread.tp_value, tpidrro_el0);
 	else if (!arm64_kernel_unmapped_at_el0())
 		write_sysreg(0, tpidrro_el0);
 
+<<<<<<< HEAD
 	write_sysreg(next->thread.tp_value, tpidr_el0);
 }
 
 /* Restore the UAO state depending on next's addr_limit */
 static void uao_thread_switch(struct task_struct *next)
+=======
+	write_sysreg(*task_user_tls(next), tpidr_el0);
+}
+
+/* Restore the UAO state depending on next's addr_limit */
+void uao_thread_switch(struct task_struct *next)
+>>>>>>> v4.9.227
 {
 	if (IS_ENABLED(CONFIG_ARM64_UAO)) {
 		if (task_thread_info(next)->addr_limit == KERNEL_DS)
@@ -394,6 +500,7 @@ static void uao_thread_switch(struct task_struct *next)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_THREAD_INFO_IN_TASK
 /*
  * We store our current task in sp_el0, which is clobbered by userspace. Keep a
@@ -410,6 +517,8 @@ static void entry_task_switch(struct task_struct *next)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * Thread switching.
  */
@@ -422,9 +531,12 @@ struct task_struct *__switch_to(struct task_struct *prev,
 	tls_thread_switch(next);
 	hw_breakpoint_thread_switch(next);
 	contextidr_thread_switch(next);
+<<<<<<< HEAD
 #ifdef CONFIG_THREAD_INFO_IN_TASK
 	entry_task_switch(next);
 #endif
+=======
+>>>>>>> v4.9.227
 	uao_thread_switch(next);
 
 	/*
@@ -450,11 +562,21 @@ unsigned long get_wchan(struct task_struct *p)
 	frame.fp = thread_saved_fp(p);
 	frame.sp = thread_saved_sp(p);
 	frame.pc = thread_saved_pc(p);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+	frame.graph = p->curr_ret_stack;
+#endif
+>>>>>>> v4.9.227
 	stack_page = (unsigned long)task_stack_page(p);
 	do {
 		if (frame.sp < stack_page ||
 		    frame.sp >= stack_page + THREAD_SIZE ||
+<<<<<<< HEAD
 		    unwind_frame(&frame))
+=======
+		    unwind_frame(p, &frame))
+>>>>>>> v4.9.227
 			return 0;
 		if (!in_sched_functions(frame.pc))
 			return frame.pc;
@@ -469,6 +591,7 @@ unsigned long arch_align_stack(unsigned long sp)
 	return sp & ~0xf;
 }
 
+<<<<<<< HEAD
 static unsigned long randomize_base(unsigned long base)
 {
 	unsigned long range_end = base + (STACK_RND_MASK << PAGE_SHIFT) + 1;
@@ -478,4 +601,12 @@ static unsigned long randomize_base(unsigned long base)
 unsigned long arch_randomize_brk(struct mm_struct *mm)
 {
 	return randomize_base(mm->brk);
+=======
+unsigned long arch_randomize_brk(struct mm_struct *mm)
+{
+	if (is_compat_task())
+		return randomize_page(mm->brk, 0x02000000);
+	else
+		return randomize_page(mm->brk, 0x40000000);
+>>>>>>> v4.9.227
 }

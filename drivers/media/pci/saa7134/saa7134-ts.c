@@ -20,23 +20,39 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
+=======
+#include "saa7134.h"
+#include "saa7134-reg.h"
+
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/list.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/delay.h>
 
+<<<<<<< HEAD
 #include "saa7134-reg.h"
 #include "saa7134.h"
 
+=======
+>>>>>>> v4.9.227
 /* ------------------------------------------------------------------ */
 
 static unsigned int ts_debug;
 module_param(ts_debug, int, 0644);
 MODULE_PARM_DESC(ts_debug,"enable debug messages [ts]");
 
+<<<<<<< HEAD
 #define dprintk(fmt, arg...)	if (ts_debug) \
 	printk(KERN_DEBUG "%s/ts: " fmt, dev->name , ## arg)
+=======
+#define ts_dbg(fmt, arg...) do { \
+	if (ts_debug) \
+		printk(KERN_DEBUG pr_fmt("ts: " fmt), ## arg); \
+	} while (0)
+>>>>>>> v4.9.227
 
 /* ------------------------------------------------------------------ */
 static int buffer_activate(struct saa7134_dev *dev,
@@ -44,7 +60,11 @@ static int buffer_activate(struct saa7134_dev *dev,
 			   struct saa7134_buf *next)
 {
 
+<<<<<<< HEAD
 	dprintk("buffer_activate [%p]",buf);
+=======
+	ts_dbg("buffer_activate [%p]", buf);
+>>>>>>> v4.9.227
 	buf->top_seen = 0;
 
 	if (!dev->ts_started)
@@ -53,12 +73,20 @@ static int buffer_activate(struct saa7134_dev *dev,
 	if (NULL == next)
 		next = buf;
 	if (V4L2_FIELD_TOP == dev->ts_field) {
+<<<<<<< HEAD
 		dprintk("- [top]     buf=%p next=%p\n",buf,next);
+=======
+		ts_dbg("- [top]     buf=%p next=%p\n", buf, next);
+>>>>>>> v4.9.227
 		saa_writel(SAA7134_RS_BA1(5),saa7134_buffer_base(buf));
 		saa_writel(SAA7134_RS_BA2(5),saa7134_buffer_base(next));
 		dev->ts_field = V4L2_FIELD_BOTTOM;
 	} else {
+<<<<<<< HEAD
 		dprintk("- [bottom]  buf=%p next=%p\n",buf,next);
+=======
+		ts_dbg("- [bottom]  buf=%p next=%p\n", buf, next);
+>>>>>>> v4.9.227
 		saa_writel(SAA7134_RS_BA1(5),saa7134_buffer_base(next));
 		saa_writel(SAA7134_RS_BA2(5),saa7134_buffer_base(buf));
 		dev->ts_field = V4L2_FIELD_TOP;
@@ -77,8 +105,14 @@ static int buffer_activate(struct saa7134_dev *dev,
 
 int saa7134_ts_buffer_init(struct vb2_buffer *vb2)
 {
+<<<<<<< HEAD
 	struct saa7134_dmaqueue *dmaq = vb2->vb2_queue->drv_priv;
 	struct saa7134_buf *buf = container_of(vb2, struct saa7134_buf, vb2);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb2);
+	struct saa7134_dmaqueue *dmaq = vb2->vb2_queue->drv_priv;
+	struct saa7134_buf *buf = container_of(vbuf, struct saa7134_buf, vb2);
+>>>>>>> v4.9.227
 
 	dmaq->curr = NULL;
 	buf->activate = buffer_activate;
@@ -89,6 +123,7 @@ EXPORT_SYMBOL_GPL(saa7134_ts_buffer_init);
 
 int saa7134_ts_buffer_prepare(struct vb2_buffer *vb2)
 {
+<<<<<<< HEAD
 	struct saa7134_dmaqueue *dmaq = vb2->vb2_queue->drv_priv;
 	struct saa7134_dev *dev = dmaq->dev;
 	struct saa7134_buf *buf = container_of(vb2, struct saa7134_buf, vb2);
@@ -97,6 +132,16 @@ int saa7134_ts_buffer_prepare(struct vb2_buffer *vb2)
 	int ret;
 
 	dprintk("buffer_prepare [%p]\n", buf);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb2);
+	struct saa7134_dmaqueue *dmaq = vb2->vb2_queue->drv_priv;
+	struct saa7134_dev *dev = dmaq->dev;
+	struct saa7134_buf *buf = container_of(vbuf, struct saa7134_buf, vb2);
+	struct sg_table *dma = vb2_dma_sg_plane_desc(vb2, 0);
+	unsigned int lines, llength, size;
+
+	ts_dbg("buffer_prepare [%p]\n", buf);
+>>>>>>> v4.9.227
 
 	llength = TS_PACKET_SIZE;
 	lines = dev->ts.nr_packets;
@@ -106,16 +151,22 @@ int saa7134_ts_buffer_prepare(struct vb2_buffer *vb2)
 		return -EINVAL;
 
 	vb2_set_plane_payload(vb2, 0, size);
+<<<<<<< HEAD
 	vb2->v4l2_buf.field = dev->field;
 
 	ret = dma_map_sg(&dev->pci->dev, dma->sgl, dma->nents, DMA_FROM_DEVICE);
 	if (!ret)
 		return -EIO;
+=======
+	vbuf->field = dev->field;
+
+>>>>>>> v4.9.227
 	return saa7134_pgtable_build(dev->pci, &dmaq->pt, dma->sgl, dma->nents,
 				    saa7134_buffer_startpage(buf));
 }
 EXPORT_SYMBOL_GPL(saa7134_ts_buffer_prepare);
 
+<<<<<<< HEAD
 void saa7134_ts_buffer_finish(struct vb2_buffer *vb2)
 {
 	struct saa7134_dmaqueue *dmaq = vb2->vb2_queue->drv_priv;
@@ -130,6 +181,11 @@ EXPORT_SYMBOL_GPL(saa7134_ts_buffer_finish);
 int saa7134_ts_queue_setup(struct vb2_queue *q, const struct v4l2_format *fmt,
 			   unsigned int *nbuffers, unsigned int *nplanes,
 			   unsigned int sizes[], void *alloc_ctxs[])
+=======
+int saa7134_ts_queue_setup(struct vb2_queue *q,
+			   unsigned int *nbuffers, unsigned int *nplanes,
+			   unsigned int sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	struct saa7134_dmaqueue *dmaq = q->drv_priv;
 	struct saa7134_dev *dev = dmaq->dev;
@@ -160,10 +216,19 @@ int saa7134_ts_start_streaming(struct vb2_queue *vq, unsigned int count)
 
 		list_for_each_entry_safe(buf, tmp, &dmaq->queue, entry) {
 			list_del(&buf->entry);
+<<<<<<< HEAD
 			vb2_buffer_done(&buf->vb2, VB2_BUF_STATE_QUEUED);
 		}
 		if (dmaq->curr) {
 			vb2_buffer_done(&dmaq->curr->vb2, VB2_BUF_STATE_QUEUED);
+=======
+			vb2_buffer_done(&buf->vb2.vb2_buf,
+					VB2_BUF_STATE_QUEUED);
+		}
+		if (dmaq->curr) {
+			vb2_buffer_done(&dmaq->curr->vb2.vb2_buf,
+					VB2_BUF_STATE_QUEUED);
+>>>>>>> v4.9.227
 			dmaq->curr = NULL;
 		}
 		return -EBUSY;
@@ -187,7 +252,10 @@ struct vb2_ops saa7134_ts_qops = {
 	.queue_setup	= saa7134_ts_queue_setup,
 	.buf_init	= saa7134_ts_buffer_init,
 	.buf_prepare	= saa7134_ts_buffer_prepare,
+<<<<<<< HEAD
 	.buf_finish	= saa7134_ts_buffer_finish,
+=======
+>>>>>>> v4.9.227
 	.buf_queue	= saa7134_vb2_buffer_queue,
 	.wait_prepare	= vb2_ops_wait_prepare,
 	.wait_finish	= vb2_ops_wait_finish,
@@ -227,8 +295,13 @@ int saa7134_ts_init1(struct saa7134_dev *dev)
 	/* sanitycheck insmod options */
 	if (tsbufs < 2)
 		tsbufs = 2;
+<<<<<<< HEAD
 	if (tsbufs > VB2_MAX_FRAME)
 		tsbufs = VB2_MAX_FRAME;
+=======
+	if (tsbufs > VIDEO_MAX_FRAME)
+		tsbufs = VIDEO_MAX_FRAME;
+>>>>>>> v4.9.227
 	if (ts_nr_packets < 4)
 		ts_nr_packets = 4;
 	if (ts_nr_packets > 312)
@@ -254,7 +327,11 @@ int saa7134_ts_init1(struct saa7134_dev *dev)
 /* Function for stop TS */
 int saa7134_ts_stop(struct saa7134_dev *dev)
 {
+<<<<<<< HEAD
 	dprintk("TS stop\n");
+=======
+	ts_dbg("TS stop\n");
+>>>>>>> v4.9.227
 
 	if (!dev->ts_started)
 		return 0;
@@ -276,7 +353,11 @@ int saa7134_ts_stop(struct saa7134_dev *dev)
 /* Function for start TS */
 int saa7134_ts_start(struct saa7134_dev *dev)
 {
+<<<<<<< HEAD
 	dprintk("TS start\n");
+=======
+	ts_dbg("TS start\n");
+>>>>>>> v4.9.227
 
 	if (WARN_ON(dev->ts_started))
 		return 0;

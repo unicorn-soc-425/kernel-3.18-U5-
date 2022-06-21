@@ -10,6 +10,7 @@
 #ifndef _LINUX_AUTO_DEV_IOCTL_H
 #define _LINUX_AUTO_DEV_IOCTL_H
 
+<<<<<<< HEAD
 #include <linux/auto_fs.h>
 
 #ifdef __KERNEL__
@@ -226,4 +227,7 @@ enum {
 	_IOWR(AUTOFS_IOCTL, \
 	      AUTOFS_DEV_IOCTL_ISMOUNTPOINT_CMD, struct autofs_dev_ioctl)
 
+=======
+#include <uapi/linux/auto_dev-ioctl.h>
+>>>>>>> v4.9.227
 #endif	/* _LINUX_AUTO_DEV_IOCTL_H */

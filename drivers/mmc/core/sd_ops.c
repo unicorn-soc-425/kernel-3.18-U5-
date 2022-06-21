@@ -120,7 +120,10 @@ EXPORT_SYMBOL(mmc_wait_for_app_cmd);
 
 int mmc_app_set_bus_width(struct mmc_card *card, int width)
 {
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> v4.9.227
 	struct mmc_command cmd = {0};
 
 	BUG_ON(!card);
@@ -140,11 +143,15 @@ int mmc_app_set_bus_width(struct mmc_card *card, int width)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	err = mmc_wait_for_app_cmd(card->host, card, &cmd, MMC_CMD_RETRIES);
 	if (err)
 		return err;
 
 	return 0;
+=======
+	return mmc_wait_for_app_cmd(card->host, card, &cmd, MMC_CMD_RETRIES);
+>>>>>>> v4.9.227
 }
 
 int mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)

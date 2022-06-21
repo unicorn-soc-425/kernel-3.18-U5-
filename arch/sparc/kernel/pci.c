@@ -185,8 +185,15 @@ static unsigned long pci_parse_of_flags(u32 addr0)
 
 	if (addr0 & 0x02000000) {
 		flags = IORESOURCE_MEM | PCI_BASE_ADDRESS_SPACE_MEMORY;
+<<<<<<< HEAD
 		flags |= (addr0 >> 22) & PCI_BASE_ADDRESS_MEM_TYPE_64;
 		flags |= (addr0 >> 28) & PCI_BASE_ADDRESS_MEM_TYPE_1M;
+=======
+		flags |= (addr0 >> 28) & PCI_BASE_ADDRESS_MEM_TYPE_1M;
+		if (addr0 & 0x01000000)
+			flags |= IORESOURCE_MEM_64
+				 | PCI_BASE_ADDRESS_MEM_TYPE_64;
+>>>>>>> v4.9.227
 		if (addr0 & 0x40000000)
 			flags |= IORESOURCE_PREFETCH
 				 | PCI_BASE_ADDRESS_MEM_PREFETCH;
@@ -231,8 +238,12 @@ static void pci_parse_of_addrs(struct platform_device *op,
 			res = &dev->resource[(i - PCI_BASE_ADDRESS_0) >> 2];
 		} else if (i == dev->rom_base_reg) {
 			res = &dev->resource[PCI_ROM_RESOURCE];
+<<<<<<< HEAD
 			flags |= IORESOURCE_READONLY | IORESOURCE_CACHEABLE
 			      | IORESOURCE_SIZEALIGN;
+=======
+			flags |= IORESOURCE_READONLY | IORESOURCE_SIZEALIGN;
+>>>>>>> v4.9.227
 		} else {
 			printk(KERN_ERR "PCI: bad cfg reg num 0x%x\n", i);
 			continue;
@@ -244,12 +255,30 @@ static void pci_parse_of_addrs(struct platform_device *op,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void pci_init_dev_archdata(struct dev_archdata *sd, void *iommu,
+				  void *stc, void *host_controller,
+				  struct platform_device  *op,
+				  int numa_node)
+{
+	sd->iommu = iommu;
+	sd->stc = stc;
+	sd->host_controller = host_controller;
+	sd->op = op;
+	sd->numa_node = numa_node;
+}
+
+>>>>>>> v4.9.227
 static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 					 struct device_node *node,
 					 struct pci_bus *bus, int devfn)
 {
 	struct dev_archdata *sd;
+<<<<<<< HEAD
 	struct pci_slot *slot;
+=======
+>>>>>>> v4.9.227
 	struct platform_device *op;
 	struct pci_dev *dev;
 	const char *type;
@@ -259,6 +288,7 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 	if (!dev)
 		return NULL;
 
+<<<<<<< HEAD
 	sd = &dev->dev.archdata;
 	sd->iommu = pbm->iommu;
 	sd->stc = &pbm->stc;
@@ -266,6 +296,12 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 	sd->op = op = of_find_device_by_node(node);
 	sd->numa_node = pbm->numa_node;
 
+=======
+	op = of_find_device_by_node(node);
+	sd = &dev->dev.archdata;
+	pci_init_dev_archdata(sd, pbm->iommu, &pbm->stc, pbm, op,
+			      pbm->numa_node);
+>>>>>>> v4.9.227
 	sd = &op->dev.archdata;
 	sd->iommu = pbm->iommu;
 	sd->stc = &pbm->stc;
@@ -290,10 +326,14 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 	dev->multifunction = 0;		/* maybe a lie? */
 	set_pcie_port_type(dev);
 
+<<<<<<< HEAD
 	list_for_each_entry(slot, &dev->bus->slots, list)
 		if (PCI_SLOT(dev->devfn) == slot->number)
 			dev->slot = slot;
 
+=======
+	pci_dev_assign_slot(dev);
+>>>>>>> v4.9.227
 	dev->vendor = of_getintprop_default(node, "vendor-id", 0xffff);
 	dev->device = of_getintprop_default(node, "device-id", 0xffff);
 	dev->subsystem_vendor =
@@ -660,6 +700,12 @@ struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
 				pbm->io_space.start);
 	pci_add_resource_offset(&resources, &pbm->mem_space,
 				pbm->mem_space.start);
+<<<<<<< HEAD
+=======
+	if (pbm->mem64_space.flags)
+		pci_add_resource_offset(&resources, &pbm->mem64_space,
+					pbm->mem_space.start);
+>>>>>>> v4.9.227
 	pbm->busn.start = pbm->pci_first_busno;
 	pbm->busn.end	= pbm->pci_last_busno;
 	pbm->busn.flags	= IORESOURCE_BUS;
@@ -674,11 +720,18 @@ struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
 	}
 
 	pci_of_scan_bus(pbm, node, bus);
+<<<<<<< HEAD
 	pci_bus_add_devices(bus);
 	pci_bus_register_of_sysfs(bus);
 
 	pci_claim_bus_resources(bus);
 
+=======
+	pci_bus_register_of_sysfs(bus);
+
+	pci_claim_bus_resources(bus);
+	pci_bus_add_devices(bus);
+>>>>>>> v4.9.227
 	return bus;
 }
 
@@ -919,7 +972,11 @@ int arch_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
 void arch_teardown_msi_irq(unsigned int irq)
 {
 	struct msi_desc *entry = irq_get_msi_desc(irq);
+<<<<<<< HEAD
 	struct pci_dev *pdev = entry->dev;
+=======
+	struct pci_dev *pdev = msi_desc_to_pci_dev(entry);
+>>>>>>> v4.9.227
 	struct pci_pbm_info *pbm = pdev->dev.archdata.host_controller;
 
 	if (pbm->teardown_msi_irq)
@@ -978,6 +1035,7 @@ void pci_resource_to_user(const struct pci_dev *pdev, int bar,
 			  const struct resource *rp, resource_size_t *start,
 			  resource_size_t *end)
 {
+<<<<<<< HEAD
 	struct pci_pbm_info *pbm = pdev->dev.archdata.host_controller;
 	unsigned long offset;
 
@@ -988,6 +1046,20 @@ void pci_resource_to_user(const struct pci_dev *pdev, int bar,
 
 	*start = rp->start - offset;
 	*end = rp->end - offset;
+=======
+	struct pci_bus_region region;
+
+	/*
+	 * "User" addresses are shown in /sys/devices/pci.../.../resource
+	 * and /proc/bus/pci/devices and used as mmap offsets for
+	 * /proc/bus/pci/BB/DD.F files (see proc_bus_pci_mmap()).
+	 *
+	 * On sparc, these are PCI bus addresses, i.e., raw BAR values.
+	 */
+	pcibios_resource_to_bus(pdev->bus, &region, (struct resource *) rp);
+	*start = region.start;
+	*end = region.end;
+>>>>>>> v4.9.227
 }
 
 void pcibios_set_master(struct pci_dev *dev)
@@ -1004,9 +1076,19 @@ int pcibios_add_device(struct pci_dev *dev)
 	 * Copy dev_archdata from PF to VF
 	 */
 	if (dev->is_virtfn) {
+<<<<<<< HEAD
 		pdev = dev->physfn;
 		memcpy(&dev->dev.archdata, &pdev->dev.archdata,
 		       sizeof(struct dev_archdata));
+=======
+		struct dev_archdata *psd;
+
+		pdev = dev->physfn;
+		psd = &pdev->dev.archdata;
+		pci_init_dev_archdata(&dev->dev.archdata, psd->iommu,
+				      psd->stc, psd->host_controller, NULL,
+				      psd->numa_node);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }
@@ -1020,6 +1102,41 @@ static int __init pcibios_init(void)
 subsys_initcall(pcibios_init);
 
 #ifdef CONFIG_SYSFS
+<<<<<<< HEAD
+=======
+
+#define SLOT_NAME_SIZE  11  /* Max decimal digits + null in u32 */
+
+static void pcie_bus_slot_names(struct pci_bus *pbus)
+{
+	struct pci_dev *pdev;
+	struct pci_bus *bus;
+
+	list_for_each_entry(pdev, &pbus->devices, bus_list) {
+		char name[SLOT_NAME_SIZE];
+		struct pci_slot *pci_slot;
+		const u32 *slot_num;
+		int len;
+
+		slot_num = of_get_property(pdev->dev.of_node,
+					   "physical-slot#", &len);
+
+		if (slot_num == NULL || len != 4)
+			continue;
+
+		snprintf(name, sizeof(name), "%u", slot_num[0]);
+		pci_slot = pci_create_slot(pbus, slot_num[0], name, NULL);
+
+		if (IS_ERR(pci_slot))
+			pr_err("PCI: pci_create_slot returned %ld.\n",
+			       PTR_ERR(pci_slot));
+	}
+
+	list_for_each_entry(bus, &pbus->children, node)
+		pcie_bus_slot_names(bus);
+}
+
+>>>>>>> v4.9.227
 static void pci_bus_slot_names(struct device_node *node, struct pci_bus *bus)
 {
 	const struct pci_slot_names {
@@ -1071,6 +1188,7 @@ static int __init of_pci_slot_init(void)
 
 	while ((pbus = pci_find_next_bus(pbus)) != NULL) {
 		struct device_node *node;
+<<<<<<< HEAD
 
 		if (pbus->self) {
 			/* PCI->PCI bridge */
@@ -1083,6 +1201,31 @@ static int __init of_pci_slot_init(void)
 		}
 
 		pci_bus_slot_names(node, pbus);
+=======
+		struct pci_dev *pdev;
+
+		pdev = list_first_entry(&pbus->devices, struct pci_dev,
+					bus_list);
+
+		if (pdev && pci_is_pcie(pdev)) {
+			pcie_bus_slot_names(pbus);
+		} else {
+
+			if (pbus->self) {
+
+				/* PCI->PCI bridge */
+				node = pbus->self->dev.of_node;
+
+			} else {
+				struct pci_pbm_info *pbm = pbus->sysdata;
+
+				/* Host PCI controller */
+				node = pbm->op->dev.of_node;
+			}
+
+			pci_bus_slot_names(node, pbus);
+		}
+>>>>>>> v4.9.227
 	}
 
 	return 0;

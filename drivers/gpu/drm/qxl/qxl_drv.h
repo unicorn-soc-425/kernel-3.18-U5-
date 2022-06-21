@@ -137,6 +137,10 @@ struct qxl_crtc {
 	int cur_y;
 	int hot_spot_x;
 	int hot_spot_y;
+<<<<<<< HEAD
+=======
+	struct qxl_bo *cursor_bo;
+>>>>>>> v4.9.227
 };
 
 struct qxl_output {
@@ -321,11 +325,16 @@ struct qxl_device {
 	struct qxl_bo *current_release_bo[3];
 	int current_release_bo_offset[3];
 
+<<<<<<< HEAD
 	struct workqueue_struct *gc_queue;
 	struct work_struct gc_work;
 
 	struct work_struct fb_work;
 
+=======
+	struct work_struct gc_work;
+
+>>>>>>> v4.9.227
 	struct drm_property *hotplug_mode_update_property;
 	int monitors_config_width;
 	int monitors_config_height;
@@ -389,11 +398,21 @@ int qxl_get_handle_for_primary_fb(struct qxl_device *qdev,
 void qxl_fbdev_set_suspend(struct qxl_device *qdev, int state);
 
 /* qxl_display.c */
+<<<<<<< HEAD
 int
 qxl_framebuffer_init(struct drm_device *dev,
 		     struct qxl_framebuffer *rfb,
 		     struct drm_mode_fb_cmd2 *mode_cmd,
 		     struct drm_gem_object *obj);
+=======
+void qxl_user_framebuffer_destroy(struct drm_framebuffer *fb);
+int
+qxl_framebuffer_init(struct drm_device *dev,
+		     struct qxl_framebuffer *rfb,
+		     const struct drm_mode_fb_cmd2 *mode_cmd,
+		     struct drm_gem_object *obj,
+		     const struct drm_framebuffer_funcs *funcs);
+>>>>>>> v4.9.227
 void qxl_display_read_client_monitors_config(struct qxl_device *qdev);
 void qxl_send_monitors_config(struct qxl_device *qdev);
 int qxl_create_monitors_object(struct qxl_device *qdev);
@@ -553,7 +572,10 @@ int qxl_irq_init(struct qxl_device *qdev);
 irqreturn_t qxl_irq_handler(int irq, void *arg);
 
 /* qxl_fb.c */
+<<<<<<< HEAD
 int qxl_fb_init(struct qxl_device *qdev);
+=======
+>>>>>>> v4.9.227
 bool qxl_fbdev_qobj_is_fb(struct qxl_device *qdev, struct qxl_bo *qobj);
 
 int qxl_debugfs_add_files(struct qxl_device *qdev,

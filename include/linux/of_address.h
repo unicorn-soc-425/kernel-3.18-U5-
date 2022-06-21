@@ -3,6 +3,10 @@
 #include <linux/ioport.h>
 #include <linux/errno.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 struct of_pci_range_parser {
 	struct device_node *node;
@@ -36,8 +40,13 @@ extern struct device_node *of_find_matching_node_by_address(
 					const struct of_device_id *matches,
 					u64 base_address);
 extern void __iomem *of_iomap(struct device_node *device, int index);
+<<<<<<< HEAD
 extern void __iomem *of_iomap_by_name(struct device_node *device,
 					const char *name);
+=======
+void __iomem *of_io_request_and_map(struct device_node *device,
+				    int index, const char *name);
+>>>>>>> v4.9.227
 
 /* Extract an address from a device, returns the region size and
  * the address space flags too. The PCI version uses a BAR number
@@ -45,12 +54,15 @@ extern void __iomem *of_iomap_by_name(struct device_node *device,
  */
 extern const __be32 *of_get_address(struct device_node *dev, int index,
 			   u64 *size, unsigned int *flags);
+<<<<<<< HEAD
 extern const __be32 *of_get_address_by_name(struct device_node *dev,
 			   const char *name, u64 *size, unsigned int *flags);
 
 extern int pci_register_io_range(phys_addr_t addr, resource_size_t size);
 extern unsigned long pci_address_to_pio(phys_addr_t addr);
 extern phys_addr_t pci_pio_to_address(unsigned long pio);
+=======
+>>>>>>> v4.9.227
 
 extern int of_pci_range_parser_init(struct of_pci_range_parser *parser,
 			struct device_node *node);
@@ -61,6 +73,21 @@ extern int of_dma_get_range(struct device_node *np, u64 *dma_addr,
 				u64 *paddr, u64 *size);
 extern bool of_dma_is_coherent(struct device_node *np);
 #else /* CONFIG_OF_ADDRESS */
+<<<<<<< HEAD
+=======
+static inline void __iomem *of_io_request_and_map(struct device_node *device,
+						  int index, const char *name)
+{
+	return IOMEM_ERR_PTR(-EINVAL);
+}
+
+static inline u64 of_translate_address(struct device_node *np,
+				       const __be32 *addr)
+{
+	return OF_BAD_ADDR;
+}
+
+>>>>>>> v4.9.227
 static inline struct device_node *of_find_matching_node_by_address(
 					struct device_node *from,
 					const struct of_device_id *matches,
@@ -75,11 +102,14 @@ static inline const __be32 *of_get_address(struct device_node *dev, int index,
 	return NULL;
 }
 
+<<<<<<< HEAD
 static inline phys_addr_t pci_pio_to_address(unsigned long pio)
 {
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int of_pci_range_parser_init(struct of_pci_range_parser *parser,
 			struct device_node *node)
 {
@@ -109,12 +139,16 @@ static inline bool of_dma_is_coherent(struct device_node *np)
 extern int of_address_to_resource(struct device_node *dev, int index,
 				  struct resource *r);
 void __iomem *of_iomap(struct device_node *node, int index);
+<<<<<<< HEAD
 void __iomem *of_io_request_and_map(struct device_node *device,
 					int index, const char *name);
 #else
 
 #include <linux/io.h>
 
+=======
+#else
+>>>>>>> v4.9.227
 static inline int of_address_to_resource(struct device_node *dev, int index,
 					 struct resource *r)
 {
@@ -125,12 +159,15 @@ static inline void __iomem *of_iomap(struct device_node *device, int index)
 {
 	return NULL;
 }
+<<<<<<< HEAD
 
 static inline void __iomem *of_io_request_and_map(struct device_node *device,
 					int index, const char *name)
 {
 	return IOMEM_ERR_PTR(-EINVAL);
 }
+=======
+>>>>>>> v4.9.227
 #endif
 
 #if defined(CONFIG_OF_ADDRESS) && defined(CONFIG_PCI)

@@ -441,9 +441,12 @@ ENTRY(cpu_arm925_set_pte_ext)
 	.type	__arm925_setup, #function
 __arm925_setup:
 	mov	r0, #0
+<<<<<<< HEAD
 #if defined(CONFIG_CPU_ICACHE_STREAMING_DISABLE)
         orr     r0,r0,#1 << 7
 #endif
+=======
+>>>>>>> v4.9.227
 
 	/* Transparent on, D-cache clean & flush mode. See  NOTE2 above */
         orr     r0,r0,#1 << 1			@ transparent mode on

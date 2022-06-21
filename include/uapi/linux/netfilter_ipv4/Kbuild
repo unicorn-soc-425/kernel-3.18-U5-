@@ -8,4 +8,7 @@ header-y += ipt_TTL.h
 header-y += ipt_ah.h
 header-y += ipt_ecn.h
 header-y += ipt_ttl.h
+<<<<<<< HEAD
 header-y += ipt_NATTYPE.h
+=======
+>>>>>>> v4.9.227

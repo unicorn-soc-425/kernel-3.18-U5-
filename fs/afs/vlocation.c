@@ -340,7 +340,12 @@ static void afs_vlocation_queue_for_updates(struct afs_vlocation *vl)
 	struct afs_vlocation *xvl;
 
 	/* wait at least 10 minutes before updating... */
+<<<<<<< HEAD
 	vl->update_at = get_seconds() + afs_vlocation_update_timeout;
+=======
+	vl->update_at = ktime_get_real_seconds() +
+			afs_vlocation_update_timeout;
+>>>>>>> v4.9.227
 
 	spin_lock(&afs_vlocation_updates_lock);
 
@@ -506,7 +511,11 @@ void afs_put_vlocation(struct afs_vlocation *vl)
 	if (atomic_read(&vl->usage) == 0) {
 		_debug("buried");
 		list_move_tail(&vl->grave, &afs_vlocation_graveyard);
+<<<<<<< HEAD
 		vl->time_of_death = get_seconds();
+=======
+		vl->time_of_death = ktime_get_real_seconds();
+>>>>>>> v4.9.227
 		queue_delayed_work(afs_wq, &afs_vlocation_reap,
 				   afs_vlocation_timeout * HZ);
 
@@ -543,11 +552,19 @@ static void afs_vlocation_reaper(struct work_struct *work)
 	LIST_HEAD(corpses);
 	struct afs_vlocation *vl;
 	unsigned long delay, expiry;
+<<<<<<< HEAD
 	time_t now;
 
 	_enter("");
 
 	now = get_seconds();
+=======
+	time64_t now;
+
+	_enter("");
+
+	now = ktime_get_real_seconds();
+>>>>>>> v4.9.227
 	spin_lock(&afs_vlocation_graveyard_lock);
 
 	while (!list_empty(&afs_vlocation_graveyard)) {
@@ -594,8 +611,13 @@ static void afs_vlocation_reaper(struct work_struct *work)
  */
 int __init afs_vlocation_update_init(void)
 {
+<<<<<<< HEAD
 	afs_vlocation_update_worker =
 		create_singlethread_workqueue("kafs_vlupdated");
+=======
+	afs_vlocation_update_worker = alloc_workqueue("kafs_vlupdated",
+						      WQ_MEM_RECLAIM, 0);
+>>>>>>> v4.9.227
 	return afs_vlocation_update_worker ? 0 : -ENOMEM;
 }
 
@@ -622,13 +644,21 @@ static void afs_vlocation_updater(struct work_struct *work)
 {
 	struct afs_cache_vlocation vldb;
 	struct afs_vlocation *vl, *xvl;
+<<<<<<< HEAD
 	time_t now;
+=======
+	time64_t now;
+>>>>>>> v4.9.227
 	long timeout;
 	int ret;
 
 	_enter("");
 
+<<<<<<< HEAD
 	now = get_seconds();
+=======
+	now = ktime_get_real_seconds();
+>>>>>>> v4.9.227
 
 	/* find a record to update */
 	spin_lock(&afs_vlocation_updates_lock);
@@ -684,7 +714,12 @@ static void afs_vlocation_updater(struct work_struct *work)
 
 	/* and then reschedule */
 	_debug("reschedule");
+<<<<<<< HEAD
 	vl->update_at = get_seconds() + afs_vlocation_update_timeout;
+=======
+	vl->update_at = ktime_get_real_seconds() +
+			afs_vlocation_update_timeout;
+>>>>>>> v4.9.227
 
 	spin_lock(&afs_vlocation_updates_lock);
 

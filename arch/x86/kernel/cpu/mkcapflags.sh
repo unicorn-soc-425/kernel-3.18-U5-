@@ -1,5 +1,6 @@
 #!/bin/sh
 #
+<<<<<<< HEAD
 # Generate the x86_cap/bug_flags[] arrays from include/asm/cpufeature.h
 #
 
@@ -7,6 +8,17 @@ IN=$1
 OUT=$2
 
 function dump_array()
+=======
+# Generate the x86_cap/bug_flags[] arrays from include/asm/cpufeatures.h
+#
+
+set -e
+
+IN=$1
+OUT=$2
+
+dump_array()
+>>>>>>> v4.9.227
 {
 	ARRAY=$1
 	SIZE=$2
@@ -28,7 +40,11 @@ function dump_array()
 		# If the /* comment */ starts with a quote string, grab that.
 		VALUE="$(echo "$i" | sed -n 's@.*/\* *\("[^"]*"\).*\*/@\1@p')"
 		[ -z "$VALUE" ] && VALUE="\"$NAME\""
+<<<<<<< HEAD
 		[ "$VALUE" == '""' ] && continue
+=======
+		[ "$VALUE" = '""' ] && continue
+>>>>>>> v4.9.227
 
 		# Name is uppercase, VALUE is all lowercase
 		VALUE="$(echo "$VALUE" | tr A-Z a-z)"
@@ -49,8 +65,13 @@ function dump_array()
 trap 'rm "$OUT"' EXIT
 
 (
+<<<<<<< HEAD
 	echo "#ifndef _ASM_X86_CPUFEATURE_H"
 	echo "#include <asm/cpufeature.h>"
+=======
+	echo "#ifndef _ASM_X86_CPUFEATURES_H"
+	echo "#include <asm/cpufeatures.h>"
+>>>>>>> v4.9.227
 	echo "#endif"
 	echo ""
 

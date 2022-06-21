@@ -78,7 +78,11 @@
 			phy-mode = "rmii";
 			pinctrl-names = "default";
 			pinctrl-0 = <&mac0_pins_a>;
+<<<<<<< HEAD
 			phy-reset-gpios = <&gpio4 13 0>;
+=======
+			phy-reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
+>>>>>>> v4.9.227
 			status = "okay";
 		};
 	};

@@ -17,11 +17,19 @@
 #include <linux/module.h>
 #include <linux/random.h>
 
+<<<<<<< HEAD
+=======
+#include <net/addrconf.h>
+>>>>>>> v4.9.227
 #include <net/inet_connection_sock.h>
 #include <net/inet_hashtables.h>
 #include <net/inet6_hashtables.h>
 #include <net/secure_seq.h>
 #include <net/ip.h>
+<<<<<<< HEAD
+=======
+#include <net/sock_reuseport.h>
+>>>>>>> v4.9.227
 
 u32 inet6_ehashfn(const struct net *net,
 		  const struct in6_addr *laddr, const u16 lport,
@@ -67,7 +75,10 @@ struct sock *__inet6_lookup_established(struct net *net,
 	struct inet_ehash_bucket *head = &hashinfo->ehash[slot];
 
 
+<<<<<<< HEAD
 	rcu_read_lock();
+=======
+>>>>>>> v4.9.227
 begin:
 	sk_nulls_for_each_rcu(sk, node, &head->chain) {
 		if (sk->sk_hash != hash)
@@ -88,7 +99,10 @@ begin:
 out:
 	sk = NULL;
 found:
+<<<<<<< HEAD
 	rcu_read_unlock();
+=======
+>>>>>>> v4.9.227
 	return sk;
 }
 EXPORT_SYMBOL(__inet6_lookup_established);
@@ -96,7 +110,11 @@ EXPORT_SYMBOL(__inet6_lookup_established);
 static inline int compute_score(struct sock *sk, struct net *net,
 				const unsigned short hnum,
 				const struct in6_addr *daddr,
+<<<<<<< HEAD
 				const int dif)
+=======
+				const int dif, bool exact_dif)
+>>>>>>> v4.9.227
 {
 	int score = -1;
 
@@ -109,15 +127,25 @@ static inline int compute_score(struct sock *sk, struct net *net,
 				return -1;
 			score++;
 		}
+<<<<<<< HEAD
 		if (sk->sk_bound_dev_if) {
+=======
+		if (sk->sk_bound_dev_if || exact_dif) {
+>>>>>>> v4.9.227
 			if (sk->sk_bound_dev_if != dif)
 				return -1;
 			score++;
 		}
+<<<<<<< HEAD
+=======
+		if (sk->sk_incoming_cpu == raw_smp_processor_id())
+			score++;
+>>>>>>> v4.9.227
 	}
 	return score;
 }
 
+<<<<<<< HEAD
 struct sock *inet6_lookup_listener(struct net *net,
 		struct inet_hashinfo *hashinfo, const struct in6_addr *saddr,
 		const __be16 sport, const struct in6_addr *daddr,
@@ -140,12 +168,44 @@ begin:
 		if (score > hiscore) {
 			hiscore = score;
 			result = sk;
+=======
+/* called with rcu_read_lock() */
+struct sock *inet6_lookup_listener(struct net *net,
+		struct inet_hashinfo *hashinfo,
+		struct sk_buff *skb, int doff,
+		const struct in6_addr *saddr,
+		const __be16 sport, const struct in6_addr *daddr,
+		const unsigned short hnum, const int dif)
+{
+	unsigned int hash = inet_lhashfn(net, hnum);
+	struct inet_listen_hashbucket *ilb = &hashinfo->listening_hash[hash];
+	int score, hiscore = 0, matches = 0, reuseport = 0;
+	bool exact_dif = inet6_exact_dif_match(net, skb);
+	struct sock *sk, *result = NULL;
+	struct hlist_nulls_node *node;
+	u32 phash = 0;
+
+	sk_nulls_for_each(sk, node, &ilb->nulls_head) {
+		score = compute_score(sk, net, hnum, daddr, dif, exact_dif);
+		if (score > hiscore) {
+>>>>>>> v4.9.227
 			reuseport = sk->sk_reuseport;
 			if (reuseport) {
 				phash = inet6_ehashfn(net, daddr, hnum,
 						      saddr, sport);
+<<<<<<< HEAD
 				matches = 1;
 			}
+=======
+				result = reuseport_select_sock(sk, phash,
+							       skb, doff);
+				if (result)
+					return result;
+				matches = 1;
+			}
+			result = sk;
+			hiscore = score;
+>>>>>>> v4.9.227
 		} else if (score == hiscore && reuseport) {
 			matches++;
 			if (reciprocal_scale(phash, matches) == 0)
@@ -153,6 +213,7 @@ begin:
 			phash = next_pseudo_random32(phash);
 		}
 	}
+<<<<<<< HEAD
 	/*
 	 * if the nulls value we got at the end of this lookup is
 	 * not the expected one, we must restart lookup.
@@ -170,21 +231,36 @@ begin:
 		}
 	}
 	rcu_read_unlock();
+=======
+>>>>>>> v4.9.227
 	return result;
 }
 EXPORT_SYMBOL_GPL(inet6_lookup_listener);
 
 struct sock *inet6_lookup(struct net *net, struct inet_hashinfo *hashinfo,
+<<<<<<< HEAD
+=======
+			  struct sk_buff *skb, int doff,
+>>>>>>> v4.9.227
 			  const struct in6_addr *saddr, const __be16 sport,
 			  const struct in6_addr *daddr, const __be16 dport,
 			  const int dif)
 {
 	struct sock *sk;
+<<<<<<< HEAD
 
 	local_bh_disable();
 	sk = __inet6_lookup(net, hashinfo, saddr, sport, daddr, ntohs(dport), dif);
 	local_bh_enable();
 
+=======
+	bool refcounted;
+
+	sk = __inet6_lookup(net, hashinfo, skb, doff, saddr, sport, daddr,
+			    ntohs(dport), dif, &refcounted);
+	if (sk && !refcounted && !atomic_inc_not_zero(&sk->sk_refcnt))
+		sk = NULL;
+>>>>>>> v4.9.227
 	return sk;
 }
 EXPORT_SYMBOL_GPL(inet6_lookup);
@@ -234,7 +310,11 @@ static int __inet6_check_established(struct inet_timewait_death_row *death_row,
 	__sk_nulls_add_node_rcu(sk, &head->chain);
 	if (tw) {
 		sk_nulls_del_node_init_rcu((struct sock *)tw);
+<<<<<<< HEAD
 		NET_INC_STATS_BH(net, LINUX_MIB_TIMEWAITRECYCLED);
+=======
+		__NET_INC_STATS(net, LINUX_MIB_TIMEWAITRECYCLED);
+>>>>>>> v4.9.227
 	}
 	spin_unlock(lock);
 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
@@ -252,7 +332,11 @@ not_unique:
 	return -EADDRNOTAVAIL;
 }
 
+<<<<<<< HEAD
 static inline u32 inet6_sk_port_offset(const struct sock *sk)
+=======
+static u32 inet6_sk_port_offset(const struct sock *sk)
+>>>>>>> v4.9.227
 {
 	const struct inet_sock *inet = inet_sk(sk);
 
@@ -264,7 +348,76 @@ static inline u32 inet6_sk_port_offset(const struct sock *sk)
 int inet6_hash_connect(struct inet_timewait_death_row *death_row,
 		       struct sock *sk)
 {
+<<<<<<< HEAD
 	return __inet_hash_connect(death_row, sk, inet6_sk_port_offset(sk),
 				   __inet6_check_established);
 }
 EXPORT_SYMBOL_GPL(inet6_hash_connect);
+=======
+	u32 port_offset = 0;
+
+	if (!inet_sk(sk)->inet_num)
+		port_offset = inet6_sk_port_offset(sk);
+	return __inet_hash_connect(death_row, sk, port_offset,
+				   __inet6_check_established);
+}
+EXPORT_SYMBOL_GPL(inet6_hash_connect);
+
+int inet6_hash(struct sock *sk)
+{
+	int err = 0;
+
+	if (sk->sk_state != TCP_CLOSE) {
+		local_bh_disable();
+		err = __inet_hash(sk, NULL, ipv6_rcv_saddr_equal);
+		local_bh_enable();
+	}
+
+	return err;
+}
+EXPORT_SYMBOL_GPL(inet6_hash);
+
+/* match_wildcard == true:  IPV6_ADDR_ANY equals to any IPv6 addresses if IPv6
+ *                          only, and any IPv4 addresses if not IPv6 only
+ * match_wildcard == false: addresses must be exactly the same, i.e.
+ *                          IPV6_ADDR_ANY only equals to IPV6_ADDR_ANY,
+ *                          and 0.0.0.0 equals to 0.0.0.0 only
+ */
+int ipv6_rcv_saddr_equal(const struct sock *sk, const struct sock *sk2,
+			 bool match_wildcard)
+{
+	const struct in6_addr *sk2_rcv_saddr6 = inet6_rcv_saddr(sk2);
+	int sk2_ipv6only = inet_v6_ipv6only(sk2);
+	int addr_type = ipv6_addr_type(&sk->sk_v6_rcv_saddr);
+	int addr_type2 = sk2_rcv_saddr6 ? ipv6_addr_type(sk2_rcv_saddr6) : IPV6_ADDR_MAPPED;
+
+	/* if both are mapped, treat as IPv4 */
+	if (addr_type == IPV6_ADDR_MAPPED && addr_type2 == IPV6_ADDR_MAPPED) {
+		if (!sk2_ipv6only) {
+			if (sk->sk_rcv_saddr == sk2->sk_rcv_saddr)
+				return 1;
+			if (!sk->sk_rcv_saddr || !sk2->sk_rcv_saddr)
+				return match_wildcard;
+		}
+		return 0;
+	}
+
+	if (addr_type == IPV6_ADDR_ANY && addr_type2 == IPV6_ADDR_ANY)
+		return 1;
+
+	if (addr_type2 == IPV6_ADDR_ANY && match_wildcard &&
+	    !(sk2_ipv6only && addr_type == IPV6_ADDR_MAPPED))
+		return 1;
+
+	if (addr_type == IPV6_ADDR_ANY && match_wildcard &&
+	    !(ipv6_only_sock(sk) && addr_type2 == IPV6_ADDR_MAPPED))
+		return 1;
+
+	if (sk2_rcv_saddr6 &&
+	    ipv6_addr_equal(&sk->sk_v6_rcv_saddr, sk2_rcv_saddr6))
+		return 1;
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(ipv6_rcv_saddr_equal);
+>>>>>>> v4.9.227

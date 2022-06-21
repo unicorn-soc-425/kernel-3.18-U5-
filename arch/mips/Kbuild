@@ -17,6 +17,10 @@ obj- := $(platform-)
 obj-y += kernel/
 obj-y += mm/
 obj-y += net/
+<<<<<<< HEAD
+=======
+obj-y += vdso/
+>>>>>>> v4.9.227
 
 ifdef CONFIG_KVM
 obj-y += kvm/

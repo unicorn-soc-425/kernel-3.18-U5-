@@ -10,23 +10,36 @@ generic-y += exec.h
 generic-y += ftrace.h
 generic-y += futex.h
 generic-y += hardirq.h
+<<<<<<< HEAD
 generic-y += hash.h
+=======
+>>>>>>> v4.9.227
 generic-y += hw_irq.h
 generic-y += io.h
 generic-y += irq_regs.h
 generic-y += irq_work.h
 generic-y += kdebug.h
 generic-y += mcs_spinlock.h
+<<<<<<< HEAD
+=======
+generic-y += mm-arch-hooks.h
+>>>>>>> v4.9.227
 generic-y += mutex.h
 generic-y += param.h
 generic-y += pci.h
 generic-y += percpu.h
 generic-y += preempt.h
+<<<<<<< HEAD
 generic-y += scatterlist.h
 generic-y += sections.h
+=======
+>>>>>>> v4.9.227
 generic-y += switch_to.h
 generic-y += topology.h
 generic-y += trace_clock.h
 generic-y += word-at-a-time.h
 generic-y += xor.h
+<<<<<<< HEAD
 generic-y += barrier.h
+=======
+>>>>>>> v4.9.227

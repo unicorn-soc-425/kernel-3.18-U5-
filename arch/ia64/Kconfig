@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+config PGTABLE_LEVELS
+	int "Page Table Levels" if !IA64_PAGE_SIZE_64KB
+	range 3 4 if !IA64_PAGE_SIZE_64KB
+	default 3
+
+>>>>>>> v4.9.227
 source "init/Kconfig"
 
 source "kernel/Kconfig.freezer"
@@ -10,9 +18,16 @@ config IA64
 	select ARCH_MIGHT_HAVE_PC_SERIO
 	select PCI if (!IA64_HP_SIM)
 	select ACPI if (!IA64_HP_SIM)
+<<<<<<< HEAD
 	select ARCH_MIGHT_HAVE_ACPI_PDC if ACPI
 	select PM if (!IA64_HP_SIM)
 	select HAVE_UNSTABLE_SCHED_CLOCK
+=======
+	select ACPI_SYSTEM_POWER_STATES_SUPPORT if ACPI
+	select ARCH_MIGHT_HAVE_ACPI_PDC if ACPI
+	select HAVE_UNSTABLE_SCHED_CLOCK
+	select HAVE_EXIT_THREAD
+>>>>>>> v4.9.227
 	select HAVE_IDE
 	select HAVE_OPROFILE
 	select HAVE_KPROBES
@@ -20,8 +35,11 @@ config IA64
 	select HAVE_FTRACE_MCOUNT_RECORD
 	select HAVE_DYNAMIC_FTRACE if (!ITANIUM)
 	select HAVE_FUNCTION_TRACER
+<<<<<<< HEAD
 	select HAVE_DMA_ATTRS
 	select HAVE_KVM
+=======
+>>>>>>> v4.9.227
 	select TTY
 	select HAVE_ARCH_TRACEHOOK
 	select HAVE_DMA_API_DEBUG
@@ -35,13 +53,20 @@ config IA64
 	select GENERIC_PENDING_IRQ if SMP
 	select GENERIC_IRQ_SHOW
 	select GENERIC_IRQ_LEGACY
+<<<<<<< HEAD
 	select ARCH_WANT_OPTIONAL_GPIOLIB
+=======
+>>>>>>> v4.9.227
 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
 	select GENERIC_IOMAP
 	select GENERIC_SMP_IDLE_THREAD
 	select ARCH_INIT_TASK
 	select ARCH_TASK_STRUCT_ALLOCATOR
+<<<<<<< HEAD
 	select ARCH_THREAD_INFO_ALLOCATOR
+=======
+	select ARCH_THREAD_STACK_ALLOCATOR
+>>>>>>> v4.9.227
 	select ARCH_CLOCKSOURCE_DATA
 	select GENERIC_TIME_VSYSCALL_OLD
 	select SYSCTL_ARCH_UNALIGN_NO_WARN
@@ -49,6 +74,10 @@ config IA64
 	select MODULES_USE_ELF_RELA
 	select ARCH_USE_CMPXCHG_LOCKREF
 	select HAVE_ARCH_AUDITSYSCALL
+<<<<<<< HEAD
+=======
+	select HAVE_ARCH_HARDENED_USERCOPY
+>>>>>>> v4.9.227
 	default y
 	help
 	  The Itanium Processor Family is Intel's 64-bit successor to
@@ -133,6 +162,7 @@ config AUDIT_ARCH
 	bool
 	default y
 
+<<<<<<< HEAD
 menuconfig PARAVIRT_GUEST
 	bool "Paravirtualized guest support"
 	depends on BROKEN
@@ -156,6 +186,8 @@ config PARAVIRT
 
 endif
 
+=======
+>>>>>>> v4.9.227
 choice
 	prompt "System type"
 	default IA64_GENERIC
@@ -233,6 +265,10 @@ config IA64_SGI_UV
 config IA64_HP_SIM
 	bool "Ski-simulator"
 	select SWIOTLB
+<<<<<<< HEAD
+=======
+	depends on !PM
+>>>>>>> v4.9.227
 
 endchoice
 
@@ -287,6 +323,7 @@ config IA64_PAGE_SIZE_64KB
 
 endchoice
 
+<<<<<<< HEAD
 choice
 	prompt "Page Table Levels"
 	default PGTABLE_3
@@ -300,6 +337,8 @@ config PGTABLE_4
 
 endchoice
 
+=======
+>>>>>>> v4.9.227
 if IA64_HP_SIM
 config HZ
 	default 32
@@ -549,6 +588,10 @@ source "drivers/sn/Kconfig"
 config KEXEC
 	bool "kexec system call"
 	depends on !IA64_HP_SIM && (!SMP || HOTPLUG_CPU)
+<<<<<<< HEAD
+=======
+	select KEXEC_CORE
+>>>>>>> v4.9.227
 	help
 	  kexec is a system call that implements the ability to shutdown your
 	  current kernel, and to start another kernel.  It is like a reboot
@@ -605,12 +648,17 @@ config PCI_DOMAINS
 config PCI_SYSCALL
 	def_bool PCI
 
+<<<<<<< HEAD
 source "drivers/pci/pcie/Kconfig"
 
 source "drivers/pci/Kconfig"
 
 source "drivers/pci/hotplug/Kconfig"
 
+=======
+source "drivers/pci/Kconfig"
+
+>>>>>>> v4.9.227
 source "drivers/pcmcia/Kconfig"
 
 endmenu
@@ -640,8 +688,11 @@ source "security/Kconfig"
 
 source "crypto/Kconfig"
 
+<<<<<<< HEAD
 source "arch/ia64/kvm/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 source "lib/Kconfig"
 
 config IOMMU_HELPER

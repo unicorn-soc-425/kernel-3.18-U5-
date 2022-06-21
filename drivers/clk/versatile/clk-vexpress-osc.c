@@ -70,7 +70,10 @@ static struct clk_ops vexpress_osc_ops = {
 
 static int vexpress_osc_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct clk_lookup *cl = pdev->dev.platform_data; /* Non-DT lookup */
+=======
+>>>>>>> v4.9.227
 	struct clk_init_data init;
 	struct vexpress_osc *osc;
 	struct clk *clk;
@@ -95,7 +98,11 @@ static int vexpress_osc_probe(struct platform_device *pdev)
 		init.name = dev_name(&pdev->dev);
 
 	init.ops = &vexpress_osc_ops;
+<<<<<<< HEAD
 	init.flags = CLK_IS_ROOT;
+=======
+	init.flags = 0;
+>>>>>>> v4.9.227
 	init.num_parents = 0;
 
 	osc->hw.init = &init;
@@ -106,18 +113,25 @@ static int vexpress_osc_probe(struct platform_device *pdev)
 
 	of_clk_add_provider(pdev->dev.of_node, of_clk_src_simple_get, clk);
 
+<<<<<<< HEAD
 	/* Only happens for non-DT cases */
 	if (cl) {
 		cl->clk = clk;
 		clkdev_add(cl);
 	}
 
+=======
+>>>>>>> v4.9.227
 	dev_dbg(&pdev->dev, "Registered clock '%s'\n", init.name);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id vexpress_osc_of_match[] = {
+=======
+static const struct of_device_id vexpress_osc_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "arm,vexpress-osc", },
 	{}
 };

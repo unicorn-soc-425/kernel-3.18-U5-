@@ -66,6 +66,10 @@
 		ti,x-plate-ohms = /bits/ 16 <40>;
 		ti,pressure-max = /bits/ 16 <255>;
 		ti,swap-xy;
+<<<<<<< HEAD
 		linux,wakeup;
+=======
+		wakeup-source;
+>>>>>>> v4.9.227
 	};
 };

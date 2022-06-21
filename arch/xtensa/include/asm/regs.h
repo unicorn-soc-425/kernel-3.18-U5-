@@ -28,6 +28,10 @@
 /*  Special registers.  */
 
 #define SREG_MR			32
+<<<<<<< HEAD
+=======
+#define SREG_IBREAKENABLE	96
+>>>>>>> v4.9.227
 #define SREG_IBREAKA		128
 #define SREG_DBREAKA		144
 #define SREG_DBREAKC		160
@@ -103,6 +107,11 @@
 
 /*  DEBUGCAUSE register fields.  */
 
+<<<<<<< HEAD
+=======
+#define DEBUGCAUSE_DBNUM_MASK		0xf00
+#define DEBUGCAUSE_DBNUM_SHIFT		8	/* First bit of DBNUM field */
+>>>>>>> v4.9.227
 #define DEBUGCAUSE_DEBUGINT_BIT		5	/* External debug interrupt */
 #define DEBUGCAUSE_BREAKN_BIT		4	/* BREAK.N instruction */
 #define DEBUGCAUSE_BREAK_BIT		3	/* BREAK instruction */

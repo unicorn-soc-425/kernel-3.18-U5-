@@ -71,6 +71,7 @@ EXPORT_SYMBOL_GPL(nf_nat_pptp_hook_expectfn);
 
 #if defined(DEBUG) || defined(CONFIG_DYNAMIC_DEBUG)
 /* PptpControlMessageType names */
+<<<<<<< HEAD
 const char *const pptp_msg_name[] = {
 	"UNKNOWN_MESSAGE",
 	"START_SESSION_REQUEST",
@@ -89,6 +90,34 @@ const char *const pptp_msg_name[] = {
 	"WAN_ERROR_NOTIFY",
 	"SET_LINK_INFO"
 };
+=======
+static const char *const pptp_msg_name_array[PPTP_MSG_MAX + 1] = {
+	[0]				= "UNKNOWN_MESSAGE",
+	[PPTP_START_SESSION_REQUEST]	= "START_SESSION_REQUEST",
+	[PPTP_START_SESSION_REPLY]	= "START_SESSION_REPLY",
+	[PPTP_STOP_SESSION_REQUEST]	= "STOP_SESSION_REQUEST",
+	[PPTP_STOP_SESSION_REPLY]	= "STOP_SESSION_REPLY",
+	[PPTP_ECHO_REQUEST]		= "ECHO_REQUEST",
+	[PPTP_ECHO_REPLY]		= "ECHO_REPLY",
+	[PPTP_OUT_CALL_REQUEST]		= "OUT_CALL_REQUEST",
+	[PPTP_OUT_CALL_REPLY]		= "OUT_CALL_REPLY",
+	[PPTP_IN_CALL_REQUEST]		= "IN_CALL_REQUEST",
+	[PPTP_IN_CALL_REPLY]		= "IN_CALL_REPLY",
+	[PPTP_IN_CALL_CONNECT]		= "IN_CALL_CONNECT",
+	[PPTP_CALL_CLEAR_REQUEST]	= "CALL_CLEAR_REQUEST",
+	[PPTP_CALL_DISCONNECT_NOTIFY]	= "CALL_DISCONNECT_NOTIFY",
+	[PPTP_WAN_ERROR_NOTIFY]		= "WAN_ERROR_NOTIFY",
+	[PPTP_SET_LINK_INFO]		= "SET_LINK_INFO"
+};
+
+const char *pptp_msg_name(u_int16_t msg)
+{
+	if (msg > PPTP_MSG_MAX)
+		return pptp_msg_name_array[0];
+
+	return pptp_msg_name_array[msg];
+}
+>>>>>>> v4.9.227
 EXPORT_SYMBOL(pptp_msg_name);
 #endif
 
@@ -143,21 +172,35 @@ static int destroy_sibling_or_exp(struct net *net, struct nf_conn *ct,
 				  const struct nf_conntrack_tuple *t)
 {
 	const struct nf_conntrack_tuple_hash *h;
+<<<<<<< HEAD
 	struct nf_conntrack_expect *exp;
 	struct nf_conn *sibling;
 	u16 zone = nf_ct_zone(ct);
+=======
+	const struct nf_conntrack_zone *zone;
+	struct nf_conntrack_expect *exp;
+	struct nf_conn *sibling;
+>>>>>>> v4.9.227
 
 	pr_debug("trying to timeout ct or exp for tuple ");
 	nf_ct_dump_tuple(t);
 
+<<<<<<< HEAD
+=======
+	zone = nf_ct_zone(ct);
+>>>>>>> v4.9.227
 	h = nf_conntrack_find_get(net, zone, t);
 	if (h)  {
 		sibling = nf_ct_tuplehash_to_ctrack(h);
 		pr_debug("setting timeout of conntrack %p to 0\n", sibling);
 		sibling->proto.gre.timeout	  = 0;
 		sibling->proto.gre.stream_timeout = 0;
+<<<<<<< HEAD
 		if (del_timer(&sibling->timeout))
 			sibling->timeout.function((unsigned long)sibling);
+=======
+		nf_ct_kill(sibling);
+>>>>>>> v4.9.227
 		nf_ct_put(sibling);
 		return 1;
 	} else {
@@ -277,7 +320,11 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
 	typeof(nf_nat_pptp_hook_inbound) nf_nat_pptp_inbound;
 
 	msg = ntohs(ctlh->messageType);
+<<<<<<< HEAD
 	pr_debug("inbound control message %s\n", pptp_msg_name[msg]);
+=======
+	pr_debug("inbound control message %s\n", pptp_msg_name(msg));
+>>>>>>> v4.9.227
 
 	switch (msg) {
 	case PPTP_START_SESSION_REPLY:
@@ -312,7 +359,11 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
 		pcid = pptpReq->ocack.peersCallID;
 		if (info->pns_call_id != pcid)
 			goto invalid;
+<<<<<<< HEAD
 		pr_debug("%s, CID=%X, PCID=%X\n", pptp_msg_name[msg],
+=======
+		pr_debug("%s, CID=%X, PCID=%X\n", pptp_msg_name(msg),
+>>>>>>> v4.9.227
 			 ntohs(cid), ntohs(pcid));
 
 		if (pptpReq->ocack.resultCode == PPTP_OUTCALL_CONNECT) {
@@ -329,7 +380,11 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
 			goto invalid;
 
 		cid = pptpReq->icreq.callID;
+<<<<<<< HEAD
 		pr_debug("%s, CID=%X\n", pptp_msg_name[msg], ntohs(cid));
+=======
+		pr_debug("%s, CID=%X\n", pptp_msg_name(msg), ntohs(cid));
+>>>>>>> v4.9.227
 		info->cstate = PPTP_CALL_IN_REQ;
 		info->pac_call_id = cid;
 		break;
@@ -348,7 +403,11 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
 		if (info->pns_call_id != pcid)
 			goto invalid;
 
+<<<<<<< HEAD
 		pr_debug("%s, PCID=%X\n", pptp_msg_name[msg], ntohs(pcid));
+=======
+		pr_debug("%s, PCID=%X\n", pptp_msg_name(msg), ntohs(pcid));
+>>>>>>> v4.9.227
 		info->cstate = PPTP_CALL_IN_CONF;
 
 		/* we expect a GRE connection from PAC to PNS */
@@ -358,7 +417,11 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
 	case PPTP_CALL_DISCONNECT_NOTIFY:
 		/* server confirms disconnect */
 		cid = pptpReq->disc.callID;
+<<<<<<< HEAD
 		pr_debug("%s, CID=%X\n", pptp_msg_name[msg], ntohs(cid));
+=======
+		pr_debug("%s, CID=%X\n", pptp_msg_name(msg), ntohs(cid));
+>>>>>>> v4.9.227
 		info->cstate = PPTP_CALL_NONE;
 
 		/* untrack this call id, unexpect GRE packets */
@@ -385,7 +448,11 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
 invalid:
 	pr_debug("invalid %s: type=%d cid=%u pcid=%u "
 		 "cstate=%d sstate=%d pns_cid=%u pac_cid=%u\n",
+<<<<<<< HEAD
 		 msg <= PPTP_MSG_MAX ? pptp_msg_name[msg] : pptp_msg_name[0],
+=======
+		 pptp_msg_name(msg),
+>>>>>>> v4.9.227
 		 msg, ntohs(cid), ntohs(pcid),  info->cstate, info->sstate,
 		 ntohs(info->pns_call_id), ntohs(info->pac_call_id));
 	return NF_ACCEPT;
@@ -405,7 +472,11 @@ pptp_outbound_pkt(struct sk_buff *skb, unsigned int protoff,
 	typeof(nf_nat_pptp_hook_outbound) nf_nat_pptp_outbound;
 
 	msg = ntohs(ctlh->messageType);
+<<<<<<< HEAD
 	pr_debug("outbound control message %s\n", pptp_msg_name[msg]);
+=======
+	pr_debug("outbound control message %s\n", pptp_msg_name(msg));
+>>>>>>> v4.9.227
 
 	switch (msg) {
 	case PPTP_START_SESSION_REQUEST:
@@ -427,7 +498,11 @@ pptp_outbound_pkt(struct sk_buff *skb, unsigned int protoff,
 		info->cstate = PPTP_CALL_OUT_REQ;
 		/* track PNS call id */
 		cid = pptpReq->ocreq.callID;
+<<<<<<< HEAD
 		pr_debug("%s, CID=%X\n", pptp_msg_name[msg], ntohs(cid));
+=======
+		pr_debug("%s, CID=%X\n", pptp_msg_name(msg), ntohs(cid));
+>>>>>>> v4.9.227
 		info->pns_call_id = cid;
 		break;
 
@@ -441,7 +516,11 @@ pptp_outbound_pkt(struct sk_buff *skb, unsigned int protoff,
 		pcid = pptpReq->icack.peersCallID;
 		if (info->pac_call_id != pcid)
 			goto invalid;
+<<<<<<< HEAD
 		pr_debug("%s, CID=%X PCID=%X\n", pptp_msg_name[msg],
+=======
+		pr_debug("%s, CID=%X PCID=%X\n", pptp_msg_name(msg),
+>>>>>>> v4.9.227
 			 ntohs(cid), ntohs(pcid));
 
 		if (pptpReq->icack.resultCode == PPTP_INCALL_ACCEPT) {
@@ -481,7 +560,11 @@ pptp_outbound_pkt(struct sk_buff *skb, unsigned int protoff,
 invalid:
 	pr_debug("invalid %s: type=%d cid=%u pcid=%u "
 		 "cstate=%d sstate=%d pns_cid=%u pac_cid=%u\n",
+<<<<<<< HEAD
 		 msg <= PPTP_MSG_MAX ? pptp_msg_name[msg] : pptp_msg_name[0],
+=======
+		 pptp_msg_name(msg),
+>>>>>>> v4.9.227
 		 msg, ntohs(cid), ntohs(pcid),  info->cstate, info->sstate,
 		 ntohs(info->pns_call_id), ntohs(info->pac_call_id));
 	return NF_ACCEPT;

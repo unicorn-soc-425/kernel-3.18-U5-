@@ -2,7 +2,11 @@
  * max8997.c - mfd core driver for the Maxim 8966 and 8997
  *
  * Copyright (C) 2011 Samsung Electronics
+<<<<<<< HEAD
  * MyungJoo Ham <myungjoo.ham@smasung.com>
+=======
+ * MyungJoo Ham <myungjoo.ham@samsung.com>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +32,11 @@
 #include <linux/of_irq.h>
 #include <linux/interrupt.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/mutex.h>
 #include <linux/mfd/core.h>
 #include <linux/mfd/max8997.h>
@@ -155,12 +163,15 @@ static struct max8997_platform_data *max8997_i2c_parse_dt_pdata(
 
 	pd->ono = irq_of_parse_and_map(dev->of_node, 1);
 
+<<<<<<< HEAD
 	/*
 	 * ToDo: the 'wakeup' member in the platform data is more of a linux
 	 * specfic information. Hence, there is no binding for that yet and
 	 * not parsed here.
 	 */
 
+=======
+>>>>>>> v4.9.227
 	return pd;
 }
 
@@ -248,7 +259,11 @@ static int max8997_i2c_probe(struct i2c_client *i2c,
 	 */
 
 	/* MAX8997 has a power button input. */
+<<<<<<< HEAD
 	device_init_wakeup(max8997->dev, pdata->wakeup);
+=======
+	device_init_wakeup(max8997->dev, true);
+>>>>>>> v4.9.227
 
 	return ret;
 
@@ -262,6 +277,7 @@ err_i2c_haptic:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int max8997_i2c_remove(struct i2c_client *i2c)
 {
 	struct max8997_dev *max8997 = i2c_get_clientdata(i2c);
@@ -274,12 +290,17 @@ static int max8997_i2c_remove(struct i2c_client *i2c)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct i2c_device_id max8997_i2c_id[] = {
 	{ "max8997", TYPE_MAX8997 },
 	{ "max8966", TYPE_MAX8966 },
 	{ }
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(i2c, max8998_i2c_id);
+=======
+>>>>>>> v4.9.227
 
 static u8 max8997_dumpaddr_pmic[] = {
 	MAX8997_REG_INT1MSK,
@@ -436,7 +457,11 @@ static u8 max8997_dumpaddr_haptic[] = {
 
 static int max8997_freeze(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *i2c = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *i2c = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct max8997_dev *max8997 = i2c_get_clientdata(i2c);
 	int i;
 
@@ -458,7 +483,11 @@ static int max8997_freeze(struct device *dev)
 
 static int max8997_restore(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *i2c = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *i2c = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct max8997_dev *max8997 = i2c_get_clientdata(i2c);
 	int i;
 
@@ -480,7 +509,11 @@ static int max8997_restore(struct device *dev)
 
 static int max8997_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *i2c = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *i2c = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct max8997_dev *max8997 = i2c_get_clientdata(i2c);
 
 	if (device_may_wakeup(dev))
@@ -490,7 +523,11 @@ static int max8997_suspend(struct device *dev)
 
 static int max8997_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *i2c = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *i2c = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct max8997_dev *max8997 = i2c_get_clientdata(i2c);
 
 	if (device_may_wakeup(dev))
@@ -508,12 +545,20 @@ static const struct dev_pm_ops max8997_pm = {
 static struct i2c_driver max8997_i2c_driver = {
 	.driver = {
 		   .name = "max8997",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
 		   .pm = &max8997_pm,
 		   .of_match_table = of_match_ptr(max8997_pmic_dt_match),
 	},
 	.probe = max8997_i2c_probe,
 	.remove = max8997_i2c_remove,
+=======
+		   .pm = &max8997_pm,
+		   .suppress_bind_attrs = true,
+		   .of_match_table = of_match_ptr(max8997_pmic_dt_match),
+	},
+	.probe = max8997_i2c_probe,
+>>>>>>> v4.9.227
 	.id_table = max8997_i2c_id,
 };
 
@@ -523,6 +568,7 @@ static int __init max8997_i2c_init(void)
 }
 /* init early so consumer devices can complete system boot */
 subsys_initcall(max8997_i2c_init);
+<<<<<<< HEAD
 
 static void __exit max8997_i2c_exit(void)
 {
@@ -533,3 +579,5 @@ module_exit(max8997_i2c_exit);
 MODULE_DESCRIPTION("MAXIM 8997 multi-function core driver");
 MODULE_AUTHOR("MyungJoo Ham <myungjoo.ham@samsung.com>");
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> v4.9.227

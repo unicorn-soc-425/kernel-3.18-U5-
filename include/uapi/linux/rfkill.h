@@ -59,6 +59,11 @@ enum rfkill_type {
  * @RFKILL_OP_DEL: a device was removed
  * @RFKILL_OP_CHANGE: a device's state changed -- userspace changes one device
  * @RFKILL_OP_CHANGE_ALL: userspace changes all devices (of a type, or all)
+<<<<<<< HEAD
+=======
+ *	into a state, also updating the default state used for devices that
+ *	are hot-plugged later.
+>>>>>>> v4.9.227
  */
 enum rfkill_operation {
 	RFKILL_OP_ADD = 0,

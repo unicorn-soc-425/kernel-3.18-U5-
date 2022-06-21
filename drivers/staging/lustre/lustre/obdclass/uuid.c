@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -43,6 +47,7 @@
 #include "../include/obd_support.h"
 #include "../include/obd_class.h"
 
+<<<<<<< HEAD
 
 static inline __u32 consume(int nob, __u8 **ptr)
 {
@@ -78,5 +83,10 @@ void class_uuid_unparse(class_uuid_t uu, struct obd_uuid *out)
 	sprintf(out->uuid, "%04x%04x-%04x-%04x-%04x-%04x%04x%04x",
 		uuid[0], uuid[1], uuid[2], uuid[3],
 		uuid[4], uuid[5], uuid[6], uuid[7]);
+=======
+void class_uuid_unparse(class_uuid_t uu, struct obd_uuid *out)
+{
+	sprintf(out->uuid, "%pU", uu);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(class_uuid_unparse);

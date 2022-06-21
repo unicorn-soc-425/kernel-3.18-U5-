@@ -24,7 +24,11 @@
 #include <linux/slab.h>
 #include <linux/kfifo.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <media/cx25840.h>
+=======
+#include <media/drv-intf/cx25840.h>
+>>>>>>> v4.9.227
 #include <media/rc-core.h>
 
 #include "cx25840-core.h"

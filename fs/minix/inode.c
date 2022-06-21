@@ -62,7 +62,11 @@ static struct kmem_cache * minix_inode_cachep;
 static struct inode *minix_alloc_inode(struct super_block *sb)
 {
 	struct minix_inode_info *ei;
+<<<<<<< HEAD
 	ei = (struct minix_inode_info *)kmem_cache_alloc(minix_inode_cachep, GFP_KERNEL);
+=======
+	ei = kmem_cache_alloc(minix_inode_cachep, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!ei)
 		return NULL;
 	return &ei->vfs_inode;
@@ -91,7 +95,11 @@ static int __init init_inodecache(void)
 	minix_inode_cachep = kmem_cache_create("minix_inode_cache",
 					     sizeof(struct minix_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> v4.9.227
 					     init_once);
 	if (minix_inode_cachep == NULL)
 		return -ENOMEM;
@@ -435,8 +443,12 @@ static const struct address_space_operations minix_aops = {
 
 static const struct inode_operations minix_symlink_inode_operations = {
 	.readlink	= generic_readlink,
+<<<<<<< HEAD
 	.follow_link	= page_follow_link_light,
 	.put_link	= page_put_link,
+=======
+	.get_link	= page_get_link,
+>>>>>>> v4.9.227
 	.getattr	= minix_getattr,
 };
 
@@ -452,6 +464,10 @@ void minix_set_inode(struct inode *inode, dev_t rdev)
 		inode->i_mapping->a_ops = &minix_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &minix_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> v4.9.227
 		inode->i_mapping->a_ops = &minix_aops;
 	} else
 		init_special_inode(inode, inode->i_mode, rdev);
@@ -626,8 +642,13 @@ static int minix_write_inode(struct inode *inode, struct writeback_control *wbc)
 int minix_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
 {
 	struct super_block *sb = dentry->d_sb;
+<<<<<<< HEAD
 	generic_fillattr(dentry->d_inode, stat);
 	if (INODE_VERSION(dentry->d_inode) == MINIX_V1)
+=======
+	generic_fillattr(d_inode(dentry), stat);
+	if (INODE_VERSION(d_inode(dentry)) == MINIX_V1)
+>>>>>>> v4.9.227
 		stat->blocks = (BLOCK_SIZE / 512) * V1_minix_blocks(stat->size, sb);
 	else
 		stat->blocks = (sb->s_blocksize / 512) * V2_minix_blocks(stat->size, sb);

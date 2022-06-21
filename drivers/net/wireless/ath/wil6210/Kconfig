@@ -40,6 +40,7 @@ config WIL6210_TRACING
 	  option if you are interested in debugging the driver.
 
 	  If unsure, say Y to make it easier to debug problems.
+<<<<<<< HEAD
 
 config WIL6210_WRITE_IOCTL
 	bool "wil6210 write ioctl to the device"
@@ -60,3 +61,5 @@ config WIL6210_PLATFORM_MSM
 	---help---
 	  Say Y here to enable wil6210 driver support for MSM
 	  platform specific features
+=======
+>>>>>>> v4.9.227

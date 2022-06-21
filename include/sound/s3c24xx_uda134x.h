@@ -7,7 +7,10 @@ struct s3c24xx_uda134x_platform_data {
 	int l3_clk;
 	int l3_mode;
 	int l3_data;
+<<<<<<< HEAD
 	void (*power) (int);
+=======
+>>>>>>> v4.9.227
 	int model;
 };
 

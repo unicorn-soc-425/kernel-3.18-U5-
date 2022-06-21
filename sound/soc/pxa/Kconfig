@@ -138,7 +138,11 @@ config SND_PXA910_SOC
 	  Marvell PXA910 reference platform.
 
 config SND_SOC_TTC_DKB
+<<<<<<< HEAD
 	bool "SoC Audio support for TTC DKB"
+=======
+	tristate "SoC Audio support for TTC DKB"
+>>>>>>> v4.9.227
 	depends on SND_PXA910_SOC && MACH_TTC_DKB && I2C=y
 	select PXA_SSP
 	select SND_PXA_SOC_SSP
@@ -208,7 +212,11 @@ config SND_PXA2XX_SOC_IMOTE2
 
 config SND_MMP_SOC_BROWNSTONE
 	tristate "SoC Audio support for Marvell Brownstone"
+<<<<<<< HEAD
 	depends on SND_MMP_SOC && MACH_BROWNSTONE
+=======
+	depends on SND_MMP_SOC && MACH_BROWNSTONE && I2C
+>>>>>>> v4.9.227
 	select SND_MMP_SOC_SSPA
 	select MFD_WM8994
 	select SND_SOC_WM8994

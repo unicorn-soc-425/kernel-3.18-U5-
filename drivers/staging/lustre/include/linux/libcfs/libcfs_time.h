@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -68,6 +72,7 @@ static inline unsigned long cfs_time_shift(int seconds)
 	return cfs_time_add(cfs_time_current(), cfs_time_seconds(seconds));
 }
 
+<<<<<<< HEAD
 static inline long cfs_timeval_sub(struct timeval *large, struct timeval *small,
 				   struct timeval *result)
 {
@@ -117,6 +122,8 @@ static inline void cfs_fs_timeval(struct timeval *tv)
 	cfs_fs_time_usec(&time, tv);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * return valid time-out based on user supplied one. Currently we only check
  * that time-out is not shorted than allowed.

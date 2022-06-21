@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Driver for SanDisk SDDR-55 SmartMedia reader
+=======
+/*
+ * Driver for SanDisk SDDR-55 SmartMedia reader
+>>>>>>> v4.9.227
  *
  * SDDR55 driver v0.1:
  *
@@ -34,6 +39,12 @@
 #include "transport.h"
 #include "protocol.h"
 #include "debug.h"
+<<<<<<< HEAD
+=======
+#include "scsiglue.h"
+
+#define DRV_NAME "ums-sddr55"
+>>>>>>> v4.9.227
 
 MODULE_DESCRIPTION("Driver for SanDisk SDDR-55 SmartMedia reader");
 MODULE_AUTHOR("Simon Munton");
@@ -127,7 +138,12 @@ sddr55_bulk_transport(struct us_data *us, int direction,
 	return usb_stor_bulk_transfer_buf(us, pipe, data, len, NULL);
 }
 
+<<<<<<< HEAD
 /* check if card inserted, if there is, update read_only status
+=======
+/*
+ * check if card inserted, if there is, update read_only status
+>>>>>>> v4.9.227
  * return non zero if no card
  */
 
@@ -711,15 +727,27 @@ static int sddr55_read_map(struct us_data *us) {
 	if (max_lba > 1000)
 		max_lba = 1000;
 
+<<<<<<< HEAD
 	// Each block is 64 bytes of control data, so block i is located in
 	// scatterlist block i*64/128k = i*(2^6)*(2^-17) = i*(2^-11)
+=======
+	/*
+	 * Each block is 64 bytes of control data, so block i is located in
+	 * scatterlist block i*64/128k = i*(2^6)*(2^-17) = i*(2^-11)
+	 */
+>>>>>>> v4.9.227
 
 	for (i=0; i<numblocks; i++) {
 		int zone = i / 1024;
 
 		lba = short_pack(buffer[i * 2], buffer[i * 2 + 1]);
 
+<<<<<<< HEAD
 			/* Every 1024 physical blocks ("zone"), the LBA numbers
+=======
+			/*
+			 * Every 1024 physical blocks ("zone"), the LBA numbers
+>>>>>>> v4.9.227
 			 * go back to zero, but are within a higher
 			 * block of LBA's. Also, there is a maximum of
 			 * 1000 LBA's per zone. In other words, in PBA
@@ -730,7 +758,12 @@ static int sddr55_read_map(struct us_data *us) {
 			 * are 24 spare blocks to use when blocks do go bad.
 			 */
 
+<<<<<<< HEAD
 			/* SDDR55 returns 0xffff for a bad block, and 0x400 for the 
+=======
+			/*
+			 * SDDR55 returns 0xffff for a bad block, and 0x400 for the 
+>>>>>>> v4.9.227
 			 * CIS block. (Is this true for cards 8MB or less??)
 			 * Record these in the physical to logical map
 			 */ 
@@ -821,8 +854,15 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	memset (info->sense_data, 0, sizeof info->sense_data);
 
+<<<<<<< HEAD
 	/* Dummy up a response for INQUIRY since SDDR55 doesn't
 	   respond to INQUIRY commands */
+=======
+	/*
+	 * Dummy up a response for INQUIRY since SDDR55 doesn't
+	 * respond to INQUIRY commands
+	 */
+>>>>>>> v4.9.227
 
 	if (srb->cmnd[0] == INQUIRY) {
 		memcpy(ptr, inquiry_response, 8);
@@ -830,7 +870,12 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 		return USB_STOR_TRANSPORT_GOOD;
 	}
 
+<<<<<<< HEAD
 	/* only check card status if the map isn't allocated, ie no card seen yet
+=======
+	/*
+	 * only check card status if the map isn't allocated, ie no card seen yet
+>>>>>>> v4.9.227
 	 * or if it's been over half a second since we last accessed it
 	 */
 	if (info->lba_to_pba == NULL || time_after(jiffies, info->last_access + HZ/2)) {
@@ -846,8 +891,15 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 		}
 	}
 
+<<<<<<< HEAD
 	/* if we detected a problem with the map when writing,
 	   don't allow any more access */
+=======
+	/*
+	 * if we detected a problem with the map when writing,
+	 * don't allow any more access
+	 */
+>>>>>>> v4.9.227
 	if (info->fatal_error) {
 
 		set_sense_info (3, 0x31, 0);
@@ -865,12 +917,25 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 		info->capacity = capacity;
 
+<<<<<<< HEAD
 		/* figure out the maximum logical block number, allowing for
 		 * the fact that only 250 out of every 256 are used */
 		info->max_log_blks = ((info->capacity >> (info->pageshift + info->blockshift)) / 256) * 250;
 
 		/* Last page in the card, adjust as we only use 250 out of
 		 * every 256 pages */
+=======
+		/*
+		 * figure out the maximum logical block number, allowing for
+		 * the fact that only 250 out of every 256 are used
+		 */
+		info->max_log_blks = ((info->capacity >> (info->pageshift + info->blockshift)) / 256) * 250;
+
+		/*
+		 * Last page in the card, adjust as we only use 250 out of
+		 * every 256 pages
+		 */
+>>>>>>> v4.9.227
 		capacity = (capacity / 256) * 250;
 
 		capacity /= PAGESIZE;
@@ -968,6 +1033,10 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 	return USB_STOR_TRANSPORT_FAILED; // FIXME: sense buffer?
 }
 
+<<<<<<< HEAD
+=======
+static struct scsi_host_template sddr55_host_template;
+>>>>>>> v4.9.227
 
 static int sddr55_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
@@ -976,7 +1045,12 @@ static int sddr55_probe(struct usb_interface *intf,
 	int result;
 
 	result = usb_stor_probe1(&us, intf, id,
+<<<<<<< HEAD
 			(id - sddr55_usb_ids) + sddr55_unusual_dev_list);
+=======
+			(id - sddr55_usb_ids) + sddr55_unusual_dev_list,
+			&sddr55_host_template);
+>>>>>>> v4.9.227
 	if (result)
 		return result;
 
@@ -990,7 +1064,11 @@ static int sddr55_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver sddr55_driver = {
+<<<<<<< HEAD
 	.name =		"ums-sddr55",
+=======
+	.name =		DRV_NAME,
+>>>>>>> v4.9.227
 	.probe =	sddr55_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -1003,4 +1081,8 @@ static struct usb_driver sddr55_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(sddr55_driver);
+=======
+module_usb_stor_driver(sddr55_driver, sddr55_host_template, DRV_NAME);
+>>>>>>> v4.9.227

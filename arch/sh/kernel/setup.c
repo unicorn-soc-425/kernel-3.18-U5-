@@ -29,6 +29,11 @@
 #include <linux/delay.h>
 #include <linux/platform_device.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_fdt.h>
+>>>>>>> v4.9.227
 #include <asm/uaccess.h>
 #include <asm/io.h>
 #include <asm/page.h>
@@ -78,17 +83,29 @@ static char __initdata command_line[COMMAND_LINE_SIZE] = { 0, };
 
 static struct resource code_resource = {
 	.name = "Kernel code",
+<<<<<<< HEAD
 	.flags = IORESOURCE_BUSY | IORESOURCE_MEM,
+=======
+	.flags = IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM,
+>>>>>>> v4.9.227
 };
 
 static struct resource data_resource = {
 	.name = "Kernel data",
+<<<<<<< HEAD
 	.flags = IORESOURCE_BUSY | IORESOURCE_MEM,
+=======
+	.flags = IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM,
+>>>>>>> v4.9.227
 };
 
 static struct resource bss_resource = {
 	.name	= "Kernel bss",
+<<<<<<< HEAD
 	.flags	= IORESOURCE_BUSY | IORESOURCE_MEM,
+=======
+	.flags	= IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM,
+>>>>>>> v4.9.227
 };
 
 unsigned long memory_start;
@@ -172,6 +189,10 @@ disable:
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_GENERIC_CALIBRATE_DELAY
+>>>>>>> v4.9.227
 void calibrate_delay(void)
 {
 	struct clk *clk = clk_get(NULL, "cpu_clk");
@@ -187,6 +208,10 @@ void calibrate_delay(void)
 			 (loops_per_jiffy/(5000/HZ)) % 100,
 			 loops_per_jiffy);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 void __init __add_active_range(unsigned int nid, unsigned long start_pfn,
 						unsigned long end_pfn)
@@ -202,7 +227,11 @@ void __init __add_active_range(unsigned int nid, unsigned long start_pfn,
 	res->name = "System RAM";
 	res->start = start;
 	res->end = end - 1;
+<<<<<<< HEAD
 	res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+=======
+	res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
+>>>>>>> v4.9.227
 
 	if (request_resource(&iomem_resource, res)) {
 		pr_err("unable to request memory_resource 0x%lx 0x%lx\n",
@@ -238,6 +267,36 @@ void __init __weak plat_early_device_setup(void)
 {
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF_FLATTREE
+void __ref sh_fdt_init(phys_addr_t dt_phys)
+{
+	static int done = 0;
+	void *dt_virt;
+
+	/* Avoid calling an __init function on secondary cpus. */
+	if (done) return;
+
+#ifdef CONFIG_USE_BUILTIN_DTB
+	dt_virt = __dtb_start;
+#else
+	dt_virt = phys_to_virt(dt_phys);
+#endif
+
+	if (!dt_virt || !early_init_dt_scan(dt_virt)) {
+		pr_crit("Error: invalid device tree blob"
+			" at physical address %p\n", (void *)dt_phys);
+
+		while (true)
+			cpu_relax();
+	}
+
+	done = 1;
+}
+#endif
+
+>>>>>>> v4.9.227
 void __init setup_arch(char **cmdline_p)
 {
 	enable_mmu();

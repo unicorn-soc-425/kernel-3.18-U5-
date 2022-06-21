@@ -1,6 +1,10 @@
 #ifndef __NV04_DISPLAY_H__
 #define __NV04_DISPLAY_H__
+<<<<<<< HEAD
 
+=======
+#include <subdev/bios.h>
+>>>>>>> v4.9.227
 #include <subdev/bios/pll.h>
 
 #include "nouveau_display.h"

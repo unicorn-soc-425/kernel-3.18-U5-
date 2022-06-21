@@ -14,7 +14,10 @@
 #include <linux/timer.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/platform_data/edma.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/i2c.h>
 #include <linux/of_platform.h>
 #include <linux/clk.h>
@@ -25,11 +28,14 @@
 #include <asm/dma.h>
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 #include <linux/edma.h>
 
 #include "davinci-pcm.h"
 #include "davinci-i2s.h"
 
+=======
+>>>>>>> v4.9.227
 struct snd_soc_card_drvdata_davinci {
 	struct clk *mclk;
 	unsigned sysclk;
@@ -123,7 +129,10 @@ static const struct snd_soc_dapm_route audio_map[] = {
 static int evm_aic3x_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_card *card = rtd->card;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
+=======
+>>>>>>> v4.9.227
 	struct device_node *np = card->dev->of_node;
 	int ret;
 
@@ -142,9 +151,15 @@ static int evm_aic3x_init(struct snd_soc_pcm_runtime *rtd)
 	}
 
 	/* not connected */
+<<<<<<< HEAD
 	snd_soc_dapm_nc_pin(&codec->dapm, "MONO_LOUT");
 	snd_soc_dapm_nc_pin(&codec->dapm, "HPLCOM");
 	snd_soc_dapm_nc_pin(&codec->dapm, "HPRCOM");
+=======
+	snd_soc_dapm_nc_pin(&card->dapm, "MONO_LOUT");
+	snd_soc_dapm_nc_pin(&card->dapm, "HPLCOM");
+	snd_soc_dapm_nc_pin(&card->dapm, "HPRCOM");
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -435,7 +450,10 @@ static struct platform_driver davinci_evm_driver = {
 	.probe		= davinci_evm_probe,
 	.driver		= {
 		.name	= "davinci_evm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &snd_soc_pm_ops,
 		.of_match_table = of_match_ptr(davinci_evm_dt_ids),
 	},

@@ -67,7 +67,11 @@ extern void pgtable_cache_init(void);
 extern void paging_init(void);
 extern void set_page_homes(void);
 
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> v4.9.227
 
 #define _PAGE_PRESENT           HV_PTE_PRESENT
 #define _PAGE_HUGE_PAGE         HV_PTE_PAGE
@@ -235,9 +239,15 @@ static inline void __pte_clear(pte_t *ptep)
 #define pte_donemigrate(x) hv_pte_set_present(hv_pte_clear_migrating(x))
 
 #define pte_ERROR(e) \
+<<<<<<< HEAD
 	pr_err("%s:%d: bad pte 0x%016llx.\n", __FILE__, __LINE__, pte_val(e))
 #define pgd_ERROR(e) \
 	pr_err("%s:%d: bad pgd 0x%016llx.\n", __FILE__, __LINE__, pgd_val(e))
+=======
+	pr_err("%s:%d: bad pte 0x%016llx\n", __FILE__, __LINE__, pte_val(e))
+#define pgd_ERROR(e) \
+	pr_err("%s:%d: bad pgd 0x%016llx\n", __FILE__, __LINE__, pgd_val(e))
+>>>>>>> v4.9.227
 
 /* Return PA and protection info for a given kernel VA. */
 int va_to_cpa_and_pte(void *va, phys_addr_t *cpa, pte_t *pte);
@@ -285,6 +295,7 @@ extern void start_mm_caching(struct mm_struct *mm);
 extern void check_mm_caching(struct mm_struct *prev, struct mm_struct *next);
 
 /*
+<<<<<<< HEAD
  * Support non-linear file mappings (see sys_remap_file_pages).
  * This is defined by CLIENT1 set but CLIENT0 and _PAGE_PRESENT clear, and the
  * file offset in the 32 high bits.
@@ -296,6 +307,8 @@ extern void check_mm_caching(struct mm_struct *prev, struct mm_struct *next);
 #define pgoff_to_pte(off) ((pte_t) { (((long long)(off)) << 32) | _PAGE_FILE })
 
 /*
+=======
+>>>>>>> v4.9.227
  * Encode and de-code a swap entry (see <linux/swapops.h>).
  * We put the swap file type+offset in the 32 high bits;
  * I believe we can just leave the low bits clear.
@@ -425,10 +438,17 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
 }
 
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_PMDP_GET_AND_CLEAR
 static inline pmd_t pmdp_get_and_clear(struct mm_struct *mm,
 				       unsigned long address,
 				       pmd_t *pmdp)
+=======
+#define __HAVE_ARCH_PMDP_HUGE_GET_AND_CLEAR
+static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
+					    unsigned long address,
+					    pmd_t *pmdp)
+>>>>>>> v4.9.227
 {
 	return pte_pmd(ptep_get_and_clear(mm, address, pmdp_ptep(pmdp)));
 }
@@ -498,6 +518,7 @@ static inline pmd_t pmd_modify(pmd_t pmd, pgprot_t newprot)
 }
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+<<<<<<< HEAD
 #define has_transparent_hugepage() 1
 #define pmd_trans_huge pmd_huge_page
 
@@ -510,6 +531,9 @@ static inline int pmd_trans_splitting(pmd_t pmd)
 {
 	return hv_pte_get_client2(pmd_pte(pmd));
 }
+=======
+#define pmd_trans_huge pmd_huge_page
+>>>>>>> v4.9.227
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
 
 /*

@@ -15,6 +15,7 @@
 #include <linux/export.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <trace/events/asoc.h>
 
 static bool snd_soc_set_cache_val(void *base, unsigned int idx,
@@ -65,6 +66,8 @@ static unsigned int snd_soc_get_cache_val(const void *base, unsigned int idx,
 	return -1;
 }
 
+=======
+>>>>>>> v4.9.227
 int snd_soc_cache_init(struct snd_soc_codec *codec)
 {
 	const struct snd_soc_codec_driver *codec_drv = codec->driver;
@@ -75,8 +78,11 @@ int snd_soc_cache_init(struct snd_soc_codec *codec)
 	if (!reg_size)
 		return 0;
 
+<<<<<<< HEAD
 	mutex_init(&codec->cache_rw_mutex);
 
+=======
+>>>>>>> v4.9.227
 	dev_dbg(codec->dev, "ASoC: Initializing cache for %s codec\n",
 				codec->component.name);
 
@@ -103,6 +109,7 @@ int snd_soc_cache_exit(struct snd_soc_codec *codec)
 	codec->reg_cache = NULL;
 	return 0;
 }
+<<<<<<< HEAD
 
 /**
  * snd_soc_cache_read: Fetch the value of a given register from the cache.
@@ -202,3 +209,5 @@ int snd_soc_cache_sync(struct snd_soc_codec *codec)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(snd_soc_cache_sync);
+=======
+>>>>>>> v4.9.227

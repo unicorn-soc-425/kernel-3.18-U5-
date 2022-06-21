@@ -56,7 +56,11 @@ MODULE_PARM_DESC(debug, "activates debug info");
 #define dprintk(fmt, arg...) do {					\
 	    if (debug)							\
 		printk(KERN_INFO "em28xx-audio %s: " fmt,		\
+<<<<<<< HEAD
 				  __func__, ##arg); 		\
+=======
+				  __func__, ##arg);		\
+>>>>>>> v4.9.227
 	} while (0)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
@@ -232,7 +236,10 @@ static struct snd_pcm_hardware snd_em28xx_hw_capture = {
 	.channels_max = 2,
 	.buffer_bytes_max = 62720 * 8,	/* just about the value in usbaudio.c */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * The period is 12.288 bytes. Allow a 10% of variation along its
 	 * value, in order to avoid overruns/underruns due to some clock
@@ -361,7 +368,11 @@ static int snd_em28xx_hw_capture_params(struct snd_pcm_substream *substream,
 	dprintk("Setting capture parameters\n");
 
 	ret = snd_pcm_alloc_vmalloc_buffer(substream,
+<<<<<<< HEAD
 				params_buffer_bytes(hw_params));
+=======
+					   params_buffer_bytes(hw_params));
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 #if 0
@@ -478,7 +489,11 @@ static struct page *snd_pcm_get_vmalloc_page(struct snd_pcm_substream *subs,
  * AC97 volume control support
  */
 static int em28xx_vol_info(struct snd_kcontrol *kcontrol,
+<<<<<<< HEAD
 				struct snd_ctl_elem_info *info)
+=======
+			   struct snd_ctl_elem_info *info)
+>>>>>>> v4.9.227
 {
 	struct em28xx *dev = snd_kcontrol_chip(kcontrol);
 
@@ -494,7 +509,11 @@ static int em28xx_vol_info(struct snd_kcontrol *kcontrol,
 }
 
 static int em28xx_vol_put(struct snd_kcontrol *kcontrol,
+<<<<<<< HEAD
 			       struct snd_ctl_elem_value *value)
+=======
+			  struct snd_ctl_elem_value *value)
+>>>>>>> v4.9.227
 {
 	struct em28xx *dev = snd_kcontrol_chip(kcontrol);
 	struct snd_pcm_substream *substream = dev->adev.capture_pcm_substream;
@@ -534,7 +553,11 @@ err:
 }
 
 static int em28xx_vol_get(struct snd_kcontrol *kcontrol,
+<<<<<<< HEAD
 			       struct snd_ctl_elem_value *value)
+=======
+			  struct snd_ctl_elem_value *value)
+>>>>>>> v4.9.227
 {
 	struct em28xx *dev = snd_kcontrol_chip(kcontrol);
 	struct snd_pcm_substream *substream = dev->adev.capture_pcm_substream;
@@ -655,7 +678,11 @@ static int em28xx_cvol_new(struct snd_card *card, struct em28xx *dev,
 	struct snd_kcontrol *kctl;
 	struct snd_kcontrol_new tmp;
 
+<<<<<<< HEAD
 	memset (&tmp, 0, sizeof(tmp));
+=======
+	memset(&tmp, 0, sizeof(tmp));
+>>>>>>> v4.9.227
 	tmp.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	tmp.private_value = id,
 	tmp.name  = ctl_name,
@@ -672,7 +699,11 @@ static int em28xx_cvol_new(struct snd_card *card, struct em28xx *dev,
 	dprintk("Added control %s for ac97 volume control 0x%04x\n",
 		ctl_name, id);
 
+<<<<<<< HEAD
 	memset (&tmp, 0, sizeof(tmp));
+=======
+	memset(&tmp, 0, sizeof(tmp));
+>>>>>>> v4.9.227
 	tmp.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	tmp.private_value = id,
 	tmp.name  = ctl_name,
@@ -696,7 +727,11 @@ static int em28xx_cvol_new(struct snd_card *card, struct em28xx *dev,
 /*
  * register/unregister code and data
  */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_em28xx_pcm_capture = {
+=======
+static const struct snd_pcm_ops snd_em28xx_pcm_capture = {
+>>>>>>> v4.9.227
 	.open      = snd_em28xx_capture_open,
 	.close     = snd_em28xx_pcm_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -731,7 +766,11 @@ static void em28xx_audio_free_urb(struct em28xx *dev)
 
 /* high bandwidth multiplier, as encoded in highspeed endpoint descriptors */
 static int em28xx_audio_ep_packet_size(struct usb_device *udev,
+<<<<<<< HEAD
 					struct usb_endpoint_descriptor *e)
+=======
+				       struct usb_endpoint_descriptor *e)
+>>>>>>> v4.9.227
 {
 	int size = le16_to_cpu(e->wMaxPacketSize);
 
@@ -781,7 +820,11 @@ static int em28xx_audio_urb_init(struct em28xx *dev)
 	interval = 1 << (ep->bInterval - 1);
 
 	em28xx_info("Endpoint 0x%02x %s on intf %d alt %d interval = %d, size %d\n",
+<<<<<<< HEAD
 		     EM28XX_EP_AUDIO, usb_speed_string(dev->udev->speed),
+=======
+		    EM28XX_EP_AUDIO, usb_speed_string(dev->udev->speed),
+>>>>>>> v4.9.227
 		     dev->ifnum, alt,
 		     interval,
 		     ep_size);
@@ -851,7 +894,10 @@ static int em28xx_audio_urb_init(struct em28xx *dev)
 
 		urb = usb_alloc_urb(npackets, GFP_ATOMIC);
 		if (!urb) {
+<<<<<<< HEAD
 			em28xx_errdev("usb_alloc_urb failed!\n");
+=======
+>>>>>>> v4.9.227
 			em28xx_audio_free_urb(dev);
 			return -ENOMEM;
 		}

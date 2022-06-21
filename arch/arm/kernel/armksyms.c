@@ -16,6 +16,10 @@
 #include <linux/syscalls.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/arm-smccc.h>
+>>>>>>> v4.9.227
 
 #include <asm/checksum.h>
 #include <asm/ftrace.h>
@@ -50,6 +54,12 @@ extern void __aeabi_ulcmp(void);
 
 extern void fpundefinstr(void);
 
+<<<<<<< HEAD
+=======
+void mmioset(void *, unsigned int, size_t);
+void mmiocpy(void *, const void *, size_t);
+
+>>>>>>> v4.9.227
 	/* platform dependent support */
 EXPORT_SYMBOL(arm_delay_ops);
 
@@ -88,6 +98,12 @@ EXPORT_SYMBOL(memmove);
 EXPORT_SYMBOL(memchr);
 EXPORT_SYMBOL(__memzero);
 
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(mmioset);
+EXPORT_SYMBOL(mmiocpy);
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_MMU
 EXPORT_SYMBOL(copy_page);
 
@@ -169,3 +185,11 @@ EXPORT_SYMBOL(__gnu_mcount_nc);
 EXPORT_SYMBOL(__pv_phys_pfn_offset);
 EXPORT_SYMBOL(__pv_offset);
 #endif
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_HAVE_ARM_SMCCC
+EXPORT_SYMBOL(__arm_smccc_smc);
+EXPORT_SYMBOL(__arm_smccc_hvc);
+#endif
+>>>>>>> v4.9.227

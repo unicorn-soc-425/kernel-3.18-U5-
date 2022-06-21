@@ -334,7 +334,10 @@ static const struct dev_pm_ops monwriter_pm_ops = {
 static struct platform_driver monwriter_pdrv = {
 	.driver = {
 		.name	= "monwriter",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &monwriter_pm_ops,
 	},
 };

@@ -39,16 +39,25 @@ static cycles_t max_warp;
 static int nr_warps;
 
 /*
+<<<<<<< HEAD
  * TSC-warp measurement loop running on both CPUs:
+=======
+ * TSC-warp measurement loop running on both CPUs.  This is not called
+ * if there is no TSC.
+>>>>>>> v4.9.227
  */
 static void check_tsc_warp(unsigned int timeout)
 {
 	cycles_t start, now, prev, end;
 	int i;
 
+<<<<<<< HEAD
 	rdtsc_barrier();
 	start = get_cycles();
 	rdtsc_barrier();
+=======
+	start = rdtsc_ordered();
+>>>>>>> v4.9.227
 	/*
 	 * The measurement runs for 'timeout' msecs:
 	 */
@@ -63,9 +72,13 @@ static void check_tsc_warp(unsigned int timeout)
 		 */
 		arch_spin_lock(&sync_lock);
 		prev = last_tsc;
+<<<<<<< HEAD
 		rdtsc_barrier();
 		now = get_cycles();
 		rdtsc_barrier();
+=======
+		now = rdtsc_ordered();
+>>>>>>> v4.9.227
 		last_tsc = now;
 		arch_spin_unlock(&sync_lock);
 
@@ -113,7 +126,11 @@ static void check_tsc_warp(unsigned int timeout)
  */
 static inline unsigned int loop_timeout(int cpu)
 {
+<<<<<<< HEAD
 	return (cpumask_weight(cpu_core_mask(cpu)) > 1) ? 2 : 20;
+=======
+	return (cpumask_weight(topology_core_cpumask(cpu)) > 1) ? 2 : 20;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -126,7 +143,11 @@ void check_tsc_sync_source(int cpu)
 
 	/*
 	 * No need to check if we already know that the TSC is not
+<<<<<<< HEAD
 	 * synchronized:
+=======
+	 * synchronized or if we have no TSC.
+>>>>>>> v4.9.227
 	 */
 	if (unsynchronized_tsc())
 		return;
@@ -190,6 +211,10 @@ void check_tsc_sync_target(void)
 {
 	int cpus = 2;
 
+<<<<<<< HEAD
+=======
+	/* Also aborts if there is no TSC. */
+>>>>>>> v4.9.227
 	if (unsynchronized_tsc() || tsc_clocksource_reliable)
 		return;
 

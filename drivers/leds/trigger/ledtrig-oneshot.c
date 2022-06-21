@@ -63,9 +63,15 @@ static ssize_t led_invert_store(struct device *dev,
 	oneshot_data->invert = !!state;
 
 	if (oneshot_data->invert)
+<<<<<<< HEAD
 		__led_set_brightness(led_cdev, LED_FULL);
 	else
 		__led_set_brightness(led_cdev, LED_OFF);
+=======
+		led_set_brightness_nosleep(led_cdev, LED_FULL);
+	else
+		led_set_brightness_nosleep(led_cdev, LED_OFF);
+>>>>>>> v4.9.227
 
 	return size;
 }
@@ -201,4 +207,8 @@ module_exit(oneshot_trig_exit);
 
 MODULE_AUTHOR("Fabio Baltieri <fabio.baltieri@gmail.com>");
 MODULE_DESCRIPTION("One-shot LED trigger");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> v4.9.227

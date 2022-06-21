@@ -146,7 +146,10 @@ static int dm355evm_rtc_probe(struct platform_device *pdev)
 static struct platform_driver rtc_dm355evm_driver = {
 	.probe		= dm355evm_rtc_probe,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "rtc-dm355evm",
 	},
 };

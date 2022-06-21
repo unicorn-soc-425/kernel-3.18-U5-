@@ -398,6 +398,11 @@ error:
 }
 
 #define AF9015_EEPROM_SIZE 256
+<<<<<<< HEAD
+=======
+/* 2^31 + 2^29 - 2^25 + 2^22 - 2^19 - 2^16 + 1 */
+#define GOLDEN_RATIO_PRIME_32 0x9e370001UL
+>>>>>>> v4.9.227
 
 /* hash (and dump) eeprom */
 static int af9015_eeprom_hash(struct dvb_usb_device *d)
@@ -641,7 +646,11 @@ static int af9015_af9013_set_frontend(struct dvb_frontend *fe)
 
 /* override demod callbacks for resource locking */
 static int af9015_af9013_read_status(struct dvb_frontend *fe,
+<<<<<<< HEAD
 	fe_status_t *status)
+=======
+	enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	int ret;
 	struct af9015_state *state = fe_to_priv(fe);
@@ -1220,6 +1229,10 @@ static int af9015_rc_query(struct dvb_usb_device *d)
 
 	/* Only process key if canary killed */
 	if (buf[16] != 0xff && buf[0] != 0x01) {
+<<<<<<< HEAD
+=======
+		enum rc_type proto;
+>>>>>>> v4.9.227
 		dev_dbg(&d->udev->dev, "%s: key pressed %*ph\n",
 				__func__, 4, buf + 12);
 
@@ -1235,11 +1248,19 @@ static int af9015_rc_query(struct dvb_usb_device *d)
 				/* NEC */
 				state->rc_keycode = RC_SCANCODE_NEC(buf[12],
 								    buf[14]);
+<<<<<<< HEAD
+=======
+				proto = RC_TYPE_NEC;
+>>>>>>> v4.9.227
 			} else {
 				/* NEC extended*/
 				state->rc_keycode = RC_SCANCODE_NECX(buf[12] << 8 |
 								     buf[13],
 								     buf[14]);
+<<<<<<< HEAD
+=======
+				proto = RC_TYPE_NECX;
+>>>>>>> v4.9.227
 			}
 		} else {
 			/* 32 bit NEC */
@@ -1247,8 +1268,14 @@ static int af9015_rc_query(struct dvb_usb_device *d)
 							      buf[13] << 16 |
 							      buf[14] << 8  |
 							      buf[15]);
+<<<<<<< HEAD
 		}
 		rc_keydown(d->rc_dev, RC_TYPE_NEC, state->rc_keycode, 0);
+=======
+			proto = RC_TYPE_NEC32;
+		}
+		rc_keydown(d->rc_dev, proto, state->rc_keycode, 0);
+>>>>>>> v4.9.227
 	} else {
 		dev_dbg(&d->udev->dev, "%s: no key press\n", __func__);
 		/* Invalidate last keypress */
@@ -1315,7 +1342,11 @@ static int af9015_get_rc_config(struct dvb_usb_device *d, struct dvb_usb_rc *rc)
 	if (!rc->map_name)
 		rc->map_name = RC_MAP_EMPTY;
 
+<<<<<<< HEAD
 	rc->allowed_protos = RC_BIT_NEC;
+=======
+	rc->allowed_protos = RC_BIT_NEC | RC_BIT_NECX | RC_BIT_NEC32;
+>>>>>>> v4.9.227
 	rc->query = af9015_rc_query;
 	rc->interval = 500;
 

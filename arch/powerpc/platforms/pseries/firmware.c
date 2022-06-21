@@ -22,6 +22,10 @@
  */
 
 
+<<<<<<< HEAD
+=======
+#include <linux/of_fdt.h>
+>>>>>>> v4.9.227
 #include <asm/firmware.h>
 #include <asm/prom.h>
 #include <asm/udbg.h>
@@ -69,7 +73,12 @@ hypertas_fw_features_table[] = {
  * device-tree/ibm,hypertas-functions.  Ultimately this functionality may
  * be moved into prom.c prom_init().
  */
+<<<<<<< HEAD
 void __init fw_hypertas_feature_init(const char *hypertas, unsigned long len)
+=======
+static void __init fw_hypertas_feature_init(const char *hypertas,
+					    unsigned long len)
+>>>>>>> v4.9.227
 {
 	const char *s;
 	int i;
@@ -113,7 +122,11 @@ vec5_fw_features_table[] = {
 	{FW_FEATURE_PRRN,		OV5_PRRN},
 };
 
+<<<<<<< HEAD
 void __init fw_vec5_feature_init(const char *vec5, unsigned long len)
+=======
+static void __init fw_vec5_feature_init(const char *vec5, unsigned long len)
+>>>>>>> v4.9.227
 {
 	unsigned int index, feat;
 	int i;
@@ -131,3 +144,48 @@ void __init fw_vec5_feature_init(const char *vec5, unsigned long len)
 
 	pr_debug(" <- fw_vec5_feature_init()\n");
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * Called very early, MMU is off, device-tree isn't unflattened
+ */
+static int __init probe_fw_features(unsigned long node, const char *uname, int
+				    depth, void *data)
+{
+	const char *prop;
+	int len;
+	static int hypertas_found;
+	static int vec5_found;
+
+	if (depth != 1)
+		return 0;
+
+	if (!strcmp(uname, "rtas") || !strcmp(uname, "rtas@0")) {
+		prop = of_get_flat_dt_prop(node, "ibm,hypertas-functions",
+					   &len);
+		if (prop) {
+			powerpc_firmware_features |= FW_FEATURE_LPAR;
+			fw_hypertas_feature_init(prop, len);
+		}
+
+		hypertas_found = 1;
+	}
+
+	if (!strcmp(uname, "chosen")) {
+		prop = of_get_flat_dt_prop(node, "ibm,architecture-vec-5",
+					   &len);
+		if (prop)
+			fw_vec5_feature_init(prop, len);
+
+		vec5_found = 1;
+	}
+
+	return hypertas_found && vec5_found;
+}
+
+void __init pseries_probe_fw_features(void)
+{
+	of_scan_flat_dt(probe_fw_features, NULL);
+}
+>>>>>>> v4.9.227

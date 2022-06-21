@@ -1,4 +1,8 @@
 ccflags-y := -Idrivers/net/ethernet/chelsio/cxgb4
+<<<<<<< HEAD
+=======
+ccflags-y += -Idrivers/net/ethernet/chelsio/libcxgb
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_INFINIBAND_CXGB4) += iw_cxgb4.o
 

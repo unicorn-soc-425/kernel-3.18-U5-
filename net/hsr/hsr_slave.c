@@ -22,6 +22,10 @@ static rx_handler_result_t hsr_handle_frame(struct sk_buff **pskb)
 {
 	struct sk_buff *skb = *pskb;
 	struct hsr_port *port;
+<<<<<<< HEAD
+=======
+	u16 protocol;
+>>>>>>> v4.9.227
 
 	if (!skb_mac_header_was_set(skb)) {
 		WARN_ONCE(1, "%s: skb invalid", __func__);
@@ -30,6 +34,11 @@ static rx_handler_result_t hsr_handle_frame(struct sk_buff **pskb)
 
 	rcu_read_lock(); /* hsr->node_db, hsr->ports */
 	port = hsr_port_get_rcu(skb->dev);
+<<<<<<< HEAD
+=======
+	if (!port)
+		goto finish_pass;
+>>>>>>> v4.9.227
 
 	if (hsr_addr_is_self(port->hsr, eth_hdr(skb)->h_source)) {
 		/* Directly kill frames sent by ourselves */
@@ -37,7 +46,12 @@ static rx_handler_result_t hsr_handle_frame(struct sk_buff **pskb)
 		goto finish_consume;
 	}
 
+<<<<<<< HEAD
 	if (eth_hdr(skb)->h_proto != htons(ETH_P_PRP))
+=======
+	protocol = eth_hdr(skb)->h_proto;
+	if (protocol != htons(ETH_P_PRP) && protocol != htons(ETH_P_HSR))
+>>>>>>> v4.9.227
 		goto finish_pass;
 
 	skb_push(skb, ETH_HLEN);
@@ -147,16 +161,26 @@ int hsr_add_port(struct hsr_priv *hsr, struct net_device *dev,
 	if (port == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	port->hsr = hsr;
+	port->dev = dev;
+	port->type = type;
+
+>>>>>>> v4.9.227
 	if (type != HSR_PT_MASTER) {
 		res = hsr_portdev_setup(dev, port);
 		if (res)
 			goto fail_dev_setup;
 	}
 
+<<<<<<< HEAD
 	port->hsr = hsr;
 	port->dev = dev;
 	port->type = type;
 
+=======
+>>>>>>> v4.9.227
 	list_add_tail_rcu(&port->port_list, &hsr->ports);
 	synchronize_rcu();
 
@@ -181,8 +205,15 @@ void hsr_del_port(struct hsr_port *port)
 	list_del_rcu(&port->port_list);
 
 	if (port != master) {
+<<<<<<< HEAD
 		netdev_update_features(master->dev);
 		dev_set_mtu(master->dev, hsr_get_max_mtu(hsr));
+=======
+		if (master != NULL) {
+			netdev_update_features(master->dev);
+			dev_set_mtu(master->dev, hsr_get_max_mtu(hsr));
+		}
+>>>>>>> v4.9.227
 		netdev_rx_handler_unregister(port->dev);
 		dev_set_promiscuity(port->dev, -1);
 	}
@@ -192,5 +223,11 @@ void hsr_del_port(struct hsr_port *port)
 	 */
 
 	synchronize_rcu();
+<<<<<<< HEAD
 	dev_put(port->dev);
+=======
+
+	if (port != master)
+		dev_put(port->dev);
+>>>>>>> v4.9.227
 }

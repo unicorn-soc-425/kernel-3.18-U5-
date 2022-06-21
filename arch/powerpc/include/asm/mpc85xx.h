@@ -61,6 +61,10 @@
 #define SVR_T4240	0x824000
 #define SVR_T4120	0x824001
 #define SVR_T4160	0x824100
+<<<<<<< HEAD
+=======
+#define SVR_T4080	0x824102
+>>>>>>> v4.9.227
 #define SVR_C291	0x850000
 #define SVR_C292	0x850020
 #define SVR_C293	0x850030

@@ -36,8 +36,11 @@ sirfsoc_uart_pio_rx_chars(struct uart_port *port, unsigned int max_rx_count);
 static struct uart_driver sirfsoc_uart_drv;
 
 static void sirfsoc_uart_tx_dma_complete_callback(void *param);
+<<<<<<< HEAD
 static void sirfsoc_uart_start_next_rx_dma(struct uart_port *port);
 static void sirfsoc_uart_rx_dma_complete_callback(void *param);
+=======
+>>>>>>> v4.9.227
 static const struct sirfsoc_baudrate_to_regv baudrate_to_regv[] = {
 	{4000000, 2359296},
 	{3500000, 1310721},
@@ -59,6 +62,7 @@ static const struct sirfsoc_baudrate_to_regv baudrate_to_regv[] = {
 	{9600, 1114979},
 };
 
+<<<<<<< HEAD
 static struct sirfsoc_uart_port sirfsoc_uart_ports[SIRFSOC_UART_NR] = {
 	[0] = {
 		.port = {
@@ -103,6 +107,9 @@ static struct sirfsoc_uart_port sirfsoc_uart_ports[SIRFSOC_UART_NR] = {
 		},
 	},
 };
+=======
+static struct sirfsoc_uart_port *sirf_ports[SIRFSOC_UART_NR];
+>>>>>>> v4.9.227
 
 static inline struct sirfsoc_uart_port *to_sirfport(struct uart_port *port)
 {
@@ -116,8 +123,12 @@ static inline unsigned int sirfsoc_uart_tx_empty(struct uart_port *port)
 	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
 	struct sirfsoc_fifo_status *ufifo_st = &sirfport->uart_reg->fifo_status;
 	reg = rd_regl(port, ureg->sirfsoc_tx_fifo_status);
+<<<<<<< HEAD
 
 	return (reg & ufifo_st->ff_empty(port->line)) ? TIOCSER_TEMT : 0;
+=======
+	return (reg & ufifo_st->ff_empty(port)) ? TIOCSER_TEMT : 0;
+>>>>>>> v4.9.227
 }
 
 static unsigned int sirfsoc_uart_get_mctrl(struct uart_port *port)
@@ -152,6 +163,29 @@ static void sirfsoc_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 	unsigned int val = assert ? SIRFUART_AFC_CTRL_RX_THD : 0x0;
 	unsigned int current_val;
 
+<<<<<<< HEAD
+=======
+	if (mctrl & TIOCM_LOOP) {
+		if (sirfport->uart_reg->uart_type == SIRF_REAL_UART)
+			wr_regl(port, ureg->sirfsoc_line_ctrl,
+				rd_regl(port, ureg->sirfsoc_line_ctrl) |
+				SIRFUART_LOOP_BACK);
+		else
+			wr_regl(port, ureg->sirfsoc_mode1,
+				rd_regl(port, ureg->sirfsoc_mode1) |
+				SIRFSOC_USP_LOOP_BACK_CTRL);
+	} else {
+		if (sirfport->uart_reg->uart_type == SIRF_REAL_UART)
+			wr_regl(port, ureg->sirfsoc_line_ctrl,
+				rd_regl(port, ureg->sirfsoc_line_ctrl) &
+				~SIRFUART_LOOP_BACK);
+		else
+			wr_regl(port, ureg->sirfsoc_mode1,
+				rd_regl(port, ureg->sirfsoc_mode1) &
+				~SIRFSOC_USP_LOOP_BACK_CTRL);
+	}
+
+>>>>>>> v4.9.227
 	if (!sirfport->hw_flow_ctrl || !sirfport->ms_enabled)
 		return;
 	if (sirfport->uart_reg->uart_type == SIRF_REAL_UART) {
@@ -177,21 +211,40 @@ static void sirfsoc_uart_stop_tx(struct uart_port *port)
 			dmaengine_pause(sirfport->tx_dma_chan);
 			sirfport->tx_dma_state = TX_DMA_PAUSE;
 		} else {
+<<<<<<< HEAD
 			if (!sirfport->is_marco)
+=======
+			if (!sirfport->is_atlas7)
+>>>>>>> v4.9.227
 				wr_regl(port, ureg->sirfsoc_int_en_reg,
 				rd_regl(port, ureg->sirfsoc_int_en_reg) &
 				~uint_en->sirfsoc_txfifo_empty_en);
 			else
+<<<<<<< HEAD
 				wr_regl(port, SIRFUART_INT_EN_CLR,
 				uint_en->sirfsoc_txfifo_empty_en);
 		}
 	} else {
 		if (!sirfport->is_marco)
+=======
+				wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+				uint_en->sirfsoc_txfifo_empty_en);
+		}
+	} else {
+		if (sirfport->uart_reg->uart_type == SIRF_USP_UART)
+			wr_regl(port, ureg->sirfsoc_tx_rx_en, rd_regl(port,
+				ureg->sirfsoc_tx_rx_en) & ~SIRFUART_TX_EN);
+		if (!sirfport->is_atlas7)
+>>>>>>> v4.9.227
 			wr_regl(port, ureg->sirfsoc_int_en_reg,
 				rd_regl(port, ureg->sirfsoc_int_en_reg) &
 				~uint_en->sirfsoc_txfifo_empty_en);
 		else
+<<<<<<< HEAD
 			wr_regl(port, SIRFUART_INT_EN_CLR,
+=======
+			wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+>>>>>>> v4.9.227
 				uint_en->sirfsoc_txfifo_empty_en);
 	}
 }
@@ -217,12 +270,20 @@ static void sirfsoc_uart_tx_with_dma(struct sirfsoc_uart_port *sirfport)
 	}
 	if (sirfport->tx_dma_state == TX_DMA_RUNNING)
 		return;
+<<<<<<< HEAD
 	if (!sirfport->is_marco)
+=======
+	if (!sirfport->is_atlas7)
+>>>>>>> v4.9.227
 		wr_regl(port, ureg->sirfsoc_int_en_reg,
 				rd_regl(port, ureg->sirfsoc_int_en_reg)&
 				~(uint_en->sirfsoc_txfifo_empty_en));
 	else
+<<<<<<< HEAD
 		wr_regl(port, SIRFUART_INT_EN_CLR,
+=======
+		wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+>>>>>>> v4.9.227
 				uint_en->sirfsoc_txfifo_empty_en);
 	/*
 	 * DMA requires buffer address and buffer length are both aligned with
@@ -244,7 +305,11 @@ static void sirfsoc_uart_tx_with_dma(struct sirfsoc_uart_port *sirfport)
 		}
 		if (tran_size < 4)
 			sirfsoc_uart_pio_tx_chars(sirfport, tran_size);
+<<<<<<< HEAD
 		if (!sirfport->is_marco)
+=======
+		if (!sirfport->is_atlas7)
+>>>>>>> v4.9.227
 			wr_regl(port, ureg->sirfsoc_int_en_reg,
 				rd_regl(port, ureg->sirfsoc_int_en_reg)|
 				uint_en->sirfsoc_txfifo_empty_en);
@@ -290,10 +355,20 @@ static void sirfsoc_uart_start_tx(struct uart_port *port)
 	if (sirfport->tx_dma_chan)
 		sirfsoc_uart_tx_with_dma(sirfport);
 	else {
+<<<<<<< HEAD
 		sirfsoc_uart_pio_tx_chars(sirfport,
 			SIRFSOC_UART_IO_TX_REASONABLE_CNT);
 		wr_regl(port, ureg->sirfsoc_tx_fifo_op, SIRFUART_FIFO_START);
 		if (!sirfport->is_marco)
+=======
+		if (sirfport->uart_reg->uart_type == SIRF_USP_UART)
+			wr_regl(port, ureg->sirfsoc_tx_rx_en, rd_regl(port,
+				ureg->sirfsoc_tx_rx_en) | SIRFUART_TX_EN);
+		wr_regl(port, ureg->sirfsoc_tx_fifo_op, SIRFUART_FIFO_STOP);
+		sirfsoc_uart_pio_tx_chars(sirfport, port->fifosize);
+		wr_regl(port, ureg->sirfsoc_tx_fifo_op, SIRFUART_FIFO_START);
+		if (!sirfport->is_atlas7)
+>>>>>>> v4.9.227
 			wr_regl(port, ureg->sirfsoc_int_en_reg,
 					rd_regl(port, ureg->sirfsoc_int_en_reg)|
 					uint_en->sirfsoc_txfifo_empty_en);
@@ -311,6 +386,7 @@ static void sirfsoc_uart_stop_rx(struct uart_port *port)
 
 	wr_regl(port, ureg->sirfsoc_rx_fifo_op, 0);
 	if (sirfport->rx_dma_chan) {
+<<<<<<< HEAD
 		if (!sirfport->is_marco)
 			wr_regl(port, ureg->sirfsoc_int_en_reg,
 				rd_regl(port, ureg->sirfsoc_int_en_reg) &
@@ -329,6 +405,30 @@ static void sirfsoc_uart_stop_rx(struct uart_port *port)
 		else
 			wr_regl(port, SIRFUART_INT_EN_CLR,
 					SIRFUART_RX_IO_INT_EN(port, uint_en));
+=======
+		if (!sirfport->is_atlas7)
+			wr_regl(port, ureg->sirfsoc_int_en_reg,
+				rd_regl(port, ureg->sirfsoc_int_en_reg) &
+				~(SIRFUART_RX_DMA_INT_EN(uint_en,
+				sirfport->uart_reg->uart_type) |
+				uint_en->sirfsoc_rx_done_en));
+		else
+			wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+				SIRFUART_RX_DMA_INT_EN(uint_en,
+				sirfport->uart_reg->uart_type)|
+				uint_en->sirfsoc_rx_done_en);
+		dmaengine_terminate_all(sirfport->rx_dma_chan);
+	} else {
+		if (!sirfport->is_atlas7)
+			wr_regl(port, ureg->sirfsoc_int_en_reg,
+				rd_regl(port, ureg->sirfsoc_int_en_reg)&
+				~(SIRFUART_RX_IO_INT_EN(uint_en,
+				sirfport->uart_reg->uart_type)));
+		else
+			wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+				SIRFUART_RX_IO_INT_EN(uint_en,
+				sirfport->uart_reg->uart_type));
+>>>>>>> v4.9.227
 	}
 }
 
@@ -344,12 +444,20 @@ static void sirfsoc_uart_disable_ms(struct uart_port *port)
 	if (sirfport->uart_reg->uart_type == SIRF_REAL_UART) {
 		wr_regl(port, ureg->sirfsoc_afc_ctrl,
 				rd_regl(port, ureg->sirfsoc_afc_ctrl) & ~0x3FF);
+<<<<<<< HEAD
 		if (!sirfport->is_marco)
+=======
+		if (!sirfport->is_atlas7)
+>>>>>>> v4.9.227
 			wr_regl(port, ureg->sirfsoc_int_en_reg,
 					rd_regl(port, ureg->sirfsoc_int_en_reg)&
 					~uint_en->sirfsoc_cts_en);
 		else
+<<<<<<< HEAD
 			wr_regl(port, SIRFUART_INT_EN_CLR,
+=======
+			wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+>>>>>>> v4.9.227
 					uint_en->sirfsoc_cts_en);
 	} else
 		disable_irq(gpio_to_irq(sirfport->cts_gpio));
@@ -379,8 +487,14 @@ static void sirfsoc_uart_enable_ms(struct uart_port *port)
 	if (sirfport->uart_reg->uart_type == SIRF_REAL_UART) {
 		wr_regl(port, ureg->sirfsoc_afc_ctrl,
 				rd_regl(port, ureg->sirfsoc_afc_ctrl) |
+<<<<<<< HEAD
 				SIRFUART_AFC_TX_EN | SIRFUART_AFC_RX_EN);
 		if (!sirfport->is_marco)
+=======
+				SIRFUART_AFC_TX_EN | SIRFUART_AFC_RX_EN |
+				SIRFUART_AFC_CTRL_RX_THD);
+		if (!sirfport->is_atlas7)
+>>>>>>> v4.9.227
 			wr_regl(port, ureg->sirfsoc_int_en_reg,
 					rd_regl(port, ureg->sirfsoc_int_en_reg)
 					| uint_en->sirfsoc_cts_en);
@@ -417,7 +531,11 @@ sirfsoc_uart_pio_rx_chars(struct uart_port *port, unsigned int max_rx_count)
 	if (!tty)
 		return -ENODEV;
 	while (!(rd_regl(port, ureg->sirfsoc_rx_fifo_status) &
+<<<<<<< HEAD
 					ufifo_st->ff_empty(port->line))) {
+=======
+					ufifo_st->ff_empty(port))) {
+>>>>>>> v4.9.227
 		ch = rd_regl(port, ureg->sirfsoc_rx_fifo_data) |
 			SIRFUART_DUMMY_READ;
 		if (unlikely(uart_handle_sysrq_char(port, ch)))
@@ -428,7 +546,10 @@ sirfsoc_uart_pio_rx_chars(struct uart_port *port, unsigned int max_rx_count)
 			break;
 	}
 
+<<<<<<< HEAD
 	sirfport->rx_io_count += rx_count;
+=======
+>>>>>>> v4.9.227
 	port->icount.rx += rx_count;
 
 	return rx_count;
@@ -444,7 +565,11 @@ sirfsoc_uart_pio_tx_chars(struct sirfsoc_uart_port *sirfport, int count)
 	unsigned int num_tx = 0;
 	while (!uart_circ_empty(xmit) &&
 		!(rd_regl(port, ureg->sirfsoc_tx_fifo_status) &
+<<<<<<< HEAD
 					ufifo_st->ff_full(port->line)) &&
+=======
+					ufifo_st->ff_full(port)) &&
+>>>>>>> v4.9.227
 		count--) {
 		wr_regl(port, ureg->sirfsoc_tx_fifo_data,
 				xmit->buf[xmit->tail]);
@@ -478,6 +603,7 @@ static void sirfsoc_uart_tx_dma_complete_callback(void *param)
 	spin_unlock_irqrestore(&port->lock, flags);
 }
 
+<<<<<<< HEAD
 static void sirfsoc_uart_insert_rx_buf_to_tty(
 		struct sirfsoc_uart_port *sirfport, int count)
 {
@@ -611,6 +737,8 @@ static void sirfsoc_uart_handle_rx_done(struct sirfsoc_uart_port *sirfport)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static irqreturn_t sirfsoc_uart_isr(int irq, void *dev_id)
 {
 	unsigned long intr_status;
@@ -628,20 +756,39 @@ static irqreturn_t sirfsoc_uart_isr(int irq, void *dev_id)
 	intr_status = rd_regl(port, ureg->sirfsoc_int_st_reg);
 	wr_regl(port, ureg->sirfsoc_int_st_reg, intr_status);
 	intr_status &= rd_regl(port, ureg->sirfsoc_int_en_reg);
+<<<<<<< HEAD
 	if (unlikely(intr_status & (SIRFUART_ERR_INT_STAT(port, uint_st)))) {
+=======
+	if (unlikely(intr_status & (SIRFUART_ERR_INT_STAT(uint_st,
+				sirfport->uart_reg->uart_type)))) {
+>>>>>>> v4.9.227
 		if (intr_status & uint_st->sirfsoc_rxd_brk) {
 			port->icount.brk++;
 			if (uart_handle_break(port))
 				goto recv_char;
 		}
+<<<<<<< HEAD
 		if (intr_status & uint_st->sirfsoc_rx_oflow)
 			port->icount.overrun++;
+=======
+		if (intr_status & uint_st->sirfsoc_rx_oflow) {
+			port->icount.overrun++;
+			flag = TTY_OVERRUN;
+		}
+>>>>>>> v4.9.227
 		if (intr_status & uint_st->sirfsoc_frm_err) {
 			port->icount.frame++;
 			flag = TTY_FRAME;
 		}
+<<<<<<< HEAD
 		if (intr_status & uint_st->sirfsoc_parity_err)
 			flag = TTY_PARITY;
+=======
+		if (intr_status & uint_st->sirfsoc_parity_err) {
+			port->icount.parity++;
+			flag = TTY_PARITY;
+		}
+>>>>>>> v4.9.227
 		wr_regl(port, ureg->sirfsoc_rx_fifo_op, SIRFUART_FIFO_RESET);
 		wr_regl(port, ureg->sirfsoc_rx_fifo_op, 0);
 		wr_regl(port, ureg->sirfsoc_rx_fifo_op, SIRFUART_FIFO_START);
@@ -662,6 +809,7 @@ recv_char:
 		uart_handle_cts_change(port, cts_status);
 		wake_up_interruptible(&state->port.delta_msr_wait);
 	}
+<<<<<<< HEAD
 	if (sirfport->rx_dma_chan) {
 		if (intr_status & uint_st->sirfsoc_rx_timeout)
 			sirfsoc_uart_handle_rx_tmo(sirfport);
@@ -671,6 +819,53 @@ recv_char:
 		if (intr_status & SIRFUART_RX_IO_INT_ST(uint_st))
 			sirfsoc_uart_pio_rx_chars(port,
 					SIRFSOC_UART_IO_RX_MAX_CNT);
+=======
+	if (!sirfport->rx_dma_chan &&
+		(intr_status & SIRFUART_RX_IO_INT_ST(uint_st))) {
+		/*
+		 * chip will trigger continuous RX_TIMEOUT interrupt
+		 * in RXFIFO empty and not trigger if RXFIFO recevice
+		 * data in limit time, original method use RX_TIMEOUT
+		 * will trigger lots of useless interrupt in RXFIFO
+		 * empty.RXFIFO received one byte will trigger RX_DONE
+		 * interrupt.use RX_DONE to wait for data received
+		 * into RXFIFO, use RX_THD/RX_FULL for lots data receive
+		 * and use RX_TIMEOUT for the last left data.
+		 */
+		if (intr_status & uint_st->sirfsoc_rx_done) {
+			if (!sirfport->is_atlas7) {
+				wr_regl(port, ureg->sirfsoc_int_en_reg,
+					rd_regl(port, ureg->sirfsoc_int_en_reg)
+					& ~(uint_en->sirfsoc_rx_done_en));
+				wr_regl(port, ureg->sirfsoc_int_en_reg,
+				rd_regl(port, ureg->sirfsoc_int_en_reg)
+				| (uint_en->sirfsoc_rx_timeout_en));
+			} else {
+				wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+					uint_en->sirfsoc_rx_done_en);
+				wr_regl(port, ureg->sirfsoc_int_en_reg,
+					uint_en->sirfsoc_rx_timeout_en);
+			}
+		} else {
+			if (intr_status & uint_st->sirfsoc_rx_timeout) {
+				if (!sirfport->is_atlas7) {
+					wr_regl(port, ureg->sirfsoc_int_en_reg,
+					rd_regl(port, ureg->sirfsoc_int_en_reg)
+					& ~(uint_en->sirfsoc_rx_timeout_en));
+					wr_regl(port, ureg->sirfsoc_int_en_reg,
+					rd_regl(port, ureg->sirfsoc_int_en_reg)
+					| (uint_en->sirfsoc_rx_done_en));
+				} else {
+					wr_regl(port,
+						ureg->sirfsoc_int_en_clr_reg,
+						uint_en->sirfsoc_rx_timeout_en);
+					wr_regl(port, ureg->sirfsoc_int_en_reg,
+						uint_en->sirfsoc_rx_done_en);
+				}
+			}
+			sirfsoc_uart_pio_rx_chars(port, port->fifosize);
+		}
+>>>>>>> v4.9.227
 	}
 	spin_unlock(&port->lock);
 	tty_flip_buffer_push(&state->port);
@@ -684,10 +879,17 @@ recv_char:
 				return IRQ_HANDLED;
 			} else {
 				sirfsoc_uart_pio_tx_chars(sirfport,
+<<<<<<< HEAD
 					SIRFSOC_UART_IO_TX_REASONABLE_CNT);
 				if ((uart_circ_empty(xmit)) &&
 				(rd_regl(port, ureg->sirfsoc_tx_fifo_status) &
 				ufifo_st->ff_empty(port->line)))
+=======
+						port->fifosize);
+				if ((uart_circ_empty(xmit)) &&
+				(rd_regl(port, ureg->sirfsoc_tx_fifo_status) &
+				ufifo_st->ff_empty(port)))
+>>>>>>> v4.9.227
 					sirfsoc_uart_stop_tx(port);
 			}
 		}
@@ -697,6 +899,7 @@ recv_char:
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void sirfsoc_uart_rx_dma_complete_tl(unsigned long param)
 {
 	struct sirfsoc_uart_port *sirfport = (struct sirfsoc_uart_port *)param;
@@ -732,6 +935,10 @@ static void sirfsoc_uart_rx_dma_complete_callback(void *param)
 	sirfport->rx_issued %= SIRFSOC_RX_LOOP_BUF_CNT;
 	tasklet_schedule(&sirfport->rx_dma_complete_tasklet);
 	spin_unlock_irqrestore(&sirfport->port.lock, flags);
+=======
+static void sirfsoc_uart_rx_dma_complete_callback(void *param)
+{
+>>>>>>> v4.9.227
 }
 
 /* submit rx dma task into dmaengine */
@@ -740,6 +947,7 @@ static void sirfsoc_uart_start_next_rx_dma(struct uart_port *port)
 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
 	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
 	struct sirfsoc_int_en *uint_en = &sirfport->uart_reg->uart_int_en;
+<<<<<<< HEAD
 	int i;
 	sirfport->rx_io_count = 0;
 	wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
@@ -778,6 +986,37 @@ static void sirfsoc_uart_start_rx(struct uart_port *port)
 			wr_regl(port, ureg->sirfsoc_int_en_reg,
 				SIRFUART_RX_IO_INT_EN(port, uint_en));
 	}
+=======
+	wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
+		rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) &
+		~SIRFUART_IO_MODE);
+	sirfport->rx_dma_items.xmit.tail =
+		sirfport->rx_dma_items.xmit.head = 0;
+	sirfport->rx_dma_items.desc =
+		dmaengine_prep_dma_cyclic(sirfport->rx_dma_chan,
+		sirfport->rx_dma_items.dma_addr, SIRFSOC_RX_DMA_BUF_SIZE,
+		SIRFSOC_RX_DMA_BUF_SIZE / 2,
+		DMA_DEV_TO_MEM, DMA_PREP_INTERRUPT);
+	if (IS_ERR_OR_NULL(sirfport->rx_dma_items.desc)) {
+		dev_err(port->dev, "DMA slave single fail\n");
+		return;
+	}
+	sirfport->rx_dma_items.desc->callback =
+		sirfsoc_uart_rx_dma_complete_callback;
+	sirfport->rx_dma_items.desc->callback_param = sirfport;
+	sirfport->rx_dma_items.cookie =
+		dmaengine_submit(sirfport->rx_dma_items.desc);
+	dma_async_issue_pending(sirfport->rx_dma_chan);
+	if (!sirfport->is_atlas7)
+		wr_regl(port, ureg->sirfsoc_int_en_reg,
+				rd_regl(port, ureg->sirfsoc_int_en_reg) |
+				SIRFUART_RX_DMA_INT_EN(uint_en,
+				sirfport->uart_reg->uart_type));
+	else
+		wr_regl(port, ureg->sirfsoc_int_en_reg,
+				SIRFUART_RX_DMA_INT_EN(uint_en,
+				sirfport->uart_reg->uart_type));
+>>>>>>> v4.9.227
 }
 
 static unsigned int
@@ -789,7 +1028,11 @@ sirfsoc_usp_calc_sample_div(unsigned long set_rate,
 	unsigned long ioclk_div = 0;
 	unsigned long temp_delta;
 
+<<<<<<< HEAD
 	for (sample_div = SIRF_MIN_SAMPLE_DIV;
+=======
+	for (sample_div = SIRF_USP_MIN_SAMPLE_DIV;
+>>>>>>> v4.9.227
 			sample_div <= SIRF_MAX_SAMPLE_DIV; sample_div++) {
 		temp_delta = ioclk_rate -
 		(ioclk_rate + (set_rate * sample_div) / 2)
@@ -910,10 +1153,18 @@ static void sirfsoc_uart_set_termios(struct uart_port *port,
 					config_reg |= SIRFUART_STICK_BIT_MARK;
 				else
 					config_reg |= SIRFUART_STICK_BIT_SPACE;
+<<<<<<< HEAD
 			} else if (termios->c_cflag & PARODD) {
 				config_reg |= SIRFUART_STICK_BIT_ODD;
 			} else {
 				config_reg |= SIRFUART_STICK_BIT_EVEN;
+=======
+			} else {
+				if (termios->c_cflag & PARODD)
+					config_reg |= SIRFUART_STICK_BIT_ODD;
+				else
+					config_reg |= SIRFUART_STICK_BIT_EVEN;
+>>>>>>> v4.9.227
 			}
 		}
 	} else {
@@ -972,11 +1223,18 @@ static void sirfsoc_uart_set_termios(struct uart_port *port,
 	rx_time_out = SIRFSOC_UART_RX_TIMEOUT(set_baud, 20000);
 	rx_time_out = SIRFUART_RECV_TIMEOUT_VALUE(rx_time_out);
 	txfifo_op_reg = rd_regl(port, ureg->sirfsoc_tx_fifo_op);
+<<<<<<< HEAD
 	wr_regl(port, ureg->sirfsoc_rx_fifo_op, SIRFUART_FIFO_STOP);
 	wr_regl(port, ureg->sirfsoc_tx_fifo_op,
 			(txfifo_op_reg & ~SIRFUART_FIFO_START));
 	if (sirfport->uart_reg->uart_type == SIRF_REAL_UART) {
 		config_reg |= SIRFUART_RECV_TIMEOUT(port, rx_time_out);
+=======
+	wr_regl(port, ureg->sirfsoc_tx_fifo_op,
+			(txfifo_op_reg & ~SIRFUART_FIFO_START));
+	if (sirfport->uart_reg->uart_type == SIRF_REAL_UART) {
+		config_reg |= SIRFUART_UART_RECV_TIMEOUT(rx_time_out);
+>>>>>>> v4.9.227
 		wr_regl(port, ureg->sirfsoc_line_ctrl, config_reg);
 	} else {
 		/*tx frame ctrl*/
@@ -999,7 +1257,11 @@ static void sirfsoc_uart_set_termios(struct uart_port *port,
 		wr_regl(port, ureg->sirfsoc_rx_frame_ctrl, len_val);
 		/*async param*/
 		wr_regl(port, ureg->sirfsoc_async_param_reg,
+<<<<<<< HEAD
 			(SIRFUART_RECV_TIMEOUT(port, rx_time_out)) |
+=======
+			(SIRFUART_USP_RECV_TIMEOUT(rx_time_out)) |
+>>>>>>> v4.9.227
 			(sample_div_reg & SIRFSOC_USP_ASYNC_DIV2_MASK) <<
 			SIRFSOC_USP_ASYNC_DIV2_OFFSET);
 	}
@@ -1008,9 +1270,20 @@ static void sirfsoc_uart_set_termios(struct uart_port *port,
 	else
 		wr_regl(port, ureg->sirfsoc_tx_dma_io_ctrl, SIRFUART_IO_MODE);
 	if (sirfport->rx_dma_chan)
+<<<<<<< HEAD
 		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl, SIRFUART_DMA_MODE);
 	else
 		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl, SIRFUART_IO_MODE);
+=======
+		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
+			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) &
+			~SIRFUART_IO_MODE);
+	else
+		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
+			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) |
+			SIRFUART_IO_MODE);
+	sirfport->rx_period_time = 20000000;
+>>>>>>> v4.9.227
 	/* Reset Rx/Tx FIFO Threshold level for proper baudrate */
 	if (set_baud < 1000000)
 		threshold_div = 1;
@@ -1023,7 +1296,10 @@ static void sirfsoc_uart_set_termios(struct uart_port *port,
 	txfifo_op_reg |= SIRFUART_FIFO_START;
 	wr_regl(port, ureg->sirfsoc_tx_fifo_op, txfifo_op_reg);
 	uart_update_timeout(port, termios->c_cflag, set_baud);
+<<<<<<< HEAD
 	sirfsoc_uart_start_rx(port);
+=======
+>>>>>>> v4.9.227
 	wr_regl(port, ureg->sirfsoc_tx_rx_en, SIRFUART_TX_EN | SIRFUART_RX_EN);
 	spin_unlock_irqrestore(&port->lock, flags);
 }
@@ -1042,9 +1318,16 @@ static int sirfsoc_uart_startup(struct uart_port *port)
 {
 	struct sirfsoc_uart_port *sirfport	= to_sirfport(port);
 	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
+<<<<<<< HEAD
 	unsigned int index			= port->line;
 	int ret;
 	set_irq_flags(port->irq, IRQF_VALID | IRQF_NOAUTOEN);
+=======
+	struct sirfsoc_int_en *uint_en = &sirfport->uart_reg->uart_int_en;
+	unsigned int index			= port->line;
+	int ret;
+	irq_modify_status(port->irq, IRQ_NOREQUEST, IRQ_NOAUTOEN);
+>>>>>>> v4.9.227
 	ret = request_irq(port->irq,
 				sirfsoc_uart_isr,
 				0,
@@ -1055,7 +1338,10 @@ static int sirfsoc_uart_startup(struct uart_port *port)
 							index, port->irq);
 		goto irq_err;
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	/* initial hardware settings */
 	wr_regl(port, ureg->sirfsoc_tx_dma_io_ctrl,
 		rd_regl(port, ureg->sirfsoc_tx_dma_io_ctrl) |
@@ -1063,6 +1349,12 @@ static int sirfsoc_uart_startup(struct uart_port *port)
 	wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
 		rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) |
 		SIRFUART_IO_MODE);
+<<<<<<< HEAD
+=======
+	wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
+		rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) &
+		~SIRFUART_RX_DMA_FLUSH);
+>>>>>>> v4.9.227
 	wr_regl(port, ureg->sirfsoc_tx_dma_io_len, 0);
 	wr_regl(port, ureg->sirfsoc_rx_dma_io_len, 0);
 	wr_regl(port, ureg->sirfsoc_tx_rx_en, SIRFUART_RX_EN | SIRFUART_TX_EN);
@@ -1071,16 +1363,25 @@ static int sirfsoc_uart_startup(struct uart_port *port)
 			SIRFSOC_USP_ENDIAN_CTRL_LSBF |
 			SIRFSOC_USP_EN);
 	wr_regl(port, ureg->sirfsoc_tx_fifo_op, SIRFUART_FIFO_RESET);
+<<<<<<< HEAD
 	wr_regl(port, ureg->sirfsoc_tx_fifo_op, 0);
+=======
+>>>>>>> v4.9.227
 	wr_regl(port, ureg->sirfsoc_rx_fifo_op, SIRFUART_FIFO_RESET);
 	wr_regl(port, ureg->sirfsoc_rx_fifo_op, 0);
 	wr_regl(port, ureg->sirfsoc_tx_fifo_ctrl, SIRFUART_FIFO_THD(port));
 	wr_regl(port, ureg->sirfsoc_rx_fifo_ctrl, SIRFUART_FIFO_THD(port));
 	if (sirfport->rx_dma_chan)
 		wr_regl(port, ureg->sirfsoc_rx_fifo_level_chk,
+<<<<<<< HEAD
 			SIRFUART_RX_FIFO_CHK_SC(port->line, 0x4) |
 			SIRFUART_RX_FIFO_CHK_LC(port->line, 0xe) |
 			SIRFUART_RX_FIFO_CHK_HC(port->line, 0x1b));
+=======
+			SIRFUART_RX_FIFO_CHK_SC(port->line, 0x1) |
+			SIRFUART_RX_FIFO_CHK_LC(port->line, 0x2) |
+			SIRFUART_RX_FIFO_CHK_HC(port->line, 0x4));
+>>>>>>> v4.9.227
 	if (sirfport->tx_dma_chan) {
 		sirfport->tx_dma_state = TX_DMA_IDLE;
 		wr_regl(port, ureg->sirfsoc_tx_fifo_level_chk,
@@ -1091,8 +1392,13 @@ static int sirfsoc_uart_startup(struct uart_port *port)
 	sirfport->ms_enabled = false;
 	if (sirfport->uart_reg->uart_type == SIRF_USP_UART &&
 		sirfport->hw_flow_ctrl) {
+<<<<<<< HEAD
 		set_irq_flags(gpio_to_irq(sirfport->cts_gpio),
 			IRQF_VALID | IRQF_NOAUTOEN);
+=======
+		irq_modify_status(gpio_to_irq(sirfport->cts_gpio),
+			IRQ_NOREQUEST, IRQ_NOAUTOEN);
+>>>>>>> v4.9.227
 		ret = request_irq(gpio_to_irq(sirfport->cts_gpio),
 			sirfsoc_uart_usp_cts_handler, IRQF_TRIGGER_FALLING |
 			IRQF_TRIGGER_RISING, "usp_cts_irq", sirfport);
@@ -1101,7 +1407,44 @@ static int sirfsoc_uart_startup(struct uart_port *port)
 			goto init_rx_err;
 		}
 	}
+<<<<<<< HEAD
 
+=======
+	if (sirfport->uart_reg->uart_type == SIRF_REAL_UART &&
+		sirfport->rx_dma_chan)
+		wr_regl(port, ureg->sirfsoc_swh_dma_io,
+			SIRFUART_CLEAR_RX_ADDR_EN);
+	if (sirfport->uart_reg->uart_type == SIRF_USP_UART &&
+			sirfport->rx_dma_chan)
+		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
+			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) |
+			SIRFSOC_USP_FRADDR_CLR_EN);
+	if (sirfport->rx_dma_chan && !sirfport->is_hrt_enabled) {
+		sirfport->is_hrt_enabled = true;
+		sirfport->rx_period_time = 20000000;
+		sirfport->rx_last_pos = -1;
+		sirfport->pio_fetch_cnt = 0;
+		sirfport->rx_dma_items.xmit.tail =
+			sirfport->rx_dma_items.xmit.head = 0;
+		hrtimer_start(&sirfport->hrt,
+			ns_to_ktime(sirfport->rx_period_time),
+			HRTIMER_MODE_REL);
+	}
+	wr_regl(port, ureg->sirfsoc_rx_fifo_op, SIRFUART_FIFO_START);
+	if (sirfport->rx_dma_chan)
+		sirfsoc_uart_start_next_rx_dma(port);
+	else {
+		if (!sirfport->is_atlas7)
+			wr_regl(port, ureg->sirfsoc_int_en_reg,
+				rd_regl(port, ureg->sirfsoc_int_en_reg) |
+				SIRFUART_RX_IO_INT_EN(uint_en,
+					sirfport->uart_reg->uart_type));
+		else
+			wr_regl(port, ureg->sirfsoc_int_en_reg,
+				SIRFUART_RX_IO_INT_EN(uint_en,
+					sirfport->uart_reg->uart_type));
+	}
+>>>>>>> v4.9.227
 	enable_irq(port->irq);
 
 	return 0;
@@ -1115,10 +1458,20 @@ static void sirfsoc_uart_shutdown(struct uart_port *port)
 {
 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
 	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
+<<<<<<< HEAD
 	if (!sirfport->is_marco)
 		wr_regl(port, ureg->sirfsoc_int_en_reg, 0);
 	else
 		wr_regl(port, SIRFUART_INT_EN_CLR, ~0UL);
+=======
+	struct circ_buf *xmit;
+
+	xmit = &sirfport->rx_dma_items.xmit;
+	if (!sirfport->is_atlas7)
+		wr_regl(port, ureg->sirfsoc_int_en_reg, 0);
+	else
+		wr_regl(port, ureg->sirfsoc_int_en_clr_reg, ~0UL);
+>>>>>>> v4.9.227
 
 	free_irq(port->irq, sirfport);
 	if (sirfport->ms_enabled)
@@ -1130,6 +1483,18 @@ static void sirfsoc_uart_shutdown(struct uart_port *port)
 	}
 	if (sirfport->tx_dma_chan)
 		sirfport->tx_dma_state = TX_DMA_IDLE;
+<<<<<<< HEAD
+=======
+	if (sirfport->rx_dma_chan && sirfport->is_hrt_enabled) {
+		while (((rd_regl(port, ureg->sirfsoc_rx_fifo_status) &
+			SIRFUART_RX_FIFO_MASK) > sirfport->pio_fetch_cnt) &&
+			!CIRC_CNT(xmit->head, xmit->tail,
+			SIRFSOC_RX_DMA_BUF_SIZE))
+			;
+		sirfport->is_hrt_enabled = false;
+		hrtimer_cancel(&sirfport->hrt);
+	}
+>>>>>>> v4.9.227
 }
 
 static const char *sirfsoc_uart_type(struct uart_port *port)
@@ -1187,6 +1552,7 @@ sirfsoc_uart_console_setup(struct console *co, char *options)
 	unsigned int bits = 8;
 	unsigned int parity = 'n';
 	unsigned int flow = 'n';
+<<<<<<< HEAD
 	struct uart_port *port = &sirfsoc_uart_ports[co->index].port;
 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
 	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
@@ -1194,20 +1560,43 @@ sirfsoc_uart_console_setup(struct console *co, char *options)
 		return -EINVAL;
 
 	if (!port->mapbase)
+=======
+	struct sirfsoc_uart_port *sirfport;
+	struct sirfsoc_register *ureg;
+	if (co->index < 0 || co->index >= SIRFSOC_UART_NR)
+		co->index = 1;
+	sirfport = sirf_ports[co->index];
+	if (!sirfport)
+		return -ENODEV;
+	ureg = &sirfport->uart_reg->uart_reg;
+	if (!sirfport->port.mapbase)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	/* enable usp in mode1 register */
 	if (sirfport->uart_reg->uart_type == SIRF_USP_UART)
+<<<<<<< HEAD
 		wr_regl(port, ureg->sirfsoc_mode1, SIRFSOC_USP_EN |
 				SIRFSOC_USP_ENDIAN_CTRL_LSBF);
 	if (options)
 		uart_parse_options(options, &baud, &parity, &bits, &flow);
 	port->cons = co;
+=======
+		wr_regl(&sirfport->port, ureg->sirfsoc_mode1, SIRFSOC_USP_EN |
+				SIRFSOC_USP_ENDIAN_CTRL_LSBF);
+	if (options)
+		uart_parse_options(options, &baud, &parity, &bits, &flow);
+	sirfport->port.cons = co;
+>>>>>>> v4.9.227
 
 	/* default console tx/rx transfer using io mode */
 	sirfport->rx_dma_chan = NULL;
 	sirfport->tx_dma_chan = NULL;
+<<<<<<< HEAD
 	return uart_set_options(port, co, baud, parity, bits, flow);
+=======
+	return uart_set_options(&sirfport->port, co, baud, parity, bits, flow);
+>>>>>>> v4.9.227
 }
 
 static void sirfsoc_uart_console_putchar(struct uart_port *port, int ch)
@@ -1215,8 +1604,13 @@ static void sirfsoc_uart_console_putchar(struct uart_port *port, int ch)
 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
 	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
 	struct sirfsoc_fifo_status *ufifo_st = &sirfport->uart_reg->fifo_status;
+<<<<<<< HEAD
 	while (rd_regl(port,
 		ureg->sirfsoc_tx_fifo_status) & ufifo_st->ff_full(port->line))
+=======
+	while (rd_regl(port, ureg->sirfsoc_tx_fifo_status) &
+		ufifo_st->ff_full(port))
+>>>>>>> v4.9.227
 		cpu_relax();
 	wr_regl(port, ureg->sirfsoc_tx_fifo_data, ch);
 }
@@ -1224,8 +1618,15 @@ static void sirfsoc_uart_console_putchar(struct uart_port *port, int ch)
 static void sirfsoc_uart_console_write(struct console *co, const char *s,
 							unsigned int count)
 {
+<<<<<<< HEAD
 	struct uart_port *port = &sirfsoc_uart_ports[co->index].port;
 	uart_console_write(port, s, count, sirfsoc_uart_console_putchar);
+=======
+	struct sirfsoc_uart_port *sirfport = sirf_ports[co->index];
+
+	uart_console_write(&sirfport->port, s, count,
+			sirfsoc_uart_console_putchar);
+>>>>>>> v4.9.227
 }
 
 static struct console sirfsoc_uart_console = {
@@ -1260,29 +1661,135 @@ static struct uart_driver sirfsoc_uart_drv = {
 #endif
 };
 
+<<<<<<< HEAD
 static struct of_device_id sirfsoc_uart_ids[] = {
 	{ .compatible = "sirf,prima2-uart", .data = &sirfsoc_uart,},
 	{ .compatible = "sirf,marco-uart", .data = &sirfsoc_uart},
 	{ .compatible = "sirf,prima2-usp-uart", .data = &sirfsoc_usp},
+=======
+static enum hrtimer_restart
+	sirfsoc_uart_rx_dma_hrtimer_callback(struct hrtimer *hrt)
+{
+	struct sirfsoc_uart_port *sirfport;
+	struct uart_port *port;
+	int count, inserted;
+	struct dma_tx_state tx_state;
+	struct tty_struct *tty;
+	struct sirfsoc_register *ureg;
+	struct circ_buf *xmit;
+	struct sirfsoc_fifo_status *ufifo_st;
+	int max_pio_cnt;
+
+	sirfport = container_of(hrt, struct sirfsoc_uart_port, hrt);
+	port = &sirfport->port;
+	inserted = 0;
+	tty = port->state->port.tty;
+	ureg = &sirfport->uart_reg->uart_reg;
+	xmit = &sirfport->rx_dma_items.xmit;
+	ufifo_st = &sirfport->uart_reg->fifo_status;
+
+	dmaengine_tx_status(sirfport->rx_dma_chan,
+			sirfport->rx_dma_items.cookie, &tx_state);
+	if (SIRFSOC_RX_DMA_BUF_SIZE - tx_state.residue !=
+		sirfport->rx_last_pos) {
+		xmit->head = SIRFSOC_RX_DMA_BUF_SIZE - tx_state.residue;
+		sirfport->rx_last_pos = xmit->head;
+		sirfport->pio_fetch_cnt = 0;
+	}
+	count = CIRC_CNT_TO_END(xmit->head, xmit->tail,
+			SIRFSOC_RX_DMA_BUF_SIZE);
+	while (count > 0) {
+		inserted = tty_insert_flip_string(tty->port,
+			(const unsigned char *)&xmit->buf[xmit->tail], count);
+		if (!inserted)
+			goto next_hrt;
+		port->icount.rx += inserted;
+		xmit->tail = (xmit->tail + inserted) &
+				(SIRFSOC_RX_DMA_BUF_SIZE - 1);
+		count = CIRC_CNT_TO_END(xmit->head, xmit->tail,
+				SIRFSOC_RX_DMA_BUF_SIZE);
+		tty_flip_buffer_push(tty->port);
+	}
+	/*
+	 * if RX DMA buffer data have all push into tty buffer, and there is
+	 * only little data(less than a dma transfer unit) left in rxfifo,
+	 * fetch it out in pio mode and switch back to dma immediately
+	 */
+	if (!inserted && !count &&
+		((rd_regl(port, ureg->sirfsoc_rx_fifo_status) &
+		SIRFUART_RX_FIFO_MASK) > sirfport->pio_fetch_cnt)) {
+		dmaengine_pause(sirfport->rx_dma_chan);
+		/* switch to pio mode */
+		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
+			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) |
+			SIRFUART_IO_MODE);
+		/*
+		 * UART controller SWH_DMA_IO register have CLEAR_RX_ADDR_EN
+		 * When found changing I/O to DMA mode, it clears
+		 * two low bits of read point;
+		 * USP have similar FRADDR_CLR_EN bit in USP_RX_DMA_IO_CTRL.
+		 * Fetch data out from rxfifo into DMA buffer in PIO mode,
+		 * while switch back to DMA mode, the data fetched will override
+		 * by DMA, as hardware have a strange behaviour:
+		 * after switch back to DMA mode, check rxfifo status it will
+		 * be the number PIO fetched, so record the fetched data count
+		 * to avoid the repeated fetch
+		 */
+		max_pio_cnt = 3;
+		while (!(rd_regl(port, ureg->sirfsoc_rx_fifo_status) &
+			ufifo_st->ff_empty(port)) && max_pio_cnt--) {
+			xmit->buf[xmit->head] =
+				rd_regl(port, ureg->sirfsoc_rx_fifo_data);
+			xmit->head = (xmit->head + 1) &
+					(SIRFSOC_RX_DMA_BUF_SIZE - 1);
+			sirfport->pio_fetch_cnt++;
+		}
+		/* switch back to dma mode */
+		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
+			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) &
+			~SIRFUART_IO_MODE);
+		dmaengine_resume(sirfport->rx_dma_chan);
+	}
+next_hrt:
+	hrtimer_forward_now(hrt, ns_to_ktime(sirfport->rx_period_time));
+	return HRTIMER_RESTART;
+}
+
+static struct of_device_id sirfsoc_uart_ids[] = {
+	{ .compatible = "sirf,prima2-uart", .data = &sirfsoc_uart,},
+	{ .compatible = "sirf,atlas7-uart", .data = &sirfsoc_uart},
+	{ .compatible = "sirf,prima2-usp-uart", .data = &sirfsoc_usp},
+	{ .compatible = "sirf,atlas7-usp-uart", .data = &sirfsoc_usp},
+>>>>>>> v4.9.227
 	{}
 };
 MODULE_DEVICE_TABLE(of, sirfsoc_uart_ids);
 
 static int sirfsoc_uart_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
+=======
+	struct device_node *np = pdev->dev.of_node;
+>>>>>>> v4.9.227
 	struct sirfsoc_uart_port *sirfport;
 	struct uart_port *port;
 	struct resource *res;
 	int ret;
+<<<<<<< HEAD
 	int i, j;
 	struct dma_slave_config slv_cfg = {
 		.src_maxburst = 2,
+=======
+	struct dma_slave_config slv_cfg = {
+		.src_maxburst = 1,
+>>>>>>> v4.9.227
 	};
 	struct dma_slave_config tx_slv_cfg = {
 		.dst_maxburst = 2,
 	};
 	const struct of_device_id *match;
 
+<<<<<<< HEAD
 	match = of_match_node(sirfsoc_uart_ids, pdev->dev.of_node);
 	if (of_property_read_u32(pdev->dev.of_node, "cell-index", &pdev->id)) {
 		dev_err(&pdev->dev,
@@ -1294,11 +1801,24 @@ static int sirfsoc_uart_probe(struct platform_device *pdev)
 		pdev->id += ((struct sirfsoc_uart_register *)
 				match->data)->uart_param.register_uart_nr;
 	sirfport = &sirfsoc_uart_ports[pdev->id];
+=======
+	match = of_match_node(sirfsoc_uart_ids, np);
+	sirfport = devm_kzalloc(&pdev->dev, sizeof(*sirfport), GFP_KERNEL);
+	if (!sirfport) {
+		ret = -ENOMEM;
+		goto err;
+	}
+	sirfport->port.line = of_alias_get_id(np, "serial");
+	sirf_ports[sirfport->port.line] = sirfport;
+	sirfport->port.iotype = UPIO_MEM;
+	sirfport->port.flags = UPF_BOOT_AUTOCONF;
+>>>>>>> v4.9.227
 	port = &sirfport->port;
 	port->dev = &pdev->dev;
 	port->private_data = sirfport;
 	sirfport->uart_reg = (struct sirfsoc_uart_register *)match->data;
 
+<<<<<<< HEAD
 	sirfport->hw_flow_ctrl = of_property_read_bool(pdev->dev.of_node,
 		"sirf,uart-has-rtscts");
 	if (of_device_is_compatible(pdev->dev.of_node, "sirf,prima2-uart"))
@@ -1315,6 +1835,27 @@ static int sirfsoc_uart_probe(struct platform_device *pdev)
 		if (of_find_property(pdev->dev.of_node, "rts-gpios", NULL))
 			sirfport->rts_gpio = of_get_named_gpio(
 					pdev->dev.of_node, "rts-gpios", 0);
+=======
+	sirfport->hw_flow_ctrl =
+		of_property_read_bool(np, "uart-has-rtscts") ||
+		of_property_read_bool(np, "sirf,uart-has-rtscts") /* deprecated */;
+	if (of_device_is_compatible(np, "sirf,prima2-uart") ||
+		of_device_is_compatible(np, "sirf,atlas7-uart"))
+		sirfport->uart_reg->uart_type = SIRF_REAL_UART;
+	if (of_device_is_compatible(np, "sirf,prima2-usp-uart") ||
+	    of_device_is_compatible(np, "sirf,atlas7-usp-uart")) {
+		sirfport->uart_reg->uart_type =	SIRF_USP_UART;
+		if (!sirfport->hw_flow_ctrl)
+			goto usp_no_flow_control;
+		if (of_find_property(np, "cts-gpios", NULL))
+			sirfport->cts_gpio =
+				of_get_named_gpio(np, "cts-gpios", 0);
+		else
+			sirfport->cts_gpio = -1;
+		if (of_find_property(np, "rts-gpios", NULL))
+			sirfport->rts_gpio =
+				of_get_named_gpio(np, "rts-gpios", 0);
+>>>>>>> v4.9.227
 		else
 			sirfport->rts_gpio = -1;
 
@@ -1341,12 +1882,20 @@ static int sirfsoc_uart_probe(struct platform_device *pdev)
 		gpio_direction_output(sirfport->rts_gpio, 1);
 	}
 usp_no_flow_control:
+<<<<<<< HEAD
 	if (of_device_is_compatible(pdev->dev.of_node, "sirf,marco-uart"))
 		sirfport->is_marco = true;
 
 	if (of_property_read_u32(pdev->dev.of_node,
 			"fifosize",
 			&port->fifosize)) {
+=======
+	if (of_device_is_compatible(np, "sirf,atlas7-uart") ||
+	    of_device_is_compatible(np, "sirf,atlas7-usp-uart"))
+		sirfport->is_atlas7 = true;
+
+	if (of_property_read_u32(np, "fifosize", &port->fifosize)) {
+>>>>>>> v4.9.227
 		dev_err(&pdev->dev,
 			"Unable to find fifosize in uart node.\n");
 		ret = -EFAULT;
@@ -1359,12 +1908,18 @@ usp_no_flow_control:
 		ret = -EFAULT;
 		goto err;
 	}
+<<<<<<< HEAD
 	tasklet_init(&sirfport->rx_dma_complete_tasklet,
 			sirfsoc_uart_rx_dma_complete_tl, (unsigned long)sirfport);
 	tasklet_init(&sirfport->rx_tmo_process_tasklet,
 			sirfsoc_rx_tmo_process_tl, (unsigned long)sirfport);
 	port->mapbase = res->start;
 	port->membase = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+=======
+	port->mapbase = res->start;
+	port->membase = devm_ioremap(&pdev->dev,
+			res->start, resource_size(res));
+>>>>>>> v4.9.227
 	if (!port->membase) {
 		dev_err(&pdev->dev, "Cannot remap resource.\n");
 		ret = -ENOMEM;
@@ -1378,7 +1933,11 @@ usp_no_flow_control:
 	}
 	port->irq = res->start;
 
+<<<<<<< HEAD
 	sirfport->clk = clk_get(&pdev->dev, NULL);
+=======
+	sirfport->clk = devm_clk_get(&pdev->dev, NULL);
+>>>>>>> v4.9.227
 	if (IS_ERR(sirfport->clk)) {
 		ret = PTR_ERR(sirfport->clk);
 		goto err;
@@ -1392,6 +1951,7 @@ usp_no_flow_control:
 	ret = uart_add_one_port(&sirfsoc_uart_drv, port);
 	if (ret != 0) {
 		dev_err(&pdev->dev, "Cannot add UART port(%d).\n", pdev->id);
+<<<<<<< HEAD
 		goto port_err;
 	}
 
@@ -1408,11 +1968,28 @@ usp_no_flow_control:
 		sirfport->rx_dma_items[i].xmit.head =
 			sirfport->rx_dma_items[i].xmit.tail = 0;
 	}
+=======
+		goto err;
+	}
+
+	sirfport->rx_dma_chan = dma_request_slave_channel(port->dev, "rx");
+	sirfport->rx_dma_items.xmit.buf =
+		dma_alloc_coherent(port->dev, SIRFSOC_RX_DMA_BUF_SIZE,
+		&sirfport->rx_dma_items.dma_addr, GFP_KERNEL);
+	if (!sirfport->rx_dma_items.xmit.buf) {
+		dev_err(port->dev, "Uart alloc bufa failed\n");
+		ret = -ENOMEM;
+		goto alloc_coherent_err;
+	}
+	sirfport->rx_dma_items.xmit.head =
+		sirfport->rx_dma_items.xmit.tail = 0;
+>>>>>>> v4.9.227
 	if (sirfport->rx_dma_chan)
 		dmaengine_slave_config(sirfport->rx_dma_chan, &slv_cfg);
 	sirfport->tx_dma_chan = dma_request_slave_channel(port->dev, "tx");
 	if (sirfport->tx_dma_chan)
 		dmaengine_slave_config(sirfport->tx_dma_chan, &tx_slv_cfg);
+<<<<<<< HEAD
 
 	return 0;
 alloc_coherent_err:
@@ -1423,6 +2000,20 @@ alloc_coherent_err:
 	dma_release_channel(sirfport->rx_dma_chan);
 port_err:
 	clk_put(sirfport->clk);
+=======
+	if (sirfport->rx_dma_chan) {
+		hrtimer_init(&sirfport->hrt, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+		sirfport->hrt.function = sirfsoc_uart_rx_dma_hrtimer_callback;
+		sirfport->is_hrt_enabled = false;
+	}
+
+	return 0;
+alloc_coherent_err:
+	dma_free_coherent(port->dev, SIRFSOC_RX_DMA_BUF_SIZE,
+			sirfport->rx_dma_items.xmit.buf,
+			sirfport->rx_dma_items.dma_addr);
+	dma_release_channel(sirfport->rx_dma_chan);
+>>>>>>> v4.9.227
 err:
 	return ret;
 }
@@ -1431,6 +2022,7 @@ static int sirfsoc_uart_remove(struct platform_device *pdev)
 {
 	struct sirfsoc_uart_port *sirfport = platform_get_drvdata(pdev);
 	struct uart_port *port = &sirfport->port;
+<<<<<<< HEAD
 	clk_put(sirfport->clk);
 	uart_remove_one_port(&sirfsoc_uart_drv, port);
 	if (sirfport->rx_dma_chan) {
@@ -1441,6 +2033,15 @@ static int sirfsoc_uart_remove(struct platform_device *pdev)
 			dma_free_coherent(port->dev, SIRFSOC_RX_DMA_BUF_SIZE,
 					sirfport->rx_dma_items[i].xmit.buf,
 					sirfport->rx_dma_items[i].dma_addr);
+=======
+	uart_remove_one_port(&sirfsoc_uart_drv, port);
+	if (sirfport->rx_dma_chan) {
+		dmaengine_terminate_all(sirfport->rx_dma_chan);
+		dma_release_channel(sirfport->rx_dma_chan);
+		dma_free_coherent(port->dev, SIRFSOC_RX_DMA_BUF_SIZE,
+				sirfport->rx_dma_items.xmit.buf,
+				sirfport->rx_dma_items.dma_addr);
+>>>>>>> v4.9.227
 	}
 	if (sirfport->tx_dma_chan) {
 		dmaengine_terminate_all(sirfport->tx_dma_chan);
@@ -1477,7 +2078,10 @@ static struct platform_driver sirfsoc_uart_driver = {
 	.remove		= sirfsoc_uart_remove,
 	.driver		= {
 		.name	= SIRFUART_PORT_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = sirfsoc_uart_ids,
 		.pm	= &sirfsoc_uart_pm_ops,
 	},

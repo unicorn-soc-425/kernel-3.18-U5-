@@ -33,9 +33,12 @@
 #include <asm/byteorder.h>
 #include <asm/uaccess.h>
 
+<<<<<<< HEAD
 int net_msg_warn __read_mostly = 1;
 EXPORT_SYMBOL(net_msg_warn);
 
+=======
+>>>>>>> v4.9.227
 DEFINE_RATELIMIT_STATE(net_ratelimit_state, 5 * HZ, 10);
 /*
  * All net warning printk()s should be guarded by this function.
@@ -136,7 +139,11 @@ int in4_pton(const char *src, int srclen,
 	s = src;
 	d = dbuf;
 	i = 0;
+<<<<<<< HEAD
 	while(1) {
+=======
+	while (1) {
+>>>>>>> v4.9.227
 		int c;
 		c = xdigit2bin(srclen > 0 ? *s : '\0', delim);
 		if (!(c & (IN6PTON_DIGIT | IN6PTON_DOT | IN6PTON_DELIM | IN6PTON_COLON_MASK))) {
@@ -286,11 +293,19 @@ cont:
 	i = 15; d--;
 
 	if (dc) {
+<<<<<<< HEAD
 		while(d >= dc)
 			dst[i--] = *d--;
 		while(i >= dc - dbuf)
 			dst[i--] = 0;
 		while(i >= 0)
+=======
+		while (d >= dc)
+			dst[i--] = *d--;
+		while (i >= dc - dbuf)
+			dst[i--] = 0;
+		while (i >= 0)
+>>>>>>> v4.9.227
 			dst[i--] = *d--;
 	} else
 		memcpy(dst, dbuf, sizeof(dbuf));
@@ -304,6 +319,7 @@ out:
 EXPORT_SYMBOL(in6_pton);
 
 void inet_proto_csum_replace4(__sum16 *sum, struct sk_buff *skb,
+<<<<<<< HEAD
 			      __be32 from, __be32 to, int pseudohdr)
 {
 	if (skb->ip_summed != CHECKSUM_PARTIAL) {
@@ -320,6 +336,43 @@ EXPORT_SYMBOL(inet_proto_csum_replace4);
 void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
 			       const __be32 *from, const __be32 *to,
 			       int pseudohdr)
+=======
+			      __be32 from, __be32 to, bool pseudohdr)
+{
+	if (skb->ip_summed != CHECKSUM_PARTIAL) {
+		csum_replace4(sum, from, to);
+		if (skb->ip_summed == CHECKSUM_COMPLETE && pseudohdr)
+			skb->csum = ~csum_add(csum_sub(~(skb->csum),
+						       (__force __wsum)from),
+					      (__force __wsum)to);
+	} else if (pseudohdr)
+		*sum = ~csum_fold(csum_add(csum_sub(csum_unfold(*sum),
+						    (__force __wsum)from),
+					   (__force __wsum)to));
+}
+EXPORT_SYMBOL(inet_proto_csum_replace4);
+
+/**
+ * inet_proto_csum_replace16 - update layer 4 header checksum field
+ * @sum: Layer 4 header checksum field
+ * @skb: sk_buff for the packet
+ * @from: old IPv6 address
+ * @to: new IPv6 address
+ * @pseudohdr: True if layer 4 header checksum includes pseudoheader
+ *
+ * Update layer 4 header as per the update in IPv6 src/dst address.
+ *
+ * There is no need to update skb->csum in this function, because update in two
+ * fields a.) IPv6 src/dst address and b.) L4 header checksum cancels each other
+ * for skb->csum calculation. Whereas inet_proto_csum_replace4 function needs to
+ * update skb->csum, because update in 3 fields a.) IPv4 src/dst address,
+ * b.) IPv4 Header checksum and c.) L4 header checksum results in same diff as
+ * L4 Header checksum for skb->csum calculation.
+ */
+void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
+			       const __be32 *from, const __be32 *to,
+			       bool pseudohdr)
+>>>>>>> v4.9.227
 {
 	__be32 diff[] = {
 		~from[0], ~from[1], ~from[2], ~from[3],
@@ -328,15 +381,19 @@ void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
 	if (skb->ip_summed != CHECKSUM_PARTIAL) {
 		*sum = csum_fold(csum_partial(diff, sizeof(diff),
 				 ~csum_unfold(*sum)));
+<<<<<<< HEAD
 		if (skb->ip_summed == CHECKSUM_COMPLETE && pseudohdr)
 			skb->csum = ~csum_partial(diff, sizeof(diff),
 						  ~skb->csum);
+=======
+>>>>>>> v4.9.227
 	} else if (pseudohdr)
 		*sum = ~csum_fold(csum_partial(diff, sizeof(diff),
 				  csum_unfold(*sum)));
 }
 EXPORT_SYMBOL(inet_proto_csum_replace16);
 
+<<<<<<< HEAD
 struct __net_random_once_work {
 	struct work_struct work;
 	struct static_key *key;
@@ -385,3 +442,17 @@ bool __net_get_random_once(void *buf, int nbytes, bool *done,
 	return true;
 }
 EXPORT_SYMBOL(__net_get_random_once);
+=======
+void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
+				     __wsum diff, bool pseudohdr)
+{
+	if (skb->ip_summed != CHECKSUM_PARTIAL) {
+		*sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
+		if (skb->ip_summed == CHECKSUM_COMPLETE && pseudohdr)
+			skb->csum = ~csum_add(diff, ~skb->csum);
+	} else if (pseudohdr) {
+		*sum = ~csum_fold(csum_add(diff, csum_unfold(*sum)));
+	}
+}
+EXPORT_SYMBOL(inet_proto_csum_replace_by_diff);
+>>>>>>> v4.9.227

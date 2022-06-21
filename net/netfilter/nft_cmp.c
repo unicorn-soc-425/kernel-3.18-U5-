@@ -25,13 +25,21 @@ struct nft_cmp_expr {
 };
 
 static void nft_cmp_eval(const struct nft_expr *expr,
+<<<<<<< HEAD
 			 struct nft_data data[NFT_REG_MAX + 1],
+=======
+			 struct nft_regs *regs,
+>>>>>>> v4.9.227
 			 const struct nft_pktinfo *pkt)
 {
 	const struct nft_cmp_expr *priv = nft_expr_priv(expr);
 	int d;
 
+<<<<<<< HEAD
 	d = nft_data_cmp(&data[priv->sreg], &priv->data, priv->len);
+=======
+	d = memcmp(&regs->data[priv->sreg], &priv->data, priv->len);
+>>>>>>> v4.9.227
 	switch (priv->op) {
 	case NFT_CMP_EQ:
 		if (d != 0)
@@ -59,7 +67,11 @@ static void nft_cmp_eval(const struct nft_expr *expr,
 	return;
 
 mismatch:
+<<<<<<< HEAD
 	data[NFT_REG_VERDICT].verdict = NFT_BREAK;
+=======
+	regs->verdict.code = NFT_BREAK;
+>>>>>>> v4.9.227
 }
 
 static const struct nla_policy nft_cmp_policy[NFTA_CMP_MAX + 1] = {
@@ -75,12 +87,28 @@ static int nft_cmp_init(const struct nft_ctx *ctx, const struct nft_expr *expr,
 	struct nft_data_desc desc;
 	int err;
 
+<<<<<<< HEAD
 	priv->sreg = ntohl(nla_get_be32(tb[NFTA_CMP_SREG]));
 	priv->op = ntohl(nla_get_be32(tb[NFTA_CMP_OP]));
 
 	err = nft_data_init(NULL, &priv->data, &desc, tb[NFTA_CMP_DATA]);
 	BUG_ON(err < 0);
 
+=======
+	err = nft_data_init(NULL, &priv->data, sizeof(priv->data), &desc,
+			    tb[NFTA_CMP_DATA]);
+	BUG_ON(err < 0);
+
+	priv->sreg = nft_parse_register(tb[NFTA_CMP_SREG]);
+	err = nft_validate_register_load(priv->sreg, desc.len);
+	if (err < 0)
+		return err;
+
+	if (desc.len > U8_MAX)
+		return -ERANGE;
+
+	priv->op  = ntohl(nla_get_be32(tb[NFTA_CMP_OP]));
+>>>>>>> v4.9.227
 	priv->len = desc.len;
 	return 0;
 }
@@ -89,7 +117,11 @@ static int nft_cmp_dump(struct sk_buff *skb, const struct nft_expr *expr)
 {
 	const struct nft_cmp_expr *priv = nft_expr_priv(expr);
 
+<<<<<<< HEAD
 	if (nla_put_be32(skb, NFTA_CMP_SREG, htonl(priv->sreg)))
+=======
+	if (nft_dump_register(skb, NFTA_CMP_SREG, priv->sreg))
+>>>>>>> v4.9.227
 		goto nla_put_failure;
 	if (nla_put_be32(skb, NFTA_CMP_OP, htonl(priv->op)))
 		goto nla_put_failure;
@@ -122,6 +154,7 @@ static int nft_cmp_fast_init(const struct nft_ctx *ctx,
 	u32 mask;
 	int err;
 
+<<<<<<< HEAD
 	priv->sreg = ntohl(nla_get_be32(tb[NFTA_CMP_SREG]));
 
 	err = nft_data_init(NULL, &data, &desc, tb[NFTA_CMP_DATA]);
@@ -129,6 +162,20 @@ static int nft_cmp_fast_init(const struct nft_ctx *ctx,
 	desc.len *= BITS_PER_BYTE;
 
 	mask = nft_cmp_fast_mask(desc.len);
+=======
+	err = nft_data_init(NULL, &data, sizeof(data), &desc,
+			    tb[NFTA_CMP_DATA]);
+	BUG_ON(err < 0);
+
+	priv->sreg = nft_parse_register(tb[NFTA_CMP_SREG]);
+	err = nft_validate_register_load(priv->sreg, desc.len);
+	if (err < 0)
+		return err;
+
+	desc.len *= BITS_PER_BYTE;
+	mask = nft_cmp_fast_mask(desc.len);
+
+>>>>>>> v4.9.227
 	priv->data = data.data[0] & mask;
 	priv->len  = desc.len;
 	return 0;
@@ -139,7 +186,11 @@ static int nft_cmp_fast_dump(struct sk_buff *skb, const struct nft_expr *expr)
 	const struct nft_cmp_fast_expr *priv = nft_expr_priv(expr);
 	struct nft_data data;
 
+<<<<<<< HEAD
 	if (nla_put_be32(skb, NFTA_CMP_SREG, htonl(priv->sreg)))
+=======
+	if (nft_dump_register(skb, NFTA_CMP_SREG, priv->sreg))
+>>>>>>> v4.9.227
 		goto nla_put_failure;
 	if (nla_put_be32(skb, NFTA_CMP_OP, htonl(NFT_CMP_EQ)))
 		goto nla_put_failure;
@@ -167,7 +218,10 @@ nft_cmp_select_ops(const struct nft_ctx *ctx, const struct nlattr * const tb[])
 {
 	struct nft_data_desc desc;
 	struct nft_data data;
+<<<<<<< HEAD
 	enum nft_registers sreg;
+=======
+>>>>>>> v4.9.227
 	enum nft_cmp_ops op;
 	int err;
 
@@ -176,11 +230,14 @@ nft_cmp_select_ops(const struct nft_ctx *ctx, const struct nlattr * const tb[])
 	    tb[NFTA_CMP_DATA] == NULL)
 		return ERR_PTR(-EINVAL);
 
+<<<<<<< HEAD
 	sreg = ntohl(nla_get_be32(tb[NFTA_CMP_SREG]));
 	err = nft_validate_input_register(sreg);
 	if (err < 0)
 		return ERR_PTR(err);
 
+=======
+>>>>>>> v4.9.227
 	op = ntohl(nla_get_be32(tb[NFTA_CMP_OP]));
 	switch (op) {
 	case NFT_CMP_EQ:
@@ -194,7 +251,12 @@ nft_cmp_select_ops(const struct nft_ctx *ctx, const struct nlattr * const tb[])
 		return ERR_PTR(-EINVAL);
 	}
 
+<<<<<<< HEAD
 	err = nft_data_init(NULL, &data, &desc, tb[NFTA_CMP_DATA]);
+=======
+	err = nft_data_init(NULL, &data, sizeof(data), &desc,
+			    tb[NFTA_CMP_DATA]);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return ERR_PTR(err);
 

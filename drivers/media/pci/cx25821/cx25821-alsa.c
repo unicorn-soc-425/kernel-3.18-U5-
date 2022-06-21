@@ -63,8 +63,16 @@ static int devno;
 
 struct cx25821_audio_buffer {
 	unsigned int bpl;
+<<<<<<< HEAD
 	struct btcx_riscmem risc;
 	struct videobuf_dmabuf dma;
+=======
+	struct cx25821_riscmem risc;
+	void			*vaddr;
+	struct scatterlist	*sglist;
+	int                     sglen;
+	int                     nr_pages;
+>>>>>>> v4.9.227
 };
 
 struct cx25821_audio_dev {
@@ -87,8 +95,11 @@ struct cx25821_audio_dev {
 	unsigned int period_size;
 	unsigned int num_periods;
 
+<<<<<<< HEAD
 	struct videobuf_dmabuf *dma_risc;
 
+=======
+>>>>>>> v4.9.227
 	struct cx25821_audio_buffer *buf;
 
 	struct snd_pcm_substream *substream;
@@ -101,7 +112,11 @@ struct cx25821_audio_dev {
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
+<<<<<<< HEAD
 static bool enable[SNDRV_CARDS] = { 1, [1 ... (SNDRV_CARDS - 1)] = 1 };
+=======
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;
+>>>>>>> v4.9.227
 
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable cx25821 soundcard. default enabled.");
@@ -142,6 +157,86 @@ MODULE_PARM_DESC(debug, "enable debug messages");
 
 #define PCI_MSK_AUD_EXT   (1 <<  4)
 #define PCI_MSK_AUD_INT   (1 <<  3)
+<<<<<<< HEAD
+=======
+
+static int cx25821_alsa_dma_init(struct cx25821_audio_dev *chip, int nr_pages)
+{
+	struct cx25821_audio_buffer *buf = chip->buf;
+	struct page *pg;
+	int i;
+
+	buf->vaddr = vmalloc_32(nr_pages << PAGE_SHIFT);
+	if (NULL == buf->vaddr) {
+		dprintk(1, "vmalloc_32(%d pages) failed\n", nr_pages);
+		return -ENOMEM;
+	}
+
+	dprintk(1, "vmalloc is at addr 0x%08lx, size=%d\n",
+				(unsigned long)buf->vaddr,
+				nr_pages << PAGE_SHIFT);
+
+	memset(buf->vaddr, 0, nr_pages << PAGE_SHIFT);
+	buf->nr_pages = nr_pages;
+
+	buf->sglist = vzalloc(buf->nr_pages * sizeof(*buf->sglist));
+	if (NULL == buf->sglist)
+		goto vzalloc_err;
+
+	sg_init_table(buf->sglist, buf->nr_pages);
+	for (i = 0; i < buf->nr_pages; i++) {
+		pg = vmalloc_to_page(buf->vaddr + i * PAGE_SIZE);
+		if (NULL == pg)
+			goto vmalloc_to_page_err;
+		sg_set_page(&buf->sglist[i], pg, PAGE_SIZE, 0);
+	}
+	return 0;
+
+vmalloc_to_page_err:
+	vfree(buf->sglist);
+	buf->sglist = NULL;
+vzalloc_err:
+	vfree(buf->vaddr);
+	buf->vaddr = NULL;
+	return -ENOMEM;
+}
+
+static int cx25821_alsa_dma_map(struct cx25821_audio_dev *dev)
+{
+	struct cx25821_audio_buffer *buf = dev->buf;
+
+	buf->sglen = dma_map_sg(&dev->pci->dev, buf->sglist,
+			buf->nr_pages, PCI_DMA_FROMDEVICE);
+
+	if (0 == buf->sglen) {
+		pr_warn("%s: cx25821_alsa_map_sg failed\n", __func__);
+		return -ENOMEM;
+	}
+	return 0;
+}
+
+static int cx25821_alsa_dma_unmap(struct cx25821_audio_dev *dev)
+{
+	struct cx25821_audio_buffer *buf = dev->buf;
+
+	if (!buf->sglen)
+		return 0;
+
+	dma_unmap_sg(&dev->pci->dev, buf->sglist, buf->sglen, PCI_DMA_FROMDEVICE);
+	buf->sglen = 0;
+	return 0;
+}
+
+static int cx25821_alsa_dma_free(struct cx25821_audio_buffer *buf)
+{
+	vfree(buf->sglist);
+	buf->sglist = NULL;
+	vfree(buf->vaddr);
+	buf->vaddr = NULL;
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /*
  * BOARD Specific: Sets audio DMA
  */
@@ -330,6 +425,7 @@ out:
 
 static int dsp_buffer_free(struct cx25821_audio_dev *chip)
 {
+<<<<<<< HEAD
 	BUG_ON(!chip->dma_size);
 
 	dprintk(2, "Freeing buffer\n");
@@ -339,6 +435,19 @@ static int dsp_buffer_free(struct cx25821_audio_dev *chip)
 	kfree(chip->buf);
 
 	chip->dma_risc = NULL;
+=======
+	struct cx25821_riscmem *risc = &chip->buf->risc;
+
+	BUG_ON(!chip->dma_size);
+
+	dprintk(2, "Freeing buffer\n");
+	cx25821_alsa_dma_unmap(chip);
+	cx25821_alsa_dma_free(chip->buf);
+	pci_free_consistent(chip->pci, risc->size, risc->cpu, risc->dma);
+	kfree(chip->buf);
+
+	chip->buf = NULL;
+>>>>>>> v4.9.227
 	chip->dma_size = 0;
 
 	return 0;
@@ -430,8 +539,11 @@ static int snd_cx25821_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *hw_params)
 {
 	struct cx25821_audio_dev *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	struct videobuf_dmabuf *dma;
 
+=======
+>>>>>>> v4.9.227
 	struct cx25821_audio_buffer *buf;
 	int ret;
 
@@ -455,19 +567,33 @@ static int snd_cx25821_hw_params(struct snd_pcm_substream *substream,
 		chip->period_size = AUDIO_LINE_SIZE;
 
 	buf->bpl = chip->period_size;
+<<<<<<< HEAD
 
 	dma = &buf->dma;
 	videobuf_dma_init(dma);
 	ret = videobuf_dma_init_kernel(dma, PCI_DMA_FROMDEVICE,
+=======
+	chip->buf = buf;
+
+	ret = cx25821_alsa_dma_init(chip,
+>>>>>>> v4.9.227
 			(PAGE_ALIGN(chip->dma_size) >> PAGE_SHIFT));
 	if (ret < 0)
 		goto error;
 
+<<<<<<< HEAD
 	ret = videobuf_dma_map(&chip->pci->dev, dma);
 	if (ret < 0)
 		goto error;
 
 	ret = cx25821_risc_databuffer_audio(chip->pci, &buf->risc, dma->sglist,
+=======
+	ret = cx25821_alsa_dma_map(chip);
+	if (ret < 0)
+		goto error;
+
+	ret = cx25821_risc_databuffer_audio(chip->pci, &buf->risc, buf->sglist,
+>>>>>>> v4.9.227
 			chip->period_size, chip->num_periods, 1);
 	if (ret < 0) {
 		pr_info("DEBUG: ERROR after cx25821_risc_databuffer_audio()\n");
@@ -479,16 +605,24 @@ static int snd_cx25821_hw_params(struct snd_pcm_substream *substream,
 	buf->risc.jmp[1] = cpu_to_le32(buf->risc.dma);
 	buf->risc.jmp[2] = cpu_to_le32(0);	/* bits 63-32 */
 
+<<<<<<< HEAD
 	chip->buf = buf;
 	chip->dma_risc = dma;
 
 	substream->runtime->dma_area = chip->dma_risc->vaddr;
+=======
+	substream->runtime->dma_area = chip->buf->vaddr;
+>>>>>>> v4.9.227
 	substream->runtime->dma_bytes = chip->dma_size;
 	substream->runtime->dma_addr = 0;
 
 	return 0;
 
 error:
+<<<<<<< HEAD
+=======
+	chip->buf = NULL;
+>>>>>>> v4.9.227
 	kfree(buf);
 	return ret;
 }
@@ -574,7 +708,11 @@ static struct page *snd_cx25821_page(struct snd_pcm_substream *substream,
 /*
  * operators
  */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cx25821_pcm_ops = {
+=======
+static const struct snd_pcm_ops snd_cx25821_pcm_ops = {
+>>>>>>> v4.9.227
 	.open = snd_cx25821_pcm_open,
 	.close = snd_cx25821_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -618,7 +756,11 @@ static int snd_cx25821_pcm(struct cx25821_audio_dev *chip, int device,
  * Only boards with eeprom and byte 1 at eeprom=1 have it
  */
 
+<<<<<<< HEAD
 static const struct pci_device_id cx25821_audio_pci_tbl[] = {
+=======
+static const struct pci_device_id __maybe_unused cx25821_audio_pci_tbl[] = {
+>>>>>>> v4.9.227
 	{0x14f1, 0x0920, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
 	{0,}
 };

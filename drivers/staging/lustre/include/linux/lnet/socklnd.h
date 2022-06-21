@@ -15,17 +15,22 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
 /*
  * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
+<<<<<<< HEAD
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -34,11 +39,22 @@
  * lnet/include/lnet/socklnd.h
  *
  * #defines shared between socknal implementation and utilities
+=======
+ *
+ * Copyright (c) 2012 - 2015, Intel Corporation.
+ */
+/*
+ * This file is part of Lustre, http://www.lustre.org/
+ * Lustre is a trademark of Seagate, Inc.
+ *
+ * lnet/include/lnet/socklnd.h
+>>>>>>> v4.9.227
  */
 #ifndef __LNET_LNET_SOCKLND_H__
 #define __LNET_LNET_SOCKLND_H__
 
 #include "types.h"
+<<<<<<< HEAD
 #include "lib-types.h"
 
 #define SOCKLND_CONN_NONE     (-1)
@@ -47,10 +63,20 @@
 #define SOCKLND_CONN_BULK_IN    2
 #define SOCKLND_CONN_BULK_OUT   3
 #define SOCKLND_CONN_NTYPES     4
+=======
+
+#define SOCKLND_CONN_NONE     (-1)
+#define SOCKLND_CONN_ANY	0
+#define SOCKLND_CONN_CONTROL	1
+#define SOCKLND_CONN_BULK_IN	2
+#define SOCKLND_CONN_BULK_OUT	3
+#define SOCKLND_CONN_NTYPES	4
+>>>>>>> v4.9.227
 
 #define SOCKLND_CONN_ACK	SOCKLND_CONN_BULK_IN
 
 typedef struct {
+<<<<<<< HEAD
 	__u32		   kshm_magic;     /* magic number of socklnd message */
 	__u32		   kshm_version;   /* version of socklnd message */
 	lnet_nid_t	      kshm_src_nid;   /* sender's nid */
@@ -66,6 +92,23 @@ typedef struct {
 
 typedef struct {
 	lnet_hdr_t	      ksnm_hdr;       /* lnet hdr */
+=======
+	__u32		kshm_magic;	/* magic number of socklnd message */
+	__u32		kshm_version;	/* version of socklnd message */
+	lnet_nid_t      kshm_src_nid;	/* sender's nid */
+	lnet_nid_t	kshm_dst_nid;	/* destination nid */
+	lnet_pid_t	kshm_src_pid;	/* sender's pid */
+	lnet_pid_t	kshm_dst_pid;	/* destination pid */
+	__u64		kshm_src_incarnation; /* sender's incarnation */
+	__u64		kshm_dst_incarnation; /* destination's incarnation */
+	__u32		kshm_ctype;	/* connection type */
+	__u32		kshm_nips;	/* # IP addrs */
+	__u32		kshm_ips[0];	/* IP addrs */
+} WIRE_ATTR ksock_hello_msg_t;
+
+typedef struct {
+	lnet_hdr_t	ksnm_hdr;	/* lnet hdr */
+>>>>>>> v4.9.227
 
 	/*
 	 * ksnm_payload is removed because of winnt compiler's limitation:
@@ -76,17 +119,27 @@ typedef struct {
 } WIRE_ATTR ksock_lnet_msg_t;
 
 typedef struct {
+<<<<<<< HEAD
 	__u32		   ksm_type;       /* type of socklnd message */
 	__u32		   ksm_csum;       /* checksum if != 0 */
 	__u64		   ksm_zc_cookies[2]; /* Zero-Copy request/ACK cookie */
 	union {
 		ksock_lnet_msg_t lnetmsg;       /* lnet message, it's empty if it's NOOP */
+=======
+	__u32	ksm_type;		/* type of socklnd message */
+	__u32	ksm_csum;		/* checksum if != 0 */
+	__u64	ksm_zc_cookies[2];	/* Zero-Copy request/ACK cookie */
+	union {
+		ksock_lnet_msg_t lnetmsg;/* lnet message, it's empty if
+					  * it's NOOP */
+>>>>>>> v4.9.227
 	} WIRE_ATTR ksm_u;
 } WIRE_ATTR ksock_msg_t;
 
 static inline void
 socklnd_init_msg(ksock_msg_t *msg, int type)
 {
+<<<<<<< HEAD
 	msg->ksm_csum	   = 0;
 	msg->ksm_type	   = type;
 	msg->ksm_zc_cookies[0]  = msg->ksm_zc_cookies[1]  = 0;
@@ -99,5 +152,22 @@ socklnd_init_msg(ksock_msg_t *msg, int type)
  * other LND (usocklnd, for example) */
 #define KSOCK_PROTO_V2	  2
 #define KSOCK_PROTO_V3	  3
+=======
+	msg->ksm_csum = 0;
+	msg->ksm_type = type;
+	msg->ksm_zc_cookies[0] = 0;
+	msg->ksm_zc_cookies[1] = 0;
+}
+
+#define KSOCK_MSG_NOOP	0xC0	/* ksm_u empty */
+#define KSOCK_MSG_LNET	0xC1	/* lnet msg */
+
+/*
+ * We need to know this number to parse hello msg from ksocklnd in
+ * other LND (usocklnd, for example)
+ */
+#define KSOCK_PROTO_V2	2
+#define KSOCK_PROTO_V3	3
+>>>>>>> v4.9.227
 
 #endif

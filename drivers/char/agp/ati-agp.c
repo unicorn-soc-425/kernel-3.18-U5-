@@ -579,6 +579,10 @@ static void __exit agp_ati_cleanup(void)
 module_init(agp_ati_init);
 module_exit(agp_ati_cleanup);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+MODULE_AUTHOR("Dave Jones");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL and additional rights");
 

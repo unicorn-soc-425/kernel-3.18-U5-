@@ -647,7 +647,10 @@ static int snd_interwave_probe(struct snd_card *card, int dev)
 #ifdef SNDRV_STB
 	struct snd_i2c_bus *i2c_bus;
 #endif
+<<<<<<< HEAD
 	struct snd_pcm *pcm;
+=======
+>>>>>>> v4.9.227
 	char *str;
 	int err;
 
@@ -695,6 +698,7 @@ static int snd_interwave_probe(struct snd_card *card, int dev)
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	err = snd_wss_pcm(wss, 0, &pcm);
 	if (err < 0)
 		return err;
@@ -703,6 +707,17 @@ static int snd_interwave_probe(struct snd_card *card, int dev)
 	strcat(pcm->name, " (codec)");
 
 	err = snd_wss_timer(wss, 2, NULL);
+=======
+	err = snd_wss_pcm(wss, 0);
+	if (err < 0)
+		return err;
+
+	sprintf(wss->pcm->name + strlen(wss->pcm->name), " rev %c",
+		gus->revision + 'A');
+	strcat(wss->pcm->name, " (codec)");
+
+	err = snd_wss_timer(wss, 2);
+>>>>>>> v4.9.227
 	if (err < 0)
 		return err;
 
@@ -711,7 +726,11 @@ static int snd_interwave_probe(struct snd_card *card, int dev)
 		return err;
 
 	if (pcm_channels[dev] > 0) {
+<<<<<<< HEAD
 		err = snd_gf1_pcm_new(gus, 1, 1, NULL);
+=======
+		err = snd_gf1_pcm_new(gus, 1, 1);
+>>>>>>> v4.9.227
 		if (err < 0)
 			return err;
 	}
@@ -740,7 +759,11 @@ static int snd_interwave_probe(struct snd_card *card, int dev)
 #endif
 
 	gus->uart_enable = midi[dev];
+<<<<<<< HEAD
 	if ((err = snd_gf1_rawmidi_new(gus, 0, NULL)) < 0)
+=======
+	if ((err = snd_gf1_rawmidi_new(gus, 0)) < 0)
+>>>>>>> v4.9.227
 		return err;
 
 #ifndef SNDRV_STB

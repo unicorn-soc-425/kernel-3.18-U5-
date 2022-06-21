@@ -135,11 +135,21 @@ static int uio_dmem_genirq_irqcontrol(struct uio_info *dev_info, s32 irq_on)
 	if (irq_on) {
 		if (test_and_clear_bit(0, &priv->flags))
 			enable_irq(dev_info->irq);
+<<<<<<< HEAD
 	} else {
 		if (!test_and_set_bit(0, &priv->flags))
 			disable_irq(dev_info->irq);
 	}
 	spin_unlock_irqrestore(&priv->lock, flags);
+=======
+		spin_unlock_irqrestore(&priv->lock, flags);
+	} else {
+		if (!test_and_set_bit(0, &priv->flags)) {
+			spin_unlock_irqrestore(&priv->lock, flags);
+			disable_irq(dev_info->irq);
+		}
+	}
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -229,7 +239,11 @@ static int uio_dmem_genirq_probe(struct platform_device *pdev)
 		++uiomem;
 	}
 
+<<<<<<< HEAD
 	priv->dmem_region_start = i;
+=======
+	priv->dmem_region_start = uiomem - &uioinfo->mem[0];
+>>>>>>> v4.9.227
 	priv->num_dmem_regions = pdata->num_dynamic_regions;
 
 	for (i = 0; i < pdata->num_dynamic_regions; ++i) {
@@ -343,7 +357,10 @@ static struct platform_driver uio_dmem_genirq = {
 	.remove = uio_dmem_genirq_remove,
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &uio_dmem_genirq_dev_pm_ops,
 		.of_match_table = of_match_ptr(uio_of_genirq_match),
 	},

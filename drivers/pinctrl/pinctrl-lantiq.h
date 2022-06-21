@@ -162,6 +162,17 @@ enum ltq_pin {
 	GPIO53,
 	GPIO54,
 	GPIO55,
+<<<<<<< HEAD
+=======
+	GPIO56,
+	GPIO57,
+	GPIO58,
+	GPIO59,
+	GPIO60, /* 60 */
+	GPIO61,
+	GPIO62,
+	GPIO63,
+>>>>>>> v4.9.227
 
 	GPIO64,
 	GPIO65,
@@ -193,4 +204,8 @@ enum ltq_pin {
 extern int ltq_pinctrl_register(struct platform_device *pdev,
 				   struct ltq_pinmux_info *info);
 extern int ltq_pinctrl_unregister(struct platform_device *pdev);
+<<<<<<< HEAD
 #endif	/* __PINCTRL_PXA3XX_H */
+=======
+#endif	/* __PINCTRL_LANTIQ_H */
+>>>>>>> v4.9.227

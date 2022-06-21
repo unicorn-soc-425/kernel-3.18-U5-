@@ -152,6 +152,7 @@ csio_scsi_itnexus_loss_error(uint16_t error)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void
 csio_scsi_tag(struct scsi_cmnd *scmnd, uint8_t *tag, uint8_t hq,
 	      uint8_t oq, uint8_t sq)
@@ -174,6 +175,8 @@ csio_scsi_tag(struct scsi_cmnd *scmnd, uint8_t *tag, uint8_t hq,
 		*tag = 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * csio_scsi_fcp_cmnd - Frame the SCSI FCP command paylod.
  * @req: IO req structure.
@@ -192,11 +195,17 @@ csio_scsi_fcp_cmnd(struct csio_ioreq *req, void *addr)
 		int_to_scsilun(scmnd->device->lun, &fcp_cmnd->fc_lun);
 		fcp_cmnd->fc_tm_flags = 0;
 		fcp_cmnd->fc_cmdref = 0;
+<<<<<<< HEAD
 		fcp_cmnd->fc_pri_ta = 0;
 
 		memcpy(fcp_cmnd->fc_cdb, scmnd->cmnd, 16);
 		csio_scsi_tag(scmnd, &fcp_cmnd->fc_pri_ta,
 			      FCP_PTA_HEADQ, FCP_PTA_ORDERED, FCP_PTA_SIMPLE);
+=======
+
+		memcpy(fcp_cmnd->fc_cdb, scmnd->cmnd, 16);
+		fcp_cmnd->fc_pri_ta = FCP_PTA_SIMPLE;
+>>>>>>> v4.9.227
 		fcp_cmnd->fc_dl = cpu_to_be32(scsi_bufflen(scmnd));
 
 		if (req->nsge)
@@ -230,10 +239,17 @@ csio_scsi_init_cmd_wr(struct csio_ioreq *req, void *addr, uint32_t size)
 	struct csio_dma_buf *dma_buf;
 	uint8_t imm = csio_hw_to_scsim(hw)->proto_cmd_len;
 
+<<<<<<< HEAD
 	wr->op_immdlen = cpu_to_be32(FW_WR_OP(FW_SCSI_CMD_WR) |
 					  FW_SCSI_CMD_WR_IMMDLEN(imm));
 	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID(rn->flowid) |
 					    FW_WR_LEN16(
+=======
+	wr->op_immdlen = cpu_to_be32(FW_WR_OP_V(FW_SCSI_CMD_WR) |
+					  FW_SCSI_CMD_WR_IMMDLEN(imm));
+	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID_V(rn->flowid) |
+					    FW_WR_LEN16_V(
+>>>>>>> v4.9.227
 						DIV_ROUND_UP(size, 16)));
 
 	wr->cookie = (uintptr_t) req;
@@ -322,8 +338,13 @@ csio_scsi_init_ultptx_dsgl(struct csio_hw *hw, struct csio_ioreq *req,
 	struct csio_dma_buf *dma_buf;
 	struct scsi_cmnd *scmnd = csio_scsi_cmnd(req);
 
+<<<<<<< HEAD
 	sgl->cmd_nsge = htonl(ULPTX_CMD(ULP_TX_SC_DSGL) | ULPTX_MORE |
 				     ULPTX_NSGE(req->nsge));
+=======
+	sgl->cmd_nsge = htonl(ULPTX_CMD_V(ULP_TX_SC_DSGL) | ULPTX_MORE_F |
+				     ULPTX_NSGE_V(req->nsge));
+>>>>>>> v4.9.227
 	/* Now add the data SGLs */
 	if (likely(!req->dcopy)) {
 		scsi_for_each_sg(scmnd, sgel, req->nsge, i) {
@@ -391,10 +412,17 @@ csio_scsi_init_read_wr(struct csio_ioreq *req, void *wrp, uint32_t size)
 	uint8_t imm = csio_hw_to_scsim(hw)->proto_cmd_len;
 	struct scsi_cmnd *scmnd = csio_scsi_cmnd(req);
 
+<<<<<<< HEAD
 	wr->op_immdlen = cpu_to_be32(FW_WR_OP(FW_SCSI_READ_WR) |
 				     FW_SCSI_READ_WR_IMMDLEN(imm));
 	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID(rn->flowid) |
 				       FW_WR_LEN16(DIV_ROUND_UP(size, 16)));
+=======
+	wr->op_immdlen = cpu_to_be32(FW_WR_OP_V(FW_SCSI_READ_WR) |
+				     FW_SCSI_READ_WR_IMMDLEN(imm));
+	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID_V(rn->flowid) |
+				       FW_WR_LEN16_V(DIV_ROUND_UP(size, 16)));
+>>>>>>> v4.9.227
 	wr->cookie = (uintptr_t)req;
 	wr->iqid = cpu_to_be16(csio_q_physiqid(hw, req->iq_idx));
 	wr->tmo_val = (uint8_t)(req->tmo);
@@ -444,10 +472,17 @@ csio_scsi_init_write_wr(struct csio_ioreq *req, void *wrp, uint32_t size)
 	uint8_t imm = csio_hw_to_scsim(hw)->proto_cmd_len;
 	struct scsi_cmnd *scmnd = csio_scsi_cmnd(req);
 
+<<<<<<< HEAD
 	wr->op_immdlen = cpu_to_be32(FW_WR_OP(FW_SCSI_WRITE_WR) |
 				     FW_SCSI_WRITE_WR_IMMDLEN(imm));
 	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID(rn->flowid) |
 				       FW_WR_LEN16(DIV_ROUND_UP(size, 16)));
+=======
+	wr->op_immdlen = cpu_to_be32(FW_WR_OP_V(FW_SCSI_WRITE_WR) |
+				     FW_SCSI_WRITE_WR_IMMDLEN(imm));
+	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID_V(rn->flowid) |
+				       FW_WR_LEN16_V(DIV_ROUND_UP(size, 16)));
+>>>>>>> v4.9.227
 	wr->cookie = (uintptr_t)req;
 	wr->iqid = cpu_to_be16(csio_q_physiqid(hw, req->iq_idx));
 	wr->tmo_val = (uint8_t)(req->tmo);
@@ -674,9 +709,15 @@ csio_scsi_init_abrt_cls_wr(struct csio_ioreq *req, void *addr, uint32_t size,
 	struct csio_rnode *rn = req->rnode;
 	struct fw_scsi_abrt_cls_wr *wr = (struct fw_scsi_abrt_cls_wr *)addr;
 
+<<<<<<< HEAD
 	wr->op_immdlen = cpu_to_be32(FW_WR_OP(FW_SCSI_ABRT_CLS_WR));
 	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID(rn->flowid) |
 					    FW_WR_LEN16(
+=======
+	wr->op_immdlen = cpu_to_be32(FW_WR_OP_V(FW_SCSI_ABRT_CLS_WR));
+	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID_V(rn->flowid) |
+					    FW_WR_LEN16_V(
+>>>>>>> v4.9.227
 						DIV_ROUND_UP(size, 16)));
 
 	wr->cookie = (uintptr_t) req;
@@ -1407,7 +1448,11 @@ csio_device_reset(struct device *dev,
 		return -EINVAL;
 
 	/* Delete NPIV lnodes */
+<<<<<<< HEAD
 	 csio_lnodes_exit(hw, 1);
+=======
+	csio_lnodes_exit(hw, 1);
+>>>>>>> v4.9.227
 
 	/* Block upper IOs */
 	csio_lnodes_block_request(hw);
@@ -1737,15 +1782,27 @@ csio_scsi_err_handler(struct csio_hw *hw, struct csio_ioreq *req)
 	}
 
 out:
+<<<<<<< HEAD
 	if (req->nsge > 0)
 		scsi_dma_unmap(cmnd);
+=======
+	if (req->nsge > 0) {
+		scsi_dma_unmap(cmnd);
+		if (req->dcopy && (host_status == DID_OK))
+			host_status = csio_scsi_copy_to_sgl(hw, req);
+	}
+>>>>>>> v4.9.227
 
 	cmnd->result = (((host_status) << 16) | scsi_status);
 	cmnd->scsi_done(cmnd);
 
 	/* Wake up waiting threads */
 	csio_scsi_cmnd(req) = NULL;
+<<<<<<< HEAD
 	complete_all(&req->cmplobj);
+=======
+	complete(&req->cmplobj);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1969,6 +2026,10 @@ csio_eh_abort_handler(struct scsi_cmnd *cmnd)
 	ready = csio_is_lnode_ready(ln);
 	tmo = CSIO_SCSI_ABRT_TMO_MS;
 
+<<<<<<< HEAD
+=======
+	reinit_completion(&ioreq->cmplobj);
+>>>>>>> v4.9.227
 	spin_lock_irq(&hw->lock);
 	rv = csio_do_abrt_cls(hw, ioreq, (ready ? SCSI_ABORT : SCSI_CLOSE));
 	spin_unlock_irq(&hw->lock);
@@ -1988,8 +2049,11 @@ csio_eh_abort_handler(struct scsi_cmnd *cmnd)
 		goto inval_scmnd;
 	}
 
+<<<<<<< HEAD
 	/* Wait for completion */
 	init_completion(&ioreq->cmplobj);
+=======
+>>>>>>> v4.9.227
 	wait_for_completion_timeout(&ioreq->cmplobj, msecs_to_jiffies(tmo));
 
 	/* FW didnt respond to abort within our timeout */
@@ -2262,11 +2326,15 @@ csio_slave_alloc(struct scsi_device *sdev)
 static int
 csio_slave_configure(struct scsi_device *sdev)
 {
+<<<<<<< HEAD
 	if (sdev->tagged_supported)
 		scsi_activate_tcq(sdev, csio_lun_qdepth);
 	else
 		scsi_deactivate_tcq(sdev, csio_lun_qdepth);
 
+=======
+	scsi_change_queue_depth(sdev, csio_lun_qdepth);
+>>>>>>> v4.9.227
 	return 0;
 }
 

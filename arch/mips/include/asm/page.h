@@ -105,8 +105,11 @@ static inline void clear_user_page(void *addr, unsigned long vaddr,
 		flush_data_cache_page((unsigned long)addr);
 }
 
+<<<<<<< HEAD
 extern void copy_user_page(void *vto, void *vfrom, unsigned long vaddr,
 	struct page *to);
+=======
+>>>>>>> v4.9.227
 struct vm_area_struct;
 extern void copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma);
@@ -116,7 +119,11 @@ extern void copy_user_highpage(struct page *to, struct page *from,
 /*
  * These are used to make use of C type-checking..
  */
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT_PHYS_ADDR
+=======
+#ifdef CONFIG_PHYS_ADDR_T_64BIT
+>>>>>>> v4.9.227
   #ifdef CONFIG_CPU_MIPS32
     typedef struct { unsigned long pte_low, pte_high; } pte_t;
     #define pte_val(x)	  ((x).pte_low | ((unsigned long long)(x).pte_high << 32))
@@ -164,6 +171,7 @@ typedef struct { unsigned long pgprot; } pgprot_t;
 /*
  * __pa()/__va() should be used only during mem init.
  */
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 #define __pa(x)								\
 ({									\
@@ -174,6 +182,36 @@ typedef struct { unsigned long pgprot; } pgprot_t;
 #define __pa(x)								\
     ((unsigned long)(x) - PAGE_OFFSET + PHYS_OFFSET)
 #endif
+=======
+static inline unsigned long ___pa(unsigned long x)
+{
+	if (IS_ENABLED(CONFIG_64BIT)) {
+		/*
+		 * For MIPS64 the virtual address may either be in one of
+		 * the compatibility segements ckseg0 or ckseg1, or it may
+		 * be in xkphys.
+		 */
+		return x < CKSEG0 ? XPHYSADDR(x) : CPHYSADDR(x);
+	}
+
+	if (!IS_ENABLED(CONFIG_EVA)) {
+		/*
+		 * We're using the standard MIPS32 legacy memory map, ie.
+		 * the address x is going to be in kseg0 or kseg1. We can
+		 * handle either case by masking out the desired bits using
+		 * CPHYSADDR.
+		 */
+		return CPHYSADDR(x);
+	}
+
+	/*
+	 * EVA is in use so the memory map could be anything, making it not
+	 * safe to just mask out bits.
+	 */
+	return x - PAGE_OFFSET + PHYS_OFFSET;
+}
+#define __pa(x)		___pa((unsigned long)(x))
+>>>>>>> v4.9.227
 #define __va(x)		((void *)((unsigned long)(x) + PAGE_OFFSET - PHYS_OFFSET))
 #include <asm/io.h>
 
@@ -202,8 +240,14 @@ static inline int pfn_valid(unsigned long pfn)
 {
 	/* avoid <linux/mm.h> include hell */
 	extern unsigned long max_mapnr;
+<<<<<<< HEAD
 
 	return pfn >= ARCH_PFN_OFFSET && pfn < max_mapnr;
+=======
+	unsigned long pfn_offset = ARCH_PFN_OFFSET;
+
+	return pfn >= pfn_offset && pfn < max_mapnr;
+>>>>>>> v4.9.227
 }
 
 #elif defined(CONFIG_SPARSEMEM)
@@ -230,8 +274,15 @@ extern int __virt_addr_valid(const volatile void *kaddr);
 #define virt_addr_valid(kaddr)						\
 	__virt_addr_valid((const volatile void *) (kaddr))
 
+<<<<<<< HEAD
 #define VM_DATA_DEFAULT_FLAGS	(VM_READ | VM_WRITE | VM_EXEC | \
 				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+=======
+#define VM_DATA_DEFAULT_FLAGS \
+	(VM_READ | VM_WRITE | \
+	 ((current->personality & READ_IMPLIES_EXEC) ? VM_EXEC : 0) | \
+	 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+>>>>>>> v4.9.227
 
 #define UNCAC_ADDR(addr)	((addr) - PAGE_OFFSET + UNCAC_BASE)
 #define CAC_ADDR(addr)		((addr) - UNCAC_BASE + PAGE_OFFSET)

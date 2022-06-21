@@ -17,5 +17,8 @@
 /* DMA Controller Registers Definitions */
 #define DMAC_REGS_VIRT	io_p2v(0x40000000)
 
+<<<<<<< HEAD
 #include <plat/dma.h>
+=======
+>>>>>>> v4.9.227
 #endif /* _ASM_ARCH_DMA_H */

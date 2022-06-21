@@ -14,7 +14,10 @@ config M68K
 	select GENERIC_IOMAP
 	select GENERIC_STRNCPY_FROM_USER if MMU
 	select GENERIC_STRNLEN_USER if MMU
+<<<<<<< HEAD
 	select FPU if MMU
+=======
+>>>>>>> v4.9.227
 	select ARCH_WANT_IPC_PARSE_VERSION
 	select ARCH_USES_GETTIMEOFFSET if MMU && !COLDFIRE
 	select HAVE_FUTEX_CMPXCHG if MMU && FUTEX
@@ -67,6 +70,13 @@ config HZ
 	default 1000 if CLEOPATRA
 	default 100
 
+<<<<<<< HEAD
+=======
+config PGTABLE_LEVELS
+	default 2 if SUN3 || COLDFIRE
+	default 3
+
+>>>>>>> v4.9.227
 source "init/Kconfig"
 
 source "kernel/Kconfig.freezer"
@@ -91,6 +101,10 @@ config MMU_SUN3
 config KEXEC
 	bool "kexec system call"
 	depends on M68KCLASSIC
+<<<<<<< HEAD
+=======
+	select KEXEC_CORE
+>>>>>>> v4.9.227
 	help
 	  kexec is a system call that implements the ability to shutdown your
 	  current kernel, and to start another kernel.  It is like a reboot

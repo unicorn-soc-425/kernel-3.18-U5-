@@ -12,6 +12,10 @@
 extern int verbose;
 extern bool quiet, dump_trace;
 extern int debug_ordered_events;
+<<<<<<< HEAD
+=======
+extern int debug_data_convert;
+>>>>>>> v4.9.227
 
 #ifndef pr_fmt
 #define pr_fmt(fmt) fmt
@@ -37,7 +41,11 @@ extern int debug_ordered_events;
 #define pr_oe_time(t, fmt, ...)  pr_time_N(1, debug_ordered_events, t, pr_fmt(fmt), ##__VA_ARGS__)
 #define pr_oe_time2(t, fmt, ...) pr_time_N(2, debug_ordered_events, t, pr_fmt(fmt), ##__VA_ARGS__)
 
+<<<<<<< HEAD
 #define STRERR_BUFSIZE	128	/* For the buffer size of strerror_r */
+=======
+#define STRERR_BUFSIZE	128	/* For the buffer size of str_error_r */
+>>>>>>> v4.9.227
 
 int dump_printf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
 void trace_event(union perf_event *event);
@@ -49,7 +57,14 @@ void pr_stat(const char *fmt, ...);
 
 int eprintf(int level, int var, const char *fmt, ...) __attribute__((format(printf, 3, 4)));
 int eprintf_time(int level, int var, u64 t, const char *fmt, ...) __attribute__((format(printf, 4, 5)));
+<<<<<<< HEAD
 
 int perf_debug_option(const char *str);
+=======
+int veprintf(int level, int var, const char *fmt, va_list args);
+
+int perf_debug_option(const char *str);
+void perf_debug_setup(void);
+>>>>>>> v4.9.227
 
 #endif	/* __PERF_DEBUG_H */

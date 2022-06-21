@@ -57,6 +57,7 @@ static DEFINE_PER_CPU(struct powernow_k8_data *, powernow_data);
 
 static struct cpufreq_driver cpufreq_amd64_driver;
 
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 static inline const struct cpumask *cpu_core_mask(int cpu)
 {
@@ -64,6 +65,8 @@ static inline const struct cpumask *cpu_core_mask(int cpu)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /* Return a frequency in MHz, given an input fid */
 static u32 find_freq_from_fid(u32 fid)
 {
@@ -620,7 +623,11 @@ static int fill_powernow_table(struct powernow_k8_data *data,
 
 	pr_debug("cfid 0x%x, cvid 0x%x\n", data->currfid, data->currvid);
 	data->powernow_table = powernow_table;
+<<<<<<< HEAD
 	if (cpumask_first(cpu_core_mask(data->cpu)) == data->cpu)
+=======
+	if (cpumask_first(topology_core_cpumask(data->cpu)) == data->cpu)
+>>>>>>> v4.9.227
 		print_basics(data);
 
 	for (j = 0; j < data->numps; j++)
@@ -784,7 +791,11 @@ static int powernow_k8_cpu_init_acpi(struct powernow_k8_data *data)
 		CPUFREQ_TABLE_END;
 	data->powernow_table = powernow_table;
 
+<<<<<<< HEAD
 	if (cpumask_first(cpu_core_mask(data->cpu)) == data->cpu)
+=======
+	if (cpumask_first(topology_core_cpumask(data->cpu)) == data->cpu)
+>>>>>>> v4.9.227
 		print_basics(data);
 
 	/* notify BIOS that we exist */
@@ -802,7 +813,11 @@ err_out_mem:
 	kfree(powernow_table);
 
 err_out:
+<<<<<<< HEAD
 	acpi_processor_unregister_performance(&data->acpi_data, data->cpu);
+=======
+	acpi_processor_unregister_performance(data->cpu);
+>>>>>>> v4.9.227
 
 	/* data->acpi_data.state_count informs us at ->exit()
 	 * whether ACPI was used */
@@ -870,8 +885,12 @@ static int fill_powernow_table_fidvid(struct powernow_k8_data *data,
 static void powernow_k8_cpu_exit_acpi(struct powernow_k8_data *data)
 {
 	if (data->acpi_data.state_count)
+<<<<<<< HEAD
 		acpi_processor_unregister_performance(&data->acpi_data,
 				data->cpu);
+=======
+		acpi_processor_unregister_performance(data->cpu);
+>>>>>>> v4.9.227
 	free_cpumask_var(data->acpi_data.shared_cpu_map);
 }
 
@@ -1090,7 +1109,11 @@ static int powernowk8_cpu_init(struct cpufreq_policy *pol)
 	if (rc != 0)
 		goto err_out_exit_acpi;
 
+<<<<<<< HEAD
 	cpumask_copy(pol->cpus, cpu_core_mask(pol->cpu));
+=======
+	cpumask_copy(pol->cpus, topology_core_cpumask(pol->cpu));
+>>>>>>> v4.9.227
 	data->available_cores = pol->cpus;
 
 	/* min/max the cpu is capable of */

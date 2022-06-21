@@ -220,9 +220,12 @@ static void note_page(struct pg_state *st, unsigned long addr, unsigned level, u
 	static const char units[] = "KMGTPE";
 	u64 prot = val & pg_level[level].mask;
 
+<<<<<<< HEAD
 	if (addr < USER_PGTABLES_CEILING)
 		return;
 
+=======
+>>>>>>> v4.9.227
 	if (!st->level) {
 		st->level = level;
 		st->current_prot = prot;
@@ -308,15 +311,23 @@ static void walk_pgd(struct seq_file *m)
 	pgd_t *pgd = swapper_pg_dir;
 	struct pg_state st;
 	unsigned long addr;
+<<<<<<< HEAD
 	unsigned i, pgdoff = USER_PGTABLES_CEILING / PGDIR_SIZE;
+=======
+	unsigned i;
+>>>>>>> v4.9.227
 
 	memset(&st, 0, sizeof(st));
 	st.seq = m;
 	st.marker = address_markers;
 
+<<<<<<< HEAD
 	pgd += pgdoff;
 
 	for (i = pgdoff; i < PTRS_PER_PGD; i++, pgd++) {
+=======
+	for (i = 0; i < PTRS_PER_PGD; i++, pgd++) {
+>>>>>>> v4.9.227
 		addr = i * PGDIR_SIZE;
 		if (!pgd_none(*pgd)) {
 			walk_pud(&st, pgd, addr);

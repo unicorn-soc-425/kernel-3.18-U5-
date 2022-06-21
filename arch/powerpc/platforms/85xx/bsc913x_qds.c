@@ -17,6 +17,10 @@
 #include <linux/pci.h>
 #include <asm/mpic.h>
 #include <sysdev/fsl_soc.h>
+<<<<<<< HEAD
+=======
+#include <sysdev/fsl_pci.h>
+>>>>>>> v4.9.227
 #include <asm/udbg.h>
 
 #include "mpc85xx.h"
@@ -46,10 +50,19 @@ static void __init bsc913x_qds_setup_arch(void)
 	mpc85xx_smp_init();
 #endif
 
+<<<<<<< HEAD
 	pr_info("bsc913x board from Freescale Semiconductor\n");
 }
 
 machine_device_initcall(bsc9132_qds, mpc85xx_common_publish_devices);
+=======
+	fsl_pci_assign_primary();
+
+	pr_info("bsc913x board from Freescale Semiconductor\n");
+}
+
+machine_arch_initcall(bsc9132_qds, mpc85xx_common_publish_devices);
+>>>>>>> v4.9.227
 
 /*
  * Called very early, device-tree isn't unflattened
@@ -57,9 +70,13 @@ machine_device_initcall(bsc9132_qds, mpc85xx_common_publish_devices);
 
 static int __init bsc9132_qds_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,bsc9132qds");
+=======
+	return of_machine_is_compatible("fsl,bsc9132qds");
+>>>>>>> v4.9.227
 }
 
 define_machine(bsc9132_qds) {
@@ -67,8 +84,15 @@ define_machine(bsc9132_qds) {
 	.probe			= bsc9132_qds_probe,
 	.setup_arch		= bsc913x_qds_setup_arch,
 	.init_IRQ		= bsc913x_qds_pic_init,
+<<<<<<< HEAD
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
+=======
+#ifdef CONFIG_PCI
+	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };

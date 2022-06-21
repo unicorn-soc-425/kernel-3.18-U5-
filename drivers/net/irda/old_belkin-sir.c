@@ -90,8 +90,11 @@ static int old_belkin_open(struct sir_dev *dev)
 {
 	struct qos_info *qos = &dev->qos;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	/* Power on dongle */
 	sirdev_set_dtr_rts(dev, TRUE, TRUE);
 
@@ -108,8 +111,11 @@ static int old_belkin_open(struct sir_dev *dev)
 
 static int old_belkin_close(struct sir_dev *dev)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	/* Power off dongle */
 	sirdev_set_dtr_rts(dev, FALSE, FALSE);
 
@@ -123,8 +129,11 @@ static int old_belkin_close(struct sir_dev *dev)
  */
 static int old_belkin_change_speed(struct sir_dev *dev, unsigned speed)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	dev->speed = 9600;
 	return (speed==dev->speed) ? 0 : -EINVAL;
 }
@@ -137,8 +146,11 @@ static int old_belkin_change_speed(struct sir_dev *dev, unsigned speed)
  */
 static int old_belkin_reset(struct sir_dev *dev)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	/* This dongles speed "defaults" to 9600 bps ;-) */
 	dev->speed = 9600;
 

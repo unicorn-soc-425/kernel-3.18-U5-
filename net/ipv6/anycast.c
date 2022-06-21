@@ -60,6 +60,11 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
 	int	ishost = !net->ipv6.devconf_all->forwarding;
 	int	err = 0;
 
+<<<<<<< HEAD
+=======
+	ASSERT_RTNL();
+
+>>>>>>> v4.9.227
 	if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 		return -EPERM;
 	if (ipv6_addr_is_multicast(addr))
@@ -68,12 +73,19 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
 		return -EINVAL;
 
 	pac = sock_kmalloc(sk, sizeof(struct ipv6_ac_socklist), GFP_KERNEL);
+<<<<<<< HEAD
 	if (pac == NULL)
+=======
+	if (!pac)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	pac->acl_next = NULL;
 	pac->acl_addr = *addr;
 
+<<<<<<< HEAD
 	rtnl_lock();
+=======
+>>>>>>> v4.9.227
 	if (ifindex == 0) {
 		struct rt6_info *rt;
 
@@ -92,7 +104,11 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
 	} else
 		dev = __dev_get_by_index(net, ifindex);
 
+<<<<<<< HEAD
 	if (dev == NULL) {
+=======
+	if (!dev) {
+>>>>>>> v4.9.227
 		err = -ENODEV;
 		goto error;
 	}
@@ -130,7 +146,10 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
 	}
 
 error:
+<<<<<<< HEAD
 	rtnl_unlock();
+=======
+>>>>>>> v4.9.227
 	if (pac)
 		sock_kfree_s(sk, pac, sizeof(*pac));
 	return err;
@@ -146,7 +165,12 @@ int ipv6_sock_ac_drop(struct sock *sk, int ifindex, const struct in6_addr *addr)
 	struct ipv6_ac_socklist *pac, *prev_pac;
 	struct net *net = sock_net(sk);
 
+<<<<<<< HEAD
 	rtnl_lock();
+=======
+	ASSERT_RTNL();
+
+>>>>>>> v4.9.227
 	prev_pac = NULL;
 	for (pac = np->ipv6_ac_list; pac; pac = pac->acl_next) {
 		if ((ifindex == 0 || pac->acl_ifindex == ifindex) &&
@@ -154,10 +178,15 @@ int ipv6_sock_ac_drop(struct sock *sk, int ifindex, const struct in6_addr *addr)
 			break;
 		prev_pac = pac;
 	}
+<<<<<<< HEAD
 	if (!pac) {
 		rtnl_unlock();
 		return -ENOENT;
 	}
+=======
+	if (!pac)
+		return -ENOENT;
+>>>>>>> v4.9.227
 	if (prev_pac)
 		prev_pac->acl_next = pac->acl_next;
 	else
@@ -166,7 +195,10 @@ int ipv6_sock_ac_drop(struct sock *sk, int ifindex, const struct in6_addr *addr)
 	dev = __dev_get_by_index(net, pac->acl_ifindex);
 	if (dev)
 		ipv6_dev_ac_dec(dev, &pac->acl_addr);
+<<<<<<< HEAD
 	rtnl_unlock();
+=======
+>>>>>>> v4.9.227
 
 	sock_kfree_s(sk, pac, sizeof(*pac));
 	return 0;
@@ -224,7 +256,11 @@ static struct ifacaddr6 *aca_alloc(struct rt6_info *rt,
 	struct ifacaddr6 *aca;
 
 	aca = kzalloc(sizeof(*aca), GFP_ATOMIC);
+<<<<<<< HEAD
 	if (aca == NULL)
+=======
+	if (!aca)
+>>>>>>> v4.9.227
 		return NULL;
 
 	aca->aca_addr = *addr;
@@ -270,7 +306,11 @@ int __ipv6_dev_ac_inc(struct inet6_dev *idev, const struct in6_addr *addr)
 		goto out;
 	}
 	aca = aca_alloc(rt, addr);
+<<<<<<< HEAD
 	if (aca == NULL) {
+=======
+	if (!aca) {
+>>>>>>> v4.9.227
 		ip6_rt_put(rt);
 		err = -ENOMEM;
 		goto out;
@@ -339,7 +379,11 @@ static int ipv6_dev_ac_dec(struct net_device *dev, const struct in6_addr *addr)
 {
 	struct inet6_dev *idev = __in6_dev_get(dev);
 
+<<<<<<< HEAD
 	if (idev == NULL)
+=======
+	if (!idev)
+>>>>>>> v4.9.227
 		return -ENODEV;
 	return __ipv6_dev_ac_dec(idev, addr);
 }

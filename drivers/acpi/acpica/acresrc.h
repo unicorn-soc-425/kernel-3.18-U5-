@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -124,7 +128,11 @@ typedef enum {
 typedef const struct acpi_rsdump_info {
 	u8 opcode;
 	u8 offset;
+<<<<<<< HEAD
 	char *name;
+=======
+	const char *name;
+>>>>>>> v4.9.227
 	const char **pointer;
 
 } acpi_rsdump_info;
@@ -209,7 +217,11 @@ acpi_rs_get_prs_method_data(struct acpi_namespace_node *node,
 
 acpi_status
 acpi_rs_get_method_data(acpi_handle handle,
+<<<<<<< HEAD
 			char *path, struct acpi_buffer *ret_buffer);
+=======
+			const char *path, struct acpi_buffer *ret_buffer);
+>>>>>>> v4.9.227
 
 acpi_status
 acpi_rs_set_srs_method_data(struct acpi_namespace_node *node,
@@ -223,6 +235,7 @@ acpi_rs_get_aei_method_data(struct acpi_namespace_node *node,
  * rscalc
  */
 acpi_status
+<<<<<<< HEAD
 acpi_rs_get_list_length(u8 * aml_buffer,
 			u32 aml_buffer_length, acpi_size * size_needed);
 
@@ -233,6 +246,18 @@ acpi_rs_get_aml_length(struct acpi_resource *resource_list,
 acpi_status
 acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
 				     acpi_size * buffer_size_needed);
+=======
+acpi_rs_get_list_length(u8 *aml_buffer,
+			u32 aml_buffer_length, acpi_size *size_needed);
+
+acpi_status
+acpi_rs_get_aml_length(struct acpi_resource *resource_list,
+		       acpi_size resource_list_size, acpi_size *size_needed);
+
+acpi_status
+acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
+				     acpi_size *buffer_size_needed);
+>>>>>>> v4.9.227
 
 acpi_status
 acpi_rs_convert_aml_to_resources(u8 * aml,
@@ -299,11 +324,21 @@ acpi_rs_set_resource_length(acpi_rsdesc_size total_length,
 			    union aml_resource *aml);
 
 /*
+<<<<<<< HEAD
  * rsdump
  */
 void acpi_rs_dump_resource_list(struct acpi_resource *resource);
 
 void acpi_rs_dump_irq_list(u8 * route_table);
+=======
+ * rsdump - Debugger support
+ */
+#ifdef ACPI_DEBUGGER
+void acpi_rs_dump_resource_list(struct acpi_resource *resource);
+
+void acpi_rs_dump_irq_list(u8 *route_table);
+#endif
+>>>>>>> v4.9.227
 
 /*
  * Resource conversion tables

@@ -9,12 +9,19 @@
  */
 
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
 
+<<<<<<< HEAD
 #include "irqchip.h"
 
+=======
+>>>>>>> v4.9.227
 /* OR1K PIC implementation */
 
 struct or1k_pic_dev {

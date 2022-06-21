@@ -22,6 +22,7 @@
 #include <linux/pm_runtime.h>
 #include <linux/of_device.h>
 
+<<<<<<< HEAD
 #include "pwm-tipwmss.h"
 
 #define PWMSS_CLKCONFIG		0x8	/* Clock gating reg */
@@ -48,6 +49,8 @@ u16 pwmss_submodule_state_change(struct device *dev, int set)
 }
 EXPORT_SYMBOL(pwmss_submodule_state_change);
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id pwmss_of_match[] = {
 	{ .compatible	= "ti,am33xx-pwmss" },
 	{},
@@ -57,6 +60,7 @@ MODULE_DEVICE_TABLE(of, pwmss_of_match);
 static int pwmss_probe(struct platform_device *pdev)
 {
 	int ret;
+<<<<<<< HEAD
 	struct resource *r;
 	struct pwmss_info *info;
 	struct device_node *node = pdev->dev.of_node;
@@ -75,6 +79,11 @@ static int pwmss_probe(struct platform_device *pdev)
 	pm_runtime_enable(&pdev->dev);
 	pm_runtime_get_sync(&pdev->dev);
 	platform_set_drvdata(pdev, info);
+=======
+	struct device_node *node = pdev->dev.of_node;
+
+	pm_runtime_enable(&pdev->dev);
+>>>>>>> v4.9.227
 
 	/* Populate all the child nodes here... */
 	ret = of_platform_populate(node, NULL, NULL, &pdev->dev);
@@ -86,6 +95,7 @@ static int pwmss_probe(struct platform_device *pdev)
 
 static int pwmss_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct pwmss_info *info = platform_get_drvdata(pdev);
 
 	pm_runtime_put_sync(&pdev->dev);
@@ -121,6 +131,15 @@ static struct platform_driver pwmss_driver = {
 		.name	= "pwmss",
 		.owner	= THIS_MODULE,
 		.pm	= &pwmss_pm_ops,
+=======
+	pm_runtime_disable(&pdev->dev);
+	return 0;
+}
+
+static struct platform_driver pwmss_driver = {
+	.driver	= {
+		.name	= "pwmss",
+>>>>>>> v4.9.227
 		.of_match_table	= pwmss_of_match,
 	},
 	.probe	= pwmss_probe,

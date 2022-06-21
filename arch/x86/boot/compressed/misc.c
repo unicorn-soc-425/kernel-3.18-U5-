@@ -1,8 +1,15 @@
 /*
  * misc.c
  *
+<<<<<<< HEAD
  * This is a collection of several routines from gzip-1.0.3
  * adapted for Linux.
+=======
+ * This is a collection of several routines used to extract the kernel
+ * which includes KASLR relocation, decompression, ELF parsing, and
+ * relocation processing. Additionally included are the screen and serial
+ * output functions and related debugging support functions.
+>>>>>>> v4.9.227
  *
  * malloc by Hannu Savolainen 1993 and Matthias Urlichs 1994
  * puts by Nick Holloway 1993, better puts by Martin Mares 1995
@@ -10,6 +17,7 @@
  */
 
 #include "misc.h"
+<<<<<<< HEAD
 #include "../string.h"
 
 /* WARNING!!
@@ -110,11 +118,44 @@
 
 
 static void error(char *m);
+=======
+#include "error.h"
+#include "../string.h"
+#include "../voffset.h"
+#include <asm/bootparam_utils.h>
+
+/*
+ * WARNING!!
+ * This code is compiled with -fPIC and it is relocated dynamically at
+ * run time, but no relocation processing is performed. This means that
+ * it is not safe to place pointers in static structures.
+ */
+
+/* Macros used by the included decompressor code below. */
+#define STATIC		static
+
+/*
+ * Use normal definitions of mem*() from string.c. There are already
+ * included header files which expect a definition of memset() and by
+ * the time we define memset macro, it is too late.
+ */
+#undef memcpy
+#undef memset
+#define memzero(s, n)	memset((s), 0, (n))
+#define memmove		memmove
+
+/* Functions used by the included decompressor code below. */
+void *memmove(void *dest, const void *src, size_t n);
+>>>>>>> v4.9.227
 
 /*
  * This is set up by the setup-routine at boot-time
  */
+<<<<<<< HEAD
 struct boot_params *real_mode;		/* Pointer to real-mode data */
+=======
+struct boot_params *boot_params;
+>>>>>>> v4.9.227
 
 memptr free_mem_ptr;
 memptr free_mem_end_ptr;
@@ -146,12 +187,23 @@ static int lines, cols;
 #ifdef CONFIG_KERNEL_LZ4
 #include "../../../../lib/decompress_unlz4.c"
 #endif
+<<<<<<< HEAD
+=======
+/*
+ * NOTE: When adding a new decompressor, please update the analysis in
+ * ../header.S.
+ */
+>>>>>>> v4.9.227
 
 static void scroll(void)
 {
 	int i;
 
+<<<<<<< HEAD
 	memcpy(vidmem, vidmem + cols * 2, (lines - 1) * cols * 2);
+=======
+	memmove(vidmem, vidmem + cols * 2, (lines - 1) * cols * 2);
+>>>>>>> v4.9.227
 	for (i = (lines - 1) * cols * 2; i < lines * cols * 2; i += 2)
 		vidmem[i] = ' ';
 }
@@ -184,12 +236,21 @@ void __putstr(const char *s)
 		}
 	}
 
+<<<<<<< HEAD
 	if (real_mode->screen_info.orig_video_mode == 0 &&
 	    lines == 0 && cols == 0)
 		return;
 
 	x = real_mode->screen_info.orig_x;
 	y = real_mode->screen_info.orig_y;
+=======
+	if (boot_params->screen_info.orig_video_mode == 0 &&
+	    lines == 0 && cols == 0)
+		return;
+
+	x = boot_params->screen_info.orig_x;
+	y = boot_params->screen_info.orig_y;
+>>>>>>> v4.9.227
 
 	while ((c = *s++) != '\0') {
 		if (c == '\n') {
@@ -210,8 +271,13 @@ void __putstr(const char *s)
 		}
 	}
 
+<<<<<<< HEAD
 	real_mode->screen_info.orig_x = x;
 	real_mode->screen_info.orig_y = y;
+=======
+	boot_params->screen_info.orig_x = x;
+	boot_params->screen_info.orig_y = y;
+>>>>>>> v4.9.227
 
 	pos = (x + cols * y) * 2;	/* Update cursor position */
 	outb(14, vidport);
@@ -220,6 +286,7 @@ void __putstr(const char *s)
 	outb(0xff & (pos >> 1), vidport+1);
 }
 
+<<<<<<< HEAD
 static void error(char *x)
 {
 	error_putstr("\n\n");
@@ -232,22 +299,51 @@ static void error(char *x)
 
 #if CONFIG_X86_NEED_RELOCS
 static void handle_relocations(void *output, unsigned long output_len)
+=======
+void __puthex(unsigned long value)
+{
+	char alpha[2] = "0";
+	int bits;
+
+	for (bits = sizeof(value) * 8 - 4; bits >= 0; bits -= 4) {
+		unsigned long digit = (value >> bits) & 0xf;
+
+		if (digit < 0xA)
+			alpha[0] = '0' + digit;
+		else
+			alpha[0] = 'a' + (digit - 0xA);
+
+		__putstr(alpha);
+	}
+}
+
+#if CONFIG_X86_NEED_RELOCS
+static void handle_relocations(void *output, unsigned long output_len,
+			       unsigned long virt_addr)
+>>>>>>> v4.9.227
 {
 	int *reloc;
 	unsigned long delta, map, ptr;
 	unsigned long min_addr = (unsigned long)output;
+<<<<<<< HEAD
 	unsigned long max_addr = min_addr + output_len;
+=======
+	unsigned long max_addr = min_addr + (VO___bss_start - VO__text);
+>>>>>>> v4.9.227
 
 	/*
 	 * Calculate the delta between where vmlinux was linked to load
 	 * and where it was actually loaded.
 	 */
 	delta = min_addr - LOAD_PHYSICAL_ADDR;
+<<<<<<< HEAD
 	if (!delta) {
 		debug_putstr("No relocation needed... ");
 		return;
 	}
 	debug_putstr("Performing relocations... ");
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * The kernel contains a table of relocation addresses. Those
@@ -259,6 +355,23 @@ static void handle_relocations(void *output, unsigned long output_len)
 	map = delta - __START_KERNEL_map;
 
 	/*
+<<<<<<< HEAD
+=======
+	 * 32-bit always performs relocations. 64-bit relocations are only
+	 * needed if KASLR has chosen a different starting address offset
+	 * from __START_KERNEL_map.
+	 */
+	if (IS_ENABLED(CONFIG_X86_64))
+		delta = virt_addr - LOAD_PHYSICAL_ADDR;
+
+	if (!delta) {
+		debug_putstr("No relocation needed... ");
+		return;
+	}
+	debug_putstr("Performing relocations... ");
+
+	/*
+>>>>>>> v4.9.227
 	 * Process relocations: 32 bit relocations first then 64 bit after.
 	 * Three sets of binary relocations are added to the end of the kernel
 	 * before compression. Each relocation table entry is the kernel
@@ -278,7 +391,11 @@ static void handle_relocations(void *output, unsigned long output_len)
 	 * So we work backwards from the end of the decompressed image.
 	 */
 	for (reloc = output + output_len - sizeof(*reloc); *reloc; reloc--) {
+<<<<<<< HEAD
 		int extended = *reloc;
+=======
+		long extended = *reloc;
+>>>>>>> v4.9.227
 		extended += map;
 
 		ptr = (unsigned long)extended;
@@ -311,7 +428,12 @@ static void handle_relocations(void *output, unsigned long output_len)
 #endif
 }
 #else
+<<<<<<< HEAD
 static inline void handle_relocations(void *output, unsigned long output_len)
+=======
+static inline void handle_relocations(void *output, unsigned long output_len,
+				      unsigned long virt_addr)
+>>>>>>> v4.9.227
 { }
 #endif
 
@@ -349,15 +471,26 @@ static void parse_elf(void *output)
 
 		switch (phdr->p_type) {
 		case PT_LOAD:
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_64
+			if ((phdr->p_align % 0x200000) != 0)
+				error("Alignment of LOAD segment isn't multiple of 2MB");
+#endif
+>>>>>>> v4.9.227
 #ifdef CONFIG_RELOCATABLE
 			dest = output;
 			dest += (phdr->p_paddr - LOAD_PHYSICAL_ADDR);
 #else
 			dest = (void *)(phdr->p_paddr);
 #endif
+<<<<<<< HEAD
 			memcpy(dest,
 			       output + phdr->p_offset,
 			       phdr->p_filesz);
+=======
+			memmove(dest, output + phdr->p_offset, phdr->p_filesz);
+>>>>>>> v4.9.227
 			break;
 		default: /* Ignore other PT_* */ break;
 		}
@@ -366,6 +499,7 @@ static void parse_elf(void *output)
 	free(phdrs);
 }
 
+<<<<<<< HEAD
 asmlinkage __visible void *decompress_kernel(void *rmode, memptr heap,
 				  unsigned char *input_data,
 				  unsigned long input_len,
@@ -380,6 +514,43 @@ asmlinkage __visible void *decompress_kernel(void *rmode, memptr heap,
 	sanitize_boot_params(real_mode);
 
 	if (real_mode->screen_info.orig_video_mode == 7) {
+=======
+/*
+ * The compressed kernel image (ZO), has been moved so that its position
+ * is against the end of the buffer used to hold the uncompressed kernel
+ * image (VO) and the execution environment (.bss, .brk), which makes sure
+ * there is room to do the in-place decompression. (See header.S for the
+ * calculations.)
+ *
+ *                             |-----compressed kernel image------|
+ *                             V                                  V
+ * 0                       extract_offset                      +INIT_SIZE
+ * |-----------|---------------|-------------------------|--------|
+ *             |               |                         |        |
+ *           VO__text      startup_32 of ZO          VO__end    ZO__end
+ *             ^                                         ^
+ *             |-------uncompressed kernel image---------|
+ *
+ */
+asmlinkage __visible void *extract_kernel(void *rmode, memptr heap,
+				  unsigned char *input_data,
+				  unsigned long input_len,
+				  unsigned char *output,
+				  unsigned long output_len)
+{
+	const unsigned long kernel_total_size = VO__end - VO__text;
+	unsigned long virt_addr = LOAD_PHYSICAL_ADDR;
+
+	/* Retain x86 boot parameters pointer passed from startup_32/64. */
+	boot_params = rmode;
+
+	/* Clear flags intended for solely in-kernel use. */
+	boot_params->hdr.loadflags &= ~KASLR_FLAG;
+
+	sanitize_boot_params(boot_params);
+
+	if (boot_params->screen_info.orig_video_mode == 7) {
+>>>>>>> v4.9.227
 		vidmem = (char *) 0xb0000;
 		vidport = 0x3b4;
 	} else {
@@ -387,20 +558,39 @@ asmlinkage __visible void *decompress_kernel(void *rmode, memptr heap,
 		vidport = 0x3d4;
 	}
 
+<<<<<<< HEAD
 	lines = real_mode->screen_info.orig_video_lines;
 	cols = real_mode->screen_info.orig_video_cols;
 
 	console_init();
 	debug_putstr("early console in decompress_kernel\n");
+=======
+	lines = boot_params->screen_info.orig_video_lines;
+	cols = boot_params->screen_info.orig_video_cols;
+
+	console_init();
+	debug_putstr("early console in extract_kernel\n");
+>>>>>>> v4.9.227
 
 	free_mem_ptr     = heap;	/* Heap */
 	free_mem_end_ptr = heap + BOOT_HEAP_SIZE;
 
+<<<<<<< HEAD
+=======
+	/* Report initial kernel position details. */
+	debug_putaddr(input_data);
+	debug_putaddr(input_len);
+	debug_putaddr(output);
+	debug_putaddr(output_len);
+	debug_putaddr(kernel_total_size);
+
+>>>>>>> v4.9.227
 	/*
 	 * The memory hole needed for the kernel is the larger of either
 	 * the entire decompressed kernel plus relocation table, or the
 	 * entire decompressed kernel plus .bss and .brk sections.
 	 */
+<<<<<<< HEAD
 	output = choose_kernel_location(input_data, input_len, output,
 					output_len > run_size ? output_len
 							      : run_size);
@@ -408,6 +598,18 @@ asmlinkage __visible void *decompress_kernel(void *rmode, memptr heap,
 	/* Validate memory location choices. */
 	if ((unsigned long)output & (MIN_KERNEL_ALIGN - 1))
 		error("Destination address inappropriately aligned");
+=======
+	choose_random_location((unsigned long)input_data, input_len,
+				(unsigned long *)&output,
+				max(output_len, kernel_total_size),
+				&virt_addr);
+
+	/* Validate memory location choices. */
+	if ((unsigned long)output & (MIN_KERNEL_ALIGN - 1))
+		error("Destination physical address inappropriately aligned");
+	if (virt_addr & (MIN_KERNEL_ALIGN - 1))
+		error("Destination virtual address inappropriately aligned");
+>>>>>>> v4.9.227
 #ifdef CONFIG_X86_64
 	if (heap > 0x3fffffffffffUL)
 		error("Destination address too large");
@@ -417,6 +619,7 @@ asmlinkage __visible void *decompress_kernel(void *rmode, memptr heap,
 #endif
 #ifndef CONFIG_RELOCATABLE
 	if ((unsigned long)output != LOAD_PHYSICAL_ADDR)
+<<<<<<< HEAD
 		error("Wrong destination address");
 #endif
 
@@ -429,6 +632,18 @@ asmlinkage __visible void *decompress_kernel(void *rmode, memptr heap,
 	 */
 	if (!IS_ENABLED(CONFIG_X86_64) || output != output_orig)
 		handle_relocations(output, output_len);
+=======
+		error("Destination address does not match LOAD_PHYSICAL_ADDR");
+	if (virt_addr != LOAD_PHYSICAL_ADDR)
+		error("Destination virtual address changed when not relocatable");
+#endif
+
+	debug_putstr("\nDecompressing Linux... ");
+	__decompress(input_data, input_len, NULL, NULL, output, output_len,
+			NULL, error);
+	parse_elf(output);
+	handle_relocations(output, output_len, virt_addr);
+>>>>>>> v4.9.227
 	debug_putstr("done.\nBooting the kernel.\n");
 	return output;
 }

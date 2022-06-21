@@ -584,6 +584,7 @@ static int uhci_debug_open(struct inode *inode, struct file *file)
 
 static loff_t uhci_debug_lseek(struct file *file, loff_t off, int whence)
 {
+<<<<<<< HEAD
 	struct uhci_debug *up;
 	loff_t new = -1;
 
@@ -605,6 +606,10 @@ static loff_t uhci_debug_lseek(struct file *file, loff_t off, int whence)
 		return -EINVAL;
 
 	return (file->f_pos = new);
+=======
+	struct uhci_debug *up = file->private_data;
+	return no_seek_end_llseek_size(file, off, whence, up->size);
+>>>>>>> v4.9.227
 }
 
 static ssize_t uhci_debug_read(struct file *file, char __user *buf,

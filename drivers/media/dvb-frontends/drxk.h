@@ -1,7 +1,10 @@
 #ifndef _DRXK_H_
 #define _DRXK_H_
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/i2c.h>
 

@@ -48,7 +48,11 @@ bool ntfs_mark_quotas_out_of_date(ntfs_volume *vol)
 		ntfs_error(vol->sb, "Quota inodes are not open.");
 		return false;
 	}
+<<<<<<< HEAD
 	mutex_lock(&vol->quota_q_ino->i_mutex);
+=======
+	inode_lock(vol->quota_q_ino);
+>>>>>>> v4.9.227
 	ictx = ntfs_index_ctx_get(NTFS_I(vol->quota_q_ino));
 	if (!ictx) {
 		ntfs_error(vol->sb, "Failed to get index context.");
@@ -98,7 +102,11 @@ bool ntfs_mark_quotas_out_of_date(ntfs_volume *vol)
 	ntfs_index_entry_mark_dirty(ictx);
 set_done:
 	ntfs_index_ctx_put(ictx);
+<<<<<<< HEAD
 	mutex_unlock(&vol->quota_q_ino->i_mutex);
+=======
+	inode_unlock(vol->quota_q_ino);
+>>>>>>> v4.9.227
 	/*
 	 * We set the flag so we do not try to mark the quotas out of date
 	 * again on remount.
@@ -110,7 +118,11 @@ done:
 err_out:
 	if (ictx)
 		ntfs_index_ctx_put(ictx);
+<<<<<<< HEAD
 	mutex_unlock(&vol->quota_q_ino->i_mutex);
+=======
+	inode_unlock(vol->quota_q_ino);
+>>>>>>> v4.9.227
 	return false;
 }
 

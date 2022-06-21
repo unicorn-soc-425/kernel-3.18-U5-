@@ -5,6 +5,10 @@
 menuconfig FB
 	tristate "Support for frame buffer devices"
 	select FB_CMDLINE
+<<<<<<< HEAD
+=======
+	select FB_NOTIFY
+>>>>>>> v4.9.227
 	---help---
 	  The frame buffer device provides an abstraction for the graphics
 	  hardware. It represents the frame buffer of some video hardware and
@@ -56,6 +60,12 @@ config FIRMWARE_EDID
 config FB_CMDLINE
 	bool
 
+<<<<<<< HEAD
+=======
+config FB_NOTIFY
+	bool
+
+>>>>>>> v4.9.227
 config FB_DDC
        tristate
        depends on FB
@@ -280,12 +290,21 @@ config FB_PM2_FIFO_DISCONNECT
 config FB_ARMCLCD
 	tristate "ARM PrimeCell PL110 support"
 	depends on ARM || ARM64 || COMPILE_TEST
+<<<<<<< HEAD
 	depends on FB && ARM_AMBA
+=======
+	depends on FB && ARM_AMBA && HAS_IOMEM
+>>>>>>> v4.9.227
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
 	select FB_MODE_HELPERS if OF
 	select VIDEOMODE_HELPERS if OF
+<<<<<<< HEAD
+=======
+	select BACKLIGHT_LCD_SUPPORT if OF
+	select BACKLIGHT_CLASS_DEVICE if OF
+>>>>>>> v4.9.227
 	help
 	  This framebuffer device driver is for the ARM PrimeCell PL110
 	  Colour LCD controller.  ARM PrimeCells provide the building
@@ -301,6 +320,11 @@ config PLAT_VERSATILE_CLCD
 	def_bool ARCH_VERSATILE || ARCH_REALVIEW || ARCH_VEXPRESS || ARCH_INTEGRATOR
 	depends on ARM
 	depends on FB_ARMCLCD && FB=y
+<<<<<<< HEAD
+=======
+	select REGMAP
+	select MFD_SYSCON
+>>>>>>> v4.9.227
 
 config FB_ACORN
 	bool "Acorn VIDC support"
@@ -479,7 +503,11 @@ config FB_ATARI
 
 config FB_OF
 	bool "Open Firmware frame buffer device support"
+<<<<<<< HEAD
 	depends on (FB = y) && (PPC64 || PPC_OF) && (!PPC_PSERIES || PCI)
+=======
+	depends on (FB = y) && PPC && (!PPC_PSERIES || PCI)
+>>>>>>> v4.9.227
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
@@ -757,7 +785,11 @@ config FB_VESA
 
 config FB_EFI
 	bool "EFI-based Framebuffer Support"
+<<<<<<< HEAD
 	depends on (FB = y) && X86 && EFI
+=======
+	depends on (FB = y) && !IA64 && EFI
+>>>>>>> v4.9.227
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
@@ -999,6 +1031,7 @@ config FB_ATMEL
 	help
 	  This enables support for the AT91/AT32 LCD Controller.
 
+<<<<<<< HEAD
 config FB_INTSRAM
 	bool "Frame Buffer in internal SRAM"
 	depends on FB_ATMEL && ARCH_AT91SAM9261
@@ -1016,6 +1049,8 @@ config FB_ATMEL_STN
 
 	  If unsure, say N.
 
+=======
+>>>>>>> v4.9.227
 config FB_NVIDIA
 	tristate "nVidia Framebuffer Support"
 	depends on FB && PCI
@@ -1350,7 +1385,11 @@ config FB_RADEON
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
+<<<<<<< HEAD
 	select FB_MACMODES if PPC_OF
+=======
+	select FB_MACMODES if PPC
+>>>>>>> v4.9.227
 	help
 	  Choose this option if you want to use an ATI Radeon graphics card as
 	  a framebuffer device.  There are both PCI and AGP versions.  You
@@ -1523,6 +1562,10 @@ config FB_SIS
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
 	select FB_BOOT_VESA_SUPPORT if FB_SIS = y
+<<<<<<< HEAD
+=======
+	select FB_SIS_300 if !FB_SIS_315
+>>>>>>> v4.9.227
 	help
 	  This is the frame buffer device driver for the SiS 300, 315, 330
 	  and 340 series as well as XGI V3XT, V5, V8, Z7 graphics chipsets.
@@ -1547,13 +1590,20 @@ config FB_SIS_315
 
 config FB_VIA
        tristate "VIA UniChrome (Pro) and Chrome9 display support"
+<<<<<<< HEAD
        depends on FB && PCI && X86
+=======
+       depends on FB && PCI && X86 && GPIOLIB && I2C
+>>>>>>> v4.9.227
        select FB_CFB_FILLRECT
        select FB_CFB_COPYAREA
        select FB_CFB_IMAGEBLIT
        select I2C_ALGOBIT
+<<<<<<< HEAD
        select I2C
        select GPIOLIB
+=======
+>>>>>>> v4.9.227
        help
 	  This is the frame buffer device driver for Graphics chips of VIA
 	  UniChrome (Pro) Family (CLE266,PM800/CN400,P4M800CE/P4M800Pro/
@@ -1685,6 +1735,11 @@ config FB_TRIDENT
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
+<<<<<<< HEAD
+=======
+	select FB_DDC
+	select FB_MODE_HELPERS
+>>>>>>> v4.9.227
 	---help---
 	  This is the frame buffer device driver for Trident PCI/AGP chipsets.
 	  Supported chipset families are TGUI 9440/96XX, 3DImage, Blade3D
@@ -1820,8 +1875,13 @@ config FB_HIT
 	  frame buffer card.
 
 config FB_PMAG_AA
+<<<<<<< HEAD
 	bool "PMAG-AA TURBOchannel framebuffer support"
 	depends on (FB = y) && TC
+=======
+	tristate "PMAG-AA TURBOchannel framebuffer support"
+	depends on FB && TC
+>>>>>>> v4.9.227
  	select FB_CFB_FILLRECT
  	select FB_CFB_COPYAREA
  	select FB_CFB_IMAGEBLIT
@@ -1897,6 +1957,11 @@ config FB_PXA
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
+<<<<<<< HEAD
+=======
+	select VIDEOMODE_HELPERS if OF
+	select FB_MODE_HELPERS if OF
+>>>>>>> v4.9.227
 	---help---
 	  Frame buffer driver for the built-in LCD controller in the Intel
 	  PXA2x0 processor.
@@ -1995,7 +2060,11 @@ config FB_W100
 
 config FB_SH_MOBILE_LCDC
 	tristate "SuperH Mobile LCDC framebuffer support"
+<<<<<<< HEAD
 	depends on FB && (SUPERH || ARCH_SHMOBILE) && HAVE_CLK
+=======
+	depends on FB && (SUPERH || ARCH_RENESAS) && HAVE_CLK
+>>>>>>> v4.9.227
 	depends on FB_SH_MOBILE_MERAM || !FB_SH_MOBILE_MERAM
 	select FB_SYS_FILLRECT
 	select FB_SYS_COPYAREA
@@ -2003,6 +2072,7 @@ config FB_SH_MOBILE_LCDC
 	select FB_SYS_FOPS
 	select FB_DEFERRED_IO
 	select FB_BACKLIGHT
+<<<<<<< HEAD
 	select SH_MIPI_DSI if SH_LCD_MIPI_DSI
 	---help---
 	  Frame buffer driver for the on-chip SH-Mobile LCD controller.
@@ -2017,6 +2087,11 @@ config FB_SH_MOBILE_HDMI
 	---help---
 	  Driver for the on-chip SH-Mobile HDMI controller.
 
+=======
+	---help---
+	  Frame buffer driver for the on-chip SH-Mobile LCD controller.
+
+>>>>>>> v4.9.227
 config FB_TMIO
 	tristate "Toshiba Mobile IO FrameBuffer support"
 	depends on FB && (MFD_TMIO || COMPILE_TEST)
@@ -2151,7 +2226,11 @@ config FB_UDL
 
 config FB_IBM_GXT4500
 	tristate "Framebuffer support for IBM GXT4000P/4500P/6000P/6500P adaptors"
+<<<<<<< HEAD
 	depends on FB && PPC
+=======
+	depends on FB
+>>>>>>> v4.9.227
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
@@ -2159,7 +2238,12 @@ config FB_IBM_GXT4500
 	  Say Y here to enable support for the IBM GXT4000P/6000P and
 	  GXT4500P/6500P display adaptor based on Raster Engine RC1000,
 	  found on some IBM System P (pSeries) machines. This driver
+<<<<<<< HEAD
 	  doesn't use Geometry Engine GT1000.
+=======
+	  doesn't use Geometry Engine GT1000. This driver also supports
+	  AGP Fire GL2/3/4 cards on x86.
+>>>>>>> v4.9.227
 
 config FB_PS3
 	tristate "PS3 GPU framebuffer driver"
@@ -2168,7 +2252,10 @@ config FB_PS3
 	select FB_SYS_COPYAREA
 	select FB_SYS_IMAGEBLIT
 	select FB_SYS_FOPS
+<<<<<<< HEAD
 	select VT_HW_CONSOLE_BINDING if FRAMEBUFFER_CONSOLE
+=======
+>>>>>>> v4.9.227
 	---help---
 	  Include support for the virtual frame buffer in the PS3 platform.
 
@@ -2204,7 +2291,11 @@ config FB_GOLDFISH
 
 config FB_COBALT
 	tristate "Cobalt server LCD frame buffer support"
+<<<<<<< HEAD
 	depends on FB && (MIPS_COBALT || MIPS_SEAD3)
+=======
+	depends on FB && MIPS_COBALT
+>>>>>>> v4.9.227
 
 config FB_SH7760
 	bool "SH7760/SH7763/SH7720/SH7721 LCDC support"
@@ -2345,6 +2436,7 @@ config FB_PRE_INIT_FB
 	  Select this option if display contents should be inherited as set by
 	  the bootloader.
 
+<<<<<<< HEAD
 config FB_MSM
 	tristate "MSM Framebuffer support"
 	depends on FB && ARCH_MSM
@@ -2352,6 +2444,8 @@ config FB_MSM
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
 
+=======
+>>>>>>> v4.9.227
 config FB_MX3
 	tristate "MX3 Framebuffer support"
 	depends on FB && MX3_IPU
@@ -2424,7 +2518,11 @@ config FB_JZ4740
 
 config FB_MXS
 	tristate "MXS LCD framebuffer support"
+<<<<<<< HEAD
 	depends on FB && ARCH_MXS
+=======
+	depends on FB && (ARCH_MXS || ARCH_MXC)
+>>>>>>> v4.9.227
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
@@ -2471,9 +2569,13 @@ config FB_SIMPLE
 
 source "drivers/video/fbdev/omap/Kconfig"
 source "drivers/video/fbdev/omap2/Kconfig"
+<<<<<<< HEAD
 source "drivers/video/fbdev/exynos/Kconfig"
 source "drivers/video/fbdev/mmp/Kconfig"
 source "drivers/video/msm/Kconfig"
+=======
+source "drivers/video/fbdev/mmp/Kconfig"
+>>>>>>> v4.9.227
 
 config FB_SH_MOBILE_MERAM
 	tristate "SuperH Mobile MERAM read ahead support"
@@ -2491,13 +2593,38 @@ config FB_SSD1307
 	tristate "Solomon SSD1307 framebuffer support"
 	depends on FB && I2C
 	depends on OF
+<<<<<<< HEAD
 	depends on GPIOLIB
+=======
+	depends on GPIOLIB || COMPILE_TEST
+>>>>>>> v4.9.227
 	select FB_SYS_FOPS
 	select FB_SYS_FILLRECT
 	select FB_SYS_COPYAREA
 	select FB_SYS_IMAGEBLIT
 	select FB_DEFERRED_IO
 	select PWM
+<<<<<<< HEAD
 	help
 	  This driver implements support for the Solomon SSD1307
 	  OLED controller over I2C.
+=======
+	select FB_BACKLIGHT
+	help
+	  This driver implements support for the Solomon SSD1307
+	  OLED controller over I2C.
+
+config FB_SM712
+	tristate "Silicon Motion SM712 framebuffer support"
+	depends on FB && PCI
+	select FB_CFB_FILLRECT
+	select FB_CFB_COPYAREA
+	select FB_CFB_IMAGEBLIT
+	help
+	  Frame buffer driver for the Silicon Motion SM710, SM712, SM721
+	  and SM722 chips.
+
+	  This driver is also available as a module. The module will be
+	  called sm712fb. If you want to compile it as a module, say M
+	  here and read <file:Documentation/kbuild/modules.txt>.
+>>>>>>> v4.9.227

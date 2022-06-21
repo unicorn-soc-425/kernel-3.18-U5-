@@ -389,7 +389,11 @@ static int s3c_adc_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	clk_enable(adc->clk);
+=======
+	clk_prepare_enable(adc->clk);
+>>>>>>> v4.9.227
 
 	tmp = adc->prescale | S3C2410_ADCCON_PRSCEN;
 
@@ -413,7 +417,11 @@ static int s3c_adc_remove(struct platform_device *pdev)
 {
 	struct adc_device *adc = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	clk_disable(adc->clk);
+=======
+	clk_disable_unprepare(adc->clk);
+>>>>>>> v4.9.227
 	regulator_disable(adc->vdd);
 
 	return 0;
@@ -422,8 +430,12 @@ static int s3c_adc_remove(struct platform_device *pdev)
 #ifdef CONFIG_PM
 static int s3c_adc_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = container_of(dev,
 			struct platform_device, dev);
+=======
+	struct platform_device *pdev = to_platform_device(dev);
+>>>>>>> v4.9.227
 	struct adc_device *adc = platform_get_drvdata(pdev);
 	unsigned long flags;
 	u32 con;
@@ -444,8 +456,12 @@ static int s3c_adc_suspend(struct device *dev)
 
 static int s3c_adc_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = container_of(dev,
 			struct platform_device, dev);
+=======
+	struct platform_device *pdev = to_platform_device(dev);
+>>>>>>> v4.9.227
 	struct adc_device *adc = platform_get_drvdata(pdev);
 	enum s3c_cpu_type cpu = platform_get_device_id(pdev)->driver_data;
 	int ret;
@@ -475,7 +491,11 @@ static int s3c_adc_resume(struct device *dev)
 #define s3c_adc_resume NULL
 #endif
 
+<<<<<<< HEAD
 static struct platform_device_id s3c_adc_driver_ids[] = {
+=======
+static const struct platform_device_id s3c_adc_driver_ids[] = {
+>>>>>>> v4.9.227
 	{
 		.name           = "s3c24xx-adc",
 		.driver_data    = TYPE_ADCV1,
@@ -505,7 +525,10 @@ static struct platform_driver s3c_adc_driver = {
 	.id_table	= s3c_adc_driver_ids,
 	.driver		= {
 		.name	= "s3c-adc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &adc_pm_ops,
 	},
 	.probe		= s3c_adc_probe,

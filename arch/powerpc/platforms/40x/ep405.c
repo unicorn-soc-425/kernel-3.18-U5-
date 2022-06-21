@@ -105,9 +105,13 @@ static void __init ep405_setup_arch(void)
 
 static int __init ep405_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (!of_flat_dt_is_compatible(root, "ep405"))
+=======
+	if (!of_machine_is_compatible("ep405"))
+>>>>>>> v4.9.227
 		return 0;
 
 	return 1;

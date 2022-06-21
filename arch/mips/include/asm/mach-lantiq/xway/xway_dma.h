@@ -12,7 +12,11 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  *
+<<<<<<< HEAD
  *   Copyright (C) 2011 John Crispin <blogic@openwrt.org>
+=======
+ *   Copyright (C) 2011 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  */
 
 #ifndef LTQ_DMA_H__

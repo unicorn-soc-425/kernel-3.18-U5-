@@ -18,7 +18,11 @@
 
 #include <scsi/iscsi_proto.h>
 
+<<<<<<< HEAD
 #include "iscsi_target_core.h"
+=======
+#include <target/iscsi/iscsi_target_core.h>
+>>>>>>> v4.9.227
 #include "iscsi_target_seq_pdu_list.h"
 #include "iscsi_target_erl1.h"
 #include "iscsi_target_util.h"
@@ -524,3 +528,7 @@ struct iscsi_datain_req *iscsit_get_datain_values(
 
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(iscsit_get_datain_values);
+>>>>>>> v4.9.227

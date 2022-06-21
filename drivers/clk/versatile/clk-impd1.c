@@ -7,7 +7,10 @@
  * published by the Free Software Foundation.
  */
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clkdev.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -99,8 +102,12 @@ void integrator_impd1_clk_init(void __iomem *base, unsigned int id)
 
 	/* Register the fixed rate PCLK */
 	imc->pclkname = kasprintf(GFP_KERNEL, "lm%x-pclk", id);
+<<<<<<< HEAD
 	pclk = clk_register_fixed_rate(NULL, imc->pclkname, NULL,
 				      CLK_IS_ROOT, 0);
+=======
+	pclk = clk_register_fixed_rate(NULL, imc->pclkname, NULL, 0, 0);
+>>>>>>> v4.9.227
 	imc->pclk = pclk;
 
 	imc->vco1name = kasprintf(GFP_KERNEL, "lm%x-vco1", id);

@@ -22,12 +22,19 @@
 /*
  * Driver: cb_pcidda
  * Description: MeasurementComputing PCI-DDA series
+<<<<<<< HEAD
  * Devices: (Measurement Computing) PCI-DDA08/12 [pci-dda08/12]
  *	    (Measurement Computing) PCI-DDA04/12 [pci-dda04/12]
  *	    (Measurement Computing) PCI-DDA02/12 [pci-dda02/12]
  *	    (Measurement Computing) PCI-DDA08/16 [pci-dda08/16]
  *	    (Measurement Computing) PCI-DDA04/16 [pci-dda04/16]
  *	    (Measurement Computing) PCI-DDA02/16 [pci-dda02/16]
+=======
+ * Devices: [Measurement Computing] PCI-DDA08/12 (pci-dda08/12),
+ *   PCI-DDA04/12 (pci-dda04/12), PCI-DDA02/12 (pci-dda02/12),
+ *   PCI-DDA08/16 (pci-dda08/16), PCI-DDA04/16 (pci-dda04/16),
+ *   PCI-DDA02/16 (pci-dda02/16)
+>>>>>>> v4.9.227
  * Author: Ivan Martinez <ivanmr@altavista.com>
  *	   Frank Mori Hess <fmhess@users.sourceforge.net>
  * Status: works
@@ -38,11 +45,17 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 
 #include "../comedidev.h"
 
 #include "comedi_fc.h"
+=======
+
+#include "../comedi_pci.h"
+
+>>>>>>> v4.9.227
 #include "8255.h"
 
 #define EEPROM_SIZE	128	/*  number of entries in eeprom */
@@ -55,13 +68,22 @@
 
 /* DAC registers */
 #define CB_DDA_DA_CTRL_REG		0x00	   /* D/A Control Register  */
+<<<<<<< HEAD
 #define CB_DDA_DA_CTRL_SU		(1 << 0)   /*  Simultaneous update  */
 #define CB_DDA_DA_CTRL_EN		(1 << 1)   /*  Enable specified DAC */
+=======
+#define CB_DDA_DA_CTRL_SU		BIT(0)   /*  Simultaneous update  */
+#define CB_DDA_DA_CTRL_EN		BIT(1)   /*  Enable specified DAC */
+>>>>>>> v4.9.227
 #define CB_DDA_DA_CTRL_DAC(x)		((x) << 2) /*  Specify DAC channel  */
 #define CB_DDA_DA_CTRL_RANGE2V5		(0 << 6)   /*  2.5V range           */
 #define CB_DDA_DA_CTRL_RANGE5V		(2 << 6)   /*  5V range             */
 #define CB_DDA_DA_CTRL_RANGE10V		(3 << 6)   /*  10V range            */
+<<<<<<< HEAD
 #define CB_DDA_DA_CTRL_UNIP		(1 << 8)   /*  Unipolar range       */
+=======
+#define CB_DDA_DA_CTRL_UNIP		BIT(8)   /*  Unipolar range       */
+>>>>>>> v4.9.227
 
 #define DACALIBRATION1	4	/*  D/A CALIBRATION REGISTER 1 */
 /* write bits */
@@ -339,18 +361,30 @@ static int cb_pcidda_auto_attach(struct comedi_device *dev,
 				 unsigned long context)
 {
 	struct pci_dev *pcidev = comedi_to_pci_dev(dev);
+<<<<<<< HEAD
 	const struct cb_pcidda_board *thisboard = NULL;
+=======
+	const struct cb_pcidda_board *board = NULL;
+>>>>>>> v4.9.227
 	struct cb_pcidda_private *devpriv;
 	struct comedi_subdevice *s;
 	int i;
 	int ret;
 
 	if (context < ARRAY_SIZE(cb_pcidda_boards))
+<<<<<<< HEAD
 		thisboard = &cb_pcidda_boards[context];
 	if (!thisboard)
 		return -ENODEV;
 	dev->board_ptr = thisboard;
 	dev->board_name = thisboard->name;
+=======
+		board = &cb_pcidda_boards[context];
+	if (!board)
+		return -ENODEV;
+	dev->board_ptr = board;
+	dev->board_name = board->name;
+>>>>>>> v4.9.227
 
 	devpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));
 	if (!devpriv)
@@ -370,8 +404,13 @@ static int cb_pcidda_auto_attach(struct comedi_device *dev,
 	/* analog output subdevice */
 	s->type = COMEDI_SUBD_AO;
 	s->subdev_flags = SDF_WRITABLE;
+<<<<<<< HEAD
 	s->n_chan = thisboard->ao_chans;
 	s->maxdata = (1 << thisboard->ao_bits) - 1;
+=======
+	s->n_chan = board->ao_chans;
+	s->maxdata = (1 << board->ao_bits) - 1;
+>>>>>>> v4.9.227
 	s->range_table = &cb_pcidda_ranges;
 	s->insn_write = cb_pcidda_ao_insn_write;
 
@@ -388,7 +427,11 @@ static int cb_pcidda_auto_attach(struct comedi_device *dev,
 		devpriv->eeprom_data[i] = cb_pcidda_read_eeprom(dev, i);
 
 	/*  set calibrations dacs */
+<<<<<<< HEAD
 	for (i = 0; i < thisboard->ao_chans; i++)
+=======
+	for (i = 0; i < board->ao_chans; i++)
+>>>>>>> v4.9.227
 		cb_pcidda_calibrate(dev, i, devpriv->ao_range[i]);
 
 	return 0;

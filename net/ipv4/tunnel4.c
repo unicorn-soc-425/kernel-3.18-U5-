@@ -6,6 +6,10 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/mpls.h>
+>>>>>>> v4.9.227
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <linux/slab.h>
@@ -16,11 +20,21 @@
 
 static struct xfrm_tunnel __rcu *tunnel4_handlers __read_mostly;
 static struct xfrm_tunnel __rcu *tunnel64_handlers __read_mostly;
+<<<<<<< HEAD
+=======
+static struct xfrm_tunnel __rcu *tunnelmpls4_handlers __read_mostly;
+>>>>>>> v4.9.227
 static DEFINE_MUTEX(tunnel4_mutex);
 
 static inline struct xfrm_tunnel __rcu **fam_handlers(unsigned short family)
 {
+<<<<<<< HEAD
 	return (family == AF_INET) ? &tunnel4_handlers : &tunnel64_handlers;
+=======
+	return (family == AF_INET) ? &tunnel4_handlers :
+		(family == AF_INET6) ? &tunnel64_handlers :
+		&tunnelmpls4_handlers;
+>>>>>>> v4.9.227
 }
 
 int xfrm4_tunnel_register(struct xfrm_tunnel *handler, unsigned short family)
@@ -125,6 +139,29 @@ drop:
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_MPLS)
+static int tunnelmpls4_rcv(struct sk_buff *skb)
+{
+	struct xfrm_tunnel *handler;
+
+	if (!pskb_may_pull(skb, sizeof(struct mpls_label)))
+		goto drop;
+
+	for_each_tunnel_rcu(tunnelmpls4_handlers, handler)
+		if (!handler->handler(skb))
+			return 0;
+
+	icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
+
+drop:
+	kfree_skb(skb);
+	return 0;
+}
+#endif
+
+>>>>>>> v4.9.227
 static void tunnel4_err(struct sk_buff *skb, u32 info)
 {
 	struct xfrm_tunnel *handler;
@@ -145,6 +182,20 @@ static void tunnel64_err(struct sk_buff *skb, u32 info)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_MPLS)
+static void tunnelmpls4_err(struct sk_buff *skb, u32 info)
+{
+	struct xfrm_tunnel *handler;
+
+	for_each_tunnel_rcu(tunnelmpls4_handlers, handler)
+		if (!handler->err_handler(skb, info))
+			break;
+}
+#endif
+
+>>>>>>> v4.9.227
 static const struct net_protocol tunnel4_protocol = {
 	.handler	=	tunnel4_rcv,
 	.err_handler	=	tunnel4_err,
@@ -161,6 +212,7 @@ static const struct net_protocol tunnel64_protocol = {
 };
 #endif
 
+<<<<<<< HEAD
 static int __init tunnel4_init(void)
 {
 	if (inet_add_protocol(&tunnel4_protocol, IPPROTO_IPIP)) {
@@ -175,10 +227,52 @@ static int __init tunnel4_init(void)
 	}
 #endif
 	return 0;
+=======
+#if IS_ENABLED(CONFIG_MPLS)
+static const struct net_protocol tunnelmpls4_protocol = {
+	.handler	=	tunnelmpls4_rcv,
+	.err_handler	=	tunnelmpls4_err,
+	.no_policy	=	1,
+	.netns_ok	=	1,
+};
+#endif
+
+static int __init tunnel4_init(void)
+{
+	if (inet_add_protocol(&tunnel4_protocol, IPPROTO_IPIP))
+		goto err;
+#if IS_ENABLED(CONFIG_IPV6)
+	if (inet_add_protocol(&tunnel64_protocol, IPPROTO_IPV6)) {
+		inet_del_protocol(&tunnel4_protocol, IPPROTO_IPIP);
+		goto err;
+	}
+#endif
+#if IS_ENABLED(CONFIG_MPLS)
+	if (inet_add_protocol(&tunnelmpls4_protocol, IPPROTO_MPLS)) {
+		inet_del_protocol(&tunnel4_protocol, IPPROTO_IPIP);
+#if IS_ENABLED(CONFIG_IPV6)
+		inet_del_protocol(&tunnel64_protocol, IPPROTO_IPV6);
+#endif
+		goto err;
+	}
+#endif
+	return 0;
+
+err:
+	pr_err("%s: can't add protocol\n", __func__);
+	return -EAGAIN;
+>>>>>>> v4.9.227
 }
 
 static void __exit tunnel4_fini(void)
 {
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_MPLS)
+	if (inet_del_protocol(&tunnelmpls4_protocol, IPPROTO_MPLS))
+		pr_err("tunnelmpls4 close: can't remove protocol\n");
+#endif
+>>>>>>> v4.9.227
 #if IS_ENABLED(CONFIG_IPV6)
 	if (inet_del_protocol(&tunnel64_protocol, IPPROTO_IPV6))
 		pr_err("tunnel64 close: can't remove protocol\n");

@@ -12,10 +12,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -28,6 +31,7 @@
 #include <linux/types.h>
 #include <linux/pci.h>
 
+<<<<<<< HEAD
 struct mp_adapter {
 	u8		LinkCtrlReg;
 
@@ -47,5 +51,9 @@ struct mp_adapter {
 
 struct net_device;
 bool rtl8192_pci_findadapter(struct pci_dev *pdev, struct net_device *dev);
+=======
+struct net_device;
+bool rtl92e_check_adapter(struct pci_dev *pdev, struct net_device *dev);
+>>>>>>> v4.9.227
 
 #endif

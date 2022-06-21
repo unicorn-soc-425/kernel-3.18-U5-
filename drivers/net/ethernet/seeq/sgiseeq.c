@@ -572,7 +572,11 @@ static inline int sgiseeq_reset(struct net_device *dev)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	netif_wake_queue(dev);
 
 	return 0;
@@ -648,7 +652,11 @@ static void timeout(struct net_device *dev)
 	printk(KERN_NOTICE "%s: transmit timed out, resetting\n", dev->name);
 	sgiseeq_reset(dev);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	netif_wake_queue(dev);
 }
 
@@ -792,15 +800,25 @@ static int sgiseeq_probe(struct platform_device *pdev)
 		printk(KERN_ERR "Sgiseeq: Cannot register net device, "
 		       "aborting.\n");
 		err = -ENODEV;
+<<<<<<< HEAD
 		goto err_out_free_page;
+=======
+		goto err_out_free_attrs;
+>>>>>>> v4.9.227
 	}
 
 	printk(KERN_INFO "%s: %s %pM\n", dev->name, sgiseeqstr, dev->dev_addr);
 
 	return 0;
 
+<<<<<<< HEAD
 err_out_free_page:
 	free_page((unsigned long) sp->srings);
+=======
+err_out_free_attrs:
+	dma_free_attrs(&pdev->dev, sizeof(*sp->srings), sp->srings,
+		       sp->srings_dma, DMA_ATTR_NON_CONSISTENT);
+>>>>>>> v4.9.227
 err_out_free_dev:
 	free_netdev(dev);
 
@@ -826,7 +844,10 @@ static struct platform_driver sgiseeq_driver = {
 	.remove	= __exit_p(sgiseeq_remove),
 	.driver = {
 		.name	= "sgiseeq",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	}
 };
 

@@ -28,9 +28,23 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 /**
  * struct wakeup_source - Representation of wakeup sources
  *
+=======
+struct wake_irq;
+
+/**
+ * struct wakeup_source - Representation of wakeup sources
+ *
+ * @name: Name of the wakeup source
+ * @entry: Wakeup source list entry
+ * @lock: Wakeup source lock
+ * @wakeirq: Optional device specific wakeirq
+ * @timer: Wakeup timer list
+ * @timer_expires: Wakeup timer expiration
+>>>>>>> v4.9.227
  * @total_time: Total time this wakeup source has been active.
  * @max_time: Maximum time this wakeup source has been continuously active.
  * @last_time: Monotonic clock when the wakeup source's was touched last time.
@@ -46,8 +60,13 @@
 struct wakeup_source {
 	const char 		*name;
 	struct list_head	entry;
+<<<<<<< HEAD
 	struct rcu_head		rcu;
 	spinlock_t		lock;
+=======
+	spinlock_t		lock;
+	struct wake_irq		*wakeirq;
+>>>>>>> v4.9.227
 	struct timer_list	timer;
 	unsigned long		timer_expires;
 	ktime_t total_time;

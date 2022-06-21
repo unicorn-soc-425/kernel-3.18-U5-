@@ -52,7 +52,11 @@ static int tilcdc_external_mode_valid(struct drm_connector *connector,
 	return MODE_OK;
 }
 
+<<<<<<< HEAD
 static int tilcdc_add_external_encoder(struct drm_device *dev, int *bpp,
+=======
+static int tilcdc_add_external_encoder(struct drm_device *dev,
+>>>>>>> v4.9.227
 				       struct drm_connector *connector)
 {
 	struct tilcdc_drm_private *priv = dev->dev_private;
@@ -64,7 +68,10 @@ static int tilcdc_add_external_encoder(struct drm_device *dev, int *bpp,
 	/* Only tda998x is supported at the moment. */
 	tilcdc_crtc_set_simulate_vesa_sync(priv->crtc, true);
 	tilcdc_crtc_set_panel_info(priv->crtc, &panel_info_tda998x);
+<<<<<<< HEAD
 	*bpp = panel_info_tda998x.bpp;
+=======
+>>>>>>> v4.9.227
 
 	connector_funcs = devm_kzalloc(dev->dev, sizeof(*connector_funcs),
 				       GFP_KERNEL);
@@ -94,7 +101,11 @@ static int tilcdc_add_external_encoder(struct drm_device *dev, int *bpp,
 	return 0;
 }
 
+<<<<<<< HEAD
 int tilcdc_add_external_encoders(struct drm_device *dev, int *bpp)
+=======
+int tilcdc_add_external_encoders(struct drm_device *dev)
+>>>>>>> v4.9.227
 {
 	struct tilcdc_drm_private *priv = dev->dev_private;
 	struct drm_connector *connector;
@@ -108,7 +119,11 @@ int tilcdc_add_external_encoders(struct drm_device *dev, int *bpp)
 			if (connector == priv->connectors[i])
 				found = true;
 		if (!found) {
+<<<<<<< HEAD
 			ret = tilcdc_add_external_encoder(dev, bpp, connector);
+=======
+			ret = tilcdc_add_external_encoder(dev, connector);
+>>>>>>> v4.9.227
 			if (ret)
 				return ret;
 		}
@@ -138,6 +153,7 @@ static int dev_match_of(struct device *dev, void *data)
 int tilcdc_get_external_components(struct device *dev,
 				   struct component_match **match)
 {
+<<<<<<< HEAD
 	struct device_node *ep = NULL;
 	int count = 0;
 
@@ -146,6 +162,25 @@ int tilcdc_get_external_components(struct device *dev,
 
 		node = of_graph_get_remote_port_parent(ep);
 		if (!node && !of_device_is_available(node)) {
+=======
+	struct device_node *node;
+	struct device_node *ep = NULL;
+	int count = 0;
+
+	/* Avoid error print by of_graph_get_next_endpoint() if there
+	 * is no ports present.
+	 */
+	node = of_get_child_by_name(dev->of_node, "ports");
+	if (!node)
+		node = of_get_child_by_name(dev->of_node, "port");
+	if (!node)
+		return 0;
+	of_node_put(node);
+
+	while ((ep = of_graph_get_next_endpoint(dev->of_node, ep))) {
+		node = of_graph_get_remote_port_parent(ep);
+		if (!node || !of_device_is_available(node)) {
+>>>>>>> v4.9.227
 			of_node_put(node);
 			continue;
 		}

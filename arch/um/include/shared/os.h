@@ -1,4 +1,9 @@
 /*
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2015 Anton Ivanov (aivanov@{brocade.com,kot-begemot.co.uk})
+ * Copyright (C) 2015 Thomas Meyer (thomas@m3y3r.de)
+>>>>>>> v4.9.227
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
  */
@@ -144,6 +149,11 @@ extern int os_read_file(int fd, void *buf, int len);
 extern int os_write_file(int fd, const void *buf, int count);
 extern int os_sync_file(int fd);
 extern int os_file_size(const char *file, unsigned long long *size_out);
+<<<<<<< HEAD
+=======
+extern int os_pread_file(int fd, void *buf, int len, unsigned long long offset);
+extern int os_pwrite_file(int fd, const void *buf, int count, unsigned long long offset);
+>>>>>>> v4.9.227
 extern int os_file_modtime(const char *file, unsigned long *modtime);
 extern int os_pipe(int *fd, int stream, int close_on_exec);
 extern int os_set_fd_async(int fd);
@@ -174,7 +184,10 @@ extern unsigned long long os_makedev(unsigned major, unsigned minor);
 
 /* start_up.c */
 extern void os_early_checks(void);
+<<<<<<< HEAD
 extern void can_do_skas(void);
+=======
+>>>>>>> v4.9.227
 extern void os_check_bugs(void);
 extern void check_host_supports_tls(int *supports_tls, int *tls_min);
 
@@ -184,10 +197,17 @@ extern int create_mem_file(unsigned long long len);
 /* process.c */
 extern unsigned long os_process_pc(int pid);
 extern int os_process_parent(int pid);
+<<<<<<< HEAD
 extern void os_stop_process(int pid);
 extern void os_kill_process(int pid, int reap_child);
 extern void os_kill_ptraced_process(int pid, int reap_child);
 extern long os_ptrace_ldt(long pid, long addr, long data);
+=======
+extern void os_alarm_process(int pid);
+extern void os_stop_process(int pid);
+extern void os_kill_process(int pid, int reap_child);
+extern void os_kill_ptraced_process(int pid, int reap_child);
+>>>>>>> v4.9.227
 
 extern int os_getpid(void);
 extern int os_getpgrp(void);
@@ -219,7 +239,11 @@ extern int set_umid(char *name);
 extern char *get_umid(void);
 
 /* signal.c */
+<<<<<<< HEAD
 extern void timer_init(void);
+=======
+extern void timer_set_signal_handler(void);
+>>>>>>> v4.9.227
 extern void set_sigstack(void *sig_stack, int size);
 extern void remove_sigstack(void);
 extern void set_handler(int sig);
@@ -229,6 +253,10 @@ extern void unblock_signals(void);
 extern int get_signals(void);
 extern int set_signals(int enable);
 extern int os_is_signal_stack(void);
+<<<<<<< HEAD
+=======
+extern void deliver_alarm(void);
+>>>>>>> v4.9.227
 
 /* util.c */
 extern void stack_protections(unsigned long address);
@@ -240,12 +268,25 @@ extern void um_early_printk(const char *s, unsigned int n);
 extern void os_fix_helper_signals(void);
 
 /* time.c */
+<<<<<<< HEAD
 extern void idle_sleep(unsigned long long nsecs);
 extern int set_interval(void);
 extern int timer_one_shot(int ticks);
 extern long long disable_timer(void);
 extern void uml_idle_timer(void);
 extern long long os_nsecs(void);
+=======
+extern void os_idle_sleep(unsigned long long nsecs);
+extern int os_timer_create(void* timer);
+extern int os_timer_set_interval(void* timer, void* its);
+extern int os_timer_one_shot(int ticks);
+extern long long os_timer_disable(void);
+extern long os_timer_remain(void* timer);
+extern void uml_idle_timer(void);
+extern long long os_persistent_clock_emulation(void);
+extern long long os_nsecs(void);
+extern long long os_vnsecs(void);
+>>>>>>> v4.9.227
 
 /* skas/mem.c */
 extern long run_syscall_stub(struct mm_id * mm_idp,
@@ -266,7 +307,11 @@ extern int protect(struct mm_id * mm_idp, unsigned long addr,
 extern int is_skas_winch(int pid, int fd, void *data);
 extern int start_userspace(unsigned long stub_stack);
 extern int copy_context_skas0(unsigned long stack, int pid);
+<<<<<<< HEAD
 extern void userspace(struct uml_pt_regs *regs);
+=======
+extern void userspace(struct uml_pt_regs *regs, unsigned long *aux_fp_regs);
+>>>>>>> v4.9.227
 extern int map_stub_pages(int fd, unsigned long code, unsigned long data,
 			  unsigned long stack);
 extern void new_thread(void *stack, jmp_buf *buf, void (*handler)(void));
@@ -303,4 +348,9 @@ extern int get_pty(void);
 /* sys-$ARCH/task_size.c */
 extern unsigned long os_get_top_address(void);
 
+<<<<<<< HEAD
+=======
+long syscall(long number, ...);
+
+>>>>>>> v4.9.227
 #endif

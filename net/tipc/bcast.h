@@ -1,7 +1,11 @@
 /*
  * net/tipc/bcast.h: Include file for TIPC broadcast code
  *
+<<<<<<< HEAD
  * Copyright (c) 2003-2006, 2014, Ericsson AB
+=======
+ * Copyright (c) 2003-2006, 2014-2015, Ericsson AB
+>>>>>>> v4.9.227
  * Copyright (c) 2005, 2010-2011, Wind River Systems
  * All rights reserved.
  *
@@ -37,6 +41,7 @@
 #ifndef _TIPC_BCAST_H
 #define _TIPC_BCAST_H
 
+<<<<<<< HEAD
 #define MAX_NODES 4096
 #define WSIZE 32
 #define TIPC_BCLINK_RESET 1
@@ -100,4 +105,47 @@ void tipc_bcbearer_sort(struct tipc_node_map *nm_ptr, u32 node, bool action);
 uint  tipc_bclink_get_mtu(void);
 int tipc_bclink_xmit(struct sk_buff *buf);
 void tipc_bclink_wakeup_users(void);
+=======
+#include "core.h"
+
+struct tipc_node;
+struct tipc_msg;
+struct tipc_nl_msg;
+struct tipc_node_map;
+extern const char tipc_bclink_name[];
+
+int tipc_bcast_init(struct net *net);
+void tipc_bcast_stop(struct net *net);
+void tipc_bcast_add_peer(struct net *net, struct tipc_link *l,
+			 struct sk_buff_head *xmitq);
+void tipc_bcast_remove_peer(struct net *net, struct tipc_link *rcv_bcl);
+void tipc_bcast_inc_bearer_dst_cnt(struct net *net, int bearer_id);
+void tipc_bcast_dec_bearer_dst_cnt(struct net *net, int bearer_id);
+int  tipc_bcast_get_mtu(struct net *net);
+int tipc_bcast_xmit(struct net *net, struct sk_buff_head *list);
+int tipc_bcast_rcv(struct net *net, struct tipc_link *l, struct sk_buff *skb);
+void tipc_bcast_ack_rcv(struct net *net, struct tipc_link *l,
+			struct tipc_msg *hdr);
+int tipc_bcast_sync_rcv(struct net *net, struct tipc_link *l,
+			struct tipc_msg *hdr);
+int tipc_nl_add_bc_link(struct net *net, struct tipc_nl_msg *msg);
+int tipc_nl_bc_link_set(struct net *net, struct nlattr *attrs[]);
+int tipc_bclink_reset_stats(struct net *net);
+
+static inline void tipc_bcast_lock(struct net *net)
+{
+	spin_lock_bh(&tipc_net(net)->bclock);
+}
+
+static inline void tipc_bcast_unlock(struct net *net)
+{
+	spin_unlock_bh(&tipc_net(net)->bclock);
+}
+
+static inline struct tipc_link *tipc_bc_sndlink(struct net *net)
+{
+	return tipc_net(net)->bcl;
+}
+
+>>>>>>> v4.9.227
 #endif

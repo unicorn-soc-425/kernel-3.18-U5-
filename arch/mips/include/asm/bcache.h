@@ -9,6 +9,10 @@
 #ifndef _ASM_BCACHE_H
 #define _ASM_BCACHE_H
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+>>>>>>> v4.9.227
 
 /* Some R4000 / R4400 / R4600 / R5000 machines may have a non-dma-coherent,
    chipset implemented caches.	On machines with other CPUs the CPU does the
@@ -18,6 +22,12 @@ struct bcache_ops {
 	void (*bc_disable)(void);
 	void (*bc_wback_inv)(unsigned long page, unsigned long size);
 	void (*bc_inv)(unsigned long page, unsigned long size);
+<<<<<<< HEAD
+=======
+	void (*bc_prefetch_enable)(void);
+	void (*bc_prefetch_disable)(void);
+	bool (*bc_prefetch_is_enabled)(void);
+>>>>>>> v4.9.227
 };
 
 extern void indy_sc_init(void);
@@ -46,6 +56,29 @@ static inline void bc_inv(unsigned long page, unsigned long size)
 	bcops->bc_inv(page, size);
 }
 
+<<<<<<< HEAD
+=======
+static inline void bc_prefetch_enable(void)
+{
+	if (bcops->bc_prefetch_enable)
+		bcops->bc_prefetch_enable();
+}
+
+static inline void bc_prefetch_disable(void)
+{
+	if (bcops->bc_prefetch_disable)
+		bcops->bc_prefetch_disable();
+}
+
+static inline bool bc_prefetch_is_enabled(void)
+{
+	if (bcops->bc_prefetch_is_enabled)
+		return bcops->bc_prefetch_is_enabled();
+
+	return false;
+}
+
+>>>>>>> v4.9.227
 #else /* !defined(CONFIG_BOARD_SCACHE) */
 
 /* Not R4000 / R4400 / R4600 / R5000.  */
@@ -54,6 +87,12 @@ static inline void bc_inv(unsigned long page, unsigned long size)
 #define bc_disable() do { } while (0)
 #define bc_wback_inv(page, size) do { } while (0)
 #define bc_inv(page, size) do { } while (0)
+<<<<<<< HEAD
+=======
+#define bc_prefetch_enable() do { } while (0)
+#define bc_prefetch_disable() do { } while (0)
+#define bc_prefetch_is_enabled() 0
+>>>>>>> v4.9.227
 
 #endif /* !defined(CONFIG_BOARD_SCACHE) */
 

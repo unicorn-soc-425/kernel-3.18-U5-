@@ -71,6 +71,7 @@
 struct workqueue_struct *rds_wq;
 EXPORT_SYMBOL_GPL(rds_wq);
 
+<<<<<<< HEAD
 void rds_connect_complete(struct rds_connection *conn)
 {
 	if (!rds_conn_transition(conn, RDS_CONN_CONNECTING, RDS_CONN_UP)) {
@@ -79,16 +80,41 @@ void rds_connect_complete(struct rds_connection *conn)
 				__func__,
 				atomic_read(&conn->c_state));
 		rds_conn_drop(conn);
+=======
+void rds_connect_path_complete(struct rds_conn_path *cp, int curr)
+{
+	if (!rds_conn_path_transition(cp, curr, RDS_CONN_UP)) {
+		printk(KERN_WARNING "%s: Cannot transition to state UP, "
+				"current state is %d\n",
+				__func__,
+				atomic_read(&cp->cp_state));
+		rds_conn_path_drop(cp);
+>>>>>>> v4.9.227
 		return;
 	}
 
 	rdsdebug("conn %p for %pI4 to %pI4 complete\n",
+<<<<<<< HEAD
 	  conn, &conn->c_laddr, &conn->c_faddr);
 
 	conn->c_reconnect_jiffies = 0;
 	set_bit(0, &conn->c_map_queued);
 	queue_delayed_work(rds_wq, &conn->c_send_w, 0);
 	queue_delayed_work(rds_wq, &conn->c_recv_w, 0);
+=======
+	  cp->cp_conn, &cp->cp_conn->c_laddr, &cp->cp_conn->c_faddr);
+
+	cp->cp_reconnect_jiffies = 0;
+	set_bit(0, &cp->cp_conn->c_map_queued);
+	queue_delayed_work(rds_wq, &cp->cp_send_w, 0);
+	queue_delayed_work(rds_wq, &cp->cp_recv_w, 0);
+}
+EXPORT_SYMBOL_GPL(rds_connect_path_complete);
+
+void rds_connect_complete(struct rds_connection *conn)
+{
+	rds_connect_path_complete(&conn->c_path[0], RDS_CONN_CONNECTING);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(rds_connect_complete);
 
@@ -110,6 +136,7 @@ EXPORT_SYMBOL_GPL(rds_connect_complete);
  * We should *always* start with a random backoff; otherwise a broken connection
  * will always take several iterations to be re-established.
  */
+<<<<<<< HEAD
 void rds_queue_reconnect(struct rds_connection *conn)
 {
 	unsigned long rand;
@@ -122,42 +149,97 @@ void rds_queue_reconnect(struct rds_connection *conn)
 	if (conn->c_reconnect_jiffies == 0) {
 		conn->c_reconnect_jiffies = rds_sysctl_reconnect_min_jiffies;
 		queue_delayed_work(rds_wq, &conn->c_conn_w, 0);
+=======
+void rds_queue_reconnect(struct rds_conn_path *cp)
+{
+	unsigned long rand;
+	struct rds_connection *conn = cp->cp_conn;
+
+	rdsdebug("conn %p for %pI4 to %pI4 reconnect jiffies %lu\n",
+	  conn, &conn->c_laddr, &conn->c_faddr,
+	  cp->cp_reconnect_jiffies);
+
+	/* let peer with smaller addr initiate reconnect, to avoid duels */
+	if (conn->c_trans->t_type == RDS_TRANS_TCP &&
+	    conn->c_laddr > conn->c_faddr)
+		return;
+
+	set_bit(RDS_RECONNECT_PENDING, &cp->cp_flags);
+	if (cp->cp_reconnect_jiffies == 0) {
+		cp->cp_reconnect_jiffies = rds_sysctl_reconnect_min_jiffies;
+		queue_delayed_work(rds_wq, &cp->cp_conn_w, 0);
+>>>>>>> v4.9.227
 		return;
 	}
 
 	get_random_bytes(&rand, sizeof(rand));
 	rdsdebug("%lu delay %lu ceil conn %p for %pI4 -> %pI4\n",
+<<<<<<< HEAD
 		 rand % conn->c_reconnect_jiffies, conn->c_reconnect_jiffies,
 		 conn, &conn->c_laddr, &conn->c_faddr);
 	queue_delayed_work(rds_wq, &conn->c_conn_w,
 			   rand % conn->c_reconnect_jiffies);
 
 	conn->c_reconnect_jiffies = min(conn->c_reconnect_jiffies * 2,
+=======
+		 rand % cp->cp_reconnect_jiffies, cp->cp_reconnect_jiffies,
+		 conn, &conn->c_laddr, &conn->c_faddr);
+	queue_delayed_work(rds_wq, &cp->cp_conn_w,
+			   rand % cp->cp_reconnect_jiffies);
+
+	cp->cp_reconnect_jiffies = min(cp->cp_reconnect_jiffies * 2,
+>>>>>>> v4.9.227
 					rds_sysctl_reconnect_max_jiffies);
 }
 
 void rds_connect_worker(struct work_struct *work)
 {
+<<<<<<< HEAD
 	struct rds_connection *conn = container_of(work, struct rds_connection, c_conn_w.work);
 	int ret;
 
 	clear_bit(RDS_RECONNECT_PENDING, &conn->c_flags);
 	if (rds_conn_transition(conn, RDS_CONN_DOWN, RDS_CONN_CONNECTING)) {
 		ret = conn->c_trans->conn_connect(conn);
+=======
+	struct rds_conn_path *cp = container_of(work,
+						struct rds_conn_path,
+						cp_conn_w.work);
+	struct rds_connection *conn = cp->cp_conn;
+	int ret;
+
+	if (cp->cp_index > 1 && cp->cp_conn->c_laddr > cp->cp_conn->c_faddr)
+		return;
+	clear_bit(RDS_RECONNECT_PENDING, &cp->cp_flags);
+	ret = rds_conn_path_transition(cp, RDS_CONN_DOWN, RDS_CONN_CONNECTING);
+	if (ret) {
+		ret = conn->c_trans->conn_path_connect(cp);
+>>>>>>> v4.9.227
 		rdsdebug("conn %p for %pI4 to %pI4 dispatched, ret %d\n",
 			conn, &conn->c_laddr, &conn->c_faddr, ret);
 
 		if (ret) {
+<<<<<<< HEAD
 			if (rds_conn_transition(conn, RDS_CONN_CONNECTING, RDS_CONN_DOWN))
 				rds_queue_reconnect(conn);
 			else
 				rds_conn_error(conn, "RDS: connect failed\n");
+=======
+			if (rds_conn_path_transition(cp,
+						     RDS_CONN_CONNECTING,
+						     RDS_CONN_DOWN))
+				rds_queue_reconnect(cp);
+			else
+				rds_conn_path_error(cp,
+						    "RDS: connect failed\n");
+>>>>>>> v4.9.227
 		}
 	}
 }
 
 void rds_send_worker(struct work_struct *work)
 {
+<<<<<<< HEAD
 	struct rds_connection *conn = container_of(work, struct rds_connection, c_send_w.work);
 	int ret;
 
@@ -172,6 +254,26 @@ void rds_send_worker(struct work_struct *work)
 		case -ENOMEM:
 			rds_stats_inc(s_send_delayed_retry);
 			queue_delayed_work(rds_wq, &conn->c_send_w, 2);
+=======
+	struct rds_conn_path *cp = container_of(work,
+						struct rds_conn_path,
+						cp_send_w.work);
+	int ret;
+
+	if (rds_conn_path_state(cp) == RDS_CONN_UP) {
+		clear_bit(RDS_LL_SEND_FULL, &cp->cp_flags);
+		ret = rds_send_xmit(cp);
+		cond_resched();
+		rdsdebug("conn %p ret %d\n", cp->cp_conn, ret);
+		switch (ret) {
+		case -EAGAIN:
+			rds_stats_inc(s_send_immediate_retry);
+			queue_delayed_work(rds_wq, &cp->cp_send_w, 0);
+			break;
+		case -ENOMEM:
+			rds_stats_inc(s_send_delayed_retry);
+			queue_delayed_work(rds_wq, &cp->cp_send_w, 2);
+>>>>>>> v4.9.227
 		default:
 			break;
 		}
@@ -180,6 +282,7 @@ void rds_send_worker(struct work_struct *work)
 
 void rds_recv_worker(struct work_struct *work)
 {
+<<<<<<< HEAD
 	struct rds_connection *conn = container_of(work, struct rds_connection, c_recv_w.work);
 	int ret;
 
@@ -194,6 +297,24 @@ void rds_recv_worker(struct work_struct *work)
 		case -ENOMEM:
 			rds_stats_inc(s_recv_delayed_retry);
 			queue_delayed_work(rds_wq, &conn->c_recv_w, 2);
+=======
+	struct rds_conn_path *cp = container_of(work,
+						struct rds_conn_path,
+						cp_recv_w.work);
+	int ret;
+
+	if (rds_conn_path_state(cp) == RDS_CONN_UP) {
+		ret = cp->cp_conn->c_trans->recv_path(cp);
+		rdsdebug("conn %p ret %d\n", cp->cp_conn, ret);
+		switch (ret) {
+		case -EAGAIN:
+			rds_stats_inc(s_recv_immediate_retry);
+			queue_delayed_work(rds_wq, &cp->cp_recv_w, 0);
+			break;
+		case -ENOMEM:
+			rds_stats_inc(s_recv_delayed_retry);
+			queue_delayed_work(rds_wq, &cp->cp_recv_w, 2);
+>>>>>>> v4.9.227
 		default:
 			break;
 		}
@@ -202,9 +323,17 @@ void rds_recv_worker(struct work_struct *work)
 
 void rds_shutdown_worker(struct work_struct *work)
 {
+<<<<<<< HEAD
 	struct rds_connection *conn = container_of(work, struct rds_connection, c_down_w);
 
 	rds_conn_shutdown(conn);
+=======
+	struct rds_conn_path *cp = container_of(work,
+						struct rds_conn_path,
+						cp_down_w);
+
+	rds_conn_shutdown(cp);
+>>>>>>> v4.9.227
 }
 
 void rds_threads_exit(void)

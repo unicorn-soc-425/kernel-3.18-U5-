@@ -29,7 +29,11 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/videodev2.h>
+<<<<<<< HEAD
 #include <media/exynos-fimc.h>
+=======
+#include <media/drv-intf/exynos-fimc.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-of.h>
 #include <media/v4l2-subdev.h>
 
@@ -238,13 +242,18 @@ struct csis_state {
  */
 struct csis_pix_format {
 	unsigned int pix_width_alignment;
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode code;
+=======
+	u32 code;
+>>>>>>> v4.9.227
 	u32 fmt_reg;
 	u8 data_alignment;
 };
 
 static const struct csis_pix_format s5pcsis_formats[] = {
 	{
+<<<<<<< HEAD
 		.code = V4L2_MBUS_FMT_VYUY8_2X8,
 		.fmt_reg = S5PCSIS_CFG_FMT_YCBCR422_8BIT,
 		.data_alignment = 32,
@@ -266,6 +275,29 @@ static const struct csis_pix_format s5pcsis_formats[] = {
 		.data_alignment = 24,
 	}, {
 		.code = V4L2_MBUS_FMT_SGRBG12_1X12,
+=======
+		.code = MEDIA_BUS_FMT_VYUY8_2X8,
+		.fmt_reg = S5PCSIS_CFG_FMT_YCBCR422_8BIT,
+		.data_alignment = 32,
+	}, {
+		.code = MEDIA_BUS_FMT_JPEG_1X8,
+		.fmt_reg = S5PCSIS_CFG_FMT_USER(1),
+		.data_alignment = 32,
+	}, {
+		.code = MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8,
+		.fmt_reg = S5PCSIS_CFG_FMT_USER(1),
+		.data_alignment = 32,
+	}, {
+		.code = MEDIA_BUS_FMT_SGRBG8_1X8,
+		.fmt_reg = S5PCSIS_CFG_FMT_RAW8,
+		.data_alignment = 24,
+	}, {
+		.code = MEDIA_BUS_FMT_SGRBG10_1X10,
+		.fmt_reg = S5PCSIS_CFG_FMT_RAW10,
+		.data_alignment = 24,
+	}, {
+		.code = MEDIA_BUS_FMT_SGRBG12_1X12,
+>>>>>>> v4.9.227
 		.fmt_reg = S5PCSIS_CFG_FMT_RAW12,
 		.data_alignment = 24,
 	}
@@ -540,7 +572,11 @@ unlock:
 }
 
 static int s5pcsis_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				  struct v4l2_subdev_fh *fh,
+=======
+				  struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 				  struct v4l2_subdev_mbus_code_enum *code)
 {
 	if (code->index >= ARRAY_SIZE(s5pcsis_formats))
@@ -568,23 +604,39 @@ static struct csis_pix_format const *s5pcsis_try_format(
 }
 
 static struct v4l2_mbus_framefmt *__s5pcsis_get_format(
+<<<<<<< HEAD
 		struct csis_state *state, struct v4l2_subdev_fh *fh,
 		enum v4l2_subdev_format_whence which)
 {
 	if (which == V4L2_SUBDEV_FORMAT_TRY)
 		return fh ? v4l2_subdev_get_try_format(fh, 0) : NULL;
+=======
+		struct csis_state *state, struct v4l2_subdev_pad_config *cfg,
+		enum v4l2_subdev_format_whence which)
+{
+	if (which == V4L2_SUBDEV_FORMAT_TRY)
+		return cfg ? v4l2_subdev_get_try_format(&state->sd, cfg, 0) : NULL;
+>>>>>>> v4.9.227
 
 	return &state->format;
 }
 
+<<<<<<< HEAD
 static int s5pcsis_set_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
+=======
+static int s5pcsis_set_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			   struct v4l2_subdev_format *fmt)
 {
 	struct csis_state *state = sd_to_csis_state(sd);
 	struct csis_pix_format const *csis_fmt;
 	struct v4l2_mbus_framefmt *mf;
 
+<<<<<<< HEAD
 	mf = __s5pcsis_get_format(state, fh, fmt->which);
+=======
+	mf = __s5pcsis_get_format(state, cfg, fmt->which);
+>>>>>>> v4.9.227
 
 	if (fmt->pad == CSIS_PAD_SOURCE) {
 		if (mf) {
@@ -605,13 +657,21 @@ static int s5pcsis_set_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s5pcsis_get_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
+=======
+static int s5pcsis_get_fmt(struct v4l2_subdev *sd, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 			   struct v4l2_subdev_format *fmt)
 {
 	struct csis_state *state = sd_to_csis_state(sd);
 	struct v4l2_mbus_framefmt *mf;
 
+<<<<<<< HEAD
 	mf = __s5pcsis_get_format(state, fh, fmt->which);
+=======
+	mf = __s5pcsis_get_format(state, cfg, fmt->which);
+>>>>>>> v4.9.227
 	if (!mf)
 		return -EINVAL;
 
@@ -649,6 +709,7 @@ static int s5pcsis_log_status(struct v4l2_subdev *sd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s5pcsis_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_mbus_framefmt *format = v4l2_subdev_get_try_format(fh, 0);
@@ -666,6 +727,8 @@ static const struct v4l2_subdev_internal_ops s5pcsis_sd_internal_ops = {
 	.open = s5pcsis_open,
 };
 
+=======
+>>>>>>> v4.9.227
 static struct v4l2_subdev_core_ops s5pcsis_core_ops = {
 	.s_power = s5pcsis_s_power,
 	.log_status = s5pcsis_log_status,
@@ -706,7 +769,12 @@ static irqreturn_t s5pcsis_irq_handler(int irq, void *dev_id)
 		else
 			offset = S5PCSIS_PKTDATA_ODD;
 
+<<<<<<< HEAD
 		memcpy(pktbuf->data, state->regs + offset, pktbuf->len);
+=======
+		memcpy(pktbuf->data, (u8 __force *)state->regs + offset,
+		       pktbuf->len);
+>>>>>>> v4.9.227
 		pktbuf->data = NULL;
 		rmb();
 	}
@@ -735,6 +803,10 @@ static int s5pcsis_parse_dt(struct platform_device *pdev,
 {
 	struct device_node *node = pdev->dev.of_node;
 	struct v4l2_of_endpoint endpoint;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	if (of_property_read_u32(node, "clock-frequency",
 				 &state->clk_frequency))
@@ -750,11 +822,23 @@ static int s5pcsis_parse_dt(struct platform_device *pdev,
 		return -EINVAL;
 	}
 	/* Get port node and validate MIPI-CSI channel id. */
+<<<<<<< HEAD
 	v4l2_of_parse_endpoint(node, &endpoint);
 
 	state->index = endpoint.base.port - FIMC_INPUT_MIPI_CSI2_0;
 	if (state->index >= CSIS_MAX_ENTITIES)
 		return -ENXIO;
+=======
+	ret = v4l2_of_parse_endpoint(node, &endpoint);
+	if (ret)
+		goto err;
+
+	state->index = endpoint.base.port - FIMC_INPUT_MIPI_CSI2_0;
+	if (state->index >= CSIS_MAX_ENTITIES) {
+		ret = -ENXIO;
+		goto err;
+	}
+>>>>>>> v4.9.227
 
 	/* Get MIPI CSI-2 bus configration from the endpoint node. */
 	of_property_read_u32(node, "samsung,csis-hs-settle",
@@ -763,9 +847,16 @@ static int s5pcsis_parse_dt(struct platform_device *pdev,
 					"samsung,csis-wclk");
 
 	state->num_lanes = endpoint.bus.mipi_csi2.num_data_lanes;
+<<<<<<< HEAD
 	of_node_put(node);
 
 	return 0;
+=======
+
+err:
+	of_node_put(node);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int s5pcsis_pm_resume(struct device *dev, bool runtime);
@@ -863,10 +954,18 @@ static int s5pcsis_probe(struct platform_device *pdev)
 	state->format.width = S5PCSIS_DEF_PIX_WIDTH;
 	state->format.height = S5PCSIS_DEF_PIX_HEIGHT;
 
+<<<<<<< HEAD
 	state->pads[CSIS_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
 	state->pads[CSIS_PAD_SOURCE].flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_init(&state->sd.entity,
 				CSIS_PADS_NUM, state->pads, 0);
+=======
+	state->sd.entity.function = MEDIA_ENT_F_IO_V4L;
+	state->pads[CSIS_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
+	state->pads[CSIS_PAD_SOURCE].flags = MEDIA_PAD_FL_SOURCE;
+	ret = media_entity_pads_init(&state->sd.entity,
+				CSIS_PADS_NUM, state->pads);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto e_clkdis;
 
@@ -978,7 +1077,11 @@ static int s5pcsis_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 static int s5pcsis_runtime_suspend(struct device *dev)
 {
 	return s5pcsis_pm_suspend(dev, true);
@@ -1041,7 +1144,10 @@ static struct platform_driver s5pcsis_driver = {
 	.driver		= {
 		.of_match_table = s5pcsis_of_match,
 		.name		= CSIS_DRIVER_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm		= &s5pcsis_pm_ops,
 	},
 };

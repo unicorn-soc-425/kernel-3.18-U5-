@@ -119,7 +119,11 @@ static int e800_probe(struct platform_device *pdev)
 
 	card->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
 			ret);
@@ -130,17 +134,24 @@ static int e800_probe(struct platform_device *pdev)
 
 static int e800_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 
 	gpio_free_array(e800_audio_gpios, ARRAY_SIZE(e800_audio_gpios));
 	snd_soc_unregister_card(card);
+=======
+	gpio_free_array(e800_audio_gpios, ARRAY_SIZE(e800_audio_gpios));
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static struct platform_driver e800_driver = {
 	.driver		= {
 		.name	= "e800-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm     = &snd_soc_pm_ops,
 	},
 	.probe		= e800_probe,

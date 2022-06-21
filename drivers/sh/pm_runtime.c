@@ -20,6 +20,7 @@
 #include <linux/bitmap.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 static int sh_pm_runtime_suspend(struct device *dev)
 {
@@ -58,10 +59,16 @@ static struct dev_pm_domain default_pm_domain = {
 	.ops = {
 		.runtime_suspend = sh_pm_runtime_suspend,
 		.runtime_resume = sh_pm_runtime_resume,
+=======
+static struct dev_pm_domain default_pm_domain = {
+	.ops = {
+		USE_PM_CLK_RUNTIME_OPS
+>>>>>>> v4.9.227
 		USE_PLATFORM_PM_SLEEP_OPS
 	},
 };
 
+<<<<<<< HEAD
 #define DEFAULT_PM_DOMAIN_PTR	(&default_pm_domain)
 
 #else
@@ -72,11 +79,16 @@ static struct dev_pm_domain default_pm_domain = {
 
 static struct pm_clk_notifier_block platform_bus_notifier = {
 	.pm_domain = DEFAULT_PM_DOMAIN_PTR,
+=======
+static struct pm_clk_notifier_block platform_bus_notifier = {
+	.pm_domain = &default_pm_domain,
+>>>>>>> v4.9.227
 	.con_ids = { NULL, },
 };
 
 static int __init sh_pm_runtime_init(void)
 {
+<<<<<<< HEAD
 	if (IS_ENABLED(CONFIG_ARCH_SHMOBILE_MULTI)) {
 		if (!of_machine_is_compatible("renesas,emev2") &&
 		    !of_machine_is_compatible("renesas,r7s72100") &&
@@ -94,6 +106,8 @@ static int __init sh_pm_runtime_init(void)
 			return 0;
 	}
 
+=======
+>>>>>>> v4.9.227
 	pm_clk_add_notifier(&platform_bus_type, &platform_bus_notifier);
 	return 0;
 }

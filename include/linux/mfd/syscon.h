@@ -16,6 +16,10 @@
 #define __LINUX_MFD_SYSCON_H__
 
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/errno.h>
+>>>>>>> v4.9.227
 
 struct device_node;
 
@@ -29,24 +33,40 @@ extern struct regmap *syscon_regmap_lookup_by_phandle(
 #else
 static inline struct regmap *syscon_node_to_regmap(struct device_node *np)
 {
+<<<<<<< HEAD
 	return ERR_PTR(-ENOSYS);
+=======
+	return ERR_PTR(-ENOTSUPP);
+>>>>>>> v4.9.227
 }
 
 static inline struct regmap *syscon_regmap_lookup_by_compatible(const char *s)
 {
+<<<<<<< HEAD
 	return ERR_PTR(-ENOSYS);
+=======
+	return ERR_PTR(-ENOTSUPP);
+>>>>>>> v4.9.227
 }
 
 static inline struct regmap *syscon_regmap_lookup_by_pdevname(const char *s)
 {
+<<<<<<< HEAD
 	return ERR_PTR(-ENOSYS);
+=======
+	return ERR_PTR(-ENOTSUPP);
+>>>>>>> v4.9.227
 }
 
 static inline struct regmap *syscon_regmap_lookup_by_phandle(
 					struct device_node *np,
 					const char *property)
 {
+<<<<<<< HEAD
 	return ERR_PTR(-ENOSYS);
+=======
+	return ERR_PTR(-ENOTSUPP);
+>>>>>>> v4.9.227
 }
 #endif
 

@@ -63,7 +63,11 @@ struct driver_private {
  *	binding of drivers which were unable to get all the resources needed by
  *	the device; typically because it depends on another driver getting
  *	probed first.
+<<<<<<< HEAD
  * @device - pointer back to the struct class that this structure is
+=======
+ * @device - pointer back to the struct device that this structure is
+>>>>>>> v4.9.227
  * associated with.
  *
  * Nothing outside of the driver core should ever touch these fields.
@@ -131,9 +135,18 @@ extern void device_remove_groups(struct device *dev,
 extern char *make_class_name(const char *name, struct kobject *kobj);
 
 extern int devres_release_all(struct device *dev);
+<<<<<<< HEAD
 
 /* /sys/devices directory */
 extern struct kset *devices_kset;
+=======
+extern void device_block_probing(void);
+extern void device_unblock_probing(void);
+
+/* /sys/devices directory */
+extern struct kset *devices_kset;
+extern void devices_kset_move_last(struct device *dev);
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_MODULES) && defined(CONFIG_SYSFS)
 extern void module_add_driver(struct module *mod, struct device_driver *drv);

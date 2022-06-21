@@ -26,6 +26,10 @@ struct f_rndis_opts {
 	bool				bound;
 	bool				borrowed_net;
 
+<<<<<<< HEAD
+=======
+	struct config_group		*rndis_interf_group;
+>>>>>>> v4.9.227
 	struct usb_os_desc		rndis_os_desc;
 	char				rndis_ext_compat_id[16];
 
@@ -39,8 +43,11 @@ struct f_rndis_opts {
 	int				refcnt;
 };
 
+<<<<<<< HEAD
 int rndis_init(void);
 void rndis_exit(void);
+=======
+>>>>>>> v4.9.227
 void rndis_borrow_net(struct usb_function_instance *f, struct net_device *net);
 
 #endif /* U_RNDIS_H */

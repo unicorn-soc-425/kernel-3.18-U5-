@@ -368,11 +368,15 @@ static int sta2x11_scr_probe(struct platform_device *dev)
 static struct platform_driver sta2x11_sctl_platform_driver = {
 	.driver = {
 		.name	= STA2X11_MFD_SCTL_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= sta2x11_sctl_probe,
 };
 
+<<<<<<< HEAD
 static int __init sta2x11_sctl_init(void)
 {
 	pr_info("%s\n", __func__);
@@ -383,10 +387,16 @@ static struct platform_driver sta2x11_platform_driver = {
 	.driver = {
 		.name	= STA2X11_MFD_APBREG_NAME,
 		.owner	= THIS_MODULE,
+=======
+static struct platform_driver sta2x11_platform_driver = {
+	.driver = {
+		.name	= STA2X11_MFD_APBREG_NAME,
+>>>>>>> v4.9.227
 	},
 	.probe		= sta2x11_apbreg_probe,
 };
 
+<<<<<<< HEAD
 static int __init sta2x11_apbreg_init(void)
 {
 	pr_info("%s\n", __func__);
@@ -397,10 +407,16 @@ static struct platform_driver sta2x11_apb_soc_regs_platform_driver = {
 	.driver = {
 		.name	= STA2X11_MFD_APB_SOC_REGS_NAME,
 		.owner	= THIS_MODULE,
+=======
+static struct platform_driver sta2x11_apb_soc_regs_platform_driver = {
+	.driver = {
+		.name	= STA2X11_MFD_APB_SOC_REGS_NAME,
+>>>>>>> v4.9.227
 	},
 	.probe		= sta2x11_apb_soc_regs_probe,
 };
 
+<<<<<<< HEAD
 static int __init sta2x11_apb_soc_regs_init(void)
 {
 	pr_info("%s\n", __func__);
@@ -411,16 +427,35 @@ static struct platform_driver sta2x11_scr_platform_driver = {
 	.driver = {
 		.name = STA2X11_MFD_SCR_NAME,
 		.owner = THIS_MODULE,
+=======
+static struct platform_driver sta2x11_scr_platform_driver = {
+	.driver = {
+		.name = STA2X11_MFD_SCR_NAME,
+>>>>>>> v4.9.227
 	},
 	.probe = sta2x11_scr_probe,
 };
 
+<<<<<<< HEAD
 static int __init sta2x11_scr_init(void)
 {
 	pr_info("%s\n", __func__);
 	return platform_driver_register(&sta2x11_scr_platform_driver);
 }
 
+=======
+static struct platform_driver * const drivers[] = {
+	&sta2x11_platform_driver,
+	&sta2x11_sctl_platform_driver,
+	&sta2x11_apb_soc_regs_platform_driver,
+	&sta2x11_scr_platform_driver,
+};
+
+static int __init sta2x11_drivers_init(void)
+{
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+}
+>>>>>>> v4.9.227
 
 /*
  * What follows are the PCI devices that host the above pdevs.
@@ -668,10 +703,14 @@ static int __init sta2x11_mfd_init(void)
  * prepares platform drivers very early and probe the PCI device later,
  * but before other PCI devices.
  */
+<<<<<<< HEAD
 subsys_initcall(sta2x11_apbreg_init);
 subsys_initcall(sta2x11_sctl_init);
 subsys_initcall(sta2x11_apb_soc_regs_init);
 subsys_initcall(sta2x11_scr_init);
+=======
+subsys_initcall(sta2x11_drivers_init);
+>>>>>>> v4.9.227
 rootfs_initcall(sta2x11_mfd_init);
 
 MODULE_LICENSE("GPL v2");

@@ -29,8 +29,14 @@ MODULE_LICENSE("GPL");
 /*
  * create a new hardware dependent device for Emu10k1
  */
+<<<<<<< HEAD
 static int snd_emu10k1_synth_new_device(struct snd_seq_device *dev)
 {
+=======
+static int snd_emu10k1_synth_probe(struct device *_dev)
+{
+	struct snd_seq_device *dev = to_seq_dev(_dev);
+>>>>>>> v4.9.227
 	struct snd_emux *emux;
 	struct snd_emu10k1 *hw;
 	struct snd_emu10k1_synth_arg *arg;
@@ -79,8 +85,14 @@ static int snd_emu10k1_synth_new_device(struct snd_seq_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_emu10k1_synth_delete_device(struct snd_seq_device *dev)
 {
+=======
+static int snd_emu10k1_synth_remove(struct device *_dev)
+{
+	struct snd_seq_device *dev = to_seq_dev(_dev);
+>>>>>>> v4.9.227
 	struct snd_emux *emux;
 	struct snd_emu10k1 *hw;
 	unsigned long flags;
@@ -104,6 +116,7 @@ static int snd_emu10k1_synth_delete_device(struct snd_seq_device *dev)
  *  INIT part
  */
 
+<<<<<<< HEAD
 static int __init alsa_emu10k1_synth_init(void)
 {
 	
@@ -122,3 +135,16 @@ static void __exit alsa_emu10k1_synth_exit(void)
 
 module_init(alsa_emu10k1_synth_init)
 module_exit(alsa_emu10k1_synth_exit)
+=======
+static struct snd_seq_driver emu10k1_synth_driver = {
+	.driver = {
+		.name = KBUILD_MODNAME,
+		.probe = snd_emu10k1_synth_probe,
+		.remove = snd_emu10k1_synth_remove,
+	},
+	.id = SNDRV_SEQ_DEV_ID_EMU10K1_SYNTH,
+	.argsize = sizeof(struct snd_emu10k1_synth_arg),
+};
+
+module_snd_seq_driver(emu10k1_synth_driver);
+>>>>>>> v4.9.227

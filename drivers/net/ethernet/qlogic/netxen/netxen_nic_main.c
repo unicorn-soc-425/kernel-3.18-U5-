@@ -176,9 +176,13 @@ netxen_alloc_sds_rings(struct netxen_recv_context *recv_ctx, int count)
 static void
 netxen_free_sds_rings(struct netxen_recv_context *recv_ctx)
 {
+<<<<<<< HEAD
 	if (recv_ctx->sds_rings != NULL)
 		kfree(recv_ctx->sds_rings);
 
+=======
+	kfree(recv_ctx->sds_rings);
+>>>>>>> v4.9.227
 	recv_ctx->sds_rings = NULL;
 }
 
@@ -854,7 +858,12 @@ netxen_check_options(struct netxen_adapter *adapter)
 	ptr32 = (__le32 *)&serial_num;
 	offset = NX_FW_SERIAL_NUM_OFFSET;
 	for (i = 0; i < 8; i++) {
+<<<<<<< HEAD
 		if (netxen_rom_fast_read(adapter, offset, &val) == -1) {
+=======
+		err = netxen_rom_fast_read(adapter, offset, &val);
+		if (err) {
+>>>>>>> v4.9.227
 			dev_err(&pdev->dev, "error reading board info\n");
 			adapter->driver_mismatch = 1;
 			return;
@@ -1893,9 +1902,15 @@ netxen_tso_check(struct net_device *netdev,
 		protocol = vh->h_vlan_encapsulated_proto;
 		flags = FLAGS_VLAN_TAGGED;
 
+<<<<<<< HEAD
 	} else if (vlan_tx_tag_present(skb)) {
 		flags = FLAGS_VLAN_OOB;
 		vid = vlan_tx_tag_get(skb);
+=======
+	} else if (skb_vlan_tag_present(skb)) {
+		flags = FLAGS_VLAN_OOB;
+		vid = skb_vlan_tag_get(skb);
+>>>>>>> v4.9.227
 		netxen_set_tx_vlan_tci(first_desc, vid);
 		vlan_oob = 1;
 	}
@@ -2287,7 +2302,11 @@ static void netxen_tx_timeout_task(struct work_struct *work)
 			goto request_reset;
 		}
 	}
+<<<<<<< HEAD
 	adapter->netdev->trans_start = jiffies;
+=======
+	netif_trans_update(adapter->netdev);
+>>>>>>> v4.9.227
 	rtnl_unlock();
 	return;
 
@@ -2893,7 +2912,11 @@ netxen_sysfs_read_crb(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *attr,
 		char *buf, loff_t offset, size_t size)
 {
+<<<<<<< HEAD
 	struct device *dev = container_of(kobj, struct device, kobj);
+=======
+	struct device *dev = kobj_to_dev(kobj);
+>>>>>>> v4.9.227
 	struct netxen_adapter *adapter = dev_get_drvdata(dev);
 	u32 data;
 	u64 qmdata;
@@ -2921,7 +2944,11 @@ netxen_sysfs_write_crb(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *attr,
 		char *buf, loff_t offset, size_t size)
 {
+<<<<<<< HEAD
 	struct device *dev = container_of(kobj, struct device, kobj);
+=======
+	struct device *dev = kobj_to_dev(kobj);
+>>>>>>> v4.9.227
 	struct netxen_adapter *adapter = dev_get_drvdata(dev);
 	u32 data;
 	u64 qmdata;
@@ -2962,7 +2989,11 @@ netxen_sysfs_read_mem(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *attr,
 		char *buf, loff_t offset, size_t size)
 {
+<<<<<<< HEAD
 	struct device *dev = container_of(kobj, struct device, kobj);
+=======
+	struct device *dev = kobj_to_dev(kobj);
+>>>>>>> v4.9.227
 	struct netxen_adapter *adapter = dev_get_drvdata(dev);
 	u64 data;
 	int ret;
@@ -2983,7 +3014,11 @@ static ssize_t netxen_sysfs_write_mem(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *attr, char *buf,
 		loff_t offset, size_t size)
 {
+<<<<<<< HEAD
 	struct device *dev = container_of(kobj, struct device, kobj);
+=======
+	struct device *dev = kobj_to_dev(kobj);
+>>>>>>> v4.9.227
 	struct netxen_adapter *adapter = dev_get_drvdata(dev);
 	u64 data;
 	int ret;
@@ -3020,16 +3055,26 @@ netxen_sysfs_read_dimm(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *attr,
 		char *buf, loff_t offset, size_t size)
 {
+<<<<<<< HEAD
 	struct device *dev = container_of(kobj, struct device, kobj);
+=======
+	struct device *dev = kobj_to_dev(kobj);
+>>>>>>> v4.9.227
 	struct netxen_adapter *adapter = dev_get_drvdata(dev);
 	struct net_device *netdev = adapter->netdev;
 	struct netxen_dimm_cfg dimm;
 	u8 dw, rows, cols, banks, ranks;
 	u32 val;
 
+<<<<<<< HEAD
 	if (size != sizeof(struct netxen_dimm_cfg)) {
 		netdev_err(netdev, "Invalid size\n");
 		return -1;
+=======
+	if (size < attr->size) {
+		netdev_err(netdev, "Invalid size\n");
+		return -EINVAL;
+>>>>>>> v4.9.227
 	}
 
 	memset(&dimm, 0, sizeof(struct netxen_dimm_cfg));
@@ -3139,7 +3184,11 @@ out:
 
 static struct bin_attribute bin_attr_dimm = {
 	.attr = { .name = "dimm", .mode = (S_IRUGO | S_IWUSR) },
+<<<<<<< HEAD
 	.size = 0,
+=======
+	.size = sizeof(struct netxen_dimm_cfg),
+>>>>>>> v4.9.227
 	.read = netxen_sysfs_read_dimm,
 };
 

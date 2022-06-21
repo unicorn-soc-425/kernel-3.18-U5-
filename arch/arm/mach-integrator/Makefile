@@ -4,7 +4,11 @@
 
 # Object file lists.
 
+<<<<<<< HEAD
 obj-y					:= core.o lm.o leds.o
+=======
+obj-y					:= core.o lm.o
+>>>>>>> v4.9.227
 obj-$(CONFIG_ARCH_INTEGRATOR_AP)	+= integrator_ap.o
 obj-$(CONFIG_ARCH_INTEGRATOR_CP)	+= integrator_cp.o
 

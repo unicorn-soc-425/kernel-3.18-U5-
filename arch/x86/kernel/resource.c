@@ -27,8 +27,13 @@ static void remove_e820_regions(struct resource *avail)
 	int i;
 	struct e820entry *entry;
 
+<<<<<<< HEAD
 	for (i = 0; i < e820.nr_map; i++) {
 		entry = &e820.map[i];
+=======
+	for (i = 0; i < e820->nr_map; i++) {
+		entry = &e820->map[i];
+>>>>>>> v4.9.227
 
 		resource_clip(avail, entry->addr,
 			      entry->addr + entry->size - 1);

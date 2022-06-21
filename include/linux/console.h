@@ -28,6 +28,16 @@ struct tty_struct;
 #define VT100ID "\033[?1;2c"
 #define VT102ID "\033[?6c"
 
+<<<<<<< HEAD
+=======
+/**
+ * struct consw - callbacks for consoles
+ *
+ * @con_set_palette: sets the palette of the console to @table (optional)
+ * @con_scrolldelta: the contents of the console should be scrolled by @lines.
+ *		     Invoked by user. (optional)
+ */
+>>>>>>> v4.9.227
 struct consw {
 	struct module *owner;
 	const char *(*con_startup)(void);
@@ -38,7 +48,10 @@ struct consw {
 	void	(*con_putcs)(struct vc_data *, const unsigned short *, int, int, int);
 	void	(*con_cursor)(struct vc_data *, int);
 	int	(*con_scroll)(struct vc_data *, int, int, int, int);
+<<<<<<< HEAD
 	void	(*con_bmove)(struct vc_data *, int, int, int, int, int, int);
+=======
+>>>>>>> v4.9.227
 	int	(*con_switch)(struct vc_data *);
 	int	(*con_blank)(struct vc_data *, int, int);
 	int	(*con_font_set)(struct vc_data *, struct console_font *, unsigned);
@@ -47,8 +60,14 @@ struct consw {
 	int	(*con_font_copy)(struct vc_data *, int);
 	int     (*con_resize)(struct vc_data *, unsigned int, unsigned int,
 			       unsigned int);
+<<<<<<< HEAD
 	int	(*con_set_palette)(struct vc_data *, unsigned char *);
 	int	(*con_scrolldelta)(struct vc_data *, int);
+=======
+	void	(*con_set_palette)(struct vc_data *,
+			const unsigned char *table);
+	void	(*con_scrolldelta)(struct vc_data *, int lines);
+>>>>>>> v4.9.227
 	int	(*con_set_origin)(struct vc_data *);
 	void	(*con_save_screen)(struct vc_data *);
 	u8	(*con_build_attr)(struct vc_data *, u8, u8, u8, u8, u8, u8);
@@ -115,6 +134,10 @@ static inline int con_debug_leave(void)
 #define CON_BOOT	(8)
 #define CON_ANYTIME	(16) /* Safe to call when cpu is offline */
 #define CON_BRL		(32) /* Used for a braille device */
+<<<<<<< HEAD
+=======
+#define CON_EXTENDED	(64) /* Use the extended output format a la /dev/kmsg */
+>>>>>>> v4.9.227
 
 struct console {
 	char	name[16];
@@ -123,7 +146,11 @@ struct console {
 	struct tty_driver *(*device)(struct console *, int *);
 	void	(*unblank)(void);
 	int	(*setup)(struct console *, char *);
+<<<<<<< HEAD
 	int	(*early_setup)(void);
+=======
+	int	(*match)(struct console *, char *name, int idx, char *options);
+>>>>>>> v4.9.227
 	short	flags;
 	short	index;
 	int	cflag;
@@ -141,7 +168,10 @@ extern int console_set_on_cmdline;
 extern struct console *early_console;
 
 extern int add_preferred_console(char *name, int idx, char *options);
+<<<<<<< HEAD
 extern int update_console_cmdline(char *name, int idx, char *name_new, int idx_new, char *options);
+=======
+>>>>>>> v4.9.227
 extern void register_console(struct console *);
 extern int unregister_console(struct console *);
 extern struct console *console_drivers;
@@ -191,6 +221,11 @@ void vcs_remove_sysfs(int index);
 
 #ifdef CONFIG_VGA_CONSOLE
 extern bool vgacon_text_force(void);
+<<<<<<< HEAD
+=======
+#else
+static inline bool vgacon_text_force(void) { return false; }
+>>>>>>> v4.9.227
 #endif
 
 #endif /* _LINUX_CONSOLE_H */

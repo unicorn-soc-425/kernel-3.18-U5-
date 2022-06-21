@@ -168,7 +168,11 @@ static int qxl_init_mem_type(struct ttm_bo_device *bdev, uint32_t type,
 		man->default_caching = TTM_PL_FLAG_CACHED;
 		break;
 	case TTM_PL_VRAM:
+<<<<<<< HEAD
 	case TTM_PL_PRIV0:
+=======
+	case TTM_PL_PRIV:
+>>>>>>> v4.9.227
 		/* "On-card" video ram */
 		man->func = &ttm_bo_manager_func;
 		man->gpu_offset = 0;
@@ -201,7 +205,11 @@ static void qxl_evict_flags(struct ttm_buffer_object *bo,
 		placement->num_busy_placement = 1;
 		return;
 	}
+<<<<<<< HEAD
 	qbo = container_of(bo, struct qxl_bo, tbo);
+=======
+	qbo = to_qxl_bo(bo);
+>>>>>>> v4.9.227
 	qxl_ttm_placement_from_domain(qbo, QXL_GEM_DOMAIN_CPU, false);
 	*placement = qbo->placement;
 }
@@ -210,7 +218,12 @@ static int qxl_verify_access(struct ttm_buffer_object *bo, struct file *filp)
 {
 	struct qxl_bo *qbo = to_qxl_bo(bo);
 
+<<<<<<< HEAD
 	return drm_vma_node_verify_access(&qbo->gem_base.vma_node, filp);
+=======
+	return drm_vma_node_verify_access(&qbo->gem_base.vma_node,
+					  filp->private_data);
+>>>>>>> v4.9.227
 }
 
 static int qxl_ttm_io_mem_reserve(struct ttm_bo_device *bdev,
@@ -235,7 +248,11 @@ static int qxl_ttm_io_mem_reserve(struct ttm_bo_device *bdev,
 		mem->bus.base = qdev->vram_base;
 		mem->bus.offset = mem->start << PAGE_SHIFT;
 		break;
+<<<<<<< HEAD
 	case TTM_PL_PRIV0:
+=======
+	case TTM_PL_PRIV:
+>>>>>>> v4.9.227
 		mem->bus.is_iomem = true;
 		mem->bus.base = qdev->surfaceram_base;
 		mem->bus.offset = mem->start << PAGE_SHIFT;
@@ -350,11 +367,26 @@ static int qxl_bo_move(struct ttm_buffer_object *bo,
 		       struct ttm_mem_reg *new_mem)
 {
 	struct ttm_mem_reg *old_mem = &bo->mem;
+<<<<<<< HEAD
+=======
+	int ret;
+
+	ret = ttm_bo_wait(bo, interruptible, no_wait_gpu);
+	if (ret)
+		return ret;
+
+
+>>>>>>> v4.9.227
 	if (old_mem->mem_type == TTM_PL_SYSTEM && bo->ttm == NULL) {
 		qxl_move_null(bo, new_mem);
 		return 0;
 	}
+<<<<<<< HEAD
 	return ttm_bo_move_memcpy(bo, evict, no_wait_gpu, new_mem);
+=======
+	return ttm_bo_move_memcpy(bo, interruptible, no_wait_gpu,
+				  new_mem);
+>>>>>>> v4.9.227
 }
 
 static void qxl_bo_move_notify(struct ttm_buffer_object *bo,
@@ -365,10 +397,17 @@ static void qxl_bo_move_notify(struct ttm_buffer_object *bo,
 
 	if (!qxl_ttm_bo_is_qxl_bo(bo))
 		return;
+<<<<<<< HEAD
 	qbo = container_of(bo, struct qxl_bo, tbo);
 	qdev = qbo->gem_base.dev->dev_private;
 
 	if (bo->mem.mem_type == TTM_PL_PRIV0 && qbo->surface_id)
+=======
+	qbo = to_qxl_bo(bo);
+	qdev = qbo->gem_base.dev->dev_private;
+
+	if (bo->mem.mem_type == TTM_PL_PRIV && qbo->surface_id)
+>>>>>>> v4.9.227
 		qxl_surface_evict(qdev, qbo, new_mem ? true : false);
 }
 
@@ -384,6 +423,11 @@ static struct ttm_bo_driver qxl_bo_driver = {
 	.io_mem_reserve = &qxl_ttm_io_mem_reserve,
 	.io_mem_free = &qxl_ttm_io_mem_free,
 	.move_notify = &qxl_bo_move_notify,
+<<<<<<< HEAD
+=======
+	.lru_tail = &ttm_bo_default_lru_tail,
+	.swap_lru_tail = &ttm_bo_default_swap_lru_tail,
+>>>>>>> v4.9.227
 };
 
 int qxl_ttm_init(struct qxl_device *qdev)
@@ -412,7 +456,11 @@ int qxl_ttm_init(struct qxl_device *qdev)
 		DRM_ERROR("Failed initializing VRAM heap.\n");
 		return r;
 	}
+<<<<<<< HEAD
 	r = ttm_bo_init_mm(&qdev->mman.bdev, TTM_PL_PRIV0,
+=======
+	r = ttm_bo_init_mm(&qdev->mman.bdev, TTM_PL_PRIV,
+>>>>>>> v4.9.227
 			   qdev->surfaceram_size / PAGE_SIZE);
 	if (r) {
 		DRM_ERROR("Failed initializing Surfaces heap.\n");
@@ -435,7 +483,11 @@ int qxl_ttm_init(struct qxl_device *qdev)
 void qxl_ttm_fini(struct qxl_device *qdev)
 {
 	ttm_bo_clean_mm(&qdev->mman.bdev, TTM_PL_VRAM);
+<<<<<<< HEAD
 	ttm_bo_clean_mm(&qdev->mman.bdev, TTM_PL_PRIV0);
+=======
+	ttm_bo_clean_mm(&qdev->mman.bdev, TTM_PL_PRIV);
+>>>>>>> v4.9.227
 	ttm_bo_device_release(&qdev->mman.bdev);
 	qxl_ttm_global_fini(qdev);
 	DRM_INFO("qxl: ttm finalized\n");
@@ -479,7 +531,11 @@ static int qxl_ttm_debugfs_init(struct qxl_device *qdev)
 		if (i == 0)
 			qxl_mem_types_list[i].data = qdev->mman.bdev.man[TTM_PL_VRAM].priv;
 		else
+<<<<<<< HEAD
 			qxl_mem_types_list[i].data = qdev->mman.bdev.man[TTM_PL_PRIV0].priv;
+=======
+			qxl_mem_types_list[i].data = qdev->mman.bdev.man[TTM_PL_PRIV].priv;
+>>>>>>> v4.9.227
 
 	}
 	return qxl_debugfs_add_files(qdev, qxl_mem_types_list, i);

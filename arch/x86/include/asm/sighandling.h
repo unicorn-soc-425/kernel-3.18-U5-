@@ -13,9 +13,12 @@
 			 X86_EFLAGS_CF | X86_EFLAGS_RF)
 
 void signal_fault(struct pt_regs *regs, void __user *frame, char *where);
+<<<<<<< HEAD
 
 int restore_sigcontext(struct pt_regs *regs, struct sigcontext __user *sc,
 		       unsigned long *pax);
+=======
+>>>>>>> v4.9.227
 int setup_sigcontext(struct sigcontext __user *sc, void __user *fpstate,
 		     struct pt_regs *regs, unsigned long mask);
 

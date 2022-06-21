@@ -21,10 +21,17 @@ struct posix_acl *hfsplus_get_posix_acl(struct inode *inode, int type)
 
 	switch (type) {
 	case ACL_TYPE_ACCESS:
+<<<<<<< HEAD
 		xattr_name = POSIX_ACL_XATTR_ACCESS;
 		break;
 	case ACL_TYPE_DEFAULT:
 		xattr_name = POSIX_ACL_XATTR_DEFAULT;
+=======
+		xattr_name = XATTR_NAME_POSIX_ACL_ACCESS;
+		break;
+	case ACL_TYPE_DEFAULT:
+		xattr_name = XATTR_NAME_POSIX_ACL_DEFAULT;
+>>>>>>> v4.9.227
 		break;
 	default:
 		return ERR_PTR(-EINVAL);
@@ -48,6 +55,7 @@ struct posix_acl *hfsplus_get_posix_acl(struct inode *inode, int type)
 
 	hfsplus_destroy_attr_entry((hfsplus_attr_entry *)value);
 
+<<<<<<< HEAD
 	if (!IS_ERR(acl))
 		set_cached_acl(inode, type, acl);
 
@@ -56,6 +64,13 @@ struct posix_acl *hfsplus_get_posix_acl(struct inode *inode, int type)
 
 int hfsplus_set_posix_acl(struct inode *inode, struct posix_acl *acl,
 		int type)
+=======
+	return acl;
+}
+
+static int __hfsplus_set_posix_acl(struct inode *inode, struct posix_acl *acl,
+				   int type)
+>>>>>>> v4.9.227
 {
 	int err;
 	char *xattr_name;
@@ -66,6 +81,7 @@ int hfsplus_set_posix_acl(struct inode *inode, struct posix_acl *acl,
 
 	switch (type) {
 	case ACL_TYPE_ACCESS:
+<<<<<<< HEAD
 		xattr_name = POSIX_ACL_XATTR_ACCESS;
 		if (acl) {
 			err = posix_acl_update_mode(inode, &inode->i_mode, &acl);
@@ -77,6 +93,13 @@ int hfsplus_set_posix_acl(struct inode *inode, struct posix_acl *acl,
 
 	case ACL_TYPE_DEFAULT:
 		xattr_name = POSIX_ACL_XATTR_DEFAULT;
+=======
+		xattr_name = XATTR_NAME_POSIX_ACL_ACCESS;
+		break;
+
+	case ACL_TYPE_DEFAULT:
+		xattr_name = XATTR_NAME_POSIX_ACL_DEFAULT;
+>>>>>>> v4.9.227
 		if (!S_ISDIR(inode->i_mode))
 			return acl ? -EACCES : 0;
 		break;
@@ -108,6 +131,21 @@ end_set_acl:
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+int hfsplus_set_posix_acl(struct inode *inode, struct posix_acl *acl, int type)
+{
+	int err;
+
+	if (type == ACL_TYPE_ACCESS && acl) {
+		err = posix_acl_update_mode(inode, &inode->i_mode, &acl);
+		if (err)
+			return err;
+	}
+	return __hfsplus_set_posix_acl(inode, acl, type);
+}
+
+>>>>>>> v4.9.227
 int hfsplus_init_posix_acl(struct inode *inode, struct inode *dir)
 {
 	int err = 0;
@@ -125,15 +163,25 @@ int hfsplus_init_posix_acl(struct inode *inode, struct inode *dir)
 		return err;
 
 	if (default_acl) {
+<<<<<<< HEAD
 		err = hfsplus_set_posix_acl(inode, default_acl,
 					    ACL_TYPE_DEFAULT);
+=======
+		err = __hfsplus_set_posix_acl(inode, default_acl,
+					      ACL_TYPE_DEFAULT);
+>>>>>>> v4.9.227
 		posix_acl_release(default_acl);
 	}
 
 	if (acl) {
 		if (!err)
+<<<<<<< HEAD
 			err = hfsplus_set_posix_acl(inode, acl,
 						    ACL_TYPE_ACCESS);
+=======
+			err = __hfsplus_set_posix_acl(inode, acl,
+						      ACL_TYPE_ACCESS);
+>>>>>>> v4.9.227
 		posix_acl_release(acl);
 	}
 	return err;

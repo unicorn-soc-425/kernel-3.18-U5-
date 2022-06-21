@@ -6,6 +6,10 @@
 
 #include <linux/sunrpc/cache.h>
 #include <uapi/linux/nfsd/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/nfs4.h>
+>>>>>>> v4.9.227
 
 struct knfsd_fh;
 struct svc_fh;
@@ -56,6 +60,11 @@ struct svc_export {
 	struct nfsd4_fs_locations ex_fslocs;
 	uint32_t		ex_nflavors;
 	struct exp_flavor_info	ex_flavors[MAX_SECINFO_LIST];
+<<<<<<< HEAD
+=======
+	u32			ex_layout_types;
+	struct nfsd4_deviceid_map *ex_devid_map;
+>>>>>>> v4.9.227
 	struct cache_detail	*cd;
 };
 

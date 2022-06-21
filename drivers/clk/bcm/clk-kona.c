@@ -15,6 +15,11 @@
 #include "clk-kona.h"
 
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/kernel.h>
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 
 /*
  * "Policies" affect the frequencies of bus clocks provided by a
@@ -51,6 +56,7 @@ static inline u32 bitfield_replace(u32 reg_val, u32 shift, u32 width, u32 val)
 
 /* Divider and scaling helpers */
 
+<<<<<<< HEAD
 /*
  * Implement DIV_ROUND_CLOSEST() for 64-bit dividend and both values
  * unsigned.  Note that unlike do_div(), the remainder is discarded
@@ -66,6 +72,8 @@ u64 do_div_round_closest(u64 dividend, unsigned long divisor)
 	return result;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Convert a divider into the scaled divisor value it represents. */
 static inline u64 scaled_div_value(struct bcm_clk_div *div, u32 reg_div)
 {
@@ -87,7 +95,11 @@ u64 scaled_div_build(struct bcm_clk_div *div, u32 div_value, u32 billionths)
 	combined = (u64)div_value * BILLION + billionths;
 	combined <<= div->u.s.frac_width;
 
+<<<<<<< HEAD
 	return do_div_round_closest(combined, BILLION);
+=======
+	return DIV_ROUND_CLOSEST_ULL(combined, BILLION);
+>>>>>>> v4.9.227
 }
 
 /* The scaled minimum divisor representable by a divider */
@@ -731,7 +743,11 @@ static unsigned long clk_recalc_rate(struct ccu_data *ccu,
 		scaled_rate = scale_rate(pre_div, parent_rate);
 		scaled_rate = scale_rate(div, scaled_rate);
 		scaled_div = divider_read_scaled(ccu, pre_div);
+<<<<<<< HEAD
 		scaled_parent_rate = do_div_round_closest(scaled_rate,
+=======
+		scaled_parent_rate = DIV_ROUND_CLOSEST_ULL(scaled_rate,
+>>>>>>> v4.9.227
 							scaled_div);
 	} else  {
 		scaled_parent_rate = scale_rate(div, parent_rate);
@@ -743,7 +759,11 @@ static unsigned long clk_recalc_rate(struct ccu_data *ccu,
 	 * rate.
 	 */
 	scaled_div = divider_read_scaled(ccu, div);
+<<<<<<< HEAD
 	result = do_div_round_closest(scaled_parent_rate, scaled_div);
+=======
+	result = DIV_ROUND_CLOSEST_ULL(scaled_parent_rate, scaled_div);
+>>>>>>> v4.9.227
 
 	return (unsigned long)result;
 }
@@ -790,7 +810,11 @@ static long round_rate(struct ccu_data *ccu, struct bcm_clk_div *div,
 		scaled_rate = scale_rate(pre_div, parent_rate);
 		scaled_rate = scale_rate(div, scaled_rate);
 		scaled_pre_div = divider_read_scaled(ccu, pre_div);
+<<<<<<< HEAD
 		scaled_parent_rate = do_div_round_closest(scaled_rate,
+=======
+		scaled_parent_rate = DIV_ROUND_CLOSEST_ULL(scaled_rate,
+>>>>>>> v4.9.227
 							scaled_pre_div);
 	} else {
 		scaled_parent_rate = scale_rate(div, parent_rate);
@@ -802,7 +826,11 @@ static long round_rate(struct ccu_data *ccu, struct bcm_clk_div *div,
 	 * the best we can do.
 	 */
 	if (!divider_is_fixed(div)) {
+<<<<<<< HEAD
 		best_scaled_div = do_div_round_closest(scaled_parent_rate,
+=======
+		best_scaled_div = DIV_ROUND_CLOSEST_ULL(scaled_parent_rate,
+>>>>>>> v4.9.227
 							rate);
 		min_scaled_div = scaled_div_min(div);
 		max_scaled_div = scaled_div_max(div);
@@ -815,7 +843,11 @@ static long round_rate(struct ccu_data *ccu, struct bcm_clk_div *div,
 	}
 
 	/* OK, figure out the resulting rate */
+<<<<<<< HEAD
 	result = do_div_round_closest(scaled_parent_rate, best_scaled_div);
+=======
+	result = DIV_ROUND_CLOSEST_ULL(scaled_parent_rate, best_scaled_div);
+>>>>>>> v4.9.227
 
 	if (scaled_div)
 		*scaled_div = best_scaled_div;
@@ -1024,23 +1056,39 @@ static long kona_peri_clk_round_rate(struct clk_hw *hw, unsigned long rate,
 	struct bcm_clk_div *div = &bcm_clk->u.peri->div;
 
 	if (!divider_exists(div))
+<<<<<<< HEAD
 		return __clk_get_rate(hw->clk);
+=======
+		return clk_hw_get_rate(hw);
+>>>>>>> v4.9.227
 
 	/* Quietly avoid a zero rate */
 	return round_rate(bcm_clk->ccu, div, &bcm_clk->u.peri->pre_div,
 				rate ? rate : 1, *parent_rate, NULL);
 }
 
+<<<<<<< HEAD
 static long kona_peri_clk_determine_rate(struct clk_hw *hw, unsigned long rate,
 		unsigned long *best_parent_rate, struct clk **best_parent)
 {
 	struct kona_clk *bcm_clk = to_kona_clk(hw);
 	struct clk *clk = hw->clk;
 	struct clk *current_parent;
+=======
+static int kona_peri_clk_determine_rate(struct clk_hw *hw,
+					struct clk_rate_request *req)
+{
+	struct kona_clk *bcm_clk = to_kona_clk(hw);
+	struct clk_hw *current_parent;
+>>>>>>> v4.9.227
 	unsigned long parent_rate;
 	unsigned long best_delta;
 	unsigned long best_rate;
 	u32 parent_count;
+<<<<<<< HEAD
+=======
+	long rate;
+>>>>>>> v4.9.227
 	u32 which;
 
 	/*
@@ -1049,6 +1097,7 @@ static long kona_peri_clk_determine_rate(struct clk_hw *hw, unsigned long rate,
 	 */
 	WARN_ON_ONCE(bcm_clk->init_data.flags & CLK_SET_RATE_NO_REPARENT);
 	parent_count = (u32)bcm_clk->init_data.num_parents;
+<<<<<<< HEAD
 	if (parent_count < 2)
 		return kona_peri_clk_round_rate(hw, rate, best_parent_rate);
 
@@ -1061,6 +1110,27 @@ static long kona_peri_clk_determine_rate(struct clk_hw *hw, unsigned long rate,
 	/* Check whether any other parent clock can produce a better result */
 	for (which = 0; which < parent_count; which++) {
 		struct clk *parent = clk_get_parent_by_index(clk, which);
+=======
+	if (parent_count < 2) {
+		rate = kona_peri_clk_round_rate(hw, req->rate,
+						&req->best_parent_rate);
+		if (rate < 0)
+			return rate;
+
+		req->rate = rate;
+		return 0;
+	}
+
+	/* Unless we can do better, stick with current parent */
+	current_parent = clk_hw_get_parent(hw);
+	parent_rate = clk_hw_get_rate(current_parent);
+	best_rate = kona_peri_clk_round_rate(hw, req->rate, &parent_rate);
+	best_delta = abs(best_rate - req->rate);
+
+	/* Check whether any other parent clock can produce a better result */
+	for (which = 0; which < parent_count; which++) {
+		struct clk_hw *parent = clk_hw_get_parent_by_index(hw, which);
+>>>>>>> v4.9.227
 		unsigned long delta;
 		unsigned long other_rate;
 
@@ -1069,6 +1139,7 @@ static long kona_peri_clk_determine_rate(struct clk_hw *hw, unsigned long rate,
 			continue;
 
 		/* We don't support CLK_SET_RATE_PARENT */
+<<<<<<< HEAD
 		parent_rate = __clk_get_rate(parent);
 		other_rate = kona_peri_clk_round_rate(hw, rate, &parent_rate);
 		delta = abs(other_rate - rate);
@@ -1081,6 +1152,22 @@ static long kona_peri_clk_determine_rate(struct clk_hw *hw, unsigned long rate,
 	}
 
 	return best_rate;
+=======
+		parent_rate = clk_hw_get_rate(parent);
+		other_rate = kona_peri_clk_round_rate(hw, req->rate,
+						      &parent_rate);
+		delta = abs(other_rate - req->rate);
+		if (delta < best_delta) {
+			best_delta = delta;
+			best_rate = other_rate;
+			req->best_parent_hw = parent;
+			req->best_parent_rate = parent_rate;
+		}
+	}
+
+	req->rate = best_rate;
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int kona_peri_clk_set_parent(struct clk_hw *hw, u8 index)
@@ -1142,7 +1229,11 @@ static int kona_peri_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (parent_rate > (unsigned long)LONG_MAX)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (rate == __clk_get_rate(hw->clk))
+=======
+	if (rate == clk_hw_get_rate(hw))
+>>>>>>> v4.9.227
 		return 0;
 
 	if (!divider_exists(div))
@@ -1252,7 +1343,11 @@ static bool __kona_clk_init(struct kona_clk *bcm_clk)
 	default:
 		BUG();
 	}
+<<<<<<< HEAD
 	return -EINVAL;
+=======
+	return false;
+>>>>>>> v4.9.227
 }
 
 /* Set a CCU and all its clocks into their desired initial state */
@@ -1260,18 +1355,31 @@ bool __init kona_ccu_init(struct ccu_data *ccu)
 {
 	unsigned long flags;
 	unsigned int which;
+<<<<<<< HEAD
 	struct clk **clks = ccu->clk_data.clks;
+=======
+	struct kona_clk *kona_clks = ccu->kona_clks;
+>>>>>>> v4.9.227
 	bool success = true;
 
 	flags = ccu_lock(ccu);
 	__ccu_write_enable(ccu);
 
+<<<<<<< HEAD
 	for (which = 0; which < ccu->clk_data.clk_num; which++) {
 		struct kona_clk *bcm_clk;
 
 		if (!clks[which])
 			continue;
 		bcm_clk = to_kona_clk(__clk_get_hw(clks[which]));
+=======
+	for (which = 0; which < ccu->clk_num; which++) {
+		struct kona_clk *bcm_clk = &kona_clks[which];
+
+		if (!bcm_clk->ccu)
+			continue;
+
+>>>>>>> v4.9.227
 		success &= __kona_clk_init(bcm_clk);
 	}
 

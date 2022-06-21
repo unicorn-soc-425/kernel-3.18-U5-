@@ -18,7 +18,10 @@
 
 #include <linux/nl80211.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/ath9k_platform.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include "ath9k.h"
 
@@ -43,6 +46,13 @@ static const struct platform_device_id ath9k_platform_id_table[] = {
 		.name = "qca953x_wmac",
 		.driver_data = AR9300_DEVID_AR953X,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.name = "qca956x_wmac",
+		.driver_data = AR9300_DEVID_QCA956X,
+	},
+>>>>>>> v4.9.227
 	{},
 };
 
@@ -54,6 +64,7 @@ static void ath_ahb_read_cachesize(struct ath_common *common, int *csz)
 
 static bool ath_ahb_eeprom_read(struct ath_common *common, u32 off, u16 *data)
 {
+<<<<<<< HEAD
 	struct ath_softc *sc = (struct ath_softc *)common->priv;
 	struct platform_device *pdev = to_platform_device(sc->dev);
 	struct ath9k_platform_data *pdata;
@@ -68,6 +79,11 @@ static bool ath_ahb_eeprom_read(struct ath_common *common, u32 off, u16 *data)
 
 	*data = pdata->eeprom_data[off];
 	return true;
+=======
+	ath_err(common, "%s: eeprom data has to be provided externally\n",
+		__func__);
+	return false;
+>>>>>>> v4.9.227
 }
 
 static struct ath_bus_ops ath_ahb_bus_ops  = {
@@ -175,7 +191,10 @@ static struct platform_driver ath_ahb_driver = {
 	.remove     = ath_ahb_remove,
 	.driver		= {
 		.name	= "ath9k",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.id_table    = ath9k_platform_id_table,
 };

@@ -210,6 +210,7 @@ bfin_jc_chars_in_buffer(struct tty_struct *tty)
 	return circ_cnt(&bfin_jc_write_buf);
 }
 
+<<<<<<< HEAD
 static void
 bfin_jc_wait_until_sent(struct tty_struct *tty, int timeout)
 {
@@ -222,6 +223,8 @@ bfin_jc_wait_until_sent(struct tty_struct *tty, int timeout)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct tty_operations bfin_jc_ops = {
 	.open            = bfin_jc_open,
 	.close           = bfin_jc_close,
@@ -230,7 +233,10 @@ static const struct tty_operations bfin_jc_ops = {
 	.flush_chars     = bfin_jc_flush_chars,
 	.write_room      = bfin_jc_write_room,
 	.chars_in_buffer = bfin_jc_chars_in_buffer,
+<<<<<<< HEAD
 	.wait_until_sent = bfin_jc_wait_until_sent,
+=======
+>>>>>>> v4.9.227
 };
 
 static int __init bfin_jc_init(void)

@@ -142,8 +142,12 @@ store_virtual_to_phys(struct device *dev, struct device_attribute *attr,
 	u64 virt_addr=simple_strtoull(buf, NULL, 16);
 	int ret;
 
+<<<<<<< HEAD
         ret = get_user_pages(current, current->mm, virt_addr,
                         1, VM_READ, 0, NULL, NULL);
+=======
+	ret = get_user_pages_fast(virt_addr, 1, FOLL_WRITE, NULL);
+>>>>>>> v4.9.227
 	if (ret<=0) {
 #ifdef ERR_INJ_DEBUG
 		printk("Virtual address %lx is not existing.\n",virt_addr);

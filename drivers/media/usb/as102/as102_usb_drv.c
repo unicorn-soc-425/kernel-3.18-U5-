@@ -189,7 +189,11 @@ static int as102_read_ep2(struct as10x_bus_adapter_t *bus_adap,
 	return actual_len;
 }
 
+<<<<<<< HEAD
 static struct as102_priv_ops_t as102_priv_ops = {
+=======
+static const struct as102_priv_ops_t as102_priv_ops = {
+>>>>>>> v4.9.227
 	.upload_fw_pkt	= as102_send_ep1,
 	.xfer_cmd	= as102_usb_xfer_cmd,
 	.as102_read_ep2	= as102_read_ep2,
@@ -270,8 +274,11 @@ static int as102_alloc_usb_stream_buffer(struct as102_dev_t *dev)
 
 		urb = usb_alloc_urb(0, GFP_ATOMIC);
 		if (urb == NULL) {
+<<<<<<< HEAD
 			dev_dbg(&dev->bus_adap.usb_dev->dev,
 				"%s: usb_alloc_urb failed\n", __func__);
+=======
+>>>>>>> v4.9.227
 			as102_free_usb_stream_buffer(dev);
 			return -ENOMEM;
 		}

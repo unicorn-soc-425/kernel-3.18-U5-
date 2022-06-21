@@ -24,7 +24,11 @@
  */
 
 #include <sound/opl3.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/init.h>

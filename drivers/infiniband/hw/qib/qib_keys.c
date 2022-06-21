@@ -46,20 +46,32 @@
  *
  */
 
+<<<<<<< HEAD
 int qib_alloc_lkey(struct qib_mregion *mr, int dma_region)
+=======
+int qib_alloc_lkey(struct rvt_mregion *mr, int dma_region)
+>>>>>>> v4.9.227
 {
 	unsigned long flags;
 	u32 r;
 	u32 n;
 	int ret = 0;
 	struct qib_ibdev *dev = to_idev(mr->pd->device);
+<<<<<<< HEAD
 	struct qib_lkey_table *rkt = &dev->lk_table;
+=======
+	struct rvt_lkey_table *rkt = &dev->lk_table;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&rkt->lock, flags);
 
 	/* special case for dma_mr lkey == 0 */
 	if (dma_region) {
+<<<<<<< HEAD
 		struct qib_mregion *tmr;
+=======
+		struct rvt_mregion *tmr;
+>>>>>>> v4.9.227
 
 		tmr = rcu_access_pointer(dev->dma_mr);
 		if (!tmr) {
@@ -90,8 +102,13 @@ int qib_alloc_lkey(struct qib_mregion *mr, int dma_region)
 	 * bits are capped in qib_verbs.c to insure enough bits
 	 * for generation number
 	 */
+<<<<<<< HEAD
 	mr->lkey = (r << (32 - ib_qib_lkey_table_size)) |
 		((((1 << (24 - ib_qib_lkey_table_size)) - 1) & rkt->gen)
+=======
+	mr->lkey = (r << (32 - ib_rvt_lkey_table_size)) |
+		((((1 << (24 - ib_rvt_lkey_table_size)) - 1) & rkt->gen)
+>>>>>>> v4.9.227
 		 << 8);
 	if (mr->lkey == 0) {
 		mr->lkey |= 1 << 8;
@@ -114,22 +131,37 @@ bail:
  * qib_free_lkey - free an lkey
  * @mr: mr to free from tables
  */
+<<<<<<< HEAD
 void qib_free_lkey(struct qib_mregion *mr)
+=======
+void qib_free_lkey(struct rvt_mregion *mr)
+>>>>>>> v4.9.227
 {
 	unsigned long flags;
 	u32 lkey = mr->lkey;
 	u32 r;
 	struct qib_ibdev *dev = to_idev(mr->pd->device);
+<<<<<<< HEAD
 	struct qib_lkey_table *rkt = &dev->lk_table;
+=======
+	struct rvt_lkey_table *rkt = &dev->lk_table;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&rkt->lock, flags);
 	if (!mr->lkey_published)
 		goto out;
 	if (lkey == 0)
+<<<<<<< HEAD
 		rcu_assign_pointer(dev->dma_mr, NULL);
 	else {
 		r = lkey >> (32 - ib_qib_lkey_table_size);
 		rcu_assign_pointer(rkt->table[r], NULL);
+=======
+		RCU_INIT_POINTER(dev->dma_mr, NULL);
+	else {
+		r = lkey >> (32 - ib_rvt_lkey_table_size);
+		RCU_INIT_POINTER(rkt->table[r], NULL);
+>>>>>>> v4.9.227
 	}
 	qib_put_mr(mr);
 	mr->lkey_published = 0;
@@ -138,6 +170,7 @@ out:
 }
 
 /**
+<<<<<<< HEAD
  * qib_lkey_ok - check IB SGE for validity and initialize
  * @rkt: table containing lkey to check SGE against
  * @pd: protection domain
@@ -237,6 +270,8 @@ bail:
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * qib_rkey_ok - check the IB virtual address, length, and RKEY
  * @qp: qp for validation
  * @sge: SGE state
@@ -249,11 +284,19 @@ bail:
  *
  * increments the reference count upon success
  */
+<<<<<<< HEAD
 int qib_rkey_ok(struct qib_qp *qp, struct qib_sge *sge,
 		u32 len, u64 vaddr, u32 rkey, int acc)
 {
 	struct qib_lkey_table *rkt = &to_idev(qp->ibqp.device)->lk_table;
 	struct qib_mregion *mr;
+=======
+int qib_rkey_ok(struct rvt_qp *qp, struct rvt_sge *sge,
+		u32 len, u64 vaddr, u32 rkey, int acc)
+{
+	struct rvt_lkey_table *rkt = &to_idev(qp->ibqp.device)->lk_table;
+	struct rvt_mregion *mr;
+>>>>>>> v4.9.227
 	unsigned n, m;
 	size_t off;
 
@@ -263,7 +306,11 @@ int qib_rkey_ok(struct qib_qp *qp, struct qib_sge *sge,
 	 */
 	rcu_read_lock();
 	if (rkey == 0) {
+<<<<<<< HEAD
 		struct qib_pd *pd = to_ipd(qp->ibqp.pd);
+=======
+		struct rvt_pd *pd = ibpd_to_rvtpd(qp->ibqp.pd);
+>>>>>>> v4.9.227
 		struct qib_ibdev *dev = to_idev(pd->ibpd.device);
 
 		if (pd->user)
@@ -285,7 +332,11 @@ int qib_rkey_ok(struct qib_qp *qp, struct qib_sge *sge,
 	}
 
 	mr = rcu_dereference(
+<<<<<<< HEAD
 		rkt->table[(rkey >> (32 - ib_qib_lkey_table_size))]);
+=======
+		rkt->table[(rkey >> (32 - ib_rvt_lkey_table_size))]);
+>>>>>>> v4.9.227
 	if (unlikely(!mr || mr->lkey != rkey || qp->ibqp.pd != mr->pd))
 		goto bail;
 
@@ -308,15 +359,24 @@ int qib_rkey_ok(struct qib_qp *qp, struct qib_sge *sge,
 
 		entries_spanned_by_off = off >> mr->page_shift;
 		off -= (entries_spanned_by_off << mr->page_shift);
+<<<<<<< HEAD
 		m = entries_spanned_by_off/QIB_SEGSZ;
 		n = entries_spanned_by_off%QIB_SEGSZ;
+=======
+		m = entries_spanned_by_off / RVT_SEGSZ;
+		n = entries_spanned_by_off % RVT_SEGSZ;
+>>>>>>> v4.9.227
 	} else {
 		m = 0;
 		n = 0;
 		while (off >= mr->map[m]->segs[n].length) {
 			off -= mr->map[m]->segs[n].length;
 			n++;
+<<<<<<< HEAD
 			if (n >= QIB_SEGSZ) {
+=======
+			if (n >= RVT_SEGSZ) {
+>>>>>>> v4.9.227
 				m++;
 				n = 0;
 			}
@@ -335,6 +395,7 @@ bail:
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Initialize the memory region specified by the work reqeust.
  */
@@ -389,3 +450,5 @@ bail:
 	spin_unlock_irqrestore(&rkt->lock, flags);
 	return ret;
 }
+=======
+>>>>>>> v4.9.227

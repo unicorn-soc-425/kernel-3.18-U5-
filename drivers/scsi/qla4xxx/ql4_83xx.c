@@ -46,11 +46,21 @@ int qla4_83xx_rd_reg_indirect(struct scsi_qla_host *ha, uint32_t addr,
 
 	ret_val = qla4_83xx_set_win_base(ha, addr);
 
+<<<<<<< HEAD
 	if (ret_val == QLA_SUCCESS)
 		*data = qla4_83xx_rd_reg(ha, QLA83XX_WILDCARD);
 	else
 		ql4_printk(KERN_ERR, ha, "%s: failed read of addr 0x%x!\n",
 			   __func__, addr);
+=======
+	if (ret_val == QLA_SUCCESS) {
+		*data = qla4_83xx_rd_reg(ha, QLA83XX_WILDCARD);
+	} else {
+		*data = 0xffffffff;
+		ql4_printk(KERN_ERR, ha, "%s: failed read of addr 0x%x!\n",
+			   __func__, addr);
+	}
+>>>>>>> v4.9.227
 
 	return ret_val;
 }
@@ -828,7 +838,11 @@ void qla4_83xx_read_reset_template(struct scsi_qla_host *ha)
 	ret_val = qla4_83xx_flash_read_u32(ha, addr, p_buff,
 					   tmplt_hdr_def_size);
 	if (ret_val != QLA_SUCCESS) {
+<<<<<<< HEAD
 		ql4_printk(KERN_ERR, ha, "%s: Failed to read reset tempelate\n",
+=======
+		ql4_printk(KERN_ERR, ha, "%s: Failed to read reset template\n",
+>>>>>>> v4.9.227
 			   __func__);
 		goto exit_read_template_error;
 	}

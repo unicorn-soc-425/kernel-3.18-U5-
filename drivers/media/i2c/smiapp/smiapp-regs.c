@@ -14,12 +14,15 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
  *
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/delay.h>
@@ -194,7 +197,12 @@ int smiapp_read_no_quirk(struct smiapp_sensor *sensor, u32 reg, u32 *val)
 				   SMIAPP_QUIRK_FLAG_8BIT_READ_ONLY));
 }
 
+<<<<<<< HEAD
 int smiapp_read(struct smiapp_sensor *sensor, u32 reg, u32 *val)
+=======
+static int smiapp_read_quirk(struct smiapp_sensor *sensor, u32 reg, u32 *val,
+			     bool force8)
+>>>>>>> v4.9.227
 {
 	int rval;
 
@@ -205,6 +213,7 @@ int smiapp_read(struct smiapp_sensor *sensor, u32 reg, u32 *val)
 	if (rval < 0)
 		return rval;
 
+<<<<<<< HEAD
 	return smiapp_read_no_quirk(sensor, reg, val);
 }
 
@@ -220,6 +229,22 @@ int smiapp_read_8only(struct smiapp_sensor *sensor, u32 reg, u32 *val)
 		return rval;
 
 	return __smiapp_read(sensor, reg, val, true);
+=======
+	if (force8)
+		return __smiapp_read(sensor, reg, val, true);
+
+	return smiapp_read_no_quirk(sensor, reg, val);
+}
+
+int smiapp_read(struct smiapp_sensor *sensor, u32 reg, u32 *val)
+{
+	return smiapp_read_quirk(sensor, reg, val, false);
+}
+
+int smiapp_read_8only(struct smiapp_sensor *sensor, u32 reg, u32 *val)
+{
+	return smiapp_read_quirk(sensor, reg, val, true);
+>>>>>>> v4.9.227
 }
 
 int smiapp_write_no_quirk(struct smiapp_sensor *sensor, u32 reg, u32 val)

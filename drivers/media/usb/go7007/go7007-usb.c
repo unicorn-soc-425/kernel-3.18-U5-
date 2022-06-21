@@ -23,9 +23,15 @@
 #include <linux/usb.h>
 #include <linux/i2c.h>
 #include <asm/byteorder.h>
+<<<<<<< HEAD
 #include <media/saa7115.h>
 #include <media/tuner.h>
 #include <media/uda1342.h>
+=======
+#include <media/i2c/saa7115.h>
+#include <media/tuner.h>
+#include <media/i2c/uda1342.h>
+>>>>>>> v4.9.227
 
 #include "go7007-priv.h"
 
@@ -338,6 +344,10 @@ static const struct go7007_usb_board board_matrix_revolution = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+#if 0
+>>>>>>> v4.9.227
 static const struct go7007_usb_board board_lifeview_lr192 = {
 	.flags		= GO7007_USB_EZUSB,
 	.main_info	= {
@@ -364,6 +374,10 @@ static const struct go7007_usb_board board_lifeview_lr192 = {
 		},
 	},
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 static const struct go7007_usb_board board_endura = {
 	.flags		= 0,
@@ -930,7 +944,11 @@ static void go7007_usb_release(struct go7007 *go)
 	kfree(go->hpi_context);
 }
 
+<<<<<<< HEAD
 static struct go7007_hpi_ops go7007_usb_ezusb_hpi_ops = {
+=======
+static const struct go7007_hpi_ops go7007_usb_ezusb_hpi_ops = {
+>>>>>>> v4.9.227
 	.interface_reset	= go7007_usb_interface_reset,
 	.write_interrupt	= go7007_usb_ezusb_write_interrupt,
 	.read_interrupt		= go7007_usb_read_interrupt,
@@ -940,7 +958,11 @@ static struct go7007_hpi_ops go7007_usb_ezusb_hpi_ops = {
 	.release		= go7007_usb_release,
 };
 
+<<<<<<< HEAD
 static struct go7007_hpi_ops go7007_usb_onboard_hpi_ops = {
+=======
+static const struct go7007_hpi_ops go7007_usb_onboard_hpi_ops = {
+>>>>>>> v4.9.227
 	.interface_reset	= go7007_usb_interface_reset,
 	.write_interrupt	= go7007_usb_onboard_write_interrupt,
 	.read_interrupt		= go7007_usb_read_interrupt,
@@ -1030,7 +1052,11 @@ static u32 go7007_usb_functionality(struct i2c_adapter *adapter)
 	return (I2C_FUNC_SMBUS_EMUL) & ~I2C_FUNC_SMBUS_QUICK;
 }
 
+<<<<<<< HEAD
 static struct i2c_algorithm go7007_usb_algo = {
+=======
+static const struct i2c_algorithm go7007_usb_algo = {
+>>>>>>> v4.9.227
 	.master_xfer	= go7007_usb_i2c_master_xfer,
 	.functionality	= go7007_usb_functionality,
 };
@@ -1096,8 +1122,15 @@ static int go7007_usb_probe(struct usb_interface *intf,
 	case GO7007_BOARDID_LIFEVIEW_LR192:
 		dev_err(&intf->dev, "The Lifeview TV Walker Ultra is not supported. Sorry!\n");
 		return -ENODEV;
+<<<<<<< HEAD
 		name = "Lifeview TV Walker Ultra";
 		board = &board_lifeview_lr192;
+=======
+#if 0
+		name = "Lifeview TV Walker Ultra";
+		board = &board_lifeview_lr192;
+#endif
+>>>>>>> v4.9.227
 		break;
 	case GO7007_BOARDID_SENSORAY_2250:
 		dev_info(&intf->dev, "Sensoray 2250 found\n");
@@ -1285,7 +1318,11 @@ static int go7007_usb_probe(struct usb_interface *intf,
 
 	/* Allocate the URBs and buffers for receiving the audio stream */
 	if ((board->flags & GO7007_USB_EZUSB) &&
+<<<<<<< HEAD
 	    (board->flags & GO7007_BOARD_HAS_AUDIO)) {
+=======
+	    (board->main_info.flags & GO7007_BOARD_HAS_AUDIO)) {
+>>>>>>> v4.9.227
 		for (i = 0; i < 8; ++i) {
 			usb->audio_urbs[i] = usb_alloc_urb(0, GFP_KERNEL);
 			if (usb->audio_urbs[i] == NULL)

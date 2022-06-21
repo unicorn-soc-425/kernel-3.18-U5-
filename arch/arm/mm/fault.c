@@ -28,6 +28,7 @@
 
 #include "fault.h"
 
+<<<<<<< HEAD
 #include <trace/events/exception.h>
 #include <linux/sec_debug.h>
 
@@ -35,6 +36,8 @@
 #include <linux/user_reset/sec_debug_user_reset.h>
 #endif
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_MMU
 
 #ifdef CONFIG_KPROBES
@@ -70,6 +73,7 @@ void show_pte(struct mm_struct *mm, unsigned long addr)
 	if (!mm)
 		mm = &init_mm;
 
+<<<<<<< HEAD
 	printk(KERN_ALERT "pgd = %p\n", mm->pgd);
 #ifdef CONFIG_USER_RESET_DEBUG
 	sec_debug_store_pte((unsigned long)mm->pgd, 0);
@@ -84,6 +88,13 @@ void show_pte(struct mm_struct *mm, unsigned long addr)
 	sec_debug_store_pte((unsigned long)pgd_val(*pgd), 2);
 #endif
 
+=======
+	pr_alert("pgd = %p\n", mm->pgd);
+	pgd = pgd_offset(mm, addr);
+	pr_alert("[%08lx] *pgd=%08llx",
+			addr, (long long)pgd_val(*pgd));
+
+>>>>>>> v4.9.227
 	do {
 		pud_t *pud;
 		pmd_t *pmd;
@@ -93,37 +104,59 @@ void show_pte(struct mm_struct *mm, unsigned long addr)
 			break;
 
 		if (pgd_bad(*pgd)) {
+<<<<<<< HEAD
 			printk("(bad)");
+=======
+			pr_cont("(bad)");
+>>>>>>> v4.9.227
 			break;
 		}
 
 		pud = pud_offset(pgd, addr);
 		if (PTRS_PER_PUD != 1)
+<<<<<<< HEAD
 			printk(", *pud=%08llx", (long long)pud_val(*pud));
 
 #ifdef CONFIG_USER_RESET_DEBUG
 		sec_debug_store_pte((unsigned long)pud_val(*pud), 3);
 #endif
+=======
+			pr_cont(", *pud=%08llx", (long long)pud_val(*pud));
+
+>>>>>>> v4.9.227
 		if (pud_none(*pud))
 			break;
 
 		if (pud_bad(*pud)) {
+<<<<<<< HEAD
 			printk("(bad)");
+=======
+			pr_cont("(bad)");
+>>>>>>> v4.9.227
 			break;
 		}
 
 		pmd = pmd_offset(pud, addr);
 		if (PTRS_PER_PMD != 1)
+<<<<<<< HEAD
 			printk(", *pmd=%08llx", (long long)pmd_val(*pmd));
 
 #ifdef CONFIG_USER_RESET_DEBUG
 		sec_debug_store_pte((unsigned long)pmd_val(*pmd), 4);
 #endif
+=======
+			pr_cont(", *pmd=%08llx", (long long)pmd_val(*pmd));
+
+>>>>>>> v4.9.227
 		if (pmd_none(*pmd))
 			break;
 
 		if (pmd_bad(*pmd)) {
+<<<<<<< HEAD
 			printk("(bad)");
+=======
+			pr_cont("(bad)");
+>>>>>>> v4.9.227
 			break;
 		}
 
@@ -132,6 +165,7 @@ void show_pte(struct mm_struct *mm, unsigned long addr)
 			break;
 
 		pte = pte_offset_map(pmd, addr);
+<<<<<<< HEAD
 		printk(", *pte=%08llx", (long long)pte_val(*pte));
 #ifndef CONFIG_ARM_LPAE
 		printk(", *ppte=%08llx",
@@ -144,6 +178,17 @@ void show_pte(struct mm_struct *mm, unsigned long addr)
 	} while(0);
 
 	printk("\n");
+=======
+		pr_cont(", *pte=%08llx", (long long)pte_val(*pte));
+#ifndef CONFIG_ARM_LPAE
+		pr_cont(", *ppte=%08llx",
+		       (long long)pte_val(pte[PTE_HWTABLE_PTRS]));
+#endif
+		pte_unmap(pte);
+	} while(0);
+
+	pr_cont("\n");
+>>>>>>> v4.9.227
 }
 #else					/* CONFIG_MMU */
 void show_pte(struct mm_struct *mm, unsigned long addr)
@@ -167,10 +212,16 @@ __do_kernel_fault(struct mm_struct *mm, unsigned long addr, unsigned int fsr,
 	 * No handler, we'll have to terminate things with extreme prejudice.
 	 */
 	bust_spinlocks(1);
+<<<<<<< HEAD
 	printk(KERN_ALERT
 		"Unable to handle kernel %s at virtual address %08lx\n",
 		(addr < PAGE_SIZE) ? "NULL pointer dereference" :
 		"paging request", addr);
+=======
+	pr_alert("Unable to handle kernel %s at virtual address %08lx\n",
+		 (addr < PAGE_SIZE) ? "NULL pointer dereference" :
+		 "paging request", addr);
+>>>>>>> v4.9.227
 
 	show_pte(mm, addr);
 	die("Oops", regs, fsr);
@@ -189,7 +240,12 @@ __do_user_fault(struct task_struct *tsk, unsigned long addr,
 {
 	struct siginfo si;
 
+<<<<<<< HEAD
 	trace_user_fault(tsk, addr, fsr);
+=======
+	if (addr > TASK_SIZE)
+		harden_branch_predictor();
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_DEBUG_USER
 	if (((user_debug & UDBG_SEGV) && (sig == SIGSEGV)) ||
@@ -239,7 +295,11 @@ static inline bool access_error(unsigned int fsr, struct vm_area_struct *vma)
 {
 	unsigned int mask = VM_READ | VM_WRITE | VM_EXEC;
 
+<<<<<<< HEAD
 	if (fsr & FSR_WRITE)
+=======
+	if ((fsr & FSR_WRITE) && !(fsr & FSR_CM))
+>>>>>>> v4.9.227
 		mask = VM_WRITE;
 	if (fsr & FSR_LNX_PF)
 		mask = VM_EXEC;
@@ -271,7 +331,11 @@ good_area:
 		goto out;
 	}
 
+<<<<<<< HEAD
 	return handle_mm_fault(mm, vma, addr & PAGE_MASK, flags);
+=======
+	return handle_mm_fault(vma, addr & PAGE_MASK, flags);
+>>>>>>> v4.9.227
 
 check_stack:
 	/* Don't allow expansion below FIRST_USER_ADDRESS */
@@ -301,15 +365,26 @@ do_page_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 		local_irq_enable();
 
 	/*
+<<<<<<< HEAD
 	 * If we're in an interrupt, or have no irqs, or have no user
 	 * context, we must not take the fault..
 	 */
 	if (in_atomic() || irqs_disabled() || !mm)
+=======
+	 * If we're in an interrupt or have no user
+	 * context, we must not take the fault..
+	 */
+	if (faulthandler_disabled() || !mm)
+>>>>>>> v4.9.227
 		goto no_context;
 
 	if (user_mode(regs))
 		flags |= FAULT_FLAG_USER;
+<<<<<<< HEAD
 	if (fsr & FSR_WRITE)
+=======
+	if ((fsr & FSR_WRITE) && !(fsr & FSR_CM))
+>>>>>>> v4.9.227
 		flags |= FAULT_FLAG_WRITE;
 
 	/*
@@ -377,7 +452,11 @@ retry:
 	up_read(&mm->mmap_sem);
 
 	/*
+<<<<<<< HEAD
 	 * Handle the "normal" case first - VM_FAULT_MAJOR / VM_FAULT_MINOR
+=======
+	 * Handle the "normal" case first - VM_FAULT_MAJOR
+>>>>>>> v4.9.227
 	 */
 	if (likely(!(fault & (VM_FAULT_ERROR | VM_FAULT_BADMAP | VM_FAULT_BADACCESS))))
 		return 0;
@@ -581,10 +660,16 @@ do_DataAbort(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	if (!inf->fn(addr, fsr & ~FSR_LNX_PF, regs))
 		return;
 
+<<<<<<< HEAD
 	trace_unhandled_abort(regs, addr, fsr);
 
 	printk(KERN_ALERT "Unhandled fault: %s (0x%03x) at 0x%08lx\n",
 		inf->name, fsr, addr);
+=======
+	pr_alert("Unhandled fault: %s (0x%03x) at 0x%08lx\n",
+		inf->name, fsr, addr);
+	show_pte(current->mm, addr);
+>>>>>>> v4.9.227
 
 	info.si_signo = inf->sig;
 	info.si_errno = 0;
@@ -615,9 +700,13 @@ do_PrefetchAbort(unsigned long addr, unsigned int ifsr, struct pt_regs *regs)
 	if (!inf->fn(addr, ifsr | FSR_LNX_PF, regs))
 		return;
 
+<<<<<<< HEAD
 	trace_unhandled_abort(regs, addr, ifsr);
 
 	printk(KERN_ALERT "Unhandled prefetch abort: %s (0x%03x) at 0x%08lx\n",
+=======
+	pr_alert("Unhandled prefetch abort: %s (0x%03x) at 0x%08lx\n",
+>>>>>>> v4.9.227
 		inf->name, ifsr, addr);
 
 	info.si_signo = inf->sig;
@@ -627,6 +716,31 @@ do_PrefetchAbort(unsigned long addr, unsigned int ifsr, struct pt_regs *regs)
 	arm_notify_die("", regs, &info, ifsr, 0);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Abort handler to be used only during first unmasking of asynchronous aborts
+ * on the boot CPU. This makes sure that the machine will not die if the
+ * firmware/bootloader left an imprecise abort pending for us to trip over.
+ */
+static int __init early_abort_handler(unsigned long addr, unsigned int fsr,
+				      struct pt_regs *regs)
+{
+	pr_warn("Hit pending asynchronous external abort (FSR=0x%08x) during "
+		"first unmask, this is most likely caused by a "
+		"firmware/bootloader bug.\n", fsr);
+
+	return 0;
+}
+
+void __init early_abt_enable(void)
+{
+	fsr_info[FSR_FS_AEA].fn = early_abort_handler;
+	local_abt_enable();
+	fsr_info[FSR_FS_AEA].fn = do_bad;
+}
+
+>>>>>>> v4.9.227
 #ifndef CONFIG_ARM_LPAE
 static int __init exceptions_init(void)
 {

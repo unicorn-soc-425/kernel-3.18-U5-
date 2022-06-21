@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2012-2014 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2012-2016  B.A.T.M.A.N. contributors:
+>>>>>>> v4.9.227
  *
  * Martin Hundebøll, Jeppe Ledet-Pedersen
  *
@@ -18,6 +22,18 @@
 #ifndef _NET_BATMAN_ADV_NETWORK_CODING_H_
 #define _NET_BATMAN_ADV_NETWORK_CODING_H_
 
+<<<<<<< HEAD
+=======
+#include "main.h"
+
+#include <linux/types.h>
+
+struct batadv_ogm_packet;
+struct net_device;
+struct seq_file;
+struct sk_buff;
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_BATMAN_ADV_NC
 
 void batadv_nc_status_update(struct net_device *net_dev);

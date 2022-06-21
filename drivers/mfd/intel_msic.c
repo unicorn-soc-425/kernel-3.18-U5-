@@ -12,7 +12,11 @@
 #include <linux/err.h>
 #include <linux/gpio.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/mfd/core.h>
 #include <linux/mfd/intel_msic.h>
 #include <linux/platform_device.h>
@@ -447,6 +451,7 @@ static struct platform_driver intel_msic_driver = {
 	.remove		= intel_msic_remove,
 	.driver		= {
 		.name	= "intel_msic",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 };
@@ -456,3 +461,8 @@ module_platform_driver(intel_msic_driver);
 MODULE_DESCRIPTION("Driver for Intel MSIC");
 MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
 MODULE_LICENSE("GPL");
+=======
+	},
+};
+builtin_platform_driver(intel_msic_driver);
+>>>>>>> v4.9.227

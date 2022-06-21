@@ -18,7 +18,11 @@
 #include <linux/pm.h>
 #include <linux/videodev2.h>
 #include <media/videobuf-core.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-async.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
@@ -105,6 +109,7 @@ struct soc_camera_host_ops {
 	int (*get_formats)(struct soc_camera_device *, unsigned int,
 			   struct soc_camera_format_xlate *);
 	void (*put_formats)(struct soc_camera_device *);
+<<<<<<< HEAD
 	int (*cropcap)(struct soc_camera_device *, struct v4l2_cropcap *);
 	int (*get_crop)(struct soc_camera_device *, struct v4l2_crop *);
 	int (*set_crop)(struct soc_camera_device *, const struct v4l2_crop *);
@@ -115,6 +120,15 @@ struct soc_camera_host_ops {
 	 * to change the output sizes
 	 */
 	int (*set_livecrop)(struct soc_camera_device *, const struct v4l2_crop *);
+=======
+	int (*get_selection)(struct soc_camera_device *, struct v4l2_selection *);
+	int (*set_selection)(struct soc_camera_device *, struct v4l2_selection *);
+	/*
+	 * The difference to .set_selection() is, that .set_liveselection is not allowed
+	 * to change the output sizes
+	 */
+	int (*set_liveselection)(struct soc_camera_device *, struct v4l2_selection *);
+>>>>>>> v4.9.227
 	int (*set_fmt)(struct soc_camera_device *, struct v4l2_format *);
 	int (*try_fmt)(struct soc_camera_device *, struct v4l2_format *);
 	void (*init_videobuf)(struct videobuf_queue *,
@@ -296,7 +310,11 @@ const struct soc_camera_format_xlate *soc_camera_xlate_by_fourcc(
  * format setup.
  */
 struct soc_camera_format_xlate {
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode code;
+=======
+	u32 code;
+>>>>>>> v4.9.227
 	const struct soc_mbus_pixelfmt *host_fmt;
 };
 

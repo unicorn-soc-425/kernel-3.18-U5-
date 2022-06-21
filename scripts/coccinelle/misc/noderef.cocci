@@ -16,6 +16,10 @@ virtual patch
 @depends on patch@
 expression *x;
 expression f;
+<<<<<<< HEAD
+=======
+expression i;
+>>>>>>> v4.9.227
 type T;
 @@
 
@@ -30,15 +34,36 @@ f(...,(T)(x),...,sizeof(
 + *x
    ),...)
 |
+<<<<<<< HEAD
 f(...,sizeof(x),...,(T)(
 - x
 + *x
    ),...)
+=======
+f(...,sizeof(
+- x
++ *x
+   ),...,(T)(x),...)
+|
+f(...,(T)(x),...,i*sizeof(
+- x
++ *x
+   ),...)
+|
+f(...,i*sizeof(
+- x
++ *x
+   ),...,(T)(x),...)
+>>>>>>> v4.9.227
 )
 
 @r depends on !patch@
 expression *x;
 expression f;
+<<<<<<< HEAD
+=======
+expression i;
+>>>>>>> v4.9.227
 position p;
 type T;
 @@
@@ -49,6 +74,13 @@ type T;
 *f(...,(T)(x),...,sizeof@p(x),...)
 |
 *f(...,sizeof@p(x),...,(T)(x),...)
+<<<<<<< HEAD
+=======
+|
+*f(...,(T)(x),...,i*sizeof@p(x),...)
+|
+*f(...,i*sizeof@p(x),...,(T)(x),...)
+>>>>>>> v4.9.227
 )
 
 @script:python depends on org@

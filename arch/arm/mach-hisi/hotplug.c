@@ -65,6 +65,12 @@
 #define PMC0_CPU1_PMC_ENABLE		(1 << 7)
 #define PMC0_CPU1_POWERDOWN		(1 << 3)
 
+<<<<<<< HEAD
+=======
+#define HIP01_PERI9                    0x50
+#define PERI9_CPU1_RESET               (1 << 1)
+
+>>>>>>> v4.9.227
 enum {
 	HI3620_CTRL,
 	ERROR_CTRL,
@@ -220,6 +226,37 @@ void hix5hd2_set_cpu(int cpu, bool enable)
 	}
 }
 
+<<<<<<< HEAD
+=======
+void hip01_set_cpu(int cpu, bool enable)
+{
+	unsigned int temp;
+	struct device_node *np;
+
+	if (!ctrl_base) {
+		np = of_find_compatible_node(NULL, NULL, "hisilicon,hip01-sysctrl");
+		BUG_ON(!np);
+		ctrl_base = of_iomap(np, 0);
+		of_node_put(np);
+		BUG_ON(!ctrl_base);
+	}
+
+	if (enable) {
+		/* reset on CPU1  */
+		temp = readl_relaxed(ctrl_base + HIP01_PERI9);
+		temp |= PERI9_CPU1_RESET;
+		writel_relaxed(temp, ctrl_base + HIP01_PERI9);
+
+		udelay(50);
+
+		/* unreset on CPU1 */
+		temp = readl_relaxed(ctrl_base + HIP01_PERI9);
+		temp &= ~PERI9_CPU1_RESET;
+		writel_relaxed(temp, ctrl_base + HIP01_PERI9);
+	}
+}
+
+>>>>>>> v4.9.227
 static inline void cpu_enter_lowpower(void)
 {
 	unsigned int v;

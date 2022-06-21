@@ -14,11 +14,19 @@
 #define ATOMIC_INIT(i)		{ (i) }
 #define ATOMIC64_INIT(i)	{ (i) }
 
+<<<<<<< HEAD
 #define atomic_read(v)		ACCESS_ONCE((v)->counter)
 #define atomic64_read(v)	ACCESS_ONCE((v)->counter)
 
 #define atomic_set(v, i)	(((v)->counter) = i)
 #define atomic64_set(v, i)	(((v)->counter) = i)
+=======
+#define atomic_read(v)		READ_ONCE((v)->counter)
+#define atomic64_read(v)	READ_ONCE((v)->counter)
+
+#define atomic_set(v, i)	WRITE_ONCE(((v)->counter), (i))
+#define atomic64_set(v, i)	WRITE_ONCE(((v)->counter), (i))
+>>>>>>> v4.9.227
 
 #define ATOMIC_OP(op)							\
 void atomic_##op(int, atomic_t *);					\
@@ -28,12 +36,31 @@ void atomic64_##op(long, atomic64_t *);
 int atomic_##op##_return(int, atomic_t *);				\
 long atomic64_##op##_return(long, atomic64_t *);
 
+<<<<<<< HEAD
 #define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_OP_RETURN(op)
+=======
+#define ATOMIC_FETCH_OP(op)						\
+int atomic_fetch_##op(int, atomic_t *);					\
+long atomic64_fetch_##op(long, atomic64_t *);
+
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_OP_RETURN(op) ATOMIC_FETCH_OP(op)
+>>>>>>> v4.9.227
 
 ATOMIC_OPS(add)
 ATOMIC_OPS(sub)
 
 #undef ATOMIC_OPS
+<<<<<<< HEAD
+=======
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_FETCH_OP(op)
+
+ATOMIC_OPS(and)
+ATOMIC_OPS(or)
+ATOMIC_OPS(xor)
+
+#undef ATOMIC_OPS
+#undef ATOMIC_FETCH_OP
+>>>>>>> v4.9.227
 #undef ATOMIC_OP_RETURN
 #undef ATOMIC_OP
 

@@ -24,8 +24,11 @@ struct ufs_sb_info {
 	unsigned s_cgno[UFS_MAX_GROUP_LOADED];
 	unsigned short s_cg_loaded;
 	unsigned s_mount_opt;
+<<<<<<< HEAD
 	struct mutex mutex;
 	struct task_struct *mutex_owner;
+=======
+>>>>>>> v4.9.227
 	struct super_block *sb;
 	int work_queued; /* non-zero if the delayed work is queued */
 	struct delayed_work sync_work; /* FS sync delayed work */
@@ -46,6 +49,11 @@ struct ufs_inode_info {
 	__u32	i_oeftflag;
 	__u16	i_osync;
 	__u64	i_lastfrag;
+<<<<<<< HEAD
+=======
+	seqlock_t meta_lock;
+	struct mutex	truncate_mutex;
+>>>>>>> v4.9.227
 	__u32   i_dir_start_lookup;
 	struct inode vfs_inode;
 };
@@ -106,7 +114,11 @@ extern int ufs_delete_entry(struct inode *, struct ufs_dir_entry *, struct page 
 extern int ufs_empty_dir (struct inode *);
 extern struct ufs_dir_entry *ufs_dotdot(struct inode *, struct page **);
 extern void ufs_set_link(struct inode *dir, struct ufs_dir_entry *de,
+<<<<<<< HEAD
 			 struct page *page, struct inode *inode);
+=======
+			 struct page *page, struct inode *inode, bool update_times);
+>>>>>>> v4.9.227
 
 /* file.c */
 extern const struct inode_operations ufs_file_inode_operations;
@@ -122,7 +134,11 @@ extern struct inode *ufs_iget(struct super_block *, unsigned long);
 extern int ufs_write_inode (struct inode *, struct writeback_control *);
 extern int ufs_sync_inode (struct inode *);
 extern void ufs_evict_inode (struct inode *);
+<<<<<<< HEAD
 extern int ufs_getfrag_block (struct inode *inode, sector_t fragment, struct buffer_head *bh_result, int create);
+=======
+extern int ufs_setattr(struct dentry *dentry, struct iattr *attr);
+>>>>>>> v4.9.227
 
 /* namei.c */
 extern const struct file_operations ufs_dir_operations;
@@ -136,6 +152,7 @@ extern __printf(3, 4)
 void ufs_panic(struct super_block *, const char *, const char *, ...);
 void ufs_mark_sb_dirty(struct super_block *sb);
 
+<<<<<<< HEAD
 /* symlink.c */
 extern const struct inode_operations ufs_fast_symlink_inode_operations;
 extern const struct inode_operations ufs_symlink_inode_operations;
@@ -144,6 +161,8 @@ extern const struct inode_operations ufs_symlink_inode_operations;
 extern int ufs_truncate (struct inode *, loff_t);
 extern int ufs_setattr(struct dentry *dentry, struct iattr *attr);
 
+=======
+>>>>>>> v4.9.227
 static inline struct ufs_sb_info *UFS_SB(struct super_block *sb)
 {
 	return sb->s_fs_info;
@@ -170,7 +189,10 @@ static inline u32 ufs_dtogd(struct ufs_sb_private_info * uspi, u64 b)
 	return do_div(b, uspi->s_fpg);
 }
 
+<<<<<<< HEAD
 extern void lock_ufs(struct super_block *sb);
 extern void unlock_ufs(struct super_block *sb);
 
+=======
+>>>>>>> v4.9.227
 #endif /* _UFS_UFS_H */

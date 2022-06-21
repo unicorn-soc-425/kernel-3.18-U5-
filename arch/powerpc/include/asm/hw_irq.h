@@ -130,6 +130,11 @@ static inline bool arch_irq_disabled_regs(struct pt_regs *regs)
 
 extern bool prep_irq_for_idle(void);
 
+<<<<<<< HEAD
+=======
+extern void force_external_irq_replay(void);
+
+>>>>>>> v4.9.227
 #else /* CONFIG_PPC64 */
 
 #define SET_MSR_EE(x)	mtmsr(x)
@@ -153,6 +158,11 @@ static inline unsigned long arch_local_irq_save(void)
 	unsigned long flags = arch_local_save_flags();
 #ifdef CONFIG_BOOKE
 	asm volatile("wrteei 0" : : : "memory");
+<<<<<<< HEAD
+=======
+#elif defined(CONFIG_PPC_8xx)
+	wrtspr(SPRN_EID);
+>>>>>>> v4.9.227
 #else
 	SET_MSR_EE(flags & ~MSR_EE);
 #endif
@@ -163,6 +173,11 @@ static inline void arch_local_irq_disable(void)
 {
 #ifdef CONFIG_BOOKE
 	asm volatile("wrteei 0" : : : "memory");
+<<<<<<< HEAD
+=======
+#elif defined(CONFIG_PPC_8xx)
+	wrtspr(SPRN_EID);
+>>>>>>> v4.9.227
 #else
 	arch_local_irq_save();
 #endif
@@ -172,6 +187,11 @@ static inline void arch_local_irq_enable(void)
 {
 #ifdef CONFIG_BOOKE
 	asm volatile("wrteei 1" : : : "memory");
+<<<<<<< HEAD
+=======
+#elif defined(CONFIG_PPC_8xx)
+	wrtspr(SPRN_EIE);
+>>>>>>> v4.9.227
 #else
 	unsigned long msr = mfmsr();
 	SET_MSR_EE(msr | MSR_EE);

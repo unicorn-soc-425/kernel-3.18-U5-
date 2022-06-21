@@ -421,9 +421,15 @@ static int vmw_cotable_resize(struct vmw_resource *res, size_t new_size)
 	}
 
 	bo = &buf->base;
+<<<<<<< HEAD
 	WARN_ON_ONCE(ttm_bo_reserve(bo, false, true, false, NULL));
 
 	ret = ttm_bo_wait(old_bo, false, false, false);
+=======
+	WARN_ON_ONCE(ttm_bo_reserve(bo, false, true, NULL));
+
+	ret = ttm_bo_wait(old_bo, false, false);
+>>>>>>> v4.9.227
 	if (unlikely(ret != 0)) {
 		DRM_ERROR("Failed waiting for cotable unbind.\n");
 		goto out_wait;

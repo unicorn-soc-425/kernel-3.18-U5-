@@ -66,7 +66,11 @@ typedef int (*cgs_irq_handler_func_t)(void *private_data,
  *
  * Return:  0 on success, -errno otherwise
  */
+<<<<<<< HEAD
 typedef int (*cgs_add_irq_source_t)(void *cgs_device, unsigned src_id,
+=======
+typedef int (*cgs_add_irq_source_t)(struct cgs_device *cgs_device, unsigned src_id,
+>>>>>>> v4.9.227
 				    unsigned num_types,
 				    cgs_irq_source_set_func_t set,
 				    cgs_irq_handler_func_t handler,
@@ -83,7 +87,11 @@ typedef int (*cgs_add_irq_source_t)(void *cgs_device, unsigned src_id,
  *
  * Return:  0 on success, -errno otherwise
  */
+<<<<<<< HEAD
 typedef int (*cgs_irq_get_t)(void *cgs_device, unsigned src_id, unsigned type);
+=======
+typedef int (*cgs_irq_get_t)(struct cgs_device *cgs_device, unsigned src_id, unsigned type);
+>>>>>>> v4.9.227
 
 /**
  * cgs_irq_put() - Indicate IRQ source is no longer needed
@@ -98,7 +106,11 @@ typedef int (*cgs_irq_get_t)(void *cgs_device, unsigned src_id, unsigned type);
  *
  * Return:  0 on success, -errno otherwise
  */
+<<<<<<< HEAD
 typedef int (*cgs_irq_put_t)(void *cgs_device, unsigned src_id, unsigned type);
+=======
+typedef int (*cgs_irq_put_t)(struct cgs_device *cgs_device, unsigned src_id, unsigned type);
+>>>>>>> v4.9.227
 
 struct cgs_os_ops {
 	/* IRQ handling */

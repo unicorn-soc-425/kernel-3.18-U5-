@@ -1,6 +1,7 @@
 #ifndef __NET_NS_HASH_H__
 #define __NET_NS_HASH_H__
 
+<<<<<<< HEAD
 #include <asm/cache.h>
 
 struct net;
@@ -17,5 +18,12 @@ static inline u32 net_hash_mix(const struct net *net)
 #else
 	return 0;
 #endif
+=======
+#include <net/net_namespace.h>
+
+static inline u32 net_hash_mix(const struct net *net)
+{
+	return net->hash_mix;
+>>>>>>> v4.9.227
 }
 #endif

@@ -25,10 +25,17 @@
 #include <linux/io.h>
 #include <linux/kernel.h>
 #include <linux/mbus.h>
+<<<<<<< HEAD
 #include <linux/of_address.h>
 #include <linux/of_device.h>
 #include <linux/platform_device.h>
 #include <linux/pm_opp.h>
+=======
+#include <linux/mvebu-pmsu.h>
+#include <linux/of_address.h>
+#include <linux/of_device.h>
+#include <linux/platform_device.h>
+>>>>>>> v4.9.227
 #include <linux/resource.h>
 #include <linux/slab.h>
 #include <linux/smp.h>
@@ -39,8 +46,12 @@
 #include <asm/suspend.h>
 #include <asm/tlbflush.h>
 #include "common.h"
+<<<<<<< HEAD
 #include "armada-370-xp.h"
 
+=======
+#include "pmsu.h"
+>>>>>>> v4.9.227
 
 #define PMSU_BASE_OFFSET    0x100
 #define PMSU_REG_SIZE	    0x1000
@@ -104,7 +115,11 @@ static void __iomem *pmsu_mp_base;
 
 static void *mvebu_cpu_resume;
 
+<<<<<<< HEAD
 static struct of_device_id of_pmsu_table[] = {
+=======
+static const struct of_device_id of_pmsu_table[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "marvell,armada-370-pmsu", },
 	{ .compatible = "marvell,armada-370-xp-pmsu", },
 	{ .compatible = "marvell,armada-380-pmsu", },
@@ -296,11 +311,19 @@ int armada_370_xp_pmsu_idle_enter(unsigned long deepidle)
 	/* Test the CR_C bit and set it if it was cleared */
 	asm volatile(
 	"mrc	p15, 0, r0, c1, c0, 0 \n\t"
+<<<<<<< HEAD
 	"tst	r0, #(1 << 2) \n\t"
 	"orreq	r0, r0, #(1 << 2) \n\t"
 	"mcreq	p15, 0, r0, c1, c0, 0 \n\t"
 	"isb	"
 	: : : "r0");
+=======
+	"tst	r0, %0 \n\t"
+	"orreq	r0, r0, #(1 << 2) \n\t"
+	"mcreq	p15, 0, r0, c1, c0, 0 \n\t"
+	"isb	"
+	: : "Ir" (CR_C) : "r0");
+>>>>>>> v4.9.227
 
 	pr_debug("Failed to suspend the system\n");
 
@@ -312,7 +335,11 @@ static int armada_370_xp_cpu_suspend(unsigned long deepidle)
 	return cpu_suspend(deepidle, armada_370_xp_pmsu_idle_enter);
 }
 
+<<<<<<< HEAD
 static int armada_38x_do_cpu_suspend(unsigned long deepidle)
+=======
+int armada_38x_do_cpu_suspend(unsigned long deepidle)
+>>>>>>> v4.9.227
 {
 	unsigned long flags = 0;
 
@@ -379,6 +406,19 @@ static struct notifier_block mvebu_v7_cpu_pm_notifier = {
 
 static struct platform_device mvebu_v7_cpuidle_device;
 
+<<<<<<< HEAD
+=======
+static int broken_idle(struct device_node *np)
+{
+	if (of_property_read_bool(np, "broken-idle")) {
+		pr_warn("CPU idle is currently broken: disabling\n");
+		return 1;
+	}
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static __init int armada_370_cpuidle_init(void)
 {
 	struct device_node *np;
@@ -387,7 +427,13 @@ static __init int armada_370_cpuidle_init(void)
 	np = of_find_compatible_node(NULL, NULL, "marvell,coherency-fabric");
 	if (!np)
 		return -ENODEV;
+<<<<<<< HEAD
 	of_node_put(np);
+=======
+
+	if (broken_idle(np))
+		goto end;
+>>>>>>> v4.9.227
 
 	/*
 	 * On Armada 370, there is "a slow exit process from the deep
@@ -406,6 +452,11 @@ static __init int armada_370_cpuidle_init(void)
 	mvebu_v7_cpuidle_device.dev.platform_data = armada_370_xp_cpu_suspend;
 	mvebu_v7_cpuidle_device.name = "cpuidle-armada-370";
 
+<<<<<<< HEAD
+=======
+end:
+	of_node_put(np);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -415,13 +466,24 @@ static __init int armada_38x_cpuidle_init(void)
 	void __iomem *mpsoc_base;
 	u32 reg;
 
+<<<<<<< HEAD
 	pr_warn("CPU idle is currently broken on Armada 38x: disabling");
+=======
+	pr_warn("CPU idle is currently broken on Armada 38x: disabling\n");
+>>>>>>> v4.9.227
 	return 0;
 
 	np = of_find_compatible_node(NULL, NULL,
 				     "marvell,armada-380-coherency-fabric");
 	if (!np)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+
+	if (broken_idle(np))
+		goto end;
+
+>>>>>>> v4.9.227
 	of_node_put(np);
 
 	np = of_find_compatible_node(NULL, NULL,
@@ -430,7 +492,10 @@ static __init int armada_38x_cpuidle_init(void)
 		return -ENODEV;
 	mpsoc_base = of_iomap(np, 0);
 	BUG_ON(!mpsoc_base);
+<<<<<<< HEAD
 	of_node_put(np);
+=======
+>>>>>>> v4.9.227
 
 	/* Set up reset mask when powering down the cpus */
 	reg = readl(mpsoc_base + MPCORE_RESET_CTL);
@@ -450,6 +515,11 @@ static __init int armada_38x_cpuidle_init(void)
 	mvebu_v7_cpuidle_device.dev.platform_data = armada_38x_cpu_suspend;
 	mvebu_v7_cpuidle_device.name = "cpuidle-armada-38x";
 
+<<<<<<< HEAD
+=======
+end:
+	of_node_put(np);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -460,12 +530,23 @@ static __init int armada_xp_cpuidle_init(void)
 	np = of_find_compatible_node(NULL, NULL, "marvell,coherency-fabric");
 	if (!np)
 		return -ENODEV;
+<<<<<<< HEAD
 	of_node_put(np);
+=======
+
+	if (broken_idle(np))
+		goto end;
+>>>>>>> v4.9.227
 
 	mvebu_cpu_resume = armada_370_xp_cpu_resume;
 	mvebu_v7_cpuidle_device.dev.platform_data = armada_370_xp_cpu_suspend;
 	mvebu_v7_cpuidle_device.name = "cpuidle-armada-xp";
 
+<<<<<<< HEAD
+=======
+end:
+	of_node_put(np);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -486,7 +567,11 @@ static int __init mvebu_v7_cpu_pm_init(void)
 	 */
 	if (of_machine_is_compatible("marvell,armada380")) {
 		cpu_hotplug_disable();
+<<<<<<< HEAD
 		pr_warn("CPU hotplug support is currently broken on Armada 38x: disabling");
+=======
+		pr_warn("CPU hotplug support is currently broken on Armada 38x: disabling\n");
+>>>>>>> v4.9.227
 	}
 
 	if (of_machine_is_compatible("marvell,armadaxp"))
@@ -585,6 +670,7 @@ int mvebu_pmsu_dfs_request(int cpu)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int __init armada_xp_pmsu_cpufreq_init(void)
 {
@@ -663,3 +749,5 @@ static int __init armada_xp_pmsu_cpufreq_init(void)
 }
 
 device_initcall(armada_xp_pmsu_cpufreq_init);
+=======
+>>>>>>> v4.9.227

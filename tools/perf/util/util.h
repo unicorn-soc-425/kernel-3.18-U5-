@@ -23,8 +23,11 @@
 #endif
 #endif
 
+<<<<<<< HEAD
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
 
+=======
+>>>>>>> v4.9.227
 #ifdef __GNUC__
 #define TYPEOF(x) (__typeof__(x))
 #else
@@ -53,6 +56,10 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+<<<<<<< HEAD
+=======
+#include <term.h>
+>>>>>>> v4.9.227
 #include <errno.h>
 #include <limits.h>
 #include <sys/param.h>
@@ -71,6 +78,7 @@
 #include <sys/ioctl.h>
 #include <inttypes.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/magic.h>
 #include <linux/types.h>
 #include <sys/ttydefaults.h>
@@ -88,6 +96,20 @@ const char *perf_debugfs_mount(const char *mountpoint);
 const char *find_tracing_dir(void);
 char *get_tracing_file(const char *name);
 void put_tracing_file(char *file);
+=======
+#include <linux/types.h>
+#include <sys/ttydefaults.h>
+#include <api/fs/tracing_path.h>
+#include <termios.h>
+#include <termios.h>
+#include "strlist.h"
+
+extern const char *graph_line;
+extern const char *graph_dotted_line;
+extern const char *spaces;
+extern const char *dots;
+extern char buildid_dir[];
+>>>>>>> v4.9.227
 
 /* On most systems <limits.h> would have given us this, but
  * not on some systems (e.g. GNU/Hurd).
@@ -136,6 +158,7 @@ void put_tracing_file(char *file);
 #define PERF_GTK_DSO  "libperf-gtk.so"
 
 /* General helper functions */
+<<<<<<< HEAD
 extern void usage(const char *err) NORETURN;
 extern void die(const char *err, ...) NORETURN __attribute__((format (printf, 1, 2)));
 extern int error(const char *err, ...) __attribute__((format (printf, 1, 2)));
@@ -161,6 +184,17 @@ static inline const char *skip_prefix(const char *str, const char *prefix)
 	size_t len = strlen(prefix);
 	return strncmp(str, prefix, len) ? NULL : str + len;
 }
+=======
+void usage(const char *err) NORETURN;
+void die(const char *err, ...) NORETURN __attribute__((format (printf, 1, 2)));
+int error(const char *err, ...) __attribute__((format (printf, 1, 2)));
+void warning(const char *err, ...) __attribute__((format (printf, 1, 2)));
+
+void set_warning_routine(void (*routine)(const char *err, va_list params));
+
+int prefixcmp(const char *str, const char *prefix);
+void set_buildid_dir(const char *dir);
+>>>>>>> v4.9.227
 
 #ifdef __GLIBC_PREREQ
 #if __GLIBC_PREREQ(2, 1)
@@ -178,6 +212,7 @@ static inline char *gitstrchrnul(const char *s, int c)
 }
 #endif
 
+<<<<<<< HEAD
 /*
  * Wrappers:
  */
@@ -185,6 +220,8 @@ extern char *xstrdup(const char *str);
 extern void *xrealloc(void *ptr, size_t size) __attribute__((weak));
 
 
+=======
+>>>>>>> v4.9.227
 static inline void *zalloc(size_t size)
 {
 	return calloc(1, size);
@@ -192,6 +229,7 @@ static inline void *zalloc(size_t size)
 
 #define zfree(ptr) ({ free(*ptr); *ptr = NULL; })
 
+<<<<<<< HEAD
 static inline int has_extension(const char *filename, const char *ext)
 {
 	size_t len = strlen(filename);
@@ -200,6 +238,8 @@ static inline int has_extension(const char *filename, const char *ext)
 	return len > extlen && !memcmp(filename + len - extlen, ext, extlen);
 }
 
+=======
+>>>>>>> v4.9.227
 /* Sane ctype - no locale, and works with signed chars */
 #undef isascii
 #undef isspace
@@ -213,10 +253,13 @@ static inline int has_extension(const char *filename, const char *ext)
 #undef tolower
 #undef toupper
 
+<<<<<<< HEAD
 #ifndef NSEC_PER_MSEC
 #define NSEC_PER_MSEC	1000000L
 #endif
 
+=======
+>>>>>>> v4.9.227
 int parse_nsec_time(const char *str, u64 *ptime);
 
 extern unsigned char sane_ctype[256];
@@ -249,14 +292,30 @@ static inline int sane_case(int x, int high)
 }
 
 int mkdir_p(char *path, mode_t mode);
+<<<<<<< HEAD
 int copyfile(const char *from, const char *to);
 int copyfile_mode(const char *from, const char *to, mode_t mode);
+=======
+int rm_rf(char *path);
+struct strlist *lsdir(const char *name, bool (*filter)(const char *, struct dirent *));
+bool lsdir_no_dot_filter(const char *name, struct dirent *d);
+int copyfile(const char *from, const char *to);
+int copyfile_mode(const char *from, const char *to, mode_t mode);
+int copyfile_offset(int fromfd, loff_t from_ofs, int tofd, loff_t to_ofs, u64 size);
+>>>>>>> v4.9.227
 
 s64 perf_atoll(const char *str);
 char **argv_split(const char *str, int *argcp);
 void argv_free(char **argv);
 bool strglobmatch(const char *str, const char *pat);
 bool strlazymatch(const char *str, const char *pat);
+<<<<<<< HEAD
+=======
+static inline bool strisglob(const char *str)
+{
+	return strpbrk(str, "*?[") != NULL;
+}
+>>>>>>> v4.9.227
 int strtailcmp(const char *s1, const char *s2);
 char *strxfrchar(char *s, char from, char to);
 unsigned long convert_unit(unsigned long value, char *unit);
@@ -270,6 +329,7 @@ void event_attr_init(struct perf_event_attr *attr);
 #define _STR(x) #x
 #define STR(x) _STR(x)
 
+<<<<<<< HEAD
 /*
  *  Determine whether some value is a power of two, where zero is
  * *not* considered a power of two.
@@ -299,12 +359,15 @@ static inline unsigned long next_pow2_l(unsigned long x)
 #endif
 }
 
+=======
+>>>>>>> v4.9.227
 size_t hex_width(u64 v);
 int hex2u64(const char *ptr, u64 *val);
 
 char *ltrim(char *s);
 char *rtrim(char *s);
 
+<<<<<<< HEAD
 void dump_stack(void);
 
 extern unsigned int page_size;
@@ -312,6 +375,20 @@ extern int cacheline_size;
 
 void get_term_dimensions(struct winsize *ws);
 void set_term_quiet_input(struct termios *old);
+=======
+static inline char *trim(char *s)
+{
+	return ltrim(rtrim(s));
+}
+
+void dump_stack(void);
+void sighandler_dump_stack(int sig);
+
+extern unsigned int page_size;
+extern int cacheline_size;
+extern int sysctl_perf_event_max_stack;
+extern int sysctl_perf_event_max_contexts_per_stack;
+>>>>>>> v4.9.227
 
 struct parse_tag {
 	char tag;
@@ -338,12 +415,24 @@ static inline int path__join3(char *bf, size_t size,
 }
 
 struct dso;
+<<<<<<< HEAD
 
 char *get_srcline(struct dso *dso, unsigned long addr);
 void free_srcline(char *srcline);
 
 int filename__read_int(const char *filename, int *value);
 int filename__read_str(const char *filename, char **buf, size_t *sizep);
+=======
+struct symbol;
+
+extern bool srcline_full_filename;
+char *get_srcline(struct dso *dso, u64 addr, struct symbol *sym,
+		  bool show_sym);
+char *__get_srcline(struct dso *dso, u64 addr, struct symbol *sym,
+		  bool show_sym, bool unwind_inlines);
+void free_srcline(char *srcline);
+
+>>>>>>> v4.9.227
 int perf_event_paranoid(void);
 
 void mem_bswap_64(void *src, int byte_size);
@@ -351,4 +440,68 @@ void mem_bswap_32(void *src, int byte_size);
 
 const char *get_filename_for_perf_kvm(void);
 bool find_process(const char *name);
+<<<<<<< HEAD
+=======
+
+#ifdef HAVE_ZLIB_SUPPORT
+int gzip_decompress_to_file(const char *input, int output_fd);
+#endif
+
+#ifdef HAVE_LZMA_SUPPORT
+int lzma_decompress_to_file(const char *input, int output_fd);
+#endif
+
+char *asprintf_expr_inout_ints(const char *var, bool in, size_t nints, int *ints);
+
+static inline char *asprintf_expr_in_ints(const char *var, size_t nints, int *ints)
+{
+	return asprintf_expr_inout_ints(var, true, nints, ints);
+}
+
+static inline char *asprintf_expr_not_in_ints(const char *var, size_t nints, int *ints)
+{
+	return asprintf_expr_inout_ints(var, false, nints, ints);
+}
+
+int get_stack_size(const char *str, unsigned long *_size);
+
+int fetch_kernel_version(unsigned int *puint,
+			 char *str, size_t str_sz);
+#define KVER_VERSION(x)		(((x) >> 16) & 0xff)
+#define KVER_PATCHLEVEL(x)	(((x) >> 8) & 0xff)
+#define KVER_SUBLEVEL(x)	((x) & 0xff)
+#define KVER_FMT	"%d.%d.%d"
+#define KVER_PARAM(x)	KVER_VERSION(x), KVER_PATCHLEVEL(x), KVER_SUBLEVEL(x)
+
+const char *perf_tip(const char *dirpath);
+bool is_regular_file(const char *file);
+int fetch_current_timestamp(char *buf, size_t sz);
+
+enum binary_printer_ops {
+	BINARY_PRINT_DATA_BEGIN,
+	BINARY_PRINT_LINE_BEGIN,
+	BINARY_PRINT_ADDR,
+	BINARY_PRINT_NUM_DATA,
+	BINARY_PRINT_NUM_PAD,
+	BINARY_PRINT_SEP,
+	BINARY_PRINT_CHAR_DATA,
+	BINARY_PRINT_CHAR_PAD,
+	BINARY_PRINT_LINE_END,
+	BINARY_PRINT_DATA_END,
+};
+
+typedef void (*print_binary_t)(enum binary_printer_ops,
+			       unsigned int val,
+			       void *extra);
+
+void print_binary(unsigned char *data, size_t len,
+		  size_t bytes_per_line, print_binary_t printer,
+		  void *extra);
+
+#if !defined(__GLIBC__) && !defined(__ANDROID__)
+extern int sched_getcpu(void);
+#endif
+
+int is_printable_array(char *p, unsigned int len);
+>>>>>>> v4.9.227
 #endif /* GIT_COMPAT_UTIL_H */

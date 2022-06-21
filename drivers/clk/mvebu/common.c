@@ -13,12 +13,21 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/clkdev.h>
+=======
+#include <linux/slab.h>
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
+<<<<<<< HEAD
+=======
+#include <linux/syscore_ops.h>
+>>>>>>> v4.9.227
 
 #include "common.h"
 
@@ -120,6 +129,14 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 
 	/* Allocate struct for TCLK, cpu clk, and core ratio clocks */
 	clk_data.clk_num = 2 + desc->num_ratios;
+<<<<<<< HEAD
+=======
+
+	/* One more clock for the optional refclk */
+	if (desc->get_refclk_freq)
+		clk_data.clk_num += 1;
+
+>>>>>>> v4.9.227
 	clk_data.clks = kzalloc(clk_data.clk_num * sizeof(struct clk *),
 				GFP_KERNEL);
 	if (WARN_ON(!clk_data.clks)) {
@@ -131,8 +148,13 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 	of_property_read_string_index(np, "clock-output-names", 0,
 				      &tclk_name);
 	rate = desc->get_tclk_freq(base);
+<<<<<<< HEAD
 	clk_data.clks[0] = clk_register_fixed_rate(NULL, tclk_name, NULL,
 						   CLK_IS_ROOT, rate);
+=======
+	clk_data.clks[0] = clk_register_fixed_rate(NULL, tclk_name, NULL, 0,
+						   rate);
+>>>>>>> v4.9.227
 	WARN_ON(IS_ERR(clk_data.clks[0]));
 
 	/* Register CPU clock */
@@ -144,8 +166,13 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 		&& desc->is_sscg_enabled(base))
 		rate = desc->fix_sscg_deviation(rate);
 
+<<<<<<< HEAD
 	clk_data.clks[1] = clk_register_fixed_rate(NULL, cpuclk_name, NULL,
 						   CLK_IS_ROOT, rate);
+=======
+	clk_data.clks[1] = clk_register_fixed_rate(NULL, cpuclk_name, NULL, 0,
+						   rate);
+>>>>>>> v4.9.227
 	WARN_ON(IS_ERR(clk_data.clks[1]));
 
 	/* Register fixed-factor clocks derived from CPU clock */
@@ -159,7 +186,22 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 		clk_data.clks[2+n] = clk_register_fixed_factor(NULL, rclk_name,
 				       cpuclk_name, 0, mult, div);
 		WARN_ON(IS_ERR(clk_data.clks[2+n]));
+<<<<<<< HEAD
 	};
+=======
+	}
+
+	/* Register optional refclk */
+	if (desc->get_refclk_freq) {
+		const char *name = "refclk";
+		of_property_read_string_index(np, "clock-output-names",
+					      2 + desc->num_ratios, &name);
+		rate = desc->get_refclk_freq(base);
+		clk_data.clks[2 + desc->num_ratios] =
+			clk_register_fixed_rate(NULL, name, NULL, 0, rate);
+		WARN_ON(IS_ERR(clk_data.clks[2 + desc->num_ratios]));
+	}
+>>>>>>> v4.9.227
 
 	/* SAR register isn't needed anymore */
 	iounmap(base);
@@ -177,14 +219,25 @@ struct clk_gating_ctrl {
 	spinlock_t *lock;
 	struct clk **gates;
 	int num_gates;
+<<<<<<< HEAD
 };
 
 #define to_clk_gate(_hw) container_of(_hw, struct clk_gate, hw)
+=======
+	void __iomem *base;
+	u32 saved_reg;
+};
+
+static struct clk_gating_ctrl *ctrl;
+>>>>>>> v4.9.227
 
 static struct clk *clk_gating_get_src(
 	struct of_phandle_args *clkspec, void *data)
 {
+<<<<<<< HEAD
 	struct clk_gating_ctrl *ctrl = (struct clk_gating_ctrl *)data;
+=======
+>>>>>>> v4.9.227
 	int n;
 
 	if (clkspec->args_count < 1)
@@ -199,15 +252,45 @@ static struct clk *clk_gating_get_src(
 	return ERR_PTR(-ENODEV);
 }
 
+<<<<<<< HEAD
 void __init mvebu_clk_gating_setup(struct device_node *np,
 				   const struct clk_gating_soc_desc *desc)
 {
 	struct clk_gating_ctrl *ctrl;
+=======
+static int mvebu_clk_gating_suspend(void)
+{
+	ctrl->saved_reg = readl(ctrl->base);
+	return 0;
+}
+
+static void mvebu_clk_gating_resume(void)
+{
+	writel(ctrl->saved_reg, ctrl->base);
+}
+
+static struct syscore_ops clk_gate_syscore_ops = {
+	.suspend = mvebu_clk_gating_suspend,
+	.resume = mvebu_clk_gating_resume,
+};
+
+void __init mvebu_clk_gating_setup(struct device_node *np,
+				   const struct clk_gating_soc_desc *desc)
+{
+>>>>>>> v4.9.227
 	struct clk *clk;
 	void __iomem *base;
 	const char *default_parent = NULL;
 	int n;
 
+<<<<<<< HEAD
+=======
+	if (ctrl) {
+		pr_err("mvebu-clk-gating: cannot instantiate more than one gatable clock device\n");
+		return;
+	}
+
+>>>>>>> v4.9.227
 	base = of_iomap(np, 0);
 	if (WARN_ON(!base))
 		return;
@@ -225,6 +308,11 @@ void __init mvebu_clk_gating_setup(struct device_node *np,
 	/* lock must already be initialized */
 	ctrl->lock = &ctrl_gating_lock;
 
+<<<<<<< HEAD
+=======
+	ctrl->base = base;
+
+>>>>>>> v4.9.227
 	/* Count, allocate, and register clock gates */
 	for (n = 0; desc[n].name;)
 		n++;
@@ -246,6 +334,11 @@ void __init mvebu_clk_gating_setup(struct device_node *np,
 
 	of_clk_add_provider(np, clk_gating_get_src, ctrl);
 
+<<<<<<< HEAD
+=======
+	register_syscore_ops(&clk_gate_syscore_ops);
+
+>>>>>>> v4.9.227
 	return;
 gates_out:
 	kfree(ctrl);

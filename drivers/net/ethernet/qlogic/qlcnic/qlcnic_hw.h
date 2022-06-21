@@ -109,6 +109,10 @@ enum qlcnic_regs {
 #define QLCNIC_CMD_GET_LED_CONFIG		0x6A
 #define QLCNIC_CMD_83XX_SET_DRV_VER		0x6F
 #define QLCNIC_CMD_ADD_RCV_RINGS		0x0B
+<<<<<<< HEAD
+=======
+#define QLCNIC_CMD_83XX_EXTEND_ISCSI_DUMP_CAP	0x37
+>>>>>>> v4.9.227
 
 #define QLCNIC_INTRPT_INTX			1
 #define QLCNIC_INTRPT_MSIX			3
@@ -172,7 +176,12 @@ int qlcnic_82xx_napi_add(struct qlcnic_adapter *adapter,
 			 struct net_device *netdev);
 void qlcnic_82xx_get_beacon_state(struct qlcnic_adapter *);
 void qlcnic_82xx_change_filter(struct qlcnic_adapter *adapter,
+<<<<<<< HEAD
 			       u64 *uaddr, u16 vlan_id);
+=======
+			       u64 *uaddr, u16 vlan_id,
+			       struct qlcnic_host_tx_ring *tx_ring);
+>>>>>>> v4.9.227
 int qlcnic_82xx_config_intr_coalesce(struct qlcnic_adapter *,
 				     struct ethtool_coalesce *);
 int qlcnic_82xx_set_rx_coalesce(struct qlcnic_adapter *);

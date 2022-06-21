@@ -376,7 +376,10 @@ static struct platform_driver rtc_platform_driver = {
 	.probe		= rtc_probe,
 	.driver		= {
 		.name	= rtc_name,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

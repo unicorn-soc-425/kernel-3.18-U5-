@@ -51,7 +51,12 @@ int tile_console_write(const char *buf, int count)
 			      _SIM_CONTROL_OPERATOR_BITS));
 		return 0;
 	} else {
+<<<<<<< HEAD
 		return hv_console_write((HV_VirtAddr)buf, count);
+=======
+		/* Translate 0 bytes written to EAGAIN for hvc_console_print. */
+		return hv_console_write((HV_VirtAddr)buf, count) ?: -EAGAIN;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -178,7 +183,10 @@ static struct platform_driver hvc_tile_driver = {
 	.shutdown	= hvc_tile_shutdown,
 	.driver         = {
 		.name   = "hvc-tile",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	}
 };
 #endif

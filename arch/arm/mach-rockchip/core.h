@@ -17,4 +17,7 @@ extern char rockchip_secondary_trampoline;
 extern char rockchip_secondary_trampoline_end;
 
 extern unsigned long rockchip_boot_fn;
+<<<<<<< HEAD
 extern void rockchip_secondary_startup(void);
+=======
+>>>>>>> v4.9.227

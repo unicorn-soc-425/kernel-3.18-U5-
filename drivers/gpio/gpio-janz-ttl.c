@@ -59,7 +59,11 @@ struct ttl_module {
 
 static int ttl_get_value(struct gpio_chip *gpio, unsigned offset)
 {
+<<<<<<< HEAD
 	struct ttl_module *mod = dev_get_drvdata(gpio->dev);
+=======
+	struct ttl_module *mod = dev_get_drvdata(gpio->parent);
+>>>>>>> v4.9.227
 	u8 *shadow;
 	int ret;
 
@@ -76,12 +80,20 @@ static int ttl_get_value(struct gpio_chip *gpio, unsigned offset)
 	spin_lock(&mod->lock);
 	ret = *shadow & (1 << offset);
 	spin_unlock(&mod->lock);
+<<<<<<< HEAD
 	return ret;
+=======
+	return !!ret;
+>>>>>>> v4.9.227
 }
 
 static void ttl_set_value(struct gpio_chip *gpio, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct ttl_module *mod = dev_get_drvdata(gpio->dev);
+=======
+	struct ttl_module *mod = dev_get_drvdata(gpio->parent);
+>>>>>>> v4.9.227
 	void __iomem *port;
 	u8 *shadow;
 
@@ -172,7 +184,11 @@ static int ttl_probe(struct platform_device *pdev)
 
 	/* Initialize the GPIO data structures */
 	gpio = &mod->gpio;
+<<<<<<< HEAD
 	gpio->dev = &pdev->dev;
+=======
+	gpio->parent = &pdev->dev;
+>>>>>>> v4.9.227
 	gpio->label = pdev->name;
 	gpio->get = ttl_get_value;
 	gpio->set = ttl_set_value;
@@ -182,7 +198,11 @@ static int ttl_probe(struct platform_device *pdev)
 	gpio->base = -1;
 	gpio->ngpio = 20;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(gpio);
+=======
+	ret = devm_gpiochip_add_data(dev, gpio, NULL);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(dev, "unable to add GPIO chip\n");
 		return ret;
@@ -191,6 +211,7 @@ static int ttl_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ttl_remove(struct platform_device *pdev)
 {
 	struct ttl_module *mod = platform_get_drvdata(pdev);
@@ -207,6 +228,13 @@ static struct platform_driver ttl_driver = {
 	},
 	.probe		= ttl_probe,
 	.remove		= ttl_remove,
+=======
+static struct platform_driver ttl_driver = {
+	.driver		= {
+		.name	= DRV_NAME,
+	},
+	.probe		= ttl_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(ttl_driver);

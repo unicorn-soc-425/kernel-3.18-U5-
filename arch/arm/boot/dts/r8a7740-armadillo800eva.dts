@@ -20,6 +20,7 @@
 	compatible = "renesas,armadillo800eva", "renesas,r8a7740";
 
 	aliases {
+<<<<<<< HEAD
 		serial1 = &scifa1;
 	};
 
@@ -28,11 +29,26 @@
 	};
 
 	memory {
+=======
+		serial0 = &scifa1;
+	};
+
+	chosen {
+		bootargs = "earlyprintk ignore_loglevel root=/dev/nfs ip=dhcp rw";
+		stdout-path = "serial0:115200n8";
+	};
+
+	memory@40000000 {
+>>>>>>> v4.9.227
 		device_type = "memory";
 		reg = <0x40000000 0x20000000>;
 	};
 
+<<<<<<< HEAD
 	reg_3p3v: regulator@0 {
+=======
+	reg_3p3v: regulator-3p3v {
+>>>>>>> v4.9.227
 		compatible = "regulator-fixed";
 		regulator-name = "fixed-3.3V";
 		regulator-min-microvolt = <3300000>;
@@ -41,7 +57,11 @@
 		regulator-boot-on;
 	};
 
+<<<<<<< HEAD
 	vcc_sdhi0: regulator@1 {
+=======
+	vcc_sdhi0: regulator-vcc-sdhi0 {
+>>>>>>> v4.9.227
 		compatible = "regulator-fixed";
 
 		regulator-name = "SDHI0 Vcc";
@@ -52,7 +72,11 @@
 		enable-active-high;
 	};
 
+<<<<<<< HEAD
 	vccq_sdhi0: regulator@2 {
+=======
+	vccq_sdhi0: regulator-vccq-sdhi0 {
+>>>>>>> v4.9.227
 		compatible = "regulator-gpio";
 
 		regulator-name = "SDHI0 VccQ";
@@ -68,7 +92,11 @@
 		enable-active-high;
 	};
 
+<<<<<<< HEAD
 	reg_5p0v: regulator@3 {
+=======
+	reg_5p0v: regulator-5p0v {
+>>>>>>> v4.9.227
 		compatible = "regulator-fixed";
 		regulator-name = "fixed-5.0V";
 		regulator-min-microvolt = <5000000>;
@@ -77,14 +105,22 @@
 		regulator-boot-on;
 	};
 
+<<<<<<< HEAD
 	gpio-keys {
+=======
+	keyboard {
+>>>>>>> v4.9.227
 		compatible = "gpio-keys";
 
 		power-key {
 			gpios = <&pfc 99 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
 			label = "SW3";
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 
 		back-key {
@@ -126,7 +162,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	i2c2: i2c@2 {
+=======
+	i2c2: i2c-2 {
+>>>>>>> v4.9.227
 		#address-cells = <1>;
 		#size-cells = <0>;
 		compatible = "i2c-gpio";
@@ -171,7 +211,11 @@
 	pinctrl-names = "default";
 
 	phy-handle = <&phy0>;
+<<<<<<< HEAD
 	status = "ok";
+=======
+	status = "okay";
+>>>>>>> v4.9.227
 
 	phy0: ethernet-phy@0 {
 		reg = <0>;
@@ -179,7 +223,11 @@
 };
 
 &extal1_clk {
+<<<<<<< HEAD
 	clock-frequency = <25000000>;
+=======
+	clock-frequency = <24000000>;
+>>>>>>> v4.9.227
 };
 &extal2_clk {
 	clock-frequency = <48000000>;
@@ -192,7 +240,11 @@
 };
 
 &cmt1 {
+<<<<<<< HEAD
 	status = "ok";
+=======
+	status = "okay";
+>>>>>>> v4.9.227
 };
 
 &i2c0 {
@@ -207,7 +259,11 @@
 		gpios = <&pfc 166 GPIO_ACTIVE_LOW>;
 	};
 
+<<<<<<< HEAD
 	wm8978: wm8978@1a {
+=======
+	wm8978: codec@1a {
+>>>>>>> v4.9.227
 		#sound-dai-cells = <0>;
 		compatible = "wlf,wm8978";
 		reg = <0x1a>;
@@ -223,6 +279,7 @@
 };
 
 &pfc {
+<<<<<<< HEAD
 	ether_pins: ether {
 		renesas,groups = "gether_mii", "gether_int";
 		renesas,function = "gether";
@@ -257,6 +314,57 @@
 		renesas,groups = "fsia_sclk_in", "fsia_mclk_out",
 				 "fsia_data_in_1", "fsia_data_out_0";
 		renesas,function = "fsia";
+=======
+	pinctrl-0 = <&lcd0_pins>;
+	pinctrl-names = "default";
+
+	ether_pins: ether {
+		groups = "gether_mii", "gether_int";
+		function = "gether";
+	};
+
+	scifa1_pins: scifa1 {
+		groups = "scifa1_data";
+		function = "scifa1";
+	};
+
+	st1232_pins: touchscreen {
+		groups = "intc_irq10";
+		function = "intc";
+	};
+
+	backlight_pins: backlight {
+		groups = "tpu0_to2_1";
+		function = "tpu0";
+	};
+
+	mmc0_pins: mmc0 {
+		groups = "mmc0_data8_1", "mmc0_ctrl_1";
+		function = "mmc0";
+	};
+
+	sdhi0_pins: sd0 {
+		groups = "sdhi0_data4", "sdhi0_ctrl", "sdhi0_wp";
+		function = "sdhi0";
+	};
+
+	fsia_pins: sounda {
+		groups = "fsia_sclk_in", "fsia_mclk_out",
+			 "fsia_data_in_1", "fsia_data_out_0";
+		function = "fsia";
+	};
+
+	lcd0_pins: lcd0 {
+		groups = "lcd0_data24_0", "lcd0_lclk_1", "lcd0_sync";
+		function = "lcd0";
+	};
+
+	lcd0_mux {
+		/* DBGMD/LCDC0/FSIA MUX */
+		gpio-hog;
+		gpios = <176 0>;
+		output-high;
+>>>>>>> v4.9.227
 	};
 };
 
@@ -298,3 +406,10 @@
 
 	status = "okay";
 };
+<<<<<<< HEAD
+=======
+
+&tmu0 {
+	status = "okay";
+};
+>>>>>>> v4.9.227

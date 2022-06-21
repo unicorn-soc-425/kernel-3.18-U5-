@@ -26,17 +26,27 @@
 #include <linux/mm.h>
 #include <linux/scatterlist.h>
 #include <linux/dma-debug.h>
+<<<<<<< HEAD
 #include <linux/dma-attrs.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/io.h>
 
 struct device;
 extern int bad_dma_address;
+<<<<<<< HEAD
 
 extern struct dma_map_ops *dma_ops;
 
 #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
 #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
 
+=======
+#define DMA_ERROR_CODE bad_dma_address
+
+extern struct dma_map_ops *dma_ops;
+
+>>>>>>> v4.9.227
 static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 {
 	if (unlikely(dev == NULL))
@@ -45,14 +55,22 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 	return dma_ops;
 }
 
+<<<<<<< HEAD
 extern int dma_supported(struct device *dev, u64 mask);
 extern int dma_set_mask(struct device *dev, u64 mask);
+=======
+#define HAVE_ARCH_DMA_SUPPORTED 1
+extern int dma_supported(struct device *dev, u64 mask);
+>>>>>>> v4.9.227
 extern int dma_is_consistent(struct device *dev, dma_addr_t dma_handle);
 extern void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 			   enum dma_data_direction direction);
 
+<<<<<<< HEAD
 #include <asm-generic/dma-mapping-common.h>
 
+=======
+>>>>>>> v4.9.227
 static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
 {
 	if (!dev->dma_mask)
@@ -60,6 +78,7 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
 	return addr + size - 1 <= *dev->dma_mask;
 }
 
+<<<<<<< HEAD
 static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 {
 	struct dma_map_ops *dma_ops = get_dma_ops(dev);
@@ -103,4 +122,6 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
 	debug_dma_free_coherent(dev, size, cpu_addr, dma_handle);
 }
 
+=======
+>>>>>>> v4.9.227
 #endif

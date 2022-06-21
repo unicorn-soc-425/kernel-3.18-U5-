@@ -109,7 +109,10 @@ struct hotplug_slot {
 	struct list_head		slot_list;
 	struct pci_slot			*pci_slot;
 };
+<<<<<<< HEAD
 #define to_hotplug_slot(n) container_of(n, struct hotplug_slot, kobj)
+=======
+>>>>>>> v4.9.227
 
 static inline const char *hotplug_slot_name(const struct hotplug_slot *slot)
 {

@@ -9,6 +9,11 @@
 #include <sysdep/ptrace.h>
 #include <sysdep/archsetjmp.h>
 
+<<<<<<< HEAD
+=======
+extern int save_i387_registers(int pid, unsigned long *fp_regs);
+extern int restore_i387_registers(int pid, unsigned long *fp_regs);
+>>>>>>> v4.9.227
 extern int save_fp_registers(int pid, unsigned long *fp_regs);
 extern int restore_fp_registers(int pid, unsigned long *fp_regs);
 extern int save_fpx_registers(int pid, unsigned long *fp_regs);

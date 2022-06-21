@@ -3,6 +3,7 @@
 # No binaries, but make sure arg-less "make" doesn't trigger "run_tests"
 all:
 
+<<<<<<< HEAD
 fw_filesystem:
 	@if /bin/sh ./fw_filesystem.sh ; then \
                 echo "fw_filesystem: ok"; \
@@ -25,3 +26,11 @@ run_tests: all fw_filesystem fw_userhelper
 clean:
 
 .PHONY: all clean run_tests fw_filesystem fw_userhelper
+=======
+TEST_PROGS := fw_filesystem.sh fw_userhelper.sh
+
+include ../lib.mk
+
+# Nothing to clean up.
+clean:
+>>>>>>> v4.9.227

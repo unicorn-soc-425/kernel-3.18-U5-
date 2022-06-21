@@ -306,7 +306,11 @@ static void tfp410_destroy(struct intel_dvo_device *dvo)
 	}
 }
 
+<<<<<<< HEAD
 struct intel_dvo_dev_ops tfp410_ops = {
+=======
+const struct intel_dvo_dev_ops tfp410_ops = {
+>>>>>>> v4.9.227
 	.init = tfp410_init,
 	.detect = tfp410_detect,
 	.mode_valid = tfp410_mode_valid,

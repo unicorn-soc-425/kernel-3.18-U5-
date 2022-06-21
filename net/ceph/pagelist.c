@@ -56,7 +56,11 @@ int ceph_pagelist_append(struct ceph_pagelist *pl, const void *buf, size_t len)
 		size_t bit = pl->room;
 		int ret;
 
+<<<<<<< HEAD
 		memcpy(pl->mapped_tail + (pl->length & ~PAGE_CACHE_MASK),
+=======
+		memcpy(pl->mapped_tail + (pl->length & ~PAGE_MASK),
+>>>>>>> v4.9.227
 		       buf, bit);
 		pl->length += bit;
 		pl->room -= bit;
@@ -67,7 +71,11 @@ int ceph_pagelist_append(struct ceph_pagelist *pl, const void *buf, size_t len)
 			return ret;
 	}
 
+<<<<<<< HEAD
 	memcpy(pl->mapped_tail + (pl->length & ~PAGE_CACHE_MASK), buf, len);
+=======
+	memcpy(pl->mapped_tail + (pl->length & ~PAGE_MASK), buf, len);
+>>>>>>> v4.9.227
 	pl->length += len;
 	pl->room -= len;
 	return 0;

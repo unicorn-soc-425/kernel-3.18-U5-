@@ -15,16 +15,21 @@
 #include <asm/mach/time.h>
 #include <asm/exception.h>
 
+<<<<<<< HEAD
 #define SIRFSOC_VA_BASE		_AC(0xFEC00000, UL)
 #define SIRFSOC_VA(x)		(SIRFSOC_VA_BASE + ((x) & 0x00FFF000))
 
 extern struct smp_operations   sirfsoc_smp_ops;
+=======
+extern const struct smp_operations sirfsoc_smp_ops;
+>>>>>>> v4.9.227
 extern void sirfsoc_secondary_startup(void);
 extern void sirfsoc_cpu_die(unsigned int cpu);
 
 extern void __init sirfsoc_of_irq_init(void);
 extern asmlinkage void __exception_irq_entry sirfsoc_handle_irq(struct pt_regs *regs);
 
+<<<<<<< HEAD
 #ifndef CONFIG_DEBUG_LL
 static inline void sirfsoc_map_lluart(void)  {}
 #else
@@ -37,6 +42,8 @@ static inline void sirfsoc_map_scu(void) {}
 extern void sirfsoc_map_scu(void);
 #endif
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_SUSPEND
 extern int sirfsoc_pm_init(void);
 #else

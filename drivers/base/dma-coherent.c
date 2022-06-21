@@ -2,6 +2,10 @@
  * Coherent per-device memory handling.
  * Borrowed from i386
  */
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,9 +21,15 @@ struct dma_coherent_mem {
 	spinlock_t	spinlock;
 };
 
+<<<<<<< HEAD
 static int dma_init_coherent_memory(phys_addr_t phys_addr, dma_addr_t device_addr,
 			     size_t size, int flags,
 			     struct dma_coherent_mem **mem)
+=======
+static bool dma_init_coherent_memory(
+	phys_addr_t phys_addr, dma_addr_t device_addr, size_t size, int flags,
+	struct dma_coherent_mem **mem)
+>>>>>>> v4.9.227
 {
 	struct dma_coherent_mem *dma_mem = NULL;
 	void __iomem *mem_base = NULL;
@@ -31,7 +41,14 @@ static int dma_init_coherent_memory(phys_addr_t phys_addr, dma_addr_t device_add
 	if (!size)
 		goto out;
 
+<<<<<<< HEAD
 	mem_base = ioremap(phys_addr, size);
+=======
+	if (flags & DMA_MEMORY_MAP)
+		mem_base = memremap(phys_addr, size, MEMREMAP_WC);
+	else
+		mem_base = ioremap(phys_addr, size);
+>>>>>>> v4.9.227
 	if (!mem_base)
 		goto out;
 
@@ -50,6 +67,7 @@ static int dma_init_coherent_memory(phys_addr_t phys_addr, dma_addr_t device_add
 	spin_lock_init(&dma_mem->spinlock);
 
 	*mem = dma_mem;
+<<<<<<< HEAD
 
 	if (flags & DMA_MEMORY_MAP)
 		return DMA_MEMORY_MAP;
@@ -61,13 +79,34 @@ out:
 	if (mem_base)
 		iounmap(mem_base);
 	return 0;
+=======
+	return true;
+
+out:
+	kfree(dma_mem);
+	if (mem_base) {
+		if (flags & DMA_MEMORY_MAP)
+			memunmap(mem_base);
+		else
+			iounmap(mem_base);
+	}
+	return false;
+>>>>>>> v4.9.227
 }
 
 static void dma_release_coherent_memory(struct dma_coherent_mem *mem)
 {
 	if (!mem)
 		return;
+<<<<<<< HEAD
 	iounmap(mem->virt_base);
+=======
+
+	if (mem->flags & DMA_MEMORY_MAP)
+		memunmap(mem->virt_base);
+	else
+		iounmap(mem->virt_base);
+>>>>>>> v4.9.227
 	kfree(mem->bitmap);
 	kfree(mem);
 }
@@ -88,6 +127,7 @@ int dma_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
 				dma_addr_t device_addr, size_t size, int flags)
 {
 	struct dma_coherent_mem *mem;
+<<<<<<< HEAD
 	int ret;
 
 	ret = dma_init_coherent_memory(phys_addr, device_addr, size, flags,
@@ -97,6 +137,15 @@ int dma_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
 
 	if (dma_assign_coherent_memory(dev, mem) == 0)
 		return ret;
+=======
+
+	if (!dma_init_coherent_memory(phys_addr, device_addr, size, flags,
+				      &mem))
+		return 0;
+
+	if (dma_assign_coherent_memory(dev, mem) == 0)
+		return flags & DMA_MEMORY_MAP ? DMA_MEMORY_MAP : DMA_MEMORY_IO;
+>>>>>>> v4.9.227
 
 	dma_release_coherent_memory(mem);
 	return 0;
@@ -159,6 +208,10 @@ int dma_alloc_from_coherent(struct device *dev, ssize_t size,
 	int order = get_order(size);
 	unsigned long flags;
 	int pageno;
+<<<<<<< HEAD
+=======
+	int dma_memory_map;
+>>>>>>> v4.9.227
 
 	if (!dev)
 		return 0;
@@ -181,8 +234,17 @@ int dma_alloc_from_coherent(struct device *dev, ssize_t size,
 	 */
 	*dma_handle = mem->device_base + (pageno << PAGE_SHIFT);
 	*ret = mem->virt_base + (pageno << PAGE_SHIFT);
+<<<<<<< HEAD
 	memset(*ret, 0, size);
 	spin_unlock_irqrestore(&mem->spinlock, flags);
+=======
+	dma_memory_map = (mem->flags & DMA_MEMORY_MAP);
+	spin_unlock_irqrestore(&mem->spinlock, flags);
+	if (dma_memory_map)
+		memset(*ret, 0, size);
+	else
+		memset_io(*ret, 0, size);
+>>>>>>> v4.9.227
 
 	return 1;
 
@@ -252,8 +314,13 @@ int dma_mmap_from_coherent(struct device *dev, struct vm_area_struct *vma,
 		   (mem->virt_base + (mem->size << PAGE_SHIFT))) {
 		unsigned long off = vma->vm_pgoff;
 		int start = (vaddr - mem->virt_base) >> PAGE_SHIFT;
+<<<<<<< HEAD
 		int user_count = (vma->vm_end - vma->vm_start) >> PAGE_SHIFT;
 		int count = size >> PAGE_SHIFT;
+=======
+		int user_count = vma_pages(vma);
+		int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+>>>>>>> v4.9.227
 
 		*ret = -ENXIO;
 		if (off < count && user_count <= count - off) {
@@ -281,9 +348,15 @@ static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
 	struct dma_coherent_mem *mem = rmem->priv;
 
 	if (!mem &&
+<<<<<<< HEAD
 	    dma_init_coherent_memory(rmem->base, rmem->base, rmem->size,
 				     DMA_MEMORY_MAP | DMA_MEMORY_EXCLUSIVE,
 				     &mem) != DMA_MEMORY_MAP) {
+=======
+	    !dma_init_coherent_memory(rmem->base, rmem->base, rmem->size,
+				      DMA_MEMORY_MAP | DMA_MEMORY_EXCLUSIVE,
+				      &mem)) {
+>>>>>>> v4.9.227
 		pr_err("Reserved memory: failed to init DMA memory pool at %pa, size %ld MiB\n",
 			&rmem->base, (unsigned long)rmem->size / SZ_1M);
 		return -ENODEV;

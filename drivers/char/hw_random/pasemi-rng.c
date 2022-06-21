@@ -26,7 +26,11 @@
 #include <linux/delay.h>
 #include <linux/of_address.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #define SDCRNG_CTL_REG			0x00
 #define   SDCRNG_CTL_FVLD_M		0x0000f000
@@ -95,6 +99,7 @@ static struct hwrng pasemi_rng = {
 	.data_read	= pasemi_rng_data_read,
 };
 
+<<<<<<< HEAD
 static int rng_probe(struct platform_device *ofdev)
 {
 	void __iomem *rng_regs;
@@ -110,10 +115,22 @@ static int rng_probe(struct platform_device *ofdev)
 
 	if (!rng_regs)
 		return -ENOMEM;
+=======
+static int rng_probe(struct platform_device *pdev)
+{
+	void __iomem *rng_regs;
+	struct resource *res;
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	rng_regs = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(rng_regs))
+		return PTR_ERR(rng_regs);
+>>>>>>> v4.9.227
 
 	pasemi_rng.priv = (unsigned long)rng_regs;
 
 	pr_info("Registering PA Semi RNG\n");
+<<<<<<< HEAD
 
 	err = hwrng_register(&pasemi_rng);
 
@@ -134,19 +151,35 @@ static int rng_remove(struct platform_device *dev)
 }
 
 static struct of_device_id rng_match[] = {
+=======
+	return devm_hwrng_register(&pdev->dev, &pasemi_rng);
+}
+
+static const struct of_device_id rng_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible      = "1682m-rng", },
 	{ .compatible      = "pasemi,pwrficient-rng", },
 	{ },
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, rng_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver rng_driver = {
 	.driver = {
 		.name = "pasemi-rng",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = rng_match,
 	},
 	.probe		= rng_probe,
 	.remove		= rng_remove,
+=======
+		.of_match_table = rng_match,
+	},
+	.probe		= rng_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(rng_driver);

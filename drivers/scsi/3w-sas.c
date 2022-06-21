@@ -191,6 +191,7 @@ static ssize_t twl_show_stats(struct device *dev,
 	return len;
 } /* End twl_show_stats() */
 
+<<<<<<< HEAD
 /* This function will set a devices queue depth */
 static int twl_change_queue_depth(struct scsi_device *sdev, int queue_depth,
 				  int reason)
@@ -204,6 +205,8 @@ static int twl_change_queue_depth(struct scsi_device *sdev, int queue_depth,
 	return queue_depth;
 } /* End twl_change_queue_depth() */
 
+=======
+>>>>>>> v4.9.227
 /* stats sysfs attribute initializer */
 static struct device_attribute twl_host_stats_attr = {
 	.attr = {
@@ -1560,7 +1563,11 @@ static struct scsi_host_template driver_template = {
 	.queuecommand		= twl_scsi_queue,
 	.eh_host_reset_handler	= twl_scsi_eh_reset,
 	.bios_param		= twl_scsi_biosparam,
+<<<<<<< HEAD
 	.change_queue_depth	= twl_change_queue_depth,
+=======
+	.change_queue_depth	= scsi_change_queue_depth,
+>>>>>>> v4.9.227
 	.can_queue		= TW_Q_LENGTH-2,
 	.slave_configure	= twl_slave_configure,
 	.this_id		= -1,

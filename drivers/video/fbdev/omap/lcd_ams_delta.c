@@ -218,7 +218,10 @@ static struct platform_driver ams_delta_panel_driver = {
 	.resume		= ams_delta_panel_resume,
 	.driver		= {
 		.name	= "lcd_ams_delta",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

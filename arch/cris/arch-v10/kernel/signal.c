@@ -321,8 +321,11 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 	if (err)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	/* TODO what is the current->exec_domain stuff and invmap ? */
 
+=======
+>>>>>>> v4.9.227
 	/* Set up registers for signal handler */
 
 	/* What we enter NOW   */

@@ -142,7 +142,10 @@ static int snd_card_ad1816a_probe(int dev, struct pnp_card_link *pcard,
 	struct snd_card *card;
 	struct snd_ad1816a *chip;
 	struct snd_opl3 *opl3;
+<<<<<<< HEAD
 	struct snd_timer *timer;
+=======
+>>>>>>> v4.9.227
 
 	error = snd_card_new(&pcard->card->dev,
 			     index[dev], id[dev], THIS_MODULE,
@@ -172,7 +175,11 @@ static int snd_card_ad1816a_probe(int dev, struct pnp_card_link *pcard,
 	sprintf(card->longname, "%s, SS at 0x%lx, irq %d, dma %d&%d",
 		card->shortname, chip->port, irq[dev], dma1[dev], dma2[dev]);
 
+<<<<<<< HEAD
 	if ((error = snd_ad1816a_pcm(chip, 0, NULL)) < 0) {
+=======
+	if ((error = snd_ad1816a_pcm(chip, 0)) < 0) {
+>>>>>>> v4.9.227
 		snd_card_free(card);
 		return error;
 	}
@@ -182,7 +189,11 @@ static int snd_card_ad1816a_probe(int dev, struct pnp_card_link *pcard,
 		return error;
 	}
 
+<<<<<<< HEAD
 	error = snd_ad1816a_timer(chip, 0, &timer);
+=======
+	error = snd_ad1816a_timer(chip, 0);
+>>>>>>> v4.9.227
 	if (error < 0) {
 		snd_card_free(card);
 		return error;

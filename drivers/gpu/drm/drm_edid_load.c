@@ -170,6 +170,7 @@ static void *edid_load(struct drm_connector *connector, const char *name,
 	int i, valid_extensions = 0;
 	bool print_bad_edid = !connector->bad_edid_counter || (drm_debug & DRM_UT_KMS);
 
+<<<<<<< HEAD
 	builtin = 0;
 	for (i = 0; i < GENERIC_EDIDS; i++) {
 		if (strcmp(name, generic_edid_name[i]) == 0) {
@@ -180,6 +181,13 @@ static void *edid_load(struct drm_connector *connector, const char *name,
 		}
 	}
 	if (!builtin) {
+=======
+	builtin = match_string(generic_edid_name, GENERIC_EDIDS, name);
+	if (builtin >= 0) {
+		fwdata = generic_edid[builtin];
+		fwsize = sizeof(generic_edid[builtin]);
+	} else {
+>>>>>>> v4.9.227
 		struct platform_device *pdev;
 		int err;
 
@@ -252,7 +260,11 @@ static void *edid_load(struct drm_connector *connector, const char *name,
 	}
 
 	DRM_INFO("Got %s EDID base block and %d extension%s from "
+<<<<<<< HEAD
 	    "\"%s\" for connector \"%s\"\n", builtin ? "built-in" :
+=======
+	    "\"%s\" for connector \"%s\"\n", (builtin >= 0) ? "built-in" :
+>>>>>>> v4.9.227
 	    "external", valid_extensions, valid_extensions == 1 ? "" : "s",
 	    name, connector_name);
 
@@ -276,7 +288,11 @@ int drm_load_edid_firmware(struct drm_connector *connector)
 	 * by commas, search through the list looking for one that
 	 * matches the connector.
 	 *
+<<<<<<< HEAD
 	 * If there's one or more that don't't specify a connector, keep
+=======
+	 * If there's one or more that doesn't specify a connector, keep
+>>>>>>> v4.9.227
 	 * the last one found one as a fallback.
 	 */
 	fwstr = kstrdup(edid_firmware, GFP_KERNEL);

@@ -18,6 +18,10 @@
 #define PLATFORM_DEVID_AUTO	(-2)
 
 struct mfd_cell;
+<<<<<<< HEAD
+=======
+struct property_entry;
+>>>>>>> v4.9.227
 
 struct platform_device {
 	const char	*name;
@@ -51,6 +55,10 @@ extern void arch_setup_pdev_archdata(struct platform_device *);
 extern struct resource *platform_get_resource(struct platform_device *,
 					      unsigned int, unsigned int);
 extern int platform_get_irq(struct platform_device *, unsigned int);
+<<<<<<< HEAD
+=======
+extern int platform_irq_count(struct platform_device *);
+>>>>>>> v4.9.227
 extern struct resource *platform_get_resource_byname(struct platform_device *,
 						     unsigned int,
 						     const char *);
@@ -59,7 +67,11 @@ extern int platform_add_devices(struct platform_device **, int);
 
 struct platform_device_info {
 		struct device *parent;
+<<<<<<< HEAD
 		struct acpi_dev_node acpi_node;
+=======
+		struct fwnode_handle *fwnode;
+>>>>>>> v4.9.227
 
 		const char *name;
 		int id;
@@ -70,6 +82,11 @@ struct platform_device_info {
 		const void *data;
 		size_t size_data;
 		u64 dma_mask;
+<<<<<<< HEAD
+=======
+
+		struct property_entry *properties;
+>>>>>>> v4.9.227
 };
 extern struct platform_device *platform_device_register_full(
 		const struct platform_device_info *pdevinfo);
@@ -167,6 +184,11 @@ extern int platform_device_add_resources(struct platform_device *pdev,
 					 unsigned int num);
 extern int platform_device_add_data(struct platform_device *pdev,
 				    const void *data, size_t size);
+<<<<<<< HEAD
+=======
+extern int platform_device_add_properties(struct platform_device *pdev,
+					  struct property_entry *properties);
+>>>>>>> v4.9.227
 extern int platform_device_add(struct platform_device *pdev);
 extern void platform_device_del(struct platform_device *pdev);
 extern void platform_device_put(struct platform_device *pdev);
@@ -197,8 +219,15 @@ extern void platform_driver_unregister(struct platform_driver *);
 /* non-hotpluggable platform devices may use this so that probe() and
  * its support may live in __init sections, conserving runtime memory.
  */
+<<<<<<< HEAD
 extern int platform_driver_probe(struct platform_driver *driver,
 		int (*probe)(struct platform_device *));
+=======
+#define platform_driver_probe(drv, probe) \
+	__platform_driver_probe(drv, probe, THIS_MODULE)
+extern int __platform_driver_probe(struct platform_driver *driver,
+		int (*probe)(struct platform_device *), struct module *module);
+>>>>>>> v4.9.227
 
 static inline void *platform_get_drvdata(const struct platform_device *pdev)
 {
@@ -220,6 +249,18 @@ static inline void platform_set_drvdata(struct platform_device *pdev,
 	module_driver(__platform_driver, platform_driver_register, \
 			platform_driver_unregister)
 
+<<<<<<< HEAD
+=======
+/* builtin_platform_driver() - Helper macro for builtin drivers that
+ * don't do anything special in driver init.  This eliminates some
+ * boilerplate.  Each driver may only use this macro once, and
+ * calling it replaces device_initcall().  Note this is meant to be
+ * a parallel of module_platform_driver() above, but w/o _exit stuff.
+ */
+#define builtin_platform_driver(__platform_driver) \
+	builtin_driver(__platform_driver, platform_driver_register)
+
+>>>>>>> v4.9.227
 /* module_platform_driver_probe() - Helper macro for drivers that don't do
  * anything special in module init/exit.  This eliminates a lot of
  * boilerplate.  Each module may only use this macro once, and
@@ -238,10 +279,41 @@ static void __exit __platform_driver##_exit(void) \
 } \
 module_exit(__platform_driver##_exit);
 
+<<<<<<< HEAD
 extern struct platform_device *platform_create_bundle(
 	struct platform_driver *driver, int (*probe)(struct platform_device *),
 	struct resource *res, unsigned int n_res,
 	const void *data, size_t size);
+=======
+/* builtin_platform_driver_probe() - Helper macro for drivers that don't do
+ * anything special in device init.  This eliminates some boilerplate.  Each
+ * driver may only use this macro once, and using it replaces device_initcall.
+ * This is meant to be a parallel of module_platform_driver_probe above, but
+ * without the __exit parts.
+ */
+#define builtin_platform_driver_probe(__platform_driver, __platform_probe) \
+static int __init __platform_driver##_init(void) \
+{ \
+	return platform_driver_probe(&(__platform_driver), \
+				     __platform_probe);    \
+} \
+device_initcall(__platform_driver##_init); \
+
+#define platform_create_bundle(driver, probe, res, n_res, data, size) \
+	__platform_create_bundle(driver, probe, res, n_res, data, size, THIS_MODULE)
+extern struct platform_device *__platform_create_bundle(
+	struct platform_driver *driver, int (*probe)(struct platform_device *),
+	struct resource *res, unsigned int n_res,
+	const void *data, size_t size, struct module *module);
+
+int __platform_register_drivers(struct platform_driver * const *drivers,
+				unsigned int count, struct module *owner);
+void platform_unregister_drivers(struct platform_driver * const *drivers,
+				 unsigned int count);
+
+#define platform_register_drivers(drivers, count) \
+	__platform_register_drivers(drivers, count, THIS_MODULE)
+>>>>>>> v4.9.227
 
 /* early platform driver interface */
 struct early_platform_driver {

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,9 +59,13 @@ ACPI_MODULE_NAME("exconfig")
 
 /* Local prototypes */
 static acpi_status
+<<<<<<< HEAD
 acpi_ex_add_table(u32 table_index,
 		  struct acpi_namespace_node *parent_node,
 		  union acpi_operand_object **ddb_handle);
+=======
+acpi_ex_add_table(u32 table_index, union acpi_operand_object **ddb_handle);
+>>>>>>> v4.9.227
 
 static acpi_status
 acpi_ex_region_read(union acpi_operand_object *obj_desc,
@@ -79,6 +87,7 @@ acpi_ex_region_read(union acpi_operand_object *obj_desc,
  ******************************************************************************/
 
 static acpi_status
+<<<<<<< HEAD
 acpi_ex_add_table(u32 table_index,
 		  struct acpi_namespace_node *parent_node,
 		  union acpi_operand_object **ddb_handle)
@@ -86,6 +95,11 @@ acpi_ex_add_table(u32 table_index,
 	union acpi_operand_object *obj_desc;
 	acpi_status status;
 	acpi_owner_id owner_id;
+=======
+acpi_ex_add_table(u32 table_index, union acpi_operand_object **ddb_handle)
+{
+	union acpi_operand_object *obj_desc;
+>>>>>>> v4.9.227
 
 	ACPI_FUNCTION_TRACE(ex_add_table);
 
@@ -100,6 +114,7 @@ acpi_ex_add_table(u32 table_index,
 
 	obj_desc->common.flags |= AOPOBJ_DATA_VALID;
 	obj_desc->reference.class = ACPI_REFCLASS_TABLE;
+<<<<<<< HEAD
 	*ddb_handle = obj_desc;
 
 	/* Install the new table into the local data structures */
@@ -131,6 +146,10 @@ acpi_ex_add_table(u32 table_index,
 		acpi_ev_update_gpes(owner_id);
 	}
 
+=======
+	obj_desc->reference.value = table_index;
+	*ddb_handle = obj_desc;
+>>>>>>> v4.9.227
 	return_ACPI_STATUS(AE_OK);
 }
 
@@ -157,11 +176,15 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 	struct acpi_namespace_node *start_node;
 	struct acpi_namespace_node *parameter_node = NULL;
 	union acpi_operand_object *ddb_handle;
+<<<<<<< HEAD
 	struct acpi_table_header *table;
+=======
+>>>>>>> v4.9.227
 	u32 table_index;
 
 	ACPI_FUNCTION_TRACE(ex_load_table_op);
 
+<<<<<<< HEAD
 	/* Validate lengths for the Signature, oem_id, and oem_table_id strings */
 
 	if ((operand[0]->string.length > ACPI_NAME_SIZE) ||
@@ -175,6 +198,15 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 	status = acpi_tb_find_table(operand[0]->string.pointer,
 				    operand[1]->string.pointer,
 				    operand[2]->string.pointer, &table_index);
+=======
+	/* Find the ACPI table in the RSDT/XSDT */
+
+	acpi_ex_exit_interpreter();
+	status = acpi_tb_find_table(operand[0]->string.pointer,
+				    operand[1]->string.pointer,
+				    operand[2]->string.pointer, &table_index);
+	acpi_ex_enter_interpreter();
+>>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 		if (status != AE_NOT_FOUND) {
 			return_ACPI_STATUS(status);
@@ -203,9 +235,16 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 		 * Find the node referenced by the root_path_string. This is the
 		 * location within the namespace where the table will be loaded.
 		 */
+<<<<<<< HEAD
 		status =
 		    acpi_ns_get_node(start_node, operand[3]->string.pointer,
 				     ACPI_NS_SEARCH_PARENT, &parent_node);
+=======
+		status = acpi_ns_get_node_unlocked(start_node,
+						   operand[3]->string.pointer,
+						   ACPI_NS_SEARCH_PARENT,
+						   &parent_node);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
@@ -225,9 +264,16 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 
 		/* Find the node referenced by the parameter_path_string */
 
+<<<<<<< HEAD
 		status =
 		    acpi_ns_get_node(start_node, operand[4]->string.pointer,
 				     ACPI_NS_SEARCH_PARENT, &parameter_node);
+=======
+		status = acpi_ns_get_node_unlocked(start_node,
+						   operand[4]->string.pointer,
+						   ACPI_NS_SEARCH_PARENT,
+						   &parameter_node);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
@@ -235,7 +281,19 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 
 	/* Load the table into the namespace */
 
+<<<<<<< HEAD
 	status = acpi_ex_add_table(table_index, parent_node, &ddb_handle);
+=======
+	ACPI_INFO(("Dynamic OEM Table Load:"));
+	acpi_ex_exit_interpreter();
+	status = acpi_tb_load_table(table_index, parent_node);
+	acpi_ex_enter_interpreter();
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	status = acpi_ex_add_table(table_index, &ddb_handle);
+>>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -258,6 +316,7 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 		}
 	}
 
+<<<<<<< HEAD
 	status = acpi_get_table_by_index(table_index, &table);
 	if (ACPI_SUCCESS(status)) {
 		ACPI_INFO((AE_INFO, "Dynamic OEM Table Load:"));
@@ -271,6 +330,8 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 					     acpi_gbl_table_handler_context);
 	}
 
+=======
+>>>>>>> v4.9.227
 	*return_desc = ddb_handle;
 	return_ACPI_STATUS(status);
 }
@@ -366,8 +427,13 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 		}
 
 		/*
+<<<<<<< HEAD
 		 * If the Region Address and Length have not been previously evaluated,
 		 * evaluate them now and save the results.
+=======
+		 * If the Region Address and Length have not been previously
+		 * evaluated, evaluate them now and save the results.
+>>>>>>> v4.9.227
 		 */
 		if (!(obj_desc->common.flags & AOPOBJ_DATA_VALID)) {
 			status = acpi_ds_get_region_arguments(obj_desc);
@@ -462,15 +528,24 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 		}
 
 		/*
+<<<<<<< HEAD
 		 * Copy the table from the buffer because the buffer could be modified
 		 * or even deleted in the future
+=======
+		 * Copy the table from the buffer because the buffer could be
+		 * modified or even deleted in the future
+>>>>>>> v4.9.227
 		 */
 		table = ACPI_ALLOCATE(length);
 		if (!table) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(table, table_header, length);
+=======
+		memcpy(table, table_header, length);
+>>>>>>> v4.9.227
 		break;
 
 	default:
@@ -480,6 +555,7 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 
 	/* Install the new table into the local data structures */
 
+<<<<<<< HEAD
 	ACPI_INFO((AE_INFO, "Dynamic OEM Table Load:"));
 	(void)acpi_ut_acquire_mutex(ACPI_MTX_TABLES);
 
@@ -488,6 +564,15 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 						TRUE, TRUE, &table_index);
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_TABLES);
+=======
+	ACPI_INFO(("Dynamic OEM Table Load:"));
+	acpi_ex_exit_interpreter();
+	status =
+	    acpi_tb_install_and_load_table(table, ACPI_PTR_TO_PHYSADDR(table),
+					   ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL,
+					   TRUE, &table_index);
+	acpi_ex_enter_interpreter();
+>>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 
 		/* Delete allocated table buffer */
@@ -497,6 +582,7 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Note: Now table is "INSTALLED", it must be validated before
 	 * loading.
 	 */
@@ -508,14 +594,20 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 	}
 
 	/*
+=======
+>>>>>>> v4.9.227
 	 * Add the table to the namespace.
 	 *
 	 * Note: Load the table objects relative to the root of the namespace.
 	 * This appears to go against the ACPI specification, but we do it for
 	 * compatibility with other ACPI implementations.
 	 */
+<<<<<<< HEAD
 	status =
 	    acpi_ex_add_table(table_index, acpi_gbl_root_node, &ddb_handle);
+=======
+	status = acpi_ex_add_table(table_index, &ddb_handle);
+>>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 
 		/* On error, table_ptr was deallocated above */
@@ -538,6 +630,7 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 	/* Remove the reference by added by acpi_ex_store above */
 
 	acpi_ut_remove_reference(ddb_handle);
+<<<<<<< HEAD
 
 	/* Invoke table handler if present */
 
@@ -546,6 +639,8 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 					     acpi_gbl_table_handler_context);
 	}
 
+=======
+>>>>>>> v4.9.227
 	return_ACPI_STATUS(status);
 }
 
@@ -598,10 +693,24 @@ acpi_status acpi_ex_unload_table(union acpi_operand_object *ddb_handle)
 
 	table_index = table_desc->reference.value;
 
+<<<<<<< HEAD
 	/* Ensure the table is still loaded */
 
 	if (!acpi_tb_is_table_loaded(table_index)) {
 		return_ACPI_STATUS(AE_NOT_EXIST);
+=======
+	/*
+	 * Release the interpreter lock so that the table lock won't have
+	 * strict order requirement against it.
+	 */
+	acpi_ex_exit_interpreter();
+
+	/* Ensure the table is still loaded */
+
+	if (!acpi_tb_is_table_loaded(table_index)) {
+		status = AE_NOT_EXIST;
+		goto lock_and_exit;
+>>>>>>> v4.9.227
 	}
 
 	/* Invoke table handler if present */
@@ -619,16 +728,36 @@ acpi_status acpi_ex_unload_table(union acpi_operand_object *ddb_handle)
 
 	status = acpi_tb_delete_namespace_by_owner(table_index);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		return_ACPI_STATUS(status);
+=======
+		goto lock_and_exit;
+>>>>>>> v4.9.227
 	}
 
 	(void)acpi_tb_release_owner_id(table_index);
 	acpi_tb_set_table_loaded_flag(table_index, FALSE);
 
+<<<<<<< HEAD
+=======
+lock_and_exit:
+
+	/* Re-acquire the interpreter lock */
+
+	acpi_ex_enter_interpreter();
+
+>>>>>>> v4.9.227
 	/*
 	 * Invalidate the handle. We do this because the handle may be stored
 	 * in a named object and may not be actually deleted until much later.
 	 */
+<<<<<<< HEAD
 	ddb_handle->common.flags &= ~AOPOBJ_DATA_VALID;
 	return_ACPI_STATUS(AE_OK);
+=======
+	if (ACPI_SUCCESS(status)) {
+		ddb_handle->common.flags &= ~AOPOBJ_DATA_VALID;
+	}
+	return_ACPI_STATUS(status);
+>>>>>>> v4.9.227
 }

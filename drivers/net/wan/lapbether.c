@@ -40,7 +40,10 @@
 #include <linux/interrupt.h>
 #include <linux/notifier.h>
 #include <linux/stat.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/lapb.h>
 #include <linux/init.h>

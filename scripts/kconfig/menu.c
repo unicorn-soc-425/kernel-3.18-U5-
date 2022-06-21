@@ -125,7 +125,11 @@ void menu_set_type(int type)
 		sym_type_name(sym->type), sym_type_name(type));
 }
 
+<<<<<<< HEAD
 struct property *menu_add_prop(enum prop_type type, char *prompt, struct expr *expr, struct expr *dep)
+=======
+static struct property *menu_add_prop(enum prop_type type, char *prompt, struct expr *expr, struct expr *dep)
+>>>>>>> v4.9.227
 {
 	struct property *prop = prop_alloc(type, current_entry->sym);
 
@@ -478,7 +482,11 @@ bool menu_is_visible(struct menu *menu)
 
 	if (menu->visibility) {
 		if (expr_calc_value(menu->visibility) == no)
+<<<<<<< HEAD
 			return no;
+=======
+			return false;
+>>>>>>> v4.9.227
 	}
 
 	sym = menu->sym;
@@ -616,7 +624,11 @@ static struct property *get_symbol_prop(struct symbol *sym)
 /*
  * head is optional and may be NULL
  */
+<<<<<<< HEAD
 void get_symbol_str(struct gstr *r, struct symbol *sym,
+=======
+static void get_symbol_str(struct gstr *r, struct symbol *sym,
+>>>>>>> v4.9.227
 		    struct list_head *head)
 {
 	bool hit;

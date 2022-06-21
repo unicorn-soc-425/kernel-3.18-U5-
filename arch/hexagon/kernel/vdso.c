@@ -65,7 +65,12 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	unsigned long vdso_base;
 	struct mm_struct *mm = current->mm;
 
+<<<<<<< HEAD
 	down_write(&mm->mmap_sem);
+=======
+	if (down_write_killable(&mm->mmap_sem))
+		return -EINTR;
+>>>>>>> v4.9.227
 
 	/* Try to get it loaded right near ld.so/glibc. */
 	vdso_base = STACK_TOP;

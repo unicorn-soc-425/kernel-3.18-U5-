@@ -2,8 +2,11 @@
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
  *
+<<<<<<< HEAD
  * Copyright (c) 2017 The Linux Foundation. All rights reserved.
  *
+=======
+>>>>>>> v4.9.227
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -23,8 +26,13 @@
 #include <linux/clk.h>
 #include <linux/regulator/consumer.h>
 
+<<<<<<< HEAD
 #include "msm_iommu.h"
 #include "msm_drv.h"
+=======
+#include "msm_drv.h"
+#include "msm_fence.h"
+>>>>>>> v4.9.227
 #include "msm_ringbuffer.h"
 
 struct msm_gem_submit;
@@ -49,10 +57,17 @@ struct msm_gpu_funcs {
 	int (*hw_init)(struct msm_gpu *gpu);
 	int (*pm_suspend)(struct msm_gpu *gpu);
 	int (*pm_resume)(struct msm_gpu *gpu);
+<<<<<<< HEAD
 	int (*submit)(struct msm_gpu *gpu, struct msm_gem_submit *submit,
 			struct msm_file_private *ctx);
 	void (*flush)(struct msm_gpu *gpu);
 	int (*idle)(struct msm_gpu *gpu);
+=======
+	void (*submit)(struct msm_gpu *gpu, struct msm_gem_submit *submit,
+			struct msm_file_private *ctx);
+	void (*flush)(struct msm_gpu *gpu);
+	void (*idle)(struct msm_gpu *gpu);
+>>>>>>> v4.9.227
 	irqreturn_t (*irq)(struct msm_gpu *irq);
 	uint32_t (*last_fence)(struct msm_gpu *gpu);
 	void (*recover)(struct msm_gpu *gpu);
@@ -61,6 +76,7 @@ struct msm_gpu_funcs {
 	/* show GPU status in debugfs: */
 	void (*show)(struct msm_gpu *gpu, struct seq_file *m);
 #endif
+<<<<<<< HEAD
 	int (*perfcounter_read)(struct msm_gpu *gpu,
 		struct drm_perfcounter_read_group __user *reads,
 			unsigned int count);
@@ -72,6 +88,8 @@ struct msm_gpu_funcs {
 			unsigned int *offset_hi, unsigned int flags);
 	int (*perfcounter_put)(struct msm_gpu *gpu, unsigned int groupid,
 		unsigned int countable, unsigned int flags);
+=======
+>>>>>>> v4.9.227
 };
 
 struct msm_gpu {
@@ -91,13 +109,22 @@ struct msm_gpu {
 	const struct msm_gpu_perfcntr *perfcntrs;
 	uint32_t num_perfcntrs;
 
+<<<<<<< HEAD
+=======
+	/* ringbuffer: */
+>>>>>>> v4.9.227
 	struct msm_ringbuffer *rb;
 	uint32_t rb_iova;
 
 	/* list of GEM active objects: */
 	struct list_head active_list;
 
+<<<<<<< HEAD
 	uint32_t submitted_fence;
+=======
+	/* fencing: */
+	struct msm_fence_context *fctx;
+>>>>>>> v4.9.227
 
 	/* is gpu powered/active? */
 	int active_cnt;
@@ -114,10 +141,17 @@ struct msm_gpu {
 
 	/* Power Control: */
 	struct regulator *gpu_reg, *gpu_cx;
+<<<<<<< HEAD
 	struct clk *ebi1_clk, *grp_clks[8];
 	uint32_t fast_rate, slow_rate, bus_freq;
 
 #ifdef CONFIG_MSM_BUS_SCALING
+=======
+	struct clk *ebi1_clk, *grp_clks[6];
+	uint32_t fast_rate, slow_rate, bus_freq;
+
+#ifdef DOWNSTREAM_CONFIG_MSM_BUS_SCALING
+>>>>>>> v4.9.227
 	struct msm_bus_scale_pdata *bus_scale_table;
 	uint32_t bsc;
 #endif
@@ -139,7 +173,11 @@ struct msm_gpu {
 
 static inline bool msm_gpu_active(struct msm_gpu *gpu)
 {
+<<<<<<< HEAD
 	return gpu->submitted_fence > gpu->funcs->last_fence(gpu);
+=======
+	return gpu->fctx->last_fence > gpu->funcs->last_fence(gpu);
+>>>>>>> v4.9.227
 }
 
 /* Perf-Counters:
@@ -155,6 +193,7 @@ struct msm_gpu_perfcntr {
 	const char *name;
 };
 
+<<<<<<< HEAD
 static inline void gpu_write_mask(struct msm_gpu *gpu,
 					unsigned int reg,
 					unsigned int mask, unsigned int bits)
@@ -166,6 +205,8 @@ static inline void gpu_write_mask(struct msm_gpu *gpu,
 	msm_writel(val | bits, gpu->mmio + (reg << 2));
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void gpu_write(struct msm_gpu *gpu, u32 reg, u32 data)
 {
 	msm_writel(data, gpu->mmio + (reg << 2));
@@ -185,15 +226,25 @@ int msm_gpu_perfcntr_sample(struct msm_gpu *gpu, uint32_t *activetime,
 		uint32_t *totaltime, uint32_t ncntrs, uint32_t *cntrs);
 
 void msm_gpu_retire(struct msm_gpu *gpu);
+<<<<<<< HEAD
 int msm_gpu_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
+=======
+void msm_gpu_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
+>>>>>>> v4.9.227
 		struct msm_file_private *ctx);
 
 int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
 		struct msm_gpu *gpu, const struct msm_gpu_funcs *funcs,
+<<<<<<< HEAD
 		const char *name, const char *ioname, const char *irqname);
 void msm_gpu_cleanup(struct msm_gpu *gpu);
 
 struct msm_iommu *get_gpu_iommu(struct platform_device *pdev);
+=======
+		const char *name, const char *ioname, const char *irqname, int ringsz);
+void msm_gpu_cleanup(struct msm_gpu *gpu);
+
+>>>>>>> v4.9.227
 struct msm_gpu *adreno_load_gpu(struct drm_device *dev);
 void __init adreno_register(void);
 void __exit adreno_unregister(void);

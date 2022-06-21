@@ -21,10 +21,13 @@
 #include "smsir.h"
 #include <linux/module.h>
 
+<<<<<<< HEAD
 static int sms_dbg;
 module_param_named(cards_dbg, sms_dbg, int, 0644);
 MODULE_PARM_DESC(cards_dbg, "set debug level (info=1, adv=2 (or-able))");
 
+=======
+>>>>>>> v4.9.227
 static struct sms_board sms_boards[] = {
 	[SMS_BOARD_UNKNOWN] = {
 		.name	= "Unknown board",
@@ -232,7 +235,11 @@ int sms_board_event(struct smscore_device_t *coredev,
 		break; /* BOARD_EVENT_MULTIPLEX_ERRORS */
 
 	default:
+<<<<<<< HEAD
 		sms_err("Unknown SMS board event");
+=======
+		pr_err("Unknown SMS board event\n");
+>>>>>>> v4.9.227
 		break;
 	}
 	return 0;
@@ -342,7 +349,11 @@ int sms_board_lna_control(struct smscore_device_t *coredev, int onoff)
 	int board_id = smscore_get_board_id(coredev);
 	struct sms_board *board = sms_get_board(board_id);
 
+<<<<<<< HEAD
 	sms_debug("%s: LNA %s", __func__, onoff ? "enabled" : "disabled");
+=======
+	pr_debug("%s: LNA %s\n", __func__, onoff ? "enabled" : "disabled");
+>>>>>>> v4.9.227
 
 	switch (board_id) {
 	case SMS1XXX_BOARD_HAUPPAUGE_TIGER_MINICARD_R2:

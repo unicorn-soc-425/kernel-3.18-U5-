@@ -44,8 +44,14 @@ static inline void plat_smp_setup(void)
 	mp_ops->smp_setup();
 }
 
+<<<<<<< HEAD
 extern void gic_send_ipi_single(int cpu, unsigned int action);
 extern void gic_send_ipi_mask(const struct cpumask *mask, unsigned int action);
+=======
+extern void mips_smp_send_ipi_single(int cpu, unsigned int action);
+extern void mips_smp_send_ipi_mask(const struct cpumask *mask,
+				      unsigned int action);
+>>>>>>> v4.9.227
 
 #else /* !CONFIG_SMP */
 

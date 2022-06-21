@@ -78,10 +78,15 @@ static int snirm710_probe(struct platform_device *dev)
 
 	base = res->start;
 	hostdata = kzalloc(sizeof(*hostdata), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!hostdata) {
 		dev_printk(KERN_ERR, dev, "Failed to allocate host data\n");
 		return -ENOMEM;
 	}
+=======
+	if (!hostdata)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	hostdata->dev = &dev->dev;
 	dma_set_mask(&dev->dev, DMA_BIT_MASK(32));
@@ -137,7 +142,10 @@ static struct platform_driver snirm710_driver = {
 	.remove	= snirm710_driver_remove,
 	.driver	= {
 		.name	= "snirm_53c710",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

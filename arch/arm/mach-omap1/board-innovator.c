@@ -32,7 +32,11 @@
 #include <asm/mach/map.h>
 
 #include <mach/mux.h>
+<<<<<<< HEAD
 #include <mach/flash.h>
+=======
+#include "flash.h"
+>>>>>>> v4.9.227
 #include <mach/tc.h>
 #include <linux/platform_data/keypad-omap.h>
 
@@ -315,7 +319,11 @@ static struct omap_usb_config h2_usb_config __initdata = {
 #if IS_ENABLED(CONFIG_USB_OMAP)
 	.hmc_mode	= 19,	/* 0:host(off) 1:dev|otg 2:disabled */
 	/* .hmc_mode	= 21,*/	/* 0:host(off) 1:dev(loopback) 2:host(loopback) */
+<<<<<<< HEAD
 #elif	defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE)
+=======
+#elif	IS_ENABLED(CONFIG_USB_OHCI_HCD)
+>>>>>>> v4.9.227
 	/* NONSTANDARD CABLE NEEDED (B-to-Mini-B) */
 	.hmc_mode	= 20,	/* 1:dev|otg(off) 1:host 2:disabled */
 #endif
@@ -328,7 +336,11 @@ static struct omap_lcd_config innovator1610_lcd_config __initdata = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MMC_OMAP)
+>>>>>>> v4.9.227
 
 static int mmc_set_power(struct device *dev, int slot, int power_on,
 				int vdd)
@@ -456,6 +468,10 @@ MACHINE_START(OMAP_INNOVATOR, "TI-Innovator")
 	.map_io		= innovator_map_io,
 	.init_early     = omap1_init_early,
 	.init_irq	= omap1_init_irq,
+<<<<<<< HEAD
+=======
+	.handle_irq	= omap1_handle_irq,
+>>>>>>> v4.9.227
 	.init_machine	= innovator_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,

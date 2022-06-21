@@ -38,6 +38,7 @@ int kmalloc_ok = 0;
 /* Used during early boot */
 static unsigned long brk_end;
 
+<<<<<<< HEAD
 #ifdef CONFIG_HIGHMEM
 static void setup_highmem(unsigned long highmem_start,
 			  unsigned long highmem_len)
@@ -51,6 +52,8 @@ static void setup_highmem(unsigned long highmem_start,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 void __init mem_init(void)
 {
 	/* clear the zero-page */
@@ -67,9 +70,12 @@ void __init mem_init(void)
 	/* this will put all low memory onto the freelists */
 	free_all_bootmem();
 	max_low_pfn = totalram_pages;
+<<<<<<< HEAD
 #ifdef CONFIG_HIGHMEM
 	setup_highmem(end_iomem, highmem);
 #endif
+=======
+>>>>>>> v4.9.227
 	max_pfn = totalram_pages;
 	mem_init_print_info(NULL);
 	kmalloc_ok = 1;
@@ -127,6 +133,7 @@ static void __init fixrange_init(unsigned long start, unsigned long end,
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_HIGHMEM
 pte_t *kmap_pte;
 pgprot_t kmap_prot;
@@ -170,6 +177,8 @@ static void __init init_highmem(void)
 }
 #endif /* CONFIG_HIGHMEM */
 
+=======
+>>>>>>> v4.9.227
 static void __init fixaddr_user_init( void)
 {
 #ifdef CONFIG_ARCH_REUSE_HOST_VSYSCALL_AREA
@@ -211,9 +220,12 @@ void __init paging_init(void)
 
 	zones_size[ZONE_NORMAL] = (end_iomem >> PAGE_SHIFT) -
 		(uml_physmem >> PAGE_SHIFT);
+<<<<<<< HEAD
 #ifdef CONFIG_HIGHMEM
 	zones_size[ZONE_HIGHMEM] = highmem >> PAGE_SHIFT;
 #endif
+=======
+>>>>>>> v4.9.227
 	free_area_init(zones_size);
 
 	/*
@@ -224,10 +236,13 @@ void __init paging_init(void)
 	fixrange_init(vaddr, FIXADDR_TOP, swapper_pg_dir);
 
 	fixaddr_user_init();
+<<<<<<< HEAD
 
 #ifdef CONFIG_HIGHMEM
 	init_highmem();
 #endif
+=======
+>>>>>>> v4.9.227
 }
 
 /*
@@ -270,7 +285,11 @@ pte_t *pte_alloc_one_kernel(struct mm_struct *mm, unsigned long address)
 {
 	pte_t *pte;
 
+<<<<<<< HEAD
 	pte = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO);
+=======
+	pte = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_ZERO);
+>>>>>>> v4.9.227
 	return pte;
 }
 
@@ -278,7 +297,11 @@ pgtable_t pte_alloc_one(struct mm_struct *mm, unsigned long address)
 {
 	struct page *pte;
 
+<<<<<<< HEAD
 	pte = alloc_page(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO);
+=======
+	pte = alloc_page(GFP_KERNEL|__GFP_ZERO);
+>>>>>>> v4.9.227
 	if (!pte)
 		return NULL;
 	if (!pgtable_page_ctor(pte)) {

@@ -286,7 +286,11 @@ static const struct neigh_ops clip_neigh_ops = {
 	.connected_output =	neigh_direct_output,
 };
 
+<<<<<<< HEAD
 static int clip_constructor(struct neighbour *neigh)
+=======
+static int clip_constructor(struct net_device *dev, struct neighbour *neigh)
+>>>>>>> v4.9.227
 {
 	struct atmarp_entry *entry = neighbour_priv(neigh);
 
@@ -317,6 +321,12 @@ static int clip_constructor(struct neighbour *neigh)
 
 static int clip_encap(struct atm_vcc *vcc, int mode)
 {
+<<<<<<< HEAD
+=======
+	if (!CLIP_VCC(vcc))
+		return -EBADFD;
+
+>>>>>>> v4.9.227
 	CLIP_VCC(vcc)->encap = mode;
 	return 0;
 }

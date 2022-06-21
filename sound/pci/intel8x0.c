@@ -26,7 +26,11 @@
  *
  */      
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -42,12 +46,15 @@
 #include <asm/pgtable.h>
 #include <asm/cacheflush.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_KVM_GUEST
 #include <linux/kvm_para.h>
 #else
 #define kvm_para_available() (0)
 #endif
 
+=======
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Intel 82801AA,82901AB,i810,i820,i830,i840,i845,MX440; SiS 7012; Ali 5455");
 MODULE_LICENSE("GPL");
@@ -1795,7 +1802,11 @@ static struct ac97_pcm ac97_pcm_defs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct ac97_quirk ac97_quirks[] = {
+=======
+static const struct ac97_quirk ac97_quirks[] = {
+>>>>>>> v4.9.227
         {
 		.subvendor = 0x0e11,
 		.subdevice = 0x000e,
@@ -2654,7 +2665,10 @@ static int snd_intel8x0_free(struct intel8x0 *chip)
  */
 static int intel8x0_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct intel8x0 *chip = card->private_data;
 	int i;
@@ -2682,12 +2696,15 @@ static int intel8x0_suspend(struct device *dev)
 		free_irq(chip->irq, chip);
 		chip->irq = -1;
 	}
+<<<<<<< HEAD
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	/* The call below may disable built-in speaker on some laptops
 	 * after S2RAM.  So, don't touch it.
 	 */
 	/* pci_set_power_state(pci, PCI_D3hot); */
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -2698,6 +2715,7 @@ static int intel8x0_resume(struct device *dev)
 	struct intel8x0 *chip = card->private_data;
 	int i;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -2706,6 +2724,8 @@ static int intel8x0_resume(struct device *dev)
 		return -EIO;
 	}
 	pci_set_master(pci);
+=======
+>>>>>>> v4.9.227
 	snd_intel8x0_chip_init(chip, 0);
 	if (request_irq(pci->irq, snd_intel8x0_interrupt,
 			IRQF_SHARED, KBUILD_MODNAME, chip)) {
@@ -2916,7 +2936,10 @@ static int intel8x0_in_clock_list(struct intel8x0 *chip)
 	return 1;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+>>>>>>> v4.9.227
 static void snd_intel8x0_proc_read(struct snd_info_entry * entry,
 				   struct snd_info_buffer *buffer)
 {
@@ -2958,9 +2981,12 @@ static void snd_intel8x0_proc_init(struct intel8x0 *chip)
 	if (! snd_card_proc_new(chip->card, "intel8x0", &entry))
 		snd_info_set_text_ops(entry, chip, snd_intel8x0_proc_read);
 }
+<<<<<<< HEAD
 #else
 #define snd_intel8x0_proc_init(x)
 #endif
+=======
+>>>>>>> v4.9.227
 
 static int snd_intel8x0_dev_free(struct snd_device *device)
 {
@@ -2991,6 +3017,7 @@ static int snd_intel8x0_inside_vm(struct pci_dev *pci)
 		goto fini;
 	}
 
+<<<<<<< HEAD
 	/* detect KVM and Parallels virtual environments */
 	result = kvm_para_available();
 #ifdef X86_FEATURE_HYPERVISOR
@@ -3010,6 +3037,19 @@ static int snd_intel8x0_inside_vm(struct pci_dev *pci)
 	} else {
 		msg = "disable (unknown or VT-d) VM";
 		result = 0;
+=======
+	/* check for known (emulated) devices */
+	result = 0;
+	if (pci->subsystem_vendor == PCI_SUBVENDOR_ID_REDHAT_QUMRANET &&
+	    pci->subsystem_device == PCI_SUBDEVICE_ID_QEMU) {
+		/* KVM emulated sound, PCI SSID: 1af4:1100 */
+		msg = "enable KVM";
+		result = 1;
+	} else if (pci->subsystem_vendor == 0x1ab8) {
+		/* Parallels VM emulated sound, PCI SSID: 1ab8:xxxx */
+		msg = "enable Parallels VM";
+		result = 1;
+>>>>>>> v4.9.227
 	}
 
 fini:
@@ -3117,13 +3157,21 @@ static int snd_intel8x0_create(struct snd_card *card,
 		chip->bmaddr = pci_iomap(pci, 3, 0);
 	else
 		chip->bmaddr = pci_iomap(pci, 1, 0);
+<<<<<<< HEAD
+=======
+
+ port_inited:
+>>>>>>> v4.9.227
 	if (!chip->bmaddr) {
 		dev_err(card->dev, "Controller space ioremap problem\n");
 		snd_intel8x0_free(chip);
 		return -EIO;
 	}
+<<<<<<< HEAD
 
  port_inited:
+=======
+>>>>>>> v4.9.227
 	chip->bdbars_count = bdbars[device_type];
 
 	/* initialize offsets */

@@ -7,6 +7,10 @@
 #include <linux/sched.h>
 #include <linux/hardirq.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 #include <asm/current.h>
 #include <asm/pgtable.h>
 #include <asm/tlbflush.h>
@@ -35,10 +39,17 @@ int handle_page_fault(unsigned long address, unsigned long ip,
 	*code_out = SEGV_MAPERR;
 
 	/*
+<<<<<<< HEAD
 	 * If the fault was during atomic operation, don't take the fault, just
 	 * fail.
 	 */
 	if (in_atomic())
+=======
+	 * If the fault was with pagefaults disabled, don't take the fault, just
+	 * fail.
+	 */
+	if (faulthandler_disabled())
+>>>>>>> v4.9.227
 		goto out_nosemaphore;
 
 	if (is_user)
@@ -72,7 +83,11 @@ good_area:
 	do {
 		int fault;
 
+<<<<<<< HEAD
 		fault = handle_mm_fault(mm, vma, address, flags);
+=======
+		fault = handle_mm_fault(vma, address, flags);
+>>>>>>> v4.9.227
 
 		if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 			goto out_nosemaphore;
@@ -172,7 +187,11 @@ static void bad_segv(struct faultinfo fi, unsigned long ip)
 void fatal_sigsegv(void)
 {
 	force_sigsegv(SIGSEGV, current);
+<<<<<<< HEAD
 	do_signal();
+=======
+	do_signal(&current->thread.regs);
+>>>>>>> v4.9.227
 	/*
 	 * This is to tell gcc that we're not returning - do_signal
 	 * can, in general, return, but in this case, it's not, since
@@ -219,8 +238,18 @@ unsigned long segv(struct faultinfo fi, unsigned long ip, int is_user,
 		show_regs(container_of(regs, struct pt_regs, regs));
 		panic("Segfault with no mm");
 	}
+<<<<<<< HEAD
 
 	if (SEGV_IS_FIXABLE(&fi) || SEGV_MAYBE_FIXABLE(&fi))
+=======
+	else if (!is_user && address > PAGE_SIZE && address < TASK_SIZE) {
+		show_regs(container_of(regs, struct pt_regs, regs));
+		panic("Kernel tried to access user memory at addr 0x%lx, ip 0x%lx",
+		       address, ip);
+	}
+
+	if (SEGV_IS_FIXABLE(&fi))
+>>>>>>> v4.9.227
 		err = handle_page_fault(address, ip, is_write, is_user,
 					&si.si_code);
 	else {

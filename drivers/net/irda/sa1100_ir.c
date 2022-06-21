@@ -38,7 +38,11 @@
 #include <net/irda/irda_device.h>
 
 #include <mach/hardware.h>
+<<<<<<< HEAD
 #include <asm/mach/irda.h>
+=======
+#include <linux/platform_data/irda-sa11x0.h>
+>>>>>>> v4.9.227
 
 static int power_level = 3;
 static int tx_lpm;
@@ -1114,7 +1118,10 @@ static struct platform_driver sa1100ir_driver = {
 	.resume		= sa1100_irda_resume,
 	.driver		= {
 		.name	= "sa11x0-ir",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

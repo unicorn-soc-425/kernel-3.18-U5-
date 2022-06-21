@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2013, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -52,12 +60,16 @@
 #include "../include/obd_support.h"
 #include "../include/lprocfs_status.h"
 
+<<<<<<< HEAD
 #include "../include/dt_object.h"
+=======
+>>>>>>> v4.9.227
 #include "../include/lustre_req_layout.h"
 #include "../include/lustre_fld.h"
 #include "../include/lustre_mdc.h"
 #include "fld_internal.h"
 
+<<<<<<< HEAD
 /* TODO: these 3 functions are copies of flow-control code from mdc_lib.c
  * It should be common thing. The same about mdc RPC lock */
 static int fld_req_avail(struct client_obd *cli, struct mdc_cache_waiter *mcw)
@@ -109,6 +121,8 @@ static void fld_exit_request(struct client_obd *cli)
 	client_obd_list_unlock(&cli->cl_loi_list_lock);
 }
 
+=======
+>>>>>>> v4.9.227
 static int fld_rrb_hash(struct lu_client_fld *fld, u64 seq)
 {
 	LASSERT(fld->lcf_count > 0);
@@ -125,17 +139,27 @@ fld_rrb_scan(struct lu_client_fld *fld, u64 seq)
 	 * it should go to index 0 directly, instead of calculating
 	 * hash again, and also if other MDTs is not being connected,
 	 * the fld lookup requests(for seq on MDT0) should not be
+<<<<<<< HEAD
 	 * blocked because of other MDTs */
+=======
+	 * blocked because of other MDTs
+	 */
+>>>>>>> v4.9.227
 	if (fid_seq_is_norm(seq))
 		hash = fld_rrb_hash(fld, seq);
 	else
 		hash = 0;
 
+<<<<<<< HEAD
+=======
+again:
+>>>>>>> v4.9.227
 	list_for_each_entry(target, &fld->lcf_targets, ft_chain) {
 		if (target->ft_idx == hash)
 			return target;
 	}
 
+<<<<<<< HEAD
 	CERROR("%s: Can't find target by hash %d (seq %#llx). Targets (%d):\n",
 		fld->lcf_name, hash, seq, fld->lcf_count);
 
@@ -143,6 +167,24 @@ fld_rrb_scan(struct lu_client_fld *fld, u64 seq)
 		const char *srv_name = target->ft_srv != NULL  ?
 			target->ft_srv->lsf_name : "<null>";
 		const char *exp_name = target->ft_exp != NULL ?
+=======
+	if (hash != 0) {
+		/* It is possible the remote target(MDT) are not connected to
+		 * with client yet, so we will refer this to MDT0, which should
+		 * be connected during mount
+		 */
+		hash = 0;
+		goto again;
+	}
+
+	CERROR("%s: Can't find target by hash %d (seq %#llx). Targets (%d):\n",
+	       fld->lcf_name, hash, seq, fld->lcf_count);
+
+	list_for_each_entry(target, &fld->lcf_targets, ft_chain) {
+		const char *srv_name = target->ft_srv ?
+			target->ft_srv->lsf_name : "<null>";
+		const char *exp_name = target->ft_exp ?
+>>>>>>> v4.9.227
 			(char *)target->ft_exp->exp_obd->obd_uuid.uuid :
 			"<null>";
 
@@ -175,13 +217,21 @@ fld_client_get_target(struct lu_client_fld *fld, u64 seq)
 {
 	struct lu_fld_target *target;
 
+<<<<<<< HEAD
 	LASSERT(fld->lcf_hash != NULL);
+=======
+	LASSERT(fld->lcf_hash);
+>>>>>>> v4.9.227
 
 	spin_lock(&fld->lcf_lock);
 	target = fld->lcf_hash->fh_scan_func(fld, seq);
 	spin_unlock(&fld->lcf_lock);
 
+<<<<<<< HEAD
 	if (target != NULL) {
+=======
+	if (target) {
+>>>>>>> v4.9.227
 		CDEBUG(D_INFO, "%s: Found target (idx %llu) by seq %#llx\n",
 		       fld->lcf_name, target->ft_idx, seq);
 	}
@@ -199,6 +249,7 @@ int fld_client_add_target(struct lu_client_fld *fld,
 	const char *name;
 	struct lu_fld_target *target, *tmp;
 
+<<<<<<< HEAD
 	LASSERT(tar != NULL);
 	name = fld_target_name(tar);
 	LASSERT(name != NULL);
@@ -215,13 +266,34 @@ int fld_client_add_target(struct lu_client_fld *fld,
 
 	OBD_ALLOC_PTR(target);
 	if (target == NULL)
+=======
+	LASSERT(tar);
+	name = fld_target_name(tar);
+	LASSERT(name);
+	LASSERT(tar->ft_srv || tar->ft_exp);
+
+	if (fld->lcf_flags != LUSTRE_FLD_INIT) {
+		CERROR("%s: Attempt to add target %s (idx %llu) on fly - skip it\n",
+		       fld->lcf_name, name, tar->ft_idx);
+		return 0;
+	}
+	CDEBUG(D_INFO, "%s: Adding target %s (idx %llu)\n",
+	       fld->lcf_name, name, tar->ft_idx);
+
+	target = kzalloc(sizeof(*target), GFP_NOFS);
+	if (!target)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	spin_lock(&fld->lcf_lock);
 	list_for_each_entry(tmp, &fld->lcf_targets, ft_chain) {
 		if (tmp->ft_idx == tar->ft_idx) {
 			spin_unlock(&fld->lcf_lock);
+<<<<<<< HEAD
 			OBD_FREE_PTR(target);
+=======
+			kfree(target);
+>>>>>>> v4.9.227
 			CERROR("Target %s exists in FLD and known as %s:#%llu\n",
 			       name, fld_target_name(tmp), tmp->ft_idx);
 			return -EEXIST;
@@ -229,13 +301,21 @@ int fld_client_add_target(struct lu_client_fld *fld,
 	}
 
 	target->ft_exp = tar->ft_exp;
+<<<<<<< HEAD
 	if (target->ft_exp != NULL)
+=======
+	if (target->ft_exp)
+>>>>>>> v4.9.227
 		class_export_get(target->ft_exp);
 	target->ft_srv = tar->ft_srv;
 	target->ft_idx = tar->ft_idx;
 
+<<<<<<< HEAD
 	list_add_tail(&target->ft_chain,
 			  &fld->lcf_targets);
+=======
+	list_add_tail(&target->ft_chain, &fld->lcf_targets);
+>>>>>>> v4.9.227
 
 	fld->lcf_count++;
 	spin_unlock(&fld->lcf_lock);
@@ -250,23 +330,35 @@ int fld_client_del_target(struct lu_client_fld *fld, __u64 idx)
 	struct lu_fld_target *target, *tmp;
 
 	spin_lock(&fld->lcf_lock);
+<<<<<<< HEAD
 	list_for_each_entry_safe(target, tmp,
 				     &fld->lcf_targets, ft_chain) {
+=======
+	list_for_each_entry_safe(target, tmp, &fld->lcf_targets, ft_chain) {
+>>>>>>> v4.9.227
 		if (target->ft_idx == idx) {
 			fld->lcf_count--;
 			list_del(&target->ft_chain);
 			spin_unlock(&fld->lcf_lock);
 
+<<<<<<< HEAD
 			if (target->ft_exp != NULL)
 				class_export_put(target->ft_exp);
 
 			OBD_FREE_PTR(target);
+=======
+			if (target->ft_exp)
+				class_export_put(target->ft_exp);
+
+			kfree(target);
+>>>>>>> v4.9.227
 			return 0;
 		}
 	}
 	spin_unlock(&fld->lcf_lock);
 	return -ENOENT;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(fld_client_del_target);
 
 struct proc_dir_entry *fld_type_proc_dir = NULL;
@@ -292,12 +384,38 @@ static int fld_client_proc_init(struct lu_client_fld *fld)
 	if (rc) {
 		CERROR("%s: Can't init FLD proc, rc %d\n",
 		       fld->lcf_name, rc);
+=======
+
+static struct dentry *fld_debugfs_dir;
+
+static int fld_client_debugfs_init(struct lu_client_fld *fld)
+{
+	int rc;
+
+	fld->lcf_debugfs_entry = ldebugfs_register(fld->lcf_name,
+						   fld_debugfs_dir,
+						   NULL, NULL);
+
+	if (IS_ERR_OR_NULL(fld->lcf_debugfs_entry)) {
+		CERROR("%s: LdebugFS failed in fld-init\n", fld->lcf_name);
+		rc = fld->lcf_debugfs_entry ? PTR_ERR(fld->lcf_debugfs_entry)
+					    : -ENOMEM;
+		fld->lcf_debugfs_entry = NULL;
+		return rc;
+	}
+
+	rc = ldebugfs_add_vars(fld->lcf_debugfs_entry,
+			       fld_client_debugfs_list, fld);
+	if (rc) {
+		CERROR("%s: Can't init FLD debufs, rc %d\n", fld->lcf_name, rc);
+>>>>>>> v4.9.227
 		goto out_cleanup;
 	}
 
 	return 0;
 
 out_cleanup:
+<<<<<<< HEAD
 	fld_client_proc_fini(fld);
 	return rc;
 }
@@ -322,6 +440,18 @@ void fld_client_proc_fini(struct lu_client_fld *fld)
 }
 #endif
 EXPORT_SYMBOL(fld_client_proc_fini);
+=======
+	fld_client_debugfs_fini(fld);
+	return rc;
+}
+
+void fld_client_debugfs_fini(struct lu_client_fld *fld)
+{
+	if (!IS_ERR_OR_NULL(fld->lcf_debugfs_entry))
+		ldebugfs_remove(&fld->lcf_debugfs_entry);
+}
+EXPORT_SYMBOL(fld_client_debugfs_fini);
+>>>>>>> v4.9.227
 
 static inline int hash_is_sane(int hash)
 {
@@ -334,8 +464,11 @@ int fld_client_init(struct lu_client_fld *fld,
 	int cache_size, cache_threshold;
 	int rc;
 
+<<<<<<< HEAD
 	LASSERT(fld != NULL);
 
+=======
+>>>>>>> v4.9.227
 	snprintf(fld->lcf_name, sizeof(fld->lcf_name),
 		 "cli-%s", prefix);
 
@@ -365,7 +498,11 @@ int fld_client_init(struct lu_client_fld *fld,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	rc = fld_client_proc_init(fld);
+=======
+	rc = fld_client_debugfs_init(fld);
+>>>>>>> v4.9.227
 	if (rc)
 		goto out;
 out:
@@ -383,6 +520,7 @@ void fld_client_fini(struct lu_client_fld *fld)
 	struct lu_fld_target *target, *tmp;
 
 	spin_lock(&fld->lcf_lock);
+<<<<<<< HEAD
 	list_for_each_entry_safe(target, tmp,
 				     &fld->lcf_targets, ft_chain) {
 		fld->lcf_count--;
@@ -394,6 +532,18 @@ void fld_client_fini(struct lu_client_fld *fld)
 	spin_unlock(&fld->lcf_lock);
 
 	if (fld->lcf_cache != NULL) {
+=======
+	list_for_each_entry_safe(target, tmp, &fld->lcf_targets, ft_chain) {
+		fld->lcf_count--;
+		list_del(&target->ft_chain);
+		if (target->ft_exp)
+			class_export_put(target->ft_exp);
+		kfree(target);
+	}
+	spin_unlock(&fld->lcf_lock);
+
+	if (fld->lcf_cache) {
+>>>>>>> v4.9.227
 		if (!IS_ERR(fld->lcf_cache))
 			fld_cache_fini(fld->lcf_cache);
 		fld->lcf_cache = NULL;
@@ -402,6 +552,7 @@ void fld_client_fini(struct lu_client_fld *fld)
 EXPORT_SYMBOL(fld_client_fini);
 
 int fld_client_rpc(struct obd_export *exp,
+<<<<<<< HEAD
 		   struct lu_seq_range *range, __u32 fld_op)
 {
 	struct ptlrpc_request *req;
@@ -424,11 +575,61 @@ int fld_client_rpc(struct obd_export *exp,
 	prange = req_capsule_client_get(&req->rq_pill, &RMF_FLD_MDFLD);
 	*prange = *range;
 
+=======
+		   struct lu_seq_range *range, __u32 fld_op,
+		   struct ptlrpc_request **reqp)
+{
+	struct ptlrpc_request *req = NULL;
+	struct lu_seq_range   *prange;
+	__u32		 *op;
+	int		    rc = 0;
+	struct obd_import     *imp;
+
+	LASSERT(exp);
+
+	imp = class_exp2cliimp(exp);
+	switch (fld_op) {
+	case FLD_QUERY:
+		req = ptlrpc_request_alloc_pack(imp, &RQF_FLD_QUERY,
+						LUSTRE_MDS_VERSION, FLD_QUERY);
+		if (!req)
+			return -ENOMEM;
+
+		/*
+		 * XXX: only needed when talking to old server(< 2.6), it should
+		 * be removed when < 2.6 server is not supported
+		 */
+		op = req_capsule_client_get(&req->rq_pill, &RMF_FLD_OPC);
+		*op = FLD_LOOKUP;
+
+		if (imp->imp_connect_flags_orig & OBD_CONNECT_MDS_MDS)
+			req->rq_allow_replay = 1;
+		break;
+	case FLD_READ:
+		req = ptlrpc_request_alloc_pack(imp, &RQF_FLD_READ,
+						LUSTRE_MDS_VERSION, FLD_READ);
+		if (!req)
+			return -ENOMEM;
+
+		req_capsule_set_size(&req->rq_pill, &RMF_GENERIC_DATA,
+				     RCL_SERVER, PAGE_SIZE);
+		break;
+	default:
+		rc = -EINVAL;
+		break;
+	}
+	if (rc)
+		return rc;
+
+	prange = req_capsule_client_get(&req->rq_pill, &RMF_FLD_MDFLD);
+	*prange = *range;
+>>>>>>> v4.9.227
 	ptlrpc_request_set_replen(req);
 	req->rq_request_portal = FLD_REQUEST_PORTAL;
 	req->rq_reply_portal = MDC_REPLY_PORTAL;
 	ptlrpc_at_set_req_timeout(req);
 
+<<<<<<< HEAD
 	if (fld_op == FLD_LOOKUP &&
 	    imp->imp_connect_flags_orig & OBD_CONNECT_MDS_MDS)
 		req->rq_allow_replay = 1;
@@ -451,6 +652,32 @@ int fld_client_rpc(struct obd_export *exp,
 	*range = *prange;
 out_req:
 	ptlrpc_req_finished(req);
+=======
+	obd_get_request_slot(&exp->exp_obd->u.cli);
+	rc = ptlrpc_queue_wait(req);
+	obd_put_request_slot(&exp->exp_obd->u.cli);
+	if (rc)
+		goto out_req;
+
+	if (fld_op == FLD_QUERY) {
+		prange = req_capsule_server_get(&req->rq_pill, &RMF_FLD_MDFLD);
+		if (!prange) {
+			rc = -EFAULT;
+			goto out_req;
+		}
+		*range = *prange;
+	}
+
+out_req:
+	if (rc || !reqp) {
+		ptlrpc_req_finished(req);
+		req = NULL;
+	}
+
+	if (reqp)
+		*reqp = req;
+
+>>>>>>> v4.9.227
 	return rc;
 }
 
@@ -471,6 +698,7 @@ int fld_client_lookup(struct lu_client_fld *fld, u64 seq, u32 *mds,
 
 	/* Can not find it in the cache */
 	target = fld_client_get_target(fld, seq);
+<<<<<<< HEAD
 	LASSERT(target != NULL);
 
 	CDEBUG(D_INFO, "%s: Lookup fld entry (seq: %#llx) on target %s (idx %llu)\n",
@@ -479,6 +707,16 @@ int fld_client_lookup(struct lu_client_fld *fld, u64 seq, u32 *mds,
 	res.lsr_start = seq;
 	fld_range_set_type(&res, flags);
 	rc = fld_client_rpc(target->ft_exp, &res, FLD_LOOKUP);
+=======
+	LASSERT(target);
+
+	CDEBUG(D_INFO, "%s: Lookup fld entry (seq: %#llx) on target %s (idx %llu)\n",
+	       fld->lcf_name, seq, fld_target_name(target), target->ft_idx);
+
+	res.lsr_start = seq;
+	fld_range_set_type(&res, flags);
+	rc = fld_client_rpc(target->ft_exp, &res, FLD_QUERY, NULL);
+>>>>>>> v4.9.227
 
 	if (rc == 0) {
 		*mds = res.lsr_index;
@@ -493,6 +731,7 @@ void fld_client_flush(struct lu_client_fld *fld)
 {
 	fld_cache_flush(fld->lcf_cache);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(fld_client_flush);
 
 static int __init fld_mod_init(void)
@@ -517,3 +756,27 @@ MODULE_LICENSE("GPL");
 
 module_init(fld_mod_init)
 module_exit(fld_mod_exit)
+=======
+
+static int __init fld_init(void)
+{
+	fld_debugfs_dir = ldebugfs_register(LUSTRE_FLD_NAME,
+					    debugfs_lustre_root,
+					    NULL, NULL);
+	return PTR_ERR_OR_ZERO(fld_debugfs_dir);
+}
+
+static void __exit fld_exit(void)
+{
+	if (!IS_ERR_OR_NULL(fld_debugfs_dir))
+		ldebugfs_remove(&fld_debugfs_dir);
+}
+
+MODULE_AUTHOR("OpenSFS, Inc. <http://www.lustre.org/>");
+MODULE_DESCRIPTION("Lustre FID Location Database");
+MODULE_VERSION(LUSTRE_VERSION_STRING);
+MODULE_LICENSE("GPL");
+
+module_init(fld_init)
+module_exit(fld_exit)
+>>>>>>> v4.9.227

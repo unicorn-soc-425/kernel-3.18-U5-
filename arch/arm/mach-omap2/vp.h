@@ -21,6 +21,7 @@
 
 struct voltagedomain;
 
+<<<<<<< HEAD
 /*
  * Voltage Processor (VP) identifiers
  */
@@ -30,6 +31,8 @@ struct voltagedomain;
 #define OMAP4_VP_VDD_IVA_ID 1
 #define OMAP4_VP_VDD_MPU_ID 2
 
+=======
+>>>>>>> v4.9.227
 /* XXX document */
 #define VP_IDLE_TIMEOUT		200
 #define VP_TRANXDONE_TIMEOUT	300

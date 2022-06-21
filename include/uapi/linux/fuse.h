@@ -102,6 +102,19 @@
  *  - add ctime and ctimensec to fuse_setattr_in
  *  - add FUSE_RENAME2 request
  *  - add FUSE_NO_OPEN_SUPPORT flag
+<<<<<<< HEAD
+=======
+ *
+ *  7.24
+ *  - add FUSE_LSEEK for SEEK_HOLE and SEEK_DATA support
+ *
+ *  7.25
+ *  - add FUSE_PARALLEL_DIROPS
+ *
+ *  7.26
+ *  - add FUSE_HANDLE_KILLPRIV
+ *  - add FUSE_POSIX_ACL
+>>>>>>> v4.9.227
  */
 
 #ifndef _LINUX_FUSE_H
@@ -137,7 +150,11 @@
 #define FUSE_KERNEL_VERSION 7
 
 /** Minor version number of this interface */
+<<<<<<< HEAD
 #define FUSE_KERNEL_MINOR_VERSION 23
+=======
+#define FUSE_KERNEL_MINOR_VERSION 26
+>>>>>>> v4.9.227
 
 /** The node ID of the root inode */
 #define FUSE_ROOT_ID 1
@@ -205,10 +222,18 @@ struct fuse_file_lock {
  * FOPEN_DIRECT_IO: bypass page cache for this open file
  * FOPEN_KEEP_CACHE: don't invalidate the data cache on open
  * FOPEN_NONSEEKABLE: the file is not seekable
+<<<<<<< HEAD
+=======
+ * FOPEN_STREAM: the file is stream-like (no file position at all)
+>>>>>>> v4.9.227
  */
 #define FOPEN_DIRECT_IO		(1 << 0)
 #define FOPEN_KEEP_CACHE	(1 << 1)
 #define FOPEN_NONSEEKABLE	(1 << 2)
+<<<<<<< HEAD
+=======
+#define FOPEN_STREAM		(1 << 4)
+>>>>>>> v4.9.227
 
 /**
  * INIT request/reply flags
@@ -231,6 +256,12 @@ struct fuse_file_lock {
  * FUSE_ASYNC_DIO: asynchronous direct I/O submission
  * FUSE_WRITEBACK_CACHE: use writeback cache for buffered writes
  * FUSE_NO_OPEN_SUPPORT: kernel supports zero-message opens
+<<<<<<< HEAD
+=======
+ * FUSE_PARALLEL_DIROPS: allow parallel lookups and readdir
+ * FUSE_HANDLE_KILLPRIV: fs handles killing suid/sgid/cap on write/chown/trunc
+ * FUSE_POSIX_ACL: filesystem supports posix acls
+>>>>>>> v4.9.227
  */
 #define FUSE_ASYNC_READ		(1 << 0)
 #define FUSE_POSIX_LOCKS	(1 << 1)
@@ -250,9 +281,15 @@ struct fuse_file_lock {
 #define FUSE_ASYNC_DIO		(1 << 15)
 #define FUSE_WRITEBACK_CACHE	(1 << 16)
 #define FUSE_NO_OPEN_SUPPORT	(1 << 17)
+<<<<<<< HEAD
 
 #define FUSE_RESERVE_SPACE	(1 << 30)
 #define FUSE_SHORTCIRCUIT	(1 << 31)
+=======
+#define FUSE_PARALLEL_DIROPS    (1 << 18)
+#define FUSE_HANDLE_KILLPRIV	(1 << 19)
+#define FUSE_POSIX_ACL		(1 << 20)
+>>>>>>> v4.9.227
 
 /**
  * CUSE INIT request/reply flags
@@ -361,7 +398,11 @@ enum fuse_opcode {
 	FUSE_FALLOCATE     = 43,
 	FUSE_READDIRPLUS   = 44,
 	FUSE_RENAME2       = 45,
+<<<<<<< HEAD
 	FUSE_CANONICAL_PATH= 2016,
+=======
+	FUSE_LSEEK         = 46,
+>>>>>>> v4.9.227
 
 	/* CUSE specific operations */
 	CUSE_INIT          = 4096,
@@ -484,7 +525,11 @@ struct fuse_create_in {
 struct fuse_open_out {
 	uint64_t	fh;
 	uint32_t	open_flags;
+<<<<<<< HEAD
 	int32_t         lower_fd;/* lower layer file descriptor */
+=======
+	uint32_t	padding;
+>>>>>>> v4.9.227
 };
 
 struct fuse_release_in {
@@ -591,8 +636,12 @@ struct fuse_init_out {
 	uint16_t	congestion_threshold;
 	uint32_t	max_write;
 	uint32_t	time_gran;
+<<<<<<< HEAD
 	uint32_t	reserved_space_mb;
 	uint32_t	unused[8];
+=======
+	uint32_t	unused[9];
+>>>>>>> v4.9.227
 };
 
 #define CUSE_INIT_INFO_MAX 4096
@@ -760,4 +809,21 @@ struct fuse_notify_retrieve_in {
 	uint64_t	dummy4;
 };
 
+<<<<<<< HEAD
+=======
+/* Device ioctls: */
+#define FUSE_DEV_IOC_CLONE	_IOR(229, 0, uint32_t)
+
+struct fuse_lseek_in {
+	uint64_t	fh;
+	uint64_t	offset;
+	uint32_t	whence;
+	uint32_t	padding;
+};
+
+struct fuse_lseek_out {
+	uint64_t	offset;
+};
+
+>>>>>>> v4.9.227
 #endif /* _LINUX_FUSE_H */

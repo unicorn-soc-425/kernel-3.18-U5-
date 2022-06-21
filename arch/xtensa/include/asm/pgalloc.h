@@ -44,7 +44,11 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm,
 	pte_t *ptep;
 	int i;
 
+<<<<<<< HEAD
 	ptep = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_REPEAT);
+=======
+	ptep = (pte_t *)__get_free_page(GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!ptep)
 		return NULL;
 	for (i = 0; i < 1024; i++)

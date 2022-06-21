@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2002, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -50,6 +58,7 @@
 #include "lustre/lustre_idl.h"
 #include "lustre_dlm.h"
 
+<<<<<<< HEAD
 struct mds_client_data;
 struct mdt_client_data;
 struct mds_idmap_table;
@@ -134,6 +143,8 @@ do {									   \
 		 "stat %p nid_exp_ref_count < 0\n", nidstat);		  \
 } while (0)
 
+=======
+>>>>>>> v4.9.227
 enum obd_option {
 	OBD_OPT_FORCE =	 0x0001,
 	OBD_OPT_FAILOVER =      0x0002,
@@ -175,6 +186,7 @@ struct obd_export {
 	/** To link all exports on an obd device */
 	struct list_head		exp_obd_chain;
 	struct hlist_node	  exp_uuid_hash; /** uuid-export hash*/
+<<<<<<< HEAD
 	struct hlist_node	  exp_nid_hash; /** nid-export hash */
 	/**
 	 * All exports eligible for ping evictor are linked into a list
@@ -183,6 +195,8 @@ struct obd_export {
 	 * protected by obd_dev_lock
 	 */
 	struct list_head		exp_obd_chain_timed;
+=======
+>>>>>>> v4.9.227
 	/** Obd device of this export */
 	struct obd_device	*exp_obd;
 	/**
@@ -190,7 +204,10 @@ struct obd_export {
 	 * exp_lock protect its change
 	 */
 	struct obd_import	*exp_imp_reverse;
+<<<<<<< HEAD
 	struct nid_stat	  *exp_nid_stats;
+=======
+>>>>>>> v4.9.227
 	struct lprocfs_stats     *exp_md_stats;
 	/** Active connection */
 	struct ptlrpc_connection *exp_connection;
@@ -208,8 +225,11 @@ struct obd_export {
 	spinlock_t		  exp_uncommitted_replies_lock;
 	/** Last committed transno for this export */
 	__u64		     exp_last_committed;
+<<<<<<< HEAD
 	/** When was last request received */
 	unsigned long		exp_last_request_time;
+=======
+>>>>>>> v4.9.227
 	/** On replay all requests waiting for replay are linked here */
 	struct list_head		exp_req_replay_queue;
 	/**
@@ -218,6 +238,7 @@ struct obd_export {
 	 */
 	spinlock_t		  exp_lock;
 	/** Compatibility flags for this export are embedded into
+<<<<<<< HEAD
 	 *  exp_connect_data */
 	struct obd_connect_data   exp_connect_data;
 	enum obd_option	   exp_flags;
@@ -241,11 +262,26 @@ struct obd_export {
 				  /* if to swap nidtbl entries for 2.2 clients.
 				   * Only used by the MGS to fix LU-1644. */
 				  exp_need_mne_swab:1;
+=======
+	 *  exp_connect_data
+	 */
+	struct obd_connect_data   exp_connect_data;
+	enum obd_option	   exp_flags;
+	unsigned long	     exp_failed:1,
+				  exp_disconnected:1,
+				  exp_connecting:1,
+				  exp_flvr_changed:1,
+				  exp_flvr_adapt:1;
+>>>>>>> v4.9.227
 	/* also protected by exp_lock */
 	enum lustre_sec_part      exp_sp_peer;
 	struct sptlrpc_flavor     exp_flvr;	     /* current */
 	struct sptlrpc_flavor     exp_flvr_old[2];      /* about-to-expire */
+<<<<<<< HEAD
 	unsigned long		exp_flvr_expire[2];   /* seconds */
+=======
+	time64_t		  exp_flvr_expire[2];   /* seconds */
+>>>>>>> v4.9.227
 
 	/** protects exp_hp_rpcs */
 	spinlock_t		  exp_rpc_lock;
@@ -254,6 +290,7 @@ struct obd_export {
 	/** blocking dlm lock list, protected by exp_bl_list_lock */
 	struct list_head		exp_bl_list;
 	spinlock_t		  exp_bl_list_lock;
+<<<<<<< HEAD
 
 	/** Target specific data */
 	union {
@@ -270,6 +307,10 @@ struct obd_export {
 #define exp_filter_data u.eu_filter_data
 #define exp_ec_data     u.eu_ec_data
 
+=======
+};
+
+>>>>>>> v4.9.227
 static inline __u64 *exp_connect_flags_ptr(struct obd_export *exp)
 {
 	return &exp->exp_connect_data.ocd_connect_flags;
@@ -282,7 +323,10 @@ static inline __u64 exp_connect_flags(struct obd_export *exp)
 
 static inline int exp_max_brw_size(struct obd_export *exp)
 {
+<<<<<<< HEAD
 	LASSERT(exp != NULL);
+=======
+>>>>>>> v4.9.227
 	if (exp_connect_flags(exp) & OBD_CONNECT_BRW_SIZE)
 		return exp->exp_connect_data.ocd_brw_size;
 
@@ -294,6 +338,7 @@ static inline int exp_connect_multibulk(struct obd_export *exp)
 	return exp_max_brw_size(exp) > ONE_MB_BRW_SIZE;
 }
 
+<<<<<<< HEAD
 static inline int exp_expired(struct obd_export *exp, long age)
 {
 	LASSERT(exp->exp_delayed);
@@ -304,11 +349,16 @@ static inline int exp_expired(struct obd_export *exp, long age)
 static inline int exp_connect_cancelset(struct obd_export *exp)
 {
 	LASSERT(exp != NULL);
+=======
+static inline int exp_connect_cancelset(struct obd_export *exp)
+{
+>>>>>>> v4.9.227
 	return !!(exp_connect_flags(exp) & OBD_CONNECT_CANCELSET);
 }
 
 static inline int exp_connect_lru_resize(struct obd_export *exp)
 {
+<<<<<<< HEAD
 	LASSERT(exp != NULL);
 	return !!(exp_connect_flags(exp) & OBD_CONNECT_LRU_RESIZE);
 }
@@ -331,12 +381,22 @@ static inline int exp_connect_vbr(struct obd_export *exp)
 {
 	LASSERT(exp != NULL);
 	LASSERT(exp->exp_connection);
+=======
+	return !!(exp_connect_flags(exp) & OBD_CONNECT_LRU_RESIZE);
+}
+
+static inline int exp_connect_vbr(struct obd_export *exp)
+{
+>>>>>>> v4.9.227
 	return !!(exp_connect_flags(exp) & OBD_CONNECT_VBR);
 }
 
 static inline int exp_connect_som(struct obd_export *exp)
 {
+<<<<<<< HEAD
 	LASSERT(exp != NULL);
+=======
+>>>>>>> v4.9.227
 	return !!(exp_connect_flags(exp) & OBD_CONNECT_SOM);
 }
 
@@ -349,7 +409,10 @@ static inline int imp_connect_lru_resize(struct obd_import *imp)
 {
 	struct obd_connect_data *ocd;
 
+<<<<<<< HEAD
 	LASSERT(imp != NULL);
+=======
+>>>>>>> v4.9.227
 	ocd = &imp->imp_connect_data;
 	return !!(ocd->ocd_connect_flags & OBD_CONNECT_LRU_RESIZE);
 }
@@ -361,7 +424,10 @@ static inline int exp_connect_layout(struct obd_export *exp)
 
 static inline bool exp_connect_lvb_type(struct obd_export *exp)
 {
+<<<<<<< HEAD
 	LASSERT(exp != NULL);
+=======
+>>>>>>> v4.9.227
 	if (exp_connect_flags(exp) & OBD_CONNECT_LVB_TYPE)
 		return true;
 	else
@@ -372,7 +438,10 @@ static inline bool imp_connect_lvb_type(struct obd_import *imp)
 {
 	struct obd_connect_data *ocd;
 
+<<<<<<< HEAD
 	LASSERT(imp != NULL);
+=======
+>>>>>>> v4.9.227
 	ocd = &imp->imp_connect_data;
 	if (ocd->ocd_connect_flags & OBD_CONNECT_LVB_TYPE)
 		return true;
@@ -392,13 +461,27 @@ static inline bool imp_connect_disp_stripe(struct obd_import *imp)
 {
 	struct obd_connect_data *ocd;
 
+<<<<<<< HEAD
 	LASSERT(imp != NULL);
+=======
+>>>>>>> v4.9.227
 	ocd = &imp->imp_connect_data;
 	return ocd->ocd_connect_flags & OBD_CONNECT_DISP_STRIPE;
 }
 
+<<<<<<< HEAD
 extern struct obd_export *class_conn2export(struct lustre_handle *conn);
 extern struct obd_device *class_conn2obd(struct lustre_handle *conn);
+=======
+struct obd_export *class_conn2export(struct lustre_handle *conn);
+
+#define KKUC_CT_DATA_MAGIC	0x092013cea
+struct kkuc_ct_data {
+	__u32		kcd_magic;
+	struct obd_uuid	kcd_uuid;
+	__u32		kcd_archive;
+};
+>>>>>>> v4.9.227
 
 /** @} export */
 

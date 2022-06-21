@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 * Renesas R-Car Timer Unit (TMU)
+=======
+* Renesas R-Mobile/R-Car Timer Unit (TMU)
+>>>>>>> v4.9.227
 
 The TMU is a 32-bit timer/counter with configurable clock inputs and
 programmable compare match.
@@ -9,6 +13,11 @@ are independent. The TMU hardware supports up to three channels.
 Required Properties:
 
   - compatible: must contain one or more of the following:
+<<<<<<< HEAD
+=======
+    - "renesas,tmu-r8a7740" for the r8a7740 TMU
+    - "renesas,tmu-r8a7778" for the r8a7778 TMU
+>>>>>>> v4.9.227
     - "renesas,tmu-r8a7779" for the r8a7779 TMU
     - "renesas,tmu" for any TMU.
       This is a fallback for the above renesas,tmu-* entries

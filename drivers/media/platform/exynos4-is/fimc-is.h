@@ -22,7 +22,11 @@
 #include <linux/sizes.h>
 #include <linux/spinlock.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-ctrls.h>
 
 #include "fimc-isp.h"
@@ -77,6 +81,12 @@ enum {
 	ISS_CLK_DRC,
 	ISS_CLK_FD,
 	ISS_CLK_MCUISP,
+<<<<<<< HEAD
+=======
+	ISS_CLK_GICISP,
+	ISS_CLK_PWM_ISP,
+	ISS_CLK_MCUCTL_ISP,
+>>>>>>> v4.9.227
 	ISS_CLK_UART,
 	ISS_GATE_CLKS_MAX,
 	ISS_CLK_ISP_DIV0 = ISS_GATE_CLKS_MAX,
@@ -233,7 +243,10 @@ struct chain_config {
  * @pdev: pointer to FIMC-IS platform device
  * @pctrl: pointer to pinctrl structure for this device
  * @v4l2_dev: pointer to top the level v4l2_device
+<<<<<<< HEAD
  * @alloc_ctx: videobuf2 memory allocator context
+=======
+>>>>>>> v4.9.227
  * @lock: mutex serializing video device and the subdev operations
  * @slock: spinlock protecting this data structure and the hw registers
  * @clocks: FIMC-LITE gate clock
@@ -256,7 +269,10 @@ struct fimc_is {
 	struct fimc_is_sensor		sensor[FIMC_IS_SENSORS_NUM];
 	struct fimc_is_setfile		setfile;
 
+<<<<<<< HEAD
 	struct vb2_alloc_ctx		*alloc_ctx;
+=======
+>>>>>>> v4.9.227
 	struct v4l2_ctrl_handler	ctrl_handler;
 
 	struct mutex			lock;

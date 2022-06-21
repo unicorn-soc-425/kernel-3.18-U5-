@@ -17,5 +17,9 @@ ath5k-y				+= ani.o
 ath5k-y				+= sysfs.o
 ath5k-y				+= mac80211-ops.o
 ath5k-$(CONFIG_ATH5K_DEBUG)	+= debug.o
+<<<<<<< HEAD
+=======
+ath5k-$(CONFIG_ATH5K_AHB)	+= ahb.o
+>>>>>>> v4.9.227
 ath5k-$(CONFIG_ATH5K_PCI)	+= pci.o
 obj-$(CONFIG_ATH5K)		+= ath5k.o

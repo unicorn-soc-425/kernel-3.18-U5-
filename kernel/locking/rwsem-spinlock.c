@@ -85,6 +85,16 @@ __rwsem_do_wake(struct rw_semaphore *sem, int wakewrite)
 
 		list_del(&waiter->list);
 		tsk = waiter->task;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure we do not wakeup the next reader before
+		 * setting the nil condition to grant the next reader;
+		 * otherwise we could miss the wakeup on the other
+		 * side and end up sleeping again. See the pairing
+		 * in rwsem_down_read_failed().
+		 */
+>>>>>>> v4.9.227
 		smp_mb();
 		waiter->task = NULL;
 		wake_up_process(tsk);
@@ -154,7 +164,11 @@ void __sched __down_read(struct rw_semaphore *sem)
 		set_task_state(tsk, TASK_UNINTERRUPTIBLE);
 	}
 
+<<<<<<< HEAD
 	tsk->state = TASK_RUNNING;
+=======
+	__set_task_state(tsk, TASK_RUNNING);
+>>>>>>> v4.9.227
  out:
 	;
 }
@@ -184,11 +198,19 @@ int __down_read_trylock(struct rw_semaphore *sem)
 /*
  * get a write lock on the semaphore
  */
+<<<<<<< HEAD
 void __sched __down_write_nested(struct rw_semaphore *sem, int subclass)
+=======
+int __sched __down_write_common(struct rw_semaphore *sem, int state)
+>>>>>>> v4.9.227
 {
 	struct rwsem_waiter waiter;
 	struct task_struct *tsk;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	int ret = 0;
+>>>>>>> v4.9.227
 
 	raw_spin_lock_irqsave(&sem->wait_lock, flags);
 
@@ -208,7 +230,13 @@ void __sched __down_write_nested(struct rw_semaphore *sem, int subclass)
 		 */
 		if (sem->count == 0)
 			break;
+<<<<<<< HEAD
 		set_task_state(tsk, TASK_UNINTERRUPTIBLE);
+=======
+		if (signal_pending_state(state, current))
+			goto out_nolock;
+		set_task_state(tsk, state);
+>>>>>>> v4.9.227
 		raw_spin_unlock_irqrestore(&sem->wait_lock, flags);
 		schedule();
 		raw_spin_lock_irqsave(&sem->wait_lock, flags);
@@ -218,11 +246,33 @@ void __sched __down_write_nested(struct rw_semaphore *sem, int subclass)
 	list_del(&waiter.list);
 
 	raw_spin_unlock_irqrestore(&sem->wait_lock, flags);
+<<<<<<< HEAD
+=======
+
+	return ret;
+
+out_nolock:
+	list_del(&waiter.list);
+	if (!list_empty(&sem->wait_list) && sem->count >= 0)
+		__rwsem_do_wake(sem, 0);
+	raw_spin_unlock_irqrestore(&sem->wait_lock, flags);
+
+	return -EINTR;
+>>>>>>> v4.9.227
 }
 
 void __sched __down_write(struct rw_semaphore *sem)
 {
+<<<<<<< HEAD
 	__down_write_nested(sem, 0);
+=======
+	__down_write_common(sem, TASK_UNINTERRUPTIBLE);
+}
+
+int __sched __down_write_killable(struct rw_semaphore *sem)
+{
+	return __down_write_common(sem, TASK_KILLABLE);
+>>>>>>> v4.9.227
 }
 
 /*

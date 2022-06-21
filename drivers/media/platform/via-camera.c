@@ -19,7 +19,11 @@
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-image-sizes.h>
+<<<<<<< HEAD
 #include <media/ov7670.h>
+=======
+#include <media/i2c/ov7670.h>
+>>>>>>> v4.9.227
 #include <media/videobuf-dma-sg.h>
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -101,7 +105,11 @@ struct via_camera {
 	 */
 	struct v4l2_pix_format sensor_format;
 	struct v4l2_pix_format user_format;
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode mbus_code;
+=======
+	u32 mbus_code;
+>>>>>>> v4.9.227
 };
 
 /*
@@ -143,12 +151,20 @@ static struct via_format {
 	__u8 *desc;
 	__u32 pixelformat;
 	int bpp;   /* Bytes per pixel */
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode mbus_code;
+=======
+	u32 mbus_code;
+>>>>>>> v4.9.227
 } via_formats[] = {
 	{
 		.desc		= "YUYV 4:2:2",
 		.pixelformat	= V4L2_PIX_FMT_YUYV,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_YUYV8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_YUYV8_2X8,
+>>>>>>> v4.9.227
 		.bpp		= 2,
 	},
 	/* RGB444 and Bayer should be doable, but have never been
@@ -240,7 +256,11 @@ static int viacam_set_flip(struct via_camera *cam)
 	memset(&ctrl, 0, sizeof(ctrl));
 	ctrl.id = V4L2_CID_VFLIP;
 	ctrl.value = flip_image;
+<<<<<<< HEAD
 	return sensor_call(cam, core, s_ctrl, &ctrl);
+=======
+	return v4l2_s_ctrl(NULL, cam->sensor->ctrl_handler, &ctrl);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -249,6 +269,7 @@ static int viacam_set_flip(struct via_camera *cam)
  */
 static int viacam_configure_sensor(struct via_camera *cam)
 {
+<<<<<<< HEAD
 	struct v4l2_mbus_framefmt mbus_fmt;
 	int ret;
 
@@ -256,6 +277,17 @@ static int viacam_configure_sensor(struct via_camera *cam)
 	ret = sensor_call(cam, core, init, 0);
 	if (ret == 0)
 		ret = sensor_call(cam, video, s_mbus_fmt, &mbus_fmt);
+=======
+	struct v4l2_subdev_format format = {
+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+	};
+	int ret;
+
+	v4l2_fill_mbus_format(&format.format, &cam->sensor_format, cam->mbus_code);
+	ret = sensor_call(cam, core, init, 0);
+	if (ret == 0)
+		ret = sensor_call(cam, pad, set_fmt, NULL, &format);
+>>>>>>> v4.9.227
 	/*
 	 * OV7670 does weird things if flip is set *before* format...
 	 */
@@ -849,7 +881,11 @@ static const struct v4l2_pix_format viacam_def_pix_format = {
 	.sizeimage	= VGA_WIDTH * VGA_HEIGHT * 2,
 };
 
+<<<<<<< HEAD
 static const enum v4l2_mbus_pixelcode via_def_mbus_code = V4L2_MBUS_FMT_YUYV8_2X8;
+=======
+static const u32 via_def_mbus_code = MEDIA_BUS_FMT_YUYV8_2X8;
+>>>>>>> v4.9.227
 
 static int viacam_enum_fmt_vid_cap(struct file *filp, void *priv,
 		struct v4l2_fmtdesc *fmt)
@@ -903,14 +939,27 @@ static int viacam_do_try_fmt(struct via_camera *cam,
 		struct v4l2_pix_format *upix, struct v4l2_pix_format *spix)
 {
 	int ret;
+<<<<<<< HEAD
 	struct v4l2_mbus_framefmt mbus_fmt;
+=======
+	struct v4l2_subdev_pad_config pad_cfg;
+	struct v4l2_subdev_format format = {
+		.which = V4L2_SUBDEV_FORMAT_TRY,
+	};
+>>>>>>> v4.9.227
 	struct via_format *f = via_find_format(upix->pixelformat);
 
 	upix->pixelformat = f->pixelformat;
 	viacam_fmt_pre(upix, spix);
+<<<<<<< HEAD
 	v4l2_fill_mbus_format(&mbus_fmt, spix, f->mbus_code);
 	ret = sensor_call(cam, video, try_mbus_fmt, &mbus_fmt);
 	v4l2_fill_pix_format(spix, &mbus_fmt);
+=======
+	v4l2_fill_mbus_format(&format.format, spix, f->mbus_code);
+	ret = sensor_call(cam, pad, set_fmt, &pad_cfg, &format);
+	v4l2_fill_pix_format(spix, &format.format);
+>>>>>>> v4.9.227
 	viacam_fmt_post(upix, spix);
 	return ret;
 }
@@ -985,9 +1034,15 @@ static int viacam_querycap(struct file *filp, void *priv,
 {
 	strcpy(cap->driver, "via-camera");
 	strcpy(cap->card, "via-camera");
+<<<<<<< HEAD
 	cap->version = 1;
 	cap->capabilities = V4L2_CAP_VIDEO_CAPTURE |
 		V4L2_CAP_READWRITE | V4L2_CAP_STREAMING;
+=======
+	cap->device_caps = V4L2_CAP_VIDEO_CAPTURE |
+		V4L2_CAP_READWRITE | V4L2_CAP_STREAMING;
+	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1147,12 +1202,32 @@ static int viacam_enum_frameintervals(struct file *filp, void *priv,
 		struct v4l2_frmivalenum *interval)
 {
 	struct via_camera *cam = priv;
+<<<<<<< HEAD
 	int ret;
 
 	mutex_lock(&cam->lock);
 	ret = sensor_call(cam, video, enum_frameintervals, interval);
 	mutex_unlock(&cam->lock);
 	return ret;
+=======
+	struct v4l2_subdev_frame_interval_enum fie = {
+		.index = interval->index,
+		.code = cam->mbus_code,
+		.width = cam->sensor_format.width,
+		.height = cam->sensor_format.height,
+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+	};
+	int ret;
+
+	mutex_lock(&cam->lock);
+	ret = sensor_call(cam, pad, enum_frame_interval, NULL, &fie);
+	mutex_unlock(&cam->lock);
+	if (ret)
+		return ret;
+	interval->type = V4L2_FRMIVAL_TYPE_DISCRETE;
+	interval->discrete = fie.interval;
+	return 0;
+>>>>>>> v4.9.227
 }
 
 

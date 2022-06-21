@@ -118,7 +118,11 @@ static irqreturn_t adjd_s311_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct adjd_s311_data *data = iio_priv(indio_dev);
+<<<<<<< HEAD
 	s64 time_ns = iio_get_time_ns();
+=======
+	s64 time_ns = iio_get_time_ns(indio_dev);
+>>>>>>> v4.9.227
 	int i, j = 0;
 
 	int ret = adjd_s311_req_data(indio_dev);

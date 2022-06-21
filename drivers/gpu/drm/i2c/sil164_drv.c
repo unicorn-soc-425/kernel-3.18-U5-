@@ -252,6 +252,7 @@ sil164_encoder_restore(struct drm_encoder *encoder)
 				     priv->saved_slave_state);
 }
 
+<<<<<<< HEAD
 static bool
 sil164_encoder_mode_fixup(struct drm_encoder *encoder,
 			  const struct drm_display_mode *mode,
@@ -260,6 +261,8 @@ sil164_encoder_mode_fixup(struct drm_encoder *encoder,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 static int
 sil164_encoder_mode_valid(struct drm_encoder *encoder,
 			  struct drm_display_mode *mode)
@@ -341,13 +344,20 @@ sil164_encoder_destroy(struct drm_encoder *encoder)
 	drm_i2c_encoder_destroy(encoder);
 }
 
+<<<<<<< HEAD
 static struct drm_encoder_slave_funcs sil164_encoder_funcs = {
+=======
+static const struct drm_encoder_slave_funcs sil164_encoder_funcs = {
+>>>>>>> v4.9.227
 	.set_config = sil164_encoder_set_config,
 	.destroy = sil164_encoder_destroy,
 	.dpms = sil164_encoder_dpms,
 	.save = sil164_encoder_save,
 	.restore = sil164_encoder_restore,
+<<<<<<< HEAD
 	.mode_fixup = sil164_encoder_mode_fixup,
+=======
+>>>>>>> v4.9.227
 	.mode_valid = sil164_encoder_mode_valid,
 	.mode_set = sil164_encoder_mode_set,
 	.detect = sil164_encoder_detect,

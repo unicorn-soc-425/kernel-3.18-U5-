@@ -172,7 +172,11 @@
 
 	/* mark compat w/8572 to get some erratum treatment */
 	gpio-controller@f000 {
+<<<<<<< HEAD
 		compatible = "fsl,mpc8572-gpio", "fsl,pq3-gpio";
+=======
+		compatible = "fsl,mpc8572-gpio";
+>>>>>>> v4.9.227
 	};
 
 	sata@18000 {

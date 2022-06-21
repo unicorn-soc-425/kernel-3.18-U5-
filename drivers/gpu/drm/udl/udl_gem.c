@@ -217,7 +217,11 @@ int udl_gem_mmap(struct drm_file *file, struct drm_device *dev,
 	int ret = 0;
 
 	mutex_lock(&dev->struct_mutex);
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file, handle);
+=======
+	obj = drm_gem_object_lookup(file, handle);
+>>>>>>> v4.9.227
 	if (obj == NULL) {
 		ret = -ENOENT;
 		goto unlock;

@@ -72,6 +72,7 @@ enum {
 	REG_UIC_COMMAND_ARG_1			= 0x94,
 	REG_UIC_COMMAND_ARG_2			= 0x98,
 	REG_UIC_COMMAND_ARG_3			= 0x9C,
+<<<<<<< HEAD
 
 	UFSHCI_REG_SPACE_SIZE			= 0xA0,
 
@@ -79,6 +80,8 @@ enum {
 	REG_UFS_CRYPTOCAP			= 0x104,
 
 	UFSHCI_CRYPTO_REG_SPACE_SIZE		= 0x400,
+=======
+>>>>>>> v4.9.227
 };
 
 /* Controller capability masks */
@@ -88,7 +91,10 @@ enum {
 	MASK_64_ADDRESSING_SUPPORT		= 0x01000000,
 	MASK_OUT_OF_ORDER_DATA_DELIVERY_SUPPORT	= 0x02000000,
 	MASK_UIC_DME_TEST_MODE_SUPPORT		= 0x04000000,
+<<<<<<< HEAD
 	MASK_CRYPTO_SUPPORT			= 0x10000000,
+=======
+>>>>>>> v4.9.227
 };
 
 /* UFS Version 08h */
@@ -117,7 +123,12 @@ enum {
 #define MANUFACTURE_ID_MASK	UFS_MASK(0xFFFF, 0)
 #define PRODUCT_ID_MASK		UFS_MASK(0xFFFF, 16)
 
+<<<<<<< HEAD
 /* IS - Interrupt status (20h) / IE - Interrupt enable (24h) */
+=======
+#define UFS_BIT(x)	(1L << (x))
+
+>>>>>>> v4.9.227
 #define UTP_TRANSFER_REQ_COMPL			UFS_BIT(0)
 #define UIC_DME_END_PT_RESET			UFS_BIT(1)
 #define UIC_ERROR				UFS_BIT(2)
@@ -132,7 +143,10 @@ enum {
 #define DEVICE_FATAL_ERROR			UFS_BIT(11)
 #define CONTROLLER_FATAL_ERROR			UFS_BIT(16)
 #define SYSTEM_BUS_FATAL_ERROR			UFS_BIT(17)
+<<<<<<< HEAD
 #define CRYPTO_ENGINE_FATAL_ERROR		UFS_BIT(18)
+=======
+>>>>>>> v4.9.227
 
 #define UFSHCD_UIC_PWR_MASK	(UIC_HIBERNATE_ENTER |\
 				UIC_HIBERNATE_EXIT |\
@@ -143,6 +157,7 @@ enum {
 #define UFSHCD_ERROR_MASK	(UIC_ERROR |\
 				DEVICE_FATAL_ERROR |\
 				CONTROLLER_FATAL_ERROR |\
+<<<<<<< HEAD
 				SYSTEM_BUS_FATAL_ERROR |\
 				CRYPTO_ENGINE_FATAL_ERROR)
 
@@ -150,6 +165,13 @@ enum {
 				CONTROLLER_FATAL_ERROR |\
 				SYSTEM_BUS_FATAL_ERROR |\
 				CRYPTO_ENGINE_FATAL_ERROR)
+=======
+				SYSTEM_BUS_FATAL_ERROR)
+
+#define INT_FATAL_ERRORS	(DEVICE_FATAL_ERROR |\
+				CONTROLLER_FATAL_ERROR |\
+				SYSTEM_BUS_FATAL_ERROR)
+>>>>>>> v4.9.227
 
 /* HCS - Host Controller Status 30h */
 #define DEVICE_PRESENT				UFS_BIT(0)
@@ -171,13 +193,19 @@ enum {
 
 /* HCE - Host Controller Enable 34h */
 #define CONTROLLER_ENABLE	UFS_BIT(0)
+<<<<<<< HEAD
 #define CRYPTO_GENERAL_ENABLE	UFS_BIT(1)
+=======
+>>>>>>> v4.9.227
 #define CONTROLLER_DISABLE	0x0
 
 /* UECPA - Host UIC Error Code PHY Adapter Layer 38h */
 #define UIC_PHY_ADAPTER_LAYER_ERROR			UFS_BIT(31)
 #define UIC_PHY_ADAPTER_LAYER_ERROR_CODE_MASK		0x1F
+<<<<<<< HEAD
 #define UIC_PHY_ADAPTER_LAYER_LANE_ERR_MASK		0xF
+=======
+>>>>>>> v4.9.227
 
 /* UECDL - Host UIC Error Code Data Link Layer 3Ch */
 #define UIC_DATA_LINK_LAYER_ERROR		UFS_BIT(31)
@@ -232,6 +260,15 @@ enum {
 #define UIC_ARG_ATTR_TYPE(t)		(((t) & 0xFF) << 16)
 #define UIC_GET_ATTR_ID(v)		(((v) >> 16) & 0xFFFF)
 
+<<<<<<< HEAD
+=======
+/* Link Status*/
+enum link_status {
+	UFSHCD_LINK_IS_DOWN	= 1,
+	UFSHCD_LINK_IS_UP	= 2,
+};
+
+>>>>>>> v4.9.227
 /* UIC Commands */
 enum uic_cmd_dme {
 	UIC_CMD_DME_GET			= 0x01,
@@ -278,9 +315,12 @@ enum {
 
 	/* Interrupt disable mask for UFSHCI v1.1 */
 	INTERRUPT_MASK_ALL_VER_11	= 0x31FFF,
+<<<<<<< HEAD
 
 	/* Interrupt disable mask for UFSHCI v2.1 */
 	INTERRUPT_MASK_ALL_VER_21	= 0x71FFF,
+=======
+>>>>>>> v4.9.227
 };
 
 /*
@@ -294,6 +334,14 @@ enum {
 	UTP_CMD_TYPE_DEV_MANAGE		= 0x2,
 };
 
+<<<<<<< HEAD
+=======
+/* To accommodate UFS2.0 required Command type */
+enum {
+	UTP_CMD_TYPE_UFS_STORAGE	= 0x1,
+};
+
+>>>>>>> v4.9.227
 enum {
 	UTP_SCSI_COMMAND		= 0x00000000,
 	UTP_NATIVE_UFS_COMMAND		= 0x10000000,
@@ -318,9 +366,12 @@ enum {
 	OCS_PEER_COMM_FAILURE		= 0x5,
 	OCS_ABORTED			= 0x6,
 	OCS_FATAL_ERROR			= 0x7,
+<<<<<<< HEAD
 	OCS_DEVICE_FATAL_ERROR		= 0x8,
 	OCS_INVALID_CRYPTO_CONFIG	= 0x9,
 	OCS_GENERAL_CRYPTO_ERROR	= 0xA,
+=======
+>>>>>>> v4.9.227
 	OCS_INVALID_COMMAND_STATUS	= 0x0F,
 	MASK_OCS			= 0x0F,
 };
@@ -356,8 +407,11 @@ struct utp_transfer_cmd_desc {
 	struct ufshcd_sg_entry    prd_table[SG_ALL];
 };
 
+<<<<<<< HEAD
 #define UTRD_CRYPTO_ENABLE	UFS_BIT(23)
 
+=======
+>>>>>>> v4.9.227
 /**
  * struct request_desc_header - Descriptor Header common to both UTRD and UTMRD
  * @dword0: Descriptor Header DW0

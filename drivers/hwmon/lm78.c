@@ -836,7 +836,10 @@ static int lm78_isa_probe(struct platform_device *pdev)
 
 static struct platform_driver lm78_isa_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "lm78",
 	},
 	.probe		= lm78_isa_probe,

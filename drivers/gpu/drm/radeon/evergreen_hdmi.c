@@ -206,7 +206,11 @@ void evergreen_hdmi_write_sad_regs(struct drm_encoder *encoder,
  * build a AVI Info Frame
  */
 void evergreen_set_avi_packet(struct radeon_device *rdev, u32 offset,
+<<<<<<< HEAD
     unsigned char *buffer, size_t size)
+=======
+			      unsigned char *buffer, size_t size)
+>>>>>>> v4.9.227
 {
 	uint8_t *frame = buffer + 3;
 

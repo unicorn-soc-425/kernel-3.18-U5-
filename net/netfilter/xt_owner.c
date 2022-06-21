@@ -14,17 +14,57 @@
 #include <linux/skbuff.h>
 #include <linux/file.h>
 #include <net/sock.h>
+<<<<<<< HEAD
+=======
+#include <net/inet_sock.h>
+>>>>>>> v4.9.227
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter/xt_owner.h>
 
 static int owner_check(const struct xt_mtchk_param *par)
 {
 	struct xt_owner_match_info *info = par->matchinfo;
+<<<<<<< HEAD
 
 	/* For now only allow adding matches from the initial user namespace */
 	if ((info->match & (XT_OWNER_UID|XT_OWNER_GID)) &&
 	    (current_user_ns() != &init_user_ns))
 		return -EINVAL;
+=======
+	struct net *net = par->net;
+
+	/* Only allow the common case where the userns of the writer
+	 * matches the userns of the network namespace.
+	 */
+	if ((info->match & (XT_OWNER_UID|XT_OWNER_GID)) &&
+	    (current_user_ns() != net->user_ns))
+		return -EINVAL;
+
+	/* Ensure the uids are valid */
+	if (info->match & XT_OWNER_UID) {
+		kuid_t uid_min = make_kuid(net->user_ns, info->uid_min);
+		kuid_t uid_max = make_kuid(net->user_ns, info->uid_max);
+
+		if (!uid_valid(uid_min) || !uid_valid(uid_max) ||
+		    (info->uid_max < info->uid_min) ||
+		    uid_lt(uid_max, uid_min)) {
+			return -EINVAL;
+		}
+	}
+
+	/* Ensure the gids are valid */
+	if (info->match & XT_OWNER_GID) {
+		kgid_t gid_min = make_kgid(net->user_ns, info->gid_min);
+		kgid_t gid_max = make_kgid(net->user_ns, info->gid_max);
+
+		if (!gid_valid(gid_min) || !gid_valid(gid_max) ||
+		    (info->gid_max < info->gid_min) ||
+		    gid_lt(gid_max, gid_min)) {
+			return -EINVAL;
+		}
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -33,8 +73,15 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_owner_match_info *info = par->matchinfo;
 	const struct file *filp;
+<<<<<<< HEAD
 
 	if (skb->sk == NULL || skb->sk->sk_socket == NULL)
+=======
+	struct sock *sk = skb_to_full_sk(skb);
+	struct net *net = par->net;
+
+	if (sk == NULL || sk->sk_socket == NULL)
+>>>>>>> v4.9.227
 		return (info->match ^ info->invert) == 0;
 	else if (info->match & info->invert & XT_OWNER_SOCKET)
 		/*
@@ -43,14 +90,23 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		 */
 		return false;
 
+<<<<<<< HEAD
 	filp = skb->sk->sk_socket->file;
+=======
+	filp = sk->sk_socket->file;
+>>>>>>> v4.9.227
 	if (filp == NULL)
 		return ((info->match ^ info->invert) &
 		       (XT_OWNER_UID | XT_OWNER_GID)) == 0;
 
 	if (info->match & XT_OWNER_UID) {
+<<<<<<< HEAD
 		kuid_t uid_min = make_kuid(&init_user_ns, info->uid_min);
 		kuid_t uid_max = make_kuid(&init_user_ns, info->uid_max);
+=======
+		kuid_t uid_min = make_kuid(net->user_ns, info->uid_min);
+		kuid_t uid_max = make_kuid(net->user_ns, info->uid_max);
+>>>>>>> v4.9.227
 		if ((uid_gte(filp->f_cred->fsuid, uid_min) &&
 		     uid_lte(filp->f_cred->fsuid, uid_max)) ^
 		    !(info->invert & XT_OWNER_UID))
@@ -58,8 +114,13 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	}
 
 	if (info->match & XT_OWNER_GID) {
+<<<<<<< HEAD
 		kgid_t gid_min = make_kgid(&init_user_ns, info->gid_min);
 		kgid_t gid_max = make_kgid(&init_user_ns, info->gid_max);
+=======
+		kgid_t gid_min = make_kgid(net->user_ns, info->gid_min);
+		kgid_t gid_max = make_kgid(net->user_ns, info->gid_max);
+>>>>>>> v4.9.227
 		if ((gid_gte(filp->f_cred->fsgid, gid_min) &&
 		     gid_lte(filp->f_cred->fsgid, gid_max)) ^
 		    !(info->invert & XT_OWNER_GID))

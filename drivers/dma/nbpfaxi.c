@@ -227,6 +227,10 @@ struct nbpf_device {
 	void __iomem *base;
 	struct clk *clk;
 	const struct nbpf_config *config;
+<<<<<<< HEAD
+=======
+	unsigned int eirq;
+>>>>>>> v4.9.227
 	struct nbpf_channel chan[];
 };
 
@@ -504,7 +508,11 @@ static int nbpf_prep_one(struct nbpf_link_desc *ldesc,
 	 * pauses DMA and reads out data received via DMA as well as those left
 	 * in the Rx FIFO. For this to work with the RAM side using burst
 	 * transfers we enable the SBE bit and terminate the transfer in our
+<<<<<<< HEAD
 	 * DMA_PAUSE handler.
+=======
+	 * .device_pause handler.
+>>>>>>> v4.9.227
 	 */
 	mem_xfer = nbpf_xfer_ds(chan->nbpf, size);
 
@@ -565,6 +573,7 @@ static void nbpf_configure(struct nbpf_device *nbpf)
 	nbpf_write(nbpf, NBPF_CTRL, NBPF_CTRL_LVINT);
 }
 
+<<<<<<< HEAD
 static void nbpf_pause(struct nbpf_channel *chan)
 {
 	nbpf_chan_write(chan, NBPF_CHAN_CTRL, NBPF_CHAN_CTRL_SETSUS);
@@ -572,6 +581,8 @@ static void nbpf_pause(struct nbpf_channel *chan)
 	nbpf_chan_write(chan, NBPF_CHAN_CTRL, NBPF_CHAN_CTRL_CLREN);
 }
 
+=======
+>>>>>>> v4.9.227
 /*		Generic part			*/
 
 /* DMA ENGINE functions */
@@ -837,6 +848,7 @@ static void nbpf_chan_idle(struct nbpf_channel *chan)
 	}
 }
 
+<<<<<<< HEAD
 static int nbpf_control(struct dma_chan *dchan, enum dma_ctrl_cmd cmd,
 			unsigned long arg)
 {
@@ -885,6 +897,60 @@ static int nbpf_control(struct dma_chan *dchan, enum dma_ctrl_cmd cmd,
 	default:
 		return -ENXIO;
 	}
+=======
+static int nbpf_pause(struct dma_chan *dchan)
+{
+	struct nbpf_channel *chan = nbpf_to_chan(dchan);
+
+	dev_dbg(dchan->device->dev, "Entry %s\n", __func__);
+
+	chan->paused = true;
+	nbpf_chan_write(chan, NBPF_CHAN_CTRL, NBPF_CHAN_CTRL_SETSUS);
+	/* See comment in nbpf_prep_one() */
+	nbpf_chan_write(chan, NBPF_CHAN_CTRL, NBPF_CHAN_CTRL_CLREN);
+
+	return 0;
+}
+
+static int nbpf_terminate_all(struct dma_chan *dchan)
+{
+	struct nbpf_channel *chan = nbpf_to_chan(dchan);
+
+	dev_dbg(dchan->device->dev, "Entry %s\n", __func__);
+	dev_dbg(dchan->device->dev, "Terminating\n");
+
+	nbpf_chan_halt(chan);
+	nbpf_chan_idle(chan);
+
+	return 0;
+}
+
+static int nbpf_config(struct dma_chan *dchan,
+		       struct dma_slave_config *config)
+{
+	struct nbpf_channel *chan = nbpf_to_chan(dchan);
+
+	dev_dbg(dchan->device->dev, "Entry %s\n", __func__);
+
+	/*
+	 * We could check config->slave_id to match chan->terminal here,
+	 * but with DT they would be coming from the same source, so
+	 * such a check would be superflous
+	 */
+
+	chan->slave_dst_addr = config->dst_addr;
+	chan->slave_dst_width = nbpf_xfer_size(chan->nbpf,
+					       config->dst_addr_width, 1);
+	chan->slave_dst_burst = nbpf_xfer_size(chan->nbpf,
+					       config->dst_addr_width,
+					       config->dst_maxburst);
+	chan->slave_src_addr = config->src_addr;
+	chan->slave_src_width = nbpf_xfer_size(chan->nbpf,
+					       config->src_addr_width, 1);
+	chan->slave_src_burst = nbpf_xfer_size(chan->nbpf,
+					       config->src_addr_width,
+					       config->src_maxburst);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1072,6 +1138,7 @@ static void nbpf_free_chan_resources(struct dma_chan *dchan)
 	}
 }
 
+<<<<<<< HEAD
 static int nbpf_slave_caps(struct dma_chan *dchan,
 			   struct dma_slave_caps *caps)
 {
@@ -1084,6 +1151,8 @@ static int nbpf_slave_caps(struct dma_chan *dchan,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static struct dma_chan *nbpf_of_xlate(struct of_phandle_args *dma_spec,
 				      struct of_dma *ofdma)
 {
@@ -1116,8 +1185,12 @@ static void nbpf_chan_tasklet(unsigned long data)
 {
 	struct nbpf_channel *chan = (struct nbpf_channel *)data;
 	struct nbpf_desc *desc, *tmp;
+<<<<<<< HEAD
 	dma_async_tx_callback callback;
 	void *param;
+=======
+	struct dmaengine_desc_callback cb;
+>>>>>>> v4.9.227
 
 	while (!list_empty(&chan->done)) {
 		bool found = false, must_put, recycling = false;
@@ -1165,14 +1238,22 @@ static void nbpf_chan_tasklet(unsigned long data)
 			must_put = false;
 		}
 
+<<<<<<< HEAD
 		callback = desc->async_tx.callback;
 		param = desc->async_tx.callback_param;
+=======
+		dmaengine_desc_get_callback(&desc->async_tx, &cb);
+>>>>>>> v4.9.227
 
 		/* ack and callback completed descriptor */
 		spin_unlock_irq(&chan->lock);
 
+<<<<<<< HEAD
 		if (callback)
 			callback(param);
+=======
+		dmaengine_desc_callback_invoke(&cb, NULL);
+>>>>>>> v4.9.227
 
 		if (must_put)
 			nbpf_desc_put(desc);
@@ -1315,10 +1396,16 @@ static int nbpf_probe(struct platform_device *pdev)
 
 	nbpf = devm_kzalloc(dev, sizeof(*nbpf) + num_channels *
 			    sizeof(nbpf->chan[0]), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!nbpf) {
 		dev_err(dev, "Memory allocation failed\n");
 		return -ENOMEM;
 	}
+=======
+	if (!nbpf)
+		return -ENOMEM;
+
+>>>>>>> v4.9.227
 	dma_dev = &nbpf->dma_dev;
 	dma_dev->dev = dev;
 
@@ -1391,6 +1478,10 @@ static int nbpf_probe(struct platform_device *pdev)
 			       IRQF_SHARED, "dma error", nbpf);
 	if (ret < 0)
 		return ret;
+<<<<<<< HEAD
+=======
+	nbpf->eirq = eirq;
+>>>>>>> v4.9.227
 
 	INIT_LIST_HEAD(&dma_dev->channels);
 
@@ -1414,7 +1505,10 @@ static int nbpf_probe(struct platform_device *pdev)
 	dma_dev->device_prep_dma_memcpy = nbpf_prep_memcpy;
 	dma_dev->device_tx_status = nbpf_tx_status;
 	dma_dev->device_issue_pending = nbpf_issue_pending;
+<<<<<<< HEAD
 	dma_dev->device_slave_caps = nbpf_slave_caps;
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * If we drop support for unaligned MEMCPY buffer addresses and / or
@@ -1426,7 +1520,17 @@ static int nbpf_probe(struct platform_device *pdev)
 
 	/* Compulsory for DMA_SLAVE fields */
 	dma_dev->device_prep_slave_sg = nbpf_prep_slave_sg;
+<<<<<<< HEAD
 	dma_dev->device_control = nbpf_control;
+=======
+	dma_dev->device_config = nbpf_config;
+	dma_dev->device_pause = nbpf_pause;
+	dma_dev->device_terminate_all = nbpf_terminate_all;
+
+	dma_dev->src_addr_widths = NBPF_DMA_BUSWIDTHS;
+	dma_dev->dst_addr_widths = NBPF_DMA_BUSWIDTHS;
+	dma_dev->directions = BIT(DMA_DEV_TO_MEM) | BIT(DMA_MEM_TO_DEV);
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, nbpf);
 
@@ -1457,6 +1561,20 @@ e_clk_off:
 static int nbpf_remove(struct platform_device *pdev)
 {
 	struct nbpf_device *nbpf = platform_get_drvdata(pdev);
+<<<<<<< HEAD
+=======
+	int i;
+
+	devm_free_irq(&pdev->dev, nbpf->eirq, nbpf);
+
+	for (i = 0; i < nbpf->config->num_channels; i++) {
+		struct nbpf_channel *chan = nbpf->chan + i;
+
+		devm_free_irq(&pdev->dev, chan->irq, chan);
+
+		tasklet_kill(&chan->tasklet);
+	}
+>>>>>>> v4.9.227
 
 	of_dma_controller_free(pdev->dev.of_node);
 	dma_async_device_unregister(&nbpf->dma_dev);
@@ -1465,7 +1583,11 @@ static int nbpf_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_device_id nbpf_ids[] = {
+=======
+static const struct platform_device_id nbpf_ids[] = {
+>>>>>>> v4.9.227
 	{"nbpfaxi64dmac1b4",	(kernel_ulong_t)&nbpf_cfg[NBPF1B4]},
 	{"nbpfaxi64dmac1b8",	(kernel_ulong_t)&nbpf_cfg[NBPF1B8]},
 	{"nbpfaxi64dmac1b16",	(kernel_ulong_t)&nbpf_cfg[NBPF1B16]},
@@ -1479,7 +1601,11 @@ static struct platform_device_id nbpf_ids[] = {
 };
 MODULE_DEVICE_TABLE(platform, nbpf_ids);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 static int nbpf_runtime_suspend(struct device *dev)
 {
 	struct nbpf_device *nbpf = platform_get_drvdata(to_platform_device(dev));
@@ -1500,7 +1626,10 @@ static const struct dev_pm_ops nbpf_pm_ops = {
 
 static struct platform_driver nbpf_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "dma-nbpf",
 		.of_match_table = nbpf_match,
 		.pm = &nbpf_pm_ops,

@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -59,6 +63,7 @@ static void lovsub_lock_fini(const struct lu_env *env,
 
 	lsl = cl2lovsub_lock(slice);
 	LASSERT(list_empty(&lsl->lss_parents));
+<<<<<<< HEAD
 	OBD_SLAB_FREE_PTR(lsl, lovsub_lock_kmem);
 }
 
@@ -435,16 +440,22 @@ static int lovsub_lock_print(const struct lu_env *env, void *cookie,
 		(*p)(env, cookie, "] ");
 	}
 	return 0;
+=======
+	kmem_cache_free(lovsub_lock_kmem, lsl);
+>>>>>>> v4.9.227
 }
 
 static const struct cl_lock_operations lovsub_lock_ops = {
 	.clo_fini    = lovsub_lock_fini,
+<<<<<<< HEAD
 	.clo_state   = lovsub_lock_state,
 	.clo_delete  = lovsub_lock_delete,
 	.clo_modify  = lovsub_lock_modify,
 	.clo_closure = lovsub_lock_closure,
 	.clo_weigh   = lovsub_lock_weigh,
 	.clo_print   = lovsub_lock_print
+=======
+>>>>>>> v4.9.227
 };
 
 int lovsub_lock_init(const struct lu_env *env, struct cl_object *obj,
@@ -453,6 +464,7 @@ int lovsub_lock_init(const struct lu_env *env, struct cl_object *obj,
 	struct lovsub_lock *lsk;
 	int result;
 
+<<<<<<< HEAD
 	OBD_SLAB_ALLOC_PTR_GFP(lsk, lovsub_lock_kmem, GFP_NOFS);
 	if (lsk != NULL) {
 		INIT_LIST_HEAD(&lsk->lss_parents);
@@ -460,6 +472,16 @@ int lovsub_lock_init(const struct lu_env *env, struct cl_object *obj,
 		result = 0;
 	} else
 		result = -ENOMEM;
+=======
+	lsk = kmem_cache_zalloc(lovsub_lock_kmem, GFP_NOFS);
+	if (lsk) {
+		INIT_LIST_HEAD(&lsk->lss_parents);
+		cl_lock_slice_add(lock, &lsk->lss_cl, obj, &lovsub_lock_ops);
+		result = 0;
+	} else {
+		result = -ENOMEM;
+	}
+>>>>>>> v4.9.227
 	return result;
 }
 

@@ -13,6 +13,10 @@
 #include <linux/kmsg_dump.h>
 #include <linux/kallsyms.h>
 #include <linux/notifier.h>
+<<<<<<< HEAD
+=======
+#include <linux/vt_kern.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/random.h>
 #include <linux/ftrace.h>
@@ -24,12 +28,16 @@
 #include <linux/init.h>
 #include <linux/nmi.h>
 #include <linux/console.h>
+<<<<<<< HEAD
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/exception.h>
 
 #include <linux/sec_debug.h>
 #include <linux/sec_debug_summary.h>
+=======
+#include <linux/bug.h>
+>>>>>>> v4.9.227
 
 #define PANIC_TIMER_STEP 100
 #define PANIC_BLINK_SPD 18
@@ -39,7 +47,12 @@ static unsigned long tainted_mask;
 static int pause_on_oops;
 static int pause_on_oops_flag;
 static DEFINE_SPINLOCK(pause_on_oops_lock);
+<<<<<<< HEAD
 static bool crash_kexec_post_notifiers;
+=======
+bool crash_kexec_post_notifiers;
+int panic_on_warn __read_mostly;
+>>>>>>> v4.9.227
 
 int panic_timeout = CONFIG_PANIC_TIMEOUT;
 EXPORT_SYMBOL_GPL(panic_timeout);
@@ -66,6 +79,66 @@ void __weak panic_smp_self_stop(void)
 		cpu_relax();
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Stop ourselves in NMI context if another CPU has already panicked. Arch code
+ * may override this to prepare for crash dumping, e.g. save regs info.
+ */
+void __weak nmi_panic_self_stop(struct pt_regs *regs)
+{
+	panic_smp_self_stop();
+}
+
+/*
+ * Stop other CPUs in panic.  Architecture dependent code may override this
+ * with more suitable version.  For example, if the architecture supports
+ * crash dump, it should save registers of each stopped CPU and disable
+ * per-CPU features such as virtualization extensions.
+ */
+void __weak crash_smp_send_stop(void)
+{
+	static int cpus_stopped;
+
+	/*
+	 * This function can be called twice in panic path, but obviously
+	 * we execute this only once.
+	 */
+	if (cpus_stopped)
+		return;
+
+	/*
+	 * Note smp_send_stop is the usual smp shutdown function, which
+	 * unfortunately means it may not be hardened to work in a panic
+	 * situation.
+	 */
+	smp_send_stop();
+	cpus_stopped = 1;
+}
+
+atomic_t panic_cpu = ATOMIC_INIT(PANIC_CPU_INVALID);
+
+/*
+ * A variant of panic() called from NMI context. We return if we've already
+ * panicked on this CPU. If another CPU already panicked, loop in
+ * nmi_panic_self_stop() which can provide architecture dependent code such
+ * as saving register state for crash dump.
+ */
+void nmi_panic(struct pt_regs *regs, const char *msg)
+{
+	int old_cpu, cpu;
+
+	cpu = raw_smp_processor_id();
+	old_cpu = atomic_cmpxchg(&panic_cpu, PANIC_CPU_INVALID, cpu);
+
+	if (old_cpu == PANIC_CPU_INVALID)
+		panic("%s", msg);
+	else if (old_cpu != cpu)
+		nmi_panic_self_stop(regs);
+}
+EXPORT_SYMBOL(nmi_panic);
+
+>>>>>>> v4.9.227
 /**
  *	panic - halt the system
  *	@fmt: The text string to print
@@ -76,24 +149,39 @@ void __weak panic_smp_self_stop(void)
  */
 void panic(const char *fmt, ...)
 {
+<<<<<<< HEAD
 	static DEFINE_SPINLOCK(panic_lock);
+=======
+>>>>>>> v4.9.227
 	static char buf[1024];
 	va_list args;
 	long i, i_next = 0;
 	int state = 0;
+<<<<<<< HEAD
 
 	trace_kernel_panic(0);
 
 	/* To prevent watchdog reset during panic handling. */
 	emerg_pet_watchdog();
+=======
+	int old_cpu, this_cpu;
+	bool _crash_kexec_post_notifiers = crash_kexec_post_notifiers;
+>>>>>>> v4.9.227
 
 	/*
 	 * Disable local interrupts. This will prevent panic_smp_self_stop
 	 * from deadlocking the first cpu that invokes the panic, since
 	 * there is nothing to prevent an interrupt handler (that runs
+<<<<<<< HEAD
 	 * after the panic_lock is acquired) from invoking panic again.
 	 */
 	local_irq_disable();
+=======
+	 * after setting panic_cpu) from invoking panic() again.
+	 */
+	local_irq_disable();
+	preempt_disable_notrace();
+>>>>>>> v4.9.227
 
 	/*
 	 * It's possible to come here directly from a panic-assertion and
@@ -104,11 +192,25 @@ void panic(const char *fmt, ...)
 	 * multiple parallel invocations of panic, all other CPUs either
 	 * stop themself or will wait until they are stopped by the 1st CPU
 	 * with smp_send_stop().
+<<<<<<< HEAD
 	 */
 	if (!spin_trylock(&panic_lock))
 		panic_smp_self_stop();
 
 	secdbg_sched_msg("!!panic!!");
+=======
+	 *
+	 * `old_cpu == PANIC_CPU_INVALID' means this is the 1st CPU which
+	 * comes here, so go ahead.
+	 * `old_cpu == this_cpu' means we came from nmi_panic() which sets
+	 * panic_cpu to this CPU.  In this case, this is also the 1st CPU.
+	 */
+	this_cpu = raw_smp_processor_id();
+	old_cpu  = atomic_cmpxchg(&panic_cpu, PANIC_CPU_INVALID, this_cpu);
+
+	if (old_cpu != PANIC_CPU_INVALID && old_cpu != this_cpu)
+		panic_smp_self_stop();
+>>>>>>> v4.9.227
 
 	console_verbose();
 	bust_spinlocks(1);
@@ -116,6 +218,7 @@ void panic(const char *fmt, ...)
 	vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
 	pr_emerg("Kernel panic - not syncing: %s\n", buf);
+<<<<<<< HEAD
 #ifdef CONFIG_RELOCATABLE_KERNEL 
 	{	
 		extern u64 *__boot_kernel_offset; 
@@ -125,6 +228,8 @@ void panic(const char *fmt, ...)
 #endif 
 
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_DEBUG_BUGVERBOSE
 	/*
 	 * Avoid nested stack-dumping if a panic occurs during oops processing
@@ -132,16 +237,20 @@ void panic(const char *fmt, ...)
 	if (!test_taint(TAINT_DIE) && oops_in_progress <= 1)
 		dump_stack();
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG_SUMMARY
 		sec_debug_save_panic_info(buf,
 			(unsigned long)__builtin_return_address(0));
 #endif
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * If we have crashed and we have a crash kernel loaded let it handle
 	 * everything else.
 	 * If we want to run this after calling panic_notifiers, pass
 	 * the "crash_kexec_post_notifiers" option to the kernel.
+<<<<<<< HEAD
 	 */
 	if (!crash_kexec_post_notifiers)
 		crash_kexec(NULL);
@@ -152,6 +261,29 @@ void panic(const char *fmt, ...)
 	 * situation.
 	 */
 	smp_send_stop();
+=======
+	 *
+	 * Bypass the panic_cpu check and call __crash_kexec directly.
+	 */
+	if (!_crash_kexec_post_notifiers) {
+		printk_nmi_flush_on_panic();
+		__crash_kexec(NULL);
+
+		/*
+		 * Note smp_send_stop is the usual smp shutdown function, which
+		 * unfortunately means it may not be hardened to work in a
+		 * panic situation.
+		 */
+		smp_send_stop();
+	} else {
+		/*
+		 * If we want to do crash dump after notifier calls and
+		 * kmsg_dump, we will need architecture dependent extra
+		 * works in addition to stopping other CPUs.
+		 */
+		crash_smp_send_stop();
+	}
+>>>>>>> v4.9.227
 
 	/*
 	 * Run any panic handlers, including those that might need to
@@ -159,6 +291,11 @@ void panic(const char *fmt, ...)
 	 */
 	atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
 
+<<<<<<< HEAD
+=======
+	/* Call flush even twice. It tries harder with a single online CPU */
+	printk_nmi_flush_on_panic();
+>>>>>>> v4.9.227
 	kmsg_dump(KMSG_DUMP_PANIC);
 
 	/*
@@ -167,10 +304,23 @@ void panic(const char *fmt, ...)
 	 * panic_notifiers and dumping kmsg before kdump.
 	 * Note: since some panic_notifiers can make crashed kernel
 	 * more unstable, it can increase risks of the kdump failure too.
+<<<<<<< HEAD
 	 */
 	crash_kexec(NULL);
 
 	bust_spinlocks(0);
+=======
+	 *
+	 * Bypass the panic_cpu check and call __crash_kexec directly.
+	 */
+	if (_crash_kexec_post_notifiers)
+		__crash_kexec(NULL);
+
+#ifdef CONFIG_VT
+	unblank_screen();
+#endif
+	console_unblank();
+>>>>>>> v4.9.227
 
 	/*
 	 * We may have ended up stopping the CPU holding the lock (in
@@ -191,7 +341,11 @@ void panic(const char *fmt, ...)
 		 * Delay timeout seconds before rebooting the machine.
 		 * We can't use the "normal" timers since we just panicked.
 		 */
+<<<<<<< HEAD
 		pr_emerg("Rebooting in %d seconds..", panic_timeout);
+=======
+		pr_emerg("Rebooting in %d seconds..\n", panic_timeout);
+>>>>>>> v4.9.227
 
 		for (i = 0; i < panic_timeout * 1000; i += PANIC_TIMER_STEP) {
 			touch_nmi_watchdog();
@@ -202,9 +356,12 @@ void panic(const char *fmt, ...)
 			mdelay(PANIC_TIMER_STEP);
 		}
 	}
+<<<<<<< HEAD
 
 	trace_kernel_panic_late(0);
 
+=======
+>>>>>>> v4.9.227
 	if (panic_timeout != 0) {
 		/*
 		 * This will not be a clean reboot, with everything
@@ -266,6 +423,10 @@ static const struct tnt tnts[] = {
 	{ TAINT_OOT_MODULE,		'O', ' ' },
 	{ TAINT_UNSIGNED_MODULE,	'E', ' ' },
 	{ TAINT_SOFTLOCKUP,		'L', ' ' },
+<<<<<<< HEAD
+=======
+	{ TAINT_LIVEPATCH,		'K', ' ' },
+>>>>>>> v4.9.227
 };
 
 /**
@@ -286,6 +447,10 @@ static const struct tnt tnts[] = {
  *  'O' - Out-of-tree module has been loaded.
  *  'E' - Unsigned module has been loaded.
  *  'L' - A soft lockup has previously occurred.
+<<<<<<< HEAD
+=======
+ *  'K' - Kernel has been live patched.
+>>>>>>> v4.9.227
  *
  *	The string is overwritten by the next call to print_tainted().
  */
@@ -451,31 +616,75 @@ void oops_exit(void)
 	kmsg_dump(KMSG_DUMP_OOPS);
 }
 
+<<<<<<< HEAD
 #ifdef WANT_WARN_ON_SLOWPATH
 struct slowpath_args {
+=======
+struct warn_args {
+>>>>>>> v4.9.227
 	const char *fmt;
 	va_list args;
 };
 
+<<<<<<< HEAD
 static void warn_slowpath_common(const char *file, int line, void *caller,
 				 unsigned taint, struct slowpath_args *args)
+=======
+void __warn(const char *file, int line, void *caller, unsigned taint,
+	    struct pt_regs *regs, struct warn_args *args)
+>>>>>>> v4.9.227
 {
 	disable_trace_on_warning();
 
 	pr_warn("------------[ cut here ]------------\n");
+<<<<<<< HEAD
 	pr_warn("WARNING: CPU: %d PID: %d at %s:%d %pS()\n",
 		raw_smp_processor_id(), current->pid, file, line, caller);
+=======
+
+	if (file)
+		pr_warn("WARNING: CPU: %d PID: %d at %s:%d %pS\n",
+			raw_smp_processor_id(), current->pid, file, line,
+			caller);
+	else
+		pr_warn("WARNING: CPU: %d PID: %d at %pS\n",
+			raw_smp_processor_id(), current->pid, caller);
+>>>>>>> v4.9.227
 
 	if (args)
 		vprintk(args->fmt, args->args);
 
+<<<<<<< HEAD
 	print_modules();
 	dump_stack();
 	print_oops_end_marker();
+=======
+	if (panic_on_warn) {
+		/*
+		 * This thread may hit another WARN() in the panic path.
+		 * Resetting this prevents additional WARN() from panicking the
+		 * system on this thread.  Other threads are blocked by the
+		 * panic_mutex in panic().
+		 */
+		panic_on_warn = 0;
+		panic("panic_on_warn set ...\n");
+	}
+
+	print_modules();
+
+	if (regs)
+		show_regs(regs);
+	else
+		dump_stack();
+
+	print_oops_end_marker();
+
+>>>>>>> v4.9.227
 	/* Just a warning, don't kill lockdep. */
 	add_taint(taint, LOCKDEP_STILL_OK);
 }
 
+<<<<<<< HEAD
 void warn_slowpath_fmt(const char *file, int line, const char *fmt, ...)
 {
 	struct slowpath_args args;
@@ -484,6 +693,17 @@ void warn_slowpath_fmt(const char *file, int line, const char *fmt, ...)
 	va_start(args.args, fmt);
 	warn_slowpath_common(file, line, __builtin_return_address(0),
 			     TAINT_WARN, &args);
+=======
+#ifdef WANT_WARN_ON_SLOWPATH
+void warn_slowpath_fmt(const char *file, int line, const char *fmt, ...)
+{
+	struct warn_args args;
+
+	args.fmt = fmt;
+	va_start(args.args, fmt);
+	__warn(file, line, __builtin_return_address(0), TAINT_WARN, NULL,
+	       &args);
+>>>>>>> v4.9.227
 	va_end(args.args);
 }
 EXPORT_SYMBOL(warn_slowpath_fmt);
@@ -491,20 +711,32 @@ EXPORT_SYMBOL(warn_slowpath_fmt);
 void warn_slowpath_fmt_taint(const char *file, int line,
 			     unsigned taint, const char *fmt, ...)
 {
+<<<<<<< HEAD
 	struct slowpath_args args;
 
 	args.fmt = fmt;
 	va_start(args.args, fmt);
 	warn_slowpath_common(file, line, __builtin_return_address(0),
 			     taint, &args);
+=======
+	struct warn_args args;
+
+	args.fmt = fmt;
+	va_start(args.args, fmt);
+	__warn(file, line, __builtin_return_address(0), taint, NULL, &args);
+>>>>>>> v4.9.227
 	va_end(args.args);
 }
 EXPORT_SYMBOL(warn_slowpath_fmt_taint);
 
 void warn_slowpath_null(const char *file, int line)
 {
+<<<<<<< HEAD
 	warn_slowpath_common(file, line, __builtin_return_address(0),
 			     TAINT_WARN, NULL);
+=======
+	__warn(file, line, __builtin_return_address(0), TAINT_WARN, NULL, NULL);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(warn_slowpath_null);
 #endif
@@ -526,6 +758,7 @@ EXPORT_SYMBOL(__stack_chk_fail);
 
 core_param(panic, panic_timeout, int, 0644);
 core_param(pause_on_oops, pause_on_oops, int, 0644);
+<<<<<<< HEAD
 
 static int __init setup_crash_kexec_post_notifiers(char *s)
 {
@@ -533,6 +766,10 @@ static int __init setup_crash_kexec_post_notifiers(char *s)
 	return 0;
 }
 early_param("crash_kexec_post_notifiers", setup_crash_kexec_post_notifiers);
+=======
+core_param(panic_on_warn, panic_on_warn, int, 0644);
+core_param(crash_kexec_post_notifiers, crash_kexec_post_notifiers, bool, 0644);
+>>>>>>> v4.9.227
 
 static int __init oops_setup(char *s)
 {

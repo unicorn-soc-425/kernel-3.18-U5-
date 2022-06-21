@@ -72,6 +72,13 @@ struct tc_estimator {
 #define TC_H_UNSPEC	(0U)
 #define TC_H_ROOT	(0xFFFFFFFFU)
 #define TC_H_INGRESS    (0xFFFFFFF1U)
+<<<<<<< HEAD
+=======
+#define TC_H_CLSACT	TC_H_INGRESS
+
+#define TC_H_MIN_INGRESS	0xFFF2U
+#define TC_H_MIN_EGRESS		0xFFF3U
+>>>>>>> v4.9.227
 
 /* Need to corrospond to iproute2 tc/tc_core.h "enum link_layer" */
 enum tc_link_layer {
@@ -126,7 +133,10 @@ struct tc_fifo_qopt {
 struct tc_prio_qopt {
 	int	bands;			/* Number of bands */
 	__u8	priomap[TC_PRIO_MAX+1];	/* Map: logical priority -> PRIO band */
+<<<<<<< HEAD
 	__u8	enable_flow;		/* Enable dequeue */
+=======
+>>>>>>> v4.9.227
 };
 
 /* MULTIQ section */
@@ -176,6 +186,10 @@ enum {
 	TCA_TBF_PRATE64,
 	TCA_TBF_BURST,
 	TCA_TBF_PBURST,
+<<<<<<< HEAD
+=======
+	TCA_TBF_PAD,
+>>>>>>> v4.9.227
 	__TCA_TBF_MAX,
 };
 
@@ -269,7 +283,12 @@ enum {
        TCA_GRED_STAB,
        TCA_GRED_DPS,
        TCA_GRED_MAX_P,
+<<<<<<< HEAD
 	   __TCA_GRED_MAX,
+=======
+       TCA_GRED_LIMIT,
+       __TCA_GRED_MAX,
+>>>>>>> v4.9.227
 };
 
 #define TCA_GRED_MAX (__TCA_GRED_MAX - 1)
@@ -364,6 +383,10 @@ enum {
 	TCA_HTB_DIRECT_QLEN,
 	TCA_HTB_RATE64,
 	TCA_HTB_CEIL64,
+<<<<<<< HEAD
+=======
+	TCA_HTB_PAD,
+>>>>>>> v4.9.227
 	__TCA_HTB_MAX,
 };
 
@@ -527,6 +550,10 @@ enum {
 	TCA_NETEM_RATE,
 	TCA_NETEM_ECN,
 	TCA_NETEM_RATE64,
+<<<<<<< HEAD
+=======
+	TCA_NETEM_PAD,
+>>>>>>> v4.9.227
 	__TCA_NETEM_MAX,
 };
 
@@ -680,6 +707,10 @@ enum {
 	TCA_CODEL_LIMIT,
 	TCA_CODEL_INTERVAL,
 	TCA_CODEL_ECN,
+<<<<<<< HEAD
+=======
+	TCA_CODEL_CE_THRESHOLD,
+>>>>>>> v4.9.227
 	__TCA_CODEL_MAX
 };
 
@@ -696,6 +727,10 @@ struct tc_codel_xstats {
 	__u32	drop_overlimit; /* number of time max qdisc packet limit was hit */
 	__u32	ecn_mark;  /* number of packets we ECN marked instead of dropped */
 	__u32	dropping;  /* are we in dropping state ? */
+<<<<<<< HEAD
+=======
+	__u32	ce_mark;   /* number of CE marked packets because of ce_threshold */
+>>>>>>> v4.9.227
 };
 
 /* FQ_CODEL */
@@ -708,6 +743,12 @@ enum {
 	TCA_FQ_CODEL_ECN,
 	TCA_FQ_CODEL_FLOWS,
 	TCA_FQ_CODEL_QUANTUM,
+<<<<<<< HEAD
+=======
+	TCA_FQ_CODEL_CE_THRESHOLD,
+	TCA_FQ_CODEL_DROP_BATCH_SIZE,
+	TCA_FQ_CODEL_MEMORY_LIMIT,
+>>>>>>> v4.9.227
 	__TCA_FQ_CODEL_MAX
 };
 
@@ -731,6 +772,12 @@ struct tc_fq_codel_qd_stats {
 				 */
 	__u32	new_flows_len;	/* count of flows in new list */
 	__u32	old_flows_len;	/* count of flows in old list */
+<<<<<<< HEAD
+=======
+	__u32	ce_mark;	/* packets above ce_threshold */
+	__u32	memory_usage;	/* in bytes */
+	__u32	drop_overmemory;
+>>>>>>> v4.9.227
 };
 
 struct tc_fq_codel_cl_stats {
@@ -775,6 +822,13 @@ enum {
 
 	TCA_FQ_FLOW_REFILL_DELAY,	/* flow credit refill delay in usec */
 
+<<<<<<< HEAD
+=======
+	TCA_FQ_ORPHAN_MASK,	/* mask applied to orphaned skb hashes */
+
+	TCA_FQ_LOW_RATE_THRESHOLD, /* per packet delay under this rate */
+
+>>>>>>> v4.9.227
 	__TCA_FQ_MAX
 };
 
@@ -792,7 +846,11 @@ struct tc_fq_qd_stats {
 	__u32	flows;
 	__u32	inactive_flows;
 	__u32	throttled_flows;
+<<<<<<< HEAD
 	__u32	pad;
+=======
+	__u32	unthrottle_latency_ns;
+>>>>>>> v4.9.227
 };
 
 /* Heavy-Hitter Filter */

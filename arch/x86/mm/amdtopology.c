@@ -9,7 +9,10 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/nodemask.h>
 #include <linux/memblock.h>
 #include <linux/bootmem.h>
@@ -53,6 +56,7 @@ static __init int find_northbridge(void)
 	return -ENOENT;
 }
 
+<<<<<<< HEAD
 static __init void early_get_boot_cpu_id(void)
 {
 	/*
@@ -68,6 +72,8 @@ static __init void early_get_boot_cpu_id(void)
 #endif
 }
 
+=======
+>>>>>>> v4.9.227
 int __init amd_numa_init(void)
 {
 	u64 start = PFN_PHYS(0);
@@ -181,8 +187,16 @@ int __init amd_numa_init(void)
 	cores = 1 << bits;
 	apicid_base = 0;
 
+<<<<<<< HEAD
 	/* get the APIC ID of the BSP early for systems with apicid lifting */
 	early_get_boot_cpu_id();
+=======
+	/*
+	 * get boot-time SMP configuration:
+	 */
+	early_get_smp_config();
+
+>>>>>>> v4.9.227
 	if (boot_cpu_physical_apicid > 0) {
 		pr_info("BSP APIC ID: %02x\n", boot_cpu_physical_apicid);
 		apicid_base = boot_cpu_physical_apicid;

@@ -32,5 +32,9 @@ obj-$(CONFIG_TILE_HVGLUE_TRACE)	+= hvglue_trace.o
 obj-$(CONFIG_FUNCTION_TRACER)	+= ftrace.o mcount_64.o
 obj-$(CONFIG_KPROBES)		+= kprobes.o
 obj-$(CONFIG_KGDB)		+= kgdb.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_JUMP_LABEL)	+= jump_label.o
+>>>>>>> v4.9.227
 
 obj-y				+= vdso/

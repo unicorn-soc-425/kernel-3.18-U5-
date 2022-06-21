@@ -5,7 +5,10 @@
 #include <linux/configfs.h>
 #include <net/sock.h>
 #include <net/tcp.h>
+<<<<<<< HEAD
 #include <scsi/scsi_cmnd.h>
+=======
+>>>>>>> v4.9.227
 #include <scsi/iscsi_proto.h>
 #include <target/target_core_base.h>
 
@@ -63,6 +66,19 @@
 /* T10 protection information disabled by default */
 #define TA_DEFAULT_T10_PI		0
 #define TA_DEFAULT_FABRIC_PROT_TYPE	0
+<<<<<<< HEAD
+=======
+/* TPG status needs to be enabled to return sendtargets discovery endpoint info */
+#define TA_DEFAULT_TPG_ENABLED_SENDTARGETS 1
+/*
+ * Used to control the sending of keys with optional to respond state bit,
+ * as a workaround for non RFC compliant initiators,that do not propose,
+ * nor respond to specific keys required for login to complete.
+ *
+ * See iscsi_check_proposer_for_optional_reply() for more details.
+ */
+#define TA_DEFAULT_LOGIN_KEYS_WORKAROUND 1
+>>>>>>> v4.9.227
 
 #define ISCSI_IOV_DATA_BUFFER		5
 
@@ -73,6 +89,10 @@ enum iscsit_transport_type {
 	ISCSI_IWARP_TCP				= 3,
 	ISCSI_IWARP_SCTP			= 4,
 	ISCSI_INFINIBAND			= 5,
+<<<<<<< HEAD
+=======
+	ISCSI_CXGBIT				= 6,
+>>>>>>> v4.9.227
 };
 
 /* RFC-3720 7.1.4  Standard Connection State Diagram for a Target */
@@ -248,10 +268,13 @@ struct iscsi_conn_ops {
 	u8	DataDigest;			/* [0,1] == [None,CRC32C] */
 	u32	MaxRecvDataSegmentLength;	/* [512..2**24-1] */
 	u32	MaxXmitDataSegmentLength;	/* [512..2**24-1] */
+<<<<<<< HEAD
 	u8	OFMarker;			/* [0,1] == [No,Yes] */
 	u8	IFMarker;			/* [0,1] == [No,Yes] */
 	u32	OFMarkInt;			/* [1..65535] */
 	u32	IFMarkInt;			/* [1..65535] */
+=======
+>>>>>>> v4.9.227
 	/*
 	 * iSER specific connection parameters
 	 */
@@ -522,7 +545,10 @@ struct iscsi_conn {
 	u16			cid;
 	/* Remote TCP Port */
 	u16			login_port;
+<<<<<<< HEAD
 	u16			local_port;
+=======
+>>>>>>> v4.9.227
 	int			net_size;
 	int			login_family;
 	u32			auth_id;
@@ -532,6 +558,7 @@ struct iscsi_conn {
 	u32			exp_statsn;
 	/* Per connection status sequence number */
 	u32			stat_sn;
+<<<<<<< HEAD
 	/* IFMarkInt's Current Value */
 	u32			if_marker;
 	/* OFMarkInt's Current Value */
@@ -541,6 +568,10 @@ struct iscsi_conn {
 #define IPV6_ADDRESS_SPACE				48
 	unsigned char		login_ip[IPV6_ADDRESS_SPACE];
 	unsigned char		local_ip[IPV6_ADDRESS_SPACE];
+=======
+	struct sockaddr_storage login_sockaddr;
+	struct sockaddr_storage local_sockaddr;
+>>>>>>> v4.9.227
 	int			conn_usage_count;
 	int			conn_waiting_on_uc;
 	atomic_t		check_immediate_queue;
@@ -565,6 +596,10 @@ struct iscsi_conn {
 #define LOGIN_FLAGS_READ_ACTIVE		1
 #define LOGIN_FLAGS_CLOSED		2
 #define LOGIN_FLAGS_READY		4
+<<<<<<< HEAD
+=======
+#define LOGIN_FLAGS_INITIAL_PDU		8
+>>>>>>> v4.9.227
 	unsigned long		login_flags;
 	struct delayed_work	login_work;
 	struct delayed_work	login_cleanup_work;
@@ -581,8 +616,13 @@ struct iscsi_conn {
 	spinlock_t		response_queue_lock;
 	spinlock_t		state_lock;
 	/* libcrypto RX and TX contexts for crc32c */
+<<<<<<< HEAD
 	struct hash_desc	conn_rx_hash;
 	struct hash_desc	conn_tx_hash;
+=======
+	struct ahash_request	*conn_rx_hash;
+	struct ahash_request	*conn_tx_hash;
+>>>>>>> v4.9.227
 	/* Used for scheduling TX and RX connection kthreads */
 	cpumask_var_t		conn_cpumask;
 	unsigned int		conn_rx_reset_cpumask:1;
@@ -647,7 +687,11 @@ struct iscsi_session {
 	/* session wide counter: expected command sequence number */
 	u32			exp_cmd_sn;
 	/* session wide counter: maximum allowed command sequence number */
+<<<<<<< HEAD
 	u32			max_cmd_sn;
+=======
+	atomic_t		max_cmd_sn;
+>>>>>>> v4.9.227
 	struct list_head	sess_ooo_cmdsn_list;
 
 	/* LIO specific session ID */
@@ -672,7 +716,11 @@ struct iscsi_session {
 	atomic_t		session_logout;
 	atomic_t		session_reinstatement;
 	atomic_t		session_stop_active;
+<<<<<<< HEAD
 	atomic_t		sleep_on_sess_wait_comp;
+=======
+	atomic_t		session_close;
+>>>>>>> v4.9.227
 	/* connection list */
 	struct list_head	sess_conn_list;
 	struct list_head	cr_active_list;
@@ -756,10 +804,17 @@ struct iscsi_node_stat_grps {
 };
 
 struct iscsi_node_acl {
+<<<<<<< HEAD
 	struct iscsi_node_attrib node_attrib;
 	struct iscsi_node_auth	node_auth;
 	struct iscsi_node_stat_grps node_stat_grps;
 	struct se_node_acl	se_node_acl;
+=======
+	struct se_node_acl	se_node_acl;
+	struct iscsi_node_attrib node_attrib;
+	struct iscsi_node_auth	node_auth;
+	struct iscsi_node_stat_grps node_stat_grps;
+>>>>>>> v4.9.227
 };
 
 struct iscsi_tpg_attrib {
@@ -775,6 +830,11 @@ struct iscsi_tpg_attrib {
 	u32			default_erl;
 	u8			t10_pi;
 	u32			fabric_prot_type;
+<<<<<<< HEAD
+=======
+	u32			tpg_enabled_sendtargets;
+	u32			login_keys_workaround;
+>>>>>>> v4.9.227
 	struct iscsi_portal_group *tpg;
 };
 
@@ -788,11 +848,18 @@ struct iscsi_np {
 	enum iscsi_timer_flags_table np_login_timer_flags;
 	u32			np_exports;
 	enum np_flags_table	np_flags;
+<<<<<<< HEAD
 	u16			np_port;
 	spinlock_t		np_thread_lock;
 	struct completion	np_restart_comp;
 	struct socket		*np_socket;
 	struct __kernel_sockaddr_storage np_sockaddr;
+=======
+	spinlock_t		np_thread_lock;
+	struct completion	np_restart_comp;
+	struct socket		*np_socket;
+	struct sockaddr_storage np_sockaddr;
+>>>>>>> v4.9.227
 	struct task_struct	*np_thread;
 	struct timer_list	np_login_timer;
 	void			*np_context;
@@ -902,4 +969,33 @@ static inline u32 session_get_next_ttt(struct iscsi_session *session)
 }
 
 extern struct iscsi_cmd *iscsit_find_cmd_from_itt(struct iscsi_conn *, itt_t);
+<<<<<<< HEAD
+=======
+
+static inline void iscsit_thread_check_cpumask(
+	struct iscsi_conn *conn,
+	struct task_struct *p,
+	int mode)
+{
+	/*
+	 * mode == 1 signals iscsi_target_tx_thread() usage.
+	 * mode == 0 signals iscsi_target_rx_thread() usage.
+	 */
+	if (mode == 1) {
+		if (!conn->conn_tx_reset_cpumask)
+			return;
+		conn->conn_tx_reset_cpumask = 0;
+	} else {
+		if (!conn->conn_rx_reset_cpumask)
+			return;
+		conn->conn_rx_reset_cpumask = 0;
+	}
+	/*
+	 * Update the CPU mask for this single kthread so that
+	 * both TX and RX kthreads are scheduled to run on the
+	 * same CPU.
+	 */
+	set_cpus_allowed_ptr(p, conn->conn_cpumask);
+}
+>>>>>>> v4.9.227
 #endif /* ISCSI_TARGET_CORE_H */

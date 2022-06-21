@@ -122,7 +122,11 @@ static __u32 max_line_capacities[10][4] = {
 	{ 800000, 400000, 160000, 80000 }, /* 16000000 bps */
 };
 
+<<<<<<< HEAD
 static pi_minor_info_t pi_minor_call_table_type_0[] = {
+=======
+static const pi_minor_info_t pi_minor_call_table_type_0[] = {
+>>>>>>> v4.9.227
 	{ NULL, 0 },
 /* 01 */{ irlap_param_baud_rate,       PV_INTEGER | PV_LITTLE_ENDIAN },
 	{ NULL, 0 },
@@ -134,7 +138,11 @@ static pi_minor_info_t pi_minor_call_table_type_0[] = {
 /* 08 */{ irlap_param_link_disconnect, PV_INT_8_BITS }
 };
 
+<<<<<<< HEAD
 static pi_minor_info_t pi_minor_call_table_type_1[] = {
+=======
+static const pi_minor_info_t pi_minor_call_table_type_1[] = {
+>>>>>>> v4.9.227
 	{ NULL, 0 },
 	{ NULL, 0 },
 /* 82 */{ irlap_param_max_turn_time,   PV_INT_8_BITS },
@@ -144,7 +152,11 @@ static pi_minor_info_t pi_minor_call_table_type_1[] = {
 /* 86 */{ irlap_param_min_turn_time,   PV_INT_8_BITS },
 };
 
+<<<<<<< HEAD
 static pi_major_info_t pi_major_call_table[] = {
+=======
+static const pi_major_info_t pi_major_call_table[] = {
+>>>>>>> v4.9.227
 	{ pi_minor_call_table_type_0, 9 },
 	{ pi_minor_call_table_type_1, 7 },
 };
@@ -200,8 +212,13 @@ static int msb_index (__u16 word)
 	 * able to check precisely what's going on. If a end user sees this,
 	 * it's very likely the peer. - Jean II */
 	if (word == 0) {
+<<<<<<< HEAD
 		IRDA_WARNING("%s(), Detected buggy peer, adjust null PV to 0x1!\n",
 			 __func__);
+=======
+		net_warn_ratelimited("%s(), Detected buggy peer, adjust null PV to 0x1!\n",
+				     __func__);
+>>>>>>> v4.9.227
 		/* The only safe choice (we don't know the array size) */
 		word = 0x1;
 	}
@@ -342,8 +359,11 @@ static void irlap_adjust_qos_settings(struct qos_info *qos)
 	__u32 line_capacity;
 	int index;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * Make sure the mintt is sensible.
 	 * Main culprit : Ericsson T39. - Jean II
@@ -351,8 +371,13 @@ static void irlap_adjust_qos_settings(struct qos_info *qos)
 	if (sysctl_min_tx_turn_time > qos->min_turn_time.value) {
 		int i;
 
+<<<<<<< HEAD
 		IRDA_WARNING("%s(), Detected buggy peer, adjust mtt to %dus!\n",
 			 __func__, sysctl_min_tx_turn_time);
+=======
+		net_warn_ratelimited("%s(), Detected buggy peer, adjust mtt to %dus!\n",
+				     __func__, sysctl_min_tx_turn_time);
+>>>>>>> v4.9.227
 
 		/* We don't really need bits, but easier this way */
 		i = value_highest_bit(sysctl_min_tx_turn_time, min_turn_times,
@@ -368,9 +393,14 @@ static void irlap_adjust_qos_settings(struct qos_info *qos)
 	if ((qos->baud_rate.value < 115200) &&
 	    (qos->max_turn_time.value < 500))
 	{
+<<<<<<< HEAD
 		IRDA_DEBUG(0,
 			   "%s(), adjusting max turn time from %d to 500 ms\n",
 			   __func__, qos->max_turn_time.value);
+=======
+		pr_debug("%s(), adjusting max turn time from %d to 500 ms\n",
+			 __func__, qos->max_turn_time.value);
+>>>>>>> v4.9.227
 		qos->max_turn_time.value = 500;
 	}
 
@@ -385,8 +415,13 @@ static void irlap_adjust_qos_settings(struct qos_info *qos)
 #ifdef CONFIG_IRDA_DYNAMIC_WINDOW
 	while ((qos->data_size.value > line_capacity) && (index > 0)) {
 		qos->data_size.value = data_sizes[index--];
+<<<<<<< HEAD
 		IRDA_DEBUG(2, "%s(), reducing data size to %d\n",
 			   __func__, qos->data_size.value);
+=======
+		pr_debug("%s(), reducing data size to %d\n",
+			 __func__, qos->data_size.value);
+>>>>>>> v4.9.227
 	}
 #else /* Use method described in section 6.6.11 of IrLAP */
 	while (irlap_requested_line_capacity(qos) > line_capacity) {
@@ -395,6 +430,7 @@ static void irlap_adjust_qos_settings(struct qos_info *qos)
 		/* Must be able to send at least one frame */
 		if (qos->window_size.value > 1) {
 			qos->window_size.value--;
+<<<<<<< HEAD
 			IRDA_DEBUG(2, "%s(), reducing window size to %d\n",
 				   __func__, qos->window_size.value);
 		} else if (index > 1) {
@@ -404,6 +440,17 @@ static void irlap_adjust_qos_settings(struct qos_info *qos)
 		} else {
 			IRDA_WARNING("%s(), nothing more we can do!\n",
 				     __func__);
+=======
+			pr_debug("%s(), reducing window size to %d\n",
+				 __func__, qos->window_size.value);
+		} else if (index > 1) {
+			qos->data_size.value = data_sizes[index--];
+			pr_debug("%s(), reducing data size to %d\n",
+				 __func__, qos->data_size.value);
+		} else {
+			net_warn_ratelimited("%s(), nothing more we can do!\n",
+					     __func__);
+>>>>>>> v4.9.227
 		}
 	}
 #endif /* CONFIG_IRDA_DYNAMIC_WINDOW */
@@ -440,6 +487,7 @@ int irlap_qos_negotiate(struct irlap_cb *self, struct sk_buff *skb)
 
 	irlap_adjust_qos_settings(&self->qos_tx);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "Setting BAUD_RATE to %d bps.\n",
 		   self->qos_tx.baud_rate.value);
 	IRDA_DEBUG(2, "Setting DATA_SIZE to %d bytes\n",
@@ -454,6 +502,22 @@ int irlap_qos_negotiate(struct irlap_cb *self, struct sk_buff *skb)
 		   self->qos_tx.min_turn_time.value);
 	IRDA_DEBUG(2, "Setting LINK_DISC to %d secs.\n",
 		   self->qos_tx.link_disc_time.value);
+=======
+	pr_debug("Setting BAUD_RATE to %d bps.\n",
+		 self->qos_tx.baud_rate.value);
+	pr_debug("Setting DATA_SIZE to %d bytes\n",
+		 self->qos_tx.data_size.value);
+	pr_debug("Setting WINDOW_SIZE to %d\n",
+		 self->qos_tx.window_size.value);
+	pr_debug("Setting XBOFS to %d\n",
+		 self->qos_tx.additional_bofs.value);
+	pr_debug("Setting MAX_TURN_TIME to %d ms.\n",
+		 self->qos_tx.max_turn_time.value);
+	pr_debug("Setting MIN_TURN_TIME to %d usecs.\n",
+		 self->qos_tx.min_turn_time.value);
+	pr_debug("Setting LINK_DISC to %d secs.\n",
+		 self->qos_tx.link_disc_time.value);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -537,17 +601,29 @@ static int irlap_param_baud_rate(void *instance, irda_param_t *param, int get)
 
 	if (get) {
 		param->pv.i = self->qos_rx.baud_rate.bits;
+<<<<<<< HEAD
 		IRDA_DEBUG(2, "%s(), baud rate = 0x%02x\n",
 			   __func__, param->pv.i);
+=======
+		pr_debug("%s(), baud rate = 0x%02x\n",
+			 __func__, param->pv.i);
+>>>>>>> v4.9.227
 	} else {
 		/*
 		 *  Stations must agree on baud rate, so calculate
 		 *  intersection
 		 */
+<<<<<<< HEAD
 		IRDA_DEBUG(2, "Requested BAUD_RATE: 0x%04x\n", (__u16) param->pv.i);
 		final = (__u16) param->pv.i & self->qos_rx.baud_rate.bits;
 
 		IRDA_DEBUG(2, "Final BAUD_RATE: 0x%04x\n", final);
+=======
+		pr_debug("Requested BAUD_RATE: 0x%04x\n", (__u16)param->pv.i);
+		final = (__u16) param->pv.i & self->qos_rx.baud_rate.bits;
+
+		pr_debug("Final BAUD_RATE: 0x%04x\n", final);
+>>>>>>> v4.9.227
 		self->qos_tx.baud_rate.bits = final;
 		self->qos_rx.baud_rate.bits = final;
 	}
@@ -578,10 +654,17 @@ static int irlap_param_link_disconnect(void *instance, irda_param_t *param,
 		 *  Stations must agree on link disconnect/threshold
 		 *  time.
 		 */
+<<<<<<< HEAD
 		IRDA_DEBUG(2, "LINK_DISC: %02x\n", (__u8) param->pv.i);
 		final = (__u8) param->pv.i & self->qos_rx.link_disc_time.bits;
 
 		IRDA_DEBUG(2, "Final LINK_DISC: %02x\n", final);
+=======
+		pr_debug("LINK_DISC: %02x\n", (__u8)param->pv.i);
+		final = (__u8) param->pv.i & self->qos_rx.link_disc_time.bits;
+
+		pr_debug("Final LINK_DISC: %02x\n", final);
+>>>>>>> v4.9.227
 		self->qos_tx.link_disc_time.bits = final;
 		self->qos_rx.link_disc_time.bits = final;
 	}
@@ -710,8 +793,13 @@ __u32 irlap_max_line_capacity(__u32 speed, __u32 max_turn_time)
 	__u32 line_capacity;
 	int i,j;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), speed=%d, max_turn_time=%d\n",
 		   __func__, speed, max_turn_time);
+=======
+	pr_debug("%s(), speed=%d, max_turn_time=%d\n",
+		 __func__, speed, max_turn_time);
+>>>>>>> v4.9.227
 
 	i = value_index(speed, baud_rates, 10);
 	j = value_index(max_turn_time, max_turn_times, 4);
@@ -721,8 +809,13 @@ __u32 irlap_max_line_capacity(__u32 speed, __u32 max_turn_time)
 
 	line_capacity = max_line_capacities[i][j];
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), line capacity=%d bytes\n",
 		   __func__, line_capacity);
+=======
+	pr_debug("%s(), line capacity=%d bytes\n",
+		 __func__, line_capacity);
+>>>>>>> v4.9.227
 
 	return line_capacity;
 }
@@ -737,8 +830,13 @@ static __u32 irlap_requested_line_capacity(struct qos_info *qos)
 		irlap_min_turn_time_in_bytes(qos->baud_rate.value,
 					     qos->min_turn_time.value);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), requested line capacity=%d\n",
 		   __func__, line_capacity);
+=======
+	pr_debug("%s(), requested line capacity=%d\n",
+		 __func__, line_capacity);
+>>>>>>> v4.9.227
 
 	return line_capacity;
 }

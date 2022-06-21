@@ -4,6 +4,7 @@
 
 
 Document started 15 Mar 2005 by Robert Love <rml@novell.com>
+<<<<<<< HEAD
 
 
 (i) User Interface
@@ -199,6 +200,12 @@ for the locking and lifetime rules.
 
 
 (vi) Rationale
+=======
+Document updated 4 Jan 2015 by Zhang Zhen <zhenzhang.zhang@huawei.com>
+	--Deleted obsoleted interface, just refer to manpages for user interface.
+
+(i) Rationale
+>>>>>>> v4.9.227
 
 Q: What is the design decision behind not tying the watch to the open fd of
    the watched object?

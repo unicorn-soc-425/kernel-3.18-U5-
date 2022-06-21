@@ -290,6 +290,7 @@ static int mop500_ab8500_hw_params(struct snd_pcm_substream *substream,
 			SND_SOC_DAIFMT_GATED;
 	}
 
+<<<<<<< HEAD
 	ret = snd_soc_dai_set_fmt(codec_dai, fmt);
 	if (ret < 0) {
 		dev_err(dev,
@@ -305,6 +306,11 @@ static int mop500_ab8500_hw_params(struct snd_pcm_substream *substream,
 			__func__, ret);
 		return ret;
 	}
+=======
+	ret = snd_soc_runtime_set_dai_fmt(rtd, fmt);
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 
 	/* Setup TDM-slots */
 
@@ -374,7 +380,11 @@ struct snd_soc_ops mop500_ab8500_ops[] = {
 
 int mop500_ab8500_machine_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
+=======
+	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
+>>>>>>> v4.9.227
 	struct device *dev = rtd->card->dev;
 	struct mop500_ab8500_drvdata *drvdata;
 	int ret;
@@ -384,6 +394,13 @@ int mop500_ab8500_machine_init(struct snd_soc_pcm_runtime *rtd)
 	/* Create driver private-data struct */
 	drvdata = devm_kzalloc(dev, sizeof(struct mop500_ab8500_drvdata),
 			GFP_KERNEL);
+<<<<<<< HEAD
+=======
+
+	if (!drvdata)
+		return -ENOMEM;
+
+>>>>>>> v4.9.227
 	snd_soc_card_set_drvdata(rtd->card, drvdata);
 
 	/* Setup clocks */
@@ -419,6 +436,7 @@ int mop500_ab8500_machine_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = snd_soc_dapm_disable_pin(&codec->dapm, "Earpiece");
 	ret |= snd_soc_dapm_disable_pin(&codec->dapm, "Speaker Left");
 	ret |= snd_soc_dapm_disable_pin(&codec->dapm, "Speaker Right");
@@ -436,6 +454,25 @@ int mop500_ab8500_machine_init(struct snd_soc_pcm_runtime *rtd)
 	ret |= snd_soc_dapm_disable_pin(&codec->dapm, "DMic 4");
 	ret |= snd_soc_dapm_disable_pin(&codec->dapm, "DMic 5");
 	ret |= snd_soc_dapm_disable_pin(&codec->dapm, "DMic 6");
+=======
+	ret = snd_soc_dapm_disable_pin(dapm, "Earpiece");
+	ret |= snd_soc_dapm_disable_pin(dapm, "Speaker Left");
+	ret |= snd_soc_dapm_disable_pin(dapm, "Speaker Right");
+	ret |= snd_soc_dapm_disable_pin(dapm, "LineOut Left");
+	ret |= snd_soc_dapm_disable_pin(dapm, "LineOut Right");
+	ret |= snd_soc_dapm_disable_pin(dapm, "Vibra 1");
+	ret |= snd_soc_dapm_disable_pin(dapm, "Vibra 2");
+	ret |= snd_soc_dapm_disable_pin(dapm, "Mic 1");
+	ret |= snd_soc_dapm_disable_pin(dapm, "Mic 2");
+	ret |= snd_soc_dapm_disable_pin(dapm, "LineIn Left");
+	ret |= snd_soc_dapm_disable_pin(dapm, "LineIn Right");
+	ret |= snd_soc_dapm_disable_pin(dapm, "DMic 1");
+	ret |= snd_soc_dapm_disable_pin(dapm, "DMic 2");
+	ret |= snd_soc_dapm_disable_pin(dapm, "DMic 3");
+	ret |= snd_soc_dapm_disable_pin(dapm, "DMic 4");
+	ret |= snd_soc_dapm_disable_pin(dapm, "DMic 5");
+	ret |= snd_soc_dapm_disable_pin(dapm, "DMic 6");
+>>>>>>> v4.9.227
 
 	return ret;
 }

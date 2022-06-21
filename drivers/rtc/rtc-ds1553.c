@@ -20,8 +20,11 @@
 #include <linux/io.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.3"
 
+=======
+>>>>>>> v4.9.227
 #define RTC_REG_SIZE		0x2000
 #define RTC_OFFSET		0x1ff0
 
@@ -245,7 +248,11 @@ static ssize_t ds1553_nvram_read(struct file *filp, struct kobject *kobj,
 	void __iomem *ioaddr = pdata->ioaddr;
 	ssize_t count;
 
+<<<<<<< HEAD
 	for (count = 0; size > 0 && pos < RTC_OFFSET; count++, size--)
+=======
+	for (count = 0; count < size; count++)
+>>>>>>> v4.9.227
 		*buf++ = readb(ioaddr + pos++);
 	return count;
 }
@@ -260,7 +267,11 @@ static ssize_t ds1553_nvram_write(struct file *filp, struct kobject *kobj,
 	void __iomem *ioaddr = pdata->ioaddr;
 	ssize_t count;
 
+<<<<<<< HEAD
 	for (count = 0; size > 0 && pos < RTC_OFFSET; count++, size--)
+=======
+	for (count = 0; count < size; count++)
+>>>>>>> v4.9.227
 		writeb(*buf++, ioaddr + pos++);
 	return count;
 }
@@ -351,7 +362,10 @@ static struct platform_driver ds1553_rtc_driver = {
 	.remove		= ds1553_rtc_remove,
 	.driver		= {
 		.name	= "rtc-ds1553",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -360,4 +374,7 @@ module_platform_driver(ds1553_rtc_driver);
 MODULE_AUTHOR("Atsushi Nemoto <anemo@mba.ocn.ne.jp>");
 MODULE_DESCRIPTION("Dallas DS1553 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> v4.9.227

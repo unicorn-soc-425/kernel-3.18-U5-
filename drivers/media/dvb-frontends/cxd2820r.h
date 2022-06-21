@@ -22,7 +22,10 @@
 #ifndef CXD2820R_H
 #define CXD2820R_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/dvb/frontend.h>
 
 #define CXD2820R_GPIO_D (0 << 0) /* disable */
@@ -37,6 +40,35 @@
 #define CXD2820R_TS_PARALLEL      0x30
 #define CXD2820R_TS_PARALLEL_MSB  0x70
 
+<<<<<<< HEAD
+=======
+/*
+ * I2C address: 0x6c, 0x6d
+ */
+
+/**
+ * struct cxd2820r_platform_data - Platform data for the cxd2820r driver
+ * @ts_mode: TS mode.
+ * @ts_clk_inv: TS clock inverted.
+ * @if_agc_polarity: IF AGC polarity.
+ * @spec_inv: Input spectrum inverted.
+ * @gpio_chip_base: GPIO.
+ * @get_dvb_frontend: Get DVB frontend.
+ */
+
+struct cxd2820r_platform_data {
+	u8 ts_mode;
+	bool ts_clk_inv;
+	bool if_agc_polarity;
+	bool spec_inv;
+	int **gpio_chip_base;
+
+	struct dvb_frontend* (*get_dvb_frontend)(struct i2c_client *);
+/* private: For legacy media attach wrapper. Do not set value. */
+	bool attach_in_use;
+};
+
+>>>>>>> v4.9.227
 struct cxd2820r_config {
 	/* Demodulator I2C address.
 	 * Driver determines DVB-C slave I2C address automatically from master

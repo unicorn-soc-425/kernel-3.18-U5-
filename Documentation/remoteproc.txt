@@ -51,6 +51,15 @@ cost.
         rproc_shutdown() returns, and users can still use it with a subsequent
         rproc_boot(), if needed.
 
+<<<<<<< HEAD
+=======
+  struct rproc *rproc_get_by_phandle(phandle phandle)
+    - Find an rproc handle using a device tree phandle. Returns the rproc
+      handle on success, and NULL on failure. This function increments
+      the remote processor's refcount, so always use rproc_put() to
+      decrement it back once rproc isn't needed anymore.
+
+>>>>>>> v4.9.227
 3. Typical usage
 
 #include <linux/remoteproc.h>
@@ -95,9 +104,15 @@ int dummy_rproc_example(struct rproc *my_rproc)
       On success, the new rproc is returned, and on failure, NULL.
 
       Note: _never_ directly deallocate @rproc, even if it was not registered
+<<<<<<< HEAD
       yet. Instead, when you need to unroll rproc_alloc(), use rproc_put().
 
   void rproc_put(struct rproc *rproc)
+=======
+      yet. Instead, when you need to unroll rproc_alloc(), use rproc_free().
+
+  void rproc_free(struct rproc *rproc)
+>>>>>>> v4.9.227
     - Free an rproc handle that was allocated by rproc_alloc.
       This function essentially unrolls rproc_alloc(), by decrementing the
       rproc's refcount. It doesn't directly free rproc; that would happen
@@ -125,7 +140,11 @@ int dummy_rproc_example(struct rproc *my_rproc)
       has completed successfully.
 
       After rproc_del() returns, @rproc is still valid, and its
+<<<<<<< HEAD
       last refcount should be decremented by calling rproc_put().
+=======
+      last refcount should be decremented by calling rproc_free().
+>>>>>>> v4.9.227
 
       Returns 0 on success and -EINVAL if @rproc isn't valid.
 

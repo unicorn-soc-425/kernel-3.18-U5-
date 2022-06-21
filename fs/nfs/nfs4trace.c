@@ -6,6 +6,10 @@
 #include "internal.h"
 #include "nfs4session.h"
 #include "callback.h"
+<<<<<<< HEAD
+=======
+#include "pnfs.h"
+>>>>>>> v4.9.227
 
 #define CREATE_TRACE_POINTS
 #include "nfs4trace.h"

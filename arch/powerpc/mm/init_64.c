@@ -34,7 +34,10 @@
 #include <linux/vmalloc.h>
 #include <linux/init.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/highmem.h>
 #include <linux/idr.h>
 #include <linux/nodemask.h>
@@ -43,6 +46,11 @@
 #include <linux/memblock.h>
 #include <linux/hugetlb.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_fdt.h>
+#include <linux/libfdt.h>
+>>>>>>> v4.9.227
 
 #include <asm/pgalloc.h>
 #include <asm/page.h>
@@ -67,11 +75,19 @@
 #include "mmu_decl.h"
 
 #ifdef CONFIG_PPC_STD_MMU_64
+<<<<<<< HEAD
 #if PGTABLE_RANGE > USER_VSID_RANGE
 #warning Limited user VSID range means pagetable space is wasted
 #endif
 
 #if (TASK_SIZE_USER64 < PGTABLE_RANGE) && (TASK_SIZE_USER64 < USER_VSID_RANGE)
+=======
+#if H_PGTABLE_RANGE > USER_VSID_RANGE
+#warning Limited user VSID range means pagetable space is wasted
+#endif
+
+#if (TASK_SIZE_USER64 < H_PGTABLE_RANGE) && (TASK_SIZE_USER64 < USER_VSID_RANGE)
+>>>>>>> v4.9.227
 #warning TASK_SIZE is smaller than it needs to be.
 #endif
 #endif /* CONFIG_PPC_STD_MMU_64 */
@@ -86,6 +102,7 @@ static void pgd_ctor(void *addr)
 	memset(addr, 0, PGD_TABLE_SIZE);
 }
 
+<<<<<<< HEAD
 static void pmd_ctor(void *addr)
 {
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
@@ -93,6 +110,16 @@ static void pmd_ctor(void *addr)
 #else
 	memset(addr, 0, PMD_TABLE_SIZE);
 #endif
+=======
+static void pud_ctor(void *addr)
+{
+	memset(addr, 0, PUD_TABLE_SIZE);
+}
+
+static void pmd_ctor(void *addr)
+{
+	memset(addr, 0, PMD_TABLE_SIZE);
+>>>>>>> v4.9.227
 }
 
 struct kmem_cache *pgtable_cache[MAX_PGTABLE_INDEX_SIZE];
@@ -133,6 +160,10 @@ void pgtable_cache_add(unsigned shift, void (*ctor)(void *))
 	align = max_t(unsigned long, align, minalign);
 	name = kasprintf(GFP_KERNEL, "pgtable-2^%d", shift);
 	new = kmem_cache_create(name, table_size, align, 0, ctor);
+<<<<<<< HEAD
+=======
+	kfree(name);
+>>>>>>> v4.9.227
 	pgtable_cache[shift - 1] = new;
 	pr_debug("Allocated pgtable cache for order %d\n", shift);
 }
@@ -142,6 +173,7 @@ void pgtable_cache_init(void)
 {
 	pgtable_cache_add(PGD_INDEX_SIZE, pgd_ctor);
 	pgtable_cache_add(PMD_CACHE_INDEX, pmd_ctor);
+<<<<<<< HEAD
 	if (!PGT_CACHE(PGD_INDEX_SIZE) || !PGT_CACHE(PMD_CACHE_INDEX))
 		panic("Couldn't allocate pgtable caches");
 	/* In all current configs, when the PUD index exists it's the
@@ -150,6 +182,20 @@ void pgtable_cache_init(void)
 	 * will need re-examiniation if we add new possibilities for
 	 * the pagetable layout. */
 	BUG_ON(PUD_INDEX_SIZE && !PGT_CACHE(PUD_INDEX_SIZE));
+=======
+	/*
+	 * In all current configs, when the PUD index exists it's the
+	 * same size as either the pgd or pmd index except with THP enabled
+	 * on book3s 64
+	 */
+	if (PUD_INDEX_SIZE && !PGT_CACHE(PUD_INDEX_SIZE))
+		pgtable_cache_add(PUD_INDEX_SIZE, pud_ctor);
+
+	if (!PGT_CACHE(PGD_INDEX_SIZE) || !PGT_CACHE(PMD_CACHE_INDEX))
+		panic("Couldn't allocate pgtable caches");
+	if (PUD_INDEX_SIZE && !PGT_CACHE(PUD_INDEX_SIZE))
+		panic("Couldn't allocate pud pgtable caches");
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_SPARSEMEM_VMEMMAP
@@ -184,6 +230,7 @@ static int __meminit vmemmap_populated(unsigned long start, int page_size)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* On hash-based CPUs, the vmemmap is bolted in the hash table.
  *
  * On Book3E CPUs, the vmemmap is currently mapped in the top half of
@@ -245,6 +292,8 @@ static void vmemmap_remove_mapping(unsigned long start,
 
 #endif /* CONFIG_PPC_BOOK3E */
 
+=======
+>>>>>>> v4.9.227
 struct vmemmap_backing *vmemmap_list;
 static struct vmemmap_backing *next;
 static int num_left;
@@ -307,6 +356,10 @@ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node)
 
 	for (; start < end; start += page_size) {
 		void *p;
+<<<<<<< HEAD
+=======
+		int rc;
+>>>>>>> v4.9.227
 
 		if (vmemmap_populated(start, page_size))
 			continue;
@@ -320,7 +373,17 @@ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node)
 		pr_debug("      * %016lx..%016lx allocated at %p\n",
 			 start, start + page_size, p);
 
+<<<<<<< HEAD
 		vmemmap_create_mapping(start, page_size, __pa(p));
+=======
+		rc = vmemmap_create_mapping(start, page_size, __pa(p));
+		if (rc < 0) {
+			pr_warning(
+				"vmemmap_populate: Unable to create vmemmap mapping: %d\n",
+				rc);
+			return -EFAULT;
+		}
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -460,3 +523,60 @@ struct page *realmode_pfn_to_page(unsigned long pfn)
 EXPORT_SYMBOL_GPL(realmode_pfn_to_page);
 
 #endif /* CONFIG_SPARSEMEM_VMEMMAP/CONFIG_FLATMEM */
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_PPC_STD_MMU_64
+static bool disable_radix;
+static int __init parse_disable_radix(char *p)
+{
+	disable_radix = true;
+	return 0;
+}
+early_param("disable_radix", parse_disable_radix);
+
+/*
+ * If we're running under a hypervisor, we currently can't do radix
+ * since we don't have the code to do the H_REGISTER_PROC_TBL hcall.
+ * We tell that we're running under a hypervisor by looking for the
+ * /chosen/ibm,architecture-vec-5 property.
+ */
+static void early_check_vec5(void)
+{
+	unsigned long root, chosen;
+	int size;
+	const u8 *vec5;
+
+	root = of_get_flat_dt_root();
+	chosen = of_get_flat_dt_subnode_by_name(root, "chosen");
+	if (chosen == -FDT_ERR_NOTFOUND)
+		return;
+	vec5 = of_get_flat_dt_prop(chosen, "ibm,architecture-vec-5", &size);
+	if (!vec5)
+		return;
+	cur_cpu_spec->mmu_features &= ~MMU_FTR_TYPE_RADIX;
+}
+
+void __init mmu_early_init_devtree(void)
+{
+	/* Disable radix mode based on kernel command line. */
+	/* We don't yet have the machinery to do radix as a guest. */
+	if (disable_radix || !(mfmsr() & MSR_HV))
+		cur_cpu_spec->mmu_features &= ~MMU_FTR_TYPE_RADIX;
+
+	/*
+	 * Check /chosen/ibm,architecture-vec-5 if running as a guest.
+	 * When running bare-metal, we can use radix if we like
+	 * even though the ibm,architecture-vec-5 property created by
+	 * skiboot doesn't have the necessary bits set.
+	 */
+	if (early_radix_enabled() && !(mfmsr() & MSR_HV))
+		early_check_vec5();
+
+	if (early_radix_enabled())
+		radix__early_init_devtree();
+	else
+		hash__early_init_devtree();
+}
+#endif /* CONFIG_PPC_STD_MMU_64 */
+>>>>>>> v4.9.227

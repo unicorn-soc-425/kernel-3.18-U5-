@@ -21,6 +21,24 @@
 
 #include "mm.h"
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARM_HEAVY_MB
+void (*soc_mb)(void);
+
+void arm_heavy_mb(void)
+{
+#ifdef CONFIG_OUTER_CACHE_SYNC
+	if (outer_cache.sync)
+		outer_cache.sync();
+#endif
+	if (soc_mb)
+		soc_mb();
+}
+EXPORT_SYMBOL(arm_heavy_mb);
+#endif
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_CPU_CACHE_VIPT
 
 static void flush_pfn_alias(unsigned long pfn, unsigned long vaddr)
@@ -33,7 +51,11 @@ static void flush_pfn_alias(unsigned long pfn, unsigned long vaddr)
 	asm(	"mcrr	p15, 0, %1, %0, c14\n"
 	"	mcr	p15, 0, %2, c7, c10, 4"
 	    :
+<<<<<<< HEAD
 	    : "r" (to), "r" (to + PAGE_SIZE - L1_CACHE_BYTES), "r" (zero)
+=======
+	    : "r" (to), "r" (to + PAGE_SIZE - 1), "r" (zero)
+>>>>>>> v4.9.227
 	    : "cc");
 }
 
@@ -220,7 +242,11 @@ void __flush_dcache_page(struct address_space *mapping, struct page *page)
 	 */
 	if (mapping && cache_is_vipt_aliasing())
 		flush_pfn_alias(page_to_pfn(page),
+<<<<<<< HEAD
 				page->index << PAGE_CACHE_SHIFT);
+=======
+				page->index << PAGE_SHIFT);
+>>>>>>> v4.9.227
 }
 
 static void __flush_dcache_aliases(struct address_space *mapping, struct page *page)
@@ -235,7 +261,11 @@ static void __flush_dcache_aliases(struct address_space *mapping, struct page *p
 	 *   data in the current VM view associated with this page.
 	 * - aliasing VIPT: we only need to find one mapping of this page.
 	 */
+<<<<<<< HEAD
 	pgoff = page->index << (PAGE_CACHE_SHIFT - PAGE_SHIFT);
+=======
+	pgoff = page->index;
+>>>>>>> v4.9.227
 
 	flush_dcache_mmap_lock(mapping);
 	vma_interval_tree_foreach(mpnt, &mapping->i_mmap, pgoff, pgoff) {
@@ -315,7 +345,11 @@ void flush_dcache_page(struct page *page)
 	mapping = page_mapping(page);
 
 	if (!cache_ops_need_broadcast() &&
+<<<<<<< HEAD
 	    mapping && !page_mapped(page))
+=======
+	    mapping && !page_mapcount(page))
+>>>>>>> v4.9.227
 		clear_bit(PG_dcache_clean, &page->flags);
 	else {
 		__flush_dcache_page(mapping, page);
@@ -400,6 +434,7 @@ void __flush_anon_page(struct vm_area_struct *vma, struct page *page, unsigned l
 	 */
 	__cpuc_flush_dcache_area(page_address(page), PAGE_SIZE);
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 #ifdef CONFIG_HAVE_RCU_TABLE_FREE
@@ -415,3 +450,5 @@ void pmdp_splitting_flush(struct vm_area_struct *vma, unsigned long address,
 }
 #endif /* CONFIG_HAVE_RCU_TABLE_FREE */
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+=======
+>>>>>>> v4.9.227

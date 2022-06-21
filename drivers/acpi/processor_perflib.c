@@ -20,10 +20,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/kernel.h>
@@ -87,7 +90,11 @@ static int acpi_processor_ppc_notifier(struct notifier_block *nb,
 	if (ignore_ppc)
 		return 0;
 
+<<<<<<< HEAD
 	if (event != CPUFREQ_INCOMPATIBLE)
+=======
+	if (event != CPUFREQ_ADJUST)
+>>>>>>> v4.9.227
 		return 0;
 
 	mutex_lock(&performance_mutex);
@@ -784,9 +791,13 @@ acpi_processor_register_performance(struct acpi_processor_performance
 
 EXPORT_SYMBOL(acpi_processor_register_performance);
 
+<<<<<<< HEAD
 void
 acpi_processor_unregister_performance(struct acpi_processor_performance
 				      *performance, unsigned int cpu)
+=======
+void acpi_processor_unregister_performance(unsigned int cpu)
+>>>>>>> v4.9.227
 {
 	struct acpi_processor *pr;
 

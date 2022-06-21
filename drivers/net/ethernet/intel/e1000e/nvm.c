@@ -1,5 +1,9 @@
 /* Intel PRO/1000 Linux driver
+<<<<<<< HEAD
  * Copyright(c) 1999 - 2014 Intel Corporation.
+=======
+ * Copyright(c) 1999 - 2015 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -67,7 +71,11 @@ static void e1000_shift_out_eec_bits(struct e1000_hw *hw, u16 data, u16 count)
 	u32 eecd = er32(EECD);
 	u32 mask;
 
+<<<<<<< HEAD
 	mask = 0x01 << (count - 1);
+=======
+	mask = BIT(count - 1);
+>>>>>>> v4.9.227
 	if (nvm->type == e1000_nvm_eeprom_spi)
 		eecd |= E1000_EECD_DO;
 

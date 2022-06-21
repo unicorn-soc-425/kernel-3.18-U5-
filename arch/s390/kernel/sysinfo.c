@@ -16,6 +16,7 @@
 #include <asm/sysinfo.h>
 #include <asm/cpcmd.h>
 #include <asm/topology.h>
+<<<<<<< HEAD
 
 /* Sigh, math-emu. Don't ask. */
 #include <asm/sfp-util.h>
@@ -31,6 +32,13 @@ int topology_max_mnest;
  * Otherwise returns 0 on success or a negative value on error.
  */
 int stsi(void *sysinfo, int fc, int sel1, int sel2)
+=======
+#include <asm/fpu/api.h>
+
+int topology_max_mnest;
+
+static inline int __stsi(void *sysinfo, int fc, int sel1, int sel2, int *lvl)
+>>>>>>> v4.9.227
 {
 	register int r0 asm("0") = (fc << 28) | sel1;
 	register int r1 asm("1") = sel2;
@@ -45,9 +53,30 @@ int stsi(void *sysinfo, int fc, int sel1, int sel2)
 		: "+d" (r0), "+d" (rc)
 		: "d" (r1), "a" (sysinfo), "K" (-EOPNOTSUPP)
 		: "cc", "memory");
+<<<<<<< HEAD
 	if (rc)
 		return rc;
 	return fc ? 0 : ((unsigned int) r0) >> 28;
+=======
+	*lvl = ((unsigned int) r0) >> 28;
+	return rc;
+}
+
+/*
+ * stsi - store system information
+ *
+ * Returns the current configuration level if function code 0 was specified.
+ * Otherwise returns 0 on success or a negative value on error.
+ */
+int stsi(void *sysinfo, int fc, int sel1, int sel2)
+{
+	int lvl, rc;
+
+	rc = __stsi(sysinfo, fc, sel1, sel2, &lvl);
+	if (rc)
+		return rc;
+	return fc ? 0 : lvl;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(stsi);
 
@@ -111,8 +140,12 @@ static void stsi_1_1_1(struct seq_file *m, struct sysinfo_1_1_1 *info)
 
 static void stsi_15_1_x(struct seq_file *m, struct sysinfo_15_1_x *info)
 {
+<<<<<<< HEAD
 	static int max_mnest;
 	int i, rc;
+=======
+	int i;
+>>>>>>> v4.9.227
 
 	seq_putc(m, '\n');
 	if (!MACHINE_HAS_TOPOLOGY)
@@ -123,7 +156,11 @@ static void stsi_15_1_x(struct seq_file *m, struct sysinfo_15_1_x *info)
 	for (i = 0; i < TOPOLOGY_NR_MAG; i++)
 		seq_printf(m, " %d", info->mag[i]);
 	seq_putc(m, '\n');
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_MC
+=======
+#ifdef CONFIG_SCHED_TOPOLOGY
+>>>>>>> v4.9.227
 	store_topology(info);
 	seq_printf(m, "CPU Topology SW:     ");
 	for (i = 0; i < TOPOLOGY_NR_MAG; i++)
@@ -145,6 +182,13 @@ static void stsi_1_2_2(struct seq_file *m, struct sysinfo_1_2_2 *info)
 	seq_printf(m, "CPUs Configured:      %d\n", info->cpus_configured);
 	seq_printf(m, "CPUs Standby:         %d\n", info->cpus_standby);
 	seq_printf(m, "CPUs Reserved:        %d\n", info->cpus_reserved);
+<<<<<<< HEAD
+=======
+	if (info->mt_installed) {
+		seq_printf(m, "CPUs G-MTID:          %d\n", info->mt_gtid);
+		seq_printf(m, "CPUs S-MTID:          %d\n", info->mt_stid);
+	}
+>>>>>>> v4.9.227
 	/*
 	 * Sigh 2. According to the specification the alternate
 	 * capability field is a 32 bit floating point number
@@ -194,6 +238,41 @@ static void stsi_2_2_2(struct seq_file *m, struct sysinfo_2_2_2 *info)
 	seq_printf(m, "LPAR CPUs Reserved:   %d\n", info->cpus_reserved);
 	seq_printf(m, "LPAR CPUs Dedicated:  %d\n", info->cpus_dedicated);
 	seq_printf(m, "LPAR CPUs Shared:     %d\n", info->cpus_shared);
+<<<<<<< HEAD
+=======
+	if (info->mt_installed) {
+		seq_printf(m, "LPAR CPUs G-MTID:     %d\n", info->mt_gtid);
+		seq_printf(m, "LPAR CPUs S-MTID:     %d\n", info->mt_stid);
+		seq_printf(m, "LPAR CPUs PS-MTID:    %d\n", info->mt_psmtid);
+	}
+}
+
+static void print_ext_name(struct seq_file *m, int lvl,
+			   struct sysinfo_3_2_2 *info)
+{
+	if (info->vm[lvl].ext_name_encoding == 0)
+		return;
+	if (info->ext_names[lvl][0] == 0)
+		return;
+	switch (info->vm[lvl].ext_name_encoding) {
+	case 1: /* EBCDIC */
+		EBCASC(info->ext_names[lvl], sizeof(info->ext_names[lvl]));
+		break;
+	case 2:	/* UTF-8 */
+		break;
+	default:
+		return;
+	}
+	seq_printf(m, "VM%02d Extended Name:   %-.256s\n", lvl,
+		   info->ext_names[lvl]);
+}
+
+static void print_uuid(struct seq_file *m, int i, struct sysinfo_3_2_2 *info)
+{
+	if (!memcmp(&info->vm[i].uuid, &NULL_UUID_BE, sizeof(uuid_be)))
+		return;
+	seq_printf(m, "VM%02d UUID:            %pUb\n", i, &info->vm[i].uuid);
+>>>>>>> v4.9.227
 }
 
 static void stsi_3_2_2(struct seq_file *m, struct sysinfo_3_2_2 *info)
@@ -213,6 +292,11 @@ static void stsi_3_2_2(struct seq_file *m, struct sysinfo_3_2_2 *info)
 		seq_printf(m, "VM%02d CPUs Configured: %d\n", i, info->vm[i].cpus_configured);
 		seq_printf(m, "VM%02d CPUs Standby:    %d\n", i, info->vm[i].cpus_standby);
 		seq_printf(m, "VM%02d CPUs Reserved:   %d\n", i, info->vm[i].cpus_reserved);
+<<<<<<< HEAD
+=======
+		print_ext_name(m, i, info);
+		print_uuid(m, i, info);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -377,10 +461,15 @@ subsys_initcall(create_proc_service_level);
 void s390_adjust_jiffies(void)
 {
 	struct sysinfo_1_2_2 *info;
+<<<<<<< HEAD
 	const unsigned int fmil = 0x4b189680;	/* 1e7 as 32-bit float. */
 	FP_DECL_S(SA); FP_DECL_S(SB); FP_DECL_S(SR);
 	FP_DECL_EX;
 	unsigned int capability;
+=======
+	unsigned long capability;
+	struct kernel_fpu fpu;
+>>>>>>> v4.9.227
 
 	info = (void *) get_zeroed_page(GFP_KERNEL);
 	if (!info)
@@ -396,6 +485,7 @@ void s390_adjust_jiffies(void)
 		 * higher cpu capacity. Bogomips are the other way round.
 		 * To get to a halfway suitable number we divide 1e7
 		 * by the cpu capability number. Yes, that means a floating
+<<<<<<< HEAD
 		 * point division .. math-emu here we come :-)
 		 */
 		FP_UNPACK_SP(SA, &fmil);
@@ -405,6 +495,27 @@ void s390_adjust_jiffies(void)
 			FP_UNPACK_SP(SB, &info->capability);
 		FP_DIV_S(SR, SA, SB);
 		FP_TO_INT_S(capability, SR, 32, 0);
+=======
+		 * point division ..
+		 */
+		kernel_fpu_begin(&fpu, KERNEL_FPR);
+		asm volatile(
+			"	sfpc	%3\n"
+			"	l	%0,%1\n"
+			"	tmlh	%0,0xff80\n"
+			"	jnz	0f\n"
+			"	cefbr	%%f2,%0\n"
+			"	j	1f\n"
+			"0:	le	%%f2,%1\n"
+			"1:	cefbr	%%f0,%2\n"
+			"	debr	%%f0,%%f2\n"
+			"	cgebr	%0,5,%%f0\n"
+			: "=&d" (capability)
+			: "Q" (info->capability), "d" (10000000), "d" (0)
+			: "cc"
+			);
+		kernel_fpu_end(&fpu, KERNEL_FPR);
+>>>>>>> v4.9.227
 	} else
 		/*
 		 * Really old machine without stsi block for basic

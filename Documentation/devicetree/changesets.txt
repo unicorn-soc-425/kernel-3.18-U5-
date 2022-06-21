@@ -21,6 +21,7 @@ a set of changes. No changes to the active tree are made at this point.
 All the change operations are recorded in the of_changeset 'entries'
 list.
 
+<<<<<<< HEAD
 3. mutex_lock(of_mutex) - starts a changeset; The global of_mutex
 ensures there can only be one editor at a time.
 
@@ -38,3 +39,13 @@ with the following sequence.
 2. of_changeset_revert()
 
 3. mutex_unlock(of_mutex)
+=======
+3. of_changeset_apply() - Apply the changes to the tree. Either the
+entire changeset will get applied, or if there is an error the tree will
+be restored to the previous state. The core ensures proper serialization
+through locking. An unlocked version __of_changeset_apply is available,
+if needed.
+
+If a successfully applied changeset needs to be removed, it can be done
+with of_changeset_revert().
+>>>>>>> v4.9.227

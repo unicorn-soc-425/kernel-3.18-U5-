@@ -50,7 +50,11 @@ copy_kcore()
 	fi
 
 	rm -f perf.data.junk
+<<<<<<< HEAD
 	("$PERF" record -o perf.data.junk $PERF_OPTIONS -- sleep 60) >/dev/null 2>/dev/null &
+=======
+	("$PERF" record -o perf.data.junk "${PERF_OPTIONS[@]}" -- sleep 60) >/dev/null 2>/dev/null &
+>>>>>>> v4.9.227
 	PERF_PID=$!
 
 	# Need to make sure that perf has started
@@ -160,18 +164,32 @@ record()
 			echo "*** WARNING *** /proc/sys/kernel/kptr_restrict prevents access to kernel addresses" >&2
 		fi
 
+<<<<<<< HEAD
 		if echo "$PERF_OPTIONS" | grep -q ' -a \|^-a \| -a$\|^-a$\| --all-cpus \|^--all-cpus \| --all-cpus$\|^--all-cpus$' ; then
 			echo "*** WARNING *** system-wide tracing without root access will not be able to read all necessary information from /proc" >&2
 		fi
 
 		if echo "$PERF_OPTIONS" | grep -q 'intel_pt\|intel_bts\| -I\|^-I' ; then
+=======
+		if echo "${PERF_OPTIONS[@]}" | grep -q ' -a \|^-a \| -a$\|^-a$\| --all-cpus \|^--all-cpus \| --all-cpus$\|^--all-cpus$' ; then
+			echo "*** WARNING *** system-wide tracing without root access will not be able to read all necessary information from /proc" >&2
+		fi
+
+		if echo "${PERF_OPTIONS[@]}" | grep -q 'intel_pt\|intel_bts\| -I\|^-I' ; then
+>>>>>>> v4.9.227
 			if [ "$(cat /proc/sys/kernel/perf_event_paranoid)" -gt -1 ] ; then
 				echo "*** WARNING *** /proc/sys/kernel/perf_event_paranoid restricts buffer size and tracepoint (sched_switch) use" >&2
 			fi
 
+<<<<<<< HEAD
 			if echo "$PERF_OPTIONS" | grep -q ' --per-thread \|^--per-thread \| --per-thread$\|^--per-thread$' ; then
 				true
 			elif echo "$PERF_OPTIONS" | grep -q ' -t \|^-t \| -t$\|^-t$' ; then
+=======
+			if echo "${PERF_OPTIONS[@]}" | grep -q ' --per-thread \|^--per-thread \| --per-thread$\|^--per-thread$' ; then
+				true
+			elif echo "${PERF_OPTIONS[@]}" | grep -q ' -t \|^-t \| -t$\|^-t$' ; then
+>>>>>>> v4.9.227
 				true
 			elif [ ! -r /sys/kernel/debug -o ! -x /sys/kernel/debug ] ; then
 				echo "*** WARNING *** /sys/kernel/debug permissions prevent tracepoint (sched_switch) use" >&2
@@ -193,8 +211,13 @@ record()
 
 	mkdir "$PERF_DATA_DIR"
 
+<<<<<<< HEAD
 	echo "$PERF record -o $PERF_DATA_DIR/perf.data $PERF_OPTIONS -- $*"
 	"$PERF" record -o "$PERF_DATA_DIR/perf.data" $PERF_OPTIONS -- $* || true
+=======
+	echo "$PERF record -o $PERF_DATA_DIR/perf.data ${PERF_OPTIONS[@]} -- $@"
+	"$PERF" record -o "$PERF_DATA_DIR/perf.data" "${PERF_OPTIONS[@]}" -- "$@" || true
+>>>>>>> v4.9.227
 
 	if rmdir "$PERF_DATA_DIR" > /dev/null 2>/dev/null ; then
 		exit 1
@@ -209,8 +232,13 @@ subcommand()
 {
 	find_perf
 	check_buildid_cache_permissions
+<<<<<<< HEAD
 	echo "$PERF $PERF_SUB_COMMAND -i $PERF_DATA_DIR/perf.data --kallsyms=$PERF_DATA_DIR/kcore_dir/kallsyms $*"
 	"$PERF" $PERF_SUB_COMMAND -i "$PERF_DATA_DIR/perf.data" "--kallsyms=$PERF_DATA_DIR/kcore_dir/kallsyms" $*
+=======
+	echo "$PERF $PERF_SUB_COMMAND -i $PERF_DATA_DIR/perf.data --kallsyms=$PERF_DATA_DIR/kcore_dir/kallsyms $@"
+	"$PERF" $PERF_SUB_COMMAND -i "$PERF_DATA_DIR/perf.data" "--kallsyms=$PERF_DATA_DIR/kcore_dir/kallsyms" "$@"
+>>>>>>> v4.9.227
 }
 
 if [ "$1" = "fix_buildid_cache_permissions" ] ; then
@@ -234,7 +262,11 @@ fi
 case "$PERF_SUB_COMMAND" in
 "record")
 	while [ "$1" != "--" ] ; do
+<<<<<<< HEAD
 		PERF_OPTIONS+="$1 "
+=======
+		PERF_OPTIONS+=("$1")
+>>>>>>> v4.9.227
 		shift || break
 	done
 	if [ "$1" != "--" ] ; then
@@ -242,6 +274,7 @@ case "$PERF_SUB_COMMAND" in
 		usage
 	fi
 	shift
+<<<<<<< HEAD
 	record $*
 ;;
 "script")
@@ -252,6 +285,18 @@ case "$PERF_SUB_COMMAND" in
 ;;
 "inject")
 	subcommand $*
+=======
+	record "$@"
+;;
+"script")
+	subcommand "$@"
+;;
+"report")
+	subcommand "$@"
+;;
+"inject")
+	subcommand "$@"
+>>>>>>> v4.9.227
 ;;
 *)
 	usage

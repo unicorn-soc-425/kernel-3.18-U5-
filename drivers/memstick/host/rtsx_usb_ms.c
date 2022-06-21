@@ -712,7 +712,11 @@ poll_again:
 		if (host->eject)
 			break;
 
+<<<<<<< HEAD
 		msleep(1000);
+=======
+		schedule_timeout_idle(HZ);
+>>>>>>> v4.9.227
 	}
 
 	complete(&host->detect_ms_exit);
@@ -833,7 +837,10 @@ static struct platform_driver rtsx_usb_ms_driver = {
 	.remove		= rtsx_usb_ms_drv_remove,
 	.id_table       = rtsx_usb_ms_ids,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "rtsx_usb_ms",
 		.pm	= &rtsx_usb_ms_pm_ops,
 	},

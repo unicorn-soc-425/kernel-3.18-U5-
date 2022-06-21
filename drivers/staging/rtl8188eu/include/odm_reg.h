@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 /*  */
 /*  File Name: odm_reg.h */
@@ -112,7 +115,11 @@
 /*  Bitmap Definition */
 /*  */
 
+<<<<<<< HEAD
 #define	BIT_FA_RESET					BIT0
+=======
+#define	BIT_FA_RESET					BIT(0)
+>>>>>>> v4.9.227
 
 
 

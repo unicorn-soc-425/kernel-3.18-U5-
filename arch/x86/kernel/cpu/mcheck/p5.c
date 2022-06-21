@@ -8,6 +8,10 @@
 #include <linux/smp.h>
 
 #include <asm/processor.h>
+<<<<<<< HEAD
+=======
+#include <asm/traps.h>
+>>>>>>> v4.9.227
 #include <asm/tlbflush.h>
 #include <asm/mce.h>
 #include <asm/msr.h>
@@ -20,6 +24,7 @@ static void pentium_machine_check(struct pt_regs *regs, long error_code)
 {
 	u32 loaddr, hi, lotype;
 
+<<<<<<< HEAD
 	rdmsr(MSR_IA32_P5_MC_ADDR, loaddr, hi);
 	rdmsr(MSR_IA32_P5_MC_TYPE, lotype, hi);
 
@@ -34,6 +39,24 @@ static void pentium_machine_check(struct pt_regs *regs, long error_code)
 	}
 
 	add_taint(TAINT_MACHINE_CHECK, LOCKDEP_NOW_UNRELIABLE);
+=======
+	ist_enter(regs);
+
+	rdmsr(MSR_IA32_P5_MC_ADDR, loaddr, hi);
+	rdmsr(MSR_IA32_P5_MC_TYPE, lotype, hi);
+
+	pr_emerg("CPU#%d: Machine Check Exception:  0x%8X (type 0x%8X).\n",
+		 smp_processor_id(), loaddr, lotype);
+
+	if (lotype & (1<<5)) {
+		pr_emerg("CPU#%d: Possible thermal failure (CPU on fire ?).\n",
+			 smp_processor_id());
+	}
+
+	add_taint(TAINT_MACHINE_CHECK, LOCKDEP_NOW_UNRELIABLE);
+
+	ist_exit(regs);
+>>>>>>> v4.9.227
 }
 
 /* Set up machine check reporting for processors with Intel style MCE: */
@@ -56,6 +79,7 @@ void intel_p5_mcheck_init(struct cpuinfo_x86 *c)
 	/* Read registers before enabling: */
 	rdmsr(MSR_IA32_P5_MC_ADDR, l, h);
 	rdmsr(MSR_IA32_P5_MC_TYPE, l, h);
+<<<<<<< HEAD
 	printk(KERN_INFO
 	       "Intel old style machine check architecture supported.\n");
 
@@ -64,4 +88,12 @@ void intel_p5_mcheck_init(struct cpuinfo_x86 *c)
 	printk(KERN_INFO
 	       "Intel old style machine check reporting enabled on CPU#%d.\n",
 	       smp_processor_id());
+=======
+	pr_info("Intel old style machine check architecture supported.\n");
+
+	/* Enable MCE: */
+	cr4_set_bits(X86_CR4_MCE);
+	pr_info("Intel old style machine check reporting enabled on CPU#%d.\n",
+		smp_processor_id());
+>>>>>>> v4.9.227
 }

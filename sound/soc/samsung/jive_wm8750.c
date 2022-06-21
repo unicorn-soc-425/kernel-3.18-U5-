@@ -61,6 +61,7 @@ static int jive_hw_params(struct snd_pcm_substream *substream,
 	s3c_i2sv2_iis_calc_rate(&div, NULL, params_rate(params),
 				s3c_i2sv2_get_clock(cpu_dai));
 
+<<<<<<< HEAD
 	/* set codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S |
 				  SND_SOC_DAIFMT_NB_NF |
@@ -75,6 +76,8 @@ static int jive_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	/* set the codec system clock for DAC and ADC */
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8750_SYSCLK, clk,
 				     SND_SOC_CLOCK_IN);
@@ -97,6 +100,7 @@ static struct snd_soc_ops jive_ops = {
 	.hw_params	= jive_hw_params,
 };
 
+<<<<<<< HEAD
 static int jive_wm8750_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
@@ -113,6 +117,8 @@ static int jive_wm8750_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static struct snd_soc_dai_link jive_dai = {
 	.name		= "wm8750",
 	.stream_name	= "WM8750",
@@ -120,7 +126,12 @@ static struct snd_soc_dai_link jive_dai = {
 	.codec_dai_name = "wm8750-hifi",
 	.platform_name	= "s3c2412-i2s",
 	.codec_name	= "wm8750.0-001a",
+<<<<<<< HEAD
 	.init		= jive_wm8750_init,
+=======
+	.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+			  SND_SOC_DAIFMT_CBS_CFS,
+>>>>>>> v4.9.227
 	.ops		= &jive_ops,
 };
 
@@ -135,6 +146,10 @@ static struct snd_soc_card snd_soc_machine_jive = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8750_dapm_widgets),
 	.dapm_routes	= audio_map,
 	.num_dapm_routes = ARRAY_SIZE(audio_map),
+<<<<<<< HEAD
+=======
+	.fully_routed	= true,
+>>>>>>> v4.9.227
 };
 
 static struct platform_device *jive_snd_device;

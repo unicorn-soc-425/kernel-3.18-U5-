@@ -26,11 +26,15 @@
 #include "../common/mic_dev.h"
 #include "mic_device.h"
 #include "mic_smpt.h"
+<<<<<<< HEAD
 #include "mic_virtio.h"
+=======
+>>>>>>> v4.9.227
 
 /* Debugfs parent dir */
 static struct dentry *mic_dbg;
 
+<<<<<<< HEAD
 /**
  * mic_log_buf_show - Display MIC kernel log buffer.
  *
@@ -96,6 +100,8 @@ static const struct file_operations log_buf_ops = {
 	.release = mic_log_buf_release
 };
 
+=======
+>>>>>>> v4.9.227
 static int mic_smpt_show(struct seq_file *s, void *pos)
 {
 	int i;
@@ -138,6 +144,7 @@ static const struct file_operations smpt_file_ops = {
 	.release = mic_smpt_debug_release
 };
 
+<<<<<<< HEAD
 static int mic_soft_reset_show(struct seq_file *s, void *pos)
 {
 	struct mic_device *mdev = s->private;
@@ -164,6 +171,8 @@ static const struct file_operations soft_reset_ops = {
 	.release = mic_soft_reset_debug_release
 };
 
+=======
+>>>>>>> v4.9.227
 static int mic_post_code_show(struct seq_file *s, void *pos)
 {
 	struct mic_device *mdev = s->private;
@@ -191,6 +200,7 @@ static const struct file_operations post_code_ops = {
 	.release = mic_post_code_debug_release
 };
 
+<<<<<<< HEAD
 static int mic_dp_show(struct seq_file *s, void *pos)
 {
 	struct mic_device *mdev = s->private;
@@ -366,6 +376,8 @@ static const struct file_operations vdev_info_ops = {
 	.release = mic_vdev_info_debug_release
 };
 
+=======
+>>>>>>> v4.9.227
 static int mic_msi_irq_info_show(struct seq_file *s, void *pos)
 {
 	struct mic_device *mdev  = s->private;
@@ -373,8 +385,12 @@ static int mic_msi_irq_info_show(struct seq_file *s, void *pos)
 	int i, j;
 	u16 entry;
 	u16 vector;
+<<<<<<< HEAD
 	struct pci_dev *pdev = container_of(mdev->sdev->parent,
 		struct pci_dev, dev);
+=======
+	struct pci_dev *pdev = mdev->pdev;
+>>>>>>> v4.9.227
 
 	if (pci_dev_msi_enabled(pdev)) {
 		for (i = 0; i < mdev->irq_info.num_vectors; i++) {
@@ -435,6 +451,7 @@ static const struct file_operations msi_irq_info_ops = {
  */
 void mic_create_debug_dir(struct mic_device *mdev)
 {
+<<<<<<< HEAD
 	if (!mic_dbg)
 		return;
 
@@ -457,6 +474,23 @@ void mic_create_debug_dir(struct mic_device *mdev)
 	debugfs_create_file("vdev_info", 0444, mdev->dbg_dir, mdev,
 			    &vdev_info_ops);
 
+=======
+	char name[16];
+
+	if (!mic_dbg)
+		return;
+
+	scnprintf(name, sizeof(name), "mic%d", mdev->id);
+	mdev->dbg_dir = debugfs_create_dir(name, mic_dbg);
+	if (!mdev->dbg_dir)
+		return;
+
+	debugfs_create_file("smpt", 0444, mdev->dbg_dir, mdev, &smpt_file_ops);
+
+	debugfs_create_file("post_code", 0444, mdev->dbg_dir, mdev,
+			    &post_code_ops);
+
+>>>>>>> v4.9.227
 	debugfs_create_file("msi_irq_info", 0444, mdev->dbg_dir, mdev,
 			    &msi_irq_info_ops);
 }

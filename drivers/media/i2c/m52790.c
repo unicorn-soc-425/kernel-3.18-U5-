@@ -27,7 +27,11 @@
 #include <asm/uaccess.h>
 #include <linux/i2c.h>
 #include <linux/videodev2.h>
+<<<<<<< HEAD
 #include <media/m52790.h>
+=======
+#include <media/i2c/m52790.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-device.h>
 
 MODULE_DESCRIPTION("i2c device driver for m52790 A/V switch");
@@ -185,7 +189,10 @@ MODULE_DEVICE_TABLE(i2c, m52790_id);
 
 static struct i2c_driver m52790_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "m52790",
 	},
 	.probe		= m52790_probe,

@@ -20,11 +20,20 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+#include <linux/irqdomain.h>
+#include <linux/of_address.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/cpu.h>
 #include <linux/notifier.h>
 #include <linux/cpu_pm.h>
+<<<<<<< HEAD
 #include <linux/irqchip/arm-gic.h>
+=======
+>>>>>>> v4.9.227
 
 #include "omap-wakeupgen.h"
 #include "omap-secure.h"
@@ -78,6 +87,7 @@ static inline void sar_writel(u32 val, u32 offset, u8 idx)
 
 static inline int _wakeupgen_get_irq_info(u32 irq, u32 *bit_posn, u8 *reg_index)
 {
+<<<<<<< HEAD
 	unsigned int spi_irq;
 
 	/*
@@ -95,12 +105,19 @@ static inline int _wakeupgen_get_irq_info(u32 irq, u32 *bit_posn, u8 *reg_index)
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * Each WakeupGen register controls 32 interrupt.
 	 * i.e. 1 bit per SPI IRQ
 	 */
+<<<<<<< HEAD
 	*reg_index = spi_irq >> 5;
 	*bit_posn = spi_irq %= 32;
+=======
+	*reg_index = irq >> 5;
+	*bit_posn = irq %= 32;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -141,6 +158,10 @@ static void wakeupgen_mask(struct irq_data *d)
 	raw_spin_lock_irqsave(&wakeupgen_lock, flags);
 	_wakeupgen_clear(d->hwirq, irq_target_cpu[d->hwirq]);
 	raw_spin_unlock_irqrestore(&wakeupgen_lock, flags);
+<<<<<<< HEAD
+=======
+	irq_chip_mask_parent(d);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -153,6 +174,10 @@ static void wakeupgen_unmask(struct irq_data *d)
 	raw_spin_lock_irqsave(&wakeupgen_lock, flags);
 	_wakeupgen_set(d->hwirq, irq_target_cpu[d->hwirq]);
 	raw_spin_unlock_irqrestore(&wakeupgen_lock, flags);
+<<<<<<< HEAD
+=======
+	irq_chip_unmask_parent(d);
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_HOTPLUG_CPU
@@ -287,6 +312,13 @@ static inline void omap5_irq_save_context(void)
  */
 static void irq_save_context(void)
 {
+<<<<<<< HEAD
+=======
+	/* DRA7 has no SAR to save */
+	if (soc_is_dra7xx())
+		return;
+
+>>>>>>> v4.9.227
 	if (!sar_base)
 		sar_base = omap4_get_sar_ram_base();
 
@@ -303,6 +335,12 @@ static void irq_sar_clear(void)
 {
 	u32 val;
 	u32 offset = SAR_BACKUP_STATUS_OFFSET;
+<<<<<<< HEAD
+=======
+	/* DRA7 has no SAR to save */
+	if (soc_is_dra7xx())
+		return;
+>>>>>>> v4.9.227
 
 	if (soc_is_omap54xx())
 		offset = OMAP5_SAR_BACKUP_STATUS_OFFSET;
@@ -328,6 +366,7 @@ static void irq_save_secure_context(void)
 #endif
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 static int irq_cpu_hotplug_notify(struct notifier_block *self,
 				  unsigned long action, void *hcpu)
 {
@@ -351,6 +390,27 @@ static struct notifier_block __refdata irq_hotplug_notifier = {
 static void __init irq_hotplug_init(void)
 {
 	register_hotcpu_notifier(&irq_hotplug_notifier);
+=======
+static int omap_wakeupgen_cpu_online(unsigned int cpu)
+{
+	wakeupgen_irqmask_all(cpu, 0);
+	return 0;
+}
+
+static int omap_wakeupgen_cpu_dead(unsigned int cpu)
+{
+	wakeupgen_irqmask_all(cpu, 1);
+	return 0;
+}
+
+static void __init irq_hotplug_init(void)
+{
+	cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN, "arm/omap-wake:online",
+				  omap_wakeupgen_cpu_online, NULL);
+	cpuhp_setup_state_nocalls(CPUHP_ARM_OMAP_WAKE_DEAD,
+				  "arm/omap-wake:dead", NULL,
+				  omap_wakeupgen_cpu_dead);
+>>>>>>> v4.9.227
 }
 #else
 static void __init irq_hotplug_init(void)
@@ -400,15 +460,106 @@ int omap_secure_apis_support(void)
 	return omap_secure_apis;
 }
 
+<<<<<<< HEAD
 /*
  * Initialise the wakeupgen module.
  */
 int __init omap_wakeupgen_init(void)
 {
+=======
+static struct irq_chip wakeupgen_chip = {
+	.name			= "WUGEN",
+	.irq_eoi		= irq_chip_eoi_parent,
+	.irq_mask		= wakeupgen_mask,
+	.irq_unmask		= wakeupgen_unmask,
+	.irq_retrigger		= irq_chip_retrigger_hierarchy,
+	.irq_set_type		= irq_chip_set_type_parent,
+	.flags			= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_MASK_ON_SUSPEND,
+#ifdef CONFIG_SMP
+	.irq_set_affinity	= irq_chip_set_affinity_parent,
+#endif
+};
+
+static int wakeupgen_domain_translate(struct irq_domain *d,
+				      struct irq_fwspec *fwspec,
+				      unsigned long *hwirq,
+				      unsigned int *type)
+{
+	if (is_of_node(fwspec->fwnode)) {
+		if (fwspec->param_count != 3)
+			return -EINVAL;
+
+		/* No PPI should point to this domain */
+		if (fwspec->param[0] != 0)
+			return -EINVAL;
+
+		*hwirq = fwspec->param[1];
+		*type = fwspec->param[2];
+		return 0;
+	}
+
+	return -EINVAL;
+}
+
+static int wakeupgen_domain_alloc(struct irq_domain *domain,
+				  unsigned int virq,
+				  unsigned int nr_irqs, void *data)
+{
+	struct irq_fwspec *fwspec = data;
+	struct irq_fwspec parent_fwspec;
+	irq_hw_number_t hwirq;
+	int i;
+
+	if (fwspec->param_count != 3)
+		return -EINVAL;	/* Not GIC compliant */
+	if (fwspec->param[0] != 0)
+		return -EINVAL;	/* No PPI should point to this domain */
+
+	hwirq = fwspec->param[1];
+	if (hwirq >= MAX_IRQS)
+		return -EINVAL;	/* Can't deal with this */
+
+	for (i = 0; i < nr_irqs; i++)
+		irq_domain_set_hwirq_and_chip(domain, virq + i, hwirq + i,
+					      &wakeupgen_chip, NULL);
+
+	parent_fwspec = *fwspec;
+	parent_fwspec.fwnode = domain->parent->fwnode;
+	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
+					    &parent_fwspec);
+}
+
+static const struct irq_domain_ops wakeupgen_domain_ops = {
+	.translate	= wakeupgen_domain_translate,
+	.alloc		= wakeupgen_domain_alloc,
+	.free		= irq_domain_free_irqs_common,
+};
+
+/*
+ * Initialise the wakeupgen module.
+ */
+static int __init wakeupgen_init(struct device_node *node,
+				 struct device_node *parent)
+{
+	struct irq_domain *parent_domain, *domain;
+>>>>>>> v4.9.227
 	int i;
 	unsigned int boot_cpu = smp_processor_id();
 	u32 val;
 
+<<<<<<< HEAD
+=======
+	if (!parent) {
+		pr_err("%s: no parent, giving up\n", node->full_name);
+		return -ENODEV;
+	}
+
+	parent_domain = irq_find_host(parent);
+	if (!parent_domain) {
+		pr_err("%s: unable to obtain parent domain\n", node->full_name);
+		return -ENXIO;
+	}
+>>>>>>> v4.9.227
 	/* Not supported on OMAP4 ES1.0 silicon */
 	if (omap_rev() == OMAP4430_REV_ES1_0) {
 		WARN(1, "WakeupGen: Not supported on OMAP4430 ES1.0\n");
@@ -416,7 +567,11 @@ int __init omap_wakeupgen_init(void)
 	}
 
 	/* Static mapping, never released */
+<<<<<<< HEAD
 	wakeupgen_base = ioremap(OMAP_WKUPGEN_BASE, SZ_4K);
+=======
+	wakeupgen_base = of_iomap(node, 0);
+>>>>>>> v4.9.227
 	if (WARN_ON(!wakeupgen_base))
 		return -ENOMEM;
 
@@ -429,6 +584,17 @@ int __init omap_wakeupgen_init(void)
 		max_irqs = AM43XX_IRQS;
 	}
 
+<<<<<<< HEAD
+=======
+	domain = irq_domain_add_hierarchy(parent_domain, 0, max_irqs,
+					  node, &wakeupgen_domain_ops,
+					  NULL);
+	if (!domain) {
+		iounmap(wakeupgen_base);
+		return -ENOMEM;
+	}
+
+>>>>>>> v4.9.227
 	/* Clear all IRQ bitmasks at wakeupGen level */
 	for (i = 0; i < irq_banks; i++) {
 		wakeupgen_writel(0, i, CPU0_ID);
@@ -437,6 +603,7 @@ int __init omap_wakeupgen_init(void)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Override GIC architecture specific functions to add
 	 * OMAP WakeupGen interrupt controller along with GIC
 	 */
@@ -445,6 +612,8 @@ int __init omap_wakeupgen_init(void)
 	gic_arch_extn.flags = IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_SKIP_SET_WAKE;
 
 	/*
+=======
+>>>>>>> v4.9.227
 	 * FIXME: Add support to set_smp_affinity() once the core
 	 * GIC code has necessary hooks in place.
 	 */
@@ -474,3 +643,7 @@ int __init omap_wakeupgen_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+IRQCHIP_DECLARE(ti_wakeupgen, "ti,omap4-wugen-mpu", wakeupgen_init);
+>>>>>>> v4.9.227

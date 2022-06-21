@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -148,7 +152,11 @@ void acpi_ut_get_expected_return_types(char *buffer, u32 expected_btypes)
 	u32 j;
 
 	if (!expected_btypes) {
+<<<<<<< HEAD
 		ACPI_STRCPY(buffer, "NONE");
+=======
+		strcpy(buffer, "NONE");
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -161,7 +169,11 @@ void acpi_ut_get_expected_return_types(char *buffer, u32 expected_btypes)
 		/* If one of the expected types, concatenate the name of this type */
 
 		if (expected_btypes & this_rtype) {
+<<<<<<< HEAD
 			ACPI_STRCAT(buffer, &ut_rtype_names[i][j]);
+=======
+			strcat(buffer, &ut_rtype_names[i][j]);
+>>>>>>> v4.9.227
 			j = 0;	/* Use name separator from now on */
 		}
 
@@ -176,8 +188,11 @@ void acpi_ut_get_expected_return_types(char *buffer, u32 expected_btypes)
  ******************************************************************************/
 
 #if (defined ACPI_ASL_COMPILER || defined ACPI_HELP_APP)
+<<<<<<< HEAD
 #include <stdio.h>
 #include <string.h>
+=======
+>>>>>>> v4.9.227
 
 /* Local prototypes */
 
@@ -225,8 +240,15 @@ const union acpi_predefined_info *acpi_ut_match_resource_name(char *name)
 {
 	const union acpi_predefined_info *this_name;
 
+<<<<<<< HEAD
 	/* Quick check for a predefined name, first character must be underscore */
 
+=======
+	/*
+	 * Quick check for a predefined name, first character must
+	 * be underscore
+	 */
+>>>>>>> v4.9.227
 	if (name[0] != '_') {
 		return (NULL);
 	}

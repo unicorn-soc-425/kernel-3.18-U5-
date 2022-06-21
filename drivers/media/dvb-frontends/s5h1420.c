@@ -52,7 +52,11 @@ struct s5h1420_state {
 	u8 postlocked:1;
 	u32 fclk;
 	u32 tunedfreq;
+<<<<<<< HEAD
 	fe_code_rate_t fec_inner;
+=======
+	enum fe_code_rate fec_inner;
+>>>>>>> v4.9.227
 	u32 symbol_rate;
 
 	/* FIXME: ugly workaround for flexcop's incapable i2c-controller
@@ -124,7 +128,12 @@ static int s5h1420_writereg (struct s5h1420_state* state, u8 reg, u8 data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s5h1420_set_voltage (struct dvb_frontend* fe, fe_sec_voltage_t voltage)
+=======
+static int s5h1420_set_voltage(struct dvb_frontend *fe,
+			       enum fe_sec_voltage voltage)
+>>>>>>> v4.9.227
 {
 	struct s5h1420_state* state = fe->demodulator_priv;
 
@@ -149,7 +158,12 @@ static int s5h1420_set_voltage (struct dvb_frontend* fe, fe_sec_voltage_t voltag
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s5h1420_set_tone (struct dvb_frontend* fe, fe_sec_tone_mode_t tone)
+=======
+static int s5h1420_set_tone(struct dvb_frontend *fe,
+			    enum fe_sec_tone_mode tone)
+>>>>>>> v4.9.227
 {
 	struct s5h1420_state* state = fe->demodulator_priv;
 
@@ -270,7 +284,12 @@ exit:
 	return result;
 }
 
+<<<<<<< HEAD
 static int s5h1420_send_burst (struct dvb_frontend* fe, fe_sec_mini_cmd_t minicmd)
+=======
+static int s5h1420_send_burst(struct dvb_frontend *fe,
+			      enum fe_sec_mini_cmd minicmd)
+>>>>>>> v4.9.227
 {
 	struct s5h1420_state* state = fe->demodulator_priv;
 	u8 val;
@@ -307,10 +326,17 @@ static int s5h1420_send_burst (struct dvb_frontend* fe, fe_sec_mini_cmd_t minicm
 	return result;
 }
 
+<<<<<<< HEAD
 static fe_status_t s5h1420_get_status_bits(struct s5h1420_state* state)
 {
 	u8 val;
 	fe_status_t status = 0;
+=======
+static enum fe_status s5h1420_get_status_bits(struct s5h1420_state *state)
+{
+	u8 val;
+	enum fe_status status = 0;
+>>>>>>> v4.9.227
 
 	val = s5h1420_readreg(state, 0x14);
 	if (val & 0x02)
@@ -328,7 +354,12 @@ static fe_status_t s5h1420_get_status_bits(struct s5h1420_state* state)
 	return status;
 }
 
+<<<<<<< HEAD
 static int s5h1420_read_status(struct dvb_frontend* fe, fe_status_t* status)
+=======
+static int s5h1420_read_status(struct dvb_frontend *fe,
+			       enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct s5h1420_state* state = fe->demodulator_priv;
 	u8 val;
@@ -561,6 +592,7 @@ static void s5h1420_setfec_inversion(struct s5h1420_state* state,
 	} else {
 		switch (p->fec_inner) {
 		case FEC_1_2:
+<<<<<<< HEAD
 			vit08 = 0x01; vit09 = 0x10;
 			break;
 
@@ -582,6 +614,35 @@ static void s5h1420_setfec_inversion(struct s5h1420_state* state,
 
 		case FEC_7_8:
 			vit08 = 0x20; vit09 = 0x15;
+=======
+			vit08 = 0x01;
+			vit09 = 0x10;
+			break;
+
+		case FEC_2_3:
+			vit08 = 0x02;
+			vit09 = 0x11;
+			break;
+
+		case FEC_3_4:
+			vit08 = 0x04;
+			vit09 = 0x12;
+			break;
+
+		case FEC_5_6:
+			vit08 = 0x08;
+			vit09 = 0x13;
+			break;
+
+		case FEC_6_7:
+			vit08 = 0x10;
+			vit09 = 0x14;
+			break;
+
+		case FEC_7_8:
+			vit08 = 0x20;
+			vit09 = 0x15;
+>>>>>>> v4.9.227
 			break;
 
 		default:
@@ -595,7 +656,11 @@ static void s5h1420_setfec_inversion(struct s5h1420_state* state,
 	dprintk("leave %s\n", __func__);
 }
 
+<<<<<<< HEAD
 static fe_code_rate_t s5h1420_getfec(struct s5h1420_state* state)
+=======
+static enum fe_code_rate s5h1420_getfec(struct s5h1420_state *state)
+>>>>>>> v4.9.227
 {
 	switch(s5h1420_readreg(state, 0x32) & 0x07) {
 	case 0:
@@ -620,7 +685,12 @@ static fe_code_rate_t s5h1420_getfec(struct s5h1420_state* state)
 	return FEC_NONE;
 }
 
+<<<<<<< HEAD
 static fe_spectral_inversion_t s5h1420_getinversion(struct s5h1420_state* state)
+=======
+static enum fe_spectral_inversion
+s5h1420_getinversion(struct s5h1420_state *state)
+>>>>>>> v4.9.227
 {
 	if (s5h1420_readreg(state, 0x32) & 0x08)
 		return INVERSION_ON;
@@ -745,9 +815,15 @@ static int s5h1420_set_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s5h1420_get_frontend(struct dvb_frontend* fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+=======
+static int s5h1420_get_frontend(struct dvb_frontend* fe,
+				struct dtv_frontend_properties *p)
+{
+>>>>>>> v4.9.227
 	struct s5h1420_state* state = fe->demodulator_priv;
 
 	p->frequency = state->tunedfreq + s5h1420_getfreqoffset(state);

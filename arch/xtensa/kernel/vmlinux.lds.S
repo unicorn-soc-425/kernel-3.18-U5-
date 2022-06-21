@@ -30,10 +30,13 @@ jiffies = jiffies_64 + 4;
 jiffies = jiffies_64;
 #endif
 
+<<<<<<< HEAD
 #ifndef KERNELOFFSET
 #define KERNELOFFSET 0xd0003000
 #endif
 
+=======
+>>>>>>> v4.9.227
 /* Note: In the following macros, it would be nice to specify only the
    vector name and section kind and construct "sym" and "section" using
    CPP concatenation, but that does not work reliably.  Concatenating a
@@ -93,6 +96,12 @@ SECTIONS
     VMLINUX_SYMBOL(__sched_text_start) = .;
     *(.sched.literal .sched.text)
     VMLINUX_SYMBOL(__sched_text_end) = .;
+<<<<<<< HEAD
+=======
+    VMLINUX_SYMBOL(__cpuidle_text_start) = .;
+    *(.cpuidle.literal .cpuidle.text)
+    VMLINUX_SYMBOL(__cpuidle_text_end) = .;
+>>>>>>> v4.9.227
     VMLINUX_SYMBOL(__lock_text_start) = .;
     *(.spinlock.literal .spinlock.text)
     VMLINUX_SYMBOL(__lock_text_end) = .;
@@ -110,6 +119,10 @@ SECTIONS
   .fixup   : { *(.fixup) }
 
   EXCEPTION_TABLE(16)
+<<<<<<< HEAD
+=======
+  NOTES
+>>>>>>> v4.9.227
   /* Data section */
 
   _sdata = .;
@@ -166,8 +179,11 @@ SECTIONS
     RELOCATE_ENTRY(_DebugInterruptVector_text,
 		   .DebugInterruptVector.text);
 #if defined(CONFIG_SMP)
+<<<<<<< HEAD
     RELOCATE_ENTRY(_SecondaryResetVector_literal,
 		   .SecondaryResetVector.literal);
+=======
+>>>>>>> v4.9.227
     RELOCATE_ENTRY(_SecondaryResetVector_text,
 		   .SecondaryResetVector.text);
 #endif
@@ -282,6 +298,7 @@ SECTIONS
 
 #if defined(CONFIG_SMP)
 
+<<<<<<< HEAD
   SECTION_VECTOR (_SecondaryResetVector_literal,
 		  .SecondaryResetVector.literal,
 		  RESET_VECTOR1_VADDR - 4,
@@ -293,6 +310,13 @@ SECTIONS
 		  RESET_VECTOR1_VADDR,
 		  4,
 		  .SecondaryResetVector.literal)
+=======
+  SECTION_VECTOR (_SecondaryResetVector_text,
+		  .SecondaryResetVector.text,
+		  RESET_VECTOR1_VADDR,
+		  SIZEOF(.DoubleExceptionVector.text),
+		  .DoubleExceptionVector.text)
+>>>>>>> v4.9.227
 
   . = LOADADDR(.SecondaryResetVector.text)+SIZEOF(.SecondaryResetVector.text);
 
@@ -306,6 +330,7 @@ SECTIONS
 
   _end = .;
 
+<<<<<<< HEAD
   /* only used by the boot loader  */
 
   . = ALIGN(0x10);
@@ -331,6 +356,8 @@ SECTIONS
   }
 
 
+=======
+>>>>>>> v4.9.227
   .xt.lit : { *(.xt.lit) }
   .xt.prop : { *(.xt.prop) }
 

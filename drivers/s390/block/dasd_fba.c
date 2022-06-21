@@ -125,6 +125,7 @@ locate_record(struct ccw1 * ccw, struct LO_fba_data *data, int rw,
 static int
 dasd_fba_check_characteristics(struct dasd_device *device)
 {
+<<<<<<< HEAD
 	struct dasd_block *block;
 	struct dasd_fba_private *private;
 	struct ccw_device *cdev = device->cdev;
@@ -132,6 +133,13 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 	int readonly;
 
 	private = (struct dasd_fba_private *) device->private;
+=======
+	struct dasd_fba_private *private = device->private;
+	struct ccw_device *cdev = device->cdev;
+	struct dasd_block *block;
+	int readonly, rc;
+
+>>>>>>> v4.9.227
 	if (!private) {
 		private = kzalloc(sizeof(*private), GFP_KERNEL | GFP_DMA);
 		if (!private) {
@@ -140,7 +148,11 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 				 "data failed\n");
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 		device->private = (void *) private;
+=======
+		device->private = private;
+>>>>>>> v4.9.227
 	} else {
 		memset(private, 0, sizeof(*private));
 	}
@@ -192,10 +204,16 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 
 static int dasd_fba_do_analysis(struct dasd_block *block)
 {
+<<<<<<< HEAD
 	struct dasd_fba_private *private;
 	int sb, rc;
 
 	private = (struct dasd_fba_private *) block->base->private;
+=======
+	struct dasd_fba_private *private = block->base->private;
+	int sb, rc;
+
+>>>>>>> v4.9.227
 	rc = dasd_check_blocksize(private->rdc_data.blk_size);
 	if (rc) {
 		DBF_DEV_EVENT(DBF_WARNING, block->base, "unknown blocksize %d",
@@ -254,7 +272,11 @@ static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
 					      struct dasd_block *block,
 					      struct request *req)
 {
+<<<<<<< HEAD
 	struct dasd_fba_private *private;
+=======
+	struct dasd_fba_private *private = block->base->private;
+>>>>>>> v4.9.227
 	unsigned long *idaws;
 	struct LO_fba_data *LO_data;
 	struct dasd_ccw_req *cqr;
@@ -267,7 +289,10 @@ static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
 	unsigned int blksize, off;
 	unsigned char cmd;
 
+<<<<<<< HEAD
 	private = (struct dasd_fba_private *) block->base->private;
+=======
+>>>>>>> v4.9.227
 	if (rq_data_dir(req) == READ) {
 		cmd = DASD_FBA_CCW_READ;
 	} else if (rq_data_dir(req) == WRITE) {
@@ -287,10 +312,15 @@ static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
 			/* Fba can only do full blocks. */
 			return ERR_PTR(-EINVAL);
 		count += bv.bv_len >> (block->s2b_shift + 9);
+<<<<<<< HEAD
 #if defined(CONFIG_64BIT)
 		if (idal_is_needed (page_address(bv.bv_page), bv.bv_len))
 			cidaw += bv.bv_len / blksize;
 #endif
+=======
+		if (idal_is_needed (page_address(bv.bv_page), bv.bv_len))
+			cidaw += bv.bv_len / blksize;
+>>>>>>> v4.9.227
 	}
 	/* Paranoia. */
 	if (count != last_rec - first_rec + 1)
@@ -381,7 +411,11 @@ static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
 static int
 dasd_fba_free_cp(struct dasd_ccw_req *cqr, struct request *req)
 {
+<<<<<<< HEAD
 	struct dasd_fba_private *private;
+=======
+	struct dasd_fba_private *private = cqr->block->base->private;
+>>>>>>> v4.9.227
 	struct ccw1 *ccw;
 	struct req_iterator iter;
 	struct bio_vec bv;
@@ -391,7 +425,10 @@ dasd_fba_free_cp(struct dasd_ccw_req *cqr, struct request *req)
 
 	if (!dasd_page_cache)
 		goto out;
+<<<<<<< HEAD
 	private = (struct dasd_fba_private *) cqr->block->base->private;
+=======
+>>>>>>> v4.9.227
 	blksize = cqr->block->bp_block;
 	ccw = cqr->cpaddr;
 	/* Skip over define extent & locate record. */
@@ -438,6 +475,7 @@ static int
 dasd_fba_fill_info(struct dasd_device * device,
 		   struct dasd_information2_t * info)
 {
+<<<<<<< HEAD
 	info->label_block = 1;
 	info->FBA_layout = 1;
 	info->format = DASD_FORMAT_LDL;
@@ -445,6 +483,16 @@ dasd_fba_fill_info(struct dasd_device * device,
 	memcpy(info->characteristics,
 	       &((struct dasd_fba_private *) device->private)->rdc_data,
 	       sizeof (struct dasd_fba_characteristics));
+=======
+	struct dasd_fba_private *private = device->private;
+
+	info->label_block = 1;
+	info->FBA_layout = 1;
+	info->format = DASD_FORMAT_LDL;
+	info->characteristics_size = sizeof(private->rdc_data);
+	memcpy(info->characteristics, &private->rdc_data,
+	       sizeof(private->rdc_data));
+>>>>>>> v4.9.227
 	info->confdata_size = 0;
 	return 0;
 }

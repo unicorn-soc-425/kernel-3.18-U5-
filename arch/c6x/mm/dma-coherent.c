@@ -73,8 +73,13 @@ static void __free_dma_pages(u32 addr, int order)
  * Allocate DMA coherent memory space and return both the kernel
  * virtual and DMA address for that space.
  */
+<<<<<<< HEAD
 void *dma_alloc_coherent(struct device *dev, size_t size,
 			 dma_addr_t *handle, gfp_t gfp)
+=======
+void *c6x_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+		gfp_t gfp, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	u32 paddr;
 	int order;
@@ -94,13 +99,21 @@ void *dma_alloc_coherent(struct device *dev, size_t size,
 
 	return phys_to_virt(paddr);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(dma_alloc_coherent);
+=======
+>>>>>>> v4.9.227
 
 /*
  * Free DMA coherent memory as defined by the above mapping.
  */
+<<<<<<< HEAD
 void dma_free_coherent(struct device *dev, size_t size, void *vaddr,
 		       dma_addr_t dma_handle)
+=======
+void c6x_dma_free(struct device *dev, size_t size, void *vaddr,
+		dma_addr_t dma_handle, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	int order;
 
@@ -111,7 +124,10 @@ void dma_free_coherent(struct device *dev, size_t size, void *vaddr,
 
 	__free_dma_pages(virt_to_phys(vaddr), order);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(dma_free_coherent);
+=======
+>>>>>>> v4.9.227
 
 /*
  * Initialise the coherent DMA memory allocator using the given uncached region.

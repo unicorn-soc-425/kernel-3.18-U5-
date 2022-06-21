@@ -10,6 +10,7 @@
 #ifndef _IIO_TYPES_H_
 #define _IIO_TYPES_H_
 
+<<<<<<< HEAD
 enum iio_chan_type {
 	IIO_VOLTAGE,
 	IIO_CURRENT,
@@ -70,18 +71,26 @@ enum iio_event_type {
 	IIO_EV_TYPE_THRESH_ADAPTIVE,
 	IIO_EV_TYPE_MAG_ADAPTIVE,
 };
+=======
+#include <uapi/linux/iio/types.h>
+>>>>>>> v4.9.227
 
 enum iio_event_info {
 	IIO_EV_INFO_ENABLE,
 	IIO_EV_INFO_VALUE,
 	IIO_EV_INFO_HYSTERESIS,
 	IIO_EV_INFO_PERIOD,
+<<<<<<< HEAD
 };
 
 enum iio_event_direction {
 	IIO_EV_DIR_EITHER,
 	IIO_EV_DIR_RISING,
 	IIO_EV_DIR_FALLING,
+=======
+	IIO_EV_INFO_HIGH_PASS_FILTER_3DB,
+	IIO_EV_INFO_LOW_PASS_FILTER_3DB,
+>>>>>>> v4.9.227
 };
 
 #define IIO_VAL_INT 1

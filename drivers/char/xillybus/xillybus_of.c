@@ -31,7 +31,11 @@ MODULE_LICENSE("GPL v2");
 static const char xillyname[] = "xillybus_of";
 
 /* Match table for of_platform binding */
+<<<<<<< HEAD
 static struct of_device_id xillybus_of_match[] = {
+=======
+static const struct of_device_id xillybus_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "xillybus,xillybus-1.00.a", },
 	{ .compatible = "xlnx,xillybus-1.00.a", }, /* Deprecated */
 	{}
@@ -81,7 +85,10 @@ static int xilly_map_single_of(struct xilly_endpoint *ep,
 {
 	dma_addr_t addr;
 	struct xilly_mapping *this;
+<<<<<<< HEAD
 	int rc;
+=======
+>>>>>>> v4.9.227
 
 	this = kzalloc(sizeof(*this), GFP_KERNEL);
 	if (!this)
@@ -101,6 +108,7 @@ static int xilly_map_single_of(struct xilly_endpoint *ep,
 
 	*ret_dma_handle = addr;
 
+<<<<<<< HEAD
 	rc = devm_add_action(ep->dev, xilly_of_unmap, this);
 
 	if (rc) {
@@ -110,6 +118,9 @@ static int xilly_map_single_of(struct xilly_endpoint *ep,
 	}
 
 	return 0;
+=======
+	return devm_add_action_or_reset(ep->dev, xilly_of_unmap, this);
+>>>>>>> v4.9.227
 }
 
 static struct xilly_endpoint_hardware of_hw = {
@@ -179,7 +190,10 @@ static struct platform_driver xillybus_platform_driver = {
 	.remove = xilly_drv_remove,
 	.driver = {
 		.name = xillyname,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = xillybus_of_match,
 	},
 };

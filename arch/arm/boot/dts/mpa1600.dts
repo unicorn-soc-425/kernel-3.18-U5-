@@ -17,6 +17,7 @@
 	};
 
 	clocks {
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
@@ -26,6 +27,8 @@
 			clock-frequency = <18432000>;
 		};
 
+=======
+>>>>>>> v4.9.227
 		slow_xtal {
 			clock-frequency = <32768>;
 		};
@@ -61,7 +64,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	i2c@0 {
+=======
+	i2c-gpio-0 {
+>>>>>>> v4.9.227
 		status = "okay";
 	};
 

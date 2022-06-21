@@ -5,6 +5,10 @@
 #include "../debug.h"
 #include "helpline.h"
 #include "ui.h"
+<<<<<<< HEAD
+=======
+#include "../util.h"
+>>>>>>> v4.9.227
 
 char ui_helpline__current[512];
 

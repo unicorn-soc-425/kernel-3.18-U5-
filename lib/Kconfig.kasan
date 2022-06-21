@@ -5,8 +5,14 @@ if HAVE_ARCH_KASAN
 
 config KASAN
 	bool "KASan: runtime memory debugger"
+<<<<<<< HEAD
 	depends on SLUB_DEBUG
 	select CONSTRUCTORS
+=======
+	depends on SLUB || (SLAB && !DEBUG_SLAB)
+	select CONSTRUCTORS
+	select STACKDEPOT
+>>>>>>> v4.9.227
 	help
 	  Enables kernel address sanitizer - runtime memory debugger,
 	  designed to find out-of-bounds accesses and use-after-free bugs.
@@ -16,10 +22,15 @@ config KASAN
 	  This feature consumes about 1/8 of available memory and brings about
 	  ~x3 performance slowdown.
 	  For better error detection enable CONFIG_STACKTRACE.
+<<<<<<< HEAD
 
 config KASAN_SHADOW_OFFSET
 	hex
 	default 0xdffffc0000000000 if X86_64
+=======
+	  Currently CONFIG_KASAN doesn't work with CONFIG_DEBUG_SLAB
+	  (the resulting kernel does not boot).
+>>>>>>> v4.9.227
 
 choice
 	prompt "Instrumentation type"

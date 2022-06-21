@@ -67,7 +67,10 @@ gt215_ce = {
 	.code.size = sizeof(gt215_ce_code),
 	.data.data = gt215_ce_data,
 	.data.size = sizeof(gt215_ce_data),
+<<<<<<< HEAD
 	.pmc_enable = 0x00802000,
+=======
+>>>>>>> v4.9.227
 	.intr = gt215_ce_intr,
 	.sclass = {
 		{ -1, -1, GT212_DMA },

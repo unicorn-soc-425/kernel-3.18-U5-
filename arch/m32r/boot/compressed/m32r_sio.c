@@ -8,12 +8,21 @@
 
 #include <asm/processor.h>
 
+<<<<<<< HEAD
 static void putc(char c);
+=======
+static void m32r_putc(char c);
+>>>>>>> v4.9.227
 
 static int puts(const char *s)
 {
 	char c;
+<<<<<<< HEAD
 	while ((c = *s++)) putc(c);
+=======
+	while ((c = *s++))
+		m32r_putc(c);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -41,7 +50,11 @@ static int puts(const char *s)
 #define BOOT_SIO0TXB	PLD_ESIO0TXB
 #endif
 
+<<<<<<< HEAD
 static void putc(char c)
+=======
+static void m32r_putc(char c)
+>>>>>>> v4.9.227
 {
 	while ((*BOOT_SIO0STS & 0x3) != 0x3)
 		cpu_relax();
@@ -61,7 +74,11 @@ static void putc(char c)
 #define SIO0TXB	(volatile unsigned short *)(0x00efd000 + 30)
 #endif
 
+<<<<<<< HEAD
 static void putc(char c)
+=======
+static void m32r_putc(char c)
+>>>>>>> v4.9.227
 {
 	while ((*SIO0STS & 0x1) == 0)
 		cpu_relax();

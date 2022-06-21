@@ -3,7 +3,10 @@
  * Copyright (C) 2006, 2007 David S. Miller (davem@davemloft.net)
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/tty.h>
@@ -149,8 +152,15 @@ static int receive_chars_read(struct uart_port *port)
 			uart_handle_dcd_change(port, 1);
 		}
 
+<<<<<<< HEAD
 		for (i = 0; i < bytes_read; i++)
 			uart_handle_sysrq_char(port, con_read_page[i]);
+=======
+		if (port->sysrq != 0 &&  *con_read_page) {
+			for (i = 0; i < bytes_read; i++)
+				uart_handle_sysrq_char(port, con_read_page[i]);
+		}
+>>>>>>> v4.9.227
 
 		if (port->state == NULL)
 			continue;
@@ -169,17 +179,29 @@ struct sunhv_ops {
 	int (*receive_chars)(struct uart_port *port);
 };
 
+<<<<<<< HEAD
 static struct sunhv_ops bychar_ops = {
+=======
+static const struct sunhv_ops bychar_ops = {
+>>>>>>> v4.9.227
 	.transmit_chars = transmit_chars_putchar,
 	.receive_chars = receive_chars_getchar,
 };
 
+<<<<<<< HEAD
 static struct sunhv_ops bywrite_ops = {
+=======
+static const struct sunhv_ops bywrite_ops = {
+>>>>>>> v4.9.227
 	.transmit_chars = transmit_chars_write,
 	.receive_chars = receive_chars_read,
 };
 
+<<<<<<< HEAD
 static struct sunhv_ops *sunhv_ops = &bychar_ops;
+=======
+static const struct sunhv_ops *sunhv_ops = &bychar_ops;
+>>>>>>> v4.9.227
 
 static struct tty_port *receive_chars(struct uart_port *port)
 {
@@ -391,12 +413,25 @@ static struct uart_ops sunhv_pops = {
 static struct uart_driver sunhv_reg = {
 	.owner			= THIS_MODULE,
 	.driver_name		= "sunhv",
+<<<<<<< HEAD
 	.dev_name		= "ttyS",
+=======
+	.dev_name		= "ttyHV",
+>>>>>>> v4.9.227
 	.major			= TTY_MAJOR,
 };
 
 static struct uart_port *sunhv_port;
 
+<<<<<<< HEAD
+=======
+void sunhv_migrate_hvcons_irq(int cpu)
+{
+	/* Migrate hvcons irq to param cpu */
+	irq_force_affinity(sunhv_port->irq, cpumask_of(cpu));
+}
+
+>>>>>>> v4.9.227
 /* Copy 's' into the con_write_page, decoding "\n" into
  * "\r\n" along the way.  We have to return two lengths
  * because the caller needs to know how much to advance
@@ -489,12 +524,15 @@ static void sunhv_console_write_bychar(struct console *con, const char *s, unsig
 		locked = spin_trylock_irqsave(&port->lock, flags);
 	else
 		spin_lock_irqsave(&port->lock, flags);
+<<<<<<< HEAD
 	if (port->sysrq) {
 		locked = 0;
 	} else if (oops_in_progress) {
 		locked = spin_trylock(&port->lock);
 	} else
 		spin_lock(&port->lock);
+=======
+>>>>>>> v4.9.227
 
 	for (i = 0; i < n; i++) {
 		if (*s == '\n')
@@ -621,12 +659,18 @@ static const struct of_device_id hv_match[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, hv_match);
+=======
+>>>>>>> v4.9.227
 
 static struct platform_driver hv_driver = {
 	.driver = {
 		.name = "hv",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = hv_match,
 	},
 	.probe		= hv_probe,
@@ -640,6 +684,7 @@ static int __init sunhv_init(void)
 
 	return platform_driver_register(&hv_driver);
 }
+<<<<<<< HEAD
 
 static void __exit sunhv_exit(void)
 {
@@ -649,7 +694,16 @@ static void __exit sunhv_exit(void)
 module_init(sunhv_init);
 module_exit(sunhv_exit);
 
+=======
+device_initcall(sunhv_init);
+
+#if 0 /* ...def MODULE ; never supported as such */
+>>>>>>> v4.9.227
 MODULE_AUTHOR("David S. Miller");
 MODULE_DESCRIPTION("SUN4V Hypervisor console driver");
 MODULE_VERSION("2.0");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227

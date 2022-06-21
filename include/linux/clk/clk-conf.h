@@ -7,6 +7,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+
+>>>>>>> v4.9.227
 struct device_node;
 
 #if defined(CONFIG_OF) && defined(CONFIG_COMMON_CLK)

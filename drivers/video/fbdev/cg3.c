@@ -463,7 +463,10 @@ MODULE_DEVICE_TABLE(of, cg3_match);
 static struct platform_driver cg3_driver = {
 	.driver = {
 		.name = "cg3",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = cg3_match,
 	},
 	.probe		= cg3_probe,

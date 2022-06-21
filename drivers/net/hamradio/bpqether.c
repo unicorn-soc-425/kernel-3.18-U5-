@@ -76,7 +76,10 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/stat.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/rtnetlink.h>
@@ -247,6 +250,12 @@ static netdev_tx_t bpq_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct net_device *orig_dev;
 	int size;
 
+<<<<<<< HEAD
+=======
+	if (skb->protocol == htons(ETH_P_IP))
+		return ax25_ip_xmit(skb);
+
+>>>>>>> v4.9.227
 	/*
 	 * Just to be *really* sure not to send anything if the interface
 	 * is down, the ethernet device may have gone.
@@ -476,8 +485,14 @@ static void bpq_setup(struct net_device *dev)
 	memcpy(dev->dev_addr,  &ax25_defaddr, AX25_ADDR_LEN);
 
 	dev->flags      = 0;
+<<<<<<< HEAD
 
 #if defined(CONFIG_AX25) || defined(CONFIG_AX25_MODULE)
+=======
+	dev->features	= NETIF_F_LLTX;	/* Allow recursion */
+
+#if IS_ENABLED(CONFIG_AX25)
+>>>>>>> v4.9.227
 	dev->header_ops      = &ax25_header_ops;
 #endif
 

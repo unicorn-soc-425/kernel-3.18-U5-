@@ -27,7 +27,10 @@
 
 #include "vmwgfx_kms.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /* Might need a hrtimer here? */
 #define VMWGFX_PRESENT_RATE ((HZ / 60 > 0) ? HZ / 60 : 1)
 
@@ -98,7 +101,11 @@ int vmw_cursor_update_dmabuf(struct vmw_private *dev_priv,
 	kmap_offset = 0;
 	kmap_num = (width*height*4 + PAGE_SIZE - 1) >> PAGE_SHIFT;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(&dmabuf->base, true, false, false, NULL);
+=======
+	ret = ttm_bo_reserve(&dmabuf->base, true, false, NULL);
+>>>>>>> v4.9.227
 	if (unlikely(ret != 0)) {
 		DRM_ERROR("reserve failed\n");
 		return -EINVAL;
@@ -236,8 +243,13 @@ int vmw_du_crtc_cursor_move(struct drm_crtc *crtc, int x, int y)
 	struct vmw_display_unit *du = vmw_crtc_to_du(crtc);
 	bool shown = du->cursor_surface || du->cursor_dmabuf ? true : false;
 
+<<<<<<< HEAD
 	du->cursor_x = x + crtc->x;
 	du->cursor_y = y + crtc->y;
+=======
+	du->cursor_x = x + du->set_gui_x;
+	du->cursor_y = y + du->set_gui_y;
+>>>>>>> v4.9.227
 
 	/*
 	 * FIXME: Unclear whether there's any global state touched by the
@@ -318,7 +330,11 @@ void vmw_kms_cursor_snoop(struct vmw_surface *srf,
 	kmap_offset = cmd->dma.guest.ptr.offset >> PAGE_SHIFT;
 	kmap_num = (64*64*4) >> PAGE_SHIFT;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(bo, true, false, false, NULL);
+=======
+	ret = ttm_bo_reserve(bo, true, false, NULL);
+>>>>>>> v4.9.227
 	if (unlikely(ret != 0)) {
 		DRM_ERROR("reserve failed\n");
 		return;
@@ -508,7 +524,11 @@ int vmw_kms_readback(struct vmw_private *dev_priv,
 }
 
 
+<<<<<<< HEAD
 static struct drm_framebuffer_funcs vmw_framebuffer_surface_funcs = {
+=======
+static const struct drm_framebuffer_funcs vmw_framebuffer_surface_funcs = {
+>>>>>>> v4.9.227
 	.destroy = vmw_framebuffer_surface_destroy,
 	.dirty = vmw_framebuffer_surface_dirty,
 };
@@ -663,9 +683,14 @@ static int vmw_framebuffer_dmabuf_dirty(struct drm_framebuffer *framebuffer,
 		break;
 	case vmw_du_screen_object:
 		ret = vmw_kms_sou_do_dmabuf_dirty(dev_priv, &vfbd->base,
+<<<<<<< HEAD
 						  clips, num_clips, increment,
 						  true,
 						  NULL);
+=======
+						  clips, NULL, num_clips,
+						  increment, true, NULL);
+>>>>>>> v4.9.227
 		break;
 	case vmw_du_legacy:
 		ret = vmw_kms_ldu_do_dmabuf_dirty(dev_priv, &vfbd->base, 0, 0,
@@ -685,7 +710,11 @@ static int vmw_framebuffer_dmabuf_dirty(struct drm_framebuffer *framebuffer,
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct drm_framebuffer_funcs vmw_framebuffer_dmabuf_funcs = {
+=======
+static const struct drm_framebuffer_funcs vmw_framebuffer_dmabuf_funcs = {
+>>>>>>> v4.9.227
 	.destroy = vmw_framebuffer_dmabuf_destroy,
 	.dirty = vmw_framebuffer_dmabuf_dirty,
 };
@@ -972,7 +1001,11 @@ vmw_kms_new_framebuffer(struct vmw_private *dev_priv,
 
 static struct drm_framebuffer *vmw_kms_fb_create(struct drm_device *dev,
 						 struct drm_file *file_priv,
+<<<<<<< HEAD
 						 struct drm_mode_fb_cmd2 *mode_cmd2)
+=======
+						 const struct drm_mode_fb_cmd2 *mode_cmd2)
+>>>>>>> v4.9.227
 {
 	struct vmw_private *dev_priv = vmw_priv(dev);
 	struct ttm_object_file *tfile = vmw_fpriv(file_priv)->tfile;
@@ -1109,6 +1142,25 @@ int vmw_kms_present(struct vmw_private *dev_priv,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void
+vmw_kms_create_hotplug_mode_update_property(struct vmw_private *dev_priv)
+{
+	if (dev_priv->hotplug_mode_update_property)
+		return;
+
+	dev_priv->hotplug_mode_update_property =
+		drm_property_create_range(dev_priv->dev,
+					  DRM_MODE_PROP_IMMUTABLE,
+					  "hotplug_mode_update", 0, 1);
+
+	if (!dev_priv->hotplug_mode_update_property)
+		return;
+
+}
+
+>>>>>>> v4.9.227
 int vmw_kms_init(struct vmw_private *dev_priv)
 {
 	struct drm_device *dev = dev_priv->dev;
@@ -1121,6 +1173,12 @@ int vmw_kms_init(struct vmw_private *dev_priv)
 	dev->mode_config.max_width = dev_priv->texture_max_width;
 	dev->mode_config.max_height = dev_priv->texture_max_height;
 
+<<<<<<< HEAD
+=======
+	drm_mode_create_suggested_offset_properties(dev);
+	vmw_kms_create_hotplug_mode_update_property(dev_priv);
+
+>>>>>>> v4.9.227
 	ret = vmw_kms_stdu_init_display(dev_priv);
 	if (ret) {
 		ret = vmw_kms_sou_init_display(dev_priv);
@@ -1360,19 +1418,42 @@ static int vmw_du_update_layout(struct vmw_private *dev_priv, unsigned num,
 			du->pref_active = true;
 			du->gui_x = rects[du->unit].x;
 			du->gui_y = rects[du->unit].y;
+<<<<<<< HEAD
+=======
+			drm_object_property_set_value
+			  (&con->base, dev->mode_config.suggested_x_property,
+			   du->gui_x);
+			drm_object_property_set_value
+			  (&con->base, dev->mode_config.suggested_y_property,
+			   du->gui_y);
+>>>>>>> v4.9.227
 		} else {
 			du->pref_width = 800;
 			du->pref_height = 600;
 			du->pref_active = false;
+<<<<<<< HEAD
+=======
+			drm_object_property_set_value
+			  (&con->base, dev->mode_config.suggested_x_property,
+			   0);
+			drm_object_property_set_value
+			  (&con->base, dev->mode_config.suggested_y_property,
+			   0);
+>>>>>>> v4.9.227
 		}
 		con->status = vmw_du_connector_detect(con, true);
 	}
 
 	mutex_unlock(&dev->mode_config.mutex);
+<<<<<<< HEAD
+=======
+	drm_sysfs_hotplug_event(dev);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 void vmw_du_crtc_save(struct drm_crtc *crtc)
 {
 }
@@ -1384,6 +1465,11 @@ void vmw_du_crtc_restore(struct drm_crtc *crtc)
 void vmw_du_crtc_gamma_set(struct drm_crtc *crtc,
 			   u16 *r, u16 *g, u16 *b,
 			   uint32_t start, uint32_t size)
+=======
+int vmw_du_crtc_gamma_set(struct drm_crtc *crtc,
+			  u16 *r, u16 *g, u16 *b,
+			  uint32_t size)
+>>>>>>> v4.9.227
 {
 	struct vmw_private *dev_priv = vmw_priv(crtc->dev);
 	int i;
@@ -1395,6 +1481,11 @@ void vmw_du_crtc_gamma_set(struct drm_crtc *crtc,
 		vmw_write(dev_priv, SVGA_PALETTE_BASE + i * 3 + 1, g[i] >> 8);
 		vmw_write(dev_priv, SVGA_PALETTE_BASE + i * 3 + 2, b[i] >> 8);
 	}
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 int vmw_du_connector_dpms(struct drm_connector *connector, int mode)
@@ -1402,6 +1493,7 @@ int vmw_du_connector_dpms(struct drm_connector *connector, int mode)
 	return 0;
 }
 
+<<<<<<< HEAD
 void vmw_du_connector_save(struct drm_connector *connector)
 {
 }
@@ -1410,6 +1502,8 @@ void vmw_du_connector_restore(struct drm_connector *connector)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 enum drm_connector_status
 vmw_du_connector_detect(struct drm_connector *connector, bool force)
 {
@@ -1592,7 +1686,11 @@ int vmw_du_connector_fill_modes(struct drm_connector *connector,
 		drm_mode_probed_add(connector, mode);
 	}
 
+<<<<<<< HEAD
 	drm_mode_connector_list_update(connector, true);
+=======
+	drm_mode_connector_list_update(connector);
+>>>>>>> v4.9.227
 	/* Move the prefered mode first, help apps pick the right mode. */
 	drm_mode_sort(&connector->modes);
 
@@ -1603,6 +1701,15 @@ int vmw_du_connector_set_property(struct drm_connector *connector,
 				  struct drm_property *property,
 				  uint64_t val)
 {
+<<<<<<< HEAD
+=======
+	struct vmw_display_unit *du = vmw_connector_to_du(connector);
+	struct vmw_private *dev_priv = vmw_priv(connector->dev);
+
+	if (property == dev_priv->implicit_placement_property)
+		du->is_implicit = val;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1834,7 +1941,11 @@ int vmw_kms_helper_buffer_prepare(struct vmw_private *dev_priv,
 	struct ttm_buffer_object *bo = &buf->base;
 	int ret;
 
+<<<<<<< HEAD
 	ttm_bo_reserve(bo, false, false, interruptible, NULL);
+=======
+	ttm_bo_reserve(bo, false, false, NULL);
+>>>>>>> v4.9.227
 	ret = vmw_validate_single_buffer(dev_priv, bo, interruptible,
 					 validate_as_mob);
 	if (ret)
@@ -1910,9 +2021,18 @@ void vmw_kms_helper_buffer_finish(struct vmw_private *dev_priv,
  * Helper to be used if an error forces the caller to undo the actions of
  * vmw_kms_helper_resource_prepare.
  */
+<<<<<<< HEAD
 void vmw_kms_helper_resource_revert(struct vmw_resource *res)
 {
 	vmw_kms_helper_buffer_revert(res->backup);
+=======
+void vmw_kms_helper_resource_revert(struct vmw_validation_ctx *ctx)
+{
+	struct vmw_resource *res = ctx->res;
+
+	vmw_kms_helper_buffer_revert(ctx->buf);
+	vmw_dmabuf_unreference(&ctx->buf);
+>>>>>>> v4.9.227
 	vmw_resource_unreserve(res, false, NULL, 0);
 	mutex_unlock(&res->dev_priv->cmdbuf_mutex);
 }
@@ -1929,10 +2049,21 @@ void vmw_kms_helper_resource_revert(struct vmw_resource *res)
  * interrupted by a signal.
  */
 int vmw_kms_helper_resource_prepare(struct vmw_resource *res,
+<<<<<<< HEAD
 				    bool interruptible)
 {
 	int ret = 0;
 
+=======
+				    bool interruptible,
+				    struct vmw_validation_ctx *ctx)
+{
+	int ret = 0;
+
+	ctx->buf = NULL;
+	ctx->res = res;
+
+>>>>>>> v4.9.227
 	if (interruptible)
 		ret = mutex_lock_interruptible(&res->dev_priv->cmdbuf_mutex);
 	else
@@ -1951,6 +2082,11 @@ int vmw_kms_helper_resource_prepare(struct vmw_resource *res,
 						    res->dev_priv->has_mob);
 		if (ret)
 			goto out_unreserve;
+<<<<<<< HEAD
+=======
+
+		ctx->buf = vmw_dmabuf_reference(res->backup);
+>>>>>>> v4.9.227
 	}
 	ret = vmw_resource_validate(res);
 	if (ret)
@@ -1958,7 +2094,11 @@ int vmw_kms_helper_resource_prepare(struct vmw_resource *res,
 	return 0;
 
 out_revert:
+<<<<<<< HEAD
 	vmw_kms_helper_buffer_revert(res->backup);
+=======
+	vmw_kms_helper_buffer_revert(ctx->buf);
+>>>>>>> v4.9.227
 out_unreserve:
 	vmw_resource_unreserve(res, false, NULL, 0);
 out_unlock:
@@ -1974,6 +2114,7 @@ out_unlock:
  * @out_fence: Optional pointer to a fence pointer. If non-NULL, a
  * ref-counted fence pointer is returned here.
  */
+<<<<<<< HEAD
 void vmw_kms_helper_resource_finish(struct vmw_resource *res,
 			     struct vmw_fence_obj **out_fence)
 {
@@ -1981,6 +2122,18 @@ void vmw_kms_helper_resource_finish(struct vmw_resource *res,
 		vmw_kms_helper_buffer_finish(res->dev_priv, NULL, res->backup,
 					     out_fence, NULL);
 
+=======
+void vmw_kms_helper_resource_finish(struct vmw_validation_ctx *ctx,
+				    struct vmw_fence_obj **out_fence)
+{
+	struct vmw_resource *res = ctx->res;
+
+	if (ctx->buf || out_fence)
+		vmw_kms_helper_buffer_finish(res->dev_priv, NULL, ctx->buf,
+					     out_fence, NULL);
+
+	vmw_dmabuf_unreference(&ctx->buf);
+>>>>>>> v4.9.227
 	vmw_resource_unreserve(res, false, NULL, 0);
 	mutex_unlock(&res->dev_priv->cmdbuf_mutex);
 }
@@ -2108,3 +2261,121 @@ int vmw_kms_fbdev_init_data(struct vmw_private *dev_priv,
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * vmw_kms_del_active - unregister a crtc binding to the implicit framebuffer
+ *
+ * @dev_priv: Pointer to a device private struct.
+ * @du: The display unit of the crtc.
+ */
+void vmw_kms_del_active(struct vmw_private *dev_priv,
+			struct vmw_display_unit *du)
+{
+	mutex_lock(&dev_priv->global_kms_state_mutex);
+	if (du->active_implicit) {
+		if (--(dev_priv->num_implicit) == 0)
+			dev_priv->implicit_fb = NULL;
+		du->active_implicit = false;
+	}
+	mutex_unlock(&dev_priv->global_kms_state_mutex);
+}
+
+/**
+ * vmw_kms_add_active - register a crtc binding to an implicit framebuffer
+ *
+ * @vmw_priv: Pointer to a device private struct.
+ * @du: The display unit of the crtc.
+ * @vfb: The implicit framebuffer
+ *
+ * Registers a binding to an implicit framebuffer.
+ */
+void vmw_kms_add_active(struct vmw_private *dev_priv,
+			struct vmw_display_unit *du,
+			struct vmw_framebuffer *vfb)
+{
+	mutex_lock(&dev_priv->global_kms_state_mutex);
+	WARN_ON_ONCE(!dev_priv->num_implicit && dev_priv->implicit_fb);
+
+	if (!du->active_implicit && du->is_implicit) {
+		dev_priv->implicit_fb = vfb;
+		du->active_implicit = true;
+		dev_priv->num_implicit++;
+	}
+	mutex_unlock(&dev_priv->global_kms_state_mutex);
+}
+
+/**
+ * vmw_kms_screen_object_flippable - Check whether we can page-flip a crtc.
+ *
+ * @dev_priv: Pointer to device-private struct.
+ * @crtc: The crtc we want to flip.
+ *
+ * Returns true or false depending whether it's OK to flip this crtc
+ * based on the criterion that we must not have more than one implicit
+ * frame-buffer at any one time.
+ */
+bool vmw_kms_crtc_flippable(struct vmw_private *dev_priv,
+			    struct drm_crtc *crtc)
+{
+	struct vmw_display_unit *du = vmw_crtc_to_du(crtc);
+	bool ret;
+
+	mutex_lock(&dev_priv->global_kms_state_mutex);
+	ret = !du->is_implicit || dev_priv->num_implicit == 1;
+	mutex_unlock(&dev_priv->global_kms_state_mutex);
+
+	return ret;
+}
+
+/**
+ * vmw_kms_update_implicit_fb - Update the implicit fb.
+ *
+ * @dev_priv: Pointer to device-private struct.
+ * @crtc: The crtc the new implicit frame-buffer is bound to.
+ */
+void vmw_kms_update_implicit_fb(struct vmw_private *dev_priv,
+				struct drm_crtc *crtc)
+{
+	struct vmw_display_unit *du = vmw_crtc_to_du(crtc);
+	struct vmw_framebuffer *vfb;
+
+	mutex_lock(&dev_priv->global_kms_state_mutex);
+
+	if (!du->is_implicit)
+		goto out_unlock;
+
+	vfb = vmw_framebuffer_to_vfb(crtc->primary->fb);
+	WARN_ON_ONCE(dev_priv->num_implicit != 1 &&
+		     dev_priv->implicit_fb != vfb);
+
+	dev_priv->implicit_fb = vfb;
+out_unlock:
+	mutex_unlock(&dev_priv->global_kms_state_mutex);
+}
+
+/**
+ * vmw_kms_create_implicit_placement_proparty - Set up the implicit placement
+ * property.
+ *
+ * @dev_priv: Pointer to a device private struct.
+ * @immutable: Whether the property is immutable.
+ *
+ * Sets up the implicit placement property unless it's already set up.
+ */
+void
+vmw_kms_create_implicit_placement_property(struct vmw_private *dev_priv,
+					   bool immutable)
+{
+	if (dev_priv->implicit_placement_property)
+		return;
+
+	dev_priv->implicit_placement_property =
+		drm_property_create_range(dev_priv->dev,
+					  immutable ?
+					  DRM_MODE_PROP_IMMUTABLE : 0,
+					  "implicit_placement", 0, 1);
+
+}
+>>>>>>> v4.9.227

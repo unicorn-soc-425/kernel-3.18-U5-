@@ -15,9 +15,37 @@
 #ifndef _EXYNOS_DRM_FBDEV_H_
 #define _EXYNOS_DRM_FBDEV_H_
 
+<<<<<<< HEAD
 int exynos_drm_fbdev_init(struct drm_device *dev);
 int exynos_drm_fbdev_reinit(struct drm_device *dev);
 void exynos_drm_fbdev_fini(struct drm_device *dev);
 void exynos_drm_fbdev_restore_mode(struct drm_device *dev);
+=======
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+
+int exynos_drm_fbdev_init(struct drm_device *dev);
+void exynos_drm_fbdev_fini(struct drm_device *dev);
+void exynos_drm_fbdev_restore_mode(struct drm_device *dev);
+void exynos_drm_output_poll_changed(struct drm_device *dev);
+
+#else
+
+static inline int exynos_drm_fbdev_init(struct drm_device *dev)
+{
+	return 0;
+}
+
+static inline void exynos_drm_fbdev_fini(struct drm_device *dev)
+{
+}
+
+static inline void exynos_drm_fbdev_restore_mode(struct drm_device *dev)
+{
+}
+
+#define exynos_drm_output_poll_changed (NULL)
+
+#endif
+>>>>>>> v4.9.227
 
 #endif

@@ -33,25 +33,41 @@
  * This driver was tested with firmware revision A4.
  */
 
+<<<<<<< HEAD
 #if defined(CONFIG_INPUT_DM355EVM) || defined(CONFIG_INPUT_DM355EVM_MODULE)
+=======
+#if IS_ENABLED(CONFIG_INPUT_DM355EVM)
+>>>>>>> v4.9.227
 #define msp_has_keyboard()	true
 #else
 #define msp_has_keyboard()	false
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_LEDS_GPIO) || defined(CONFIG_LEDS_GPIO_MODULE)
+=======
+#if IS_ENABLED(CONFIG_LEDS_GPIO)
+>>>>>>> v4.9.227
 #define msp_has_leds()		true
 #else
 #define msp_has_leds()		false
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_DRV_DM355EVM) || defined(CONFIG_RTC_DRV_DM355EVM_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_DRV_DM355EVM)
+>>>>>>> v4.9.227
 #define msp_has_rtc()		true
 #else
 #define msp_has_rtc()		false
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_VIDEO_TVP514X) || defined(CONFIG_VIDEO_TVP514X_MODULE)
+=======
+#if IS_ENABLED(CONFIG_VIDEO_TVP514X)
+>>>>>>> v4.9.227
 #define msp_has_tvp()		true
 #else
 #define msp_has_tvp()		false
@@ -147,7 +163,11 @@ static int msp_gpio_get(struct gpio_chip *chip, unsigned offset)
 		return status;
 	if (reg == DM355EVM_MSP_LED)
 		msp_led_cache = status;
+<<<<<<< HEAD
 	return status & MSP_GPIO_MASK(offset);
+=======
+	return !!(status & MSP_GPIO_MASK(offset));
+>>>>>>> v4.9.227
 }
 
 static int msp_gpio_out(struct gpio_chip *chip, unsigned offset, int value)
@@ -199,11 +219,16 @@ static struct device *add_child(struct i2c_client *client, const char *name,
 	int			status;
 
 	pdev = platform_device_alloc(name, -1);
+<<<<<<< HEAD
 	if (!pdev) {
 		dev_dbg(&client->dev, "can't alloc dev\n");
 		status = -ENOMEM;
 		goto err;
 	}
+=======
+	if (!pdev)
+		return ERR_PTR(-ENOMEM);
+>>>>>>> v4.9.227
 
 	device_init_wakeup(&pdev->dev, can_wakeup);
 	pdev->dev.parent = &client->dev;
@@ -212,7 +237,11 @@ static struct device *add_child(struct i2c_client *client, const char *name,
 		status = platform_device_add_data(pdev, pdata, pdata_len);
 		if (status < 0) {
 			dev_dbg(&pdev->dev, "can't add platform_data\n");
+<<<<<<< HEAD
 			goto err;
+=======
+			goto put_device;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -225,11 +254,16 @@ static struct device *add_child(struct i2c_client *client, const char *name,
 		status = platform_device_add_resources(pdev, &r, 1);
 		if (status < 0) {
 			dev_dbg(&pdev->dev, "can't add irq\n");
+<<<<<<< HEAD
 			goto err;
+=======
+			goto put_device;
+>>>>>>> v4.9.227
 		}
 	}
 
 	status = platform_device_add(pdev);
+<<<<<<< HEAD
 
 err:
 	if (status < 0) {
@@ -238,6 +272,17 @@ err:
 		return ERR_PTR(status);
 	}
 	return &pdev->dev;
+=======
+	if (status)
+		goto put_device;
+
+	return &pdev->dev;
+
+put_device:
+	platform_device_put(pdev);
+	dev_err(&client->dev, "failed to add device %s\n", name);
+	return ERR_PTR(status);
+>>>>>>> v4.9.227
 }
 
 static int add_children(struct i2c_client *client)
@@ -259,8 +304,13 @@ static int add_children(struct i2c_client *client)
 	int		i;
 
 	/* GPIO-ish stuff */
+<<<<<<< HEAD
 	dm355evm_msp_gpio.dev = &client->dev;
 	status = gpiochip_add(&dm355evm_msp_gpio);
+=======
+	dm355evm_msp_gpio.parent = &client->dev;
+	status = gpiochip_add_data(&dm355evm_msp_gpio, NULL);
+>>>>>>> v4.9.227
 	if (status < 0)
 		return status;
 

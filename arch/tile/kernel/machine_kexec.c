@@ -77,6 +77,7 @@ void machine_crash_shutdown(struct pt_regs *regs)
 int machine_kexec_prepare(struct kimage *image)
 {
 	if (num_online_cpus() > 1) {
+<<<<<<< HEAD
 		pr_warning("%s: detected attempt to kexec "
 		       "with num_online_cpus() > 1\n",
 		       __func__);
@@ -87,6 +88,15 @@ int machine_kexec_prepare(struct kimage *image)
 		       "with unsupported type: %d\n",
 		       __func__,
 		       image->type);
+=======
+		pr_warn("%s: detected attempt to kexec with num_online_cpus() > 1\n",
+			__func__);
+		return -ENOSYS;
+	}
+	if (image->type != KEXEC_TYPE_DEFAULT) {
+		pr_warn("%s: detected attempt to kexec with unsupported type: %d\n",
+			__func__, image->type);
+>>>>>>> v4.9.227
 		return -ENOSYS;
 	}
 	return 0;
@@ -131,8 +141,13 @@ static unsigned char *kexec_bn2cl(void *pg)
 	 */
 	csum = ip_compute_csum(pg, bhdrp->b_size);
 	if (csum != 0) {
+<<<<<<< HEAD
 		pr_warning("%s: bad checksum %#x (size %d)\n",
 			   __func__, csum, bhdrp->b_size);
+=======
+		pr_warn("%s: bad checksum %#x (size %d)\n",
+			__func__, csum, bhdrp->b_size);
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -160,8 +175,12 @@ static unsigned char *kexec_bn2cl(void *pg)
 	while (*desc != '\0') {
 		desc++;
 		if (((unsigned long)desc & PAGE_MASK) != (unsigned long)pg) {
+<<<<<<< HEAD
 			pr_info("%s: ran off end of page\n",
 			       __func__);
+=======
+			pr_info("%s: ran off end of page\n", __func__);
+>>>>>>> v4.9.227
 			return 0;
 		}
 	}
@@ -195,13 +214,18 @@ static void kexec_find_and_set_command_line(struct kimage *image)
 	}
 
 	if (command_line != 0) {
+<<<<<<< HEAD
 		pr_info("setting new command line to \"%s\"\n",
 		       command_line);
+=======
+		pr_info("setting new command line to \"%s\"\n", command_line);
+>>>>>>> v4.9.227
 
 		hverr = hv_set_command_line(
 			(HV_VirtAddr) command_line, strlen(command_line));
 		kunmap_atomic(command_line);
 	} else {
+<<<<<<< HEAD
 		pr_info("%s: no command line found; making empty\n",
 		       __func__);
 		hverr = hv_set_command_line((HV_VirtAddr) command_line, 0);
@@ -209,6 +233,14 @@ static void kexec_find_and_set_command_line(struct kimage *image)
 	if (hverr)
 		pr_warning("%s: hv_set_command_line returned error: %d\n",
 			   __func__, hverr);
+=======
+		pr_info("%s: no command line found; making empty\n", __func__);
+		hverr = hv_set_command_line((HV_VirtAddr) command_line, 0);
+	}
+	if (hverr)
+		pr_warn("%s: hv_set_command_line returned error: %d\n",
+			__func__, hverr);
+>>>>>>> v4.9.227
 }
 
 /*

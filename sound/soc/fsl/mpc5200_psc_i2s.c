@@ -217,7 +217,11 @@ static int psc_i2s_of_remove(struct platform_device *op)
 }
 
 /* Match table for of_platform binding */
+<<<<<<< HEAD
 static struct of_device_id psc_i2s_match[] = {
+=======
+static const struct of_device_id psc_i2s_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "fsl,mpc5200-psc-i2s", },
 	{ .compatible = "fsl,mpc5200b-psc-i2s", },
 	{}
@@ -229,7 +233,10 @@ static struct platform_driver psc_i2s_driver = {
 	.remove = psc_i2s_of_remove,
 	.driver = {
 		.name = "mpc5200-psc-i2s",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = psc_i2s_match,
 	},
 };

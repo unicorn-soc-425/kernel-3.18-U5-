@@ -16,6 +16,10 @@
 #include <linux/threads.h>
 
 #include <asm/ppc-opcode.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu_has_feature.h>
+>>>>>>> v4.9.227
 
 #define PPC_DBELL_MSG_BRDCAST	(0x04000000)
 #define PPC_DBELL_TYPE(x)	(((x) & 0xf) << (63-36))

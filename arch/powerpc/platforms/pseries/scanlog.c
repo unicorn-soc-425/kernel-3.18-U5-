@@ -156,7 +156,11 @@ static int scanlog_release(struct inode * inode, struct file * file)
 	return 0;
 }
 
+<<<<<<< HEAD
 const struct file_operations scanlog_fops = {
+=======
+static const struct file_operations scanlog_fops = {
+>>>>>>> v4.9.227
 	.owner		= THIS_MODULE,
 	.read		= scanlog_read,
 	.write		= scanlog_write,

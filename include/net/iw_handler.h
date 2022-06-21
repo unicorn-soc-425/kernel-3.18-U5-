@@ -525,6 +525,20 @@ iwe_stream_add_event(struct iw_request_info *info, char *stream, char *ends,
 	return stream;
 }
 
+<<<<<<< HEAD
+=======
+static inline char *
+iwe_stream_add_event_check(struct iw_request_info *info, char *stream,
+			   char *ends, struct iw_event *iwe, int event_len)
+{
+	char *res = iwe_stream_add_event(info, stream, ends, iwe, event_len);
+
+	if (res == stream)
+		return ERR_PTR(-E2BIG);
+	return res;
+}
+
+>>>>>>> v4.9.227
 /*------------------------------------------------------------------*/
 /*
  * Wrapper to add an short Wireless Event containing a pointer to a
@@ -552,6 +566,20 @@ iwe_stream_add_point(struct iw_request_info *info, char *stream, char *ends,
 	return stream;
 }
 
+<<<<<<< HEAD
+=======
+static inline char *
+iwe_stream_add_point_check(struct iw_request_info *info, char *stream,
+			   char *ends, struct iw_event *iwe, char *extra)
+{
+	char *res = iwe_stream_add_point(info, stream, ends, iwe, extra);
+
+	if (res == stream)
+		return ERR_PTR(-E2BIG);
+	return res;
+}
+
+>>>>>>> v4.9.227
 /*------------------------------------------------------------------*/
 /*
  * Wrapper to add a value to a Wireless Event in a stream of events.

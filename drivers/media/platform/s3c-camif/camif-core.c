@@ -32,7 +32,11 @@
 #include <media/media-device.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/videobuf2-dma-contig.h>
 
 #include "camif-core.h"
@@ -256,15 +260,23 @@ static void camif_unregister_sensor(struct camif_dev *camif)
 	v4l2_device_unregister_subdev(sd);
 	camif->sensor.sd = NULL;
 	i2c_unregister_device(client);
+<<<<<<< HEAD
 	if (adapter)
 		i2c_put_adapter(adapter);
+=======
+	i2c_put_adapter(adapter);
+>>>>>>> v4.9.227
 }
 
 static int camif_create_media_links(struct camif_dev *camif)
 {
 	int i, ret;
 
+<<<<<<< HEAD
 	ret = media_entity_create_link(&camif->sensor.sd->entity, 0,
+=======
+	ret = media_create_pad_link(&camif->sensor.sd->entity, 0,
+>>>>>>> v4.9.227
 				&camif->subdev.entity, CAMIF_SD_PAD_SINK,
 				MEDIA_LNK_FL_IMMUTABLE |
 				MEDIA_LNK_FL_ENABLED);
@@ -272,7 +284,11 @@ static int camif_create_media_links(struct camif_dev *camif)
 		return ret;
 
 	for (i = 1; i < CAMIF_SD_PADS_NUM && !ret; i++) {
+<<<<<<< HEAD
 		ret = media_entity_create_link(&camif->subdev.entity, i,
+=======
+		ret = media_create_pad_link(&camif->subdev.entity, i,
+>>>>>>> v4.9.227
 				&camif->vp[i - 1].vdev.entity, 0,
 				MEDIA_LNK_FL_IMMUTABLE |
 				MEDIA_LNK_FL_ENABLED);
@@ -306,7 +322,11 @@ static void camif_unregister_media_entities(struct camif_dev *camif)
 /*
  * Media device
  */
+<<<<<<< HEAD
 static int camif_media_dev_register(struct camif_dev *camif)
+=======
+static int camif_media_dev_init(struct camif_dev *camif)
+>>>>>>> v4.9.227
 {
 	struct media_device *md = &camif->media_dev;
 	struct v4l2_device *v4l2_dev = &camif->v4l2_dev;
@@ -325,14 +345,22 @@ static int camif_media_dev_register(struct camif_dev *camif)
 	strlcpy(v4l2_dev->name, "s3c-camif", sizeof(v4l2_dev->name));
 	v4l2_dev->mdev = md;
 
+<<<<<<< HEAD
+=======
+	media_device_init(md);
+
+>>>>>>> v4.9.227
 	ret = v4l2_device_register(camif->dev, v4l2_dev);
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	ret = media_device_register(md);
 	if (ret < 0)
 		v4l2_device_unregister(v4l2_dev);
 
+=======
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -477,6 +505,7 @@ static int s3c_camif_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_pm;
 
+<<<<<<< HEAD
 	/* Initialize contiguous memory allocator */
 	camif->alloc_ctx = vb2_dma_contig_init_ctx(dev);
 	if (IS_ERR(camif->alloc_ctx)) {
@@ -487,6 +516,11 @@ static int s3c_camif_probe(struct platform_device *pdev)
 	ret = camif_media_dev_register(camif);
 	if (ret < 0)
 		goto err_mdev;
+=======
+	ret = camif_media_dev_init(camif);
+	if (ret < 0)
+		goto err_alloc;
+>>>>>>> v4.9.227
 
 	ret = camif_register_sensor(camif);
 	if (ret < 0)
@@ -496,6 +530,7 @@ static int s3c_camif_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_sens;
 
+<<<<<<< HEAD
 	mutex_lock(&camif->media_dev.graph_mutex);
 
 	ret = v4l2_device_register_subdev_nodes(&camif->v4l2_dev);
@@ -522,6 +557,32 @@ err_sens:
 	camif_unregister_media_entities(camif);
 err_mdev:
 	vb2_dma_contig_cleanup_ctx(camif->alloc_ctx);
+=======
+	ret = v4l2_device_register_subdev_nodes(&camif->v4l2_dev);
+	if (ret < 0)
+		goto err_sens;
+
+	ret = camif_register_video_nodes(camif);
+	if (ret < 0)
+		goto err_sens;
+
+	ret = camif_create_media_links(camif);
+	if (ret < 0)
+		goto err_sens;
+
+	ret = media_device_register(&camif->media_dev);
+	if (ret < 0)
+		goto err_sens;
+
+	pm_runtime_put(dev);
+	return 0;
+
+err_sens:
+	v4l2_device_unregister(&camif->v4l2_dev);
+	media_device_unregister(&camif->media_dev);
+	media_device_cleanup(&camif->media_dev);
+	camif_unregister_media_entities(camif);
+>>>>>>> v4.9.227
 err_alloc:
 	pm_runtime_put(dev);
 	pm_runtime_disable(dev);
@@ -540,6 +601,10 @@ static int s3c_camif_remove(struct platform_device *pdev)
 	struct s3c_camif_plat_data *pdata = &camif->pdata;
 
 	media_device_unregister(&camif->media_dev);
+<<<<<<< HEAD
+=======
+	media_device_cleanup(&camif->media_dev);
+>>>>>>> v4.9.227
 	camif_unregister_media_entities(camif);
 	v4l2_device_unregister(&camif->v4l2_dev);
 
@@ -629,7 +694,11 @@ static struct s3c_camif_drvdata s3c6410_camif_drvdata = {
 	.bus_clk_freq	= 133000000UL,
 };
 
+<<<<<<< HEAD
 static struct platform_device_id s3c_camif_driver_ids[] = {
+=======
+static const struct platform_device_id s3c_camif_driver_ids[] = {
+>>>>>>> v4.9.227
 	{
 		.name		= "s3c2440-camif",
 		.driver_data	= (unsigned long)&s3c244x_camif_drvdata,
@@ -652,7 +721,10 @@ static struct platform_driver s3c_camif_driver = {
 	.id_table	= s3c_camif_driver_ids,
 	.driver = {
 		.name	= S3C_CAMIF_DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &s3c_camif_pm_ops,
 	}
 };

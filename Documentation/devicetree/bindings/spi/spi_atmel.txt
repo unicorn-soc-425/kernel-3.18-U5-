@@ -4,11 +4,23 @@ Required properties:
 - compatible : should be "atmel,at91rm9200-spi".
 - reg: Address and length of the register set for the device
 - interrupts: Should contain spi interrupt
+<<<<<<< HEAD
 - cs-gpios: chipselects
+=======
+- cs-gpios: chipselects (optional for SPI controller version >= 2 with the
+  Chip Select Active After Transfer feature).
+>>>>>>> v4.9.227
 - clock-names: tuple listing input clock names.
 	Required elements: "spi_clk"
 - clocks: phandles to input clocks.
 
+<<<<<<< HEAD
+=======
+Optional properties:
+- atmel,fifo-size: maximum number of data the RX and TX FIFOs can store for FIFO
+  capable SPI controllers.
+
+>>>>>>> v4.9.227
 Example:
 
 spi1: spi@fffcc000 {
@@ -20,6 +32,10 @@ spi1: spi@fffcc000 {
 	clocks = <&spi1_clk>;
 	clock-names = "spi_clk";
 	cs-gpios = <&pioB 3 0>;
+<<<<<<< HEAD
+=======
+	atmel,fifo-size = <32>;
+>>>>>>> v4.9.227
 	status = "okay";
 
 	mmc-slot@0 {

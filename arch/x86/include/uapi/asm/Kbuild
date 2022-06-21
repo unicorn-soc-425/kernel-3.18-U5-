@@ -27,7 +27,10 @@ header-y += ldt.h
 header-y += mce.h
 header-y += mman.h
 header-y += msgbuf.h
+<<<<<<< HEAD
 header-y += msr-index.h
+=======
+>>>>>>> v4.9.227
 header-y += msr.h
 header-y += mtrr.h
 header-y += param.h

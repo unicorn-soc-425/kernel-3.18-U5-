@@ -2303,12 +2303,15 @@ static inline int port_chk_force_flow_ctrl(struct ksz_hw *hw, int p)
 
 /* Spanning Tree */
 
+<<<<<<< HEAD
 static inline void port_cfg_dis_learn(struct ksz_hw *hw, int p, int set)
 {
 	port_cfg(hw, p,
 		KS8842_PORT_CTRL_2_OFFSET, PORT_LEARN_DISABLE, set);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void port_cfg_rx(struct ksz_hw *hw, int p, int set)
 {
 	port_cfg(hw, p,
@@ -4150,7 +4153,11 @@ static int hw_del_addr(struct ksz_hw *hw, u8 *mac_addr)
 
 	for (i = 0; i < hw->addr_list_size; i++) {
 		if (ether_addr_equal(hw->address[i], mac_addr)) {
+<<<<<<< HEAD
 			memset(hw->address[i], 0, ETH_ALEN);
+=======
+			eth_zero_addr(hw->address[i]);
+>>>>>>> v4.9.227
 			writel(0, hw->io + ADD_ADDR_INCR * i +
 				KS_ADD_ADDR_0_HI);
 			return 0;
@@ -4348,9 +4355,13 @@ static void ksz_init_timer(struct ksz_timer_info *info, int period,
 {
 	info->max = 0;
 	info->period = period;
+<<<<<<< HEAD
 	init_timer(&info->timer);
 	info->timer.function = function;
 	info->timer.data = (unsigned long) data;
+=======
+	setup_timer(&info->timer, function, (unsigned long)data);
+>>>>>>> v4.9.227
 }
 
 static void ksz_update_timer(struct ksz_timer_info *info)
@@ -4798,7 +4809,11 @@ static void transmit_cleanup(struct dev_info *hw_priv, int normal)
 
 	/* Notify the network subsystem that the packet has been sent. */
 	if (dev)
+<<<<<<< HEAD
 		dev->trans_start = jiffies;
+=======
+		netif_trans_update(dev);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -4973,7 +4988,11 @@ static void netdev_tx_timeout(struct net_device *dev)
 		hw_ena_intr(hw);
 	}
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> v4.9.227
 	netif_wake_queue(dev);
 }
 
@@ -6672,7 +6691,11 @@ static void mib_read_work(struct work_struct *work)
 				wake_up_interruptible(
 					&hw_priv->counter[i].counter);
 			}
+<<<<<<< HEAD
 		} else if (jiffies >= hw_priv->counter[i].time) {
+=======
+		} else if (time_after_eq(jiffies, hw_priv->counter[i].time)) {
+>>>>>>> v4.9.227
 			/* Only read MIB counters when the port is connected. */
 			if (media_connected == mib->state)
 				hw_priv->counter[i].read = 1;
@@ -6697,7 +6720,11 @@ static void mib_monitor(unsigned long ptr)
 
 	/* This is used to verify Wake-on-LAN is working. */
 	if (hw_priv->pme_wait) {
+<<<<<<< HEAD
 		if (hw_priv->pme_wait <= jiffies) {
+=======
+		if (time_is_before_eq_jiffies(hw_priv->pme_wait)) {
+>>>>>>> v4.9.227
 			hw_clr_wol_pme_status(&hw_priv->hw);
 			hw_priv->pme_wait = 0;
 		}

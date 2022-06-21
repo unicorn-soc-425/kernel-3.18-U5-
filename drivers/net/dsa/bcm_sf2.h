@@ -19,10 +19,20 @@
 #include <linux/mutex.h>
 #include <linux/mii.h>
 #include <linux/ethtool.h>
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+#include <linux/bitops.h>
+#include <linux/if_vlan.h>
+>>>>>>> v4.9.227
 
 #include <net/dsa.h>
 
 #include "bcm_sf2_regs.h"
+<<<<<<< HEAD
+=======
+#include "b53/b53_priv.h"
+>>>>>>> v4.9.227
 
 struct bcm_sf2_hw_params {
 	u16	top_rev;
@@ -67,6 +77,12 @@ struct bcm_sf2_priv {
 	u32				irq1_stat;
 	u32				irq1_mask;
 
+<<<<<<< HEAD
+=======
+	/* Backing b53_device */
+	struct b53_device		*dev;
+
+>>>>>>> v4.9.227
 	/* Mutex protecting access to the MIB counters */
 	struct mutex			stats_mutex;
 
@@ -76,6 +92,7 @@ struct bcm_sf2_priv {
 
 	/* Mask of ports enabled for Wake-on-LAN */
 	u32				wol_ports_mask;
+<<<<<<< HEAD
 };
 
 struct bcm_sf2_hw_stats {
@@ -83,6 +100,28 @@ struct bcm_sf2_hw_stats {
 	u16		reg;
 	u8		sizeof_stat;
 };
+=======
+
+	/* MoCA port location */
+	int				moca_port;
+
+	/* Bitmask of ports having an integrated PHY */
+	unsigned int			int_phy_mask;
+
+	/* Master and slave MDIO bus controller */
+	unsigned int			indir_phy_mask;
+	struct device_node		*master_mii_dn;
+	struct mii_bus			*slave_mii_bus;
+	struct mii_bus			*master_mii_bus;
+};
+
+static inline struct bcm_sf2_priv *bcm_sf2_to_priv(struct dsa_switch *ds)
+{
+	struct b53_device *dev = ds->priv;
+
+	return dev->priv;
+}
+>>>>>>> v4.9.227
 
 #define SF2_IO_MACRO(name) \
 static inline u32 name##_readl(struct bcm_sf2_priv *priv, u32 off)	\
@@ -105,8 +144,13 @@ static inline u64 name##_readq(struct bcm_sf2_priv *priv, u32 off)	\
 {									\
 	u32 indir, dir;							\
 	spin_lock(&priv->indir_lock);					\
+<<<<<<< HEAD
 	indir = reg_readl(priv, REG_DIR_DATA_READ);			\
 	dir = __raw_readl(priv->name + off);				\
+=======
+	dir = __raw_readl(priv->name + off);				\
+	indir = reg_readl(priv, REG_DIR_DATA_READ);			\
+>>>>>>> v4.9.227
 	spin_unlock(&priv->indir_lock);					\
 	return (u64)indir << 32 | dir;					\
 }									\
@@ -123,8 +167,13 @@ static inline void name##_writeq(struct bcm_sf2_priv *priv, u64 val,	\
 static inline void intrl2_##which##_mask_clear(struct bcm_sf2_priv *priv, \
 						u32 mask)		\
 {									\
+<<<<<<< HEAD
 	intrl2_##which##_writel(priv, mask, INTRL2_CPU_MASK_CLEAR);	\
 	priv->irq##which##_mask &= ~(mask);				\
+=======
+	priv->irq##which##_mask &= ~(mask);				\
+	intrl2_##which##_writel(priv, mask, INTRL2_CPU_MASK_CLEAR);	\
+>>>>>>> v4.9.227
 }									\
 static inline void intrl2_##which##_mask_set(struct bcm_sf2_priv *priv, \
 						u32 mask)		\

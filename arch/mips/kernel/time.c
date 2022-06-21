@@ -36,7 +36,11 @@ EXPORT_SYMBOL(rtc_lock);
 
 int __weak rtc_mips_set_time(unsigned long sec)
 {
+<<<<<<< HEAD
 	return 0;
+=======
+	return -ENODEV;
+>>>>>>> v4.9.227
 }
 
 int __weak rtc_mips_set_mmss(unsigned long nowtime)

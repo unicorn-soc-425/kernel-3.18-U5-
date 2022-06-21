@@ -55,6 +55,10 @@ static struct device_node *find_vio_slot_node(char *drc_name)
 		if ((rc == 0) && (!strcmp(drc_name, name)))
 			break;
 	}
+<<<<<<< HEAD
+=======
+	of_node_put(parent);
+>>>>>>> v4.9.227
 
 	return dn;
 }
@@ -78,6 +82,10 @@ static struct device_node *find_php_slot_pci_node(char *drc_name,
 	return np;
 }
 
+<<<<<<< HEAD
+=======
+/* Returns a device_node with its reference count incremented */
+>>>>>>> v4.9.227
 static struct device_node *find_dlpar_node(char *drc_name, int *node_type)
 {
 	struct device_node *dn;
@@ -114,11 +122,18 @@ static struct device_node *find_dlpar_node(char *drc_name, int *node_type)
  */
 static struct slot *find_php_slot(struct device_node *dn)
 {
+<<<<<<< HEAD
 	struct list_head *tmp, *n;
 	struct slot *slot;
 
 	list_for_each_safe(tmp, n, &rpaphp_slot_head) {
 		slot = list_entry(tmp, struct slot, rpaphp_slot_list);
+=======
+	struct slot *slot, *next;
+
+	list_for_each_entry_safe(slot, next, &rpaphp_slot_head,
+				 rpaphp_slot_list) {
+>>>>>>> v4.9.227
 		if (slot->dn == dn)
 			return slot;
 	}
@@ -146,7 +161,11 @@ static void dlpar_pci_add_bus(struct device_node *dn)
 	struct pci_controller *phb = pdn->phb;
 	struct pci_dev *dev = NULL;
 
+<<<<<<< HEAD
 	eeh_add_device_tree_early(dn);
+=======
+	eeh_add_device_tree_early(pdn);
+>>>>>>> v4.9.227
 
 	/* Add EADS device to PHB bus, adding new entry to bus->devices */
 	dev = of_create_pci_dev(dn, phb->bus, pdn->devfn);
@@ -176,7 +195,11 @@ static int dlpar_add_pci_slot(char *drc_name, struct device_node *dn)
 	struct pci_dev *dev;
 	struct pci_controller *phb;
 
+<<<<<<< HEAD
 	if (pcibios_find_pci_bus(dn))
+=======
+	if (pci_find_bus_by_node(dn))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	/* Add pci bus */
@@ -213,7 +236,11 @@ static int dlpar_remove_phb(char *drc_name, struct device_node *dn)
 	struct pci_dn *pdn;
 	int rc = 0;
 
+<<<<<<< HEAD
 	if (!pcibios_find_pci_bus(dn))
+=======
+	if (!pci_find_bus_by_node(dn))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	/* If pci slot is hotpluggable, use hotplug to remove it */
@@ -258,8 +285,18 @@ static int dlpar_add_phb(char *drc_name, struct device_node *dn)
 
 static int dlpar_add_vio_slot(char *drc_name, struct device_node *dn)
 {
+<<<<<<< HEAD
 	if (vio_find_node(dn))
 		return -EINVAL;
+=======
+	struct vio_dev *vio_dev;
+
+	vio_dev = vio_find_node(dn);
+	if (vio_dev) {
+		put_device(&vio_dev->dev);
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 
 	if (!vio_register_device_node(dn)) {
 		printk(KERN_ERR
@@ -309,6 +346,10 @@ int dlpar_add_slot(char *drc_name)
 			rc = dlpar_add_phb(drc_name, dn);
 			break;
 	}
+<<<<<<< HEAD
+=======
+	of_node_put(dn);
+>>>>>>> v4.9.227
 
 	printk(KERN_INFO "%s: slot %s added\n", DLPAR_MODULE_NAME, drc_name);
 exit:
@@ -335,6 +376,12 @@ static int dlpar_remove_vio_slot(char *drc_name, struct device_node *dn)
 		return -EINVAL;
 
 	vio_unregister_device(vio_dev);
+<<<<<<< HEAD
+=======
+
+	put_device(&vio_dev->dev);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -357,7 +404,11 @@ int dlpar_remove_pci_slot(char *drc_name, struct device_node *dn)
 
 	pci_lock_rescan_remove();
 
+<<<<<<< HEAD
 	bus = pcibios_find_pci_bus(dn);
+=======
+	bus = pci_find_bus_by_node(dn);
+>>>>>>> v4.9.227
 	if (!bus) {
 		ret = -EINVAL;
 		goto out;
@@ -381,7 +432,11 @@ int dlpar_remove_pci_slot(char *drc_name, struct device_node *dn)
 	}
 
 	/* Remove all devices below slot */
+<<<<<<< HEAD
 	pcibios_remove_pci_devices(bus);
+=======
+	pci_hp_remove_devices(bus);
+>>>>>>> v4.9.227
 
 	/* Unmap PCI IO space */
 	if (pcibios_unmap_io_space(bus)) {
@@ -439,6 +494,10 @@ int dlpar_remove_slot(char *drc_name)
 			rc = dlpar_remove_pci_slot(drc_name, dn);
 			break;
 	}
+<<<<<<< HEAD
+=======
+	of_node_put(dn);
+>>>>>>> v4.9.227
 	vm_unmap_aliases();
 
 	printk(KERN_INFO "%s: slot %s removed\n", DLPAR_MODULE_NAME, drc_name);

@@ -99,6 +99,12 @@
 					solomon,height = <32>;
 					solomon,width = <128>;
 					solomon,page-offset = <0>;
+<<<<<<< HEAD
+=======
+					solomon,com-lrremap;
+					solomon,com-invdir;
+					solomon,com-offset = <32>;
+>>>>>>> v4.9.227
 				};
 			};
 

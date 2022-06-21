@@ -17,7 +17,10 @@
 
 #include <linux/clocksource.h>
 #include <linux/irqchip.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/serial_s3c.h>
 
 #include <asm/mach/arch.h>
@@ -35,11 +38,18 @@ static void __init s3c2416_dt_map_io(void)
 
 static void __init s3c2416_dt_machine_init(void)
 {
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
 	s3c_pm_init();
 }
 
 static char const *s3c2416_dt_compat[] __initdata = {
+=======
+	s3c_pm_init();
+}
+
+static const char *const s3c2416_dt_compat[] __initconst = {
+>>>>>>> v4.9.227
 	"samsung,s3c2416",
 	"samsung,s3c2450",
 	NULL

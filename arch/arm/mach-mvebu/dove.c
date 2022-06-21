@@ -11,7 +11,11 @@
 #include <linux/init.h>
 #include <linux/mbus.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+#include <linux/soc/dove/pmu.h>
+>>>>>>> v4.9.227
 #include <asm/hardware/cache-tauros2.h>
 #include <asm/mach/arch.h>
 #include "common.h"
@@ -24,10 +28,17 @@ static void __init dove_init(void)
 	tauros2_init(0);
 #endif
 	BUG_ON(mvebu_mbus_dt_init(false));
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
 }
 
 static const char * const dove_dt_compat[] = {
+=======
+	dove_init_pmu();
+}
+
+static const char * const dove_dt_compat[] __initconst = {
+>>>>>>> v4.9.227
 	"marvell,dove",
 	NULL
 };

@@ -14,9 +14,17 @@
 #define _CAN_DEV_H
 
 #include <linux/can.h>
+<<<<<<< HEAD
 #include <linux/can/netlink.h>
 #include <linux/can/error.h>
 #include <linux/can/led.h>
+=======
+#include <linux/can/error.h>
+#include <linux/can/led.h>
+#include <linux/can/netlink.h>
+#include <linux/can/skb.h>
+#include <linux/netdevice.h>
+>>>>>>> v4.9.227
 
 /*
  * CAN mode
@@ -65,6 +73,11 @@ struct can_priv {
 	char tx_led_trig_name[CAN_LED_NAME_SZ];
 	struct led_trigger *rx_led_trig;
 	char rx_led_trig_name[CAN_LED_NAME_SZ];
+<<<<<<< HEAD
+=======
+	struct led_trigger *rxtx_led_trig;
+	char rxtx_led_trig_name[CAN_LED_NAME_SZ];
+>>>>>>> v4.9.227
 #endif
 };
 
@@ -78,8 +91,43 @@ struct can_priv {
 #define get_can_dlc(i)		(min_t(__u8, (i), CAN_MAX_DLC))
 #define get_canfd_dlc(i)	(min_t(__u8, (i), CANFD_MAX_DLC))
 
+<<<<<<< HEAD
 /* Drop a given socketbuffer if it does not contain a valid CAN frame. */
 static inline int can_dropped_invalid_skb(struct net_device *dev,
+=======
+/* Check for outgoing skbs that have not been created by the CAN subsystem */
+static inline bool can_skb_headroom_valid(struct net_device *dev,
+					  struct sk_buff *skb)
+{
+	/* af_packet creates a headroom of HH_DATA_MOD bytes which is fine */
+	if (WARN_ON_ONCE(skb_headroom(skb) < sizeof(struct can_skb_priv)))
+		return false;
+
+	/* af_packet does not apply CAN skb specific settings */
+	if (skb->ip_summed == CHECKSUM_NONE) {
+		/* init headroom */
+		can_skb_prv(skb)->ifindex = dev->ifindex;
+		can_skb_prv(skb)->skbcnt = 0;
+
+		skb->ip_summed = CHECKSUM_UNNECESSARY;
+
+		/* preform proper loopback on capable devices */
+		if (dev->flags & IFF_ECHO)
+			skb->pkt_type = PACKET_LOOPBACK;
+		else
+			skb->pkt_type = PACKET_HOST;
+
+		skb_reset_mac_header(skb);
+		skb_reset_network_header(skb);
+		skb_reset_transport_header(skb);
+	}
+
+	return true;
+}
+
+/* Drop a given socketbuffer if it does not contain a valid CAN frame. */
+static inline bool can_dropped_invalid_skb(struct net_device *dev,
+>>>>>>> v4.9.227
 					  struct sk_buff *skb)
 {
 	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
@@ -95,12 +143,23 @@ static inline int can_dropped_invalid_skb(struct net_device *dev,
 	} else
 		goto inval_skb;
 
+<<<<<<< HEAD
 	return 0;
+=======
+	if (!can_skb_headroom_valid(dev, skb))
+		goto inval_skb;
+
+	return false;
+>>>>>>> v4.9.227
 
 inval_skb:
 	kfree_skb(skb);
 	dev->stats.tx_dropped++;
+<<<<<<< HEAD
 	return 1;
+=======
+	return true;
+>>>>>>> v4.9.227
 }
 
 static inline bool can_is_canfd_skb(const struct sk_buff *skb)
@@ -146,8 +205,17 @@ void unregister_candev(struct net_device *dev);
 int can_restart_now(struct net_device *dev);
 void can_bus_off(struct net_device *dev);
 
+<<<<<<< HEAD
 void can_put_echo_skb(struct sk_buff *skb, struct net_device *dev,
 		      unsigned int idx);
+=======
+void can_change_state(struct net_device *dev, struct can_frame *cf,
+		      enum can_state tx_state, enum can_state rx_state);
+
+void can_put_echo_skb(struct sk_buff *skb, struct net_device *dev,
+		      unsigned int idx);
+struct sk_buff *__can_get_echo_skb(struct net_device *dev, unsigned int idx, u8 *len_ptr);
+>>>>>>> v4.9.227
 unsigned int can_get_echo_skb(struct net_device *dev, unsigned int idx);
 void can_free_echo_skb(struct net_device *dev, unsigned int idx);
 

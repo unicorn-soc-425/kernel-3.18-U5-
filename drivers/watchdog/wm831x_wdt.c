@@ -215,6 +215,10 @@ static int wm831x_wdt_probe(struct platform_device *pdev)
 
 	wm831x_wdt->info = &wm831x_wdt_info;
 	wm831x_wdt->ops = &wm831x_wdt_ops;
+<<<<<<< HEAD
+=======
+	wm831x_wdt->parent = &pdev->dev;
+>>>>>>> v4.9.227
 	watchdog_set_nowayout(wm831x_wdt, nowayout);
 	watchdog_set_drvdata(wm831x_wdt, driver_data);
 

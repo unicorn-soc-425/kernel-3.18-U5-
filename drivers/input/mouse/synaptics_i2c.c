@@ -185,7 +185,11 @@
 #define NO_DATA_SLEEP_MSECS	(MSEC_PER_SEC / 4)
 
 /* Control touchpad's No Deceleration option */
+<<<<<<< HEAD
 static bool no_decel = 1;
+=======
+static bool no_decel = true;
+>>>>>>> v4.9.227
 module_param(no_decel, bool, 0644);
 MODULE_PARM_DESC(no_decel, "No Deceleration. Default = 1 (on)");
 
@@ -340,9 +344,15 @@ static bool synaptics_i2c_get_input(struct synaptics_i2c *touch)
 	s32 data;
 	s8 x_delta, y_delta;
 
+<<<<<<< HEAD
 	/* Deal with spontanious resets and errors */
 	if (synaptics_i2c_check_error(touch->client))
 		return 0;
+=======
+	/* Deal with spontaneous resets and errors */
+	if (synaptics_i2c_check_error(touch->client))
+		return false;
+>>>>>>> v4.9.227
 
 	/* Get Gesture Bit */
 	data = synaptics_i2c_reg_get(touch->client, DATA_REG0);
@@ -614,8 +624,12 @@ static int synaptics_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int synaptics_i2c_suspend(struct device *dev)
+=======
+static int __maybe_unused synaptics_i2c_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct synaptics_i2c *touch = i2c_get_clientdata(client);
@@ -628,7 +642,11 @@ static int synaptics_i2c_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int synaptics_i2c_resume(struct device *dev)
+=======
+static int __maybe_unused synaptics_i2c_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	int ret;
 	struct i2c_client *client = to_i2c_client(dev);
@@ -643,7 +661,10 @@ static int synaptics_i2c_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(synaptics_i2c_pm, synaptics_i2c_suspend,
 			 synaptics_i2c_resume);
@@ -657,7 +678,10 @@ MODULE_DEVICE_TABLE(i2c, synaptics_i2c_id_table);
 static struct i2c_driver synaptics_i2c_driver = {
 	.driver = {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &synaptics_i2c_pm,
 	},
 

@@ -9,6 +9,7 @@
 #ifndef _POSIX_ACL_XATTR_H
 #define _POSIX_ACL_XATTR_H
 
+<<<<<<< HEAD
 #include <linux/posix_acl.h>
 
 /* Extended attribute names */
@@ -39,17 +40,37 @@ posix_acl_xattr_size(int count)
 {
 	return (sizeof(posix_acl_xattr_header) +
 		(count * sizeof(posix_acl_xattr_entry)));
+=======
+#include <uapi/linux/xattr.h>
+#include <uapi/linux/posix_acl_xattr.h>
+#include <linux/posix_acl.h>
+
+static inline size_t
+posix_acl_xattr_size(int count)
+{
+	return (sizeof(struct posix_acl_xattr_header) +
+		(count * sizeof(struct posix_acl_xattr_entry)));
+>>>>>>> v4.9.227
 }
 
 static inline int
 posix_acl_xattr_count(size_t size)
 {
+<<<<<<< HEAD
 	if (size < sizeof(posix_acl_xattr_header))
 		return -1;
 	size -= sizeof(posix_acl_xattr_header);
 	if (size % sizeof(posix_acl_xattr_entry))
 		return -1;
 	return size / sizeof(posix_acl_xattr_entry);
+=======
+	if (size < sizeof(struct posix_acl_xattr_header))
+		return -1;
+	size -= sizeof(struct posix_acl_xattr_header);
+	if (size % sizeof(struct posix_acl_xattr_entry))
+		return -1;
+	return size / sizeof(struct posix_acl_xattr_entry);
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_FS_POSIX_ACL

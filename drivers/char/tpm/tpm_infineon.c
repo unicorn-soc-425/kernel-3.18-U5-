@@ -195,9 +195,15 @@ static int wait(struct tpm_chip *chip, int wait_for_bit)
 	}
 	if (i == TPM_MAX_TRIES) {	/* timeout occurs */
 		if (wait_for_bit == STAT_XFE)
+<<<<<<< HEAD
 			dev_err(chip->dev, "Timeout in wait(STAT_XFE)\n");
 		if (wait_for_bit == STAT_RDA)
 			dev_err(chip->dev, "Timeout in wait(STAT_RDA)\n");
+=======
+			dev_err(&chip->dev, "Timeout in wait(STAT_XFE)\n");
+		if (wait_for_bit == STAT_RDA)
+			dev_err(&chip->dev, "Timeout in wait(STAT_RDA)\n");
+>>>>>>> v4.9.227
 		return -EIO;
 	}
 	return 0;
@@ -220,7 +226,11 @@ static void wait_and_send(struct tpm_chip *chip, u8 sendbyte)
 static void tpm_wtx(struct tpm_chip *chip)
 {
 	number_of_wtx++;
+<<<<<<< HEAD
 	dev_info(chip->dev, "Granting WTX (%02d / %02d)\n",
+=======
+	dev_info(&chip->dev, "Granting WTX (%02d / %02d)\n",
+>>>>>>> v4.9.227
 		 number_of_wtx, TPM_MAX_WTX_PACKAGES);
 	wait_and_send(chip, TPM_VL_VER);
 	wait_and_send(chip, TPM_CTRL_WTX);
@@ -231,7 +241,11 @@ static void tpm_wtx(struct tpm_chip *chip)
 
 static void tpm_wtx_abort(struct tpm_chip *chip)
 {
+<<<<<<< HEAD
 	dev_info(chip->dev, "Aborting WTX\n");
+=======
+	dev_info(&chip->dev, "Aborting WTX\n");
+>>>>>>> v4.9.227
 	wait_and_send(chip, TPM_VL_VER);
 	wait_and_send(chip, TPM_CTRL_WTX_ABORT);
 	wait_and_send(chip, 0x00);
@@ -257,7 +271,11 @@ recv_begin:
 	}
 
 	if (buf[0] != TPM_VL_VER) {
+<<<<<<< HEAD
 		dev_err(chip->dev,
+=======
+		dev_err(&chip->dev,
+>>>>>>> v4.9.227
 			"Wrong transport protocol implementation!\n");
 		return -EIO;
 	}
@@ -272,7 +290,11 @@ recv_begin:
 		}
 
 		if ((size == 0x6D00) && (buf[1] == 0x80)) {
+<<<<<<< HEAD
 			dev_err(chip->dev, "Error handling on vendor layer!\n");
+=======
+			dev_err(&chip->dev, "Error handling on vendor layer!\n");
+>>>>>>> v4.9.227
 			return -EIO;
 		}
 
@@ -284,7 +306,11 @@ recv_begin:
 	}
 
 	if (buf[1] == TPM_CTRL_WTX) {
+<<<<<<< HEAD
 		dev_info(chip->dev, "WTX-package received\n");
+=======
+		dev_info(&chip->dev, "WTX-package received\n");
+>>>>>>> v4.9.227
 		if (number_of_wtx < TPM_MAX_WTX_PACKAGES) {
 			tpm_wtx(chip);
 			goto recv_begin;
@@ -295,14 +321,24 @@ recv_begin:
 	}
 
 	if (buf[1] == TPM_CTRL_WTX_ABORT_ACK) {
+<<<<<<< HEAD
 		dev_info(chip->dev, "WTX-abort acknowledged\n");
+=======
+		dev_info(&chip->dev, "WTX-abort acknowledged\n");
+>>>>>>> v4.9.227
 		return size;
 	}
 
 	if (buf[1] == TPM_CTRL_ERROR) {
+<<<<<<< HEAD
 		dev_err(chip->dev, "ERROR-package received:\n");
 		if (buf[4] == TPM_INF_NAK)
 			dev_err(chip->dev,
+=======
+		dev_err(&chip->dev, "ERROR-package received:\n");
+		if (buf[4] == TPM_INF_NAK)
+			dev_err(&chip->dev,
+>>>>>>> v4.9.227
 				"-> Negative acknowledgement"
 				" - retransmit command!\n");
 		return -EIO;
@@ -321,7 +357,11 @@ static int tpm_inf_send(struct tpm_chip *chip, u8 * buf, size_t count)
 
 	ret = empty_fifo(chip, 1);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(chip->dev, "Timeout while clearing FIFO\n");
+=======
+		dev_err(&chip->dev, "Timeout while clearing FIFO\n");
+>>>>>>> v4.9.227
 		return -EIO;
 	}
 
@@ -546,7 +586,18 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 			 vendorid[0], vendorid[1],
 			 productid[0], productid[1], chipname);
 
+<<<<<<< HEAD
 		if (!(chip = tpm_register_hardware(&dev->dev, &tpm_inf)))
+=======
+		chip = tpmm_chip_alloc(&dev->dev, &tpm_inf);
+		if (IS_ERR(chip)) {
+			rc = PTR_ERR(chip);
+			goto err_release_region;
+		}
+
+		rc = tpm_chip_register(chip);
+		if (rc)
+>>>>>>> v4.9.227
 			goto err_release_region;
 
 		return 0;
@@ -572,6 +623,7 @@ static void tpm_inf_pnp_remove(struct pnp_dev *dev)
 {
 	struct tpm_chip *chip = pnp_get_drvdata(dev);
 
+<<<<<<< HEAD
 	if (chip) {
 		if (tpm_dev.iotype == TPM_INF_IO_PORT) {
 			release_region(tpm_dev.data_regs, tpm_dev.data_size);
@@ -607,6 +659,22 @@ static int tpm_inf_pnp_suspend(struct pnp_dev *dev, pm_message_t pm_state)
 }
 
 static int tpm_inf_pnp_resume(struct pnp_dev *dev)
+=======
+	tpm_chip_unregister(chip);
+
+	if (tpm_dev.iotype == TPM_INF_IO_PORT) {
+		release_region(tpm_dev.data_regs, tpm_dev.data_size);
+		release_region(tpm_dev.config_port,
+			       tpm_dev.config_size);
+	} else {
+		iounmap(tpm_dev.mem_base);
+		release_mem_region(tpm_dev.map_base, tpm_dev.map_size);
+	}
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int tpm_inf_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	/* Re-configure TPM after suspending */
 	tpm_config_out(ENABLE_REGISTER_PAIR, TPM_INF_ADDR);
@@ -620,13 +688,21 @@ static int tpm_inf_pnp_resume(struct pnp_dev *dev)
 	tpm_config_out(DISABLE_REGISTER_PAIR, TPM_INF_ADDR);
 	/* disable RESET, LP and IRQC */
 	tpm_data_out(RESET_LP_IRQC_DISABLE, CMD);
+<<<<<<< HEAD
 	return tpm_pm_resume(&dev->dev);
 }
+=======
+	return tpm_pm_resume(dev);
+}
+#endif
+static SIMPLE_DEV_PM_OPS(tpm_inf_pm, tpm_pm_suspend, tpm_inf_resume);
+>>>>>>> v4.9.227
 
 static struct pnp_driver tpm_inf_pnp_driver = {
 	.name = "tpm_inf_pnp",
 	.id_table = tpm_inf_pnp_tbl,
 	.probe = tpm_inf_pnp_probe,
+<<<<<<< HEAD
 	.suspend = tpm_inf_pnp_suspend,
 	.resume = tpm_inf_pnp_resume,
 	.remove = tpm_inf_pnp_remove
@@ -644,6 +720,15 @@ static void __exit cleanup_inf(void)
 
 module_init(init_inf);
 module_exit(cleanup_inf);
+=======
+	.remove = tpm_inf_pnp_remove,
+	.driver = {
+		.pm = &tpm_inf_pm,
+	}
+};
+
+module_pnp_driver(tpm_inf_pnp_driver);
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Marcel Selhorst <tpmdd@sirrix.com>");
 MODULE_DESCRIPTION("Driver for Infineon TPM SLD 9630 TT 1.1 / SLB 9635 TT 1.2");

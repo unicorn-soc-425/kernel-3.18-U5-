@@ -325,6 +325,11 @@ void r3k_cache_init(void)
 	flush_cache_page = r3k_flush_cache_page;
 	flush_icache_range = r3k_flush_icache_range;
 	local_flush_icache_range = r3k_flush_icache_range;
+<<<<<<< HEAD
+=======
+	__flush_icache_user_range = r3k_flush_icache_range;
+	__local_flush_icache_user_range = r3k_flush_icache_range;
+>>>>>>> v4.9.227
 
 	__flush_kernel_vmap_range = r3k_flush_kernel_vmap_range;
 

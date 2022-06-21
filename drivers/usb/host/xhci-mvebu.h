@@ -10,10 +10,20 @@
 
 #ifndef __LINUX_XHCI_MVEBU_H
 #define __LINUX_XHCI_MVEBU_H
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_USB_XHCI_MVEBU)
 int xhci_mvebu_mbus_init_quirk(struct platform_device *pdev);
 #else
 static inline int xhci_mvebu_mbus_init_quirk(struct platform_device *pdev)
+=======
+
+struct usb_hcd;
+
+#if IS_ENABLED(CONFIG_USB_XHCI_MVEBU)
+int xhci_mvebu_mbus_init_quirk(struct usb_hcd *hcd);
+#else
+static inline int xhci_mvebu_mbus_init_quirk(struct usb_hcd *hcd)
+>>>>>>> v4.9.227
 {
 	return 0;
 }

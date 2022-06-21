@@ -241,13 +241,20 @@ static struct snd_rawmidi_ops snd_gf1_uart_input =
 	.trigger =	snd_gf1_uart_input_trigger,
 };
 
+<<<<<<< HEAD
 int snd_gf1_rawmidi_new(struct snd_gus_card * gus, int device, struct snd_rawmidi ** rrawmidi)
+=======
+int snd_gf1_rawmidi_new(struct snd_gus_card *gus, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_rawmidi *rmidi;
 	int err;
 
+<<<<<<< HEAD
 	if (rrawmidi)
 		*rrawmidi = NULL;
+=======
+>>>>>>> v4.9.227
 	if ((err = snd_rawmidi_new(gus->card, "GF1", device, 1, 1, &rmidi)) < 0)
 		return err;
 	strcpy(rmidi->name, gus->interwave ? "AMD InterWave" : "GF1");
@@ -256,7 +263,10 @@ int snd_gf1_rawmidi_new(struct snd_gus_card * gus, int device, struct snd_rawmid
 	rmidi->info_flags |= SNDRV_RAWMIDI_INFO_OUTPUT | SNDRV_RAWMIDI_INFO_INPUT | SNDRV_RAWMIDI_INFO_DUPLEX;
 	rmidi->private_data = gus;
 	gus->midi_uart = rmidi;
+<<<<<<< HEAD
 	if (rrawmidi)
 		*rrawmidi = rmidi;
+=======
+>>>>>>> v4.9.227
 	return err;
 }

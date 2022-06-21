@@ -173,6 +173,10 @@ static const struct ath6kl_hw hw_list[] = {
 		.reserved_ram_size		= 7168,
 		.board_addr			= 0x436400,
 		.testscript_addr		= 0,
+<<<<<<< HEAD
+=======
+		.uarttx_pin			= 11,
+>>>>>>> v4.9.227
 		.flags				= 0,
 
 		.fw = {
@@ -650,6 +654,17 @@ int ath6kl_configure_target(struct ath6kl *ar)
 	if (status)
 		return status;
 
+<<<<<<< HEAD
+=======
+	/* Only set the baud rate if we're actually doing debug */
+	if (ar->conf_flags & ATH6KL_CONF_UART_DEBUG) {
+		status = ath6kl_bmi_write_hi32(ar, hi_desired_baud_rate,
+					       ar->hw.uarttx_rate);
+		if (status)
+			return status;
+	}
+
+>>>>>>> v4.9.227
 	/* Configure target refclk_hz */
 	if (ar->hw.refclk_hz != 0) {
 		status = ath6kl_bmi_write_hi32(ar, hi_refclk_hz,
@@ -715,6 +730,10 @@ static bool check_device_tree(struct ath6kl *ar)
 				   board_filename, ret);
 			continue;
 		}
+<<<<<<< HEAD
+=======
+		of_node_put(node);
+>>>>>>> v4.9.227
 		return true;
 	}
 	return false;
@@ -953,8 +972,15 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 	snprintf(filename, sizeof(filename), "%s/%s", ar->hw.fw.dir, name);
 
 	ret = request_firmware(&fw, filename, ar->dev);
+<<<<<<< HEAD
 	if (ret)
 		return ret;
+=======
+	if (ret) {
+		ath6kl_err("Failed request firmware, rv: %d\n", ret);
+		return ret;
+	}
+>>>>>>> v4.9.227
 
 	data = fw->data;
 	len = fw->size;
@@ -963,11 +989,21 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 	magic_len = strlen(ATH6KL_FIRMWARE_MAGIC) + 1;
 
 	if (len < magic_len) {
+<<<<<<< HEAD
+=======
+		ath6kl_err("Magic length is invalid, len: %zd  magic_len: %zd\n",
+			   len, magic_len);
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 		goto out;
 	}
 
 	if (memcmp(data, ATH6KL_FIRMWARE_MAGIC, magic_len) != 0) {
+<<<<<<< HEAD
+=======
+		ath6kl_err("Magic is invalid, magic_len: %zd\n",
+			   magic_len);
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 		goto out;
 	}
@@ -986,7 +1022,16 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 		len -= sizeof(*hdr);
 		data += sizeof(*hdr);
 
+<<<<<<< HEAD
 		if (len < ie_len) {
+=======
+		ath6kl_dbg(ATH6KL_DBG_BOOT, "ie-id: %d  len: %zd (0x%zx)\n",
+			   ie_id, ie_len, ie_len);
+
+		if (len < ie_len) {
+			ath6kl_err("IE len is invalid, len: %zd  ie_len: %zd  ie-id: %d\n",
+				   len, ie_len, ie_id);
+>>>>>>> v4.9.227
 			ret = -EINVAL;
 			goto out;
 		}
@@ -994,7 +1039,11 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 		switch (ie_id) {
 		case ATH6KL_FW_IE_FW_VERSION:
 			strlcpy(ar->wiphy->fw_version, data,
+<<<<<<< HEAD
 				sizeof(ar->wiphy->fw_version));
+=======
+				min(sizeof(ar->wiphy->fw_version), ie_len+1));
+>>>>>>> v4.9.227
 
 			ath6kl_dbg(ATH6KL_DBG_BOOT,
 				   "found fw version %s\n",
@@ -1007,6 +1056,10 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 			ar->fw_otp = kmemdup(data, ie_len, GFP_KERNEL);
 
 			if (ar->fw_otp == NULL) {
+<<<<<<< HEAD
+=======
+				ath6kl_err("fw_otp cannot be allocated\n");
+>>>>>>> v4.9.227
 				ret = -ENOMEM;
 				goto out;
 			}
@@ -1024,6 +1077,10 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 			ar->fw = vmalloc(ie_len);
 
 			if (ar->fw == NULL) {
+<<<<<<< HEAD
+=======
+				ath6kl_err("fw storage cannot be allocated, len: %zd\n", ie_len);
+>>>>>>> v4.9.227
 				ret = -ENOMEM;
 				goto out;
 			}
@@ -1038,6 +1095,10 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 			ar->fw_patch = kmemdup(data, ie_len, GFP_KERNEL);
 
 			if (ar->fw_patch == NULL) {
+<<<<<<< HEAD
+=======
+				ath6kl_err("fw_patch storage cannot be allocated, len: %zd\n", ie_len);
+>>>>>>> v4.9.227
 				ret = -ENOMEM;
 				goto out;
 			}

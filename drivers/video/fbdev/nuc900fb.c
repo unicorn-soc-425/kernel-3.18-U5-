@@ -396,8 +396,13 @@ static int nuc900fb_map_video_memory(struct fb_info *info)
 	dev_dbg(fbi->dev, "nuc900fb_map_video_memory(fbi=%p) map_size %lu\n",
 		fbi, map_size);
 
+<<<<<<< HEAD
 	info->screen_base = dma_alloc_writecombine(fbi->dev, map_size,
 							&map_dma, GFP_KERNEL);
+=======
+	info->screen_base = dma_alloc_wc(fbi->dev, map_size, &map_dma,
+					 GFP_KERNEL);
+>>>>>>> v4.9.227
 
 	if (!info->screen_base)
 		return -ENOMEM;
@@ -411,8 +416,13 @@ static int nuc900fb_map_video_memory(struct fb_info *info)
 static inline void nuc900fb_unmap_video_memory(struct fb_info *info)
 {
 	struct nuc900fb_info *fbi = info->par;
+<<<<<<< HEAD
 	dma_free_writecombine(fbi->dev, PAGE_ALIGN(info->fix.smem_len),
 			      info->screen_base, info->fix.smem_start);
+=======
+	dma_free_wc(fbi->dev, PAGE_ALIGN(info->fix.smem_len),
+		    info->screen_base, info->fix.smem_start);
+>>>>>>> v4.9.227
 }
 
 static irqreturn_t nuc900fb_irqhandler(int irq, void *dev_id)
@@ -755,7 +765,10 @@ static struct platform_driver nuc900fb_driver = {
 	.resume		= nuc900fb_resume,
 	.driver		= {
 		.name	= "nuc900-lcd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

@@ -6,6 +6,7 @@
 #include <asm/thread_info.h>
 #include <asm/page.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
 
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
 /* void do_load_up_transact_altivec(struct thread_struct *thread)
@@ -45,6 +46,9 @@ _GLOBAL(vec_enable)
 	MTMSRD(r3)
 	isync
 	blr
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 /*
  * Load state from memory into VMX registers including VSCR.
@@ -52,10 +56,18 @@ _GLOBAL(vec_enable)
  */
 _GLOBAL(load_vr_state)
 	li	r4,VRSTATE_VSCR
+<<<<<<< HEAD
 	lvx	vr0,r4,r3
 	mtvscr	vr0
 	REST_32VRS(0,r4,r3)
 	blr
+=======
+	lvx	v0,r4,r3
+	mtvscr	v0
+	REST_32VRS(0,r4,r3)
+	blr
+EXPORT_SYMBOL(load_vr_state)
+>>>>>>> v4.9.227
 
 /*
  * Store VMX state into memory, including VSCR.
@@ -63,10 +75,18 @@ _GLOBAL(load_vr_state)
  */
 _GLOBAL(store_vr_state)
 	SAVE_32VRS(0, r4, r3)
+<<<<<<< HEAD
 	mfvscr	vr0
 	li	r4, VRSTATE_VSCR
 	stvx	vr0, r4, r3
 	blr
+=======
+	mfvscr	v0
+	li	r4, VRSTATE_VSCR
+	stvx	v0, r4, r3
+	blr
+EXPORT_SYMBOL(store_vr_state)
+>>>>>>> v4.9.227
 
 /*
  * Disable VMX for the task which had it previously,
@@ -84,6 +104,7 @@ _GLOBAL(load_up_altivec)
 	MTMSRD(r5)			/* enable use of AltiVec now */
 	isync
 
+<<<<<<< HEAD
 /*
  * For SMP, we don't do lazy VMX switching because it just gets too
  * horrendously complex, especially when a task switches from one CPU
@@ -121,6 +142,13 @@ _GLOBAL(load_up_altivec)
 	 * set to all zeros, we assume this is a broken application
 	 * that fails to set it properly, and thus we switch it to
 	 * all 1's
+=======
+	/*
+	 * While userspace in general ignores VRSAVE, glibc uses it as a boolean
+	 * to optimise userspace context save/restore. Whenever we take an
+	 * altivec unavailable exception we must set VRSAVE to something non
+	 * zero. Set it to all 1s. See also the programming note in the ISA.
+>>>>>>> v4.9.227
 	 */
 	mfspr	r4,SPRN_VRSAVE
 	cmpwi	0,r4,0
@@ -138,10 +166,18 @@ _GLOBAL(load_up_altivec)
 	oris	r12,r12,MSR_VEC@h
 	std	r12,_MSR(r1)
 #endif
+<<<<<<< HEAD
+=======
+	/* Don't care if r4 overflows, this is desired behaviour */
+	lbz	r4,THREAD_LOAD_VEC(r5)
+	addi	r4,r4,1
+	stb	r4,THREAD_LOAD_VEC(r5)
+>>>>>>> v4.9.227
 	addi	r6,r5,THREAD_VRSTATE
 	li	r4,1
 	li	r10,VRSTATE_VSCR
 	stw	r4,THREAD_USED_VR(r5)
+<<<<<<< HEAD
 	lvx	vr0,r10,r6
 	mtvscr	vr0
 	REST_32VRS(0,r4,r6)
@@ -178,12 +214,26 @@ _GLOBAL(giveup_altivec)
 	isync
 	PPC_LCMPI	0,r3,0
 	beqlr				/* if no previous owner, done */
+=======
+	lvx	v0,r10,r6
+	mtvscr	v0
+	REST_32VRS(0,r4,r6)
+	/* restore registers and return */
+	blr
+
+/*
+ * save_altivec(tsk)
+ * Save the vector registers to its thread_struct
+ */
+_GLOBAL(save_altivec)
+>>>>>>> v4.9.227
 	addi	r3,r3,THREAD		/* want THREAD of task */
 	PPC_LL	r7,THREAD_VRSAVEAREA(r3)
 	PPC_LL	r5,PT_REGS(r3)
 	PPC_LCMPI	0,r7,0
 	bne	2f
 	addi	r7,r3,THREAD_VRSTATE
+<<<<<<< HEAD
 2:	PPC_LCMPI	0,r5,0
 	SAVE_32VRS(0,r4,r7)
 	mfvscr	vr0
@@ -208,6 +258,12 @@ ALT_FTR_SECTION_END_IFSET(CPU_FTR_VSX)
 	LOAD_REG_ADDRBASE(r4,last_task_used_altivec)
 	PPC_STL	r5,ADDROFF(last_task_used_altivec)(r4)
 #endif /* CONFIG_SMP */
+=======
+2:	SAVE_32VRS(0,r4,r7)
+	mfvscr	v0
+	li	r4,VRSTATE_VSCR
+	stvx	v0,r4,r7
+>>>>>>> v4.9.227
 	blr
 
 #ifdef CONFIG_VSX
@@ -230,6 +286,7 @@ _GLOBAL(load_up_vsx)
 	andis.	r5,r12,MSR_VEC@h
 	beql+	load_up_altivec		/* skip if already loaded */
 
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 	ld	r3,last_task_used_vsx@got(r2)
 	ld	r4,0(r3)
@@ -244,6 +301,8 @@ _GLOBAL(load_up_vsx)
 	std	r6,_MSR-STACK_FRAME_OVERHEAD(r5)
 1:
 #endif /* CONFIG_SMP */
+=======
+>>>>>>> v4.9.227
 	ld	r4,PACACURRENT(r13)
 	addi	r4,r4,THREAD		/* Get THREAD */
 	li	r6,1
@@ -251,6 +310,7 @@ _GLOBAL(load_up_vsx)
 	/* enable use of VSX after return */
 	oris	r12,r12,MSR_VSX@h
 	std	r12,_MSR(r1)
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 	/* Update last_task_used_vsx to 'current' */
 	ld	r4,PACACURRENT(r13)
@@ -288,6 +348,10 @@ _GLOBAL(__giveup_vsx)
 #endif /* CONFIG_SMP */
 	blr
 
+=======
+	b	fast_exception_return
+
+>>>>>>> v4.9.227
 #endif /* CONFIG_VSX */
 
 

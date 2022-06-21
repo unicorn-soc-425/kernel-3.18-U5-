@@ -11,11 +11,14 @@
 * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 * more details.
 *
+<<<<<<< HEAD
 * You should have received a copy of the GNU General Public License along with
 * this program; if not, write to the Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 *
 *
+=======
+>>>>>>> v4.9.227
 ******************************************************************************/
 
 #include "odm_precomp.h"
@@ -24,7 +27,11 @@
 
 static bool check_condition(struct adapter *adapt, const u32  condition)
 {
+<<<<<<< HEAD
 	struct odm_dm_struct *odm = &GET_HAL_DATA(adapt)->odmpriv;
+=======
+	struct odm_dm_struct *odm = &adapt->HalData->odmpriv;
+>>>>>>> v4.9.227
 	u32 _board = odm->BoardType;
 	u32 _platform = odm->SupportPlatform;
 	u32 _interface = odm->SupportInterface;
@@ -38,12 +45,20 @@ static bool check_condition(struct adapter *adapt, const u32  condition)
 		return false;
 
 	cond = condition & 0x0000FF00;
+<<<<<<< HEAD
 	cond = cond >> 8;
+=======
+	cond >>= 8;
+>>>>>>> v4.9.227
 	if ((_interface & cond) == 0 && cond != 0x07)
 		return false;
 
 	cond = condition & 0x00FF0000;
+<<<<<<< HEAD
 	cond = cond >> 16;
+=======
+	cond >>= 16;
+>>>>>>> v4.9.227
 	if ((_platform & cond) == 0 && cond != 0x0F)
 		return false;
 	return true;
@@ -164,7 +179,11 @@ do {								\
 #define B3WIREDATALENGTH 0x800
 #define BRFSI_RFENV 0x10
 
+<<<<<<< HEAD
 static void rtl_rfreg_delay(struct adapter *adapt, enum rf_radio_path rfpath,u32 addr, u32 mask, u32 data)
+=======
+static void rtl_rfreg_delay(struct adapter *adapt, enum rf_radio_path rfpath, u32 addr, u32 mask, u32 data)
+>>>>>>> v4.9.227
 {
 	if (addr == 0xfe) {
 		mdelay(50);
@@ -188,9 +207,15 @@ static void rtl8188e_config_rf_reg(struct adapter *adapt,
 	u32 addr, u32 data)
 {
 	u32 content = 0x1000; /*RF Content: radio_a_txt*/
+<<<<<<< HEAD
 	u32 maskforphyset = (u32)(content & 0xE000);
 
 	rtl_rfreg_delay(adapt, RF90_PATH_A, addr| maskforphyset,
+=======
+	u32 maskforphyset = content & 0xE000;
+
+	rtl_rfreg_delay(adapt, RF90_PATH_A, addr | maskforphyset,
+>>>>>>> v4.9.227
 			RFREG_OFFSET_MASK,
 			data);
 }
@@ -198,7 +223,11 @@ static void rtl8188e_config_rf_reg(struct adapter *adapt,
 static bool rtl88e_phy_config_rf_with_headerfile(struct adapter *adapt)
 {
 	u32 i;
+<<<<<<< HEAD
 	u32 array_len = sizeof(Array_RadioA_1T_8188E)/sizeof(u32);
+=======
+	u32 array_len = ARRAY_SIZE(Array_RadioA_1T_8188E);
+>>>>>>> v4.9.227
 	u32 *array = Array_RadioA_1T_8188E;
 
 	for (i = 0; i < array_len; i += 2) {
@@ -214,7 +243,11 @@ static bool rtl88e_phy_config_rf_with_headerfile(struct adapter *adapt)
 				while (v2 != 0xDEAD && v2 != 0xCDEF &&
 				       v2 != 0xCDCD && i < array_len - 2)
 					READ_NEXT_PAIR(v1, v2, i);
+<<<<<<< HEAD
 					i -= 2;
+=======
+				i -= 2;
+>>>>>>> v4.9.227
 			} else {
 				READ_NEXT_PAIR(v1, v2, i);
 				while (v2 != 0xDEAD && v2 != 0xCDEF &&
@@ -233,7 +266,11 @@ static bool rtl88e_phy_config_rf_with_headerfile(struct adapter *adapt)
 
 static bool rf6052_conf_para(struct adapter *adapt)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
+=======
+	struct hal_data_8188e *hal_data = adapt->HalData;
+>>>>>>> v4.9.227
 	u32 u4val = 0;
 	u8 rfpath;
 	bool rtstatus = true;
@@ -295,7 +332,11 @@ static bool rf6052_conf_para(struct adapter *adapt)
 			break;
 		}
 
+<<<<<<< HEAD
 		if (rtstatus != true)
+=======
+		if (!rtstatus)
+>>>>>>> v4.9.227
 			return false;
 	}
 
@@ -304,12 +345,18 @@ static bool rf6052_conf_para(struct adapter *adapt)
 
 static bool rtl88e_phy_rf6052_config(struct adapter *adapt)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 
 	if (hal_data->rf_type == RF_1T1R)
 		hal_data->NumTotalRFPath = 1;
 	else
 		hal_data->NumTotalRFPath = 2;
+=======
+	struct hal_data_8188e *hal_data = adapt->HalData;
+
+	hal_data->NumTotalRFPath = 1;
+>>>>>>> v4.9.227
 
 	return rf6052_conf_para(adapt);
 }

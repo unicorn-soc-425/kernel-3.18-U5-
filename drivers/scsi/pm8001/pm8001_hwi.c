@@ -1479,6 +1479,15 @@ u32 pm8001_mpi_msg_consume(struct pm8001_hba_info *pm8001_ha,
 		} else {
 			u32 producer_index;
 			void *pi_virt = circularQ->pi_virt;
+<<<<<<< HEAD
+=======
+			/* spurious interrupt during setup if
+			 * kexec-ing and driver doing a doorbell access
+			 * with the pre-kexec oq interrupt setup
+			 */
+			if (!pi_virt)
+				break;
+>>>>>>> v4.9.227
 			/* Update the producer index from SPC */
 			producer_index = pm8001_read_32(pi_virt);
 			circularQ->producer_index = cpu_to_le32(producer_index);
@@ -2642,6 +2651,10 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		ts->resp = SAS_TASK_COMPLETE;
 		ts->stat = SAS_OPEN_REJECT;
 		ts->open_rej_reason = SAS_OREJ_RSVD_RETRY;
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> v4.9.227
 	default:
 		PM8001_IO_DBG(pm8001_ha,
 			pm8001_printk("Unknown status 0x%x\n", status));
@@ -3263,6 +3276,13 @@ void pm8001_get_lrate_mode(struct pm8001_phy *phy, u8 link_rate)
 	struct sas_phy *sas_phy = phy->sas_phy.phy;
 
 	switch (link_rate) {
+<<<<<<< HEAD
+=======
+	case PHY_SPEED_120:
+		phy->sas_phy.linkrate = SAS_LINK_RATE_12_0_GBPS;
+		phy->sas_phy.phy->negotiated_linkrate = SAS_LINK_RATE_12_0_GBPS;
+		break;
+>>>>>>> v4.9.227
 	case PHY_SPEED_60:
 		phy->sas_phy.linkrate = SAS_LINK_RATE_6_0_GBPS;
 		phy->sas_phy.phy->negotiated_linkrate = SAS_LINK_RATE_6_0_GBPS;
@@ -4367,7 +4387,11 @@ static int pm8001_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
 			PM8001_IO_DBG(pm8001_ha, pm8001_printk("PIO\n"));
 		}
 		if (task->ata_task.use_ncq &&
+<<<<<<< HEAD
 			dev->sata_dev.command_set != ATAPI_COMMAND_SET) {
+=======
+			dev->sata_dev.class != ATA_DEV_ATAPI) {
+>>>>>>> v4.9.227
 			ATAP = 0x07; /* FPDMA */
 			PM8001_IO_DBG(pm8001_ha, pm8001_printk("FPDMA\n"));
 		}
@@ -4487,8 +4511,13 @@ pm8001_chip_phy_start_req(struct pm8001_hba_info *pm8001_ha, u8 phy_id)
  * @num: the inbound queue number
  * @phy_id: the phy id which we wanted to start up.
  */
+<<<<<<< HEAD
 int pm8001_chip_phy_stop_req(struct pm8001_hba_info *pm8001_ha,
 	u8 phy_id)
+=======
+static int pm8001_chip_phy_stop_req(struct pm8001_hba_info *pm8001_ha,
+				    u8 phy_id)
+>>>>>>> v4.9.227
 {
 	struct phy_stop_req payload;
 	struct inbound_queue_table *circularQ;

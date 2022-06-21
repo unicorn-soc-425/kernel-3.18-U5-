@@ -90,7 +90,11 @@ static int vortex_wt_allocroute(vortex_t * vortex, int wt, int nr_ch)
 	hwwrite(vortex->mmio, WT_PARM(wt, 2), 0);
 
 	temp = hwread(vortex->mmio, WT_PARM(wt, 3));
+<<<<<<< HEAD
 	pr_debug( "vortex: WT PARM3: %x\n", temp);
+=======
+	dev_dbg(vortex->card->dev, "WT PARM3: %x\n", temp);
+>>>>>>> v4.9.227
 	//hwwrite(vortex->mmio, WT_PARM(wt, 3), temp);
 
 	hwwrite(vortex->mmio, WT_DELAY(wt, 0), 0);
@@ -98,7 +102,12 @@ static int vortex_wt_allocroute(vortex_t * vortex, int wt, int nr_ch)
 	hwwrite(vortex->mmio, WT_DELAY(wt, 2), 0);
 	hwwrite(vortex->mmio, WT_DELAY(wt, 3), 0);
 
+<<<<<<< HEAD
 	pr_debug( "vortex: WT GMODE: %x\n", hwread(vortex->mmio, WT_GMODE(wt)));
+=======
+	dev_dbg(vortex->card->dev, "WT GMODE: %x\n",
+		hwread(vortex->mmio, WT_GMODE(wt)));
+>>>>>>> v4.9.227
 
 	hwwrite(vortex->mmio, WT_PARM(wt, 2), 0xffffffff);
 	hwwrite(vortex->mmio, WT_PARM(wt, 3), 0xcff1c810);
@@ -106,7 +115,12 @@ static int vortex_wt_allocroute(vortex_t * vortex, int wt, int nr_ch)
 	voice->parm0 = voice->parm1 = 0xcfb23e2f;
 	hwwrite(vortex->mmio, WT_PARM(wt, 0), voice->parm0);
 	hwwrite(vortex->mmio, WT_PARM(wt, 1), voice->parm1);
+<<<<<<< HEAD
 	pr_debug( "vortex: WT GMODE 2 : %x\n", hwread(vortex->mmio, WT_GMODE(wt)));
+=======
+	dev_dbg(vortex->card->dev, "WT GMODE 2 : %x\n",
+		hwread(vortex->mmio, WT_GMODE(wt)));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -196,14 +210,25 @@ vortex_wt_SetReg(vortex_t * vortex, unsigned char reg, int wt,
 
 	if ((reg == 5) || ((reg >= 7) && (reg <= 10)) || (reg == 0xc)) {
 		if (wt >= (NR_WT / NR_WT_PB)) {
+<<<<<<< HEAD
 			pr_warn
 			    ("vortex: WT SetReg: bank out of range. reg=0x%x, wt=%d\n",
 			     reg, wt);
+=======
+			dev_warn(vortex->card->dev,
+				 "WT SetReg: bank out of range. reg=0x%x, wt=%d\n",
+				 reg, wt);
+>>>>>>> v4.9.227
 			return 0;
 		}
 	} else {
 		if (wt >= NR_WT) {
+<<<<<<< HEAD
 			pr_err( "vortex: WT SetReg: voice out of range\n");
+=======
+			dev_err(vortex->card->dev,
+				"WT SetReg: voice out of range\n");
+>>>>>>> v4.9.227
 			return 0;
 		}
 	}

@@ -29,8 +29,11 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 #include "ttype.h"
 
+=======
+>>>>>>> v4.9.227
 typedef
 struct _version {
 	unsigned char   major;
@@ -71,6 +74,7 @@ typedef enum  _chip_type {
 	VT3253 = 1
 } CHIP_TYPE, *PCHIP_TYPE;
 
+<<<<<<< HEAD
 #ifdef VIAWET_DEBUG
 #define ASSERT(x)							\
 do {									\
@@ -86,4 +90,6 @@ do {									\
 #define DBG_PORT80(value)
 #endif
 
+=======
+>>>>>>> v4.9.227
 #endif

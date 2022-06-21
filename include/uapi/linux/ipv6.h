@@ -1,6 +1,10 @@
 #ifndef _UAPI_IPV6_H
 #define _UAPI_IPV6_H
 
+<<<<<<< HEAD
+=======
+#include <linux/libc-compat.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/in6.h>
 #include <asm/byteorder.h>
@@ -15,21 +19,39 @@
  *	*under construction*
  */
 
+<<<<<<< HEAD
 
+=======
+#if __UAPI_DEF_IN6_PKTINFO
+>>>>>>> v4.9.227
 struct in6_pktinfo {
 	struct in6_addr	ipi6_addr;
 	int		ipi6_ifindex;
 };
+<<<<<<< HEAD
 
+=======
+#endif
+
+#if __UAPI_DEF_IP6_MTUINFO
+>>>>>>> v4.9.227
 struct ip6_mtuinfo {
 	struct sockaddr_in6	ip6m_addr;
 	__u32			ip6m_mtu;
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 struct in6_ifreq {
 	struct in6_addr	ifr6_addr;
 	__u32		ifr6_prefixlen;
+<<<<<<< HEAD
 	int		ifr6_ifindex;
+=======
+	int		ifr6_ifindex; 
+>>>>>>> v4.9.227
 };
 
 #define IPV6_SRCRT_STRICT	0x01	/* Deprecated; will be removed */
@@ -55,7 +77,11 @@ struct ipv6_rt_hdr {
 struct ipv6_opt_hdr {
 	__u8 		nexthdr;
 	__u8 		hdrlen;
+<<<<<<< HEAD
 	/*
+=======
+	/* 
+>>>>>>> v4.9.227
 	 * TLV encoded option data follows.
 	 */
 } __attribute__((packed));	/* required for some archs */
@@ -160,13 +186,19 @@ enum {
 	DEVCONF_ACCEPT_DAD,
 	DEVCONF_FORCE_TLLAO,
 	DEVCONF_NDISC_NOTIFY,
+<<<<<<< HEAD
 	DEVCONF_ACCEPT_RA_RT_TABLE,
+=======
+>>>>>>> v4.9.227
 	DEVCONF_MLDV1_UNSOLICITED_REPORT_INTERVAL,
 	DEVCONF_MLDV2_UNSOLICITED_REPORT_INTERVAL,
 	DEVCONF_SUPPRESS_FRAG_NDISC,
 	DEVCONF_ACCEPT_RA_FROM_LOCAL,
 	DEVCONF_USE_OPTIMISTIC,
+<<<<<<< HEAD
 	DEVCONF_ACCEPT_RA_PREFIX_ROUTE,
+=======
+>>>>>>> v4.9.227
 	DEVCONF_ACCEPT_RA_MTU,
 	DEVCONF_STABLE_SECRET,
 	DEVCONF_USE_OIF_ADDRS_ONLY,
@@ -176,12 +208,15 @@ enum {
 	DEVCONF_DROP_UNSOLICITED_NA,
 	DEVCONF_KEEP_ADDR_ON_DOWN,
 	DEVCONF_RTR_SOLICIT_MAX_INTERVAL,
+<<<<<<< HEAD
 	DEVCONF_SEG6_ENABLED,
 	DEVCONF_SEG6_REQUIRE_HMAC,
 	DEVCONF_ENHANCED_DAD,
 	DEVCONF_ADDR_GEN_MODE,
 	DEVCONF_DISABLE_POLICY,
 	DEVCONF_ACCEPT_RA_RT_INFO_MIN_PLEN,
+=======
+>>>>>>> v4.9.227
 	DEVCONF_MAX
 };
 

@@ -24,6 +24,10 @@
 #include <linux/delay.h>
 #include <linux/seq_file.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/fsl/guts.h>
+>>>>>>> v4.9.227
 
 #include <asm/time.h>
 #include <asm/machdep.h>
@@ -38,7 +42,10 @@
 #include <sysdev/fsl_pci.h>
 #include <sysdev/fsl_soc.h>
 #include <sysdev/simple_gpio.h>
+<<<<<<< HEAD
 #include <asm/fsl_guts.h>
+=======
+>>>>>>> v4.9.227
 
 #include "mpc86xx.h"
 
@@ -88,12 +95,18 @@ static inline void mpc8610_suspend_init(void) { }
 static const struct of_device_id mpc8610_ids[] __initconst = {
 	{ .compatible = "fsl,mpc8610-immr", },
 	{ .compatible = "fsl,mpc8610-guts", },
+<<<<<<< HEAD
 	{ .compatible = "simple-bus", },
+=======
+>>>>>>> v4.9.227
 	/* So that the DMA channel nodes can be probed individually: */
 	{ .compatible = "fsl,eloplus-dma", },
 	/* PCI controllers */
 	{ .compatible = "fsl,mpc8610-pci", },
+<<<<<<< HEAD
 	{ .compatible = "fsl,mpc8641-pcie", },
+=======
+>>>>>>> v4.9.227
 	{}
 };
 
@@ -105,6 +118,11 @@ static int __init mpc8610_declare_of_platform_devices(void)
 	/* Enable wakeup on PIXIS' event IRQ. */
 	mpc8610_suspend_init();
 
+<<<<<<< HEAD
+=======
+	mpc86xx_common_publish_devices();
+
+>>>>>>> v4.9.227
 	/* Without this call, the SSI device driver won't get probed. */
 	of_platform_bus_probe(NULL, mpc8610_ids, NULL);
 
@@ -319,14 +337,19 @@ static void __init mpc86xx_hpcd_setup_arch(void)
  */
 static int __init mpc86xx_hpcd_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (of_flat_dt_is_compatible(root, "fsl,MPC8610HPCD"))
+=======
+	if (of_machine_is_compatible("fsl,MPC8610HPCD"))
+>>>>>>> v4.9.227
 		return 1;	/* Looks good */
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static long __init mpc86xx_time_init(void)
 {
 	unsigned int temp;
@@ -343,13 +366,18 @@ static long __init mpc86xx_time_init(void)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 define_machine(mpc86xx_hpcd) {
 	.name			= "MPC86xx HPCD",
 	.probe			= mpc86xx_hpcd_probe,
 	.setup_arch		= mpc86xx_hpcd_setup_arch,
 	.init_IRQ		= mpc86xx_init_irq,
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.time_init		= mpc86xx_time_init,
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,

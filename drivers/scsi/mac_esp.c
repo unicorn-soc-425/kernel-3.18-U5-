@@ -426,6 +426,11 @@ static void mac_esp_send_pio_cmd(struct esp *esp, u32 addr, u32 esp_count,
 			scsi_esp_cmd(esp, ESP_CMD_TI);
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	esp->send_cmd_residual = esp_count;
+>>>>>>> v4.9.227
 }
 
 static int mac_esp_irq_pending(struct esp *esp)
@@ -630,7 +635,10 @@ static struct platform_driver esp_mac_driver = {
 	.remove   = esp_mac_remove,
 	.driver   = {
 		.name	= DRV_MODULE_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

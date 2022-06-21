@@ -1,14 +1,20 @@
+<<<<<<< HEAD
 /*********************************************************************
  * Author: Cavium Networks
  *
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
+=======
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+>>>>>>> v4.9.227
  *
  * Copyright (c) 2003-2007 Cavium Networks
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This file is distributed in the hope that it will be useful, but
  * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
@@ -24,6 +30,10 @@
  * This file may also be available under a different license from Cavium.
  * Contact Cavium Networks for more information
 *********************************************************************/
+=======
+ */
+
+>>>>>>> v4.9.227
 #include <asm/octeon/cvmx-fau.h>
 
 void cvm_oct_poll_controller(struct net_device *dev);
@@ -46,7 +56,11 @@ static inline void cvm_oct_rx_refill_pool(int fill_threshold)
 						 number_to_free);
 		if (num_freed != number_to_free) {
 			cvmx_fau_atomic_add32(FAU_NUM_PACKET_BUFFERS_TO_FREE,
+<<<<<<< HEAD
 					number_to_free - num_freed);
+=======
+					      number_to_free - num_freed);
+>>>>>>> v4.9.227
 		}
 	}
 }

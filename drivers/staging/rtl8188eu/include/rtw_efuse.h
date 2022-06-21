@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __RTW_EFUSE_H__
 #define __RTW_EFUSE_H__
@@ -39,6 +42,7 @@
 #define	EFUSE_WIFI				0
 #define	EFUSE_BT				1
 
+<<<<<<< HEAD
 enum _EFUSE_DEF_TYPE {
 	TYPE_EFUSE_MAX_SECTION				= 0,
 	TYPE_EFUSE_REAL_CONTENT_LEN			= 1,
@@ -49,6 +53,8 @@ enum _EFUSE_DEF_TYPE {
 	TYPE_EFUSE_CONTENT_LEN_BANK			= 6,
 };
 
+=======
+>>>>>>> v4.9.227
 /* E-Fuse */
 #define EFUSE_MAP_SIZE      512
 #define EFUSE_MAX_SIZE      256
@@ -100,8 +106,11 @@ struct efuse_hal {
 };
 
 u8 Efuse_CalculateWordCnts(u8 word_en);
+<<<<<<< HEAD
 void EFUSE_GetEfuseDefinition(struct adapter *adapt, u8 type, u8 type1,
 			      void *out);
+=======
+>>>>>>> v4.9.227
 u8 efuse_OneByteRead(struct adapter *adapter, u16 addr, u8 *data);
 u8 efuse_OneByteWrite(struct adapter *adapter, u16 addr, u8 data);
 

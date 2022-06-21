@@ -61,13 +61,21 @@ static struct hwrng pseries_rng = {
 	.read		= pseries_rng_read,
 };
 
+<<<<<<< HEAD
 static int __init pseries_rng_probe(struct vio_dev *dev,
+=======
+static int pseries_rng_probe(struct vio_dev *dev,
+>>>>>>> v4.9.227
 		const struct vio_device_id *id)
 {
 	return hwrng_register(&pseries_rng);
 }
 
+<<<<<<< HEAD
 static int __exit pseries_rng_remove(struct vio_dev *dev)
+=======
+static int pseries_rng_remove(struct vio_dev *dev)
+>>>>>>> v4.9.227
 {
 	hwrng_unregister(&pseries_rng);
 	return 0;

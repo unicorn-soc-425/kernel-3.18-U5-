@@ -14,7 +14,11 @@
 #include <asm-generic/4level-fixup.h>
 
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/swap.h>
+=======
+#include <linux/mm_types.h>
+>>>>>>> v4.9.227
 #include <asm/types.h>
 #include <asm/pgtsrmmu.h>
 #include <asm/vaddrs.h>
@@ -44,7 +48,11 @@ unsigned long __init bootmem_init(unsigned long *pages_avail);
 #define PTRS_PER_PMD    	SRMMU_PTRS_PER_PMD
 #define PTRS_PER_PGD    	SRMMU_PTRS_PER_PGD
 #define USER_PTRS_PER_PGD	PAGE_OFFSET / SRMMU_PGDIR_SIZE
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> v4.9.227
 #define PTE_SIZE		(PTRS_PER_PTE*4)
 
 #define PAGE_NONE	SRMMU_PAGE_NONE
@@ -91,9 +99,15 @@ extern unsigned long pfn_base;
  * ZERO_PAGE is a global shared page that is always zero: used
  * for zero-mapped memory areas etc..
  */
+<<<<<<< HEAD
 extern unsigned long empty_zero_page;
 
 #define ZERO_PAGE(vaddr) (virt_to_page(&empty_zero_page))
+=======
+extern unsigned long empty_zero_page[PAGE_SIZE / sizeof(unsigned long)];
+
+#define ZERO_PAGE(vaddr) (virt_to_page(empty_zero_page))
+>>>>>>> v4.9.227
 
 /*
  * In general all page table modifications should use the V8 atomic
@@ -102,7 +116,12 @@ extern unsigned long empty_zero_page;
  */
 static inline unsigned long srmmu_swap(unsigned long *addr, unsigned long value)
 {
+<<<<<<< HEAD
 	__asm__ __volatile__("swap [%2], %0" : "=&r" (value) : "0" (value), "r" (addr));
+=======
+	__asm__ __volatile__("swap [%2], %0" :
+			"=&r" (value) : "0" (value), "r" (addr) : "memory");
+>>>>>>> v4.9.227
 	return value;
 }
 
@@ -221,6 +240,7 @@ static inline int pte_young(pte_t pte)
 	return pte_val(pte) & SRMMU_REF;
 }
 
+<<<<<<< HEAD
 /*
  * The following only work if pte_present() is not true.
  */
@@ -229,6 +249,8 @@ static inline int pte_file(pte_t pte)
 	return pte_val(pte) & SRMMU_FILE;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int pte_special(pte_t pte)
 {
 	return 0;
@@ -305,7 +327,11 @@ static inline pte_t mk_pte_io(unsigned long page, pgprot_t pgprot, int space)
 #define pgprot_noncached pgprot_noncached
 static inline pgprot_t pgprot_noncached(pgprot_t prot)
 {
+<<<<<<< HEAD
 	prot &= ~__pgprot(SRMMU_CACHE);
+=======
+	pgprot_val(prot) &= ~pgprot_val(__pgprot(SRMMU_CACHE));
+>>>>>>> v4.9.227
 	return prot;
 }
 
@@ -375,6 +401,7 @@ static inline swp_entry_t __swp_entry(unsigned long type, unsigned long offset)
 #define __pte_to_swp_entry(pte)		((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)		((pte_t) { (x).val })
 
+<<<<<<< HEAD
 /* file-offset-in-pte helpers */
 static inline unsigned long pte_to_pgoff(pte_t pte)
 {
@@ -391,6 +418,8 @@ static inline pte_t pgoff_to_pte(unsigned long pgoff)
  */
 #define PTE_FILE_MAX_BITS 24
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned long
 __get_phys (unsigned long addr)
 {

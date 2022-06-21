@@ -23,6 +23,7 @@
 #include <linux/clk-provider.h>
 #include <linux/clk/ti.h>
 
+<<<<<<< HEAD
 struct omap_clk {
 	u16				cpu;
 	struct clk_lookup		lk;
@@ -101,6 +102,8 @@ struct clockdomain;
 	};							\
 	DEFINE_STRUCT_CLK(_name, _parent_names, _ops);
 
+=======
+>>>>>>> v4.9.227
 /* struct clksel_rate.flags possibilities */
 #define RATE_IN_242X		(1 << 0)
 #define RATE_IN_243X		(1 << 1)
@@ -121,6 +124,7 @@ struct clockdomain;
 /* RATE_IN_3430ES2PLUS_36XX includes 34xx/35xx with ES >=2, and all 36xx/37xx */
 #define RATE_IN_3430ES2PLUS_36XX	(RATE_IN_3430ES2PLUS | RATE_IN_36XX)
 
+<<<<<<< HEAD
 
 /**
  * struct clksel_rate - register bitfield values corresponding to clk divisors
@@ -153,6 +157,8 @@ struct clksel {
 	const struct clksel_rate *rates;
 };
 
+=======
+>>>>>>> v4.9.227
 /* CM_CLKSEL2_PLL.CORE_CLK_SRC bits (2XXX) */
 #define CORE_CLK_SRC_32K		0x0
 #define CORE_CLK_SRC_DPLL		0x1
@@ -174,6 +180,7 @@ struct clksel {
 #define OMAP4XXX_EN_DPLL_FRBYPASS		0x6
 #define OMAP4XXX_EN_DPLL_LOCKED			0x7
 
+<<<<<<< HEAD
 u32 omap3_dpll_autoidle_read(struct clk_hw_omap *clk);
 void omap3_dpll_allow_idle(struct clk_hw_omap *clk);
 void omap3_dpll_deny_idle(struct clk_hw_omap *clk);
@@ -211,10 +218,13 @@ int omap2_clk_enable_autoidle_all(void);
 int omap2_clk_allow_idle(struct clk *clk);
 int omap2_clk_deny_idle(struct clk *clk);
 int omap2_clk_switch_mpurate_at_boot(const char *mpurate_ck_name);
+=======
+>>>>>>> v4.9.227
 void omap2_clk_print_new_rates(const char *hfclkin_ck_name,
 			       const char *core_ck_name,
 			       const char *mpu_ck_name);
 
+<<<<<<< HEAD
 u32 omap2_clk_readl(struct clk_hw_omap *clk, void __iomem *reg);
 void omap2_clk_writel(u32 val, struct clk_hw_omap *clk, void __iomem *reg);
 
@@ -239,10 +249,16 @@ extern struct ti_clk_features ti_clk_features;
 
 extern const struct clkops clkops_omap2_dflt_wait;
 extern const struct clkops clkops_dummy;
+=======
+extern u16 cpu_mask;
+
+extern const struct clkops clkops_omap2_dflt_wait;
+>>>>>>> v4.9.227
 extern const struct clkops clkops_omap2_dflt;
 
 extern struct clk_functions omap2_clk_functions;
 
+<<<<<<< HEAD
 extern const struct clksel_rate gpt_32k_rates[];
 extern const struct clksel_rate gpt_sys_rates[];
 extern const struct clksel_rate gfx_l3_rates[];
@@ -275,6 +291,9 @@ extern int omap2_clkops_enable_clkdm(struct clk_hw *hw);
 extern void omap2_clkops_disable_clkdm(struct clk_hw *hw);
 
 extern void omap_clocks_register(struct omap_clk *oclks, int cnt);
+=======
+int __init omap2_clk_setup_ll_ops(void);
+>>>>>>> v4.9.227
 
 void __init ti_clk_init_features(void);
 #endif

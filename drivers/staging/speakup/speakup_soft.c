@@ -14,12 +14,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * this code is specificly written as a driver for the speakup screenreview
  * package and is not a general device driver.  */
+=======
+ *
+ * this code is specificly written as a driver for the speakup screenreview
+ * package and is not a general device driver.
+ */
+>>>>>>> v4.9.227
 
 #include <linux/unistd.h>
 #include <linux/miscdevice.h> /* for misc_register, and SYNTH_MINOR */
@@ -350,6 +357,7 @@ module_param_named(start, synth_soft.startup, short, S_IRUGO);
 
 MODULE_PARM_DESC(start, "Start the synthesizer once it is loaded.");
 
+<<<<<<< HEAD
 
 static int __init soft_init(void)
 {
@@ -363,8 +371,15 @@ static void __exit soft_exit(void)
 
 module_init(soft_init);
 module_exit(soft_exit);
+=======
+module_spk_synth(synth_soft);
+
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Kirk Reiser <kirk@braille.uwo.ca>");
 MODULE_DESCRIPTION("Speakup userspace software synthesizer support");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227

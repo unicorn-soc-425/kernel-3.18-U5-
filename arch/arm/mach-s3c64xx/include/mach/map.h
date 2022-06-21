@@ -99,7 +99,11 @@
 
 #define S3C64XX_PA_USB_HSPHY	(0x7C100000)
 
+<<<<<<< HEAD
 /* compatibiltiy defines. */
+=======
+/* compatibility defines. */
+>>>>>>> v4.9.227
 #define S3C_PA_TIMER		S3C64XX_PA_TIMER
 #define S3C_PA_HSMMC0		S3C64XX_PA_HSMMC0
 #define S3C_PA_HSMMC1		S3C64XX_PA_HSMMC1

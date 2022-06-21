@@ -12,13 +12,24 @@
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/param.h>
+=======
+#include <linux/irq.h>
+#include <linux/irqnr.h>
+#include <linux/module.h>
+#include <linux/param.h>
+#include <linux/percpu-defs.h>
+>>>>>>> v4.9.227
 #include <linux/sched.h>
 #include <linux/spinlock.h>
 #include <linux/types.h>
 #include <linux/pm.h>
+<<<<<<< HEAD
 #include <linux/irq.h>
+=======
+>>>>>>> v4.9.227
 
 #include <asm/bootinfo.h>
 #include <asm/cpu.h>
@@ -58,6 +69,10 @@ EXPORT_SYMBOL(dec_kn_slot_size);
 int dec_tc_bus;
 
 DEFINE_SPINLOCK(ioasic_ssr_lock);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ioasic_ssr_lock);
+>>>>>>> v4.9.227
 
 volatile u32 *ioasic_base;
 
@@ -98,6 +113,10 @@ int_ptr asic_mask_nr_tbl[DEC_MAX_ASIC_INTS][2] = {
 	{ { .i = ~0 }, { .p = asic_intr_unimplemented } },
 };
 int cpu_fpu_mask = DEC_CPU_IRQ_MASK(DEC_CPU_INR_FPU);
+<<<<<<< HEAD
+=======
+int *fpu_kstat_irq;
+>>>>>>> v4.9.227
 
 static struct irqaction ioirq = {
 	.handler = no_action,
@@ -755,8 +774,20 @@ void __init arch_init_irq(void)
 		dec_interrupt[DEC_IRQ_HALT] = -1;
 
 	/* Register board interrupts: FPU and cascade. */
+<<<<<<< HEAD
 	if (dec_interrupt[DEC_IRQ_FPU] >= 0)
 		setup_irq(dec_interrupt[DEC_IRQ_FPU], &fpuirq);
+=======
+	if (dec_interrupt[DEC_IRQ_FPU] >= 0 && cpu_has_fpu) {
+		struct irq_desc *desc_fpu;
+		int irq_fpu;
+
+		irq_fpu = dec_interrupt[DEC_IRQ_FPU];
+		setup_irq(irq_fpu, &fpuirq);
+		desc_fpu = irq_to_desc(irq_fpu);
+		fpu_kstat_irq = this_cpu_ptr(desc_fpu->kstat_irqs);
+	}
+>>>>>>> v4.9.227
 	if (dec_interrupt[DEC_IRQ_CASCADE] >= 0)
 		setup_irq(dec_interrupt[DEC_IRQ_CASCADE], &ioirq);
 

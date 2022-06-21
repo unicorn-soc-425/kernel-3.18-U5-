@@ -663,7 +663,11 @@ static void smc_hardware_send_packet( struct net_device * dev )
 	lp->saved_skb = NULL;
 	dev_kfree_skb_any (skb);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> v4.9.227
 
 	/* we can send another packet */
 	netif_wake_queue(dev);
@@ -1031,6 +1035,7 @@ err_out:
 static void print_packet( byte * buf, int length )
 {
 #if 0
+<<<<<<< HEAD
 	int i;
 	int remainder;
 	int lines;
@@ -1061,6 +1066,10 @@ static void print_packet( byte * buf, int length )
 		pr_cont("%02x%02x ", a, b);
 	}
 	pr_cont("\n");
+=======
+	print_hex_dump_debug(DRV_NAME, DUMP_PREFIX_OFFSET, 16, 1,
+			     buf, length, true);
+>>>>>>> v4.9.227
 #endif
 }
 #endif
@@ -1132,7 +1141,11 @@ static void smc_timeout(struct net_device *dev)
 	/* "kick" the adaptor */
 	smc_reset( dev->base_addr );
 	smc_enable( dev->base_addr );
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	/* clear anything saved */
 	((struct smc_local *)netdev_priv(dev))->saved_skb = NULL;
 	netif_wake_queue(dev);

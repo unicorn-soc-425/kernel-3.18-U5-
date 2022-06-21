@@ -83,14 +83,24 @@ static int sr_init_command(struct scsi_cmnd *SCpnt);
 static int sr_done(struct scsi_cmnd *);
 static int sr_runtime_suspend(struct device *dev);
 
+<<<<<<< HEAD
 static struct dev_pm_ops sr_pm_ops = {
+=======
+static const struct dev_pm_ops sr_pm_ops = {
+>>>>>>> v4.9.227
 	.runtime_suspend	= sr_runtime_suspend,
 };
 
 static struct scsi_driver sr_template = {
+<<<<<<< HEAD
 	.owner			= THIS_MODULE,
 	.gendrv = {
 		.name   	= "sr",
+=======
+	.gendrv = {
+		.name   	= "sr",
+		.owner		= THIS_MODULE,
+>>>>>>> v4.9.227
 		.probe		= sr_probe,
 		.remove		= sr_remove,
 		.pm		= &sr_pm_ops,
@@ -390,7 +400,11 @@ static int sr_init_command(struct scsi_cmnd *SCpnt)
 	struct request *rq = SCpnt->request;
 	int ret;
 
+<<<<<<< HEAD
 	ret = scsi_init_io(SCpnt, GFP_ATOMIC);
+=======
+	ret = scsi_init_io(SCpnt);
+>>>>>>> v4.9.227
 	if (ret != BLKPREP_OK)
 		goto out;
 	SCpnt = rq->special;
@@ -520,6 +534,7 @@ static int sr_init_command(struct scsi_cmnd *SCpnt)
 static int sr_block_open(struct block_device *bdev, fmode_t mode)
 {
 	struct scsi_cd *cd;
+<<<<<<< HEAD
 	int ret = -ENXIO;
 
 	check_disk_change(bdev);
@@ -532,6 +547,28 @@ static int sr_block_open(struct block_device *bdev, fmode_t mode)
 			scsi_cd_put(cd);
 	}
 	mutex_unlock(&sr_mutex);
+=======
+	struct scsi_device *sdev;
+	int ret = -ENXIO;
+
+	cd = scsi_cd_get(bdev->bd_disk);
+	if (!cd)
+		goto out;
+
+	sdev = cd->device;
+	scsi_autopm_get_device(sdev);
+	check_disk_change(bdev);
+
+	mutex_lock(&sr_mutex);
+	ret = cdrom_open(&cd->cdi, bdev, mode);
+	mutex_unlock(&sr_mutex);
+
+	scsi_autopm_put_device(sdev);
+	if (ret)
+		scsi_cd_put(cd);
+
+out:
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -554,6 +591,16 @@ static int sr_block_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd,
 
 	mutex_lock(&sr_mutex);
 
+<<<<<<< HEAD
+=======
+	ret = scsi_ioctl_block_when_processing_errors(sdev, cmd,
+			(mode & FMODE_NDELAY) != 0);
+	if (ret)
+		goto out;
+
+	scsi_autopm_get_device(sdev);
+
+>>>>>>> v4.9.227
 	/*
 	 * Send SCSI addressing ioctls directly to mid level, send other
 	 * ioctls to cdrom/block level.
@@ -562,11 +609,16 @@ static int sr_block_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd,
 	case SCSI_IOCTL_GET_IDLUN:
 	case SCSI_IOCTL_GET_BUS_NUMBER:
 		ret = scsi_ioctl(sdev, cmd, argp);
+<<<<<<< HEAD
 		goto out;
+=======
+		goto put;
+>>>>>>> v4.9.227
 	}
 
 	ret = cdrom_ioctl(&cd->cdi, bdev, mode, cmd, arg);
 	if (ret != -ENOSYS)
+<<<<<<< HEAD
 		goto out;
 
 	/*
@@ -581,6 +633,15 @@ static int sr_block_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd,
 		goto out;
 	ret = scsi_ioctl(sdev, cmd, argp);
 
+=======
+		goto put;
+
+	ret = scsi_ioctl(sdev, cmd, argp);
+
+put:
+	scsi_autopm_put_device(sdev);
+
+>>>>>>> v4.9.227
 out:
 	mutex_unlock(&sr_mutex);
 	return ret;
@@ -731,7 +792,10 @@ static int sr_probe(struct device *dev)
 	get_capabilities(cd);
 	sr_vendor_init(cd);
 
+<<<<<<< HEAD
 	disk->driverfs_dev = &sdev->sdev_gendev;
+=======
+>>>>>>> v4.9.227
 	set_capacity(disk, cd->capacity);
 	disk->private_data = &cd->driver;
 	disk->queue = sdev->request_queue;
@@ -748,7 +812,11 @@ static int sr_probe(struct device *dev)
 
 	dev_set_drvdata(dev, cd);
 	disk->flags |= GENHD_FL_REMOVABLE;
+<<<<<<< HEAD
 	add_disk(disk);
+=======
+	device_add_disk(&sdev->sdev_gendev, disk);
+>>>>>>> v4.9.227
 
 	sdev_printk(KERN_DEBUG, sdev,
 		    "Attached scsi CD-ROM %s\n", cd->cdi.name);

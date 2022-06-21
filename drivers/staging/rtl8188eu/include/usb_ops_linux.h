@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __USB_OPS_LINUX_H__
 #define __USB_OPS_LINUX_H__
@@ -52,6 +55,7 @@
 #define usb_read_interrupt_complete(purb, regs)		\
 	usb_read_interrupt_complete(purb)
 
+<<<<<<< HEAD
 static inline u8 rtw_usb_bulk_size_boundary(struct adapter *padapter,
 					    int buf_len)
 {
@@ -67,6 +71,8 @@ static inline u8 rtw_usb_bulk_size_boundary(struct adapter *padapter,
 	return rst;
 }
 
+=======
+>>>>>>> v4.9.227
 unsigned int ffaddr2pipehdl(struct dvobj_priv *pdvobj, u32 addr);
 
 u8 usb_read8(struct adapter *adapter, u32 addr);
@@ -79,9 +85,14 @@ void usb_read_port_cancel(struct adapter *adapter);
 int usb_write8(struct adapter *adapter, u32 addr, u8 val);
 int usb_write16(struct adapter *adapter, u32 addr, u16 val);
 int usb_write32(struct adapter *adapter, u32 addr, u32 val);
+<<<<<<< HEAD
 int usb_writeN(struct adapter *adapter, u32 addr, u32 length, u8 *pdata);
 
 u32 usb_write_port(struct adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+=======
+
+u32 usb_write_port(struct adapter *adapter, u32 addr, u32 cnt, struct xmit_buf *pmem);
+>>>>>>> v4.9.227
 void usb_write_port_cancel(struct adapter *adapter);
 
 #endif

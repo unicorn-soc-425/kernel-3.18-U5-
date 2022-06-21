@@ -134,28 +134,48 @@ enum {
 	MTIP_PF_EH_ACTIVE_BIT       = 1, /* error handling */
 	MTIP_PF_SE_ACTIVE_BIT       = 2, /* secure erase */
 	MTIP_PF_DM_ACTIVE_BIT       = 3, /* download microcde */
+<<<<<<< HEAD
 	MTIP_PF_PAUSE_IO      =	((1 << MTIP_PF_IC_ACTIVE_BIT) |
 				(1 << MTIP_PF_EH_ACTIVE_BIT) |
 				(1 << MTIP_PF_SE_ACTIVE_BIT) |
 				(1 << MTIP_PF_DM_ACTIVE_BIT)),
+=======
+	MTIP_PF_TO_ACTIVE_BIT       = 9, /* timeout handling */
+	MTIP_PF_PAUSE_IO      =	((1 << MTIP_PF_IC_ACTIVE_BIT) |
+				(1 << MTIP_PF_EH_ACTIVE_BIT) |
+				(1 << MTIP_PF_SE_ACTIVE_BIT) |
+				(1 << MTIP_PF_DM_ACTIVE_BIT) |
+				(1 << MTIP_PF_TO_ACTIVE_BIT)),
+>>>>>>> v4.9.227
 
 	MTIP_PF_SVC_THD_ACTIVE_BIT  = 4,
 	MTIP_PF_ISSUE_CMDS_BIT      = 5,
 	MTIP_PF_REBUILD_BIT         = 6,
+<<<<<<< HEAD
 	MTIP_PF_SR_CLEANUP_BIT      = 7,
+=======
+>>>>>>> v4.9.227
 	MTIP_PF_SVC_THD_STOP_BIT    = 8,
 
 	MTIP_PF_SVC_THD_WORK	= ((1 << MTIP_PF_EH_ACTIVE_BIT) |
 				  (1 << MTIP_PF_ISSUE_CMDS_BIT) |
 				  (1 << MTIP_PF_REBUILD_BIT) |
+<<<<<<< HEAD
 				  (1 << MTIP_PF_SVC_THD_STOP_BIT)),
+=======
+				  (1 << MTIP_PF_SVC_THD_STOP_BIT) |
+				  (1 << MTIP_PF_TO_ACTIVE_BIT)),
+>>>>>>> v4.9.227
 
 	/* below are bit numbers in 'dd_flag' defined in driver_data */
 	MTIP_DDF_SEC_LOCK_BIT	    = 0,
 	MTIP_DDF_REMOVE_PENDING_BIT = 1,
 	MTIP_DDF_OVER_TEMP_BIT      = 2,
 	MTIP_DDF_WRITE_PROTECT_BIT  = 3,
+<<<<<<< HEAD
 	MTIP_DDF_REMOVE_DONE_BIT    = 4,
+=======
+>>>>>>> v4.9.227
 	MTIP_DDF_CLEANUP_BIT        = 5,
 	MTIP_DDF_RESUME_BIT         = 6,
 	MTIP_DDF_INIT_DONE_BIT      = 7,
@@ -418,19 +438,26 @@ struct mtip_port {
 	 * by the DMA when the driver issues internal commands.
 	 */
 	dma_addr_t sector_buffer_dma;
+<<<<<<< HEAD
 	/*
 	 * Bit significant, used to determine if a command slot has
 	 * been allocated. i.e. the slot is in use.  Bits are cleared
 	 * when the command slot and all associated data structures
 	 * are no longer needed.
 	 */
+=======
+
+>>>>>>> v4.9.227
 	u16 *log_buf;
 	dma_addr_t log_buf_dma;
 
 	u8 *smart_buf;
 	dma_addr_t smart_buf_dma;
 
+<<<<<<< HEAD
 	unsigned long allocated[SLOTBITS_IN_LONGS];
+=======
+>>>>>>> v4.9.227
 	/*
 	 * used to queue commands when an internal command is in progress
 	 * or error handling is active

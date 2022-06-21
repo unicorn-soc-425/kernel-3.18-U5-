@@ -195,7 +195,11 @@ static int latch_addr_flash_probe(struct platform_device *dev)
 		err = -ENODEV;
 		goto iounmap;
 	}
+<<<<<<< HEAD
 	info->mtd->owner = THIS_MODULE;
+=======
+	info->mtd->dev.parent = &dev->dev;
+>>>>>>> v4.9.227
 
 	mtd_device_parse_register(info->mtd, NULL, NULL,
 				  latch_addr_data->parts,

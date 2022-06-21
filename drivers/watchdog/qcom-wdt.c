@@ -17,21 +17,62 @@
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/reboot.h>
 #include <linux/watchdog.h>
 
 #define WDT_RST		0x0
 #define WDT_EN		0x8
 #define WDT_BITE_TIME	0x24
+=======
+#include <linux/watchdog.h>
+#include <linux/of_device.h>
+
+enum wdt_reg {
+	WDT_RST,
+	WDT_EN,
+	WDT_STS,
+	WDT_BARK_TIME,
+	WDT_BITE_TIME,
+};
+
+static const u32 reg_offset_data_apcs_tmr[] = {
+	[WDT_RST] = 0x38,
+	[WDT_EN] = 0x40,
+	[WDT_STS] = 0x44,
+	[WDT_BARK_TIME] = 0x4C,
+	[WDT_BITE_TIME] = 0x5C,
+};
+
+static const u32 reg_offset_data_kpss[] = {
+	[WDT_RST] = 0x4,
+	[WDT_EN] = 0x8,
+	[WDT_STS] = 0xC,
+	[WDT_BARK_TIME] = 0x10,
+	[WDT_BITE_TIME] = 0x14,
+};
+>>>>>>> v4.9.227
 
 struct qcom_wdt {
 	struct watchdog_device	wdd;
 	struct clk		*clk;
 	unsigned long		rate;
+<<<<<<< HEAD
 	struct notifier_block	restart_nb;
 	void __iomem		*base;
 };
 
+=======
+	void __iomem		*base;
+	const u32		*layout;
+};
+
+static void __iomem *wdt_addr(struct qcom_wdt *wdt, enum wdt_reg reg)
+{
+	return wdt->base + wdt->layout[reg];
+}
+
+>>>>>>> v4.9.227
 static inline
 struct qcom_wdt *to_qcom_wdt(struct watchdog_device *wdd)
 {
@@ -42,10 +83,18 @@ static int qcom_wdt_start(struct watchdog_device *wdd)
 {
 	struct qcom_wdt *wdt = to_qcom_wdt(wdd);
 
+<<<<<<< HEAD
 	writel(0, wdt->base + WDT_EN);
 	writel(1, wdt->base + WDT_RST);
 	writel(wdd->timeout * wdt->rate, wdt->base + WDT_BITE_TIME);
 	writel(1, wdt->base + WDT_EN);
+=======
+	writel(0, wdt_addr(wdt, WDT_EN));
+	writel(1, wdt_addr(wdt, WDT_RST));
+	writel(wdd->timeout * wdt->rate, wdt_addr(wdt, WDT_BARK_TIME));
+	writel(wdd->timeout * wdt->rate, wdt_addr(wdt, WDT_BITE_TIME));
+	writel(1, wdt_addr(wdt, WDT_EN));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -53,7 +102,11 @@ static int qcom_wdt_stop(struct watchdog_device *wdd)
 {
 	struct qcom_wdt *wdt = to_qcom_wdt(wdd);
 
+<<<<<<< HEAD
 	writel(0, wdt->base + WDT_EN);
+=======
+	writel(0, wdt_addr(wdt, WDT_EN));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -61,7 +114,11 @@ static int qcom_wdt_ping(struct watchdog_device *wdd)
 {
 	struct qcom_wdt *wdt = to_qcom_wdt(wdd);
 
+<<<<<<< HEAD
 	writel(1, wdt->base + WDT_RST);
+=======
+	writel(1, wdt_addr(wdt, WDT_RST));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -72,6 +129,7 @@ static int qcom_wdt_set_timeout(struct watchdog_device *wdd,
 	return qcom_wdt_start(wdd);
 }
 
+<<<<<<< HEAD
 static const struct watchdog_ops qcom_wdt_ops = {
 	.start		= qcom_wdt_start,
 	.stop		= qcom_wdt_stop,
@@ -91,6 +149,12 @@ static int qcom_wdt_restart(struct notifier_block *nb, unsigned long action,
 			    void *data)
 {
 	struct qcom_wdt *wdt = container_of(nb, struct qcom_wdt, restart_nb);
+=======
+static int qcom_wdt_restart(struct watchdog_device *wdd, unsigned long action,
+			    void *data)
+{
+	struct qcom_wdt *wdt = to_qcom_wdt(wdd);
+>>>>>>> v4.9.227
 	u32 timeout;
 
 	/*
@@ -99,10 +163,18 @@ static int qcom_wdt_restart(struct notifier_block *nb, unsigned long action,
 	 */
 	timeout = 128 * wdt->rate / 1000;
 
+<<<<<<< HEAD
 	writel(0, wdt->base + WDT_EN);
 	writel(1, wdt->base + WDT_RST);
 	writel(timeout, wdt->base + WDT_BITE_TIME);
 	writel(1, wdt->base + WDT_EN);
+=======
+	writel(0, wdt_addr(wdt, WDT_EN));
+	writel(1, wdt_addr(wdt, WDT_RST));
+	writel(timeout, wdt_addr(wdt, WDT_BARK_TIME));
+	writel(timeout, wdt_addr(wdt, WDT_BITE_TIME));
+	writel(1, wdt_addr(wdt, WDT_EN));
+>>>>>>> v4.9.227
 
 	/*
 	 * Actually make sure the above sequence hits hardware before sleeping.
@@ -110,20 +182,68 @@ static int qcom_wdt_restart(struct notifier_block *nb, unsigned long action,
 	wmb();
 
 	msleep(150);
+<<<<<<< HEAD
 	return NOTIFY_DONE;
 }
 
+=======
+	return 0;
+}
+
+static const struct watchdog_ops qcom_wdt_ops = {
+	.start		= qcom_wdt_start,
+	.stop		= qcom_wdt_stop,
+	.ping		= qcom_wdt_ping,
+	.set_timeout	= qcom_wdt_set_timeout,
+	.restart        = qcom_wdt_restart,
+	.owner		= THIS_MODULE,
+};
+
+static const struct watchdog_info qcom_wdt_info = {
+	.options	= WDIOF_KEEPALIVEPING
+			| WDIOF_MAGICCLOSE
+			| WDIOF_SETTIMEOUT
+			| WDIOF_CARDRESET,
+	.identity	= KBUILD_MODNAME,
+};
+
+>>>>>>> v4.9.227
 static int qcom_wdt_probe(struct platform_device *pdev)
 {
 	struct qcom_wdt *wdt;
 	struct resource *res;
+<<<<<<< HEAD
 	int ret;
 
+=======
+	struct device_node *np = pdev->dev.of_node;
+	const u32 *regs;
+	u32 percpu_offset;
+	int ret;
+
+	regs = of_device_get_match_data(&pdev->dev);
+	if (!regs) {
+		dev_err(&pdev->dev, "Unsupported QCOM WDT module\n");
+		return -ENODEV;
+	}
+
+>>>>>>> v4.9.227
 	wdt = devm_kzalloc(&pdev->dev, sizeof(*wdt), GFP_KERNEL);
 	if (!wdt)
 		return -ENOMEM;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
+=======
+
+	/* We use CPU0's DGT for the watchdog */
+	if (of_property_read_u32(np, "cpu-offset", &percpu_offset))
+		percpu_offset = 0;
+
+	res->start += percpu_offset;
+	res->end += percpu_offset;
+
+>>>>>>> v4.9.227
 	wdt->base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(wdt->base))
 		return PTR_ERR(wdt->base);
@@ -156,11 +276,22 @@ static int qcom_wdt_probe(struct platform_device *pdev)
 		goto err_clk_unprepare;
 	}
 
+<<<<<<< HEAD
 	wdt->wdd.dev = &pdev->dev;
+=======
+>>>>>>> v4.9.227
 	wdt->wdd.info = &qcom_wdt_info;
 	wdt->wdd.ops = &qcom_wdt_ops;
 	wdt->wdd.min_timeout = 1;
 	wdt->wdd.max_timeout = 0x10000000U / wdt->rate;
+<<<<<<< HEAD
+=======
+	wdt->wdd.parent = &pdev->dev;
+	wdt->layout = regs;
+
+	if (readl(wdt_addr(wdt, WDT_STS)) & 1)
+		wdt->wdd.bootstatus = WDIOF_CARDRESET;
+>>>>>>> v4.9.227
 
 	/*
 	 * If 'timeout-sec' unspecified in devicetree, assume a 30 second
@@ -176,6 +307,7 @@ static int qcom_wdt_probe(struct platform_device *pdev)
 		goto err_clk_unprepare;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * WDT restart notifier has priority 0 (use as a last resort)
 	 */
@@ -184,6 +316,8 @@ static int qcom_wdt_probe(struct platform_device *pdev)
 	if (ret)
 		dev_err(&pdev->dev, "failed to setup restart handler\n");
 
+=======
+>>>>>>> v4.9.227
 	platform_set_drvdata(pdev, wdt);
 	return 0;
 
@@ -196,16 +330,25 @@ static int qcom_wdt_remove(struct platform_device *pdev)
 {
 	struct qcom_wdt *wdt = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	unregister_restart_handler(&wdt->restart_nb);
+=======
+>>>>>>> v4.9.227
 	watchdog_unregister_device(&wdt->wdd);
 	clk_disable_unprepare(wdt->clk);
 	return 0;
 }
 
 static const struct of_device_id qcom_wdt_of_table[] = {
+<<<<<<< HEAD
 	{ .compatible = "qcom,kpss-wdt-msm8960", },
 	{ .compatible = "qcom,kpss-wdt-apq8064", },
 	{ .compatible = "qcom,kpss-wdt-ipq8064", },
+=======
+	{ .compatible = "qcom,kpss-timer", .data = reg_offset_data_apcs_tmr },
+	{ .compatible = "qcom,scss-timer", .data = reg_offset_data_apcs_tmr },
+	{ .compatible = "qcom,kpss-wdt", .data = reg_offset_data_kpss },
+>>>>>>> v4.9.227
 	{ },
 };
 MODULE_DEVICE_TABLE(of, qcom_wdt_of_table);

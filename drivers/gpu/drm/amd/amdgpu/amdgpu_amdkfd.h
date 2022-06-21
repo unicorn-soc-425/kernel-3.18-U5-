@@ -36,7 +36,11 @@ struct kgd_mem {
 	void *cpu_ptr;
 };
 
+<<<<<<< HEAD
 bool amdgpu_amdkfd_init(void);
+=======
+int amdgpu_amdkfd_init(void);
+>>>>>>> v4.9.227
 void amdgpu_amdkfd_fini(void);
 
 bool amdgpu_amdkfd_load_interface(struct amdgpu_device *rdev);

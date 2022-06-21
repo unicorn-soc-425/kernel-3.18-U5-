@@ -27,10 +27,13 @@ typedef u64 pmdval_t;
 typedef u64 pudval_t;
 typedef u64 pgdval_t;
 
+<<<<<<< HEAD
 #undef STRICT_MM_TYPECHECKS
 
 #ifdef STRICT_MM_TYPECHECKS
 
+=======
+>>>>>>> v4.9.227
 /*
  * These are used to make use of C type-checking..
  */
@@ -58,6 +61,7 @@ typedef struct { pteval_t pgprot; } pgprot_t;
 #define pgprot_val(x)	((x).pgprot)
 #define __pgprot(x)	((pgprot_t) { (x) } )
 
+<<<<<<< HEAD
 #else	/* !STRICT_MM_TYPECHECKS */
 
 typedef pteval_t pte_t;
@@ -86,6 +90,8 @@ typedef pteval_t pgprot_t;
 
 #endif /* STRICT_MM_TYPECHECKS */
 
+=======
+>>>>>>> v4.9.227
 #if CONFIG_PGTABLE_LEVELS == 2
 #include <asm-generic/pgtable-nopmd.h>
 #elif CONFIG_PGTABLE_LEVELS == 3

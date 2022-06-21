@@ -44,7 +44,10 @@ struct pps_gpio_device_data {
 	bool assert_falling_edge;
 	bool capture_clear;
 	unsigned int gpio_pin;
+<<<<<<< HEAD
 	bool use_system_time_ts;
+=======
+>>>>>>> v4.9.227
 };
 
 /*
@@ -57,6 +60,7 @@ static irqreturn_t pps_gpio_irq_handler(int irq, void *data)
 	struct pps_event_time ts;
 	int rising_edge;
 
+<<<<<<< HEAD
 	info = data;
 
 	/* Get the time stamp first */
@@ -64,6 +68,12 @@ static irqreturn_t pps_gpio_irq_handler(int irq, void *data)
 		get_monotonic_boottime(&ts.ts_real);
 	else
 		pps_get_ts(&ts);
+=======
+	/* Get the time stamp first */
+	pps_get_ts(&ts);
+
+	info = data;
+>>>>>>> v4.9.227
 
 	rising_edge = gpio_get_value(info->gpio_pin);
 	if ((rising_edge && !info->assert_falling_edge) ||
@@ -123,9 +133,12 @@ static int pps_gpio_probe(struct platform_device *pdev)
 
 		if (of_get_property(np, "assert-falling-edge", NULL))
 			data->assert_falling_edge = true;
+<<<<<<< HEAD
 
 		if (of_get_property(np, "use-system-time-ts", NULL))
 			data->use_system_time_ts = true;
+=======
+>>>>>>> v4.9.227
 	}
 
 	/* GPIO setup */
@@ -207,7 +220,10 @@ static struct platform_driver pps_gpio_driver = {
 	.remove		= pps_gpio_remove,
 	.driver		= {
 		.name	= PPS_GPIO_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= pps_gpio_dt_ids,
 	},
 };

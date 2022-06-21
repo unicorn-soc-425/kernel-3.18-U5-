@@ -21,13 +21,20 @@
 #include <linux/scatterlist.h>
 #include <linux/dma-mapping.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/unaligned/access_ok.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/crypto.h>
 #include <linux/cryptohash.h>
 #include <crypto/scatterwalk.h>
 #include <crypto/algapi.h>
 #include <crypto/hash.h>
 #include <crypto/internal/hash.h>
+<<<<<<< HEAD
+=======
+#include <asm/unaligned.h>
+>>>>>>> v4.9.227
 
 #include <asm/dma.h>
 #include <asm/portmux.h>
@@ -96,6 +103,7 @@ struct bfin_crypto_crc_ctx {
 	u32			key;
 };
 
+<<<<<<< HEAD
 
 /*
  * derive number of elements in scatterlist
@@ -116,6 +124,8 @@ static int sg_count(struct scatterlist *sg_list)
 	return sg_nents;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * get element in scatter list by given index
  */
@@ -160,7 +170,11 @@ static int bfin_crypto_crc_init(struct ahash_request *req)
 	}
 	spin_unlock_bh(&crc_list.lock);
 
+<<<<<<< HEAD
 	if (sg_count(req->src) > CRC_MAX_DMA_DESC) {
+=======
+	if (sg_nents(req->src) > CRC_MAX_DMA_DESC) {
+>>>>>>> v4.9.227
 		dev_dbg(ctx->crc->dev, "init: requested sg list is too big > %d\n",
 			CRC_MAX_DMA_DESC);
 		return -EINVAL;
@@ -370,14 +384,23 @@ static int bfin_crypto_crc_handle_queue(struct bfin_crypto_crc *crc,
 			sg_init_table(ctx->bufsl, nsg);
 			sg_set_buf(ctx->bufsl, ctx->buflast, ctx->buflast_len);
 			if (nsg > 1)
+<<<<<<< HEAD
 				scatterwalk_sg_chain(ctx->bufsl, nsg,
 						req->src);
+=======
+				sg_chain(ctx->bufsl, nsg, req->src);
+>>>>>>> v4.9.227
 			ctx->sg = ctx->bufsl;
 		} else
 			ctx->sg = req->src;
 
 		/* Chop crc buffer size to multiple of 32 bit */
+<<<<<<< HEAD
 		nsg = ctx->sg_nents = sg_count(ctx->sg);
+=======
+		nsg = sg_nents(ctx->sg);
+		ctx->sg_nents = nsg;
+>>>>>>> v4.9.227
 		ctx->sg_buflen = ctx->buflast_len + req->nbytes;
 		ctx->bufnext_len = ctx->sg_buflen % 4;
 		ctx->sg_buflen &= ~0x3;
@@ -514,7 +537,12 @@ static struct ahash_alg algs = {
 		.cra_driver_name	= DRIVER_NAME,
 		.cra_priority		= 100,
 		.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
+<<<<<<< HEAD
 						CRYPTO_ALG_ASYNC,
+=======
+						CRYPTO_ALG_ASYNC |
+						CRYPTO_ALG_OPTIONAL_KEY,
+>>>>>>> v4.9.227
 		.cra_blocksize		= CHKSUM_BLOCK_SIZE,
 		.cra_ctxsize		= sizeof(struct bfin_crypto_crc_ctx),
 		.cra_alignmask		= 3,
@@ -608,11 +636,14 @@ static int bfin_crypto_crc_probe(struct platform_device *pdev)
 	crypto_init_queue(&crc->queue, CRC_CCRYPTO_QUEUE_LENGTH);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (res == NULL) {
 		dev_err(&pdev->dev, "Cannot get IORESOURCE_MEM\n");
 		return -ENOENT;
 	}
 
+=======
+>>>>>>> v4.9.227
 	crc->regs = devm_ioremap_resource(dev, res);
 	if (IS_ERR((void *)crc->regs)) {
 		dev_err(&pdev->dev, "Cannot map CRC IO\n");
@@ -724,7 +755,10 @@ static struct platform_driver bfin_crypto_crc_driver = {
 	.resume    = bfin_crypto_crc_resume,
 	.driver    = {
 		.name  = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -745,7 +779,11 @@ static int __init bfin_crypto_crc_mod_init(void)
 
 	ret = platform_driver_register(&bfin_crypto_crc_driver);
 	if (ret) {
+<<<<<<< HEAD
 		pr_info(KERN_ERR "unable to register driver\n");
+=======
+		pr_err("unable to register driver\n");
+>>>>>>> v4.9.227
 		return ret;
 	}
 

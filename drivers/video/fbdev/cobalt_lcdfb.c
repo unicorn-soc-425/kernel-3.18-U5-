@@ -63,7 +63,10 @@
 #define LCD_CUR_POS(x)		((x) & LCD_CUR_POS_MASK)
 #define LCD_TEXT_POS(x)		((x) | LCD_TEXT_MODE)
 
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_COBALT
+=======
+>>>>>>> v4.9.227
 static inline void lcd_write_control(struct fb_info *info, u8 control)
 {
 	writel((u32)control << 24, info->screen_base);
@@ -83,6 +86,7 @@ static inline u8 lcd_read_data(struct fb_info *info)
 {
 	return readl(info->screen_base + LCD_DATA_REG_OFFSET) >> 24;
 }
+<<<<<<< HEAD
 #else
 
 #define LCD_CTL			0x00
@@ -124,6 +128,8 @@ static inline u8 lcd_read_data(struct fb_info *info)
 	return readl(info->screen_base + CPLD_DATA) & 0xff;
 }
 #endif
+=======
+>>>>>>> v4.9.227
 
 static int lcd_busy_wait(struct fb_info *info)
 {
@@ -350,6 +356,14 @@ static int cobalt_lcdfb_probe(struct platform_device *dev)
 	info->screen_size = resource_size(res);
 	info->screen_base = devm_ioremap(&dev->dev, res->start,
 					 info->screen_size);
+<<<<<<< HEAD
+=======
+	if (!info->screen_base) {
+		framebuffer_release(info);
+		return -ENOMEM;
+	}
+
+>>>>>>> v4.9.227
 	info->fbops = &cobalt_lcd_fbops;
 	info->fix = cobalt_lcdfb_fix;
 	info->fix.smem_start = res->start;
@@ -391,7 +405,10 @@ static struct platform_driver cobalt_lcdfb_driver = {
 	.remove	= cobalt_lcdfb_remove,
 	.driver	= {
 		.name	= "cobalt-lcd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(cobalt_lcdfb_driver);

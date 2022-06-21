@@ -89,6 +89,16 @@ static const struct adapter_parm adapter_parm[] = {
 		.getsda	= { 0x80, PORT_STAT, 1 },
 		.init	= { 0x04, PORT_DATA, 1 },
 	},
+<<<<<<< HEAD
+=======
+	/* type 8: VCT-jig */
+	{
+		.setsda	= { 0x04, PORT_DATA, 1 },
+		.setscl	= { 0x01, PORT_DATA, 1 },
+		.getsda	= { 0x40, PORT_STAT, 0 },
+		.getscl	= { 0x80, PORT_STAT, 1 },
+	},
+>>>>>>> v4.9.227
 };
 
 static int type = -1;
@@ -103,4 +113,8 @@ MODULE_PARM_DESC(type,
 	" 5 = ADM1025, ADM1030 and ADM1031 evaluation boards\n"
 	" 6 = Barco LPT->DVI (K5800236) adapter\n"
 	" 7 = One For All JP1 parallel port adapter\n"
+<<<<<<< HEAD
+=======
+	" 8 = VCT-jig\n"
+>>>>>>> v4.9.227
 );

@@ -11,6 +11,10 @@
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
  */
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -40,7 +44,10 @@
 #define ICHP_VAL_IRQ		(1 << 31)
 #define ICHP_IRQ(i)		(((i) >> 16) & 0x7fff)
 #define IPR_VALID		(1 << 31)
+<<<<<<< HEAD
 #define IRQ_BIT(n)		(((n) - PXA_IRQ(0)) & 0x1f)
+=======
+>>>>>>> v4.9.227
 
 #define MAX_INTERNAL_IRQS	128
 
@@ -51,6 +58,10 @@
 static void __iomem *pxa_irq_base;
 static int pxa_internal_irq_nr;
 static bool cpu_has_ipr;
+<<<<<<< HEAD
+=======
+static struct irq_domain *pxa_irq_domain;
+>>>>>>> v4.9.227
 
 static inline void __iomem *irq_base(int i)
 {
@@ -66,18 +77,32 @@ static inline void __iomem *irq_base(int i)
 void pxa_mask_irq(struct irq_data *d)
 {
 	void __iomem *base = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	uint32_t icmr = __raw_readl(base + ICMR);
 
 	icmr &= ~(1 << IRQ_BIT(d->irq));
+=======
+	irq_hw_number_t irq = irqd_to_hwirq(d);
+	uint32_t icmr = __raw_readl(base + ICMR);
+
+	icmr &= ~BIT(irq & 0x1f);
+>>>>>>> v4.9.227
 	__raw_writel(icmr, base + ICMR);
 }
 
 void pxa_unmask_irq(struct irq_data *d)
 {
 	void __iomem *base = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	uint32_t icmr = __raw_readl(base + ICMR);
 
 	icmr |= 1 << IRQ_BIT(d->irq);
+=======
+	irq_hw_number_t irq = irqd_to_hwirq(d);
+	uint32_t icmr = __raw_readl(base + ICMR);
+
+	icmr |= BIT(irq & 0x1f);
+>>>>>>> v4.9.227
 	__raw_writel(icmr, base + ICMR);
 }
 
@@ -118,6 +143,7 @@ asmlinkage void __exception_irq_entry ichp_handle_irq(struct pt_regs *regs)
 	} while (1);
 }
 
+<<<<<<< HEAD
 void __init pxa_init_irq(int irq_nr, int (*fn)(struct irq_data *, unsigned int))
 {
 	int irq, i, n;
@@ -127,12 +153,49 @@ void __init pxa_init_irq(int irq_nr, int (*fn)(struct irq_data *, unsigned int))
 	pxa_internal_irq_nr = irq_nr;
 	cpu_has_ipr = !cpu_is_pxa25x();
 	pxa_irq_base = io_p2v(0x40d00000);
+=======
+static int pxa_irq_map(struct irq_domain *h, unsigned int virq,
+		       irq_hw_number_t hw)
+{
+	void __iomem *base = irq_base(hw / 32);
+
+	/* initialize interrupt priority */
+	if (cpu_has_ipr)
+		__raw_writel(hw | IPR_VALID, pxa_irq_base + IPR(hw));
+
+	irq_set_chip_and_handler(virq, &pxa_internal_irq_chip,
+				 handle_level_irq);
+	irq_set_chip_data(virq, base);
+
+	return 0;
+}
+
+static const struct irq_domain_ops pxa_irq_ops = {
+	.map    = pxa_irq_map,
+	.xlate  = irq_domain_xlate_onecell,
+};
+
+static __init void
+pxa_init_irq_common(struct device_node *node, int irq_nr,
+		    int (*fn)(struct irq_data *, unsigned int))
+{
+	int n;
+
+	pxa_internal_irq_nr = irq_nr;
+	pxa_irq_domain = irq_domain_add_legacy(node, irq_nr,
+					       PXA_IRQ(0), 0,
+					       &pxa_irq_ops, NULL);
+	if (!pxa_irq_domain)
+		panic("Unable to add PXA IRQ domain\n");
+	irq_set_default_host(pxa_irq_domain);
+>>>>>>> v4.9.227
 
 	for (n = 0; n < irq_nr; n += 32) {
 		void __iomem *base = irq_base(n >> 5);
 
 		__raw_writel(0, base + ICMR);	/* disable all IRQs */
 		__raw_writel(0, base + ICLR);	/* all IRQs are IRQ, not FIQ */
+<<<<<<< HEAD
 		for (i = n; (i < (n + 32)) && (i < irq_nr); i++) {
 			/* initialize interrupt priority */
 			if (cpu_has_ipr)
@@ -146,12 +209,27 @@ void __init pxa_init_irq(int irq_nr, int (*fn)(struct irq_data *, unsigned int))
 		}
 	}
 
+=======
+	}
+>>>>>>> v4.9.227
 	/* only unmasked interrupts kick us out of idle */
 	__raw_writel(1, irq_base(0) + ICCR);
 
 	pxa_internal_irq_chip.irq_set_wake = fn;
 }
 
+<<<<<<< HEAD
+=======
+void __init pxa_init_irq(int irq_nr, int (*fn)(struct irq_data *, unsigned int))
+{
+	BUG_ON(irq_nr > MAX_INTERNAL_IRQS);
+
+	pxa_irq_base = io_p2v(0x40d00000);
+	cpu_has_ipr = !cpu_is_pxa25x();
+	pxa_init_irq_common(NULL, irq_nr, fn);
+}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 static unsigned long saved_icmr[MAX_INTERNAL_IRQS/32];
 static unsigned long saved_ipr[MAX_INTERNAL_IRQS];
@@ -203,6 +281,7 @@ struct syscore_ops pxa_irq_syscore_ops = {
 };
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static struct irq_domain *pxa_irq_domain;
 
 static int pxa_irq_map(struct irq_domain *h, unsigned int virq,
@@ -227,6 +306,8 @@ static struct irq_domain_ops pxa_irq_ops = {
 	.xlate  = irq_domain_xlate_onecell,
 };
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id intc_ids[] __initconst = {
 	{ .compatible = "marvell,pxa-intc", },
 	{}
@@ -236,7 +317,11 @@ void __init pxa_dt_irq_init(int (*fn)(struct irq_data *, unsigned int))
 {
 	struct device_node *node;
 	struct resource res;
+<<<<<<< HEAD
 	int n, ret;
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	node = of_find_matching_node(NULL, intc_ids);
 	if (!node) {
@@ -267,6 +352,7 @@ void __init pxa_dt_irq_init(int (*fn)(struct irq_data *, unsigned int))
 		return;
 	}
 
+<<<<<<< HEAD
 	pxa_irq_domain = irq_domain_add_legacy(node, pxa_internal_irq_nr, 0, 0,
 					       &pxa_irq_ops, NULL);
 	if (!pxa_irq_domain)
@@ -285,5 +371,8 @@ void __init pxa_dt_irq_init(int (*fn)(struct irq_data *, unsigned int))
 	__raw_writel(1, irq_base(0) + ICCR);
 
 	pxa_internal_irq_chip.irq_set_wake = fn;
+=======
+	pxa_init_irq_common(node, pxa_internal_irq_nr, fn);
+>>>>>>> v4.9.227
 }
 #endif /* CONFIG_OF */

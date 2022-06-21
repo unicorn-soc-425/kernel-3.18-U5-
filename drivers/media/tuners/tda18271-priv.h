@@ -21,6 +21,11 @@
 #ifndef __TDA18271_PRIV_H__
 #define __TDA18271_PRIV_H__
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/mutex.h>
@@ -226,6 +231,7 @@ extern int tda18271_calc_ir_measure(struct dvb_frontend *fe, u32 *freq);
 extern int tda18271_calc_rf_cal(struct dvb_frontend *fe, u32 *freq);
 
 #endif /* __TDA18271_PRIV_H__ */
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -234,3 +240,5 @@ extern int tda18271_calc_rf_cal(struct dvb_frontend *fe, u32 *freq);
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

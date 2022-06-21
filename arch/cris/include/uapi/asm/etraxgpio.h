@@ -11,6 +11,7 @@
  *       g1-g7 and g25-g31 is both input and outputs but on different pins
  *       Also note that some bits change pins depending on what interfaces
  *       are enabled.
+<<<<<<< HEAD
  *
  * For ETRAX FS (CONFIG_ETRAXFS):
  * /dev/gpioa  minor 0,  8 bit GPIO, each bit can change direction
@@ -31,6 +32,8 @@
  * /dev/pwm2   minor 18, PWM channel 2 on PB26
  * /dev/ppwm   minor 19, PPWM channel
  *
+=======
+>>>>>>> v4.9.227
  */
 #ifndef _ASM_ETRAXGPIO_H
 #define _ASM_ETRAXGPIO_H
@@ -40,13 +43,17 @@
 #define ETRAXGPIO_IOCTYPE 43
 
 /* etraxgpio _IOC_TYPE, bits 8 to 15 in ioctl cmd */
+<<<<<<< HEAD
 #ifdef CONFIG_ETRAX_ARCH_V10
+=======
+>>>>>>> v4.9.227
 #define GPIO_MINOR_A 0
 #define GPIO_MINOR_B 1
 #define GPIO_MINOR_LEDS 2
 #define GPIO_MINOR_G 3
 #define GPIO_MINOR_LAST 3
 #define GPIO_MINOR_LAST_REAL GPIO_MINOR_LAST
+<<<<<<< HEAD
 #endif
 
 #ifdef CONFIG_ETRAXFS
@@ -86,6 +93,8 @@
 #define GPIO_MINOR_LAST_REAL GPIO_MINOR_LAST_PWM
 #endif
 
+=======
+>>>>>>> v4.9.227
 
 
 /* supported ioctl _IOC_NR's */
@@ -139,6 +148,7 @@
 #define IO_SETGET_OUTPUT 0x13 /* bits set in *arg is set to output, */
 			      /* *arg updated with current output pins. */
 
+<<<<<<< HEAD
 /* The following ioctl's are applicable to the PWM channels only */
 
 #define IO_PWM_SET_MODE     0x20
@@ -236,4 +246,6 @@ struct gpio_pwmclk_conf {
  * baseclk = 0, low = 0, high = 0, the values will be updated by driver.
  */
 
+=======
+>>>>>>> v4.9.227
 #endif

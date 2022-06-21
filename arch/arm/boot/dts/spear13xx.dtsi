@@ -1,7 +1,11 @@
 /*
  * DTS file for all SPEAr13xx SoCs
  *
+<<<<<<< HEAD
  * Copyright 2012 Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Copyright 2012 Viresh Kumar <vireshk@kernel.org>
+>>>>>>> v4.9.227
  *
  * The code contained herein is licensed under the GNU General Public
  * License. You may obtain a copy of the GNU General Public License
@@ -117,7 +121,11 @@
 			chan_priority = <1>;
 			block_size = <0xfff>;
 			dma-masters = <2>;
+<<<<<<< HEAD
 			data_width = <3 3 0 0>;
+=======
+			data-width = <8 8>;
+>>>>>>> v4.9.227
 		};
 
 		dma@eb000000 {
@@ -133,7 +141,11 @@
 			chan_allocation_order = <1>;
 			chan_priority = <1>;
 			block_size = <0xfff>;
+<<<<<<< HEAD
 			data_width = <3 3 0 0>;
+=======
+			data-width = <8 8>;
+>>>>>>> v4.9.227
 		};
 
 		fsmc: flash@b0000000 {

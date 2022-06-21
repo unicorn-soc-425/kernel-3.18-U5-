@@ -382,7 +382,12 @@ static void usbatm_extract_one_cell(struct usbatm_data *instance, unsigned char 
 		     "%s: got packet (length: %u, pdu_length: %u, vcc: 0x%p)",
 		     __func__, length, pdu_length, vcc);
 
+<<<<<<< HEAD
 		if (!(skb = dev_alloc_skb(length))) {
+=======
+		skb = dev_alloc_skb(length);
+		if (!skb) {
+>>>>>>> v4.9.227
 			if (printk_ratelimit())
 				atm_err(instance, "%s: no memory for skb (length: %u)!\n",
 					__func__, length);
@@ -816,8 +821,13 @@ static int usbatm_atm_open(struct atm_vcc *vcc)
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	if (!(new = kzalloc(sizeof(struct usbatm_vcc_data), GFP_KERNEL))) {
 		atm_err(instance, "%s: no memory for vcc_data!\n", __func__);
+=======
+	new = kzalloc(sizeof(struct usbatm_vcc_data), GFP_KERNEL);
+	if (!new) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto fail;
 	}
@@ -1030,10 +1040,15 @@ int usbatm_usb_probe(struct usb_interface *intf, const struct usb_device_id *id,
 
 	/* instance init */
 	instance = kzalloc(sizeof(*instance) + sizeof(struct urb *) * (num_rcv_urbs + num_snd_urbs), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!instance) {
 		dev_err(dev, "%s: no memory for instance data!\n", __func__);
 		return -ENOMEM;
 	}
+=======
+	if (!instance)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	/* public fields */
 
@@ -1139,7 +1154,10 @@ int usbatm_usb_probe(struct usb_interface *intf, const struct usb_device_id *id,
 
 		urb = usb_alloc_urb(iso_packets, GFP_KERNEL);
 		if (!urb) {
+<<<<<<< HEAD
 			dev_err(dev, "%s: no memory for urb %d!\n", __func__, i);
+=======
+>>>>>>> v4.9.227
 			error = -ENOMEM;
 			goto fail_unbind;
 		}
@@ -1149,7 +1167,10 @@ int usbatm_usb_probe(struct usb_interface *intf, const struct usb_device_id *id,
 		/* zero the tx padding to avoid leaking information */
 		buffer = kzalloc(channel->buf_size, GFP_KERNEL);
 		if (!buffer) {
+<<<<<<< HEAD
 			dev_err(dev, "%s: no memory for buffer %d!\n", __func__, i);
+=======
+>>>>>>> v4.9.227
 			error = -ENOMEM;
 			goto fail_unbind;
 		}
@@ -1180,7 +1201,10 @@ int usbatm_usb_probe(struct usb_interface *intf, const struct usb_device_id *id,
 	instance->cell_buf = kmalloc(instance->rx_channel.stride, GFP_KERNEL);
 
 	if (!instance->cell_buf) {
+<<<<<<< HEAD
 		dev_err(dev, "%s: no memory for cell buffer!\n", __func__);
+=======
+>>>>>>> v4.9.227
 		error = -ENOMEM;
 		goto fail_unbind;
 	}

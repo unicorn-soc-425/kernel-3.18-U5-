@@ -15,10 +15,16 @@
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 #include <linux/mfd/syscon.h>
+<<<<<<< HEAD
 #include <linux/regmap.h>
 
 #include <asm/system_misc.h>
 
+=======
+#include <linux/reboot.h>
+#include <linux/regmap.h>
+
+>>>>>>> v4.9.227
 struct reset_syscfg {
 	struct regmap *regmap;
 	/* syscfg used for reset */
@@ -29,6 +35,7 @@ struct reset_syscfg {
 	unsigned int mask_rst_msk;
 };
 
+<<<<<<< HEAD
 /* STiH415 */
 #define STIH415_SYSCFG_11	0x2c
 #define STIH415_SYSCFG_15	0x3c
@@ -51,6 +58,8 @@ static struct reset_syscfg stih416_reset = {
 	.mask_rst_msk = BIT(0)
 };
 
+=======
+>>>>>>> v4.9.227
 /* STiH407 */
 #define STIH407_SYSCFG_4000	0x0
 #define STIH407_SYSCFG_4008	0x20
@@ -62,6 +71,7 @@ static struct reset_syscfg stih407_reset = {
 	.mask_rst_msk = BIT(0)
 };
 
+<<<<<<< HEAD
 /* STiD127 */
 #define STID127_SYSCFG_700	0x0
 #define STID127_SYSCFG_773	0x124
@@ -76,6 +86,13 @@ static struct reset_syscfg stid127_reset = {
 static struct reset_syscfg *st_restart_syscfg;
 
 static void st_restart(enum reboot_mode reboot_mode, const char *cmd)
+=======
+
+static struct reset_syscfg *st_restart_syscfg;
+
+static int st_restart(struct notifier_block *this, unsigned long mode,
+		      void *cmd)
+>>>>>>> v4.9.227
 {
 	/* reset syscfg updated */
 	regmap_update_bits(st_restart_syscfg->regmap,
@@ -88,6 +105,7 @@ static void st_restart(enum reboot_mode reboot_mode, const char *cmd)
 			   st_restart_syscfg->offset_rst_msk,
 			   st_restart_syscfg->mask_rst_msk,
 			   0);
+<<<<<<< HEAD
 }
 
 static struct of_device_id st_reset_of_match[] = {
@@ -103,6 +121,21 @@ static struct of_device_id st_reset_of_match[] = {
 	}, {
 		.compatible = "st,stid127-restart",
 		.data = (void *)&stid127_reset,
+=======
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block st_restart_nb = {
+	.notifier_call = st_restart,
+	.priority = 192,
+};
+
+static const struct of_device_id st_reset_of_match[] = {
+	{
+		.compatible = "st,stih407-restart",
+		.data = (void *)&stih407_reset,
+>>>>>>> v4.9.227
 	},
 	{}
 };
@@ -126,9 +159,13 @@ static int st_reset_probe(struct platform_device *pdev)
 		return PTR_ERR(st_restart_syscfg->regmap);
 	}
 
+<<<<<<< HEAD
 	arm_pm_restart = st_restart;
 
 	return 0;
+=======
+	return register_restart_handler(&st_restart_nb);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver st_reset_driver = {

@@ -77,6 +77,7 @@ static int iop_set_next_event(unsigned long delta,
 
 static unsigned long ticks_per_jiffy;
 
+<<<<<<< HEAD
 static void iop_set_mode(enum clock_event_mode mode,
 			 struct clock_event_device *unused)
 {
@@ -112,6 +113,59 @@ static struct clock_event_device iop_clockevent = {
 	.rating         = 300,
 	.set_next_event	= iop_set_next_event,
 	.set_mode	= iop_set_mode,
+=======
+static int iop_set_periodic(struct clock_event_device *evt)
+{
+	u32 tmr = read_tmr0();
+
+	write_tmr0(tmr & ~IOP_TMR_EN);
+	write_tcr0(ticks_per_jiffy - 1);
+	write_trr0(ticks_per_jiffy - 1);
+	tmr |= (IOP_TMR_RELOAD | IOP_TMR_EN);
+
+	write_tmr0(tmr);
+	return 0;
+}
+
+static int iop_set_oneshot(struct clock_event_device *evt)
+{
+	u32 tmr = read_tmr0();
+
+	/* ->set_next_event sets period and enables timer */
+	tmr &= ~(IOP_TMR_RELOAD | IOP_TMR_EN);
+	write_tmr0(tmr);
+	return 0;
+}
+
+static int iop_shutdown(struct clock_event_device *evt)
+{
+	u32 tmr = read_tmr0();
+
+	tmr &= ~IOP_TMR_EN;
+	write_tmr0(tmr);
+	return 0;
+}
+
+static int iop_resume(struct clock_event_device *evt)
+{
+	u32 tmr = read_tmr0();
+
+	tmr |= IOP_TMR_EN;
+	write_tmr0(tmr);
+	return 0;
+}
+
+static struct clock_event_device iop_clockevent = {
+	.name			= "iop_timer0",
+	.features		= CLOCK_EVT_FEAT_PERIODIC |
+				  CLOCK_EVT_FEAT_ONESHOT,
+	.rating			= 300,
+	.set_next_event		= iop_set_next_event,
+	.set_state_shutdown	= iop_shutdown,
+	.set_state_periodic	= iop_set_periodic,
+	.tick_resume		= iop_resume,
+	.set_state_oneshot	= iop_set_oneshot,
+>>>>>>> v4.9.227
 };
 
 static irqreturn_t

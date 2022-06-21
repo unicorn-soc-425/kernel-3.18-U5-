@@ -11,8 +11,13 @@ obj-y				+= bus/
 obj-$(CONFIG_GENERIC_PHY)	+= phy/
 
 # GPIO must come after pinctrl as gpios may need to mux pins etc
+<<<<<<< HEAD
 obj-y				+= pinctrl/
 obj-y				+= gpio/
+=======
+obj-$(CONFIG_PINCTRL)		+= pinctrl/
+obj-$(CONFIG_GPIOLIB)		+= gpio/
+>>>>>>> v4.9.227
 obj-y				+= pwm/
 obj-$(CONFIG_PCI)		+= pci/
 obj-$(CONFIG_PARISC)		+= parisc/
@@ -21,7 +26,11 @@ obj-y				+= video/
 obj-y				+= idle/
 
 # IPMI must come before ACPI in order to provide IPMI opregion support
+<<<<<<< HEAD
 obj-$(CONFIG_IPMI_HANDLER)	+= char/ipmi/
+=======
+obj-y				+= char/ipmi/
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_ACPI)		+= acpi/
 obj-$(CONFIG_SFI)		+= sfi/
@@ -29,6 +38,11 @@ obj-$(CONFIG_SFI)		+= sfi/
 # was used and do nothing if so
 obj-$(CONFIG_PNP)		+= pnp/
 obj-y				+= amba/
+<<<<<<< HEAD
+=======
+
+obj-y				+= clk/
+>>>>>>> v4.9.227
 # Many drivers will want to use DMA so this has to be made available
 # really early.
 obj-$(CONFIG_DMADEVICES)	+= dma/
@@ -50,7 +64,14 @@ obj-$(CONFIG_RESET_CONTROLLER)	+= reset/
 obj-y				+= tty/
 obj-y				+= char/
 
+<<<<<<< HEAD
 # gpu/ comes after char for AGP vs DRM startup
+=======
+# iommu/ comes before gpu as gpu are using iommu controllers
+obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
+
+# gpu/ comes after char for AGP vs DRM startup and after iommu
+>>>>>>> v4.9.227
 obj-y				+= gpu/
 
 obj-$(CONFIG_CONNECTOR)		+= connector/
@@ -60,22 +81,38 @@ obj-$(CONFIG_FB_I810)           += video/fbdev/i810/
 obj-$(CONFIG_FB_INTEL)          += video/fbdev/intelfb/
 
 obj-$(CONFIG_PARPORT)		+= parport/
+<<<<<<< HEAD
 obj-y				+= base/ block/ misc/ mfd/ soc/
 obj-$(CONFIG_VBUS_NOTIFIER)	+= staging/samsung/sec_notifier/
+=======
+obj-$(CONFIG_NVM)		+= lightnvm/
+obj-y				+= base/ block/ misc/ mfd/ nfc/
+obj-$(CONFIG_LIBNVDIMM)		+= nvdimm/
+obj-$(CONFIG_DEV_DAX)		+= dax/
+>>>>>>> v4.9.227
 obj-$(CONFIG_DMA_SHARED_BUFFER) += dma-buf/
 obj-$(CONFIG_NUBUS)		+= nubus/
 obj-y				+= macintosh/
 obj-$(CONFIG_IDE)		+= ide/
+<<<<<<< HEAD
 obj-$(CONFIG_CRYPTO)		+= crypto/
 obj-$(CONFIG_SCSI)		+= scsi/
+=======
+obj-$(CONFIG_SCSI)		+= scsi/
+obj-y				+= nvme/
+>>>>>>> v4.9.227
 obj-$(CONFIG_ATA)		+= ata/
 obj-$(CONFIG_TARGET_CORE)	+= target/
 obj-$(CONFIG_MTD)		+= mtd/
 obj-$(CONFIG_SPI)		+= spi/
 obj-$(CONFIG_SPMI)		+= spmi/
+<<<<<<< HEAD
 obj-$(CONFIG_SLIMBUS)           += slimbus/
 obj-$(CONFIG_SOUNDWIRE)		+= soundwire/
 obj-y				+= hsi/
+=======
+obj-$(CONFIG_HSI)		+= hsi/
+>>>>>>> v4.9.227
 obj-y				+= net/
 obj-$(CONFIG_ATM)		+= atm/
 obj-$(CONFIG_FUSION)		+= message/
@@ -97,16 +134,27 @@ obj-$(CONFIG_USB)		+= usb/
 obj-$(CONFIG_USB_SUPPORT)	+= usb/
 obj-$(CONFIG_PCI)		+= usb/
 obj-$(CONFIG_USB_GADGET)	+= usb/
+<<<<<<< HEAD
 obj-$(CONFIG_SERIO)		+= input/serio/
 obj-$(CONFIG_GAMEPORT)		+= input/gameport/
 obj-$(CONFIG_INPUT)		+= input/
 obj-$(CONFIG_I2O)		+= message/
+=======
+obj-$(CONFIG_OF)		+= usb/
+obj-$(CONFIG_SERIO)		+= input/serio/
+obj-$(CONFIG_GAMEPORT)		+= input/gameport/
+obj-$(CONFIG_INPUT)		+= input/
+>>>>>>> v4.9.227
 obj-$(CONFIG_RTC_LIB)		+= rtc/
 obj-y				+= i2c/ media/
 obj-$(CONFIG_PPS)		+= pps/
 obj-$(CONFIG_PTP_1588_CLOCK)	+= ptp/
 obj-$(CONFIG_W1)		+= w1/
+<<<<<<< HEAD
 obj-$(CONFIG_POWER_SUPPLY)	+= power/
+=======
+obj-y				+= power/
+>>>>>>> v4.9.227
 obj-$(CONFIG_HWMON)		+= hwmon/
 obj-$(CONFIG_THERMAL)		+= thermal/
 obj-$(CONFIG_WATCHDOG)		+= watchdog/
@@ -121,6 +169,7 @@ obj-$(CONFIG_CPU_FREQ)		+= cpufreq/
 obj-$(CONFIG_CPU_IDLE)		+= cpuidle/
 obj-y				+= mmc/
 obj-$(CONFIG_MEMSTICK)		+= memstick/
+<<<<<<< HEAD
 obj-y				+= leds/
 obj-$(CONFIG_SWITCH)		+= switch/
 obj-$(CONFIG_INFINIBAND)	+= infiniband/
@@ -128,6 +177,14 @@ obj-$(CONFIG_SGI_SN)		+= sn/
 obj-y				+= firmware/
 obj-$(CONFIG_SUPERH)		+= sh/
 obj-$(CONFIG_ARCH_SHMOBILE)	+= sh/
+=======
+obj-$(CONFIG_NEW_LEDS)		+= leds/
+obj-$(CONFIG_INFINIBAND)	+= infiniband/
+obj-$(CONFIG_SGI_SN)		+= sn/
+obj-y				+= firmware/
+obj-$(CONFIG_CRYPTO)		+= crypto/
+obj-$(CONFIG_SUPERH)		+= sh/
+>>>>>>> v4.9.227
 ifndef CONFIG_ARCH_USES_GETTIMEOFFSET
 obj-y				+= clocksource/
 endif
@@ -138,6 +195,7 @@ obj-$(CONFIG_OF)		+= of/
 obj-$(CONFIG_SSB)		+= ssb/
 obj-$(CONFIG_BCMA)		+= bcma/
 obj-$(CONFIG_VHOST_RING)	+= vhost/
+<<<<<<< HEAD
 obj-$(CONFIG_VLYNQ)		+= vlynq/
 obj-$(CONFIG_STAGING)		+= staging/
 obj-y				+= platform/
@@ -148,6 +206,15 @@ obj-$(CONFIG_SAMSUNG_NFC)		+= nfc/
 obj-$(CONFIG_MAILBOX)		+= mailbox/
 obj-$(CONFIG_HWSPINLOCK)	+= hwspinlock/
 obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
+=======
+obj-$(CONFIG_VHOST)		+= vhost/
+obj-$(CONFIG_VLYNQ)		+= vlynq/
+obj-$(CONFIG_STAGING)		+= staging/
+obj-y				+= platform/
+
+obj-$(CONFIG_MAILBOX)		+= mailbox/
+obj-$(CONFIG_HWSPINLOCK)	+= hwspinlock/
+>>>>>>> v4.9.227
 obj-$(CONFIG_REMOTEPROC)	+= remoteproc/
 obj-$(CONFIG_RPMSG)		+= rpmsg/
 
@@ -156,6 +223,7 @@ obj-$(CONFIG_VIRT_DRIVERS)	+= virt/
 obj-$(CONFIG_HYPERV)		+= hv/
 
 obj-$(CONFIG_PM_DEVFREQ)	+= devfreq/
+<<<<<<< HEAD
 ifeq ($(CONFIG_BATTERY_SAMSUNG_V2), y)
 	obj-$(CONFIG_BATTERY_SAMSUNG)	+= battery_v2/
 else 
@@ -165,6 +233,8 @@ else
 	obj-$(CONFIG_BATTERY_SAMSUNG)	+= battery/
 endif
 endif
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_EXTCON)		+= extcon/
 obj-$(CONFIG_MEMORY)		+= memory/
 obj-$(CONFIG_IIO)		+= iio/
@@ -174,6 +244,7 @@ obj-$(CONFIG_NTB)		+= ntb/
 obj-$(CONFIG_FMC)		+= fmc/
 obj-$(CONFIG_POWERCAP)		+= powercap/
 obj-$(CONFIG_MCB)		+= mcb/
+<<<<<<< HEAD
 obj-$(CONFIG_RAS)		+= ras/
 obj-$(CONFIG_THUNDERBOLT)	+= thunderbolt/
 obj-$(CONFIG_CORESIGHT)		+= coresight/
@@ -208,3 +279,14 @@ obj-y += ccic/
 # FIVE TEE driver
 obj-$(CONFIG_FIVE_TEE_DRIVER)	+= security/samsung/five_tee_driver/
 obj-$(CONFIG_ICD)		+= security/samsung/icdrv/
+=======
+obj-$(CONFIG_PERF_EVENTS)	+= perf/
+obj-$(CONFIG_RAS)		+= ras/
+obj-$(CONFIG_THUNDERBOLT)	+= thunderbolt/
+obj-$(CONFIG_CORESIGHT)		+= hwtracing/coresight/
+obj-y				+= hwtracing/intel_th/
+obj-$(CONFIG_STM)		+= hwtracing/stm/
+obj-$(CONFIG_ANDROID)		+= android/
+obj-$(CONFIG_NVMEM)		+= nvmem/
+obj-$(CONFIG_FPGA)		+= fpga/
+>>>>>>> v4.9.227

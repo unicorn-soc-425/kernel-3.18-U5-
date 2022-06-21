@@ -20,34 +20,54 @@
 #include <linux/types.h>
 #include <linux/io.h>
 
+<<<<<<< HEAD
 #define IO_CHECK_ALIGN(v, a) ((((unsigned long)(v)) & ((a) - 1)) == 0)
 
+=======
+>>>>>>> v4.9.227
 /*
  * Copy data from IO memory space to "real" memory space.
  */
 void __memcpy_fromio(void *to, const volatile void __iomem *from, size_t count)
 {
+<<<<<<< HEAD
 	while (count && !IS_ALIGNED((unsigned long)from, 8)) {
 		*(u8 *)to = readb_relaxed_no_log(from);
+=======
+	while (count && (!IS_ALIGNED((unsigned long)from, 8) ||
+			 !IS_ALIGNED((unsigned long)to, 8))) {
+		*(u8 *)to = __raw_readb(from);
+>>>>>>> v4.9.227
 		from++;
 		to++;
 		count--;
 	}
 
 	while (count >= 8) {
+<<<<<<< HEAD
 		*(u64 *)to = readq_relaxed_no_log(from);
+=======
+		*(u64 *)to = __raw_readq(from);
+>>>>>>> v4.9.227
 		from += 8;
 		to += 8;
 		count -= 8;
 	}
 
 	while (count) {
+<<<<<<< HEAD
 		*(u8 *)to = readb_relaxed_no_log(from);
+=======
+		*(u8 *)to = __raw_readb(from);
+>>>>>>> v4.9.227
 		from++;
 		to++;
 		count--;
 	}
+<<<<<<< HEAD
 	__iormb();
+=======
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(__memcpy_fromio);
 
@@ -56,22 +76,36 @@ EXPORT_SYMBOL(__memcpy_fromio);
  */
 void __memcpy_toio(volatile void __iomem *to, const void *from, size_t count)
 {
+<<<<<<< HEAD
 	while (count && !IS_ALIGNED((unsigned long)to, 8)) {
 		writeb_relaxed_no_log(*(u8 *)from, to);
+=======
+	while (count && (!IS_ALIGNED((unsigned long)to, 8) ||
+			 !IS_ALIGNED((unsigned long)from, 8))) {
+		__raw_writeb(*(volatile u8 *)from, to);
+>>>>>>> v4.9.227
 		from++;
 		to++;
 		count--;
 	}
 
 	while (count >= 8) {
+<<<<<<< HEAD
 		writeq_relaxed_no_log(*(u64 *)from, to);
+=======
+		__raw_writeq(*(volatile u64 *)from, to);
+>>>>>>> v4.9.227
 		from += 8;
 		to += 8;
 		count -= 8;
 	}
 
 	while (count) {
+<<<<<<< HEAD
 		writeb_relaxed_no_log(*(u8 *)from, to);
+=======
+		__raw_writeb(*(volatile u8 *)from, to);
+>>>>>>> v4.9.227
 		from++;
 		to++;
 		count--;
@@ -91,19 +125,31 @@ void __memset_io(volatile void __iomem *dst, int c, size_t count)
 	qc |= qc << 32;
 
 	while (count && !IS_ALIGNED((unsigned long)dst, 8)) {
+<<<<<<< HEAD
 		writeb_relaxed_no_log(c, dst);
+=======
+		__raw_writeb(c, dst);
+>>>>>>> v4.9.227
 		dst++;
 		count--;
 	}
 
 	while (count >= 8) {
+<<<<<<< HEAD
 		writeq_relaxed_no_log(qc, dst);
+=======
+		__raw_writeq(qc, dst);
+>>>>>>> v4.9.227
 		dst += 8;
 		count -= 8;
 	}
 
 	while (count) {
+<<<<<<< HEAD
 		writeb_relaxed_no_log(c, dst);
+=======
+		__raw_writeb(c, dst);
+>>>>>>> v4.9.227
 		dst++;
 		count--;
 	}

@@ -13,6 +13,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/omap-gpmc.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/mtd/physmap.h>
 #include <linux/io.h>
@@ -23,8 +27,11 @@
 #include "soc.h"
 #include "common.h"
 #include "board-flash.h"
+<<<<<<< HEAD
 #include "gpmc-onenand.h"
 #include "gpmc-nand.h"
+=======
+>>>>>>> v4.9.227
 
 #define REG_FPGA_REV			0x10
 #define REG_FPGA_DIP_SWITCH_INPUT2	0x60
@@ -82,8 +89,12 @@ __init board_nor_init(struct mtd_partition *nor_parts, u8 nr_parts, u8 cs)
 		pr_err("Unable to register NOR device\n");
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_ONENAND_OMAP2) || \
 		defined(CONFIG_MTD_ONENAND_OMAP2_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MTD_ONENAND_OMAP2)
+>>>>>>> v4.9.227
 static struct omap_onenand_platform_data board_onenand_data = {
 	.dma_channel	= -1,   /* disable DMA in OMAP OneNAND driver */
 };
@@ -98,10 +109,16 @@ __init board_onenand_init(struct mtd_partition *onenand_parts,
 
 	gpmc_onenand_init(&board_onenand_data);
 }
+<<<<<<< HEAD
 #endif /* CONFIG_MTD_ONENAND_OMAP2 || CONFIG_MTD_ONENAND_OMAP2_MODULE */
 
 #if defined(CONFIG_MTD_NAND_OMAP2) || \
 		defined(CONFIG_MTD_NAND_OMAP2_MODULE)
+=======
+#endif /* IS_ENABLED(CONFIG_MTD_ONENAND_OMAP2) */
+
+#if IS_ENABLED(CONFIG_MTD_NAND_OMAP2)
+>>>>>>> v4.9.227
 
 /* Note that all values in this struct are in nanoseconds */
 struct gpmc_timings nand_default_timings[1] = {
@@ -145,7 +162,11 @@ __init board_nand_init(struct mtd_partition *nand_parts, u8 nr_parts, u8 cs,
 	board_nand_data.ecc_opt = OMAP_ECC_HAM1_CODE_SW;
 	gpmc_nand_init(&board_nand_data, gpmc_t);
 }
+<<<<<<< HEAD
 #endif /* CONFIG_MTD_NAND_OMAP2 || CONFIG_MTD_NAND_OMAP2_MODULE */
+=======
+#endif /* IS_ENABLED(CONFIG_MTD_NAND_OMAP2) */
+>>>>>>> v4.9.227
 
 /**
  * get_gpmc0_type - Reads the FPGA DIP_SWITCH_INPUT_REGISTER2 to get

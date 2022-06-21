@@ -101,7 +101,11 @@ typedef struct {
 } DSP_UART_CFG_1;
 
 typedef struct {
+<<<<<<< HEAD
 	unsigned char Enable:1;	/* RW: Enable I/O and IRQ: 0=FALSE, 1=TRUE */
+=======
+	unsigned char Enable:1;	/* RW: Enable I/O and IRQ: 0=false, 1=true */
+>>>>>>> v4.9.227
 	unsigned char Reserved:7;	/* 0: Reserved */
 } DSP_UART_CFG_2;
 
@@ -114,7 +118,11 @@ typedef struct {
 } DSP_HBRIDGE_CFG_1;
 
 typedef struct {
+<<<<<<< HEAD
 	unsigned char Enable:1;	/* RW: enable I/O and IRQ: 0=FALSE, 1=TRUE */
+=======
+	unsigned char Enable:1;	/* RW: enable I/O and IRQ: 0=false, 1=true */
+>>>>>>> v4.9.227
 	unsigned char Reserved:7;	/* 0: Reserved */
 } DSP_HBRIDGE_CFG_2;
 
@@ -133,12 +141,20 @@ typedef struct {
 
 
 typedef struct {
+<<<<<<< HEAD
 	unsigned char GateIOCHRDY:1;	/* RW: Enable IOCHRDY gating: 0=FALSE, 1=TRUE */
+=======
+	unsigned char GateIOCHRDY:1;	/* RW: Enable IOCHRDY gating: 0=false, 1=true */
+>>>>>>> v4.9.227
 	unsigned char Reserved:7;	/* 0: Reserved */
 } DSP_ISA_PROT_CFG;
 
 typedef struct {
+<<<<<<< HEAD
 	unsigned char Enable:1;	/* RW: Enable low power suspend/resume 0=FALSE, 1=TRUE */
+=======
+	unsigned char Enable:1;	/* RW: Enable low power suspend/resume 0=false, 1=true */
+>>>>>>> v4.9.227
 	unsigned char Reserved:7;	/* 0: Reserved */
 } DSP_POWER_MGMT_CFG;
 

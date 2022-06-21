@@ -139,8 +139,11 @@ static struct board_type products[] = {
 	{0x3214103C, "Smart Array E200i", &SA5_access},
 	{0x3215103C, "Smart Array E200i", &SA5_access},
 	{0x3237103C, "Smart Array E500", &SA5_access},
+<<<<<<< HEAD
 	{0x3223103C, "Smart Array P800", &SA5_access},
 	{0x3234103C, "Smart Array P400", &SA5_access},
+=======
+>>>>>>> v4.9.227
 	{0x323D103C, "Smart Array P700m", &SA5_access},
 };
 
@@ -516,6 +519,7 @@ cciss_proc_write(struct file *file, const char __user *buf,
 	if (!buf || length > PAGE_SIZE - 1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	buffer = (char *)__get_free_page(GFP_KERNEL);
 	if (!buffer)
 		return -ENOMEM;
@@ -524,6 +528,11 @@ cciss_proc_write(struct file *file, const char __user *buf,
 	if (copy_from_user(buffer, buf, length))
 		goto out;
 	buffer[length] = '\0';
+=======
+	buffer = memdup_user_nul(buf, length);
+	if (IS_ERR(buffer))
+		return PTR_ERR(buffer);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_CISS_SCSI_TAPE
 	if (strncmp(ENGAGE_SCSI, buffer, sizeof ENGAGE_SCSI - 1) == 0) {
@@ -539,8 +548,12 @@ cciss_proc_write(struct file *file, const char __user *buf,
 	/* might be nice to have "disengage" too, but it's not
 	   safely possible. (only 1 module use count, lock issues.) */
 
+<<<<<<< HEAD
 out:
 	free_page((unsigned long)buffer);
+=======
+	kfree(buffer);
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -574,8 +587,11 @@ static void cciss_procinit(ctlr_info_t *h)
 
 /* List of controllers which cannot be hard reset on kexec with reset_devices */
 static u32 unresettable_controller[] = {
+<<<<<<< HEAD
 	0x324a103C, /* Smart Array P712m */
 	0x324b103C, /* SmartArray P711m */
+=======
+>>>>>>> v4.9.227
 	0x3223103C, /* Smart Array P800 */
 	0x3234103C, /* Smart Array P400 */
 	0x3235103C, /* Smart Array P400i */
@@ -586,12 +602,40 @@ static u32 unresettable_controller[] = {
 	0x3215103C, /* Smart Array E200i */
 	0x3237103C, /* Smart Array E500 */
 	0x323D103C, /* Smart Array P700m */
+<<<<<<< HEAD
 	0x409C0E11, /* Smart Array 6400 */
 	0x409D0E11, /* Smart Array 6400 EM */
+=======
+	0x40800E11, /* Smart Array 5i */
+	0x409C0E11, /* Smart Array 6400 */
+	0x409D0E11, /* Smart Array 6400 EM */
+	0x40700E11, /* Smart Array 5300 */
+	0x40820E11, /* Smart Array 532 */
+	0x40830E11, /* Smart Array 5312 */
+	0x409A0E11, /* Smart Array 641 */
+	0x409B0E11, /* Smart Array 642 */
+	0x40910E11, /* Smart Array 6i */
+>>>>>>> v4.9.227
 };
 
 /* List of controllers which cannot even be soft reset */
 static u32 soft_unresettable_controller[] = {
+<<<<<<< HEAD
+=======
+	0x40800E11, /* Smart Array 5i */
+	0x40700E11, /* Smart Array 5300 */
+	0x40820E11, /* Smart Array 532 */
+	0x40830E11, /* Smart Array 5312 */
+	0x409A0E11, /* Smart Array 641 */
+	0x409B0E11, /* Smart Array 642 */
+	0x40910E11, /* Smart Array 6i */
+	/* Exclude 640x boards.  These are two pci devices in one slot
+	 * which share a battery backed cache module.  One controls the
+	 * cache, the other accesses the cache through the one that controls
+	 * it.  If we reset the one controlling the cache, the other will
+	 * likely not be happy.  Just forbid resetting this conjoined mess.
+	 */
+>>>>>>> v4.9.227
 	0x409C0E11, /* Smart Array 6400 */
 	0x409D0E11, /* Smart Array 6400 EM */
 };
@@ -1941,7 +1985,10 @@ static int cciss_add_disk(ctlr_info_t *h, struct gendisk *disk,
 	if (cciss_create_ld_sysfs_entry(h, drv_index))
 		goto cleanup_queue;
 	disk->private_data = h->drv[drv_index];
+<<<<<<< HEAD
 	disk->driverfs_dev = &h->drv[drv_index]->dev;
+=======
+>>>>>>> v4.9.227
 
 	/* Set up queue information */
 	blk_queue_bounce_limit(disk->queue, h->pdev->dma_mask);
@@ -1963,7 +2010,11 @@ static int cciss_add_disk(ctlr_info_t *h, struct gendisk *disk,
 	/* allows the interrupt handler to start the queue */
 	wmb();
 	h->drv[drv_index]->queue = disk->queue;
+<<<<<<< HEAD
 	add_disk(disk);
+=======
+	device_add_disk(&h->drv[drv_index]->dev, disk);
+>>>>>>> v4.9.227
 	return 0;
 
 cleanup_queue:
@@ -3838,7 +3889,11 @@ static void print_cfg_table(ctlr_info_t *h)
 	       readl(&(tb->HostWrite.CoalIntDelay)));
 	dev_dbg(&h->pdev->dev, "   Coalesce Interrupt Count = 0x%x\n",
 	       readl(&(tb->HostWrite.CoalIntCount)));
+<<<<<<< HEAD
 	dev_dbg(&h->pdev->dev, "   Max outstanding commands = 0x%d\n",
+=======
+	dev_dbg(&h->pdev->dev, "   Max outstanding commands = 0x%x\n",
+>>>>>>> v4.9.227
 	       readl(&(tb->CmdsOutMax)));
 	dev_dbg(&h->pdev->dev, "   Bus Types = 0x%x\n",
 		readl(&(tb->BusTypes)));
@@ -4667,8 +4722,12 @@ static int cciss_kdump_hard_reset_controller(struct pci_dev *pdev)
 	 */
 	cciss_lookup_board_id(pdev, &board_id);
 	if (!ctlr_is_resettable(board_id)) {
+<<<<<<< HEAD
 		dev_warn(&pdev->dev, "Cannot reset Smart Array 640x "
 				"due to shared cache module.");
+=======
+		dev_warn(&pdev->dev, "Controller not resettable\n");
+>>>>>>> v4.9.227
 		return -ENODEV;
 	}
 

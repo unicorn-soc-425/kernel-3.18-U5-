@@ -86,6 +86,9 @@ struct mxs_pinctrl_soc_data {
 
 int mxs_pinctrl_probe(struct platform_device *pdev,
 		      struct mxs_pinctrl_soc_data *soc);
+<<<<<<< HEAD
 int mxs_pinctrl_remove(struct platform_device *pdev);
+=======
+>>>>>>> v4.9.227
 
 #endif /* __PINCTRL_MXS_H */

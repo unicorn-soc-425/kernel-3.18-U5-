@@ -428,7 +428,12 @@ static int ts72xx_wdt_probe(struct platform_device *pdev)
 
 static int ts72xx_wdt_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return misc_deregister(&ts72xx_wdt_miscdev);
+=======
+	misc_deregister(&ts72xx_wdt_miscdev);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver ts72xx_wdt_driver = {
@@ -436,7 +441,10 @@ static struct platform_driver ts72xx_wdt_driver = {
 	.remove		= ts72xx_wdt_remove,
 	.driver		= {
 		.name	= "ts72xx-wdt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

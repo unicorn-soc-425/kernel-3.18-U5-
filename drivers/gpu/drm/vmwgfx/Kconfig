@@ -6,6 +6,10 @@ config DRM_VMWGFX
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
 	select DRM_TTM
+<<<<<<< HEAD
+=======
+	select FB
+>>>>>>> v4.9.227
 	# Only needed for the transitional use of drm_crtc_init - can be removed
 	# again once vmwgfx sets up the primary plane itself.
 	select DRM_KMS_HELPER

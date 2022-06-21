@@ -60,7 +60,11 @@ struct __large_struct { unsigned long buf[100]; };
 	const __typeof__(*(ptr)) __user *__gu_addr = (ptr);	\
 	__chk_user_ptr(ptr);					\
 	__get_user_size(__gu_val, __gu_addr, (size), __gu_err);	\
+<<<<<<< HEAD
 	(x) = (__typeof__(*(ptr)))__gu_val;			\
+=======
+	(x) = (__force __typeof__(*(ptr)))__gu_val;		\
+>>>>>>> v4.9.227
 	__gu_err;						\
 })
 
@@ -71,7 +75,11 @@ struct __large_struct { unsigned long buf[100]; };
 	const __typeof__(*(ptr)) *__gu_addr = (ptr);			\
 	if (likely(access_ok(VERIFY_READ, __gu_addr, (size))))		\
 		__get_user_size(__gu_val, __gu_addr, (size), __gu_err);	\
+<<<<<<< HEAD
 	(x) = (__typeof__(*(ptr)))__gu_val;				\
+=======
+	(x) = (__force __typeof__(*(ptr)))__gu_val;			\
+>>>>>>> v4.9.227
 	__gu_err;							\
 })
 
@@ -192,8 +200,11 @@ struct exception_table_entry {
 #endif
 
 int fixup_exception(struct pt_regs *regs);
+<<<<<<< HEAD
 /* Returns 0 if exception not found and fixup.unit otherwise.  */
 unsigned long search_exception_table(unsigned long addr);
+=======
+>>>>>>> v4.9.227
 const struct exception_table_entry *search_exception_tables(unsigned long addr);
 
 extern void *set_exception_table_vec(unsigned int vec, void *handler);

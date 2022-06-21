@@ -42,6 +42,7 @@
 
 #define FUSE_HAS_REVISION_INFO	BIT(0)
 
+<<<<<<< HEAD
 enum speedo_idx {
 	SPEEDO_TEGRA30 = 0,
 	SPEEDO_TEGRA114,
@@ -151,6 +152,36 @@ static speedo_f __initdata speedo_tbl[] = {
 	[SPEEDO_TEGRA124]	= tegra124_init_speedo_data,
 };
 
+=======
+#if defined(CONFIG_ARCH_TEGRA_3x_SOC) || \
+    defined(CONFIG_ARCH_TEGRA_114_SOC) || \
+    defined(CONFIG_ARCH_TEGRA_124_SOC) || \
+    defined(CONFIG_ARCH_TEGRA_132_SOC) || \
+    defined(CONFIG_ARCH_TEGRA_210_SOC)
+static u32 tegra30_fuse_read_early(struct tegra_fuse *fuse, unsigned int offset)
+{
+	return readl_relaxed(fuse->base + FUSE_BEGIN + offset);
+}
+
+static u32 tegra30_fuse_read(struct tegra_fuse *fuse, unsigned int offset)
+{
+	u32 value;
+	int err;
+
+	err = clk_prepare_enable(fuse->clk);
+	if (err < 0) {
+		dev_err(fuse->dev, "failed to enable FUSE clock: %d\n", err);
+		return 0;
+	}
+
+	value = readl_relaxed(fuse->base + FUSE_BEGIN + offset);
+
+	clk_disable_unprepare(fuse->clk);
+
+	return value;
+}
+
+>>>>>>> v4.9.227
 static void __init tegra30_fuse_add_randomness(void)
 {
 	u32 randomness[12];
@@ -159,6 +190,7 @@ static void __init tegra30_fuse_add_randomness(void)
 	randomness[1] = tegra_read_straps();
 	randomness[2] = tegra_read_chipid();
 	randomness[3] = tegra_sku_info.cpu_process_id << 16;
+<<<<<<< HEAD
 	randomness[3] |= tegra_sku_info.core_process_id;
 	randomness[4] = tegra_sku_info.cpu_speedo_id << 16;
 	randomness[4] |= tegra_sku_info.soc_speedo_id;
@@ -169,10 +201,23 @@ static void __init tegra30_fuse_add_randomness(void)
 	randomness[9] = tegra30_fuse_readl(FUSE_WAFER_ID);
 	randomness[10] = tegra30_fuse_readl(FUSE_X_COORDINATE);
 	randomness[11] = tegra30_fuse_readl(FUSE_Y_COORDINATE);
+=======
+	randomness[3] |= tegra_sku_info.soc_process_id;
+	randomness[4] = tegra_sku_info.cpu_speedo_id << 16;
+	randomness[4] |= tegra_sku_info.soc_speedo_id;
+	randomness[5] = tegra_fuse_read_early(FUSE_VENDOR_CODE);
+	randomness[6] = tegra_fuse_read_early(FUSE_FAB_CODE);
+	randomness[7] = tegra_fuse_read_early(FUSE_LOT_CODE_0);
+	randomness[8] = tegra_fuse_read_early(FUSE_LOT_CODE_1);
+	randomness[9] = tegra_fuse_read_early(FUSE_WAFER_ID);
+	randomness[10] = tegra_fuse_read_early(FUSE_X_COORDINATE);
+	randomness[11] = tegra_fuse_read_early(FUSE_Y_COORDINATE);
+>>>>>>> v4.9.227
 
 	add_device_randomness(randomness, sizeof(randomness));
 }
 
+<<<<<<< HEAD
 static void __init legacy_fuse_init(void)
 {
 	switch (tegra_get_chip_id()) {
@@ -222,3 +267,71 @@ void __init tegra30_init_fuse_early(void)
 	speedo_tbl[fuse_info->speedo_idx](&tegra_sku_info);
 	tegra30_fuse_add_randomness();
 }
+=======
+static void __init tegra30_fuse_init(struct tegra_fuse *fuse)
+{
+	fuse->read_early = tegra30_fuse_read_early;
+	fuse->read = tegra30_fuse_read;
+
+	tegra_init_revision();
+	fuse->soc->speedo_init(&tegra_sku_info);
+	tegra30_fuse_add_randomness();
+}
+#endif
+
+#ifdef CONFIG_ARCH_TEGRA_3x_SOC
+static const struct tegra_fuse_info tegra30_fuse_info = {
+	.read = tegra30_fuse_read,
+	.size = 0x2a4,
+	.spare = 0x144,
+};
+
+const struct tegra_fuse_soc tegra30_fuse_soc = {
+	.init = tegra30_fuse_init,
+	.speedo_init = tegra30_init_speedo_data,
+	.info = &tegra30_fuse_info,
+};
+#endif
+
+#ifdef CONFIG_ARCH_TEGRA_114_SOC
+static const struct tegra_fuse_info tegra114_fuse_info = {
+	.read = tegra30_fuse_read,
+	.size = 0x2a0,
+	.spare = 0x180,
+};
+
+const struct tegra_fuse_soc tegra114_fuse_soc = {
+	.init = tegra30_fuse_init,
+	.speedo_init = tegra114_init_speedo_data,
+	.info = &tegra114_fuse_info,
+};
+#endif
+
+#if defined(CONFIG_ARCH_TEGRA_124_SOC) || defined(CONFIG_ARCH_TEGRA_132_SOC)
+static const struct tegra_fuse_info tegra124_fuse_info = {
+	.read = tegra30_fuse_read,
+	.size = 0x300,
+	.spare = 0x200,
+};
+
+const struct tegra_fuse_soc tegra124_fuse_soc = {
+	.init = tegra30_fuse_init,
+	.speedo_init = tegra124_init_speedo_data,
+	.info = &tegra124_fuse_info,
+};
+#endif
+
+#if defined(CONFIG_ARCH_TEGRA_210_SOC)
+static const struct tegra_fuse_info tegra210_fuse_info = {
+	.read = tegra30_fuse_read,
+	.size = 0x300,
+	.spare = 0x280,
+};
+
+const struct tegra_fuse_soc tegra210_fuse_soc = {
+	.init = tegra30_fuse_init,
+	.speedo_init = tegra210_init_speedo_data,
+	.info = &tegra210_fuse_info,
+};
+#endif
+>>>>>>> v4.9.227

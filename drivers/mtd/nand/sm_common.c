@@ -12,6 +12,7 @@
 #include <linux/sizes.h>
 #include "sm_common.h"
 
+<<<<<<< HEAD
 static struct nand_ecclayout nand_oob_sm = {
 	.eccbytes = 6,
 	.eccpos = {8, 9, 10, 13, 14, 15},
@@ -20,6 +21,49 @@ static struct nand_ecclayout nand_oob_sm = {
 		{.offset = 6 , .length = 2}, /* LBA1 */
 		{.offset = 11, .length = 2}  /* LBA2 */
 	}
+=======
+static int oob_sm_ooblayout_ecc(struct mtd_info *mtd, int section,
+				struct mtd_oob_region *oobregion)
+{
+	if (section > 1)
+		return -ERANGE;
+
+	oobregion->length = 3;
+	oobregion->offset = ((section + 1) * 8) - 3;
+
+	return 0;
+}
+
+static int oob_sm_ooblayout_free(struct mtd_info *mtd, int section,
+				 struct mtd_oob_region *oobregion)
+{
+	switch (section) {
+	case 0:
+		/* reserved */
+		oobregion->offset = 0;
+		oobregion->length = 4;
+		break;
+	case 1:
+		/* LBA1 */
+		oobregion->offset = 6;
+		oobregion->length = 2;
+		break;
+	case 2:
+		/* LBA2 */
+		oobregion->offset = 11;
+		oobregion->length = 2;
+		break;
+	default:
+		return -ERANGE;
+	}
+
+	return 0;
+}
+
+static const struct mtd_ooblayout_ops oob_sm_ops = {
+	.ecc = oob_sm_ooblayout_ecc,
+	.free = oob_sm_ooblayout_free,
+>>>>>>> v4.9.227
 };
 
 /* NOTE: This layout is is not compatabable with SmartMedia, */
@@ -28,6 +72,7 @@ static struct nand_ecclayout nand_oob_sm = {
 /* If you use smftl, it will bypass this and work correctly */
 /* If you not, then you break SmartMedia compliance anyway */
 
+<<<<<<< HEAD
 static struct nand_ecclayout nand_oob_sm_small = {
 	.eccbytes = 3,
 	.eccpos = {0, 1, 2},
@@ -37,6 +82,45 @@ static struct nand_ecclayout nand_oob_sm_small = {
 	}
 };
 
+=======
+static int oob_sm_small_ooblayout_ecc(struct mtd_info *mtd, int section,
+				      struct mtd_oob_region *oobregion)
+{
+	if (section)
+		return -ERANGE;
+
+	oobregion->length = 3;
+	oobregion->offset = 0;
+
+	return 0;
+}
+
+static int oob_sm_small_ooblayout_free(struct mtd_info *mtd, int section,
+				       struct mtd_oob_region *oobregion)
+{
+	switch (section) {
+	case 0:
+		/* reserved */
+		oobregion->offset = 3;
+		oobregion->length = 2;
+		break;
+	case 1:
+		/* LBA1 */
+		oobregion->offset = 6;
+		oobregion->length = 2;
+		break;
+	default:
+		return -ERANGE;
+	}
+
+	return 0;
+}
+
+static const struct mtd_ooblayout_ops oob_sm_small_ops = {
+	.ecc = oob_sm_small_ooblayout_ecc,
+	.free = oob_sm_small_ooblayout_free,
+};
+>>>>>>> v4.9.227
 
 static int sm_block_markbad(struct mtd_info *mtd, loff_t ofs)
 {
@@ -102,7 +186,11 @@ static struct nand_flash_dev nand_xd_flash_ids[] = {
 
 int sm_register_device(struct mtd_info *mtd, int smartmedia)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	int ret;
 
 	chip->options |= NAND_SKIP_BBTSCAN;
@@ -121,9 +209,15 @@ int sm_register_device(struct mtd_info *mtd, int smartmedia)
 
 	/* ECC layout */
 	if (mtd->writesize == SM_SECTOR_SIZE)
+<<<<<<< HEAD
 		chip->ecc.layout = &nand_oob_sm;
 	else if (mtd->writesize == SM_SMALL_PAGE)
 		chip->ecc.layout = &nand_oob_sm_small;
+=======
+		mtd_set_ooblayout(mtd, &oob_sm_ops);
+	else if (mtd->writesize == SM_SMALL_PAGE)
+		mtd_set_ooblayout(mtd, &oob_sm_small_ops);
+>>>>>>> v4.9.227
 	else
 		return -ENODEV;
 

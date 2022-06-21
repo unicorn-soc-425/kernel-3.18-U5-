@@ -46,6 +46,10 @@ SECTIONS {
 		__end_ivt_text = .;
 		TEXT_TEXT
 		SCHED_TEXT
+<<<<<<< HEAD
+=======
+		CPUIDLE_TEXT
+>>>>>>> v4.9.227
 		LOCK_TEXT
 		KPROBES_TEXT
 		*(.gnu.linkonce.t*)
@@ -136,6 +140,7 @@ SECTIONS {
 		__end___mckinley_e9_bundles = .;
 	}
 
+<<<<<<< HEAD
 #if defined(CONFIG_PARAVIRT)
 	. = ALIGN(16);
 	.paravirt_bundles : AT(ADDR(.paravirt_bundles) - LOAD_OFFSET) {
@@ -157,6 +162,8 @@ SECTIONS {
 	}
 #endif
 
+=======
+>>>>>>> v4.9.227
 #if defined(CONFIG_IA64_GENERIC)
 	/* Machine Vector */
 	. = ALIGN(16);

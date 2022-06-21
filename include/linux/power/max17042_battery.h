@@ -126,7 +126,18 @@ enum max17047_register {
 	MAX17047_QRTbl30	= 0x42,
 };
 
+<<<<<<< HEAD
 enum max170xx_chip_type {MAX17042, MAX17047};
+=======
+enum max170xx_chip_type {
+	MAXIM_DEVICE_TYPE_UNKNOWN	= 0,
+	MAXIM_DEVICE_TYPE_MAX17042,
+	MAXIM_DEVICE_TYPE_MAX17047,
+	MAXIM_DEVICE_TYPE_MAX17050,
+
+	MAXIM_DEVICE_TYPE_NUM
+};
+>>>>>>> v4.9.227
 
 /*
  * used for setting a register to a desired value
@@ -208,6 +219,13 @@ struct max17042_platform_data {
 	 * the datasheet although it can be changed by board designers.
 	 */
 	unsigned int r_sns;
+<<<<<<< HEAD
+=======
+	int         vmin;	/* in millivolts */
+	int         vmax;	/* in millivolts */
+	int         temp_min;	/* in tenths of degree Celsius */
+	int         temp_max;	/* in tenths of degree Celsius */
+>>>>>>> v4.9.227
 };
 
 #endif /* __MAX17042_BATTERY_H_ */

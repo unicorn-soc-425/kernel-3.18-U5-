@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2013-2014 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2013-2016  B.A.T.M.A.N. contributors:
+>>>>>>> v4.9.227
  *
  * Martin Hundebøll <martin@hundeboll.net>
  *
@@ -18,6 +22,18 @@
 #ifndef _NET_BATMAN_ADV_FRAGMENTATION_H_
 #define _NET_BATMAN_ADV_FRAGMENTATION_H_
 
+<<<<<<< HEAD
+=======
+#include "main.h"
+
+#include <linux/compiler.h>
+#include <linux/list.h>
+#include <linux/stddef.h>
+#include <linux/types.h>
+
+struct sk_buff;
+
+>>>>>>> v4.9.227
 void batadv_frag_purge_orig(struct batadv_orig_node *orig,
 			    bool (*check_cb)(struct batadv_frag_table_entry *));
 bool batadv_frag_skb_fwd(struct sk_buff *skb,
@@ -25,15 +41,25 @@ bool batadv_frag_skb_fwd(struct sk_buff *skb,
 			 struct batadv_orig_node *orig_node_src);
 bool batadv_frag_skb_buffer(struct sk_buff **skb,
 			    struct batadv_orig_node *orig_node);
+<<<<<<< HEAD
 bool batadv_frag_send_packet(struct sk_buff *skb,
 			     struct batadv_orig_node *orig_node,
 			     struct batadv_neigh_node *neigh_node);
+=======
+int batadv_frag_send_packet(struct sk_buff *skb,
+			    struct batadv_orig_node *orig_node,
+			    struct batadv_neigh_node *neigh_node);
+>>>>>>> v4.9.227
 
 /**
  * batadv_frag_check_entry - check if a list of fragments has timed out
  * @frags_entry: table entry to check
  *
+<<<<<<< HEAD
  * Returns true if the frags entry has timed out, false otherwise.
+=======
+ * Return: true if the frags entry has timed out, false otherwise.
+>>>>>>> v4.9.227
  */
 static inline bool
 batadv_frag_check_entry(struct batadv_frag_table_entry *frags_entry)
@@ -41,8 +67,12 @@ batadv_frag_check_entry(struct batadv_frag_table_entry *frags_entry)
 	if (!hlist_empty(&frags_entry->head) &&
 	    batadv_has_timed_out(frags_entry->timestamp, BATADV_FRAG_TIMEOUT))
 		return true;
+<<<<<<< HEAD
 	else
 		return false;
+=======
+	return false;
+>>>>>>> v4.9.227
 }
 
 #endif /* _NET_BATMAN_ADV_FRAGMENTATION_H_ */

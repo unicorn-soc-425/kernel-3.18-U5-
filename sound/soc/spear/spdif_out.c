@@ -354,7 +354,10 @@ static struct platform_driver spdif_out_driver = {
 	.probe		= spdif_out_probe,
 	.driver		= {
 		.name	= "spdif-out",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= SPDIF_OUT_DEV_PM_OPS,
 	},
 };

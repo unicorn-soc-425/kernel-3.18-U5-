@@ -107,6 +107,7 @@ static const struct m5602_sensor ov7660 = {
 	.stop = ov7660_stop,
 	.disconnect = ov7660_disconnect,
 };
+<<<<<<< HEAD
 
 static const unsigned char preinit_ov7660[][4] = {
 	{BRIDGE, M5602_XB_MCU_CLK_DIV, 0x02},
@@ -260,4 +261,6 @@ static const unsigned char init_ov7660[][4] = {
 	{BRIDGE, M5602_XB_SEN_CLK_DIV, 0x00},
 	{BRIDGE, M5602_XB_SEN_CLK_CTRL, 0xb0},
 };
+=======
+>>>>>>> v4.9.227
 #endif

@@ -7,7 +7,10 @@
  * published by the Free Software Foundation.
  */
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/module.h>
 

@@ -22,6 +22,9 @@ static const char * const imx50_dt_board_compat[] __initconst = {
 };
 
 DT_MACHINE_START(IMX50_DT, "Freescale i.MX50 (Device Tree Support)")
+<<<<<<< HEAD
 	.init_irq	= tzic_init_irq,
+=======
+>>>>>>> v4.9.227
 	.dt_compat	= imx50_dt_board_compat,
 MACHINE_END

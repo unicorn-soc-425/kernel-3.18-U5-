@@ -1,6 +1,10 @@
 config INTEL_MEI
 	tristate "Intel Management Engine Interface"
+<<<<<<< HEAD
 	depends on X86 && PCI && WATCHDOG_CORE
+=======
+	depends on X86 && PCI
+>>>>>>> v4.9.227
 	help
 	  The Intel Management Engine (Intel ME) provides Manageability,
 	  Security and Media services for system containing Intel chipsets.
@@ -12,7 +16,11 @@ config INTEL_MEI
 config INTEL_MEI_ME
 	tristate "ME Enabled Intel Chipsets"
 	select INTEL_MEI
+<<<<<<< HEAD
 	depends on X86 && PCI && WATCHDOG_CORE
+=======
+	depends on X86 && PCI
+>>>>>>> v4.9.227
 	help
 	  MEI support for ME Enabled Intel chipsets.
 
@@ -37,7 +45,11 @@ config INTEL_MEI_ME
 config INTEL_MEI_TXE
 	tristate "Intel Trusted Execution Environment with ME Interface"
 	select INTEL_MEI
+<<<<<<< HEAD
 	depends on X86 && PCI && WATCHDOG_CORE
+=======
+	depends on X86 && PCI
+>>>>>>> v4.9.227
 	help
 	  MEI Support for Trusted Execution Environment device on Intel SoCs
 

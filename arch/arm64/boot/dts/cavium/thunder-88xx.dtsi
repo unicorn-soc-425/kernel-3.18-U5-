@@ -354,10 +354,22 @@
 
 	timer {
 		compatible = "arm,armv8-timer";
+<<<<<<< HEAD
 		interrupts = <1 13 0xff01>,
 		             <1 14 0xff01>,
 		             <1 11 0xff01>,
 		             <1 10 0xff01>;
+=======
+		interrupts = <1 13 4>,
+		             <1 14 4>,
+		             <1 11 4>,
+		             <1 10 4>;
+	};
+
+	pmu {
+		compatible = "cavium,thunder-pmu", "arm,armv8-pmuv3";
+		interrupts = <1 7 4>;
+>>>>>>> v4.9.227
 	};
 
 	soc {
@@ -376,10 +388,25 @@
 		gic0: interrupt-controller@8010,00000000 {
 			compatible = "arm,gic-v3";
 			#interrupt-cells = <3>;
+<<<<<<< HEAD
+=======
+			#address-cells = <2>;
+			#size-cells = <2>;
+			ranges;
+>>>>>>> v4.9.227
 			interrupt-controller;
 			reg = <0x8010 0x00000000 0x0 0x010000>, /* GICD */
 			      <0x8010 0x80000000 0x0 0x600000>; /* GICR */
 			interrupts = <1 9 0xf04>;
+<<<<<<< HEAD
+=======
+
+			its: gic-its@8010,00020000 {
+				compatible = "arm,gic-v3-its";
+				msi-controller;
+				reg = <0x8010 0x20000 0x0 0x200000>;
+			};
+>>>>>>> v4.9.227
 		};
 
 		uaa0: serial@87e0,24000000 {

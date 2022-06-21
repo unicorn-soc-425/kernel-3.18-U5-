@@ -77,7 +77,11 @@ static int wait_phy_eeprom_ready(struct usbnet *dev, int phy)
 		int ret;
 
 		udelay(1);
+<<<<<<< HEAD
 		ret = sr_read_reg(dev, EPCR, &tmp);
+=======
+		ret = sr_read_reg(dev, SR_EPCR, &tmp);
+>>>>>>> v4.9.227
 		if (ret < 0)
 			return ret;
 
@@ -98,15 +102,25 @@ static int sr_share_read_word(struct usbnet *dev, int phy, u8 reg,
 
 	mutex_lock(&dev->phy_mutex);
 
+<<<<<<< HEAD
 	sr_write_reg(dev, EPAR, phy ? (reg | EPAR_PHY_ADR) : reg);
 	sr_write_reg(dev, EPCR, phy ? (EPCR_EPOS | EPCR_ERPRR) : EPCR_ERPRR);
+=======
+	sr_write_reg(dev, SR_EPAR, phy ? (reg | EPAR_PHY_ADR) : reg);
+	sr_write_reg(dev, SR_EPCR, phy ? (EPCR_EPOS | EPCR_ERPRR) : EPCR_ERPRR);
+>>>>>>> v4.9.227
 
 	ret = wait_phy_eeprom_ready(dev, phy);
 	if (ret < 0)
 		goto out_unlock;
 
+<<<<<<< HEAD
 	sr_write_reg(dev, EPCR, 0x0);
 	ret = sr_read(dev, EPDR, 2, value);
+=======
+	sr_write_reg(dev, SR_EPCR, 0x0);
+	ret = sr_read(dev, SR_EPDR, 2, value);
+>>>>>>> v4.9.227
 
 	netdev_dbg(dev->net, "read shared %d 0x%02x returned 0x%04x, %d\n",
 		   phy, reg, *value, ret);
@@ -123,19 +137,32 @@ static int sr_share_write_word(struct usbnet *dev, int phy, u8 reg,
 
 	mutex_lock(&dev->phy_mutex);
 
+<<<<<<< HEAD
 	ret = sr_write(dev, EPDR, 2, &value);
 	if (ret < 0)
 		goto out_unlock;
 
 	sr_write_reg(dev, EPAR, phy ? (reg | EPAR_PHY_ADR) : reg);
 	sr_write_reg(dev, EPCR, phy ? (EPCR_WEP | EPCR_EPOS | EPCR_ERPRW) :
+=======
+	ret = sr_write(dev, SR_EPDR, 2, &value);
+	if (ret < 0)
+		goto out_unlock;
+
+	sr_write_reg(dev, SR_EPAR, phy ? (reg | EPAR_PHY_ADR) : reg);
+	sr_write_reg(dev, SR_EPCR, phy ? (EPCR_WEP | EPCR_EPOS | EPCR_ERPRW) :
+>>>>>>> v4.9.227
 		    (EPCR_WEP | EPCR_ERPRW));
 
 	ret = wait_phy_eeprom_ready(dev, phy);
 	if (ret < 0)
 		goto out_unlock;
 
+<<<<<<< HEAD
 	sr_write_reg(dev, EPCR, 0x0);
+=======
+	sr_write_reg(dev, SR_EPCR, 0x0);
+>>>>>>> v4.9.227
 
 out_unlock:
 	mutex_unlock(&dev->phy_mutex);
@@ -188,7 +215,11 @@ static int sr_mdio_read(struct net_device *netdev, int phy_id, int loc)
 	if (loc == MII_BMSR) {
 		u8 value;
 
+<<<<<<< HEAD
 		sr_read_reg(dev, NSR, &value);
+=======
+		sr_read_reg(dev, SR_NSR, &value);
+>>>>>>> v4.9.227
 		if (value & NSR_LINKST)
 			rc = 1;
 	}
@@ -228,7 +259,11 @@ static u32 sr9700_get_link(struct net_device *netdev)
 	int rc = 0;
 
 	/* Get the Link Status directly */
+<<<<<<< HEAD
 	sr_read_reg(dev, NSR, &value);
+=======
+	sr_read_reg(dev, SR_NSR, &value);
+>>>>>>> v4.9.227
 	if (value & NSR_LINKST)
 		rc = 1;
 
@@ -281,8 +316,13 @@ static void sr9700_set_multicast(struct net_device *netdev)
 		}
 	}
 
+<<<<<<< HEAD
 	sr_write_async(dev, MAR, SR_MCAST_SIZE, hashes);
 	sr_write_reg_async(dev, RCR, rx_ctl);
+=======
+	sr_write_async(dev, SR_MAR, SR_MCAST_SIZE, hashes);
+	sr_write_reg_async(dev, SR_RCR, rx_ctl);
+>>>>>>> v4.9.227
 }
 
 static int sr9700_set_mac_address(struct net_device *netdev, void *p)
@@ -291,13 +331,21 @@ static int sr9700_set_mac_address(struct net_device *netdev, void *p)
 	struct sockaddr *addr = p;
 
 	if (!is_valid_ether_addr(addr->sa_data)) {
+<<<<<<< HEAD
 		netdev_err(netdev, "not setting invalid mac address %pKM\n",
+=======
+		netdev_err(netdev, "not setting invalid mac address %pM\n",
+>>>>>>> v4.9.227
 			   addr->sa_data);
 		return -EINVAL;
 	}
 
 	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
+<<<<<<< HEAD
 	sr_write_async(dev, PAR, 6, netdev->dev_addr);
+=======
+	sr_write_async(dev, SR_PAR, 6, netdev->dev_addr);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -340,7 +388,11 @@ static int sr9700_bind(struct usbnet *dev, struct usb_interface *intf)
 	mii->phy_id_mask = 0x1f;
 	mii->reg_num_mask = 0x1f;
 
+<<<<<<< HEAD
 	sr_write_reg(dev, NCR, NCR_RST);
+=======
+	sr_write_reg(dev, SR_NCR, NCR_RST);
+>>>>>>> v4.9.227
 	udelay(20);
 
 	/* read MAC
@@ -348,17 +400,28 @@ static int sr9700_bind(struct usbnet *dev, struct usb_interface *intf)
 	 * EEPROM automatically to PAR. In case there is no EEPROM externally,
 	 * a default MAC address is stored in PAR for making chip work properly.
 	 */
+<<<<<<< HEAD
 	if (sr_read(dev, PAR, ETH_ALEN, netdev->dev_addr) < 0) {
+=======
+	if (sr_read(dev, SR_PAR, ETH_ALEN, netdev->dev_addr) < 0) {
+>>>>>>> v4.9.227
 		netdev_err(netdev, "Error reading MAC address\n");
 		ret = -ENODEV;
 		goto out;
 	}
 
 	/* power up and reset phy */
+<<<<<<< HEAD
 	sr_write_reg(dev, PRR, PRR_PHY_RST);
 	/* at least 10ms, here 20ms for safe */
 	mdelay(20);
 	sr_write_reg(dev, PRR, 0);
+=======
+	sr_write_reg(dev, SR_PRR, PRR_PHY_RST);
+	/* at least 10ms, here 20ms for safe */
+	mdelay(20);
+	sr_write_reg(dev, SR_PRR, 0);
+>>>>>>> v4.9.227
 	/* at least 1ms, here 2ms for reading right register */
 	udelay(2 * 1000);
 
@@ -456,6 +519,7 @@ static struct sk_buff *sr9700_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 
 	len = skb->len;
 
+<<<<<<< HEAD
 	if (skb_headroom(skb) < SR_TX_OVERHEAD) {
 		struct sk_buff *skb2;
 
@@ -464,6 +528,11 @@ static struct sk_buff *sr9700_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 		skb = skb2;
 		if (!skb)
 			return NULL;
+=======
+	if (skb_cow_head(skb, SR_TX_OVERHEAD)) {
+		dev_kfree_skb_any(skb);
+		return NULL;
+>>>>>>> v4.9.227
 	}
 
 	__skb_push(skb, SR_TX_OVERHEAD);

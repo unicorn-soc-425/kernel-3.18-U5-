@@ -17,7 +17,11 @@
 int input_event_from_user(const char __user *buffer,
 			  struct input_event *event)
 {
+<<<<<<< HEAD
 	if (INPUT_COMPAT_TEST && !COMPAT_USE_64BIT_TIME) {
+=======
+	if (in_compat_syscall() && !COMPAT_USE_64BIT_TIME) {
+>>>>>>> v4.9.227
 		struct input_event_compat compat_event;
 
 		if (copy_from_user(&compat_event, buffer,
@@ -41,7 +45,11 @@ int input_event_from_user(const char __user *buffer,
 int input_event_to_user(char __user *buffer,
 			const struct input_event *event)
 {
+<<<<<<< HEAD
 	if (INPUT_COMPAT_TEST && !COMPAT_USE_64BIT_TIME) {
+=======
+	if (in_compat_syscall() && !COMPAT_USE_64BIT_TIME) {
+>>>>>>> v4.9.227
 		struct input_event_compat compat_event;
 
 		compat_event.time.tv_sec = event->time.tv_sec;
@@ -65,7 +73,11 @@ int input_event_to_user(char __user *buffer,
 int input_ff_effect_from_user(const char __user *buffer, size_t size,
 			      struct ff_effect *effect)
 {
+<<<<<<< HEAD
 	if (INPUT_COMPAT_TEST) {
+=======
+	if (in_compat_syscall()) {
+>>>>>>> v4.9.227
 		struct ff_effect_compat *compat_effect;
 
 		if (size != sizeof(struct ff_effect_compat))

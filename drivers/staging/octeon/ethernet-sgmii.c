@@ -1,14 +1,20 @@
+<<<<<<< HEAD
 /**********************************************************************
  * Author: Cavium Networks
  *
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
+=======
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+>>>>>>> v4.9.227
  *
  * Copyright (c) 2003-2007 Cavium Networks
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This file is distributed in the hope that it will be useful, but
  * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
@@ -24,6 +30,10 @@
  * This file may also be available under a different license from Cavium.
  * Contact Cavium Networks for more information
 **********************************************************************/
+=======
+ */
+
+>>>>>>> v4.9.227
 #include <linux/phy.h>
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -41,6 +51,7 @@
 
 #include <asm/octeon/cvmx-gmxx-defs.h>
 
+<<<<<<< HEAD
 static void cvm_oct_sgmii_poll(struct net_device *dev)
 {
 	struct octeon_ethernet *priv = netdev_priv(dev);
@@ -124,18 +135,29 @@ int cvm_oct_sgmii_stop(struct net_device *dev)
 	gmx_cfg.s.en = 0;
 	cvmx_write_csr(CVMX_GMXX_PRTX_CFG(index, interface), gmx_cfg.u64);
 	return cvm_oct_common_stop(dev);
+=======
+int cvm_oct_sgmii_open(struct net_device *dev)
+{
+	return cvm_oct_common_open(dev, cvm_oct_link_poll);
+>>>>>>> v4.9.227
 }
 
 int cvm_oct_sgmii_init(struct net_device *dev)
 {
 	cvm_oct_common_init(dev);
+<<<<<<< HEAD
 	dev->netdev_ops->ndo_stop(dev);
+=======
+>>>>>>> v4.9.227
 
 	/* FIXME: Need autoneg logic */
 	return 0;
 }
+<<<<<<< HEAD
 
 void cvm_oct_sgmii_uninit(struct net_device *dev)
 {
 	cvm_oct_common_uninit(dev);
 }
+=======
+>>>>>>> v4.9.227

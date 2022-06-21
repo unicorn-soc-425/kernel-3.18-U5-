@@ -5,7 +5,11 @@
  * Written by Ralf Baechle and Andreas Busse, modified for DECstation
  * support by Paul Antoine and Harald Koerfgen.
  *
+<<<<<<< HEAD
  * completly rewritten:
+=======
+ * completely rewritten:
+>>>>>>> v4.9.227
  * Copyright (C) 1998 Harald Koerfgen
  *
  * Rewritten extensively for controller-driven IRQ support
@@ -147,6 +151,7 @@
 		 * Find irq with highest priority
 		 */
 		# open coded PTR_LA t1, cpu_mask_nr_tbl
+<<<<<<< HEAD
 #if (_MIPS_SZPTR == 32)
 		# open coded la t1, cpu_mask_nr_tbl
 		lui	t1, %hi(cpu_mask_nr_tbl)
@@ -164,6 +169,14 @@
 		dsll	t1, 32
 		daddu	t1, t1, AT
 		.set	pop
+=======
+#if defined(CONFIG_32BIT) || defined(KBUILD_64BIT_SYM32)
+		# open coded la t1, cpu_mask_nr_tbl
+		lui	t1, %hi(cpu_mask_nr_tbl)
+		addiu	t1, %lo(cpu_mask_nr_tbl)
+#else
+#error GCC `-msym32' option required for 64-bit DECstation builds
+>>>>>>> v4.9.227
 #endif
 1:		lw	t2,(t1)
 		nop
@@ -214,6 +227,7 @@
 		 * Find irq with highest priority
 		 */
 		# open coded PTR_LA t1,asic_mask_nr_tbl
+<<<<<<< HEAD
 #if (_MIPS_SZPTR == 32)
 		# open coded la t1, asic_mask_nr_tbl
 		lui	t1, %hi(asic_mask_nr_tbl)
@@ -231,6 +245,14 @@
 		dsll	t1, 32
 		daddu	t1, t1, AT
 		.set	pop
+=======
+#if defined(CONFIG_32BIT) || defined(KBUILD_64BIT_SYM32)
+		# open coded la t1, asic_mask_nr_tbl
+		lui	t1, %hi(asic_mask_nr_tbl)
+		addiu	t1, %lo(asic_mask_nr_tbl)
+#else
+#error GCC `-msym32' option required for 64-bit DECstation builds
+>>>>>>> v4.9.227
 #endif
 2:		lw	t2,(t1)
 		nop
@@ -303,8 +325,18 @@ handle_it:
 
 #ifdef CONFIG_32BIT
 fpu:
+<<<<<<< HEAD
 		j	handle_fpe_int
 		 nop
+=======
+		lw	t0,fpu_kstat_irq
+		nop
+		lw	t1,(t0)
+		nop
+		addu	t1,1
+		j	handle_fpe_int
+		 sw	t1,(t0)
+>>>>>>> v4.9.227
 #endif
 
 spurious:

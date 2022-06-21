@@ -36,8 +36,13 @@ static int afs_init_lock_manager(void)
 	if (!afs_lock_manager) {
 		mutex_lock(&afs_lock_manager_mutex);
 		if (!afs_lock_manager) {
+<<<<<<< HEAD
 			afs_lock_manager =
 				create_singlethread_workqueue("kafs_lockd");
+=======
+			afs_lock_manager = alloc_workqueue("kafs_lockd",
+							   WQ_MEM_RECLAIM, 0);
+>>>>>>> v4.9.227
 			if (!afs_lock_manager)
 				ret = -ENOMEM;
 		}
@@ -483,7 +488,11 @@ static int afs_do_getlk(struct file *file, struct file_lock *fl)
 
 	fl->fl_type = F_UNLCK;
 
+<<<<<<< HEAD
 	mutex_lock(&vnode->vfs_inode.i_mutex);
+=======
+	inode_lock(&vnode->vfs_inode);
+>>>>>>> v4.9.227
 
 	/* check local lock records first */
 	ret = 0;
@@ -505,7 +514,11 @@ static int afs_do_getlk(struct file *file, struct file_lock *fl)
 	}
 
 error:
+<<<<<<< HEAD
 	mutex_unlock(&vnode->vfs_inode.i_mutex);
+=======
+	inode_unlock(&vnode->vfs_inode);
+>>>>>>> v4.9.227
 	_leave(" = %d [%hd]", ret, fl->fl_type);
 	return ret;
 }

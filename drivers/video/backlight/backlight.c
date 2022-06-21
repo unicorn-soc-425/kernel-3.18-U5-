@@ -134,7 +134,11 @@ static ssize_t bl_power_store(struct device *dev, struct device_attribute *attr,
 {
 	int rc;
 	struct backlight_device *bd = to_backlight_device(dev);
+<<<<<<< HEAD
 	unsigned long power;
+=======
+	unsigned long power, old_power;
+>>>>>>> v4.9.227
 
 	rc = kstrtoul(buf, 0, &power);
 	if (rc)
@@ -145,10 +149,23 @@ static ssize_t bl_power_store(struct device *dev, struct device_attribute *attr,
 	if (bd->ops) {
 		pr_debug("set power to %lu\n", power);
 		if (bd->props.power != power) {
+<<<<<<< HEAD
 			bd->props.power = power;
 			backlight_update_status(bd);
 		}
 		rc = count;
+=======
+			old_power = bd->props.power;
+			bd->props.power = power;
+			rc = backlight_update_status(bd);
+			if (rc)
+				bd->props.power = old_power;
+			else
+				rc = count;
+		} else {
+			rc = count;
+		}
+>>>>>>> v4.9.227
 	}
 	mutex_unlock(&bd->ops_lock);
 
@@ -164,6 +181,32 @@ static ssize_t brightness_show(struct device *dev,
 	return sprintf(buf, "%d\n", bd->props.brightness);
 }
 
+<<<<<<< HEAD
+=======
+int backlight_device_set_brightness(struct backlight_device *bd,
+				    unsigned long brightness)
+{
+	int rc = -ENXIO;
+
+	mutex_lock(&bd->ops_lock);
+	if (bd->ops) {
+		if (brightness > bd->props.max_brightness)
+			rc = -EINVAL;
+		else {
+			pr_debug("set brightness to %lu\n", brightness);
+			bd->props.brightness = brightness;
+			rc = backlight_update_status(bd);
+		}
+	}
+	mutex_unlock(&bd->ops_lock);
+
+	backlight_generate_event(bd, BACKLIGHT_UPDATE_SYSFS);
+
+	return rc;
+}
+EXPORT_SYMBOL(backlight_device_set_brightness);
+
+>>>>>>> v4.9.227
 static ssize_t brightness_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
@@ -175,6 +218,7 @@ static ssize_t brightness_store(struct device *dev,
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	rc = -ENXIO;
 
 	mutex_lock(&bd->ops_lock);
@@ -193,6 +237,11 @@ static ssize_t brightness_store(struct device *dev,
 	backlight_generate_event(bd, BACKLIGHT_UPDATE_SYSFS);
 
 	return rc;
+=======
+	rc = backlight_device_set_brightness(bd, brightness);
+
+	return rc ? rc : count;
+>>>>>>> v4.9.227
 }
 static DEVICE_ATTR_RW(brightness);
 
@@ -380,7 +429,11 @@ struct backlight_device *backlight_device_register(const char *name,
 }
 EXPORT_SYMBOL(backlight_device_register);
 
+<<<<<<< HEAD
 bool backlight_device_registered(enum backlight_type type)
+=======
+struct backlight_device *backlight_device_get_by_type(enum backlight_type type)
+>>>>>>> v4.9.227
 {
 	bool found = false;
 	struct backlight_device *bd;
@@ -394,9 +447,15 @@ bool backlight_device_registered(enum backlight_type type)
 	}
 	mutex_unlock(&backlight_dev_list_mutex);
 
+<<<<<<< HEAD
 	return found;
 }
 EXPORT_SYMBOL(backlight_device_registered);
+=======
+	return found ? bd : NULL;
+}
+EXPORT_SYMBOL(backlight_device_get_by_type);
+>>>>>>> v4.9.227
 
 /**
  * backlight_device_unregister - unregisters a backlight device object.

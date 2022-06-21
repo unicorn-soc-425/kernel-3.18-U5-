@@ -2,7 +2,11 @@
  * drivers/misc/spear13xx_pcie_gadget.c
  *
  * Copyright (C) 2010 ST Microelectronics
+<<<<<<< HEAD
  * Pratyush Anand<pratyush.anand@st.com>
+=======
+ * Pratyush Anand<pratyush.anand@gmail.com>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -220,11 +224,25 @@ static irqreturn_t spear_pcie_gadget_irq(int irq, void *dev_id)
 /*
  * configfs interfaces show/store functions
  */
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_link(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
 {
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+=======
+
+static struct pcie_gadget_target *to_target(struct config_item *item)
+{
+	return item ?
+		container_of(to_configfs_subsystem(to_config_group(item)),
+				struct pcie_gadget_target, subsys) : NULL;
+}
+
+static ssize_t pcie_gadget_link_show(struct config_item *item, char *buf)
+{
+	struct pcie_app_reg __iomem *app_reg = to_target(item)->va_app_base;
+>>>>>>> v4.9.227
 
 	if (readl(&app_reg->app_status_1) & ((u32)1 << XMLH_LINK_UP_ID))
 		return sprintf(buf, "UP");
@@ -232,11 +250,18 @@ static ssize_t pcie_gadget_show_link(
 		return sprintf(buf, "DOWN");
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_link(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
 {
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+=======
+static ssize_t pcie_gadget_link_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct pcie_app_reg __iomem *app_reg = to_target(item)->va_app_base;
+>>>>>>> v4.9.227
 
 	if (sysfs_streq(buf, "UP"))
 		writel(readl(&app_reg->app_ctrl_0) | (1 << APP_LTSSM_ENABLE_ID),
@@ -250,6 +275,7 @@ static ssize_t pcie_gadget_store_link(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_int_type(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
@@ -261,6 +287,17 @@ static ssize_t pcie_gadget_store_int_type(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
 {
+=======
+static ssize_t pcie_gadget_int_type_show(struct config_item *item, char *buf)
+{
+	return sprintf(buf, "%s", to_target(item)->int_type);
+}
+
+static ssize_t pcie_gadget_int_type_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+>>>>>>> v4.9.227
 	u32 cap, vec, flags;
 	ulong vector;
 
@@ -288,11 +325,18 @@ static ssize_t pcie_gadget_store_int_type(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_no_of_msi(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
 {
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+=======
+static ssize_t pcie_gadget_no_of_msi_show(struct config_item *item, char *buf)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+	struct pcie_app_reg __iomem *app_reg = to_target(item)->va_app_base;
+>>>>>>> v4.9.227
 	u32 cap, vec, flags;
 	ulong vector;
 
@@ -313,13 +357,21 @@ static ssize_t pcie_gadget_show_no_of_msi(
 	return sprintf(buf, "%lu", vector);
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_no_of_msi(
 		struct spear_pcie_gadget_config *config,
+=======
+static ssize_t pcie_gadget_no_of_msi_store(struct config_item *item,
+>>>>>>> v4.9.227
 		const char *buf, size_t count)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = kstrtoul(buf, 0, &config->requested_msi);
+=======
+	ret = kstrtoul(buf, 0, &to_target(item)->requested_msi);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -329,11 +381,18 @@ static ssize_t pcie_gadget_store_no_of_msi(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_inta(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
 {
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+=======
+static ssize_t pcie_gadget_inta_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct pcie_app_reg __iomem *app_reg = to_target(item)->va_app_base;
+>>>>>>> v4.9.227
 	ulong en;
 	int ret;
 
@@ -351,10 +410,17 @@ static ssize_t pcie_gadget_store_inta(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_send_msi(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
 {
+=======
+static ssize_t pcie_gadget_send_msi_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+>>>>>>> v4.9.227
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
 	ulong vector;
 	u32 ven_msi;
@@ -388,6 +454,7 @@ static ssize_t pcie_gadget_store_send_msi(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_vendor_id(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
@@ -395,12 +462,23 @@ static ssize_t pcie_gadget_show_vendor_id(
 	u32 id;
 
 	spear_dbi_read_reg(config, PCI_VENDOR_ID, 2, &id);
+=======
+static ssize_t pcie_gadget_vendor_id_show(struct config_item *item, char *buf)
+{
+	u32 id;
+
+	spear_dbi_read_reg(to_target(item), PCI_VENDOR_ID, 2, &id);
+>>>>>>> v4.9.227
 
 	return sprintf(buf, "%x", id);
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_vendor_id(
 		struct spear_pcie_gadget_config *config,
+=======
+static ssize_t pcie_gadget_vendor_id_store(struct config_item *item,
+>>>>>>> v4.9.227
 		const char *buf, size_t count)
 {
 	ulong id;
@@ -410,11 +488,16 @@ static ssize_t pcie_gadget_store_vendor_id(
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	spear_dbi_write_reg(config, PCI_VENDOR_ID, 2, id);
+=======
+	spear_dbi_write_reg(to_target(item), PCI_VENDOR_ID, 2, id);
+>>>>>>> v4.9.227
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_device_id(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
@@ -422,12 +505,23 @@ static ssize_t pcie_gadget_show_device_id(
 	u32 id;
 
 	spear_dbi_read_reg(config, PCI_DEVICE_ID, 2, &id);
+=======
+static ssize_t pcie_gadget_device_id_show(struct config_item *item, char *buf)
+{
+	u32 id;
+
+	spear_dbi_read_reg(to_target(item), PCI_DEVICE_ID, 2, &id);
+>>>>>>> v4.9.227
 
 	return sprintf(buf, "%x", id);
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_device_id(
 		struct spear_pcie_gadget_config *config,
+=======
+static ssize_t pcie_gadget_device_id_store(struct config_item *item,
+>>>>>>> v4.9.227
 		const char *buf, size_t count)
 {
 	ulong id;
@@ -437,11 +531,16 @@ static ssize_t pcie_gadget_store_device_id(
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	spear_dbi_write_reg(config, PCI_DEVICE_ID, 2, id);
+=======
+	spear_dbi_write_reg(to_target(item), PCI_DEVICE_ID, 2, id);
+>>>>>>> v4.9.227
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_bar0_size(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
@@ -453,6 +552,17 @@ static ssize_t pcie_gadget_store_bar0_size(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
 {
+=======
+static ssize_t pcie_gadget_bar0_size_show(struct config_item *item, char *buf)
+{
+	return sprintf(buf, "%lx", to_target(item)->bar0_size);
+}
+
+static ssize_t pcie_gadget_bar0_size_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+>>>>>>> v4.9.227
 	ulong size;
 	u32 pos, pos1;
 	u32 no_of_bit = 0;
@@ -489,21 +599,35 @@ static ssize_t pcie_gadget_store_bar0_size(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_bar0_address(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
 {
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+=======
+static ssize_t pcie_gadget_bar0_address_show(struct config_item *item,
+		char *buf)
+{
+	struct pcie_app_reg __iomem *app_reg = to_target(item)->va_app_base;
+>>>>>>> v4.9.227
 
 	u32 address = readl(&app_reg->pim0_mem_addr_start);
 
 	return sprintf(buf, "%x", address);
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_bar0_address(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
 {
+=======
+static ssize_t pcie_gadget_bar0_address_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+>>>>>>> v4.9.227
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
 	ulong address;
 	int ret;
@@ -524,6 +648,7 @@ static ssize_t pcie_gadget_store_bar0_address(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_bar0_rw_offset(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
@@ -533,6 +658,15 @@ static ssize_t pcie_gadget_show_bar0_rw_offset(
 
 static ssize_t pcie_gadget_store_bar0_rw_offset(
 		struct spear_pcie_gadget_config *config,
+=======
+static ssize_t pcie_gadget_bar0_rw_offset_show(struct config_item *item,
+		char *buf)
+{
+	return sprintf(buf, "%lx", to_target(item)->bar0_rw_offset);
+}
+
+static ssize_t pcie_gadget_bar0_rw_offset_store(struct config_item *item,
+>>>>>>> v4.9.227
 		const char *buf, size_t count)
 {
 	ulong offset;
@@ -545,15 +679,25 @@ static ssize_t pcie_gadget_store_bar0_rw_offset(
 	if (offset % 4)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	config->bar0_rw_offset = offset;
+=======
+	to_target(item)->bar0_rw_offset = offset;
+>>>>>>> v4.9.227
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_bar0_data(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
 {
+=======
+static ssize_t pcie_gadget_bar0_data_show(struct config_item *item, char *buf)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+>>>>>>> v4.9.227
 	ulong data;
 
 	if (!config->va_bar0_address)
@@ -564,10 +708,17 @@ static ssize_t pcie_gadget_show_bar0_data(
 	return sprintf(buf, "%lx", data);
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_bar0_data(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
 {
+=======
+static ssize_t pcie_gadget_bar0_data_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+>>>>>>> v4.9.227
 	ulong data;
 	int ret;
 
@@ -583,6 +734,7 @@ static ssize_t pcie_gadget_store_bar0_data(
 	return count;
 }
 
+<<<<<<< HEAD
 /*
  * Attribute definitions.
  */
@@ -674,6 +826,37 @@ static struct configfs_item_operations pcie_gadget_target_item_ops = {
 static struct config_item_type pcie_gadget_target_type = {
 	.ct_attrs		= pcie_gadget_target_attrs,
 	.ct_item_ops		= &pcie_gadget_target_item_ops,
+=======
+CONFIGFS_ATTR(pcie_gadget_, link);
+CONFIGFS_ATTR(pcie_gadget_, int_type);
+CONFIGFS_ATTR(pcie_gadget_, no_of_msi);
+CONFIGFS_ATTR_WO(pcie_gadget_, inta);
+CONFIGFS_ATTR_WO(pcie_gadget_, send_msi);
+CONFIGFS_ATTR(pcie_gadget_, vendor_id);
+CONFIGFS_ATTR(pcie_gadget_, device_id);
+CONFIGFS_ATTR(pcie_gadget_, bar0_size);
+CONFIGFS_ATTR(pcie_gadget_, bar0_address);
+CONFIGFS_ATTR(pcie_gadget_, bar0_rw_offset);
+CONFIGFS_ATTR(pcie_gadget_, bar0_data);
+
+static struct configfs_attribute *pcie_gadget_target_attrs[] = {
+	&pcie_gadget_attr_link,
+	&pcie_gadget_attr_int_type,
+	&pcie_gadget_attr_no_of_msi,
+	&pcie_gadget_attr_inta,
+	&pcie_gadget_attr_send_msi,
+	&pcie_gadget_attr_vendor_id,
+	&pcie_gadget_attr_device_id,
+	&pcie_gadget_attr_bar0_size,
+	&pcie_gadget_attr_bar0_address,
+	&pcie_gadget_attr_bar0_rw_offset,
+	&pcie_gadget_attr_bar0_data,
+	NULL,
+};
+
+static struct config_item_type pcie_gadget_target_type = {
+	.ct_attrs		= pcie_gadget_target_attrs,
+>>>>>>> v4.9.227
 	.ct_owner		= THIS_MODULE,
 };
 

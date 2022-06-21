@@ -33,11 +33,20 @@
 
 #define pop_0()	{ FPU_settag0(TAG_Empty); top++; }
 
+<<<<<<< HEAD
 static u_char const type_table[32] = {
 	_PUSH_, _PUSH_, _PUSH_, _PUSH_,
 	_null_, _null_, _null_, _null_,
 	_REG0_, _REG0_, _REG0_, _REG0_,
 	_REG0_, _REG0_, _REG0_, _REG0_,
+=======
+/* index is a 5-bit value: (3-bit FPU_modrm.reg field | opcode[2,1]) */
+static u_char const type_table[32] = {
+	_PUSH_, _PUSH_, _PUSH_, _PUSH_, /* /0: d9:fld f32,  db:fild m32,  dd:fld f64,  df:fild m16 */
+	_null_, _REG0_, _REG0_, _REG0_, /* /1: d9:undef,    db,dd,df:fisttp m32/64/16 */
+	_REG0_, _REG0_, _REG0_, _REG0_, /* /2: d9:fst f32,  db:fist m32,  dd:fst f64,  df:fist m16 */
+	_REG0_, _REG0_, _REG0_, _REG0_, /* /3: d9:fstp f32, db:fistp m32, dd:fstp f64, df:fistp m16 */
+>>>>>>> v4.9.227
 	_NONE_, _null_, _NONE_, _PUSH_,
 	_NONE_, _PUSH_, _null_, _PUSH_,
 	_NONE_, _null_, _NONE_, _REG0_,
@@ -45,15 +54,29 @@ static u_char const type_table[32] = {
 };
 
 u_char const data_sizes_16[32] = {
+<<<<<<< HEAD
 	4, 4, 8, 2, 0, 0, 0, 0,
 	4, 4, 8, 2, 4, 4, 8, 2,
+=======
+	4, 4, 8, 2,
+	0, 4, 8, 2, /* /1: d9:undef, db,dd,df:fisttp */
+	4, 4, 8, 2,
+	4, 4, 8, 2,
+>>>>>>> v4.9.227
 	14, 0, 94, 10, 2, 10, 0, 8,
 	14, 0, 94, 10, 2, 10, 2, 8
 };
 
 static u_char const data_sizes_32[32] = {
+<<<<<<< HEAD
 	4, 4, 8, 2, 0, 0, 0, 0,
 	4, 4, 8, 2, 4, 4, 8, 2,
+=======
+	4, 4, 8, 2,
+	0, 4, 8, 2, /* /1: d9:undef, db,dd,df:fisttp */
+	4, 4, 8, 2,
+	4, 4, 8, 2,
+>>>>>>> v4.9.227
 	28, 0, 108, 10, 2, 10, 0, 8,
 	28, 0, 108, 10, 2, 10, 2, 8
 };
@@ -65,6 +88,10 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 	FPU_REG *st0_ptr;
 	u_char st0_tag = TAG_Empty;	/* This is just to stop a gcc warning. */
 	u_char loaded_tag;
+<<<<<<< HEAD
+=======
+	int sv_cw;
+>>>>>>> v4.9.227
 
 	st0_ptr = NULL;		/* Initialized just to stop compiler warnings. */
 
@@ -111,7 +138,12 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 	}
 
 	switch (type) {
+<<<<<<< HEAD
 	case 000:		/* fld m32real */
+=======
+	/* type is a 5-bit value: (3-bit FPU_modrm.reg field | opcode[2,1]) */
+	case 000:		/* fld m32real (d9 /0) */
+>>>>>>> v4.9.227
 		clear_C1();
 		loaded_tag =
 		    FPU_load_single((float __user *)data_address, &loaded_data);
@@ -123,13 +155,21 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 		}
 		FPU_copy_to_reg0(&loaded_data, loaded_tag);
 		break;
+<<<<<<< HEAD
 	case 001:		/* fild m32int */
+=======
+	case 001:		/* fild m32int (db /0) */
+>>>>>>> v4.9.227
 		clear_C1();
 		loaded_tag =
 		    FPU_load_int32((long __user *)data_address, &loaded_data);
 		FPU_copy_to_reg0(&loaded_data, loaded_tag);
 		break;
+<<<<<<< HEAD
 	case 002:		/* fld m64real */
+=======
+	case 002:		/* fld m64real (dd /0) */
+>>>>>>> v4.9.227
 		clear_C1();
 		loaded_tag =
 		    FPU_load_double((double __user *)data_address,
@@ -142,12 +182,51 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 		}
 		FPU_copy_to_reg0(&loaded_data, loaded_tag);
 		break;
+<<<<<<< HEAD
 	case 003:		/* fild m16int */
+=======
+	case 003:		/* fild m16int (df /0) */
+>>>>>>> v4.9.227
 		clear_C1();
 		loaded_tag =
 		    FPU_load_int16((short __user *)data_address, &loaded_data);
 		FPU_copy_to_reg0(&loaded_data, loaded_tag);
 		break;
+<<<<<<< HEAD
+=======
+	/* case 004: undefined (d9 /1) */
+	/* fisttp are enabled if CPUID(1).ECX(0) "sse3" is set */
+	case 005:		/* fisttp m32int (db /1) */
+		clear_C1();
+		sv_cw = control_word;
+		control_word |= RC_CHOP;
+		if (FPU_store_int32
+		    (st0_ptr, st0_tag, (long __user *)data_address))
+			pop_0();	/* pop only if the number was actually stored
+					   (see the 80486 manual p16-28) */
+		control_word = sv_cw;
+		break;
+	case 006:		/* fisttp m64int (dd /1) */
+		clear_C1();
+		sv_cw = control_word;
+		control_word |= RC_CHOP;
+		if (FPU_store_int64
+		    (st0_ptr, st0_tag, (long long __user *)data_address))
+			pop_0();	/* pop only if the number was actually stored
+					   (see the 80486 manual p16-28) */
+		control_word = sv_cw;
+		break;
+	case 007:		/* fisttp m16int (df /1) */
+		clear_C1();
+		sv_cw = control_word;
+		control_word |= RC_CHOP;
+		if (FPU_store_int16
+		    (st0_ptr, st0_tag, (short __user *)data_address))
+			pop_0();	/* pop only if the number was actually stored
+					   (see the 80486 manual p16-28) */
+		control_word = sv_cw;
+		break;
+>>>>>>> v4.9.227
 	case 010:		/* fst m32real */
 		clear_C1();
 		FPU_store_single(st0_ptr, st0_tag,

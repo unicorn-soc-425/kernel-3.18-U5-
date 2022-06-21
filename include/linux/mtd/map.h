@@ -27,9 +27,15 @@
 #include <linux/string.h>
 #include <linux/bug.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 
 #include <asm/unaligned.h>
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+
+#include <asm/unaligned.h>
+>>>>>>> v4.9.227
 #include <asm/barrier.h>
 
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_1
@@ -77,7 +83,11 @@
 /* ensure we never evaluate anything shorted than an unsigned long
  * to zero, and ensure we'll never miss the end of an comparison (bjd) */
 
+<<<<<<< HEAD
 #define map_calc_words(map) ((map_bankwidth(map) + (sizeof(unsigned long)-1))/ sizeof(unsigned long))
+=======
+#define map_calc_words(map) ((map_bankwidth(map) + (sizeof(unsigned long)-1)) / sizeof(unsigned long))
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_8
 # ifdef map_bankwidth
@@ -137,7 +147,13 @@
 #endif
 
 #ifndef map_bankwidth
+<<<<<<< HEAD
 #warning "No CONFIG_MTD_MAP_BANK_WIDTH_xx selected. No NOR chip support can work"
+=======
+#ifdef CONFIG_MTD
+#warning "No CONFIG_MTD_MAP_BANK_WIDTH_xx selected. No NOR chip support can work"
+#endif
+>>>>>>> v4.9.227
 static inline int map_bankwidth(void *map)
 {
 	BUG();
@@ -176,7 +192,11 @@ static inline int map_bankwidth_supported(int w)
 	}
 }
 
+<<<<<<< HEAD
 #define MAX_MAP_LONGS ( ((MAX_MAP_BANKWIDTH*8) + BITS_PER_LONG - 1) / BITS_PER_LONG )
+=======
+#define MAX_MAP_LONGS (((MAX_MAP_BANKWIDTH * 8) + BITS_PER_LONG - 1) / BITS_PER_LONG)
+>>>>>>> v4.9.227
 
 typedef union {
 	unsigned long x[MAX_MAP_LONGS];
@@ -233,8 +253,16 @@ struct map_info {
 	   If there is no cache to care about this can be set to NULL. */
 	void (*inval_cache)(struct map_info *, unsigned long, ssize_t);
 
+<<<<<<< HEAD
 	/* set_vpp() must handle being reentered -- enable, enable, disable
 	   must leave it enabled. */
+=======
+	/* This will be called with 1 as parameter when the first map user
+	 * needs VPP, and called with 0 when the last user exits. The map
+	 * core maintains a reference counter, and assumes that VPP is a
+	 * global resource applying to all mapped flash chips on the system.
+	 */
+>>>>>>> v4.9.227
 	void (*set_vpp)(struct map_info *, int);
 
 	unsigned long pfow_base;
@@ -259,6 +287,7 @@ void unregister_mtd_chip_driver(struct mtd_chip_driver *);
 struct mtd_info *do_map_probe(const char *name, struct map_info *map);
 void map_destroy(struct mtd_info *mtd);
 
+<<<<<<< HEAD
 #define ENABLE_VPP(map) do { if(map->set_vpp) map->set_vpp(map, 1); } while(0)
 #define DISABLE_VPP(map) do { if(map->set_vpp) map->set_vpp(map, 0); } while(0)
 
@@ -331,6 +360,75 @@ static inline int map_word_bitsset(struct map_info *map, map_word val1, map_word
 	}
 	return 0;
 }
+=======
+#define ENABLE_VPP(map) do { if (map->set_vpp) map->set_vpp(map, 1); } while (0)
+#define DISABLE_VPP(map) do { if (map->set_vpp) map->set_vpp(map, 0); } while (0)
+
+#define INVALIDATE_CACHED_RANGE(map, from, size) \
+	do { if (map->inval_cache) map->inval_cache(map, from, size); } while (0)
+
+#define map_word_equal(map, val1, val2)					\
+({									\
+	int i, ret = 1;							\
+	for (i = 0; i < map_words(map); i++)				\
+		if ((val1).x[i] != (val2).x[i]) {			\
+			ret = 0;					\
+			break;						\
+		}							\
+	ret;								\
+})
+
+#define map_word_and(map, val1, val2)					\
+({									\
+	map_word r;							\
+	int i;								\
+	for (i = 0; i < map_words(map); i++)				\
+		r.x[i] = (val1).x[i] & (val2).x[i];			\
+	r;								\
+})
+
+#define map_word_clr(map, val1, val2)					\
+({									\
+	map_word r;							\
+	int i;								\
+	for (i = 0; i < map_words(map); i++)				\
+		r.x[i] = (val1).x[i] & ~(val2).x[i];			\
+	r;								\
+})
+
+#define map_word_or(map, val1, val2)					\
+({									\
+	map_word r;							\
+	int i;								\
+	for (i = 0; i < map_words(map); i++)				\
+		r.x[i] = (val1).x[i] | (val2).x[i];			\
+	r;								\
+})
+
+#define map_word_andequal(map, val1, val2, val3)			\
+({									\
+	int i, ret = 1;							\
+	for (i = 0; i < map_words(map); i++) {				\
+		if (((val1).x[i] & (val2).x[i]) != (val2).x[i]) {	\
+			ret = 0;					\
+			break;						\
+		}							\
+	}								\
+	ret;								\
+})
+
+#define map_word_bitsset(map, val1, val2)				\
+({									\
+	int i, ret = 0;							\
+	for (i = 0; i < map_words(map); i++) {				\
+		if ((val1).x[i] & (val2).x[i]) {			\
+			ret = 1;					\
+			break;						\
+		}							\
+	}								\
+	ret;								\
+})
+>>>>>>> v4.9.227
 
 static inline map_word map_word_load(struct map_info *map, const void *ptr)
 {
@@ -360,6 +458,7 @@ static inline map_word map_word_load_partial(struct map_info *map, map_word orig
 
 	if (map_bankwidth_is_large(map)) {
 		char *dest = (char *)&orig;
+<<<<<<< HEAD
 		memcpy(dest+start, buf, len);
 	} else {
 		for (i=start; i < start+len; i++) {
@@ -368,6 +467,18 @@ static inline map_word map_word_load_partial(struct map_info *map, map_word orig
 			bitpos = i*8;
 #else /* __BIG_ENDIAN */
 			bitpos = (map_bankwidth(map)-1-i)*8;
+=======
+
+		memcpy(dest+start, buf, len);
+	} else {
+		for (i = start; i < start+len; i++) {
+			int bitpos;
+
+#ifdef __LITTLE_ENDIAN
+			bitpos = i * 8;
+#else /* __BIG_ENDIAN */
+			bitpos = (map_bankwidth(map) - 1 - i) * 8;
+>>>>>>> v4.9.227
 #endif
 			orig.x[0] &= ~(0xff << bitpos);
 			orig.x[0] |= (unsigned long)buf[i-start] << bitpos;
@@ -389,9 +500,16 @@ static inline map_word map_word_ff(struct map_info *map)
 
 	if (map_bankwidth(map) < MAP_FF_LIMIT) {
 		int bw = 8 * map_bankwidth(map);
+<<<<<<< HEAD
 		r.x[0] = (1UL << bw) - 1;
 	} else {
 		for (i=0; i<map_words(map); i++)
+=======
+
+		r.x[0] = (1UL << bw) - 1;
+	} else {
+		for (i = 0; i < map_words(map); i++)
+>>>>>>> v4.9.227
 			r.x[i] = ~0UL;
 	}
 	return r;
@@ -412,7 +530,11 @@ static inline map_word inline_map_read(struct map_info *map, unsigned long ofs)
 		r.x[0] = __raw_readq(map->virt + ofs);
 #endif
 	else if (map_bankwidth_is_large(map))
+<<<<<<< HEAD
 		memcpy_fromio(r.x, map->virt+ofs, map->bankwidth);
+=======
+		memcpy_fromio(r.x, map->virt + ofs, map->bankwidth);
+>>>>>>> v4.9.227
 	else
 		BUG();
 

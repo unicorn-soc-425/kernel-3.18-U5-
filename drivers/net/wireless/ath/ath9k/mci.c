@@ -495,7 +495,11 @@ void ath_mci_intr(struct ath_softc *sc)
 	ar9003_mci_get_interrupt(sc->sc_ah, &mci_int, &mci_int_rxmsg);
 
 	if (ar9003_mci_state(ah, MCI_STATE_ENABLE) == 0) {
+<<<<<<< HEAD
 		ar9003_mci_get_next_gpm_offset(ah, true, NULL);
+=======
+		ar9003_mci_state(ah, MCI_STATE_INIT_GPM_OFFSET);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -559,8 +563,12 @@ void ath_mci_intr(struct ath_softc *sc)
 				return;
 
 			pgpm = mci->gpm_buf.bf_addr;
+<<<<<<< HEAD
 			offset = ar9003_mci_get_next_gpm_offset(ah, false,
 								&more_data);
+=======
+			offset = ar9003_mci_get_next_gpm_offset(ah, &more_data);
+>>>>>>> v4.9.227
 
 			if (offset == MCI_GPM_INVALID)
 				break;

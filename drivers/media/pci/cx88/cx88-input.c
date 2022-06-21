@@ -144,7 +144,12 @@ static void cx88_ir_handle_key(struct cx88_IR *ir)
 		scancode = RC_SCANCODE_NECX(addr, cmd);
 
 		if (0 == (gpio & ir->mask_keyup))
+<<<<<<< HEAD
 			rc_keydown_notimeout(ir->dev, RC_TYPE_NEC, scancode, 0);
+=======
+			rc_keydown_notimeout(ir->dev, RC_TYPE_NECX, scancode,
+									0);
+>>>>>>> v4.9.227
 		else
 			rc_keyup(ir->dev);
 
@@ -345,7 +350,11 @@ int cx88_ir_init(struct cx88_core *core, struct pci_dev *pci)
 		 * 002-T mini RC, provided with newer PV hardware
 		 */
 		ir_codes = RC_MAP_PIXELVIEW_MK12;
+<<<<<<< HEAD
 		rc_type = RC_BIT_NEC;
+=======
+		rc_type = RC_BIT_NECX;
+>>>>>>> v4.9.227
 		ir->gpio_addr = MO_GP1_IO;
 		ir->mask_keyup = 0x80;
 		ir->polling = 10; /* ms */
@@ -631,7 +640,12 @@ void cx88_i2c_init_ir(struct cx88_core *core)
 			/* Hauppauge XVR */
 			core->init_data.name = "cx88 Hauppauge XVR remote";
 			core->init_data.ir_codes = RC_MAP_HAUPPAUGE;
+<<<<<<< HEAD
 			core->init_data.type = RC_BIT_RC5;
+=======
+			core->init_data.type = RC_BIT_RC5 | RC_BIT_RC6_MCE |
+							RC_BIT_RC6_6A_32;
+>>>>>>> v4.9.227
 			core->init_data.internal_get_key_func = IR_KBD_GET_KEY_HAUP_XVR;
 
 			info.platform_data = &core->init_data;

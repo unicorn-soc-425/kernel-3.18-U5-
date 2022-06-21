@@ -1,9 +1,19 @@
+<<<<<<< HEAD
+=======
+/*
+ * Serial port routines for use during early boot reporting. This code is
+ * included from both the compressed kernel and the regular kernel.
+ */
+>>>>>>> v4.9.227
 #include "boot.h"
 
 #define DEFAULT_SERIAL_PORT 0x3f8 /* ttyS0 */
 
+<<<<<<< HEAD
 #define XMTRDY          0x20
 
+=======
+>>>>>>> v4.9.227
 #define DLAB		0x80
 
 #define TXR             0       /*  Transmit register (WRITE) */
@@ -74,8 +84,13 @@ static void parse_earlyprintk(void)
 			static const int bases[] = { 0x3f8, 0x2f8 };
 			int idx = 0;
 
+<<<<<<< HEAD
 			if (!strncmp(arg + pos, "ttyS", 4))
 				pos += 4;
+=======
+			/* += strlen("ttyS"); */
+			pos += 4;
+>>>>>>> v4.9.227
 
 			if (arg[pos++] == '1')
 				idx = 1;

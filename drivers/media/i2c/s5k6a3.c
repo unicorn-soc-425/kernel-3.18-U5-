@@ -80,7 +80,11 @@ static inline struct s5k6a3 *sd_to_s5k6a3(struct v4l2_subdev *sd)
 
 static const struct v4l2_mbus_framefmt s5k6a3_formats[] = {
 	{
+<<<<<<< HEAD
 		.code = V4L2_MBUS_FMT_SGRBG10_1X10,
+=======
+		.code = MEDIA_BUS_FMT_SGRBG10_1X10,
+>>>>>>> v4.9.227
 		.colorspace = V4L2_COLORSPACE_SRGB,
 		.field = V4L2_FIELD_NONE,
 	}
@@ -99,7 +103,11 @@ static const struct v4l2_mbus_framefmt *find_sensor_format(
 }
 
 static int s5k6a3_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				  struct v4l2_subdev_fh *fh,
+=======
+				  struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 				  struct v4l2_subdev_mbus_code_enum *code)
 {
 	if (code->index >= ARRAY_SIZE(s5k6a3_formats))
@@ -123,17 +131,29 @@ static void s5k6a3_try_format(struct v4l2_mbus_framefmt *mf)
 }
 
 static struct v4l2_mbus_framefmt *__s5k6a3_get_format(
+<<<<<<< HEAD
 		struct s5k6a3 *sensor, struct v4l2_subdev_fh *fh,
 		u32 pad, enum v4l2_subdev_format_whence which)
 {
 	if (which == V4L2_SUBDEV_FORMAT_TRY)
 		return fh ? v4l2_subdev_get_try_format(fh, pad) : NULL;
+=======
+		struct s5k6a3 *sensor, struct v4l2_subdev_pad_config *cfg,
+		u32 pad, enum v4l2_subdev_format_whence which)
+{
+	if (which == V4L2_SUBDEV_FORMAT_TRY)
+		return cfg ? v4l2_subdev_get_try_format(&sensor->subdev, cfg, pad) : NULL;
+>>>>>>> v4.9.227
 
 	return &sensor->format;
 }
 
 static int s5k6a3_set_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				  struct v4l2_subdev_fh *fh,
+=======
+				  struct v4l2_subdev_pad_config *cfg,
+>>>>>>> v4.9.227
 				  struct v4l2_subdev_format *fmt)
 {
 	struct s5k6a3 *sensor = sd_to_s5k6a3(sd);
@@ -141,24 +161,40 @@ static int s5k6a3_set_fmt(struct v4l2_subdev *sd,
 
 	s5k6a3_try_format(&fmt->format);
 
+<<<<<<< HEAD
 	mf = __s5k6a3_get_format(sensor, fh, fmt->pad, fmt->which);
 	if (mf) {
 		mutex_lock(&sensor->lock);
 		if (fmt->which == V4L2_SUBDEV_FORMAT_ACTIVE)
 			*mf = fmt->format;
+=======
+	mf = __s5k6a3_get_format(sensor, cfg, fmt->pad, fmt->which);
+	if (mf) {
+		mutex_lock(&sensor->lock);
+		*mf = fmt->format;
+>>>>>>> v4.9.227
 		mutex_unlock(&sensor->lock);
 	}
 	return 0;
 }
 
 static int s5k6a3_get_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				  struct v4l2_subdev_fh *fh,
 				  struct v4l2_subdev_format *fmt)
+=======
+			  struct v4l2_subdev_pad_config *cfg,
+			  struct v4l2_subdev_format *fmt)
+>>>>>>> v4.9.227
 {
 	struct s5k6a3 *sensor = sd_to_s5k6a3(sd);
 	struct v4l2_mbus_framefmt *mf;
 
+<<<<<<< HEAD
 	mf = __s5k6a3_get_format(sensor, fh, fmt->pad, fmt->which);
+=======
+	mf = __s5k6a3_get_format(sensor, cfg, fmt->pad, fmt->which);
+>>>>>>> v4.9.227
 
 	mutex_lock(&sensor->lock);
 	fmt->format = *mf;
@@ -174,7 +210,11 @@ static struct v4l2_subdev_pad_ops s5k6a3_pad_ops = {
 
 static int s5k6a3_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
+<<<<<<< HEAD
 	struct v4l2_mbus_framefmt *format = v4l2_subdev_get_try_format(fh, 0);
+=======
+	struct v4l2_mbus_framefmt *format = v4l2_subdev_get_try_format(sd, fh->pad, 0);
+>>>>>>> v4.9.227
 
 	*format		= s5k6a3_formats[0];
 	format->width	= S5K6A3_DEFAULT_WIDTH;
@@ -332,8 +372,14 @@ static int s5k6a3_probe(struct i2c_client *client,
 	sensor->format.width = S5K6A3_DEFAULT_WIDTH;
 	sensor->format.height = S5K6A3_DEFAULT_HEIGHT;
 
+<<<<<<< HEAD
 	sensor->pad.flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_init(&sd->entity, 1, &sensor->pad, 0);
+=======
+	sd->entity.function = MEDIA_ENT_F_CAM_SENSOR;
+	sensor->pad.flags = MEDIA_PAD_FL_SOURCE;
+	ret = media_entity_pads_init(&sd->entity, 1, &sensor->pad);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
@@ -363,6 +409,10 @@ static int s5k6a3_remove(struct i2c_client *client)
 static const struct i2c_device_id s5k6a3_ids[] = {
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, s5k6a3_ids);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_OF
 static const struct of_device_id s5k6a3_of_match[] = {
@@ -376,7 +426,10 @@ static struct i2c_driver s5k6a3_driver = {
 	.driver = {
 		.of_match_table	= of_match_ptr(s5k6a3_of_match),
 		.name		= S5K6A3_DRV_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= s5k6a3_probe,
 	.remove		= s5k6a3_remove,

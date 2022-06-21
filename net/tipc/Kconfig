@@ -20,6 +20,7 @@ menuconfig TIPC
 
 	  If in doubt, say N.
 
+<<<<<<< HEAD
 config TIPC_PORTS
 	int "Maximum number of ports in a node"
 	depends on TIPC
@@ -32,9 +33,22 @@ config TIPC_PORTS
 	  Setting this to a smaller value saves some memory,
 	  setting it to higher allows for more ports.
 
+=======
+>>>>>>> v4.9.227
 config TIPC_MEDIA_IB
 	bool "InfiniBand media type support"
 	depends on TIPC && INFINIBAND_IPOIB
 	help
 	  Saying Y here will enable support for running TIPC on
 	  IP-over-InfiniBand devices.
+<<<<<<< HEAD
+=======
+config TIPC_MEDIA_UDP
+	bool "IP/UDP media type support"
+	depends on TIPC
+	select NET_UDP_TUNNEL
+	help
+	  Saying Y here will enable support for running TIPC over IP/UDP
+	bool
+	default y
+>>>>>>> v4.9.227

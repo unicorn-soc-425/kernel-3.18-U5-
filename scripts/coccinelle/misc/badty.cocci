@@ -50,7 +50,11 @@ T **x;
 //  For org and report mode
 //----------------------------------------------------------
 
+<<<<<<< HEAD
 @r disable sizeof_type_expr@
+=======
+@r depends on (org || report) disable sizeof_type_expr@
+>>>>>>> v4.9.227
 type T;
 T **x;
 position p;

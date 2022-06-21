@@ -369,8 +369,13 @@ static void trinity_gfx_powergating_initialize(struct radeon_device *rdev)
 	int ret;
 	u32 hw_rev = (RREG32(HW_REV) & ATI_REV_ID_MASK) >> ATI_REV_ID_SHIFT;
 
+<<<<<<< HEAD
         ret = radeon_atom_get_clock_dividers(rdev, COMPUTE_ENGINE_PLL_PARAM,
                                              25000, false, &dividers);
+=======
+	ret = radeon_atom_get_clock_dividers(rdev, COMPUTE_ENGINE_PLL_PARAM,
+					     25000, false, &dividers);
+>>>>>>> v4.9.227
 	if (ret)
 		return;
 
@@ -587,8 +592,13 @@ static void trinity_set_divider_value(struct radeon_device *rdev,
 	u32 value;
 	u32 ix = index * TRINITY_SIZEOF_DPM_STATE_TABLE;
 
+<<<<<<< HEAD
         ret = radeon_atom_get_clock_dividers(rdev, COMPUTE_ENGINE_PLL_PARAM,
                                              sclk, false, &dividers);
+=======
+	ret = radeon_atom_get_clock_dividers(rdev, COMPUTE_ENGINE_PLL_PARAM,
+					     sclk, false, &dividers);
+>>>>>>> v4.9.227
 	if (ret)
 		return;
 
@@ -597,8 +607,13 @@ static void trinity_set_divider_value(struct radeon_device *rdev,
 	value |= CLK_DIVIDER(dividers.post_div);
 	WREG32_SMC(SMU_SCLK_DPM_STATE_0_CNTL_0 + ix, value);
 
+<<<<<<< HEAD
         ret = radeon_atom_get_clock_dividers(rdev, COMPUTE_ENGINE_PLL_PARAM,
                                              sclk/2, false, &dividers);
+=======
+	ret = radeon_atom_get_clock_dividers(rdev, COMPUTE_ENGINE_PLL_PARAM,
+					     sclk/2, false, &dividers);
+>>>>>>> v4.9.227
 	if (ret)
 		return;
 
@@ -1045,6 +1060,7 @@ static int trinity_set_thermal_temperature_range(struct radeon_device *rdev,
 	int low_temp = 0 * 1000;
 	int high_temp = 255 * 1000;
 
+<<<<<<< HEAD
         if (low_temp < min_temp)
 		low_temp = min_temp;
         if (high_temp > max_temp)
@@ -1053,6 +1069,16 @@ static int trinity_set_thermal_temperature_range(struct radeon_device *rdev,
 		DRM_ERROR("invalid thermal range: %d - %d\n", low_temp, high_temp);
                 return -EINVAL;
         }
+=======
+	if (low_temp < min_temp)
+		low_temp = min_temp;
+	if (high_temp > max_temp)
+		high_temp = max_temp;
+	if (high_temp < low_temp) {
+		DRM_ERROR("invalid thermal range: %d - %d\n", low_temp, high_temp);
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 
 	WREG32_P(CG_THERMAL_INT_CTRL, DIG_THERM_INTH(49 + (high_temp / 1000)), ~DIG_THERM_INTH_MASK);
 	WREG32_P(CG_THERMAL_INT_CTRL, DIG_THERM_INTL(49 + (low_temp / 1000)), ~DIG_THERM_INTL_MASK);
@@ -1737,7 +1763,11 @@ static int trinity_parse_power_table(struct radeon_device *rdev)
 	struct _NonClockInfoArray *non_clock_info_array;
 	union power_info *power_info;
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
+<<<<<<< HEAD
         u16 data_offset;
+=======
+	u16 data_offset;
+>>>>>>> v4.9.227
 	u8 frev, crev;
 	u8 *power_state_offset;
 	struct sumo_ps *ps;

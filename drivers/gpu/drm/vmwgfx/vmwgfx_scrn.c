@@ -74,6 +74,7 @@ struct vmw_kms_sou_dirty_cmd {
 	SVGA3dCmdBlitSurfaceToScreen body;
 };
 
+<<<<<<< HEAD
 
 /*
  * Other structs.
@@ -87,6 +88,8 @@ struct vmw_screen_object_display {
 	struct vmw_dma_buffer *pinned_gmrfb;
 };
 
+=======
+>>>>>>> v4.9.227
 /**
  * Display unit using screen objects.
  */
@@ -97,7 +100,10 @@ struct vmw_screen_object_unit {
 	struct vmw_dma_buffer *buffer; /**< Backing store buffer */
 
 	bool defined;
+<<<<<<< HEAD
 	bool active_implicit;
+=======
+>>>>>>> v4.9.227
 };
 
 static void vmw_sou_destroy(struct vmw_screen_object_unit *sou)
@@ -116,6 +122,7 @@ static void vmw_sou_crtc_destroy(struct drm_crtc *crtc)
 	vmw_sou_destroy(vmw_crtc_to_sou(crtc));
 }
 
+<<<<<<< HEAD
 static void vmw_sou_del_active(struct vmw_private *vmw_priv,
 			       struct vmw_screen_object_unit *sou)
 {
@@ -143,6 +150,8 @@ static void vmw_sou_add_active(struct vmw_private *vmw_priv,
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * Send the fifo command to create a screen.
  */
@@ -185,6 +194,11 @@ static int vmw_sou_fifo_create(struct vmw_private *dev_priv,
 		cmd->obj.root.x = sou->base.gui_x;
 		cmd->obj.root.y = sou->base.gui_y;
 	}
+<<<<<<< HEAD
+=======
+	sou->base.set_gui_x = cmd->obj.root.x;
+	sou->base.set_gui_y = cmd->obj.root.y;
+>>>>>>> v4.9.227
 
 	/* Ok to assume that buffer is pinned in vram */
 	vmw_bo_get_guest_ptr(&sou->buffer->base, &cmd->obj.backingStore.ptr);
@@ -323,6 +337,7 @@ static int vmw_sou_crtc_set_config(struct drm_mode_set *set)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* sou only supports one fb active at the time */
 	if (sou->base.is_implicit &&
 	    dev_priv->sou_priv->implicit_fb && vfb &&
@@ -332,6 +347,20 @@ static int vmw_sou_crtc_set_config(struct drm_mode_set *set)
 		DRM_ERROR("Multiple framebuffers not supported\n");
 		return -EINVAL;
 	}
+=======
+	/* Only one active implicit frame-buffer at a time. */
+	mutex_lock(&dev_priv->global_kms_state_mutex);
+	if (sou->base.is_implicit &&
+	    dev_priv->implicit_fb && vfb &&
+	    !(dev_priv->num_implicit == 1 &&
+	      sou->base.active_implicit) &&
+	    dev_priv->implicit_fb != vfb) {
+		mutex_unlock(&dev_priv->global_kms_state_mutex);
+		DRM_ERROR("Multiple implicit framebuffers not supported.\n");
+		return -EINVAL;
+	}
+	mutex_unlock(&dev_priv->global_kms_state_mutex);
+>>>>>>> v4.9.227
 
 	/* since they always map one to one these are safe */
 	connector = &sou->base.connector;
@@ -351,7 +380,11 @@ static int vmw_sou_crtc_set_config(struct drm_mode_set *set)
 		crtc->y = 0;
 		crtc->enabled = false;
 
+<<<<<<< HEAD
 		vmw_sou_del_active(dev_priv, sou);
+=======
+		vmw_kms_del_active(dev_priv, &sou->base);
+>>>>>>> v4.9.227
 
 		vmw_sou_backing_free(dev_priv, sou);
 
@@ -415,7 +448,11 @@ static int vmw_sou_crtc_set_config(struct drm_mode_set *set)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	vmw_sou_add_active(dev_priv, sou, vfb);
+=======
+	vmw_kms_add_active(dev_priv, &sou->base, vfb);
+>>>>>>> v4.9.227
 
 	connector->encoder = encoder;
 	encoder->crtc = crtc;
@@ -428,6 +465,7 @@ static int vmw_sou_crtc_set_config(struct drm_mode_set *set)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * Returns if this unit can be page flipped.
  * Must be called with the mode_config mutex held.
@@ -461,6 +499,8 @@ static void vmw_sou_update_implicit_fb(struct vmw_private *dev_priv,
 		vmw_framebuffer_to_vfb(sou->base.crtc.primary->fb);
 }
 
+=======
+>>>>>>> v4.9.227
 static int vmw_sou_crtc_page_flip(struct drm_crtc *crtc,
 				  struct drm_framebuffer *fb,
 				  struct drm_pending_vblank_event *event,
@@ -470,6 +510,7 @@ static int vmw_sou_crtc_page_flip(struct drm_crtc *crtc,
 	struct drm_framebuffer *old_fb = crtc->primary->fb;
 	struct vmw_framebuffer *vfb = vmw_framebuffer_to_vfb(fb);
 	struct vmw_fence_obj *fence = NULL;
+<<<<<<< HEAD
 	struct drm_clip_rect clips;
 	int ret;
 
@@ -478,11 +519,18 @@ static int vmw_sou_crtc_page_flip(struct drm_crtc *crtc,
 		return -ENOSYS;
 
 	if (!vmw_sou_screen_object_flippable(dev_priv, crtc))
+=======
+	struct drm_vmw_rect vclips;
+	int ret;
+
+	if (!vmw_kms_crtc_flippable(dev_priv, crtc))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	crtc->primary->fb = fb;
 
 	/* do a full screen dirty update */
+<<<<<<< HEAD
 	clips.x1 = clips.y1 = 0;
 	clips.x2 = fb->width;
 	clips.y2 = fb->height;
@@ -494,6 +542,20 @@ static int vmw_sou_crtc_page_flip(struct drm_crtc *crtc,
 	else
 		ret = vmw_kms_sou_do_surface_dirty(dev_priv, vfb,
 						   &clips, NULL, NULL,
+=======
+	vclips.x = crtc->x;
+	vclips.y = crtc->y;
+	vclips.w = crtc->mode.hdisplay;
+	vclips.h = crtc->mode.vdisplay;
+
+	if (vfb->dmabuf)
+		ret = vmw_kms_sou_do_dmabuf_dirty(dev_priv, vfb,
+						  NULL, &vclips, 1, 1,
+						  true, &fence);
+	else
+		ret = vmw_kms_sou_do_surface_dirty(dev_priv, vfb,
+						   NULL, &vclips, NULL,
+>>>>>>> v4.9.227
 						   0, 0, 1, 1, &fence);
 
 
@@ -521,7 +583,11 @@ static int vmw_sou_crtc_page_flip(struct drm_crtc *crtc,
 	vmw_fence_obj_unreference(&fence);
 
 	if (vmw_crtc_to_du(crtc)->is_implicit)
+<<<<<<< HEAD
 		vmw_sou_update_implicit_fb(dev_priv, crtc);
+=======
+		vmw_kms_update_implicit_fb(dev_priv, crtc);
+>>>>>>> v4.9.227
 
 	return ret;
 
@@ -530,9 +596,13 @@ out_no_fence:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct drm_crtc_funcs vmw_screen_object_crtc_funcs = {
 	.save = vmw_du_crtc_save,
 	.restore = vmw_du_crtc_restore,
+=======
+static const struct drm_crtc_funcs vmw_screen_object_crtc_funcs = {
+>>>>>>> v4.9.227
 	.cursor_set2 = vmw_du_crtc_cursor_set2,
 	.cursor_move = vmw_du_crtc_cursor_move,
 	.gamma_set = vmw_du_crtc_gamma_set,
@@ -550,7 +620,11 @@ static void vmw_sou_encoder_destroy(struct drm_encoder *encoder)
 	vmw_sou_destroy(vmw_encoder_to_sou(encoder));
 }
 
+<<<<<<< HEAD
 static struct drm_encoder_funcs vmw_screen_object_encoder_funcs = {
+=======
+static const struct drm_encoder_funcs vmw_screen_object_encoder_funcs = {
+>>>>>>> v4.9.227
 	.destroy = vmw_sou_encoder_destroy,
 };
 
@@ -563,10 +637,15 @@ static void vmw_sou_connector_destroy(struct drm_connector *connector)
 	vmw_sou_destroy(vmw_connector_to_sou(connector));
 }
 
+<<<<<<< HEAD
 static struct drm_connector_funcs vmw_sou_connector_funcs = {
 	.dpms = vmw_du_connector_dpms,
 	.save = vmw_du_connector_save,
 	.restore = vmw_du_connector_restore,
+=======
+static const struct drm_connector_funcs vmw_sou_connector_funcs = {
+	.dpms = vmw_du_connector_dpms,
+>>>>>>> v4.9.227
 	.detect = vmw_du_connector_detect,
 	.fill_modes = vmw_du_connector_fill_modes,
 	.set_property = vmw_du_connector_set_property,
@@ -590,20 +669,32 @@ static int vmw_sou_init(struct vmw_private *dev_priv, unsigned unit)
 	encoder = &sou->base.encoder;
 	connector = &sou->base.connector;
 
+<<<<<<< HEAD
 	sou->active_implicit = false;
 
+=======
+	sou->base.active_implicit = false;
+>>>>>>> v4.9.227
 	sou->base.pref_active = (unit == 0);
 	sou->base.pref_width = dev_priv->initial_width;
 	sou->base.pref_height = dev_priv->initial_height;
 	sou->base.pref_mode = NULL;
+<<<<<<< HEAD
 	sou->base.is_implicit = true;
+=======
+	sou->base.is_implicit = false;
+>>>>>>> v4.9.227
 
 	drm_connector_init(dev, connector, &vmw_sou_connector_funcs,
 			   DRM_MODE_CONNECTOR_VIRTUAL);
 	connector->status = vmw_du_connector_detect(connector, true);
 
 	drm_encoder_init(dev, encoder, &vmw_screen_object_encoder_funcs,
+<<<<<<< HEAD
 			 DRM_MODE_ENCODER_VIRTUAL);
+=======
+			 DRM_MODE_ENCODER_VIRTUAL, NULL);
+>>>>>>> v4.9.227
 	drm_mode_connector_attach_encoder(connector, encoder);
 	encoder->possible_crtcs = (1 << unit);
 	encoder->possible_clones = 0;
@@ -615,8 +706,21 @@ static int vmw_sou_init(struct vmw_private *dev_priv, unsigned unit)
 	drm_mode_crtc_set_gamma_size(crtc, 256);
 
 	drm_object_attach_property(&connector->base,
+<<<<<<< HEAD
 				      dev->mode_config.dirty_info_property,
 				      1);
+=======
+				   dev_priv->hotplug_mode_update_property, 1);
+	drm_object_attach_property(&connector->base,
+				   dev->mode_config.suggested_x_property, 0);
+	drm_object_attach_property(&connector->base,
+				   dev->mode_config.suggested_y_property, 0);
+	if (dev_priv->implicit_placement_property)
+		drm_object_attach_property
+			(&connector->base,
+			 dev_priv->implicit_placement_property,
+			 sou->base.is_implicit);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -626,11 +730,14 @@ int vmw_kms_sou_init_display(struct vmw_private *dev_priv)
 	struct drm_device *dev = dev_priv->dev;
 	int i, ret;
 
+<<<<<<< HEAD
 	if (dev_priv->sou_priv) {
 		DRM_INFO("sou system already on\n");
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (!(dev_priv->capabilities & SVGA_CAP_SCREEN_OBJECT_2)) {
 		DRM_INFO("Not using screen objects,"
 			 " missing cap SCREEN_OBJECT_2\n");
@@ -638,6 +745,7 @@ int vmw_kms_sou_init_display(struct vmw_private *dev_priv)
 	}
 
 	ret = -ENOMEM;
+<<<<<<< HEAD
 	dev_priv->sou_priv = kmalloc(sizeof(*dev_priv->sou_priv), GFP_KERNEL);
 	if (unlikely(!dev_priv->sou_priv))
 		goto err_no_mem;
@@ -652,6 +760,16 @@ int vmw_kms_sou_init_display(struct vmw_private *dev_priv)
 	ret = drm_mode_create_dirty_info_property(dev);
 	if (unlikely(ret != 0))
 		goto err_vblank_cleanup;
+=======
+	dev_priv->num_implicit = 0;
+	dev_priv->implicit_fb = NULL;
+
+	ret = drm_vblank_init(dev, VMWGFX_NUM_DISPLAY_UNITS);
+	if (unlikely(ret != 0))
+		return ret;
+
+	vmw_kms_create_implicit_placement_property(dev_priv, false);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < VMWGFX_NUM_DISPLAY_UNITS; ++i)
 		vmw_sou_init(dev_priv, i);
@@ -661,6 +779,7 @@ int vmw_kms_sou_init_display(struct vmw_private *dev_priv)
 	DRM_INFO("Screen Objects Display Unit initialized\n");
 
 	return 0;
+<<<<<<< HEAD
 
 err_vblank_cleanup:
 	drm_vblank_cleanup(dev);
@@ -669,12 +788,15 @@ err_free:
 	dev_priv->sou_priv = NULL;
 err_no_mem:
 	return ret;
+=======
+>>>>>>> v4.9.227
 }
 
 int vmw_kms_sou_close_display(struct vmw_private *dev_priv)
 {
 	struct drm_device *dev = dev_priv->dev;
 
+<<<<<<< HEAD
 	if (!dev_priv->sou_priv)
 		return -ENOSYS;
 
@@ -682,6 +804,10 @@ int vmw_kms_sou_close_display(struct vmw_private *dev_priv)
 
 	kfree(dev_priv->sou_priv);
 
+=======
+	drm_vblank_cleanup(dev);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -742,6 +868,14 @@ static void vmw_sou_surface_fifo_commit(struct vmw_kms_dirty *dirty)
 	SVGASignedRect *blit = (SVGASignedRect *) &cmd[1];
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (!dirty->num_hits) {
+		vmw_fifo_commit(dirty->dev_priv, 0);
+		return;
+	}
+
+>>>>>>> v4.9.227
 	cmd->header.id = SVGA_3D_CMD_BLIT_SURFACE_TO_SCREEN;
 	cmd->header.size = sizeof(cmd->body) + region_size;
 
@@ -841,12 +975,20 @@ int vmw_kms_sou_do_surface_dirty(struct vmw_private *dev_priv,
 	struct vmw_framebuffer_surface *vfbs =
 		container_of(framebuffer, typeof(*vfbs), base);
 	struct vmw_kms_sou_surface_dirty sdirty;
+<<<<<<< HEAD
+=======
+	struct vmw_validation_ctx ctx;
+>>>>>>> v4.9.227
 	int ret;
 
 	if (!srf)
 		srf = &vfbs->surface->res;
 
+<<<<<<< HEAD
 	ret = vmw_kms_helper_resource_prepare(srf, true);
+=======
+	ret = vmw_kms_helper_resource_prepare(srf, true, &ctx);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -865,7 +1007,11 @@ int vmw_kms_sou_do_surface_dirty(struct vmw_private *dev_priv,
 	ret = vmw_kms_helper_dirty(dev_priv, framebuffer, clips, vclips,
 				   dest_x, dest_y, num_clips, inc,
 				   &sdirty.base);
+<<<<<<< HEAD
 	vmw_kms_helper_resource_finish(srf, out_fence);
+=======
+	vmw_kms_helper_resource_finish(&ctx, out_fence);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -879,6 +1025,14 @@ int vmw_kms_sou_do_surface_dirty(struct vmw_private *dev_priv,
  */
 static void vmw_sou_dmabuf_fifo_commit(struct vmw_kms_dirty *dirty)
 {
+<<<<<<< HEAD
+=======
+	if (!dirty->num_hits) {
+		vmw_fifo_commit(dirty->dev_priv, 0);
+		return;
+	}
+
+>>>>>>> v4.9.227
 	vmw_fifo_commit(dirty->dev_priv,
 			sizeof(struct vmw_kms_sou_dmabuf_blit) *
 			dirty->num_hits);
@@ -913,6 +1067,11 @@ static void vmw_sou_dmabuf_clip(struct vmw_kms_dirty *dirty)
  * @dev_priv: Pointer to the device private structure.
  * @framebuffer: Pointer to the dma-buffer backed framebuffer.
  * @clips: Array of clip rects.
+<<<<<<< HEAD
+=======
+ * @vclips: Alternate array of clip rects. Either @clips or @vclips must
+ * be NULL.
+>>>>>>> v4.9.227
  * @num_clips: Number of clip rects in @clips.
  * @increment: Increment to use when looping over @clips.
  * @interruptible: Whether to perform waits interruptible if possible.
@@ -926,6 +1085,10 @@ static void vmw_sou_dmabuf_clip(struct vmw_kms_dirty *dirty)
 int vmw_kms_sou_do_dmabuf_dirty(struct vmw_private *dev_priv,
 				struct vmw_framebuffer *framebuffer,
 				struct drm_clip_rect *clips,
+<<<<<<< HEAD
+=======
+				struct drm_vmw_rect *vclips,
+>>>>>>> v4.9.227
 				unsigned num_clips, int increment,
 				bool interruptible,
 				struct vmw_fence_obj **out_fence)
@@ -949,7 +1112,11 @@ int vmw_kms_sou_do_dmabuf_dirty(struct vmw_private *dev_priv,
 	dirty.clip = vmw_sou_dmabuf_clip;
 	dirty.fifo_reserve_size = sizeof(struct vmw_kms_sou_dmabuf_blit) *
 		num_clips;
+<<<<<<< HEAD
 	ret = vmw_kms_helper_dirty(dev_priv, framebuffer, clips, NULL,
+=======
+	ret = vmw_kms_helper_dirty(dev_priv, framebuffer, clips, vclips,
+>>>>>>> v4.9.227
 				   0, 0, num_clips, increment, &dirty);
 	vmw_kms_helper_buffer_finish(dev_priv, NULL, buf, out_fence, NULL);
 
@@ -971,6 +1138,14 @@ out_revert:
  */
 static void vmw_sou_readback_fifo_commit(struct vmw_kms_dirty *dirty)
 {
+<<<<<<< HEAD
+=======
+	if (!dirty->num_hits) {
+		vmw_fifo_commit(dirty->dev_priv, 0);
+		return;
+	}
+
+>>>>>>> v4.9.227
 	vmw_fifo_commit(dirty->dev_priv,
 			sizeof(struct vmw_kms_sou_readback_blit) *
 			dirty->num_hits);

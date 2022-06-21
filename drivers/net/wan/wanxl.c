@@ -586,6 +586,10 @@ static int wanxl_pci_init_one(struct pci_dev *pdev,
 	if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(28)) ||
 	    pci_set_dma_mask(pdev, DMA_BIT_MASK(28))) {
 		pr_err("No usable DMA configuration\n");
+<<<<<<< HEAD
+=======
+		pci_disable_device(pdev);
+>>>>>>> v4.9.227
 		return -EIO;
 	}
 

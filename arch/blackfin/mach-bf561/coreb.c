@@ -59,6 +59,7 @@ static struct miscdevice coreb_dev = {
 	.name  = "coreb",
 	.fops  = &coreb_fops,
 };
+<<<<<<< HEAD
 
 static int __init bf561_coreb_init(void)
 {
@@ -71,6 +72,9 @@ static void __exit bf561_coreb_exit(void)
 	misc_deregister(&coreb_dev);
 }
 module_exit(bf561_coreb_exit);
+=======
+module_misc_device(coreb_dev);
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Bas Vermeulen <bvermeul@blackstar.xs4all.nl>");
 MODULE_DESCRIPTION("BF561 Core B Support");

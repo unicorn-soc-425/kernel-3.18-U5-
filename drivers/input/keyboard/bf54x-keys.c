@@ -385,7 +385,10 @@ static int bfin_kpad_resume(struct platform_device *pdev)
 static struct platform_driver bfin_kpad_device_driver = {
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= bfin_kpad_probe,
 	.remove		= bfin_kpad_remove,

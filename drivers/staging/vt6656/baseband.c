@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  *
  * File: baseband.c
  *
@@ -142,7 +145,11 @@ static const u16 vnt_frame_time[MAX_RATE] = {
  *
  */
 unsigned int vnt_get_frame_time(u8 preamble_type, u8 pkt_type,
+<<<<<<< HEAD
 	unsigned int frame_length, u16 tx_rate)
+=======
+				unsigned int frame_length, u16 tx_rate)
+>>>>>>> v4.9.227
 {
 	unsigned int frame_time;
 	unsigned int preamble;
@@ -199,7 +206,11 @@ unsigned int vnt_get_frame_time(u8 preamble_type, u8 pkt_type,
  *
  */
 void vnt_get_phy_field(struct vnt_private *priv, u32 frame_length,
+<<<<<<< HEAD
 	u16 tx_rate, u8 pkt_type, struct vnt_phy_field *phy)
+=======
+		       u16 tx_rate, u8 pkt_type, struct vnt_phy_field *phy)
+>>>>>>> v4.9.227
 {
 	u32 bit_count;
 	u32 count = 0;
@@ -359,7 +370,11 @@ void vnt_set_antenna_mode(struct vnt_private *priv, u8 antenna_mode)
 	}
 
 	vnt_control_out(priv, MESSAGE_TYPE_SET_ANTMD,
+<<<<<<< HEAD
 		(u16)antenna_mode, 0, 0, NULL);
+=======
+			(u16)antenna_mode, 0, 0, NULL);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -387,7 +402,11 @@ int vnt_vt3184_init(struct vnt_private *priv)
 	u8 data;
 
 	status = vnt_control_in(priv, MESSAGE_TYPE_READ, 0,
+<<<<<<< HEAD
 		MESSAGE_REQUEST_EEPROM, EEP_MAX_CONTEXT_SIZE,
+=======
+				MESSAGE_REQUEST_EEPROM, EEP_MAX_CONTEXT_SIZE,
+>>>>>>> v4.9.227
 						priv->eeprom);
 	if (status != STATUS_SUCCESS)
 		return false;
@@ -397,7 +416,11 @@ int vnt_vt3184_init(struct vnt_private *priv)
 	dev_dbg(&priv->usb->dev, "RF Type %d\n", priv->rf_type);
 
 	if ((priv->rf_type == RF_AL2230) ||
+<<<<<<< HEAD
 				(priv->rf_type == RF_AL2230S)) {
+=======
+	    (priv->rf_type == RF_AL2230S)) {
+>>>>>>> v4.9.227
 		priv->bb_rx_conf = vnt_vt3184_al2230[10];
 		length = sizeof(vnt_vt3184_al2230);
 		addr = vnt_vt3184_al2230;
@@ -461,11 +484,16 @@ int vnt_vt3184_init(struct vnt_private *priv)
 	memcpy(array, addr, length);
 
 	vnt_control_out(priv, MESSAGE_TYPE_WRITE, 0,
+<<<<<<< HEAD
 		MESSAGE_REQUEST_BBREG, length, array);
+=======
+			MESSAGE_REQUEST_BBREG, length, array);
+>>>>>>> v4.9.227
 
 	memcpy(array, agc, length_agc);
 
 	vnt_control_out(priv, MESSAGE_TYPE_WRITE, 0,
+<<<<<<< HEAD
 		MESSAGE_REQUEST_BBAGC, length_agc, array);
 
 	if ((priv->rf_type == RF_VT3226) ||
@@ -476,6 +504,18 @@ int vnt_vt3184_init(struct vnt_private *priv)
 	} else if (priv->rf_type == RF_VT3226D0) {
 		vnt_control_out_u8(priv, MESSAGE_REQUEST_MACREG,
 						MAC_REG_ITRTMSET, 0x11);
+=======
+			MESSAGE_REQUEST_BBAGC, length_agc, array);
+
+	if ((priv->rf_type == RF_VT3226) ||
+	    (priv->rf_type == RF_VT3342A0)) {
+		vnt_control_out_u8(priv, MESSAGE_REQUEST_MACREG,
+				   MAC_REG_ITRTMSET, 0x23);
+		vnt_mac_reg_bits_on(priv, MAC_REG_PAPEDELAY, 0x01);
+	} else if (priv->rf_type == RF_VT3226D0) {
+		vnt_control_out_u8(priv, MESSAGE_REQUEST_MACREG,
+				   MAC_REG_ITRTMSET, 0x11);
+>>>>>>> v4.9.227
 		vnt_mac_reg_bits_on(priv, MAC_REG_PAPEDELAY, 0x01);
 	}
 
@@ -486,12 +526,20 @@ int vnt_vt3184_init(struct vnt_private *priv)
 
 	/* Fix for TX USB resets from vendors driver */
 	vnt_control_in(priv, MESSAGE_TYPE_READ, USB_REG4,
+<<<<<<< HEAD
 		MESSAGE_REQUEST_MEM, sizeof(data), &data);
+=======
+		       MESSAGE_REQUEST_MEM, sizeof(data), &data);
+>>>>>>> v4.9.227
 
 	data |= 0x2;
 
 	vnt_control_out(priv, MESSAGE_TYPE_WRITE, USB_REG4,
+<<<<<<< HEAD
 		MESSAGE_REQUEST_MEM, sizeof(data), &data);
+=======
+			MESSAGE_REQUEST_MEM, sizeof(data), &data);
+>>>>>>> v4.9.227
 
 	return true;
 }
@@ -527,7 +575,10 @@ void vnt_set_short_slot_time(struct vnt_private *priv)
 
 void vnt_set_vga_gain_offset(struct vnt_private *priv, u8 data)
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	vnt_control_out_u8(priv, MESSAGE_REQUEST_BBREG, 0xE7, data);
 
 	/* patch for 3253B0 Baseband with Cardbus module */
@@ -811,7 +862,10 @@ void vnt_update_pre_ed_threshold(struct vnt_private *priv, int scanning)
 			cr_206 = 0x38;
 		}
 		break;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	}
 
 	if (ed_inx == priv->bb_pre_ed_index && !scanning)
@@ -820,7 +874,11 @@ void vnt_update_pre_ed_threshold(struct vnt_private *priv, int scanning)
 	priv->bb_pre_ed_index = ed_inx;
 
 	dev_dbg(&priv->usb->dev, "%s bb_pre_ed_rssi %d\n",
+<<<<<<< HEAD
 					__func__, priv->bb_pre_ed_rssi);
+=======
+		__func__, priv->bb_pre_ed_rssi);
+>>>>>>> v4.9.227
 
 	if (!cr_201 && !cr_206)
 		return;

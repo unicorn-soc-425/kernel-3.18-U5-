@@ -72,20 +72,27 @@ static int cbc_aes_nx_crypt(struct blkcipher_desc *desc,
 	struct nx_csbcpb *csbcpb = nx_ctx->csbcpb;
 	unsigned long irq_flags;
 	unsigned int processed = 0, to_process;
+<<<<<<< HEAD
 	u32 max_sg_len;
+=======
+>>>>>>> v4.9.227
 	int rc;
 
 	spin_lock_irqsave(&nx_ctx->lock, irq_flags);
 
+<<<<<<< HEAD
 	max_sg_len = min_t(u32, nx_driver.of.max_sg_len/sizeof(struct nx_sg),
 			   nx_ctx->ap->sglen);
 
+=======
+>>>>>>> v4.9.227
 	if (enc)
 		NX_CPB_FDM(csbcpb) |= NX_FDM_ENDE_ENCRYPT;
 	else
 		NX_CPB_FDM(csbcpb) &= ~NX_FDM_ENDE_ENCRYPT;
 
 	do {
+<<<<<<< HEAD
 		to_process = min_t(u64, nbytes - processed,
 				   nx_ctx->ap->databytelen);
 		to_process = min_t(u64, to_process,
@@ -93,6 +100,11 @@ static int cbc_aes_nx_crypt(struct blkcipher_desc *desc,
 		to_process = to_process & ~(AES_BLOCK_SIZE - 1);
 
 		rc = nx_build_sg_lists(nx_ctx, desc, dst, src, to_process,
+=======
+		to_process = nbytes - processed;
+
+		rc = nx_build_sg_lists(nx_ctx, desc, dst, src, &to_process,
+>>>>>>> v4.9.227
 				       processed, csbcpb->cpb.aes_cbc.iv);
 		if (rc)
 			goto out;

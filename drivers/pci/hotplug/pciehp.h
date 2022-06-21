@@ -47,6 +47,7 @@ extern bool pciehp_debug;
 #define dbg(format, arg...)						\
 do {									\
 	if (pciehp_debug)						\
+<<<<<<< HEAD
 		printk(KERN_DEBUG "%s: " format, MY_NAME , ## arg);	\
 } while (0)
 #define err(format, arg...)						\
@@ -55,6 +56,16 @@ do {									\
 	printk(KERN_INFO "%s: " format, MY_NAME , ## arg)
 #define warn(format, arg...)						\
 	printk(KERN_WARNING "%s: " format, MY_NAME , ## arg)
+=======
+		printk(KERN_DEBUG "%s: " format, MY_NAME, ## arg);	\
+} while (0)
+#define err(format, arg...)						\
+	printk(KERN_ERR "%s: " format, MY_NAME, ## arg)
+#define info(format, arg...)						\
+	printk(KERN_INFO "%s: " format, MY_NAME, ## arg)
+#define warn(format, arg...)						\
+	printk(KERN_WARNING "%s: " format, MY_NAME, ## arg)
+>>>>>>> v4.9.227
 
 #define ctrl_dbg(ctrl, format, arg...)					\
 	do {								\
@@ -101,6 +112,7 @@ struct controller {
 	unsigned int power_fault_detected;
 };
 
+<<<<<<< HEAD
 #define INT_BUTTON_IGNORE		0
 #define INT_PRESENCE_ON			1
 #define INT_PRESENCE_OFF		2
@@ -113,6 +125,14 @@ struct controller {
 #define INT_BUTTON_CANCEL		9
 #define INT_LINK_UP			10
 #define INT_LINK_DOWN			11
+=======
+#define INT_PRESENCE_ON			1
+#define INT_PRESENCE_OFF		2
+#define INT_POWER_FAULT			3
+#define INT_BUTTON_PRESS		4
+#define INT_LINK_UP			5
+#define INT_LINK_DOWN			6
+>>>>>>> v4.9.227
 
 #define STATIC_STATE			0
 #define BLINKINGON_STATE		1
@@ -132,16 +152,24 @@ struct controller {
 
 int pciehp_sysfs_enable_slot(struct slot *slot);
 int pciehp_sysfs_disable_slot(struct slot *slot);
+<<<<<<< HEAD
 u8 pciehp_handle_attention_button(struct slot *p_slot);
 u8 pciehp_handle_switch_change(struct slot *p_slot);
 u8 pciehp_handle_presence_change(struct slot *p_slot);
 u8 pciehp_handle_power_fault(struct slot *p_slot);
 void pciehp_handle_linkstate_change(struct slot *p_slot);
+=======
+void pciehp_queue_interrupt_event(struct slot *slot, u32 event_type);
+>>>>>>> v4.9.227
 int pciehp_configure_device(struct slot *p_slot);
 int pciehp_unconfigure_device(struct slot *p_slot);
 void pciehp_queue_pushbutton_work(struct work_struct *work);
 struct controller *pcie_init(struct pcie_device *dev);
 int pcie_init_notification(struct controller *ctrl);
+<<<<<<< HEAD
+=======
+void pcie_shutdown_notification(struct controller *ctrl);
+>>>>>>> v4.9.227
 int pciehp_enable_slot(struct slot *p_slot);
 int pciehp_disable_slot(struct slot *p_slot);
 void pcie_reenable_notification(struct controller *ctrl);
@@ -162,11 +190,18 @@ bool pciehp_check_link_active(struct controller *ctrl);
 void pciehp_release_ctrl(struct controller *ctrl);
 int pciehp_reset_slot(struct slot *slot, int probe);
 
+<<<<<<< HEAD
+=======
+int pciehp_set_raw_indicator_status(struct hotplug_slot *h_slot, u8 status);
+int pciehp_get_raw_indicator_status(struct hotplug_slot *h_slot, u8 *status);
+
+>>>>>>> v4.9.227
 static inline const char *slot_name(struct slot *slot)
 {
 	return hotplug_slot_name(slot->hotplug_slot);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_ACPI
 #include <linux/pci-acpi.h>
 
@@ -184,4 +219,6 @@ static inline int pciehp_acpi_slot_detection_check(struct pci_dev *dev)
 	return 0;
 }
 #endif				/* CONFIG_ACPI */
+=======
+>>>>>>> v4.9.227
 #endif				/* _PCIEHP_H */

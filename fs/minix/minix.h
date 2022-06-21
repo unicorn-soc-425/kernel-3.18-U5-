@@ -84,7 +84,11 @@ static inline struct minix_sb_info *minix_sb(struct super_block *sb)
 
 static inline struct minix_inode_info *minix_i(struct inode *inode)
 {
+<<<<<<< HEAD
 	return list_entry(inode, struct minix_inode_info, vfs_inode);
+=======
+	return container_of(inode, struct minix_inode_info, vfs_inode);
+>>>>>>> v4.9.227
 }
 
 static inline unsigned minix_blocks_needed(unsigned bits, unsigned blocksize)

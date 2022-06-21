@@ -1,9 +1,16 @@
 /*
  * AMD Cryptographic Coprocessor (CCP) SHA crypto API support
  *
+<<<<<<< HEAD
  * Copyright (C) 2013 Advanced Micro Devices, Inc.
  *
  * Author: Tom Lendacky <thomas.lendacky@amd.com>
+=======
+ * Copyright (C) 2013,2016 Advanced Micro Devices, Inc.
+ *
+ * Author: Tom Lendacky <thomas.lendacky@amd.com>
+ * Author: Gary R Hook <gary.hook@amd.com>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -23,7 +30,10 @@
 
 #include "ccp-crypto.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static int ccp_sha_complete(struct crypto_async_request *async_req, int ret)
 {
 	struct ahash_request *req = ahash_request_cast(async_req);
@@ -37,11 +47,21 @@ static int ccp_sha_complete(struct crypto_async_request *async_req, int ret)
 	if (rctx->hash_rem) {
 		/* Save remaining data to buffer */
 		unsigned int offset = rctx->nbytes - rctx->hash_rem;
+<<<<<<< HEAD
 		scatterwalk_map_and_copy(rctx->buf, rctx->src,
 					 offset, rctx->hash_rem, 0);
 		rctx->buf_count = rctx->hash_rem;
 	} else
 		rctx->buf_count = 0;
+=======
+
+		scatterwalk_map_and_copy(rctx->buf, rctx->src,
+					 offset, rctx->hash_rem, 0);
+		rctx->buf_count = rctx->hash_rem;
+	} else {
+		rctx->buf_count = 0;
+	}
+>>>>>>> v4.9.227
 
 	/* Update result area if supplied */
 	if (req->result)
@@ -106,7 +126,19 @@ static int ccp_do_sha_update(struct ahash_request *req, unsigned int nbytes,
 
 		sg_init_one(&rctx->buf_sg, rctx->buf, rctx->buf_count);
 		sg = ccp_crypto_sg_table_add(&rctx->data_sg, &rctx->buf_sg);
+<<<<<<< HEAD
 		sg = ccp_crypto_sg_table_add(&rctx->data_sg, req->src);
+=======
+		if (!sg) {
+			ret = -EINVAL;
+			goto e_free;
+		}
+		sg = ccp_crypto_sg_table_add(&rctx->data_sg, req->src);
+		if (!sg) {
+			ret = -EINVAL;
+			goto e_free;
+		}
+>>>>>>> v4.9.227
 		sg_mark_end(sg);
 
 		sg = rctx->data_sg.sgl;
@@ -125,7 +157,26 @@ static int ccp_do_sha_update(struct ahash_request *req, unsigned int nbytes,
 	rctx->cmd.engine = CCP_ENGINE_SHA;
 	rctx->cmd.u.sha.type = rctx->type;
 	rctx->cmd.u.sha.ctx = &rctx->ctx_sg;
+<<<<<<< HEAD
 	rctx->cmd.u.sha.ctx_len = sizeof(rctx->ctx);
+=======
+
+	switch (rctx->type) {
+	case CCP_SHA_TYPE_1:
+		rctx->cmd.u.sha.ctx_len = SHA1_DIGEST_SIZE;
+		break;
+	case CCP_SHA_TYPE_224:
+		rctx->cmd.u.sha.ctx_len = SHA224_DIGEST_SIZE;
+		break;
+	case CCP_SHA_TYPE_256:
+		rctx->cmd.u.sha.ctx_len = SHA256_DIGEST_SIZE;
+		break;
+	default:
+		/* Should never get here */
+		break;
+	}
+
+>>>>>>> v4.9.227
 	rctx->cmd.u.sha.src = sg;
 	rctx->cmd.u.sha.src_len = rctx->hash_cnt;
 	rctx->cmd.u.sha.opad = ctx->u.sha.key_len ?
@@ -141,6 +192,14 @@ static int ccp_do_sha_update(struct ahash_request *req, unsigned int nbytes,
 	ret = ccp_crypto_enqueue_request(&req->base, &rctx->cmd);
 
 	return ret;
+<<<<<<< HEAD
+=======
+
+e_free:
+	sg_free_table(&rctx->data_sg);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int ccp_sha_init(struct ahash_request *req)
@@ -267,8 +326,14 @@ static int ccp_sha_setkey(struct crypto_ahash *tfm, const u8 *key,
 		}
 
 		key_len = digest_size;
+<<<<<<< HEAD
 	} else
 		memcpy(ctx->u.sha.key, key, key_len);
+=======
+	} else {
+		memcpy(ctx->u.sha.key, key, key_len);
+	}
+>>>>>>> v4.9.227
 
 	for (i = 0; i < block_size; i++) {
 		ctx->u.sha.ipad[i] = ctx->u.sha.key[i] ^ 0x36;
@@ -329,6 +394,10 @@ static void ccp_hmac_sha_cra_exit(struct crypto_tfm *tfm)
 }
 
 struct ccp_sha_def {
+<<<<<<< HEAD
+=======
+	unsigned int version;
+>>>>>>> v4.9.227
 	const char *name;
 	const char *drv_name;
 	enum ccp_sha_type type;
@@ -338,6 +407,10 @@ struct ccp_sha_def {
 
 static struct ccp_sha_def sha_algs[] = {
 	{
+<<<<<<< HEAD
+=======
+		.version	= CCP_VERSION(3, 0),
+>>>>>>> v4.9.227
 		.name		= "sha1",
 		.drv_name	= "sha1-ccp",
 		.type		= CCP_SHA_TYPE_1,
@@ -345,6 +418,10 @@ static struct ccp_sha_def sha_algs[] = {
 		.block_size	= SHA1_BLOCK_SIZE,
 	},
 	{
+<<<<<<< HEAD
+=======
+		.version	= CCP_VERSION(3, 0),
+>>>>>>> v4.9.227
 		.name		= "sha224",
 		.drv_name	= "sha224-ccp",
 		.type		= CCP_SHA_TYPE_224,
@@ -352,6 +429,10 @@ static struct ccp_sha_def sha_algs[] = {
 		.block_size	= SHA224_BLOCK_SIZE,
 	},
 	{
+<<<<<<< HEAD
+=======
+		.version	= CCP_VERSION(3, 0),
+>>>>>>> v4.9.227
 		.name		= "sha256",
 		.drv_name	= "sha256-ccp",
 		.type		= CCP_SHA_TYPE_256,
@@ -395,7 +476,11 @@ static int ccp_register_hmac_alg(struct list_head *head,
 	ret = crypto_register_ahash(alg);
 	if (ret) {
 		pr_err("%s ahash algorithm registration error (%d)\n",
+<<<<<<< HEAD
 			base->cra_name, ret);
+=======
+		       base->cra_name, ret);
+>>>>>>> v4.9.227
 		kfree(ccp_alg);
 		return ret;
 	}
@@ -453,7 +538,11 @@ static int ccp_register_sha_alg(struct list_head *head,
 	ret = crypto_register_ahash(alg);
 	if (ret) {
 		pr_err("%s ahash algorithm registration error (%d)\n",
+<<<<<<< HEAD
 			base->cra_name, ret);
+=======
+		       base->cra_name, ret);
+>>>>>>> v4.9.227
 		kfree(ccp_alg);
 		return ret;
 	}
@@ -468,8 +557,16 @@ static int ccp_register_sha_alg(struct list_head *head,
 int ccp_register_sha_algs(struct list_head *head)
 {
 	int i, ret;
+<<<<<<< HEAD
 
 	for (i = 0; i < ARRAY_SIZE(sha_algs); i++) {
+=======
+	unsigned int ccpversion = ccp_version();
+
+	for (i = 0; i < ARRAY_SIZE(sha_algs); i++) {
+		if (sha_algs[i].version > ccpversion)
+			continue;
+>>>>>>> v4.9.227
 		ret = ccp_register_sha_alg(head, &sha_algs[i]);
 		if (ret)
 			return ret;

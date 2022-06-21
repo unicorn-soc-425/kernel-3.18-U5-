@@ -87,8 +87,13 @@ host_to_adap(uint8_t *src, uint8_t *dst, uint32_t bsize)
 	__le32 *odest = (__le32 *) dst;
 	uint32_t iter = bsize >> 2;
 
+<<<<<<< HEAD
 	for (; iter ; iter--)
 		*odest++ = cpu_to_le32(*isrc++);
+=======
+	for ( ; iter--; isrc++)
+		*odest++ = cpu_to_le32(*isrc);
+>>>>>>> v4.9.227
 }
 
 static inline void
@@ -258,6 +263,11 @@ qla2x00_init_timer(srb_t *sp, unsigned long tmo)
 	if ((IS_QLAFX00(sp->fcport->vha->hw)) &&
 	    (sp->type == SRB_FXIOCB_DCMD))
 		init_completion(&sp->u.iocb_cmd.u.fxiocb.fxiocb_comp);
+<<<<<<< HEAD
+=======
+	if (sp->type == SRB_ELS_DCMD)
+		init_completion(&sp->u.iocb_cmd.u.els_logo.comp);
+>>>>>>> v4.9.227
 }
 
 static inline int

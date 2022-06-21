@@ -8,6 +8,7 @@
 
 #include <uapi/asm/unistd.h>
 
+<<<<<<< HEAD
 
 #ifndef CONFIG_64BIT
 #define __IGNORE_select
@@ -25,6 +26,12 @@
 /* Ignore system calls that are also reachable via sys_socket */
 #define __IGNORE_recvmmsg
 #define __IGNORE_sendmmsg
+=======
+#define __IGNORE_time
+#define __IGNORE_pkey_mprotect
+#define __IGNORE_pkey_alloc
+#define __IGNORE_pkey_free
+>>>>>>> v4.9.227
 
 #define __ARCH_WANT_OLD_READDIR
 #define __ARCH_WANT_SYS_ALARM
@@ -43,10 +50,13 @@
 #define __ARCH_WANT_SYS_OLDUMOUNT
 #define __ARCH_WANT_SYS_SIGPENDING
 #define __ARCH_WANT_SYS_SIGPROCMASK
+<<<<<<< HEAD
 # ifndef CONFIG_64BIT
 #   define __ARCH_WANT_STAT64
 #   define __ARCH_WANT_SYS_TIME
 # endif
+=======
+>>>>>>> v4.9.227
 # ifdef CONFIG_COMPAT
 #   define __ARCH_WANT_COMPAT_SYS_TIME
 # endif

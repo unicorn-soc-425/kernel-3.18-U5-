@@ -15,6 +15,10 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/frame.h>
+>>>>>>> v4.9.227
 #include "glue_helper-asm-avx2.S"
 
 .file "serpent-avx2-asm_64.S"
@@ -673,6 +677,10 @@ ENTRY(serpent_ecb_enc_16way)
 	 *	%rsi: dst
 	 *	%rdx: src
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -684,6 +692,10 @@ ENTRY(serpent_ecb_enc_16way)
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(serpent_ecb_enc_16way)
 
@@ -693,6 +705,10 @@ ENTRY(serpent_ecb_dec_16way)
 	 *	%rsi: dst
 	 *	%rdx: src
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -704,6 +720,10 @@ ENTRY(serpent_ecb_dec_16way)
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(serpent_ecb_dec_16way)
 
@@ -713,6 +733,10 @@ ENTRY(serpent_cbc_dec_16way)
 	 *	%rsi: dst
 	 *	%rdx: src
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -725,6 +749,10 @@ ENTRY(serpent_cbc_dec_16way)
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(serpent_cbc_dec_16way)
 
@@ -735,6 +763,10 @@ ENTRY(serpent_ctr_16way)
 	 *	%rdx: src (16 blocks)
 	 *	%rcx: iv (little endian, 128bit)
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -748,6 +780,10 @@ ENTRY(serpent_ctr_16way)
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(serpent_ctr_16way)
 
@@ -758,6 +794,10 @@ ENTRY(serpent_xts_enc_16way)
 	 *	%rdx: src (16 blocks)
 	 *	%rcx: iv (t ⊕ αⁿ ∈ GF(2¹²⁸))
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -772,6 +812,10 @@ ENTRY(serpent_xts_enc_16way)
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(serpent_xts_enc_16way)
 
@@ -782,6 +826,10 @@ ENTRY(serpent_xts_dec_16way)
 	 *	%rdx: src (16 blocks)
 	 *	%rcx: iv (t ⊕ αⁿ ∈ GF(2¹²⁸))
 	 */
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 
 	vzeroupper;
 
@@ -796,5 +844,9 @@ ENTRY(serpent_xts_dec_16way)
 
 	vzeroupper;
 
+<<<<<<< HEAD
+=======
+	FRAME_END
+>>>>>>> v4.9.227
 	ret;
 ENDPROC(serpent_xts_dec_16way)

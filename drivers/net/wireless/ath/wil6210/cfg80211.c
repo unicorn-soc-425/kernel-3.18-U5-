@@ -17,12 +17,19 @@
 #include <linux/etherdevice.h>
 #include "wil6210.h"
 #include "wmi.h"
+<<<<<<< HEAD
 #include "ftm.h"
+=======
+>>>>>>> v4.9.227
 
 #define WIL_MAX_ROC_DURATION_MS 5000
 
 #define CHAN60G(_channel, _flags) {				\
+<<<<<<< HEAD
 	.band			= IEEE80211_BAND_60GHZ,		\
+=======
+	.band			= NL80211_BAND_60GHZ,		\
+>>>>>>> v4.9.227
 	.center_freq		= 56160 + (2160 * (_channel)),	\
 	.hw_value		= (_channel),			\
 	.flags			= (_flags),			\
@@ -37,6 +44,7 @@ static struct ieee80211_channel wil_60ghz_channels[] = {
 /* channel 4 not supported yet */
 };
 
+<<<<<<< HEAD
 /* Vendor id to be used in vendor specific command and events
  * to user space.
  * NOTE: The authoritative place for definition of QCA_NL80211_VENDOR_ID,
@@ -121,6 +129,8 @@ static const struct nl80211_vendor_cmd_info wil_nl80211_vendor_events[] = {
 	},
 };
 
+=======
+>>>>>>> v4.9.227
 static struct ieee80211_supported_band wil_band_60ghz = {
 	.channels = wil_60ghz_channels,
 	.n_channels = ARRAY_SIZE(wil_60ghz_channels),
@@ -242,6 +252,7 @@ int wil_cid_fill_sinfo(struct wil6210_priv *wil, int cid,
 
 	sinfo->generation = wil->sinfo_gen;
 
+<<<<<<< HEAD
 	sinfo->filled = STATION_INFO_RX_BYTES |
 			STATION_INFO_TX_BYTES |
 			STATION_INFO_RX_PACKETS |
@@ -250,6 +261,16 @@ int wil_cid_fill_sinfo(struct wil6210_priv *wil, int cid,
 			STATION_INFO_TX_BITRATE |
 			STATION_INFO_RX_DROP_MISC |
 			STATION_INFO_TX_FAILED;
+=======
+	sinfo->filled = BIT(NL80211_STA_INFO_RX_BYTES) |
+			BIT(NL80211_STA_INFO_TX_BYTES) |
+			BIT(NL80211_STA_INFO_RX_PACKETS) |
+			BIT(NL80211_STA_INFO_TX_PACKETS) |
+			BIT(NL80211_STA_INFO_RX_BITRATE) |
+			BIT(NL80211_STA_INFO_TX_BITRATE) |
+			BIT(NL80211_STA_INFO_RX_DROP_MISC) |
+			BIT(NL80211_STA_INFO_TX_FAILED);
+>>>>>>> v4.9.227
 
 	sinfo->txrate.flags = RATE_INFO_FLAGS_MCS | RATE_INFO_FLAGS_60G;
 	sinfo->txrate.mcs = le16_to_cpu(reply.evt.bf_mcs);
@@ -263,7 +284,11 @@ int wil_cid_fill_sinfo(struct wil6210_priv *wil, int cid,
 	sinfo->tx_failed = stats->tx_errors;
 
 	if (test_bit(wil_status_fwconnected, wil->status)) {
+<<<<<<< HEAD
 		sinfo->filled |= STATION_INFO_SIGNAL;
+=======
+		sinfo->filled |= BIT(NL80211_STA_INFO_SIGNAL);
+>>>>>>> v4.9.227
 		sinfo->signal = reply.evt.sqi;
 	}
 
@@ -327,6 +352,10 @@ static int wil_cfg80211_dump_station(struct wiphy *wiphy,
 
 static struct wireless_dev *
 wil_cfg80211_add_iface(struct wiphy *wiphy, const char *name,
+<<<<<<< HEAD
+=======
+		       unsigned char name_assign_type,
+>>>>>>> v4.9.227
 		       enum nl80211_iftype type,
 		       u32 *flags, struct vif_params *params)
 {
@@ -763,7 +792,11 @@ int wil_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 			 u64 *cookie)
 {
 	const u8 *buf = params->buf;
+<<<<<<< HEAD
 	size_t len = params->len, total;
+=======
+	size_t len = params->len;
+>>>>>>> v4.9.227
 	struct wil6210_priv *wil = wiphy_to_wil(wiphy);
 	int rc;
 	bool tx_status = false;
@@ -784,6 +817,7 @@ int wil_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 	wil_dbg_misc(wil, "%s()\n", __func__);
 	print_hex_dump_bytes("mgmt tx frame ", DUMP_PREFIX_OFFSET, buf, len);
 
+<<<<<<< HEAD
 	if (len < sizeof(struct ieee80211_mgmt))
 		return -EINVAL;
 
@@ -792,6 +826,9 @@ int wil_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 		return -EINVAL;
 
 	cmd = kmalloc(total, GFP_KERNEL);
+=======
+	cmd = kmalloc(sizeof(*cmd) + len, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!cmd) {
 		rc = -ENOMEM;
 		goto out;
@@ -801,7 +838,11 @@ int wil_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 	cmd->len = cpu_to_le16(len);
 	memcpy(cmd->payload, buf, len);
 
+<<<<<<< HEAD
 	rc = wmi_call(wil, WMI_SW_TX_REQ_CMDID, cmd, total,
+=======
+	rc = wmi_call(wil, WMI_SW_TX_REQ_CMDID, cmd, sizeof(*cmd) + len,
+>>>>>>> v4.9.227
 		      WMI_SW_TX_COMPLETE_EVENTID, &evt, sizeof(evt), 2000);
 	if (rc == 0)
 		tx_status = !evt.evt.status;
@@ -1096,6 +1137,15 @@ static int _wil_cfg80211_merge_extra_ies(const u8 *ies1, u16 ies1_len,
 	u8 *buf, *dpos;
 	const u8 *spos;
 
+<<<<<<< HEAD
+=======
+	if (!ies1)
+		ies1_len = 0;
+
+	if (!ies2)
+		ies2_len = 0;
+
+>>>>>>> v4.9.227
 	if (ies1_len == 0 && ies2_len == 0) {
 		*merged_ies = NULL;
 		*merged_len = 0;
@@ -1105,17 +1155,30 @@ static int _wil_cfg80211_merge_extra_ies(const u8 *ies1, u16 ies1_len,
 	buf = kmalloc(ies1_len + ies2_len, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
+<<<<<<< HEAD
 	memcpy(buf, ies1, ies1_len);
 	dpos = buf + ies1_len;
 	spos = ies2;
 	while (spos + 1 < ies2 + ies2_len) {
+=======
+	if (ies1)
+		memcpy(buf, ies1, ies1_len);
+	dpos = buf + ies1_len;
+	spos = ies2;
+	while (spos && (spos + 1 < ies2 + ies2_len)) {
+>>>>>>> v4.9.227
 		/* IE tag at offset 0, length at offset 1 */
 		u16 ielen = 2 + spos[1];
 
 		if (spos + ielen > ies2 + ies2_len)
 			break;
 		if (spos[0] == WLAN_EID_VENDOR_SPECIFIC &&
+<<<<<<< HEAD
 		    !_wil_cfg80211_find_ie(ies1, ies1_len, spos, ielen)) {
+=======
+		    (!ies1 || !_wil_cfg80211_find_ie(ies1, ies1_len,
+						     spos, ielen))) {
+>>>>>>> v4.9.227
 			memcpy(dpos, spos, ielen);
 			dpos += ielen;
 		}
@@ -1565,7 +1628,11 @@ static void wil_wiphy_init(struct wiphy *wiphy)
 		NL80211_PROBE_RESP_OFFLOAD_SUPPORT_WPS2 |
 		NL80211_PROBE_RESP_OFFLOAD_SUPPORT_P2P;
 
+<<<<<<< HEAD
 	wiphy->bands[IEEE80211_BAND_60GHZ] = &wil_band_60ghz;
+=======
+	wiphy->bands[NL80211_BAND_60GHZ] = &wil_band_60ghz;
+>>>>>>> v4.9.227
 
 	/* TODO: figure this out */
 	wiphy->signal_type = CFG80211_SIGNAL_TYPE_UNSPEC;
@@ -1574,11 +1641,14 @@ static void wil_wiphy_init(struct wiphy *wiphy)
 	wiphy->n_cipher_suites = ARRAY_SIZE(wil_cipher_suites);
 	wiphy->mgmt_stypes = wil_mgmt_stypes;
 	wiphy->features |= NL80211_FEATURE_SK_TX_STATUS;
+<<<<<<< HEAD
 
 	wiphy->n_vendor_commands = ARRAY_SIZE(wil_nl80211_vendor_commands);
 	wiphy->vendor_commands = wil_nl80211_vendor_commands;
 	wiphy->vendor_events = wil_nl80211_vendor_events;
 	wiphy->n_vendor_events = ARRAY_SIZE(wil_nl80211_vendor_events);
+=======
+>>>>>>> v4.9.227
 }
 
 struct wireless_dev *wil_cfg80211_init(struct device *dev)

@@ -41,6 +41,10 @@
 #include <linux/fs.h>
 #include <linux/vfs.h>
 #include <linux/xattr.h>
+<<<<<<< HEAD
+=======
+#include <linux/pagemap.h>
+>>>>>>> v4.9.227
 
 #include "squashfs_fs.h"
 #include "squashfs_fs_sb.h"
@@ -291,6 +295,10 @@ int squashfs_read_inode(struct inode *inode, long long ino)
 		set_nlink(inode, le32_to_cpu(sqsh_ino->nlink));
 		inode->i_size = le32_to_cpu(sqsh_ino->symlink_size);
 		inode->i_op = &squashfs_symlink_inode_ops;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> v4.9.227
 		inode->i_data.a_ops = &squashfs_symlink_aops;
 		inode->i_mode |= S_IFLNK;
 		squashfs_i(inode)->start = block;
@@ -423,7 +431,10 @@ failed_read:
 
 
 const struct inode_operations squashfs_inode_ops = {
+<<<<<<< HEAD
 	.getxattr = generic_getxattr,
+=======
+>>>>>>> v4.9.227
 	.listxattr = squashfs_listxattr
 };
 

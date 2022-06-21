@@ -25,9 +25,17 @@
 #include <nvif/driver.h>
 #include <nvif/ioctl.h>
 #include <nvif/class.h>
+<<<<<<< HEAD
 #include <nvif/unpack.h>
 
 #include "nouveau_drm.h"
+=======
+#include <nvif/cl0002.h>
+#include <nvif/cla06f.h>
+#include <nvif/unpack.h>
+
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 #include "nouveau_gem.h"
 #include "nouveau_chan.h"
@@ -87,11 +95,16 @@ nouveau_abi16_swclass(struct nouveau_drm *drm)
 {
 	switch (drm->device.info.family) {
 	case NV_DEVICE_INFO_V0_TNT:
+<<<<<<< HEAD
 		return NVIF_IOCTL_NEW_V0_SW_NV04;
+=======
+		return NVIF_CLASS_SW_NV04;
+>>>>>>> v4.9.227
 	case NV_DEVICE_INFO_V0_CELSIUS:
 	case NV_DEVICE_INFO_V0_KELVIN:
 	case NV_DEVICE_INFO_V0_RANKINE:
 	case NV_DEVICE_INFO_V0_CURIE:
+<<<<<<< HEAD
 		return NVIF_IOCTL_NEW_V0_SW_NV10;
 	case NV_DEVICE_INFO_V0_TESLA:
 		return NVIF_IOCTL_NEW_V0_SW_NV50;
@@ -99,6 +112,16 @@ nouveau_abi16_swclass(struct nouveau_drm *drm)
 	case NV_DEVICE_INFO_V0_KEPLER:
 	case NV_DEVICE_INFO_V0_MAXWELL:
 		return NVIF_IOCTL_NEW_V0_SW_GF100;
+=======
+		return NVIF_CLASS_SW_NV10;
+	case NV_DEVICE_INFO_V0_TESLA:
+		return NVIF_CLASS_SW_NV50;
+	case NV_DEVICE_INFO_V0_FERMI:
+	case NV_DEVICE_INFO_V0_KEPLER:
+	case NV_DEVICE_INFO_V0_MAXWELL:
+	case NV_DEVICE_INFO_V0_PASCAL:
+		return NVIF_CLASS_SW_GF100;
+>>>>>>> v4.9.227
 	}
 
 	return 0x0000;
@@ -261,6 +284,7 @@ nouveau_abi16_ioctl_channel_alloc(ABI16_IOCTL_ARGS)
 	/* hack to allow channel engine type specification on kepler */
 	if (device->info.family >= NV_DEVICE_INFO_V0_KEPLER) {
 		if (init->fb_ctxdma_handle != ~0)
+<<<<<<< HEAD
 			init->fb_ctxdma_handle = KEPLER_CHANNEL_GPFIFO_A_V0_ENGINE_GR;
 		else
 			init->fb_ctxdma_handle = init->tt_ctxdma_handle;
@@ -268,6 +292,25 @@ nouveau_abi16_ioctl_channel_alloc(ABI16_IOCTL_ARGS)
 		/* allow flips to be executed if this is a graphics channel */
 		init->tt_ctxdma_handle = 0;
 		if (init->fb_ctxdma_handle == KEPLER_CHANNEL_GPFIFO_A_V0_ENGINE_GR)
+=======
+			init->fb_ctxdma_handle = NVA06F_V0_ENGINE_GR;
+		else {
+			init->fb_ctxdma_handle = 0;
+#define _(A,B) if (init->tt_ctxdma_handle & (A)) init->fb_ctxdma_handle |= (B)
+			_(0x01, NVA06F_V0_ENGINE_GR);
+			_(0x02, NVA06F_V0_ENGINE_MSPDEC);
+			_(0x04, NVA06F_V0_ENGINE_MSPPP);
+			_(0x08, NVA06F_V0_ENGINE_MSVLD);
+			_(0x10, NVA06F_V0_ENGINE_CE0);
+			_(0x20, NVA06F_V0_ENGINE_CE1);
+			_(0x40, NVA06F_V0_ENGINE_MSENC);
+#undef _
+		}
+
+		/* allow flips to be executed if this is a graphics channel */
+		init->tt_ctxdma_handle = 0;
+		if (init->fb_ctxdma_handle == NVA06F_V0_ENGINE_GR)
+>>>>>>> v4.9.227
 			init->tt_ctxdma_handle = 1;
 	}
 
@@ -355,9 +398,15 @@ nouveau_abi16_usif(struct drm_file *file_priv, void *data, u32 size)
 	} *args = data;
 	struct nouveau_abi16_chan *chan;
 	struct nouveau_abi16 *abi16;
+<<<<<<< HEAD
 	int ret;
 
 	if (nvif_unpack(args->v0, 0, 0, true)) {
+=======
+	int ret = -ENOSYS;
+
+	if (!(ret = nvif_unpack(ret, &data, &size, args->v0, 0, 0, true))) {
+>>>>>>> v4.9.227
 		switch (args->v0.type) {
 		case NVIF_IOCTL_V0_NEW:
 		case NVIF_IOCTL_V0_MTHD:
@@ -433,10 +482,17 @@ nouveau_abi16_ioctl_grobj_alloc(ABI16_IOCTL_ARGS)
 		/* nvsw: compatibility with older 0x*6e class identifier */
 		for (i = 0; !oclass && i < ret; i++) {
 			switch (sclass[i].oclass) {
+<<<<<<< HEAD
 			case NVIF_IOCTL_NEW_V0_SW_NV04:
 			case NVIF_IOCTL_NEW_V0_SW_NV10:
 			case NVIF_IOCTL_NEW_V0_SW_NV50:
 			case NVIF_IOCTL_NEW_V0_SW_GF100:
+=======
+			case NVIF_CLASS_SW_NV04:
+			case NVIF_CLASS_SW_NV10:
+			case NVIF_CLASS_SW_NV50:
+			case NVIF_CLASS_SW_GF100:
+>>>>>>> v4.9.227
 				oclass = sclass[i].oclass;
 				break;
 			default:

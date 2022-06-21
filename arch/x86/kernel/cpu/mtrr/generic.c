@@ -4,7 +4,11 @@
  */
 #define DEBUG
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/mm.h>
@@ -42,7 +46,11 @@ EXPORT_SYMBOL_GPL(mtrr_state);
  * "BIOS and Kernel Developer's Guide for the AMD Athlon 64 and AMD
  * Opteron Processors" (26094 Rev. 3.30 February 2006), section
  * "13.2.1.2 SYSCFG Register": "The MtrrFixDramModEn bit should be set
+<<<<<<< HEAD
  * to 1 during BIOS initalization of the fixed MTRRs, then cleared to
+=======
+ * to 1 during BIOS initialization of the fixed MTRRs, then cleared to
+>>>>>>> v4.9.227
  * 0 for operation."
  */
 static inline void k8_check_syscfg_dram_mod_en(void)
@@ -55,7 +63,11 @@ static inline void k8_check_syscfg_dram_mod_en(void)
 
 	rdmsr(MSR_K8_SYSCFG, lo, hi);
 	if (lo & K8_MTRRFIXRANGE_DRAM_MODIFY) {
+<<<<<<< HEAD
 		printk(KERN_ERR FW_WARN "MTRR: CPU %u: SYSCFG[MtrrFixDramModEn]"
+=======
+		pr_err(FW_WARN "MTRR: CPU %u: SYSCFG[MtrrFixDramModEn]"
+>>>>>>> v4.9.227
 		       " not cleared by BIOS, clearing this bit\n",
 		       smp_processor_id());
 		lo &= ~K8_MTRRFIXRANGE_DRAM_MODIFY;
@@ -102,6 +114,7 @@ static int check_type_overlap(u8 *prev, u8 *curr)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Error/Semi-error returns:
  * 0xFF - when MTRR is not enabled
@@ -110,12 +123,71 @@ static int check_type_overlap(u8 *prev, u8 *curr)
  *		Caller has to lookup again for [*partial_end:end].
  */
 static u8 __mtrr_type_lookup(u64 start, u64 end, u64 *partial_end, int *repeat)
+=======
+/**
+ * mtrr_type_lookup_fixed - look up memory type in MTRR fixed entries
+ *
+ * Return the MTRR fixed memory type of 'start'.
+ *
+ * MTRR fixed entries are divided into the following ways:
+ *  0x00000 - 0x7FFFF : This range is divided into eight 64KB sub-ranges
+ *  0x80000 - 0xBFFFF : This range is divided into sixteen 16KB sub-ranges
+ *  0xC0000 - 0xFFFFF : This range is divided into sixty-four 4KB sub-ranges
+ *
+ * Return Values:
+ * MTRR_TYPE_(type)  - Matched memory type
+ * MTRR_TYPE_INVALID - Unmatched
+ */
+static u8 mtrr_type_lookup_fixed(u64 start, u64 end)
+{
+	int idx;
+
+	if (start >= 0x100000)
+		return MTRR_TYPE_INVALID;
+
+	/* 0x0 - 0x7FFFF */
+	if (start < 0x80000) {
+		idx = 0;
+		idx += (start >> 16);
+		return mtrr_state.fixed_ranges[idx];
+	/* 0x80000 - 0xBFFFF */
+	} else if (start < 0xC0000) {
+		idx = 1 * 8;
+		idx += ((start - 0x80000) >> 14);
+		return mtrr_state.fixed_ranges[idx];
+	}
+
+	/* 0xC0000 - 0xFFFFF */
+	idx = 3 * 8;
+	idx += ((start - 0xC0000) >> 12);
+	return mtrr_state.fixed_ranges[idx];
+}
+
+/**
+ * mtrr_type_lookup_variable - look up memory type in MTRR variable entries
+ *
+ * Return Value:
+ * MTRR_TYPE_(type) - Matched memory type or default memory type (unmatched)
+ *
+ * Output Arguments:
+ * repeat - Set to 1 when [start:end] spanned across MTRR range and type
+ *	    returned corresponds only to [start:*partial_end].  Caller has
+ *	    to lookup again for [*partial_end:end].
+ *
+ * uniform - Set to 1 when an MTRR covers the region uniformly, i.e. the
+ *	     region is fully covered by a single MTRR entry or the default
+ *	     type.
+ */
+static u8 mtrr_type_lookup_variable(u64 start, u64 end, u64 *partial_end,
+				    int *repeat, u8 *uniform)
+>>>>>>> v4.9.227
 {
 	int i;
 	u64 base, mask;
 	u8 prev_match, curr_match;
 
 	*repeat = 0;
+<<<<<<< HEAD
 	if (!mtrr_state_set)
 		return 0xFF;
 
@@ -155,6 +227,16 @@ static u8 __mtrr_type_lookup(u64 start, u64 end, u64 *partial_end, int *repeat)
 	prev_match = 0xFF;
 	for (i = 0; i < num_var_ranges; ++i) {
 		unsigned short start_state, end_state;
+=======
+	*uniform = 1;
+
+	/* Make end inclusive instead of exclusive */
+	end--;
+
+	prev_match = MTRR_TYPE_INVALID;
+	for (i = 0; i < num_var_ranges; ++i) {
+		unsigned short start_state, end_state, inclusive;
+>>>>>>> v4.9.227
 
 		if (!(mtrr_state.var_ranges[i].mask_lo & (1 << 11)))
 			continue;
@@ -166,6 +248,7 @@ static u8 __mtrr_type_lookup(u64 start, u64 end, u64 *partial_end, int *repeat)
 
 		start_state = ((start & mask) == (base & mask));
 		end_state = ((end & mask) == (base & mask));
+<<<<<<< HEAD
 
 		if (start_state != end_state) {
 			/*
@@ -180,6 +263,31 @@ static u8 __mtrr_type_lookup(u64 start, u64 end, u64 *partial_end, int *repeat)
 			 * the start of second region so that caller will
 			 * lookup again on the second region.
 			 * Note: This way we handle multiple overlaps as well.
+=======
+		inclusive = ((start < base) && (end > base));
+
+		if ((start_state != end_state) || inclusive) {
+			/*
+			 * We have start:end spanning across an MTRR.
+			 * We split the region into either
+			 *
+			 * - start_state:1
+			 * (start:mtrr_end)(mtrr_end:end)
+			 * - end_state:1
+			 * (start:mtrr_start)(mtrr_start:end)
+			 * - inclusive:1
+			 * (start:mtrr_start)(mtrr_start:mtrr_end)(mtrr_end:end)
+			 *
+			 * depending on kind of overlap.
+			 *
+			 * Return the type of the first region and a pointer
+			 * to the start of next region so that caller will be
+			 * advised to lookup again after having adjusted start
+			 * and end.
+			 *
+			 * Note: This way we handle overlaps with multiple
+			 * entries and the default type properly.
+>>>>>>> v4.9.227
 			 */
 			if (start_state)
 				*partial_end = base + get_mtrr_size(mask);
@@ -193,32 +301,49 @@ static u8 __mtrr_type_lookup(u64 start, u64 end, u64 *partial_end, int *repeat)
 
 			end = *partial_end - 1; /* end is inclusive */
 			*repeat = 1;
+<<<<<<< HEAD
+=======
+			*uniform = 0;
+>>>>>>> v4.9.227
 		}
 
 		if ((start & mask) != (base & mask))
 			continue;
 
 		curr_match = mtrr_state.var_ranges[i].base_lo & 0xff;
+<<<<<<< HEAD
 		if (prev_match == 0xFF) {
+=======
+		if (prev_match == MTRR_TYPE_INVALID) {
+>>>>>>> v4.9.227
 			prev_match = curr_match;
 			continue;
 		}
 
+<<<<<<< HEAD
+=======
+		*uniform = 0;
+>>>>>>> v4.9.227
 		if (check_type_overlap(&prev_match, &curr_match))
 			return curr_match;
 	}
 
+<<<<<<< HEAD
 	if (mtrr_tom2) {
 		if (start >= (1ULL<<32) && (end < mtrr_tom2))
 			return MTRR_TYPE_WRBACK;
 	}
 
 	if (prev_match != 0xFF)
+=======
+	if (prev_match != MTRR_TYPE_INVALID)
+>>>>>>> v4.9.227
 		return prev_match;
 
 	return mtrr_state.def_type;
 }
 
+<<<<<<< HEAD
 /*
  * Returns the effective MTRR type for the region
  * Error return:
@@ -231,21 +356,86 @@ u8 mtrr_type_lookup(u64 start, u64 end)
 	u64 partial_end;
 
 	type = __mtrr_type_lookup(start, end, &partial_end, &repeat);
+=======
+/**
+ * mtrr_type_lookup - look up memory type in MTRR
+ *
+ * Return Values:
+ * MTRR_TYPE_(type)  - The effective MTRR type for the region
+ * MTRR_TYPE_INVALID - MTRR is disabled
+ *
+ * Output Argument:
+ * uniform - Set to 1 when an MTRR covers the region uniformly, i.e. the
+ *	     region is fully covered by a single MTRR entry or the default
+ *	     type.
+ */
+u8 mtrr_type_lookup(u64 start, u64 end, u8 *uniform)
+{
+	u8 type, prev_type, is_uniform = 1, dummy;
+	int repeat;
+	u64 partial_end;
+
+	if (!mtrr_state_set)
+		return MTRR_TYPE_INVALID;
+
+	if (!(mtrr_state.enabled & MTRR_STATE_MTRR_ENABLED))
+		return MTRR_TYPE_INVALID;
+
+	/*
+	 * Look up the fixed ranges first, which take priority over
+	 * the variable ranges.
+	 */
+	if ((start < 0x100000) &&
+	    (mtrr_state.have_fixed) &&
+	    (mtrr_state.enabled & MTRR_STATE_MTRR_FIXED_ENABLED)) {
+		is_uniform = 0;
+		type = mtrr_type_lookup_fixed(start, end);
+		goto out;
+	}
+
+	/*
+	 * Look up the variable ranges.  Look of multiple ranges matching
+	 * this address and pick type as per MTRR precedence.
+	 */
+	type = mtrr_type_lookup_variable(start, end, &partial_end,
+					 &repeat, &is_uniform);
+>>>>>>> v4.9.227
 
 	/*
 	 * Common path is with repeat = 0.
 	 * However, we can have cases where [start:end] spans across some
+<<<<<<< HEAD
 	 * MTRR range. Do repeated lookups for that case here.
+=======
+	 * MTRR ranges and/or the default type.  Do repeated lookups for
+	 * that case here.
+>>>>>>> v4.9.227
 	 */
 	while (repeat) {
 		prev_type = type;
 		start = partial_end;
+<<<<<<< HEAD
 		type = __mtrr_type_lookup(start, end, &partial_end, &repeat);
 
 		if (check_type_overlap(&prev_type, &type))
 			return type;
 	}
 
+=======
+		is_uniform = 0;
+		type = mtrr_type_lookup_variable(start, end, &partial_end,
+						 &repeat, &dummy);
+
+		if (check_type_overlap(&prev_type, &type))
+			goto out;
+	}
+
+	if (mtrr_tom2 && (start >= (1ULL<<32)) && (end < mtrr_tom2))
+		type = MTRR_TYPE_WRBACK;
+
+out:
+	*uniform = is_uniform;
+>>>>>>> v4.9.227
 	return type;
 }
 
@@ -288,7 +478,11 @@ static void get_fixed_ranges(mtrr_type *frs)
 
 void mtrr_save_fixed_ranges(void *info)
 {
+<<<<<<< HEAD
 	if (cpu_has_mtrr)
+=======
+	if (boot_cpu_has(X86_FEATURE_MTRR))
+>>>>>>> v4.9.227
 		get_fixed_ranges(mtrr_state.fixed_ranges);
 }
 
@@ -347,7 +541,13 @@ static void __init print_mtrr_state(void)
 		 mtrr_attrib_to_str(mtrr_state.def_type));
 	if (mtrr_state.have_fixed) {
 		pr_debug("MTRR fixed ranges %sabled:\n",
+<<<<<<< HEAD
 			 mtrr_state.enabled & 1 ? "en" : "dis");
+=======
+			((mtrr_state.enabled & MTRR_STATE_MTRR_ENABLED) &&
+			 (mtrr_state.enabled & MTRR_STATE_MTRR_FIXED_ENABLED)) ?
+			 "en" : "dis");
+>>>>>>> v4.9.227
 		print_fixed(0x00000, 0x10000, mtrr_state.fixed_ranges + 0);
 		for (i = 0; i < 2; ++i)
 			print_fixed(0x80000 + i * 0x20000, 0x04000,
@@ -360,7 +560,11 @@ static void __init print_mtrr_state(void)
 		print_fixed_last();
 	}
 	pr_debug("MTRR variable ranges %sabled:\n",
+<<<<<<< HEAD
 		 mtrr_state.enabled & 2 ? "en" : "dis");
+=======
+		 mtrr_state.enabled & MTRR_STATE_MTRR_ENABLED ? "en" : "dis");
+>>>>>>> v4.9.227
 	high_width = (__ffs64(size_or_mask) - (32 - PAGE_SHIFT) + 3) / 4;
 
 	for (i = 0; i < num_var_ranges; ++i) {
@@ -381,11 +585,32 @@ static void __init print_mtrr_state(void)
 		pr_debug("TOM2: %016llx aka %lldM\n", mtrr_tom2, mtrr_tom2>>20);
 }
 
+<<<<<<< HEAD
 /* Grab all of the MTRR state for this CPU into *state */
 void __init get_mtrr_state(void)
 {
 	struct mtrr_var_range *vrs;
 	unsigned long flags;
+=======
+/* PAT setup for BP. We need to go through sync steps here */
+void __init mtrr_bp_pat_init(void)
+{
+	unsigned long flags;
+
+	local_irq_save(flags);
+	prepare_set();
+
+	pat_init();
+
+	post_set();
+	local_irq_restore(flags);
+}
+
+/* Grab all of the MTRR state for this CPU into *state */
+bool __init get_mtrr_state(void)
+{
+	struct mtrr_var_range *vrs;
+>>>>>>> v4.9.227
 	unsigned lo, dummy;
 	unsigned int i;
 
@@ -418,6 +643,7 @@ void __init get_mtrr_state(void)
 
 	mtrr_state_set = 1;
 
+<<<<<<< HEAD
 	/* PAT setup for BP. We need to go through sync steps here */
 	local_irq_save(flags);
 	prepare_set();
@@ -426,6 +652,9 @@ void __init get_mtrr_state(void)
 
 	post_set();
 	local_irq_restore(flags);
+=======
+	return !!(mtrr_state.enabled & MTRR_STATE_MTRR_ENABLED);
+>>>>>>> v4.9.227
 }
 
 /* Some BIOS's are messed up and don't set all MTRRs the same! */
@@ -436,6 +665,7 @@ void __init mtrr_state_warn(void)
 	if (!mask)
 		return;
 	if (mask & MTRR_CHANGE_MASK_FIXED)
+<<<<<<< HEAD
 		pr_warning("mtrr: your CPUs had inconsistent fixed MTRR settings\n");
 	if (mask & MTRR_CHANGE_MASK_VARIABLE)
 		pr_warning("mtrr: your CPUs had inconsistent variable MTRR settings\n");
@@ -444,6 +674,16 @@ void __init mtrr_state_warn(void)
 
 	printk(KERN_INFO "mtrr: probably your BIOS does not setup all CPUs.\n");
 	printk(KERN_INFO "mtrr: corrected configuration.\n");
+=======
+		pr_warn("mtrr: your CPUs had inconsistent fixed MTRR settings\n");
+	if (mask & MTRR_CHANGE_MASK_VARIABLE)
+		pr_warn("mtrr: your CPUs had inconsistent variable MTRR settings\n");
+	if (mask & MTRR_CHANGE_MASK_DEFTYPE)
+		pr_warn("mtrr: your CPUs had inconsistent MTRRdefType settings\n");
+
+	pr_info("mtrr: probably your BIOS does not setup all CPUs.\n");
+	pr_info("mtrr: corrected configuration.\n");
+>>>>>>> v4.9.227
 }
 
 /*
@@ -454,8 +694,12 @@ void __init mtrr_state_warn(void)
 void mtrr_wrmsr(unsigned msr, unsigned a, unsigned b)
 {
 	if (wrmsr_safe(msr, a, b) < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 			"MTRR: CPU %u: Writing MSR %x to %x:%x failed\n",
+=======
+		pr_err("MTRR: CPU %u: Writing MSR %x to %x:%x failed\n",
+>>>>>>> v4.9.227
 			smp_processor_id(), msr, a, b);
 	}
 }
@@ -542,7 +786,11 @@ static void generic_get_mtrr(unsigned int reg, unsigned long *base,
 		tmp |= ~((1ULL<<(hi - 1)) - 1);
 
 		if (tmp != mask) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "mtrr: your BIOS has configured an incorrect mask, fixing it.\n");
+=======
+			pr_warn("mtrr: your BIOS has configured an incorrect mask, fixing it.\n");
+>>>>>>> v4.9.227
 			add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
 			mask = tmp;
 		}
@@ -677,7 +925,11 @@ static void prepare_set(void) __acquires(set_atomicity_lock)
 	wbinvd();
 
 	/* Save value of CR4 and clear Page Global Enable (bit 7) */
+<<<<<<< HEAD
 	if (cpu_has_pge) {
+=======
+	if (boot_cpu_has(X86_FEATURE_PGE)) {
+>>>>>>> v4.9.227
 		cr4 = __read_cr4();
 		__write_cr4(cr4 & ~X86_CR4_PGE);
 	}
@@ -707,7 +959,11 @@ static void post_set(void) __releases(set_atomicity_lock)
 	write_cr0(read_cr0() & ~X86_CR0_CD);
 
 	/* Restore value of CR4 */
+<<<<<<< HEAD
 	if (cpu_has_pge)
+=======
+	if (boot_cpu_has(X86_FEATURE_PGE))
+>>>>>>> v4.9.227
 		__write_cr4(cr4);
 	raw_spin_unlock(&set_atomicity_lock);
 }
@@ -791,15 +1047,25 @@ int generic_validate_add_page(unsigned long base, unsigned long size,
 	 */
 	if (is_cpu(INTEL) && boot_cpu_data.x86 == 6 &&
 	    boot_cpu_data.x86_model == 1 &&
+<<<<<<< HEAD
 	    boot_cpu_data.x86_mask <= 7) {
 		if (base & ((1 << (22 - PAGE_SHIFT)) - 1)) {
 			pr_warning("mtrr: base(0x%lx000) is not 4 MiB aligned\n", base);
+=======
+	    boot_cpu_data.x86_stepping <= 7) {
+		if (base & ((1 << (22 - PAGE_SHIFT)) - 1)) {
+			pr_warn("mtrr: base(0x%lx000) is not 4 MiB aligned\n", base);
+>>>>>>> v4.9.227
 			return -EINVAL;
 		}
 		if (!(base + size < 0x70000 || base > 0x7003F) &&
 		    (type == MTRR_TYPE_WRCOMB
 		     || type == MTRR_TYPE_WRBACK)) {
+<<<<<<< HEAD
 			pr_warning("mtrr: writable mtrr between 0x70000000 and 0x7003FFFF may hang the CPU.\n");
+=======
+			pr_warn("mtrr: writable mtrr between 0x70000000 and 0x7003FFFF may hang the CPU.\n");
+>>>>>>> v4.9.227
 			return -EINVAL;
 		}
 	}
@@ -813,7 +1079,11 @@ int generic_validate_add_page(unsigned long base, unsigned long size,
 	     lbase = lbase >> 1, last = last >> 1)
 		;
 	if (lbase != last) {
+<<<<<<< HEAD
 		pr_warning("mtrr: base(0x%lx000) is not aligned on a size(0x%lx000) boundary\n", base, size);
+=======
+		pr_warn("mtrr: base(0x%lx000) is not aligned on a size(0x%lx000) boundary\n", base, size);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 	return 0;

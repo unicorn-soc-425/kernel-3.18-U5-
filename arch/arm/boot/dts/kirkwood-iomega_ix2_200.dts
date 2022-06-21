@@ -169,6 +169,13 @@
 			gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
 		};
 	};
+<<<<<<< HEAD
+=======
+	gpio-poweroff {
+		compatible = "gpio-poweroff";
+		gpios = <&gpio0 17 GPIO_ACTIVE_LOW>;
+	};
+>>>>>>> v4.9.227
 };
 
 &nand {
@@ -192,8 +199,13 @@
 	};
 
 	partition@400000 {
+<<<<<<< HEAD
 		label = "uInitrd";
 		reg = <0x540000 0x1000000>;
+=======
+		label = "rootfs";
+		reg = <0x400000 0x1C00000>;
+>>>>>>> v4.9.227
 	};
 };
 

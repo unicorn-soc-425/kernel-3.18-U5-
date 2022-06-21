@@ -158,8 +158,13 @@ static const struct i2c_algorithm amdgpu_atombios_i2c_algo = {
 };
 
 struct amdgpu_i2c_chan *amdgpu_i2c_create(struct drm_device *dev,
+<<<<<<< HEAD
 					    struct amdgpu_i2c_bus_rec *rec,
 					    const char *name)
+=======
+					  const struct amdgpu_i2c_bus_rec *rec,
+					  const char *name)
+>>>>>>> v4.9.227
 {
 	struct amdgpu_i2c_chan *i2c;
 	int ret;
@@ -186,10 +191,15 @@ struct amdgpu_i2c_chan *amdgpu_i2c_create(struct drm_device *dev,
 			 "AMDGPU i2c hw bus %s", name);
 		i2c->adapter.algo = &amdgpu_atombios_i2c_algo;
 		ret = i2c_add_adapter(&i2c->adapter);
+<<<<<<< HEAD
 		if (ret) {
 			DRM_ERROR("Failed to register hw i2c %s\n", name);
 			goto out_free;
 		}
+=======
+		if (ret)
+			goto out_free;
+>>>>>>> v4.9.227
 	} else {
 		/* set the amdgpu bit adapter */
 		snprintf(i2c->adapter.name, sizeof(i2c->adapter.name),
@@ -222,6 +232,10 @@ void amdgpu_i2c_destroy(struct amdgpu_i2c_chan *i2c)
 {
 	if (!i2c)
 		return;
+<<<<<<< HEAD
+=======
+	WARN_ON(i2c->has_aux);
+>>>>>>> v4.9.227
 	i2c_del_adapter(&i2c->adapter);
 	kfree(i2c);
 }
@@ -251,8 +265,13 @@ void amdgpu_i2c_fini(struct amdgpu_device *adev)
 
 /* Add additional buses */
 void amdgpu_i2c_add(struct amdgpu_device *adev,
+<<<<<<< HEAD
 		     struct amdgpu_i2c_bus_rec *rec,
 		     const char *name)
+=======
+		    const struct amdgpu_i2c_bus_rec *rec,
+		    const char *name)
+>>>>>>> v4.9.227
 {
 	struct drm_device *dev = adev->ddev;
 	int i;
@@ -268,7 +287,11 @@ void amdgpu_i2c_add(struct amdgpu_device *adev,
 /* looks up bus based on id */
 struct amdgpu_i2c_chan *
 amdgpu_i2c_lookup(struct amdgpu_device *adev,
+<<<<<<< HEAD
 		   struct amdgpu_i2c_bus_rec *i2c_bus)
+=======
+		  const struct amdgpu_i2c_bus_rec *i2c_bus)
+>>>>>>> v4.9.227
 {
 	int i;
 
@@ -338,7 +361,11 @@ static void amdgpu_i2c_put_byte(struct amdgpu_i2c_chan *i2c_bus,
 
 /* ddc router switching */
 void
+<<<<<<< HEAD
 amdgpu_i2c_router_select_ddc_port(struct amdgpu_connector *amdgpu_connector)
+=======
+amdgpu_i2c_router_select_ddc_port(const struct amdgpu_connector *amdgpu_connector)
+>>>>>>> v4.9.227
 {
 	u8 val;
 
@@ -367,7 +394,11 @@ amdgpu_i2c_router_select_ddc_port(struct amdgpu_connector *amdgpu_connector)
 
 /* clock/data router switching */
 void
+<<<<<<< HEAD
 amdgpu_i2c_router_select_cd_port(struct amdgpu_connector *amdgpu_connector)
+=======
+amdgpu_i2c_router_select_cd_port(const struct amdgpu_connector *amdgpu_connector)
+>>>>>>> v4.9.227
 {
 	u8 val;
 

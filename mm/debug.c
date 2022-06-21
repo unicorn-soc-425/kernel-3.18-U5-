@@ -7,6 +7,7 @@
 
 #include <linux/kernel.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/ftrace_event.h>
 #include <linux/memcontrol.h>
 
@@ -99,16 +100,83 @@ void dump_page_badflags(struct page *page, const char *reason,
 				pageflag_names, ARRAY_SIZE(pageflag_names));
 	}
 	mem_cgroup_print_bad_page(page);
+=======
+#include <linux/trace_events.h>
+#include <linux/memcontrol.h>
+#include <trace/events/mmflags.h>
+#include <linux/migrate.h>
+#include <linux/page_owner.h>
+
+#include "internal.h"
+
+char *migrate_reason_names[MR_TYPES] = {
+	"compaction",
+	"memory_failure",
+	"memory_hotplug",
+	"syscall_or_cpuset",
+	"mempolicy_mbind",
+	"numa_misplaced",
+	"cma",
+};
+
+const struct trace_print_flags pageflag_names[] = {
+	__def_pageflag_names,
+	{0, NULL}
+};
+
+const struct trace_print_flags gfpflag_names[] = {
+	__def_gfpflag_names,
+	{0, NULL}
+};
+
+const struct trace_print_flags vmaflag_names[] = {
+	__def_vmaflag_names,
+	{0, NULL}
+};
+
+void __dump_page(struct page *page, const char *reason)
+{
+	/*
+	 * Avoid VM_BUG_ON() in page_mapcount().
+	 * page->_mapcount space in struct page is used by sl[aou]b pages to
+	 * encode own info.
+	 */
+	int mapcount = PageSlab(page) ? 0 : page_mapcount(page);
+
+	pr_emerg("page:%p count:%d mapcount:%d mapping:%p index:%#lx",
+		  page, page_ref_count(page), mapcount,
+		  page->mapping, page_to_pgoff(page));
+	if (PageCompound(page))
+		pr_cont(" compound_mapcount: %d", compound_mapcount(page));
+	pr_cont("\n");
+	BUILD_BUG_ON(ARRAY_SIZE(pageflag_names) != __NR_PAGEFLAGS + 1);
+
+	pr_emerg("flags: %#lx(%pGp)\n", page->flags, &page->flags);
+
+	if (reason)
+		pr_alert("page dumped because: %s\n", reason);
+
+#ifdef CONFIG_MEMCG
+	if (page->mem_cgroup)
+		pr_alert("page->mem_cgroup:%p\n", page->mem_cgroup);
+#endif
+>>>>>>> v4.9.227
 }
 
 void dump_page(struct page *page, const char *reason)
 {
+<<<<<<< HEAD
 	dump_page_badflags(page, reason, 0);
+=======
+	__dump_page(page, reason);
+	dump_page_owner(page);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(dump_page);
 
 #ifdef CONFIG_DEBUG_VM
 
+<<<<<<< HEAD
 static const struct trace_print_flags vmaflags_names[] = {
 	{VM_READ,			"read"		},
 	{VM_WRITE,			"write"		},
@@ -152,31 +220,53 @@ static const struct trace_print_flags vmaflags_names[] = {
 	{VM_MERGEABLE,			"mergeable"	},
 };
 
+=======
+>>>>>>> v4.9.227
 void dump_vma(const struct vm_area_struct *vma)
 {
 	pr_emerg("vma %p start %p end %p\n"
 		"next %p prev %p mm %p\n"
 		"prot %lx anon_vma %p vm_ops %p\n"
+<<<<<<< HEAD
 		"pgoff %lx file %p private_data %p\n",
+=======
+		"pgoff %lx file %p private_data %p\n"
+		"flags: %#lx(%pGv)\n",
+>>>>>>> v4.9.227
 		vma, (void *)vma->vm_start, (void *)vma->vm_end, vma->vm_next,
 		vma->vm_prev, vma->vm_mm,
 		(unsigned long)pgprot_val(vma->vm_page_prot),
 		vma->anon_vma, vma->vm_ops, vma->vm_pgoff,
+<<<<<<< HEAD
 		vma->vm_file, vma->vm_private_data);
 	dump_flags(vma->vm_flags, vmaflags_names, ARRAY_SIZE(vmaflags_names));
+=======
+		vma->vm_file, vma->vm_private_data,
+		vma->vm_flags, &vma->vm_flags);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(dump_vma);
 
 void dump_mm(const struct mm_struct *mm)
 {
+<<<<<<< HEAD
 	pr_emerg("mm %px mmap %px seqnum %llu task_size %lu\n"
+=======
+	pr_emerg("mm %p mmap %p seqnum %llu task_size %lu\n"
+>>>>>>> v4.9.227
 #ifdef CONFIG_MMU
 		"get_unmapped_area %p\n"
 #endif
 		"mmap_base %lu mmap_legacy_base %lu highest_vm_end %lu\n"
+<<<<<<< HEAD
 		"pgd %p mm_users %d mm_count %d nr_ptes %lu map_count %d\n"
 		"hiwater_rss %lx hiwater_vm %lx total_vm %lx locked_vm %lx\n"
 		"pinned_vm %lx shared_vm %lx exec_vm %lx stack_vm %lx\n"
+=======
+		"pgd %p mm_users %d mm_count %d nr_ptes %lu nr_pmds %lu map_count %d\n"
+		"hiwater_rss %lx hiwater_vm %lx total_vm %lx locked_vm %lx\n"
+		"pinned_vm %lx data_vm %lx exec_vm %lx stack_vm %lx\n"
+>>>>>>> v4.9.227
 		"start_code %lx end_code %lx start_data %lx end_data %lx\n"
 		"start_brk %lx brk %lx start_stack %lx\n"
 		"arg_start %lx arg_end %lx env_start %lx env_end %lx\n"
@@ -197,7 +287,11 @@ void dump_mm(const struct mm_struct *mm)
 #if defined(CONFIG_NUMA_BALANCING) || defined(CONFIG_COMPACTION)
 		"tlb_flush_pending %d\n"
 #endif
+<<<<<<< HEAD
 		"%s",	/* This is here to hold the comma */
+=======
+		"def_flags: %#lx(%pGv)\n",
+>>>>>>> v4.9.227
 
 		mm, mm->mmap, (long long) mm->vmacache_seqnum, mm->task_size,
 #ifdef CONFIG_MMU
@@ -207,9 +301,16 @@ void dump_mm(const struct mm_struct *mm)
 		mm->pgd, atomic_read(&mm->mm_users),
 		atomic_read(&mm->mm_count),
 		atomic_long_read((atomic_long_t *)&mm->nr_ptes),
+<<<<<<< HEAD
 		mm->map_count,
 		mm->hiwater_rss, mm->hiwater_vm, mm->total_vm, mm->locked_vm,
 		mm->pinned_vm, mm->shared_vm, mm->exec_vm, mm->stack_vm,
+=======
+		mm_nr_pmds((struct mm_struct *)mm),
+		mm->map_count,
+		mm->hiwater_rss, mm->hiwater_vm, mm->total_vm, mm->locked_vm,
+		mm->pinned_vm, mm->data_vm, mm->exec_vm, mm->stack_vm,
+>>>>>>> v4.9.227
 		mm->start_code, mm->end_code, mm->start_data, mm->end_data,
 		mm->start_brk, mm->brk, mm->start_stack,
 		mm->arg_start, mm->arg_end, mm->env_start, mm->env_end,
@@ -230,11 +331,16 @@ void dump_mm(const struct mm_struct *mm)
 #if defined(CONFIG_NUMA_BALANCING) || defined(CONFIG_COMPACTION)
 		mm->tlb_flush_pending,
 #endif
+<<<<<<< HEAD
 		""		/* This is here to not have a comma! */
 		);
 
 		dump_flags(mm->def_flags, vmaflags_names,
 				ARRAY_SIZE(vmaflags_names));
+=======
+		mm->def_flags, &mm->def_flags
+	);
+>>>>>>> v4.9.227
 }
 
 #endif		/* CONFIG_DEBUG_VM */

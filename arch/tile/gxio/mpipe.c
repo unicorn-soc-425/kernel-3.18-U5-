@@ -122,7 +122,11 @@ size_t gxio_mpipe_calc_buffer_stack_bytes(unsigned long buffers)
 {
 	const int BUFFERS_PER_LINE = 12;
 
+<<<<<<< HEAD
 	/* Count the number of cachlines. */
+=======
+	/* Count the number of cachelines. */
+>>>>>>> v4.9.227
 	unsigned long lines =
 		(buffers + BUFFERS_PER_LINE - 1) / BUFFERS_PER_LINE;
 
@@ -431,16 +435,27 @@ int gxio_mpipe_equeue_init(gxio_mpipe_equeue_t *equeue,
 EXPORT_SYMBOL_GPL(gxio_mpipe_equeue_init);
 
 int gxio_mpipe_set_timestamp(gxio_mpipe_context_t *context,
+<<<<<<< HEAD
 			     const struct timespec *ts)
+=======
+			     const struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	cycles_t cycles = get_cycles();
 	return gxio_mpipe_set_timestamp_aux(context, (uint64_t)ts->tv_sec,
 					    (uint64_t)ts->tv_nsec,
 					    (uint64_t)cycles);
 }
+<<<<<<< HEAD
 
 int gxio_mpipe_get_timestamp(gxio_mpipe_context_t *context,
 			     struct timespec *ts)
+=======
+EXPORT_SYMBOL_GPL(gxio_mpipe_set_timestamp);
+
+int gxio_mpipe_get_timestamp(gxio_mpipe_context_t *context,
+			     struct timespec64 *ts)
+>>>>>>> v4.9.227
 {
 	int ret;
 	cycles_t cycles_prev, cycles_now, clock_rate;
@@ -460,11 +475,19 @@ int gxio_mpipe_get_timestamp(gxio_mpipe_context_t *context,
 	}
 	return ret;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(gxio_mpipe_get_timestamp);
+>>>>>>> v4.9.227
 
 int gxio_mpipe_adjust_timestamp(gxio_mpipe_context_t *context, int64_t delta)
 {
 	return gxio_mpipe_adjust_timestamp_aux(context, delta);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(gxio_mpipe_adjust_timestamp);
+>>>>>>> v4.9.227
 
 /* Get our internal context used for link name access.  This context is
  *  special in that it is not associated with an mPIPE service domain.
@@ -517,6 +540,10 @@ int gxio_mpipe_link_instance(const char *link_name)
 
 	return gxio_mpipe_info_instance_aux(context, name);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(gxio_mpipe_link_instance);
+>>>>>>> v4.9.227
 
 int gxio_mpipe_link_enumerate_mac(int idx, char *link_name, uint8_t *link_mac)
 {

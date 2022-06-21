@@ -3,7 +3,11 @@
  *
  */
 #include <linux/clockchips.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/timex.h>
 #include <linux/i8253.h>
 
@@ -34,7 +38,11 @@ static int __init init_pit_clocksource(void)
 	  * - when local APIC timer is active (PIT is switched off)
 	  */
 	if (num_possible_cpus() > 1 || is_hpet_enabled() ||
+<<<<<<< HEAD
 	    i8253_clockevent.mode != CLOCK_EVT_MODE_PERIODIC)
+=======
+	    !clockevent_state_periodic(&i8253_clockevent))
+>>>>>>> v4.9.227
 		return 0;
 
 	return clocksource_i8253_init();

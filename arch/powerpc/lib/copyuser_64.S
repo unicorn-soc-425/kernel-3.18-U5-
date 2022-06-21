@@ -8,6 +8,10 @@
  */
 #include <asm/processor.h>
 #include <asm/ppc_asm.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 #ifdef __BIG_ENDIAN__
 #define sLd sld		/* Shift towards low-numbered address. */
@@ -359,6 +363,10 @@ END_FTR_SECTION_IFCLR(CPU_FTR_UNALIGNED_LD_STD)
 	addi	r3,r3,8
 171:
 177:
+<<<<<<< HEAD
+=======
+179:
+>>>>>>> v4.9.227
 	addi	r3,r3,8
 370:
 372:
@@ -373,7 +381,10 @@ END_FTR_SECTION_IFCLR(CPU_FTR_UNALIGNED_LD_STD)
 173:
 174:
 175:
+<<<<<<< HEAD
 179:
+=======
+>>>>>>> v4.9.227
 181:
 184:
 186:
@@ -671,3 +682,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_UNALIGNED_LD_STD)
 	.llong	89b,100b
 	.llong	90b,100b
 	.llong	91b,100b
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__copy_tofrom_user)
+>>>>>>> v4.9.227

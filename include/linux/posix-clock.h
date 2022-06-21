@@ -59,23 +59,40 @@ struct posix_clock_operations {
 
 	int  (*clock_adjtime)(struct posix_clock *pc, struct timex *tx);
 
+<<<<<<< HEAD
 	int  (*clock_gettime)(struct posix_clock *pc, struct timespec *ts);
 
 	int  (*clock_getres) (struct posix_clock *pc, struct timespec *ts);
 
 	int  (*clock_settime)(struct posix_clock *pc,
 			      const struct timespec *ts);
+=======
+	int  (*clock_gettime)(struct posix_clock *pc, struct timespec64 *ts);
+
+	int  (*clock_getres) (struct posix_clock *pc, struct timespec64 *ts);
+
+	int  (*clock_settime)(struct posix_clock *pc,
+			      const struct timespec64 *ts);
+>>>>>>> v4.9.227
 
 	int  (*timer_create) (struct posix_clock *pc, struct k_itimer *kit);
 
 	int  (*timer_delete) (struct posix_clock *pc, struct k_itimer *kit);
 
 	void (*timer_gettime)(struct posix_clock *pc,
+<<<<<<< HEAD
 			      struct k_itimer *kit, struct itimerspec *tsp);
 
 	int  (*timer_settime)(struct posix_clock *pc,
 			      struct k_itimer *kit, int flags,
 			      struct itimerspec *tsp, struct itimerspec *old);
+=======
+			      struct k_itimer *kit, struct itimerspec64 *tsp);
+
+	int  (*timer_settime)(struct posix_clock *pc,
+			      struct k_itimer *kit, int flags,
+			      struct itimerspec64 *tsp, struct itimerspec64 *old);
+>>>>>>> v4.9.227
 	/*
 	 * Optional character device methods:
 	 */
@@ -104,29 +121,55 @@ struct posix_clock_operations {
  *
  * @ops:     Functional interface to the clock
  * @cdev:    Character device instance for this clock
+<<<<<<< HEAD
  * @kref:    Reference count.
  * @rwsem:   Protects the 'zombie' field from concurrent access.
  * @zombie:  If 'zombie' is true, then the hardware has disappeared.
  * @release: A function to free the structure when the reference count reaches
  *           zero. May be NULL if structure is statically allocated.
+=======
+ * @dev:     Pointer to the clock's device.
+ * @rwsem:   Protects the 'zombie' field from concurrent access.
+ * @zombie:  If 'zombie' is true, then the hardware has disappeared.
+>>>>>>> v4.9.227
  *
  * Drivers should embed their struct posix_clock within a private
  * structure, obtaining a reference to it during callbacks using
  * container_of().
+<<<<<<< HEAD
+=======
+ *
+ * Drivers should supply an initialized but not exposed struct device
+ * to posix_clock_register(). It is used to manage lifetime of the
+ * driver's private structure. It's 'release' field should be set to
+ * a release function for this private structure.
+>>>>>>> v4.9.227
  */
 struct posix_clock {
 	struct posix_clock_operations ops;
 	struct cdev cdev;
+<<<<<<< HEAD
 	struct kref kref;
 	struct rw_semaphore rwsem;
 	bool zombie;
 	void (*release)(struct posix_clock *clk);
+=======
+	struct device *dev;
+	struct rw_semaphore rwsem;
+	bool zombie;
+>>>>>>> v4.9.227
 };
 
 /**
  * posix_clock_register() - register a new clock
+<<<<<<< HEAD
  * @clk:   Pointer to the clock. Caller must provide 'ops' and 'release'
  * @devid: Allocated device id
+=======
+ * @clk:   Pointer to the clock. Caller must provide 'ops' field
+ * @dev:   Pointer to the initialized device. Caller must provide
+ *         'release' field
+>>>>>>> v4.9.227
  *
  * A clock driver calls this function to register itself with the
  * clock device subsystem. If 'clk' points to dynamically allocated
@@ -135,7 +178,11 @@ struct posix_clock {
  *
  * Returns zero on success, non-zero otherwise.
  */
+<<<<<<< HEAD
 int posix_clock_register(struct posix_clock *clk, dev_t devid);
+=======
+int posix_clock_register(struct posix_clock *clk, struct device *dev);
+>>>>>>> v4.9.227
 
 /**
  * posix_clock_unregister() - unregister a clock

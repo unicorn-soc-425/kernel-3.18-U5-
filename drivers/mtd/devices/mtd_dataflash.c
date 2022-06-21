@@ -102,6 +102,10 @@ static const struct of_device_id dataflash_dt_ids[] = {
 	{ .compatible = "atmel,dataflash", },
 	{ /* sentinel */ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, dataflash_dt_ids);
+>>>>>>> v4.9.227
 #endif
 
 /* ......................................................................... */
@@ -149,7 +153,11 @@ static int dataflash_erase(struct mtd_info *mtd, struct erase_info *instr)
 {
 	struct dataflash	*priv = mtd->priv;
 	struct spi_device	*spi = priv->spi;
+<<<<<<< HEAD
 	struct spi_transfer	x = { .tx_dma = 0, };
+=======
+	struct spi_transfer	x = { };
+>>>>>>> v4.9.227
 	struct spi_message	msg;
 	unsigned		blocksize = priv->page_size << 3;
 	uint8_t			*command;
@@ -235,7 +243,11 @@ static int dataflash_read(struct mtd_info *mtd, loff_t from, size_t len,
 			       size_t *retlen, u_char *buf)
 {
 	struct dataflash	*priv = mtd->priv;
+<<<<<<< HEAD
 	struct spi_transfer	x[2] = { { .tx_dma = 0, }, };
+=======
+	struct spi_transfer	x[2] = { };
+>>>>>>> v4.9.227
 	struct spi_message	msg;
 	unsigned int		addr;
 	uint8_t			*command;
@@ -301,7 +313,11 @@ static int dataflash_write(struct mtd_info *mtd, loff_t to, size_t len,
 {
 	struct dataflash	*priv = mtd->priv;
 	struct spi_device	*spi = priv->spi;
+<<<<<<< HEAD
 	struct spi_transfer	x[2] = { { .tx_dma = 0, }, };
+=======
+	struct spi_transfer	x[2] = { };
+>>>>>>> v4.9.227
 	struct spi_message	msg;
 	unsigned int		pageaddr, addr, offset, writelen;
 	size_t			remaining = len;
@@ -623,7 +639,10 @@ static int add_dataflash_otp(struct spi_device *spi, char *name, int nr_pages,
 {
 	struct dataflash		*priv;
 	struct mtd_info			*device;
+<<<<<<< HEAD
 	struct mtd_part_parser_data	ppdata;
+=======
+>>>>>>> v4.9.227
 	struct flash_platform_data	*pdata = dev_get_platdata(&spi->dev);
 	char				*otp_tag = "";
 	int				err = 0;
@@ -647,7 +666,10 @@ static int add_dataflash_otp(struct spi_device *spi, char *name, int nr_pages,
 	device->size = nr_pages * pagesize;
 	device->erasesize = pagesize;
 	device->writesize = pagesize;
+<<<<<<< HEAD
 	device->owner = THIS_MODULE;
+=======
+>>>>>>> v4.9.227
 	device->type = MTD_DATAFLASH;
 	device->flags = MTD_WRITEABLE;
 	device->_erase = dataflash_erase;
@@ -656,6 +678,10 @@ static int add_dataflash_otp(struct spi_device *spi, char *name, int nr_pages,
 	device->priv = priv;
 
 	device->dev.parent = &spi->dev;
+<<<<<<< HEAD
+=======
+	mtd_set_of_node(device, spi->dev.of_node);
+>>>>>>> v4.9.227
 
 	if (revision >= 'c')
 		otp_tag = otp_setup(device, revision);
@@ -665,8 +691,12 @@ static int add_dataflash_otp(struct spi_device *spi, char *name, int nr_pages,
 			pagesize, otp_tag);
 	spi_set_drvdata(spi, priv);
 
+<<<<<<< HEAD
 	ppdata.of_node = spi->dev.of_node;
 	err = mtd_device_parse_register(device, NULL, &ppdata,
+=======
+	err = mtd_device_register(device,
+>>>>>>> v4.9.227
 			pdata ? pdata->parts : NULL,
 			pdata ? pdata->nr_parts : 0);
 
@@ -910,7 +940,10 @@ static int dataflash_remove(struct spi_device *spi)
 static struct spi_driver dataflash_driver = {
 	.driver = {
 		.name		= "mtd_dataflash",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(dataflash_dt_ids),
 	},
 

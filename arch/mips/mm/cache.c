@@ -10,12 +10,20 @@
 #include <linux/fcntl.h>
 #include <linux/kernel.h>
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/sched.h>
 #include <linux/syscalls.h>
 #include <linux/mm.h>
 
 #include <asm/cacheflush.h>
+<<<<<<< HEAD
+=======
+#include <asm/highmem.h>
+>>>>>>> v4.9.227
 #include <asm/processor.h>
 #include <asm/cpu.h>
 #include <asm/cpu-features.h>
@@ -32,6 +40,13 @@ void (*flush_icache_range)(unsigned long start, unsigned long end);
 EXPORT_SYMBOL_GPL(flush_icache_range);
 void (*local_flush_icache_range)(unsigned long start, unsigned long end);
 EXPORT_SYMBOL_GPL(local_flush_icache_range);
+<<<<<<< HEAD
+=======
+void (*__flush_icache_user_range)(unsigned long start, unsigned long end);
+EXPORT_SYMBOL_GPL(__flush_icache_user_range);
+void (*__local_flush_icache_user_range)(unsigned long start, unsigned long end);
+EXPORT_SYMBOL_GPL(__local_flush_icache_user_range);
+>>>>>>> v4.9.227
 
 void (*__flush_cache_vmap)(void);
 void (*__flush_cache_vunmap)(void);
@@ -73,7 +88,11 @@ SYSCALL_DEFINE3(cacheflush, unsigned long, addr, unsigned long, bytes,
 	if (!access_ok(VERIFY_WRITE, (void __user *) addr, bytes))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	flush_icache_range(addr, addr + bytes);
+=======
+	__flush_icache_user_range(addr, addr + bytes);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -83,8 +102,11 @@ void __flush_dcache_page(struct page *page)
 	struct address_space *mapping = page_mapping(page);
 	unsigned long addr;
 
+<<<<<<< HEAD
 	if (PageHighMem(page))
 		return;
+=======
+>>>>>>> v4.9.227
 	if (mapping && !mapping_mapped(mapping)) {
 		SetPageDcacheDirty(page);
 		return;
@@ -95,8 +117,20 @@ void __flush_dcache_page(struct page *page)
 	 * case is for exec env/arg pages and those are %99 certainly going to
 	 * get faulted into the tlb (and thus flushed) anyways.
 	 */
+<<<<<<< HEAD
 	addr = (unsigned long) page_address(page);
 	flush_data_cache_page(addr);
+=======
+	if (PageHighMem(page))
+		addr = (unsigned long)kmap_atomic(page);
+	else
+		addr = (unsigned long)page_address(page);
+
+	flush_data_cache_page(addr);
+
+	if (PageHighMem(page))
+		__kunmap_atomic((void *)addr);
+>>>>>>> v4.9.227
 }
 
 EXPORT_SYMBOL(__flush_dcache_page);
@@ -106,7 +140,11 @@ void __flush_anon_page(struct page *page, unsigned long vmaddr)
 	unsigned long addr = (unsigned long) page_address(page);
 
 	if (pages_do_alias(addr, vmaddr)) {
+<<<<<<< HEAD
 		if (page_mapped(page) && !Page_dcache_dirty(page)) {
+=======
+		if (page_mapcount(page) && !Page_dcache_dirty(page)) {
+>>>>>>> v4.9.227
 			void *kaddr;
 
 			kaddr = kmap_coherent(page, vmaddr);
@@ -119,6 +157,7 @@ void __flush_anon_page(struct page *page, unsigned long vmaddr)
 
 EXPORT_SYMBOL(__flush_anon_page);
 
+<<<<<<< HEAD
 static void mips_flush_dcache_from_pte(pte_t pteval, unsigned long address)
 {
 	struct page *page;
@@ -134,10 +173,35 @@ static void mips_flush_dcache_from_pte(pte_t pteval, unsigned long address)
 		if (!cpu_has_ic_fills_f_dc ||
 		    pages_do_alias(page_addr, address & PAGE_MASK))
 			flush_data_cache_page(page_addr);
+=======
+void __update_cache(unsigned long address, pte_t pte)
+{
+	struct page *page;
+	unsigned long pfn, addr;
+	int exec = !pte_no_exec(pte) && !cpu_has_ic_fills_f_dc;
+
+	pfn = pte_pfn(pte);
+	if (unlikely(!pfn_valid(pfn)))
+		return;
+	page = pfn_to_page(pfn);
+	if (Page_dcache_dirty(page)) {
+		if (PageHighMem(page))
+			addr = (unsigned long)kmap_atomic(page);
+		else
+			addr = (unsigned long)page_address(page);
+
+		if (exec || pages_do_alias(addr, address & PAGE_MASK))
+			flush_data_cache_page(addr);
+
+		if (PageHighMem(page))
+			__kunmap_atomic((void *)addr);
+
+>>>>>>> v4.9.227
 		ClearPageDcacheDirty(page);
 	}
 }
 
+<<<<<<< HEAD
 void set_pte_at(struct mm_struct *mm, unsigned long addr,
         pte_t *ptep, pte_t pteval)
 {
@@ -149,6 +213,8 @@ void set_pte_at(struct mm_struct *mm, unsigned long addr,
         set_pte(ptep, pteval);
 }
 
+=======
+>>>>>>> v4.9.227
 unsigned long _page_cachable_default;
 EXPORT_SYMBOL(_page_cachable_default);
 
@@ -159,18 +225,30 @@ static inline void setup_protection_map(void)
 		protection_map[1]  = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_NO_EXEC);
 		protection_map[2]  = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_NO_EXEC | _PAGE_NO_READ);
 		protection_map[3]  = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_NO_EXEC);
+<<<<<<< HEAD
 		protection_map[4]  = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_NO_READ);
 		protection_map[5]  = __pgprot(_page_cachable_default | _PAGE_PRESENT);
 		protection_map[6]  = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_NO_READ);
+=======
+		protection_map[4]  = __pgprot(_page_cachable_default | _PAGE_PRESENT);
+		protection_map[5]  = __pgprot(_page_cachable_default | _PAGE_PRESENT);
+		protection_map[6]  = __pgprot(_page_cachable_default | _PAGE_PRESENT);
+>>>>>>> v4.9.227
 		protection_map[7]  = __pgprot(_page_cachable_default | _PAGE_PRESENT);
 
 		protection_map[8]  = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_NO_EXEC | _PAGE_NO_READ);
 		protection_map[9]  = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_NO_EXEC);
 		protection_map[10] = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_NO_EXEC | _PAGE_WRITE | _PAGE_NO_READ);
 		protection_map[11] = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_NO_EXEC | _PAGE_WRITE);
+<<<<<<< HEAD
 		protection_map[12] = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_NO_READ);
 		protection_map[13] = __pgprot(_page_cachable_default | _PAGE_PRESENT);
 		protection_map[14] = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_WRITE  | _PAGE_NO_READ);
+=======
+		protection_map[12] = __pgprot(_page_cachable_default | _PAGE_PRESENT);
+		protection_map[13] = __pgprot(_page_cachable_default | _PAGE_PRESENT);
+		protection_map[14] = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_WRITE);
+>>>>>>> v4.9.227
 		protection_map[15] = __pgprot(_page_cachable_default | _PAGE_PRESENT | _PAGE_WRITE);
 
 	} else {

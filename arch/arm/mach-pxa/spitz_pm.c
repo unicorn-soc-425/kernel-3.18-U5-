@@ -25,8 +25,13 @@
 #include <mach/hardware.h>
 
 #include <mach/spitz.h>
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
 #include <mach/sharpsl_pm.h>
+=======
+#include "pxa27x.h"
+#include "sharpsl_pm.h"
+>>>>>>> v4.9.227
 
 #include "generic.h"
 
@@ -165,6 +170,7 @@ static int spitz_should_wakeup(unsigned int resume_on_alarm)
 	return is_resume;
 }
 
+<<<<<<< HEAD
 static unsigned long spitz_charger_wakeup(void)
 {
 	unsigned long ret;
@@ -172,6 +178,12 @@ static unsigned long spitz_charger_wakeup(void)
 		<< GPIO_bit(SPITZ_GPIO_KEY_INT))
 		| gpio_get_value(SPITZ_GPIO_SYNC));
 	return ret;
+=======
+static bool spitz_charger_wakeup(void)
+{
+	return !gpio_get_value(SPITZ_GPIO_KEY_INT) ||
+		gpio_get_value(SPITZ_GPIO_SYNC);
+>>>>>>> v4.9.227
 }
 
 unsigned long spitzpm_read_devdata(int type)

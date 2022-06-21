@@ -6,6 +6,10 @@
 #endif
 
 #include <asm/processor.h>	/* for cpu_relax() */
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+>>>>>>> v4.9.227
 
 /*
  * include/linux/spinlock_up.h - UP-debug version of spinlocks.
@@ -25,6 +29,14 @@
 #ifdef CONFIG_DEBUG_SPINLOCK
 #define arch_spin_is_locked(x)		((x)->slock == 0)
 
+<<<<<<< HEAD
+=======
+static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
+{
+	smp_cond_load_acquire(&lock->slock, VAL);
+}
+
+>>>>>>> v4.9.227
 static inline void arch_spin_lock(arch_spinlock_t *lock)
 {
 	lock->slock = 0;
@@ -67,6 +79,10 @@ static inline void arch_spin_unlock(arch_spinlock_t *lock)
 
 #else /* DEBUG_SPINLOCK */
 #define arch_spin_is_locked(lock)	((void)(lock), 0)
+<<<<<<< HEAD
+=======
+#define arch_spin_unlock_wait(lock)	do { barrier(); (void)(lock); } while (0)
+>>>>>>> v4.9.227
 /* for sched/core.c and kernel_lock.c: */
 # define arch_spin_lock(lock)		do { barrier(); (void)(lock); } while (0)
 # define arch_spin_lock_flags(lock, flags)	do { barrier(); (void)(lock); } while (0)
@@ -79,7 +95,10 @@ static inline void arch_spin_unlock(arch_spinlock_t *lock)
 #define arch_read_can_lock(lock)	(((void)(lock), 1))
 #define arch_write_can_lock(lock)	(((void)(lock), 1))
 
+<<<<<<< HEAD
 #define arch_spin_unlock_wait(lock) \
 		do { cpu_relax(); } while (arch_spin_is_locked(lock))
 
+=======
+>>>>>>> v4.9.227
 #endif /* __LINUX_SPINLOCK_UP_H */

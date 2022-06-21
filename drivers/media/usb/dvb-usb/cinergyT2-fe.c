@@ -139,6 +139,7 @@ static uint16_t compute_tps(struct dtv_frontend_properties *op)
 struct cinergyt2_fe_state {
 	struct dvb_frontend fe;
 	struct dvb_usb_device *d;
+<<<<<<< HEAD
 };
 
 static int cinergyt2_fe_read_status(struct dvb_frontend *fe,
@@ -151,11 +152,36 @@ static int cinergyt2_fe_read_status(struct dvb_frontend *fe,
 
 	ret = dvb_usb_generic_rw(state->d, cmd, sizeof(cmd), (u8 *)&result,
 			sizeof(result), 0);
+=======
+
+	unsigned char data[64];
+	struct mutex data_mutex;
+
+	struct dvbt_get_status_msg status;
+};
+
+static int cinergyt2_fe_read_status(struct dvb_frontend *fe,
+				    enum fe_status *status)
+{
+	struct cinergyt2_fe_state *state = fe->demodulator_priv;
+	int ret;
+
+	mutex_lock(&state->data_mutex);
+	state->data[0] = CINERGYT2_EP1_GET_TUNER_STATUS;
+
+	ret = dvb_usb_generic_rw(state->d, state->data, 1,
+				 state->data, sizeof(state->status), 0);
+	if (!ret)
+		memcpy(&state->status, state->data, sizeof(state->status));
+	mutex_unlock(&state->data_mutex);
+
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
 	*status = 0;
 
+<<<<<<< HEAD
 	if (0xffff - le16_to_cpu(result.gain) > 30)
 		*status |= FE_HAS_SIGNAL;
 	if (result.lock_bits & (1 << 6))
@@ -165,6 +191,17 @@ static int cinergyt2_fe_read_status(struct dvb_frontend *fe,
 	if (result.lock_bits & (1 << 4))
 		*status |= FE_HAS_CARRIER;
 	if (result.lock_bits & (1 << 1))
+=======
+	if (0xffff - le16_to_cpu(state->status.gain) > 30)
+		*status |= FE_HAS_SIGNAL;
+	if (state->status.lock_bits & (1 << 6))
+		*status |= FE_HAS_LOCK;
+	if (state->status.lock_bits & (1 << 5))
+		*status |= FE_HAS_SYNC;
+	if (state->status.lock_bits & (1 << 4))
+		*status |= FE_HAS_CARRIER;
+	if (state->status.lock_bits & (1 << 1))
+>>>>>>> v4.9.227
 		*status |= FE_HAS_VITERBI;
 
 	if ((*status & (FE_HAS_CARRIER | FE_HAS_VITERBI | FE_HAS_SYNC)) !=
@@ -177,6 +214,7 @@ static int cinergyt2_fe_read_status(struct dvb_frontend *fe,
 static int cinergyt2_fe_read_ber(struct dvb_frontend *fe, u32 *ber)
 {
 	struct cinergyt2_fe_state *state = fe->demodulator_priv;
+<<<<<<< HEAD
 	struct dvbt_get_status_msg status;
 	char cmd[] = { CINERGYT2_EP1_GET_TUNER_STATUS };
 	int ret;
@@ -187,12 +225,17 @@ static int cinergyt2_fe_read_ber(struct dvb_frontend *fe, u32 *ber)
 		return ret;
 
 	*ber = le32_to_cpu(status.viterbi_error_rate);
+=======
+
+	*ber = le32_to_cpu(state->status.viterbi_error_rate);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int cinergyt2_fe_read_unc_blocks(struct dvb_frontend *fe, u32 *unc)
 {
 	struct cinergyt2_fe_state *state = fe->demodulator_priv;
+<<<<<<< HEAD
 	struct dvbt_get_status_msg status;
 	u8 cmd[] = { CINERGYT2_EP1_GET_TUNER_STATUS };
 	int ret;
@@ -205,6 +248,10 @@ static int cinergyt2_fe_read_unc_blocks(struct dvb_frontend *fe, u32 *unc)
 		return ret;
 	}
 	*unc = le32_to_cpu(status.uncorrected_block_count);
+=======
+
+	*unc = le32_to_cpu(state->status.uncorrected_block_count);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -212,6 +259,7 @@ static int cinergyt2_fe_read_signal_strength(struct dvb_frontend *fe,
 						u16 *strength)
 {
 	struct cinergyt2_fe_state *state = fe->demodulator_priv;
+<<<<<<< HEAD
 	struct dvbt_get_status_msg status;
 	char cmd[] = { CINERGYT2_EP1_GET_TUNER_STATUS };
 	int ret;
@@ -224,12 +272,17 @@ static int cinergyt2_fe_read_signal_strength(struct dvb_frontend *fe,
 		return ret;
 	}
 	*strength = (0xffff - le16_to_cpu(status.gain));
+=======
+
+	*strength = (0xffff - le16_to_cpu(state->status.gain));
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int cinergyt2_fe_read_snr(struct dvb_frontend *fe, u16 *snr)
 {
 	struct cinergyt2_fe_state *state = fe->demodulator_priv;
+<<<<<<< HEAD
 	struct dvbt_get_status_msg status;
 	char cmd[] = { CINERGYT2_EP1_GET_TUNER_STATUS };
 	int ret;
@@ -241,6 +294,10 @@ static int cinergyt2_fe_read_snr(struct dvb_frontend *fe, u16 *snr)
 		return ret;
 	}
 	*snr = (status.snr << 8) | status.snr;
+=======
+
+	*snr = (state->status.snr << 8) | state->status.snr;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -266,6 +323,7 @@ static int cinergyt2_fe_set_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *fep = &fe->dtv_property_cache;
 	struct cinergyt2_fe_state *state = fe->demodulator_priv;
+<<<<<<< HEAD
 	struct dvbt_set_parameters_msg param;
 	char result[2];
 	int err;
@@ -274,10 +332,23 @@ static int cinergyt2_fe_set_frontend(struct dvb_frontend *fe)
 	param.tps = cpu_to_le16(compute_tps(fep));
 	param.freq = cpu_to_le32(fep->frequency / 1000);
 	param.flags = 0;
+=======
+	struct dvbt_set_parameters_msg *param;
+	int err;
+
+	mutex_lock(&state->data_mutex);
+
+	param = (void *)state->data;
+	param->cmd = CINERGYT2_EP1_SET_TUNER_PARAMETERS;
+	param->tps = cpu_to_le16(compute_tps(fep));
+	param->freq = cpu_to_le32(fep->frequency / 1000);
+	param->flags = 0;
+>>>>>>> v4.9.227
 
 	switch (fep->bandwidth_hz) {
 	default:
 	case 8000000:
+<<<<<<< HEAD
 		param.bandwidth = 8;
 		break;
 	case 7000000:
@@ -294,6 +365,24 @@ static int cinergyt2_fe_set_frontend(struct dvb_frontend *fe)
 	if (err < 0)
 		err("cinergyt2_fe_set_frontend() Failed! err=%d\n", err);
 
+=======
+		param->bandwidth = 8;
+		break;
+	case 7000000:
+		param->bandwidth = 7;
+		break;
+	case 6000000:
+		param->bandwidth = 6;
+		break;
+	}
+
+	err = dvb_usb_generic_rw(state->d, state->data, sizeof(*param),
+				 state->data, 2, 0);
+	if (err < 0)
+		err("cinergyt2_fe_set_frontend() Failed! err=%d\n", err);
+
+	mutex_unlock(&state->data_mutex);
+>>>>>>> v4.9.227
 	return (err < 0) ? err : 0;
 }
 
@@ -315,6 +404,10 @@ struct dvb_frontend *cinergyt2_fe_attach(struct dvb_usb_device *d)
 	s->d = d;
 	memcpy(&s->fe.ops, &cinergyt2_fe_ops, sizeof(struct dvb_frontend_ops));
 	s->fe.demodulator_priv = s;
+<<<<<<< HEAD
+=======
+	mutex_init(&s->data_mutex);
+>>>>>>> v4.9.227
 	return &s->fe;
 }
 

@@ -188,7 +188,11 @@ via_free_sg_info(struct pci_dev *pdev, drm_via_sg_info_t *vsg)
 			if (NULL != (page = vsg->pages[i])) {
 				if (!PageReserved(page) && (DMA_FROM_DEVICE == vsg->direction))
 					SetPageDirty(page);
+<<<<<<< HEAD
 				page_cache_release(page);
+=======
+				put_page(page);
+>>>>>>> v4.9.227
 			}
 		}
 	case dr_via_pages_alloc:
@@ -239,11 +243,18 @@ via_lock_all_dma_pages(drm_via_sg_info_t *vsg,  drm_via_dmablit_t *xfer)
 	if (NULL == vsg->pages)
 		return -ENOMEM;
 	down_read(&current->mm->mmap_sem);
+<<<<<<< HEAD
 	ret = get_user_pages(current, current->mm,
 			     (unsigned long)xfer->mem_addr,
 			     vsg->num_pages,
 			     (vsg->direction == DMA_FROM_DEVICE),
 			     0, vsg->pages, NULL);
+=======
+	ret = get_user_pages((unsigned long)xfer->mem_addr,
+			     vsg->num_pages,
+			     (vsg->direction == DMA_FROM_DEVICE) ? FOLL_WRITE : 0,
+			     vsg->pages, NULL);
+>>>>>>> v4.9.227
 
 	up_read(&current->mm->mmap_sem);
 	if (ret != vsg->num_pages) {

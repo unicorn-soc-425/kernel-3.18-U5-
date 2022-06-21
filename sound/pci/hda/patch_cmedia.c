@@ -57,6 +57,10 @@ static int patch_cmi9880(struct hda_codec *codec)
 		return -ENOMEM;
 
 	codec->spec = spec;
+<<<<<<< HEAD
+=======
+	codec->patch_ops = cmi_auto_patch_ops;
+>>>>>>> v4.9.227
 	cfg = &spec->gen.autocfg;
 	snd_hda_gen_spec_init(&spec->gen);
 
@@ -67,7 +71,10 @@ static int patch_cmi9880(struct hda_codec *codec)
 	if (err < 0)
 		goto error;
 
+<<<<<<< HEAD
 	codec->patch_ops = cmi_auto_patch_ops;
+=======
+>>>>>>> v4.9.227
 	return 0;
 
  error:
@@ -86,6 +93,10 @@ static int patch_cmi8888(struct hda_codec *codec)
 		return -ENOMEM;
 
 	codec->spec = spec;
+<<<<<<< HEAD
+=======
+	codec->patch_ops = cmi_auto_patch_ops;
+>>>>>>> v4.9.227
 	cfg = &spec->gen.autocfg;
 	snd_hda_gen_spec_init(&spec->gen);
 
@@ -112,7 +123,10 @@ static int patch_cmi8888(struct hda_codec *codec)
 		}
 	}
 
+<<<<<<< HEAD
 	codec->patch_ops = cmi_auto_patch_ops;
+=======
+>>>>>>> v4.9.227
 	return 0;
 
  error:
@@ -123,6 +137,7 @@ static int patch_cmi8888(struct hda_codec *codec)
 /*
  * patch entries
  */
+<<<<<<< HEAD
 static const struct hda_codec_preset snd_hda_preset_cmedia[] = {
 	{ .id = 0x13f68888, .name = "CMI8888", .patch = patch_cmi8888 },
 	{ .id = 0x13f69880, .name = "CMI9880", .patch = patch_cmi9880 },
@@ -133,10 +148,20 @@ static const struct hda_codec_preset snd_hda_preset_cmedia[] = {
 MODULE_ALIAS("snd-hda-codec-id:13f68888");
 MODULE_ALIAS("snd-hda-codec-id:13f69880");
 MODULE_ALIAS("snd-hda-codec-id:434d4980");
+=======
+static const struct hda_device_id snd_hda_id_cmedia[] = {
+	HDA_CODEC_ENTRY(0x13f68888, "CMI8888", patch_cmi8888),
+	HDA_CODEC_ENTRY(0x13f69880, "CMI9880", patch_cmi9880),
+	HDA_CODEC_ENTRY(0x434d4980, "CMI9880", patch_cmi9880),
+	{} /* terminator */
+};
+MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_cmedia);
+>>>>>>> v4.9.227
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("C-Media HD-audio codec");
 
+<<<<<<< HEAD
 static struct hda_codec_preset_list cmedia_list = {
 	.preset = snd_hda_preset_cmedia,
 	.owner = THIS_MODULE,
@@ -154,3 +179,10 @@ static void __exit patch_cmedia_exit(void)
 
 module_init(patch_cmedia_init)
 module_exit(patch_cmedia_exit)
+=======
+static struct hda_codec_driver cmedia_driver = {
+	.id = snd_hda_id_cmedia,
+};
+
+module_hda_codec_driver(cmedia_driver);
+>>>>>>> v4.9.227

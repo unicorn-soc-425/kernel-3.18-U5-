@@ -62,6 +62,10 @@ The below bindings specify the set of valid subnodes.
 		    "qcom,pm8058-rtc"
 		    "qcom,pm8921-rtc"
 		    "qcom,pm8941-rtc"
+<<<<<<< HEAD
+=======
+		    "qcom,pm8018-rtc"
+>>>>>>> v4.9.227
 
 - reg:
 	Usage: required

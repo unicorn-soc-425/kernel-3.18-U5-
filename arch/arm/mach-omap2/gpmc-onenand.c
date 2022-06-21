@@ -15,14 +15,22 @@
 #include <linux/platform_device.h>
 #include <linux/mtd/onenand_regs.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/omap-gpmc.h>
+>>>>>>> v4.9.227
 #include <linux/platform_data/mtd-onenand-omap2.h>
 #include <linux/err.h>
 
 #include <asm/mach/flash.h>
 
+<<<<<<< HEAD
 #include "gpmc.h"
 #include "soc.h"
 #include "gpmc-onenand.h"
+=======
+#include "soc.h"
+>>>>>>> v4.9.227
 
 #define	ONENAND_IO_SIZE	SZ_128K
 
@@ -102,10 +110,15 @@ static void omap2_onenand_set_async_mode(void __iomem *onenand_base)
 
 static void set_onenand_cfg(void __iomem *onenand_base)
 {
+<<<<<<< HEAD
 	u32 reg;
 
 	reg = readw(onenand_base + ONENAND_REG_SYS_CFG1);
 	reg &= ~((0x7 << ONENAND_SYS_CFG1_BRL_SHIFT) | (0x7 << 9));
+=======
+	u32 reg = ONENAND_SYS_CFG1_RDY | ONENAND_SYS_CFG1_INT;
+
+>>>>>>> v4.9.227
 	reg |=	(latency << ONENAND_SYS_CFG1_BRL_SHIFT) |
 		ONENAND_SYS_CFG1_BL_16;
 	if (onenand_flags & ONENAND_FLAG_SYNCREAD)
@@ -124,6 +137,10 @@ static void set_onenand_cfg(void __iomem *onenand_base)
 		reg |= ONENAND_SYS_CFG1_VHF;
 	else
 		reg &= ~ONENAND_SYS_CFG1_VHF;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	writew(reg, onenand_base + ONENAND_REG_SYS_CFG1);
 }
 
@@ -150,8 +167,13 @@ static int omap2_onenand_get_freq(struct omap_onenand_platform_data *cfg,
 		freq = 104;
 		break;
 	default:
+<<<<<<< HEAD
 		freq = 54;
 		break;
+=======
+		pr_err("onenand rate not detected, bad GPMC async timings?\n");
+		freq = 0;
+>>>>>>> v4.9.227
 	}
 
 	return freq;
@@ -217,11 +239,19 @@ static void omap2_onenand_calc_sync_timings(struct gpmc_timings *t,
 
 	div = gpmc_calc_divider(min_gpmc_clk_period);
 	gpmc_clk_ns = gpmc_ticks_to_ns(div);
+<<<<<<< HEAD
 	if (gpmc_clk_ns < 15) /* >66Mhz */
 		onenand_flags |= ONENAND_FLAG_HF;
 	else
 		onenand_flags &= ~ONENAND_FLAG_HF;
 	if (gpmc_clk_ns < 12) /* >83Mhz */
+=======
+	if (gpmc_clk_ns < 15) /* >66MHz */
+		onenand_flags |= ONENAND_FLAG_HF;
+	else
+		onenand_flags &= ~ONENAND_FLAG_HF;
+	if (gpmc_clk_ns < 12) /* >83MHz */
+>>>>>>> v4.9.227
 		onenand_flags |= ONENAND_FLAG_VHF;
 	else
 		onenand_flags &= ~ONENAND_FLAG_VHF;
@@ -272,6 +302,14 @@ static int omap2_onenand_setup_async(void __iomem *onenand_base)
 	struct gpmc_timings t;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Note that we need to keep sync_write set for the call to
+	 * omap2_onenand_set_async_mode() to work to detect the onenand
+	 * supported clock rate for the sync timings.
+	 */
+>>>>>>> v4.9.227
 	if (gpmc_onenand_data->of_node) {
 		gpmc_read_settings_dt(gpmc_onenand_data->of_node,
 				      &onenand_async);
@@ -282,19 +320,30 @@ static int omap2_onenand_setup_async(void __iomem *onenand_base)
 			else
 				gpmc_onenand_data->flags |= ONENAND_SYNC_READ;
 			onenand_async.sync_read = false;
+<<<<<<< HEAD
 			onenand_async.sync_write = false;
 		}
 	}
 
 	omap2_onenand_set_async_mode(onenand_base);
 
+=======
+		}
+	}
+
+	onenand_async.sync_write = true;
+>>>>>>> v4.9.227
 	omap2_onenand_calc_async_timings(&t);
 
 	ret = gpmc_cs_program_settings(gpmc_onenand_data->cs, &onenand_async);
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	ret = gpmc_cs_set_timings(gpmc_onenand_data->cs, &t);
+=======
+	ret = gpmc_cs_set_timings(gpmc_onenand_data->cs, &t, &onenand_async);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
@@ -311,6 +360,11 @@ static int omap2_onenand_setup_sync(void __iomem *onenand_base, int *freq_ptr)
 	if (!freq) {
 		/* Very first call freq is not known */
 		freq = omap2_onenand_get_freq(gpmc_onenand_data, onenand_base);
+<<<<<<< HEAD
+=======
+		if (!freq)
+			return -ENODEV;
+>>>>>>> v4.9.227
 		set_onenand_cfg(onenand_base);
 	}
 
@@ -332,7 +386,11 @@ static int omap2_onenand_setup_sync(void __iomem *onenand_base, int *freq_ptr)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	ret = gpmc_cs_set_timings(gpmc_onenand_data->cs, &t);
+=======
+	ret = gpmc_cs_set_timings(gpmc_onenand_data->cs, &t, &onenand_sync);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
@@ -364,7 +422,11 @@ static int gpmc_onenand_setup(void __iomem *onenand_base, int *freq_ptr)
 	return ret;
 }
 
+<<<<<<< HEAD
 void gpmc_onenand_init(struct omap_onenand_platform_data *_onenand_data)
+=======
+int gpmc_onenand_init(struct omap_onenand_platform_data *_onenand_data)
+>>>>>>> v4.9.227
 {
 	int err;
 	struct device *dev = &gpmc_onenand_device.dev;
@@ -390,15 +452,29 @@ void gpmc_onenand_init(struct omap_onenand_platform_data *_onenand_data)
 	if (err < 0) {
 		dev_err(dev, "Cannot request GPMC CS %d, error %d\n",
 			gpmc_onenand_data->cs, err);
+<<<<<<< HEAD
 		return;
+=======
+		return err;
+>>>>>>> v4.9.227
 	}
 
 	gpmc_onenand_resource.end = gpmc_onenand_resource.start +
 							ONENAND_IO_SIZE - 1;
 
+<<<<<<< HEAD
 	if (platform_device_register(&gpmc_onenand_device) < 0) {
 		dev_err(dev, "Unable to register OneNAND device\n");
 		gpmc_cs_free(gpmc_onenand_data->cs);
 		return;
 	}
+=======
+	err = platform_device_register(&gpmc_onenand_device);
+	if (err) {
+		dev_err(dev, "Unable to register OneNAND device\n");
+		gpmc_cs_free(gpmc_onenand_data->cs);
+	}
+
+	return err;
+>>>>>>> v4.9.227
 }

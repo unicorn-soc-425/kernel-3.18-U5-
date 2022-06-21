@@ -18,7 +18,11 @@
 unsigned gx1_gx_base(void);
 int gx1_frame_buffer_size(void);
 
+<<<<<<< HEAD
 extern struct geode_dc_ops gx1_dc_ops;
+=======
+extern const struct geode_dc_ops gx1_dc_ops;
+>>>>>>> v4.9.227
 
 /* GX1 configuration I/O registers */
 

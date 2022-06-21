@@ -37,7 +37,10 @@ typedef unsigned long mm_segment_t;
 
 struct thread_info {
 	struct task_struct *task;	/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain *exec_domain;	/* execution domain */
+=======
+>>>>>>> v4.9.227
 	unsigned long flags;	/* low level flags */
 	int cpu;		/* cpu we're on */
 	int preempt_count;	/* 0 => preemptable, <0 => BUG */
@@ -53,7 +56,10 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> v4.9.227
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
@@ -76,6 +82,7 @@ static inline struct thread_info *current_thread_info(void)
 #endif				/* __ASSEMBLY__ */
 
 /*
+<<<<<<< HEAD
  * Offsets in thread_info structure, used in assembly code
  */
 #define TI_TASK		0
@@ -85,6 +92,8 @@ static inline struct thread_info *current_thread_info(void)
 #define TI_PREEMPT	16
 
 /*
+=======
+>>>>>>> v4.9.227
  * thread information flag bit numbers
  */
 #define TIF_SYSCALL_TRACE	0	/* syscall trace active */

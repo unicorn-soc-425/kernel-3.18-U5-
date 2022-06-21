@@ -49,10 +49,13 @@
 #ifndef _LINUX_SMAPI_H
 #define _LINUX_SMAPI_H
 
+<<<<<<< HEAD
 #define TRUE 1
 #define FALSE 0
 #define BOOLEAN int
 
+=======
+>>>>>>> v4.9.227
 typedef struct {
 	int bDSPPresent;
 	int bDSPEnabled;
@@ -74,7 +77,11 @@ typedef struct {
 int smapi_init(void);
 int smapi_query_DSP_cfg(SMAPI_DSP_SETTINGS * pSettings);
 int smapi_set_DSP_cfg(void);
+<<<<<<< HEAD
 int smapi_set_DSP_power_state(BOOLEAN bOn);
+=======
+int smapi_set_DSP_power_state(bool bOn);
+>>>>>>> v4.9.227
 
 
 #endif

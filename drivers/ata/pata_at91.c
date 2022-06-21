@@ -24,12 +24,22 @@
 #include <linux/ata.h>
 #include <linux/clk.h>
 #include <linux/libata.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/ata_platform.h>
 #include <linux/platform_data/atmel.h>
 
 #include <mach/at91sam9_smc.h>
 #include <asm/gpio.h>
+=======
+#include <linux/mfd/syscon.h>
+#include <linux/mfd/syscon/atmel-smc.h>
+#include <linux/platform_device.h>
+#include <linux/ata_platform.h>
+#include <linux/platform_data/atmel.h>
+#include <linux/regmap.h>
+#include <linux/gpio.h>
+>>>>>>> v4.9.227
 
 #define DRV_NAME		"pata_at91"
 #define DRV_VERSION		"0.3"
@@ -57,6 +67,18 @@ struct smc_range {
 	int max;
 };
 
+<<<<<<< HEAD
+=======
+struct regmap *smc;
+
+struct at91sam9_smc_generic_fields {
+	struct regmap_field *setup;
+	struct regmap_field *pulse;
+	struct regmap_field *cycle;
+	struct regmap_field *mode;
+} fields;
+
+>>>>>>> v4.9.227
 /**
  * adjust_smc_value - adjust value for one of SMC registers.
  * @value: adjusted value
@@ -206,7 +228,10 @@ static void set_smc_timing(struct device *dev, struct ata_device *adev,
 {
 	int ret = 0;
 	int use_iordy;
+<<<<<<< HEAD
 	struct sam9_smc_config smc;
+=======
+>>>>>>> v4.9.227
 	unsigned int t6z;         /* data tristate time in ns */
 	unsigned int cycle;       /* SMC Cycle width in MCK ticks */
 	unsigned int setup;       /* SMC Setup width in MCK ticks */
@@ -244,6 +269,7 @@ static void set_smc_timing(struct device *dev, struct ata_device *adev,
 
 	dev_dbg(dev, "Use IORDY=%u, TDF Cycles=%u\n", use_iordy, tdf_cycles);
 
+<<<<<<< HEAD
 	/* SMC Setup Register */
 	smc.nwe_setup = smc.nrd_setup = setup;
 	smc.ncs_write_setup = smc.ncs_read_setup = 0;
@@ -257,6 +283,23 @@ static void set_smc_timing(struct device *dev, struct ata_device *adev,
 	smc.mode = info->mode;
 
 	sam9_smc_configure(0, info->cs, &smc);
+=======
+	regmap_fields_write(fields.setup, info->cs,
+			    AT91SAM9_SMC_NRDSETUP(setup) |
+			    AT91SAM9_SMC_NWESETUP(setup) |
+			    AT91SAM9_SMC_NCS_NRDSETUP(0) |
+			    AT91SAM9_SMC_NCS_WRSETUP(0));
+	regmap_fields_write(fields.pulse, info->cs,
+			    AT91SAM9_SMC_NRDPULSE(pulse) |
+			    AT91SAM9_SMC_NWEPULSE(pulse) |
+			    AT91SAM9_SMC_NCS_NRDPULSE(cs_pulse) |
+			    AT91SAM9_SMC_NCS_WRPULSE(cs_pulse));
+	regmap_fields_write(fields.cycle, info->cs,
+			    AT91SAM9_SMC_NRDCYCLE(cycle) |
+			    AT91SAM9_SMC_NWECYCLE(cycle));
+	regmap_fields_write(fields.mode, info->cs, info->mode |
+			    AT91_SMC_TDF_(tdf_cycles));
+>>>>>>> v4.9.227
 }
 
 static void pata_at91_set_piomode(struct ata_port *ap, struct ata_device *adev)
@@ -280,6 +323,7 @@ static unsigned int pata_at91_data_xfer_noirq(struct ata_device *dev,
 {
 	struct at91_ide_info *info = dev->link->ap->host->private_data;
 	unsigned int consumed;
+<<<<<<< HEAD
 	unsigned long flags;
 	struct sam9_smc_config smc;
 
@@ -289,12 +333,28 @@ static unsigned int pata_at91_data_xfer_noirq(struct ata_device *dev,
 	/* set 16bit mode before writing data */
 	smc.mode = (smc.mode & ~AT91_SMC_DBW) | AT91_SMC_DBW_16;
 	sam9_smc_write_mode(0, info->cs, &smc);
+=======
+	unsigned int mode;
+	unsigned long flags;
+
+	local_irq_save(flags);
+	regmap_fields_read(fields.mode, info->cs, &mode);
+
+	/* set 16bit mode before writing data */
+	regmap_fields_write(fields.mode, info->cs, (mode & ~AT91_SMC_DBW) |
+			    AT91_SMC_DBW_16);
+>>>>>>> v4.9.227
 
 	consumed = ata_sff_data_xfer(dev, buf, buflen, rw);
 
 	/* restore 8bit mode after data is written */
+<<<<<<< HEAD
 	smc.mode = (smc.mode & ~AT91_SMC_DBW) | AT91_SMC_DBW_8;
 	sam9_smc_write_mode(0, info->cs, &smc);
+=======
+	regmap_fields_write(fields.mode, info->cs, (mode & ~AT91_SMC_DBW) |
+			    AT91_SMC_DBW_8);
+>>>>>>> v4.9.227
 
 	local_irq_restore(flags);
 	return consumed;
@@ -312,6 +372,37 @@ static struct ata_port_operations pata_at91_port_ops = {
 	.cable_detect	= ata_cable_40wire,
 };
 
+<<<<<<< HEAD
+=======
+static int at91sam9_smc_fields_init(struct device *dev)
+{
+	struct reg_field field = REG_FIELD(0, 0, 31);
+
+	field.id_size = 8;
+	field.id_offset = AT91SAM9_SMC_GENERIC_BLK_SZ;
+
+	field.reg = AT91SAM9_SMC_SETUP(AT91SAM9_SMC_GENERIC);
+	fields.setup = devm_regmap_field_alloc(dev, smc, field);
+	if (IS_ERR(fields.setup))
+		return PTR_ERR(fields.setup);
+
+	field.reg = AT91SAM9_SMC_PULSE(AT91SAM9_SMC_GENERIC);
+	fields.pulse = devm_regmap_field_alloc(dev, smc, field);
+	if (IS_ERR(fields.pulse))
+		return PTR_ERR(fields.pulse);
+
+	field.reg = AT91SAM9_SMC_CYCLE(AT91SAM9_SMC_GENERIC);
+	fields.cycle = devm_regmap_field_alloc(dev, smc, field);
+	if (IS_ERR(fields.cycle))
+		return PTR_ERR(fields.cycle);
+
+	field.reg = AT91SAM9_SMC_MODE(AT91SAM9_SMC_GENERIC);
+	fields.mode = devm_regmap_field_alloc(dev, smc, field);
+
+	return PTR_ERR_OR_ZERO(fields.mode);
+}
+
+>>>>>>> v4.9.227
 static int pata_at91_probe(struct platform_device *pdev)
 {
 	struct at91_cf_data *board = dev_get_platdata(&pdev->dev);
@@ -341,6 +432,17 @@ static int pata_at91_probe(struct platform_device *pdev)
 
 	irq = board->irq_pin;
 
+<<<<<<< HEAD
+=======
+	smc = syscon_regmap_lookup_by_phandle(pdev->dev.of_node, "atmel,smc");
+	if (IS_ERR(smc))
+		return PTR_ERR(smc);
+
+	ret = at91sam9_smc_fields_init(dev);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> v4.9.227
 	/* init ata host */
 
 	host = ata_host_alloc(dev, 1);
@@ -444,7 +546,10 @@ static struct platform_driver pata_at91_driver = {
 	.remove		= pata_at91_remove,
 	.driver		= {
 		.name		= DRV_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

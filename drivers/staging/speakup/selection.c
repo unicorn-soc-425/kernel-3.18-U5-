@@ -7,7 +7,11 @@
 #include <linux/workqueue.h>
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
+<<<<<<< HEAD
 #include <asm/cmpxchg.h>
+=======
+#include <linux/atomic.h>
+>>>>>>> v4.9.227
 
 #include "speakup.h"
 
@@ -114,7 +118,12 @@ int speakup_set_selection(struct tty_struct *tty)
 			obp = bp;
 		if (!((i + 2) % vc->vc_size_row)) {
 			/* strip trailing blanks from line and add newline,
+<<<<<<< HEAD
 			   unless non-space at end of line. */
+=======
+			 * unless non-space at end of line.
+			 */
+>>>>>>> v4.9.227
 			if (obp != bp) {
 				bp = obp;
 				*bp++ = '\r';
@@ -149,7 +158,11 @@ static void __speakup_paste_selection(struct work_struct *work)
 	add_wait_queue(&vc->paste_wait, &wait);
 	while (sel_buffer && sel_buffer_lth > pasted) {
 		set_current_state(TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 		if (test_bit(TTY_THROTTLED, &tty->flags)) {
+=======
+		if (tty_throttled(tty)) {
+>>>>>>> v4.9.227
 			schedule();
 			continue;
 		}
@@ -159,7 +172,11 @@ static void __speakup_paste_selection(struct work_struct *work)
 		pasted += count;
 	}
 	remove_wait_queue(&vc->paste_wait, &wait);
+<<<<<<< HEAD
 	current->state = TASK_RUNNING;
+=======
+	__set_current_state(TASK_RUNNING);
+>>>>>>> v4.9.227
 
 	tty_buffer_unlock_exclusive(&vc->port);
 	tty_ldisc_deref(ld);

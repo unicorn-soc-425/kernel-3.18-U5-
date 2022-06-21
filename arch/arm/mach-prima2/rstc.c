@@ -34,6 +34,7 @@ static int sirfsoc_reset_module(struct reset_controller_dev *rcdev,
 
 	mutex_lock(&rstc_lock);
 
+<<<<<<< HEAD
 	if (of_device_is_compatible(rcdev->of_node, "sirf,prima2-rstc")) {
 		/*
 		 * Writing 1 to this bit resets corresponding block.
@@ -64,6 +65,22 @@ static int sirfsoc_reset_module(struct reset_controller_dev *rcdev,
 		writel(1 << reset_bit,
 			sirfsoc_rstc_base + (reset_bit / 32) * 8 + 4);
 	}
+=======
+	/*
+	 * Writing 1 to this bit resets corresponding block.
+	 * Writing 0 to this bit de-asserts reset signal of the
+	 * corresponding block. datasheet doesn't require explicit
+	 * delay between the set and clear of reset bit. it could
+	 * be shorter if tests pass.
+	 */
+	writel(readl(sirfsoc_rstc_base +
+			(reset_bit / 32) * 4) | (1 << reset_bit),
+		sirfsoc_rstc_base + (reset_bit / 32) * 4);
+	msleep(20);
+	writel(readl(sirfsoc_rstc_base +
+			(reset_bit / 32) * 4) & ~(1 << reset_bit),
+		sirfsoc_rstc_base + (reset_bit / 32) * 4);
+>>>>>>> v4.9.227
 
 	mutex_unlock(&rstc_lock);
 
@@ -106,7 +123,10 @@ static int sirfsoc_rstc_probe(struct platform_device *pdev)
 
 static const struct of_device_id rstc_ids[]  = {
 	{ .compatible = "sirf,prima2-rstc" },
+<<<<<<< HEAD
 	{ .compatible = "sirf,marco-rstc" },
+=======
+>>>>>>> v4.9.227
 	{},
 };
 
@@ -114,7 +134,10 @@ static struct platform_driver sirfsoc_rstc_driver = {
 	.probe		= sirfsoc_rstc_probe,
 	.driver		= {
 		.name	= "sirfsoc_rstc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = rstc_ids,
 	},
 };

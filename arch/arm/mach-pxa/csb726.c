@@ -21,8 +21,13 @@
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/csb726.h>
 #include <mach/pxa27x.h>
+=======
+#include "csb726.h"
+#include "pxa27x.h"
+>>>>>>> v4.9.227
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <mach/audio.h>

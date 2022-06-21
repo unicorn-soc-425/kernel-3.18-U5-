@@ -401,7 +401,11 @@ __kfifo_int_must_check_helper( \
 			((typeof(__tmp->type))__kfifo->data) : \
 			(__tmp->buf) \
 			)[__kfifo->in & __tmp->kfifo.mask] = \
+<<<<<<< HEAD
 				(typeof(*__tmp->type))__val; \
+=======
+				*(typeof(__tmp->type))&__val; \
+>>>>>>> v4.9.227
 			smp_wmb(); \
 			__kfifo->in++; \
 		} \

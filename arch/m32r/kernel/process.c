@@ -101,6 +101,7 @@ void show_regs(struct pt_regs * regs)
 #endif
 }
 
+<<<<<<< HEAD
 /*
  * Free current thread data structures etc..
  */
@@ -110,6 +111,8 @@ void exit_thread(void)
 	DPRINTK("pid = %d\n", current->pid);
 }
 
+=======
+>>>>>>> v4.9.227
 void flush_thread(void)
 {
 	DPRINTK("pid = %d\n", current->pid);

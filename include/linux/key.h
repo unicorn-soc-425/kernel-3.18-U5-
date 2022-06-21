@@ -89,6 +89,14 @@ struct keyring_index_key {
 	size_t			desc_len;
 };
 
+<<<<<<< HEAD
+=======
+union key_payload {
+	void __rcu		*rcu_data0;
+	void			*data[4];
+};
+
+>>>>>>> v4.9.227
 /*****************************************************************************/
 /*
  * key reference with possession attribute handling
@@ -121,6 +129,14 @@ static inline bool is_key_possessed(const key_ref_t key_ref)
 	return (unsigned long) key_ref & 1UL;
 }
 
+<<<<<<< HEAD
+=======
+enum key_state {
+	KEY_IS_UNINSTANTIATED,
+	KEY_IS_POSITIVE,		/* Positively instantiated */
+};
+
+>>>>>>> v4.9.227
 /*****************************************************************************/
 /*
  * authentication token / access credential / keyring
@@ -152,6 +168,10 @@ struct key {
 						 * - may not match RCU dereferenced payload
 						 * - payload should contain own length
 						 */
+<<<<<<< HEAD
+=======
+	short			state;		/* Key state (+) or rejection error (-) */
+>>>>>>> v4.9.227
 
 #ifdef KEY_DEBUGGING
 	unsigned		magic;
@@ -160,6 +180,7 @@ struct key {
 #endif
 
 	unsigned long		flags;		/* status flags (change with bitops) */
+<<<<<<< HEAD
 #define KEY_FLAG_INSTANTIATED	0	/* set if key has been instantiated */
 #define KEY_FLAG_DEAD		1	/* set if key type has been deleted */
 #define KEY_FLAG_REVOKED	2	/* set if key had been revoked */
@@ -173,6 +194,18 @@ struct key {
 #define KEY_FLAG_BUILTIN	10	/* set if key is builtin */
 #define KEY_FLAG_ROOT_CAN_INVAL	11	/* set if key can be invalidated by root without permission */
 #define KEY_FLAG_UID_KEYRING	12	/* set if key is a user or user session keyring */
+=======
+#define KEY_FLAG_DEAD		0	/* set if key type has been deleted */
+#define KEY_FLAG_REVOKED	1	/* set if key had been revoked */
+#define KEY_FLAG_IN_QUOTA	2	/* set if key consumes quota */
+#define KEY_FLAG_USER_CONSTRUCT	3	/* set if key is being constructed in userspace */
+#define KEY_FLAG_ROOT_CAN_CLEAR	4	/* set if key can be cleared by root without permission */
+#define KEY_FLAG_INVALIDATED	5	/* set if key has been invalidated */
+#define KEY_FLAG_BUILTIN	6	/* set if key is built in to the kernel */
+#define KEY_FLAG_ROOT_CAN_INVAL	7	/* set if key can be invalidated by root without permission */
+#define KEY_FLAG_KEEP		8	/* set if key should not be removed */
+#define KEY_FLAG_UID_KEYRING	9	/* set if key is a user or user session keyring */
+>>>>>>> v4.9.227
 
 	/* the key type and key description string
 	 * - the desc is used to match a key against search criteria
@@ -187,6 +220,7 @@ struct key {
 		};
 	};
 
+<<<<<<< HEAD
 	/* type specific data
 	 * - this is used by the keyring type to index the name
 	 */
@@ -197,11 +231,14 @@ struct key {
 		int			reject_error;
 	} type_data;
 
+=======
+>>>>>>> v4.9.227
 	/* key data
 	 * - this is used to hold the data actually used in cryptography or
 	 *   whatever
 	 */
 	union {
+<<<<<<< HEAD
 		union {
 			unsigned long		value;
 			void __rcu		*rcudata;
@@ -210,6 +247,29 @@ struct key {
 		} payload;
 		struct assoc_array keys;
 	};
+=======
+		union key_payload payload;
+		struct {
+			/* Keyring bits */
+			struct list_head name_link;
+			struct assoc_array keys;
+		};
+	};
+
+	/* This is set on a keyring to restrict the addition of a link to a key
+	 * to it.  If this method isn't provided then it is assumed that the
+	 * keyring is open to any addition.  It is ignored for non-keyring
+	 * keys.
+	 *
+	 * This is intended for use with rings of trusted keys whereby addition
+	 * to the keyring needs to be controlled.  KEY_ALLOC_BYPASS_RESTRICTION
+	 * overrides this, allowing the kernel to add extra keys without
+	 * restriction.
+	 */
+	int (*restrict_link)(struct key *keyring,
+			     const struct key_type *type,
+			     const union key_payload *payload);
+>>>>>>> v4.9.227
 };
 
 extern struct key *key_alloc(struct key_type *type,
@@ -217,6 +277,7 @@ extern struct key *key_alloc(struct key_type *type,
 			     kuid_t uid, kgid_t gid,
 			     const struct cred *cred,
 			     key_perm_t perm,
+<<<<<<< HEAD
 			     unsigned long flags);
 
 
@@ -225,6 +286,20 @@ extern struct key *key_alloc(struct key_type *type,
 #define KEY_ALLOC_NOT_IN_QUOTA	0x0002	/* not in quota */
 #define KEY_ALLOC_TRUSTED	0x0004	/* Key should be flagged as trusted */
 #define KEY_ALLOC_UID_KEYRING	0x0010	/* allocating a user or user session keyring */
+=======
+			     unsigned long flags,
+			     int (*restrict_link)(struct key *,
+						  const struct key_type *,
+						  const union key_payload *));
+
+
+#define KEY_ALLOC_IN_QUOTA		0x0000	/* add to quota, reject if would overrun */
+#define KEY_ALLOC_QUOTA_OVERRUN		0x0001	/* add to quota, permit even if overrun */
+#define KEY_ALLOC_NOT_IN_QUOTA		0x0002	/* not in quota */
+#define KEY_ALLOC_BUILT_IN		0x0004	/* Key is built into kernel */
+#define KEY_ALLOC_BYPASS_RESTRICTION	0x0008	/* Override the check on restricted keyrings */
+#define KEY_ALLOC_UID_KEYRING		0x0010	/* allocating a user or user session keyring */
+>>>>>>> v4.9.227
 
 extern void key_revoke(struct key *key);
 extern void key_invalidate(struct key *key);
@@ -293,8 +368,20 @@ extern struct key *keyring_alloc(const char *description, kuid_t uid, kgid_t gid
 				 const struct cred *cred,
 				 key_perm_t perm,
 				 unsigned long flags,
+<<<<<<< HEAD
 				 struct key *dest);
 
+=======
+				 int (*restrict_link)(struct key *,
+						      const struct key_type *,
+						      const union key_payload *),
+				 struct key *dest);
+
+extern int restrict_link_reject(struct key *keyring,
+				const struct key_type *type,
+				const union key_payload *payload);
+
+>>>>>>> v4.9.227
 extern int keyring_clear(struct key *keyring);
 
 extern key_ref_t keyring_search(key_ref_t keyring,
@@ -324,13 +411,25 @@ extern void key_set_timeout(struct key *, unsigned);
 #define	KEY_NEED_SETATTR 0x20	/* Require permission to change attributes */
 #define	KEY_NEED_ALL	0x3f	/* All the above permissions */
 
+<<<<<<< HEAD
 /**
  * key_is_instantiated - Determine if a key has been positively instantiated
+=======
+static inline short key_read_state(const struct key *key)
+{
+	/* Barrier versus mark_key_instantiated(). */
+	return smp_load_acquire(&key->state);
+}
+
+/**
+ * key_is_positive - Determine if a key has been positively instantiated
+>>>>>>> v4.9.227
  * @key: The key to check.
  *
  * Return true if the specified key has been positively instantiated, false
  * otherwise.
  */
+<<<<<<< HEAD
 static inline bool key_is_instantiated(const struct key *key)
 {
 	return test_bit(KEY_FLAG_INSTANTIATED, &key->flags) &&
@@ -339,11 +438,29 @@ static inline bool key_is_instantiated(const struct key *key)
 
 #define rcu_dereference_key(KEY)					\
 	(rcu_dereference_protected((KEY)->payload.rcudata,		\
+=======
+static inline bool key_is_positive(const struct key *key)
+{
+	return key_read_state(key) == KEY_IS_POSITIVE;
+}
+
+static inline bool key_is_negative(const struct key *key)
+{
+	return key_read_state(key) < 0;
+}
+
+#define rcu_dereference_key(KEY)					\
+	(rcu_dereference_protected((KEY)->payload.rcu_data0,		\
+>>>>>>> v4.9.227
 				   rwsem_is_locked(&((struct key *)(KEY))->sem)))
 
 #define rcu_assign_keypointer(KEY, PAYLOAD)				\
 do {									\
+<<<<<<< HEAD
 	rcu_assign_pointer((KEY)->payload.rcudata, (PAYLOAD));		\
+=======
+	rcu_assign_pointer((KEY)->payload.rcu_data0, (PAYLOAD));	\
+>>>>>>> v4.9.227
 } while (0)
 
 #ifdef CONFIG_SYSCTL

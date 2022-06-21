@@ -22,6 +22,11 @@
 #include <linux/of_address.h>
 #include <linux/clk/ti.h>
 
+<<<<<<< HEAD
+=======
+#include "clock.h"
+
+>>>>>>> v4.9.227
 struct clk_ti_autoidle {
 	void __iomem		*reg;
 	u8			shift;
@@ -33,8 +38,46 @@ struct clk_ti_autoidle {
 #define AUTOIDLE_LOW		0x1
 
 static LIST_HEAD(autoidle_clks);
+<<<<<<< HEAD
 
 static void ti_allow_autoidle(struct clk_ti_autoidle *clk)
+=======
+static LIST_HEAD(clk_hw_omap_clocks);
+
+/**
+ * omap2_clk_deny_idle - disable autoidle on an OMAP clock
+ * @clk: struct clk * to disable autoidle for
+ *
+ * Disable autoidle on an OMAP clock.
+ */
+int omap2_clk_deny_idle(struct clk *clk)
+{
+	struct clk_hw_omap *c;
+
+	c = to_clk_hw_omap(__clk_get_hw(clk));
+	if (c->ops && c->ops->deny_idle)
+		c->ops->deny_idle(c);
+	return 0;
+}
+
+/**
+ * omap2_clk_allow_idle - enable autoidle on an OMAP clock
+ * @clk: struct clk * to enable autoidle for
+ *
+ * Enable autoidle on an OMAP clock.
+ */
+int omap2_clk_allow_idle(struct clk *clk)
+{
+	struct clk_hw_omap *c;
+
+	c = to_clk_hw_omap(__clk_get_hw(clk));
+	if (c->ops && c->ops->allow_idle)
+		c->ops->allow_idle(c);
+	return 0;
+}
+
+static void _allow_autoidle(struct clk_ti_autoidle *clk)
+>>>>>>> v4.9.227
 {
 	u32 val;
 
@@ -48,7 +91,11 @@ static void ti_allow_autoidle(struct clk_ti_autoidle *clk)
 	ti_clk_ll_ops->clk_writel(val, clk->reg);
 }
 
+<<<<<<< HEAD
 static void ti_deny_autoidle(struct clk_ti_autoidle *clk)
+=======
+static void _deny_autoidle(struct clk_ti_autoidle *clk)
+>>>>>>> v4.9.227
 {
 	u32 val;
 
@@ -63,31 +110,55 @@ static void ti_deny_autoidle(struct clk_ti_autoidle *clk)
 }
 
 /**
+<<<<<<< HEAD
  * of_ti_clk_allow_autoidle_all - enable autoidle for all clocks
+=======
+ * _clk_generic_allow_autoidle_all - enable autoidle for all clocks
+>>>>>>> v4.9.227
  *
  * Enables hardware autoidle for all registered DT clocks, which have
  * the feature.
  */
+<<<<<<< HEAD
 void of_ti_clk_allow_autoidle_all(void)
+=======
+static void _clk_generic_allow_autoidle_all(void)
+>>>>>>> v4.9.227
 {
 	struct clk_ti_autoidle *c;
 
 	list_for_each_entry(c, &autoidle_clks, node)
+<<<<<<< HEAD
 		ti_allow_autoidle(c);
 }
 
 /**
  * of_ti_clk_deny_autoidle_all - disable autoidle for all clocks
+=======
+		_allow_autoidle(c);
+}
+
+/**
+ * _clk_generic_deny_autoidle_all - disable autoidle for all clocks
+>>>>>>> v4.9.227
  *
  * Disables hardware autoidle for all registered DT clocks, which have
  * the feature.
  */
+<<<<<<< HEAD
 void of_ti_clk_deny_autoidle_all(void)
+=======
+static void _clk_generic_deny_autoidle_all(void)
+>>>>>>> v4.9.227
 {
 	struct clk_ti_autoidle *c;
 
 	list_for_each_entry(c, &autoidle_clks, node)
+<<<<<<< HEAD
 		ti_deny_autoidle(c);
+=======
+		_deny_autoidle(c);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -119,7 +190,11 @@ int __init of_ti_clk_autoidle_setup(struct device_node *node)
 	clk->name = node->name;
 	clk->reg = ti_clk_get_reg_addr(node, 0);
 
+<<<<<<< HEAD
 	if (!clk->reg) {
+=======
+	if (IS_ERR(clk->reg)) {
+>>>>>>> v4.9.227
 		kfree(clk);
 		return -EINVAL;
 	}
@@ -131,3 +206,70 @@ int __init of_ti_clk_autoidle_setup(struct device_node *node)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * omap2_init_clk_hw_omap_clocks - initialize an OMAP clock
+ * @hw: struct clk_hw * to initialize
+ *
+ * Add an OMAP clock @clk to the internal list of OMAP clocks.  Used
+ * temporarily for autoidle handling, until this support can be
+ * integrated into the common clock framework code in some way.  No
+ * return value.
+ */
+void omap2_init_clk_hw_omap_clocks(struct clk_hw *hw)
+{
+	struct clk_hw_omap *c;
+
+	if (clk_hw_get_flags(hw) & CLK_IS_BASIC)
+		return;
+
+	c = to_clk_hw_omap(hw);
+	list_add(&c->node, &clk_hw_omap_clocks);
+}
+
+/**
+ * omap2_clk_enable_autoidle_all - enable autoidle on all OMAP clocks that
+ * support it
+ *
+ * Enable clock autoidle on all OMAP clocks that have allow_idle
+ * function pointers associated with them.  This function is intended
+ * to be temporary until support for this is added to the common clock
+ * code.  Returns 0.
+ */
+int omap2_clk_enable_autoidle_all(void)
+{
+	struct clk_hw_omap *c;
+
+	list_for_each_entry(c, &clk_hw_omap_clocks, node)
+		if (c->ops && c->ops->allow_idle)
+			c->ops->allow_idle(c);
+
+	_clk_generic_allow_autoidle_all();
+
+	return 0;
+}
+
+/**
+ * omap2_clk_disable_autoidle_all - disable autoidle on all OMAP clocks that
+ * support it
+ *
+ * Disable clock autoidle on all OMAP clocks that have allow_idle
+ * function pointers associated with them.  This function is intended
+ * to be temporary until support for this is added to the common clock
+ * code.  Returns 0.
+ */
+int omap2_clk_disable_autoidle_all(void)
+{
+	struct clk_hw_omap *c;
+
+	list_for_each_entry(c, &clk_hw_omap_clocks, node)
+		if (c->ops && c->ops->deny_idle)
+			c->ops->deny_idle(c);
+
+	_clk_generic_deny_autoidle_all();
+
+	return 0;
+}
+>>>>>>> v4.9.227

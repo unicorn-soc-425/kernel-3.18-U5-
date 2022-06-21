@@ -34,8 +34,13 @@
  * set of these objects.
  *
  * Fences are used to detile GTT memory mappings. They're also connected to the
+<<<<<<< HEAD
  * hardware frontbuffer render tracking and hence interract with frontbuffer
  * conmpression. Furthermore on older platforms fences are required for tiled
+=======
+ * hardware frontbuffer render tracking and hence interact with frontbuffer
+ * compression. Furthermore on older platforms fences are required for tiled
+>>>>>>> v4.9.227
  * objects used by the display engine. They can also be used by the render
  * engine - they're required for blitter commands and are optional for render
  * commands. But on gen4+ both display (with the exception of fbc) and rendering
@@ -46,8 +51,13 @@
  *
  * Finally note that because fences are such a restricted resource they're
  * dynamically associated with objects. Furthermore fence state is committed to
+<<<<<<< HEAD
  * the hardware lazily to avoid unecessary stalls on gen2/3. Therefore code must
  * explictly call i915_gem_object_get_fence() to synchronize fencing status
+=======
+ * the hardware lazily to avoid unnecessary stalls on gen2/3. Therefore code must
+ * explicitly call i915_gem_object_get_fence() to synchronize fencing status
+>>>>>>> v4.9.227
  * for cpu access. Also note that some code wants an unfenced view, for those
  * cases the fence can be removed forcefully with i915_gem_object_put_fence().
  *
@@ -55,6 +65,7 @@
  * CPU ptes into GTT mmaps (not the GTT ptes themselves) as needed.
  */
 
+<<<<<<< HEAD
 static void i965_write_fence_reg(struct drm_device *dev, int reg,
 				 struct drm_i915_gem_object *obj)
 {
@@ -132,11 +143,93 @@ static void i915_write_fence_reg(struct drm_device *dev, int reg,
 		     i915_gem_obj_ggtt_offset(obj), obj->map_and_fenceable, size);
 
 		if (obj->tiling_mode == I915_TILING_Y && HAS_128_BYTE_Y_TILING(dev))
+=======
+#define pipelined 0
+
+static void i965_write_fence_reg(struct drm_i915_fence_reg *fence,
+				 struct i915_vma *vma)
+{
+	i915_reg_t fence_reg_lo, fence_reg_hi;
+	int fence_pitch_shift;
+	u64 val;
+
+	if (INTEL_INFO(fence->i915)->gen >= 6) {
+		fence_reg_lo = FENCE_REG_GEN6_LO(fence->id);
+		fence_reg_hi = FENCE_REG_GEN6_HI(fence->id);
+		fence_pitch_shift = GEN6_FENCE_PITCH_SHIFT;
+
+	} else {
+		fence_reg_lo = FENCE_REG_965_LO(fence->id);
+		fence_reg_hi = FENCE_REG_965_HI(fence->id);
+		fence_pitch_shift = I965_FENCE_PITCH_SHIFT;
+	}
+
+	val = 0;
+	if (vma) {
+		unsigned int tiling = i915_gem_object_get_tiling(vma->obj);
+		bool is_y_tiled = tiling == I915_TILING_Y;
+		unsigned int stride = i915_gem_object_get_stride(vma->obj);
+		u32 row_size = stride * (is_y_tiled ? 32 : 8);
+		u32 size = rounddown((u32)vma->node.size, row_size);
+
+		val = ((vma->node.start + size - 4096) & 0xfffff000) << 32;
+		val |= vma->node.start & 0xfffff000;
+		val |= (u64)((stride / 128) - 1) << fence_pitch_shift;
+		if (is_y_tiled)
+			val |= BIT(I965_FENCE_TILING_Y_SHIFT);
+		val |= I965_FENCE_REG_VALID;
+	}
+
+	if (!pipelined) {
+		struct drm_i915_private *dev_priv = fence->i915;
+
+		/* To w/a incoherency with non-atomic 64-bit register updates,
+		 * we split the 64-bit update into two 32-bit writes. In order
+		 * for a partial fence not to be evaluated between writes, we
+		 * precede the update with write to turn off the fence register,
+		 * and only enable the fence as the last step.
+		 *
+		 * For extra levels of paranoia, we make sure each step lands
+		 * before applying the next step.
+		 */
+		I915_WRITE(fence_reg_lo, 0);
+		POSTING_READ(fence_reg_lo);
+
+		I915_WRITE(fence_reg_hi, upper_32_bits(val));
+		I915_WRITE(fence_reg_lo, lower_32_bits(val));
+		POSTING_READ(fence_reg_lo);
+	}
+}
+
+static void i915_write_fence_reg(struct drm_i915_fence_reg *fence,
+				 struct i915_vma *vma)
+{
+	u32 val;
+
+	val = 0;
+	if (vma) {
+		unsigned int tiling = i915_gem_object_get_tiling(vma->obj);
+		bool is_y_tiled = tiling == I915_TILING_Y;
+		unsigned int stride = i915_gem_object_get_stride(vma->obj);
+		int pitch_val;
+		int tile_width;
+
+		WARN((vma->node.start & ~I915_FENCE_START_MASK) ||
+		     !is_power_of_2(vma->node.size) ||
+		     (vma->node.start & (vma->node.size - 1)),
+		     "object 0x%08llx [fenceable? %d] not 1M or pot-size (0x%08llx) aligned\n",
+		     vma->node.start,
+		     i915_vma_is_map_and_fenceable(vma),
+		     vma->node.size);
+
+		if (is_y_tiled && HAS_128_BYTE_Y_TILING(fence->i915))
+>>>>>>> v4.9.227
 			tile_width = 128;
 		else
 			tile_width = 512;
 
 		/* Note: pitch better be a power of two tile widths */
+<<<<<<< HEAD
 		pitch_val = obj->stride / tile_width;
 		pitch_val = ffs(pitch_val) - 1;
 
@@ -267,14 +360,151 @@ i915_gem_object_wait_fence(struct drm_i915_gem_object *obj)
 			return ret;
 
 		i915_gem_request_assign(&obj->last_fenced_req, NULL);
+=======
+		pitch_val = stride / tile_width;
+		pitch_val = ffs(pitch_val) - 1;
+
+		val = vma->node.start;
+		if (is_y_tiled)
+			val |= BIT(I830_FENCE_TILING_Y_SHIFT);
+		val |= I915_FENCE_SIZE_BITS(vma->node.size);
+		val |= pitch_val << I830_FENCE_PITCH_SHIFT;
+		val |= I830_FENCE_REG_VALID;
+	}
+
+	if (!pipelined) {
+		struct drm_i915_private *dev_priv = fence->i915;
+		i915_reg_t reg = FENCE_REG(fence->id);
+
+		I915_WRITE(reg, val);
+		POSTING_READ(reg);
+	}
+}
+
+static void i830_write_fence_reg(struct drm_i915_fence_reg *fence,
+				 struct i915_vma *vma)
+{
+	u32 val;
+
+	val = 0;
+	if (vma) {
+		unsigned int tiling = i915_gem_object_get_tiling(vma->obj);
+		bool is_y_tiled = tiling == I915_TILING_Y;
+		unsigned int stride = i915_gem_object_get_stride(vma->obj);
+		u32 pitch_val;
+
+		WARN((vma->node.start & ~I830_FENCE_START_MASK) ||
+		     !is_power_of_2(vma->node.size) ||
+		     (vma->node.start & (vma->node.size - 1)),
+		     "object 0x%08llx not 512K or pot-size 0x%08llx aligned\n",
+		     vma->node.start, vma->node.size);
+
+		pitch_val = stride / 128;
+		pitch_val = ffs(pitch_val) - 1;
+
+		val = vma->node.start;
+		if (is_y_tiled)
+			val |= BIT(I830_FENCE_TILING_Y_SHIFT);
+		val |= I830_FENCE_SIZE_BITS(vma->node.size);
+		val |= pitch_val << I830_FENCE_PITCH_SHIFT;
+		val |= I830_FENCE_REG_VALID;
+	}
+
+	if (!pipelined) {
+		struct drm_i915_private *dev_priv = fence->i915;
+		i915_reg_t reg = FENCE_REG(fence->id);
+
+		I915_WRITE(reg, val);
+		POSTING_READ(reg);
+	}
+}
+
+static void fence_write(struct drm_i915_fence_reg *fence,
+			struct i915_vma *vma)
+{
+	/* Previous access through the fence register is marshalled by
+	 * the mb() inside the fault handlers (i915_gem_release_mmaps)
+	 * and explicitly managed for internal users.
+	 */
+
+	if (IS_GEN2(fence->i915))
+		i830_write_fence_reg(fence, vma);
+	else if (IS_GEN3(fence->i915))
+		i915_write_fence_reg(fence, vma);
+	else
+		i965_write_fence_reg(fence, vma);
+
+	/* Access through the fenced region afterwards is
+	 * ordered by the posting reads whilst writing the registers.
+	 */
+
+	fence->dirty = false;
+}
+
+static int fence_update(struct drm_i915_fence_reg *fence,
+			struct i915_vma *vma)
+{
+	int ret;
+
+	if (vma) {
+		if (!i915_vma_is_map_and_fenceable(vma))
+			return -EINVAL;
+
+		if (WARN(!i915_gem_object_get_stride(vma->obj) ||
+			 !i915_gem_object_get_tiling(vma->obj),
+			 "bogus fence setup with stride: 0x%x, tiling mode: %i\n",
+			 i915_gem_object_get_stride(vma->obj),
+			 i915_gem_object_get_tiling(vma->obj)))
+			return -EINVAL;
+
+		ret = i915_gem_active_retire(&vma->last_fence,
+					     &vma->obj->base.dev->struct_mutex);
+		if (ret)
+			return ret;
+	}
+
+	if (fence->vma) {
+		ret = i915_gem_active_retire(&fence->vma->last_fence,
+				      &fence->vma->obj->base.dev->struct_mutex);
+		if (ret)
+			return ret;
+	}
+
+	if (fence->vma && fence->vma != vma) {
+		/* Ensure that all userspace CPU access is completed before
+		 * stealing the fence.
+		 */
+		i915_gem_release_mmap(fence->vma->obj);
+
+		fence->vma->fence = NULL;
+		fence->vma = NULL;
+
+		list_move(&fence->link, &fence->i915->mm.fence_list);
+	}
+
+	fence_write(fence, vma);
+
+	if (vma) {
+		if (fence->vma != vma) {
+			vma->fence = fence;
+			fence->vma = vma;
+		}
+
+		list_move_tail(&fence->link, &fence->i915->mm.fence_list);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
  * i915_gem_object_put_fence - force-remove fence for an object
  * @obj: object to map through a fence reg
+=======
+ * i915_vma_put_fence - force-remove fence for a VMA
+ * @vma: vma to map linearly (not through a fence reg)
+>>>>>>> v4.9.227
  *
  * This function force-removes any fence from the given object, which is useful
  * if the kernel wants to do untiled GTT access.
@@ -284,6 +514,7 @@ i915_gem_object_wait_fence(struct drm_i915_gem_object *obj)
  * 0 on success, negative error code on failure.
  */
 int
+<<<<<<< HEAD
 i915_gem_object_put_fence(struct drm_i915_gem_object *obj)
 {
 	struct drm_i915_private *dev_priv = obj->base.dev->dev_private;
@@ -340,14 +571,49 @@ i915_find_fence_reg(struct drm_device *dev)
 deadlock:
 	/* Wait for completion of pending flips which consume fences */
 	if (intel_has_pending_fb_unpin(dev))
+=======
+i915_vma_put_fence(struct i915_vma *vma)
+{
+	struct drm_i915_fence_reg *fence = vma->fence;
+
+	assert_rpm_wakelock_held(to_i915(vma->vm->dev));
+
+	if (!fence)
+		return 0;
+
+	if (fence->pin_count)
+		return -EBUSY;
+
+	return fence_update(fence, NULL);
+}
+
+static struct drm_i915_fence_reg *fence_find(struct drm_i915_private *dev_priv)
+{
+	struct drm_i915_fence_reg *fence;
+
+	list_for_each_entry(fence, &dev_priv->mm.fence_list, link) {
+		if (fence->pin_count)
+			continue;
+
+		return fence;
+	}
+
+	/* Wait for completion of pending flips which consume fences */
+	if (intel_has_pending_fb_unpin(&dev_priv->drm))
+>>>>>>> v4.9.227
 		return ERR_PTR(-EAGAIN);
 
 	return ERR_PTR(-EDEADLK);
 }
 
 /**
+<<<<<<< HEAD
  * i915_gem_object_get_fence - set up fencing for an object
  * @obj: object to map through a fence reg
+=======
+ * i915_vma_get_fence - set up fencing for a vma
+ * @vma: vma to map through a fence reg
+>>>>>>> v4.9.227
  *
  * When mapping objects through the GTT, userspace wants to be able to write
  * to them without having to worry about swizzling if the object is tiled.
@@ -364,6 +630,7 @@ deadlock:
  * 0 on success, negative error code on failure.
  */
 int
+<<<<<<< HEAD
 i915_gem_object_get_fence(struct drm_i915_gem_object *obj)
 {
 	struct drm_device *dev = obj->base.dev;
@@ -461,6 +728,31 @@ i915_gem_object_unpin_fence(struct drm_i915_gem_object *obj)
 		WARN_ON(dev_priv->fence_regs[obj->fence_reg].pin_count <= 0);
 		dev_priv->fence_regs[obj->fence_reg].pin_count--;
 	}
+=======
+i915_vma_get_fence(struct i915_vma *vma)
+{
+	struct drm_i915_fence_reg *fence;
+	struct i915_vma *set = i915_gem_object_is_tiled(vma->obj) ? vma : NULL;
+
+	assert_rpm_wakelock_held(to_i915(vma->vm->dev));
+
+	/* Just update our place in the LRU if our fence is getting reused. */
+	if (vma->fence) {
+		fence = vma->fence;
+		if (!fence->dirty) {
+			list_move_tail(&fence->link,
+				       &fence->i915->mm.fence_list);
+			return 0;
+		}
+	} else if (set) {
+		fence = fence_find(to_i915(vma->vm->dev));
+		if (IS_ERR(fence))
+			return PTR_ERR(fence);
+	} else
+		return 0;
+
+	return fence_update(fence, set);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -472,22 +764,51 @@ i915_gem_object_unpin_fence(struct drm_i915_gem_object *obj)
  */
 void i915_gem_restore_fences(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_i915_private *dev_priv = dev->dev_private;
 	int i;
 
 	for (i = 0; i < dev_priv->num_fence_regs; i++) {
 		struct drm_i915_fence_reg *reg = &dev_priv->fence_regs[i];
+=======
+	struct drm_i915_private *dev_priv = to_i915(dev);
+	int i;
+
+	/* Note that this may be called outside of struct_mutex, by
+	 * runtime suspend/resume. The barrier we require is enforced by
+	 * rpm itself - all access to fences/GTT are only within an rpm
+	 * wakeref, and to acquire that wakeref you must pass through here.
+	 */
+
+	for (i = 0; i < dev_priv->num_fence_regs; i++) {
+		struct drm_i915_fence_reg *reg = &dev_priv->fence_regs[i];
+		struct i915_vma *vma = reg->vma;
+>>>>>>> v4.9.227
 
 		/*
 		 * Commit delayed tiling changes if we have an object still
 		 * attached to the fence, otherwise just clear the fence.
 		 */
+<<<<<<< HEAD
 		if (reg->obj) {
 			i915_gem_object_update_fence(reg->obj, reg,
 						     reg->obj->tiling_mode);
 		} else {
 			i915_gem_write_fence(dev, i, NULL);
 		}
+=======
+		if (vma && !i915_gem_object_is_tiled(vma->obj)) {
+			GEM_BUG_ON(!reg->dirty);
+			GEM_BUG_ON(vma->obj->fault_mappable);
+
+			list_move(&reg->link, &dev_priv->mm.fence_list);
+			vma->fence = NULL;
+			vma = NULL;
+		}
+
+		fence_write(reg, vma);
+		reg->vma = vma;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -527,7 +848,11 @@ void i915_gem_restore_fences(struct drm_device *dev)
  * required.
  *
  * When bit 17 is XORed in, we simply refuse to tile at all.  Bit
+<<<<<<< HEAD
  * 17 is not just a page offset, so as we page an objet out and back in,
+=======
+ * 17 is not just a page offset, so as we page an object out and back in,
+>>>>>>> v4.9.227
  * individual pages in it will have different bit 17 addresses, resulting in
  * each 64 bytes being swapped with its neighbor!
  *
@@ -549,7 +874,11 @@ void i915_gem_restore_fences(struct drm_device *dev)
 void
 i915_gem_detect_bit_6_swizzle(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_i915_private *dev_priv = dev->dev_private;
+=======
+	struct drm_i915_private *dev_priv = to_i915(dev);
+>>>>>>> v4.9.227
 	uint32_t swizzle_x = I915_BIT_6_SWIZZLE_UNKNOWN;
 	uint32_t swizzle_y = I915_BIT_6_SWIZZLE_UNKNOWN;
 
@@ -745,15 +1074,24 @@ i915_gem_swizzle_page(struct page *page)
 void
 i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj)
 {
+<<<<<<< HEAD
 	struct sg_page_iter sg_iter;
+=======
+	struct sgt_iter sgt_iter;
+	struct page *page;
+>>>>>>> v4.9.227
 	int i;
 
 	if (obj->bit_17 == NULL)
 		return;
 
 	i = 0;
+<<<<<<< HEAD
 	for_each_sg_page(obj->pages->sgl, &sg_iter, obj->pages->nents, 0) {
 		struct page *page = sg_page_iter_page(&sg_iter);
+=======
+	for_each_sgt_page(page, sgt_iter, obj->pages) {
+>>>>>>> v4.9.227
 		char new_bit_17 = page_to_phys(page) >> 17;
 		if ((new_bit_17 & 0x1) !=
 		    (test_bit(i, obj->bit_17) != 0)) {
@@ -775,7 +1113,12 @@ i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj)
 void
 i915_gem_object_save_bit_17_swizzle(struct drm_i915_gem_object *obj)
 {
+<<<<<<< HEAD
 	struct sg_page_iter sg_iter;
+=======
+	struct sgt_iter sgt_iter;
+	struct page *page;
+>>>>>>> v4.9.227
 	int page_count = obj->base.size >> PAGE_SHIFT;
 	int i;
 
@@ -790,8 +1133,14 @@ i915_gem_object_save_bit_17_swizzle(struct drm_i915_gem_object *obj)
 	}
 
 	i = 0;
+<<<<<<< HEAD
 	for_each_sg_page(obj->pages->sgl, &sg_iter, obj->pages->nents, 0) {
 		if (page_to_phys(sg_page_iter_page(&sg_iter)) & (1 << 17))
+=======
+
+	for_each_sgt_page(page, sgt_iter, obj->pages) {
+		if (page_to_phys(page) & (1 << 17))
+>>>>>>> v4.9.227
 			__set_bit(i, obj->bit_17);
 		else
 			__clear_bit(i, obj->bit_17);

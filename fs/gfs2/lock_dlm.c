@@ -31,10 +31,18 @@ extern struct workqueue_struct *gfs2_control_wq;
  *
  * @delta is the difference between the current rtt sample and the
  * running average srtt. We add 1/8 of that to the srtt in order to
+<<<<<<< HEAD
  * update the current srtt estimate. The varience estimate is a bit
  * more complicated. We subtract the abs value of the @delta from
  * the current variance estimate and add 1/4 of that to the running
  * total.
+=======
+ * update the current srtt estimate. The variance estimate is a bit
+ * more complicated. We subtract the current variance estimate from
+ * the abs value of the @delta and add 1/4 of that to the running
+ * total.  That's equivalent to 3/4 of the current variance
+ * estimate plus 1/4 of the abs of @delta.
+>>>>>>> v4.9.227
  *
  * Note that the index points at the array entry containing the smoothed
  * mean value, and the variance is always in the following entry
@@ -50,7 +58,11 @@ static inline void gfs2_update_stats(struct gfs2_lkstats *s, unsigned index,
 	s64 delta = sample - s->stats[index];
 	s->stats[index] += (delta >> 3);
 	index++;
+<<<<<<< HEAD
 	s->stats[index] += ((abs64(delta) - s->stats[index]) >> 2);
+=======
+	s->stats[index] += (s64)(abs(delta) - s->stats[index]) >> 2;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -80,7 +92,11 @@ static inline void gfs2_update_reply_times(struct gfs2_glock *gl)
 
 	preempt_disable();
 	rtt = ktime_to_ns(ktime_sub(ktime_get_real(), gl->gl_dstamp));
+<<<<<<< HEAD
 	lks = this_cpu_ptr(gl->gl_sbd->sd_lkstats);
+=======
+	lks = this_cpu_ptr(gl->gl_name.ln_sbd->sd_lkstats);
+>>>>>>> v4.9.227
 	gfs2_update_stats(&gl->gl_stats, index, rtt);		/* Local */
 	gfs2_update_stats(&lks->lkstats[gltype], index, rtt);	/* Global */
 	preempt_enable();
@@ -108,7 +124,11 @@ static inline void gfs2_update_request_times(struct gfs2_glock *gl)
 	dstamp = gl->gl_dstamp;
 	gl->gl_dstamp = ktime_get_real();
 	irt = ktime_to_ns(ktime_sub(gl->gl_dstamp, dstamp));
+<<<<<<< HEAD
 	lks = this_cpu_ptr(gl->gl_sbd->sd_lkstats);
+=======
+	lks = this_cpu_ptr(gl->gl_name.ln_sbd->sd_lkstats);
+>>>>>>> v4.9.227
 	gfs2_update_stats(&gl->gl_stats, GFS2_LKS_SIRT, irt);		/* Local */
 	gfs2_update_stats(&lks->lkstats[gltype], GFS2_LKS_SIRT, irt);	/* Global */
 	preempt_enable();
@@ -253,7 +273,11 @@ static void gfs2_reverse_hex(char *c, u64 value)
 static int gdlm_lock(struct gfs2_glock *gl, unsigned int req_state,
 		     unsigned int flags)
 {
+<<<<<<< HEAD
 	struct lm_lockstruct *ls = &gl->gl_sbd->sd_lockstruct;
+=======
+	struct lm_lockstruct *ls = &gl->gl_name.ln_sbd->sd_lockstruct;
+>>>>>>> v4.9.227
 	int req;
 	u32 lkf;
 	char strname[GDLM_STRNAME_BYTES] = "";
@@ -281,7 +305,11 @@ static int gdlm_lock(struct gfs2_glock *gl, unsigned int req_state,
 
 static void gdlm_put_lock(struct gfs2_glock *gl)
 {
+<<<<<<< HEAD
 	struct gfs2_sbd *sdp = gl->gl_sbd;
+=======
+	struct gfs2_sbd *sdp = gl->gl_name.ln_sbd;
+>>>>>>> v4.9.227
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
 	int lvb_needs_unlock = 0;
 	int error;
@@ -319,7 +347,11 @@ static void gdlm_put_lock(struct gfs2_glock *gl)
 
 static void gdlm_cancel(struct gfs2_glock *gl)
 {
+<<<<<<< HEAD
 	struct lm_lockstruct *ls = &gl->gl_sbd->sd_lockstruct;
+=======
+	struct lm_lockstruct *ls = &gl->gl_name.ln_sbd->sd_lockstruct;
+>>>>>>> v4.9.227
 	dlm_unlock(ls->ls_dlm, gl->gl_lksb.sb_lkid, DLM_LKF_CANCEL, NULL, gl);
 }
 

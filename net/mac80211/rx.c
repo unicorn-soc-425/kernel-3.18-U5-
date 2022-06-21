@@ -4,6 +4,10 @@
  * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
  * Copyright 2007-2010	Johannes Berg <johannes@sipsolutions.net>
  * Copyright 2013-2014  Intel Mobile Communications GmbH
+<<<<<<< HEAD
+=======
+ * Copyright(c) 2015 - 2017 Intel Deutschland GmbH
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,6 +22,10 @@
 #include <linux/etherdevice.h>
 #include <linux/rcupdate.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> v4.9.227
 #include <net/mac80211.h>
 #include <net/ieee80211_radiotap.h>
 #include <asm/unaligned.h>
@@ -32,6 +40,64 @@
 #include "wme.h"
 #include "rate.h"
 
+<<<<<<< HEAD
+=======
+static inline void ieee80211_rx_stats(struct net_device *dev, u32 len)
+{
+	struct pcpu_sw_netstats *tstats = this_cpu_ptr(dev->tstats);
+
+	u64_stats_update_begin(&tstats->syncp);
+	tstats->rx_packets++;
+	tstats->rx_bytes += len;
+	u64_stats_update_end(&tstats->syncp);
+}
+
+static u8 *ieee80211_get_bssid(struct ieee80211_hdr *hdr, size_t len,
+			       enum nl80211_iftype type)
+{
+	__le16 fc = hdr->frame_control;
+
+	if (ieee80211_is_data(fc)) {
+		if (len < 24) /* drop incorrect hdr len (data) */
+			return NULL;
+
+		if (ieee80211_has_a4(fc))
+			return NULL;
+		if (ieee80211_has_tods(fc))
+			return hdr->addr1;
+		if (ieee80211_has_fromds(fc))
+			return hdr->addr2;
+
+		return hdr->addr3;
+	}
+
+	if (ieee80211_is_mgmt(fc)) {
+		if (len < 24) /* drop incorrect hdr len (mgmt) */
+			return NULL;
+		return hdr->addr3;
+	}
+
+	if (ieee80211_is_ctl(fc)) {
+		if (ieee80211_is_pspoll(fc))
+			return hdr->addr1;
+
+		if (ieee80211_is_back_req(fc)) {
+			switch (type) {
+			case NL80211_IFTYPE_STATION:
+				return hdr->addr2;
+			case NL80211_IFTYPE_AP:
+			case NL80211_IFTYPE_AP_VLAN:
+				return hdr->addr1;
+			default:
+				break; /* fall through to the return */
+			}
+		}
+	}
+
+	return NULL;
+}
+
+>>>>>>> v4.9.227
 /*
  * monitor mode reception
  *
@@ -39,9 +105,16 @@
  * only useful for monitoring.
  */
 static struct sk_buff *remove_monitor_info(struct ieee80211_local *local,
+<<<<<<< HEAD
 					   struct sk_buff *skb)
 {
 	if (local->hw.flags & IEEE80211_HW_RX_INCLUDES_FCS) {
+=======
+					   struct sk_buff *skb,
+					   unsigned int rtap_vendor_space)
+{
+	if (ieee80211_hw_check(&local->hw, RX_INCLUDES_FCS)) {
+>>>>>>> v4.9.227
 		if (likely(skb->len > FCS_LEN))
 			__pskb_trim(skb, skb->len - FCS_LEN);
 		else {
@@ -52,6 +125,7 @@ static struct sk_buff *remove_monitor_info(struct ieee80211_local *local,
 		}
 	}
 
+<<<<<<< HEAD
 	return skb;
 }
 
@@ -66,6 +140,27 @@ static inline bool should_drop_frame(struct sk_buff *skb, int present_fcs_len)
 		return true;
 
 	if (unlikely(skb->len < 16 + present_fcs_len))
+=======
+	__pskb_pull(skb, rtap_vendor_space);
+
+	return skb;
+}
+
+static inline bool should_drop_frame(struct sk_buff *skb, int present_fcs_len,
+				     unsigned int rtap_vendor_space)
+{
+	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
+	struct ieee80211_hdr *hdr;
+
+	hdr = (void *)(skb->data + rtap_vendor_space);
+
+	if (status->flag & (RX_FLAG_FAILED_FCS_CRC |
+			    RX_FLAG_FAILED_PLCP_CRC |
+			    RX_FLAG_ONLY_MONITOR))
+		return true;
+
+	if (unlikely(skb->len < 16 + present_fcs_len + rtap_vendor_space))
+>>>>>>> v4.9.227
 		return true;
 
 	if (ieee80211_is_ctl(hdr->frame_control) &&
@@ -77,8 +172,14 @@ static inline bool should_drop_frame(struct sk_buff *skb, int present_fcs_len)
 }
 
 static int
+<<<<<<< HEAD
 ieee80211_rx_radiotap_space(struct ieee80211_local *local,
 			    struct ieee80211_rx_status *status)
+=======
+ieee80211_rx_radiotap_hdrlen(struct ieee80211_local *local,
+			     struct ieee80211_rx_status *status,
+			     struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	int len;
 
@@ -88,12 +189,22 @@ ieee80211_rx_radiotap_space(struct ieee80211_local *local,
 	/* allocate extra bitmaps */
 	if (status->chains)
 		len += 4 * hweight8(status->chains);
+<<<<<<< HEAD
+=======
+	/* vendor presence bitmap */
+	if (status->flag & RX_FLAG_RADIOTAP_VENDOR_DATA)
+		len += 4;
+>>>>>>> v4.9.227
 
 	if (ieee80211_have_rx_timestamp(status)) {
 		len = ALIGN(len, 8);
 		len += 8;
 	}
+<<<<<<< HEAD
 	if (local->hw.flags & IEEE80211_HW_SIGNAL_DBM)
+=======
+	if (ieee80211_hw_check(&local->hw, SIGNAL_DBM))
+>>>>>>> v4.9.227
 		len += 1;
 
 	/* antenna field, if we don't have per-chain info */
@@ -116,14 +227,86 @@ ieee80211_rx_radiotap_space(struct ieee80211_local *local,
 		len += 12;
 	}
 
+<<<<<<< HEAD
+=======
+	if (local->hw.radiotap_timestamp.units_pos >= 0) {
+		len = ALIGN(len, 8);
+		len += 12;
+	}
+
+>>>>>>> v4.9.227
 	if (status->chains) {
 		/* antenna and antenna signal fields */
 		len += 2 * hweight8(status->chains);
 	}
 
+<<<<<<< HEAD
 	return len;
 }
 
+=======
+	if (status->flag & RX_FLAG_RADIOTAP_VENDOR_DATA) {
+		struct ieee80211_vendor_radiotap *rtap = (void *)skb->data;
+
+		/* alignment for fixed 6-byte vendor data header */
+		len = ALIGN(len, 2);
+		/* vendor data header */
+		len += 6;
+		if (WARN_ON(rtap->align == 0))
+			rtap->align = 1;
+		len = ALIGN(len, rtap->align);
+		len += rtap->len + rtap->pad;
+	}
+
+	return len;
+}
+
+static void ieee80211_handle_mu_mimo_mon(struct ieee80211_sub_if_data *sdata,
+					 struct sk_buff *skb,
+					 int rtap_vendor_space)
+{
+	struct {
+		struct ieee80211_hdr_3addr hdr;
+		u8 category;
+		u8 action_code;
+	} __packed __aligned(2) action;
+
+	if (!sdata)
+		return;
+
+	BUILD_BUG_ON(sizeof(action) != IEEE80211_MIN_ACTION_SIZE + 1);
+
+	if (skb->len < rtap_vendor_space + sizeof(action) +
+		       VHT_MUMIMO_GROUPS_DATA_LEN)
+		return;
+
+	if (!is_valid_ether_addr(sdata->u.mntr.mu_follow_addr))
+		return;
+
+	skb_copy_bits(skb, rtap_vendor_space, &action, sizeof(action));
+
+	if (!ieee80211_is_action(action.hdr.frame_control))
+		return;
+
+	if (action.category != WLAN_CATEGORY_VHT)
+		return;
+
+	if (action.action_code != WLAN_VHT_ACTION_GROUPID_MGMT)
+		return;
+
+	if (!ether_addr_equal(action.hdr.addr1, sdata->u.mntr.mu_follow_addr))
+		return;
+
+	skb = skb_copy(skb, GFP_ATOMIC);
+	if (!skb)
+		return;
+
+	skb->pkt_type = IEEE80211_SDATA_QUEUE_TYPE_FRAME;
+	skb_queue_tail(&sdata->skb_queue, skb);
+	ieee80211_queue_work(&sdata->local->hw, &sdata->work);
+}
+
+>>>>>>> v4.9.227
 /*
  * ieee80211_add_rx_radiotap_header - add radiotap header
  *
@@ -144,6 +327,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 	u16 channel_flags = 0;
 	int mpdulen, chain;
 	unsigned long chains = status->chains;
+<<<<<<< HEAD
 
 	mpdulen = skb->len;
 	if (!(has_fcs && (local->hw.flags & IEEE80211_HW_RX_INCLUDES_FCS)))
@@ -151,6 +335,22 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 
 	rthdr = (struct ieee80211_radiotap_header *)skb_push(skb, rtap_len);
 	memset(rthdr, 0, rtap_len);
+=======
+	struct ieee80211_vendor_radiotap rtap = {};
+
+	if (status->flag & RX_FLAG_RADIOTAP_VENDOR_DATA) {
+		rtap = *(struct ieee80211_vendor_radiotap *)skb->data;
+		/* rtap.len and rtap.pad are undone immediately */
+		skb_pull(skb, sizeof(rtap) + rtap.len + rtap.pad);
+	}
+
+	mpdulen = skb->len;
+	if (!(has_fcs && ieee80211_hw_check(&local->hw, RX_INCLUDES_FCS)))
+		mpdulen += FCS_LEN;
+
+	rthdr = (struct ieee80211_radiotap_header *)skb_push(skb, rtap_len);
+	memset(rthdr, 0, rtap_len - rtap.len - rtap.pad);
+>>>>>>> v4.9.227
 	it_present = &rthdr->it_present;
 
 	/* radiotap header, set always present flags */
@@ -172,6 +372,17 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 				 BIT(IEEE80211_RADIOTAP_DBM_ANTSIGNAL);
 	}
 
+<<<<<<< HEAD
+=======
+	if (status->flag & RX_FLAG_RADIOTAP_VENDOR_DATA) {
+		it_present_val |= BIT(IEEE80211_RADIOTAP_VENDOR_NAMESPACE) |
+				  BIT(IEEE80211_RADIOTAP_EXT);
+		put_unaligned_le32(it_present_val, it_present);
+		it_present++;
+		it_present_val = rtap.present;
+	}
+
+>>>>>>> v4.9.227
 	put_unaligned_le32(it_present_val, it_present);
 
 	pos = (void *)(it_present + 1);
@@ -192,7 +403,11 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 	}
 
 	/* IEEE80211_RADIOTAP_FLAGS */
+<<<<<<< HEAD
 	if (has_fcs && (local->hw.flags & IEEE80211_HW_RX_INCLUDES_FCS))
+=======
+	if (has_fcs && ieee80211_hw_check(&local->hw, RX_INCLUDES_FCS))
+>>>>>>> v4.9.227
 		*pos |= IEEE80211_RADIOTAP_F_FCS;
 	if (status->flag & (RX_FLAG_FAILED_FCS_CRC | RX_FLAG_FAILED_PLCP_CRC))
 		*pos |= IEEE80211_RADIOTAP_F_BADFCS;
@@ -228,7 +443,11 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 	else if (status->flag & RX_FLAG_5MHZ)
 		channel_flags |= IEEE80211_CHAN_QUARTER;
 
+<<<<<<< HEAD
 	if (status->band == IEEE80211_BAND_5GHZ)
+=======
+	if (status->band == NL80211_BAND_5GHZ)
+>>>>>>> v4.9.227
 		channel_flags |= IEEE80211_CHAN_OFDM | IEEE80211_CHAN_5GHZ;
 	else if (status->flag & (RX_FLAG_HT | RX_FLAG_VHT))
 		channel_flags |= IEEE80211_CHAN_DYN | IEEE80211_CHAN_2GHZ;
@@ -242,7 +461,11 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 	pos += 2;
 
 	/* IEEE80211_RADIOTAP_DBM_ANTSIGNAL */
+<<<<<<< HEAD
 	if (local->hw.flags & IEEE80211_HW_SIGNAL_DBM &&
+=======
+	if (ieee80211_hw_check(&local->hw, SIGNAL_DBM) &&
+>>>>>>> v4.9.227
 	    !(status->flag & RX_FLAG_NO_SIGNAL_VAL)) {
 		*pos = status->signal;
 		rthdr->it_present |=
@@ -299,10 +522,13 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 			cpu_to_le32(1 << IEEE80211_RADIOTAP_AMPDU_STATUS);
 		put_unaligned_le32(status->ampdu_reference, pos);
 		pos += 4;
+<<<<<<< HEAD
 		if (status->flag & RX_FLAG_AMPDU_REPORT_ZEROLEN)
 			flags |= IEEE80211_RADIOTAP_AMPDU_REPORT_ZEROLEN;
 		if (status->flag & RX_FLAG_AMPDU_IS_ZEROLEN)
 			flags |= IEEE80211_RADIOTAP_AMPDU_IS_ZEROLEN;
+=======
+>>>>>>> v4.9.227
 		if (status->flag & RX_FLAG_AMPDU_LAST_KNOWN)
 			flags |= IEEE80211_RADIOTAP_AMPDU_LAST_KNOWN;
 		if (status->flag & RX_FLAG_AMPDU_IS_LAST)
@@ -324,9 +550,12 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 		u16 known = local->hw.radiotap_vht_details;
 
 		rthdr->it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_VHT);
+<<<<<<< HEAD
 		/* known field - how to handle 80+80? */
 		if (status->vht_flag & RX_VHT_FLAG_80P80MHZ)
 			known &= ~IEEE80211_RADIOTAP_VHT_KNOWN_BANDWIDTH;
+=======
+>>>>>>> v4.9.227
 		put_unaligned_le16(known, pos);
 		pos += 2;
 		/* flags */
@@ -341,8 +570,11 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 		/* bandwidth */
 		if (status->vht_flag & RX_VHT_FLAG_80MHZ)
 			*pos++ = 4;
+<<<<<<< HEAD
 		else if (status->vht_flag & RX_VHT_FLAG_80P80MHZ)
 			*pos++ = 0; /* marked not known above */
+=======
+>>>>>>> v4.9.227
 		else if (status->vht_flag & RX_VHT_FLAG_160MHZ)
 			*pos++ = 11;
 		else if (status->flag & RX_FLAG_40MHZ)
@@ -362,10 +594,57 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 		pos += 2;
 	}
 
+<<<<<<< HEAD
+=======
+	if (local->hw.radiotap_timestamp.units_pos >= 0) {
+		u16 accuracy = 0;
+		u8 flags = IEEE80211_RADIOTAP_TIMESTAMP_FLAG_32BIT;
+
+		rthdr->it_present |=
+			cpu_to_le32(1 << IEEE80211_RADIOTAP_TIMESTAMP);
+
+		/* ensure 8 byte alignment */
+		while ((pos - (u8 *)rthdr) & 7)
+			pos++;
+
+		put_unaligned_le64(status->device_timestamp, pos);
+		pos += sizeof(u64);
+
+		if (local->hw.radiotap_timestamp.accuracy >= 0) {
+			accuracy = local->hw.radiotap_timestamp.accuracy;
+			flags |= IEEE80211_RADIOTAP_TIMESTAMP_FLAG_ACCURACY;
+		}
+		put_unaligned_le16(accuracy, pos);
+		pos += sizeof(u16);
+
+		*pos++ = local->hw.radiotap_timestamp.units_pos;
+		*pos++ = flags;
+	}
+
+>>>>>>> v4.9.227
 	for_each_set_bit(chain, &chains, IEEE80211_MAX_CHAINS) {
 		*pos++ = status->chain_signal[chain];
 		*pos++ = chain;
 	}
+<<<<<<< HEAD
+=======
+
+	if (status->flag & RX_FLAG_RADIOTAP_VENDOR_DATA) {
+		/* ensure 2 byte alignment for the vendor field as required */
+		if ((pos - (u8 *)rthdr) & 1)
+			*pos++ = 0;
+		*pos++ = rtap.oui[0];
+		*pos++ = rtap.oui[1];
+		*pos++ = rtap.oui[2];
+		*pos++ = rtap.subns;
+		put_unaligned_le16(rtap.len, pos);
+		pos += 2;
+		/* align the actual payload as requested */
+		while ((pos - (u8 *)rthdr) & (rtap.align - 1))
+			*pos++ = 0;
+		/* data (and possible padding) already follows */
+	}
+>>>>>>> v4.9.227
 }
 
 /*
@@ -379,10 +658,26 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 {
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(origskb);
 	struct ieee80211_sub_if_data *sdata;
+<<<<<<< HEAD
 	int needed_headroom;
 	struct sk_buff *skb, *skb2;
 	struct net_device *prev_dev = NULL;
 	int present_fcs_len = 0;
+=======
+	int rt_hdrlen, needed_headroom;
+	struct sk_buff *skb, *skb2;
+	struct net_device *prev_dev = NULL;
+	int present_fcs_len = 0;
+	unsigned int rtap_vendor_space = 0;
+	struct ieee80211_sub_if_data *monitor_sdata =
+		rcu_dereference(local->monitor_sdata);
+
+	if (unlikely(status->flag & RX_FLAG_RADIOTAP_VENDOR_DATA)) {
+		struct ieee80211_vendor_radiotap *rtap = (void *)origskb->data;
+
+		rtap_vendor_space = sizeof(*rtap) + rtap->len + rtap->pad;
+	}
+>>>>>>> v4.9.227
 
 	/*
 	 * First, we may need to make a copy of the skb because
@@ -393,21 +688,36 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 	 * the SKB because it has a bad FCS/PLCP checksum.
 	 */
 
+<<<<<<< HEAD
 	if (local->hw.flags & IEEE80211_HW_RX_INCLUDES_FCS)
 		present_fcs_len = FCS_LEN;
 
 	/* ensure hdr->frame_control is in skb head */
 	if (!pskb_may_pull(origskb, 2)) {
+=======
+	if (ieee80211_hw_check(&local->hw, RX_INCLUDES_FCS))
+		present_fcs_len = FCS_LEN;
+
+	/* ensure hdr->frame_control and vendor radiotap data are in skb head */
+	if (!pskb_may_pull(origskb, 2 + rtap_vendor_space)) {
+>>>>>>> v4.9.227
 		dev_kfree_skb(origskb);
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	if (!local->monitors) {
 		if (should_drop_frame(origskb, present_fcs_len)) {
+=======
+	if (!local->monitors || (status->flag & RX_FLAG_SKIP_MONITOR)) {
+		if (should_drop_frame(origskb, present_fcs_len,
+				      rtap_vendor_space)) {
+>>>>>>> v4.9.227
 			dev_kfree_skb(origskb);
 			return NULL;
 		}
 
+<<<<<<< HEAD
 		return remove_monitor_info(local, origskb);
 	}
 
@@ -415,6 +725,18 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 	needed_headroom = ieee80211_rx_radiotap_space(local, status);
 
 	if (should_drop_frame(origskb, present_fcs_len)) {
+=======
+		return remove_monitor_info(local, origskb, rtap_vendor_space);
+	}
+
+	ieee80211_handle_mu_mimo_mon(monitor_sdata, origskb, rtap_vendor_space);
+
+	/* room for the radiotap header based on driver features */
+	rt_hdrlen = ieee80211_rx_radiotap_hdrlen(local, status, origskb);
+	needed_headroom = rt_hdrlen - rtap_vendor_space;
+
+	if (should_drop_frame(origskb, present_fcs_len, rtap_vendor_space)) {
+>>>>>>> v4.9.227
 		/* only need to expand headroom if necessary */
 		skb = origskb;
 		origskb = NULL;
@@ -438,15 +760,24 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 		 */
 		skb = skb_copy_expand(origskb, needed_headroom, 0, GFP_ATOMIC);
 
+<<<<<<< HEAD
 		origskb = remove_monitor_info(local, origskb);
+=======
+		origskb = remove_monitor_info(local, origskb,
+					      rtap_vendor_space);
+>>>>>>> v4.9.227
 
 		if (!skb)
 			return origskb;
 	}
 
 	/* prepend radiotap information */
+<<<<<<< HEAD
 	ieee80211_add_rx_radiotap_header(local, skb, rate, needed_headroom,
 					 true);
+=======
+	ieee80211_add_rx_radiotap_header(local, skb, rate, rt_hdrlen, true);
+>>>>>>> v4.9.227
 
 	skb_reset_mac_header(skb);
 	skb->ip_summed = CHECKSUM_UNNECESSARY;
@@ -457,7 +788,11 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 		if (sdata->vif.type != NL80211_IFTYPE_MONITOR)
 			continue;
 
+<<<<<<< HEAD
 		if (sdata->u.mntr_flags & MONITOR_FLAG_COOK_FRAMES)
+=======
+		if (sdata->u.mntr.flags & MONITOR_FLAG_COOK_FRAMES)
+>>>>>>> v4.9.227
 			continue;
 
 		if (!ieee80211_sdata_running(sdata))
@@ -472,8 +807,12 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 		}
 
 		prev_dev = sdata->dev;
+<<<<<<< HEAD
 		sdata->dev->stats.rx_packets++;
 		sdata->dev->stats.rx_bytes += skb->len;
+=======
+		ieee80211_rx_stats(sdata->dev, skb->len);
+>>>>>>> v4.9.227
 	}
 
 	if (prev_dev) {
@@ -555,8 +894,12 @@ static void ieee80211_parse_qos(struct ieee80211_rx_data *rx)
 static void ieee80211_verify_alignment(struct ieee80211_rx_data *rx)
 {
 #ifdef CONFIG_MAC80211_VERBOSE_DEBUG
+<<<<<<< HEAD
 	WARN_ONCE((unsigned long)rx->skb->data & 1,
 		  "unaligned packet at 0x%p\n", rx->skb->data);
+=======
+	WARN_ON_ONCE((unsigned long)rx->skb->data & 1);
+>>>>>>> v4.9.227
 #endif
 }
 
@@ -590,6 +933,10 @@ static int ieee80211_get_mmie_keyidx(struct sk_buff *skb)
 {
 	struct ieee80211_mgmt *hdr = (struct ieee80211_mgmt *) skb->data;
 	struct ieee80211_mmie *mmie;
+<<<<<<< HEAD
+=======
+	struct ieee80211_mmie_16 *mmie16;
+>>>>>>> v4.9.227
 
 	if (skb->len < 24 + sizeof(*mmie) || !is_multicast_ether_addr(hdr->da))
 		return -1;
@@ -599,6 +946,7 @@ static int ieee80211_get_mmie_keyidx(struct sk_buff *skb)
 
 	mmie = (struct ieee80211_mmie *)
 		(skb->data + skb->len - sizeof(*mmie));
+<<<<<<< HEAD
 	if (mmie->element_id != WLAN_EID_MMIE ||
 	    mmie->length != sizeof(*mmie) - 2)
 		return -1;
@@ -608,6 +956,24 @@ static int ieee80211_get_mmie_keyidx(struct sk_buff *skb)
 
 static int iwl80211_get_cs_keyid(const struct ieee80211_cipher_scheme *cs,
 				 struct sk_buff *skb)
+=======
+	if (mmie->element_id == WLAN_EID_MMIE &&
+	    mmie->length == sizeof(*mmie) - 2)
+		return le16_to_cpu(mmie->key_id);
+
+	mmie16 = (struct ieee80211_mmie_16 *)
+		(skb->data + skb->len - sizeof(*mmie16));
+	if (skb->len >= 24 + sizeof(*mmie16) &&
+	    mmie16->element_id == WLAN_EID_MMIE &&
+	    mmie16->length == sizeof(*mmie16) - 2)
+		return le16_to_cpu(mmie16->key_id);
+
+	return -1;
+}
+
+static int ieee80211_get_cs_keyid(const struct ieee80211_cipher_scheme *cs,
+				  struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
 	__le16 fc;
@@ -684,6 +1050,29 @@ static ieee80211_rx_result ieee80211_rx_mesh_check(struct ieee80211_rx_data *rx)
 	return RX_CONTINUE;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool ieee80211_rx_reorder_ready(struct tid_ampdu_rx *tid_agg_rx,
+					      int index)
+{
+	struct sk_buff_head *frames = &tid_agg_rx->reorder_buf[index];
+	struct sk_buff *tail = skb_peek_tail(frames);
+	struct ieee80211_rx_status *status;
+
+	if (tid_agg_rx->reorder_buf_filtered & BIT_ULL(index))
+		return true;
+
+	if (!tail)
+		return false;
+
+	status = IEEE80211_SKB_RXCB(tail);
+	if (status->flag & RX_FLAG_AMSDU_MORE)
+		return false;
+
+	return true;
+}
+
+>>>>>>> v4.9.227
 static void ieee80211_release_reorder_frame(struct ieee80211_sub_if_data *sdata,
 					    struct tid_ampdu_rx *tid_agg_rx,
 					    int index,
@@ -698,7 +1087,11 @@ static void ieee80211_release_reorder_frame(struct ieee80211_sub_if_data *sdata,
 	if (skb_queue_empty(skb_list))
 		goto no_frame;
 
+<<<<<<< HEAD
 	if (!ieee80211_rx_reorder_ready(skb_list)) {
+=======
+	if (!ieee80211_rx_reorder_ready(tid_agg_rx, index)) {
+>>>>>>> v4.9.227
 		__skb_queue_purge(skb_list);
 		goto no_frame;
 	}
@@ -712,6 +1105,10 @@ static void ieee80211_release_reorder_frame(struct ieee80211_sub_if_data *sdata,
 	}
 
 no_frame:
+<<<<<<< HEAD
+=======
+	tid_agg_rx->reorder_buf_filtered &= ~BIT_ULL(index);
+>>>>>>> v4.9.227
 	tid_agg_rx->head_seq_num = ieee80211_sn_inc(tid_agg_rx->head_seq_num);
 }
 
@@ -752,7 +1149,11 @@ static void ieee80211_sta_reorder_release(struct ieee80211_sub_if_data *sdata,
 
 	/* release the buffer until next missing frame */
 	index = tid_agg_rx->head_seq_num % tid_agg_rx->buf_size;
+<<<<<<< HEAD
 	if (!ieee80211_rx_reorder_ready(&tid_agg_rx->reorder_buf[index]) &&
+=======
+	if (!ieee80211_rx_reorder_ready(tid_agg_rx, index) &&
+>>>>>>> v4.9.227
 	    tid_agg_rx->stored_mpdu_num) {
 		/*
 		 * No buffers ready to be released, but check whether any
@@ -761,8 +1162,12 @@ static void ieee80211_sta_reorder_release(struct ieee80211_sub_if_data *sdata,
 		int skipped = 1;
 		for (j = (index + 1) % tid_agg_rx->buf_size; j != index;
 		     j = (j + 1) % tid_agg_rx->buf_size) {
+<<<<<<< HEAD
 			if (!ieee80211_rx_reorder_ready(
 					&tid_agg_rx->reorder_buf[j])) {
+=======
+			if (!ieee80211_rx_reorder_ready(tid_agg_rx, j)) {
+>>>>>>> v4.9.227
 				skipped++;
 				continue;
 			}
@@ -789,8 +1194,12 @@ static void ieee80211_sta_reorder_release(struct ieee80211_sub_if_data *sdata,
 				 skipped) & IEEE80211_SN_MASK;
 			skipped = 0;
 		}
+<<<<<<< HEAD
 	} else while (ieee80211_rx_reorder_ready(
 				&tid_agg_rx->reorder_buf[index])) {
+=======
+	} else while (ieee80211_rx_reorder_ready(tid_agg_rx, index)) {
+>>>>>>> v4.9.227
 		ieee80211_release_reorder_frame(sdata, tid_agg_rx, index,
 						frames);
 		index =	tid_agg_rx->head_seq_num % tid_agg_rx->buf_size;
@@ -801,8 +1210,12 @@ static void ieee80211_sta_reorder_release(struct ieee80211_sub_if_data *sdata,
 
 		for (; j != (index - 1) % tid_agg_rx->buf_size;
 		     j = (j + 1) % tid_agg_rx->buf_size) {
+<<<<<<< HEAD
 			if (ieee80211_rx_reorder_ready(
 					&tid_agg_rx->reorder_buf[j]))
+=======
+			if (ieee80211_rx_reorder_ready(tid_agg_rx, j))
+>>>>>>> v4.9.227
 				break;
 		}
 
@@ -850,6 +1263,21 @@ static bool ieee80211_sta_manage_reorder_buf(struct ieee80211_sub_if_data *sdata
 	buf_size = tid_agg_rx->buf_size;
 	head_seq_num = tid_agg_rx->head_seq_num;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If the current MPDU's SN is smaller than the SSN, it shouldn't
+	 * be reordered.
+	 */
+	if (unlikely(!tid_agg_rx->started)) {
+		if (ieee80211_sn_less(mpdu_seq_num, head_seq_num)) {
+			ret = false;
+			goto out;
+		}
+		tid_agg_rx->started = true;
+	}
+
+>>>>>>> v4.9.227
 	/* frame with out of date sequence number */
 	if (ieee80211_sn_less(mpdu_seq_num, head_seq_num)) {
 		dev_kfree_skb(skb);
@@ -873,7 +1301,11 @@ static bool ieee80211_sta_manage_reorder_buf(struct ieee80211_sub_if_data *sdata
 	index = mpdu_seq_num % tid_agg_rx->buf_size;
 
 	/* check if we already stored this frame */
+<<<<<<< HEAD
 	if (ieee80211_rx_reorder_ready(&tid_agg_rx->reorder_buf[index])) {
+=======
+	if (ieee80211_rx_reorder_ready(tid_agg_rx, index)) {
+>>>>>>> v4.9.227
 		dev_kfree_skb(skb);
 		goto out;
 	}
@@ -916,7 +1348,10 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
 	struct sk_buff *skb = rx->skb;
 	struct ieee80211_local *local = rx->local;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
+<<<<<<< HEAD
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
+=======
+>>>>>>> v4.9.227
 	struct sta_info *sta = rx->sta;
 	struct tid_ampdu_rx *tid_agg_rx;
 	u16 sc;
@@ -939,8 +1374,20 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
 	tid = *ieee80211_get_qos_ctl(hdr) & IEEE80211_QOS_CTL_TID_MASK;
 
 	tid_agg_rx = rcu_dereference(sta->ampdu_mlme.tid_rx[tid]);
+<<<<<<< HEAD
 	if (!tid_agg_rx)
 		goto dont_reorder;
+=======
+	if (!tid_agg_rx) {
+		if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
+		    !test_bit(tid, rx->sta->ampdu_mlme.agg_session_valid) &&
+		    !test_and_set_bit(tid, rx->sta->ampdu_mlme.unexpected_agg))
+			ieee80211_send_delba(rx->sdata, rx->sta->sta.addr, tid,
+					     WLAN_BACK_RECIPIENT,
+					     WLAN_REASON_QSTA_REQUIRE_SETUP);
+		goto dont_reorder;
+	}
+>>>>>>> v4.9.227
 
 	/* qos null data frames are excluded */
 	if (unlikely(hdr->frame_control & cpu_to_le16(IEEE80211_STYPE_NULLFUNC)))
@@ -951,10 +1398,13 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
 	    ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_NORMAL)
 		goto dont_reorder;
 
+<<<<<<< HEAD
 	/* not actually part of this BA session */
 	if (!(status->rx_flags & IEEE80211_RX_RA_MATCH))
 		goto dont_reorder;
 
+=======
+>>>>>>> v4.9.227
 	/* new, potentially un-ordered, ampdu frame - process it */
 
 	/* reset session timer */
@@ -986,15 +1436,26 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
 }
 
 static ieee80211_rx_result debug_noinline
+<<<<<<< HEAD
 ieee80211_rx_h_check(struct ieee80211_rx_data *rx)
+=======
+ieee80211_rx_h_check_dup(struct ieee80211_rx_data *rx)
+>>>>>>> v4.9.227
 {
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)rx->skb->data;
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(rx->skb);
 
+<<<<<<< HEAD
+=======
+	if (status->flag & RX_FLAG_DUP_VALIDATED)
+		return RX_CONTINUE;
+
+>>>>>>> v4.9.227
 	/*
 	 * Drop duplicate 802.11 retransmissions
 	 * (IEEE 802.11-2012: 9.3.2.10 "Duplicate detection and recovery")
 	 */
+<<<<<<< HEAD
 	if (rx->skb->len >= 24 && rx->sta &&
 	    !ieee80211_is_ctl(hdr->frame_control) &&
 	    !ieee80211_is_qos_nullfunc(hdr->frame_control) &&
@@ -1016,6 +1477,36 @@ ieee80211_rx_h_check(struct ieee80211_rx_data *rx)
 		I802_DEBUG_INC(rx->local->rx_handlers_drop_short);
 		return RX_DROP_MONITOR;
 	}
+=======
+
+	if (rx->skb->len < 24)
+		return RX_CONTINUE;
+
+	if (ieee80211_is_ctl(hdr->frame_control) ||
+	    ieee80211_is_any_nullfunc(hdr->frame_control) ||
+	    is_multicast_ether_addr(hdr->addr1))
+		return RX_CONTINUE;
+
+	if (!rx->sta)
+		return RX_CONTINUE;
+
+	if (unlikely(ieee80211_has_retry(hdr->frame_control) &&
+		     rx->sta->last_seq_ctrl[rx->seqno_idx] == hdr->seq_ctrl)) {
+		I802_DEBUG_INC(rx->local->dot11FrameDuplicateCount);
+		rx->sta->rx_stats.num_duplicates++;
+		return RX_DROP_UNUSABLE;
+	} else if (!(status->flag & RX_FLAG_AMSDU_MORE)) {
+		rx->sta->last_seq_ctrl[rx->seqno_idx] = hdr->seq_ctrl;
+	}
+
+	return RX_CONTINUE;
+}
+
+static ieee80211_rx_result debug_noinline
+ieee80211_rx_h_check(struct ieee80211_rx_data *rx)
+{
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)rx->skb->data;
+>>>>>>> v4.9.227
 
 	/* Drop disallowed frame classes based on STA auth/assoc state;
 	 * IEEE 802.11, Chap 5.5.
@@ -1033,6 +1524,10 @@ ieee80211_rx_h_check(struct ieee80211_rx_data *rx)
 		      ieee80211_is_pspoll(hdr->frame_control)) &&
 		     rx->sdata->vif.type != NL80211_IFTYPE_ADHOC &&
 		     rx->sdata->vif.type != NL80211_IFTYPE_WDS &&
+<<<<<<< HEAD
+=======
+		     rx->sdata->vif.type != NL80211_IFTYPE_OCB &&
+>>>>>>> v4.9.227
 		     (!rx->sta || !test_sta_flag(rx->sta, WLAN_STA_ASSOC)))) {
 		/*
 		 * accept port control frames from the AP even when it's not
@@ -1105,6 +1600,10 @@ static void sta_ps_start(struct sta_info *sta)
 	struct ieee80211_sub_if_data *sdata = sta->sdata;
 	struct ieee80211_local *local = sdata->local;
 	struct ps_data *ps;
+<<<<<<< HEAD
+=======
+	int tid;
+>>>>>>> v4.9.227
 
 	if (sta->sdata->vif.type == NL80211_IFTYPE_AP ||
 	    sta->sdata->vif.type == NL80211_IFTYPE_AP_VLAN)
@@ -1114,10 +1613,29 @@ static void sta_ps_start(struct sta_info *sta)
 
 	atomic_inc(&ps->num_sta_ps);
 	set_sta_flag(sta, WLAN_STA_PS_STA);
+<<<<<<< HEAD
 	if (!(local->hw.flags & IEEE80211_HW_AP_LINK_PS))
 		drv_sta_notify(local, sdata, STA_NOTIFY_SLEEP, &sta->sta);
 	ps_dbg(sdata, "STA %pM aid %d enters power save mode\n",
 	       sta->sta.addr, sta->sta.aid);
+=======
+	if (!ieee80211_hw_check(&local->hw, AP_LINK_PS))
+		drv_sta_notify(local, sdata, STA_NOTIFY_SLEEP, &sta->sta);
+	ps_dbg(sdata, "STA %pM aid %d enters power save mode\n",
+	       sta->sta.addr, sta->sta.aid);
+
+	ieee80211_clear_fast_xmit(sta);
+
+	if (!sta->sta.txq[0])
+		return;
+
+	for (tid = 0; tid < ARRAY_SIZE(sta->sta.txq); tid++) {
+		if (txq_has_queue(sta->sta.txq[tid]))
+			set_bit(tid, &sta->txq_buffered_tids);
+		else
+			clear_bit(tid, &sta->txq_buffered_tids);
+	}
+>>>>>>> v4.9.227
 }
 
 static void sta_ps_end(struct sta_info *sta)
@@ -1143,6 +1661,7 @@ static void sta_ps_end(struct sta_info *sta)
 	ieee80211_sta_ps_deliver_wakeup(sta);
 }
 
+<<<<<<< HEAD
 int ieee80211_sta_ps_transition(struct ieee80211_sta *sta, bool start)
 {
 	struct sta_info *sta_inf = container_of(sta, struct sta_info, sta);
@@ -1152,27 +1671,92 @@ int ieee80211_sta_ps_transition(struct ieee80211_sta *sta, bool start)
 
 	/* Don't let the same PS state be set twice */
 	in_ps = test_sta_flag(sta_inf, WLAN_STA_PS_STA);
+=======
+int ieee80211_sta_ps_transition(struct ieee80211_sta *pubsta, bool start)
+{
+	struct sta_info *sta = container_of(pubsta, struct sta_info, sta);
+	bool in_ps;
+
+	WARN_ON(!ieee80211_hw_check(&sta->local->hw, AP_LINK_PS));
+
+	/* Don't let the same PS state be set twice */
+	in_ps = test_sta_flag(sta, WLAN_STA_PS_STA);
+>>>>>>> v4.9.227
 	if ((start && in_ps) || (!start && !in_ps))
 		return -EINVAL;
 
 	if (start)
+<<<<<<< HEAD
 		sta_ps_start(sta_inf);
 	else
 		sta_ps_end(sta_inf);
+=======
+		sta_ps_start(sta);
+	else
+		sta_ps_end(sta);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 EXPORT_SYMBOL(ieee80211_sta_ps_transition);
 
+<<<<<<< HEAD
+=======
+void ieee80211_sta_pspoll(struct ieee80211_sta *pubsta)
+{
+	struct sta_info *sta = container_of(pubsta, struct sta_info, sta);
+
+	if (test_sta_flag(sta, WLAN_STA_SP))
+		return;
+
+	if (!test_sta_flag(sta, WLAN_STA_PS_DRIVER))
+		ieee80211_sta_ps_deliver_poll_response(sta);
+	else
+		set_sta_flag(sta, WLAN_STA_PSPOLL);
+}
+EXPORT_SYMBOL(ieee80211_sta_pspoll);
+
+void ieee80211_sta_uapsd_trigger(struct ieee80211_sta *pubsta, u8 tid)
+{
+	struct sta_info *sta = container_of(pubsta, struct sta_info, sta);
+	u8 ac = ieee802_1d_to_ac[tid & 7];
+
+	/*
+	 * If this AC is not trigger-enabled do nothing.
+	 *
+	 * NB: This could/should check a separate bitmap of trigger-
+	 * enabled queues, but for now we only implement uAPSD w/o
+	 * TSPEC changes to the ACs, so they're always the same.
+	 */
+	if (!(sta->sta.uapsd_queues & BIT(ac)))
+		return;
+
+	/* if we are in a service period, do nothing */
+	if (test_sta_flag(sta, WLAN_STA_SP))
+		return;
+
+	if (!test_sta_flag(sta, WLAN_STA_PS_DRIVER))
+		ieee80211_sta_ps_deliver_uapsd(sta);
+	else
+		set_sta_flag(sta, WLAN_STA_UAPSD);
+}
+EXPORT_SYMBOL(ieee80211_sta_uapsd_trigger);
+
+>>>>>>> v4.9.227
 static ieee80211_rx_result debug_noinline
 ieee80211_rx_h_uapsd_and_pspoll(struct ieee80211_rx_data *rx)
 {
 	struct ieee80211_sub_if_data *sdata = rx->sdata;
 	struct ieee80211_hdr *hdr = (void *)rx->skb->data;
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(rx->skb);
+<<<<<<< HEAD
 	int tid, ac;
 
 	if (!rx->sta || !(status->rx_flags & IEEE80211_RX_RA_MATCH))
+=======
+
+	if (!rx->sta)
+>>>>>>> v4.9.227
 		return RX_CONTINUE;
 
 	if (sdata->vif.type != NL80211_IFTYPE_AP &&
@@ -1184,7 +1768,11 @@ ieee80211_rx_h_uapsd_and_pspoll(struct ieee80211_rx_data *rx)
 	 * uAPSD and PS-Poll frames (the latter shouldn't even come up from
 	 * it to mac80211 since they're handled.)
 	 */
+<<<<<<< HEAD
 	if (sdata->local->hw.flags & IEEE80211_HW_AP_LINK_PS)
+=======
+	if (ieee80211_hw_check(&sdata->local->hw, AP_LINK_PS))
+>>>>>>> v4.9.227
 		return RX_CONTINUE;
 
 	/*
@@ -1196,12 +1784,16 @@ ieee80211_rx_h_uapsd_and_pspoll(struct ieee80211_rx_data *rx)
 		return RX_CONTINUE;
 
 	if (unlikely(ieee80211_is_pspoll(hdr->frame_control))) {
+<<<<<<< HEAD
 		if (!test_sta_flag(rx->sta, WLAN_STA_SP)) {
 			if (!test_sta_flag(rx->sta, WLAN_STA_PS_DRIVER))
 				ieee80211_sta_ps_deliver_poll_response(rx->sta);
 			else
 				set_sta_flag(rx->sta, WLAN_STA_PSPOLL);
 		}
+=======
+		ieee80211_sta_pspoll(&rx->sta->sta);
+>>>>>>> v4.9.227
 
 		/* Free PS Poll skb here instead of returning RX_DROP that would
 		 * count as an dropped frame. */
@@ -1213,6 +1805,7 @@ ieee80211_rx_h_uapsd_and_pspoll(struct ieee80211_rx_data *rx)
 		   ieee80211_has_pm(hdr->frame_control) &&
 		   (ieee80211_is_data_qos(hdr->frame_control) ||
 		    ieee80211_is_qos_nullfunc(hdr->frame_control))) {
+<<<<<<< HEAD
 		tid = *ieee80211_get_qos_ctl(hdr) & IEEE80211_QOS_CTL_TID_MASK;
 		ac = ieee802_1d_to_ac[tid & 7];
 
@@ -1234,6 +1827,13 @@ ieee80211_rx_h_uapsd_and_pspoll(struct ieee80211_rx_data *rx)
 			ieee80211_sta_ps_deliver_uapsd(rx->sta);
 		else
 			set_sta_flag(rx->sta, WLAN_STA_UAPSD);
+=======
+		u8 tid;
+
+		tid = *ieee80211_get_qos_ctl(hdr) & IEEE80211_QOS_CTL_TID_MASK;
+
+		ieee80211_sta_uapsd_trigger(&rx->sta->sta, tid);
+>>>>>>> v4.9.227
 	}
 
 	return RX_CONTINUE;
@@ -1264,6 +1864,7 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
 						NL80211_IFTYPE_ADHOC);
 		if (ether_addr_equal(bssid, rx->sdata->u.ibss.bssid) &&
 		    test_sta_flag(sta, WLAN_STA_AUTHORIZED)) {
+<<<<<<< HEAD
 			sta->last_rx = jiffies;
 			if (ieee80211_is_data(hdr->frame_control) &&
 			    !is_multicast_ether_addr(hdr->addr1)) {
@@ -1273,11 +1874,22 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
 				sta->last_rx_rate_vht_nss = status->vht_nss;
 			}
 		}
+=======
+			sta->rx_stats.last_rx = jiffies;
+			if (ieee80211_is_data(hdr->frame_control) &&
+			    !is_multicast_ether_addr(hdr->addr1))
+				sta->rx_stats.last_rate =
+					sta_stats_encode_rate(status);
+		}
+	} else if (rx->sdata->vif.type == NL80211_IFTYPE_OCB) {
+		sta->rx_stats.last_rx = jiffies;
+>>>>>>> v4.9.227
 	} else if (!is_multicast_ether_addr(hdr->addr1)) {
 		/*
 		 * Mesh beacons will update last_rx when if they are found to
 		 * match the current local configuration when processed.
 		 */
+<<<<<<< HEAD
 		sta->last_rx = jiffies;
 		if (ieee80211_is_data(hdr->frame_control)) {
 			sta->last_rx_rate_idx = status->rate_idx;
@@ -1302,14 +1914,43 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
 
 	if (status->chains) {
 		sta->chains = status->chains;
+=======
+		sta->rx_stats.last_rx = jiffies;
+		if (ieee80211_is_data(hdr->frame_control))
+			sta->rx_stats.last_rate = sta_stats_encode_rate(status);
+	}
+
+	if (rx->sdata->vif.type == NL80211_IFTYPE_STATION)
+		ieee80211_sta_rx_notify(rx->sdata, hdr);
+
+	sta->rx_stats.fragments++;
+
+	u64_stats_update_begin(&rx->sta->rx_stats.syncp);
+	sta->rx_stats.bytes += rx->skb->len;
+	u64_stats_update_end(&rx->sta->rx_stats.syncp);
+
+	if (!(status->flag & RX_FLAG_NO_SIGNAL_VAL)) {
+		sta->rx_stats.last_signal = status->signal;
+		ewma_signal_add(&sta->rx_stats_avg.signal, -status->signal);
+	}
+
+	if (status->chains) {
+		sta->rx_stats.chains = status->chains;
+>>>>>>> v4.9.227
 		for (i = 0; i < ARRAY_SIZE(status->chain_signal); i++) {
 			int signal = status->chain_signal[i];
 
 			if (!(status->chains & BIT(i)))
 				continue;
 
+<<<<<<< HEAD
 			sta->chain_signal_last[i] = signal;
 			ewma_add(&sta->chain_signal_avg[i], -signal);
+=======
+			sta->rx_stats.chain_signal_last[i] = signal;
+			ewma_signal_add(&sta->rx_stats_avg.chain_signal[i],
+					-signal);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -1317,7 +1958,11 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
 	 * Change STA power saving mode only at the end of a frame
 	 * exchange sequence.
 	 */
+<<<<<<< HEAD
 	if (!(sta->local->hw.flags & IEEE80211_HW_AP_LINK_PS) &&
+=======
+	if (!ieee80211_hw_check(&sta->local->hw, AP_LINK_PS) &&
+>>>>>>> v4.9.227
 	    !ieee80211_has_morefrags(hdr->frame_control) &&
 	    !ieee80211_is_back_req(hdr->frame_control) &&
 	    !(status->rx_flags & IEEE80211_RX_DEFERRED_RELEASE) &&
@@ -1349,8 +1994,12 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
 	 * Drop (qos-)data::nullfunc frames silently, since they
 	 * are used only to control station power saving mode.
 	 */
+<<<<<<< HEAD
 	if (ieee80211_is_nullfunc(hdr->frame_control) ||
 	    ieee80211_is_qos_nullfunc(hdr->frame_control)) {
+=======
+	if (ieee80211_is_any_nullfunc(hdr->frame_control)) {
+>>>>>>> v4.9.227
 		I802_DEBUG_INC(rx->local->rx_handlers_drop_nullfunc);
 
 		/*
@@ -1373,7 +2022,11 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
 		 * Update counter and free packet here to avoid
 		 * counting this as a dropped packed.
 		 */
+<<<<<<< HEAD
 		sta->rx_packets++;
+=======
+		sta->rx_stats.packets++;
+>>>>>>> v4.9.227
 		dev_kfree_skb(rx->skb);
 		return RX_QUEUED;
 	}
@@ -1422,6 +2075,7 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
 	 * possible.
 	 */
 
+<<<<<<< HEAD
 	/*
 	 * No point in finding a key and decrypting if the frame is neither
 	 * addressed to us nor a multicast frame.
@@ -1429,6 +2083,8 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
 	if (!(status->rx_flags & IEEE80211_RX_RA_MATCH))
 		return RX_CONTINUE;
 
+=======
+>>>>>>> v4.9.227
 	/* start without a key */
 	rx->key = NULL;
 	fc = hdr->frame_control;
@@ -1438,7 +2094,11 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
 
 		if (ieee80211_has_protected(fc) && rx->sta->cipher_scheme) {
 			cs = rx->sta->cipher_scheme;
+<<<<<<< HEAD
 			keyid = iwl80211_get_cs_keyid(cs, rx->skb);
+=======
+			keyid = ieee80211_get_cs_keyid(cs, rx->skb);
+>>>>>>> v4.9.227
 			if (unlikely(keyid < 0))
 				return RX_DROP_UNUSABLE;
 		}
@@ -1465,8 +2125,18 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
 		if (mmie_keyidx < NUM_DEFAULT_KEYS ||
 		    mmie_keyidx >= NUM_DEFAULT_KEYS + NUM_DEFAULT_MGMT_KEYS)
 			return RX_DROP_MONITOR; /* unexpected BIP keyidx */
+<<<<<<< HEAD
 		if (rx->sta)
 			rx->key = rcu_dereference(rx->sta->gtk[mmie_keyidx]);
+=======
+		if (rx->sta) {
+			if (ieee80211_is_group_privacy_action(skb) &&
+			    test_sta_flag(rx->sta, WLAN_STA_MFP))
+				return RX_DROP_MONITOR;
+
+			rx->key = rcu_dereference(rx->sta->gtk[mmie_keyidx]);
+		}
+>>>>>>> v4.9.227
 		if (!rx->key)
 			rx->key = rcu_dereference(rx->sdata->keys[mmie_keyidx]);
 	} else if (!ieee80211_has_protected(fc)) {
@@ -1522,7 +2192,11 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
 		hdrlen = ieee80211_hdrlen(fc);
 
 		if (cs) {
+<<<<<<< HEAD
 			keyidx = iwl80211_get_cs_keyid(cs, rx->skb);
+=======
+			keyidx = ieee80211_get_cs_keyid(cs, rx->skb);
+>>>>>>> v4.9.227
 
 			if (unlikely(keyidx < 0))
 				return RX_DROP_UNUSABLE;
@@ -1562,7 +2236,10 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
 		if (unlikely(rx->key->flags & KEY_FLAG_TAINTED))
 			return RX_DROP_MONITOR;
 
+<<<<<<< HEAD
 		rx->key->tx_rx_count++;
+=======
+>>>>>>> v4.9.227
 		/* TODO: add threshold stuff again */
 	} else {
 		return RX_DROP_MONITOR;
@@ -1577,11 +2254,34 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
 		result = ieee80211_crypto_tkip_decrypt(rx);
 		break;
 	case WLAN_CIPHER_SUITE_CCMP:
+<<<<<<< HEAD
 		result = ieee80211_crypto_ccmp_decrypt(rx);
+=======
+		result = ieee80211_crypto_ccmp_decrypt(
+			rx, IEEE80211_CCMP_MIC_LEN);
+		break;
+	case WLAN_CIPHER_SUITE_CCMP_256:
+		result = ieee80211_crypto_ccmp_decrypt(
+			rx, IEEE80211_CCMP_256_MIC_LEN);
+>>>>>>> v4.9.227
 		break;
 	case WLAN_CIPHER_SUITE_AES_CMAC:
 		result = ieee80211_crypto_aes_cmac_decrypt(rx);
 		break;
+<<<<<<< HEAD
+=======
+	case WLAN_CIPHER_SUITE_BIP_CMAC_256:
+		result = ieee80211_crypto_aes_cmac_256_decrypt(rx);
+		break;
+	case WLAN_CIPHER_SUITE_BIP_GMAC_128:
+	case WLAN_CIPHER_SUITE_BIP_GMAC_256:
+		result = ieee80211_crypto_aes_gmac_decrypt(rx);
+		break;
+	case WLAN_CIPHER_SUITE_GCMP:
+	case WLAN_CIPHER_SUITE_GCMP_256:
+		result = ieee80211_crypto_gcmp_decrypt(rx);
+		break;
+>>>>>>> v4.9.227
 	default:
 		result = ieee80211_crypto_hw_decrypt(rx);
 	}
@@ -1614,7 +2314,11 @@ ieee80211_reassemble_add(struct ieee80211_sub_if_data *sdata,
 	entry->seq = seq;
 	entry->rx_queue = rx_queue;
 	entry->last_frag = frag;
+<<<<<<< HEAD
 	entry->ccmp = 0;
+=======
+	entry->check_sequential_pn = false;
+>>>>>>> v4.9.227
 	entry->extra_len = 0;
 
 	return entry;
@@ -1684,7 +2388,11 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
 	frag = sc & IEEE80211_SCTL_FRAG;
 
 	if (is_multicast_ether_addr(hdr->addr1)) {
+<<<<<<< HEAD
 		rx->local->dot11MulticastReceivedFrameCount++;
+=======
+		I802_DEBUG_INC(rx->local->dot11MulticastReceivedFrameCount);
+>>>>>>> v4.9.227
 		goto out_no_led;
 	}
 
@@ -1708,6 +2416,7 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
 		/* This is the first fragment of a new frame. */
 		entry = ieee80211_reassemble_add(rx->sdata, frag, seq,
 						 rx->seqno_idx, &(rx->skb));
+<<<<<<< HEAD
 		if (rx->key && rx->key->conf.cipher == WLAN_CIPHER_SUITE_CCMP &&
 		    ieee80211_has_protected(fc)) {
 			int queue = rx->security_idx;
@@ -1717,6 +2426,31 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
 			memcpy(entry->last_pn,
 			       rx->key->u.ccmp.rx_pn[queue],
 			       IEEE80211_CCMP_PN_LEN);
+=======
+		if (rx->key &&
+		    (rx->key->conf.cipher == WLAN_CIPHER_SUITE_CCMP ||
+		     rx->key->conf.cipher == WLAN_CIPHER_SUITE_CCMP_256 ||
+		     rx->key->conf.cipher == WLAN_CIPHER_SUITE_GCMP ||
+		     rx->key->conf.cipher == WLAN_CIPHER_SUITE_GCMP_256) &&
+		    ieee80211_has_protected(fc)) {
+			int queue = rx->security_idx;
+
+			/* Store CCMP/GCMP PN so that we can verify that the
+			 * next fragment has a sequential PN value.
+			 */
+			entry->check_sequential_pn = true;
+			memcpy(entry->last_pn,
+			       rx->key->u.ccmp.rx_pn[queue],
+			       IEEE80211_CCMP_PN_LEN);
+			BUILD_BUG_ON(offsetof(struct ieee80211_key,
+					      u.ccmp.rx_pn) !=
+				     offsetof(struct ieee80211_key,
+					      u.gcmp.rx_pn));
+			BUILD_BUG_ON(sizeof(rx->key->u.ccmp.rx_pn[queue]) !=
+				     sizeof(rx->key->u.gcmp.rx_pn[queue]));
+			BUILD_BUG_ON(IEEE80211_CCMP_PN_LEN !=
+				     IEEE80211_GCMP_PN_LEN);
+>>>>>>> v4.9.227
 		}
 		return RX_QUEUED;
 	}
@@ -1731,6 +2465,7 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
 		return RX_DROP_MONITOR;
 	}
 
+<<<<<<< HEAD
 	/* Verify that MPDUs within one MSDU have sequential PN values.
 	 * (IEEE 802.11i, 8.3.3.4.5) */
 	if (entry->ccmp) {
@@ -1738,6 +2473,23 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
 		u8 pn[IEEE80211_CCMP_PN_LEN], *rpn;
 		int queue;
 		if (!rx->key || rx->key->conf.cipher != WLAN_CIPHER_SUITE_CCMP)
+=======
+	/* "The receiver shall discard MSDUs and MMPDUs whose constituent
+	 *  MPDU PN values are not incrementing in steps of 1."
+	 * see IEEE P802.11-REVmc/D5.0, 12.5.3.4.4, item d (for CCMP)
+	 * and IEEE P802.11-REVmc/D5.0, 12.5.5.4.4, item d (for GCMP)
+	 */
+	if (entry->check_sequential_pn) {
+		int i;
+		u8 pn[IEEE80211_CCMP_PN_LEN], *rpn;
+		int queue;
+
+		if (!rx->key ||
+		    (rx->key->conf.cipher != WLAN_CIPHER_SUITE_CCMP &&
+		     rx->key->conf.cipher != WLAN_CIPHER_SUITE_CCMP_256 &&
+		     rx->key->conf.cipher != WLAN_CIPHER_SUITE_GCMP &&
+		     rx->key->conf.cipher != WLAN_CIPHER_SUITE_GCMP_256))
+>>>>>>> v4.9.227
 			return RX_DROP_UNUSABLE;
 		memcpy(pn, entry->last_pn, IEEE80211_CCMP_PN_LEN);
 		for (i = IEEE80211_CCMP_PN_LEN - 1; i >= 0; i--) {
@@ -1763,7 +2515,11 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
 
 	rx->skb = __skb_dequeue(&entry->skb_list);
 	if (skb_tailroom(rx->skb) < entry->extra_len) {
+<<<<<<< HEAD
 		I802_DEBUG_INC(rx->local->rx_expand_skb_head2);
+=======
+		I802_DEBUG_INC(rx->local->rx_expand_skb_head_defrag);
+>>>>>>> v4.9.227
 		if (unlikely(pskb_expand_head(rx->skb, 0, entry->extra_len,
 					      GFP_ATOMIC))) {
 			I802_DEBUG_INC(rx->local->rx_handlers_drop_defrag);
@@ -1778,13 +2534,20 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
 
 	/* Complete frame has been reassembled - process it now */
 	status = IEEE80211_SKB_RXCB(rx->skb);
+<<<<<<< HEAD
 	status->rx_flags |= IEEE80211_RX_FRAGMENTED;
+=======
+>>>>>>> v4.9.227
 
  out:
 	ieee80211_led_rx(rx->local);
  out_no_led:
 	if (rx->sta)
+<<<<<<< HEAD
 		rx->sta->rx_packets++;
+=======
+		rx->sta->rx_stats.packets++;
+>>>>>>> v4.9.227
 	return RX_CONTINUE;
 }
 
@@ -1810,9 +2573,14 @@ static int ieee80211_drop_unencrypted(struct ieee80211_rx_data *rx, __le16 fc)
 
 	/* Drop unencrypted frames if key is set. */
 	if (unlikely(!ieee80211_has_protected(fc) &&
+<<<<<<< HEAD
 		     !ieee80211_is_nullfunc(fc) &&
 		     ieee80211_is_data(fc) &&
 		     (rx->key || rx->sdata->drop_unencrypted)))
+=======
+		     !ieee80211_is_any_nullfunc(fc) &&
+		     ieee80211_is_data(fc) && rx->key))
+>>>>>>> v4.9.227
 		return -EACCES;
 
 	return 0;
@@ -1940,15 +2708,37 @@ ieee80211_deliver_skb(struct ieee80211_rx_data *rx)
 	struct sk_buff *skb, *xmit_skb;
 	struct ethhdr *ehdr = (struct ethhdr *) rx->skb->data;
 	struct sta_info *dsta;
+<<<<<<< HEAD
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(rx->skb);
+=======
+>>>>>>> v4.9.227
 
 	skb = rx->skb;
 	xmit_skb = NULL;
 
+<<<<<<< HEAD
 	if ((sdata->vif.type == NL80211_IFTYPE_AP ||
 	     sdata->vif.type == NL80211_IFTYPE_AP_VLAN) &&
 	    !(sdata->flags & IEEE80211_SDATA_DONT_BRIDGE_PACKETS) &&
 	    (status->rx_flags & IEEE80211_RX_RA_MATCH) &&
+=======
+	ieee80211_rx_stats(dev, skb->len);
+
+	if (rx->sta) {
+		/* The seqno index has the same property as needed
+		 * for the rx_msdu field, i.e. it is IEEE80211_NUM_TIDS
+		 * for non-QoS-data frames. Here we know it's a data
+		 * frame, so count MSDUs.
+		 */
+		u64_stats_update_begin(&rx->sta->rx_stats.syncp);
+		rx->sta->rx_stats.msdu[rx->seqno_idx]++;
+		u64_stats_update_end(&rx->sta->rx_stats.syncp);
+	}
+
+	if ((sdata->vif.type == NL80211_IFTYPE_AP ||
+	     sdata->vif.type == NL80211_IFTYPE_AP_VLAN) &&
+	    !(sdata->flags & IEEE80211_SDATA_DONT_BRIDGE_PACKETS) &&
+>>>>>>> v4.9.227
 	    (sdata->vif.type != NL80211_IFTYPE_AP_VLAN || !sdata->u.vlan.sta)) {
 		if (is_multicast_ether_addr(ehdr->h_dest)) {
 			/*
@@ -2004,9 +2794,14 @@ ieee80211_deliver_skb(struct ieee80211_rx_data *rx)
 		/* deliver to local stack */
 		skb->protocol = eth_type_trans(skb, dev);
 		memset(skb->cb, 0, sizeof(skb->cb));
+<<<<<<< HEAD
 		if (!(rx->flags & IEEE80211_RX_REORDER_TIMER) &&
 		    rx->local->napi)
 			napi_gro_receive(rx->local->napi, skb);
+=======
+		if (rx->napi)
+			napi_gro_receive(rx->napi, skb);
+>>>>>>> v4.9.227
 		else
 			netif_receive_skb(skb);
 	}
@@ -2034,6 +2829,11 @@ ieee80211_rx_h_amsdu(struct ieee80211_rx_data *rx)
 	__le16 fc = hdr->frame_control;
 	struct sk_buff_head frame_list;
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(rx->skb);
+<<<<<<< HEAD
+=======
+	struct ethhdr ethhdr;
+	const u8 *check_da = ethhdr.h_dest, *check_sa = ethhdr.h_source;
+>>>>>>> v4.9.227
 
 	if (unlikely(!ieee80211_is_data(fc)))
 		return RX_CONTINUE;
@@ -2057,6 +2857,26 @@ ieee80211_rx_h_amsdu(struct ieee80211_rx_data *rx)
 		default:
 			return RX_DROP_UNUSABLE;
 		}
+<<<<<<< HEAD
+=======
+		check_da = NULL;
+		check_sa = NULL;
+	} else switch (rx->sdata->vif.type) {
+		case NL80211_IFTYPE_AP:
+		case NL80211_IFTYPE_AP_VLAN:
+			check_da = NULL;
+			break;
+		case NL80211_IFTYPE_STATION:
+			if (!rx->sta ||
+			    !test_sta_flag(rx->sta, WLAN_STA_TDLS_PEER))
+				check_sa = NULL;
+			break;
+		case NL80211_IFTYPE_MESH_POINT:
+			check_sa = NULL;
+			break;
+		default:
+			break;
+>>>>>>> v4.9.227
 	}
 
 	if (is_multicast_ether_addr(hdr->addr1))
@@ -2065,12 +2885,23 @@ ieee80211_rx_h_amsdu(struct ieee80211_rx_data *rx)
 	skb->dev = dev;
 	__skb_queue_head_init(&frame_list);
 
+<<<<<<< HEAD
 	if (skb_linearize(skb))
+=======
+	if (ieee80211_data_to_8023_exthdr(skb, &ethhdr,
+					  rx->sdata->vif.addr,
+					  rx->sdata->vif.type))
+>>>>>>> v4.9.227
 		return RX_DROP_UNUSABLE;
 
 	ieee80211_amsdu_to_8023s(skb, &frame_list, dev->dev_addr,
 				 rx->sdata->vif.type,
+<<<<<<< HEAD
 				 rx->local->hw.extra_tx_headroom, true);
+=======
+				 rx->local->hw.extra_tx_headroom,
+				 check_da, check_sa);
+>>>>>>> v4.9.227
 
 	while (!skb_queue_empty(&frame_list)) {
 		rx->skb = __skb_dequeue(&frame_list);
@@ -2079,8 +2910,11 @@ ieee80211_rx_h_amsdu(struct ieee80211_rx_data *rx)
 			dev_kfree_skb(rx->skb);
 			continue;
 		}
+<<<<<<< HEAD
 		dev->stats.rx_packets++;
 		dev->stats.rx_bytes += rx->skb->len;
+=======
+>>>>>>> v4.9.227
 
 		ieee80211_deliver_skb(rx);
 	}
@@ -2098,7 +2932,10 @@ ieee80211_rx_h_mesh_fwding(struct ieee80211_rx_data *rx)
 	struct sk_buff *skb = rx->skb, *fwd_skb;
 	struct ieee80211_local *local = rx->local;
 	struct ieee80211_sub_if_data *sdata = rx->sdata;
+<<<<<<< HEAD
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
+=======
+>>>>>>> v4.9.227
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 	u16 ac, q, hdrlen;
 
@@ -2129,8 +2966,12 @@ ieee80211_rx_h_mesh_fwding(struct ieee80211_rx_data *rx)
 	    mesh_rmc_check(rx->sdata, hdr->addr3, mesh_hdr))
 		return RX_DROP_MONITOR;
 
+<<<<<<< HEAD
 	if (!ieee80211_is_data(hdr->frame_control) ||
 	    !(status->rx_flags & IEEE80211_RX_RA_MATCH))
+=======
+	if (!ieee80211_is_data(hdr->frame_control))
+>>>>>>> v4.9.227
 		return RX_CONTINUE;
 
 	if (!mesh_hdr->ttl)
@@ -2144,7 +2985,12 @@ ieee80211_rx_h_mesh_fwding(struct ieee80211_rx_data *rx)
 		if (is_multicast_ether_addr(hdr->addr1)) {
 			mpp_addr = hdr->addr3;
 			proxied_addr = mesh_hdr->eaddr1;
+<<<<<<< HEAD
 		} else if (mesh_hdr->flags & MESH_FLAGS_AE_A5_A6) {
+=======
+		} else if ((mesh_hdr->flags & MESH_FLAGS_AE) ==
+			    MESH_FLAGS_AE_A5_A6) {
+>>>>>>> v4.9.227
 			/* has_a4 already checked in ieee80211_rx_mesh_check */
 			mpp_addr = hdr->addr4;
 			proxied_addr = mesh_hdr->eaddr2;
@@ -2160,6 +3006,10 @@ ieee80211_rx_h_mesh_fwding(struct ieee80211_rx_data *rx)
 			spin_lock_bh(&mppath->state_lock);
 			if (!ether_addr_equal(mppath->mpp, mpp_addr))
 				memcpy(mppath->mpp, mpp_addr, ETH_ALEN);
+<<<<<<< HEAD
+=======
+			mppath->exp_time = jiffies;
+>>>>>>> v4.9.227
 			spin_unlock_bh(&mppath->state_lock);
 		}
 		rcu_read_unlock();
@@ -2179,7 +3029,13 @@ ieee80211_rx_h_mesh_fwding(struct ieee80211_rx_data *rx)
 	skb_set_queue_mapping(skb, q);
 
 	if (!--mesh_hdr->ttl) {
+<<<<<<< HEAD
 		IEEE80211_IFSTA_MESH_CTR_INC(ifmsh, dropped_frames_ttl);
+=======
+		if (!is_multicast_ether_addr(hdr->addr1))
+			IEEE80211_IFSTA_MESH_CTR_INC(ifmsh,
+						     dropped_frames_ttl);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -2222,11 +3078,17 @@ ieee80211_rx_h_mesh_fwding(struct ieee80211_rx_data *rx)
 	IEEE80211_IFSTA_MESH_CTR_INC(ifmsh, fwded_frames);
 	ieee80211_add_pending_skb(local, fwd_skb);
  out:
+<<<<<<< HEAD
 	if (is_multicast_ether_addr(hdr->addr1) ||
 	    sdata->dev->flags & IFF_PROMISC)
 		return RX_CONTINUE;
 	else
 		return RX_DROP_MONITOR;
+=======
+	if (is_multicast_ether_addr(hdr->addr1))
+		return RX_CONTINUE;
+	return RX_DROP_MONITOR;
+>>>>>>> v4.9.227
 }
 #endif
 
@@ -2267,6 +3129,29 @@ ieee80211_rx_h_data(struct ieee80211_rx_data *rx)
 	if (!ieee80211_frame_allowed(rx, fc))
 		return RX_DROP_MONITOR;
 
+<<<<<<< HEAD
+=======
+	/* directly handle TDLS channel switch requests/responses */
+	if (unlikely(((struct ethhdr *)rx->skb->data)->h_proto ==
+						cpu_to_be16(ETH_P_TDLS))) {
+		struct ieee80211_tdls_data *tf = (void *)rx->skb->data;
+
+		if (pskb_may_pull(rx->skb,
+				  offsetof(struct ieee80211_tdls_data, u)) &&
+		    tf->payload_type == WLAN_TDLS_SNAP_RFTYPE &&
+		    tf->category == WLAN_CATEGORY_TDLS &&
+		    (tf->action_code == WLAN_TDLS_CHANNEL_SWITCH_REQUEST ||
+		     tf->action_code == WLAN_TDLS_CHANNEL_SWITCH_RESPONSE)) {
+			skb_queue_tail(&local->skb_queue_tdls_chsw, rx->skb);
+			schedule_work(&local->tdls_chsw_work);
+			if (rx->sta)
+				rx->sta->rx_stats.packets++;
+
+			return RX_QUEUED;
+		}
+	}
+
+>>>>>>> v4.9.227
 	if (rx->sdata->vif.type == NL80211_IFTYPE_AP_VLAN &&
 	    unlikely(port_control) && sdata->bss) {
 		sdata = container_of(sdata->bss, struct ieee80211_sub_if_data,
@@ -2277,6 +3162,7 @@ ieee80211_rx_h_data(struct ieee80211_rx_data *rx)
 
 	rx->skb->dev = dev;
 
+<<<<<<< HEAD
 	dev->stats.rx_packets++;
 	dev->stats.rx_bytes += rx->skb->len;
 
@@ -2288,6 +3174,16 @@ ieee80211_rx_h_data(struct ieee80211_rx_data *rx)
 			mod_timer(&local->dynamic_ps_timer, jiffies +
 			 msecs_to_jiffies(local->hw.conf.dynamic_ps_timeout));
 	}
+=======
+	if (!ieee80211_hw_check(&local->hw, SUPPORTS_DYNAMIC_PS) &&
+	    local->ps_sdata && local->hw.conf.dynamic_ps_timeout > 0 &&
+	    !is_multicast_ether_addr(
+		    ((struct ethhdr *)rx->skb->data)->h_dest) &&
+	    (!local->scanning &&
+	     !test_bit(SDATA_STATE_OFFCHANNEL, &sdata->state)))
+		mod_timer(&local->dynamic_ps_timer, jiffies +
+			  msecs_to_jiffies(local->hw.conf.dynamic_ps_timeout));
+>>>>>>> v4.9.227
 
 	ieee80211_deliver_skb(rx);
 
@@ -2310,6 +3206,12 @@ ieee80211_rx_h_ctrl(struct ieee80211_rx_data *rx, struct sk_buff_head *frames)
 		struct {
 			__le16 control, start_seq_num;
 		} __packed bar_data;
+<<<<<<< HEAD
+=======
+		struct ieee80211_event event = {
+			.type = BAR_RX_EVENT,
+		};
+>>>>>>> v4.9.227
 
 		if (!rx->sta)
 			return RX_DROP_MONITOR;
@@ -2320,11 +3222,26 @@ ieee80211_rx_h_ctrl(struct ieee80211_rx_data *rx, struct sk_buff_head *frames)
 
 		tid = le16_to_cpu(bar_data.control) >> 12;
 
+<<<<<<< HEAD
+=======
+		if (!test_bit(tid, rx->sta->ampdu_mlme.agg_session_valid) &&
+		    !test_and_set_bit(tid, rx->sta->ampdu_mlme.unexpected_agg))
+			ieee80211_send_delba(rx->sdata, rx->sta->sta.addr, tid,
+					     WLAN_BACK_RECIPIENT,
+					     WLAN_REASON_QSTA_REQUIRE_SETUP);
+
+>>>>>>> v4.9.227
 		tid_agg_rx = rcu_dereference(rx->sta->ampdu_mlme.tid_rx[tid]);
 		if (!tid_agg_rx)
 			return RX_DROP_MONITOR;
 
 		start_seq_num = le16_to_cpu(bar_data.start_seq_num) >> 4;
+<<<<<<< HEAD
+=======
+		event.u.ba.tid = tid;
+		event.u.ba.ssn = start_seq_num;
+		event.u.ba.sta = &rx->sta->sta;
+>>>>>>> v4.9.227
 
 		/* reset session timer */
 		if (tid_agg_rx->timeout)
@@ -2337,6 +3254,11 @@ ieee80211_rx_h_ctrl(struct ieee80211_rx_data *rx, struct sk_buff_head *frames)
 						 start_seq_num, frames);
 		spin_unlock(&tid_agg_rx->reorder_lock);
 
+<<<<<<< HEAD
+=======
+		drv_event_callback(rx->local, rx->sdata, &event);
+
+>>>>>>> v4.9.227
 		kfree_skb(skb);
 		return RX_QUEUED;
 	}
@@ -2417,7 +3339,11 @@ ieee80211_rx_h_mgmt_check(struct ieee80211_rx_data *rx)
 	    !(rx->flags & IEEE80211_RX_BEACON_REPORTED)) {
 		int sig = 0;
 
+<<<<<<< HEAD
 		if (rx->local->hw.flags & IEEE80211_HW_SIGNAL_DBM)
+=======
+		if (ieee80211_hw_check(&rx->local->hw, SIGNAL_DBM))
+>>>>>>> v4.9.227
 			sig = status->signal;
 
 		cfg80211_report_obss_beacon(rx->local->hw.wiphy,
@@ -2426,9 +3352,12 @@ ieee80211_rx_h_mgmt_check(struct ieee80211_rx_data *rx)
 		rx->flags |= IEEE80211_RX_BEACON_REPORTED;
 	}
 
+<<<<<<< HEAD
 	if (!(status->rx_flags & IEEE80211_RX_RA_MATCH))
 		return RX_DROP_MONITOR;
 
+=======
+>>>>>>> v4.9.227
 	if (ieee80211_drop_unencrypted_mgmt(rx))
 		return RX_DROP_UNUSABLE;
 
@@ -2456,9 +3385,12 @@ ieee80211_rx_h_action(struct ieee80211_rx_data *rx)
 	    mgmt->u.action.category != WLAN_CATEGORY_SPECTRUM_MGMT)
 		return RX_DROP_UNUSABLE;
 
+<<<<<<< HEAD
 	if (!(status->rx_flags & IEEE80211_RX_RA_MATCH))
 		return RX_DROP_UNUSABLE;
 
+=======
+>>>>>>> v4.9.227
 	switch (mgmt->u.action.category) {
 	case WLAN_CATEGORY_HT:
 		/* reject HT action frames from stations not supporting HT */
@@ -2510,7 +3442,11 @@ ieee80211_rx_h_action(struct ieee80211_rx_data *rx)
 		case WLAN_HT_ACTION_NOTIFY_CHANWIDTH: {
 			struct ieee80211_supported_band *sband;
 			u8 chanwidth = mgmt->u.action.u.ht_notify_cw.chanwidth;
+<<<<<<< HEAD
 			enum ieee80211_sta_rx_bandwidth new_bw;
+=======
+			enum ieee80211_sta_rx_bandwidth max_bw, new_bw;
+>>>>>>> v4.9.227
 
 			/* If it doesn't support 40 MHz it can't change ... */
 			if (!(rx->sta->sta.ht_cap.cap &
@@ -2518,13 +3454,27 @@ ieee80211_rx_h_action(struct ieee80211_rx_data *rx)
 				goto handled;
 
 			if (chanwidth == IEEE80211_HT_CHANWIDTH_20MHZ)
+<<<<<<< HEAD
 				new_bw = IEEE80211_STA_RX_BW_20;
 			else
 				new_bw = ieee80211_sta_cur_vht_bw(rx->sta);
+=======
+				max_bw = IEEE80211_STA_RX_BW_20;
+			else
+				max_bw = ieee80211_sta_cap_rx_bw(rx->sta);
+
+			/* set cur_max_bandwidth and recalc sta bw */
+			rx->sta->cur_max_bandwidth = max_bw;
+			new_bw = ieee80211_sta_cur_vht_bw(rx->sta);
+>>>>>>> v4.9.227
 
 			if (rx->sta->sta.bandwidth == new_bw)
 				goto handled;
 
+<<<<<<< HEAD
+=======
+			rx->sta->sta.bandwidth = new_bw;
+>>>>>>> v4.9.227
 			sband = rx->local->hw.wiphy->bands[status->band];
 
 			rate_control_rate_update(local, sband, rx->sta,
@@ -2566,6 +3516,7 @@ ieee80211_rx_h_action(struct ieee80211_rx_data *rx)
 
 		switch (mgmt->u.action.u.vht_opmode_notif.action_code) {
 		case WLAN_VHT_ACTION_OPMODE_NOTIF: {
+<<<<<<< HEAD
 			u8 opmode;
 
 			/* verify opmode is present */
@@ -2578,6 +3529,17 @@ ieee80211_rx_h_action(struct ieee80211_rx_data *rx)
 						    opmode, status->band,
 						    false);
 			goto handled;
+=======
+			/* verify opmode is present */
+			if (len < IEEE80211_MIN_ACTION_SIZE + 2)
+				goto invalid;
+			goto queue;
+		}
+		case WLAN_VHT_ACTION_GROUPID_MGMT: {
+			if (len < IEEE80211_MIN_ACTION_SIZE + 25)
+				goto invalid;
+			goto queue;
+>>>>>>> v4.9.227
 		}
 		default:
 			break;
@@ -2623,7 +3585,11 @@ ieee80211_rx_h_action(struct ieee80211_rx_data *rx)
 
 		switch (mgmt->u.action.u.measurement.action_code) {
 		case WLAN_ACTION_SPCT_MSR_REQ:
+<<<<<<< HEAD
 			if (status->band != IEEE80211_BAND_5GHZ)
+=======
+			if (status->band != NL80211_BAND_5GHZ)
+>>>>>>> v4.9.227
 				break;
 
 			if (len < (IEEE80211_MIN_ACTION_SIZE +
@@ -2719,7 +3685,11 @@ ieee80211_rx_h_action(struct ieee80211_rx_data *rx)
 
  handled:
 	if (rx->sta)
+<<<<<<< HEAD
 		rx->sta->rx_packets++;
+=======
+		rx->sta->rx_stats.packets++;
+>>>>>>> v4.9.227
 	dev_kfree_skb(rx->skb);
 	return RX_QUEUED;
 
@@ -2728,7 +3698,11 @@ ieee80211_rx_h_action(struct ieee80211_rx_data *rx)
 	skb_queue_tail(&sdata->skb_queue, rx->skb);
 	ieee80211_queue_work(&local->hw, &sdata->work);
 	if (rx->sta)
+<<<<<<< HEAD
 		rx->sta->rx_packets++;
+=======
+		rx->sta->rx_stats.packets++;
+>>>>>>> v4.9.227
 	return RX_QUEUED;
 }
 
@@ -2749,13 +3723,21 @@ ieee80211_rx_h_userspace_mgmt(struct ieee80211_rx_data *rx)
 	 * it transmitted were processed or returned.
 	 */
 
+<<<<<<< HEAD
 	if (rx->local->hw.flags & IEEE80211_HW_SIGNAL_DBM)
+=======
+	if (ieee80211_hw_check(&rx->local->hw, SIGNAL_DBM))
+>>>>>>> v4.9.227
 		sig = status->signal;
 
 	if (cfg80211_rx_mgmt(&rx->sdata->wdev, status->freq, sig,
 			     rx->skb->data, rx->skb->len, 0)) {
 		if (rx->sta)
+<<<<<<< HEAD
 			rx->sta->rx_packets++;
+=======
+			rx->sta->rx_stats.packets++;
+>>>>>>> v4.9.227
 		dev_kfree_skb(rx->skb);
 		return RX_QUEUED;
 	}
@@ -2814,7 +3796,11 @@ ieee80211_rx_h_action_return(struct ieee80211_rx_data *rx)
 			info->flags = IEEE80211_TX_CTL_TX_OFFCHAN |
 				      IEEE80211_TX_INTFL_OFFCHAN_TX_OK |
 				      IEEE80211_TX_CTL_NO_CCK_RATE;
+<<<<<<< HEAD
 			if (local->hw.flags & IEEE80211_HW_QUEUE_CONTROL)
+=======
+			if (ieee80211_hw_check(&local->hw, QUEUE_CONTROL))
+>>>>>>> v4.9.227
 				info->hw_queue =
 					local->hw.offchannel_tx_hw_queue;
 		}
@@ -2837,6 +3823,10 @@ ieee80211_rx_h_mgmt(struct ieee80211_rx_data *rx)
 
 	if (!ieee80211_vif_is_mesh(&sdata->vif) &&
 	    sdata->vif.type != NL80211_IFTYPE_ADHOC &&
+<<<<<<< HEAD
+=======
+	    sdata->vif.type != NL80211_IFTYPE_OCB &&
+>>>>>>> v4.9.227
 	    sdata->vif.type != NL80211_IFTYPE_STATION)
 		return RX_DROP_MONITOR;
 
@@ -2846,9 +3836,24 @@ ieee80211_rx_h_mgmt(struct ieee80211_rx_data *rx)
 	case cpu_to_le16(IEEE80211_STYPE_PROBE_RESP):
 		/* process for all: mesh, mlme, ibss */
 		break;
+<<<<<<< HEAD
 	case cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP):
 	case cpu_to_le16(IEEE80211_STYPE_REASSOC_RESP):
 	case cpu_to_le16(IEEE80211_STYPE_DEAUTH):
+=======
+	case cpu_to_le16(IEEE80211_STYPE_DEAUTH):
+		if (is_multicast_ether_addr(mgmt->da) &&
+		    !is_broadcast_ether_addr(mgmt->da))
+			return RX_DROP_MONITOR;
+
+		/* process only for station/IBSS */
+		if (sdata->vif.type != NL80211_IFTYPE_STATION &&
+		    sdata->vif.type != NL80211_IFTYPE_ADHOC)
+			return RX_DROP_MONITOR;
+		break;
+	case cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP):
+	case cpu_to_le16(IEEE80211_STYPE_REASSOC_RESP):
+>>>>>>> v4.9.227
 	case cpu_to_le16(IEEE80211_STYPE_DISASSOC):
 		if (is_multicast_ether_addr(mgmt->da) &&
 		    !is_broadcast_ether_addr(mgmt->da))
@@ -2873,12 +3878,19 @@ ieee80211_rx_h_mgmt(struct ieee80211_rx_data *rx)
 	skb_queue_tail(&sdata->skb_queue, rx->skb);
 	ieee80211_queue_work(&rx->local->hw, &sdata->work);
 	if (rx->sta)
+<<<<<<< HEAD
 		rx->sta->rx_packets++;
+=======
+		rx->sta->rx_stats.packets++;
+>>>>>>> v4.9.227
 
 	return RX_QUEUED;
 }
 
+<<<<<<< HEAD
 /* TODO: use IEEE80211_RX_FRAGMENTED */
+=======
+>>>>>>> v4.9.227
 static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
 					struct ieee80211_rate *rate)
 {
@@ -2901,8 +3913,15 @@ static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
 	if (!local->cooked_mntrs)
 		goto out_free_skb;
 
+<<<<<<< HEAD
 	/* room for the radiotap header based on driver features */
 	needed_headroom = ieee80211_rx_radiotap_space(local, status);
+=======
+	/* vendor data is long removed here */
+	status->flag &= ~RX_FLAG_RADIOTAP_VENDOR_DATA;
+	/* room for the radiotap header based on driver features */
+	needed_headroom = ieee80211_rx_radiotap_hdrlen(local, status, skb);
+>>>>>>> v4.9.227
 
 	if (skb_headroom(skb) < needed_headroom &&
 	    pskb_expand_head(skb, needed_headroom, 0, GFP_ATOMIC))
@@ -2912,7 +3931,11 @@ static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
 	ieee80211_add_rx_radiotap_header(local, skb, rate, needed_headroom,
 					 false);
 
+<<<<<<< HEAD
 	skb_set_mac_header(skb, 0);
+=======
+	skb_reset_mac_header(skb);
+>>>>>>> v4.9.227
 	skb->ip_summed = CHECKSUM_UNNECESSARY;
 	skb->pkt_type = PACKET_OTHERHOST;
 	skb->protocol = htons(ETH_P_802_2);
@@ -2922,7 +3945,11 @@ static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
 			continue;
 
 		if (sdata->vif.type != NL80211_IFTYPE_MONITOR ||
+<<<<<<< HEAD
 		    !(sdata->u.mntr_flags & MONITOR_FLAG_COOK_FRAMES))
+=======
+		    !(sdata->u.mntr.flags & MONITOR_FLAG_COOK_FRAMES))
+>>>>>>> v4.9.227
 			continue;
 
 		if (prev_dev) {
@@ -2934,8 +3961,12 @@ static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
 		}
 
 		prev_dev = sdata->dev;
+<<<<<<< HEAD
 		sdata->dev->stats.rx_packets++;
 		sdata->dev->stats.rx_bytes += skb->len;
+=======
+		ieee80211_rx_stats(sdata->dev, skb->len);
+>>>>>>> v4.9.227
 	}
 
 	if (prev_dev) {
@@ -2955,7 +3986,11 @@ static void ieee80211_rx_handlers_result(struct ieee80211_rx_data *rx,
 	case RX_DROP_MONITOR:
 		I802_DEBUG_INC(rx->sdata->local->rx_handlers_drop);
 		if (rx->sta)
+<<<<<<< HEAD
 			rx->sta->rx_dropped++;
+=======
+			rx->sta->rx_stats.dropped++;
+>>>>>>> v4.9.227
 		/* fall through */
 	case RX_CONTINUE: {
 		struct ieee80211_rate *rate = NULL;
@@ -2975,7 +4010,11 @@ static void ieee80211_rx_handlers_result(struct ieee80211_rx_data *rx,
 	case RX_DROP_UNUSABLE:
 		I802_DEBUG_INC(rx->sdata->local->rx_handlers_drop);
 		if (rx->sta)
+<<<<<<< HEAD
 			rx->sta->rx_dropped++;
+=======
+			rx->sta->rx_stats.dropped++;
+>>>>>>> v4.9.227
 		dev_kfree_skb(rx->skb);
 		break;
 	case RX_QUEUED:
@@ -2995,8 +4034,19 @@ static void ieee80211_rx_handlers(struct ieee80211_rx_data *rx,
 		res = rxh(rx);		\
 		if (res != RX_CONTINUE)	\
 			goto rxh_next;  \
+<<<<<<< HEAD
 	} while (0);
 
+=======
+	} while (0)
+
+	/* Lock here to avoid hitting all of the data used in the RX
+	 * path (e.g. key data, station data, ...) concurrently when
+	 * a frame is released from the reorder buffer due to timeout
+	 * from the timer, potentially concurrently with RX from the
+	 * driver.
+	 */
+>>>>>>> v4.9.227
 	spin_lock_bh(&rx->local->rx_path_lock);
 
 	while ((skb = __skb_dequeue(frames))) {
@@ -3007,30 +4057,52 @@ static void ieee80211_rx_handlers(struct ieee80211_rx_data *rx,
 		 */
 		rx->skb = skb;
 
+<<<<<<< HEAD
 		CALL_RXH(ieee80211_rx_h_check_more_data)
 		CALL_RXH(ieee80211_rx_h_uapsd_and_pspoll)
 		CALL_RXH(ieee80211_rx_h_sta_process)
 		CALL_RXH(ieee80211_rx_h_decrypt)
 		CALL_RXH(ieee80211_rx_h_defragment)
 		CALL_RXH(ieee80211_rx_h_michael_mic_verify)
+=======
+		CALL_RXH(ieee80211_rx_h_check_more_data);
+		CALL_RXH(ieee80211_rx_h_uapsd_and_pspoll);
+		CALL_RXH(ieee80211_rx_h_sta_process);
+		CALL_RXH(ieee80211_rx_h_decrypt);
+		CALL_RXH(ieee80211_rx_h_defragment);
+		CALL_RXH(ieee80211_rx_h_michael_mic_verify);
+>>>>>>> v4.9.227
 		/* must be after MMIC verify so header is counted in MPDU mic */
 #ifdef CONFIG_MAC80211_MESH
 		if (ieee80211_vif_is_mesh(&rx->sdata->vif))
 			CALL_RXH(ieee80211_rx_h_mesh_fwding);
 #endif
+<<<<<<< HEAD
 		CALL_RXH(ieee80211_rx_h_amsdu)
 		CALL_RXH(ieee80211_rx_h_data)
+=======
+		CALL_RXH(ieee80211_rx_h_amsdu);
+		CALL_RXH(ieee80211_rx_h_data);
+>>>>>>> v4.9.227
 
 		/* special treatment -- needs the queue */
 		res = ieee80211_rx_h_ctrl(rx, frames);
 		if (res != RX_CONTINUE)
 			goto rxh_next;
 
+<<<<<<< HEAD
 		CALL_RXH(ieee80211_rx_h_mgmt_check)
 		CALL_RXH(ieee80211_rx_h_action)
 		CALL_RXH(ieee80211_rx_h_userspace_mgmt)
 		CALL_RXH(ieee80211_rx_h_action_return)
 		CALL_RXH(ieee80211_rx_h_mgmt)
+=======
+		CALL_RXH(ieee80211_rx_h_mgmt_check);
+		CALL_RXH(ieee80211_rx_h_action);
+		CALL_RXH(ieee80211_rx_h_userspace_mgmt);
+		CALL_RXH(ieee80211_rx_h_action_return);
+		CALL_RXH(ieee80211_rx_h_mgmt);
+>>>>>>> v4.9.227
 
  rxh_next:
 		ieee80211_rx_handlers_result(rx, res);
@@ -3053,9 +4125,16 @@ static void ieee80211_invoke_rx_handlers(struct ieee80211_rx_data *rx)
 		res = rxh(rx);		\
 		if (res != RX_CONTINUE)	\
 			goto rxh_next;  \
+<<<<<<< HEAD
 	} while (0);
 
 	CALL_RXH(ieee80211_rx_h_check)
+=======
+	} while (0)
+
+	CALL_RXH(ieee80211_rx_h_check_dup);
+	CALL_RXH(ieee80211_rx_h_check);
+>>>>>>> v4.9.227
 
 	ieee80211_rx_reorder_ampdu(rx, &reorder_release);
 
@@ -3082,7 +4161,11 @@ void ieee80211_release_reorder_timeout(struct sta_info *sta, int tid)
 		/* This is OK -- must be QoS data frame */
 		.security_idx = tid,
 		.seqno_idx = tid,
+<<<<<<< HEAD
 		.flags = IEEE80211_RX_REORDER_TIMER,
+=======
+		.napi = NULL, /* must be NULL to not have races */
+>>>>>>> v4.9.227
 	};
 	struct tid_ampdu_rx *tid_agg_rx;
 
@@ -3096,6 +4179,7 @@ void ieee80211_release_reorder_timeout(struct sta_info *sta, int tid)
 	ieee80211_sta_reorder_release(sta->sdata, tid_agg_rx, &frames);
 	spin_unlock(&tid_agg_rx->reorder_lock);
 
+<<<<<<< HEAD
 	ieee80211_rx_handlers(&rx, &frames);
 }
 
@@ -3106,6 +4190,106 @@ static bool prepare_for_handlers(struct ieee80211_rx_data *rx,
 {
 	struct ieee80211_sub_if_data *sdata = rx->sdata;
 	struct sk_buff *skb = rx->skb;
+=======
+	if (!skb_queue_empty(&frames)) {
+		struct ieee80211_event event = {
+			.type = BA_FRAME_TIMEOUT,
+			.u.ba.tid = tid,
+			.u.ba.sta = &sta->sta,
+		};
+		drv_event_callback(rx.local, rx.sdata, &event);
+	}
+
+	ieee80211_rx_handlers(&rx, &frames);
+}
+
+void ieee80211_mark_rx_ba_filtered_frames(struct ieee80211_sta *pubsta, u8 tid,
+					  u16 ssn, u64 filtered,
+					  u16 received_mpdus)
+{
+	struct sta_info *sta;
+	struct tid_ampdu_rx *tid_agg_rx;
+	struct sk_buff_head frames;
+	struct ieee80211_rx_data rx = {
+		/* This is OK -- must be QoS data frame */
+		.security_idx = tid,
+		.seqno_idx = tid,
+	};
+	int i, diff;
+
+	if (WARN_ON(!pubsta || tid >= IEEE80211_NUM_TIDS))
+		return;
+
+	__skb_queue_head_init(&frames);
+
+	sta = container_of(pubsta, struct sta_info, sta);
+
+	rx.sta = sta;
+	rx.sdata = sta->sdata;
+	rx.local = sta->local;
+
+	rcu_read_lock();
+	tid_agg_rx = rcu_dereference(sta->ampdu_mlme.tid_rx[tid]);
+	if (!tid_agg_rx)
+		goto out;
+
+	spin_lock_bh(&tid_agg_rx->reorder_lock);
+
+	if (received_mpdus >= IEEE80211_SN_MODULO >> 1) {
+		int release;
+
+		/* release all frames in the reorder buffer */
+		release = (tid_agg_rx->head_seq_num + tid_agg_rx->buf_size) %
+			   IEEE80211_SN_MODULO;
+		ieee80211_release_reorder_frames(sta->sdata, tid_agg_rx,
+						 release, &frames);
+		/* update ssn to match received ssn */
+		tid_agg_rx->head_seq_num = ssn;
+	} else {
+		ieee80211_release_reorder_frames(sta->sdata, tid_agg_rx, ssn,
+						 &frames);
+	}
+
+	/* handle the case that received ssn is behind the mac ssn.
+	 * it can be tid_agg_rx->buf_size behind and still be valid */
+	diff = (tid_agg_rx->head_seq_num - ssn) & IEEE80211_SN_MASK;
+	if (diff >= tid_agg_rx->buf_size) {
+		tid_agg_rx->reorder_buf_filtered = 0;
+		goto release;
+	}
+	filtered = filtered >> diff;
+	ssn += diff;
+
+	/* update bitmap */
+	for (i = 0; i < tid_agg_rx->buf_size; i++) {
+		int index = (ssn + i) % tid_agg_rx->buf_size;
+
+		tid_agg_rx->reorder_buf_filtered &= ~BIT_ULL(index);
+		if (filtered & BIT_ULL(i))
+			tid_agg_rx->reorder_buf_filtered |= BIT_ULL(index);
+	}
+
+	/* now process also frames that the filter marking released */
+	ieee80211_sta_reorder_release(sta->sdata, tid_agg_rx, &frames);
+
+release:
+	spin_unlock_bh(&tid_agg_rx->reorder_lock);
+
+	ieee80211_rx_handlers(&rx, &frames);
+
+ out:
+	rcu_read_unlock();
+}
+EXPORT_SYMBOL(ieee80211_mark_rx_ba_filtered_frames);
+
+/* main receive path */
+
+static bool ieee80211_accept_frame(struct ieee80211_rx_data *rx)
+{
+	struct ieee80211_sub_if_data *sdata = rx->sdata;
+	struct sk_buff *skb = rx->skb;
+	struct ieee80211_hdr *hdr = (void *)skb->data;
+>>>>>>> v4.9.227
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
 	u8 *bssid = ieee80211_get_bssid(hdr, skb->len, sdata->vif.type);
 	int multicast = is_multicast_ether_addr(hdr->addr1);
@@ -3114,6 +4298,7 @@ static bool prepare_for_handlers(struct ieee80211_rx_data *rx,
 	case NL80211_IFTYPE_STATION:
 		if (!bssid && !sdata->u.mgd.use_4addr)
 			return false;
+<<<<<<< HEAD
 		if (!multicast &&
 		    !ether_addr_equal(sdata->vif.addr, hdr->addr1)) {
 			if (!(sdata->dev->flags & IFF_PROMISC) ||
@@ -3122,12 +4307,20 @@ static bool prepare_for_handlers(struct ieee80211_rx_data *rx,
 			status->rx_flags &= ~IEEE80211_RX_RA_MATCH;
 		}
 		break;
+=======
+		if (ieee80211_is_robust_mgmt_frame(skb) && !rx->sta)
+			return false;
+		if (multicast)
+			return true;
+		return ether_addr_equal(sdata->vif.addr, hdr->addr1);
+>>>>>>> v4.9.227
 	case NL80211_IFTYPE_ADHOC:
 		if (!bssid)
 			return false;
 		if (ether_addr_equal(sdata->vif.addr, hdr->addr2) ||
 		    ether_addr_equal(sdata->u.ibss.bssid, hdr->addr2))
 			return false;
+<<<<<<< HEAD
 		if (ieee80211_is_beacon(hdr->frame_control)) {
 			return true;
 		} else if (!ieee80211_bssid_match(bssid, sdata->u.ibss.bssid)) {
@@ -3138,6 +4331,16 @@ static bool prepare_for_handlers(struct ieee80211_rx_data *rx,
 				return false;
 			status->rx_flags &= ~IEEE80211_RX_RA_MATCH;
 		} else if (!rx->sta) {
+=======
+		if (ieee80211_is_beacon(hdr->frame_control))
+			return true;
+		if (!ieee80211_bssid_match(bssid, sdata->u.ibss.bssid))
+			return false;
+		if (!multicast &&
+		    !ether_addr_equal(sdata->vif.addr, hdr->addr1))
+			return false;
+		if (!rx->sta) {
+>>>>>>> v4.9.227
 			int rate_idx;
 			if (status->flag & (RX_FLAG_HT | RX_FLAG_VHT))
 				rate_idx = 0; /* TODO: HT/VHT rates */
@@ -3146,6 +4349,7 @@ static bool prepare_for_handlers(struct ieee80211_rx_data *rx,
 			ieee80211_ibss_rx_no_sta(sdata, bssid, hdr->addr2,
 						 BIT(rate_idx));
 		}
+<<<<<<< HEAD
 		break;
 	case NL80211_IFTYPE_MESH_POINT:
 		if (!multicast &&
@@ -3162,6 +4366,41 @@ static bool prepare_for_handlers(struct ieee80211_rx_data *rx,
 			if (!ether_addr_equal(sdata->vif.addr, hdr->addr1))
 				return false;
 		} else if (!ieee80211_bssid_match(bssid, sdata->vif.addr)) {
+=======
+		return true;
+	case NL80211_IFTYPE_OCB:
+		if (!bssid)
+			return false;
+		if (!ieee80211_is_data_present(hdr->frame_control))
+			return false;
+		if (!is_broadcast_ether_addr(bssid))
+			return false;
+		if (!multicast &&
+		    !ether_addr_equal(sdata->dev->dev_addr, hdr->addr1))
+			return false;
+		if (!rx->sta) {
+			int rate_idx;
+			if (status->flag & RX_FLAG_HT)
+				rate_idx = 0; /* TODO: HT rates */
+			else
+				rate_idx = status->rate_idx;
+			ieee80211_ocb_rx_no_sta(sdata, bssid, hdr->addr2,
+						BIT(rate_idx));
+		}
+		return true;
+	case NL80211_IFTYPE_MESH_POINT:
+		if (ether_addr_equal(sdata->vif.addr, hdr->addr2))
+			return false;
+		if (multicast)
+			return true;
+		return ether_addr_equal(sdata->vif.addr, hdr->addr1);
+	case NL80211_IFTYPE_AP_VLAN:
+	case NL80211_IFTYPE_AP:
+		if (!bssid)
+			return ether_addr_equal(sdata->vif.addr, hdr->addr1);
+
+		if (!ieee80211_bssid_match(bssid, sdata->vif.addr)) {
+>>>>>>> v4.9.227
 			/*
 			 * Accept public action frames even when the
 			 * BSSID doesn't match, this is used for P2P
@@ -3173,10 +4412,17 @@ static bool prepare_for_handlers(struct ieee80211_rx_data *rx,
 				return false;
 			if (ieee80211_is_public_action(hdr, skb->len))
 				return true;
+<<<<<<< HEAD
 			if (!ieee80211_is_beacon(hdr->frame_control))
 				return false;
 			status->rx_flags &= ~IEEE80211_RX_RA_MATCH;
 		} else if (!ieee80211_has_tods(hdr->frame_control)) {
+=======
+			return ieee80211_is_beacon(hdr->frame_control);
+		}
+
+		if (!ieee80211_has_tods(hdr->frame_control)) {
+>>>>>>> v4.9.227
 			/* ignore data frames to TDLS-peers */
 			if (ieee80211_is_data(hdr->frame_control))
 				return false;
@@ -3186,6 +4432,7 @@ static bool prepare_for_handlers(struct ieee80211_rx_data *rx,
 			    !ether_addr_equal(bssid, hdr->addr1))
 				return false;
 		}
+<<<<<<< HEAD
 		break;
 	case NL80211_IFTYPE_WDS:
 		if (bssid || !ieee80211_is_data(hdr->frame_control))
@@ -3209,6 +4456,403 @@ static bool prepare_for_handlers(struct ieee80211_rx_data *rx,
 		break;
 	}
 
+=======
+
+		/*
+		 * 802.11-2016 Table 9-26 says that for data frames, A1 must be
+		 * the BSSID - we've checked that already but may have accepted
+		 * the wildcard (ff:ff:ff:ff:ff:ff).
+		 *
+		 * It also says:
+		 *	The BSSID of the Data frame is determined as follows:
+		 *	a) If the STA is contained within an AP or is associated
+		 *	   with an AP, the BSSID is the address currently in use
+		 *	   by the STA contained in the AP.
+		 *
+		 * So we should not accept data frames with an address that's
+		 * multicast.
+		 *
+		 * Accepting it also opens a security problem because stations
+		 * could encrypt it with the GTK and inject traffic that way.
+		 */
+		if (ieee80211_is_data(hdr->frame_control) && multicast)
+			return false;
+
+		return true;
+	case NL80211_IFTYPE_WDS:
+		if (bssid || !ieee80211_is_data(hdr->frame_control))
+			return false;
+		return ether_addr_equal(sdata->u.wds.remote_addr, hdr->addr2);
+	case NL80211_IFTYPE_P2P_DEVICE:
+		return ieee80211_is_public_action(hdr, skb->len) ||
+		       ieee80211_is_probe_req(hdr->frame_control) ||
+		       ieee80211_is_probe_resp(hdr->frame_control) ||
+		       ieee80211_is_beacon(hdr->frame_control);
+	case NL80211_IFTYPE_NAN:
+		/* Currently no frames on NAN interface are allowed */
+		return false;
+	default:
+		break;
+	}
+
+	WARN_ON_ONCE(1);
+	return false;
+}
+
+void ieee80211_check_fast_rx(struct sta_info *sta)
+{
+	struct ieee80211_sub_if_data *sdata = sta->sdata;
+	struct ieee80211_local *local = sdata->local;
+	struct ieee80211_key *key;
+	struct ieee80211_fast_rx fastrx = {
+		.dev = sdata->dev,
+		.vif_type = sdata->vif.type,
+		.control_port_protocol = sdata->control_port_protocol,
+	}, *old, *new = NULL;
+	bool assign = false;
+
+	/* use sparse to check that we don't return without updating */
+	__acquire(check_fast_rx);
+
+	BUILD_BUG_ON(sizeof(fastrx.rfc1042_hdr) != sizeof(rfc1042_header));
+	BUILD_BUG_ON(sizeof(fastrx.rfc1042_hdr) != ETH_ALEN);
+	ether_addr_copy(fastrx.rfc1042_hdr, rfc1042_header);
+	ether_addr_copy(fastrx.vif_addr, sdata->vif.addr);
+
+	fastrx.uses_rss = ieee80211_hw_check(&local->hw, USES_RSS);
+
+	/* fast-rx doesn't do reordering */
+	if (ieee80211_hw_check(&local->hw, AMPDU_AGGREGATION) &&
+	    !ieee80211_hw_check(&local->hw, SUPPORTS_REORDERING_BUFFER))
+		goto clear;
+
+	switch (sdata->vif.type) {
+	case NL80211_IFTYPE_STATION:
+		/* 4-addr is harder to deal with, later maybe */
+		if (sdata->u.mgd.use_4addr)
+			goto clear;
+		/* software powersave is a huge mess, avoid all of it */
+		if (ieee80211_hw_check(&local->hw, PS_NULLFUNC_STACK))
+			goto clear;
+		if (ieee80211_hw_check(&local->hw, SUPPORTS_PS) &&
+		    !ieee80211_hw_check(&local->hw, SUPPORTS_DYNAMIC_PS))
+			goto clear;
+		if (sta->sta.tdls) {
+			fastrx.da_offs = offsetof(struct ieee80211_hdr, addr1);
+			fastrx.sa_offs = offsetof(struct ieee80211_hdr, addr2);
+			fastrx.expected_ds_bits = 0;
+		} else {
+			fastrx.sta_notify = sdata->u.mgd.probe_send_count > 0;
+			fastrx.da_offs = offsetof(struct ieee80211_hdr, addr1);
+			fastrx.sa_offs = offsetof(struct ieee80211_hdr, addr3);
+			fastrx.expected_ds_bits =
+				cpu_to_le16(IEEE80211_FCTL_FROMDS);
+		}
+		break;
+	case NL80211_IFTYPE_AP_VLAN:
+	case NL80211_IFTYPE_AP:
+		/* parallel-rx requires this, at least with calls to
+		 * ieee80211_sta_ps_transition()
+		 */
+		if (!ieee80211_hw_check(&local->hw, AP_LINK_PS))
+			goto clear;
+		fastrx.da_offs = offsetof(struct ieee80211_hdr, addr3);
+		fastrx.sa_offs = offsetof(struct ieee80211_hdr, addr2);
+		fastrx.expected_ds_bits = cpu_to_le16(IEEE80211_FCTL_TODS);
+
+		fastrx.internal_forward =
+			!(sdata->flags & IEEE80211_SDATA_DONT_BRIDGE_PACKETS) &&
+			(sdata->vif.type != NL80211_IFTYPE_AP_VLAN ||
+			 !sdata->u.vlan.sta);
+		break;
+	default:
+		goto clear;
+	}
+
+	if (!test_sta_flag(sta, WLAN_STA_AUTHORIZED))
+		goto clear;
+
+	rcu_read_lock();
+	key = rcu_dereference(sta->ptk[sta->ptk_idx]);
+	if (key) {
+		switch (key->conf.cipher) {
+		case WLAN_CIPHER_SUITE_TKIP:
+			/* we don't want to deal with MMIC in fast-rx */
+			goto clear_rcu;
+		case WLAN_CIPHER_SUITE_CCMP:
+		case WLAN_CIPHER_SUITE_CCMP_256:
+		case WLAN_CIPHER_SUITE_GCMP:
+		case WLAN_CIPHER_SUITE_GCMP_256:
+			break;
+		default:
+			/* we also don't want to deal with WEP or cipher scheme
+			 * since those require looking up the key idx in the
+			 * frame, rather than assuming the PTK is used
+			 * (we need to revisit this once we implement the real
+			 * PTK index, which is now valid in the spec, but we
+			 * haven't implemented that part yet)
+			 */
+			goto clear_rcu;
+		}
+
+		fastrx.key = true;
+		fastrx.icv_len = key->conf.icv_len;
+	}
+
+	assign = true;
+ clear_rcu:
+	rcu_read_unlock();
+ clear:
+	__release(check_fast_rx);
+
+	if (assign)
+		new = kmemdup(&fastrx, sizeof(fastrx), GFP_KERNEL);
+
+	spin_lock_bh(&sta->lock);
+	old = rcu_dereference_protected(sta->fast_rx, true);
+	rcu_assign_pointer(sta->fast_rx, new);
+	spin_unlock_bh(&sta->lock);
+
+	if (old)
+		kfree_rcu(old, rcu_head);
+}
+
+void ieee80211_clear_fast_rx(struct sta_info *sta)
+{
+	struct ieee80211_fast_rx *old;
+
+	spin_lock_bh(&sta->lock);
+	old = rcu_dereference_protected(sta->fast_rx, true);
+	RCU_INIT_POINTER(sta->fast_rx, NULL);
+	spin_unlock_bh(&sta->lock);
+
+	if (old)
+		kfree_rcu(old, rcu_head);
+}
+
+void __ieee80211_check_fast_rx_iface(struct ieee80211_sub_if_data *sdata)
+{
+	struct ieee80211_local *local = sdata->local;
+	struct sta_info *sta;
+
+	lockdep_assert_held(&local->sta_mtx);
+
+	list_for_each_entry(sta, &local->sta_list, list) {
+		if (sdata != sta->sdata &&
+		    (!sta->sdata->bss || sta->sdata->bss != sdata->bss))
+			continue;
+		ieee80211_check_fast_rx(sta);
+	}
+}
+
+void ieee80211_check_fast_rx_iface(struct ieee80211_sub_if_data *sdata)
+{
+	struct ieee80211_local *local = sdata->local;
+
+	mutex_lock(&local->sta_mtx);
+	__ieee80211_check_fast_rx_iface(sdata);
+	mutex_unlock(&local->sta_mtx);
+}
+
+static bool ieee80211_invoke_fast_rx(struct ieee80211_rx_data *rx,
+				     struct ieee80211_fast_rx *fast_rx)
+{
+	struct sk_buff *skb = rx->skb;
+	struct ieee80211_hdr *hdr = (void *)skb->data;
+	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
+	struct sta_info *sta = rx->sta;
+	int orig_len = skb->len;
+	int snap_offs = ieee80211_hdrlen(hdr->frame_control);
+	struct {
+		u8 snap[sizeof(rfc1042_header)];
+		__be16 proto;
+	} *payload __aligned(2);
+	struct {
+		u8 da[ETH_ALEN];
+		u8 sa[ETH_ALEN];
+	} addrs __aligned(2);
+	struct ieee80211_sta_rx_stats *stats = &sta->rx_stats;
+
+	if (fast_rx->uses_rss)
+		stats = this_cpu_ptr(sta->pcpu_rx_stats);
+
+	/* for parallel-rx, we need to have DUP_VALIDATED, otherwise we write
+	 * to a common data structure; drivers can implement that per queue
+	 * but we don't have that information in mac80211
+	 */
+	if (!(status->flag & RX_FLAG_DUP_VALIDATED))
+		return false;
+
+#define FAST_RX_CRYPT_FLAGS	(RX_FLAG_PN_VALIDATED | RX_FLAG_DECRYPTED)
+
+	/* If using encryption, we also need to have:
+	 *  - PN_VALIDATED: similar, but the implementation is tricky
+	 *  - DECRYPTED: necessary for PN_VALIDATED
+	 */
+	if (fast_rx->key &&
+	    (status->flag & FAST_RX_CRYPT_FLAGS) != FAST_RX_CRYPT_FLAGS)
+		return false;
+
+	/* we don't deal with A-MSDU deaggregation here */
+	if (status->rx_flags & IEEE80211_RX_AMSDU)
+		return false;
+
+	if (unlikely(!ieee80211_is_data_present(hdr->frame_control)))
+		return false;
+
+	if (unlikely(ieee80211_is_frag(hdr)))
+		return false;
+
+	/* Since our interface address cannot be multicast, this
+	 * implicitly also rejects multicast frames without the
+	 * explicit check.
+	 *
+	 * We shouldn't get any *data* frames not addressed to us
+	 * (AP mode will accept multicast *management* frames), but
+	 * punting here will make it go through the full checks in
+	 * ieee80211_accept_frame().
+	 */
+	if (!ether_addr_equal(fast_rx->vif_addr, hdr->addr1))
+		return false;
+
+	if ((hdr->frame_control & cpu_to_le16(IEEE80211_FCTL_FROMDS |
+					      IEEE80211_FCTL_TODS)) !=
+	    fast_rx->expected_ds_bits)
+		return false;
+
+	/* assign the key to drop unencrypted frames (later)
+	 * and strip the IV/MIC if necessary
+	 */
+	if (fast_rx->key && !(status->flag & RX_FLAG_IV_STRIPPED)) {
+		/* GCMP header length is the same */
+		snap_offs += IEEE80211_CCMP_HDR_LEN;
+	}
+
+	if (!pskb_may_pull(skb, snap_offs + sizeof(*payload)))
+		goto drop;
+	payload = (void *)(skb->data + snap_offs);
+
+	if (!ether_addr_equal(payload->snap, fast_rx->rfc1042_hdr))
+		return false;
+
+	/* Don't handle these here since they require special code.
+	 * Accept AARP and IPX even though they should come with a
+	 * bridge-tunnel header - but if we get them this way then
+	 * there's little point in discarding them.
+	 */
+	if (unlikely(payload->proto == cpu_to_be16(ETH_P_TDLS) ||
+		     payload->proto == fast_rx->control_port_protocol))
+		return false;
+
+	/* after this point, don't punt to the slowpath! */
+
+	if (rx->key && !(status->flag & RX_FLAG_MIC_STRIPPED) &&
+	    pskb_trim(skb, skb->len - fast_rx->icv_len))
+		goto drop;
+
+	if (unlikely(fast_rx->sta_notify)) {
+		ieee80211_sta_rx_notify(rx->sdata, hdr);
+		fast_rx->sta_notify = false;
+	}
+
+	/* statistics part of ieee80211_rx_h_sta_process() */
+	stats->last_rx = jiffies;
+	stats->last_rate = sta_stats_encode_rate(status);
+
+	stats->fragments++;
+	stats->packets++;
+
+	if (!(status->flag & RX_FLAG_NO_SIGNAL_VAL)) {
+		stats->last_signal = status->signal;
+		if (!fast_rx->uses_rss)
+			ewma_signal_add(&sta->rx_stats_avg.signal,
+					-status->signal);
+	}
+
+	if (status->chains) {
+		int i;
+
+		stats->chains = status->chains;
+		for (i = 0; i < ARRAY_SIZE(status->chain_signal); i++) {
+			int signal = status->chain_signal[i];
+
+			if (!(status->chains & BIT(i)))
+				continue;
+
+			stats->chain_signal_last[i] = signal;
+			if (!fast_rx->uses_rss)
+				ewma_signal_add(&sta->rx_stats_avg.chain_signal[i],
+						-signal);
+		}
+	}
+	/* end of statistics */
+
+	if (rx->key && !ieee80211_has_protected(hdr->frame_control))
+		goto drop;
+
+	/* do the header conversion - first grab the addresses */
+	ether_addr_copy(addrs.da, skb->data + fast_rx->da_offs);
+	ether_addr_copy(addrs.sa, skb->data + fast_rx->sa_offs);
+	/* remove the SNAP but leave the ethertype */
+	skb_pull(skb, snap_offs + sizeof(rfc1042_header));
+	/* push the addresses in front */
+	memcpy(skb_push(skb, sizeof(addrs)), &addrs, sizeof(addrs));
+
+	skb->dev = fast_rx->dev;
+
+	ieee80211_rx_stats(fast_rx->dev, skb->len);
+
+	/* The seqno index has the same property as needed
+	 * for the rx_msdu field, i.e. it is IEEE80211_NUM_TIDS
+	 * for non-QoS-data frames. Here we know it's a data
+	 * frame, so count MSDUs.
+	 */
+	u64_stats_update_begin(&stats->syncp);
+	stats->msdu[rx->seqno_idx]++;
+	stats->bytes += orig_len;
+	u64_stats_update_end(&stats->syncp);
+
+	if (fast_rx->internal_forward) {
+		struct sk_buff *xmit_skb = NULL;
+		bool multicast = is_multicast_ether_addr(skb->data);
+
+		if (multicast) {
+			xmit_skb = skb_copy(skb, GFP_ATOMIC);
+		} else if (sta_info_get(rx->sdata, skb->data)) {
+			xmit_skb = skb;
+			skb = NULL;
+		}
+
+		if (xmit_skb) {
+			/*
+			 * Send to wireless media and increase priority by 256
+			 * to keep the received priority instead of
+			 * reclassifying the frame (see cfg80211_classify8021d).
+			 */
+			xmit_skb->priority += 256;
+			xmit_skb->protocol = htons(ETH_P_802_3);
+			skb_reset_network_header(xmit_skb);
+			skb_reset_mac_header(xmit_skb);
+			dev_queue_xmit(xmit_skb);
+		}
+
+		if (!skb)
+			return true;
+	}
+
+	/* deliver to local stack */
+	skb->protocol = eth_type_trans(skb, fast_rx->dev);
+	memset(skb->cb, 0, sizeof(skb->cb));
+	if (rx->napi)
+		napi_gro_receive(rx->napi, skb);
+	else
+		netif_receive_skb(skb);
+
+	return true;
+ drop:
+	dev_kfree_skb(skb);
+	stats->dropped++;
+>>>>>>> v4.9.227
 	return true;
 }
 
@@ -3223,6 +4867,7 @@ static bool ieee80211_prepare_and_rx_handle(struct ieee80211_rx_data *rx,
 {
 	struct ieee80211_local *local = rx->local;
 	struct ieee80211_sub_if_data *sdata = rx->sdata;
+<<<<<<< HEAD
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
 	struct ieee80211_hdr *hdr = (void *)skb->data;
 
@@ -3230,6 +4875,27 @@ static bool ieee80211_prepare_and_rx_handle(struct ieee80211_rx_data *rx,
 	status->rx_flags |= IEEE80211_RX_RA_MATCH;
 
 	if (!prepare_for_handlers(rx, hdr))
+=======
+
+	rx->skb = skb;
+
+	/* See if we can do fast-rx; if we have to copy we already lost,
+	 * so punt in that case. We should never have to deliver a data
+	 * frame to multiple interfaces anyway.
+	 *
+	 * We skip the ieee80211_accept_frame() call and do the necessary
+	 * checking inside ieee80211_invoke_fast_rx().
+	 */
+	if (consume && rx->sta) {
+		struct ieee80211_fast_rx *fast_rx;
+
+		fast_rx = rcu_dereference(rx->sta->fast_rx);
+		if (fast_rx && ieee80211_invoke_fast_rx(rx, fast_rx))
+			return true;
+	}
+
+	if (!ieee80211_accept_frame(rx))
+>>>>>>> v4.9.227
 		return false;
 
 	if (!consume) {
@@ -3254,7 +4920,13 @@ static bool ieee80211_prepare_and_rx_handle(struct ieee80211_rx_data *rx,
  * be called with rcu_read_lock protection.
  */
 static void __ieee80211_rx_handle_packet(struct ieee80211_hw *hw,
+<<<<<<< HEAD
 					 struct sk_buff *skb)
+=======
+					 struct ieee80211_sta *pubsta,
+					 struct sk_buff *skb,
+					 struct napi_struct *napi)
+>>>>>>> v4.9.227
 {
 	struct ieee80211_local *local = hw_to_local(hw);
 	struct ieee80211_sub_if_data *sdata;
@@ -3262,16 +4934,27 @@ static void __ieee80211_rx_handle_packet(struct ieee80211_hw *hw,
 	__le16 fc;
 	struct ieee80211_rx_data rx;
 	struct ieee80211_sub_if_data *prev;
+<<<<<<< HEAD
 	struct sta_info *sta, *tmp, *prev_sta;
+=======
+	struct rhlist_head *tmp;
+>>>>>>> v4.9.227
 	int err = 0;
 
 	fc = ((struct ieee80211_hdr *)skb->data)->frame_control;
 	memset(&rx, 0, sizeof(rx));
 	rx.skb = skb;
 	rx.local = local;
+<<<<<<< HEAD
 
 	if (ieee80211_is_data(fc) || ieee80211_is_mgmt(fc))
 		local->dot11ReceivedFragmentCount++;
+=======
+	rx.napi = napi;
+
+	if (ieee80211_is_data(fc) || ieee80211_is_mgmt(fc))
+		I802_DEBUG_INC(local->dot11ReceivedFragmentCount);
+>>>>>>> v4.9.227
 
 	if (ieee80211_is_mgmt(fc)) {
 		/* drop frame if too short for header */
@@ -3297,6 +4980,19 @@ static void __ieee80211_rx_handle_packet(struct ieee80211_hw *hw,
 		ieee80211_scan_rx(local, skb);
 
 	if (ieee80211_is_data(fc)) {
+<<<<<<< HEAD
+=======
+		struct sta_info *sta, *prev_sta;
+
+		if (pubsta) {
+			rx.sta = container_of(pubsta, struct sta_info, sta);
+			rx.sdata = rx.sta->sdata;
+			if (ieee80211_prepare_and_rx_handle(&rx, skb, true))
+				return;
+			goto out;
+		}
+
+>>>>>>> v4.9.227
 		prev_sta = NULL;
 
 		for_each_sta_info(local, hdr->addr2, sta, tmp) {
@@ -3366,7 +5062,12 @@ static void __ieee80211_rx_handle_packet(struct ieee80211_hw *hw,
  * This is the receive path handler. It is called by a low level driver when an
  * 802.11 MPDU is received from the hardware.
  */
+<<<<<<< HEAD
 void ieee80211_rx(struct ieee80211_hw *hw, struct sk_buff *skb)
+=======
+void ieee80211_rx_napi(struct ieee80211_hw *hw, struct ieee80211_sta *pubsta,
+		       struct sk_buff *skb, struct napi_struct *napi)
+>>>>>>> v4.9.227
 {
 	struct ieee80211_local *local = hw_to_local(hw);
 	struct ieee80211_rate *rate = NULL;
@@ -3375,7 +5076,11 @@ void ieee80211_rx(struct ieee80211_hw *hw, struct sk_buff *skb)
 
 	WARN_ON_ONCE(softirq_count() == 0);
 
+<<<<<<< HEAD
 	if (WARN_ON(status->band >= IEEE80211_NUM_BANDS))
+=======
+	if (WARN_ON(status->band >= NUM_NL80211_BANDS))
+>>>>>>> v4.9.227
 		goto drop;
 
 	sband = local->hw.wiphy->bands[status->band];
@@ -3465,7 +5170,12 @@ void ieee80211_rx(struct ieee80211_hw *hw, struct sk_buff *skb)
 	ieee80211_tpt_led_trig_rx(local,
 			((struct ieee80211_hdr *)skb->data)->frame_control,
 			skb->len);
+<<<<<<< HEAD
 	__ieee80211_rx_handle_packet(hw, skb);
+=======
+
+	__ieee80211_rx_handle_packet(hw, pubsta, skb, napi);
+>>>>>>> v4.9.227
 
 	rcu_read_unlock();
 
@@ -3473,7 +5183,11 @@ void ieee80211_rx(struct ieee80211_hw *hw, struct sk_buff *skb)
  drop:
 	kfree_skb(skb);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ieee80211_rx);
+=======
+EXPORT_SYMBOL(ieee80211_rx_napi);
+>>>>>>> v4.9.227
 
 /* This is a version of the rx handler that can be called from hard irq
  * context. Post the skb on the queue and schedule the tasklet */

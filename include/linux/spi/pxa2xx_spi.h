@@ -10,10 +10,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> v4.9.227
  */
 #ifndef __linux_pxa2xx_spi_h
 #define __linux_pxa2xx_spi_h
@@ -27,7 +30,10 @@ struct dma_chan;
 
 /* device.platform_data for SSP controller devices */
 struct pxa2xx_spi_master {
+<<<<<<< HEAD
 	u32 clock_enable;
+=======
+>>>>>>> v4.9.227
 	u16 num_chipselect;
 	u8 enable_dma;
 
@@ -57,7 +63,10 @@ struct pxa2xx_spi_chip {
 #if defined(CONFIG_ARCH_PXA) || defined(CONFIG_ARCH_MMP)
 
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <mach/dma.h>
+=======
+>>>>>>> v4.9.227
 
 extern void pxa2xx_set_spi_info(unsigned id, struct pxa2xx_spi_master *info);
 

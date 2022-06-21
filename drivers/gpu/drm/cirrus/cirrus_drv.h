@@ -153,7 +153,10 @@ struct cirrus_device {
 struct cirrus_fbdev {
 	struct drm_fb_helper helper;
 	struct cirrus_framebuffer gfb;
+<<<<<<< HEAD
 	struct list_head fbdev_list;
+=======
+>>>>>>> v4.9.227
 	void *sysram;
 	int size;
 	int x1, y1, x2, y2; /* dirty rect */
@@ -207,7 +210,11 @@ int cirrus_dumb_create(struct drm_file *file,
 
 int cirrus_framebuffer_init(struct drm_device *dev,
 			   struct cirrus_framebuffer *gfb,
+<<<<<<< HEAD
 			    struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+			    const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 			    struct drm_gem_object *obj);
 
 bool cirrus_check_framebuffer(struct cirrus_device *cdev, int width, int height,
@@ -246,7 +253,11 @@ static inline int cirrus_bo_reserve(struct cirrus_bo *bo, bool no_wait)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(&bo->bo, true, no_wait, false, NULL);
+=======
+	ret = ttm_bo_reserve(&bo->bo, true, no_wait, NULL);
+>>>>>>> v4.9.227
 	if (ret) {
 		if (ret != -ERESTARTSYS && ret != -EBUSY)
 			DRM_ERROR("reserve failed %p\n", bo);

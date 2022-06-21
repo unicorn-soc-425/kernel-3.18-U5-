@@ -20,8 +20,11 @@
 #ifndef __MTD_USER_H__
 #define __MTD_USER_H__
 
+<<<<<<< HEAD
 #include <stdint.h>
 
+=======
+>>>>>>> v4.9.227
 /* This file is blessed for inclusion by userspace */
 #include <mtd/mtd-abi.h>
 

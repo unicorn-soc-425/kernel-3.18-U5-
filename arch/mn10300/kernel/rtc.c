@@ -12,14 +12,21 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/mc146818rtc.h>
+<<<<<<< HEAD
 #include <linux/bcd.h>
 #include <linux/timex.h>
+=======
+#include <linux/ioport.h>
+#include <linux/platform_device.h>
+
+>>>>>>> v4.9.227
 #include <asm/rtc-regs.h>
 #include <asm/rtc.h>
 
 DEFINE_SPINLOCK(rtc_lock);
 EXPORT_SYMBOL(rtc_lock);
 
+<<<<<<< HEAD
 /*
  * Read the current RTC time
  */
@@ -113,6 +120,12 @@ int update_persistent_clock(struct timespec now)
 {
 	return set_rtc_mmss(now.tv_sec);
 }
+=======
+static const __initdata struct resource res[] = {
+	DEFINE_RES_IO(RTC_PORT(0), RTC_IO_EXTENT),
+	DEFINE_RES_IRQ(RTC_IRQ),
+};
+>>>>>>> v4.9.227
 
 /*
  * calibrate the TSC clock against the RTC
@@ -129,4 +142,9 @@ void __init calibrate_clock(void)
 	RTCRA |= RTCRA_DVR;
 	RTCRA &= ~RTCRA_DVR;
 	RTCRB &= ~RTCRB_SET;
+<<<<<<< HEAD
+=======
+
+	platform_device_register_simple("rtc_cmos", -1, res, ARRAY_SIZE(res));
+>>>>>>> v4.9.227
 }

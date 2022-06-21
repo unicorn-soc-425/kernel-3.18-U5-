@@ -31,6 +31,11 @@
 #include <drm/amdgpu_drm.h>
 #include "amdgpu.h"
 
+<<<<<<< HEAD
+=======
+#define AMDGPU_BO_INVALID_OFFSET	LONG_MAX
+
+>>>>>>> v4.9.227
 /**
  * amdgpu_mem_type_to_domain - return domain corresponding to mem_type
  * @mem_type:	ttm memory type
@@ -71,7 +76,11 @@ static inline int amdgpu_bo_reserve(struct amdgpu_bo *bo, bool no_intr)
 {
 	int r;
 
+<<<<<<< HEAD
 	r = ttm_bo_reserve(&bo->tbo, !no_intr, false, false, 0);
+=======
+	r = ttm_bo_reserve(&bo->tbo, !no_intr, false, NULL);
+>>>>>>> v4.9.227
 	if (unlikely(r != 0)) {
 		if (r != -ERESTARTSYS)
 			dev_err(bo->adev->dev, "%p reserve failed\n", bo);
@@ -85,6 +94,7 @@ static inline void amdgpu_bo_unreserve(struct amdgpu_bo *bo)
 	ttm_bo_unreserve(&bo->tbo);
 }
 
+<<<<<<< HEAD
 /**
  * amdgpu_bo_gpu_offset - return GPU offset of bo
  * @bo:	amdgpu object for which we query the offset
@@ -99,6 +109,8 @@ static inline u64 amdgpu_bo_gpu_offset(struct amdgpu_bo *bo)
 	return bo->tbo.offset;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned long amdgpu_bo_size(struct amdgpu_bo *bo)
 {
 	return bo->tbo.num_pages << PAGE_SHIFT;
@@ -138,6 +150,15 @@ int amdgpu_bo_create_restricted(struct amdgpu_device *adev,
 				struct ttm_placement *placement,
 			        struct reservation_object *resv,
 				struct amdgpu_bo **bo_ptr);
+<<<<<<< HEAD
+=======
+int amdgpu_bo_create_kernel(struct amdgpu_device *adev,
+			    unsigned long size, int align,
+			    u32 domain, struct amdgpu_bo **bo_ptr,
+			    u64 *gpu_addr, void **cpu_addr);
+void amdgpu_bo_free_kernel(struct amdgpu_bo **bo, u64 *gpu_addr,
+			   void **cpu_addr);
+>>>>>>> v4.9.227
 int amdgpu_bo_kmap(struct amdgpu_bo *bo, void **ptr);
 void amdgpu_bo_kunmap(struct amdgpu_bo *bo);
 struct amdgpu_bo *amdgpu_bo_ref(struct amdgpu_bo *bo);
@@ -148,7 +169,10 @@ int amdgpu_bo_pin_restricted(struct amdgpu_bo *bo, u32 domain,
 			     u64 *gpu_addr);
 int amdgpu_bo_unpin(struct amdgpu_bo *bo);
 int amdgpu_bo_evict_vram(struct amdgpu_device *adev);
+<<<<<<< HEAD
 void amdgpu_bo_force_delete(struct amdgpu_device *adev);
+=======
+>>>>>>> v4.9.227
 int amdgpu_bo_init(struct amdgpu_device *adev);
 void amdgpu_bo_fini(struct amdgpu_device *adev);
 int amdgpu_bo_fbdev_mmap(struct amdgpu_bo *bo,
@@ -165,6 +189,22 @@ void amdgpu_bo_move_notify(struct ttm_buffer_object *bo,
 int amdgpu_bo_fault_reserve_notify(struct ttm_buffer_object *bo);
 void amdgpu_bo_fence(struct amdgpu_bo *bo, struct fence *fence,
 		     bool shared);
+<<<<<<< HEAD
+=======
+u64 amdgpu_bo_gpu_offset(struct amdgpu_bo *bo);
+int amdgpu_bo_backup_to_shadow(struct amdgpu_device *adev,
+			       struct amdgpu_ring *ring,
+			       struct amdgpu_bo *bo,
+			       struct reservation_object *resv,
+			       struct fence **fence, bool direct);
+int amdgpu_bo_restore_from_shadow(struct amdgpu_device *adev,
+				  struct amdgpu_ring *ring,
+				  struct amdgpu_bo *bo,
+				  struct reservation_object *resv,
+				  struct fence **fence,
+				  bool direct);
+
+>>>>>>> v4.9.227
 
 /*
  * sub allocation

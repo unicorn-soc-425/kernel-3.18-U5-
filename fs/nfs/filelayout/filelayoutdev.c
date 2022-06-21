@@ -31,7 +31,10 @@
 #include <linux/nfs_fs.h>
 #include <linux/vmalloc.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/sunrpc/addr.h>
+=======
+>>>>>>> v4.9.227
 
 #include "../internal.h"
 #include "../nfs4session.h"
@@ -42,6 +45,7 @@
 static unsigned int dataserver_timeo = NFS4_DEF_DS_TIMEO;
 static unsigned int dataserver_retrans = NFS4_DEF_DS_RETRANS;
 
+<<<<<<< HEAD
 /*
  * Data server cache
  *
@@ -220,6 +224,8 @@ destroy_ds(struct nfs4_pnfs_ds *ds)
 	kfree(ds);
 }
 
+=======
+>>>>>>> v4.9.227
 void
 nfs4_fl_free_deviceid(struct nfs4_file_layout_dsaddr *dsaddr)
 {
@@ -230,6 +236,7 @@ nfs4_fl_free_deviceid(struct nfs4_file_layout_dsaddr *dsaddr)
 
 	for (i = 0; i < dsaddr->ds_num; i++) {
 		ds = dsaddr->ds_list[i];
+<<<<<<< HEAD
 		if (ds != NULL) {
 			if (atomic_dec_and_lock(&ds->ds_count,
 						&nfs4_ds_cache_lock)) {
@@ -481,6 +488,13 @@ out_free_netid:
 	kfree(netid);
 out_err:
 	return NULL;
+=======
+		if (ds != NULL)
+			nfs4_pnfs_ds_put(ds);
+	}
+	kfree(dsaddr->stripe_indices);
+	kfree_rcu(dsaddr, id_node.rcu);
+>>>>>>> v4.9.227
 }
 
 /* Decode opaque device data and return the result */
@@ -585,8 +599,13 @@ nfs4_fl_alloc_deviceid_node(struct nfs_server *server, struct pnfs_device *pdev,
 
 		mp_count = be32_to_cpup(p); /* multipath count */
 		for (j = 0; j < mp_count; j++) {
+<<<<<<< HEAD
 			da = decode_ds_addr(server->nfs_client->cl_net,
 					    &stream, gfp_flags);
+=======
+			da = nfs4_decode_mp_ds_addr(server->nfs_client->cl_net,
+						    &stream, gfp_flags);
+>>>>>>> v4.9.227
 			if (da)
 				list_add_tail(&da->da_node, &dsaddrs);
 		}
@@ -682,6 +701,7 @@ nfs4_fl_select_ds_fh(struct pnfs_layout_segment *lseg, u32 j)
 	return flseg->fh_array[i];
 }
 
+<<<<<<< HEAD
 static void nfs4_wait_ds_connect(struct nfs4_pnfs_ds *ds)
 {
 	might_sleep();
@@ -698,6 +718,9 @@ static void nfs4_clear_ds_conn_bit(struct nfs4_pnfs_ds *ds)
 }
 
 
+=======
+/* Upon return, either ds is connected, or ds is NULL */
+>>>>>>> v4.9.227
 struct nfs4_pnfs_ds *
 nfs4_fl_prepare_ds(struct pnfs_layout_segment *lseg, u32 ds_idx)
 {
@@ -705,17 +728,26 @@ nfs4_fl_prepare_ds(struct pnfs_layout_segment *lseg, u32 ds_idx)
 	struct nfs4_pnfs_ds *ds = dsaddr->ds_list[ds_idx];
 	struct nfs4_deviceid_node *devid = FILELAYOUT_DEVID_NODE(lseg);
 	struct nfs4_pnfs_ds *ret = ds;
+<<<<<<< HEAD
+=======
+	struct nfs_server *s = NFS_SERVER(lseg->pls_layout->plh_inode);
+>>>>>>> v4.9.227
 
 	if (ds == NULL) {
 		printk(KERN_ERR "NFS: %s: No data server for offset index %d\n",
 			__func__, ds_idx);
+<<<<<<< HEAD
 		filelayout_mark_devid_invalid(devid);
+=======
+		pnfs_generic_mark_devid_invalid(devid);
+>>>>>>> v4.9.227
 		goto out;
 	}
 	smp_rmb();
 	if (ds->ds_clp)
 		goto out_test_devid;
 
+<<<<<<< HEAD
 	if (test_and_set_bit(NFS4DS_CONNECTING, &ds->ds_state) == 0) {
 		struct nfs_server *s = NFS_SERVER(lseg->pls_layout->plh_inode);
 		int err;
@@ -730,6 +762,16 @@ nfs4_fl_prepare_ds(struct pnfs_layout_segment *lseg, u32 ds_idx)
 	}
 out_test_devid:
 	if (filelayout_test_devid_unavailable(devid))
+=======
+	nfs4_pnfs_ds_connect(s, ds, devid, dataserver_timeo,
+			     dataserver_retrans, 4,
+			     s->nfs_client->cl_minorversion,
+			     s->nfs_client->cl_rpcclient->cl_auth->au_flavor);
+
+out_test_devid:
+	if (ret->ds_clp == NULL ||
+	    filelayout_test_devid_unavailable(devid))
+>>>>>>> v4.9.227
 		ret = NULL;
 out:
 	return ret;

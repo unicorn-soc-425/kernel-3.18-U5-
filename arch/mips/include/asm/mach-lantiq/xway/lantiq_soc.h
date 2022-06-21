@@ -3,7 +3,11 @@
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
+<<<<<<< HEAD
  *  Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+ *  Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  */
 
 #ifndef _LTQ_XWAY_H__
@@ -35,6 +39,20 @@
 #define SOC_ID_VRX268_2		0x00C /* v1.2 */
 #define SOC_ID_GRX288_2		0x00D /* v1.2 */
 #define SOC_ID_GRX282_2		0x00E /* v1.2 */
+<<<<<<< HEAD
+=======
+#define SOC_ID_VRX220		0x000
+
+#define SOC_ID_ARX362		0x004
+#define SOC_ID_ARX368		0x005
+#define SOC_ID_ARX382		0x007
+#define SOC_ID_ARX388		0x008
+#define SOC_ID_URX388		0x009
+#define SOC_ID_GRX383		0x010
+#define SOC_ID_GRX369		0x011
+#define SOC_ID_GRX387		0x00F
+#define SOC_ID_GRX389		0x012
+>>>>>>> v4.9.227
 
  /* SoC Types */
 #define SOC_TYPE_DANUBE		0x01
@@ -43,6 +61,12 @@
 #define SOC_TYPE_VR9		0x04 /* v1.1 */
 #define SOC_TYPE_VR9_2		0x05 /* v1.2 */
 #define SOC_TYPE_AMAZON_SE	0x06
+<<<<<<< HEAD
+=======
+#define SOC_TYPE_AR10		0x07
+#define SOC_TYPE_GRX390		0x08
+#define SOC_TYPE_VRX220		0x09
+>>>>>>> v4.9.227
 
 /* BOOT_SEL - find what boot media we have */
 #define BS_EXT_ROM		0x0
@@ -61,7 +85,11 @@ extern __iomem void *ltq_cgu_membase;
 
 /*
  * during early_printk no ioremap is possible
+<<<<<<< HEAD
  * lets use KSEG1 instead
+=======
+ * let's use KSEG1 instead
+>>>>>>> v4.9.227
  */
 #define LTQ_ASC1_BASE_ADDR	0x1E100C00
 #define LTQ_EARLY_ASC		KSEG1ADDR(LTQ_ASC1_BASE_ADDR)

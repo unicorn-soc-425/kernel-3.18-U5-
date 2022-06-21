@@ -2,6 +2,10 @@
 %parse-param {void *_data}
 %parse-param {void *scanner}
 %lex-param {void* scanner}
+<<<<<<< HEAD
+=======
+%locations
+>>>>>>> v4.9.227
 
 %{
 
@@ -14,8 +18,11 @@
 #include "parse-events.h"
 #include "parse-events-bison.h"
 
+<<<<<<< HEAD
 extern int parse_events_lex (YYSTYPE* lvalp, void* scanner);
 
+=======
+>>>>>>> v4.9.227
 #define ABORT_ON(val) \
 do { \
 	if (val) \
@@ -29,7 +36,11 @@ do { \
 	INIT_LIST_HEAD(list);         \
 } while (0)
 
+<<<<<<< HEAD
 static inc_group_count(struct list_head *list,
+=======
+static void inc_group_count(struct list_head *list,
+>>>>>>> v4.9.227
 		       struct parse_events_evlist *data)
 {
 	/* Count groups only have more than 1 members */
@@ -43,33 +54,62 @@ static inc_group_count(struct list_head *list,
 %token PE_VALUE PE_VALUE_SYM_HW PE_VALUE_SYM_SW PE_RAW PE_TERM
 %token PE_EVENT_NAME
 %token PE_NAME
+<<<<<<< HEAD
+=======
+%token PE_BPF_OBJECT PE_BPF_SOURCE
+>>>>>>> v4.9.227
 %token PE_MODIFIER_EVENT PE_MODIFIER_BP
 %token PE_NAME_CACHE_TYPE PE_NAME_CACHE_OP_RESULT
 %token PE_PREFIX_MEM PE_PREFIX_RAW PE_PREFIX_GROUP
 %token PE_ERROR
 %token PE_PMU_EVENT_PRE PE_PMU_EVENT_SUF PE_KERNEL_PMU_EVENT
+<<<<<<< HEAD
+=======
+%token PE_ARRAY_ALL PE_ARRAY_RANGE
+%token PE_DRV_CFG_TERM
+>>>>>>> v4.9.227
 %type <num> PE_VALUE
 %type <num> PE_VALUE_SYM_HW
 %type <num> PE_VALUE_SYM_SW
 %type <num> PE_RAW
 %type <num> PE_TERM
 %type <str> PE_NAME
+<<<<<<< HEAD
+=======
+%type <str> PE_BPF_OBJECT
+%type <str> PE_BPF_SOURCE
+>>>>>>> v4.9.227
 %type <str> PE_NAME_CACHE_TYPE
 %type <str> PE_NAME_CACHE_OP_RESULT
 %type <str> PE_MODIFIER_EVENT
 %type <str> PE_MODIFIER_BP
 %type <str> PE_EVENT_NAME
 %type <str> PE_PMU_EVENT_PRE PE_PMU_EVENT_SUF PE_KERNEL_PMU_EVENT
+<<<<<<< HEAD
 %type <num> value_sym
 %type <head> event_config
+=======
+%type <str> PE_DRV_CFG_TERM
+%type <num> value_sym
+%type <head> event_config
+%type <head> opt_event_config
+%type <head> opt_pmu_config
+>>>>>>> v4.9.227
 %type <term> event_term
 %type <head> event_pmu
 %type <head> event_legacy_symbol
 %type <head> event_legacy_cache
 %type <head> event_legacy_mem
 %type <head> event_legacy_tracepoint
+<<<<<<< HEAD
 %type <head> event_legacy_numeric
 %type <head> event_legacy_raw
+=======
+%type <tracepoint_name> tracepoint_name
+%type <head> event_legacy_numeric
+%type <head> event_legacy_raw
+%type <head> event_bpf_file
+>>>>>>> v4.9.227
 %type <head> event_def
 %type <head> event_mod
 %type <head> event_name
@@ -78,6 +118,12 @@ static inc_group_count(struct list_head *list,
 %type <head> group_def
 %type <head> group
 %type <head> groups
+<<<<<<< HEAD
+=======
+%type <array> array
+%type <array> array_term
+%type <array> array_terms
+>>>>>>> v4.9.227
 
 %union
 {
@@ -85,6 +131,14 @@ static inc_group_count(struct list_head *list,
 	u64 num;
 	struct list_head *head;
 	struct parse_events_term *term;
+<<<<<<< HEAD
+=======
+	struct tracepoint_name {
+		char *sys;
+		char *event;
+	} tracepoint_name;
+	struct parse_events_array array;
+>>>>>>> v4.9.227
 }
 %%
 
@@ -199,15 +253,24 @@ event_def: event_pmu |
 	   event_legacy_mem |
 	   event_legacy_tracepoint sep_dc |
 	   event_legacy_numeric sep_dc |
+<<<<<<< HEAD
 	   event_legacy_raw sep_dc
 
 event_pmu:
 PE_NAME '/' event_config '/'
+=======
+	   event_legacy_raw sep_dc |
+	   event_bpf_file
+
+event_pmu:
+PE_NAME opt_pmu_config
+>>>>>>> v4.9.227
 {
 	struct parse_events_evlist *data = _data;
 	struct list_head *list;
 
 	ALLOC_LIST(list);
+<<<<<<< HEAD
 	ABORT_ON(parse_events_add_pmu(list, &data->idx, $1, $3));
 	parse_events__free_terms($3);
 	$$ = list;
@@ -220,6 +283,10 @@ PE_NAME '/' '/'
 
 	ALLOC_LIST(list);
 	ABORT_ON(parse_events_add_pmu(list, &data->idx, $1, NULL));
+=======
+	ABORT_ON(parse_events_add_pmu(data, list, $1, $2));
+	parse_events_terms__delete($2);
+>>>>>>> v4.9.227
 	$$ = list;
 }
 |
@@ -232,12 +299,21 @@ PE_KERNEL_PMU_EVENT sep_dc
 
 	ALLOC_LIST(head);
 	ABORT_ON(parse_events_term__num(&term, PARSE_EVENTS__TERM_TYPE_USER,
+<<<<<<< HEAD
 					$1, 1));
 	list_add_tail(&term->list, head);
 
 	ALLOC_LIST(list);
 	ABORT_ON(parse_events_add_pmu(list, &data->idx, "cpu", head));
 	parse_events__free_terms(head);
+=======
+					$1, 1, &@1, NULL));
+	list_add_tail(&term->list, head);
+
+	ALLOC_LIST(list);
+	ABORT_ON(parse_events_add_pmu(data, list, "cpu", head));
+	parse_events_terms__delete(head);
+>>>>>>> v4.9.227
 	$$ = list;
 }
 |
@@ -252,12 +328,21 @@ PE_PMU_EVENT_PRE '-' PE_PMU_EVENT_SUF sep_dc
 
 	ALLOC_LIST(head);
 	ABORT_ON(parse_events_term__num(&term, PARSE_EVENTS__TERM_TYPE_USER,
+<<<<<<< HEAD
 					&pmu_name, 1));
 	list_add_tail(&term->list, head);
 
 	ALLOC_LIST(list);
 	ABORT_ON(parse_events_add_pmu(list, &data->idx, "cpu", head));
 	parse_events__free_terms(head);
+=======
+					&pmu_name, 1, &@1, NULL));
+	list_add_tail(&term->list, head);
+
+	ALLOC_LIST(list);
+	ABORT_ON(parse_events_add_pmu(data, list, "cpu", head));
+	parse_events_terms__delete(head);
+>>>>>>> v4.9.227
 	$$ = list;
 }
 
@@ -275,9 +360,14 @@ value_sym '/' event_config '/'
 	int config = $1 & 255;
 
 	ALLOC_LIST(list);
+<<<<<<< HEAD
 	ABORT_ON(parse_events_add_numeric(list, &data->idx,
 					  type, config, $3));
 	parse_events__free_terms($3);
+=======
+	ABORT_ON(parse_events_add_numeric(data, list, type, config, $3));
+	parse_events_terms__delete($3);
+>>>>>>> v4.9.227
 	$$ = list;
 }
 |
@@ -289,12 +379,17 @@ value_sym sep_slash_dc
 	int config = $1 & 255;
 
 	ALLOC_LIST(list);
+<<<<<<< HEAD
 	ABORT_ON(parse_events_add_numeric(list, &data->idx,
 					  type, config, NULL));
+=======
+	ABORT_ON(parse_events_add_numeric(data, list, type, config, NULL));
+>>>>>>> v4.9.227
 	$$ = list;
 }
 
 event_legacy_cache:
+<<<<<<< HEAD
 PE_NAME_CACHE_TYPE '-' PE_NAME_CACHE_OP_RESULT '-' PE_NAME_CACHE_OP_RESULT
 {
 	struct parse_events_evlist *data = _data;
@@ -322,10 +417,70 @@ PE_NAME_CACHE_TYPE
 
 	ALLOC_LIST(list);
 	ABORT_ON(parse_events_add_cache(list, &data->idx, $1, NULL, NULL));
+=======
+PE_NAME_CACHE_TYPE '-' PE_NAME_CACHE_OP_RESULT '-' PE_NAME_CACHE_OP_RESULT opt_event_config
+{
+	struct parse_events_evlist *data = _data;
+	struct parse_events_error *error = data->error;
+	struct list_head *list;
+
+	ALLOC_LIST(list);
+	ABORT_ON(parse_events_add_cache(list, &data->idx, $1, $3, $5, error, $6));
+	parse_events_terms__delete($6);
+	$$ = list;
+}
+|
+PE_NAME_CACHE_TYPE '-' PE_NAME_CACHE_OP_RESULT opt_event_config
+{
+	struct parse_events_evlist *data = _data;
+	struct parse_events_error *error = data->error;
+	struct list_head *list;
+
+	ALLOC_LIST(list);
+	ABORT_ON(parse_events_add_cache(list, &data->idx, $1, $3, NULL, error, $4));
+	parse_events_terms__delete($4);
+	$$ = list;
+}
+|
+PE_NAME_CACHE_TYPE opt_event_config
+{
+	struct parse_events_evlist *data = _data;
+	struct parse_events_error *error = data->error;
+	struct list_head *list;
+
+	ALLOC_LIST(list);
+	ABORT_ON(parse_events_add_cache(list, &data->idx, $1, NULL, NULL, error, $2));
+	parse_events_terms__delete($2);
+>>>>>>> v4.9.227
 	$$ = list;
 }
 
 event_legacy_mem:
+<<<<<<< HEAD
+=======
+PE_PREFIX_MEM PE_VALUE '/' PE_VALUE ':' PE_MODIFIER_BP sep_dc
+{
+	struct parse_events_evlist *data = _data;
+	struct list_head *list;
+
+	ALLOC_LIST(list);
+	ABORT_ON(parse_events_add_breakpoint(list, &data->idx,
+					     (void *) $2, $6, $4));
+	$$ = list;
+}
+|
+PE_PREFIX_MEM PE_VALUE '/' PE_VALUE sep_dc
+{
+	struct parse_events_evlist *data = _data;
+	struct list_head *list;
+
+	ALLOC_LIST(list);
+	ABORT_ON(parse_events_add_breakpoint(list, &data->idx,
+					     (void *) $2, NULL, $4));
+	$$ = list;
+}
+|
+>>>>>>> v4.9.227
 PE_PREFIX_MEM PE_VALUE ':' PE_MODIFIER_BP sep_dc
 {
 	struct parse_events_evlist *data = _data;
@@ -333,7 +488,11 @@ PE_PREFIX_MEM PE_VALUE ':' PE_MODIFIER_BP sep_dc
 
 	ALLOC_LIST(list);
 	ABORT_ON(parse_events_add_breakpoint(list, &data->idx,
+<<<<<<< HEAD
 					     (void *) $2, $4));
+=======
+					     (void *) $2, $4, 0));
+>>>>>>> v4.9.227
 	$$ = list;
 }
 |
@@ -344,11 +503,16 @@ PE_PREFIX_MEM PE_VALUE sep_dc
 
 	ALLOC_LIST(list);
 	ABORT_ON(parse_events_add_breakpoint(list, &data->idx,
+<<<<<<< HEAD
 					     (void *) $2, NULL));
+=======
+					     (void *) $2, NULL, 0));
+>>>>>>> v4.9.227
 	$$ = list;
 }
 
 event_legacy_tracepoint:
+<<<<<<< HEAD
 PE_NAME '-' PE_NAME ':' PE_NAME
 {
 	struct parse_events_evlist *data = _data;
@@ -373,27 +537,135 @@ PE_NAME ':' PE_NAME
 
 event_legacy_numeric:
 PE_VALUE ':' PE_VALUE
+=======
+tracepoint_name opt_event_config
+{
+	struct parse_events_evlist *data = _data;
+	struct parse_events_error *error = data->error;
+	struct list_head *list;
+
+	ALLOC_LIST(list);
+	if (error)
+		error->idx = @1.first_column;
+
+	if (parse_events_add_tracepoint(list, &data->idx, $1.sys, $1.event,
+					error, $2))
+		return -1;
+
+	$$ = list;
+}
+
+tracepoint_name:
+PE_NAME '-' PE_NAME ':' PE_NAME
+{
+	char sys_name[128];
+	struct tracepoint_name tracepoint;
+
+	snprintf(&sys_name, 128, "%s-%s", $1, $3);
+	tracepoint.sys = &sys_name;
+	tracepoint.event = $5;
+
+	$$ = tracepoint;
+}
+|
+PE_NAME ':' PE_NAME
+{
+	struct tracepoint_name tracepoint = {$1, $3};
+
+	$$ = tracepoint;
+}
+
+event_legacy_numeric:
+PE_VALUE ':' PE_VALUE opt_event_config
+>>>>>>> v4.9.227
 {
 	struct parse_events_evlist *data = _data;
 	struct list_head *list;
 
 	ALLOC_LIST(list);
+<<<<<<< HEAD
 	ABORT_ON(parse_events_add_numeric(list, &data->idx, (u32)$1, $3, NULL));
+=======
+	ABORT_ON(parse_events_add_numeric(data, list, (u32)$1, $3, $4));
+	parse_events_terms__delete($4);
+>>>>>>> v4.9.227
 	$$ = list;
 }
 
 event_legacy_raw:
+<<<<<<< HEAD
 PE_RAW
+=======
+PE_RAW opt_event_config
+>>>>>>> v4.9.227
 {
 	struct parse_events_evlist *data = _data;
 	struct list_head *list;
 
 	ALLOC_LIST(list);
+<<<<<<< HEAD
 	ABORT_ON(parse_events_add_numeric(list, &data->idx,
 					  PERF_TYPE_RAW, $1, NULL));
 	$$ = list;
 }
 
+=======
+	ABORT_ON(parse_events_add_numeric(data, list, PERF_TYPE_RAW, $1, $2));
+	parse_events_terms__delete($2);
+	$$ = list;
+}
+
+event_bpf_file:
+PE_BPF_OBJECT opt_event_config
+{
+	struct parse_events_evlist *data = _data;
+	struct parse_events_error *error = data->error;
+	struct list_head *list;
+
+	ALLOC_LIST(list);
+	ABORT_ON(parse_events_load_bpf(data, list, $1, false, $2));
+	parse_events_terms__delete($2);
+	$$ = list;
+}
+|
+PE_BPF_SOURCE opt_event_config
+{
+	struct parse_events_evlist *data = _data;
+	struct list_head *list;
+
+	ALLOC_LIST(list);
+	ABORT_ON(parse_events_load_bpf(data, list, $1, true, $2));
+	parse_events_terms__delete($2);
+	$$ = list;
+}
+
+opt_event_config:
+'/' event_config '/'
+{
+	$$ = $2;
+}
+|
+'/' '/'
+{
+	$$ = NULL;
+}
+|
+{
+	$$ = NULL;
+}
+
+opt_pmu_config:
+'/' event_config '/'
+{
+	$$ = $2;
+}
+|
+'/' '/'
+{
+	$$ = NULL;
+}
+
+>>>>>>> v4.9.227
 start_terms: event_config
 {
 	struct parse_events_terms *data = _data;
@@ -428,7 +700,11 @@ PE_NAME '=' PE_NAME
 	struct parse_events_term *term;
 
 	ABORT_ON(parse_events_term__str(&term, PARSE_EVENTS__TERM_TYPE_USER,
+<<<<<<< HEAD
 					$1, $3));
+=======
+					$1, $3, &@1, &@3));
+>>>>>>> v4.9.227
 	$$ = term;
 }
 |
@@ -437,7 +713,11 @@ PE_NAME '=' PE_VALUE
 	struct parse_events_term *term;
 
 	ABORT_ON(parse_events_term__num(&term, PARSE_EVENTS__TERM_TYPE_USER,
+<<<<<<< HEAD
 					$1, $3));
+=======
+					$1, $3, &@1, &@3));
+>>>>>>> v4.9.227
 	$$ = term;
 }
 |
@@ -455,7 +735,11 @@ PE_NAME
 	struct parse_events_term *term;
 
 	ABORT_ON(parse_events_term__num(&term, PARSE_EVENTS__TERM_TYPE_USER,
+<<<<<<< HEAD
 					$1, 1));
+=======
+					$1, 1, &@1, NULL));
+>>>>>>> v4.9.227
 	$$ = term;
 }
 |
@@ -472,7 +756,11 @@ PE_TERM '=' PE_NAME
 {
 	struct parse_events_term *term;
 
+<<<<<<< HEAD
 	ABORT_ON(parse_events_term__str(&term, (int)$1, NULL, $3));
+=======
+	ABORT_ON(parse_events_term__str(&term, (int)$1, NULL, $3, &@1, &@3));
+>>>>>>> v4.9.227
 	$$ = term;
 }
 |
@@ -480,7 +768,11 @@ PE_TERM '=' PE_VALUE
 {
 	struct parse_events_term *term;
 
+<<<<<<< HEAD
 	ABORT_ON(parse_events_term__num(&term, (int)$1, NULL, $3));
+=======
+	ABORT_ON(parse_events_term__num(&term, (int)$1, NULL, $3, &@1, &@3));
+>>>>>>> v4.9.227
 	$$ = term;
 }
 |
@@ -488,9 +780,104 @@ PE_TERM
 {
 	struct parse_events_term *term;
 
+<<<<<<< HEAD
 	ABORT_ON(parse_events_term__num(&term, (int)$1, NULL, 1));
 	$$ = term;
 }
+=======
+	ABORT_ON(parse_events_term__num(&term, (int)$1, NULL, 1, &@1, NULL));
+	$$ = term;
+}
+|
+PE_NAME array '=' PE_NAME
+{
+	struct parse_events_term *term;
+	int i;
+
+	ABORT_ON(parse_events_term__str(&term, PARSE_EVENTS__TERM_TYPE_USER,
+					$1, $4, &@1, &@4));
+
+	term->array = $2;
+	$$ = term;
+}
+|
+PE_NAME array '=' PE_VALUE
+{
+	struct parse_events_term *term;
+
+	ABORT_ON(parse_events_term__num(&term, PARSE_EVENTS__TERM_TYPE_USER,
+					$1, $4, &@1, &@4));
+	term->array = $2;
+	$$ = term;
+}
+|
+PE_DRV_CFG_TERM
+{
+	struct parse_events_term *term;
+
+	ABORT_ON(parse_events_term__str(&term, PARSE_EVENTS__TERM_TYPE_DRV_CFG,
+					$1, $1, &@1, NULL));
+	$$ = term;
+}
+
+array:
+'[' array_terms ']'
+{
+	$$ = $2;
+}
+|
+PE_ARRAY_ALL
+{
+	$$.nr_ranges = 0;
+	$$.ranges = NULL;
+}
+
+array_terms:
+array_terms ',' array_term
+{
+	struct parse_events_array new_array;
+
+	new_array.nr_ranges = $1.nr_ranges + $3.nr_ranges;
+	new_array.ranges = malloc(sizeof(new_array.ranges[0]) *
+				  new_array.nr_ranges);
+	ABORT_ON(!new_array.ranges);
+	memcpy(&new_array.ranges[0], $1.ranges,
+	       $1.nr_ranges * sizeof(new_array.ranges[0]));
+	memcpy(&new_array.ranges[$1.nr_ranges], $3.ranges,
+	       $3.nr_ranges * sizeof(new_array.ranges[0]));
+	free($1.ranges);
+	free($3.ranges);
+	$$ = new_array;
+}
+|
+array_term
+
+array_term:
+PE_VALUE
+{
+	struct parse_events_array array;
+
+	array.nr_ranges = 1;
+	array.ranges = malloc(sizeof(array.ranges[0]));
+	ABORT_ON(!array.ranges);
+	array.ranges[0].start = $1;
+	array.ranges[0].length = 1;
+	$$ = array;
+}
+|
+PE_VALUE PE_ARRAY_RANGE PE_VALUE
+{
+	struct parse_events_array array;
+
+	ABORT_ON($3 < $1);
+	array.nr_ranges = 1;
+	array.ranges = malloc(sizeof(array.ranges[0]));
+	ABORT_ON(!array.ranges);
+	array.ranges[0].start = $1;
+	array.ranges[0].length = $3 - $1 + 1;
+	$$ = array;
+}
+>>>>>>> v4.9.227
 
 sep_dc: ':' |
 
@@ -498,7 +885,15 @@ sep_slash_dc: '/' | ':' |
 
 %%
 
+<<<<<<< HEAD
 void parse_events_error(void *data __maybe_unused, void *scanner __maybe_unused,
 			char const *msg __maybe_unused)
 {
+=======
+void parse_events_error(YYLTYPE *loc, void *data,
+			void *scanner __maybe_unused,
+			char const *msg __maybe_unused)
+{
+	parse_events_evlist_error(data, loc->last_column, "parser error");
+>>>>>>> v4.9.227
 }

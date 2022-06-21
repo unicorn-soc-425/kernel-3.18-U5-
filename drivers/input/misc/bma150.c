@@ -147,7 +147,11 @@ struct bma150_data {
  * are stated and verified by Bosch Sensortec where they are configured
  * to provide a generic sensitivity performance.
  */
+<<<<<<< HEAD
 static struct bma150_cfg default_cfg = {
+=======
+static const struct bma150_cfg default_cfg = {
+>>>>>>> v4.9.227
 	.any_motion_int = 1,
 	.hg_int = 1,
 	.lg_int = 1,
@@ -333,10 +337,16 @@ static void bma150_report_xyz(struct bma150_data *bma150)
 	y = ((0xc0 & data[2]) >> 6) | (data[3] << 2);
 	z = ((0xc0 & data[4]) >> 6) | (data[5] << 2);
 
+<<<<<<< HEAD
 	/* sign extension */
 	x = (s16) (x << 6) >> 6;
 	y = (s16) (y << 6) >> 6;
 	z = (s16) (z << 6) >> 6;
+=======
+	x = sign_extend32(x, 9);
+	y = sign_extend32(y, 9);
+	z = sign_extend32(z, 9);
+>>>>>>> v4.9.227
 
 	input_report_abs(bma150->input, ABS_X, x);
 	input_report_abs(bma150->input, ABS_Y, y);
@@ -483,13 +493,21 @@ static int bma150_register_input_device(struct bma150_data *bma150)
 	idev->close = bma150_irq_close;
 	input_set_drvdata(idev, bma150);
 
+<<<<<<< HEAD
+=======
+	bma150->input = idev;
+
+>>>>>>> v4.9.227
 	error = input_register_device(idev);
 	if (error) {
 		input_free_device(idev);
 		return error;
 	}
 
+<<<<<<< HEAD
 	bma150->input = idev;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -512,15 +530,24 @@ static int bma150_register_polled_device(struct bma150_data *bma150)
 
 	bma150_init_input_device(bma150, ipoll_dev->input);
 
+<<<<<<< HEAD
+=======
+	bma150->input_polled = ipoll_dev;
+	bma150->input = ipoll_dev->input;
+
+>>>>>>> v4.9.227
 	error = input_register_polled_device(ipoll_dev);
 	if (error) {
 		input_free_polled_device(ipoll_dev);
 		return error;
 	}
 
+<<<<<<< HEAD
 	bma150->input_polled = ipoll_dev;
 	bma150->input = ipoll_dev->input;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -654,7 +681,10 @@ MODULE_DEVICE_TABLE(i2c, bma150_id);
 
 static struct i2c_driver bma150_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= BMA150_DRIVER,
 		.pm	= &bma150_pm,
 	},

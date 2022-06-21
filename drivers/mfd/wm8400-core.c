@@ -35,6 +35,7 @@ static bool wm8400_volatile(struct device *dev, unsigned int reg)
 	}
 }
 
+<<<<<<< HEAD
 /**
  * wm8400_reg_read - Single register read
  *
@@ -56,6 +57,8 @@ u16 wm8400_reg_read(struct wm8400 *wm8400, u8 reg)
 }
 EXPORT_SYMBOL_GPL(wm8400_reg_read);
 
+=======
+>>>>>>> v4.9.227
 int wm8400_block_read(struct wm8400 *wm8400, u8 reg, int count, u16 *data)
 {
 	return regmap_bulk_read(wm8400->regmap, reg, data, count);
@@ -70,7 +73,11 @@ static int wm8400_register_codec(struct wm8400 *wm8400)
 		.pdata_size = sizeof(*wm8400),
 	};
 
+<<<<<<< HEAD
 	return mfd_add_devices(wm8400->dev, -1, &cell, 1, NULL, 0, NULL);
+=======
+	return devm_mfd_add_devices(wm8400->dev, -1, &cell, 1, NULL, 0, NULL);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -111,7 +118,11 @@ static int wm8400_init(struct wm8400 *wm8400,
 	ret = wm8400_register_codec(wm8400);
 	if (ret != 0) {
 		dev_err(wm8400->dev, "Failed to register codec\n");
+<<<<<<< HEAD
 		goto err_children;
+=======
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	if (pdata && pdata->platform_init) {
@@ -119,12 +130,17 @@ static int wm8400_init(struct wm8400 *wm8400,
 		if (ret != 0) {
 			dev_err(wm8400->dev, "Platform init failed: %d\n",
 				ret);
+<<<<<<< HEAD
 			goto err_children;
+=======
+			return ret;
+>>>>>>> v4.9.227
 		}
 	} else
 		dev_warn(wm8400->dev, "No platform initialisation supplied\n");
 
 	return 0;
+<<<<<<< HEAD
 
 err_children:
 	mfd_remove_devices(wm8400->dev);
@@ -134,6 +150,8 @@ err_children:
 static void wm8400_release(struct wm8400 *wm8400)
 {
 	mfd_remove_devices(wm8400->dev);
+=======
+>>>>>>> v4.9.227
 }
 
 static const struct regmap_config wm8400_regmap_config = {
@@ -156,7 +174,11 @@ void wm8400_reset_codec_reg_cache(struct wm8400 *wm8400)
 }
 EXPORT_SYMBOL_GPL(wm8400_reset_codec_reg_cache);
 
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> v4.9.227
 static int wm8400_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
 {
@@ -176,6 +198,7 @@ static int wm8400_i2c_probe(struct i2c_client *i2c,
 	return wm8400_init(wm8400, dev_get_platdata(&i2c->dev));
 }
 
+<<<<<<< HEAD
 static int wm8400_i2c_remove(struct i2c_client *i2c)
 {
 	struct wm8400 *wm8400 = i2c_get_clientdata(i2c);
@@ -185,6 +208,8 @@ static int wm8400_i2c_remove(struct i2c_client *i2c)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct i2c_device_id wm8400_i2c_id[] = {
        { "wm8400", 0 },
        { }
@@ -194,10 +219,15 @@ MODULE_DEVICE_TABLE(i2c, wm8400_i2c_id);
 static struct i2c_driver wm8400_i2c_driver = {
 	.driver = {
 		.name = "WM8400",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe    = wm8400_i2c_probe,
 	.remove   = wm8400_i2c_remove,
+=======
+	},
+	.probe    = wm8400_i2c_probe,
+>>>>>>> v4.9.227
 	.id_table = wm8400_i2c_id,
 };
 #endif
@@ -206,7 +236,11 @@ static int __init wm8400_module_init(void)
 {
 	int ret = -ENODEV;
 
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> v4.9.227
 	ret = i2c_add_driver(&wm8400_i2c_driver);
 	if (ret != 0)
 		pr_err("Failed to register I2C driver: %d\n", ret);
@@ -218,7 +252,11 @@ subsys_initcall(wm8400_module_init);
 
 static void __exit wm8400_module_exit(void)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> v4.9.227
 	i2c_del_driver(&wm8400_i2c_driver);
 #endif
 }

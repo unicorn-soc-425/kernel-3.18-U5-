@@ -1,7 +1,11 @@
 /*
  *  Driver for the NXP SAA7164 PCIe bridge
  *
+<<<<<<< HEAD
  *  Copyright (c) 2010 Steven Toth <stoth@kernellabs.com>
+=======
+ *  Copyright (c) 2010-2015 Steven Toth <stoth@kernellabs.com>
+>>>>>>> v4.9.227
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,8 +58,11 @@
 
 #include <media/tuner.h>
 #include <media/tveeprom.h>
+<<<<<<< HEAD
 #include <media/videobuf-dma-sg.h>
 #include <media/videobuf-dvb.h>
+=======
+>>>>>>> v4.9.227
 #include <dvb_demux.h>
 #include <dvb_frontend.h>
 #include <dvb_net.h>
@@ -64,6 +71,11 @@
 #include <media/v4l2-common.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
+=======
+#include <media/v4l2-ctrls.h>
+#include <media/v4l2-event.h>
+>>>>>>> v4.9.227
 
 #include "saa7164-reg.h"
 #include "saa7164-types.h"
@@ -83,6 +95,12 @@
 #define SAA7164_BOARD_HAUPPAUGE_HVR2250_3	8
 #define SAA7164_BOARD_HAUPPAUGE_HVR2200_4	9
 #define SAA7164_BOARD_HAUPPAUGE_HVR2200_5	10
+<<<<<<< HEAD
+=======
+#define SAA7164_BOARD_HAUPPAUGE_HVR2255proto	11
+#define SAA7164_BOARD_HAUPPAUGE_HVR2255		12
+#define SAA7164_BOARD_HAUPPAUGE_HVR2205		13
+>>>>>>> v4.9.227
 
 #define SAA7164_MAX_UNITS		8
 #define SAA7164_TS_NUMBER_OF_LINES	312
@@ -114,7 +132,15 @@
 #define DBGLVL_CPU 8192
 
 #define SAA7164_NORMS \
+<<<<<<< HEAD
 	(V4L2_STD_NTSC_M |  V4L2_STD_NTSC_M_JP |  V4L2_STD_NTSC_443)
+=======
+	(V4L2_STD_NTSC_M | V4L2_STD_NTSC_M_JP)
+
+/* TV frequency range copied from tuner-core.c */
+#define SAA7164_TV_MIN_FREQ (44U * 16U)
+#define SAA7164_TV_MAX_FREQ (958U * 16U)
+>>>>>>> v4.9.227
 
 enum port_t {
 	SAA7164_MPEG_UNDEFINED = 0,
@@ -182,11 +208,19 @@ struct saa7164_subid {
 };
 
 struct saa7164_encoder_fh {
+<<<<<<< HEAD
+=======
+	struct v4l2_fh fh;
+>>>>>>> v4.9.227
 	struct saa7164_port *port;
 	atomic_t v4l_reading;
 };
 
 struct saa7164_vbi_fh {
+<<<<<<< HEAD
+=======
+	struct v4l2_fh fh;
+>>>>>>> v4.9.227
 	struct saa7164_port *port;
 	atomic_t v4l_reading;
 };
@@ -254,10 +288,13 @@ struct saa7164_i2c {
 	u32				i2c_rc;
 };
 
+<<<<<<< HEAD
 struct saa7164_ctrl {
 	struct v4l2_queryctrl v;
 };
 
+=======
+>>>>>>> v4.9.227
 struct saa7164_tvnorm {
 	char		*name;
 	v4l2_std_id	id;
@@ -313,13 +350,21 @@ struct saa7164_buffer {
 
 	/* A block of page align PCI memory */
 	u32 pci_size;	/* PCI allocation size in bytes */
+<<<<<<< HEAD
 	u64 __iomem *cpu;	/* Virtual address */
+=======
+	u64 *cpu;	/* Virtual address */
+>>>>>>> v4.9.227
 	dma_addr_t dma;	/* Physical address */
 	u32 crc;	/* Checksum for the entire buffer data */
 
 	/* A page table that splits the block into a number of entries */
 	u32 pt_size;		/* PCI allocation size in bytes */
+<<<<<<< HEAD
 	u64 __iomem *pt_cpu;		/* Virtual address */
+=======
+	u64 *pt_cpu;		/* Virtual address */
+>>>>>>> v4.9.227
 	dma_addr_t pt_dma;	/* Physical address */
 
 	/* Encoder fops */
@@ -371,17 +416,29 @@ struct saa7164_port {
 
 	/* --- DVB Transport Specific --- */
 	struct saa7164_dvb dvb;
+<<<<<<< HEAD
+=======
+	struct i2c_client *i2c_client_demod;
+	struct i2c_client *i2c_client_tuner;
+>>>>>>> v4.9.227
 
 	/* --- Encoder/V4L related attributes --- */
 	/* Encoder */
 	/* Defaults established in saa7164-encoder.c */
 	struct saa7164_tvnorm encodernorm;
+<<<<<<< HEAD
+=======
+	struct v4l2_ctrl_handler ctrl_handler;
+>>>>>>> v4.9.227
 	v4l2_std_id std;
 	u32 height;
 	u32 width;
 	u32 freq;
+<<<<<<< HEAD
 	u32 ts_packet_size;
 	u32 ts_packet_count;
+=======
+>>>>>>> v4.9.227
 	u8 mux_input;
 	u8 encoder_profile;
 	u8 video_format;
@@ -414,6 +471,10 @@ struct saa7164_port {
 	/* V4L VBI */
 	struct tmComResVBIFormatDescrHeader vbi_fmt_ntsc;
 	struct saa7164_vbi_params vbi_params;
+<<<<<<< HEAD
+=======
+	struct saa7164_port *enc_port;
+>>>>>>> v4.9.227
 
 	/* Debug */
 	u32 sync_errors;
@@ -459,6 +520,10 @@ struct saa7164_dev {
 	/* Interrupt status and ack registers */
 	u32 int_status;
 	u32 int_ack;
+<<<<<<< HEAD
+=======
+	bool msi;
+>>>>>>> v4.9.227
 
 	struct cmd			cmds[SAA_CMD_MAX_MSG_UNITS];
 	struct mutex			lock;
@@ -588,6 +653,19 @@ extern int saa7164_buffer_zero_offsets(struct saa7164_port *port, int i);
 
 /* ----------------------------------------------------------- */
 /* saa7164-encoder.c                                            */
+<<<<<<< HEAD
+=======
+int saa7164_s_std(struct saa7164_port *port, v4l2_std_id id);
+int saa7164_g_std(struct saa7164_port *port, v4l2_std_id *id);
+int saa7164_enum_input(struct file *file, void *priv, struct v4l2_input *i);
+int saa7164_g_input(struct saa7164_port *port, unsigned int *i);
+int saa7164_s_input(struct saa7164_port *port, unsigned int i);
+int saa7164_g_tuner(struct file *file, void *priv, struct v4l2_tuner *t);
+int saa7164_s_tuner(struct file *file, void *priv, const struct v4l2_tuner *t);
+int saa7164_g_frequency(struct saa7164_port *port, struct v4l2_frequency *f);
+int saa7164_s_frequency(struct saa7164_port *port,
+			const struct v4l2_frequency *f);
+>>>>>>> v4.9.227
 int saa7164_encoder_register(struct saa7164_port *port);
 void saa7164_encoder_unregister(struct saa7164_port *port);
 

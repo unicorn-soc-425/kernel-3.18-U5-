@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Linux network driver for Brocade Converged Network Adapter.
+=======
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -11,9 +15,16 @@
  * General Public License for more details.
  */
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> v4.9.227
  */
 #ifndef __BFA_DEFS_CNA_H__
 #define __BFA_DEFS_CNA_H__
@@ -108,8 +119,11 @@ union bfa_port_stats_u {
 	struct bfa_port_eth_stats eth;
 };
 
+<<<<<<< HEAD
 #pragma pack(1)
 
+=======
+>>>>>>> v4.9.227
 #define BFA_CEE_LLDP_MAX_STRING_LEN (128)
 #define BFA_CEE_DCBX_MAX_PRIORITY	(8)
 #define BFA_CEE_DCBX_MAX_PGID		(8)
@@ -132,9 +146,15 @@ struct bfa_cee_lldp_str {
 	u8 len;
 	u8 rsvd[2];
 	u8 value[BFA_CEE_LLDP_MAX_STRING_LEN];
+<<<<<<< HEAD
 };
 
 /* LLDP paramters */
+=======
+} __packed;
+
+/* LLDP parameters */
+>>>>>>> v4.9.227
 struct bfa_cee_lldp_cfg {
 	struct bfa_cee_lldp_str chassis_id;
 	struct bfa_cee_lldp_str port_id;
@@ -144,7 +164,11 @@ struct bfa_cee_lldp_cfg {
 	struct bfa_cee_lldp_str mgmt_addr;
 	u16 time_to_live;
 	u16 enabled_system_cap;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 enum bfa_cee_dcbx_version {
 	DCBX_PROTOCOL_PRECEE	= 1,
@@ -170,7 +194,11 @@ struct bfa_cee_dcbx_cfg {
 	u8 lls_fcoe; /* FCoE Logical Link Status */
 	u8 lls_lan; /* LAN Logical Link Status */
 	u8 rsvd[2];
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 /* CEE status */
 /* Making this to tri-state for the benefit of port list command */
@@ -187,11 +215,19 @@ struct bfa_cee_attr {
 	u8 error_reason;
 	struct bfa_cee_lldp_cfg lldp_remote;
 	struct bfa_cee_dcbx_cfg dcbx_remote;
+<<<<<<< HEAD
 	mac_t src_mac;
 	u8 link_speed;
 	u8 nw_priority;
 	u8 filler[2];
 };
+=======
+	u8 src_mac[ETH_ALEN];
+	u8 link_speed;
+	u8 nw_priority;
+	u8 filler[2];
+} __packed;
+>>>>>>> v4.9.227
 
 /* LLDP/DCBX/CEE Statistics */
 struct bfa_cee_stats {
@@ -213,8 +249,12 @@ struct bfa_cee_stats {
 	u32	cee_status_up;		/*!< CEE status up */
 	u32	cee_hw_cfg_changed;	/*!< CEE hw cfg changed */
 	u32	cee_rx_invalid_cfg;	/*!< CEE invalid cfg */
+<<<<<<< HEAD
 };
 
 #pragma pack()
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 #endif	/* __BFA_DEFS_CNA_H__ */

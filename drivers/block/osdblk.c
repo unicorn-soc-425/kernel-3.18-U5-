@@ -271,7 +271,11 @@ static struct bio *bio_chain_clone(struct bio *old_chain, gfp_t gfpmask)
 			goto err_out;
 
 		tmp->bi_bdev = NULL;
+<<<<<<< HEAD
 		gfpmask &= ~__GFP_WAIT;
+=======
+		gfpmask &= ~__GFP_DIRECT_RECLAIM;
+>>>>>>> v4.9.227
 		tmp->bi_next = NULL;
 
 		if (!new_chain)
@@ -321,7 +325,11 @@ static void osdblk_rq_fn(struct request_queue *q)
 		 * driver-specific, etc.
 		 */
 
+<<<<<<< HEAD
 		do_flush = rq->cmd_flags & REQ_FLUSH;
+=======
+		do_flush = (req_op(rq) == REQ_OP_FLUSH);
+>>>>>>> v4.9.227
 		do_write = (rq_data_dir(rq) == WRITE);
 
 		if (!do_flush) { /* osd_flush does not use a bio */
@@ -423,7 +431,11 @@ static int osdblk_init_disk(struct osdblk_device *osdev)
 	}
 
 	/* switch queue to TCQ mode; allocate tag map */
+<<<<<<< HEAD
 	rc = blk_queue_init_tags(q, OSDBLK_MAX_REQ, NULL);
+=======
+	rc = blk_queue_init_tags(q, OSDBLK_MAX_REQ, NULL, BLK_TAG_ALLOC_FIFO);
+>>>>>>> v4.9.227
 	if (rc) {
 		blk_cleanup_queue(q);
 		put_disk(disk);
@@ -437,7 +449,11 @@ static int osdblk_init_disk(struct osdblk_device *osdev)
 	blk_queue_stack_limits(q, osd_request_queue(osdev->osd));
 
 	blk_queue_prep_rq(q, blk_queue_start_tag);
+<<<<<<< HEAD
 	blk_queue_flush(q, REQ_FLUSH);
+=======
+	blk_queue_write_cache(q, true, false);
+>>>>>>> v4.9.227
 
 	disk->queue = q;
 

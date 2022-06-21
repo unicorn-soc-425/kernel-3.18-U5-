@@ -179,6 +179,10 @@ static int davinci_wdt_probe(struct platform_device *pdev)
 	wdd->min_timeout	= 1;
 	wdd->max_timeout	= MAX_HEARTBEAT;
 	wdd->timeout		= DEFAULT_HEARTBEAT;
+<<<<<<< HEAD
+=======
+	wdd->parent		= &pdev->dev;
+>>>>>>> v4.9.227
 
 	watchdog_init_timeout(wdd, heartbeat, dev);
 
@@ -218,7 +222,10 @@ MODULE_DEVICE_TABLE(of, davinci_wdt_of_match);
 static struct platform_driver platform_wdt_driver = {
 	.driver = {
 		.name = "davinci-wdt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = davinci_wdt_of_match,
 	},
 	.probe = davinci_wdt_probe,

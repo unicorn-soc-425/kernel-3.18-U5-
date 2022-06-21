@@ -25,6 +25,10 @@
 #include <linux/io.h>
 #include <linux/ioctl.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 #include <linux/sched.h>
@@ -39,7 +43,11 @@
 #include <media/v4l2-event.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-mem2mem.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/videobuf2-dma-contig.h>
 
 #include "vpdma.h"
@@ -74,7 +82,11 @@
 #define VPE_DEF_BUFS_PER_JOB	1	/* default one buffer per batch job */
 
 /*
+<<<<<<< HEAD
  * each VPE context can need up to 3 config desciptors, 7 input descriptors,
+=======
+ * each VPE context can need up to 3 config descriptors, 7 input descriptors,
+>>>>>>> v4.9.227
  * 3 output descriptors, and 10 control descriptors
  */
 #define VPE_DESC_LIST_SIZE	(10 * VPDMA_DTD_DESC_SIZE +	\
@@ -329,20 +341,36 @@ enum {
 };
 
 /* find our format description corresponding to the passed v4l2_format */
+<<<<<<< HEAD
 static struct vpe_fmt *find_format(struct v4l2_format *f)
+=======
+static struct vpe_fmt *__find_format(u32 fourcc)
+>>>>>>> v4.9.227
 {
 	struct vpe_fmt *fmt;
 	unsigned int k;
 
 	for (k = 0; k < ARRAY_SIZE(vpe_formats); k++) {
 		fmt = &vpe_formats[k];
+<<<<<<< HEAD
 		if (fmt->fourcc == f->fmt.pix.pixelformat)
+=======
+		if (fmt->fourcc == fourcc)
+>>>>>>> v4.9.227
 			return fmt;
 	}
 
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static struct vpe_fmt *find_format(struct v4l2_format *f)
+{
+	return __find_format(f->fmt.pix.pixelformat);
+}
+
+>>>>>>> v4.9.227
 /*
  * there is one vpe_dev structure in the driver, it is shared by
  * all instances.
@@ -361,7 +389,10 @@ struct vpe_dev {
 	void __iomem		*base;
 	struct resource		*res;
 
+<<<<<<< HEAD
 	struct vb2_alloc_ctx	*alloc_ctx;
+=======
+>>>>>>> v4.9.227
 	struct vpdma_data	*vpdma;		/* vpdma data handle */
 	struct sc_data		*sc;		/* scaler data handle */
 	struct csc_data		*csc;		/* csc data handle */
@@ -373,7 +404,10 @@ struct vpe_dev {
 struct vpe_ctx {
 	struct v4l2_fh		fh;
 	struct vpe_dev		*dev;
+<<<<<<< HEAD
 	struct v4l2_m2m_ctx	*m2m_ctx;
+=======
+>>>>>>> v4.9.227
 	struct v4l2_ctrl_handler hdl;
 
 	unsigned int		field;			/* current field */
@@ -384,8 +418,13 @@ struct vpe_ctx {
 	unsigned int		bufs_completed;		/* bufs done in this batch */
 
 	struct vpe_q_data	q_data[2];		/* src & dst queue data */
+<<<<<<< HEAD
 	struct vb2_buffer	*src_vbs[VPE_MAX_SRC_BUFS];
 	struct vb2_buffer	*dst_vb;
+=======
+	struct vb2_v4l2_buffer	*src_vbs[VPE_MAX_SRC_BUFS];
+	struct vb2_v4l2_buffer	*dst_vb;
+>>>>>>> v4.9.227
 
 	dma_addr_t		mv_buf_dma[2];		/* dma addrs of motion vector in/out bufs */
 	void			*mv_buf[2];		/* virtual addrs of motion vector bufs */
@@ -887,10 +926,17 @@ static int job_ready(void *priv)
 	if (ctx->deinterlacing && ctx->src_vbs[2] == NULL)
 		needed += 2;	/* need additional two most recent fields */
 
+<<<<<<< HEAD
 	if (v4l2_m2m_num_src_bufs_ready(ctx->m2m_ctx) < needed)
 		return 0;
 
 	if (v4l2_m2m_num_dst_bufs_ready(ctx->m2m_ctx) < needed)
+=======
+	if (v4l2_m2m_num_src_bufs_ready(ctx->fh.m2m_ctx) < needed)
+		return 0;
+
+	if (v4l2_m2m_num_dst_bufs_ready(ctx->fh.m2m_ctx) < needed)
+>>>>>>> v4.9.227
 		return 0;
 
 	return 1;
@@ -988,7 +1034,11 @@ static void add_out_dtd(struct vpe_ctx *ctx, int port)
 {
 	struct vpe_q_data *q_data = &ctx->q_data[Q_DATA_DST];
 	const struct vpe_port_data *p_data = &port_data[port];
+<<<<<<< HEAD
 	struct vb2_buffer *vb = ctx->dst_vb;
+=======
+	struct vb2_buffer *vb = &ctx->dst_vb->vb2_buf;
+>>>>>>> v4.9.227
 	struct vpe_fmt *fmt = q_data->fmt;
 	const struct vpdma_data_format *vpdma_fmt;
 	int mv_buf_selector = !ctx->src_mv_buf_selector;
@@ -1025,11 +1075,20 @@ static void add_in_dtd(struct vpe_ctx *ctx, int port)
 {
 	struct vpe_q_data *q_data = &ctx->q_data[Q_DATA_SRC];
 	const struct vpe_port_data *p_data = &port_data[port];
+<<<<<<< HEAD
 	struct vb2_buffer *vb = ctx->src_vbs[p_data->vb_index];
 	struct vpe_fmt *fmt = q_data->fmt;
 	const struct vpdma_data_format *vpdma_fmt;
 	int mv_buf_selector = ctx->src_mv_buf_selector;
 	int field = vb->v4l2_buf.field == V4L2_FIELD_BOTTOM;
+=======
+	struct vb2_buffer *vb = &ctx->src_vbs[p_data->vb_index]->vb2_buf;
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct vpe_fmt *fmt = q_data->fmt;
+	const struct vpdma_data_format *vpdma_fmt;
+	int mv_buf_selector = ctx->src_mv_buf_selector;
+	int field = vbuf->field == V4L2_FIELD_BOTTOM;
+>>>>>>> v4.9.227
 	int frame_width, frame_height;
 	dma_addr_t dma_addr;
 	u32 flags = 0;
@@ -1100,6 +1159,7 @@ static void device_run(void *priv)
 	struct vpe_q_data *d_q_data = &ctx->q_data[Q_DATA_DST];
 
 	if (ctx->deinterlacing && ctx->src_vbs[2] == NULL) {
+<<<<<<< HEAD
 		ctx->src_vbs[2] = v4l2_m2m_src_buf_remove(ctx->m2m_ctx);
 		WARN_ON(ctx->src_vbs[2] == NULL);
 		ctx->src_vbs[1] = v4l2_m2m_src_buf_remove(ctx->m2m_ctx);
@@ -1109,6 +1169,17 @@ static void device_run(void *priv)
 	ctx->src_vbs[0] = v4l2_m2m_src_buf_remove(ctx->m2m_ctx);
 	WARN_ON(ctx->src_vbs[0] == NULL);
 	ctx->dst_vb = v4l2_m2m_dst_buf_remove(ctx->m2m_ctx);
+=======
+		ctx->src_vbs[2] = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
+		WARN_ON(ctx->src_vbs[2] == NULL);
+		ctx->src_vbs[1] = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
+		WARN_ON(ctx->src_vbs[1] == NULL);
+	}
+
+	ctx->src_vbs[0] = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
+	WARN_ON(ctx->src_vbs[0] == NULL);
+	ctx->dst_vb = v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
+>>>>>>> v4.9.227
 	WARN_ON(ctx->dst_vb == NULL);
 
 	/* config descriptors */
@@ -1222,8 +1293,12 @@ static irqreturn_t vpe_irq(int irq_vpe, void *data)
 	struct vpe_dev *dev = (struct vpe_dev *)data;
 	struct vpe_ctx *ctx;
 	struct vpe_q_data *d_q_data;
+<<<<<<< HEAD
 	struct vb2_buffer *s_vb, *d_vb;
 	struct v4l2_buffer *s_buf, *d_buf;
+=======
+	struct vb2_v4l2_buffer *s_vb, *d_vb;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	u32 irqst0, irqst1;
 
@@ -1286,6 +1361,7 @@ static irqreturn_t vpe_irq(int irq_vpe, void *data)
 
 	s_vb = ctx->src_vbs[0];
 	d_vb = ctx->dst_vb;
+<<<<<<< HEAD
 	s_buf = &s_vb->v4l2_buf;
 	d_buf = &d_vb->v4l2_buf;
 
@@ -1300,6 +1376,21 @@ static irqreturn_t vpe_irq(int irq_vpe, void *data)
 	d_q_data = &ctx->q_data[Q_DATA_DST];
 	if (d_q_data->flags & Q_DATA_INTERLACED) {
 		d_buf->field = ctx->field;
+=======
+
+	d_vb->flags = s_vb->flags;
+	d_vb->vb2_buf.timestamp = s_vb->vb2_buf.timestamp;
+
+	if (s_vb->flags & V4L2_BUF_FLAG_TIMECODE)
+		d_vb->timecode = s_vb->timecode;
+
+	d_vb->sequence = ctx->sequence;
+	s_vb->sequence = ctx->sequence;
+
+	d_q_data = &ctx->q_data[Q_DATA_DST];
+	if (d_q_data->flags & Q_DATA_INTERLACED) {
+		d_vb->field = ctx->field;
+>>>>>>> v4.9.227
 		if (ctx->field == V4L2_FIELD_BOTTOM) {
 			ctx->sequence++;
 			ctx->field = V4L2_FIELD_TOP;
@@ -1308,7 +1399,11 @@ static irqreturn_t vpe_irq(int irq_vpe, void *data)
 			ctx->field = V4L2_FIELD_BOTTOM;
 		}
 	} else {
+<<<<<<< HEAD
 		d_buf->field = V4L2_FIELD_NONE;
+=======
+		d_vb->field = V4L2_FIELD_NONE;
+>>>>>>> v4.9.227
 		ctx->sequence++;
 	}
 
@@ -1334,7 +1429,11 @@ static irqreturn_t vpe_irq(int irq_vpe, void *data)
 finished:
 	vpe_dbg(ctx->dev, "finishing transaction\n");
 	ctx->bufs_completed = 0;
+<<<<<<< HEAD
 	v4l2_m2m_job_finish(dev->m2m_dev, ctx->m2m_ctx);
+=======
+	v4l2_m2m_job_finish(dev->m2m_dev, ctx->fh.m2m_ctx);
+>>>>>>> v4.9.227
 handled:
 	return IRQ_HANDLED;
 }
@@ -1395,7 +1494,11 @@ static int vpe_g_fmt(struct file *file, void *priv, struct v4l2_format *f)
 	struct vpe_q_data *q_data;
 	int i;
 
+<<<<<<< HEAD
 	vq = v4l2_m2m_get_vq(ctx->m2m_ctx, f->type);
+=======
+	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx, f->type);
+>>>>>>> v4.9.227
 	if (!vq)
 		return -EINVAL;
 
@@ -1436,9 +1539,15 @@ static int __vpe_try_fmt(struct vpe_ctx *ctx, struct v4l2_format *f,
 	int i, depth, depth_bytes;
 
 	if (!fmt || !(fmt->types & type)) {
+<<<<<<< HEAD
 		vpe_err(ctx->dev, "Fourcc format (0x%08x) invalid.\n",
 			pix->pixelformat);
 		return -EINVAL;
+=======
+		vpe_dbg(ctx->dev, "Fourcc format (0x%08x) invalid.\n",
+			pix->pixelformat);
+		fmt = __find_format(V4L2_PIX_FMT_YUYV);
+>>>>>>> v4.9.227
 	}
 
 	if (pix->field != V4L2_FIELD_NONE && pix->field != V4L2_FIELD_ALTERNATE)
@@ -1527,7 +1636,11 @@ static int __vpe_s_fmt(struct vpe_ctx *ctx, struct v4l2_format *f)
 	struct vb2_queue *vq;
 	int i;
 
+<<<<<<< HEAD
 	vq = v4l2_m2m_get_vq(ctx->m2m_ctx, f->type);
+=======
+	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx, f->type);
+>>>>>>> v4.9.227
 	if (!vq)
 		return -EINVAL;
 
@@ -1739,6 +1852,7 @@ static int vpe_s_selection(struct file *file, void *fh,
 	return set_srcdst_params(ctx);
 }
 
+<<<<<<< HEAD
 static int vpe_reqbufs(struct file *file, void *priv,
 		       struct v4l2_requestbuffers *reqbufs)
 {
@@ -1785,6 +1899,8 @@ static int vpe_streamoff(struct file *file, void *priv, enum v4l2_buf_type type)
 	return v4l2_m2m_streamoff(file, ctx->m2m_ctx, type);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * defines number of buffers/frames a context can process with VPE before
  * switching to a different context. default value is 1 buffer per context
@@ -1814,14 +1930,24 @@ static const struct v4l2_ctrl_ops vpe_ctrl_ops = {
 };
 
 static const struct v4l2_ioctl_ops vpe_ioctl_ops = {
+<<<<<<< HEAD
 	.vidioc_querycap	= vpe_querycap,
 
 	.vidioc_enum_fmt_vid_cap_mplane = vpe_enum_fmt,
+=======
+	.vidioc_querycap		= vpe_querycap,
+
+	.vidioc_enum_fmt_vid_cap_mplane	= vpe_enum_fmt,
+>>>>>>> v4.9.227
 	.vidioc_g_fmt_vid_cap_mplane	= vpe_g_fmt,
 	.vidioc_try_fmt_vid_cap_mplane	= vpe_try_fmt,
 	.vidioc_s_fmt_vid_cap_mplane	= vpe_s_fmt,
 
+<<<<<<< HEAD
 	.vidioc_enum_fmt_vid_out_mplane = vpe_enum_fmt,
+=======
+	.vidioc_enum_fmt_vid_out_mplane	= vpe_enum_fmt,
+>>>>>>> v4.9.227
 	.vidioc_g_fmt_vid_out_mplane	= vpe_g_fmt,
 	.vidioc_try_fmt_vid_out_mplane	= vpe_try_fmt,
 	.vidioc_s_fmt_vid_out_mplane	= vpe_s_fmt,
@@ -1829,6 +1955,7 @@ static const struct v4l2_ioctl_ops vpe_ioctl_ops = {
 	.vidioc_g_selection		= vpe_g_selection,
 	.vidioc_s_selection		= vpe_s_selection,
 
+<<<<<<< HEAD
 	.vidioc_reqbufs		= vpe_reqbufs,
 	.vidioc_querybuf	= vpe_querybuf,
 
@@ -1839,15 +1966,31 @@ static const struct v4l2_ioctl_ops vpe_ioctl_ops = {
 	.vidioc_streamoff	= vpe_streamoff,
 	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
+=======
+	.vidioc_reqbufs			= v4l2_m2m_ioctl_reqbufs,
+	.vidioc_querybuf		= v4l2_m2m_ioctl_querybuf,
+	.vidioc_qbuf			= v4l2_m2m_ioctl_qbuf,
+	.vidioc_dqbuf			= v4l2_m2m_ioctl_dqbuf,
+	.vidioc_streamon		= v4l2_m2m_ioctl_streamon,
+	.vidioc_streamoff		= v4l2_m2m_ioctl_streamoff,
+
+	.vidioc_subscribe_event		= v4l2_ctrl_subscribe_event,
+	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
+>>>>>>> v4.9.227
 };
 
 /*
  * Queue operations
  */
 static int vpe_queue_setup(struct vb2_queue *vq,
+<<<<<<< HEAD
 			   const struct v4l2_format *fmt,
 			   unsigned int *nbuffers, unsigned int *nplanes,
 			   unsigned int sizes[], void *alloc_ctxs[])
+=======
+			   unsigned int *nbuffers, unsigned int *nplanes,
+			   unsigned int sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	int i;
 	struct vpe_ctx *ctx = vb2_get_drv_priv(vq);
@@ -1857,10 +2000,15 @@ static int vpe_queue_setup(struct vb2_queue *vq,
 
 	*nplanes = q_data->fmt->coplanar ? 2 : 1;
 
+<<<<<<< HEAD
 	for (i = 0; i < *nplanes; i++) {
 		sizes[i] = q_data->sizeimage[i];
 		alloc_ctxs[i] = ctx->dev->alloc_ctx;
 	}
+=======
+	for (i = 0; i < *nplanes; i++)
+		sizes[i] = q_data->sizeimage[i];
+>>>>>>> v4.9.227
 
 	vpe_dbg(ctx->dev, "get %d buffer(s) of size %d", *nbuffers,
 		sizes[VPE_LUMA]);
@@ -1872,6 +2020,10 @@ static int vpe_queue_setup(struct vb2_queue *vq,
 
 static int vpe_buf_prepare(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+>>>>>>> v4.9.227
 	struct vpe_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
 	struct vpe_q_data *q_data;
 	int i, num_planes;
@@ -1883,10 +2035,17 @@ static int vpe_buf_prepare(struct vb2_buffer *vb)
 
 	if (vb->vb2_queue->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
 		if (!(q_data->flags & Q_DATA_INTERLACED)) {
+<<<<<<< HEAD
 			vb->v4l2_buf.field = V4L2_FIELD_NONE;
 		} else {
 			if (vb->v4l2_buf.field != V4L2_FIELD_TOP &&
 					vb->v4l2_buf.field != V4L2_FIELD_BOTTOM)
+=======
+			vbuf->field = V4L2_FIELD_NONE;
+		} else {
+			if (vbuf->field != V4L2_FIELD_TOP &&
+					vbuf->field != V4L2_FIELD_BOTTOM)
+>>>>>>> v4.9.227
 				return -EINVAL;
 		}
 	}
@@ -1909,6 +2068,7 @@ static int vpe_buf_prepare(struct vb2_buffer *vb)
 
 static void vpe_buf_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct vpe_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
 	v4l2_m2m_buf_queue(ctx->m2m_ctx, vb);
 }
@@ -1931,12 +2091,47 @@ static struct vb2_ops vpe_qops = {
 	.buf_queue	 = vpe_buf_queue,
 	.wait_prepare	 = vpe_wait_prepare,
 	.wait_finish	 = vpe_wait_finish,
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct vpe_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
+
+	v4l2_m2m_buf_queue(ctx->fh.m2m_ctx, vbuf);
+}
+
+static int vpe_start_streaming(struct vb2_queue *q, unsigned int count)
+{
+	/* currently we do nothing here */
+
+	return 0;
+}
+
+static void vpe_stop_streaming(struct vb2_queue *q)
+{
+	struct vpe_ctx *ctx = vb2_get_drv_priv(q);
+
+	vpe_dump_regs(ctx->dev);
+	vpdma_dump_regs(ctx->dev->vpdma);
+}
+
+static const struct vb2_ops vpe_qops = {
+	.queue_setup	 = vpe_queue_setup,
+	.buf_prepare	 = vpe_buf_prepare,
+	.buf_queue	 = vpe_buf_queue,
+	.wait_prepare	 = vb2_ops_wait_prepare,
+	.wait_finish	 = vb2_ops_wait_finish,
+	.start_streaming = vpe_start_streaming,
+	.stop_streaming  = vpe_stop_streaming,
+>>>>>>> v4.9.227
 };
 
 static int queue_init(void *priv, struct vb2_queue *src_vq,
 		      struct vb2_queue *dst_vq)
 {
 	struct vpe_ctx *ctx = priv;
+<<<<<<< HEAD
+=======
+	struct vpe_dev *dev = ctx->dev;
+>>>>>>> v4.9.227
 	int ret;
 
 	memset(src_vq, 0, sizeof(*src_vq));
@@ -1947,6 +2142,11 @@ static int queue_init(void *priv, struct vb2_queue *src_vq,
 	src_vq->ops = &vpe_qops;
 	src_vq->mem_ops = &vb2_dma_contig_memops;
 	src_vq->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
+<<<<<<< HEAD
+=======
+	src_vq->lock = &dev->dev_mutex;
+	src_vq->dev = dev->v4l2_dev.dev;
+>>>>>>> v4.9.227
 
 	ret = vb2_queue_init(src_vq);
 	if (ret)
@@ -1960,6 +2160,11 @@ static int queue_init(void *priv, struct vb2_queue *src_vq,
 	dst_vq->ops = &vpe_qops;
 	dst_vq->mem_ops = &vb2_dma_contig_memops;
 	dst_vq->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
+<<<<<<< HEAD
+=======
+	dst_vq->lock = &dev->dev_mutex;
+	dst_vq->dev = dev->v4l2_dev.dev;
+>>>>>>> v4.9.227
 
 	return vb2_queue_init(dst_vq);
 }
@@ -1981,9 +2186,15 @@ static const struct v4l2_ctrl_config vpe_bufs_per_job = {
 static int vpe_open(struct file *file)
 {
 	struct vpe_dev *dev = video_drvdata(file);
+<<<<<<< HEAD
 	struct vpe_ctx *ctx = NULL;
 	struct vpe_q_data *s_q_data;
 	struct v4l2_ctrl_handler *hdl;
+=======
+	struct vpe_q_data *s_q_data;
+	struct v4l2_ctrl_handler *hdl;
+	struct vpe_ctx *ctx;
+>>>>>>> v4.9.227
 	int ret;
 
 	vpe_dbg(dev, "vpe_open\n");
@@ -2032,7 +2243,11 @@ static int vpe_open(struct file *file)
 	v4l2_ctrl_handler_setup(hdl);
 
 	s_q_data = &ctx->q_data[Q_DATA_SRC];
+<<<<<<< HEAD
 	s_q_data->fmt = &vpe_formats[2];
+=======
+	s_q_data->fmt = __find_format(V4L2_PIX_FMT_YUYV);
+>>>>>>> v4.9.227
 	s_q_data->width = 1920;
 	s_q_data->height = 1080;
 	s_q_data->bytesperline[VPE_LUMA] = (s_q_data->width *
@@ -2056,10 +2271,17 @@ static int vpe_open(struct file *file)
 	if (ret)
 		goto exit_fh;
 
+<<<<<<< HEAD
 	ctx->m2m_ctx = v4l2_m2m_ctx_init(dev->m2m_dev, ctx, &queue_init);
 
 	if (IS_ERR(ctx->m2m_ctx)) {
 		ret = PTR_ERR(ctx->m2m_ctx);
+=======
+	ctx->fh.m2m_ctx = v4l2_m2m_ctx_init(dev->m2m_dev, ctx, &queue_init);
+
+	if (IS_ERR(ctx->fh.m2m_ctx)) {
+		ret = PTR_ERR(ctx->fh.m2m_ctx);
+>>>>>>> v4.9.227
 		goto exit_fh;
 	}
 
@@ -2078,7 +2300,11 @@ static int vpe_open(struct file *file)
 	ctx->load_mmrs = true;
 
 	vpe_dbg(dev, "created instance %p, m2m_ctx: %p\n",
+<<<<<<< HEAD
 		ctx, ctx->m2m_ctx);
+=======
+		ctx, ctx->fh.m2m_ctx);
+>>>>>>> v4.9.227
 
 	mutex_unlock(&dev->dev_mutex);
 
@@ -2116,7 +2342,11 @@ static int vpe_release(struct file *file)
 	v4l2_fh_del(&ctx->fh);
 	v4l2_fh_exit(&ctx->fh);
 	v4l2_ctrl_handler_free(&ctx->hdl);
+<<<<<<< HEAD
 	v4l2_m2m_ctx_release(ctx->m2m_ctx);
+=======
+	v4l2_m2m_ctx_release(ctx->fh.m2m_ctx);
+>>>>>>> v4.9.227
 
 	kfree(ctx);
 
@@ -2133,6 +2363,7 @@ static int vpe_release(struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned int vpe_poll(struct file *file,
 			     struct poll_table_struct *wait)
 {
@@ -2159,13 +2390,21 @@ static int vpe_mmap(struct file *file, struct vm_area_struct *vma)
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct v4l2_file_operations vpe_fops = {
 	.owner		= THIS_MODULE,
 	.open		= vpe_open,
 	.release	= vpe_release,
+<<<<<<< HEAD
 	.poll		= vpe_poll,
 	.unlocked_ioctl	= video_ioctl2,
 	.mmap		= vpe_mmap,
+=======
+	.poll		= v4l2_m2m_fop_poll,
+	.unlocked_ioctl	= video_ioctl2,
+	.mmap		= v4l2_m2m_fop_mmap,
+>>>>>>> v4.9.227
 };
 
 static struct video_device vpe_videodev = {
@@ -2226,7 +2465,10 @@ static void vpe_fw_cb(struct platform_device *pdev)
 		vpe_runtime_put(pdev);
 		pm_runtime_disable(&pdev->dev);
 		v4l2_m2m_release(dev->m2m_dev);
+<<<<<<< HEAD
 		vb2_dma_contig_cleanup_ctx(dev->alloc_ctx);
+=======
+>>>>>>> v4.9.227
 		v4l2_device_unregister(&dev->v4l2_dev);
 
 		return;
@@ -2278,6 +2520,7 @@ static int vpe_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, dev);
 
+<<<<<<< HEAD
 	dev->alloc_ctx = vb2_dma_contig_init_ctx(&pdev->dev);
 	if (IS_ERR(dev->alloc_ctx)) {
 		vpe_err(dev, "Failed to alloc vb2 context\n");
@@ -2285,11 +2528,17 @@ static int vpe_probe(struct platform_device *pdev)
 		goto v4l2_dev_unreg;
 	}
 
+=======
+>>>>>>> v4.9.227
 	dev->m2m_dev = v4l2_m2m_init(&m2m_ops);
 	if (IS_ERR(dev->m2m_dev)) {
 		vpe_err(dev, "Failed to init mem2mem device\n");
 		ret = PTR_ERR(dev->m2m_dev);
+<<<<<<< HEAD
 		goto rel_ctx;
+=======
+		goto v4l2_dev_unreg;
+>>>>>>> v4.9.227
 	}
 
 	pm_runtime_enable(&pdev->dev);
@@ -2334,8 +2583,11 @@ runtime_put:
 rel_m2m:
 	pm_runtime_disable(&pdev->dev);
 	v4l2_m2m_release(dev->m2m_dev);
+<<<<<<< HEAD
 rel_ctx:
 	vb2_dma_contig_cleanup_ctx(dev->alloc_ctx);
+=======
+>>>>>>> v4.9.227
 v4l2_dev_unreg:
 	v4l2_device_unregister(&dev->v4l2_dev);
 
@@ -2351,7 +2603,10 @@ static int vpe_remove(struct platform_device *pdev)
 	v4l2_m2m_release(dev->m2m_dev);
 	video_unregister_device(&dev->vfd);
 	v4l2_device_unregister(&dev->v4l2_dev);
+<<<<<<< HEAD
 	vb2_dma_contig_cleanup_ctx(dev->alloc_ctx);
+=======
+>>>>>>> v4.9.227
 
 	vpe_set_clock_enable(dev, 0);
 	vpe_runtime_put(pdev);
@@ -2367,8 +2622,11 @@ static const struct of_device_id vpe_of_match[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
 #else
 #define vpe_of_match NULL
+=======
+>>>>>>> v4.9.227
 #endif
 
 static struct platform_driver vpe_pdrv = {
@@ -2376,8 +2634,12 @@ static struct platform_driver vpe_pdrv = {
 	.remove		= vpe_remove,
 	.driver		= {
 		.name	= VPE_MODULE_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.of_match_table = vpe_of_match,
+=======
+		.of_match_table = of_match_ptr(vpe_of_match),
+>>>>>>> v4.9.227
 	},
 };
 

@@ -459,7 +459,11 @@ static int em28xx_ir_change_protocol(struct rc_dev *rc_dev, u64 *rc_type)
 		return em2874_ir_change_protocol(rc_dev, rc_type);
 	default:
 		printk("Unrecognized em28xx chip id 0x%02x: IR not supported\n",
+<<<<<<< HEAD
 			dev->chip_id);
+=======
+		       dev->chip_id);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 }
@@ -505,7 +509,11 @@ static void em28xx_query_buttons(struct work_struct *work)
 		/* Check states of the buttons and act */
 		j = 0;
 		while (dev->board.buttons[j].role >= 0 &&
+<<<<<<< HEAD
 			 dev->board.buttons[j].role < EM28XX_NUM_BUTTON_ROLES) {
+=======
+		       dev->board.buttons[j].role < EM28XX_NUM_BUTTON_ROLES) {
+>>>>>>> v4.9.227
 			struct em28xx_button *button = &dev->board.buttons[j];
 			/* Check if button uses the current address */
 			if (button->reg_r != dev->button_polling_addresses[i]) {
@@ -607,7 +615,11 @@ static void em28xx_init_buttons(struct em28xx *dev)
 
 	dev->button_polling_interval = EM28XX_BUTTONS_DEBOUNCED_QUERY_INTERVAL;
 	while (dev->board.buttons[i].role >= 0 &&
+<<<<<<< HEAD
 			 dev->board.buttons[i].role < EM28XX_NUM_BUTTON_ROLES) {
+=======
+	       dev->board.buttons[i].role < EM28XX_NUM_BUTTON_ROLES) {
+>>>>>>> v4.9.227
 		struct em28xx_button *button = &dev->board.buttons[i];
 		/* Check if polling address is already on the list */
 		addr_new = true;
@@ -653,11 +665,17 @@ next_button:
 	/* Start polling */
 	if (dev->num_button_polling_addresses) {
 		memset(dev->button_polling_last_values, 0,
+<<<<<<< HEAD
 					       EM28XX_NUM_BUTTON_ADDRESSES_MAX);
 		INIT_DELAYED_WORK(&dev->buttons_query_work,
 							  em28xx_query_buttons);
 		schedule_delayed_work(&dev->buttons_query_work,
 			       msecs_to_jiffies(dev->button_polling_interval));
+=======
+		       EM28XX_NUM_BUTTON_ADDRESSES_MAX);
+		schedule_delayed_work(&dev->buttons_query_work,
+				      msecs_to_jiffies(dev->button_polling_interval));
+>>>>>>> v4.9.227
 	}
 }
 
@@ -689,6 +707,10 @@ static int em28xx_ir_init(struct em28xx *dev)
 	}
 
 	kref_get(&dev->ref);
+<<<<<<< HEAD
+=======
+	INIT_DELAYED_WORK(&dev->buttons_query_work, em28xx_query_buttons);
+>>>>>>> v4.9.227
 
 	if (dev->board.buttons)
 		em28xx_init_buttons(dev);
@@ -841,8 +863,12 @@ static int em28xx_ir_fini(struct em28xx *dev)
 	if (!ir)
 		goto ref_put;
 
+<<<<<<< HEAD
 	if (ir->rc)
 		rc_unregister_device(ir->rc);
+=======
+	rc_unregister_device(ir->rc);
+>>>>>>> v4.9.227
 
 	kfree(ir->i2c_client);
 
@@ -887,7 +913,11 @@ static int em28xx_ir_resume(struct em28xx *dev)
 		schedule_delayed_work(&ir->work, msecs_to_jiffies(ir->polling));
 	if (dev->num_button_polling_addresses)
 		schedule_delayed_work(&dev->buttons_query_work,
+<<<<<<< HEAD
 			       msecs_to_jiffies(dev->button_polling_interval));
+=======
+				      msecs_to_jiffies(dev->button_polling_interval));
+>>>>>>> v4.9.227
 	return 0;
 }
 

@@ -114,12 +114,15 @@ static ssize_t max6875_read(struct file *filp, struct kobject *kobj,
 	struct max6875_data *data = i2c_get_clientdata(client);
 	int slice, max_slice;
 
+<<<<<<< HEAD
 	if (off > USER_EEPROM_SIZE)
 		return 0;
 
 	if (off + count > USER_EEPROM_SIZE)
 		count = USER_EEPROM_SIZE - off;
 
+=======
+>>>>>>> v4.9.227
 	/* refresh slices which contain requested bytes */
 	max_slice = (off + count - 1) >> SLICE_BITS;
 	for (slice = (off >> SLICE_BITS); slice <= max_slice; slice++)
@@ -197,6 +200,10 @@ static const struct i2c_device_id max6875_id[] = {
 	{ "max6875", 0 },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, max6875_id);
+>>>>>>> v4.9.227
 
 static struct i2c_driver max6875_driver = {
 	.driver = {

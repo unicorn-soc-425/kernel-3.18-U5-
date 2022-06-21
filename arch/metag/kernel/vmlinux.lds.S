@@ -21,9 +21,17 @@ SECTIONS
   .text : {
 	TEXT_TEXT
 	SCHED_TEXT
+<<<<<<< HEAD
 	LOCK_TEXT
 	KPROBES_TEXT
 	IRQENTRY_TEXT
+=======
+	CPUIDLE_TEXT
+	LOCK_TEXT
+	KPROBES_TEXT
+	IRQENTRY_TEXT
+	SOFTIRQENTRY_TEXT
+>>>>>>> v4.9.227
 	*(.text.*)
 	*(.gnu.warning)
 	}

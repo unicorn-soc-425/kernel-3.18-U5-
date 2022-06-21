@@ -36,6 +36,7 @@
 
 #include "csio_defs.h"
 
+<<<<<<< HEAD
 /* FCoE device IDs for T4 */
 #define CSIO_DEVID_T440DBG_FCOE			0x4600
 #define CSIO_DEVID_T420CR_FCOE			0x4601
@@ -102,6 +103,30 @@ static inline int csio_is_t4(uint16_t chip)
 {
 	return (chip == CSIO_HW_T4);
 }
+=======
+/* Define MACRO values */
+#define CSIO_HW_T5				0x5000
+#define CSIO_T5_FCOE_ASIC			0x5600
+#define CSIO_HW_CHIP_MASK			0xF000
+
+#define T5_REGMAP_SIZE				(332 * 1024)
+#define FW_FNAME_T5				"cxgb4/t5fw.bin"
+#define FW_CFG_NAME_T5				"cxgb4/t5-config.txt"
+
+#define CHELSIO_CHIP_CODE(version, revision) (((version) << 4) | (revision))
+#define CHELSIO_CHIP_FPGA          0x100
+#define CHELSIO_CHIP_VERSION(code) (((code) >> 12) & 0xf)
+#define CHELSIO_CHIP_RELEASE(code) ((code) & 0xf)
+
+#define CHELSIO_T5		0x5
+
+enum chip_type {
+	T5_A0 = CHELSIO_CHIP_CODE(CHELSIO_T5, 0),
+	T5_A1 = CHELSIO_CHIP_CODE(CHELSIO_T5, 1),
+	T5_FIRST_REV	= T5_A0,
+	T5_LAST_REV	= T5_A1,
+};
+>>>>>>> v4.9.227
 
 static inline int csio_is_t5(uint16_t chip)
 {
@@ -112,6 +137,7 @@ static inline int csio_is_t5(uint16_t chip)
 #define CSIO_DEVICE(devid, idx)						\
 	{ PCI_VENDOR_ID_CHELSIO, (devid), PCI_ANY_ID, PCI_ANY_ID, 0, 0, (idx) }
 
+<<<<<<< HEAD
 #define CSIO_HW_PIDX(hw, index)						\
 	(csio_is_t4(hw->chip_id) ? (PIDX(index)) :			\
 					(PIDX_T5(index) | DBTYPE(1U)))
@@ -136,6 +162,24 @@ static inline int csio_is_t5(uint16_t chip)
 
 #define CSIO_CF_FNAME(hw)						\
 	(csio_is_t4(hw->chip_id) ? FW_CFG_NAME_T4 : FW_CFG_NAME_T5)
+=======
+#include "t4fw_api.h"
+#include "t4fw_version.h"
+
+#define FW_VERSION(chip) ( \
+		FW_HDR_FW_VER_MAJOR_G(chip##FW_VERSION_MAJOR) | \
+		FW_HDR_FW_VER_MINOR_G(chip##FW_VERSION_MINOR) | \
+		FW_HDR_FW_VER_MICRO_G(chip##FW_VERSION_MICRO) | \
+		FW_HDR_FW_VER_BUILD_G(chip##FW_VERSION_BUILD))
+#define FW_INTFVER(chip, intf) (FW_HDR_INTFVER_##intf)
+
+struct fw_info {
+	u8 chip;
+	char *fs_name;
+	char *fw_mod_name;
+	struct fw_hdr fw_hdr;
+};
+>>>>>>> v4.9.227
 
 /* Declare ENUMS */
 enum { MEM_EDC0, MEM_EDC1, MEM_MC, MEM_MC0 = MEM_MC, MEM_MC1 };
@@ -143,7 +187,10 @@ enum { MEM_EDC0, MEM_EDC1, MEM_MC, MEM_MC0 = MEM_MC, MEM_MC1 };
 enum {
 	MEMWIN_APERTURE = 2048,
 	MEMWIN_BASE     = 0x1b800,
+<<<<<<< HEAD
 	MEMWIN_CSIOSTOR = 6,		/* PCI-e Memory Window access */
+=======
+>>>>>>> v4.9.227
 };
 
 /* Slow path handlers */
@@ -169,7 +216,10 @@ struct csio_hw_chip_ops {
 	void (*chip_dfs_create_ext_mem)(struct csio_hw *);
 };
 
+<<<<<<< HEAD
 extern struct csio_hw_chip_ops t4_ops;
+=======
+>>>>>>> v4.9.227
 extern struct csio_hw_chip_ops t5_ops;
 
 #endif /* #ifndef __CSIO_HW_CHIP_H__ */

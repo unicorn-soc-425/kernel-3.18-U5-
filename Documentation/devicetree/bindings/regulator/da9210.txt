@@ -1,10 +1,21 @@
+<<<<<<< HEAD
 * Dialog Semiconductor DA9210 Voltage Regulator
+=======
+* Dialog Semiconductor DA9210 Multi-phase 12A DCDC BUCK Converter
+>>>>>>> v4.9.227
 
 Required properties:
 
 - compatible:	must be "dlg,da9210"
 - reg:		the i2c slave address of the regulator. It should be 0x68.
 
+<<<<<<< HEAD
+=======
+Optional properties:
+
+- interrupts:	a reference to the DA9210 interrupt, if available.
+
+>>>>>>> v4.9.227
 Any standard regulator properties can be used to configure the single da9210
 DCDC.
 
@@ -14,8 +25,19 @@ Example:
 		compatible = "dlg,da9210";
 		reg = <0x68>;
 
+<<<<<<< HEAD
 		regulator-min-microvolt = <900000>;
 		regulator-max-microvolt = <1000000>;
 		regulator-boot-on;
 		regulator-always-on;
+=======
+		interrupt-parent = <...>;
+		interrupts = <...>;
+
+		regulator-min-microvolt = <300000>;
+		regulator-max-microvolt = <1570000>;
+		regulator-min-microamp = <1600000>;
+		regulator-max-microamp = <4600000>;
+		regulator-boot-on;
+>>>>>>> v4.9.227
 	};

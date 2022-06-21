@@ -26,6 +26,7 @@
 
 #include "mv_sas.h"
 
+<<<<<<< HEAD
 static int lldd_max_execute_num = 1;
 module_param_named(collector, lldd_max_execute_num, int, S_IRUGO);
 MODULE_PARM_DESC(collector, "\n"
@@ -38,6 +39,11 @@ int interrupt_coalescing = 0x80;
 
 static struct scsi_transport_template *mvs_stt;
 struct kmem_cache *mvs_task_list_cache;
+=======
+int interrupt_coalescing = 0x80;
+
+static struct scsi_transport_template *mvs_stt;
+>>>>>>> v4.9.227
 static const struct mvs_chip_info mvs_chips[] = {
 	[chip_6320] =	{ 1, 2, 0x400, 17, 16, 6,  9, &mvs_64xx_dispatch, },
 	[chip_6440] =	{ 1, 4, 0x400, 17, 16, 6,  9, &mvs_64xx_dispatch, },
@@ -63,10 +69,15 @@ static struct scsi_host_template mvs_sht = {
 	.scan_finished		= mvs_scan_finished,
 	.scan_start		= mvs_scan_start,
 	.change_queue_depth	= sas_change_queue_depth,
+<<<<<<< HEAD
 	.change_queue_type	= sas_change_queue_type,
 	.bios_param		= sas_bios_param,
 	.can_queue		= 1,
 	.cmd_per_lun		= 1,
+=======
+	.bios_param		= sas_bios_param,
+	.can_queue		= 1,
+>>>>>>> v4.9.227
 	.this_id		= -1,
 	.sg_tablesize		= SG_ALL,
 	.max_sectors		= SCSI_DEFAULT_MAX_SECTORS,
@@ -76,6 +87,10 @@ static struct scsi_host_template mvs_sht = {
 	.target_destroy		= sas_target_destroy,
 	.ioctl			= sas_ioctl,
 	.shost_attrs		= mvst_host_attrs,
+<<<<<<< HEAD
+=======
+	.track_queue_depth	= 1,
+>>>>>>> v4.9.227
 };
 
 static struct sas_domain_function_template mvs_transport_ops = {
@@ -94,6 +109,11 @@ static struct sas_domain_function_template mvs_transport_ops = {
 	.lldd_port_formed	= mvs_port_formed,
 	.lldd_port_deformed     = mvs_port_deformed,
 
+<<<<<<< HEAD
+=======
+	.lldd_write_gpio	= mvs_gpio_write,
+
+>>>>>>> v4.9.227
 };
 
 static void mvs_phy_init(struct mvs_info *mvi, int phy_id)
@@ -333,6 +353,7 @@ int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex)
 			goto err_out;
 
 		res_flag_ex = pci_resource_flags(pdev, bar_ex);
+<<<<<<< HEAD
 		if (res_flag_ex & IORESOURCE_MEM) {
 			if (res_flag_ex & IORESOURCE_CACHEABLE)
 				mvi->regs_ex = ioremap(res_start, res_len);
@@ -340,6 +361,11 @@ int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex)
 				mvi->regs_ex = ioremap_nocache(res_start,
 						res_len);
 		} else
+=======
+		if (res_flag_ex & IORESOURCE_MEM)
+			mvi->regs_ex = ioremap(res_start, res_len);
+		else
+>>>>>>> v4.9.227
 			mvi->regs_ex = (void *)res_start;
 		if (!mvi->regs_ex)
 			goto err_out;
@@ -347,6 +373,7 @@ int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex)
 
 	res_start = pci_resource_start(pdev, bar);
 	res_len = pci_resource_len(pdev, bar);
+<<<<<<< HEAD
 	if (!res_start || !res_len)
 		goto err_out;
 
@@ -355,6 +382,16 @@ int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex)
 		mvi->regs = ioremap(res_start, res_len);
 	else
 		mvi->regs = ioremap_nocache(res_start, res_len);
+=======
+	if (!res_start || !res_len) {
+		iounmap(mvi->regs_ex);
+		mvi->regs_ex = NULL;
+		goto err_out;
+	}
+
+	res_flag = pci_resource_flags(pdev, bar);
+	mvi->regs = ioremap(res_start, res_len);
+>>>>>>> v4.9.227
 
 	if (!mvi->regs) {
 		if (mvi->regs_ex && (res_flag_ex & IORESOURCE_MEM))
@@ -511,14 +548,20 @@ static void  mvs_post_sas_ha_init(struct Scsi_Host *shost,
 
 	sha->num_phys = nr_core * chip_info->n_phy;
 
+<<<<<<< HEAD
 	sha->lldd_max_execute_num = lldd_max_execute_num;
 
+=======
+>>>>>>> v4.9.227
 	if (mvi->flags & MVF_FLAG_SOC)
 		can_queue = MVS_SOC_CAN_QUEUE;
 	else
 		can_queue = MVS_CHIP_SLOT_SZ;
 
+<<<<<<< HEAD
 	sha->lldd_queue_size = can_queue;
+=======
+>>>>>>> v4.9.227
 	shost->sg_tablesize = min_t(u16, SG_ALL, MVS_MAX_SG);
 	shost->can_queue = can_queue;
 	mvi->shost->cmd_per_lun = MVS_QUEUE_SIZE;
@@ -657,9 +700,15 @@ static void mvs_pci_remove(struct pci_dev *pdev)
 	tasklet_kill(&((struct mvs_prv_info *)sha->lldd_ha)->mv_tasklet);
 #endif
 
+<<<<<<< HEAD
 	sas_unregister_ha(sha);
 	sas_remove_host(mvi->shost);
 	scsi_remove_host(mvi->shost);
+=======
+	scsi_remove_host(mvi->shost);
+	sas_unregister_ha(sha);
+	sas_remove_host(mvi->shost);
+>>>>>>> v4.9.227
 
 	MVS_CHIP_DISP->interrupt_disable(mvi);
 	free_irq(mvi->pdev->irq, sha);
@@ -719,6 +768,7 @@ static struct pci_device_id mvs_pci_table[] = {
 		.class_mask	= 0,
 		.driver_data	= chip_9445,
 	},
+<<<<<<< HEAD
 	{
 		.vendor		= PCI_VENDOR_ID_MARVELL_EXT,
 		.device		= 0x9485,
@@ -737,6 +787,9 @@ static struct pci_device_id mvs_pci_table[] = {
 		.class_mask	= 0,
 		.driver_data	= chip_9485,
 	},
+=======
+	{ PCI_VDEVICE(MARVELL_EXT, 0x9485), chip_9485 }, /* Marvell 9480/9485 (any vendor/model) */
+>>>>>>> v4.9.227
 	{ PCI_VDEVICE(OCZ, 0x1021), chip_9485}, /* OCZ RevoDrive3 */
 	{ PCI_VDEVICE(OCZ, 0x1022), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
 	{ PCI_VDEVICE(OCZ, 0x1040), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
@@ -775,7 +828,11 @@ mvs_store_interrupt_coalescing(struct device *cdev,
 			struct device_attribute *attr,
 			const char *buffer, size_t size)
 {
+<<<<<<< HEAD
 	int val = 0;
+=======
+	unsigned int val = 0;
+>>>>>>> v4.9.227
 	struct mvs_info *mvi = NULL;
 	struct Scsi_Host *shost = class_to_shost(cdev);
 	struct sas_ha_struct *sha = SHOST_TO_SAS_HA(shost);
@@ -783,7 +840,11 @@ mvs_store_interrupt_coalescing(struct device *cdev,
 	if (buffer == NULL)
 		return size;
 
+<<<<<<< HEAD
 	if (sscanf(buffer, "%d", &val) != 1)
+=======
+	if (sscanf(buffer, "%u", &val) != 1)
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	if (val >= 0x10000) {
@@ -831,6 +892,7 @@ static int __init mvs_init(void)
 	if (!mvs_stt)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	mvs_task_list_cache = kmem_cache_create("mvs_task_list", sizeof(struct mvs_task_list),
 							 0, SLAB_HWCACHE_ALIGN, NULL);
 	if (!mvs_task_list_cache) {
@@ -841,6 +903,9 @@ static int __init mvs_init(void)
 
 	rc = pci_register_driver(&mvs_pci_driver);
 
+=======
+	rc = pci_register_driver(&mvs_pci_driver);
+>>>>>>> v4.9.227
 	if (rc)
 		goto err_out;
 
@@ -855,7 +920,10 @@ static void __exit mvs_exit(void)
 {
 	pci_unregister_driver(&mvs_pci_driver);
 	sas_release_transport(mvs_stt);
+<<<<<<< HEAD
 	kmem_cache_destroy(mvs_task_list_cache);
+=======
+>>>>>>> v4.9.227
 }
 
 struct device_attribute *mvst_host_attrs[] = {

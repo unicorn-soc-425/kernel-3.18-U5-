@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,8 +91,13 @@ acpi_tb_compare_tables(struct acpi_table_desc *table_desc, u32 table_index)
 	 * not just the header.
 	 */
 	is_identical = (u8)((table_desc->length != table_length ||
+<<<<<<< HEAD
 			     ACPI_MEMCMP(table_desc->pointer, table,
 					 table_length)) ? FALSE : TRUE);
+=======
+			     memcmp(table_desc->pointer, table, table_length)) ?
+			    FALSE : TRUE);
+>>>>>>> v4.9.227
 
 	/* Release the acquired table */
 
@@ -100,9 +109,15 @@ acpi_tb_compare_tables(struct acpi_table_desc *table_desc, u32 table_index)
  *
  * FUNCTION:    acpi_tb_install_table_with_override
  *
+<<<<<<< HEAD
  * PARAMETERS:  table_index             - Index into root table array
  *              new_table_desc          - New table descriptor to install
  *              override                - Whether override should be performed
+=======
+ * PARAMETERS:  new_table_desc          - New table descriptor to install
+ *              override                - Whether override should be performed
+ *              table_index             - Where the table index is returned
+>>>>>>> v4.9.227
  *
  * RETURN:      None
  *
@@ -114,12 +129,23 @@ acpi_tb_compare_tables(struct acpi_table_desc *table_desc, u32 table_index)
  ******************************************************************************/
 
 void
+<<<<<<< HEAD
 acpi_tb_install_table_with_override(u32 table_index,
 				    struct acpi_table_desc *new_table_desc,
 				    u8 override)
 {
 
 	if (table_index >= acpi_gbl_root_table_list.current_table_count) {
+=======
+acpi_tb_install_table_with_override(struct acpi_table_desc *new_table_desc,
+				    u8 override, u32 *table_index)
+{
+	u32 i;
+	acpi_status status;
+
+	status = acpi_tb_get_next_table_descriptor(&i, NULL);
+	if (ACPI_FAILURE(status)) {
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -134,8 +160,12 @@ acpi_tb_install_table_with_override(u32 table_index,
 		acpi_tb_override_table(new_table_desc);
 	}
 
+<<<<<<< HEAD
 	acpi_tb_init_table_descriptor(&acpi_gbl_root_table_list.
 				      tables[table_index],
+=======
+	acpi_tb_init_table_descriptor(&acpi_gbl_root_table_list.tables[i],
+>>>>>>> v4.9.227
 				      new_table_desc->address,
 				      new_table_desc->flags,
 				      new_table_desc->pointer);
@@ -143,15 +173,26 @@ acpi_tb_install_table_with_override(u32 table_index,
 	acpi_tb_print_table_header(new_table_desc->address,
 				   new_table_desc->pointer);
 
+<<<<<<< HEAD
 	/* Set the global integer width (based upon revision of the DSDT) */
 
 	if (table_index == ACPI_TABLE_INDEX_DSDT) {
+=======
+	/* This synchronizes acpi_gbl_dsdt_index */
+
+	*table_index = i;
+
+	/* Set the global integer width (based upon revision of the DSDT) */
+
+	if (i == acpi_gbl_dsdt_index) {
+>>>>>>> v4.9.227
 		acpi_ut_set_integer_width(new_table_desc->pointer->revision);
 	}
 }
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_tb_install_fixed_table
  *
  * PARAMETERS:  address                 - Physical address of DSDT or FACS
@@ -212,6 +253,8 @@ release_and_exit:
 
 /*******************************************************************************
  *
+=======
+>>>>>>> v4.9.227
  * FUNCTION:    acpi_tb_install_standard_table
  *
  * PARAMETERS:  address             - Address of the table (might be a virtual
@@ -223,8 +266,12 @@ release_and_exit:
  *
  * RETURN:      Status
  *
+<<<<<<< HEAD
  * DESCRIPTION: This function is called to install an ACPI table that is
  *              neither DSDT nor FACS (a "standard" table.)
+=======
+ * DESCRIPTION: This function is called to verify and install an ACPI table.
+>>>>>>> v4.9.227
  *              When this function is called by "Load" or "LoadTable" opcodes,
  *              or by acpi_load_table() API, the "Reload" parameter is set.
  *              After sucessfully returning from this function, table is
@@ -260,8 +307,12 @@ acpi_tb_install_standard_table(acpi_physical_address address,
 	if (!reload &&
 	    acpi_gbl_disable_ssdt_table_install &&
 	    ACPI_COMPARE_NAME(&new_table_desc.signature, ACPI_SIG_SSDT)) {
+<<<<<<< HEAD
 		ACPI_INFO((AE_INFO,
 			   "Ignoring installation of %4.4s at %8.8X%8.8X",
+=======
+		ACPI_INFO(("Ignoring installation of %4.4s at %8.8X%8.8X",
+>>>>>>> v4.9.227
 			   new_table_desc.signature.ascii,
 			   ACPI_FORMAT_UINT64(address)));
 		goto release_and_exit;
@@ -289,6 +340,7 @@ acpi_tb_install_standard_table(acpi_physical_address address,
 		if ((new_table_desc.signature.ascii[0] != 0x00) &&
 		    (!ACPI_COMPARE_NAME
 		     (&new_table_desc.signature, ACPI_SIG_SSDT))
+<<<<<<< HEAD
 		    && (ACPI_STRNCMP(new_table_desc.signature.ascii, "OEM", 3)))
 		{
 			ACPI_BIOS_ERROR((AE_INFO,
@@ -297,6 +349,15 @@ acpi_tb_install_standard_table(acpi_physical_address address,
 					 acpi_ut_valid_acpi_name(new_table_desc.
 								 signature.
 								 ascii) ?
+=======
+		    && (strncmp(new_table_desc.signature.ascii, "OEM", 3))) {
+			ACPI_BIOS_ERROR((AE_INFO,
+					 "Table has invalid signature [%4.4s] (0x%8.8X), "
+					 "must be SSDT or OEMx",
+					 acpi_ut_valid_nameseg(new_table_desc.
+							       signature.
+							       ascii) ?
+>>>>>>> v4.9.227
 					 new_table_desc.signature.
 					 ascii : "????",
 					 new_table_desc.signature.integer));
@@ -331,8 +392,13 @@ acpi_tb_install_standard_table(acpi_physical_address address,
 			 * need to be unregistered when they are unloaded, and slots in the
 			 * root table list should be reused when empty.
 			 */
+<<<<<<< HEAD
 			if (acpi_gbl_root_table_list.tables[i].
 			    flags & ACPI_TABLE_IS_LOADED) {
+=======
+			if (acpi_gbl_root_table_list.tables[i].flags &
+			    ACPI_TABLE_IS_LOADED) {
+>>>>>>> v4.9.227
 
 				/* Table is still loaded, this is an error */
 
@@ -356,6 +422,7 @@ acpi_tb_install_standard_table(acpi_physical_address address,
 
 	/* Add the table to the global root table list */
 
+<<<<<<< HEAD
 	status = acpi_tb_get_next_root_index(&i);
 	if (ACPI_FAILURE(status)) {
 		goto release_and_exit;
@@ -363,6 +430,18 @@ acpi_tb_install_standard_table(acpi_physical_address address,
 
 	*table_index = i;
 	acpi_tb_install_table_with_override(i, &new_table_desc, override);
+=======
+	acpi_tb_install_table_with_override(&new_table_desc, override,
+					    table_index);
+
+	/* Invoke table handler if present */
+
+	if (acpi_gbl_table_handler) {
+		(void)acpi_gbl_table_handler(ACPI_TABLE_EVENT_INSTALL,
+					     new_table_desc.pointer,
+					     acpi_gbl_table_handler_context);
+	}
+>>>>>>> v4.9.227
 
 release_and_exit:
 
@@ -431,7 +510,11 @@ finish_override:
 		return;
 	}
 
+<<<<<<< HEAD
 	ACPI_INFO((AE_INFO, "%4.4s 0x%8.8X%8.8X"
+=======
+	ACPI_INFO(("%4.4s 0x%8.8X%8.8X"
+>>>>>>> v4.9.227
 		   " %s table override, new table: 0x%8.8X%8.8X",
 		   old_table_desc->signature.ascii,
 		   ACPI_FORMAT_UINT64(old_table_desc->address),
@@ -457,6 +540,7 @@ finish_override:
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_tb_store_table
  *
  * PARAMETERS:  address             - Table address
@@ -494,6 +578,8 @@ acpi_tb_store_table(acpi_physical_address address,
 
 /*******************************************************************************
  *
+=======
+>>>>>>> v4.9.227
  * FUNCTION:    acpi_tb_uninstall_table
  *
  * PARAMETERS:  table_desc          - Table descriptor

@@ -36,6 +36,7 @@
 void pvr2_cs53l32a_subdev_update(struct pvr2_hdw *, struct v4l2_subdev *);
 
 #endif /* __PVRUSB2_AUDIO_CS53L32A_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -46,3 +47,5 @@ void pvr2_cs53l32a_subdev_update(struct pvr2_hdw *, struct v4l2_subdev *);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

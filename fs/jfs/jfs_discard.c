@@ -49,14 +49,22 @@ void jfs_issue_discard(struct inode *ip, u64 blkno, u64 nblocks)
 
 	r = sb_issue_discard(sb, blkno, nblocks, GFP_NOFS, 0);
 	if (unlikely(r != 0)) {
+<<<<<<< HEAD
 		jfs_err("JFS: sb_issue_discard" \
 			"(%p, %llu, %llu, GFP_NOFS, 0) = %d => failed!\n",
+=======
+		jfs_err("JFS: sb_issue_discard(%p, %llu, %llu, GFP_NOFS, 0) = %d => failed!",
+>>>>>>> v4.9.227
 			sb, (unsigned long long)blkno,
 			(unsigned long long)nblocks, r);
 	}
 
+<<<<<<< HEAD
 	jfs_info("JFS: sb_issue_discard" \
 		"(%p, %llu, %llu, GFP_NOFS, 0) = %d\n",
+=======
+	jfs_info("JFS: sb_issue_discard(%p, %llu, %llu, GFP_NOFS, 0) = %d",
+>>>>>>> v4.9.227
 		sb, (unsigned long long)blkno,
 		(unsigned long long)nblocks, r);
 

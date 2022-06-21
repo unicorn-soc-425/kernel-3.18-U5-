@@ -145,12 +145,35 @@ void bt_info(const char *format, ...)
 	vaf.fmt = format;
 	vaf.va = &args;
 
+<<<<<<< HEAD
 	pr_info("%pKV", &vaf);
+=======
+	pr_info("%pV", &vaf);
+>>>>>>> v4.9.227
 
 	va_end(args);
 }
 EXPORT_SYMBOL(bt_info);
 
+<<<<<<< HEAD
+=======
+void bt_warn(const char *format, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, format);
+
+	vaf.fmt = format;
+	vaf.va = &args;
+
+	pr_warn("%pV", &vaf);
+
+	va_end(args);
+}
+EXPORT_SYMBOL(bt_warn);
+
+>>>>>>> v4.9.227
 void bt_err(const char *format, ...)
 {
 	struct va_format vaf;
@@ -161,8 +184,31 @@ void bt_err(const char *format, ...)
 	vaf.fmt = format;
 	vaf.va = &args;
 
+<<<<<<< HEAD
 	pr_err("%pKV", &vaf);
+=======
+	pr_err("%pV", &vaf);
+>>>>>>> v4.9.227
 
 	va_end(args);
 }
 EXPORT_SYMBOL(bt_err);
+<<<<<<< HEAD
+=======
+
+void bt_err_ratelimited(const char *format, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, format);
+
+	vaf.fmt = format;
+	vaf.va = &args;
+
+	pr_err_ratelimited("%pV", &vaf);
+
+	va_end(args);
+}
+EXPORT_SYMBOL(bt_err_ratelimited);
+>>>>>>> v4.9.227

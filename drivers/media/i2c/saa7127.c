@@ -54,7 +54,11 @@
 #include <linux/i2c.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/saa7127.h>
+=======
+#include <media/i2c/saa7127.h>
+>>>>>>> v4.9.227
 
 static int debug;
 static int test_image;
@@ -822,7 +826,10 @@ MODULE_DEVICE_TABLE(i2c, saa7127_id);
 
 static struct i2c_driver saa7127_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "saa7127",
 	},
 	.probe		= saa7127_probe,

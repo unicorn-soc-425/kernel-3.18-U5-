@@ -4,13 +4,21 @@
  * Copyright (C) ST Microelectronics SA 2011
  *
  * License Terms: GNU General Public License, version 2
+<<<<<<< HEAD
  * Author: Viresh Kumar <viresh.linux@gmail.com> for ST Microelectronics
+=======
+ * Author: Viresh Kumar <vireshk@kernel.org> for ST Microelectronics
+>>>>>>> v4.9.227
  */
 
 #include <linux/spi/spi.h>
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include "stmpe.h"
 
@@ -108,6 +116,20 @@ static int stmpe_spi_remove(struct spi_device *spi)
 	return stmpe_remove(stmpe);
 }
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id stmpe_spi_of_match[] = {
+	{ .compatible = "st,stmpe610", },
+	{ .compatible = "st,stmpe801", },
+	{ .compatible = "st,stmpe811", },
+	{ .compatible = "st,stmpe1601", },
+	{ .compatible = "st,stmpe2401", },
+	{ .compatible = "st,stmpe2403", },
+	{ /* sentinel */ },
+};
+MODULE_DEVICE_TABLE(of, stmpe_spi_of_match);
+
+>>>>>>> v4.9.227
 static const struct spi_device_id stmpe_spi_id[] = {
 	{ "stmpe610", STMPE610 },
 	{ "stmpe801", STMPE801 },
@@ -122,7 +144,11 @@ MODULE_DEVICE_TABLE(spi, stmpe_id);
 static struct spi_driver stmpe_spi_driver = {
 	.driver = {
 		.name	= "stmpe-spi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(stmpe_spi_of_match),
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 		.pm	= &stmpe_dev_pm_ops,
 #endif
@@ -146,4 +172,8 @@ module_exit(stmpe_exit);
 
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("STMPE MFD SPI Interface Driver");
+<<<<<<< HEAD
 MODULE_AUTHOR("Viresh Kumar <viresh.linux@gmail.com>");
+=======
+MODULE_AUTHOR("Viresh Kumar <vireshk@kernel.org>");
+>>>>>>> v4.9.227

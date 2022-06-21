@@ -94,6 +94,7 @@ static void vivid_g_fmt_vbi_cap(struct vivid_dev *dev, struct v4l2_vbi_format *v
 void vivid_raw_vbi_cap_process(struct vivid_dev *dev, struct vivid_buffer *buf)
 {
 	struct v4l2_vbi_format vbi;
+<<<<<<< HEAD
 	u8 *vbuf = vb2_plane_vaddr(&buf->vb, 0);
 
 	vivid_g_fmt_vbi_cap(dev, &vbi);
@@ -104,10 +105,23 @@ void vivid_raw_vbi_cap_process(struct vivid_dev *dev, struct vivid_buffer *buf)
 	vivid_sliced_vbi_cap_fill(dev, buf->vb.v4l2_buf.sequence);
 
 	memset(vbuf, 0x10, vb2_plane_size(&buf->vb, 0));
+=======
+	u8 *vbuf = vb2_plane_vaddr(&buf->vb.vb2_buf, 0);
+
+	vivid_g_fmt_vbi_cap(dev, &vbi);
+	buf->vb.sequence = dev->vbi_cap_seq_count;
+	if (dev->field_cap == V4L2_FIELD_ALTERNATE)
+		buf->vb.sequence /= 2;
+
+	vivid_sliced_vbi_cap_fill(dev, buf->vb.sequence);
+
+	memset(vbuf, 0x10, vb2_plane_size(&buf->vb.vb2_buf, 0));
+>>>>>>> v4.9.227
 
 	if (!VIVID_INVALID_SIGNAL(dev->std_signal_mode))
 		vivid_vbi_gen_raw(&dev->vbi_gen, &vbi, vbuf);
 
+<<<<<<< HEAD
 	v4l2_get_timestamp(&buf->vb.v4l2_buf.timestamp);
 	buf->vb.v4l2_buf.timestamp.tv_sec += dev->time_wrap_offset;
 }
@@ -124,6 +138,25 @@ void vivid_sliced_vbi_cap_process(struct vivid_dev *dev, struct vivid_buffer *bu
 	vivid_sliced_vbi_cap_fill(dev, buf->vb.v4l2_buf.sequence);
 
 	memset(vbuf, 0, vb2_plane_size(&buf->vb, 0));
+=======
+	buf->vb.vb2_buf.timestamp = ktime_get_ns() + dev->time_wrap_offset;
+}
+
+
+void vivid_sliced_vbi_cap_process(struct vivid_dev *dev,
+			struct vivid_buffer *buf)
+{
+	struct v4l2_sliced_vbi_data *vbuf =
+			vb2_plane_vaddr(&buf->vb.vb2_buf, 0);
+
+	buf->vb.sequence = dev->vbi_cap_seq_count;
+	if (dev->field_cap == V4L2_FIELD_ALTERNATE)
+		buf->vb.sequence /= 2;
+
+	vivid_sliced_vbi_cap_fill(dev, buf->vb.sequence);
+
+	memset(vbuf, 0, vb2_plane_size(&buf->vb.vb2_buf, 0));
+>>>>>>> v4.9.227
 	if (!VIVID_INVALID_SIGNAL(dev->std_signal_mode)) {
 		unsigned i;
 
@@ -131,6 +164,7 @@ void vivid_sliced_vbi_cap_process(struct vivid_dev *dev, struct vivid_buffer *bu
 			vbuf[i] = dev->vbi_gen.data[i];
 	}
 
+<<<<<<< HEAD
 	v4l2_get_timestamp(&buf->vb.v4l2_buf.timestamp);
 	buf->vb.v4l2_buf.timestamp.tv_sec += dev->time_wrap_offset;
 }
@@ -138,6 +172,14 @@ void vivid_sliced_vbi_cap_process(struct vivid_dev *dev, struct vivid_buffer *bu
 static int vbi_cap_queue_setup(struct vb2_queue *vq, const struct v4l2_format *fmt,
 		       unsigned *nbuffers, unsigned *nplanes,
 		       unsigned sizes[], void *alloc_ctxs[])
+=======
+	buf->vb.vb2_buf.timestamp = ktime_get_ns() + dev->time_wrap_offset;
+}
+
+static int vbi_cap_queue_setup(struct vb2_queue *vq,
+		       unsigned *nbuffers, unsigned *nplanes,
+		       unsigned sizes[], struct device *alloc_devs[])
+>>>>>>> v4.9.227
 {
 	struct vivid_dev *dev = vb2_get_drv_priv(vq);
 	bool is_60hz = dev->std_cap & V4L2_STD_525_60;
@@ -187,8 +229,14 @@ static int vbi_cap_buf_prepare(struct vb2_buffer *vb)
 
 static void vbi_cap_buf_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct vivid_dev *dev = vb2_get_drv_priv(vb->vb2_queue);
 	struct vivid_buffer *buf = container_of(vb, struct vivid_buffer, vb);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct vivid_dev *dev = vb2_get_drv_priv(vb->vb2_queue);
+	struct vivid_buffer *buf = container_of(vbuf, struct vivid_buffer, vb);
+>>>>>>> v4.9.227
 
 	dprintk(dev, 1, "%s\n", __func__);
 
@@ -215,7 +263,12 @@ static int vbi_cap_start_streaming(struct vb2_queue *vq, unsigned count)
 
 		list_for_each_entry_safe(buf, tmp, &dev->vbi_cap_active, list) {
 			list_del(&buf->list);
+<<<<<<< HEAD
 			vb2_buffer_done(&buf->vb, VB2_BUF_STATE_QUEUED);
+=======
+			vb2_buffer_done(&buf->vb.vb2_buf,
+					VB2_BUF_STATE_QUEUED);
+>>>>>>> v4.9.227
 		}
 	}
 	return err;
@@ -236,8 +289,13 @@ const struct vb2_ops vivid_vbi_cap_qops = {
 	.buf_queue		= vbi_cap_buf_queue,
 	.start_streaming	= vbi_cap_start_streaming,
 	.stop_streaming		= vbi_cap_stop_streaming,
+<<<<<<< HEAD
 	.wait_prepare		= vivid_unlock,
 	.wait_finish		= vivid_lock,
+=======
+	.wait_prepare		= vb2_ops_wait_prepare,
+	.wait_finish		= vb2_ops_wait_finish,
+>>>>>>> v4.9.227
 };
 
 int vidioc_g_fmt_vbi_cap(struct file *file, void *priv,

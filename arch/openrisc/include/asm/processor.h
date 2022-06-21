@@ -85,6 +85,7 @@ void release_thread(struct task_struct *);
 unsigned long get_wchan(struct task_struct *p);
 
 /*
+<<<<<<< HEAD
  * Free current thread data structures etc..
  */
 
@@ -94,6 +95,8 @@ extern inline void exit_thread(void)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Return saved PC of a blocked thread. For now, this is the "user" PC
  */
 extern unsigned long thread_saved_pc(struct task_struct *t);

@@ -199,7 +199,10 @@ static int tile_edac_mc_remove(struct platform_device *pdev)
 static struct platform_driver tile_edac_mc_driver = {
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= tile_edac_mc_probe,
 	.remove		= tile_edac_mc_remove,

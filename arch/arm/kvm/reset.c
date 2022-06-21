@@ -52,7 +52,11 @@ static const struct kvm_irq_level cortexa_vtimer_irq = {
  * @vcpu: The VCPU pointer
  *
  * This function finds the right table above and sets the registers on the
+<<<<<<< HEAD
  * virtual CPU struct to their architectually defined reset values.
+=======
+ * virtual CPU struct to their architecturally defined reset values.
+>>>>>>> v4.9.227
  */
 int kvm_reset_vcpu(struct kvm_vcpu *vcpu)
 {
@@ -71,13 +75,21 @@ int kvm_reset_vcpu(struct kvm_vcpu *vcpu)
 	}
 
 	/* Reset core registers */
+<<<<<<< HEAD
 	memcpy(&vcpu->arch.regs, reset_regs, sizeof(vcpu->arch.regs));
+=======
+	memcpy(&vcpu->arch.ctxt.gp_regs, reset_regs, sizeof(vcpu->arch.ctxt.gp_regs));
+>>>>>>> v4.9.227
 
 	/* Reset CP15 registers */
 	kvm_reset_coprocs(vcpu);
 
 	/* Reset arch_timer context */
+<<<<<<< HEAD
 	kvm_timer_vcpu_reset(vcpu, cpu_vtimer_irq);
 
 	return 0;
+=======
+	return kvm_timer_vcpu_reset(vcpu, cpu_vtimer_irq);
+>>>>>>> v4.9.227
 }

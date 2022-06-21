@@ -21,7 +21,11 @@
  *  Copyright (C) 2008-2009 Red Hat, Inc., Ingo Molnar
  *  Copyright (C) 2009 Jaswinder Singh Rajput
  *  Copyright (C) 2009 Advanced Micro Devices, Inc., Robert Richter
+<<<<<<< HEAD
  *  Copyright (C) 2008-2009 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ *  Copyright (C) 2008-2009 Red Hat, Inc., Peter Zijlstra
+>>>>>>> v4.9.227
  *  Copyright (C) 2009 Intel Corporation, <markus.t.metzger@intel.com>
  *  Copyright (C) 2009 Google, Inc., Stephane Eranian
  */
@@ -941,7 +945,11 @@ arch_initcall(init_hw_perf_events);
 /*
  * Tile specific backtracing code for perf_events.
  */
+<<<<<<< HEAD
 static inline void perf_callchain(struct perf_callchain_entry *entry,
+=======
+static inline void perf_callchain(struct perf_callchain_entry_ctx *entry,
+>>>>>>> v4.9.227
 		    struct pt_regs *regs)
 {
 	struct KBacktraceIterator kbt;
@@ -992,13 +1000,21 @@ static inline void perf_callchain(struct perf_callchain_entry *entry,
 	}
 }
 
+<<<<<<< HEAD
 void perf_callchain_user(struct perf_callchain_entry *entry,
+=======
+void perf_callchain_user(struct perf_callchain_entry_ctx *entry,
+>>>>>>> v4.9.227
 		    struct pt_regs *regs)
 {
 	perf_callchain(entry, regs);
 }
 
+<<<<<<< HEAD
 void perf_callchain_kernel(struct perf_callchain_entry *entry,
+=======
+void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
+>>>>>>> v4.9.227
 		      struct pt_regs *regs)
 {
 	perf_callchain(entry, regs);

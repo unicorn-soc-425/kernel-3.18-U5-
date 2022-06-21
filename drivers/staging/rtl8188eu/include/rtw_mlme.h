@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __RTW_MLME_H_
 #define __RTW_MLME_H_
@@ -65,7 +68,11 @@
 #define _FW_UNDER_SURVEY	WIFI_SITE_MONITOR
 
 enum dot11AuthAlgrthmNum {
+<<<<<<< HEAD
 	dot11AuthAlgrthm_Open = 0,
+=======
+	dot11AuthAlgrthm_Open = 0, /* open system */
+>>>>>>> v4.9.227
 	dot11AuthAlgrthm_Shared,
 	dot11AuthAlgrthm_8021X,
 	dot11AuthAlgrthm_Auto,
@@ -306,12 +313,18 @@ struct mlme_priv {
 
 	u8 *nic_hdl;
 
+<<<<<<< HEAD
 	u8 not_indic_disco;
+=======
+>>>>>>> v4.9.227
 	struct list_head *pscanned;
 	struct __queue free_bss_pool;
 	struct __queue scanned_queue;
 	u8 *free_bss_buf;
+<<<<<<< HEAD
 	u32	num_of_scanned;
+=======
+>>>>>>> v4.9.227
 
 	struct ndis_802_11_ssid	assoc_ssid;
 	u8	assoc_bssid[6];
@@ -323,10 +336,15 @@ struct mlme_priv {
 	struct timer_list assoc_timer;
 
 	uint assoc_by_bssid;
+<<<<<<< HEAD
 	uint assoc_by_rssi;
 
 	struct timer_list scan_to_timer; /*  driver itself handles scan_timeout status. */
 	u32 scan_start_time; /*  used to evaluate the time spent in scanning */
+=======
+
+	struct timer_list scan_to_timer; /*  driver itself handles scan_timeout status. */
+>>>>>>> v4.9.227
 
 	struct qos_priv qospriv;
 
@@ -392,6 +410,7 @@ struct mlme_priv {
 	u32 wps_probe_resp_ie_len;
 	u32 wps_assoc_resp_ie_len;
 
+<<<<<<< HEAD
 	u8 *p2p_beacon_ie;
 	u8 *p2p_probe_req_ie;
 	u8 *p2p_probe_resp_ie;
@@ -403,6 +422,8 @@ struct mlme_priv {
 	u32 p2p_probe_resp_ie_len;
 	u32 p2p_go_probe_resp_ie_len; /* for GO */
 	u32 p2p_assoc_req_ie_len;
+=======
+>>>>>>> v4.9.227
 	spinlock_t bcn_update_lock;
 	u8		update_bcn;
 #endif /* if defined (CONFIG_88EU_AP_MODE) */
@@ -505,6 +526,7 @@ static inline void clr_fwstate_ex(struct mlme_priv *pmlmepriv, int state)
 	spin_unlock_bh(&pmlmepriv->lock);
 }
 
+<<<<<<< HEAD
 static inline void up_scanned_network(struct mlme_priv *pmlmepriv)
 {
 	spin_lock_bh(&pmlmepriv->lock);
@@ -526,6 +548,8 @@ static inline void set_scanned_network_val(struct mlme_priv *pmlmepriv, int val)
 	spin_unlock_bh(&pmlmepriv->lock);
 }
 
+=======
+>>>>>>> v4.9.227
 u16 rtw_get_capability(struct wlan_bssid_ex *bss);
 void rtw_update_scanned_network(struct adapter *adapter,
 				struct wlan_bssid_ex *target);
@@ -535,7 +559,12 @@ void rtw_generate_random_ibss(u8 *pibss);
 struct wlan_network *rtw_find_network(struct __queue *scanned_queue, u8 *addr);
 struct wlan_network *rtw_get_oldest_wlan_network(struct __queue *scanned_queue);
 
+<<<<<<< HEAD
 void rtw_free_assoc_resources(struct adapter *adapter, int lock_scanned_queue);
+=======
+void rtw_free_assoc_resources(struct adapter *adapter);
+void rtw_free_assoc_resources_locked(struct adapter *adapter);
+>>>>>>> v4.9.227
 void rtw_indicate_disconnect(struct adapter *adapter);
 void rtw_indicate_connect(struct adapter *adapter);
 void rtw_indicate_scan_done(struct adapter *padapter, bool aborted);
@@ -551,10 +580,17 @@ void rtw_update_registrypriv_dev_network(struct adapter *adapter);
 
 void rtw_get_encrypt_decrypt_from_registrypriv(struct adapter *adapter);
 
+<<<<<<< HEAD
 void _rtw_join_timeout_handler(void *function_context);
 void rtw_scan_timeout_handler(void *function_context);
 
 void rtw_dynamic_check_timer_handlder(void *function_context);
+=======
+void _rtw_join_timeout_handler(unsigned long data);
+void rtw_scan_timeout_handler(unsigned long data);
+
+void rtw_dynamic_check_timer_handlder(unsigned long data);
+>>>>>>> v4.9.227
 #define rtw_is_scan_deny(adapter) false
 #define rtw_clear_scan_deny(adapter) do {} while (0)
 #define rtw_set_scan_deny_timer_hdl(adapter) do {} while (0)

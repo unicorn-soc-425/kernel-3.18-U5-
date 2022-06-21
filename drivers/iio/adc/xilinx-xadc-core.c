@@ -273,6 +273,7 @@ static void xadc_zynq_unmask_worker(struct work_struct *work)
 		schedule_delayed_work(&xadc->zynq_unmask_work,
 				msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
 	}
+<<<<<<< HEAD
 }
 
 static irqreturn_t xadc_zynq_threaded_interrupt_handler(int irq, void *devid)
@@ -293,13 +294,19 @@ static irqreturn_t xadc_zynq_threaded_interrupt_handler(int irq, void *devid)
 			msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
 
 	return IRQ_HANDLED;
+=======
+
+>>>>>>> v4.9.227
 }
 
 static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
 {
 	struct iio_dev *indio_dev = devid;
 	struct xadc *xadc = iio_priv(indio_dev);
+<<<<<<< HEAD
 	irqreturn_t ret = IRQ_HANDLED;
+=======
+>>>>>>> v4.9.227
 	uint32_t status;
 
 	xadc_read_reg(xadc, XADC_ZYNQ_REG_INTSTS, &status);
@@ -321,18 +328,35 @@ static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
 
 	status &= XADC_ZYNQ_INT_ALARM_MASK;
 	if (status) {
+<<<<<<< HEAD
 		xadc->zynq_alarm |= status;
+=======
+>>>>>>> v4.9.227
 		xadc->zynq_masked_alarm |= status;
 		/*
 		 * mask the current event interrupt,
 		 * unmask it when the interrupt is no more active.
 		 */
 		xadc_zynq_update_intmsk(xadc, 0, 0);
+<<<<<<< HEAD
 		ret = IRQ_WAKE_THREAD;
 	}
 	spin_unlock(&xadc->lock);
 
 	return ret;
+=======
+
+		xadc_handle_events(indio_dev,
+				xadc_zynq_transform_alarm(status));
+
+		/* unmask the required interrupts in timer. */
+		schedule_delayed_work(&xadc->zynq_unmask_work,
+				msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
+	}
+	spin_unlock(&xadc->lock);
+
+	return IRQ_HANDLED;
+>>>>>>> v4.9.227
 }
 
 #define XADC_ZYNQ_TCK_RATE_MAX 50000000
@@ -437,7 +461,10 @@ static const struct xadc_ops xadc_zynq_ops = {
 	.setup = xadc_zynq_setup,
 	.get_dclk_rate = xadc_zynq_get_dclk_rate,
 	.interrupt_handler = xadc_zynq_interrupt_handler,
+<<<<<<< HEAD
 	.threaded_interrupt_handler = xadc_zynq_threaded_interrupt_handler,
+=======
+>>>>>>> v4.9.227
 	.update_alarm = xadc_zynq_update_alarm,
 };
 
@@ -676,7 +703,11 @@ static int xadc_trigger_set_state(struct iio_trigger *trigger, bool state)
 
 	spin_lock_irqsave(&xadc->lock, flags);
 	xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &val);
+<<<<<<< HEAD
 	xadc_write_reg(xadc, XADC_AXI_REG_IPISR, val & XADC_AXI_INT_EOS);
+=======
+	xadc_write_reg(xadc, XADC_AXI_REG_IPISR, XADC_AXI_INT_EOS);
+>>>>>>> v4.9.227
 	if (state)
 		val |= XADC_AXI_INT_EOS;
 	else
@@ -725,6 +756,7 @@ static int xadc_power_adc_b(struct xadc *xadc, unsigned int seq_mode)
 {
 	uint16_t val;
 
+<<<<<<< HEAD
 	switch (seq_mode) {
 	case XADC_CONF1_SEQ_SIMULTANEOUS:
 	case XADC_CONF1_SEQ_INDEPENDENT:
@@ -732,6 +764,16 @@ static int xadc_power_adc_b(struct xadc *xadc, unsigned int seq_mode)
 		break;
 	default:
 		val = 0;
+=======
+	/* Powerdown the ADC-B when it is not needed. */
+	switch (seq_mode) {
+	case XADC_CONF1_SEQ_SIMULTANEOUS:
+	case XADC_CONF1_SEQ_INDEPENDENT:
+		val = 0;
+		break;
+	default:
+		val = XADC_CONF2_PD_ADC_B;
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -800,6 +842,19 @@ static int xadc_preenable(struct iio_dev *indio_dev)
 	if (ret)
 		goto err;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * In simultaneous mode the upper and lower aux channels are samples at
+	 * the same time. In this mode the upper 8 bits in the sequencer
+	 * register are don't care and the lower 8 bits control two channels
+	 * each. As such we must set the bit if either the channel in the lower
+	 * group or the upper group is enabled.
+	 */
+	if (seq_mode == XADC_CONF1_SEQ_SIMULTANEOUS)
+		scan_mask = ((scan_mask >> 8) | scan_mask) & 0xff0000;
+
+>>>>>>> v4.9.227
 	ret = xadc_write_adc_reg(xadc, XADC_REG_SEQ(1), scan_mask >> 16);
 	if (ret)
 		goto err;
@@ -819,7 +874,11 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct iio_buffer_setup_ops xadc_buffer_ops = {
+=======
+static const struct iio_buffer_setup_ops xadc_buffer_ops = {
+>>>>>>> v4.9.227
 	.preenable = &xadc_preenable,
 	.postenable = &iio_triggered_buffer_postenable,
 	.predisable = &iio_triggered_buffer_predisable,
@@ -857,6 +916,10 @@ static int xadc_read_raw(struct iio_dev *indio_dev,
 			case XADC_REG_VCCINT:
 			case XADC_REG_VCCAUX:
 			case XADC_REG_VREFP:
+<<<<<<< HEAD
+=======
+			case XADC_REG_VREFN:
+>>>>>>> v4.9.227
 			case XADC_REG_VCCBRAM:
 			case XADC_REG_VCCPINT:
 			case XADC_REG_VCCPAUX:
@@ -1225,9 +1288,14 @@ static int xadc_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_clk_disable_unprepare;
 
+<<<<<<< HEAD
 	ret = request_threaded_irq(irq, xadc->ops->interrupt_handler,
 				xadc->ops->threaded_interrupt_handler,
 				0, dev_name(&pdev->dev), indio_dev);
+=======
+	ret = request_irq(irq, xadc->ops->interrupt_handler, 0,
+			dev_name(&pdev->dev), indio_dev);
+>>>>>>> v4.9.227
 	if (ret)
 		goto err_clk_disable_unprepare;
 
@@ -1315,7 +1383,11 @@ static int xadc_remove(struct platform_device *pdev)
 	}
 	free_irq(irq, indio_dev);
 	clk_disable_unprepare(xadc->clk);
+<<<<<<< HEAD
 	cancel_delayed_work(&xadc->zynq_unmask_work);
+=======
+	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
+>>>>>>> v4.9.227
 	kfree(xadc->data);
 	kfree(indio_dev->channels);
 

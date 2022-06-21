@@ -20,6 +20,13 @@ kvmap_itlb:
 	mov		TLB_TAG_ACCESS, %g4
 	ldxa		[%g4] ASI_IMMU, %g4
 
+<<<<<<< HEAD
+=======
+	/* The kernel executes in context zero, therefore we do not
+	 * need to clear the context ID bits out of %g4 here.
+	 */
+
+>>>>>>> v4.9.227
 	/* sun4v_itlb_miss branches here with the missing virtual
 	 * address already loaded into %g4
 	 */
@@ -128,6 +135,13 @@ kvmap_dtlb:
 	mov		TLB_TAG_ACCESS, %g4
 	ldxa		[%g4] ASI_DMMU, %g4
 
+<<<<<<< HEAD
+=======
+	/* The kernel executes in context zero, therefore we do not
+	 * need to clear the context ID bits out of %g4 here.
+	 */
+
+>>>>>>> v4.9.227
 	/* sun4v_dtlb_miss branches here with the missing virtual
 	 * address already loaded into %g4
 	 */
@@ -251,6 +265,13 @@ kvmap_dtlb_longpath:
 	nop
 	.previous
 
+<<<<<<< HEAD
+=======
+	/* The kernel executes in context zero, therefore we do not
+	 * need to clear the context ID bits out of %g5 here.
+	 */
+
+>>>>>>> v4.9.227
 	be,pt	%xcc, sparc64_realfault_common
 	 mov	FAULT_CODE_DTLB, %g4
 	ba,pt	%xcc, winfix_trampoline

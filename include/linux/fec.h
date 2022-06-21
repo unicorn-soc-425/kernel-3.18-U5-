@@ -19,6 +19,10 @@
 struct fec_platform_data {
 	phy_interface_t phy;
 	unsigned char mac[ETH_ALEN];
+<<<<<<< HEAD
+=======
+	void (*sleep_mode_enable)(int enabled);
+>>>>>>> v4.9.227
 };
 
 #endif

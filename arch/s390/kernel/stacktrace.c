@@ -10,6 +10,7 @@
 #include <linux/kallsyms.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 static unsigned long save_context_stack(struct stack_trace *trace,
 					unsigned long sp,
 					unsigned long low,
@@ -58,10 +59,38 @@ static unsigned long save_context_stack(struct stack_trace *trace,
 		low = sp;
 		sp = regs->gprs[15];
 	}
+=======
+static int __save_address(void *data, unsigned long address, int nosched)
+{
+	struct stack_trace *trace = data;
+
+	if (nosched && in_sched_functions(address))
+		return 0;
+	if (trace->skip > 0) {
+		trace->skip--;
+		return 0;
+	}
+	if (trace->nr_entries < trace->max_entries) {
+		trace->entries[trace->nr_entries++] = address;
+		return 0;
+	}
+	return 1;
+}
+
+static int save_address(void *data, unsigned long address, int reliable)
+{
+	return __save_address(data, address, 0);
+}
+
+static int save_address_nosched(void *data, unsigned long address, int reliable)
+{
+	return __save_address(data, address, 1);
+>>>>>>> v4.9.227
 }
 
 void save_stack_trace(struct stack_trace *trace)
 {
+<<<<<<< HEAD
 	register unsigned long sp asm ("15");
 	unsigned long orig_sp, new_sp;
 
@@ -79,18 +108,49 @@ void save_stack_trace(struct stack_trace *trace)
 	save_context_stack(trace, new_sp,
 			   S390_lowcore.thread_info,
 			   S390_lowcore.thread_info + THREAD_SIZE, 1);
+=======
+	unsigned long sp;
+
+	sp = current_stack_pointer();
+	dump_trace(save_address, trace, NULL, sp);
+	if (trace->nr_entries < trace->max_entries)
+		trace->entries[trace->nr_entries++] = ULONG_MAX;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(save_stack_trace);
 
 void save_stack_trace_tsk(struct task_struct *tsk, struct stack_trace *trace)
 {
+<<<<<<< HEAD
 	unsigned long sp, low, high;
 
 	sp = tsk->thread.ksp & PSW_ADDR_INSN;
 	low = (unsigned long) task_stack_page(tsk);
 	high = (unsigned long) task_pt_regs(tsk);
 	save_context_stack(trace, sp, low, high, 0);
+=======
+	unsigned long sp;
+
+	sp = tsk->thread.ksp;
+	if (tsk == current)
+		sp = current_stack_pointer();
+	dump_trace(save_address_nosched, trace, tsk, sp);
+>>>>>>> v4.9.227
 	if (trace->nr_entries < trace->max_entries)
 		trace->entries[trace->nr_entries++] = ULONG_MAX;
 }
 EXPORT_SYMBOL_GPL(save_stack_trace_tsk);
+<<<<<<< HEAD
+=======
+
+void save_stack_trace_regs(struct pt_regs *regs, struct stack_trace *trace)
+{
+	unsigned long sp;
+
+	sp = kernel_stack_pointer(regs);
+	dump_trace(save_address, trace, NULL, sp);
+	if (trace->nr_entries < trace->max_entries)
+		trace->entries[trace->nr_entries++] = ULONG_MAX;
+}
+EXPORT_SYMBOL_GPL(save_stack_trace_regs);
+>>>>>>> v4.9.227

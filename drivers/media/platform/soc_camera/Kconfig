@@ -17,6 +17,7 @@ config SOC_CAMERA_PLATFORM
 	help
 	  This is a generic SoC camera platform driver, useful for testing
 
+<<<<<<< HEAD
 config VIDEO_MX3
 	tristate "i.MX3x Camera Sensor Interface driver"
 	depends on VIDEO_DEV && MX3_IPU && SOC_CAMERA
@@ -36,11 +37,17 @@ config VIDEO_PXA27x
 config VIDEO_RCAR_VIN
 	tristate "R-Car Video Input (VIN) support"
 	depends on VIDEO_DEV && SOC_CAMERA
+=======
+config VIDEO_SH_MOBILE_CEU
+	tristate "SuperH Mobile CEU Interface driver"
+	depends on VIDEO_DEV && SOC_CAMERA && HAS_DMA && HAVE_CLK
+>>>>>>> v4.9.227
 	depends on ARCH_SHMOBILE || COMPILE_TEST
 	depends on HAS_DMA
 	select VIDEOBUF2_DMA_CONTIG
 	select SOC_CAMERA_SCALE_CROP
 	---help---
+<<<<<<< HEAD
 	  This is a v4l2 driver for the R-Car VIN Interface
 
 config VIDEO_SH_MOBILE_CSI2
@@ -79,6 +86,10 @@ config VIDEO_MX2
 	---help---
 	  This is a v4l2 driver for the i.MX27 Camera Sensor Interface
 
+=======
+	  This is a v4l2 driver for the SuperH Mobile CEU Interface
+
+>>>>>>> v4.9.227
 config VIDEO_ATMEL_ISI
 	tristate "ATMEL Image Sensor Interface (ISI) support"
 	depends on VIDEO_DEV && SOC_CAMERA

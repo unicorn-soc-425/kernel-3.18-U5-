@@ -64,6 +64,7 @@ static DECLARE_TASKLET_DISABLED(kp_tasklet, omap_kp_tasklet, 0);
 static unsigned int *row_gpios;
 static unsigned int *col_gpios;
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_OMAP2
 static void set_col_gpio_val(struct omap_kp *omap_kp, u8 value)
 {
@@ -89,6 +90,8 @@ static u8 get_row_gpio_val(struct omap_kp *omap_kp)
 #define		get_row_gpio_val(x)	0
 #endif
 
+=======
+>>>>>>> v4.9.227
 static irqreturn_t omap_kp_interrupt(int irq, void *dev_id)
 {
 	/* disable keyboard interrupt and schedule for handling */
@@ -133,7 +136,10 @@ static void omap_kp_tasklet(unsigned long data)
 	unsigned int row_shift = get_count_order(omap_kp_data->cols);
 	unsigned char new_state[8], changed, key_down = 0;
 	int col, row;
+<<<<<<< HEAD
 	int spurious = 0;
+=======
+>>>>>>> v4.9.227
 
 	/* check for any changes */
 	omap_kp_scan_keypad(omap_kp_data, new_state);
@@ -155,6 +161,7 @@ static void omap_kp_tasklet(unsigned long data)
 			       "pressed" : "released");
 #else
 			key = keycodes[MATRIX_SCAN_CODE(row, col, row_shift)];
+<<<<<<< HEAD
 			if (key < 0) {
 				printk(KERN_WARNING
 				      "omap-keypad: Spurious key event %d-%d\n",
@@ -163,6 +170,8 @@ static void omap_kp_tasklet(unsigned long data)
 				spurious = 1;
 				continue;
 			}
+=======
+>>>>>>> v4.9.227
 
 			if (!(kp_cur_group == (key & GROUP_MASK) ||
 			      kp_cur_group == -1))
@@ -178,12 +187,18 @@ static void omap_kp_tasklet(unsigned long data)
 	memcpy(keypad_state, new_state, sizeof(keypad_state));
 
 	if (key_down) {
+<<<<<<< HEAD
 		int delay = HZ / 20;
 		/* some key is pressed - keep irq disabled and use timer
 		 * to poll the keypad */
 		if (spurious)
 			delay = 2 * HZ;
 		mod_timer(&omap_kp_data->timer, jiffies + delay);
+=======
+		/* some key is pressed - keep irq disabled and use timer
+		 * to poll the keypad */
+		mod_timer(&omap_kp_data->timer, jiffies + HZ / 20);
+>>>>>>> v4.9.227
 	} else {
 		/* enable interrupts */
 		omap_writew(0, OMAP1_MPUIO_BASE + OMAP_MPUIO_KBD_MASKIT);
@@ -224,6 +239,7 @@ static ssize_t omap_kp_enable_store(struct device *dev, struct device_attribute 
 
 static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR, omap_kp_enable_show, omap_kp_enable_store);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int omap_kp_suspend(struct platform_device *dev, pm_message_t state)
 {
@@ -243,6 +259,8 @@ static int omap_kp_resume(struct platform_device *dev)
 #define omap_kp_resume	NULL
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int omap_kp_probe(struct platform_device *pdev)
 {
 	struct omap_kp *omap_kp;
@@ -292,8 +310,13 @@ static int omap_kp_probe(struct platform_device *pdev)
 	setup_timer(&omap_kp->timer, omap_kp_timer, (unsigned long)omap_kp);
 
 	/* get the irq and init timer*/
+<<<<<<< HEAD
 	tasklet_enable(&kp_tasklet);
 	kp_tasklet.data = (unsigned long) omap_kp;
+=======
+	kp_tasklet.data = (unsigned long) omap_kp;
+	tasklet_enable(&kp_tasklet);
+>>>>>>> v4.9.227
 
 	ret = device_create_file(&pdev->dev, &dev_attr_enable);
 	if (ret < 0)
@@ -379,11 +402,16 @@ static int omap_kp_remove(struct platform_device *pdev)
 static struct platform_driver omap_kp_driver = {
 	.probe		= omap_kp_probe,
 	.remove		= omap_kp_remove,
+<<<<<<< HEAD
 	.suspend	= omap_kp_suspend,
 	.resume		= omap_kp_resume,
 	.driver		= {
 		.name	= "omap-keypad",
 		.owner	= THIS_MODULE,
+=======
+	.driver		= {
+		.name	= "omap-keypad",
+>>>>>>> v4.9.227
 	},
 };
 module_platform_driver(omap_kp_driver);

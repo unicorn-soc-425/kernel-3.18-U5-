@@ -136,7 +136,11 @@ omap_otg_init(struct omap_usb_config *config)
 	}
 #endif
 
+<<<<<<< HEAD
 #if	defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE)
+=======
+#if	IS_ENABLED(CONFIG_USB_OHCI_HCD)
+>>>>>>> v4.9.227
 	if (config->otg || config->register_host) {
 		struct platform_device *ohci_device = config->ohci_device;
 		int status;
@@ -221,7 +225,11 @@ static inline void udc_device_init(struct omap_usb_config *pdata)
 
 #endif
 
+<<<<<<< HEAD
 #if	defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE)
+=======
+#if	IS_ENABLED(CONFIG_USB_OHCI_HCD)
+>>>>>>> v4.9.227
 
 /* The dmamask must be set for OHCI to work */
 static u64 ohci_dmamask = ~(u32)0;
@@ -612,7 +620,11 @@ static void __init omap_1510_usb_init(struct omap_usb_config *config)
 	}
 #endif
 
+<<<<<<< HEAD
 #if	defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE)
+=======
+#if	IS_ENABLED(CONFIG_USB_OHCI_HCD)
+>>>>>>> v4.9.227
 	if (config->register_host) {
 		int status;
 

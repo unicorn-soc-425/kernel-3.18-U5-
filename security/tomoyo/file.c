@@ -145,7 +145,11 @@ static void tomoyo_add_slash(struct tomoyo_path_info *buf)
  *
  * Returns true on success, false otherwise.
  */
+<<<<<<< HEAD
 static bool tomoyo_get_realpath(struct tomoyo_path_info *buf, struct path *path)
+=======
+static bool tomoyo_get_realpath(struct tomoyo_path_info *buf, const struct path *path)
+>>>>>>> v4.9.227
 {
 	buf->name = tomoyo_realpath_from_path(path);
 	if (buf->name) {
@@ -687,7 +691,11 @@ static int tomoyo_update_path_number_acl(const u8 perm,
  *
  * Returns 0 on success, negative value otherwise.
  */
+<<<<<<< HEAD
 int tomoyo_path_number_perm(const u8 type, struct path *path,
+=======
+int tomoyo_path_number_perm(const u8 type, const struct path *path,
+>>>>>>> v4.9.227
 			    unsigned long number)
 {
 	struct tomoyo_request_info r;
@@ -733,7 +741,11 @@ int tomoyo_path_number_perm(const u8 type, struct path *path,
  * Returns 0 on success, negative value otherwise.
  */
 int tomoyo_check_open_permission(struct tomoyo_domain_info *domain,
+<<<<<<< HEAD
 				 struct path *path, const int flag)
+=======
+				 const struct path *path, const int flag)
+>>>>>>> v4.9.227
 {
 	const u8 acc_mode = ACC_MODE(flag);
 	int error = 0;
@@ -782,7 +794,11 @@ int tomoyo_check_open_permission(struct tomoyo_domain_info *domain,
  *
  * Returns 0 on success, negative value otherwise.
  */
+<<<<<<< HEAD
 int tomoyo_path_perm(const u8 operation, struct path *path, const char *target)
+=======
+int tomoyo_path_perm(const u8 operation, const struct path *path, const char *target)
+>>>>>>> v4.9.227
 {
 	struct tomoyo_request_info r;
 	struct tomoyo_obj_info obj = {
@@ -838,7 +854,11 @@ int tomoyo_path_perm(const u8 operation, struct path *path, const char *target)
  *
  * Returns 0 on success, negative value otherwise.
  */
+<<<<<<< HEAD
 int tomoyo_mkdev_perm(const u8 operation, struct path *path,
+=======
+int tomoyo_mkdev_perm(const u8 operation, const struct path *path,
+>>>>>>> v4.9.227
 		      const unsigned int mode, unsigned int dev)
 {
 	struct tomoyo_request_info r;
@@ -882,8 +902,13 @@ int tomoyo_mkdev_perm(const u8 operation, struct path *path,
  *
  * Returns 0 on success, negative value otherwise.
  */
+<<<<<<< HEAD
 int tomoyo_path2_perm(const u8 operation, struct path *path1,
 		      struct path *path2)
+=======
+int tomoyo_path2_perm(const u8 operation, const struct path *path1,
+		      const struct path *path2)
+>>>>>>> v4.9.227
 {
 	int error = -ENOMEM;
 	struct tomoyo_path_info buf1;
@@ -905,11 +930,17 @@ int tomoyo_path2_perm(const u8 operation, struct path *path1,
 	    !tomoyo_get_realpath(&buf2, path2))
 		goto out;
 	switch (operation) {
+<<<<<<< HEAD
 		struct dentry *dentry;
 	case TOMOYO_TYPE_RENAME:
 	case TOMOYO_TYPE_LINK:
 		dentry = path1->dentry;
 		if (!dentry->d_inode || !S_ISDIR(dentry->d_inode->i_mode))
+=======
+	case TOMOYO_TYPE_RENAME:
+	case TOMOYO_TYPE_LINK:
+		if (!d_is_dir(path1->dentry))
+>>>>>>> v4.9.227
 			break;
 		/* fall through */
 	case TOMOYO_TYPE_PIVOT_ROOT:

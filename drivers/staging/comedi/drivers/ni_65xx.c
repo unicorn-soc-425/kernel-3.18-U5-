@@ -25,6 +25,7 @@
  * Author: Jon Grierson <jd@renko.co.uk>,
  *	   Frank Mori Hess <fmhess@users.sourceforge.net>
  * Status: testing
+<<<<<<< HEAD
  * Devices: (National Instruments) PCI-6509 [ni_65xx]
  *	    (National Instruments) PXI-6509 [ni_65xx]
  *	    (National Instruments) PCI-6510 [ni_65xx]
@@ -47,6 +48,16 @@
  *	    (National Instruments) PXI-6521 [ni_65xx]
  *	    (National Instruments) PCI-6528 [ni_65xx]
  *	    (National Instruments) PXI-6528 [ni_65xx]
+=======
+ * Devices: [National Instruments] PCI-6509 (pci-6509), PXI-6509 (pxi-6509),
+ *   PCI-6510 (pci-6510), PCI-6511 (pci-6511), PXI-6511 (pxi-6511),
+ *   PCI-6512 (pci-6512), PXI-6512 (pxi-6512), PCI-6513 (pci-6513),
+ *   PXI-6513 (pxi-6513), PCI-6514 (pci-6514), PXI-6514 (pxi-6514),
+ *   PCI-6515 (pxi-6515), PXI-6515 (pxi-6515), PCI-6516 (pci-6516),
+ *   PCI-6517 (pci-6517), PCI-6518 (pci-6518), PCI-6519 (pci-6519),
+ *   PCI-6520 (pci-6520), PCI-6521 (pci-6521), PXI-6521 (pxi-6521),
+ *   PCI-6528 (pci-6528), PXI-6528 (pxi-6528)
+>>>>>>> v4.9.227
  * Updated: Mon, 21 Jul 2014 12:49:58 +0000
  *
  * Configuration Options: not applicable, uses PCI auto config
@@ -71,12 +82,18 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/interrupt.h>
 
 #include "../comedidev.h"
 
 #include "comedi_fc.h"
+=======
+#include <linux/interrupt.h>
+
+#include "../comedi_pci.h"
+>>>>>>> v4.9.227
 
 /*
  * PCI BAR1 Register Map
@@ -85,6 +102,7 @@
 /* Non-recurring Registers (8-bit except where noted) */
 #define NI_65XX_ID_REG			0x00
 #define NI_65XX_CLR_REG			0x01
+<<<<<<< HEAD
 #define NI_65XX_CLR_WDOG_INT		(1 << 6)
 #define NI_65XX_CLR_WDOG_PING		(1 << 5)
 #define NI_65XX_CLR_WDOG_EXP		(1 << 4)
@@ -104,6 +122,27 @@
 #define NI_65XX_CTRL_INT_ENA		(1 << 2)
 #define NI_65XX_CTRL_OVERFLOW_ENA	(1 << 1)
 #define NI_65XX_CTRL_EDGE_ENA		(1 << 0)
+=======
+#define NI_65XX_CLR_WDOG_INT		BIT(6)
+#define NI_65XX_CLR_WDOG_PING		BIT(5)
+#define NI_65XX_CLR_WDOG_EXP		BIT(4)
+#define NI_65XX_CLR_EDGE_INT		BIT(3)
+#define NI_65XX_CLR_OVERFLOW_INT	BIT(2)
+#define NI_65XX_STATUS_REG		0x02
+#define NI_65XX_STATUS_WDOG_INT		BIT(5)
+#define NI_65XX_STATUS_FALL_EDGE	BIT(4)
+#define NI_65XX_STATUS_RISE_EDGE	BIT(3)
+#define NI_65XX_STATUS_INT		BIT(2)
+#define NI_65XX_STATUS_OVERFLOW_INT	BIT(1)
+#define NI_65XX_STATUS_EDGE_INT		BIT(0)
+#define NI_65XX_CTRL_REG		0x03
+#define NI_65XX_CTRL_WDOG_ENA		BIT(5)
+#define NI_65XX_CTRL_FALL_EDGE_ENA	BIT(4)
+#define NI_65XX_CTRL_RISE_EDGE_ENA	BIT(3)
+#define NI_65XX_CTRL_INT_ENA		BIT(2)
+#define NI_65XX_CTRL_OVERFLOW_ENA	BIT(1)
+#define NI_65XX_CTRL_EDGE_ENA		BIT(0)
+>>>>>>> v4.9.227
 #define NI_65XX_REV_REG			0x04 /* 32-bit */
 #define NI_65XX_FILTER_REG		0x08 /* 32-bit */
 #define NI_65XX_RTSI_ROUTE_REG		0x0c /* 16-bit */
@@ -111,6 +150,7 @@
 #define NI_65XX_RTSI_WDOG_REG		0x10 /* 16-bit */
 #define NI_65XX_RTSI_TRIG_REG		0x12 /* 16-bit */
 #define NI_65XX_AUTO_CLK_SEL_REG	0x14 /* PXI-6528 only */
+<<<<<<< HEAD
 #define NI_65XX_AUTO_CLK_SEL_STATUS	(1 << 1)
 #define NI_65XX_AUTO_CLK_SEL_DISABLE	(1 << 0)
 #define NI_65XX_WDOG_CTRL_REG		0x15
@@ -121,14 +161,31 @@
 #define NI_65XX_RTSI_CFG_SYNC_DETECT	(1 << 0)
 #define NI_65XX_WDOG_STATUS_REG		0x17
 #define NI_65XX_WDOG_STATUS_EXP		(1 << 0)
+=======
+#define NI_65XX_AUTO_CLK_SEL_STATUS	BIT(1)
+#define NI_65XX_AUTO_CLK_SEL_DISABLE	BIT(0)
+#define NI_65XX_WDOG_CTRL_REG		0x15
+#define NI_65XX_WDOG_CTRL_ENA		BIT(0)
+#define NI_65XX_RTSI_CFG_REG		0x16
+#define NI_65XX_RTSI_CFG_RISE_SENSE	BIT(2)
+#define NI_65XX_RTSI_CFG_FALL_SENSE	BIT(1)
+#define NI_65XX_RTSI_CFG_SYNC_DETECT	BIT(0)
+#define NI_65XX_WDOG_STATUS_REG		0x17
+#define NI_65XX_WDOG_STATUS_EXP		BIT(0)
+>>>>>>> v4.9.227
 #define NI_65XX_WDOG_INTERVAL_REG	0x18 /* 32-bit */
 
 /* Recurring port registers (8-bit) */
 #define NI_65XX_PORT(x)			((x) * 0x10)
 #define NI_65XX_IO_DATA_REG(x)		(0x40 + NI_65XX_PORT(x))
 #define NI_65XX_IO_SEL_REG(x)		(0x41 + NI_65XX_PORT(x))
+<<<<<<< HEAD
 #define NI_65XX_IO_SEL_OUTPUT		(0 << 0)
 #define NI_65XX_IO_SEL_INPUT		(1 << 0)
+=======
+#define NI_65XX_IO_SEL_OUTPUT		0
+#define NI_65XX_IO_SEL_INPUT		BIT(0)
+>>>>>>> v4.9.227
 #define NI_65XX_RISE_EDGE_ENA_REG(x)	(0x42 + NI_65XX_PORT(x))
 #define NI_65XX_FALL_EDGE_ENA_REG(x)	(0x43 + NI_65XX_PORT(x))
 #define NI_65XX_FILTER_ENA(x)		(0x44 + NI_65XX_PORT(x))
@@ -168,10 +225,17 @@ enum ni_65xx_boardid {
 
 struct ni_65xx_board {
 	const char *name;
+<<<<<<< HEAD
 	unsigned num_dio_ports;
 	unsigned num_di_ports;
 	unsigned num_do_ports;
 	unsigned legacy_invert:1;
+=======
+	unsigned int num_dio_ports;
+	unsigned int num_di_ports;
+	unsigned int num_do_ports;
+	unsigned int legacy_invert:1;
+>>>>>>> v4.9.227
 };
 
 static const struct ni_65xx_board ni_65xx_boards[] = {
@@ -377,7 +441,11 @@ static int ni_65xx_dio_insn_config(struct comedi_device *dev,
 	unsigned long base_port = (unsigned long)s->private;
 	unsigned int chan = CR_CHAN(insn->chanspec);
 	unsigned int chan_mask = NI_65XX_CHAN_TO_MASK(chan);
+<<<<<<< HEAD
 	unsigned port = base_port + NI_65XX_CHAN_TO_PORT(chan);
+=======
+	unsigned int port = base_port + NI_65XX_CHAN_TO_PORT(chan);
+>>>>>>> v4.9.227
 	unsigned int interval;
 	unsigned int val;
 
@@ -445,14 +513,24 @@ static int ni_65xx_dio_insn_bits(struct comedi_device *dev,
 	unsigned long base_port = (unsigned long)s->private;
 	unsigned int base_chan = CR_CHAN(insn->chanspec);
 	int last_port_offset = NI_65XX_CHAN_TO_PORT(s->n_chan - 1);
+<<<<<<< HEAD
 	unsigned read_bits = 0;
+=======
+	unsigned int read_bits = 0;
+>>>>>>> v4.9.227
 	int port_offset;
 
 	for (port_offset = NI_65XX_CHAN_TO_PORT(base_chan);
 	     port_offset <= last_port_offset; port_offset++) {
+<<<<<<< HEAD
 		unsigned port = base_port + port_offset;
 		int base_port_channel = NI_65XX_PORT_TO_CHAN(port_offset);
 		unsigned port_mask, port_data, bits;
+=======
+		unsigned int port = base_port + port_offset;
+		int base_port_channel = NI_65XX_PORT_TO_CHAN(port_offset);
+		unsigned int port_mask, port_data, bits;
+>>>>>>> v4.9.227
 		int bitshift = base_port_channel - base_chan;
 
 		if (bitshift >= 32)
@@ -508,9 +586,15 @@ static irqreturn_t ni_65xx_interrupt(int irq, void *d)
 	writeb(NI_65XX_CLR_EDGE_INT | NI_65XX_CLR_OVERFLOW_INT,
 	       dev->mmio + NI_65XX_CLR_REG);
 
+<<<<<<< HEAD
 	comedi_buf_put(s, 0);
 	s->async->events |= COMEDI_CB_EOS;
 	comedi_event(dev, s);
+=======
+	comedi_buf_write_samples(s, &s->state, 1);
+	comedi_handle_events(dev, s);
+
+>>>>>>> v4.9.227
 	return IRQ_HANDLED;
 }
 
@@ -522,11 +606,19 @@ static int ni_65xx_intr_cmdtest(struct comedi_device *dev,
 
 	/* Step 1 : check if triggers are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= cfc_check_trigger_src(&cmd->scan_begin_src, TRIG_OTHER);
 	err |= cfc_check_trigger_src(&cmd->convert_src, TRIG_FOLLOW);
 	err |= cfc_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
 	err |= cfc_check_trigger_src(&cmd->stop_src, TRIG_COUNT);
+=======
+	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
+	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_OTHER);
+	err |= comedi_check_trigger_src(&cmd->convert_src, TRIG_FOLLOW);
+	err |= comedi_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
+	err |= comedi_check_trigger_src(&cmd->stop_src, TRIG_COUNT);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 1;
@@ -534,6 +626,7 @@ static int ni_65xx_intr_cmdtest(struct comedi_device *dev,
 	/* Step 2a : make sure trigger sources are unique */
 	/* Step 2b : and mutually compatible */
 
+<<<<<<< HEAD
 	if (err)
 		return 2;
 
@@ -544,6 +637,16 @@ static int ni_65xx_intr_cmdtest(struct comedi_device *dev,
 	err |= cfc_check_trigger_arg_is(&cmd->convert_arg, 0);
 	err |= cfc_check_trigger_arg_is(&cmd->scan_end_arg, cmd->chanlist_len);
 	err |= cfc_check_trigger_arg_is(&cmd->stop_arg, 0);
+=======
+	/* Step 3: check if arguments are trivially valid */
+
+	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->convert_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_end_arg,
+					   cmd->chanlist_len);
+	err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 3;
@@ -630,9 +733,15 @@ static int ni_65xx_intr_insn_config(struct comedi_device *dev,
 	return insn->n;
 }
 
+<<<<<<< HEAD
 /* ripped from mite.h and mite_setup2() to avoid mite dependancy */
 #define MITE_IODWBSR	0xc0	 /* IO Device Window Base Size Register */
 #define WENAB		(1 << 7) /* window enable */
+=======
+/* ripped from mite.h and mite_setup2() to avoid mite dependency */
+#define MITE_IODWBSR	0xc0	 /* IO Device Window Base Size Register */
+#define WENAB			BIT(7) /* window enable */
+>>>>>>> v4.9.227
 
 static int ni_65xx_mite_init(struct pci_dev *pcidev)
 {
@@ -659,7 +768,11 @@ static int ni_65xx_auto_attach(struct comedi_device *dev,
 	struct pci_dev *pcidev = comedi_to_pci_dev(dev);
 	const struct ni_65xx_board *board = NULL;
 	struct comedi_subdevice *s;
+<<<<<<< HEAD
 	unsigned i;
+=======
+	unsigned int i;
+>>>>>>> v4.9.227
 	int ret;
 
 	if (context < ARRAY_SIZE(ni_65xx_boards))
@@ -693,7 +806,11 @@ static int ni_65xx_auto_attach(struct comedi_device *dev,
 	}
 
 	dev_info(dev->class_dev, "board: %s, ID=0x%02x", dev->board_name,
+<<<<<<< HEAD
 	       readb(dev->mmio + NI_65XX_ID_REG));
+=======
+		 readb(dev->mmio + NI_65XX_ID_REG));
+>>>>>>> v4.9.227
 
 	ret = comedi_alloc_subdevices(dev, 4);
 	if (ret)

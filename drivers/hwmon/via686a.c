@@ -670,7 +670,10 @@ static const struct attribute_group via686a_group = {
 
 static struct platform_driver via686a_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "via686a",
 	},
 	.probe		= via686a_probe,

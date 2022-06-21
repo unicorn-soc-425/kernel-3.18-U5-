@@ -7,6 +7,7 @@
 void irq_move_masked_irq(struct irq_data *idata)
 {
 	struct irq_desc *desc = irq_data_to_desc(idata);
+<<<<<<< HEAD
 	struct irq_chip *chip = idata->chip;
 
 	if (likely(!irqd_is_setaffinity_pending(&desc->irq_data)))
@@ -16,12 +17,29 @@ void irq_move_masked_irq(struct irq_data *idata)
 	 * Paranoia: cpu-local interrupts shouldn't be calling in here anyway.
 	 */
 	if (!irqd_can_balance(&desc->irq_data)) {
+=======
+	struct irq_data *data = &desc->irq_data;
+	struct irq_chip *chip = data->chip;
+
+	if (likely(!irqd_is_setaffinity_pending(data)))
+		return;
+
+	irqd_clr_move_pending(data);
+
+	/*
+	 * Paranoia: cpu-local interrupts shouldn't be calling in here anyway.
+	 */
+	if (irqd_is_per_cpu(data)) {
+>>>>>>> v4.9.227
 		WARN_ON(1);
 		return;
 	}
 
+<<<<<<< HEAD
 	irqd_clr_move_pending(&desc->irq_data);
 
+=======
+>>>>>>> v4.9.227
 	if (unlikely(cpumask_empty(desc->pending_mask)))
 		return;
 
@@ -42,9 +60,26 @@ void irq_move_masked_irq(struct irq_data *idata)
 	 * For correct operation this depends on the caller
 	 * masking the irqs.
 	 */
+<<<<<<< HEAD
 	if (cpumask_any_and(desc->pending_mask, cpu_online_mask) < nr_cpu_ids)
 		irq_do_set_affinity(&desc->irq_data, desc->pending_mask, false);
 
+=======
+	if (cpumask_any_and(desc->pending_mask, cpu_online_mask) < nr_cpu_ids) {
+		int ret;
+
+		ret = irq_do_set_affinity(data, desc->pending_mask, false);
+		/*
+		 * If the there is a cleanup pending in the underlying
+		 * vector management, reschedule the move for the next
+		 * interrupt. Leave desc->pending_mask intact.
+		 */
+		if (ret == -EBUSY) {
+			irqd_set_move_pending(data);
+			return;
+		}
+	}
+>>>>>>> v4.9.227
 	cpumask_clear(desc->pending_mask);
 }
 
@@ -52,6 +87,16 @@ void irq_move_irq(struct irq_data *idata)
 {
 	bool masked;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Get top level irq_data when CONFIG_IRQ_DOMAIN_HIERARCHY is enabled,
+	 * and it should be optimized away when CONFIG_IRQ_DOMAIN_HIERARCHY is
+	 * disabled. So we avoid an "#ifdef CONFIG_IRQ_DOMAIN_HIERARCHY" here.
+	 */
+	idata = irq_desc_get_irq_data(irq_data_to_desc(idata));
+
+>>>>>>> v4.9.227
 	if (likely(!irqd_is_setaffinity_pending(idata)))
 		return;
 

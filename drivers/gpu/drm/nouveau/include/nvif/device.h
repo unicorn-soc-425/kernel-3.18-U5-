@@ -2,7 +2,11 @@
 #define __NVIF_DEVICE_H__
 
 #include <nvif/object.h>
+<<<<<<< HEAD
 #include <nvif/class.h>
+=======
+#include <nvif/cl0080.h>
+>>>>>>> v4.9.227
 
 struct nvif_device {
 	struct nvif_object object;
@@ -62,7 +66,13 @@ u64  nvif_device_time(struct nvif_device *);
 #define nvxx_gpio(a) nvxx_device(a)->gpio
 #define nvxx_clk(a) nvxx_device(a)->clk
 #define nvxx_i2c(a) nvxx_device(a)->i2c
+<<<<<<< HEAD
 #define nvxx_therm(a) nvxx_device(a)->therm
+=======
+#define nvxx_iccsense(a) nvxx_device(a)->iccsense
+#define nvxx_therm(a) nvxx_device(a)->therm
+#define nvxx_volt(a) nvxx_device(a)->volt
+>>>>>>> v4.9.227
 
 #include <core/device.h>
 #include <engine/fifo.h>

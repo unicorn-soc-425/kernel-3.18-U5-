@@ -45,6 +45,7 @@
  */
 
 static unsigned int litekit_db_board_pins[] __initdata = {
+<<<<<<< HEAD
 	/* UART1 */
 	MX31_PIN_CTS1__CTS1,
 	MX31_PIN_RTS1__RTS1,
@@ -58,6 +59,8 @@ static unsigned int litekit_db_board_pins[] __initdata = {
 	MX31_PIN_CSPI1_SS0__SS0,
 	MX31_PIN_CSPI1_SS1__SS1,
 	MX31_PIN_CSPI1_SS2__SS2,
+=======
+>>>>>>> v4.9.227
 	/* SDHC1 */
 	MX31_PIN_SD1_DATA0__SD1_DATA0,
 	MX31_PIN_SD1_DATA1__SD1_DATA1,
@@ -67,11 +70,14 @@ static unsigned int litekit_db_board_pins[] __initdata = {
 	MX31_PIN_SD1_CMD__SD1_CMD,
 };
 
+<<<<<<< HEAD
 /* UART */
 static const struct imxuart_platform_data uart_pdata __initconst = {
 	.flags = IMXUART_HAVE_RTSCTS,
 };
 
+=======
+>>>>>>> v4.9.227
 /* MMC */
 
 static int gpio_det, gpio_wp;
@@ -146,6 +152,7 @@ static const struct imxmmc_platform_data mmc_pdata __initconst = {
 	.exit	   = mxc_mmc1_exit,
 };
 
+<<<<<<< HEAD
 /* SPI */
 
 static int spi_internal_chipselect[] = {
@@ -159,6 +166,8 @@ static const struct spi_imx_master spi0_pdata __initconst = {
 	.num_chipselect	= ARRAY_SIZE(spi_internal_chipselect),
 };
 
+=======
+>>>>>>> v4.9.227
 /* GPIO LEDs */
 
 static const struct gpio_led litekit_leds[] __initconst = {
@@ -187,9 +196,13 @@ void __init mx31lite_db_init(void)
 	mxc_iomux_setup_multiple_pins(litekit_db_board_pins,
 					ARRAY_SIZE(litekit_db_board_pins),
 					"development board pins");
+<<<<<<< HEAD
 	imx31_add_imx_uart0(&uart_pdata);
 	imx31_add_mxc_mmc(0, &mmc_pdata);
 	imx31_add_spi_imx0(&spi0_pdata);
+=======
+	imx31_add_mxc_mmc(0, &mmc_pdata);
+>>>>>>> v4.9.227
 	gpio_led_register_device(-1, &litekit_led_platform_data);
 	imx31_add_imx2_wdt();
 	imx31_add_mxc_rtc();

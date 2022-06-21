@@ -44,7 +44,11 @@ int devm_spear_pcm_platform_register(struct device *dev,
 	*config = spear_dmaengine_pcm_config;
 	config->compat_filter_fn = filter;
 
+<<<<<<< HEAD
 	return snd_dmaengine_pcm_register(dev, config,
+=======
+	return devm_snd_dmaengine_pcm_register(dev, config,
+>>>>>>> v4.9.227
 		SND_DMAENGINE_PCM_FLAG_NO_DT |
 		SND_DMAENGINE_PCM_FLAG_COMPAT);
 }

@@ -17,6 +17,7 @@
  *
  *	Software only watchdog driver. Unlike its big brother the WDT501P
  *	driver this won't always recover a failed machine.
+<<<<<<< HEAD
  *
  *  03/96: Angelo Haritsis <ah@doc.ic.ac.uk> :
  *	Modularised.
@@ -34,10 +35,13 @@
  *
  *  20020530 Joel Becker <joel.becker@oracle.com>
  *	Added Matt Domsch's nowayout module option.
+=======
+>>>>>>> v4.9.227
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/types.h>
@@ -48,6 +52,17 @@
 #include <linux/init.h>
 #include <linux/jiffies.h>
 #include <linux/kernel.h>
+=======
+#include <linux/init.h>
+#include <linux/jiffies.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/moduleparam.h>
+#include <linux/reboot.h>
+#include <linux/timer.h>
+#include <linux/types.h>
+#include <linux/watchdog.h>
+>>>>>>> v4.9.227
 
 #define TIMER_MARGIN	60		/* Default is 60 seconds */
 static unsigned int soft_margin = TIMER_MARGIN;	/* in seconds */
@@ -72,6 +87,7 @@ module_param(soft_panic, int, 0);
 MODULE_PARM_DESC(soft_panic,
 	"Softdog action, set to 1 to panic, 0 to reboot (default=0)");
 
+<<<<<<< HEAD
 /*
  *	Our timer
  */
@@ -90,6 +106,14 @@ static void watchdog_fire(unsigned long data)
 	if (soft_noboot)
 		pr_crit("Triggered - Reboot ignored\n");
 	else if (soft_panic) {
+=======
+static void softdog_fire(unsigned long data)
+{
+	module_put(THIS_MODULE);
+	if (soft_noboot) {
+		pr_crit("Triggered - Reboot ignored\n");
+	} else if (soft_panic) {
+>>>>>>> v4.9.227
 		pr_crit("Initiating panic\n");
 		panic("Software Watchdog Timer expired");
 	} else {
@@ -99,6 +123,7 @@ static void watchdog_fire(unsigned long data)
 	}
 }
 
+<<<<<<< HEAD
 /*
  *	Softdog operations
  */
@@ -106,11 +131,38 @@ static void watchdog_fire(unsigned long data)
 static int softdog_ping(struct watchdog_device *w)
 {
 	mod_timer(&watchdog_ticktock, jiffies+(w->timeout*HZ));
+=======
+static struct timer_list softdog_ticktock =
+		TIMER_INITIALIZER(softdog_fire, 0, 0);
+
+static struct watchdog_device softdog_dev;
+
+static void softdog_pretimeout(unsigned long data)
+{
+	watchdog_notify_pretimeout(&softdog_dev);
+}
+
+static struct timer_list softdog_preticktock =
+		TIMER_INITIALIZER(softdog_pretimeout, 0, 0);
+
+static int softdog_ping(struct watchdog_device *w)
+{
+	if (!mod_timer(&softdog_ticktock, jiffies + (w->timeout * HZ)))
+		__module_get(THIS_MODULE);
+
+	if (w->pretimeout)
+		mod_timer(&softdog_preticktock, jiffies +
+			  (w->timeout - w->pretimeout) * HZ);
+	else
+		del_timer(&softdog_preticktock);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int softdog_stop(struct watchdog_device *w)
 {
+<<<<<<< HEAD
 	del_timer(&watchdog_ticktock);
 	return 0;
 }
@@ -152,12 +204,33 @@ static struct watchdog_ops softdog_ops = {
 	.start = softdog_ping,
 	.stop = softdog_stop,
 	.set_timeout = softdog_set_timeout,
+=======
+	if (del_timer(&softdog_ticktock))
+		module_put(THIS_MODULE);
+
+	del_timer(&softdog_preticktock);
+
+	return 0;
+}
+
+static struct watchdog_info softdog_info = {
+	.identity = "Software Watchdog",
+	.options = WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING | WDIOF_MAGICCLOSE |
+		   WDIOF_PRETIMEOUT,
+};
+
+static const struct watchdog_ops softdog_ops = {
+	.owner = THIS_MODULE,
+	.start = softdog_ping,
+	.stop = softdog_stop,
+>>>>>>> v4.9.227
 };
 
 static struct watchdog_device softdog_dev = {
 	.info = &softdog_info,
 	.ops = &softdog_ops,
 	.min_timeout = 1,
+<<<<<<< HEAD
 	.max_timeout = 0xFFFF
 };
 
@@ -202,6 +275,36 @@ static void __exit watchdog_exit(void)
 
 module_init(watchdog_init);
 module_exit(watchdog_exit);
+=======
+	.max_timeout = 65535,
+	.timeout = TIMER_MARGIN,
+};
+
+static int __init softdog_init(void)
+{
+	int ret;
+
+	watchdog_init_timeout(&softdog_dev, soft_margin, NULL);
+	watchdog_set_nowayout(&softdog_dev, nowayout);
+	watchdog_stop_on_reboot(&softdog_dev);
+
+	ret = watchdog_register_device(&softdog_dev);
+	if (ret)
+		return ret;
+
+	pr_info("initialized. soft_noboot=%d soft_margin=%d sec soft_panic=%d (nowayout=%d)\n",
+		soft_noboot, softdog_dev.timeout, soft_panic, nowayout);
+
+	return 0;
+}
+module_init(softdog_init);
+
+static void __exit softdog_exit(void)
+{
+	watchdog_unregister_device(&softdog_dev);
+}
+module_exit(softdog_exit);
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("Software Watchdog Device Driver");

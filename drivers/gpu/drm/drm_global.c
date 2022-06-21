@@ -65,11 +65,16 @@ void drm_global_release(void)
 
 int drm_global_item_ref(struct drm_global_reference *ref)
 {
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = 0;
+>>>>>>> v4.9.227
 	struct drm_global_item *item = &glob[ref->global_type];
 
 	mutex_lock(&item->mutex);
 	if (item->refcount == 0) {
+<<<<<<< HEAD
 		item->object = kzalloc(ref->size, GFP_KERNEL);
 		if (unlikely(item->object == NULL)) {
 			ret = -ENOMEM;
@@ -89,6 +94,31 @@ int drm_global_item_ref(struct drm_global_reference *ref)
 out_err:
 	mutex_unlock(&item->mutex);
 	item->object = NULL;
+=======
+		ref->object = kzalloc(ref->size, GFP_KERNEL);
+		if (unlikely(ref->object == NULL)) {
+			ret = -ENOMEM;
+			goto error_unlock;
+		}
+		ret = ref->init(ref);
+		if (unlikely(ret != 0))
+			goto error_free;
+
+		item->object = ref->object;
+	} else {
+		ref->object = item->object;
+	}
+
+	++item->refcount;
+	mutex_unlock(&item->mutex);
+	return 0;
+
+error_free:
+	kfree(ref->object);
+	ref->object = NULL;
+error_unlock:
+	mutex_unlock(&item->mutex);
+>>>>>>> v4.9.227
 	return ret;
 }
 EXPORT_SYMBOL(drm_global_item_ref);

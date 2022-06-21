@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * mpl115.c - Support for Freescale MPL115A2 pressure/temperature sensor
+=======
+ * mpl115.c - Support for Freescale MPL115A pressure/temperature sensor
+>>>>>>> v4.9.227
  *
  * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
  *
@@ -7,17 +11,28 @@
  * the GNU General Public License.  See the file COPYING in the main
  * directory of this archive for more details.
  *
+<<<<<<< HEAD
  * (7-bit I2C slave address 0x60)
  *
+=======
+>>>>>>> v4.9.227
  * TODO: shutdown pin
  *
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/i2c.h>
 #include <linux/iio/iio.h>
 #include <linux/delay.h>
 
+=======
+#include <linux/iio/iio.h>
+#include <linux/delay.h>
+
+#include "mpl115.h"
+
+>>>>>>> v4.9.227
 #define MPL115_PADC 0x00 /* pressure ADC output value, MSB first, 10 bit */
 #define MPL115_TADC 0x02 /* temperature ADC output value, MSB first, 10 bit */
 #define MPL115_A0 0x04 /* 12 bit integer, 3 bit fraction */
@@ -27,16 +42,29 @@
 #define MPL115_CONVERT 0x12 /* convert temperature and pressure */
 
 struct mpl115_data {
+<<<<<<< HEAD
 	struct i2c_client *client;
+=======
+	struct device *dev;
+>>>>>>> v4.9.227
 	struct mutex lock;
 	s16 a0;
 	s16 b1, b2;
 	s16 c12;
+<<<<<<< HEAD
+=======
+	const struct mpl115_ops *ops;
+>>>>>>> v4.9.227
 };
 
 static int mpl115_request(struct mpl115_data *data)
 {
+<<<<<<< HEAD
 	int ret = i2c_smbus_write_byte_data(data->client, MPL115_CONVERT, 0);
+=======
+	int ret = data->ops->write(data->dev, MPL115_CONVERT, 0);
+
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
@@ -57,12 +85,20 @@ static int mpl115_comp_pressure(struct mpl115_data *data, int *val, int *val2)
 	if (ret < 0)
 		goto done;
 
+<<<<<<< HEAD
 	ret = i2c_smbus_read_word_swapped(data->client, MPL115_PADC);
+=======
+	ret = data->ops->read(data->dev, MPL115_PADC);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto done;
 	padc = ret >> 6;
 
+<<<<<<< HEAD
 	ret = i2c_smbus_read_word_swapped(data->client, MPL115_TADC);
+=======
+	ret = data->ops->read(data->dev, MPL115_TADC);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto done;
 	tadc = ret >> 6;
@@ -90,7 +126,11 @@ static int mpl115_read_temp(struct mpl115_data *data)
 	ret = mpl115_request(data);
 	if (ret < 0)
 		goto done;
+<<<<<<< HEAD
 	ret = i2c_smbus_read_word_swapped(data->client, MPL115_TADC);
+=======
+	ret = data->ops->read(data->dev, MPL115_TADC);
+>>>>>>> v4.9.227
 done:
 	mutex_unlock(&data->lock);
 	return ret;
@@ -136,6 +176,10 @@ static const struct iio_chan_spec mpl115_channels[] = {
 	{
 		.type = IIO_TEMP,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+<<<<<<< HEAD
+=======
+		.info_mask_shared_by_type =
+>>>>>>> v4.9.227
 			BIT(IIO_CHAN_INFO_OFFSET) | BIT(IIO_CHAN_INFO_SCALE),
 	},
 };
@@ -145,21 +189,31 @@ static const struct iio_info mpl115_info = {
 	.driver_module = THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static int mpl115_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
+=======
+int mpl115_probe(struct device *dev, const char *name,
+			const struct mpl115_ops *ops)
+>>>>>>> v4.9.227
 {
 	struct mpl115_data *data;
 	struct iio_dev *indio_dev;
 	int ret;
 
+<<<<<<< HEAD
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
 		return -ENODEV;
 
 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+=======
+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+>>>>>>> v4.9.227
 	if (!indio_dev)
 		return -ENOMEM;
 
 	data = iio_priv(indio_dev);
+<<<<<<< HEAD
 	data->client = client;
 	mutex_init(&data->lock);
 
@@ -167,10 +221,20 @@ static int mpl115_probe(struct i2c_client *client,
 	indio_dev->info = &mpl115_info;
 	indio_dev->name = id->name;
 	indio_dev->dev.parent = &client->dev;
+=======
+	data->dev = dev;
+	data->ops = ops;
+	mutex_init(&data->lock);
+
+	indio_dev->info = &mpl115_info;
+	indio_dev->name = name;
+	indio_dev->dev.parent = dev;
+>>>>>>> v4.9.227
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->channels = mpl115_channels;
 	indio_dev->num_channels = ARRAY_SIZE(mpl115_channels);
 
+<<<<<<< HEAD
 	ret = i2c_smbus_read_word_swapped(data->client, MPL115_A0);
 	if (ret < 0)
 		return ret;
@@ -184,10 +248,30 @@ static int mpl115_probe(struct i2c_client *client,
 		return ret;
 	data->b2 = ret;
 	ret = i2c_smbus_read_word_swapped(data->client, MPL115_C12);
+=======
+	ret = data->ops->init(data->dev);
+	if (ret)
+		return ret;
+
+	ret = data->ops->read(data->dev, MPL115_A0);
+	if (ret < 0)
+		return ret;
+	data->a0 = ret;
+	ret = data->ops->read(data->dev, MPL115_B1);
+	if (ret < 0)
+		return ret;
+	data->b1 = ret;
+	ret = data->ops->read(data->dev, MPL115_B2);
+	if (ret < 0)
+		return ret;
+	data->b2 = ret;
+	ret = data->ops->read(data->dev, MPL115_C12);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 	data->c12 = ret;
 
+<<<<<<< HEAD
 	return devm_iio_device_register(&client->dev, indio_dev);
 }
 
@@ -205,6 +289,11 @@ static struct i2c_driver mpl115_driver = {
 	.id_table = mpl115_id,
 };
 module_i2c_driver(mpl115_driver);
+=======
+	return devm_iio_device_register(dev, indio_dev);
+}
+EXPORT_SYMBOL_GPL(mpl115_probe);
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
 MODULE_DESCRIPTION("Freescale MPL115 pressure/temperature driver");

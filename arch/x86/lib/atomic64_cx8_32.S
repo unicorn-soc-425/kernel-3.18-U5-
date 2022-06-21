@@ -11,6 +11,7 @@
 
 #include <linux/linkage.h>
 #include <asm/alternative-asm.h>
+<<<<<<< HEAD
 #include <asm/dwarf2.h>
 
 .macro SAVE reg
@@ -22,6 +23,8 @@
 	popl_cfi %\reg
 	CFI_RESTORE \reg
 .endm
+=======
+>>>>>>> v4.9.227
 
 .macro read64 reg
 	movl %ebx, %eax
@@ -32,6 +35,7 @@
 .endm
 
 ENTRY(atomic64_read_cx8)
+<<<<<<< HEAD
 	CFI_STARTPROC
 
 	read64 %ecx
@@ -42,6 +46,13 @@ ENDPROC(atomic64_read_cx8)
 ENTRY(atomic64_set_cx8)
 	CFI_STARTPROC
 
+=======
+	read64 %ecx
+	ret
+ENDPROC(atomic64_read_cx8)
+
+ENTRY(atomic64_set_cx8)
+>>>>>>> v4.9.227
 1:
 /* we don't need LOCK_PREFIX since aligned 64-bit writes
  * are atomic on 586 and newer */
@@ -49,28 +60,44 @@ ENTRY(atomic64_set_cx8)
 	jne 1b
 
 	ret
+<<<<<<< HEAD
 	CFI_ENDPROC
 ENDPROC(atomic64_set_cx8)
 
 ENTRY(atomic64_xchg_cx8)
 	CFI_STARTPROC
 
+=======
+ENDPROC(atomic64_set_cx8)
+
+ENTRY(atomic64_xchg_cx8)
+>>>>>>> v4.9.227
 1:
 	LOCK_PREFIX
 	cmpxchg8b (%esi)
 	jne 1b
 
 	ret
+<<<<<<< HEAD
 	CFI_ENDPROC
+=======
+>>>>>>> v4.9.227
 ENDPROC(atomic64_xchg_cx8)
 
 .macro addsub_return func ins insc
 ENTRY(atomic64_\func\()_return_cx8)
+<<<<<<< HEAD
 	CFI_STARTPROC
 	SAVE ebp
 	SAVE ebx
 	SAVE esi
 	SAVE edi
+=======
+	pushl %ebp
+	pushl %ebx
+	pushl %esi
+	pushl %edi
+>>>>>>> v4.9.227
 
 	movl %eax, %esi
 	movl %edx, %edi
@@ -89,12 +116,20 @@ ENTRY(atomic64_\func\()_return_cx8)
 10:
 	movl %ebx, %eax
 	movl %ecx, %edx
+<<<<<<< HEAD
 	RESTORE edi
 	RESTORE esi
 	RESTORE ebx
 	RESTORE ebp
 	ret
 	CFI_ENDPROC
+=======
+	popl %edi
+	popl %esi
+	popl %ebx
+	popl %ebp
+	ret
+>>>>>>> v4.9.227
 ENDPROC(atomic64_\func\()_return_cx8)
 .endm
 
@@ -103,8 +138,12 @@ addsub_return sub sub sbb
 
 .macro incdec_return func ins insc
 ENTRY(atomic64_\func\()_return_cx8)
+<<<<<<< HEAD
 	CFI_STARTPROC
 	SAVE ebx
+=======
+	pushl %ebx
+>>>>>>> v4.9.227
 
 	read64 %esi
 1:
@@ -119,9 +158,14 @@ ENTRY(atomic64_\func\()_return_cx8)
 10:
 	movl %ebx, %eax
 	movl %ecx, %edx
+<<<<<<< HEAD
 	RESTORE ebx
 	ret
 	CFI_ENDPROC
+=======
+	popl %ebx
+	ret
+>>>>>>> v4.9.227
 ENDPROC(atomic64_\func\()_return_cx8)
 .endm
 
@@ -129,8 +173,12 @@ incdec_return inc add adc
 incdec_return dec sub sbb
 
 ENTRY(atomic64_dec_if_positive_cx8)
+<<<<<<< HEAD
 	CFI_STARTPROC
 	SAVE ebx
+=======
+	pushl %ebx
+>>>>>>> v4.9.227
 
 	read64 %esi
 1:
@@ -146,6 +194,7 @@ ENTRY(atomic64_dec_if_positive_cx8)
 2:
 	movl %ebx, %eax
 	movl %ecx, %edx
+<<<<<<< HEAD
 	RESTORE ebx
 	ret
 	CFI_ENDPROC
@@ -158,6 +207,18 @@ ENTRY(atomic64_add_unless_cx8)
 /* these just push these two parameters on the stack */
 	SAVE edi
 	SAVE ecx
+=======
+	popl %ebx
+	ret
+ENDPROC(atomic64_dec_if_positive_cx8)
+
+ENTRY(atomic64_add_unless_cx8)
+	pushl %ebp
+	pushl %ebx
+/* these just push these two parameters on the stack */
+	pushl %edi
+	pushl %ecx
+>>>>>>> v4.9.227
 
 	movl %eax, %ebp
 	movl %edx, %edi
@@ -178,21 +239,33 @@ ENTRY(atomic64_add_unless_cx8)
 	movl $1, %eax
 3:
 	addl $8, %esp
+<<<<<<< HEAD
 	CFI_ADJUST_CFA_OFFSET -8
 	RESTORE ebx
 	RESTORE ebp
+=======
+	popl %ebx
+	popl %ebp
+>>>>>>> v4.9.227
 	ret
 4:
 	cmpl %edx, 4(%esp)
 	jne 2b
 	xorl %eax, %eax
 	jmp 3b
+<<<<<<< HEAD
 	CFI_ENDPROC
 ENDPROC(atomic64_add_unless_cx8)
 
 ENTRY(atomic64_inc_not_zero_cx8)
 	CFI_STARTPROC
 	SAVE ebx
+=======
+ENDPROC(atomic64_add_unless_cx8)
+
+ENTRY(atomic64_inc_not_zero_cx8)
+	pushl %ebx
+>>>>>>> v4.9.227
 
 	read64 %esi
 1:
@@ -209,7 +282,12 @@ ENTRY(atomic64_inc_not_zero_cx8)
 
 	movl $1, %eax
 3:
+<<<<<<< HEAD
 	RESTORE ebx
 	ret
 	CFI_ENDPROC
+=======
+	popl %ebx
+	ret
+>>>>>>> v4.9.227
 ENDPROC(atomic64_inc_not_zero_cx8)

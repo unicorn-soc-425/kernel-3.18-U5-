@@ -283,7 +283,11 @@ static void gru_unload_mm_tracker(struct gru_state *gru,
 	spin_lock(&gru->gs_asid_lock);
 	BUG_ON((asids->mt_ctxbitmap & ctxbitmap) != ctxbitmap);
 	asids->mt_ctxbitmap ^= ctxbitmap;
+<<<<<<< HEAD
 	gru_dbg(grudev, "gid %d, gts %p, gms %p, ctxnum 0x%d, asidmap 0x%lx\n",
+=======
+	gru_dbg(grudev, "gid %d, gts %p, gms %p, ctxnum %d, asidmap 0x%lx\n",
+>>>>>>> v4.9.227
 		gru->gs_gid, gts, gms, gts->ts_ctxnum, gms->ms_asidmap[0]);
 	spin_unlock(&gru->gs_asid_lock);
 	spin_unlock(&gms->ms_asid_lock);
@@ -930,6 +934,10 @@ int gru_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 {
 	struct gru_thread_state *gts;
 	unsigned long paddr, vaddr;
+<<<<<<< HEAD
+=======
+	unsigned long expires;
+>>>>>>> v4.9.227
 
 	vaddr = (unsigned long)vmf->virtual_address;
 	gru_dbg(grudev, "vma %p, vaddr 0x%lx (0x%lx)\n",
@@ -954,7 +962,12 @@ again:
 			mutex_unlock(&gts->ts_ctxlock);
 			set_current_state(TASK_INTERRUPTIBLE);
 			schedule_timeout(GRU_ASSIGN_DELAY);  /* true hack ZZZ */
+<<<<<<< HEAD
 			if (gts->ts_steal_jiffies + GRU_STEAL_DELAY < jiffies)
+=======
+			expires = gts->ts_steal_jiffies + GRU_STEAL_DELAY;
+			if (time_before(expires, jiffies))
+>>>>>>> v4.9.227
 				gru_steal_context(gts);
 			goto again;
 		}

@@ -35,18 +35,25 @@
 #include <linux/moduleparam.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
+<<<<<<< HEAD
 #include <linux/ip.h>
 #include <linux/tcp.h>
 #include <linux/if_vlan.h>
 #include <linux/inet_lro.h>
+=======
+#include <linux/if_vlan.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 
 #include "nes.h"
 
+<<<<<<< HEAD
 static unsigned int nes_lro_max_aggr = NES_LRO_MAX_AGGR;
 module_param(nes_lro_max_aggr, uint, 0444);
 MODULE_PARM_DESC(nes_lro_max_aggr, "NIC LRO max packet aggregation");
 
+=======
+>>>>>>> v4.9.227
 static int wide_ppm_offset;
 module_param(wide_ppm_offset, int, 0644);
 MODULE_PARM_DESC(wide_ppm_offset, "Increase CX4 interface clock ppm offset, 0=100ppm (default), 1=300ppm");
@@ -1642,6 +1649,7 @@ static void nes_rq_wqes_timeout(unsigned long parm)
 }
 
 
+<<<<<<< HEAD
 static int nes_lro_get_skb_hdr(struct sk_buff *skb, void **iphdr,
 			       void **tcph, u64 *hdr_flags, void *priv)
 {
@@ -1661,6 +1669,8 @@ static int nes_lro_get_skb_hdr(struct sk_buff *skb, void **iphdr,
 }
 
 
+=======
+>>>>>>> v4.9.227
 /**
  * nes_init_nic_qp
  */
@@ -1895,6 +1905,7 @@ int nes_init_nic_qp(struct nes_device *nesdev, struct net_device *netdev)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	nesvnic->lro_mgr.max_aggr       = nes_lro_max_aggr;
 	nesvnic->lro_mgr.max_desc       = NES_MAX_LRO_DESCRIPTORS;
 	nesvnic->lro_mgr.lro_arr        = nesvnic->lro_desc;
@@ -1903,6 +1914,8 @@ int nes_init_nic_qp(struct nes_device *nesdev, struct net_device *netdev)
 	nesvnic->lro_mgr.dev            = netdev;
 	nesvnic->lro_mgr.ip_summed      = CHECKSUM_UNNECESSARY;
 	nesvnic->lro_mgr.ip_summed_aggr = CHECKSUM_UNNECESSARY;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -2809,13 +2822,19 @@ void nes_nic_ce_handler(struct nes_device *nesdev, struct nes_hw_nic_cq *cq)
 	u16 pkt_type;
 	u16 rqes_processed = 0;
 	u8 sq_cqes = 0;
+<<<<<<< HEAD
 	u8 nes_use_lro = 0;
+=======
+>>>>>>> v4.9.227
 
 	head = cq->cq_head;
 	cq_size = cq->cq_size;
 	cq->cqes_pending = 1;
+<<<<<<< HEAD
 	if (nesvnic->netdev->features & NETIF_F_LRO)
 		nes_use_lro = 1;
+=======
+>>>>>>> v4.9.227
 	do {
 		if (le32_to_cpu(cq->cq_vbase[head].cqe_words[NES_NIC_CQE_MISC_IDX]) &
 				NES_NIC_CQE_VALID) {
@@ -2950,10 +2969,14 @@ void nes_nic_ce_handler(struct nes_device *nesdev, struct nes_hw_nic_cq *cq)
 
 					__vlan_hwaccel_put_tag(rx_skb, htons(ETH_P_8021Q), vlan_tag);
 				}
+<<<<<<< HEAD
 				if (nes_use_lro)
 					lro_receive_skb(&nesvnic->lro_mgr, rx_skb, NULL);
 				else
 					netif_receive_skb(rx_skb);
+=======
+				napi_gro_receive(&nesvnic->napi, rx_skb);
+>>>>>>> v4.9.227
 
 skip_rx_indicate0:
 				;
@@ -2984,8 +3007,11 @@ skip_rx_indicate0:
 
 	} while (1);
 
+<<<<<<< HEAD
 	if (nes_use_lro)
 		lro_flush_all(&nesvnic->lro_mgr);
+=======
+>>>>>>> v4.9.227
 	if (sq_cqes) {
 		barrier();
 		/* restart the queue if it had been stopped */
@@ -3861,7 +3887,11 @@ void nes_manage_arp_cache(struct net_device *netdev, unsigned char *mac_addr,
 				(((u32)mac_addr[2]) << 24) | (((u32)mac_addr[3]) << 16) |
 				(((u32)mac_addr[4]) << 8)  | (u32)mac_addr[5]);
 		cqp_wqe->wqe_words[NES_CQP_ARP_WQE_MAC_HIGH_IDX] = cpu_to_le32(
+<<<<<<< HEAD
 				(((u32)mac_addr[0]) << 16) | (u32)mac_addr[1]);
+=======
+				(((u32)mac_addr[0]) << 8) | (u32)mac_addr[1]);
+>>>>>>> v4.9.227
 	} else {
 		cqp_wqe->wqe_words[NES_CQP_ARP_WQE_MAC_ADDR_LOW_IDX] = 0;
 		cqp_wqe->wqe_words[NES_CQP_ARP_WQE_MAC_HIGH_IDX] = 0;

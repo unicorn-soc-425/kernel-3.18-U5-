@@ -8,21 +8,32 @@
  * licensing only applies to this file, and not this project as a
  * whole.
  *
+<<<<<<< HEAD
  *  a) This library is free software; you can redistribute it and/or
+=======
+ *  a) This file is free software; you can redistribute it and/or
+>>>>>>> v4.9.227
  *     modify it under the terms of the GNU General Public License as
  *     published by the Free Software Foundation; either version 2 of the
  *     License, or (at your option) any later version.
  *
+<<<<<<< HEAD
  *     This library is distributed in the hope that it will be useful,
+=======
+ *     This file is distributed in the hope that it will be useful,
+>>>>>>> v4.9.227
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  *
+<<<<<<< HEAD
  *     You should have received a copy of the GNU General Public
  *     License along with this library; if not, write to the Free
  *     Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
  *     MA 02110-1301 USA
  *
+=======
+>>>>>>> v4.9.227
  * Or, alternatively,
  *
  *  b) Permission is hereby granted, free of charge, to any person
@@ -47,6 +58,7 @@
  *     OTHER DEALINGS IN THE SOFTWARE.
  */
 
+<<<<<<< HEAD
 /include/ "skeleton.dtsi"
 
 / {
@@ -567,4 +579,33 @@
 			};
 		};
 	};
+=======
+#include "sun8i-a23-a33.dtsi"
+
+/ {
+	memory {
+		reg = <0x40000000 0x40000000>;
+	};
+};
+
+&ccu {
+	compatible = "allwinner,sun8i-a23-ccu";
+};
+
+&pio {
+	compatible = "allwinner,sun8i-a23-pinctrl";
+	interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
+		     <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>,
+		     <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&usb_otg {
+	compatible = "allwinner,sun6i-a31-musb";
+};
+
+&usbphy {
+	compatible = "allwinner,sun8i-a23-usb-phy";
+	reg = <0x01c19400 0x10>, <0x01c1a800 0x4>;
+	reg-names = "phy_ctrl", "pmu1";
+>>>>>>> v4.9.227
 };

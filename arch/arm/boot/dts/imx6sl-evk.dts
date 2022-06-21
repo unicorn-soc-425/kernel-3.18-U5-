@@ -52,6 +52,10 @@
 			regulator-max-microvolt = <5000000>;
 			gpio = <&gpio4 0 0>;
 			enable-active-high;
+<<<<<<< HEAD
+=======
+			vin-supply = <&swbst_reg>;
+>>>>>>> v4.9.227
 		};
 
 		reg_usb_otg2_vbus: regulator@1 {
@@ -62,6 +66,10 @@
 			regulator-max-microvolt = <5000000>;
 			gpio = <&gpio4 2 0>;
 			enable-active-high;
+<<<<<<< HEAD
+=======
+			vin-supply = <&swbst_reg>;
+>>>>>>> v4.9.227
 		};
 
 		reg_aud3v: regulator@2 {
@@ -124,7 +132,11 @@
 	flash: m25p80@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
+<<<<<<< HEAD
 		compatible = "st,m25p32";
+=======
+		compatible = "st,m25p32", "jedec,spi-nor";
+>>>>>>> v4.9.227
 		spi-max-frequency = <20000000>;
 		reg = <0>;
 	};
@@ -580,6 +592,13 @@
 	status = "okay";
 };
 
+<<<<<<< HEAD
+=======
+&snvs_poweroff {
+	status = "okay";
+};
+
+>>>>>>> v4.9.227
 &ssi2 {
 	status = "okay";
 };
@@ -611,8 +630,13 @@
 	pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
 	bus-width = <8>;
+<<<<<<< HEAD
 	cd-gpios = <&gpio4 7 0>;
 	wp-gpios = <&gpio4 6 0>;
+=======
+	cd-gpios = <&gpio4 7 GPIO_ACTIVE_LOW>;
+	wp-gpios = <&gpio4 6 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 	status = "okay";
 };
 
@@ -621,8 +645,13 @@
 	pinctrl-0 = <&pinctrl_usdhc2>;
 	pinctrl-1 = <&pinctrl_usdhc2_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc2_200mhz>;
+<<<<<<< HEAD
 	cd-gpios = <&gpio5 0 0>;
 	wp-gpios = <&gpio4 29 0>;
+=======
+	cd-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
+	wp-gpios = <&gpio4 29 GPIO_ACTIVE_HIGH>;
+>>>>>>> v4.9.227
 	status = "okay";
 };
 
@@ -631,6 +660,10 @@
 	pinctrl-0 = <&pinctrl_usdhc3>;
 	pinctrl-1 = <&pinctrl_usdhc3_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
+<<<<<<< HEAD
 	cd-gpios = <&gpio3 22 0>;
+=======
+	cd-gpios = <&gpio3 22 GPIO_ACTIVE_LOW>;
+>>>>>>> v4.9.227
 	status = "okay";
 };

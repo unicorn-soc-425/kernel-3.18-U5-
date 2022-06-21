@@ -81,6 +81,7 @@ static void sun4i_clkevt_time_start(u8 timer, bool periodic)
 	       timer_base + TIMER_CTL_REG(timer));
 }
 
+<<<<<<< HEAD
 static void sun4i_clkevt_mode(enum clock_event_mode mode,
 			      struct clock_event_device *clk)
 {
@@ -100,6 +101,27 @@ static void sun4i_clkevt_mode(enum clock_event_mode mode,
 		sun4i_clkevt_time_stop(0);
 		break;
 	}
+=======
+static int sun4i_clkevt_shutdown(struct clock_event_device *evt)
+{
+	sun4i_clkevt_time_stop(0);
+	return 0;
+}
+
+static int sun4i_clkevt_set_oneshot(struct clock_event_device *evt)
+{
+	sun4i_clkevt_time_stop(0);
+	sun4i_clkevt_time_start(0, false);
+	return 0;
+}
+
+static int sun4i_clkevt_set_periodic(struct clock_event_device *evt)
+{
+	sun4i_clkevt_time_stop(0);
+	sun4i_clkevt_time_setup(0, ticks_per_jiffy);
+	sun4i_clkevt_time_start(0, true);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int sun4i_clkevt_next_event(unsigned long evt,
@@ -116,7 +138,14 @@ static struct clock_event_device sun4i_clockevent = {
 	.name = "sun4i_tick",
 	.rating = 350,
 	.features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
+<<<<<<< HEAD
 	.set_mode = sun4i_clkevt_mode,
+=======
+	.set_state_shutdown = sun4i_clkevt_shutdown,
+	.set_state_periodic = sun4i_clkevt_set_periodic,
+	.set_state_oneshot = sun4i_clkevt_set_oneshot,
+	.tick_resume = sun4i_clkevt_shutdown,
+>>>>>>> v4.9.227
 	.set_next_event = sun4i_clkevt_next_event,
 };
 
@@ -147,7 +176,11 @@ static u64 notrace sun4i_timer_sched_read(void)
 	return ~readl(timer_base + TIMER_CNTVAL_REG(1));
 }
 
+<<<<<<< HEAD
 static void __init sun4i_timer_init(struct device_node *node)
+=======
+static int __init sun4i_timer_init(struct device_node *node)
+>>>>>>> v4.9.227
 {
 	unsigned long rate = 0;
 	struct clk *clk;
@@ -155,6 +188,7 @@ static void __init sun4i_timer_init(struct device_node *node)
 	u32 val;
 
 	timer_base = of_iomap(node, 0);
+<<<<<<< HEAD
 	if (!timer_base)
 		panic("Can't map registers");
 
@@ -166,6 +200,30 @@ static void __init sun4i_timer_init(struct device_node *node)
 	if (IS_ERR(clk))
 		panic("Can't get timer clock");
 	clk_prepare_enable(clk);
+=======
+	if (!timer_base) {
+		pr_crit("Can't map registers");
+		return -ENXIO;
+	}
+
+	irq = irq_of_parse_and_map(node, 0);
+	if (irq <= 0) {
+		pr_crit("Can't parse IRQ");
+		return -EINVAL;
+	}
+
+	clk = of_clk_get(node, 0);
+	if (IS_ERR(clk)) {
+		pr_crit("Can't get timer clock");
+		return PTR_ERR(clk);
+	}
+
+	ret = clk_prepare_enable(clk);
+	if (ret) {
+		pr_err("Failed to prepare clock");
+		return ret;
+	}
+>>>>>>> v4.9.227
 
 	rate = clk_get_rate(clk);
 
@@ -174,9 +232,27 @@ static void __init sun4i_timer_init(struct device_node *node)
 	       TIMER_CTL_CLK_SRC(TIMER_CTL_CLK_SRC_OSC24M),
 	       timer_base + TIMER_CTL_REG(1));
 
+<<<<<<< HEAD
 	sched_clock_register(sun4i_timer_sched_read, 32, rate);
 	clocksource_mmio_init(timer_base + TIMER_CNTVAL_REG(1), node->name,
 			      rate, 350, 32, clocksource_mmio_readl_down);
+=======
+	/*
+	 * sched_clock_register does not have priorities, and on sun6i and
+	 * later there is a better sched_clock registered by arm_arch_timer.c
+	 */
+	if (of_machine_is_compatible("allwinner,sun4i-a10") ||
+	    of_machine_is_compatible("allwinner,sun5i-a13") ||
+	    of_machine_is_compatible("allwinner,sun5i-a10s"))
+		sched_clock_register(sun4i_timer_sched_read, 32, rate);
+
+	ret = clocksource_mmio_init(timer_base + TIMER_CNTVAL_REG(1), node->name,
+				    rate, 350, 32, clocksource_mmio_readl_down);
+	if (ret) {
+		pr_err("Failed to register clocksource");
+		return ret;
+	}
+>>>>>>> v4.9.227
 
 	ticks_per_jiffy = DIV_ROUND_UP(rate, HZ);
 
@@ -196,12 +272,24 @@ static void __init sun4i_timer_init(struct device_node *node)
 					TIMER_SYNC_TICKS, 0xffffffff);
 
 	ret = setup_irq(irq, &sun4i_timer_irq);
+<<<<<<< HEAD
 	if (ret)
 		pr_warn("failed to setup irq %d\n", irq);
+=======
+	if (ret) {
+		pr_err("failed to setup irq %d\n", irq);
+		return ret;
+	}
+>>>>>>> v4.9.227
 
 	/* Enable timer0 interrupt */
 	val = readl(timer_base + TIMER_IRQ_EN_REG);
 	writel(val | TIMER_IRQ_EN(0), timer_base + TIMER_IRQ_EN_REG);
+<<<<<<< HEAD
+=======
+
+	return ret;
+>>>>>>> v4.9.227
 }
 CLOCKSOURCE_OF_DECLARE(sun4i, "allwinner,sun4i-a10-timer",
 		       sun4i_timer_init);

@@ -27,13 +27,24 @@
 
 #include "i915_drv.h"
 
+<<<<<<< HEAD
 struct i915_gem_batch_pool {
 	struct drm_device *dev;
+=======
+struct intel_engine_cs;
+
+struct i915_gem_batch_pool {
+	struct intel_engine_cs *engine;
+>>>>>>> v4.9.227
 	struct list_head cache_list[4];
 };
 
 /* i915_gem_batch_pool.c */
+<<<<<<< HEAD
 void i915_gem_batch_pool_init(struct drm_device *dev,
+=======
+void i915_gem_batch_pool_init(struct intel_engine_cs *engine,
+>>>>>>> v4.9.227
 			      struct i915_gem_batch_pool *pool);
 void i915_gem_batch_pool_fini(struct i915_gem_batch_pool *pool);
 struct drm_i915_gem_object*

@@ -670,7 +670,11 @@ struct u300_pmx {
  * u300_pmx_registers - the array of registers read/written for each pinmux
  * shunt setting
  */
+<<<<<<< HEAD
 const u32 u300_pmx_registers[] = {
+=======
+static const u32 u300_pmx_registers[] = {
+>>>>>>> v4.9.227
 	U300_SYSCON_PMC1LR,
 	U300_SYSCON_PMC1HR,
 	U300_SYSCON_PMC2R,
@@ -1067,10 +1071,17 @@ static int u300_pmx_probe(struct platform_device *pdev)
 	if (IS_ERR(upmx->virtbase))
 		return PTR_ERR(upmx->virtbase);
 
+<<<<<<< HEAD
 	upmx->pctl = pinctrl_register(&u300_pmx_desc, &pdev->dev, upmx);
 	if (!upmx->pctl) {
 		dev_err(&pdev->dev, "could not register U300 pinmux driver\n");
 		return -EINVAL;
+=======
+	upmx->pctl = devm_pinctrl_register(&pdev->dev, &u300_pmx_desc, upmx);
+	if (IS_ERR(upmx->pctl)) {
+		dev_err(&pdev->dev, "could not register U300 pinmux driver\n");
+		return PTR_ERR(upmx->pctl);
+>>>>>>> v4.9.227
 	}
 
 	platform_set_drvdata(pdev, upmx);
@@ -1080,6 +1091,7 @@ static int u300_pmx_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int u300_pmx_remove(struct platform_device *pdev)
 {
 	struct u300_pmx *upmx = platform_get_drvdata(pdev);
@@ -1089,6 +1101,8 @@ static int u300_pmx_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id u300_pinctrl_match[] = {
 	{ .compatible = "stericsson,pinctrl-u300" },
 	{},
@@ -1098,11 +1112,17 @@ static const struct of_device_id u300_pinctrl_match[] = {
 static struct platform_driver u300_pmx_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = u300_pinctrl_match,
 	},
 	.probe = u300_pmx_probe,
 	.remove = u300_pmx_remove,
+=======
+		.of_match_table = u300_pinctrl_match,
+	},
+	.probe = u300_pmx_probe,
+>>>>>>> v4.9.227
 };
 
 static int __init u300_pmx_init(void)

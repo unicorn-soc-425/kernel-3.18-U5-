@@ -21,7 +21,10 @@
 #include <net/netlink.h>
 
 #include "security.h"
+<<<<<<< HEAD
 #include "avc.h"
+=======
+>>>>>>> v4.9.227
 
 static struct sock *selnl;
 

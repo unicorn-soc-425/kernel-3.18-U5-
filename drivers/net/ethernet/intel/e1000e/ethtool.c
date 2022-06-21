@@ -1,5 +1,9 @@
 /* Intel PRO/1000 Linux driver
+<<<<<<< HEAD
  * Copyright(c) 1999 - 2014 Intel Corporation.
+=======
+ * Copyright(c) 1999 - 2015 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -201,6 +205,12 @@ static int e1000_get_settings(struct net_device *netdev,
 	else
 		ecmd->eth_tp_mdix_ctrl = hw->phy.mdix;
 
+<<<<<<< HEAD
+=======
+	if (hw->phy.media_type != e1000_media_type_copper)
+		ecmd->eth_tp_mdix_ctrl = ETH_TP_MDI_INVALID;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -236,8 +246,18 @@ static int e1000_set_spd_dplx(struct e1000_adapter *adapter, u32 spd, u8 dplx)
 		mac->forced_speed_duplex = ADVERTISE_100_FULL;
 		break;
 	case SPEED_1000 + DUPLEX_FULL:
+<<<<<<< HEAD
 		mac->autoneg = 1;
 		adapter->hw.phy.autoneg_advertised = ADVERTISE_1000_FULL;
+=======
+		if (adapter->hw.phy.media_type == e1000_media_type_copper) {
+			mac->autoneg = 1;
+			adapter->hw.phy.autoneg_advertised =
+				ADVERTISE_1000_FULL;
+		} else {
+			mac->forced_speed_duplex = ADVERTISE_1000_FULL;
+		}
+>>>>>>> v4.9.227
 		break;
 	case SPEED_1000 + DUPLEX_HALF:	/* not supported */
 	default:
@@ -439,8 +459,14 @@ static void e1000_get_regs(struct net_device *netdev,
 
 	memset(p, 0, E1000_REGS_LEN * sizeof(u32));
 
+<<<<<<< HEAD
 	regs->version = (1 << 24) | (adapter->pdev->revision << 16) |
 	    adapter->pdev->device;
+=======
+	regs->version = (1u << 24) |
+			(adapter->pdev->revision << 16) |
+			adapter->pdev->device;
+>>>>>>> v4.9.227
 
 	regs_buff[0] = er32(CTRL);
 	regs_buff[1] = er32(STATUS);
@@ -648,8 +674,11 @@ static void e1000_get_drvinfo(struct net_device *netdev,
 
 	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->regdump_len = e1000_get_regs_len(netdev);
 	drvinfo->eedump_len = e1000_get_eeprom_len(netdev);
+=======
+>>>>>>> v4.9.227
 }
 
 static void e1000_get_ringparam(struct net_device *netdev,
@@ -896,27 +925,47 @@ static int e1000_reg_test(struct e1000_adapter *adapter, u64 *data)
 	case e1000_pchlan:
 	case e1000_pch2lan:
 	case e1000_pch_lpt:
+<<<<<<< HEAD
 		mask |= (1 << 18);
+=======
+	case e1000_pch_spt:
+		mask |= BIT(18);
+>>>>>>> v4.9.227
 		break;
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 	if (mac->type == e1000_pch_lpt)
+=======
+	if ((mac->type == e1000_pch_lpt) || (mac->type == e1000_pch_spt))
+>>>>>>> v4.9.227
 		wlock_mac = (er32(FWSM) & E1000_FWSM_WLOCK_MAC_MASK) >>
 		    E1000_FWSM_WLOCK_MAC_SHIFT;
 
 	for (i = 0; i < mac->rar_entry_count; i++) {
+<<<<<<< HEAD
 		if (mac->type == e1000_pch_lpt) {
+=======
+		if ((mac->type == e1000_pch_lpt) ||
+		    (mac->type == e1000_pch_spt)) {
+>>>>>>> v4.9.227
 			/* Cannot test write-protected SHRAL[n] registers */
 			if ((wlock_mac == 1) || (wlock_mac && (i > wlock_mac)))
 				continue;
 
 			/* SHRAH[9] different than the others */
 			if (i == 10)
+<<<<<<< HEAD
 				mask |= (1 << 30);
 			else
 				mask &= ~(1 << 30);
+=======
+				mask |= BIT(30);
+			else
+				mask &= ~BIT(30);
+>>>>>>> v4.9.227
 		}
 		if (mac->type == e1000_pch2lan) {
 			/* SHRAH[0,1,2] different than previous */
@@ -924,7 +973,11 @@ static int e1000_reg_test(struct e1000_adapter *adapter, u64 *data)
 				mask &= 0xFFF4FFFF;
 			/* SHRAH[3] different than SHRAH[0,1,2] */
 			if (i == 4)
+<<<<<<< HEAD
 				mask |= (1 << 30);
+=======
+				mask |= BIT(30);
+>>>>>>> v4.9.227
 			/* RAR[1-6] owned by management engine - skipping */
 			if (i > 0)
 				i += 6;
@@ -1019,7 +1072,11 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
 	/* Test each interrupt */
 	for (i = 0; i < 10; i++) {
 		/* Interrupt to test */
+<<<<<<< HEAD
 		mask = 1 << i;
+=======
+		mask = BIT(i);
+>>>>>>> v4.9.227
 
 		if (adapter->flags & FLAG_IS_ICH) {
 			switch (mask) {
@@ -1387,7 +1444,11 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
 	case e1000_phy_82579:
 		/* Disable PHY energy detect power down */
 		e1e_rphy(hw, PHY_REG(0, 21), &phy_reg);
+<<<<<<< HEAD
 		e1e_wphy(hw, PHY_REG(0, 21), phy_reg & ~(1 << 3));
+=======
+		e1e_wphy(hw, PHY_REG(0, 21), phy_reg & ~BIT(3));
+>>>>>>> v4.9.227
 		/* Disable full chip energy detect */
 		e1e_rphy(hw, PHY_REG(776, 18), &phy_reg);
 		e1e_wphy(hw, PHY_REG(776, 18), phy_reg | 1);
@@ -1453,7 +1514,11 @@ static int e1000_set_82571_fiber_loopback(struct e1000_adapter *adapter)
 
 	/* disable autoneg */
 	ctrl = er32(TXCW);
+<<<<<<< HEAD
 	ctrl &= ~(1 << 31);
+=======
+	ctrl &= ~BIT(31);
+>>>>>>> v4.9.227
 	ew32(TXCW, ctrl);
 
 	link = (er32(STATUS) & E1000_STATUS_LU);
@@ -1514,8 +1579,24 @@ static int e1000_set_es2lan_mac_loopback(struct e1000_adapter *adapter)
 static int e1000_setup_loopback_test(struct e1000_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
+<<<<<<< HEAD
 	u32 rctl;
 
+=======
+	u32 rctl, fext_nvm11, tarc0;
+
+	if (hw->mac.type == e1000_pch_spt) {
+		fext_nvm11 = er32(FEXTNVM11);
+		fext_nvm11 |= E1000_FEXTNVM11_DISABLE_MULR_FIX;
+		ew32(FEXTNVM11, fext_nvm11);
+		tarc0 = er32(TARC(0));
+		/* clear bits 28 & 29 (control of MULR concurrent requests) */
+		tarc0 &= 0xcfffffff;
+		/* set bit 29 (value of MULR requests is now 2) */
+		tarc0 |= 0x20000000;
+		ew32(TARC(0), tarc0);
+	}
+>>>>>>> v4.9.227
 	if (hw->phy.media_type == e1000_media_type_fiber ||
 	    hw->phy.media_type == e1000_media_type_internal_serdes) {
 		switch (hw->mac.type) {
@@ -1540,7 +1621,11 @@ static int e1000_setup_loopback_test(struct e1000_adapter *adapter)
 static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
+<<<<<<< HEAD
 	u32 rctl;
+=======
+	u32 rctl, fext_nvm11, tarc0;
+>>>>>>> v4.9.227
 	u16 phy_reg;
 
 	rctl = er32(RCTL);
@@ -1548,6 +1633,19 @@ static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
 	ew32(RCTL, rctl);
 
 	switch (hw->mac.type) {
+<<<<<<< HEAD
+=======
+	case e1000_pch_spt:
+		fext_nvm11 = er32(FEXTNVM11);
+		fext_nvm11 &= ~E1000_FEXTNVM11_DISABLE_MULR_FIX;
+		ew32(FEXTNVM11, fext_nvm11);
+		tarc0 = er32(TARC(0));
+		/* clear bits 28 & 29 (control of MULR concurrent requests) */
+		/* set bit 29 (value of MULR requests is now 0) */
+		tarc0 &= 0xcfffffff;
+		ew32(TARC(0), tarc0);
+		/* fall through */
+>>>>>>> v4.9.227
 	case e1000_80003es2lan:
 		if (hw->phy.media_type == e1000_media_type_fiber ||
 		    hw->phy.media_type == e1000_media_type_internal_serdes) {
@@ -1795,7 +1893,11 @@ static void e1000_diag_test(struct net_device *netdev,
 
 		if (if_running)
 			/* indicate we're in test mode */
+<<<<<<< HEAD
 			dev_close(netdev);
+=======
+			e1000e_close(netdev);
+>>>>>>> v4.9.227
 
 		if (e1000_reg_test(adapter, &data[0]))
 			eth_test->flags |= ETH_TEST_FL_FAILED;
@@ -1828,7 +1930,11 @@ static void e1000_diag_test(struct net_device *netdev,
 
 		clear_bit(__E1000_TESTING, &adapter->state);
 		if (if_running)
+<<<<<<< HEAD
 			dev_open(netdev);
+=======
+			e1000e_open(netdev);
+>>>>>>> v4.9.227
 	} else {
 		/* Online tests */
 
@@ -2262,6 +2368,7 @@ static int e1000e_get_ts_info(struct net_device *netdev,
 				  SOF_TIMESTAMPING_RX_HARDWARE |
 				  SOF_TIMESTAMPING_RAW_HARDWARE);
 
+<<<<<<< HEAD
 	info->tx_types = (1 << HWTSTAMP_TX_OFF) | (1 << HWTSTAMP_TX_ON);
 
 	info->rx_filters = ((1 << HWTSTAMP_FILTER_NONE) |
@@ -2275,6 +2382,21 @@ static int e1000e_get_ts_info(struct net_device *netdev,
 			    (1 << HWTSTAMP_FILTER_PTP_V2_SYNC) |
 			    (1 << HWTSTAMP_FILTER_PTP_V2_DELAY_REQ) |
 			    (1 << HWTSTAMP_FILTER_ALL));
+=======
+	info->tx_types = BIT(HWTSTAMP_TX_OFF) | BIT(HWTSTAMP_TX_ON);
+
+	info->rx_filters = (BIT(HWTSTAMP_FILTER_NONE) |
+			    BIT(HWTSTAMP_FILTER_PTP_V1_L4_SYNC) |
+			    BIT(HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_L4_SYNC) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_L2_SYNC) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_EVENT) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_SYNC) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_DELAY_REQ) |
+			    BIT(HWTSTAMP_FILTER_ALL));
+>>>>>>> v4.9.227
 
 	if (adapter->ptp_clock)
 		info->phc_index = ptp_clock_index(adapter->ptp_clock);

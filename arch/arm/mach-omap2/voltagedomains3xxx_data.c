@@ -95,7 +95,11 @@ static struct voltagedomain *voltagedomains_am35xx[] __initdata = {
 };
 
 
+<<<<<<< HEAD
 static const char *sys_clk_name __initdata = "sys_ck";
+=======
+static const char *const sys_clk_name __initconst = "sys_ck";
+>>>>>>> v4.9.227
 
 void __init omap3xxx_voltagedomains_init(void)
 {

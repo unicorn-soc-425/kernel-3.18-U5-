@@ -34,7 +34,11 @@
 #include <linux/usb.h>
 #include <linux/mm.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <media/saa7115.h>
+=======
+#include <media/i2c/saa7115.h>
+>>>>>>> v4.9.227
 
 #include "stk1160.h"
 #include "stk1160-reg.h"
@@ -162,7 +166,11 @@ static void stk1160_release(struct v4l2_device *v4l2_dev)
 {
 	struct stk1160 *dev = container_of(v4l2_dev, struct stk1160, v4l2_dev);
 
+<<<<<<< HEAD
 	stk1160_info("releasing all resources\n");
+=======
+	stk1160_dbg("releasing all resources\n");
+>>>>>>> v4.9.227
 
 	stk1160_i2c_unregister(dev);
 
@@ -363,9 +371,12 @@ static int stk1160_probe(struct usb_interface *interface,
 	dev->sd_saa7115 = v4l2_i2c_new_subdev(&dev->v4l2_dev, &dev->i2c_adap,
 		"saa7115_auto", 0, saa7113_addrs);
 
+<<<<<<< HEAD
 	stk1160_info("driver ver %s successfully loaded\n",
 		STK1160_VERSION);
 
+=======
+>>>>>>> v4.9.227
 	/* i2c reset saa711x */
 	v4l2_device_call_all(&dev->v4l2_dev, 0, core, reset, 0);
 	v4l2_device_call_all(&dev->v4l2_dev, 0, video, s_stream, 0);

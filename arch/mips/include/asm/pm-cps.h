@@ -13,10 +13,19 @@
 
 /*
  * The CM & CPC can only handle coherence & power control on a per-core basis,
+<<<<<<< HEAD
  * thus in an MT system the VPEs within each core are coupled and can only
  * enter or exit states requiring CM or CPC assistance in unison.
  */
 #ifdef CONFIG_MIPS_MT
+=======
+ * thus in an MT system the VP(E)s within each core are coupled and can only
+ * enter or exit states requiring CM or CPC assistance in unison.
+ */
+#if defined(CONFIG_CPU_MIPSR6)
+# define coupled_coherence cpu_has_vp
+#elif defined(CONFIG_MIPS_MT)
+>>>>>>> v4.9.227
 # define coupled_coherence cpu_has_mipsmt
 #else
 # define coupled_coherence 0

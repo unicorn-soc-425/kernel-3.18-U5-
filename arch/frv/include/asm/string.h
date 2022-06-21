@@ -33,7 +33,10 @@ extern void *memcpy(void *, const void *, __kernel_size_t);
 #define __HAVE_ARCH_STRNCAT 1
 #define __HAVE_ARCH_STRCMP 1
 #define __HAVE_ARCH_STRNCMP 1
+<<<<<<< HEAD
 #define __HAVE_ARCH_STRNICMP 1
+=======
+>>>>>>> v4.9.227
 #define __HAVE_ARCH_STRCHR 1
 #define __HAVE_ARCH_STRRCHR 1
 #define __HAVE_ARCH_STRSTR 1

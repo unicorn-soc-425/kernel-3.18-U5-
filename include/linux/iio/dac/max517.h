@@ -9,7 +9,11 @@
 #define IIO_DAC_MAX517_H_
 
 struct max517_platform_data {
+<<<<<<< HEAD
 	u16				vref_mv[2];
+=======
+	u16				vref_mv[8];
+>>>>>>> v4.9.227
 };
 
 #endif /* IIO_DAC_MAX517_H_ */

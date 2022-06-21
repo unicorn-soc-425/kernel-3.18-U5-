@@ -1,7 +1,11 @@
 /* DVB USB library compliant Linux driver for the WideView/ Yakumo/ Hama/
  * Typhoon/ Yuan/ Miglia DVB-T USB2.0 receiver.
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  *
  * Thanks to Steve Chang from WideView for providing support for the WT-220U.
  *
@@ -20,6 +24,7 @@ MODULE_PARM_DESC(debug, "set debugging level (1=info,xfer=2 (or-able))." DVB_USB
 
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
+<<<<<<< HEAD
 static int dtt200u_power_ctrl(struct dvb_usb_device *d, int onoff)
 {
 	u8 b = SET_INIT;
@@ -28,10 +33,31 @@ static int dtt200u_power_ctrl(struct dvb_usb_device *d, int onoff)
 		dvb_usb_generic_write(d,&b,2);
 
 	return 0;
+=======
+struct dtt200u_state {
+	unsigned char data[80];
+};
+
+static int dtt200u_power_ctrl(struct dvb_usb_device *d, int onoff)
+{
+	struct dtt200u_state *st = d->priv;
+	int ret = 0;
+
+	mutex_lock(&d->data_mutex);
+
+	st->data[0] = SET_INIT;
+
+	if (onoff)
+		ret = dvb_usb_generic_write(d, st->data, 2);
+
+	mutex_unlock(&d->data_mutex);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int dtt200u_streaming_ctrl(struct dvb_usb_adapter *adap, int onoff)
 {
+<<<<<<< HEAD
 	u8 b_streaming[2] = { SET_STREAMING, onoff };
 	u8 b_rst_pid = RESET_PID_FILTER;
 
@@ -40,10 +66,35 @@ static int dtt200u_streaming_ctrl(struct dvb_usb_adapter *adap, int onoff)
 	if (onoff == 0)
 		dvb_usb_generic_write(adap->dev, &b_rst_pid, 1);
 	return 0;
+=======
+	struct dvb_usb_device *d = adap->dev;
+	struct dtt200u_state *st = d->priv;
+	int ret;
+
+	mutex_lock(&d->data_mutex);
+	st->data[0] = SET_STREAMING;
+	st->data[1] = onoff;
+
+	ret = dvb_usb_generic_write(adap->dev, st->data, 2);
+	if (ret < 0)
+		goto ret;
+
+	if (onoff)
+		goto ret;
+
+	st->data[0] = RESET_PID_FILTER;
+	ret = dvb_usb_generic_write(adap->dev, st->data, 1);
+
+ret:
+	mutex_unlock(&d->data_mutex);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int dtt200u_pid_filter(struct dvb_usb_adapter *adap, int index, u16 pid, int onoff)
 {
+<<<<<<< HEAD
 	u8 b_pid[4];
 	pid = onoff ? pid : 0;
 
@@ -86,6 +137,69 @@ static int dtt200u_rc_query(struct dvb_usb_device *d, u32 *event, int *state)
 	if (key[0] != 0)
 		deb_info("key: %*ph\n", 5, key);
 	return 0;
+=======
+	struct dvb_usb_device *d = adap->dev;
+	struct dtt200u_state *st = d->priv;
+	int ret;
+
+	pid = onoff ? pid : 0;
+
+	mutex_lock(&d->data_mutex);
+	st->data[0] = SET_PID_FILTER;
+	st->data[1] = index;
+	st->data[2] = pid & 0xff;
+	st->data[3] = (pid >> 8) & 0x1f;
+
+	ret = dvb_usb_generic_write(adap->dev, st->data, 4);
+	mutex_unlock(&d->data_mutex);
+
+	return ret;
+}
+
+static int dtt200u_rc_query(struct dvb_usb_device *d)
+{
+	struct dtt200u_state *st = d->priv;
+	u32 scancode;
+	int ret;
+
+	mutex_lock(&d->data_mutex);
+	st->data[0] = GET_RC_CODE;
+
+	ret = dvb_usb_generic_rw(d, st->data, 1, st->data, 5, 0);
+	if (ret < 0)
+		goto ret;
+
+	if (st->data[0] == 1) {
+		enum rc_type proto = RC_TYPE_NEC;
+
+		scancode = st->data[1];
+		if ((u8) ~st->data[1] != st->data[2]) {
+			/* Extended NEC */
+			scancode = scancode << 8;
+			scancode |= st->data[2];
+			proto = RC_TYPE_NECX;
+		}
+		scancode = scancode << 8;
+		scancode |= st->data[3];
+
+		/* Check command checksum is ok */
+		if ((u8) ~st->data[3] == st->data[4])
+			rc_keydown(d->rc_dev, proto, scancode, 0);
+		else
+			rc_keyup(d->rc_dev);
+	} else if (st->data[0] == 2) {
+		rc_repeat(d->rc_dev);
+	} else {
+		rc_keyup(d->rc_dev);
+	}
+
+	if (st->data[0] != 0)
+		deb_info("st->data: %*ph\n", 5, st->data);
+
+ret:
+	mutex_unlock(&d->data_mutex);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static int dtt200u_frontend_attach(struct dvb_usb_adapter *adap)
@@ -137,6 +251,11 @@ static struct dvb_usb_device_properties dtt200u_properties = {
 	.usb_ctrl = CYPRESS_FX2,
 	.firmware = "dvb-usb-dtt200u-01.fw",
 
+<<<<<<< HEAD
+=======
+	.size_of_priv     = sizeof(struct dtt200u_state),
+
+>>>>>>> v4.9.227
 	.num_adapters = 1,
 	.adapter = {
 		{
@@ -164,11 +283,19 @@ static struct dvb_usb_device_properties dtt200u_properties = {
 	},
 	.power_ctrl      = dtt200u_power_ctrl,
 
+<<<<<<< HEAD
 	.rc.legacy = {
 		.rc_interval     = 300,
 		.rc_map_table    = rc_map_dtt200u_table,
 		.rc_map_size     = ARRAY_SIZE(rc_map_dtt200u_table),
 		.rc_query        = dtt200u_rc_query,
+=======
+	.rc.core = {
+		.rc_interval     = 300,
+		.rc_codes        = RC_MAP_DTT200U,
+		.rc_query        = dtt200u_rc_query,
+		.allowed_protos  = RC_BIT_NEC,
+>>>>>>> v4.9.227
 	},
 
 	.generic_bulk_ctrl_endpoint = 0x01,
@@ -187,6 +314,11 @@ static struct dvb_usb_device_properties wt220u_properties = {
 	.usb_ctrl = CYPRESS_FX2,
 	.firmware = "dvb-usb-wt220u-02.fw",
 
+<<<<<<< HEAD
+=======
+	.size_of_priv     = sizeof(struct dtt200u_state),
+
+>>>>>>> v4.9.227
 	.num_adapters = 1,
 	.adapter = {
 		{
@@ -214,11 +346,19 @@ static struct dvb_usb_device_properties wt220u_properties = {
 	},
 	.power_ctrl      = dtt200u_power_ctrl,
 
+<<<<<<< HEAD
 	.rc.legacy = {
 		.rc_interval     = 300,
 		.rc_map_table      = rc_map_dtt200u_table,
 		.rc_map_size = ARRAY_SIZE(rc_map_dtt200u_table),
 		.rc_query        = dtt200u_rc_query,
+=======
+	.rc.core = {
+		.rc_interval     = 300,
+		.rc_codes        = RC_MAP_DTT200U,
+		.rc_query        = dtt200u_rc_query,
+		.allowed_protos  = RC_BIT_NEC,
+>>>>>>> v4.9.227
 	},
 
 	.generic_bulk_ctrl_endpoint = 0x01,
@@ -237,6 +377,11 @@ static struct dvb_usb_device_properties wt220u_fc_properties = {
 	.usb_ctrl = CYPRESS_FX2,
 	.firmware = "dvb-usb-wt220u-fc03.fw",
 
+<<<<<<< HEAD
+=======
+	.size_of_priv     = sizeof(struct dtt200u_state),
+
+>>>>>>> v4.9.227
 	.num_adapters = 1,
 	.adapter = {
 		{
@@ -264,11 +409,19 @@ static struct dvb_usb_device_properties wt220u_fc_properties = {
 	},
 	.power_ctrl      = dtt200u_power_ctrl,
 
+<<<<<<< HEAD
 	.rc.legacy = {
 		.rc_interval     = 300,
 		.rc_map_table    = rc_map_dtt200u_table,
 		.rc_map_size     = ARRAY_SIZE(rc_map_dtt200u_table),
 		.rc_query        = dtt200u_rc_query,
+=======
+	.rc.core = {
+		.rc_interval     = 300,
+		.rc_codes        = RC_MAP_DTT200U,
+		.rc_query        = dtt200u_rc_query,
+		.allowed_protos  = RC_BIT_NEC,
+>>>>>>> v4.9.227
 	},
 
 	.generic_bulk_ctrl_endpoint = 0x01,
@@ -287,6 +440,11 @@ static struct dvb_usb_device_properties wt220u_zl0353_properties = {
 	.usb_ctrl = CYPRESS_FX2,
 	.firmware = "dvb-usb-wt220u-zl0353-01.fw",
 
+<<<<<<< HEAD
+=======
+	.size_of_priv     = sizeof(struct dtt200u_state),
+
+>>>>>>> v4.9.227
 	.num_adapters = 1,
 	.adapter = {
 		{
@@ -314,11 +472,19 @@ static struct dvb_usb_device_properties wt220u_zl0353_properties = {
 	},
 	.power_ctrl      = dtt200u_power_ctrl,
 
+<<<<<<< HEAD
 	.rc.legacy = {
 		.rc_interval     = 300,
 		.rc_map_table    = rc_map_dtt200u_table,
 		.rc_map_size     = ARRAY_SIZE(rc_map_dtt200u_table),
 		.rc_query        = dtt200u_rc_query,
+=======
+	.rc.core = {
+		.rc_interval     = 300,
+		.rc_codes        = RC_MAP_DTT200U,
+		.rc_query        = dtt200u_rc_query,
+		.allowed_protos  = RC_BIT_NEC,
+>>>>>>> v4.9.227
 	},
 
 	.generic_bulk_ctrl_endpoint = 0x01,
@@ -337,6 +503,11 @@ static struct dvb_usb_device_properties wt220u_miglia_properties = {
 	.usb_ctrl = CYPRESS_FX2,
 	.firmware = "dvb-usb-wt220u-miglia-01.fw",
 
+<<<<<<< HEAD
+=======
+	.size_of_priv     = sizeof(struct dtt200u_state),
+
+>>>>>>> v4.9.227
 	.num_adapters = 1,
 	.generic_bulk_ctrl_endpoint = 0x01,
 
@@ -362,7 +533,11 @@ static struct usb_driver dtt200u_usb_driver = {
 
 module_usb_driver(dtt200u_usb_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@desy.de>");
+=======
+MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@posteo.de>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Driver for the WideView/Yakumo/Hama/Typhoon/Club3D/Miglia DVB-T USB2.0 devices");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");

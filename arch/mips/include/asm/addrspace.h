@@ -45,7 +45,11 @@
 /*
  * Returns the kernel segment base of a given address
  */
+<<<<<<< HEAD
 #define KSEGX(a)		((_ACAST32_ (a)) & 0xe0000000)
+=======
+#define KSEGX(a)		((_ACAST32_(a)) & _ACAST32_(0xe0000000))
+>>>>>>> v4.9.227
 
 /*
  * Returns the physical address of a CKSEGx / XKPHYS address
@@ -126,8 +130,12 @@
 #define PHYS_TO_XKSEG_UNCACHED(p)	PHYS_TO_XKPHYS(K_CALG_UNCACHED, (p))
 #define PHYS_TO_XKSEG_CACHED(p)		PHYS_TO_XKPHYS(K_CALG_COH_SHAREABLE, (p))
 #define XKPHYS_TO_PHYS(p)		((p) & TO_PHYS_MASK)
+<<<<<<< HEAD
 #define PHYS_TO_XKPHYS(cm, a)		(_CONST64_(0x8000000000000000) | \
 					 (_CONST64_(cm) << 59) | (a))
+=======
+#define PHYS_TO_XKPHYS(cm, a)		(XKPHYS | (_ACAST64_(cm) << 59) | (a))
+>>>>>>> v4.9.227
 
 /*
  * The ultimate limited of the 64-bit MIPS architecture:  2 bits for selecting

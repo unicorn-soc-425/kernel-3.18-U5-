@@ -256,7 +256,11 @@ set_rte (unsigned int gsi, unsigned int irq, unsigned int dest, int mask)
 }
 
 static void
+<<<<<<< HEAD
 nop (struct irq_data *data)
+=======
+iosapic_nop (struct irq_data *data)
+>>>>>>> v4.9.227
 {
 	/* do nothing... */
 }
@@ -415,7 +419,11 @@ iosapic_unmask_level_irq (struct irq_data *data)
 #define iosapic_shutdown_level_irq	mask_irq
 #define iosapic_enable_level_irq	unmask_irq
 #define iosapic_disable_level_irq	mask_irq
+<<<<<<< HEAD
 #define iosapic_ack_level_irq		nop
+=======
+#define iosapic_ack_level_irq		iosapic_nop
+>>>>>>> v4.9.227
 
 static struct irq_chip irq_type_iosapic_level = {
 	.name =			"IO-SAPIC-level",
@@ -453,7 +461,11 @@ iosapic_ack_edge_irq (struct irq_data *data)
 }
 
 #define iosapic_enable_edge_irq		unmask_irq
+<<<<<<< HEAD
 #define iosapic_disable_edge_irq	nop
+=======
+#define iosapic_disable_edge_irq	iosapic_nop
+>>>>>>> v4.9.227
 
 static struct irq_chip irq_type_iosapic_edge = {
 	.name =			"IO-SAPIC-edge",
@@ -610,9 +622,15 @@ register_intr (unsigned int gsi, int irq, unsigned char delivery,
 			       chip->name, irq_type->name);
 		chip = irq_type;
 	}
+<<<<<<< HEAD
 	__irq_set_chip_handler_name_locked(irq, chip, trigger == IOSAPIC_EDGE ?
 					   handle_edge_irq : handle_level_irq,
 					   NULL);
+=======
+	irq_set_chip_handler_name_locked(irq_get_irq_data(irq), chip,
+		trigger == IOSAPIC_EDGE ? handle_edge_irq : handle_level_irq,
+		NULL);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -690,7 +708,11 @@ skip_numa_setup:
 	do {
 		if (++cpu >= nr_cpu_ids)
 			cpu = 0;
+<<<<<<< HEAD
 	} while (!cpu_online(cpu) || !cpu_isset(cpu, domain));
+=======
+	} while (!cpu_online(cpu) || !cpumask_test_cpu(cpu, &domain));
+>>>>>>> v4.9.227
 
 	return cpu_physical_id(cpu);
 #else  /* CONFIG_SMP */
@@ -838,7 +860,11 @@ iosapic_unregister_intr (unsigned int gsi)
 	if (iosapic_intr_info[irq].count == 0) {
 #ifdef CONFIG_SMP
 		/* Clear affinity */
+<<<<<<< HEAD
 		cpumask_setall(irq_get_irq_data(irq)->affinity);
+=======
+		cpumask_setall(irq_get_affinity_mask(irq));
+>>>>>>> v4.9.227
 #endif
 		/* Clear the interrupt information */
 		iosapic_intr_info[irq].dest = 0;

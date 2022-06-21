@@ -167,8 +167,12 @@ static void __init parse_tags(const struct tag *t)
 {
 	for (; t->hdr.size; t = tag_next(t))
 		if (!parse_tag(t))
+<<<<<<< HEAD
 			printk(KERN_WARNING
 				"Ignoring unrecognised tag 0x%08x\n",
+=======
+			pr_warn("Ignoring unrecognised tag 0x%08x\n",
+>>>>>>> v4.9.227
 				t->hdr.tag);
 }
 
@@ -193,7 +197,11 @@ setup_machine_tags(phys_addr_t __atags_pointer, unsigned int machine_nr)
 	 */
 	for_each_machine_desc(p)
 		if (machine_nr == p->nr) {
+<<<<<<< HEAD
 			printk("Machine: %s\n", p->name);
+=======
+			pr_info("Machine: %s\n", p->name);
+>>>>>>> v4.9.227
 			mdesc = p;
 			break;
 		}

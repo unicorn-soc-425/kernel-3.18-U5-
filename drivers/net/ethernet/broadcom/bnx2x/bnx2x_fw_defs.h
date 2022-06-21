@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 /* bnx2x_fw_defs.h: Broadcom Everest network driver.
  *
  * Copyright (c) 2007-2013 Broadcom Corporation
+=======
+/* bnx2x_fw_defs.h: Qlogic Everest network driver.
+ *
+ * Copyright (c) 2007-2013 Broadcom Corporation
+ * Copyright (c) 2014 QLogic Corporation
+ * All rights reserved
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -372,7 +380,11 @@
 #define MAX_COS_NUMBER 4
 #define MAX_TRAFFIC_TYPES 8
 #define MAX_PFC_PRIORITIES 8
+<<<<<<< HEAD
 
+=======
+#define MAX_VLAN_PRIORITIES 8
+>>>>>>> v4.9.227
 	/* used by array traffic_type_to_priority[] to mark traffic type \
 	that is not mapped to priority*/
 #define LLFC_TRAFFIC_TYPE_TO_PRIORITY_UNMAPPED 0xFF

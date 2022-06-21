@@ -14,6 +14,10 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/mutex.h>
+>>>>>>> v4.9.227
 #include <linux/etherdevice.h>
 #include <linux/netlink.h>
 #include <asm/byteorder.h>
@@ -21,6 +25,7 @@
 
 #include "netlink_k.h"
 
+<<<<<<< HEAD
 #if defined(DEFINE_MUTEX)
 static DEFINE_MUTEX(netlink_mutex);
 #else
@@ -28,14 +33,22 @@ static struct semaphore netlink_mutex;
 #define mutex_lock(x)		down(x)
 #define mutex_unlock(x)		up(x)
 #endif
+=======
+static DEFINE_MUTEX(netlink_mutex);
+>>>>>>> v4.9.227
 
 #define ND_MAX_GROUP		30
 #define ND_IFINDEX_LEN		sizeof(int)
 #define ND_NLMSG_SPACE(len)	(NLMSG_SPACE(len) + ND_IFINDEX_LEN)
 #define ND_NLMSG_DATA(nlh)	((void *)((char *)NLMSG_DATA(nlh) + \
 						  ND_IFINDEX_LEN))
+<<<<<<< HEAD
 #define ND_NLMSG_S_LEN(len)	(len+ND_IFINDEX_LEN)
 #define ND_NLMSG_R_LEN(nlh)	(nlh->nlmsg_len-ND_IFINDEX_LEN)
+=======
+#define ND_NLMSG_S_LEN(len)	(len + ND_IFINDEX_LEN)
+#define ND_NLMSG_R_LEN(nlh)	(nlh->nlmsg_len - ND_IFINDEX_LEN)
+>>>>>>> v4.9.227
 #define ND_NLMSG_IFIDX(nlh)	NLMSG_DATA(nlh)
 #define ND_MAX_MSG_LEN		(1024 * 32)
 
@@ -88,17 +101,25 @@ static void netlink_rcv(struct sk_buff *skb)
 }
 
 struct sock *netlink_init(int unit,
+<<<<<<< HEAD
 	void (*cb)(struct net_device *dev, u16 type, void *msg, int len))
+=======
+			  void (*cb)(struct net_device *dev, u16 type,
+				     void *msg, int len))
+>>>>>>> v4.9.227
 {
 	struct sock *sock;
 	struct netlink_kernel_cfg cfg = {
 		.input  = netlink_rcv,
 	};
 
+<<<<<<< HEAD
 #if !defined(DEFINE_MUTEX)
 	init_MUTEX(&netlink_mutex);
 #endif
 
+=======
+>>>>>>> v4.9.227
 	sock = netlink_kernel_create(&init_net, unit, &cfg);
 
 	if (sock)
@@ -107,11 +128,14 @@ struct sock *netlink_init(int unit,
 	return sock;
 }
 
+<<<<<<< HEAD
 void netlink_exit(struct sock *sock)
 {
 	sock_release(sock->sk_socket);
 }
 
+=======
+>>>>>>> v4.9.227
 int netlink_send(struct sock *sock, int group, u16 type, void *msg, int len)
 {
 	static u32 seq;
@@ -122,7 +146,11 @@ int netlink_send(struct sock *sock, int group, u16 type, void *msg, int len)
 	if (group > ND_MAX_GROUP)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (!netlink_has_listeners(sock, group+1))
+=======
+	if (!netlink_has_listeners(sock, group + 1))
+>>>>>>> v4.9.227
 		return -ESRCH;
 
 	skb = alloc_skb(NLMSG_SPACE(len), GFP_ATOMIC);
@@ -136,14 +164,22 @@ int netlink_send(struct sock *sock, int group, u16 type, void *msg, int len)
 	NETLINK_CB(skb).portid = 0;
 	NETLINK_CB(skb).dst_group = 0;
 
+<<<<<<< HEAD
 	ret = netlink_broadcast(sock, skb, 0, group+1, GFP_ATOMIC);
+=======
+	ret = netlink_broadcast(sock, skb, 0, group + 1, GFP_ATOMIC);
+>>>>>>> v4.9.227
 	if (!ret)
 		return len;
 
 	if (ret != -ESRCH)
 		pr_err("nl broadcast g=%d, t=%d, l=%d, r=%d\n",
 		       group, type, len, ret);
+<<<<<<< HEAD
 	else if (netlink_has_listeners(sock, group+1))
+=======
+	else if (netlink_has_listeners(sock, group + 1))
+>>>>>>> v4.9.227
 		return -EAGAIN;
 
 	return ret;

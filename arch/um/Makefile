@@ -43,8 +43,13 @@ endif
 
 HOST_DIR := arch/$(HEADER_ARCH)
 
+<<<<<<< HEAD
 include $(srctree)/$(ARCH_DIR)/Makefile-skas
 include $(srctree)/$(HOST_DIR)/Makefile.um
+=======
+include $(ARCH_DIR)/Makefile-skas
+include $(HOST_DIR)/Makefile.um
+>>>>>>> v4.9.227
 
 core-y += $(HOST_DIR)/um/
 
@@ -74,12 +79,21 @@ USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -I%,,$(KBUILD_CFLAGS))) \
 		-idirafter $(obj)/include -D__KERNEL__ -D__UM_HOST__
 
 #This will adjust *FLAGS accordingly to the platform.
+<<<<<<< HEAD
 include $(srctree)/$(ARCH_DIR)/Makefile-os-$(OS)
 
 KBUILD_CPPFLAGS += -I$(srctree)/$(HOST_DIR)/include \
 		   -I$(srctree)/$(HOST_DIR)/include/uapi \
 		   -I$(HOST_DIR)/include/generated \
 		   -I$(HOST_DIR)/include/generated/uapi
+=======
+include $(ARCH_DIR)/Makefile-os-$(OS)
+
+KBUILD_CPPFLAGS += -I$(srctree)/$(HOST_DIR)/include \
+		   -I$(srctree)/$(HOST_DIR)/include/uapi \
+		   -I$(objtree)/$(HOST_DIR)/include/generated \
+		   -I$(objtree)/$(HOST_DIR)/include/generated/uapi
+>>>>>>> v4.9.227
 
 # -Derrno=kernel_errno - This turns all kernel references to errno into
 # kernel_errno to separate them from the libc errno.  This allows -fno-common

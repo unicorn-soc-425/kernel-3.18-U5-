@@ -14,27 +14,55 @@
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/notifier.h>
+>>>>>>> v4.9.227
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
 #include <linux/reboot.h>
 
 #include <asm/proc-fns.h>
+<<<<<<< HEAD
 #include <asm/system_misc.h>
+=======
+>>>>>>> v4.9.227
 
 static void __iomem *base;
 static u32 reboot_offset;
 
+<<<<<<< HEAD
 static void hisi_restart(enum reboot_mode mode, const char *cmd)
+=======
+static int hisi_restart_handler(struct notifier_block *this,
+				unsigned long mode, void *cmd)
+>>>>>>> v4.9.227
 {
 	writel_relaxed(0xdeadbeef, base + reboot_offset);
 
 	while (1)
 		cpu_do_idle();
+<<<<<<< HEAD
 }
 
 static int hisi_reboot_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
+=======
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block hisi_restart_nb = {
+	.notifier_call = hisi_restart_handler,
+	.priority = 128,
+};
+
+static int hisi_reboot_probe(struct platform_device *pdev)
+{
+	struct device_node *np = pdev->dev.of_node;
+	int err;
+>>>>>>> v4.9.227
 
 	base = of_iomap(np, 0);
 	if (!base) {
@@ -44,6 +72,7 @@ static int hisi_reboot_probe(struct platform_device *pdev)
 
 	if (of_property_read_u32(np, "reboot-offset", &reboot_offset) < 0) {
 		pr_err("failed to find reboot-offset property\n");
+<<<<<<< HEAD
 		return -EINVAL;
 	}
 
@@ -53,6 +82,23 @@ static int hisi_reboot_probe(struct platform_device *pdev)
 }
 
 static struct of_device_id hisi_reboot_of_match[] = {
+=======
+		iounmap(base);
+		return -EINVAL;
+	}
+
+	err = register_restart_handler(&hisi_restart_nb);
+	if (err) {
+		dev_err(&pdev->dev, "cannot register restart handler (err=%d)\n",
+			err);
+		iounmap(base);
+	}
+
+	return err;
+}
+
+static const struct of_device_id hisi_reboot_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "hisilicon,sysctrl" },
 	{}
 };

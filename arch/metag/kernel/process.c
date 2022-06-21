@@ -174,8 +174,16 @@ void show_regs(struct pt_regs *regs)
 	show_trace(NULL, (unsigned long *)regs->ctx.AX[0].U0, regs);
 }
 
+<<<<<<< HEAD
 int copy_thread(unsigned long clone_flags, unsigned long usp,
 		unsigned long arg, struct task_struct *tsk)
+=======
+/*
+ * Copy architecture-specific thread state
+ */
+int copy_thread(unsigned long clone_flags, unsigned long usp,
+		unsigned long kthread_arg, struct task_struct *tsk)
+>>>>>>> v4.9.227
 {
 	struct pt_regs *childregs = task_pt_regs(tsk);
 	void *kernel_context = ((void *) childregs +
@@ -202,12 +210,22 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
 		global_base = __core_reg_get(A1GbP);
 		childregs->ctx.AX[0].U1 = (unsigned long) global_base;
 		childregs->ctx.AX[0].U0 = (unsigned long) kernel_context;
+<<<<<<< HEAD
 		/* Set D1Ar1=arg and D1RtP=usp (fn) */
 		childregs->ctx.DX[4].U1 = usp;
 		childregs->ctx.DX[3].U1 = arg;
 		tsk->thread.int_depth = 2;
 		return 0;
 	}
+=======
+		/* Set D1Ar1=kthread_arg and D1RtP=usp (fn) */
+		childregs->ctx.DX[4].U1 = usp;
+		childregs->ctx.DX[3].U1 = kthread_arg;
+		tsk->thread.int_depth = 2;
+		return 0;
+	}
+
+>>>>>>> v4.9.227
 	/*
 	 * Get a pointer to where the new child's register block should have
 	 * been pushed.
@@ -341,10 +359,17 @@ void flush_thread(void)
 /*
  * Free current thread data structures etc.
  */
+<<<<<<< HEAD
 void exit_thread(void)
 {
 	clear_fpu(&current->thread);
 	clear_dsp(&current->thread);
+=======
+void exit_thread(struct task_struct *tsk)
+{
+	clear_fpu(&tsk->thread);
+	clear_dsp(&tsk->thread);
+>>>>>>> v4.9.227
 }
 
 /* TODO: figure out how to unwind the kernel stack here to figure out

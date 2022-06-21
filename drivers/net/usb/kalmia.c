@@ -117,16 +117,27 @@ kalmia_init_and_get_ethernet_addr(struct usbnet *dev, u8 *ethernet_addr)
 	status = kalmia_send_init_packet(dev, usb_buf, sizeof(init_msg_1)
 		/ sizeof(init_msg_1[0]), usb_buf, 24);
 	if (status != 0)
+<<<<<<< HEAD
 		return status;
+=======
+		goto out;
+>>>>>>> v4.9.227
 
 	memcpy(usb_buf, init_msg_2, 12);
 	status = kalmia_send_init_packet(dev, usb_buf, sizeof(init_msg_2)
 		/ sizeof(init_msg_2[0]), usb_buf, 28);
 	if (status != 0)
+<<<<<<< HEAD
 		return status;
 
 	memcpy(ethernet_addr, usb_buf + 10, ETH_ALEN);
 
+=======
+		goto out;
+
+	memcpy(ethernet_addr, usb_buf + 10, ETH_ALEN);
+out:
+>>>>>>> v4.9.227
 	kfree(usb_buf);
 	return status;
 }
@@ -151,7 +162,11 @@ kalmia_bind(struct usbnet *dev, struct usb_interface *intf)
 
 	status = kalmia_init_and_get_ethernet_addr(dev, ethernet_addr);
 
+<<<<<<< HEAD
 	if (status < 0) {
+=======
+	if (status) {
+>>>>>>> v4.9.227
 		usb_set_intfdata(intf, NULL);
 		usb_driver_release_interface(driver_of(intf), intf);
 		return status;

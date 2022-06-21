@@ -472,8 +472,12 @@ int mthca_map_user_db(struct mthca_dev *dev, struct mthca_uar *uar,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	ret = get_user_pages(current, current->mm, uaddr & PAGE_MASK, 1, 1, 0,
 			     pages, NULL);
+=======
+	ret = get_user_pages(uaddr & PAGE_MASK, 1, FOLL_WRITE, pages, NULL);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto out;
 

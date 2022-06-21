@@ -12,8 +12,14 @@
  * power domain.  We use the Timer 4 for our always-on clock
  * source on DB8500.
  */
+<<<<<<< HEAD
 #include <linux/clockchips.h>
 #include <linux/clksrc-dbx500-prcmu.h>
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/clockchips.h>
+>>>>>>> v4.9.227
 #include <linux/sched_clock.h>
 
 #define RATE_32K		32768
@@ -63,9 +69,15 @@ static u64 notrace dbx500_prcmu_sched_clock_read(void)
 
 #endif
 
+<<<<<<< HEAD
 void __init clksrc_dbx500_prcmu_init(void __iomem *base)
 {
 	clksrc_dbx500_timer_base = base;
+=======
+static int __init clksrc_dbx500_prcmu_init(struct device_node *node)
+{
+	clksrc_dbx500_timer_base = of_iomap(node, 0);
+>>>>>>> v4.9.227
 
 	/*
 	 * The A9 sub system expects the timer to be configured as
@@ -83,5 +95,12 @@ void __init clksrc_dbx500_prcmu_init(void __iomem *base)
 #ifdef CONFIG_CLKSRC_DBX500_PRCMU_SCHED_CLOCK
 	sched_clock_register(dbx500_prcmu_sched_clock_read, 32, RATE_32K);
 #endif
+<<<<<<< HEAD
 	clocksource_register_hz(&clocksource_dbx500_prcmu, RATE_32K);
 }
+=======
+	return clocksource_register_hz(&clocksource_dbx500_prcmu, RATE_32K);
+}
+CLOCKSOURCE_OF_DECLARE(dbx500_prcmu, "stericsson,db8500-prcmu-timer-4",
+		       clksrc_dbx500_prcmu_init);
+>>>>>>> v4.9.227

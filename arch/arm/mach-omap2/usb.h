@@ -68,5 +68,8 @@ extern void am35x_musb_reset(void);
 extern void am35x_musb_phy_power(u8 on);
 extern void am35x_musb_clear_irq(void);
 extern void am35x_set_mode(u8 musb_mode);
+<<<<<<< HEAD
 extern void ti81xx_musb_phy_power(u8 on);
 
+=======
+>>>>>>> v4.9.227

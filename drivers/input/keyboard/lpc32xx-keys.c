@@ -66,7 +66,10 @@
 struct lpc32xx_kscan_drv {
 	struct input_dev *input;
 	struct clk *clk;
+<<<<<<< HEAD
 	struct resource *iores;
+=======
+>>>>>>> v4.9.227
 	void __iomem *kscan_base;
 	unsigned int irq;
 
@@ -188,20 +191,32 @@ static int lpc32xx_kscan_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	kscandat = kzalloc(sizeof(struct lpc32xx_kscan_drv), GFP_KERNEL);
 	if (!kscandat) {
 		dev_err(&pdev->dev, "failed to allocate memory\n");
 		return -ENOMEM;
 	}
+=======
+	kscandat = devm_kzalloc(&pdev->dev, sizeof(*kscandat),
+				GFP_KERNEL);
+	if (!kscandat)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	error = lpc32xx_parse_dt(&pdev->dev, kscandat);
 	if (error) {
 		dev_err(&pdev->dev, "failed to parse device tree\n");
+<<<<<<< HEAD
 		goto err_free_mem;
+=======
+		return error;
+>>>>>>> v4.9.227
 	}
 
 	keymap_size = sizeof(kscandat->keymap[0]) *
 				(kscandat->matrix_sz << kscandat->row_shift);
+<<<<<<< HEAD
 	kscandat->keymap = kzalloc(keymap_size, GFP_KERNEL);
 	if (!kscandat->keymap) {
 		dev_err(&pdev->dev, "could not allocate memory for keymap\n");
@@ -214,6 +229,16 @@ static int lpc32xx_kscan_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to allocate input device\n");
 		error = -ENOMEM;
 		goto err_free_keymap;
+=======
+	kscandat->keymap = devm_kzalloc(&pdev->dev, keymap_size, GFP_KERNEL);
+	if (!kscandat->keymap)
+		return -ENOMEM;
+
+	kscandat->input = input = devm_input_allocate_device(&pdev->dev);
+	if (!input) {
+		dev_err(&pdev->dev, "failed to allocate input device\n");
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	}
 
 	/* Setup key input */
@@ -234,11 +259,16 @@ static int lpc32xx_kscan_probe(struct platform_device *pdev)
 					   kscandat->keymap, kscandat->input);
 	if (error) {
 		dev_err(&pdev->dev, "failed to build keymap\n");
+<<<<<<< HEAD
 		goto err_free_input;
+=======
+		return error;
+>>>>>>> v4.9.227
 	}
 
 	input_set_drvdata(kscandat->input, kscandat);
 
+<<<<<<< HEAD
 	kscandat->iores = request_mem_region(res->start, resource_size(res),
 					     pdev->name);
 	if (!kscandat->iores) {
@@ -261,12 +291,27 @@ static int lpc32xx_kscan_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to get clock\n");
 		error = PTR_ERR(kscandat->clk);
 		goto err_unmap;
+=======
+	kscandat->kscan_base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(kscandat->kscan_base))
+		return PTR_ERR(kscandat->kscan_base);
+
+	/* Get the key scanner clock */
+	kscandat->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(kscandat->clk)) {
+		dev_err(&pdev->dev, "failed to get clock\n");
+		return PTR_ERR(kscandat->clk);
+>>>>>>> v4.9.227
 	}
 
 	/* Configure the key scanner */
 	error = clk_prepare_enable(kscandat->clk);
 	if (error)
+<<<<<<< HEAD
 		goto err_clk_put;
+=======
+		return error;
+>>>>>>> v4.9.227
 
 	writel(kscandat->deb_clks, LPC32XX_KS_DEB(kscandat->kscan_base));
 	writel(kscandat->scan_delay, LPC32XX_KS_SCAN_CTL(kscandat->kscan_base));
@@ -277,15 +322,24 @@ static int lpc32xx_kscan_probe(struct platform_device *pdev)
 	writel(1, LPC32XX_KS_IRQ(kscandat->kscan_base));
 	clk_disable_unprepare(kscandat->clk);
 
+<<<<<<< HEAD
 	error = request_irq(irq, lpc32xx_kscan_irq, 0, pdev->name, kscandat);
 	if (error) {
 		dev_err(&pdev->dev, "failed to request irq\n");
 		goto err_clk_put;
+=======
+	error = devm_request_irq(&pdev->dev, irq, lpc32xx_kscan_irq, 0,
+				 pdev->name, kscandat);
+	if (error) {
+		dev_err(&pdev->dev, "failed to request irq\n");
+		return error;
+>>>>>>> v4.9.227
 	}
 
 	error = input_register_device(kscandat->input);
 	if (error) {
 		dev_err(&pdev->dev, "failed to register input device\n");
+<<<<<<< HEAD
 		goto err_free_irq;
 	}
 
@@ -323,6 +377,12 @@ static int lpc32xx_kscan_remove(struct platform_device *pdev)
 	input_unregister_device(kscandat->input);
 	kfree(kscandat->keymap);
 	kfree(kscandat);
+=======
+		return error;
+	}
+
+	platform_set_drvdata(pdev, kscandat);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -378,10 +438,15 @@ MODULE_DEVICE_TABLE(of, lpc32xx_kscan_match);
 
 static struct platform_driver lpc32xx_kscan_driver = {
 	.probe		= lpc32xx_kscan_probe,
+<<<<<<< HEAD
 	.remove		= lpc32xx_kscan_remove,
 	.driver		= {
 		.name	= DRV_NAME,
 		.owner	= THIS_MODULE,
+=======
+	.driver		= {
+		.name	= DRV_NAME,
+>>>>>>> v4.9.227
 		.pm	= &lpc32xx_kscan_pm_ops,
 		.of_match_table = lpc32xx_kscan_match,
 	}

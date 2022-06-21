@@ -80,6 +80,7 @@
 		compatible = "fsl,b4420-device-config", "fsl,qoriq-device-config-2.0";
 	};
 
+<<<<<<< HEAD
 	clockgen: global-utilities@e1000 {
 		compatible = "fsl,b4420-clockgen", "fsl,qoriq-clockgen-2.0";
 		ranges = <0x0 0xe1000 0x1000>;
@@ -118,13 +119,25 @@
 				"pll1", "pll1-div2", "pll1-div4";
 			clock-output-names = "cmux0";
 		};
+=======
+	global-utilities@e1000 {
+		compatible = "fsl,b4420-clockgen", "fsl,b4-clockgen",
+			      "fsl,qoriq-clockgen-2.0";
+>>>>>>> v4.9.227
 	};
 
 	rcpm: global-utilities@e2000 {
 		compatible = "fsl,b4420-rcpm", "fsl,qoriq-rcpm-2.0";
 	};
 
+<<<<<<< HEAD
 	L2: l2-cache-controller@c20000 {
 		compatible = "fsl,b4420-l2-cache-controller";
+=======
+	L2_1: l2-cache-controller@c20000 {
+		compatible = "fsl,b4420-l2-cache-controller";
+		reg = <0xc20000 0x40000>;
+		next-level-cache = <&cpc>;
+>>>>>>> v4.9.227
 	};
 };

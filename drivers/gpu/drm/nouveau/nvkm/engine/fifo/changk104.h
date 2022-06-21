@@ -7,7 +7,11 @@
 struct gk104_fifo_chan {
 	struct nvkm_fifo_chan base;
 	struct gk104_fifo *fifo;
+<<<<<<< HEAD
 	int engine;
+=======
+	int runl;
+>>>>>>> v4.9.227
 
 	struct list_head head;
 	bool killed;
@@ -25,5 +29,11 @@ int gk104_fifo_gpfifo_new(struct nvkm_fifo *, const struct nvkm_oclass *,
 			  void *data, u32 size, struct nvkm_object **);
 
 extern const struct nvkm_fifo_chan_oclass gk104_fifo_gpfifo_oclass;
+<<<<<<< HEAD
 extern const struct nvkm_fifo_chan_oclass gm204_fifo_gpfifo_oclass;
+=======
+extern const struct nvkm_fifo_chan_oclass gk110_fifo_gpfifo_oclass;
+extern const struct nvkm_fifo_chan_oclass gm200_fifo_gpfifo_oclass;
+extern const struct nvkm_fifo_chan_oclass gp100_fifo_gpfifo_oclass;
+>>>>>>> v4.9.227
 #endif

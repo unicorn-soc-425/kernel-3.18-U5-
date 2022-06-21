@@ -30,7 +30,11 @@
 #include <linux/export.h>
 #include <linux/sizes.h>
 
+<<<<<<< HEAD
 #include <video/omapdss.h>
+=======
+#include <video/omapfb_dss.h>
+>>>>>>> v4.9.227
 #include <video/omapvrfb.h>
 
 #include "omapfb.h"
@@ -137,8 +141,16 @@ static int omapfb_setup_plane(struct fb_info *fbi, struct omapfb_plane_info *pi)
 			goto undo;
 	}
 
+<<<<<<< HEAD
 	if (ovl->manager)
 		ovl->manager->apply(ovl->manager);
+=======
+	if (ovl->manager) {
+		r = ovl->manager->apply(ovl->manager);
+		if (r)
+			goto undo;
+	}
+>>>>>>> v4.9.227
 
 	if (pi->enabled) {
 		r = ovl->enable(ovl);
@@ -606,6 +618,11 @@ int omapfb_ioctl(struct fb_info *fbi, unsigned int cmd, unsigned long arg)
 
 	int r = 0;
 
+<<<<<<< HEAD
+=======
+	memset(&p, 0, sizeof(p));
+
+>>>>>>> v4.9.227
 	switch (cmd) {
 	case OMAPFB_SYNC_GFX:
 		DBG("ioctl SYNC_GFX\n");

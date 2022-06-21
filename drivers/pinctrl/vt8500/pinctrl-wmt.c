@@ -14,7 +14,11 @@
  */
 
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -486,6 +490,7 @@ static struct pinctrl_desc wmt_desc = {
 	.confops = &wmt_pinconf_ops,
 };
 
+<<<<<<< HEAD
 static int wmt_gpio_request(struct gpio_chip *chip, unsigned offset)
 {
 	return pinctrl_request_gpio(chip->base + offset);
@@ -499,6 +504,11 @@ static void wmt_gpio_free(struct gpio_chip *chip, unsigned offset)
 static int wmt_gpio_get_direction(struct gpio_chip *chip, unsigned offset)
 {
 	struct wmt_pinctrl_data *data = dev_get_drvdata(chip->dev);
+=======
+static int wmt_gpio_get_direction(struct gpio_chip *chip, unsigned offset)
+{
+	struct wmt_pinctrl_data *data = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 bank = WMT_BANK_FROM_PIN(offset);
 	u32 bit = WMT_BIT_FROM_PIN(offset);
 	u32 reg_dir = data->banks[bank].reg_dir;
@@ -513,7 +523,11 @@ static int wmt_gpio_get_direction(struct gpio_chip *chip, unsigned offset)
 
 static int wmt_gpio_get_value(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct wmt_pinctrl_data *data = dev_get_drvdata(chip->dev);
+=======
+	struct wmt_pinctrl_data *data = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 bank = WMT_BANK_FROM_PIN(offset);
 	u32 bit = WMT_BIT_FROM_PIN(offset);
 	u32 reg_data_in = data->banks[bank].reg_data_in;
@@ -529,7 +543,11 @@ static int wmt_gpio_get_value(struct gpio_chip *chip, unsigned offset)
 static void wmt_gpio_set_value(struct gpio_chip *chip, unsigned offset,
 			       int val)
 {
+<<<<<<< HEAD
 	struct wmt_pinctrl_data *data = dev_get_drvdata(chip->dev);
+=======
+	struct wmt_pinctrl_data *data = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u32 bank = WMT_BANK_FROM_PIN(offset);
 	u32 bit = WMT_BIT_FROM_PIN(offset);
 	u32 reg_data_out = data->banks[bank].reg_data_out;
@@ -560,8 +578,13 @@ static int wmt_gpio_direction_output(struct gpio_chip *chip, unsigned offset,
 static struct gpio_chip wmt_gpio_chip = {
 	.label = "gpio-wmt",
 	.owner = THIS_MODULE,
+<<<<<<< HEAD
 	.request = wmt_gpio_request,
 	.free = wmt_gpio_free,
+=======
+	.request = gpiochip_generic_request,
+	.free = gpiochip_generic_free,
+>>>>>>> v4.9.227
 	.get_direction = wmt_gpio_get_direction,
 	.direction_input = wmt_gpio_direction_input,
 	.direction_output = wmt_gpio_direction_output,
@@ -585,7 +608,11 @@ int wmt_pinctrl_probe(struct platform_device *pdev,
 	wmt_desc.npins = data->npins;
 
 	data->gpio_chip = wmt_gpio_chip;
+<<<<<<< HEAD
 	data->gpio_chip.dev = &pdev->dev;
+=======
+	data->gpio_chip.parent = &pdev->dev;
+>>>>>>> v4.9.227
 	data->gpio_chip.of_node = pdev->dev.of_node;
 	data->gpio_chip.ngpio = data->nbanks * 32;
 
@@ -593,6 +620,7 @@ int wmt_pinctrl_probe(struct platform_device *pdev,
 
 	data->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	data->pctl_dev = pinctrl_register(&wmt_desc, &pdev->dev, data);
 	if (!data->pctl_dev) {
 		dev_err(&pdev->dev, "Failed to register pinctrl\n");
@@ -603,6 +631,18 @@ int wmt_pinctrl_probe(struct platform_device *pdev,
 	if (err) {
 		dev_err(&pdev->dev, "could not add GPIO chip\n");
 		goto fail_gpio;
+=======
+	data->pctl_dev = devm_pinctrl_register(&pdev->dev, &wmt_desc, data);
+	if (IS_ERR(data->pctl_dev)) {
+		dev_err(&pdev->dev, "Failed to register pinctrl\n");
+		return PTR_ERR(data->pctl_dev);
+	}
+
+	err = gpiochip_add_data(&data->gpio_chip, data);
+	if (err) {
+		dev_err(&pdev->dev, "could not add GPIO chip\n");
+		return err;
+>>>>>>> v4.9.227
 	}
 
 	err = gpiochip_add_pin_range(&data->gpio_chip, dev_name(data->dev),
@@ -616,8 +656,11 @@ int wmt_pinctrl_probe(struct platform_device *pdev,
 
 fail_range:
 	gpiochip_remove(&data->gpio_chip);
+<<<<<<< HEAD
 fail_gpio:
 	pinctrl_unregister(data->pctl_dev);
+=======
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -626,7 +669,10 @@ int wmt_pinctrl_remove(struct platform_device *pdev)
 	struct wmt_pinctrl_data *data = platform_get_drvdata(pdev);
 
 	gpiochip_remove(&data->gpio_chip);
+<<<<<<< HEAD
 	pinctrl_unregister(data->pctl_dev);
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }

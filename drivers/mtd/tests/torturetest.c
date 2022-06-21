@@ -26,6 +26,10 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/err.h>
@@ -79,18 +83,30 @@ static unsigned char *check_buf;
 static unsigned int erase_cycles;
 
 static int pgsize;
+<<<<<<< HEAD
 static struct timeval start, finish;
+=======
+static ktime_t start, finish;
+>>>>>>> v4.9.227
 
 static void report_corrupt(unsigned char *read, unsigned char *written);
 
 static inline void start_timing(void)
 {
+<<<<<<< HEAD
 	do_gettimeofday(&start);
+=======
+	start = ktime_get();
+>>>>>>> v4.9.227
 }
 
 static inline void stop_timing(void)
 {
+<<<<<<< HEAD
 	do_gettimeofday(&finish);
+=======
+	finish = ktime_get();
+>>>>>>> v4.9.227
 }
 
 /*
@@ -101,11 +117,19 @@ static inline int check_eraseblock(int ebnum, unsigned char *buf)
 {
 	int err, retries = 0;
 	size_t read;
+<<<<<<< HEAD
 	loff_t addr = ebnum * mtd->erasesize;
 	size_t len = mtd->erasesize;
 
 	if (pgcnt) {
 		addr = (ebnum + 1) * mtd->erasesize - pgcnt * pgsize;
+=======
+	loff_t addr = (loff_t)ebnum * mtd->erasesize;
+	size_t len = mtd->erasesize;
+
+	if (pgcnt) {
+		addr = (loff_t)(ebnum + 1) * mtd->erasesize - pgcnt * pgsize;
+>>>>>>> v4.9.227
 		len = pgcnt * pgsize;
 	}
 
@@ -155,11 +179,19 @@ static inline int write_pattern(int ebnum, void *buf)
 {
 	int err;
 	size_t written;
+<<<<<<< HEAD
 	loff_t addr = ebnum * mtd->erasesize;
 	size_t len = mtd->erasesize;
 
 	if (pgcnt) {
 		addr = (ebnum + 1) * mtd->erasesize - pgcnt * pgsize;
+=======
+	loff_t addr = (loff_t)ebnum * mtd->erasesize;
+	size_t len = mtd->erasesize;
+
+	if (pgcnt) {
+		addr = (loff_t)(ebnum + 1) * mtd->erasesize - pgcnt * pgsize;
+>>>>>>> v4.9.227
 		len = pgcnt * pgsize;
 	}
 	err = mtd_write(mtd, addr, len, &written, buf);
@@ -279,7 +311,14 @@ static int __init tort_init(void)
 					       " for 0xFF... pattern\n");
 					goto out;
 				}
+<<<<<<< HEAD
 				cond_resched();
+=======
+
+				err = mtdtest_relax();
+				if (err)
+					goto out;
+>>>>>>> v4.9.227
 			}
 		}
 
@@ -294,7 +333,14 @@ static int __init tort_init(void)
 			err = write_pattern(i, patt);
 			if (err)
 				goto out;
+<<<<<<< HEAD
 			cond_resched();
+=======
+
+			err = mtdtest_relax();
+			if (err)
+				goto out;
+>>>>>>> v4.9.227
 		}
 
 		/* Verify what we wrote */
@@ -314,7 +360,14 @@ static int __init tort_init(void)
 					       "0x55AA55..." : "0xAA55AA...");
 					goto out;
 				}
+<<<<<<< HEAD
 				cond_resched();
+=======
+
+				err = mtdtest_relax();
+				if (err)
+					goto out;
+>>>>>>> v4.9.227
 			}
 		}
 
@@ -324,8 +377,12 @@ static int __init tort_init(void)
 			long ms;
 
 			stop_timing();
+<<<<<<< HEAD
 			ms = (finish.tv_sec - start.tv_sec) * 1000 +
 			     (finish.tv_usec - start.tv_usec) / 1000;
+=======
+			ms = ktime_ms_delta(finish, start);
+>>>>>>> v4.9.227
 			pr_info("%08u erase cycles done, took %lu "
 			       "milliseconds (%lu seconds)\n",
 			       erase_cycles, ms, ms / 1000);

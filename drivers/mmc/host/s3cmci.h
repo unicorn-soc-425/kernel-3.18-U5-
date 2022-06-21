@@ -74,7 +74,11 @@ struct s3cmci_host {
 	struct dentry		*debug_regs;
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ
+=======
+#ifdef CONFIG_ARM_S3C24XX_CPUFREQ
+>>>>>>> v4.9.227
 	struct notifier_block	freq_transition;
 #endif
 };

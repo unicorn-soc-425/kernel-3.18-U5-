@@ -6,7 +6,11 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/list.h>
 #include <linux/vmalloc.h>
@@ -17,7 +21,10 @@
 #include "pciback.h"
 
 #define INVALID_EVTCHN_IRQ  (-1)
+<<<<<<< HEAD
 struct workqueue_struct *xen_pcibk_wq;
+=======
+>>>>>>> v4.9.227
 
 static bool __read_mostly passthrough;
 module_param(passthrough, bool, S_IRUGO);
@@ -44,7 +51,10 @@ static struct xen_pcibk_device *alloc_pdev(struct xenbus_device *xdev)
 	dev_dbg(&xdev->dev, "allocated pdev @ 0x%p\n", pdev);
 
 	pdev->xdev = xdev;
+<<<<<<< HEAD
 	dev_set_drvdata(&xdev->dev, pdev);
+=======
+>>>>>>> v4.9.227
 
 	mutex_init(&pdev->dev_lock);
 
@@ -58,6 +68,12 @@ static struct xen_pcibk_device *alloc_pdev(struct xenbus_device *xdev)
 		kfree(pdev);
 		pdev = NULL;
 	}
+<<<<<<< HEAD
+=======
+
+	dev_set_drvdata(&xdev->dev, pdev);
+
+>>>>>>> v4.9.227
 out:
 	return pdev;
 }
@@ -74,8 +90,12 @@ static void xen_pcibk_disconnect(struct xen_pcibk_device *pdev)
 	/* If the driver domain started an op, make sure we complete it
 	 * before releasing the shared memory */
 
+<<<<<<< HEAD
 	/* Note, the workqueue does not use spinlocks at all.*/
 	flush_workqueue(xen_pcibk_wq);
+=======
+	flush_work(&pdev->op_work);
+>>>>>>> v4.9.227
 
 	if (pdev->sh_info != NULL) {
 		xenbus_unmap_ring_vfree(pdev->xdev, pdev->sh_info);
@@ -113,7 +133,11 @@ static int xen_pcibk_do_attach(struct xen_pcibk_device *pdev, int gnt_ref,
 		"Attaching to frontend resources - gnt_ref=%d evtchn=%d\n",
 		gnt_ref, remote_evtchn);
 
+<<<<<<< HEAD
 	err = xenbus_map_ring_valloc(pdev->xdev, gnt_ref, &vaddr);
+=======
+	err = xenbus_map_ring_valloc(pdev->xdev, &gnt_ref, 1, &vaddr);
+>>>>>>> v4.9.227
 	if (err < 0) {
 		xenbus_dev_fatal(pdev->xdev, err,
 				"Error mapping other domain page in ours.");
@@ -247,7 +271,11 @@ static int xen_pcibk_export_device(struct xen_pcibk_device *pdev,
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	dev_dbg(&dev->dev, "registering for %d\n", pdev->xdev->otherend_id);
+=======
+	dev_info(&dev->dev, "registering for %d\n", pdev->xdev->otherend_id);
+>>>>>>> v4.9.227
 	if (xen_register_device_domain_owner(dev,
 					     pdev->xdev->otherend_id) != 0) {
 		dev_err(&dev->dev, "Stealing ownership from dom%d.\n",
@@ -291,7 +319,11 @@ static int xen_pcibk_remove_device(struct xen_pcibk_device *pdev,
 
 	/* N.B. This ends up calling pcistub_put_pci_dev which ends up
 	 * doing the FLR. */
+<<<<<<< HEAD
 	xen_pcibk_release_pci_dev(pdev, dev);
+=======
+	xen_pcibk_release_pci_dev(pdev, dev, true /* use the lock. */);
+>>>>>>> v4.9.227
 
 out:
 	return err;
@@ -731,11 +763,14 @@ const struct xen_pcibk_backend *__read_mostly xen_pcibk_backend;
 
 int __init xen_pcibk_xenbus_register(void)
 {
+<<<<<<< HEAD
 	xen_pcibk_wq = create_workqueue("xen_pciback_workqueue");
 	if (!xen_pcibk_wq) {
 		pr_err("%s: create xen_pciback_workqueue failed\n", __func__);
 		return -EFAULT;
 	}
+=======
+>>>>>>> v4.9.227
 	xen_pcibk_backend = &xen_pcibk_vpci_backend;
 	if (passthrough)
 		xen_pcibk_backend = &xen_pcibk_passthrough_backend;
@@ -745,6 +780,9 @@ int __init xen_pcibk_xenbus_register(void)
 
 void __exit xen_pcibk_xenbus_unregister(void)
 {
+<<<<<<< HEAD
 	destroy_workqueue(xen_pcibk_wq);
+=======
+>>>>>>> v4.9.227
 	xenbus_unregister_driver(&xen_pcibk_driver);
 }

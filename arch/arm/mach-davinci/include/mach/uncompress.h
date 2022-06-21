@@ -30,7 +30,11 @@
 u32 *uart;
 
 /* PORT_16C550A, in polled non-fifo mode */
+<<<<<<< HEAD
 static void putc(char c)
+=======
+static inline void putc(char c)
+>>>>>>> v4.9.227
 {
 	if (!uart)
 		return;

@@ -19,7 +19,11 @@
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/of_gpio.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <asm/prom.h>
 #include "simple_gpio.h"
@@ -32,11 +36,14 @@ struct u8_gpio_chip {
 	u8 data;
 };
 
+<<<<<<< HEAD
 static struct u8_gpio_chip *to_u8_gpio_chip(struct of_mm_gpio_chip *mm_gc)
 {
 	return container_of(mm_gc, struct u8_gpio_chip, mm_gc);
 }
 
+=======
+>>>>>>> v4.9.227
 static u8 u8_pin2mask(unsigned int pin)
 {
 	return 1 << (8 - 1 - pin);
@@ -46,13 +53,21 @@ static int u8_gpio_get(struct gpio_chip *gc, unsigned int gpio)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
 
+<<<<<<< HEAD
 	return in_8(mm_gc->regs) & u8_pin2mask(gpio);
+=======
+	return !!(in_8(mm_gc->regs) & u8_pin2mask(gpio));
+>>>>>>> v4.9.227
 }
 
 static void u8_gpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
+<<<<<<< HEAD
 	struct u8_gpio_chip *u8_gc = to_u8_gpio_chip(mm_gc);
+=======
+	struct u8_gpio_chip *u8_gc = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	spin_lock_irqsave(&u8_gc->lock, flags);
@@ -80,7 +95,12 @@ static int u8_gpio_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
 
 static void u8_gpio_save_regs(struct of_mm_gpio_chip *mm_gc)
 {
+<<<<<<< HEAD
 	struct u8_gpio_chip *u8_gc = to_u8_gpio_chip(mm_gc);
+=======
+	struct u8_gpio_chip *u8_gc =
+		container_of(mm_gc, struct u8_gpio_chip, mm_gc);
+>>>>>>> v4.9.227
 
 	u8_gc->data = in_8(mm_gc->regs);
 }
@@ -108,7 +128,11 @@ static int __init u8_simple_gpiochip_add(struct device_node *np)
 	gc->get = u8_gpio_get;
 	gc->set = u8_gpio_set;
 
+<<<<<<< HEAD
 	ret = of_mm_gpiochip_add(np, mm_gc);
+=======
+	ret = of_mm_gpiochip_add_data(np, mm_gc, u8_gc);
+>>>>>>> v4.9.227
 	if (ret)
 		goto err;
 	return 0;

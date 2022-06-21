@@ -25,6 +25,10 @@ void flush_user_icache_range_asm(unsigned long, unsigned long);
 void flush_kernel_icache_range_asm(unsigned long, unsigned long);
 void flush_user_dcache_range_asm(unsigned long, unsigned long);
 void flush_kernel_dcache_range_asm(unsigned long, unsigned long);
+<<<<<<< HEAD
+=======
+void purge_kernel_dcache_range_asm(unsigned long, unsigned long);
+>>>>>>> v4.9.227
 void flush_kernel_dcache_page_asm(void *);
 void flush_kernel_icache_page(void *);
 void flush_user_dcache_range(unsigned long, unsigned long);
@@ -45,6 +49,7 @@ static inline void flush_kernel_dcache_page(struct page *page)
 
 #define flush_kernel_dcache_range(start,size) \
 	flush_kernel_dcache_range_asm((start), (start)+(size));
+<<<<<<< HEAD
 /* vmap range flushes and invalidates.  Architecturally, we don't need
  * the invalidate, because the CPU should refuse to speculate once an
  * area has been flushed, so invalidate is left empty */
@@ -67,6 +72,11 @@ static inline void invalidate_kernel_vmap_range(void *vaddr, int size)
 	}
 	flush_kernel_dcache_range_asm(start, start + size);
 }
+=======
+
+void flush_kernel_vmap_range(void *vaddr, int size);
+void invalidate_kernel_vmap_range(void *vaddr, int size);
+>>>>>>> v4.9.227
 
 #define flush_cache_vmap(start, end)		flush_cache_all()
 #define flush_cache_vunmap(start, end)		flush_cache_all()
@@ -138,6 +148,10 @@ static inline void kunmap(struct page *page)
 
 static inline void *kmap_atomic(struct page *page)
 {
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> v4.9.227
 	pagefault_disable();
 	return page_address(page);
 }
@@ -146,11 +160,18 @@ static inline void __kunmap_atomic(void *addr)
 {
 	flush_kernel_dcache_page_addr(addr);
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> v4.9.227
 }
 
 #define kmap_atomic_prot(page, prot)	kmap_atomic(page)
 #define kmap_atomic_pfn(pfn)	kmap_atomic(pfn_to_page(pfn))
+<<<<<<< HEAD
 #define kmap_atomic_to_page(ptr)	virt_to_page(ptr)
+=======
+>>>>>>> v4.9.227
 
 #endif /* _PARISC_CACHEFLUSH_H */
 

@@ -48,6 +48,10 @@
 #include <scsi/scsi_transport_iscsi.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
+<<<<<<< HEAD
+=======
+#include <scsi/iser.h>
+>>>>>>> v4.9.227
 
 #include <linux/interrupt.h>
 #include <linux/wait.h>
@@ -69,40 +73,71 @@
 
 #define DRV_NAME	"iser"
 #define PFX		DRV_NAME ": "
+<<<<<<< HEAD
 #define DRV_VER		"1.4.8"
 
 #define iser_dbg(fmt, arg...)				 \
 	do {						 \
 		if (iser_debug_level > 2)		 \
+=======
+#define DRV_VER		"1.6"
+
+#define iser_dbg(fmt, arg...)				 \
+	do {						 \
+		if (unlikely(iser_debug_level > 2))	 \
+>>>>>>> v4.9.227
 			printk(KERN_DEBUG PFX "%s: " fmt,\
 				__func__ , ## arg);	 \
 	} while (0)
 
 #define iser_warn(fmt, arg...)				\
 	do {						\
+<<<<<<< HEAD
 		if (iser_debug_level > 0)		\
+=======
+		if (unlikely(iser_debug_level > 0))	\
+>>>>>>> v4.9.227
 			pr_warn(PFX "%s: " fmt,		\
 				__func__ , ## arg);	\
 	} while (0)
 
 #define iser_info(fmt, arg...)				\
 	do {						\
+<<<<<<< HEAD
 		if (iser_debug_level > 1)		\
+=======
+		if (unlikely(iser_debug_level > 1))	\
+>>>>>>> v4.9.227
 			pr_info(PFX "%s: " fmt,		\
 				__func__ , ## arg);	\
 	} while (0)
 
+<<<<<<< HEAD
 #define iser_err(fmt, arg...)				\
 	do {						\
 		printk(KERN_ERR PFX "%s: " fmt,		\
 		       __func__ , ## arg);		\
 	} while (0)
+=======
+#define iser_err(fmt, arg...) \
+	pr_err(PFX "%s: " fmt, __func__ , ## arg)
+>>>>>>> v4.9.227
 
 #define SHIFT_4K	12
 #define SIZE_4K	(1ULL << SHIFT_4K)
 #define MASK_4K	(~(SIZE_4K-1))
+<<<<<<< HEAD
 					/* support up to 512KB in one RDMA */
 #define ISCSI_ISER_SG_TABLESIZE         (0x80000 >> SHIFT_4K)
+=======
+
+/* Default support is 512KB I/O size */
+#define ISER_DEF_MAX_SECTORS		1024
+#define ISCSI_ISER_DEF_SG_TABLESIZE	((ISER_DEF_MAX_SECTORS * 512) >> SHIFT_4K)
+/* Maximum support is 8MB I/O size */
+#define ISCSI_ISER_MAX_SG_TABLESIZE	((16384 * 512) >> SHIFT_4K)
+
+>>>>>>> v4.9.227
 #define ISER_DEF_XMIT_CMDS_DEFAULT		512
 #if ISCSI_DEF_XMIT_CMDS_MAX > ISER_DEF_XMIT_CMDS_DEFAULT
 	#define ISER_DEF_XMIT_CMDS_MAX		ISCSI_DEF_XMIT_CMDS_MAX
@@ -144,6 +179,7 @@
 					ISER_MAX_TX_MISC_PDUS         + \
 					ISER_MAX_RX_MISC_PDUS)
 
+<<<<<<< HEAD
 #define ISER_WC_BATCH_COUNT   16
 #define ISER_SIGNAL_CMD_COUNT 32
 
@@ -184,6 +220,17 @@ struct iser_cm_hdr {
 
 /* Constant PDU lengths calculations */
 #define ISER_HEADERS_LEN  (sizeof(struct iser_hdr) + sizeof(struct iscsi_hdr))
+=======
+#define ISER_GET_MAX_XMIT_CMDS(send_wr) ((send_wr			\
+					 - ISER_MAX_TX_MISC_PDUS	\
+					 - ISER_MAX_RX_MISC_PDUS) /	\
+					 (1 + ISER_INFLIGHT_DATAOUTS))
+
+#define ISER_SIGNAL_CMD_COUNT 32
+
+/* Constant PDU lengths calculations */
+#define ISER_HEADERS_LEN	(sizeof(struct iser_ctrl) + sizeof(struct iscsi_hdr))
+>>>>>>> v4.9.227
 
 #define ISER_RECV_DATA_SEG_LEN	128
 #define ISER_RX_PAYLOAD_SIZE	(ISER_HEADERS_LEN + ISER_RECV_DATA_SEG_LEN)
@@ -216,6 +263,7 @@ enum iser_data_dir {
 /**
  * struct iser_data_buf - iSER data buffer
  *
+<<<<<<< HEAD
  * @buf:          pointer to the sg list
  * @size:         num entries of this sg
  * @data_len:     total beffer byte len
@@ -233,15 +281,33 @@ struct iser_data_buf {
 	char               *copy_buf;
 	struct scatterlist sg_single;
   };
+=======
+ * @sg:           pointer to the sg list
+ * @size:         num entries of this sg
+ * @data_len:     total beffer byte len
+ * @dma_nents:    returned by dma_map_sg
+ */
+struct iser_data_buf {
+	struct scatterlist *sg;
+	int                size;
+	unsigned long      data_len;
+	int                dma_nents;
+};
+>>>>>>> v4.9.227
 
 /* fwd declarations */
 struct iser_device;
 struct iscsi_iser_task;
 struct iscsi_endpoint;
+<<<<<<< HEAD
+=======
+struct iser_reg_resources;
+>>>>>>> v4.9.227
 
 /**
  * struct iser_mem_reg - iSER memory registration info
  *
+<<<<<<< HEAD
  * @lkey:         MR local key
  * @rkey:         MR remote key
  * @va:           MR start address (buffer va)
@@ -273,6 +339,16 @@ struct iser_regd_buf {
 	struct iser_device      *device;
 	enum dma_data_direction direction;
 	unsigned int            data_size;
+=======
+ * @sge:          memory region sg element
+ * @rkey:         memory region remote key
+ * @mem_h:        pointer to registration context (FMR/Fastreg)
+ */
+struct iser_mem_reg {
+	struct ib_sge	 sge;
+	u32		 rkey;
+	void		*mem_h;
+>>>>>>> v4.9.227
 };
 
 enum iser_desc_type {
@@ -281,8 +357,21 @@ enum iser_desc_type {
 	ISCSI_TX_DATAOUT
 };
 
+<<<<<<< HEAD
 /**
  * struct iser_tx_desc - iSER TX descriptor (for send wr_id)
+=======
+/* Maximum number of work requests per task:
+ * Data memory region local invalidate + fast registration
+ * Protection memory region local invalidate + fast registration
+ * Signature memory region local invalidate + fast registration
+ * PDU send
+ */
+#define ISER_MAX_WRS 7
+
+/**
+ * struct iser_tx_desc - iSER TX descriptor
+>>>>>>> v4.9.227
  *
  * @iser_header:   iser header
  * @iscsi_header:  iscsi header
@@ -292,20 +381,53 @@ enum iser_desc_type {
  *                 sg[1] optionally points to either of immediate data
  *                 unsolicited data-out or control
  * @num_sge:       number sges used on this TX task
+<<<<<<< HEAD
  */
 struct iser_tx_desc {
 	struct iser_hdr              iser_header;
+=======
+ * @mapped:        Is the task header mapped
+ * @wr_idx:        Current WR index
+ * @wrs:           Array of WRs per task
+ * @data_reg:      Data buffer registration details
+ * @prot_reg:      Protection buffer registration details
+ * @sig_attrs:     Signature attributes
+ */
+struct iser_tx_desc {
+	struct iser_ctrl             iser_header;
+>>>>>>> v4.9.227
 	struct iscsi_hdr             iscsi_header;
 	enum   iser_desc_type        type;
 	u64		             dma_addr;
 	struct ib_sge		     tx_sg[2];
 	int                          num_sge;
+<<<<<<< HEAD
 };
 
 #define ISER_RX_PAD_SIZE	(256 - (ISER_RX_PAYLOAD_SIZE + \
 					sizeof(u64) + sizeof(struct ib_sge)))
 /**
  * struct iser_rx_desc - iSER RX descriptor (for recv wr_id)
+=======
+	struct ib_cqe		     cqe;
+	bool			     mapped;
+	u8                           wr_idx;
+	union iser_wr {
+		struct ib_send_wr		send;
+		struct ib_reg_wr		fast_reg;
+		struct ib_sig_handover_wr	sig;
+	} wrs[ISER_MAX_WRS];
+	struct iser_mem_reg          data_reg;
+	struct iser_mem_reg          prot_reg;
+	struct ib_sig_attrs          sig_attrs;
+};
+
+#define ISER_RX_PAD_SIZE	(256 - (ISER_RX_PAYLOAD_SIZE + \
+				 sizeof(u64) + sizeof(struct ib_sge) + \
+				 sizeof(struct ib_cqe)))
+/**
+ * struct iser_rx_desc - iSER RX descriptor
+>>>>>>> v4.9.227
  *
  * @iser_header:   iser header
  * @iscsi_header:  iscsi header
@@ -315,15 +437,44 @@ struct iser_tx_desc {
  * @pad:           for sense data TODO: Modify to maximum sense length supported
  */
 struct iser_rx_desc {
+<<<<<<< HEAD
 	struct iser_hdr              iser_header;
+=======
+	struct iser_ctrl             iser_header;
+>>>>>>> v4.9.227
 	struct iscsi_hdr             iscsi_header;
 	char		             data[ISER_RECV_DATA_SEG_LEN];
 	u64		             dma_addr;
 	struct ib_sge		     rx_sg;
+<<<<<<< HEAD
 	char		             pad[ISER_RX_PAD_SIZE];
 } __attribute__((packed));
 
 #define ISER_MAX_CQ 4
+=======
+	struct ib_cqe		     cqe;
+	char		             pad[ISER_RX_PAD_SIZE];
+} __packed;
+
+/**
+ * struct iser_login_desc - iSER login descriptor
+ *
+ * @req:           pointer to login request buffer
+ * @resp:          pointer to login response buffer
+ * @req_dma:       DMA address of login request buffer
+ * @rsp_dma:      DMA address of login response buffer
+ * @sge:           IB sge for login post recv
+ * @cqe:           completion handler
+ */
+struct iser_login_desc {
+	void                         *req;
+	void                         *rsp;
+	u64                          req_dma;
+	u64                          rsp_dma;
+	struct ib_sge                sge;
+	struct ib_cqe		     cqe;
+} __attribute__((packed));
+>>>>>>> v4.9.227
 
 struct iser_conn;
 struct ib_conn;
@@ -332,27 +483,68 @@ struct iscsi_iser_task;
 /**
  * struct iser_comp - iSER completion context
  *
+<<<<<<< HEAD
  * @device:     pointer to device handle
  * @cq:         completion queue
  * @wcs:        work completion array
  * @tasklet:    Tasklet handle
+=======
+ * @cq:         completion queue
+>>>>>>> v4.9.227
  * @active_qps: Number of active QPs attached
  *              to completion context
  */
 struct iser_comp {
+<<<<<<< HEAD
 	struct iser_device      *device;
 	struct ib_cq		*cq;
 	struct ib_wc		 wcs[ISER_WC_BATCH_COUNT];
 	struct tasklet_struct	 tasklet;
+=======
+	struct ib_cq		*cq;
+>>>>>>> v4.9.227
 	int                      active_qps;
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * struct iser_device - Memory registration operations
+ *     per-device registration schemes
+ *
+ * @alloc_reg_res:     Allocate registration resources
+ * @free_reg_res:      Free registration resources
+ * @fast_reg_mem:      Register memory buffers
+ * @unreg_mem:         Un-register memory buffers
+ * @reg_desc_get:      Get a registration descriptor for pool
+ * @reg_desc_put:      Get a registration descriptor to pool
+ */
+struct iser_reg_ops {
+	int            (*alloc_reg_res)(struct ib_conn *ib_conn,
+					unsigned cmds_max,
+					unsigned int size);
+	void           (*free_reg_res)(struct ib_conn *ib_conn);
+	int            (*reg_mem)(struct iscsi_iser_task *iser_task,
+				  struct iser_data_buf *mem,
+				  struct iser_reg_resources *rsc,
+				  struct iser_mem_reg *reg);
+	void           (*unreg_mem)(struct iscsi_iser_task *iser_task,
+				    enum iser_data_dir cmd_dir);
+	struct iser_fr_desc * (*reg_desc_get)(struct ib_conn *ib_conn);
+	void           (*reg_desc_put)(struct ib_conn *ib_conn,
+				       struct iser_fr_desc *desc);
+};
+
+/**
+>>>>>>> v4.9.227
  * struct iser_device - iSER device handle
  *
  * @ib_device:     RDMA device
  * @pd:            Protection Domain for this device
+<<<<<<< HEAD
  * @dev_attr:      Device attributes container
+=======
+>>>>>>> v4.9.227
  * @mr:            Global DMA memory region
  * @event_handler: IB events handle routine
  * @ig_list:	   entry in devices list
@@ -360,21 +552,30 @@ struct iser_comp {
  * @comps_used:    Number of completion contexts used, Min between online
  *                 cpus and device max completion vectors
  * @comps:         Dinamically allocated array of completion handlers
+<<<<<<< HEAD
  * Memory registration pool Function pointers (FMR or Fastreg):
  *     @iser_alloc_rdma_reg_res: Allocation of memory regions pool
  *     @iser_free_rdma_reg_res:  Free of memory regions pool
  *     @iser_reg_rdma_mem:       Memory registration routine
  *     @iser_unreg_rdma_mem:     Memory deregistration routine
+=======
+ * @reg_ops:       Registration ops
+ * @remote_inv_sup: Remote invalidate is supported on this device
+>>>>>>> v4.9.227
  */
 struct iser_device {
 	struct ib_device             *ib_device;
 	struct ib_pd	             *pd;
+<<<<<<< HEAD
 	struct ib_device_attr	     dev_attr;
 	struct ib_mr	             *mr;
+=======
+>>>>>>> v4.9.227
 	struct ib_event_handler      event_handler;
 	struct list_head             ig_list;
 	int                          refcount;
 	int			     comps_used;
+<<<<<<< HEAD
 	struct iser_comp	     comps[ISER_MAX_CQ];
 	int                          (*iser_alloc_rdma_reg_res)(struct ib_conn *ib_conn,
 								unsigned cmds_max);
@@ -383,22 +584,46 @@ struct iser_device {
 							  enum iser_data_dir cmd_dir);
 	void                         (*iser_unreg_rdma_mem)(struct iscsi_iser_task *iser_task,
 							    enum iser_data_dir cmd_dir);
+=======
+	struct iser_comp	     *comps;
+	const struct iser_reg_ops    *reg_ops;
+	bool                         remote_inv_sup;
+>>>>>>> v4.9.227
 };
 
 #define ISER_CHECK_GUARD	0xc0
 #define ISER_CHECK_REFTAG	0x0f
 #define ISER_CHECK_APPTAG	0x30
 
+<<<<<<< HEAD
 enum iser_reg_indicator {
 	ISER_DATA_KEY_VALID	= 1 << 0,
 	ISER_PROT_KEY_VALID	= 1 << 1,
 	ISER_SIG_KEY_VALID	= 1 << 2,
 	ISER_FASTREG_PROTECTED	= 1 << 3,
+=======
+/**
+ * struct iser_reg_resources - Fast registration recources
+ *
+ * @mr:         memory region
+ * @fmr_pool:   pool of fmrs
+ * @page_vec:   fast reg page list used by fmr pool
+ * @mr_valid:   is mr valid indicator
+ */
+struct iser_reg_resources {
+	union {
+		struct ib_mr             *mr;
+		struct ib_fmr_pool       *fmr_pool;
+	};
+	struct iser_page_vec             *page_vec;
+	u8				  mr_valid:1;
+>>>>>>> v4.9.227
 };
 
 /**
  * struct iser_pi_context - Protection information context
  *
+<<<<<<< HEAD
  * @prot_mr:        protection memory region
  * @prot_frpl:      protection fastreg page list
  * @sig_mr:         signature feature enabled memory region
@@ -424,6 +649,46 @@ struct fast_reg_descriptor {
 	struct ib_fast_reg_page_list     *data_frpl;
 	struct iser_pi_context		 *pi_ctx;
 	u8				  reg_indicators;
+=======
+ * @rsc:             protection buffer registration resources
+ * @sig_mr:          signature enable memory region
+ * @sig_mr_valid:    is sig_mr valid indicator
+ * @sig_protected:   is region protected indicator
+ */
+struct iser_pi_context {
+	struct iser_reg_resources	rsc;
+	struct ib_mr                   *sig_mr;
+	u8                              sig_mr_valid:1;
+	u8                              sig_protected:1;
+};
+
+/**
+ * struct iser_fr_desc - Fast registration descriptor
+ *
+ * @list:           entry in connection fastreg pool
+ * @rsc:            data buffer registration resources
+ * @pi_ctx:         protection information context
+ */
+struct iser_fr_desc {
+	struct list_head		  list;
+	struct iser_reg_resources	  rsc;
+	struct iser_pi_context		 *pi_ctx;
+	struct list_head                  all_list;
+};
+
+/**
+ * struct iser_fr_pool: connection fast registration pool
+ *
+ * @list:                list of fastreg descriptors
+ * @lock:                protects fmr/fastreg pool
+ * @size:                size of the pool
+ */
+struct iser_fr_pool {
+	struct list_head        list;
+	spinlock_t              lock;
+	int                     size;
+	struct list_head        all_list;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -436,6 +701,7 @@ struct fast_reg_descriptor {
  * @rx_wr:               receive work request for batch posts
  * @device:              reference to iser device
  * @comp:                iser completion context
+<<<<<<< HEAD
  * @pi_support:          Indicate device T10-PI support
  * @beacon:              beacon send wr to signal all flush errors were drained
  * @flush_comp:          completes when all connection completions consumed
@@ -448,6 +714,10 @@ struct fast_reg_descriptor {
  *     @pool:            Fast registration descriptors pool for fast
  *                       registrations
  *     @pool_size:       Size of pool
+=======
+ * @fr_pool:             connection fast registration poool
+ * @pi_support:          Indicate device T10-PI support
+>>>>>>> v4.9.227
  */
 struct ib_conn {
 	struct rdma_cm_id           *cma_id;
@@ -457,6 +727,7 @@ struct ib_conn {
 	struct ib_recv_wr	     rx_wr[ISER_MIN_POSTED_RX];
 	struct iser_device          *device;
 	struct iser_comp	    *comp;
+<<<<<<< HEAD
 	bool			     pi_support;
 	struct ib_send_wr	     beacon;
 	struct completion	     flush_comp;
@@ -471,6 +742,11 @@ struct ib_conn {
 			int			 pool_size;
 		} fastreg;
 	};
+=======
+	struct iser_fr_pool          fr_pool;
+	bool			     pi_support;
+	struct ib_cqe		     reg_cqe;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -484,6 +760,10 @@ struct ib_conn {
  *                    to max number of post recvs
  * @qp_max_recv_dtos_mask: (qp_max_recv_dtos - 1)
  * @min_posted_rx:    (qp_max_recv_dtos >> 2)
+<<<<<<< HEAD
+=======
+ * @max_cmds:         maximum cmds allowed for this connection
+>>>>>>> v4.9.227
  * @name:             connection peer portal
  * @release_work:     deffered work for release job
  * @state_mutex:      protects iser onnection state
@@ -492,6 +772,7 @@ struct ib_conn {
  * @up_completion:    connection establishment completed
  *                    (state is ISER_CONN_UP)
  * @conn_list:        entry in ig conn list
+<<<<<<< HEAD
  * @login_buf:        login data buffer (stores login parameters)
  * @login_req_buf:    login request buffer
  * @login_req_dma:    login request buffer dma address
@@ -500,6 +781,14 @@ struct ib_conn {
  * @rx_desc_head:     head of rx_descs cyclic buffer
  * @rx_descs:         rx buffers array (cyclic buffer)
  * @num_rx_descs:     number of rx descriptors
+=======
+ * @login_desc:       login descriptor
+ * @rx_desc_head:     head of rx_descs cyclic buffer
+ * @rx_descs:         rx buffers array (cyclic buffer)
+ * @num_rx_descs:     number of rx descriptors
+ * @scsi_sg_tablesize: scsi host sg_tablesize
+ * @scsi_max_sectors: scsi host max sectors
+>>>>>>> v4.9.227
  */
 struct iser_conn {
 	struct ib_conn		     ib_conn;
@@ -509,6 +798,10 @@ struct iser_conn {
 	unsigned		     qp_max_recv_dtos;
 	unsigned		     qp_max_recv_dtos_mask;
 	unsigned		     min_posted_rx;
+<<<<<<< HEAD
+=======
+	u16                          max_cmds;
+>>>>>>> v4.9.227
 	char 			     name[ISER_OBJECT_NAME_SIZE];
 	struct work_struct	     release_work;
 	struct mutex		     state_mutex;
@@ -516,6 +809,7 @@ struct iser_conn {
 	struct completion	     ib_completion;
 	struct completion	     up_completion;
 	struct list_head	     conn_list;
+<<<<<<< HEAD
 
 	char  			     *login_buf;
 	char			     *login_req_buf, *login_resp_buf;
@@ -523,6 +817,15 @@ struct iser_conn {
 	unsigned int 		     rx_desc_head;
 	struct iser_rx_desc	     *rx_descs;
 	u32                          num_rx_descs;
+=======
+	struct iser_login_desc       login_desc;
+	unsigned int 		     rx_desc_head;
+	struct iser_rx_desc	     *rx_descs;
+	u32                          num_rx_descs;
+	unsigned short               scsi_sg_tablesize;
+	unsigned int                 scsi_max_sectors;
+	bool			     snd_w_inv;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -534,11 +837,17 @@ struct iser_conn {
  * @sc:               link to scsi command
  * @command_sent:     indicate if command was sent
  * @dir:              iser data direction
+<<<<<<< HEAD
  * @rdma_regd:        task rdma registration desc
  * @data:             iser data buffer desc
  * @data_copy:        iser data copy buffer desc (bounce buffer)
  * @prot:             iser protection buffer desc
  * @prot_copy:        iser protection copy buffer desc (bounce buffer)
+=======
+ * @rdma_reg:         task rdma registration desc
+ * @data:             iser data buffer desc
+ * @prot:             iser protection buffer desc
+>>>>>>> v4.9.227
  */
 struct iscsi_iser_task {
 	struct iser_tx_desc          desc;
@@ -547,18 +856,29 @@ struct iscsi_iser_task {
 	struct scsi_cmnd	     *sc;
 	int                          command_sent;
 	int                          dir[ISER_DIRS_NUM];
+<<<<<<< HEAD
 	struct iser_regd_buf         rdma_regd[ISER_DIRS_NUM];
 	struct iser_data_buf         data[ISER_DIRS_NUM];
 	struct iser_data_buf         data_copy[ISER_DIRS_NUM];
 	struct iser_data_buf         prot[ISER_DIRS_NUM];
 	struct iser_data_buf         prot_copy[ISER_DIRS_NUM];
+=======
+	struct iser_mem_reg          rdma_reg[ISER_DIRS_NUM];
+	struct iser_data_buf         data[ISER_DIRS_NUM];
+	struct iser_data_buf         prot[ISER_DIRS_NUM];
+>>>>>>> v4.9.227
 };
 
 struct iser_page_vec {
 	u64 *pages;
+<<<<<<< HEAD
 	int length;
 	int offset;
 	int data_size;
+=======
+	int npages;
+	struct ib_mr fake_mr;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -582,6 +902,13 @@ extern struct iser_global ig;
 extern int iser_debug_level;
 extern bool iser_pi_enable;
 extern int iser_pi_guard;
+<<<<<<< HEAD
+=======
+extern unsigned int iser_max_sectors;
+extern bool iser_always_reg;
+
+int iser_assign_reg_ops(struct iser_device *device);
+>>>>>>> v4.9.227
 
 int iser_send_control(struct iscsi_conn *conn,
 		      struct iscsi_task *task);
@@ -606,12 +933,22 @@ int iser_conn_terminate(struct iser_conn *iser_conn);
 
 void iser_release_work(struct work_struct *work);
 
+<<<<<<< HEAD
 void iser_rcv_completion(struct iser_rx_desc *desc,
 			 unsigned long dto_xfer_len,
 			 struct ib_conn *ib_conn);
 
 void iser_snd_completion(struct iser_tx_desc *desc,
 			 struct ib_conn *ib_conn);
+=======
+void iser_err_comp(struct ib_wc *wc, const char *type);
+void iser_login_rsp(struct ib_cq *cq, struct ib_wc *wc);
+void iser_task_rsp(struct ib_cq *cq, struct ib_wc *wc);
+void iser_cmd_comp(struct ib_cq *cq, struct ib_wc *wc);
+void iser_ctrl_comp(struct ib_cq *cq, struct ib_wc *wc);
+void iser_dataout_comp(struct ib_cq *cq, struct ib_wc *wc);
+void iser_reg_comp(struct ib_cq *cq, struct ib_wc *wc);
+>>>>>>> v4.9.227
 
 void iser_task_rdma_init(struct iscsi_iser_task *task);
 
@@ -621,6 +958,7 @@ void iser_free_rx_descriptors(struct iser_conn *iser_conn);
 
 void iser_finalize_rdma_unaligned_sg(struct iscsi_iser_task *iser_task,
 				     struct iser_data_buf *mem,
+<<<<<<< HEAD
 				     struct iser_data_buf *mem_copy,
 				     enum iser_data_dir cmd_dir);
 
@@ -628,16 +966,28 @@ int  iser_reg_rdma_mem_fmr(struct iscsi_iser_task *task,
 			   enum iser_data_dir cmd_dir);
 int  iser_reg_rdma_mem_fastreg(struct iscsi_iser_task *task,
 			       enum iser_data_dir cmd_dir);
+=======
+				     enum iser_data_dir cmd_dir);
+
+int iser_reg_rdma_mem(struct iscsi_iser_task *task,
+		      enum iser_data_dir dir,
+		      bool all_imm);
+void iser_unreg_rdma_mem(struct iscsi_iser_task *task,
+			 enum iser_data_dir dir);
+>>>>>>> v4.9.227
 
 int  iser_connect(struct iser_conn *iser_conn,
 		  struct sockaddr *src_addr,
 		  struct sockaddr *dst_addr,
 		  int non_blocking);
 
+<<<<<<< HEAD
 int  iser_reg_page_vec(struct ib_conn *ib_conn,
 		       struct iser_page_vec *page_vec,
 		       struct iser_mem_reg *mem_reg);
 
+=======
+>>>>>>> v4.9.227
 void iser_unreg_mem_fmr(struct iscsi_iser_task *iser_task,
 			enum iser_data_dir cmd_dir);
 void iser_unreg_mem_fastreg(struct iscsi_iser_task *iser_task,
@@ -661,10 +1011,73 @@ int  iser_initialize_task_headers(struct iscsi_task *task,
 			struct iser_tx_desc *tx_desc);
 int iser_alloc_rx_descriptors(struct iser_conn *iser_conn,
 			      struct iscsi_session *session);
+<<<<<<< HEAD
 int iser_create_fmr_pool(struct ib_conn *ib_conn, unsigned cmds_max);
 void iser_free_fmr_pool(struct ib_conn *ib_conn);
 int iser_create_fastreg_pool(struct ib_conn *ib_conn, unsigned cmds_max);
 void iser_free_fastreg_pool(struct ib_conn *ib_conn);
 u8 iser_check_task_pi_status(struct iscsi_iser_task *iser_task,
 			     enum iser_data_dir cmd_dir, sector_t *sector);
+=======
+int iser_alloc_fmr_pool(struct ib_conn *ib_conn,
+			unsigned cmds_max,
+			unsigned int size);
+void iser_free_fmr_pool(struct ib_conn *ib_conn);
+int iser_alloc_fastreg_pool(struct ib_conn *ib_conn,
+			    unsigned cmds_max,
+			    unsigned int size);
+void iser_free_fastreg_pool(struct ib_conn *ib_conn);
+u8 iser_check_task_pi_status(struct iscsi_iser_task *iser_task,
+			     enum iser_data_dir cmd_dir, sector_t *sector);
+struct iser_fr_desc *
+iser_reg_desc_get_fr(struct ib_conn *ib_conn);
+void
+iser_reg_desc_put_fr(struct ib_conn *ib_conn,
+		     struct iser_fr_desc *desc);
+struct iser_fr_desc *
+iser_reg_desc_get_fmr(struct ib_conn *ib_conn);
+void
+iser_reg_desc_put_fmr(struct ib_conn *ib_conn,
+		      struct iser_fr_desc *desc);
+
+static inline struct ib_send_wr *
+iser_tx_next_wr(struct iser_tx_desc *tx_desc)
+{
+	struct ib_send_wr *cur_wr = &tx_desc->wrs[tx_desc->wr_idx].send;
+	struct ib_send_wr *last_wr;
+
+	if (tx_desc->wr_idx) {
+		last_wr = &tx_desc->wrs[tx_desc->wr_idx - 1].send;
+		last_wr->next = cur_wr;
+	}
+	tx_desc->wr_idx++;
+
+	return cur_wr;
+}
+
+static inline struct iser_conn *
+to_iser_conn(struct ib_conn *ib_conn)
+{
+	return container_of(ib_conn, struct iser_conn, ib_conn);
+}
+
+static inline struct iser_rx_desc *
+iser_rx(struct ib_cqe *cqe)
+{
+	return container_of(cqe, struct iser_rx_desc, cqe);
+}
+
+static inline struct iser_tx_desc *
+iser_tx(struct ib_cqe *cqe)
+{
+	return container_of(cqe, struct iser_tx_desc, cqe);
+}
+
+static inline struct iser_login_desc *
+iser_login(struct ib_cqe *cqe)
+{
+	return container_of(cqe, struct iser_login_desc, cqe);
+}
+
+>>>>>>> v4.9.227
 #endif

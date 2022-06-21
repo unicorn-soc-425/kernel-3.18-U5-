@@ -1,7 +1,11 @@
 /* DVB USB framework compliant Linux driver for the AVerMedia AverTV DVB-T
  * USB2.0 (A800) DVB-T receiver.
  *
+<<<<<<< HEAD
  * Copyright (C) 2005 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2005 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  *
  * Thanks to
  *   - AVerMedia who kindly provided information and
@@ -185,7 +189,11 @@ static struct usb_driver a800_driver = {
 
 module_usb_driver(a800_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@desy.de>");
+=======
+MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@posteo.de>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("AVerMedia AverTV DVB-T USB 2.0 (A800)");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");

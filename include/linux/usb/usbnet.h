@@ -22,6 +22,7 @@
 #ifndef	__LINUX_USB_USBNET_H
 #define	__LINUX_USB_USBNET_H
 
+<<<<<<< HEAD
 #include <linux/ipa.h>
 
 #define USBNET_IPA_SYS_PIPE_MAX_PKTS_DESC 200
@@ -49,11 +50,16 @@ struct usbnet_ipa_ctx {
 	struct dentry *debugfs_dir;
 };
 
+=======
+>>>>>>> v4.9.227
 /* interface from usbnet core to each USB networking link we handle */
 struct usbnet {
 	/* housekeeping */
 	struct usb_device	*udev;
+<<<<<<< HEAD
 	struct usbnet_ipa_ctx	*pusbnet_ipa;
+=======
+>>>>>>> v4.9.227
 	struct usb_interface	*intf;
 	struct driver_info	*driver_info;
 	const char		*driver_name;
@@ -90,7 +96,11 @@ struct usbnet {
 	unsigned		interrupt_count;
 	struct mutex		interrupt_mutex;
 	struct usb_anchor	deferred;
+<<<<<<< HEAD
 	struct work_struct	bh_w;
+=======
+	struct tasklet_struct	bh;
+>>>>>>> v4.9.227
 
 	struct work_struct	kevent;
 	unsigned long		flags;
@@ -107,6 +117,7 @@ struct usbnet {
 #		define EVENT_RX_KILL	10
 #		define EVENT_LINK_CHANGE	11
 #		define EVENT_SET_RX_MODE	12
+<<<<<<< HEAD
 
 	struct completion rm_prod_granted_comp;
 	struct completion rm_prod_release_comp;
@@ -120,6 +131,9 @@ struct usbnet {
 	struct work_struct ipa_send_task;
 	/* work for odu bridge initialization */
 	struct work_struct odu_bridge_init;
+=======
+#		define EVENT_NO_IP_ALIGN	13
+>>>>>>> v4.9.227
 };
 
 static inline struct usb_driver *driver_of(struct usb_interface *intf)

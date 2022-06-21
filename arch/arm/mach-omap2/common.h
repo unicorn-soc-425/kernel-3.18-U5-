@@ -35,6 +35,10 @@
 #include <linux/irqchip/irq-omap-intc.h>
 
 #include <asm/proc-fns.h>
+<<<<<<< HEAD
+=======
+#include <asm/hardware/cache-l2x0.h>
+>>>>>>> v4.9.227
 
 #include "i2c.h"
 #include "serial.h"
@@ -87,18 +91,35 @@ static inline int omap_mux_late_init(void)
 
 extern void omap2_init_common_infrastructure(void);
 
+<<<<<<< HEAD
 extern void omap2_sync32k_timer_init(void);
 extern void omap3_sync32k_timer_init(void);
+=======
+extern void omap_init_time(void);
+>>>>>>> v4.9.227
 extern void omap3_secure_sync32k_timer_init(void);
 extern void omap3_gptimer_timer_init(void);
 extern void omap4_local_timer_init(void);
 #ifdef CONFIG_CACHE_L2X0
 int omap_l2_cache_init(void);
+<<<<<<< HEAD
+=======
+#define OMAP_L2C_AUX_CTRL	(L2C_AUX_CTRL_SHARED_OVERRIDE | \
+				 L310_AUX_CTRL_DATA_PREFETCH | \
+				 L310_AUX_CTRL_INSTR_PREFETCH)
+void omap4_l2c310_write_sec(unsigned long val, unsigned reg);
+>>>>>>> v4.9.227
 #else
 static inline int omap_l2_cache_init(void)
 {
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+#define OMAP_L2C_AUX_CTRL	0
+#define omap4_l2c310_write_sec	NULL
+>>>>>>> v4.9.227
 #endif
 extern void omap5_realtime_timer_init(void);
 
@@ -110,7 +131,12 @@ void omap3630_init_early(void);
 void omap3_init_early(void);	/* Do not use this one */
 void am33xx_init_early(void);
 void am35xx_init_early(void);
+<<<<<<< HEAD
 void ti81xx_init_early(void);
+=======
+void ti814x_init_early(void);
+void ti816x_init_early(void);
+>>>>>>> v4.9.227
 void am33xx_init_early(void);
 void am43xx_init_early(void);
 void am43xx_init_late(void);
@@ -163,6 +189,17 @@ static inline void omap3xxx_restart(enum reboot_mode mode, const char *cmd)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SOC_TI81XX
+void ti81xx_restart(enum reboot_mode mode, const char *cmd);
+#else
+static inline void ti81xx_restart(enum reboot_mode mode, const char *cmd)
+{
+}
+#endif
+
+>>>>>>> v4.9.227
 #if defined(CONFIG_ARCH_OMAP4) || defined(CONFIG_SOC_OMAP5) || \
 	defined(CONFIG_SOC_DRA7XX) || defined(CONFIG_SOC_AM43XX)
 void omap44xx_restart(enum reboot_mode mode, const char *cmd);
@@ -172,6 +209,18 @@ static inline void omap44xx_restart(enum reboot_mode mode, const char *cmd)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OMAP_INTERCONNECT_BARRIER
+void omap_barrier_reserve_memblock(void);
+void omap_barriers_init(void);
+#else
+static inline void omap_barrier_reserve_memblock(void)
+{
+}
+#endif
+
+>>>>>>> v4.9.227
 /* This gets called from mach-omap2/io.c, do not call this */
 void __init omap2_set_globals_tap(u32 class, void __iomem *tap);
 
@@ -181,11 +230,17 @@ void __init omap3_map_io(void);
 void __init am33xx_map_io(void);
 void __init omap4_map_io(void);
 void __init omap5_map_io(void);
+<<<<<<< HEAD
 void __init ti81xx_map_io(void);
 
 /* omap_barriers_init() is OMAP4 only */
 void omap_barriers_init(void);
 
+=======
+void __init dra7xx_map_io(void);
+void __init ti81xx_map_io(void);
+
+>>>>>>> v4.9.227
 /**
  * omap_test_timeout - busy-loop, testing a condition
  * @cond: condition to test until it evaluates to true
@@ -211,6 +266,10 @@ extern struct device *omap2_get_iva_device(void);
 extern struct device *omap2_get_l3_device(void);
 extern struct device *omap4_get_dsp_device(void);
 
+<<<<<<< HEAD
+=======
+unsigned int omap4_xlate_irq(unsigned int hwirq);
+>>>>>>> v4.9.227
 void omap_gic_of_init(void);
 
 #ifdef CONFIG_CACHE_L2X0
@@ -233,6 +292,7 @@ extern void gic_dist_enable(void);
 extern bool gic_dist_disabled(void);
 extern void gic_timer_retrigger(void);
 extern void omap_smc1(u32 fn, u32 arg);
+<<<<<<< HEAD
 extern void __iomem *omap4_get_sar_ram_base(void);
 extern void omap_do_wfi(void);
 
@@ -240,23 +300,42 @@ extern void omap_do_wfi(void);
 /* Needed for secondary core boot */
 extern void omap4_secondary_startup(void);
 extern void omap4460_secondary_startup(void);
+=======
+extern void omap4_sar_ram_init(void);
+extern void __iomem *omap4_get_sar_ram_base(void);
+extern void omap4_mpuss_early_init(void);
+extern void omap_do_wfi(void);
+
+
+#ifdef CONFIG_SMP
+/* Needed for secondary core boot */
+>>>>>>> v4.9.227
 extern u32 omap_modify_auxcoreboot0(u32 set_mask, u32 clear_mask);
 extern void omap_auxcoreboot_addr(u32 cpu_addr);
 extern u32 omap_read_auxcoreboot0(void);
 
 extern void omap4_cpu_die(unsigned int cpu);
+<<<<<<< HEAD
 
 extern struct smp_operations omap4_smp_ops;
 
 extern void omap5_secondary_startup(void);
 extern void omap5_secondary_hyp_startup(void);
+=======
+extern int omap4_cpu_kill(unsigned int cpu);
+
+extern const struct smp_operations omap4_smp_ops;
+>>>>>>> v4.9.227
 #endif
 
 #if defined(CONFIG_SMP) && defined(CONFIG_PM)
 extern int omap4_mpuss_init(void);
 extern int omap4_enter_lowpower(unsigned int cpu, unsigned int power_state);
+<<<<<<< HEAD
 extern int omap4_finish_suspend(unsigned long cpu_state);
 extern void omap4_cpu_resume(void);
+=======
+>>>>>>> v4.9.227
 extern int omap4_hotplug_cpu(unsigned int cpu, unsigned int power_state);
 #else
 static inline int omap4_enter_lowpower(unsigned int cpu,
@@ -277,14 +356,51 @@ static inline int omap4_mpuss_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#endif
+
+#ifdef CONFIG_ARCH_OMAP4
+void omap4_secondary_startup(void);
+void omap4460_secondary_startup(void);
+int omap4_finish_suspend(unsigned long cpu_state);
+void omap4_cpu_resume(void);
+#else
+static inline void omap4_secondary_startup(void)
+{
+}
+
+static inline void omap4460_secondary_startup(void)
+{
+}
+>>>>>>> v4.9.227
 static inline int omap4_finish_suspend(unsigned long cpu_state)
 {
 	return 0;
 }
+<<<<<<< HEAD
 
 static inline void omap4_cpu_resume(void)
 {}
 
+=======
+static inline void omap4_cpu_resume(void)
+{
+}
+#endif
+
+#if defined(CONFIG_SOC_OMAP5) || defined(CONFIG_SOC_DRA7XX)
+void omap5_secondary_startup(void);
+void omap5_secondary_hyp_startup(void);
+#else
+static inline void omap5_secondary_startup(void)
+{
+}
+
+static inline void omap5_secondary_hyp_startup(void)
+{
+}
+>>>>>>> v4.9.227
 #endif
 
 void pdata_quirks_init(const struct of_device_id *);

@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 /* bnx2x_stats.c: Broadcom Everest network driver.
  *
  * Copyright (c) 2007-2013 Broadcom Corporation
+=======
+/* bnx2x_stats.c: QLogic Everest network driver.
+ *
+ * Copyright (c) 2007-2013 Broadcom Corporation
+ * Copyright (c) 2014 QLogic Corporation
+ * All rights reserved
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,6 +131,7 @@ static void bnx2x_dp_stats(struct bnx2x *bp)
  */
 static void bnx2x_storm_stats_post(struct bnx2x *bp)
 {
+<<<<<<< HEAD
 	if (!bp->stats_pending) {
 		int rc;
 
@@ -153,6 +162,30 @@ static void bnx2x_storm_stats_post(struct bnx2x *bp)
 
 		spin_unlock_bh(&bp->stats_lock);
 	}
+=======
+	int rc;
+
+	if (bp->stats_pending)
+		return;
+
+	bp->fw_stats_req->hdr.drv_stats_counter =
+		cpu_to_le16(bp->stats_counter++);
+
+	DP(BNX2X_MSG_STATS, "Sending statistics ramrod %d\n",
+	   le16_to_cpu(bp->fw_stats_req->hdr.drv_stats_counter));
+
+	/* adjust the ramrod to include VF queues statistics */
+	bnx2x_iov_adjust_stats_req(bp);
+	bnx2x_dp_stats(bp);
+
+	/* send FW stats ramrod */
+	rc = bnx2x_sp_post(bp, RAMROD_CMD_ID_COMMON_STAT_QUERY, 0,
+			   U64_HI(bp->fw_stats_req_mapping),
+			   U64_LO(bp->fw_stats_req_mapping),
+			   NONE_CONNECTION_TYPE);
+	if (rc == 0)
+		bp->stats_pending = 1;
+>>>>>>> v4.9.227
 }
 
 static void bnx2x_hw_stats_post(struct bnx2x *bp)
@@ -221,7 +254,11 @@ static void bnx2x_stats_comp(struct bnx2x *bp)
  */
 
 /* should be called under stats_sema */
+<<<<<<< HEAD
 static void __bnx2x_stats_pmf_update(struct bnx2x *bp)
+=======
+static void bnx2x_stats_pmf_update(struct bnx2x *bp)
+>>>>>>> v4.9.227
 {
 	struct dmae_command *dmae;
 	u32 opcode;
@@ -519,7 +556,11 @@ static void bnx2x_func_stats_init(struct bnx2x *bp)
 }
 
 /* should be called under stats_sema */
+<<<<<<< HEAD
 static void __bnx2x_stats_start(struct bnx2x *bp)
+=======
+static void bnx2x_stats_start(struct bnx2x *bp)
+>>>>>>> v4.9.227
 {
 	if (IS_PF(bp)) {
 		if (bp->port.pmf)
@@ -531,6 +572,7 @@ static void __bnx2x_stats_start(struct bnx2x *bp)
 		bnx2x_hw_stats_post(bp);
 		bnx2x_storm_stats_post(bp);
 	}
+<<<<<<< HEAD
 
 	bp->stats_started = true;
 }
@@ -541,10 +583,13 @@ static void bnx2x_stats_start(struct bnx2x *bp)
 		BNX2X_ERR("Unable to acquire stats lock\n");
 	__bnx2x_stats_start(bp);
 	up(&bp->stats_sema);
+=======
+>>>>>>> v4.9.227
 }
 
 static void bnx2x_stats_pmf_start(struct bnx2x *bp)
 {
+<<<<<<< HEAD
 	if (down_timeout(&bp->stats_sema, HZ/10))
 		BNX2X_ERR("Unable to acquire stats lock\n");
 	bnx2x_stats_comp(bp);
@@ -559,6 +604,11 @@ static void bnx2x_stats_pmf_update(struct bnx2x *bp)
 		BNX2X_ERR("Unable to acquire stats lock\n");
 	__bnx2x_stats_pmf_update(bp);
 	up(&bp->stats_sema);
+=======
+	bnx2x_stats_comp(bp);
+	bnx2x_stats_pmf_update(bp);
+	bnx2x_stats_start(bp);
+>>>>>>> v4.9.227
 }
 
 static void bnx2x_stats_restart(struct bnx2x *bp)
@@ -568,11 +618,17 @@ static void bnx2x_stats_restart(struct bnx2x *bp)
 	 */
 	if (IS_VF(bp))
 		return;
+<<<<<<< HEAD
 	if (down_timeout(&bp->stats_sema, HZ/10))
 		BNX2X_ERR("Unable to acquire stats lock\n");
 	bnx2x_stats_comp(bp);
 	__bnx2x_stats_start(bp);
 	up(&bp->stats_sema);
+=======
+
+	bnx2x_stats_comp(bp);
+	bnx2x_stats_start(bp);
+>>>>>>> v4.9.227
 }
 
 static void bnx2x_bmac_stats_update(struct bnx2x *bp)
@@ -1246,6 +1302,7 @@ static void bnx2x_stats_update(struct bnx2x *bp)
 {
 	u32 *stats_comp = bnx2x_sp(bp, stats_comp);
 
+<<<<<<< HEAD
 	/* we run update from timer context, so give up
 	 * if somebody is in the middle of transition
 	 */
@@ -1258,6 +1315,14 @@ static void bnx2x_stats_update(struct bnx2x *bp)
 	if (IS_PF(bp)) {
 		if (*stats_comp != DMAE_COMP_VAL)
 			goto out;
+=======
+	if (bnx2x_edebug_stats_stopped(bp))
+		return;
+
+	if (IS_PF(bp)) {
+		if (*stats_comp != DMAE_COMP_VAL)
+			return;
+>>>>>>> v4.9.227
 
 		if (bp->port.pmf)
 			bnx2x_hw_stats_update(bp);
@@ -1267,7 +1332,11 @@ static void bnx2x_stats_update(struct bnx2x *bp)
 				BNX2X_ERR("storm stats were not updated for 3 times\n");
 				bnx2x_panic();
 			}
+<<<<<<< HEAD
 			goto out;
+=======
+			return;
+>>>>>>> v4.9.227
 		}
 	} else {
 		/* vf doesn't collect HW statistics, and doesn't get completions
@@ -1281,7 +1350,11 @@ static void bnx2x_stats_update(struct bnx2x *bp)
 
 	/* vf is done */
 	if (IS_VF(bp))
+<<<<<<< HEAD
 		goto out;
+=======
+		return;
+>>>>>>> v4.9.227
 
 	if (netif_msg_timer(bp)) {
 		struct bnx2x_eth_stats *estats = &bp->eth_stats;
@@ -1292,9 +1365,12 @@ static void bnx2x_stats_update(struct bnx2x *bp)
 
 	bnx2x_hw_stats_post(bp);
 	bnx2x_storm_stats_post(bp);
+<<<<<<< HEAD
 
 out:
 	up(&bp->stats_sema);
+=======
+>>>>>>> v4.9.227
 }
 
 static void bnx2x_port_stats_stop(struct bnx2x *bp)
@@ -1358,12 +1434,16 @@ static void bnx2x_port_stats_stop(struct bnx2x *bp)
 
 static void bnx2x_stats_stop(struct bnx2x *bp)
 {
+<<<<<<< HEAD
 	int update = 0;
 
 	if (down_timeout(&bp->stats_sema, HZ/10))
 		BNX2X_ERR("Unable to acquire stats lock\n");
 
 	bp->stats_started = false;
+=======
+	bool update = false;
+>>>>>>> v4.9.227
 
 	bnx2x_stats_comp(bp);
 
@@ -1381,8 +1461,11 @@ static void bnx2x_stats_stop(struct bnx2x *bp)
 		bnx2x_hw_stats_post(bp);
 		bnx2x_stats_comp(bp);
 	}
+<<<<<<< HEAD
 
 	up(&bp->stats_sema);
+=======
+>>>>>>> v4.9.227
 }
 
 static void bnx2x_stats_do_nothing(struct bnx2x *bp)
@@ -1410,6 +1493,7 @@ static const struct {
 
 void bnx2x_stats_handle(struct bnx2x *bp, enum bnx2x_stats_event event)
 {
+<<<<<<< HEAD
 	enum bnx2x_stats_state state;
 	void (*action)(struct bnx2x *bp);
 	if (unlikely(bp->panic))
@@ -1422,6 +1506,34 @@ void bnx2x_stats_handle(struct bnx2x *bp, enum bnx2x_stats_event event)
 	spin_unlock_bh(&bp->stats_lock);
 
 	action(bp);
+=======
+	enum bnx2x_stats_state state = bp->stats_state;
+
+	if (unlikely(bp->panic))
+		return;
+
+	/* Statistics update run from timer context, and we don't want to stop
+	 * that context in case someone is in the middle of a transition.
+	 * For other events, wait a bit until lock is taken.
+	 */
+	if (down_trylock(&bp->stats_lock)) {
+		if (event == STATS_EVENT_UPDATE)
+			return;
+
+		DP(BNX2X_MSG_STATS,
+		   "Unlikely stats' lock contention [event %d]\n", event);
+		if (unlikely(down_timeout(&bp->stats_lock, HZ / 10))) {
+			BNX2X_ERR("Failed to take stats lock [event %d]\n",
+				  event);
+			return;
+		}
+	}
+
+	bnx2x_stats_stm[state][event].action(bp);
+	bp->stats_state = bnx2x_stats_stm[state][event].next_state;
+
+	up(&bp->stats_lock);
+>>>>>>> v4.9.227
 
 	if ((event != STATS_EVENT_UPDATE) || netif_msg_timer(bp))
 		DP(BNX2X_MSG_STATS, "state %d -> event %d -> state %d\n",
@@ -1620,7 +1732,11 @@ void bnx2x_memset_stats(struct bnx2x *bp)
 	if (bp->port.pmf && bp->port.port_stx)
 		bnx2x_port_stats_base_init(bp);
 
+<<<<<<< HEAD
 	/* mark the end of statistics initializiation */
+=======
+	/* mark the end of statistics initialization */
+>>>>>>> v4.9.227
 	bp->stats_init = false;
 }
 
@@ -1998,6 +2114,7 @@ void bnx2x_afex_collect_stats(struct bnx2x *bp, void *void_afex_stats,
 	}
 }
 
+<<<<<<< HEAD
 void bnx2x_stats_safe_exec(struct bnx2x *bp,
 			   void (func_to_exec)(void *cookie),
 			   void *cookie){
@@ -2007,4 +2124,40 @@ void bnx2x_stats_safe_exec(struct bnx2x *bp,
 	func_to_exec(cookie);
 	__bnx2x_stats_start(bp);
 	up(&bp->stats_sema);
+=======
+int bnx2x_stats_safe_exec(struct bnx2x *bp,
+			  void (func_to_exec)(void *cookie),
+			  void *cookie)
+{
+	int cnt = 10, rc = 0;
+
+	/* Wait for statistics to end [while blocking further requests],
+	 * then run supplied function 'safely'.
+	 */
+	rc = down_timeout(&bp->stats_lock, HZ / 10);
+	if (unlikely(rc)) {
+		BNX2X_ERR("Failed to take statistics lock for safe execution\n");
+		goto out_no_lock;
+	}
+
+	bnx2x_stats_comp(bp);
+	while (bp->stats_pending && cnt--)
+		if (bnx2x_storm_stats_update(bp))
+			usleep_range(1000, 2000);
+	if (bp->stats_pending) {
+		BNX2X_ERR("Failed to wait for stats pending to clear [possibly FW is stuck]\n");
+		rc = -EBUSY;
+		goto out;
+	}
+
+	func_to_exec(cookie);
+
+out:
+	/* No need to restart statistics - if they're enabled, the timer
+	 * will restart the statistics.
+	 */
+	up(&bp->stats_lock);
+out_no_lock:
+	return rc;
+>>>>>>> v4.9.227
 }

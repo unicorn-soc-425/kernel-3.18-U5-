@@ -18,10 +18,17 @@
 #ifndef HOST1X_BUS_H
 #define HOST1X_BUS_H
 
+<<<<<<< HEAD
 struct host1x;
 
 int host1x_bus_init(void);
 void host1x_bus_exit(void);
+=======
+struct bus_type;
+struct host1x;
+
+extern struct bus_type host1x_bus_type;
+>>>>>>> v4.9.227
 
 int host1x_register(struct host1x *host1x);
 int host1x_unregister(struct host1x *host1x);

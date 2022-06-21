@@ -25,25 +25,39 @@
 #include <linux/suspend.h>
 #include <linux/syscore_ops.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 
 #include <asm/mach/map.h>
 #include <asm/suspend.h>
 #include <mach/hardware.h>
 #include <mach/irqs.h>
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
 #include <mach/reset.h>
 #include <mach/pm.h>
+=======
+#include "pxa25x.h"
+#include <mach/reset.h>
+#include "pm.h"
+>>>>>>> v4.9.227
 #include <mach/dma.h>
 #include <mach/smemc.h>
 
 #include "generic.h"
 #include "devices.h"
+<<<<<<< HEAD
 #include "clock.h"
+=======
+>>>>>>> v4.9.227
 
 /*
  * Various clock factors driven by the CCCR register.
  */
 
+<<<<<<< HEAD
 /* Crystal Frequency to Memory Frequency Multiplier (L) */
 static unsigned char L_clk_mult[32] = { 0, 27, 32, 36, 40, 45, 0, };
 
@@ -219,6 +233,8 @@ static struct clk_lookup pxa25x_clkregs[] = {
 static struct clk_lookup pxa25x_hwuart_clkreg =
 	INIT_CLKREG(&clk_pxa25x_hwuart, "pxa2xx-uart.3", NULL);
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 
 #define SAVE(x)		sleep_save[SLEEP_SAVE_##x] = x
@@ -327,6 +343,19 @@ void __init pxa26x_init_irq(void)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+static int __init __init
+pxa25x_dt_init_irq(struct device_node *node, struct device_node *parent)
+{
+	pxa_dt_irq_init(pxa25x_set_wake);
+	set_handle_irq(icip_handle_irq);
+
+	return 0;
+}
+IRQCHIP_DECLARE(pxa25x_intc, "marvell,pxa-intc", pxa25x_dt_init_irq);
+
+>>>>>>> v4.9.227
 static struct map_desc pxa25x_io_desc[] __initdata = {
 	{	/* Mem Ctl */
 		.virtual	= (unsigned long)SMEMC_VIRT,
@@ -374,15 +403,19 @@ static int __init pxa25x_init(void)
 
 		reset_status = RCSR;
 
+<<<<<<< HEAD
 		clkdev_add_table(pxa25x_clkregs, ARRAY_SIZE(pxa25x_clkregs));
 
 		if ((ret = pxa_init_dma(IRQ_DMA, 16)))
 			return ret;
 
+=======
+>>>>>>> v4.9.227
 		pxa25x_init_pm();
 
 		register_syscore_ops(&pxa_irq_syscore_ops);
 		register_syscore_ops(&pxa2xx_mfp_syscore_ops);
+<<<<<<< HEAD
 		register_syscore_ops(&pxa2xx_clock_syscore_ops);
 
 		pxa_register_device(&pxa25x_device_gpio, &pxa25x_gpio_info);
@@ -396,6 +429,17 @@ static int __init pxa25x_init(void)
 	if (cpu_is_pxa255())
 		clkdev_add(&pxa25x_hwuart_clkreg);
 
+=======
+
+		if (!of_have_populated_dt()) {
+			pxa2xx_set_dmac_info(16, 40);
+			pxa_register_device(&pxa25x_device_gpio, &pxa25x_gpio_info);
+			ret = platform_add_devices(pxa25x_devices,
+						   ARRAY_SIZE(pxa25x_devices));
+		}
+	}
+
+>>>>>>> v4.9.227
 	return ret;
 }
 

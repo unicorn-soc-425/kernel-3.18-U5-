@@ -23,6 +23,10 @@
 #include <linux/of_device.h>
 #include <linux/clk.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/dma-mapping.h>
+>>>>>>> v4.9.227
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/host1x.h>
@@ -35,6 +39,10 @@
 #include "hw/host1x01.h"
 #include "hw/host1x02.h"
 #include "hw/host1x04.h"
+<<<<<<< HEAD
+=======
+#include "hw/host1x05.h"
+>>>>>>> v4.9.227
 
 void host1x_sync_writel(struct host1x *host1x, u32 v, u32 r)
 {
@@ -61,12 +69,22 @@ u32 host1x_ch_readl(struct host1x_channel *ch, u32 r)
 }
 
 static const struct host1x_info host1x01_info = {
+<<<<<<< HEAD
 	.nb_channels	= 8,
 	.nb_pts		= 32,
 	.nb_mlocks	= 16,
 	.nb_bases	= 8,
 	.init		= host1x01_init,
 	.sync_offset	= 0x3000,
+=======
+	.nb_channels = 8,
+	.nb_pts = 32,
+	.nb_mlocks = 16,
+	.nb_bases = 8,
+	.init = host1x01_init,
+	.sync_offset = 0x3000,
+	.dma_mask = DMA_BIT_MASK(32),
+>>>>>>> v4.9.227
 };
 
 static const struct host1x_info host1x02_info = {
@@ -76,6 +94,10 @@ static const struct host1x_info host1x02_info = {
 	.nb_bases = 12,
 	.init = host1x02_init,
 	.sync_offset = 0x3000,
+<<<<<<< HEAD
+=======
+	.dma_mask = DMA_BIT_MASK(32),
+>>>>>>> v4.9.227
 };
 
 static const struct host1x_info host1x04_info = {
@@ -85,9 +107,27 @@ static const struct host1x_info host1x04_info = {
 	.nb_bases = 64,
 	.init = host1x04_init,
 	.sync_offset = 0x2100,
+<<<<<<< HEAD
 };
 
 static struct of_device_id host1x_of_match[] = {
+=======
+	.dma_mask = DMA_BIT_MASK(34),
+};
+
+static const struct host1x_info host1x05_info = {
+	.nb_channels = 14,
+	.nb_pts = 192,
+	.nb_mlocks = 16,
+	.nb_bases = 64,
+	.init = host1x05_init,
+	.sync_offset = 0x2100,
+	.dma_mask = DMA_BIT_MASK(34),
+};
+
+static const struct of_device_id host1x_of_match[] = {
+	{ .compatible = "nvidia,tegra210-host1x", .data = &host1x05_info, },
+>>>>>>> v4.9.227
 	{ .compatible = "nvidia,tegra124-host1x", .data = &host1x04_info, },
 	{ .compatible = "nvidia,tegra114-host1x", .data = &host1x02_info, },
 	{ .compatible = "nvidia,tegra30-host1x", .data = &host1x01_info, },
@@ -137,6 +177,11 @@ static int host1x_probe(struct platform_device *pdev)
 	if (IS_ERR(host->regs))
 		return PTR_ERR(host->regs);
 
+<<<<<<< HEAD
+=======
+	dma_set_mask_and_coherent(host->dev, host->info->dma_mask);
+
+>>>>>>> v4.9.227
 	if (host->info->init) {
 		err = host->info->init(host);
 		if (err)
@@ -212,10 +257,19 @@ static struct platform_driver tegra_host1x_driver = {
 	.remove = host1x_remove,
 };
 
+<<<<<<< HEAD
+=======
+static struct platform_driver * const drivers[] = {
+	&tegra_host1x_driver,
+	&tegra_mipi_driver,
+};
+
+>>>>>>> v4.9.227
 static int __init tegra_host1x_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	err = host1x_bus_init();
 	if (err < 0)
 		return err;
@@ -234,15 +288,30 @@ unregister_host1x:
 	platform_driver_unregister(&tegra_host1x_driver);
 unregister_bus:
 	host1x_bus_exit();
+=======
+	err = bus_register(&host1x_bus_type);
+	if (err < 0)
+		return err;
+
+	err = platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+	if (err < 0)
+		bus_unregister(&host1x_bus_type);
+
+>>>>>>> v4.9.227
 	return err;
 }
 module_init(tegra_host1x_init);
 
 static void __exit tegra_host1x_exit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&tegra_mipi_driver);
 	platform_driver_unregister(&tegra_host1x_driver);
 	host1x_bus_exit();
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+	bus_unregister(&host1x_bus_type);
+>>>>>>> v4.9.227
 }
 module_exit(tegra_host1x_exit);
 

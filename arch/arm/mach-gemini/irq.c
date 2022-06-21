@@ -92,7 +92,11 @@ void __init gemini_init_irq(void)
 		} else {			
 			irq_set_handler(i, handle_level_irq);
 		}
+<<<<<<< HEAD
 		set_irq_flags(i, IRQF_VALID | IRQF_PROBE);
+=======
+		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> v4.9.227
 	}
 
 	/* Disable all interrupts */

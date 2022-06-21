@@ -14,6 +14,7 @@
 #ifndef _LINUX_PUBLIC_KEY_H
 #define _LINUX_PUBLIC_KEY_H
 
+<<<<<<< HEAD
 #include <linux/mpi.h>
 #include <keys/asymmetric-type.h>
 #include <crypto/hash_info.h>
@@ -38,6 +39,8 @@ enum pkey_id_type {
 
 extern const char *const pkey_id_type_name[PKEY_ID_TYPE__LAST];
 
+=======
+>>>>>>> v4.9.227
 /*
  * Cryptographic data for the public-key subtype of the asymmetric key type.
  *
@@ -45,6 +48,7 @@ extern const char *const pkey_id_type_name[PKEY_ID_TYPE__LAST];
  * part.
  */
 struct public_key {
+<<<<<<< HEAD
 	const struct public_key_algorithm *algo;
 	u8	capabilities;
 #define PKEY_CAN_ENCRYPT	0x01
@@ -73,11 +77,21 @@ struct public_key {
 };
 
 extern void public_key_destroy(void *payload);
+=======
+	void *key;
+	u32 keylen;
+	const char *id_type;
+	const char *pkey_algo;
+};
+
+extern void public_key_free(struct public_key *key);
+>>>>>>> v4.9.227
 
 /*
  * Public key cryptography signature data
  */
 struct public_key_signature {
+<<<<<<< HEAD
 	u8 *digest;
 	u8 digest_size;			/* Number of bytes in digest */
 	u8 nr_mpi;			/* Occupancy of mpi[] */
@@ -103,5 +117,33 @@ struct asymmetric_key_id;
 extern struct key *x509_request_asymmetric_key(struct key *keyring,
 					       const struct asymmetric_key_id *kid,
 					       bool partial);
+=======
+	struct asymmetric_key_id *auth_ids[2];
+	u8 *s;			/* Signature */
+	u32 s_size;		/* Number of bytes in signature */
+	u8 *digest;
+	u8 digest_size;		/* Number of bytes in digest */
+	const char *pkey_algo;
+	const char *hash_algo;
+};
+
+extern void public_key_signature_free(struct public_key_signature *sig);
+
+extern struct asymmetric_key_subtype public_key_subtype;
+
+struct key;
+struct key_type;
+union key_payload;
+
+extern int restrict_link_by_signature(struct key *trust_keyring,
+				      const struct key_type *type,
+				      const union key_payload *payload);
+
+extern int verify_signature(const struct key *key,
+			    const struct public_key_signature *sig);
+
+int public_key_verify_signature(const struct public_key *pkey,
+				const struct public_key_signature *sig);
+>>>>>>> v4.9.227
 
 #endif /* _LINUX_PUBLIC_KEY_H */

@@ -33,7 +33,11 @@
 
 #include "opl4_local.h"
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <sound/asoundef.h>
 
 /* GM2 controllers */

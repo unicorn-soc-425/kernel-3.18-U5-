@@ -9,7 +9,11 @@
  *  Copyright (C) 2008-2009 Red Hat, Inc., Ingo Molnar
  *  Copyright (C) 2009 Jaswinder Singh Rajput
  *  Copyright (C) 2009 Advanced Micro Devices, Inc., Robert Richter
+<<<<<<< HEAD
  *  Copyright (C) 2008-2009 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ *  Copyright (C) 2008-2009 Red Hat, Inc., Peter Zijlstra
+>>>>>>> v4.9.227
  */
 
 #include <linux/perf_event.h>
@@ -21,7 +25,11 @@
 
 #include <asm/stacktrace.h>
 #include <asm/cpudata.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> v4.9.227
 #include <linux/atomic.h>
 #include <asm/nmi.h>
 #include <asm/pcr.h>
@@ -108,7 +116,11 @@ struct cpu_hw_events {
 	/* Enabled/disable state.  */
 	int			enabled;
 
+<<<<<<< HEAD
 	unsigned int		group_flag;
+=======
+	unsigned int		txn_flags;
+>>>>>>> v4.9.227
 };
 static DEFINE_PER_CPU(struct cpu_hw_events, cpu_hw_events) = { .enabled = 1, };
 
@@ -737,6 +749,7 @@ static void sparc_vt_write_pmc(int idx, u64 val)
 {
 	u64 pcr;
 
+<<<<<<< HEAD
 	/* There seems to be an internal latch on the overflow event
 	 * on SPARC-T4 that prevents it from triggering unless you
 	 * update the PIC exactly as we do here.  The requirement
@@ -756,6 +769,11 @@ static void sparc_vt_write_pmc(int idx, u64 val)
 	 */
 	pcr = pcr_ops->read_pcr(idx);
 	pcr_ops->write_pcr(idx, PCR_N4_PICNPT);
+=======
+	pcr = pcr_ops->read_pcr(idx);
+	/* ensure ov and ntc are reset */
+	pcr &= ~(PCR_N4_OV | PCR_N4_NTC);
+>>>>>>> v4.9.227
 
 	pcr_ops->write_pic(idx, val & 0xffffffff);
 
@@ -792,6 +810,32 @@ static const struct sparc_pmu niagara4_pmu = {
 	.num_pic_regs	= 4,
 };
 
+<<<<<<< HEAD
+=======
+static const struct sparc_pmu sparc_m7_pmu = {
+	.event_map	= niagara4_event_map,
+	.cache_map	= &niagara4_cache_map,
+	.max_events	= ARRAY_SIZE(niagara4_perfmon_event_map),
+	.read_pmc	= sparc_vt_read_pmc,
+	.write_pmc	= sparc_vt_write_pmc,
+	.upper_shift	= 5,
+	.lower_shift	= 5,
+	.event_mask	= 0x7ff,
+	.user_bit	= PCR_N4_UTRACE,
+	.priv_bit	= PCR_N4_STRACE,
+
+	/* We explicitly don't support hypervisor tracing. */
+	.hv_bit		= 0,
+
+	.irq_bit	= PCR_N4_TOE,
+	.upper_nop	= 0,
+	.lower_nop	= 0,
+	.flags		= 0,
+	.max_hw_events	= 4,
+	.num_pcrs	= 4,
+	.num_pic_regs	= 4,
+};
+>>>>>>> v4.9.227
 static const struct sparc_pmu *sparc_pmu __read_mostly;
 
 static u64 event_encoding(u64 event_id, int idx)
@@ -882,6 +926,13 @@ static int sparc_perf_event_set_period(struct perf_event *event,
 	s64 period = hwc->sample_period;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	/* The period may have been changed by PERF_EVENT_IOC_PERIOD */
+	if (unlikely(period != hwc->last_period))
+		left = period - (hwc->last_period - left);
+
+>>>>>>> v4.9.227
 	if (unlikely(left <= -period)) {
 		left = period;
 		local64_set(&hwc->period_left, left);
@@ -919,6 +970,11 @@ static void read_in_all_counters(struct cpu_hw_events *cpuc)
 			sparc_perf_event_update(cp, &cp->hw,
 						cpuc->current_idx[i]);
 			cpuc->current_idx[i] = PIC_NO_INDEX;
+<<<<<<< HEAD
+=======
+			if (cp->hw.state & PERF_HES_STOPPED)
+				cp->hw.state |= PERF_HES_ARCH;
+>>>>>>> v4.9.227
 		}
 	}
 }
@@ -951,10 +1007,19 @@ static void calculate_single_pcr(struct cpu_hw_events *cpuc)
 
 		enc = perf_event_get_enc(cpuc->events[i]);
 		cpuc->pcr[0] &= ~mask_for_index(idx);
+<<<<<<< HEAD
 		if (hwc->state & PERF_HES_STOPPED)
 			cpuc->pcr[0] |= nop_for_index(idx);
 		else
 			cpuc->pcr[0] |= event_encoding(enc, idx);
+=======
+		if (hwc->state & PERF_HES_ARCH) {
+			cpuc->pcr[0] |= nop_for_index(idx);
+		} else {
+			cpuc->pcr[0] |= event_encoding(enc, idx);
+			hwc->state = 0;
+		}
+>>>>>>> v4.9.227
 	}
 out:
 	cpuc->pcr[0] |= cpuc->event[0]->hw.config_base;
@@ -980,6 +1045,12 @@ static void calculate_multiple_pcrs(struct cpu_hw_events *cpuc)
 
 		cpuc->current_idx[i] = idx;
 
+<<<<<<< HEAD
+=======
+		if (cp->hw.state & PERF_HES_ARCH)
+			continue;
+
+>>>>>>> v4.9.227
 		sparc_pmu_start(cp, PERF_EF_RELOAD);
 	}
 out:
@@ -1071,6 +1142,11 @@ static void sparc_pmu_start(struct perf_event *event, int flags)
 	event->hw.state = 0;
 
 	sparc_pmu_enable_event(cpuc, &event->hw, idx);
+<<<<<<< HEAD
+=======
+
+	perf_event_update_userpage(event);
+>>>>>>> v4.9.227
 }
 
 static void sparc_pmu_stop(struct perf_event *event, int flags)
@@ -1363,16 +1439,26 @@ static int sparc_pmu_add(struct perf_event *event, int ef_flags)
 	cpuc->events[n0] = event->hw.event_base;
 	cpuc->current_idx[n0] = PIC_NO_INDEX;
 
+<<<<<<< HEAD
 	event->hw.state = PERF_HES_UPTODATE;
 	if (!(ef_flags & PERF_EF_START))
 		event->hw.state |= PERF_HES_STOPPED;
+=======
+	event->hw.state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
+	if (!(ef_flags & PERF_EF_START))
+		event->hw.state |= PERF_HES_ARCH;
+>>>>>>> v4.9.227
 
 	/*
 	 * If group events scheduling transaction was started,
 	 * skip the schedulability test here, it will be performed
 	 * at commit time(->commit_txn) as a whole
 	 */
+<<<<<<< HEAD
 	if (cpuc->group_flag & PERF_EVENT_TXN)
+=======
+	if (cpuc->txn_flags & PERF_PMU_TXN_ADD)
+>>>>>>> v4.9.227
 		goto nocheck;
 
 	if (check_excludes(cpuc->event, n0, 1))
@@ -1487,12 +1573,26 @@ static int sparc_pmu_event_init(struct perf_event *event)
  * Set the flag to make pmu::enable() not perform the
  * schedulability test, it will be performed at commit time
  */
+<<<<<<< HEAD
 static void sparc_pmu_start_txn(struct pmu *pmu)
 {
 	struct cpu_hw_events *cpuhw = this_cpu_ptr(&cpu_hw_events);
 
 	perf_pmu_disable(pmu);
 	cpuhw->group_flag |= PERF_EVENT_TXN;
+=======
+static void sparc_pmu_start_txn(struct pmu *pmu, unsigned int txn_flags)
+{
+	struct cpu_hw_events *cpuhw = this_cpu_ptr(&cpu_hw_events);
+
+	WARN_ON_ONCE(cpuhw->txn_flags);		/* txn already in flight */
+
+	cpuhw->txn_flags = txn_flags;
+	if (txn_flags & ~PERF_PMU_TXN_ADD)
+		return;
+
+	perf_pmu_disable(pmu);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1503,8 +1603,20 @@ static void sparc_pmu_start_txn(struct pmu *pmu)
 static void sparc_pmu_cancel_txn(struct pmu *pmu)
 {
 	struct cpu_hw_events *cpuhw = this_cpu_ptr(&cpu_hw_events);
+<<<<<<< HEAD
 
 	cpuhw->group_flag &= ~PERF_EVENT_TXN;
+=======
+	unsigned int txn_flags;
+
+	WARN_ON_ONCE(!cpuhw->txn_flags);	/* no txn in flight */
+
+	txn_flags = cpuhw->txn_flags;
+	cpuhw->txn_flags = 0;
+	if (txn_flags & ~PERF_PMU_TXN_ADD)
+		return;
+
+>>>>>>> v4.9.227
 	perf_pmu_enable(pmu);
 }
 
@@ -1521,14 +1633,28 @@ static int sparc_pmu_commit_txn(struct pmu *pmu)
 	if (!sparc_pmu)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	cpuc = this_cpu_ptr(&cpu_hw_events);
+=======
+	WARN_ON_ONCE(!cpuc->txn_flags);	/* no txn in flight */
+
+	if (cpuc->txn_flags & ~PERF_PMU_TXN_ADD) {
+		cpuc->txn_flags = 0;
+		return 0;
+	}
+
+>>>>>>> v4.9.227
 	n = cpuc->n_events;
 	if (check_excludes(cpuc->event, 0, n))
 		return -EINVAL;
 	if (sparc_check_constraints(cpuc->event, cpuc->events, n))
 		return -EAGAIN;
 
+<<<<<<< HEAD
 	cpuc->group_flag &= ~PERF_EVENT_TXN;
+=======
+	cpuc->txn_flags = 0;
+>>>>>>> v4.9.227
 	perf_pmu_enable(pmu);
 	return 0;
 }
@@ -1658,6 +1784,13 @@ static bool __init supported_pmu(void)
 		sparc_pmu = &niagara4_pmu;
 		return true;
 	}
+<<<<<<< HEAD
+=======
+	if (!strcmp(sparc_pmu_type, "sparc-m7")) {
+		sparc_pmu = &sparc_m7_pmu;
+		return true;
+	}
+>>>>>>> v4.9.227
 	return false;
 }
 
@@ -1682,7 +1815,11 @@ static int __init init_hw_perf_events(void)
 }
 pure_initcall(init_hw_perf_events);
 
+<<<<<<< HEAD
 void perf_callchain_kernel(struct perf_callchain_entry *entry,
+=======
+void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
+>>>>>>> v4.9.227
 			   struct pt_regs *regs)
 {
 	unsigned long ksp, fp;
@@ -1727,36 +1864,74 @@ void perf_callchain_kernel(struct perf_callchain_entry *entry,
 			}
 		}
 #endif
+<<<<<<< HEAD
 	} while (entry->nr < PERF_MAX_STACK_DEPTH);
 }
 
 static void perf_callchain_user_64(struct perf_callchain_entry *entry,
+=======
+	} while (entry->nr < entry->max_stack);
+}
+
+static inline int
+valid_user_frame(const void __user *fp, unsigned long size)
+{
+	/* addresses should be at least 4-byte aligned */
+	if (((unsigned long) fp) & 3)
+		return 0;
+
+	return (__range_not_ok(fp, size, TASK_SIZE) == 0);
+}
+
+static void perf_callchain_user_64(struct perf_callchain_entry_ctx *entry,
+>>>>>>> v4.9.227
 				   struct pt_regs *regs)
 {
 	unsigned long ufp;
 
+<<<<<<< HEAD
 	ufp = regs->u_regs[UREG_I6] + STACK_BIAS;
+=======
+	ufp = regs->u_regs[UREG_FP] + STACK_BIAS;
+>>>>>>> v4.9.227
 	do {
 		struct sparc_stackf __user *usf;
 		struct sparc_stackf sf;
 		unsigned long pc;
 
 		usf = (struct sparc_stackf __user *)ufp;
+<<<<<<< HEAD
+=======
+		if (!valid_user_frame(usf, sizeof(sf)))
+			break;
+
+>>>>>>> v4.9.227
 		if (__copy_from_user_inatomic(&sf, usf, sizeof(sf)))
 			break;
 
 		pc = sf.callers_pc;
 		ufp = (unsigned long)sf.fp + STACK_BIAS;
 		perf_callchain_store(entry, pc);
+<<<<<<< HEAD
 	} while (entry->nr < PERF_MAX_STACK_DEPTH);
 }
 
 static void perf_callchain_user_32(struct perf_callchain_entry *entry,
+=======
+	} while (entry->nr < entry->max_stack);
+}
+
+static void perf_callchain_user_32(struct perf_callchain_entry_ctx *entry,
+>>>>>>> v4.9.227
 				   struct pt_regs *regs)
 {
 	unsigned long ufp;
 
+<<<<<<< HEAD
 	ufp = regs->u_regs[UREG_I6] & 0xffffffffUL;
+=======
+	ufp = regs->u_regs[UREG_FP] & 0xffffffffUL;
+>>>>>>> v4.9.227
 	do {
 		unsigned long pc;
 
@@ -1780,20 +1955,52 @@ static void perf_callchain_user_32(struct perf_callchain_entry *entry,
 			ufp = (unsigned long)sf.fp;
 		}
 		perf_callchain_store(entry, pc);
+<<<<<<< HEAD
 	} while (entry->nr < PERF_MAX_STACK_DEPTH);
 }
 
 void
 perf_callchain_user(struct perf_callchain_entry *entry, struct pt_regs *regs)
 {
+=======
+	} while (entry->nr < entry->max_stack);
+}
+
+void
+perf_callchain_user(struct perf_callchain_entry_ctx *entry, struct pt_regs *regs)
+{
+	u64 saved_fault_address = current_thread_info()->fault_address;
+	u8 saved_fault_code = get_thread_fault_code();
+	mm_segment_t old_fs;
+
+>>>>>>> v4.9.227
 	perf_callchain_store(entry, regs->tpc);
 
 	if (!current->mm)
 		return;
 
+<<<<<<< HEAD
 	flushw_user();
+=======
+	old_fs = get_fs();
+	set_fs(USER_DS);
+
+	flushw_user();
+
+	pagefault_disable();
+
+>>>>>>> v4.9.227
 	if (test_thread_flag(TIF_32BIT))
 		perf_callchain_user_32(entry, regs);
 	else
 		perf_callchain_user_64(entry, regs);
+<<<<<<< HEAD
+=======
+
+	pagefault_enable();
+
+	set_fs(old_fs);
+	set_thread_fault_code(saved_fault_code);
+	current_thread_info()->fault_address = saved_fault_address;
+>>>>>>> v4.9.227
 }

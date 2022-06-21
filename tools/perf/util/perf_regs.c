@@ -2,11 +2,20 @@
 #include "perf_regs.h"
 #include "event.h"
 
+<<<<<<< HEAD
+=======
+const struct sample_reg __weak sample_reg_masks[] = {
+	SMPL_REG_END
+};
+
+#ifdef HAVE_PERF_REGS_SUPPORT
+>>>>>>> v4.9.227
 int perf_reg_value(u64 *valp, struct regs_dump *regs, int id)
 {
 	int i, idx = 0;
 	u64 mask = regs->mask;
 
+<<<<<<< HEAD
 	if (regs->cache_mask & (1 << id))
 		goto out;
 
@@ -19,9 +28,27 @@ int perf_reg_value(u64 *valp, struct regs_dump *regs, int id)
 	}
 
 	regs->cache_mask |= (1 << id);
+=======
+	if (regs->cache_mask & (1ULL << id))
+		goto out;
+
+	if (!(mask & (1ULL << id)))
+		return -EINVAL;
+
+	for (i = 0; i < id; i++) {
+		if (mask & (1ULL << i))
+			idx++;
+	}
+
+	regs->cache_mask |= (1ULL << id);
+>>>>>>> v4.9.227
 	regs->cache_regs[id] = regs->regs[idx];
 
 out:
 	*valp = regs->cache_regs[id];
 	return 0;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227

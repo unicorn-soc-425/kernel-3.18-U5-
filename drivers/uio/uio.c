@@ -56,12 +56,20 @@ static ssize_t map_name_show(struct uio_mem *mem, char *buf)
 
 static ssize_t map_addr_show(struct uio_mem *mem, char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "0x%llx\n", (unsigned long long)mem->addr);
+=======
+	return sprintf(buf, "%pa\n", &mem->addr);
+>>>>>>> v4.9.227
 }
 
 static ssize_t map_size_show(struct uio_mem *mem, char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "0x%lx\n", mem->size);
+=======
+	return sprintf(buf, "%pa\n", &mem->size);
+>>>>>>> v4.9.227
 }
 
 static ssize_t map_offset_show(struct uio_mem *mem, char *buf)
@@ -249,6 +257,11 @@ static struct class uio_class = {
 	.dev_groups = uio_groups,
 };
 
+<<<<<<< HEAD
+=======
+bool uio_class_registered;
+
+>>>>>>> v4.9.227
 /*
  * device functions
  */
@@ -271,12 +284,25 @@ static int uio_dev_add_attributes(struct uio_device *idev)
 			map_found = 1;
 			idev->map_dir = kobject_create_and_add("maps",
 							&idev->dev->kobj);
+<<<<<<< HEAD
 			if (!idev->map_dir)
 				goto err_map;
 		}
 		map = kzalloc(sizeof(*map), GFP_KERNEL);
 		if (!map)
 			goto err_map_kobj;
+=======
+			if (!idev->map_dir) {
+				ret = -ENOMEM;
+				goto err_map;
+			}
+		}
+		map = kzalloc(sizeof(*map), GFP_KERNEL);
+		if (!map) {
+			ret = -ENOMEM;
+			goto err_map;
+		}
+>>>>>>> v4.9.227
 		kobject_init(&map->kobj, &map_attr_type);
 		map->mem = mem;
 		mem->map = map;
@@ -285,7 +311,11 @@ static int uio_dev_add_attributes(struct uio_device *idev)
 			goto err_map_kobj;
 		ret = kobject_uevent(&map->kobj, KOBJ_ADD);
 		if (ret)
+<<<<<<< HEAD
 			goto err_map;
+=======
+			goto err_map_kobj;
+>>>>>>> v4.9.227
 	}
 
 	for (pi = 0; pi < MAX_UIO_PORT_REGIONS; pi++) {
@@ -296,12 +326,25 @@ static int uio_dev_add_attributes(struct uio_device *idev)
 			portio_found = 1;
 			idev->portio_dir = kobject_create_and_add("portio",
 							&idev->dev->kobj);
+<<<<<<< HEAD
 			if (!idev->portio_dir)
 				goto err_portio;
 		}
 		portio = kzalloc(sizeof(*portio), GFP_KERNEL);
 		if (!portio)
 			goto err_portio_kobj;
+=======
+			if (!idev->portio_dir) {
+				ret = -ENOMEM;
+				goto err_portio;
+			}
+		}
+		portio = kzalloc(sizeof(*portio), GFP_KERNEL);
+		if (!portio) {
+			ret = -ENOMEM;
+			goto err_portio;
+		}
+>>>>>>> v4.9.227
 		kobject_init(&portio->kobj, &portio_attr_type);
 		portio->port = port;
 		port->portio = portio;
@@ -311,7 +354,11 @@ static int uio_dev_add_attributes(struct uio_device *idev)
 			goto err_portio_kobj;
 		ret = kobject_uevent(&portio->kobj, KOBJ_ADD);
 		if (ret)
+<<<<<<< HEAD
 			goto err_portio;
+=======
+			goto err_portio_kobj;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -524,6 +571,10 @@ static ssize_t uio_read(struct file *filep, char __user *buf,
 
 		event_count = atomic_read(&idev->event);
 		if (event_count != listener->event_count) {
+<<<<<<< HEAD
+=======
+			__set_current_state(TASK_RUNNING);
+>>>>>>> v4.9.227
 			if (copy_to_user(buf, &event_count, count))
 				retval = -EFAULT;
 			else {
@@ -771,6 +822,12 @@ static int init_uio_class(void)
 		printk(KERN_ERR "class_register failed for uio\n");
 		goto err_class_register;
 	}
+<<<<<<< HEAD
+=======
+
+	uio_class_registered = true;
+
+>>>>>>> v4.9.227
 	return 0;
 
 err_class_register:
@@ -781,6 +838,10 @@ exit:
 
 static void release_uio_class(void)
 {
+<<<<<<< HEAD
+=======
+	uio_class_registered = false;
+>>>>>>> v4.9.227
 	class_unregister(&uio_class);
 	uio_major_cleanup();
 }
@@ -800,6 +861,12 @@ int __uio_register_device(struct module *owner,
 	struct uio_device *idev;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	if (!uio_class_registered)
+		return -EPROBE_DEFER;
+
+>>>>>>> v4.9.227
 	if (!parent || !info || !info->name || !info->version)
 		return -EINVAL;
 
@@ -832,6 +899,7 @@ int __uio_register_device(struct module *owner,
 	if (ret)
 		goto err_uio_dev_add_attributes;
 
+<<<<<<< HEAD
 	if (info->irq && (info->irq != UIO_IRQ_CUSTOM)) {
 		ret = devm_request_irq(idev->dev, info->irq, uio_interrupt,
 				  info->irq_flags, info->name, idev);
@@ -840,6 +908,27 @@ int __uio_register_device(struct module *owner,
 	}
 
 	info->uio_dev = idev;
+=======
+	info->uio_dev = idev;
+
+	if (info->irq && (info->irq != UIO_IRQ_CUSTOM)) {
+		/*
+		 * Note that we deliberately don't use devm_request_irq
+		 * here. The parent module can unregister the UIO device
+		 * and call pci_disable_msi, which requires that this
+		 * irq has been freed. However, the device may have open
+		 * FDs at the time of unregister and therefore may not be
+		 * freed until they are released.
+		 */
+		ret = request_irq(info->irq, uio_interrupt,
+				  info->irq_flags, info->name, idev);
+		if (ret) {
+			info->uio_dev = NULL;
+			goto err_request_irq;
+		}
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 
 err_request_irq:
@@ -870,6 +959,12 @@ void uio_unregister_device(struct uio_info *info)
 
 	uio_dev_del_attributes(idev);
 
+<<<<<<< HEAD
+=======
+	if (info->irq && info->irq != UIO_IRQ_CUSTOM)
+		free_irq(info->irq, idev);
+
+>>>>>>> v4.9.227
 	device_destroy(&uio_class, MKDEV(uio_major, idev->minor));
 
 	return;
@@ -884,6 +979,10 @@ static int __init uio_init(void)
 static void __exit uio_exit(void)
 {
 	release_uio_class();
+<<<<<<< HEAD
+=======
+	idr_destroy(&uio_idr);
+>>>>>>> v4.9.227
 }
 
 module_init(uio_init)

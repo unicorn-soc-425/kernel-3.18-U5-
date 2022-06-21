@@ -241,7 +241,11 @@ nvkm_mxm_new_(struct nvkm_device *device, int index, struct nvkm_mxm **pmxm)
 	if (!(mxm = *pmxm = kzalloc(sizeof(*mxm), GFP_KERNEL)))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	nvkm_subdev_ctor(&nvkm_mxm, device, index, 0, &mxm->subdev);
+=======
+	nvkm_subdev_ctor(&nvkm_mxm, device, index, &mxm->subdev);
+>>>>>>> v4.9.227
 
 	data = mxm_table(bios, &ver, &len);
 	if (!data || !(ver = nvbios_rd08(bios, data))) {

@@ -94,17 +94,33 @@ static int mcp4922_write_raw(struct iio_dev *indio_dev,
 		long mask)
 {
 	struct mcp4922_state *state = iio_priv(indio_dev);
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	if (val2 != 0)
 		return -EINVAL;
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
+<<<<<<< HEAD
 		if (val > GENMASK(chan->scan_type.realbits-1, 0))
 			return -EINVAL;
 		val <<= chan->scan_type.shift;
 		state->value[chan->channel] = val;
 		return mcp4922_spi_write(state, chan->channel, val);
+=======
+		if (val < 0 || val > GENMASK(chan->scan_type.realbits - 1, 0))
+			return -EINVAL;
+		val <<= chan->scan_type.shift;
+
+		ret = mcp4922_spi_write(state, chan->channel, val);
+		if (!ret)
+			state->value[chan->channel] = val;
+		return ret;
+
+>>>>>>> v4.9.227
 	default:
 		return -EINVAL;
 	}
@@ -203,7 +219,10 @@ MODULE_DEVICE_TABLE(spi, mcp4922_id);
 static struct spi_driver mcp4922_driver = {
 	.driver = {
 		   .name = "mcp4922",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   },
 	.probe = mcp4922_probe,
 	.remove = mcp4922_remove,

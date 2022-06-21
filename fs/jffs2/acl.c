@@ -203,8 +203,11 @@ struct posix_acl *jffs2_get_acl(struct inode *inode, int type)
 		acl = ERR_PTR(rc);
 	}
 	kfree(value);
+<<<<<<< HEAD
 	if (!IS_ERR(acl))
 		set_cached_acl(inode, type, acl);
+=======
+>>>>>>> v4.9.227
 	return acl;
 }
 
@@ -245,7 +248,11 @@ int jffs2_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 
 				attr.ia_valid = ATTR_MODE | ATTR_CTIME;
 				attr.ia_mode = mode;
+<<<<<<< HEAD
 				attr.ia_ctime = CURRENT_TIME_SEC;
+=======
+				attr.ia_ctime = current_time(inode);
+>>>>>>> v4.9.227
 				rc = jffs2_do_setattr(inode, &attr);
 				if (rc < 0)
 					return rc;

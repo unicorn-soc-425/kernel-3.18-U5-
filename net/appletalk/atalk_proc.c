@@ -293,7 +293,11 @@ out_interface:
 	goto out;
 }
 
+<<<<<<< HEAD
 void __exit atalk_proc_exit(void)
+=======
+void atalk_proc_exit(void)
+>>>>>>> v4.9.227
 {
 	remove_proc_entry("interface", atalk_proc_dir);
 	remove_proc_entry("route", atalk_proc_dir);

@@ -33,7 +33,11 @@
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 
+<<<<<<< HEAD
 #include <mach/devices.h>
+=======
+#include "devices.h"
+>>>>>>> v4.9.227
 #include <mach/gpio-ks8695.h>
 
 #include "generic.h"
@@ -92,7 +96,11 @@ static struct i2c_board_info acs5k_i2c_devs[] __initdata = {
 	},
 };
 
+<<<<<<< HEAD
 static void acs5k_i2c_init(void)
+=======
+static void __init acs5k_i2c_init(void)
+>>>>>>> v4.9.227
 {
 	/* The gpio interface */
 	platform_device_register(&acs5k_i2c_device);

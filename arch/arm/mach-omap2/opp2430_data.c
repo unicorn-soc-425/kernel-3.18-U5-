@@ -116,7 +116,11 @@ const struct prcm_config omap2430_rate_table[] = {
 		RATE_IN_243X},
 
 	/* PRCM-boot/bypass */
+<<<<<<< HEAD
 	{S13M, S13M, S13M, RB_CM_CLKSEL_MPU_VAL,		/* 13Mhz */
+=======
+	{S13M, S13M, S13M, RB_CM_CLKSEL_MPU_VAL,		/* 13MHz */
+>>>>>>> v4.9.227
 		RB_CM_CLKSEL_DSP_VAL, RB_CM_CLKSEL_GFX_VAL,
 		RB_CM_CLKSEL1_CORE_VAL, MB_CM_CLKSEL1_PLL_13_VAL,
 		MX_CLKSEL2_PLL_2x_VAL, RB_CM_CLKSEL_MDM_VAL,
@@ -124,7 +128,11 @@ const struct prcm_config omap2430_rate_table[] = {
 		RATE_IN_243X},
 
 	/* PRCM-boot/bypass */
+<<<<<<< HEAD
 	{S12M, S12M, S12M, RB_CM_CLKSEL_MPU_VAL,		/* 12Mhz */
+=======
+	{S12M, S12M, S12M, RB_CM_CLKSEL_MPU_VAL,		/* 12MHz */
+>>>>>>> v4.9.227
 		RB_CM_CLKSEL_DSP_VAL, RB_CM_CLKSEL_GFX_VAL,
 		RB_CM_CLKSEL1_CORE_VAL, MB_CM_CLKSEL1_PLL_12_VAL,
 		MX_CLKSEL2_PLL_2x_VAL, RB_CM_CLKSEL_MDM_VAL,

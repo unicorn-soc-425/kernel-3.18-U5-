@@ -670,6 +670,11 @@ static int ctrl_get_input(struct pvr2_ctrl *cptr,int *vp)
 
 static int ctrl_check_input(struct pvr2_ctrl *cptr,int v)
 {
+<<<<<<< HEAD
+=======
+	if (v < 0 || v > PVR2_CVAL_INPUT_MAX)
+		return 0;
+>>>>>>> v4.9.227
 	return ((1 << v) & cptr->hdw->input_allowed_mask) != 0;
 }
 
@@ -2425,6 +2430,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
 	}
 	if (!hdw) goto fail;
 
+<<<<<<< HEAD
 	init_timer(&hdw->quiescent_timer);
 	hdw->quiescent_timer.data = (unsigned long)hdw;
 	hdw->quiescent_timer.function = pvr2_hdw_quiescent_timeout;
@@ -2441,6 +2447,20 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
 	init_timer(&hdw->encoder_run_timer);
 	hdw->encoder_run_timer.data = (unsigned long)hdw;
 	hdw->encoder_run_timer.function = pvr2_hdw_encoder_run_timeout;
+=======
+	setup_timer(&hdw->quiescent_timer, pvr2_hdw_quiescent_timeout,
+		    (unsigned long)hdw);
+
+	setup_timer(&hdw->decoder_stabilization_timer,
+		    pvr2_hdw_decoder_stabilization_timeout,
+		    (unsigned long)hdw);
+
+	setup_timer(&hdw->encoder_wait_timer, pvr2_hdw_encoder_wait_timeout,
+		    (unsigned long)hdw);
+
+	setup_timer(&hdw->encoder_run_timer, pvr2_hdw_encoder_run_timeout,
+		    (unsigned long)hdw);
+>>>>>>> v4.9.227
 
 	hdw->master_state = PVR2_STATE_DEAD;
 
@@ -2606,14 +2626,24 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
 			   "Error registering with v4l core, giving up");
 		goto fail;
 	}
+<<<<<<< HEAD
 	mutex_lock(&pvr2_unit_mtx); do {
+=======
+	mutex_lock(&pvr2_unit_mtx);
+	do {
+>>>>>>> v4.9.227
 		for (idx = 0; idx < PVR_NUM; idx++) {
 			if (unit_pointers[idx]) continue;
 			hdw->unit_number = idx;
 			unit_pointers[idx] = hdw;
 			break;
 		}
+<<<<<<< HEAD
 	} while (0); mutex_unlock(&pvr2_unit_mtx);
+=======
+	} while (0);
+	mutex_unlock(&pvr2_unit_mtx);
+>>>>>>> v4.9.227
 
 	cnt1 = 0;
 	cnt2 = scnprintf(hdw->name+cnt1,sizeof(hdw->name)-cnt1,"pvrusb2");
@@ -2626,7 +2656,10 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
 	if (cnt1 >= sizeof(hdw->name)) cnt1 = sizeof(hdw->name)-1;
 	hdw->name[cnt1] = 0;
 
+<<<<<<< HEAD
 	hdw->workqueue = create_singlethread_workqueue(hdw->name);
+=======
+>>>>>>> v4.9.227
 	INIT_WORK(&hdw->workpoll,pvr2_hdw_worker_poll);
 
 	pvr2_trace(PVR2_TRACE_INIT,"Driver unit number is %d, name is %s",
@@ -2653,11 +2686,15 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
 		del_timer_sync(&hdw->decoder_stabilization_timer);
 		del_timer_sync(&hdw->encoder_run_timer);
 		del_timer_sync(&hdw->encoder_wait_timer);
+<<<<<<< HEAD
 		if (hdw->workqueue) {
 			flush_workqueue(hdw->workqueue);
 			destroy_workqueue(hdw->workqueue);
 			hdw->workqueue = NULL;
 		}
+=======
+		flush_work(&hdw->workpoll);
+>>>>>>> v4.9.227
 		usb_free_urb(hdw->ctl_read_urb);
 		usb_free_urb(hdw->ctl_write_urb);
 		kfree(hdw->ctl_read_buffer);
@@ -2714,11 +2751,15 @@ void pvr2_hdw_destroy(struct pvr2_hdw *hdw)
 {
 	if (!hdw) return;
 	pvr2_trace(PVR2_TRACE_INIT,"pvr2_hdw_destroy: hdw=%p",hdw);
+<<<<<<< HEAD
 	if (hdw->workqueue) {
 		flush_workqueue(hdw->workqueue);
 		destroy_workqueue(hdw->workqueue);
 		hdw->workqueue = NULL;
 	}
+=======
+	flush_work(&hdw->workpoll);
+>>>>>>> v4.9.227
 	del_timer_sync(&hdw->quiescent_timer);
 	del_timer_sync(&hdw->decoder_stabilization_timer);
 	del_timer_sync(&hdw->encoder_run_timer);
@@ -2734,13 +2775,23 @@ void pvr2_hdw_destroy(struct pvr2_hdw *hdw)
 	pvr2_i2c_core_done(hdw);
 	v4l2_device_unregister(&hdw->v4l2_dev);
 	pvr2_hdw_remove_usb_stuff(hdw);
+<<<<<<< HEAD
 	mutex_lock(&pvr2_unit_mtx); do {
+=======
+	mutex_lock(&pvr2_unit_mtx);
+	do {
+>>>>>>> v4.9.227
 		if ((hdw->unit_number >= 0) &&
 		    (hdw->unit_number < PVR_NUM) &&
 		    (unit_pointers[hdw->unit_number] == hdw)) {
 			unit_pointers[hdw->unit_number] = NULL;
 		}
+<<<<<<< HEAD
 	} while (0); mutex_unlock(&pvr2_unit_mtx);
+=======
+	} while (0);
+	mutex_unlock(&pvr2_unit_mtx);
+>>>>>>> v4.9.227
 	kfree(hdw->controls);
 	kfree(hdw->mpeg_ctrl_info);
 	kfree(hdw);
@@ -2856,11 +2907,22 @@ static void pvr2_subdev_set_control(struct pvr2_hdw *hdw, int id,
 				    const char *name, int val)
 {
 	struct v4l2_control ctrl;
+<<<<<<< HEAD
+=======
+	struct v4l2_subdev *sd;
+
+>>>>>>> v4.9.227
 	pvr2_trace(PVR2_TRACE_CHIPS, "subdev v4l2 %s=%d", name, val);
 	memset(&ctrl, 0, sizeof(ctrl));
 	ctrl.id = id;
 	ctrl.value = val;
+<<<<<<< HEAD
 	v4l2_device_call_all(&hdw->v4l2_dev, 0, core, s_ctrl, &ctrl);
+=======
+
+	v4l2_device_for_each_subdev(sd, &hdw->v4l2_dev)
+		v4l2_s_ctrl(NULL, sd->ctrl_handler, &ctrl);
+>>>>>>> v4.9.227
 }
 
 #define PVR2_SUBDEV_SET_CONTROL(hdw, id, lab) \
@@ -2962,6 +3024,7 @@ static void pvr2_subdev_update(struct pvr2_hdw *hdw)
 	}
 
 	if (hdw->res_hor_dirty || hdw->res_ver_dirty || hdw->force_dirty) {
+<<<<<<< HEAD
 		struct v4l2_mbus_framefmt fmt;
 		memset(&fmt, 0, sizeof(fmt));
 		fmt.width = hdw->res_hor_val;
@@ -2970,6 +3033,19 @@ static void pvr2_subdev_update(struct pvr2_hdw *hdw)
 		pvr2_trace(PVR2_TRACE_CHIPS, "subdev v4l2 set_size(%dx%d)",
 			   fmt.width, fmt.height);
 		v4l2_device_call_all(&hdw->v4l2_dev, 0, video, s_mbus_fmt, &fmt);
+=======
+		struct v4l2_subdev_format format = {
+			.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+		};
+
+		format.format.width = hdw->res_hor_val;
+		format.format.height = hdw->res_ver_val;
+		format.format.code = MEDIA_BUS_FMT_FIXED;
+		pvr2_trace(PVR2_TRACE_CHIPS, "subdev v4l2 set_size(%dx%d)",
+			   format.format.width, format.format.height);
+		v4l2_device_call_all(&hdw->v4l2_dev, 0, pad, set_fmt,
+				     NULL, &format);
+>>>>>>> v4.9.227
 	}
 
 	if (hdw->srate_dirty || hdw->force_dirty) {
@@ -3347,14 +3423,24 @@ struct pvr2_stream *pvr2_hdw_get_video_stream(struct pvr2_hdw *hp)
 void pvr2_hdw_trigger_module_log(struct pvr2_hdw *hdw)
 {
 	int nr = pvr2_hdw_get_unit_number(hdw);
+<<<<<<< HEAD
 	LOCK_TAKE(hdw->big_lock); do {
+=======
+	LOCK_TAKE(hdw->big_lock);
+	do {
+>>>>>>> v4.9.227
 		printk(KERN_INFO "pvrusb2: =================  START STATUS CARD #%d  =================\n", nr);
 		v4l2_device_call_all(&hdw->v4l2_dev, 0, core, log_status);
 		pvr2_trace(PVR2_TRACE_INFO,"cx2341x config:");
 		cx2341x_log_status(&hdw->enc_ctl_state, "pvrusb2");
 		pvr2_hdw_state_log_state(hdw);
 		printk(KERN_INFO "pvrusb2: ==================  END STATUS CARD #%d  ==================\n", nr);
+<<<<<<< HEAD
 	} while (0); LOCK_GIVE(hdw->big_lock);
+=======
+	} while (0);
+	LOCK_GIVE(hdw->big_lock);
+>>>>>>> v4.9.227
 }
 
 
@@ -3667,11 +3753,18 @@ static int pvr2_send_request_ex(struct pvr2_hdw *hdw,
 
 
 	hdw->cmd_debug_state = 1;
+<<<<<<< HEAD
 	if (write_len) {
 		hdw->cmd_debug_code = ((unsigned char *)write_data)[0];
 	} else {
 		hdw->cmd_debug_code = 0;
 	}
+=======
+	if (write_len && write_data)
+		hdw->cmd_debug_code = ((unsigned char *)write_data)[0];
+	else
+		hdw->cmd_debug_code = 0;
+>>>>>>> v4.9.227
 	hdw->cmd_debug_write_len = write_len;
 	hdw->cmd_debug_read_len = read_len;
 
@@ -3680,12 +3773,19 @@ static int pvr2_send_request_ex(struct pvr2_hdw *hdw,
 	hdw->ctl_timeout_flag = 0;
 	hdw->ctl_write_pend_flag = 0;
 	hdw->ctl_read_pend_flag = 0;
+<<<<<<< HEAD
 	init_timer(&timer);
 	timer.expires = jiffies + timeout;
 	timer.data = (unsigned long)hdw;
 	timer.function = pvr2_ctl_timeout;
 
 	if (write_len) {
+=======
+	setup_timer(&timer, pvr2_ctl_timeout, (unsigned long)hdw);
+	timer.expires = jiffies + timeout;
+
+	if (write_len && write_data) {
+>>>>>>> v4.9.227
 		hdw->cmd_debug_state = 2;
 		/* Transfer write data to internal buffer */
 		for (idx = 0; idx < write_len; idx++) {
@@ -3792,7 +3892,11 @@ static int pvr2_send_request_ex(struct pvr2_hdw *hdw,
 			goto done;
 		}
 	}
+<<<<<<< HEAD
 	if (read_len) {
+=======
+	if (read_len && read_data) {
+>>>>>>> v4.9.227
 		/* Validate results of read request */
 		if ((hdw->ctl_read_urb->status != 0) &&
 		    (hdw->ctl_read_urb->status != -ENOENT) &&
@@ -4035,11 +4139,14 @@ int pvr2_hdw_cmd_powerup(struct pvr2_hdw *hdw)
 }
 
 
+<<<<<<< HEAD
 int pvr2_hdw_cmd_powerdown(struct pvr2_hdw *hdw)
 {
 	return pvr2_issue_simple_cmd(hdw,FX2CMD_POWER_OFF);
 }
 
+=======
+>>>>>>> v4.9.227
 
 int pvr2_hdw_cmd_decoder_reset(struct pvr2_hdw *hdw)
 {
@@ -4301,9 +4408,14 @@ static int state_eval_encoder_config(struct pvr2_hdw *hdw)
 				   the encoder. */
 				if (!hdw->state_encoder_waitok) {
 					hdw->encoder_wait_timer.expires =
+<<<<<<< HEAD
 						jiffies +
 						(HZ * TIME_MSEC_ENCODER_WAIT
 						 / 1000);
+=======
+						jiffies + msecs_to_jiffies(
+						TIME_MSEC_ENCODER_WAIT);
+>>>>>>> v4.9.227
 					add_timer(&hdw->encoder_wait_timer);
 				}
 			}
@@ -4426,8 +4538,13 @@ static int state_eval_encoder_run(struct pvr2_hdw *hdw)
 		if (pvr2_encoder_start(hdw) < 0) return !0;
 		hdw->state_encoder_run = !0;
 		if (!hdw->state_encoder_runok) {
+<<<<<<< HEAD
 			hdw->encoder_run_timer.expires =
 				jiffies + (HZ * TIME_MSEC_ENCODER_OK / 1000);
+=======
+			hdw->encoder_run_timer.expires = jiffies +
+				 msecs_to_jiffies(TIME_MSEC_ENCODER_OK);
+>>>>>>> v4.9.227
 			add_timer(&hdw->encoder_run_timer);
 		}
 	}
@@ -4443,7 +4560,11 @@ static void pvr2_hdw_quiescent_timeout(unsigned long data)
 	hdw->state_decoder_quiescent = !0;
 	trace_stbit("state_decoder_quiescent",hdw->state_decoder_quiescent);
 	hdw->state_stale = !0;
+<<<<<<< HEAD
 	queue_work(hdw->workqueue,&hdw->workpoll);
+=======
+	schedule_work(&hdw->workpoll);
+>>>>>>> v4.9.227
 }
 
 
@@ -4454,7 +4575,11 @@ static void pvr2_hdw_decoder_stabilization_timeout(unsigned long data)
 	hdw->state_decoder_ready = !0;
 	trace_stbit("state_decoder_ready", hdw->state_decoder_ready);
 	hdw->state_stale = !0;
+<<<<<<< HEAD
 	queue_work(hdw->workqueue, &hdw->workpoll);
+=======
+	schedule_work(&hdw->workpoll);
+>>>>>>> v4.9.227
 }
 
 
@@ -4465,7 +4590,11 @@ static void pvr2_hdw_encoder_wait_timeout(unsigned long data)
 	hdw->state_encoder_waitok = !0;
 	trace_stbit("state_encoder_waitok",hdw->state_encoder_waitok);
 	hdw->state_stale = !0;
+<<<<<<< HEAD
 	queue_work(hdw->workqueue,&hdw->workpoll);
+=======
+	schedule_work(&hdw->workpoll);
+>>>>>>> v4.9.227
 }
 
 
@@ -4477,7 +4606,11 @@ static void pvr2_hdw_encoder_run_timeout(unsigned long data)
 		hdw->state_encoder_runok = !0;
 		trace_stbit("state_encoder_runok",hdw->state_encoder_runok);
 		hdw->state_stale = !0;
+<<<<<<< HEAD
 		queue_work(hdw->workqueue,&hdw->workpoll);
+=======
+		schedule_work(&hdw->workpoll);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -4518,9 +4651,14 @@ static int state_eval_decoder_run(struct pvr2_hdw *hdw)
 				   but before we did the pending check. */
 				if (!hdw->state_decoder_quiescent) {
 					hdw->quiescent_timer.expires =
+<<<<<<< HEAD
 						jiffies +
 						(HZ * TIME_MSEC_DECODER_WAIT
 						 / 1000);
+=======
+						jiffies + msecs_to_jiffies(
+						TIME_MSEC_DECODER_WAIT);
+>>>>>>> v4.9.227
 					add_timer(&hdw->quiescent_timer);
 				}
 			}
@@ -4544,9 +4682,14 @@ static int state_eval_decoder_run(struct pvr2_hdw *hdw)
 		hdw->state_decoder_run = !0;
 		if (hdw->decoder_client_id == PVR2_CLIENT_ID_SAA7115) {
 			hdw->decoder_stabilization_timer.expires =
+<<<<<<< HEAD
 				jiffies +
 				(HZ * TIME_MSEC_DECODER_STABILIZATION_WAIT /
 				 1000);
+=======
+				jiffies + msecs_to_jiffies(
+				TIME_MSEC_DECODER_STABILIZATION_WAIT);
+>>>>>>> v4.9.227
 			add_timer(&hdw->decoder_stabilization_timer);
 		} else {
 			hdw->state_decoder_ready = !0;
@@ -4908,6 +5051,12 @@ static void pvr2_hdw_state_log_state(struct pvr2_hdw *hdw)
 		printk(KERN_INFO "%s %.*s\n",hdw->name,ccnt,buf);
 	}
 	ccnt = pvr2_hdw_report_clients(hdw, buf, sizeof(buf));
+<<<<<<< HEAD
+=======
+	if (ccnt >= sizeof(buf))
+		ccnt = sizeof(buf);
+
+>>>>>>> v4.9.227
 	ucnt = 0;
 	while (ucnt < ccnt) {
 		lcnt = 0;
@@ -4990,7 +5139,11 @@ static void pvr2_hdw_state_sched(struct pvr2_hdw *hdw)
 	if (hdw->state_stale) return;
 	hdw->state_stale = !0;
 	trace_stbit("state_stale",hdw->state_stale);
+<<<<<<< HEAD
 	queue_work(hdw->workqueue,&hdw->workpoll);
+=======
+	schedule_work(&hdw->workpoll);
+>>>>>>> v4.9.227
 }
 
 

@@ -24,7 +24,11 @@
 
 void bcm63xx_machine_halt(void)
 {
+<<<<<<< HEAD
 	printk(KERN_INFO "System halted\n");
+=======
+	pr_info("System halted\n");
+>>>>>>> v4.9.227
 	while (1)
 		;
 }
@@ -34,7 +38,11 @@ static void bcm6348_a1_reboot(void)
 	u32 reg;
 
 	/* soft reset all blocks */
+<<<<<<< HEAD
 	printk(KERN_INFO "soft-resetting all blocks ...\n");
+=======
+	pr_info("soft-resetting all blocks ...\n");
+>>>>>>> v4.9.227
 	reg = bcm_perf_readl(PERF_SOFTRESET_REG);
 	reg &= ~SOFTRESET_6348_ALL;
 	bcm_perf_writel(reg, PERF_SOFTRESET_REG);
@@ -46,7 +54,11 @@ static void bcm6348_a1_reboot(void)
 	mdelay(10);
 
 	/* Jump to the power on address. */
+<<<<<<< HEAD
 	printk(KERN_INFO "jumping to reset vector.\n");
+=======
+	pr_info("jumping to reset vector.\n");
+>>>>>>> v4.9.227
 	/* set high vectors (base at 0xbfc00000 */
 	set_c0_status(ST0_BEV | ST0_ERL);
 	/* run uncached in kseg0 */
@@ -110,7 +122,11 @@ void bcm63xx_machine_reboot(void)
 	if (BCMCPU_IS_6348() && (bcm63xx_get_cpu_rev() == 0xa1))
 		bcm6348_a1_reboot();
 
+<<<<<<< HEAD
 	printk(KERN_INFO "triggering watchdog soft-reset...\n");
+=======
+	pr_info("triggering watchdog soft-reset...\n");
+>>>>>>> v4.9.227
 	if (BCMCPU_IS_6328()) {
 		bcm_wdt_writel(1, WDT_SOFTRESET_REG);
 	} else {

@@ -32,7 +32,10 @@
 #include <linux/tty.h>
 #include <linux/sysrq.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/screen_info.h>
 #include <linux/vga_switcheroo.h>
@@ -43,7 +46,11 @@
 #include <drm/drm_crtc_helper.h>
 #include <drm/drm_fb_helper.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_gem.h"
 #include "nouveau_bo.h"
 #include "nouveau_fbcon.h"
@@ -386,8 +393,11 @@ nouveau_fbcon_create(struct drm_fb_helper *helper,
 		}
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&dev->struct_mutex);
 
+=======
+>>>>>>> v4.9.227
 	info = drm_fb_helper_alloc_fbi(helper);
 	if (IS_ERR(info)) {
 		ret = PTR_ERR(info);
@@ -426,8 +436,11 @@ nouveau_fbcon_create(struct drm_fb_helper *helper,
 
 	/* Use default scratch pixmap (info->pixmap.flags = FB_PIXMAP_SYSTEM) */
 
+<<<<<<< HEAD
 	mutex_unlock(&dev->struct_mutex);
 
+=======
+>>>>>>> v4.9.227
 	if (chan)
 		nouveau_fbcon_accel_init(dev);
 	nouveau_fbcon_zfill(dev, fbcon);
@@ -441,7 +454,10 @@ nouveau_fbcon_create(struct drm_fb_helper *helper,
 	return 0;
 
 out_unlock:
+<<<<<<< HEAD
 	mutex_unlock(&dev->struct_mutex);
+=======
+>>>>>>> v4.9.227
 	if (chan)
 		nouveau_bo_vma_del(nvbo, &fbcon->nouveau_fb.vma);
 	nouveau_bo_unmap(nvbo);
@@ -497,10 +513,37 @@ static const struct drm_fb_helper_funcs nouveau_fbcon_helper_funcs = {
 	.fb_probe = nouveau_fbcon_create,
 };
 
+<<<<<<< HEAD
+=======
+static void
+nouveau_fbcon_set_suspend_work(struct work_struct *work)
+{
+	struct nouveau_drm *drm = container_of(work, typeof(*drm), fbcon_work);
+	int state = READ_ONCE(drm->fbcon_new_state);
+
+	if (state == FBINFO_STATE_RUNNING)
+		pm_runtime_get_sync(drm->dev->dev);
+
+	console_lock();
+	if (state == FBINFO_STATE_RUNNING)
+		nouveau_fbcon_accel_restore(drm->dev);
+	drm_fb_helper_set_suspend(&drm->fbcon->helper, state);
+	if (state != FBINFO_STATE_RUNNING)
+		nouveau_fbcon_accel_save_disable(drm->dev);
+	console_unlock();
+
+	if (state == FBINFO_STATE_RUNNING) {
+		pm_runtime_mark_last_busy(drm->dev->dev);
+		pm_runtime_put_sync(drm->dev->dev);
+	}
+}
+
+>>>>>>> v4.9.227
 void
 nouveau_fbcon_set_suspend(struct drm_device *dev, int state)
 {
 	struct nouveau_drm *drm = nouveau_drm(dev);
+<<<<<<< HEAD
 	if (drm->fbcon) {
 		console_lock();
 		if (state == FBINFO_STATE_RUNNING)
@@ -510,6 +553,18 @@ nouveau_fbcon_set_suspend(struct drm_device *dev, int state)
 			nouveau_fbcon_accel_save_disable(dev);
 		console_unlock();
 	}
+=======
+
+	if (!drm->fbcon)
+		return;
+
+	drm->fbcon_new_state = state;
+	/* Since runtime resume can happen as a result of a sysfs operation,
+	 * it's possible we already have the console locked. So handle fbcon
+	 * init/deinit from a seperate work thread
+	 */
+	schedule_work(&drm->fbcon_work);
+>>>>>>> v4.9.227
 }
 
 int
@@ -530,6 +585,10 @@ nouveau_fbcon_init(struct drm_device *dev)
 
 	fbcon->dev = dev;
 	drm->fbcon = fbcon;
+<<<<<<< HEAD
+=======
+	INIT_WORK(&drm->fbcon_work, nouveau_fbcon_set_suspend_work);
+>>>>>>> v4.9.227
 
 	drm_fb_helper_prepare(dev, &fbcon->helper, &nouveau_fbcon_helper_funcs);
 

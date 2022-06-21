@@ -29,8 +29,11 @@ struct nf_conn;
 
 /* The structure embedded in the conntrack structure. */
 struct nf_conn_nat {
+<<<<<<< HEAD
 	struct hlist_node bysource;
 	struct nf_conn *ct;
+=======
+>>>>>>> v4.9.227
 	union nf_conntrack_nat_help help;
 #if IS_ENABLED(CONFIG_NF_NAT_MASQUERADE_IPV4) || \
     IS_ENABLED(CONFIG_NF_NAT_MASQUERADE_IPV6)

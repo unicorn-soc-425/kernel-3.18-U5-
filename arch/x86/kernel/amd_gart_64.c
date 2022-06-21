@@ -20,7 +20,10 @@
 #include <linux/string.h>
 #include <linux/spinlock.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/topology.h>
 #include <linux/interrupt.h>
 #include <linux/bitmap.h>
@@ -242,7 +245,11 @@ static dma_addr_t dma_map_area(struct device *dev, dma_addr_t phys_mem,
 static dma_addr_t gart_map_page(struct device *dev, struct page *page,
 				unsigned long offset, size_t size,
 				enum dma_data_direction dir,
+<<<<<<< HEAD
 				struct dma_attrs *attrs)
+=======
+				unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	unsigned long bus;
 	phys_addr_t paddr = page_to_phys(page) + offset;
@@ -264,7 +271,11 @@ static dma_addr_t gart_map_page(struct device *dev, struct page *page,
  */
 static void gart_unmap_page(struct device *dev, dma_addr_t dma_addr,
 			    size_t size, enum dma_data_direction dir,
+<<<<<<< HEAD
 			    struct dma_attrs *attrs)
+=======
+			    unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	unsigned long iommu_page;
 	int npages;
@@ -286,7 +297,11 @@ static void gart_unmap_page(struct device *dev, dma_addr_t dma_addr,
  * Wrapper for pci_unmap_single working with scatterlists.
  */
 static void gart_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+<<<<<<< HEAD
 			  enum dma_data_direction dir, struct dma_attrs *attrs)
+=======
+			  enum dma_data_direction dir, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	struct scatterlist *s;
 	int i;
@@ -294,7 +309,11 @@ static void gart_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
 	for_each_sg(sg, s, nents, i) {
 		if (!s->dma_length || !s->length)
 			break;
+<<<<<<< HEAD
 		gart_unmap_page(dev, s->dma_address, s->dma_length, dir, NULL);
+=======
+		gart_unmap_page(dev, s->dma_address, s->dma_length, dir, 0);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -316,7 +335,11 @@ static int dma_map_sg_nonforce(struct device *dev, struct scatterlist *sg,
 			addr = dma_map_area(dev, addr, s->length, dir, 0);
 			if (addr == bad_dma_addr) {
 				if (i > 0)
+<<<<<<< HEAD
 					gart_unmap_sg(dev, sg, i, dir, NULL);
+=======
+					gart_unmap_sg(dev, sg, i, dir, 0);
+>>>>>>> v4.9.227
 				nents = 0;
 				sg[0].dma_length = 0;
 				break;
@@ -387,7 +410,11 @@ dma_map_cont(struct device *dev, struct scatterlist *start, int nelems,
  * Merge chunks that have page aligned sizes into a continuous mapping.
  */
 static int gart_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+<<<<<<< HEAD
 		       enum dma_data_direction dir, struct dma_attrs *attrs)
+=======
+		       enum dma_data_direction dir, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	struct scatterlist *s, *ps, *start_sg, *sgmap;
 	int need = 0, nextneed, i, out, start;
@@ -457,7 +484,11 @@ static int gart_map_sg(struct device *dev, struct scatterlist *sg, int nents,
 
 error:
 	flush_gart();
+<<<<<<< HEAD
 	gart_unmap_sg(dev, sg, out, dir, NULL);
+=======
+	gart_unmap_sg(dev, sg, out, dir, 0);
+>>>>>>> v4.9.227
 
 	/* When it was forced or merged try again in a dumb way */
 	if (force_iommu || iommu_merge) {
@@ -477,7 +508,11 @@ error:
 /* allocate and map a coherent mapping */
 static void *
 gart_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_addr,
+<<<<<<< HEAD
 		    gfp_t flag, struct dma_attrs *attrs)
+=======
+		    gfp_t flag, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	dma_addr_t paddr;
 	unsigned long align_mask;
@@ -509,9 +544,15 @@ gart_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_addr,
 /* free a coherent mapping */
 static void
 gart_free_coherent(struct device *dev, size_t size, void *vaddr,
+<<<<<<< HEAD
 		   dma_addr_t dma_addr, struct dma_attrs *attrs)
 {
 	gart_unmap_page(dev, dma_addr, size, DMA_BIDIRECTIONAL, NULL);
+=======
+		   dma_addr_t dma_addr, unsigned long attrs)
+{
+	gart_unmap_page(dev, dma_addr, size, DMA_BIDIRECTIONAL, 0);
+>>>>>>> v4.9.227
 	dma_generic_free_coherent(dev, size, vaddr, dma_addr, attrs);
 }
 

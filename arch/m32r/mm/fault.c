@@ -24,9 +24,15 @@
 #include <linux/vt_kern.h>		/* For unblank_screen() */
 #include <linux/highmem.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #include <asm/m32r.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+
+#include <asm/m32r.h>
+>>>>>>> v4.9.227
 #include <asm/hardirq.h>
 #include <asm/mmu_context.h>
 #include <asm/tlbflush.h>
@@ -111,10 +117,17 @@ asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long error_code,
 	mm = tsk->mm;
 
 	/*
+<<<<<<< HEAD
 	 * If we're in an interrupt or have no user context or are running in an
 	 * atomic region then we must not take the fault..
 	 */
 	if (in_atomic() || !mm)
+=======
+	 * If we're in an interrupt or have no user context or have pagefaults
+	 * disabled then we must not take the fault.
+	 */
+	if (faulthandler_disabled() || !mm)
+>>>>>>> v4.9.227
 		goto bad_area_nosemaphore;
 
 	if (error_code & ACE_USERMODE)
@@ -196,7 +209,11 @@ good_area:
 	 */
 	addr = (address & PAGE_MASK);
 	set_thread_fault_code(error_code);
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, addr, flags);
+=======
+	fault = handle_mm_fault(vma, addr, flags);
+>>>>>>> v4.9.227
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;

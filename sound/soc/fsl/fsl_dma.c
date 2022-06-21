@@ -151,6 +151,7 @@ static const struct snd_pcm_hardware fsl_dma_hardware = {
  */
 static void fsl_dma_abort_stream(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	snd_pcm_stream_lock_irqsave(substream, flags);
@@ -159,6 +160,9 @@ static void fsl_dma_abort_stream(struct snd_pcm_substream *substream)
 		snd_pcm_stop(substream, SNDRV_PCM_STATE_XRUN);
 
 	snd_pcm_stream_unlock_irqrestore(substream, flags);
+=======
+	snd_pcm_stop_xrun(substream);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -452,7 +456,11 @@ static int fsl_dma_open(struct snd_pcm_substream *substream)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	dma->assigned = 1;
+=======
+	dma->assigned = true;
+>>>>>>> v4.9.227
 
 	snd_pcm_set_runtime_buffer(substream, &substream->dma_buffer);
 	snd_soc_set_runtime_hwparams(substream, &fsl_dma_hardware);
@@ -821,7 +829,11 @@ static int fsl_dma_close(struct snd_pcm_substream *substream)
 		substream->runtime->private_data = NULL;
 	}
 
+<<<<<<< HEAD
 	dma->assigned = 0;
+=======
+	dma->assigned = false;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -971,7 +983,10 @@ MODULE_DEVICE_TABLE(of, fsl_soc_dma_ids);
 static struct platform_driver fsl_soc_dma_driver = {
 	.driver = {
 		.name = "fsl-pcm-audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = fsl_soc_dma_ids,
 	},
 	.probe = fsl_soc_dma_probe,

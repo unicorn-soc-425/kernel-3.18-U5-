@@ -336,7 +336,10 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set,
 {
 	struct rt_sigframe *frame;
 	int err = 0, sig = ksig->sig;
+<<<<<<< HEAD
 	int signal;
+=======
+>>>>>>> v4.9.227
 	unsigned long sp, ra, tp;
 
 	sp = regs->areg[1];
@@ -354,12 +357,15 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set,
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	signal = current_thread_info()->exec_domain
 		&& current_thread_info()->exec_domain->signal_invmap
 		&& sig < 32
 		? current_thread_info()->exec_domain->signal_invmap[sig]
 		: sig;
 
+=======
+>>>>>>> v4.9.227
 	if (ksig->ka.sa.sa_flags & SA_SIGINFO) {
 		err |= copy_siginfo_to_user(&frame->info, &ksig->info);
 	}
@@ -400,11 +406,16 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set,
 	 * Note: PS.CALLINC is set to one by start_thread
 	 */
 	regs->areg[4] = (((unsigned long) ra) & 0x3fffffff) | 0x40000000;
+<<<<<<< HEAD
 	regs->areg[6] = (unsigned long) signal;
+=======
+	regs->areg[6] = (unsigned long) sig;
+>>>>>>> v4.9.227
 	regs->areg[7] = (unsigned long) &frame->info;
 	regs->areg[8] = (unsigned long) &frame->uc;
 	regs->threadptr = tp;
 
+<<<<<<< HEAD
 	/* Set access mode to USER_DS.  Nomenclature is outdated, but
 	 * functionality is used in uaccess.h
 	 */
@@ -413,6 +424,11 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set,
 #if DEBUG_SIG
 	printk("SIG rt deliver (%s:%d): signal=%d sp=%p pc=%08x\n",
 		current->comm, current->pid, signal, frame, regs->pc);
+=======
+#if DEBUG_SIG
+	printk("SIG rt deliver (%s:%d): signal=%d sp=%p pc=%08x\n",
+		current->comm, current->pid, sig, frame, regs->pc);
+>>>>>>> v4.9.227
 #endif
 
 	return 0;

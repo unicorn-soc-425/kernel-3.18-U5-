@@ -19,7 +19,10 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 
 #include "clk.h"
 
@@ -33,7 +36,11 @@
 static int get_div(struct tegra_clk_frac_div *divider, unsigned long rate,
 		   unsigned long parent_rate)
 {
+<<<<<<< HEAD
 	s64 divider_ux1 = parent_rate;
+=======
+	u64 divider_ux1 = parent_rate;
+>>>>>>> v4.9.227
 	u8 flags = divider->flags;
 	int mul;
 
@@ -55,7 +62,11 @@ static int get_div(struct tegra_clk_frac_div *divider, unsigned long rate,
 
 	divider_ux1 -= mul;
 
+<<<<<<< HEAD
 	if (divider_ux1 < 0)
+=======
+	if ((s64)divider_ux1 < 0)
+>>>>>>> v4.9.227
 		return 0;
 
 	if (divider_ux1 > get_max_div(divider))
@@ -185,3 +196,19 @@ struct clk *tegra_clk_register_divider(const char *name,
 
 	return clk;
 }
+<<<<<<< HEAD
+=======
+
+static const struct clk_div_table mc_div_table[] = {
+	{ .val = 0, .div = 2 },
+	{ .val = 1, .div = 1 },
+	{ .val = 0, .div = 0 },
+};
+
+struct clk *tegra_clk_register_mc(const char *name, const char *parent_name,
+				  void __iomem *reg, spinlock_t *lock)
+{
+	return clk_register_divider_table(NULL, name, parent_name, 0, reg,
+					  16, 1, 0, mc_div_table, lock);
+}
+>>>>>>> v4.9.227

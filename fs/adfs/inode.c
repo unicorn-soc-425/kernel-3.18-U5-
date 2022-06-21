@@ -199,7 +199,11 @@ adfs_adfs2unix_time(struct timespec *tv, struct inode *inode)
 	return;
 
  cur_time:
+<<<<<<< HEAD
 	*tv = CURRENT_TIME;
+=======
+	*tv = current_time(inode);
+>>>>>>> v4.9.227
 	return;
 
  too_early:
@@ -298,12 +302,20 @@ out:
 int
 adfs_notify_change(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	struct super_block *sb = inode->i_sb;
 	unsigned int ia_valid = attr->ia_valid;
 	int error;
 	
+<<<<<<< HEAD
 	error = inode_change_ok(inode, attr);
+=======
+	error = setattr_prepare(dentry, attr);
+>>>>>>> v4.9.227
 
 	/*
 	 * we can't change the UID or GID of any file -

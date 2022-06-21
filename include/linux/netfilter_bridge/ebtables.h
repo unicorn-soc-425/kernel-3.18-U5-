@@ -6,15 +6,26 @@
  *
  *  ebtables.c,v 2.0, April, 2002
  *
+<<<<<<< HEAD
  *  This code is stongly inspired on the iptables code which is
+=======
+ *  This code is strongly inspired by the iptables code which is
+>>>>>>> v4.9.227
  *  Copyright (C) 1999 Paul `Rusty' Russell & Michael J. Neuling
  */
 #ifndef __LINUX_BRIDGE_EFF_H
 #define __LINUX_BRIDGE_EFF_H
 
+<<<<<<< HEAD
 #include <uapi/linux/netfilter_bridge/ebtables.h>
 
 
+=======
+#include <linux/if.h>
+#include <linux/if_ether.h>
+#include <uapi/linux/netfilter_bridge/ebtables.h>
+
+>>>>>>> v4.9.227
 /* return values for match() functions */
 #define EBT_MATCH 0
 #define EBT_NOMATCH 1
@@ -110,12 +121,19 @@ struct ebt_table {
 extern struct ebt_table *ebt_register_table(struct net *net,
 					    const struct ebt_table *table);
 extern void ebt_unregister_table(struct net *net, struct ebt_table *table);
+<<<<<<< HEAD
 extern unsigned int ebt_do_table(unsigned int hook, struct sk_buff *skb,
    const struct net_device *in, const struct net_device *out,
    struct ebt_table *table);
 
 /* Used in the kernel match() functions */
 #define FWINV(bool,invflg) ((bool) ^ !!(info->invflags & invflg))
+=======
+extern unsigned int ebt_do_table(struct sk_buff *skb,
+				 const struct nf_hook_state *state,
+				 struct ebt_table *table);
+
+>>>>>>> v4.9.227
 /* True if the hook mask denotes that the rule is in a base chain,
  * used in the check() functions */
 #define BASE_CHAIN (par->hook_mask & (1 << NF_BR_NUMHOOKS))

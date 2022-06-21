@@ -257,9 +257,15 @@ static int idmouse_open(struct inode *inode, struct file *file)
 		if (result)
 			goto error;
 		result = idmouse_create_image (dev);
+<<<<<<< HEAD
 		if (result)
 			goto error;
 		usb_autopm_put_interface(interface);
+=======
+		usb_autopm_put_interface(interface);
+		if (result)
+			goto error;
+>>>>>>> v4.9.227
 
 		/* increment our usage count for the driver */
 		++dev->open;
@@ -342,10 +348,20 @@ static int idmouse_probe(struct usb_interface *interface,
 	int result;
 
 	/* check if we have gotten the data or the hid interface */
+<<<<<<< HEAD
 	iface_desc = &interface->altsetting[0];
 	if (iface_desc->desc.bInterfaceClass != 0x0A)
 		return -ENODEV;
 
+=======
+	iface_desc = interface->cur_altsetting;
+	if (iface_desc->desc.bInterfaceClass != 0x0A)
+		return -ENODEV;
+
+	if (iface_desc->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	/* allocate memory for our device state and initialize it */
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (dev == NULL)
@@ -366,7 +382,10 @@ static int idmouse_probe(struct usb_interface *interface,
 			kmalloc(IMGSIZE + dev->bulk_in_size, GFP_KERNEL);
 
 		if (!dev->bulk_in_buffer) {
+<<<<<<< HEAD
 			dev_err(&interface->dev, "Unable to allocate input buffer.\n");
+=======
+>>>>>>> v4.9.227
 			idmouse_delete(dev);
 			return -ENOMEM;
 		}

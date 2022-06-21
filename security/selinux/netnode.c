@@ -42,7 +42,10 @@
 
 #include "netnode.h"
 #include "objsec.h"
+<<<<<<< HEAD
 #include "avc.h"
+=======
+>>>>>>> v4.9.227
 
 #define SEL_NETNODE_HASH_SIZE       256
 #define SEL_NETNODE_HASH_BKT_LIMIT   16
@@ -305,12 +308,15 @@ static __init int sel_netnode_init(void)
 {
 	int iter;
 
+<<<<<<< HEAD
 // [ SEC_SELINUX_PORTING_COMMON
 #ifdef CONFIG_ALWAYS_ENFORCE
 	selinux_enabled = 1;
 #endif
 // ] SEC_SELINUX_PORTING_COMMON
 
+=======
+>>>>>>> v4.9.227
 	if (!selinux_enabled)
 		return 0;
 

@@ -20,6 +20,7 @@
  * Generic Generic NCR5380 driver
  *
  * Copyright 1995, Russell King
+<<<<<<< HEAD
  *
  * ALPHA RELEASE 1.
  *
@@ -104,12 +105,61 @@ static irqreturn_t scsi_sun3_intr(int irq, void *dummy);
 static inline unsigned char sun3scsi_read(int reg);
 static inline void sun3scsi_write(int reg, int value);
 
+=======
+ */
+
+#include <linux/types.h>
+#include <linux/delay.h>
+#include <linux/module.h>
+#include <linux/ioport.h>
+#include <linux/init.h>
+#include <linux/blkdev.h>
+#include <linux/platform_device.h>
+
+#include <asm/io.h>
+#include <asm/dvma.h>
+
+#include <scsi/scsi_host.h>
+#include "sun3_scsi.h"
+
+/* minimum number of bytes to do dma on */
+#define DMA_MIN_SIZE                    129
+
+/* Definitions for the core NCR5380 driver. */
+
+#define NCR5380_implementation_fields   /* none */
+
+#define NCR5380_read(reg)               sun3scsi_read(reg)
+#define NCR5380_write(reg, value)       sun3scsi_write(reg, value)
+
+#define NCR5380_queue_command           sun3scsi_queue_command
+#define NCR5380_bus_reset               sun3scsi_bus_reset
+#define NCR5380_abort                   sun3scsi_abort
+#define NCR5380_info                    sun3scsi_info
+
+#define NCR5380_dma_recv_setup(instance, data, count) (count)
+#define NCR5380_dma_send_setup(instance, data, count) (count)
+#define NCR5380_dma_residual(instance) \
+        sun3scsi_dma_residual(instance)
+#define NCR5380_dma_xfer_len(instance, cmd, phase) \
+        sun3scsi_dma_xfer_len(cmd->SCp.this_residual, cmd)
+
+#define NCR5380_acquire_dma_irq(instance)    (1)
+#define NCR5380_release_dma_irq(instance)
+
+#include "NCR5380.h"
+
+
+extern int sun3_map_test(unsigned long, char *);
+
+>>>>>>> v4.9.227
 static int setup_can_queue = -1;
 module_param(setup_can_queue, int, 0);
 static int setup_cmd_per_lun = -1;
 module_param(setup_cmd_per_lun, int, 0);
 static int setup_sg_tablesize = -1;
 module_param(setup_sg_tablesize, int, 0);
+<<<<<<< HEAD
 #ifdef SUPPORT_TAGS
 static int setup_use_tagged_queuing = -1;
 module_param(setup_use_tagged_queuing, int, 0);
@@ -123,12 +173,18 @@ static struct scsi_cmnd *sun3_dma_setup_done = NULL;
 
 #define	AFTER_RESET_DELAY	(HZ/2)
 
+=======
+static int setup_hostid = -1;
+module_param(setup_hostid, int, 0);
+
+>>>>>>> v4.9.227
 /* ms to wait after hitting dma regs */
 #define SUN3_DMA_DELAY 10
 
 /* dvma buffer to allocate -- 32k should hopefully be more than sufficient */
 #define SUN3_DVMA_BUFSIZE 0xe000
 
+<<<<<<< HEAD
 /* minimum number of bytes to do dma on */
 #define SUN3_DMA_MINSIZE 128
 
@@ -141,6 +197,16 @@ static unsigned char *sun3_dma_orig_addr = NULL;
 static unsigned long sun3_dma_orig_count = 0;
 static int sun3_dma_active = 0;
 static unsigned long last_residual = 0;
+=======
+static struct scsi_cmnd *sun3_dma_setup_done;
+static unsigned char *sun3_scsi_regp;
+static volatile struct sun3_dma_regs *dregs;
+static struct sun3_udc_regs *udc_regs;
+static unsigned char *sun3_dma_orig_addr;
+static unsigned long sun3_dma_orig_count;
+static int sun3_dma_active;
+static unsigned long last_residual;
+>>>>>>> v4.9.227
 
 /*
  * NCR 5380 register access functions
@@ -148,12 +214,20 @@ static unsigned long last_residual = 0;
 
 static inline unsigned char sun3scsi_read(int reg)
 {
+<<<<<<< HEAD
 	return( sun3_scsi_regp[reg] );
+=======
+	return in_8(sun3_scsi_regp + reg);
+>>>>>>> v4.9.227
 }
 
 static inline void sun3scsi_write(int reg, int value)
 {
+<<<<<<< HEAD
 	sun3_scsi_regp[reg] = value;
+=======
+	out_8(sun3_scsi_regp + reg, value);
+>>>>>>> v4.9.227
 }
 
 #ifndef SUN3_SCSI_VME
@@ -180,6 +254,7 @@ static inline void sun3_udc_write(unsigned short val, unsigned char reg)
 }
 #endif
 
+<<<<<<< HEAD
 /*
  * XXX: status debug
  */
@@ -432,6 +507,14 @@ static const char *sun3scsi_info(struct Scsi_Host *spnt)
 
 static irqreturn_t scsi_sun3_intr(int irq, void *dummy)
 {
+=======
+// safe bits for the CSR
+#define CSR_GOOD 0x060f
+
+static irqreturn_t scsi_sun3_intr(int irq, void *dev)
+{
+	struct Scsi_Host *instance = dev;
+>>>>>>> v4.9.227
 	unsigned short csr = dregs->csr;
 	int handled = 0;
 
@@ -440,6 +523,7 @@ static irqreturn_t scsi_sun3_intr(int irq, void *dummy)
 #endif
 
 	if(csr & ~CSR_GOOD) {
+<<<<<<< HEAD
 		if(csr & CSR_DMA_BUSERR) {
 			printk("scsi%d: bus error in dma\n", default_instance->host_no);
 		}
@@ -447,17 +531,28 @@ static irqreturn_t scsi_sun3_intr(int irq, void *dummy)
 		if(csr & CSR_DMA_CONFLICT) {
 			printk("scsi%d: dma conflict\n", default_instance->host_no);
 		}
+=======
+		if (csr & CSR_DMA_BUSERR)
+			shost_printk(KERN_ERR, instance, "bus error in DMA\n");
+		if (csr & CSR_DMA_CONFLICT)
+			shost_printk(KERN_ERR, instance, "DMA conflict\n");
+>>>>>>> v4.9.227
 		handled = 1;
 	}
 
 	if(csr & (CSR_SDB_INT | CSR_DMA_INT)) {
+<<<<<<< HEAD
 		NCR5380_intr(irq, dummy);
+=======
+		NCR5380_intr(irq, dev);
+>>>>>>> v4.9.227
 		handled = 1;
 	}
 
 	return IRQ_RETVAL(handled);
 }
 
+<<<<<<< HEAD
 /*
  * Debug stuff - to be called on NMI, or sysrq key. Use at your own risk; 
  * reentering NCR5380_print_status seems to have ugly side effects
@@ -481,6 +576,11 @@ void sun3_sun3_debug (void)
 
 /* sun3scsi_dma_setup() -- initialize the dma controller for a read/write */
 static unsigned long sun3scsi_dma_setup(void *data, unsigned long count, int write_flag)
+=======
+/* sun3scsi_dma_setup() -- initialize the dma controller for a read/write */
+static unsigned long sun3scsi_dma_setup(struct Scsi_Host *instance,
+                                void *data, unsigned long count, int write_flag)
+>>>>>>> v4.9.227
 {
 	void *addr;
 
@@ -532,10 +632,16 @@ static unsigned long sun3scsi_dma_setup(void *data, unsigned long count, int wri
 	dregs->csr |= CSR_FIFO;
 	
 	if(dregs->fifo_count != count) { 
+<<<<<<< HEAD
 		printk("scsi%d: fifo_mismatch %04x not %04x\n",
 		       default_instance->host_no, dregs->fifo_count,
 		       (unsigned int) count);
 		NCR5380_dprint(NDEBUG_DMA, default_instance);
+=======
+		shost_printk(KERN_ERR, instance, "FIFO mismatch %04x not %04x\n",
+		             dregs->fifo_count, (unsigned int) count);
+		NCR5380_dprint(NDEBUG_DMA, instance);
+>>>>>>> v4.9.227
 	}
 
 	/* setup udc */
@@ -570,6 +676,7 @@ static unsigned long sun3scsi_dma_setup(void *data, unsigned long count, int wri
 
 }
 
+<<<<<<< HEAD
 #ifndef SUN3_SCSI_VME
 static inline unsigned long sun3scsi_dma_count(struct Scsi_Host *instance)
 {
@@ -585,11 +692,14 @@ static inline unsigned long sun3scsi_dma_count(struct Scsi_Host *instance)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned long sun3scsi_dma_residual(struct Scsi_Host *instance)
 {
 	return last_residual;
 }
 
+<<<<<<< HEAD
 static inline unsigned long sun3scsi_dma_xfer_len(unsigned long wanted,
 						  struct scsi_cmnd *cmd,
 						  int write_flag)
@@ -598,6 +708,15 @@ static inline unsigned long sun3scsi_dma_xfer_len(unsigned long wanted,
  		return wanted;
 	else
 		return 0;
+=======
+static inline unsigned long sun3scsi_dma_xfer_len(unsigned long wanted_len,
+                                                  struct scsi_cmnd *cmd)
+{
+	if (wanted_len < DMA_MIN_SIZE || cmd->request->cmd_type != REQ_TYPE_FS)
+		return 0;
+
+	return wanted_len;
+>>>>>>> v4.9.227
 }
 
 static inline int sun3scsi_dma_start(unsigned long count, unsigned char *data)
@@ -682,7 +801,14 @@ static int sun3scsi_dma_finish(int write_flag)
 		}
 	}
 
+<<<<<<< HEAD
 	count = sun3scsi_dma_count(default_instance);
+=======
+	dregs->udc_addr = 0x32;
+	udelay(SUN3_DMA_DELAY);
+	count = 2 * dregs->udc_data;
+	udelay(SUN3_DMA_DELAY);
+>>>>>>> v4.9.227
 
 	fifo = dregs->fifo_count;
 	last_residual = fifo;
@@ -732,6 +858,7 @@ static int sun3scsi_dma_finish(int write_flag)
 
 }
 	
+<<<<<<< HEAD
 #include "sun3_NCR5380.c"
 
 static struct scsi_host_template driver_template = {
@@ -753,4 +880,189 @@ static struct scsi_host_template driver_template = {
 
 #include "scsi_module.c"
 
+=======
+#include "NCR5380.c"
+
+#ifdef SUN3_SCSI_VME
+#define SUN3_SCSI_NAME          "Sun3 NCR5380 VME SCSI"
+#define DRV_MODULE_NAME         "sun3_scsi_vme"
+#else
+#define SUN3_SCSI_NAME          "Sun3 NCR5380 SCSI"
+#define DRV_MODULE_NAME         "sun3_scsi"
+#endif
+
+#define PFX                     DRV_MODULE_NAME ": "
+
+static struct scsi_host_template sun3_scsi_template = {
+	.module			= THIS_MODULE,
+	.proc_name		= DRV_MODULE_NAME,
+	.name			= SUN3_SCSI_NAME,
+	.info			= sun3scsi_info,
+	.queuecommand		= sun3scsi_queue_command,
+	.eh_abort_handler	= sun3scsi_abort,
+	.eh_bus_reset_handler	= sun3scsi_bus_reset,
+	.can_queue		= 16,
+	.this_id		= 7,
+	.sg_tablesize		= 1,
+	.cmd_per_lun		= 2,
+	.use_clustering		= DISABLE_CLUSTERING,
+	.cmd_size		= NCR5380_CMD_SIZE,
+};
+
+static int __init sun3_scsi_probe(struct platform_device *pdev)
+{
+	struct Scsi_Host *instance;
+	int error;
+	struct resource *irq, *mem;
+	unsigned char *ioaddr;
+	int host_flags = 0;
+#ifdef SUN3_SCSI_VME
+	int i;
+#endif
+
+	if (setup_can_queue > 0)
+		sun3_scsi_template.can_queue = setup_can_queue;
+	if (setup_cmd_per_lun > 0)
+		sun3_scsi_template.cmd_per_lun = setup_cmd_per_lun;
+	if (setup_sg_tablesize > 0)
+		sun3_scsi_template.sg_tablesize = setup_sg_tablesize;
+	if (setup_hostid >= 0)
+		sun3_scsi_template.this_id = setup_hostid & 7;
+
+#ifdef SUN3_SCSI_VME
+	ioaddr = NULL;
+	for (i = 0; i < 2; i++) {
+		unsigned char x;
+
+		irq = platform_get_resource(pdev, IORESOURCE_IRQ, i);
+		mem = platform_get_resource(pdev, IORESOURCE_MEM, i);
+		if (!irq || !mem)
+			break;
+
+		ioaddr = sun3_ioremap(mem->start, resource_size(mem),
+		                      SUN3_PAGE_TYPE_VME16);
+		dregs = (struct sun3_dma_regs *)(ioaddr + 8);
+
+		if (sun3_map_test((unsigned long)dregs, &x)) {
+			unsigned short oldcsr;
+
+			oldcsr = dregs->csr;
+			dregs->csr = 0;
+			udelay(SUN3_DMA_DELAY);
+			if (dregs->csr == 0x1400)
+				break;
+
+			dregs->csr = oldcsr;
+		}
+
+		iounmap(ioaddr);
+		ioaddr = NULL;
+	}
+	if (!ioaddr)
+		return -ENODEV;
+#else
+	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (!irq || !mem)
+		return -ENODEV;
+
+	ioaddr = ioremap(mem->start, resource_size(mem));
+	dregs = (struct sun3_dma_regs *)(ioaddr + 8);
+
+	udc_regs = dvma_malloc(sizeof(struct sun3_udc_regs));
+	if (!udc_regs) {
+		pr_err(PFX "couldn't allocate DVMA memory!\n");
+		iounmap(ioaddr);
+		return -ENOMEM;
+	}
+#endif
+
+	sun3_scsi_regp = ioaddr;
+
+	instance = scsi_host_alloc(&sun3_scsi_template,
+	                           sizeof(struct NCR5380_hostdata));
+	if (!instance) {
+		error = -ENOMEM;
+		goto fail_alloc;
+	}
+
+	instance->io_port = (unsigned long)ioaddr;
+	instance->irq = irq->start;
+
+	error = NCR5380_init(instance, host_flags);
+	if (error)
+		goto fail_init;
+
+	error = request_irq(instance->irq, scsi_sun3_intr, 0,
+	                    "NCR5380", instance);
+	if (error) {
+		pr_err(PFX "scsi%d: IRQ %d not free, bailing out\n",
+		       instance->host_no, instance->irq);
+		goto fail_irq;
+	}
+
+	dregs->csr = 0;
+	udelay(SUN3_DMA_DELAY);
+	dregs->csr = CSR_SCSI | CSR_FIFO | CSR_INTR;
+	udelay(SUN3_DMA_DELAY);
+	dregs->fifo_count = 0;
+#ifdef SUN3_SCSI_VME
+	dregs->fifo_count_hi = 0;
+	dregs->dma_addr_hi = 0;
+	dregs->dma_addr_lo = 0;
+	dregs->dma_count_hi = 0;
+	dregs->dma_count_lo = 0;
+
+	dregs->ivect = VME_DATA24 | (instance->irq & 0xff);
+#endif
+
+	NCR5380_maybe_reset_bus(instance);
+
+	error = scsi_add_host(instance, NULL);
+	if (error)
+		goto fail_host;
+
+	platform_set_drvdata(pdev, instance);
+
+	scsi_scan_host(instance);
+	return 0;
+
+fail_host:
+	free_irq(instance->irq, instance);
+fail_irq:
+	NCR5380_exit(instance);
+fail_init:
+	scsi_host_put(instance);
+fail_alloc:
+	if (udc_regs)
+		dvma_free(udc_regs);
+	iounmap(sun3_scsi_regp);
+	return error;
+}
+
+static int __exit sun3_scsi_remove(struct platform_device *pdev)
+{
+	struct Scsi_Host *instance = platform_get_drvdata(pdev);
+
+	scsi_remove_host(instance);
+	free_irq(instance->irq, instance);
+	NCR5380_exit(instance);
+	scsi_host_put(instance);
+	if (udc_regs)
+		dvma_free(udc_regs);
+	iounmap(sun3_scsi_regp);
+	return 0;
+}
+
+static struct platform_driver sun3_scsi_driver = {
+	.remove = __exit_p(sun3_scsi_remove),
+	.driver = {
+		.name	= DRV_MODULE_NAME,
+	},
+};
+
+module_platform_driver_probe(sun3_scsi_driver, sun3_scsi_probe);
+
+MODULE_ALIAS("platform:" DRV_MODULE_NAME);
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");

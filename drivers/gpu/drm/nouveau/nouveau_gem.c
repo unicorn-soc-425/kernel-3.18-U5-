@@ -24,7 +24,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 #include "nouveau_fence.h"
 #include "nouveau_abi16.h"
@@ -71,7 +75,11 @@ nouveau_gem_object_open(struct drm_gem_object *gem, struct drm_file *file_priv)
 	if (!cli->vm)
 		return 0;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(&nvbo->bo, false, false, false, NULL);
+=======
+	ret = ttm_bo_reserve(&nvbo->bo, false, false, NULL);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -126,7 +134,11 @@ nouveau_gem_object_unmap(struct nouveau_bo *nvbo, struct nvkm_vma *vma)
 	list_del(&vma->head);
 
 	if (fobj && fobj->shared_count > 1)
+<<<<<<< HEAD
 		ttm_bo_wait(&nvbo->bo, true, false, false);
+=======
+		ttm_bo_wait(&nvbo->bo, false, false);
+>>>>>>> v4.9.227
 	else if (fobj && fobj->shared_count == 1)
 		fence = rcu_dereference_protected(fobj->shared[0],
 						reservation_object_held(resv));
@@ -156,7 +168,11 @@ nouveau_gem_object_close(struct drm_gem_object *gem, struct drm_file *file_priv)
 	if (!cli->vm)
 		return;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(&nvbo->bo, false, false, false, NULL);
+=======
+	ret = ttm_bo_reserve(&nvbo->bo, false, false, NULL);
+>>>>>>> v4.9.227
 	if (ret)
 		return;
 
@@ -368,9 +384,14 @@ validate_init(struct nouveau_channel *chan, struct drm_file *file_priv,
 	      int nr_buffers, struct validate_op *op)
 {
 	struct nouveau_cli *cli = nouveau_cli(file_priv);
+<<<<<<< HEAD
 	struct drm_device *dev = chan->drm->dev;
 	int trycnt = 0;
 	int ret, i;
+=======
+	int trycnt = 0;
+	int ret = -EINVAL, i;
+>>>>>>> v4.9.227
 	struct nouveau_bo *res_bo = NULL;
 	LIST_HEAD(gart_list);
 	LIST_HEAD(vram_list);
@@ -388,7 +409,11 @@ retry:
 		struct drm_gem_object *gem;
 		struct nouveau_bo *nvbo;
 
+<<<<<<< HEAD
 		gem = drm_gem_object_lookup(dev, file_priv, b->handle);
+=======
+		gem = drm_gem_object_lookup(file_priv, b->handle);
+>>>>>>> v4.9.227
 		if (!gem) {
 			NV_PRINTK(err, cli, "Unknown handle 0x%08x\n", b->handle);
 			ret = -ENOENT;
@@ -409,7 +434,11 @@ retry:
 			break;
 		}
 
+<<<<<<< HEAD
 		ret = ttm_bo_reserve(&nvbo->bo, true, false, true, &op->ticket);
+=======
+		ret = ttm_bo_reserve(&nvbo->bo, true, false, &op->ticket);
+>>>>>>> v4.9.227
 		if (ret) {
 			list_splice_tail_init(&vram_list, &op->list);
 			list_splice_tail_init(&gart_list, &op->list);
@@ -602,7 +631,11 @@ nouveau_gem_pushbuf_reloc_apply(struct nouveau_cli *cli,
 		struct nouveau_bo *nvbo;
 		uint32_t data;
 
+<<<<<<< HEAD
 		if (unlikely(r->bo_index > req->nr_buffers)) {
+=======
+		if (unlikely(r->bo_index >= req->nr_buffers)) {
+>>>>>>> v4.9.227
 			NV_PRINTK(err, cli, "reloc bo index invalid\n");
 			ret = -EINVAL;
 			break;
@@ -612,7 +645,11 @@ nouveau_gem_pushbuf_reloc_apply(struct nouveau_cli *cli,
 		if (b->presumed.valid)
 			continue;
 
+<<<<<<< HEAD
 		if (unlikely(r->reloc_bo_index > req->nr_buffers)) {
+=======
+		if (unlikely(r->reloc_bo_index >= req->nr_buffers)) {
+>>>>>>> v4.9.227
 			NV_PRINTK(err, cli, "reloc container bo index invalid\n");
 			ret = -EINVAL;
 			break;
@@ -651,7 +688,11 @@ nouveau_gem_pushbuf_reloc_apply(struct nouveau_cli *cli,
 				data |= r->vor;
 		}
 
+<<<<<<< HEAD
 		ret = ttm_bo_wait(&nvbo->bo, true, false, false);
+=======
+		ret = ttm_bo_wait(&nvbo->bo, false, false);
+>>>>>>> v4.9.227
 		if (ret) {
 			NV_PRINTK(err, cli, "reloc wait_idle failed: %d\n", ret);
 			break;
@@ -864,7 +905,11 @@ nouveau_gem_ioctl_cpu_prep(struct drm_device *dev, void *data,
 	bool write = !!(req->flags & NOUVEAU_GEM_CPU_PREP_WRITE);
 	int ret;
 
+<<<<<<< HEAD
 	gem = drm_gem_object_lookup(dev, file_priv, req->handle);
+=======
+	gem = drm_gem_object_lookup(file_priv, req->handle);
+>>>>>>> v4.9.227
 	if (!gem)
 		return -ENOENT;
 	nvbo = nouveau_gem_object(gem);
@@ -896,7 +941,11 @@ nouveau_gem_ioctl_cpu_fini(struct drm_device *dev, void *data,
 	struct drm_gem_object *gem;
 	struct nouveau_bo *nvbo;
 
+<<<<<<< HEAD
 	gem = drm_gem_object_lookup(dev, file_priv, req->handle);
+=======
+	gem = drm_gem_object_lookup(file_priv, req->handle);
+>>>>>>> v4.9.227
 	if (!gem)
 		return -ENOENT;
 	nvbo = nouveau_gem_object(gem);
@@ -914,7 +963,11 @@ nouveau_gem_ioctl_info(struct drm_device *dev, void *data,
 	struct drm_gem_object *gem;
 	int ret;
 
+<<<<<<< HEAD
 	gem = drm_gem_object_lookup(dev, file_priv, req->handle);
+=======
+	gem = drm_gem_object_lookup(file_priv, req->handle);
+>>>>>>> v4.9.227
 	if (!gem)
 		return -ENOENT;
 

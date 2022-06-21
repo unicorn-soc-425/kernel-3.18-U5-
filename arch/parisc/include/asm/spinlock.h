@@ -13,15 +13,28 @@ static inline int arch_spin_is_locked(arch_spinlock_t *x)
 }
 
 #define arch_spin_lock(lock) arch_spin_lock_flags(lock, 0)
+<<<<<<< HEAD
 #define arch_spin_unlock_wait(x) \
 		do { cpu_relax(); } while (arch_spin_is_locked(x))
+=======
+
+static inline void arch_spin_unlock_wait(arch_spinlock_t *x)
+{
+	volatile unsigned int *a = __ldcw_align(x);
+
+	smp_cond_load_acquire(a, VAL);
+}
+>>>>>>> v4.9.227
 
 static inline void arch_spin_lock_flags(arch_spinlock_t *x,
 					 unsigned long flags)
 {
 	volatile unsigned int *a;
 
+<<<<<<< HEAD
 	mb();
+=======
+>>>>>>> v4.9.227
 	a = __ldcw_align(x);
 	while (__ldcw(a) == 0)
 		while (*a == 0)
@@ -31,16 +44,26 @@ static inline void arch_spin_lock_flags(arch_spinlock_t *x,
 				local_irq_disable();
 			} else
 				cpu_relax();
+<<<<<<< HEAD
 	mb();
+=======
+>>>>>>> v4.9.227
 }
 
 static inline void arch_spin_unlock(arch_spinlock_t *x)
 {
 	volatile unsigned int *a;
+<<<<<<< HEAD
 	mb();
 	a = __ldcw_align(x);
 	*a = 1;
 	mb();
+=======
+
+	a = __ldcw_align(x);
+	mb();
+	*a = 1;
+>>>>>>> v4.9.227
 }
 
 static inline int arch_spin_trylock(arch_spinlock_t *x)
@@ -48,10 +71,15 @@ static inline int arch_spin_trylock(arch_spinlock_t *x)
 	volatile unsigned int *a;
 	int ret;
 
+<<<<<<< HEAD
 	mb();
 	a = __ldcw_align(x);
         ret = __ldcw(a) != 0;
 	mb();
+=======
+	a = __ldcw_align(x);
+        ret = __ldcw(a) != 0;
+>>>>>>> v4.9.227
 
 	return ret;
 }

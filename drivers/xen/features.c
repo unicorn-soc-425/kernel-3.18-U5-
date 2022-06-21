@@ -7,7 +7,11 @@
  */
 #include <linux/types.h>
 #include <linux/cache.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 
 #include <asm/xen/hypercall.h>
 

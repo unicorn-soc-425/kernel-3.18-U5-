@@ -4,7 +4,12 @@
 
 config MLX4_EN
 	tristate "Mellanox Technologies 1/10/40Gbit Ethernet support"
+<<<<<<< HEAD
 	depends on PCI
+=======
+	depends on MAY_USE_DEVLINK
+	depends on PCI && NETDEVICES && ETHERNET && INET
+>>>>>>> v4.9.227
 	select MLX4_CORE
 	select PTP_1588_CLOCK
 	---help---
@@ -23,6 +28,7 @@ config MLX4_EN_DCB
 
 	  If unsure, set to Y
 
+<<<<<<< HEAD
 config MLX4_EN_VXLAN
 	bool "VXLAN offloads Support"
 	default y
@@ -30,6 +36,8 @@ config MLX4_EN_VXLAN
 	---help---
 	  Say Y here if you want to use VXLAN offloads in the driver.
 
+=======
+>>>>>>> v4.9.227
 config MLX4_CORE
 	tristate
 	depends on PCI

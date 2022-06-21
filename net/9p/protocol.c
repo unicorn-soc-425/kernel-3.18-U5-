@@ -33,6 +33,10 @@
 #include <linux/sched.h>
 #include <linux/stddef.h>
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/uio.h>
+>>>>>>> v4.9.227
 #include <net/9p/9p.h>
 #include <net/9p/client.h>
 #include "protocol.h"
@@ -45,10 +49,22 @@ p9pdu_writef(struct p9_fcall *pdu, int proto_version, const char *fmt, ...);
 void p9stat_free(struct p9_wstat *stbuf)
 {
 	kfree(stbuf->name);
+<<<<<<< HEAD
 	kfree(stbuf->uid);
 	kfree(stbuf->gid);
 	kfree(stbuf->muid);
 	kfree(stbuf->extension);
+=======
+	stbuf->name = NULL;
+	kfree(stbuf->uid);
+	stbuf->uid = NULL;
+	kfree(stbuf->gid);
+	stbuf->gid = NULL;
+	kfree(stbuf->muid);
+	stbuf->muid = NULL;
+	kfree(stbuf->extension);
+	stbuf->extension = NULL;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(p9stat_free);
 
@@ -69,10 +85,18 @@ static size_t pdu_write(struct p9_fcall *pdu, const void *data, size_t size)
 }
 
 static size_t
+<<<<<<< HEAD
 pdu_write_u(struct p9_fcall *pdu, const char __user *udata, size_t size)
 {
 	size_t len = min(pdu->capacity - pdu->size, size);
 	if (copy_from_user(&pdu->sdata[pdu->size], udata, len))
+=======
+pdu_write_u(struct p9_fcall *pdu, struct iov_iter *from, size_t size)
+{
+	size_t len = min(pdu->capacity - pdu->size, size);
+	struct iov_iter i = *from;
+	if (copy_from_iter(&pdu->sdata[pdu->size], len, &i) != len)
+>>>>>>> v4.9.227
 		len = 0;
 
 	pdu->size += len;
@@ -273,7 +297,11 @@ p9pdu_vreadf(struct p9_fcall *pdu, int proto_version, const char *fmt,
 			}
 			break;
 		case 'R':{
+<<<<<<< HEAD
 				int16_t *nwqid = va_arg(ap, int16_t *);
+=======
+				uint16_t *nwqid = va_arg(ap, uint16_t *);
+>>>>>>> v4.9.227
 				struct p9_qid **wqids =
 				    va_arg(ap, struct p9_qid **);
 
@@ -437,6 +465,7 @@ p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
 						 stbuf->extension, stbuf->n_uid,
 						 stbuf->n_gid, stbuf->n_muid);
 			} break;
+<<<<<<< HEAD
 		case 'D':{
 				uint32_t count = va_arg(ap, uint32_t);
 				const void *data = va_arg(ap, const void *);
@@ -454,6 +483,15 @@ p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
 				errcode = p9pdu_writef(pdu, proto_version, "d",
 									count);
 				if (!errcode && pdu_write_u(pdu, udata, count))
+=======
+		case 'V':{
+				uint32_t count = va_arg(ap, uint32_t);
+				struct iov_iter *from =
+						va_arg(ap, struct iov_iter *);
+				errcode = p9pdu_writef(pdu, proto_version, "d",
+									count);
+				if (!errcode && pdu_write_u(pdu, from, count))
+>>>>>>> v4.9.227
 					errcode = -EFAULT;
 			}
 			break;
@@ -479,7 +517,11 @@ p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
 			}
 			break;
 		case 'R':{
+<<<<<<< HEAD
 				int16_t nwqid = va_arg(ap, int);
+=======
+				uint16_t nwqid = va_arg(ap, int);
+>>>>>>> v4.9.227
 				struct p9_qid *wqids =
 				    va_arg(ap, struct p9_qid *);
 
@@ -573,9 +615,16 @@ int p9stat_read(struct p9_client *clnt, char *buf, int len, struct p9_wstat *st)
 	if (ret) {
 		p9_debug(P9_DEBUG_9P, "<<< p9stat_read failed: %d\n", ret);
 		trace_9p_protocol_dump(clnt, &fake_pdu);
+<<<<<<< HEAD
 	}
 
 	return ret;
+=======
+		return ret;
+	}
+
+	return fake_pdu.offset;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(p9stat_read);
 
@@ -624,6 +673,7 @@ int p9dirent_read(struct p9_client *clnt, char *buf, int len,
 	if (ret) {
 		p9_debug(P9_DEBUG_9P, "<<< p9dirent_read failed: %d\n", ret);
 		trace_9p_protocol_dump(clnt, &fake_pdu);
+<<<<<<< HEAD
 		goto out;
 	}
 
@@ -631,6 +681,21 @@ int p9dirent_read(struct p9_client *clnt, char *buf, int len,
 	kfree(nameptr);
 
 out:
+=======
+		return ret;
+	}
+
+	ret = strscpy(dirent->d_name, nameptr, sizeof(dirent->d_name));
+	if (ret < 0) {
+		p9_debug(P9_DEBUG_ERROR,
+			 "On the wire dirent name too long: %s\n",
+			 nameptr);
+		kfree(nameptr);
+		return ret;
+	}
+	kfree(nameptr);
+
+>>>>>>> v4.9.227
 	return fake_pdu.offset;
 }
 EXPORT_SYMBOL(p9dirent_read);

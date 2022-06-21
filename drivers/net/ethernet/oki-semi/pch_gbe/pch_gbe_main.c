@@ -1640,7 +1640,11 @@ pch_gbe_clean_tx(struct pch_gbe_adapter *adapter,
 		   cleaned_count);
 	if (cleaned_count > 0)  { /*skip this if nothing cleaned*/
 		/* Recover from running out of Tx resources in xmit_frame */
+<<<<<<< HEAD
 		spin_lock(&tx_ring->tx_lock);
+=======
+		netif_tx_lock(adapter->netdev);
+>>>>>>> v4.9.227
 		if (unlikely(cleaned && (netif_queue_stopped(adapter->netdev))))
 		{
 			netif_wake_queue(adapter->netdev);
@@ -1652,7 +1656,11 @@ pch_gbe_clean_tx(struct pch_gbe_adapter *adapter,
 
 		netdev_dbg(adapter->netdev, "next_to_clean : %d\n",
 			   tx_ring->next_to_clean);
+<<<<<<< HEAD
 		spin_unlock(&tx_ring->tx_lock);
+=======
+		netif_tx_unlock(adapter->netdev);
+>>>>>>> v4.9.227
 	}
 	return cleaned;
 }
@@ -1805,7 +1813,10 @@ int pch_gbe_setup_tx_resources(struct pch_gbe_adapter *adapter,
 
 	tx_ring->next_to_use = 0;
 	tx_ring->next_to_clean = 0;
+<<<<<<< HEAD
 	spin_lock_init(&tx_ring->tx_lock);
+=======
+>>>>>>> v4.9.227
 
 	for (desNo = 0; desNo < tx_ring->count; desNo++) {
 		tx_desc = PCH_GBE_TX_DESC(*tx_ring, desNo);
@@ -2135,6 +2146,7 @@ static int pch_gbe_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 {
 	struct pch_gbe_adapter *adapter = netdev_priv(netdev);
 	struct pch_gbe_tx_ring *tx_ring = adapter->tx_ring;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (!spin_trylock_irqsave(&tx_ring->tx_lock, flags)) {
@@ -2144,6 +2156,11 @@ static int pch_gbe_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 	if (unlikely(!PCH_GBE_DESC_UNUSED(tx_ring))) {
 		netif_stop_queue(netdev);
 		spin_unlock_irqrestore(&tx_ring->tx_lock, flags);
+=======
+
+	if (unlikely(!PCH_GBE_DESC_UNUSED(tx_ring))) {
+		netif_stop_queue(netdev);
+>>>>>>> v4.9.227
 		netdev_dbg(netdev,
 			   "Return : BUSY  next_to use : 0x%08x  next_to clean : 0x%08x\n",
 			   tx_ring->next_to_use, tx_ring->next_to_clean);
@@ -2152,7 +2169,10 @@ static int pch_gbe_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 
 	/* CRC,ITAG no support */
 	pch_gbe_tx_queue(adapter, tx_ring, skb);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&tx_ring->tx_lock, flags);
+=======
+>>>>>>> v4.9.227
 	return NETDEV_TX_OK;
 }
 

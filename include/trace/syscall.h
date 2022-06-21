@@ -3,7 +3,11 @@
 
 #include <linux/tracepoint.h>
 #include <linux/unistd.h>
+<<<<<<< HEAD
 #include <linux/ftrace_event.h>
+=======
+#include <linux/trace_events.h>
+>>>>>>> v4.9.227
 #include <linux/thread_info.h>
 
 #include <asm/ptrace.h>
@@ -29,8 +33,13 @@ struct syscall_metadata {
 	const char	**args;
 	struct list_head enter_fields;
 
+<<<<<<< HEAD
 	struct ftrace_event_call *enter_event;
 	struct ftrace_event_call *exit_event;
+=======
+	struct trace_event_call *enter_event;
+	struct trace_event_call *exit_event;
+>>>>>>> v4.9.227
 };
 
 #if defined(CONFIG_TRACEPOINTS) && defined(CONFIG_HAVE_SYSCALL_TRACEPOINTS)

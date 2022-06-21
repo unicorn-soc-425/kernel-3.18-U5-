@@ -4,7 +4,11 @@
 #include <linux/errno.h>
 #include <linux/timex.h>
 #include <linux/clocksource.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 /* IBM Summit (EXA) Cyclone counter code*/
 #define CYCLONE_CBAR_ADDR 0xFEB00CD0

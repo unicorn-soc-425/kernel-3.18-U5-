@@ -35,7 +35,11 @@ struct max9768 {
 	u32 flags;
 };
 
+<<<<<<< HEAD
 static struct reg_default max9768_default_regs[] = {
+=======
+static const struct reg_default max9768_default_regs[] = {
+>>>>>>> v4.9.227
 	{ 0, 0 },
 	{ 3,  MAX9768_CTRL_FILTERLESS},
 };
@@ -43,8 +47,13 @@ static struct reg_default max9768_default_regs[] = {
 static int max9768_get_gpio(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
 	struct max9768 *max9768 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *c = snd_soc_kcontrol_component(kcontrol);
+	struct max9768 *max9768 = snd_soc_component_get_drvdata(c);
+>>>>>>> v4.9.227
 	int val = gpio_get_value_cansleep(max9768->mute_gpio);
 
 	ucontrol->value.integer.value[0] = !val;
@@ -55,16 +64,25 @@ static int max9768_get_gpio(struct snd_kcontrol *kcontrol,
 static int max9768_set_gpio(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
 	struct max9768 *max9768 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *c = snd_soc_kcontrol_component(kcontrol);
+	struct max9768 *max9768 = snd_soc_component_get_drvdata(c);
+>>>>>>> v4.9.227
 
 	gpio_set_value_cansleep(max9768->mute_gpio, !ucontrol->value.integer.value[0]);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static const unsigned int volume_tlv[] = {
 	TLV_DB_RANGE_HEAD(43),
+=======
+static const DECLARE_TLV_DB_RANGE(volume_tlv,
+>>>>>>> v4.9.227
 	0, 0, TLV_DB_SCALE_ITEM(-16150, 0, 0),
 	1, 1, TLV_DB_SCALE_ITEM(-9280, 0, 0),
 	2, 2, TLV_DB_SCALE_ITEM(-9030, 0, 0),
@@ -107,8 +125,13 @@ static const unsigned int volume_tlv[] = {
 	51, 57, TLV_DB_SCALE_ITEM(290, 50, 0),
 	58, 58, TLV_DB_SCALE_ITEM(650, 0, 0),
 	59, 62, TLV_DB_SCALE_ITEM(700, 60, 0),
+<<<<<<< HEAD
 	63, 63, TLV_DB_SCALE_ITEM(950, 0, 0),
 };
+=======
+	63, 63, TLV_DB_SCALE_ITEM(950, 0, 0)
+);
+>>>>>>> v4.9.227
 
 static const struct snd_kcontrol_new max9768_volume[] = {
 	SOC_SINGLE_TLV("Playback Volume", MAX9768_VOL, 0, 63, 0, volume_tlv),
@@ -130,6 +153,7 @@ static const struct snd_soc_dapm_route max9768_dapm_routes[] = {
 	{ "OUT-", NULL, "IN" },
 };
 
+<<<<<<< HEAD
 static int max9768_probe(struct snd_soc_codec *codec)
 {
 	struct max9768 *max9768 = snd_soc_codec_get_drvdata(codec);
@@ -137,12 +161,26 @@ static int max9768_probe(struct snd_soc_codec *codec)
 
 	if (max9768->flags & MAX9768_FLAG_CLASSIC_PWM) {
 		ret = snd_soc_write(codec, MAX9768_CTRL, MAX9768_CTRL_PWM);
+=======
+static int max9768_probe(struct snd_soc_component *component)
+{
+	struct max9768 *max9768 = snd_soc_component_get_drvdata(component);
+	int ret;
+
+	if (max9768->flags & MAX9768_FLAG_CLASSIC_PWM) {
+		ret = regmap_write(max9768->regmap, MAX9768_CTRL,
+			MAX9768_CTRL_PWM);
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 	}
 
 	if (gpio_is_valid(max9768->mute_gpio)) {
+<<<<<<< HEAD
 		ret = snd_soc_add_codec_controls(codec, max9768_mute,
+=======
+		ret = snd_soc_add_component_controls(component, max9768_mute,
+>>>>>>> v4.9.227
 				ARRAY_SIZE(max9768_mute));
 		if (ret)
 			return ret;
@@ -151,7 +189,11 @@ static int max9768_probe(struct snd_soc_codec *codec)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver max9768_codec_driver = {
+=======
+static struct snd_soc_component_driver max9768_component_driver = {
+>>>>>>> v4.9.227
 	.probe = max9768_probe,
 	.controls = max9768_volume,
 	.num_controls = ARRAY_SIZE(max9768_volume),
@@ -183,11 +225,21 @@ static int max9768_i2c_probe(struct i2c_client *client,
 
 	if (pdata) {
 		/* Mute on powerup to avoid clicks */
+<<<<<<< HEAD
 		err = gpio_request_one(pdata->mute_gpio, GPIOF_INIT_HIGH, "MAX9768 Mute");
 		max9768->mute_gpio = err ?: pdata->mute_gpio;
 
 		/* Activate chip by releasing shutdown, enables I2C */
 		err = gpio_request_one(pdata->shdn_gpio, GPIOF_INIT_HIGH, "MAX9768 Shutdown");
+=======
+		err = devm_gpio_request_one(&client->dev, pdata->mute_gpio,
+				GPIOF_INIT_HIGH, "MAX9768 Mute");
+		max9768->mute_gpio = err ?: pdata->mute_gpio;
+
+		/* Activate chip by releasing shutdown, enables I2C */
+		err = devm_gpio_request_one(&client->dev, pdata->shdn_gpio,
+				GPIOF_INIT_HIGH, "MAX9768 Shutdown");
+>>>>>>> v4.9.227
 		max9768->shdn_gpio = err ?: pdata->shdn_gpio;
 
 		max9768->flags = pdata->flags;
@@ -199,6 +251,7 @@ static int max9768_i2c_probe(struct i2c_client *client,
 	i2c_set_clientdata(client, max9768);
 
 	max9768->regmap = devm_regmap_init_i2c(client, &max9768_i2c_regmap_config);
+<<<<<<< HEAD
 	if (IS_ERR(max9768->regmap)) {
 		err = PTR_ERR(max9768->regmap);
 		goto err_gpio_free;
@@ -231,6 +284,13 @@ static int max9768_i2c_remove(struct i2c_client *client)
 		gpio_free(max9768->mute_gpio);
 
 	return 0;
+=======
+	if (IS_ERR(max9768->regmap))
+		return PTR_ERR(max9768->regmap);
+
+	return devm_snd_soc_register_component(&client->dev,
+		&max9768_component_driver, NULL, 0);
+>>>>>>> v4.9.227
 }
 
 static const struct i2c_device_id max9768_i2c_id[] = {
@@ -242,10 +302,15 @@ MODULE_DEVICE_TABLE(i2c, max9768_i2c_id);
 static struct i2c_driver max9768_i2c_driver = {
 	.driver = {
 		.name = "max9768",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = max9768_i2c_probe,
 	.remove = max9768_i2c_remove,
+=======
+	},
+	.probe = max9768_i2c_probe,
+>>>>>>> v4.9.227
 	.id_table = max9768_i2c_id,
 };
 module_i2c_driver(max9768_i2c_driver);

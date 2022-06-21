@@ -6,7 +6,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -112,6 +116,7 @@ acpi_install_address_space_handler(acpi_handle device,
 		goto unlock_and_exit;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * For the default space_IDs, (the IDs for which there are default region handlers
 	 * installed) Only execute the _REG methods if the global initialization _REG
@@ -147,6 +152,11 @@ acpi_install_address_space_handler(acpi_handle device,
 	/* Run all _REG methods for this address space */
 
 	status = acpi_ev_execute_reg_methods(node, space_id);
+=======
+	/* Run all _REG methods for this address space */
+
+	acpi_ev_execute_reg_methods(node, space_id, ACPI_REG_CONNECT);
+>>>>>>> v4.9.227
 
 unlock_and_exit:
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
@@ -215,8 +225,13 @@ acpi_remove_address_space_handler(acpi_handle device,
 
 	/* Find the address handler the user requested */
 
+<<<<<<< HEAD
 	handler_obj = obj_desc->device.handler;
 	last_obj_ptr = &obj_desc->device.handler;
+=======
+	handler_obj = obj_desc->common_notify.handler;
+	last_obj_ptr = &obj_desc->common_notify.handler;
+>>>>>>> v4.9.227
 	while (handler_obj) {
 
 		/* We have a handler, see if user requested this one */
@@ -259,7 +274,10 @@ acpi_remove_address_space_handler(acpi_handle device,
 				 */
 				region_obj =
 				    handler_obj->address_space.region_list;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 			}
 
 			/* Remove this Handler object from the list */

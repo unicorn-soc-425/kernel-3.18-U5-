@@ -3,7 +3,11 @@
  *
  * Copyright (C) 2014 Marvell Technology Group Ltd.
  *
+<<<<<<< HEAD
  * Antoine TÃ©nart <antoine.tenart@free-electrons.com>
+=======
+ * Antoine Ténart <antoine.tenart@free-electrons.com>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -20,24 +24,43 @@
 static const struct berlin_desc_group berlin2_soc_pinctrl_groups[] = {
 	/* G */
 	BERLIN_PINCTRL_GROUP("G0", 0x00, 0x1, 0x00,
+<<<<<<< HEAD
 		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"),
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio")),
 	BERLIN_PINCTRL_GROUP("G1", 0x00, 0x2, 0x01,
 		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"),
+=======
+		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"), /* SS0n */
+		BERLIN_PINCTRL_FUNCTION(0x1, "gpio")),
+	BERLIN_PINCTRL_GROUP("G1", 0x00, 0x2, 0x01,
+		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"), /* SS1n */
+>>>>>>> v4.9.227
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio"),
 		BERLIN_PINCTRL_FUNCTION(0x2, "usb1")),
 	BERLIN_PINCTRL_GROUP("G2", 0x00, 0x2, 0x02,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
+<<<<<<< HEAD
 		BERLIN_PINCTRL_FUNCTION(0x1, "spi1"),
+=======
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi1"), /* SS2n */
+>>>>>>> v4.9.227
 		BERLIN_PINCTRL_FUNCTION(0x2, "pwm"),
 		BERLIN_PINCTRL_FUNCTION(0x3, "i2s0")),
 	BERLIN_PINCTRL_GROUP("G3", 0x00, 0x2, 0x04,
 		BERLIN_PINCTRL_FUNCTION(0x0, "soc"),
+<<<<<<< HEAD
 		BERLIN_PINCTRL_FUNCTION(0x1, "spi1"),
 		BERLIN_PINCTRL_FUNCTION(0x2, "gpio"),
 		BERLIN_PINCTRL_FUNCTION(0x3, "i2s1")),
 	BERLIN_PINCTRL_GROUP("G4", 0x00, 0x2, 0x06,
 		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"),
+=======
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi1"), /* SS3n */
+		BERLIN_PINCTRL_FUNCTION(0x2, "gpio"),
+		BERLIN_PINCTRL_FUNCTION(0x3, "i2s1")),
+	BERLIN_PINCTRL_GROUP("G4", 0x00, 0x2, 0x06,
+		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"), /* CLK/SDI/SDO */
+>>>>>>> v4.9.227
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio"),
 		BERLIN_PINCTRL_FUNCTION(0x2, "pwm")),
 	BERLIN_PINCTRL_GROUP("G5", 0x00, 0x3, 0x08,
@@ -163,6 +186,7 @@ static const struct berlin_desc_group berlin2_sysmgr_pinctrl_groups[] = {
 	/* GSM */
 	BERLIN_PINCTRL_GROUP("GSM0", 0x40, 0x2, 0x00,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
+<<<<<<< HEAD
 		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"),
 		BERLIN_PINCTRL_FUNCTION(0x2, "eth1")),
 	BERLIN_PINCTRL_GROUP("GSM1", 0x40, 0x2, 0x02,
@@ -172,6 +196,17 @@ static const struct berlin_desc_group berlin2_sysmgr_pinctrl_groups[] = {
 	BERLIN_PINCTRL_GROUP("GSM2", 0x40, 0x2, 0x04,
 		BERLIN_PINCTRL_FUNCTION(0x0, "twsi2"),
 		BERLIN_PINCTRL_FUNCTION(0x1, "spi2")),
+=======
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"), /* SS0n */
+		BERLIN_PINCTRL_FUNCTION(0x2, "eth1")),
+	BERLIN_PINCTRL_GROUP("GSM1", 0x40, 0x2, 0x02,
+		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"), /* SS1n */
+		BERLIN_PINCTRL_FUNCTION(0x2, "eth1")),
+	BERLIN_PINCTRL_GROUP("GSM2", 0x40, 0x2, 0x04,
+		BERLIN_PINCTRL_FUNCTION(0x0, "twsi2"),
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi2")), /* SS2n/SS3n */
+>>>>>>> v4.9.227
 	BERLIN_PINCTRL_GROUP("GSM3", 0x40, 0x2, 0x06,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
 		BERLIN_PINCTRL_FUNCTION(0x1, "uart0"),	/* CTS/RTS */
@@ -187,7 +222,11 @@ static const struct berlin_desc_group berlin2_sysmgr_pinctrl_groups[] = {
 		BERLIN_PINCTRL_FUNCTION(0x3, "twsi3")),
 	BERLIN_PINCTRL_GROUP("GSM6", 0x40, 0x2, 0x0c,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
+<<<<<<< HEAD
 		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"),
+=======
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"), /* CLK/SDO */
+>>>>>>> v4.9.227
 		BERLIN_PINCTRL_FUNCTION(0x1, "clki")),
 	BERLIN_PINCTRL_GROUP("GSM7", 0x40, 0x1, 0x0e,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
@@ -218,11 +257,19 @@ static const struct berlin_pinctrl_desc berlin2_sysmgr_pinctrl_data = {
 
 static const struct of_device_id berlin2_pinctrl_match[] = {
 	{
+<<<<<<< HEAD
 		.compatible = "marvell,berlin2-chip-ctrl",
 		.data = &berlin2_soc_pinctrl_data
 	},
 	{
 		.compatible = "marvell,berlin2-system-ctrl",
+=======
+		.compatible = "marvell,berlin2-soc-pinctrl",
+		.data = &berlin2_soc_pinctrl_data
+	},
+	{
+		.compatible = "marvell,berlin2-system-pinctrl",
+>>>>>>> v4.9.227
 		.data = &berlin2_sysmgr_pinctrl_data
 	},
 	{}
@@ -233,6 +280,7 @@ static int berlin2_pinctrl_probe(struct platform_device *pdev)
 {
 	const struct of_device_id *match =
 		of_match_device(berlin2_pinctrl_match, &pdev->dev);
+<<<<<<< HEAD
 	struct regmap_config *rmconfig;
 	struct regmap *regmap;
 	struct resource *res;
@@ -255,6 +303,8 @@ static int berlin2_pinctrl_probe(struct platform_device *pdev)
 	regmap = devm_regmap_init_mmio(&pdev->dev, base, rmconfig);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
+=======
+>>>>>>> v4.9.227
 
 	return berlin_pinctrl_probe(pdev, match->data);
 }
@@ -263,12 +313,19 @@ static struct platform_driver berlin2_pinctrl_driver = {
 	.probe	= berlin2_pinctrl_probe,
 	.driver	= {
 		.name = "berlin-bg2-pinctrl",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = berlin2_pinctrl_match,
 	},
 };
 module_platform_driver(berlin2_pinctrl_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Antoine TÃ©nart <antoine.tenart@free-electrons.com>");
+=======
+MODULE_AUTHOR("Antoine Ténart <antoine.tenart@free-electrons.com>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Marvell Berlin BG2 pinctrl driver");
 MODULE_LICENSE("GPL");

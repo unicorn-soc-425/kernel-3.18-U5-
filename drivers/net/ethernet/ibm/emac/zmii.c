@@ -295,7 +295,11 @@ static int zmii_remove(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id zmii_match[] =
+=======
+static const struct of_device_id zmii_match[] =
+>>>>>>> v4.9.227
 {
 	{
 		.compatible	= "ibm,zmii",
@@ -310,7 +314,10 @@ static struct of_device_id zmii_match[] =
 static struct platform_driver zmii_driver = {
 	.driver = {
 		.name = "emac-zmii",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = zmii_match,
 	},
 	.probe = zmii_probe,

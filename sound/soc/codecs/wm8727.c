@@ -53,11 +53,21 @@ static struct snd_soc_dai_driver wm8727_dai = {
 		},
 };
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_wm8727 = {
 	.dapm_widgets = wm8727_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(wm8727_dapm_widgets),
 	.dapm_routes = wm8727_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm8727_dapm_routes),
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8727 = {
+	.component_driver = {
+		.dapm_widgets		= wm8727_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8727_dapm_widgets),
+		.dapm_routes		= wm8727_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm8727_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static int wm8727_probe(struct platform_device *pdev)
@@ -75,7 +85,10 @@ static int wm8727_remove(struct platform_device *pdev)
 static struct platform_driver wm8727_codec_driver = {
 	.driver = {
 			.name = "wm8727",
+<<<<<<< HEAD
 			.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 
 	.probe = wm8727_probe,

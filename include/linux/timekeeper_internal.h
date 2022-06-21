@@ -29,7 +29,10 @@
  */
 struct tk_read_base {
 	struct clocksource	*clock;
+<<<<<<< HEAD
 	cycle_t			(*read)(struct clocksource *cs);
+=======
+>>>>>>> v4.9.227
 	cycle_t			mask;
 	cycle_t			cycle_last;
 	u32			mult;
@@ -43,12 +46,23 @@ struct tk_read_base {
  * @tkr_mono:		The readout base structure for CLOCK_MONOTONIC
  * @tkr_raw:		The readout base structure for CLOCK_MONOTONIC_RAW
  * @xtime_sec:		Current CLOCK_REALTIME time in seconds
+<<<<<<< HEAD
+=======
+ * @ktime_sec:		Current CLOCK_MONOTONIC time in seconds
+>>>>>>> v4.9.227
  * @wall_to_monotonic:	CLOCK_REALTIME to CLOCK_MONOTONIC offset
  * @offs_real:		Offset clock monotonic -> clock realtime
  * @offs_boot:		Offset clock monotonic -> clock boottime
  * @offs_tai:		Offset clock monotonic -> clock tai
  * @tai_offset:		The current UTC to TAI offset in seconds
+<<<<<<< HEAD
  * @raw_sec:		CLOCK_MONOTONIC_RAW  time in seconds
+=======
+ * @clock_was_set_seq:	The sequence number of clock was set events
+ * @cs_was_changed_seq:	The sequence number of clocksource change events
+ * @next_leap_ktime:	CLOCK_MONOTONIC time value of a pending leap-second
+ * @raw_time:		Monotonic raw base time in timespec64 format
+>>>>>>> v4.9.227
  * @cycle_interval:	Number of clock cycles in one NTP interval
  * @xtime_interval:	Number of clock shifted nano seconds in one NTP
  *			interval.
@@ -59,6 +73,12 @@ struct tk_read_base {
  *			shifted nano seconds.
  * @ntp_error_shift:	Shift conversion between clock shifted nano seconds and
  *			ntp shifted nano seconds.
+<<<<<<< HEAD
+=======
+ * @last_warning:	Warning ratelimiter (DEBUG_TIMEKEEPING)
+ * @underflow_seen:	Underflow warning flag (DEBUG_TIMEKEEPING)
+ * @overflow_seen:	Overflow warning flag (DEBUG_TIMEKEEPING)
+>>>>>>> v4.9.227
  *
  * Note: For timespec(64) based interfaces wall_to_monotonic is what
  * we need to add to xtime (or xtime corrected for sub jiffie times)
@@ -78,12 +98,23 @@ struct timekeeper {
 	struct tk_read_base	tkr_mono;
 	struct tk_read_base	tkr_raw;
 	u64			xtime_sec;
+<<<<<<< HEAD
+=======
+	unsigned long		ktime_sec;
+>>>>>>> v4.9.227
 	struct timespec64	wall_to_monotonic;
 	ktime_t			offs_real;
 	ktime_t			offs_boot;
 	ktime_t			offs_tai;
 	s32			tai_offset;
+<<<<<<< HEAD
 	u64			raw_sec;
+=======
+	unsigned int		clock_was_set_seq;
+	u8			cs_was_changed_seq;
+	ktime_t			next_leap_ktime;
+	struct timespec64	raw_time;
+>>>>>>> v4.9.227
 
 	/* The following members are for timekeeping internal use */
 	cycle_t			cycle_interval;
@@ -102,6 +133,21 @@ struct timekeeper {
 	s64			ntp_error;
 	u32			ntp_error_shift;
 	u32			ntp_err_mult;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DEBUG_TIMEKEEPING
+	long			last_warning;
+	/*
+	 * These simple flag variables are managed
+	 * without locks, which is racy, but they are
+	 * ok since we don't really care about being
+	 * super precise about how many events were
+	 * seen, just that a problem was observed.
+	 */
+	int			underflow_seen;
+	int			overflow_seen;
+#endif
+>>>>>>> v4.9.227
 };
 
 #ifdef CONFIG_GENERIC_TIME_VSYSCALL

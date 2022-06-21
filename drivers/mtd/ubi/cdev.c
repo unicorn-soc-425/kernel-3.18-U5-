@@ -174,9 +174,15 @@ static int vol_cdev_fsync(struct file *file, loff_t start, loff_t end,
 	struct ubi_device *ubi = desc->vol->ubi;
 	struct inode *inode = file_inode(file);
 	int err;
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
 	err = ubi_sync(ubi->ubi_num);
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+	err = ubi_sync(ubi->ubi_num);
+	inode_unlock(inode);
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -416,7 +422,11 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 		}
 
 		rsvd_bytes = (long long)vol->reserved_pebs *
+<<<<<<< HEAD
 					ubi->leb_size-vol->data_pad;
+=======
+					vol->usable_leb_size;
+>>>>>>> v4.9.227
 		if (bytes < 0 || bytes > rsvd_bytes) {
 			err = -EINVAL;
 			break;
@@ -454,7 +464,11 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 
 		/* Validate the request */
 		err = -EINVAL;
+<<<<<<< HEAD
 		if (req.lnum < 0 || req.lnum >= vol->reserved_pebs ||
+=======
+		if (!ubi_leb_valid(vol, req.lnum) ||
+>>>>>>> v4.9.227
 		    req.bytes < 0 || req.bytes > vol->usable_leb_size)
 			break;
 
@@ -485,7 +499,11 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 			break;
 		}
 
+<<<<<<< HEAD
 		if (lnum < 0 || lnum >= vol->reserved_pebs) {
+=======
+		if (!ubi_leb_valid(vol, lnum)) {
+>>>>>>> v4.9.227
 			err = -EINVAL;
 			break;
 		}

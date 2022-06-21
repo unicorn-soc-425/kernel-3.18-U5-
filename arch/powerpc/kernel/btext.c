@@ -162,7 +162,11 @@ void btext_map(void)
 	offset = ((unsigned long) dispDeviceBase) - base;
 	size = dispDeviceRowBytes * dispDeviceRect[3] + offset
 		+ dispDeviceRect[0];
+<<<<<<< HEAD
 	vbase = __ioremap(base, size, _PAGE_NO_CACHE);
+=======
+	vbase = __ioremap(base, size, pgprot_val(pgprot_noncached_wc(__pgprot(0))));
+>>>>>>> v4.9.227
 	if (vbase == 0)
 		return;
 	logicalDisplayBase = vbase + offset;

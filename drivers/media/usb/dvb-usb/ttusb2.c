@@ -839,7 +839,11 @@ static struct usb_driver ttusb2_driver = {
 
 module_usb_driver(ttusb2_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@desy.de>");
+=======
+MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@posteo.de>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("Driver for Pinnacle PCTV 400e DVB-S USB2.0");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");

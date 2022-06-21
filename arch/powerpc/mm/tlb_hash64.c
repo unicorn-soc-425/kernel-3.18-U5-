@@ -155,7 +155,11 @@ void __flush_tlb_pending(struct ppc64_tlb_batch *batch)
 	batch->index = 0;
 }
 
+<<<<<<< HEAD
 void tlb_flush(struct mmu_gather *tlb)
+=======
+void hash__tlb_flush(struct mmu_gather *tlb)
+>>>>>>> v4.9.227
 {
 	struct ppc64_tlb_batch *tlbbatch = &get_cpu_var(ppc64_tlb_batch);
 
@@ -190,6 +194,10 @@ void tlb_flush(struct mmu_gather *tlb)
 void __flush_hash_table_range(struct mm_struct *mm, unsigned long start,
 			      unsigned long end)
 {
+<<<<<<< HEAD
+=======
+	bool is_thp;
+>>>>>>> v4.9.227
 	int hugepage_shift;
 	unsigned long flags;
 
@@ -208,13 +216,18 @@ void __flush_hash_table_range(struct mm_struct *mm, unsigned long start,
 	local_irq_save(flags);
 	arch_enter_lazy_mmu_mode();
 	for (; start < end; start += PAGE_SIZE) {
+<<<<<<< HEAD
 		pte_t *ptep = find_linux_pte_or_hugepte(mm->pgd, start,
+=======
+		pte_t *ptep = find_linux_pte_or_hugepte(mm->pgd, start, &is_thp,
+>>>>>>> v4.9.227
 							&hugepage_shift);
 		unsigned long pte;
 
 		if (ptep == NULL)
 			continue;
 		pte = pte_val(*ptep);
+<<<<<<< HEAD
 		if (hugepage_shift)
 			trace_hugepage_invalidate(start, pte_val(pte));
 		if (!(pte & _PAGE_HASHPTE))
@@ -223,6 +236,16 @@ void __flush_hash_table_range(struct mm_struct *mm, unsigned long start,
 			hpte_do_hugepage_flush(mm, start, (pmd_t *)ptep, pte);
 		else
 			hpte_need_flush(mm, start, ptep, pte, 0);
+=======
+		if (is_thp)
+			trace_hugepage_invalidate(start, pte);
+		if (!(pte & H_PAGE_HASHPTE))
+			continue;
+		if (unlikely(is_thp))
+			hpte_do_hugepage_flush(mm, start, (pmd_t *)ptep, pte);
+		else
+			hpte_need_flush(mm, start, ptep, pte, hugepage_shift);
+>>>>>>> v4.9.227
 	}
 	arch_leave_lazy_mmu_mode();
 	local_irq_restore(flags);
@@ -247,7 +270,11 @@ void flush_tlb_pmd_range(struct mm_struct *mm, pmd_t *pmd, unsigned long addr)
 	start_pte = pte_offset_map(pmd, addr);
 	for (pte = start_pte; pte < start_pte + PTRS_PER_PTE; pte++) {
 		unsigned long pteval = pte_val(*pte);
+<<<<<<< HEAD
 		if (pteval & _PAGE_HASHPTE)
+=======
+		if (pteval & H_PAGE_HASHPTE)
+>>>>>>> v4.9.227
 			hpte_need_flush(mm, addr, pte, pteval, 0);
 		addr += PAGE_SIZE;
 	}

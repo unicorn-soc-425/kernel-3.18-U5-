@@ -32,7 +32,10 @@
 #include <linux/leds.h>
 #include <linux/err.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/of.h>
 #include <linux/platform_data/leds-pca963x.h>
@@ -96,11 +99,14 @@ static const struct i2c_device_id pca963x_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, pca963x_id);
 
+<<<<<<< HEAD
 enum pca963x_cmd {
 	BRIGHTNESS_SET,
 	BLINK_SET,
 };
 
+=======
+>>>>>>> v4.9.227
 struct pca963x_led;
 
 struct pca963x {
@@ -112,23 +118,34 @@ struct pca963x {
 
 struct pca963x_led {
 	struct pca963x *chip;
+<<<<<<< HEAD
 	struct work_struct work;
 	enum led_brightness brightness;
 	struct led_classdev led_cdev;
 	int led_num; /* 0 .. 15 potentially */
 	enum pca963x_cmd cmd;
+=======
+	struct led_classdev led_cdev;
+	int led_num; /* 0 .. 15 potentially */
+>>>>>>> v4.9.227
 	char name[32];
 	u8 gdc;
 	u8 gfrq;
 };
 
+<<<<<<< HEAD
 static void pca963x_brightness_work(struct pca963x_led *pca963x)
+=======
+static int pca963x_brightness(struct pca963x_led *pca963x,
+			       enum led_brightness brightness)
+>>>>>>> v4.9.227
 {
 	u8 ledout_addr = pca963x->chip->chipdef->ledout_base
 		+ (pca963x->led_num / 4);
 	u8 ledout;
 	int shift = 2 * (pca963x->led_num % 4);
 	u8 mask = 0x3 << shift;
+<<<<<<< HEAD
 
 	mutex_lock(&pca963x->chip->mutex);
 	ledout = i2c_smbus_read_byte_data(pca963x->chip->client, ledout_addr);
@@ -153,6 +170,39 @@ static void pca963x_brightness_work(struct pca963x_led *pca963x)
 }
 
 static void pca963x_blink_work(struct pca963x_led *pca963x)
+=======
+	int ret;
+
+	mutex_lock(&pca963x->chip->mutex);
+	ledout = i2c_smbus_read_byte_data(pca963x->chip->client, ledout_addr);
+	switch (brightness) {
+	case LED_FULL:
+		ret = i2c_smbus_write_byte_data(pca963x->chip->client,
+			ledout_addr,
+			(ledout & ~mask) | (PCA963X_LED_ON << shift));
+		break;
+	case LED_OFF:
+		ret = i2c_smbus_write_byte_data(pca963x->chip->client,
+			ledout_addr, ledout & ~mask);
+		break;
+	default:
+		ret = i2c_smbus_write_byte_data(pca963x->chip->client,
+			PCA963X_PWM_BASE + pca963x->led_num,
+			brightness);
+		if (ret < 0)
+			goto unlock;
+		ret = i2c_smbus_write_byte_data(pca963x->chip->client,
+			ledout_addr,
+			(ledout & ~mask) | (PCA963X_LED_PWM << shift));
+		break;
+	}
+unlock:
+	mutex_unlock(&pca963x->chip->mutex);
+	return ret;
+}
+
+static void pca963x_blink(struct pca963x_led *pca963x)
+>>>>>>> v4.9.227
 {
 	u8 ledout_addr = pca963x->chip->chipdef->ledout_base +
 		(pca963x->led_num / 4);
@@ -180,6 +230,7 @@ static void pca963x_blink_work(struct pca963x_led *pca963x)
 	mutex_unlock(&pca963x->chip->mutex);
 }
 
+<<<<<<< HEAD
 static void pca963x_work(struct work_struct *work)
 {
 	struct pca963x_led *pca963x = container_of(work,
@@ -196,12 +247,16 @@ static void pca963x_work(struct work_struct *work)
 }
 
 static void pca963x_led_set(struct led_classdev *led_cdev,
+=======
+static int pca963x_led_set(struct led_classdev *led_cdev,
+>>>>>>> v4.9.227
 	enum led_brightness value)
 {
 	struct pca963x_led *pca963x;
 
 	pca963x = container_of(led_cdev, struct pca963x_led, led_cdev);
 
+<<<<<<< HEAD
 	pca963x->cmd = BRIGHTNESS_SET;
 	pca963x->brightness = value;
 
@@ -210,6 +265,9 @@ static void pca963x_led_set(struct led_classdev *led_cdev,
 	 * can sleep.
 	 */
 	schedule_work(&pca963x->work);
+=======
+	return pca963x_brightness(pca963x, value);
+>>>>>>> v4.9.227
 }
 
 static int pca963x_blink_set(struct led_classdev *led_cdev,
@@ -254,6 +312,7 @@ static int pca963x_blink_set(struct led_classdev *led_cdev,
 	 */
 	gfrq = (period * 24 / 1000) - 1;
 
+<<<<<<< HEAD
 	pca963x->cmd = BLINK_SET;
 	pca963x->gdc = gdc;
 	pca963x->gfrq = gfrq;
@@ -263,6 +322,12 @@ static int pca963x_blink_set(struct led_classdev *led_cdev,
 	 * can sleep.
 	 */
 	schedule_work(&pca963x->work);
+=======
+	pca963x->gdc = gdc;
+	pca963x->gfrq = gfrq;
+
+	pca963x_blink(pca963x);
+>>>>>>> v4.9.227
 
 	*delay_on = time_on;
 	*delay_off = time_off;
@@ -289,7 +354,11 @@ pca963x_dt_init(struct i2c_client *client, struct pca963x_chipdef *chip)
 		return ERR_PTR(-ENOMEM);
 
 	for_each_child_of_node(np, child) {
+<<<<<<< HEAD
 		struct led_info led;
+=======
+		struct led_info led = {};
+>>>>>>> v4.9.227
 		u32 reg;
 		int res;
 
@@ -332,6 +401,10 @@ static const struct of_device_id of_pca963x_match[] = {
 	{ .compatible = "nxp,pca9635", },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, of_pca963x_match);
+>>>>>>> v4.9.227
 #else
 static struct pca963x_platform_data *
 pca963x_dt_init(struct i2c_client *client, struct pca963x_chipdef *chip)
@@ -408,13 +481,20 @@ static int pca963x_probe(struct i2c_client *client,
 				 client->addr, i);
 
 		pca963x[i].led_cdev.name = pca963x[i].name;
+<<<<<<< HEAD
 		pca963x[i].led_cdev.brightness_set = pca963x_led_set;
+=======
+		pca963x[i].led_cdev.brightness_set_blocking = pca963x_led_set;
+>>>>>>> v4.9.227
 
 		if (pdata && pdata->blink_type == PCA963X_HW_BLINK)
 			pca963x[i].led_cdev.blink_set = pca963x_blink_set;
 
+<<<<<<< HEAD
 		INIT_WORK(&pca963x[i].work, pca963x_work);
 
+=======
+>>>>>>> v4.9.227
 		err = led_classdev_register(&client->dev, &pca963x[i].led_cdev);
 		if (err < 0)
 			goto exit;
@@ -434,10 +514,15 @@ static int pca963x_probe(struct i2c_client *client,
 	return 0;
 
 exit:
+<<<<<<< HEAD
 	while (i--) {
 		led_classdev_unregister(&pca963x[i].led_cdev);
 		cancel_work_sync(&pca963x[i].work);
 	}
+=======
+	while (i--)
+		led_classdev_unregister(&pca963x[i].led_cdev);
+>>>>>>> v4.9.227
 
 	return err;
 }
@@ -447,10 +532,15 @@ static int pca963x_remove(struct i2c_client *client)
 	struct pca963x *pca963x = i2c_get_clientdata(client);
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < pca963x->chipdef->n_leds; i++) {
 		led_classdev_unregister(&pca963x->leds[i].led_cdev);
 		cancel_work_sync(&pca963x->leds[i].work);
 	}
+=======
+	for (i = 0; i < pca963x->chipdef->n_leds; i++)
+		led_classdev_unregister(&pca963x->leds[i].led_cdev);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -458,7 +548,10 @@ static int pca963x_remove(struct i2c_client *client)
 static struct i2c_driver pca963x_driver = {
 	.driver = {
 		.name	= "leds-pca963x",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(of_pca963x_match),
 	},
 	.probe	= pca963x_probe,

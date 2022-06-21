@@ -12,6 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -24,10 +25,16 @@
 #include <linux/serial_sci.h>
 #include <linux/sh_dma.h>
 #include <linux/sh_timer.h>
+=======
+ */
+
+#include <linux/init.h>
+>>>>>>> v4.9.227
 
 #include <asm/mach/arch.h>
 
 #include "common.h"
+<<<<<<< HEAD
 #include "dma-register.h"
 #include "irqs.h"
 #include "r8a73a4.h"
@@ -298,6 +305,10 @@ void __init r8a73a4_add_standard_devices(void)
 #ifdef CONFIG_USE_OF
 
 static const char *r8a73a4_boards_compat_dt[] __initdata = {
+=======
+
+static const char *const r8a73a4_boards_compat_dt[] __initconst = {
+>>>>>>> v4.9.227
 	"renesas,r8a73a4",
 	NULL,
 };
@@ -307,4 +318,7 @@ DT_MACHINE_START(R8A73A4_DT, "Generic R8A73A4 (Flattened Device Tree)")
 	.init_late	= shmobile_init_late,
 	.dt_compat	= r8a73a4_boards_compat_dt,
 MACHINE_END
+<<<<<<< HEAD
 #endif /* CONFIG_USE_OF */
+=======
+>>>>>>> v4.9.227

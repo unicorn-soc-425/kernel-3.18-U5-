@@ -3,7 +3,11 @@ Introduction:
 	The hw_random framework is software that makes use of a
 	special hardware feature on your CPU or motherboard,
 	a Random Number Generator (RNG).  The software has two parts:
+<<<<<<< HEAD
 	a core providing the /dev/hw_random character device and its
+=======
+	a core providing the /dev/hwrng character device and its
+>>>>>>> v4.9.227
 	sysfs support, plus a hardware-specific driver that plugs
 	into that core.
 
@@ -14,7 +18,11 @@ Introduction:
 
 		http://sourceforge.net/projects/gkernel/
 
+<<<<<<< HEAD
 	Those tools use /dev/hw_random to fill the kernel entropy pool,
+=======
+	Those tools use /dev/hwrng to fill the kernel entropy pool,
+>>>>>>> v4.9.227
 	which is used internally and exported by the /dev/urandom and
 	/dev/random special files.
 
@@ -32,13 +40,21 @@ Theory of operation:
 	The rng-tools package uses such tests in "rngd", and lets you
 	run them by hand with a "rngtest" utility.
 
+<<<<<<< HEAD
 	/dev/hw_random is char device major 10, minor 183.
+=======
+	/dev/hwrng is char device major 10, minor 183.
+>>>>>>> v4.9.227
 
 	CLASS DEVICE.  There is a /sys/class/misc/hw_random node with
 	two unique attributes, "rng_available" and "rng_current".  The
 	"rng_available" attribute lists the hardware-specific drivers
 	available, while "rng_current" lists the one which is currently
+<<<<<<< HEAD
 	connected to /dev/hw_random.  If your system has more than one
+=======
+	connected to /dev/hwrng.  If your system has more than one
+>>>>>>> v4.9.227
 	RNG available, you may change the one used by writing a name from
 	the list in "rng_available" into "rng_current".
 

@@ -2,7 +2,10 @@ if ARCH_STI
 
 config STI_RESET_SYSCFG
 	bool
+<<<<<<< HEAD
 	select RESET_CONTROLLER
+=======
+>>>>>>> v4.9.227
 
 config STIH415_RESET
 	bool
@@ -12,4 +15,11 @@ config STIH416_RESET
 	bool
 	select STI_RESET_SYSCFG
 
+<<<<<<< HEAD
+=======
+config STIH407_RESET
+	bool
+	select STI_RESET_SYSCFG
+
+>>>>>>> v4.9.227
 endif

@@ -610,8 +610,13 @@ err_out_regions:
 #ifdef CONFIG_PCI
 	if (pdev)
 		pci_release_regions(pdev);
+<<<<<<< HEAD
 #endif
 err_out:
+=======
+err_out:
+#endif
+>>>>>>> v4.9.227
 	if (pdev)
 		pci_disable_device(pdev);
 	return rc;
@@ -791,7 +796,10 @@ static void tlan_get_drvinfo(struct net_device *dev,
 			sizeof(info->bus_info));
 	else
 		strlcpy(info->bus_info, "EISA",	sizeof(info->bus_info));
+<<<<<<< HEAD
 	info->eedump_len = TLAN_EEPROM_SIZE;
+=======
+>>>>>>> v4.9.227
 }
 
 static int tlan_get_eeprom_len(struct net_device *dev)
@@ -1008,7 +1016,11 @@ static void tlan_tx_timeout(struct net_device *dev)
 	tlan_reset_lists(dev);
 	tlan_read_and_clear_stats(dev, TLAN_IGNORE);
 	tlan_reset_adapter(dev);
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	netif_wake_queue(dev);
 
 }
@@ -1652,7 +1664,10 @@ static u32 tlan_handle_tx_eoc(struct net_device *dev, u16 host_int)
 	dma_addr_t		head_list_phys;
 	u32			ack = 1;
 
+<<<<<<< HEAD
 	host_int = 0;
+=======
+>>>>>>> v4.9.227
 	if (priv->tlan_rev < 0x30) {
 		TLAN_DBG(TLAN_DEBUG_TX,
 			 "TRANSMIT:  handling TX EOC (Head=%d Tail=%d) -- IRQ\n",
@@ -2540,7 +2555,11 @@ static void tlan_phy_power_down(struct net_device *dev)
 	 * This is abitrary.  It is intended to make sure the
 	 * transceiver settles.
 	 */
+<<<<<<< HEAD
 	tlan_set_timer(dev, (HZ/20), TLAN_TIMER_PHY_PUP);
+=======
+	tlan_set_timer(dev, msecs_to_jiffies(50), TLAN_TIMER_PHY_PUP);
+>>>>>>> v4.9.227
 
 }
 
@@ -2561,7 +2580,11 @@ static void tlan_phy_power_up(struct net_device *dev)
 	 * transceiver.  The TLAN docs say both 50 ms and
 	 * 500 ms, so do the longer, just in case.
 	 */
+<<<<<<< HEAD
 	tlan_set_timer(dev, (HZ/20), TLAN_TIMER_PHY_RESET);
+=======
+	tlan_set_timer(dev, msecs_to_jiffies(500), TLAN_TIMER_PHY_RESET);
+>>>>>>> v4.9.227
 
 }
 
@@ -2593,7 +2616,11 @@ static void tlan_phy_reset(struct net_device *dev)
 	 * I don't remember why I wait this long.
 	 * I've changed this to 50ms, as it seems long enough.
 	 */
+<<<<<<< HEAD
 	tlan_set_timer(dev, (HZ/20), TLAN_TIMER_PHY_START_LINK);
+=======
+	tlan_set_timer(dev, msecs_to_jiffies(50), TLAN_TIMER_PHY_START_LINK);
+>>>>>>> v4.9.227
 
 }
 
@@ -2658,7 +2685,11 @@ static void tlan_phy_start_link(struct net_device *dev)
 		data = TLAN_NET_CFG_1FRAG | TLAN_NET_CFG_1CHAN
 			| TLAN_NET_CFG_PHY_EN;
 		tlan_dio_write16(dev->base_addr, TLAN_NET_CONFIG, data);
+<<<<<<< HEAD
 		tlan_set_timer(dev, (40*HZ/1000), TLAN_TIMER_PHY_PDOWN);
+=======
+		tlan_set_timer(dev, msecs_to_jiffies(40), TLAN_TIMER_PHY_PDOWN);
+>>>>>>> v4.9.227
 		return;
 	} else if (priv->phy_num == 0) {
 		control = 0;
@@ -2725,7 +2756,11 @@ static void tlan_phy_finish_auto_neg(struct net_device *dev)
 	    (priv->adapter->flags & TLAN_ADAPTER_USE_INTERN_10) &&
 	    (priv->phy_num != 0)) {
 		priv->phy_num = 0;
+<<<<<<< HEAD
 		tlan_set_timer(dev, (400*HZ/1000), TLAN_TIMER_PHY_PDOWN);
+=======
+		tlan_set_timer(dev, msecs_to_jiffies(400), TLAN_TIMER_PHY_PDOWN);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -2744,7 +2779,11 @@ static void tlan_phy_finish_auto_neg(struct net_device *dev)
 
 	/* Wait for 100 ms.  No reason in partiticular.
 	 */
+<<<<<<< HEAD
 	tlan_set_timer(dev, (HZ/10), TLAN_TIMER_FINISH_RESET);
+=======
+	tlan_set_timer(dev, msecs_to_jiffies(100), TLAN_TIMER_FINISH_RESET);
+>>>>>>> v4.9.227
 
 }
 
@@ -2796,7 +2835,11 @@ static void tlan_phy_monitor(unsigned long data)
 				/* set to external PHY */
 				priv->phy_num = 1;
 				/* restart autonegotiation */
+<<<<<<< HEAD
 				tlan_set_timer(dev, 4 * HZ / 10,
+=======
+				tlan_set_timer(dev, msecs_to_jiffies(400),
+>>>>>>> v4.9.227
 					       TLAN_TIMER_PHY_PDOWN);
 				return;
 			}

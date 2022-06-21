@@ -114,5 +114,13 @@ static inline void debug_stack_usage_inc(void) { }
 static inline void debug_stack_usage_dec(void) { }
 #endif /* X86_64 */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_SUP_AMD
+extern void set_dr_addr_mask(unsigned long mask, int dr);
+#else
+static inline void set_dr_addr_mask(unsigned long mask, int dr) { }
+#endif
+>>>>>>> v4.9.227
 
 #endif /* _ASM_X86_DEBUGREG_H */

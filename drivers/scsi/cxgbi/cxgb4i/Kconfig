@@ -5,6 +5,10 @@ config SCSI_CXGB4_ISCSI
 	select ETHERNET
 	select NET_VENDOR_CHELSIO
 	select CHELSIO_T4
+<<<<<<< HEAD
+=======
+	select CHELSIO_LIB
+>>>>>>> v4.9.227
 	select SCSI_ISCSI_ATTRS
 	---help---
 	  This driver supports iSCSI offload for the Chelsio T4 devices.

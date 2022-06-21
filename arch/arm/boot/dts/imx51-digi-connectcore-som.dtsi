@@ -156,7 +156,11 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_esdhc2>;
 	cap-sdio-irq;
+<<<<<<< HEAD
 	enable-sdio-wakeup;
+=======
+	wakeup-source;
+>>>>>>> v4.9.227
 	keep-power-in-suspend;
 	max-frequency = <50000000>;
 	no-1-8-v;

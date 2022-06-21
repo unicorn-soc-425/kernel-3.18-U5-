@@ -37,7 +37,11 @@
 			compatible = "fixed-clock";
 			reg = <0>;
 			#clock-cells = <0>;
+<<<<<<< HEAD
 			clock-frequency = <27000000>;
+=======
+			clock-frequency = <26000000>;
+>>>>>>> v4.9.227
 		};
 	};
 
@@ -50,7 +54,11 @@
 			label = "Power Button";
 			gpios = <&gpio5 2 GPIO_ACTIVE_HIGH>;
 			linux,code = <116>; /* KEY_POWER */
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 	};
 
@@ -513,21 +521,33 @@
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
+<<<<<<< HEAD
 	fsl,uart-has-rtscts;
+=======
+	uart-has-rtscts;
+>>>>>>> v4.9.227
 	status = "okay";
 };
 
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
+<<<<<<< HEAD
 	fsl,uart-has-rtscts;
+=======
+	uart-has-rtscts;
+>>>>>>> v4.9.227
 	status = "okay";
 };
 
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;
+<<<<<<< HEAD
 	fsl,uart-has-rtscts;
+=======
+	uart-has-rtscts;
+>>>>>>> v4.9.227
 	status = "okay";
 };
 

@@ -47,6 +47,7 @@ struct fib4_rule {
 #endif
 };
 
+<<<<<<< HEAD
 int __fib_lookup(struct net *net, struct flowi4 *flp, struct fib_result *res)
 {
 	struct fib_lookup_arg arg = {
@@ -55,6 +56,20 @@ int __fib_lookup(struct net *net, struct flowi4 *flp, struct fib_result *res)
 	};
 	int err;
 
+=======
+int __fib_lookup(struct net *net, struct flowi4 *flp,
+		 struct fib_result *res, unsigned int flags)
+{
+	struct fib_lookup_arg arg = {
+		.result = res,
+		.flags = flags,
+	};
+	int err;
+
+	/* update flow if oif or iif point to device enslaved to l3mdev */
+	l3mdev_update_flow(net, flowi4_to_flowi(flp));
+
+>>>>>>> v4.9.227
 	err = fib_rules_lookup(net->ipv4.rules_ops, flowi4_to_flowi(flp), 0, &arg);
 #ifdef CONFIG_IP_ROUTE_CLASSID
 	if (arg.rule)
@@ -75,12 +90,17 @@ static int fib4_rule_action(struct fib_rule *rule, struct flowi *flp,
 {
 	int err = -EAGAIN;
 	struct fib_table *tbl;
+<<<<<<< HEAD
+=======
+	u32 tb_id;
+>>>>>>> v4.9.227
 
 	switch (rule->action) {
 	case FR_ACT_TO_TBL:
 		break;
 
 	case FR_ACT_UNREACHABLE:
+<<<<<<< HEAD
 		err = -ENETUNREACH;
 		goto errout;
 
@@ -102,6 +122,28 @@ static int fib4_rule_action(struct fib_rule *rule, struct flowi *flp,
 	if (err > 0)
 		err = -EAGAIN;
 errout:
+=======
+		return -ENETUNREACH;
+
+	case FR_ACT_PROHIBIT:
+		return -EACCES;
+
+	case FR_ACT_BLACKHOLE:
+	default:
+		return -EINVAL;
+	}
+
+	rcu_read_lock();
+
+	tb_id = fib_rule_get_table(rule, arg);
+	tbl = fib_get_table(rule->fr_net, tb_id);
+	if (tbl)
+		err = fib_table_lookup(tbl, &flp->u.ip4,
+				       (struct fib_result *)arg->result,
+				       arg->flags);
+
+	rcu_read_unlock();
+>>>>>>> v4.9.227
 	return err;
 }
 
@@ -155,11 +197,26 @@ static struct fib_table *fib_empty_table(struct net *net)
 	u32 id;
 
 	for (id = 1; id <= RT_TABLE_MAX; id++)
+<<<<<<< HEAD
 		if (fib_get_table(net, id) == NULL)
+=======
+		if (!fib_get_table(net, id))
+>>>>>>> v4.9.227
 			return fib_new_table(net, id);
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static int call_fib_rule_notifiers(struct net *net,
+				   enum fib_event_type event_type)
+{
+	struct fib_notifier_info info;
+
+	return call_fib_notifiers(net, event_type, &info);
+}
+
+>>>>>>> v4.9.227
 static const struct nla_policy fib4_rule_policy[FRA_MAX+1] = {
 	FRA_GENERIC_POLICY,
 	[FRA_FLOW]	= { .type = NLA_U32 },
@@ -176,12 +233,25 @@ static int fib4_rule_configure(struct fib_rule *rule, struct sk_buff *skb,
 	if (frh->tos & ~IPTOS_TOS_MASK)
 		goto errout;
 
+<<<<<<< HEAD
 	if (rule->table == RT_TABLE_UNSPEC) {
+=======
+	/* split local/main if they are not already split */
+	err = fib_unmerge(net);
+	if (err)
+		goto errout;
+
+	if (rule->table == RT_TABLE_UNSPEC && !rule->l3mdev) {
+>>>>>>> v4.9.227
 		if (rule->action == FR_ACT_TO_TBL) {
 			struct fib_table *table;
 
 			table = fib_empty_table(net);
+<<<<<<< HEAD
 			if (table == NULL) {
+=======
+			if (!table) {
+>>>>>>> v4.9.227
 				err = -ENOBUFS;
 				goto errout;
 			}
@@ -191,10 +261,17 @@ static int fib4_rule_configure(struct fib_rule *rule, struct sk_buff *skb,
 	}
 
 	if (frh->src_len)
+<<<<<<< HEAD
 		rule4->src = nla_get_be32(tb[FRA_SRC]);
 
 	if (frh->dst_len)
 		rule4->dst = nla_get_be32(tb[FRA_DST]);
+=======
+		rule4->src = nla_get_in_addr(tb[FRA_SRC]);
+
+	if (frh->dst_len)
+		rule4->dst = nla_get_in_addr(tb[FRA_DST]);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_IP_ROUTE_CLASSID
 	if (tb[FRA_FLOW]) {
@@ -211,11 +288,17 @@ static int fib4_rule_configure(struct fib_rule *rule, struct sk_buff *skb,
 	rule4->tos = frh->tos;
 
 	net->ipv4.fib_has_custom_rules = true;
+<<<<<<< HEAD
+=======
+	call_fib_rule_notifiers(net, FIB_EVENT_RULE_ADD);
+
+>>>>>>> v4.9.227
 	err = 0;
 errout:
 	return err;
 }
 
+<<<<<<< HEAD
 static void fib4_rule_delete(struct fib_rule *rule)
 {
 	struct net *net = rule->fr_net;
@@ -226,6 +309,26 @@ static void fib4_rule_delete(struct fib_rule *rule)
 		net->ipv4.fib_num_tclassid_users--;
 #endif
 	net->ipv4.fib_has_custom_rules = true;
+=======
+static int fib4_rule_delete(struct fib_rule *rule)
+{
+	struct net *net = rule->fr_net;
+	int err;
+
+	/* split local/main if they are not already split */
+	err = fib_unmerge(net);
+	if (err)
+		goto errout;
+
+#ifdef CONFIG_IP_ROUTE_CLASSID
+	if (((struct fib4_rule *)rule)->tclassid)
+		net->ipv4.fib_num_tclassid_users--;
+#endif
+	net->ipv4.fib_has_custom_rules = true;
+	call_fib_rule_notifiers(net, FIB_EVENT_RULE_DEL);
+errout:
+	return err;
+>>>>>>> v4.9.227
 }
 
 static int fib4_rule_compare(struct fib_rule *rule, struct fib_rule_hdr *frh,
@@ -247,10 +350,17 @@ static int fib4_rule_compare(struct fib_rule *rule, struct fib_rule_hdr *frh,
 		return 0;
 #endif
 
+<<<<<<< HEAD
 	if (frh->src_len && (rule4->src != nla_get_be32(tb[FRA_SRC])))
 		return 0;
 
 	if (frh->dst_len && (rule4->dst != nla_get_be32(tb[FRA_DST])))
+=======
+	if (frh->src_len && (rule4->src != nla_get_in_addr(tb[FRA_SRC])))
+		return 0;
+
+	if (frh->dst_len && (rule4->dst != nla_get_in_addr(tb[FRA_DST])))
+>>>>>>> v4.9.227
 		return 0;
 
 	return 1;
@@ -266,9 +376,15 @@ static int fib4_rule_fill(struct fib_rule *rule, struct sk_buff *skb,
 	frh->tos = rule4->tos;
 
 	if ((rule4->dst_len &&
+<<<<<<< HEAD
 	     nla_put_be32(skb, FRA_DST, rule4->dst)) ||
 	    (rule4->src_len &&
 	     nla_put_be32(skb, FRA_SRC, rule4->src)))
+=======
+	     nla_put_in_addr(skb, FRA_DST, rule4->dst)) ||
+	    (rule4->src_len &&
+	     nla_put_in_addr(skb, FRA_SRC, rule4->src)))
+>>>>>>> v4.9.227
 		goto nla_put_failure;
 #ifdef CONFIG_IP_ROUTE_CLASSID
 	if (rule4->tclassid &&
@@ -304,7 +420,10 @@ static const struct fib_rules_ops __net_initconst fib4_rules_ops_template = {
 	.delete		= fib4_rule_delete,
 	.compare	= fib4_rule_compare,
 	.fill		= fib4_rule_fill,
+<<<<<<< HEAD
 	.default_pref	= fib_default_rule_pref,
+=======
+>>>>>>> v4.9.227
 	.nlmsg_payload	= fib4_rule_nlmsg_payload,
 	.flush_cache	= fib4_rule_flush_cache,
 	.nlgroup	= RTNLGRP_IPV4_RULE,

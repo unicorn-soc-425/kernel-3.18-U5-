@@ -24,7 +24,11 @@
 #include <linux/mfd/core.h>
 #include <linux/mfd/tmio.h>
 #include <linux/mfd/tc6393xb.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 
 #define SCR_REVID	0x08		/* b Revision ID	*/
@@ -434,17 +438,29 @@ static struct mfd_cell tc6393xb_cells[] = {
 static int tc6393xb_gpio_get(struct gpio_chip *chip,
 		unsigned offset)
 {
+<<<<<<< HEAD
 	struct tc6393xb *tc6393xb = container_of(chip, struct tc6393xb, gpio);
 
 	/* XXX: does dsr also represent inputs? */
 	return tmio_ioread8(tc6393xb->scr + SCR_GPO_DSR(offset / 8))
 		& TC_GPIO_BIT(offset);
+=======
+	struct tc6393xb *tc6393xb = gpiochip_get_data(chip);
+
+	/* XXX: does dsr also represent inputs? */
+	return !!(tmio_ioread8(tc6393xb->scr + SCR_GPO_DSR(offset / 8))
+		  & TC_GPIO_BIT(offset));
+>>>>>>> v4.9.227
 }
 
 static void __tc6393xb_gpio_set(struct gpio_chip *chip,
 		unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct tc6393xb *tc6393xb = container_of(chip, struct tc6393xb, gpio);
+=======
+	struct tc6393xb *tc6393xb = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	u8  dsr;
 
 	dsr = tmio_ioread8(tc6393xb->scr + SCR_GPO_DSR(offset / 8));
@@ -459,7 +475,11 @@ static void __tc6393xb_gpio_set(struct gpio_chip *chip,
 static void tc6393xb_gpio_set(struct gpio_chip *chip,
 		unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct tc6393xb *tc6393xb = container_of(chip, struct tc6393xb, gpio);
+=======
+	struct tc6393xb *tc6393xb = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	spin_lock_irqsave(&tc6393xb->lock, flags);
@@ -472,7 +492,11 @@ static void tc6393xb_gpio_set(struct gpio_chip *chip,
 static int tc6393xb_gpio_direction_input(struct gpio_chip *chip,
 			unsigned offset)
 {
+<<<<<<< HEAD
 	struct tc6393xb *tc6393xb = container_of(chip, struct tc6393xb, gpio);
+=======
+	struct tc6393xb *tc6393xb = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	u8 doecr;
 
@@ -490,7 +514,11 @@ static int tc6393xb_gpio_direction_input(struct gpio_chip *chip,
 static int tc6393xb_gpio_direction_output(struct gpio_chip *chip,
 			unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct tc6393xb *tc6393xb = container_of(chip, struct tc6393xb, gpio);
+=======
+	struct tc6393xb *tc6393xb = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	u8 doecr;
 
@@ -517,15 +545,25 @@ static int tc6393xb_register_gpio(struct tc6393xb *tc6393xb, int gpio_base)
 	tc6393xb->gpio.direction_input = tc6393xb_gpio_direction_input;
 	tc6393xb->gpio.direction_output = tc6393xb_gpio_direction_output;
 
+<<<<<<< HEAD
 	return gpiochip_add(&tc6393xb->gpio);
+=======
+	return gpiochip_add_data(&tc6393xb->gpio, tc6393xb);
+>>>>>>> v4.9.227
 }
 
 /*--------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static void
 tc6393xb_irq(unsigned int irq, struct irq_desc *desc)
 {
 	struct tc6393xb *tc6393xb = irq_get_handler_data(irq);
+=======
+static void tc6393xb_irq(struct irq_desc *desc)
+{
+	struct tc6393xb *tc6393xb = irq_desc_get_handler_data(desc);
+>>>>>>> v4.9.227
 	unsigned int isr;
 	unsigned int i, irq_base;
 
@@ -586,12 +624,21 @@ static void tc6393xb_attach_irq(struct platform_device *dev)
 	for (irq = irq_base; irq < irq_base + TC6393XB_NR_IRQS; irq++) {
 		irq_set_chip_and_handler(irq, &tc6393xb_chip, handle_edge_irq);
 		irq_set_chip_data(irq, tc6393xb);
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
 	}
 
 	irq_set_irq_type(tc6393xb->irq, IRQ_TYPE_EDGE_FALLING);
 	irq_set_handler_data(tc6393xb->irq, tc6393xb);
 	irq_set_chained_handler(tc6393xb->irq, tc6393xb_irq);
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+	}
+
+	irq_set_irq_type(tc6393xb->irq, IRQ_TYPE_EDGE_FALLING);
+	irq_set_chained_handler_and_data(tc6393xb->irq, tc6393xb_irq,
+					 tc6393xb);
+>>>>>>> v4.9.227
 }
 
 static void tc6393xb_detach_irq(struct platform_device *dev)
@@ -599,13 +646,21 @@ static void tc6393xb_detach_irq(struct platform_device *dev)
 	struct tc6393xb *tc6393xb = platform_get_drvdata(dev);
 	unsigned int irq, irq_base;
 
+<<<<<<< HEAD
 	irq_set_chained_handler(tc6393xb->irq, NULL);
 	irq_set_handler_data(tc6393xb->irq, NULL);
+=======
+	irq_set_chained_handler_and_data(tc6393xb->irq, NULL, NULL);
+>>>>>>> v4.9.227
 
 	irq_base = tc6393xb->irq_base;
 
 	for (irq = irq_base; irq < irq_base + TC6393XB_NR_IRQS; irq++) {
+<<<<<<< HEAD
 		set_irq_flags(irq, 0);
+=======
+		irq_set_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> v4.9.227
 		irq_set_chip(irq, NULL);
 		irq_set_chip_data(irq, NULL);
 	}
@@ -665,7 +720,11 @@ static int tc6393xb_probe(struct platform_device *dev)
 		goto err_ioremap;
 	}
 
+<<<<<<< HEAD
 	ret = clk_enable(tc6393xb->clk);
+=======
+	ret = clk_prepare_enable(tc6393xb->clk);
+>>>>>>> v4.9.227
 	if (ret)
 		goto err_clk_enable;
 
@@ -728,7 +787,11 @@ err_gpio_add:
 		gpiochip_remove(&tc6393xb->gpio);
 	tcpd->disable(dev);
 err_enable:
+<<<<<<< HEAD
 	clk_disable(tc6393xb->clk);
+=======
+	clk_disable_unprepare(tc6393xb->clk);
+>>>>>>> v4.9.227
 err_clk_enable:
 	iounmap(tc6393xb->scr);
 err_ioremap:
@@ -759,7 +822,11 @@ static int tc6393xb_remove(struct platform_device *dev)
 		gpiochip_remove(&tc6393xb->gpio);
 
 	ret = tcpd->disable(dev);
+<<<<<<< HEAD
 	clk_disable(tc6393xb->clk);
+=======
+	clk_disable_unprepare(tc6393xb->clk);
+>>>>>>> v4.9.227
 	iounmap(tc6393xb->scr);
 	release_resource(&tc6393xb->rscr);
 	clk_put(tc6393xb->clk);
@@ -787,7 +854,11 @@ static int tc6393xb_suspend(struct platform_device *dev, pm_message_t state)
 			ioread8(tc6393xb->scr + SCR_GPI_BCR(i));
 	}
 	ret = tcpd->suspend(dev);
+<<<<<<< HEAD
 	clk_disable(tc6393xb->clk);
+=======
+	clk_disable_unprepare(tc6393xb->clk);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -799,7 +870,11 @@ static int tc6393xb_resume(struct platform_device *dev)
 	int ret;
 	int i;
 
+<<<<<<< HEAD
 	clk_enable(tc6393xb->clk);
+=======
+	clk_prepare_enable(tc6393xb->clk);
+>>>>>>> v4.9.227
 
 	ret = tcpd->resume(dev);
 	if (ret)
@@ -842,7 +917,10 @@ static struct platform_driver tc6393xb_driver = {
 
 	.driver = {
 		.name = "tc6393xb",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

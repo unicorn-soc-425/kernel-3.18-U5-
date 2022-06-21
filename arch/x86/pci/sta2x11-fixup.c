@@ -169,7 +169,11 @@ static void *sta2x11_swiotlb_alloc_coherent(struct device *dev,
 					    size_t size,
 					    dma_addr_t *dma_handle,
 					    gfp_t flags,
+<<<<<<< HEAD
 					    struct dma_attrs *attrs)
+=======
+					    unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	void *vaddr;
 

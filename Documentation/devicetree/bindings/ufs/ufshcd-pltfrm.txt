@@ -4,11 +4,21 @@ UFSHC nodes are defined to describe on-chip UFS host controllers.
 Each UFS controller instance should have its own node.
 
 Required properties:
+<<<<<<< HEAD
 - compatible        : compatible list, contains "jedec,ufs-1.1"
 - interrupts        : <interrupt mapping for UFS host controller IRQ>
 - reg               : <registers mapping>
 		      first entry should contain UFS host controller register address space (mandatory),
                       second entry is the device ref. clock control register map (optional).
+=======
+- compatible		: must contain "jedec,ufs-1.1" or "jedec,ufs-2.0", may
+			  also list one or more of the following:
+					  "qcom,msm8994-ufshc"
+					  "qcom,msm8996-ufshc"
+					  "qcom,ufshc"
+- interrupts        : <interrupt mapping for UFS host controller IRQ>
+- reg               : <registers mapping>
+>>>>>>> v4.9.227
 
 Optional properties:
 - phys                  : phandle to UFS PHY node
@@ -36,6 +46,7 @@ Optional properties:
 			  defined or a value in the array is "0" then it is assumed
 			  that the frequency is set by the parent clock or a
 			  fixed rate clock source.
+<<<<<<< HEAD
 - rpm-level		: UFS Runtime power management level. Following PM levels are suppported:
 			  0 - Both UFS device and Link in active state (Highest power consumption)
 			  1 - UFS device in active state but Link in Hibern8 state
@@ -48,6 +59,11 @@ Optional properties:
 - lanes-per-direction:	number of lanes available per direction - either 1 or 2.
 			Note that it is assume same number of lanes is used both directions at once.
 			If not specified, default is 2 lanes per direction.
+=======
+-lanes-per-direction	: number of lanes available per direction - either 1 or 2.
+			  Note that it is assume same number of lanes is used both
+			  directions at once. If not specified, default is 2 lanes per direction.
+>>>>>>> v4.9.227
 
 Note: If above properties are not defined it can be assumed that the supply
 regulators or clocks are always on.
@@ -55,10 +71,16 @@ regulators or clocks are always on.
 Example:
 	ufshc@0xfc598000 {
 		compatible = "jedec,ufs-1.1";
+<<<<<<< HEAD
 		reg = <0xfc598000 0x800>, <0xfd512074 0x4>;
 		interrupts = <0 28 0>;
 
 		ufs-qcom-crypto = <&ufs_ice>;
+=======
+		reg = <0xfc598000 0x800>;
+		interrupts = <0 28 0>;
+
+>>>>>>> v4.9.227
 		vdd-hba-supply = <&xxx_reg0>;
 		vdd-hba-fixed-regulator;
 		vcc-supply = <&xxx_reg1>;
@@ -72,6 +94,7 @@ Example:
 		clocks = <&core 0>, <&ref 0>, <&iface 0>;
 		clock-names = "core_clk", "ref_clk", "iface_clk";
 		freq-table-hz = <100000000 200000000>, <0 0>, <0 0>;
+<<<<<<< HEAD
 		rpm-level = <3>;
 		spm-level = <5>;
 	};
@@ -185,3 +208,8 @@ ufs_variant {
 
 This sub-node holds various specific information that is not defined in the
 standard and that may differ between platforms.
+=======
+		phys = <&ufsphy1>;
+		phy-names = "ufsphy";
+	};
+>>>>>>> v4.9.227

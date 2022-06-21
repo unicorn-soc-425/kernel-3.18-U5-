@@ -30,7 +30,11 @@
 #ifndef __LINUX_MFD_MAX77693_H
 #define __LINUX_MFD_MAX77693_H
 
+<<<<<<< HEAD
 /* MAX77686 regulator IDs */
+=======
+/* MAX77693 regulator IDs */
+>>>>>>> v4.9.227
 enum max77693_regulators {
 	MAX77693_ESAFEOUT1 = 0,
 	MAX77693_ESAFEOUT2,
@@ -38,12 +42,15 @@ enum max77693_regulators {
 	MAX77693_REG_MAX,
 };
 
+<<<<<<< HEAD
 struct max77693_regulator_data {
 	int id;
 	struct regulator_init_data *initdata;
 	struct device_node *of_node;
 };
 
+=======
+>>>>>>> v4.9.227
 struct max77693_reg_data {
 	u8 addr;
 	u8 data;
@@ -87,6 +94,7 @@ enum max77693_led_boost_mode {
 	MAX77693_LED_BOOST_FIXED,
 };
 
+<<<<<<< HEAD
 struct max77693_led_platform_data {
 	u32 fleds[2];
 	u32 iout_torch[2];
@@ -107,6 +115,11 @@ struct max77693_platform_data {
 	struct max77693_regulator_data *regulators;
 	int num_regulators;
 
+=======
+/* MAX77693 */
+
+struct max77693_platform_data {
+>>>>>>> v4.9.227
 	/* muic data */
 	struct max77693_muic_platform_data *muic_data;
 	struct max77693_led_platform_data *led_data;

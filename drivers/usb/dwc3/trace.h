@@ -47,6 +47,19 @@ DEFINE_EVENT(dwc3_log_msg, dwc3_writel,
 	TP_ARGS(vaf)
 );
 
+<<<<<<< HEAD
+=======
+DEFINE_EVENT(dwc3_log_msg, dwc3_gadget,
+	TP_PROTO(struct va_format *vaf),
+	TP_ARGS(vaf)
+);
+
+DEFINE_EVENT(dwc3_log_msg, dwc3_core,
+	TP_PROTO(struct va_format *vaf),
+	TP_ARGS(vaf)
+);
+
+>>>>>>> v4.9.227
 DEFINE_EVENT(dwc3_log_msg, dwc3_ep0,
 	TP_PROTO(struct va_format *vaf),
 	TP_ARGS(vaf)
@@ -61,7 +74,12 @@ DECLARE_EVENT_CLASS(dwc3_log_event,
 	TP_fast_assign(
 		__entry->event = event;
 	),
+<<<<<<< HEAD
 	TP_printk("event %08x\n", __entry->event)
+=======
+	TP_printk("event (%08x): %s", __entry->event,
+			dwc3_decode_event(__entry->event))
+>>>>>>> v4.9.227
 );
 
 DEFINE_EVENT(dwc3_log_event, dwc3_event,
@@ -75,13 +93,20 @@ DECLARE_EVENT_CLASS(dwc3_log_ctrl,
 	TP_STRUCT__entry(
 		__field(__u8, bRequestType)
 		__field(__u8, bRequest)
+<<<<<<< HEAD
 		__field(__le16, wValue)
 		__field(__le16, wIndex)
 		__field(__le16, wLength)
+=======
+		__field(__u16, wValue)
+		__field(__u16, wIndex)
+		__field(__u16, wLength)
+>>>>>>> v4.9.227
 	),
 	TP_fast_assign(
 		__entry->bRequestType = ctrl->bRequestType;
 		__entry->bRequest = ctrl->bRequest;
+<<<<<<< HEAD
 		__entry->wValue = ctrl->wValue;
 		__entry->wIndex = ctrl->wIndex;
 		__entry->wLength = ctrl->wLength;
@@ -90,6 +115,16 @@ DECLARE_EVENT_CLASS(dwc3_log_ctrl,
 		__entry->bRequestType, __entry->bRequest,
 		le16_to_cpu(__entry->wValue), le16_to_cpu(__entry->wIndex),
 		le16_to_cpu(__entry->wLength)
+=======
+		__entry->wValue = le16_to_cpu(ctrl->wValue);
+		__entry->wIndex = le16_to_cpu(ctrl->wIndex);
+		__entry->wLength = le16_to_cpu(ctrl->wLength);
+	),
+	TP_printk("bRequestType %02x bRequest %02x wValue %04x wIndex %04x wLength %d",
+		__entry->bRequestType, __entry->bRequest,
+		__entry->wValue, __entry->wIndex,
+		__entry->wLength
+>>>>>>> v4.9.227
 	)
 );
 
@@ -107,6 +142,12 @@ DECLARE_EVENT_CLASS(dwc3_log_request,
 		__field(unsigned, actual)
 		__field(unsigned, length)
 		__field(int, status)
+<<<<<<< HEAD
+=======
+		__field(int, zero)
+		__field(int, short_not_ok)
+		__field(int, no_interrupt)
+>>>>>>> v4.9.227
 	),
 	TP_fast_assign(
 		snprintf(__get_str(name), DWC3_MSG_MAX, "%s", req->dep->name);
@@ -114,9 +155,21 @@ DECLARE_EVENT_CLASS(dwc3_log_request,
 		__entry->actual = req->request.actual;
 		__entry->length = req->request.length;
 		__entry->status = req->request.status;
+<<<<<<< HEAD
 	),
 	TP_printk("%s: req %pK length %u/%u ==> %d",
 		__get_str(name), __entry->req, __entry->actual, __entry->length,
+=======
+		__entry->zero = req->request.zero;
+		__entry->short_not_ok = req->request.short_not_ok;
+		__entry->no_interrupt = req->request.no_interrupt;
+	),
+	TP_printk("%s: req %p length %u/%u %s%s%s ==> %d",
+		__get_str(name), __entry->req, __entry->actual, __entry->length,
+		__entry->zero ? "Z" : "z",
+		__entry->short_not_ok ? "S" : "s",
+		__entry->no_interrupt ? "i" : "I",
+>>>>>>> v4.9.227
 		__entry->status
 	)
 );
@@ -147,52 +200,105 @@ DEFINE_EVENT(dwc3_log_request, dwc3_gadget_giveback,
 );
 
 DECLARE_EVENT_CLASS(dwc3_log_generic_cmd,
+<<<<<<< HEAD
 	TP_PROTO(unsigned int cmd, u32 param),
 	TP_ARGS(cmd, param),
 	TP_STRUCT__entry(
 		__field(unsigned int, cmd)
 		__field(u32, param)
+=======
+	TP_PROTO(unsigned int cmd, u32 param, int status),
+	TP_ARGS(cmd, param, status),
+	TP_STRUCT__entry(
+		__field(unsigned int, cmd)
+		__field(u32, param)
+		__field(int, status)
+>>>>>>> v4.9.227
 	),
 	TP_fast_assign(
 		__entry->cmd = cmd;
 		__entry->param = param;
+<<<<<<< HEAD
 	),
 	TP_printk("cmd '%s' [%d] param %08x\n",
 		dwc3_gadget_generic_cmd_string(__entry->cmd),
 		__entry->cmd, __entry->param
+=======
+		__entry->status = status;
+	),
+	TP_printk("cmd '%s' [%d] param %08x --> status: %s",
+		dwc3_gadget_generic_cmd_string(__entry->cmd),
+		__entry->cmd, __entry->param,
+		dwc3_gadget_generic_cmd_status_string(__entry->status)
+>>>>>>> v4.9.227
 	)
 );
 
 DEFINE_EVENT(dwc3_log_generic_cmd, dwc3_gadget_generic_cmd,
+<<<<<<< HEAD
 	TP_PROTO(unsigned int cmd, u32 param),
 	TP_ARGS(cmd, param)
+=======
+	TP_PROTO(unsigned int cmd, u32 param, int status),
+	TP_ARGS(cmd, param, status)
+>>>>>>> v4.9.227
 );
 
 DECLARE_EVENT_CLASS(dwc3_log_gadget_ep_cmd,
 	TP_PROTO(struct dwc3_ep *dep, unsigned int cmd,
+<<<<<<< HEAD
 		struct dwc3_gadget_ep_cmd_params *params),
 	TP_ARGS(dep, cmd, params),
 	TP_STRUCT__entry(
 		__dynamic_array(char, name, DWC3_MSG_MAX)
 		__field(unsigned int, cmd)
 		__field(struct dwc3_gadget_ep_cmd_params *, params)
+=======
+		struct dwc3_gadget_ep_cmd_params *params, int cmd_status),
+	TP_ARGS(dep, cmd, params, cmd_status),
+	TP_STRUCT__entry(
+		__dynamic_array(char, name, DWC3_MSG_MAX)
+		__field(unsigned int, cmd)
+		__field(u32, param0)
+		__field(u32, param1)
+		__field(u32, param2)
+		__field(int, cmd_status)
+>>>>>>> v4.9.227
 	),
 	TP_fast_assign(
 		snprintf(__get_str(name), DWC3_MSG_MAX, "%s", dep->name);
 		__entry->cmd = cmd;
+<<<<<<< HEAD
 		__entry->params = params;
 	),
 	TP_printk("%s: cmd '%s' [%d] params %08x %08x %08x\n",
 		__get_str(name), dwc3_gadget_ep_cmd_string(__entry->cmd),
 		__entry->cmd, __entry->params->param0,
 		__entry->params->param1, __entry->params->param2
+=======
+		__entry->param0 = params->param0;
+		__entry->param1 = params->param1;
+		__entry->param2 = params->param2;
+		__entry->cmd_status = cmd_status;
+	),
+	TP_printk("%s: cmd '%s' [%d] params %08x %08x %08x --> status: %s",
+		__get_str(name), dwc3_gadget_ep_cmd_string(__entry->cmd),
+		__entry->cmd, __entry->param0,
+		__entry->param1, __entry->param2,
+		dwc3_ep_cmd_status_string(__entry->cmd_status)
+>>>>>>> v4.9.227
 	)
 );
 
 DEFINE_EVENT(dwc3_log_gadget_ep_cmd, dwc3_gadget_ep_cmd,
 	TP_PROTO(struct dwc3_ep *dep, unsigned int cmd,
+<<<<<<< HEAD
 		struct dwc3_gadget_ep_cmd_params *params),
 	TP_ARGS(dep, cmd, params)
+=======
+		struct dwc3_gadget_ep_cmd_params *params, int cmd_status),
+	TP_ARGS(dep, cmd, params, cmd_status)
+>>>>>>> v4.9.227
 );
 
 DECLARE_EVENT_CLASS(dwc3_log_trb,
@@ -201,6 +307,11 @@ DECLARE_EVENT_CLASS(dwc3_log_trb,
 	TP_STRUCT__entry(
 		__dynamic_array(char, name, DWC3_MSG_MAX)
 		__field(struct dwc3_trb *, trb)
+<<<<<<< HEAD
+=======
+		__field(u32, allocated)
+		__field(u32, queued)
+>>>>>>> v4.9.227
 		__field(u32, bpl)
 		__field(u32, bph)
 		__field(u32, size)
@@ -209,14 +320,62 @@ DECLARE_EVENT_CLASS(dwc3_log_trb,
 	TP_fast_assign(
 		snprintf(__get_str(name), DWC3_MSG_MAX, "%s", dep->name);
 		__entry->trb = trb;
+<<<<<<< HEAD
+=======
+		__entry->allocated = dep->allocated_requests;
+		__entry->queued = dep->queued_requests;
+>>>>>>> v4.9.227
 		__entry->bpl = trb->bpl;
 		__entry->bph = trb->bph;
 		__entry->size = trb->size;
 		__entry->ctrl = trb->ctrl;
 	),
+<<<<<<< HEAD
 	TP_printk("%s: trb %pK bph %08x bpl %08x size %08x ctrl %08x\n",
 		__get_str(name), __entry->trb, __entry->bph, __entry->bpl,
 		__entry->size, __entry->ctrl
+=======
+	TP_printk("%s: %d/%d trb %p buf %08x%08x size %d ctrl %08x (%c%c%c%c:%c%c:%s)",
+		__get_str(name), __entry->queued, __entry->allocated,
+		__entry->trb, __entry->bph, __entry->bpl,
+		__entry->size, __entry->ctrl,
+		__entry->ctrl & DWC3_TRB_CTRL_HWO ? 'H' : 'h',
+		__entry->ctrl & DWC3_TRB_CTRL_LST ? 'L' : 'l',
+		__entry->ctrl & DWC3_TRB_CTRL_CHN ? 'C' : 'c',
+		__entry->ctrl & DWC3_TRB_CTRL_CSP ? 'S' : 's',
+		__entry->ctrl & DWC3_TRB_CTRL_ISP_IMI ? 'S' : 's',
+		__entry->ctrl & DWC3_TRB_CTRL_IOC ? 'C' : 'c',
+		({char *s;
+		switch (__entry->ctrl & 0x3f0) {
+		case DWC3_TRBCTL_NORMAL:
+			s = "normal";
+			break;
+		case DWC3_TRBCTL_CONTROL_SETUP:
+			s = "setup";
+			break;
+		case DWC3_TRBCTL_CONTROL_STATUS2:
+			s = "status2";
+			break;
+		case DWC3_TRBCTL_CONTROL_STATUS3:
+			s = "status3";
+			break;
+		case DWC3_TRBCTL_CONTROL_DATA:
+			s = "data";
+			break;
+		case DWC3_TRBCTL_ISOCHRONOUS_FIRST:
+			s = "isoc-first";
+			break;
+		case DWC3_TRBCTL_ISOCHRONOUS:
+			s = "isoc";
+			break;
+		case DWC3_TRBCTL_LINK_TRB:
+			s = "link";
+			break;
+		default:
+			s = "UNKNOWN";
+			break;
+		} s; })
+>>>>>>> v4.9.227
 	)
 );
 

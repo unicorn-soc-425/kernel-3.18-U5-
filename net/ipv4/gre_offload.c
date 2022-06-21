@@ -18,6 +18,7 @@
 static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
 				       netdev_features_t features)
 {
+<<<<<<< HEAD
 	struct sk_buff *segs = ERR_PTR(-EINVAL);
 	netdev_features_t enc_features;
 	int ghl;
@@ -39,10 +40,20 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
 				  SKB_GSO_IPIP |
 				  SKB_GSO_SIT)))
 		goto out;
+=======
+	int tnl_hlen = skb_inner_mac_header(skb) - skb_transport_header(skb);
+	struct sk_buff *segs = ERR_PTR(-EINVAL);
+	u16 mac_offset = skb->mac_header;
+	__be16 protocol = skb->protocol;
+	u16 mac_len = skb->mac_len;
+	int gre_offset, outer_hlen;
+	bool need_csum, ufo, gso_partial;
+>>>>>>> v4.9.227
 
 	if (!skb->encapsulation)
 		goto out;
 
+<<<<<<< HEAD
 	if (unlikely(!pskb_may_pull(skb, sizeof(*greh))))
 		goto out;
 
@@ -111,6 +122,94 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
 		skb_set_network_header(skb, mac_len);
 		skb->mac_len = mac_len;
 		skb->protocol = protocol;
+=======
+	if (unlikely(tnl_hlen < sizeof(struct gre_base_hdr)))
+		goto out;
+
+	if (unlikely(!pskb_may_pull(skb, tnl_hlen)))
+		goto out;
+
+	/* setup inner skb. */
+	skb->encapsulation = 0;
+	SKB_GSO_CB(skb)->encap_level = 0;
+	__skb_pull(skb, tnl_hlen);
+	skb_reset_mac_header(skb);
+	skb_set_network_header(skb, skb_inner_network_offset(skb));
+	skb->mac_len = skb_inner_network_offset(skb);
+	skb->protocol = skb->inner_protocol;
+
+	need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
+	skb->encap_hdr_csum = need_csum;
+
+	ufo = !!(skb_shinfo(skb)->gso_type & SKB_GSO_UDP);
+
+	features &= skb->dev->hw_enc_features;
+
+	/* The only checksum offload we care about from here on out is the
+	 * outer one so strip the existing checksum feature flags based
+	 * on the fact that we will be computing our checksum in software.
+	 */
+	if (ufo) {
+		features &= ~NETIF_F_CSUM_MASK;
+		if (!need_csum)
+			features |= NETIF_F_HW_CSUM;
+	}
+
+	/* segment inner packet. */
+	segs = skb_mac_gso_segment(skb, features);
+	if (IS_ERR_OR_NULL(segs)) {
+		skb_gso_error_unwind(skb, protocol, tnl_hlen, mac_offset,
+				     mac_len);
+		goto out;
+	}
+
+	gso_partial = !!(skb_shinfo(segs)->gso_type & SKB_GSO_PARTIAL);
+
+	outer_hlen = skb_tnl_header_len(skb);
+	gre_offset = outer_hlen - tnl_hlen;
+	skb = segs;
+	do {
+		struct gre_base_hdr *greh;
+		__sum16 *pcsum;
+
+		/* Set up inner headers if we are offloading inner checksum */
+		if (skb->ip_summed == CHECKSUM_PARTIAL) {
+			skb_reset_inner_headers(skb);
+			skb->encapsulation = 1;
+		}
+
+		skb->mac_len = mac_len;
+		skb->protocol = protocol;
+
+		__skb_push(skb, outer_hlen);
+		skb_reset_mac_header(skb);
+		skb_set_network_header(skb, mac_len);
+		skb_set_transport_header(skb, gre_offset);
+
+		if (!need_csum)
+			continue;
+
+		greh = (struct gre_base_hdr *)skb_transport_header(skb);
+		pcsum = (__sum16 *)(greh + 1);
+
+		if (gso_partial && skb_is_gso(skb)) {
+			unsigned int partial_adj;
+
+			/* Adjust checksum to account for the fact that
+			 * the partial checksum is based on actual size
+			 * whereas headers should be based on MSS size.
+			 */
+			partial_adj = skb->len + skb_headroom(skb) -
+				      SKB_GSO_CB(skb)->data_offset -
+				      skb_shinfo(skb)->gso_size;
+			*pcsum = ~csum_fold((__force __wsum)htonl(partial_adj));
+		} else {
+			*pcsum = 0;
+		}
+
+		*(pcsum + 1) = 0;
+		*pcsum = gso_make_checksum(skb, 0);
+>>>>>>> v4.9.227
 	} while ((skb = skb->next));
 out:
 	return segs;
@@ -151,11 +250,26 @@ static struct sk_buff **gre_gro_receive(struct sk_buff **head,
 	if ((greh->flags & ~(GRE_KEY|GRE_CSUM)) != 0)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	/* We can only support GRE_CSUM if we can track the location of
+	 * the GRE header.  In the case of FOU/GUE we cannot because the
+	 * outer UDP header displaces the GRE header leaving us in a state
+	 * of limbo.
+	 */
+	if ((greh->flags & GRE_CSUM) && NAPI_GRO_CB(skb)->is_fou)
+		goto out;
+
+>>>>>>> v4.9.227
 	type = greh->protocol;
 
 	rcu_read_lock();
 	ptype = gro_find_receive_by_type(type);
+<<<<<<< HEAD
 	if (ptype == NULL)
+=======
+	if (!ptype)
+>>>>>>> v4.9.227
 		goto out_unlock;
 
 	grehlen = GRE_HEADER_SECTION;
@@ -182,8 +296,11 @@ static struct sk_buff **gre_gro_receive(struct sk_buff **head,
 					     null_compute_pseudo);
 	}
 
+<<<<<<< HEAD
 	flush = 0;
 
+=======
+>>>>>>> v4.9.227
 	for (p = *head; p; p = p->next) {
 		const struct gre_base_hdr *greh2;
 
@@ -220,6 +337,10 @@ static struct sk_buff **gre_gro_receive(struct sk_buff **head,
 	skb_gro_postpull_rcsum(skb, greh, grehlen);
 
 	pp = call_gro_receive(ptype->callbacks.gro_receive, head, skb);
+<<<<<<< HEAD
+=======
+	flush = 0;
+>>>>>>> v4.9.227
 
 out_unlock:
 	rcu_read_unlock();
@@ -249,7 +370,11 @@ static int gre_gro_complete(struct sk_buff *skb, int nhoff)
 
 	rcu_read_lock();
 	ptype = gro_find_complete_by_type(type);
+<<<<<<< HEAD
 	if (ptype != NULL)
+=======
+	if (ptype)
+>>>>>>> v4.9.227
 		err = ptype->callbacks.gro_complete(skb, nhoff + grehlen);
 
 	rcu_read_unlock();
@@ -269,6 +394,22 @@ static const struct net_offload gre_offload = {
 
 static int __init gre_offload_init(void)
 {
+<<<<<<< HEAD
 	return inet_add_offload(&gre_offload, IPPROTO_GRE);
+=======
+	int err;
+
+	err = inet_add_offload(&gre_offload, IPPROTO_GRE);
+#if IS_ENABLED(CONFIG_IPV6)
+	if (err)
+		return err;
+
+	err = inet6_add_offload(&gre_offload, IPPROTO_GRE);
+	if (err)
+		inet_del_offload(&gre_offload, IPPROTO_GRE);
+#endif
+
+	return err;
+>>>>>>> v4.9.227
 }
 device_initcall(gre_offload_init);

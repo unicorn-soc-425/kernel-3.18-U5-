@@ -3,7 +3,11 @@
  *
  * Copyright (C) 2003 Ken Chen <kenneth.w.chen@intel.com>
  * Copyright (C) 2003 Asit Mallick <asit.k.mallick@intel.com>
+<<<<<<< HEAD
  * Copyright (C) 2005 Christoph Lameter <clameter@sgi.com>
+=======
+ * Copyright (C) 2005 Christoph Lameter <cl@linux.com>
+>>>>>>> v4.9.227
  *
  * Based on asm-i386/rwsem.h and other architecture implementation.
  *
@@ -40,7 +44,11 @@
 static inline void
 __down_read (struct rw_semaphore *sem)
 {
+<<<<<<< HEAD
 	long result = ia64_fetchadd8_acq((unsigned long *)&sem->count, 1);
+=======
+	long result = ia64_fetchadd8_acq((unsigned long *)&sem->count.counter, 1);
+>>>>>>> v4.9.227
 
 	if (result < 0)
 		rwsem_down_read_failed(sem);
@@ -49,12 +57,18 @@ __down_read (struct rw_semaphore *sem)
 /*
  * lock for writing
  */
+<<<<<<< HEAD
 static inline void
 __down_write (struct rw_semaphore *sem)
+=======
+static inline long
+___down_write (struct rw_semaphore *sem)
+>>>>>>> v4.9.227
 {
 	long old, new;
 
 	do {
+<<<<<<< HEAD
 		old = sem->count;
 		new = old + RWSEM_ACTIVE_WRITE_BIAS;
 	} while (cmpxchg_acq(&sem->count, old, new) != old);
@@ -63,13 +77,43 @@ __down_write (struct rw_semaphore *sem)
 		rwsem_down_write_failed(sem);
 }
 
+=======
+		old = atomic_long_read(&sem->count);
+		new = old + RWSEM_ACTIVE_WRITE_BIAS;
+	} while (atomic_long_cmpxchg_acquire(&sem->count, old, new) != old);
+
+	return old;
+}
+
+static inline void
+__down_write (struct rw_semaphore *sem)
+{
+	if (___down_write(sem))
+		rwsem_down_write_failed(sem);
+}
+
+static inline int
+__down_write_killable (struct rw_semaphore *sem)
+{
+	if (___down_write(sem))
+		if (IS_ERR(rwsem_down_write_failed_killable(sem)))
+			return -EINTR;
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /*
  * unlock after reading
  */
 static inline void
 __up_read (struct rw_semaphore *sem)
 {
+<<<<<<< HEAD
 	long result = ia64_fetchadd8_rel((unsigned long *)&sem->count, -1);
+=======
+	long result = ia64_fetchadd8_rel((unsigned long *)&sem->count.counter, -1);
+>>>>>>> v4.9.227
 
 	if (result < 0 && (--result & RWSEM_ACTIVE_MASK) == 0)
 		rwsem_wake(sem);
@@ -84,9 +128,15 @@ __up_write (struct rw_semaphore *sem)
 	long old, new;
 
 	do {
+<<<<<<< HEAD
 		old = sem->count;
 		new = old - RWSEM_ACTIVE_WRITE_BIAS;
 	} while (cmpxchg_rel(&sem->count, old, new) != old);
+=======
+		old = atomic_long_read(&sem->count);
+		new = old - RWSEM_ACTIVE_WRITE_BIAS;
+	} while (atomic_long_cmpxchg_release(&sem->count, old, new) != old);
+>>>>>>> v4.9.227
 
 	if (new < 0 && (new & RWSEM_ACTIVE_MASK) == 0)
 		rwsem_wake(sem);
@@ -99,8 +149,13 @@ static inline int
 __down_read_trylock (struct rw_semaphore *sem)
 {
 	long tmp;
+<<<<<<< HEAD
 	while ((tmp = sem->count) >= 0) {
 		if (tmp == cmpxchg_acq(&sem->count, tmp, tmp+1)) {
+=======
+	while ((tmp = atomic_long_read(&sem->count)) >= 0) {
+		if (tmp == atomic_long_cmpxchg_acquire(&sem->count, tmp, tmp+1)) {
+>>>>>>> v4.9.227
 			return 1;
 		}
 	}
@@ -113,8 +168,13 @@ __down_read_trylock (struct rw_semaphore *sem)
 static inline int
 __down_write_trylock (struct rw_semaphore *sem)
 {
+<<<<<<< HEAD
 	long tmp = cmpxchg_acq(&sem->count, RWSEM_UNLOCKED_VALUE,
 			      RWSEM_ACTIVE_WRITE_BIAS);
+=======
+	long tmp = atomic_long_cmpxchg_acquire(&sem->count,
+			RWSEM_UNLOCKED_VALUE, RWSEM_ACTIVE_WRITE_BIAS);
+>>>>>>> v4.9.227
 	return tmp == RWSEM_UNLOCKED_VALUE;
 }
 
@@ -127,14 +187,21 @@ __downgrade_write (struct rw_semaphore *sem)
 	long old, new;
 
 	do {
+<<<<<<< HEAD
 		old = sem->count;
 		new = old - RWSEM_WAITING_BIAS;
 	} while (cmpxchg_rel(&sem->count, old, new) != old);
+=======
+		old = atomic_long_read(&sem->count);
+		new = old - RWSEM_WAITING_BIAS;
+	} while (atomic_long_cmpxchg_release(&sem->count, old, new) != old);
+>>>>>>> v4.9.227
 
 	if (old < 0)
 		rwsem_downgrade_wake(sem);
 }
 
+<<<<<<< HEAD
 /*
  * Implement atomic add functionality.  These used to be "inline" functions, but GCC v3.1
  * doesn't quite optimize this stuff right and ends up with bad calls to fetchandadd.
@@ -142,4 +209,6 @@ __downgrade_write (struct rw_semaphore *sem)
 #define rwsem_atomic_add(delta, sem)	atomic64_add(delta, (atomic64_t *)(&(sem)->count))
 #define rwsem_atomic_update(delta, sem)	atomic64_add_return(delta, (atomic64_t *)(&(sem)->count))
 
+=======
+>>>>>>> v4.9.227
 #endif /* _ASM_IA64_RWSEM_H */

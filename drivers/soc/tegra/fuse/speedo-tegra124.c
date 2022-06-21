@@ -24,7 +24,11 @@
 
 #define CPU_PROCESS_CORNERS	2
 #define GPU_PROCESS_CORNERS	2
+<<<<<<< HEAD
 #define CORE_PROCESS_CORNERS	2
+=======
+#define SOC_PROCESS_CORNERS	2
+>>>>>>> v4.9.227
 
 #define FUSE_CPU_SPEEDO_0	0x14
 #define FUSE_CPU_SPEEDO_1	0x2c
@@ -53,7 +57,11 @@ static const u32 __initconst gpu_process_speedos[][GPU_PROCESS_CORNERS] = {
 	{0,	UINT_MAX},
 };
 
+<<<<<<< HEAD
 static const u32 __initconst core_process_speedos[][CORE_PROCESS_CORNERS] = {
+=======
+static const u32 __initconst soc_process_speedos[][SOC_PROCESS_CORNERS] = {
+>>>>>>> v4.9.227
 	{2101,	UINT_MAX},
 	{0,	UINT_MAX},
 };
@@ -119,6 +127,7 @@ void __init tegra124_init_speedo_data(struct tegra_sku_info *sku_info)
 			THRESHOLD_INDEX_COUNT);
 	BUILD_BUG_ON(ARRAY_SIZE(gpu_process_speedos) !=
 			THRESHOLD_INDEX_COUNT);
+<<<<<<< HEAD
 	BUILD_BUG_ON(ARRAY_SIZE(core_process_speedos) !=
 			THRESHOLD_INDEX_COUNT);
 
@@ -132,6 +141,21 @@ void __init tegra124_init_speedo_data(struct tegra_sku_info *sku_info)
 	cpu_iddq_value = tegra30_fuse_readl(FUSE_CPU_IDDQ);
 	soc_iddq_value = tegra30_fuse_readl(FUSE_SOC_IDDQ);
 	gpu_iddq_value = tegra30_fuse_readl(FUSE_GPU_IDDQ);
+=======
+	BUILD_BUG_ON(ARRAY_SIZE(soc_process_speedos) !=
+			THRESHOLD_INDEX_COUNT);
+
+	cpu_speedo_0_value = tegra_fuse_read_early(FUSE_CPU_SPEEDO_0);
+
+	/* GPU Speedo is stored in CPU_SPEEDO_2 */
+	sku_info->gpu_speedo_value = tegra_fuse_read_early(FUSE_CPU_SPEEDO_2);
+
+	soc_speedo_0_value = tegra_fuse_read_early(FUSE_SOC_SPEEDO_0);
+
+	cpu_iddq_value = tegra_fuse_read_early(FUSE_CPU_IDDQ);
+	soc_iddq_value = tegra_fuse_read_early(FUSE_SOC_IDDQ);
+	gpu_iddq_value = tegra_fuse_read_early(FUSE_GPU_IDDQ);
+>>>>>>> v4.9.227
 
 	sku_info->cpu_speedo_value = cpu_speedo_0_value;
 
@@ -143,7 +167,11 @@ void __init tegra124_init_speedo_data(struct tegra_sku_info *sku_info)
 
 	rev_sku_to_speedo_ids(sku_info, &threshold);
 
+<<<<<<< HEAD
 	sku_info->cpu_iddq_value = tegra30_fuse_readl(FUSE_CPU_IDDQ);
+=======
+	sku_info->cpu_iddq_value = tegra_fuse_read_early(FUSE_CPU_IDDQ);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < GPU_PROCESS_CORNERS; i++)
 		if (sku_info->gpu_speedo_value <
@@ -157,11 +185,19 @@ void __init tegra124_init_speedo_data(struct tegra_sku_info *sku_info)
 				break;
 	sku_info->cpu_process_id = i;
 
+<<<<<<< HEAD
 	for (i = 0; i < CORE_PROCESS_CORNERS; i++)
 		if (soc_speedo_0_value <
 			core_process_speedos[threshold][i])
 			break;
 	sku_info->core_process_id = i;
+=======
+	for (i = 0; i < SOC_PROCESS_CORNERS; i++)
+		if (soc_speedo_0_value <
+			soc_process_speedos[threshold][i])
+			break;
+	sku_info->soc_process_id = i;
+>>>>>>> v4.9.227
 
 	pr_debug("Tegra GPU Speedo ID=%d, Speedo Value=%d\n",
 		 sku_info->gpu_speedo_id, sku_info->gpu_speedo_value);

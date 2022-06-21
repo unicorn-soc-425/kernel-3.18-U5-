@@ -49,7 +49,10 @@ typedef unsigned int   u32;
 
 /* This must be large enough to hold the entire setup */
 u8 buf[SETUP_SECT_MAX*512];
+<<<<<<< HEAD
 int is_big_kernel;
+=======
+>>>>>>> v4.9.227
 
 #define PECOFF_RELOC_RESERVE 0x20
 
@@ -391,6 +394,16 @@ int main(int argc, char ** argv)
 		die("Unable to mmap '%s': %m", argv[2]);
 	/* Number of 16-byte paragraphs, including space for a 4-byte CRC */
 	sys_size = (sz + 15 + 4) / 16;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EFI_STUB
+	/*
+	 * COFF requires minimum 32-byte alignment of sections, and
+	 * adding a signature is problematic without that alignment.
+	 */
+	sys_size = (sys_size + 1) & ~1;
+#endif
+>>>>>>> v4.9.227
 
 	/* Patch the setup code with the appropriate size parameters */
 	buf[0x1f1] = setup_sectors-1;

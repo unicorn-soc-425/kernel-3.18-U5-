@@ -267,6 +267,10 @@ static int ie6xx_wdt_probe(struct platform_device *pdev)
 
 	ie6xx_wdt_dev.timeout = timeout;
 	watchdog_set_nowayout(&ie6xx_wdt_dev, nowayout);
+<<<<<<< HEAD
+=======
+	ie6xx_wdt_dev.parent = &pdev->dev;
+>>>>>>> v4.9.227
 
 	spin_lock_init(&ie6xx_wdt_data.unlock_sequence);
 
@@ -313,7 +317,10 @@ static struct platform_driver ie6xx_wdt_driver = {
 	.remove		= ie6xx_wdt_remove,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

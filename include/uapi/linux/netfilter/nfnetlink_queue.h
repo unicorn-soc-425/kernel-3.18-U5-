@@ -30,6 +30,17 @@ struct nfqnl_msg_packet_timestamp {
 	__aligned_be64	usec;
 };
 
+<<<<<<< HEAD
+=======
+enum nfqnl_vlan_attr {
+	NFQA_VLAN_UNSPEC,
+	NFQA_VLAN_PROTO,		/* __be16 skb vlan_proto */
+	NFQA_VLAN_TCI,			/* __be16 skb htons(vlan_tci) */
+	__NFQA_VLAN_MAX,
+};
+#define NFQA_VLAN_MAX (__NFQA_VLAN_MAX + 1)
+
+>>>>>>> v4.9.227
 enum nfqnl_attr_type {
 	NFQA_UNSPEC,
 	NFQA_PACKET_HDR,
@@ -49,6 +60,12 @@ enum nfqnl_attr_type {
 	NFQA_EXP,			/* nf_conntrack_netlink.h */
 	NFQA_UID,			/* __u32 sk uid */
 	NFQA_GID,			/* __u32 sk gid */
+<<<<<<< HEAD
+=======
+	NFQA_SECCTX,			/* security context string */
+	NFQA_VLAN,			/* nested attribute: packet vlan info */
+	NFQA_L2HDR,			/* full L2 header */
+>>>>>>> v4.9.227
 
 	__NFQA_MAX
 };
@@ -102,7 +119,12 @@ enum nfqnl_attr_config {
 #define NFQA_CFG_F_CONNTRACK			(1 << 1)
 #define NFQA_CFG_F_GSO				(1 << 2)
 #define NFQA_CFG_F_UID_GID			(1 << 3)
+<<<<<<< HEAD
 #define NFQA_CFG_F_MAX				(1 << 4)
+=======
+#define NFQA_CFG_F_SECCTX			(1 << 4)
+#define NFQA_CFG_F_MAX				(1 << 5)
+>>>>>>> v4.9.227
 
 /* flags for NFQA_SKB_INFO */
 /* packet appears to have wrong checksums, but they are ok */

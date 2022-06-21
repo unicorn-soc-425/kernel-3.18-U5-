@@ -37,10 +37,15 @@ static inline void rate_control_tx_status(struct ieee80211_local *local,
 	struct rate_control_ref *ref = local->rate_ctrl;
 	struct ieee80211_sta *ista = &sta->sta;
 	void *priv_sta = sta->rate_ctrl_priv;
+<<<<<<< HEAD
+=======
+	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
+>>>>>>> v4.9.227
 
 	if (!ref || !test_sta_flag(sta, WLAN_STA_RATE_CONTROL))
 		return;
 
+<<<<<<< HEAD
 	ref->ops->tx_status(ref->priv, sband, ista, priv_sta, skb);
 }
 
@@ -78,10 +83,26 @@ static inline void rate_control_rate_init(struct sta_info *sta)
 static inline void rate_control_rate_update(struct ieee80211_local *local,
 				    struct ieee80211_supported_band *sband,
 				    struct sta_info *sta, u32 changed)
+=======
+	spin_lock_bh(&sta->rate_ctrl_lock);
+	if (ref->ops->tx_status)
+		ref->ops->tx_status(ref->priv, sband, ista, priv_sta, skb);
+	else
+		ref->ops->tx_status_noskb(ref->priv, sband, ista, priv_sta, info);
+	spin_unlock_bh(&sta->rate_ctrl_lock);
+}
+
+static inline void
+rate_control_tx_status_noskb(struct ieee80211_local *local,
+			     struct ieee80211_supported_band *sband,
+			     struct sta_info *sta,
+			     struct ieee80211_tx_info *info)
+>>>>>>> v4.9.227
 {
 	struct rate_control_ref *ref = local->rate_ctrl;
 	struct ieee80211_sta *ista = &sta->sta;
 	void *priv_sta = sta->rate_ctrl_priv;
+<<<<<<< HEAD
 	struct ieee80211_chanctx_conf *chanctx_conf;
 
 	if (ref && ref->ops->rate_update) {
@@ -105,6 +126,30 @@ static inline void *rate_control_alloc_sta(struct rate_control_ref *ref,
 					   gfp_t gfp)
 {
 	return ref->ops->alloc_sta(ref->priv, sta, gfp);
+=======
+
+	if (!ref || !test_sta_flag(sta, WLAN_STA_RATE_CONTROL))
+		return;
+
+	if (WARN_ON_ONCE(!ref->ops->tx_status_noskb))
+		return;
+
+	spin_lock_bh(&sta->rate_ctrl_lock);
+	ref->ops->tx_status_noskb(ref->priv, sband, ista, priv_sta, info);
+	spin_unlock_bh(&sta->rate_ctrl_lock);
+}
+
+void rate_control_rate_init(struct sta_info *sta);
+void rate_control_rate_update(struct ieee80211_local *local,
+				    struct ieee80211_supported_band *sband,
+				    struct sta_info *sta, u32 changed);
+
+static inline void *rate_control_alloc_sta(struct rate_control_ref *ref,
+					   struct sta_info *sta, gfp_t gfp)
+{
+	spin_lock_init(&sta->rate_ctrl_lock);
+	return ref->ops->alloc_sta(ref->priv, &sta->sta, gfp);
+>>>>>>> v4.9.227
 }
 
 static inline void rate_control_free_sta(struct sta_info *sta)
@@ -120,9 +165,15 @@ static inline void rate_control_add_sta_debugfs(struct sta_info *sta)
 {
 #ifdef CONFIG_MAC80211_DEBUGFS
 	struct rate_control_ref *ref = sta->rate_ctrl;
+<<<<<<< HEAD
 	if (ref && sta->debugfs.dir && ref->ops->add_sta_debugfs)
 		ref->ops->add_sta_debugfs(ref->priv, sta->rate_ctrl_priv,
 					  sta->debugfs.dir);
+=======
+	if (ref && sta->debugfs_dir && ref->ops->add_sta_debugfs)
+		ref->ops->add_sta_debugfs(ref->priv, sta->rate_ctrl_priv,
+					  sta->debugfs_dir);
+>>>>>>> v4.9.227
 #endif
 }
 

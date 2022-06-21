@@ -11,7 +11,11 @@ Please find an example below:
 
     Clockgen block diagram
     -------------------------------------------------------------------
+<<<<<<< HEAD
    |                     Flexgen stucture                              |
+=======
+   |                     Flexgen structure                             |
+>>>>>>> v4.9.227
    |                  ---------------------------------------------    |
    |                 |    -------       --------       --------    |   |
 clk_sysin            |   |       |     |        |     |        |   |   |
@@ -60,6 +64,13 @@ This binding uses the common clock binding[2].
 Required properties:
 - compatible : shall be:
   "st,flexgen"
+<<<<<<< HEAD
+=======
+  "st,flexgen-audio", "st,flexgen" (enable clock propagation on parent for
+  audio use case)
+  "st,flexgen-video", "st,flexgen" (enable clock propagation on parent
+					and activate synchronous mode)
+>>>>>>> v4.9.227
 
 - #clock-cells : from common clock binding; shall be set to 1 (multiple clock
   outputs).

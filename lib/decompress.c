@@ -44,8 +44,13 @@ struct compress_format {
 };
 
 static const struct compress_format compressed_formats[] __initconst = {
+<<<<<<< HEAD
 	{ {037, 0213}, "gzip", gunzip },
 	{ {037, 0236}, "gzip", gunzip },
+=======
+	{ {0x1f, 0x8b}, "gzip", gunzip },
+	{ {0x1f, 0x9e}, "gzip", gunzip },
+>>>>>>> v4.9.227
 	{ {0x42, 0x5a}, "bzip2", bunzip2 },
 	{ {0x5d, 0x00}, "lzma", unlzma },
 	{ {0xfd, 0x37}, "xz", unxz },
@@ -59,8 +64,16 @@ decompress_fn __init decompress_method(const unsigned char *inbuf, long len,
 {
 	const struct compress_format *cf;
 
+<<<<<<< HEAD
 	if (len < 2)
 		return NULL;	/* Need at least this much... */
+=======
+	if (len < 2) {
+		if (name)
+			*name = NULL;
+		return NULL;	/* Need at least this much... */
+	}
+>>>>>>> v4.9.227
 
 	pr_debug("Compressed data magic: %#.2x %#.2x\n", inbuf[0], inbuf[1]);
 

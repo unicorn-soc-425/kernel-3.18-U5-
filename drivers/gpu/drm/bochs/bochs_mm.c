@@ -128,7 +128,12 @@ static int bochs_bo_verify_access(struct ttm_buffer_object *bo,
 {
 	struct bochs_bo *bochsbo = bochs_bo(bo);
 
+<<<<<<< HEAD
 	return drm_vma_node_verify_access(&bochsbo->gem.vma_node, filp);
+=======
+	return drm_vma_node_verify_access(&bochsbo->gem.vma_node,
+					  filp->private_data);
+>>>>>>> v4.9.227
 }
 
 static int bochs_ttm_io_mem_reserve(struct ttm_bo_device *bdev,
@@ -165,6 +170,7 @@ static void bochs_ttm_io_mem_free(struct ttm_bo_device *bdev,
 {
 }
 
+<<<<<<< HEAD
 static int bochs_bo_move(struct ttm_buffer_object *bo,
 			 bool evict, bool interruptible,
 			 bool no_wait_gpu,
@@ -174,6 +180,8 @@ static int bochs_bo_move(struct ttm_buffer_object *bo,
 }
 
 
+=======
+>>>>>>> v4.9.227
 static void bochs_ttm_backend_destroy(struct ttm_tt *tt)
 {
 	ttm_tt_fini(tt);
@@ -208,10 +216,19 @@ struct ttm_bo_driver bochs_bo_driver = {
 	.ttm_tt_unpopulate = ttm_pool_unpopulate,
 	.init_mem_type = bochs_bo_init_mem_type,
 	.evict_flags = bochs_bo_evict_flags,
+<<<<<<< HEAD
 	.move = bochs_bo_move,
 	.verify_access = bochs_bo_verify_access,
 	.io_mem_reserve = &bochs_ttm_io_mem_reserve,
 	.io_mem_free = &bochs_ttm_io_mem_free,
+=======
+	.move = NULL,
+	.verify_access = bochs_bo_verify_access,
+	.io_mem_reserve = &bochs_ttm_io_mem_reserve,
+	.io_mem_free = &bochs_ttm_io_mem_free,
+	.lru_tail = &ttm_bo_default_lru_tail,
+	.swap_lru_tail = &ttm_bo_default_swap_lru_tail,
+>>>>>>> v4.9.227
 };
 
 int bochs_mm_init(struct bochs_device *bochs)
@@ -456,7 +473,11 @@ int bochs_dumb_mmap_offset(struct drm_file *file, struct drm_device *dev,
 	struct drm_gem_object *obj;
 	struct bochs_bo *bo;
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, file, handle);
+=======
+	obj = drm_gem_object_lookup(file, handle);
+>>>>>>> v4.9.227
 	if (obj == NULL)
 		return -ENOENT;
 
@@ -472,8 +493,13 @@ int bochs_dumb_mmap_offset(struct drm_file *file, struct drm_device *dev,
 static void bochs_user_framebuffer_destroy(struct drm_framebuffer *fb)
 {
 	struct bochs_framebuffer *bochs_fb = to_bochs_framebuffer(fb);
+<<<<<<< HEAD
 	if (bochs_fb->obj)
 		drm_gem_object_unreference_unlocked(bochs_fb->obj);
+=======
+
+	drm_gem_object_unreference_unlocked(bochs_fb->obj);
+>>>>>>> v4.9.227
 	drm_framebuffer_cleanup(fb);
 	kfree(fb);
 }
@@ -484,7 +510,11 @@ static const struct drm_framebuffer_funcs bochs_fb_funcs = {
 
 int bochs_framebuffer_init(struct drm_device *dev,
 			   struct bochs_framebuffer *gfb,
+<<<<<<< HEAD
 			   struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+			   const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 			   struct drm_gem_object *obj)
 {
 	int ret;
@@ -502,7 +532,11 @@ int bochs_framebuffer_init(struct drm_device *dev,
 static struct drm_framebuffer *
 bochs_user_framebuffer_create(struct drm_device *dev,
 			      struct drm_file *filp,
+<<<<<<< HEAD
 			      struct drm_mode_fb_cmd2 *mode_cmd)
+=======
+			      const struct drm_mode_fb_cmd2 *mode_cmd)
+>>>>>>> v4.9.227
 {
 	struct drm_gem_object *obj;
 	struct bochs_framebuffer *bochs_fb;
@@ -518,7 +552,11 @@ bochs_user_framebuffer_create(struct drm_device *dev,
 	if (mode_cmd->pixel_format != DRM_FORMAT_XRGB8888)
 		return ERR_PTR(-ENOENT);
 
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, filp, mode_cmd->handles[0]);
+=======
+	obj = drm_gem_object_lookup(filp, mode_cmd->handles[0]);
+>>>>>>> v4.9.227
 	if (obj == NULL)
 		return ERR_PTR(-ENOENT);
 

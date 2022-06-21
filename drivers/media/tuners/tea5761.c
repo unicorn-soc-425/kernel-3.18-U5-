@@ -301,7 +301,11 @@ static int tea5761_get_frequency(struct dvb_frontend *fe, u32 *frequency)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dvb_tuner_ops tea5761_tuner_ops = {
+=======
+static const struct dvb_tuner_ops tea5761_tuner_ops = {
+>>>>>>> v4.9.227
 	.info = {
 		.name           = "tea5761", // Philips TEA5761HN FM Radio
 	},

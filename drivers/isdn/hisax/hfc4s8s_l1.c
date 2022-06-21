@@ -225,6 +225,7 @@ fWrite_hfc8(hfc4s8s_hw *a, u_char c)
 }
 
 static inline void
+<<<<<<< HEAD
 Write_hfc16(hfc4s8s_hw *a, u_char b, u_short c)
 {
 	SetRegAddr(a, b);
@@ -239,6 +240,8 @@ Write_hfc32(hfc4s8s_hw *a, u_char b, u_long c)
 }
 
 static inline void
+=======
+>>>>>>> v4.9.227
 fWrite_hfc32(hfc4s8s_hw *a, u_long c)
 {
 	outl(c, a->iobase);
@@ -266,6 +269,7 @@ Read_hfc16(hfc4s8s_hw *a, u_char b)
 }
 
 static inline u_long
+<<<<<<< HEAD
 Read_hfc32(hfc4s8s_hw *a, u_char b)
 {
 	SetRegAddr(a, b);
@@ -273,6 +277,8 @@ Read_hfc32(hfc4s8s_hw *a, u_char b)
 }
 
 static inline u_long
+=======
+>>>>>>> v4.9.227
 fRead_hfc32(hfc4s8s_hw *a)
 {
 	return (inl((volatile u_int) a->iobase));
@@ -667,6 +673,7 @@ rx_d_frame(struct hfc4s8s_l1 *l1p, int ech)
 
 		f1 = Read_hfc8_stable(l1p->hw, A_F1);
 		f2 = Read_hfc8(l1p->hw, A_F2);
+<<<<<<< HEAD
 		df = f1 - f2;
 		if ((f1 - f2) < 0)
 			df = f1 - f2 + MAX_F_CNT + 1;
@@ -675,6 +682,16 @@ rx_d_frame(struct hfc4s8s_l1 *l1p, int ech)
 		if (!df) {
 			return;	/* no complete frame in fifo */
 		}
+=======
+
+		if (f1 < f2)
+			df = MAX_F_CNT + 1 + f1 - f2;
+		else
+			df = f1 - f2;
+
+		if (!df)
+			return;	/* no complete frame in fifo */
+>>>>>>> v4.9.227
 
 		z1 = Read_hfc16_stable(l1p->hw, A_Z1);
 		z2 = Read_hfc16(l1p->hw, A_Z2);
@@ -1520,6 +1537,10 @@ hfc4s8s_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		printk(KERN_INFO
 		       "HFC-4S/8S: failed to request address space at 0x%04x\n",
 		       hw->iobase);
+<<<<<<< HEAD
+=======
+		err = -EBUSY;
+>>>>>>> v4.9.227
 		goto out;
 	}
 

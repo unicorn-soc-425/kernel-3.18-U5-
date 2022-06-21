@@ -11,6 +11,7 @@
 #ifndef _ARIZONA_PDATA_H
 #define _ARIZONA_PDATA_H
 
+<<<<<<< HEAD
 #define ARIZONA_GPN_DIR                          0x8000  /* GPN_DIR */
 #define ARIZONA_GPN_DIR_MASK                     0x8000  /* GPN_DIR */
 #define ARIZONA_GPN_DIR_SHIFT                        15  /* GPN_DIR */
@@ -36,6 +37,28 @@
 #define ARIZONA_GPN_OP_CFG_SHIFT                      9  /* GPN_OP_CFG */
 #define ARIZONA_GPN_OP_CFG_WIDTH                      1  /* GPN_OP_CFG */
 #define ARIZONA_GPN_DB                           0x0100  /* GPN_DB */
+=======
+#include <dt-bindings/mfd/arizona.h>
+
+#define ARIZONA_GPN_DIR_MASK                     0x8000  /* GPN_DIR */
+#define ARIZONA_GPN_DIR_SHIFT                        15  /* GPN_DIR */
+#define ARIZONA_GPN_DIR_WIDTH                         1  /* GPN_DIR */
+#define ARIZONA_GPN_PU_MASK                      0x4000  /* GPN_PU */
+#define ARIZONA_GPN_PU_SHIFT                         14  /* GPN_PU */
+#define ARIZONA_GPN_PU_WIDTH                          1  /* GPN_PU */
+#define ARIZONA_GPN_PD_MASK                      0x2000  /* GPN_PD */
+#define ARIZONA_GPN_PD_SHIFT                         13  /* GPN_PD */
+#define ARIZONA_GPN_PD_WIDTH                          1  /* GPN_PD */
+#define ARIZONA_GPN_LVL_MASK                     0x0800  /* GPN_LVL */
+#define ARIZONA_GPN_LVL_SHIFT                        11  /* GPN_LVL */
+#define ARIZONA_GPN_LVL_WIDTH                         1  /* GPN_LVL */
+#define ARIZONA_GPN_POL_MASK                     0x0400  /* GPN_POL */
+#define ARIZONA_GPN_POL_SHIFT                        10  /* GPN_POL */
+#define ARIZONA_GPN_POL_WIDTH                         1  /* GPN_POL */
+#define ARIZONA_GPN_OP_CFG_MASK                  0x0200  /* GPN_OP_CFG */
+#define ARIZONA_GPN_OP_CFG_SHIFT                      9  /* GPN_OP_CFG */
+#define ARIZONA_GPN_OP_CFG_WIDTH                      1  /* GPN_OP_CFG */
+>>>>>>> v4.9.227
 #define ARIZONA_GPN_DB_MASK                      0x0100  /* GPN_DB */
 #define ARIZONA_GPN_DB_SHIFT                          8  /* GPN_DB */
 #define ARIZONA_GPN_DB_WIDTH                          1  /* GPN_DB */
@@ -45,6 +68,7 @@
 
 #define ARIZONA_MAX_GPIO 5
 
+<<<<<<< HEAD
 #define ARIZONA_32KZ_MCLK1 1
 #define ARIZONA_32KZ_MCLK2 2
 #define ARIZONA_32KZ_NONE  3
@@ -62,6 +86,12 @@
 #define ARIZONA_INMODE_SE   1
 #define ARIZONA_INMODE_DMIC 2
 
+=======
+#define ARIZONA_MAX_INPUT 4
+
+#define ARIZONA_MAX_MICBIAS 3
+
+>>>>>>> v4.9.227
 #define ARIZONA_MAX_OUTPUT 6
 
 #define ARIZONA_MAX_AIF 3
@@ -112,14 +142,22 @@ struct arizona_pdata {
 	int gpio_base;
 
 	/** Pin state for GPIO pins */
+<<<<<<< HEAD
 	int gpio_defaults[ARIZONA_MAX_GPIO];
+=======
+	unsigned int gpio_defaults[ARIZONA_MAX_GPIO];
+>>>>>>> v4.9.227
 
 	/**
 	 * Maximum number of channels clocks will be generated for,
 	 * useful for systems where and I2S bus with multiple data
 	 * lines is mastered.
 	 */
+<<<<<<< HEAD
 	int max_channels_clocked[ARIZONA_MAX_AIF];
+=======
+	unsigned int max_channels_clocked[ARIZONA_MAX_AIF];
+>>>>>>> v4.9.227
 
 	/** GPIO5 is used for jack detection */
 	bool jd_gpio5;
@@ -139,13 +177,25 @@ struct arizona_pdata {
 	/** GPIO used for mic isolation with HPDET */
 	int hpdet_id_gpio;
 
+<<<<<<< HEAD
 	/** Extra debounce timeout used during initial mic detection (ms) */
 	int micd_detect_debounce;
+=======
+	/** Channel to use for headphone detection */
+	unsigned int hpdet_channel;
+
+	/** Use software comparison to determine mic presence */
+	bool micd_software_compare;
+
+	/** Extra debounce timeout used during initial mic detection (ms) */
+	unsigned int micd_detect_debounce;
+>>>>>>> v4.9.227
 
 	/** GPIO for mic detection polarity */
 	int micd_pol_gpio;
 
 	/** Mic detect ramp rate */
+<<<<<<< HEAD
 	int micd_bias_start_time;
 
 	/** Mic detect sample rate */
@@ -156,6 +206,18 @@ struct arizona_pdata {
 
 	/** Mic detect timeout (ms) */
 	int micd_timeout;
+=======
+	unsigned int micd_bias_start_time;
+
+	/** Mic detect sample rate */
+	unsigned int micd_rate;
+
+	/** Mic detect debounce level */
+	unsigned int micd_dbtime;
+
+	/** Mic detect timeout (ms) */
+	unsigned int micd_timeout;
+>>>>>>> v4.9.227
 
 	/** Force MICBIAS on for mic detect */
 	bool micd_force_micbias;
@@ -174,11 +236,24 @@ struct arizona_pdata {
 	/** MICBIAS configurations */
 	struct arizona_micbias micbias[ARIZONA_MAX_MICBIAS];
 
+<<<<<<< HEAD
 	/** Mode of input structures */
 	int inmode[ARIZONA_MAX_INPUT];
 
 	/** Mode for outputs */
 	bool out_mono[ARIZONA_MAX_OUTPUT];
+=======
+	/**
+	 * Mode of input structures
+	 * One of the ARIZONA_INMODE_xxx values
+	 * wm5102/wm5110/wm8280/wm8997: [0]=IN1 [1]=IN2 [2]=IN3 [3]=IN4
+	 * wm8998: [0]=IN1A [1]=IN2A [2]=IN1B [3]=IN2B
+	 */
+	int inmode[ARIZONA_MAX_INPUT];
+
+	/** Mode for outputs */
+	int out_mono[ARIZONA_MAX_OUTPUT];
+>>>>>>> v4.9.227
 
 	/** PDM speaker mute setting */
 	unsigned int spk_mute[ARIZONA_MAX_PDM_SPK];
@@ -191,6 +266,12 @@ struct arizona_pdata {
 
 	/** GPIO for primary IRQ (used for edge triggered emulation) */
 	int irq_gpio;
+<<<<<<< HEAD
+=======
+
+	/** General purpose switch control */
+	unsigned int gpsw;
+>>>>>>> v4.9.227
 };
 
 #endif

@@ -27,6 +27,15 @@
 #ifndef __SIS_DRM_H__
 #define __SIS_DRM_H__
 
+<<<<<<< HEAD
+=======
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+>>>>>>> v4.9.227
 /* SiS specific ioctls */
 #define NOT_USED_0_3
 #define DRM_SIS_FB_ALLOC	0x04
@@ -64,4 +73,11 @@ typedef struct {
 	unsigned long offset, size;
 } drm_sis_fb_t;
 
+<<<<<<< HEAD
+=======
+#if defined(__cplusplus)
+}
+#endif
+
+>>>>>>> v4.9.227
 #endif				/* __SIS_DRM_H__ */

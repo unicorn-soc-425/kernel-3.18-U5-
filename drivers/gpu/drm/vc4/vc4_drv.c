@@ -14,8 +14,16 @@
 #include <linux/module.h>
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include "drm_fb_cma_helper.h"
 
+=======
+#include <linux/pm_runtime.h>
+#include "drm_fb_cma_helper.h"
+#include <drm/drm_fb_helper.h>
+
+#include "uapi/drm/vc4_drm.h"
+>>>>>>> v4.9.227
 #include "vc4_drv.h"
 #include "vc4_regs.h"
 
@@ -42,20 +50,71 @@ void __iomem *vc4_ioremap_regs(struct platform_device *dev, int index)
 	return map;
 }
 
+<<<<<<< HEAD
 static void vc4_drm_preclose(struct drm_device *dev, struct drm_file *file)
 {
 	struct drm_crtc *crtc;
 
 	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head)
 		vc4_cancel_page_flip(crtc, file);
+=======
+static int vc4_get_param_ioctl(struct drm_device *dev, void *data,
+			       struct drm_file *file_priv)
+{
+	struct vc4_dev *vc4 = to_vc4_dev(dev);
+	struct drm_vc4_get_param *args = data;
+	int ret;
+
+	if (args->pad != 0)
+		return -EINVAL;
+
+	switch (args->param) {
+	case DRM_VC4_PARAM_V3D_IDENT0:
+		ret = pm_runtime_get_sync(&vc4->v3d->pdev->dev);
+		if (ret < 0)
+			return ret;
+		args->value = V3D_READ(V3D_IDENT0);
+		pm_runtime_mark_last_busy(&vc4->v3d->pdev->dev);
+		pm_runtime_put_autosuspend(&vc4->v3d->pdev->dev);
+		break;
+	case DRM_VC4_PARAM_V3D_IDENT1:
+		ret = pm_runtime_get_sync(&vc4->v3d->pdev->dev);
+		if (ret < 0)
+			return ret;
+		args->value = V3D_READ(V3D_IDENT1);
+		pm_runtime_mark_last_busy(&vc4->v3d->pdev->dev);
+		pm_runtime_put_autosuspend(&vc4->v3d->pdev->dev);
+		break;
+	case DRM_VC4_PARAM_V3D_IDENT2:
+		ret = pm_runtime_get_sync(&vc4->v3d->pdev->dev);
+		if (ret < 0)
+			return ret;
+		args->value = V3D_READ(V3D_IDENT2);
+		pm_runtime_mark_last_busy(&vc4->v3d->pdev->dev);
+		pm_runtime_put_autosuspend(&vc4->v3d->pdev->dev);
+		break;
+	case DRM_VC4_PARAM_SUPPORTS_BRANCHES:
+		args->value = true;
+		break;
+	default:
+		DRM_DEBUG("Unknown parameter %d\n", args->param);
+		return -EINVAL;
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void vc4_lastclose(struct drm_device *dev)
 {
 	struct vc4_dev *vc4 = to_vc4_dev(dev);
 
+<<<<<<< HEAD
 	if (vc4->fbdev)
 		drm_fbdev_cma_restore_mode(vc4->fbdev);
+=======
+	drm_fbdev_cma_restore_mode(vc4->fbdev);
+>>>>>>> v4.9.227
 }
 
 static const struct file_operations vc4_drm_fops = {
@@ -63,7 +122,11 @@ static const struct file_operations vc4_drm_fops = {
 	.open = drm_open,
 	.release = drm_release,
 	.unlocked_ioctl = drm_ioctl,
+<<<<<<< HEAD
 	.mmap = drm_gem_cma_mmap,
+=======
+	.mmap = vc4_mmap,
+>>>>>>> v4.9.227
 	.poll = drm_poll,
 	.read = drm_read,
 #ifdef CONFIG_COMPAT
@@ -73,12 +136,25 @@ static const struct file_operations vc4_drm_fops = {
 };
 
 static const struct drm_ioctl_desc vc4_drm_ioctls[] = {
+<<<<<<< HEAD
+=======
+	DRM_IOCTL_DEF_DRV(VC4_SUBMIT_CL, vc4_submit_cl_ioctl, DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(VC4_WAIT_SEQNO, vc4_wait_seqno_ioctl, DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(VC4_WAIT_BO, vc4_wait_bo_ioctl, DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(VC4_CREATE_BO, vc4_create_bo_ioctl, DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(VC4_MMAP_BO, vc4_mmap_bo_ioctl, DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(VC4_CREATE_SHADER_BO, vc4_create_shader_bo_ioctl, DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(VC4_GET_HANG_STATE, vc4_get_hang_state_ioctl,
+			  DRM_ROOT_ONLY),
+	DRM_IOCTL_DEF_DRV(VC4_GET_PARAM, vc4_get_param_ioctl, DRM_RENDER_ALLOW),
+>>>>>>> v4.9.227
 };
 
 static struct drm_driver vc4_drm_driver = {
 	.driver_features = (DRIVER_MODESET |
 			    DRIVER_ATOMIC |
 			    DRIVER_GEM |
+<<<<<<< HEAD
 			    DRIVER_PRIME),
 	.lastclose = vc4_lastclose,
 	.preclose = vc4_drm_preclose,
@@ -86,24 +162,54 @@ static struct drm_driver vc4_drm_driver = {
 	.enable_vblank = vc4_enable_vblank,
 	.disable_vblank = vc4_disable_vblank,
 	.get_vblank_counter = drm_vblank_count,
+=======
+			    DRIVER_HAVE_IRQ |
+			    DRIVER_RENDER |
+			    DRIVER_PRIME),
+	.lastclose = vc4_lastclose,
+	.irq_handler = vc4_irq,
+	.irq_preinstall = vc4_irq_preinstall,
+	.irq_postinstall = vc4_irq_postinstall,
+	.irq_uninstall = vc4_irq_uninstall,
+
+	.enable_vblank = vc4_enable_vblank,
+	.disable_vblank = vc4_disable_vblank,
+	.get_vblank_counter = drm_vblank_no_hw_counter,
+	.get_scanout_position = vc4_crtc_get_scanoutpos,
+	.get_vblank_timestamp = vc4_crtc_get_vblank_timestamp,
+>>>>>>> v4.9.227
 
 #if defined(CONFIG_DEBUG_FS)
 	.debugfs_init = vc4_debugfs_init,
 	.debugfs_cleanup = vc4_debugfs_cleanup,
 #endif
 
+<<<<<<< HEAD
 	.gem_free_object = drm_gem_cma_free_object,
+=======
+	.gem_create_object = vc4_create_object,
+	.gem_free_object_unlocked = vc4_free_object,
+>>>>>>> v4.9.227
 	.gem_vm_ops = &drm_gem_cma_vm_ops,
 
 	.prime_handle_to_fd = drm_gem_prime_handle_to_fd,
 	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
 	.gem_prime_import = drm_gem_prime_import,
+<<<<<<< HEAD
 	.gem_prime_export = drm_gem_prime_export,
 	.gem_prime_get_sg_table	= drm_gem_cma_prime_get_sg_table,
 	.gem_prime_import_sg_table = drm_gem_cma_prime_import_sg_table,
 	.gem_prime_vmap = drm_gem_cma_prime_vmap,
 	.gem_prime_vunmap = drm_gem_cma_prime_vunmap,
 	.gem_prime_mmap = drm_gem_cma_prime_mmap,
+=======
+	.gem_prime_export = vc4_prime_export,
+	.gem_prime_get_sg_table	= drm_gem_cma_prime_get_sg_table,
+	.gem_prime_import_sg_table = drm_gem_cma_prime_import_sg_table,
+	.gem_prime_vmap = vc4_prime_vmap,
+	.gem_prime_vunmap = drm_gem_cma_prime_vunmap,
+	.gem_prime_mmap = vc4_prime_mmap,
+>>>>>>> v4.9.227
 
 	.dumb_create = vc4_dumb_create,
 	.dumb_map_offset = drm_gem_cma_dumb_map_offset,
@@ -147,11 +253,35 @@ static void vc4_match_add_drivers(struct device *dev,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void vc4_kick_out_firmware_fb(void)
+{
+	struct apertures_struct *ap;
+
+	ap = alloc_apertures(1);
+	if (!ap)
+		return;
+
+	/* Since VC4 is a UMA device, the simplefb node may have been
+	 * located anywhere in memory.
+	 */
+	ap->ranges[0].base = 0;
+	ap->ranges[0].size = ~0;
+
+	drm_fb_helper_remove_conflicting_framebuffers(ap, "vc4drmfb", false);
+	kfree(ap);
+}
+
+>>>>>>> v4.9.227
 static int vc4_drm_bind(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct drm_device *drm;
+<<<<<<< HEAD
 	struct drm_connector *connector;
+=======
+>>>>>>> v4.9.227
 	struct vc4_dev *vc4;
 	int ret = 0;
 
@@ -162,12 +292,18 @@ static int vc4_drm_bind(struct device *dev)
 		return -ENOMEM;
 
 	drm = drm_dev_alloc(&vc4_drm_driver, dev);
+<<<<<<< HEAD
 	if (!drm)
 		return -ENOMEM;
+=======
+	if (IS_ERR(drm))
+		return PTR_ERR(drm);
+>>>>>>> v4.9.227
 	platform_set_drvdata(pdev, drm);
 	vc4->dev = drm;
 	drm->dev_private = vc4;
 
+<<<<<<< HEAD
 	drm_dev_set_unique(drm, dev_name(dev));
 
 	drm_mode_config_init(drm);
@@ -177,11 +313,25 @@ static int vc4_drm_bind(struct device *dev)
 	ret = component_bind_all(dev, drm);
 	if (ret)
 		goto unref;
+=======
+	vc4_bo_cache_init(drm);
+
+	drm_mode_config_init(drm);
+
+	vc4_gem_init(drm);
+
+	ret = component_bind_all(dev, drm);
+	if (ret)
+		goto gem_destroy;
+
+	vc4_kick_out_firmware_fb();
+>>>>>>> v4.9.227
 
 	ret = drm_dev_register(drm, 0);
 	if (ret < 0)
 		goto unbind_all;
 
+<<<<<<< HEAD
 	/* Connector registration has to occur after DRM device
 	 * registration, because it creates sysfs entries based on the
 	 * DRM device.
@@ -192,16 +342,27 @@ static int vc4_drm_bind(struct device *dev)
 			goto unregister;
 	}
 
+=======
+>>>>>>> v4.9.227
 	vc4_kms_load(drm);
 
 	return 0;
 
+<<<<<<< HEAD
 unregister:
 	drm_dev_unregister(drm);
 unbind_all:
 	component_unbind_all(dev, drm);
 unref:
 	drm_dev_unref(drm);
+=======
+unbind_all:
+	component_unbind_all(dev, drm);
+gem_destroy:
+	vc4_gem_destroy(drm);
+	drm_dev_unref(drm);
+	vc4_bo_cache_destroy(drm);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -226,8 +387,15 @@ static const struct component_master_ops vc4_drm_ops = {
 
 static struct platform_driver *const component_drivers[] = {
 	&vc4_hdmi_driver,
+<<<<<<< HEAD
 	&vc4_crtc_driver,
 	&vc4_hvs_driver,
+=======
+	&vc4_dpi_driver,
+	&vc4_hvs_driver,
+	&vc4_crtc_driver,
+	&vc4_v3d_driver,
+>>>>>>> v4.9.227
 };
 
 static int vc4_platform_drm_probe(struct platform_device *pdev)

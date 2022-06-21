@@ -56,6 +56,10 @@ extern unsigned long brk_start;
 extern unsigned long host_task_size;
 
 extern int linux_main(int argc, char **argv);
+<<<<<<< HEAD
+=======
+extern void uml_finishsetup(void);
+>>>>>>> v4.9.227
 
 struct siginfo;
 extern void (*sig_info[])(int, struct siginfo *si, struct uml_pt_regs *);

@@ -20,6 +20,10 @@ enum {
 	TCA_MIRRED_UNSPEC,
 	TCA_MIRRED_TM,
 	TCA_MIRRED_PARMS,
+<<<<<<< HEAD
+=======
+	TCA_MIRRED_PAD,
+>>>>>>> v4.9.227
 	__TCA_MIRRED_MAX
 };
 #define TCA_MIRRED_MAX (__TCA_MIRRED_MAX - 1)

@@ -35,10 +35,22 @@ static struct snd_soc_dai_link snow_dai[] = {
 
 static int snow_late_probe(struct snd_soc_card *card)
 {
+<<<<<<< HEAD
 	struct snd_soc_dai *codec_dai = card->rtd[0].codec_dai;
 	struct snd_soc_dai *cpu_dai = card->rtd[0].cpu_dai;
 	int ret;
 
+=======
+	struct snd_soc_pcm_runtime *rtd;
+	struct snd_soc_dai *codec_dai;
+	struct snd_soc_dai *cpu_dai;
+	int ret;
+
+	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[0].name);
+	codec_dai = rtd->codec_dai;
+	cpu_dai = rtd->cpu_dai;
+
+>>>>>>> v4.9.227
 	/* Set the MCLK rate for the codec */
 	ret = snd_soc_dai_set_sysclk(codec_dai, 0,
 					FIN_PLL_RATE, SND_SOC_CLOCK_IN);
@@ -56,6 +68,10 @@ static int snow_late_probe(struct snd_soc_card *card)
 
 static struct snd_soc_card snow_snd = {
 	.name = "Snow-I2S",
+<<<<<<< HEAD
+=======
+	.owner = THIS_MODULE,
+>>>>>>> v4.9.227
 	.dai_link = snow_dai,
 	.num_links = ARRAY_SIZE(snow_dai),
 
@@ -115,7 +131,10 @@ MODULE_DEVICE_TABLE(of, snow_of_match);
 static struct platform_driver snow_driver = {
 	.driver = {
 		.name = "snow-audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &snd_soc_pm_ops,
 		.of_match_table = snow_of_match,
 	},

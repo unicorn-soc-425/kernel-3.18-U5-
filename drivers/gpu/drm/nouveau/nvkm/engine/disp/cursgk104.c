@@ -33,5 +33,9 @@ gk104_disp_curs_oclass = {
 	.base.maxver = 0,
 	.ctor = nv50_disp_curs_new,
 	.func = &gf119_disp_pioc_func,
+<<<<<<< HEAD
 	.chid = 13,
+=======
+	.chid = { 13, 13 },
+>>>>>>> v4.9.227
 };

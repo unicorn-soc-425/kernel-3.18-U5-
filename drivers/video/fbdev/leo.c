@@ -662,7 +662,10 @@ MODULE_DEVICE_TABLE(of, leo_match);
 static struct platform_driver leo_driver = {
 	.driver = {
 		.name = "leo",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = leo_match,
 	},
 	.probe		= leo_probe,

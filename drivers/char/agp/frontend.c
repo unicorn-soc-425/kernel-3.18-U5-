@@ -156,7 +156,11 @@ static pgprot_t agp_convert_mmap_flags(int prot)
 {
 	unsigned long prot_bits;
 
+<<<<<<< HEAD
 	prot_bits = calc_vm_prot_bits(prot) | VM_SHARED;
+=======
+	prot_bits = calc_vm_prot_bits(prot, 0) | VM_SHARED;
+>>>>>>> v4.9.227
 	return vm_get_page_prot(prot_bits);
 }
 

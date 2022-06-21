@@ -49,6 +49,7 @@
 #include <net/dn_route.h>
 
 static int dn_neigh_construct(struct neighbour *);
+<<<<<<< HEAD
 static void dn_long_error_report(struct neighbour *, struct sk_buff *);
 static void dn_short_error_report(struct neighbour *, struct sk_buff *);
 static int dn_long_output(struct neighbour *, struct sk_buff *);
@@ -84,6 +85,19 @@ static const struct neigh_ops dn_phase3_ops = {
 	.error_report =		dn_short_error_report, /* Can use short version here */
 	.output =		dn_phase3_output,
 	.connected_output =	dn_phase3_output,
+=======
+static void dn_neigh_error_report(struct neighbour *, struct sk_buff *);
+static int dn_neigh_output(struct neighbour *neigh, struct sk_buff *skb);
+
+/*
+ * Operations for adding the link layer header.
+ */
+static const struct neigh_ops dn_neigh_ops = {
+	.family =		AF_DECnet,
+	.error_report =		dn_neigh_error_report,
+	.output =		dn_neigh_output,
+	.connected_output =	dn_neigh_output,
+>>>>>>> v4.9.227
 };
 
 static u32 dn_neigh_hash(const void *pkey,
@@ -93,11 +107,25 @@ static u32 dn_neigh_hash(const void *pkey,
 	return jhash_2words(*(__u16 *)pkey, 0, hash_rnd[0]);
 }
 
+<<<<<<< HEAD
+=======
+static bool dn_key_eq(const struct neighbour *neigh, const void *pkey)
+{
+	return neigh_key_eq16(neigh, pkey);
+}
+
+>>>>>>> v4.9.227
 struct neigh_table dn_neigh_table = {
 	.family =			PF_DECnet,
 	.entry_size =			NEIGH_ENTRY_SIZE(sizeof(struct dn_neigh)),
 	.key_len =			sizeof(__le16),
+<<<<<<< HEAD
 	.hash =				dn_neigh_hash,
+=======
+	.protocol =			cpu_to_be16(ETH_P_DNA_RT),
+	.hash =				dn_neigh_hash,
+	.key_eq =			dn_key_eq,
+>>>>>>> v4.9.227
 	.constructor =			dn_neigh_construct,
 	.id =				"dn_neigh_cache",
 	.parms ={
@@ -146,6 +174,7 @@ static int dn_neigh_construct(struct neighbour *neigh)
 
 	__neigh_parms_put(neigh->parms);
 	neigh->parms = neigh_parms_clone(parms);
+<<<<<<< HEAD
 
 	if (dn_db->use_long)
 		neigh->ops = &dn_long_ops;
@@ -156,6 +185,11 @@ static int dn_neigh_construct(struct neighbour *neigh)
 	if (dn->flags & DN_NDFLAG_P3)
 		neigh->ops = &dn_phase3_ops;
 
+=======
+	rcu_read_unlock();
+
+	neigh->ops = &dn_neigh_ops;
+>>>>>>> v4.9.227
 	neigh->nud_state = NUD_NOARP;
 	neigh->output = neigh->ops->connected_output;
 
@@ -187,6 +221,7 @@ static int dn_neigh_construct(struct neighbour *neigh)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void dn_long_error_report(struct neighbour *neigh, struct sk_buff *skb)
 {
 	printk(KERN_DEBUG "dn_long_error_report: called\n");
@@ -205,6 +240,18 @@ static int dn_neigh_output_packet(struct sk_buff *skb)
 	struct dst_entry *dst = skb_dst(skb);
 	struct dn_route *rt = (struct dn_route *)dst;
 	struct neighbour *neigh = rt->n;
+=======
+static void dn_neigh_error_report(struct neighbour *neigh, struct sk_buff *skb)
+{
+	printk(KERN_DEBUG "dn_neigh_error_report: called\n");
+	kfree_skb(skb);
+}
+
+static int dn_neigh_output(struct neighbour *neigh, struct sk_buff *skb)
+{
+	struct dst_entry *dst = skb_dst(skb);
+	struct dn_route *rt = (struct dn_route *)dst;
+>>>>>>> v4.9.227
 	struct net_device *dev = neigh->dev;
 	char mac_addr[ETH_ALEN];
 	unsigned int seq;
@@ -226,7 +273,24 @@ static int dn_neigh_output_packet(struct sk_buff *skb)
 	return err;
 }
 
+<<<<<<< HEAD
 static int dn_long_output(struct neighbour *neigh, struct sk_buff *skb)
+=======
+static int dn_neigh_output_packet(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	struct dst_entry *dst = skb_dst(skb);
+	struct dn_route *rt = (struct dn_route *)dst;
+	struct neighbour *neigh = rt->n;
+
+	return neigh->output(neigh, skb);
+}
+
+/*
+ * For talking to broadcast devices: Ethernet & PPP
+ */
+static int dn_long_output(struct neighbour *neigh, struct sock *sk,
+			  struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	struct net_device *dev = neigh->dev;
 	int headroom = dev->hard_header_len + sizeof(struct dn_long_packet) + 3;
@@ -265,11 +329,24 @@ static int dn_long_output(struct neighbour *neigh, struct sk_buff *skb)
 
 	skb_reset_network_header(skb);
 
+<<<<<<< HEAD
 	return NF_HOOK(NFPROTO_DECNET, NF_DN_POST_ROUTING, skb, NULL,
 		       neigh->dev, dn_neigh_output_packet);
 }
 
 static int dn_short_output(struct neighbour *neigh, struct sk_buff *skb)
+=======
+	return NF_HOOK(NFPROTO_DECNET, NF_DN_POST_ROUTING,
+		       &init_net, sk, skb, NULL, neigh->dev,
+		       dn_neigh_output_packet);
+}
+
+/*
+ * For talking to pointopoint and multidrop devices: DDCMP and X.25
+ */
+static int dn_short_output(struct neighbour *neigh, struct sock *sk,
+			   struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	struct net_device *dev = neigh->dev;
 	int headroom = dev->hard_header_len + sizeof(struct dn_short_packet) + 2;
@@ -301,6 +378,7 @@ static int dn_short_output(struct neighbour *neigh, struct sk_buff *skb)
 
 	skb_reset_network_header(skb);
 
+<<<<<<< HEAD
 	return NF_HOOK(NFPROTO_DECNET, NF_DN_POST_ROUTING, skb, NULL,
 		       neigh->dev, dn_neigh_output_packet);
 }
@@ -310,6 +388,20 @@ static int dn_short_output(struct neighbour *neigh, struct sk_buff *skb)
  * it clears the area bits before transmission.
  */
 static int dn_phase3_output(struct neighbour *neigh, struct sk_buff *skb)
+=======
+	return NF_HOOK(NFPROTO_DECNET, NF_DN_POST_ROUTING,
+		       &init_net, sk, skb, NULL, neigh->dev,
+		       dn_neigh_output_packet);
+}
+
+/*
+ * For talking to DECnet phase III nodes
+ * Phase 3 output is the same as short output, execpt that
+ * it clears the area bits before transmission.
+ */
+static int dn_phase3_output(struct neighbour *neigh, struct sock *sk,
+			    struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	struct net_device *dev = neigh->dev;
 	int headroom = dev->hard_header_len + sizeof(struct dn_short_packet) + 2;
@@ -340,8 +432,40 @@ static int dn_phase3_output(struct neighbour *neigh, struct sk_buff *skb)
 
 	skb_reset_network_header(skb);
 
+<<<<<<< HEAD
 	return NF_HOOK(NFPROTO_DECNET, NF_DN_POST_ROUTING, skb, NULL,
 		       neigh->dev, dn_neigh_output_packet);
+=======
+	return NF_HOOK(NFPROTO_DECNET, NF_DN_POST_ROUTING,
+		       &init_net, sk, skb, NULL, neigh->dev,
+		       dn_neigh_output_packet);
+}
+
+int dn_to_neigh_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	struct dst_entry *dst = skb_dst(skb);
+	struct dn_route *rt = (struct dn_route *) dst;
+	struct neighbour *neigh = rt->n;
+	struct dn_neigh *dn = (struct dn_neigh *)neigh;
+	struct dn_dev *dn_db;
+	bool use_long;
+
+	rcu_read_lock();
+	dn_db = rcu_dereference(neigh->dev->dn_ptr);
+	if (dn_db == NULL) {
+		rcu_read_unlock();
+		return -EINVAL;
+	}
+	use_long = dn_db->use_long;
+	rcu_read_unlock();
+
+	if (dn->flags & DN_NDFLAG_P3)
+		return dn_phase3_output(neigh, sk, skb);
+	if (use_long)
+		return dn_long_output(neigh, sk, skb);
+	else
+		return dn_short_output(neigh, sk, skb);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -362,7 +486,11 @@ void dn_neigh_pointopoint_hello(struct sk_buff *skb)
 /*
  * Ethernet router hello message received
  */
+<<<<<<< HEAD
 int dn_neigh_router_hello(struct sk_buff *skb)
+=======
+int dn_neigh_router_hello(struct net *net, struct sock *sk, struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	struct rtnode_hello_message *msg = (struct rtnode_hello_message *)skb->data;
 
@@ -424,7 +552,11 @@ int dn_neigh_router_hello(struct sk_buff *skb)
 /*
  * Endnode hello message received
  */
+<<<<<<< HEAD
 int dn_neigh_endnode_hello(struct sk_buff *skb)
+=======
+int dn_neigh_endnode_hello(struct net *net, struct sock *sk, struct sk_buff *skb)
+>>>>>>> v4.9.227
 {
 	struct endnode_hello_message *msg = (struct endnode_hello_message *)skb->data;
 	struct neighbour *neigh;
@@ -591,7 +723,11 @@ static const struct file_operations dn_neigh_seq_fops = {
 
 void __init dn_neigh_init(void)
 {
+<<<<<<< HEAD
 	neigh_table_init(&dn_neigh_table);
+=======
+	neigh_table_init(NEIGH_DN_TABLE, &dn_neigh_table);
+>>>>>>> v4.9.227
 	proc_create("decnet_neigh", S_IRUGO, init_net.proc_net,
 		    &dn_neigh_seq_fops);
 }
@@ -599,5 +735,9 @@ void __init dn_neigh_init(void)
 void __exit dn_neigh_cleanup(void)
 {
 	remove_proc_entry("decnet_neigh", init_net.proc_net);
+<<<<<<< HEAD
 	neigh_table_clear(&dn_neigh_table);
+=======
+	neigh_table_clear(NEIGH_DN_TABLE, &dn_neigh_table);
+>>>>>>> v4.9.227
 }

@@ -10,8 +10,13 @@
 #include <linux/gfp.h>
 #include <linux/moduleparam.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <sound/pcm.h>
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+#include <sound/pcm.h>
+>>>>>>> v4.9.227
 #include "pcsp.h"
 
 static bool nforce_wa;

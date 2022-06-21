@@ -18,6 +18,7 @@ if VIRTUALIZATION
 
 config KVM
 	bool "Kernel-based Virtual Machine (KVM) support"
+<<<<<<< HEAD
 	select PREEMPT_NOTIFIERS
 	select ANON_INODES
 	select HAVE_KVM_CPU_RELAX_INTERCEPT
@@ -27,6 +28,27 @@ config KVM
 	---help---
 	  Support hosting virtualized guest machines. You will also
 	  need to select one or more of the processor modules below.
+=======
+	depends on MMU && OF
+	select PREEMPT_NOTIFIERS
+	select ANON_INODES
+	select ARM_GIC
+	select HAVE_KVM_CPU_RELAX_INTERCEPT
+	select HAVE_KVM_ARCH_TLB_FLUSH_ALL
+	select KVM_MMIO
+	select KVM_ARM_HOST
+	select KVM_GENERIC_DIRTYLOG_READ_PROTECT
+	select SRCU
+	select MMU_NOTIFIER
+	select KVM_VFIO
+	select HAVE_KVM_EVENTFD
+	select HAVE_KVM_IRQFD
+	select HAVE_KVM_IRQCHIP
+	select HAVE_KVM_IRQ_ROUTING
+	depends on ARM_VIRT_EXT && ARM_LPAE && ARM_ARCH_TIMER
+	---help---
+	  Support hosting virtualized guest machines.
+>>>>>>> v4.9.227
 
 	  This module provides access to the hardware capabilities through
 	  a character device node named /dev/kvm.
@@ -34,6 +56,7 @@ config KVM
 	  If unsure, say N.
 
 config KVM_ARM_HOST
+<<<<<<< HEAD
 	bool "KVM host support for ARM cpus."
 	depends on KVM
 	depends on MMU
@@ -67,5 +90,12 @@ config KVM_ARM_TIMER
 	default y
 	---help---
 	  Adds support for the Architected Timers in virtual machines
+=======
+	bool
+	---help---
+	  Provides host support for ARM processors.
+
+source drivers/vhost/Kconfig
+>>>>>>> v4.9.227
 
 endif # VIRTUALIZATION

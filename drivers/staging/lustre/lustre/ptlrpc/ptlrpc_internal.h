@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -47,12 +55,27 @@ struct ldlm_res_id;
 struct ptlrpc_request_set;
 extern int test_req_buffer_pressure;
 extern struct mutex ptlrpc_all_services_mutex;
+<<<<<<< HEAD
 
 int ptlrpc_start_thread(struct ptlrpc_service_part *svcpt, int wait);
 /* ptlrpcd.c */
 int ptlrpcd_start(int index, int max, const char *name, struct ptlrpcd_ctl *pc);
 
 /* client.c */
+=======
+extern struct list_head ptlrpc_all_services;
+
+extern struct mutex ptlrpcd_mutex;
+extern struct mutex pinger_mutex;
+
+int ptlrpc_start_thread(struct ptlrpc_service_part *svcpt, int wait);
+/* ptlrpcd.c */
+int ptlrpcd_start(struct ptlrpcd_ctl *pc);
+
+/* client.c */
+void ptlrpc_at_adj_net_latency(struct ptlrpc_request *req,
+			       unsigned int service_time);
+>>>>>>> v4.9.227
 struct ptlrpc_bulk_desc *ptlrpc_new_bulk(unsigned npages, unsigned max_brw,
 					 unsigned type, unsigned portal);
 int ptlrpc_request_cache_init(void);
@@ -60,6 +83,14 @@ void ptlrpc_request_cache_fini(void);
 struct ptlrpc_request *ptlrpc_request_cache_alloc(gfp_t flags);
 void ptlrpc_request_cache_free(struct ptlrpc_request *req);
 void ptlrpc_init_xid(void);
+<<<<<<< HEAD
+=======
+void ptlrpc_set_add_new_req(struct ptlrpcd_ctl *pc,
+			    struct ptlrpc_request *req);
+int ptlrpc_expired_set(void *data);
+int ptlrpc_set_next_timeout(struct ptlrpc_request_set *);
+void ptlrpc_resend_req(struct ptlrpc_request *request);
+>>>>>>> v4.9.227
 
 /* events.c */
 int ptlrpc_init_portals(void);
@@ -69,13 +100,17 @@ void ptlrpc_request_handle_notconn(struct ptlrpc_request *);
 void lustre_assert_wire_constants(void);
 int ptlrpc_import_in_recovery(struct obd_import *imp);
 int ptlrpc_set_import_discon(struct obd_import *imp, __u32 conn_cnt);
+<<<<<<< HEAD
 void ptlrpc_handle_failed_import(struct obd_import *imp);
+=======
+>>>>>>> v4.9.227
 int ptlrpc_replay_next(struct obd_import *imp, int *inflight);
 void ptlrpc_initiate_recovery(struct obd_import *imp);
 
 int lustre_unpack_req_ptlrpc_body(struct ptlrpc_request *req, int offset);
 int lustre_unpack_rep_ptlrpc_body(struct ptlrpc_request *req, int offset);
 
+<<<<<<< HEAD
 #if defined (CONFIG_PROC_FS)
 void ptlrpc_lprocfs_register_service(struct proc_dir_entry *proc_entry,
 				     struct ptlrpc_service *svc);
@@ -89,6 +124,16 @@ void ptlrpc_lprocfs_do_request_stat(struct ptlrpc_request *req,
 #define ptlrpc_lprocfs_rpc_sent(params...) do {} while (0)
 #define ptlrpc_lprocfs_do_request_stat(params...) do {} while (0)
 #endif /* CONFIG_PROC_FS */
+=======
+int ptlrpc_sysfs_register_service(struct kset *parent,
+				  struct ptlrpc_service *svc);
+void ptlrpc_sysfs_unregister_service(struct ptlrpc_service *svc);
+
+void ptlrpc_ldebugfs_register_service(struct dentry *debugfs_entry,
+				      struct ptlrpc_service *svc);
+void ptlrpc_lprocfs_unregister_service(struct ptlrpc_service *svc);
+void ptlrpc_lprocfs_rpc_sent(struct ptlrpc_request *req, long amount);
+>>>>>>> v4.9.227
 
 /* NRS */
 
@@ -103,8 +148,11 @@ struct nrs_core {
 	 * registration/unregistration, and NRS core lprocfs operations.
 	 */
 	struct mutex nrs_mutex;
+<<<<<<< HEAD
 	/* XXX: This is just for liblustre. Remove the #if defined directive
 	 * when the * "cfs_" prefix is dropped from cfs_list_head. */
+=======
+>>>>>>> v4.9.227
 	/**
 	 * List of all policy descriptors registered with NRS core; protected
 	 * by nrs_core::nrs_mutex.
@@ -113,6 +161,11 @@ struct nrs_core {
 
 };
 
+<<<<<<< HEAD
+=======
+extern struct nrs_core nrs_core;
+
+>>>>>>> v4.9.227
 int ptlrpc_service_nrs_setup(struct ptlrpc_service *svc);
 void ptlrpc_service_nrs_cleanup(struct ptlrpc_service *svc);
 
@@ -134,6 +187,7 @@ ptlrpc_nrs_req_get_nolock(struct ptlrpc_service_part *svcpt, bool hp,
 	return ptlrpc_nrs_req_get_nolock0(svcpt, hp, false, force);
 }
 
+<<<<<<< HEAD
 static inline struct ptlrpc_request *
 ptlrpc_nrs_req_peek_nolock(struct ptlrpc_service_part *svcpt, bool hp)
 {
@@ -141,6 +195,8 @@ ptlrpc_nrs_req_peek_nolock(struct ptlrpc_service_part *svcpt, bool hp)
 }
 
 void ptlrpc_nrs_req_del_nolock(struct ptlrpc_request *req);
+=======
+>>>>>>> v4.9.227
 bool ptlrpc_nrs_req_pending_nolock(struct ptlrpc_service_part *svcpt, bool hp);
 
 int ptlrpc_nrs_policy_control(const struct ptlrpc_service *svc,
@@ -246,8 +302,11 @@ int ptlrpc_stop_pinger(void);
 void ptlrpc_pinger_sending_on_import(struct obd_import *imp);
 void ptlrpc_pinger_commit_expected(struct obd_import *imp);
 void ptlrpc_pinger_wake_up(void);
+<<<<<<< HEAD
 void ptlrpc_ping_import_soon(struct obd_import *imp);
 int ping_evictor_wake(struct obd_export *exp);
+=======
+>>>>>>> v4.9.227
 
 /* sec_null.c */
 int  sptlrpc_null_init(void);
@@ -263,6 +322,7 @@ void sptlrpc_enc_pool_fini(void);
 int sptlrpc_proc_enc_pool_seq_show(struct seq_file *m, void *v);
 
 /* sec_lproc.c */
+<<<<<<< HEAD
 #if defined (CONFIG_PROC_FS)
 int  sptlrpc_lproc_init(void);
 void sptlrpc_lproc_fini(void);
@@ -271,6 +331,10 @@ static inline int sptlrpc_lproc_init(void)
 { return 0; }
 static inline void sptlrpc_lproc_fini(void) {}
 #endif
+=======
+int  sptlrpc_lproc_init(void);
+void sptlrpc_lproc_fini(void);
+>>>>>>> v4.9.227
 
 /* sec_gc.c */
 int sptlrpc_gc_init(void);
@@ -289,7 +353,11 @@ void sptlrpc_conf_fini(void);
 int  sptlrpc_init(void);
 void sptlrpc_fini(void);
 
+<<<<<<< HEAD
 static inline int ll_rpc_recoverable_error(int rc)
+=======
+static inline bool ptlrpc_recoverable_error(int rc)
+>>>>>>> v4.9.227
 {
 	return (rc == -ENOTCONN || rc == -ENODEV);
 }
@@ -307,6 +375,54 @@ static inline void tgt_mod_exit(void)
 static inline void ptlrpc_reqset_put(struct ptlrpc_request_set *set)
 {
 	if (atomic_dec_and_test(&set->set_refcount))
+<<<<<<< HEAD
 		OBD_FREE_PTR(set);
 }
+=======
+		kfree(set);
+}
+
+/** initialise ptlrpc common fields */
+static inline void ptlrpc_req_comm_init(struct ptlrpc_request *req)
+{
+	spin_lock_init(&req->rq_lock);
+	atomic_set(&req->rq_refcount, 1);
+	INIT_LIST_HEAD(&req->rq_list);
+	INIT_LIST_HEAD(&req->rq_replay_list);
+}
+
+/** initialise client side ptlrpc request */
+static inline void ptlrpc_cli_req_init(struct ptlrpc_request *req)
+{
+	struct ptlrpc_cli_req *cr = &req->rq_cli;
+
+	ptlrpc_req_comm_init(req);
+
+	req->rq_receiving_reply = 0;
+	req->rq_req_unlinked = 1;
+	req->rq_reply_unlinked = 1;
+
+	req->rq_receiving_reply = 0;
+	req->rq_req_unlinked = 1;
+	req->rq_reply_unlinked = 1;
+
+	INIT_LIST_HEAD(&cr->cr_set_chain);
+	INIT_LIST_HEAD(&cr->cr_ctx_chain);
+	init_waitqueue_head(&cr->cr_reply_waitq);
+	init_waitqueue_head(&cr->cr_set_waitq);
+}
+
+/** initialise server side ptlrpc request */
+static inline void ptlrpc_srv_req_init(struct ptlrpc_request *req)
+{
+	struct ptlrpc_srv_req *sr = &req->rq_srv;
+
+	ptlrpc_req_comm_init(req);
+	req->rq_srv_req = 1;
+	INIT_LIST_HEAD(&sr->sr_exp_list);
+	INIT_LIST_HEAD(&sr->sr_timed_list);
+	INIT_LIST_HEAD(&sr->sr_hist_list);
+}
+
+>>>>>>> v4.9.227
 #endif /* PTLRPC_INTERNAL_H */

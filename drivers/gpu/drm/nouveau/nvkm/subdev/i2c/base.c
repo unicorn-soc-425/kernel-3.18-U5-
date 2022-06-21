@@ -160,8 +160,23 @@ nvkm_i2c_fini(struct nvkm_subdev *subdev, bool suspend)
 {
 	struct nvkm_i2c *i2c = nvkm_i2c(subdev);
 	struct nvkm_i2c_pad *pad;
+<<<<<<< HEAD
 	u32 mask;
 
+=======
+	struct nvkm_i2c_bus *bus;
+	struct nvkm_i2c_aux *aux;
+	u32 mask;
+
+	list_for_each_entry(aux, &i2c->aux, head) {
+		nvkm_i2c_aux_fini(aux);
+	}
+
+	list_for_each_entry(bus, &i2c->bus, head) {
+		nvkm_i2c_bus_fini(bus);
+	}
+
+>>>>>>> v4.9.227
 	if ((mask = (1 << i2c->func->aux) - 1), i2c->func->aux_stat) {
 		i2c->func->aux_mask(i2c, NVKM_I2C_ANY, mask, 0);
 		i2c->func->aux_stat(i2c, &mask, &mask, &mask, &mask);
@@ -175,11 +190,37 @@ nvkm_i2c_fini(struct nvkm_subdev *subdev, bool suspend)
 }
 
 static int
+<<<<<<< HEAD
+=======
+nvkm_i2c_preinit(struct nvkm_subdev *subdev)
+{
+	struct nvkm_i2c *i2c = nvkm_i2c(subdev);
+	struct nvkm_i2c_bus *bus;
+	struct nvkm_i2c_pad *pad;
+
+	/*
+	 * We init our i2c busses as early as possible, since they may be
+	 * needed by the vbios init scripts on some cards
+	 */
+	list_for_each_entry(pad, &i2c->pad, head)
+		nvkm_i2c_pad_init(pad);
+	list_for_each_entry(bus, &i2c->bus, head)
+		nvkm_i2c_bus_init(bus);
+
+	return 0;
+}
+
+static int
+>>>>>>> v4.9.227
 nvkm_i2c_init(struct nvkm_subdev *subdev)
 {
 	struct nvkm_i2c *i2c = nvkm_i2c(subdev);
 	struct nvkm_i2c_bus *bus;
 	struct nvkm_i2c_pad *pad;
+<<<<<<< HEAD
+=======
+	struct nvkm_i2c_aux *aux;
+>>>>>>> v4.9.227
 
 	list_for_each_entry(pad, &i2c->pad, head) {
 		nvkm_i2c_pad_init(pad);
@@ -189,6 +230,13 @@ nvkm_i2c_init(struct nvkm_subdev *subdev)
 		nvkm_i2c_bus_init(bus);
 	}
 
+<<<<<<< HEAD
+=======
+	list_for_each_entry(aux, &i2c->aux, head) {
+		nvkm_i2c_aux_init(aux);
+	}
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -223,6 +271,10 @@ nvkm_i2c_dtor(struct nvkm_subdev *subdev)
 static const struct nvkm_subdev_func
 nvkm_i2c = {
 	.dtor = nvkm_i2c_dtor,
+<<<<<<< HEAD
+=======
+	.preinit = nvkm_i2c_preinit,
+>>>>>>> v4.9.227
 	.init = nvkm_i2c_init,
 	.fini = nvkm_i2c_fini,
 	.intr = nvkm_i2c_intr,
@@ -254,7 +306,11 @@ nvkm_i2c_new_(const struct nvkm_i2c_func *func, struct nvkm_device *device,
 	if (!(i2c = *pi2c = kzalloc(sizeof(*i2c), GFP_KERNEL)))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	nvkm_subdev_ctor(&nvkm_i2c, device, index, 0, &i2c->subdev);
+=======
+	nvkm_subdev_ctor(&nvkm_i2c, device, index, &i2c->subdev);
+>>>>>>> v4.9.227
 	i2c->func = func;
 	INIT_LIST_HEAD(&i2c->pad);
 	INIT_LIST_HEAD(&i2c->bus);

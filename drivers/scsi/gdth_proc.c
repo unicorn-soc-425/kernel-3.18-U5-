@@ -148,7 +148,10 @@ int gdth_show_info(struct seq_file *m, struct Scsi_Host *host)
     gdth_cmd_str *gdtcmd;
     gdth_evt_str *estr;
     char hrec[161];
+<<<<<<< HEAD
     struct timeval tv;
+=======
+>>>>>>> v4.9.227
 
     char *buf;
     gdth_dskstat_str *pds;
@@ -173,7 +176,11 @@ int gdth_show_info(struct seq_file *m, struct Scsi_Host *host)
     /* request is i.e. "cat /proc/scsi/gdth/0" */ 
     /* format: %-15s\t%-10s\t%-15s\t%s */
     /* driver parameters */
+<<<<<<< HEAD
     seq_printf(m, "Driver Parameters:\n");
+=======
+    seq_puts(m, "Driver Parameters:\n");
+>>>>>>> v4.9.227
     if (reserve_list[0] == 0xff)
         strcpy(hrec, "--");
     else {
@@ -192,7 +199,11 @@ int gdth_show_info(struct seq_file *m, struct Scsi_Host *host)
                    max_ids, hdr_channel);
 
     /* controller information */
+<<<<<<< HEAD
     seq_printf(m,"\nDisk Array Controller Information:\n");
+=======
+    seq_puts(m, "\nDisk Array Controller Information:\n");
+>>>>>>> v4.9.227
     seq_printf(m,
                    " Number:       \t%d         \tName:          \t%s\n",
                    ha->hanum, ha->binfo.type_string);
@@ -219,7 +230,11 @@ int gdth_show_info(struct seq_file *m, struct Scsi_Host *host)
 
 #ifdef GDTH_DMA_STATISTICS
     /* controller statistics */
+<<<<<<< HEAD
     seq_printf(m,"\nController Statistics:\n");
+=======
+    seq_puts(m, "\nController Statistics:\n");
+>>>>>>> v4.9.227
     seq_printf(m,
                    " 32-bit DMA buffer:\t%lu\t64-bit DMA buffer:\t%lu\n",
                    ha->dma32_cnt, ha->dma64_cnt);
@@ -227,7 +242,11 @@ int gdth_show_info(struct seq_file *m, struct Scsi_Host *host)
 
     if (ha->more_proc) {
         /* more information: 2. about physical devices */
+<<<<<<< HEAD
         seq_printf(m, "\nPhysical Devices:");
+=======
+        seq_puts(m, "\nPhysical Devices:");
+>>>>>>> v4.9.227
         flag = FALSE;
             
         buf = gdth_ioctl_alloc(ha, GDTH_SCRATCH, FALSE, &paddr);
@@ -326,10 +345,17 @@ int gdth_show_info(struct seq_file *m, struct Scsi_Host *host)
         gdth_ioctl_free(ha, GDTH_SCRATCH, buf, paddr);
 
         if (!flag)
+<<<<<<< HEAD
             seq_printf(m, "\n --\n");
 
         /* 3. about logical drives */
         seq_printf(m,"\nLogical Drives:");
+=======
+            seq_puts(m, "\n --\n");
+
+        /* 3. about logical drives */
+        seq_puts(m, "\nLogical Drives:");
+>>>>>>> v4.9.227
         flag = FALSE;
 
         buf = gdth_ioctl_alloc(ha, GDTH_SCRATCH, FALSE, &paddr);
@@ -411,10 +437,17 @@ int gdth_show_info(struct seq_file *m, struct Scsi_Host *host)
         gdth_ioctl_free(ha, GDTH_SCRATCH, buf, paddr);
         
         if (!flag)
+<<<<<<< HEAD
             seq_printf(m, "\n --\n");
 
         /* 4. about array drives */
         seq_printf(m,"\nArray Drives:");
+=======
+            seq_puts(m, "\n --\n");
+
+        /* 4. about array drives */
+        seq_puts(m, "\nArray Drives:");
+>>>>>>> v4.9.227
         flag = FALSE;
 
         buf = gdth_ioctl_alloc(ha, GDTH_SCRATCH, FALSE, &paddr);
@@ -471,10 +504,17 @@ int gdth_show_info(struct seq_file *m, struct Scsi_Host *host)
         gdth_ioctl_free(ha, GDTH_SCRATCH, buf, paddr);
         
         if (!flag)
+<<<<<<< HEAD
             seq_printf(m, "\n --\n");
 
         /* 5. about host drives */
         seq_printf(m,"\nHost Drives:");
+=======
+            seq_puts(m, "\n --\n");
+
+        /* 5. about host drives */
+        seq_puts(m, "\nHost Drives:");
+>>>>>>> v4.9.227
         flag = FALSE;
 
         buf = gdth_ioctl_alloc(ha, sizeof(gdth_hget_str), FALSE, &paddr);
@@ -527,11 +567,19 @@ int gdth_show_info(struct seq_file *m, struct Scsi_Host *host)
         }
         
         if (!flag)
+<<<<<<< HEAD
             seq_printf(m, "\n --\n");
     }
 
     /* controller events */
     seq_printf(m,"\nController Events:\n");
+=======
+            seq_puts(m, "\n --\n");
+    }
+
+    /* controller events */
+    seq_puts(m, "\nController Events:\n");
+>>>>>>> v4.9.227
 
     for (id = -1;;) {
         id = gdth_read_event(ha, id, estr);
@@ -540,8 +588,19 @@ int gdth_show_info(struct seq_file *m, struct Scsi_Host *host)
         if (estr->event_data.eu.driver.ionode == ha->hanum &&
             estr->event_source == ES_ASYNC) { 
             gdth_log_event(&estr->event_data, hrec);
+<<<<<<< HEAD
             do_gettimeofday(&tv);
             sec = (int)(tv.tv_sec - estr->first_stamp);
+=======
+
+	    /*
+	     * Elapsed seconds subtraction with unsigned operands is
+	     * safe from wrap around in year 2106.  Executes as:
+	     * operand a + (2's complement operand b) + 1
+	     */
+
+	    sec = (int)((u32)ktime_get_real_seconds() - estr->first_stamp);
+>>>>>>> v4.9.227
             if (sec < 0) sec = 0;
             seq_printf(m," date- %02d:%02d:%02d\t%s\n",
                            sec/3600, sec%3600/60, sec%60, hrec);

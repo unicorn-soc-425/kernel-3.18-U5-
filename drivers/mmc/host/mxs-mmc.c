@@ -309,6 +309,12 @@ static void mxs_mmc_ac(struct mxs_mmc_host *host)
 	cmd0 = BF_SSP(cmd->opcode, CMD0_CMD);
 	cmd1 = cmd->arg;
 
+<<<<<<< HEAD
+=======
+	if (cmd->opcode == MMC_STOP_TRANSMISSION)
+		cmd0 |= BM_SSP_CMD0_APPEND_8CYC;
+
+>>>>>>> v4.9.227
 	if (host->sdio_irq_en) {
 		ctrl0 |= BM_SSP_CTRL0_SDIO_IRQ_CHECK;
 		cmd0 |= BM_SSP_CMD0_CONT_CLKING_EN | BM_SSP_CMD0_SLOW_CLKING_EN;
@@ -417,8 +423,12 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 		       ssp->base + HW_SSP_BLOCK_SIZE);
 	}
 
+<<<<<<< HEAD
 	if ((cmd->opcode == MMC_STOP_TRANSMISSION) ||
 	    (cmd->opcode == SD_IO_RW_EXTENDED))
+=======
+	if (cmd->opcode == SD_IO_RW_EXTENDED)
+>>>>>>> v4.9.227
 		cmd0 |= BM_SSP_CMD0_APPEND_8CYC;
 
 	cmd1 = cmd->arg;
@@ -549,7 +559,11 @@ static const struct mmc_host_ops mxs_mmc_ops = {
 	.enable_sdio_irq = mxs_mmc_enable_sdio_irq,
 };
 
+<<<<<<< HEAD
 static struct platform_device_id mxs_ssp_ids[] = {
+=======
+static const struct platform_device_id mxs_ssp_ids[] = {
+>>>>>>> v4.9.227
 	{
 		.name = "imx23-mmc",
 		.driver_data = IMX23_SSP,
@@ -581,10 +595,16 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 	struct regulator *reg_vmmc;
 	struct mxs_ssp *ssp;
 
+<<<<<<< HEAD
 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	irq_err = platform_get_irq(pdev, 0);
 	if (!iores || irq_err < 0)
 		return -EINVAL;
+=======
+	irq_err = platform_get_irq(pdev, 0);
+	if (irq_err < 0)
+		return irq_err;
+>>>>>>> v4.9.227
 
 	mmc = mmc_alloc_host(sizeof(struct mxs_mmc_host), &pdev->dev);
 	if (!mmc)
@@ -593,6 +613,10 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 	host = mmc_priv(mmc);
 	ssp = &host->ssp;
 	ssp->dev = &pdev->dev;
+<<<<<<< HEAD
+=======
+	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> v4.9.227
 	ssp->base = devm_ioremap_resource(&pdev->dev, iores);
 	if (IS_ERR(ssp->base)) {
 		ret = PTR_ERR(ssp->base);
@@ -619,7 +643,13 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 		ret = PTR_ERR(ssp->clk);
 		goto out_mmc_free;
 	}
+<<<<<<< HEAD
 	clk_prepare_enable(ssp->clk);
+=======
+	ret = clk_prepare_enable(ssp->clk);
+	if (ret)
+		goto out_mmc_free;
+>>>>>>> v4.9.227
 
 	ret = mxs_mmc_reset(host);
 	if (ret) {
@@ -659,6 +689,7 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, mmc);
 
+<<<<<<< HEAD
 	ret = devm_request_irq(&pdev->dev, irq_err, mxs_mmc_irq_handler, 0,
 			       DRIVER_NAME, host);
 	if (ret)
@@ -666,6 +697,15 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 
 	spin_lock_init(&host->lock);
 
+=======
+	spin_lock_init(&host->lock);
+
+	ret = devm_request_irq(&pdev->dev, irq_err, mxs_mmc_irq_handler, 0,
+			       dev_name(&pdev->dev), host);
+	if (ret)
+		goto out_free_dma;
+
+>>>>>>> v4.9.227
 	ret = mmc_add_host(mmc);
 	if (ret)
 		goto out_free_dma;
@@ -675,8 +715,12 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 	return 0;
 
 out_free_dma:
+<<<<<<< HEAD
 	if (ssp->dmach)
 		dma_release_channel(ssp->dmach);
+=======
+	dma_release_channel(ssp->dmach);
+>>>>>>> v4.9.227
 out_clk_disable:
 	clk_disable_unprepare(ssp->clk);
 out_mmc_free:
@@ -702,7 +746,11 @@ static int mxs_mmc_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 static int mxs_mmc_suspend(struct device *dev)
 {
 	struct mmc_host *mmc = dev_get_drvdata(dev);
@@ -719,6 +767,7 @@ static int mxs_mmc_resume(struct device *dev)
 	struct mxs_mmc_host *host = mmc_priv(mmc);
 	struct mxs_ssp *ssp = &host->ssp;
 
+<<<<<<< HEAD
 	clk_prepare_enable(ssp->clk);
 	return 0;
 }
@@ -729,15 +778,27 @@ static const struct dev_pm_ops mxs_mmc_pm_ops = {
 };
 #endif
 
+=======
+	return clk_prepare_enable(ssp->clk);
+}
+#endif
+
+static SIMPLE_DEV_PM_OPS(mxs_mmc_pm_ops, mxs_mmc_suspend, mxs_mmc_resume);
+
+>>>>>>> v4.9.227
 static struct platform_driver mxs_mmc_driver = {
 	.probe		= mxs_mmc_probe,
 	.remove		= mxs_mmc_remove,
 	.id_table	= mxs_ssp_ids,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 		.pm	= &mxs_mmc_pm_ops,
 #endif
+=======
+		.pm	= &mxs_mmc_pm_ops,
+>>>>>>> v4.9.227
 		.of_match_table = mxs_mmc_dt_ids,
 	},
 };

@@ -25,7 +25,11 @@
 /*
  * stiH407 compositor properties
  */
+<<<<<<< HEAD
 struct sti_compositor_data stih407_compositor_data = {
+=======
+static const struct sti_compositor_data stih407_compositor_data = {
+>>>>>>> v4.9.227
 	.nb_subdev = 8,
 	.subdev_desc = {
 			{STI_CURSOR_SUBDEV, (int)STI_CURSOR, 0x000},
@@ -39,6 +43,7 @@ struct sti_compositor_data stih407_compositor_data = {
 	},
 };
 
+<<<<<<< HEAD
 /*
  * stiH416 compositor properties
  * Note:
@@ -54,6 +59,23 @@ struct sti_compositor_data stih416_compositor_data = {
 			{STI_MIXER_MAIN_SUBDEV, STI_MIXER_MAIN, 0xC00}
 	},
 };
+=======
+int sti_compositor_debugfs_init(struct sti_compositor *compo,
+				struct drm_minor *minor)
+{
+	unsigned int i;
+
+	for (i = 0; i < STI_MAX_VID; i++)
+		if (compo->vid[i])
+			vid_debugfs_init(compo->vid[i], minor);
+
+	for (i = 0; i < STI_MAX_MIXER; i++)
+		if (compo->mixer[i])
+			sti_mixer_debugfs_init(compo->mixer[i], minor);
+
+	return 0;
+}
+>>>>>>> v4.9.227
 
 static int sti_compositor_bind(struct device *dev,
 			       struct device *master,
@@ -75,13 +97,21 @@ static int sti_compositor_bind(struct device *dev,
 		switch (desc[i].type) {
 		case STI_VID_SUBDEV:
 			compo->vid[vid_id++] =
+<<<<<<< HEAD
 			    sti_vid_create(compo->dev, desc[i].id,
+=======
+			    sti_vid_create(compo->dev, drm_dev, desc[i].id,
+>>>>>>> v4.9.227
 					   compo->regs + desc[i].offset);
 			break;
 		case STI_MIXER_MAIN_SUBDEV:
 		case STI_MIXER_AUX_SUBDEV:
 			compo->mixer[mixer_id++] =
+<<<<<<< HEAD
 			    sti_mixer_create(compo->dev, desc[i].id,
+=======
+			    sti_mixer_create(compo->dev, drm_dev, desc[i].id,
+>>>>>>> v4.9.227
 					     compo->regs + desc[i].offset);
 			break;
 		case STI_GPD_SUBDEV:
@@ -163,9 +193,12 @@ static const struct component_ops sti_compositor_ops = {
 
 static const struct of_device_id compositor_of_match[] = {
 	{
+<<<<<<< HEAD
 		.compatible = "st,stih416-compositor",
 		.data = &stih416_compositor_data,
 	}, {
+=======
+>>>>>>> v4.9.227
 		.compatible = "st,stih407-compositor",
 		.data = &stih407_compositor_data,
 	}, {
@@ -181,6 +214,10 @@ static int sti_compositor_probe(struct platform_device *pdev)
 	struct device_node *vtg_np;
 	struct sti_compositor *compo;
 	struct resource *res;
+<<<<<<< HEAD
+=======
+	unsigned int i;
+>>>>>>> v4.9.227
 
 	compo = devm_kzalloc(dev, sizeof(*compo), GFP_KERNEL);
 	if (!compo) {
@@ -188,7 +225,12 @@ static int sti_compositor_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 	compo->dev = dev;
+<<<<<<< HEAD
 	compo->vtg_vblank_nb.notifier_call = sti_crtc_vblank_cb;
+=======
+	for (i = 0; i < STI_MAX_MIXER; i++)
+		compo->vtg_vblank_nb[i].notifier_call = sti_crtc_vblank_cb;
+>>>>>>> v4.9.227
 
 	/* populate data structure depending on compatibility */
 	BUG_ON(!of_match_node(compositor_of_match, np)->data);
@@ -234,23 +276,41 @@ static int sti_compositor_probe(struct platform_device *pdev)
 	}
 
 	/* Get reset resources */
+<<<<<<< HEAD
 	compo->rst_main = devm_reset_control_get(dev, "compo-main");
+=======
+	compo->rst_main = devm_reset_control_get_shared(dev, "compo-main");
+>>>>>>> v4.9.227
 	/* Take compo main out of reset */
 	if (!IS_ERR(compo->rst_main))
 		reset_control_deassert(compo->rst_main);
 
+<<<<<<< HEAD
 	compo->rst_aux = devm_reset_control_get(dev, "compo-aux");
+=======
+	compo->rst_aux = devm_reset_control_get_shared(dev, "compo-aux");
+>>>>>>> v4.9.227
 	/* Take compo aux out of reset */
 	if (!IS_ERR(compo->rst_aux))
 		reset_control_deassert(compo->rst_aux);
 
 	vtg_np = of_parse_phandle(pdev->dev.of_node, "st,vtg", 0);
 	if (vtg_np)
+<<<<<<< HEAD
 		compo->vtg_main = of_vtg_find(vtg_np);
 
 	vtg_np = of_parse_phandle(pdev->dev.of_node, "st,vtg", 1);
 	if (vtg_np)
 		compo->vtg_aux = of_vtg_find(vtg_np);
+=======
+		compo->vtg[STI_MIXER_MAIN] = of_vtg_find(vtg_np);
+	of_node_put(vtg_np);
+
+	vtg_np = of_parse_phandle(pdev->dev.of_node, "st,vtg", 1);
+	if (vtg_np)
+		compo->vtg[STI_MIXER_AUX] = of_vtg_find(vtg_np);
+	of_node_put(vtg_np);
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, compo);
 

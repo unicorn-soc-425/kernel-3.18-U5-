@@ -275,7 +275,11 @@ static char remcomOutBuffer[BUFMAX];
 /* Error and warning messages. */
 enum error_type
 {
+<<<<<<< HEAD
 	SUCCESS, E01, E02, E03, E04, E05, E06, E07
+=======
+	SUCCESS, E01, E02, E03, E04, E05, E06, E07, E08
+>>>>>>> v4.9.227
 };
 static char *error_message[] =
 {
@@ -286,7 +290,12 @@ static char *error_message[] =
 	"E04 The command is not supported - [s,C,S,!,R,d,r] - internal error.",
 	"E05 Change register content - P - the register is not implemented..",
 	"E06 Change memory content - M - internal error.",
+<<<<<<< HEAD
 	"E07 Change register content - P - the register is not stored on the stack"
+=======
+	"E07 Change register content - P - the register is not stored on the stack",
+	"E08 Invalid parameter"
+>>>>>>> v4.9.227
 };
 /********************************* Register image ****************************/
 /* Use the order of registers as defined in "AXIS ETRAX CRIS Programmer's
@@ -351,7 +360,11 @@ char internal_stack[INTERNAL_STACK_SIZE];
    breakpoint to be handled. A static breakpoint uses the content of register
    BRP as it is whereas a dynamic breakpoint requires subtraction with 2
    in order to execute the instruction. The first breakpoint is static. */
+<<<<<<< HEAD
 static unsigned char is_dyn_brkp = 0;
+=======
+static unsigned char __used is_dyn_brkp;
+>>>>>>> v4.9.227
 
 /********************************* String library ****************************/
 /* Single-step over library functions creates trap loops. */
@@ -413,6 +426,7 @@ gdb_cris_strtol (const char *s, char **endptr, int base)
 }
 
 /********************************** Packet I/O ******************************/
+<<<<<<< HEAD
 /* Returns the integer equivalent of a hexadecimal character. */
 static int
 hex (char ch)
@@ -425,6 +439,8 @@ hex (char ch)
 		return (ch - 'A' + 10);
 	return (-1);
 }
+=======
+>>>>>>> v4.9.227
 
 /* Convert the memory, pointed to by mem into hexadecimal representation.
    Put the result in buf, and return a pointer to the last character
@@ -455,6 +471,7 @@ mem2hex(char *buf, unsigned char *mem, int count)
 	return (buf);
 }
 
+<<<<<<< HEAD
 /* Convert the array, in hexadecimal representation, pointed to by buf into
    binary representation. Put the result in mem, and return a pointer to
    the character after the last byte written. */
@@ -471,6 +488,8 @@ hex2mem (unsigned char *mem, char *buf, int count)
 	return (mem);
 }
 
+=======
+>>>>>>> v4.9.227
 /* Put the content of the array, in binary representation, pointed to by buf
    into memory pointed to by mem, and return a pointer to the character after
    the last byte written.
@@ -524,8 +543,13 @@ getpacket (char *buffer)
 		buffer[count] = '\0';
 		
 		if (ch == '#') {
+<<<<<<< HEAD
 			xmitcsum = hex (getDebugChar ()) << 4;
 			xmitcsum += hex (getDebugChar ());
+=======
+			xmitcsum = hex_to_bin(getDebugChar()) << 4;
+			xmitcsum += hex_to_bin(getDebugChar());
+>>>>>>> v4.9.227
 			if (checksum != xmitcsum) {
 				/* Wrong checksum */
 				putDebugChar ('-');
@@ -599,7 +623,11 @@ putDebugString (const unsigned char *str, int length)
 
 /********************************* Register image ****************************/
 /* Write a value to a specified register in the register image of the current
+<<<<<<< HEAD
    thread. Returns status code SUCCESS, E02 or E05. */
+=======
+   thread. Returns status code SUCCESS, E02, E05 or E08. */
+>>>>>>> v4.9.227
 static int
 write_register (int regno, char *val)
 {
@@ -608,8 +636,14 @@ write_register (int regno, char *val)
 
         if (regno >= R0 && regno <= PC) {
 		/* 32-bit register with simple offset. */
+<<<<<<< HEAD
 		hex2mem ((unsigned char *)current_reg + regno * sizeof(unsigned int),
 			 val, sizeof(unsigned int));
+=======
+		if (hex2bin((unsigned char *)current_reg + regno * sizeof(unsigned int),
+			    val, sizeof(unsigned int)))
+			status = E08;
+>>>>>>> v4.9.227
 	}
         else if (regno == P0 || regno == VR || regno == P4 || regno == P8) {
 		/* Do not support read-only registers. */
@@ -618,6 +652,7 @@ write_register (int regno, char *val)
         else if (regno == CCR) {
 		/* 16 bit register with complex offset. (P4 is read-only, P6 is not implemented, 
                    and P7 (MOF) is 32 bits in ETRAX 100LX. */
+<<<<<<< HEAD
 		hex2mem ((unsigned char *)&(current_reg->ccr) + (regno-CCR) * sizeof(unsigned short),
 			 val, sizeof(unsigned short));
 	}
@@ -625,6 +660,17 @@ write_register (int regno, char *val)
 		/* 32 bit register with complex offset.  (P8 has been taken care of.) */
 		hex2mem ((unsigned char *)&(current_reg->ibr) + (regno-IBR) * sizeof(unsigned int),
 			 val, sizeof(unsigned int));
+=======
+		if (hex2bin((unsigned char *)&(current_reg->ccr) + (regno-CCR) * sizeof(unsigned short),
+			    val, sizeof(unsigned short)))
+			status = E08;
+	}
+	else if (regno >= MOF && regno <= USP) {
+		/* 32 bit register with complex offset.  (P8 has been taken care of.) */
+		if (hex2bin((unsigned char *)&(current_reg->ibr) + (regno-IBR) * sizeof(unsigned int),
+			    val, sizeof(unsigned int)))
+			status = E08;
+>>>>>>> v4.9.227
 	} 
         else {
 		/* Do not support nonexisting or unimplemented registers (P2, P3, and P6). */
@@ -759,9 +805,17 @@ handle_exception (int sigval)
 				/* Write registers. GXX..XX
 				   Each byte of register data  is described by two hex digits.
 				   Success: OK
+<<<<<<< HEAD
 				   Failure: void. */
 				hex2mem((char *)&cris_reg, &remcomInBuffer[1], sizeof(registers));
 				gdb_cris_strcpy (remcomOutBuffer, "OK");
+=======
+				   Failure: E08. */
+				if (hex2bin((char *)&cris_reg, &remcomInBuffer[1], sizeof(registers)))
+					gdb_cris_strcpy (remcomOutBuffer, error_message[E08]);
+				else
+					gdb_cris_strcpy (remcomOutBuffer, "OK");
+>>>>>>> v4.9.227
 				break;
 				
 			case 'P':
@@ -771,7 +825,11 @@ handle_exception (int sigval)
 				   for each byte in the register (target byte order). P1f=11223344 means
 				   set register 31 to 44332211.
 				   Success: OK
+<<<<<<< HEAD
 				   Failure: E02, E05 */
+=======
+				   Failure: E02, E05, E08 */
+>>>>>>> v4.9.227
 				{
 					char *suffix;
 					int regno = gdb_cris_strtol (&remcomInBuffer[1], &suffix, 16);
@@ -791,6 +849,13 @@ handle_exception (int sigval)
 							/* Do not support non-existing registers on the stack. */
 							gdb_cris_strcpy (remcomOutBuffer, error_message[E07]);
 							break;
+<<<<<<< HEAD
+=======
+						case E08:
+							/* Invalid parameter. */
+							gdb_cris_strcpy (remcomOutBuffer, error_message[E08]);
+							break;
+>>>>>>> v4.9.227
 						default:
 							/* Valid register number. */
 							gdb_cris_strcpy (remcomOutBuffer, "OK");
@@ -826,7 +891,11 @@ handle_exception (int sigval)
 				   AA..AA is the start address,  LLLL is the number of bytes, and
 				   XX..XX is the hexadecimal data.
 				   Success: OK
+<<<<<<< HEAD
 				   Failure: void. */
+=======
+				   Failure: E08. */
+>>>>>>> v4.9.227
 				{
 					char *lenptr;
 					char *dataptr;
@@ -835,6 +904,7 @@ handle_exception (int sigval)
 					int length = gdb_cris_strtol(lenptr+1, &dataptr, 16);
 					if (*lenptr == ',' && *dataptr == ':') {
 						if (remcomInBuffer[0] == 'M') {
+<<<<<<< HEAD
 							hex2mem(addr, dataptr + 1, length);
 						}
 						else /* X */ {
@@ -843,6 +913,17 @@ handle_exception (int sigval)
 						gdb_cris_strcpy (remcomOutBuffer, "OK");
 					}
 					else {
+=======
+							if (hex2bin(addr, dataptr + 1, length))
+								gdb_cris_strcpy (remcomOutBuffer, error_message[E08]);
+							else
+								gdb_cris_strcpy (remcomOutBuffer, "OK");
+						} else /* X */ {
+							bin2mem(addr, dataptr + 1, length);
+							gdb_cris_strcpy (remcomOutBuffer, "OK");
+						}
+					} else {
+>>>>>>> v4.9.227
 						gdb_cris_strcpy (remcomOutBuffer, error_message[E06]);
 					}
 				}
@@ -970,7 +1051,11 @@ asm ("\n"
 "  move     $ibr,[cris_reg+0x4E]  ; P9,\n"
 "  move     $irp,[cris_reg+0x52]  ; P10,\n"
 "  move     $srp,[cris_reg+0x56]  ; P11,\n"
+<<<<<<< HEAD
 "  move     $dtp0,[cris_reg+0x5A] ; P12, register BAR, assembler might not know BAR\n"
+=======
+"  move     $bar,[cris_reg+0x5A]  ; P12,\n"
+>>>>>>> v4.9.227
 "                            ; P13, register DCCR already saved\n"
 ";; Due to the old assembler-versions BRP might not be recognized\n"
 "  .word 0xE670              ; move brp,r0\n"
@@ -1063,7 +1148,11 @@ asm ("\n"
 "  move     $ibr,[cris_reg+0x4E]  ; P9,\n"
 "  move     $irp,[cris_reg+0x52]  ; P10,\n"
 "  move     $srp,[cris_reg+0x56]  ; P11,\n"
+<<<<<<< HEAD
 "  move     $dtp0,[cris_reg+0x5A] ; P12, register BAR, assembler might not know BAR\n"
+=======
+"  move     $bar,[cris_reg+0x5A]  ; P12,\n"
+>>>>>>> v4.9.227
 "                            ; P13, register DCCR already saved\n"
 ";; Due to the old assembler-versions BRP might not be recognized\n"
 "  .word 0xE670              ; move brp,r0\n"

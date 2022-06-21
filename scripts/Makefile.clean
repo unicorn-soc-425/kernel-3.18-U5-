@@ -7,6 +7,7 @@ src := $(obj)
 PHONY := __clean
 __clean:
 
+<<<<<<< HEAD
 # Shorthand for $(Q)$(MAKE) scripts/Makefile.clean obj=dir
 # Usage:
 # $(Q)$(MAKE) $(clean)=dir
@@ -15,6 +16,13 @@ clean := -f $(srctree)/scripts/Makefile.clean obj
 # The filename Kbuild has precedence over Makefile
 kbuild-dir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
 -include $(if $(wildcard $(kbuild-dir)/Kbuild), $(kbuild-dir)/Kbuild, $(kbuild-dir)/Makefile)
+=======
+include scripts/Kbuild.include
+
+# The filename Kbuild has precedence over Makefile
+kbuild-dir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
+include $(if $(wildcard $(kbuild-dir)/Kbuild), $(kbuild-dir)/Kbuild, $(kbuild-dir)/Makefile)
+>>>>>>> v4.9.227
 
 # Figure out what we need to build from the various variables
 # ==========================================================================
@@ -41,7 +49,13 @@ subdir-ymn	:= $(addprefix $(obj)/,$(subdir-ymn))
 __clean-files	:= $(extra-y) $(extra-m) $(extra-)       \
 		   $(always) $(targets) $(clean-files)   \
 		   $(host-progs)                         \
+<<<<<<< HEAD
 		   $(hostprogs-y) $(hostprogs-m) $(hostprogs-)
+=======
+		   $(hostprogs-y) $(hostprogs-m) $(hostprogs-) \
+		   $(hostlibs-y) $(hostlibs-m) $(hostlibs-) \
+		   $(hostcxxlibs-y) $(hostcxxlibs-m)
+>>>>>>> v4.9.227
 
 __clean-files   := $(filter-out $(no-clean-files), $(__clean-files))
 
@@ -74,9 +88,12 @@ endif
 ifneq ($(strip $(__clean-dirs)),)
 	+$(call cmd,cleandir)
 endif
+<<<<<<< HEAD
 ifneq ($(strip $(clean-rule)),)
 	+$(clean-rule)
 endif
+=======
+>>>>>>> v4.9.227
 	@:
 
 
@@ -91,11 +108,14 @@ PHONY += $(subdir-ymn)
 $(subdir-ymn):
 	$(Q)$(MAKE) $(clean)=$@
 
+<<<<<<< HEAD
 # If quiet is set, only print short version of command
 
 cmd = @$(if $($(quiet)cmd_$(1)),echo '  $($(quiet)cmd_$(1))' &&) $(cmd_$(1))
 
 
+=======
+>>>>>>> v4.9.227
 # Declare the contents of the .PHONY variable as phony.  We keep that
 # information in a variable se we can use it in if_changed and friends.
 

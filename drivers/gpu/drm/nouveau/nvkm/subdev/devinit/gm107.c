@@ -46,7 +46,11 @@ gm107_devinit_disable(struct nvkm_devinit *init)
 
 static const struct nvkm_devinit_func
 gm107_devinit = {
+<<<<<<< HEAD
 	.preinit = nv50_devinit_preinit,
+=======
+	.preinit = gf100_devinit_preinit,
+>>>>>>> v4.9.227
 	.init = nv50_devinit_init,
 	.post = nv04_devinit_post,
 	.pll_set = gf100_devinit_pll_set,

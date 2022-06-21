@@ -18,6 +18,13 @@
 		serial0 = &uartd;
 	};
 
+<<<<<<< HEAD
+=======
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+>>>>>>> v4.9.227
 	memory {
 		reg = <0x80000000 0x40000000>;
 	};
@@ -893,7 +900,11 @@
 		palmas: tps65913@58 {
 			compatible = "ti,palmas";
 			reg = <0x58>;
+<<<<<<< HEAD
 			interrupts = <0 86 IRQ_TYPE_LEVEL_LOW>;
+=======
+			interrupts = <0 86 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>> v4.9.227
 
 			#interrupt-cells = <2>;
 			interrupt-controller;
@@ -1145,7 +1156,11 @@
 
 		clk32k_in: clock@0 {
 			compatible = "fixed-clock";
+<<<<<<< HEAD
 			reg=<0>;
+=======
+			reg = <0>;
+>>>>>>> v4.9.227
 			#clock-cells = <0>;
 			clock-frequency = <32768>;
 		};
@@ -1164,7 +1179,11 @@
 			label = "Power";
 			gpios = <&gpio TEGRA_GPIO(Q, 0) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 
 		volume_down {

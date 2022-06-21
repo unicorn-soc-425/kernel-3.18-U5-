@@ -1,7 +1,11 @@
 /*
  * DVB USB framework
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-6 Patrick Boettcher <patrick.boettcher@desy.de>
+=======
+ * Copyright (C) 2004-6 Patrick Boettcher <patrick.boettcher@posteo.de>
+>>>>>>> v4.9.227
  * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -25,6 +29,10 @@
 #include <linux/usb/input.h>
 #include <linux/firmware.h>
 #include <media/rc-core.h>
+<<<<<<< HEAD
+=======
+#include <media/media-device.h>
+>>>>>>> v4.9.227
 
 #include "dvb_frontend.h"
 #include "dvb_demux.h"
@@ -354,6 +362,10 @@ struct dvb_usb_adapter {
  * @name: device name
  * @rc_map: name of rc codes table
  * @rc_polling_active: set when RC polling is active
+<<<<<<< HEAD
+=======
+ * @intf: pointer to the device's struct usb_interface
+>>>>>>> v4.9.227
  * @udev: pointer to the device's struct usb_device
  * @rc: remote controller configuration
  * @powered: indicated whether the device is power or not
@@ -370,6 +382,10 @@ struct dvb_usb_device {
 	const char *name;
 	const char *rc_map;
 	bool rc_polling_active;
+<<<<<<< HEAD
+=======
+	struct usb_interface *intf;
+>>>>>>> v4.9.227
 	struct usb_device *udev;
 	struct dvb_usb_rc rc;
 	int powered;

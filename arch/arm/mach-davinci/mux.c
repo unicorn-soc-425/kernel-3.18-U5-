@@ -15,6 +15,12 @@
  *
  * Copyright (C) 2008 Texas Instruments.
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/spinlock.h>
@@ -27,7 +33,11 @@ static void __iomem *pinmux_base;
 /*
  * Sets the DAVINCI MUX register based on the table
  */
+<<<<<<< HEAD
 int __init_or_module davinci_cfg_reg(const unsigned long index)
+=======
+int davinci_cfg_reg(const unsigned long index)
+>>>>>>> v4.9.227
 {
 	static DEFINE_SPINLOCK(mux_spin_lock);
 	struct davinci_soc_info *soc_info = &davinci_soc_info;
@@ -46,7 +56,11 @@ int __init_or_module davinci_cfg_reg(const unsigned long index)
 	}
 
 	if (index >= soc_info->pinmux_pins_num) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Invalid pin mux index: %lu (%lu)\n",
+=======
+		pr_err("Invalid pin mux index: %lu (%lu)\n",
+>>>>>>> v4.9.227
 		       index, soc_info->pinmux_pins_num);
 		dump_stack();
 		return -ENODEV;
@@ -55,7 +69,11 @@ int __init_or_module davinci_cfg_reg(const unsigned long index)
 	cfg = &soc_info->pinmux_pins[index];
 
 	if (cfg->name == NULL) {
+<<<<<<< HEAD
 		printk(KERN_ERR "No entry for the specified index\n");
+=======
+		pr_err("No entry for the specified index\n");
+>>>>>>> v4.9.227
 		return -ENODEV;
 	}
 
@@ -82,15 +100,25 @@ int __init_or_module davinci_cfg_reg(const unsigned long index)
 
 	if (warn) {
 #ifdef CONFIG_DAVINCI_MUX_WARNINGS
+<<<<<<< HEAD
 		printk(KERN_WARNING "MUX: initialized %s\n", cfg->name);
+=======
+		pr_warn("initialized %s\n", cfg->name);
+>>>>>>> v4.9.227
 #endif
 	}
 
 #ifdef CONFIG_DAVINCI_MUX_DEBUG
 	if (cfg->debug || warn) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "MUX: Setting register %s\n", cfg->name);
 		printk(KERN_WARNING "	   %s (0x%08x) = 0x%08x -> 0x%08x\n",
 		       cfg->mux_reg_name, cfg->mux_reg, reg_orig, reg);
+=======
+		pr_warn("Setting register %s\n", cfg->name);
+		pr_warn("   %s (0x%08x) = 0x%08x -> 0x%08x\n",
+			cfg->mux_reg_name, cfg->mux_reg, reg_orig, reg);
+>>>>>>> v4.9.227
 	}
 #endif
 
@@ -98,7 +126,11 @@ int __init_or_module davinci_cfg_reg(const unsigned long index)
 }
 EXPORT_SYMBOL(davinci_cfg_reg);
 
+<<<<<<< HEAD
 int __init_or_module davinci_cfg_reg_list(const short pins[])
+=======
+int davinci_cfg_reg_list(const short pins[])
+>>>>>>> v4.9.227
 {
 	int i, error = -EINVAL;
 

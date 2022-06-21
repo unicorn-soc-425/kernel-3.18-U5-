@@ -112,8 +112,13 @@ unsigned long long read_size(struct event_format *event, void *ptr, int size)
 	return pevent_read_number(event->pevent, ptr, size);
 }
 
+<<<<<<< HEAD
 void event_format__print(struct event_format *event,
 			 int cpu, void *data, int size)
+=======
+void event_format__fprintf(struct event_format *event,
+			   int cpu, void *data, int size, FILE *fp)
+>>>>>>> v4.9.227
 {
 	struct pevent_record record;
 	struct trace_seq s;
@@ -125,6 +130,7 @@ void event_format__print(struct event_format *event,
 
 	trace_seq_init(&s);
 	pevent_event_info(&s, event, &record);
+<<<<<<< HEAD
 	trace_seq_do_printf(&s);
 	trace_seq_destroy(&s);
 }
@@ -157,6 +163,16 @@ void parse_proc_kallsyms(struct pevent *pevent,
 
 		line = strtok_r(NULL, "\n", &next);
 	}
+=======
+	trace_seq_do_fprintf(&s, fp);
+	trace_seq_destroy(&s);
+}
+
+void event_format__print(struct event_format *event,
+			 int cpu, void *data, int size)
+{
+	return event_format__fprintf(event, cpu, data, size, stdout);
+>>>>>>> v4.9.227
 }
 
 void parse_ftrace_printk(struct pevent *pevent,
@@ -167,7 +183,11 @@ void parse_ftrace_printk(struct pevent *pevent,
 	char *line;
 	char *next = NULL;
 	char *addr_str;
+<<<<<<< HEAD
 	char *fmt;
+=======
+	char *fmt = NULL;
+>>>>>>> v4.9.227
 
 	line = strtok_r(file, "\n", &next);
 	while (line) {
@@ -233,7 +253,11 @@ static const struct flag flags[] = {
 	{ "NET_TX_SOFTIRQ", 2 },
 	{ "NET_RX_SOFTIRQ", 3 },
 	{ "BLOCK_SOFTIRQ", 4 },
+<<<<<<< HEAD
 	{ "BLOCK_IOPOLL_SOFTIRQ", 5 },
+=======
+	{ "IRQ_POLL_SOFTIRQ", 5 },
+>>>>>>> v4.9.227
 	{ "TASKLET_SOFTIRQ", 6 },
 	{ "SCHED_SOFTIRQ", 7 },
 	{ "HRTIMER_SOFTIRQ", 8 },

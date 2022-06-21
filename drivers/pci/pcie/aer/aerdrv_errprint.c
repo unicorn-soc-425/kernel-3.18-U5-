@@ -219,6 +219,7 @@ int cper_severity_to_aer(int cper_severity)
 }
 EXPORT_SYMBOL_GPL(cper_severity_to_aer);
 
+<<<<<<< HEAD
 void cper_print_aer(struct pci_dev *dev, int cper_severity,
 		    struct aer_capability_regs *aer)
 {
@@ -228,6 +229,15 @@ void cper_print_aer(struct pci_dev *dev, int cper_severity,
 
 	aer_severity = cper_severity_to_aer(cper_severity);
 
+=======
+void cper_print_aer(struct pci_dev *dev, int aer_severity,
+		    struct aer_capability_regs *aer)
+{
+	int layer, agent, status_strs_size, tlp_header_valid = 0;
+	u32 status, mask;
+	const char **status_strs;
+
+>>>>>>> v4.9.227
 	if (aer_severity == AER_CORRECTABLE) {
 		status = aer->cor_status;
 		mask = aer->cor_mask;

@@ -2,9 +2,17 @@
 #define pr_fmt(fmt) "list_sort_test: " fmt
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/list_sort.h>
 #include <linux/slab.h>
+=======
+#include <linux/bug.h>
+#include <linux/compiler.h>
+#include <linux/export.h>
+#include <linux/string.h>
+#include <linux/list_sort.h>
+>>>>>>> v4.9.227
 #include <linux/list.h>
 
 #define MAX_LIST_LENGTH_BITS 20
@@ -146,6 +154,10 @@ EXPORT_SYMBOL(list_sort);
 
 #ifdef CONFIG_TEST_LIST_SORT
 
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> v4.9.227
 #include <linux/random.h>
 
 /*
@@ -286,5 +298,9 @@ exit:
 	kfree(elts);
 	return err;
 }
+<<<<<<< HEAD
 module_init(list_sort_test);
+=======
+late_initcall(list_sort_test);
+>>>>>>> v4.9.227
 #endif /* CONFIG_TEST_LIST_SORT */

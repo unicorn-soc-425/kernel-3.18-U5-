@@ -14,6 +14,11 @@
 
 #include <linux/init.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/driver.h>
+/* FIXME: needed for gpio_set_value() - convert to use descriptors or hogs */
+>>>>>>> v4.9.227
 #include <linux/gpio.h>
 #include <mach/hardware.h>
 
@@ -25,7 +30,11 @@ static const struct gpio_led puv3_gpio_leds[] = {
 	{ .name = "cpuhealth", .gpio = GPO_CPU_HEALTH, .active_low = 0,
 		.default_trigger = "heartbeat",	},
 	{ .name = "hdd_led", .gpio = GPO_HDD_LED, .active_low = 1,
+<<<<<<< HEAD
 		.default_trigger = "ide-disk", },
+=======
+		.default_trigger = "disk-activity", },
+>>>>>>> v4.9.227
 };
 
 static const struct gpio_led_platform_data puv3_gpio_led_data = {
@@ -52,7 +61,11 @@ device_initcall(puv3_gpio_leds_init);
 
 static int puv3_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	return readl(GPIO_GPLR) & GPIO_GPIO(offset);
+=======
+	return !!(readl(GPIO_GPLR) & GPIO_GPIO(offset));
+>>>>>>> v4.9.227
 }
 
 static void puv3_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
@@ -118,5 +131,9 @@ void __init puv3_init_gpio(void)
  *	gpio_set_value(GPO_SET_V2, 1);
  */
 #endif
+<<<<<<< HEAD
 	gpiochip_add(&puv3_gpio_chip);
+=======
+	gpiochip_add_data(&puv3_gpio_chip, NULL);
+>>>>>>> v4.9.227
 }

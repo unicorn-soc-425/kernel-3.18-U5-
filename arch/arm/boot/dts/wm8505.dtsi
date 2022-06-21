@@ -281,8 +281,13 @@
 
 		sdhc@d800a000 {
 			compatible = "wm,wm8505-sdhc";
+<<<<<<< HEAD
 			reg = <0xd800a000 0x1000>;
 			interrupts = <20 21>;
+=======
+			reg = <0xd800a000 0x400>;
+			interrupts = <20>, <21>;
+>>>>>>> v4.9.227
 			clocks = <&clksdhc>;
 			bus-width = <4>;
 		};

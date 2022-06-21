@@ -24,6 +24,10 @@
 #include "cifsfs.h"
 #include "dns_resolve.h"
 #include "cifs_debug.h"
+<<<<<<< HEAD
+=======
+#include "cifs_unicode.h"
+>>>>>>> v4.9.227
 
 static LIST_HEAD(cifs_dfs_automount_list);
 
@@ -150,8 +154,17 @@ char *cifs_compose_mount_options(const char *sb_mountdata,
 	if (sb_mountdata == NULL)
 		return ERR_PTR(-EINVAL);
 
+<<<<<<< HEAD
 	if (strlen(fullpath) - ref->path_consumed)
 		prepath = fullpath + ref->path_consumed;
+=======
+	if (strlen(fullpath) - ref->path_consumed) {
+		prepath = fullpath + ref->path_consumed;
+		/* skip initial delimiter */
+		if (*prepath == '/' || *prepath == '\\')
+			prepath++;
+	}
+>>>>>>> v4.9.227
 
 	*devname = cifs_build_devname(ref->node_name, prepath);
 	if (IS_ERR(*devname)) {
@@ -174,7 +187,11 @@ char *cifs_compose_mount_options(const char *sb_mountdata,
 	 * string to the length of the original string to allow for worst case.
 	 */
 	md_len = strlen(sb_mountdata) + INET6_ADDRSTRLEN;
+<<<<<<< HEAD
 	mountdata = kzalloc(md_len + 1, GFP_KERNEL);
+=======
+	mountdata = kzalloc(md_len + sizeof("ip=") + 1, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (mountdata == NULL) {
 		rc = -ENOMEM;
 		goto compose_mount_options_err;
@@ -240,7 +257,12 @@ compose_mount_options_err:
  * @fullpath:		full path in UNC format
  * @ref:		server's referral
  */
+<<<<<<< HEAD
 static struct vfsmount *cifs_dfs_do_refmount(struct cifs_sb_info *cifs_sb,
+=======
+static struct vfsmount *cifs_dfs_do_refmount(struct dentry *mntpt,
+		struct cifs_sb_info *cifs_sb,
+>>>>>>> v4.9.227
 		const char *fullpath, const struct dfs_info3_param *ref)
 {
 	struct vfsmount *mnt;
@@ -254,7 +276,11 @@ static struct vfsmount *cifs_dfs_do_refmount(struct cifs_sb_info *cifs_sb,
 	if (IS_ERR(mountdata))
 		return (struct vfsmount *)mountdata;
 
+<<<<<<< HEAD
 	mnt = vfs_kern_mount(&cifs_fs_type, 0, devname, mountdata);
+=======
+	mnt = vfs_submount(mntpt, &cifs_fs_type, devname, mountdata);
+>>>>>>> v4.9.227
 	kfree(mountdata);
 	kfree(devname);
 	return mnt;
@@ -265,9 +291,15 @@ static void dump_referral(const struct dfs_info3_param *ref)
 {
 	cifs_dbg(FYI, "DFS: ref path: %s\n", ref->path_name);
 	cifs_dbg(FYI, "DFS: node path: %s\n", ref->node_name);
+<<<<<<< HEAD
 	cifs_dbg(FYI, "DFS: fl: %hd, srv_type: %hd\n",
 		 ref->flags, ref->server_type);
 	cifs_dbg(FYI, "DFS: ref_flags: %hd, path_consumed: %hd\n",
+=======
+	cifs_dbg(FYI, "DFS: fl: %d, srv_type: %d\n",
+		 ref->flags, ref->server_type);
+	cifs_dbg(FYI, "DFS: ref_flags: %d, path_consumed: %d\n",
+>>>>>>> v4.9.227
 		 ref->ref_flag, ref->path_consumed);
 }
 
@@ -301,7 +333,11 @@ static struct vfsmount *cifs_dfs_do_automount(struct dentry *mntpt)
 	if (full_path == NULL)
 		goto cdda_exit;
 
+<<<<<<< HEAD
 	cifs_sb = CIFS_SB(mntpt->d_inode->i_sb);
+=======
+	cifs_sb = CIFS_SB(mntpt->d_sb);
+>>>>>>> v4.9.227
 	tlink = cifs_sb_tlink(cifs_sb);
 	if (IS_ERR(tlink)) {
 		mnt = ERR_CAST(tlink);
@@ -312,7 +348,11 @@ static struct vfsmount *cifs_dfs_do_automount(struct dentry *mntpt)
 	xid = get_xid();
 	rc = get_dfs_path(xid, ses, full_path + 1, cifs_sb->local_nls,
 		&num_referrals, &referrals,
+<<<<<<< HEAD
 		cifs_sb->mnt_cifs_flags & CIFS_MOUNT_MAP_SPECIAL_CHR);
+=======
+		cifs_remap(cifs_sb));
+>>>>>>> v4.9.227
 	free_xid(xid);
 
 	cifs_put_tlink(tlink);
@@ -329,7 +369,11 @@ static struct vfsmount *cifs_dfs_do_automount(struct dentry *mntpt)
 			mnt = ERR_PTR(-EINVAL);
 			break;
 		}
+<<<<<<< HEAD
 		mnt = cifs_dfs_do_refmount(cifs_sb,
+=======
+		mnt = cifs_dfs_do_refmount(mntpt, cifs_sb,
+>>>>>>> v4.9.227
 				full_path, referrals + i);
 		cifs_dbg(FYI, "%s: cifs_dfs_do_refmount:%s , mnt:%p\n",
 			 __func__, referrals[i].node_name, mnt);

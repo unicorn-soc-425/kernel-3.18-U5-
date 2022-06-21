@@ -56,6 +56,10 @@ static const char *flexcop_device_names[] = {
 	[FC_SKY_REV26]	= "Sky2PC/SkyStar 2 DVB-S rev 2.6",
 	[FC_SKY_REV27]	= "Sky2PC/SkyStar 2 DVB-S rev 2.7a/u",
 	[FC_SKY_REV28]	= "Sky2PC/SkyStar 2 DVB-S rev 2.8",
+<<<<<<< HEAD
+=======
+	[FC_SKYS2_REV33] = "Sky2PC/SkyStar S2 DVB-S/S2 rev 3.3",
+>>>>>>> v4.9.227
 };
 
 static const char *flexcop_bus_names[] = {

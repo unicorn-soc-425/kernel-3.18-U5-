@@ -1,5 +1,6 @@
 #include <linux/kernel.h>
 #include "cache.h"
+<<<<<<< HEAD
 #include "color.h"
 #include <math.h>
 
@@ -131,6 +132,17 @@ bad:
 	die("bad color value '%.*s' for variable '%s'", value_len, value, var);
 }
 
+=======
+#include "config.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "color.h"
+#include <math.h>
+#include <unistd.h>
+
+int perf_use_color_default = -1;
+
+>>>>>>> v4.9.227
 int perf_config_colorbool(const char *var, const char *value, int stdout_is_tty)
 {
 	if (value) {
@@ -150,7 +162,11 @@ int perf_config_colorbool(const char *var, const char *value, int stdout_is_tty)
  auto_color:
 	if (stdout_is_tty < 0)
 		stdout_is_tty = isatty(1);
+<<<<<<< HEAD
 	if (stdout_is_tty || (pager_in_use() && pager_use_color)) {
+=======
+	if (stdout_is_tty || pager_in_use()) {
+>>>>>>> v4.9.227
 		char *term = getenv("TERM");
 		if (term && strcmp(term, "dumb"))
 			return 1;
@@ -158,14 +174,23 @@ int perf_config_colorbool(const char *var, const char *value, int stdout_is_tty)
 	return 0;
 }
 
+<<<<<<< HEAD
 int perf_color_default_config(const char *var, const char *value, void *cb)
+=======
+int perf_color_default_config(const char *var, const char *value,
+			      void *cb __maybe_unused)
+>>>>>>> v4.9.227
 {
 	if (!strcmp(var, "color.ui")) {
 		perf_use_color_default = perf_config_colorbool(var, value, -1);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	return perf_default_config(var, value, cb);
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int __color_vsnprintf(char *bf, size_t size, const char *color,
@@ -193,8 +218,14 @@ static int __color_vsnprintf(char *bf, size_t size, const char *color,
 	return r;
 }
 
+<<<<<<< HEAD
 static int __color_vfprintf(FILE *fp, const char *color, const char *fmt,
 		va_list args, const char *trail)
+=======
+/* Colors are not included in return value */
+static int __color_vfprintf(FILE *fp, const char *color, const char *fmt,
+		va_list args)
+>>>>>>> v4.9.227
 {
 	int r = 0;
 
@@ -209,12 +240,19 @@ static int __color_vfprintf(FILE *fp, const char *color, const char *fmt,
 	}
 
 	if (perf_use_color_default && *color)
+<<<<<<< HEAD
 		r += fprintf(fp, "%s", color);
 	r += vfprintf(fp, fmt, args);
 	if (perf_use_color_default && *color)
 		r += fprintf(fp, "%s", PERF_COLOR_RESET);
 	if (trail)
 		r += fprintf(fp, "%s", trail);
+=======
+		fprintf(fp, "%s", color);
+	r += vfprintf(fp, fmt, args);
+	if (perf_use_color_default && *color)
+		fprintf(fp, "%s", PERF_COLOR_RESET);
+>>>>>>> v4.9.227
 	return r;
 }
 
@@ -226,7 +264,11 @@ int color_vsnprintf(char *bf, size_t size, const char *color,
 
 int color_vfprintf(FILE *fp, const char *color, const char *fmt, va_list args)
 {
+<<<<<<< HEAD
 	return __color_vfprintf(fp, color, fmt, args, NULL);
+=======
+	return __color_vfprintf(fp, color, fmt, args);
+>>>>>>> v4.9.227
 }
 
 int color_snprintf(char *bf, size_t size, const char *color,
@@ -252,6 +294,7 @@ int color_fprintf(FILE *fp, const char *color, const char *fmt, ...)
 	return r;
 }
 
+<<<<<<< HEAD
 int color_fprintf_ln(FILE *fp, const char *color, const char *fmt, ...)
 {
 	va_list args;
@@ -262,6 +305,8 @@ int color_fprintf_ln(FILE *fp, const char *color, const char *fmt, ...)
 	return r;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * This function splits the buffer by newlines and colors the lines individually.
  *

@@ -25,7 +25,10 @@
  *  GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include <linux/version.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/pci.h>
 #include <linux/videodev2.h>
 #include <linux/notifier.h>
@@ -37,12 +40,17 @@
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 #include <media/videobuf2-dma-sg.h>
 
 #include "tw68-reg.h"
 
 #define	UNSET	(-1U)
 
+<<<<<<< HEAD
 /* system vendor and device ID's */
 #define	PCI_VENDOR_ID_TECHWELL	0x1797
 #define	PCI_DEVICE_ID_6800	0x6800
@@ -59,6 +67,8 @@
 #define	PCI_DEVICE_ID_6816_3   0x6812
 #define	PCI_DEVICE_ID_6816_4   0x6813
 
+=======
+>>>>>>> v4.9.227
 #define TW68_NORMS ( \
 	V4L2_STD_NTSC    | V4L2_STD_PAL       | V4L2_STD_SECAM    | \
 	V4L2_STD_PAL_M   | V4L2_STD_PAL_Nc    | V4L2_STD_PAL_60)
@@ -135,7 +145,11 @@ struct tw68_dev;	/* forward delclaration */
 
 /* buffer for one video/vbi/ts frame */
 struct tw68_buf {
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head list;
 
 	unsigned int   size;

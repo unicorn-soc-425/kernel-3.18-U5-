@@ -59,8 +59,11 @@ enum {
 	BLANK_OFF,
 };
 
+<<<<<<< HEAD
 #define DRIVER_NAME "bfin-adv7393"
 
+=======
+>>>>>>> v4.9.227
 struct adv7393fb_modes {
 	const s8 name[25];	/* Full name */
 	u16 xres;		/* Active Horizonzal Pixels  */

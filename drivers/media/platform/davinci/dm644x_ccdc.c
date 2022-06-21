@@ -261,7 +261,11 @@ static int ccdc_update_raw_params(struct ccdc_config_params_raw *raw_params)
 	 */
 	if (raw_params->fault_pxl.fp_num != config_params->fault_pxl.fp_num) {
 		if (fpc_physaddr != NULL) {
+<<<<<<< HEAD
 			free_pages((unsigned long)fpc_physaddr,
+=======
+			free_pages((unsigned long)fpc_virtaddr,
+>>>>>>> v4.9.227
 				   get_order
 				   (config_params->fault_pxl.fp_num *
 				   FP_NUM_BYTES));
@@ -1029,7 +1033,10 @@ static const struct dev_pm_ops dm644x_ccdc_pm_ops = {
 static struct platform_driver dm644x_ccdc_driver = {
 	.driver = {
 		.name	= "dm644x_ccdc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &dm644x_ccdc_pm_ops,
 	},
 	.remove = dm644x_ccdc_remove,

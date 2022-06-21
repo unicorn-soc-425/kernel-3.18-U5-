@@ -571,7 +571,11 @@ static int qla4_83xx_pre_loopback_config(struct scsi_qla_host *ha,
 
 	if ((config & ENABLE_INTERNAL_LOOPBACK) ||
 	    (config & ENABLE_EXTERNAL_LOOPBACK)) {
+<<<<<<< HEAD
 		ql4_printk(KERN_INFO, ha, "%s: Loopback diagnostics already in progress. Invalid requiest\n",
+=======
+		ql4_printk(KERN_INFO, ha, "%s: Loopback diagnostics already in progress. Invalid request\n",
+>>>>>>> v4.9.227
 			   __func__);
 		goto exit_pre_loopback_config;
 	}

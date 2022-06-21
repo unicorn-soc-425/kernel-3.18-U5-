@@ -54,6 +54,7 @@ static struct snd_pcm_hw_constraint_list hw_constraints_rates = {
 };
 #endif
 
+<<<<<<< HEAD
 static struct platform_device *s3c24xx_uda134x_snd_device;
 
 static int s3c24xx_uda134x_startup(struct snd_pcm_substream *substream)
@@ -76,6 +77,29 @@ static int s3c24xx_uda134x_startup(struct snd_pcm_substream *substream)
 			if (IS_ERR(pclk)) {
 				printk(KERN_ERR "%s cannot get pclk\n",
 				       __func__);
+=======
+static int s3c24xx_uda134x_startup(struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
+#ifdef ENFORCE_RATES
+	struct snd_pcm_runtime *runtime = substream->runtime;
+#endif
+	int ret = 0;
+
+	mutex_lock(&clk_lock);
+
+	if (clk_users == 0) {
+		xtal = clk_get(rtd->dev, "xtal");
+		if (IS_ERR(xtal)) {
+			dev_err(rtd->dev, "%s cannot get xtal\n", __func__);
+			ret = PTR_ERR(xtal);
+		} else {
+			pclk = clk_get(cpu_dai->dev, "iis");
+			if (IS_ERR(pclk)) {
+				dev_err(rtd->dev, "%s cannot get pclk\n",
+					__func__);
+>>>>>>> v4.9.227
 				clk_put(xtal);
 				ret = PTR_ERR(pclk);
 			}
@@ -101,8 +125,13 @@ static int s3c24xx_uda134x_startup(struct snd_pcm_substream *substream)
 						 SNDRV_PCM_HW_PARAM_RATE,
 						 &hw_constraints_rates);
 		if (ret < 0)
+<<<<<<< HEAD
 			printk(KERN_ERR "%s cannot set constraints\n",
 			       __func__);
+=======
+			dev_err(rtd->dev, "%s cannot set constraints\n",
+				__func__);
+>>>>>>> v4.9.227
 #endif
 	}
 	return ret;
@@ -111,7 +140,10 @@ static int s3c24xx_uda134x_startup(struct snd_pcm_substream *substream)
 static void s3c24xx_uda134x_shutdown(struct snd_pcm_substream *substream)
 {
 	mutex_lock(&clk_lock);
+<<<<<<< HEAD
 	pr_debug("%s %d\n", __func__, clk_users);
+=======
+>>>>>>> v4.9.227
 	clk_users -= 1;
 	if (clk_users == 0) {
 		clk_put(xtal);
@@ -158,6 +190,7 @@ static int s3c24xx_uda134x_hw_params(struct snd_pcm_substream *substream,
 		clk_source = S3C24XX_CLKSRC_PCLK;
 		div = bi % 33;
 	}
+<<<<<<< HEAD
 	pr_debug("%s desired rate %lu, %d\n", __func__, rate, bi);
 
 	clk = (fs_mode == S3C2410_IISMOD_384FS ? 384 : 256) * rate;
@@ -183,6 +216,24 @@ static int s3c24xx_uda134x_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+
+	dev_dbg(rtd->dev, "%s desired rate %lu, %d\n", __func__, rate, bi);
+
+	clk = (fs_mode == S3C2410_IISMOD_384FS ? 384 : 256) * rate;
+
+	dev_dbg(rtd->dev, "%s will use: %s %s %d sysclk %d err %ld\n", __func__,
+		fs_mode == S3C2410_IISMOD_384FS ? "384FS" : "256FS",
+		clk_source == S3C24XX_CLKSRC_MPLL ? "MPLLin" : "PCLK",
+		div, clk, err);
+
+	if ((err * 100 / rate) > 5) {
+		dev_err(rtd->dev, "effective frequency too different "
+				  "from desired (%ld%%)\n", err * 100 / rate);
+		return -EINVAL;
+	}
+
+>>>>>>> v4.9.227
 	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_source , clk,
 			SND_SOC_CLOCK_IN);
 	if (ret < 0)
@@ -223,6 +274,11 @@ static struct snd_soc_dai_link s3c24xx_uda134x_dai_link = {
 	.codec_name = "uda134x-codec",
 	.codec_dai_name = "uda134x-hifi",
 	.cpu_dai_name = "s3c24xx-iis",
+<<<<<<< HEAD
+=======
+	.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+		   SND_SOC_DAIFMT_CBS_CFS,
+>>>>>>> v4.9.227
 	.ops = &s3c24xx_uda134x_ops,
 	.platform_name	= "s3c24xx-iis",
 };
@@ -234,6 +290,7 @@ static struct snd_soc_card snd_soc_s3c24xx_uda134x = {
 	.num_links = 1,
 };
 
+<<<<<<< HEAD
 static struct s3c24xx_uda134x_platform_data *s3c24xx_uda134x_l3_pins;
 
 static void setdat(int v)
@@ -322,10 +379,24 @@ static int s3c24xx_uda134x_probe(struct platform_device *pdev)
 		printk(KERN_ERR "S3C24XX_UDA134X SoC Audio: Unable to add\n");
 		platform_device_put(s3c24xx_uda134x_snd_device);
 	}
+=======
+static int s3c24xx_uda134x_probe(struct platform_device *pdev)
+{
+	struct snd_soc_card *card = &snd_soc_s3c24xx_uda134x;
+	int ret;
+
+	platform_set_drvdata(pdev, card);
+	card->dev = &pdev->dev;
+
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+	if (ret)
+		dev_err(&pdev->dev, "failed to register card: %d\n", ret);
+>>>>>>> v4.9.227
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int s3c24xx_uda134x_remove(struct platform_device *pdev)
 {
 	platform_device_unregister(s3c24xx_uda134x_snd_device);
@@ -344,6 +415,14 @@ static struct platform_driver s3c24xx_uda134x_driver = {
 	},
 };
 
+=======
+static struct platform_driver s3c24xx_uda134x_driver = {
+	.probe  = s3c24xx_uda134x_probe,
+	.driver = {
+		.name = "s3c24xx_uda134x",
+	},
+};
+>>>>>>> v4.9.227
 module_platform_driver(s3c24xx_uda134x_driver);
 
 MODULE_AUTHOR("Zoltan Devai, Christian Pellegrin <chripell@evolware.org>");

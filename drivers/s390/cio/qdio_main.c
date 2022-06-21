@@ -321,6 +321,11 @@ static int qdio_siga_output(struct qdio_q *q, unsigned int *busy_bit,
 	int retries = 0, cc;
 	unsigned long laob = 0;
 
+<<<<<<< HEAD
+=======
+	WARN_ON_ONCE(aob && ((queue_type(q) != QDIO_IQDIO_QFMT) ||
+			     !q->u.out.use_cq));
+>>>>>>> v4.9.227
 	if (q->u.out.use_cq && aob != 0) {
 		fc = QDIO_SIGA_WRITEQ;
 		laob = aob;
@@ -331,8 +336,11 @@ static int qdio_siga_output(struct qdio_q *q, unsigned int *busy_bit,
 		fc |= QDIO_SIGA_QEBSM_FLAG;
 	}
 again:
+<<<<<<< HEAD
 	WARN_ON_ONCE((aob && queue_type(q) != QDIO_IQDIO_QFMT) ||
 		(aob && fc != QDIO_SIGA_WRITEQ));
+=======
+>>>>>>> v4.9.227
 	cc = do_siga_output(schid, q->mask, busy_bit, fc, laob);
 
 	/* hipersocket busy condition */
@@ -687,6 +695,18 @@ static void qdio_kick_handler(struct qdio_q *q)
 	q->qdio_error = 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline int qdio_tasklet_schedule(struct qdio_q *q)
+{
+	if (likely(q->irq_ptr->state == QDIO_IRQ_STATE_ACTIVE)) {
+		tasklet_schedule(&q->tasklet);
+		return 0;
+	}
+	return -EPERM;
+}
+
+>>>>>>> v4.9.227
 static void __qdio_inbound_processing(struct qdio_q *q)
 {
 	qperf_inc(q, tasklet_inbound);
@@ -699,10 +719,15 @@ static void __qdio_inbound_processing(struct qdio_q *q)
 	if (!qdio_inbound_q_done(q)) {
 		/* means poll time is not yet over */
 		qperf_inc(q, tasklet_inbound_resched);
+<<<<<<< HEAD
 		if (likely(q->irq_ptr->state != QDIO_IRQ_STATE_STOPPED)) {
 			tasklet_schedule(&q->tasklet);
 			return;
 		}
+=======
+		if (!qdio_tasklet_schedule(q))
+			return;
+>>>>>>> v4.9.227
 	}
 
 	qdio_stop_polling(q);
@@ -712,8 +737,12 @@ static void __qdio_inbound_processing(struct qdio_q *q)
 	 */
 	if (!qdio_inbound_q_done(q)) {
 		qperf_inc(q, tasklet_inbound_resched2);
+<<<<<<< HEAD
 		if (likely(q->irq_ptr->state != QDIO_IRQ_STATE_STOPPED))
 			tasklet_schedule(&q->tasklet);
+=======
+		qdio_tasklet_schedule(q);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -752,6 +781,10 @@ static int get_outbound_buffer_frontier(struct qdio_q *q)
 
 	switch (state) {
 	case SLSB_P_OUTPUT_EMPTY:
+<<<<<<< HEAD
+=======
+	case SLSB_P_OUTPUT_PENDING:
+>>>>>>> v4.9.227
 		/* the adapter got it */
 		DBF_DEV_EVENT(DBF_INFO, q->irq_ptr,
 			"out empty:%1d %02x", q->nr, count);
@@ -870,16 +903,27 @@ static void __qdio_outbound_processing(struct qdio_q *q)
 	 * is noticed and outbound_handler is called after some time.
 	 */
 	if (qdio_outbound_q_done(q))
+<<<<<<< HEAD
 		del_timer(&q->u.out.timer);
 	else
 		if (!timer_pending(&q->u.out.timer))
+=======
+		del_timer_sync(&q->u.out.timer);
+	else
+		if (!timer_pending(&q->u.out.timer) &&
+		    likely(q->irq_ptr->state == QDIO_IRQ_STATE_ACTIVE))
+>>>>>>> v4.9.227
 			mod_timer(&q->u.out.timer, jiffies + 10 * HZ);
 	return;
 
 sched:
+<<<<<<< HEAD
 	if (unlikely(q->irq_ptr->state == QDIO_IRQ_STATE_STOPPED))
 		return;
 	tasklet_schedule(&q->tasklet);
+=======
+	qdio_tasklet_schedule(q);
+>>>>>>> v4.9.227
 }
 
 /* outbound tasklet */
@@ -893,9 +937,13 @@ void qdio_outbound_timer(unsigned long data)
 {
 	struct qdio_q *q = (struct qdio_q *)data;
 
+<<<<<<< HEAD
 	if (unlikely(q->irq_ptr->state == QDIO_IRQ_STATE_STOPPED))
 		return;
 	tasklet_schedule(&q->tasklet);
+=======
+	qdio_tasklet_schedule(q);
+>>>>>>> v4.9.227
 }
 
 static inline void qdio_check_outbound_after_thinint(struct qdio_q *q)
@@ -908,7 +956,11 @@ static inline void qdio_check_outbound_after_thinint(struct qdio_q *q)
 
 	for_each_output_queue(q->irq_ptr, out, i)
 		if (!qdio_outbound_q_done(out))
+<<<<<<< HEAD
 			tasklet_schedule(&out->tasklet);
+=======
+			qdio_tasklet_schedule(out);
+>>>>>>> v4.9.227
 }
 
 static void __tiqdio_inbound_processing(struct qdio_q *q)
@@ -930,10 +982,15 @@ static void __tiqdio_inbound_processing(struct qdio_q *q)
 
 	if (!qdio_inbound_q_done(q)) {
 		qperf_inc(q, tasklet_inbound_resched);
+<<<<<<< HEAD
 		if (likely(q->irq_ptr->state != QDIO_IRQ_STATE_STOPPED)) {
 			tasklet_schedule(&q->tasklet);
 			return;
 		}
+=======
+		if (!qdio_tasklet_schedule(q))
+			return;
+>>>>>>> v4.9.227
 	}
 
 	qdio_stop_polling(q);
@@ -943,8 +1000,12 @@ static void __tiqdio_inbound_processing(struct qdio_q *q)
 	 */
 	if (!qdio_inbound_q_done(q)) {
 		qperf_inc(q, tasklet_inbound_resched2);
+<<<<<<< HEAD
 		if (likely(q->irq_ptr->state != QDIO_IRQ_STATE_STOPPED))
 			tasklet_schedule(&q->tasklet);
+=======
+		qdio_tasklet_schedule(q);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -978,7 +1039,11 @@ static void qdio_int_handler_pci(struct qdio_irq *irq_ptr)
 	int i;
 	struct qdio_q *q;
 
+<<<<<<< HEAD
 	if (unlikely(irq_ptr->state == QDIO_IRQ_STATE_STOPPED))
+=======
+	if (unlikely(irq_ptr->state != QDIO_IRQ_STATE_ACTIVE))
+>>>>>>> v4.9.227
 		return;
 
 	for_each_input_queue(irq_ptr, q, i) {
@@ -1004,7 +1069,11 @@ static void qdio_int_handler_pci(struct qdio_irq *irq_ptr)
 			continue;
 		if (need_siga_sync(q) && need_siga_sync_out_after_pci(q))
 			qdio_siga_sync_q(q);
+<<<<<<< HEAD
 		tasklet_schedule(&q->tasklet);
+=======
+		qdio_tasklet_schedule(q);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -1067,10 +1136,19 @@ void qdio_int_handler(struct ccw_device *cdev, unsigned long intparm,
 		      struct irb *irb)
 {
 	struct qdio_irq *irq_ptr = cdev->private->qdio_data;
+<<<<<<< HEAD
 	int cstat, dstat;
 
 	if (!intparm || !irq_ptr) {
 		DBF_ERROR("qint:%4x", cdev->private->schid.sch_no);
+=======
+	struct subchannel_id schid;
+	int cstat, dstat;
+
+	if (!intparm || !irq_ptr) {
+		ccw_device_get_schid(cdev, &schid);
+		DBF_ERROR("qint:%4x", schid.sch_no);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -1123,12 +1201,22 @@ void qdio_int_handler(struct ccw_device *cdev, unsigned long intparm,
 int qdio_get_ssqd_desc(struct ccw_device *cdev,
 		       struct qdio_ssqd_desc *data)
 {
+<<<<<<< HEAD
+=======
+	struct subchannel_id schid;
+>>>>>>> v4.9.227
 
 	if (!cdev || !cdev->private)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	DBF_EVENT("get ssqd:%4x", cdev->private->schid.sch_no);
 	return qdio_setup_get_ssqd(NULL, &cdev->private->schid, data);
+=======
+	ccw_device_get_schid(cdev, &schid);
+	DBF_EVENT("get ssqd:%4x", schid.sch_no);
+	return qdio_setup_get_ssqd(NULL, &schid, data);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(qdio_get_ssqd_desc);
 
@@ -1142,7 +1230,11 @@ static void qdio_shutdown_queues(struct ccw_device *cdev)
 		tasklet_kill(&q->tasklet);
 
 	for_each_output_queue(irq_ptr, q, i) {
+<<<<<<< HEAD
 		del_timer(&q->u.out.timer);
+=======
+		del_timer_sync(&q->u.out.timer);
+>>>>>>> v4.9.227
 		tasklet_kill(&q->tasklet);
 	}
 }
@@ -1155,14 +1247,24 @@ static void qdio_shutdown_queues(struct ccw_device *cdev)
 int qdio_shutdown(struct ccw_device *cdev, int how)
 {
 	struct qdio_irq *irq_ptr = cdev->private->qdio_data;
+<<<<<<< HEAD
 	int rc;
 	unsigned long flags;
+=======
+	struct subchannel_id schid;
+	int rc;
+>>>>>>> v4.9.227
 
 	if (!irq_ptr)
 		return -ENODEV;
 
 	WARN_ON_ONCE(irqs_disabled());
+<<<<<<< HEAD
 	DBF_EVENT("qshutdown:%4x", cdev->private->schid.sch_no);
+=======
+	ccw_device_get_schid(cdev, &schid);
+	DBF_EVENT("qshutdown:%4x", schid.sch_no);
+>>>>>>> v4.9.227
 
 	mutex_lock(&irq_ptr->setup_mutex);
 	/*
@@ -1185,7 +1287,11 @@ int qdio_shutdown(struct ccw_device *cdev, int how)
 	qdio_shutdown_debug_entries(irq_ptr);
 
 	/* cleanup subchannel */
+<<<<<<< HEAD
 	spin_lock_irqsave(get_ccwdev_lock(cdev), flags);
+=======
+	spin_lock_irq(get_ccwdev_lock(cdev));
+>>>>>>> v4.9.227
 
 	if (how & QDIO_FLAG_CLEANUP_USING_CLEAR)
 		rc = ccw_device_clear(cdev, QDIO_DOING_CLEANUP);
@@ -1199,12 +1305,20 @@ int qdio_shutdown(struct ccw_device *cdev, int how)
 	}
 
 	qdio_set_state(irq_ptr, QDIO_IRQ_STATE_CLEANUP);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(get_ccwdev_lock(cdev), flags);
+=======
+	spin_unlock_irq(get_ccwdev_lock(cdev));
+>>>>>>> v4.9.227
 	wait_event_interruptible_timeout(cdev->private->wait_q,
 		irq_ptr->state == QDIO_IRQ_STATE_INACTIVE ||
 		irq_ptr->state == QDIO_IRQ_STATE_ERR,
 		10 * HZ);
+<<<<<<< HEAD
 	spin_lock_irqsave(get_ccwdev_lock(cdev), flags);
+=======
+	spin_lock_irq(get_ccwdev_lock(cdev));
+>>>>>>> v4.9.227
 
 no_cleanup:
 	qdio_shutdown_thinint(irq_ptr);
@@ -1212,7 +1326,11 @@ no_cleanup:
 	/* restore interrupt handler */
 	if ((void *)cdev->handler == (void *)qdio_int_handler)
 		cdev->handler = irq_ptr->orig_handler;
+<<<<<<< HEAD
 	spin_unlock_irqrestore(get_ccwdev_lock(cdev), flags);
+=======
+	spin_unlock_irq(get_ccwdev_lock(cdev));
+>>>>>>> v4.9.227
 
 	qdio_set_state(irq_ptr, QDIO_IRQ_STATE_INACTIVE);
 	mutex_unlock(&irq_ptr->setup_mutex);
@@ -1229,11 +1347,20 @@ EXPORT_SYMBOL_GPL(qdio_shutdown);
 int qdio_free(struct ccw_device *cdev)
 {
 	struct qdio_irq *irq_ptr = cdev->private->qdio_data;
+<<<<<<< HEAD
+=======
+	struct subchannel_id schid;
+>>>>>>> v4.9.227
 
 	if (!irq_ptr)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	DBF_EVENT("qfree:%4x", cdev->private->schid.sch_no);
+=======
+	ccw_device_get_schid(cdev, &schid);
+	DBF_EVENT("qfree:%4x", schid.sch_no);
+>>>>>>> v4.9.227
 	DBF_DEV_EVENT(DBF_ERR, irq_ptr, "dbf abandoned");
 	mutex_lock(&irq_ptr->setup_mutex);
 
@@ -1252,9 +1379,17 @@ EXPORT_SYMBOL_GPL(qdio_free);
  */
 int qdio_allocate(struct qdio_initialize *init_data)
 {
+<<<<<<< HEAD
 	struct qdio_irq *irq_ptr;
 
 	DBF_EVENT("qallocate:%4x", init_data->cdev->private->schid.sch_no);
+=======
+	struct subchannel_id schid;
+	struct qdio_irq *irq_ptr;
+
+	ccw_device_get_schid(init_data->cdev, &schid);
+	DBF_EVENT("qallocate:%4x", schid.sch_no);
+>>>>>>> v4.9.227
 
 	if ((init_data->no_input_qs && !init_data->input_handler) ||
 	    (init_data->no_output_qs && !init_data->output_handler))
@@ -1332,20 +1467,33 @@ static void qdio_detect_hsicq(struct qdio_irq *irq_ptr)
  */
 int qdio_establish(struct qdio_initialize *init_data)
 {
+<<<<<<< HEAD
 	struct qdio_irq *irq_ptr;
 	struct ccw_device *cdev = init_data->cdev;
 	unsigned long saveflags;
 	int rc;
 
 	DBF_EVENT("qestablish:%4x", cdev->private->schid.sch_no);
+=======
+	struct ccw_device *cdev = init_data->cdev;
+	struct subchannel_id schid;
+	struct qdio_irq *irq_ptr;
+	int rc;
+
+	ccw_device_get_schid(cdev, &schid);
+	DBF_EVENT("qestablish:%4x", schid.sch_no);
+>>>>>>> v4.9.227
 
 	irq_ptr = cdev->private->qdio_data;
 	if (!irq_ptr)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (cdev->private->state != DEV_STATE_ONLINE)
 		return -EINVAL;
 
+=======
+>>>>>>> v4.9.227
 	mutex_lock(&irq_ptr->setup_mutex);
 	qdio_setup_irq(init_data);
 
@@ -1362,6 +1510,7 @@ int qdio_establish(struct qdio_initialize *init_data)
 	irq_ptr->ccw.count = irq_ptr->equeue.count;
 	irq_ptr->ccw.cda = (u32)((addr_t)irq_ptr->qdr);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(get_ccwdev_lock(cdev), saveflags);
 	ccw_device_set_options_mask(cdev, 0);
 
@@ -1373,6 +1522,16 @@ int qdio_establish(struct qdio_initialize *init_data)
 	spin_unlock_irqrestore(get_ccwdev_lock(cdev), saveflags);
 
 	if (rc) {
+=======
+	spin_lock_irq(get_ccwdev_lock(cdev));
+	ccw_device_set_options_mask(cdev, 0);
+
+	rc = ccw_device_start(cdev, &irq_ptr->ccw, QDIO_DOING_ESTABLISH, 0, 0);
+	spin_unlock_irq(get_ccwdev_lock(cdev));
+	if (rc) {
+		DBF_ERROR("%4x est IO ERR", irq_ptr->schid.sch_no);
+		DBF_ERROR("rc:%4x", rc);
+>>>>>>> v4.9.227
 		mutex_unlock(&irq_ptr->setup_mutex);
 		qdio_shutdown(cdev, QDIO_FLAG_CLEANUP_USING_CLEAR);
 		return rc;
@@ -1408,19 +1567,31 @@ EXPORT_SYMBOL_GPL(qdio_establish);
  */
 int qdio_activate(struct ccw_device *cdev)
 {
+<<<<<<< HEAD
 	struct qdio_irq *irq_ptr;
 	int rc;
 	unsigned long saveflags;
 
 	DBF_EVENT("qactivate:%4x", cdev->private->schid.sch_no);
+=======
+	struct subchannel_id schid;
+	struct qdio_irq *irq_ptr;
+	int rc;
+
+	ccw_device_get_schid(cdev, &schid);
+	DBF_EVENT("qactivate:%4x", schid.sch_no);
+>>>>>>> v4.9.227
 
 	irq_ptr = cdev->private->qdio_data;
 	if (!irq_ptr)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (cdev->private->state != DEV_STATE_ONLINE)
 		return -EINVAL;
 
+=======
+>>>>>>> v4.9.227
 	mutex_lock(&irq_ptr->setup_mutex);
 	if (irq_ptr->state == QDIO_IRQ_STATE_INACTIVE) {
 		rc = -EBUSY;
@@ -1432,11 +1603,16 @@ int qdio_activate(struct ccw_device *cdev)
 	irq_ptr->ccw.count = irq_ptr->aqueue.count;
 	irq_ptr->ccw.cda = 0;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(get_ccwdev_lock(cdev), saveflags);
+=======
+	spin_lock_irq(get_ccwdev_lock(cdev));
+>>>>>>> v4.9.227
 	ccw_device_set_options(cdev, CCWDEV_REPORT_ALL);
 
 	rc = ccw_device_start(cdev, &irq_ptr->ccw, QDIO_DOING_ACTIVATE,
 			      0, DOIO_DENY_PREFETCH);
+<<<<<<< HEAD
 	if (rc) {
 		DBF_ERROR("%4x act IO ERR", irq_ptr->schid.sch_no);
 		DBF_ERROR("rc:%4x", rc);
@@ -1445,6 +1621,14 @@ int qdio_activate(struct ccw_device *cdev)
 
 	if (rc)
 		goto out;
+=======
+	spin_unlock_irq(get_ccwdev_lock(cdev));
+	if (rc) {
+		DBF_ERROR("%4x act IO ERR", irq_ptr->schid.sch_no);
+		DBF_ERROR("rc:%4x", rc);
+		goto out;
+	}
+>>>>>>> v4.9.227
 
 	if (is_thinint_irq(irq_ptr))
 		tiqdio_add_input_queues(irq_ptr);
@@ -1575,6 +1759,7 @@ static int handle_outbound(struct qdio_q *q, unsigned int callflags,
 		rc = qdio_kick_outbound_q(q, phys_aob);
 	} else if (need_siga_sync(q)) {
 		rc = qdio_siga_sync_q(q);
+<<<<<<< HEAD
 	} else {
 		/* try to fast requeue buffers */
 		get_buf_state(q, prev_buf(bufnr), &state, 0);
@@ -1582,14 +1767,31 @@ static int handle_outbound(struct qdio_q *q, unsigned int callflags,
 			rc = qdio_kick_outbound_q(q, 0);
 		else
 			qperf_inc(q, fast_requeue);
+=======
+	} else if (count < QDIO_MAX_BUFFERS_PER_Q &&
+		   get_buf_state(q, prev_buf(bufnr), &state, 0) > 0 &&
+		   state == SLSB_CU_OUTPUT_PRIMED) {
+		/* The previous buffer is not processed yet, tack on. */
+		qperf_inc(q, fast_requeue);
+	} else {
+		rc = qdio_kick_outbound_q(q, 0);
+>>>>>>> v4.9.227
 	}
 
 	/* in case of SIGA errors we must process the error immediately */
 	if (used >= q->u.out.scan_threshold || rc)
+<<<<<<< HEAD
 		tasklet_schedule(&q->tasklet);
 	else
 		/* free the SBALs in case of no further traffic */
 		if (!timer_pending(&q->u.out.timer))
+=======
+		qdio_tasklet_schedule(q);
+	else
+		/* free the SBALs in case of no further traffic */
+		if (!timer_pending(&q->u.out.timer) &&
+		    likely(q->irq_ptr->state == QDIO_IRQ_STATE_ACTIVE))
+>>>>>>> v4.9.227
 			mod_timer(&q->u.out.timer, jiffies + HZ);
 	return rc;
 }

@@ -42,7 +42,11 @@
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
 
+<<<<<<< HEAD
 #include "timeconst.h"
+=======
+#include <generated/timeconst.h>
+>>>>>>> v4.9.227
 #include "timekeeping.h"
 
 /*
@@ -161,19 +165,37 @@ static inline void warp_clock(void)
  * various programs will get confused when the clock gets warped.
  */
 
+<<<<<<< HEAD
 int do_sys_settimeofday(const struct timespec *tv, const struct timezone *tz)
+=======
+int do_sys_settimeofday64(const struct timespec64 *tv, const struct timezone *tz)
+>>>>>>> v4.9.227
 {
 	static int firsttime = 1;
 	int error = 0;
 
+<<<<<<< HEAD
 	if (tv && !timespec_valid(tv))
 		return -EINVAL;
 
 	error = security_settime(tv, tz);
+=======
+	if (tv && !timespec64_valid(tv))
+		return -EINVAL;
+
+	error = security_settime64(tv, tz);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 
 	if (tz) {
+<<<<<<< HEAD
+=======
+		/* Verify we're witin the +-15 hrs range */
+		if (tz->tz_minuteswest > 15*60 || tz->tz_minuteswest < -15*60)
+			return -EINVAL;
+
+>>>>>>> v4.9.227
 		sys_tz = *tz;
 		update_vsyscall_tz();
 		if (firsttime) {
@@ -183,7 +205,11 @@ int do_sys_settimeofday(const struct timespec *tv, const struct timezone *tz)
 		}
 	}
 	if (tv)
+<<<<<<< HEAD
 		return do_settimeofday(tv);
+=======
+		return do_settimeofday64(tv);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -266,10 +292,21 @@ EXPORT_SYMBOL(jiffies_to_msecs);
 
 unsigned int jiffies_to_usecs(const unsigned long j)
 {
+<<<<<<< HEAD
 #if HZ <= USEC_PER_SEC && !(USEC_PER_SEC % HZ)
 	return (USEC_PER_SEC / HZ) * j;
 #elif HZ > USEC_PER_SEC && !(HZ % USEC_PER_SEC)
 	return (j + (HZ / USEC_PER_SEC) - 1)/(HZ / USEC_PER_SEC);
+=======
+	/*
+	 * Hz usually doesn't go much further MSEC_PER_SEC.
+	 * jiffies_to_usecs() and usecs_to_jiffies() depend on that.
+	 */
+	BUILD_BUG_ON(HZ > USEC_PER_SEC);
+
+#if !(USEC_PER_SEC % HZ)
+	return (USEC_PER_SEC / HZ) * j;
+>>>>>>> v4.9.227
 #else
 # if BITS_PER_LONG == 32
 	return (HZ_TO_USEC_MUL32 * j) >> HZ_TO_USEC_SHR32;
@@ -285,6 +322,7 @@ EXPORT_SYMBOL(jiffies_to_usecs);
  * @t: Timespec
  * @gran: Granularity in ns.
  *
+<<<<<<< HEAD
  * Truncate a timespec to a granularity. gran must be smaller than a second.
  * Always rounds down.
  *
@@ -305,12 +343,34 @@ struct timespec timespec_trunc(struct timespec t, unsigned gran)
 		t.tv_nsec = 0;
 	} else {
 		t.tv_nsec -= t.tv_nsec % gran;
+=======
+ * Truncate a timespec to a granularity. Always rounds down. gran must
+ * not be 0 nor greater than a second (NSEC_PER_SEC, or 10^9 ns).
+ */
+struct timespec timespec_trunc(struct timespec t, unsigned gran)
+{
+	/* Avoid division in the common cases 1 ns and 1 s. */
+	if (gran == 1) {
+		/* nothing */
+	} else if (gran == NSEC_PER_SEC) {
+		t.tv_nsec = 0;
+	} else if (gran > 1 && gran < NSEC_PER_SEC) {
+		t.tv_nsec -= t.tv_nsec % gran;
+	} else {
+		WARN(1, "illegal file time granularity: %u", gran);
+>>>>>>> v4.9.227
 	}
 	return t;
 }
 EXPORT_SYMBOL(timespec_trunc);
 
+<<<<<<< HEAD
 /* Converts Gregorian date to seconds since 1970-01-01 00:00:00.
+=======
+/*
+ * mktime64 - Converts date to seconds.
+ * Converts Gregorian date to seconds since 1970-01-01 00:00:00.
+>>>>>>> v4.9.227
  * Assumes input in normal date format, i.e. 1980-12-31 23:59:59
  * => year=1980, mon=12, day=31, hour=23, min=59, sec=59.
  *
@@ -321,6 +381,7 @@ EXPORT_SYMBOL(timespec_trunc);
  *
  * This algorithm was first published by Gauss (I think).
  *
+<<<<<<< HEAD
  * WARNING: this function will overflow on 2106-02-07 06:28:16 on
  * machines where long is 32-bit! (However, as time_t is signed, we
  * will already get problems at other places on 2038-01-19 03:14:08)
@@ -329,6 +390,18 @@ unsigned long
 mktime(const unsigned int year0, const unsigned int mon0,
        const unsigned int day, const unsigned int hour,
        const unsigned int min, const unsigned int sec)
+=======
+ * A leap second can be indicated by calling this function with sec as
+ * 60 (allowable under ISO 8601).  The leap second is treated the same
+ * as the following second since they don't exist in UNIX time.
+ *
+ * An encoding of midnight at the end of the day as 24:00:00 - ie. midnight
+ * tomorrow - (allowable under ISO 8601) is supported.
+ */
+time64_t mktime64(const unsigned int year0, const unsigned int mon0,
+		const unsigned int day, const unsigned int hour,
+		const unsigned int min, const unsigned int sec)
+>>>>>>> v4.9.227
 {
 	unsigned int mon = mon0, year = year0;
 
@@ -338,6 +411,7 @@ mktime(const unsigned int year0, const unsigned int mon0,
 		year -= 1;
 	}
 
+<<<<<<< HEAD
 	return ((((unsigned long)
 		  (year/4 - year/100 + year/400 + 367*mon/12 + day) +
 		  year*365 - 719499
@@ -347,6 +421,16 @@ mktime(const unsigned int year0, const unsigned int mon0,
 }
 
 EXPORT_SYMBOL(mktime);
+=======
+	return ((((time64_t)
+		  (year/4 - year/100 + year/400 + 367*mon/12 + day) +
+		  year*365 - 719499
+	    )*24 + hour /* now have hours - midnight tomorrow handled here */
+	  )*60 + min /* now have minutes */
+	)*60 + sec; /* finally seconds */
+}
+EXPORT_SYMBOL(mktime64);
+>>>>>>> v4.9.227
 
 /**
  * set_normalized_timespec - set timespec sec and nsec parts and normalize
@@ -489,9 +573,17 @@ struct timespec64 ns_to_timespec64(const s64 nsec)
 }
 EXPORT_SYMBOL(ns_to_timespec64);
 #endif
+<<<<<<< HEAD
 /*
  * When we convert to jiffies then we interpret incoming values
  * the following way:
+=======
+/**
+ * msecs_to_jiffies: - convert milliseconds to jiffies
+ * @m:	time in milliseconds
+ *
+ * conversion is done as follows:
+>>>>>>> v4.9.227
  *
  * - negative values mean 'infinite timeout' (MAX_JIFFY_OFFSET)
  *
@@ -499,17 +591,34 @@ EXPORT_SYMBOL(ns_to_timespec64);
  *   MAX_JIFFY_OFFSET values] mean 'infinite timeout' too.
  *
  * - all other values are converted to jiffies by either multiplying
+<<<<<<< HEAD
  *   the input value by a factor or dividing it with a factor
  *
  * We must also be careful about 32-bit overflows.
  */
 unsigned long msecs_to_jiffies(const unsigned int m)
+=======
+ *   the input value by a factor or dividing it with a factor and
+ *   handling any 32-bit overflows.
+ *   for the details see __msecs_to_jiffies()
+ *
+ * msecs_to_jiffies() checks for the passed in value being a constant
+ * via __builtin_constant_p() allowing gcc to eliminate most of the
+ * code, __msecs_to_jiffies() is called if the value passed does not
+ * allow constant folding and the actual conversion must be done at
+ * runtime.
+ * the _msecs_to_jiffies helpers are the HZ dependent conversion
+ * routines found in include/linux/jiffies.h
+ */
+unsigned long __msecs_to_jiffies(const unsigned int m)
+>>>>>>> v4.9.227
 {
 	/*
 	 * Negative value, means infinite timeout:
 	 */
 	if ((int)m < 0)
 		return MAX_JIFFY_OFFSET;
+<<<<<<< HEAD
 
 #if HZ <= MSEC_PER_SEC && !(MSEC_PER_SEC % HZ)
 	/*
@@ -559,6 +668,19 @@ unsigned long usecs_to_jiffies(const unsigned int u)
 #endif
 }
 EXPORT_SYMBOL(usecs_to_jiffies);
+=======
+	return _msecs_to_jiffies(m);
+}
+EXPORT_SYMBOL(__msecs_to_jiffies);
+
+unsigned long __usecs_to_jiffies(const unsigned int u)
+{
+	if (u > jiffies_to_usecs(MAX_JIFFY_OFFSET))
+		return MAX_JIFFY_OFFSET;
+	return _usecs_to_jiffies(u);
+}
+EXPORT_SYMBOL(__usecs_to_jiffies);
+>>>>>>> v4.9.227
 
 /*
  * The TICK_NSEC - 1 rounds up the value to the next resolution.  Note
@@ -576,7 +698,11 @@ EXPORT_SYMBOL(usecs_to_jiffies);
  * value to a scaled second value.
  */
 static unsigned long
+<<<<<<< HEAD
 __timespec_to_jiffies(unsigned long sec, long nsec)
+=======
+__timespec64_to_jiffies(u64 sec, long nsec)
+>>>>>>> v4.9.227
 {
 	nsec = nsec + TICK_NSEC - 1;
 
@@ -584,12 +710,17 @@ __timespec_to_jiffies(unsigned long sec, long nsec)
 		sec = MAX_SEC_IN_JIFFIES;
 		nsec = 0;
 	}
+<<<<<<< HEAD
 	return (((u64)sec * SEC_CONVERSION) +
+=======
+	return ((sec * SEC_CONVERSION) +
+>>>>>>> v4.9.227
 		(((u64)nsec * NSEC_CONVERSION) >>
 		 (NSEC_JIFFIE_SC - SEC_JIFFIE_SC))) >> SEC_JIFFIE_SC;
 
 }
 
+<<<<<<< HEAD
 unsigned long
 timespec_to_jiffies(const struct timespec *value)
 {
@@ -600,6 +731,23 @@ EXPORT_SYMBOL(timespec_to_jiffies);
 
 void
 jiffies_to_timespec(const unsigned long jiffies, struct timespec *value)
+=======
+static unsigned long
+__timespec_to_jiffies(unsigned long sec, long nsec)
+{
+	return __timespec64_to_jiffies((u64)sec, nsec);
+}
+
+unsigned long
+timespec64_to_jiffies(const struct timespec64 *value)
+{
+	return __timespec64_to_jiffies(value->tv_sec, value->tv_nsec);
+}
+EXPORT_SYMBOL(timespec64_to_jiffies);
+
+void
+jiffies_to_timespec64(const unsigned long jiffies, struct timespec64 *value)
+>>>>>>> v4.9.227
 {
 	/*
 	 * Convert jiffies to nanoseconds and separate with
@@ -610,7 +758,11 @@ jiffies_to_timespec(const unsigned long jiffies, struct timespec *value)
 				    NSEC_PER_SEC, &rem);
 	value->tv_nsec = rem;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(jiffies_to_timespec);
+=======
+EXPORT_SYMBOL(jiffies_to_timespec64);
+>>>>>>> v4.9.227
 
 /*
  * We could use a similar algorithm to timespec_to_jiffies (with a
@@ -722,6 +874,19 @@ u64 nsec_to_clock_t(u64 x)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+u64 jiffies64_to_nsecs(u64 j)
+{
+#if !(NSEC_PER_SEC % HZ)
+	return (NSEC_PER_SEC / HZ) * j;
+# else
+	return div_u64(j * HZ_TO_NSEC_NUM, HZ_TO_NSEC_DEN);
+#endif
+}
+EXPORT_SYMBOL(jiffies64_to_nsecs);
+
+>>>>>>> v4.9.227
 /**
  * nsecs_to_jiffies64 - Convert nsecs in u64 to jiffies64
  *
@@ -751,6 +916,10 @@ u64 nsecs_to_jiffies64(u64 n)
 	return div_u64(n * 9, (9ull * NSEC_PER_SEC + HZ / 2) / HZ);
 #endif
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(nsecs_to_jiffies64);
+>>>>>>> v4.9.227
 
 /**
  * nsecs_to_jiffies - Convert nsecs in u64 to jiffies
@@ -788,3 +957,27 @@ struct timespec timespec_add_safe(const struct timespec lhs,
 
 	return res;
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * Add two timespec64 values and do a safety check for overflow.
+ * It's assumed that both values are valid (>= 0).
+ * And, each timespec64 is in normalized form.
+ */
+struct timespec64 timespec64_add_safe(const struct timespec64 lhs,
+				const struct timespec64 rhs)
+{
+	struct timespec64 res;
+
+	set_normalized_timespec64(&res, (timeu64_t) lhs.tv_sec + rhs.tv_sec,
+			lhs.tv_nsec + rhs.tv_nsec);
+
+	if (unlikely(res.tv_sec < lhs.tv_sec || res.tv_sec < rhs.tv_sec)) {
+		res.tv_sec = TIME64_MAX;
+		res.tv_nsec = 0;
+	}
+
+	return res;
+}
+>>>>>>> v4.9.227

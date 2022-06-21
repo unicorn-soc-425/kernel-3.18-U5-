@@ -146,7 +146,10 @@ static int max6902_probe(struct spi_device *spi)
 static struct spi_driver max6902_driver = {
 	.driver = {
 		.name	= "rtc-max6902",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe	= max6902_probe,
 };

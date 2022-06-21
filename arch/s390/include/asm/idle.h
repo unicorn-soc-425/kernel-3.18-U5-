@@ -9,9 +9,16 @@
 
 #include <linux/types.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 
 struct s390_idle_data {
 	unsigned int sequence;
+=======
+#include <linux/seqlock.h>
+
+struct s390_idle_data {
+	seqcount_t seqcount;
+>>>>>>> v4.9.227
 	unsigned long long idle_count;
 	unsigned long long idle_time;
 	unsigned long long clock_idle_enter;
@@ -23,4 +30,9 @@ struct s390_idle_data {
 extern struct device_attribute dev_attr_idle_count;
 extern struct device_attribute dev_attr_idle_time_us;
 
+<<<<<<< HEAD
+=======
+void psw_idle(struct s390_idle_data *, unsigned long);
+
+>>>>>>> v4.9.227
 #endif /* _S390_IDLE_H */

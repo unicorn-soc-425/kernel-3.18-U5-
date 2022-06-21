@@ -49,7 +49,11 @@ static void shift_out_bits(struct _adapter *padapter, u16 data, u16 count)
 {
 	u16 x, mask;
 
+<<<<<<< HEAD
 	if (padapter->bSurpriseRemoved == true)
+=======
+	if (padapter->bSurpriseRemoved)
+>>>>>>> v4.9.227
 		goto out;
 	mask = 0x01 << (count - 1);
 	x = r8712_read8(padapter, EE_9346CR);
@@ -58,15 +62,25 @@ static void shift_out_bits(struct _adapter *padapter, u16 data, u16 count)
 		x &= ~_EEDI;
 		if (data & mask)
 			x |= _EEDI;
+<<<<<<< HEAD
 		if (padapter->bSurpriseRemoved == true)
+=======
+		if (padapter->bSurpriseRemoved)
+>>>>>>> v4.9.227
 			goto out;
 		r8712_write8(padapter, EE_9346CR, (u8)x);
 		udelay(CLOCK_RATE);
 		up_clk(padapter, &x);
 		down_clk(padapter, &x);
+<<<<<<< HEAD
 		mask = mask >> 1;
 	} while (mask);
 	if (padapter->bSurpriseRemoved == true)
+=======
+		mask >>= 1;
+	} while (mask);
+	if (padapter->bSurpriseRemoved)
+>>>>>>> v4.9.227
 		goto out;
 	x &= ~_EEDI;
 	r8712_write8(padapter, EE_9346CR, (u8)x);
@@ -77,15 +91,25 @@ static u16 shift_in_bits(struct _adapter *padapter)
 {
 	u16 x, d = 0, i;
 
+<<<<<<< HEAD
 	if (padapter->bSurpriseRemoved == true)
+=======
+	if (padapter->bSurpriseRemoved)
+>>>>>>> v4.9.227
 		goto out;
 	x = r8712_read8(padapter, EE_9346CR);
 	x &= ~(_EEDO | _EEDI);
 	d = 0;
 	for (i = 0; i < 16; i++) {
+<<<<<<< HEAD
 		d = d << 1;
 		up_clk(padapter, &x);
 		if (padapter->bSurpriseRemoved == true)
+=======
+		d <<= 1;
+		up_clk(padapter, &x);
+		if (padapter->bSurpriseRemoved)
+>>>>>>> v4.9.227
 			goto out;
 		x = r8712_read8(padapter, EE_9346CR);
 		x &= ~(_EEDI);
@@ -129,6 +153,7 @@ static void eeprom_clean(struct _adapter *padapter)
 {
 	u16 x;
 
+<<<<<<< HEAD
 	if (padapter->bSurpriseRemoved == true)
 		return;
 	x = r8712_read8(padapter, EE_9346CR);
@@ -140,6 +165,19 @@ static void eeprom_clean(struct _adapter *padapter)
 		return;
 	up_clk(padapter, &x);
 	if (padapter->bSurpriseRemoved == true)
+=======
+	if (padapter->bSurpriseRemoved)
+		return;
+	x = r8712_read8(padapter, EE_9346CR);
+	if (padapter->bSurpriseRemoved)
+		return;
+	x &= ~(_EECS | _EEDI);
+	r8712_write8(padapter, EE_9346CR, (u8)x);
+	if (padapter->bSurpriseRemoved)
+		return;
+	up_clk(padapter, &x);
+	if (padapter->bSurpriseRemoved)
+>>>>>>> v4.9.227
 		return;
 	down_clk(padapter, &x);
 }
@@ -206,11 +244,19 @@ u16 r8712_eeprom_read16(struct _adapter *padapter, u16 reg) /*ReadEEprom*/
 	tmp8_clk_new = tmp8_clk_ori | 0x20;
 	if (tmp8_clk_new != tmp8_clk_ori)
 		r8712_write8(padapter, 0x10250003, tmp8_clk_new);
+<<<<<<< HEAD
 	if (padapter->bSurpriseRemoved == true)
 		goto out;
 	/* select EEPROM, reset bits, set _EECS */
 	x = r8712_read8(padapter, EE_9346CR);
 	if (padapter->bSurpriseRemoved == true)
+=======
+	if (padapter->bSurpriseRemoved)
+		goto out;
+	/* select EEPROM, reset bits, set _EECS */
+	x = r8712_read8(padapter, EE_9346CR);
+	if (padapter->bSurpriseRemoved)
+>>>>>>> v4.9.227
 		goto out;
 	x &= ~(_EEDI | _EEDO | _EESK | _EEM0);
 	x |= _EEM1 | _EECS;

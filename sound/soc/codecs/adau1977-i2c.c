@@ -46,7 +46,10 @@ MODULE_DEVICE_TABLE(i2c, adau1977_i2c_ids);
 static struct i2c_driver adau1977_i2c_driver = {
 	.driver = {
 		.name = "adau1977",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = adau1977_i2c_probe,
 	.remove = adau1977_i2c_remove,

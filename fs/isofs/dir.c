@@ -58,7 +58,11 @@ int get_acorn_filename(struct iso_directory_record *de,
 	std = sizeof(struct iso_directory_record) + de->name_len[0];
 	if (std & 1)
 		std++;
+<<<<<<< HEAD
 	if ((*((unsigned char *) de) - std) != 32)
+=======
+	if (de->length[0] - std != 32)
+>>>>>>> v4.9.227
 		return retnamlen;
 	chr = ((unsigned char *) de) + std;
 	if (strncmp(chr, "ARCHIMEDES", 10))
@@ -269,7 +273,11 @@ const struct file_operations isofs_dir_operations =
 {
 	.llseek = generic_file_llseek,
 	.read = generic_read_dir,
+<<<<<<< HEAD
 	.iterate = isofs_readdir,
+=======
+	.iterate_shared = isofs_readdir,
+>>>>>>> v4.9.227
 };
 
 /*

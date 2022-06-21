@@ -1,6 +1,10 @@
 menuconfig GOLDFISH
 	bool "Platform support for Goldfish virtual devices"
 	depends on X86_32 || X86_64 || ARM || ARM64 || MIPS
+<<<<<<< HEAD
+=======
+	depends on HAS_IOMEM
+>>>>>>> v4.9.227
 	---help---
 	  Say Y here to get to see options for the Goldfish virtual platform.
 	  This option alone does not add any kernel code.
@@ -10,7 +14,11 @@ menuconfig GOLDFISH
 if GOLDFISH
 
 config GOLDFISH_BUS
+<<<<<<< HEAD
 	tristate "Goldfish platform bus"
+=======
+	bool "Goldfish platform bus"
+>>>>>>> v4.9.227
 	---help---
 	  This is a virtual bus to host Goldfish Android Virtual Devices.
 

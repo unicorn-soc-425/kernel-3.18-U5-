@@ -11,6 +11,10 @@ config METAG
 	select HAVE_DEBUG_KMEMLEAK
 	select HAVE_DEBUG_STACKOVERFLOW
 	select HAVE_DYNAMIC_FTRACE
+<<<<<<< HEAD
+=======
+	select HAVE_EXIT_THREAD
+>>>>>>> v4.9.227
 	select HAVE_FTRACE_MCOUNT_RECORD
 	select HAVE_FUNCTION_TRACER
 	select HAVE_KERNEL_BZIP2
@@ -29,6 +33,10 @@ config METAG
 	select OF
 	select OF_EARLY_FLATTREE
 	select SPARSE_IRQ
+<<<<<<< HEAD
+=======
+	select CPU_NO_EFFICIENT_FFS
+>>>>>>> v4.9.227
 
 config STACKTRACE_SUPPORT
 	def_bool y
@@ -36,9 +44,12 @@ config STACKTRACE_SUPPORT
 config LOCKDEP_SUPPORT
 	def_bool y
 
+<<<<<<< HEAD
 config HAVE_LATENCYTOP_SUPPORT
 	def_bool y
 
+=======
+>>>>>>> v4.9.227
 config RWSEM_GENERIC_SPINLOCK
 	def_bool y
 

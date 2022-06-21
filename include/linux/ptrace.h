@@ -8,6 +8,12 @@
 #include <linux/pid_namespace.h>	/* For task_active_pid_ns.  */
 #include <uapi/linux/ptrace.h>
 
+<<<<<<< HEAD
+=======
+extern int ptrace_access_vm(struct task_struct *tsk, unsigned long addr,
+			    void *buf, int len, unsigned int gup_flags);
+
+>>>>>>> v4.9.227
 /*
  * Ptrace flags
  *
@@ -19,7 +25,10 @@
 #define PT_SEIZED	0x00010000	/* SEIZE used, enable new behavior */
 #define PT_PTRACED	0x00000001
 #define PT_DTRACE	0x00000002	/* delayed trace (used on m68k, i386) */
+<<<<<<< HEAD
 #define PT_PTRACE_CAP	0x00000004	/* ptracer can follow suid-exec */
+=======
+>>>>>>> v4.9.227
 
 #define PT_OPT_FLAG_SHIFT	3
 /* PT_TRACE_* event enable flags */
@@ -34,6 +43,10 @@
 #define PT_TRACE_SECCOMP	PT_EVENT_FLAG(PTRACE_EVENT_SECCOMP)
 
 #define PT_EXITKILL		(PTRACE_O_EXITKILL << PT_OPT_FLAG_SHIFT)
+<<<<<<< HEAD
+=======
+#define PT_SUSPEND_SECCOMP	(PTRACE_O_SUSPEND_SECCOMP << PT_OPT_FLAG_SHIFT)
+>>>>>>> v4.9.227
 
 /* single stepping state bits (used on ARM and PA-RISC) */
 #define PT_SINGLESTEP_BIT	31
@@ -50,6 +63,7 @@ extern int ptrace_request(struct task_struct *child, long request,
 			  unsigned long addr, unsigned long data);
 extern void ptrace_notify(int exit_code);
 extern void __ptrace_link(struct task_struct *child,
+<<<<<<< HEAD
 			  struct task_struct *new_parent);
 extern void __ptrace_unlink(struct task_struct *child);
 extern void exit_ptrace(struct task_struct *tracer);
@@ -58,12 +72,29 @@ extern void exit_ptrace(struct task_struct *tracer);
 #define PTRACE_MODE_NOAUDIT	0x04
 #define PTRACE_MODE_FSCREDS 0x08
 #define PTRACE_MODE_REALCREDS 0x10
+=======
+			  struct task_struct *new_parent,
+			  const struct cred *ptracer_cred);
+extern void __ptrace_unlink(struct task_struct *child);
+extern void exit_ptrace(struct task_struct *tracer, struct list_head *dead);
+#define PTRACE_MODE_READ	0x01
+#define PTRACE_MODE_ATTACH	0x02
+#define PTRACE_MODE_NOAUDIT	0x04
+#define PTRACE_MODE_FSCREDS	0x08
+#define PTRACE_MODE_REALCREDS	0x10
+#define PTRACE_MODE_SCHED	0x20
+#define PTRACE_MODE_IBPB	0x40
+>>>>>>> v4.9.227
 
 /* shorthands for READ/ATTACH and FSCREDS/REALCREDS combinations */
 #define PTRACE_MODE_READ_FSCREDS (PTRACE_MODE_READ | PTRACE_MODE_FSCREDS)
 #define PTRACE_MODE_READ_REALCREDS (PTRACE_MODE_READ | PTRACE_MODE_REALCREDS)
 #define PTRACE_MODE_ATTACH_FSCREDS (PTRACE_MODE_ATTACH | PTRACE_MODE_FSCREDS)
 #define PTRACE_MODE_ATTACH_REALCREDS (PTRACE_MODE_ATTACH | PTRACE_MODE_REALCREDS)
+<<<<<<< HEAD
+=======
+#define PTRACE_MODE_SPEC_IBPB (PTRACE_MODE_ATTACH_REALCREDS | PTRACE_MODE_IBPB)
+>>>>>>> v4.9.227
 
 /**
  * ptrace_may_access - check whether the caller is permitted to access
@@ -81,6 +112,23 @@ extern void exit_ptrace(struct task_struct *tracer);
  */
 extern bool ptrace_may_access(struct task_struct *task, unsigned int mode);
 
+<<<<<<< HEAD
+=======
+/**
+ * ptrace_may_access - check whether the caller is permitted to access
+ * a target task.
+ * @task: target task
+ * @mode: selects type of access and caller credentials
+ *
+ * Returns true on success, false on denial.
+ *
+ * Similar to ptrace_may_access(). Only to be called from context switch
+ * code. Does not call into audit and the regular LSM hooks due to locking
+ * constraints.
+ */
+extern bool ptrace_may_access_sched(struct task_struct *task, unsigned int mode);
+
+>>>>>>> v4.9.227
 static inline int ptrace_reparented(struct task_struct *child)
 {
 	return !same_thread_group(child->real_parent, child->parent);
@@ -202,7 +250,11 @@ static inline void ptrace_init_task(struct task_struct *child, bool ptrace)
 
 	if (unlikely(ptrace) && current->ptrace) {
 		child->ptrace = current->ptrace;
+<<<<<<< HEAD
 		__ptrace_link(child, current->parent);
+=======
+		__ptrace_link(child, current->parent, current->ptracer_cred);
+>>>>>>> v4.9.227
 
 		if (child->ptrace & PT_SEIZED)
 			task_set_jobctl_pending(child, JOBCTL_TRAP_STOP);
@@ -211,6 +263,11 @@ static inline void ptrace_init_task(struct task_struct *child, bool ptrace)
 
 		set_tsk_thread_flag(child, TIF_SIGPENDING);
 	}
+<<<<<<< HEAD
+=======
+	else
+		child->ptracer_cred = NULL;
+>>>>>>> v4.9.227
 }
 
 /**

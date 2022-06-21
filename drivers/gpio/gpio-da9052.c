@@ -51,11 +51,14 @@ struct da9052_gpio {
 	struct gpio_chip gp;
 };
 
+<<<<<<< HEAD
 static inline struct da9052_gpio *to_da9052_gpio(struct gpio_chip *chip)
 {
 	return container_of(chip, struct da9052_gpio, gp);
 }
 
+=======
+>>>>>>> v4.9.227
 static unsigned char da9052_gpio_port_odd(unsigned offset)
 {
 	return offset % 2;
@@ -63,7 +66,11 @@ static unsigned char da9052_gpio_port_odd(unsigned offset)
 
 static int da9052_gpio_get(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	struct da9052_gpio *gpio = to_da9052_gpio(gc);
+=======
+	struct da9052_gpio *gpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	int da9052_port_direction = 0;
 	int ret;
 
@@ -89,6 +96,7 @@ static int da9052_gpio_get(struct gpio_chip *gc, unsigned offset)
 					      DA9052_STATUS_D_REG);
 		if (ret < 0)
 			return ret;
+<<<<<<< HEAD
 		if (ret & (1 << DA9052_GPIO_SHIFT_COUNT(offset)))
 			return 1;
 		else
@@ -98,6 +106,14 @@ static int da9052_gpio_get(struct gpio_chip *gc, unsigned offset)
 			return ret & DA9052_GPIO_ODD_PORT_MODE;
 		else
 			return ret & DA9052_GPIO_EVEN_PORT_MODE;
+=======
+		return !!(ret & (1 << DA9052_GPIO_SHIFT_COUNT(offset)));
+	case DA9052_OUTPUT_PUSHPULL:
+		if (da9052_gpio_port_odd(offset))
+			return !!(ret & DA9052_GPIO_ODD_PORT_MODE);
+		else
+			return !!(ret & DA9052_GPIO_EVEN_PORT_MODE);
+>>>>>>> v4.9.227
 	default:
 		return -EINVAL;
 	}
@@ -105,7 +121,11 @@ static int da9052_gpio_get(struct gpio_chip *gc, unsigned offset)
 
 static void da9052_gpio_set(struct gpio_chip *gc, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct da9052_gpio *gpio = to_da9052_gpio(gc);
+=======
+	struct da9052_gpio *gpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	int ret;
 
 	if (da9052_gpio_port_odd(offset)) {
@@ -131,7 +151,11 @@ static void da9052_gpio_set(struct gpio_chip *gc, unsigned offset, int value)
 
 static int da9052_gpio_direction_input(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	struct da9052_gpio *gpio = to_da9052_gpio(gc);
+=======
+	struct da9052_gpio *gpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	unsigned char register_value;
 	int ret;
 
@@ -157,7 +181,11 @@ static int da9052_gpio_direction_input(struct gpio_chip *gc, unsigned offset)
 static int da9052_gpio_direction_output(struct gpio_chip *gc,
 					unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct da9052_gpio *gpio = to_da9052_gpio(gc);
+=======
+	struct da9052_gpio *gpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	unsigned char register_value;
 	int ret;
 
@@ -182,7 +210,11 @@ static int da9052_gpio_direction_output(struct gpio_chip *gc,
 
 static int da9052_gpio_to_irq(struct gpio_chip *gc, u32 offset)
 {
+<<<<<<< HEAD
 	struct da9052_gpio *gpio = to_da9052_gpio(gc);
+=======
+	struct da9052_gpio *gpio = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	struct da9052 *da9052 = gpio->da9052;
 
 	int irq;
@@ -192,7 +224,11 @@ static int da9052_gpio_to_irq(struct gpio_chip *gc, u32 offset)
 	return irq;
 }
 
+<<<<<<< HEAD
 static struct gpio_chip reference_gp = {
+=======
+static const struct gpio_chip reference_gp = {
+>>>>>>> v4.9.227
 	.label = "da9052-gpio",
 	.owner = THIS_MODULE,
 	.get = da9052_gpio_get,
@@ -212,7 +248,11 @@ static int da9052_gpio_probe(struct platform_device *pdev)
 	int ret;
 
 	gpio = devm_kzalloc(&pdev->dev, sizeof(*gpio), GFP_KERNEL);
+<<<<<<< HEAD
 	if (gpio == NULL)
+=======
+	if (!gpio)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	gpio->da9052 = dev_get_drvdata(pdev->dev.parent);
@@ -222,7 +262,11 @@ static int da9052_gpio_probe(struct platform_device *pdev)
 	if (pdata && pdata->gpio_base)
 		gpio->gp.base = pdata->gpio_base;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&gpio->gp);
+=======
+	ret = devm_gpiochip_add_data(&pdev->dev, &gpio->gp, gpio);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Could not register gpiochip, %d\n", ret);
 		return ret;
@@ -233,6 +277,7 @@ static int da9052_gpio_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int da9052_gpio_remove(struct platform_device *pdev)
 {
 	struct da9052_gpio *gpio = platform_get_drvdata(pdev);
@@ -247,6 +292,12 @@ static struct platform_driver da9052_gpio_driver = {
 	.driver = {
 		.name	= "da9052-gpio",
 		.owner	= THIS_MODULE,
+=======
+static struct platform_driver da9052_gpio_driver = {
+	.probe = da9052_gpio_probe,
+	.driver = {
+		.name	= "da9052-gpio",
+>>>>>>> v4.9.227
 	},
 };
 

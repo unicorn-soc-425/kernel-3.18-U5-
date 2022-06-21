@@ -35,7 +35,11 @@
 #include <media/v4l2-dev.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ctrls.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 
 #include "solo6x10-regs.h"
 
@@ -135,7 +139,11 @@ struct solo_p2m_dev {
 #define OSD_TEXT_MAX		44
 
 struct solo_vb2_buf {
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head list;
 };
 
@@ -159,8 +167,11 @@ struct solo_enc_dev {
 	u16			motion_thresh;
 	bool			motion_global;
 	bool			motion_enabled;
+<<<<<<< HEAD
 	bool			motion_last_state;
 	u8			frames_since_last_motion;
+=======
+>>>>>>> v4.9.227
 	u16			width;
 	u16			height;
 
@@ -170,9 +181,15 @@ struct solo_enc_dev {
 					__aligned(4);
 
 	/* VOP stuff */
+<<<<<<< HEAD
 	unsigned char		vop[64];
 	int			vop_len;
 	unsigned char		jpeg_header[1024];
+=======
+	u8			vop[64];
+	int			vop_len;
+	u8			jpeg_header[1024];
+>>>>>>> v4.9.227
 	int			jpeg_len;
 
 	u32			fmt;
@@ -200,7 +217,10 @@ struct solo_dev {
 	int			nr_ext;
 	u32			irq_mask;
 	u32			motion_mask;
+<<<<<<< HEAD
 	spinlock_t		reg_io_lock;
+=======
+>>>>>>> v4.9.227
 	struct v4l2_device	v4l2_dev;
 
 	/* tw28xx accounting */
@@ -271,7 +291,10 @@ struct solo_dev {
 
 	/* Buffer handling */
 	struct vb2_queue	vidq;
+<<<<<<< HEAD
 	struct vb2_alloc_ctx	*alloc_ctx;
+=======
+>>>>>>> v4.9.227
 	u32			sequence;
 	struct task_struct      *kthread;
 	struct mutex		lock;
@@ -282,6 +305,7 @@ struct solo_dev {
 
 static inline u32 solo_reg_read(struct solo_dev *solo_dev, int reg)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	u32 ret;
 	u16 val;
@@ -296,11 +320,15 @@ static inline u32 solo_reg_read(struct solo_dev *solo_dev, int reg)
 	spin_unlock_irqrestore(&solo_dev->reg_io_lock, flags);
 
 	return ret;
+=======
+	return readl(solo_dev->reg_base + reg);
+>>>>>>> v4.9.227
 }
 
 static inline void solo_reg_write(struct solo_dev *solo_dev, int reg,
 				  u32 data)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	u16 val;
 
@@ -312,6 +340,12 @@ static inline void solo_reg_write(struct solo_dev *solo_dev, int reg,
 	rmb();
 
 	spin_unlock_irqrestore(&solo_dev->reg_io_lock, flags);
+=======
+	u16 val;
+
+	writel(data, solo_dev->reg_base + reg);
+	pci_read_config_word(solo_dev->pdev, PCI_STATUS, &val);
+>>>>>>> v4.9.227
 }
 
 static inline void solo_irq_on(struct solo_dev *dev, u32 mask)

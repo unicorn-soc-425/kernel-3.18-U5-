@@ -66,19 +66,36 @@ void __init omap_pmic_init(int bus, u32 clkrate,
 	omap_register_i2c_bus(bus, clkrate, &pmic_i2c_board_info, 1);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARCH_OMAP4
+>>>>>>> v4.9.227
 void __init omap4_pmic_init(const char *pmic_type,
 		    struct twl4030_platform_data *pmic_data,
 		    struct i2c_board_info *devices, int nr_devices)
 {
 	/* PMIC part*/
+<<<<<<< HEAD
 	omap_mux_init_signal("sys_nirq1", OMAP_PIN_INPUT_PULLUP | OMAP_PIN_OFF_WAKEUPENABLE);
 	omap_mux_init_signal("fref_clk0_out.sys_drm_msecure", OMAP_PIN_OUTPUT);
 	omap_pmic_init(1, 400, pmic_type, 7 + OMAP44XX_IRQ_GIC_START, pmic_data);
+=======
+	unsigned int irq;
+
+	omap_mux_init_signal("sys_nirq1", OMAP_PIN_INPUT_PULLUP | OMAP_PIN_OFF_WAKEUPENABLE);
+	omap_mux_init_signal("fref_clk0_out.sys_drm_msecure", OMAP_PIN_OUTPUT);
+	irq = omap4_xlate_irq(7 + OMAP44XX_IRQ_GIC_START);
+	omap_pmic_init(1, 400, pmic_type, irq, pmic_data);
+>>>>>>> v4.9.227
 
 	/* Register additional devices on i2c1 bus if needed */
 	if (devices)
 		i2c_register_board_info(1, devices, nr_devices);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 void __init omap_pmic_late_init(void)
 {
@@ -91,6 +108,7 @@ void __init omap_pmic_late_init(void)
 }
 
 #if defined(CONFIG_ARCH_OMAP3)
+<<<<<<< HEAD
 struct phy_consumer consumers[] = {
 	PHY_CONSUMER("musb-hdrc.0", "usb"),
 };
@@ -103,6 +121,10 @@ struct phy_init_data init_data = {
 static struct twl4030_usb_data omap3_usb_pdata = {
 	.usb_mode	= T2_USB_MODE_ULPI,
 	.init_data	= &init_data,
+=======
+static struct twl4030_usb_data omap3_usb_pdata = {
+	.usb_mode = T2_USB_MODE_ULPI,
+>>>>>>> v4.9.227
 };
 
 static int omap3_batt_table[] = {
@@ -537,8 +559,12 @@ void __init omap4_pmic_get_config(struct twl4030_platform_data *pmic_data,
 }
 #endif /* CONFIG_ARCH_OMAP4 */
 
+<<<<<<< HEAD
 #if defined(CONFIG_SND_OMAP_SOC_OMAP_TWL4030) || \
 	defined(CONFIG_SND_OMAP_SOC_OMAP_TWL4030_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SND_OMAP_SOC_OMAP_TWL4030)
+>>>>>>> v4.9.227
 #include <linux/platform_data/omap-twl4030.h>
 
 /* Commonly used configuration */

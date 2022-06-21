@@ -169,11 +169,16 @@ static void ar9002_hw_spur_mitigate(struct ath_hw *ah,
 {
 	int bb_spur = AR_NO_SPUR;
 	int freq;
+<<<<<<< HEAD
 	int bin, cur_bin;
+=======
+	int bin;
+>>>>>>> v4.9.227
 	int bb_spur_off, spur_subchannel_sd;
 	int spur_freq_sd;
 	int spur_delta_phase;
 	int denominator;
+<<<<<<< HEAD
 	int upper, lower, cur_vit_mask;
 	int tmp, newVal;
 	int i;
@@ -198,6 +203,15 @@ static void ar9002_hw_spur_mitigate(struct ath_hw *ah,
 	memset(&mask_m, 0, sizeof(int8_t) * 123);
 	memset(&mask_p, 0, sizeof(int8_t) * 123);
 
+=======
+	int tmp, newVal;
+	int i;
+	struct chan_centers centers;
+
+	int cur_bb_spur;
+	bool is2GHz = IS_CHAN_2GHZ(chan);
+
+>>>>>>> v4.9.227
 	ath9k_hw_get_channel_centers(ah, chan, &centers);
 	freq = centers.synth_center;
 
@@ -288,6 +302,7 @@ static void ar9002_hw_spur_mitigate(struct ath_hw *ah,
 	newVal = spur_subchannel_sd << AR_PHY_SFCORR_SPUR_SUBCHNL_SD_S;
 	REG_WRITE(ah, AR_PHY_SFCORR_EXT, newVal);
 
+<<<<<<< HEAD
 	cur_bin = -6000;
 	upper = bin + 100;
 	lower = bin - 100;
@@ -417,6 +432,9 @@ static void ar9002_hw_spur_mitigate(struct ath_hw *ah,
 		| (mask_p[47] << 2) | (mask_p[46] << 0);
 	REG_WRITE(ah, AR_PHY_BIN_MASK2_4, tmp_mask);
 	REG_WRITE(ah, AR_PHY_MASK2_P_61_45, tmp_mask);
+=======
+	ar5008_hw_cmn_spur_mitigate(ah, chan, bin);
+>>>>>>> v4.9.227
 
 	REGWRITE_BUFFER_FLUSH(ah);
 }
@@ -621,6 +639,10 @@ static void ar9002_hw_set_bt_ant_diversity(struct ath_hw *ah, bool enable)
 static void ar9002_hw_spectral_scan_config(struct ath_hw *ah,
 				    struct ath_spec_scan *param)
 {
+<<<<<<< HEAD
+=======
+	u32 repeat_bit;
+>>>>>>> v4.9.227
 	u8 count;
 
 	if (!param->enabled) {
@@ -631,18 +653,31 @@ static void ar9002_hw_spectral_scan_config(struct ath_hw *ah,
 	REG_SET_BIT(ah, AR_PHY_RADAR_0, AR_PHY_RADAR_0_FFT_ENA);
 	REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN, AR_PHY_SPECTRAL_SCAN_ENABLE);
 
+<<<<<<< HEAD
 	if (param->short_repeat)
 		REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN,
 			    AR_PHY_SPECTRAL_SCAN_SHORT_REPEAT);
 	else
 		REG_CLR_BIT(ah, AR_PHY_SPECTRAL_SCAN,
 			    AR_PHY_SPECTRAL_SCAN_SHORT_REPEAT);
+=======
+	if (AR_SREV_9280(ah))
+		repeat_bit = AR_PHY_SPECTRAL_SCAN_SHORT_REPEAT;
+	else
+		repeat_bit = AR_PHY_SPECTRAL_SCAN_SHORT_REPEAT_KIWI;
+
+	if (param->short_repeat)
+		REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN, repeat_bit);
+	else
+		REG_CLR_BIT(ah, AR_PHY_SPECTRAL_SCAN, repeat_bit);
+>>>>>>> v4.9.227
 
 	/* on AR92xx, the highest bit of count will make the the chip send
 	 * spectral samples endlessly. Check if this really was intended,
 	 * and fix otherwise.
 	 */
 	count = param->count;
+<<<<<<< HEAD
 	if (param->endless)
 		count = 0x80;
 	else if (count & 0x80)
@@ -650,6 +685,28 @@ static void ar9002_hw_spectral_scan_config(struct ath_hw *ah,
 
 	REG_RMW_FIELD(ah, AR_PHY_SPECTRAL_SCAN,
 		      AR_PHY_SPECTRAL_SCAN_COUNT, count);
+=======
+	if (param->endless) {
+		if (AR_SREV_9280(ah))
+			count = 0x80;
+		else
+			count = 0;
+	} else if (count & 0x80)
+		count = 0x7f;
+	else if (!count)
+		count = 1;
+
+	if (AR_SREV_9280(ah)) {
+		REG_RMW_FIELD(ah, AR_PHY_SPECTRAL_SCAN,
+			      AR_PHY_SPECTRAL_SCAN_COUNT, count);
+	} else {
+		REG_RMW_FIELD(ah, AR_PHY_SPECTRAL_SCAN,
+			      AR_PHY_SPECTRAL_SCAN_COUNT_KIWI, count);
+		REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN,
+			    AR_PHY_SPECTRAL_SCAN_PHYERR_MASK_SELECT);
+	}
+
+>>>>>>> v4.9.227
 	REG_RMW_FIELD(ah, AR_PHY_SPECTRAL_SCAN,
 		      AR_PHY_SPECTRAL_SCAN_PERIOD, param->period);
 	REG_RMW_FIELD(ah, AR_PHY_SPECTRAL_SCAN,

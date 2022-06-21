@@ -12,6 +12,7 @@ its hardware characteristcs.
 
 	* compatible: These have to be supplemented with "arm,primecell" as
 	  drivers are using the AMBA bus interface.  Possible values include:
+<<<<<<< HEAD
 		- "arm,coresight-etb10", "arm,primecell";
 		- "arm,coresight-tpiu", "arm,primecell";
 		- "arm,coresight-tmc", "arm,primecell";
@@ -19,20 +20,61 @@ its hardware characteristcs.
 		- "arm,coresight-etm3x", "arm,primecell";
 		- "qcom,coresight-replicator1x", "arm,primecell";
 		- "arm,coresight-stm", "arm,primecell";
+=======
+		- Embedded Trace Buffer (version 1.0):
+			"arm,coresight-etb10", "arm,primecell";
+
+		- Trace Port Interface Unit:
+			"arm,coresight-tpiu", "arm,primecell";
+
+		- Trace Memory Controller, used for Embedded Trace Buffer(ETB),
+		  Embedded Trace FIFO(ETF) and Embedded Trace Router(ETR)
+		  configuration.  The configuration mode (ETB, ETF, ETR) is
+		  discovered at boot time when the device is probed.
+			"arm,coresight-tmc", "arm,primecell";
+
+		- Trace Funnel:
+			"arm,coresight-funnel", "arm,primecell";
+
+		- Embedded Trace Macrocell (version 3.x) and
+					Program Flow Trace Macrocell:
+			"arm,coresight-etm3x", "arm,primecell";
+
+		- Embedded Trace Macrocell (version 4.x):
+			"arm,coresight-etm4x", "arm,primecell";
+
+		- Qualcomm Configurable Replicator (version 1.x):
+			"qcom,coresight-replicator1x", "arm,primecell";
+
+		- System Trace Macrocell:
+			"arm,coresight-stm", "arm,primecell"; [1]
+>>>>>>> v4.9.227
 
 	* reg: physical base address and length of the register
 	  set(s) of the component.
 
+<<<<<<< HEAD
 	* clocks: the clock associated to this component.
 
 	* clock-names: the name of the clock as referenced by the code.
 	  Since we are using the AMBA framework, the name should be
 	  "apb_pclk".
+=======
+	* clocks: the clocks associated to this component.
+
+	* clock-names: the name of the clocks referenced by the code.
+	  Since we are using the AMBA framework, the name of the clock
+	  providing the interconnect should be "apb_pclk", and some
+	  coresight blocks also have an additional clock "atclk", which
+	  clocks the core of that coresight component. The latter clock
+	  is optional.
+>>>>>>> v4.9.227
 
 	* port or ports: The representation of the component's port
 	  layout using the generic DT graph presentation found in
 	  "bindings/graph.txt".
 
+<<<<<<< HEAD
 * Required properties for devices that don't show up on the AMBA bus, such as
   non-configurable replicators:
 
@@ -51,6 +93,25 @@ its hardware characteristcs.
 	* coresight-name: unique descriptive name of the component.
 	* reg-names: names corresponding to each reg property value.
 
+=======
+* Additional required properties for System Trace Macrocells (STM):
+	* reg: along with the physical base address and length of the register
+	  set as described above, another entry is required to describe the
+	  mapping of the extended stimulus port area.
+
+	* reg-names: the only acceptable values are "stm-base" and
+	  "stm-stimulus-base", each corresponding to the areas defined in "reg".
+
+* Required properties for devices that don't show up on the AMBA bus, such as
+  non-configurable replicators:
+
+	* compatible: Currently supported value is (note the absence of the
+	  AMBA markee):
+		- "arm,coresight-replicator"
+
+	* port or ports: same as above.
+
+>>>>>>> v4.9.227
 * Optional properties for ETM/PTMs:
 
 	* arm,cp14: must be present if the system accesses ETM/PTM management
@@ -64,6 +125,7 @@ its hardware characteristcs.
 	* arm,buffer-size: size of contiguous buffer space for TMC ETR
 	 (embedded trace router)
 
+<<<<<<< HEAD
 	* arm,default-sink: represents the default compile time CoreSight sink
 
 * Required property for TPDAs:
@@ -99,6 +161,8 @@ its hardware characteristcs.
 * Required property for Remote ETMs:
 
 	* qcom,inst-id: must be present. QMI instance id for remote ETMs.
+=======
+>>>>>>> v4.9.227
 
 Example:
 
@@ -215,6 +279,7 @@ Example:
 		};
 	};
 
+<<<<<<< HEAD
 	tpda_mss: tpda@7043000 {
 		compatible = "qcom,coresight-tpda";
 		reg = <0x7043000 0x1000>;
@@ -251,6 +316,8 @@ Example:
 		};
 	};
 
+=======
+>>>>>>> v4.9.227
 3. Sources
 	ptm@2201c000 {
 		compatible = "arm,coresight-etm3x", "arm,primecell";
@@ -280,6 +347,7 @@ Example:
 		};
 	};
 
+<<<<<<< HEAD
 	stm: stm@6002000 {
 		compatible = "arm,coresight-stm", "arm,primecell";
 		arm,primecell-periphid = <0x0003b962>;
@@ -297,10 +365,25 @@ Example:
 		port{
 			stm_out_funnel_in0: endpoint {
 				remote-endpoint = <&funnel_in0_in_stm>;
+=======
+4. STM
+	stm@20100000 {
+		compatible = "arm,coresight-stm", "arm,primecell";
+		reg = <0 0x20100000 0 0x1000>,
+		      <0 0x28000000 0 0x180000>;
+		reg-names = "stm-base", "stm-stimulus-base";
+
+		clocks = <&soc_smc50mhz>;
+		clock-names = "apb_pclk";
+		port {
+			stm_out_port: endpoint {
+				remote-endpoint = <&main_funnel_in_port2>;
+>>>>>>> v4.9.227
 			};
 		};
 	};
 
+<<<<<<< HEAD
 	tpdm_mss: tpdm@7042000 {
 		compatible = "qcom,coresight-tpdm";
 		reg = <0x7042000 0x1000>;
@@ -331,3 +414,7 @@ Example:
 			 <&clock_gcc clk_qdss_a_clk>;
 		clock-names = "core_clk", "core_a_clk";
 	};
+=======
+[1]. There is currently two version of STM: STM32 and STM500.  Both
+have the same HW interface and as such don't need an explicit binding name.
+>>>>>>> v4.9.227

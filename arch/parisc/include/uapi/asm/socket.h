@@ -79,4 +79,17 @@
 
 #define SO_BPF_EXTENSIONS	0x4029
 
+<<<<<<< HEAD
+=======
+#define SO_INCOMING_CPU		0x402A
+
+#define SO_ATTACH_BPF		0x402B
+#define SO_DETACH_BPF		SO_DETACH_FILTER
+
+#define SO_ATTACH_REUSEPORT_CBPF	0x402C
+#define SO_ATTACH_REUSEPORT_EBPF	0x402D
+
+#define SO_CNX_ADVICE		0x402E
+
+>>>>>>> v4.9.227
 #endif /* _UAPI_ASM_SOCKET_H */

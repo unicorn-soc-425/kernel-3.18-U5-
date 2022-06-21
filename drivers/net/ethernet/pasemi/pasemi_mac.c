@@ -30,9 +30,13 @@
 #include <linux/skbuff.h>
 
 #include <linux/ip.h>
+<<<<<<< HEAD
 #include <linux/tcp.h>
 #include <net/checksum.h>
 #include <linux/inet_lro.h>
+=======
+#include <net/checksum.h>
+>>>>>>> v4.9.227
 #include <linux/prefetch.h>
 
 #include <asm/irq.h>
@@ -52,12 +56,18 @@
  *
  * - Multicast support
  * - Large MTU support
+<<<<<<< HEAD
  * - SW LRO
  * - Multiqueue RX/TX
  */
 
 #define LRO_MAX_AGGR 64
 
+=======
+ * - Multiqueue RX/TX
+ */
+
+>>>>>>> v4.9.227
 #define PE_MIN_MTU	64
 #define PE_MAX_MTU	9000
 #define PE_DEF_MTU	ETH_DATA_LEN
@@ -257,6 +267,7 @@ static int pasemi_mac_set_mac_addr(struct net_device *dev, void *p)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int get_skb_hdr(struct sk_buff *skb, void **iphdr,
 		       void **tcph, u64 *hdr_flags, void *data)
 {
@@ -288,6 +299,8 @@ static int get_skb_hdr(struct sk_buff *skb, void **iphdr,
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int pasemi_mac_unmap_tx_skb(struct pasemi_mac *mac,
 				    const int nfrags,
 				    struct sk_buff *skb,
@@ -817,7 +830,11 @@ static int pasemi_mac_clean_rx(struct pasemi_mac_rxring *rx,
 		skb_put(skb, len-4);
 
 		skb->protocol = eth_type_trans(skb, mac->netdev);
+<<<<<<< HEAD
 		lro_receive_skb(&mac->lro_mgr, skb, (void *)macrx);
+=======
+		napi_gro_receive(&mac->napi, skb);
+>>>>>>> v4.9.227
 
 next:
 		RX_DESC(rx, n) = 0;
@@ -839,8 +856,11 @@ next:
 
 	rx_ring(mac)->next_to_clean = n;
 
+<<<<<<< HEAD
 	lro_flush_all(&mac->lro_mgr);
 
+=======
+>>>>>>> v4.9.227
 	/* Increase is in number of 16-byte entries, and since each descriptor
 	 * with an 8BRES takes up 3x8 bytes (padded to 4x8), increase with
 	 * count*2.
@@ -1027,7 +1047,11 @@ static void pasemi_adjust_link(struct net_device *dev)
 	unsigned int flags;
 	unsigned int new_flags;
 
+<<<<<<< HEAD
 	if (!mac->phydev->link) {
+=======
+	if (!dev->phydev->link) {
+>>>>>>> v4.9.227
 		/* If no link, MAC speed settings don't matter. Just report
 		 * link down and return.
 		 */
@@ -1048,10 +1072,17 @@ static void pasemi_adjust_link(struct net_device *dev)
 	new_flags = flags & ~(PAS_MAC_CFG_PCFG_HD | PAS_MAC_CFG_PCFG_SPD_M |
 			      PAS_MAC_CFG_PCFG_TSR_M);
 
+<<<<<<< HEAD
 	if (!mac->phydev->duplex)
 		new_flags |= PAS_MAC_CFG_PCFG_HD;
 
 	switch (mac->phydev->speed) {
+=======
+	if (!dev->phydev->duplex)
+		new_flags |= PAS_MAC_CFG_PCFG_HD;
+
+	switch (dev->phydev->speed) {
+>>>>>>> v4.9.227
 	case 1000:
 		new_flags |= PAS_MAC_CFG_PCFG_SPD_1G |
 			     PAS_MAC_CFG_PCFG_TSR_1G;
@@ -1065,6 +1096,7 @@ static void pasemi_adjust_link(struct net_device *dev)
 			     PAS_MAC_CFG_PCFG_TSR_10M;
 		break;
 	default:
+<<<<<<< HEAD
 		printk("Unsupported speed %d\n", mac->phydev->speed);
 	}
 
@@ -1074,6 +1106,17 @@ static void pasemi_adjust_link(struct net_device *dev)
 	mac->duplex = mac->phydev->duplex;
 	mac->speed = mac->phydev->speed;
 	mac->link = mac->phydev->link;
+=======
+		printk("Unsupported speed %d\n", dev->phydev->speed);
+	}
+
+	/* Print on link or speed/duplex change */
+	msg = mac->link != dev->phydev->link || flags != new_flags;
+
+	mac->duplex = dev->phydev->duplex;
+	mac->speed = dev->phydev->speed;
+	mac->link = dev->phydev->link;
+>>>>>>> v4.9.227
 
 	if (new_flags != flags)
 		write_mac_reg(mac, PAS_MAC_CFG_PCFG, new_flags);
@@ -1091,7 +1134,10 @@ static int pasemi_mac_phy_init(struct net_device *dev)
 
 	dn = pci_device_to_OF_node(mac->pdev);
 	phy_dn = of_parse_phandle(dn, "phy-handle", 0);
+<<<<<<< HEAD
 	of_node_put(phy_dn);
+=======
+>>>>>>> v4.9.227
 
 	mac->link = 0;
 	mac->speed = 0;
@@ -1100,13 +1146,20 @@ static int pasemi_mac_phy_init(struct net_device *dev)
 	phydev = of_phy_connect(dev, phy_dn, &pasemi_adjust_link, 0,
 				PHY_INTERFACE_MODE_SGMII);
 
+<<<<<<< HEAD
+=======
+	of_node_put(phy_dn);
+>>>>>>> v4.9.227
 	if (!phydev) {
 		printk(KERN_ERR "%s: Could not attach to phy\n", dev->name);
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	mac->phydev = phydev;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1236,6 +1289,7 @@ static int pasemi_mac_open(struct net_device *dev)
 		goto out_rx_int;
 	}
 
+<<<<<<< HEAD
 	if (mac->phydev)
 		phy_start(mac->phydev);
 
@@ -1244,6 +1298,14 @@ static int pasemi_mac_open(struct net_device *dev)
 	mac->tx->clean_timer.data = (unsigned long)mac->tx;
 	mac->tx->clean_timer.expires = jiffies+HZ;
 	add_timer(&mac->tx->clean_timer);
+=======
+	if (dev->phydev)
+		phy_start(dev->phydev);
+
+	setup_timer(&mac->tx->clean_timer, pasemi_mac_tx_timer,
+		    (unsigned long)mac->tx);
+	mod_timer(&mac->tx->clean_timer, jiffies + HZ);
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -1333,9 +1395,15 @@ static int pasemi_mac_close(struct net_device *dev)
 	rxch = rx_ring(mac)->chan.chno;
 	txch = tx_ring(mac)->chan.chno;
 
+<<<<<<< HEAD
 	if (mac->phydev) {
 		phy_stop(mac->phydev);
 		phy_disconnect(mac->phydev);
+=======
+	if (dev->phydev) {
+		phy_stop(dev->phydev);
+		phy_disconnect(dev->phydev);
+>>>>>>> v4.9.227
 	}
 
 	del_timer_sync(&mac->tx->clean_timer);
@@ -1756,6 +1824,7 @@ pasemi_mac_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	dev->features = NETIF_F_IP_CSUM | NETIF_F_LLTX | NETIF_F_SG |
 			NETIF_F_HIGHDMA | NETIF_F_GSO;
 
+<<<<<<< HEAD
 	mac->lro_mgr.max_aggr = LRO_MAX_AGGR;
 	mac->lro_mgr.max_desc = MAX_LRO_DESCRIPTORS;
 	mac->lro_mgr.lro_arr = mac->lro_desc;
@@ -1766,6 +1835,8 @@ pasemi_mac_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	mac->lro_mgr.ip_summed_aggr = CHECKSUM_UNNECESSARY;
 
 
+=======
+>>>>>>> v4.9.227
 	mac->dma_pdev = pci_get_device(PCI_VENDOR_ID_PASEMI, 0xa007, NULL);
 	if (!mac->dma_pdev) {
 		dev_err(&mac->pdev->dev, "Can't find DMA Controller\n");
@@ -1837,10 +1908,15 @@ pasemi_mac_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return err;
 
 out:
+<<<<<<< HEAD
 	if (mac->iob_pdev)
 		pci_dev_put(mac->iob_pdev);
 	if (mac->dma_pdev)
 		pci_dev_put(mac->dma_pdev);
+=======
+	pci_dev_put(mac->iob_pdev);
+	pci_dev_put(mac->dma_pdev);
+>>>>>>> v4.9.227
 
 	free_netdev(dev);
 out_disable_device:

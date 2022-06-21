@@ -12,7 +12,10 @@ struct bcm47xxnflash {
 	struct bcma_drv_cc *cc;
 
 	struct nand_chip nand_chip;
+<<<<<<< HEAD
 	struct mtd_info mtd;
+=======
+>>>>>>> v4.9.227
 
 	unsigned curr_command;
 	int curr_page_addr;

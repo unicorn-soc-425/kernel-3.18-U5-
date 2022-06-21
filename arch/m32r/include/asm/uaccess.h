@@ -54,7 +54,11 @@ static inline void set_fs(mm_segment_t s)
 
 #endif /* not CONFIG_MMU */
 
+<<<<<<< HEAD
 #define segment_eq(a,b)	((a).seg == (b).seg)
+=======
+#define segment_eq(a, b)	((a).seg == (b).seg)
+>>>>>>> v4.9.227
 
 #define __addr_ok(addr) \
 	((unsigned long)(addr) < (current_thread_info()->addr_limit.seg))
@@ -68,7 +72,11 @@ static inline void set_fs(mm_segment_t s)
  *
  * This needs 33-bit arithmetic. We have a carry...
  */
+<<<<<<< HEAD
 #define __range_ok(addr,size) ({					\
+=======
+#define __range_ok(addr, size) ({					\
+>>>>>>> v4.9.227
 	unsigned long flag, roksum; 					\
 	__chk_user_ptr(addr);						\
 	asm ( 								\
@@ -91,7 +99,12 @@ static inline void set_fs(mm_segment_t s)
  * @addr: User space pointer to start of block to check
  * @size: Size of block to check
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Checks if a pointer to a block of memory in user space is valid.
  *
@@ -103,7 +116,11 @@ static inline void set_fs(mm_segment_t s)
  * this function, memory access functions may still return -EFAULT.
  */
 #ifdef CONFIG_MMU
+<<<<<<< HEAD
 #define access_ok(type,addr,size) (likely(__range_ok(addr,size) == 0))
+=======
+#define access_ok(type, addr, size) (likely(__range_ok(addr, size) == 0))
+>>>>>>> v4.9.227
 #else
 static inline int access_ok(int type, const void *addr, unsigned long size)
 {
@@ -155,7 +172,12 @@ extern int fixup_exception(struct pt_regs *regs);
  * @x:   Variable to store result.
  * @ptr: Source address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -167,15 +189,25 @@ extern int fixup_exception(struct pt_regs *regs);
  * Returns zero on success, or -EFAULT on error.
  * On error, the variable @x is set to zero.
  */
+<<<<<<< HEAD
 #define get_user(x,ptr)							\
 	__get_user_check((x),(ptr),sizeof(*(ptr)))
+=======
+#define get_user(x, ptr)							\
+	__get_user_check((x), (ptr), sizeof(*(ptr)))
+>>>>>>> v4.9.227
 
 /**
  * put_user: - Write a simple value into user space.
  * @x:   Value to copy to user space.
  * @ptr: Destination address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -186,15 +218,25 @@ extern int fixup_exception(struct pt_regs *regs);
  *
  * Returns zero on success, or -EFAULT on error.
  */
+<<<<<<< HEAD
 #define put_user(x,ptr)							\
 	__put_user_check((__typeof__(*(ptr)))(x),(ptr),sizeof(*(ptr)))
+=======
+#define put_user(x, ptr)							\
+	__put_user_check((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)))
+>>>>>>> v4.9.227
 
 /**
  * __get_user: - Get a simple variable from user space, with less checking.
  * @x:   Variable to store result.
  * @ptr: Source address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -209,41 +251,73 @@ extern int fixup_exception(struct pt_regs *regs);
  * Returns zero on success, or -EFAULT on error.
  * On error, the variable @x is set to zero.
  */
+<<<<<<< HEAD
 #define __get_user(x,ptr) \
 	__get_user_nocheck((x),(ptr),sizeof(*(ptr)))
 
 #define __get_user_nocheck(x,ptr,size)					\
+=======
+#define __get_user(x, ptr) \
+	__get_user_nocheck((x), (ptr), sizeof(*(ptr)))
+
+#define __get_user_nocheck(x, ptr, size)				\
+>>>>>>> v4.9.227
 ({									\
 	long __gu_err = 0;						\
 	unsigned long __gu_val = 0;					\
 	might_fault();							\
+<<<<<<< HEAD
 	__get_user_size(__gu_val,(ptr),(size),__gu_err);		\
 	(x) = (__typeof__(*(ptr)))__gu_val;				\
 	__gu_err;							\
 })
 
 #define __get_user_check(x,ptr,size)					\
+=======
+	__get_user_size(__gu_val, (ptr), (size), __gu_err);		\
+	(x) = (__force __typeof__(*(ptr)))__gu_val;			\
+	__gu_err;							\
+})
+
+#define __get_user_check(x, ptr, size)					\
+>>>>>>> v4.9.227
 ({									\
 	long __gu_err = -EFAULT;					\
 	unsigned long __gu_val = 0;					\
 	const __typeof__(*(ptr)) __user *__gu_addr = (ptr);		\
 	might_fault();							\
+<<<<<<< HEAD
 	if (access_ok(VERIFY_READ,__gu_addr,size))			\
 		__get_user_size(__gu_val,__gu_addr,(size),__gu_err);	\
 	(x) = (__typeof__(*(ptr)))__gu_val;				\
+=======
+	if (access_ok(VERIFY_READ, __gu_addr, size))			\
+		__get_user_size(__gu_val, __gu_addr, (size), __gu_err);	\
+	(x) = (__force __typeof__(*(ptr)))__gu_val;			\
+>>>>>>> v4.9.227
 	__gu_err;							\
 })
 
 extern long __get_user_bad(void);
 
+<<<<<<< HEAD
 #define __get_user_size(x,ptr,size,retval)				\
+=======
+#define __get_user_size(x, ptr, size, retval)				\
+>>>>>>> v4.9.227
 do {									\
 	retval = 0;							\
 	__chk_user_ptr(ptr);						\
 	switch (size) {							\
+<<<<<<< HEAD
 	  case 1: __get_user_asm(x,ptr,retval,"ub"); break;		\
 	  case 2: __get_user_asm(x,ptr,retval,"uh"); break;		\
 	  case 4: __get_user_asm(x,ptr,retval,""); break;		\
+=======
+	  case 1: __get_user_asm(x, ptr, retval, "ub"); break;		\
+	  case 2: __get_user_asm(x, ptr, retval, "uh"); break;		\
+	  case 4: __get_user_asm(x, ptr, retval, ""); break;		\
+>>>>>>> v4.9.227
 	  default: (x) = __get_user_bad();				\
 	}								\
 } while (0)
@@ -274,7 +348,12 @@ do {									\
  * @x:   Value to copy to user space.
  * @ptr: Destination address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -288,6 +367,7 @@ do {									\
  *
  * Returns zero on success, or -EFAULT on error.
  */
+<<<<<<< HEAD
 #define __put_user(x,ptr) \
 	__put_user_nocheck((__typeof__(*(ptr)))(x),(ptr),sizeof(*(ptr)))
 
@@ -297,17 +377,37 @@ do {									\
 	long __pu_err;							\
 	might_fault();							\
 	__put_user_size((x),(ptr),(size),__pu_err);			\
+=======
+#define __put_user(x, ptr) \
+	__put_user_nocheck((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)))
+
+
+#define __put_user_nocheck(x, ptr, size)				\
+({									\
+	long __pu_err;							\
+	might_fault();							\
+	__put_user_size((x), (ptr), (size), __pu_err);			\
+>>>>>>> v4.9.227
 	__pu_err;							\
 })
 
 
+<<<<<<< HEAD
 #define __put_user_check(x,ptr,size)					\
+=======
+#define __put_user_check(x, ptr, size)					\
+>>>>>>> v4.9.227
 ({									\
 	long __pu_err = -EFAULT;					\
 	__typeof__(*(ptr)) __user *__pu_addr = (ptr);			\
 	might_fault();							\
+<<<<<<< HEAD
 	if (access_ok(VERIFY_WRITE,__pu_addr,size))			\
 		__put_user_size((x),__pu_addr,(size),__pu_err);		\
+=======
+	if (access_ok(VERIFY_WRITE, __pu_addr, size))			\
+		__put_user_size((x), __pu_addr, (size), __pu_err);	\
+>>>>>>> v4.9.227
 	__pu_err;							\
 })
 
@@ -366,15 +466,26 @@ do {									\
 
 extern void __put_user_bad(void);
 
+<<<<<<< HEAD
 #define __put_user_size(x,ptr,size,retval)				\
+=======
+#define __put_user_size(x, ptr, size, retval)				\
+>>>>>>> v4.9.227
 do {									\
 	retval = 0;							\
 	__chk_user_ptr(ptr);						\
 	switch (size) {							\
+<<<<<<< HEAD
 	  case 1: __put_user_asm(x,ptr,retval,"b"); break;		\
 	  case 2: __put_user_asm(x,ptr,retval,"h"); break;		\
 	  case 4: __put_user_asm(x,ptr,retval,""); break;		\
 	  case 8: __put_user_u64((__typeof__(*ptr))(x),ptr,retval); break;\
+=======
+	  case 1: __put_user_asm(x, ptr, retval, "b"); break;		\
+	  case 2: __put_user_asm(x, ptr, retval, "h"); break;		\
+	  case 4: __put_user_asm(x, ptr, retval, ""); break;		\
+	  case 8: __put_user_u64((__typeof__(*ptr))(x), ptr, retval); break;\
+>>>>>>> v4.9.227
 	  default: __put_user_bad();					\
 	}								\
 } while (0)
@@ -421,7 +532,11 @@ struct __large_struct { unsigned long buf[100]; };
 
 /* Generic arbitrary sized copy.  */
 /* Return the number of bytes NOT copied.  */
+<<<<<<< HEAD
 #define __copy_user(to,from,size)					\
+=======
+#define __copy_user(to, from, size)					\
+>>>>>>> v4.9.227
 do {									\
 	unsigned long __dst, __src, __c;				\
 	__asm__ __volatile__ (						\
@@ -478,7 +593,11 @@ do {									\
 		: "r14", "memory");					\
 } while (0)
 
+<<<<<<< HEAD
 #define __copy_user_zeroing(to,from,size)				\
+=======
+#define __copy_user_zeroing(to, from, size)				\
+>>>>>>> v4.9.227
 do {									\
 	unsigned long __dst, __src, __c;				\
 	__asm__ __volatile__ (						\
@@ -548,14 +667,22 @@ do {									\
 static inline unsigned long __generic_copy_from_user_nocheck(void *to,
 	const void __user *from, unsigned long n)
 {
+<<<<<<< HEAD
 	__copy_user_zeroing(to,from,n);
+=======
+	__copy_user_zeroing(to, from, n);
+>>>>>>> v4.9.227
 	return n;
 }
 
 static inline unsigned long __generic_copy_to_user_nocheck(void __user *to,
 	const void *from, unsigned long n)
 {
+<<<<<<< HEAD
 	__copy_user(to,from,n);
+=======
+	__copy_user(to, from, n);
+>>>>>>> v4.9.227
 	return n;
 }
 
@@ -568,7 +695,12 @@ unsigned long __generic_copy_from_user(void *, const void __user *, unsigned lon
  * @from: Source address, in kernel space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Copy data from kernel space to user space.  Caller must check
  * the specified block with access_ok() before calling this function.
@@ -576,8 +708,13 @@ unsigned long __generic_copy_from_user(void *, const void __user *, unsigned lon
  * Returns number of bytes that could not be copied.
  * On success, this will be zero.
  */
+<<<<<<< HEAD
 #define __copy_to_user(to,from,n)			\
 	__generic_copy_to_user_nocheck((to),(from),(n))
+=======
+#define __copy_to_user(to, from, n)			\
+	__generic_copy_to_user_nocheck((to), (from), (n))
+>>>>>>> v4.9.227
 
 #define __copy_to_user_inatomic __copy_to_user
 #define __copy_from_user_inatomic __copy_from_user
@@ -588,17 +725,29 @@ unsigned long __generic_copy_from_user(void *, const void __user *, unsigned lon
  * @from: Source address, in kernel space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Copy data from kernel space to user space.
  *
  * Returns number of bytes that could not be copied.
  * On success, this will be zero.
  */
+<<<<<<< HEAD
 #define copy_to_user(to,from,n)				\
 ({							\
 	might_fault();					\
 	__generic_copy_to_user((to),(from),(n));	\
+=======
+#define copy_to_user(to, from, n)			\
+({							\
+	might_fault();					\
+	__generic_copy_to_user((to), (from), (n));	\
+>>>>>>> v4.9.227
 })
 
 /**
@@ -606,7 +755,12 @@ unsigned long __generic_copy_from_user(void *, const void __user *, unsigned lon
  * @from: Source address, in user space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Copy data from user space to kernel space.  Caller must check
  * the specified block with access_ok() before calling this function.
@@ -617,8 +771,13 @@ unsigned long __generic_copy_from_user(void *, const void __user *, unsigned lon
  * If some data could not be copied, this function will pad the copied
  * data to the requested size using zero bytes.
  */
+<<<<<<< HEAD
 #define __copy_from_user(to,from,n)			\
 	__generic_copy_from_user_nocheck((to),(from),(n))
+=======
+#define __copy_from_user(to, from, n)			\
+	__generic_copy_from_user_nocheck((to), (from), (n))
+>>>>>>> v4.9.227
 
 /**
  * copy_from_user: - Copy a block of data from user space.
@@ -626,7 +785,12 @@ unsigned long __generic_copy_from_user(void *, const void __user *, unsigned lon
  * @from: Source address, in user space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Copy data from user space to kernel space.
  *
@@ -636,10 +800,17 @@ unsigned long __generic_copy_from_user(void *, const void __user *, unsigned lon
  * If some data could not be copied, this function will pad the copied
  * data to the requested size using zero bytes.
  */
+<<<<<<< HEAD
 #define copy_from_user(to,from,n)			\
 ({							\
 	might_fault();					\
 	__generic_copy_from_user((to),(from),(n));	\
+=======
+#define copy_from_user(to, from, n)			\
+({							\
+	might_fault();					\
+	__generic_copy_from_user((to), (from), (n));	\
+>>>>>>> v4.9.227
 })
 
 long __must_check strncpy_from_user(char *dst, const char __user *src,
@@ -677,7 +848,12 @@ unsigned long clear_user(void __user *mem, unsigned long len);
  * strlen_user: - Get the size of a string in user space.
  * @str: The string to measure.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> v4.9.227
  *
  * Get the size of a NUL-terminated string in user space.
  *

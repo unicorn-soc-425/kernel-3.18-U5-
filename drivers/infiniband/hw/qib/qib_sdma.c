@@ -513,7 +513,13 @@ int qib_sdma_running(struct qib_pportdata *ppd)
 static void complete_sdma_err_req(struct qib_pportdata *ppd,
 				  struct qib_verbs_txreq *tx)
 {
+<<<<<<< HEAD
 	atomic_inc(&tx->qp->s_dma_busy);
+=======
+	struct qib_qp_priv *priv = tx->qp->priv;
+
+	atomic_inc(&priv->s_dma_busy);
+>>>>>>> v4.9.227
 	/* no sdma descriptors, so no unmap_desc */
 	tx->txreq.start_idx = 0;
 	tx->txreq.next_descq_idx = 0;
@@ -531,18 +537,31 @@ static void complete_sdma_err_req(struct qib_pportdata *ppd,
  * 3) The SGE addresses are suitable for passing to dma_map_single().
  */
 int qib_sdma_verbs_send(struct qib_pportdata *ppd,
+<<<<<<< HEAD
 			struct qib_sge_state *ss, u32 dwords,
 			struct qib_verbs_txreq *tx)
 {
 	unsigned long flags;
 	struct qib_sge *sge;
 	struct qib_qp *qp;
+=======
+			struct rvt_sge_state *ss, u32 dwords,
+			struct qib_verbs_txreq *tx)
+{
+	unsigned long flags;
+	struct rvt_sge *sge;
+	struct rvt_qp *qp;
+>>>>>>> v4.9.227
 	int ret = 0;
 	u16 tail;
 	__le64 *descqp;
 	u64 sdmadesc[2];
 	u32 dwoffset;
 	dma_addr_t addr;
+<<<<<<< HEAD
+=======
+	struct qib_qp_priv *priv;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&ppd->sdma_lock, flags);
 
@@ -597,8 +616,15 @@ retry:
 		dw = (len + 3) >> 2;
 		addr = dma_map_single(&ppd->dd->pcidev->dev, sge->vaddr,
 				      dw << 2, DMA_TO_DEVICE);
+<<<<<<< HEAD
 		if (dma_mapping_error(&ppd->dd->pcidev->dev, addr))
 			goto unmap;
+=======
+		if (dma_mapping_error(&ppd->dd->pcidev->dev, addr)) {
+			ret = -ENOMEM;
+			goto unmap;
+		}
+>>>>>>> v4.9.227
 		sdmadesc[0] = 0;
 		make_sdma_desc(ppd, sdmadesc, (u64) addr, dw, dwoffset);
 		/* SDmaUseLargeBuf has to be set in every descriptor */
@@ -621,7 +647,11 @@ retry:
 			if (--ss->num_sge)
 				*sge = *ss->sg_list++;
 		} else if (sge->length == 0 && sge->mr->lkey) {
+<<<<<<< HEAD
 			if (++sge->n >= QIB_SEGSZ) {
+=======
+			if (++sge->n >= RVT_SEGSZ) {
+>>>>>>> v4.9.227
 				if (++sge->m >= sge->mr->mapsz)
 					break;
 				sge->n = 0;
@@ -644,8 +674,13 @@ retry:
 		descqp[0] |= cpu_to_le64(SDMA_DESC_DMA_HEAD);
 	if (tx->txreq.flags & QIB_SDMA_TXREQ_F_INTREQ)
 		descqp[0] |= cpu_to_le64(SDMA_DESC_INTR);
+<<<<<<< HEAD
 
 	atomic_inc(&tx->qp->s_dma_busy);
+=======
+	priv = tx->qp->priv;
+	atomic_inc(&priv->s_dma_busy);
+>>>>>>> v4.9.227
 	tx->txreq.next_descq_idx = tail;
 	ppd->dd->f_sdma_update_tail(ppd, tail);
 	ppd->sdma_descq_added += tx->txreq.sg_count;
@@ -663,13 +698,22 @@ unmap:
 		unmap_desc(ppd, tail);
 	}
 	qp = tx->qp;
+<<<<<<< HEAD
+=======
+	priv = qp->priv;
+>>>>>>> v4.9.227
 	qib_put_txreq(tx);
 	spin_lock(&qp->r_lock);
 	spin_lock(&qp->s_lock);
 	if (qp->ibqp.qp_type == IB_QPT_RC) {
 		/* XXX what about error sending RDMA read responses? */
+<<<<<<< HEAD
 		if (ib_qib_state_ops[qp->state] & QIB_PROCESS_RECV_OK)
 			qib_error_qp(qp, IB_WC_GENERAL_ERR);
+=======
+		if (ib_rvt_state_ops[qp->state] & RVT_PROCESS_RECV_OK)
+			rvt_error_qp(qp, IB_WC_GENERAL_ERR);
+>>>>>>> v4.9.227
 	} else if (qp->s_wqe)
 		qib_send_complete(qp, qp->s_wqe, IB_WC_GENERAL_ERR);
 	spin_unlock(&qp->s_lock);
@@ -679,8 +723,14 @@ unmap:
 
 busy:
 	qp = tx->qp;
+<<<<<<< HEAD
 	spin_lock(&qp->s_lock);
 	if (ib_qib_state_ops[qp->state] & QIB_PROCESS_RECV_OK) {
+=======
+	priv = qp->priv;
+	spin_lock(&qp->s_lock);
+	if (ib_rvt_state_ops[qp->state] & RVT_PROCESS_RECV_OK) {
+>>>>>>> v4.9.227
 		struct qib_ibdev *dev;
 
 		/*
@@ -690,6 +740,7 @@ busy:
 		 */
 		tx->ss = ss;
 		tx->dwords = dwords;
+<<<<<<< HEAD
 		qp->s_tx = tx;
 		dev = &ppd->dd->verbs_dev;
 		spin_lock(&dev->pending_lock);
@@ -703,6 +754,21 @@ busy:
 		}
 		spin_unlock(&dev->pending_lock);
 		qp->s_flags &= ~QIB_S_BUSY;
+=======
+		priv->s_tx = tx;
+		dev = &ppd->dd->verbs_dev;
+		spin_lock(&dev->rdi.pending_lock);
+		if (list_empty(&priv->iowait)) {
+			struct qib_ibport *ibp;
+
+			ibp = &ppd->ibport_data;
+			ibp->rvp.n_dmawait++;
+			qp->s_flags |= RVT_S_WAIT_DMA_DESC;
+			list_add_tail(&priv->iowait, &dev->dmawait);
+		}
+		spin_unlock(&dev->rdi.pending_lock);
+		qp->s_flags &= ~RVT_S_BUSY;
+>>>>>>> v4.9.227
 		spin_unlock(&qp->s_lock);
 		ret = -EBUSY;
 	} else {

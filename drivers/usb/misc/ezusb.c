@@ -22,7 +22,11 @@ struct ezusb_fx_type {
 	unsigned short max_internal_adress;
 };
 
+<<<<<<< HEAD
 static struct ezusb_fx_type ezusb_fx1 = {
+=======
+static const struct ezusb_fx_type ezusb_fx1 = {
+>>>>>>> v4.9.227
 	.cpucs_reg = 0x7F92,
 	.max_internal_adress = 0x1B3F,
 };

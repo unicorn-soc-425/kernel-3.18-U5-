@@ -1,7 +1,11 @@
 /*
  *  Driver for the NXP SAA7164 PCIe bridge
  *
+<<<<<<< HEAD
  *  Copyright (c) 2010 Steven Toth <stoth@kernellabs.com>
+=======
+ *  Copyright (c) 2010-2015 Steven Toth <stoth@kernellabs.com>
+>>>>>>> v4.9.227
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -85,6 +89,14 @@ module_param(guard_checking, int, 0644);
 MODULE_PARM_DESC(guard_checking,
 	"enable dma sanity checking for buffer overruns");
 
+<<<<<<< HEAD
+=======
+static bool enable_msi = true;
+module_param(enable_msi, bool, 0444);
+MODULE_PARM_DESC(enable_msi,
+		"enable the use of an msi interrupt if available");
+
+>>>>>>> v4.9.227
 static unsigned int saa7164_devcount;
 
 static DEFINE_MUTEX(devlist);
@@ -119,7 +131,11 @@ static void saa7164_ts_verifier(struct saa7164_buffer *buf)
 	u32 i;
 	u8 cc, a;
 	u16 pid;
+<<<<<<< HEAD
 	u8 __iomem *bufcpu = (u8 *)buf->cpu;
+=======
+	u8 *bufcpu = (u8 *)buf->cpu;
+>>>>>>> v4.9.227
 
 	port->sync_errors = 0;
 	port->v_cc_errors = 0;
@@ -260,7 +276,11 @@ static void saa7164_work_enchandler_helper(struct saa7164_port *port, int bufnr)
 	struct saa7164_user_buffer *ubuf = NULL;
 	struct list_head *c, *n;
 	int i = 0;
+<<<<<<< HEAD
 	u8 __iomem *p;
+=======
+	u8 *p;
+>>>>>>> v4.9.227
 
 	mutex_lock(&port->dmaqueue_lock);
 	list_for_each_safe(c, n, &port->dmaqueue.list) {
@@ -318,8 +338,12 @@ static void saa7164_work_enchandler_helper(struct saa7164_port *port, int bufnr)
 
 				if (buf->actual_size <= ubuf->actual_size) {
 
+<<<<<<< HEAD
 					memcpy_fromio(ubuf->data, buf->cpu,
 						ubuf->actual_size);
+=======
+					memcpy(ubuf->data, buf->cpu, ubuf->actual_size);
+>>>>>>> v4.9.227
 
 					if (crc_checking) {
 						/* Throw a new checksum on the read buffer */
@@ -346,7 +370,11 @@ static void saa7164_work_enchandler_helper(struct saa7164_port *port, int bufnr)
 			 * with known bad data. We check for this data at a later point
 			 * in time. */
 			saa7164_buffer_zero_offsets(port, bufnr);
+<<<<<<< HEAD
 			memset_io(buf->cpu, 0xff, buf->pci_size);
+=======
+			memset(buf->cpu, 0xff, buf->pci_size);
+>>>>>>> v4.9.227
 			if (crc_checking) {
 				/* Throw yet aanother new checksum on the dma buffer */
 				buf->crc = crc32(0, buf->cpu, buf->actual_size);
@@ -619,12 +647,16 @@ static irqreturn_t saa7164_irq_ts(struct saa7164_port *port)
 static irqreturn_t saa7164_irq(int irq, void *dev_id)
 {
 	struct saa7164_dev *dev = dev_id;
+<<<<<<< HEAD
 	struct saa7164_port *porta = &dev->ports[SAA7164_PORT_TS1];
 	struct saa7164_port *portb = &dev->ports[SAA7164_PORT_TS2];
 	struct saa7164_port *portc = &dev->ports[SAA7164_PORT_ENC1];
 	struct saa7164_port *portd = &dev->ports[SAA7164_PORT_ENC2];
 	struct saa7164_port *porte = &dev->ports[SAA7164_PORT_VBI1];
 	struct saa7164_port *portf = &dev->ports[SAA7164_PORT_VBI2];
+=======
+	struct saa7164_port *porta, *portb, *portc, *portd, *porte, *portf;
+>>>>>>> v4.9.227
 
 	u32 intid, intstat[INT_SIZE/4];
 	int i, handled = 0, bit;
@@ -635,6 +667,16 @@ static irqreturn_t saa7164_irq(int irq, void *dev_id)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	porta = &dev->ports[SAA7164_PORT_TS1];
+	portb = &dev->ports[SAA7164_PORT_TS2];
+	portc = &dev->ports[SAA7164_PORT_ENC1];
+	portd = &dev->ports[SAA7164_PORT_ENC2];
+	porte = &dev->ports[SAA7164_PORT_VBI1];
+	portf = &dev->ports[SAA7164_PORT_VBI2];
+
+>>>>>>> v4.9.227
 	/* Check that the hardware is accessible. If the status bytes are
 	 * 0xFF then the device is not accessible, the the IRQ belongs
 	 * to another driver.
@@ -1096,7 +1138,11 @@ static int saa7164_proc_show(struct seq_file *m, void *v)
 			if (c == 0)
 				seq_printf(m, " %04x:", i);
 
+<<<<<<< HEAD
 			seq_printf(m, " %02x", *(b->m_pdwSetRing + i));
+=======
+			seq_printf(m, " %02x", readb(b->m_pdwSetRing + i));
+>>>>>>> v4.9.227
 
 			if (++c == 16) {
 				seq_printf(m, "\n");
@@ -1111,7 +1157,11 @@ static int saa7164_proc_show(struct seq_file *m, void *v)
 			if (c == 0)
 				seq_printf(m, " %04x:", i);
 
+<<<<<<< HEAD
 			seq_printf(m, " %02x", *(b->m_pdwGetRing + i));
+=======
+			seq_printf(m, " %02x", readb(b->m_pdwGetRing + i));
+>>>>>>> v4.9.227
 
 			if (++c == 16) {
 				seq_printf(m, "\n");
@@ -1185,6 +1235,42 @@ static int saa7164_thread_function(void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static bool saa7164_enable_msi(struct pci_dev *pci_dev, struct saa7164_dev *dev)
+{
+	int err;
+
+	if (!enable_msi) {
+		printk(KERN_WARNING "%s() MSI disabled by module parameter 'enable_msi'"
+		       , __func__);
+		return false;
+	}
+
+	err = pci_enable_msi(pci_dev);
+
+	if (err) {
+		printk(KERN_ERR "%s() Failed to enable MSI interrupt."
+			" Falling back to a shared IRQ\n", __func__);
+		return false;
+	}
+
+	/* no error - so request an msi interrupt */
+	err = request_irq(pci_dev->irq, saa7164_irq, 0,
+						dev->name, dev);
+
+	if (err) {
+		/* fall back to legacy interrupt */
+		printk(KERN_ERR "%s() Failed to get an MSI interrupt."
+		       " Falling back to a shared IRQ\n", __func__);
+		pci_disable_msi(pci_dev);
+		return false;
+	}
+
+	return true;
+}
+
+>>>>>>> v4.9.227
 static int saa7164_initdev(struct pci_dev *pci_dev,
 			   const struct pci_device_id *pci_id)
 {
@@ -1225,6 +1311,7 @@ static int saa7164_initdev(struct pci_dev *pci_dev,
 
 	pci_set_master(pci_dev);
 	/* TODO */
+<<<<<<< HEAD
 	if (!pci_dma_supported(pci_dev, 0xffffffff)) {
 		printk("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
 		err = -EIO;
@@ -1238,6 +1325,30 @@ static int saa7164_initdev(struct pci_dev *pci_dev,
 			pci_dev->irq);
 		err = -EIO;
 		goto fail_irq;
+=======
+	err = pci_set_dma_mask(pci_dev, 0xffffffff);
+	if (err) {
+		printk("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
+		goto fail_irq;
+	}
+
+	/* irq bit */
+	if (saa7164_enable_msi(pci_dev, dev)) {
+		dev->msi = true;
+	} else {
+		/* if we have an error (i.e. we don't have an interrupt)
+			 or msi is not enabled - fallback to shared interrupt */
+
+		err = request_irq(pci_dev->irq, saa7164_irq,
+				IRQF_SHARED, dev->name, dev);
+
+		if (err < 0) {
+			printk(KERN_ERR "%s: can't get IRQ %d\n", dev->name,
+			       pci_dev->irq);
+			err = -EIO;
+			goto fail_irq;
+		}
+>>>>>>> v4.9.227
 	}
 
 	pci_set_drvdata(pci_dev, dev);
@@ -1437,11 +1548,24 @@ static void saa7164_finidev(struct pci_dev *pci_dev)
 	saa7164_i2c_unregister(&dev->i2c_bus[1]);
 	saa7164_i2c_unregister(&dev->i2c_bus[2]);
 
+<<<<<<< HEAD
 	pci_disable_device(pci_dev);
 
 	/* unregister stuff */
 	free_irq(pci_dev->irq, dev);
 
+=======
+	/* unregister stuff */
+	free_irq(pci_dev->irq, dev);
+
+	if (dev->msi) {
+		pci_disable_msi(pci_dev);
+		dev->msi = false;
+	}
+
+	pci_disable_device(pci_dev);
+
+>>>>>>> v4.9.227
 	mutex_lock(&devlist);
 	list_del(&dev->devlist);
 	mutex_unlock(&devlist);

@@ -17,7 +17,10 @@ typedef union {
 #endif	/* !__ASSEMBLY__ */
 
 #define SHARED_KERNEL_PMD	0
+<<<<<<< HEAD
 #define PAGETABLE_LEVELS	2
+=======
+>>>>>>> v4.9.227
 
 /*
  * traditional i386 two-level paging structure:

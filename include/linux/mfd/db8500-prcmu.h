@@ -538,7 +538,10 @@ int db8500_prcmu_get_arm_opp(void);
 int db8500_prcmu_set_ape_opp(u8 opp);
 int db8500_prcmu_get_ape_opp(void);
 int db8500_prcmu_request_ape_opp_100_voltage(bool enable);
+<<<<<<< HEAD
 int db8500_prcmu_set_ddr_opp(u8 opp);
+=======
+>>>>>>> v4.9.227
 int db8500_prcmu_get_ddr_opp(void);
 
 u32 db8500_prcmu_read(unsigned int reg);
@@ -594,11 +597,14 @@ static inline int prcmu_release_usb_wakeup_state(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int db8500_prcmu_set_ddr_opp(u8 opp)
 {
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int db8500_prcmu_get_ddr_opp(void)
 {
 	return DDR_100_OPP;

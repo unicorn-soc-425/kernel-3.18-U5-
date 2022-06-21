@@ -46,3 +46,17 @@
 	bus-width = <4>;
 	cap-power-off-card;
 };
+<<<<<<< HEAD
+=======
+
+&dss {
+	status = "ok";
+
+	pinctrl-names = "default";
+	pinctrl-0 = <
+		&dss_dpi_pins_common
+		&dss_dpi_pins_cm_t35x
+	>;
+};
+
+>>>>>>> v4.9.227

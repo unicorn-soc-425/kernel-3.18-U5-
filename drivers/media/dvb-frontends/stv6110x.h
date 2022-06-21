@@ -55,12 +55,20 @@ struct stv6110x_devctl {
 
 #if IS_REACHABLE(CONFIG_DVB_STV6110x)
 
+<<<<<<< HEAD
 extern struct stv6110x_devctl *stv6110x_attach(struct dvb_frontend *fe,
+=======
+extern const struct stv6110x_devctl *stv6110x_attach(struct dvb_frontend *fe,
+>>>>>>> v4.9.227
 					       const struct stv6110x_config *config,
 					       struct i2c_adapter *i2c);
 
 #else
+<<<<<<< HEAD
 static inline struct stv6110x_devctl *stv6110x_attach(struct dvb_frontend *fe,
+=======
+static inline const struct stv6110x_devctl *stv6110x_attach(struct dvb_frontend *fe,
+>>>>>>> v4.9.227
 						      const struct stv6110x_config *config,
 						      struct i2c_adapter *i2c)
 {

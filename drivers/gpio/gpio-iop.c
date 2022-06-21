@@ -10,6 +10,7 @@
  * your option) any later version.
  */
 
+<<<<<<< HEAD
 #include <linux/device.h>
 #include <linux/init.h>
 #include <linux/types.h>
@@ -104,23 +105,58 @@ static struct gpio_chip iop3xx_chip = {
 	.base			= 0,
 	.ngpio			= IOP3XX_N_GPIOS,
 };
+=======
+#include <linux/err.h>
+#include <linux/module.h>
+#include <linux/gpio/driver.h>
+#include <linux/platform_device.h>
+
+#define IOP3XX_GPOE	0x0000
+#define IOP3XX_GPID	0x0004
+#define IOP3XX_GPOD	0x0008
+>>>>>>> v4.9.227
 
 static int iop3xx_gpio_probe(struct platform_device *pdev)
 {
 	struct resource *res;
+<<<<<<< HEAD
+=======
+	struct gpio_chip *gc;
+	void __iomem *base;
+	int err;
+
+	gc = devm_kzalloc(&pdev->dev, sizeof(*gc), GFP_KERNEL);
+	if (!gc)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
 
+<<<<<<< HEAD
 	return gpiochip_add(&iop3xx_chip);
+=======
+	err = bgpio_init(gc, &pdev->dev, 1, base + IOP3XX_GPID,
+			 base + IOP3XX_GPOD, NULL, NULL, base + IOP3XX_GPOE, 0);
+	if (err)
+		return err;
+
+	gc->base = 0;
+	gc->owner = THIS_MODULE;
+
+	return devm_gpiochip_add_data(&pdev->dev, gc, NULL);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver iop3xx_gpio_driver = {
 	.driver = {
 		.name = "gpio-iop",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = iop3xx_gpio_probe,
 };

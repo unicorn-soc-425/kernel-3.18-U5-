@@ -63,18 +63,26 @@ struct dm_verity {
 	sector_t hash_level_block[DM_VERITY_MAX_LEVELS];
 
 	struct dm_verity_fec *fec;	/* forward error correction */
+<<<<<<< HEAD
 	unsigned long *validated_blocks; /* bitset blocks validated */
 #ifdef DMV_ALTA
 	u8 *verity_bitmap;
 #endif
+=======
+>>>>>>> v4.9.227
 };
 
 struct dm_verity_io {
 	struct dm_verity *v;
 
+<<<<<<< HEAD
 	/* original values of bio->bi_end_io and bio->bi_private */
 	bio_end_io_t *orig_bi_end_io;
 	void *orig_bi_private;
+=======
+	/* original value of bio->bi_end_io */
+	bio_end_io_t *orig_bi_end_io;
+>>>>>>> v4.9.227
 
 	sector_t block;
 	unsigned n_blocks;
@@ -131,6 +139,7 @@ extern int verity_hash(struct dm_verity *v, struct shash_desc *desc,
 extern int verity_hash_for_block(struct dm_verity *v, struct dm_verity_io *io,
 				 sector_t block, u8 *digest, bool *is_zero);
 
+<<<<<<< HEAD
 extern void verity_status(struct dm_target *ti, status_type_t type,
 			unsigned status_flags, char *result, unsigned maxlen);
 extern int verity_ioctl(struct dm_target *ti, unsigned cmd,
@@ -143,4 +152,6 @@ extern void verity_io_hints(struct dm_target *ti, struct queue_limits *limits);
 extern void verity_dtr(struct dm_target *ti);
 extern int verity_ctr(struct dm_target *ti, unsigned argc, char **argv);
 extern int verity_map(struct dm_target *ti, struct bio *bio);
+=======
+>>>>>>> v4.9.227
 #endif /* DM_VERITY_H */

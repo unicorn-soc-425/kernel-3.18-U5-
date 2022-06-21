@@ -24,7 +24,11 @@
 #define _ASM_FPU_EMULATOR_H
 
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <asm/break.h>
+=======
+#include <asm/dsemul.h>
+>>>>>>> v4.9.227
 #include <asm/thread_info.h>
 #include <asm/inst.h>
 #include <asm/local.h>
@@ -44,6 +48,10 @@ struct mips_fpu_emulator_stats {
 	unsigned long ieee754_overflow;
 	unsigned long ieee754_zerodiv;
 	unsigned long ieee754_invalidop;
+<<<<<<< HEAD
+=======
+	unsigned long ds_emul;
+>>>>>>> v4.9.227
 };
 
 DECLARE_PER_CPU(struct mips_fpu_emulator_stats, fpuemustats);
@@ -59,6 +67,7 @@ do {									\
 #define MIPS_FPU_EMU_INC_STATS(M) do { } while (0)
 #endif /* CONFIG_DEBUG_FS */
 
+<<<<<<< HEAD
 extern int mips_dsemul(struct pt_regs *regs, mips_instruction ir,
 	unsigned long cpc);
 extern int do_dsemulret(struct pt_regs *xcp);
@@ -79,6 +88,20 @@ int mm_isBranchInstr(struct pt_regs *regs, struct mm_decoded_insn dec_insn,
  */
 #define BREAK_MATH (0x0000000d | (BRK_MEMU << 16))
 
+=======
+extern int fpu_emulator_cop1Handler(struct pt_regs *xcp,
+				    struct mips_fpu_struct *ctx, int has_fpu,
+				    void *__user *fault_addr);
+void force_fcr31_sig(unsigned long fcr31, void __user *fault_addr,
+		     struct task_struct *tsk);
+int process_fpemu_return(int sig, void __user *fault_addr,
+			 unsigned long fcr31);
+int isBranchInstr(struct pt_regs *regs, struct mm_decoded_insn dec_insn,
+		  unsigned long *contpc);
+int mm_isBranchInstr(struct pt_regs *regs, struct mm_decoded_insn dec_insn,
+		     unsigned long *contpc);
+
+>>>>>>> v4.9.227
 #define SIGNALLING_NAN 0x7ff800007ff80000LL
 
 static inline void fpu_emulator_init_fpu(void)
@@ -86,10 +109,27 @@ static inline void fpu_emulator_init_fpu(void)
 	struct task_struct *t = current;
 	int i;
 
+<<<<<<< HEAD
 	t->thread.fpu.fcr31 = 0;
 
+=======
+>>>>>>> v4.9.227
 	for (i = 0; i < 32; i++)
 		set_fpr64(&t->thread.fpu.fpr[i], 0, SIGNALLING_NAN);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Mask the FCSR Cause bits according to the Enable bits, observing
+ * that Unimplemented is always enabled.
+ */
+static inline unsigned long mask_fcr31_x(unsigned long fcr31)
+{
+	return fcr31 & (FPU_CSR_UNI_X |
+			((fcr31 & FPU_CSR_ALL_E) <<
+			 (ffs(FPU_CSR_ALL_X) - ffs(FPU_CSR_ALL_E))));
+}
+
+>>>>>>> v4.9.227
 #endif /* _ASM_FPU_EMULATOR_H */

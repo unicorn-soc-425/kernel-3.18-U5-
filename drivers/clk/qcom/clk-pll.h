@@ -62,6 +62,10 @@ struct clk_pll {
 
 extern const struct clk_ops clk_pll_ops;
 extern const struct clk_ops clk_pll_vote_ops;
+<<<<<<< HEAD
+=======
+extern const struct clk_ops clk_pll_sr2_ops;
+>>>>>>> v4.9.227
 
 #define to_clk_pll(_hw) container_of(to_clk_regmap(_hw), struct clk_pll, clkr)
 

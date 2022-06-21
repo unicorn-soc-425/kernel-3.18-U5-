@@ -10,7 +10,11 @@
 	@
 	@ routine called with r0 = irq number, r1 = struct pt_regs *
 	@
+<<<<<<< HEAD
 	adrne	lr, BSYM(1b)
+=======
+	badrne	lr, 1b
+>>>>>>> v4.9.227
 	bne	asm_do_IRQ
 
 #ifdef CONFIG_SMP
@@ -23,7 +27,11 @@
 	ALT_SMP(test_for_ipi r0, r2, r6, lr)
 	ALT_UP_B(9997f)
 	movne	r1, sp
+<<<<<<< HEAD
 	adrne	lr, BSYM(1b)
+=======
+	badrne	lr, 1b
+>>>>>>> v4.9.227
 	bne	do_IPI
 #endif
 9997:

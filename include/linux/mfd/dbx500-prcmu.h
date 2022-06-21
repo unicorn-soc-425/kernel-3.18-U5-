@@ -178,6 +178,7 @@ enum ddr_pwrst {
 
 #define DB8500_PRCMU_LEGACY_OFFSET		0xDD4
 
+<<<<<<< HEAD
 struct prcmu_pdata
 {
 	bool enable_set_ddr_opp;
@@ -188,6 +189,8 @@ struct prcmu_pdata
 	u32 adt_offset;
 };
 
+=======
+>>>>>>> v4.9.227
 #define PRCMU_FW_PROJECT_U8500		2
 #define PRCMU_FW_PROJECT_U8400		3
 #define PRCMU_FW_PROJECT_U9500		4 /* Customer specific */
@@ -279,10 +282,13 @@ unsigned long prcmu_clock_rate(u8 clock);
 long prcmu_round_clock_rate(u8 clock, unsigned long rate);
 int prcmu_set_clock_rate(u8 clock, unsigned long rate);
 
+<<<<<<< HEAD
 static inline int prcmu_set_ddr_opp(u8 opp)
 {
 	return db8500_prcmu_set_ddr_opp(opp);
 }
+=======
+>>>>>>> v4.9.227
 static inline int prcmu_get_ddr_opp(void)
 {
 	return db8500_prcmu_get_ddr_opp();
@@ -499,11 +505,14 @@ static inline int prcmu_get_arm_opp(void)
 	return ARM_100_OPP;
 }
 
+<<<<<<< HEAD
 static inline int prcmu_set_ddr_opp(u8 opp)
 {
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int prcmu_get_ddr_opp(void)
 {
 	return DDR_100_OPP;

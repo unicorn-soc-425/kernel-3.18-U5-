@@ -14,7 +14,11 @@
 	model = "TI OMAP35XX EVM (TMDSEVM3530)";
 	compatible = "ti,omap3-evm", "ti,omap3";
 
+<<<<<<< HEAD
 	memory {
+=======
+	memory@80000000 {
+>>>>>>> v4.9.227
 		device_type = "memory";
 		reg = <0x80000000 0x10000000>; /* 256 MB */
 	};

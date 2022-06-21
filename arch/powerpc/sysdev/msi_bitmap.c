@@ -11,6 +11,10 @@
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/bitmap.h>
+<<<<<<< HEAD
+=======
+#include <linux/bootmem.h>
+>>>>>>> v4.9.227
 #include <asm/msi_bitmap.h>
 #include <asm/setup.h>
 
@@ -111,7 +115,11 @@ int msi_bitmap_reserve_dt_hwirqs(struct msi_bitmap *bmp)
 	return 0;
 }
 
+<<<<<<< HEAD
 int msi_bitmap_alloc(struct msi_bitmap *bmp, unsigned int irq_count,
+=======
+int __ref msi_bitmap_alloc(struct msi_bitmap *bmp, unsigned int irq_count,
+>>>>>>> v4.9.227
 		     struct device_node *of_node)
 {
 	int size;
@@ -122,7 +130,19 @@ int msi_bitmap_alloc(struct msi_bitmap *bmp, unsigned int irq_count,
 	size = BITS_TO_LONGS(irq_count) * sizeof(long);
 	pr_debug("msi_bitmap: allocator bitmap size is 0x%x bytes\n", size);
 
+<<<<<<< HEAD
 	bmp->bitmap = zalloc_maybe_bootmem(size, GFP_KERNEL);
+=======
+	bmp->bitmap_from_slab = slab_is_available();
+	if (bmp->bitmap_from_slab)
+		bmp->bitmap = kzalloc(size, GFP_KERNEL);
+	else {
+		bmp->bitmap = memblock_virt_alloc(size, 0);
+		/* the bitmap won't be freed from memblock allocator */
+		kmemleak_not_leak(bmp->bitmap);
+	}
+
+>>>>>>> v4.9.227
 	if (!bmp->bitmap) {
 		pr_debug("msi_bitmap: ENOMEM allocating allocator bitmap!\n");
 		return -ENOMEM;
@@ -138,7 +158,12 @@ int msi_bitmap_alloc(struct msi_bitmap *bmp, unsigned int irq_count,
 
 void msi_bitmap_free(struct msi_bitmap *bmp)
 {
+<<<<<<< HEAD
 	/* we can't free the bitmap we don't know if it's bootmem etc. */
+=======
+	if (bmp->bitmap_from_slab)
+		kfree(bmp->bitmap);
+>>>>>>> v4.9.227
 	of_node_put(bmp->of_node);
 	bmp->bitmap = NULL;
 }
@@ -203,8 +228,11 @@ static void __init test_basics(void)
 
 	/* Clients may WARN_ON bitmap == NULL for "not-allocated" */
 	WARN_ON(bmp.bitmap != NULL);
+<<<<<<< HEAD
 
 	kfree(bmp.bitmap);
+=======
+>>>>>>> v4.9.227
 }
 
 static void __init test_of_node(void)

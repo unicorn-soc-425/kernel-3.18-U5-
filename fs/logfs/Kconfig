@@ -1,6 +1,10 @@
 config LOGFS
 	tristate "LogFS file system"
+<<<<<<< HEAD
 	depends on (MTD || BLOCK)
+=======
+	depends on MTD || (!MTD && BLOCK)
+>>>>>>> v4.9.227
 	select ZLIB_INFLATE
 	select ZLIB_DEFLATE
 	select CRC32

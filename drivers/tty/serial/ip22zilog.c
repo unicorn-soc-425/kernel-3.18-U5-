@@ -544,7 +544,12 @@ static unsigned int ip22zilog_get_mctrl(struct uart_port *port)
 /* The port lock is held and interrupts are disabled.  */
 static void ip22zilog_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> v4.9.227
 	struct zilog_channel *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char set_bits, clear_bits;
 
@@ -568,7 +573,12 @@ static void ip22zilog_set_mctrl(struct uart_port *port, unsigned int mctrl)
 /* The port lock is held and interrupts are disabled.  */
 static void ip22zilog_stop_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> v4.9.227
 
 	up->flags |= IP22ZILOG_FLAG_TX_STOPPED;
 }
@@ -576,7 +586,12 @@ static void ip22zilog_stop_tx(struct uart_port *port)
 /* The port lock is held and interrupts are disabled.  */
 static void ip22zilog_start_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> v4.9.227
 	struct zilog_channel *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char status;
 
@@ -636,7 +651,12 @@ static void ip22zilog_stop_rx(struct uart_port *port)
 /* The port lock is held.  */
 static void ip22zilog_enable_ms(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> v4.9.227
 	struct zilog_channel *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char new_reg;
 
@@ -652,7 +672,12 @@ static void ip22zilog_enable_ms(struct uart_port *port)
 /* The port lock is not held.  */
 static void ip22zilog_break_ctl(struct uart_port *port, int break_state)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> v4.9.227
 	struct zilog_channel *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char set_bits, clear_bits, new_reg;
 	unsigned long flags;
@@ -873,7 +898,12 @@ static void
 ip22zilog_set_termios(struct uart_port *port, struct ktermios *termios,
 		      struct ktermios *old)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	int baud, brg;
 

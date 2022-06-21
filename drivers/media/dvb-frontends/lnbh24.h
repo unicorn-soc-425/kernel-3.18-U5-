@@ -23,8 +23,11 @@
 #ifndef _LNBH24_H
 #define _LNBH24_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> v4.9.227
 /* system register bits */
 #define LNBH24_OLF	0x01
 #define LNBH24_OTF	0x02

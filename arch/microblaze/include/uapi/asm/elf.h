@@ -11,12 +11,20 @@
 #ifndef _UAPI_ASM_MICROBLAZE_ELF_H
 #define _UAPI_ASM_MICROBLAZE_ELF_H
 
+<<<<<<< HEAD
+=======
+#include <linux/elf-em.h>
+
+>>>>>>> v4.9.227
 /*
  * Note there is no "official" ELF designation for Microblaze.
  * I've snaffled the value from the microblaze binutils source code
  * /binutils/microblaze/include/elf/microblaze.h
  */
+<<<<<<< HEAD
 #define EM_MICROBLAZE		189
+=======
+>>>>>>> v4.9.227
 #define EM_MICROBLAZE_OLD	0xbaab
 #define ELF_ARCH		EM_MICROBLAZE
 

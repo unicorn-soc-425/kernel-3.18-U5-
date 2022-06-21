@@ -21,7 +21,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -465,6 +469,7 @@ static int snd_akm4xxx_stereo_volume_put(struct snd_kcontrol *kcontrol,
 static int snd_akm4xxx_deemphasis_info(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = {
 		"44.1kHz", "Off", "48kHz", "32kHz",
 	};
@@ -476,6 +481,12 @@ static int snd_akm4xxx_deemphasis_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"44.1kHz", "Off", "48kHz", "32kHz",
+	};
+	return snd_ctl_enum_info(uinfo, 1, 4, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_akm4xxx_deemphasis_get(struct snd_kcontrol *kcontrol,
@@ -570,12 +581,17 @@ static int ak4xxx_capture_source_info(struct snd_kcontrol *kcontrol,
 {
 	struct snd_akm4xxx *ak = snd_kcontrol_chip(kcontrol);
 	int mixer_ch = AK_GET_SHIFT(kcontrol->private_value);
+<<<<<<< HEAD
 	const char **input_names;
 	unsigned int num_names, idx;
+=======
+	unsigned int num_names;
+>>>>>>> v4.9.227
 
 	num_names = ak4xxx_capture_num_inputs(ak, mixer_ch);
 	if (!num_names)
 		return -EINVAL;
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = num_names;
@@ -586,6 +602,10 @@ static int ak4xxx_capture_source_info(struct snd_kcontrol *kcontrol,
 	strlcpy(uinfo->value.enumerated.name, input_names[idx],
 		sizeof(uinfo->value.enumerated.name));
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, num_names,
+				 ak->adc_info[mixer_ch].input_names);
+>>>>>>> v4.9.227
 }
 
 static int ak4xxx_capture_source_get(struct snd_kcontrol *kcontrol,
@@ -805,11 +825,20 @@ static int build_adc_controls(struct snd_akm4xxx *ak)
 				return err;
 
 			memset(&knew, 0, sizeof(knew));
+<<<<<<< HEAD
 			knew.name = ak->adc_info[mixer_ch].selector_name;
 			if (!knew.name) {
 				knew.name = "Capture Channel";
 				knew.index = mixer_ch + ak->idx_offset * 2;
 			}
+=======
+			if (!ak->adc_info ||
+				!ak->adc_info[mixer_ch].selector_name) {
+				knew.name = "Capture Channel";
+				knew.index = mixer_ch + ak->idx_offset * 2;
+			} else
+				knew.name = ak->adc_info[mixer_ch].selector_name;
+>>>>>>> v4.9.227
 
 			knew.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
 			knew.info = ak4xxx_capture_source_info;
@@ -875,7 +904,10 @@ static int build_deemphasis(struct snd_akm4xxx *ak, int num_emphs)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+>>>>>>> v4.9.227
 static void proc_regs_read(struct snd_info_entry *entry,
 		struct snd_info_buffer *buffer)
 {
@@ -900,9 +932,12 @@ static int proc_init(struct snd_akm4xxx *ak)
 	snd_info_set_text_ops(entry, ak, proc_regs_read);
 	return 0;
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PROC_FS */
 static int proc_init(struct snd_akm4xxx *ak) { return 0; }
 #endif
+=======
+>>>>>>> v4.9.227
 
 int snd_akm4xxx_build_controls(struct snd_akm4xxx *ak)
 {

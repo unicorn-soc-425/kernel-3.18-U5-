@@ -13,7 +13,14 @@
 #ifndef __VSP1_LUT_H__
 #define __VSP1_LUT_H__
 
+<<<<<<< HEAD
 #include <media/media-entity.h>
+=======
+#include <linux/spinlock.h>
+
+#include <media/media-entity.h>
+#include <media/v4l2-ctrls.h>
+>>>>>>> v4.9.227
 #include <media/v4l2-subdev.h>
 
 #include "vsp1_entity.h"
@@ -25,7 +32,15 @@ struct vsp1_device;
 
 struct vsp1_lut {
 	struct vsp1_entity entity;
+<<<<<<< HEAD
 	u32 lut[256];
+=======
+
+	struct v4l2_ctrl_handler ctrls;
+
+	spinlock_t lock;
+	struct vsp1_dl_body *lut;
+>>>>>>> v4.9.227
 };
 
 static inline struct vsp1_lut *to_lut(struct v4l2_subdev *subdev)

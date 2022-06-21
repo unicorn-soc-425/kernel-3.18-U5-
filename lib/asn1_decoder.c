@@ -12,6 +12,10 @@
 #include <linux/export.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> v4.9.227
 #include <linux/asn1_decoder.h>
 #include <linux/asn1_ber_bytecode.h>
 
@@ -24,15 +28,31 @@ static const unsigned char asn1_op_lengths[ASN1_OP__NR] = {
 	[ASN1_OP_MATCH_JUMP]			= 1 + 1 + 1,
 	[ASN1_OP_MATCH_JUMP_OR_SKIP]		= 1 + 1 + 1,
 	[ASN1_OP_MATCH_ANY]			= 1,
+<<<<<<< HEAD
 	[ASN1_OP_MATCH_ANY_ACT]			= 1         + 1,
+=======
+	[ASN1_OP_MATCH_ANY_OR_SKIP]		= 1,
+	[ASN1_OP_MATCH_ANY_ACT]			= 1         + 1,
+	[ASN1_OP_MATCH_ANY_ACT_OR_SKIP]		= 1         + 1,
+>>>>>>> v4.9.227
 	[ASN1_OP_COND_MATCH_OR_SKIP]		= 1 + 1,
 	[ASN1_OP_COND_MATCH_ACT_OR_SKIP]	= 1 + 1     + 1,
 	[ASN1_OP_COND_MATCH_JUMP_OR_SKIP]	= 1 + 1 + 1,
 	[ASN1_OP_COND_MATCH_ANY]		= 1,
+<<<<<<< HEAD
 	[ASN1_OP_COND_MATCH_ANY_ACT]		= 1         + 1,
 	[ASN1_OP_COND_FAIL]			= 1,
 	[ASN1_OP_COMPLETE]			= 1,
 	[ASN1_OP_ACT]				= 1         + 1,
+=======
+	[ASN1_OP_COND_MATCH_ANY_OR_SKIP]	= 1,
+	[ASN1_OP_COND_MATCH_ANY_ACT]		= 1         + 1,
+	[ASN1_OP_COND_MATCH_ANY_ACT_OR_SKIP]	= 1         + 1,
+	[ASN1_OP_COND_FAIL]			= 1,
+	[ASN1_OP_COMPLETE]			= 1,
+	[ASN1_OP_ACT]				= 1         + 1,
+	[ASN1_OP_MAYBE_ACT]			= 1         + 1,
+>>>>>>> v4.9.227
 	[ASN1_OP_RETURN]			= 1,
 	[ASN1_OP_END_SEQ]			= 1,
 	[ASN1_OP_END_SEQ_OF]			= 1     + 1,
@@ -179,6 +199,10 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
 	unsigned char flags = 0;
 #define FLAG_INDEFINITE_LENGTH	0x01
 #define FLAG_MATCHED		0x02
+<<<<<<< HEAD
+=======
+#define FLAG_LAST_MATCHED	0x04 /* Last tag matched */
+>>>>>>> v4.9.227
 #define FLAG_CONS		0x20 /* Corresponds to CONS bit in the opcode tag
 				      * - ie. whether or not we are going to parse
 				      *   a compound type.
@@ -212,6 +236,10 @@ next_op:
 		/* Skip conditional matches if possible */
 		if ((op & ASN1_OP_MATCH__COND && flags & FLAG_MATCHED) ||
 		    (op & ASN1_OP_MATCH__SKIP && dp == datalen)) {
+<<<<<<< HEAD
+=======
+			flags &= ~FLAG_LAST_MATCHED;
+>>>>>>> v4.9.227
 			pc += asn1_op_lengths[op];
 			goto next_op;
 		}
@@ -278,7 +306,11 @@ next_op:
 			}
 		} else {
 			if (unlikely(len > datalen - dp))
+<<<<<<< HEAD
 				goto data_overrun_error;			
+=======
+				goto data_overrun_error;
+>>>>>>> v4.9.227
 		}
 
 		if (flags & FLAG_CONS) {
@@ -310,16 +342,32 @@ next_op:
 	case ASN1_OP_MATCH_ACT:
 	case ASN1_OP_MATCH_ACT_OR_SKIP:
 	case ASN1_OP_MATCH_ANY:
+<<<<<<< HEAD
 	case ASN1_OP_MATCH_ANY_ACT:
 	case ASN1_OP_COND_MATCH_OR_SKIP:
 	case ASN1_OP_COND_MATCH_ACT_OR_SKIP:
 	case ASN1_OP_COND_MATCH_ANY:
 	case ASN1_OP_COND_MATCH_ANY_ACT:
+=======
+	case ASN1_OP_MATCH_ANY_OR_SKIP:
+	case ASN1_OP_MATCH_ANY_ACT:
+	case ASN1_OP_MATCH_ANY_ACT_OR_SKIP:
+	case ASN1_OP_COND_MATCH_OR_SKIP:
+	case ASN1_OP_COND_MATCH_ACT_OR_SKIP:
+	case ASN1_OP_COND_MATCH_ANY:
+	case ASN1_OP_COND_MATCH_ANY_OR_SKIP:
+	case ASN1_OP_COND_MATCH_ANY_ACT:
+	case ASN1_OP_COND_MATCH_ANY_ACT_OR_SKIP:
+>>>>>>> v4.9.227
 
 		if (!(flags & FLAG_CONS)) {
 			if (flags & FLAG_INDEFINITE_LENGTH) {
 				size_t tmp = dp;
+<<<<<<< HEAD
 				
+=======
+
+>>>>>>> v4.9.227
 				ret = asn1_find_indefinite_length(
 					data, datalen, &tmp, &len, &errmsg);
 				if (ret < 0)
@@ -341,7 +389,11 @@ next_op:
 		}
 
 		if (!(flags & FLAG_CONS))
+<<<<<<< HEAD
 			dp += len;		
+=======
+			dp += len;
+>>>>>>> v4.9.227
 		pc += asn1_op_lengths[op];
 		goto next_op;
 
@@ -433,8 +485,20 @@ next_op:
 		pc += asn1_op_lengths[op];
 		goto next_op;
 
+<<<<<<< HEAD
 	case ASN1_OP_ACT:
 		ret = actions[machine[pc + 1]](context, hdr, tag, data + tdp, len);
+=======
+	case ASN1_OP_MAYBE_ACT:
+		if (!(flags & FLAG_LAST_MATCHED)) {
+			pc += asn1_op_lengths[op];
+			goto next_op;
+		}
+	case ASN1_OP_ACT:
+		ret = actions[machine[pc + 1]](context, hdr, tag, data + tdp, len);
+		if (ret < 0)
+			return ret;
+>>>>>>> v4.9.227
 		pc += asn1_op_lengths[op];
 		goto next_op;
 
@@ -442,6 +506,10 @@ next_op:
 		if (unlikely(jsp <= 0))
 			goto jump_stack_underflow;
 		pc = jump_stack[--jsp];
+<<<<<<< HEAD
+=======
+		flags |= FLAG_MATCHED | FLAG_LAST_MATCHED;
+>>>>>>> v4.9.227
 		goto next_op;
 
 	default:
@@ -449,7 +517,12 @@ next_op:
 	}
 
 	/* Shouldn't reach here */
+<<<<<<< HEAD
 	pr_err("ASN.1 decoder error: Found reserved opcode (%u)\n", op);
+=======
+	pr_err("ASN.1 decoder error: Found reserved opcode (%u) pc=%zu\n",
+	       op, pc);
+>>>>>>> v4.9.227
 	return -EBADMSG;
 
 data_overrun_error:
@@ -496,3 +569,8 @@ error:
 	return -EBADMSG;
 }
 EXPORT_SYMBOL_GPL(asn1_ber_decoder);
+<<<<<<< HEAD
+=======
+
+MODULE_LICENSE("GPL");
+>>>>>>> v4.9.227

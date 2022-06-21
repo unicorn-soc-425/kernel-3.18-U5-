@@ -7,7 +7,10 @@
 #include <linux/init.h>
 #include <linux/string.h>
 
+<<<<<<< HEAD
 #include <asm/paravirt.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/patch.h>
 #include <asm/processor.h>
 #include <asm/sections.h>
@@ -169,6 +172,7 @@ ia64_patch_mckinley_e9 (unsigned long start, unsigned long end)
 	ia64_srlz_i();
 }
 
+<<<<<<< HEAD
 extern unsigned long ia64_native_fsyscall_table[NR_syscalls];
 extern char ia64_native_fsys_bubble_down[];
 struct pv_fsys_data pv_fsys_data __initdata = {
@@ -192,12 +196,22 @@ static void __init
 patch_fsyscall_table (unsigned long start, unsigned long end)
 {
 	u64 fsyscall_table = (u64)paravirt_get_fsyscall_table();
+=======
+static void __init
+patch_fsyscall_table (unsigned long start, unsigned long end)
+{
+	extern unsigned long fsyscall_table[NR_syscalls];
+>>>>>>> v4.9.227
 	s32 *offp = (s32 *) start;
 	u64 ip;
 
 	while (offp < (s32 *) end) {
 		ip = (u64) ia64_imva((char *) offp + *offp);
+<<<<<<< HEAD
 		ia64_patch_imm64(ip, fsyscall_table);
+=======
+		ia64_patch_imm64(ip, (u64) fsyscall_table);
+>>>>>>> v4.9.227
 		ia64_fc((void *) ip);
 		++offp;
 	}
@@ -208,7 +222,11 @@ patch_fsyscall_table (unsigned long start, unsigned long end)
 static void __init
 patch_brl_fsys_bubble_down (unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	u64 fsys_bubble_down = (u64)paravirt_get_fsys_bubble_down();
+=======
+	extern char fsys_bubble_down[];
+>>>>>>> v4.9.227
 	s32 *offp = (s32 *) start;
 	u64 ip;
 
@@ -226,6 +244,7 @@ patch_brl_fsys_bubble_down (unsigned long start, unsigned long end)
 void __init
 ia64_patch_gate (void)
 {
+<<<<<<< HEAD
 #	define START(name)	paravirt_get_gate_patchlist(PV_GATE_START_##name)
 #	define END(name)	paravirt_get_gate_patchlist(PV_GATE_END_##name)
 
@@ -233,6 +252,15 @@ ia64_patch_gate (void)
 	patch_brl_fsys_bubble_down(START(BRL_FSYS_BUBBLE_DOWN), END(BRL_FSYS_BUBBLE_DOWN));
 	ia64_patch_vtop(START(VTOP), END(VTOP));
 	ia64_patch_mckinley_e9(START(MCKINLEY_E9), END(MCKINLEY_E9));
+=======
+#	define START(name)	((unsigned long) __start_gate_##name##_patchlist)
+#	define END(name)	((unsigned long)__end_gate_##name##_patchlist)
+
+	patch_fsyscall_table(START(fsyscall), END(fsyscall));
+	patch_brl_fsys_bubble_down(START(brl_fsys_bubble_down), END(brl_fsys_bubble_down));
+	ia64_patch_vtop(START(vtop), END(vtop));
+	ia64_patch_mckinley_e9(START(mckinley_e9), END(mckinley_e9));
+>>>>>>> v4.9.227
 }
 
 void ia64_patch_phys_stack_reg(unsigned long val)

@@ -59,7 +59,11 @@ static void request_key_auth_free_preparse(struct key_preparsed_payload *prep)
 static int request_key_auth_instantiate(struct key *key,
 					struct key_preparsed_payload *prep)
 {
+<<<<<<< HEAD
 	key->payload.data = (struct request_key_auth *)prep->data;
+=======
+	key->payload.data[0] = (struct request_key_auth *)prep->data;
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -69,11 +73,22 @@ static int request_key_auth_instantiate(struct key *key,
 static void request_key_auth_describe(const struct key *key,
 				      struct seq_file *m)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
 
 	seq_puts(m, "key:");
 	seq_puts(m, key->description);
 	if (key_is_instantiated(key))
+=======
+	struct request_key_auth *rka = key->payload.data[0];
+
+	if (!rka)
+		return;
+
+	seq_puts(m, "key:");
+	seq_puts(m, key->description);
+	if (key_is_positive(key))
+>>>>>>> v4.9.227
 		seq_printf(m, " pid:%d ci:%zu", rka->pid, rka->callout_len);
 }
 
@@ -84,10 +99,20 @@ static void request_key_auth_describe(const struct key *key,
 static long request_key_auth_read(const struct key *key,
 				  char __user *buffer, size_t buflen)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
 	size_t datalen;
 	long ret;
 
+=======
+	struct request_key_auth *rka = key->payload.data[0];
+	size_t datalen;
+	long ret;
+
+	if (!rka)
+		return -EKEYREVOKED;
+
+>>>>>>> v4.9.227
 	datalen = rka->callout_len;
 	ret = datalen;
 
@@ -110,7 +135,11 @@ static long request_key_auth_read(const struct key *key,
  */
 static void request_key_auth_revoke(struct key *key)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
+=======
+	struct request_key_auth *rka = key->payload.data[0];
+>>>>>>> v4.9.227
 
 	kenter("{%d}", key->serial);
 
@@ -125,7 +154,11 @@ static void request_key_auth_revoke(struct key *key)
  */
 static void request_key_auth_destroy(struct key *key)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
+=======
+	struct request_key_auth *rka = key->payload.data[0];
+>>>>>>> v4.9.227
 
 	kenter("{%d}", key->serial);
 
@@ -179,7 +212,11 @@ struct key *request_key_auth_new(struct key *target, const void *callout_info,
 		if (test_bit(KEY_FLAG_REVOKED, &cred->request_key_auth->flags))
 			goto auth_key_revoked;
 
+<<<<<<< HEAD
 		irka = cred->request_key_auth->payload.data;
+=======
+		irka = cred->request_key_auth->payload.data[0];
+>>>>>>> v4.9.227
 		rka->cred = get_cred(irka->cred);
 		rka->pid = irka->pid;
 
@@ -202,7 +239,11 @@ struct key *request_key_auth_new(struct key *target, const void *callout_info,
 	authkey = key_alloc(&key_type_request_key_auth, desc,
 			    cred->fsuid, cred->fsgid, cred,
 			    KEY_POS_VIEW | KEY_POS_READ | KEY_POS_SEARCH |
+<<<<<<< HEAD
 			    KEY_USR_VIEW, KEY_ALLOC_NOT_IN_QUOTA);
+=======
+			    KEY_USR_VIEW, KEY_ALLOC_NOT_IN_QUOTA, NULL);
+>>>>>>> v4.9.227
 	if (IS_ERR(authkey)) {
 		ret = PTR_ERR(authkey);
 		goto error_alloc;
@@ -254,7 +295,11 @@ struct key *key_get_instantiation_authkey(key_serial_t target_id)
 	struct key *authkey;
 	key_ref_t authkey_ref;
 
+<<<<<<< HEAD
 	sprintf(description, "%x", target_id);
+=======
+	ctx.index_key.desc_len = sprintf(description, "%x", target_id);
+>>>>>>> v4.9.227
 
 	authkey_ref = search_process_keyrings(&ctx);
 

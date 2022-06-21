@@ -177,6 +177,7 @@ static int dsi_phy_regulator_init(struct msm_dsi_phy *phy)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < num; i++) {
 		if (regulator_can_change_voltage(s[i].consumer)) {
 			ret = regulator_set_voltage(s[i].consumer,
@@ -190,6 +191,8 @@ static int dsi_phy_regulator_init(struct msm_dsi_phy *phy)
 		}
 	}
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -277,9 +280,43 @@ static const struct of_device_id dsi_phy_dt_match[] = {
 	{ .compatible = "qcom,dsi-phy-20nm",
 	  .data = &dsi_phy_20nm_cfgs },
 #endif
+<<<<<<< HEAD
 	{}
 };
 
+=======
+#ifdef CONFIG_DRM_MSM_DSI_28NM_8960_PHY
+	{ .compatible = "qcom,dsi-phy-28nm-8960",
+	  .data = &dsi_phy_28nm_8960_cfgs },
+#endif
+	{}
+};
+
+/*
+ * Currently, we only support one SoC for each PHY type. When we have multiple
+ * SoCs for the same PHY, we can try to make the index searching a bit more
+ * clever.
+ */
+static int dsi_phy_get_id(struct msm_dsi_phy *phy)
+{
+	struct platform_device *pdev = phy->pdev;
+	const struct msm_dsi_phy_cfg *cfg = phy->cfg;
+	struct resource *res;
+	int i;
+
+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dsi_phy");
+	if (!res)
+		return -EINVAL;
+
+	for (i = 0; i < cfg->num_dsi_phy; i++) {
+		if (cfg->io_start[i] == res->start)
+			return i;
+	}
+
+	return -EINVAL;
+}
+
+>>>>>>> v4.9.227
 static int dsi_phy_driver_probe(struct platform_device *pdev)
 {
 	struct msm_dsi_phy *phy;
@@ -298,10 +335,17 @@ static int dsi_phy_driver_probe(struct platform_device *pdev)
 	phy->cfg = match->data;
 	phy->pdev = pdev;
 
+<<<<<<< HEAD
 	ret = of_property_read_u32(dev->of_node,
 				"qcom,dsi-phy-index", &phy->id);
 	if (ret) {
 		dev_err(dev, "%s: PHY index not specified, %d\n",
+=======
+	phy->id = dsi_phy_get_id(phy);
+	if (phy->id < 0) {
+		ret = phy->id;
+		dev_err(dev, "%s: couldn't identify PHY index, %d\n",
+>>>>>>> v4.9.227
 			__func__, ret);
 		goto fail;
 	}

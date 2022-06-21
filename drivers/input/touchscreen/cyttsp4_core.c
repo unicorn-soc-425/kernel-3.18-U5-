@@ -775,7 +775,10 @@ static void cyttsp4_get_touch(struct cyttsp4_mt_data *md,
 	struct device *dev = &md->input->dev;
 	struct cyttsp4_sysinfo *si = md->si;
 	enum cyttsp4_tch_abs abs;
+<<<<<<< HEAD
 	int tmp;
+=======
+>>>>>>> v4.9.227
 	bool flipped;
 
 	for (abs = CY_TCH_X; abs < CY_TCH_NUM_ABS; abs++) {
@@ -790,9 +793,13 @@ static void cyttsp4_get_touch(struct cyttsp4_mt_data *md,
 	}
 
 	if (md->pdata->flags & CY_FLAG_FLIP) {
+<<<<<<< HEAD
 		tmp = touch->abs[CY_TCH_X];
 		touch->abs[CY_TCH_X] = touch->abs[CY_TCH_Y];
 		touch->abs[CY_TCH_Y] = tmp;
+=======
+		swap(touch->abs[CY_TCH_X], touch->abs[CY_TCH_Y]);
+>>>>>>> v4.9.227
 		flipped = true;
 	} else
 		flipped = false;
@@ -1502,7 +1509,11 @@ static int cyttsp4_core_sleep_(struct cyttsp4 *cd)
 
 	if (IS_BOOTLOADER(mode[0], mode[1])) {
 		mutex_unlock(&cd->system_lock);
+<<<<<<< HEAD
 		dev_err(cd->dev, "%s: Device in BOOTLADER mode.\n", __func__);
+=======
+		dev_err(cd->dev, "%s: Device in BOOTLOADER mode.\n", __func__);
+>>>>>>> v4.9.227
 		rc = -EINVAL;
 		goto error;
 	}
@@ -1716,7 +1727,11 @@ static void cyttsp4_free_si_ptrs(struct cyttsp4 *cd)
 	kfree(si->btn_rec_data);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM_RUNTIME)
+=======
+#ifdef CONFIG_PM
+>>>>>>> v4.9.227
 static int cyttsp4_core_sleep(struct cyttsp4 *cd)
 {
 	int rc;
@@ -1975,11 +1990,14 @@ static int cyttsp4_mt_probe(struct cyttsp4 *cd)
 
 	/* get sysinfo */
 	md->si = &cd->sysinfo;
+<<<<<<< HEAD
 	if (!md->si) {
 		dev_err(dev, "%s: Fail get sysinfo pointer from core p=%p\n",
 			__func__, md->si);
 		goto error_get_sysinfo;
 	}
+=======
+>>>>>>> v4.9.227
 
 	rc = cyttsp4_setup_input_device(cd);
 	if (rc)
@@ -1989,8 +2007,11 @@ static int cyttsp4_mt_probe(struct cyttsp4 *cd)
 
 error_init_input:
 	input_free_device(md->input);
+<<<<<<< HEAD
 error_get_sysinfo:
 	input_set_drvdata(md->input, NULL);
+=======
+>>>>>>> v4.9.227
 error_alloc_failed:
 	dev_err(dev, "%s failed.\n", __func__);
 	return rc;

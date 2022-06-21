@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * lirc.h - linux infrared remote control header file
  * last modified 2010/07/13 by Jarod Wilson
@@ -166,3 +167,6 @@
 #define LIRC_SET_WIDEBAND_RECEIVER     _IOW('i', 0x00000023, __u32)
 
 #endif
+=======
+#include <uapi/linux/lirc.h>
+>>>>>>> v4.9.227

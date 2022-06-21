@@ -7,6 +7,11 @@
 config CRYPTO_DEV_UX500_CRYP
 	tristate "UX500 crypto driver for CRYP block"
 	depends on CRYPTO_DEV_UX500
+<<<<<<< HEAD
+=======
+	select CRYPTO_ALGAPI
+	select CRYPTO_BLKCIPHER
+>>>>>>> v4.9.227
 	select CRYPTO_DES
 	help
         This selects the crypto driver for the UX500_CRYP hardware. It supports
@@ -16,7 +21,12 @@ config CRYPTO_DEV_UX500_HASH
         tristate "UX500 crypto driver for HASH block"
         depends on CRYPTO_DEV_UX500
         select CRYPTO_HASH
+<<<<<<< HEAD
         select CRYPTO_HMAC
+=======
+	select CRYPTO_SHA1
+	select CRYPTO_SHA256
+>>>>>>> v4.9.227
         help
           This selects the hash driver for the UX500_HASH hardware.
           Depends on UX500/STM DMA if running in DMA mode.
@@ -24,7 +34,10 @@ config CRYPTO_DEV_UX500_HASH
 config CRYPTO_DEV_UX500_DEBUG
 	bool "Activate ux500 platform debug-mode for crypto and hash block"
 	depends on CRYPTO_DEV_UX500_CRYP || CRYPTO_DEV_UX500_HASH
+<<<<<<< HEAD
 	default n
+=======
+>>>>>>> v4.9.227
 	help
 	  Say Y if you want to add debug prints to ux500_hash and
 	  ux500_cryp devices.

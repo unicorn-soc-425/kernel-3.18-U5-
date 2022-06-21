@@ -29,7 +29,11 @@ static ssize_t show_companion(struct device *dev,
 	int			count = PAGE_SIZE;
 	char			*ptr = buf;
 
+<<<<<<< HEAD
 	ehci = hcd_to_ehci(bus_to_hcd(dev_get_drvdata(dev)));
+=======
+	ehci = hcd_to_ehci(dev_get_drvdata(dev));
+>>>>>>> v4.9.227
 	nports = HCS_N_PORTS(ehci->hcs_params);
 
 	for (index = 0; index < nports; ++index) {
@@ -54,7 +58,11 @@ static ssize_t store_companion(struct device *dev,
 	struct ehci_hcd		*ehci;
 	int			portnum, new_owner;
 
+<<<<<<< HEAD
 	ehci = hcd_to_ehci(bus_to_hcd(dev_get_drvdata(dev)));
+=======
+	ehci = hcd_to_ehci(dev_get_drvdata(dev));
+>>>>>>> v4.9.227
 	new_owner = PORT_OWNER;		/* Owned by companion */
 	if (sscanf(buf, "%d", &portnum) != 1)
 		return -EINVAL;
@@ -85,7 +93,11 @@ static ssize_t show_uframe_periodic_max(struct device *dev,
 	struct ehci_hcd		*ehci;
 	int			n;
 
+<<<<<<< HEAD
 	ehci = hcd_to_ehci(bus_to_hcd(dev_get_drvdata(dev)));
+=======
+	ehci = hcd_to_ehci(dev_get_drvdata(dev));
+>>>>>>> v4.9.227
 	n = scnprintf(buf, PAGE_SIZE, "%d\n", ehci->uframe_periodic_max);
 	return n;
 }
@@ -101,7 +113,11 @@ static ssize_t store_uframe_periodic_max(struct device *dev,
 	unsigned long		flags;
 	ssize_t			ret;
 
+<<<<<<< HEAD
 	ehci = hcd_to_ehci(bus_to_hcd(dev_get_drvdata(dev)));
+=======
+	ehci = hcd_to_ehci(dev_get_drvdata(dev));
+>>>>>>> v4.9.227
 	if (kstrtouint(buf, 0, &uframe_periodic_max) < 0)
 		return -EINVAL;
 
@@ -132,7 +148,11 @@ static ssize_t store_uframe_periodic_max(struct device *dev,
 
 		if (allocated_max > uframe_periodic_max) {
 			ehci_info(ehci,
+<<<<<<< HEAD
 				"cannot decrease uframe_periodic_max becase "
+=======
+				"cannot decrease uframe_periodic_max because "
+>>>>>>> v4.9.227
 				"periodic bandwidth is already allocated "
 				"(%u > %u)\n",
 				allocated_max, uframe_periodic_max);

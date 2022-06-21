@@ -813,6 +813,10 @@ static void __exit agp_amd64_cleanup(void)
 module_init(agp_amd64_mod_init);
 module_exit(agp_amd64_cleanup);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>, Andi Kleen");
+=======
+MODULE_AUTHOR("Dave Jones, Andi Kleen");
+>>>>>>> v4.9.227
 module_param(agp_try_unsupported, bool, 0);
 MODULE_LICENSE("GPL");

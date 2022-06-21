@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage compliant devices
+=======
+/*
+ * Driver for USB Mass Storage compliant devices
+>>>>>>> v4.9.227
  *
  * Current development and maintenance by:
  *   (c) 1999-2002 Matthew Dharm (mdharm-usb@one-eyed-alien.net)
@@ -75,7 +80,12 @@ void usb_stor_pad12_command(struct scsi_cmnd *srb, struct us_data *us)
 
 void usb_stor_ufi_command(struct scsi_cmnd *srb, struct us_data *us)
 {
+<<<<<<< HEAD
 	/* fix some commands -- this is a form of mode translation
+=======
+	/*
+	 * fix some commands -- this is a form of mode translation
+>>>>>>> v4.9.227
 	 * UFI devices only accept 12 byte long commands
 	 *
 	 * NOTE: This only works because a scsi_cmnd struct field contains
@@ -127,7 +137,12 @@ EXPORT_SYMBOL_GPL(usb_stor_transparent_scsi_command);
  * Scatter-gather transfer buffer access routines
  ***********************************************************************/
 
+<<<<<<< HEAD
 /* Copy a buffer of length buflen to/from the srb's transfer buffer.
+=======
+/*
+ * Copy a buffer of length buflen to/from the srb's transfer buffer.
+>>>>>>> v4.9.227
  * Update the **sgptr and *offset variables so that the next copy will
  * pick up from where this one left off.
  */
@@ -175,7 +190,12 @@ unsigned int usb_stor_access_xfer_buf(unsigned char *buffer,
 }
 EXPORT_SYMBOL_GPL(usb_stor_access_xfer_buf);
 
+<<<<<<< HEAD
 /* Store the contents of buffer into srb's transfer buffer and set the
+=======
+/*
+ * Store the contents of buffer into srb's transfer buffer and set the
+>>>>>>> v4.9.227
  * SCSI residue.
  */
 void usb_stor_set_xfer_buf(unsigned char *buffer,

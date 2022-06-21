@@ -68,6 +68,14 @@ void kunmap_high(struct page *page);
 
 static inline void *kmap(struct page *page)
 {
+<<<<<<< HEAD
+=======
+	/* Check if this memory layout is broken because PKMAP overlaps
+	 * page table.
+	 */
+	BUILD_BUG_ON(PKMAP_BASE <
+		     XCHAL_PAGE_TABLE_VADDR + XCHAL_PAGE_TABLE_SIZE);
+>>>>>>> v4.9.227
 	BUG_ON(in_interrupt());
 	if (!PageHighMem(page))
 		return page_address(page);

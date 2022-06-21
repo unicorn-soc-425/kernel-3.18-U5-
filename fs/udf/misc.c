@@ -23,7 +23,10 @@
 
 #include <linux/fs.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/buffer_head.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/crc-itu-t.h>
 
 #include "udf_i.h"

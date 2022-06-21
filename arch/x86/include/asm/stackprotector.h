@@ -39,7 +39,13 @@
 #include <asm/processor.h>
 #include <asm/percpu.h>
 #include <asm/desc.h>
+<<<<<<< HEAD
 #include <linux/random.h>
+=======
+
+#include <linux/random.h>
+#include <linux/sched.h>
+>>>>>>> v4.9.227
 
 /*
  * 24 byte read-only segment initializer for stack canary.  Linker
@@ -52,8 +58,18 @@
 /*
  * Initialize the stackprotector canary value.
  *
+<<<<<<< HEAD
  * NOTE: this must only be called from functions that never return,
  * and it must always be inlined.
+=======
+ * NOTE: this must only be called from functions that never return
+ * and it must always be inlined.
+ *
+ * In addition, it should be called from a compilation unit for which
+ * stack protector is disabled. Alternatively, the caller should not end
+ * with a function call which gets tail-call optimized as that would
+ * lead to checking a modified canary value.
+>>>>>>> v4.9.227
  */
 static __always_inline void boot_init_stack_canary(void)
 {
@@ -70,7 +86,11 @@ static __always_inline void boot_init_stack_canary(void)
 	 * on during the bootup the random pool has true entropy too.
 	 */
 	get_random_bytes(&canary, sizeof(canary));
+<<<<<<< HEAD
 	tsc = __native_read_tsc();
+=======
+	tsc = rdtsc();
+>>>>>>> v4.9.227
 	canary += tsc + (tsc << 32UL);
 
 	current->stack_canary = canary;

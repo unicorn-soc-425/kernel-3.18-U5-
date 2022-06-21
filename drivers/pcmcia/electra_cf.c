@@ -48,14 +48,24 @@ struct electra_cf_socket {
 
 	struct platform_device	*ofdev;
 	unsigned long		mem_phys;
+<<<<<<< HEAD
 	void __iomem *		mem_base;
 	unsigned long		mem_size;
 	void __iomem *		io_virt;
+=======
+	void __iomem		*mem_base;
+	unsigned long		mem_size;
+	void __iomem		*io_virt;
+>>>>>>> v4.9.227
 	unsigned int		io_base;
 	unsigned int		io_size;
 	u_int			irq;
 	struct resource		iomem;
+<<<<<<< HEAD
 	void __iomem *		gpio_base;
+=======
+	void __iomem		*gpio_base;
+>>>>>>> v4.9.227
 	int			gpio_detect;
 	int			gpio_vsense;
 	int			gpio_3v;
@@ -202,7 +212,11 @@ static int electra_cf_probe(struct platform_device *ofdev)
 	if (err)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	cf = kzalloc(sizeof *cf, GFP_KERNEL);
+=======
+	cf = kzalloc(sizeof(*cf), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!cf)
 		return -ENOMEM;
 
@@ -216,8 +230,15 @@ static int electra_cf_probe(struct platform_device *ofdev)
 	cf->io_size = PAGE_ALIGN(resource_size(&io));
 
 	area = __get_vm_area(cf->io_size, 0, PHB_IO_BASE, PHB_IO_END);
+<<<<<<< HEAD
 	if (area == NULL)
 		return -ENOMEM;
+=======
+	if (area == NULL) {
+		status = -ENOMEM;
+		goto fail1;
+	}
+>>>>>>> v4.9.227
 
 	cf->io_virt = (void __iomem *)(area->addr);
 
@@ -226,7 +247,11 @@ static int electra_cf_probe(struct platform_device *ofdev)
 
 	if (!cf->mem_base || !cf->io_virt || !cf->gpio_base ||
 	    (__ioremap_at(io.start, cf->io_virt, cf->io_size,
+<<<<<<< HEAD
 		_PAGE_NO_CACHE | _PAGE_GUARDED) == NULL)) {
+=======
+		  pgprot_val(pgprot_noncached(__pgprot(0)))) == NULL)) {
+>>>>>>> v4.9.227
 		dev_err(device, "can't ioremap ranges\n");
 		status = -ENOMEM;
 		goto fail1;
@@ -320,7 +345,12 @@ fail1:
 		iounmap(cf->mem_base);
 	if (cf->gpio_base)
 		iounmap(cf->gpio_base);
+<<<<<<< HEAD
 	device_init_wakeup(&ofdev->dev, 0);
+=======
+	if (area)
+		device_init_wakeup(&ofdev->dev, 0);
+>>>>>>> v4.9.227
 	kfree(cf);
 	return status;
 
@@ -360,7 +390,10 @@ MODULE_DEVICE_TABLE(of, electra_cf_match);
 static struct platform_driver electra_cf_driver = {
 	.driver = {
 		.name = driver_name,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = electra_cf_match,
 	},
 	.probe	  = electra_cf_probe,
@@ -370,5 +403,9 @@ static struct platform_driver electra_cf_driver = {
 module_platform_driver(electra_cf_driver);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR ("Olof Johansson <olof@lixom.net>");
+=======
+MODULE_AUTHOR("Olof Johansson <olof@lixom.net>");
+>>>>>>> v4.9.227
 MODULE_DESCRIPTION("PA Semi Electra CF driver");

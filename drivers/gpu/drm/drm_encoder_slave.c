@@ -124,7 +124,11 @@ EXPORT_SYMBOL(drm_i2c_encoder_destroy);
  * Wrapper fxns which can be plugged in to drm_encoder_helper_funcs:
  */
 
+<<<<<<< HEAD
 static inline struct drm_encoder_slave_funcs *
+=======
+static inline const struct drm_encoder_slave_funcs *
+>>>>>>> v4.9.227
 get_slave_funcs(struct drm_encoder *enc)
 {
 	return to_encoder_slave(enc)->slave_funcs;
@@ -140,6 +144,12 @@ bool drm_i2c_encoder_mode_fixup(struct drm_encoder *encoder,
 		const struct drm_display_mode *mode,
 		struct drm_display_mode *adjusted_mode)
 {
+<<<<<<< HEAD
+=======
+	if (!get_slave_funcs(encoder)->mode_fixup)
+		return true;
+
+>>>>>>> v4.9.227
 	return get_slave_funcs(encoder)->mode_fixup(encoder, mode, adjusted_mode);
 }
 EXPORT_SYMBOL(drm_i2c_encoder_mode_fixup);

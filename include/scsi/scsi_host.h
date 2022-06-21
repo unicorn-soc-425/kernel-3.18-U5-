@@ -37,7 +37,11 @@ struct blk_queue_tags;
  *	 used in one scatter-gather request.
  */
 #define SG_NONE 0
+<<<<<<< HEAD
 #define SG_ALL	SCSI_MAX_SG_SEGMENTS
+=======
+#define SG_ALL	SG_CHUNK_SIZE
+>>>>>>> v4.9.227
 
 #define MODE_UNKNOWN 0x00
 #define MODE_INITIATOR 0x01
@@ -46,12 +50,15 @@ struct blk_queue_tags;
 #define DISABLE_CLUSTERING 0
 #define ENABLE_CLUSTERING 1
 
+<<<<<<< HEAD
 enum {
 	SCSI_QDEPTH_DEFAULT,	/* default requested change, e.g. from sysfs */
 	SCSI_QDEPTH_QFULL,	/* scsi-ml requested due to queue full */
 	SCSI_QDEPTH_RAMP_UP,	/* scsi-ml requested due to threshold event */
 };
 
+=======
+>>>>>>> v4.9.227
 struct scsi_host_template {
 	struct module *module;
 	const char *name;
@@ -195,7 +202,11 @@ struct scsi_host_template {
 	 * Things currently recommended to be handled at this time include:
 	 *
 	 * 1.  Setting the device queue depth.  Proper setting of this is
+<<<<<<< HEAD
 	 *     described in the comments for scsi_adjust_queue_depth.
+=======
+	 *     described in the comments for scsi_change_queue_depth.
+>>>>>>> v4.9.227
 	 * 2.  Determining if the device supports the various synchronous
 	 *     negotiation protocols.  The device struct will already have
 	 *     responded to INQUIRY and the results of the standard items
@@ -281,6 +292,7 @@ struct scsi_host_template {
 	 *
 	 * Status: OPTIONAL
 	 */
+<<<<<<< HEAD
 	int (* change_queue_depth)(struct scsi_device *, int, int);
 
 	/*
@@ -295,6 +307,9 @@ struct scsi_host_template {
 	 * Status: OPTIONAL
 	 */
 	int (* change_queue_type)(struct scsi_device *, int);
+=======
+	int (* change_queue_depth)(struct scsi_device *, int);
+>>>>>>> v4.9.227
 
 	/*
 	 * This function determines the BIOS parameters for a given
@@ -421,6 +436,17 @@ struct scsi_host_template {
 	 */
 	unsigned char present;
 
+<<<<<<< HEAD
+=======
+	/* If use block layer to manage tags, this is tag allocation policy */
+	int tag_alloc_policy;
+
+	/*
+	 * Track QUEUE_FULL events and reduce queue depth on demand.
+	 */
+	unsigned track_queue_depth:1;
+
+>>>>>>> v4.9.227
 	/*
 	 * This specifies the mode that a LLD supports.
 	 */
@@ -451,11 +477,14 @@ struct scsi_host_template {
 	 */
 	unsigned skip_settle_delay:1;
 
+<<<<<<< HEAD
 	/*
 	 * True if we are using ordered write support.
 	 */
 	unsigned ordered_tag:1;
 
+=======
+>>>>>>> v4.9.227
 	/* True if the controller does not support WRITE SAME */
 	unsigned no_write_same:1;
 
@@ -511,9 +540,12 @@ struct scsi_host_template {
 	 */
 	unsigned int cmd_size;
 	struct scsi_host_cmd_pool *cmd_pool;
+<<<<<<< HEAD
 
 	/* temporary flag to disable blk-mq I/O path */
 	bool disable_blk_mq;
+=======
+>>>>>>> v4.9.227
 };
 
 /*
@@ -555,7 +587,11 @@ struct Scsi_Host {
 	 * __devices is protected by the host_lock, but you should
 	 * usually use scsi_device_lookup / shost_for_each_device
 	 * to access it and don't care about locking yourself.
+<<<<<<< HEAD
 	 * In the rare case of beeing in irq context you can use
+=======
+	 * In the rare case of being in irq context you can use
+>>>>>>> v4.9.227
 	 * their __ prefixed variants with the lock held. NEVER
 	 * access this list directly from a driver.
 	 */
@@ -638,6 +674,17 @@ struct Scsi_Host {
 	short unsigned int sg_prot_tablesize;
 	unsigned int max_sectors;
 	unsigned long dma_boundary;
+<<<<<<< HEAD
+=======
+	/*
+	 * In scsi-mq mode, the number of hardware queues supported by the LLD.
+	 *
+	 * Note: it is assumed that each hardware queue has a queue depth of
+	 * can_queue. In other words, the total queue depth per host
+	 * is nr_hw_queues * can_queue.
+	 */
+	unsigned nr_hw_queues;
+>>>>>>> v4.9.227
 	/* 
 	 * Used to assign serial numbers to the cmds.
 	 * Protected by the host lock.
@@ -647,7 +694,10 @@ struct Scsi_Host {
 	unsigned active_mode:2;
 	unsigned unchecked_isa_dma:1;
 	unsigned use_clustering:1;
+<<<<<<< HEAD
 	unsigned use_blk_tcq:1;
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * Host has requested that no further requests come through for the
@@ -662,11 +712,14 @@ struct Scsi_Host {
 	 */
 	unsigned reverse_ordering:1;
 
+<<<<<<< HEAD
 	/*
 	 * Ordered write support
 	 */
 	unsigned ordered_tag:1;
 
+=======
+>>>>>>> v4.9.227
 	/* Task mgmt function in progress */
 	unsigned tmf_in_progress:1;
 
@@ -682,11 +735,16 @@ struct Scsi_Host {
 	unsigned use_blk_mq:1;
 	unsigned use_cmd_list:1;
 
+<<<<<<< HEAD
 	/*
 	 * Set "DBD" field in mode_sense caching mode page in case it is
 	 * mandatory by LLD standard.
 	 */
 	unsigned set_dbd_for_caching:1;
+=======
+	/* Host responded with short (<36 bytes) INQUIRY result */
+	unsigned short_inquiry:1;
+>>>>>>> v4.9.227
 
 	/*
 	 * Optional work queue to be utilized by the transport
@@ -750,9 +808,12 @@ struct Scsi_Host {
 	 * Needed just in case we have virtual hosts.
 	 */
 	struct device *dma_dev;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_STORAGE_DETECT
 	unsigned int  by_usb;
 #endif
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * We should ensure that this is aligned, both for better performance
@@ -794,8 +855,11 @@ static inline int scsi_host_in_recovery(struct Scsi_Host *shost)
 		shost->tmf_in_progress;
 }
 
+<<<<<<< HEAD
 extern bool scsi_use_blk_mq;
 
+=======
+>>>>>>> v4.9.227
 static inline bool shost_use_blk_mq(struct Scsi_Host *shost)
 {
 	return shost->use_blk_mq;

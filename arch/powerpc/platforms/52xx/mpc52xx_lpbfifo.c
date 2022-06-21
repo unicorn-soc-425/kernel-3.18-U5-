@@ -568,11 +568,18 @@ static const struct of_device_id mpc52xx_lpbfifo_match[] = {
 	{ .compatible = "fsl,mpc5200-lpbfifo", },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, mpc52xx_lpbfifo_match);
+>>>>>>> v4.9.227
 
 static struct platform_driver mpc52xx_lpbfifo_driver = {
 	.driver = {
 		.name = "mpc52xx-lpbfifo",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = mpc52xx_lpbfifo_match,
 	},
 	.probe = mpc52xx_lpbfifo_probe,

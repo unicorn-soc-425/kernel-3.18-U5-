@@ -44,7 +44,11 @@
 #include <mach/tc.h>
 #include <linux/platform_data/keypad-omap.h>
 #include <linux/omap-dma.h>
+<<<<<<< HEAD
 #include <mach/flash.h>
+=======
+#include "flash.h"
+>>>>>>> v4.9.227
 
 #include <mach/hardware.h>
 #include <mach/irqs.h>
@@ -368,7 +372,11 @@ static struct omap_usb_config h3_usb_config __initdata = {
 
 #if IS_ENABLED(CONFIG_USB_OMAP)
 	.hmc_mode       = 19,   /* 0:host(off) 1:dev|otg 2:disabled */
+<<<<<<< HEAD
 #elif  defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE)
+=======
+#elif IS_ENABLED(CONFIG_USB_OHCI_HCD)
+>>>>>>> v4.9.227
 	/* NONSTANDARD CABLE NEEDED (B-to-Mini-B) */
 	.hmc_mode       = 20,   /* 1:dev|otg(off) 1:host 2:disabled */
 #endif
@@ -452,6 +460,10 @@ MACHINE_START(OMAP_H3, "TI OMAP1710 H3 board")
 	.map_io		= omap16xx_map_io,
 	.init_early     = omap1_init_early,
 	.init_irq	= omap1_init_irq,
+<<<<<<< HEAD
+=======
+	.handle_irq	= omap1_handle_irq,
+>>>>>>> v4.9.227
 	.init_machine	= h3_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,

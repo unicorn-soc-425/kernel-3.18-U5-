@@ -4,6 +4,7 @@
  *
  */
 /*
+<<<<<<< HEAD
 Driver: dt2801
 Description: Data Translation DT2801 series and DT01-EZ
 Author: ds
@@ -28,6 +29,32 @@ Configuration options:
 	  4 = [0,5]
   [5] - D/A 1 range (same choices)
 */
+=======
+ * Driver: dt2801
+ * Description: Data Translation DT2801 series and DT01-EZ
+ * Author: ds
+ * Status: works
+ * Devices: [Data Translation] DT2801 (dt2801), DT2801-A, DT2801/5716A,
+ * DT2805, DT2805/5716A, DT2808, DT2818, DT2809, DT01-EZ
+ *
+ * This driver can autoprobe the type of board.
+ *
+ * Configuration options:
+ * [0] - I/O port base address
+ * [1] - unused
+ * [2] - A/D reference 0=differential, 1=single-ended
+ * [3] - A/D range
+ *	  0 = [-10, 10]
+ *	  1 = [0,10]
+ * [4] - D/A 0 range
+ *	  0 = [-10, 10]
+ *	  1 = [-5,5]
+ *	  2 = [-2.5,2.5]
+ *	  3 = [0,10]
+ *	  4 = [0,5]
+ * [5] - D/A 1 range (same choices)
+ */
+>>>>>>> v4.9.227
 
 #include <linux/module.h>
 #include "../comedidev.h"
@@ -65,6 +92,7 @@ Configuration options:
 #define DT_C_SET_AD      0xd
 #define DT_C_READ_AD     0xe
 
+<<<<<<< HEAD
 /* Command modifiers (only used with read/write), EXTTRIG can be
    used with some other commands.
 */
@@ -79,6 +107,23 @@ Configuration options:
 #define DT_S_READY            (1<<2)
 #define DT_S_COMMAND          (1<<3)
 #define DT_S_COMPOSITE_ERROR  (1<<7)
+=======
+/*
+ * Command modifiers (only used with read/write), EXTTRIG can be
+ * used with some other commands.
+ */
+#define DT_MOD_DMA     BIT(4)
+#define DT_MOD_CONT    BIT(5)
+#define DT_MOD_EXTCLK  BIT(6)
+#define DT_MOD_EXTTRIG BIT(7)
+
+/* Bits in status register */
+#define DT_S_DATA_OUT_READY   BIT(0)
+#define DT_S_DATA_IN_FULL     BIT(1)
+#define DT_S_READY            BIT(2)
+#define DT_S_COMMAND          BIT(3)
+#define DT_S_COMPOSITE_ERROR  BIT(7)
+>>>>>>> v4.9.227
 
 /* registers */
 #define DT2801_DATA		0
@@ -126,7 +171,10 @@ static const struct comedi_lrange range_dt2801_ai_pgl_unipolar = {
 };
 
 struct dt2801_board {
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	const char *name;
 	int boardcode;
 	int ad_diff;
@@ -136,9 +184,16 @@ struct dt2801_board {
 	int dabits;
 };
 
+<<<<<<< HEAD
 /* Typeid's for the different boards of the DT2801-series
    (taken from the test-software, that comes with the board)
    */
+=======
+/*
+ * Typeid's for the different boards of the DT2801-series
+ * (taken from the test-software, that comes with the board)
+ */
+>>>>>>> v4.9.227
 static const struct dt2801_board boardtypes[] = {
 	{
 	 .name = "dt2801",
@@ -210,6 +265,7 @@ struct dt2801_private {
 	const struct comedi_lrange *dac_range_types[2];
 };
 
+<<<<<<< HEAD
 /* These are the low-level routines:
    writecommand: write a command to the board
    writedata: write data byte
@@ -219,6 +275,20 @@ struct dt2801_private {
 /* Only checks DataOutReady-flag, not the Ready-flag as it is done
    in the examples of the manual. I don't see why this should be
    necessary. */
+=======
+/*
+ * These are the low-level routines:
+ * writecommand: write a command to the board
+ * writedata: write data byte
+ * readdata: read data byte
+ */
+
+/*
+ * Only checks DataOutReady-flag, not the Ready-flag as it is done
+ *  in the examples of the manual. I don't see why this should be
+ *  necessary.
+ */
+>>>>>>> v4.9.227
 static int dt2801_readdata(struct comedi_device *dev, int *data)
 {
 	int stat = 0;
@@ -280,7 +350,11 @@ static int dt2801_writedata2(struct comedi_device *dev, unsigned int data)
 	ret = dt2801_writedata(dev, data & 0xff);
 	if (ret < 0)
 		return ret;
+<<<<<<< HEAD
 	ret = dt2801_writedata(dev, (data >> 8));
+=======
+	ret = dt2801_writedata(dev, data >> 8);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
@@ -518,6 +592,7 @@ static int dt2801_dio_insn_config(struct comedi_device *dev,
 }
 
 /*
+<<<<<<< HEAD
    options:
 	[0] - i/o base
 	[1] - unused
@@ -526,6 +601,16 @@ static int dt2801_dio_insn_config(struct comedi_device *dev,
 	[4] - dac0 range 0=[-10,10], 1=[-5,5], 2=[-2.5,2.5] 3=[0,10], 4=[0,5]
 	[5] - dac1 range 0=[-10,10], 1=[-5,5], 2=[-2.5,2.5] 3=[0,10], 4=[0,5]
 */
+=======
+ * options:
+ *	[0] - i/o base
+ *	[1] - unused
+ *	[2] - a/d 0=differential, 1=single-ended
+ *	[3] - a/d range 0=[-10,10], 1=[0,10]
+ *	[4] - dac0 range 0=[-10,10], 1=[-5,5], 2=[-2.5,2.5] 3=[0,10], 4=[0,5]
+ *	[5] - dac1 range 0=[-10,10], 1=[-5,5], 2=[-2.5,2.5] 3=[0,10], 4=[0,5]
+ */
+>>>>>>> v4.9.227
 static int dt2801_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 {
 	const struct dt2801_board *board;
@@ -597,7 +682,10 @@ havetype:
 	devpriv->dac_range_types[0] = dac_range_lkup(it->options[4]);
 	devpriv->dac_range_types[1] = dac_range_lkup(it->options[5]);
 	s->insn_write = dt2801_ao_insn_write;
+<<<<<<< HEAD
 	s->insn_read = comedi_readback_insn_read;
+=======
+>>>>>>> v4.9.227
 
 	ret = comedi_alloc_subdev_readback(s);
 	if (ret)

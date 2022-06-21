@@ -21,6 +21,10 @@
 #include <linux/gpio_keys.h>
 #include <linux/input.h>
 #include <linux/pda_power.h>
+<<<<<<< HEAD
+=======
+#include <linux/pwm.h>
+>>>>>>> v4.9.227
 #include <linux/pwm_backlight.h>
 #include <linux/gpio.h>
 #include <linux/wm97xx.h>
@@ -31,6 +35,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
 #include <mach/audio.h>
 #include <mach/palmte2.h>
@@ -38,6 +43,15 @@
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/irda-pxaficp.h>
 #include <mach/udc.h>
+=======
+#include "pxa25x.h"
+#include <mach/audio.h>
+#include "palmte2.h"
+#include <linux/platform_data/mmc-pxamci.h>
+#include <linux/platform_data/video-pxafb.h>
+#include <linux/platform_data/irda-pxaficp.h>
+#include "udc.h"
+>>>>>>> v4.9.227
 #include <linux/platform_data/asoc-palm27x.h>
 
 #include "generic.h"
@@ -138,6 +152,14 @@ static struct platform_device palmte2_pxa_keys = {
 /******************************************************************************
  * Backlight
  ******************************************************************************/
+<<<<<<< HEAD
+=======
+static struct pwm_lookup palmte2_pwm_lookup[] = {
+	PWM_LOOKUP("pxa25x-pwm.0", 0, "pwm-backlight.0", NULL,
+		   PALMTE2_PERIOD_NS, PWM_POLARITY_NORMAL),
+};
+
+>>>>>>> v4.9.227
 static struct gpio palmte_bl_gpios[] = {
 	{ GPIO_NR_PALMTE2_BL_POWER, GPIOF_INIT_LOW, "Backlight power" },
 	{ GPIO_NR_PALMTE2_LCD_POWER, GPIOF_INIT_LOW, "LCD power" },
@@ -161,10 +183,15 @@ static void palmte2_backlight_exit(struct device *dev)
 }
 
 static struct platform_pwm_backlight_data palmte2_backlight_data = {
+<<<<<<< HEAD
 	.pwm_id		= 0,
 	.max_brightness	= PALMTE2_MAX_INTENSITY,
 	.dft_brightness	= PALMTE2_MAX_INTENSITY,
 	.pwm_period_ns	= PALMTE2_PERIOD_NS,
+=======
+	.max_brightness	= PALMTE2_MAX_INTENSITY,
+	.dft_brightness	= PALMTE2_MAX_INTENSITY,
+>>>>>>> v4.9.227
 	.enable_gpio	= -1,
 	.init		= palmte2_backlight_init,
 	.notify		= palmte2_backlight_notify,
@@ -355,6 +382,10 @@ static void __init palmte2_init(void)
 	pxa_set_ac97_info(&palmte2_ac97_pdata);
 	pxa_set_ficp_info(&palmte2_ficp_platform_data);
 
+<<<<<<< HEAD
+=======
+	pwm_add_table(palmte2_pwm_lookup, ARRAY_SIZE(palmte2_pwm_lookup));
+>>>>>>> v4.9.227
 	platform_add_devices(devices, ARRAY_SIZE(devices));
 }
 

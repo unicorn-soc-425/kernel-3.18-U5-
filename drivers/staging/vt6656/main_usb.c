@@ -12,9 +12,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> v4.9.227
  *
  * File: main_usb.c
  *
@@ -34,6 +37,10 @@
  */
 #undef __NO_VERSION__
 
+<<<<<<< HEAD
+=======
+#include <linux/etherdevice.h>
+>>>>>>> v4.9.227
 #include <linux/file.h>
 #include "device.h"
 #include "card.h"
@@ -76,10 +83,17 @@ MODULE_PARM_DESC(tx_buffers, "Number of receive usb tx buffers");
 #define LONG_RETRY_DEF     4
 
 /* BasebandType[] baseband type selected
+<<<<<<< HEAD
    0: indicate 802.11a type
    1: indicate 802.11b type
    2: indicate 802.11g type
 */
+=======
+ * 0: indicate 802.11a type
+ * 1: indicate 802.11b type
+ * 2: indicate 802.11g type
+ */
+>>>>>>> v4.9.227
 
 #define BBP_TYPE_DEF     2
 
@@ -240,7 +254,11 @@ static int vnt_init_registers(struct vnt_private *priv)
 		priv->tx_antenna_mode = ANT_B;
 		priv->rx_antenna_sel = 1;
 
+<<<<<<< HEAD
 		if (priv->tx_rx_ant_inv == true)
+=======
+		if (priv->tx_rx_ant_inv)
+>>>>>>> v4.9.227
 			priv->rx_antenna_mode = ANT_A;
 		else
 			priv->rx_antenna_mode = ANT_B;
@@ -250,14 +268,22 @@ static int vnt_init_registers(struct vnt_private *priv)
 		if (antenna & EEP_ANTENNA_AUX) {
 			priv->tx_antenna_mode = ANT_A;
 
+<<<<<<< HEAD
 			if (priv->tx_rx_ant_inv == true)
+=======
+			if (priv->tx_rx_ant_inv)
+>>>>>>> v4.9.227
 				priv->rx_antenna_mode = ANT_B;
 			else
 				priv->rx_antenna_mode = ANT_A;
 		} else {
 			priv->tx_antenna_mode = ANT_B;
 
+<<<<<<< HEAD
 		if (priv->tx_rx_ant_inv == true)
+=======
+		if (priv->tx_rx_ant_inv)
+>>>>>>> v4.9.227
 			priv->rx_antenna_mode = ANT_A;
 		else
 			priv->rx_antenna_mode = ANT_B;
@@ -286,7 +312,12 @@ static int vnt_init_registers(struct vnt_private *priv)
 			calib_rx_iq = priv->eeprom[EEP_OFS_CALIB_RX_IQ];
 			if (calib_tx_iq || calib_tx_dc || calib_rx_iq) {
 				/* CR255, enable TX/RX IQ and
+<<<<<<< HEAD
 				   DC compensation mode */
+=======
+				 * DC compensation mode
+				 */
+>>>>>>> v4.9.227
 				vnt_control_out_u8(priv,
 						   MESSAGE_REQUEST_BBREG,
 						   0xff,
@@ -308,7 +339,12 @@ static int vnt_init_registers(struct vnt_private *priv)
 						   calib_rx_iq);
 			} else {
 				/* CR255, turn off
+<<<<<<< HEAD
 				   BB Calibration compensation */
+=======
+				 * BB Calibration compensation
+				 */
+>>>>>>> v4.9.227
 				vnt_control_out_u8(priv,
 						   MESSAGE_REQUEST_BBREG,
 						   0xff,
@@ -319,7 +355,11 @@ static int vnt_init_registers(struct vnt_private *priv)
 
 	/* get permanent network address */
 	memcpy(priv->permanent_net_addr, init_rsp->net_addr, 6);
+<<<<<<< HEAD
 	memcpy(priv->current_net_addr, priv->permanent_net_addr, ETH_ALEN);
+=======
+	ether_addr_copy(priv->current_net_addr, priv->permanent_net_addr);
+>>>>>>> v4.9.227
 
 	/* if exist SW network address, use it */
 	dev_dbg(&priv->usb->dev, "Network address = %pM\n",
@@ -431,22 +471,33 @@ static bool vnt_alloc_bufs(struct vnt_private *priv)
 	for (ii = 0; ii < priv->num_tx_context; ii++) {
 		tx_context = kmalloc(sizeof(struct vnt_usb_send_context),
 								GFP_KERNEL);
+<<<<<<< HEAD
 		if (tx_context == NULL) {
 			dev_err(&priv->usb->dev,
 					"allocate tx usb context failed\n");
 			goto free_tx;
 		}
+=======
+		if (!tx_context)
+			goto free_tx;
+>>>>>>> v4.9.227
 
 		priv->tx_context[ii] = tx_context;
 		tx_context->priv = priv;
 		tx_context->pkt_no = ii;
 
 		/* allocate URBs */
+<<<<<<< HEAD
 		tx_context->urb = usb_alloc_urb(0, GFP_ATOMIC);
 		if (!tx_context->urb) {
 			dev_err(&priv->usb->dev, "alloc tx urb failed\n");
 			goto free_tx;
 		}
+=======
+		tx_context->urb = usb_alloc_urb(0, GFP_KERNEL);
+		if (!tx_context->urb)
+			goto free_tx;
+>>>>>>> v4.9.227
 
 		tx_context->in_use = false;
 	}
@@ -464,6 +515,7 @@ static bool vnt_alloc_bufs(struct vnt_private *priv)
 		rcb->priv = priv;
 
 		/* allocate URBs */
+<<<<<<< HEAD
 		rcb->urb = usb_alloc_urb(0, GFP_ATOMIC);
 		if (rcb->urb == NULL) {
 			dev_err(&priv->usb->dev, "Failed to alloc rx urb\n");
@@ -475,6 +527,15 @@ static bool vnt_alloc_bufs(struct vnt_private *priv)
 			dev_err(&priv->usb->dev, "Failed to alloc rx skb\n");
 			goto free_rx_tx;
 		}
+=======
+		rcb->urb = usb_alloc_urb(0, GFP_KERNEL);
+		if (!rcb->urb)
+			goto free_rx_tx;
+
+		rcb->skb = dev_alloc_skb(priv->rx_buf_sz);
+		if (!rcb->skb)
+			goto free_rx_tx;
+>>>>>>> v4.9.227
 
 		rcb->in_use = false;
 
@@ -483,6 +544,7 @@ static bool vnt_alloc_bufs(struct vnt_private *priv)
 			goto free_rx_tx;
 	}
 
+<<<<<<< HEAD
 	priv->interrupt_urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (priv->interrupt_urb == NULL) {
 		dev_err(&priv->usb->dev, "Failed to alloc int urb\n");
@@ -492,6 +554,14 @@ static bool vnt_alloc_bufs(struct vnt_private *priv)
 	priv->int_buf.data_buf = kmalloc(MAX_INTERRUPT_SIZE, GFP_KERNEL);
 	if (priv->int_buf.data_buf == NULL) {
 		dev_err(&priv->usb->dev, "Failed to alloc int buf\n");
+=======
+	priv->interrupt_urb = usb_alloc_urb(0, GFP_KERNEL);
+	if (!priv->interrupt_urb)
+		goto free_rx_tx;
+
+	priv->int_buf.data_buf = kmalloc(MAX_INTERRUPT_SIZE, GFP_KERNEL);
+	if (!priv->int_buf.data_buf) {
+>>>>>>> v4.9.227
 		usb_free_urb(priv->interrupt_urb);
 		goto free_rx_tx;
 	}
@@ -512,6 +582,7 @@ static void vnt_tx_80211(struct ieee80211_hw *hw,
 {
 	struct vnt_private *priv = hw->priv;
 
+<<<<<<< HEAD
 	ieee80211_stop_queues(hw);
 
 	if (vnt_tx_packet(priv, skb)) {
@@ -519,6 +590,10 @@ static void vnt_tx_80211(struct ieee80211_hw *hw,
 
 		ieee80211_wake_queues(hw);
 	}
+=======
+	if (vnt_tx_packet(priv, skb))
+		ieee80211_free_txskb(hw, skb);
+>>>>>>> v4.9.227
 }
 
 static int vnt_start(struct ieee80211_hw *hw)
@@ -527,7 +602,11 @@ static int vnt_start(struct ieee80211_hw *hw)
 
 	priv->rx_buf_sz = MAX_TOTAL_SIZE_WITH_ALL_HEADERS;
 
+<<<<<<< HEAD
 	if (vnt_alloc_bufs(priv) == false) {
+=======
+	if (!vnt_alloc_bufs(priv)) {
+>>>>>>> v4.9.227
 		dev_dbg(&priv->usb->dev, "vnt_alloc_bufs fail...\n");
 		return -ENOMEM;
 	}
@@ -676,7 +755,11 @@ static int vnt_config(struct ieee80211_hw *hw, u32 changed)
 			(conf->flags & IEEE80211_CONF_OFFCHANNEL)) {
 		vnt_set_channel(priv, conf->chandef.chan->hw_value);
 
+<<<<<<< HEAD
 		if (conf->chandef.chan->band == IEEE80211_BAND_5GHZ)
+=======
+		if (conf->chandef.chan->band == NL80211_BAND_5GHZ)
+>>>>>>> v4.9.227
 			bb_type = BB_TYPE_11A;
 		else
 			bb_type = BB_TYPE_11G;
@@ -709,7 +792,11 @@ static void vnt_bss_info_changed(struct ieee80211_hw *hw,
 
 	priv->current_aid = conf->aid;
 
+<<<<<<< HEAD
 	if (changed & BSS_CHANGED_BSSID)
+=======
+	if (changed & BSS_CHANGED_BSSID && conf->bssid)
+>>>>>>> v4.9.227
 		vnt_mac_set_bssid_addr(priv, (u8 *)conf->bssid);
 
 
@@ -765,6 +852,32 @@ static void vnt_bss_info_changed(struct ieee80211_hw *hw,
 			vnt_mac_reg_bits_off(priv, MAC_REG_TCR, TCR_AUTOBCNTX);
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	if (changed & (BSS_CHANGED_ASSOC | BSS_CHANGED_BEACON_INFO) &&
+	    priv->op_mode != NL80211_IFTYPE_AP) {
+		if (conf->assoc && conf->beacon_rate) {
+			vnt_mac_reg_bits_on(priv, MAC_REG_TFTCTL,
+					    TFTCTL_TSFCNTREN);
+
+			vnt_mac_set_beacon_interval(priv, conf->beacon_int);
+
+			vnt_reset_next_tbtt(priv, conf->beacon_int);
+
+			vnt_adjust_tsf(priv, conf->beacon_rate->hw_value,
+				       conf->sync_tsf, priv->current_tsf);
+
+			vnt_update_next_tbtt(priv,
+					     conf->sync_tsf, conf->beacon_int);
+		} else {
+			vnt_clear_current_tsf(priv);
+
+			vnt_mac_reg_bits_off(priv, MAC_REG_TFTCTL,
+					     TFTCTL_TSFCNTREN);
+		}
+	}
+>>>>>>> v4.9.227
 }
 
 static u64 vnt_prepare_multicast(struct ieee80211_hw *hw,
@@ -793,8 +906,12 @@ static void vnt_configure(struct ieee80211_hw *hw,
 	u8 rx_mode = 0;
 	int rc;
 
+<<<<<<< HEAD
 	*total_flags &= FIF_ALLMULTI | FIF_OTHER_BSS | FIF_PROMISC_IN_BSS |
 		FIF_BCN_PRBRESP_PROMISC;
+=======
+	*total_flags &= FIF_ALLMULTI | FIF_OTHER_BSS | FIF_BCN_PRBRESP_PROMISC;
+>>>>>>> v4.9.227
 
 	rc = vnt_control_in(priv, MESSAGE_TYPE_READ, MAC_REG_RCR,
 		MESSAGE_REQUEST_MACREG, sizeof(u8), &rx_mode);
@@ -804,6 +921,7 @@ static void vnt_configure(struct ieee80211_hw *hw,
 
 	dev_dbg(&priv->usb->dev, "rx mode in = %x\n", rx_mode);
 
+<<<<<<< HEAD
 	if (changed_flags & FIF_PROMISC_IN_BSS) {
 		/* unconditionally log net taps */
 		if (*total_flags & FIF_PROMISC_IN_BSS)
@@ -812,6 +930,8 @@ static void vnt_configure(struct ieee80211_hw *hw,
 			rx_mode &= ~RCR_UNICAST;
 	}
 
+=======
+>>>>>>> v4.9.227
 	if (changed_flags & FIF_ALLMULTI) {
 		if (*total_flags & FIF_ALLMULTI) {
 			if (priv->mc_list_count > 2)
@@ -859,7 +979,13 @@ static int vnt_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void vnt_sw_scan_start(struct ieee80211_hw *hw)
+=======
+static void vnt_sw_scan_start(struct ieee80211_hw *hw,
+			      struct ieee80211_vif *vif,
+			      const u8 *addr)
+>>>>>>> v4.9.227
 {
 	struct vnt_private *priv = hw->priv;
 
@@ -868,7 +994,12 @@ static void vnt_sw_scan_start(struct ieee80211_hw *hw)
 	vnt_update_pre_ed_threshold(priv, true);
 }
 
+<<<<<<< HEAD
 static void vnt_sw_scan_complete(struct ieee80211_hw *hw)
+=======
+static void vnt_sw_scan_complete(struct ieee80211_hw *hw,
+				 struct ieee80211_vif *vif)
+>>>>>>> v4.9.227
 {
 	struct vnt_private *priv = hw->priv;
 
@@ -968,12 +1099,20 @@ vt6656_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	hw = ieee80211_alloc_hw(sizeof(struct vnt_private), &vnt_mac_ops);
 	if (!hw) {
 		dev_err(&udev->dev, "could not register ieee80211_hw\n");
+<<<<<<< HEAD
+=======
+		rc = -ENOMEM;
+>>>>>>> v4.9.227
 		goto err_nomem;
 	}
 
 	priv = hw->priv;
 	priv->hw = hw;
 	priv->usb = udev;
+<<<<<<< HEAD
+=======
+	priv->intf = intf;
+>>>>>>> v4.9.227
 
 	vnt_set_options(priv);
 
@@ -991,10 +1130,19 @@ vt6656_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION) |
 		BIT(NL80211_IFTYPE_ADHOC) | BIT(NL80211_IFTYPE_AP);
 
+<<<<<<< HEAD
 	priv->hw->flags = IEEE80211_HW_RX_INCLUDES_FCS |
 		IEEE80211_HW_REPORTS_TX_ACK_STATUS |
 		IEEE80211_HW_SIGNAL_DBM |
 		IEEE80211_HW_TIMING_BEACON_ONLY;
+=======
+	ieee80211_hw_set(priv->hw, TIMING_BEACON_ONLY);
+	ieee80211_hw_set(priv->hw, SIGNAL_DBM);
+	ieee80211_hw_set(priv->hw, RX_INCLUDES_FCS);
+	ieee80211_hw_set(priv->hw, REPORTS_TX_ACK_STATUS);
+	ieee80211_hw_set(priv->hw, SUPPORTS_PS);
+	ieee80211_hw_set(priv->hw, PS_NULLFUNC_STACK);
+>>>>>>> v4.9.227
 
 	priv->hw->max_signal = 100;
 

@@ -65,7 +65,10 @@ typedef struct {
 
 struct thread_info {
 	struct task_struct	*task; /* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain; /* execution domain */
+=======
+>>>>>>> v4.9.227
 	unsigned long		flags; /* low level flags */
 	unsigned long		status; /* thread-synchronous flags */
 	__u32			cpu; /* current CPU */
@@ -81,7 +84,10 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> v4.9.227
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
@@ -150,6 +156,7 @@ static inline struct thread_info *current_thread_info(void)
  */
 /* FPU was used by this task this quantum (SMP) */
 #define TS_USEDFPU		0x0001
+<<<<<<< HEAD
 #define TS_RESTORE_SIGMASK	0x0002
 
 #ifndef __ASSEMBLY__
@@ -177,6 +184,8 @@ static inline bool test_and_clear_restore_sigmask(void)
 	return true;
 }
 #endif
+=======
+>>>>>>> v4.9.227
 
 #endif /* __KERNEL__ */
 #endif /* _ASM_MICROBLAZE_THREAD_INFO_H */

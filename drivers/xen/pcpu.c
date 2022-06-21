@@ -78,7 +78,11 @@ static int xen_pcpu_down(uint32_t cpu_id)
 		.u.cpu_ol.cpuid		= cpu_id,
 	};
 
+<<<<<<< HEAD
 	return HYPERVISOR_dom0_op(&op);
+=======
+	return HYPERVISOR_platform_op(&op);
+>>>>>>> v4.9.227
 }
 
 static int xen_pcpu_up(uint32_t cpu_id)
@@ -89,7 +93,11 @@ static int xen_pcpu_up(uint32_t cpu_id)
 		.u.cpu_ol.cpuid		= cpu_id,
 	};
 
+<<<<<<< HEAD
 	return HYPERVISOR_dom0_op(&op);
+=======
+	return HYPERVISOR_platform_op(&op);
+>>>>>>> v4.9.227
 }
 
 static ssize_t show_online(struct device *dev,
@@ -132,6 +140,36 @@ static ssize_t __ref store_online(struct device *dev,
 }
 static DEVICE_ATTR(online, S_IRUGO | S_IWUSR, show_online, store_online);
 
+<<<<<<< HEAD
+=======
+static struct attribute *pcpu_dev_attrs[] = {
+	&dev_attr_online.attr,
+	NULL
+};
+
+static umode_t pcpu_dev_is_visible(struct kobject *kobj,
+				   struct attribute *attr, int idx)
+{
+	struct device *dev = kobj_to_dev(kobj);
+	/*
+	 * Xen never offline cpu0 due to several restrictions
+	 * and assumptions. This basically doesn't add a sys control
+	 * to user, one cannot attempt to offline BSP.
+	 */
+	return dev->id ? attr->mode : 0;
+}
+
+static const struct attribute_group pcpu_dev_group = {
+	.attrs = pcpu_dev_attrs,
+	.is_visible = pcpu_dev_is_visible,
+};
+
+static const struct attribute_group *pcpu_dev_groups[] = {
+	&pcpu_dev_group,
+	NULL
+};
+
+>>>>>>> v4.9.227
 static bool xen_pcpu_online(uint32_t flags)
 {
 	return !!(flags & XEN_PCPU_FLAGS_ONLINE);
@@ -181,9 +219,12 @@ static void unregister_and_remove_pcpu(struct pcpu *pcpu)
 		return;
 
 	dev = &pcpu->dev;
+<<<<<<< HEAD
 	if (dev->id)
 		device_remove_file(dev, &dev_attr_online);
 
+=======
+>>>>>>> v4.9.227
 	/* pcpu remove would be implicitly done */
 	device_unregister(dev);
 }
@@ -200,6 +241,10 @@ static int register_pcpu(struct pcpu *pcpu)
 	dev->bus = &xen_pcpu_subsys;
 	dev->id = pcpu->cpu_id;
 	dev->release = pcpu_release;
+<<<<<<< HEAD
+=======
+	dev->groups = pcpu_dev_groups;
+>>>>>>> v4.9.227
 
 	err = device_register(dev);
 	if (err) {
@@ -207,6 +252,7 @@ static int register_pcpu(struct pcpu *pcpu)
 		return err;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Xen never offline cpu0 due to several restrictions
 	 * and assumptions. This basically doesn't add a sys control
@@ -220,6 +266,8 @@ static int register_pcpu(struct pcpu *pcpu)
 		}
 	}
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -265,7 +313,11 @@ static int sync_pcpu(uint32_t cpu, uint32_t *max_cpu)
 		.u.pcpu_info.xen_cpuid = cpu,
 	};
 
+<<<<<<< HEAD
 	ret = HYPERVISOR_dom0_op(&op);
+=======
+	ret = HYPERVISOR_platform_op(&op);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -352,7 +404,11 @@ int xen_pcpu_id(uint32_t acpi_id)
 	op.cmd = XENPF_get_cpuinfo;
 	while (cpu_id <= max_id) {
 		op.u.pcpu_info.xen_cpuid = cpu_id;
+<<<<<<< HEAD
 		if (HYPERVISOR_dom0_op(&op)) {
+=======
+		if (HYPERVISOR_platform_op(&op)) {
+>>>>>>> v4.9.227
 			cpu_id++;
 			continue;
 		}

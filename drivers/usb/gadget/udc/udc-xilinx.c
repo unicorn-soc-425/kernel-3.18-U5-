@@ -973,10 +973,15 @@ static struct usb_request *xudc_ep_alloc_request(struct usb_ep *_ep,
 
 	udc = ep->udc;
 	req = kzalloc(sizeof(*req), gfp_flags);
+<<<<<<< HEAD
 	if (!req) {
 		dev_err(udc->dev, "%s:not enough memory", __func__);
 		return NULL;
 	}
+=======
+	if (!req)
+		return NULL;
+>>>>>>> v4.9.227
 
 	req->ep = ep;
 	INIT_LIST_HEAD(&req->queue);
@@ -1317,12 +1322,29 @@ static void xudc_eps_init(struct xusb_udc *udc)
 			snprintf(ep->name, EPNAME_SIZE, "ep%d", ep_number);
 			ep->ep_usb.name = ep->name;
 			ep->ep_usb.ops = &xusb_ep_ops;
+<<<<<<< HEAD
+=======
+
+			ep->ep_usb.caps.type_iso = true;
+			ep->ep_usb.caps.type_bulk = true;
+			ep->ep_usb.caps.type_int = true;
+>>>>>>> v4.9.227
 		} else {
 			ep->ep_usb.name = ep0name;
 			usb_ep_set_maxpacket_limit(&ep->ep_usb, EP0_MAX_PACKET);
 			ep->ep_usb.ops = &xusb_ep0_ops;
+<<<<<<< HEAD
 		}
 
+=======
+
+			ep->ep_usb.caps.type_control = true;
+		}
+
+		ep->ep_usb.caps.dir_in = true;
+		ep->ep_usb.caps.dir_out = true;
+
+>>>>>>> v4.9.227
 		ep->udc = udc;
 		ep->epnumber = ep_number;
 		ep->desc = NULL;
@@ -1403,8 +1425,12 @@ err:
  *
  * Return: zero always
  */
+<<<<<<< HEAD
 static int xudc_stop(struct usb_gadget *gadget,
 		     struct usb_gadget_driver *driver)
+=======
+static int xudc_stop(struct usb_gadget *gadget)
+>>>>>>> v4.9.227
 {
 	struct xusb_udc *udc = to_udc(gadget);
 	unsigned long flags;
@@ -2047,7 +2073,10 @@ static int xudc_probe(struct platform_device *pdev)
 	struct device_node *np = pdev->dev.of_node;
 	struct resource *res;
 	struct xusb_udc *udc;
+<<<<<<< HEAD
 	struct xusb_ep *ep0;
+=======
+>>>>>>> v4.9.227
 	int irq;
 	int ret;
 	u32 ier;
@@ -2072,8 +2101,13 @@ static int xudc_probe(struct platform_device *pdev)
 	/* Map the registers */
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	udc->addr = devm_ioremap_resource(&pdev->dev, res);
+<<<<<<< HEAD
 	if (!udc->addr)
 		return -ENOMEM;
+=======
+	if (IS_ERR(udc->addr))
+		return PTR_ERR(udc->addr);
+>>>>>>> v4.9.227
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
@@ -2111,8 +2145,11 @@ static int xudc_probe(struct platform_device *pdev)
 
 	xudc_eps_init(udc);
 
+<<<<<<< HEAD
 	ep0 = &udc->ep[0];
 
+=======
+>>>>>>> v4.9.227
 	/* Set device address to 0.*/
 	udc->write_fn(udc->addr, XUSB_ADDRESS_OFFSET, 0);
 
@@ -2132,8 +2169,13 @@ static int xudc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, udc);
 
+<<<<<<< HEAD
 	dev_vdbg(&pdev->dev, "%s at 0x%08X mapped to 0x%08X %s\n",
 		 driver_name, (u32)res->start, (u32 __force)udc->addr,
+=======
+	dev_vdbg(&pdev->dev, "%s at 0x%08X mapped to %p %s\n",
+		 driver_name, (u32)res->start, udc->addr,
+>>>>>>> v4.9.227
 		 udc->dma_enabled ? "with DMA" : "without DMA");
 
 	return 0;

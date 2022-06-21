@@ -853,6 +853,7 @@ rqbiocnt(struct request *r)
 	return n;
 }
 
+<<<<<<< HEAD
 /* This can be removed if we are certain that no users of the block
  * layer will ever use zero-count pages in bios.  Otherwise we have to
  * protect against the put_page sometimes done by the network layer.
@@ -892,6 +893,8 @@ bio_pagedec(struct bio *bio)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static void
 bufinit(struct buf *buf, struct request *rq, struct bio *bio)
 {
@@ -899,7 +902,10 @@ bufinit(struct buf *buf, struct request *rq, struct bio *bio)
 	buf->rq = rq;
 	buf->bio = bio;
 	buf->iter = bio->bi_iter;
+<<<<<<< HEAD
 	bio_pageinc(bio);
+=======
+>>>>>>> v4.9.227
 }
 
 static struct buf *
@@ -964,9 +970,15 @@ aoecmd_sleepwork(struct work_struct *work)
 		ssize = get_capacity(d->gd);
 		bd = bdget_disk(d->gd, 0);
 		if (bd) {
+<<<<<<< HEAD
 			mutex_lock(&bd->bd_inode->i_mutex);
 			i_size_write(bd->bd_inode, (loff_t)ssize<<9);
 			mutex_unlock(&bd->bd_inode->i_mutex);
+=======
+			inode_lock(bd->bd_inode);
+			i_size_write(bd->bd_inode, (loff_t)ssize<<9);
+			inode_unlock(bd->bd_inode);
+>>>>>>> v4.9.227
 			bdput(bd);
 		}
 		spin_lock_irq(&d->lock);
@@ -1110,7 +1122,11 @@ aoe_end_request(struct aoedev *d, struct request *rq, int fastfail)
 		d->ip.rq = NULL;
 	do {
 		bio = rq->bio;
+<<<<<<< HEAD
 		bok = !fastfail && test_bit(BIO_UPTODATE, &bio->bi_flags);
+=======
+		bok = !fastfail && !bio->bi_error;
+>>>>>>> v4.9.227
 	} while (__blk_end_request(rq, bok ? 0 : -EIO, bio->bi_iter.bi_size));
 
 	/* cf. http://lkml.org/lkml/2006/10/31/28 */
@@ -1127,7 +1143,10 @@ aoe_end_buf(struct aoedev *d, struct buf *buf)
 	if (buf == d->ip.buf)
 		d->ip.buf = NULL;
 	rq = buf->rq;
+<<<<<<< HEAD
 	bio_pagedec(buf->bio);
+=======
+>>>>>>> v4.9.227
 	mempool_free(buf, d->bufpool);
 	n = (unsigned long) rq->special;
 	rq->special = (void *) --n;
@@ -1172,7 +1191,11 @@ ktiocomplete(struct frame *f)
 			ahout->cmdstat, ahin->cmdstat,
 			d->aoemajor, d->aoeminor);
 noskb:		if (buf)
+<<<<<<< HEAD
 			clear_bit(BIO_UPTODATE, &buf->bio->bi_flags);
+=======
+			buf->bio->bi_error = -EIO;
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -1185,7 +1208,11 @@ noskb:		if (buf)
 				"aoe: runt data size in read from",
 				(long) d->aoemajor, d->aoeminor,
 			       skb->len, n);
+<<<<<<< HEAD
 			clear_bit(BIO_UPTODATE, &buf->bio->bi_flags);
+=======
+			buf->bio->bi_error = -EIO;
+>>>>>>> v4.9.227
 			break;
 		}
 		if (n > f->iter.bi_size) {
@@ -1193,7 +1220,11 @@ noskb:		if (buf)
 				"aoe: too-large data size in read from",
 				(long) d->aoemajor, d->aoeminor,
 				n, f->iter.bi_size);
+<<<<<<< HEAD
 			clear_bit(BIO_UPTODATE, &buf->bio->bi_flags);
+=======
+			buf->bio->bi_error = -EIO;
+>>>>>>> v4.9.227
 			break;
 		}
 		bvcpy(skb, f->buf->bio, f->iter, n);
@@ -1695,7 +1726,11 @@ aoe_failbuf(struct aoedev *d, struct buf *buf)
 	if (buf == NULL)
 		return;
 	buf->iter.bi_size = 0;
+<<<<<<< HEAD
 	clear_bit(BIO_UPTODATE, &buf->bio->bi_flags);
+=======
+	buf->bio->bi_error = -EIO;
+>>>>>>> v4.9.227
 	if (buf->nframesout == 0)
 		aoe_end_buf(d, buf);
 }
@@ -1750,7 +1785,11 @@ aoecmd_init(void)
 	int ret;
 
 	/* get_zeroed_page returns page with ref count 1 */
+<<<<<<< HEAD
 	p = (void *) get_zeroed_page(GFP_KERNEL | __GFP_REPEAT);
+=======
+	p = (void *) get_zeroed_page(GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!p)
 		return -ENOMEM;
 	empty_page = virt_to_page(p);

@@ -22,7 +22,11 @@
 
 #include "fuse.h"
 
+<<<<<<< HEAD
 #define CORE_PROCESS_CORNERS	1
+=======
+#define SOC_PROCESS_CORNERS	1
+>>>>>>> v4.9.227
 #define CPU_PROCESS_CORNERS	6
 
 #define FUSE_SPEEDO_CALIB_0	0x14
@@ -54,7 +58,11 @@ enum {
 	THRESHOLD_INDEX_COUNT,
 };
 
+<<<<<<< HEAD
 static const u32 __initconst core_process_speedos[][CORE_PROCESS_CORNERS] = {
+=======
+static const u32 __initconst soc_process_speedos[][SOC_PROCESS_CORNERS] = {
+>>>>>>> v4.9.227
 	{180},
 	{170},
 	{195},
@@ -93,11 +101,16 @@ static void __init fuse_speedo_calib(u32 *speedo_g, u32 *speedo_lp)
 	int bit_minus1;
 	int bit_minus2;
 
+<<<<<<< HEAD
 	reg = tegra30_fuse_readl(FUSE_SPEEDO_CALIB_0);
+=======
+	reg = tegra_fuse_read_early(FUSE_SPEEDO_CALIB_0);
+>>>>>>> v4.9.227
 
 	*speedo_lp = (reg & 0xFFFF) * 4;
 	*speedo_g = ((reg >> 16) & 0xFFFF) * 4;
 
+<<<<<<< HEAD
 	ate_ver = tegra30_fuse_readl(FUSE_TEST_PROG_VER);
 	pr_debug("Tegra ATE prog ver %d.%d\n", ate_ver/10, ate_ver%10);
 
@@ -112,6 +125,22 @@ static void __init fuse_speedo_calib(u32 *speedo_g, u32 *speedo_lp)
 		bit_minus1 |= tegra30_spare_fuse(G_SPEEDO_BIT_MINUS1_R);
 		bit_minus2 = tegra30_spare_fuse(G_SPEEDO_BIT_MINUS2);
 		bit_minus2 |= tegra30_spare_fuse(G_SPEEDO_BIT_MINUS2_R);
+=======
+	ate_ver = tegra_fuse_read_early(FUSE_TEST_PROG_VER);
+	pr_debug("Tegra ATE prog ver %d.%d\n", ate_ver/10, ate_ver%10);
+
+	if (ate_ver >= 26) {
+		bit_minus1 = tegra_fuse_read_spare(LP_SPEEDO_BIT_MINUS1);
+		bit_minus1 |= tegra_fuse_read_spare(LP_SPEEDO_BIT_MINUS1_R);
+		bit_minus2 = tegra_fuse_read_spare(LP_SPEEDO_BIT_MINUS2);
+		bit_minus2 |= tegra_fuse_read_spare(LP_SPEEDO_BIT_MINUS2_R);
+		*speedo_lp |= (bit_minus1 << 1) | bit_minus2;
+
+		bit_minus1 = tegra_fuse_read_spare(G_SPEEDO_BIT_MINUS1);
+		bit_minus1 |= tegra_fuse_read_spare(G_SPEEDO_BIT_MINUS1_R);
+		bit_minus2 = tegra_fuse_read_spare(G_SPEEDO_BIT_MINUS2);
+		bit_minus2 |= tegra_fuse_read_spare(G_SPEEDO_BIT_MINUS2_R);
+>>>>>>> v4.9.227
 		*speedo_g |= (bit_minus1 << 1) | bit_minus2;
 	} else {
 		*speedo_lp |= 0x3;
@@ -121,7 +150,11 @@ static void __init fuse_speedo_calib(u32 *speedo_g, u32 *speedo_lp)
 
 static void __init rev_sku_to_speedo_ids(struct tegra_sku_info *sku_info)
 {
+<<<<<<< HEAD
 	int package_id = tegra30_fuse_readl(FUSE_PACKAGE_INFO) & 0x0F;
+=======
+	int package_id = tegra_fuse_read_early(FUSE_PACKAGE_INFO) & 0x0F;
+>>>>>>> v4.9.227
 
 	switch (sku_info->revision) {
 	case TEGRA_REVISION_A01:
@@ -246,19 +279,33 @@ static void __init rev_sku_to_speedo_ids(struct tegra_sku_info *sku_info)
 void __init tegra30_init_speedo_data(struct tegra_sku_info *sku_info)
 {
 	u32 cpu_speedo_val;
+<<<<<<< HEAD
 	u32 core_speedo_val;
+=======
+	u32 soc_speedo_val;
+>>>>>>> v4.9.227
 	int i;
 
 	BUILD_BUG_ON(ARRAY_SIZE(cpu_process_speedos) !=
 			THRESHOLD_INDEX_COUNT);
+<<<<<<< HEAD
 	BUILD_BUG_ON(ARRAY_SIZE(core_process_speedos) !=
+=======
+	BUILD_BUG_ON(ARRAY_SIZE(soc_process_speedos) !=
+>>>>>>> v4.9.227
 			THRESHOLD_INDEX_COUNT);
 
 
 	rev_sku_to_speedo_ids(sku_info);
+<<<<<<< HEAD
 	fuse_speedo_calib(&cpu_speedo_val, &core_speedo_val);
 	pr_debug("Tegra CPU speedo value %u\n", cpu_speedo_val);
 	pr_debug("Tegra Core speedo value %u\n", core_speedo_val);
+=======
+	fuse_speedo_calib(&cpu_speedo_val, &soc_speedo_val);
+	pr_debug("Tegra CPU speedo value %u\n", cpu_speedo_val);
+	pr_debug("Tegra Core speedo value %u\n", soc_speedo_val);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < CPU_PROCESS_CORNERS; i++) {
 		if (cpu_speedo_val < cpu_process_speedos[threshold_index][i])
@@ -273,6 +320,7 @@ void __init tegra30_init_speedo_data(struct tegra_sku_info *sku_info)
 		sku_info->cpu_speedo_id = 1;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < CORE_PROCESS_CORNERS; i++) {
 		if (core_speedo_val < core_process_speedos[threshold_index][i])
 			break;
@@ -283,6 +331,18 @@ void __init tegra30_init_speedo_data(struct tegra_sku_info *sku_info)
 		pr_warn("Tegra CORE speedo value %3d out of range",
 				 core_speedo_val);
 		sku_info->core_process_id = 0;
+=======
+	for (i = 0; i < SOC_PROCESS_CORNERS; i++) {
+		if (soc_speedo_val < soc_process_speedos[threshold_index][i])
+			break;
+	}
+	sku_info->soc_process_id = i - 1;
+
+	if (sku_info->soc_process_id == -1) {
+		pr_warn("Tegra SoC speedo value %3d out of range",
+			soc_speedo_val);
+		sku_info->soc_process_id = 0;
+>>>>>>> v4.9.227
 		sku_info->soc_speedo_id = 1;
 	}
 }

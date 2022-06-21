@@ -9,11 +9,19 @@
  */
 
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/device.h>
 #include <linux/errno.h>
 #include <linux/list.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/string.h>
 
@@ -23,6 +31,7 @@
 static DEFINE_MUTEX(clk_lock);
 static LIST_HEAD(clk_list);
 
+<<<<<<< HEAD
 static struct v4l2_clk *v4l2_clk_find(const char *dev_id, const char *id)
 {
 	struct v4l2_clk *clk;
@@ -34,6 +43,15 @@ static struct v4l2_clk *v4l2_clk_find(const char *dev_id, const char *id)
 		if (!id || !clk->id || !strcmp(clk->id, id))
 			return clk;
 	}
+=======
+static struct v4l2_clk *v4l2_clk_find(const char *dev_id)
+{
+	struct v4l2_clk *clk;
+
+	list_for_each_entry(clk, &clk_list, list)
+		if (!strcmp(dev_id, clk->dev_id))
+			return clk;
+>>>>>>> v4.9.227
 
 	return ERR_PTR(-ENODEV);
 }
@@ -41,9 +59,38 @@ static struct v4l2_clk *v4l2_clk_find(const char *dev_id, const char *id)
 struct v4l2_clk *v4l2_clk_get(struct device *dev, const char *id)
 {
 	struct v4l2_clk *clk;
+<<<<<<< HEAD
 
 	mutex_lock(&clk_lock);
 	clk = v4l2_clk_find(dev_name(dev), id);
+=======
+	struct clk *ccf_clk = clk_get(dev, id);
+	char clk_name[V4L2_CLK_NAME_SIZE];
+
+	if (PTR_ERR(ccf_clk) == -EPROBE_DEFER)
+		return ERR_PTR(-EPROBE_DEFER);
+
+	if (!IS_ERR_OR_NULL(ccf_clk)) {
+		clk = kzalloc(sizeof(*clk), GFP_KERNEL);
+		if (!clk) {
+			clk_put(ccf_clk);
+			return ERR_PTR(-ENOMEM);
+		}
+		clk->clk = ccf_clk;
+
+		return clk;
+	}
+
+	mutex_lock(&clk_lock);
+	clk = v4l2_clk_find(dev_name(dev));
+
+	/* if dev_name is not found, try use the OF name to find again  */
+	if (PTR_ERR(clk) == -ENODEV && dev->of_node) {
+		v4l2_clk_name_of(clk_name, sizeof(clk_name),
+				 of_node_full_name(dev->of_node));
+		clk = v4l2_clk_find(clk_name);
+	}
+>>>>>>> v4.9.227
 
 	if (!IS_ERR(clk))
 		atomic_inc(&clk->use_count);
@@ -60,6 +107,15 @@ void v4l2_clk_put(struct v4l2_clk *clk)
 	if (IS_ERR(clk))
 		return;
 
+<<<<<<< HEAD
+=======
+	if (clk->clk) {
+		clk_put(clk->clk);
+		kfree(clk);
+		return;
+	}
+
+>>>>>>> v4.9.227
 	mutex_lock(&clk_lock);
 
 	list_for_each_entry(tmp, &clk_list, list)
@@ -97,8 +153,17 @@ static void v4l2_clk_unlock_driver(struct v4l2_clk *clk)
 
 int v4l2_clk_enable(struct v4l2_clk *clk)
 {
+<<<<<<< HEAD
 	int ret = v4l2_clk_lock_driver(clk);
 
+=======
+	int ret;
+
+	if (clk->clk)
+		return clk_prepare_enable(clk->clk);
+
+	ret = v4l2_clk_lock_driver(clk);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
@@ -124,11 +189,22 @@ void v4l2_clk_disable(struct v4l2_clk *clk)
 {
 	int enable;
 
+<<<<<<< HEAD
 	mutex_lock(&clk->lock);
 
 	enable = --clk->enable;
 	if (WARN(enable < 0, "Unbalanced %s() on %s:%s!\n", __func__,
 		 clk->dev_id, clk->id))
+=======
+	if (clk->clk)
+		return clk_disable_unprepare(clk->clk);
+
+	mutex_lock(&clk->lock);
+
+	enable = --clk->enable;
+	if (WARN(enable < 0, "Unbalanced %s() on %s!\n", __func__,
+		 clk->dev_id))
+>>>>>>> v4.9.227
 		clk->enable++;
 	else if (!enable && clk->ops->disable)
 		clk->ops->disable(clk);
@@ -141,8 +217,17 @@ EXPORT_SYMBOL(v4l2_clk_disable);
 
 unsigned long v4l2_clk_get_rate(struct v4l2_clk *clk)
 {
+<<<<<<< HEAD
 	int ret = v4l2_clk_lock_driver(clk);
 
+=======
+	int ret;
+
+	if (clk->clk)
+		return clk_get_rate(clk->clk);
+
+	ret = v4l2_clk_lock_driver(clk);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
@@ -161,7 +246,20 @@ EXPORT_SYMBOL(v4l2_clk_get_rate);
 
 int v4l2_clk_set_rate(struct v4l2_clk *clk, unsigned long rate)
 {
+<<<<<<< HEAD
 	int ret = v4l2_clk_lock_driver(clk);
+=======
+	int ret;
+
+	if (clk->clk) {
+		long r = clk_round_rate(clk->clk, rate);
+		if (r < 0)
+			return r;
+		return clk_set_rate(clk->clk, r);
+	}
+
+	ret = v4l2_clk_lock_driver(clk);
+>>>>>>> v4.9.227
 
 	if (ret < 0)
 		return ret;
@@ -181,7 +279,11 @@ EXPORT_SYMBOL(v4l2_clk_set_rate);
 
 struct v4l2_clk *v4l2_clk_register(const struct v4l2_clk_ops *ops,
 				   const char *dev_id,
+<<<<<<< HEAD
 				   const char *id, void *priv)
+=======
+				   void *priv)
+>>>>>>> v4.9.227
 {
 	struct v4l2_clk *clk;
 	int ret;
@@ -193,9 +295,14 @@ struct v4l2_clk *v4l2_clk_register(const struct v4l2_clk_ops *ops,
 	if (!clk)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
 	clk->id = kstrdup(id, GFP_KERNEL);
 	clk->dev_id = kstrdup(dev_id, GFP_KERNEL);
 	if ((id && !clk->id) || !clk->dev_id) {
+=======
+	clk->dev_id = kstrdup(dev_id, GFP_KERNEL);
+	if (!clk->dev_id) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto ealloc;
 	}
@@ -205,7 +312,11 @@ struct v4l2_clk *v4l2_clk_register(const struct v4l2_clk_ops *ops,
 	mutex_init(&clk->lock);
 
 	mutex_lock(&clk_lock);
+<<<<<<< HEAD
 	if (!IS_ERR(v4l2_clk_find(dev_id, id))) {
+=======
+	if (!IS_ERR(v4l2_clk_find(dev_id))) {
+>>>>>>> v4.9.227
 		mutex_unlock(&clk_lock);
 		ret = -EEXIST;
 		goto eexist;
@@ -217,7 +328,10 @@ struct v4l2_clk *v4l2_clk_register(const struct v4l2_clk_ops *ops,
 
 eexist:
 ealloc:
+<<<<<<< HEAD
 	kfree(clk->id);
+=======
+>>>>>>> v4.9.227
 	kfree(clk->dev_id);
 	kfree(clk);
 	return ERR_PTR(ret);
@@ -227,15 +341,23 @@ EXPORT_SYMBOL(v4l2_clk_register);
 void v4l2_clk_unregister(struct v4l2_clk *clk)
 {
 	if (WARN(atomic_read(&clk->use_count),
+<<<<<<< HEAD
 		 "%s(): Refusing to unregister ref-counted %s:%s clock!\n",
 		 __func__, clk->dev_id, clk->id))
+=======
+		 "%s(): Refusing to unregister ref-counted %s clock!\n",
+		 __func__, clk->dev_id))
+>>>>>>> v4.9.227
 		return;
 
 	mutex_lock(&clk_lock);
 	list_del(&clk->list);
 	mutex_unlock(&clk_lock);
 
+<<<<<<< HEAD
 	kfree(clk->id);
+=======
+>>>>>>> v4.9.227
 	kfree(clk->dev_id);
 	kfree(clk);
 }
@@ -253,7 +375,11 @@ static unsigned long fixed_get_rate(struct v4l2_clk *clk)
 }
 
 struct v4l2_clk *__v4l2_clk_register_fixed(const char *dev_id,
+<<<<<<< HEAD
 		const char *id, unsigned long rate, struct module *owner)
+=======
+				unsigned long rate, struct module *owner)
+>>>>>>> v4.9.227
 {
 	struct v4l2_clk *clk;
 	struct v4l2_clk_fixed *priv = kzalloc(sizeof(*priv), GFP_KERNEL);
@@ -265,7 +391,11 @@ struct v4l2_clk *__v4l2_clk_register_fixed(const char *dev_id,
 	priv->ops.get_rate = fixed_get_rate;
 	priv->ops.owner = owner;
 
+<<<<<<< HEAD
 	clk = v4l2_clk_register(&priv->ops, dev_id, id, priv);
+=======
+	clk = v4l2_clk_register(&priv->ops, dev_id, priv);
+>>>>>>> v4.9.227
 	if (IS_ERR(clk))
 		kfree(priv);
 

@@ -38,6 +38,7 @@
 	mov %rsi, %cr0;			\
 	mov (%rsp), %rsp
 
+<<<<<<< HEAD
 	/* stolen from gcc */
 	.macro FLUSH_TLB_ALL
 	movq %r15, efi_scratch(%rip)
@@ -77,12 +78,20 @@ ENTRY(efi_call)
 	SAVE_XMM
 	mov (%rsp), %rax
 	mov 8(%rax), %rax
+=======
+ENTRY(efi_call)
+	pushq %rbp
+	movq %rsp, %rbp
+	SAVE_XMM
+	mov 16(%rbp), %rax
+>>>>>>> v4.9.227
 	subq $48, %rsp
 	mov %r9, 32(%rsp)
 	mov %rax, 40(%rsp)
 	mov %r8, %r9
 	mov %rcx, %r8
 	mov %rsi, %rcx
+<<<<<<< HEAD
 	SWITCH_PGT
 	call *%rdi
 	RESTORE_PGT
@@ -96,3 +105,11 @@ ENTRY(efi_scratch)
 	.fill 3,8,0
 	.byte 0
 	.quad 0
+=======
+	call *%rdi
+	addq $48, %rsp
+	RESTORE_XMM
+	popq %rbp
+	ret
+ENDPROC(efi_call)
+>>>>>>> v4.9.227

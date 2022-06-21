@@ -1150,7 +1150,11 @@ static void mpt_work_wrapper(struct work_struct *work)
 	}
 	shost_printk(KERN_INFO, shost, MYIOC_s_FMT
 	    "Integrated RAID detects new device %d\n", ioc->name, disk);
+<<<<<<< HEAD
 	scsi_scan_target(&ioc->sh->shost_gendev, 1, disk, 0, 1);
+=======
+	scsi_scan_target(&ioc->sh->shost_gendev, 1, disk, 0, SCSI_SCAN_RESCAN);
+>>>>>>> v4.9.227
 }
 
 

@@ -22,8 +22,13 @@
 #define PAGE_MASK	(~(PAGE_SIZE-1))
 
 /* align addr on a size boundary - adjust address up/down if needed */
+<<<<<<< HEAD
 #define _ALIGN_UP(addr,size)	(((addr)+((size)-1))&(~((size)-1)))
 #define _ALIGN_DOWN(addr,size)	((addr)&(~((size)-1)))
+=======
+#define _ALIGN_UP(addr, size)	(((addr)+((size)-1))&(~((typeof(addr))(size)-1)))
+#define _ALIGN_DOWN(addr, size)	((addr)&(~((typeof(addr))(size)-1)))
+>>>>>>> v4.9.227
 
 /* align addr on a size boundary - adjust address up if needed */
 #define _ALIGN(addr,size)     _ALIGN_UP(addr,size)

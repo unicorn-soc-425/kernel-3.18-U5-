@@ -61,14 +61,22 @@
 
 #include <linux/module.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
 
+<<<<<<< HEAD
 #include "../comedidev.h"
 
 #include "comedi_fc.h"
+=======
+#include "../comedi_pci.h"
+
+>>>>>>> v4.9.227
 #include "s626.h"
 
 struct s626_buffer_dma {
@@ -78,7 +86,10 @@ struct s626_buffer_dma {
 
 struct s626_private {
 	uint8_t ai_cmd_running;		/* ai_cmd is running */
+<<<<<<< HEAD
 	int ai_sample_count;		/* number of samples to acquire */
+=======
+>>>>>>> v4.9.227
 	unsigned int ai_sample_timer;	/* time between samples in
 					 * units of the timer */
 	int ai_convert_count;		/* conversion counter */
@@ -119,7 +130,11 @@ static void s626_mc_enable(struct comedi_device *dev,
 static void s626_mc_disable(struct comedi_device *dev,
 			    unsigned int cmd, unsigned int reg)
 {
+<<<<<<< HEAD
 	writel(cmd << 16 , dev->mmio + reg);
+=======
+	writel(cmd << 16, dev->mmio + reg);
+>>>>>>> v4.9.227
 	mmiowb();
 }
 
@@ -232,9 +247,15 @@ static void s626_debi_replace(struct comedi_device *dev, unsigned int addr,
 /* **************  EEPROM ACCESS FUNCTIONS  ************** */
 
 static int s626_i2c_handshake_eoc(struct comedi_device *dev,
+<<<<<<< HEAD
 				 struct comedi_subdevice *s,
 				 struct comedi_insn *insn,
 				 unsigned long context)
+=======
+				  struct comedi_subdevice *s,
+				  struct comedi_insn *insn,
+				  unsigned long context)
+>>>>>>> v4.9.227
 {
 	bool status;
 
@@ -295,7 +316,11 @@ static uint8_t s626_i2c_read(struct comedi_device *dev, uint8_t addr)
 	 *  Byte0 = Not sent.
 	 */
 	if (s626_i2c_handshake(dev, S626_I2C_B2(S626_I2C_ATTRSTART,
+<<<<<<< HEAD
 					   (devpriv->i2c_adrs | 1)) |
+=======
+						(devpriv->i2c_adrs | 1)) |
+>>>>>>> v4.9.227
 				    S626_I2C_B1(S626_I2C_ATTRSTOP, 0) |
 				    S626_I2C_B0(S626_I2C_ATTRNOP, 0)))
 		/* Abort function and declare error if handshake failed. */
@@ -518,8 +543,13 @@ static int s626_send_dac(struct comedi_device *dev, uint32_t val)
 /*
  * Private helper function: Write setpoint to an application DAC channel.
  */
+<<<<<<< HEAD
 static int s626_set_dac(struct comedi_device *dev, uint16_t chan,
 			 int16_t dacdata)
+=======
+static int s626_set_dac(struct comedi_device *dev,
+			uint16_t chan, int16_t dacdata)
+>>>>>>> v4.9.227
 {
 	struct s626_private *devpriv = dev->private;
 	uint16_t signmask;
@@ -584,8 +614,13 @@ static int s626_set_dac(struct comedi_device *dev, uint16_t chan,
 	return s626_send_dac(dev, val);
 }
 
+<<<<<<< HEAD
 static int s626_write_trim_dac(struct comedi_device *dev, uint8_t logical_chan,
 				uint8_t dac_data)
+=======
+static int s626_write_trim_dac(struct comedi_device *dev,
+			       uint8_t logical_chan, uint8_t dac_data)
+>>>>>>> v4.9.227
 {
 	struct s626_private *devpriv = dev->private;
 	uint32_t chan;
@@ -642,7 +677,11 @@ static int s626_load_trim_dacs(struct comedi_device *dev)
 	/* Copy TrimDac setpoint values from EEPROM to TrimDacs. */
 	for (i = 0; i < ARRAY_SIZE(s626_trimchan); i++) {
 		ret = s626_write_trim_dac(dev, i,
+<<<<<<< HEAD
 				    s626_i2c_read(dev, s626_trimadrs[i]));
+=======
+					  s626_i2c_read(dev, s626_trimadrs[i]));
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 	}
@@ -700,6 +739,7 @@ static void s626_reset_cap_flags(struct comedi_device *dev,
 	s626_debi_replace(dev, S626_LP_CRB(chan), ~S626_CRBMSK_INTCTRL, set);
 }
 
+<<<<<<< HEAD
 #ifdef unused
 /*
  * Return counter setup in a format (COUNTER_SETUP) that is consistent
@@ -828,6 +868,8 @@ static uint16_t s626_get_mode(struct comedi_device *dev,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * Set the operating mode for the specified counter.  The setup
  * parameter is treated as a COUNTER_SETUP data type.  The following
@@ -841,7 +883,11 @@ static void s626_set_mode_a(struct comedi_device *dev,
 	struct s626_private *devpriv = dev->private;
 	uint16_t cra;
 	uint16_t crb;
+<<<<<<< HEAD
 	unsigned cntsrc, clkmult, clkpol;
+=======
+	unsigned int cntsrc, clkmult, clkpol;
+>>>>>>> v4.9.227
 
 	/* Initialize CRA and CRB images. */
 	/* Preload trigger is passed through. */
@@ -919,7 +965,11 @@ static void s626_set_mode_b(struct comedi_device *dev,
 	struct s626_private *devpriv = dev->private;
 	uint16_t cra;
 	uint16_t crb;
+<<<<<<< HEAD
 	unsigned cntsrc, clkmult, clkpol;
+=======
+	unsigned int cntsrc, clkmult, clkpol;
+>>>>>>> v4.9.227
 
 	/* Initialize CRA and CRB images. */
 	/* IndexSrc is passed through. */
@@ -1026,6 +1076,7 @@ static void s626_set_enable(struct comedi_device *dev,
 	s626_debi_replace(dev, S626_LP_CRB(chan), ~mask, set);
 }
 
+<<<<<<< HEAD
 #ifdef unused
 static uint16_t s626_get_enable(struct comedi_device *dev,
 				unsigned int chan)
@@ -1045,6 +1096,8 @@ static uint16_t s626_get_latch_source(struct comedi_device *dev,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * Return/set the event that will trigger transfer of the preload
  * register into the counter.  0=ThisCntr_Index, 1=ThisCntr_Overflow,
@@ -1069,6 +1122,7 @@ static void s626_set_load_trig(struct comedi_device *dev,
 	s626_debi_replace(dev, reg, ~mask, set);
 }
 
+<<<<<<< HEAD
 #ifdef unused
 static uint16_t s626_get_load_trig(struct comedi_device *dev,
 				   unsigned int chan)
@@ -1082,6 +1136,8 @@ static uint16_t s626_get_load_trig(struct comedi_device *dev,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * Return/set counter interrupt source and clear any captured
  * index/overflow events.  int_source: 0=Disabled, 1=OverflowOnly,
@@ -1141,6 +1197,7 @@ static void s626_set_int_src(struct comedi_device *dev,
 	}
 }
 
+<<<<<<< HEAD
 #ifdef unused
 static uint16_t s626_get_int_src(struct comedi_device *dev,
 				 unsigned int chan)
@@ -1261,6 +1318,8 @@ static uint16_t s626_get_index_src(struct comedi_device *dev,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * Generate an index pulse.
  */
@@ -1480,7 +1539,10 @@ static bool s626_handle_eos_interrupt(struct comedi_device *dev)
 	 * from the final ADC of the previous poll list scan.
 	 */
 	uint32_t *readaddr = (uint32_t *)devpriv->ana_buf.logical_base + 1;
+<<<<<<< HEAD
 	bool finished = false;
+=======
+>>>>>>> v4.9.227
 	int i;
 
 	/* get the data and hand it over to comedi */
@@ -1494,6 +1556,7 @@ static bool s626_handle_eos_interrupt(struct comedi_device *dev)
 		tempdata = s626_ai_reg_to_uint(*readaddr);
 		readaddr++;
 
+<<<<<<< HEAD
 		/* put data into read buffer */
 		cfc_write_to_buffer(s, tempdata);
 	}
@@ -1516,14 +1579,30 @@ static bool s626_handle_eos_interrupt(struct comedi_device *dev)
 			finished = true;
 		}
 	}
+=======
+		comedi_buf_write_samples(s, &tempdata, 1);
+	}
+
+	if (cmd->stop_src == TRIG_COUNT && async->scans_done >= cmd->stop_arg)
+		async->events |= COMEDI_CB_EOA;
+
+	if (async->events & COMEDI_CB_CANCEL_MASK)
+		devpriv->ai_cmd_running = 0;
+>>>>>>> v4.9.227
 
 	if (devpriv->ai_cmd_running && cmd->scan_begin_src == TRIG_EXT)
 		s626_dio_set_irq(dev, cmd->scan_begin_arg);
 
+<<<<<<< HEAD
 	/* tell comedi that data is there */
 	comedi_event(dev, s);
 
 	return finished;
+=======
+	comedi_handle_events(dev, s);
+
+	return !devpriv->ai_cmd_running;
+>>>>>>> v4.9.227
 }
 
 static irqreturn_t s626_irq_handler(int irq, void *d)
@@ -1593,7 +1672,11 @@ static void s626_reset_adc(struct comedi_device *dev, uint8_t *ppl)
 	       dev->mmio + S626_P_RPSADDR1);
 
 	/* Construct RPS program in rps_buf DMA buffer */
+<<<<<<< HEAD
 	if (cmd != NULL && cmd->scan_begin_src != TRIG_FOLLOW) {
+=======
+	if (cmd->scan_begin_src != TRIG_FOLLOW) {
+>>>>>>> v4.9.227
 		/* Wait for Start trigger. */
 		*rps++ = S626_RPS_PAUSE | S626_RPS_SIGADC;
 		*rps++ = S626_RPS_CLRSIGNAL | S626_RPS_SIGADC;
@@ -1682,7 +1765,11 @@ static void s626_reset_adc(struct comedi_device *dev, uint8_t *ppl)
 			*rps++ = jmp_adrs;
 		}
 
+<<<<<<< HEAD
 		if (cmd != NULL && cmd->convert_src != TRIG_NOW) {
+=======
+		if (cmd->convert_src != TRIG_NOW) {
+>>>>>>> v4.9.227
 			/* Wait for Start trigger. */
 			*rps++ = S626_RPS_PAUSE | S626_RPS_SIGADC;
 			*rps++ = S626_RPS_CLRSIGNAL | S626_RPS_SIGADC;
@@ -1769,6 +1856,7 @@ static void s626_reset_adc(struct comedi_device *dev, uint8_t *ppl)
 	/* End of RPS program build */
 }
 
+<<<<<<< HEAD
 #ifdef unused_code
 static int s626_ai_rinsn(struct comedi_device *dev,
 			 struct comedi_subdevice *s,
@@ -1806,6 +1894,8 @@ static int s626_ai_rinsn(struct comedi_device *dev,
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int s626_ai_eoc(struct comedi_device *dev,
 		       struct comedi_subdevice *s,
 		       struct comedi_insn *insn,
@@ -1970,13 +2060,21 @@ static int s626_ns_to_timer(unsigned int *nanosec, unsigned int flags)
 	switch (flags & CMDF_ROUND_MASK) {
 	case CMDF_ROUND_NEAREST:
 	default:
+<<<<<<< HEAD
 		divider = (*nanosec + base / 2) / base;
+=======
+		divider = DIV_ROUND_CLOSEST(*nanosec, base);
+>>>>>>> v4.9.227
 		break;
 	case CMDF_ROUND_DOWN:
 		divider = (*nanosec) / base;
 		break;
 	case CMDF_ROUND_UP:
+<<<<<<< HEAD
 		divider = (*nanosec + base - 1) / base;
+=======
+		divider = DIV_ROUND_UP(*nanosec, base);
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -2051,10 +2149,13 @@ static int s626_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 	/* reset ai_cmd_running flag */
 	devpriv->ai_cmd_running = 0;
 
+<<<<<<< HEAD
 	/* test if cmd is valid */
 	if (cmd == NULL)
 		return -EINVAL;
 
+=======
+>>>>>>> v4.9.227
 	s626_ai_load_polllist(ppl, cmd);
 	devpriv->ai_cmd_running = 1;
 	devpriv->ai_convert_count = 0;
@@ -2102,8 +2203,11 @@ static int s626_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 		break;
 	}
 
+<<<<<<< HEAD
 	devpriv->ai_sample_count = cmd->stop_arg;
 
+=======
+>>>>>>> v4.9.227
 	s626_reset_adc(dev, ppl);
 
 	switch (cmd->start_src) {
@@ -2139,6 +2243,7 @@ static int s626_ai_cmdtest(struct comedi_device *dev,
 
 	/* Step 1 : check if triggers are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_src(&cmd->start_src,
 				     TRIG_NOW | TRIG_INT | TRIG_EXT);
 	err |= cfc_check_trigger_src(&cmd->scan_begin_src,
@@ -2147,16 +2252,33 @@ static int s626_ai_cmdtest(struct comedi_device *dev,
 				     TRIG_TIMER | TRIG_EXT | TRIG_NOW);
 	err |= cfc_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
 	err |= cfc_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+=======
+	err |= comedi_check_trigger_src(&cmd->start_src,
+					TRIG_NOW | TRIG_INT | TRIG_EXT);
+	err |= comedi_check_trigger_src(&cmd->scan_begin_src,
+					TRIG_TIMER | TRIG_EXT | TRIG_FOLLOW);
+	err |= comedi_check_trigger_src(&cmd->convert_src,
+					TRIG_TIMER | TRIG_EXT | TRIG_NOW);
+	err |= comedi_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
+	err |= comedi_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 1;
 
 	/* Step 2a : make sure trigger sources are unique */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_is_unique(cmd->start_src);
 	err |= cfc_check_trigger_is_unique(cmd->scan_begin_src);
 	err |= cfc_check_trigger_is_unique(cmd->convert_src);
 	err |= cfc_check_trigger_is_unique(cmd->stop_src);
+=======
+	err |= comedi_check_trigger_is_unique(cmd->start_src);
+	err |= comedi_check_trigger_is_unique(cmd->scan_begin_src);
+	err |= comedi_check_trigger_is_unique(cmd->convert_src);
+	err |= comedi_check_trigger_is_unique(cmd->stop_src);
+>>>>>>> v4.9.227
 
 	/* Step 2b : and mutually compatible */
 
@@ -2168,22 +2290,36 @@ static int s626_ai_cmdtest(struct comedi_device *dev,
 	switch (cmd->start_src) {
 	case TRIG_NOW:
 	case TRIG_INT:
+<<<<<<< HEAD
 		err |= cfc_check_trigger_arg_is(&cmd->start_arg, 0);
 		break;
 	case TRIG_EXT:
 		err |= cfc_check_trigger_arg_max(&cmd->start_arg, 39);
+=======
+		err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
+		break;
+	case TRIG_EXT:
+		err |= comedi_check_trigger_arg_max(&cmd->start_arg, 39);
+>>>>>>> v4.9.227
 		break;
 	}
 
 	if (cmd->scan_begin_src == TRIG_EXT)
+<<<<<<< HEAD
 		err |= cfc_check_trigger_arg_max(&cmd->scan_begin_arg, 39);
 	if (cmd->convert_src == TRIG_EXT)
 		err |= cfc_check_trigger_arg_max(&cmd->convert_arg, 39);
+=======
+		err |= comedi_check_trigger_arg_max(&cmd->scan_begin_arg, 39);
+	if (cmd->convert_src == TRIG_EXT)
+		err |= comedi_check_trigger_arg_max(&cmd->convert_arg, 39);
+>>>>>>> v4.9.227
 
 #define S626_MAX_SPEED	200000	/* in nanoseconds */
 #define S626_MIN_SPEED	2000000000	/* in nanoseconds */
 
 	if (cmd->scan_begin_src == TRIG_TIMER) {
+<<<<<<< HEAD
 		err |= cfc_check_trigger_arg_min(&cmd->scan_begin_arg,
 						 S626_MAX_SPEED);
 		err |= cfc_check_trigger_arg_max(&cmd->scan_begin_arg,
@@ -2211,6 +2347,39 @@ static int s626_ai_cmdtest(struct comedi_device *dev,
 		err |= cfc_check_trigger_arg_min(&cmd->stop_arg, 1);
 	else	/* TRIG_NONE */
 		err |= cfc_check_trigger_arg_is(&cmd->stop_arg, 0);
+=======
+		err |= comedi_check_trigger_arg_min(&cmd->scan_begin_arg,
+						    S626_MAX_SPEED);
+		err |= comedi_check_trigger_arg_max(&cmd->scan_begin_arg,
+						    S626_MIN_SPEED);
+	} else {
+		/*
+		 * external trigger
+		 * should be level/edge, hi/lo specification here
+		 * should specify multiple external triggers
+		 * err |= comedi_check_trigger_arg_max(&cmd->scan_begin_arg, 9);
+		 */
+	}
+	if (cmd->convert_src == TRIG_TIMER) {
+		err |= comedi_check_trigger_arg_min(&cmd->convert_arg,
+						    S626_MAX_SPEED);
+		err |= comedi_check_trigger_arg_max(&cmd->convert_arg,
+						    S626_MIN_SPEED);
+	} else {
+		/*
+		 * external trigger - see above
+		 * err |= comedi_check_trigger_arg_max(&cmd->scan_begin_arg, 9);
+		 */
+	}
+
+	err |= comedi_check_trigger_arg_is(&cmd->scan_end_arg,
+					   cmd->chanlist_len);
+
+	if (cmd->stop_src == TRIG_COUNT)
+		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
+	else	/* TRIG_NONE */
+		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 3;
@@ -2220,18 +2389,32 @@ static int s626_ai_cmdtest(struct comedi_device *dev,
 	if (cmd->scan_begin_src == TRIG_TIMER) {
 		arg = cmd->scan_begin_arg;
 		s626_ns_to_timer(&arg, cmd->flags);
+<<<<<<< HEAD
 		err |= cfc_check_trigger_arg_is(&cmd->scan_begin_arg, arg);
+=======
+		err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, arg);
+>>>>>>> v4.9.227
 	}
 
 	if (cmd->convert_src == TRIG_TIMER) {
 		arg = cmd->convert_arg;
 		s626_ns_to_timer(&arg, cmd->flags);
+<<<<<<< HEAD
 		err |= cfc_check_trigger_arg_is(&cmd->convert_arg, arg);
 
 		if (cmd->scan_begin_src == TRIG_TIMER) {
 			arg = cmd->convert_arg * cmd->scan_end_arg;
 			err |= cfc_check_trigger_arg_min(&cmd->scan_begin_arg,
 							 arg);
+=======
+		err |= comedi_check_trigger_arg_is(&cmd->convert_arg, arg);
+
+		if (cmd->scan_begin_src == TRIG_TIMER) {
+			arg = cmd->convert_arg * cmd->scan_end_arg;
+			err |= comedi_check_trigger_arg_min(&cmd->
+							    scan_begin_arg,
+							    arg);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -2553,7 +2736,12 @@ static int s626_initialize(struct comedi_device *dev)
 	for (i = 0; i < 2; i++) {
 		writel(S626_I2C_CLKSEL, dev->mmio + S626_P_I2CSTAT);
 		s626_mc_enable(dev, S626_MC2_UPLD_IIC, S626_P_MC2);
+<<<<<<< HEAD
 		ret = comedi_timeout(dev, NULL, NULL, s626_i2c_handshake_eoc, 0);
+=======
+		ret = comedi_timeout(dev, NULL,
+				     NULL, s626_i2c_handshake_eoc, 0);
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 	}
@@ -2752,7 +2940,11 @@ static int s626_initialize(struct comedi_device *dev)
 }
 
 static int s626_auto_attach(struct comedi_device *dev,
+<<<<<<< HEAD
 				      unsigned long context_unused)
+=======
+			    unsigned long context_unused)
+>>>>>>> v4.9.227
 {
 	struct pci_dev *pcidev = comedi_to_pci_dev(dev);
 	struct s626_private *devpriv;
@@ -2820,7 +3012,10 @@ static int s626_auto_attach(struct comedi_device *dev,
 	s->maxdata	= 0x3fff;
 	s->range_table	= &range_bipolar10;
 	s->insn_write	= s626_ao_insn_write;
+<<<<<<< HEAD
 	s->insn_read	= comedi_readback_insn_read;
+=======
+>>>>>>> v4.9.227
 
 	ret = comedi_alloc_subdev_readback(s);
 	if (ret)
@@ -2873,11 +3068,15 @@ static int s626_auto_attach(struct comedi_device *dev,
 	s->insn_read	= s626_enc_insn_read;
 	s->insn_write	= s626_enc_insn_write;
 
+<<<<<<< HEAD
 	ret = s626_initialize(dev);
 	if (ret)
 		return ret;
 
 	return 0;
+=======
+	return s626_initialize(dev);
+>>>>>>> v4.9.227
 }
 
 static void s626_detach(struct comedi_device *dev)

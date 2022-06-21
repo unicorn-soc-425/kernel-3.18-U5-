@@ -135,25 +135,48 @@ int ipoib_transport_dev_init(struct net_device *dev, struct ib_device *ca)
 		.cap = {
 			.max_send_wr  = ipoib_sendq_size,
 			.max_recv_wr  = ipoib_recvq_size,
+<<<<<<< HEAD
 			.max_send_sge = 1,
+=======
+			.max_send_sge = min_t(u32, priv->ca->attrs.max_sge,
+					      MAX_SKB_FRAGS + 1),
+>>>>>>> v4.9.227
 			.max_recv_sge = IPOIB_UD_RX_SG
 		},
 		.sq_sig_type = IB_SIGNAL_ALL_WR,
 		.qp_type     = IB_QPT_UD
 	};
+<<<<<<< HEAD
+=======
+	struct ib_cq_init_attr cq_attr = {};
+>>>>>>> v4.9.227
 
 	int ret, size;
 	int i;
 
+<<<<<<< HEAD
 	priv->pd = ib_alloc_pd(priv->ca);
+=======
+	priv->pd = ib_alloc_pd(priv->ca, 0);
+>>>>>>> v4.9.227
 	if (IS_ERR(priv->pd)) {
 		printk(KERN_WARNING "%s: failed to allocate PD\n", ca->name);
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	priv->mr = ib_get_dma_mr(priv->pd, IB_ACCESS_LOCAL_WRITE);
 	if (IS_ERR(priv->mr)) {
 		printk(KERN_WARNING "%s: ib_get_dma_mr failed\n", ca->name);
+=======
+	/*
+	 * the various IPoIB tasks assume they will never race against
+	 * themselves, so always use a single thread workqueue
+	 */
+	priv->wq = alloc_ordered_workqueue("ipoib_wq", WQ_MEM_RECLAIM);
+	if (!priv->wq) {
+		printk(KERN_WARNING "ipoib: failed to allocate device WQ\n");
+>>>>>>> v4.9.227
 		goto out_free_pd;
 	}
 
@@ -165,6 +188,7 @@ int ipoib_transport_dev_init(struct net_device *dev, struct ib_device *ca)
 			size += ipoib_recvq_size + 1; /* 1 extra for rx_drain_qp */
 		else
 			size += ipoib_recvq_size * ipoib_max_conn_qp;
+<<<<<<< HEAD
 	}
 
 	priv->recv_cq = ib_create_cq(priv->ca, ipoib_ib_completion, NULL, dev, size, 0);
@@ -175,6 +199,23 @@ int ipoib_transport_dev_init(struct net_device *dev, struct ib_device *ca)
 
 	priv->send_cq = ib_create_cq(priv->ca, ipoib_send_comp_handler, NULL,
 				     dev, ipoib_sendq_size, 0);
+=======
+	} else
+		if (ret != -ENOSYS)
+			goto out_free_wq;
+
+	cq_attr.cqe = size;
+	priv->recv_cq = ib_create_cq(priv->ca, ipoib_ib_completion, NULL,
+				     dev, &cq_attr);
+	if (IS_ERR(priv->recv_cq)) {
+		printk(KERN_WARNING "%s: failed to create receive CQ\n", ca->name);
+		goto out_cm_dev_cleanup;
+	}
+
+	cq_attr.cqe = ipoib_sendq_size;
+	priv->send_cq = ib_create_cq(priv->ca, ipoib_send_comp_handler, NULL,
+				     dev, &cq_attr);
+>>>>>>> v4.9.227
 	if (IS_ERR(priv->send_cq)) {
 		printk(KERN_WARNING "%s: failed to create send CQ\n", ca->name);
 		goto out_free_recv_cq;
@@ -195,9 +236,12 @@ int ipoib_transport_dev_init(struct net_device *dev, struct ib_device *ca)
 	if (priv->hca_caps & IB_DEVICE_MANAGED_FLOW_STEERING)
 		init_attr.create_flags |= IB_QP_CREATE_NETIF_QP;
 
+<<<<<<< HEAD
 	if (dev->features & NETIF_F_SG)
 		init_attr.cap.max_send_sge = MAX_SKB_FRAGS + 1;
 
+=======
+>>>>>>> v4.9.227
 	priv->qp = ib_create_qp(priv->pd, &init_attr);
 	if (IS_ERR(priv->qp)) {
 		printk(KERN_WARNING "%s: failed to create QP\n", ca->name);
@@ -209,6 +253,7 @@ int ipoib_transport_dev_init(struct net_device *dev, struct ib_device *ca)
 	priv->dev->dev_addr[3] = (priv->qp->qp_num      ) & 0xff;
 
 	for (i = 0; i < MAX_SKB_FRAGS + 1; ++i)
+<<<<<<< HEAD
 		priv->tx_sge[i].lkey = priv->mr->lkey;
 
 	priv->tx_wr.opcode	= IB_WR_SEND;
@@ -228,6 +273,27 @@ int ipoib_transport_dev_init(struct net_device *dev, struct ib_device *ca)
 	priv->rx_wr.next = NULL;
 	priv->rx_wr.sg_list = priv->rx_sge;
 
+=======
+		priv->tx_sge[i].lkey = priv->pd->local_dma_lkey;
+
+	priv->tx_wr.wr.opcode		= IB_WR_SEND;
+	priv->tx_wr.wr.sg_list		= priv->tx_sge;
+	priv->tx_wr.wr.send_flags	= IB_SEND_SIGNALED;
+
+	priv->rx_sge[0].lkey = priv->pd->local_dma_lkey;
+
+	priv->rx_sge[0].length = IPOIB_UD_BUF_SIZE(priv->max_ib_mtu);
+	priv->rx_wr.num_sge = 1;
+
+	priv->rx_wr.next = NULL;
+	priv->rx_wr.sg_list = priv->rx_sge;
+
+	if (init_attr.cap.max_send_sge > 1)
+		dev->features |= NETIF_F_SG;
+
+	priv->max_send_sge = init_attr.cap.max_send_sge;
+
+>>>>>>> v4.9.227
 	return 0;
 
 out_free_send_cq:
@@ -236,12 +302,25 @@ out_free_send_cq:
 out_free_recv_cq:
 	ib_destroy_cq(priv->recv_cq);
 
+<<<<<<< HEAD
 out_free_mr:
 	ib_dereg_mr(priv->mr);
 	ipoib_cm_dev_cleanup(dev);
 
 out_free_pd:
 	ib_dealloc_pd(priv->pd);
+=======
+out_cm_dev_cleanup:
+	ipoib_cm_dev_cleanup(dev);
+
+out_free_wq:
+	destroy_workqueue(priv->wq);
+	priv->wq = NULL;
+
+out_free_pd:
+	ib_dealloc_pd(priv->pd);
+
+>>>>>>> v4.9.227
 	return -ENODEV;
 }
 
@@ -265,11 +344,21 @@ void ipoib_transport_dev_cleanup(struct net_device *dev)
 
 	ipoib_cm_dev_cleanup(dev);
 
+<<<<<<< HEAD
 	if (ib_dereg_mr(priv->mr))
 		ipoib_warn(priv, "ib_dereg_mr failed\n");
 
 	if (ib_dealloc_pd(priv->pd))
 		ipoib_warn(priv, "ib_dealloc_pd failed\n");
+=======
+	if (priv->wq) {
+		flush_workqueue(priv->wq);
+		destroy_workqueue(priv->wq);
+		priv->wq = NULL;
+	}
+
+	ib_dealloc_pd(priv->pd);
+>>>>>>> v4.9.227
 }
 
 void ipoib_event(struct ib_event_handler *handler,
@@ -293,5 +382,11 @@ void ipoib_event(struct ib_event_handler *handler,
 		queue_work(ipoib_workqueue, &priv->flush_normal);
 	} else if (record->event == IB_EVENT_PKEY_CHANGE) {
 		queue_work(ipoib_workqueue, &priv->flush_heavy);
+<<<<<<< HEAD
+=======
+	} else if (record->event == IB_EVENT_GID_CHANGE &&
+		   !test_bit(IPOIB_FLAG_DEV_ADDR_SET, &priv->flags)) {
+		queue_work(ipoib_workqueue, &priv->flush_light);
+>>>>>>> v4.9.227
 	}
 }

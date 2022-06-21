@@ -3,7 +3,11 @@
  *
  * Copyright (C) 2014 Marvell Technology Group Ltd.
  *
+<<<<<<< HEAD
  * Antoine TÃ©nart <antoine.tenart@free-electrons.com>
+=======
+ * Antoine Ténart <antoine.tenart@free-electrons.com>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -11,6 +15,10 @@
  */
 
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/mfd/syscon.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -103,7 +111,11 @@ static const struct pinctrl_ops berlin_pinctrl_ops = {
 	.get_groups_count	= &berlin_pinctrl_get_group_count,
 	.get_group_name		= &berlin_pinctrl_get_group_name,
 	.dt_node_to_map		= &berlin_pinctrl_dt_node_to_map,
+<<<<<<< HEAD
 	.dt_free_map		= &pinctrl_utils_dt_free_map,
+=======
+	.dt_free_map		= &pinctrl_utils_free_map,
+>>>>>>> v4.9.227
 };
 
 static int berlin_pinmux_get_functions_count(struct pinctrl_dev *pctrl_dev)
@@ -291,6 +303,7 @@ static struct pinctrl_desc berlin_pctrl_desc = {
 	.owner		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 int berlin_pinctrl_probe(struct platform_device *pdev,
 			 const struct berlin_pinctrl_desc *desc)
 {
@@ -303,6 +316,16 @@ int berlin_pinctrl_probe(struct platform_device *pdev,
 	if (!regmap)
 		return -ENODEV;
 
+=======
+int berlin_pinctrl_probe_regmap(struct platform_device *pdev,
+				const struct berlin_pinctrl_desc *desc,
+				struct regmap *regmap)
+{
+	struct device *dev = &pdev->dev;
+	struct berlin_pinctrl *pctrl;
+	int ret;
+
+>>>>>>> v4.9.227
 	pctrl = devm_kzalloc(dev, sizeof(*pctrl), GFP_KERNEL);
 	if (!pctrl)
 		return -ENOMEM;
@@ -319,11 +342,36 @@ int berlin_pinctrl_probe(struct platform_device *pdev,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	pctrl->pctrl_dev = pinctrl_register(&berlin_pctrl_desc, dev, pctrl);
 	if (!pctrl->pctrl_dev) {
 		dev_err(dev, "failed to register pinctrl driver\n");
 		return -EINVAL;
+=======
+	pctrl->pctrl_dev = devm_pinctrl_register(dev, &berlin_pctrl_desc,
+						 pctrl);
+	if (IS_ERR(pctrl->pctrl_dev)) {
+		dev_err(dev, "failed to register pinctrl driver\n");
+		return PTR_ERR(pctrl->pctrl_dev);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+int berlin_pinctrl_probe(struct platform_device *pdev,
+			 const struct berlin_pinctrl_desc *desc)
+{
+	struct device *dev = &pdev->dev;
+	struct device_node *parent_np = of_get_parent(dev->of_node);
+	struct regmap *regmap = syscon_node_to_regmap(parent_np);
+
+	of_node_put(parent_np);
+	if (IS_ERR(regmap))
+		return PTR_ERR(regmap);
+
+	return berlin_pinctrl_probe_regmap(pdev, desc, regmap);
+}
+>>>>>>> v4.9.227

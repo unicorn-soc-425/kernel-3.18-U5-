@@ -24,17 +24,30 @@ static void ci_hdrc_msm_notify_event(struct ci_hdrc *ci, unsigned event)
 	switch (event) {
 	case CI_HDRC_CONTROLLER_RESET_EVENT:
 		dev_dbg(dev, "CI_HDRC_CONTROLLER_RESET_EVENT received\n");
+<<<<<<< HEAD
 		writel(0, USB_AHBBURST);
 		writel(0, USB_AHBMODE);
 		usb_phy_init(ci->transceiver);
+=======
+		/* use AHB transactor, allow posted data writes */
+		writel(0x8, USB_AHBMODE);
+		usb_phy_init(ci->usb_phy);
+>>>>>>> v4.9.227
 		break;
 	case CI_HDRC_CONTROLLER_STOPPED_EVENT:
 		dev_dbg(dev, "CI_HDRC_CONTROLLER_STOPPED_EVENT received\n");
 		/*
+<<<<<<< HEAD
 		 * Put the transceiver in non-driving mode. Otherwise host
 		 * may not detect soft-disconnection.
 		 */
 		usb_phy_notify_disconnect(ci->transceiver, USB_SPEED_UNKNOWN);
+=======
+		 * Put the phy in non-driving mode. Otherwise host
+		 * may not detect soft-disconnection.
+		 */
+		usb_phy_notify_disconnect(ci->usb_phy, USB_SPEED_UNKNOWN);
+>>>>>>> v4.9.227
 		break;
 	default:
 		dev_dbg(dev, "unknown ci_hdrc event\n");
@@ -46,8 +59,13 @@ static struct ci_hdrc_platform_data ci_hdrc_msm_platdata = {
 	.name			= "ci_hdrc_msm",
 	.capoffset		= DEF_CAPOFFSET,
 	.flags			= CI_HDRC_REGS_SHARED |
+<<<<<<< HEAD
 				  CI_HDRC_REQUIRE_TRANSCEIVER |
 				  CI_HDRC_DISABLE_STREAMING,
+=======
+				  CI_HDRC_DISABLE_STREAMING |
+				  CI_HDRC_OVERRIDE_AHB_BURST,
+>>>>>>> v4.9.227
 
 	.notify_event		= ci_hdrc_msm_notify_event,
 };
@@ -68,7 +86,11 @@ static int ci_hdrc_msm_probe(struct platform_device *pdev)
 	if (IS_ERR(phy))
 		return PTR_ERR(phy);
 
+<<<<<<< HEAD
 	ci_hdrc_msm_platdata.phy = phy;
+=======
+	ci_hdrc_msm_platdata.usb_phy = phy;
+>>>>>>> v4.9.227
 
 	plat_ci = ci_hdrc_add_device(&pdev->dev,
 				pdev->resource, pdev->num_resources,

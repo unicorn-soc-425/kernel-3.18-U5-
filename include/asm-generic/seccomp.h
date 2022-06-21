@@ -17,7 +17,13 @@
 #define __NR_seccomp_read_32		__NR_read
 #define __NR_seccomp_write_32		__NR_write
 #define __NR_seccomp_exit_32		__NR_exit
+<<<<<<< HEAD
 #define __NR_seccomp_sigreturn_32	__NR_rt_sigreturn
+=======
+#ifndef __NR_seccomp_sigreturn_32
+#define __NR_seccomp_sigreturn_32	__NR_rt_sigreturn
+#endif
+>>>>>>> v4.9.227
 #endif /* CONFIG_COMPAT && ! already defined */
 
 #define __NR_seccomp_read		__NR_read
@@ -27,4 +33,21 @@
 #define __NR_seccomp_sigreturn		__NR_rt_sigreturn
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+#ifndef get_compat_mode1_syscalls
+static inline const int *get_compat_mode1_syscalls(void)
+{
+	static const int mode1_syscalls_32[] = {
+		__NR_seccomp_read_32, __NR_seccomp_write_32,
+		__NR_seccomp_exit_32, __NR_seccomp_sigreturn_32,
+		0, /* null terminated */
+	};
+	return mode1_syscalls_32;
+}
+#endif
+#endif /* CONFIG_COMPAT */
+
+>>>>>>> v4.9.227
 #endif /* _ASM_GENERIC_SECCOMP_H */

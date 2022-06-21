@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -217,8 +221,14 @@ acpi_ut_namespace_error(const char *module_name,
 	} else {
 		/* Convert path to external format */
 
+<<<<<<< HEAD
 		status = acpi_ns_externalize_name(ACPI_UINT32_MAX,
 						  internal_name, NULL, &name);
+=======
+		status =
+		    acpi_ns_externalize_name(ACPI_UINT32_MAX, internal_name,
+					     NULL, &name);
+>>>>>>> v4.9.227
 
 		/* Print target name */
 
@@ -271,9 +281,14 @@ acpi_ut_method_error(const char *module_name,
 	acpi_os_printf(ACPI_MSG_ERROR);
 
 	if (path) {
+<<<<<<< HEAD
 		status =
 		    acpi_ns_get_node(prefix_node, path, ACPI_NS_NO_UPSEARCH,
 				     &node);
+=======
+		status = acpi_ns_get_node(prefix_node, path,
+					  ACPI_NS_NO_UPSEARCH, &node);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			acpi_os_printf("[Could not get node by pathname]");
 		}

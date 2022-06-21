@@ -9,6 +9,7 @@
 #ifndef __SPARC64_STRING_H__
 #define __SPARC64_STRING_H__
 
+<<<<<<< HEAD
 /* Really, userland/ksyms should not see any of this stuff. */
 
 #ifdef __KERNEL__
@@ -48,10 +49,15 @@ void *memmove(void *, const void *, __kernel_size_t);
 #define __HAVE_ARCH_MEMCMP
 int memcmp(const void *,const void *,__kernel_size_t);
 
+=======
+#include <asm/asi.h>
+
+>>>>>>> v4.9.227
 /* Now the str*() stuff... */
 #define __HAVE_ARCH_STRLEN
 __kernel_size_t strlen(const char *);
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_STRNCMP
 int strncmp(const char *, const char *, __kernel_size_t);
 
@@ -59,4 +65,6 @@ int strncmp(const char *, const char *, __kernel_size_t);
 
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> v4.9.227
 #endif /* !(__SPARC64_STRING_H__) */

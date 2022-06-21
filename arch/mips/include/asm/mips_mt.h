@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Definitions and decalrations for MIPS MT support that are common between
+=======
+ * Definitions and declarations for MIPS MT support that are common between
+>>>>>>> v4.9.227
  * the VSMP, and AP/SP kernel models.
  */
 #ifndef __ASM_MIPS_MT_H

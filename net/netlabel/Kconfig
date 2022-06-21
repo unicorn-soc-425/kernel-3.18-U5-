@@ -5,6 +5,10 @@
 config NETLABEL
 	bool "NetLabel subsystem support"
 	depends on SECURITY
+<<<<<<< HEAD
+=======
+	select CRC_CCITT if IPV6
+>>>>>>> v4.9.227
 	default n
 	---help---
 	  NetLabel provides support for explicit network packet labeling

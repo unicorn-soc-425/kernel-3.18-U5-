@@ -28,8 +28,11 @@
 #include "rtsx_chip.h"
 #include "rtsx_card.h"
 
+<<<<<<< HEAD
 typedef dma_addr_t ULONG_PTR;
 
+=======
+>>>>>>> v4.9.227
 static inline void rtsx_exclusive_enter_ss(struct rtsx_chip *chip)
 {
 	struct rtsx_dev *dev = chip->rtsx;

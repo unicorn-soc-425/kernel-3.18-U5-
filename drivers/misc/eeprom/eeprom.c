@@ -84,6 +84,7 @@ static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 			   struct bin_attribute *bin_attr,
 			   char *buf, loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(container_of(kobj, struct device, kobj));
 	struct eeprom_data *data = i2c_get_clientdata(client);
 	u8 slice;
@@ -93,6 +94,12 @@ static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 	if (off + count > EEPROM_SIZE)
 		count = EEPROM_SIZE - off;
 
+=======
+	struct i2c_client *client = to_i2c_client(kobj_to_dev(kobj));
+	struct eeprom_data *data = i2c_get_clientdata(client);
+	u8 slice;
+
+>>>>>>> v4.9.227
 	/* Only refresh slices which contain requested bytes */
 	for (slice = off >> 5; slice <= (off + count - 1) >> 5; slice++)
 		eeprom_update_client(client, slice);

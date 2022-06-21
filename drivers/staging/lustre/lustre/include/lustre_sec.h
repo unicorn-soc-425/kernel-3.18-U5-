@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -221,13 +225,22 @@ enum sptlrpc_bulk_service {
 
 #define SPTLRPC_FLVR_DEFAULT	    SPTLRPC_FLVR_NULL
 
+<<<<<<< HEAD
 #define SPTLRPC_FLVR_INVALID	    ((__u32) 0xFFFFFFFF)
 #define SPTLRPC_FLVR_ANY		((__u32) 0xFFF00000)
+=======
+#define SPTLRPC_FLVR_INVALID	    ((__u32)0xFFFFFFFF)
+#define SPTLRPC_FLVR_ANY		((__u32)0xFFF00000)
+>>>>>>> v4.9.227
 
 /**
  * extract the useful part from wire flavor
  */
+<<<<<<< HEAD
 #define WIRE_FLVR(wflvr)		(((__u32) (wflvr)) & 0x000FFFFF)
+=======
+#define WIRE_FLVR(wflvr)		(((__u32)(wflvr)) & 0x000FFFFF)
+>>>>>>> v4.9.227
 
 /** @} flavor */
 
@@ -295,7 +308,10 @@ enum lustre_sec_part {
 	LUSTRE_SP_ANY	   = 0xFF
 };
 
+<<<<<<< HEAD
 const char *sptlrpc_part2name(enum lustre_sec_part sp);
+=======
+>>>>>>> v4.9.227
 enum lustre_sec_part sptlrpc_target_sec_part(struct obd_device *obd);
 
 /**
@@ -323,13 +339,18 @@ struct sptlrpc_rule_set {
 };
 
 int sptlrpc_parse_flavor(const char *str, struct sptlrpc_flavor *flvr);
+<<<<<<< HEAD
 int sptlrpc_flavor_has_bulk(struct sptlrpc_flavor *flvr);
+=======
+bool sptlrpc_flavor_has_bulk(struct sptlrpc_flavor *flvr);
+>>>>>>> v4.9.227
 
 static inline void sptlrpc_rule_set_init(struct sptlrpc_rule_set *set)
 {
 	memset(set, 0, sizeof(*set));
 }
 
+<<<<<<< HEAD
 void sptlrpc_rule_set_free(struct sptlrpc_rule_set *set);
 int  sptlrpc_rule_set_expand(struct sptlrpc_rule_set *set);
 int  sptlrpc_rule_set_merge(struct sptlrpc_rule_set *set,
@@ -341,16 +362,21 @@ int sptlrpc_rule_set_choose(struct sptlrpc_rule_set *rset,
 			    struct sptlrpc_flavor *sf);
 void sptlrpc_rule_set_dump(struct sptlrpc_rule_set *set);
 
+=======
+>>>>>>> v4.9.227
 int  sptlrpc_process_config(struct lustre_cfg *lcfg);
 void sptlrpc_conf_log_start(const char *logname);
 void sptlrpc_conf_log_stop(const char *logname);
 void sptlrpc_conf_log_update_begin(const char *logname);
 void sptlrpc_conf_log_update_end(const char *logname);
 void sptlrpc_conf_client_adapt(struct obd_device *obd);
+<<<<<<< HEAD
 void sptlrpc_target_choose_flavor(struct sptlrpc_rule_set *rset,
 				  enum lustre_sec_part from,
 				  lnet_nid_t nid,
 				  struct sptlrpc_flavor *flavor);
+=======
+>>>>>>> v4.9.227
 
 /* The maximum length of security payload. 1024 is enough for Kerberos 5,
  * and should be enough for other future mechanisms but not sure.
@@ -358,7 +384,10 @@ void sptlrpc_target_choose_flavor(struct sptlrpc_rule_set *rset,
  */
 #define SPTLRPC_MAX_PAYLOAD     (1024)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 struct vfs_cred {
 	uint32_t	vc_uid;
 	uint32_t	vc_gid;
@@ -368,26 +397,43 @@ struct ptlrpc_ctx_ops {
 	/**
 	 * To determine whether it's suitable to use the \a ctx for \a vcred.
 	 */
+<<<<<<< HEAD
 	int     (*match)       (struct ptlrpc_cli_ctx *ctx,
 				struct vfs_cred *vcred);
+=======
+	int (*match)(struct ptlrpc_cli_ctx *ctx, struct vfs_cred *vcred);
+>>>>>>> v4.9.227
 
 	/**
 	 * To bring the \a ctx uptodate.
 	 */
+<<<<<<< HEAD
 	int     (*refresh)     (struct ptlrpc_cli_ctx *ctx);
+=======
+	int (*refresh)(struct ptlrpc_cli_ctx *ctx);
+>>>>>>> v4.9.227
 
 	/**
 	 * Validate the \a ctx.
 	 */
+<<<<<<< HEAD
 	int     (*validate)    (struct ptlrpc_cli_ctx *ctx);
+=======
+	int (*validate)(struct ptlrpc_cli_ctx *ctx);
+>>>>>>> v4.9.227
 
 	/**
 	 * Force the \a ctx to die.
 	 */
+<<<<<<< HEAD
 	void    (*force_die)   (struct ptlrpc_cli_ctx *ctx,
 				int grace);
 	int     (*display)     (struct ptlrpc_cli_ctx *ctx,
 				char *buf, int bufsize);
+=======
+	void (*force_die)(struct ptlrpc_cli_ctx *ctx, int grace);
+	int (*display)(struct ptlrpc_cli_ctx *ctx, char *buf, int bufsize);
+>>>>>>> v4.9.227
 
 	/**
 	 * Sign the request message using \a ctx.
@@ -399,8 +445,12 @@ struct ptlrpc_ctx_ops {
 	 *
 	 * \see null_ctx_sign(), plain_ctx_sign(), gss_cli_ctx_sign().
 	 */
+<<<<<<< HEAD
 	int     (*sign)	(struct ptlrpc_cli_ctx *ctx,
 				struct ptlrpc_request *req);
+=======
+	int (*sign)(struct ptlrpc_cli_ctx *ctx, struct ptlrpc_request *req);
+>>>>>>> v4.9.227
 
 	/**
 	 * Verify the reply message using \a ctx.
@@ -412,8 +462,12 @@ struct ptlrpc_ctx_ops {
 	 *
 	 * \see null_ctx_verify(), plain_ctx_verify(), gss_cli_ctx_verify().
 	 */
+<<<<<<< HEAD
 	int     (*verify)      (struct ptlrpc_cli_ctx *ctx,
 				struct ptlrpc_request *req);
+=======
+	int (*verify)(struct ptlrpc_cli_ctx *ctx, struct ptlrpc_request *req);
+>>>>>>> v4.9.227
 
 	/**
 	 * Encrypt the request message using \a ctx.
@@ -425,8 +479,12 @@ struct ptlrpc_ctx_ops {
 	 *
 	 * \see gss_cli_ctx_seal().
 	 */
+<<<<<<< HEAD
 	int     (*seal)	(struct ptlrpc_cli_ctx *ctx,
 				struct ptlrpc_request *req);
+=======
+	int (*seal)(struct ptlrpc_cli_ctx *ctx, struct ptlrpc_request *req);
+>>>>>>> v4.9.227
 
 	/**
 	 * Decrypt the reply message using \a ctx.
@@ -438,8 +496,12 @@ struct ptlrpc_ctx_ops {
 	 *
 	 * \see gss_cli_ctx_unseal().
 	 */
+<<<<<<< HEAD
 	int     (*unseal)      (struct ptlrpc_cli_ctx *ctx,
 				struct ptlrpc_request *req);
+=======
+	int (*unseal)(struct ptlrpc_cli_ctx *ctx, struct ptlrpc_request *req);
+>>>>>>> v4.9.227
 
 	/**
 	 * Wrap bulk request data. This is called before wrapping RPC
@@ -461,9 +523,15 @@ struct ptlrpc_ctx_ops {
 	 *
 	 * \see plain_cli_wrap_bulk(), gss_cli_ctx_wrap_bulk().
 	 */
+<<<<<<< HEAD
 	int     (*wrap_bulk)   (struct ptlrpc_cli_ctx *ctx,
 				struct ptlrpc_request *req,
 				struct ptlrpc_bulk_desc *desc);
+=======
+	int (*wrap_bulk)(struct ptlrpc_cli_ctx *ctx,
+			 struct ptlrpc_request *req,
+			 struct ptlrpc_bulk_desc *desc);
+>>>>>>> v4.9.227
 
 	/**
 	 * Unwrap bulk reply data. This is called after wrapping RPC
@@ -478,9 +546,15 @@ struct ptlrpc_ctx_ops {
 	 *
 	 * \see plain_cli_unwrap_bulk(), gss_cli_ctx_unwrap_bulk().
 	 */
+<<<<<<< HEAD
 	int     (*unwrap_bulk) (struct ptlrpc_cli_ctx *ctx,
 				struct ptlrpc_request *req,
 				struct ptlrpc_bulk_desc *desc);
+=======
+	int (*unwrap_bulk)(struct ptlrpc_cli_ctx *ctx,
+			   struct ptlrpc_request *req,
+			   struct ptlrpc_bulk_desc *desc);
+>>>>>>> v4.9.227
 };
 
 #define PTLRPC_CTX_NEW_BIT	     (0)  /* newly created */
@@ -532,9 +606,15 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see null_create_sec(), plain_create_sec(), gss_sec_create_kr().
 	 */
+<<<<<<< HEAD
 	struct ptlrpc_sec *     (*create_sec)  (struct obd_import *imp,
 						struct ptlrpc_svc_ctx *ctx,
 						struct sptlrpc_flavor *flavor);
+=======
+	struct ptlrpc_sec *(*create_sec)(struct obd_import *imp,
+					 struct ptlrpc_svc_ctx *ctx,
+					 struct sptlrpc_flavor *flavor);
+>>>>>>> v4.9.227
 
 	/**
 	 * Destructor of ptlrpc_sec. When called, refcount has been dropped
@@ -542,7 +622,11 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see null_destroy_sec(), plain_destroy_sec(), gss_sec_destroy_kr().
 	 */
+<<<<<<< HEAD
 	void		    (*destroy_sec) (struct ptlrpc_sec *sec);
+=======
+	void (*destroy_sec)(struct ptlrpc_sec *sec);
+>>>>>>> v4.9.227
 
 	/**
 	 * Notify that this ptlrpc_sec is going to die. Optionally, policy
@@ -551,7 +635,11 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see plain_kill_sec(), gss_sec_kill().
 	 */
+<<<<<<< HEAD
 	void		    (*kill_sec)    (struct ptlrpc_sec *sec);
+=======
+	void (*kill_sec)(struct ptlrpc_sec *sec);
+>>>>>>> v4.9.227
 
 	/**
 	 * Given \a vcred, lookup and/or create its context. The policy module
@@ -561,10 +649,16 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see null_lookup_ctx(), plain_lookup_ctx(), gss_sec_lookup_ctx_kr().
 	 */
+<<<<<<< HEAD
 	struct ptlrpc_cli_ctx * (*lookup_ctx)  (struct ptlrpc_sec *sec,
 						struct vfs_cred *vcred,
 						int create,
 						int remove_dead);
+=======
+	struct ptlrpc_cli_ctx *(*lookup_ctx)(struct ptlrpc_sec *sec,
+					     struct vfs_cred *vcred,
+					     int create, int remove_dead);
+>>>>>>> v4.9.227
 
 	/**
 	 * Called then the reference of \a ctx dropped to 0. The policy module
@@ -576,9 +670,14 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see plain_release_ctx(), gss_sec_release_ctx_kr().
 	 */
+<<<<<<< HEAD
 	void		    (*release_ctx) (struct ptlrpc_sec *sec,
 						struct ptlrpc_cli_ctx *ctx,
 						int sync);
+=======
+	void (*release_ctx)(struct ptlrpc_sec *sec, struct ptlrpc_cli_ctx *ctx,
+			    int sync);
+>>>>>>> v4.9.227
 
 	/**
 	 * Flush the context cache.
@@ -590,11 +689,16 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see plain_flush_ctx_cache(), gss_sec_flush_ctx_cache_kr().
 	 */
+<<<<<<< HEAD
 	int		     (*flush_ctx_cache)
 					       (struct ptlrpc_sec *sec,
 						uid_t uid,
 						int grace,
 						int force);
+=======
+	int (*flush_ctx_cache)(struct ptlrpc_sec *sec, uid_t uid,
+			       int grace, int force);
+>>>>>>> v4.9.227
 
 	/**
 	 * Called periodically by garbage collector to remove dead contexts
@@ -602,7 +706,11 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see gss_sec_gc_ctx_kr().
 	 */
+<<<<<<< HEAD
 	void		    (*gc_ctx)      (struct ptlrpc_sec *sec);
+=======
+	void (*gc_ctx)(struct ptlrpc_sec *sec);
+>>>>>>> v4.9.227
 
 	/**
 	 * Given an context \a ctx, install a corresponding reverse service
@@ -610,9 +718,14 @@ struct ptlrpc_sec_cops {
 	 * XXX currently it's only used by GSS module, maybe we should remove
 	 * this from general API.
 	 */
+<<<<<<< HEAD
 	int		     (*install_rctx)(struct obd_import *imp,
 						struct ptlrpc_sec *sec,
 						struct ptlrpc_cli_ctx *ctx);
+=======
+	int (*install_rctx)(struct obd_import *imp, struct ptlrpc_sec *sec,
+			    struct ptlrpc_cli_ctx *ctx);
+>>>>>>> v4.9.227
 
 	/**
 	 * To allocate request buffer for \a req.
@@ -625,9 +738,14 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see null_alloc_reqbuf(), plain_alloc_reqbuf(), gss_alloc_reqbuf().
 	 */
+<<<<<<< HEAD
 	int		     (*alloc_reqbuf)(struct ptlrpc_sec *sec,
 						struct ptlrpc_request *req,
 						int lustre_msg_size);
+=======
+	int (*alloc_reqbuf)(struct ptlrpc_sec *sec, struct ptlrpc_request *req,
+			    int lustre_msg_size);
+>>>>>>> v4.9.227
 
 	/**
 	 * To free request buffer for \a req.
@@ -636,8 +754,12 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see null_free_reqbuf(), plain_free_reqbuf(), gss_free_reqbuf().
 	 */
+<<<<<<< HEAD
 	void		    (*free_reqbuf) (struct ptlrpc_sec *sec,
 						struct ptlrpc_request *req);
+=======
+	void (*free_reqbuf)(struct ptlrpc_sec *sec, struct ptlrpc_request *req);
+>>>>>>> v4.9.227
 
 	/**
 	 * To allocate reply buffer for \a req.
@@ -649,9 +771,14 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see null_alloc_repbuf(), plain_alloc_repbuf(), gss_alloc_repbuf().
 	 */
+<<<<<<< HEAD
 	int		     (*alloc_repbuf)(struct ptlrpc_sec *sec,
 						struct ptlrpc_request *req,
 						int lustre_msg_size);
+=======
+	int (*alloc_repbuf)(struct ptlrpc_sec *sec, struct ptlrpc_request *req,
+			    int lustre_msg_size);
+>>>>>>> v4.9.227
 
 	/**
 	 * To free reply buffer for \a req.
@@ -662,8 +789,12 @@ struct ptlrpc_sec_cops {
 	 *
 	 * \see null_free_repbuf(), plain_free_repbuf(), gss_free_repbuf().
 	 */
+<<<<<<< HEAD
 	void		    (*free_repbuf) (struct ptlrpc_sec *sec,
 						struct ptlrpc_request *req);
+=======
+	void (*free_repbuf)(struct ptlrpc_sec *sec, struct ptlrpc_request *req);
+>>>>>>> v4.9.227
 
 	/**
 	 * To expand the request buffer of \a req, thus the \a segment in
@@ -675,6 +806,7 @@ struct ptlrpc_sec_cops {
 	 * \see null_enlarge_reqbuf(), plain_enlarge_reqbuf(),
 	 * gss_enlarge_reqbuf().
 	 */
+<<<<<<< HEAD
 	int		     (*enlarge_reqbuf)
 					       (struct ptlrpc_sec *sec,
 						struct ptlrpc_request *req,
@@ -684,6 +816,15 @@ struct ptlrpc_sec_cops {
 	 */
 	int		     (*display)     (struct ptlrpc_sec *sec,
 						struct seq_file *seq);
+=======
+	int (*enlarge_reqbuf)(struct ptlrpc_sec *sec,
+			      struct ptlrpc_request *req,
+			      int segment, int newsize);
+	/*
+	 * misc
+	 */
+	int (*display)(struct ptlrpc_sec *sec, struct seq_file *seq);
+>>>>>>> v4.9.227
 };
 
 /**
@@ -707,7 +848,11 @@ struct ptlrpc_sec_sops {
 	 *
 	 * \see null_accept(), plain_accept(), gss_svc_accept_kr().
 	 */
+<<<<<<< HEAD
 	int		     (*accept)      (struct ptlrpc_request *req);
+=======
+	int (*accept)(struct ptlrpc_request *req);
+>>>>>>> v4.9.227
 
 	/**
 	 * Perform security transformation upon reply message.
@@ -719,15 +864,23 @@ struct ptlrpc_sec_sops {
 	 *
 	 * \see null_authorize(), plain_authorize(), gss_svc_authorize().
 	 */
+<<<<<<< HEAD
 	int		     (*authorize)   (struct ptlrpc_request *req);
+=======
+	int (*authorize)(struct ptlrpc_request *req);
+>>>>>>> v4.9.227
 
 	/**
 	 * Invalidate server context \a ctx.
 	 *
 	 * \see gss_svc_invalidate_ctx().
 	 */
+<<<<<<< HEAD
 	void		    (*invalidate_ctx)
 					       (struct ptlrpc_svc_ctx *ctx);
+=======
+	void (*invalidate_ctx)(struct ptlrpc_svc_ctx *ctx);
+>>>>>>> v4.9.227
 
 	/**
 	 * Allocate a ptlrpc_reply_state.
@@ -741,28 +894,44 @@ struct ptlrpc_sec_sops {
 	 *
 	 * \see null_alloc_rs(), plain_alloc_rs(), gss_svc_alloc_rs().
 	 */
+<<<<<<< HEAD
 	int		     (*alloc_rs)    (struct ptlrpc_request *req,
 						int msgsize);
+=======
+	int (*alloc_rs)(struct ptlrpc_request *req, int msgsize);
+>>>>>>> v4.9.227
 
 	/**
 	 * Free a ptlrpc_reply_state.
 	 */
+<<<<<<< HEAD
 	void		    (*free_rs)     (struct ptlrpc_reply_state *rs);
+=======
+	void (*free_rs)(struct ptlrpc_reply_state *rs);
+>>>>>>> v4.9.227
 
 	/**
 	 * Release the server context \a ctx.
 	 *
 	 * \see gss_svc_free_ctx().
 	 */
+<<<<<<< HEAD
 	void		    (*free_ctx)    (struct ptlrpc_svc_ctx *ctx);
+=======
+	void (*free_ctx)(struct ptlrpc_svc_ctx *ctx);
+>>>>>>> v4.9.227
 
 	/**
 	 * Install a reverse context based on the server context \a ctx.
 	 *
 	 * \see gss_svc_install_rctx_kr().
 	 */
+<<<<<<< HEAD
 	int		     (*install_rctx)(struct obd_import *imp,
 						struct ptlrpc_svc_ctx *ctx);
+=======
+	int (*install_rctx)(struct obd_import *imp, struct ptlrpc_svc_ctx *ctx);
+>>>>>>> v4.9.227
 
 	/**
 	 * Prepare buffer for incoming bulk write.
@@ -772,24 +941,39 @@ struct ptlrpc_sec_sops {
 	 *
 	 * \see gss_svc_prep_bulk().
 	 */
+<<<<<<< HEAD
 	int		     (*prep_bulk)   (struct ptlrpc_request *req,
 						struct ptlrpc_bulk_desc *desc);
+=======
+	int (*prep_bulk)(struct ptlrpc_request *req,
+			 struct ptlrpc_bulk_desc *desc);
+>>>>>>> v4.9.227
 
 	/**
 	 * Unwrap the bulk write data.
 	 *
 	 * \see plain_svc_unwrap_bulk(), gss_svc_unwrap_bulk().
 	 */
+<<<<<<< HEAD
 	int		     (*unwrap_bulk) (struct ptlrpc_request *req,
 						struct ptlrpc_bulk_desc *desc);
+=======
+	int (*unwrap_bulk)(struct ptlrpc_request *req,
+			   struct ptlrpc_bulk_desc *desc);
+>>>>>>> v4.9.227
 
 	/**
 	 * Wrap the bulk read data.
 	 *
 	 * \see plain_svc_wrap_bulk(), gss_svc_wrap_bulk().
 	 */
+<<<<<<< HEAD
 	int		     (*wrap_bulk)   (struct ptlrpc_request *req,
 						struct ptlrpc_bulk_desc *desc);
+=======
+	int (*wrap_bulk)(struct ptlrpc_request *req,
+			 struct ptlrpc_bulk_desc *desc);
+>>>>>>> v4.9.227
 };
 
 struct ptlrpc_sec_policy {
@@ -833,7 +1017,11 @@ struct ptlrpc_sec {
 	 */
 	struct list_head		      ps_gc_list;
 	unsigned long		      ps_gc_interval; /* in seconds */
+<<<<<<< HEAD
 	unsigned long		      ps_gc_next;     /* in seconds */
+=======
+	time64_t		      ps_gc_next;     /* in seconds */
+>>>>>>> v4.9.227
 };
 
 static inline int sec_is_reverse(struct ptlrpc_sec *sec)
@@ -846,7 +1034,10 @@ static inline int sec_is_rootonly(struct ptlrpc_sec *sec)
 	return (sec->ps_flvr.sf_flags & PTLRPC_SEC_FL_ROOTONLY);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 struct ptlrpc_svc_ctx {
 	atomic_t		    sc_refcount;
 	struct ptlrpc_sec_policy       *sc_policy;
@@ -898,7 +1089,10 @@ struct ptlrpc_bulk_sec_desc {
 	__u8	    bsd_data[0];    /* policy-specific token */
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  * round size up to next power of 2, for slab allocation.
  * @size must be sane (can't overflow after round up)
@@ -932,7 +1126,10 @@ const char *sptlrpc_flavor2name_base(__u32 flvr);
 char *sptlrpc_flavor2name_bulk(struct sptlrpc_flavor *sf,
 			       char *buf, int bufsize);
 char *sptlrpc_flavor2name(struct sptlrpc_flavor *sf, char *buf, int bufsize);
+<<<<<<< HEAD
 char *sptlrpc_secflags2str(__u32 flags, char *buf, int bufsize);
+=======
+>>>>>>> v4.9.227
 
 static inline
 struct ptlrpc_sec_policy *sptlrpc_policy_get(struct ptlrpc_sec_policy *policy)
@@ -995,23 +1192,32 @@ int cli_ctx_is_eternal(struct ptlrpc_cli_ctx *ctx)
 /*
  * sec get/put
  */
+<<<<<<< HEAD
 struct ptlrpc_sec *sptlrpc_sec_get(struct ptlrpc_sec *sec);
+=======
+>>>>>>> v4.9.227
 void sptlrpc_sec_put(struct ptlrpc_sec *sec);
 
 /*
  * internal apis which only used by policy implementation
  */
 int  sptlrpc_get_next_secid(void);
+<<<<<<< HEAD
 void sptlrpc_sec_destroy(struct ptlrpc_sec *sec);
+=======
+>>>>>>> v4.9.227
 
 /*
  * exported client context api
  */
 struct ptlrpc_cli_ctx *sptlrpc_cli_ctx_get(struct ptlrpc_cli_ctx *ctx);
 void sptlrpc_cli_ctx_put(struct ptlrpc_cli_ctx *ctx, int sync);
+<<<<<<< HEAD
 void sptlrpc_cli_ctx_expire(struct ptlrpc_cli_ctx *ctx);
 void sptlrpc_cli_ctx_wakeup(struct ptlrpc_cli_ctx *ctx);
 int sptlrpc_cli_ctx_display(struct ptlrpc_cli_ctx *ctx, char *buf, int bufsize);
+=======
+>>>>>>> v4.9.227
 
 /*
  * exported client context wrap/buffers
@@ -1046,6 +1252,7 @@ void sptlrpc_import_flush_all_ctx(struct obd_import *imp);
 int  sptlrpc_req_get_ctx(struct ptlrpc_request *req);
 void sptlrpc_req_put_ctx(struct ptlrpc_request *req, int sync);
 int  sptlrpc_req_refresh_ctx(struct ptlrpc_request *req, long timeout);
+<<<<<<< HEAD
 int  sptlrpc_req_replace_dead_ctx(struct ptlrpc_request *req);
 void sptlrpc_req_set_flavor(struct ptlrpc_request *req, int opcode);
 
@@ -1055,12 +1262,20 @@ int sptlrpc_parse_rule(char *param, struct sptlrpc_rule *rule);
 void sptlrpc_gc_add_sec(struct ptlrpc_sec *sec);
 void sptlrpc_gc_del_sec(struct ptlrpc_sec *sec);
 void sptlrpc_gc_add_ctx(struct ptlrpc_cli_ctx *ctx);
+=======
+void sptlrpc_req_set_flavor(struct ptlrpc_request *req, int opcode);
+
+/* gc */
+void sptlrpc_gc_add_sec(struct ptlrpc_sec *sec);
+void sptlrpc_gc_del_sec(struct ptlrpc_sec *sec);
+>>>>>>> v4.9.227
 
 /* misc */
 const char *sec2target_str(struct ptlrpc_sec *sec);
 /*
  * lprocfs
  */
+<<<<<<< HEAD
 #if defined (CONFIG_PROC_FS)
 struct proc_dir_entry;
 extern struct proc_dir_entry *sptlrpc_proc_root;
@@ -1070,6 +1285,9 @@ int sptlrpc_lprocfs_cliobd_attach(struct obd_device *dev);
 static inline int sptlrpc_lprocfs_cliobd_attach(struct obd_device *dev)
 { return 0; }
 #endif
+=======
+int sptlrpc_lprocfs_cliobd_attach(struct obd_device *dev);
+>>>>>>> v4.9.227
 
 /*
  * server side
@@ -1086,6 +1304,7 @@ int  sptlrpc_svc_wrap_reply(struct ptlrpc_request *req);
 void sptlrpc_svc_free_rs(struct ptlrpc_reply_state *rs);
 void sptlrpc_svc_ctx_addref(struct ptlrpc_request *req);
 void sptlrpc_svc_ctx_decref(struct ptlrpc_request *req);
+<<<<<<< HEAD
 void sptlrpc_svc_ctx_invalidate(struct ptlrpc_request *req);
 
 int  sptlrpc_target_export_check(struct obd_export *exp,
@@ -1105,6 +1324,13 @@ int sptlrpc_cli_install_rvs_ctx(struct obd_import *imp,
 int sptlrpc_enc_pool_add_user(void);
 int sptlrpc_enc_pool_del_user(void);
 int  sptlrpc_enc_pool_get_pages(struct ptlrpc_bulk_desc *desc);
+=======
+
+int  sptlrpc_target_export_check(struct obd_export *exp,
+				 struct ptlrpc_request *req);
+
+/* bulk security api */
+>>>>>>> v4.9.227
 void sptlrpc_enc_pool_put_pages(struct ptlrpc_bulk_desc *desc);
 
 int sptlrpc_cli_wrap_bulk(struct ptlrpc_request *req,
@@ -1131,7 +1357,10 @@ int sptlrpc_current_user_desc_size(void);
 int sptlrpc_pack_user_desc(struct lustre_msg *msg, int offset);
 int sptlrpc_unpack_user_desc(struct lustre_msg *req, int offset, int swabbed);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #define CFS_CAP_CHOWN_MASK (1 << CFS_CAP_CHOWN)
 #define CFS_CAP_SYS_RESOURCE_MASK (1 << CFS_CAP_SYS_RESOURCE)
 

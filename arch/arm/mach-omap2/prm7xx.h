@@ -22,8 +22,13 @@
 #ifndef __ARCH_ARM_MACH_OMAP2_PRM7XX_H
 #define __ARCH_ARM_MACH_OMAP2_PRM7XX_H
 
+<<<<<<< HEAD
 #include "prm44xx_54xx.h"
 #include "prcm-common.h"
+=======
+#include "prcm-common.h"
+#include "prm44xx_54xx.h"
+>>>>>>> v4.9.227
 #include "prm.h"
 
 #define DRA7XX_PRM_BASE		0x4ae06000
@@ -360,6 +365,10 @@
 /* PRM.L3INIT_PRM register offsets */
 #define DRA7XX_PM_L3INIT_PWRSTCTRL_OFFSET			0x0000
 #define DRA7XX_PM_L3INIT_PWRSTST_OFFSET				0x0004
+<<<<<<< HEAD
+=======
+#define DRA7XX_RM_L3INIT_PCIESS_RSTCTRL_OFFSET			0x0010
+>>>>>>> v4.9.227
 #define DRA7XX_PM_L3INIT_MMC1_WKDEP_OFFSET			0x0028
 #define DRA7XX_RM_L3INIT_MMC1_CONTEXT_OFFSET			0x002c
 #define DRA7XX_PM_L3INIT_MMC2_WKDEP_OFFSET			0x0030

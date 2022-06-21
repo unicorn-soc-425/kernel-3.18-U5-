@@ -15,7 +15,12 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/irq.h>
+=======
+#include <linux/irqchip.h>
+#include <linux/of_irq.h>
+>>>>>>> v4.9.227
 
 #include <asm/irq_cpu.h>
 #include <asm/mipsregs.h>
@@ -23,6 +28,7 @@
 #include <asm/mach-ath79/ath79.h>
 #include <asm/mach-ath79/ar71xx_regs.h>
 #include "common.h"
+<<<<<<< HEAD
 
 static void (*ath79_ip2_handler)(void);
 static void (*ath79_ip3_handler)(void);
@@ -133,12 +139,31 @@ static void ar934x_ip2_irq_dispatch(unsigned int irq, struct irq_desc *desc)
 		generic_handle_irq(ATH79_IP2_IRQ(0));
 	} else if (status & AR934X_PCIE_WMAC_INT_WMAC_ALL) {
 		ath79_ddr_wb_flush(AR934X_DDR_REG_FLUSH_WMAC);
+=======
+#include "machtypes.h"
+
+
+static void ar934x_ip2_irq_dispatch(struct irq_desc *desc)
+{
+	u32 status;
+
+	status = ath79_reset_rr(AR934X_RESET_REG_PCIE_WMAC_INT_STATUS);
+
+	if (status & AR934X_PCIE_WMAC_INT_PCIE_ALL) {
+		ath79_ddr_wb_flush(3);
+		generic_handle_irq(ATH79_IP2_IRQ(0));
+	} else if (status & AR934X_PCIE_WMAC_INT_WMAC_ALL) {
+		ath79_ddr_wb_flush(4);
+>>>>>>> v4.9.227
 		generic_handle_irq(ATH79_IP2_IRQ(1));
 	} else {
 		spurious_interrupt();
 	}
+<<<<<<< HEAD
 
 	enable_irq(irq);
+=======
+>>>>>>> v4.9.227
 }
 
 static void ar934x_ip2_irq_init(void)
@@ -153,18 +178,29 @@ static void ar934x_ip2_irq_init(void)
 	irq_set_chained_handler(ATH79_CPU_IRQ(2), ar934x_ip2_irq_dispatch);
 }
 
+<<<<<<< HEAD
 static void qca955x_ip2_irq_dispatch(unsigned int irq, struct irq_desc *desc)
 {
 	u32 status;
 
 	disable_irq_nosync(irq);
 
+=======
+static void qca955x_ip2_irq_dispatch(struct irq_desc *desc)
+{
+	u32 status;
+
+>>>>>>> v4.9.227
 	status = ath79_reset_rr(QCA955X_RESET_REG_EXT_INT_STATUS);
 	status &= QCA955X_EXT_INT_PCIE_RC1_ALL | QCA955X_EXT_INT_WMAC_ALL;
 
 	if (status == 0) {
 		spurious_interrupt();
+<<<<<<< HEAD
 		goto enable;
+=======
+		return;
+>>>>>>> v4.9.227
 	}
 
 	if (status & QCA955X_EXT_INT_PCIE_RC1_ALL) {
@@ -176,6 +212,7 @@ static void qca955x_ip2_irq_dispatch(unsigned int irq, struct irq_desc *desc)
 		/* TODO: flush DDR? */
 		generic_handle_irq(ATH79_IP2_IRQ(1));
 	}
+<<<<<<< HEAD
 
 enable:
 	enable_irq(irq);
@@ -187,6 +224,14 @@ static void qca955x_ip3_irq_dispatch(unsigned int irq, struct irq_desc *desc)
 
 	disable_irq_nosync(irq);
 
+=======
+}
+
+static void qca955x_ip3_irq_dispatch(struct irq_desc *desc)
+{
+	u32 status;
+
+>>>>>>> v4.9.227
 	status = ath79_reset_rr(QCA955X_RESET_REG_EXT_INT_STATUS);
 	status &= QCA955X_EXT_INT_PCIE_RC2_ALL |
 		  QCA955X_EXT_INT_USB1 |
@@ -194,7 +239,11 @@ static void qca955x_ip3_irq_dispatch(unsigned int irq, struct irq_desc *desc)
 
 	if (status == 0) {
 		spurious_interrupt();
+<<<<<<< HEAD
 		goto enable;
+=======
+		return;
+>>>>>>> v4.9.227
 	}
 
 	if (status & QCA955X_EXT_INT_USB1) {
@@ -211,9 +260,12 @@ static void qca955x_ip3_irq_dispatch(unsigned int irq, struct irq_desc *desc)
 		/* TODO: flush DDR? */
 		generic_handle_irq(ATH79_IP3_IRQ(2));
 	}
+<<<<<<< HEAD
 
 enable:
 	enable_irq(irq);
+=======
+>>>>>>> v4.9.227
 }
 
 static void qca955x_irq_init(void)
@@ -235,6 +287,7 @@ static void qca955x_irq_init(void)
 	irq_set_chained_handler(ATH79_CPU_IRQ(3), qca955x_ip3_irq_dispatch);
 }
 
+<<<<<<< HEAD
 asmlinkage void plat_irq_dispatch(void)
 {
 	unsigned long pending;
@@ -362,6 +415,41 @@ void __init arch_init_irq(void)
 	cp0_perfcount_irq = ATH79_MISC_IRQ(5);
 	mips_cpu_irq_init();
 	ath79_misc_irq_init();
+=======
+void __init arch_init_irq(void)
+{
+	unsigned irq_wb_chan2 = -1;
+	unsigned irq_wb_chan3 = -1;
+	bool misc_is_ar71xx;
+
+	if (mips_machtype == ATH79_MACH_GENERIC_OF) {
+		irqchip_init();
+		return;
+	}
+
+	if (soc_is_ar71xx() || soc_is_ar724x() ||
+	    soc_is_ar913x() || soc_is_ar933x()) {
+		irq_wb_chan2 = 3;
+		irq_wb_chan3 = 2;
+	} else if (soc_is_ar934x()) {
+		irq_wb_chan3 = 2;
+	}
+
+	ath79_cpu_irq_init(irq_wb_chan2, irq_wb_chan3);
+
+	if (soc_is_ar71xx() || soc_is_ar913x())
+		misc_is_ar71xx = true;
+	else if (soc_is_ar724x() ||
+		 soc_is_ar933x() ||
+		 soc_is_ar934x() ||
+		 soc_is_qca955x())
+		misc_is_ar71xx = false;
+	else
+		BUG();
+	ath79_misc_irq_init(
+		ath79_reset_base + AR71XX_RESET_REG_MISC_INT_STATUS,
+		ATH79_CPU_IRQ(6), ATH79_MISC_IRQ_BASE, misc_is_ar71xx);
+>>>>>>> v4.9.227
 
 	if (soc_is_ar934x())
 		ar934x_ip2_irq_init();

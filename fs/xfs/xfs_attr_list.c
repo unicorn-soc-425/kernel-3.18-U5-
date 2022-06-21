@@ -22,8 +22,11 @@
 #include "xfs_log_format.h"
 #include "xfs_trans_resv.h"
 #include "xfs_bit.h"
+<<<<<<< HEAD
 #include "xfs_sb.h"
 #include "xfs_ag.h"
+=======
+>>>>>>> v4.9.227
 #include "xfs_mount.h"
 #include "xfs_da_format.h"
 #include "xfs_da_btree.h"
@@ -39,7 +42,10 @@
 #include "xfs_trace.h"
 #include "xfs_buf_item.h"
 #include "xfs_cksum.h"
+<<<<<<< HEAD
 #include "xfs_dinode.h"
+=======
+>>>>>>> v4.9.227
 #include "xfs_dir2.h"
 
 STATIC int
@@ -68,7 +74,11 @@ xfs_attr_shortform_compare(const void *a, const void *b)
  * we have to calculate each entries' hashvalue and sort them before
  * we can begin returning them to the user.
  */
+<<<<<<< HEAD
 int
+=======
+static int
+>>>>>>> v4.9.227
 xfs_attr_shortform_list(xfs_attr_list_context_t *context)
 {
 	attrlist_cursor_kern_t *cursor;
@@ -109,18 +119,27 @@ xfs_attr_shortform_list(xfs_attr_list_context_t *context)
 					   sfe->flags,
 					   sfe->nameval,
 					   (int)sfe->namelen,
+<<<<<<< HEAD
 					   (int)sfe->valuelen,
 					   &sfe->nameval[sfe->namelen]);
 
+=======
+					   (int)sfe->valuelen);
+			if (error)
+				return error;
+>>>>>>> v4.9.227
 			/*
 			 * Either search callback finished early or
 			 * didn't fit it all in the buffer after all.
 			 */
 			if (context->seen_enough)
 				break;
+<<<<<<< HEAD
 
 			if (error)
 				return error;
+=======
+>>>>>>> v4.9.227
 			sfe = XFS_ATTR_SF_NEXTENTRY(sfe);
 		}
 		trace_xfs_attr_list_sf_all(context);
@@ -203,8 +222,12 @@ xfs_attr_shortform_list(xfs_attr_list_context_t *context)
 					sbp->flags,
 					sbp->name,
 					sbp->namelen,
+<<<<<<< HEAD
 					sbp->valuelen,
 					&sbp->name[sbp->namelen]);
+=======
+					sbp->valuelen);
+>>>>>>> v4.9.227
 		if (error) {
 			kmem_free(sbuf);
 			return error;
@@ -230,6 +253,10 @@ xfs_attr_node_list(xfs_attr_list_context_t *context)
 	int error, i;
 	struct xfs_buf *bp;
 	struct xfs_inode	*dp = context->dp;
+<<<<<<< HEAD
+=======
+	struct xfs_mount	*mp = dp->i_mount;
+>>>>>>> v4.9.227
 
 	trace_xfs_attr_node_list(context);
 
@@ -261,7 +288,12 @@ xfs_attr_node_list(xfs_attr_list_context_t *context)
 			case XFS_ATTR_LEAF_MAGIC:
 			case XFS_ATTR3_LEAF_MAGIC:
 				leaf = bp->b_addr;
+<<<<<<< HEAD
 				xfs_attr3_leaf_hdr_from_disk(&leafhdr, leaf);
+=======
+				xfs_attr3_leaf_hdr_from_disk(mp->m_attr_geo,
+							     &leafhdr, leaf);
+>>>>>>> v4.9.227
 				entries = xfs_attr3_leaf_entryp(leaf);
 				if (cursor->hashval > be32_to_cpu(
 						entries[leafhdr.count - 1].hashval)) {
@@ -345,7 +377,11 @@ xfs_attr_node_list(xfs_attr_list_context_t *context)
 			xfs_trans_brelse(NULL, bp);
 			return error;
 		}
+<<<<<<< HEAD
 		xfs_attr3_leaf_hdr_from_disk(&leafhdr, leaf);
+=======
+		xfs_attr3_leaf_hdr_from_disk(mp->m_attr_geo, &leafhdr, leaf);
+>>>>>>> v4.9.227
 		if (context->seen_enough || leafhdr.forw == 0)
 			break;
 		cursor->blkno = leafhdr.forw;
@@ -373,11 +409,19 @@ xfs_attr3_leaf_list_int(
 	struct xfs_attr_leaf_entry	*entry;
 	int				retval;
 	int				i;
+<<<<<<< HEAD
+=======
+	struct xfs_mount		*mp = context->dp->i_mount;
+>>>>>>> v4.9.227
 
 	trace_xfs_attr_list_leaf(context);
 
 	leaf = bp->b_addr;
+<<<<<<< HEAD
 	xfs_attr3_leaf_hdr_from_disk(&ichdr, leaf);
+=======
+	xfs_attr3_leaf_hdr_from_disk(mp->m_attr_geo, &ichdr, leaf);
+>>>>>>> v4.9.227
 	entries = xfs_attr3_leaf_entryp(leaf);
 
 	cursor = context->cursor;
@@ -416,6 +460,12 @@ xfs_attr3_leaf_list_int(
 	 */
 	retval = 0;
 	for (; i < ichdr.count; entry++, i++) {
+<<<<<<< HEAD
+=======
+		char *name;
+		int namelen, valuelen;
+
+>>>>>>> v4.9.227
 		if (be32_to_cpu(entry->hashval) != cursor->hashval) {
 			cursor->hashval = be32_to_cpu(entry->hashval);
 			cursor->offset = 0;
@@ -425,6 +475,7 @@ xfs_attr3_leaf_list_int(
 			continue;		/* skip incomplete entries */
 
 		if (entry->flags & XFS_ATTR_LOCAL) {
+<<<<<<< HEAD
 			xfs_attr_leaf_name_local_t *name_loc =
 				xfs_attr3_leaf_name_local(leaf, i);
 
@@ -475,6 +526,27 @@ xfs_attr3_leaf_list_int(
 			if (retval)
 				return retval;
 		}
+=======
+			xfs_attr_leaf_name_local_t *name_loc;
+
+			name_loc = xfs_attr3_leaf_name_local(leaf, i);
+			name = name_loc->nameval;
+			namelen = name_loc->namelen;
+			valuelen = be16_to_cpu(name_loc->valuelen);
+		} else {
+			xfs_attr_leaf_name_remote_t *name_rmt;
+
+			name_rmt = xfs_attr3_leaf_name_remote(leaf, i);
+			name = name_rmt->name;
+			namelen = name_rmt->namelen;
+			valuelen = be32_to_cpu(name_rmt->valuelen);
+		}
+
+		retval = context->put_listent(context, entry->flags,
+					      name, namelen, valuelen);
+		if (retval)
+			break;
+>>>>>>> v4.9.227
 		if (context->seen_enough)
 			break;
 		cursor->offset++;
@@ -512,7 +584,11 @@ xfs_attr_list_int(
 	xfs_inode_t *dp = context->dp;
 	uint		lock_mode;
 
+<<<<<<< HEAD
 	XFS_STATS_INC(xs_attr_list);
+=======
+	XFS_STATS_INC(dp->i_mount, xs_attr_list);
+>>>>>>> v4.9.227
 
 	if (XFS_FORCED_SHUTDOWN(dp->i_mount))
 		return -EIO;
@@ -551,8 +627,12 @@ xfs_attr_put_listent(
 	int		flags,
 	unsigned char	*name,
 	int		namelen,
+<<<<<<< HEAD
 	int		valuelen,
 	unsigned char	*value)
+=======
+	int		valuelen)
+>>>>>>> v4.9.227
 {
 	struct attrlist *alist = (struct attrlist *)context->alist;
 	attrlist_ent_t *aep;
@@ -581,7 +661,11 @@ xfs_attr_put_listent(
 		trace_xfs_attr_list_full(context);
 		alist->al_more = 1;
 		context->seen_enough = 1;
+<<<<<<< HEAD
 		return 1;
+=======
+		return 0;
+>>>>>>> v4.9.227
 	}
 
 	aep = (attrlist_ent_t *)&context->alist[context->firstu];

@@ -1,6 +1,10 @@
 /* Common methods for dibusb-based-receivers.
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> v4.9.227
  *
  *	This program is free software; you can redistribute it and/or modify it
  *	under the terms of the GNU General Public License as published by the Free
@@ -9,7 +13,10 @@
  * see Documentation/dvb/README.dvb-usb for more information
  */
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include "dibusb.h"
 
 /* Max transfer size done by I2C transfer functions */
@@ -63,6 +70,7 @@ EXPORT_SYMBOL(dibusb_pid_filter_ctrl);
 
 int dibusb_power_ctrl(struct dvb_usb_device *d, int onoff)
 {
+<<<<<<< HEAD
 	u8 b[3];
 	int ret;
 	b[0] = DIBUSB_REQ_SET_IOCTL;
@@ -70,44 +78,112 @@ int dibusb_power_ctrl(struct dvb_usb_device *d, int onoff)
 	b[2] = onoff ? DIBUSB_IOCTL_POWER_WAKEUP : DIBUSB_IOCTL_POWER_SLEEP;
 	ret = dvb_usb_generic_write(d,b,3);
 	msleep(10);
+=======
+	u8 *b;
+	int ret;
+
+	b = kmalloc(3, GFP_KERNEL);
+	if (!b)
+		return -ENOMEM;
+
+	b[0] = DIBUSB_REQ_SET_IOCTL;
+	b[1] = DIBUSB_IOCTL_CMD_POWER_MODE;
+	b[2] = onoff ? DIBUSB_IOCTL_POWER_WAKEUP : DIBUSB_IOCTL_POWER_SLEEP;
+
+	ret = dvb_usb_generic_write(d, b, 3);
+
+	kfree(b);
+
+	msleep(10);
+
+>>>>>>> v4.9.227
 	return ret;
 }
 EXPORT_SYMBOL(dibusb_power_ctrl);
 
 int dibusb2_0_streaming_ctrl(struct dvb_usb_adapter *adap, int onoff)
 {
+<<<<<<< HEAD
 	u8 b[3] = { 0 };
 	int ret;
 
 	if ((ret = dibusb_streaming_ctrl(adap,onoff)) < 0)
 		return ret;
+=======
+	int ret;
+	u8 *b;
+
+	b = kmalloc(3, GFP_KERNEL);
+	if (!b)
+		return -ENOMEM;
+
+	if ((ret = dibusb_streaming_ctrl(adap,onoff)) < 0)
+		goto ret;
+>>>>>>> v4.9.227
 
 	if (onoff) {
 		b[0] = DIBUSB_REQ_SET_STREAMING_MODE;
 		b[1] = 0x00;
+<<<<<<< HEAD
 		if ((ret = dvb_usb_generic_write(adap->dev,b,2)) < 0)
 			return ret;
+=======
+		ret = dvb_usb_generic_write(adap->dev, b, 2);
+		if (ret  < 0)
+			goto ret;
+>>>>>>> v4.9.227
 	}
 
 	b[0] = DIBUSB_REQ_SET_IOCTL;
 	b[1] = onoff ? DIBUSB_IOCTL_CMD_ENABLE_STREAM : DIBUSB_IOCTL_CMD_DISABLE_STREAM;
+<<<<<<< HEAD
 	return dvb_usb_generic_write(adap->dev,b,3);
+=======
+	ret = dvb_usb_generic_write(adap->dev, b, 3);
+
+ret:
+	kfree(b);
+	return ret;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(dibusb2_0_streaming_ctrl);
 
 int dibusb2_0_power_ctrl(struct dvb_usb_device *d, int onoff)
 {
+<<<<<<< HEAD
 	if (onoff) {
 		u8 b[3] = { DIBUSB_REQ_SET_IOCTL, DIBUSB_IOCTL_CMD_POWER_MODE, DIBUSB_IOCTL_POWER_WAKEUP };
 		return dvb_usb_generic_write(d,b,3);
 	} else
 		return 0;
+=======
+	u8 *b;
+	int ret;
+
+	if (!onoff)
+		return 0;
+
+	b = kmalloc(3, GFP_KERNEL);
+	if (!b)
+		return -ENOMEM;
+
+	b[0] = DIBUSB_REQ_SET_IOCTL;
+	b[1] = DIBUSB_IOCTL_CMD_POWER_MODE;
+	b[2] = DIBUSB_IOCTL_POWER_WAKEUP;
+
+	ret = dvb_usb_generic_write(d, b, 3);
+
+	kfree(b);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(dibusb2_0_power_ctrl);
 
 static int dibusb_i2c_msg(struct dvb_usb_device *d, u8 addr,
 			  u8 *wbuf, u16 wlen, u8 *rbuf, u16 rlen)
 {
+<<<<<<< HEAD
 	u8 sndbuf[MAX_XFER_SIZE]; /* lead(1) devaddr,direction(1) addr(2) data(wlen) (len(2) (when reading)) */
 	/* write only ? */
 	int wo = (rbuf == NULL || rlen == 0),
@@ -116,11 +192,30 @@ static int dibusb_i2c_msg(struct dvb_usb_device *d, u8 addr,
 	if (4 + wlen > sizeof(sndbuf)) {
 		warn("i2c wr: len=%d is too big!\n", wlen);
 		return -EOPNOTSUPP;
+=======
+	u8 *sndbuf;
+	int ret, wo, len;
+
+	/* write only ? */
+	wo = (rbuf == NULL || rlen == 0);
+
+	len = 2 + wlen + (wo ? 0 : 2);
+
+	sndbuf = kmalloc(MAX_XFER_SIZE, GFP_KERNEL);
+	if (!sndbuf)
+		return -ENOMEM;
+
+	if (4 + wlen > MAX_XFER_SIZE) {
+		warn("i2c wr: len=%d is too big!\n", wlen);
+		ret = -EOPNOTSUPP;
+		goto ret;
+>>>>>>> v4.9.227
 	}
 
 	sndbuf[0] = wo ? DIBUSB_REQ_I2C_WRITE : DIBUSB_REQ_I2C_READ;
 	sndbuf[1] = (addr << 1) | (wo ? 0 : 1);
 
+<<<<<<< HEAD
 	memcpy(&sndbuf[2],wbuf,wlen);
 
 	if (!wo) {
@@ -129,6 +224,20 @@ static int dibusb_i2c_msg(struct dvb_usb_device *d, u8 addr,
 	}
 
 	return dvb_usb_generic_rw(d,sndbuf,len,rbuf,rlen,0);
+=======
+	memcpy(&sndbuf[2], wbuf, wlen);
+
+	if (!wo) {
+		sndbuf[wlen + 2] = (rlen >> 8) & 0xff;
+		sndbuf[wlen + 3] = rlen & 0xff;
+	}
+
+	ret = dvb_usb_generic_rw(d, sndbuf, len, rbuf, rlen, 0);
+
+ret:
+	kfree(sndbuf);
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -196,6 +305,7 @@ int dibusb_read_eeprom_byte(struct dvb_usb_device *d, u8 offs, u8 *val)
 }
 EXPORT_SYMBOL(dibusb_read_eeprom_byte);
 
+<<<<<<< HEAD
 /* 3000MC/P stuff */
 // Config Adjacent channels  Perf -cal22
 static struct dibx000_agc_config dib3000p_mt2060_agc_config = {
@@ -354,6 +464,8 @@ int dibusb_dib3000mc_tuner_attach(struct dvb_usb_adapter *adap)
 EXPORT_SYMBOL(dibusb_dib3000mc_tuner_attach);
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * common remote control stuff
  */
@@ -490,11 +602,36 @@ EXPORT_SYMBOL(rc_map_dibusb_table);
 
 int dibusb_rc_query(struct dvb_usb_device *d, u32 *event, int *state)
 {
+<<<<<<< HEAD
 	u8 key[5],cmd = DIBUSB_REQ_POLL_REMOTE;
 	dvb_usb_generic_rw(d,&cmd,1,key,5,0);
 	dvb_usb_nec_rc_key_to_event(d,key,event,state);
 	if (key[0] != 0)
 		deb_info("key: %*ph\n", 5, key);
 	return 0;
+=======
+	u8 *buf;
+	int ret;
+
+	buf = kmalloc(5, GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+
+	buf[0] = DIBUSB_REQ_POLL_REMOTE;
+
+	ret = dvb_usb_generic_rw(d, buf, 1, buf, 5, 0);
+	if (ret < 0)
+		goto ret;
+
+	dvb_usb_nec_rc_key_to_event(d, buf, event, state);
+
+	if (buf[0] != 0)
+		deb_info("key: %*ph\n", 5, buf);
+
+ret:
+	kfree(buf);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(dibusb_rc_query);

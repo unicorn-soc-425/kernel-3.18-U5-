@@ -27,11 +27,20 @@
 #include <linux/mfd/samsung/irq.h>
 #include <linux/mfd/samsung/s2mpa01.h>
 #include <linux/mfd/samsung/s2mps11.h>
+<<<<<<< HEAD
 #include <linux/mfd/samsung/s2mps14.h>
 #include <linux/mfd/samsung/s2mpu02.h>
 #include <linux/mfd/samsung/s5m8763.h>
 #include <linux/mfd/samsung/s5m8767.h>
 #include <linux/regulator/machine.h>
+=======
+#include <linux/mfd/samsung/s2mps13.h>
+#include <linux/mfd/samsung/s2mps14.h>
+#include <linux/mfd/samsung/s2mps15.h>
+#include <linux/mfd/samsung/s2mpu02.h>
+#include <linux/mfd/samsung/s5m8763.h>
+#include <linux/mfd/samsung/s5m8767.h>
+>>>>>>> v4.9.227
 #include <linux/regmap.h>
 
 static const struct mfd_cell s5m8751_devs[] = {
@@ -67,16 +76,37 @@ static const struct mfd_cell s5m8767_devs[] = {
 
 static const struct mfd_cell s2mps11_devs[] = {
 	{
+<<<<<<< HEAD
 		.name = "s2mps11-pmic",
+=======
+		.name = "s2mps11-regulator",
+	}, {
+		.name = "s2mps14-rtc",
+>>>>>>> v4.9.227
 	}, {
 		.name = "s2mps11-clk",
 		.of_compatible = "samsung,s2mps11-clk",
 	}
 };
 
+<<<<<<< HEAD
 static const struct mfd_cell s2mps14_devs[] = {
 	{
 		.name = "s2mps14-pmic",
+=======
+static const struct mfd_cell s2mps13_devs[] = {
+	{ .name = "s2mps13-regulator", },
+	{ .name = "s2mps13-rtc", },
+	{
+		.name = "s2mps13-clk",
+		.of_compatible = "samsung,s2mps13-clk",
+	},
+};
+
+static const struct mfd_cell s2mps14_devs[] = {
+	{
+		.name = "s2mps14-regulator",
+>>>>>>> v4.9.227
 	}, {
 		.name = "s2mps14-rtc",
 	}, {
@@ -85,6 +115,20 @@ static const struct mfd_cell s2mps14_devs[] = {
 	}
 };
 
+<<<<<<< HEAD
+=======
+static const struct mfd_cell s2mps15_devs[] = {
+	{
+		.name = "s2mps15-regulator",
+	}, {
+		.name = "s2mps15-rtc",
+	}, {
+		.name = "s2mps13-clk",
+		.of_compatible = "samsung,s2mps13-clk",
+	},
+};
+
+>>>>>>> v4.9.227
 static const struct mfd_cell s2mpa01_devs[] = {
 	{
 		.name = "s2mpa01-pmic",
@@ -92,12 +136,18 @@ static const struct mfd_cell s2mpa01_devs[] = {
 };
 
 static const struct mfd_cell s2mpu02_devs[] = {
+<<<<<<< HEAD
 	{ .name = "s2mpu02-pmic", },
 	{ .name = "s2mpu02-rtc", },
 	{
 		.name = "s2mpu02-clk",
 		.of_compatible = "samsung,s2mpu02-clk",
 	}
+=======
+	{
+		.name = "s2mpu02-regulator",
+	},
+>>>>>>> v4.9.227
 };
 
 #ifdef CONFIG_OF
@@ -108,9 +158,21 @@ static const struct of_device_id sec_dt_match[] = {
 		.compatible = "samsung,s2mps11-pmic",
 		.data = (void *)S2MPS11X,
 	}, {
+<<<<<<< HEAD
 		.compatible = "samsung,s2mps14-pmic",
 		.data = (void *)S2MPS14X,
 	}, {
+=======
+		.compatible = "samsung,s2mps13-pmic",
+		.data = (void *)S2MPS13X,
+	}, {
+		.compatible = "samsung,s2mps14-pmic",
+		.data = (void *)S2MPS14X,
+	}, {
+		.compatible = "samsung,s2mps15-pmic",
+		.data = (void *)S2MPS15X,
+	}, {
+>>>>>>> v4.9.227
 		.compatible = "samsung,s2mpa01-pmic",
 		.data = (void *)S2MPA01,
 	}, {
@@ -194,6 +256,18 @@ static const struct regmap_config s2mps11_regmap_config = {
 	.cache_type = REGCACHE_FLAT,
 };
 
+<<<<<<< HEAD
+=======
+static const struct regmap_config s2mps13_regmap_config = {
+	.reg_bits = 8,
+	.val_bits = 8,
+
+	.max_register = S2MPS13_REG_LDODSCH5,
+	.volatile_reg = s2mps11_volatile,
+	.cache_type = REGCACHE_FLAT,
+};
+
+>>>>>>> v4.9.227
 static const struct regmap_config s2mps14_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
@@ -203,6 +277,18 @@ static const struct regmap_config s2mps14_regmap_config = {
 	.cache_type = REGCACHE_FLAT,
 };
 
+<<<<<<< HEAD
+=======
+static const struct regmap_config s2mps15_regmap_config = {
+	.reg_bits = 8,
+	.val_bits = 8,
+
+	.max_register = S2MPS15_REG_LDODSCH4,
+	.volatile_reg = s2mps11_volatile,
+	.cache_type = REGCACHE_FLAT,
+};
+
+>>>>>>> v4.9.227
 static const struct regmap_config s2mpu02_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
@@ -230,6 +316,41 @@ static const struct regmap_config s5m8767_regmap_config = {
 	.cache_type = REGCACHE_FLAT,
 };
 
+<<<<<<< HEAD
+=======
+static void sec_pmic_dump_rev(struct sec_pmic_dev *sec_pmic)
+{
+	unsigned int val;
+
+	/* For each device type, the REG_ID is always the first register */
+	if (!regmap_read(sec_pmic->regmap_pmic, S2MPS11_REG_ID, &val))
+		dev_dbg(sec_pmic->dev, "Revision: 0x%x\n", val);
+}
+
+static void sec_pmic_configure(struct sec_pmic_dev *sec_pmic)
+{
+	int err;
+
+	if (sec_pmic->device_type != S2MPS13X)
+		return;
+
+	if (sec_pmic->pdata->disable_wrstbi) {
+		/*
+		 * If WRSTBI pin is pulled down this feature must be disabled
+		 * because each Suspend to RAM will trigger buck voltage reset
+		 * to default values.
+		 */
+		err = regmap_update_bits(sec_pmic->regmap_pmic,
+					 S2MPS13_REG_WRSTBI,
+					 S2MPS13_REG_WRSTBI_MASK, 0x0);
+		if (err)
+			dev_warn(sec_pmic->dev,
+				 "Cannot initialize WRSTBI config: %d\n",
+				 err);
+	}
+}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_OF
 /*
  * Only the common platform data elements for s5m8767 are parsed here from the
@@ -246,10 +367,15 @@ static struct sec_platform_data *sec_pmic_i2c_parse_dt_pdata(
 	struct sec_platform_data *pd;
 
 	pd = devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pd) {
 		dev_err(dev, "could not allocate memory for pdata\n");
 		return ERR_PTR(-ENOMEM);
 	}
+=======
+	if (!pd)
+		return ERR_PTR(-ENOMEM);
+>>>>>>> v4.9.227
 
 	/*
 	 * ToDo: the 'wakeup' member in the platform data is more of a linux
@@ -257,6 +383,13 @@ static struct sec_platform_data *sec_pmic_i2c_parse_dt_pdata(
 	 * not parsed here.
 	 */
 
+<<<<<<< HEAD
+=======
+	pd->manual_poweroff = of_property_read_bool(dev->of_node,
+						"samsung,s2mps11-acokb-ground");
+	pd->disable_wrstbi = of_property_read_bool(dev->of_node,
+						"samsung,s2mps11-wrstbi-ground");
+>>>>>>> v4.9.227
 	return pd;
 }
 #else
@@ -312,7 +445,10 @@ static int sec_pmic_probe(struct i2c_client *i2c,
 	}
 	if (pdata) {
 		sec_pmic->device_type = pdata->device_type;
+<<<<<<< HEAD
 		sec_pmic->ono = pdata->ono;
+=======
+>>>>>>> v4.9.227
 		sec_pmic->irq_base = pdata->irq_base;
 		sec_pmic->wakeup = pdata->wakeup;
 		sec_pmic->pdata = pdata;
@@ -325,9 +461,21 @@ static int sec_pmic_probe(struct i2c_client *i2c,
 	case S2MPS11X:
 		regmap = &s2mps11_regmap_config;
 		break;
+<<<<<<< HEAD
 	case S2MPS14X:
 		regmap = &s2mps14_regmap_config;
 		break;
+=======
+	case S2MPS13X:
+		regmap = &s2mps13_regmap_config;
+		break;
+	case S2MPS14X:
+		regmap = &s2mps14_regmap_config;
+		break;
+	case S2MPS15X:
+		regmap = &s2mps15_regmap_config;
+		break;
+>>>>>>> v4.9.227
 	case S5M8763X:
 		regmap = &s5m8763_regmap_config;
 		break;
@@ -378,10 +526,24 @@ static int sec_pmic_probe(struct i2c_client *i2c,
 		sec_devs = s2mps11_devs;
 		num_sec_devs = ARRAY_SIZE(s2mps11_devs);
 		break;
+<<<<<<< HEAD
+=======
+	case S2MPS13X:
+		sec_devs = s2mps13_devs;
+		num_sec_devs = ARRAY_SIZE(s2mps13_devs);
+		break;
+>>>>>>> v4.9.227
 	case S2MPS14X:
 		sec_devs = s2mps14_devs;
 		num_sec_devs = ARRAY_SIZE(s2mps14_devs);
 		break;
+<<<<<<< HEAD
+=======
+	case S2MPS15X:
+		sec_devs = s2mps15_devs;
+		num_sec_devs = ARRAY_SIZE(s2mps15_devs);
+		break;
+>>>>>>> v4.9.227
 	case S2MPU02:
 		sec_devs = s2mpu02_devs;
 		num_sec_devs = ARRAY_SIZE(s2mpu02_devs);
@@ -390,6 +552,7 @@ static int sec_pmic_probe(struct i2c_client *i2c,
 		/* If this happens the probe function is problem */
 		BUG();
 	}
+<<<<<<< HEAD
 	ret = mfd_add_devices(sec_pmic->dev, -1, sec_devs, num_sec_devs, NULL,
 			      0, NULL);
 	if (ret)
@@ -411,12 +574,55 @@ static int sec_pmic_remove(struct i2c_client *i2c)
 	mfd_remove_devices(sec_pmic->dev);
 	sec_irq_exit(sec_pmic);
 	return 0;
+=======
+	ret = devm_mfd_add_devices(sec_pmic->dev, -1, sec_devs, num_sec_devs,
+				   NULL, 0, NULL);
+	if (ret)
+		return ret;
+
+	device_init_wakeup(sec_pmic->dev, sec_pmic->wakeup);
+	sec_pmic_configure(sec_pmic);
+	sec_pmic_dump_rev(sec_pmic);
+
+	return ret;
+}
+
+static void sec_pmic_shutdown(struct i2c_client *i2c)
+{
+	struct sec_pmic_dev *sec_pmic = i2c_get_clientdata(i2c);
+	unsigned int reg, mask;
+
+	if (!sec_pmic->pdata->manual_poweroff)
+		return;
+
+	switch (sec_pmic->device_type) {
+	case S2MPS11X:
+		reg = S2MPS11_REG_CTRL1;
+		mask = S2MPS11_CTRL1_PWRHOLD_MASK;
+		break;
+	default:
+		/*
+		 * Currently only one board with S2MPS11 needs this, so just
+		 * ignore the rest.
+		 */
+		dev_warn(sec_pmic->dev,
+			"Unsupported device %lu for manual power off\n",
+			sec_pmic->device_type);
+		return;
+	}
+
+	regmap_update_bits(sec_pmic->regmap_pmic, reg, mask, 0);
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_PM_SLEEP
 static int sec_pmic_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *i2c = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *i2c = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct sec_pmic_dev *sec_pmic = i2c_get_clientdata(i2c);
 
 	if (device_may_wakeup(dev))
@@ -432,6 +638,7 @@ static int sec_pmic_suspend(struct device *dev)
 	 */
 	disable_irq(sec_pmic->irq);
 
+<<<<<<< HEAD
 	switch (sec_pmic->device_type) {
 	case S2MPS14X:
 	case S2MPU02:
@@ -441,12 +648,18 @@ static int sec_pmic_suspend(struct device *dev)
 		break;
 	}
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int sec_pmic_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *i2c = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *i2c = to_i2c_client(dev);
+>>>>>>> v4.9.227
 	struct sec_pmic_dev *sec_pmic = i2c_get_clientdata(i2c);
 
 	if (device_may_wakeup(dev))
@@ -468,12 +681,19 @@ MODULE_DEVICE_TABLE(i2c, sec_pmic_id);
 static struct i2c_driver sec_pmic_driver = {
 	.driver = {
 		   .name = "sec_pmic",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		   .pm = &sec_pmic_pm_ops,
 		   .of_match_table = of_match_ptr(sec_dt_match),
 	},
 	.probe = sec_pmic_probe,
+<<<<<<< HEAD
 	.remove = sec_pmic_remove,
+=======
+	.shutdown = sec_pmic_shutdown,
+>>>>>>> v4.9.227
 	.id_table = sec_pmic_id,
 };
 

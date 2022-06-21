@@ -751,9 +751,12 @@ void gigaset_stop(struct cardstate *cs);
 /* Tell common.c that the driver is being unloaded. */
 int gigaset_shutdown(struct cardstate *cs);
 
+<<<<<<< HEAD
 /* Tell common.c that an skb has been sent. */
 void gigaset_skb_sent(struct bc_state *bcs, struct sk_buff *skb);
 
+=======
+>>>>>>> v4.9.227
 /* Append event to the queue.
  * Returns NULL on failure or a pointer to the event on success.
  * ptr must be kmalloc()ed (and not be freed by the caller).

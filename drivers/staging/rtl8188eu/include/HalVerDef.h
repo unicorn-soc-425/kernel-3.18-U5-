@@ -11,15 +11,19 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __HAL_VERSION_DEF_H__
 #define __HAL_VERSION_DEF_H__
 
+<<<<<<< HEAD
 enum HAL_IC_TYPE {
 	CHIP_8192S	=	0,
 	CHIP_8188C	=	1,
@@ -34,6 +38,8 @@ enum HAL_IC_TYPE {
 	CHIP_8192E	=	10,
 };
 
+=======
+>>>>>>> v4.9.227
 enum HAL_CHIP_TYPE {
 	TEST_CHIP	=	0,
 	NORMAL_CHIP	=	1,
@@ -55,6 +61,7 @@ enum HAL_VENDOR {
 	CHIP_VENDOR_UMC		=	1,
 };
 
+<<<<<<< HEAD
 enum HAL_RF_TYPE {
 	RF_TYPE_1T1R	=	0,
 	RF_TYPE_1T2R	=	1,
@@ -164,4 +171,12 @@ struct HAL_VERSION {
 #define IS_8723A_B_CUT(version)				\
 	((IS_8723_SERIES(version)) ? (IS_B_CUT(version) ? true : false) : false)
 
+=======
+struct HAL_VERSION {
+	enum HAL_CHIP_TYPE	ChipType;
+	enum HAL_CUT_VERSION	CUTVersion;
+	enum HAL_VENDOR		VendorType;
+};
+
+>>>>>>> v4.9.227
 #endif

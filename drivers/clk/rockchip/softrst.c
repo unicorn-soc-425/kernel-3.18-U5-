@@ -81,7 +81,11 @@ static int rockchip_softrst_deassert(struct reset_controller_dev *rcdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct reset_control_ops rockchip_softrst_ops = {
+=======
+static const struct reset_control_ops rockchip_softrst_ops = {
+>>>>>>> v4.9.227
 	.assert		= rockchip_softrst_assert,
 	.deassert	= rockchip_softrst_deassert,
 };

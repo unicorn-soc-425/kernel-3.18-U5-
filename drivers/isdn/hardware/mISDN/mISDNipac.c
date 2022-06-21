@@ -80,6 +80,10 @@ isac_ph_state_bh(struct dchannel *dch)
 		l1_event(dch->l1, HW_DEACT_CNF);
 		break;
 	case ISAC_IND_DR:
+<<<<<<< HEAD
+=======
+	case ISAC_IND_DR6:
+>>>>>>> v4.9.227
 		dch->state = 3;
 		l1_event(dch->l1, HW_DEACT_IND);
 		break;
@@ -112,7 +116,11 @@ isac_ph_state_bh(struct dchannel *dch)
 	pr_debug("%s: TE newstate %x\n", isac->name, dch->state);
 }
 
+<<<<<<< HEAD
 void
+=======
+static void
+>>>>>>> v4.9.227
 isac_empty_fifo(struct isac_hw *isac, int count)
 {
 	u8 *ptr;
@@ -660,6 +668,10 @@ isac_l1cmd(struct dchannel *dch, u32 cmd)
 		spin_lock_irqsave(isac->hwlock, flags);
 		if ((isac->state == ISAC_IND_EI) ||
 		    (isac->state == ISAC_IND_DR) ||
+<<<<<<< HEAD
+=======
+		    (isac->state == ISAC_IND_DR6) ||
+>>>>>>> v4.9.227
 		    (isac->state == ISAC_IND_RS))
 			ph_command(isac, ISAC_CMD_TIM);
 		else
@@ -1170,7 +1182,11 @@ mISDNipac_irq(struct ipac_hw *ipac, int maxloop)
 
 	if (ipac->type & IPAC_TYPE_IPACX) {
 		ista = ReadIPAC(ipac, ISACX_ISTA);
+<<<<<<< HEAD
 		while (ista && cnt--) {
+=======
+		while (ista && --cnt) {
+>>>>>>> v4.9.227
 			pr_debug("%s: ISTA %02x\n", ipac->name, ista);
 			if (ista & IPACX__ICA)
 				ipac_irq(&ipac->hscx[0], ista);
@@ -1182,7 +1198,11 @@ mISDNipac_irq(struct ipac_hw *ipac, int maxloop)
 		}
 	} else if (ipac->type & IPAC_TYPE_IPAC) {
 		ista = ReadIPAC(ipac, IPAC_ISTA);
+<<<<<<< HEAD
 		while (ista && cnt--) {
+=======
+		while (ista && --cnt) {
+>>>>>>> v4.9.227
 			pr_debug("%s: ISTA %02x\n", ipac->name, ista);
 			if (ista & (IPAC__ICD | IPAC__EXD)) {
 				istad = ReadISAC(isac, ISAC_ISTA);
@@ -1200,7 +1220,11 @@ mISDNipac_irq(struct ipac_hw *ipac, int maxloop)
 			ista = ReadIPAC(ipac, IPAC_ISTA);
 		}
 	} else if (ipac->type & IPAC_TYPE_HSCX) {
+<<<<<<< HEAD
 		while (cnt) {
+=======
+		while (--cnt) {
+>>>>>>> v4.9.227
 			ista = ReadIPAC(ipac, IPAC_ISTAB + ipac->hscx[1].off);
 			pr_debug("%s: B2 ISTA %02x\n", ipac->name, ista);
 			if (ista)
@@ -1211,7 +1235,10 @@ mISDNipac_irq(struct ipac_hw *ipac, int maxloop)
 				mISDNisac_irq(isac, istad);
 			if (0 == (ista | istad))
 				break;
+<<<<<<< HEAD
 			cnt--;
+=======
+>>>>>>> v4.9.227
 		}
 	}
 	if (cnt > maxloop) /* only for ISAC/HSCX without PCI IRQ test */

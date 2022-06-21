@@ -80,7 +80,10 @@ static int jffs2_garbage_collect_thread(void *_c)
 	siginitset(&hupmask, sigmask(SIGHUP));
 	allow_signal(SIGKILL);
 	allow_signal(SIGSTOP);
+<<<<<<< HEAD
 	allow_signal(SIGCONT);
+=======
+>>>>>>> v4.9.227
 	allow_signal(SIGHUP);
 
 	c->gc_task = current;
@@ -121,20 +124,31 @@ static int jffs2_garbage_collect_thread(void *_c)
 		/* Put_super will send a SIGKILL and then wait on the sem.
 		 */
 		while (signal_pending(current) || freezing(current)) {
+<<<<<<< HEAD
 			siginfo_t info;
+=======
+>>>>>>> v4.9.227
 			unsigned long signr;
 
 			if (try_to_freeze())
 				goto again;
 
+<<<<<<< HEAD
 			signr = dequeue_signal_lock(current, &current->blocked, &info);
+=======
+			signr = kernel_dequeue_signal(NULL);
+>>>>>>> v4.9.227
 
 			switch(signr) {
 			case SIGSTOP:
 				jffs2_dbg(1, "%s(): SIGSTOP received\n",
 					  __func__);
+<<<<<<< HEAD
 				set_current_state(TASK_STOPPED);
 				schedule();
+=======
+				kernel_signal_stop();
+>>>>>>> v4.9.227
 				break;
 
 			case SIGKILL:

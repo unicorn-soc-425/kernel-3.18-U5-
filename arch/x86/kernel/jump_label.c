@@ -13,6 +13,10 @@
 #include <linux/cpu.h>
 #include <asm/kprobes.h>
 #include <asm/alternative.h>
+<<<<<<< HEAD
+=======
+#include <asm/text-patching.h>
+>>>>>>> v4.9.227
 
 #ifdef HAVE_JUMP_LABEL
 
@@ -45,7 +49,11 @@ static void __jump_label_transform(struct jump_entry *entry,
 	const unsigned char default_nop[] = { STATIC_KEY_INIT_NOP };
 	const unsigned char *ideal_nop = ideal_nops[NOP_ATOMIC5];
 
+<<<<<<< HEAD
 	if (type == JUMP_LABEL_ENABLE) {
+=======
+	if (type == JUMP_LABEL_JMP) {
+>>>>>>> v4.9.227
 		if (init) {
 			/*
 			 * Jump label is enabled for the first time.

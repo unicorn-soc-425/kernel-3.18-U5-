@@ -147,8 +147,12 @@ error:
 	return err;
 }
 
+<<<<<<< HEAD
 int ssb_pcmcia_switch_core(struct ssb_bus *bus,
 			   struct ssb_device *dev)
+=======
+static int ssb_pcmcia_switch_core(struct ssb_bus *bus, struct ssb_device *dev)
+>>>>>>> v4.9.227
 {
 	int err;
 

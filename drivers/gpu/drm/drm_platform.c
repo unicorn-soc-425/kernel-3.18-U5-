@@ -48,8 +48,13 @@ static int drm_get_platform_dev(struct platform_device *platdev,
 	DRM_DEBUG("\n");
 
 	dev = drm_dev_alloc(driver, &platdev->dev);
+<<<<<<< HEAD
 	if (!dev)
 		return -ENOMEM;
+=======
+	if (IS_ERR(dev))
+		return PTR_ERR(dev);
+>>>>>>> v4.9.227
 
 	dev->platformdev = platdev;
 
@@ -68,6 +73,7 @@ err_free:
 	return ret;
 }
 
+<<<<<<< HEAD
 int drm_platform_set_busid(struct drm_device *dev, struct drm_master *master)
 {
 	int id;
@@ -86,6 +92,8 @@ int drm_platform_set_busid(struct drm_device *dev, struct drm_master *master)
 }
 EXPORT_SYMBOL(drm_platform_set_busid);
 
+=======
+>>>>>>> v4.9.227
 /**
  * drm_platform_init - Register a platform device with the DRM subsystem
  * @driver: DRM device driver

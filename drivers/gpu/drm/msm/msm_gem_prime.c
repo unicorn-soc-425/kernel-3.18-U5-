@@ -33,12 +33,20 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
 
 void *msm_gem_prime_vmap(struct drm_gem_object *obj)
 {
+<<<<<<< HEAD
 	return msm_gem_vaddr(obj);
+=======
+	return msm_gem_get_vaddr(obj);
+>>>>>>> v4.9.227
 }
 
 void msm_gem_prime_vunmap(struct drm_gem_object *obj, void *vaddr)
 {
+<<<<<<< HEAD
 	/* TODO msm_gem_vunmap() */
+=======
+	msm_gem_put_vaddr(obj);
+>>>>>>> v4.9.227
 }
 
 int msm_gem_prime_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma)
@@ -55,7 +63,11 @@ int msm_gem_prime_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma)
 struct drm_gem_object *msm_gem_prime_import_sg_table(struct drm_device *dev,
 		struct dma_buf_attachment *attach, struct sg_table *sg)
 {
+<<<<<<< HEAD
 	return msm_gem_import(dev, attach->dmabuf->size, sg);
+=======
+	return msm_gem_import(dev, attach->dmabuf, sg);
+>>>>>>> v4.9.227
 }
 
 int msm_gem_prime_pin(struct drm_gem_object *obj)
@@ -70,3 +82,13 @@ void msm_gem_prime_unpin(struct drm_gem_object *obj)
 	if (!obj->import_attach)
 		msm_gem_put_pages(obj);
 }
+<<<<<<< HEAD
+=======
+
+struct reservation_object *msm_gem_prime_res_obj(struct drm_gem_object *obj)
+{
+	struct msm_gem_object *msm_obj = to_msm_bo(obj);
+
+	return msm_obj->resv;
+}
+>>>>>>> v4.9.227

@@ -1,5 +1,9 @@
 /* Intel PRO/1000 Linux driver
+<<<<<<< HEAD
  * Copyright(c) 1999 - 2014 Intel Corporation.
+=======
+ * Copyright(c) 1999 - 2015 Intel Corporation.
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -2895,11 +2899,19 @@ static s32 __e1000_write_phy_reg_hv(struct e1000_hw *hw, u32 offset, u16 data,
 		if ((hw->phy.type == e1000_phy_82578) &&
 		    (hw->phy.revision >= 1) &&
 		    (hw->phy.addr == 2) &&
+<<<<<<< HEAD
 		    !(MAX_PHY_REG_ADDRESS & reg) && (data & (1 << 11))) {
 			u16 data2 = 0x7EFF;
 
 			ret_val = e1000_access_phy_debug_regs_hv(hw,
 								 (1 << 6) | 0x3,
+=======
+		    !(MAX_PHY_REG_ADDRESS & reg) && (data & BIT(11))) {
+			u16 data2 = 0x7EFF;
+
+			ret_val = e1000_access_phy_debug_regs_hv(hw,
+								 BIT(6) | 0x3,
+>>>>>>> v4.9.227
 								 &data2, false);
 			if (ret_val)
 				goto out;

@@ -385,6 +385,7 @@ static const struct snd_soc_component_driver sh4_ssi_component = {
 
 static int sh4_soc_dai_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_component(&pdev->dev, &sh4_ssi_component,
 					  sh4_ssi_dai, ARRAY_SIZE(sh4_ssi_dai));
 }
@@ -393,16 +394,27 @@ static int sh4_soc_dai_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_component(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_component(&pdev->dev, &sh4_ssi_component,
+					       sh4_ssi_dai,
+					       ARRAY_SIZE(sh4_ssi_dai));
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver sh4_ssi_driver = {
 	.driver = {
 			.name = "sh4-ssi-dai",
+<<<<<<< HEAD
 			.owner = THIS_MODULE,
 	},
 
 	.probe = sh4_soc_dai_probe,
 	.remove = sh4_soc_dai_remove,
+=======
+	},
+
+	.probe = sh4_soc_dai_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(sh4_ssi_driver);

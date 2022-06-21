@@ -6,7 +6,11 @@
  *
  * License 1: GPLv2
  *
+<<<<<<< HEAD
  * Copyright (c) 2014 Advanced Micro Devices, Inc.
+=======
+ * Copyright (c) 2014-2016 Advanced Micro Devices, Inc.
+>>>>>>> v4.9.227
  *
  * This file is free software; you may copy, redistribute and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +60,11 @@
  *
  * License 2: Modified BSD
  *
+<<<<<<< HEAD
  * Copyright (c) 2014 Advanced Micro Devices, Inc.
+=======
+ * Copyright (c) 2014-2016 Advanced Micro Devices, Inc.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -146,10 +154,15 @@ static int xgbe_dcb_ieee_setets(struct net_device *netdev,
 {
 	struct xgbe_prv_data *pdata = netdev_priv(netdev);
 	unsigned int i, tc_ets, tc_ets_weight;
+<<<<<<< HEAD
+=======
+	u8 max_tc = 0;
+>>>>>>> v4.9.227
 
 	tc_ets = 0;
 	tc_ets_weight = 0;
 	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
+<<<<<<< HEAD
 		DBGPR("  TC%u: tx_bw=%hhu, rx_bw=%hhu, tsa=%hhu\n", i,
 		      ets->tc_tx_bw[i], ets->tc_rx_bw[i], ets->tc_tsa[i]);
 		DBGPR("  PRIO%u: TC=%hhu\n", i, ets->prio_tc[i]);
@@ -160,6 +173,18 @@ static int xgbe_dcb_ieee_setets(struct net_device *netdev,
 
 		if (ets->prio_tc[i] >= pdata->hw_feat.tc_cnt)
 			return -EINVAL;
+=======
+		netif_dbg(pdata, drv, netdev,
+			  "TC%u: tx_bw=%hhu, rx_bw=%hhu, tsa=%hhu\n", i,
+			  ets->tc_tx_bw[i], ets->tc_rx_bw[i],
+			  ets->tc_tsa[i]);
+		netif_dbg(pdata, drv, netdev, "PRIO%u: TC=%hhu\n", i,
+			  ets->prio_tc[i]);
+
+		max_tc = max_t(u8, max_tc, ets->prio_tc[i]);
+		if ((ets->tc_tx_bw[i] || ets->tc_tsa[i]))
+			max_tc = max_t(u8, max_tc, i);
+>>>>>>> v4.9.227
 
 		switch (ets->tc_tsa[i]) {
 		case IEEE_8021QAZ_TSA_STRICT:
@@ -168,15 +193,39 @@ static int xgbe_dcb_ieee_setets(struct net_device *netdev,
 			tc_ets = 1;
 			tc_ets_weight += ets->tc_tx_bw[i];
 			break;
+<<<<<<< HEAD
 
 		default:
+=======
+		default:
+			netif_err(pdata, drv, netdev,
+				  "unsupported TSA algorithm (%hhu)\n",
+				  ets->tc_tsa[i]);
+>>>>>>> v4.9.227
 			return -EINVAL;
 		}
 	}
 
+<<<<<<< HEAD
 	/* Weights must add up to 100% */
 	if (tc_ets && (tc_ets_weight != 100))
 		return -EINVAL;
+=======
+	/* Check maximum traffic class requested */
+	if (max_tc >= pdata->hw_feat.tc_cnt) {
+		netif_err(pdata, drv, netdev,
+			  "exceeded number of supported traffic classes\n");
+		return -EINVAL;
+	}
+
+	/* Weights must add up to 100% */
+	if (tc_ets && (tc_ets_weight != 100)) {
+		netif_err(pdata, drv, netdev,
+			  "sum of ETS algorithm weights is not 100 (%u)\n",
+			  tc_ets_weight);
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 
 	if (!pdata->ets) {
 		pdata->ets = devm_kzalloc(pdata->dev, sizeof(*pdata->ets),
@@ -185,6 +234,10 @@ static int xgbe_dcb_ieee_setets(struct net_device *netdev,
 			return -ENOMEM;
 	}
 
+<<<<<<< HEAD
+=======
+	pdata->num_tcs = max_tc + 1;
+>>>>>>> v4.9.227
 	memcpy(pdata->ets, ets, sizeof(*pdata->ets));
 
 	pdata->hw_if.config_dcb_tc(pdata);
@@ -214,8 +267,21 @@ static int xgbe_dcb_ieee_setpfc(struct net_device *netdev,
 {
 	struct xgbe_prv_data *pdata = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	DBGPR("  cap=%hhu, en=%hhx, mbc=%hhu, delay=%hhu\n",
 	      pfc->pfc_cap, pfc->pfc_en, pfc->mbc, pfc->delay);
+=======
+	netif_dbg(pdata, drv, netdev,
+		  "cap=%hhu, en=%#hhx, mbc=%hhu, delay=%hhu\n",
+		  pfc->pfc_cap, pfc->pfc_en, pfc->mbc, pfc->delay);
+
+	/* Check PFC for supported number of traffic classes */
+	if (pfc->pfc_en & ~((1 << pdata->hw_feat.tc_cnt) - 1)) {
+		netif_err(pdata, drv, netdev,
+			  "PFC requested for unsupported traffic class\n");
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 
 	if (!pdata->pfc) {
 		pdata->pfc = devm_kzalloc(pdata->dev, sizeof(*pdata->pfc),
@@ -238,9 +304,16 @@ static u8 xgbe_dcb_getdcbx(struct net_device *netdev)
 
 static u8 xgbe_dcb_setdcbx(struct net_device *netdev, u8 dcbx)
 {
+<<<<<<< HEAD
 	u8 support = xgbe_dcb_getdcbx(netdev);
 
 	DBGPR("  DCBX=%#hhx\n", dcbx);
+=======
+	struct xgbe_prv_data *pdata = netdev_priv(netdev);
+	u8 support = xgbe_dcb_getdcbx(netdev);
+
+	netif_dbg(pdata, drv, netdev, "DCBX=%#hhx\n", dcbx);
+>>>>>>> v4.9.227
 
 	if (dcbx & ~support)
 		return 1;

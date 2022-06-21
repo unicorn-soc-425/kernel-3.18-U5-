@@ -63,6 +63,10 @@ struct as3935_state {
 	struct delayed_work work;
 
 	u32 tune_cap;
+<<<<<<< HEAD
+=======
+	u8 buffer[16]; /* 8-bit data + 56-bit padding + 64-bit timestamp */
+>>>>>>> v4.9.227
 	u8 buf[2] ____cacheline_aligned;
 };
 
@@ -71,7 +75,12 @@ static const struct iio_chan_spec as3935_channels[] = {
 		.type           = IIO_PROXIMITY,
 		.info_mask_separate =
 			BIT(IIO_CHAN_INFO_RAW) |
+<<<<<<< HEAD
 			BIT(IIO_CHAN_INFO_PROCESSED),
+=======
+			BIT(IIO_CHAN_INFO_PROCESSED) |
+			BIT(IIO_CHAN_INFO_SCALE),
+>>>>>>> v4.9.227
 		.scan_index     = 0,
 		.scan_type = {
 			.sign           = 'u',
@@ -94,7 +103,11 @@ static int as3935_read(struct as3935_state *st, unsigned int reg, int *val)
 	*val = ret;
 
 	return 0;
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> v4.9.227
 
 static int as3935_write(struct as3935_state *st,
 				unsigned int reg,
@@ -106,7 +119,11 @@ static int as3935_write(struct as3935_state *st,
 	buf[1] = val;
 
 	return spi_write(st->spi, buf, 2);
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> v4.9.227
 
 static ssize_t as3935_sensor_sensitivity_show(struct device *dev,
 					struct device_attribute *attr,
@@ -121,7 +138,11 @@ static ssize_t as3935_sensor_sensitivity_show(struct device *dev,
 	val = (val & AS3935_AFE_MASK) >> 1;
 
 	return sprintf(buf, "%d\n", val);
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> v4.9.227
 
 static ssize_t as3935_sensor_sensitivity_store(struct device *dev,
 					struct device_attribute *attr,
@@ -141,7 +162,11 @@ static ssize_t as3935_sensor_sensitivity_store(struct device *dev,
 	as3935_write(st, AS3935_AFE_GAIN, val << 1);
 
 	return len;
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> v4.9.227
 
 static IIO_DEVICE_ATTR(sensor_sensitivity, S_IRUGO | S_IWUSR,
 	as3935_sensor_sensitivity_show, as3935_sensor_sensitivity_store, 0);
@@ -180,7 +205,16 @@ static int as3935_read_raw(struct iio_dev *indio_dev,
 		/* storm out of range */
 		if (*val == AS3935_DATA_MASK)
 			return -EINVAL;
+<<<<<<< HEAD
 		*val *= 1000;
+=======
+
+		if (m == IIO_CHAN_INFO_PROCESSED)
+			*val *= 1000;
+		break;
+	case IIO_CHAN_INFO_SCALE:
+		*val = 1000;
+>>>>>>> v4.9.227
 		break;
 	default:
 		return -EINVAL;
@@ -205,15 +239,26 @@ static irqreturn_t as3935_trigger_handler(int irq, void *private)
 	ret = as3935_read(st, AS3935_DATA, &val);
 	if (ret)
 		goto err_read;
+<<<<<<< HEAD
 	val &= AS3935_DATA_MASK;
 	val *= 1000;
 
 	iio_push_to_buffers_with_timestamp(indio_dev, &val, pf->timestamp);
+=======
+
+	st->buffer[0] = val & AS3935_DATA_MASK;
+	iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
+					   iio_get_time_ns(indio_dev));
+>>>>>>> v4.9.227
 err_read:
 	iio_trigger_notify_done(indio_dev->trig);
 
 	return IRQ_HANDLED;
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> v4.9.227
 
 static const struct iio_trigger_ops iio_interrupt_trigger_ops = {
 	.owner = THIS_MODULE,
@@ -223,14 +268,28 @@ static void as3935_event_work(struct work_struct *work)
 {
 	struct as3935_state *st;
 	int val;
+<<<<<<< HEAD
 
 	st = container_of(work, struct as3935_state, work.work);
 
 	as3935_read(st, AS3935_INT, &val);
+=======
+	int ret;
+
+	st = container_of(work, struct as3935_state, work.work);
+
+	ret = as3935_read(st, AS3935_INT, &val);
+	if (ret) {
+		dev_warn(&st->spi->dev, "read error\n");
+		return;
+	}
+
+>>>>>>> v4.9.227
 	val &= AS3935_INT_MASK;
 
 	switch (val) {
 	case AS3935_EVENT_INT:
+<<<<<<< HEAD
 		iio_trigger_poll(st->trig);
 		break;
 	case AS3935_NOISE_INT:
@@ -238,6 +297,15 @@ static void as3935_event_work(struct work_struct *work)
 		break;
 	}
 };
+=======
+		iio_trigger_poll_chained(st->trig);
+		break;
+	case AS3935_NOISE_INT:
+		dev_warn(&st->spi->dev, "noise level is too high\n");
+		break;
+	}
+}
+>>>>>>> v4.9.227
 
 static irqreturn_t as3935_interrupt_handler(int irq, void *private)
 {
@@ -268,9 +336,15 @@ static void calibrate_as3935(struct as3935_state *st)
 }
 
 #ifdef CONFIG_PM_SLEEP
+<<<<<<< HEAD
 static int as3935_suspend(struct spi_device *spi, pm_message_t msg)
 {
 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+=======
+static int as3935_suspend(struct device *dev)
+{
+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>>>>>>> v4.9.227
 	struct as3935_state *st = iio_priv(indio_dev);
 	int val, ret;
 
@@ -288,9 +362,15 @@ err_suspend:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int as3935_resume(struct spi_device *spi)
 {
 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+=======
+static int as3935_resume(struct device *dev)
+{
+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>>>>>>> v4.9.227
 	struct as3935_state *st = iio_priv(indio_dev);
 	int val, ret;
 
@@ -308,9 +388,18 @@ err_resume:
 
 	return ret;
 }
+<<<<<<< HEAD
 #else
 #define as3935_suspend	NULL
 #define as3935_resume	NULL
+=======
+
+static SIMPLE_DEV_PM_OPS(as3935_pm_ops, as3935_suspend, as3935_resume);
+#define AS3935_PM_OPS (&as3935_pm_ops)
+
+#else
+#define AS3935_PM_OPS NULL
+>>>>>>> v4.9.227
 #endif
 
 static int as3935_probe(struct spi_device *spi)
@@ -333,7 +422,10 @@ static int as3935_probe(struct spi_device *spi)
 
 	st = iio_priv(indio_dev);
 	st->spi = spi;
+<<<<<<< HEAD
 	st->tune_cap = 0;
+=======
+>>>>>>> v4.9.227
 
 	spi_set_drvdata(spi, indio_dev);
 	mutex_init(&st->lock);
@@ -379,7 +471,11 @@ static int as3935_probe(struct spi_device *spi)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+=======
+	ret = iio_triggered_buffer_setup(indio_dev, iio_pollfunc_store_time,
+>>>>>>> v4.9.227
 		&as3935_trigger_handler, NULL);
 
 	if (ret) {
@@ -414,7 +510,11 @@ unregister_trigger:
 	iio_trigger_unregister(st->trig);
 
 	return ret;
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> v4.9.227
 
 static int as3935_remove(struct spi_device *spi)
 {
@@ -426,7 +526,17 @@ static int as3935_remove(struct spi_device *spi)
 	iio_trigger_unregister(st->trig);
 
 	return 0;
+<<<<<<< HEAD
 };
+=======
+}
+
+static const struct of_device_id as3935_of_match[] = {
+	{ .compatible = "ams,as3935", },
+	{ /* sentinel */ },
+};
+MODULE_DEVICE_TABLE(of, as3935_of_match);
+>>>>>>> v4.9.227
 
 static const struct spi_device_id as3935_id[] = {
 	{"as3935", 0},
@@ -437,17 +547,28 @@ MODULE_DEVICE_TABLE(spi, as3935_id);
 static struct spi_driver as3935_driver = {
 	.driver = {
 		.name	= "as3935",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(as3935_of_match),
+		.pm	= AS3935_PM_OPS,
+>>>>>>> v4.9.227
 	},
 	.probe		= as3935_probe,
 	.remove		= as3935_remove,
 	.id_table	= as3935_id,
+<<<<<<< HEAD
 	.suspend	= as3935_suspend,
 	.resume		= as3935_resume,
+=======
+>>>>>>> v4.9.227
 };
 module_spi_driver(as3935_driver);
 
 MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
 MODULE_DESCRIPTION("AS3935 lightning sensor");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS("spi:as3935");
+=======
+>>>>>>> v4.9.227

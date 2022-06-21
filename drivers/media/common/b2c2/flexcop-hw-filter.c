@@ -117,6 +117,13 @@ static void flexcop_pid_control(struct flexcop_device *fc,
 	deb_ts("setting pid: %5d %04x at index %d '%s'\n",
 			pid, pid, index, onoff ? "on" : "off");
 
+<<<<<<< HEAD
+=======
+	/* First 6 can be buggy - skip over them if option set */
+	if (fc->skip_6_hw_pid_filter)
+		index += 6;
+
+>>>>>>> v4.9.227
 	/* We could use bit magic here to reduce source code size.
 	 * I decided against it, but to use the real register names */
 	switch (index) {
@@ -170,7 +177,14 @@ static int flexcop_toggle_fullts_streaming(struct flexcop_device *fc, int onoff)
 int flexcop_pid_feed_control(struct flexcop_device *fc,
 		struct dvb_demux_feed *dvbdmxfeed, int onoff)
 {
+<<<<<<< HEAD
 	int max_pid_filter = 6 + fc->has_32_hw_pid_filter*32;
+=======
+	int max_pid_filter = 6;
+
+	max_pid_filter -= 6 * fc->skip_6_hw_pid_filter;
+	max_pid_filter += 32 * fc->has_32_hw_pid_filter;
+>>>>>>> v4.9.227
 
 	fc->feedcount += onoff ? 1 : -1; /* the number of PIDs/Feed currently requested */
 	if (dvbdmxfeed->index >= max_pid_filter)
@@ -217,7 +231,16 @@ void flexcop_hw_filter_init(struct flexcop_device *fc)
 {
 	int i;
 	flexcop_ibi_value v;
+<<<<<<< HEAD
 	for (i = 0; i < 6 + 32*fc->has_32_hw_pid_filter; i++)
+=======
+	int max_pid_filter = 6;
+
+	max_pid_filter -= 6 * fc->skip_6_hw_pid_filter;
+	max_pid_filter += 32 * fc->has_32_hw_pid_filter;
+
+	for (i = 0; i < max_pid_filter; i++)
+>>>>>>> v4.9.227
 		flexcop_pid_control(fc, i, 0x1fff, 0);
 
 	flexcop_pid_group_filter(fc, 0, 0x1fe0);

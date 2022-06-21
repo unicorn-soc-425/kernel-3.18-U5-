@@ -1,6 +1,10 @@
 /* toshiba.h -- Linux driver for accessing the SMM on Toshiba laptops 
  *
  * Copyright (c) 1996-2000  Jonathan A. Buzzard (jonathan@buzzard.org.uk)
+<<<<<<< HEAD
+=======
+ * Copyright (c) 2015  Azael Avalos <coproscefalo@gmail.com>
+>>>>>>> v4.9.227
  *
  * Thanks to Juergen Heinzl <juergen@monocerus.demon.co.uk> for the pointers
  * on making sure the structure is aligned and packed.
@@ -20,9 +24,24 @@
 #ifndef _UAPI_LINUX_TOSHIBA_H
 #define _UAPI_LINUX_TOSHIBA_H
 
+<<<<<<< HEAD
 #define TOSH_PROC "/proc/toshiba"
 #define TOSH_DEVICE "/dev/toshiba"
 #define TOSH_SMM _IOWR('t', 0x90, int)	/* broken: meant 24 bytes */
+=======
+/*
+ * Toshiba modules paths
+ */
+
+#define TOSH_PROC		"/proc/toshiba"
+#define TOSH_DEVICE		"/dev/toshiba"
+#define TOSHIBA_ACPI_PROC	"/proc/acpi/toshiba"
+#define TOSHIBA_ACPI_DEVICE	"/dev/toshiba_acpi"
+
+/*
+ * Toshiba SMM structure
+ */
+>>>>>>> v4.9.227
 
 typedef struct {
 	unsigned int eax;
@@ -33,5 +52,24 @@ typedef struct {
 	unsigned int edi __attribute__ ((packed));
 } SMMRegisters;
 
+<<<<<<< HEAD
+=======
+/*
+ * IOCTLs (0x90 - 0x91)
+ */
+
+#define TOSH_SMM		_IOWR('t', 0x90, SMMRegisters)
+/*
+ * Convenience toshiba_acpi command.
+ *
+ * The System Configuration Interface (SCI) is opened/closed internally
+ * to avoid userspace of buggy BIOSes.
+ *
+ * The toshiba_acpi module checks whether the eax register is set with
+ * SCI_GET (0xf300) or SCI_SET (0xf400), returning -EINVAL if not.
+ */
+#define TOSHIBA_ACPI_SCI	_IOWR('t', 0x91, SMMRegisters)
+
+>>>>>>> v4.9.227
 
 #endif /* _UAPI_LINUX_TOSHIBA_H */

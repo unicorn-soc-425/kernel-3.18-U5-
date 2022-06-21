@@ -1,6 +1,10 @@
 /*
  * usbduxsigma.c
+<<<<<<< HEAD
  * Copyright (C) 2011 Bernd Porr, Bernd.Porr@f2s.com
+=======
+ * Copyright (C) 2011-2015 Bernd Porr, mail@berndporr.me.uk
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +20,17 @@
 /*
  * Driver: usbduxsigma
  * Description: University of Stirling USB DAQ & INCITE Technology Limited
+<<<<<<< HEAD
  * Devices: (ITL) USB-DUX [usbduxsigma]
  * Author: Bernd Porr <BerndPorr@f2s.com>
  * Updated: 8 Nov 2011
  * Status: testing
+=======
+ * Devices: [ITL] USB-DUX-SIGMA (usbduxsigma)
+ * Author: Bernd Porr <mail@berndporr.me.uk>
+ * Updated: 20 July 2015
+ * Status: stable
+>>>>>>> v4.9.227
  */
 
 /*
@@ -39,19 +50,30 @@
  *   0.4: fixed D/A voltage range
  *   0.5: various bug fixes, health check at startup
  *   0.6: corrected wrong input range
+<<<<<<< HEAD
+=======
+ *   0.7: rewrite code that urb->interval is always 1
+>>>>>>> v4.9.227
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/fcntl.h>
 #include <linux/compiler.h>
 #include <asm/unaligned.h>
 
+<<<<<<< HEAD
 #include "comedi_fc.h"
 #include "../comedidev.h"
+=======
+#include "../comedi_usb.h"
+>>>>>>> v4.9.227
 
 /* timeout for the USB-transfer in ms*/
 #define BULK_TIMEOUT 1000
@@ -67,22 +89,37 @@
 #define USBDUXSUB_CPUCS 0xE600
 
 /* 300Hz max frequ under PWM */
+<<<<<<< HEAD
 #define MIN_PWM_PERIOD  ((long)(1E9/300))
 
 /* Default PWM frequency */
 #define PWM_DEFAULT_PERIOD ((long)(1E9/100))
+=======
+#define MIN_PWM_PERIOD  ((long)(1E9 / 300))
+
+/* Default PWM frequency */
+#define PWM_DEFAULT_PERIOD ((long)(1E9 / 100))
+>>>>>>> v4.9.227
 
 /* Number of channels (16 AD and offset)*/
 #define NUMCHANNELS 16
 
 /* Size of one A/D value */
+<<<<<<< HEAD
 #define SIZEADIN          ((sizeof(uint32_t)))
+=======
+#define SIZEADIN          ((sizeof(u32)))
+>>>>>>> v4.9.227
 
 /*
  * Size of the async input-buffer IN BYTES, the DIO state is transmitted
  * as the first byte.
  */
+<<<<<<< HEAD
 #define SIZEINBUF         (((NUMCHANNELS+1)*SIZEADIN))
+=======
+#define SIZEINBUF         (((NUMCHANNELS + 1) * SIZEADIN))
+>>>>>>> v4.9.227
 
 /* 16 bytes. */
 #define SIZEINSNBUF       16
@@ -91,20 +128,32 @@
 #define NUMOUTCHANNELS    8
 
 /* size of one value for the D/A converter: channel and value */
+<<<<<<< HEAD
 #define SIZEDAOUT          ((sizeof(uint8_t)+sizeof(uint16_t)))
+=======
+#define SIZEDAOUT          ((sizeof(u8) + sizeof(uint16_t)))
+>>>>>>> v4.9.227
 
 /*
  * Size of the output-buffer in bytes
  * Actually only the first 4 triplets are used but for the
  * high speed mode we need to pad it to 8 (microframes).
  */
+<<<<<<< HEAD
 #define SIZEOUTBUF         ((8*SIZEDAOUT))
+=======
+#define SIZEOUTBUF         ((8 * SIZEDAOUT))
+>>>>>>> v4.9.227
 
 /*
  * Size of the buffer for the dux commands: just now max size is determined
  * by the analogue out + command byte + panic bytes...
  */
+<<<<<<< HEAD
 #define SIZEOFDUXBUFFER    ((8*SIZEDAOUT+2))
+=======
+#define SIZEOFDUXBUFFER    ((8 * SIZEDAOUT + 2))
+>>>>>>> v4.9.227
 
 /* Number of in-URBs which receive the data: min=2 */
 #define NUMOFINBUFFERSFULL     5
@@ -124,7 +173,11 @@
 #define RETRIES 10
 
 /* bulk transfer commands to usbduxsigma */
+<<<<<<< HEAD
 #define USBBUXSIGMA_AD_CMD		0
+=======
+#define USBBUXSIGMA_AD_CMD		9
+>>>>>>> v4.9.227
 #define USBDUXSIGMA_DA_CMD		1
 #define USBDUXSIGMA_DIO_CFG_CMD		2
 #define USBDUXSIGMA_DIO_BITS_CMD	3
@@ -151,22 +204,33 @@ struct usbduxsigma_private {
 	/* PWM period */
 	unsigned int pwm_period;
 	/* PWM internal delay for the GPIF in the FX2 */
+<<<<<<< HEAD
 	uint8_t pwm_delay;
+=======
+	u8 pwm_delay;
+>>>>>>> v4.9.227
 	/* size of the PWM buffer which holds the bit pattern */
 	int pwm_buf_sz;
 	/* input buffer for the ISO-transfer */
 	__be32 *in_buf;
 	/* input buffer for single insn */
+<<<<<<< HEAD
 	uint8_t *insn_buf;
+=======
+	u8 *insn_buf;
+>>>>>>> v4.9.227
 
 	unsigned high_speed:1;
 	unsigned ai_cmd_running:1;
 	unsigned ao_cmd_running:1;
 	unsigned pwm_cmd_running:1;
 
+<<<<<<< HEAD
 	/* number of samples to acquire */
 	int ai_sample_count;
 	int ao_sample_count;
+=======
+>>>>>>> v4.9.227
 	/* time between samples in units of the timer */
 	unsigned int ai_timer;
 	unsigned int ao_timer;
@@ -176,8 +240,13 @@ struct usbduxsigma_private {
 	/* interval in frames/uframes */
 	unsigned int ai_interval;
 	/* commands */
+<<<<<<< HEAD
 	uint8_t *dux_commands;
 	struct semaphore sem;
+=======
+	u8 *dux_commands;
+	struct mutex mut;
+>>>>>>> v4.9.227
 };
 
 static void usbduxsigma_unlink_urbs(struct urb **urbs, int num_urbs)
@@ -203,19 +272,79 @@ static int usbduxsigma_ai_cancel(struct comedi_device *dev,
 {
 	struct usbduxsigma_private *devpriv = dev->private;
 
+<<<<<<< HEAD
 	down(&devpriv->sem);
 	/* unlink only if it is really running */
 	usbduxsigma_ai_stop(dev, devpriv->ai_cmd_running);
 	up(&devpriv->sem);
+=======
+	mutex_lock(&devpriv->mut);
+	/* unlink only if it is really running */
+	usbduxsigma_ai_stop(dev, devpriv->ai_cmd_running);
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void usbduxsigma_ai_handle_urb(struct comedi_device *dev,
+				      struct comedi_subdevice *s,
+				      struct urb *urb)
+{
+	struct usbduxsigma_private *devpriv = dev->private;
+	struct comedi_async *async = s->async;
+	struct comedi_cmd *cmd = &async->cmd;
+	u32 val;
+	int ret;
+	int i;
+
+	if ((urb->actual_length > 0) && (urb->status != -EXDEV)) {
+		devpriv->ai_counter--;
+		if (devpriv->ai_counter == 0) {
+			devpriv->ai_counter = devpriv->ai_timer;
+
+			/*
+			 * Get the data from the USB bus and hand it over
+			 * to comedi. Note, first byte is the DIO state.
+			 */
+			for (i = 0; i < cmd->chanlist_len; i++) {
+				val = be32_to_cpu(devpriv->in_buf[i + 1]);
+				val &= 0x00ffffff; /* strip status byte */
+				val = comedi_offset_munge(s, val);
+				if (!comedi_buf_write_samples(s, &val, 1))
+					return;
+			}
+
+			if (cmd->stop_src == TRIG_COUNT &&
+			    async->scans_done >= cmd->stop_arg)
+				async->events |= COMEDI_CB_EOA;
+		}
+	}
+
+	/* if command is still running, resubmit urb */
+	if (!(async->events & COMEDI_CB_CANCEL_MASK)) {
+		urb->dev = comedi_to_usb_dev(dev);
+		ret = usb_submit_urb(urb, GFP_ATOMIC);
+		if (ret < 0) {
+			dev_err(dev->class_dev, "urb resubmit failed (%d)\n",
+				ret);
+			if (ret == -EL2NSYNC)
+				dev_err(dev->class_dev,
+					"buggy USB host controller or bug in IRQ handler\n");
+			async->events |= COMEDI_CB_ERROR;
+		}
+	}
+}
+
+>>>>>>> v4.9.227
 static void usbduxsigma_ai_urb_complete(struct urb *urb)
 {
 	struct comedi_device *dev = urb->context;
 	struct usbduxsigma_private *devpriv = dev->private;
 	struct comedi_subdevice *s = dev->read_subdev;
+<<<<<<< HEAD
 	struct comedi_cmd *cmd = &s->async->cmd;
 	unsigned int dio_state;
 	uint32_t val;
@@ -223,11 +352,25 @@ static void usbduxsigma_ai_urb_complete(struct urb *urb)
 	int i;
 
 	/* first we test if something unusual has just happened */
+=======
+	struct comedi_async *async = s->async;
+
+	/* exit if not running a command, do not resubmit urb */
+	if (!devpriv->ai_cmd_running)
+		return;
+
+>>>>>>> v4.9.227
 	switch (urb->status) {
 	case 0:
 		/* copy the result in the transfer buffer */
 		memcpy(devpriv->in_buf, urb->transfer_buffer, SIZEINBUF);
+<<<<<<< HEAD
 		break;
+=======
+		usbduxsigma_ai_handle_urb(dev, s, urb);
+		break;
+
+>>>>>>> v4.9.227
 	case -EILSEQ:
 		/*
 		 * error in the ISOchronous data
@@ -235,7 +378,11 @@ static void usbduxsigma_ai_urb_complete(struct urb *urb)
 		 * and recycle the last data byte
 		 */
 		dev_dbg(dev->class_dev, "CRC error in ISO IN stream\n");
+<<<<<<< HEAD
 
+=======
+		usbduxsigma_ai_handle_urb(dev, s, urb);
+>>>>>>> v4.9.227
 		break;
 
 	case -ECONNRESET:
@@ -243,6 +390,7 @@ static void usbduxsigma_ai_urb_complete(struct urb *urb)
 	case -ESHUTDOWN:
 	case -ECONNABORTED:
 		/* happens after an unlink command */
+<<<<<<< HEAD
 		if (devpriv->ai_cmd_running) {
 			usbduxsigma_ai_stop(dev, 0);	/* w/o unlink */
 			/* we are still running a command, tell comedi */
@@ -323,6 +471,26 @@ static void usbduxsigma_ai_urb_complete(struct urb *urb)
 	}
 	/* tell comedi that data is there */
 	s->async->events |= (COMEDI_CB_BLOCK | COMEDI_CB_EOS);
+=======
+		async->events |= COMEDI_CB_ERROR;
+		break;
+
+	default:
+		/* a real error */
+		dev_err(dev->class_dev, "non-zero urb status (%d)\n",
+			urb->status);
+		async->events |= COMEDI_CB_ERROR;
+		break;
+	}
+
+	/*
+	 * comedi_handle_events() cannot be used in this driver. The (*cancel)
+	 * operation would unlink the urb.
+	 */
+	if (async->events & COMEDI_CB_CANCEL_MASK)
+		usbduxsigma_ai_stop(dev, 0);
+
+>>>>>>> v4.9.227
 	comedi_event(dev, s);
 }
 
@@ -341,14 +509,22 @@ static int usbduxsigma_ao_cancel(struct comedi_device *dev,
 {
 	struct usbduxsigma_private *devpriv = dev->private;
 
+<<<<<<< HEAD
 	down(&devpriv->sem);
 	/* unlink only if it is really running */
 	usbduxsigma_ao_stop(dev, devpriv->ao_cmd_running);
 	up(&devpriv->sem);
+=======
+	mutex_lock(&devpriv->mut);
+	/* unlink only if it is really running */
+	usbduxsigma_ao_stop(dev, devpriv->ao_cmd_running);
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void usbduxsigma_ao_urb_complete(struct urb *urb)
 {
 	struct comedi_device *dev = urb->context;
@@ -407,6 +583,27 @@ static void usbduxsigma_ao_urb_complete(struct urb *urb)
 				comedi_event(dev, s);
 				return;
 			}
+=======
+static void usbduxsigma_ao_handle_urb(struct comedi_device *dev,
+				      struct comedi_subdevice *s,
+				      struct urb *urb)
+{
+	struct usbduxsigma_private *devpriv = dev->private;
+	struct comedi_async *async = s->async;
+	struct comedi_cmd *cmd = &async->cmd;
+	u8 *datap;
+	int ret;
+	int i;
+
+	devpriv->ao_counter--;
+	if (devpriv->ao_counter == 0) {
+		devpriv->ao_counter = devpriv->ao_timer;
+
+		if (cmd->stop_src == TRIG_COUNT &&
+		    async->scans_done >= cmd->stop_arg) {
+			async->events |= COMEDI_CB_EOA;
+			return;
+>>>>>>> v4.9.227
 		}
 
 		/* transmit data to the USB bus */
@@ -416,6 +613,7 @@ static void usbduxsigma_ao_urb_complete(struct urb *urb)
 			unsigned int chan = CR_CHAN(cmd->chanlist[i]);
 			unsigned short val;
 
+<<<<<<< HEAD
 			ret = comedi_buf_get(s, &val);
 			if (ret < 0) {
 				dev_err(dev->class_dev, "buffer underflow\n");
@@ -456,12 +654,93 @@ static void usbduxsigma_ao_urb_complete(struct urb *urb)
 	}
 }
 
+=======
+			if (!comedi_buf_read_samples(s, &val, 1)) {
+				dev_err(dev->class_dev, "buffer underflow\n");
+				async->events |= COMEDI_CB_OVERFLOW;
+				return;
+			}
+
+			*datap++ = val;
+			*datap++ = chan;
+			s->readback[chan] = val;
+		}
+	}
+
+	/* if command is still running, resubmit urb */
+	if (!(async->events & COMEDI_CB_CANCEL_MASK)) {
+		urb->transfer_buffer_length = SIZEOUTBUF;
+		urb->dev = comedi_to_usb_dev(dev);
+		urb->status = 0;
+		urb->interval = 1;	/* (u)frames */
+		urb->number_of_packets = 1;
+		urb->iso_frame_desc[0].offset = 0;
+		urb->iso_frame_desc[0].length = SIZEOUTBUF;
+		urb->iso_frame_desc[0].status = 0;
+		ret = usb_submit_urb(urb, GFP_ATOMIC);
+		if (ret < 0) {
+			dev_err(dev->class_dev, "urb resubmit failed (%d)\n",
+				ret);
+			if (ret == -EL2NSYNC)
+				dev_err(dev->class_dev,
+					"buggy USB host controller or bug in IRQ handler\n");
+			async->events |= COMEDI_CB_ERROR;
+		}
+	}
+}
+
+static void usbduxsigma_ao_urb_complete(struct urb *urb)
+{
+	struct comedi_device *dev = urb->context;
+	struct usbduxsigma_private *devpriv = dev->private;
+	struct comedi_subdevice *s = dev->write_subdev;
+	struct comedi_async *async = s->async;
+
+	/* exit if not running a command, do not resubmit urb */
+	if (!devpriv->ao_cmd_running)
+		return;
+
+	switch (urb->status) {
+	case 0:
+		usbduxsigma_ao_handle_urb(dev, s, urb);
+		break;
+
+	case -ECONNRESET:
+	case -ENOENT:
+	case -ESHUTDOWN:
+	case -ECONNABORTED:
+		/* happens after an unlink command */
+		async->events |= COMEDI_CB_ERROR;
+		break;
+
+	default:
+		/* a real error */
+		dev_err(dev->class_dev, "non-zero urb status (%d)\n",
+			urb->status);
+		async->events |= COMEDI_CB_ERROR;
+		break;
+	}
+
+	/*
+	 * comedi_handle_events() cannot be used in this driver. The (*cancel)
+	 * operation would unlink the urb.
+	 */
+	if (async->events & COMEDI_CB_CANCEL_MASK)
+		usbduxsigma_ao_stop(dev, 0);
+
+	comedi_event(dev, s);
+}
+
+>>>>>>> v4.9.227
 static int usbduxsigma_submit_urbs(struct comedi_device *dev,
 				   struct urb **urbs, int num_urbs,
 				   int input_urb)
 {
 	struct usb_device *usb = comedi_to_usb_dev(dev);
+<<<<<<< HEAD
 	struct usbduxsigma_private *devpriv = dev->private;
+=======
+>>>>>>> v4.9.227
 	struct urb *urb;
 	int ret;
 	int i;
@@ -472,7 +751,11 @@ static int usbduxsigma_submit_urbs(struct comedi_device *dev,
 
 		/* in case of a resubmission after an unlink... */
 		if (input_urb)
+<<<<<<< HEAD
 			urb->interval = devpriv->ai_interval;
+=======
+			urb->interval = 1;
+>>>>>>> v4.9.227
 		urb->context = dev;
 		urb->dev = usb;
 		urb->status = 0;
@@ -501,23 +784,40 @@ static int usbduxsigma_ai_cmdtest(struct comedi_device *dev,
 	struct usbduxsigma_private *devpriv = dev->private;
 	int high_speed = devpriv->high_speed;
 	int interval = usbduxsigma_chans_to_interval(cmd->chanlist_len);
+<<<<<<< HEAD
+=======
+	unsigned int tmp;
+>>>>>>> v4.9.227
 	int err = 0;
 
 	/* Step 1 : check if triggers are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_src(&cmd->start_src, TRIG_NOW | TRIG_INT);
 	err |= cfc_check_trigger_src(&cmd->scan_begin_src, TRIG_TIMER);
 	err |= cfc_check_trigger_src(&cmd->convert_src, TRIG_NOW);
 	err |= cfc_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
 	err |= cfc_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+=======
+	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW | TRIG_INT);
+	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_TIMER);
+	err |= comedi_check_trigger_src(&cmd->convert_src, TRIG_NOW);
+	err |= comedi_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
+	err |= comedi_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 1;
 
 	/* Step 2a : make sure trigger sources are unique */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_is_unique(cmd->start_src);
 	err |= cfc_check_trigger_is_unique(cmd->stop_src);
+=======
+	err |= comedi_check_trigger_is_unique(cmd->start_src);
+	err |= comedi_check_trigger_is_unique(cmd->stop_src);
+>>>>>>> v4.9.227
 
 	/* Step 2b : and mutually compatible */
 
@@ -526,6 +826,7 @@ static int usbduxsigma_ai_cmdtest(struct comedi_device *dev,
 
 	/* Step 3: check if arguments are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_arg_is(&cmd->start_arg, 0);
 
 	if (cmd->scan_begin_src == TRIG_FOLLOW)	/* internal trigger */
@@ -562,12 +863,40 @@ static int usbduxsigma_ai_cmdtest(struct comedi_device *dev,
 		err |= cfc_check_trigger_arg_min(&cmd->stop_arg, 1);
 	else	/* TRIG_NONE */
 		err |= cfc_check_trigger_arg_is(&cmd->stop_arg, 0);
+=======
+	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
+
+	if (high_speed) {
+		/*
+		 * In high speed mode microframes are possible.
+		 * However, during one microframe we can roughly
+		 * sample two channels. Thus, the more channels
+		 * are in the channel list the more time we need.
+		 */
+		err |= comedi_check_trigger_arg_min(&cmd->scan_begin_arg,
+						    (125000 * interval));
+	} else {
+		/* full speed */
+		/* 1kHz scans every USB frame */
+		err |= comedi_check_trigger_arg_min(&cmd->scan_begin_arg,
+						    1000000);
+	}
+
+	err |= comedi_check_trigger_arg_is(&cmd->scan_end_arg,
+					   cmd->chanlist_len);
+
+	if (cmd->stop_src == TRIG_COUNT)
+		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
+	else	/* TRIG_NONE */
+		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 3;
 
 	/* Step 4: fix up any arguments */
 
+<<<<<<< HEAD
 	if (high_speed) {
 		/*
 		 * every 2 channels get a time window of 125us. Thus, if we
@@ -591,6 +920,10 @@ static int usbduxsigma_ai_cmdtest(struct comedi_device *dev,
 		/* continuous acquisition */
 		devpriv->ai_sample_count = 0;
 	}
+=======
+	tmp = rounddown(cmd->scan_begin_arg, high_speed ? 125000 : 1000000);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, tmp);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 4;
@@ -603,13 +936,21 @@ static int usbduxsigma_ai_cmdtest(struct comedi_device *dev,
  * range is the range value from comedi
  */
 static void create_adc_command(unsigned int chan,
+<<<<<<< HEAD
 			       uint8_t *muxsg0,
 			       uint8_t *muxsg1)
+=======
+			       u8 *muxsg0, u8 *muxsg1)
+>>>>>>> v4.9.227
 {
 	if (chan < 8)
 		(*muxsg0) = (*muxsg0) | (1 << chan);
 	else if (chan < 16)
+<<<<<<< HEAD
 		(*muxsg1) = (*muxsg1) | (1 << (chan-8));
+=======
+		(*muxsg1) = (*muxsg1) | (1 << (chan - 8));
+>>>>>>> v4.9.227
 }
 
 static int usbbuxsigma_send_cmd(struct comedi_device *dev, int cmd_type)
@@ -661,19 +1002,31 @@ static int usbduxsigma_ai_inttrig(struct comedi_device *dev,
 	if (trig_num != cmd->start_arg)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	down(&devpriv->sem);
+=======
+	mutex_lock(&devpriv->mut);
+>>>>>>> v4.9.227
 	if (!devpriv->ai_cmd_running) {
 		devpriv->ai_cmd_running = 1;
 		ret = usbduxsigma_submit_urbs(dev, devpriv->ai_urbs,
 					      devpriv->n_ai_urbs, 1);
 		if (ret < 0) {
 			devpriv->ai_cmd_running = 0;
+<<<<<<< HEAD
 			up(&devpriv->sem);
+=======
+			mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 			return ret;
 		}
 		s->async->inttrig = NULL;
 	}
+<<<<<<< HEAD
 	up(&devpriv->sem);
+=======
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return 1;
 }
@@ -684,6 +1037,7 @@ static int usbduxsigma_ai_cmd(struct comedi_device *dev,
 	struct usbduxsigma_private *devpriv = dev->private;
 	struct comedi_cmd *cmd = &s->async->cmd;
 	unsigned int len = cmd->chanlist_len;
+<<<<<<< HEAD
 	uint8_t muxsg0 = 0;
 	uint8_t muxsg1 = 0;
 	uint8_t sysred = 0;
@@ -694,12 +1048,39 @@ static int usbduxsigma_ai_cmd(struct comedi_device *dev,
 
 	/* set current channel of the running acquisition to zero */
 	s->async->cur_chan = 0;
+=======
+	u8 muxsg0 = 0;
+	u8 muxsg1 = 0;
+	u8 sysred = 0;
+	int ret;
+	int i;
+
+	mutex_lock(&devpriv->mut);
+
+	if (devpriv->high_speed) {
+		/*
+		 * every 2 channels get a time window of 125us. Thus, if we
+		 * sample all 16 channels we need 1ms. If we sample only one
+		 * channel we need only 125us
+		 */
+		unsigned int interval = usbduxsigma_chans_to_interval(len);
+
+		devpriv->ai_interval = interval;
+		devpriv->ai_timer = cmd->scan_begin_arg / (125000 * interval);
+	} else {
+		/* interval always 1ms */
+		devpriv->ai_interval = 1;
+		devpriv->ai_timer = cmd->scan_begin_arg / 1000000;
+	}
+
+>>>>>>> v4.9.227
 	for (i = 0; i < len; i++) {
 		unsigned int chan  = CR_CHAN(cmd->chanlist[i]);
 
 		create_adc_command(chan, &muxsg0, &muxsg1);
 	}
 
+<<<<<<< HEAD
 	devpriv->dux_commands[1] = len;  /* num channels per time step */
 	devpriv->dux_commands[2] = 0x12; /* CONFIG0 */
 	devpriv->dux_commands[3] = 0x03; /* CONFIG1: 23kHz sample, delay 0us */
@@ -711,6 +1092,20 @@ static int usbduxsigma_ai_cmd(struct comedi_device *dev,
 	ret = usbbuxsigma_send_cmd(dev, USBBUXSIGMA_AD_CMD);
 	if (ret < 0) {
 		up(&devpriv->sem);
+=======
+	devpriv->dux_commands[1] = devpriv->ai_interval;
+	devpriv->dux_commands[2] = len;  /* num channels per time step */
+	devpriv->dux_commands[3] = 0x12; /* CONFIG0 */
+	devpriv->dux_commands[4] = 0x03; /* CONFIG1: 23kHz sample, delay 0us */
+	devpriv->dux_commands[5] = 0x00; /* CONFIG3: diff. channels off */
+	devpriv->dux_commands[6] = muxsg0;
+	devpriv->dux_commands[7] = muxsg1;
+	devpriv->dux_commands[8] = sysred;
+
+	ret = usbbuxsigma_send_cmd(dev, USBBUXSIGMA_AD_CMD);
+	if (ret < 0) {
+		mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 		return ret;
 	}
 
@@ -723,7 +1118,11 @@ static int usbduxsigma_ai_cmd(struct comedi_device *dev,
 					      devpriv->n_ai_urbs, 1);
 		if (ret < 0) {
 			devpriv->ai_cmd_running = 0;
+<<<<<<< HEAD
 			up(&devpriv->sem);
+=======
+			mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 			return ret;
 		}
 		s->async->inttrig = NULL;
@@ -731,7 +1130,11 @@ static int usbduxsigma_ai_cmd(struct comedi_device *dev,
 		s->async->inttrig = usbduxsigma_ai_inttrig;
 	}
 
+<<<<<<< HEAD
 	up(&devpriv->sem);
+=======
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -743,6 +1146,7 @@ static int usbduxsigma_ai_insn_read(struct comedi_device *dev,
 {
 	struct usbduxsigma_private *devpriv = dev->private;
 	unsigned int chan = CR_CHAN(insn->chanspec);
+<<<<<<< HEAD
 	uint8_t muxsg0 = 0;
 	uint8_t muxsg1 = 0;
 	uint8_t sysred = 0;
@@ -752,6 +1156,17 @@ static int usbduxsigma_ai_insn_read(struct comedi_device *dev,
 	down(&devpriv->sem);
 	if (devpriv->ai_cmd_running) {
 		up(&devpriv->sem);
+=======
+	u8 muxsg0 = 0;
+	u8 muxsg1 = 0;
+	u8 sysred = 0;
+	int ret;
+	int i;
+
+	mutex_lock(&devpriv->mut);
+	if (devpriv->ai_cmd_running) {
+		mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 		return -EBUSY;
 	}
 
@@ -768,16 +1183,28 @@ static int usbduxsigma_ai_insn_read(struct comedi_device *dev,
 	/* adc commands */
 	ret = usbbuxsigma_send_cmd(dev, USBDUXSIGMA_SINGLE_AD_CMD);
 	if (ret < 0) {
+<<<<<<< HEAD
 		up(&devpriv->sem);
+=======
+		mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 		return ret;
 	}
 
 	for (i = 0; i < insn->n; i++) {
+<<<<<<< HEAD
 		uint32_t val;
 
 		ret = usbduxsigma_receive_cmd(dev, USBDUXSIGMA_SINGLE_AD_CMD);
 		if (ret < 0) {
 			up(&devpriv->sem);
+=======
+		u32 val;
+
+		ret = usbduxsigma_receive_cmd(dev, USBDUXSIGMA_SINGLE_AD_CMD);
+		if (ret < 0) {
+			mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 			return ret;
 		}
 
@@ -785,11 +1212,17 @@ static int usbduxsigma_ai_insn_read(struct comedi_device *dev,
 		val = be32_to_cpu(get_unaligned((__be32
 						 *)(devpriv->insn_buf + 1)));
 		val &= 0x00ffffff;	/* strip status byte */
+<<<<<<< HEAD
 		val ^= 0x00800000;	/* convert to unsigned */
 
 		data[i] = val;
 	}
 	up(&devpriv->sem);
+=======
+		data[i] = comedi_offset_munge(s, val);
+	}
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return insn->n;
 }
@@ -802,9 +1235,15 @@ static int usbduxsigma_ao_insn_read(struct comedi_device *dev,
 	struct usbduxsigma_private *devpriv = dev->private;
 	int ret;
 
+<<<<<<< HEAD
 	down(&devpriv->sem);
 	ret = comedi_readback_insn_read(dev, s, insn, data);
 	up(&devpriv->sem);
+=======
+	mutex_lock(&devpriv->mut);
+	ret = comedi_readback_insn_read(dev, s, insn, data);
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -819,9 +1258,15 @@ static int usbduxsigma_ao_insn_write(struct comedi_device *dev,
 	int ret;
 	int i;
 
+<<<<<<< HEAD
 	down(&devpriv->sem);
 	if (devpriv->ao_cmd_running) {
 		up(&devpriv->sem);
+=======
+	mutex_lock(&devpriv->mut);
+	if (devpriv->ao_cmd_running) {
+		mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 		return -EBUSY;
 	}
 
@@ -831,12 +1276,20 @@ static int usbduxsigma_ao_insn_write(struct comedi_device *dev,
 		devpriv->dux_commands[3] = chan;	/* channel number */
 		ret = usbbuxsigma_send_cmd(dev, USBDUXSIGMA_DA_CMD);
 		if (ret < 0) {
+<<<<<<< HEAD
 			up(&devpriv->sem);
+=======
+			mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 			return ret;
 		}
 		s->readback[chan] = data[i];
 	}
+<<<<<<< HEAD
 	up(&devpriv->sem);
+=======
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return insn->n;
 }
@@ -852,19 +1305,31 @@ static int usbduxsigma_ao_inttrig(struct comedi_device *dev,
 	if (trig_num != cmd->start_arg)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	down(&devpriv->sem);
+=======
+	mutex_lock(&devpriv->mut);
+>>>>>>> v4.9.227
 	if (!devpriv->ao_cmd_running) {
 		devpriv->ao_cmd_running = 1;
 		ret = usbduxsigma_submit_urbs(dev, devpriv->ao_urbs,
 					      devpriv->n_ao_urbs, 0);
 		if (ret < 0) {
 			devpriv->ao_cmd_running = 0;
+<<<<<<< HEAD
 			up(&devpriv->sem);
+=======
+			mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 			return ret;
 		}
 		s->async->inttrig = NULL;
 	}
+<<<<<<< HEAD
 	up(&devpriv->sem);
+=======
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return 1;
 }
@@ -874,6 +1339,7 @@ static int usbduxsigma_ao_cmdtest(struct comedi_device *dev,
 				  struct comedi_cmd *cmd)
 {
 	struct usbduxsigma_private *devpriv = dev->private;
+<<<<<<< HEAD
 	int err = 0;
 	int high_speed;
 	unsigned int flags;
@@ -903,13 +1369,42 @@ static int usbduxsigma_ao_cmdtest(struct comedi_device *dev,
 
 	if (err) {
 		up(&devpriv->sem);
+=======
+	unsigned int tmp;
+	int err = 0;
+
+	/* Step 1 : check if triggers are trivially valid */
+
+	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW | TRIG_INT);
+
+	/*
+	 * For now, always use "scan" timing with all channels updated at once
+	 * (cmd->scan_begin_src == TRIG_TIMER, cmd->convert_src == TRIG_NOW).
+	 *
+	 * In a future version, "convert" timing with channels updated
+	 * indivually may be supported in high speed mode
+	 * (cmd->scan_begin_src == TRIG_FOLLOW, cmd->convert_src == TRIG_TIMER).
+	 */
+	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_TIMER);
+	err |= comedi_check_trigger_src(&cmd->convert_src, TRIG_NOW);
+	err |= comedi_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
+	err |= comedi_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+
+	if (err) {
+		mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 		return 1;
 	}
 
 	/* Step 2a : make sure trigger sources are unique */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_is_unique(cmd->start_src);
 	err |= cfc_check_trigger_is_unique(cmd->stop_src);
+=======
+	err |= comedi_check_trigger_is_unique(cmd->start_src);
+	err |= comedi_check_trigger_is_unique(cmd->stop_src);
+>>>>>>> v4.9.227
 
 	/* Step 2b : and mutually compatible */
 
@@ -918,6 +1413,7 @@ static int usbduxsigma_ao_cmdtest(struct comedi_device *dev,
 
 	/* Step 3: check if arguments are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_arg_is(&cmd->start_arg, 0);
 
 	if (cmd->scan_begin_src == TRIG_FOLLOW)	/* internal trigger */
@@ -937,12 +1433,26 @@ static int usbduxsigma_ao_cmdtest(struct comedi_device *dev,
 		err |= cfc_check_trigger_arg_min(&cmd->stop_arg, 1);
 	else	/* TRIG_NONE */
 		err |= cfc_check_trigger_arg_is(&cmd->stop_arg, 0);
+=======
+	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
+
+	err |= comedi_check_trigger_arg_min(&cmd->scan_begin_arg, 1000000);
+
+	err |= comedi_check_trigger_arg_is(&cmd->scan_end_arg,
+					   cmd->chanlist_len);
+
+	if (cmd->stop_src == TRIG_COUNT)
+		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
+	else	/* TRIG_NONE */
+		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 3;
 
 	/* Step 4: fix up any arguments */
 
+<<<<<<< HEAD
 	/* we count in timer steps */
 	if (high_speed) {
 		/* timing of the conversion itself: every 125 us */
@@ -975,6 +1485,10 @@ static int usbduxsigma_ao_cmdtest(struct comedi_device *dev,
 		/* continuous acquisition */
 		devpriv->ao_sample_count = 0;
 	}
+=======
+	tmp = rounddown(cmd->scan_begin_arg, 1000000);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, tmp);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 4;
@@ -989,10 +1503,22 @@ static int usbduxsigma_ao_cmd(struct comedi_device *dev,
 	struct comedi_cmd *cmd = &s->async->cmd;
 	int ret;
 
+<<<<<<< HEAD
 	down(&devpriv->sem);
 
 	/* set current channel of the running acquisition to zero */
 	s->async->cur_chan = 0;
+=======
+	mutex_lock(&devpriv->mut);
+
+	/*
+	 * For now, only "scan" timing is supported.  A future version may
+	 * support "convert" timing in high speed mode.
+	 *
+	 * Timing of the scan: every 1ms all channels updated at once.
+	 */
+	devpriv->ao_timer = cmd->scan_begin_arg / 1000000;
+>>>>>>> v4.9.227
 
 	devpriv->ao_counter = devpriv->ao_timer;
 
@@ -1003,7 +1529,11 @@ static int usbduxsigma_ao_cmd(struct comedi_device *dev,
 					      devpriv->n_ao_urbs, 0);
 		if (ret < 0) {
 			devpriv->ao_cmd_running = 0;
+<<<<<<< HEAD
 			up(&devpriv->sem);
+=======
+			mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 			return ret;
 		}
 		s->async->inttrig = NULL;
@@ -1011,7 +1541,11 @@ static int usbduxsigma_ao_cmd(struct comedi_device *dev,
 		s->async->inttrig = usbduxsigma_ao_inttrig;
 	}
 
+<<<<<<< HEAD
 	up(&devpriv->sem);
+=======
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1042,7 +1576,11 @@ static int usbduxsigma_dio_insn_bits(struct comedi_device *dev,
 	struct usbduxsigma_private *devpriv = dev->private;
 	int ret;
 
+<<<<<<< HEAD
 	down(&devpriv->sem);
+=======
+	mutex_lock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	comedi_dio_update_state(s, data);
 
@@ -1069,7 +1607,11 @@ static int usbduxsigma_dio_insn_bits(struct comedi_device *dev,
 	ret = insn->n;
 
 done:
+<<<<<<< HEAD
 	up(&devpriv->sem);
+=======
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -1120,9 +1662,14 @@ static void usbduxsigma_pwm_urb_complete(struct urb *urb)
 	default:
 		/* a real error */
 		if (devpriv->pwm_cmd_running) {
+<<<<<<< HEAD
 			dev_err(dev->class_dev,
 				"%s: non-zero urb status (%d)\n",
 				__func__, urb->status);
+=======
+			dev_err(dev->class_dev, "non-zero urb status (%d)\n",
+				urb->status);
+>>>>>>> v4.9.227
 			usbduxsigma_pwm_stop(dev, 0);	/* w/o unlink */
 		}
 		return;
@@ -1136,8 +1683,12 @@ static void usbduxsigma_pwm_urb_complete(struct urb *urb)
 	urb->status = 0;
 	ret = usb_submit_urb(urb, GFP_ATOMIC);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_err(dev->class_dev, "%s: urb resubmit failed (%d)\n",
 			__func__, ret);
+=======
+		dev_err(dev->class_dev, "urb resubmit failed (%d)\n", ret);
+>>>>>>> v4.9.227
 		if (ret == -EL2NSYNC)
 			dev_err(dev->class_dev,
 				"buggy USB host controller or bug in IRQ handler\n");
@@ -1297,9 +1848,16 @@ static int usbduxsigma_pwm_config(struct comedi_device *dev,
 
 static int usbduxsigma_getstatusinfo(struct comedi_device *dev, int chan)
 {
+<<<<<<< HEAD
 	struct usbduxsigma_private *devpriv = dev->private;
 	uint8_t sysred;
 	uint32_t val;
+=======
+	struct comedi_subdevice *s = dev->read_subdev;
+	struct usbduxsigma_private *devpriv = dev->private;
+	u8 sysred;
+	u32 val;
+>>>>>>> v4.9.227
 	int ret;
 
 	switch (chan) {
@@ -1341,9 +1899,14 @@ static int usbduxsigma_getstatusinfo(struct comedi_device *dev, int chan)
 	/* 32 bits big endian from the A/D converter */
 	val = be32_to_cpu(get_unaligned((__be32 *)(devpriv->insn_buf + 1)));
 	val &= 0x00ffffff;	/* strip status byte */
+<<<<<<< HEAD
 	val ^= 0x00800000;	/* convert to unsigned */
 
 	return (int)val;
+=======
+
+	return (int)comedi_offset_munge(s, val);
+>>>>>>> v4.9.227
 }
 
 static int usbduxsigma_firmware_upload(struct comedi_device *dev,
@@ -1351,8 +1914,13 @@ static int usbduxsigma_firmware_upload(struct comedi_device *dev,
 				       unsigned long context)
 {
 	struct usb_device *usb = comedi_to_usb_dev(dev);
+<<<<<<< HEAD
 	uint8_t *buf;
 	uint8_t *tmp;
+=======
+	u8 *buf;
+	u8 *tmp;
+>>>>>>> v4.9.227
 	int ret;
 
 	if (!data)
@@ -1475,10 +2043,14 @@ static int usbduxsigma_alloc_usb_buffers(struct comedi_device *dev)
 		urb->transfer_buffer_length = SIZEOUTBUF;
 		urb->iso_frame_desc[0].offset = 0;
 		urb->iso_frame_desc[0].length = SIZEOUTBUF;
+<<<<<<< HEAD
 		if (devpriv->high_speed)
 			urb->interval = 8;	/* uframes */
 		else
 			urb->interval = 1;	/* frames */
+=======
+		urb->interval = 1;	/* (u)frames */
+>>>>>>> v4.9.227
 	}
 
 	if (devpriv->pwm_buf_sz) {
@@ -1546,7 +2118,11 @@ static int usbduxsigma_auto_attach(struct comedi_device *dev,
 	if (!devpriv)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	sema_init(&devpriv->sem, 1);
+=======
+	mutex_init(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	usb_set_intfdata(intf, devpriv);
 
@@ -1660,7 +2236,11 @@ static void usbduxsigma_detach(struct comedi_device *dev)
 	if (!devpriv)
 		return;
 
+<<<<<<< HEAD
 	down(&devpriv->sem);
+=======
+	mutex_lock(&devpriv->mut);
+>>>>>>> v4.9.227
 
 	/* force unlink all urbs */
 	usbduxsigma_ai_stop(dev, 1);
@@ -1669,7 +2249,11 @@ static void usbduxsigma_detach(struct comedi_device *dev)
 
 	usbduxsigma_free_usb_buffers(dev);
 
+<<<<<<< HEAD
 	up(&devpriv->sem);
+=======
+	mutex_unlock(&devpriv->mut);
+>>>>>>> v4.9.227
 }
 
 static struct comedi_driver usbduxsigma_driver = {
@@ -1701,7 +2285,12 @@ static struct usb_driver usbduxsigma_usb_driver = {
 };
 module_comedi_usb_driver(usbduxsigma_driver, usbduxsigma_usb_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Bernd Porr, BerndPorr@f2s.com");
 MODULE_DESCRIPTION("Stirling/ITL USB-DUX SIGMA -- Bernd.Porr@f2s.com");
+=======
+MODULE_AUTHOR("Bernd Porr, mail@berndporr.me.uk");
+MODULE_DESCRIPTION("Stirling/ITL USB-DUX SIGMA -- mail@berndporr.me.uk");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");
 MODULE_FIRMWARE(FIRMWARE);

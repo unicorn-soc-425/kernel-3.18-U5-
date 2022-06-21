@@ -47,8 +47,15 @@ nvkm_ltc_tags_clear(struct nvkm_ltc *ltc, u32 first, u32 count)
 
 	BUG_ON((first > limit) || (limit >= ltc->num_tags));
 
+<<<<<<< HEAD
 	ltc->func->cbc_clear(ltc, first, limit);
 	ltc->func->cbc_wait(ltc);
+=======
+	mutex_lock(&ltc->subdev.mutex);
+	ltc->func->cbc_clear(ltc, first, limit);
+	ltc->func->cbc_wait(ltc);
+	mutex_unlock(&ltc->subdev.mutex);
+>>>>>>> v4.9.227
 }
 
 int
@@ -138,7 +145,11 @@ nvkm_ltc_new_(const struct nvkm_ltc_func *func, struct nvkm_device *device,
 	if (!(ltc = *pltc = kzalloc(sizeof(*ltc), GFP_KERNEL)))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	nvkm_subdev_ctor(&nvkm_ltc, device, index, 0, &ltc->subdev);
+=======
+	nvkm_subdev_ctor(&nvkm_ltc, device, index, &ltc->subdev);
+>>>>>>> v4.9.227
 	ltc->func = func;
 	ltc->zbc_min = 1; /* reserve 0 for disabled */
 	ltc->zbc_max = min(func->zbc, NVKM_LTC_MAX_ZBC_CNT) - 1;

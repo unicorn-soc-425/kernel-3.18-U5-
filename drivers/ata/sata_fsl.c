@@ -45,7 +45,12 @@ enum {
 	SATA_FSL_MAX_PRD_DIRECT	= 16,	/* Direct PRDT entries */
 
 	SATA_FSL_HOST_FLAGS	= (ATA_FLAG_SATA | ATA_FLAG_PIO_DMA |
+<<<<<<< HEAD
 				ATA_FLAG_PMP | ATA_FLAG_NCQ | ATA_FLAG_AN),
+=======
+				   ATA_FLAG_PMP | ATA_FLAG_NCQ |
+				   ATA_FLAG_AN | ATA_FLAG_NO_LOG_PAGE),
+>>>>>>> v4.9.227
 
 	SATA_FSL_MAX_CMDS	= SATA_FSL_QUEUE_DEPTH,
 	SATA_FSL_CMD_HDR_SIZE	= 16,	/* 4 DWORDS */
@@ -869,6 +874,11 @@ try_offline_again:
 	 */
 	ata_msleep(ap, 1);
 
+<<<<<<< HEAD
+=======
+	sata_set_spd(link);
+
+>>>>>>> v4.9.227
 	/*
 	 * Now, bring the host controller online again, this can take time
 	 * as PHY reset and communication establishment, 1st D2H FIS and
@@ -1624,7 +1634,10 @@ MODULE_DEVICE_TABLE(of, fsl_sata_match);
 static struct platform_driver fsl_sata_driver = {
 	.driver = {
 		.name = "fsl-sata",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = fsl_sata_match,
 	},
 	.probe		= sata_fsl_probe,

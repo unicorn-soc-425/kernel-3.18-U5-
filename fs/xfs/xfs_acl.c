@@ -19,8 +19,11 @@
 #include "xfs_format.h"
 #include "xfs_log_format.h"
 #include "xfs_trans_resv.h"
+<<<<<<< HEAD
 #include "xfs_ag.h"
 #include "xfs_sb.h"
+=======
+>>>>>>> v4.9.227
 #include "xfs_mount.h"
 #include "xfs_inode.h"
 #include "xfs_acl.h"
@@ -39,6 +42,7 @@
 
 STATIC struct posix_acl *
 xfs_acl_from_disk(
+<<<<<<< HEAD
 	struct xfs_acl	*aclp,
 	int		max_entries)
 {
@@ -49,6 +53,21 @@ xfs_acl_from_disk(
 
 	count = be32_to_cpu(aclp->acl_cnt);
 	if (count > max_entries)
+=======
+	const struct xfs_acl	*aclp,
+	int			len,
+	int			max_entries)
+{
+	struct posix_acl_entry *acl_e;
+	struct posix_acl *acl;
+	const struct xfs_acl_entry *ace;
+	unsigned int count, i;
+
+	if (len < sizeof(*aclp))
+		return ERR_PTR(-EFSCORRUPTED);
+	count = be32_to_cpu(aclp->acl_cnt);
+	if (count > max_entries || XFS_ACL_SIZE(count) != len)
+>>>>>>> v4.9.227
 		return ERR_PTR(-EFSCORRUPTED);
 
 	acl = posix_acl_alloc(count, GFP_KERNEL);
@@ -157,6 +176,7 @@ xfs_get_acl(struct inode *inode, int type)
 	if (error) {
 		/*
 		 * If the attribute doesn't exist make sure we have a negative
+<<<<<<< HEAD
 		 * cache entry, for any other error assume it is transient and
 		 * leave the cache entry as ACL_NOT_CACHED.
 		 */
@@ -172,12 +192,27 @@ xfs_get_acl(struct inode *inode, int type)
 out_update_cache:
 	set_cached_acl(inode, type, acl);
 out:
+=======
+		 * cache entry, for any other error assume it is transient.
+		 */
+		if (error != -ENOATTR)
+			acl = ERR_PTR(error);
+	} else  {
+		acl = xfs_acl_from_disk(xfs_acl, len,
+					XFS_ACL_MAX_ENTRIES(ip->i_mount));
+	}
+>>>>>>> v4.9.227
 	kmem_free(xfs_acl);
 	return acl;
 }
 
+<<<<<<< HEAD
 STATIC int
 __xfs_set_acl(struct inode *inode, int type, struct posix_acl *acl)
+=======
+int
+__xfs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
+>>>>>>> v4.9.227
 {
 	struct xfs_inode *ip = XFS_I(inode);
 	unsigned char *ea_name;
@@ -242,7 +277,11 @@ xfs_set_mode(struct inode *inode, umode_t mode)
 
 		iattr.ia_valid = ATTR_MODE | ATTR_CTIME;
 		iattr.ia_mode = mode;
+<<<<<<< HEAD
 		iattr.ia_ctime = current_fs_time(inode->i_sb);
+=======
+		iattr.ia_ctime = current_time(inode);
+>>>>>>> v4.9.227
 
 		error = xfs_setattr_nonsize(XFS_I(inode), &iattr, XFS_ATTR_NOACL);
 	}
@@ -250,6 +289,7 @@ xfs_set_mode(struct inode *inode, umode_t mode)
 	return error;
 }
 
+<<<<<<< HEAD
 static int
 xfs_acl_exists(struct inode *inode, unsigned char *name)
 {
@@ -276,6 +316,13 @@ posix_acl_default_exists(struct inode *inode)
 int
 xfs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 {
+=======
+int
+xfs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
+{
+	umode_t mode;
+	bool set_mode = false;
+>>>>>>> v4.9.227
 	int error = 0;
 
 	if (!acl)
@@ -286,6 +333,7 @@ xfs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 		return error;
 
 	if (type == ACL_TYPE_ACCESS) {
+<<<<<<< HEAD
 		umode_t mode;
 		struct posix_acl *old_acl = acl;
 		error = posix_acl_update_mode(inode, &mode, &acl);
@@ -300,4 +348,26 @@ xfs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 
  set_acl:
 	return __xfs_set_acl(inode, type, acl);
+=======
+		error = posix_acl_update_mode(inode, &mode, &acl);
+		if (error)
+			return error;
+		set_mode = true;
+	}
+
+ set_acl:
+	error =  __xfs_set_acl(inode, acl, type);
+	if (error)
+		return error;
+
+	/*
+	 * We set the mode after successfully updating the ACL xattr because the
+	 * xattr update can fail at ENOSPC and we don't want to change the mode
+	 * if the ACL update hasn't been applied.
+	 */
+	if (set_mode)
+		error = xfs_set_mode(inode, mode);
+
+	return error;
+>>>>>>> v4.9.227
 }

@@ -19,6 +19,7 @@
 #endif
 
 #include <arch/bitops.h>
+<<<<<<< HEAD
 #include <linux/atomic.h>
 #include <linux/compiler.h>
 #include <asm/barrier.h>
@@ -132,6 +133,12 @@ static inline int test_and_change_bit(int nr, volatile unsigned long *addr)
 	return retval;
 }
 
+=======
+#include <linux/compiler.h>
+#include <asm/barrier.h>
+
+#include <asm-generic/bitops/atomic.h>
+>>>>>>> v4.9.227
 #include <asm-generic/bitops/non-atomic.h>
 
 /*

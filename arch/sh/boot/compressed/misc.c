@@ -132,7 +132,11 @@ void decompress_kernel(void)
 
 	puts("Uncompressing Linux... ");
 	cache_control(CACHE_ENABLE);
+<<<<<<< HEAD
 	decompress(input_data, input_len, NULL, NULL, output, NULL, error);
+=======
+	__decompress(input_data, input_len, NULL, NULL, output, 0, NULL, error);
+>>>>>>> v4.9.227
 	cache_control(CACHE_DISABLE);
 	puts("Ok, booting the kernel.\n");
 }

@@ -47,6 +47,7 @@ int request_firmware_nowait(
 	void (*cont)(const struct firmware *fw, void *context));
 int request_firmware_direct(const struct firmware **fw, const char *name,
 			    struct device *device);
+<<<<<<< HEAD
 
 int request_firmware_into_buf(const char *name, struct device *device,
 			    phys_addr_t dest_addr, size_t dest_size,
@@ -62,6 +63,11 @@ int request_firmware_nowait_into_buf(
 	phys_addr_t dest_addr, size_t dest_size,
 	void * (*map_fw_mem)(phys_addr_t phys, size_t size, void *data),
 	void (*unmap_fw_mem)(void *virt, size_t size, void *data), void *data);
+=======
+int request_firmware_into_buf(const struct firmware **firmware_p,
+	const char *name, struct device *device, void *buf, size_t size);
+
+>>>>>>> v4.9.227
 void release_firmware(const struct firmware *fw);
 #else
 static inline int request_firmware(const struct firmware **fw,
@@ -70,6 +76,7 @@ static inline int request_firmware(const struct firmware **fw,
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
 static inline int request_firmware_into_buf(const char *name,
 					  struct device *device,
 					  phys_addr_t dest_addr,
@@ -83,6 +90,8 @@ static inline int request_firmware_into_buf(const char *name,
 {
 	return -EINVAL;
 }
+=======
+>>>>>>> v4.9.227
 static inline int request_firmware_nowait(
 	struct module *module, bool uevent,
 	const char *name, struct device *device, gfp_t gfp, void *context,
@@ -90,6 +99,7 @@ static inline int request_firmware_nowait(
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
 static inline int request_firmware_nowait_into_buf(
 	struct module *module, bool uevent,
 	const char *name, struct device *device, gfp_t gfp, void *context,
@@ -100,6 +110,9 @@ static inline int request_firmware_nowait_into_buf(
 {
 	return -EINVAL;
 }
+=======
+
+>>>>>>> v4.9.227
 static inline void release_firmware(const struct firmware *fw)
 {
 }
@@ -111,5 +124,14 @@ static inline int request_firmware_direct(const struct firmware **fw,
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
+=======
+static inline int request_firmware_into_buf(const struct firmware **firmware_p,
+	const char *name, struct device *device, void *buf, size_t size)
+{
+	return -EINVAL;
+}
+
+>>>>>>> v4.9.227
 #endif
 #endif

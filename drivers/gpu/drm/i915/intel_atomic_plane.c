@@ -55,7 +55,11 @@ intel_create_plane_state(struct drm_plane *plane)
 		return NULL;
 
 	state->base.plane = plane;
+<<<<<<< HEAD
 	state->base.rotation = BIT(DRM_ROTATE_0);
+=======
+	state->base.rotation = DRM_ROTATE_0;
+>>>>>>> v4.9.227
 	state->ckey.flags = I915_SET_COLORKEY_NONE;
 
 	return state;
@@ -84,6 +88,10 @@ intel_plane_duplicate_state(struct drm_plane *plane)
 	state = &intel_state->base;
 
 	__drm_atomic_helper_plane_duplicate_state(plane, state);
+<<<<<<< HEAD
+=======
+	intel_state->wait_req = NULL;
+>>>>>>> v4.9.227
 
 	return state;
 }
@@ -100,6 +108,10 @@ void
 intel_plane_destroy_state(struct drm_plane *plane,
 			  struct drm_plane_state *state)
 {
+<<<<<<< HEAD
+=======
+	WARN_ON(state && to_intel_plane_state(state)->wait_req);
+>>>>>>> v4.9.227
 	drm_atomic_helper_plane_destroy_state(plane, state);
 }
 
@@ -132,6 +144,7 @@ static int intel_plane_atomic_check(struct drm_plane *plane,
 
 	crtc_state = to_intel_crtc_state(drm_crtc_state);
 
+<<<<<<< HEAD
 	/*
 	 * The original src/dest coordinates are stored in state->base, but
 	 * we want to keep another copy internal to our driver that we can
@@ -146,15 +159,26 @@ static int intel_plane_atomic_check(struct drm_plane *plane,
 	intel_state->dst.x2 = state->crtc_x + state->crtc_w;
 	intel_state->dst.y2 = state->crtc_y + state->crtc_h;
 
+=======
+>>>>>>> v4.9.227
 	/* Clip all planes to CRTC size, or 0x0 if CRTC is disabled */
 	intel_state->clip.x1 = 0;
 	intel_state->clip.y1 = 0;
 	intel_state->clip.x2 =
+<<<<<<< HEAD
 		crtc_state->base.active ? crtc_state->pipe_src_w : 0;
 	intel_state->clip.y2 =
 		crtc_state->base.active ? crtc_state->pipe_src_h : 0;
 
 	if (state->fb && intel_rotation_90_or_270(state->rotation)) {
+=======
+		crtc_state->base.enable ? crtc_state->pipe_src_w : 0;
+	intel_state->clip.y2 =
+		crtc_state->base.enable ? crtc_state->pipe_src_h : 0;
+
+	if (state->fb && intel_rotation_90_or_270(state->rotation)) {
+		char *format_name;
+>>>>>>> v4.9.227
 		if (!(state->fb->modifier[0] == I915_FORMAT_MOD_Y_TILED ||
 			state->fb->modifier[0] == I915_FORMAT_MOD_Yf_TILED)) {
 			DRM_DEBUG_KMS("Y/Yf tiling required for 90/270!\n");
@@ -169,8 +193,14 @@ static int intel_plane_atomic_check(struct drm_plane *plane,
 		switch (state->fb->pixel_format) {
 		case DRM_FORMAT_C8:
 		case DRM_FORMAT_RGB565:
+<<<<<<< HEAD
 			DRM_DEBUG_KMS("Unsupported pixel format %s for 90/270!\n",
 					drm_get_format_name(state->fb->pixel_format));
+=======
+			format_name = drm_get_format_name(state->fb->pixel_format);
+			DRM_DEBUG_KMS("Unsupported pixel format %s for 90/270!\n", format_name);
+			kfree(format_name);
+>>>>>>> v4.9.227
 			return -EINVAL;
 
 		default:
@@ -178,7 +208,11 @@ static int intel_plane_atomic_check(struct drm_plane *plane,
 		}
 	}
 
+<<<<<<< HEAD
 	intel_state->visible = false;
+=======
+	intel_state->base.visible = false;
+>>>>>>> v4.9.227
 	ret = intel_plane->check_plane(plane, crtc_state, intel_state);
 	if (ret)
 		return ret;
@@ -192,8 +226,19 @@ static void intel_plane_atomic_update(struct drm_plane *plane,
 	struct intel_plane *intel_plane = to_intel_plane(plane);
 	struct intel_plane_state *intel_state =
 		to_intel_plane_state(plane->state);
+<<<<<<< HEAD
 
 	intel_plane->commit_plane(plane, intel_state);
+=======
+	struct drm_crtc *crtc = plane->state->crtc ?: old_state->crtc;
+
+	if (intel_state->base.visible)
+		intel_plane->update_plane(plane,
+					  to_intel_crtc_state(crtc->state),
+					  intel_state);
+	else
+		intel_plane->disable_plane(plane, crtc);
+>>>>>>> v4.9.227
 }
 
 const struct drm_plane_helper_funcs intel_plane_helper_funcs = {

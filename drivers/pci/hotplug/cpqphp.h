@@ -36,10 +36,17 @@
 
 #define MY_NAME	"cpqphp"
 
+<<<<<<< HEAD
 #define dbg(fmt, arg...) do { if (cpqhp_debug) printk(KERN_DEBUG "%s: " fmt , MY_NAME , ## arg); } while (0)
 #define err(format, arg...) printk(KERN_ERR "%s: " format , MY_NAME , ## arg)
 #define info(format, arg...) printk(KERN_INFO "%s: " format , MY_NAME , ## arg)
 #define warn(format, arg...) printk(KERN_WARNING "%s: " format , MY_NAME , ## arg)
+=======
+#define dbg(fmt, arg...) do { if (cpqhp_debug) printk(KERN_DEBUG "%s: " fmt, MY_NAME, ## arg); } while (0)
+#define err(format, arg...) printk(KERN_ERR "%s: " format, MY_NAME, ## arg)
+#define info(format, arg...) printk(KERN_INFO "%s: " format, MY_NAME, ## arg)
+#define warn(format, arg...) printk(KERN_WARNING "%s: " format, MY_NAME, ## arg)
+>>>>>>> v4.9.227
 
 
 
@@ -424,7 +431,11 @@ int cpqhp_process_SS(struct controller *ctrl, struct pci_func *func);
 int cpqhp_hardware_test(struct controller *ctrl, int test_num);
 
 /* resource functions */
+<<<<<<< HEAD
 int	cpqhp_resource_sort_and_combine	(struct pci_resource **head);
+=======
+int	cpqhp_resource_sort_and_combine(struct pci_resource **head);
+>>>>>>> v4.9.227
 
 /* pci functions */
 int cpqhp_set_irq(u8 bus_num, u8 dev_num, u8 int_pin, u8 irq_num);
@@ -685,7 +696,11 @@ static inline int cpq_get_latch_status(struct controller *ctrl,
 	u8 hp_slot;
 
 	hp_slot = slot->device - ctrl->slot_device_offset;
+<<<<<<< HEAD
 	dbg("%s: slot->device = %d, ctrl->slot_device_offset = %d \n",
+=======
+	dbg("%s: slot->device = %d, ctrl->slot_device_offset = %d\n",
+>>>>>>> v4.9.227
 	    __func__, slot->device, ctrl->slot_device_offset);
 
 	status = (readl(ctrl->hpc_reg + INT_INPUT_CLEAR) & (0x01L << hp_slot));
@@ -712,7 +727,11 @@ static inline int get_presence_status(struct controller *ctrl,
 
 static inline int wait_for_ctrl_irq(struct controller *ctrl)
 {
+<<<<<<< HEAD
         DECLARE_WAITQUEUE(wait, current);
+=======
+	DECLARE_WAITQUEUE(wait, current);
+>>>>>>> v4.9.227
 	int retval = 0;
 
 	dbg("%s - start\n", __func__);

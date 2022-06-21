@@ -35,7 +35,10 @@ const struct inode_operations coda_ioctl_inode_operations = {
 };
 
 const struct file_operations coda_ioctl_operations = {
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	.unlocked_ioctl	= coda_pioctl,
 	.llseek		= noop_llseek,
 };
@@ -72,7 +75,11 @@ static long coda_pioctl(struct file *filp, unsigned int cmd,
 	if (error)
 		return error;
 
+<<<<<<< HEAD
 	target_inode = path.dentry->d_inode;
+=======
+	target_inode = d_inode(path.dentry);
+>>>>>>> v4.9.227
 
 	/* return if it is not a Coda inode */
 	if (target_inode->i_sb != inode->i_sb) {

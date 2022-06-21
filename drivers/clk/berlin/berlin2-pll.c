@@ -25,6 +25,7 @@
 #include <asm/div64.h>
 
 #include "berlin2-div.h"
+<<<<<<< HEAD
 
 struct berlin2_pll_map {
 	const u8 vcodiv[16];
@@ -33,6 +34,9 @@ struct berlin2_pll_map {
 	u8 rfdiv_shift;
 	u8 divsel_shift;
 };
+=======
+#include "berlin2-pll.h"
+>>>>>>> v4.9.227
 
 struct berlin2_pll {
 	struct clk_hw hw;
@@ -68,7 +72,11 @@ berlin2_pll_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 	fbdiv = (val >> map->fbdiv_shift) & FBDIV_MASK;
 	rfdiv = (val >> map->rfdiv_shift) & RFDIV_MASK;
 	if (rfdiv == 0) {
+<<<<<<< HEAD
 		pr_warn("%s has zero rfdiv\n", __clk_get_name(hw->clk));
+=======
+		pr_warn("%s has zero rfdiv\n", clk_hw_get_name(hw));
+>>>>>>> v4.9.227
 		rfdiv = 1;
 	}
 
@@ -77,7 +85,11 @@ berlin2_pll_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 	vcodiv = map->vcodiv[vcodivsel];
 	if (vcodiv == 0) {
 		pr_warn("%s has zero vcodiv (index %d)\n",
+<<<<<<< HEAD
 			__clk_get_name(hw->clk), vcodivsel);
+=======
+			clk_hw_get_name(hw), vcodivsel);
+>>>>>>> v4.9.227
 		vcodiv = 1;
 	}
 
@@ -91,7 +103,11 @@ static const struct clk_ops berlin2_pll_ops = {
 	.recalc_rate	= berlin2_pll_recalc_rate,
 };
 
+<<<<<<< HEAD
 struct clk * __init
+=======
+int __init
+>>>>>>> v4.9.227
 berlin2_pll_register(const struct berlin2_pll_map *map,
 		     void __iomem *base, const char *name,
 		     const char *parent_name, unsigned long flags)
@@ -101,7 +117,11 @@ berlin2_pll_register(const struct berlin2_pll_map *map,
 
 	pll = kzalloc(sizeof(*pll), GFP_KERNEL);
 	if (!pll)
+<<<<<<< HEAD
 		return ERR_PTR(-ENOMEM);
+=======
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	/* copy pll_map to allow __initconst */
 	memcpy(&pll->map, map, sizeof(*map));
@@ -113,5 +133,9 @@ berlin2_pll_register(const struct berlin2_pll_map *map,
 	init.num_parents = 1;
 	init.flags = flags;
 
+<<<<<<< HEAD
 	return clk_register(NULL, &pll->hw);
+=======
+	return clk_hw_register(NULL, &pll->hw);
+>>>>>>> v4.9.227
 }

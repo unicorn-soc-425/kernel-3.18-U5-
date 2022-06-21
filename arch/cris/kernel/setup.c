@@ -19,6 +19,11 @@
 #include <linux/utsname.h>
 #include <linux/pfn.h>
 #include <linux/cpu.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_fdt.h>
+>>>>>>> v4.9.227
 #include <asm/setup.h>
 #include <arch/system.h>
 
@@ -64,6 +69,13 @@ void __init setup_arch(char **cmdline_p)
 	unsigned long start_pfn, max_pfn;
 	unsigned long memory_start;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+	early_init_dt_scan(__dtb_start);
+#endif
+
+>>>>>>> v4.9.227
 	/* register an initial console printing routine for printk's */
 
 	init_etrax_debug();
@@ -141,6 +153,11 @@ void __init setup_arch(char **cmdline_p)
 
 	reserve_bootmem(PFN_PHYS(start_pfn), bootmap_size, BOOTMEM_DEFAULT);
 
+<<<<<<< HEAD
+=======
+	unflatten_and_copy_device_tree();
+
+>>>>>>> v4.9.227
 	/* paging_init() sets up the MMU and marks all pages as reserved */
 
 	paging_init();
@@ -203,4 +220,7 @@ static int __init topology_init(void)
 }
 
 subsys_initcall(topology_init);
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227

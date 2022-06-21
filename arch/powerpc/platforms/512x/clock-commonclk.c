@@ -12,6 +12,10 @@
  */
 
 #include <linux/bitops.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
 #include <linux/device.h>
@@ -220,7 +224,11 @@ static bool soc_has_mclk_mux0_canin(void)
 /* convenience wrappers around the common clk API */
 static inline struct clk *mpc512x_clk_fixed(const char *name, int rate)
 {
+<<<<<<< HEAD
 	return clk_register_fixed_rate(NULL, name, NULL, CLK_IS_ROOT, rate);
+=======
+	return clk_register_fixed_rate(NULL, name, NULL, 0, rate);
+>>>>>>> v4.9.227
 }
 
 static inline struct clk *mpc512x_clk_factor(
@@ -718,7 +726,11 @@ static void mpc512x_clk_setup_clock_tree(struct device_node *np, int busfreq)
 	 *   most one of a mux, div, and gate each into one 'struct clk'
 	 *   item
 	 * - PSC/MSCAN/SPDIF clock generation OTOH already is very
+<<<<<<< HEAD
 	 *   specific and cannot get mapped to componsites (at least not
+=======
+	 *   specific and cannot get mapped to composites (at least not
+>>>>>>> v4.9.227
 	 *   a single one, maybe two of them, but then some of these
 	 *   intermediate clock signals get referenced elsewhere (e.g.
 	 *   in the clock frequency measurement, CFM) and thus need
@@ -1168,6 +1180,14 @@ static void mpc5121_clk_provide_backwards_compat(void)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * The "fixed-clock" nodes (which includes the oscillator node if the board's
+ * DT provides one) has already been scanned by the of_clk_init() in
+ * time_init().
+ */
+>>>>>>> v4.9.227
 int __init mpc5121_clk_init(void)
 {
 	struct device_node *clk_np;
@@ -1187,12 +1207,15 @@ int __init mpc5121_clk_init(void)
 	mpc512x_clk_preset_data();
 
 	/*
+<<<<<<< HEAD
 	 * have the device tree scanned for "fixed-clock" nodes (which
 	 * includes the oscillator node if the board's DT provides one)
 	 */
 	of_clk_init(NULL);
 
 	/*
+=======
+>>>>>>> v4.9.227
 	 * add a dummy clock for those situations where a clock spec is
 	 * required yet no real clock is involved
 	 */

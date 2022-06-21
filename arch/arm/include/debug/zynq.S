@@ -20,9 +20,15 @@
 #define UART_SR_TXEMPTY		0x00000008	/* TX FIFO empty */
 
 #define UART0_PHYS		0xE0000000
+<<<<<<< HEAD
 #define UART0_VIRT		0xF0000000
 #define UART1_PHYS		0xE0001000
 #define UART1_VIRT		0xF0001000
+=======
+#define UART0_VIRT		0xF0800000
+#define UART1_PHYS		0xE0001000
+#define UART1_VIRT		0xF0801000
+>>>>>>> v4.9.227
 
 #if IS_ENABLED(CONFIG_DEBUG_ZYNQ_UART1)
 # define LL_UART_PADDR		UART1_PHYS
@@ -38,7 +44,11 @@
 		.endm
 
 		.macro	senduart,rd,rx
+<<<<<<< HEAD
 		str	\rd, [\rx, #UART_FIFO_OFFSET]	@ TXDATA
+=======
+		strb	\rd, [\rx, #UART_FIFO_OFFSET]	@ TXDATA
+>>>>>>> v4.9.227
 		.endm
 
 		.macro	waituart,rd,rx

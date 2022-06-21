@@ -25,7 +25,11 @@
 #include <linux/v4l2-mediabus.h>
 #include <linux/videodev2.h>
 
+<<<<<<< HEAD
 #include <media/mt9t112.h>
+=======
+#include <media/i2c/mt9t112.h>
+>>>>>>> v4.9.227
 #include <media/soc_camera.h>
 #include <media/v4l2-clk.h>
 #include <media/v4l2-common.h>
@@ -77,7 +81,11 @@
 			struct
 ************************************************************************/
 struct mt9t112_format {
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode code;
+=======
+	u32 code;
+>>>>>>> v4.9.227
 	enum v4l2_colorspace colorspace;
 	u16 fmt;
 	u16 order;
@@ -103,6 +111,7 @@ struct mt9t112_priv {
 
 static const struct mt9t112_format mt9t112_cfmts[] = {
 	{
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_UYVY8_2X8,
 		.colorspace	= V4L2_COLORSPACE_JPEG,
 		.fmt		= 1,
@@ -124,11 +133,38 @@ static const struct mt9t112_format mt9t112_cfmts[] = {
 		.order		= 3,
 	}, {
 		.code		= V4L2_MBUS_FMT_RGB555_2X8_PADHI_LE,
+=======
+		.code		= MEDIA_BUS_FMT_UYVY8_2X8,
+		.colorspace	= V4L2_COLORSPACE_SRGB,
+		.fmt		= 1,
+		.order		= 0,
+	}, {
+		.code		= MEDIA_BUS_FMT_VYUY8_2X8,
+		.colorspace	= V4L2_COLORSPACE_SRGB,
+		.fmt		= 1,
+		.order		= 1,
+	}, {
+		.code		= MEDIA_BUS_FMT_YUYV8_2X8,
+		.colorspace	= V4L2_COLORSPACE_SRGB,
+		.fmt		= 1,
+		.order		= 2,
+	}, {
+		.code		= MEDIA_BUS_FMT_YVYU8_2X8,
+		.colorspace	= V4L2_COLORSPACE_SRGB,
+		.fmt		= 1,
+		.order		= 3,
+	}, {
+		.code		= MEDIA_BUS_FMT_RGB555_2X8_PADHI_LE,
+>>>>>>> v4.9.227
 		.colorspace	= V4L2_COLORSPACE_SRGB,
 		.fmt		= 8,
 		.order		= 2,
 	}, {
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_RGB565_2X8_LE,
+=======
+		.code		= MEDIA_BUS_FMT_RGB565_2X8_LE,
+>>>>>>> v4.9.227
 		.colorspace	= V4L2_COLORSPACE_SRGB,
 		.fmt		= 4,
 		.order		= 2,
@@ -840,7 +876,11 @@ static int mt9t112_s_stream(struct v4l2_subdev *sd, int enable)
 
 static int mt9t112_set_params(struct mt9t112_priv *priv,
 			      const struct v4l2_rect *rect,
+<<<<<<< HEAD
 			      enum v4l2_mbus_pixelcode code)
+=======
+			      u32 code)
+>>>>>>> v4.9.227
 {
 	int i;
 
@@ -867,6 +907,7 @@ static int mt9t112_set_params(struct mt9t112_priv *priv,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mt9t112_cropcap(struct v4l2_subdev *sd, struct v4l2_cropcap *a)
 {
 	a->bounds.left			= 0;
@@ -885,10 +926,16 @@ static int mt9t112_cropcap(struct v4l2_subdev *sd, struct v4l2_cropcap *a)
 }
 
 static int mt9t112_g_crop(struct v4l2_subdev *sd, struct v4l2_crop *a)
+=======
+static int mt9t112_get_selection(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_selection *sel)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct mt9t112_priv *priv = to_mt9t112(client);
 
+<<<<<<< HEAD
 	a->c	= priv->frame;
 	a->type	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
@@ -900,16 +947,67 @@ static int mt9t112_s_crop(struct v4l2_subdev *sd, const struct v4l2_crop *a)
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct mt9t112_priv *priv = to_mt9t112(client);
 	const struct v4l2_rect *rect = &a->c;
+=======
+	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE)
+		return -EINVAL;
+
+	switch (sel->target) {
+	case V4L2_SEL_TGT_CROP_BOUNDS:
+		sel->r.left = 0;
+		sel->r.top = 0;
+		sel->r.width = MAX_WIDTH;
+		sel->r.height = MAX_HEIGHT;
+		return 0;
+	case V4L2_SEL_TGT_CROP_DEFAULT:
+		sel->r.left = 0;
+		sel->r.top = 0;
+		sel->r.width = VGA_WIDTH;
+		sel->r.height = VGA_HEIGHT;
+		return 0;
+	case V4L2_SEL_TGT_CROP:
+		sel->r = priv->frame;
+		return 0;
+	default:
+		return -EINVAL;
+	}
+}
+
+static int mt9t112_set_selection(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_selection *sel)
+{
+	struct i2c_client *client = v4l2_get_subdevdata(sd);
+	struct mt9t112_priv *priv = to_mt9t112(client);
+	const struct v4l2_rect *rect = &sel->r;
+
+	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE ||
+	    sel->target != V4L2_SEL_TGT_CROP)
+		return -EINVAL;
+>>>>>>> v4.9.227
 
 	return mt9t112_set_params(priv, rect, priv->format->code);
 }
 
+<<<<<<< HEAD
 static int mt9t112_g_fmt(struct v4l2_subdev *sd,
 			 struct v4l2_mbus_framefmt *mf)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct mt9t112_priv *priv = to_mt9t112(client);
 
+=======
+static int mt9t112_get_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+	struct i2c_client *client = v4l2_get_subdevdata(sd);
+	struct mt9t112_priv *priv = to_mt9t112(client);
+
+	if (format->pad)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	mf->width	= priv->frame.width;
 	mf->height	= priv->frame.height;
 	mf->colorspace	= priv->format->colorspace;
@@ -940,20 +1038,38 @@ static int mt9t112_s_fmt(struct v4l2_subdev *sd,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int mt9t112_try_fmt(struct v4l2_subdev *sd,
 			   struct v4l2_mbus_framefmt *mf)
 {
+=======
+static int mt9t112_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+>>>>>>> v4.9.227
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct mt9t112_priv *priv = to_mt9t112(client);
 	unsigned int top, left;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (format->pad)
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	for (i = 0; i < priv->num_formats; i++)
 		if (mt9t112_cfmts[i].code == mf->code)
 			break;
 
 	if (i == priv->num_formats) {
+<<<<<<< HEAD
 		mf->code = V4L2_MBUS_FMT_UYVY8_2X8;
+=======
+		mf->code = MEDIA_BUS_FMT_UYVY8_2X8;
+>>>>>>> v4.9.227
 		mf->colorspace = V4L2_COLORSPACE_JPEG;
 	} else {
 		mf->colorspace	= mt9t112_cfmts[i].colorspace;
@@ -963,19 +1079,38 @@ static int mt9t112_try_fmt(struct v4l2_subdev *sd,
 
 	mf->field = V4L2_FIELD_NONE;
 
+<<<<<<< HEAD
 	return 0;
 }
 
 static int mt9t112_enum_fmt(struct v4l2_subdev *sd, unsigned int index,
 			   enum v4l2_mbus_pixelcode *code)
+=======
+	if (format->which == V4L2_SUBDEV_FORMAT_ACTIVE)
+		return mt9t112_s_fmt(sd, mf);
+	cfg->try_fmt = *mf;
+	return 0;
+}
+
+static int mt9t112_enum_mbus_code(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_mbus_code_enum *code)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct mt9t112_priv *priv = to_mt9t112(client);
 
+<<<<<<< HEAD
 	if (index >= priv->num_formats)
 		return -EINVAL;
 
 	*code = mt9t112_cfmts[index].code;
+=======
+	if (code->pad || code->index >= priv->num_formats)
+		return -EINVAL;
+
+	code->code = mt9t112_cfmts[code->index].code;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1010,6 +1145,7 @@ static int mt9t112_s_mbus_config(struct v4l2_subdev *sd,
 
 static struct v4l2_subdev_video_ops mt9t112_subdev_video_ops = {
 	.s_stream	= mt9t112_s_stream,
+<<<<<<< HEAD
 	.g_mbus_fmt	= mt9t112_g_fmt,
 	.s_mbus_fmt	= mt9t112_s_fmt,
 	.try_mbus_fmt	= mt9t112_try_fmt,
@@ -1017,16 +1153,33 @@ static struct v4l2_subdev_video_ops mt9t112_subdev_video_ops = {
 	.g_crop		= mt9t112_g_crop,
 	.s_crop		= mt9t112_s_crop,
 	.enum_mbus_fmt	= mt9t112_enum_fmt,
+=======
+>>>>>>> v4.9.227
 	.g_mbus_config	= mt9t112_g_mbus_config,
 	.s_mbus_config	= mt9t112_s_mbus_config,
 };
 
+<<<<<<< HEAD
+=======
+static const struct v4l2_subdev_pad_ops mt9t112_subdev_pad_ops = {
+	.enum_mbus_code = mt9t112_enum_mbus_code,
+	.get_selection	= mt9t112_get_selection,
+	.set_selection	= mt9t112_set_selection,
+	.get_fmt	= mt9t112_get_fmt,
+	.set_fmt	= mt9t112_set_fmt,
+};
+
+>>>>>>> v4.9.227
 /************************************************************************
 			i2c driver
 ************************************************************************/
 static struct v4l2_subdev_ops mt9t112_subdev_ops = {
 	.core	= &mt9t112_subdev_core_ops,
 	.video	= &mt9t112_subdev_video_ops,
+<<<<<<< HEAD
+=======
+	.pad	= &mt9t112_subdev_pad_ops,
+>>>>>>> v4.9.227
 };
 
 static int mt9t112_camera_probe(struct i2c_client *client)
@@ -1101,7 +1254,11 @@ static int mt9t112_probe(struct i2c_client *client,
 
 	/* Cannot fail: using the default supported pixel code */
 	if (!ret)
+<<<<<<< HEAD
 		mt9t112_set_params(priv, &rect, V4L2_MBUS_FMT_UYVY8_2X8);
+=======
+		mt9t112_set_params(priv, &rect, MEDIA_BUS_FMT_UYVY8_2X8);
+>>>>>>> v4.9.227
 	else
 		v4l2_clk_put(priv->clk);
 

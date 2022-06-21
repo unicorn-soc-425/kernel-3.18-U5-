@@ -50,20 +50,33 @@ static struct cpuidle_driver armadaxp_idle_driver = {
 	.states[0]		= ARM_CPUIDLE_WFI_STATE,
 	.states[1]		= {
 		.enter			= mvebu_v7_enter_idle,
+<<<<<<< HEAD
 		.exit_latency		= 10,
 		.power_usage		= 50,
 		.target_residency	= 100,
 		.flags			= CPUIDLE_FLAG_TIME_VALID,
+=======
+		.exit_latency		= 100,
+		.power_usage		= 50,
+		.target_residency	= 1000,
+>>>>>>> v4.9.227
 		.name			= "MV CPU IDLE",
 		.desc			= "CPU power down",
 	},
 	.states[2]		= {
 		.enter			= mvebu_v7_enter_idle,
+<<<<<<< HEAD
 		.exit_latency		= 100,
 		.power_usage		= 5,
 		.target_residency	= 1000,
 		.flags			= CPUIDLE_FLAG_TIME_VALID |
 						MVEBU_V7_FLAG_DEEP_IDLE,
+=======
+		.exit_latency		= 1000,
+		.power_usage		= 5,
+		.target_residency	= 10000,
+		.flags			= MVEBU_V7_FLAG_DEEP_IDLE,
+>>>>>>> v4.9.227
 		.name			= "MV CPU DEEP IDLE",
 		.desc			= "CPU and L2 Fabric power down",
 	},
@@ -78,8 +91,12 @@ static struct cpuidle_driver armada370_idle_driver = {
 		.exit_latency		= 100,
 		.power_usage		= 5,
 		.target_residency	= 1000,
+<<<<<<< HEAD
 		.flags			= (CPUIDLE_FLAG_TIME_VALID |
 					   MVEBU_V7_FLAG_DEEP_IDLE),
+=======
+		.flags			= MVEBU_V7_FLAG_DEEP_IDLE,
+>>>>>>> v4.9.227
 		.name			= "Deep Idle",
 		.desc			= "CPU and L2 Fabric power down",
 	},
@@ -94,7 +111,10 @@ static struct cpuidle_driver armada38x_idle_driver = {
 		.exit_latency		= 10,
 		.power_usage		= 5,
 		.target_residency	= 100,
+<<<<<<< HEAD
 		.flags			= CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> v4.9.227
 		.name			= "Idle",
 		.desc			= "CPU and SCU power down",
 	},
@@ -103,6 +123,7 @@ static struct cpuidle_driver armada38x_idle_driver = {
 
 static int mvebu_v7_cpuidle_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	mvebu_v7_cpu_suspend = pdev->dev.platform_data;
 
 	if (!strcmp(pdev->dev.driver->name, "cpuidle-armada-xp"))
@@ -144,6 +165,42 @@ static struct platform_driver armada38x_cpuidle_plat_driver = {
 };
 
 module_platform_driver(armada38x_cpuidle_plat_driver);
+=======
+	const struct platform_device_id *id = pdev->id_entry;
+
+	if (!id)
+		return -EINVAL;
+
+	mvebu_v7_cpu_suspend = pdev->dev.platform_data;
+
+	return cpuidle_register((struct cpuidle_driver *)id->driver_data, NULL);
+}
+
+static const struct platform_device_id mvebu_cpuidle_ids[] = {
+	{
+		.name = "cpuidle-armada-xp",
+		.driver_data = (unsigned long)&armadaxp_idle_driver,
+	}, {
+		.name = "cpuidle-armada-370",
+		.driver_data = (unsigned long)&armada370_idle_driver,
+	}, {
+		.name = "cpuidle-armada-38x",
+		.driver_data = (unsigned long)&armada38x_idle_driver,
+	},
+	{}
+};
+
+static struct platform_driver mvebu_cpuidle_driver = {
+	.probe = mvebu_v7_cpuidle_probe,
+	.driver = {
+		.name = "cpuidle-mbevu",
+		.suppress_bind_attrs = true,
+	},
+	.id_table = mvebu_cpuidle_ids,
+};
+
+builtin_platform_driver(mvebu_cpuidle_driver);
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Gregory CLEMENT <gregory.clement@free-electrons.com>");
 MODULE_DESCRIPTION("Marvell EBU v7 cpuidle driver");

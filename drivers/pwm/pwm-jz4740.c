@@ -194,7 +194,10 @@ static int jz4740_pwm_remove(struct platform_device *pdev)
 static struct platform_driver jz4740_pwm_driver = {
 	.driver = {
 		.name = "jz4740-pwm",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = jz4740_pwm_probe,
 	.remove = jz4740_pwm_remove,

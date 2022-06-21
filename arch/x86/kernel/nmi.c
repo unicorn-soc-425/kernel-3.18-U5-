@@ -17,6 +17,10 @@
 #include <linux/debugfs.h>
 #include <linux/delay.h>
 #include <linux/hardirq.h>
+<<<<<<< HEAD
+=======
+#include <linux/ratelimit.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/export.h>
 
@@ -29,6 +33,12 @@
 #include <asm/mach_traps.h>
 #include <asm/nmi.h>
 #include <asm/x86_init.h>
+<<<<<<< HEAD
+=======
+#include <asm/reboot.h>
+#include <asm/cache.h>
+#include <asm/nospec-branch.h>
+>>>>>>> v4.9.227
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/nmi.h>
@@ -68,7 +78,11 @@ struct nmi_stats {
 
 static DEFINE_PER_CPU(struct nmi_stats, nmi_stats);
 
+<<<<<<< HEAD
 static int ignore_nmis;
+=======
+static int ignore_nmis __read_mostly;
+>>>>>>> v4.9.227
 
 int unknown_nmi_panic;
 /*
@@ -110,7 +124,11 @@ static void nmi_max_handler(struct irq_work *w)
 		a->handler, whole_msecs, decimal_msecs);
 }
 
+<<<<<<< HEAD
 static int nmi_handle(unsigned int type, struct pt_regs *regs, bool b2b)
+=======
+static int nmi_handle(unsigned int type, struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	struct nmi_desc *desc = nmi_to_desc(type);
 	struct nmiaction *a;
@@ -213,7 +231,11 @@ static void
 pci_serr_error(unsigned char reason, struct pt_regs *regs)
 {
 	/* check to see if anyone registered against these types of errors */
+<<<<<<< HEAD
 	if (nmi_handle(NMI_SERR, regs, false))
+=======
+	if (nmi_handle(NMI_SERR, regs))
+>>>>>>> v4.9.227
 		return;
 
 	pr_emerg("NMI: PCI system error (SERR) for reason %02x on CPU %d.\n",
@@ -231,7 +253,11 @@ pci_serr_error(unsigned char reason, struct pt_regs *regs)
 #endif
 
 	if (panic_on_unrecovered_nmi)
+<<<<<<< HEAD
 		panic("NMI: Not continuing");
+=======
+		nmi_panic(regs, "NMI: Not continuing");
+>>>>>>> v4.9.227
 
 	pr_emerg("Dazed and confused, but trying to continue\n");
 
@@ -247,7 +273,11 @@ io_check_error(unsigned char reason, struct pt_regs *regs)
 	unsigned long i;
 
 	/* check to see if anyone registered against these types of errors */
+<<<<<<< HEAD
 	if (nmi_handle(NMI_IO_CHECK, regs, false))
+=======
+	if (nmi_handle(NMI_IO_CHECK, regs))
+>>>>>>> v4.9.227
 		return;
 
 	pr_emerg(
@@ -255,8 +285,21 @@ io_check_error(unsigned char reason, struct pt_regs *regs)
 		 reason, smp_processor_id());
 	show_regs(regs);
 
+<<<<<<< HEAD
 	if (panic_on_io_nmi)
 		panic("NMI IOCK error: Not continuing");
+=======
+	if (panic_on_io_nmi) {
+		nmi_panic(regs, "NMI IOCK error: Not continuing");
+
+		/*
+		 * If we end up here, it means we have received an NMI while
+		 * processing panic(). Simply return without delaying and
+		 * re-enabling NMIs.
+		 */
+		return;
+	}
+>>>>>>> v4.9.227
 
 	/* Re-enable the IOCK line, wait for a few seconds */
 	reason = (reason & NMI_REASON_CLEAR_MASK) | NMI_REASON_CLEAR_IOCHK;
@@ -284,7 +327,11 @@ unknown_nmi_error(unsigned char reason, struct pt_regs *regs)
 	 * as only the first one is ever run (unless it can actually determine
 	 * if it caused the NMI)
 	 */
+<<<<<<< HEAD
 	handled = nmi_handle(NMI_UNKNOWN, regs, false);
+=======
+	handled = nmi_handle(NMI_UNKNOWN, regs);
+>>>>>>> v4.9.227
 	if (handled) {
 		__this_cpu_add(nmi_stats.unknown, handled);
 		return;
@@ -297,7 +344,11 @@ unknown_nmi_error(unsigned char reason, struct pt_regs *regs)
 
 	pr_emerg("Do you have a strange power saving mode enabled?\n");
 	if (unknown_nmi_panic || panic_on_unrecovered_nmi)
+<<<<<<< HEAD
 		panic("NMI: Not continuing");
+=======
+		nmi_panic(regs, "NMI: Not continuing");
+>>>>>>> v4.9.227
 
 	pr_emerg("Dazed and confused, but trying to continue\n");
 }
@@ -332,7 +383,11 @@ static void default_do_nmi(struct pt_regs *regs)
 
 	__this_cpu_write(last_nmi_rip, regs->ip);
 
+<<<<<<< HEAD
 	handled = nmi_handle(NMI_LOCAL, regs, b2b);
+=======
+	handled = nmi_handle(NMI_LOCAL, regs);
+>>>>>>> v4.9.227
 	__this_cpu_add(nmi_stats.normal, handled);
 	if (handled) {
 		/*
@@ -348,8 +403,24 @@ static void default_do_nmi(struct pt_regs *regs)
 		return;
 	}
 
+<<<<<<< HEAD
 	/* Non-CPU-specific NMI: NMI sources can be processed on any CPU */
 	raw_spin_lock(&nmi_reason_lock);
+=======
+	/*
+	 * Non-CPU-specific NMI: NMI sources can be processed on any CPU.
+	 *
+	 * Another CPU may be processing panic routines while holding
+	 * nmi_reason_lock. Check if the CPU issued the IPI for crash dumping,
+	 * and if so, call its callback directly.  If there is no CPU preparing
+	 * crash dump, we simply loop here.
+	 */
+	while (!raw_spin_trylock(&nmi_reason_lock)) {
+		run_crash_ipi_callback(regs);
+		cpu_relax();
+	}
+
+>>>>>>> v4.9.227
 	reason = x86_platform.get_nmi_reason();
 
 	if (reason & NMI_REASON_MASK) {
@@ -478,7 +549,11 @@ static DEFINE_PER_CPU(unsigned long, nmi_cr2);
 static DEFINE_PER_CPU(int, update_debug_stack);
 #endif
 
+<<<<<<< HEAD
 dotraplinkage notrace __kprobes void
+=======
+dotraplinkage notrace void
+>>>>>>> v4.9.227
 do_nmi(struct pt_regs *regs, long error_code)
 {
 	if (this_cpu_read(nmi_state) != NMI_NOT_RUNNING) {
@@ -522,6 +597,12 @@ nmi_restart:
 		write_cr2(this_cpu_read(nmi_cr2));
 	if (this_cpu_dec_return(nmi_state))
 		goto nmi_restart;
+<<<<<<< HEAD
+=======
+
+	if (user_mode(regs))
+		mds_user_clear_cpu_buffers();
+>>>>>>> v4.9.227
 }
 NOKPROBE_SYMBOL(do_nmi);
 

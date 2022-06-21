@@ -135,7 +135,11 @@ static const struct regmap_access_table tps65218_volatile_table = {
 	.n_yes_ranges = ARRAY_SIZE(tps65218_yes_ranges),
 };
 
+<<<<<<< HEAD
 static struct regmap_config tps65218_regmap_config = {
+=======
+static const struct regmap_config tps65218_regmap_config = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 	.cache_type = REGCACHE_RBTREE,
@@ -211,6 +215,10 @@ static const struct of_device_id of_tps65218_match_table[] = {
 	{ .compatible = "ti,tps65218", },
 	{}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, of_tps65218_match_table);
+>>>>>>> v4.9.227
 
 static int tps65218_probe(struct i2c_client *client,
 				const struct i2c_device_id *ids)
@@ -218,6 +226,10 @@ static int tps65218_probe(struct i2c_client *client,
 	struct tps65218 *tps;
 	const struct of_device_id *match;
 	int ret;
+<<<<<<< HEAD
+=======
+	unsigned int chipid;
+>>>>>>> v4.9.227
 
 	match = of_match_device(of_tps65218_match_table, &client->dev);
 	if (!match) {
@@ -249,6 +261,17 @@ static int tps65218_probe(struct i2c_client *client,
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
+=======
+	ret = tps65218_reg_read(tps, TPS65218_REG_CHIPID, &chipid);
+	if (ret) {
+		dev_err(tps->dev, "Failed to read chipid: %d\n", ret);
+		return ret;
+	}
+
+	tps->rev = chipid & TPS65218_CHIPID_REV_MASK;
+
+>>>>>>> v4.9.227
 	ret = of_platform_populate(client->dev.of_node, NULL, NULL,
 				   &client->dev);
 	if (ret < 0)
@@ -280,7 +303,10 @@ MODULE_DEVICE_TABLE(i2c, tps65218_id_table);
 static struct i2c_driver tps65218_driver = {
 	.driver		= {
 		.name	= "tps65218",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_tps65218_match_table,
 	},
 	.probe		= tps65218_probe,

@@ -3,6 +3,7 @@
 #define _TRACE_KVM_PR_H
 
 #include <linux/tracepoint.h>
+<<<<<<< HEAD
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM kvm_pr
@@ -32,6 +33,12 @@
 	{0xf00, "PERFMON"}, \
 	{0xf20, "ALTIVEC"}, \
 	{0xf40, "VSX"}
+=======
+#include "trace_book3s.h"
+
+#undef TRACE_SYSTEM
+#define TRACE_SYSTEM kvm_pr
+>>>>>>> v4.9.227
 
 TRACE_EVENT(kvm_book3s_reenter,
 	TP_PROTO(int r, struct kvm_vcpu *vcpu),
@@ -53,7 +60,11 @@ TRACE_EVENT(kvm_book3s_reenter,
 #ifdef CONFIG_PPC_BOOK3S_64
 
 TRACE_EVENT(kvm_book3s_64_mmu_map,
+<<<<<<< HEAD
 	TP_PROTO(int rflags, ulong hpteg, ulong va, pfn_t hpaddr,
+=======
+	TP_PROTO(int rflags, ulong hpteg, ulong va, kvm_pfn_t hpaddr,
+>>>>>>> v4.9.227
 		 struct kvmppc_pte *orig_pte),
 	TP_ARGS(rflags, hpteg, va, hpaddr, orig_pte),
 
@@ -294,4 +305,14 @@ TRACE_EVENT(kvm_unmap_hva,
 #endif /* _TRACE_KVM_H */
 
 /* This part must be outside protection */
+<<<<<<< HEAD
+=======
+
+#undef TRACE_INCLUDE_PATH
+#undef TRACE_INCLUDE_FILE
+
+#define TRACE_INCLUDE_PATH .
+#define TRACE_INCLUDE_FILE trace_pr
+
+>>>>>>> v4.9.227
 #include <trace/define_trace.h>

@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2008, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -41,10 +49,21 @@
 
 #define DEBUG_SUBSYSTEM S_LLITE
 
+<<<<<<< HEAD
 
 #include "../include/obd.h"
 #include "../include/lustre_lite.h"
 
+=======
+#include <linux/atomic.h>
+#include <linux/bitops.h>
+#include <linux/mm.h>
+#include <linux/mutex.h>
+#include <linux/page-flags.h>
+#include <linux/pagemap.h>
+
+#include "llite_internal.h"
+>>>>>>> v4.9.227
 #include "vvp_internal.h"
 
 /*****************************************************************************
@@ -53,36 +72,61 @@
  *
  */
 
+<<<<<<< HEAD
 static void vvp_page_fini_common(struct ccc_page *cp)
 {
 	struct page *vmpage = cp->cpg_page;
 
 	LASSERT(vmpage != NULL);
 	page_cache_release(vmpage);
+=======
+static void vvp_page_fini_common(struct vvp_page *vpg)
+{
+	struct page *vmpage = vpg->vpg_page;
+
+	LASSERT(vmpage);
+	put_page(vmpage);
+>>>>>>> v4.9.227
 }
 
 static void vvp_page_fini(const struct lu_env *env,
 			  struct cl_page_slice *slice)
 {
+<<<<<<< HEAD
 	struct ccc_page *cp = cl2ccc_page(slice);
 	struct page *vmpage  = cp->cpg_page;
+=======
+	struct vvp_page *vpg     = cl2vvp_page(slice);
+	struct page     *vmpage  = vpg->vpg_page;
+>>>>>>> v4.9.227
 
 	/*
 	 * vmpage->private was already cleared when page was moved into
 	 * VPG_FREEING state.
 	 */
 	LASSERT((struct cl_page *)vmpage->private != slice->cpl_page);
+<<<<<<< HEAD
 	vvp_page_fini_common(cp);
+=======
+	vvp_page_fini_common(vpg);
+>>>>>>> v4.9.227
 }
 
 static int vvp_page_own(const struct lu_env *env,
 			const struct cl_page_slice *slice, struct cl_io *io,
 			int nonblock)
 {
+<<<<<<< HEAD
 	struct ccc_page *vpg    = cl2ccc_page(slice);
 	struct page      *vmpage = vpg->cpg_page;
 
 	LASSERT(vmpage != NULL);
+=======
+	struct vvp_page *vpg    = cl2vvp_page(slice);
+	struct page     *vmpage = vpg->vpg_page;
+
+	LASSERT(vmpage);
+>>>>>>> v4.9.227
 	if (nonblock) {
 		if (!trylock_page(vmpage))
 			return -EAGAIN;
@@ -97,6 +141,10 @@ static int vvp_page_own(const struct lu_env *env,
 
 	lock_page(vmpage);
 	wait_on_page_writeback(vmpage);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -106,7 +154,11 @@ static void vvp_page_assume(const struct lu_env *env,
 {
 	struct page *vmpage = cl2vm_page(slice);
 
+<<<<<<< HEAD
 	LASSERT(vmpage != NULL);
+=======
+	LASSERT(vmpage);
+>>>>>>> v4.9.227
 	LASSERT(PageLocked(vmpage));
 	wait_on_page_writeback(vmpage);
 }
@@ -117,7 +169,11 @@ static void vvp_page_unassume(const struct lu_env *env,
 {
 	struct page *vmpage = cl2vm_page(slice);
 
+<<<<<<< HEAD
 	LASSERT(vmpage != NULL);
+=======
+	LASSERT(vmpage);
+>>>>>>> v4.9.227
 	LASSERT(PageLocked(vmpage));
 }
 
@@ -126,7 +182,11 @@ static void vvp_page_disown(const struct lu_env *env,
 {
 	struct page *vmpage = cl2vm_page(slice);
 
+<<<<<<< HEAD
 	LASSERT(vmpage != NULL);
+=======
+	LASSERT(vmpage);
+>>>>>>> v4.9.227
 	LASSERT(PageLocked(vmpage));
 
 	unlock_page(cl2vm_page(slice));
@@ -137,6 +197,7 @@ static void vvp_page_discard(const struct lu_env *env,
 			     struct cl_io *unused)
 {
 	struct page	   *vmpage  = cl2vm_page(slice);
+<<<<<<< HEAD
 	struct address_space *mapping;
 	struct ccc_page      *cpg     = cl2ccc_page(slice);
 
@@ -172,6 +233,17 @@ static int vvp_page_unmap(const struct lu_env *env,
 	 */
 	ll_teardown_mmaps(vmpage->mapping, offset, offset + PAGE_CACHE_SIZE);
 	return 0;
+=======
+	struct vvp_page      *vpg     = cl2vvp_page(slice);
+
+	LASSERT(vmpage);
+	LASSERT(PageLocked(vmpage));
+
+	if (vpg->vpg_defer_uptodate && !vpg->vpg_ra_used)
+		ll_ra_stats_inc(vmpage->mapping->host, RA_STAT_DISCARDED);
+
+	ll_invalidate_page(vmpage);
+>>>>>>> v4.9.227
 }
 
 static void vvp_page_delete(const struct lu_env *env,
@@ -180,12 +252,29 @@ static void vvp_page_delete(const struct lu_env *env,
 	struct page       *vmpage = cl2vm_page(slice);
 	struct inode     *inode  = vmpage->mapping->host;
 	struct cl_object *obj    = slice->cpl_obj;
+<<<<<<< HEAD
 
 	LASSERT(PageLocked(vmpage));
 	LASSERT((struct cl_page *)vmpage->private == slice->cpl_page);
 	LASSERT(inode == ccc_object_inode(obj));
 
 	vvp_write_complete(cl2ccc(obj), cl2ccc_page(slice));
+=======
+	struct cl_page   *page   = slice->cpl_page;
+	int refc;
+
+	LASSERT(PageLocked(vmpage));
+	LASSERT((struct cl_page *)vmpage->private == page);
+	LASSERT(inode == vvp_object_inode(obj));
+
+	vvp_write_complete(cl2vvp(obj), cl2vvp_page(slice));
+
+	/* Drop the reference count held in vvp_page_init */
+	refc = atomic_dec_return(&page->cp_ref);
+	LASSERTF(refc >= 1, "page = %p, refc = %d\n", page, refc);
+
+	ClearPageUptodate(vmpage);
+>>>>>>> v4.9.227
 	ClearPagePrivate(vmpage);
 	vmpage->private = 0;
 	/*
@@ -200,7 +289,11 @@ static void vvp_page_export(const struct lu_env *env,
 {
 	struct page *vmpage = cl2vm_page(slice);
 
+<<<<<<< HEAD
 	LASSERT(vmpage != NULL);
+=======
+	LASSERT(vmpage);
+>>>>>>> v4.9.227
 	LASSERT(PageLocked(vmpage));
 	if (uptodate)
 		SetPageUptodate(vmpage);
@@ -227,12 +320,26 @@ static int vvp_page_prep_write(const struct lu_env *env,
 			       struct cl_io *unused)
 {
 	struct page *vmpage = cl2vm_page(slice);
+<<<<<<< HEAD
+=======
+	struct cl_page *pg = slice->cpl_page;
+>>>>>>> v4.9.227
 
 	LASSERT(PageLocked(vmpage));
 	LASSERT(!PageDirty(vmpage));
 
+<<<<<<< HEAD
 	set_page_writeback(vmpage);
 	vvp_write_pending(cl2ccc(slice->cpl_obj), cl2ccc_page(slice));
+=======
+	/* ll_writepage path is not a sync write, so need to set page writeback
+	 * flag
+	 */
+	if (!pg->cp_sync_io)
+		set_page_writeback(vmpage);
+
+	vvp_write_pending(cl2vvp(slice->cpl_obj), cl2vvp_page(slice));
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -245,6 +352,7 @@ static int vvp_page_prep_write(const struct lu_env *env,
  */
 static void vvp_vmpage_error(struct inode *inode, struct page *vmpage, int ioret)
 {
+<<<<<<< HEAD
 	struct ccc_object *obj = cl_inode2ccc(inode);
 
 	if (ioret == 0) {
@@ -260,6 +368,20 @@ static void vvp_vmpage_error(struct inode *inode, struct page *vmpage, int ioret
 		if ((ioret == -ESHUTDOWN || ioret == -EINTR) &&
 		     obj->cob_discard_page_warned == 0) {
 			obj->cob_discard_page_warned = 1;
+=======
+	struct vvp_object *obj = cl_inode2vvp(inode);
+
+	if (ioret == 0) {
+		ClearPageError(vmpage);
+		obj->vob_discard_page_warned = 0;
+	} else {
+		SetPageError(vmpage);
+		mapping_set_error(inode->i_mapping, ioret);
+
+		if ((ioret == -ESHUTDOWN || ioret == -EINTR) &&
+		    obj->vob_discard_page_warned == 0) {
+			obj->vob_discard_page_warned = 1;
+>>>>>>> v4.9.227
 			ll_dirty_page_discard_warn(vmpage, ioret);
 		}
 	}
@@ -269,14 +391,22 @@ static void vvp_page_completion_read(const struct lu_env *env,
 				     const struct cl_page_slice *slice,
 				     int ioret)
 {
+<<<<<<< HEAD
 	struct ccc_page *cp     = cl2ccc_page(slice);
 	struct page      *vmpage = cp->cpg_page;
 	struct cl_page  *page   = cl_page_top(slice->cpl_page);
 	struct inode    *inode  = ccc_object_inode(page->cp_obj);
+=======
+	struct vvp_page *vpg    = cl2vvp_page(slice);
+	struct page     *vmpage = vpg->vpg_page;
+	struct cl_page  *page   = slice->cpl_page;
+	struct inode    *inode  = vvp_object_inode(page->cp_obj);
+>>>>>>> v4.9.227
 
 	LASSERT(PageLocked(vmpage));
 	CL_PAGE_HEADER(D_PAGE, env, page, "completing READ with %d\n", ioret);
 
+<<<<<<< HEAD
 	if (cp->cpg_defer_uptodate)
 		ll_ra_count_put(ll_i2sbi(inode), 1);
 
@@ -287,6 +417,19 @@ static void vvp_page_completion_read(const struct lu_env *env,
 		cp->cpg_defer_uptodate = 0;
 
 	if (page->cp_sync_io == NULL)
+=======
+	if (vpg->vpg_defer_uptodate)
+		ll_ra_count_put(ll_i2sbi(inode), 1);
+
+	if (ioret == 0)  {
+		if (!vpg->vpg_defer_uptodate)
+			cl_page_export(env, page, 1);
+	} else {
+		vpg->vpg_defer_uptodate = 0;
+	}
+
+	if (!page->cp_sync_io)
+>>>>>>> v4.9.227
 		unlock_page(vmpage);
 }
 
@@ -294,12 +437,18 @@ static void vvp_page_completion_write(const struct lu_env *env,
 				      const struct cl_page_slice *slice,
 				      int ioret)
 {
+<<<<<<< HEAD
 	struct ccc_page *cp     = cl2ccc_page(slice);
 	struct cl_page  *pg     = slice->cpl_page;
 	struct page      *vmpage = cp->cpg_page;
 
 	LASSERT(ergo(pg->cp_sync_io != NULL, PageLocked(vmpage)));
 	LASSERT(PageWriteback(vmpage));
+=======
+	struct vvp_page *vpg     = cl2vvp_page(slice);
+	struct cl_page  *pg     = slice->cpl_page;
+	struct page     *vmpage = vpg->vpg_page;
+>>>>>>> v4.9.227
 
 	CL_PAGE_HEADER(D_PAGE, env, pg, "completing WRITE with %d\n", ioret);
 
@@ -313,6 +462,7 @@ static void vvp_page_completion_write(const struct lu_env *env,
 	 * and then re-add the page into pending transfer queue.  -jay
 	 */
 
+<<<<<<< HEAD
 	cp->cpg_write_queued = 0;
 	vvp_write_complete(cl2ccc(slice->cpl_obj), cp);
 
@@ -324,6 +474,24 @@ static void vvp_page_completion_write(const struct lu_env *env,
 		vvp_vmpage_error(ccc_object_inode(pg->cp_obj), vmpage, ioret);
 
 	end_page_writeback(vmpage);
+=======
+	vpg->vpg_write_queued = 0;
+	vvp_write_complete(cl2vvp(slice->cpl_obj), vpg);
+
+	if (pg->cp_sync_io) {
+		LASSERT(PageLocked(vmpage));
+		LASSERT(!PageWriteback(vmpage));
+	} else {
+		LASSERT(PageWriteback(vmpage));
+		/*
+		 * Only mark the page error only when it's an async write
+		 * because applications won't wait for IO to finish.
+		 */
+		vvp_vmpage_error(vvp_object_inode(pg->cp_obj), vmpage, ioret);
+
+		end_page_writeback(vmpage);
+	}
+>>>>>>> v4.9.227
 }
 
 /**
@@ -350,6 +518,7 @@ static int vvp_page_make_ready(const struct lu_env *env,
 	lock_page(vmpage);
 	if (clear_page_dirty_for_io(vmpage)) {
 		LASSERT(pg->cp_state == CPS_CACHED);
+<<<<<<< HEAD
 		/* This actually clears the dirty bit in the radix
 		 * tree. */
 		set_page_writeback(vmpage);
@@ -359,6 +528,16 @@ static int vvp_page_make_ready(const struct lu_env *env,
 	} else if (pg->cp_state == CPS_PAGEOUT) {
 		/* is it possible for osc_flush_async_page() to already
 		 * make it ready? */
+=======
+		/* This actually clears the dirty bit in the radix tree. */
+		set_page_writeback(vmpage);
+		vvp_write_pending(cl2vvp(slice->cpl_obj), cl2vvp_page(slice));
+		CL_PAGE_HEADER(D_PAGE, env, pg, "readied\n");
+	} else if (pg->cp_state == CPS_PAGEOUT) {
+		/* is it possible for osc_flush_async_page() to already
+		 * make it ready?
+		 */
+>>>>>>> v4.9.227
 		result = -EALREADY;
 	} else {
 		CL_PAGE_DEBUG(D_ERROR, env, pg, "Unexpecting page state %d.\n",
@@ -369,10 +548,28 @@ static int vvp_page_make_ready(const struct lu_env *env,
 	return result;
 }
 
+<<<<<<< HEAD
+=======
+static int vvp_page_is_under_lock(const struct lu_env *env,
+				  const struct cl_page_slice *slice,
+				  struct cl_io *io, pgoff_t *max_index)
+{
+	if (io->ci_type == CIT_READ || io->ci_type == CIT_WRITE ||
+	    io->ci_type == CIT_FAULT) {
+		struct vvp_io *vio = vvp_env_io(env);
+
+		if (unlikely(vio->vui_fd->fd_flags & LL_FILE_GROUP_LOCKED))
+			*max_index = CL_PAGE_EOF;
+	}
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static int vvp_page_print(const struct lu_env *env,
 			  const struct cl_page_slice *slice,
 			  void *cookie, lu_printer_t printer)
 {
+<<<<<<< HEAD
 	struct ccc_page *vp = cl2ccc_page(slice);
 	struct page      *vmpage = vp->cpg_page;
 
@@ -388,6 +585,35 @@ static int vvp_page_print(const struct lu_env *env,
 			   list_empty(&vmpage->lru) ? "not-" : "");
 	}
 	(*printer)(env, cookie, "\n");
+=======
+	struct vvp_page *vpg = cl2vvp_page(slice);
+	struct page     *vmpage = vpg->vpg_page;
+
+	(*printer)(env, cookie, LUSTRE_VVP_NAME "-page@%p(%d:%d:%d) vm@%p ",
+		   vpg, vpg->vpg_defer_uptodate, vpg->vpg_ra_used,
+		   vpg->vpg_write_queued, vmpage);
+	if (vmpage) {
+		(*printer)(env, cookie, "%lx %d:%d %lx %lu %slru",
+			   (long)vmpage->flags, page_count(vmpage),
+			   page_mapcount(vmpage), vmpage->private,
+			   vmpage->index,
+			   list_empty(&vmpage->lru) ? "not-" : "");
+	}
+
+	(*printer)(env, cookie, "\n");
+
+	return 0;
+}
+
+static int vvp_page_fail(const struct lu_env *env,
+			 const struct cl_page_slice *slice)
+{
+	/*
+	 * Cached read?
+	 */
+	LBUG();
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -396,25 +622,39 @@ static const struct cl_page_operations vvp_page_ops = {
 	.cpo_assume	= vvp_page_assume,
 	.cpo_unassume      = vvp_page_unassume,
 	.cpo_disown	= vvp_page_disown,
+<<<<<<< HEAD
 	.cpo_vmpage	= ccc_page_vmpage,
 	.cpo_discard       = vvp_page_discard,
 	.cpo_delete	= vvp_page_delete,
 	.cpo_unmap	 = vvp_page_unmap,
+=======
+	.cpo_discard       = vvp_page_discard,
+	.cpo_delete	= vvp_page_delete,
+>>>>>>> v4.9.227
 	.cpo_export	= vvp_page_export,
 	.cpo_is_vmlocked   = vvp_page_is_vmlocked,
 	.cpo_fini	  = vvp_page_fini,
 	.cpo_print	 = vvp_page_print,
+<<<<<<< HEAD
 	.cpo_is_under_lock = ccc_page_is_under_lock,
+=======
+	.cpo_is_under_lock = vvp_page_is_under_lock,
+>>>>>>> v4.9.227
 	.io = {
 		[CRT_READ] = {
 			.cpo_prep	= vvp_page_prep_read,
 			.cpo_completion  = vvp_page_completion_read,
+<<<<<<< HEAD
 			.cpo_make_ready  = ccc_fail,
+=======
+			.cpo_make_ready = vvp_page_fail,
+>>>>>>> v4.9.227
 		},
 		[CRT_WRITE] = {
 			.cpo_prep	= vvp_page_prep_write,
 			.cpo_completion  = vvp_page_completion_write,
 			.cpo_make_ready  = vvp_page_make_ready,
+<<<<<<< HEAD
 		}
 	}
 };
@@ -424,13 +664,28 @@ static void vvp_transient_page_verify(const struct cl_page *page)
 	struct inode *inode = ccc_object_inode(page->cp_obj);
 
 	LASSERT(!mutex_trylock(&inode->i_mutex));
+=======
+		},
+	},
+};
+
+static int vvp_transient_page_prep(const struct lu_env *env,
+				   const struct cl_page_slice *slice,
+				   struct cl_io *unused)
+{
+	/* transient page should always be sent. */
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int vvp_transient_page_own(const struct lu_env *env,
 				  const struct cl_page_slice *slice,
 				  struct cl_io *unused, int nonblock)
 {
+<<<<<<< HEAD
 	vvp_transient_page_verify(slice->cpl_page);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -438,21 +693,30 @@ static void vvp_transient_page_assume(const struct lu_env *env,
 				      const struct cl_page_slice *slice,
 				      struct cl_io *unused)
 {
+<<<<<<< HEAD
 	vvp_transient_page_verify(slice->cpl_page);
+=======
+>>>>>>> v4.9.227
 }
 
 static void vvp_transient_page_unassume(const struct lu_env *env,
 					const struct cl_page_slice *slice,
 					struct cl_io *unused)
 {
+<<<<<<< HEAD
 	vvp_transient_page_verify(slice->cpl_page);
+=======
+>>>>>>> v4.9.227
 }
 
 static void vvp_transient_page_disown(const struct lu_env *env,
 				      const struct cl_page_slice *slice,
 				      struct cl_io *unused)
 {
+<<<<<<< HEAD
 	vvp_transient_page_verify(slice->cpl_page);
+=======
+>>>>>>> v4.9.227
 }
 
 static void vvp_transient_page_discard(const struct lu_env *env,
@@ -461,8 +725,11 @@ static void vvp_transient_page_discard(const struct lu_env *env,
 {
 	struct cl_page *page = slice->cpl_page;
 
+<<<<<<< HEAD
 	vvp_transient_page_verify(slice->cpl_page);
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * For transient pages, remove it from the radix tree.
 	 */
@@ -472,12 +739,21 @@ static void vvp_transient_page_discard(const struct lu_env *env,
 static int vvp_transient_page_is_vmlocked(const struct lu_env *env,
 					  const struct cl_page_slice *slice)
 {
+<<<<<<< HEAD
 	struct inode    *inode = ccc_object_inode(slice->cpl_obj);
 	int	locked;
 
 	locked = !mutex_trylock(&inode->i_mutex);
 	if (!locked)
 		mutex_unlock(&inode->i_mutex);
+=======
+	struct inode    *inode = vvp_object_inode(slice->cpl_obj);
+	int	locked;
+
+	locked = !inode_trylock(inode);
+	if (!locked)
+		inode_unlock(inode);
+>>>>>>> v4.9.227
 	return locked ? -EBUSY : -ENODATA;
 }
 
@@ -486,12 +762,16 @@ vvp_transient_page_completion(const struct lu_env *env,
 			      const struct cl_page_slice *slice,
 			      int ioret)
 {
+<<<<<<< HEAD
 	vvp_transient_page_verify(slice->cpl_page);
+=======
+>>>>>>> v4.9.227
 }
 
 static void vvp_transient_page_fini(const struct lu_env *env,
 				    struct cl_page_slice *slice)
 {
+<<<<<<< HEAD
 	struct ccc_page *cp = cl2ccc_page(slice);
 	struct cl_page *clp = slice->cpl_page;
 	struct ccc_object *clobj = cl2ccc(clp->cp_obj);
@@ -499,6 +779,14 @@ static void vvp_transient_page_fini(const struct lu_env *env,
 	vvp_page_fini_common(cp);
 	LASSERT(!mutex_trylock(&clobj->cob_inode->i_mutex));
 	clobj->cob_transient_pages--;
+=======
+	struct vvp_page *vpg = cl2vvp_page(slice);
+	struct cl_page *clp = slice->cpl_page;
+	struct vvp_object *clobj = cl2vvp(clp->cp_obj);
+
+	vvp_page_fini_common(vpg);
+	atomic_dec(&clobj->vob_transient_pages);
+>>>>>>> v4.9.227
 }
 
 static const struct cl_page_operations vvp_transient_page_ops = {
@@ -507,6 +795,7 @@ static const struct cl_page_operations vvp_transient_page_ops = {
 	.cpo_unassume      = vvp_transient_page_unassume,
 	.cpo_disown	= vvp_transient_page_disown,
 	.cpo_discard       = vvp_transient_page_discard,
+<<<<<<< HEAD
 	.cpo_vmpage	= ccc_page_vmpage,
 	.cpo_fini	  = vvp_transient_page_fini,
 	.cpo_is_vmlocked   = vvp_transient_page_is_vmlocked,
@@ -519,12 +808,26 @@ static const struct cl_page_operations vvp_transient_page_ops = {
 		},
 		[CRT_WRITE] = {
 			.cpo_prep	= ccc_transient_page_prep,
+=======
+	.cpo_fini	  = vvp_transient_page_fini,
+	.cpo_is_vmlocked   = vvp_transient_page_is_vmlocked,
+	.cpo_print	 = vvp_page_print,
+	.cpo_is_under_lock	= vvp_page_is_under_lock,
+	.io = {
+		[CRT_READ] = {
+			.cpo_prep	= vvp_transient_page_prep,
+			.cpo_completion  = vvp_transient_page_completion,
+		},
+		[CRT_WRITE] = {
+			.cpo_prep	= vvp_transient_page_prep,
+>>>>>>> v4.9.227
 			.cpo_completion  = vvp_transient_page_completion,
 		}
 	}
 };
 
 int vvp_page_init(const struct lu_env *env, struct cl_object *obj,
+<<<<<<< HEAD
 		struct cl_page *page, struct page *vmpage)
 {
 	struct ccc_page *cpg = cl_object_page_slice(obj, page);
@@ -547,6 +850,32 @@ int vvp_page_init(const struct lu_env *env, struct cl_object *obj,
 		cl_page_slice_add(page, &cpg->cpg_cl, obj,
 				&vvp_transient_page_ops);
 		clobj->cob_transient_pages++;
+=======
+		  struct cl_page *page, pgoff_t index)
+{
+	struct vvp_page *vpg = cl_object_page_slice(obj, page);
+	struct page     *vmpage = page->cp_vmpage;
+
+	CLOBINVRNT(env, obj, vvp_object_invariant(obj));
+
+	vpg->vpg_page = vmpage;
+	get_page(vmpage);
+
+	INIT_LIST_HEAD(&vpg->vpg_pending_linkage);
+	if (page->cp_type == CPT_CACHEABLE) {
+		/* in cache, decref in vvp_page_delete */
+		atomic_inc(&page->cp_ref);
+		SetPagePrivate(vmpage);
+		vmpage->private = (unsigned long)page;
+		cl_page_slice_add(page, &vpg->vpg_cl, obj, index,
+				  &vvp_page_ops);
+	} else {
+		struct vvp_object *clobj = cl2vvp(obj);
+
+		cl_page_slice_add(page, &vpg->vpg_cl, obj, index,
+				  &vvp_transient_page_ops);
+		atomic_inc(&clobj->vob_transient_pages);
+>>>>>>> v4.9.227
 	}
 	return 0;
 }

@@ -5,7 +5,11 @@
 
 /*
  * FMODE_EXEC is 0x20
+<<<<<<< HEAD
  * FMODE_NONOTIFY is 0x1000000
+=======
+ * FMODE_NONOTIFY is 0x4000000
+>>>>>>> v4.9.227
  * These cannot be used by userspace O_* until internal and external open
  * flags are split.
  * -Eric Paris

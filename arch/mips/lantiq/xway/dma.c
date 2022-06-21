@@ -12,7 +12,11 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  *
+<<<<<<< HEAD
  *   Copyright (C) 2011 John Crispin <blogic@openwrt.org>
+=======
+ *   Copyright (C) 2011 John Crispin <john@phrozen.org>
+>>>>>>> v4.9.227
  */
 
 #include <linux/init.h>
@@ -261,7 +265,10 @@ static struct platform_driver dma_driver = {
 	.probe = ltq_dma_init,
 	.driver = {
 		.name = "dma-xway",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = dma_match,
 	},
 };

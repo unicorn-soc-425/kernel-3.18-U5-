@@ -24,6 +24,10 @@
 #include <linux/list.h>
 #include <linux/io.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/irqchip/chained_irq.h>
 #include <linux/irqdomain.h>
 #include <linux/of.h>
@@ -37,8 +41,11 @@
 #include <asm/exception.h>
 #include <asm/irq.h>
 
+<<<<<<< HEAD
 #include "irqchip.h"
 
+=======
+>>>>>>> v4.9.227
 #define VIC_IRQ_STATUS			0x00
 #define VIC_FIQ_STATUS			0x04
 #define VIC_INT_SELECT			0x0c	/* 1 = FIQ, 0 = IRQ */
@@ -168,7 +175,11 @@ static int vic_suspend(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct syscore_ops vic_syscore_ops = {
+=======
+static struct syscore_ops vic_syscore_ops = {
+>>>>>>> v4.9.227
 	.suspend	= vic_suspend,
 	.resume		= vic_resume,
 };
@@ -202,7 +213,11 @@ static int vic_irqdomain_map(struct irq_domain *d, unsigned int irq,
 		return -EPERM;
 	irq_set_chip_and_handler(irq, &vic_chip, handle_level_irq);
 	irq_set_chip_data(irq, v->base);
+<<<<<<< HEAD
 	set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+	irq_set_probe(irq);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -226,7 +241,11 @@ static int handle_one_vic(struct vic_device *vic, struct pt_regs *regs)
 	return handled;
 }
 
+<<<<<<< HEAD
 static void vic_handle_irq_cascaded(unsigned int irq, struct irq_desc *desc)
+=======
+static void vic_handle_irq_cascaded(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	u32 stat, hwirq;
 	struct irq_chip *host_chip = irq_desc_get_chip(desc);
@@ -256,7 +275,11 @@ static void __exception_irq_entry vic_handle_irq(struct pt_regs *regs)
 	} while (handled);
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops vic_irqdomain_ops = {
+=======
+static const struct irq_domain_ops vic_irqdomain_ops = {
+>>>>>>> v4.9.227
 	.map = vic_irqdomain_map,
 	.xlate = irq_domain_xlate_onetwocell,
 };
@@ -297,8 +320,13 @@ static void __init vic_register(void __iomem *base, unsigned int parent_irq,
 	vic_id++;
 
 	if (parent_irq) {
+<<<<<<< HEAD
 		irq_set_handler_data(parent_irq, v);
 		irq_set_chained_handler(parent_irq, vic_handle_irq_cascaded);
+=======
+		irq_set_chained_handler_and_data(parent_irq,
+						 vic_handle_irq_cascaded, v);
+>>>>>>> v4.9.227
 	}
 
 	v->domain = irq_domain_add_simple(node, fls(valid_sources), irq,
@@ -499,7 +527,10 @@ void __init vic_init(void __iomem *base, unsigned int irq_start,
  * vic_init_cascaded() - initialise a cascaded vectored interrupt controller
  * @base: iomem base address
  * @parent_irq: the parent IRQ we're cascaded off
+<<<<<<< HEAD
  * @irq_start: starting interrupt number, must be muliple of 32
+=======
+>>>>>>> v4.9.227
  * @vic_sources: bitmask of interrupt sources to allow
  * @resume_sources: bitmask of interrupt sources to allow for resume
  *
@@ -518,7 +549,12 @@ int __init vic_init_cascaded(void __iomem *base, unsigned int parent_irq,
 EXPORT_SYMBOL_GPL(vic_init_cascaded);
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 int __init vic_of_init(struct device_node *node, struct device_node *parent)
+=======
+static int __init vic_of_init(struct device_node *node,
+			      struct device_node *parent)
+>>>>>>> v4.9.227
 {
 	void __iomem *regs;
 	u32 interrupt_mask = ~0;

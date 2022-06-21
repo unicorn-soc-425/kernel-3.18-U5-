@@ -58,7 +58,11 @@ void __init setup_pdc(void)
 	status = pdc_system_map_find_mods(&module_result, &module_path, 0);
 	if (status == PDC_OK) {
 		pdc_type = PDC_TYPE_SYSTEM_MAP;
+<<<<<<< HEAD
 		printk("System Map.\n");
+=======
+		pr_cont("System Map.\n");
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -77,7 +81,11 @@ void __init setup_pdc(void)
 	status = pdc_pat_cell_get_number(&cell_info);
 	if (status == PDC_OK) {
 		pdc_type = PDC_TYPE_PAT;
+<<<<<<< HEAD
 		printk("64 bit PAT.\n");
+=======
+		pr_cont("64 bit PAT.\n");
+>>>>>>> v4.9.227
 		return;
 	}
 #endif
@@ -97,12 +105,20 @@ void __init setup_pdc(void)
 	case 0xC:		/* 715/64, at least */
 
 		pdc_type = PDC_TYPE_SNAKE;
+<<<<<<< HEAD
 		printk("Snake.\n");
+=======
+		pr_cont("Snake.\n");
+>>>>>>> v4.9.227
 		return;
 
 	default:		/* Everything else */
 
+<<<<<<< HEAD
 		printk("Unsupported.\n");
+=======
+		pr_cont("Unsupported.\n");
+>>>>>>> v4.9.227
 		panic("If this is a 64-bit machine, please try a 64-bit kernel.\n");
 	}
 }
@@ -506,7 +522,11 @@ add_system_map_addresses(struct parisc_device *dev, int num_addrs,
 	long status;
 	struct pdc_system_map_addr_info addr_result;
 
+<<<<<<< HEAD
 	dev->addr = kmalloc(num_addrs * sizeof(unsigned long), GFP_KERNEL);
+=======
+	dev->addr = kmalloc_array(num_addrs, sizeof(*dev->addr), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if(!dev->addr) {
 		printk(KERN_ERR "%s %s(): memory allocation failure\n",
 		       __FILE__, __func__);

@@ -91,7 +91,11 @@ static void (*write_imipr[])(u32) = {
 	write_imipr_3,
 };
 
+<<<<<<< HEAD
 static void iop13xx_msi_handler(unsigned int irq, struct irq_desc *desc)
+=======
+static void iop13xx_msi_handler(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	int i, j;
 	unsigned long status;

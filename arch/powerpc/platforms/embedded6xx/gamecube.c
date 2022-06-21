@@ -29,14 +29,22 @@
 #include "usbgecko_udbg.h"
 
 
+<<<<<<< HEAD
 static void gamecube_spin(void)
+=======
+static void __noreturn gamecube_spin(void)
+>>>>>>> v4.9.227
 {
 	/* spin until power button pressed */
 	for (;;)
 		cpu_relax();
 }
 
+<<<<<<< HEAD
 static void gamecube_restart(char *cmd)
+=======
+static void __noreturn gamecube_restart(char *cmd)
+>>>>>>> v4.9.227
 {
 	local_irq_disable();
 	flipper_platform_reset();
@@ -49,11 +57,16 @@ static void gamecube_power_off(void)
 	gamecube_spin();
 }
 
+<<<<<<< HEAD
 static void gamecube_halt(void)
+=======
+static void __noreturn gamecube_halt(void)
+>>>>>>> v4.9.227
 {
 	gamecube_restart(NULL);
 }
 
+<<<<<<< HEAD
 static void __init gamecube_init_early(void)
 {
 	ug_udbg_init();
@@ -67,6 +80,17 @@ static int __init gamecube_probe(void)
 	if (!of_flat_dt_is_compatible(dt_root, "nintendo,gamecube"))
 		return 0;
 
+=======
+static int __init gamecube_probe(void)
+{
+	if (!of_machine_is_compatible("nintendo,gamecube"))
+		return 0;
+
+	pm_power_off = gamecube_power_off;
+
+	ug_udbg_init();
+
+>>>>>>> v4.9.227
 	return 1;
 }
 
@@ -78,9 +102,13 @@ static void gamecube_shutdown(void)
 define_machine(gamecube) {
 	.name			= "gamecube",
 	.probe			= gamecube_probe,
+<<<<<<< HEAD
 	.init_early		= gamecube_init_early,
 	.restart		= gamecube_restart,
 	.power_off		= gamecube_power_off,
+=======
+	.restart		= gamecube_restart,
+>>>>>>> v4.9.227
 	.halt			= gamecube_halt,
 	.init_IRQ		= flipper_pic_probe,
 	.get_irq		= flipper_pic_get_irq,

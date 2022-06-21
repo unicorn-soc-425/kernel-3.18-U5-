@@ -318,7 +318,10 @@ static struct platform_driver hdaps_driver = {
 	.probe = hdaps_probe,
 	.driver	= {
 		.name = "hdaps",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &hdaps_pm,
 	},
 };

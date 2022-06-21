@@ -51,6 +51,7 @@ struct msginfo {
 };
 
 /*
+<<<<<<< HEAD
  * Scaling factor to compute msgmni:
  * the memory dedicated to msg queues (msgmni * msgmnb) should occupy
  * at most 1/MSG_MEM_SCALE of the lowmem (see the formula in ipc/msg.c):
@@ -61,6 +62,30 @@ struct msginfo {
 #define MSG_MEM_SCALE 32
 
 #define MSGMNI    16   /* <= IPCMNI */     /* max # of msg queue identifiers */
+=======
+ * MSGMNI, MSGMAX and MSGMNB are default values which can be
+ * modified by sysctl.
+ *
+ * MSGMNI is the upper limit for the number of messages queues per
+ * namespace.
+ * It has been chosen to be as large possible without facilitating
+ * scenarios where userspace causes overflows when adjusting the limits via
+ * operations of the form retrieve current limit; add X; update limit".
+ *
+ * MSGMNB is the default size of a new message queue. Non-root tasks can
+ * decrease the size with msgctl(IPC_SET), root tasks
+ * (actually: CAP_SYS_RESOURCE) can both increase and decrease the queue
+ * size. The optimal value is application dependent.
+ * 16384 is used because it was always used (since 0.99.10)
+ *
+ * MAXMAX is the maximum size of an individual message, it's a global
+ * (per-namespace) limit that applies for all message queues.
+ * It's set to 1/2 of MSGMNB, to ensure that at least two messages fit into
+ * the queue. This is also an arbitrary choice (since 2.6.0).
+ */
+
+#define MSGMNI 32000   /* <= IPCMNI */     /* max # of msg queue identifiers */
+>>>>>>> v4.9.227
 #define MSGMAX  8192   /* <= INT_MAX */   /* max size of message (bytes) */
 #define MSGMNB 16384   /* <= INT_MAX */   /* default max size of a message queue */
 

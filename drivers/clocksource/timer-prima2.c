@@ -19,7 +19,10 @@
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
 #include <linux/sched_clock.h>
+<<<<<<< HEAD
 #include <asm/mach/time.h>
+=======
+>>>>>>> v4.9.227
 
 #define PRIMA2_CLOCK_FREQ 1000000
 
@@ -73,7 +76,11 @@ static irqreturn_t sirfsoc_timer_interrupt(int irq, void *dev_id)
 }
 
 /* read 64-bit timer counter */
+<<<<<<< HEAD
 static cycle_t sirfsoc_timer_read(struct clocksource *cs)
+=======
+static cycle_t notrace sirfsoc_timer_read(struct clocksource *cs)
+>>>>>>> v4.9.227
 {
 	u64 cycles;
 
@@ -104,6 +111,7 @@ static int sirfsoc_timer_set_next_event(unsigned long delta,
 	return next - now > delta ? -ETIME : 0;
 }
 
+<<<<<<< HEAD
 static void sirfsoc_timer_set_mode(enum clock_event_mode mode,
 	struct clock_event_device *ce)
 {
@@ -124,6 +132,23 @@ static void sirfsoc_timer_set_mode(enum clock_event_mode mode,
 	case CLOCK_EVT_MODE_RESUME:
 		break;
 	}
+=======
+static int sirfsoc_timer_shutdown(struct clock_event_device *evt)
+{
+	u32 val = readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_INT_EN);
+
+	writel_relaxed(val & ~BIT(0),
+		       sirfsoc_timer_base + SIRFSOC_TIMER_INT_EN);
+	return 0;
+}
+
+static int sirfsoc_timer_set_oneshot(struct clock_event_device *evt)
+{
+	u32 val = readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_INT_EN);
+
+	writel_relaxed(val | BIT(0), sirfsoc_timer_base + SIRFSOC_TIMER_INT_EN);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void sirfsoc_clocksource_suspend(struct clocksource *cs)
@@ -157,7 +182,12 @@ static struct clock_event_device sirfsoc_clockevent = {
 	.name = "sirfsoc_clockevent",
 	.rating = 200,
 	.features = CLOCK_EVT_FEAT_ONESHOT,
+<<<<<<< HEAD
 	.set_mode = sirfsoc_timer_set_mode,
+=======
+	.set_state_shutdown = sirfsoc_timer_shutdown,
+	.set_state_oneshot = sirfsoc_timer_set_oneshot,
+>>>>>>> v4.9.227
 	.set_next_event = sirfsoc_timer_set_next_event,
 };
 
@@ -193,6 +223,7 @@ static void __init sirfsoc_clockevent_init(void)
 }
 
 /* initialize the kernel jiffy timer source */
+<<<<<<< HEAD
 static void __init sirfsoc_prima2_timer_init(struct device_node *np)
 {
 	unsigned long rate;
@@ -211,6 +242,38 @@ static void __init sirfsoc_prima2_timer_init(struct device_node *np)
 	sirfsoc_timer_base = of_iomap(np, 0);
 	if (!sirfsoc_timer_base)
 		panic("unable to map timer cpu registers\n");
+=======
+static int __init sirfsoc_prima2_timer_init(struct device_node *np)
+{
+	unsigned long rate;
+	struct clk *clk;
+	int ret;
+
+	clk = of_clk_get(np, 0);
+	if (IS_ERR(clk)) {
+		pr_err("Failed to get clock");
+		return PTR_ERR(clk);
+	}
+
+	ret = clk_prepare_enable(clk);
+	if (ret) {
+		pr_err("Failed to enable clock");
+		return ret;
+	}
+
+	rate = clk_get_rate(clk);
+
+	if (rate < PRIMA2_CLOCK_FREQ || rate % PRIMA2_CLOCK_FREQ) {
+		pr_err("Invalid clock rate");
+		return -EINVAL;
+	}
+
+	sirfsoc_timer_base = of_iomap(np, 0);
+	if (!sirfsoc_timer_base) {
+		pr_err("unable to map timer cpu registers\n");
+		return -ENXIO;
+	}
+>>>>>>> v4.9.227
 
 	sirfsoc_timer_irq.irq = irq_of_parse_and_map(np, 0);
 
@@ -220,6 +283,7 @@ static void __init sirfsoc_prima2_timer_init(struct device_node *np)
 	writel_relaxed(0, sirfsoc_timer_base + SIRFSOC_TIMER_COUNTER_HI);
 	writel_relaxed(BIT(0), sirfsoc_timer_base + SIRFSOC_TIMER_STATUS);
 
+<<<<<<< HEAD
 	BUG_ON(clocksource_register_hz(&sirfsoc_clocksource,
 				       PRIMA2_CLOCK_FREQ));
 
@@ -228,6 +292,25 @@ static void __init sirfsoc_prima2_timer_init(struct device_node *np)
 	BUG_ON(setup_irq(sirfsoc_timer_irq.irq, &sirfsoc_timer_irq));
 
 	sirfsoc_clockevent_init();
+=======
+	ret = clocksource_register_hz(&sirfsoc_clocksource, PRIMA2_CLOCK_FREQ);
+	if (ret) {
+		pr_err("Failed to register clocksource");
+		return ret;
+	}
+
+	sched_clock_register(sirfsoc_read_sched_clock, 64, PRIMA2_CLOCK_FREQ);
+
+	ret = setup_irq(sirfsoc_timer_irq.irq, &sirfsoc_timer_irq);
+	if (ret) {
+		pr_err("Failed to setup irq");
+		return ret;
+	}
+
+	sirfsoc_clockevent_init();
+
+	return 0;
+>>>>>>> v4.9.227
 }
 CLOCKSOURCE_OF_DECLARE(sirfsoc_prima2_timer,
 	"sirf,prima2-tick", sirfsoc_prima2_timer_init);

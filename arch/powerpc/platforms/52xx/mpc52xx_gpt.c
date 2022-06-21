@@ -191,9 +191,15 @@ static struct irq_chip mpc52xx_gpt_irq_chip = {
 	.irq_set_type = mpc52xx_gpt_irq_set_type,
 };
 
+<<<<<<< HEAD
 void mpc52xx_gpt_irq_cascade(unsigned int virq, struct irq_desc *desc)
 {
 	struct mpc52xx_gpt_priv *gpt = irq_get_handler_data(virq);
+=======
+static void mpc52xx_gpt_irq_cascade(struct irq_desc *desc)
+{
+	struct mpc52xx_gpt_priv *gpt = irq_desc_get_handler_data(desc);
+>>>>>>> v4.9.227
 	int sub_virq;
 	u32 status;
 
@@ -278,6 +284,7 @@ mpc52xx_gpt_irq_setup(struct mpc52xx_gpt_priv *gpt, struct device_node *node)
  * GPIOLIB hooks
  */
 #if defined(CONFIG_GPIOLIB)
+<<<<<<< HEAD
 static inline struct mpc52xx_gpt_priv *gc_to_mpc52xx_gpt(struct gpio_chip *gc)
 {
 	return container_of(gc, struct mpc52xx_gpt_priv, gc);
@@ -286,6 +293,11 @@ static inline struct mpc52xx_gpt_priv *gc_to_mpc52xx_gpt(struct gpio_chip *gc)
 static int mpc52xx_gpt_gpio_get(struct gpio_chip *gc, unsigned int gpio)
 {
 	struct mpc52xx_gpt_priv *gpt = gc_to_mpc52xx_gpt(gc);
+=======
+static int mpc52xx_gpt_gpio_get(struct gpio_chip *gc, unsigned int gpio)
+{
+	struct mpc52xx_gpt_priv *gpt = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 
 	return (in_be32(&gpt->regs->status) >> 8) & 1;
 }
@@ -293,7 +305,11 @@ static int mpc52xx_gpt_gpio_get(struct gpio_chip *gc, unsigned int gpio)
 static void
 mpc52xx_gpt_gpio_set(struct gpio_chip *gc, unsigned int gpio, int v)
 {
+<<<<<<< HEAD
 	struct mpc52xx_gpt_priv *gpt = gc_to_mpc52xx_gpt(gc);
+=======
+	struct mpc52xx_gpt_priv *gpt = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	unsigned long flags;
 	u32 r;
 
@@ -307,7 +323,11 @@ mpc52xx_gpt_gpio_set(struct gpio_chip *gc, unsigned int gpio, int v)
 
 static int mpc52xx_gpt_gpio_dir_in(struct gpio_chip *gc, unsigned int gpio)
 {
+<<<<<<< HEAD
 	struct mpc52xx_gpt_priv *gpt = gc_to_mpc52xx_gpt(gc);
+=======
+	struct mpc52xx_gpt_priv *gpt = gpiochip_get_data(gc);
+>>>>>>> v4.9.227
 	unsigned long flags;
 
 	dev_dbg(gpt->dev, "%s: gpio:%d\n", __func__, gpio);
@@ -354,9 +374,15 @@ mpc52xx_gpt_gpio_setup(struct mpc52xx_gpt_priv *gpt, struct device_node *node)
 	clrsetbits_be32(&gpt->regs->mode, MPC52xx_GPT_MODE_MS_MASK,
 			MPC52xx_GPT_MODE_MS_GPIO);
 
+<<<<<<< HEAD
 	rc = gpiochip_add(&gpt->gc);
 	if (rc)
 		dev_err(gpt->dev, "gpiochip_add() failed; rc=%i\n", rc);
+=======
+	rc = gpiochip_add_data(&gpt->gc, gpt);
+	if (rc)
+		dev_err(gpt->dev, "gpiochip_add_data() failed; rc=%i\n", rc);
+>>>>>>> v4.9.227
 
 	dev_dbg(gpt->dev, "%s() complete.\n", __func__);
 }
@@ -724,7 +750,11 @@ static int mpc52xx_gpt_probe(struct platform_device *ofdev)
 {
 	struct mpc52xx_gpt_priv *gpt;
 
+<<<<<<< HEAD
 	gpt = kzalloc(sizeof *gpt, GFP_KERNEL);
+=======
+	gpt = devm_kzalloc(&ofdev->dev, sizeof *gpt, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!gpt)
 		return -ENOMEM;
 
@@ -732,10 +762,15 @@ static int mpc52xx_gpt_probe(struct platform_device *ofdev)
 	gpt->dev = &ofdev->dev;
 	gpt->ipb_freq = mpc5xxx_get_bus_frequency(ofdev->dev.of_node);
 	gpt->regs = of_iomap(ofdev->dev.of_node, 0);
+<<<<<<< HEAD
 	if (!gpt->regs) {
 		kfree(gpt);
 		return -ENOMEM;
 	}
+=======
+	if (!gpt->regs)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	dev_set_drvdata(&ofdev->dev, gpt);
 
@@ -782,7 +817,10 @@ static const struct of_device_id mpc52xx_gpt_match[] = {
 static struct platform_driver mpc52xx_gpt_driver = {
 	.driver = {
 		.name = "mpc52xx-gpt",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = mpc52xx_gpt_match,
 	},
 	.probe = mpc52xx_gpt_probe,

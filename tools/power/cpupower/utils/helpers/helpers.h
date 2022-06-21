@@ -14,6 +14,10 @@
 #include <locale.h>
 
 #include "helpers/bitmask.h"
+<<<<<<< HEAD
+=======
+#include <cpupower.h>
+>>>>>>> v4.9.227
 
 /* Internationalization ****************************/
 #ifdef NLS
@@ -92,6 +96,7 @@ extern int get_cpu_info(unsigned int cpu, struct cpupower_cpu_info *cpu_info);
 extern struct cpupower_cpu_info cpupower_cpu_info;
 /* cpuid and cpuinfo helpers  **************************/
 
+<<<<<<< HEAD
 struct cpuid_core_info {
 	int pkg;
 	int core;
@@ -117,6 +122,8 @@ extern void cpu_topology_release(struct cpupower_topology cpu_top);
 
 /* CPU topology/hierarchy parsing ******************/
 
+=======
+>>>>>>> v4.9.227
 /* X86 ONLY ****************************************/
 #if defined(__i386__) || defined(__x86_64__)
 

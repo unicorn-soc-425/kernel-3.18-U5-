@@ -25,6 +25,10 @@ enum {
 	NDA_VNI,
 	NDA_IFINDEX,
 	NDA_MASTER,
+<<<<<<< HEAD
+=======
+	NDA_LINK_NETNSID,
+>>>>>>> v4.9.227
 	__NDA_MAX
 };
 
@@ -35,11 +39,19 @@ enum {
  */
 
 #define NTF_USE		0x01
+<<<<<<< HEAD
 #define NTF_PROXY	0x08	/* == ATF_PUBL */
 #define NTF_ROUTER	0x80
 
 #define NTF_SELF	0x02
 #define NTF_MASTER	0x04
+=======
+#define NTF_SELF	0x02
+#define NTF_MASTER	0x04
+#define NTF_PROXY	0x08	/* == ATF_PUBL */
+#define NTF_EXT_LEARNED	0x10
+#define NTF_ROUTER	0x80
+>>>>>>> v4.9.227
 
 /*
  *	Neighbor Cache Entry States.
@@ -105,6 +117,10 @@ struct ndt_stats {
 	__u64		ndts_rcv_probes_ucast;
 	__u64		ndts_periodic_gc_runs;
 	__u64		ndts_forced_gc_runs;
+<<<<<<< HEAD
+=======
+	__u64		ndts_table_fulls;
+>>>>>>> v4.9.227
 };
 
 enum {
@@ -125,6 +141,11 @@ enum {
 	NDTPA_PROXY_QLEN,		/* u32 */
 	NDTPA_LOCKTIME,			/* u64, msecs */
 	NDTPA_QUEUE_LENBYTES,		/* u32 */
+<<<<<<< HEAD
+=======
+	NDTPA_MCAST_REPROBES,		/* u32 */
+	NDTPA_PAD,
+>>>>>>> v4.9.227
 	__NDTPA_MAX
 };
 #define NDTPA_MAX (__NDTPA_MAX - 1)
@@ -157,6 +178,10 @@ enum {
 	NDTA_PARMS,			/* nested TLV NDTPA_* */
 	NDTA_STATS,			/* struct ndt_stats, read-only */
 	NDTA_GC_INTERVAL,		/* u64, msecs */
+<<<<<<< HEAD
+=======
+	NDTA_PAD,
+>>>>>>> v4.9.227
 	__NDTA_MAX
 };
 #define NDTA_MAX (__NDTA_MAX - 1)

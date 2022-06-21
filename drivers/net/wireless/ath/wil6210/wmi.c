@@ -22,7 +22,10 @@
 #include "txrx.h"
 #include "wmi.h"
 #include "trace.h"
+<<<<<<< HEAD
 #include "ftm.h"
+=======
+>>>>>>> v4.9.227
 
 static uint max_assoc_sta = WIL6210_MAX_CID;
 module_param(max_assoc_sta, uint, S_IRUGO | S_IWUSR);
@@ -128,15 +131,22 @@ static u32 wmi_addr_remap(u32 x)
 /**
  * Check address validity for WMI buffer; remap if needed
  * @ptr - internal (linker) fw/ucode address
+<<<<<<< HEAD
  * @size - if non zero, validate the block does not
  *  exceed the device memory (bar)
+=======
+>>>>>>> v4.9.227
  *
  * Valid buffer should be DWORD aligned
  *
  * return address for accessing buffer from the host;
  * if buffer is not valid, return NULL.
  */
+<<<<<<< HEAD
 void __iomem *wmi_buffer_block(struct wil6210_priv *wil, __le32 ptr_, u32 size)
+=======
+void __iomem *wmi_buffer(struct wil6210_priv *wil, __le32 ptr_)
+>>>>>>> v4.9.227
 {
 	u32 off;
 	u32 ptr = le32_to_cpu(ptr_);
@@ -151,17 +161,23 @@ void __iomem *wmi_buffer_block(struct wil6210_priv *wil, __le32 ptr_, u32 size)
 	off = HOSTADDR(ptr);
 	if (off > WIL6210_MEM_SIZE - 4)
 		return NULL;
+<<<<<<< HEAD
 	if (size && ((off + size > WIL6210_MEM_SIZE) || (off + size < off)))
 		return NULL;
+=======
+>>>>>>> v4.9.227
 
 	return wil->csr + off;
 }
 
+<<<<<<< HEAD
 void __iomem *wmi_buffer(struct wil6210_priv *wil, __le32 ptr_)
 {
 	return wmi_buffer_block(wil, ptr_, 0);
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * Check address validity
  */
@@ -366,7 +382,11 @@ static void wmi_evt_rx_mgmt(struct wil6210_priv *wil, int id, void *d, int len)
 	}
 
 	ch_no = data->info.channel + 1;
+<<<<<<< HEAD
 	freq = ieee80211_channel_to_frequency(ch_no, IEEE80211_BAND_60GHZ);
+=======
+	freq = ieee80211_channel_to_frequency(ch_no, NL80211_BAND_60GHZ);
+>>>>>>> v4.9.227
 	channel = ieee80211_get_channel(wiphy, freq);
 	signal = data->info.sqi;
 	d_status = le16_to_cpu(data->info.status);
@@ -437,6 +457,7 @@ static void wmi_evt_scan_complete(struct wil6210_priv *wil, int id,
 	mutex_lock(&wil->p2p_wdev_mutex);
 	if (wil->scan_request) {
 		struct wmi_scan_complete_event *data = d;
+<<<<<<< HEAD
 		bool aborted = (data->status != WMI_SCAN_SUCCESS);
 
 		wil_dbg_wmi(wil, "SCAN_COMPLETE(0x%08x)\n", data->status);
@@ -445,6 +466,18 @@ static void wmi_evt_scan_complete(struct wil6210_priv *wil, int id,
 
 		del_timer_sync(&wil->scan_timer);
 		cfg80211_scan_done(wil->scan_request, aborted);
+=======
+		struct cfg80211_scan_info info = {
+			.aborted = (data->status != WMI_SCAN_SUCCESS),
+		};
+
+		wil_dbg_wmi(wil, "SCAN_COMPLETE(0x%08x)\n", data->status);
+		wil_dbg_misc(wil, "Complete scan_request 0x%p aborted %d\n",
+			     wil->scan_request, info.aborted);
+
+		del_timer_sync(&wil->scan_timer);
+		cfg80211_scan_done(wil->scan_request, &info);
+>>>>>>> v4.9.227
 		wil->radio_wdev = wil->wdev;
 		wil->scan_request = NULL;
 	} else {
@@ -509,16 +542,27 @@ static void wmi_evt_connect(struct wil6210_priv *wil, int id, void *d, int len)
 		assoc_resp_ielen = 0;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&wil->mutex);
+=======
+>>>>>>> v4.9.227
 	if (test_bit(wil_status_resetting, wil->status) ||
 	    !test_bit(wil_status_fwready, wil->status)) {
 		wil_err(wil, "status_resetting, cancel connect event, CID %d\n",
 			evt->cid);
+<<<<<<< HEAD
 		mutex_unlock(&wil->mutex);
+=======
+>>>>>>> v4.9.227
 		/* no need for cleanup, wil_reset will do that */
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&wil->mutex);
+
+>>>>>>> v4.9.227
 	if ((wdev->iftype == NL80211_IFTYPE_STATION) ||
 	    (wdev->iftype == NL80211_IFTYPE_P2P_CLIENT)) {
 		if (!test_bit(wil_status_fwconnecting, wil->status)) {
@@ -585,7 +629,10 @@ static void wmi_evt_connect(struct wil6210_priv *wil, int id, void *d, int len)
 		if (assoc_req_ie) {
 			sinfo.assoc_req_ies = assoc_req_ie;
 			sinfo.assoc_req_ies_len = assoc_req_ielen;
+<<<<<<< HEAD
 			sinfo.filled |= STATION_INFO_ASSOC_REQ_IES;
+=======
+>>>>>>> v4.9.227
 		}
 
 		cfg80211_new_sta(ndev, evt->bssid, &sinfo, GFP_KERNEL);
@@ -617,6 +664,16 @@ static void wmi_evt_disconnect(struct wil6210_priv *wil, int id,
 
 	wil->sinfo_gen++;
 
+<<<<<<< HEAD
+=======
+	if (test_bit(wil_status_resetting, wil->status) ||
+	    !test_bit(wil_status_fwready, wil->status)) {
+		wil_err(wil, "status_resetting, cancel disconnect event\n");
+		/* no need for cleanup, wil_reset will do that */
+		return;
+	}
+
+>>>>>>> v4.9.227
 	mutex_lock(&wil->mutex);
 	wil6210_disconnect(wil, evt->bssid, reason_code, true);
 	mutex_unlock(&wil->mutex);
@@ -783,6 +840,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 	spin_unlock_bh(&sta->tid_rx_lock);
 }
 
+<<<<<<< HEAD
 static void wmi_evt_aoa_meas(struct wil6210_priv *wil, int id,
 			     void *d, int len)
 {
@@ -807,6 +865,8 @@ static void wmi_evt_per_dest_res(struct wil6210_priv *wil, int id,
 	wil_ftm_evt_per_dest_res(wil, evt);
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * Some events are ignored for purpose; and need not be interpreted as
  * "unhandled events"
@@ -834,6 +894,7 @@ static const struct {
 	{WMI_DELBA_EVENTID,		wmi_evt_delba},
 	{WMI_VRING_EN_EVENTID,		wmi_evt_vring_en},
 	{WMI_DATA_PORT_OPEN_EVENTID,		wmi_evt_ignore},
+<<<<<<< HEAD
 	{WMI_AOA_MEAS_EVENTID,			wmi_evt_aoa_meas},
 	{WMI_TOF_SESSION_END_EVENTID,		wmi_evt_ftm_session_ended},
 	{WMI_TOF_GET_CAPABILITIES_EVENTID,	wmi_evt_ignore},
@@ -841,6 +902,8 @@ static const struct {
 	{WMI_TOF_SET_LCI_EVENTID,		wmi_evt_ignore},
 	{WMI_TOF_FTM_PER_DEST_RES_EVENTID,	wmi_evt_per_dest_res},
 	{WMI_TOF_CHANNEL_INFO_EVENTID,		wmi_evt_ignore},
+=======
+>>>>>>> v4.9.227
 };
 
 /*

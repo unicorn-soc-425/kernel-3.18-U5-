@@ -222,7 +222,11 @@ static void vmw_takedown_otable_base(struct vmw_private *dev_priv,
 	if (bo) {
 		int ret;
 
+<<<<<<< HEAD
 		ret = ttm_bo_reserve(bo, false, true, false, NULL);
+=======
+		ret = ttm_bo_reserve(bo, false, true, NULL);
+>>>>>>> v4.9.227
 		BUG_ON(ret != 0);
 
 		vmw_fence_single_bo(bo, NULL);
@@ -262,7 +266,11 @@ static int vmw_otable_batch_setup(struct vmw_private *dev_priv,
 	if (unlikely(ret != 0))
 		goto out_no_bo;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(batch->otable_bo, false, true, false, NULL);
+=======
+	ret = ttm_bo_reserve(batch->otable_bo, false, true, NULL);
+>>>>>>> v4.9.227
 	BUG_ON(ret != 0);
 	ret = vmw_bo_driver.ttm_tt_populate(batch->otable_bo->ttm);
 	if (unlikely(ret != 0))
@@ -357,7 +365,11 @@ static void vmw_otable_batch_takedown(struct vmw_private *dev_priv,
 			vmw_takedown_otable_base(dev_priv, i,
 						 &batch->otables[i]);
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(bo, false, true, false, NULL);
+=======
+	ret = ttm_bo_reserve(bo, false, true, NULL);
+>>>>>>> v4.9.227
 	BUG_ON(ret != 0);
 
 	vmw_fence_single_bo(bo, NULL);
@@ -440,7 +452,11 @@ static int vmw_mob_pt_populate(struct vmw_private *dev_priv,
 	if (unlikely(ret != 0))
 		return ret;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(mob->pt_bo, false, true, false, NULL);
+=======
+	ret = ttm_bo_reserve(mob->pt_bo, false, true, NULL);
+>>>>>>> v4.9.227
 
 	BUG_ON(ret != 0);
 	ret = vmw_bo_driver.ttm_tt_populate(mob->pt_bo->ttm);
@@ -545,7 +561,11 @@ static void vmw_mob_pt_setup(struct vmw_mob *mob,
 	const struct vmw_sg_table *vsgt;
 	int ret;
 
+<<<<<<< HEAD
 	ret = ttm_bo_reserve(bo, false, true, false, NULL);
+=======
+	ret = ttm_bo_reserve(bo, false, true, NULL);
+>>>>>>> v4.9.227
 	BUG_ON(ret != 0);
 
 	vsgt = vmw_bo_sg_table(bo);
@@ -595,7 +615,11 @@ void vmw_mob_unbind(struct vmw_private *dev_priv,
 	struct ttm_buffer_object *bo = mob->pt_bo;
 
 	if (bo) {
+<<<<<<< HEAD
 		ret = ttm_bo_reserve(bo, false, true, false, NULL);
+=======
+		ret = ttm_bo_reserve(bo, false, true, NULL);
+>>>>>>> v4.9.227
 		/*
 		 * Noone else should be using this buffer.
 		 */

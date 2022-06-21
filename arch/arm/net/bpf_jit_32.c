@@ -54,6 +54,10 @@
 #define SEEN_DATA		(1 << (BPF_MEMWORDS + 3))
 
 #define FLAG_NEED_X_RESET	(1 << 0)
+<<<<<<< HEAD
+=======
+#define FLAG_IMM_OVERFLOW	(1 << 1)
+>>>>>>> v4.9.227
 
 struct jit_ctx {
 	const struct bpf_prog *skf;
@@ -71,40 +75,88 @@ struct jit_ctx {
 #endif
 };
 
+<<<<<<< HEAD
 int bpf_jit_enable __read_mostly;
 
 static u64 jit_get_skb_b(struct sk_buff *skb, unsigned offset)
+=======
+static inline int call_neg_helper(struct sk_buff *skb, int offset, void *ret,
+		      unsigned int size)
+{
+	void *ptr = bpf_internal_load_pointer_neg_helper(skb, offset, size);
+
+	if (!ptr)
+		return -EFAULT;
+	memcpy(ret, ptr, size);
+	return 0;
+}
+
+static u64 jit_get_skb_b(struct sk_buff *skb, int offset)
+>>>>>>> v4.9.227
 {
 	u8 ret;
 	int err;
 
+<<<<<<< HEAD
 	err = skb_copy_bits(skb, offset, &ret, 1);
+=======
+	if (offset < 0)
+		err = call_neg_helper(skb, offset, &ret, 1);
+	else
+		err = skb_copy_bits(skb, offset, &ret, 1);
+>>>>>>> v4.9.227
 
 	return (u64)err << 32 | ret;
 }
 
+<<<<<<< HEAD
 static u64 jit_get_skb_h(struct sk_buff *skb, unsigned offset)
+=======
+static u64 jit_get_skb_h(struct sk_buff *skb, int offset)
+>>>>>>> v4.9.227
 {
 	u16 ret;
 	int err;
 
+<<<<<<< HEAD
 	err = skb_copy_bits(skb, offset, &ret, 2);
+=======
+	if (offset < 0)
+		err = call_neg_helper(skb, offset, &ret, 2);
+	else
+		err = skb_copy_bits(skb, offset, &ret, 2);
+>>>>>>> v4.9.227
 
 	return (u64)err << 32 | ntohs(ret);
 }
 
+<<<<<<< HEAD
 static u64 jit_get_skb_w(struct sk_buff *skb, unsigned offset)
+=======
+static u64 jit_get_skb_w(struct sk_buff *skb, int offset)
+>>>>>>> v4.9.227
 {
 	u32 ret;
 	int err;
 
+<<<<<<< HEAD
 	err = skb_copy_bits(skb, offset, &ret, 4);
+=======
+	if (offset < 0)
+		err = call_neg_helper(skb, offset, &ret, 4);
+	else
+		err = skb_copy_bits(skb, offset, &ret, 4);
+>>>>>>> v4.9.227
 
 	return (u64)err << 32 | ntohl(ret);
 }
 
 /*
+<<<<<<< HEAD
  * Wrapper that handles both OABI and EABI and assures Thumb2 interworking
+=======
+ * Wrappers which handle both OABI and EABI and assures Thumb2 interworking
+>>>>>>> v4.9.227
  * (where the assembly routines like __aeabi_uidiv could cause problems).
  */
 static u32 jit_udiv(u32 dividend, u32 divisor)
@@ -112,6 +164,14 @@ static u32 jit_udiv(u32 dividend, u32 divisor)
 	return dividend / divisor;
 }
 
+<<<<<<< HEAD
+=======
+static u32 jit_mod(u32 dividend, u32 divisor)
+{
+	return dividend % divisor;
+}
+
+>>>>>>> v4.9.227
 static inline void _emit(int cond, u32 inst, struct jit_ctx *ctx)
 {
 	inst |= (cond << 28);
@@ -279,6 +339,18 @@ static u16 imm_offset(u32 k, struct jit_ctx *ctx)
 	/* PC in ARM mode == address of the instruction + 8 */
 	imm = offset - (8 + ctx->idx * 4);
 
+<<<<<<< HEAD
+=======
+	if (imm & ~0xfff) {
+		/*
+		 * literal pool is too far, signal it into flags. we
+		 * can only detect it on the second pass unfortunately.
+		 */
+		ctx->flags |= FLAG_IMM_OVERFLOW;
+		return 0;
+	}
+
+>>>>>>> v4.9.227
 	return imm;
 }
 
@@ -427,11 +499,25 @@ static inline void emit_blx_r(u8 tgt_reg, struct jit_ctx *ctx)
 #endif
 }
 
+<<<<<<< HEAD
 static inline void emit_udiv(u8 rd, u8 rm, u8 rn, struct jit_ctx *ctx)
 {
 #if __LINUX_ARM_ARCH__ == 7
 	if (elf_hwcap & HWCAP_IDIVA) {
 		emit(ARM_UDIV(rd, rm, rn), ctx);
+=======
+static inline void emit_udivmod(u8 rd, u8 rm, u8 rn, struct jit_ctx *ctx,
+				int bpf_op)
+{
+#if __LINUX_ARM_ARCH__ == 7
+	if (elf_hwcap & HWCAP_IDIVA) {
+		if (bpf_op == BPF_DIV)
+			emit(ARM_UDIV(rd, rm, rn), ctx);
+		else {
+			emit(ARM_UDIV(ARM_R3, rm, rn), ctx);
+			emit(ARM_MLS(rd, rn, ARM_R3, rm), ctx);
+		}
+>>>>>>> v4.9.227
 		return;
 	}
 #endif
@@ -452,7 +538,12 @@ static inline void emit_udiv(u8 rd, u8 rm, u8 rn, struct jit_ctx *ctx)
 		emit(ARM_MOV_R(ARM_R0, rm), ctx);
 
 	ctx->seen |= SEEN_CALL;
+<<<<<<< HEAD
 	emit_mov_i(ARM_R3, (u32)jit_udiv, ctx);
+=======
+	emit_mov_i(ARM_R3, bpf_op == BPF_DIV ? (u32)jit_udiv : (u32)jit_mod,
+		   ctx);
+>>>>>>> v4.9.227
 	emit_blx_r(ARM_R3, ctx);
 
 	if (rd != ARM_R0)
@@ -512,9 +603,12 @@ static int build_body(struct jit_ctx *ctx)
 		case BPF_LD | BPF_B | BPF_ABS:
 			load_order = 0;
 load:
+<<<<<<< HEAD
 			/* the interpreter will deal with the negative K */
 			if ((int)k < 0)
 				return -ENOTSUPP;
+=======
+>>>>>>> v4.9.227
 			emit_mov_i(r_off, k, ctx);
 load_common:
 			ctx->seen |= SEEN_DATA | SEEN_CALL;
@@ -523,12 +617,31 @@ load_common:
 				emit(ARM_SUB_I(r_scratch, r_skb_hl,
 					       1 << load_order), ctx);
 				emit(ARM_CMP_R(r_scratch, r_off), ctx);
+<<<<<<< HEAD
 				condt = ARM_COND_HS;
+=======
+				condt = ARM_COND_GE;
+>>>>>>> v4.9.227
 			} else {
 				emit(ARM_CMP_R(r_skb_hl, r_off), ctx);
 				condt = ARM_COND_HI;
 			}
 
+<<<<<<< HEAD
+=======
+			/*
+			 * test for negative offset, only if we are
+			 * currently scheduled to take the fast
+			 * path. this will update the flags so that
+			 * the slowpath instruction are ignored if the
+			 * offset is negative.
+			 *
+			 * for loard_order == 0 the HI condition will
+			 * make loads at offset 0 take the slow path too.
+			 */
+			_emit(condt, ARM_CMP_I(r_off, 0), ctx);
+
+>>>>>>> v4.9.227
 			_emit(condt, ARM_ADD_R(r_scratch, r_off, r_skb_data),
 			      ctx);
 
@@ -561,6 +674,10 @@ load_common:
 		case BPF_LD | BPF_B | BPF_IND:
 			load_order = 0;
 load_ind:
+<<<<<<< HEAD
+=======
+			update_on_xread(ctx);
+>>>>>>> v4.9.227
 			OP_IMM3(ARM_ADD, r_off, r_X, k, ctx);
 			goto load_common;
 		case BPF_LDX | BPF_IMM:
@@ -644,13 +761,35 @@ load_ind:
 			if (k == 1)
 				break;
 			emit_mov_i(r_scratch, k, ctx);
+<<<<<<< HEAD
 			emit_udiv(r_A, r_A, r_scratch, ctx);
+=======
+			emit_udivmod(r_A, r_A, r_scratch, ctx, BPF_DIV);
+>>>>>>> v4.9.227
 			break;
 		case BPF_ALU | BPF_DIV | BPF_X:
 			update_on_xread(ctx);
 			emit(ARM_CMP_I(r_X, 0), ctx);
 			emit_err_ret(ARM_COND_EQ, ctx);
+<<<<<<< HEAD
 			emit_udiv(r_A, r_A, r_X, ctx);
+=======
+			emit_udivmod(r_A, r_A, r_X, ctx, BPF_DIV);
+			break;
+		case BPF_ALU | BPF_MOD | BPF_K:
+			if (k == 1) {
+				emit_mov_i(r_A, 0, ctx);
+				break;
+			}
+			emit_mov_i(r_scratch, k, ctx);
+			emit_udivmod(r_A, r_A, r_scratch, ctx, BPF_MOD);
+			break;
+		case BPF_ALU | BPF_MOD | BPF_X:
+			update_on_xread(ctx);
+			emit(ARM_CMP_I(r_X, 0), ctx);
+			emit_err_ret(ARM_COND_EQ, ctx);
+			emit_udivmod(r_A, r_A, r_X, ctx, BPF_MOD);
+>>>>>>> v4.9.227
 			break;
 		case BPF_ALU | BPF_OR | BPF_K:
 			/* A |= K */
@@ -690,7 +829,12 @@ load_ind:
 		case BPF_ALU | BPF_RSH | BPF_K:
 			if (unlikely(k > 31))
 				return -1;
+<<<<<<< HEAD
 			emit(ARM_LSR_I(r_A, r_A, k), ctx);
+=======
+			if (k)
+				emit(ARM_LSR_I(r_A, r_A, k), ctx);
+>>>>>>> v4.9.227
 			break;
 		case BPF_ALU | BPF_RSH | BPF_X:
 			update_on_xread(ctx);
@@ -804,7 +948,13 @@ b_epilogue:
 			emit(ARM_LDR_I(r_A, r_scratch, off), ctx);
 			break;
 		case BPF_ANC | SKF_AD_IFINDEX:
+<<<<<<< HEAD
 			/* A = skb->dev->ifindex */
+=======
+		case BPF_ANC | SKF_AD_HATYPE:
+			/* A = skb->dev->ifindex */
+			/* A = skb->dev->type */
+>>>>>>> v4.9.227
 			ctx->seen |= SEEN_SKB;
 			off = offsetof(struct sk_buff, dev);
 			emit(ARM_LDR_I(r_scratch, r_skb, off), ctx);
@@ -814,8 +964,29 @@ b_epilogue:
 
 			BUILD_BUG_ON(FIELD_SIZEOF(struct net_device,
 						  ifindex) != 4);
+<<<<<<< HEAD
 			off = offsetof(struct net_device, ifindex);
 			emit(ARM_LDR_I(r_A, r_scratch, off), ctx);
+=======
+			BUILD_BUG_ON(FIELD_SIZEOF(struct net_device,
+						  type) != 2);
+
+			if (code == (BPF_ANC | SKF_AD_IFINDEX)) {
+				off = offsetof(struct net_device, ifindex);
+				emit(ARM_LDR_I(r_A, r_scratch, off), ctx);
+			} else {
+				/*
+				 * offset of field "type" in "struct
+				 * net_device" is above what can be
+				 * used in the ldrh rd, [rn, #imm]
+				 * instruction, so load the offset in
+				 * a register and use ldrh rd, [rn, rm]
+				 */
+				off = offsetof(struct net_device, type);
+				emit_mov_i(ARM_R3, off, ctx);
+				emit(ARM_LDRH_R(r_A, r_scratch, ARM_R3), ctx);
+			}
+>>>>>>> v4.9.227
 			break;
 		case BPF_ANC | SKF_AD_MARK:
 			ctx->seen |= SEEN_SKB;
@@ -836,9 +1007,28 @@ b_epilogue:
 			off = offsetof(struct sk_buff, vlan_tci);
 			emit(ARM_LDRH_I(r_A, r_skb, off), ctx);
 			if (code == (BPF_ANC | SKF_AD_VLAN_TAG))
+<<<<<<< HEAD
 				OP_IMM3(ARM_AND, r_A, r_A, VLAN_VID_MASK, ctx);
 			else
 				OP_IMM3(ARM_AND, r_A, r_A, VLAN_TAG_PRESENT, ctx);
+=======
+				OP_IMM3(ARM_AND, r_A, r_A, ~VLAN_TAG_PRESENT, ctx);
+			else {
+				OP_IMM3(ARM_LSR, r_A, r_A, 12, ctx);
+				OP_IMM3(ARM_AND, r_A, r_A, 0x1, ctx);
+			}
+			break;
+		case BPF_ANC | SKF_AD_PKTTYPE:
+			ctx->seen |= SEEN_SKB;
+			BUILD_BUG_ON(FIELD_SIZEOF(struct sk_buff,
+						  __pkt_type_offset[0]) != 1);
+			off = PKT_TYPE_OFFSET();
+			emit(ARM_LDRB_I(r_A, r_skb, off), ctx);
+			emit(ARM_AND_I(r_A, r_A, PKT_TYPE_MAX), ctx);
+#ifdef __BIG_ENDIAN_BITFIELD
+			emit(ARM_LSR_I(r_A, r_A, 5), ctx);
+#endif
+>>>>>>> v4.9.227
 			break;
 		case BPF_ANC | SKF_AD_QUEUE:
 			ctx->seen |= SEEN_SKB;
@@ -849,9 +1039,41 @@ b_epilogue:
 			off = offsetof(struct sk_buff, queue_mapping);
 			emit(ARM_LDRH_I(r_A, r_skb, off), ctx);
 			break;
+<<<<<<< HEAD
 		default:
 			return -1;
 		}
+=======
+		case BPF_ANC | SKF_AD_PAY_OFFSET:
+			ctx->seen |= SEEN_SKB | SEEN_CALL;
+
+			emit(ARM_MOV_R(ARM_R0, r_skb), ctx);
+			emit_mov_i(ARM_R3, (unsigned int)skb_get_poff, ctx);
+			emit_blx_r(ARM_R3, ctx);
+			emit(ARM_MOV_R(r_A, ARM_R0), ctx);
+			break;
+		case BPF_LDX | BPF_W | BPF_ABS:
+			/*
+			 * load a 32bit word from struct seccomp_data.
+			 * seccomp_check_filter() will already have checked
+			 * that k is 32bit aligned and lies within the
+			 * struct seccomp_data.
+			 */
+			ctx->seen |= SEEN_SKB;
+			emit(ARM_LDR_I(r_A, r_skb, k), ctx);
+			break;
+		default:
+			return -1;
+		}
+
+		if (ctx->flags & FLAG_IMM_OVERFLOW)
+			/*
+			 * this instruction generated an overflow when
+			 * trying to access the literal pool, so
+			 * delegate this filter to the kernel interpreter.
+			 */
+			return -1;
+>>>>>>> v4.9.227
 	}
 
 	/* compute offsets only during the first pass */
@@ -914,10 +1136,24 @@ void bpf_jit_compile(struct bpf_prog *fp)
 	ctx.idx = 0;
 
 	build_prologue(&ctx);
+<<<<<<< HEAD
 	build_body(&ctx);
 	build_epilogue(&ctx);
 
 	flush_icache_range((u32)ctx.target, (u32)(ctx.target + ctx.idx));
+=======
+	if (build_body(&ctx) < 0) {
+#if __LINUX_ARM_ARCH__ < 7
+		if (ctx.imm_count)
+			kfree(ctx.imms);
+#endif
+		bpf_jit_binary_free(header);
+		goto out;
+	}
+	build_epilogue(&ctx);
+
+	flush_icache_range((u32)header, (u32)(ctx.target + ctx.idx));
+>>>>>>> v4.9.227
 
 #if __LINUX_ARM_ARCH__ < 7
 	if (ctx.imm_count)
@@ -930,7 +1166,11 @@ void bpf_jit_compile(struct bpf_prog *fp)
 
 	set_memory_ro((unsigned long)header, header->pages);
 	fp->bpf_func = (void *)ctx.target;
+<<<<<<< HEAD
 	fp->jited = true;
+=======
+	fp->jited = 1;
+>>>>>>> v4.9.227
 out:
 	kfree(ctx.offsets);
 	return;

@@ -57,6 +57,10 @@
 #include <linux/module.h>
 #include <linux/firmware.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 
 #include <sound/core.h>
 #include <sound/control.h>
@@ -65,8 +69,11 @@
 #include <sound/pcm_params.h>
 #include "cs46xx.h"
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
+=======
+>>>>>>> v4.9.227
 #include "cs46xx_lib.h"
 #include "dsp_spos.h"
 
@@ -1778,13 +1785,20 @@ static struct snd_pcm_ops snd_cs46xx_capture_indirect_ops = {
 #define MAX_PLAYBACK_CHANNELS	1
 #endif
 
+<<<<<<< HEAD
 int snd_cs46xx_pcm(struct snd_cs46xx *chip, int device, struct snd_pcm **rpcm)
+=======
+int snd_cs46xx_pcm(struct snd_cs46xx *chip, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
+=======
+>>>>>>> v4.9.227
 	if ((err = snd_pcm_new(chip->card, "CS46xx", device, MAX_PLAYBACK_CHANNELS, 1, &pcm)) < 0)
 		return err;
 
@@ -1801,23 +1815,33 @@ int snd_cs46xx_pcm(struct snd_cs46xx *chip, int device, struct snd_pcm **rpcm)
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->pci), 64*1024, 256*1024);
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
+<<<<<<< HEAD
 int snd_cs46xx_pcm_rear(struct snd_cs46xx *chip, int device,
 			struct snd_pcm **rpcm)
+=======
+int snd_cs46xx_pcm_rear(struct snd_cs46xx *chip, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
+=======
+>>>>>>> v4.9.227
 	if ((err = snd_pcm_new(chip->card, "CS46xx - Rear", device, MAX_PLAYBACK_CHANNELS, 0, &pcm)) < 0)
 		return err;
 
@@ -1833,6 +1857,7 @@ int snd_cs46xx_pcm_rear(struct snd_cs46xx *chip, int device,
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->pci), 64*1024, 256*1024);
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
 
@@ -1841,13 +1866,22 @@ int snd_cs46xx_pcm_rear(struct snd_cs46xx *chip, int device,
 
 int snd_cs46xx_pcm_center_lfe(struct snd_cs46xx *chip, int device,
 			      struct snd_pcm **rpcm)
+=======
+	return 0;
+}
+
+int snd_cs46xx_pcm_center_lfe(struct snd_cs46xx *chip, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
+=======
+>>>>>>> v4.9.227
 	if ((err = snd_pcm_new(chip->card, "CS46xx - Center LFE", device, MAX_PLAYBACK_CHANNELS, 0, &pcm)) < 0)
 		return err;
 
@@ -1863,6 +1897,7 @@ int snd_cs46xx_pcm_center_lfe(struct snd_cs46xx *chip, int device,
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->pci), 64*1024, 256*1024);
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
 
@@ -1871,13 +1906,22 @@ int snd_cs46xx_pcm_center_lfe(struct snd_cs46xx *chip, int device,
 
 int snd_cs46xx_pcm_iec958(struct snd_cs46xx *chip, int device,
 			  struct snd_pcm **rpcm)
+=======
+	return 0;
+}
+
+int snd_cs46xx_pcm_iec958(struct snd_cs46xx *chip, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
+=======
+>>>>>>> v4.9.227
 	if ((err = snd_pcm_new(chip->card, "CS46xx - IEC958", device, 1, 0, &pcm)) < 0)
 		return err;
 
@@ -1888,14 +1932,21 @@ int snd_cs46xx_pcm_iec958(struct snd_cs46xx *chip, int device,
 	/* global setup */
 	pcm->info_flags = 0;
 	strcpy(pcm->name, "CS46xx - IEC958");
+<<<<<<< HEAD
 	chip->pcm_rear = pcm;
+=======
+	chip->pcm_iec958 = pcm;
+>>>>>>> v4.9.227
 
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->pci), 64*1024, 256*1024);
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 #endif
@@ -2487,7 +2538,11 @@ static int cs46xx_detect_codec(struct snd_cs46xx *chip, int codec)
 		udelay(10);
 		if (snd_cs46xx_codec_read(chip, AC97_RESET, codec) & 0x8000) {
 			dev_dbg(chip->card->dev,
+<<<<<<< HEAD
 				"seconadry codec not present\n");
+=======
+				"secondary codec not present\n");
+>>>>>>> v4.9.227
 			return -ENXIO;
 		}
 	}
@@ -2530,7 +2585,11 @@ int snd_cs46xx_mixer(struct snd_cs46xx *chip, int spdif_device)
 	chip->nr_ac97_codecs = 1;
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
+<<<<<<< HEAD
 	dev_dbg(chip->card->dev, "detecting seconadry codec\n");
+=======
+	dev_dbg(chip->card->dev, "detecting secondary codec\n");
+>>>>>>> v4.9.227
 	/* try detect a secondary codec */
 	if (! cs46xx_detect_codec(chip, CS46XX_SECONDARY_CODEC_INDEX))
 		chip->nr_ac97_codecs = 2;
@@ -2555,7 +2614,11 @@ int snd_cs46xx_mixer(struct snd_cs46xx *chip, int spdif_device)
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 	if (chip->nr_ac97_codecs == 1) {
 		unsigned int id2 = chip->ac97[CS46XX_PRIMARY_CODEC_INDEX]->id & 0xffff;
+<<<<<<< HEAD
 		if (id2 == 0x592b || id2 == 0x592d) {
+=======
+		if ((id2 & 0xfff0) == 0x5920) {	/* CS4294 and CS4298 */
+>>>>>>> v4.9.227
 			err = snd_ctl_add(card, snd_ctl_new1(&snd_cs46xx_front_dup_ctl, chip));
 			if (err < 0)
 				return err;
@@ -2724,13 +2787,20 @@ static struct snd_rawmidi_ops snd_cs46xx_midi_input =
 	.trigger =	snd_cs46xx_midi_input_trigger,
 };
 
+<<<<<<< HEAD
 int snd_cs46xx_midi(struct snd_cs46xx *chip, int device, struct snd_rawmidi **rrawmidi)
+=======
+int snd_cs46xx_midi(struct snd_cs46xx *chip, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_rawmidi *rmidi;
 	int err;
 
+<<<<<<< HEAD
 	if (rrawmidi)
 		*rrawmidi = NULL;
+=======
+>>>>>>> v4.9.227
 	if ((err = snd_rawmidi_new(chip->card, "CS46XX", device, 1, 1, &rmidi)) < 0)
 		return err;
 	strcpy(rmidi->name, "CS46XX");
@@ -2739,8 +2809,11 @@ int snd_cs46xx_midi(struct snd_cs46xx *chip, int device, struct snd_rawmidi **rr
 	rmidi->info_flags |= SNDRV_RAWMIDI_INFO_OUTPUT | SNDRV_RAWMIDI_INFO_INPUT | SNDRV_RAWMIDI_INFO_DUPLEX;
 	rmidi->private_data = chip;
 	chip->rmidi = rmidi;
+<<<<<<< HEAD
 	if (rrawmidi)
 		*rrawmidi = NULL;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -2847,7 +2920,11 @@ int snd_cs46xx_gameport(struct snd_cs46xx *chip) { return -ENOSYS; }
 static inline void snd_cs46xx_remove_gameport(struct snd_cs46xx *chip) { }
 #endif /* CONFIG_GAMEPORT */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> v4.9.227
 /*
  *  proc interface
  */
@@ -2896,7 +2973,11 @@ static int snd_cs46xx_proc_done(struct snd_cs46xx *chip)
 #endif
 	return 0;
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PROC_FS */
+=======
+#else /* !CONFIG_SND_PROC_FS */
+>>>>>>> v4.9.227
 #define snd_cs46xx_proc_init(card, chip)
 #define snd_cs46xx_proc_done(chip)
 #endif
@@ -2979,8 +3060,13 @@ static int snd_cs46xx_free(struct snd_cs46xx *chip)
 
 	for (idx = 0; idx < 5; idx++) {
 		struct snd_cs46xx_region *region = &chip->region.idx[idx];
+<<<<<<< HEAD
 		if (region->remap_addr)
 			iounmap(region->remap_addr);
+=======
+
+		iounmap(region->remap_addr);
+>>>>>>> v4.9.227
 		release_and_free_resource(region->resource);
 	}
 
@@ -3804,7 +3890,10 @@ static unsigned int saved_regs[] = {
 
 static int snd_cs46xx_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_cs46xx *chip = card->private_data;
 	int i, amp_saved;
@@ -3812,6 +3901,14 @@ static int snd_cs46xx_suspend(struct device *dev)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	chip->in_suspend = 1;
 	snd_pcm_suspend_all(chip->pcm);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SND_CS46XX_NEW_DSP
+	snd_pcm_suspend_all(chip->pcm_rear);
+	snd_pcm_suspend_all(chip->pcm_center_lfe);
+	snd_pcm_suspend_all(chip->pcm_iec958);
+#endif
+>>>>>>> v4.9.227
 	// chip->ac97_powerdown = snd_cs46xx_codec_read(chip, AC97_POWER_CONTROL);
 	// chip->ac97_general_purpose = snd_cs46xx_codec_read(chip, BA0_AC97_GENERAL_PURPOSE);
 
@@ -3829,16 +3926,22 @@ static int snd_cs46xx_suspend(struct device *dev)
 	/* disable CLKRUN */
 	chip->active_ctrl(chip, -chip->amplifier);
 	chip->amplifier = amp_saved; /* restore the status */
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int snd_cs46xx_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_cs46xx *chip = card->private_data;
 	int amp_saved;
@@ -3847,6 +3950,7 @@ static int snd_cs46xx_resume(struct device *dev)
 #endif
 	unsigned int tmp;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -3856,6 +3960,8 @@ static int snd_cs46xx_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> v4.9.227
 	amp_saved = chip->amplifier;
 	chip->amplifier = 0;
 	chip->active_ctrl(chip, 1); /* force to on */

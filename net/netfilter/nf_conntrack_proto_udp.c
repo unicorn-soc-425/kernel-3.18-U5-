@@ -38,13 +38,22 @@ static inline struct nf_udp_net *udp_pernet(struct net *net)
 
 static bool udp_pkt_to_tuple(const struct sk_buff *skb,
 			     unsigned int dataoff,
+<<<<<<< HEAD
+=======
+			     struct net *net,
+>>>>>>> v4.9.227
 			     struct nf_conntrack_tuple *tuple)
 {
 	const struct udphdr *hp;
 	struct udphdr _hdr;
 
+<<<<<<< HEAD
 	/* Actually only need first 8 bytes. */
 	hp = skb_header_pointer(skb, dataoff, sizeof(_hdr), &_hdr);
+=======
+	/* Actually only need first 4 bytes to get ports. */
+	hp = skb_header_pointer(skb, dataoff, 4, &_hdr);
+>>>>>>> v4.9.227
 	if (hp == NULL)
 		return false;
 
@@ -63,12 +72,21 @@ static bool udp_invert_tuple(struct nf_conntrack_tuple *tuple,
 }
 
 /* Print out the per-protocol part of the tuple. */
+<<<<<<< HEAD
 static int udp_print_tuple(struct seq_file *s,
 			   const struct nf_conntrack_tuple *tuple)
 {
 	return seq_printf(s, "sport=%hu dport=%hu ",
 			  ntohs(tuple->src.u.udp.port),
 			  ntohs(tuple->dst.u.udp.port));
+=======
+static void udp_print_tuple(struct seq_file *s,
+			    const struct nf_conntrack_tuple *tuple)
+{
+	seq_printf(s, "sport=%hu dport=%hu ",
+		   ntohs(tuple->src.u.udp.port),
+		   ntohs(tuple->dst.u.udp.port));
+>>>>>>> v4.9.227
 }
 
 static unsigned int *udp_get_timeouts(struct net *net)
@@ -217,6 +235,7 @@ static struct ctl_table udp_sysctl_table[] = {
 	},
 	{ }
 };
+<<<<<<< HEAD
 #ifdef CONFIG_NF_CONNTRACK_PROC_COMPAT
 static struct ctl_table udp_compat_sysctl_table[] = {
 	{
@@ -234,6 +253,8 @@ static struct ctl_table udp_compat_sysctl_table[] = {
 	{ }
 };
 #endif /* CONFIG_NF_CONNTRACK_PROC_COMPAT */
+=======
+>>>>>>> v4.9.227
 #endif /* CONFIG_SYSCTL */
 
 static int udp_kmemdup_sysctl_table(struct nf_proto_net *pn,
@@ -253,6 +274,7 @@ static int udp_kmemdup_sysctl_table(struct nf_proto_net *pn,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int udp_kmemdup_compat_sysctl_table(struct nf_proto_net *pn,
 					   struct nf_udp_net *un)
 {
@@ -274,6 +296,10 @@ static int udp_kmemdup_compat_sysctl_table(struct nf_proto_net *pn,
 static int udp_init_net(struct net *net, u_int16_t proto)
 {
 	int ret;
+=======
+static int udp_init_net(struct net *net, u_int16_t proto)
+{
+>>>>>>> v4.9.227
 	struct nf_udp_net *un = udp_pernet(net);
 	struct nf_proto_net *pn = &un->pn;
 
@@ -284,6 +310,7 @@ static int udp_init_net(struct net *net, u_int16_t proto)
 			un->timeouts[i] = udp_timeouts[i];
 	}
 
+<<<<<<< HEAD
 	if (proto == AF_INET) {
 		ret = udp_kmemdup_compat_sysctl_table(pn, un);
 		if (ret < 0)
@@ -296,6 +323,9 @@ static int udp_init_net(struct net *net, u_int16_t proto)
 		ret = udp_kmemdup_sysctl_table(pn, un);
 
 	return ret;
+=======
+	return udp_kmemdup_sysctl_table(pn, un);
+>>>>>>> v4.9.227
 }
 
 static struct nf_proto_net *udp_get_net_proto(struct net *net)
@@ -308,6 +338,10 @@ struct nf_conntrack_l4proto nf_conntrack_l4proto_udp4 __read_mostly =
 	.l3proto		= PF_INET,
 	.l4proto		= IPPROTO_UDP,
 	.name			= "udp",
+<<<<<<< HEAD
+=======
+	.allow_clash		= true,
+>>>>>>> v4.9.227
 	.pkt_to_tuple		= udp_pkt_to_tuple,
 	.invert_tuple		= udp_invert_tuple,
 	.print_tuple		= udp_print_tuple,
@@ -340,6 +374,10 @@ struct nf_conntrack_l4proto nf_conntrack_l4proto_udp6 __read_mostly =
 	.l3proto		= PF_INET6,
 	.l4proto		= IPPROTO_UDP,
 	.name			= "udp",
+<<<<<<< HEAD
+=======
+	.allow_clash		= true,
+>>>>>>> v4.9.227
 	.pkt_to_tuple		= udp_pkt_to_tuple,
 	.invert_tuple		= udp_invert_tuple,
 	.print_tuple		= udp_print_tuple,

@@ -99,9 +99,12 @@ extern const struct xattr_handler jffs2_user_xattr_handler;
 extern const struct xattr_handler jffs2_trusted_xattr_handler;
 
 extern ssize_t jffs2_listxattr(struct dentry *, char *, size_t);
+<<<<<<< HEAD
 #define jffs2_getxattr		generic_getxattr
 #define jffs2_setxattr		generic_setxattr
 #define jffs2_removexattr	generic_removexattr
+=======
+>>>>>>> v4.9.227
 
 #else
 
@@ -116,9 +119,12 @@ extern ssize_t jffs2_listxattr(struct dentry *, char *, size_t);
 
 #define jffs2_xattr_handlers	NULL
 #define jffs2_listxattr		NULL
+<<<<<<< HEAD
 #define jffs2_getxattr		NULL
 #define jffs2_setxattr		NULL
 #define jffs2_removexattr	NULL
+=======
+>>>>>>> v4.9.227
 
 #endif /* CONFIG_JFFS2_FS_XATTR */
 

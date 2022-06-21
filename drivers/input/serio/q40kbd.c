@@ -186,7 +186,10 @@ static int q40kbd_remove(struct platform_device *pdev)
 static struct platform_driver q40kbd_driver = {
 	.driver		= {
 		.name	= "q40kbd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.remove		= q40kbd_remove,
 };

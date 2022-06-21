@@ -96,5 +96,9 @@ static int __init asb2303_mtd_init(void)
 	platform_device_register(&asb2303_sysflash);
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(asb2303_mtd_init);
+=======
+device_initcall(asb2303_mtd_init);
+>>>>>>> v4.9.227

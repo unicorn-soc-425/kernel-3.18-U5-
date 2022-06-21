@@ -14,7 +14,11 @@
 #include <linux/io.h>		/* outb, outb_p			*/
 #include <linux/isa.h>
 #include <linux/pnp.h>
+<<<<<<< HEAD
 #include <media/tea575x.h>
+=======
+#include <media/drv-intf/tea575x.h>
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Ondrej Zary");
 MODULE_DESCRIPTION("MediaForte SF16-FMR2 and SF16-FMD2 FM radio card driver");
@@ -82,7 +86,11 @@ static void fmr2_tea575x_set_direction(struct snd_tea575x *tea, bool output)
 {
 }
 
+<<<<<<< HEAD
 static struct snd_tea575x_ops fmr2_tea_ops = {
+=======
+static const struct snd_tea575x_ops fmr2_tea_ops = {
+>>>>>>> v4.9.227
 	.set_pins = fmr2_tea575x_set_pins,
 	.get_pins = fmr2_tea575x_get_pins,
 	.set_direction = fmr2_tea575x_set_direction,

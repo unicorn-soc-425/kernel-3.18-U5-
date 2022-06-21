@@ -217,6 +217,11 @@ static void gssp_free_receive_pages(struct gssx_arg_accept_sec_context *arg)
 
 	for (i = 0; i < arg->npages && arg->pages[i]; i++)
 		__free_page(arg->pages[i]);
+<<<<<<< HEAD
+=======
+
+	kfree(arg->pages);
+>>>>>>> v4.9.227
 }
 
 static int gssp_alloc_receive_pages(struct gssx_arg_accept_sec_context *arg)
@@ -324,6 +329,12 @@ int gssp_accept_sec_context_upcall(struct net *net,
 	if (data->found_creds && client_name.data != NULL) {
 		char *c;
 
+<<<<<<< HEAD
+=======
+		data->creds.cr_raw_principal = kstrndup(client_name.data,
+						client_name.len, GFP_KERNEL);
+
+>>>>>>> v4.9.227
 		data->creds.cr_principal = kstrndup(client_name.data,
 						client_name.len, GFP_KERNEL);
 		if (data->creds.cr_principal) {

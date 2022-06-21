@@ -27,10 +27,18 @@
 /**
  * struct can_skb_priv - private additional data inside CAN sk_buffs
  * @ifindex:	ifindex of the first interface the CAN frame appeared on
+<<<<<<< HEAD
+=======
+ * @skbcnt:	atomic counter to have an unique id together with skb pointer
+>>>>>>> v4.9.227
  * @cf:		align to the following CAN frame at skb->data
  */
 struct can_skb_priv {
 	int ifindex;
+<<<<<<< HEAD
+=======
+	int skbcnt;
+>>>>>>> v4.9.227
 	struct can_frame cf[0];
 };
 
@@ -44,16 +52,23 @@ static inline void can_skb_reserve(struct sk_buff *skb)
 	skb_reserve(skb, sizeof(struct can_skb_priv));
 }
 
+<<<<<<< HEAD
 static inline void can_skb_destructor(struct sk_buff *skb)
 {
 	sock_put(skb->sk);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void can_skb_set_owner(struct sk_buff *skb, struct sock *sk)
 {
 	if (sk) {
 		sock_hold(sk);
+<<<<<<< HEAD
 		skb->destructor = can_skb_destructor;
+=======
+		skb->destructor = sock_efree;
+>>>>>>> v4.9.227
 		skb->sk = sk;
 	}
 }

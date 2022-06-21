@@ -35,7 +35,11 @@
 #include <media/v4l2-common.h>
 #include <media/v4l2-dv-timings.h>
 #include <media/v4l2-ctrls.h>
+<<<<<<< HEAD
 #include <media/ad9389b.h>
+=======
+#include <media/i2c/ad9389b.h>
+>>>>>>> v4.9.227
 
 static int debug;
 module_param(debug, int, 0644);
@@ -98,7 +102,10 @@ struct ad9389b_state {
 	struct ad9389b_state_edid edid;
 	/* Running counter of the number of detected EDIDs (for debugging) */
 	unsigned edid_detect_counter;
+<<<<<<< HEAD
 	struct workqueue_struct *work_queue;
+=======
+>>>>>>> v4.9.227
 	struct delayed_work edid_handler; /* work entry */
 };
 
@@ -239,8 +246,13 @@ static void ad9389b_set_IT_content_AVI_InfoFrame(struct v4l2_subdev *sd)
 {
 	struct ad9389b_state *state = get_ad9389b_state(sd);
 
+<<<<<<< HEAD
 	if (state->dv_timings.bt.standards & V4L2_DV_BT_STD_CEA861) {
 		/* CEA format, not IT  */
+=======
+	if (state->dv_timings.bt.flags & V4L2_DV_FL_IS_CE_VIDEO) {
+		/* CE format, not IT  */
+>>>>>>> v4.9.227
 		ad9389b_wr_and_or(sd, 0xcd, 0xbf, 0x00);
 	} else {
 		/* IT format */
@@ -255,11 +267,19 @@ static int ad9389b_set_rgb_quantization_mode(struct v4l2_subdev *sd, struct v4l2
 	switch (ctrl->val) {
 	case V4L2_DV_RGB_RANGE_AUTO:
 		/* automatic */
+<<<<<<< HEAD
 		if (state->dv_timings.bt.standards & V4L2_DV_BT_STD_CEA861) {
 			/* cea format, RGB limited range (16-235) */
 			ad9389b_csc_rgb_full2limit(sd, true);
 		} else {
 			/* not cea format, RGB full range (0-255) */
+=======
+		if (state->dv_timings.bt.flags & V4L2_DV_FL_IS_CE_VIDEO) {
+			/* CE format, RGB limited range (16-235) */
+			ad9389b_csc_rgb_full2limit(sd, true);
+		} else {
+			/* not CE format, RGB full range (0-255) */
+>>>>>>> v4.9.227
 			ad9389b_csc_rgb_full2limit(sd, false);
 		}
 		break;
@@ -591,7 +611,11 @@ static const struct v4l2_dv_timings_cap ad9389b_timings_cap = {
 	.type = V4L2_DV_BT_656_1120,
 	/* keep this initialization for compatibility with GCC < 4.4.6 */
 	.reserved = { 0 },
+<<<<<<< HEAD
 	V4L2_INIT_BT_TIMINGS(0, 1920, 0, 1200, 25000000, 170000000,
+=======
+	V4L2_INIT_BT_TIMINGS(640, 1920, 350, 1200, 25000000, 170000000,
+>>>>>>> v4.9.227
 		V4L2_DV_BT_STD_CEA861 | V4L2_DV_BT_STD_DMT |
 			V4L2_DV_BT_STD_GTF | V4L2_DV_BT_STD_CVT,
 		V4L2_DV_BT_CAP_PROGRESSIVE | V4L2_DV_BT_CAP_REDUCED_BLANKING |
@@ -843,8 +867,12 @@ static void ad9389b_edid_handler(struct work_struct *work)
 			v4l2_dbg(1, debug, sd, "%s: edid read failed\n", __func__);
 			ad9389b_s_power(sd, false);
 			ad9389b_s_power(sd, true);
+<<<<<<< HEAD
 			queue_delayed_work(state->work_queue,
 					   &state->edid_handler, EDID_DELAY);
+=======
+			schedule_delayed_work(&state->edid_handler, EDID_DELAY);
+>>>>>>> v4.9.227
 			return;
 		}
 	}
@@ -933,8 +961,12 @@ static void ad9389b_update_monitor_present_status(struct v4l2_subdev *sd)
 		ad9389b_setup(sd);
 		ad9389b_notify_monitor_detect(sd);
 		state->edid.read_retries = EDID_MAX_RETRIES;
+<<<<<<< HEAD
 		queue_delayed_work(state->work_queue,
 				   &state->edid_handler, EDID_DELAY);
+=======
+		schedule_delayed_work(&state->edid_handler, EDID_DELAY);
+>>>>>>> v4.9.227
 	} else if (!(status & MASK_AD9389B_HPD_DETECT)) {
 		v4l2_dbg(1, debug, sd, "%s: hotplug not detected\n", __func__);
 		state->have_monitor = false;
@@ -1065,8 +1097,12 @@ static bool ad9389b_check_edid_status(struct v4l2_subdev *sd)
 		ad9389b_wr(sd, 0xc9, 0xf);
 		ad9389b_wr(sd, 0xc4, state->edid.segments);
 		state->edid.read_retries = EDID_MAX_RETRIES;
+<<<<<<< HEAD
 		queue_delayed_work(state->work_queue,
 				   &state->edid_handler, EDID_DELAY);
+=======
+		schedule_delayed_work(&state->edid_handler, EDID_DELAY);
+>>>>>>> v4.9.227
 		return false;
 	}
 
@@ -1130,8 +1166,11 @@ static int ad9389b_probe(struct i2c_client *client, const struct i2c_device_id *
 	hdl = &state->hdl;
 	v4l2_ctrl_handler_init(hdl, 5);
 
+<<<<<<< HEAD
 	/* private controls */
 
+=======
+>>>>>>> v4.9.227
 	state->hdmi_mode_ctrl = v4l2_ctrl_new_std_menu(hdl, &ad9389b_ctrl_ops,
 			V4L2_CID_DV_TX_MODE, V4L2_DV_TX_MODE_HDMI,
 			0, V4L2_DV_TX_MODE_DVI_D);
@@ -1151,6 +1190,7 @@ static int ad9389b_probe(struct i2c_client *client, const struct i2c_device_id *
 
 		goto err_hdl;
 	}
+<<<<<<< HEAD
 	state->hdmi_mode_ctrl->is_private = true;
 	state->hotplug_ctrl->is_private = true;
 	state->rx_sense_ctrl->is_private = true;
@@ -1159,6 +1199,10 @@ static int ad9389b_probe(struct i2c_client *client, const struct i2c_device_id *
 
 	state->pad.flags = MEDIA_PAD_FL_SINK;
 	err = media_entity_init(&sd->entity, 1, &state->pad, 0);
+=======
+	state->pad.flags = MEDIA_PAD_FL_SINK;
+	err = media_entity_pads_init(&sd->entity, 1, &state->pad);
+>>>>>>> v4.9.227
 	if (err)
 		goto err_hdl;
 
@@ -1178,6 +1222,7 @@ static int ad9389b_probe(struct i2c_client *client, const struct i2c_device_id *
 		goto err_entity;
 	}
 
+<<<<<<< HEAD
 	state->work_queue = create_singlethread_workqueue(sd->name);
 	if (state->work_queue == NULL) {
 		v4l2_err(sd, "could not create workqueue\n");
@@ -1185,6 +1230,8 @@ static int ad9389b_probe(struct i2c_client *client, const struct i2c_device_id *
 		goto err_unreg;
 	}
 
+=======
+>>>>>>> v4.9.227
 	INIT_DELAYED_WORK(&state->edid_handler, ad9389b_edid_handler);
 	state->dv_timings = dv1080p60;
 
@@ -1195,8 +1242,11 @@ static int ad9389b_probe(struct i2c_client *client, const struct i2c_device_id *
 		  client->addr << 1, client->adapter->name);
 	return 0;
 
+<<<<<<< HEAD
 err_unreg:
 	i2c_unregister_device(state->edid_i2c_client);
+=======
+>>>>>>> v4.9.227
 err_entity:
 	media_entity_cleanup(&sd->entity);
 err_hdl:
@@ -1219,9 +1269,14 @@ static int ad9389b_remove(struct i2c_client *client)
 	ad9389b_s_stream(sd, false);
 	ad9389b_s_audio_stream(sd, false);
 	ad9389b_init_setup(sd);
+<<<<<<< HEAD
 	cancel_delayed_work(&state->edid_handler);
 	i2c_unregister_device(state->edid_i2c_client);
 	destroy_workqueue(state->work_queue);
+=======
+	cancel_delayed_work_sync(&state->edid_handler);
+	i2c_unregister_device(state->edid_i2c_client);
+>>>>>>> v4.9.227
 	v4l2_device_unregister_subdev(sd);
 	media_entity_cleanup(&sd->entity);
 	v4l2_ctrl_handler_free(sd->ctrl_handler);
@@ -1239,7 +1294,10 @@ MODULE_DEVICE_TABLE(i2c, ad9389b_id);
 
 static struct i2c_driver ad9389b_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name = "ad9389b",
 	},
 	.probe = ad9389b_probe,

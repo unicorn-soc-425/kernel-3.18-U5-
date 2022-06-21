@@ -95,7 +95,11 @@ static int fs_enet_fec_mii_write(struct mii_bus *bus, int phy_id, int location, 
 
 }
 
+<<<<<<< HEAD
 static struct of_device_id fs_enet_mdio_fec_match[];
+=======
+static const struct of_device_id fs_enet_mdio_fec_match[];
+>>>>>>> v4.9.227
 static int fs_enet_mdio_probe(struct platform_device *ofdev)
 {
 	const struct of_device_id *match;
@@ -166,23 +170,33 @@ static int fs_enet_mdio_probe(struct platform_device *ofdev)
 	clrsetbits_be32(&fec->fecp->fec_mii_speed, 0x7E, fec->mii_speed);
 
 	new_bus->phy_mask = ~0;
+<<<<<<< HEAD
 	new_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (!new_bus->irq) {
 		ret = -ENOMEM;
 		goto out_unmap_regs;
 	}
+=======
+>>>>>>> v4.9.227
 
 	new_bus->parent = &ofdev->dev;
 	platform_set_drvdata(ofdev, new_bus);
 
 	ret = of_mdiobus_register(new_bus, ofdev->dev.of_node);
 	if (ret)
+<<<<<<< HEAD
 		goto out_free_irqs;
 
 	return 0;
 
 out_free_irqs:
 	kfree(new_bus->irq);
+=======
+		goto out_unmap_regs;
+
+	return 0;
+
+>>>>>>> v4.9.227
 out_unmap_regs:
 	iounmap(fec->fecp);
 out_res:
@@ -200,7 +214,10 @@ static int fs_enet_mdio_remove(struct platform_device *ofdev)
 	struct fec_info *fec = bus->priv;
 
 	mdiobus_unregister(bus);
+<<<<<<< HEAD
 	kfree(bus->irq);
+=======
+>>>>>>> v4.9.227
 	iounmap(fec->fecp);
 	kfree(fec);
 	mdiobus_free(bus);
@@ -208,7 +225,11 @@ static int fs_enet_mdio_remove(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id fs_enet_mdio_fec_match[] = {
+=======
+static const struct of_device_id fs_enet_mdio_fec_match[] = {
+>>>>>>> v4.9.227
 	{
 		.compatible = "fsl,pq1-fec-mdio",
 	},
@@ -225,7 +246,10 @@ MODULE_DEVICE_TABLE(of, fs_enet_mdio_fec_match);
 static struct platform_driver fs_enet_fec_mdio_driver = {
 	.driver = {
 		.name = "fsl-fec-mdio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = fs_enet_mdio_fec_match,
 	},
 	.probe = fs_enet_mdio_probe,

@@ -29,7 +29,11 @@
 
 #include "../packets-buffer.h"
 #include "../iso-resources.h"
+<<<<<<< HEAD
 #include "../amdtp.h"
+=======
+#include "../amdtp-am824.h"
+>>>>>>> v4.9.227
 #include "../cmp.h"
 #include "../lib.h"
 
@@ -65,6 +69,12 @@ struct snd_efw {
 	struct mutex mutex;
 	spinlock_t lock;
 
+<<<<<<< HEAD
+=======
+	bool registered;
+	struct delayed_work dwork;
+
+>>>>>>> v4.9.227
 	/* for transaction */
 	u32 seqnum;
 	bool resp_addr_changable;
@@ -81,13 +91,21 @@ struct snd_efw {
 	unsigned int pcm_capture_channels[SND_EFW_MULTIPLIER_MODES];
 	unsigned int pcm_playback_channels[SND_EFW_MULTIPLIER_MODES];
 
+<<<<<<< HEAD
 	struct amdtp_stream *master;
+=======
+>>>>>>> v4.9.227
 	struct amdtp_stream tx_stream;
 	struct amdtp_stream rx_stream;
 	struct cmp_connection out_conn;
 	struct cmp_connection in_conn;
+<<<<<<< HEAD
 	atomic_t capture_substreams;
 	atomic_t playback_substreams;
+=======
+	unsigned int capture_substreams;
+	unsigned int playback_substreams;
+>>>>>>> v4.9.227
 
 	/* hardware metering parameters */
 	unsigned int phys_out;

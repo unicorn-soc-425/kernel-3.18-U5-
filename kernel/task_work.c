@@ -18,6 +18,11 @@ static struct callback_head work_exited; /* all we need is ->next == NULL */
  * This is like the signal handler which runs in kernel mode, but it doesn't
  * try to wake up the @task.
  *
+<<<<<<< HEAD
+=======
+ * Note: there is no ordering guarantee on works queued here.
+ *
+>>>>>>> v4.9.227
  * RETURNS:
  * 0 if succeeds or -ESRCH.
  */
@@ -27,7 +32,11 @@ task_work_add(struct task_struct *task, struct callback_head *work, bool notify)
 	struct callback_head *head;
 
 	do {
+<<<<<<< HEAD
 		head = ACCESS_ONCE(task->task_works);
+=======
+		head = READ_ONCE(task->task_works);
+>>>>>>> v4.9.227
 		if (unlikely(head == &work_exited))
 			return -ESRCH;
 		work->next = head;
@@ -55,6 +64,12 @@ task_work_cancel(struct task_struct *task, task_work_func_t func)
 	struct callback_head **pprev = &task->task_works;
 	struct callback_head *work;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+
+	if (likely(!task->task_works))
+		return NULL;
+>>>>>>> v4.9.227
 	/*
 	 * If cmpxchg() fails we continue without updating pprev.
 	 * Either we raced with task_work_add() which added the
@@ -62,8 +77,12 @@ task_work_cancel(struct task_struct *task, task_work_func_t func)
 	 * we raced with task_work_run(), *pprev == NULL/exited.
 	 */
 	raw_spin_lock_irqsave(&task->pi_lock, flags);
+<<<<<<< HEAD
 	while ((work = ACCESS_ONCE(*pprev))) {
 		smp_read_barrier_depends();
+=======
+	while ((work = lockless_dereference(*pprev))) {
+>>>>>>> v4.9.227
 		if (work->func != func)
 			pprev = &work->next;
 		else if (cmpxchg(pprev, work, work->next) == work)
@@ -93,7 +112,11 @@ void task_work_run(void)
 		 * work_exited unless the list is empty.
 		 */
 		do {
+<<<<<<< HEAD
 			work = ACCESS_ONCE(task->task_works);
+=======
+			work = READ_ONCE(task->task_works);
+>>>>>>> v4.9.227
 			head = !work && (task->flags & PF_EXITING) ?
 				&work_exited : NULL;
 		} while (cmpxchg(&task->task_works, work, head) != work);
@@ -106,6 +129,7 @@ void task_work_run(void)
 		 * fail, but it can play with *work and other entries.
 		 */
 		raw_spin_unlock_wait(&task->pi_lock);
+<<<<<<< HEAD
 		smp_mb();
 
 		/* Reverse the list to run the works in fifo order */
@@ -118,6 +142,9 @@ void task_work_run(void)
 		} while (work);
 
 		work = head;
+=======
+
+>>>>>>> v4.9.227
 		do {
 			next = work->next;
 			work->func(work);

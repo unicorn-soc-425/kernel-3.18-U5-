@@ -166,11 +166,15 @@ static void ct_vm_unmap(struct ct_vm *vm, struct ct_vm_block *block)
 static dma_addr_t
 ct_get_ptp_phys(struct ct_vm *vm, int index)
 {
+<<<<<<< HEAD
 	dma_addr_t addr;
 
 	addr = (index >= CT_PTP_NUM) ? ~0UL : vm->ptp[index].addr;
 
 	return addr;
+=======
+	return (index >= CT_PTP_NUM) ? ~0UL : vm->ptp[index].addr;
+>>>>>>> v4.9.227
 }
 
 int ct_vm_create(struct ct_vm **rvm, struct pci_dev *pci)

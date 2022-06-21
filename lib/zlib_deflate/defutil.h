@@ -293,6 +293,7 @@ void zlib_tr_stored_type_only (deflate_state *);
 }
 
 /* ===========================================================================
+<<<<<<< HEAD
  * Reverse the first len bits of a code, using straightforward code (a faster
  * method would use a table)
  * IN assertion: 1 <= len <= 15
@@ -309,6 +310,8 @@ static inline unsigned bi_reverse(unsigned code, /* the value to invert */
 }
 
 /* ===========================================================================
+=======
+>>>>>>> v4.9.227
  * Flush the bit buffer, keeping at most 7 bits in it.
  */
 static inline void bi_flush(deflate_state *s)

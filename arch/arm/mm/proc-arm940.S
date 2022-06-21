@@ -297,6 +297,7 @@ __arm940_setup:
 	mcr	p15, 0, r0, c6,	c0, 1
 
 	ldr	r0, =(CONFIG_DRAM_BASE & 0xFFFFF000) @ base[31:12] of RAM
+<<<<<<< HEAD
 	ldr	r1, =(CONFIG_DRAM_SIZE >> 12)	@ size of RAM (must be >= 4KB)
 	mov	r2, #10				@ 11 is the minimum (4KB)
 1:	add	r2, r2, #1			@ area size *= 2
@@ -317,6 +318,18 @@ __arm940_setup:
 	orr	r0, r0, #1			@ set enable bit
 	mcr	p15, 0, r0, c6,	c2, 0		@ set area 2, ROM/FLASH
 	mcr	p15, 0, r0, c6,	c2, 1
+=======
+	ldr	r7, =CONFIG_DRAM_SIZE >> 12	@ size of RAM (must be >= 4KB)
+	pr_val	r3, r0, r7, #1
+	mcr	p15, 0, r3, c6,	c1, 0		@ set area 1, RAM
+	mcr	p15, 0, r3, c6,	c1, 1
+
+	ldr	r0, =(CONFIG_FLASH_MEM_BASE & 0xFFFFF000) @ base[31:12] of FLASH
+	ldr	r7, =CONFIG_FLASH_SIZE		@ size of FLASH (must be >= 4KB)
+	pr_val	r3, r0, r6, #1
+	mcr	p15, 0, r3, c6,	c2, 0		@ set area 2, ROM/FLASH
+	mcr	p15, 0, r3, c6,	c2, 1
+>>>>>>> v4.9.227
 
 	mov	r0, #0x06
 	mcr	p15, 0, r0, c2, c0, 0		@ Region 1&2 cacheable

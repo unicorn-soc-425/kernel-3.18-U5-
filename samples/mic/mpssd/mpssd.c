@@ -43,7 +43,11 @@
 #include <linux/mic_common.h>
 #include <tools/endian.h>
 
+<<<<<<< HEAD
 static void init_mic(struct mic_info *mic);
+=======
+static void *init_mic(void *arg);
+>>>>>>> v4.9.227
 
 static FILE *logfp;
 static struct mic_info mic_list;
@@ -116,19 +120,31 @@ static struct {
 		.num = htole16(MIC_VRING_ENTRIES),
 	},
 #if GSO_ENABLED
+<<<<<<< HEAD
 		.host_features = htole32(
+=======
+	.host_features = htole32(
+>>>>>>> v4.9.227
 		1 << VIRTIO_NET_F_CSUM |
 		1 << VIRTIO_NET_F_GSO |
 		1 << VIRTIO_NET_F_GUEST_TSO4 |
 		1 << VIRTIO_NET_F_GUEST_TSO6 |
+<<<<<<< HEAD
 		1 << VIRTIO_NET_F_GUEST_ECN |
 		1 << VIRTIO_NET_F_GUEST_UFO),
+=======
+		1 << VIRTIO_NET_F_GUEST_ECN),
+>>>>>>> v4.9.227
 #else
 		.host_features = 0,
 #endif
 };
 
+<<<<<<< HEAD
 static const char *mic_config_dir = "/etc/sysconfig/mic";
+=======
+static const char *mic_config_dir = "/etc/mpss";
+>>>>>>> v4.9.227
 static const char *virtblk_backend = "VIRTBLK_BACKEND";
 static struct {
 	struct mic_device_desc dd;
@@ -192,7 +208,11 @@ tap_configure(struct mic_info *mic, char *dev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	snprintf(ipaddr, IFNAMSIZ, "172.31.%d.254/24", mic->id);
+=======
+	snprintf(ipaddr, IFNAMSIZ, "172.31.%d.254/24", mic->id + 1);
+>>>>>>> v4.9.227
 
 	pid = fork();
 	if (pid == 0) {
@@ -255,8 +275,12 @@ static int tun_alloc(struct mic_info *mic, char *dev)
 		return err;
 	}
 #if GSO_ENABLED
+<<<<<<< HEAD
 	offload = TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
 		TUN_F_TSO_ECN | TUN_F_UFO;
+=======
+	offload = TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 | TUN_F_TSO_ECN;
+>>>>>>> v4.9.227
 
 	err = ioctl(fd, TUNSETOFFLOAD, offload);
 	if (err < 0) {
@@ -332,7 +356,10 @@ static struct mic_device_desc *get_device_desc(struct mic_info *mic, int type)
 			return d;
 	}
 	mpsslog("%s %s %d not found\n", mic->name, __func__, type);
+<<<<<<< HEAD
 	assert(0);
+=======
+>>>>>>> v4.9.227
 	return NULL;
 }
 
@@ -352,7 +379,11 @@ static ssize_t
 sum_iovec_len(struct mic_copy_desc *copy)
 {
 	ssize_t sum = 0;
+<<<<<<< HEAD
 	int i;
+=======
+	unsigned int i;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < copy->iovcnt; i++)
 		sum += copy->iov[i].iov_len;
@@ -375,7 +406,11 @@ static void
 disp_iovec(struct mic_info *mic, struct mic_copy_desc *copy,
 	   const char *s, int line)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	unsigned int i;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < copy->iovcnt; i++)
 		mpsslog("%s %s %d copy->iov[%d] addr %p len 0x%zx\n",
@@ -415,6 +450,16 @@ mic_virtio_copy(struct mic_info *mic, int fd,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned _vring_size(unsigned int num, unsigned long align)
+{
+	return ((sizeof(struct vring_desc) * num + sizeof(__u16) * (3 + num)
+				+ align - 1) & ~(align - 1))
+		+ sizeof(__u16) * 3 + sizeof(struct vring_used_elem) * num;
+}
+
+>>>>>>> v4.9.227
 /*
  * This initialization routine requires at least one
  * vring i.e. vr0. vr1 is optional.
@@ -426,8 +471,14 @@ init_vr(struct mic_info *mic, int fd, int type,
 	int vr_size;
 	char *va;
 
+<<<<<<< HEAD
 	vr_size = PAGE_ALIGN(vring_size(MIC_VRING_ENTRIES,
 		MIC_VIRTIO_RING_ALIGN) + sizeof(struct _mic_vring_info));
+=======
+	vr_size = PAGE_ALIGN(_vring_size(MIC_VRING_ENTRIES,
+					 MIC_VIRTIO_RING_ALIGN) +
+			     sizeof(struct _mic_vring_info));
+>>>>>>> v4.9.227
 	va = mmap(NULL, MIC_DEVICE_PAGE_END + vr_size * num_vq,
 		PROT_READ, MAP_SHARED, fd, 0);
 	if (MAP_FAILED == va) {
@@ -439,25 +490,41 @@ init_vr(struct mic_info *mic, int fd, int type,
 	set_dp(mic, type, va);
 	vr0->va = (struct mic_vring *)&va[MIC_DEVICE_PAGE_END];
 	vr0->info = vr0->va +
+<<<<<<< HEAD
 		vring_size(MIC_VRING_ENTRIES, MIC_VIRTIO_RING_ALIGN);
+=======
+		_vring_size(MIC_VRING_ENTRIES, MIC_VIRTIO_RING_ALIGN);
+>>>>>>> v4.9.227
 	vring_init(&vr0->vr,
 		   MIC_VRING_ENTRIES, vr0->va, MIC_VIRTIO_RING_ALIGN);
 	mpsslog("%s %s vr0 %p vr0->info %p vr_size 0x%x vring 0x%x ",
 		__func__, mic->name, vr0->va, vr0->info, vr_size,
+<<<<<<< HEAD
 		vring_size(MIC_VRING_ENTRIES, MIC_VIRTIO_RING_ALIGN));
+=======
+		_vring_size(MIC_VRING_ENTRIES, MIC_VIRTIO_RING_ALIGN));
+>>>>>>> v4.9.227
 	mpsslog("magic 0x%x expected 0x%x\n",
 		le32toh(vr0->info->magic), MIC_MAGIC + type);
 	assert(le32toh(vr0->info->magic) == MIC_MAGIC + type);
 	if (vr1) {
 		vr1->va = (struct mic_vring *)
 			&va[MIC_DEVICE_PAGE_END + vr_size];
+<<<<<<< HEAD
 		vr1->info = vr1->va + vring_size(MIC_VRING_ENTRIES,
+=======
+		vr1->info = vr1->va + _vring_size(MIC_VRING_ENTRIES,
+>>>>>>> v4.9.227
 			MIC_VIRTIO_RING_ALIGN);
 		vring_init(&vr1->vr,
 			   MIC_VRING_ENTRIES, vr1->va, MIC_VIRTIO_RING_ALIGN);
 		mpsslog("%s %s vr1 %p vr1->info %p vr_size 0x%x vring 0x%x ",
 			__func__, mic->name, vr1->va, vr1->info, vr_size,
+<<<<<<< HEAD
 			vring_size(MIC_VRING_ENTRIES, MIC_VIRTIO_RING_ALIGN));
+=======
+			_vring_size(MIC_VRING_ENTRIES, MIC_VIRTIO_RING_ALIGN));
+>>>>>>> v4.9.227
 		mpsslog("magic 0x%x expected 0x%x\n",
 			le32toh(vr1->info->magic), MIC_MAGIC + type + 1);
 		assert(le32toh(vr1->info->magic) == MIC_MAGIC + type + 1);
@@ -466,16 +533,32 @@ done:
 	return va;
 }
 
+<<<<<<< HEAD
 static void
+=======
+static int
+>>>>>>> v4.9.227
 wait_for_card_driver(struct mic_info *mic, int fd, int type)
 {
 	struct pollfd pollfd;
 	int err;
 	struct mic_device_desc *desc = get_device_desc(mic, type);
+<<<<<<< HEAD
 
 	pollfd.fd = fd;
 	mpsslog("%s %s Waiting .... desc-> type %d status 0x%x\n",
 		mic->name, __func__, type, desc->status);
+=======
+	__u8 prev_status;
+
+	if (!desc)
+		return -ENODEV;
+	prev_status = desc->status;
+	pollfd.fd = fd;
+	mpsslog("%s %s Waiting .... desc-> type %d status 0x%x\n",
+		mic->name, __func__, type, desc->status);
+
+>>>>>>> v4.9.227
 	while (1) {
 		pollfd.events = POLLIN;
 		pollfd.revents = 0;
@@ -487,8 +570,18 @@ wait_for_card_driver(struct mic_info *mic, int fd, int type)
 		}
 
 		if (pollfd.revents) {
+<<<<<<< HEAD
 			mpsslog("%s %s Waiting... desc-> type %d status 0x%x\n",
 				mic->name, __func__, type, desc->status);
+=======
+			if (desc->status != prev_status) {
+				mpsslog("%s %s Waiting... desc-> type %d "
+					"status 0x%x\n",
+					mic->name, __func__, type,
+					desc->status);
+				prev_status = desc->status;
+			}
+>>>>>>> v4.9.227
 			if (desc->status & VIRTIO_CONFIG_S_DRIVER_OK) {
 				mpsslog("%s %s poll.revents %d\n",
 					mic->name, __func__, pollfd.revents);
@@ -499,6 +592,10 @@ wait_for_card_driver(struct mic_info *mic, int fd, int type)
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /* Spin till we have some descriptors */
@@ -575,9 +672,22 @@ virtio_net(void *arg)
 				__func__, strerror(errno));
 			continue;
 		}
+<<<<<<< HEAD
 		if (!(desc->status & VIRTIO_CONFIG_S_DRIVER_OK))
 			wait_for_card_driver(mic, mic->mic_net.virtio_net_fd,
 					     VIRTIO_ID_NET);
+=======
+		if (!(desc->status & VIRTIO_CONFIG_S_DRIVER_OK)) {
+			err = wait_for_card_driver(mic,
+						   mic->mic_net.virtio_net_fd,
+						   VIRTIO_ID_NET);
+			if (err) {
+				mpsslog("%s %s %d Exiting...\n",
+					mic->name, __func__, __LINE__);
+				break;
+			}
+		}
+>>>>>>> v4.9.227
 		/*
 		 * Check if there is data to be read from TUN and write to
 		 * virtio net fd if there is.
@@ -786,10 +896,23 @@ virtio_console(void *arg)
 				strerror(errno));
 			continue;
 		}
+<<<<<<< HEAD
 		if (!(desc->status & VIRTIO_CONFIG_S_DRIVER_OK))
 			wait_for_card_driver(mic,
 					     mic->mic_console.virtio_console_fd,
 				VIRTIO_ID_CONSOLE);
+=======
+		if (!(desc->status & VIRTIO_CONFIG_S_DRIVER_OK)) {
+			err = wait_for_card_driver(mic,
+					mic->mic_console.virtio_console_fd,
+					VIRTIO_ID_CONSOLE);
+			if (err) {
+				mpsslog("%s %s %d Exiting...\n",
+					mic->name, __func__, __LINE__);
+				break;
+			}
+		}
+>>>>>>> v4.9.227
 
 		if (console_poll[MONITOR_FD].revents & POLLIN) {
 			copy.iov = iov0;
@@ -897,7 +1020,11 @@ add_virtio_device(struct mic_info *mic, struct mic_device_desc *dd)
 	char path[PATH_MAX];
 	int fd, err;
 
+<<<<<<< HEAD
 	snprintf(path, PATH_MAX, "/dev/mic%d", mic->id);
+=======
+	snprintf(path, PATH_MAX, "/dev/vop_virtio%d", mic->id);
+>>>>>>> v4.9.227
 	fd = open(path, O_RDWR);
 	if (fd < 0) {
 		mpsslog("Could not open %s %s\n", path, strerror(errno));
@@ -1048,8 +1175,14 @@ stop_virtblk(struct mic_info *mic)
 {
 	int vr_size, ret;
 
+<<<<<<< HEAD
 	vr_size = PAGE_ALIGN(vring_size(MIC_VRING_ENTRIES,
 		MIC_VIRTIO_RING_ALIGN) + sizeof(struct _mic_vring_info));
+=======
+	vr_size = PAGE_ALIGN(_vring_size(MIC_VRING_ENTRIES,
+					 MIC_VIRTIO_RING_ALIGN) +
+			     sizeof(struct _mic_vring_info));
+>>>>>>> v4.9.227
 	ret = munmap(mic->mic_virtblk.block_dp,
 		MIC_DEVICE_PAGE_END + vr_size * virtblk_dev_page.dd.num_vq);
 	if (ret < 0)
@@ -1131,6 +1264,13 @@ write_status(int fd, __u8 *status)
 	return ioctl(fd, MIC_VIRTIO_COPY_DESC, &copy);
 }
 
+<<<<<<< HEAD
+=======
+#ifndef VIRTIO_BLK_T_GET_ID
+#define VIRTIO_BLK_T_GET_ID    8
+#endif
+
+>>>>>>> v4.9.227
 static void *
 virtio_block(void *arg)
 {
@@ -1297,12 +1437,16 @@ reset(struct mic_info *mic)
 		mpsslog("%s: %s %d state %s\n",
 			mic->name, __func__, __LINE__, state);
 
+<<<<<<< HEAD
 		/*
 		 * If the shutdown was initiated by OSPM, the state stays
 		 * in "suspended" which is also a valid condition for reset.
 		 */
 		if ((!strcmp(state, "offline")) ||
 		    (!strcmp(state, "suspended"))) {
+=======
+		if (!strcmp(state, "ready")) {
+>>>>>>> v4.9.227
 			free(state);
 			break;
 		}
@@ -1331,6 +1475,7 @@ get_mic_shutdown_status(struct mic_info *mic, char *shutdown_status)
 	assert(0);
 };
 
+<<<<<<< HEAD
 static int get_mic_state(struct mic_info *mic, char *state)
 {
 	if (!strcmp(state, "offline"))
@@ -1348,17 +1493,61 @@ static int get_mic_state(struct mic_info *mic, char *state)
 	mpsslog("%s: BUG invalid state %s\n", mic->name, state);
 	/* Invalid state */
 	assert(0);
+=======
+static int get_mic_state(struct mic_info *mic)
+{
+	char *state = NULL;
+	enum mic_states mic_state;
+
+	while (!state) {
+		state = readsysfs(mic->name, "state");
+		sleep(1);
+	}
+	mpsslog("%s: %s %d state %s\n",
+		mic->name, __func__, __LINE__, state);
+
+	if (!strcmp(state, "ready")) {
+		mic_state = MIC_READY;
+	} else if (!strcmp(state, "booting")) {
+		mic_state = MIC_BOOTING;
+	} else if (!strcmp(state, "online")) {
+		mic_state = MIC_ONLINE;
+	} else if (!strcmp(state, "shutting_down")) {
+		mic_state = MIC_SHUTTING_DOWN;
+	} else if (!strcmp(state, "reset_failed")) {
+		mic_state = MIC_RESET_FAILED;
+	} else if (!strcmp(state, "resetting")) {
+		mic_state = MIC_RESETTING;
+	} else {
+		mpsslog("%s: BUG invalid state %s\n", mic->name, state);
+		assert(0);
+	}
+
+	free(state);
+	return mic_state;
+>>>>>>> v4.9.227
 };
 
 static void mic_handle_shutdown(struct mic_info *mic)
 {
 #define SHUTDOWN_TIMEOUT 60
+<<<<<<< HEAD
 	int i = SHUTDOWN_TIMEOUT, ret, stat = 0;
 	char *shutdown_status;
 	while (i) {
 		shutdown_status = readsysfs(mic->name, "shutdown_status");
 		if (!shutdown_status)
 			continue;
+=======
+	int i = SHUTDOWN_TIMEOUT;
+	char *shutdown_status;
+	while (i) {
+		shutdown_status = readsysfs(mic->name, "shutdown_status");
+		if (!shutdown_status) {
+			sleep(1);
+			continue;
+		}
+>>>>>>> v4.9.227
 		mpsslog("%s: %s %d shutdown_status %s\n",
 			mic->name, __func__, __LINE__, shutdown_status);
 		switch (get_mic_shutdown_status(mic, shutdown_status)) {
@@ -1377,6 +1566,7 @@ static void mic_handle_shutdown(struct mic_info *mic)
 		i--;
 	}
 reset:
+<<<<<<< HEAD
 	ret = kill(mic->pid, SIGTERM);
 	mpsslog("%s: %s %d kill pid %d ret %d\n",
 		mic->name, __func__, __LINE__,
@@ -1390,12 +1580,66 @@ reset:
 	}
 	if (ret == mic->pid)
 		reset(mic);
+=======
+	if (!i)
+		mpsslog("%s: %s %d timing out waiting for shutdown_status %s\n",
+			mic->name, __func__, __LINE__, shutdown_status);
+	reset(mic);
+}
+
+static int open_state_fd(struct mic_info *mic)
+{
+	char pathname[PATH_MAX];
+	int fd;
+
+	snprintf(pathname, PATH_MAX - 1, "%s/%s/%s",
+		 MICSYSFSDIR, mic->name, "state");
+
+	fd = open(pathname, O_RDONLY);
+	if (fd < 0)
+		mpsslog("%s: opening file %s failed %s\n",
+			mic->name, pathname, strerror(errno));
+	return fd;
+}
+
+static int block_till_state_change(int fd, struct mic_info *mic)
+{
+	struct pollfd ufds[1];
+	char value[PAGE_SIZE];
+	int ret;
+
+	ufds[0].fd = fd;
+	ufds[0].events = POLLERR | POLLPRI;
+	ret = poll(ufds, 1, -1);
+	if (ret < 0) {
+		mpsslog("%s: %s %d poll failed %s\n",
+			mic->name, __func__, __LINE__, strerror(errno));
+		return ret;
+	}
+
+	ret = lseek(fd, 0, SEEK_SET);
+	if (ret < 0) {
+		mpsslog("%s: %s %d Failed to seek to 0: %s\n",
+			mic->name, __func__, __LINE__, strerror(errno));
+		return ret;
+	}
+
+	ret = read(fd, value, sizeof(value));
+	if (ret < 0) {
+		mpsslog("%s: %s %d Failed to read sysfs entry: %s\n",
+			mic->name, __func__, __LINE__, strerror(errno));
+		return ret;
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static void *
 mic_config(void *arg)
 {
 	struct mic_info *mic = (struct mic_info *)arg;
+<<<<<<< HEAD
 	char *state = NULL;
 	char pathname[PATH_MAX];
 	int fd, ret;
@@ -1441,10 +1685,47 @@ retry:
 			mic_handle_shutdown(mic);
 			goto close_error;
 		case MIC_OFFLINE:
+=======
+	int fd, ret, stat = 0;
+
+	fd = open_state_fd(mic);
+	if (fd < 0) {
+		mpsslog("%s: %s %d open state fd failed %s\n",
+			mic->name, __func__, __LINE__, strerror(errno));
+		goto exit;
+	}
+
+	do {
+		ret = block_till_state_change(fd, mic);
+		if (ret < 0) {
+			mpsslog("%s: %s %d block_till_state_change error %s\n",
+				mic->name, __func__, __LINE__, strerror(errno));
+			goto close_exit;
+		}
+
+		switch (get_mic_state(mic)) {
+		case MIC_SHUTTING_DOWN:
+			mic_handle_shutdown(mic);
+			break;
+		case MIC_READY:
+		case MIC_RESET_FAILED:
+			ret = kill(mic->pid, SIGTERM);
+			mpsslog("%s: %s %d kill pid %d ret %d\n",
+				mic->name, __func__, __LINE__,
+				mic->pid, ret);
+			if (!ret) {
+				ret = waitpid(mic->pid, &stat,
+					      WIFSIGNALED(stat));
+				mpsslog("%s: %s %d waitpid ret %d pid %d\n",
+					mic->name, __func__, __LINE__,
+					ret, mic->pid);
+			}
+>>>>>>> v4.9.227
 			if (mic->boot_on_resume) {
 				setsysfs(mic->name, "state", "boot");
 				mic->boot_on_resume = 0;
 			}
+<<<<<<< HEAD
 			break;
 		default:
 			break;
@@ -1465,6 +1746,17 @@ close_error:
 close_error1:
 	close(fd);
 error:
+=======
+			goto close_exit;
+		default:
+			break;
+		}
+	} while (1);
+
+close_exit:
+	close(fd);
+exit:
+>>>>>>> v4.9.227
 	init_mic(mic);
 	pthread_exit(NULL);
 }
@@ -1481,11 +1773,19 @@ set_cmdline(struct mic_info *mic)
 		"cpufreq_on;corec6_off;pc3_off;pc6_off ");
 	len += snprintf(buffer + len, PATH_MAX - len,
 		"ifcfg=static;address,172.31.%d.1;netmask,255.255.255.0",
+<<<<<<< HEAD
 		mic->id);
 
 	setsysfs(mic->name, "cmdline", buffer);
 	mpsslog("%s: Command line: \"%s\"\n", mic->name, buffer);
 	snprintf(buffer, PATH_MAX, "172.31.%d.1", mic->id);
+=======
+		mic->id + 1);
+
+	setsysfs(mic->name, "cmdline", buffer);
+	mpsslog("%s: Command line: \"%s\"\n", mic->name, buffer);
+	snprintf(buffer, PATH_MAX, "172.31.%d.1", mic->id + 1);
+>>>>>>> v4.9.227
 	mpsslog("%s: IPADDR: \"%s\"\n", mic->name, buffer);
 }
 
@@ -1541,8 +1841,11 @@ set_log_buf_info(struct mic_info *mic)
 	close(fd);
 }
 
+<<<<<<< HEAD
 static void init_mic(struct mic_info *mic);
 
+=======
+>>>>>>> v4.9.227
 static void
 change_virtblk_backend(int x, siginfo_t *siginfo, void *p)
 {
@@ -1553,8 +1856,21 @@ change_virtblk_backend(int x, siginfo_t *siginfo, void *p)
 }
 
 static void
+<<<<<<< HEAD
 init_mic(struct mic_info *mic)
 {
+=======
+set_mic_boot_params(struct mic_info *mic)
+{
+	set_log_buf_info(mic);
+	set_cmdline(mic);
+}
+
+static void *
+init_mic(void *arg)
+{
+	struct mic_info *mic = (struct mic_info *)arg;
+>>>>>>> v4.9.227
 	struct sigaction ignore = {
 		.sa_flags = 0,
 		.sa_handler = SIG_IGN
@@ -1564,7 +1880,11 @@ init_mic(struct mic_info *mic)
 		.sa_sigaction = change_virtblk_backend,
 	};
 	char buffer[PATH_MAX];
+<<<<<<< HEAD
 	int err;
+=======
+	int err, fd;
+>>>>>>> v4.9.227
 
 	/*
 	 * Currently, one virtio block device is supported for each MIC card
@@ -1577,12 +1897,46 @@ init_mic(struct mic_info *mic)
 	 * the MIC daemon.
 	 */
 	sigaction(SIGUSR1, &ignore, NULL);
+<<<<<<< HEAD
+=======
+retry:
+	fd = open_state_fd(mic);
+	if (fd < 0) {
+		mpsslog("%s: %s %d open state fd failed %s\n",
+			mic->name, __func__, __LINE__, strerror(errno));
+		sleep(2);
+		goto retry;
+	}
+
+	if (mic->restart) {
+		snprintf(buffer, PATH_MAX, "boot");
+		setsysfs(mic->name, "state", buffer);
+		mpsslog("%s restarting mic %d\n",
+			mic->name, mic->restart);
+		mic->restart = 0;
+	}
+
+	while (1) {
+		while (block_till_state_change(fd, mic)) {
+			mpsslog("%s: %s %d block_till_state_change error %s\n",
+				mic->name, __func__, __LINE__, strerror(errno));
+			sleep(2);
+			continue;
+		}
+
+		if (get_mic_state(mic) == MIC_BOOTING)
+			break;
+	}
+>>>>>>> v4.9.227
 
 	mic->pid = fork();
 	switch (mic->pid) {
 	case 0:
+<<<<<<< HEAD
 		set_log_buf_info(mic);
 		set_cmdline(mic);
+=======
+>>>>>>> v4.9.227
 		add_virtio_device(mic, &virtcons_dev_page.dd);
 		add_virtio_device(mic, &virtnet_dev_page.dd);
 		err = pthread_create(&mic->mic_console.console_thread, NULL,
@@ -1612,6 +1966,7 @@ init_mic(struct mic_info *mic)
 			mic->name, mic->id, errno);
 		break;
 	default:
+<<<<<<< HEAD
 		if (mic->restart) {
 			snprintf(buffer, PATH_MAX, "boot");
 			setsysfs(mic->name, "state", buffer);
@@ -1621,15 +1976,37 @@ init_mic(struct mic_info *mic)
 		}
 		pthread_create(&mic->config_thread, NULL, mic_config, mic);
 	}
+=======
+		err = pthread_create(&mic->config_thread, NULL,
+				     mic_config, mic);
+		if (err)
+			mpsslog("%s mic_config pthread_create failed %s\n",
+				mic->name, strerror(err));
+	}
+
+	return NULL;
+>>>>>>> v4.9.227
 }
 
 static void
 start_daemon(void)
 {
 	struct mic_info *mic;
+<<<<<<< HEAD
 
 	for (mic = mic_list.next; mic != NULL; mic = mic->next)
 		init_mic(mic);
+=======
+	int err;
+
+	for (mic = mic_list.next; mic; mic = mic->next) {
+		set_mic_boot_params(mic);
+		err = pthread_create(&mic->init_thread, NULL, init_mic, mic);
+		if (err)
+			mpsslog("%s init_mic pthread_create failed %s\n",
+				mic->name, strerror(err));
+	}
+>>>>>>> v4.9.227
 
 	while (1)
 		sleep(60);

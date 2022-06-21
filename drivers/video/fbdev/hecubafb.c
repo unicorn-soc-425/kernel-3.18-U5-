@@ -47,7 +47,11 @@
 #define DPY_W 600
 #define DPY_H 800
 
+<<<<<<< HEAD
 static struct fb_fix_screeninfo hecubafb_fix = {
+=======
+static const struct fb_fix_screeninfo hecubafb_fix = {
+>>>>>>> v4.9.227
 	.id =		"hecubafb",
 	.type =		FB_TYPE_PACKED_PIXELS,
 	.visual =	FB_VISUAL_MONO01,
@@ -58,7 +62,11 @@ static struct fb_fix_screeninfo hecubafb_fix = {
 	.accel =	FB_ACCEL_NONE,
 };
 
+<<<<<<< HEAD
 static struct fb_var_screeninfo hecubafb_var = {
+=======
+static const struct fb_var_screeninfo hecubafb_var = {
+>>>>>>> v4.9.227
 	.xres		= DPY_W,
 	.yres		= DPY_H,
 	.xres_virtual	= DPY_W,
@@ -300,7 +308,10 @@ static struct platform_driver hecubafb_driver = {
 	.probe	= hecubafb_probe,
 	.remove = hecubafb_remove,
 	.driver	= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "hecubafb",
 	},
 };

@@ -17,6 +17,10 @@
 #include <linux/device.h>
 #include <linux/regmap.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/consumer.h>
+>>>>>>> v4.9.227
 
 #define KHZ 1000
 #define MHZ (KHZ * KHZ)
@@ -37,6 +41,10 @@ struct samsung_usb2_phy_driver {
 	const struct samsung_usb2_phy_config *cfg;
 	struct clk *clk;
 	struct clk *ref_clk;
+<<<<<<< HEAD
+=======
+	struct regulator *vbus;
+>>>>>>> v4.9.227
 	unsigned long ref_rate;
 	u32 ref_reg_val;
 	struct device *dev;

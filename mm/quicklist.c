@@ -8,7 +8,11 @@
  * improved on it.
  *
  * Copyright (C) 2007 SGI,
+<<<<<<< HEAD
  * 	Christoph Lameter <clameter@sgi.com>
+=======
+ * 	Christoph Lameter <cl@linux.com>
+>>>>>>> v4.9.227
  * 		Generalized, added support for multiple lists and
  * 		constructors / destructors.
  */

@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #define _RTL8188E_PHYCFG_C_
 
@@ -60,7 +63,11 @@ void phy_set_bb_reg(struct adapter *adapt, u32 regaddr, u32 bitmask, u32 data)
 	if (bitmask != bMaskDWord) { /* if not "double word" write */
 		original_value = usb_read32(adapt, regaddr);
 		bit_shift = cal_bit_shift(bitmask);
+<<<<<<< HEAD
 		data = ((original_value & (~bitmask)) | (data << bit_shift));
+=======
+		data = (original_value & (~bitmask)) | (data << bit_shift);
+>>>>>>> v4.9.227
 	}
 
 	usb_write32(adapt, regaddr, data);
@@ -70,14 +77,21 @@ static u32 rf_serial_read(struct adapter *adapt,
 			enum rf_radio_path rfpath, u32 offset)
 {
 	u32 ret = 0;
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	struct bb_reg_def *phyreg = &hal_data->PHYRegDef[rfpath];
 	u32 newoffset;
+=======
+	struct bb_reg_def *phyreg = &adapt->HalData->PHYRegDef[rfpath];
+>>>>>>> v4.9.227
 	u32 tmplong, tmplong2;
 	u8 rfpi_enable = 0;
 
 	offset &= 0xff;
+<<<<<<< HEAD
 	newoffset = offset;
+=======
+>>>>>>> v4.9.227
 
 	tmplong = phy_query_bb_reg(adapt, rFPGA0_XA_HSSIParameter2, bMaskDWord);
 	if (rfpath == RF_PATH_A)
@@ -87,7 +101,11 @@ static u32 rf_serial_read(struct adapter *adapt,
 					    bMaskDWord);
 
 	tmplong2 = (tmplong2 & (~bLSSIReadAddress)) |
+<<<<<<< HEAD
 		   (newoffset<<23) | bLSSIReadEdge;
+=======
+		   (offset<<23) | bLSSIReadEdge;
+>>>>>>> v4.9.227
 
 	phy_set_bb_reg(adapt, rFPGA0_XA_HSSIParameter2, bMaskDWord,
 		       tmplong&(~bLSSIReadEdge));
@@ -99,9 +117,15 @@ static u32 rf_serial_read(struct adapter *adapt,
 	udelay(10);
 
 	if (rfpath == RF_PATH_A)
+<<<<<<< HEAD
 		rfpi_enable = (u8)phy_query_bb_reg(adapt, rFPGA0_XA_HSSIParameter1, BIT8);
 	else if (rfpath == RF_PATH_B)
 		rfpi_enable = (u8)phy_query_bb_reg(adapt, rFPGA0_XB_HSSIParameter1, BIT8);
+=======
+		rfpi_enable = (u8)phy_query_bb_reg(adapt, rFPGA0_XA_HSSIParameter1, BIT(8));
+	else if (rfpath == RF_PATH_B)
+		rfpi_enable = (u8)phy_query_bb_reg(adapt, rFPGA0_XB_HSSIParameter1, BIT(8));
+>>>>>>> v4.9.227
 
 	if (rfpi_enable)
 		ret = phy_query_bb_reg(adapt, phyreg->rfLSSIReadBackPi,
@@ -117,6 +141,7 @@ static void rf_serial_write(struct adapter *adapt,
 			    u32 data)
 {
 	u32 data_and_addr = 0;
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	struct bb_reg_def *phyreg = &hal_data->PHYRegDef[rfpath];
 	u32 newoffset;
@@ -127,6 +152,16 @@ static void rf_serial_write(struct adapter *adapt,
 }
 
 u32 phy_query_rf_reg(struct adapter *adapt, enum rf_radio_path rf_path,
+=======
+	struct bb_reg_def *phyreg = &adapt->HalData->PHYRegDef[rfpath];
+
+	offset &= 0xff;
+	data_and_addr = ((offset<<20) | (data&0x000fffff)) & 0x0fffffff;
+	phy_set_bb_reg(adapt, phyreg->rf3wireOffset, bMaskDWord, data_and_addr);
+}
+
+u32 rtw_hal_read_rfreg(struct adapter *adapt, enum rf_radio_path rf_path,
+>>>>>>> v4.9.227
 		     u32 reg_addr, u32 bit_mask)
 {
 	u32 original_value, readback_value, bit_shift;
@@ -146,7 +181,11 @@ void phy_set_rf_reg(struct adapter *adapt, enum rf_radio_path rf_path,
 	if (bit_mask != bRFRegOffsetMask) {
 		original_value = rf_serial_read(adapt, rf_path, reg_addr);
 		bit_shift =  cal_bit_shift(bit_mask);
+<<<<<<< HEAD
 		data = ((original_value & (~bit_mask)) | (data << bit_shift));
+=======
+		data = (original_value & (~bit_mask)) | (data << bit_shift);
+>>>>>>> v4.9.227
 	}
 
 	rf_serial_write(adapt, rf_path, reg_addr, data);
@@ -155,6 +194,7 @@ void phy_set_rf_reg(struct adapter *adapt, enum rf_radio_path rf_path,
 static void get_tx_power_index(struct adapter *adapt, u8 channel, u8 *cck_pwr,
 			       u8 *ofdm_pwr, u8 *bw20_pwr, u8 *bw40_pwr)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	u8 index = (channel - 1);
 	u8 TxCount = 0, path_nums;
@@ -163,6 +203,13 @@ static void get_tx_power_index(struct adapter *adapt, u8 channel, u8 *cck_pwr,
 		path_nums = 1;
 	else
 		path_nums = 2;
+=======
+	struct hal_data_8188e *hal_data = adapt->HalData;
+	u8 index = (channel - 1);
+	u8 TxCount = 0, path_nums;
+
+	path_nums = 1;
+>>>>>>> v4.9.227
 
 	for (TxCount = 0; TxCount < path_nums; TxCount++) {
 		if (TxCount == RF_PATH_A) {
@@ -183,6 +230,7 @@ static void get_tx_power_index(struct adapter *adapt, u8 channel, u8 *cck_pwr,
 			hal_data->BW20_24G_Diff[TxCount][RF_PATH_A]+
 			hal_data->BW20_24G_Diff[TxCount][index];
 			bw40_pwr[TxCount] = hal_data->Index24G_BW40_Base[TxCount][index];
+<<<<<<< HEAD
 		} else if (TxCount == RF_PATH_C) {
 			cck_pwr[TxCount] = hal_data->Index24G_CCK_Base[TxCount][index];
 			ofdm_pwr[TxCount] = hal_data->Index24G_BW40_Base[RF_PATH_A][index]+
@@ -209,6 +257,8 @@ static void get_tx_power_index(struct adapter *adapt, u8 channel, u8 *cck_pwr,
 			hal_data->BW20_24G_Diff[RF_PATH_C][index]+
 			hal_data->BW20_24G_Diff[TxCount][index];
 			bw40_pwr[TxCount] = hal_data->Index24G_BW40_Base[TxCount][index];
+=======
+>>>>>>> v4.9.227
 		}
 	}
 }
@@ -217,7 +267,11 @@ static void phy_power_index_check(struct adapter *adapt, u8 channel,
 				  u8 *cck_pwr, u8 *ofdm_pwr, u8 *bw20_pwr,
 				  u8 *bw40_pwr)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
+=======
+	struct hal_data_8188e *hal_data = adapt->HalData;
+>>>>>>> v4.9.227
 
 	hal_data->CurrentCckTxPwrIdx = cck_pwr[0];
 	hal_data->CurrentOfdm24GTxPwrIdx = ofdm_pwr[0];
@@ -245,7 +299,11 @@ void phy_set_tx_power_level(struct adapter *adapt, u8 channel)
 
 static void phy_set_bw_mode_callback(struct adapter *adapt)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
+=======
+	struct hal_data_8188e *hal_data = adapt->HalData;
+>>>>>>> v4.9.227
 	u8 reg_bw_opmode;
 	u8 reg_prsr_rsc;
 
@@ -296,7 +354,11 @@ static void phy_set_bw_mode_callback(struct adapter *adapt)
 		    (hal_data->nCur40MhzPrimeSC>>1));
 		phy_set_bb_reg(adapt, rOFDM1_LSTF, 0xC00,
 			       hal_data->nCur40MhzPrimeSC);
+<<<<<<< HEAD
 		phy_set_bb_reg(adapt, 0x818, (BIT26 | BIT27),
+=======
+		phy_set_bb_reg(adapt, 0x818, (BIT(26) | BIT(27)),
+>>>>>>> v4.9.227
 		   (hal_data->nCur40MhzPrimeSC == HAL_PRIME_CHNL_OFFSET_LOWER) ? 2 : 1);
 		break;
 	default:
@@ -304,6 +366,7 @@ static void phy_set_bw_mode_callback(struct adapter *adapt)
 	}
 
 	/* Set RF related register */
+<<<<<<< HEAD
 	switch (hal_data->rf_chip) {
 	case RF_8225:
 		break;
@@ -325,6 +388,16 @@ void phy_set_bw_mode(struct adapter *adapt, enum ht_channel_width bandwidth,
 		     unsigned char offset)
 {
 	struct hal_data_8188e	*hal_data = GET_HAL_DATA(adapt);
+=======
+	if (hal_data->rf_chip == RF_6052)
+		rtl88eu_phy_rf6052_set_bandwidth(adapt, hal_data->CurrentChannelBW);
+}
+
+void rtw_hal_set_bwmode(struct adapter *adapt, enum ht_channel_width bandwidth,
+		     unsigned char offset)
+{
+	struct hal_data_8188e *hal_data = adapt->HalData;
+>>>>>>> v4.9.227
 	enum ht_channel_width tmp_bw = hal_data->CurrentChannelBW;
 
 	hal_data->CurrentChannelBW = bandwidth;
@@ -340,10 +413,14 @@ static void phy_sw_chnl_callback(struct adapter *adapt, u8 channel)
 {
 	u8 rf_path;
 	u32 param1, param2;
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 
 	if (adapt->bNotifyChannelChange)
 		DBG_88E("[%s] ch = %d\n", __func__, channel);
+=======
+	struct hal_data_8188e *hal_data = adapt->HalData;
+>>>>>>> v4.9.227
 
 	phy_set_tx_power_level(adapt, channel);
 
@@ -357,11 +434,18 @@ static void phy_sw_chnl_callback(struct adapter *adapt, u8 channel)
 	}
 }
 
+<<<<<<< HEAD
 void phy_sw_chnl(struct adapter *adapt, u8 channel)
 {
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	u8 tmpchannel = hal_data->CurrentChannel;
 	bool  result = true;
+=======
+void rtw_hal_set_chan(struct adapter *adapt, u8 channel)
+{
+	struct hal_data_8188e *hal_data = adapt->HalData;
+	u8 tmpchannel = hal_data->CurrentChannel;
+>>>>>>> v4.9.227
 
 	if (hal_data->rf_chip == RF_PSEUDO_11N)
 		return;
@@ -371,6 +455,7 @@ void phy_sw_chnl(struct adapter *adapt, u8 channel)
 
 	hal_data->CurrentChannel = channel;
 
+<<<<<<< HEAD
 	if ((!adapt->bDriverStopped) && (!adapt->bSurpriseRemoved)) {
 		phy_sw_chnl_callback(adapt, channel);
 
@@ -380,25 +465,44 @@ void phy_sw_chnl(struct adapter *adapt, u8 channel)
 	} else {
 		hal_data->CurrentChannel = tmpchannel;
 	}
+=======
+	if ((!adapt->bDriverStopped) && (!adapt->bSurpriseRemoved))
+		phy_sw_chnl_callback(adapt, channel);
+	else
+		hal_data->CurrentChannel = tmpchannel;
+>>>>>>> v4.9.227
 }
 
 #define ODM_TXPWRTRACK_MAX_IDX_88E  6
 
 static u8 get_right_chnl_for_iqk(u8 chnl)
 {
+<<<<<<< HEAD
 	u8 channel_all[ODM_TARGET_CHNL_NUM_2G_5G] = {
 		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+=======
+	u8 place;
+	u8 channel_all[ODM_TARGET_CHNL_NUM_2G_5G] = {
+>>>>>>> v4.9.227
 		36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64,
 		100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122,
 		124, 126, 128, 130, 132, 134, 136, 138, 140, 149, 151, 153,
 		155, 157, 159, 161, 163, 165
 	};
+<<<<<<< HEAD
 	u8 place = chnl;
 
 	if (chnl > 14) {
 		for (place = 14; place < sizeof(channel_all); place++) {
 			if (channel_all[place] == chnl)
 				return place-13;
+=======
+
+	if (chnl > 14) {
+		for (place = 0; place < sizeof(channel_all); place++) {
+			if (channel_all[place] == chnl)
+				return ++place;
+>>>>>>> v4.9.227
 		}
 	}
 	return 0;
@@ -416,12 +520,21 @@ void rtl88eu_dm_txpower_track_adjust(struct odm_dm_struct *dm_odm, u8 type,
 
 		if (dm_odm->BbSwingIdxOfdm <= dm_odm->BbSwingIdxOfdmBase) {
 			*direction = 1;
+<<<<<<< HEAD
 			pwr_value = (dm_odm->BbSwingIdxOfdmBase -
 				     dm_odm->BbSwingIdxOfdm);
 		} else {
 			*direction = 2;
 			pwr_value = (dm_odm->BbSwingIdxOfdm -
 				     dm_odm->BbSwingIdxOfdmBase);
+=======
+			pwr_value = dm_odm->BbSwingIdxOfdmBase -
+				     dm_odm->BbSwingIdxOfdm;
+		} else {
+			*direction = 2;
+			pwr_value = dm_odm->BbSwingIdxOfdm -
+				     dm_odm->BbSwingIdxOfdmBase;
+>>>>>>> v4.9.227
 		}
 
 	} else if (type == 1) { /* For CCK adjust. */
@@ -431,12 +544,21 @@ void rtl88eu_dm_txpower_track_adjust(struct odm_dm_struct *dm_odm, u8 type,
 
 		if (dm_odm->BbSwingIdxCck <= dm_odm->BbSwingIdxCckBase) {
 			*direction = 1;
+<<<<<<< HEAD
 			pwr_value = (dm_odm->BbSwingIdxCckBase -
 				     dm_odm->BbSwingIdxCck);
 		} else {
 			*direction = 2;
 			pwr_value = (dm_odm->BbSwingIdxCck -
 				     dm_odm->BbSwingIdxCckBase);
+=======
+			pwr_value = dm_odm->BbSwingIdxCckBase -
+				     dm_odm->BbSwingIdxCck;
+		} else {
+			*direction = 2;
+			pwr_value = dm_odm->BbSwingIdxCck -
+				     dm_odm->BbSwingIdxCckBase;
+>>>>>>> v4.9.227
 		}
 
 	}
@@ -461,24 +583,39 @@ static void dm_txpwr_track_setpwr(struct odm_dm_struct *dm_odm)
 
 void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	u8 thermal_val = 0, delta, delta_lck, delta_iqk, offset;
 	u8 thermal_avg_count = 0;
 	u32 thermal_avg = 0;
 	s32 ele_a = 0, ele_d, temp_cck, x, value32;
 	s32 y, ele_c = 0;
+=======
+	struct hal_data_8188e *hal_data = adapt->HalData;
+	u8 thermal_val = 0, delta, delta_lck, delta_iqk, offset;
+	u8 thermal_avg_count = 0;
+	u32 thermal_avg = 0;
+	s32 ele_d, temp_cck;
+>>>>>>> v4.9.227
 	s8 ofdm_index[2], cck_index = 0;
 	s8 ofdm_index_old[2] = {0, 0}, cck_index_old = 0;
 	u32 i = 0, j = 0;
 	bool is2t = false;
 
 	u8 ofdm_min_index = 6, rf; /* OFDM BB Swing should be less than +3.0dB */
+<<<<<<< HEAD
 	u8 indexforchannel = 0;
+=======
+>>>>>>> v4.9.227
 	s8 ofdm_index_mapping[2][index_mapping_NUM_88E] = {
 		/* 2.4G, decrease power */
 		{0, 0, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11},
 		/* 2.4G, increase power */
+<<<<<<< HEAD
 		{0, 0, -1, -2, -3, -4,-4, -4, -4, -5, -7, -8,-9, -9, -10},
+=======
+		{0, 0, -1, -2, -3, -4, -4, -4, -4, -5, -7, -8, -9, -9, -10},
+>>>>>>> v4.9.227
 	};
 	u8 thermal_mapping[2][index_mapping_NUM_88E] = {
 		/* 2.4G, decrease power */
@@ -495,7 +632,11 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 
 	dm_odm->RFCalibrateInfo.RegA24 = 0x090e1317;
 
+<<<<<<< HEAD
 	thermal_val = (u8)phy_query_rf_reg(adapt, RF_PATH_A,
+=======
+	thermal_val = (u8)rtw_hal_read_rfreg(adapt, RF_PATH_A,
+>>>>>>> v4.9.227
 					   RF_T_METER_88E, 0xfc00);
 
 	if (is2t)
@@ -529,6 +670,7 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 		temp_cck = dm_odm->RFCalibrateInfo.RegA24;
 
 		for (i = 0; i < CCK_TABLE_SIZE; i++) {
+<<<<<<< HEAD
 			if (dm_odm->RFCalibrateInfo.bCCKinCH14) {
 				if (memcmp(&temp_cck, &CCKSwingTable_Ch14[i][2], 4)) {
 					cck_index_old = (u8)i;
@@ -541,6 +683,14 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 					dm_odm->BbSwingIdxCckBase = (u8)i;
 					break;
 				}
+=======
+			if ((dm_odm->RFCalibrateInfo.bCCKinCH14 &&
+				memcmp(&temp_cck, &CCKSwingTable_Ch14[i][2], 4)) ||
+				memcmp(&temp_cck, &CCKSwingTable_Ch1_Ch13[i][2], 4)) {
+					cck_index_old = (u8)i;
+					dm_odm->BbSwingIdxCckBase = (u8)i;
+					break;
+>>>>>>> v4.9.227
 			}
 		}
 
@@ -570,6 +720,7 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 		if (thermal_avg_count)
 			thermal_val = (u8)(thermal_avg / thermal_avg_count);
 
+<<<<<<< HEAD
 		if (dm_odm->RFCalibrateInfo.bReloadtxpowerindex) {
 			delta = thermal_val > hal_data->EEPROMThermalMeter ?
 				(thermal_val - hal_data->EEPROMThermalMeter) :
@@ -591,6 +742,21 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 		delta_iqk = (thermal_val > dm_odm->RFCalibrateInfo.ThermalValue_IQK) ?
 			    (thermal_val - dm_odm->RFCalibrateInfo.ThermalValue_IQK) :
 			    (dm_odm->RFCalibrateInfo.ThermalValue_IQK - thermal_val);
+=======
+		if (dm_odm->RFCalibrateInfo.bDoneTxpower &&
+			!dm_odm->RFCalibrateInfo.bReloadtxpowerindex)
+			delta = abs(thermal_val - dm_odm->RFCalibrateInfo.ThermalValue);
+		else {
+			delta = abs(thermal_val - hal_data->EEPROMThermalMeter);
+			if (dm_odm->RFCalibrateInfo.bReloadtxpowerindex) {
+				dm_odm->RFCalibrateInfo.bReloadtxpowerindex = false;
+				dm_odm->RFCalibrateInfo.bDoneTxpower = false;
+			}
+		}
+
+		delta_lck = abs(dm_odm->RFCalibrateInfo.ThermalValue_LCK - thermal_val);
+		delta_iqk = abs(dm_odm->RFCalibrateInfo.ThermalValue_IQK - thermal_val);
+>>>>>>> v4.9.227
 
 		/* Delta temperature is equal to or larger than 20 centigrade.*/
 		if ((delta_lck >= 8)) {
@@ -599,9 +765,14 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 		}
 
 		if (delta > 0 && dm_odm->RFCalibrateInfo.TxPowerTrackControl) {
+<<<<<<< HEAD
 			delta = thermal_val > hal_data->EEPROMThermalMeter ?
 				(thermal_val - hal_data->EEPROMThermalMeter) :
 				(hal_data->EEPROMThermalMeter - thermal_val);
+=======
+			delta = abs(hal_data->EEPROMThermalMeter - thermal_val);
+
+>>>>>>> v4.9.227
 			/* calculate new OFDM / CCK offset */
 			if (thermal_val > hal_data->EEPROMThermalMeter)
 				j = 1;
@@ -616,17 +787,28 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 			}
 			if (offset >= index_mapping_NUM_88E)
 				offset = index_mapping_NUM_88E-1;
+<<<<<<< HEAD
 			for (i = 0; i < rf; i++)
 				ofdm_index[i] = dm_odm->RFCalibrateInfo.OFDM_index[i] + ofdm_index_mapping[j][offset];
 			cck_index = dm_odm->RFCalibrateInfo.CCK_index + ofdm_index_mapping[j][offset];
 
 			for (i = 0; i < rf; i++) {
+=======
+
+			/* Updating ofdm_index values with new OFDM / CCK offset */
+			for (i = 0; i < rf; i++) {
+				ofdm_index[i] = dm_odm->RFCalibrateInfo.OFDM_index[i] + ofdm_index_mapping[j][offset];
+>>>>>>> v4.9.227
 				if (ofdm_index[i] > OFDM_TABLE_SIZE_92D-1)
 					ofdm_index[i] = OFDM_TABLE_SIZE_92D-1;
 				else if (ofdm_index[i] < ofdm_min_index)
 					ofdm_index[i] = ofdm_min_index;
 			}
 
+<<<<<<< HEAD
+=======
+			cck_index = dm_odm->RFCalibrateInfo.CCK_index + ofdm_index_mapping[j][offset];
+>>>>>>> v4.9.227
 			if (cck_index > CCK_TABLE_SIZE-1)
 				cck_index = CCK_TABLE_SIZE-1;
 			else if (cck_index < 0)
@@ -637,11 +819,14 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 			if (dm_odm->RFCalibrateInfo.TxPowerTrackControl) {
 				dm_odm->RFCalibrateInfo.bDoneTxpower = true;
 
+<<<<<<< HEAD
 				/* Adujst OFDM Ant_A according to IQK result */
 				ele_d = (OFDMSwingTable[(u8)ofdm_index[0]] & 0xFFC00000)>>22;
 				x = dm_odm->RFCalibrateInfo.IQKMatrixRegSetting[indexforchannel].Value[0][0];
 				y = dm_odm->RFCalibrateInfo.IQKMatrixRegSetting[indexforchannel].Value[0][1];
 
+=======
+>>>>>>> v4.9.227
 				/*  Revse TX power table. */
 				dm_odm->BbSwingIdxOfdm = (u8)ofdm_index[0];
 				dm_odm->BbSwingIdxCck = (u8)cck_index;
@@ -655,6 +840,7 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 					dm_odm->BbSwingIdxCckCurrent = dm_odm->BbSwingIdxCck;
 					dm_odm->BbSwingFlagCck = true;
 				}
+<<<<<<< HEAD
 
 				if (x != 0) {
 					if ((x & 0x00000200) != 0)
@@ -702,6 +888,8 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 
 				}
 
+=======
+>>>>>>> v4.9.227
 			}
 		}
 
@@ -721,7 +909,11 @@ void rtl88eu_dm_txpower_tracking_callback_thermalmeter(struct adapter *adapt)
 
 static u8 phy_path_a_iqk(struct adapter *adapt, bool config_pathb)
 {
+<<<<<<< HEAD
 	u32 reg_eac, reg_e94, reg_e9c, reg_ea4;
+=======
+	u32 reg_eac, reg_e94, reg_e9c;
+>>>>>>> v4.9.227
 	u8 result = 0x00;
 
 	/* 1 Tx IQK */
@@ -743,9 +935,14 @@ static u8 phy_path_a_iqk(struct adapter *adapt, bool config_pathb)
 	reg_eac = phy_query_bb_reg(adapt, rRx_Power_After_IQK_A_2, bMaskDWord);
 	reg_e94 = phy_query_bb_reg(adapt, rTx_Power_Before_IQK_A, bMaskDWord);
 	reg_e9c = phy_query_bb_reg(adapt, rTx_Power_After_IQK_A, bMaskDWord);
+<<<<<<< HEAD
 	reg_ea4 = phy_query_bb_reg(adapt, rRx_Power_Before_IQK_A_2, bMaskDWord);
 
 	if (!(reg_eac & BIT28) &&
+=======
+
+	if (!(reg_eac & BIT(28)) &&
+>>>>>>> v4.9.227
 	    (((reg_e94 & 0x03FF0000)>>16) != 0x142) &&
 	    (((reg_e9c & 0x03FF0000)>>16) != 0x42))
 		result |= 0x01;
@@ -756,8 +953,12 @@ static u8 phy_path_a_rx_iqk(struct adapter *adapt, bool configPathB)
 {
 	u32 reg_eac, reg_e94, reg_e9c, reg_ea4, u4tmp;
 	u8 result = 0x00;
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	struct odm_dm_struct *dm_odm = &hal_data->odmpriv;
+=======
+	struct odm_dm_struct *dm_odm = &adapt->HalData->odmpriv;
+>>>>>>> v4.9.227
 
 	/* 1 Get TXIMR setting */
 	/* modify RXIQK mode table */
@@ -798,7 +999,11 @@ static u8 phy_path_a_rx_iqk(struct adapter *adapt, bool configPathB)
 	reg_e94 = phy_query_bb_reg(adapt, rTx_Power_Before_IQK_A, bMaskDWord);
 	reg_e9c = phy_query_bb_reg(adapt, rTx_Power_After_IQK_A, bMaskDWord);
 
+<<<<<<< HEAD
 	if (!(reg_eac & BIT28) &&
+=======
+	if (!(reg_eac & BIT(28)) &&
+>>>>>>> v4.9.227
 	    (((reg_e94 & 0x03FF0000)>>16) != 0x142) &&
 	    (((reg_e9c & 0x03FF0000)>>16) != 0x42))
 		result |= 0x01;
@@ -846,7 +1051,11 @@ static u8 phy_path_a_rx_iqk(struct adapter *adapt, bool configPathB)
 	phy_set_bb_reg(adapt, rFPGA0_IQK, bMaskDWord, 0x00000000);
 	phy_set_rf_reg(adapt, RF_PATH_A, 0xdf, bRFRegOffsetMask, 0x180);
 
+<<<<<<< HEAD
 	if (!(reg_eac & BIT27) && /* if Tx is OK, check whether Rx is OK */
+=======
+	if (!(reg_eac & BIT(27)) && /* if Tx is OK, check whether Rx is OK */
+>>>>>>> v4.9.227
 	    (((reg_ea4 & 0x03FF0000)>>16) != 0x132) &&
 	    (((reg_eac & 0x03FF0000)>>16) != 0x36))
 		result |= 0x02;
@@ -861,8 +1070,12 @@ static u8 phy_path_b_iqk(struct adapter *adapt)
 {
 	u32 regeac, regeb4, regebc, regec4, regecc;
 	u8 result = 0x00;
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	struct odm_dm_struct *dm_odm = &hal_data->odmpriv;
+=======
+	struct odm_dm_struct *dm_odm = &adapt->HalData->odmpriv;
+>>>>>>> v4.9.227
 
 	/* One shot, path B LOK & IQK */
 	phy_set_bb_reg(adapt, rIQK_AGC_Cont, bMaskDWord, 0x00000002);
@@ -876,14 +1089,22 @@ static u8 phy_path_b_iqk(struct adapter *adapt)
 	regec4 = phy_query_bb_reg(adapt, rRx_Power_Before_IQK_B_2, bMaskDWord);
 	regecc = phy_query_bb_reg(adapt, rRx_Power_After_IQK_B_2, bMaskDWord);
 
+<<<<<<< HEAD
 	if (!(regeac & BIT31) &&
+=======
+	if (!(regeac & BIT(31)) &&
+>>>>>>> v4.9.227
 	    (((regeb4 & 0x03FF0000)>>16) != 0x142) &&
 	    (((regebc & 0x03FF0000)>>16) != 0x42))
 		result |= 0x01;
 	else
 		return result;
 
+<<<<<<< HEAD
 	if (!(regeac & BIT30) &&
+=======
+	if (!(regeac & BIT(30)) &&
+>>>>>>> v4.9.227
 	    (((regec4 & 0x03FF0000)>>16) != 0x132) &&
 	    (((regecc & 0x03FF0000)>>16) != 0x36))
 		result |= 0x02;
@@ -1033,11 +1254,18 @@ static void path_adda_on(struct adapter *adapt, u32 *adda_reg,
 	u32 path_on;
 	u32 i;
 
+<<<<<<< HEAD
 	path_on = is_path_a_on ? 0x04db25a4 : 0x0b1b25a4;
+=======
+>>>>>>> v4.9.227
 	if (!is2t) {
 		path_on = 0x0bdb25a0;
 		phy_set_bb_reg(adapt, adda_reg[0], bMaskDWord, 0x0b1b25a0);
 	} else {
+<<<<<<< HEAD
+=======
+		path_on = is_path_a_on ? 0x04db25a4 : 0x0b1b25a4;
+>>>>>>> v4.9.227
 		phy_set_bb_reg(adapt, adda_reg[0], bMaskDWord, path_on);
 	}
 
@@ -1052,9 +1280,15 @@ static void mac_setting_calibration(struct adapter *adapt, u32 *mac_reg, u32 *ba
 	usb_write8(adapt, mac_reg[i], 0x3F);
 
 	for (i = 1; i < (IQK_MAC_REG_NUM - 1); i++) {
+<<<<<<< HEAD
 		usb_write8(adapt, mac_reg[i], (u8)(backup[i]&(~BIT3)));
 	}
 	usb_write8(adapt, mac_reg[i], (u8)(backup[i]&(~BIT5)));
+=======
+		usb_write8(adapt, mac_reg[i], (u8)(backup[i]&(~BIT(3))));
+	}
+	usb_write8(adapt, mac_reg[i], (u8)(backup[i]&(~BIT(5))));
+>>>>>>> v4.9.227
 }
 
 static void path_a_standby(struct adapter *adapt)
@@ -1077,6 +1311,7 @@ static void pi_mode_switch(struct adapter *adapt, bool pi_mode)
 static bool simularity_compare(struct adapter *adapt, s32 resulta[][8],
 			       u8 c1, u8 c2)
 {
+<<<<<<< HEAD
 	u32 i, j, diff, sim_bitmap, bound = 0;
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	struct odm_dm_struct *dm_odm = &hal_data->odmpriv;
@@ -1097,6 +1332,14 @@ static bool simularity_compare(struct adapter *adapt, s32 resulta[][8],
 		bound = 4;
 
 	sim_bitmap = 0;
+=======
+	u32 i, j, diff, sim_bitmap = 0, bound;
+	u8 final_candidate[2] = {0xFF, 0xFF};	/* for path A and path B */
+	bool result = true;
+	s32 tmp1 = 0, tmp2 = 0;
+
+	bound = 4;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < bound; i++) {
 		if ((i == 1) || (i == 3) || (i == 5) || (i == 7)) {
@@ -1114,7 +1357,11 @@ static bool simularity_compare(struct adapter *adapt, s32 resulta[][8],
 			tmp2 = resulta[c2][i];
 		}
 
+<<<<<<< HEAD
 		diff = (tmp1 > tmp2) ? (tmp1 - tmp2) : (tmp2 - tmp1);
+=======
+		diff = abs(tmp1 - tmp2);
+>>>>>>> v4.9.227
 
 		if (diff > MAX_TOLERANCE) {
 			if ((i == 2 || i == 6) && !sim_bitmap) {
@@ -1165,8 +1412,12 @@ static bool simularity_compare(struct adapter *adapt, s32 resulta[][8],
 static void phy_iq_calibrate(struct adapter *adapt, s32 result[][8],
 			     u8 t, bool is2t)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	struct odm_dm_struct *dm_odm = &hal_data->odmpriv;
+=======
+	struct odm_dm_struct *dm_odm = &adapt->HalData->odmpriv;
+>>>>>>> v4.9.227
 	u32 i;
 	u8 path_a_ok, path_b_ok;
 	u32 adda_reg[IQK_ADDA_REG_NUM] = {
@@ -1218,15 +1469,26 @@ static void phy_iq_calibrate(struct adapter *adapt, s32 result[][8],
 	}
 
 	/* BB setting */
+<<<<<<< HEAD
 	phy_set_bb_reg(adapt, rFPGA0_RFMOD, BIT24, 0x00);
+=======
+	phy_set_bb_reg(adapt, rFPGA0_RFMOD, BIT(24), 0x00);
+>>>>>>> v4.9.227
 	phy_set_bb_reg(adapt, rOFDM0_TRxPathEnable, bMaskDWord, 0x03a05600);
 	phy_set_bb_reg(adapt, rOFDM0_TRMuxPar, bMaskDWord, 0x000800e4);
 	phy_set_bb_reg(adapt, rFPGA0_XCD_RFInterfaceSW, bMaskDWord, 0x22204000);
 
+<<<<<<< HEAD
 	phy_set_bb_reg(adapt, rFPGA0_XAB_RFInterfaceSW, BIT10, 0x01);
 	phy_set_bb_reg(adapt, rFPGA0_XAB_RFInterfaceSW, BIT26, 0x01);
 	phy_set_bb_reg(adapt, rFPGA0_XA_RFInterfaceOE, BIT10, 0x00);
 	phy_set_bb_reg(adapt, rFPGA0_XB_RFInterfaceOE, BIT10, 0x00);
+=======
+	phy_set_bb_reg(adapt, rFPGA0_XAB_RFInterfaceSW, BIT(10), 0x01);
+	phy_set_bb_reg(adapt, rFPGA0_XAB_RFInterfaceSW, BIT(26), 0x01);
+	phy_set_bb_reg(adapt, rFPGA0_XA_RFInterfaceOE, BIT(10), 0x00);
+	phy_set_bb_reg(adapt, rFPGA0_XB_RFInterfaceOE, BIT(10), 0x00);
+>>>>>>> v4.9.227
 
 	if (is2t) {
 		phy_set_bb_reg(adapt, rFPGA0_XA_LSSIParameter, bMaskDWord,
@@ -1364,12 +1626,20 @@ static void phy_lc_calibrate(struct adapter *adapt, bool is2t)
 	if ((tmpreg&0x70) != 0) {
 		/* 1. Read original RF mode */
 		/* Path-A */
+<<<<<<< HEAD
 		rf_a_mode = phy_query_rf_reg(adapt, RF_PATH_A, RF_AC,
+=======
+		rf_a_mode = rtw_hal_read_rfreg(adapt, RF_PATH_A, RF_AC,
+>>>>>>> v4.9.227
 					     bMask12Bits);
 
 		/* Path-B */
 		if (is2t)
+<<<<<<< HEAD
 			rf_b_mode = phy_query_rf_reg(adapt, RF_PATH_B, RF_AC,
+=======
+			rf_b_mode = rtw_hal_read_rfreg(adapt, RF_PATH_B, RF_AC,
+>>>>>>> v4.9.227
 						     bMask12Bits);
 
 		/* 2. Set RF mode = standby mode */
@@ -1384,7 +1654,11 @@ static void phy_lc_calibrate(struct adapter *adapt, bool is2t)
 	}
 
 	/* 3. Read RF reg18 */
+<<<<<<< HEAD
 	lc_cal = phy_query_rf_reg(adapt, RF_PATH_A, RF_CHNLBW, bMask12Bits);
+=======
+	lc_cal = rtw_hal_read_rfreg(adapt, RF_PATH_A, RF_CHNLBW, bMask12Bits);
+>>>>>>> v4.9.227
 
 	/* 4. Set LC calibration begin bit15 */
 	phy_set_rf_reg(adapt, RF_PATH_A, RF_CHNLBW, bMask12Bits,
@@ -1411,6 +1685,7 @@ static void phy_lc_calibrate(struct adapter *adapt, bool is2t)
 
 void rtl88eu_phy_iq_calibrate(struct adapter *adapt, bool recovery)
 {
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	struct odm_dm_struct *dm_odm = &hal_data->odmpriv;
 	s32 result[4][8];
@@ -1418,6 +1693,13 @@ void rtl88eu_phy_iq_calibrate(struct adapter *adapt, bool recovery)
 	bool pathaok, pathbok;
 	s32 reg_e94, reg_e9c, reg_ea4, reg_eac, reg_eb4, reg_ebc, reg_ec4,
 	    reg_ecc;
+=======
+	struct odm_dm_struct *dm_odm = &adapt->HalData->odmpriv;
+	s32 result[4][8];
+	u8 i, final, chn_index;
+	bool pathaok, pathbok;
+	s32 reg_e94, reg_e9c, reg_ea4, reg_eb4, reg_ebc, reg_ec4;
+>>>>>>> v4.9.227
 	bool is12simular, is13simular, is23simular;
 	bool singletone = false, carrier_sup = false;
 	u32 iqk_bb_reg_92c[IQK_BB_REG_NUM] = {
@@ -1428,7 +1710,11 @@ void rtl88eu_phy_iq_calibrate(struct adapter *adapt, bool recovery)
 		rOFDM0_RxIQExtAnta};
 	bool is2t;
 
+<<<<<<< HEAD
 	is2t = (dm_odm->RFType == ODM_2T2R) ? true : false;
+=======
+	is2t = false;
+>>>>>>> v4.9.227
 
 	if (!(dm_odm->SupportAbility & ODM_RF_CALIBRATION))
 		return;
@@ -1489,18 +1775,27 @@ void rtl88eu_phy_iq_calibrate(struct adapter *adapt, bool recovery)
 		reg_e94 = result[i][0];
 		reg_e9c = result[i][1];
 		reg_ea4 = result[i][2];
+<<<<<<< HEAD
 		reg_eac = result[i][3];
 		reg_eb4 = result[i][4];
 		reg_ebc = result[i][5];
 		reg_ec4 = result[i][6];
 		reg_ecc = result[i][7];
+=======
+		reg_eb4 = result[i][4];
+		reg_ebc = result[i][5];
+		reg_ec4 = result[i][6];
+>>>>>>> v4.9.227
 	}
 
 	if (final != 0xff) {
 		reg_e94 = result[final][0];
 		reg_e9c = result[final][1];
 		reg_ea4 = result[final][2];
+<<<<<<< HEAD
 		reg_eac = result[final][3];
+=======
+>>>>>>> v4.9.227
 		reg_eb4 = result[final][4];
 		reg_ebc = result[final][5];
 		dm_odm->RFCalibrateInfo.RegE94 = reg_e94;
@@ -1508,7 +1803,10 @@ void rtl88eu_phy_iq_calibrate(struct adapter *adapt, bool recovery)
 		dm_odm->RFCalibrateInfo.RegEB4 = reg_eb4;
 		dm_odm->RFCalibrateInfo.RegEBC = reg_ebc;
 		reg_ec4 = result[final][6];
+<<<<<<< HEAD
 		reg_ecc = result[final][7];
+=======
+>>>>>>> v4.9.227
 		pathaok = true;
 		pathbok = true;
 	} else {
@@ -1528,7 +1826,11 @@ void rtl88eu_phy_iq_calibrate(struct adapter *adapt, bool recovery)
 				       (reg_ec4 == 0));
 	}
 
+<<<<<<< HEAD
 	chn_index = get_right_chnl_for_iqk(hal_data->CurrentChannel);
+=======
+	chn_index = get_right_chnl_for_iqk(adapt->HalData->CurrentChannel);
+>>>>>>> v4.9.227
 
 	if (final < 4) {
 		for (i = 0; i < IQK_Matrix_REG_NUM; i++)
@@ -1544,8 +1846,12 @@ void rtl88eu_phy_lc_calibrate(struct adapter *adapt)
 {
 	bool singletone = false, carrier_sup = false;
 	u32 timeout = 2000, timecount = 0;
+<<<<<<< HEAD
 	struct hal_data_8188e *hal_data = GET_HAL_DATA(adapt);
 	struct odm_dm_struct *dm_odm = &hal_data->odmpriv;
+=======
+	struct odm_dm_struct *dm_odm = &adapt->HalData->odmpriv;
+>>>>>>> v4.9.227
 
 	if (!(dm_odm->SupportAbility & ODM_RF_CALIBRATION))
 		return;
@@ -1559,12 +1865,16 @@ void rtl88eu_phy_lc_calibrate(struct adapter *adapt)
 
 	dm_odm->RFCalibrateInfo.bLCKInProgress = true;
 
+<<<<<<< HEAD
 	if (dm_odm->RFType == ODM_2T2R) {
 		phy_lc_calibrate(adapt, true);
 	} else {
 		/* For 88C 1T1R */
 		phy_lc_calibrate(adapt, false);
 	}
+=======
+	phy_lc_calibrate(adapt, false);
+>>>>>>> v4.9.227
 
 	dm_odm->RFCalibrateInfo.bLCKInProgress = false;
 }

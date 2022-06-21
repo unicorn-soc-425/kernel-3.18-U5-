@@ -537,7 +537,11 @@ static int wm_master_vol_put(struct snd_kcontrol *kcontrol,
 static int wm_adc_mux_enum_info(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char* texts[32] = {
+=======
+	static const char * const texts[32] = {
+>>>>>>> v4.9.227
 		"NULL", WM_AIN1, WM_AIN2, WM_AIN1 "+" WM_AIN2,
 		WM_AIN3, WM_AIN1 "+" WM_AIN3, WM_AIN2 "+" WM_AIN3,
 		WM_AIN1 "+" WM_AIN2 "+" WM_AIN3,
@@ -560,6 +564,7 @@ static int wm_adc_mux_enum_info(struct snd_kcontrol *kcontrol,
 		WM_AIN1 "+" WM_AIN2 "+" WM_AIN3 "+" WM_AIN4 "+" WM_AIN5
 	};
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 32;
@@ -568,6 +573,9 @@ static int wm_adc_mux_enum_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 32, texts);
+>>>>>>> v4.9.227
 }
 
 static int wm_adc_mux_enum_get(struct snd_kcontrol *kcontrol,
@@ -576,7 +584,11 @@ static int wm_adc_mux_enum_get(struct snd_kcontrol *kcontrol,
 	struct snd_ice1712 *ice = snd_kcontrol_chip(kcontrol);
 
 	mutex_lock(&ice->gpio_mutex);
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] = wm_get(ice, WM_ADC_MUX) & 0x1f;
+=======
+	ucontrol->value.enumerated.item[0] = wm_get(ice, WM_ADC_MUX) & 0x1f;
+>>>>>>> v4.9.227
 	mutex_unlock(&ice->gpio_mutex);
 	return 0;
 }
@@ -590,7 +602,11 @@ static int wm_adc_mux_enum_put(struct snd_kcontrol *kcontrol,
 
 	mutex_lock(&ice->gpio_mutex);
 	oval = wm_get(ice, WM_ADC_MUX);
+<<<<<<< HEAD
 	nval = (oval & 0xe0) | ucontrol->value.integer.value[0];
+=======
+	nval = (oval & 0xe0) | ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 	if (nval != oval) {
 		wm_put(ice, WM_ADC_MUX, nval);
 		change = 1;

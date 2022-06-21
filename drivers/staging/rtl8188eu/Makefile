@@ -42,6 +42,10 @@ r8188eu-y :=				\
 		hal/usb_halinit.o	\
 		os_dep/ioctl_linux.o	\
 		os_dep/mlme_linux.o	\
+<<<<<<< HEAD
+=======
+		os_dep/mon.o		\
+>>>>>>> v4.9.227
 		os_dep/os_intfs.o	\
 		os_dep/osdep_service.o	\
 		os_dep/recv_linux.o	\
@@ -52,4 +56,8 @@ r8188eu-y :=				\
 
 obj-$(CONFIG_R8188EU)	:= r8188eu.o
 
+<<<<<<< HEAD
 ccflags-y += -D__CHECK_ENDIAN__ -I$(src)/include
+=======
+ccflags-y += -D__CHECK_ENDIAN__ -I$(srctree)/$(src)/include
+>>>>>>> v4.9.227

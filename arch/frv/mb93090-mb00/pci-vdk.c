@@ -168,8 +168,13 @@ static int pci_frv_write_config(struct pci_bus *bus, unsigned int devfn, int whe
 }
 
 static struct pci_ops pci_direct_frv = {
+<<<<<<< HEAD
 	pci_frv_read_config,
 	pci_frv_write_config,
+=======
+	.read = pci_frv_read_config,
+	.write = pci_frv_write_config,
+>>>>>>> v4.9.227
 };
 
 /*

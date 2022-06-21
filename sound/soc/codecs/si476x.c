@@ -208,7 +208,11 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops si476x_dai_ops = {
+=======
+static const struct snd_soc_dai_ops si476x_dai_ops = {
+>>>>>>> v4.9.227
 	.hw_params	= si476x_codec_hw_params,
 	.set_fmt	= si476x_codec_set_dai_fmt,
 };
@@ -238,10 +242,19 @@ static struct regmap *si476x_get_regmap(struct device *dev)
 
 static struct snd_soc_codec_driver soc_codec_dev_si476x = {
 	.get_regmap = si476x_get_regmap,
+<<<<<<< HEAD
 	.dapm_widgets = si476x_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(si476x_dapm_widgets),
 	.dapm_routes = si476x_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(si476x_dapm_routes),
+=======
+	.component_driver = {
+		.dapm_widgets		= si476x_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(si476x_dapm_widgets),
+		.dapm_routes		= si476x_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(si476x_dapm_routes),
+	},
+>>>>>>> v4.9.227
 };
 
 static int si476x_platform_probe(struct platform_device *pdev)
@@ -261,7 +274,10 @@ MODULE_ALIAS("platform:si476x-codec");
 static struct platform_driver si476x_platform_driver = {
 	.driver		= {
 		.name	= "si476x-codec",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= si476x_platform_probe,
 	.remove		= si476x_platform_remove,

@@ -28,7 +28,10 @@ void exynos_drm_crtc_disable_vblank(struct drm_device *dev, unsigned int pipe);
 void exynos_drm_crtc_wait_pending_update(struct exynos_drm_crtc *exynos_crtc);
 void exynos_drm_crtc_finish_update(struct exynos_drm_crtc *exynos_crtc,
 				   struct exynos_drm_plane *exynos_plane);
+<<<<<<< HEAD
 void exynos_drm_crtc_complete_scanout(struct drm_framebuffer *fb);
+=======
+>>>>>>> v4.9.227
 
 /* This function gets pipe value to crtc device matched with out_type. */
 int exynos_drm_crtc_get_pipe_from_type(struct drm_device *drm_dev,
@@ -41,4 +44,11 @@ int exynos_drm_crtc_get_pipe_from_type(struct drm_device *drm_dev,
  */
 void exynos_drm_crtc_te_handler(struct drm_crtc *crtc);
 
+<<<<<<< HEAD
+=======
+/* This function cancels a page flip request. */
+void exynos_drm_crtc_cancel_page_flip(struct drm_crtc *crtc,
+					struct drm_file *file);
+
+>>>>>>> v4.9.227
 #endif

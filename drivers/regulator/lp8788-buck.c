@@ -344,7 +344,11 @@ static unsigned int lp8788_buck_get_mode(struct regulator_dev *rdev)
 				REGULATOR_MODE_FAST : REGULATOR_MODE_NORMAL;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops lp8788_buck12_ops = {
+=======
+static const struct regulator_ops lp8788_buck12_ops = {
+>>>>>>> v4.9.227
 	.list_voltage = regulator_list_voltage_table,
 	.map_voltage = regulator_map_voltage_ascend,
 	.set_voltage_sel = lp8788_buck12_set_voltage_sel,
@@ -357,7 +361,11 @@ static struct regulator_ops lp8788_buck12_ops = {
 	.get_mode = lp8788_buck_get_mode,
 };
 
+<<<<<<< HEAD
 static struct regulator_ops lp8788_buck34_ops = {
+=======
+static const struct regulator_ops lp8788_buck34_ops = {
+>>>>>>> v4.9.227
 	.list_voltage = regulator_list_voltage_table,
 	.map_voltage = regulator_map_voltage_ascend,
 	.set_voltage_sel = regulator_set_voltage_sel_regmap,
@@ -533,7 +541,10 @@ static struct platform_driver lp8788_buck_driver = {
 	.probe = lp8788_buck_probe,
 	.driver = {
 		.name = LP8788_DEV_BUCK,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

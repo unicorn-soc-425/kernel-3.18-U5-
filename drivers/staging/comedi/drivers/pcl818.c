@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
    comedi/drivers/pcl818.c
 
    Author:  Michal Dobes <dobes@tesnet.cz>
@@ -97,12 +98,106 @@ A word or two about DMA. Driver support DMA operations at two ways:
           1,100=max 100kHz A/D sampling (PCL-718 with Option 001 installed)
 
 */
+=======
+ * comedi/drivers/pcl818.c
+ *
+ * Driver: pcl818
+ * Description: Advantech PCL-818 cards, PCL-718
+ * Author: Michal Dobes <dobes@tesnet.cz>
+ * Devices: [Advantech] PCL-818L (pcl818l), PCL-818H (pcl818h),
+ *   PCL-818HD (pcl818hd), PCL-818HG (pcl818hg), PCL-818 (pcl818),
+ *   PCL-718 (pcl718)
+ * Status: works
+ *
+ * All cards have 16 SE/8 DIFF ADCs, one or two DACs, 16 DI and 16 DO.
+ * Differences are only at maximal sample speed, range list and FIFO
+ * support.
+ * The driver support AI mode 0, 1, 3 other subdevices (AO, DI, DO) support
+ * only mode 0. If DMA/FIFO/INT are disabled then AI support only mode 0.
+ * PCL-818HD and PCL-818HG support 1kword FIFO. Driver support this FIFO
+ * but this code is untested.
+ * A word or two about DMA. Driver support DMA operations at two ways:
+ * 1) DMA uses two buffers and after one is filled then is generated
+ *    INT and DMA restart with second buffer. With this mode I'm unable run
+ *    more that 80Ksamples/secs without data dropouts on K6/233.
+ * 2) DMA uses one buffer and run in autoinit mode and the data are
+ *    from DMA buffer moved on the fly with 2kHz interrupts from RTC.
+ *    This mode is used if the interrupt 8 is available for allocation.
+ *    If not, then first DMA mode is used. With this I can run at
+ *    full speed one card (100ksamples/secs) or two cards with
+ *    60ksamples/secs each (more is problem on account of ISA limitations).
+ *    To use this mode you must have compiled  kernel with disabled
+ *    "Enhanced Real Time Clock Support".
+ *    Maybe you can have problems if you use xntpd or similar.
+ *    If you've data dropouts with DMA mode 2 then:
+ *     a) disable IDE DMA
+ *     b) switch text mode console to fb.
+ *
+ *  Options for PCL-818L:
+ *  [0] - IO Base
+ *  [1] - IRQ        (0=disable, 2, 3, 4, 5, 6, 7)
+ *  [2] - DMA        (0=disable, 1, 3)
+ *  [3] - 0, 10=10MHz clock for 8254
+ *            1= 1MHz clock for 8254
+ *  [4] - 0,  5=A/D input  -5V.. +5V
+ *        1, 10=A/D input -10V..+10V
+ *  [5] - 0,  5=D/A output 0-5V  (internal reference -5V)
+ *        1, 10=D/A output 0-10V (internal reference -10V)
+ *        2    =D/A output unknown (external reference)
+ *
+ *  Options for PCL-818, PCL-818H:
+ *  [0] - IO Base
+ *  [1] - IRQ        (0=disable, 2, 3, 4, 5, 6, 7)
+ *  [2] - DMA        (0=disable, 1, 3)
+ *  [3] - 0, 10=10MHz clock for 8254
+ *            1= 1MHz clock for 8254
+ *  [4] - 0,  5=D/A output 0-5V  (internal reference -5V)
+ *        1, 10=D/A output 0-10V (internal reference -10V)
+ *        2    =D/A output unknown (external reference)
+ *
+ *  Options for PCL-818HD, PCL-818HG:
+ *  [0] - IO Base
+ *  [1] - IRQ        (0=disable, 2, 3, 4, 5, 6, 7)
+ *  [2] - DMA/FIFO  (-1=use FIFO, 0=disable both FIFO and DMA,
+ *                    1=use DMA ch 1, 3=use DMA ch 3)
+ *  [3] - 0, 10=10MHz clock for 8254
+ *            1= 1MHz clock for 8254
+ *  [4] - 0,  5=D/A output 0-5V  (internal reference -5V)
+ *        1, 10=D/A output 0-10V (internal reference -10V)
+ *        2    =D/A output unknown (external reference)
+ *
+ *  Options for PCL-718:
+ *  [0] - IO Base
+ *  [1] - IRQ        (0=disable, 2, 3, 4, 5, 6, 7)
+ *  [2] - DMA        (0=disable, 1, 3)
+ *  [3] - 0, 10=10MHz clock for 8254
+ *            1= 1MHz clock for 8254
+ *  [4] -     0=A/D Range is +/-10V
+ *            1=             +/-5V
+ *            2=             +/-2.5V
+ *            3=             +/-1V
+ *            4=             +/-0.5V
+ *            5=             user defined bipolar
+ *            6=             0-10V
+ *            7=             0-5V
+ *            8=             0-2V
+ *            9=             0-1V
+ *           10=             user defined unipolar
+ *  [5] - 0,  5=D/A outputs 0-5V  (internal reference -5V)
+ *        1, 10=D/A outputs 0-10V (internal reference -10V)
+ *            2=D/A outputs unknown (external reference)
+ *  [6] - 0, 60=max  60kHz A/D sampling
+ *        1,100=max 100kHz A/D sampling (PCL-718 with Option 001 installed)
+ *
+ */
+>>>>>>> v4.9.227
 
 #include <linux/module.h>
 #include <linux/gfp.h>
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <asm/dma.h>
 
 #include "../comedidev.h"
@@ -118,6 +213,13 @@ A word or two about DMA. Driver support DMA operations at two ways:
 #define boardPCL818HG 3
 #define boardPCL818 4
 #define boardPCL718 5
+=======
+
+#include "../comedidev.h"
+
+#include "comedi_isadma.h"
+#include "comedi_8254.h"
+>>>>>>> v4.9.227
 
 /*
  * Register I/O map
@@ -132,6 +234,7 @@ A word or two about DMA. Driver support DMA operations at two ways:
 #define PCL818_AO_MSB_REG(x)			(0x05 + ((x) * 2))
 #define PCL818_STATUS_REG			0x08
 #define PCL818_STATUS_NEXT_CHAN_MASK		(0xf << 0)
+<<<<<<< HEAD
 #define PCL818_STATUS_INT			(1 << 4)
 #define PCL818_STATUS_MUX			(1 << 5)
 #define PCL818_STATUS_UNI			(1 << 6)
@@ -149,6 +252,24 @@ A word or two about DMA. Driver support DMA operations at two ways:
 #define PCL818_CNTENABLE_PACER_TRIG0		(1 << 0)
 #define PCL818_CNTENABLE_CNT0_EXT_CLK		(0 << 1)
 #define PCL818_CNTENABLE_CNT0_INT_CLK		(1 << 1)
+=======
+#define PCL818_STATUS_INT			BIT(4)
+#define PCL818_STATUS_MUX			BIT(5)
+#define PCL818_STATUS_UNI			BIT(6)
+#define PCL818_STATUS_EOC			BIT(7)
+#define PCL818_CTRL_REG				0x09
+#define PCL818_CTRL_TRIG(x)			(((x) & 0x3) << 0)
+#define PCL818_CTRL_DISABLE_TRIG		PCL818_CTRL_TRIG(0)
+#define PCL818_CTRL_SOFT_TRIG			PCL818_CTRL_TRIG(1)
+#define PCL818_CTRL_EXT_TRIG			PCL818_CTRL_TRIG(2)
+#define PCL818_CTRL_PACER_TRIG			PCL818_CTRL_TRIG(3)
+#define PCL818_CTRL_DMAE			BIT(2)
+#define PCL818_CTRL_IRQ(x)			((x) << 4)
+#define PCL818_CTRL_INTE			BIT(7)
+#define PCL818_CNTENABLE_REG			0x0a
+#define PCL818_CNTENABLE_PACER_TRIG0		BIT(0)
+#define PCL818_CNTENABLE_CNT0_INT_CLK		BIT(1)	/* 0=ext clk */
+>>>>>>> v4.9.227
 #define PCL818_DO_DI_MSB_REG			0x0b
 #define PCL818_TIMER_BASE			0x0c
 
@@ -303,6 +424,7 @@ static const struct pcl818_board boardtypes[] = {
 };
 
 struct pcl818_private {
+<<<<<<< HEAD
 	unsigned int dma;	/*  used DMA, 0=don't use DMA */
 	unsigned int dmapages;
 	unsigned int hwdmasize;
@@ -321,11 +443,21 @@ struct pcl818_private {
 	unsigned int ai_data_len;	/*  len of data buffer */
 	unsigned int divisor1;
 	unsigned int divisor2;
+=======
+	struct comedi_isadma *dma;
+	/*  manimal allowed delay between samples (in us) for actual card */
+	unsigned int ns_min;
+	/*  MUX setting for actual AI operations */
+	unsigned int act_chanlist[16];
+	unsigned int act_chanlist_len;	/*  how long is actual MUX list */
+	unsigned int act_chanlist_pos;	/*  actual position in MUX list */
+>>>>>>> v4.9.227
 	unsigned int usefifo:1;
 	unsigned int ai_cmd_running:1;
 	unsigned int ai_cmd_canceled:1;
 };
 
+<<<<<<< HEAD
 static void pcl818_start_pacer(struct comedi_device *dev, bool load_counters)
 {
 	struct pcl818_private *devpriv = dev->private;
@@ -394,6 +526,30 @@ static void pcl818_ai_setup_next_dma(struct comedi_device *dev,
 	}
 
 	devpriv->dma_runs_to_end--;
+=======
+static void pcl818_ai_setup_dma(struct comedi_device *dev,
+				struct comedi_subdevice *s,
+				unsigned int unread_samples)
+{
+	struct pcl818_private *devpriv = dev->private;
+	struct comedi_isadma *dma = devpriv->dma;
+	struct comedi_isadma_desc *desc = &dma->desc[dma->cur_dma];
+	unsigned int max_samples = comedi_bytes_to_samples(s, desc->maxsize);
+	unsigned int nsamples;
+
+	comedi_isadma_disable(dma->chan);
+
+	/*
+	 * Determine dma size based on the buffer maxsize plus the number of
+	 * unread samples and the number of samples remaining in the command.
+	 */
+	nsamples = comedi_nsamples_left(s, max_samples + unread_samples);
+	if (nsamples > unread_samples) {
+		nsamples -= unread_samples;
+		desc->size = comedi_samples_to_bytes(s, nsamples);
+		comedi_isadma_program(desc);
+	}
+>>>>>>> v4.9.227
 }
 
 static void pcl818_ai_set_chan_range(struct comedi_device *dev,
@@ -495,11 +651,20 @@ static int pcl818_ai_eoc(struct comedi_device *dev,
 	return -EBUSY;
 }
 
+<<<<<<< HEAD
 static bool pcl818_ai_dropout(struct comedi_device *dev,
 			      struct comedi_subdevice *s,
 			      unsigned int chan)
 {
 	struct pcl818_private *devpriv = dev->private;
+=======
+static bool pcl818_ai_write_sample(struct comedi_device *dev,
+				   struct comedi_subdevice *s,
+				   unsigned int chan, unsigned int val)
+{
+	struct pcl818_private *devpriv = dev->private;
+	struct comedi_cmd *cmd = &s->async->cmd;
+>>>>>>> v4.9.227
 	unsigned int expected_chan;
 
 	expected_chan = devpriv->act_chanlist[devpriv->act_chanlist_pos];
@@ -509,6 +674,7 @@ static bool pcl818_ai_dropout(struct comedi_device *dev,
 			(devpriv->dma) ? "DMA" :
 			(devpriv->usefifo) ? "FIFO" : "IRQ",
 			chan, expected_chan);
+<<<<<<< HEAD
 		s->async->events |= COMEDI_CB_EOA | COMEDI_CB_ERROR;
 		return true;
 	}
@@ -522,11 +688,19 @@ static bool pcl818_ai_next_chan(struct comedi_device *dev,
 	struct comedi_cmd *cmd = &s->async->cmd;
 
 	s->async->events |= COMEDI_CB_BLOCK;
+=======
+		s->async->events |= COMEDI_CB_ERROR;
+		return false;
+	}
+
+	comedi_buf_write_samples(s, &val, 1);
+>>>>>>> v4.9.227
 
 	devpriv->act_chanlist_pos++;
 	if (devpriv->act_chanlist_pos >= devpriv->act_chanlist_len)
 		devpriv->act_chanlist_pos = 0;
 
+<<<<<<< HEAD
 	s->async->cur_chan++;
 	if (s->async->cur_chan >= cmd->chanlist_len) {
 		s->async->cur_chan = 0;
@@ -536,6 +710,10 @@ static bool pcl818_ai_next_chan(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT && devpriv->ai_act_scan == 0) {
 		/* all data sampled */
+=======
+	if (cmd->stop_src == TRIG_COUNT &&
+	    s->async->scans_done >= cmd->stop_arg) {
+>>>>>>> v4.9.227
 		s->async->events |= COMEDI_CB_EOA;
 		return false;
 	}
@@ -551,11 +729,16 @@ static void pcl818_handle_eoc(struct comedi_device *dev,
 
 	if (pcl818_ai_eoc(dev, s, NULL, 0)) {
 		dev_err(dev->class_dev, "A/D mode1/3 IRQ without DRDY!\n");
+<<<<<<< HEAD
 		s->async->events |= COMEDI_CB_EOA | COMEDI_CB_ERROR;
+=======
+		s->async->events |= COMEDI_CB_ERROR;
+>>>>>>> v4.9.227
 		return;
 	}
 
 	val = pcl818_ai_get_sample(dev, s, &chan);
+<<<<<<< HEAD
 
 	if (pcl818_ai_dropout(dev, s, chan))
 		return;
@@ -563,12 +746,16 @@ static void pcl818_handle_eoc(struct comedi_device *dev,
 	comedi_buf_put(s, val);
 
 	pcl818_ai_next_chan(dev, s);
+=======
+	pcl818_ai_write_sample(dev, s, chan, val);
+>>>>>>> v4.9.227
 }
 
 static void pcl818_handle_dma(struct comedi_device *dev,
 			      struct comedi_subdevice *s)
 {
 	struct pcl818_private *devpriv = dev->private;
+<<<<<<< HEAD
 	unsigned short *ptr;
 	unsigned int chan;
 	unsigned int val;
@@ -592,6 +779,25 @@ static void pcl818_handle_dma(struct comedi_device *dev,
 		comedi_buf_put(s, val);
 
 		if (!pcl818_ai_next_chan(dev, s))
+=======
+	struct comedi_isadma *dma = devpriv->dma;
+	struct comedi_isadma_desc *desc = &dma->desc[dma->cur_dma];
+	unsigned short *ptr = desc->virt_addr;
+	unsigned int nsamples = comedi_bytes_to_samples(s, desc->size);
+	unsigned int chan;
+	unsigned int val;
+	int i;
+
+	/* restart dma with the next buffer */
+	dma->cur_dma = 1 - dma->cur_dma;
+	pcl818_ai_setup_dma(dev, s, nsamples);
+
+	for (i = 0; i < nsamples; i++) {
+		val = ptr[i];
+		chan = val & 0xf;
+		val = (val >> 4) & s->maxdata;
+		if (!pcl818_ai_write_sample(dev, s, chan, val))
+>>>>>>> v4.9.227
 			break;
 	}
 }
@@ -608,14 +814,22 @@ static void pcl818_handle_fifo(struct comedi_device *dev,
 
 	if (status & 4) {
 		dev_err(dev->class_dev, "A/D mode1/3 FIFO overflow!\n");
+<<<<<<< HEAD
 		s->async->events |= COMEDI_CB_EOA | COMEDI_CB_ERROR;
+=======
+		s->async->events |= COMEDI_CB_ERROR;
+>>>>>>> v4.9.227
 		return;
 	}
 
 	if (status & 1) {
 		dev_err(dev->class_dev,
 			"A/D mode1/3 FIFO interrupt without data!\n");
+<<<<<<< HEAD
 		s->async->events |= COMEDI_CB_EOA | COMEDI_CB_ERROR;
+=======
+		s->async->events |= COMEDI_CB_ERROR;
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -626,6 +840,7 @@ static void pcl818_handle_fifo(struct comedi_device *dev,
 
 	for (i = 0; i < len; i++) {
 		val = pcl818_ai_get_fifo_sample(dev, s, &chan);
+<<<<<<< HEAD
 
 		if (pcl818_ai_dropout(dev, s, chan))
 			break;
@@ -633,6 +848,9 @@ static void pcl818_handle_fifo(struct comedi_device *dev,
 		comedi_buf_put(s, val);
 
 		if (!pcl818_ai_next_chan(dev, s))
+=======
+		if (!pcl818_ai_write_sample(dev, s, chan, val))
+>>>>>>> v4.9.227
 			break;
 	}
 }
@@ -642,6 +860,10 @@ static irqreturn_t pcl818_interrupt(int irq, void *d)
 	struct comedi_device *dev = d;
 	struct pcl818_private *devpriv = dev->private;
 	struct comedi_subdevice *s = dev->read_subdev;
+<<<<<<< HEAD
+=======
+	struct comedi_cmd *cmd = &s->async->cmd;
+>>>>>>> v4.9.227
 
 	if (!dev->attached || !devpriv->ai_cmd_running) {
 		pcl818_ai_clear_eoc(dev);
@@ -655,7 +877,11 @@ static irqreturn_t pcl818_interrupt(int irq, void *d)
 		 * being reprogrammed while a DMA transfer is in
 		 * progress.
 		 */
+<<<<<<< HEAD
 		devpriv->ai_act_scan = 0;
+=======
+		s->async->scans_done = cmd->stop_arg;
+>>>>>>> v4.9.227
 		s->cancel(dev, s);
 		return IRQ_HANDLED;
 	}
@@ -669,7 +895,11 @@ static irqreturn_t pcl818_interrupt(int irq, void *d)
 
 	pcl818_ai_clear_eoc(dev);
 
+<<<<<<< HEAD
 	cfc_handle_events(dev, s);
+=======
+	comedi_handle_events(dev, s);
+>>>>>>> v4.9.227
 	return IRQ_HANDLED;
 }
 
@@ -697,7 +927,12 @@ static int check_channel_list(struct comedi_device *dev,
 				break;
 			nowmustbechan =
 			    (CR_CHAN(chansegment[i - 1]) + 1) % s->n_chan;
+<<<<<<< HEAD
 			if (nowmustbechan != CR_CHAN(chanlist[i])) {	/*  channel list isn't continuous :-( */
+=======
+			if (nowmustbechan != CR_CHAN(chanlist[i])) {
+				/*  channel list isn't continuous :-( */
+>>>>>>> v4.9.227
 				dev_dbg(dev->class_dev,
 					"channel list must be continuous! chanlist[%i]=%d but must be %d or %d!\n",
 					i, CR_CHAN(chanlist[i]), nowmustbechan,
@@ -739,6 +974,7 @@ static int ai_cmdtest(struct comedi_device *dev, struct comedi_subdevice *s,
 		      struct comedi_cmd *cmd)
 {
 	const struct pcl818_board *board = dev->board_ptr;
+<<<<<<< HEAD
 	struct pcl818_private *devpriv = dev->private;
 	int err = 0;
 	unsigned int arg;
@@ -750,14 +986,31 @@ static int ai_cmdtest(struct comedi_device *dev, struct comedi_subdevice *s,
 	err |= cfc_check_trigger_src(&cmd->convert_src, TRIG_TIMER | TRIG_EXT);
 	err |= cfc_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
 	err |= cfc_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+=======
+	int err = 0;
+
+	/* Step 1 : check if triggers are trivially valid */
+
+	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
+	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_FOLLOW);
+	err |= comedi_check_trigger_src(&cmd->convert_src,
+					TRIG_TIMER | TRIG_EXT);
+	err |= comedi_check_trigger_src(&cmd->scan_end_src, TRIG_COUNT);
+	err |= comedi_check_trigger_src(&cmd->stop_src, TRIG_COUNT | TRIG_NONE);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 1;
 
 	/* Step 2a : make sure trigger sources are unique */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_is_unique(cmd->convert_src);
 	err |= cfc_check_trigger_is_unique(cmd->stop_src);
+=======
+	err |= comedi_check_trigger_is_unique(cmd->convert_src);
+	err |= comedi_check_trigger_is_unique(cmd->stop_src);
+>>>>>>> v4.9.227
 
 	/* Step 2b : and mutually compatible */
 
@@ -766,6 +1019,7 @@ static int ai_cmdtest(struct comedi_device *dev, struct comedi_subdevice *s,
 
 	/* Step 3: check if arguments are trivially valid */
 
+<<<<<<< HEAD
 	err |= cfc_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= cfc_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
 
@@ -781,6 +1035,25 @@ static int ai_cmdtest(struct comedi_device *dev, struct comedi_subdevice *s,
 		err |= cfc_check_trigger_arg_min(&cmd->stop_arg, 1);
 	else	/* TRIG_NONE */
 		err |= cfc_check_trigger_arg_is(&cmd->stop_arg, 0);
+=======
+	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
+	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
+
+	if (cmd->convert_src == TRIG_TIMER) {
+		err |= comedi_check_trigger_arg_min(&cmd->convert_arg,
+						    board->ns_min);
+	} else {	/* TRIG_EXT */
+		err |= comedi_check_trigger_arg_is(&cmd->convert_arg, 0);
+	}
+
+	err |= comedi_check_trigger_arg_is(&cmd->scan_end_arg,
+					   cmd->chanlist_len);
+
+	if (cmd->stop_src == TRIG_COUNT)
+		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
+	else	/* TRIG_NONE */
+		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
+>>>>>>> v4.9.227
 
 	if (err)
 		return 3;
@@ -788,12 +1061,19 @@ static int ai_cmdtest(struct comedi_device *dev, struct comedi_subdevice *s,
 	/* step 4: fix up any arguments */
 
 	if (cmd->convert_src == TRIG_TIMER) {
+<<<<<<< HEAD
 		arg = cmd->convert_arg;
 		i8253_cascade_ns_to_timer(devpriv->i8253_osc_base,
 					  &devpriv->divisor1,
 					  &devpriv->divisor2,
 					  &arg, cmd->flags);
 		err |= cfc_check_trigger_arg_is(&cmd->convert_arg, arg);
+=======
+		unsigned int arg = cmd->convert_arg;
+
+		comedi_8254_cascade_ns_to_timer(dev->pacer, &arg, cmd->flags);
+		err |= comedi_check_trigger_arg_is(&cmd->convert_arg, arg);
+>>>>>>> v4.9.227
 	}
 
 	if (err)
@@ -814,6 +1094,10 @@ static int pcl818_ai_cmd(struct comedi_device *dev,
 			 struct comedi_subdevice *s)
 {
 	struct pcl818_private *devpriv = dev->private;
+<<<<<<< HEAD
+=======
+	struct comedi_isadma *dma = devpriv->dma;
+>>>>>>> v4.9.227
 	struct comedi_cmd *cmd = &s->async->cmd;
 	unsigned int ctrl = 0;
 	unsigned int seglen;
@@ -821,13 +1105,17 @@ static int pcl818_ai_cmd(struct comedi_device *dev,
 	if (devpriv->ai_cmd_running)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	pcl818_start_pacer(dev, false);
 
+=======
+>>>>>>> v4.9.227
 	seglen = check_channel_list(dev, s, cmd->chanlist, cmd->chanlist_len);
 	if (seglen < 1)
 		return -EINVAL;
 	pcl818_ai_setup_chanlist(dev, cmd->chanlist, seglen);
 
+<<<<<<< HEAD
 	devpriv->ai_data_len = s->async->prealloc_bufsz;
 	devpriv->ai_act_scan = cmd->stop_arg;
 	devpriv->ai_act_chan = 0;
@@ -835,16 +1123,30 @@ static int pcl818_ai_cmd(struct comedi_device *dev,
 	devpriv->ai_cmd_canceled = 0;
 	devpriv->act_chanlist_pos = 0;
 	devpriv->dma_runs_to_end = 0;
+=======
+	devpriv->ai_cmd_running = 1;
+	devpriv->ai_cmd_canceled = 0;
+	devpriv->act_chanlist_pos = 0;
+>>>>>>> v4.9.227
 
 	if (cmd->convert_src == TRIG_TIMER)
 		ctrl |= PCL818_CTRL_PACER_TRIG;
 	else
 		ctrl |= PCL818_CTRL_EXT_TRIG;
 
+<<<<<<< HEAD
 	outb(PCL818_CNTENABLE_PACER_ENA, dev->iobase + PCL818_CNTENABLE_REG);
 
 	if (devpriv->dma) {
 		pcl818_ai_setup_dma(dev, s);
+=======
+	outb(0, dev->iobase + PCL818_CNTENABLE_REG);
+
+	if (dma) {
+		/* setup and enable dma for the first buffer */
+		dma->cur_dma = 0;
+		pcl818_ai_setup_dma(dev, s, 0);
+>>>>>>> v4.9.227
 
 		ctrl |= PCL818_CTRL_INTE | PCL818_CTRL_IRQ(dev->irq) |
 			PCL818_CTRL_DMAE;
@@ -856,8 +1158,15 @@ static int pcl818_ai_cmd(struct comedi_device *dev,
 	}
 	outb(ctrl, dev->iobase + PCL818_CTRL_REG);
 
+<<<<<<< HEAD
 	if (cmd->convert_src == TRIG_TIMER)
 		pcl818_start_pacer(dev, true);
+=======
+	if (cmd->convert_src == TRIG_TIMER) {
+		comedi_8254_update_divisors(dev->pacer);
+		comedi_8254_pacer_enable(dev->pacer, 1, 2, true);
+	}
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -866,14 +1175,25 @@ static int pcl818_ai_cancel(struct comedi_device *dev,
 			    struct comedi_subdevice *s)
 {
 	struct pcl818_private *devpriv = dev->private;
+<<<<<<< HEAD
+=======
+	struct comedi_isadma *dma = devpriv->dma;
+>>>>>>> v4.9.227
 	struct comedi_cmd *cmd = &s->async->cmd;
 
 	if (!devpriv->ai_cmd_running)
 		return 0;
 
+<<<<<<< HEAD
 	if (devpriv->dma) {
 		if (cmd->stop_src == TRIG_NONE ||
 		    (cmd->stop_src == TRIG_COUNT && devpriv->ai_act_scan > 0)) {
+=======
+	if (dma) {
+		if (cmd->stop_src == TRIG_NONE ||
+		    (cmd->stop_src == TRIG_COUNT &&
+		     s->async->scans_done < cmd->stop_arg)) {
+>>>>>>> v4.9.227
 			if (!devpriv->ai_cmd_canceled) {
 				/*
 				* Wait for running dma transfer to end,
@@ -883,11 +1203,19 @@ static int pcl818_ai_cancel(struct comedi_device *dev,
 				return 0;
 			}
 		}
+<<<<<<< HEAD
 		disable_dma(devpriv->dma);
 	}
 
 	outb(PCL818_CTRL_DISABLE_TRIG, dev->iobase + PCL818_CTRL_REG);
 	pcl818_start_pacer(dev, false);
+=======
+		comedi_isadma_disable(dma->chan);
+	}
+
+	outb(PCL818_CTRL_DISABLE_TRIG, dev->iobase + PCL818_CTRL_REG);
+	comedi_8254_pacer_enable(dev->pacer, 1, 2, false);
+>>>>>>> v4.9.227
 	pcl818_ai_clear_eoc(dev);
 
 	if (devpriv->usefifo) {	/*  FIFO shutdown */
@@ -981,7 +1309,10 @@ static int pcl818_do_insn_bits(struct comedi_device *dev,
 static void pcl818_reset(struct comedi_device *dev)
 {
 	const struct pcl818_board *board = dev->board_ptr;
+<<<<<<< HEAD
 	unsigned long timer_base = dev->iobase + PCL818_TIMER_BASE;
+=======
+>>>>>>> v4.9.227
 	unsigned int chan;
 
 	/* flush and disable the FIFO */
@@ -998,10 +1329,14 @@ static void pcl818_reset(struct comedi_device *dev)
 	pcl818_ai_set_chan_range(dev, 0, 0);
 
 	/* stop pacer */
+<<<<<<< HEAD
 	outb(PCL818_CNTENABLE_PACER_ENA, dev->iobase + PCL818_CNTENABLE_REG);
 	i8254_set_mode(timer_base, 0, 2, I8254_MODE0 | I8254_BINARY);
 	i8254_set_mode(timer_base, 0, 1, I8254_MODE0 | I8254_BINARY);
 	i8254_set_mode(timer_base, 0, 0, I8254_MODE0 | I8254_BINARY);
+=======
+	outb(0, dev->iobase + PCL818_CNTENABLE_REG);
+>>>>>>> v4.9.227
 
 	/* set analog output channels to 0V */
 	for (chan = 0; chan < board->n_aochan; chan++) {
@@ -1065,13 +1400,42 @@ static void pcl818_set_ai_range_table(struct comedi_device *dev,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void pcl818_alloc_dma(struct comedi_device *dev, unsigned int dma_chan)
+{
+	struct pcl818_private *devpriv = dev->private;
+
+	/* only DMA channels 3 and 1 are valid */
+	if (!(dma_chan == 3 || dma_chan == 1))
+		return;
+
+	/* DMA uses two 16K buffers */
+	devpriv->dma = comedi_isadma_alloc(dev, 2, dma_chan, dma_chan,
+					   PAGE_SIZE * 4, COMEDI_ISADMA_READ);
+}
+
+static void pcl818_free_dma(struct comedi_device *dev)
+{
+	struct pcl818_private *devpriv = dev->private;
+
+	if (devpriv)
+		comedi_isadma_free(devpriv->dma);
+}
+
+>>>>>>> v4.9.227
 static int pcl818_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 {
 	const struct pcl818_board *board = dev->board_ptr;
 	struct pcl818_private *devpriv;
 	struct comedi_subdevice *s;
+<<<<<<< HEAD
 	int ret;
 	int i;
+=======
+	unsigned int osc_base;
+	int ret;
+>>>>>>> v4.9.227
 
 	devpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));
 	if (!devpriv)
@@ -1095,6 +1459,7 @@ static int pcl818_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		devpriv->usefifo = 1;
 
 	/* we need an IRQ to do DMA on channel 3 or 1 */
+<<<<<<< HEAD
 	if (dev->irq && board->has_dma &&
 	    (it->options[2] == 3 || it->options[2] == 1)) {
 		ret = request_dma(it->options[2], dev->board_name);
@@ -1119,6 +1484,28 @@ static int pcl818_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 			devpriv->dmabuf[i] = dmabuf;
 			devpriv->hwdmaptr[i] = virt_to_bus((void *)dmabuf);
 		}
+=======
+	if (dev->irq && board->has_dma)
+		pcl818_alloc_dma(dev, it->options[2]);
+
+	/* use 1MHz or 10MHz oscilator */
+	if ((it->options[3] == 0) || (it->options[3] == 10))
+		osc_base = I8254_OSC_BASE_10MHZ;
+	else
+		osc_base = I8254_OSC_BASE_1MHZ;
+
+	dev->pacer = comedi_8254_init(dev->iobase + PCL818_TIMER_BASE,
+				      osc_base, I8254_IO8, 0);
+	if (!dev->pacer)
+		return -ENOMEM;
+
+	/* max sampling speed */
+	devpriv->ns_min = board->ns_min;
+	if (!board->is_818) {
+		/* extended PCL718 to 100kHz DAC */
+		if ((it->options[6] == 1) || (it->options[6] == 100))
+			devpriv->ns_min = 10000;
+>>>>>>> v4.9.227
 	}
 
 	ret = comedi_alloc_subdevices(dev, 4);
@@ -1169,7 +1556,10 @@ static int pcl818_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 				s->range_table = &range_unknown;
 		}
 		s->insn_write	= pcl818_ao_insn_write;
+<<<<<<< HEAD
 		s->insn_read	= comedi_readback_insn_read;
+=======
+>>>>>>> v4.9.227
 
 		ret = comedi_alloc_subdev_readback(s);
 		if (ret)
@@ -1196,6 +1586,7 @@ static int pcl818_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->range_table	= &range_digital;
 	s->insn_bits	= pcl818_do_insn_bits;
 
+<<<<<<< HEAD
 	/* select 1/10MHz oscilator */
 	if ((it->options[3] == 0) || (it->options[3] == 10))
 		devpriv->i8253_osc_base = I8254_OSC_BASE_10MHZ;
@@ -1210,6 +1601,8 @@ static int pcl818_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 			devpriv->ns_min = 10000;	/* extended PCL718 to 100kHz DAC */
 	}
 
+=======
+>>>>>>> v4.9.227
 	pcl818_reset(dev);
 
 	return 0;
@@ -1222,6 +1615,7 @@ static void pcl818_detach(struct comedi_device *dev)
 	if (devpriv) {
 		pcl818_ai_cancel(dev, dev->read_subdev);
 		pcl818_reset(dev);
+<<<<<<< HEAD
 		if (devpriv->dma)
 			free_dma(devpriv->dma);
 		if (devpriv->dmabuf[0])
@@ -1229,6 +1623,10 @@ static void pcl818_detach(struct comedi_device *dev)
 		if (devpriv->dmabuf[1])
 			free_pages(devpriv->dmabuf[1], devpriv->dmapages);
 	}
+=======
+	}
+	pcl818_free_dma(dev);
+>>>>>>> v4.9.227
 	comedi_legacy_detach(dev);
 }
 

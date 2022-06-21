@@ -32,7 +32,11 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
 #include <media/v4l2-mediabus.h>
+<<<<<<< HEAD
 #include <media/s5c73m3.h>
+=======
+#include <media/i2c/s5c73m3.h>
+>>>>>>> v4.9.227
 
 #include "s5c73m3.h"
 

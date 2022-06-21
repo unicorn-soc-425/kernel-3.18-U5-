@@ -231,7 +231,11 @@ static irqreturn_t twl6030_irq_thread(int irq, void *data)
 
 static int twl6030_irq_set_wake(struct irq_data *d, unsigned int on)
 {
+<<<<<<< HEAD
 	struct twl6030_irq *pdata = irq_get_chip_data(d->irq);
+=======
+	struct twl6030_irq *pdata = irq_data_get_irq_chip_data(d);
+>>>>>>> v4.9.227
 
 	if (on)
 		atomic_inc(&pdata->wakeirqs);
@@ -352,6 +356,7 @@ static int twl6030_irq_map(struct irq_domain *d, unsigned int virq,
 	irq_set_chip_and_handler(virq,  &pdata->irq_chip, handle_simple_irq);
 	irq_set_nested_thread(virq, true);
 	irq_set_parent(virq, pdata->twl_irq);
+<<<<<<< HEAD
 
 #ifdef CONFIG_ARM
 	/*
@@ -363,20 +368,30 @@ static int twl6030_irq_map(struct irq_domain *d, unsigned int virq,
 	/* same effect on other architectures */
 	irq_set_noprobe(virq);
 #endif
+=======
+	irq_set_noprobe(virq);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static void twl6030_irq_unmap(struct irq_domain *d, unsigned int virq)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 	set_irq_flags(virq, 0);
 #endif
+=======
+>>>>>>> v4.9.227
 	irq_set_chip_and_handler(virq, NULL, NULL);
 	irq_set_chip_data(virq, NULL);
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops twl6030_irq_domain_ops = {
+=======
+static const struct irq_domain_ops twl6030_irq_domain_ops = {
+>>>>>>> v4.9.227
 	.map	= twl6030_irq_map,
 	.unmap	= twl6030_irq_unmap,
 	.xlate	= irq_domain_xlate_onetwocell,

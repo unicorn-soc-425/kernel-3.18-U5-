@@ -17,7 +17,11 @@ This driver implements support for the Maxim MAX1668, MAX1805 and MAX1989
 chips.
 
 The three devices are very similar, but the MAX1805 has a reduced feature
+<<<<<<< HEAD
 set; only two remote temperature inputs vs the four avaible on the other
+=======
+set; only two remote temperature inputs vs the four available on the other
+>>>>>>> v4.9.227
 two ICs.
 
 The driver is able to distinguish between the devices and creates sysfs

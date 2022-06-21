@@ -109,7 +109,11 @@ struct ath9k_pacal_info{
 
 bool ath9k_hw_reset_calvalid(struct ath_hw *ah);
 void ath9k_hw_start_nfcal(struct ath_hw *ah, bool update);
+<<<<<<< HEAD
 void ath9k_hw_loadnf(struct ath_hw *ah, struct ath9k_channel *chan);
+=======
+int ath9k_hw_loadnf(struct ath_hw *ah, struct ath9k_channel *chan);
+>>>>>>> v4.9.227
 bool ath9k_hw_getnf(struct ath_hw *ah, struct ath9k_channel *chan);
 void ath9k_init_nfcal_hist_buffer(struct ath_hw *ah,
 				  struct ath9k_channel *chan);

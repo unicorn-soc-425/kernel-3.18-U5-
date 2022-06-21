@@ -16,6 +16,10 @@
 #include <linux/uaccess.h>
 #include <linux/elf.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/compat.h>
+>>>>>>> v4.9.227
 #include <asm/ia32.h>
 #include <asm/syscalls.h>
 
@@ -34,10 +38,33 @@ static unsigned long get_align_mask(void)
 	return va_align.mask;
 }
 
+<<<<<<< HEAD
 unsigned long align_vdso_addr(unsigned long addr)
 {
 	unsigned long align_mask = get_align_mask();
 	return (addr + align_mask) & ~align_mask;
+=======
+/*
+ * To avoid aliasing in the I$ on AMD F15h, the bits defined by the
+ * va_align.bits, [12:upper_bit), are set to a random value instead of
+ * zeroing them. This random value is computed once per boot. This form
+ * of ASLR is known as "per-boot ASLR".
+ *
+ * To achieve this, the random value is added to the info.align_offset
+ * value before calling vm_unmapped_area() or ORed directly to the
+ * address.
+ */
+static unsigned long get_align_bits(void)
+{
+	return va_align.bits & get_align_mask();
+}
+
+unsigned long align_vdso_addr(unsigned long addr)
+{
+	unsigned long align_mask = get_align_mask();
+	addr = (addr + align_mask) & ~align_mask;
+	return addr | get_align_bits();
+>>>>>>> v4.9.227
 }
 
 static int __init control_va_addr_alignment(char *str)
@@ -84,8 +111,12 @@ out:
 static void find_start_end(unsigned long flags, unsigned long *begin,
 			   unsigned long *end)
 {
+<<<<<<< HEAD
 	if (!test_thread_flag(TIF_ADDR32) && (flags & MAP_32BIT)) {
 		unsigned long new_begin;
+=======
+	if (!in_compat_syscall() && (flags & MAP_32BIT)) {
+>>>>>>> v4.9.227
 		/* This is usually used needed to map code in small
 		   model, so it needs to be in the first 31bit. Limit
 		   it to that.  This means we need to move the
@@ -96,9 +127,13 @@ static void find_start_end(unsigned long flags, unsigned long *begin,
 		*begin = 0x40000000;
 		*end = 0x80000000;
 		if (current->flags & PF_RANDOMIZE) {
+<<<<<<< HEAD
 			new_begin = randomize_range(*begin, *begin + 0x02000000, 0);
 			if (new_begin)
 				*begin = new_begin;
+=======
+			*begin = randomize_page(*begin, 0x02000000);
+>>>>>>> v4.9.227
 		}
 	} else {
 		*begin = current->mm->mmap_legacy_base;
@@ -135,8 +170,17 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 	info.length = len;
 	info.low_limit = begin;
 	info.high_limit = end;
+<<<<<<< HEAD
 	info.align_mask = filp ? get_align_mask() : 0;
 	info.align_offset = pgoff << PAGE_SHIFT;
+=======
+	info.align_mask = 0;
+	info.align_offset = pgoff << PAGE_SHIFT;
+	if (filp) {
+		info.align_mask = get_align_mask();
+		info.align_offset += get_align_bits();
+	}
+>>>>>>> v4.9.227
 	return vm_unmapped_area(&info);
 }
 
@@ -158,7 +202,11 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 		return addr;
 
 	/* for MAP_32BIT mappings we force the legacy mmap base */
+<<<<<<< HEAD
 	if (!test_thread_flag(TIF_ADDR32) && (flags & MAP_32BIT))
+=======
+	if (!in_compat_syscall() && (flags & MAP_32BIT))
+>>>>>>> v4.9.227
 		goto bottomup;
 
 	/* requesting a specific address */
@@ -174,8 +222,17 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	info.length = len;
 	info.low_limit = PAGE_SIZE;
 	info.high_limit = mm->mmap_base;
+<<<<<<< HEAD
 	info.align_mask = filp ? get_align_mask() : 0;
 	info.align_offset = pgoff << PAGE_SHIFT;
+=======
+	info.align_mask = 0;
+	info.align_offset = pgoff << PAGE_SHIFT;
+	if (filp) {
+		info.align_mask = get_align_mask();
+		info.align_offset += get_align_bits();
+	}
+>>>>>>> v4.9.227
 	addr = vm_unmapped_area(&info);
 	if (!(addr & ~PAGE_MASK))
 		return addr;

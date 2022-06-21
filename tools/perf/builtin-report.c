@@ -8,7 +8,11 @@
 #include "builtin.h"
 
 #include "util/util.h"
+<<<<<<< HEAD
 #include "util/cache.h"
+=======
+#include "util/config.h"
+>>>>>>> v4.9.227
 
 #include "util/annotate.h"
 #include "util/color.h"
@@ -27,7 +31,12 @@
 #include "util/session.h"
 #include "util/tool.h"
 
+<<<<<<< HEAD
 #include "util/parse-options.h"
+=======
+#include <subcmd/parse-options.h>
+#include <subcmd/exec-cmd.h>
+>>>>>>> v4.9.227
 #include "util/parse-events.h"
 
 #include "util/thread.h"
@@ -36,21 +45,37 @@
 #include "util/data.h"
 #include "arch/common.h"
 
+<<<<<<< HEAD
 #include <dlfcn.h>
 #include <linux/bitmap.h>
+=======
+#include "util/auxtrace.h"
+
+#include <dlfcn.h>
+#include <linux/bitmap.h>
+#include <linux/stringify.h>
+>>>>>>> v4.9.227
 
 struct report {
 	struct perf_tool	tool;
 	struct perf_session	*session;
+<<<<<<< HEAD
 	bool			force, use_tui, use_gtk, use_stdio;
 	bool			hide_unresolved;
 	bool			dont_use_callchains;
+=======
+	bool			use_tui, use_gtk, use_stdio;
+>>>>>>> v4.9.227
 	bool			show_full_info;
 	bool			show_threads;
 	bool			inverted_callchain;
 	bool			mem_mode;
 	bool			header;
 	bool			header_only;
+<<<<<<< HEAD
+=======
+	bool			nonany_branch_mode;
+>>>>>>> v4.9.227
 	int			max_stack;
 	struct perf_read_values	show_threads_values;
 	const char		*pretty_printing_style;
@@ -59,6 +84,10 @@ struct report {
 	float			min_percent;
 	u64			nr_entries;
 	u64			queue_size;
+<<<<<<< HEAD
+=======
+	int			socket_filter;
+>>>>>>> v4.9.227
 	DECLARE_BITMAP(cpu_bitmap, MAX_NR_CPUS);
 };
 
@@ -71,7 +100,14 @@ static int report__config(const char *var, const char *value, void *cb)
 		return 0;
 	}
 	if (!strcmp(var, "report.percent-limit")) {
+<<<<<<< HEAD
 		rep->min_percent = strtof(value, NULL);
+=======
+		double pcnt = strtof(value, NULL);
+
+		rep->min_percent = pcnt;
+		callchain_param.min_percent = pcnt;
+>>>>>>> v4.9.227
 		return 0;
 	}
 	if (!strcmp(var, "report.children")) {
@@ -82,6 +118,7 @@ static int report__config(const char *var, const char *value, void *cb)
 		rep->queue_size = perf_config_u64(var, value);
 		return 0;
 	}
+<<<<<<< HEAD
 
 	return perf_default_config(var, value, cb);
 }
@@ -95,6 +132,14 @@ static void report__inc_stats(struct report *rep, struct hist_entry *he)
 	 */
 	if (he->stat.nr_events == 1)
 		rep->nr_entries++;
+=======
+	if (!strcmp(var, "report.sort_order")) {
+		default_sort_order = strdup(value);
+		return 0;
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int hist_iter__report_callback(struct hist_entry_iter *iter,
@@ -108,11 +153,20 @@ static int hist_iter__report_callback(struct hist_entry_iter *iter,
 	struct mem_info *mi;
 	struct branch_info *bi;
 
+<<<<<<< HEAD
 	report__inc_stats(rep, he);
 
 	if (!ui__has_annotation())
 		return 0;
 
+=======
+	if (!ui__has_annotation())
+		return 0;
+
+	hist__account_cycles(iter->sample->branch_stack, al, iter->sample,
+			     rep->nonany_branch_mode);
+
+>>>>>>> v4.9.227
 	if (sort__mode == SORT_MODE__BRANCH) {
 		bi = he->branch_info;
 		err = addr_map_symbol__inc_samples(&bi->from, evsel->idx);
@@ -150,17 +204,29 @@ static int process_sample_event(struct perf_tool *tool,
 	struct report *rep = container_of(tool, struct report, tool);
 	struct addr_location al;
 	struct hist_entry_iter iter = {
+<<<<<<< HEAD
 		.hide_unresolved = rep->hide_unresolved,
 		.add_entry_cb = hist_iter__report_callback,
 	};
 	int ret;
 
 	if (perf_event__preprocess_sample(event, machine, &al, sample) < 0) {
+=======
+		.evsel 			= evsel,
+		.sample 		= sample,
+		.hide_unresolved 	= symbol_conf.hide_unresolved,
+		.add_entry_cb 		= hist_iter__report_callback,
+	};
+	int ret = 0;
+
+	if (machine__resolve(machine, &al, sample) < 0) {
+>>>>>>> v4.9.227
 		pr_debug("problem processing %d event, skipping it.\n",
 			 event->header.type);
 		return -1;
 	}
 
+<<<<<<< HEAD
 	if (rep->hide_unresolved && al.sym == NULL)
 		return 0;
 
@@ -175,15 +241,46 @@ static int process_sample_event(struct perf_tool *tool,
 		iter.ops = &hist_iter_cumulative;
 	else
 		iter.ops = &hist_iter_normal;
+=======
+	if (symbol_conf.hide_unresolved && al.sym == NULL)
+		goto out_put;
+
+	if (rep->cpu_list && !test_bit(sample->cpu, rep->cpu_bitmap))
+		goto out_put;
+
+	if (sort__mode == SORT_MODE__BRANCH) {
+		/*
+		 * A non-synthesized event might not have a branch stack if
+		 * branch stacks have been synthesized (using itrace options).
+		 */
+		if (!sample->branch_stack)
+			goto out_put;
+		iter.ops = &hist_iter_branch;
+	} else if (rep->mem_mode) {
+		iter.ops = &hist_iter_mem;
+	} else if (symbol_conf.cumulate_callchain) {
+		iter.ops = &hist_iter_cumulative;
+	} else {
+		iter.ops = &hist_iter_normal;
+	}
+>>>>>>> v4.9.227
 
 	if (al.map != NULL)
 		al.map->dso->hit = 1;
 
+<<<<<<< HEAD
 	ret = hist_entry_iter__add(&iter, &al, evsel, sample, rep->max_stack,
 				   rep);
 	if (ret < 0)
 		pr_debug("problem adding hist entry, skipping event\n");
 
+=======
+	ret = hist_entry_iter__add(&iter, &al, rep->max_stack, rep);
+	if (ret < 0)
+		pr_debug("problem adding hist entry, skipping event\n");
+out_put:
+	addr_location__put(&al);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -218,19 +315,42 @@ static int report__setup_sample_type(struct report *rep)
 	u64 sample_type = perf_evlist__combined_sample_type(session->evlist);
 	bool is_pipe = perf_data_file__is_pipe(session->file);
 
+<<<<<<< HEAD
 	if (!is_pipe && !(sample_type & PERF_SAMPLE_CALLCHAIN)) {
 		if (sort__has_parent) {
+=======
+	if (session->itrace_synth_opts->callchain ||
+	    (!is_pipe &&
+	     perf_header__has_feat(&session->header, HEADER_AUXTRACE) &&
+	     !session->itrace_synth_opts->set))
+		sample_type |= PERF_SAMPLE_CALLCHAIN;
+
+	if (session->itrace_synth_opts->last_branch)
+		sample_type |= PERF_SAMPLE_BRANCH_STACK;
+
+	if (!is_pipe && !(sample_type & PERF_SAMPLE_CALLCHAIN)) {
+		if (perf_hpp_list.parent) {
+>>>>>>> v4.9.227
 			ui__error("Selected --sort parent, but no "
 				    "callchain data. Did you call "
 				    "'perf record' without -g?\n");
 			return -EINVAL;
 		}
 		if (symbol_conf.use_callchain) {
+<<<<<<< HEAD
 			ui__error("Selected -g but no callchain data. Did "
 				    "you call 'perf record' without -g?\n");
 			return -1;
 		}
 	} else if (!rep->dont_use_callchains &&
+=======
+			ui__error("Selected -g or --branch-history but no "
+				  "callchain data. Did\n"
+				  "you call 'perf record' without -g?\n");
+			return -1;
+		}
+	} else if (!callchain_param.enabled &&
+>>>>>>> v4.9.227
 		   callchain_param.mode != CHAIN_NONE &&
 		   !symbol_conf.use_callchain) {
 			symbol_conf.use_callchain = true;
@@ -261,9 +381,23 @@ static int report__setup_sample_type(struct report *rep)
 		if ((sample_type & PERF_SAMPLE_REGS_USER) &&
 		    (sample_type & PERF_SAMPLE_STACK_USER))
 			callchain_param.record_mode = CALLCHAIN_DWARF;
+<<<<<<< HEAD
 		else
 			callchain_param.record_mode = CALLCHAIN_FP;
 	}
+=======
+		else if (sample_type & PERF_SAMPLE_BRANCH_STACK)
+			callchain_param.record_mode = CALLCHAIN_LBR;
+		else
+			callchain_param.record_mode = CALLCHAIN_FP;
+	}
+
+	/* ??? handle more cases than just ANY? */
+	if (!(perf_evlist__combined_branch_type(session->evlist) &
+				PERF_SAMPLE_BRANCH_ANY))
+		rep->nonany_branch_mode = true;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -282,6 +416,10 @@ static size_t hists__fprintf_nr_sample_events(struct hists *hists, struct report
 	struct perf_evsel *evsel = hists_to_evsel(hists);
 	char buf[512];
 	size_t size = sizeof(buf);
+<<<<<<< HEAD
+=======
+	int socked_id = hists->socket_filter;
+>>>>>>> v4.9.227
 
 	if (symbol_conf.filter_relative) {
 		nr_samples = hists->stats.nr_non_filtered_samples;
@@ -312,11 +450,28 @@ static size_t hists__fprintf_nr_sample_events(struct hists *hists, struct report
 	if (evname != NULL)
 		ret += fprintf(fp, " of event '%s'", evname);
 
+<<<<<<< HEAD
 	if (rep->mem_mode) {
 		ret += fprintf(fp, "\n# Total weight : %" PRIu64, nr_events);
 		ret += fprintf(fp, "\n# Sort order   : %s", sort_order);
 	} else
 		ret += fprintf(fp, "\n# Event count (approx.): %" PRIu64, nr_events);
+=======
+	if (symbol_conf.show_ref_callgraph &&
+	    strstr(evname, "call-graph=no")) {
+		ret += fprintf(fp, ", show reference callgraph");
+	}
+
+	if (rep->mem_mode) {
+		ret += fprintf(fp, "\n# Total weight : %" PRIu64, nr_events);
+		ret += fprintf(fp, "\n# Sort order   : %s", sort_order ? : default_mem_sort_order);
+	} else
+		ret += fprintf(fp, "\n# Event count (approx.): %" PRIu64, nr_events);
+
+	if (socked_id > -1)
+		ret += fprintf(fp, "\n# Processor Socket: %d", socked_id);
+
+>>>>>>> v4.9.227
 	return ret + fprintf(fp, "\n#\n");
 }
 
@@ -326,7 +481,12 @@ static int perf_evlist__tty_browse_hists(struct perf_evlist *evlist,
 {
 	struct perf_evsel *pos;
 
+<<<<<<< HEAD
 	evlist__for_each(evlist, pos) {
+=======
+	fprintf(stdout, "#\n# Total Lost Samples: %" PRIu64 "\n#\n", evlist->stats.total_lost_samples);
+	evlist__for_each_entry(evlist, pos) {
+>>>>>>> v4.9.227
 		struct hists *hists = evsel__hists(pos);
 		const char *evname = perf_evsel__name(pos);
 
@@ -335,6 +495,7 @@ static int perf_evlist__tty_browse_hists(struct perf_evlist *evlist,
 			continue;
 
 		hists__fprintf_nr_sample_events(hists, rep, evname, stdout);
+<<<<<<< HEAD
 		hists__fprintf(hists, true, 0, 0, rep->min_percent, stdout);
 		fprintf(stdout, "\n\n");
 	}
@@ -349,6 +510,22 @@ static int perf_evlist__tty_browse_hists(struct perf_evlist *evlist,
 						 style);
 			perf_read_values_destroy(&rep->show_threads_values);
 		}
+=======
+		hists__fprintf(hists, true, 0, 0, rep->min_percent, stdout,
+			       symbol_conf.use_callchain);
+		fprintf(stdout, "\n\n");
+	}
+
+	if (sort_order == NULL &&
+	    parent_pattern == default_parent_pattern)
+		fprintf(stdout, "#\n# (%s)\n#\n", help);
+
+	if (rep->show_threads) {
+		bool style = !strcmp(rep->pretty_printing_style, "raw");
+		perf_read_values_display(stdout, &rep->show_threads_values,
+					 style);
+		perf_read_values_destroy(&rep->show_threads_values);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -356,8 +533,13 @@ static int perf_evlist__tty_browse_hists(struct perf_evlist *evlist,
 
 static void report__warn_kptr_restrict(const struct report *rep)
 {
+<<<<<<< HEAD
 	struct map *kernel_map = rep->session->machines.host.vmlinux_maps[MAP__FUNCTION];
 	struct kmap *kernel_kmap = map__kmap(kernel_map);
+=======
+	struct map *kernel_map = machine__kernel_map(&rep->session->machines.host);
+	struct kmap *kernel_kmap = kernel_map ? map__kmap(kernel_map) : NULL;
+>>>>>>> v4.9.227
 
 	if (kernel_map == NULL ||
 	    (kernel_map->dso->hit &&
@@ -403,7 +585,18 @@ static int report__browse_hists(struct report *rep)
 	int ret;
 	struct perf_session *session = rep->session;
 	struct perf_evlist *evlist = session->evlist;
+<<<<<<< HEAD
 	const char *help = "For a higher level overview, try: perf report --sort comm,dso";
+=======
+	const char *help = perf_tip(system_path(TIPDIR));
+
+	if (help == NULL) {
+		/* fallback for people who don't install perf ;-) */
+		help = perf_tip(DOCDIR);
+		if (help == NULL)
+			help = "Cannot load tips.txt file, please install perf!";
+	}
+>>>>>>> v4.9.227
 
 	switch (use_browser) {
 	case 1:
@@ -428,6 +621,7 @@ static int report__browse_hists(struct report *rep)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void report__collapse_hists(struct report *rep)
 {
 	struct ui_progress prog;
@@ -436,12 +630,31 @@ static void report__collapse_hists(struct report *rep)
 	ui_progress__init(&prog, rep->nr_entries, "Merging related events...");
 
 	evlist__for_each(rep->session->evlist, pos) {
+=======
+static int report__collapse_hists(struct report *rep)
+{
+	struct ui_progress prog;
+	struct perf_evsel *pos;
+	int ret = 0;
+
+	ui_progress__init(&prog, rep->nr_entries, "Merging related events...");
+
+	evlist__for_each_entry(rep->session->evlist, pos) {
+>>>>>>> v4.9.227
 		struct hists *hists = evsel__hists(pos);
 
 		if (pos->idx == 0)
 			hists->symbol_filter_str = rep->symbol_filter_str;
 
+<<<<<<< HEAD
 		hists__collapse_resort(hists, &prog);
+=======
+		hists->socket_filter = rep->socket_filter;
+
+		ret = hists__collapse_resort(hists, &prog);
+		if (ret < 0)
+			break;
+>>>>>>> v4.9.227
 
 		/* Non-group events are considered as leader */
 		if (symbol_conf.event_group &&
@@ -454,6 +667,23 @@ static void report__collapse_hists(struct report *rep)
 	}
 
 	ui_progress__finish();
+<<<<<<< HEAD
+=======
+	return ret;
+}
+
+static void report__output_resort(struct report *rep)
+{
+	struct ui_progress prog;
+	struct perf_evsel *pos;
+
+	ui_progress__init(&prog, rep->nr_entries, "Sorting events for output...");
+
+	evlist__for_each_entry(rep->session->evlist, pos)
+		perf_evsel__output_resort(pos, &prog);
+
+	ui_progress__finish();
+>>>>>>> v4.9.227
 }
 
 static int __cmd_report(struct report *rep)
@@ -468,14 +698,22 @@ static int __cmd_report(struct report *rep)
 	if (rep->cpu_list) {
 		ret = perf_session__cpu_bitmap(session, rep->cpu_list,
 					       rep->cpu_bitmap);
+<<<<<<< HEAD
 		if (ret)
 			return ret;
+=======
+		if (ret) {
+			ui__error("failed to set cpu bitmap\n");
+			return ret;
+		}
+>>>>>>> v4.9.227
 	}
 
 	if (rep->show_threads)
 		perf_read_values_init(&rep->show_threads_values);
 
 	ret = report__setup_sample_type(rep);
+<<<<<<< HEAD
 	if (ret)
 		return ret;
 
@@ -485,6 +723,24 @@ static int __cmd_report(struct report *rep)
 
 	report__warn_kptr_restrict(rep);
 
+=======
+	if (ret) {
+		/* report__setup_sample_type() already showed error message */
+		return ret;
+	}
+
+	ret = perf_session__process_events(session);
+	if (ret) {
+		ui__error("failed to process sample\n");
+		return ret;
+	}
+
+	report__warn_kptr_restrict(rep);
+
+	evlist__for_each_entry(session->evlist, pos)
+		rep->nr_entries += evsel__hists(pos)->nr_entries;
+
+>>>>>>> v4.9.227
 	if (use_browser == 0) {
 		if (verbose > 3)
 			perf_session__fprintf(session, stdout);
@@ -499,18 +755,41 @@ static int __cmd_report(struct report *rep)
 		}
 	}
 
+<<<<<<< HEAD
 	report__collapse_hists(rep);
+=======
+	ret = report__collapse_hists(rep);
+	if (ret) {
+		ui__error("failed to process hist entry\n");
+		return ret;
+	}
+>>>>>>> v4.9.227
 
 	if (session_done())
 		return 0;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * recalculate number of entries after collapsing since it
+	 * might be changed during the collapse phase.
+	 */
+	rep->nr_entries = 0;
+	evlist__for_each_entry(session->evlist, pos)
+		rep->nr_entries += evsel__hists(pos)->nr_entries;
+
+>>>>>>> v4.9.227
 	if (rep->nr_entries == 0) {
 		ui__error("The %s file has no samples!\n", file->path);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	evlist__for_each(session->evlist, pos)
 		hists__output_resort(evsel__hists(pos));
+=======
+	report__output_resort(rep);
+>>>>>>> v4.9.227
 
 	return report__browse_hists(rep);
 }
@@ -518,13 +797,24 @@ static int __cmd_report(struct report *rep)
 static int
 report_parse_callchain_opt(const struct option *opt, const char *arg, int unset)
 {
+<<<<<<< HEAD
 	struct report *rep = (struct report *)opt->value;
 
+=======
+	struct callchain_param *callchain = opt->value;
+
+	callchain->enabled = !unset;
+>>>>>>> v4.9.227
 	/*
 	 * --no-call-graph
 	 */
 	if (unset) {
+<<<<<<< HEAD
 		rep->dont_use_callchains = true;
+=======
+		symbol_conf.use_callchain = false;
+		callchain->mode = CHAIN_NONE;
+>>>>>>> v4.9.227
 		return 0;
 	}
 
@@ -564,6 +854,7 @@ parse_percent_limit(const struct option *opt, const char *str,
 		    int unset __maybe_unused)
 {
 	struct report *rep = opt->value;
+<<<<<<< HEAD
 
 	rep->min_percent = strtof(str, NULL);
 	return 0;
@@ -576,6 +867,31 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 	bool has_br_stack = false;
 	int branch_mode = -1;
 	char callchain_default_opt[] = "fractal,0.5,callee";
+=======
+	double pcnt = strtof(str, NULL);
+
+	rep->min_percent = pcnt;
+	callchain_param.min_percent = pcnt;
+	return 0;
+}
+
+#define CALLCHAIN_DEFAULT_OPT  "graph,0.5,caller,function,percent"
+
+const char report_callchain_help[] = "Display call graph (stack chain/backtrace):\n\n"
+				     CALLCHAIN_REPORT_HELP
+				     "\n\t\t\t\tDefault: " CALLCHAIN_DEFAULT_OPT;
+
+int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
+{
+	struct perf_session *session;
+	struct itrace_synth_opts itrace_synth_opts = { .set = 0, };
+	struct stat st;
+	bool has_br_stack = false;
+	int branch_mode = -1;
+	int last_key = 0;
+	bool branch_call_mode = false;
+	char callchain_default_opt[] = CALLCHAIN_DEFAULT_OPT;
+>>>>>>> v4.9.227
 	const char * const report_usage[] = {
 		"perf report [<options>]",
 		NULL
@@ -593,11 +909,21 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 			.attr		 = perf_event__process_attr,
 			.tracing_data	 = perf_event__process_tracing_data,
 			.build_id	 = perf_event__process_build_id,
+<<<<<<< HEAD
+=======
+			.id_index	 = perf_event__process_id_index,
+			.auxtrace_info	 = perf_event__process_auxtrace_info,
+			.auxtrace	 = perf_event__process_auxtrace,
+>>>>>>> v4.9.227
 			.ordered_events	 = true,
 			.ordering_requires_timestamps = true,
 		},
 		.max_stack		 = PERF_MAX_STACK_DEPTH,
 		.pretty_printing_style	 = "normal",
+<<<<<<< HEAD
+=======
+		.socket_filter		 = -1,
+>>>>>>> v4.9.227
 	};
 	const struct option options[] = {
 	OPT_STRING('i', "input", &input_name, "file",
@@ -610,7 +936,11 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 		   "file", "vmlinux pathname"),
 	OPT_STRING(0, "kallsyms", &symbol_conf.kallsyms_name,
 		   "file", "kallsyms pathname"),
+<<<<<<< HEAD
 	OPT_BOOLEAN('f', "force", &report.force, "don't complain, do it"),
+=======
+	OPT_BOOLEAN('f', "force", &symbol_conf.force, "don't complain, do it"),
+>>>>>>> v4.9.227
 	OPT_BOOLEAN('m', "modules", &symbol_conf.use_modules,
 		    "load module symbols - WARNING: use only with -k and LIVE kernel"),
 	OPT_BOOLEAN('n', "show-nr-samples", &symbol_conf.show_nr_samples,
@@ -631,21 +961,39 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 		   " Please refer the man page for the complete list."),
 	OPT_STRING('F', "fields", &field_order, "key[,keys...]",
 		   "output field(s): overhead, period, sample plus all of sort keys"),
+<<<<<<< HEAD
 	OPT_BOOLEAN(0, "showcpuutilization", &symbol_conf.show_cpu_utilization,
 		    "Show sample percentage for different cpu modes"),
+=======
+	OPT_BOOLEAN(0, "show-cpu-utilization", &symbol_conf.show_cpu_utilization,
+		    "Show sample percentage for different cpu modes"),
+	OPT_BOOLEAN_FLAG(0, "showcpuutilization", &symbol_conf.show_cpu_utilization,
+		    "Show sample percentage for different cpu modes", PARSE_OPT_HIDDEN),
+>>>>>>> v4.9.227
 	OPT_STRING('p', "parent", &parent_pattern, "regex",
 		   "regex filter to identify parent, see: '--sort parent'"),
 	OPT_BOOLEAN('x', "exclude-other", &symbol_conf.exclude_other,
 		    "Only display entries with parent-match"),
+<<<<<<< HEAD
 	OPT_CALLBACK_DEFAULT('g', "call-graph", &report, "output_type,min_percent[,print_limit],call_order",
 		     "Display callchains using output_type (graph, flat, fractal, or none) , min percent threshold, optional print limit, callchain order, key (function or address). "
 		     "Default: fractal,0.5,callee,function", &report_parse_callchain_opt, callchain_default_opt),
+=======
+	OPT_CALLBACK_DEFAULT('g', "call-graph", &callchain_param,
+			     "print_type,threshold[,print_limit],order,sort_key[,branch],value",
+			     report_callchain_help, &report_parse_callchain_opt,
+			     callchain_default_opt),
+>>>>>>> v4.9.227
 	OPT_BOOLEAN(0, "children", &symbol_conf.cumulate_callchain,
 		    "Accumulate callchains of children and show total overhead as well"),
 	OPT_INTEGER(0, "max-stack", &report.max_stack,
 		    "Set the maximum stack depth when parsing the callchain, "
 		    "anything beyond the specified depth will be ignored. "
+<<<<<<< HEAD
 		    "Default: " __stringify(PERF_MAX_STACK_DEPTH)),
+=======
+		    "Default: kernel.perf_event_max_stack or " __stringify(PERF_MAX_STACK_DEPTH)),
+>>>>>>> v4.9.227
 	OPT_BOOLEAN('G', "inverted", &report.inverted_callchain,
 		    "alias for inverted call graph"),
 	OPT_CALLBACK(0, "ignore-callees", NULL, "regex",
@@ -655,6 +1003,13 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 		   "only consider symbols in these dsos"),
 	OPT_STRING('c', "comms", &symbol_conf.comm_list_str, "comm[,comm...]",
 		   "only consider symbols in these comms"),
+<<<<<<< HEAD
+=======
+	OPT_STRING(0, "pid", &symbol_conf.pid_list_str, "pid[,pid...]",
+		   "only consider symbols in these pids"),
+	OPT_STRING(0, "tid", &symbol_conf.tid_list_str, "tid[,tid...]",
+		   "only consider symbols in these tids"),
+>>>>>>> v4.9.227
 	OPT_STRING('S', "symbols", &symbol_conf.sym_list_str, "symbol[,symbol...]",
 		   "only consider these symbols"),
 	OPT_STRING(0, "symbol-filter", &report.symbol_filter_str, "filter",
@@ -662,6 +1017,7 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 	OPT_STRING('w', "column-widths", &symbol_conf.col_width_list_str,
 		   "width[,width...]",
 		   "don't try to adjust column width, use these fixed values"),
+<<<<<<< HEAD
 	OPT_STRING('t', "field-separator", &symbol_conf.field_sep, "separator",
 		   "separator for columns, no spaces will be added between "
 		   "columns '.' is reserved."),
@@ -669,6 +1025,16 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 		    "Only display entries resolved to a symbol"),
 	OPT_STRING(0, "symfs", &symbol_conf.symfs, "directory",
 		    "Look for files with symbols relative to this directory"),
+=======
+	OPT_STRING_NOEMPTY('t', "field-separator", &symbol_conf.field_sep, "separator",
+		   "separator for columns, no spaces will be added between "
+		   "columns '.' is reserved."),
+	OPT_BOOLEAN('U', "hide-unresolved", &symbol_conf.hide_unresolved,
+		    "Only display entries resolved to a symbol"),
+	OPT_CALLBACK(0, "symfs", NULL, "directory",
+		     "Look for files with symbols relative to this directory",
+		     symbol__config_symfs),
+>>>>>>> v4.9.227
 	OPT_STRING('C', "cpu", &report.cpu_list, "cpu",
 		   "list of cpus to profile"),
 	OPT_BOOLEAN('I', "show-info", &report.show_full_info,
@@ -684,7 +1050,14 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 	OPT_BOOLEAN(0, "group", &symbol_conf.event_group,
 		    "Show event group information together"),
 	OPT_CALLBACK_NOOPT('b', "branch-stack", &branch_mode, "",
+<<<<<<< HEAD
 		    "use branch records for histogram filling", parse_branch_mode),
+=======
+		    "use branch records for per branch histogram filling",
+		    parse_branch_mode),
+	OPT_BOOLEAN(0, "branch-history", &branch_call_mode,
+		    "add last branch records to call history"),
+>>>>>>> v4.9.227
 	OPT_STRING(0, "objdump", &objdump_path, "path",
 		   "objdump binary to use for disassembly and annotations"),
 	OPT_BOOLEAN(0, "demangle", &symbol_conf.demangle,
@@ -696,6 +1069,25 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 		     "Don't show entries under that percent", parse_percent_limit),
 	OPT_CALLBACK(0, "percentage", NULL, "relative|absolute",
 		     "how to display percentage of filtered entries", parse_filter_percentage),
+<<<<<<< HEAD
+=======
+	OPT_CALLBACK_OPTARG(0, "itrace", &itrace_synth_opts, NULL, "opts",
+			    "Instruction Tracing options",
+			    itrace_parse_synth_opts),
+	OPT_BOOLEAN(0, "full-source-path", &srcline_full_filename,
+			"Show full source file name path for source lines"),
+	OPT_BOOLEAN(0, "show-ref-call-graph", &symbol_conf.show_ref_callgraph,
+		    "Show callgraph from reference event"),
+	OPT_INTEGER(0, "socket-filter", &report.socket_filter,
+		    "only show processor socket that match with this filter"),
+	OPT_BOOLEAN(0, "raw-trace", &symbol_conf.raw_trace,
+		    "Show raw trace event output (do not use print fmt or plugins)"),
+	OPT_BOOLEAN(0, "hierarchy", &symbol_conf.report_hierarchy,
+		    "Show entries in a hierarchy"),
+	OPT_CALLBACK_DEFAULT(0, "stdio-color", NULL, "mode",
+			     "'always' (default), 'never' or 'auto' only applicable to --stdio mode",
+			     stdio__config_color, "always"),
+>>>>>>> v4.9.227
 	OPT_END()
 	};
 	struct perf_data_file file = {
@@ -709,6 +1101,30 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 	perf_config(report__config, &report);
 
 	argc = parse_options(argc, argv, options, report_usage, 0);
+<<<<<<< HEAD
+=======
+	if (argc) {
+		/*
+		 * Special case: if there's an argument left then assume that
+		 * it's a symbol filter:
+		 */
+		if (argc > 1)
+			usage_with_options(report_usage, options);
+
+		report.symbol_filter_str = argv[0];
+	}
+
+	if (symbol_conf.vmlinux_name &&
+	    access(symbol_conf.vmlinux_name, R_OK)) {
+		pr_err("Invalid file: %s\n", symbol_conf.vmlinux_name);
+		return -EINVAL;
+	}
+	if (symbol_conf.kallsyms_name &&
+	    access(symbol_conf.kallsyms_name, R_OK)) {
+		pr_err("Invalid file: %s\n", symbol_conf.kallsyms_name);
+		return -EINVAL;
+	}
+>>>>>>> v4.9.227
 
 	if (report.use_stdio)
 		use_browser = 0;
@@ -719,6 +1135,15 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 
 	if (report.inverted_callchain)
 		callchain_param.order = ORDER_CALLER;
+<<<<<<< HEAD
+=======
+	if (symbol_conf.cumulate_callchain && !callchain_param.order_set)
+		callchain_param.order = ORDER_CALLER;
+
+	if (itrace_synth_opts.callchain &&
+	    (int)itrace_synth_opts.callchain_sz > report.max_stack)
+		report.max_stack = itrace_synth_opts.callchain_sz;
+>>>>>>> v4.9.227
 
 	if (!input_name || !strlen(input_name)) {
 		if (!fstat(STDIN_FILENO, &st) && S_ISFIFO(st.st_mode))
@@ -728,7 +1153,11 @@ int cmd_report(int argc, const char **argv, const char *prefix __maybe_unused)
 	}
 
 	file.path  = input_name;
+<<<<<<< HEAD
 	file.force = report.force;
+=======
+	file.force = symbol_conf.force;
+>>>>>>> v4.9.227
 
 repeat:
 	session = perf_session__new(&file, false, &report.tool);
@@ -740,15 +1169,44 @@ repeat:
 					       report.queue_size);
 	}
 
+<<<<<<< HEAD
+=======
+	session->itrace_synth_opts = &itrace_synth_opts;
+
+>>>>>>> v4.9.227
 	report.session = session;
 
 	has_br_stack = perf_header__has_feat(&session->header,
 					     HEADER_BRANCH_STACK);
 
+<<<<<<< HEAD
 	if ((branch_mode == -1 && has_br_stack) || branch_mode == 1) {
 		sort__mode = SORT_MODE__BRANCH;
 		symbol_conf.cumulate_callchain = false;
 	}
+=======
+	if (itrace_synth_opts.last_branch)
+		has_br_stack = true;
+
+	/*
+	 * Branch mode is a tristate:
+	 * -1 means default, so decide based on the file having branch data.
+	 * 0/1 means the user chose a mode.
+	 */
+	if (((branch_mode == -1 && has_br_stack) || branch_mode == 1) &&
+	    !branch_call_mode) {
+		sort__mode = SORT_MODE__BRANCH;
+		symbol_conf.cumulate_callchain = false;
+	}
+	if (branch_call_mode) {
+		callchain_param.key = CCKEY_ADDRESS;
+		callchain_param.branch_callstack = 1;
+		symbol_conf.use_callchain = true;
+		callchain_register_param(&callchain_param);
+		if (sort_order == NULL)
+			sort_order = "srcline,symbol,dso";
+	}
+>>>>>>> v4.9.227
 
 	if (report.mem_mode) {
 		if (sort__mode == SORT_MODE__BRANCH) {
@@ -759,7 +1217,35 @@ repeat:
 		symbol_conf.cumulate_callchain = false;
 	}
 
+<<<<<<< HEAD
 	if (setup_sorting() < 0) {
+=======
+	if (symbol_conf.report_hierarchy) {
+		/* disable incompatible options */
+		symbol_conf.cumulate_callchain = false;
+
+		if (field_order) {
+			pr_err("Error: --hierarchy and --fields options cannot be used together\n");
+			parse_options_usage(report_usage, options, "F", 1);
+			parse_options_usage(NULL, options, "hierarchy", 0);
+			goto error;
+		}
+
+		perf_hpp_list.need_collapse = true;
+	}
+
+	/* Force tty output for header output and per-thread stat. */
+	if (report.header || report.header_only || report.show_threads)
+		use_browser = 0;
+
+	if (strcmp(input_name, "-") != 0)
+		setup_browser(true);
+	else
+		use_browser = 0;
+
+	if ((last_key != K_SWITCH_INPUT_DATA) &&
+	    (setup_sorting(session->evlist) < 0)) {
+>>>>>>> v4.9.227
 		if (sort_order)
 			parse_options_usage(report_usage, options, "s", 1);
 		if (field_order)
@@ -768,6 +1254,7 @@ repeat:
 		goto error;
 	}
 
+<<<<<<< HEAD
 	/* Force tty output for header output. */
 	if (report.header || report.header_only)
 		use_browser = 0;
@@ -782,6 +1269,15 @@ repeat:
 					   report.show_full_info);
 		if (report.header_only)
 			return 0;
+=======
+	if (report.header || report.header_only) {
+		perf_session__fprintf_info(session, stdout,
+					   report.show_full_info);
+		if (report.header_only) {
+			ret = 0;
+			goto error;
+		}
+>>>>>>> v4.9.227
 	} else if (use_browser == 0) {
 		fputs("# To display the perf.data header info, please use --header/--header-only options.\n#\n",
 		      stdout);
@@ -793,9 +1289,15 @@ repeat:
 	 * implementation.
 	 */
 	if (ui__has_annotation()) {
+<<<<<<< HEAD
 		symbol_conf.priv_size = sizeof(struct annotation);
 		machines__set_symbol_filter(&session->machines,
 					    symbol__annotate_init);
+=======
+		ret = symbol__annotation_init();
+		if (ret < 0)
+			goto error;
+>>>>>>> v4.9.227
 		/*
  		 * For searching by name on the "Browse map details".
  		 * providing it only in verbose mode not to bloat too
@@ -816,6 +1318,7 @@ repeat:
 	if (symbol__init(&session->header.env) < 0)
 		goto error;
 
+<<<<<<< HEAD
 	if (argc) {
 		/*
 		 * Special case: if there's an argument left then assume that
@@ -827,11 +1330,17 @@ repeat:
 		report.symbol_filter_str = argv[0];
 	}
 
+=======
+>>>>>>> v4.9.227
 	sort__setup_elide(stdout);
 
 	ret = __cmd_report(&report);
 	if (ret == K_SWITCH_INPUT_DATA) {
 		perf_session__delete(session);
+<<<<<<< HEAD
+=======
+		last_key = K_SWITCH_INPUT_DATA;
+>>>>>>> v4.9.227
 		goto repeat;
 	} else
 		ret = 0;

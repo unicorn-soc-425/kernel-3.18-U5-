@@ -57,7 +57,11 @@ static int cma_maxchunk_get(void *data, u64 *val)
 	mutex_lock(&cma->lock);
 	for (;;) {
 		start = find_next_zero_bit(cma->bitmap, bitmap_maxno, end);
+<<<<<<< HEAD
 		if (start >= cma->count)
+=======
+		if (start >= bitmap_maxno)
+>>>>>>> v4.9.227
 			break;
 		end = find_next_bit(cma->bitmap, bitmap_maxno, start);
 		maxchunk = max(end - start, maxchunk);

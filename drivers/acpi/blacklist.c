@@ -3,7 +3,11 @@
  *
  *  Check to see if the given machine has a known bad ACPI BIOS
  *  or if the BIOS is too old.
+<<<<<<< HEAD
  *  Check given machine against acpi_osi_dmi_table[].
+=======
+ *  Check given machine against acpi_rev_dmi_table[].
+>>>>>>> v4.9.227
  *
  *  Copyright (C) 2004 Len Brown <len.brown@intel.com>
  *  Copyright (C) 2002 Andy Grover <andrew.grover@intel.com>
@@ -20,10 +24,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+>>>>>>> v4.9.227
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
@@ -51,7 +58,11 @@ struct acpi_blacklist_item {
 	u32 is_critical_error;
 };
 
+<<<<<<< HEAD
 static struct dmi_system_id acpi_osi_dmi_table[] __initdata;
+=======
+static struct dmi_system_id acpi_rev_dmi_table[] __initdata;
+>>>>>>> v4.9.227
 
 /*
  * POLICY: If *anything* doesn't work, put it on the blacklist.
@@ -132,11 +143,17 @@ int __init acpi_blacklisted(void)
 		}
 	}
 
+<<<<<<< HEAD
 	dmi_check_system(acpi_osi_dmi_table);
+=======
+	(void)early_acpi_osi_init();
+	dmi_check_system(acpi_rev_dmi_table);
+>>>>>>> v4.9.227
 
 	return blacklisted;
 }
 #ifdef CONFIG_DMI
+<<<<<<< HEAD
 static int __init dmi_enable_osi_linux(const struct dmi_system_id *d)
 {
 	acpi_dmi_osi_linux(1, d);	/* enable */
@@ -371,6 +388,63 @@ static struct dmi_system_id acpi_osi_dmi_table[] __initdata = {
 		     DMI_MATCH(DMI_PRODUCT_NAME, "1015PX"),
 		},
 	},
+=======
+#ifdef CONFIG_ACPI_REV_OVERRIDE_POSSIBLE
+static int __init dmi_enable_rev_override(const struct dmi_system_id *d)
+{
+	printk(KERN_NOTICE PREFIX "DMI detected: %s (force ACPI _REV to 5)\n",
+	       d->ident);
+	acpi_rev_override_setup(NULL);
+	return 0;
+}
+#endif
+
+static struct dmi_system_id acpi_rev_dmi_table[] __initdata = {
+#ifdef CONFIG_ACPI_REV_OVERRIDE_POSSIBLE
+	/*
+	 * DELL XPS 13 (2015) switches sound between HDA and I2S
+	 * depending on the ACPI _REV callback. If userspace supports
+	 * I2S sufficiently (or if you do not care about sound), you
+	 * can safely disable this quirk.
+	 */
+	{
+	 .callback = dmi_enable_rev_override,
+	 .ident = "DELL XPS 13 (2015)",
+	 .matches = {
+		      DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+		      DMI_MATCH(DMI_PRODUCT_NAME, "XPS 13 9343"),
+		},
+	},
+	{
+	 .callback = dmi_enable_rev_override,
+	 .ident = "DELL Precision 5520",
+	 .matches = {
+		      DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+		      DMI_MATCH(DMI_PRODUCT_NAME, "Precision 5520"),
+		},
+	},
+	{
+	 .callback = dmi_enable_rev_override,
+	 .ident = "DELL Precision 3520",
+	 .matches = {
+		      DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+		      DMI_MATCH(DMI_PRODUCT_NAME, "Precision 3520"),
+		},
+	},
+	/*
+	 * Resolves a quirk with the Dell Latitude 3350 that
+	 * causes the ethernet adapter to not function.
+	 */
+	{
+	 .callback = dmi_enable_rev_override,
+	 .ident = "DELL Latitude 3350",
+	 .matches = {
+		      DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+		      DMI_MATCH(DMI_PRODUCT_NAME, "Latitude 3350"),
+		},
+	},
+#endif
+>>>>>>> v4.9.227
 	{}
 };
 

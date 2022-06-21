@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -35,9 +39,16 @@
 #ifndef __OBD_CKSUM
 #define __OBD_CKSUM
 #include "../../include/linux/libcfs/libcfs.h"
+<<<<<<< HEAD
 #include "lustre/lustre_idl.h"
 
 static inline unsigned char cksum_obd2cfs(cksum_type_t cksum_type)
+=======
+#include "../../include/linux/libcfs/libcfs_crypto.h"
+#include "lustre/lustre_idl.h"
+
+static inline unsigned char cksum_obd2cfs(enum cksum_type cksum_type)
+>>>>>>> v4.9.227
 {
 	switch (cksum_type) {
 	case OBD_CKSUM_CRC32:
@@ -63,8 +74,14 @@ static inline unsigned char cksum_obd2cfs(cksum_type_t cksum_type)
  * In case of an unsupported types/flags we fall back to ADLER
  * because that is supported by all clients since 1.8
  *
+<<<<<<< HEAD
  * In case multiple algorithms are supported the best one is used. */
 static inline u32 cksum_type_pack(cksum_type_t cksum_type)
+=======
+ * In case multiple algorithms are supported the best one is used.
+ */
+static inline u32 cksum_type_pack(enum cksum_type cksum_type)
+>>>>>>> v4.9.227
 {
 	unsigned int    performance = 0, tmp;
 	u32		flag = OBD_FL_CKSUM_ADLER;
@@ -98,7 +115,11 @@ static inline u32 cksum_type_pack(cksum_type_t cksum_type)
 	return flag;
 }
 
+<<<<<<< HEAD
 static inline cksum_type_t cksum_type_unpack(u32 o_flags)
+=======
+static inline enum cksum_type cksum_type_unpack(u32 o_flags)
+>>>>>>> v4.9.227
 {
 	switch (o_flags & OBD_FL_CKSUM_ALL) {
 	case OBD_FL_CKSUM_CRC32C:
@@ -116,9 +137,15 @@ static inline cksum_type_t cksum_type_unpack(u32 o_flags)
  * 1.8 supported ADLER it is base and not depend on hw
  * Client uses all available local algos
  */
+<<<<<<< HEAD
 static inline cksum_type_t cksum_types_supported_client(void)
 {
 	cksum_type_t ret = OBD_CKSUM_ADLER;
+=======
+static inline enum cksum_type cksum_types_supported_client(void)
+{
+	enum cksum_type ret = OBD_CKSUM_ADLER;
+>>>>>>> v4.9.227
 
 	CDEBUG(D_INFO, "Crypto hash speed: crc %d, crc32c %d, adler %d\n",
 	       cfs_crypto_hash_speed(cksum_obd2cfs(OBD_CKSUM_CRC32)),
@@ -133,6 +160,7 @@ static inline cksum_type_t cksum_types_supported_client(void)
 	return ret;
 }
 
+<<<<<<< HEAD
 /* Server uses algos that perform at 50% or better of the Adler */
 static inline cksum_type_t cksum_types_supported_server(void)
 {
@@ -157,20 +185,33 @@ static inline cksum_type_t cksum_types_supported_server(void)
 }
 
 
+=======
+>>>>>>> v4.9.227
 /* Select the best checksum algorithm among those supplied in the cksum_types
  * input.
  *
  * Currently, calling cksum_type_pack() with a mask will return the fastest
  * checksum type due to its benchmarking at libcfs module load.
  * Caution is advised, however, since what is fastest on a single client may
+<<<<<<< HEAD
  * not be the fastest or most efficient algorithm on the server.  */
 static inline cksum_type_t cksum_type_select(cksum_type_t cksum_types)
+=======
+ * not be the fastest or most efficient algorithm on the server.
+ */
+static inline enum cksum_type cksum_type_select(enum cksum_type cksum_types)
+>>>>>>> v4.9.227
 {
 	return cksum_type_unpack(cksum_type_pack(cksum_types));
 }
 
 /* Checksum algorithm names. Must be defined in the same order as the
+<<<<<<< HEAD
  * OBD_CKSUM_* flags. */
+=======
+ * OBD_CKSUM_* flags.
+ */
+>>>>>>> v4.9.227
 #define DECLARE_CKSUM_NAME char *cksum_name[] = {"crc32", "adler", "crc32c"}
 
 #endif /* __OBD_H */

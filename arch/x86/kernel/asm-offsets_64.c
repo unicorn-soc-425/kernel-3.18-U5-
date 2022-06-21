@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <asm/ia32.h>
 
 #define __SYSCALL_64(nr, sym, compat) [nr] = 1,
@@ -11,6 +12,19 @@ static char syscalls_64[] = {
 #include <asm/syscalls_64.h>
 };
 #define __SYSCALL_I386(nr, sym, compat) [nr] = 1,
+=======
+#ifndef __LINUX_KBUILD_H
+# error "Please do not build this file directly, build asm-offsets.c instead"
+#endif
+
+#include <asm/ia32.h>
+
+#define __SYSCALL_64(nr, sym, qual) [nr] = 1,
+static char syscalls_64[] = {
+#include <asm/syscalls_64.h>
+};
+#define __SYSCALL_I386(nr, sym, qual) [nr] = 1,
+>>>>>>> v4.9.227
 static char syscalls_ia32[] = {
 #include <asm/syscalls_32.h>
 };
@@ -19,12 +33,16 @@ int main(void)
 {
 #ifdef CONFIG_PARAVIRT
 	OFFSET(PV_IRQ_adjust_exception_frame, pv_irq_ops, adjust_exception_frame);
+<<<<<<< HEAD
 	OFFSET(PV_CPU_usergs_sysret32, pv_cpu_ops, usergs_sysret32);
+=======
+>>>>>>> v4.9.227
 	OFFSET(PV_CPU_usergs_sysret64, pv_cpu_ops, usergs_sysret64);
 	OFFSET(PV_CPU_swapgs, pv_cpu_ops, swapgs);
 	BLANK();
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_IA32_EMULATION
 	OFFSET(TI_sysenter_return, thread_info, sysenter_return);
 	BLANK();
@@ -49,6 +67,10 @@ int main(void)
 #define ENTRY(entry) OFFSET(pt_regs_ ## entry, pt_regs, entry)
 	ENTRY(bx);
 	ENTRY(bx);
+=======
+#define ENTRY(entry) OFFSET(pt_regs_ ## entry, pt_regs, entry)
+	ENTRY(bx);
+>>>>>>> v4.9.227
 	ENTRY(cx);
 	ENTRY(dx);
 	ENTRY(sp);
@@ -78,12 +100,27 @@ int main(void)
 #undef ENTRY
 
 	OFFSET(TSS_ist, tss_struct, x86_tss.ist);
+<<<<<<< HEAD
 	BLANK();
 
 	DEFINE(__NR_syscall_max, sizeof(syscalls_64) - 1);
 	DEFINE(NR_syscalls, sizeof(syscalls_64));
 
 	DEFINE(__NR_ia32_syscall_max, sizeof(syscalls_ia32) - 1);
+=======
+	OFFSET(TSS_sp0, tss_struct, x86_tss.sp0);
+	BLANK();
+
+#ifdef CONFIG_CC_STACKPROTECTOR
+	DEFINE(stack_canary_offset, offsetof(union irq_stack_union, stack_canary));
+	BLANK();
+#endif
+
+	DEFINE(__NR_syscall_max, sizeof(syscalls_64) - 1);
+	DEFINE(NR_syscalls, sizeof(syscalls_64));
+
+	DEFINE(__NR_syscall_compat_max, sizeof(syscalls_ia32) - 1);
+>>>>>>> v4.9.227
 	DEFINE(IA32_NR_syscalls, sizeof(syscalls_ia32));
 
 	return 0;

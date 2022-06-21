@@ -11,11 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  *
+=======
+>>>>>>> v4.9.227
  ******************************************************************************/
 #ifndef __IEEE80211_H
 #define __IEEE80211_H
@@ -122,7 +125,10 @@ enum {
 
 #define WPA_SELECTOR_LEN 4
 extern u8 RTW_WPA_OUI_TYPE[];
+<<<<<<< HEAD
 extern u16 RTW_WPA_VERSION;
+=======
+>>>>>>> v4.9.227
 extern u8 WPA_AUTH_KEY_MGMT_NONE[];
 extern u8 WPA_AUTH_KEY_MGMT_UNSPEC_802_1X[];
 extern u8 WPA_AUTH_KEY_MGMT_PSK_OVER_802_1X[];
@@ -245,7 +251,11 @@ struct ieee_param {
 			u16 capability;
 			int flags;
 			u8 tx_supp_rates[16];
+<<<<<<< HEAD
 			struct rtw_ieee80211_ht_cap ht_cap;
+=======
+			struct ieee80211_ht_cap ht_cap;
+>>>>>>> v4.9.227
 		} add_sta;
 		struct {
 			u8	reserved[2];/* for set max_num_sta */
@@ -270,7 +280,11 @@ struct sta_data {
 	u32 sta_set;
 	u8 tx_supp_rates[16];
 	u32 tx_supp_rates_len;
+<<<<<<< HEAD
 	struct rtw_ieee80211_ht_cap ht_cap;
+=======
+	struct ieee80211_ht_cap ht_cap;
+>>>>>>> v4.9.227
 	u64	rx_pkts;
 	u64	rx_bytes;
 	u64	rx_drops;
@@ -297,6 +311,7 @@ struct sta_data {
 /* this is stolen from ipw2200 driver */
 #define IEEE_IBSS_MAC_HASH_SIZE 31
 
+<<<<<<< HEAD
 struct ieee_ibss_seq {
 	u8 mac[ETH_ALEN];
 	u16 seq_num;
@@ -353,6 +368,8 @@ struct eapol {
 	u16 length;
 } __packed;
 
+=======
+>>>>>>> v4.9.227
 enum eap_type {
 	EAP_PACKET = 0,
 	EAPOL_START,
@@ -478,6 +495,7 @@ struct ieee80211_snap_hdr {
 #define WLAN_GET_SEQ_FRAG(seq) ((seq) & RTW_IEEE80211_SCTL_FRAG)
 #define WLAN_GET_SEQ_SEQ(seq)  ((seq) & RTW_IEEE80211_SCTL_SEQ)
 
+<<<<<<< HEAD
 /* Authentication algorithms */
 #define WLAN_AUTH_OPEN 0
 #define WLAN_AUTH_SHARED_KEY 1
@@ -562,6 +580,11 @@ struct ieee80211_snap_hdr {
 #define WLAN_EID_VENDOR_SPECIFIC 221
 #define WLAN_EID_GENERIC (WLAN_EID_VENDOR_SPECIFIC)
 
+=======
+/* Non standard?  Not in <linux/ieee80211.h> */
+#define WLAN_REASON_EXPIRATION_CHK 65535
+
+>>>>>>> v4.9.227
 #define IEEE80211_MGMT_HDR_LEN 24
 #define IEEE80211_DATA_HDR3_LEN 24
 #define IEEE80211_DATA_HDR4_LEN 30
@@ -639,6 +662,7 @@ struct ieee80211_snap_hdr {
 #define IEEE80211_NUM_CCK_RATES		4
 #define IEEE80211_OFDM_SHIFT_MASK_A	4
 
+<<<<<<< HEAD
 /* NOTE: This data is for statistical purposes; not all hardware provides this
  *       information for frames received.  Not setting these will not cause
  *       any adverse affects. */
@@ -655,12 +679,15 @@ struct ieee80211_rx_stats {
 	u16 len;
 };
 
+=======
+>>>>>>> v4.9.227
 /* IEEE 802.11 requires that STA supports concurrent reception of at least
  * three fragmented frames. This define can be increased to support more
  * concurrent frames, but it should be noted that each entry can consume about
  * 2 kB of RAM and increasing cache size will slow down frame reassembly. */
 #define IEEE80211_FRAG_CACHE_LEN 4
 
+<<<<<<< HEAD
 struct ieee80211_frag_entry {
 	u32 first_frag_time;
 	uint seq;
@@ -716,6 +743,8 @@ struct ieee80211_softmac_stats {
 	uint swtxawake;
 };
 
+=======
+>>>>>>> v4.9.227
 #define SEC_KEY_1	(1<<0)
 #define SEC_KEY_2	(1<<1)
 #define SEC_KEY_3	(1<<2)
@@ -735,6 +764,7 @@ struct ieee80211_softmac_stats {
 #define WEP_KEYS 4
 #define WEP_KEY_LEN 13
 
+<<<<<<< HEAD
 struct ieee80211_security {
 	u16 active_key:2,
 	enabled:1,
@@ -771,6 +801,8 @@ struct ieee80211_header_data {
 	u16 seq_ctrl;
 };
 
+=======
+>>>>>>> v4.9.227
 #define BEACON_PROBE_SSID_ID_POSITION 12
 
 /* Management Frame Information Element Types */
@@ -787,6 +819,7 @@ struct ieee80211_header_data {
 #define MFIE_TYPE_RATES_EX	50
 #define MFIE_TYPE_GENERIC	221
 
+<<<<<<< HEAD
 struct ieee80211_info_element_hdr {
 	u8 id;
 	u8 len;
@@ -862,6 +895,11 @@ struct ieee80211_txb {
 };
 
 
+=======
+#define IEEE80211_DEFAULT_TX_ESSID "Penguin"
+#define IEEE80211_DEFAULT_BASIC_RATE 10
+
+>>>>>>> v4.9.227
 /* SWEEP TABLE ENTRIES NUMBER*/
 #define MAX_SWEEP_TAB_ENTRIES		  42
 #define MAX_SWEEP_TAB_ENTRIES_PER_PACKET  7
@@ -959,11 +997,14 @@ static inline int is_broadcast_mac_addr(const u8 *addr)
 #define CFG_IEEE80211_RESERVE_FCS (1<<0)
 #define CFG_IEEE80211_COMPUTE_FCS (1<<1)
 
+<<<<<<< HEAD
 struct tx_pending {
 	int frag;
 	struct ieee80211_txb *txb;
 };
 
+=======
+>>>>>>> v4.9.227
 #define MAXTID	16
 
 #define IEEE_A	    (1<<0)
@@ -1174,8 +1215,13 @@ enum parse_res rtw_ieee802_11_parse_elems(u8 *start, uint len,
 					  struct rtw_ieee802_11_elems *elems,
 					  int show_errors);
 
+<<<<<<< HEAD
 u8 *rtw_set_fixed_ie(unsigned char *pbuf, unsigned int len,
 		     unsigned char *source, unsigned int *frlen);
+=======
+u8 *rtw_set_fixed_ie(void *pbuf, unsigned int len,
+		     void *source, unsigned int *frlen);
+>>>>>>> v4.9.227
 u8 *rtw_set_ie(u8 *pbuf, int index, uint len, u8 *source, uint *frlen);
 
 enum secondary_ch_offset {
@@ -1183,6 +1229,7 @@ enum secondary_ch_offset {
 	SCA = 1, /* secondary channel above */
 	SCB = 3,  /* secondary channel below */
 };
+<<<<<<< HEAD
 u8 secondary_ch_offset_to_hal_ch_offset(u8 ch_offset);
 u8 hal_ch_offset_to_secondary_ch_offset(u8 ch_offset);
 u8 *rtw_set_ie_ch_switch(u8 *buf, u32 *buf_len, u8 ch_switch_mode,
@@ -1197,6 +1244,10 @@ u8 *rtw_get_ie_ex(u8 *in_ie, uint in_len, u8 eid, u8 *oui,
 		  u8 oui_len, u8 *ie, uint *ielen);
 int rtw_ies_remove_ie(u8 *ies, uint *ies_len, uint offset,
 		      u8 eid, u8 *oui, u8 oui_len);
+=======
+
+u8 *rtw_get_ie(u8 *pbuf, int index, int *len, int limit);
+>>>>>>> v4.9.227
 
 void rtw_set_supported_rate(u8 *SupportedRates, uint mode);
 
@@ -1220,6 +1271,7 @@ u8 *rtw_get_wps_attr(u8 *wps_ie, uint wps_ielen, u16 target_attr_id,
 u8 *rtw_get_wps_attr_content(u8 *wps_ie, uint wps_ielen, u16 target_attr_id,
 			     u8 *buf_content, uint *len_content);
 
+<<<<<<< HEAD
 /**
  * for_each_ie - iterate over continuous IEs
  * @ie:
@@ -1233,6 +1285,8 @@ u8 *rtw_get_wps_attr_content(u8 *wps_ie, uint wps_ielen, u16 target_attr_id,
 void dump_ies(u8 *buf, u32 buf_len);
 void dump_wps_ie(u8 *ie, u32 ie_len);
 
+=======
+>>>>>>> v4.9.227
 uint	rtw_get_rateset_len(u8	*rateset);
 
 struct registry_priv;
@@ -1254,8 +1308,11 @@ void rtw_macaddr_cfg(u8 *mac_addr);
 u16 rtw_mcs_rate(u8 rf_type, u8 bw_40MHz, u8 short_GI_20, u8 short_GI_40,
 		 unsigned char *MCS_rate);
 
+<<<<<<< HEAD
 int rtw_action_frame_parse(const u8 *frame, u32 frame_len, u8 *category,
 			   u8 *action);
 const char *action_public_str(u8 action);
 
+=======
+>>>>>>> v4.9.227
 #endif /* IEEE80211_H */

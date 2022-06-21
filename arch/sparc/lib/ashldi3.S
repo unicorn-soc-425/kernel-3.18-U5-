@@ -6,6 +6,10 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	.text
 ENTRY(__ashldi3)
@@ -33,3 +37,7 @@ ENTRY(__ashldi3)
 	retl
 	 nop
 ENDPROC(__ashldi3)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__ashldi3)
+>>>>>>> v4.9.227

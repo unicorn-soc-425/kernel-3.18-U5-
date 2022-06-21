@@ -40,7 +40,11 @@
 static inline void flush_tce(void* tceaddr)
 {
 	/* a single tce can't cross a cache line */
+<<<<<<< HEAD
 	if (cpu_has_clflush)
+=======
+	if (boot_cpu_has(X86_FEATURE_CLFLUSH))
+>>>>>>> v4.9.227
 		clflush(tceaddr);
 	else
 		wbinvd();

@@ -17,6 +17,7 @@
 
 #ifdef CONFIG_COMPAT
 
+<<<<<<< HEAD
 /* Note to the author of this code: did it ever occur to
    you why the ifdefs are needed? Think about it again. -AK */
 #if defined(CONFIG_X86_64) || defined(CONFIG_TILE)
@@ -29,6 +30,8 @@
 #  define INPUT_COMPAT_TEST test_thread_flag(TIF_32BIT)
 #endif
 
+=======
+>>>>>>> v4.9.227
 struct input_event_compat {
 	struct compat_timeval time;
 	__u16 type;
@@ -67,7 +70,11 @@ struct ff_effect_compat {
 
 static inline size_t input_event_size(void)
 {
+<<<<<<< HEAD
 	return (INPUT_COMPAT_TEST && !COMPAT_USE_64BIT_TIME) ?
+=======
+	return (in_compat_syscall() && !COMPAT_USE_64BIT_TIME) ?
+>>>>>>> v4.9.227
 		sizeof(struct input_event_compat) : sizeof(struct input_event);
 }
 

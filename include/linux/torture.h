@@ -43,13 +43,24 @@
 
 #define TORTURE_FLAG "-torture:"
 #define TOROUT_STRING(s) \
+<<<<<<< HEAD
 	pr_alert("%s" TORTURE_FLAG s "\n", torture_type)
+=======
+	pr_alert("%s" TORTURE_FLAG " %s\n", torture_type, s)
+>>>>>>> v4.9.227
 #define VERBOSE_TOROUT_STRING(s) \
 	do { if (verbose) pr_alert("%s" TORTURE_FLAG " %s\n", torture_type, s); } while (0)
 #define VERBOSE_TOROUT_ERRSTRING(s) \
 	do { if (verbose) pr_alert("%s" TORTURE_FLAG "!!! %s\n", torture_type, s); } while (0)
 
 /* Definitions for online/offline exerciser. */
+<<<<<<< HEAD
+=======
+bool torture_offline(int cpu, long *n_onl_attempts, long *n_onl_successes,
+		     unsigned long *sum_offl, int *min_onl, int *max_onl);
+bool torture_online(int cpu, long *n_onl_attempts, long *n_onl_successes,
+		    unsigned long *sum_onl, int *min_onl, int *max_onl);
+>>>>>>> v4.9.227
 int torture_onoff_init(long ooholdoff, long oointerval);
 void torture_onoff_stats(void);
 bool torture_onoff_failures(void);

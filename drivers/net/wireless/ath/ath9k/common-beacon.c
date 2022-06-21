@@ -18,6 +18,7 @@
 
 #define FUDGE 2
 
+<<<<<<< HEAD
 /* Calculate the modulo of a 64 bit TSF snapshot with a TU divisor */
 static u32 ath9k_mod_tsf64_tu(u64 tsf, u32 div_tu)
 {
@@ -42,6 +43,18 @@ static u32 ath9k_get_next_tbtt(struct ath_hw *ah, u64 tsf,
 	offset = ath9k_mod_tsf64_tu(tsf, interval);
 
 	return (u32) tsf + TU_TO_USEC(interval) - offset;
+=======
+static u32 ath9k_get_next_tbtt(struct ath_hw *ah, u64 tsf,
+			       unsigned int interval)
+{
+	unsigned int offset, divisor;
+
+	tsf += TU_TO_USEC(FUDGE + ah->config.sw_beacon_response_time);
+	divisor = TU_TO_USEC(interval);
+	div_u64_rem(tsf, divisor, &offset);
+
+	return (u32) tsf + divisor - offset;
+>>>>>>> v4.9.227
 }
 
 /*

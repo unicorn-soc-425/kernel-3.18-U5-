@@ -82,6 +82,7 @@ void __init usb_musb_init(struct omap_musb_board_data *musb_board_data)
 	musb_plat.mode = board_data->mode;
 	musb_plat.extvbus = board_data->extvbus;
 
+<<<<<<< HEAD
 	if (soc_is_am35xx()) {
 		oh_name = "am35x_otg_hs";
 		name = "musb-am35x";
@@ -92,6 +93,10 @@ void __init usb_musb_init(struct omap_musb_board_data *musb_board_data)
 		oh_name = "usb_otg_hs";
 		name = "musb-omap2430";
 	}
+=======
+	oh_name = "usb_otg_hs";
+	name = "musb-omap2430";
+>>>>>>> v4.9.227
 
         oh = omap_hwmod_lookup(oh_name);
         if (WARN(!oh, "%s: could not find omap_hwmod for %s\n",

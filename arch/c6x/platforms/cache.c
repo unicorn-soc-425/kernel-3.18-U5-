@@ -145,7 +145,11 @@ loop:
 		spin_lock_irqsave(&cache_lock, flags);
 
 		/*
+<<<<<<< HEAD
 		 * If another cache operation is occuring
+=======
+		 * If another cache operation is occurring
+>>>>>>> v4.9.227
 		 */
 		if (unlikely(imcr_get(wc_reg))) {
 			spin_unlock_irqrestore(&cache_lock, flags);
@@ -350,6 +354,10 @@ void L1P_cache_block_invalidate(unsigned int start, unsigned int end)
 			      (unsigned int *) end,
 			      IMCR_L1PIBAR, IMCR_L1PIWC);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(L1P_cache_block_invalidate);
+>>>>>>> v4.9.227
 
 void L1D_cache_block_invalidate(unsigned int start, unsigned int end)
 {
@@ -371,6 +379,10 @@ void L1D_cache_block_writeback(unsigned int start, unsigned int end)
 			      (unsigned int *) end,
 			      IMCR_L1DWBAR, IMCR_L1DWWC);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(L1D_cache_block_writeback);
+>>>>>>> v4.9.227
 
 /*
  *  L2 block operations

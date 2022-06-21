@@ -12,26 +12,48 @@
  * This file contains the hardware configuration of the XTAVNET boards.
  */
 
+<<<<<<< HEAD
+=======
+#include <asm/types.h>
+
+>>>>>>> v4.9.227
 #ifndef __XTENSA_XTAVNET_HARDWARE_H
 #define __XTENSA_XTAVNET_HARDWARE_H
 
 /* Memory configuration. */
 
+<<<<<<< HEAD
 #define PLATFORM_DEFAULT_MEM_START 0x00000000
 #define PLATFORM_DEFAULT_MEM_SIZE  0x04000000
 
 /* Interrupt configuration. */
 
 #define PLATFORM_NR_IRQS	10
+=======
+#define PLATFORM_DEFAULT_MEM_START __XTENSA_UL(CONFIG_DEFAULT_MEM_START)
+#define PLATFORM_DEFAULT_MEM_SIZE  __XTENSA_UL(CONFIG_DEFAULT_MEM_SIZE)
+
+/* Interrupt configuration. */
+
+#define PLATFORM_NR_IRQS	0
+>>>>>>> v4.9.227
 
 /* Default assignment of LX60 devices to external interrupts. */
 
 #ifdef CONFIG_XTENSA_MX
 #define DUART16552_INTNUM	XCHAL_EXTINT3_NUM
 #define OETH_IRQ		XCHAL_EXTINT4_NUM
+<<<<<<< HEAD
 #else
 #define DUART16552_INTNUM	XCHAL_EXTINT0_NUM
 #define OETH_IRQ		XCHAL_EXTINT1_NUM
+=======
+#define C67X00_IRQ		XCHAL_EXTINT8_NUM
+#else
+#define DUART16552_INTNUM	XCHAL_EXTINT0_NUM
+#define OETH_IRQ		XCHAL_EXTINT1_NUM
+#define C67X00_IRQ		XCHAL_EXTINT5_NUM
+>>>>>>> v4.9.227
 #endif
 
 /*
@@ -59,4 +81,10 @@
 				/* 5*rx buffs + 5*tx buffs */
 #define OETH_SRAMBUFF_SIZE	(5 * 0x600 + 5 * 0x600)
 
+<<<<<<< HEAD
+=======
+#define C67X00_PADDR		(XCHAL_KIO_PADDR + 0x0D0D0000)
+#define C67X00_SIZE		0x10
+
+>>>>>>> v4.9.227
 #endif /* __XTENSA_XTAVNET_HARDWARE_H */

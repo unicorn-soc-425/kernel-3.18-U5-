@@ -82,6 +82,10 @@ struct iss_csi2_ctx_cfg {
 	u8 virtual_id;
 	u16 format_id;		/* as in CSI2_CTx_CTRL2[9:0] */
 	u8 dpcm_predictor;	/* 1: simple, 0: advanced */
+<<<<<<< HEAD
+=======
+	u16 frame;
+>>>>>>> v4.9.227
 
 	/* Fields in CSI2_CTx_CTRL1/3 - Shadowed */
 	u16 alpha;
@@ -115,8 +119,13 @@ struct iss_csi2_ctrl_cfg {
 #define CSI2_PAD_SOURCE		1
 #define CSI2_PADS_NUM		2
 
+<<<<<<< HEAD
 #define CSI2_OUTPUT_IPIPEIF	(1 << 0)
 #define CSI2_OUTPUT_MEMORY	(1 << 1)
+=======
+#define CSI2_OUTPUT_IPIPEIF	BIT(0)
+#define CSI2_OUTPUT_MEMORY	BIT(1)
+>>>>>>> v4.9.227
 
 struct iss_csi2_device {
 	struct v4l2_subdev subdev;
@@ -137,7 +146,10 @@ struct iss_csi2_device {
 	u32 output; /* output to IPIPEIF, memory or both? */
 	bool dpcm_decompress;
 	unsigned int frame_skip;
+<<<<<<< HEAD
 	bool use_fs_irq;
+=======
+>>>>>>> v4.9.227
 
 	struct iss_csiphy *phy;
 	struct iss_csi2_ctx_cfg contexts[ISS_CSI2_MAX_CTX_NUM + 1];
@@ -151,6 +163,10 @@ struct iss_csi2_device {
 void omap4iss_csi2_isr(struct iss_csi2_device *csi2);
 int omap4iss_csi2_reset(struct iss_csi2_device *csi2);
 int omap4iss_csi2_init(struct iss_device *iss);
+<<<<<<< HEAD
+=======
+int omap4iss_csi2_create_links(struct iss_device *iss);
+>>>>>>> v4.9.227
 void omap4iss_csi2_cleanup(struct iss_device *iss);
 void omap4iss_csi2_unregister_entities(struct iss_csi2_device *csi2);
 int omap4iss_csi2_register_entities(struct iss_csi2_device *csi2,

@@ -90,6 +90,7 @@ found:
 }
 #endif /* CONFIG_SSB_PCMCIAHOST */
 
+<<<<<<< HEAD
 #ifdef CONFIG_SSB_SDIOHOST
 struct ssb_bus *ssb_sdio_func_to_bus(struct sdio_func *func)
 {
@@ -109,6 +110,8 @@ found:
 }
 #endif /* CONFIG_SSB_SDIOHOST */
 
+=======
+>>>>>>> v4.9.227
 int ssb_for_each_bus_call(unsigned long data,
 			  int (*func)(struct ssb_bus *bus, unsigned long data))
 {
@@ -615,6 +618,7 @@ error:
 	return err;
 }
 
+<<<<<<< HEAD
 static u8 ssb_ssb_read8(struct ssb_device *dev, u16 offset)
 {
 	struct ssb_bus *bus = dev->bus;
@@ -775,6 +779,8 @@ static const struct ssb_bus_ops ssb_ssb_ops = {
 #endif
 };
 
+=======
+>>>>>>> v4.9.227
 static int ssb_fetch_invariants(struct ssb_bus *bus,
 				ssb_invariants_func_t get_invariants)
 {
@@ -792,9 +798,16 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int ssb_bus_register(struct ssb_bus *bus,
 			    ssb_invariants_func_t get_invariants,
 			    unsigned long baseaddr)
+=======
+static int __maybe_unused
+ssb_bus_register(struct ssb_bus *bus,
+		 ssb_invariants_func_t get_invariants,
+		 unsigned long baseaddr)
+>>>>>>> v4.9.227
 {
 	int err;
 
@@ -895,7 +908,10 @@ int ssb_bus_pcibus_register(struct ssb_bus *bus, struct pci_dev *host_pci)
 
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ssb_bus_pcibus_register);
+=======
+>>>>>>> v4.9.227
 #endif /* CONFIG_SSB_PCIHOST */
 
 #ifdef CONFIG_SSB_PCMCIAHOST
@@ -917,7 +933,10 @@ int ssb_bus_pcmciabus_register(struct ssb_bus *bus,
 
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ssb_bus_pcmciabus_register);
+=======
+>>>>>>> v4.9.227
 #endif /* CONFIG_SSB_PCMCIAHOST */
 
 #ifdef CONFIG_SSB_SDIOHOST
@@ -942,15 +961,26 @@ int ssb_bus_sdiobus_register(struct ssb_bus *bus, struct sdio_func *func,
 EXPORT_SYMBOL(ssb_bus_sdiobus_register);
 #endif /* CONFIG_SSB_PCMCIAHOST */
 
+<<<<<<< HEAD
 int ssb_bus_ssbbus_register(struct ssb_bus *bus, unsigned long baseaddr,
 			    ssb_invariants_func_t get_invariants)
+=======
+#ifdef CONFIG_SSB_HOST_SOC
+int ssb_bus_host_soc_register(struct ssb_bus *bus, unsigned long baseaddr)
+>>>>>>> v4.9.227
 {
 	int err;
 
 	bus->bustype = SSB_BUSTYPE_SSB;
+<<<<<<< HEAD
 	bus->ops = &ssb_ssb_ops;
 
 	err = ssb_bus_register(bus, get_invariants, baseaddr);
+=======
+	bus->ops = &ssb_host_soc_ops;
+
+	err = ssb_bus_register(bus, ssb_host_soc_get_invariants, baseaddr);
+>>>>>>> v4.9.227
 	if (!err) {
 		ssb_info("Sonics Silicon Backplane found at address 0x%08lX\n",
 			 baseaddr);
@@ -958,6 +988,10 @@ int ssb_bus_ssbbus_register(struct ssb_bus *bus, unsigned long baseaddr,
 
 	return err;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 int __ssb_driver_register(struct ssb_driver *drv, struct module *owner)
 {
@@ -1154,6 +1188,11 @@ static u32 ssb_tmslow_reject_bitmask(struct ssb_device *dev)
 	case SSB_IDLOW_SSBREV_25:     /* TODO - find the proper REJECT bit */
 	case SSB_IDLOW_SSBREV_27:     /* same here */
 		return SSB_TMSLOW_REJECT;	/* this is a guess */
+<<<<<<< HEAD
+=======
+	case SSB_IDLOW_SSBREV:
+		break;
+>>>>>>> v4.9.227
 	default:
 		WARN(1, KERN_INFO "ssb: Backplane Revision 0x%.8X\n", rev);
 	}
@@ -1482,6 +1521,15 @@ static int __init ssb_modinit(void)
 		/* don't fail SSB init because of this */
 		err = 0;
 	}
+<<<<<<< HEAD
+=======
+	err = ssb_host_pcmcia_init();
+	if (err) {
+		ssb_err("PCMCIA host initialization failed\n");
+		/* don't fail SSB init because of this */
+		err = 0;
+	}
+>>>>>>> v4.9.227
 	err = ssb_gige_init();
 	if (err) {
 		ssb_err("SSB Broadcom Gigabit Ethernet driver initialization failed\n");
@@ -1499,6 +1547,10 @@ fs_initcall(ssb_modinit);
 static void __exit ssb_modexit(void)
 {
 	ssb_gige_exit();
+<<<<<<< HEAD
+=======
+	ssb_host_pcmcia_exit();
+>>>>>>> v4.9.227
 	b43_pci_ssb_bridge_exit();
 	bus_unregister(&ssb_bustype);
 }

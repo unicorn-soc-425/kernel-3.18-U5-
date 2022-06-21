@@ -379,8 +379,19 @@ int jfs_extendfs(struct super_block *sb, s64 newLVSize, int newLogSize)
 	 * cached in meta-data cache, and not written out
 	 * by txCommit();
 	 */
+<<<<<<< HEAD
 	filemap_fdatawait(ipbmap->i_mapping);
 	filemap_write_and_wait(ipbmap->i_mapping);
+=======
+	rc = filemap_fdatawait(ipbmap->i_mapping);
+	if (rc)
+		goto error_out;
+
+	rc = filemap_write_and_wait(ipbmap->i_mapping);
+	if (rc)
+		goto error_out;
+
+>>>>>>> v4.9.227
 	diWriteSpecial(ipbmap, 0);
 
 	newPage = nPages;	/* first new page number */

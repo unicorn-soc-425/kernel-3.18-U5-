@@ -534,7 +534,10 @@ static int db8500_regulator_remove(struct platform_device *pdev)
 static struct platform_driver db8500_regulator_driver = {
 	.driver = {
 		.name = "db8500-prcmu-regulators",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = db8500_regulator_probe,
 	.remove = db8500_regulator_remove,

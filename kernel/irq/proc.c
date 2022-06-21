@@ -40,17 +40,27 @@ static struct proc_dir_entry *root_irq_dir;
 static int show_irq_affinity(int type, struct seq_file *m, void *v)
 {
 	struct irq_desc *desc = irq_to_desc((long)m->private);
+<<<<<<< HEAD
 	const struct cpumask *mask = desc->irq_data.affinity;
+=======
+	const struct cpumask *mask = desc->irq_common_data.affinity;
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_GENERIC_PENDING_IRQ
 	if (irqd_is_setaffinity_pending(&desc->irq_data))
 		mask = desc->pending_mask;
 #endif
 	if (type)
+<<<<<<< HEAD
 		seq_cpumask_list(m, mask);
 	else
 		seq_cpumask(m, mask);
 	seq_putc(m, '\n');
+=======
+		seq_printf(m, "%*pbl\n", cpumask_pr_args(mask));
+	else
+		seq_printf(m, "%*pb\n", cpumask_pr_args(mask));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -68,8 +78,12 @@ static int irq_affinity_hint_proc_show(struct seq_file *m, void *v)
 		cpumask_copy(mask, desc->affinity_hint);
 	raw_spin_unlock_irqrestore(&desc->lock, flags);
 
+<<<<<<< HEAD
 	seq_cpumask(m, mask);
 	seq_putc(m, '\n');
+=======
+	seq_printf(m, "%*pb\n", cpumask_pr_args(mask));
+>>>>>>> v4.9.227
 	free_cpumask_var(mask);
 
 	return 0;
@@ -98,7 +112,11 @@ static ssize_t write_irq_affinity(int type, struct file *file,
 	cpumask_var_t new_value;
 	int err;
 
+<<<<<<< HEAD
 	if (!irq_can_set_affinity(irq) || no_irq_affinity)
+=======
+	if (!irq_can_set_affinity_usr(irq) || no_irq_affinity)
+>>>>>>> v4.9.227
 		return -EIO;
 
 	if (!alloc_cpumask_var(&new_value, GFP_KERNEL))
@@ -187,8 +205,12 @@ static const struct file_operations irq_affinity_list_proc_fops = {
 
 static int default_affinity_show(struct seq_file *m, void *v)
 {
+<<<<<<< HEAD
 	seq_cpumask(m, irq_default_affinity);
 	seq_putc(m, '\n');
+=======
+	seq_printf(m, "%*pb\n", cpumask_pr_args(irq_default_affinity));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -245,7 +267,11 @@ static int irq_node_proc_show(struct seq_file *m, void *v)
 {
 	struct irq_desc *desc = irq_to_desc((long) m->private);
 
+<<<<<<< HEAD
 	seq_printf(m, "%d\n", desc->irq_data.node);
+=======
+	seq_printf(m, "%d\n", irq_desc_get_node(desc));
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -284,6 +310,7 @@ static const struct file_operations irq_spurious_proc_fops = {
 	.release	= single_release,
 };
 
+<<<<<<< HEAD
 static int irq_wake_depth_proc_show(struct seq_file *m, void *v)
 {
 	struct irq_desc *desc = irq_to_desc((long) m->private);
@@ -323,6 +350,8 @@ static const struct file_operations irq_disable_depth_proc_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+>>>>>>> v4.9.227
 #define MAX_NAMELEN 128
 
 static int name_unique(unsigned int irq, struct irqaction *new_action)
@@ -333,7 +362,11 @@ static int name_unique(unsigned int irq, struct irqaction *new_action)
 	int ret = 1;
 
 	raw_spin_lock_irqsave(&desc->lock, flags);
+<<<<<<< HEAD
 	for (action = desc->action ; action; action = action->next) {
+=======
+	for_each_action_of_desc(desc, action) {
+>>>>>>> v4.9.227
 		if ((action != new_action) && action->name &&
 				!strcmp(new_action->name, action->name)) {
 			ret = 0;
@@ -353,7 +386,10 @@ void register_handler_proc(unsigned int irq, struct irqaction *action)
 					!name_unique(irq, action))
 		return;
 
+<<<<<<< HEAD
 	memset(name, 0, MAX_NAMELEN);
+=======
+>>>>>>> v4.9.227
 	snprintf(name, MAX_NAMELEN, "%s", action->name);
 
 	/* create /proc/irq/1234/handler/ */
@@ -382,7 +418,10 @@ void register_irq_proc(unsigned int irq, struct irq_desc *desc)
 	if (desc->dir)
 		goto out_unlock;
 
+<<<<<<< HEAD
 	memset(name, 0, MAX_NAMELEN);
+=======
+>>>>>>> v4.9.227
 	sprintf(name, "%d", irq);
 
 	/* create /proc/irq/1234 */
@@ -409,10 +448,13 @@ void register_irq_proc(unsigned int irq, struct irq_desc *desc)
 
 	proc_create_data("spurious", 0444, desc->dir,
 			 &irq_spurious_proc_fops, (void *)(long)irq);
+<<<<<<< HEAD
 	proc_create_data("disable_depth", 0444, desc->dir,
 			 &irq_disable_depth_proc_fops, (void *)(long)irq);
 	proc_create_data("wake_depth", 0444, desc->dir,
 			 &irq_wake_depth_proc_fops, (void *)(long)irq);
+=======
+>>>>>>> v4.9.227
 
 out_unlock:
 	mutex_unlock(&register_lock);
@@ -431,10 +473,14 @@ void unregister_irq_proc(unsigned int irq, struct irq_desc *desc)
 	remove_proc_entry("node", desc->dir);
 #endif
 	remove_proc_entry("spurious", desc->dir);
+<<<<<<< HEAD
 	remove_proc_entry("disable_depth", desc->dir);
 	remove_proc_entry("wake_depth", desc->dir);
 
 	memset(name, 0, MAX_NAMELEN);
+=======
+
+>>>>>>> v4.9.227
 	sprintf(name, "%u", irq);
 	remove_proc_entry(name, root_irq_dir);
 }
@@ -469,12 +515,17 @@ void init_irq_proc(void)
 	/*
 	 * Create entries for all existing IRQs.
 	 */
+<<<<<<< HEAD
 	for_each_irq_desc(irq, desc) {
 		if (!desc)
 			continue;
 
 		register_irq_proc(irq, desc);
 	}
+=======
+	for_each_irq_desc(irq, desc)
+		register_irq_proc(irq, desc);
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_GENERIC_IRQ_SHOW
@@ -523,7 +574,11 @@ int show_interrupts(struct seq_file *p, void *v)
 	for_each_online_cpu(j)
 		any_count |= kstat_irqs_cpu(i, j);
 	action = desc->action;
+<<<<<<< HEAD
 	if (!action && !any_count)
+=======
+	if ((!action || irq_desc_is_chained(desc)) && !any_count)
+>>>>>>> v4.9.227
 		goto out;
 
 	seq_printf(p, "%*d: ", prec, i);

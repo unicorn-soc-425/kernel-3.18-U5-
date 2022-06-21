@@ -2,6 +2,10 @@
 #include <linux/fs.h>
 #include <linux/mm.h>
 #include <linux/binfmts.h>
+<<<<<<< HEAD
+=======
+#include <linux/elfcore.h>
+>>>>>>> v4.9.227
 
 Elf_Half __weak elf_core_extra_phdrs(void)
 {

@@ -222,7 +222,11 @@ static bool da9055_register_volatile(struct device *dev, unsigned int reg)
 	}
 }
 
+<<<<<<< HEAD
 static struct regmap_irq da9055_irqs[] = {
+=======
+static const struct regmap_irq da9055_irqs[] = {
+>>>>>>> v4.9.227
 	[DA9055_IRQ_NONKEY] = {
 		.reg_offset = 0,
 		.mask = DA9055_IRQ_NONKEY_MASK,
@@ -245,7 +249,11 @@ static struct regmap_irq da9055_irqs[] = {
 	},
 };
 
+<<<<<<< HEAD
 struct regmap_config da9055_regmap_config = {
+=======
+const struct regmap_config da9055_regmap_config = {
+>>>>>>> v4.9.227
 	.reg_bits = 8,
 	.val_bits = 8,
 
@@ -367,7 +375,11 @@ static const struct mfd_cell da9055_devs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct regmap_irq_chip da9055_regmap_irq_chip = {
+=======
+static const struct regmap_irq_chip da9055_regmap_irq_chip = {
+>>>>>>> v4.9.227
 	.name = "da9055_irq",
 	.status_base = DA9055_REG_EVENT_A,
 	.mask_base = DA9055_REG_IRQ_MASK_A,

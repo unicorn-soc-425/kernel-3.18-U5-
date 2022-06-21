@@ -21,8 +21,13 @@
 
 #include <linux/linkage.h>
 #include <asm/assembler.h>
+<<<<<<< HEAD
 #include <mach/psc.h>
 #include <mach/ddr2.h>
+=======
+#include "psc.h"
+#include "ddr2.h"
+>>>>>>> v4.9.227
 
 #include "clock.h"
 
@@ -37,6 +42,10 @@
 #define DEEPSLEEP_SLEEPENABLE_BIT	BIT(31)
 
 	.text
+<<<<<<< HEAD
+=======
+	.arch	armv5te
+>>>>>>> v4.9.227
 /*
  * Move DaVinci into deep sleep state
  *

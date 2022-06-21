@@ -27,6 +27,10 @@
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <linux/mod_devicetable.h>
+<<<<<<< HEAD
+=======
+#include <linux/syscore_ops.h>
+>>>>>>> v4.9.227
 #include <asm/prom.h>
 #include <asm/fsl_lbc.h>
 
@@ -243,8 +247,11 @@ static irqreturn_t fsl_lbc_ctrl_irq(int irqno, void *data)
 	if (status & LTESR_CS)
 		dev_err(ctrl->dev, "Chip select error: "
 			"LTESR 0x%08X\n", status);
+<<<<<<< HEAD
 	if (status & LTESR_UPM)
 		;
+=======
+>>>>>>> v4.9.227
 	if (status & LTESR_FCT) {
 		dev_err(ctrl->dev, "FCM command time-out: "
 			"LTESR 0x%08X\n", status);
@@ -354,24 +361,59 @@ err:
 #ifdef CONFIG_SUSPEND
 
 /* save lbc registers */
+<<<<<<< HEAD
 static int fsl_lbc_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct fsl_lbc_ctrl *ctrl = dev_get_drvdata(&pdev->dev);
 	struct fsl_lbc_regs __iomem *lbc = ctrl->regs;
+=======
+static int fsl_lbc_syscore_suspend(void)
+{
+	struct fsl_lbc_ctrl *ctrl;
+	struct fsl_lbc_regs __iomem *lbc;
+
+	ctrl = fsl_lbc_ctrl_dev;
+	if (!ctrl)
+		goto out;
+
+	lbc = ctrl->regs;
+	if (!lbc)
+		goto out;
+>>>>>>> v4.9.227
 
 	ctrl->saved_regs = kmalloc(sizeof(struct fsl_lbc_regs), GFP_KERNEL);
 	if (!ctrl->saved_regs)
 		return -ENOMEM;
 
 	_memcpy_fromio(ctrl->saved_regs, lbc, sizeof(struct fsl_lbc_regs));
+<<<<<<< HEAD
+=======
+
+out:
+>>>>>>> v4.9.227
 	return 0;
 }
 
 /* restore lbc registers */
+<<<<<<< HEAD
 static int fsl_lbc_resume(struct platform_device *pdev)
 {
 	struct fsl_lbc_ctrl *ctrl = dev_get_drvdata(&pdev->dev);
 	struct fsl_lbc_regs __iomem *lbc = ctrl->regs;
+=======
+static void fsl_lbc_syscore_resume(void)
+{
+	struct fsl_lbc_ctrl *ctrl;
+	struct fsl_lbc_regs __iomem *lbc;
+
+	ctrl = fsl_lbc_ctrl_dev;
+	if (!ctrl)
+		goto out;
+
+	lbc = ctrl->regs;
+	if (!lbc)
+		goto out;
+>>>>>>> v4.9.227
 
 	if (ctrl->saved_regs) {
 		_memcpy_toio(lbc, ctrl->saved_regs,
@@ -379,7 +421,13 @@ static int fsl_lbc_resume(struct platform_device *pdev)
 		kfree(ctrl->saved_regs);
 		ctrl->saved_regs = NULL;
 	}
+<<<<<<< HEAD
 	return 0;
+=======
+
+out:
+	return;
+>>>>>>> v4.9.227
 }
 #endif /* CONFIG_SUSPEND */
 
@@ -391,20 +439,42 @@ static const struct of_device_id fsl_lbc_match[] = {
 	{},
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SUSPEND
+static struct syscore_ops lbc_syscore_pm_ops = {
+	.suspend = fsl_lbc_syscore_suspend,
+	.resume = fsl_lbc_syscore_resume,
+};
+#endif
+
+>>>>>>> v4.9.227
 static struct platform_driver fsl_lbc_ctrl_driver = {
 	.driver = {
 		.name = "fsl-lbc",
 		.of_match_table = fsl_lbc_match,
 	},
 	.probe = fsl_lbc_ctrl_probe,
+<<<<<<< HEAD
 #ifdef CONFIG_SUSPEND
 	.suspend     = fsl_lbc_suspend,
 	.resume      = fsl_lbc_resume,
 #endif
+=======
+>>>>>>> v4.9.227
 };
 
 static int __init fsl_lbc_init(void)
 {
+<<<<<<< HEAD
 	return platform_driver_register(&fsl_lbc_ctrl_driver);
 }
 module_init(fsl_lbc_init);
+=======
+#ifdef CONFIG_SUSPEND
+	register_syscore_ops(&lbc_syscore_pm_ops);
+#endif
+	return platform_driver_register(&fsl_lbc_ctrl_driver);
+}
+subsys_initcall(fsl_lbc_init);
+>>>>>>> v4.9.227

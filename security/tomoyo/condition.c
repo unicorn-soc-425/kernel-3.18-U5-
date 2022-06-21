@@ -714,7 +714,11 @@ void tomoyo_get_attributes(struct tomoyo_obj_info *obj)
 			dentry = dget_parent(dentry);
 			break;
 		}
+<<<<<<< HEAD
 		inode = dentry->d_inode;
+=======
+		inode = d_backing_inode(dentry);
+>>>>>>> v4.9.227
 		if (inode) {
 			struct tomoyo_mini_stat *stat = &obj->stat[i];
 			stat->uid  = inode->i_uid;

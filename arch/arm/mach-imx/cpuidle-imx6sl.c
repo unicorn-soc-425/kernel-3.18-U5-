@@ -9,7 +9,10 @@
 #include <linux/cpuidle.h>
 #include <linux/module.h>
 #include <asm/cpuidle.h>
+<<<<<<< HEAD
 #include <asm/proc-fns.h>
+=======
+>>>>>>> v4.9.227
 
 #include "common.h"
 #include "cpuidle.h"
@@ -17,7 +20,11 @@
 static int imx6sl_enter_wait(struct cpuidle_device *dev,
 			    struct cpuidle_driver *drv, int index)
 {
+<<<<<<< HEAD
 	imx6q_set_lpm(WAIT_UNCLOCKED);
+=======
+	imx6_set_lpm(WAIT_UNCLOCKED);
+>>>>>>> v4.9.227
 	/*
 	 * Software workaround for ERR005311, see function
 	 * description for details.
@@ -25,7 +32,11 @@ static int imx6sl_enter_wait(struct cpuidle_device *dev,
 	imx6sl_set_wait_clk(true);
 	cpu_do_idle();
 	imx6sl_set_wait_clk(false);
+<<<<<<< HEAD
 	imx6q_set_lpm(WAIT_CLOCKED);
+=======
+	imx6_set_lpm(WAIT_CLOCKED);
+>>>>>>> v4.9.227
 
 	return index;
 }
@@ -40,8 +51,12 @@ static struct cpuidle_driver imx6sl_cpuidle_driver = {
 		{
 			.exit_latency = 50,
 			.target_residency = 75,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID |
 				CPUIDLE_FLAG_TIMER_STOP,
+=======
+			.flags = CPUIDLE_FLAG_TIMER_STOP,
+>>>>>>> v4.9.227
 			.enter = imx6sl_enter_wait,
 			.name = "WAIT",
 			.desc = "Clock off",

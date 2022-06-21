@@ -41,8 +41,17 @@ static inline int arch_spin_is_locked(arch_spinlock_t *lock)
 	 * to claim the lock is held, since it will be momentarily
 	 * if not already.  There's no need to wait for a "valid"
 	 * lock->next_ticket to become available.
+<<<<<<< HEAD
 	 */
 	return lock->next_ticket != lock->current_ticket;
+=======
+	 * Use READ_ONCE() to ensure that calling this in a loop is OK.
+	 */
+	int curr = READ_ONCE(lock->current_ticket);
+	int next = READ_ONCE(lock->next_ticket);
+
+	return next != curr;
+>>>>>>> v4.9.227
 }
 
 void arch_spin_lock(arch_spinlock_t *lock);

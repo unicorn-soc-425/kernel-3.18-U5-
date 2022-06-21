@@ -394,7 +394,11 @@ static int timbuart_verify_port(struct uart_port *port,
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct uart_ops timbuart_ops = {
+=======
+static const struct uart_ops timbuart_ops = {
+>>>>>>> v4.9.227
 	.tx_empty = timbuart_tx_empty,
 	.set_mctrl = timbuart_set_mctrl,
 	.get_mctrl = timbuart_get_mctrl,
@@ -503,7 +507,10 @@ static int timbuart_remove(struct platform_device *dev)
 static struct platform_driver timbuart_platform_driver = {
 	.driver = {
 		.name	= "timb-uart",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= timbuart_probe,
 	.remove		= timbuart_remove,

@@ -10,8 +10,12 @@
 #define NF_CT_LABELS_MAX_SIZE ((XT_CONNLABEL_MAXBIT + 1) / BITS_PER_BYTE)
 
 struct nf_conn_labels {
+<<<<<<< HEAD
 	u8 words;
 	unsigned long bits[];
+=======
+	unsigned long bits[NF_CT_LABELS_MAX_SIZE / sizeof(long)];
+>>>>>>> v4.9.227
 };
 
 static inline struct nf_conn_labels *nf_ct_labels_find(const struct nf_conn *ct)
@@ -26,6 +30,7 @@ static inline struct nf_conn_labels *nf_ct_labels_find(const struct nf_conn *ct)
 static inline struct nf_conn_labels *nf_ct_labels_ext_add(struct nf_conn *ct)
 {
 #ifdef CONFIG_NF_CONNTRACK_LABELS
+<<<<<<< HEAD
 	struct nf_conn_labels *cl_ext;
 	struct net *net = nf_ct_net(ct);
 	u8 words;
@@ -40,21 +45,42 @@ static inline struct nf_conn_labels *nf_ct_labels_ext_add(struct nf_conn *ct)
 		cl_ext->words = words;
 
 	return cl_ext;
+=======
+	struct net *net = nf_ct_net(ct);
+
+	if (net->ct.labels_used == 0)
+		return NULL;
+
+	return nf_ct_ext_add(ct, NF_CT_EXT_LABELS, GFP_ATOMIC);
+>>>>>>> v4.9.227
 #else
 	return NULL;
 #endif
 }
 
+<<<<<<< HEAD
 bool nf_connlabel_match(const struct nf_conn *ct, u16 bit);
 int nf_connlabel_set(struct nf_conn *ct, u16 bit);
 
+=======
+>>>>>>> v4.9.227
 int nf_connlabels_replace(struct nf_conn *ct,
 			  const u32 *data, const u32 *mask, unsigned int words);
 
 #ifdef CONFIG_NF_CONNTRACK_LABELS
 int nf_conntrack_labels_init(void);
 void nf_conntrack_labels_fini(void);
+<<<<<<< HEAD
 #else
 static inline int nf_conntrack_labels_init(void) { return 0; }
 static inline void nf_conntrack_labels_fini(void) {}
+=======
+int nf_connlabels_get(struct net *net, unsigned int bit);
+void nf_connlabels_put(struct net *net);
+#else
+static inline int nf_conntrack_labels_init(void) { return 0; }
+static inline void nf_conntrack_labels_fini(void) {}
+static inline int nf_connlabels_get(struct net *net, unsigned int bit) { return 0; }
+static inline void nf_connlabels_put(struct net *net) {}
+>>>>>>> v4.9.227
 #endif

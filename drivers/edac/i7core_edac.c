@@ -271,6 +271,7 @@ struct i7core_pvt {
 
 	bool		is_registered, enable_scrub;
 
+<<<<<<< HEAD
 	/* Fifo double buffers */
 	struct mce		mce_entry[MCE_LOG_LEN];
 	struct mce		mce_outentry[MCE_LOG_LEN];
@@ -281,6 +282,8 @@ struct i7core_pvt {
 	/* Count indicator to show errors not got */
 	unsigned		mce_overrun;
 
+=======
+>>>>>>> v4.9.227
 	/* DCLK Frequency used for computing scrub rate */
 	int			dclk_freq;
 
@@ -1157,11 +1160,25 @@ static DEVICE_ATTR(inject_eccmask, S_IRUGO | S_IWUSR,
 static DEVICE_ATTR(inject_enable, S_IRUGO | S_IWUSR,
 		   i7core_inject_enable_show, i7core_inject_enable_store);
 
+<<<<<<< HEAD
+=======
+static struct attribute *i7core_dev_attrs[] = {
+	&dev_attr_inject_section.attr,
+	&dev_attr_inject_type.attr,
+	&dev_attr_inject_eccmask.attr,
+	&dev_attr_inject_enable.attr,
+	NULL
+};
+
+ATTRIBUTE_GROUPS(i7core_dev);
+
+>>>>>>> v4.9.227
 static int i7core_create_sysfs_devices(struct mem_ctl_info *mci)
 {
 	struct i7core_pvt *pvt = mci->pvt_info;
 	int rc;
 
+<<<<<<< HEAD
 	rc = device_create_file(&mci->dev, &dev_attr_inject_section);
 	if (rc < 0)
 		return rc;
@@ -1178,6 +1195,11 @@ static int i7core_create_sysfs_devices(struct mem_ctl_info *mci)
 	pvt->addrmatch_dev = kzalloc(sizeof(*pvt->addrmatch_dev), GFP_KERNEL);
 	if (!pvt->addrmatch_dev)
 		return rc;
+=======
+	pvt->addrmatch_dev = kzalloc(sizeof(*pvt->addrmatch_dev), GFP_KERNEL);
+	if (!pvt->addrmatch_dev)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	pvt->addrmatch_dev->type = &addrmatch_type;
 	pvt->addrmatch_dev->bus = mci->dev.bus;
@@ -1190,15 +1212,24 @@ static int i7core_create_sysfs_devices(struct mem_ctl_info *mci)
 
 	rc = device_add(pvt->addrmatch_dev);
 	if (rc < 0)
+<<<<<<< HEAD
 		return rc;
+=======
+		goto err_put_addrmatch;
+>>>>>>> v4.9.227
 
 	if (!pvt->is_registered) {
 		pvt->chancounts_dev = kzalloc(sizeof(*pvt->chancounts_dev),
 					      GFP_KERNEL);
 		if (!pvt->chancounts_dev) {
+<<<<<<< HEAD
 			put_device(pvt->addrmatch_dev);
 			device_del(pvt->addrmatch_dev);
 			return rc;
+=======
+			rc = -ENOMEM;
+			goto err_del_addrmatch;
+>>>>>>> v4.9.227
 		}
 
 		pvt->chancounts_dev->type = &all_channel_counts_type;
@@ -1212,9 +1243,24 @@ static int i7core_create_sysfs_devices(struct mem_ctl_info *mci)
 
 		rc = device_add(pvt->chancounts_dev);
 		if (rc < 0)
+<<<<<<< HEAD
 			return rc;
 	}
 	return 0;
+=======
+			goto err_put_chancounts;
+	}
+	return 0;
+
+err_put_chancounts:
+	put_device(pvt->chancounts_dev);
+err_del_addrmatch:
+	device_del(pvt->addrmatch_dev);
+err_put_addrmatch:
+	put_device(pvt->addrmatch_dev);
+
+	return rc;
+>>>>>>> v4.9.227
 }
 
 static void i7core_delete_sysfs_devices(struct mem_ctl_info *mci)
@@ -1223,6 +1269,7 @@ static void i7core_delete_sysfs_devices(struct mem_ctl_info *mci)
 
 	edac_dbg(1, "\n");
 
+<<<<<<< HEAD
 	device_remove_file(&mci->dev, &dev_attr_inject_section);
 	device_remove_file(&mci->dev, &dev_attr_inject_type);
 	device_remove_file(&mci->dev, &dev_attr_inject_eccmask);
@@ -1234,6 +1281,14 @@ static void i7core_delete_sysfs_devices(struct mem_ctl_info *mci)
 	}
 	put_device(pvt->addrmatch_dev);
 	device_del(pvt->addrmatch_dev);
+=======
+	if (!pvt->is_registered) {
+		device_del(pvt->chancounts_dev);
+		put_device(pvt->chancounts_dev);
+	}
+	device_del(pvt->addrmatch_dev);
+	put_device(pvt->addrmatch_dev);
+>>>>>>> v4.9.227
 }
 
 /****************************************************************************
@@ -1721,6 +1776,10 @@ static void i7core_mce_output_error(struct mem_ctl_info *mci,
 	u32 errnum = find_first_bit(&error, 32);
 
 	if (uncorrected_error) {
+<<<<<<< HEAD
+=======
+		core_err_cnt = 1;
+>>>>>>> v4.9.227
 		if (ripv)
 			tp_event = HW_EVENT_ERR_FATAL;
 		else
@@ -1800,6 +1859,7 @@ static void i7core_mce_output_error(struct mem_ctl_info *mci,
  *	i7core_check_error	Retrieve and process errors reported by the
  *				hardware. Called by the Core module.
  */
+<<<<<<< HEAD
 static void i7core_check_error(struct mem_ctl_info *mci)
 {
 	struct i7core_pvt *pvt = mci->pvt_info;
@@ -1845,11 +1905,21 @@ static void i7core_check_error(struct mem_ctl_info *mci)
 	 */
 	for (i = 0; i < count; i++)
 		i7core_mce_output_error(mci, &pvt->mce_outentry[i]);
+=======
+static void i7core_check_error(struct mem_ctl_info *mci, struct mce *m)
+{
+	struct i7core_pvt *pvt = mci->pvt_info;
+
+	i7core_mce_output_error(mci, m);
+>>>>>>> v4.9.227
 
 	/*
 	 * Now, let's increment CE error counts
 	 */
+<<<<<<< HEAD
 check_ce_error:
+=======
+>>>>>>> v4.9.227
 	if (!pvt->is_registered)
 		i7core_udimm_check_mc_ecc_err(mci);
 	else
@@ -1857,12 +1927,17 @@ check_ce_error:
 }
 
 /*
+<<<<<<< HEAD
  * i7core_mce_check_error	Replicates mcelog routine to get errors
  *				This routine simply queues mcelog errors, and
  *				return. The error itself should be handled later
  *				by i7core_check_error.
  * WARNING: As this routine should be called at NMI time, extra care should
  * be taken to avoid deadlocks, and to be as fast as possible.
+=======
+ * Check that logging is enabled and that this is the right type
+ * of error for us to handle.
+>>>>>>> v4.9.227
  */
 static int i7core_mce_check_error(struct notifier_block *nb, unsigned long val,
 				  void *data)
@@ -1890,6 +1965,7 @@ static int i7core_mce_check_error(struct notifier_block *nb, unsigned long val,
 	if (mce->bank != 8)
 		return NOTIFY_DONE;
 
+<<<<<<< HEAD
 	smp_rmb();
 	if ((pvt->mce_out + 1) % MCE_LOG_LEN == pvt->mce_in) {
 		smp_wmb();
@@ -1905,6 +1981,9 @@ static int i7core_mce_check_error(struct notifier_block *nb, unsigned long val,
 	/* Handle fatal errors immediately */
 	if (mce->mcgstatus & 1)
 		i7core_check_error(mci);
+=======
+	i7core_check_error(mci, mce);
+>>>>>>> v4.9.227
 
 	/* Advise mcelog that the errors were handled */
 	return NOTIFY_STOP;
@@ -2251,15 +2330,22 @@ static int i7core_register_mci(struct i7core_dev *i7core_dev)
 	get_dimm_config(mci);
 	/* record ptr to the generic device */
 	mci->pdev = &i7core_dev->pdev[0]->dev;
+<<<<<<< HEAD
 	/* Set the function pointer to an actual operation function */
 	mci->edac_check = i7core_check_error;
+=======
+>>>>>>> v4.9.227
 
 	/* Enable scrubrate setting */
 	if (pvt->enable_scrub)
 		enable_sdram_scrub_setting(mci);
 
 	/* add this new MC control structure to EDAC's list of MCs */
+<<<<<<< HEAD
 	if (unlikely(edac_mc_add_mc(mci))) {
+=======
+	if (unlikely(edac_mc_add_mc_with_groups(mci, i7core_dev_groups))) {
+>>>>>>> v4.9.227
 		edac_dbg(0, "MC: failed edac_mc_add_mc()\n");
 		/* FIXME: perhaps some code should go here that disables error
 		 * reporting if we just enabled it

@@ -1217,7 +1217,11 @@ static int get_bandwidth(struct dvb_frontend *fe, u32 *bandwidth)
 }
 
 
+<<<<<<< HEAD
 static struct dvb_tuner_ops tuner_ops = {
+=======
+static const struct dvb_tuner_ops tuner_ops = {
+>>>>>>> v4.9.227
 	.info = {
 		.name = "NXP TDA18271C2D",
 		.frequency_min  =  47125000,

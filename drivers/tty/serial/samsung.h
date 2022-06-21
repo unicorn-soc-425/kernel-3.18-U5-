@@ -12,6 +12,11 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+
+>>>>>>> v4.9.227
 struct s3c24xx_uart_info {
 	char			*name;
 	unsigned int		type;
@@ -41,15 +46,63 @@ struct s3c24xx_serial_drv_data {
 	unsigned int			fifosize[CONFIG_SERIAL_SAMSUNG_UARTS];
 };
 
+<<<<<<< HEAD
+=======
+struct s3c24xx_uart_dma {
+	dma_filter_fn			fn;
+	void				*rx_param;
+	void				*tx_param;
+
+	unsigned int			rx_chan_id;
+	unsigned int			tx_chan_id;
+
+	struct dma_slave_config		rx_conf;
+	struct dma_slave_config		tx_conf;
+
+	struct dma_chan			*rx_chan;
+	struct dma_chan			*tx_chan;
+
+	dma_addr_t			rx_addr;
+	dma_addr_t			tx_addr;
+
+	dma_cookie_t			rx_cookie;
+	dma_cookie_t			tx_cookie;
+
+	char				*rx_buf;
+
+	dma_addr_t			tx_transfer_addr;
+
+	size_t				rx_size;
+	size_t				tx_size;
+
+	struct dma_async_tx_descriptor	*tx_desc;
+	struct dma_async_tx_descriptor	*rx_desc;
+
+	int				tx_bytes_requested;
+	int				rx_bytes_requested;
+};
+
+>>>>>>> v4.9.227
 struct s3c24xx_uart_port {
 	unsigned char			rx_claimed;
 	unsigned char			tx_claimed;
 	unsigned int			pm_level;
 	unsigned long			baudclk_rate;
+<<<<<<< HEAD
+=======
+	unsigned int			min_dma_size;
+>>>>>>> v4.9.227
 
 	unsigned int			rx_irq;
 	unsigned int			tx_irq;
 
+<<<<<<< HEAD
+=======
+	unsigned int			tx_in_progress;
+	unsigned int			tx_mode;
+	unsigned int			rx_mode;
+
+>>>>>>> v4.9.227
 	struct s3c24xx_uart_info	*info;
 	struct clk			*clk;
 	struct clk			*baudclk;
@@ -59,7 +112,13 @@ struct s3c24xx_uart_port {
 	/* reference to platform data */
 	struct s3c2410_uartcfg		*cfg;
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ
+=======
+	struct s3c24xx_uart_dma		*dma;
+
+#ifdef CONFIG_ARM_S3C24XX_CPUFREQ
+>>>>>>> v4.9.227
 	struct notifier_block		freq_transition;
 #endif
 };
@@ -74,10 +133,46 @@ struct s3c24xx_uart_port {
 #define portaddrl(port, reg) \
 	((unsigned long *)(unsigned long)((port)->membase + (reg)))
 
+<<<<<<< HEAD
 #define rd_regb(port, reg) (__raw_readb(portaddr(port, reg)))
 #define rd_regl(port, reg) (__raw_readl(portaddr(port, reg)))
 
 #define wr_regb(port, reg, val) __raw_writeb(val, portaddr(port, reg))
 #define wr_regl(port, reg, val) __raw_writel(val, portaddr(port, reg))
+=======
+#define rd_regb(port, reg) (readb_relaxed(portaddr(port, reg)))
+#define rd_regl(port, reg) (readl_relaxed(portaddr(port, reg)))
+
+#define wr_regb(port, reg, val) writeb_relaxed(val, portaddr(port, reg))
+#define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
+
+/* Byte-order aware bit setting/clearing functions. */
+
+static inline void s3c24xx_set_bit(struct uart_port *port, int idx,
+				   unsigned int reg)
+{
+	unsigned long flags;
+	u32 val;
+
+	local_irq_save(flags);
+	val = rd_regl(port, reg);
+	val |= (1 << idx);
+	wr_regl(port, reg, val);
+	local_irq_restore(flags);
+}
+
+static inline void s3c24xx_clear_bit(struct uart_port *port, int idx,
+				     unsigned int reg)
+{
+	unsigned long flags;
+	u32 val;
+
+	local_irq_save(flags);
+	val = rd_regl(port, reg);
+	val &= ~(1 << idx);
+	wr_regl(port, reg, val);
+	local_irq_restore(flags);
+}
+>>>>>>> v4.9.227
 
 #endif

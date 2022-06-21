@@ -28,23 +28,40 @@ struct dwc3;
 #define gadget_to_dwc(g)	(container_of(g, struct dwc3, gadget))
 
 /* DEPCFG parameter 1 */
+<<<<<<< HEAD
 #define DWC3_DEPCFG_INT_NUM(n)		((n) << 0)
+=======
+#define DWC3_DEPCFG_INT_NUM(n)		(((n) & 0x1f) << 0)
+>>>>>>> v4.9.227
 #define DWC3_DEPCFG_XFER_COMPLETE_EN	(1 << 8)
 #define DWC3_DEPCFG_XFER_IN_PROGRESS_EN	(1 << 9)
 #define DWC3_DEPCFG_XFER_NOT_READY_EN	(1 << 10)
 #define DWC3_DEPCFG_FIFO_ERROR_EN	(1 << 11)
 #define DWC3_DEPCFG_STREAM_EVENT_EN	(1 << 13)
+<<<<<<< HEAD
 #define DWC3_DEPCFG_BINTERVAL_M1(n)	((n) << 16)
 #define DWC3_DEPCFG_STREAM_CAPABLE	(1 << 24)
 #define DWC3_DEPCFG_EP_NUMBER(n)	((n) << 25)
+=======
+#define DWC3_DEPCFG_BINTERVAL_M1(n)	(((n) & 0xff) << 16)
+#define DWC3_DEPCFG_STREAM_CAPABLE	(1 << 24)
+#define DWC3_DEPCFG_EP_NUMBER(n)	(((n) & 0x1f) << 25)
+>>>>>>> v4.9.227
 #define DWC3_DEPCFG_BULK_BASED		(1 << 30)
 #define DWC3_DEPCFG_FIFO_BASED		(1 << 31)
 
 /* DEPCFG parameter 0 */
+<<<<<<< HEAD
 #define DWC3_DEPCFG_EP_TYPE(n)		((n) << 1)
 #define DWC3_DEPCFG_MAX_PACKET_SIZE(n)	((n) << 3)
 #define DWC3_DEPCFG_FIFO_NUMBER(n)	((n) << 17)
 #define DWC3_DEPCFG_BURST_SIZE(n)	((n) << 22)
+=======
+#define DWC3_DEPCFG_EP_TYPE(n)		(((n) & 0x3) << 1)
+#define DWC3_DEPCFG_MAX_PACKET_SIZE(n)	(((n) & 0x7ff) << 3)
+#define DWC3_DEPCFG_FIFO_NUMBER(n)	(((n) & 0x1f) << 17)
+#define DWC3_DEPCFG_BURST_SIZE(n)	(((n) & 0xf) << 22)
+>>>>>>> v4.9.227
 #define DWC3_DEPCFG_DATA_SEQ_NUM(n)	((n) << 26)
 /* This applies for core versions earlier than 1.94a */
 #define DWC3_DEPCFG_IGN_SEQ_NUM		(1 << 31)
@@ -68,6 +85,7 @@ static inline struct dwc3_request *next_request(struct list_head *list)
 	return list_first_entry(list, struct dwc3_request, list);
 }
 
+<<<<<<< HEAD
 static inline void dwc3_gadget_move_request_list_front(struct dwc3_request *req)
 {
 	struct dwc3_ep		*dep = req->dep;
@@ -90,6 +108,14 @@ static inline enum dwc3_link_state dwc3_get_link_state(struct dwc3 *dwc)
 
 	reg = dwc3_readl(dwc->regs, DWC3_DSTS);
 	return DWC3_DSTS_USBLNKST(reg);
+=======
+static inline void dwc3_gadget_move_started_request(struct dwc3_request *req)
+{
+	struct dwc3_ep		*dep = req->dep;
+
+	req->started = true;
+	list_move_tail(&req->list, &dep->started_list);
+>>>>>>> v4.9.227
 }
 
 void dwc3_gadget_giveback(struct dwc3_ep *dep, struct dwc3_request *req,
@@ -98,12 +124,16 @@ void dwc3_gadget_giveback(struct dwc3_ep *dep, struct dwc3_request *req,
 void dwc3_ep0_interrupt(struct dwc3 *dwc,
 		const struct dwc3_event_depevt *event);
 void dwc3_ep0_out_start(struct dwc3 *dwc);
+<<<<<<< HEAD
 void dwc3_ep0_stall_and_restart(struct dwc3 *dwc);
+=======
+>>>>>>> v4.9.227
 int __dwc3_gadget_ep0_set_halt(struct usb_ep *ep, int value);
 int dwc3_gadget_ep0_set_halt(struct usb_ep *ep, int value);
 int dwc3_gadget_ep0_queue(struct usb_ep *ep, struct usb_request *request,
 		gfp_t gfp_flags);
 int __dwc3_gadget_ep_set_halt(struct dwc3_ep *dep, int value, int protocol);
+<<<<<<< HEAD
 void dwc3_stop_active_transfer(struct dwc3 *dwc, u32 epnum, bool force);
 irqreturn_t dwc3_interrupt(int irq, void *_dwc);
 
@@ -114,6 +144,8 @@ static inline dma_addr_t dwc3_trb_dma_offset(struct dwc3_ep *dep,
 
 	return dep->trb_pool_dma + offset;
 }
+=======
+>>>>>>> v4.9.227
 
 /**
  * dwc3_gadget_ep_get_transfer_index - Gets transfer index from HW
@@ -122,11 +154,19 @@ static inline dma_addr_t dwc3_trb_dma_offset(struct dwc3_ep *dep,
  *
  * Caller should take care of locking
  */
+<<<<<<< HEAD
 static inline u32 dwc3_gadget_ep_get_transfer_index(struct dwc3 *dwc, u8 number)
 {
 	u32			res_id;
 
 	res_id = dwc3_readl(dwc->regs, DWC3_DEPCMD(number));
+=======
+static inline u32 dwc3_gadget_ep_get_transfer_index(struct dwc3_ep *dep)
+{
+	u32			res_id;
+
+	res_id = dwc3_readl(dep->regs, DWC3_DEPCMD);
+>>>>>>> v4.9.227
 
 	return DWC3_DEPCMD_GET_RSC_IDX(res_id);
 }

@@ -25,15 +25,24 @@
 #include <linux/cryptohash.h>
 #include <linux/types.h>
 #include <crypto/sha.h>
+<<<<<<< HEAD
 #include <asm/byteorder.h>
 #include <asm/neon.h>
 #include <asm/simd.h>
 #include <asm/crypto/sha1.h>
 
+=======
+#include <crypto/sha1_base.h>
+#include <asm/neon.h>
+#include <asm/simd.h>
+
+#include "sha1.h"
+>>>>>>> v4.9.227
 
 asmlinkage void sha1_transform_neon(void *state_h, const char *data,
 				    unsigned int rounds);
 
+<<<<<<< HEAD
 
 static int sha1_neon_init(struct shash_desc *desc)
 {
@@ -155,10 +164,49 @@ static int sha1_neon_import(struct shash_desc *desc, const void *in)
 	memcpy(sctx, in, sizeof(*sctx));
 
 	return 0;
+=======
+static int sha1_neon_update(struct shash_desc *desc, const u8 *data,
+			  unsigned int len)
+{
+	struct sha1_state *sctx = shash_desc_ctx(desc);
+
+	if (!may_use_simd() ||
+	    (sctx->count % SHA1_BLOCK_SIZE) + len < SHA1_BLOCK_SIZE)
+		return sha1_update_arm(desc, data, len);
+
+	kernel_neon_begin();
+	sha1_base_do_update(desc, data, len,
+			    (sha1_block_fn *)sha1_transform_neon);
+	kernel_neon_end();
+
+	return 0;
+}
+
+static int sha1_neon_finup(struct shash_desc *desc, const u8 *data,
+			   unsigned int len, u8 *out)
+{
+	if (!may_use_simd())
+		return sha1_finup_arm(desc, data, len, out);
+
+	kernel_neon_begin();
+	if (len)
+		sha1_base_do_update(desc, data, len,
+				    (sha1_block_fn *)sha1_transform_neon);
+	sha1_base_do_finalize(desc, (sha1_block_fn *)sha1_transform_neon);
+	kernel_neon_end();
+
+	return sha1_base_finish(desc, out);
+}
+
+static int sha1_neon_final(struct shash_desc *desc, u8 *out)
+{
+	return sha1_neon_finup(desc, NULL, 0, out);
+>>>>>>> v4.9.227
 }
 
 static struct shash_alg alg = {
 	.digestsize	=	SHA1_DIGEST_SIZE,
+<<<<<<< HEAD
 	.init		=	sha1_neon_init,
 	.update		=	sha1_neon_update,
 	.final		=	sha1_neon_final,
@@ -166,6 +214,13 @@ static struct shash_alg alg = {
 	.import		=	sha1_neon_import,
 	.descsize	=	sizeof(struct sha1_state),
 	.statesize	=	sizeof(struct sha1_state),
+=======
+	.init		=	sha1_base_init,
+	.update		=	sha1_neon_update,
+	.final		=	sha1_neon_final,
+	.finup		=	sha1_neon_finup,
+	.descsize	=	sizeof(struct sha1_state),
+>>>>>>> v4.9.227
 	.base		=	{
 		.cra_name		= "sha1",
 		.cra_driver_name	= "sha1-neon",

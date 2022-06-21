@@ -19,16 +19,23 @@ config CPU_IDLE_MULTIPLE_DRIVERS
 
 config CPU_IDLE_GOV_LADDER
 	bool "Ladder governor (for periodic timer tick)"
+<<<<<<< HEAD
 	default y
 
 config CPU_IDLE_GOV_MENU
 	bool "Menu governor (for tickless system)"
 	default y
+=======
+
+config CPU_IDLE_GOV_MENU
+	bool "Menu governor (for tickless system)"
+>>>>>>> v4.9.227
 
 config DT_IDLE_STATES
 	bool
 
 menu "ARM CPU Idle Drivers"
+<<<<<<< HEAD
 depends on ARM
 source "drivers/cpuidle/Kconfig.arm"
 endmenu
@@ -38,6 +45,12 @@ depends on ARM64
 source "drivers/cpuidle/Kconfig.arm64"
 endmenu
 
+=======
+depends on ARM || ARM64
+source "drivers/cpuidle/Kconfig.arm"
+endmenu
+
+>>>>>>> v4.9.227
 menu "MIPS CPU Idle Drivers"
 depends on MIPS
 source "drivers/cpuidle/Kconfig.mips"

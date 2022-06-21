@@ -21,7 +21,10 @@
 
 #include <linux/hrtimer.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/io.h>
 #include <linux/ioport.h>
 #include <linux/irq.h>
@@ -119,7 +122,11 @@ struct vt8500_port {
  * have been allocated as we can't use pdev->id in
  * devicetree
  */
+<<<<<<< HEAD
 static unsigned long vt8500_ports_in_use;
+=======
+static DECLARE_BITMAP(vt8500_ports_in_use, VT8500_MAX_PORTS);
+>>>>>>> v4.9.227
 
 static inline void vt8500_write(struct uart_port *port, unsigned int val,
 			     unsigned int off)
@@ -485,7 +492,11 @@ static struct uart_driver vt8500_uart_driver;
 
 #ifdef CONFIG_SERIAL_VT8500_CONSOLE
 
+<<<<<<< HEAD
 static inline void wait_for_xmitr(struct uart_port *port)
+=======
+static void wait_for_xmitr(struct uart_port *port)
+>>>>>>> v4.9.227
 {
 	unsigned int status, tmout = 10000;
 
@@ -664,15 +675,24 @@ static int vt8500_serial_probe(struct platform_device *pdev)
 
 	if (port < 0) {
 		/* calculate the port id */
+<<<<<<< HEAD
 		port = find_first_zero_bit(&vt8500_ports_in_use,
 					sizeof(vt8500_ports_in_use));
+=======
+		port = find_first_zero_bit(vt8500_ports_in_use,
+					   VT8500_MAX_PORTS);
+>>>>>>> v4.9.227
 	}
 
 	if (port >= VT8500_MAX_PORTS)
 		return -ENODEV;
 
 	/* reserve the port id */
+<<<<<<< HEAD
 	if (test_and_set_bit(port, &vt8500_ports_in_use)) {
+=======
+	if (test_and_set_bit(port, vt8500_ports_in_use)) {
+>>>>>>> v4.9.227
 		/* port already in use - shouldn't really happen */
 		return -EBUSY;
 	}
@@ -730,6 +750,7 @@ static int vt8500_serial_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vt8500_serial_remove(struct platform_device *pdev)
 {
 	struct vt8500_port *vt8500_port = platform_get_drvdata(pdev);
@@ -747,6 +768,14 @@ static struct platform_driver vt8500_platform_driver = {
 		.name = "vt8500_serial",
 		.owner = THIS_MODULE,
 		.of_match_table = wmt_dt_ids,
+=======
+static struct platform_driver vt8500_platform_driver = {
+	.probe  = vt8500_serial_probe,
+	.driver = {
+		.name = "vt8500_serial",
+		.of_match_table = wmt_dt_ids,
+		.suppress_bind_attrs = true,
+>>>>>>> v4.9.227
 	},
 };
 
@@ -765,6 +794,7 @@ static int __init vt8500_serial_init(void)
 
 	return ret;
 }
+<<<<<<< HEAD
 
 static void __exit vt8500_serial_exit(void)
 {
@@ -781,3 +811,6 @@ module_exit(vt8500_serial_exit);
 MODULE_AUTHOR("Alexey Charkov <alchark@gmail.com>");
 MODULE_DESCRIPTION("Driver for vt8500 serial device");
 MODULE_LICENSE("GPL v2");
+=======
+device_initcall(vt8500_serial_init);
+>>>>>>> v4.9.227

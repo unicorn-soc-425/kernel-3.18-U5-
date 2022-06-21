@@ -84,7 +84,11 @@ int mpic_msi_init_allocator(struct mpic *mpic)
 	int rc;
 
 	rc = msi_bitmap_alloc(&mpic->msi_bitmap, mpic->num_sources,
+<<<<<<< HEAD
 			      mpic->irqhost->of_node);
+=======
+			      irq_domain_get_of_node(mpic->irqhost));
+>>>>>>> v4.9.227
 	if (rc)
 		return rc;
 

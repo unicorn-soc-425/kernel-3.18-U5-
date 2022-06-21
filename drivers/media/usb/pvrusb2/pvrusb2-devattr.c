@@ -564,6 +564,7 @@ MODULE_FIRMWARE(PVR2_FIRMWARE_29xxx);
 MODULE_FIRMWARE(PVR2_FIRMWARE_24xxx);
 MODULE_FIRMWARE(PVR2_FIRMWARE_73xxx);
 MODULE_FIRMWARE(PVR2_FIRMWARE_75xxx);
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -574,3 +575,5 @@ MODULE_FIRMWARE(PVR2_FIRMWARE_75xxx);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

@@ -13,6 +13,10 @@
 #include <linux/ctype.h>
 #include <linux/netdevice.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/uuid.h>
+>>>>>>> v4.9.227
 #include <linux/slab.h>
 #include <linux/compat.h>
 
@@ -137,8 +141,12 @@ static const struct bin_table bin_kern_table[] = {
 	{ CTL_INT,	KERN_COMPAT_LOG,		"compat-log" },
 	{ CTL_INT,	KERN_MAX_LOCK_DEPTH,		"max_lock_depth" },
 	{ CTL_INT,	KERN_PANIC_ON_NMI,		"panic_on_unrecovered_nmi" },
+<<<<<<< HEAD
 	{ CTL_INT,	KERN_BOOT_REASON,		"boot_reason" },
 	{ CTL_INT,	KERN_COLD_BOOT,			"cold_boot" },
+=======
+	{ CTL_INT,	KERN_PANIC_ON_WARN,		"panic_on_warn" },
+>>>>>>> v4.9.227
 	{}
 };
 
@@ -524,7 +532,10 @@ static const struct bin_table bin_net_ipv6_conf_var_table[] = {
 	{ CTL_INT,	NET_IPV6_PROXY_NDP,			"proxy_ndp" },
 	{ CTL_INT,	NET_IPV6_ACCEPT_SOURCE_ROUTE,		"accept_source_route" },
 	{ CTL_INT,	NET_IPV6_ACCEPT_RA_FROM_LOCAL,		"accept_ra_from_local" },
+<<<<<<< HEAD
 	{ CTL_INT,	NET_IPV6_ACCEPT_RA_PREFIX_ROUTE,	"accept_ra_prefix_route" },
+=======
+>>>>>>> v4.9.227
 	{}
 };
 
@@ -1119,9 +1130,14 @@ static ssize_t bin_uuid(struct file *file,
 
 	/* Only supports reads */
 	if (oldval && oldlen) {
+<<<<<<< HEAD
 		char buf[40], *str = buf;
 		unsigned char uuid[16];
 		int i;
+=======
+		char buf[UUID_STRING_LEN + 1];
+		uuid_be uuid;
+>>>>>>> v4.9.227
 
 		result = kernel_read(file, 0, buf, sizeof(buf) - 1);
 		if (result < 0)
@@ -1129,6 +1145,7 @@ static ssize_t bin_uuid(struct file *file,
 
 		buf[result] = '\0';
 
+<<<<<<< HEAD
 		/* Convert the uuid to from a string to binary */
 		for (i = 0; i < 16; i++) {
 			result = -EIO;
@@ -1141,12 +1158,21 @@ static ssize_t bin_uuid(struct file *file,
 			if (*str == '-')
 				str++;
 		}
+=======
+		result = -EIO;
+		if (uuid_be_to_bin(buf, &uuid))
+			goto out;
+>>>>>>> v4.9.227
 
 		if (oldlen > 16)
 			oldlen = 16;
 
 		result = -EFAULT;
+<<<<<<< HEAD
 		if (copy_to_user(oldval, uuid, oldlen))
+=======
+		if (copy_to_user(oldval, &uuid, oldlen))
+>>>>>>> v4.9.227
 			goto out;
 
 		copied = oldlen;

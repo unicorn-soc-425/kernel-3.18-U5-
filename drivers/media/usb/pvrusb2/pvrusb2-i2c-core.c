@@ -20,7 +20,11 @@
 
 #include <linux/i2c.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <media/ir-kbd-i2c.h>
+=======
+#include <media/i2c/ir-kbd-i2c.h>
+>>>>>>> v4.9.227
 #include "pvrusb2-i2c-core.h"
 #include "pvrusb2-hdw-internal.h"
 #include "pvrusb2-debug.h"
@@ -596,7 +600,12 @@ static void pvr2_i2c_register_ir(struct pvr2_hdw *hdw)
 	case PVR2_IR_SCHEME_24XXX_MCE: /* 24xxx MCE device */
 		init_data->ir_codes              = RC_MAP_HAUPPAUGE;
 		init_data->internal_get_key_func = IR_KBD_GET_KEY_HAUP_XVR;
+<<<<<<< HEAD
 		init_data->type                  = RC_BIT_RC5;
+=======
+		init_data->type                  = RC_BIT_RC5 | RC_BIT_RC6_MCE |
+							RC_BIT_RC6_6A_32;
+>>>>>>> v4.9.227
 		init_data->name                  = hdw->hdw_desc->description;
 		/* IR Receiver */
 		info.addr          = 0x71;
@@ -686,6 +695,7 @@ void pvr2_i2c_core_done(struct pvr2_hdw *hdw)
 		hdw->i2c_linked = 0;
 	}
 }
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -696,3 +706,5 @@ void pvr2_i2c_core_done(struct pvr2_hdw *hdw)
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

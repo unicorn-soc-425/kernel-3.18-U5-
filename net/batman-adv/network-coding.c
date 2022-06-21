@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2012-2014 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2012-2016  B.A.T.M.A.N. contributors:
+>>>>>>> v4.9.227
  *
  * Martin Hundebøll, Jeppe Ledet-Pedersen
  *
@@ -15,6 +19,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 #include <linux/bitops.h>
 #include <linux/debugfs.h>
 
@@ -25,6 +30,50 @@
 #include "originator.h"
 #include "hard-interface.h"
 #include "routing.h"
+=======
+#include "network-coding.h"
+#include "main.h"
+
+#include <linux/atomic.h>
+#include <linux/bitops.h>
+#include <linux/byteorder/generic.h>
+#include <linux/compiler.h>
+#include <linux/debugfs.h>
+#include <linux/errno.h>
+#include <linux/etherdevice.h>
+#include <linux/fs.h>
+#include <linux/if_ether.h>
+#include <linux/if_packet.h>
+#include <linux/init.h>
+#include <linux/jhash.h>
+#include <linux/jiffies.h>
+#include <linux/kernel.h>
+#include <linux/kref.h>
+#include <linux/list.h>
+#include <linux/lockdep.h>
+#include <linux/netdevice.h>
+#include <linux/printk.h>
+#include <linux/random.h>
+#include <linux/rculist.h>
+#include <linux/rcupdate.h>
+#include <linux/seq_file.h>
+#include <linux/skbuff.h>
+#include <linux/slab.h>
+#include <linux/spinlock.h>
+#include <linux/stat.h>
+#include <linux/stddef.h>
+#include <linux/string.h>
+#include <linux/workqueue.h>
+
+#include "hard-interface.h"
+#include "hash.h"
+#include "log.h"
+#include "originator.h"
+#include "packet.h"
+#include "routing.h"
+#include "send.h"
+#include "tvlv.h"
+>>>>>>> v4.9.227
 
 static struct lock_class_key batadv_nc_coding_hash_lock_class_key;
 static struct lock_class_key batadv_nc_decoding_hash_lock_class_key;
@@ -35,6 +84,11 @@ static int batadv_nc_recv_coded_packet(struct sk_buff *skb,
 
 /**
  * batadv_nc_init - one-time initialization for network coding
+<<<<<<< HEAD
+=======
+ *
+ * Return: 0 on success or negative error number in case of failure
+>>>>>>> v4.9.227
  */
 int __init batadv_nc_init(void)
 {
@@ -101,9 +155,14 @@ void batadv_nc_status_update(struct net_device *net_dev)
  */
 static void batadv_nc_tvlv_ogm_handler_v1(struct batadv_priv *bat_priv,
 					  struct batadv_orig_node *orig,
+<<<<<<< HEAD
 					  uint8_t flags,
 					  void *tvlv_value,
 					  uint16_t tvlv_value_len)
+=======
+					  u8 flags,
+					  void *tvlv_value, u16 tvlv_value_len)
+>>>>>>> v4.9.227
 {
 	if (flags & BATADV_TVLV_HANDLER_OGM_CIFNOTFND)
 		clear_bit(BATADV_ORIG_CAPA_HAS_NC, &orig->capabilities);
@@ -114,6 +173,11 @@ static void batadv_nc_tvlv_ogm_handler_v1(struct batadv_priv *bat_priv,
 /**
  * batadv_nc_mesh_init - initialise coding hash table and start house keeping
  * @bat_priv: the bat priv with all the soft interface information
+<<<<<<< HEAD
+=======
+ *
+ * Return: 0 on success or negative error number in case of failure
+>>>>>>> v4.9.227
  */
 int batadv_nc_mesh_init(struct batadv_priv *bat_priv)
 {
@@ -134,7 +198,11 @@ int batadv_nc_mesh_init(struct batadv_priv *bat_priv)
 	if (!bat_priv->nc.decoding_hash)
 		goto err;
 
+<<<<<<< HEAD
 	batadv_hash_set_lock_class(bat_priv->nc.coding_hash,
+=======
+	batadv_hash_set_lock_class(bat_priv->nc.decoding_hash,
+>>>>>>> v4.9.227
 				   &batadv_nc_decoding_hash_lock_class_key);
 
 	INIT_DELAYED_WORK(&bat_priv->nc.work, batadv_nc_worker);
@@ -156,7 +224,11 @@ err:
  */
 void batadv_nc_init_bat_priv(struct batadv_priv *bat_priv)
 {
+<<<<<<< HEAD
 	atomic_set(&bat_priv->network_coding, 1);
+=======
+	atomic_set(&bat_priv->network_coding, 0);
+>>>>>>> v4.9.227
 	bat_priv->nc.min_tq = 200;
 	bat_priv->nc.max_fwd_delay = 10;
 	bat_priv->nc.max_buffer_time = 200;
@@ -175,6 +247,7 @@ void batadv_nc_init_orig(struct batadv_orig_node *orig_node)
 }
 
 /**
+<<<<<<< HEAD
  * batadv_nc_node_free_rcu - rcu callback to free an nc node and remove
  *  its refcount on the orig_node
  * @rcu: rcu pointer of the nc node
@@ -208,6 +281,54 @@ static void batadv_nc_path_free_ref(struct batadv_nc_path *nc_path)
 {
 	if (atomic_dec_and_test(&nc_path->refcount))
 		kfree_rcu(nc_path, rcu);
+=======
+ * batadv_nc_node_release - release nc_node from lists and queue for free after
+ *  rcu grace period
+ * @ref: kref pointer of the nc_node
+ */
+static void batadv_nc_node_release(struct kref *ref)
+{
+	struct batadv_nc_node *nc_node;
+
+	nc_node = container_of(ref, struct batadv_nc_node, refcount);
+
+	batadv_orig_node_put(nc_node->orig_node);
+	kfree_rcu(nc_node, rcu);
+}
+
+/**
+ * batadv_nc_node_put - decrement the nc_node refcounter and possibly
+ *  release it
+ * @nc_node: nc_node to be free'd
+ */
+static void batadv_nc_node_put(struct batadv_nc_node *nc_node)
+{
+	kref_put(&nc_node->refcount, batadv_nc_node_release);
+}
+
+/**
+ * batadv_nc_path_release - release nc_path from lists and queue for free after
+ *  rcu grace period
+ * @ref: kref pointer of the nc_path
+ */
+static void batadv_nc_path_release(struct kref *ref)
+{
+	struct batadv_nc_path *nc_path;
+
+	nc_path = container_of(ref, struct batadv_nc_path, refcount);
+
+	kfree_rcu(nc_path, rcu);
+}
+
+/**
+ * batadv_nc_path_put - decrement the nc_path refcounter and possibly
+ *  release it
+ * @nc_path: nc_path to be free'd
+ */
+static void batadv_nc_path_put(struct batadv_nc_path *nc_path)
+{
+	kref_put(&nc_path->refcount, batadv_nc_path_release);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -216,10 +337,15 @@ static void batadv_nc_path_free_ref(struct batadv_nc_path *nc_path)
  */
 static void batadv_nc_packet_free(struct batadv_nc_packet *nc_packet)
 {
+<<<<<<< HEAD
 	if (nc_packet->skb)
 		kfree_skb(nc_packet->skb);
 
 	batadv_nc_path_free_ref(nc_packet->nc_path);
+=======
+	kfree_skb(nc_packet->skb);
+	batadv_nc_path_put(nc_packet->nc_path);
+>>>>>>> v4.9.227
 	kfree(nc_packet);
 }
 
@@ -228,7 +354,11 @@ static void batadv_nc_packet_free(struct batadv_nc_packet *nc_packet)
  * @bat_priv: the bat priv with all the soft interface information
  * @nc_node: the nc node to check
  *
+<<<<<<< HEAD
  * Returns true if the entry has to be purged now, false otherwise
+=======
+ * Return: true if the entry has to be purged now, false otherwise
+>>>>>>> v4.9.227
  */
 static bool batadv_nc_to_purge_nc_node(struct batadv_priv *bat_priv,
 				       struct batadv_nc_node *nc_node)
@@ -244,7 +374,11 @@ static bool batadv_nc_to_purge_nc_node(struct batadv_priv *bat_priv,
  * @bat_priv: the bat priv with all the soft interface information
  * @nc_path: the nc path to check
  *
+<<<<<<< HEAD
  * Returns true if the entry has to be purged now, false otherwise
+=======
+ * Return: true if the entry has to be purged now, false otherwise
+>>>>>>> v4.9.227
  */
 static bool batadv_nc_to_purge_nc_path_coding(struct batadv_priv *bat_priv,
 					      struct batadv_nc_path *nc_path)
@@ -264,7 +398,11 @@ static bool batadv_nc_to_purge_nc_path_coding(struct batadv_priv *bat_priv,
  * @bat_priv: the bat priv with all the soft interface information
  * @nc_path: the nc path to check
  *
+<<<<<<< HEAD
  * Returns true if the entry has to be purged now, false otherwise
+=======
+ * Return: true if the entry has to be purged now, false otherwise
+>>>>>>> v4.9.227
  */
 static bool batadv_nc_to_purge_nc_path_decoding(struct batadv_priv *bat_priv,
 						struct batadv_nc_path *nc_path)
@@ -276,7 +414,11 @@ static bool batadv_nc_to_purge_nc_path_decoding(struct batadv_priv *bat_priv,
 	 * max_buffer time
 	 */
 	return batadv_has_timed_out(nc_path->last_valid,
+<<<<<<< HEAD
 				    bat_priv->nc.max_buffer_time*10);
+=======
+				    bat_priv->nc.max_buffer_time * 10);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -312,7 +454,11 @@ batadv_nc_purge_orig_nc_nodes(struct batadv_priv *bat_priv,
 			   "Removing nc_node %pM -> %pM\n",
 			   nc_node->addr, nc_node->orig_node->orig);
 		list_del_rcu(&nc_node->list);
+<<<<<<< HEAD
 		batadv_nc_node_free_ref(nc_node);
+=======
+		batadv_nc_node_put(nc_node);
+>>>>>>> v4.9.227
 	}
 	spin_unlock_bh(lock);
 }
@@ -353,7 +499,11 @@ static void batadv_nc_purge_orig_hash(struct batadv_priv *bat_priv)
 	struct batadv_hashtable *hash = bat_priv->orig_hash;
 	struct hlist_head *head;
 	struct batadv_orig_node *orig_node;
+<<<<<<< HEAD
 	uint32_t i;
+=======
+	u32 i;
+>>>>>>> v4.9.227
 
 	if (!hash)
 		return;
@@ -389,7 +539,11 @@ static void batadv_nc_purge_paths(struct batadv_priv *bat_priv,
 	struct hlist_node *node_tmp;
 	struct batadv_nc_path *nc_path;
 	spinlock_t *lock; /* Protects lists in hash */
+<<<<<<< HEAD
 	uint32_t i;
+=======
+	u32 i;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < hash->size; i++) {
 		head = &hash->table[i];
@@ -423,7 +577,11 @@ static void batadv_nc_purge_paths(struct batadv_priv *bat_priv,
 				   "Remove nc_path %pM -> %pM\n",
 				   nc_path->prev_hop, nc_path->next_hop);
 			hlist_del_rcu(&nc_path->hash_entry);
+<<<<<<< HEAD
 			batadv_nc_path_free_ref(nc_path);
+=======
+			batadv_nc_path_put(nc_path);
+>>>>>>> v4.9.227
 		}
 		spin_unlock_bh(lock);
 	}
@@ -447,6 +605,7 @@ static void batadv_nc_hash_key_gen(struct batadv_nc_path *key, const char *src,
  * @data: data to hash
  * @size: size of the hash table
  *
+<<<<<<< HEAD
  * Returns the selected index in the hash table for the given data.
  */
 static uint32_t batadv_nc_hash_choose(const void *data, uint32_t size)
@@ -462,6 +621,17 @@ static uint32_t batadv_nc_hash_choose(const void *data, uint32_t size)
 	hash += (hash << 3);
 	hash ^= (hash >> 11);
 	hash += (hash << 15);
+=======
+ * Return: the selected index in the hash table for the given data.
+ */
+static u32 batadv_nc_hash_choose(const void *data, u32 size)
+{
+	const struct batadv_nc_path *nc_path = data;
+	u32 hash = 0;
+
+	hash = jhash(&nc_path->prev_hop, sizeof(nc_path->prev_hop), hash);
+	hash = jhash(&nc_path->next_hop, sizeof(nc_path->next_hop), hash);
+>>>>>>> v4.9.227
 
 	return hash % size;
 }
@@ -472,10 +642,17 @@ static uint32_t batadv_nc_hash_choose(const void *data, uint32_t size)
  * @node: node in the local table
  * @data2: second object to compare the node to
  *
+<<<<<<< HEAD
  * Returns 1 if the two entry are the same, 0 otherwise
  */
 static int batadv_nc_hash_compare(const struct hlist_node *node,
 				  const void *data2)
+=======
+ * Return: true if the two entry are the same, false otherwise
+ */
+static bool batadv_nc_hash_compare(const struct hlist_node *node,
+				   const void *data2)
+>>>>>>> v4.9.227
 {
 	const struct batadv_nc_path *nc_path1, *nc_path2;
 
@@ -483,6 +660,7 @@ static int batadv_nc_hash_compare(const struct hlist_node *node,
 	nc_path2 = data2;
 
 	/* Return 1 if the two keys are identical */
+<<<<<<< HEAD
 	if (memcmp(nc_path1->prev_hop, nc_path2->prev_hop,
 		   sizeof(nc_path1->prev_hop)) != 0)
 		return 0;
@@ -492,6 +670,15 @@ static int batadv_nc_hash_compare(const struct hlist_node *node,
 		return 0;
 
 	return 1;
+=======
+	if (!batadv_compare_eth(nc_path1->prev_hop, nc_path2->prev_hop))
+		return false;
+
+	if (!batadv_compare_eth(nc_path1->next_hop, nc_path2->next_hop))
+		return false;
+
+	return true;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -499,7 +686,11 @@ static int batadv_nc_hash_compare(const struct hlist_node *node,
  * @hash: hash table containing the nc path
  * @data: search key
  *
+<<<<<<< HEAD
  * Returns the nc_path if found, NULL otherwise.
+=======
+ * Return: the nc_path if found, NULL otherwise.
+>>>>>>> v4.9.227
  */
 static struct batadv_nc_path *
 batadv_nc_hash_find(struct batadv_hashtable *hash,
@@ -520,7 +711,11 @@ batadv_nc_hash_find(struct batadv_hashtable *hash,
 		if (!batadv_nc_hash_compare(&nc_path->hash_entry, data))
 			continue;
 
+<<<<<<< HEAD
 		if (!atomic_inc_not_zero(&nc_path->refcount))
+=======
+		if (!kref_get_unless_zero(&nc_path->refcount))
+>>>>>>> v4.9.227
 			continue;
 
 		nc_path_tmp = nc_path;
@@ -537,9 +732,13 @@ batadv_nc_hash_find(struct batadv_hashtable *hash,
  */
 static void batadv_nc_send_packet(struct batadv_nc_packet *nc_packet)
 {
+<<<<<<< HEAD
 	batadv_send_skb_packet(nc_packet->skb,
 			       nc_packet->neigh_node->if_incoming,
 			       nc_packet->nc_path->next_hop);
+=======
+	batadv_send_unicast_skb(nc_packet->skb, nc_packet->neigh_node);
+>>>>>>> v4.9.227
 	nc_packet->skb = NULL;
 	batadv_nc_packet_free(nc_packet);
 }
@@ -554,7 +753,11 @@ static void batadv_nc_send_packet(struct batadv_nc_packet *nc_packet)
  * timeout. If so, the packet is no longer kept and the entry deleted from the
  * queue. Has to be called with the appropriate locks.
  *
+<<<<<<< HEAD
  * Returns false as soon as the entry in the fifo queue has not been timed out
+=======
+ * Return: false as soon as the entry in the fifo queue has not been timed out
+>>>>>>> v4.9.227
  * yet and true otherwise.
  */
 static bool batadv_nc_sniffed_purge(struct batadv_priv *bat_priv,
@@ -564,6 +767,11 @@ static bool batadv_nc_sniffed_purge(struct batadv_priv *bat_priv,
 	unsigned long timeout = bat_priv->nc.max_buffer_time;
 	bool res = false;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&nc_path->packet_list_lock);
+
+>>>>>>> v4.9.227
 	/* Packets are added to tail, so the remaining packets did not time
 	 * out and we can stop processing the current queue
 	 */
@@ -591,7 +799,11 @@ out:
  * packet is no longer delayed, immediately sent and the entry deleted from the
  * queue. Has to be called with the appropriate locks.
  *
+<<<<<<< HEAD
  * Returns false as soon as the entry in the fifo queue has not been timed out
+=======
+ * Return: false as soon as the entry in the fifo queue has not been timed out
+>>>>>>> v4.9.227
  * yet and true otherwise.
  */
 static bool batadv_nc_fwd_flush(struct batadv_priv *bat_priv,
@@ -600,6 +812,11 @@ static bool batadv_nc_fwd_flush(struct batadv_priv *bat_priv,
 {
 	unsigned long timeout = bat_priv->nc.max_fwd_delay;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&nc_path->packet_list_lock);
+
+>>>>>>> v4.9.227
 	/* Packets are added to tail, so the remaining packets did not time
 	 * out and we can stop processing the current queue
 	 */
@@ -674,7 +891,11 @@ static void batadv_nc_worker(struct work_struct *work)
 	struct batadv_priv *bat_priv;
 	unsigned long timeout;
 
+<<<<<<< HEAD
 	delayed_work = container_of(work, struct delayed_work, work);
+=======
+	delayed_work = to_delayed_work(work);
+>>>>>>> v4.9.227
 	priv_nc = container_of(delayed_work, struct batadv_priv_nc, work);
 	bat_priv = container_of(priv_nc, struct batadv_priv, nc);
 
@@ -710,7 +931,11 @@ static void batadv_nc_worker(struct work_struct *work)
  * @orig_node: neighboring orig node which may be used as nc candidate
  * @ogm_packet: incoming ogm packet also used for the checks
  *
+<<<<<<< HEAD
  * Returns true if:
+=======
+ * Return: true if:
+>>>>>>> v4.9.227
  *  1) The OGM must have the most recent sequence number.
  *  2) The TTL must be decremented by one and only one.
  *  3) The OGM must be received from the first hop from orig_node.
@@ -721,8 +946,13 @@ static bool batadv_can_nc_with_orig(struct batadv_priv *bat_priv,
 				    struct batadv_ogm_packet *ogm_packet)
 {
 	struct batadv_orig_ifinfo *orig_ifinfo;
+<<<<<<< HEAD
 	uint32_t last_real_seqno;
 	uint8_t last_ttl;
+=======
+	u32 last_real_seqno;
+	u8 last_ttl;
+>>>>>>> v4.9.227
 
 	orig_ifinfo = batadv_orig_ifinfo_get(orig_node, BATADV_IF_DEFAULT);
 	if (!orig_ifinfo)
@@ -730,7 +960,11 @@ static bool batadv_can_nc_with_orig(struct batadv_priv *bat_priv,
 
 	last_ttl = orig_ifinfo->last_ttl;
 	last_real_seqno = orig_ifinfo->last_real_seqno;
+<<<<<<< HEAD
 	batadv_orig_ifinfo_free_ref(orig_ifinfo);
+=======
+	batadv_orig_ifinfo_put(orig_ifinfo);
+>>>>>>> v4.9.227
 
 	if (last_real_seqno != ntohl(ogm_packet->seqno))
 		return false;
@@ -751,12 +985,21 @@ static bool batadv_can_nc_with_orig(struct batadv_priv *bat_priv,
  *  (can be equal to orig_node)
  * @in_coding: traverse incoming or outgoing network coding list
  *
+<<<<<<< HEAD
  * Returns the nc_node if found, NULL otherwise.
  */
 static struct batadv_nc_node
 *batadv_nc_find_nc_node(struct batadv_orig_node *orig_node,
 			struct batadv_orig_node *orig_neigh_node,
 			bool in_coding)
+=======
+ * Return: the nc_node if found, NULL otherwise.
+ */
+static struct batadv_nc_node *
+batadv_nc_find_nc_node(struct batadv_orig_node *orig_node,
+		       struct batadv_orig_node *orig_neigh_node,
+		       bool in_coding)
+>>>>>>> v4.9.227
 {
 	struct batadv_nc_node *nc_node, *nc_node_out = NULL;
 	struct list_head *list;
@@ -772,7 +1015,11 @@ static struct batadv_nc_node
 		if (!batadv_compare_eth(nc_node->addr, orig_node->orig))
 			continue;
 
+<<<<<<< HEAD
 		if (!atomic_inc_not_zero(&nc_node->refcount))
+=======
+		if (!kref_get_unless_zero(&nc_node->refcount))
+>>>>>>> v4.9.227
 			continue;
 
 		/* Found a match */
@@ -793,6 +1040,7 @@ static struct batadv_nc_node
  *  (can be equal to orig_node)
  * @in_coding: traverse incoming or outgoing network coding list
  *
+<<<<<<< HEAD
  * Returns the nc_node if found or created, NULL in case of an error.
  */
 static struct batadv_nc_node
@@ -800,11 +1048,21 @@ static struct batadv_nc_node
 		       struct batadv_orig_node *orig_node,
 		       struct batadv_orig_node *orig_neigh_node,
 		       bool in_coding)
+=======
+ * Return: the nc_node if found or created, NULL in case of an error.
+ */
+static struct batadv_nc_node *
+batadv_nc_get_nc_node(struct batadv_priv *bat_priv,
+		      struct batadv_orig_node *orig_node,
+		      struct batadv_orig_node *orig_neigh_node,
+		      bool in_coding)
+>>>>>>> v4.9.227
 {
 	struct batadv_nc_node *nc_node;
 	spinlock_t *lock; /* Used to lock list selected by "int in_coding" */
 	struct list_head *list;
 
+<<<<<<< HEAD
 	/* Check if nc_node is already added */
 	nc_node = batadv_nc_find_nc_node(orig_node, orig_neigh_node, in_coding);
 
@@ -825,6 +1083,8 @@ static struct batadv_nc_node
 	nc_node->orig_node = orig_neigh_node;
 	atomic_set(&nc_node->refcount, 2);
 
+=======
+>>>>>>> v4.9.227
 	/* Select ingoing or outgoing coding node */
 	if (in_coding) {
 		lock = &orig_neigh_node->in_coding_list_lock;
@@ -834,10 +1094,34 @@ static struct batadv_nc_node
 		list = &orig_neigh_node->out_coding_list;
 	}
 
+<<<<<<< HEAD
+=======
+	spin_lock_bh(lock);
+
+	/* Check if nc_node is already added */
+	nc_node = batadv_nc_find_nc_node(orig_node, orig_neigh_node, in_coding);
+
+	/* Node found */
+	if (nc_node)
+		goto unlock;
+
+	nc_node = kzalloc(sizeof(*nc_node), GFP_ATOMIC);
+	if (!nc_node)
+		goto unlock;
+
+	/* Initialize nc_node */
+	INIT_LIST_HEAD(&nc_node->list);
+	kref_init(&nc_node->refcount);
+	ether_addr_copy(nc_node->addr, orig_node->orig);
+	kref_get(&orig_neigh_node->refcount);
+	nc_node->orig_node = orig_neigh_node;
+
+>>>>>>> v4.9.227
 	batadv_dbg(BATADV_DBG_NC, bat_priv, "Adding nc_node %pM -> %pM\n",
 		   nc_node->addr, nc_node->orig_node->orig);
 
 	/* Add nc_node to orig_node */
+<<<<<<< HEAD
 	spin_lock_bh(lock);
 	list_add_tail_rcu(&nc_node->list, list);
 	spin_unlock_bh(lock);
@@ -852,6 +1136,20 @@ free:
 /**
  * batadv_nc_update_nc_node - updates stored incoming and outgoing nc node structs
  *  (best called on incoming OGMs)
+=======
+	kref_get(&nc_node->refcount);
+	list_add_tail_rcu(&nc_node->list, list);
+
+unlock:
+	spin_unlock_bh(lock);
+
+	return nc_node;
+}
+
+/**
+ * batadv_nc_update_nc_node - updates stored incoming and outgoing nc node
+ *  structs (best called on incoming OGMs)
+>>>>>>> v4.9.227
  * @bat_priv: the bat priv with all the soft interface information
  * @orig_node: orig node originating the ogm packet
  * @orig_neigh_node: neighboring orig node from which we received the ogm packet
@@ -865,7 +1163,12 @@ void batadv_nc_update_nc_node(struct batadv_priv *bat_priv,
 			      struct batadv_ogm_packet *ogm_packet,
 			      int is_single_hop_neigh)
 {
+<<<<<<< HEAD
 	struct batadv_nc_node *in_nc_node = NULL, *out_nc_node = NULL;
+=======
+	struct batadv_nc_node *in_nc_node = NULL;
+	struct batadv_nc_node *out_nc_node = NULL;
+>>>>>>> v4.9.227
 
 	/* Check if network coding is enabled */
 	if (!atomic_read(&bat_priv->network_coding))
@@ -898,9 +1201,15 @@ void batadv_nc_update_nc_node(struct batadv_priv *bat_priv,
 
 out:
 	if (in_nc_node)
+<<<<<<< HEAD
 		batadv_nc_node_free_ref(in_nc_node);
 	if (out_nc_node)
 		batadv_nc_node_free_ref(out_nc_node);
+=======
+		batadv_nc_node_put(in_nc_node);
+	if (out_nc_node)
+		batadv_nc_node_put(out_nc_node);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -910,13 +1219,22 @@ out:
  * @src: ethernet source address - first half of the nc path search key
  * @dst: ethernet destination address - second half of the nc path search key
  *
+<<<<<<< HEAD
  * Returns pointer to nc_path if the path was found or created, returns NULL
+=======
+ * Return: pointer to nc_path if the path was found or created, returns NULL
+>>>>>>> v4.9.227
  * on error.
  */
 static struct batadv_nc_path *batadv_nc_get_path(struct batadv_priv *bat_priv,
 						 struct batadv_hashtable *hash,
+<<<<<<< HEAD
 						 uint8_t *src,
 						 uint8_t *dst)
+=======
+						 u8 *src,
+						 u8 *dst)
+>>>>>>> v4.9.227
 {
 	int hash_added;
 	struct batadv_nc_path *nc_path, nc_path_key;
@@ -941,7 +1259,11 @@ static struct batadv_nc_path *batadv_nc_get_path(struct batadv_priv *bat_priv,
 	/* Initialize nc_path */
 	INIT_LIST_HEAD(&nc_path->packet_list);
 	spin_lock_init(&nc_path->packet_list_lock);
+<<<<<<< HEAD
 	atomic_set(&nc_path->refcount, 2);
+=======
+	kref_init(&nc_path->refcount);
+>>>>>>> v4.9.227
 	nc_path->last_valid = jiffies;
 	ether_addr_copy(nc_path->next_hop, dst);
 	ether_addr_copy(nc_path->prev_hop, src);
@@ -951,6 +1273,10 @@ static struct batadv_nc_path *batadv_nc_get_path(struct batadv_priv *bat_priv,
 		   nc_path->next_hop);
 
 	/* Add nc_path to hash table */
+<<<<<<< HEAD
+=======
+	kref_get(&nc_path->refcount);
+>>>>>>> v4.9.227
 	hash_added = batadv_hash_add(hash, batadv_nc_hash_compare,
 				     batadv_nc_hash_choose, &nc_path_key,
 				     &nc_path->hash_entry);
@@ -967,6 +1293,7 @@ static struct batadv_nc_path *batadv_nc_get_path(struct batadv_priv *bat_priv,
  * batadv_nc_random_weight_tq - scale the receivers TQ-value to avoid unfair
  *  selection of a receiver with slightly lower TQ than the other
  * @tq: to be weighted tq value
+<<<<<<< HEAD
  */
 static uint8_t batadv_nc_random_weight_tq(uint8_t tq)
 {
@@ -979,6 +1306,15 @@ static uint8_t batadv_nc_random_weight_tq(uint8_t tq)
 
 	/* normalize the randomized packet loss */
 	rand_tq /= BATADV_TQ_MAX_VALUE;
+=======
+ *
+ * Return: scaled tq value
+ */
+static u8 batadv_nc_random_weight_tq(u8 tq)
+{
+	/* randomize the estimated packet loss (max TQ - estimated TQ) */
+	u8 rand_tq = prandom_u32_max(BATADV_TQ_MAX_VALUE + 1 - tq);
+>>>>>>> v4.9.227
 
 	/* convert to (randomized) estimated tq again */
 	return BATADV_TQ_MAX_VALUE - rand_tq;
@@ -1007,7 +1343,11 @@ static void batadv_nc_memxor(char *dst, const char *src, unsigned int len)
  * @nc_packet: structure containing the packet to the skb can be coded with
  * @neigh_node: next hop to forward packet to
  *
+<<<<<<< HEAD
  * Returns true if both packets are consumed, false otherwise.
+=======
+ * Return: true if both packets are consumed, false otherwise.
+>>>>>>> v4.9.227
  */
 static bool batadv_nc_code_packets(struct batadv_priv *bat_priv,
 				   struct sk_buff *skb,
@@ -1015,16 +1355,28 @@ static bool batadv_nc_code_packets(struct batadv_priv *bat_priv,
 				   struct batadv_nc_packet *nc_packet,
 				   struct batadv_neigh_node *neigh_node)
 {
+<<<<<<< HEAD
 	uint8_t tq_weighted_neigh, tq_weighted_coding, tq_tmp;
+=======
+	u8 tq_weighted_neigh, tq_weighted_coding, tq_tmp;
+>>>>>>> v4.9.227
 	struct sk_buff *skb_dest, *skb_src;
 	struct batadv_unicast_packet *packet1;
 	struct batadv_unicast_packet *packet2;
 	struct batadv_coded_packet *coded_packet;
+<<<<<<< HEAD
 	struct batadv_neigh_node *neigh_tmp, *router_neigh;
 	struct batadv_neigh_node *router_coding = NULL;
 	struct batadv_neigh_ifinfo *router_neigh_ifinfo = NULL;
 	struct batadv_neigh_ifinfo *router_coding_ifinfo = NULL;
 	uint8_t *first_source, *first_dest, *second_source, *second_dest;
+=======
+	struct batadv_neigh_node *neigh_tmp, *router_neigh, *first_dest;
+	struct batadv_neigh_node *router_coding = NULL, *second_dest;
+	struct batadv_neigh_ifinfo *router_neigh_ifinfo = NULL;
+	struct batadv_neigh_ifinfo *router_coding_ifinfo = NULL;
+	u8 *first_source, *second_source;
+>>>>>>> v4.9.227
 	__be32 packet_id1, packet_id2;
 	size_t count;
 	bool res = false;
@@ -1067,9 +1419,15 @@ static bool batadv_nc_code_packets(struct batadv_priv *bat_priv,
 	 */
 	if (tq_weighted_neigh >= tq_weighted_coding) {
 		/* Destination from nc_packet is selected for MAC-header */
+<<<<<<< HEAD
 		first_dest = nc_packet->nc_path->next_hop;
 		first_source = nc_packet->nc_path->prev_hop;
 		second_dest = neigh_node->addr;
+=======
+		first_dest = nc_packet->neigh_node;
+		first_source = nc_packet->nc_path->prev_hop;
+		second_dest = neigh_node;
+>>>>>>> v4.9.227
 		second_source = ethhdr->h_source;
 		packet1 = (struct batadv_unicast_packet *)nc_packet->skb->data;
 		packet2 = (struct batadv_unicast_packet *)skb->data;
@@ -1078,9 +1436,15 @@ static bool batadv_nc_code_packets(struct batadv_priv *bat_priv,
 					      skb->data + sizeof(*packet2));
 	} else {
 		/* Destination for skb is selected for MAC-header */
+<<<<<<< HEAD
 		first_dest = neigh_node->addr;
 		first_source = ethhdr->h_source;
 		second_dest = nc_packet->nc_path->next_hop;
+=======
+		first_dest = neigh_node;
+		first_source = ethhdr->h_source;
+		second_dest = nc_packet->neigh_node;
+>>>>>>> v4.9.227
 		second_source = nc_packet->nc_path->prev_hop;
 		packet1 = (struct batadv_unicast_packet *)skb->data;
 		packet2 = (struct batadv_unicast_packet *)nc_packet->skb->data;
@@ -1122,7 +1486,11 @@ static bool batadv_nc_code_packets(struct batadv_priv *bat_priv,
 	coded_packet->first_ttvn = packet1->ttvn;
 
 	/* Info about second unicast packet */
+<<<<<<< HEAD
 	ether_addr_copy(coded_packet->second_dest, second_dest);
+=======
+	ether_addr_copy(coded_packet->second_dest, second_dest->addr);
+>>>>>>> v4.9.227
 	ether_addr_copy(coded_packet->second_source, second_source);
 	ether_addr_copy(coded_packet->second_orig_dest, packet2->dest);
 	coded_packet->second_crc = packet_id2;
@@ -1177,6 +1545,7 @@ static bool batadv_nc_code_packets(struct batadv_priv *bat_priv,
 	batadv_nc_packet_free(nc_packet);
 
 	/* Send the coded packet and return true */
+<<<<<<< HEAD
 	batadv_send_skb_packet(skb_dest, neigh_node->if_incoming, first_dest);
 	res = true;
 out:
@@ -1188,6 +1557,19 @@ out:
 		batadv_neigh_ifinfo_free_ref(router_neigh_ifinfo);
 	if (router_coding_ifinfo)
 		batadv_neigh_ifinfo_free_ref(router_coding_ifinfo);
+=======
+	batadv_send_unicast_skb(skb_dest, first_dest);
+	res = true;
+out:
+	if (router_neigh)
+		batadv_neigh_node_put(router_neigh);
+	if (router_coding)
+		batadv_neigh_node_put(router_coding);
+	if (router_neigh_ifinfo)
+		batadv_neigh_ifinfo_put(router_neigh_ifinfo);
+	if (router_coding_ifinfo)
+		batadv_neigh_ifinfo_put(router_coding_ifinfo);
+>>>>>>> v4.9.227
 	return res;
 }
 
@@ -1206,6 +1588,7 @@ out:
  * Since the source encoded the packet we can be certain it has all necessary
  * decode information.
  *
+<<<<<<< HEAD
  * Returns true if coding of a decoded packet is allowed.
  */
 static bool batadv_nc_skb_coding_possible(struct sk_buff *skb,
@@ -1215,6 +1598,15 @@ static bool batadv_nc_skb_coding_possible(struct sk_buff *skb,
 		return false;
 	else
 		return true;
+=======
+ * Return: true if coding of a decoded packet is allowed.
+ */
+static bool batadv_nc_skb_coding_possible(struct sk_buff *skb, u8 *dst, u8 *src)
+{
+	if (BATADV_SKB_CB(skb)->decoded && !batadv_compare_eth(dst, src))
+		return false;
+	return true;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -1226,14 +1618,22 @@ static bool batadv_nc_skb_coding_possible(struct sk_buff *skb,
  * @skb: data skb to forward
  * @eth_dst: next hop mac address of skb
  *
+<<<<<<< HEAD
  * Returns true if coding of a decoded skb is allowed.
+=======
+ * Return: true if coding of a decoded skb is allowed.
+>>>>>>> v4.9.227
  */
 static struct batadv_nc_packet *
 batadv_nc_path_search(struct batadv_priv *bat_priv,
 		      struct batadv_nc_node *in_nc_node,
 		      struct batadv_nc_node *out_nc_node,
 		      struct sk_buff *skb,
+<<<<<<< HEAD
 		      uint8_t *eth_dst)
+=======
+		      u8 *eth_dst)
+>>>>>>> v4.9.227
 {
 	struct batadv_nc_path *nc_path, nc_path_key;
 	struct batadv_nc_packet *nc_packet_out = NULL;
@@ -1294,13 +1694,22 @@ batadv_nc_path_search(struct batadv_priv *bat_priv,
  * @eth_src: source mac address of skb
  * @in_nc_node: pointer to skb next hop's neighbor nc node
  *
+<<<<<<< HEAD
  * Returns an nc packet if a suitable coding packet was found, NULL otherwise.
+=======
+ * Return: an nc packet if a suitable coding packet was found, NULL otherwise.
+>>>>>>> v4.9.227
  */
 static struct batadv_nc_packet *
 batadv_nc_skb_src_search(struct batadv_priv *bat_priv,
 			 struct sk_buff *skb,
+<<<<<<< HEAD
 			 uint8_t *eth_dst,
 			 uint8_t *eth_src,
+=======
+			 u8 *eth_dst,
+			 u8 *eth_src,
+>>>>>>> v4.9.227
 			 struct batadv_nc_node *in_nc_node)
 {
 	struct batadv_orig_node *orig_node;
@@ -1327,7 +1736,11 @@ batadv_nc_skb_src_search(struct batadv_priv *bat_priv,
 	}
 	rcu_read_unlock();
 
+<<<<<<< HEAD
 	batadv_orig_node_free_ref(orig_node);
+=======
+	batadv_orig_node_put(orig_node);
+>>>>>>> v4.9.227
 	return nc_packet;
 }
 
@@ -1340,7 +1753,11 @@ batadv_nc_skb_src_search(struct batadv_priv *bat_priv,
  */
 static void batadv_nc_skb_store_before_coding(struct batadv_priv *bat_priv,
 					      struct sk_buff *skb,
+<<<<<<< HEAD
 					      uint8_t *eth_dst_new)
+=======
+					      u8 *eth_dst_new)
+>>>>>>> v4.9.227
 {
 	struct ethhdr *ethhdr;
 
@@ -1377,7 +1794,11 @@ static void batadv_nc_skb_store_before_coding(struct batadv_priv *bat_priv,
  * next hop that potentially sent a packet which our next hop also received
  * (overheard) and has stored for later decoding.
  *
+<<<<<<< HEAD
  * Returns true if the skb was consumed (encoded packet sent) or false otherwise
+=======
+ * Return: true if the skb was consumed (encoded packet sent) or false otherwise
+>>>>>>> v4.9.227
  */
 static bool batadv_nc_skb_dst_search(struct sk_buff *skb,
 				     struct batadv_neigh_node *neigh_node,
@@ -1431,7 +1852,11 @@ static bool batadv_nc_skb_dst_search(struct sk_buff *skb,
  * @neigh_node: next hop to forward packet to
  * @packet_id: checksum to identify packet
  *
+<<<<<<< HEAD
  * Returns true if the packet was buffered or false in case of an error.
+=======
+ * Return: true if the packet was buffered or false in case of an error.
+>>>>>>> v4.9.227
  */
 static bool batadv_nc_skb_add_to_path(struct sk_buff *skb,
 				      struct batadv_nc_path *nc_path,
@@ -1465,7 +1890,11 @@ static bool batadv_nc_skb_add_to_path(struct sk_buff *skb,
  * @skb: data skb to forward
  * @neigh_node: next hop to forward packet to
  *
+<<<<<<< HEAD
  * Returns true if the skb was consumed (encoded packet sent) or false otherwise
+=======
+ * Return: true if the skb was consumed (encoded packet sent) or false otherwise
+>>>>>>> v4.9.227
  */
 bool batadv_nc_skb_forward(struct sk_buff *skb,
 			   struct batadv_neigh_node *neigh_node)
@@ -1510,7 +1939,11 @@ bool batadv_nc_skb_forward(struct sk_buff *skb,
 	return true;
 
 free_nc_path:
+<<<<<<< HEAD
 	batadv_nc_path_free_ref(nc_path);
+=======
+	batadv_nc_path_put(nc_path);
+>>>>>>> v4.9.227
 out:
 	/* Packet is not consumed */
 	return false;
@@ -1572,7 +2005,11 @@ void batadv_nc_skb_store_for_decoding(struct batadv_priv *bat_priv,
 free_skb:
 	kfree_skb(skb);
 free_nc_path:
+<<<<<<< HEAD
 	batadv_nc_path_free_ref(nc_path);
+=======
+	batadv_nc_path_put(nc_path);
+>>>>>>> v4.9.227
 out:
 	return;
 }
@@ -1604,7 +2041,11 @@ void batadv_nc_skb_store_sniffed_unicast(struct batadv_priv *bat_priv,
  * @skb: unicast skb to decode
  * @nc_packet: decode data needed to decode the skb
  *
+<<<<<<< HEAD
  * Returns pointer to decoded unicast packet if the packet was decoded or NULL
+=======
+ * Return: pointer to decoded unicast packet if the packet was decoded or NULL
+>>>>>>> v4.9.227
  * in case of an error.
  */
 static struct batadv_unicast_packet *
@@ -1616,7 +2057,11 @@ batadv_nc_skb_decode_packet(struct batadv_priv *bat_priv, struct sk_buff *skb,
 	struct batadv_unicast_packet *unicast_packet;
 	struct batadv_coded_packet coded_packet_tmp;
 	struct ethhdr *ethhdr, ethhdr_tmp;
+<<<<<<< HEAD
 	uint8_t *orig_dest, ttl, ttvn;
+=======
+	u8 *orig_dest, ttl, ttvn;
+>>>>>>> v4.9.227
 	unsigned int coding_len;
 	int err;
 
@@ -1698,7 +2143,11 @@ batadv_nc_skb_decode_packet(struct batadv_priv *bat_priv, struct sk_buff *skb,
  * @ethhdr: pointer to the ethernet header inside the coded packet
  * @coded: coded packet we try to find decode data for
  *
+<<<<<<< HEAD
  * Returns pointer to nc packet if the needed data was found or NULL otherwise.
+=======
+ * Return: pointer to nc packet if the needed data was found or NULL otherwise.
+>>>>>>> v4.9.227
  */
 static struct batadv_nc_packet *
 batadv_nc_find_decoding_packet(struct batadv_priv *bat_priv,
@@ -1708,7 +2157,11 @@ batadv_nc_find_decoding_packet(struct batadv_priv *bat_priv,
 	struct batadv_hashtable *hash = bat_priv->nc.decoding_hash;
 	struct batadv_nc_packet *tmp_nc_packet, *nc_packet = NULL;
 	struct batadv_nc_path *nc_path, nc_path_key;
+<<<<<<< HEAD
 	uint8_t *dest, *source;
+=======
+	u8 *dest, *source;
+>>>>>>> v4.9.227
 	__be32 packet_id;
 	int index;
 
@@ -1761,6 +2214,12 @@ batadv_nc_find_decoding_packet(struct batadv_priv *bat_priv,
  *  resulting unicast packet
  * @skb: incoming coded packet
  * @recv_if: pointer to interface this packet was received on
+<<<<<<< HEAD
+=======
+ *
+ * Return: NET_RX_SUCCESS if the packet has been consumed or NET_RX_DROP
+ * otherwise.
+>>>>>>> v4.9.227
  */
 static int batadv_nc_recv_coded_packet(struct sk_buff *skb,
 				       struct batadv_hard_iface *recv_if)
@@ -1841,10 +2300,19 @@ void batadv_nc_mesh_free(struct batadv_priv *bat_priv)
 	batadv_hash_destroy(bat_priv->nc.decoding_hash);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_BATMAN_ADV_DEBUGFS
+>>>>>>> v4.9.227
 /**
  * batadv_nc_nodes_seq_print_text - print the nc node information
  * @seq: seq file to print on
  * @offset: not used
+<<<<<<< HEAD
+=======
+ *
+ * Return: always 0
+>>>>>>> v4.9.227
  */
 int batadv_nc_nodes_seq_print_text(struct seq_file *seq, void *offset)
 {
@@ -1900,13 +2368,22 @@ int batadv_nc_nodes_seq_print_text(struct seq_file *seq, void *offset)
 
 out:
 	if (primary_if)
+<<<<<<< HEAD
 		batadv_hardif_free_ref(primary_if);
+=======
+		batadv_hardif_put(primary_if);
+>>>>>>> v4.9.227
 	return 0;
 }
 
 /**
  * batadv_nc_init_debugfs - create nc folder and related files in debugfs
  * @bat_priv: the bat priv with all the soft interface information
+<<<<<<< HEAD
+=======
+ *
+ * Return: 0 on success or negative error number in case of failure
+>>>>>>> v4.9.227
  */
 int batadv_nc_init_debugfs(struct batadv_priv *bat_priv)
 {
@@ -1936,3 +2413,7 @@ int batadv_nc_init_debugfs(struct batadv_priv *bat_priv)
 out:
 	return -ENOMEM;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227

@@ -15,7 +15,10 @@
  */
 
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
 #include <linux/of.h>
@@ -61,6 +64,7 @@ struct pmc_clk_init_data {
 
 static DEFINE_SPINLOCK(clk_out_lock);
 
+<<<<<<< HEAD
 static const char *clk_out1_parents[] = { "clk_m", "clk_m_div2",
 	"clk_m_div4", "extern1",
 };
@@ -71,6 +75,18 @@ static const char *clk_out2_parents[] = { "clk_m", "clk_m_div2",
 
 static const char *clk_out3_parents[] = { "clk_m", "clk_m_div2",
 	"clk_m_div4", "extern3",
+=======
+static const char *clk_out1_parents[] = { "osc", "osc_div2",
+	"osc_div4", "extern1",
+};
+
+static const char *clk_out2_parents[] = { "osc", "osc_div2",
+	"osc_div4", "extern2",
+};
+
+static const char *clk_out3_parents[] = { "osc", "osc_div2",
+	"osc_div4", "extern3",
+>>>>>>> v4.9.227
 };
 
 static struct pmc_clk_init_data pmc_clks[] = {

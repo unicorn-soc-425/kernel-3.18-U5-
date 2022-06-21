@@ -91,7 +91,12 @@ struct mbus_hw_ops {
 
 struct mbus_device *
 mbus_register_device(struct device *pdev, int id, struct dma_map_ops *dma_ops,
+<<<<<<< HEAD
 		     struct mbus_hw_ops *hw_ops, void __iomem *mmio_va);
+=======
+		     struct mbus_hw_ops *hw_ops, int index,
+		     void __iomem *mmio_va);
+>>>>>>> v4.9.227
 void mbus_unregister_device(struct mbus_device *mbdev);
 
 int mbus_register_driver(struct mbus_driver *drv);

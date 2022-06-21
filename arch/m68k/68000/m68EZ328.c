@@ -62,8 +62,12 @@ void __init config_BSP(char *command, int len)
 #ifdef CONFIG_UCSIMM
   printk(KERN_INFO "uCsimm serial string [%s]\n",getserialnum());
   p = cs8900a_hwaddr = gethwaddr(0);
+<<<<<<< HEAD
   printk(KERN_INFO "uCsimm hwaddr %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",
          p[0], p[1], p[2], p[3], p[4], p[5]);
+=======
+  printk(KERN_INFO "uCsimm hwaddr %pM\n", p);
+>>>>>>> v4.9.227
 
   p = getbenv("APPEND");
   if (p) strcpy(p,command);

@@ -4,10 +4,22 @@
  * Jan 23 2005  Matt Mackall <mpm@selenic.com>
  */
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/sort.h>
 #include <linux/slab.h>
+=======
+#include <linux/types.h>
+#include <linux/export.h>
+#include <linux/sort.h>
+
+static int alignment_ok(const void *base, int align)
+{
+	return IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) ||
+		((unsigned long)base & (align - 1)) == 0;
+}
+>>>>>>> v4.9.227
 
 static void u32_swap(void *a, void *b, int size)
 {
@@ -16,6 +28,16 @@ static void u32_swap(void *a, void *b, int size)
 	*(u32 *)b = t;
 }
 
+<<<<<<< HEAD
+=======
+static void u64_swap(void *a, void *b, int size)
+{
+	u64 t = *(u64 *)a;
+	*(u64 *)a = *(u64 *)b;
+	*(u64 *)b = t;
+}
+
+>>>>>>> v4.9.227
 static void generic_swap(void *a, void *b, int size)
 {
 	char t;
@@ -51,8 +73,19 @@ void sort(void *base, size_t num, size_t size,
 	/* pre-scale counters for performance */
 	int i = (num/2 - 1) * size, n = num * size, c, r;
 
+<<<<<<< HEAD
 	if (!swap_func)
 		swap_func = (size == 4 ? u32_swap : generic_swap);
+=======
+	if (!swap_func) {
+		if (size == 4 && alignment_ok(base, 4))
+			swap_func = u32_swap;
+		else if (size == 8 && alignment_ok(base, 8))
+			swap_func = u64_swap;
+		else
+			swap_func = generic_swap;
+	}
+>>>>>>> v4.9.227
 
 	/* heapify */
 	for ( ; i >= 0; i -= size) {
@@ -85,6 +118,10 @@ void sort(void *base, size_t num, size_t size,
 EXPORT_SYMBOL(sort);
 
 #if 0
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> v4.9.227
 /* a simple boot-time regression test */
 
 int cmpint(const void *a, const void *b)

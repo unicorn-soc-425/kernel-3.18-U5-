@@ -7,5 +7,9 @@ config ARCH_NSPIRE
 	select ARM_AMBA
 	select ARM_VIC
 	select ARM_TIMER_SP804
+<<<<<<< HEAD
+=======
+	select NSPIRE_TIMER
+>>>>>>> v4.9.227
 	help
 	  This enables support for systems using the TI-NSPIRE CPU

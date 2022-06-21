@@ -39,7 +39,11 @@
 #define OCFS2_CHECK_RESERVATIONS
 #endif
 
+<<<<<<< HEAD
 DEFINE_SPINLOCK(resv_lock);
+=======
+static DEFINE_SPINLOCK(resv_lock);
+>>>>>>> v4.9.227
 
 #define	OCFS2_MIN_RESV_WINDOW_BITS	8
 #define	OCFS2_MAX_RESV_WINDOW_BITS	1024

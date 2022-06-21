@@ -57,7 +57,11 @@
 				flash: m25p80@0 {
 					#address-cells = <1>;
 					#size-cells = <1>;
+<<<<<<< HEAD
 					compatible = "sst,sst25vf016b";
+=======
+					compatible = "sst,sst25vf016b", "jedec,spi-nor";
+>>>>>>> v4.9.227
 					spi-max-frequency = <40000000>;
 					reg = <0>;
 				};
@@ -182,7 +186,10 @@
 			};
 
 			lradc@80050000 {
+<<<<<<< HEAD
 				fsl,lradc-touchscreen-wires = <4>;
+=======
+>>>>>>> v4.9.227
 				status = "okay";
 				fsl,lradc-touchscreen-wires = <4>;
 				fsl,ave-ctrl = <4>;
@@ -225,7 +232,11 @@
 			auart0: serial@8006a000 {
 				pinctrl-names = "default";
 				pinctrl-0 = <&auart0_pins_a>;
+<<<<<<< HEAD
 				fsl,uart-has-rtscts;
+=======
+				uart-has-rtscts;
+>>>>>>> v4.9.227
 				status = "okay";
 			};
 

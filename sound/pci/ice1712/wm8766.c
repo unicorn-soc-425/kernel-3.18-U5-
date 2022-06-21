@@ -183,6 +183,7 @@ void snd_wm8766_set_if(struct snd_wm8766 *wm, u16 dac)
 	snd_wm8766_write(wm, WM8766_REG_IFCTRL, val | dac);
 }
 
+<<<<<<< HEAD
 void snd_wm8766_set_master_mode(struct snd_wm8766 *wm, u16 mode)
 {
 	u16 val = wm->regs[WM8766_REG_DACCTRL3] & ~WM8766_DAC3_MSTR_MASK;
@@ -199,6 +200,8 @@ void snd_wm8766_set_power(struct snd_wm8766 *wm, u16 power)
 	snd_wm8766_write(wm, WM8766_REG_DACCTRL3, val | power);
 }
 
+=======
+>>>>>>> v4.9.227
 void snd_wm8766_volume_restore(struct snd_wm8766 *wm)
 {
 	u16 val = wm->regs[WM8766_REG_DACR1];

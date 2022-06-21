@@ -68,6 +68,10 @@ SECTIONS
     _stext = .;
     TEXT_TEXT
     SCHED_TEXT
+<<<<<<< HEAD
+=======
+    CPUIDLE_TEXT
+>>>>>>> v4.9.227
     LOCK_TEXT
     *(.fixup)
     *(.stub .text.* .gnu.linkonce.t.*)

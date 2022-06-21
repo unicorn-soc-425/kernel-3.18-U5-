@@ -7,6 +7,7 @@
 #include <linux/tracepoint.h>
 
 #define MIGRATE_MODE						\
+<<<<<<< HEAD
 	{MIGRATE_ASYNC,		"MIGRATE_ASYNC"},		\
 	{MIGRATE_SYNC_LIGHT,	"MIGRATE_SYNC_LIGHT"},		\
 	{MIGRATE_SYNC,		"MIGRATE_SYNC"}		
@@ -19,6 +20,42 @@
 	{MR_MEMPOLICY_MBIND,	"mempolicy_mbind"},		\
 	{MR_NUMA_MISPLACED,	"numa_misplaced"},		\
 	{MR_CMA,		"cma"}
+=======
+	EM( MIGRATE_ASYNC,	"MIGRATE_ASYNC")		\
+	EM( MIGRATE_SYNC_LIGHT,	"MIGRATE_SYNC_LIGHT")		\
+	EMe(MIGRATE_SYNC,	"MIGRATE_SYNC")
+
+
+#define MIGRATE_REASON						\
+	EM( MR_COMPACTION,	"compaction")			\
+	EM( MR_MEMORY_FAILURE,	"memory_failure")		\
+	EM( MR_MEMORY_HOTPLUG,	"memory_hotplug")		\
+	EM( MR_SYSCALL,		"syscall_or_cpuset")		\
+	EM( MR_MEMPOLICY_MBIND,	"mempolicy_mbind")		\
+	EM( MR_NUMA_MISPLACED,	"numa_misplaced")		\
+	EMe(MR_CMA,		"cma")
+
+/*
+ * First define the enums in the above macros to be exported to userspace
+ * via TRACE_DEFINE_ENUM().
+ */
+#undef EM
+#undef EMe
+#define EM(a, b)	TRACE_DEFINE_ENUM(a);
+#define EMe(a, b)	TRACE_DEFINE_ENUM(a);
+
+MIGRATE_MODE
+MIGRATE_REASON
+
+/*
+ * Now redefine the EM() and EMe() macros to map the enums to the strings
+ * that will be printed in the output.
+ */
+#undef EM
+#undef EMe
+#define EM(a, b)	{a, b},
+#define EMe(a, b)	{a, b}
+>>>>>>> v4.9.227
 
 TRACE_EVENT(mm_migrate_pages,
 
@@ -74,6 +111,7 @@ TRACE_EVENT(mm_numa_migrate_ratelimit,
 		__entry->dst_nid,
 		__entry->nr_pages)
 );
+<<<<<<< HEAD
 
 TRACE_EVENT(mm_migrate_pages_start,
 
@@ -95,6 +133,8 @@ TRACE_EVENT(mm_migrate_pages_start,
 		__print_symbolic(__entry->mode, MIGRATE_MODE),
 		__print_symbolic(__entry->reason, MIGRATE_REASON))
 );
+=======
+>>>>>>> v4.9.227
 #endif /* _TRACE_MIGRATE_H */
 
 /* This part must be outside protection */

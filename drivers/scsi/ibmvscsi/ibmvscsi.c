@@ -106,9 +106,15 @@ MODULE_LICENSE("GPL");
 MODULE_VERSION(IBMVSCSI_VERSION);
 
 module_param_named(max_id, max_id, int, S_IRUGO | S_IWUSR);
+<<<<<<< HEAD
 MODULE_PARM_DESC(max_id, "Largest ID value for each channel");
 module_param_named(max_channel, max_channel, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(max_channel, "Largest channel value");
+=======
+MODULE_PARM_DESC(max_id, "Largest ID value for each channel [Default=64]");
+module_param_named(max_channel, max_channel, int, S_IRUGO | S_IWUSR);
+MODULE_PARM_DESC(max_channel, "Largest channel value [Default=3]");
+>>>>>>> v4.9.227
 module_param_named(init_timeout, init_timeout, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(init_timeout, "Initialization timeout in seconds");
 module_param_named(max_requests, max_requests, int, S_IRUGO);
@@ -182,7 +188,11 @@ static struct viosrp_crq *crq_queue_next_crq(struct crq_queue *queue)
 
 	spin_lock_irqsave(&queue->lock, flags);
 	crq = &queue->msgs[queue->cur];
+<<<<<<< HEAD
 	if (crq->valid & 0x80) {
+=======
+	if (crq->valid != VIOSRP_CRQ_FREE) {
+>>>>>>> v4.9.227
 		if (++queue->cur == queue->size)
 			queue->cur = 0;
 
@@ -231,7 +241,11 @@ static void ibmvscsi_task(void *data)
 		/* Pull all the valid messages off the CRQ */
 		while ((crq = crq_queue_next_crq(&hostdata->queue)) != NULL) {
 			ibmvscsi_handle_crq(crq, hostdata);
+<<<<<<< HEAD
 			crq->valid = 0x00;
+=======
+			crq->valid = VIOSRP_CRQ_FREE;
+>>>>>>> v4.9.227
 		}
 
 		vio_enable_interrupts(vdev);
@@ -239,7 +253,11 @@ static void ibmvscsi_task(void *data)
 		if (crq != NULL) {
 			vio_disable_interrupts(vdev);
 			ibmvscsi_handle_crq(crq, hostdata);
+<<<<<<< HEAD
 			crq->valid = 0x00;
+=======
+			crq->valid = VIOSRP_CRQ_FREE;
+>>>>>>> v4.9.227
 		} else {
 			done = 1;
 		}
@@ -248,12 +266,16 @@ static void ibmvscsi_task(void *data)
 
 static void gather_partition_info(void)
 {
+<<<<<<< HEAD
 	struct device_node *rootdn;
 
+=======
+>>>>>>> v4.9.227
 	const char *ppartition_name;
 	const __be32 *p_number_ptr;
 
 	/* Retrieve information about this partition */
+<<<<<<< HEAD
 	rootdn = of_find_node_by_path("/");
 	if (!rootdn) {
 		return;
@@ -267,6 +289,21 @@ static void gather_partition_info(void)
 	if (p_number_ptr)
 		partition_number = of_read_number(p_number_ptr, 1);
 	of_node_put(rootdn);
+=======
+	if (!of_root)
+		return;
+
+	of_node_get(of_root);
+
+	ppartition_name = of_get_property(of_root, "ibm,partition-name", NULL);
+	if (ppartition_name)
+		strlcpy(partition_name, ppartition_name,
+				sizeof(partition_name));
+	p_number_ptr = of_get_property(of_root, "ibm,partition-no", NULL);
+	if (p_number_ptr)
+		partition_number = of_read_number(p_number_ptr, 1);
+	of_node_put(of_root);
+>>>>>>> v4.9.227
 }
 
 static void set_adapter_info(struct ibmvscsi_host_data *hostdata)
@@ -283,8 +320,13 @@ static void set_adapter_info(struct ibmvscsi_host_data *hostdata)
 	hostdata->madapter_info.partition_number =
 					cpu_to_be32(partition_number);
 
+<<<<<<< HEAD
 	hostdata->madapter_info.mad_version = cpu_to_be32(1);
 	hostdata->madapter_info.os_type = cpu_to_be32(2);
+=======
+	hostdata->madapter_info.mad_version = cpu_to_be32(SRP_MAD_VERSION_1);
+	hostdata->madapter_info.os_type = cpu_to_be32(SRP_MAD_OS_LINUX);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -316,7 +358,11 @@ static int ibmvscsi_reset_crq_queue(struct crq_queue *queue,
 	rc = plpar_hcall_norets(H_REG_CRQ,
 				vdev->unit_address,
 				queue->msg_token, PAGE_SIZE);
+<<<<<<< HEAD
 	if (rc == 2) {
+=======
+	if (rc == H_CLOSED) {
+>>>>>>> v4.9.227
 		/* Adapter is good, but other end is not ready */
 		dev_warn(hostdata->dev, "Partner adapter not ready\n");
 	} else if (rc != 0) {
@@ -366,7 +412,11 @@ static int ibmvscsi_init_crq_queue(struct crq_queue *queue,
 		rc = ibmvscsi_reset_crq_queue(queue,
 					      hostdata);
 
+<<<<<<< HEAD
 	if (rc == 2) {
+=======
+	if (rc == H_CLOSED) {
+>>>>>>> v4.9.227
 		/* Adapter is good, but other end is not ready */
 		dev_warn(hostdata->dev, "Partner adapter not ready\n");
 		retrc = 0;
@@ -474,7 +524,11 @@ static int initialize_event_pool(struct event_pool *pool,
 		struct srp_event_struct *evt = &pool->events[i];
 		memset(&evt->crq, 0x00, sizeof(evt->crq));
 		atomic_set(&evt->free, 1);
+<<<<<<< HEAD
 		evt->crq.valid = 0x80;
+=======
+		evt->crq.valid = VIOSRP_CRQ_CMD_RSP;
+>>>>>>> v4.9.227
 		evt->crq.IU_length = cpu_to_be16(sizeof(*evt->xfer_iu));
 		evt->crq.IU_data_ptr = cpu_to_be64(pool->iu_token +
 			sizeof(*evt->xfer_iu) * i);
@@ -1053,7 +1107,11 @@ static int ibmvscsi_queuecommand_lck(struct scsi_cmnd *cmnd,
 	memset(srp_cmd, 0x00, SRP_MAX_IU_LEN);
 	srp_cmd->opcode = SRP_CMD;
 	memcpy(srp_cmd->cdb, cmnd->cmnd, sizeof(srp_cmd->cdb));
+<<<<<<< HEAD
 	srp_cmd->lun = cpu_to_be64(((u64)lun) << 48);
+=======
+	int_to_scsilun(lun, &srp_cmd->lun);
+>>>>>>> v4.9.227
 
 	if (!map_data_for_srp_cmd(cmnd, evt_struct, srp_cmd, hostdata->dev)) {
 		if (!firmware_has_feature(FW_FEATURE_CMO))
@@ -1398,7 +1456,11 @@ static void adapter_info_rsp(struct srp_event_struct *evt_struct)
 			hostdata->host->max_sectors = 
 				be32_to_cpu(hostdata->madapter_info.port_max_txu[0]) >> 9;
 		
+<<<<<<< HEAD
 		if (be32_to_cpu(hostdata->madapter_info.os_type) == 3 &&
+=======
+		if (be32_to_cpu(hostdata->madapter_info.os_type) == SRP_MAD_OS_AIX &&
+>>>>>>> v4.9.227
 		    strcmp(hostdata->madapter_info.srp_version, "1.6a") <= 0) {
 			dev_err(hostdata->dev, "host (Ver. %s) doesn't support large transfers\n",
 				hostdata->madapter_info.srp_version);
@@ -1407,7 +1469,11 @@ static void adapter_info_rsp(struct srp_event_struct *evt_struct)
 			hostdata->host->sg_tablesize = MAX_INDIRECT_BUFS;
 		}
 
+<<<<<<< HEAD
 		if (be32_to_cpu(hostdata->madapter_info.os_type) == 3) {
+=======
+		if (be32_to_cpu(hostdata->madapter_info.os_type) == SRP_MAD_OS_AIX) {
+>>>>>>> v4.9.227
 			enable_fast_fail(hostdata);
 			return;
 		}
@@ -1529,7 +1595,11 @@ static int ibmvscsi_eh_abort_handler(struct scsi_cmnd *cmd)
 		/* Set up an abort SRP command */
 		memset(tsk_mgmt, 0x00, sizeof(*tsk_mgmt));
 		tsk_mgmt->opcode = SRP_TSK_MGMT;
+<<<<<<< HEAD
 		tsk_mgmt->lun = cpu_to_be64(((u64) lun) << 48);
+=======
+		int_to_scsilun(lun, &tsk_mgmt->lun);
+>>>>>>> v4.9.227
 		tsk_mgmt->tsk_mgmt_func = SRP_TSK_ABORT_TASK;
 		tsk_mgmt->task_tag = (u64) found_evt;
 
@@ -1652,7 +1722,11 @@ static int ibmvscsi_eh_device_reset_handler(struct scsi_cmnd *cmd)
 		/* Set up a lun reset SRP command */
 		memset(tsk_mgmt, 0x00, sizeof(*tsk_mgmt));
 		tsk_mgmt->opcode = SRP_TSK_MGMT;
+<<<<<<< HEAD
 		tsk_mgmt->lun = cpu_to_be64(((u64) lun) << 48);
+=======
+		int_to_scsilun(lun, &tsk_mgmt->lun);
+>>>>>>> v4.9.227
 		tsk_mgmt->tsk_mgmt_func = SRP_TSK_LUN_RESET;
 
 		evt->sync_srp = &srp_rsp;
@@ -1767,9 +1841,15 @@ static void ibmvscsi_handle_crq(struct viosrp_crq *crq,
 	struct srp_event_struct *evt_struct =
 			(__force struct srp_event_struct *)crq->IU_data_ptr;
 	switch (crq->valid) {
+<<<<<<< HEAD
 	case 0xC0:		/* initialization */
 		switch (crq->format) {
 		case 0x01:	/* Initialization message */
+=======
+	case VIOSRP_CRQ_INIT_RSP:		/* initialization */
+		switch (crq->format) {
+		case VIOSRP_CRQ_INIT:	/* Initialization message */
+>>>>>>> v4.9.227
 			dev_info(hostdata->dev, "partner initialized\n");
 			/* Send back a response */
 			rc = ibmvscsi_send_crq(hostdata, 0xC002000000000000LL, 0);
@@ -1781,7 +1861,11 @@ static void ibmvscsi_handle_crq(struct viosrp_crq *crq,
 			}
 
 			break;
+<<<<<<< HEAD
 		case 0x02:	/* Initialization response */
+=======
+		case VIOSRP_CRQ_INIT_COMPLETE:	/* Initialization response */
+>>>>>>> v4.9.227
 			dev_info(hostdata->dev, "partner initialization complete\n");
 
 			/* Now login */
@@ -1791,7 +1875,11 @@ static void ibmvscsi_handle_crq(struct viosrp_crq *crq,
 			dev_err(hostdata->dev, "unknown crq message type: %d\n", crq->format);
 		}
 		return;
+<<<<<<< HEAD
 	case 0xFF:	/* Hypervisor telling us the connection is closed */
+=======
+	case VIOSRP_CRQ_XPORT_EVENT:	/* Hypervisor telling us the connection is closed */
+>>>>>>> v4.9.227
 		scsi_block_requests(hostdata->host);
 		atomic_set(&hostdata->request_limit, 0);
 		if (crq->format == 0x06) {
@@ -1807,7 +1895,11 @@ static void ibmvscsi_handle_crq(struct viosrp_crq *crq,
 			ibmvscsi_reset_host(hostdata);
 		}
 		return;
+<<<<<<< HEAD
 	case 0x80:		/* real payload */
+=======
+	case VIOSRP_CRQ_CMD_RSP:		/* real payload */
+>>>>>>> v4.9.227
 		break;
 	default:
 		dev_err(hostdata->dev, "got an invalid message type 0x%02x\n",
@@ -1855,6 +1947,7 @@ static void ibmvscsi_handle_crq(struct viosrp_crq *crq,
 }
 
 /**
+<<<<<<< HEAD
  * ibmvscsi_get_host_config: Send the command to the server to get host
  * configuration data.  The data is opaque to us.
  */
@@ -1911,6 +2004,8 @@ static int ibmvscsi_do_host_config(struct ibmvscsi_host_data *hostdata,
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * ibmvscsi_slave_configure: Set the "allow_restart" flag for each disk.
  * @sdev:	struct scsi_device device to configure
  *
@@ -1929,7 +2024,10 @@ static int ibmvscsi_slave_configure(struct scsi_device *sdev)
 		blk_queue_rq_timeout(sdev->request_queue, 120 * HZ);
 	}
 	spin_unlock_irqrestore(shost->host_lock, lock_flags);
+<<<<<<< HEAD
 	scsi_adjust_queue_depth(sdev, 0, shost->cmd_per_lun);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1942,6 +2040,7 @@ static int ibmvscsi_slave_configure(struct scsi_device *sdev)
  * Return value:
  * 	actual depth set
  **/
+<<<<<<< HEAD
 static int ibmvscsi_change_queue_depth(struct scsi_device *sdev, int qdepth,
 				       int reason)
 {
@@ -1953,6 +2052,13 @@ static int ibmvscsi_change_queue_depth(struct scsi_device *sdev, int qdepth,
 
 	scsi_adjust_queue_depth(sdev, 0, qdepth);
 	return sdev->queue_depth;
+=======
+static int ibmvscsi_change_queue_depth(struct scsi_device *sdev, int qdepth)
+{
+	if (qdepth > IBMVSCSI_MAX_CMDS_PER_LUN)
+		qdepth = IBMVSCSI_MAX_CMDS_PER_LUN;
+	return scsi_change_queue_depth(sdev, qdepth);
+>>>>>>> v4.9.227
 }
 
 /* ------------------------------------------------------------
@@ -2048,7 +2154,11 @@ static ssize_t show_host_partition_number(struct device *dev,
 	int len;
 
 	len = snprintf(buf, PAGE_SIZE, "%d\n",
+<<<<<<< HEAD
 		       hostdata->madapter_info.partition_number);
+=======
+		       be32_to_cpu(hostdata->madapter_info.partition_number));
+>>>>>>> v4.9.227
 	return len;
 }
 
@@ -2068,7 +2178,11 @@ static ssize_t show_host_mad_version(struct device *dev,
 	int len;
 
 	len = snprintf(buf, PAGE_SIZE, "%d\n",
+<<<<<<< HEAD
 		       hostdata->madapter_info.mad_version);
+=======
+		       be32_to_cpu(hostdata->madapter_info.mad_version));
+>>>>>>> v4.9.227
 	return len;
 }
 
@@ -2087,7 +2201,12 @@ static ssize_t show_host_os_type(struct device *dev,
 	struct ibmvscsi_host_data *hostdata = shost_priv(shost);
 	int len;
 
+<<<<<<< HEAD
 	len = snprintf(buf, PAGE_SIZE, "%d\n", hostdata->madapter_info.os_type);
+=======
+	len = snprintf(buf, PAGE_SIZE, "%d\n",
+		       be32_to_cpu(hostdata->madapter_info.os_type));
+>>>>>>> v4.9.227
 	return len;
 }
 
@@ -2102,6 +2221,7 @@ static struct device_attribute ibmvscsi_host_os_type = {
 static ssize_t show_host_config(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = class_to_shost(dev);
 	struct ibmvscsi_host_data *hostdata = shost_priv(shost);
 
@@ -2110,13 +2230,22 @@ static ssize_t show_host_config(struct device *dev,
 		return strlen(buf);
 	else
 		return 0;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static struct device_attribute ibmvscsi_host_config = {
 	.attr = {
+<<<<<<< HEAD
 		 .name = "config",
 		 .mode = S_IRUGO,
 		 },
+=======
+		.name = "config",
+		.mode = S_IRUGO,
+		},
+>>>>>>> v4.9.227
 	.show = show_host_config,
 };
 
@@ -2296,11 +2425,22 @@ static int ibmvscsi_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 		goto init_pool_failed;
 	}
 
+<<<<<<< HEAD
 	host->max_lun = 8;
+=======
+	host->max_lun = IBMVSCSI_MAX_LUN;
+>>>>>>> v4.9.227
 	host->max_id = max_id;
 	host->max_channel = max_channel;
 	host->max_cmd_len = 16;
 
+<<<<<<< HEAD
+=======
+	dev_info(dev,
+		 "Maximum ID: %d Maximum LUN: %llu Maximum Channel: %d\n",
+		 host->max_id, host->max_lun, host->max_channel);
+
+>>>>>>> v4.9.227
 	if (scsi_add_host(hostdata->host, hostdata->dev))
 		goto add_host_failed;
 

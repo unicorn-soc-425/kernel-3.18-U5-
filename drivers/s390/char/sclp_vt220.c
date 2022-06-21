@@ -12,6 +12,10 @@
 #include <linux/wait.h>
 #include <linux/timer.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/sysrq.h>
+>>>>>>> v4.9.227
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
 #include <linux/tty_flip.h>
@@ -27,6 +31,10 @@
 
 #include <asm/uaccess.h>
 #include "sclp.h"
+<<<<<<< HEAD
+=======
+#include "ctrlchar.h"
+>>>>>>> v4.9.227
 
 #define SCLP_VT220_MAJOR		TTY_MAJOR
 #define SCLP_VT220_MINOR		65
@@ -477,6 +485,56 @@ sclp_vt220_write(struct tty_struct *tty, const unsigned char *buf, int count)
 #define	SCLP_VT220_SESSION_STARTED	0x80
 #define SCLP_VT220_SESSION_DATA		0x00
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MAGIC_SYSRQ
+
+static int sysrq_pressed;
+static struct sysrq_work sysrq;
+
+static void sclp_vt220_reset_session(void)
+{
+	sysrq_pressed = 0;
+}
+
+static void sclp_vt220_handle_input(const char *buffer, unsigned int count)
+{
+	int i;
+
+	for (i = 0; i < count; i++) {
+		/* Handle magic sys request */
+		if (buffer[i] == ('O' ^ 0100)) { /* CTRL-O */
+			/*
+			 * If pressed again, reset sysrq_pressed
+			 * and flip CTRL-O character
+			 */
+			sysrq_pressed = !sysrq_pressed;
+			if (sysrq_pressed)
+				continue;
+		} else if (sysrq_pressed) {
+			sysrq.key = buffer[i];
+			schedule_sysrq_work(&sysrq);
+			sysrq_pressed = 0;
+			continue;
+		}
+		tty_insert_flip_char(&sclp_vt220_port, buffer[i], 0);
+	}
+}
+
+#else
+
+static void sclp_vt220_reset_session(void)
+{
+}
+
+static void sclp_vt220_handle_input(const char *buffer, unsigned int count)
+{
+	tty_insert_flip_string(&sclp_vt220_port, buffer, count);
+}
+
+#endif
+
+>>>>>>> v4.9.227
 /*
  * Called by the SCLP to report incoming event buffers.
  */
@@ -492,12 +550,20 @@ sclp_vt220_receiver_fn(struct evbuf_header *evbuf)
 	switch (*buffer) {
 	case SCLP_VT220_SESSION_ENDED:
 	case SCLP_VT220_SESSION_STARTED:
+<<<<<<< HEAD
+=======
+		sclp_vt220_reset_session();
+>>>>>>> v4.9.227
 		break;
 	case SCLP_VT220_SESSION_DATA:
 		/* Send input to line discipline */
 		buffer++;
 		count--;
+<<<<<<< HEAD
 		tty_insert_flip_string(&sclp_vt220_port, buffer, count);
+=======
+		sclp_vt220_handle_input(buffer, count);
+>>>>>>> v4.9.227
 		tty_flip_buffer_push(&sclp_vt220_port);
 		break;
 	}

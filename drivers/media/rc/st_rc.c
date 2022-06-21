@@ -16,14 +16,23 @@
 #include <linux/reset.h>
 #include <media/rc-core.h>
 #include <linux/pinctrl/consumer.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_wakeirq.h>
+>>>>>>> v4.9.227
 
 struct st_rc_device {
 	struct device			*dev;
 	int				irq;
 	int				irq_wake;
 	struct clk			*sys_clock;
+<<<<<<< HEAD
 	volatile void __iomem		*base;	/* Register base address */
 	volatile void __iomem		*rx_base;/* RX Register base address */
+=======
+	void __iomem			*base;	/* Register base address */
+	void __iomem			*rx_base;/* RX Register base address */
+>>>>>>> v4.9.227
 	struct rc_dev			*rdev;
 	bool				overclocking;
 	int				sample_mult;
@@ -190,6 +199,12 @@ static void st_rc_hardware_init(struct st_rc_device *dev)
 static int st_rc_remove(struct platform_device *pdev)
 {
 	struct st_rc_device *rc_dev = platform_get_drvdata(pdev);
+<<<<<<< HEAD
+=======
+
+	dev_pm_clear_wake_irq(&pdev->dev);
+	device_init_wakeup(&pdev->dev, false);
+>>>>>>> v4.9.227
 	clk_disable_unprepare(rc_dev->sys_clock);
 	rc_unregister_device(rc_dev->rdev);
 	return 0;
@@ -267,8 +282,13 @@ static int st_rc_probe(struct platform_device *pdev)
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 
 	rc_dev->base = devm_ioremap_resource(dev, res);
+<<<<<<< HEAD
 	if (IS_ERR((__force void *)rc_dev->base)) {
 		ret = PTR_ERR((__force void *)rc_dev->base);
+=======
+	if (IS_ERR(rc_dev->base)) {
+		ret = PTR_ERR(rc_dev->base);
+>>>>>>> v4.9.227
 		goto err;
 	}
 
@@ -298,22 +318,36 @@ static int st_rc_probe(struct platform_device *pdev)
 	rdev->map_name = RC_MAP_LIRC;
 	rdev->input_name = "ST Remote Control Receiver";
 
+<<<<<<< HEAD
 	/* enable wake via this device */
 	device_set_wakeup_capable(dev, true);
 	device_set_wakeup_enable(dev, true);
 
+=======
+>>>>>>> v4.9.227
 	ret = rc_register_device(rdev);
 	if (ret < 0)
 		goto clkerr;
 
 	rc_dev->rdev = rdev;
 	if (devm_request_irq(dev, rc_dev->irq, st_rc_rx_interrupt,
+<<<<<<< HEAD
 			IRQF_NO_SUSPEND, IR_ST_NAME, rc_dev) < 0) {
+=======
+			     0, IR_ST_NAME, rc_dev) < 0) {
+>>>>>>> v4.9.227
 		dev_err(dev, "IRQ %d register failed\n", rc_dev->irq);
 		ret = -EINVAL;
 		goto rcerr;
 	}
 
+<<<<<<< HEAD
+=======
+	/* enable wake via this device */
+	device_init_wakeup(dev, true);
+	dev_pm_set_wake_irq(dev, rc_dev->irq);
+
+>>>>>>> v4.9.227
 	/**
 	 * for LIRC_MODE_MODE2 or LIRC_MODE_PULSE or LIRC_MODE_RAW
 	 * lircd expects a long space first before a signal train to sync.
@@ -334,7 +368,11 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> v4.9.227
 static int st_rc_suspend(struct device *dev)
 {
 	struct st_rc_device *rc_dev = dev_get_drvdata(dev);
@@ -381,7 +419,11 @@ static int st_rc_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(st_rc_pm_ops, st_rc_suspend, st_rc_resume);
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static struct of_device_id st_rc_match[] = {
+=======
+static const struct of_device_id st_rc_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "st,comms-irb", },
 	{},
 };

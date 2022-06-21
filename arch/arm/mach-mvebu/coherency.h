@@ -14,6 +14,10 @@
 #ifndef __MACH_370_XP_COHERENCY_H
 #define __MACH_370_XP_COHERENCY_H
 
+<<<<<<< HEAD
+=======
+extern void __iomem *coherency_base;	/* for coherency_ll.S */
+>>>>>>> v4.9.227
 extern unsigned long coherency_phys_base;
 int set_cpu_coherent(void);
 

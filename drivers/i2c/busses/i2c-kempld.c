@@ -394,7 +394,10 @@ static int kempld_i2c_resume(struct platform_device *pdev)
 static struct platform_driver kempld_i2c_driver = {
 	.driver = {
 		.name = "kempld-i2c",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= kempld_i2c_probe,
 	.remove		= kempld_i2c_remove,

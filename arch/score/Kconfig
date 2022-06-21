@@ -14,6 +14,10 @@ config SCORE
 	select VIRT_TO_BUS
 	select MODULES_USE_ELF_REL
 	select CLONE_BACKWARDS
+<<<<<<< HEAD
+=======
+	select CPU_NO_EFFICIENT_FFS
+>>>>>>> v4.9.227
 
 choice
 	prompt "System type"

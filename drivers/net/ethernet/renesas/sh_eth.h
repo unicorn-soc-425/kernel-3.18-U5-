@@ -32,6 +32,13 @@
 #define SH_ETH_TSU_CAM_ENTRIES	32
 
 enum {
+<<<<<<< HEAD
+=======
+	/* IMPORTANT: To keep ethtool register dump working, add new
+	 * register names immediately before SH_ETH_MAX_REGISTER_OFFSET.
+	 */
+
+>>>>>>> v4.9.227
 	/* E-DMAC registers */
 	EDSR = 0,
 	EDMR,
@@ -131,9 +138,13 @@ enum {
 	TSU_POST3,
 	TSU_POST4,
 	TSU_ADRH0,
+<<<<<<< HEAD
 	TSU_ADRL0,
 	TSU_ADRH31,
 	TSU_ADRL31,
+=======
+	/* TSU_ADR{H,L}{0..31} are assumed to be contiguous */
+>>>>>>> v4.9.227
 
 	TXNLCR0,
 	TXALCR0,
@@ -281,9 +292,15 @@ enum DMAC_IM_BIT {
 	DMAC_M_RINT1 = 0x00000001,
 };
 
+<<<<<<< HEAD
 /* Receive descriptor bit */
 enum RD_STS_BIT {
 	RD_RACT = 0x80000000, RD_RDEL = 0x40000000,
+=======
+/* Receive descriptor 0 bits */
+enum RD_STS_BIT {
+	RD_RACT = 0x80000000, RD_RDLE = 0x40000000,
+>>>>>>> v4.9.227
 	RD_RFP1 = 0x20000000, RD_RFP0 = 0x10000000,
 	RD_RFE = 0x08000000, RD_RFS10 = 0x00000200,
 	RD_RFS9 = 0x00000100, RD_RFS8 = 0x00000080,
@@ -296,6 +313,15 @@ enum RD_STS_BIT {
 #define RDFEND	RD_RFP0
 #define RD_RFP	(RD_RFP1|RD_RFP0)
 
+<<<<<<< HEAD
+=======
+/* Receive descriptor 1 bits */
+enum RD_LEN_BIT {
+	RD_RFL	= 0x0000ffff,	/* receive frame  length */
+	RD_RBL	= 0xffff0000,	/* receive buffer length */
+};
+
+>>>>>>> v4.9.227
 /* FCFTR */
 enum FCFTR_BIT {
 	FCFTR_RFF2 = 0x00040000, FCFTR_RFF1 = 0x00020000,
@@ -305,7 +331,11 @@ enum FCFTR_BIT {
 #define DEFAULT_FIFO_F_D_RFF	(FCFTR_RFF2 | FCFTR_RFF1 | FCFTR_RFF0)
 #define DEFAULT_FIFO_F_D_RFD	(FCFTR_RFD2 | FCFTR_RFD1 | FCFTR_RFD0)
 
+<<<<<<< HEAD
 /* Transmit descriptor bit */
+=======
+/* Transmit descriptor 0 bits */
+>>>>>>> v4.9.227
 enum TD_STS_BIT {
 	TD_TACT = 0x80000000, TD_TDLE = 0x40000000,
 	TD_TFP1 = 0x20000000, TD_TFP0 = 0x10000000,
@@ -315,6 +345,14 @@ enum TD_STS_BIT {
 #define TDFEND	TD_TFP0
 #define TD_TFP	(TD_TFP1|TD_TFP0)
 
+<<<<<<< HEAD
+=======
+/* Transmit descriptor 1 bits */
+enum TD_LEN_BIT {
+	TD_TBL	= 0xffff0000,	/* transmit buffer length */
+};
+
+>>>>>>> v4.9.227
 /* RMCR */
 enum RMCR_BIT {
 	RMCR_RNC = 0x00000001,
@@ -369,6 +407,11 @@ enum DESC_I_BIT {
 	DESC_I_RINT1 = 0x0001,
 };
 
+<<<<<<< HEAD
+=======
+#define DEFAULT_TRSCER_ERR_MASK (DESC_I_RINT8 | DESC_I_RINT5 | DESC_I_TINT2)
+
+>>>>>>> v4.9.227
 /* RPADIR */
 enum RPADIR_BIT {
 	RPADIR_PADS1 = 0x20000, RPADIR_PADS0 = 0x10000,
@@ -379,7 +422,11 @@ enum RPADIR_BIT {
 #define DEFAULT_FDR_INIT	0x00000707
 
 /* ARSTR */
+<<<<<<< HEAD
 enum ARSTR_BIT { ARSTR_ARSTR = 0x00000001, };
+=======
+enum ARSTR_BIT { ARSTR_ARST = 0x00000001, };
+>>>>>>> v4.9.227
 
 /* TSU_FWEN0 */
 enum TSU_FWEN0_BIT {
@@ -421,6 +468,7 @@ enum TSU_FWSLC_BIT {
  */
 struct sh_eth_txdesc {
 	u32 status;		/* TD0 */
+<<<<<<< HEAD
 #if defined(__LITTLE_ENDIAN)
 	u16 pad0;		/* TD1 */
 	u16 buffer_length;	/* TD1 */
@@ -430,6 +478,11 @@ struct sh_eth_txdesc {
 #endif
 	u32 addr;		/* TD2 */
 	u32 pad1;		/* padding data */
+=======
+	u32 len;		/* TD1 */
+	u32 addr;		/* TD2 */
+	u32 pad0;		/* padding data */
+>>>>>>> v4.9.227
 } __aligned(2) __packed;
 
 /* The sh ether Rx buffer descriptors.
@@ -437,6 +490,7 @@ struct sh_eth_txdesc {
  */
 struct sh_eth_rxdesc {
 	u32 status;		/* RD0 */
+<<<<<<< HEAD
 #if defined(__LITTLE_ENDIAN)
 	u16 frame_length;	/* RD1 */
 	u16 buffer_length;	/* RD1 */
@@ -444,6 +498,9 @@ struct sh_eth_rxdesc {
 	u16 buffer_length;	/* RD1 */
 	u16 frame_length;	/* RD1 */
 #endif
+=======
+	u32 len;		/* RD1 */
+>>>>>>> v4.9.227
 	u32 addr;		/* RD2 */
 	u32 pad0;		/* padding data */
 } __aligned(2) __packed;
@@ -457,6 +514,7 @@ struct sh_eth_cpu_data {
 
 	/* mandatory initialize value */
 	int register_type;
+<<<<<<< HEAD
 	unsigned long eesipr_value;
 
 	/* optional initialize value */
@@ -469,6 +527,23 @@ struct sh_eth_cpu_data {
 	/* interrupt checking mask */
 	unsigned long tx_check;
 	unsigned long eesr_err_check;
+=======
+	u32 eesipr_value;
+
+	/* optional initialize value */
+	u32 ecsr_value;
+	u32 ecsipr_value;
+	u32 fdr_value;
+	u32 fcftr_value;
+	u32 rpadir_value;
+
+	/* interrupt checking mask */
+	u32 tx_check;
+	u32 eesr_err_check;
+
+	/* Error mask */
+	u32 trscer_err_mask;
+>>>>>>> v4.9.227
 
 	/* hardware features */
 	unsigned long irq_flags; /* IRQ configuration flags */
@@ -486,6 +561,10 @@ struct sh_eth_cpu_data {
 	unsigned select_mii:1;	/* EtherC have RMII_MII (MII select register) */
 	unsigned shift_rd0:1;	/* shift Rx descriptor word 0 right by 16 */
 	unsigned rmiimode:1;	/* EtherC has RMIIMODE register */
+<<<<<<< HEAD
+=======
+	unsigned rtrate:1;	/* EtherC has RTRATE register */
+>>>>>>> v4.9.227
 };
 
 struct sh_eth_private {
@@ -506,12 +585,20 @@ struct sh_eth_private {
 	u32 cur_rx, dirty_rx;		/* Producer/consumer ring indices */
 	u32 cur_tx, dirty_tx;
 	u32 rx_buf_sz;			/* Based on MTU+slack. */
+<<<<<<< HEAD
 	int edmac_endian;
 	struct napi_struct napi;
 	/* MII transceiver section. */
 	u32 phy_id;			/* PHY ID */
 	struct mii_bus *mii_bus;	/* MDIO bus control */
 	struct phy_device *phydev;	/* PHY device control */
+=======
+	struct napi_struct napi;
+	bool irq_enabled;
+	/* MII transceiver section. */
+	u32 phy_id;			/* PHY ID */
+	struct mii_bus *mii_bus;	/* MDIO bus control */
+>>>>>>> v4.9.227
 	int link;
 	phy_interface_t phy_interface;
 	int msg_enable;
@@ -537,6 +624,7 @@ static inline void sh_eth_soft_swap(char *src, int len)
 #endif
 }
 
+<<<<<<< HEAD
 static inline void sh_eth_write(struct net_device *ndev, unsigned long data,
 				int enum_index)
 {
@@ -553,20 +641,31 @@ static inline unsigned long sh_eth_read(struct net_device *ndev,
 	return ioread32(mdp->addr + mdp->reg_offset[enum_index]);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void *sh_eth_tsu_get_offset(struct sh_eth_private *mdp,
 					  int enum_index)
 {
 	return mdp->tsu_addr + mdp->reg_offset[enum_index];
 }
 
+<<<<<<< HEAD
 static inline void sh_eth_tsu_write(struct sh_eth_private *mdp,
 				unsigned long data, int enum_index)
+=======
+static inline void sh_eth_tsu_write(struct sh_eth_private *mdp, u32 data,
+				    int enum_index)
+>>>>>>> v4.9.227
 {
 	iowrite32(data, mdp->tsu_addr + mdp->reg_offset[enum_index]);
 }
 
+<<<<<<< HEAD
 static inline unsigned long sh_eth_tsu_read(struct sh_eth_private *mdp,
 					int enum_index)
+=======
+static inline u32 sh_eth_tsu_read(struct sh_eth_private *mdp, int enum_index)
+>>>>>>> v4.9.227
 {
 	return ioread32(mdp->tsu_addr + mdp->reg_offset[enum_index]);
 }

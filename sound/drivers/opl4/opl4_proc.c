@@ -22,8 +22,11 @@
 #include <linux/export.h>
 #include <sound/info.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 
+=======
+>>>>>>> v4.9.227
 static int snd_opl4_mem_proc_open(struct snd_info_entry *entry,
 				  unsigned short mode, void **file_private_data)
 {
@@ -129,5 +132,8 @@ void snd_opl4_free_proc(struct snd_opl4 *opl4)
 {
 	snd_info_free_entry(opl4->proc_entry);
 }
+<<<<<<< HEAD
 
 #endif /* CONFIG_PROC_FS */
+=======
+>>>>>>> v4.9.227

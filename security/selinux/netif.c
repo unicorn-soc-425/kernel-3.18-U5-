@@ -28,7 +28,10 @@
 #include "security.h"
 #include "objsec.h"
 #include "netif.h"
+<<<<<<< HEAD
 #include "avc.h"
+=======
+>>>>>>> v4.9.227
 
 #define SEL_NETIF_HASH_SIZE	64
 #define SEL_NETIF_HASH_MAX	1024
@@ -278,12 +281,15 @@ static __init int sel_netif_init(void)
 {
 	int i;
 
+<<<<<<< HEAD
 // [ SEC_SELINUX_PORTING_COMMON
 #ifdef CONFIG_ALWAYS_ENFORCE
 	selinux_enabled = 1;
 #endif
 // ] SEC_SELINUX_PORTING_COMMON
 
+=======
+>>>>>>> v4.9.227
 	if (!selinux_enabled)
 		return 0;
 

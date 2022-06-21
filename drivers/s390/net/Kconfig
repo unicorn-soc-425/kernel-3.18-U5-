@@ -57,6 +57,7 @@ config SMSGIUCV_EVENT
 
 	  To compile as a module, choose M. The module name is "smsgiucv_app".
 
+<<<<<<< HEAD
 config CLAW
 	def_tristate m
 	prompt "CLAW device support"
@@ -72,6 +73,12 @@ config QETH
 	def_tristate y
 	prompt "Gigabit Ethernet device support"
 	depends on CCW && NETDEVICES && IP_MULTICAST && QDIO
+=======
+config QETH
+	def_tristate y
+	prompt "Gigabit Ethernet device support"
+	depends on CCW && NETDEVICES && IP_MULTICAST && QDIO && ETHERNET
+>>>>>>> v4.9.227
 	help
 	  This driver supports the IBM System z OSA Express adapters
 	  in QDIO mode (all media types), HiperSockets interfaces and z/VM
@@ -106,6 +113,10 @@ config QETH_IPV6
 
 config CCWGROUP
 	tristate
+<<<<<<< HEAD
 	default (LCS || CTCM || QETH || CLAW)
+=======
+	default (LCS || CTCM || QETH)
+>>>>>>> v4.9.227
 
 endmenu

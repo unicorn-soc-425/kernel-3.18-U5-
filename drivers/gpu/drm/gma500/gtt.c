@@ -425,6 +425,10 @@ int psb_gtt_init(struct drm_device *dev, int resume)
 
 	if (!resume) {
 		mutex_init(&dev_priv->gtt_mutex);
+<<<<<<< HEAD
+=======
+		mutex_init(&dev_priv->mmap_mutex);
+>>>>>>> v4.9.227
 		psb_gtt_alloc(dev);
 	}
 

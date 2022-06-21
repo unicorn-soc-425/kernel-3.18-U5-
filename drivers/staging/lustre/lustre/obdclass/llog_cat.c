@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2012, Intel Corporation.
+=======
+ * Copyright (c) 2012, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -48,11 +56,15 @@
 
 #define DEBUG_SUBSYSTEM S_LOG
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 #include "../include/obd_class.h"
 
 #include "llog_internal.h"
 
+<<<<<<< HEAD
 /* Create a new log handle and add it to the open list.
  * This log handle will be closed when all of the records in it are removed.
  *
@@ -140,6 +152,8 @@ out_destroy:
 	return rc;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Open an existent log handle and add it to the open list.
  * This log handle will be closed when all of the records in it are removed.
  *
@@ -149,6 +163,7 @@ out_destroy:
  * This takes extra reference on llog_handle via llog_handle_get() and require
  * this reference to be put by caller using llog_handle_put()
  */
+<<<<<<< HEAD
 int llog_cat_id2handle(const struct lu_env *env, struct llog_handle *cathandle,
 		       struct llog_handle **res, struct llog_logid *logid)
 {
@@ -161,6 +176,24 @@ int llog_cat_id2handle(const struct lu_env *env, struct llog_handle *cathandle,
 	down_write(&cathandle->lgh_lock);
 	list_for_each_entry(loghandle, &cathandle->u.chd.chd_head,
 				u.phd.phd_entry) {
+=======
+static int llog_cat_id2handle(const struct lu_env *env,
+			      struct llog_handle *cathandle,
+			      struct llog_handle **res,
+			      struct llog_logid *logid)
+{
+	struct llog_handle	*loghandle;
+	enum llog_flag fmt;
+	int			 rc = 0;
+
+	if (!cathandle)
+		return -EBADF;
+
+	fmt = cathandle->lgh_hdr->llh_flags & LLOG_F_EXT_MASK;
+	down_write(&cathandle->lgh_lock);
+	list_for_each_entry(loghandle, &cathandle->u.chd.chd_head,
+			    u.phd.phd_entry) {
+>>>>>>> v4.9.227
 		struct llog_logid *cgl = &loghandle->lgh_id;
 
 		if (ostid_id(&cgl->lgl_oi) == ostid_id(&logid->lgl_oi) &&
@@ -189,7 +222,11 @@ int llog_cat_id2handle(const struct lu_env *env, struct llog_handle *cathandle,
 		return rc;
 	}
 
+<<<<<<< HEAD
 	rc = llog_init_handle(env, loghandle, LLOG_F_IS_PLAIN, NULL);
+=======
+	rc = llog_init_handle(env, loghandle, fmt | LLOG_F_IS_PLAIN, NULL);
+>>>>>>> v4.9.227
 	if (rc < 0) {
 		llog_close(env, loghandle);
 		loghandle = NULL;
@@ -197,7 +234,11 @@ int llog_cat_id2handle(const struct lu_env *env, struct llog_handle *cathandle,
 	}
 
 	down_write(&cathandle->lgh_lock);
+<<<<<<< HEAD
 	list_add(&loghandle->u.phd.phd_entry, &cathandle->u.chd.chd_head);
+=======
+	list_add_tail(&loghandle->u.phd.phd_entry, &cathandle->u.chd.chd_head);
+>>>>>>> v4.9.227
 	up_write(&cathandle->lgh_lock);
 
 	loghandle->u.phd.phd_cat_handle = cathandle;
@@ -213,6 +254,7 @@ out:
 int llog_cat_close(const struct lu_env *env, struct llog_handle *cathandle)
 {
 	struct llog_handle	*loghandle, *n;
+<<<<<<< HEAD
 	int			 rc;
 
 	list_for_each_entry_safe(loghandle, n, &cathandle->u.chd.chd_head,
@@ -236,11 +278,19 @@ int llog_cat_close(const struct lu_env *env, struct llog_handle *cathandle)
 			index = loghandle->u.phd.phd_cookie.lgc_index;
 			llog_cat_cleanup(env, cathandle, NULL, index);
 		}
+=======
+
+	list_for_each_entry_safe(loghandle, n, &cathandle->u.chd.chd_head,
+				 u.phd.phd_entry) {
+		/* unlink open-not-created llogs */
+		list_del_init(&loghandle->u.phd.phd_entry);
+>>>>>>> v4.9.227
 		llog_close(env, loghandle);
 	}
 	/* if handle was stored in ctxt, remove it too */
 	if (cathandle->lgh_ctxt->loc_handle == cathandle)
 		cathandle->lgh_ctxt->loc_handle = NULL;
+<<<<<<< HEAD
 	rc = llog_close(env, cathandle);
 	return rc;
 }
@@ -529,6 +579,15 @@ EXPORT_SYMBOL(llog_cat_cancel_records);
 
 int llog_cat_process_cb(const struct lu_env *env, struct llog_handle *cat_llh,
 			struct llog_rec_hdr *rec, void *data)
+=======
+	return llog_close(env, cathandle);
+}
+EXPORT_SYMBOL(llog_cat_close);
+
+static int llog_cat_process_cb(const struct lu_env *env,
+			       struct llog_handle *cat_llh,
+			       struct llog_rec_hdr *rec, void *data)
+>>>>>>> v4.9.227
 {
 	struct llog_process_data *d = data;
 	struct llog_logid_rec *lir = (struct llog_logid_rec *)rec;
@@ -573,10 +632,17 @@ int llog_cat_process_cb(const struct lu_env *env, struct llog_handle *cat_llh,
 	return rc;
 }
 
+<<<<<<< HEAD
 int llog_cat_process_or_fork(const struct lu_env *env,
 			     struct llog_handle *cat_llh,
 			     llog_cb_t cb, void *data, int startcat,
 			     int startidx, bool fork)
+=======
+static int llog_cat_process_or_fork(const struct lu_env *env,
+				    struct llog_handle *cat_llh,
+				    llog_cb_t cb, void *data, int startcat,
+				    int startidx, bool fork)
+>>>>>>> v4.9.227
 {
 	struct llog_process_data d;
 	struct llog_log_hdr *llh = cat_llh->lgh_hdr;
@@ -612,7 +678,10 @@ int llog_cat_process_or_fork(const struct lu_env *env,
 
 	return rc;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(llog_cat_process_or_fork);
+=======
+>>>>>>> v4.9.227
 
 int llog_cat_process(const struct lu_env *env, struct llog_handle *cat_llh,
 		     llog_cb_t cb, void *data, int startcat, int startidx)
@@ -621,6 +690,7 @@ int llog_cat_process(const struct lu_env *env, struct llog_handle *cat_llh,
 					startidx, false);
 }
 EXPORT_SYMBOL(llog_cat_process);
+<<<<<<< HEAD
 
 static int llog_cat_reverse_process_cb(const struct lu_env *env,
 				       struct llog_handle *cat_llh,
@@ -815,3 +885,5 @@ int llog_cat_init_and_process(const struct lu_env *env,
 	return 0;
 }
 EXPORT_SYMBOL(llog_cat_init_and_process);
+=======
+>>>>>>> v4.9.227

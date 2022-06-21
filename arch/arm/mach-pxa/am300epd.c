@@ -28,8 +28,13 @@
 #include <linux/irq.h>
 #include <linux/gpio.h>
 
+<<<<<<< HEAD
 #include <mach/gumstix.h>
 #include <mach/mfp-pxa25x.h>
+=======
+#include "gumstix.h"
+#include "mfp-pxa25x.h"
+>>>>>>> v4.9.227
 #include <mach/irqs.h>
 #include <linux/platform_data/video-pxafb.h>
 

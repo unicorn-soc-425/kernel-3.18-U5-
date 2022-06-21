@@ -33,6 +33,10 @@ MODULE_LICENSE("GPL");
 /********************************************************/
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/pci.h>
@@ -40,9 +44,15 @@ MODULE_LICENSE("GPL");
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/time.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
+=======
+#include <linux/proc_fs.h>
+#include <linux/seq_file.h>
+#include <linux/math64.h>
+>>>>>>> v4.9.227
 #include <linux/mutex.h>
 #include <asm/uaccess.h>
 #include <asm/byteorder.h>
@@ -180,8 +190,12 @@ static void vlsi_proc_ndev(struct seq_file *seq, struct net_device *ndev)
 	vlsi_irda_dev_t *idev = netdev_priv(ndev);
 	u8 byte;
 	u16 word;
+<<<<<<< HEAD
 	unsigned delta1, delta2;
 	struct timeval now;
+=======
+	s32 sec, usec;
+>>>>>>> v4.9.227
 	unsigned iobase = ndev->base_addr;
 
 	seq_printf(seq, "\n%s link state: %s / %s / %s / %s\n", ndev->name,
@@ -277,6 +291,7 @@ static void vlsi_proc_ndev(struct seq_file *seq, struct net_device *ndev)
 	seq_printf(seq, "\nsw-state:\n");
 	seq_printf(seq, "IrPHY setup: %d baud - %s encoding\n", idev->baud, 
 		(idev->mode==IFF_SIR)?"SIR":((idev->mode==IFF_MIR)?"MIR":"FIR"));
+<<<<<<< HEAD
 	do_gettimeofday(&now);
 	if (now.tv_usec >= idev->last_rx.tv_usec) {
 		delta2 = now.tv_usec - idev->last_rx.tv_usec;
@@ -288,6 +303,11 @@ static void vlsi_proc_ndev(struct seq_file *seq, struct net_device *ndev)
 	}
 	seq_printf(seq, "last rx: %lu.%06u sec\n",
 		now.tv_sec - idev->last_rx.tv_sec - delta1, delta2);	
+=======
+	sec = div_s64_rem(ktime_us_delta(ktime_get(), idev->last_rx),
+			  USEC_PER_SEC, &usec);
+	seq_printf(seq, "last rx: %ul.%06u sec\n", sec, usec);
+>>>>>>> v4.9.227
 
 	seq_printf(seq, "RX: packets=%lu / bytes=%lu / errors=%lu / dropped=%lu",
 		ndev->stats.rx_packets, ndev->stats.rx_bytes, ndev->stats.rx_errors,
@@ -430,8 +450,13 @@ static struct vlsi_ring *vlsi_alloc_ring(struct pci_dev *pdev, struct ring_descr
 			busaddr = pci_map_single(pdev, rd->buf, len, dir);
 		if (rd->buf == NULL || pci_dma_mapping_error(pdev, busaddr)) {
 			if (rd->buf) {
+<<<<<<< HEAD
 				IRDA_ERROR("%s: failed to create PCI-MAP for %p",
 					   __func__, rd->buf);
+=======
+				net_err_ratelimited("%s: failed to create PCI-MAP for %p\n",
+						    __func__, rd->buf);
+>>>>>>> v4.9.227
 				kfree(rd->buf);
 				rd->buf = NULL;
 			}
@@ -483,11 +508,16 @@ static int vlsi_create_hwif(vlsi_irda_dev_t *idev)
 
 	ringarea = pci_zalloc_consistent(idev->pdev, HW_RING_AREA_SIZE,
 					 &idev->busaddr);
+<<<<<<< HEAD
 	if (!ringarea) {
 		IRDA_ERROR("%s: insufficient memory for descriptor rings\n",
 			   __func__);
 		goto out;
 	}
+=======
+	if (!ringarea)
+		goto out;
+>>>>>>> v4.9.227
 
 	hwmap = (struct ring_descr_hw *)ringarea;
 	idev->rx_ring = vlsi_alloc_ring(idev->pdev, hwmap, ringsize[1],
@@ -559,7 +589,11 @@ static int vlsi_process_rx(struct vlsi_ring *r, struct ring_descr *rd)
 	crclen = (idev->mode==IFF_FIR) ? sizeof(u32) : sizeof(u16);
 	len -= crclen;		/* remove trailing CRC */
 	if (len <= 0) {
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%s: strange frame (len=%d)\n", __func__, len);
+=======
+		pr_debug("%s: strange frame (len=%d)\n", __func__, len);
+>>>>>>> v4.9.227
 		ret |= VLSI_RX_DROP;
 		goto done;
 	}
@@ -574,14 +608,22 @@ static int vlsi_process_rx(struct vlsi_ring *r, struct ring_descr *rd)
 		 */
 		le16_to_cpus(rd->buf+len);
 		if (irda_calc_crc16(INIT_FCS,rd->buf,len+crclen) != GOOD_FCS) {
+<<<<<<< HEAD
 			IRDA_DEBUG(0, "%s: crc error\n", __func__);
+=======
+			pr_debug("%s: crc error\n", __func__);
+>>>>>>> v4.9.227
 			ret |= VLSI_RX_CRC;
 			goto done;
 		}
 	}
 
 	if (!rd->skb) {
+<<<<<<< HEAD
 		IRDA_WARNING("%s: rx packet lost\n", __func__);
+=======
+		net_warn_ratelimited("%s: rx packet lost\n", __func__);
+>>>>>>> v4.9.227
 		ret |= VLSI_RX_DROP;
 		goto done;
 	}
@@ -610,8 +652,13 @@ static void vlsi_fill_rx(struct vlsi_ring *r)
 
 	for (rd = ring_last(r); rd != NULL; rd = ring_put(r)) {
 		if (rd_is_active(rd)) {
+<<<<<<< HEAD
 			IRDA_WARNING("%s: driver bug: rx descr race with hw\n",
 				     __func__);
+=======
+			net_warn_ratelimited("%s: driver bug: rx descr race with hw\n",
+					     __func__);
+>>>>>>> v4.9.227
 			vlsi_ring_debug(r);
 			break;
 		}
@@ -664,13 +711,21 @@ static void vlsi_rx_interrupt(struct net_device *ndev)
 		}
 	}
 
+<<<<<<< HEAD
 	do_gettimeofday(&idev->last_rx); /* remember "now" for later mtt delay */
+=======
+	idev->last_rx = ktime_get(); /* remember "now" for later mtt delay */
+>>>>>>> v4.9.227
 
 	vlsi_fill_rx(r);
 
 	if (ring_first(r) == NULL) {
 		/* we are in big trouble, if this should ever happen */
+<<<<<<< HEAD
 		IRDA_ERROR("%s: rx ring exhausted!\n", __func__);
+=======
+		net_err_ratelimited("%s: rx ring exhausted!\n", __func__);
+>>>>>>> v4.9.227
 		vlsi_ring_debug(r);
 	}
 	else
@@ -692,7 +747,11 @@ static void vlsi_unarm_rx(vlsi_irda_dev_t *idev)
 		if (rd_is_active(rd)) {
 			rd_set_status(rd, 0);
 			if (rd_get_count(rd)) {
+<<<<<<< HEAD
 				IRDA_DEBUG(0, "%s - dropping rx packet\n", __func__);
+=======
+				pr_debug("%s - dropping rx packet\n", __func__);
+>>>>>>> v4.9.227
 				ret = -VLSI_RX_DROP;
 			}
 			rd_set_count(rd, 0);
@@ -767,7 +826,11 @@ static int vlsi_set_baud(vlsi_irda_dev_t *idev, unsigned iobase)
 	int	fifocnt;
 
 	baudrate = idev->new_baud;
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s: %d -> %d\n", __func__, idev->baud, idev->new_baud);
+=======
+	pr_debug("%s: %d -> %d\n", __func__, idev->baud, idev->new_baud);
+>>>>>>> v4.9.227
 	if (baudrate == 4000000) {
 		mode = IFF_FIR;
 		config = IRCFG_FIR;
@@ -783,8 +846,13 @@ static int vlsi_set_baud(vlsi_irda_dev_t *idev, unsigned iobase)
 		config = IRCFG_SIR | IRCFG_SIRFILT  | IRCFG_RXANY;
 		switch(baudrate) {
 			default:
+<<<<<<< HEAD
 				IRDA_WARNING("%s: undefined baudrate %d - fallback to 9600!\n",
 					     __func__, baudrate);
+=======
+				net_warn_ratelimited("%s: undefined baudrate %d - fallback to 9600!\n",
+						     __func__, baudrate);
+>>>>>>> v4.9.227
 				baudrate = 9600;
 				/* fallthru */
 			case 2400:
@@ -801,7 +869,11 @@ static int vlsi_set_baud(vlsi_irda_dev_t *idev, unsigned iobase)
 
 	fifocnt = inw(iobase+VLSI_PIO_RCVBCNT) & RCVBCNT_MASK;
 	if (fifocnt != 0) {
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%s: rx fifo not empty(%d)\n", __func__, fifocnt);
+=======
+		pr_debug("%s: rx fifo not empty(%d)\n", __func__, fifocnt);
+>>>>>>> v4.9.227
 	}
 
 	outw(0, iobase+VLSI_PIO_IRENABLE);
@@ -825,14 +897,26 @@ static int vlsi_set_baud(vlsi_irda_dev_t *idev, unsigned iobase)
 		config ^= IRENABLE_SIR_ON;
 
 	if (config != (IRENABLE_PHYANDCLOCK|IRENABLE_ENRXST)) {
+<<<<<<< HEAD
 		IRDA_WARNING("%s: failed to set %s mode!\n", __func__,
 			(mode==IFF_SIR)?"SIR":((mode==IFF_MIR)?"MIR":"FIR"));
+=======
+		net_warn_ratelimited("%s: failed to set %s mode!\n",
+				     __func__,
+				     mode == IFF_SIR ? "SIR" :
+				     mode == IFF_MIR ? "MIR" : "FIR");
+>>>>>>> v4.9.227
 		ret = -1;
 	}
 	else {
 		if (inw(iobase+VLSI_PIO_PHYCTL) != nphyctl) {
+<<<<<<< HEAD
 			IRDA_WARNING("%s: failed to apply baudrate %d\n",
 				     __func__, baudrate);
+=======
+			net_warn_ratelimited("%s: failed to apply baudrate %d\n",
+					     __func__, baudrate);
+>>>>>>> v4.9.227
 			ret = -1;
 		}
 		else {
@@ -859,9 +943,14 @@ static netdev_tx_t vlsi_hard_start_xmit(struct sk_buff *skb,
 	unsigned iobase = ndev->base_addr;
 	u8 status;
 	u16 config;
+<<<<<<< HEAD
 	int mtt;
 	int len, speed;
 	struct timeval  now, ready;
+=======
+	int mtt, diff;
+	int len, speed;
+>>>>>>> v4.9.227
 	char *msg = NULL;
 
 	speed = irda_get_next_speed(skb);
@@ -941,6 +1030,7 @@ static netdev_tx_t vlsi_hard_start_xmit(struct sk_buff *skb,
 	spin_unlock_irqrestore(&idev->lock, flags);
 
 	if ((mtt = irda_get_mtt(skb)) > 0) {
+<<<<<<< HEAD
 	
 		ready.tv_usec = idev->last_rx.tv_usec + mtt;
 		ready.tv_sec = idev->last_rx.tv_sec;
@@ -956,6 +1046,12 @@ static netdev_tx_t vlsi_hard_start_xmit(struct sk_buff *skb,
 			udelay(100);
 			/* must not sleep here - called under netif_tx_lock! */
 		}
+=======
+		diff = ktime_us_delta(ktime_get(), idev->last_rx);
+		if (mtt > diff)
+			udelay(mtt - diff);
+			/* must not sleep here - called under netif_tx_lock! */
+>>>>>>> v4.9.227
 	}
 
 	/* tx buffer already owned by CPU due to pci_dma_sync_single_for_cpu()
@@ -977,8 +1073,13 @@ static netdev_tx_t vlsi_hard_start_xmit(struct sk_buff *skb,
 		 */
 
 		if (len >= r->len-5)
+<<<<<<< HEAD
 			 IRDA_WARNING("%s: possible buffer overflow with SIR wrapping!\n",
 				      __func__);
+=======
+			net_warn_ratelimited("%s: possible buffer overflow with SIR wrapping!\n",
+					     __func__);
+>>>>>>> v4.9.227
 	}
 	else {
 		/* hw deals with MIR/FIR mode wrapping */
@@ -1023,7 +1124,12 @@ static netdev_tx_t vlsi_hard_start_xmit(struct sk_buff *skb,
 
 		fifocnt = inw(ndev->base_addr+VLSI_PIO_RCVBCNT) & RCVBCNT_MASK;
 		if (fifocnt != 0) {
+<<<<<<< HEAD
 			IRDA_DEBUG(0, "%s: rx fifo not empty(%d)\n", __func__, fifocnt);
+=======
+			pr_debug("%s: rx fifo not empty(%d)\n",
+				 __func__, fifocnt);
+>>>>>>> v4.9.227
 		}
 
 		config = inw(iobase+VLSI_PIO_IRCFG);
@@ -1035,7 +1141,11 @@ static netdev_tx_t vlsi_hard_start_xmit(struct sk_buff *skb,
 
 	if (ring_put(r) == NULL) {
 		netif_stop_queue(ndev);
+<<<<<<< HEAD
 		IRDA_DEBUG(3, "%s: tx ring full - queue stopped\n", __func__);
+=======
+		pr_debug("%s: tx ring full - queue stopped\n", __func__);
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&idev->lock, flags);
 
@@ -1044,7 +1154,11 @@ static netdev_tx_t vlsi_hard_start_xmit(struct sk_buff *skb,
 drop_unlock:
 	spin_unlock_irqrestore(&idev->lock, flags);
 drop:
+<<<<<<< HEAD
 	IRDA_WARNING("%s: dropping packet - %s\n", __func__, msg);
+=======
+	net_warn_ratelimited("%s: dropping packet - %s\n", __func__, msg);
+>>>>>>> v4.9.227
 	dev_kfree_skb_any(skb);
 	ndev->stats.tx_errors++;
 	ndev->stats.tx_dropped++;
@@ -1100,8 +1214,13 @@ static void vlsi_tx_interrupt(struct net_device *ndev)
 
 		fifocnt = inw(iobase+VLSI_PIO_RCVBCNT) & RCVBCNT_MASK;
 		if (fifocnt != 0) {
+<<<<<<< HEAD
 			IRDA_DEBUG(0, "%s: rx fifo not empty(%d)\n",
 				__func__, fifocnt);
+=======
+			pr_debug("%s: rx fifo not empty(%d)\n",
+				 __func__, fifocnt);
+>>>>>>> v4.9.227
 		}
 		outw(config | IRCFG_ENTX, iobase+VLSI_PIO_IRCFG);
 	}
@@ -1110,7 +1229,11 @@ static void vlsi_tx_interrupt(struct net_device *ndev)
 
 	if (netif_queue_stopped(ndev)  &&  !idev->new_baud) {
 		netif_wake_queue(ndev);
+<<<<<<< HEAD
 		IRDA_DEBUG(3, "%s: queue awoken\n", __func__);
+=======
+		pr_debug("%s: queue awoken\n", __func__);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -1134,7 +1257,11 @@ static void vlsi_unarm_tx(vlsi_irda_dev_t *idev)
 				dev_kfree_skb_any(rd->skb);
 				rd->skb = NULL;
 			}
+<<<<<<< HEAD
 			IRDA_DEBUG(0, "%s - dropping tx packet\n", __func__);
+=======
+			pr_debug("%s - dropping tx packet\n", __func__);
+>>>>>>> v4.9.227
 			ret = -VLSI_TX_DROP;
 		}
 		else
@@ -1183,8 +1310,13 @@ static int vlsi_start_clock(struct pci_dev *pdev)
 		}
 		if (count < 3) {
 			if (clksrc == 1) { /* explicitly asked for PLL hence bail out */
+<<<<<<< HEAD
 				IRDA_ERROR("%s: no PLL or failed to lock!\n",
 					   __func__);
+=======
+				net_err_ratelimited("%s: no PLL or failed to lock!\n",
+						    __func__);
+>>>>>>> v4.9.227
 				clkctl = CLKCTL_CLKSTP;
 				pci_write_config_byte(pdev, VLSI_PCI_CLKCTL, clkctl);
 				return -1;
@@ -1192,8 +1324,13 @@ static int vlsi_start_clock(struct pci_dev *pdev)
 			else			/* was: clksrc=0(auto) */
 				clksrc = 3;	/* fallback to 40MHz XCLK (OB800) */
 
+<<<<<<< HEAD
 			IRDA_DEBUG(0, "%s: PLL not locked, fallback to clksrc=%d\n",
 				__func__, clksrc);
+=======
+			pr_debug("%s: PLL not locked, fallback to clksrc=%d\n",
+				 __func__, clksrc);
+>>>>>>> v4.9.227
 		}
 		else
 			clksrc = 1;	/* got successful PLL lock */
@@ -1265,7 +1402,11 @@ static int vlsi_init_chip(struct pci_dev *pdev)
 	/* start the clock and clean the registers */
 
 	if (vlsi_start_clock(pdev)) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s: no valid clock source\n", __func__);
+=======
+		net_err_ratelimited("%s: no valid clock source\n", __func__);
+>>>>>>> v4.9.227
 		return -1;
 	}
 	iobase = ndev->base_addr;
@@ -1333,7 +1474,11 @@ static int vlsi_start_hw(vlsi_irda_dev_t *idev)
 
 	vlsi_fill_rx(idev->rx_ring);
 
+<<<<<<< HEAD
 	do_gettimeofday(&idev->last_rx);	/* first mtt may start from now on */
+=======
+	idev->last_rx = ktime_get();	/* first mtt may start from now on */
+>>>>>>> v4.9.227
 
 	outw(0, iobase+VLSI_PIO_PROMPT);	/* kick hw state machine */
 
@@ -1389,8 +1534,13 @@ static void vlsi_tx_timeout(struct net_device *ndev)
 		idev->new_baud = idev->baud;		/* keep current baudrate */
 
 	if (vlsi_start_hw(idev))
+<<<<<<< HEAD
 		IRDA_ERROR("%s: failed to restart hw - %s(%s) unusable!\n",
 			   __func__, pci_name(idev->pdev), ndev->name);
+=======
+		net_err_ratelimited("%s: failed to restart hw - %s(%s) unusable!\n",
+				    __func__, pci_name(idev->pdev), ndev->name);
+>>>>>>> v4.9.227
 	else
 		netif_start_queue(ndev);
 }
@@ -1434,8 +1584,13 @@ static int vlsi_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
 			irq->ifr_receiving = (fifocnt!=0) ? 1 : 0;
 			break;
 		default:
+<<<<<<< HEAD
 			IRDA_WARNING("%s: notsupp - cmd=%04x\n",
 				     __func__, cmd);
+=======
+			net_warn_ratelimited("%s: notsupp - cmd=%04x\n",
+					     __func__, cmd);
+>>>>>>> v4.9.227
 			ret = -EOPNOTSUPP;
 	}	
 	
@@ -1479,8 +1634,13 @@ static irqreturn_t vlsi_interrupt(int irq, void *dev_instance)
 	spin_unlock_irqrestore(&idev->lock,flags);
 
 	if (boguscount <= 0)
+<<<<<<< HEAD
 		IRDA_MESSAGE("%s: too much work in interrupt!\n",
 			     __func__);
+=======
+		net_info_ratelimited("%s: too much work in interrupt!\n",
+				     __func__);
+>>>>>>> v4.9.227
 	return IRQ_RETVAL(handled);
 }
 
@@ -1493,7 +1653,11 @@ static int vlsi_open(struct net_device *ndev)
 	char	hwname[32];
 
 	if (pci_request_regions(idev->pdev, drivername)) {
+<<<<<<< HEAD
 		IRDA_WARNING("%s: io resource busy\n", __func__);
+=======
+		net_warn_ratelimited("%s: io resource busy\n", __func__);
+>>>>>>> v4.9.227
 		goto errout;
 	}
 	ndev->base_addr = pci_resource_start(idev->pdev,0);
@@ -1507,8 +1671,13 @@ static int vlsi_open(struct net_device *ndev)
 
 	if (request_irq(ndev->irq, vlsi_interrupt, IRQF_SHARED,
 			drivername, ndev)) {
+<<<<<<< HEAD
 		IRDA_WARNING("%s: couldn't get IRQ: %d\n",
 			     __func__, ndev->irq);
+=======
+		net_warn_ratelimited("%s: couldn't get IRQ: %d\n",
+				     __func__, ndev->irq);
+>>>>>>> v4.9.227
 		goto errout_io;
 	}
 
@@ -1520,7 +1689,11 @@ static int vlsi_open(struct net_device *ndev)
 	if (!idev->irlap)
 		goto errout_free_ring;
 
+<<<<<<< HEAD
 	do_gettimeofday(&idev->last_rx);  /* first mtt may start from now on */
+=======
+	idev->last_rx = ktime_get();  /* first mtt may start from now on */
+>>>>>>> v4.9.227
 
 	idev->new_baud = 9600;		/* start with IrPHY using 9600(SIR) mode */
 
@@ -1529,7 +1702,12 @@ static int vlsi_open(struct net_device *ndev)
 
 	netif_start_queue(ndev);
 
+<<<<<<< HEAD
 	IRDA_MESSAGE("%s: device %s operational\n", __func__, ndev->name);
+=======
+	net_info_ratelimited("%s: device %s operational\n",
+			     __func__, ndev->name);
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -1563,7 +1741,11 @@ static int vlsi_close(struct net_device *ndev)
 
 	pci_release_regions(idev->pdev);
 
+<<<<<<< HEAD
 	IRDA_MESSAGE("%s: device %s stopped\n", __func__, ndev->name);
+=======
+	net_info_ratelimited("%s: device %s stopped\n", __func__, ndev->name);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1590,7 +1772,12 @@ static int vlsi_irda_init(struct net_device *ndev)
 
 	if (pci_set_dma_mask(pdev,DMA_MASK_USED_BY_HW) ||
 	    pci_set_dma_mask(pdev,DMA_MASK_MSTRPAGE)) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s: aborting due to PCI BM-DMA address limitations\n", __func__);
+=======
+		net_err_ratelimited("%s: aborting due to PCI BM-DMA address limitations\n",
+				    __func__);
+>>>>>>> v4.9.227
 		return -1;
 	}
 
@@ -1632,19 +1819,33 @@ vlsi_irda_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	else
 		pdev->current_state = 0; /* hw must be running now */
 
+<<<<<<< HEAD
 	IRDA_MESSAGE("%s: IrDA PCI controller %s detected\n",
 		     drivername, pci_name(pdev));
 
 	if ( !pci_resource_start(pdev,0) ||
 	     !(pci_resource_flags(pdev,0) & IORESOURCE_IO) ) {
 		IRDA_ERROR("%s: bar 0 invalid", __func__);
+=======
+	net_info_ratelimited("%s: IrDA PCI controller %s detected\n",
+			     drivername, pci_name(pdev));
+
+	if ( !pci_resource_start(pdev,0) ||
+	     !(pci_resource_flags(pdev,0) & IORESOURCE_IO) ) {
+		net_err_ratelimited("%s: bar 0 invalid", __func__);
+>>>>>>> v4.9.227
 		goto out_disable;
 	}
 
 	ndev = alloc_irdadev(sizeof(*idev));
 	if (ndev==NULL) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s: Unable to allocate device memory.\n",
 			   __func__);
+=======
+		net_err_ratelimited("%s: Unable to allocate device memory.\n",
+				    __func__);
+>>>>>>> v4.9.227
 		goto out_disable;
 	}
 
@@ -1659,7 +1860,11 @@ vlsi_irda_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto out_freedev;
 
 	if (register_netdev(ndev) < 0) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s: register_netdev failed\n", __func__);
+=======
+		net_err_ratelimited("%s: register_netdev failed\n", __func__);
+>>>>>>> v4.9.227
 		goto out_freedev;
 	}
 
@@ -1669,14 +1874,24 @@ vlsi_irda_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		ent = proc_create_data(ndev->name, S_IFREG|S_IRUGO,
 				       vlsi_proc_root, VLSI_PROC_FOPS, ndev);
 		if (!ent) {
+<<<<<<< HEAD
 			IRDA_WARNING("%s: failed to create proc entry\n",
 				     __func__);
+=======
+			net_warn_ratelimited("%s: failed to create proc entry\n",
+					     __func__);
+>>>>>>> v4.9.227
 		} else {
 			proc_set_size(ent, 0);
 		}
 		idev->proc_entry = ent;
 	}
+<<<<<<< HEAD
 	IRDA_MESSAGE("%s: registered device %s\n", drivername, ndev->name);
+=======
+	net_info_ratelimited("%s: registered device %s\n",
+			     drivername, ndev->name);
+>>>>>>> v4.9.227
 
 	pci_set_drvdata(pdev, ndev);
 	mutex_unlock(&idev->mtx);
@@ -1698,7 +1913,11 @@ static void vlsi_irda_remove(struct pci_dev *pdev)
 	vlsi_irda_dev_t *idev;
 
 	if (!ndev) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s: lost netdevice?\n", drivername);
+=======
+		net_err_ratelimited("%s: lost netdevice?\n", drivername);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -1714,7 +1933,11 @@ static void vlsi_irda_remove(struct pci_dev *pdev)
 
 	free_netdev(ndev);
 
+<<<<<<< HEAD
 	IRDA_MESSAGE("%s: %s removed\n", drivername, pci_name(pdev));
+=======
+	net_info_ratelimited("%s: %s removed\n", drivername, pci_name(pdev));
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_PM
@@ -1733,8 +1956,13 @@ static int vlsi_irda_suspend(struct pci_dev *pdev, pm_message_t state)
 	vlsi_irda_dev_t *idev;
 
 	if (!ndev) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s - %s: no netdevice\n",
 			   __func__, pci_name(pdev));
+=======
+		net_err_ratelimited("%s - %s: no netdevice\n",
+				    __func__, pci_name(pdev));
+>>>>>>> v4.9.227
 		return 0;
 	}
 	idev = netdev_priv(ndev);
@@ -1745,7 +1973,13 @@ static int vlsi_irda_suspend(struct pci_dev *pdev, pm_message_t state)
 			pdev->current_state = state.event;
 		}
 		else
+<<<<<<< HEAD
 			IRDA_ERROR("%s - %s: invalid suspend request %u -> %u\n", __func__, pci_name(pdev), pdev->current_state, state.event);
+=======
+			net_err_ratelimited("%s - %s: invalid suspend request %u -> %u\n",
+					    __func__, pci_name(pdev),
+					    pdev->current_state, state.event);
+>>>>>>> v4.9.227
 		mutex_unlock(&idev->mtx);
 		return 0;
 	}
@@ -1772,16 +2006,26 @@ static int vlsi_irda_resume(struct pci_dev *pdev)
 	vlsi_irda_dev_t	*idev;
 
 	if (!ndev) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s - %s: no netdevice\n",
 			   __func__, pci_name(pdev));
+=======
+		net_err_ratelimited("%s - %s: no netdevice\n",
+				    __func__, pci_name(pdev));
+>>>>>>> v4.9.227
 		return 0;
 	}
 	idev = netdev_priv(ndev);
 	mutex_lock(&idev->mtx);
 	if (pdev->current_state == 0) {
 		mutex_unlock(&idev->mtx);
+<<<<<<< HEAD
 		IRDA_WARNING("%s - %s: already resumed\n",
 			     __func__, pci_name(pdev));
+=======
+		net_warn_ratelimited("%s - %s: already resumed\n",
+				     __func__, pci_name(pdev));
+>>>>>>> v4.9.227
 		return 0;
 	}
 	
@@ -1800,7 +2044,11 @@ static int vlsi_irda_resume(struct pci_dev *pdev)
 		 * now we explicitly set pdev->current_state = 0 after enabling the
 		 * device and independently resume_ok should catch any garbage config.
 		 */
+<<<<<<< HEAD
 		IRDA_WARNING("%s - hm, nothing to resume?\n", __func__);
+=======
+		net_warn_ratelimited("%s - hm, nothing to resume?\n", __func__);
+>>>>>>> v4.9.227
 		mutex_unlock(&idev->mtx);
 		return 0;
 	}
@@ -1837,7 +2085,12 @@ static int __init vlsi_mod_init(void)
 	int	i, ret;
 
 	if (clksrc < 0  ||  clksrc > 3) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s: invalid clksrc=%d\n", drivername, clksrc);
+=======
+		net_err_ratelimited("%s: invalid clksrc=%d\n",
+				    drivername, clksrc);
+>>>>>>> v4.9.227
 		return -1;
 	}
 
@@ -1850,7 +2103,14 @@ static int __init vlsi_mod_init(void)
 			case 64:
 				break;
 			default:
+<<<<<<< HEAD
 				IRDA_WARNING("%s: invalid %s ringsize %d, using default=8", drivername, (i)?"rx":"tx", ringsize[i]);
+=======
+				net_warn_ratelimited("%s: invalid %s ringsize %d, using default=8\n",
+						     drivername,
+						     i ? "rx" : "tx",
+						     ringsize[i]);
+>>>>>>> v4.9.227
 				ringsize[i] = 8;
 				break;
 		}

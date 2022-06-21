@@ -48,7 +48,11 @@ registers).
 	 */
 #define KILL_INSN	break	0,0
 
+<<<<<<< HEAD
 	.level          LEVEL
+=======
+	.level          PA_ASM_LEVEL
+>>>>>>> v4.9.227
 
 	.text
 
@@ -100,7 +104,11 @@ set_thread_pointer:
 	.endr
 
 /* This address must remain fixed at 0x100 for glibc's syscalls to work */
+<<<<<<< HEAD
 	.align 256
+=======
+	.align LINUX_GATEWAY_ADDR
+>>>>>>> v4.9.227
 linux_gateway_entry:
 	gate	.+8, %r0			/* become privileged */
 	mtsp	%r0,%sr4			/* get kernel space into sr4 */
@@ -336,6 +344,10 @@ tracesys_next:
 
 	ldo     -THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1      /* get task ptr */
 	LDREG	TI_TASK(%r1), %r1
+<<<<<<< HEAD
+=======
+	LDREG   TASK_PT_GR28(%r1), %r28		/* Restore return value */
+>>>>>>> v4.9.227
 	LDREG   TASK_PT_GR26(%r1), %r26		/* Restore the users args */
 	LDREG   TASK_PT_GR25(%r1), %r25
 	LDREG   TASK_PT_GR24(%r1), %r24
@@ -349,6 +361,10 @@ tracesys_next:
 	stw     %r21, -56(%r30)                 /* 6th argument */
 #endif
 
+<<<<<<< HEAD
+=======
+	cmpib,COND(=),n -1,%r20,tracesys_exit /* seccomp may have returned -1 */
+>>>>>>> v4.9.227
 	comiclr,>>	__NR_Linux_syscalls, %r20, %r0
 	b,n	.Ltracesys_nosys
 
@@ -379,7 +395,11 @@ tracesys_exit:
 	ldo	-16(%r30),%r29			/* Reference param save area */
 #endif
 	ldo	TASK_REGS(%r1),%r26
+<<<<<<< HEAD
 	bl	do_syscall_trace_exit,%r2
+=======
+	BL	do_syscall_trace_exit,%r2
+>>>>>>> v4.9.227
 	STREG   %r28,TASK_PT_GR28(%r1)          /* save return value now */
 	ldo     -THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1      /* get task ptr */
 	LDREG	TI_TASK(%r1), %r1
@@ -400,7 +420,11 @@ tracesys_sigexit:
 #ifdef CONFIG_64BIT
 	ldo	-16(%r30),%r29			/* Reference param save area */
 #endif
+<<<<<<< HEAD
 	bl	do_syscall_trace_exit,%r2
+=======
+	BL	do_syscall_trace_exit,%r2
+>>>>>>> v4.9.227
 	ldo	TASK_REGS(%r1),%r26
 
 	ldil	L%syscall_exit_rfi,%r1
@@ -627,11 +651,20 @@ cas_action:
 	stw	%r1, 4(%sr2,%r20)
 #endif
 	/* The load and store could fail */
+<<<<<<< HEAD
 1:	ldw,ma	0(%r26), %r28
 	sub,<>	%r28, %r25, %r0
 2:	stw,ma	%r24, 0(%r26)
 	/* Free lock */
 	stw,ma	%r20, 0(%sr2,%r20)
+=======
+1:	ldw	0(%r26), %r28
+	sub,<>	%r28, %r25, %r0
+2:	stw	%r24, 0(%r26)
+	/* Free lock */
+	sync
+	stw	%r20, 0(%sr2,%r20)
+>>>>>>> v4.9.227
 #if ENABLE_LWS_DEBUG
 	/* Clear thread register indicator */
 	stw	%r0, 4(%sr2,%r20)
@@ -645,6 +678,10 @@ cas_action:
 3:		
 	/* Error occurred on load or store */
 	/* Free lock */
+<<<<<<< HEAD
+=======
+	sync
+>>>>>>> v4.9.227
 	stw	%r20, 0(%sr2,%r20)
 #if ENABLE_LWS_DEBUG
 	stw	%r0, 4(%sr2,%r20)
@@ -794,30 +831,51 @@ cas2_action:
 	ldo	1(%r0),%r28
 
 	/* 8bit CAS */
+<<<<<<< HEAD
 13:	ldb,ma	0(%r26), %r29
 	sub,=	%r29, %r25, %r0
 	b,n	cas2_end
 14:	stb,ma	%r24, 0(%r26)
+=======
+13:	ldb	0(%r26), %r29
+	sub,=	%r29, %r25, %r0
+	b,n	cas2_end
+14:	stb	%r24, 0(%r26)
+>>>>>>> v4.9.227
 	b	cas2_end
 	copy	%r0, %r28
 	nop
 	nop
 
 	/* 16bit CAS */
+<<<<<<< HEAD
 15:	ldh,ma	0(%r26), %r29
 	sub,=	%r29, %r25, %r0
 	b,n	cas2_end
 16:	sth,ma	%r24, 0(%r26)
+=======
+15:	ldh	0(%r26), %r29
+	sub,=	%r29, %r25, %r0
+	b,n	cas2_end
+16:	sth	%r24, 0(%r26)
+>>>>>>> v4.9.227
 	b	cas2_end
 	copy	%r0, %r28
 	nop
 	nop
 
 	/* 32bit CAS */
+<<<<<<< HEAD
 17:	ldw,ma	0(%r26), %r29
 	sub,=	%r29, %r25, %r0
 	b,n	cas2_end
 18:	stw,ma	%r24, 0(%r26)
+=======
+17:	ldw	0(%r26), %r29
+	sub,=	%r29, %r25, %r0
+	b,n	cas2_end
+18:	stw	%r24, 0(%r26)
+>>>>>>> v4.9.227
 	b	cas2_end
 	copy	%r0, %r28
 	nop
@@ -825,10 +883,17 @@ cas2_action:
 
 	/* 64bit CAS */
 #ifdef CONFIG_64BIT
+<<<<<<< HEAD
 19:	ldd,ma	0(%r26), %r29
 	sub,*=	%r29, %r25, %r0
 	b,n	cas2_end
 20:	std,ma	%r24, 0(%r26)
+=======
+19:	ldd	0(%r26), %r29
+	sub,*=	%r29, %r25, %r0
+	b,n	cas2_end
+20:	std	%r24, 0(%r26)
+>>>>>>> v4.9.227
 	copy	%r0, %r28
 #else
 	/* Compare first word */
@@ -846,7 +911,12 @@ cas2_action:
 
 cas2_end:
 	/* Free lock */
+<<<<<<< HEAD
 	stw,ma	%r20, 0(%sr2,%r20)
+=======
+	sync
+	stw	%r20, 0(%sr2,%r20)
+>>>>>>> v4.9.227
 	/* Enable interrupts */
 	ssm	PSW_SM_I, %r0
 	/* Return to userspace, set no error */
@@ -856,6 +926,10 @@ cas2_end:
 22:
 	/* Error occurred on load or store */
 	/* Free lock */
+<<<<<<< HEAD
+=======
+	sync
+>>>>>>> v4.9.227
 	stw	%r20, 0(%sr2,%r20)
 	ssm	PSW_SM_I, %r0
 	ldo	1(%r0),%r28
@@ -912,6 +986,10 @@ END(lws_table)
 
 	.align 8
 ENTRY(sys_call_table)
+<<<<<<< HEAD
+=======
+	.export sys_call_table,data
+>>>>>>> v4.9.227
 #include "syscall_table.S"
 END(sys_call_table)
 

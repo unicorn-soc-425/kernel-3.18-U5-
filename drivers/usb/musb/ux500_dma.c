@@ -91,9 +91,15 @@ static bool ux500_configure_channel(struct dma_channel *channel,
 	struct scatterlist sg;
 	struct dma_slave_config slave_conf;
 	enum dma_slave_buswidth addr_width;
+<<<<<<< HEAD
 	dma_addr_t usb_fifo_addr = (MUSB_FIFO_OFFSET(hw_ep->epnum) +
 					ux500_channel->controller->phy_base);
 	struct musb *musb = ux500_channel->controller->private_data;
+=======
+	struct musb *musb = ux500_channel->controller->private_data;
+	dma_addr_t usb_fifo_addr = (musb->io.fifo_offset(hw_ep->epnum) +
+					ux500_channel->controller->phy_base);
+>>>>>>> v4.9.227
 
 	dev_dbg(musb->controller,
 		"packet_sz=%d, mode=%d, dma_addr=0x%llx, len=%d is_tx=%d\n",
@@ -121,8 +127,12 @@ static bool ux500_configure_channel(struct dma_channel *channel,
 	slave_conf.dst_maxburst = 16;
 	slave_conf.device_fc = false;
 
+<<<<<<< HEAD
 	dma_chan->device->device_control(dma_chan, DMA_SLAVE_CONFIG,
 					     (unsigned long) &slave_conf);
+=======
+	dmaengine_slave_config(dma_chan, &slave_conf);
+>>>>>>> v4.9.227
 
 	dma_desc = dmaengine_prep_slave_sg(dma_chan, &sg, 1, direction,
 					     DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
@@ -208,9 +218,12 @@ static int ux500_dma_channel_program(struct dma_channel *channel,
 	BUG_ON(channel->status == MUSB_DMA_STATUS_UNKNOWN ||
 		channel->status == MUSB_DMA_STATUS_BUSY);
 
+<<<<<<< HEAD
 	if (!ux500_dma_is_compatible(channel, packet_sz, (void *)dma_addr, len))
 		return false;
 
+=======
+>>>>>>> v4.9.227
 	channel->status = MUSB_DMA_STATUS_BUSY;
 	channel->actual_len = 0;
 	ret = ux500_configure_channel(channel, packet_sz, mode, dma_addr, len);
@@ -246,9 +259,13 @@ static int ux500_dma_channel_abort(struct dma_channel *channel)
 			musb_writew(epio, MUSB_RXCSR, csr);
 		}
 
+<<<<<<< HEAD
 		ux500_channel->dma_chan->device->
 				device_control(ux500_channel->dma_chan,
 					DMA_TERMINATE_ALL, 0);
+=======
+		dmaengine_terminate_all(ux500_channel->dma_chan);
+>>>>>>> v4.9.227
 		channel->status = MUSB_DMA_STATUS_FREE;
 	}
 	return 0;
@@ -362,7 +379,11 @@ static int ux500_dma_controller_start(struct ux500_dma_controller *controller)
 	return 0;
 }
 
+<<<<<<< HEAD
 void dma_controller_destroy(struct dma_controller *c)
+=======
+void ux500_dma_controller_destroy(struct dma_controller *c)
+>>>>>>> v4.9.227
 {
 	struct ux500_dma_controller *controller = container_of(c,
 			struct ux500_dma_controller, controller);
@@ -370,9 +391,16 @@ void dma_controller_destroy(struct dma_controller *c)
 	ux500_dma_controller_stop(controller);
 	kfree(controller);
 }
+<<<<<<< HEAD
 
 struct dma_controller *dma_controller_create(struct musb *musb,
 					void __iomem *base)
+=======
+EXPORT_SYMBOL_GPL(ux500_dma_controller_destroy);
+
+struct dma_controller *
+ux500_dma_controller_create(struct musb *musb, void __iomem *base)
+>>>>>>> v4.9.227
 {
 	struct ux500_dma_controller *controller;
 	struct platform_device *pdev = to_platform_device(musb->controller);
@@ -410,3 +438,7 @@ plat_get_fail:
 kzalloc_fail:
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ux500_dma_controller_create);
+>>>>>>> v4.9.227

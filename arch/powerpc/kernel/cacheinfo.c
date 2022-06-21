@@ -631,6 +631,7 @@ static ssize_t shared_cpu_map_show(struct kobject *k, struct kobj_attribute *att
 {
 	struct cache_index_dir *index;
 	struct cache *cache;
+<<<<<<< HEAD
 	int len;
 	int n = 0;
 
@@ -644,6 +645,18 @@ static ssize_t shared_cpu_map_show(struct kobject *k, struct kobj_attribute *att
 		buf[n] = '\0';
 	}
 	return n;
+=======
+	int ret;
+
+	index = kobj_to_cache_index_dir(k);
+	cache = index->cache;
+
+	ret = scnprintf(buf, PAGE_SIZE - 1, "%*pb\n",
+			cpumask_pr_args(&cache->shared_cpu_map));
+	buf[ret++] = '\n';
+	buf[ret] = '\0';
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static struct kobj_attribute cache_shared_cpu_map_attr =
@@ -870,4 +883,24 @@ void cacheinfo_cpu_offline(unsigned int cpu_id)
 	if (cache)
 		cache_cpu_clear(cache, cpu_id);
 }
+<<<<<<< HEAD
+=======
+
+void cacheinfo_teardown(void)
+{
+	unsigned int cpu;
+
+	for_each_online_cpu(cpu)
+		cacheinfo_cpu_offline(cpu);
+}
+
+void cacheinfo_rebuild(void)
+{
+	unsigned int cpu;
+
+	for_each_online_cpu(cpu)
+		cacheinfo_cpu_online(cpu);
+}
+
+>>>>>>> v4.9.227
 #endif /* (CONFIG_PPC_PSERIES && CONFIG_SUSPEND) || CONFIG_HOTPLUG_CPU */

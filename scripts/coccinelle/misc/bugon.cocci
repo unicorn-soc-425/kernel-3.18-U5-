@@ -40,7 +40,11 @@ expression e;
 //  For org and report mode
 //----------------------------------------------------------
 
+<<<<<<< HEAD
 @r@
+=======
+@r depends on (org || report)@
+>>>>>>> v4.9.227
 expression e;
 position p;
 @@
@@ -57,6 +61,10 @@ coccilib.org.print_todo(p[0], "WARNING use BUG_ON")
 p << r.p;
 @@
 
+<<<<<<< HEAD
 msg="WARNING: Use BUG_ON"
+=======
+msg="WARNING: Use BUG_ON instead of if condition followed by BUG.\nPlease make sure the condition has no side effects (see conditional BUG_ON definition in include/asm-generic/bug.h)"
+>>>>>>> v4.9.227
 coccilib.report.print_report(p[0], msg)
 

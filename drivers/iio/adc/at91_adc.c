@@ -113,6 +113,10 @@
 #define		AT91_ADC_TSMR_TSAV	(3 << 4)	/* Averages samples */
 #define			AT91_ADC_TSMR_TSAV_(x)		((x) << 4)
 #define		AT91_ADC_TSMR_SCTIM	(0x0f << 16)	/* Switch closure time */
+<<<<<<< HEAD
+=======
+#define			AT91_ADC_TSMR_SCTIM_(x)		((x) << 16)
+>>>>>>> v4.9.227
 #define		AT91_ADC_TSMR_PENDBC	(0x0f << 28)	/* Pen Debounce time */
 #define			AT91_ADC_TSMR_PENDBC_(x)	((x) << 28)
 #define		AT91_ADC_TSMR_NOTSDMA	(1 << 22)	/* No Touchscreen DMA */
@@ -150,6 +154,10 @@
 #define MAX_RLPOS_BITS         10
 #define TOUCH_SAMPLE_PERIOD_US_RL      10000   /* 10ms, the SoC can't keep up with 2ms */
 #define TOUCH_SHTIM                    0xa
+<<<<<<< HEAD
+=======
+#define TOUCH_SCTIM_US		10		/* 10us for the Touchscreen Switches Closure Time */
+>>>>>>> v4.9.227
 
 /**
  * struct at91_adc_reg_desc - Various informations relative to registers
@@ -245,12 +253,21 @@ static irqreturn_t at91_adc_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *idev = pf->indio_dev;
 	struct at91_adc_state *st = iio_priv(idev);
+<<<<<<< HEAD
+=======
+	struct iio_chan_spec const *chan;
+>>>>>>> v4.9.227
 	int i, j = 0;
 
 	for (i = 0; i < idev->masklength; i++) {
 		if (!test_bit(i, idev->active_scan_mask))
 			continue;
+<<<<<<< HEAD
 		st->buffer[j] = at91_adc_readl(st, AT91_ADC_CHAN(st, i));
+=======
+		chan = idev->channels + i;
+		st->buffer[j] = at91_adc_readl(st, AT91_ADC_CHAN(st, chan->channel));
+>>>>>>> v4.9.227
 		j++;
 	}
 
@@ -276,6 +293,11 @@ static void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
 		iio_trigger_poll(idev->trig);
 	} else {
 		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
+<<<<<<< HEAD
+=======
+		/* Needed to ACK the DRDY interruption */
+		at91_adc_readl(st, AT91_ADC_LCDR);
+>>>>>>> v4.9.227
 		st->done = true;
 		wake_up_interruptible(&st->wq_data_avail);
 	}
@@ -381,8 +403,13 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
 		st->ts_bufferedmeasure = false;
 		input_report_key(st->ts_input, BTN_TOUCH, 0);
 		input_sync(st->ts_input);
+<<<<<<< HEAD
 	} else if (status & AT91_ADC_EOC(3)) {
 		/* Conversion finished */
+=======
+	} else if (status & AT91_ADC_EOC(3) && st->ts_input) {
+		/* Conversion finished and we've a touchscreen */
+>>>>>>> v4.9.227
 		if (st->ts_bufferedmeasure) {
 			/*
 			 * Last measurement is always discarded, since it can
@@ -544,7 +571,10 @@ static int at91_adc_configure_trigger(struct iio_trigger *trig, bool state)
 {
 	struct iio_dev *idev = iio_trigger_get_drvdata(trig);
 	struct at91_adc_state *st = iio_priv(idev);
+<<<<<<< HEAD
 	struct iio_buffer *buffer = idev->buffer;
+=======
+>>>>>>> v4.9.227
 	struct at91_adc_reg_desc *reg = st->registers;
 	u32 status = at91_adc_readl(st, reg->trigger_register);
 	int value;
@@ -564,7 +594,11 @@ static int at91_adc_configure_trigger(struct iio_trigger *trig, bool state)
 		at91_adc_writel(st, reg->trigger_register,
 				status | value);
 
+<<<<<<< HEAD
 		for_each_set_bit(bit, buffer->scan_mask,
+=======
+		for_each_set_bit(bit, idev->active_scan_mask,
+>>>>>>> v4.9.227
 				 st->num_channels) {
 			struct iio_chan_spec const *chan = idev->channels + bit;
 			at91_adc_writel(st, AT91_ADC_CHER,
@@ -579,7 +613,11 @@ static int at91_adc_configure_trigger(struct iio_trigger *trig, bool state)
 		at91_adc_writel(st, reg->trigger_register,
 				status & ~value);
 
+<<<<<<< HEAD
 		for_each_set_bit(bit, buffer->scan_mask,
+=======
+		for_each_set_bit(bit, idev->active_scan_mask,
+>>>>>>> v4.9.227
 				 st->num_channels) {
 			struct iio_chan_spec const *chan = idev->channels + bit;
 			at91_adc_writel(st, AT91_ADC_CHDR,
@@ -699,6 +737,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
 		ret = wait_event_interruptible_timeout(st->wq_data_avail,
 						       st->done,
 						       msecs_to_jiffies(1000));
+<<<<<<< HEAD
 		if (ret == 0)
 			ret = -ETIMEDOUT;
 		if (ret < 0) {
@@ -708,14 +747,38 @@ static int at91_adc_read_raw(struct iio_dev *idev,
 
 		*val = st->last_value;
 
+=======
+
+		/* Disable interrupts, regardless if adc conversion was
+		 * successful or not
+		 */
+>>>>>>> v4.9.227
 		at91_adc_writel(st, AT91_ADC_CHDR,
 				AT91_ADC_CH(chan->channel));
 		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
 
+<<<<<<< HEAD
 		st->last_value = 0;
 		st->done = false;
 		mutex_unlock(&st->lock);
 		return IIO_VAL_INT;
+=======
+		if (ret > 0) {
+			/* a valid conversion took place */
+			*val = st->last_value;
+			st->last_value = 0;
+			st->done = false;
+			ret = IIO_VAL_INT;
+		} else if (ret == 0) {
+			/* conversion timeout */
+			dev_err(&idev->dev, "ADC Channel %d timeout.\n",
+				chan->channel);
+			ret = -ETIMEDOUT;
+		}
+
+		mutex_unlock(&st->lock);
+		return ret;
+>>>>>>> v4.9.227
 
 	case IIO_CHAN_INFO_SCALE:
 		*val = st->vref_mv;
@@ -743,7 +806,11 @@ static int at91_adc_of_get_resolution(struct at91_adc_state *st,
 		return count;
 	}
 
+<<<<<<< HEAD
 	resolutions = kmalloc(count * sizeof(*resolutions), GFP_KERNEL);
+=======
+	resolutions = kmalloc_array(count, sizeof(*resolutions), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!resolutions)
 		return -ENOMEM;
 
@@ -798,8 +865,13 @@ static u32 calc_startup_ticks_9x5(u32 startup_time, u32 adc_clk_khz)
 	 * Startup Time = <lookup_table_value> / ADC Clock
 	 */
 	const int startup_lookup[] = {
+<<<<<<< HEAD
 		0  , 8  , 16 , 24 ,
 		64 , 80 , 96 , 112,
+=======
+		0,   8,   16,  24,
+		64,  80,  96,  112,
+>>>>>>> v4.9.227
 		512, 576, 640, 704,
 		768, 832, 896, 960
 		};
@@ -925,14 +997,22 @@ static int at91_adc_probe_dt(struct at91_adc_state *st,
 			ret = -EINVAL;
 			goto error_ret;
 		}
+<<<<<<< HEAD
 	        trig->name = name;
+=======
+		trig->name = name;
+>>>>>>> v4.9.227
 
 		if (of_property_read_u32(trig_node, "trigger-value", &prop)) {
 			dev_err(&idev->dev, "Missing trigger-value property in the DT.\n");
 			ret = -EINVAL;
 			goto error_ret;
 		}
+<<<<<<< HEAD
 	        trig->value = prop;
+=======
+		trig->value = prop;
+>>>>>>> v4.9.227
 		trig->is_external = of_property_read_bool(trig_node, "trigger-external");
 		i++;
 	}
@@ -1002,7 +1082,13 @@ static void atmel_ts_close(struct input_dev *dev)
 
 static int at91_ts_hw_init(struct at91_adc_state *st, u32 adc_clk_khz)
 {
+<<<<<<< HEAD
 	u32 reg = 0;
+=======
+	struct iio_dev *idev = iio_priv_to_dev(st);
+	u32 reg = 0;
+	u32 tssctim = 0;
+>>>>>>> v4.9.227
 	int i = 0;
 
 	/* a Pen Detect Debounce Time is necessary for the ADC Touch to avoid
@@ -1035,11 +1121,26 @@ static int at91_ts_hw_init(struct at91_adc_state *st, u32 adc_clk_khz)
 		return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Touchscreen Switches Closure time needed for allowing the value to
+	 * stabilize.
+	 * Switch Closure Time = (TSSCTIM * 4) ADCClock periods
+	 */
+	tssctim = DIV_ROUND_UP(TOUCH_SCTIM_US * adc_clk_khz / 1000, 4);
+	dev_dbg(&idev->dev, "adc_clk at: %d KHz, tssctim at: %d\n",
+		adc_clk_khz, tssctim);
+
+>>>>>>> v4.9.227
 	if (st->touchscreen_type == ATMEL_ADC_TOUCHSCREEN_4WIRE)
 		reg = AT91_ADC_TSMR_TSMODE_4WIRE_PRESS;
 	else
 		reg = AT91_ADC_TSMR_TSMODE_5WIRE;
 
+<<<<<<< HEAD
+=======
+	reg |= AT91_ADC_TSMR_SCTIM_(tssctim) & AT91_ADC_TSMR_SCTIM;
+>>>>>>> v4.9.227
 	reg |= AT91_ADC_TSMR_TSAV_(st->caps->ts_filter_average)
 	       & AT91_ADC_TSMR_TSAV;
 	reg |= AT91_ADC_TSMR_PENDBC_(st->ts_pendbc) & AT91_ADC_TSMR_PENDBC;

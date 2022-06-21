@@ -62,12 +62,17 @@ static int msm_fbdev_mmap(struct fb_info *info, struct vm_area_struct *vma)
 	struct drm_fb_helper *helper = (struct drm_fb_helper *)info->par;
 	struct msm_fbdev *fbdev = to_msm_fbdev(helper);
 	struct drm_gem_object *drm_obj = fbdev->bo;
+<<<<<<< HEAD
 	struct drm_device *dev = helper->dev;
 	int ret = 0;
 
 	if (drm_device_is_unplugged(dev))
 		return -ENODEV;
 
+=======
+	int ret = 0;
+
+>>>>>>> v4.9.227
 	ret = drm_gem_mmap_obj(drm_obj, drm_obj->size, vma);
 	if (ret) {
 		pr_err("%s:drm_gem_mmap_obj fail\n", __func__);
@@ -121,7 +126,11 @@ static int msm_fbdev_create(struct drm_fb_helper *helper,
 		/* note: if fb creation failed, we can't rely on fb destroy
 		 * to unref the bo:
 		 */
+<<<<<<< HEAD
 		drm_gem_object_unreference(fbdev->bo);
+=======
+		drm_gem_object_unreference_unlocked(fbdev->bo);
+>>>>>>> v4.9.227
 		ret = PTR_ERR(fb);
 		goto fail;
 	}
@@ -146,7 +155,11 @@ static int msm_fbdev_create(struct drm_fb_helper *helper,
 		goto fail_unlock;
 	}
 
+<<<<<<< HEAD
 	DBG("fbi=%pK, dev=%pK", fbi, dev);
+=======
+	DBG("fbi=%p, dev=%p", fbi, dev);
+>>>>>>> v4.9.227
 
 	fbdev->fb = fb;
 	helper->fb = fb;
@@ -162,12 +175,24 @@ static int msm_fbdev_create(struct drm_fb_helper *helper,
 
 	dev->mode_config.fb_base = paddr;
 
+<<<<<<< HEAD
 	fbi->screen_base = msm_gem_vaddr_locked(fbdev->bo);
+=======
+	fbi->screen_base = msm_gem_get_vaddr_locked(fbdev->bo);
+	if (IS_ERR(fbi->screen_base)) {
+		ret = PTR_ERR(fbi->screen_base);
+		goto fail_unlock;
+	}
+>>>>>>> v4.9.227
 	fbi->screen_size = fbdev->bo->size;
 	fbi->fix.smem_start = paddr;
 	fbi->fix.smem_len = fbdev->bo->size;
 
+<<<<<<< HEAD
 	DBG("par=%pK, %dx%d", fbi->par, fbi->var.xres, fbi->var.yres);
+=======
+	DBG("par=%p, %dx%d", fbi->par, fbi->var.xres, fbi->var.yres);
+>>>>>>> v4.9.227
 	DBG("allocated %dx%d fb", fbdev->fb->width, fbdev->fb->height);
 
 	mutex_unlock(&dev->struct_mutex);
@@ -188,6 +213,7 @@ fail:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void msm_crtc_fb_gamma_set(struct drm_crtc *crtc,
 		u16 red, u16 green, u16 blue, int regno)
 {
@@ -203,6 +229,9 @@ static void msm_crtc_fb_gamma_get(struct drm_crtc *crtc,
 static const struct drm_fb_helper_funcs msm_fb_helper_funcs = {
 	.gamma_set = msm_crtc_fb_gamma_set,
 	.gamma_get = msm_crtc_fb_gamma_get,
+=======
+static const struct drm_fb_helper_funcs msm_fb_helper_funcs = {
+>>>>>>> v4.9.227
 	.fb_probe = msm_fbdev_create,
 };
 
@@ -233,9 +262,12 @@ struct drm_fb_helper *msm_fbdev_init(struct drm_device *dev)
 	if (ret)
 		goto fini;
 
+<<<<<<< HEAD
 	/* disable all the possible outputs/crtcs before entering KMS mode */
 	drm_helper_disable_unused_functions(dev);
 
+=======
+>>>>>>> v4.9.227
 	ret = drm_fb_helper_initial_config(helper, 32);
 	if (ret)
 		goto fini;
@@ -268,6 +300,10 @@ void msm_fbdev_free(struct drm_device *dev)
 
 	/* this will free the backing object */
 	if (fbdev->fb) {
+<<<<<<< HEAD
+=======
+		msm_gem_put_vaddr(fbdev->bo);
+>>>>>>> v4.9.227
 		drm_framebuffer_unregister_private(fbdev->fb);
 		drm_framebuffer_remove(fbdev->fb);
 	}

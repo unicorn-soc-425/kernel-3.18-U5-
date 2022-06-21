@@ -64,7 +64,12 @@ static void logfs_inode_setops(struct inode *inode)
 		inode->i_mapping->a_ops = &logfs_reg_aops;
 		break;
 	case S_IFLNK:
+<<<<<<< HEAD
 		inode->i_op = &logfs_symlink_iops;
+=======
+		inode->i_op = &page_symlink_inode_operations;
+		inode_nohighmem(inode);
+>>>>>>> v4.9.227
 		inode->i_mapping->a_ops = &logfs_reg_aops;
 		break;
 	case S_IFSOCK:	/* fall through */
@@ -212,8 +217,13 @@ static void logfs_init_inode(struct super_block *sb, struct inode *inode)
 	i_gid_write(inode, 0);
 	inode->i_size	= 0;
 	inode->i_blocks	= 0;
+<<<<<<< HEAD
 	inode->i_ctime	= CURRENT_TIME;
 	inode->i_mtime	= CURRENT_TIME;
+=======
+	inode->i_ctime	= current_time(inode);
+	inode->i_mtime	= current_time(inode);
+>>>>>>> v4.9.227
 	li->li_refcount = 1;
 	INIT_LIST_HEAD(&li->li_freeing_list);
 
@@ -408,7 +418,12 @@ const struct super_operations logfs_super_operations = {
 int logfs_init_inode_cache(void)
 {
 	logfs_inode_cache = kmem_cache_create("logfs_inode_cache",
+<<<<<<< HEAD
 			sizeof(struct logfs_inode), 0, SLAB_RECLAIM_ACCOUNT,
+=======
+			sizeof(struct logfs_inode), 0,
+			SLAB_RECLAIM_ACCOUNT|SLAB_ACCOUNT,
+>>>>>>> v4.9.227
 			logfs_init_once);
 	if (!logfs_inode_cache)
 		return -ENOMEM;

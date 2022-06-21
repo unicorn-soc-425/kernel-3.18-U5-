@@ -86,6 +86,11 @@ decompress_kernel(int mmu_on, unsigned char *zimage_data,
 	free_mem_end_ptr = free_mem_ptr + BOOT_HEAP_SIZE;
 
 	puts("\nDecompressing Linux... ");
+<<<<<<< HEAD
 	decompress(input_data, input_len, NULL, NULL, output_data, NULL, error);
+=======
+	__decompress(input_data, input_len, NULL, NULL, output_data, 0,
+			NULL, error);
+>>>>>>> v4.9.227
 	puts("done.\nBooting the kernel.\n");
 }

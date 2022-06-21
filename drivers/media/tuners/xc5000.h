@@ -22,7 +22,10 @@
 #ifndef __XC5000_H__
 #define __XC5000_H__
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/firmware.h>
 
 struct dvb_frontend;
@@ -36,6 +39,10 @@ struct xc5000_config {
 	u32  if_khz;
 	u8   radio_input;
 	u16  xtal_khz;
+<<<<<<< HEAD
+=======
+	u16  output_amp;
+>>>>>>> v4.9.227
 
 	int chip_id;
 };

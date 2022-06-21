@@ -34,6 +34,11 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <crypto/hash.h>
+#include <crypto/skcipher.h>
+>>>>>>> v4.9.227
 #include <linux/err.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -42,10 +47,16 @@
 #include <linux/sunrpc/auth.h>
 #include <linux/sunrpc/gss_krb5.h>
 #include <linux/sunrpc/xdr.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
 #include <linux/sunrpc/gss_krb5_enctypes.h>
 
 #ifdef RPC_DEBUG
+=======
+#include <linux/sunrpc/gss_krb5_enctypes.h>
+
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> v4.9.227
 # define RPCDBG_FACILITY	RPCDBG_AUTH
 #endif
 
@@ -217,7 +228,11 @@ simple_get_netobj(const void *p, const void *end, struct xdr_netobj *res)
 
 static inline const void *
 get_key(const void *p, const void *end,
+<<<<<<< HEAD
 	struct krb5_ctx *ctx, struct crypto_blkcipher **res)
+=======
+	struct krb5_ctx *ctx, struct crypto_skcipher **res)
+>>>>>>> v4.9.227
 {
 	struct xdr_netobj	key;
 	int			alg;
@@ -245,7 +260,11 @@ get_key(const void *p, const void *end,
 	if (IS_ERR(p))
 		goto out_err;
 
+<<<<<<< HEAD
 	*res = crypto_alloc_blkcipher(ctx->gk5e->encrypt_name, 0,
+=======
+	*res = crypto_alloc_skcipher(ctx->gk5e->encrypt_name, 0,
+>>>>>>> v4.9.227
 							CRYPTO_ALG_ASYNC);
 	if (IS_ERR(*res)) {
 		printk(KERN_WARNING "gss_kerberos_mech: unable to initialize "
@@ -253,7 +272,11 @@ get_key(const void *p, const void *end,
 		*res = NULL;
 		goto out_err_free_key;
 	}
+<<<<<<< HEAD
 	if (crypto_blkcipher_setkey(*res, key.data, key.len)) {
+=======
+	if (crypto_skcipher_setkey(*res, key.data, key.len)) {
+>>>>>>> v4.9.227
 		printk(KERN_WARNING "gss_kerberos_mech: error setting key for "
 			"crypto algorithm %s\n", ctx->gk5e->encrypt_name);
 		goto out_err_free_tfm;
@@ -263,7 +286,11 @@ get_key(const void *p, const void *end,
 	return p;
 
 out_err_free_tfm:
+<<<<<<< HEAD
 	crypto_free_blkcipher(*res);
+=======
+	crypto_free_skcipher(*res);
+>>>>>>> v4.9.227
 out_err_free_key:
 	kfree(key.data);
 	p = ERR_PTR(-EINVAL);
@@ -335,30 +362,52 @@ gss_import_v1_context(const void *p, const void *end, struct krb5_ctx *ctx)
 	return 0;
 
 out_err_free_key2:
+<<<<<<< HEAD
 	crypto_free_blkcipher(ctx->seq);
 out_err_free_key1:
 	crypto_free_blkcipher(ctx->enc);
+=======
+	crypto_free_skcipher(ctx->seq);
+out_err_free_key1:
+	crypto_free_skcipher(ctx->enc);
+>>>>>>> v4.9.227
 out_err_free_mech:
 	kfree(ctx->mech_used.data);
 out_err:
 	return PTR_ERR(p);
 }
 
+<<<<<<< HEAD
 static struct crypto_blkcipher *
 context_v2_alloc_cipher(struct krb5_ctx *ctx, const char *cname, u8 *key)
 {
 	struct crypto_blkcipher *cp;
 
 	cp = crypto_alloc_blkcipher(cname, 0, CRYPTO_ALG_ASYNC);
+=======
+static struct crypto_skcipher *
+context_v2_alloc_cipher(struct krb5_ctx *ctx, const char *cname, u8 *key)
+{
+	struct crypto_skcipher *cp;
+
+	cp = crypto_alloc_skcipher(cname, 0, CRYPTO_ALG_ASYNC);
+>>>>>>> v4.9.227
 	if (IS_ERR(cp)) {
 		dprintk("gss_kerberos_mech: unable to initialize "
 			"crypto algorithm %s\n", cname);
 		return NULL;
 	}
+<<<<<<< HEAD
 	if (crypto_blkcipher_setkey(cp, key, ctx->gk5e->keylength)) {
 		dprintk("gss_kerberos_mech: error setting key for "
 			"crypto algorithm %s\n", cname);
 		crypto_free_blkcipher(cp);
+=======
+	if (crypto_skcipher_setkey(cp, key, ctx->gk5e->keylength)) {
+		dprintk("gss_kerberos_mech: error setting key for "
+			"crypto algorithm %s\n", cname);
+		crypto_free_skcipher(cp);
+>>>>>>> v4.9.227
 		return NULL;
 	}
 	return cp;
@@ -412,9 +461,15 @@ context_derive_keys_des3(struct krb5_ctx *ctx, gfp_t gfp_mask)
 	return 0;
 
 out_free_enc:
+<<<<<<< HEAD
 	crypto_free_blkcipher(ctx->enc);
 out_free_seq:
 	crypto_free_blkcipher(ctx->seq);
+=======
+	crypto_free_skcipher(ctx->enc);
+out_free_seq:
+	crypto_free_skcipher(ctx->seq);
+>>>>>>> v4.9.227
 out_err:
 	return -EINVAL;
 }
@@ -427,18 +482,29 @@ out_err:
 static int
 context_derive_keys_rc4(struct krb5_ctx *ctx)
 {
+<<<<<<< HEAD
 	struct crypto_hash *hmac;
 	char sigkeyconstant[] = "signaturekey";
 	int slen = strlen(sigkeyconstant) + 1;	/* include null terminator */
 	struct hash_desc desc;
 	struct scatterlist sg[1];
+=======
+	struct crypto_shash *hmac;
+	char sigkeyconstant[] = "signaturekey";
+	int slen = strlen(sigkeyconstant) + 1;	/* include null terminator */
+	struct shash_desc *desc;
+>>>>>>> v4.9.227
 	int err;
 
 	dprintk("RPC:       %s: entered\n", __func__);
 	/*
 	 * derive cksum (aka Ksign) key
 	 */
+<<<<<<< HEAD
 	hmac = crypto_alloc_hash(ctx->gk5e->cksum_name, 0, CRYPTO_ALG_ASYNC);
+=======
+	hmac = crypto_alloc_shash(ctx->gk5e->cksum_name, 0, 0);
+>>>>>>> v4.9.227
 	if (IS_ERR(hmac)) {
 		dprintk("%s: error %ld allocating hash '%s'\n",
 			__func__, PTR_ERR(hmac), ctx->gk5e->cksum_name);
@@ -446,6 +512,7 @@ context_derive_keys_rc4(struct krb5_ctx *ctx)
 		goto out_err;
 	}
 
+<<<<<<< HEAD
 	err = crypto_hash_setkey(hmac, ctx->Ksess, ctx->gk5e->keylength);
 	if (err)
 		goto out_err_free_hmac;
@@ -468,15 +535,50 @@ context_derive_keys_rc4(struct krb5_ctx *ctx)
 	 */
 	ctx->enc = crypto_alloc_blkcipher(ctx->gk5e->encrypt_name, 0,
 					  CRYPTO_ALG_ASYNC);
+=======
+	err = crypto_shash_setkey(hmac, ctx->Ksess, ctx->gk5e->keylength);
+	if (err)
+		goto out_err_free_hmac;
+
+
+	desc = kmalloc(sizeof(*desc) + crypto_shash_descsize(hmac),
+		       GFP_KERNEL);
+	if (!desc) {
+		dprintk("%s: failed to allocate hash descriptor for '%s'\n",
+			__func__, ctx->gk5e->cksum_name);
+		err = -ENOMEM;
+		goto out_err_free_hmac;
+	}
+
+	desc->tfm = hmac;
+	desc->flags = 0;
+
+	err = crypto_shash_digest(desc, sigkeyconstant, slen, ctx->cksum);
+	kzfree(desc);
+	if (err)
+		goto out_err_free_hmac;
+	/*
+	 * allocate hash, and skciphers for data and seqnum encryption
+	 */
+	ctx->enc = crypto_alloc_skcipher(ctx->gk5e->encrypt_name, 0,
+					 CRYPTO_ALG_ASYNC);
+>>>>>>> v4.9.227
 	if (IS_ERR(ctx->enc)) {
 		err = PTR_ERR(ctx->enc);
 		goto out_err_free_hmac;
 	}
 
+<<<<<<< HEAD
 	ctx->seq = crypto_alloc_blkcipher(ctx->gk5e->encrypt_name, 0,
 					  CRYPTO_ALG_ASYNC);
 	if (IS_ERR(ctx->seq)) {
 		crypto_free_blkcipher(ctx->enc);
+=======
+	ctx->seq = crypto_alloc_skcipher(ctx->gk5e->encrypt_name, 0,
+					 CRYPTO_ALG_ASYNC);
+	if (IS_ERR(ctx->seq)) {
+		crypto_free_skcipher(ctx->enc);
+>>>>>>> v4.9.227
 		err = PTR_ERR(ctx->seq);
 		goto out_err_free_hmac;
 	}
@@ -486,7 +588,11 @@ context_derive_keys_rc4(struct krb5_ctx *ctx)
 	err = 0;
 
 out_err_free_hmac:
+<<<<<<< HEAD
 	crypto_free_hash(hmac);
+=======
+	crypto_free_shash(hmac);
+>>>>>>> v4.9.227
 out_err:
 	dprintk("RPC:       %s: returning %d\n", __func__, err);
 	return err;
@@ -588,7 +694,11 @@ context_derive_keys_new(struct krb5_ctx *ctx, gfp_t gfp_mask)
 			context_v2_alloc_cipher(ctx, "cbc(aes)",
 						ctx->acceptor_seal);
 		if (ctx->acceptor_enc_aux == NULL) {
+<<<<<<< HEAD
 			crypto_free_blkcipher(ctx->initiator_enc_aux);
+=======
+			crypto_free_skcipher(ctx->initiator_enc_aux);
+>>>>>>> v4.9.227
 			goto out_free_acceptor_enc;
 		}
 	}
@@ -596,9 +706,15 @@ context_derive_keys_new(struct krb5_ctx *ctx, gfp_t gfp_mask)
 	return 0;
 
 out_free_acceptor_enc:
+<<<<<<< HEAD
 	crypto_free_blkcipher(ctx->acceptor_enc);
 out_free_initiator_enc:
 	crypto_free_blkcipher(ctx->initiator_enc);
+=======
+	crypto_free_skcipher(ctx->acceptor_enc);
+out_free_initiator_enc:
+	crypto_free_skcipher(ctx->initiator_enc);
+>>>>>>> v4.9.227
 out_err:
 	return -EINVAL;
 }
@@ -710,12 +826,21 @@ static void
 gss_delete_sec_context_kerberos(void *internal_ctx) {
 	struct krb5_ctx *kctx = internal_ctx;
 
+<<<<<<< HEAD
 	crypto_free_blkcipher(kctx->seq);
 	crypto_free_blkcipher(kctx->enc);
 	crypto_free_blkcipher(kctx->acceptor_enc);
 	crypto_free_blkcipher(kctx->initiator_enc);
 	crypto_free_blkcipher(kctx->acceptor_enc_aux);
 	crypto_free_blkcipher(kctx->initiator_enc_aux);
+=======
+	crypto_free_skcipher(kctx->seq);
+	crypto_free_skcipher(kctx->enc);
+	crypto_free_skcipher(kctx->acceptor_enc);
+	crypto_free_skcipher(kctx->initiator_enc);
+	crypto_free_skcipher(kctx->acceptor_enc_aux);
+	crypto_free_skcipher(kctx->initiator_enc_aux);
+>>>>>>> v4.9.227
 	kfree(kctx->mech_used.data);
 	kfree(kctx);
 }
@@ -741,12 +866,20 @@ static struct pf_desc gss_kerberos_pfs[] = {
 		.qop = GSS_C_QOP_DEFAULT,
 		.service = RPC_GSS_SVC_INTEGRITY,
 		.name = "krb5i",
+<<<<<<< HEAD
+=======
+		.datatouch = true,
+>>>>>>> v4.9.227
 	},
 	[2] = {
 		.pseudoflavor = RPC_AUTH_GSS_KRB5P,
 		.qop = GSS_C_QOP_DEFAULT,
 		.service = RPC_GSS_SVC_PRIVACY,
 		.name = "krb5p",
+<<<<<<< HEAD
+=======
+		.datatouch = true,
+>>>>>>> v4.9.227
 	},
 };
 

@@ -12,6 +12,7 @@ struct ceph_crypto_key {
 	struct ceph_timespec created;
 	int len;
 	void *key;
+<<<<<<< HEAD
 };
 
 static inline void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
@@ -20,11 +21,17 @@ static inline void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
 		kfree(key->key);
 }
 
+=======
+	struct crypto_skcipher *tfm;
+};
+
+>>>>>>> v4.9.227
 int ceph_crypto_key_clone(struct ceph_crypto_key *dst,
 			  const struct ceph_crypto_key *src);
 int ceph_crypto_key_encode(struct ceph_crypto_key *key, void **p, void *end);
 int ceph_crypto_key_decode(struct ceph_crypto_key *key, void **p, void *end);
 int ceph_crypto_key_unarmor(struct ceph_crypto_key *key, const char *in);
+<<<<<<< HEAD
 
 /* crypto.c */
 int ceph_decrypt(struct ceph_crypto_key *secret,
@@ -41,6 +48,13 @@ int ceph_encrypt2(struct ceph_crypto_key *secret,
 		  void *dst, size_t *dst_len,
 		  const void *src1, size_t src1_len,
 		  const void *src2, size_t src2_len);
+=======
+void ceph_crypto_key_destroy(struct ceph_crypto_key *key);
+
+/* crypto.c */
+int ceph_crypt(const struct ceph_crypto_key *key, bool encrypt,
+	       void *buf, int buf_len, int in_len, int *pout_len);
+>>>>>>> v4.9.227
 int ceph_crypto_init(void);
 void ceph_crypto_shutdown(void);
 

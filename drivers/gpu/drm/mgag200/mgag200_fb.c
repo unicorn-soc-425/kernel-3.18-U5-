@@ -15,8 +15,11 @@
 #include <drm/drm_fb_helper.h>
 #include <drm/drm_crtc_helper.h>
 
+<<<<<<< HEAD
 #include <linux/fb.h>
 
+=======
+>>>>>>> v4.9.227
 #include "mgag200_drv.h"
 
 static void mga_dirty_update(struct mga_fbdev *mfbdev,
@@ -138,7 +141,11 @@ static struct fb_ops mgag200fb_ops = {
 };
 
 static int mgag200fb_create_object(struct mga_fbdev *afbdev,
+<<<<<<< HEAD
 				   struct drm_mode_fb_cmd2 *mode_cmd,
+=======
+				   const struct drm_mode_fb_cmd2 *mode_cmd,
+>>>>>>> v4.9.227
 				   struct drm_gem_object **gobj_p)
 {
 	struct drm_device *dev = afbdev->helper.dev;
@@ -185,8 +192,15 @@ static int mgag200fb_create(struct drm_fb_helper *helper,
 	}
 
 	sysram = vmalloc(size);
+<<<<<<< HEAD
 	if (!sysram)
 		goto err_sysram;
+=======
+	if (!sysram) {
+		ret = -ENOMEM;
+		goto err_sysram;
+	}
+>>>>>>> v4.9.227
 
 	info = drm_fb_helper_alloc_fbi(helper);
 	if (IS_ERR(info)) {

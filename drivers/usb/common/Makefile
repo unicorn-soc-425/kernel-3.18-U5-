@@ -7,3 +7,7 @@ usb-common-y			  += common.o
 usb-common-$(CONFIG_USB_LED_TRIG) += led.o
 
 obj-$(CONFIG_USB_OTG_FSM) += usb-otg-fsm.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_USB_ULPI_BUS)	+= ulpi.o
+>>>>>>> v4.9.227

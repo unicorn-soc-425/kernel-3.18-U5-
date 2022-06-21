@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,6 +53,7 @@ ACPI_MODULE_NAME("utstate")
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_create_pkg_state_and_push
  *
  * PARAMETERS:  object          - Object to be added to the new state
@@ -82,6 +87,8 @@ acpi_ut_create_pkg_state_and_push(void *internal_object,
 
 /*******************************************************************************
  *
+=======
+>>>>>>> v4.9.227
  * FUNCTION:    acpi_ut_push_generic_state
  *
  * PARAMETERS:  list_head           - Head of the state stack
@@ -92,7 +99,10 @@ acpi_ut_create_pkg_state_and_push(void *internal_object,
  * DESCRIPTION: Push a state object onto a state stack
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 void
 acpi_ut_push_generic_state(union acpi_generic_state **list_head,
 			   union acpi_generic_state *state)
@@ -280,6 +290,10 @@ union acpi_generic_state *acpi_ut_create_pkg_state(void *internal_object,
 	state->pkg.dest_object = external_object;
 	state->pkg.index = index;
 	state->pkg.num_packages = 1;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return (state);
 }
 
@@ -313,6 +327,10 @@ union acpi_generic_state *acpi_ut_create_control_state(void)
 
 	state->common.descriptor_type = ACPI_DESC_TYPE_STATE_CONTROL;
 	state->common.state = ACPI_CONTROL_CONDITIONAL_EXECUTING;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return (state);
 }
 
@@ -338,5 +356,9 @@ void acpi_ut_delete_generic_state(union acpi_generic_state *state)
 	if (state) {
 		(void)acpi_os_release_object(acpi_gbl_state_cache, state);
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	return;
 }

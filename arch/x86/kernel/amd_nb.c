@@ -9,7 +9,11 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/spinlock.h>
 #include <asm/amd_nb.h>
 
@@ -21,6 +25,10 @@ const struct pci_device_id amd_nb_misc_ids[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_NB_F3) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_M10H_F3) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_M30H_NB_F3) },
+<<<<<<< HEAD
+=======
+	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_M60H_NB_F3) },
+>>>>>>> v4.9.227
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_16H_NB_F3) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_16H_M30H_NB_F3) },
 	{}
@@ -30,6 +38,10 @@ EXPORT_SYMBOL(amd_nb_misc_ids);
 static const struct pci_device_id amd_nb_link_ids[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_NB_F4) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_M30H_NB_F4) },
+<<<<<<< HEAD
+=======
+	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_M60H_NB_F4) },
+>>>>>>> v4.9.227
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_16H_NB_F4) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_16H_M30H_NB_F4) },
 	{}
@@ -87,9 +99,13 @@ int amd_cache_northbridges(void)
 			next_northbridge(link, amd_nb_link_ids);
 	}
 
+<<<<<<< HEAD
 	/* GART present only on Fam15h upto model 0fh */
 	if (boot_cpu_data.x86 == 0xf || boot_cpu_data.x86 == 0x10 ||
 	    (boot_cpu_data.x86 == 0x15 && boot_cpu_data.x86_model < 0x10))
+=======
+	if (amd_gart_present())
+>>>>>>> v4.9.227
 		amd_northbridges.flags |= AMD_NB_GART;
 
 	/*
@@ -105,7 +121,11 @@ int amd_cache_northbridges(void)
 	if (boot_cpu_data.x86 == 0x10 &&
 	    boot_cpu_data.x86_model >= 0x8 &&
 	    (boot_cpu_data.x86_model > 0x9 ||
+<<<<<<< HEAD
 	     boot_cpu_data.x86_mask >= 0x1))
+=======
+	     boot_cpu_data.x86_stepping >= 0x1))
+>>>>>>> v4.9.227
 		amd_northbridges.flags |= AMD_NB_L3_INDEX_DISABLE;
 
 	if (boot_cpu_data.x86 == 0x15)
@@ -170,15 +190,22 @@ int amd_get_subcaches(int cpu)
 {
 	struct pci_dev *link = node_to_amd_nb(amd_get_nb_id(cpu))->link;
 	unsigned int mask;
+<<<<<<< HEAD
 	int cuid;
+=======
+>>>>>>> v4.9.227
 
 	if (!amd_nb_has_feature(AMD_NB_L3_PARTITIONING))
 		return 0;
 
 	pci_read_config_dword(link, 0x1d4, &mask);
 
+<<<<<<< HEAD
 	cuid = cpu_data(cpu).compute_unit_id;
 	return (mask >> (4 * cuid)) & 0xf;
+=======
+	return (mask >> (4 * cpu_data(cpu).cpu_core_id)) & 0xf;
+>>>>>>> v4.9.227
 }
 
 int amd_set_subcaches(int cpu, unsigned long mask)
@@ -204,7 +231,11 @@ int amd_set_subcaches(int cpu, unsigned long mask)
 		pci_write_config_dword(nb->misc, 0x1b8, reg & ~0x180000);
 	}
 
+<<<<<<< HEAD
 	cuid = cpu_data(cpu).compute_unit_id;
+=======
+	cuid = cpu_data(cpu).cpu_core_id;
+>>>>>>> v4.9.227
 	mask <<= 4 * cuid;
 	mask |= (0xf ^ (1 << cuid)) << 26;
 
@@ -221,6 +252,7 @@ int amd_set_subcaches(int cpu, unsigned long mask)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int amd_cache_gart(void)
 {
 	u16 i;
@@ -239,6 +271,24 @@ static int amd_cache_gart(void)
                                      &flush_words[i]);
 
        return 0;
+=======
+static void amd_cache_gart(void)
+{
+	u16 i;
+
+	if (!amd_nb_has_feature(AMD_NB_GART))
+		return;
+
+	flush_words = kmalloc(amd_nb_num() * sizeof(u32), GFP_KERNEL);
+	if (!flush_words) {
+		amd_northbridges.flags &= ~AMD_NB_GART;
+		pr_notice("Cannot initialize GART flush words, GART support disabled\n");
+		return;
+	}
+
+	for (i = 0; i != amd_nb_num(); i++)
+		pci_read_config_dword(node_to_amd_nb(i)->misc, 0x9c, &flush_words[i]);
+>>>>>>> v4.9.227
 }
 
 void amd_flush_garts(void)
@@ -280,6 +330,7 @@ EXPORT_SYMBOL_GPL(amd_flush_garts);
 
 static __init int init_amd_nbs(void)
 {
+<<<<<<< HEAD
 	int err = 0;
 
 	err = amd_cache_northbridges();
@@ -291,6 +342,12 @@ static __init int init_amd_nbs(void)
 		pr_notice("Cannot initialize GART flush words, GART support disabled\n");
 
 	return err;
+=======
+	amd_cache_northbridges();
+	amd_cache_gart();
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /* This has to go after the PCI subsystem */

@@ -182,9 +182,15 @@ static void dtl1_control(struct dtl1_info *info, struct sk_buff *skb)
 	int i;
 
 	printk(KERN_INFO "Bluetooth: Nokia control data =");
+<<<<<<< HEAD
 	for (i = 0; i < skb->len; i++) {
 		printk(" %02x", skb->data[i]);
 	}
+=======
+	for (i = 0; i < skb->len; i++)
+		printk(" %02x", skb->data[i]);
+
+>>>>>>> v4.9.227
 	printk("\n");
 
 	/* transition to active state */
@@ -239,7 +245,11 @@ static void dtl1_receive(struct dtl1_info *info)
 				info->rx_count = nsh->len + (nsh->len & 0x0001);
 				break;
 			case RECV_WAIT_DATA:
+<<<<<<< HEAD
 				bt_cb(info->rx_skb)->pkt_type = nsh->type;
+=======
+				hci_skb_pkt_type(info->rx_skb) = nsh->type;
+>>>>>>> v4.9.227
 
 				/* remove PAD byte if it exists */
 				if (nsh->len & 0x0001) {
@@ -250,7 +260,11 @@ static void dtl1_receive(struct dtl1_info *info)
 				/* remove NSH */
 				skb_pull(info->rx_skb, NSHL);
 
+<<<<<<< HEAD
 				switch (bt_cb(info->rx_skb)->pkt_type) {
+=======
+				switch (hci_skb_pkt_type(info->rx_skb)) {
+>>>>>>> v4.9.227
 				case 0x80:
 					/* control data for the Nokia Card */
 					dtl1_control(info, info->rx_skb);
@@ -259,12 +273,21 @@ static void dtl1_receive(struct dtl1_info *info)
 				case 0x83:
 				case 0x84:
 					/* send frame to the HCI layer */
+<<<<<<< HEAD
 					bt_cb(info->rx_skb)->pkt_type &= 0x0f;
+=======
+					hci_skb_pkt_type(info->rx_skb) &= 0x0f;
+>>>>>>> v4.9.227
 					hci_recv_frame(info->hdev, info->rx_skb);
 					break;
 				default:
 					/* unknown packet */
+<<<<<<< HEAD
 					BT_ERR("Unknown HCI packet with type 0x%02x received", bt_cb(info->rx_skb)->pkt_type);
+=======
+					BT_ERR("Unknown HCI packet with type 0x%02x received",
+					       hci_skb_pkt_type(info->rx_skb));
+>>>>>>> v4.9.227
 					kfree_skb(info->rx_skb);
 					break;
 				}
@@ -357,8 +380,11 @@ static irqreturn_t dtl1_interrupt(int irq, void *dev_inst)
 
 static int dtl1_hci_open(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	set_bit(HCI_RUNNING, &(hdev->flags));
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -376,9 +402,12 @@ static int dtl1_hci_flush(struct hci_dev *hdev)
 
 static int dtl1_hci_close(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	if (!test_and_clear_bit(HCI_RUNNING, &(hdev->flags)))
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	dtl1_hci_flush(hdev);
 
 	return 0;
@@ -391,7 +420,11 @@ static int dtl1_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	struct sk_buff *s;
 	struct nsh nsh;
 
+<<<<<<< HEAD
 	switch (bt_cb(skb)->pkt_type) {
+=======
+	switch (hci_skb_pkt_type(skb)) {
+>>>>>>> v4.9.227
 	case HCI_COMMAND_PKT:
 		hdev->stat.cmd_tx++;
 		nsh.type = 0x81;
@@ -406,7 +439,11 @@ static int dtl1_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 		break;
 	default:
 		return -EILSEQ;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> v4.9.227
 
 	nsh.zero = 0;
 	nsh.len = skb->len;

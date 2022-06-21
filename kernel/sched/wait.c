@@ -9,6 +9,10 @@
 #include <linux/mm.h>
 #include <linux/wait.h>
 #include <linux/hash.h>
+<<<<<<< HEAD
+=======
+#include <linux/kthread.h>
+>>>>>>> v4.9.227
 
 void __init_waitqueue_head(wait_queue_head_t *q, const char *name, struct lock_class_key *key)
 {
@@ -195,6 +199,7 @@ prepare_to_wait_exclusive(wait_queue_head_t *q, wait_queue_t *wait, int state)
 }
 EXPORT_SYMBOL(prepare_to_wait_exclusive);
 
+<<<<<<< HEAD
 long prepare_to_wait_event(wait_queue_head_t *q, wait_queue_t *wait, int state)
 {
 	unsigned long flags;
@@ -216,6 +221,50 @@ long prepare_to_wait_event(wait_queue_head_t *q, wait_queue_t *wait, int state)
 	spin_unlock_irqrestore(&q->lock, flags);
 
 	return 0;
+=======
+void init_wait_entry(wait_queue_t *wait, int flags)
+{
+	wait->flags = flags;
+	wait->private = current;
+	wait->func = autoremove_wake_function;
+	INIT_LIST_HEAD(&wait->task_list);
+}
+EXPORT_SYMBOL(init_wait_entry);
+
+long prepare_to_wait_event(wait_queue_head_t *q, wait_queue_t *wait, int state)
+{
+	unsigned long flags;
+	long ret = 0;
+
+	spin_lock_irqsave(&q->lock, flags);
+	if (unlikely(signal_pending_state(state, current))) {
+		/*
+		 * Exclusive waiter must not fail if it was selected by wakeup,
+		 * it should "consume" the condition we were waiting for.
+		 *
+		 * The caller will recheck the condition and return success if
+		 * we were already woken up, we can not miss the event because
+		 * wakeup locks/unlocks the same q->lock.
+		 *
+		 * But we need to ensure that set-condition + wakeup after that
+		 * can't see us, it should wake up another exclusive waiter if
+		 * we fail.
+		 */
+		list_del_init(&wait->task_list);
+		ret = -ERESTARTSYS;
+	} else {
+		if (list_empty(&wait->task_list)) {
+			if (wait->flags & WQ_FLAG_EXCLUSIVE)
+				__add_wait_queue_tail(q, wait);
+			else
+				__add_wait_queue(q, wait);
+		}
+		set_current_state(state);
+	}
+	spin_unlock_irqrestore(&q->lock, flags);
+
+	return ret;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(prepare_to_wait_event);
 
@@ -254,6 +303,7 @@ void finish_wait(wait_queue_head_t *q, wait_queue_t *wait)
 }
 EXPORT_SYMBOL(finish_wait);
 
+<<<<<<< HEAD
 /**
  * abort_exclusive_wait - abort exclusive waiting in a queue
  * @q: waitqueue waited on
@@ -287,6 +337,8 @@ void abort_exclusive_wait(wait_queue_head_t *q, wait_queue_t *wait,
 }
 EXPORT_SYMBOL(abort_exclusive_wait);
 
+=======
+>>>>>>> v4.9.227
 int autoremove_wake_function(wait_queue_t *wait, unsigned mode, int sync, void *key)
 {
 	int ret = default_wake_function(wait, mode, sync, key);
@@ -297,6 +349,13 @@ int autoremove_wake_function(wait_queue_t *wait, unsigned mode, int sync, void *
 }
 EXPORT_SYMBOL(autoremove_wake_function);
 
+<<<<<<< HEAD
+=======
+static inline bool is_kthread_should_stop(void)
+{
+	return (current->flags & PF_KTHREAD) && kthread_should_stop();
+}
+>>>>>>> v4.9.227
 
 /*
  * DEFINE_WAIT_FUNC(wait, woken_wake_func);
@@ -326,7 +385,11 @@ long wait_woken(wait_queue_t *wait, unsigned mode, long timeout)
 	 * woken_wake_function() such that if we observe WQ_FLAG_WOKEN we must
 	 * also observe all state before the wakeup.
 	 */
+<<<<<<< HEAD
 	if (!(wait->flags & WQ_FLAG_WOKEN))
+=======
+	if (!(wait->flags & WQ_FLAG_WOKEN) && !is_kthread_should_stop())
+>>>>>>> v4.9.227
 		timeout = schedule_timeout(timeout);
 	__set_current_state(TASK_RUNNING);
 
@@ -336,7 +399,11 @@ long wait_woken(wait_queue_t *wait, unsigned mode, long timeout)
 	 * condition being true _OR_ WQ_FLAG_WOKEN such that we will not miss
 	 * an event.
 	 */
+<<<<<<< HEAD
 	set_mb(wait->flags, wait->flags & ~WQ_FLAG_WOKEN); /* B */
+=======
+	smp_store_mb(wait->flags, wait->flags & ~WQ_FLAG_WOKEN); /* B */
+>>>>>>> v4.9.227
 
 	return timeout;
 }
@@ -349,7 +416,11 @@ int woken_wake_function(wait_queue_t *wait, unsigned mode, int sync, void *key)
 	 * doesn't imply write barrier and the users expects write
 	 * barrier semantics on wakeup functions.  The following
 	 * smp_wmb() is equivalent to smp_wmb() in try_to_wake_up()
+<<<<<<< HEAD
 	 * and is paired with set_mb() in wait_woken().
+=======
+	 * and is paired with smp_store_mb() in wait_woken().
+>>>>>>> v4.9.227
 	 */
 	smp_wmb(); /* C */
 	wait->flags |= WQ_FLAG_WOKEN;
@@ -420,6 +491,7 @@ int __sched
 __wait_on_bit_lock(wait_queue_head_t *wq, struct wait_bit_queue *q,
 			wait_bit_action_f *action, unsigned mode)
 {
+<<<<<<< HEAD
 	do {
 		int ret;
 
@@ -434,6 +506,31 @@ __wait_on_bit_lock(wait_queue_head_t *wq, struct wait_bit_queue *q,
 	} while (test_and_set_bit(q->key.bit_nr, q->key.flags));
 	finish_wait(wq, &q->wait);
 	return 0;
+=======
+	int ret = 0;
+
+	for (;;) {
+		prepare_to_wait_exclusive(wq, &q->wait, mode);
+		if (test_bit(q->key.bit_nr, q->key.flags)) {
+			ret = action(&q->key, mode);
+			/*
+			 * See the comment in prepare_to_wait_event().
+			 * finish_wait() does not necessarily takes wq->lock,
+			 * but test_and_set_bit() implies mb() which pairs with
+			 * smp_mb__after_atomic() before wake_up_page().
+			 */
+			if (ret)
+				finish_wait(wq, &q->wait);
+		}
+		if (!test_and_set_bit(q->key.bit_nr, q->key.flags)) {
+			if (!ret)
+				finish_wait(wq, &q->wait);
+			return 0;
+		} else if (ret) {
+			return ret;
+		}
+	}
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(__wait_on_bit_lock);
 
@@ -478,6 +575,7 @@ void wake_up_bit(void *word, int bit)
 }
 EXPORT_SYMBOL(wake_up_bit);
 
+<<<<<<< HEAD
 wait_queue_head_t *bit_waitqueue(void *word, int bit)
 {
 	const int shift = BITS_PER_LONG == 32 ? 5 : 6;
@@ -488,6 +586,8 @@ wait_queue_head_t *bit_waitqueue(void *word, int bit)
 }
 EXPORT_SYMBOL(bit_waitqueue);
 
+=======
+>>>>>>> v4.9.227
 /*
  * Manipulate the atomic_t address to produce a better bit waitqueue table hash
  * index (we're keying off bit -1, but that would produce a horrible hash
@@ -596,7 +696,11 @@ EXPORT_SYMBOL(bit_wait_io);
 
 __sched int bit_wait_timeout(struct wait_bit_key *word, int mode)
 {
+<<<<<<< HEAD
 	unsigned long now = ACCESS_ONCE(jiffies);
+=======
+	unsigned long now = READ_ONCE(jiffies);
+>>>>>>> v4.9.227
 	if (time_after_eq(now, word->timeout))
 		return -EAGAIN;
 	schedule_timeout(word->timeout - now);
@@ -608,7 +712,11 @@ EXPORT_SYMBOL_GPL(bit_wait_timeout);
 
 __sched int bit_wait_io_timeout(struct wait_bit_key *word, int mode)
 {
+<<<<<<< HEAD
 	unsigned long now = ACCESS_ONCE(jiffies);
+=======
+	unsigned long now = READ_ONCE(jiffies);
+>>>>>>> v4.9.227
 	if (time_after_eq(now, word->timeout))
 		return -EAGAIN;
 	io_schedule_timeout(word->timeout - now);

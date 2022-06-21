@@ -21,9 +21,17 @@
 #ifdef CONFIG_PPC64
 #define OLDSYS(func)		-1
 #define SYS32ONLY(func)		-1
+<<<<<<< HEAD
 #else
 #define OLDSYS(func)		__NR_old##func
 #define SYS32ONLY(func)		__NR_##func
+=======
+#define PPC64ONLY(func)		__NR_##func
+#else
+#define OLDSYS(func)		__NR_old##func
+#define SYS32ONLY(func)		__NR_##func
+#define PPC64ONLY(func)		-1
+>>>>>>> v4.9.227
 #endif
 #define SYSX(f, f3264, f32)	-1
 
@@ -55,4 +63,8 @@
 
 START_TABLE
 #include <asm/systbl.h>
+<<<<<<< HEAD
 END_TABLE __NR_syscalls
+=======
+END_TABLE NR_syscalls
+>>>>>>> v4.9.227

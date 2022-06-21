@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Atmel AT91 SAM9 SoCs reset code
+=======
+ * Atmel AT91 SAM9 & SAMA5 SoCs reset code
+>>>>>>> v4.9.227
  *
  * Copyright (C) 2007 Atmel Corporation.
  * Copyright (C) BitBox Ltd 2010
@@ -11,16 +15,25 @@
  * warranty of any kind, whether express or implied.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> v4.9.227
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
 #include <linux/reboot.h>
 
+<<<<<<< HEAD
 #include <asm/system_misc.h>
 
 #include <mach/at91sam9_ddrsdr.h>
 #include <mach/at91sam9_sdramc.h>
+=======
+#include <soc/at91/at91sam9_ddrsdr.h>
+#include <soc/at91/at91sam9_sdramc.h>
+>>>>>>> v4.9.227
 
 #define AT91_RSTC_CR	0x00		/* Reset Controller Control Register */
 #define AT91_RSTC_PROCRST	BIT(0)		/* Processor Reset */
@@ -48,13 +61,22 @@ enum reset_type {
 };
 
 static void __iomem *at91_ramc_base[2], *at91_rstc_base;
+<<<<<<< HEAD
+=======
+static struct clk *sclk;
+>>>>>>> v4.9.227
 
 /*
 * unless the SDRAM is cleanly shutdown before we hit the
 * reset register it can be left driving the data bus and
 * killing the chance of a subsequent boot from NAND
 */
+<<<<<<< HEAD
 static void at91sam9260_restart(enum reboot_mode mode, const char *cmd)
+=======
+static int at91sam9260_restart(struct notifier_block *this, unsigned long mode,
+			       void *cmd)
+>>>>>>> v4.9.227
 {
 	asm volatile(
 		/* Align to cache lines */
@@ -74,11 +96,22 @@ static void at91sam9260_restart(enum reboot_mode mode, const char *cmd)
 		: "r" (at91_ramc_base[0]),
 		  "r" (at91_rstc_base),
 		  "r" (1),
+<<<<<<< HEAD
 		  "r" (AT91_SDRAMC_LPCB_POWER_DOWN),
 		  "r" (AT91_RSTC_KEY | AT91_RSTC_PERRST | AT91_RSTC_PROCRST));
 }
 
 static void at91sam9g45_restart(enum reboot_mode mode, const char *cmd)
+=======
+		  "r" cpu_to_le32(AT91_SDRAMC_LPCB_POWER_DOWN),
+		  "r" cpu_to_le32(AT91_RSTC_KEY | AT91_RSTC_PERRST | AT91_RSTC_PROCRST));
+
+	return NOTIFY_DONE;
+}
+
+static int at91sam9g45_restart(struct notifier_block *this, unsigned long mode,
+			       void *cmd)
+>>>>>>> v4.9.227
 {
 	asm volatile(
 		/*
@@ -114,9 +147,26 @@ static void at91sam9g45_restart(enum reboot_mode mode, const char *cmd)
 		  "r" (at91_ramc_base[1]),
 		  "r" (at91_rstc_base),
 		  "r" (1),
+<<<<<<< HEAD
 		  "r" (AT91_DDRSDRC_LPCB_POWER_DOWN),
 		  "r" (AT91_RSTC_KEY | AT91_RSTC_PERRST | AT91_RSTC_PROCRST)
 		: "r0");
+=======
+		  "r" cpu_to_le32(AT91_DDRSDRC_LPCB_POWER_DOWN),
+		  "r" cpu_to_le32(AT91_RSTC_KEY | AT91_RSTC_PERRST | AT91_RSTC_PROCRST)
+		: "r0");
+
+	return NOTIFY_DONE;
+}
+
+static int sama5d3_restart(struct notifier_block *this, unsigned long mode,
+			   void *cmd)
+{
+	writel(cpu_to_le32(AT91_RSTC_KEY | AT91_RSTC_PERRST | AT91_RSTC_PROCRST),
+	       at91_rstc_base);
+
+	return NOTIFY_DONE;
+>>>>>>> v4.9.227
 }
 
 static void __init at91_reset_status(struct platform_device *pdev)
@@ -148,6 +198,7 @@ static void __init at91_reset_status(struct platform_device *pdev)
 	pr_info("AT91: Starting after %s\n", reason);
 }
 
+<<<<<<< HEAD
 static struct of_device_id at91_ramc_of_match[] = {
 	{ .compatible = "atmel,at91sam9260-sdramc", },
 	{ .compatible = "atmel,at91sam9g45-ddramc", },
@@ -166,6 +217,30 @@ static int at91_reset_of_probe(struct platform_device *pdev)
 	const struct of_device_id *match;
 	struct device_node *np;
 	int idx = 0;
+=======
+static const struct of_device_id at91_ramc_of_match[] = {
+	{ .compatible = "atmel,at91sam9260-sdramc", },
+	{ .compatible = "atmel,at91sam9g45-ddramc", },
+	{ /* sentinel */ }
+};
+
+static const struct of_device_id at91_reset_of_match[] = {
+	{ .compatible = "atmel,at91sam9260-rstc", .data = at91sam9260_restart },
+	{ .compatible = "atmel,at91sam9g45-rstc", .data = at91sam9g45_restart },
+	{ .compatible = "atmel,sama5d3-rstc", .data = sama5d3_restart },
+	{ /* sentinel */ }
+};
+
+static struct notifier_block at91_restart_nb = {
+	.priority = 192,
+};
+
+static int __init at91_reset_probe(struct platform_device *pdev)
+{
+	const struct of_device_id *match;
+	struct device_node *np;
+	int ret, idx = 0;
+>>>>>>> v4.9.227
 
 	at91_rstc_base = of_iomap(pdev->dev.of_node, 0);
 	if (!at91_rstc_base) {
@@ -173,6 +248,7 @@ static int at91_reset_of_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	for_each_matching_node(np, at91_ramc_of_match) {
 		at91_ramc_base[idx] = of_iomap(np, 0);
 		if (!at91_ramc_base[idx]) {
@@ -229,24 +305,81 @@ static int at91_reset_probe(struct platform_device *pdev)
 
 	if (ret)
 		return ret;
+=======
+	if (!of_device_is_compatible(pdev->dev.of_node, "atmel,sama5d3-rstc")) {
+		/* we need to shutdown the ddr controller, so get ramc base */
+		for_each_matching_node(np, at91_ramc_of_match) {
+			at91_ramc_base[idx] = of_iomap(np, 0);
+			if (!at91_ramc_base[idx]) {
+				dev_err(&pdev->dev, "Could not map ram controller address\n");
+				of_node_put(np);
+				return -ENODEV;
+			}
+			idx++;
+		}
+	}
+
+	match = of_match_node(at91_reset_of_match, pdev->dev.of_node);
+	at91_restart_nb.notifier_call = match->data;
+
+	sclk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(sclk))
+		return PTR_ERR(sclk);
+
+	ret = clk_prepare_enable(sclk);
+	if (ret) {
+		dev_err(&pdev->dev, "Could not enable slow clock\n");
+		return ret;
+	}
+
+	ret = register_restart_handler(&at91_restart_nb);
+	if (ret) {
+		clk_disable_unprepare(sclk);
+		return ret;
+	}
+>>>>>>> v4.9.227
 
 	at91_reset_status(pdev);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_device_id at91_reset_plat_match[] = {
+=======
+static int __exit at91_reset_remove(struct platform_device *pdev)
+{
+	unregister_restart_handler(&at91_restart_nb);
+	clk_disable_unprepare(sclk);
+
+	return 0;
+}
+
+static const struct platform_device_id at91_reset_plat_match[] = {
+>>>>>>> v4.9.227
 	{ "at91-sam9260-reset", (unsigned long)at91sam9260_restart },
 	{ "at91-sam9g45-reset", (unsigned long)at91sam9g45_restart },
 	{ /* sentinel */ }
 };
 
 static struct platform_driver at91_reset_driver = {
+<<<<<<< HEAD
 	.probe = at91_reset_probe,
+=======
+	.remove = __exit_p(at91_reset_remove),
+>>>>>>> v4.9.227
 	.driver = {
 		.name = "at91-reset",
 		.of_match_table = at91_reset_of_match,
 	},
 	.id_table = at91_reset_plat_match,
 };
+<<<<<<< HEAD
 module_platform_driver(at91_reset_driver);
+=======
+module_platform_driver_probe(at91_reset_driver, at91_reset_probe);
+
+MODULE_AUTHOR("Atmel Corporation");
+MODULE_DESCRIPTION("Reset driver for Atmel SoCs");
+MODULE_LICENSE("GPL v2");
+>>>>>>> v4.9.227

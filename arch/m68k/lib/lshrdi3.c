@@ -11,12 +11,19 @@ any later version.
 GNU CC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<<<<<<< HEAD
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU CC; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
+=======
+GNU General Public License for more details. */
+
+#include <linux/compiler.h>
+#include <linux/export.h>
+>>>>>>> v4.9.227
 
 #define BITS_PER_UNIT 8
 
@@ -60,3 +67,7 @@ __lshrdi3 (DItype u, word_type b)
 
   return w.ll;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__lshrdi3);
+>>>>>>> v4.9.227

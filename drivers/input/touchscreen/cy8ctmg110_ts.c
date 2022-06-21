@@ -291,8 +291,12 @@ err_free_mem:
 	return err;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int cy8ctmg110_suspend(struct device *dev)
+=======
+static int __maybe_unused cy8ctmg110_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct cy8ctmg110 *ts = i2c_get_clientdata(client);
@@ -306,7 +310,11 @@ static int cy8ctmg110_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int cy8ctmg110_resume(struct device *dev)
+=======
+static int __maybe_unused cy8ctmg110_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct cy8ctmg110 *ts = i2c_get_clientdata(client);
@@ -319,7 +327,10 @@ static int cy8ctmg110_resume(struct device *dev)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(cy8ctmg110_pm, cy8ctmg110_suspend, cy8ctmg110_resume);
 
@@ -349,7 +360,10 @@ MODULE_DEVICE_TABLE(i2c, cy8ctmg110_idtable);
 
 static struct i2c_driver cy8ctmg110_driver = {
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= CY8CTMG110_DRIVER_NAME,
 		.pm	= &cy8ctmg110_pm,
 	},

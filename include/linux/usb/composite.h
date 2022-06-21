@@ -41,6 +41,7 @@
 #include <linux/log2.h>
 #include <linux/configfs.h>
 
+<<<<<<< HEAD
 /* FUNCTION_SUSPEND: suspend options from usb 3.0 spec Table 9-7 */
 #define FUNC_SUSPEND_OPT_SUSP_MASK BIT(0)
 #define FUNC_SUSPEND_OPT_RW_EN_MASK BIT(1)
@@ -48,6 +49,8 @@
 #define FUNC_WAKEUP_CAPABLE_SHIFT  0
 #define FUNC_WAKEUP_ENABLE_SHIFT   1
 
+=======
+>>>>>>> v4.9.227
 /*
  * USB function drivers should return USB_GADGET_DELAYED_STATUS if they
  * wish to delay the data/status stages of the control transfer till they
@@ -58,7 +61,11 @@
 #define USB_GADGET_DELAYED_STATUS       0x7fff	/* Impossibly large value */
 
 /* big enough to hold our biggest descriptor */
+<<<<<<< HEAD
 #define USB_COMP_EP0_BUFSIZ	4096
+=======
+#define USB_COMP_EP0_BUFSIZ	1024
+>>>>>>> v4.9.227
 
 /* OS feature descriptor length <= 4kB */
 #define USB_COMP_EP0_OS_DESC_BUFSIZ	4096
@@ -136,6 +143,13 @@ struct usb_os_desc_table {
  *	string identifiers assigned during @bind(). If this
  *	pointer is null after initiation, the function will not
  *	be available at super speed.
+<<<<<<< HEAD
+=======
+ * @ssp_descriptors: Table of super speed plus descriptors, using
+ *	interface and string identifiers assigned during @bind(). If
+ *	this pointer is null after initiation, the function will not
+ *	be available at super speed plus.
+>>>>>>> v4.9.227
  * @config: assigned when @usb_add_function() is called; this is the
  *	configuration with which this function is associated.
  * @os_desc_table: Table of (interface id, os descriptors) pairs. The function
@@ -158,11 +172,16 @@ struct usb_os_desc_table {
  * @disable: (REQUIRED) Indicates the function should be disabled.  Reasons
  *	include host resetting or reconfiguring the gadget, and disconnection.
  * @setup: Used for interface-specific control requests.
+<<<<<<< HEAD
+=======
+ * @req_match: Tests if a given class request can be handled by this function.
+>>>>>>> v4.9.227
  * @suspend: Notifies functions when the host stops sending USB traffic.
  * @resume: Notifies functions when the host restarts USB traffic.
  * @get_status: Returns function status as a reply to
  *	GetStatus() request when the recipient is Interface.
  * @func_suspend: callback to be called when
+<<<<<<< HEAD
  *	SetFeature(FUNCTION_SUSPEND) is received
  * @func_is_suspended: Tells whether the function is currently in
  *	Function Suspend state (used in Super Speed mode only).
@@ -171,6 +190,9 @@ struct usb_os_desc_table {
  * @func_wakeup_pending: Marks that the function has issued a Function Wakeup
  *	while the USB bus was suspended and therefore a Function Wakeup
  *	notification needs to be sent once the USB bus is resumed.
+=======
+ *	SetFeature(FUNCTION_SUSPEND) is reseived
+>>>>>>> v4.9.227
  *
  * A single USB function uses one or more interfaces, and should in most
  * cases support operation at both full and high speeds.  Each function is
@@ -198,22 +220,32 @@ struct usb_os_desc_table {
 
 struct usb_function {
 	const char			*name;
+<<<<<<< HEAD
 	int				intf_id;
+=======
+>>>>>>> v4.9.227
 	struct usb_gadget_strings	**strings;
 	struct usb_descriptor_header	**fs_descriptors;
 	struct usb_descriptor_header	**hs_descriptors;
 	struct usb_descriptor_header	**ss_descriptors;
+<<<<<<< HEAD
+=======
+	struct usb_descriptor_header	**ssp_descriptors;
+>>>>>>> v4.9.227
 
 	struct usb_configuration	*config;
 
 	struct usb_os_desc_table	*os_desc_table;
 	unsigned			os_desc_n;
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 	int	(*set_intf_num)(struct usb_function *f,
 			int intf_num, int index_num);
 	int	(*set_config_desc)(int conf_num);
 #endif
+=======
+>>>>>>> v4.9.227
 	/* REVISIT:  bind() functions can be marked __init, which
 	 * makes trouble for section mismatch analysis.  See if
 	 * we can't restructure things to avoid mismatching.
@@ -236,6 +268,12 @@ struct usb_function {
 	void			(*disable)(struct usb_function *);
 	int			(*setup)(struct usb_function *,
 					const struct usb_ctrlrequest *);
+<<<<<<< HEAD
+=======
+	bool			(*req_match)(struct usb_function *,
+					const struct usb_ctrlrequest *,
+					bool config0);
+>>>>>>> v4.9.227
 	void			(*suspend)(struct usb_function *);
 	void			(*resume)(struct usb_function *);
 
@@ -243,14 +281,22 @@ struct usb_function {
 	int			(*get_status)(struct usb_function *);
 	int			(*func_suspend)(struct usb_function *,
 						u8 suspend_opt);
+<<<<<<< HEAD
 	unsigned		func_is_suspended:1;
 	unsigned		func_wakeup_allowed:1;
 	unsigned		func_wakeup_pending:1;
+=======
+>>>>>>> v4.9.227
 	/* private: */
 	/* internals */
 	struct list_head		list;
 	DECLARE_BITMAP(endpoints, 32);
 	const struct usb_function_instance *fi;
+<<<<<<< HEAD
+=======
+
+	unsigned int		bind_deactivated:1;
+>>>>>>> v4.9.227
 };
 
 int usb_add_function(struct usb_configuration *, struct usb_function *);
@@ -259,9 +305,12 @@ int usb_function_deactivate(struct usb_function *);
 int usb_function_activate(struct usb_function *);
 
 int usb_interface_id(struct usb_configuration *, struct usb_function *);
+<<<<<<< HEAD
 int usb_func_wakeup(struct usb_function *func);
 
 int usb_get_func_interface_id(struct usb_function *func);
+=======
+>>>>>>> v4.9.227
 
 int config_ep_by_speed(struct usb_gadget *g, struct usb_function *f,
 			struct usb_ep *_ep);
@@ -341,11 +390,16 @@ struct usb_configuration {
 	unsigned		superspeed:1;
 	unsigned		highspeed:1;
 	unsigned		fullspeed:1;
+<<<<<<< HEAD
 	struct usb_function	*interface[MAX_CONFIG_INTERFACES];
 
 	/* number of in and out eps used in this configuration */
 	int			num_ineps_used;
 	int			num_outeps_used;
+=======
+	unsigned		superspeed_plus:1;
+	struct usb_function	*interface[MAX_CONFIG_INTERFACES];
+>>>>>>> v4.9.227
 };
 
 int usb_add_config(struct usb_composite_dev *,
@@ -460,6 +514,11 @@ static inline struct usb_composite_driver *to_cdriver(
  * @b_vendor_code: bMS_VendorCode part of the OS string
  * @use_os_string: false by default, interested gadgets set it
  * @os_desc_config: the configuration to be used with OS descriptors
+<<<<<<< HEAD
+=======
+ * @setup_pending: true when setup request is queued but not completed
+ * @os_desc_pending: true when os_desc request is queued but not completed
+>>>>>>> v4.9.227
  *
  * One of these devices is allocated and initialized before the
  * associated device driver's bind() is called.
@@ -521,6 +580,12 @@ struct usb_composite_dev {
 
 	/* protects deactivations and delayed_status counts*/
 	spinlock_t			lock;
+<<<<<<< HEAD
+=======
+
+	unsigned			setup_pending:1;
+	unsigned			os_desc_pending:1;
+>>>>>>> v4.9.227
 };
 
 extern int usb_string_id(struct usb_composite_dev *c);
@@ -534,6 +599,11 @@ extern int usb_string_ids_n(struct usb_composite_dev *c, unsigned n);
 extern void composite_disconnect(struct usb_gadget *gadget);
 extern int composite_setup(struct usb_gadget *gadget,
 		const struct usb_ctrlrequest *ctrl);
+<<<<<<< HEAD
+=======
+extern void composite_suspend(struct usb_gadget *gadget);
+extern void composite_resume(struct usb_gadget *gadget);
+>>>>>>> v4.9.227
 
 /*
  * Some systems will need runtime overrides for the  product identifiers
@@ -595,7 +665,10 @@ struct usb_function_instance {
 	struct config_group group;
 	struct list_head cfs_list;
 	struct usb_function_driver *fd;
+<<<<<<< HEAD
 	struct usb_function *f;
+=======
+>>>>>>> v4.9.227
 	int (*set_inst_name)(struct usb_function_instance *inst,
 			      const char *name);
 	void (*free_func_inst)(struct usb_function_instance *inst);

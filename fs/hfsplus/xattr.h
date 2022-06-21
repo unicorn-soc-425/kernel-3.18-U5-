@@ -21,6 +21,7 @@ extern const struct xattr_handler *hfsplus_xattr_handlers[];
 int __hfsplus_setxattr(struct inode *inode, const char *name,
 			const void *value, size_t size, int flags);
 
+<<<<<<< HEAD
 static inline int hfsplus_setxattr(struct dentry *dentry, const char *name,
 			const void *value, size_t size, int flags)
 {
@@ -37,6 +38,18 @@ static inline ssize_t hfsplus_getxattr(struct dentry *dentry,
 {
 	return __hfsplus_getxattr(dentry->d_inode, name, value, size);
 }
+=======
+int hfsplus_setxattr(struct inode *inode, const char *name,
+				   const void *value, size_t size, int flags,
+				   const char *prefix, size_t prefixlen);
+
+ssize_t __hfsplus_getxattr(struct inode *inode, const char *name,
+			   void *value, size_t size);
+
+ssize_t hfsplus_getxattr(struct inode *inode, const char *name,
+			 void *value, size_t size,
+			 const char *prefix, size_t prefixlen);
+>>>>>>> v4.9.227
 
 ssize_t hfsplus_listxattr(struct dentry *dentry, char *buffer, size_t size);
 

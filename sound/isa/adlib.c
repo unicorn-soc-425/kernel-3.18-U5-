@@ -112,6 +112,7 @@ static struct isa_driver snd_adlib_driver = {
 	}
 };
 
+<<<<<<< HEAD
 static int __init alsa_card_adlib_init(void)
 {
 	return isa_register_driver(&snd_adlib_driver, SNDRV_CARDS);
@@ -124,3 +125,6 @@ static void __exit alsa_card_adlib_exit(void)
 
 module_init(alsa_card_adlib_init);
 module_exit(alsa_card_adlib_exit);
+=======
+module_isa_driver(snd_adlib_driver, SNDRV_CARDS);
+>>>>>>> v4.9.227

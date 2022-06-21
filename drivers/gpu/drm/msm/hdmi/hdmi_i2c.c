@@ -97,7 +97,11 @@ static bool sw_done(struct hdmi_i2c_adapter *hdmi_i2c)
 	return hdmi_i2c->sw_done;
 }
 
+<<<<<<< HEAD
 static int hdmi_i2c_xfer(struct i2c_adapter *i2c,
+=======
+static int msm_hdmi_i2c_xfer(struct i2c_adapter *i2c,
+>>>>>>> v4.9.227
 		struct i2c_msg *msgs, int num)
 {
 	struct hdmi_i2c_adapter *hdmi_i2c = to_hdmi_i2c_adapter(i2c);
@@ -216,17 +220,30 @@ static int hdmi_i2c_xfer(struct i2c_adapter *i2c,
 	return i;
 }
 
+<<<<<<< HEAD
 static u32 hdmi_i2c_func(struct i2c_adapter *adapter)
+=======
+static u32 msm_hdmi_i2c_func(struct i2c_adapter *adapter)
+>>>>>>> v4.9.227
 {
 	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL;
 }
 
+<<<<<<< HEAD
 static const struct i2c_algorithm hdmi_i2c_algorithm = {
 	.master_xfer	= hdmi_i2c_xfer,
 	.functionality	= hdmi_i2c_func,
 };
 
 void hdmi_i2c_irq(struct i2c_adapter *i2c)
+=======
+static const struct i2c_algorithm msm_hdmi_i2c_algorithm = {
+	.master_xfer	= msm_hdmi_i2c_xfer,
+	.functionality	= msm_hdmi_i2c_func,
+};
+
+void msm_hdmi_i2c_irq(struct i2c_adapter *i2c)
+>>>>>>> v4.9.227
 {
 	struct hdmi_i2c_adapter *hdmi_i2c = to_hdmi_i2c_adapter(i2c);
 
@@ -234,16 +251,25 @@ void hdmi_i2c_irq(struct i2c_adapter *i2c)
 		wake_up_all(&hdmi_i2c->ddc_event);
 }
 
+<<<<<<< HEAD
 void hdmi_i2c_destroy(struct i2c_adapter *i2c)
+=======
+void msm_hdmi_i2c_destroy(struct i2c_adapter *i2c)
+>>>>>>> v4.9.227
 {
 	struct hdmi_i2c_adapter *hdmi_i2c = to_hdmi_i2c_adapter(i2c);
 	i2c_del_adapter(i2c);
 	kfree(hdmi_i2c);
 }
 
+<<<<<<< HEAD
 struct i2c_adapter *hdmi_i2c_init(struct hdmi *hdmi)
 {
 	struct drm_device *dev = hdmi->dev;
+=======
+struct i2c_adapter *msm_hdmi_i2c_init(struct hdmi *hdmi)
+{
+>>>>>>> v4.9.227
 	struct hdmi_i2c_adapter *hdmi_i2c;
 	struct i2c_adapter *i2c = NULL;
 	int ret;
@@ -264,6 +290,7 @@ struct i2c_adapter *hdmi_i2c_init(struct hdmi *hdmi)
 	i2c->class = I2C_CLASS_DDC;
 	snprintf(i2c->name, sizeof(i2c->name), "msm hdmi i2c");
 	i2c->dev.parent = &hdmi->pdev->dev;
+<<<<<<< HEAD
 	i2c->algo = &hdmi_i2c_algorithm;
 
 	ret = i2c_add_adapter(i2c);
@@ -271,11 +298,22 @@ struct i2c_adapter *hdmi_i2c_init(struct hdmi *hdmi)
 		dev_err(dev->dev, "failed to register hdmi i2c: %d\n", ret);
 		goto fail;
 	}
+=======
+	i2c->algo = &msm_hdmi_i2c_algorithm;
+
+	ret = i2c_add_adapter(i2c);
+	if (ret)
+		goto fail;
+>>>>>>> v4.9.227
 
 	return i2c;
 
 fail:
 	if (i2c)
+<<<<<<< HEAD
 		hdmi_i2c_destroy(i2c);
+=======
+		msm_hdmi_i2c_destroy(i2c);
+>>>>>>> v4.9.227
 	return ERR_PTR(ret);
 }

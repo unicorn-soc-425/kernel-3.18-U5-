@@ -5,9 +5,20 @@ The BCM2835 contains a custom top-level interrupt controller, which supports
 controller, or the HW block containing it, is referred to occasionally
 as "armctrl" in the SoC documentation, hence naming of this binding.
 
+<<<<<<< HEAD
 Required properties:
 
 - compatible : should be "brcm,bcm2835-armctrl-ic"
+=======
+The BCM2836 contains the same interrupt controller with the same
+interrupts, but the per-CPU interrupt controller is the root, and an
+interrupt there indicates that the ARMCTRL has an interrupt to handle.
+
+Required properties:
+
+- compatible : should be "brcm,bcm2835-armctrl-ic" or
+                 "brcm,bcm2836-armctrl-ic"
+>>>>>>> v4.9.227
 - reg : Specifies base physical address and size of the registers.
 - interrupt-controller : Identifies the node as an interrupt controller
 - #interrupt-cells : Specifies the number of cells needed to encode an
@@ -20,6 +31,15 @@ Required properties:
   The 2nd cell contains the interrupt number within the bank. Valid values
   are 0..7 for bank 0, and 0..31 for bank 1.
 
+<<<<<<< HEAD
+=======
+Additional required properties for brcm,bcm2836-armctrl-ic:
+- interrupt-parent : Specifies the parent interrupt controller when this
+  controller is the second level.
+- interrupts : Specifies the interrupt on the parent for this interrupt
+  controller to handle.
+
+>>>>>>> v4.9.227
 The interrupt sources are as follows:
 
 Bank 0:
@@ -60,8 +80,13 @@ Bank 1:
 24: DMA8
 25: DMA9
 26: DMA10
+<<<<<<< HEAD
 27: DMA11
 28: DMA12
+=======
+27: DMA11-14 - shared interrupt for DMA 11 to 14
+28: DMAALL - triggers on all dma interrupts (including chanel 15)
+>>>>>>> v4.9.227
 29: AUX
 30: ARM
 31: VPUDMA
@@ -102,9 +127,27 @@ Bank 2:
 
 Example:
 
+<<<<<<< HEAD
+=======
+/* BCM2835, first level */
+>>>>>>> v4.9.227
 intc: interrupt-controller {
 	compatible = "brcm,bcm2835-armctrl-ic";
 	reg = <0x7e00b200 0x200>;
 	interrupt-controller;
 	#interrupt-cells = <2>;
 };
+<<<<<<< HEAD
+=======
+
+/* BCM2836, second level */
+intc: interrupt-controller {
+	compatible = "brcm,bcm2836-armctrl-ic";
+	reg = <0x7e00b200 0x200>;
+	interrupt-controller;
+	#interrupt-cells = <2>;
+
+	interrupt-parent = <&local_intc>;
+	interrupts = <8>;
+};
+>>>>>>> v4.9.227

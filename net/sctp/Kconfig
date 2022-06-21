@@ -99,5 +99,12 @@ config SCTP_COOKIE_HMAC_SHA1
 	select CRYPTO_HMAC if SCTP_COOKIE_HMAC_SHA1
 	select CRYPTO_SHA1 if SCTP_COOKIE_HMAC_SHA1
 
+<<<<<<< HEAD
+=======
+config INET_SCTP_DIAG
+	depends on INET_DIAG
+	def_tristate INET_DIAG
+
+>>>>>>> v4.9.227
 
 endif # IP_SCTP

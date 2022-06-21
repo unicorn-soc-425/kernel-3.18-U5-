@@ -41,7 +41,11 @@ helper_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	if (!master_help)
 		return ret;
 
+<<<<<<< HEAD
 	/* rcu_read_lock()ed by nf_hook_slow */
+=======
+	/* rcu_read_lock()ed by nf_hook_thresh */
+>>>>>>> v4.9.227
 	helper = rcu_dereference(master_help->helper);
 	if (!helper)
 		return ret;
@@ -65,7 +69,11 @@ static int helper_mt_check(const struct xt_mtchk_param *par)
 			par->family);
 		return ret;
 	}
+<<<<<<< HEAD
 	info->name[29] = '\0';
+=======
+	info->name[sizeof(info->name) - 1] = '\0';
+>>>>>>> v4.9.227
 	return 0;
 }
 

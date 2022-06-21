@@ -25,6 +25,7 @@
 
 #define MAX_PLANE	4
 
+<<<<<<< HEAD
 /**
  * Device Private DRM Mode Flags
  * drm_mode->private_flags
@@ -34,6 +35,8 @@
 /* Transition to new mode requires a wait-for-vblank before the modeset */
 #define MSM_MODE_FLAG_VBLANK_PRE_MODESET	(1<<1)
 
+=======
+>>>>>>> v4.9.227
 /* As there are different display controller blocks depending on the
  * snapdragon version, the kms support is split out and the appropriate
  * implementation is loaded at runtime.  The kms module is responsible
@@ -50,6 +53,7 @@ struct msm_kms_funcs {
 	int (*enable_vblank)(struct msm_kms *kms, struct drm_crtc *crtc);
 	void (*disable_vblank)(struct msm_kms *kms, struct drm_crtc *crtc);
 	/* modeset, bracketing atomic_commit(): */
+<<<<<<< HEAD
 	void (*prepare_fence)(struct msm_kms *kms,
 			struct drm_atomic_state *state);
 	void (*prepare_commit)(struct msm_kms *kms,
@@ -71,25 +75,43 @@ struct msm_kms_funcs {
 			const struct drm_mode_fb_cmd2 *cmd,
 			struct drm_gem_object **bos);
 	/* misc: */
+=======
+	void (*prepare_commit)(struct msm_kms *kms, struct drm_atomic_state *state);
+	void (*complete_commit)(struct msm_kms *kms, struct drm_atomic_state *state);
+	/* functions to wait for atomic commit completed on each CRTC */
+	void (*wait_for_crtc_commit_done)(struct msm_kms *kms,
+					struct drm_crtc *crtc);
+	/* misc: */
+	const struct msm_format *(*get_format)(struct msm_kms *kms, uint32_t format);
+>>>>>>> v4.9.227
 	long (*round_pixclk)(struct msm_kms *kms, unsigned long rate,
 			struct drm_encoder *encoder);
 	int (*set_split_display)(struct msm_kms *kms,
 			struct drm_encoder *encoder,
 			struct drm_encoder *slave_encoder,
 			bool is_cmd_mode);
+<<<<<<< HEAD
 	void (*postopen)(struct msm_kms *kms, struct drm_file *file);
 	/* cleanup: */
 	void (*preclose)(struct msm_kms *kms, struct drm_file *file);
+=======
+	/* cleanup: */
+>>>>>>> v4.9.227
 	void (*destroy)(struct msm_kms *kms);
 };
 
 struct msm_kms {
 	const struct msm_kms_funcs *funcs;
 
+<<<<<<< HEAD
 	/* irq handling: */
 	bool in_irq;
 	struct list_head irq_list;    /* list of mdp4_irq */
 	uint32_t vblank_mask;         /* irq bits set for userspace vblank */
+=======
+	/* irq number to be passed on to drm_irq_install */
+	int irq;
+>>>>>>> v4.9.227
 };
 
 static inline void msm_kms_init(struct msm_kms *kms,
@@ -98,6 +120,7 @@ static inline void msm_kms_init(struct msm_kms *kms,
 	kms->funcs = funcs;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_DRM_MSM_MDP4
 struct msm_kms *mdp4_kms_init(struct drm_device *dev);
 #else
@@ -126,5 +149,11 @@ static inline bool msm_needs_vblank_pre_modeset(
 {
 	return (mode->private_flags & MSM_MODE_FLAG_VBLANK_PRE_MODESET);
 }
+=======
+struct msm_kms *mdp4_kms_init(struct drm_device *dev);
+struct msm_kms *mdp5_kms_init(struct drm_device *dev);
+int msm_mdss_init(struct drm_device *dev);
+void msm_mdss_destroy(struct drm_device *dev);
+>>>>>>> v4.9.227
 
 #endif /* __MSM_KMS_H__ */

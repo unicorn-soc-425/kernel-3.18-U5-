@@ -25,6 +25,14 @@
 # define MAP_UNINITIALIZED 0x0		/* Don't support this flag */
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * Flags for mlock
+ */
+#define MLOCK_ONFAULT	0x01		/* Lock pages in range after they are faulted in, do not prefault */
+
+>>>>>>> v4.9.227
 #define MS_ASYNC	1		/* sync memory asynchronously */
 #define MS_INVALIDATE	2		/* invalidate the caches */
 #define MS_SYNC		4		/* synchronous memory sync */
@@ -36,6 +44,10 @@
 #define MADV_DONTNEED	4		/* don't need these pages */
 
 /* common parameters: try to keep these consistent across architectures */
+<<<<<<< HEAD
+=======
+#define MADV_FREE	8		/* free pages only if memory pressure */
+>>>>>>> v4.9.227
 #define MADV_REMOVE	9		/* remove these pages & resources */
 #define MADV_DONTFORK	10		/* don't inherit across fork */
 #define MADV_DOFORK	11		/* do inherit across fork */
@@ -66,4 +78,12 @@
 #define MAP_HUGE_SHIFT	26
 #define MAP_HUGE_MASK	0x3f
 
+<<<<<<< HEAD
+=======
+#define PKEY_DISABLE_ACCESS	0x1
+#define PKEY_DISABLE_WRITE	0x2
+#define PKEY_ACCESS_MASK	(PKEY_DISABLE_ACCESS |\
+				 PKEY_DISABLE_WRITE)
+
+>>>>>>> v4.9.227
 #endif /* __ASM_GENERIC_MMAN_COMMON_H */

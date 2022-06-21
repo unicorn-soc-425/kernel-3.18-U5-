@@ -26,6 +26,15 @@
 
 #undef TTY_DEBUG_WAIT_UNTIL_SENT
 
+<<<<<<< HEAD
+=======
+#ifdef TTY_DEBUG_WAIT_UNTIL_SENT
+# define tty_debug_wait_until_sent(tty, f, args...)    tty_debug(tty, f, ##args)
+#else
+# define tty_debug_wait_until_sent(tty, f, args...)    do {} while (0)
+#endif
+
+>>>>>>> v4.9.227
 #undef	DEBUG
 
 /*
@@ -152,7 +161,11 @@ int tty_throttle_safe(struct tty_struct *tty)
 	int ret = 0;
 
 	mutex_lock(&tty->throttle_mutex);
+<<<<<<< HEAD
 	if (!test_bit(TTY_THROTTLED, &tty->flags)) {
+=======
+	if (!tty_throttled(tty)) {
+>>>>>>> v4.9.227
 		if (tty->flow_change != TTY_THROTTLE_SAFE)
 			ret = 1;
 		else {
@@ -183,7 +196,11 @@ int tty_unthrottle_safe(struct tty_struct *tty)
 	int ret = 0;
 
 	mutex_lock(&tty->throttle_mutex);
+<<<<<<< HEAD
 	if (test_bit(TTY_THROTTLED, &tty->flags)) {
+=======
+	if (tty_throttled(tty)) {
+>>>>>>> v4.9.227
 		if (tty->flow_change != TTY_UNTHROTTLE_SAFE)
 			ret = 1;
 		else {
@@ -210,6 +227,7 @@ int tty_unthrottle_safe(struct tty_struct *tty)
 
 void tty_wait_until_sent(struct tty_struct *tty, long timeout)
 {
+<<<<<<< HEAD
 #ifdef TTY_DEBUG_WAIT_UNTIL_SENT
 	char buf[64];
 
@@ -222,6 +240,17 @@ void tty_wait_until_sent(struct tty_struct *tty, long timeout)
 			!tty_chars_in_buffer(tty), timeout) < 0) {
 		return;
 	}
+=======
+	tty_debug_wait_until_sent(tty, "wait until sent, timeout=%ld\n", timeout);
+
+	if (!timeout)
+		timeout = MAX_SCHEDULE_TIMEOUT;
+
+	timeout = wait_event_interruptible_timeout(tty->write_wait,
+			!tty_chars_in_buffer(tty), timeout);
+	if (timeout <= 0)
+		return;
+>>>>>>> v4.9.227
 
 	if (timeout == MAX_SCHEDULE_TIMEOUT)
 		timeout = 0;
@@ -236,19 +265,29 @@ EXPORT_SYMBOL(tty_wait_until_sent);
  *		Termios Helper Methods
  */
 
+<<<<<<< HEAD
 static void unset_locked_termios(struct ktermios *termios,
 				 struct ktermios *old,
 				 struct ktermios *locked)
 {
+=======
+static void unset_locked_termios(struct tty_struct *tty, struct ktermios *old)
+{
+	struct ktermios *termios = &tty->termios;
+	struct ktermios *locked  = &tty->termios_locked;
+>>>>>>> v4.9.227
 	int	i;
 
 #define NOSET_MASK(x, y, z) (x = ((x) & ~(z)) | ((y) & (z)))
 
+<<<<<<< HEAD
 	if (!locked) {
 		printk(KERN_WARNING "Warning?!? termios_locked is NULL.\n");
 		return;
 	}
 
+=======
+>>>>>>> v4.9.227
 	NOSET_MASK(termios->c_iflag, old->c_iflag, locked->c_iflag);
 	NOSET_MASK(termios->c_oflag, old->c_oflag, locked->c_oflag);
 	NOSET_MASK(termios->c_cflag, old->c_cflag, locked->c_cflag);
@@ -327,7 +366,11 @@ speed_t tty_termios_baud_rate(struct ktermios *termios)
 		else
 			cbaud += 15;
 	}
+<<<<<<< HEAD
 	return baud_table[cbaud];
+=======
+	return cbaud >= n_baud_table ? 0 : baud_table[cbaud];
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(tty_termios_baud_rate);
 
@@ -363,7 +406,11 @@ speed_t tty_termios_input_baud_rate(struct ktermios *termios)
 		else
 			cbaud += 15;
 	}
+<<<<<<< HEAD
 	return baud_table[cbaud];
+=======
+	return cbaud >= n_baud_table ? 0 : baud_table[cbaud];
+>>>>>>> v4.9.227
 #else
 	return tty_termios_baud_rate(termios);
 #endif
@@ -460,10 +507,15 @@ void tty_termios_encode_baud_rate(struct ktermios *termios,
 	if (ifound == -1 && (ibaud != obaud || ibinput))
 		termios->c_cflag |= (BOTHER << IBSHIFT);
 #else
+<<<<<<< HEAD
 	if (ifound == -1 || ofound == -1) {
 		printk_once(KERN_WARNING "tty: Unable to return correct "
 			  "speed data as your architecture needs updating.\n");
 	}
+=======
+	if (ifound == -1 || ofound == -1)
+		pr_warn_once("tty: Unable to return correct speed data as your architecture needs updating.\n");
+>>>>>>> v4.9.227
 #endif
 }
 EXPORT_SYMBOL_GPL(tty_termios_encode_baud_rate);
@@ -530,9 +582,14 @@ EXPORT_SYMBOL(tty_termios_hw_change);
  *	@tty: tty to update
  *	@new_termios: desired new value
  *
+<<<<<<< HEAD
  *	Perform updates to the termios values set on this terminal. There
  *	is a bit of layering violation here with n_tty in terms of the
  *	internal knowledge of this function.
+=======
+ *	Perform updates to the termios values set on this terminal.
+ *	A master pty's termios should never be set.
+>>>>>>> v4.9.227
  *
  *	Locking: termios_rwsem
  */
@@ -541,8 +598,14 @@ int tty_set_termios(struct tty_struct *tty, struct ktermios *new_termios)
 {
 	struct ktermios old_termios;
 	struct tty_ldisc *ld;
+<<<<<<< HEAD
 	unsigned long flags;
 
+=======
+
+	WARN_ON(tty->driver->type == TTY_DRIVER_TYPE_PTY &&
+		tty->driver->subtype == PTY_TYPE_MASTER);
+>>>>>>> v4.9.227
 	/*
 	 *	Perform the actual termios internal changes under lock.
 	 */
@@ -553,6 +616,7 @@ int tty_set_termios(struct tty_struct *tty, struct ktermios *new_termios)
 	down_write(&tty->termios_rwsem);
 	old_termios = tty->termios;
 	tty->termios = *new_termios;
+<<<<<<< HEAD
 	unset_locked_termios(&tty->termios, &old_termios, &tty->termios_locked);
 
 	/* See if packet mode change of state. */
@@ -583,13 +647,23 @@ int tty_set_termios(struct tty_struct *tty, struct ktermios *new_termios)
 
 	if (tty->ops->set_termios)
 		(*tty->ops->set_termios)(tty, &old_termios);
+=======
+	unset_locked_termios(tty, &old_termios);
+
+	if (tty->ops->set_termios)
+		tty->ops->set_termios(tty, &old_termios);
+>>>>>>> v4.9.227
 	else
 		tty_termios_copy_hw(&tty->termios, &old_termios);
 
 	ld = tty_ldisc_ref(tty);
 	if (ld != NULL) {
 		if (ld->ops->set_termios)
+<<<<<<< HEAD
 			(ld->ops->set_termios)(tty, &old_termios);
+=======
+			ld->ops->set_termios(tty, &old_termios);
+>>>>>>> v4.9.227
 		tty_ldisc_deref(ld);
 	}
 	up_write(&tty->termios_rwsem);
@@ -749,16 +823,28 @@ static int get_sgflags(struct tty_struct *tty)
 {
 	int flags = 0;
 
+<<<<<<< HEAD
 	if (!(tty->termios.c_lflag & ICANON)) {
 		if (tty->termios.c_lflag & ISIG)
+=======
+	if (!L_ICANON(tty)) {
+		if (L_ISIG(tty))
+>>>>>>> v4.9.227
 			flags |= 0x02;		/* cbreak */
 		else
 			flags |= 0x20;		/* raw */
 	}
+<<<<<<< HEAD
 	if (tty->termios.c_lflag & ECHO)
 		flags |= 0x08;			/* echo */
 	if (tty->termios.c_oflag & OPOST)
 		if (tty->termios.c_oflag & ONLCR)
+=======
+	if (L_ECHO(tty))
+		flags |= 0x08;			/* echo */
+	if (O_OPOST(tty))
+		if (O_ONLCR(tty))
+>>>>>>> v4.9.227
 			flags |= 0x10;		/* crmod */
 	return flags;
 }
@@ -938,7 +1024,11 @@ static int tty_change_softcar(struct tty_struct *tty, int arg)
 	tty->termios.c_cflag |= bit;
 	if (tty->ops->set_termios)
 		tty->ops->set_termios(tty, &old);
+<<<<<<< HEAD
 	if ((tty->termios.c_cflag & CLOCAL) != bit)
+=======
+	if (C_CLOCAL(tty) != bit)
+>>>>>>> v4.9.227
 		ret = -EINVAL;
 	up_write(&tty->termios_rwsem);
 	return ret;
@@ -1170,6 +1260,7 @@ int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
 			spin_unlock_irq(&tty->flow_lock);
 			break;
 		case TCIOFF:
+<<<<<<< HEAD
 			down_read(&tty->termios_rwsem);
 			if (STOP_CHAR(tty) != __DISABLED_CHAR)
 				retval = tty_send_xchar(tty, STOP_CHAR(tty));
@@ -1180,6 +1271,14 @@ int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
 			if (START_CHAR(tty) != __DISABLED_CHAR)
 				retval = tty_send_xchar(tty, START_CHAR(tty));
 			up_read(&tty->termios_rwsem);
+=======
+			if (STOP_CHAR(tty) != __DISABLED_CHAR)
+				retval = tty_send_xchar(tty, STOP_CHAR(tty));
+			break;
+		case TCION:
+			if (START_CHAR(tty) != __DISABLED_CHAR)
+				retval = tty_send_xchar(tty, START_CHAR(tty));
+>>>>>>> v4.9.227
 			break;
 		default:
 			return -EINVAL;

@@ -11,6 +11,7 @@
 #define __ASM_SGIDEFS_H
 
 /*
+<<<<<<< HEAD
  * Using a Linux compiler for building Linux seems logic but not to
  * everybody.
  */
@@ -19,6 +20,8 @@
 #endif
 
 /*
+=======
+>>>>>>> v4.9.227
  * Definitions for the ISA levels
  *
  * With the introduction of MIPS32 / MIPS64 instruction sets definitions

@@ -218,6 +218,7 @@ init:
 // Main program loop, very simple, sleeps until woken up by the interrupt
 // handler, pulls a command from the queue and executes its handler
 //
+<<<<<<< HEAD
 main:
 	// sleep until we have something to do
 	bset $flags $p0
@@ -225,6 +226,16 @@ main:
 	mov $r13 #cmd_queue
 	call(queue_get)
 	bra $p1 #main
+=======
+wait:
+	// sleep until we have something to do
+	sleep $p0
+	bset $flags $p0
+main:
+	mov $r13 #cmd_queue
+	call(queue_get)
+	bra $p1 #wait
+>>>>>>> v4.9.227
 
 	// context switch, requested by GPU?
 	cmpu b32 $r14 0x4001
@@ -306,6 +317,10 @@ main:
 
 // interrupt handler
 ih:
+<<<<<<< HEAD
+=======
+	push $r0
+>>>>>>> v4.9.227
 	push $r8
 	mov $r8 $flags
 	push $r8
@@ -380,6 +395,10 @@ ih:
 	pop $r8
 	mov $flags $r8
 	pop $r8
+<<<<<<< HEAD
+=======
+	pop $r0
+>>>>>>> v4.9.227
 	bclr $flags $p0
 	iret
 

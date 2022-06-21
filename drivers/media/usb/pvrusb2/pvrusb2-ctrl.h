@@ -110,6 +110,7 @@ int pvr2_ctrl_value_to_sym_internal(struct pvr2_ctrl *,
 			   unsigned int *len);
 
 #endif /* __PVRUSB2_CTRL_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -120,3 +121,5 @@ int pvr2_ctrl_value_to_sym_internal(struct pvr2_ctrl *,
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

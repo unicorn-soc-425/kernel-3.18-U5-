@@ -31,7 +31,10 @@
 struct da9052_wdt_data {
 	struct watchdog_device wdt;
 	struct da9052 *da9052;
+<<<<<<< HEAD
 	struct kref kref;
+=======
+>>>>>>> v4.9.227
 	unsigned long jpast;
 };
 
@@ -51,10 +54,13 @@ static const struct {
 };
 
 
+<<<<<<< HEAD
 static void da9052_wdt_release_resources(struct kref *r)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 static int da9052_wdt_set_timeout(struct watchdog_device *wdt_dev,
 				  unsigned int timeout)
 {
@@ -104,6 +110,7 @@ static int da9052_wdt_set_timeout(struct watchdog_device *wdt_dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void da9052_wdt_ref(struct watchdog_device *wdt_dev)
 {
 	struct da9052_wdt_data *driver_data = watchdog_get_drvdata(wdt_dev);
@@ -118,6 +125,8 @@ static void da9052_wdt_unref(struct watchdog_device *wdt_dev)
 	kref_put(&driver_data->kref, da9052_wdt_release_resources);
 }
 
+=======
+>>>>>>> v4.9.227
 static int da9052_wdt_start(struct watchdog_device *wdt_dev)
 {
 	return da9052_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
@@ -170,8 +179,11 @@ static const struct watchdog_ops da9052_wdt_ops = {
 	.stop = da9052_wdt_stop,
 	.ping = da9052_wdt_ping,
 	.set_timeout = da9052_wdt_set_timeout,
+<<<<<<< HEAD
 	.ref = da9052_wdt_ref,
 	.unref = da9052_wdt_unref,
+=======
+>>>>>>> v4.9.227
 };
 
 
@@ -195,10 +207,16 @@ static int da9052_wdt_probe(struct platform_device *pdev)
 	da9052_wdt->timeout = DA9052_DEF_TIMEOUT;
 	da9052_wdt->info = &da9052_wdt_info;
 	da9052_wdt->ops = &da9052_wdt_ops;
+<<<<<<< HEAD
 	watchdog_set_drvdata(da9052_wdt, driver_data);
 
 	kref_init(&driver_data->kref);
 
+=======
+	da9052_wdt->parent = &pdev->dev;
+	watchdog_set_drvdata(da9052_wdt, driver_data);
+
+>>>>>>> v4.9.227
 	ret = da9052_reg_update(da9052, DA9052_CONTROL_D_REG,
 				DA9052_CONTROLD_TWDSCALE, 0);
 	if (ret < 0) {
@@ -224,7 +242,10 @@ static int da9052_wdt_remove(struct platform_device *pdev)
 	struct da9052_wdt_data *driver_data = platform_get_drvdata(pdev);
 
 	watchdog_unregister_device(&driver_data->wdt);
+<<<<<<< HEAD
 	kref_put(&driver_data->kref, da9052_wdt_release_resources);
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }

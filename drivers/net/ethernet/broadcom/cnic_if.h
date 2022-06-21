@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /* cnic_if.h: QLogic CNIC core network driver.
  *
  * Copyright (c) 2006-2014 Broadcom Corporation
  * Copyright (c) 2014 QLogic Corporation
+=======
+/* cnic_if.h: QLogic cnic core network driver.
+ *
+ * Copyright (c) 2006-2014 Broadcom Corporation
+ * Copyright (c) 2014-2015 QLogic Corporation
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,8 +22,13 @@
 
 #include "bnx2x/bnx2x_mfw_req.h"
 
+<<<<<<< HEAD
 #define CNIC_MODULE_VERSION	"2.5.20"
 #define CNIC_MODULE_RELDATE	"March 14, 2014"
+=======
+#define CNIC_MODULE_VERSION	"2.5.22"
+#define CNIC_MODULE_RELDATE	"July 20, 2015"
+>>>>>>> v4.9.227
 
 #define CNIC_ULP_RDMA		0
 #define CNIC_ULP_ISCSI		1
@@ -151,6 +163,14 @@ struct drv_ctl_register_data {
 
 struct drv_ctl_info {
 	int	cmd;
+<<<<<<< HEAD
+=======
+	int     drv_state;
+#define DRV_NOP		0
+#define DRV_ACTIVE	1
+#define DRV_INACTIVE	2
+#define DRV_UNLOADED	3
+>>>>>>> v4.9.227
 	union {
 		struct drv_ctl_spq_credit credit;
 		struct drv_ctl_io io;
@@ -161,6 +181,18 @@ struct drv_ctl_info {
 	} data;
 };
 
+<<<<<<< HEAD
+=======
+#define MAX_NPIV_ENTRIES 64
+#define FC_NPIV_WWN_SIZE 8
+
+struct cnic_fc_npiv_tbl {
+	u8 wwpn[MAX_NPIV_ENTRIES][FC_NPIV_WWN_SIZE];
+	u8 wwnn[MAX_NPIV_ENTRIES][FC_NPIV_WWN_SIZE];
+	u32 count;
+};
+
+>>>>>>> v4.9.227
 struct cnic_ops {
 	struct module	*cnic_owner;
 	/* Calls to these functions are protected by RCU.  When
@@ -226,6 +258,11 @@ struct cnic_eth_dev {
 	int		(*drv_submit_kwqes_16)(struct net_device *,
 					       struct kwqe_16 *[], u32);
 	int		(*drv_ctl)(struct net_device *, struct drv_ctl_info *);
+<<<<<<< HEAD
+=======
+	int		(*drv_get_fc_npiv_tbl)(struct net_device *,
+					       struct cnic_fc_npiv_tbl *);
+>>>>>>> v4.9.227
 	unsigned long	reserved1[2];
 	union drv_info_to_mcp	*addr_drv_info_to_mcp;
 };
@@ -314,6 +351,10 @@ struct cnic_dev {
 	struct cnic_dev *(*cm_select_dev)(struct sockaddr_in *, int ulp_type);
 	int (*iscsi_nl_msg_recv)(struct cnic_dev *dev, u32 msg_type,
 				 char *data, u16 data_size);
+<<<<<<< HEAD
+=======
+	int (*get_fc_npiv_tbl)(struct cnic_dev *, struct cnic_fc_npiv_tbl *);
+>>>>>>> v4.9.227
 	unsigned long	flags;
 #define CNIC_F_CNIC_UP		1
 #define CNIC_F_BNX2_CLASS	3

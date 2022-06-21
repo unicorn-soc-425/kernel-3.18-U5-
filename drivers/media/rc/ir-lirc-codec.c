@@ -35,9 +35,12 @@ static int ir_lirc_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	struct lirc_codec *lirc = &dev->raw->lirc;
 	int sample;
 
+<<<<<<< HEAD
 	if (!(dev->enabled_protocols & RC_BIT_LIRC))
 		return 0;
 
+=======
+>>>>>>> v4.9.227
 	if (!dev->raw->lirc.drv || !dev->raw->lirc.drv->rbuf)
 		return -EINVAL;
 
@@ -257,7 +260,11 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
 		return 0;
 
 	case LIRC_GET_REC_RESOLUTION:
+<<<<<<< HEAD
 		val = dev->rx_resolution;
+=======
+		val = dev->rx_resolution / 1000;
+>>>>>>> v4.9.227
 		break;
 
 	case LIRC_SET_WIDEBAND_RECEIVER:
@@ -298,7 +305,14 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
 		if (tmp < dev->min_timeout || tmp > dev->max_timeout)
 			return -EINVAL;
 
+<<<<<<< HEAD
 		dev->timeout = tmp;
+=======
+		if (dev->s_timeout)
+			ret = dev->s_timeout(dev, tmp);
+		if (!ret)
+			dev->timeout = tmp;
+>>>>>>> v4.9.227
 		break;
 
 	case LIRC_SET_REC_TIMEOUT_REPORTS:
@@ -421,13 +435,21 @@ static int ir_lirc_unregister(struct rc_dev *dev)
 
 	lirc_unregister_driver(lirc->drv->minor);
 	lirc_buffer_free(lirc->drv->rbuf);
+<<<<<<< HEAD
+=======
+	kfree(lirc->drv->rbuf);
+>>>>>>> v4.9.227
 	kfree(lirc->drv);
 
 	return 0;
 }
 
 static struct ir_raw_handler lirc_handler = {
+<<<<<<< HEAD
 	.protocols	= RC_BIT_LIRC,
+=======
+	.protocols	= 0,
+>>>>>>> v4.9.227
 	.decode		= ir_lirc_decode,
 	.raw_register	= ir_lirc_register,
 	.raw_unregister	= ir_lirc_unregister,

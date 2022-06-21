@@ -29,7 +29,11 @@ static const struct stacktrace_ops stackops = {
 
 void show_stack(struct task_struct *task, unsigned long *stack)
 {
+<<<<<<< HEAD
 	unsigned long *sp = stack, bp = 0;
+=======
+	unsigned long *sp = stack;
+>>>>>>> v4.9.227
 	struct pt_regs *segv_regs = current->thread.segv_regs;
 	int i;
 
@@ -39,10 +43,13 @@ void show_stack(struct task_struct *task, unsigned long *stack)
 		return;
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_FRAME_POINTER
 	bp = get_frame_pointer(task, segv_regs);
 #endif
 
+=======
+>>>>>>> v4.9.227
 	if (!stack)
 		sp = get_stack_pointer(task, segv_regs);
 

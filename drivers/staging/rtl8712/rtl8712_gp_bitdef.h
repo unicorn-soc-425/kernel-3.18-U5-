@@ -64,7 +64,12 @@
 
 #define		GPIOMUX_EN	BIT(3)	/* When this bit is set to "1",
 					 * GPIO PINs will switch to MAC
+<<<<<<< HEAD
 					 * GPIO Function*/
+=======
+					 * GPIO Function
+					 */
+>>>>>>> v4.9.227
 #define		GPIOSEL_GPIO	0	/* UART or JTAG or pure GPIO*/
 #define		GPIOSEL_PHYDBG	1	/* PHYDBG*/
 #define		GPIOSEL_BT	2	/* BT_coex*/

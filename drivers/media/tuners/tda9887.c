@@ -707,6 +707,7 @@ struct dvb_frontend *tda9887_attach(struct dvb_frontend *fe,
 EXPORT_SYMBOL_GPL(tda9887_attach);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -715,3 +716,5 @@ MODULE_LICENSE("GPL");
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

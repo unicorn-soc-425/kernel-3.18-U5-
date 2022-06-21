@@ -679,8 +679,12 @@ static struct snd_pcm_ops snd_msnd_capture_ops = {
 };
 
 
+<<<<<<< HEAD
 int snd_msnd_pcm(struct snd_card *card, int device,
 			struct snd_pcm **rpcm)
+=======
+int snd_msnd_pcm(struct snd_card *card, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_msnd *chip = card->private_data;
 	struct snd_pcm	*pcm;
@@ -696,9 +700,12 @@ int snd_msnd_pcm(struct snd_card *card, int device,
 	pcm->private_data = chip;
 	strcpy(pcm->name, "Hurricane");
 
+<<<<<<< HEAD
 
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 EXPORT_SYMBOL(snd_msnd_pcm);

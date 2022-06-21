@@ -20,6 +20,7 @@
  * (the type definitions are in asm/spinlock_types.h)
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_32
 # define LOCK_PTR_REG "a"
 #else
@@ -36,12 +37,15 @@
 # define UNLOCK_LOCK_PREFIX
 #endif
 
+=======
+>>>>>>> v4.9.227
 /* How long a lock should spin before we consider blocking */
 #define SPIN_THRESHOLD	(1 << 15)
 
 extern struct static_key paravirt_ticketlocks_enabled;
 static __always_inline bool static_key_false(struct static_key *key);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT_SPINLOCKS
 
 static inline void __ticket_enter_slowpath(arch_spinlock_t *lock)
@@ -186,6 +190,9 @@ static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
 	while (arch_spin_is_locked(lock))
 		cpu_relax();
 }
+=======
+#include <asm/qspinlock.h>
+>>>>>>> v4.9.227
 
 /*
  * Read-write spinlocks, allowing multiple readers

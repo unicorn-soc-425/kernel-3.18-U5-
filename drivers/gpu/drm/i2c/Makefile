@@ -1,7 +1,10 @@
 ccflags-y := -Iinclude/drm
 
+<<<<<<< HEAD
 obj-$(CONFIG_DRM_I2C_ADV7511) += adv7511.o
 
+=======
+>>>>>>> v4.9.227
 ch7006-y := ch7006_drv.o ch7006_mode.o
 obj-$(CONFIG_DRM_I2C_CH7006) += ch7006.o
 

@@ -45,9 +45,15 @@
 
 #define USB_PR_DEVICE	0xff		/* Use device's value */
 
+<<<<<<< HEAD
  /*
   * Bulk only data structures
   */
+=======
+/*
+ * Bulk only data structures
+ */
+>>>>>>> v4.9.227
 
 /* command block wrapper */
 struct bulk_cb_wrap {
@@ -56,18 +62,30 @@ struct bulk_cb_wrap {
 	__le32	DataTransferLength;	/* size of data */
 	__u8	Flags;			/* direction in bit 0 */
 	__u8	Lun;			/* LUN normally 0 */
+<<<<<<< HEAD
 	__u8	Length;			/* of of the CDB */
+=======
+	__u8	Length;			/* length of the CDB */
+>>>>>>> v4.9.227
 	__u8	CDB[16];		/* max command */
 };
 
 #define US_BULK_CB_WRAP_LEN	31
+<<<<<<< HEAD
 #define US_BULK_CB_SIGN		0x43425355	/*spells out USBC */
+=======
+#define US_BULK_CB_SIGN		0x43425355	/* spells out 'USBC' */
+>>>>>>> v4.9.227
 #define US_BULK_FLAG_IN		(1 << 7)
 #define US_BULK_FLAG_OUT	0
 
 /* command status wrapper */
 struct bulk_cs_wrap {
+<<<<<<< HEAD
 	__le32	Signature;	/* should = 'USBS' */
+=======
+	__le32	Signature;	/* contains 'USBS' */
+>>>>>>> v4.9.227
 	__u32	Tag;		/* same as original command */
 	__le32	Residue;	/* amount not transferred */
 	__u8	Status;		/* see below */

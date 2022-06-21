@@ -14,6 +14,7 @@
 #define __ASM_ARCH_MAP_H
 
 #include <plat/map-base.h>
+<<<<<<< HEAD
 
 /*
  * S3C2410 UART offset is 0x4000 but the other SoCs are 0x400.
@@ -21,6 +22,8 @@
  */
 #define S3C_UART_OFFSET		(0x4000)
 
+=======
+>>>>>>> v4.9.227
 #include <plat/map-s3c.h>
 
 /*
@@ -34,9 +37,12 @@
 #define S3C2410_PA_MEMCTRL	(0x48000000)
 #define S3C24XX_SZ_MEMCTRL	SZ_1M
 
+<<<<<<< HEAD
 /* UARTs */
 #define S3C_VA_UARTx(uart)	(S3C_VA_UART + ((uart * S3C_UART_OFFSET)))
 
+=======
+>>>>>>> v4.9.227
 /* Timers */
 #define S3C2410_PA_TIMER	(0x51000000)
 #define S3C24XX_SZ_TIMER	SZ_1M
@@ -157,7 +163,10 @@
 
 #define S3C_PA_FB	    S3C2443_PA_FB
 #define S3C_PA_IIC          S3C2410_PA_IIC
+<<<<<<< HEAD
 #define S3C_PA_UART	    S3C24XX_PA_UART
+=======
+>>>>>>> v4.9.227
 #define S3C_PA_USBHOST	S3C2410_PA_USBHOST
 #define S3C_PA_HSMMC0	    S3C2416_PA_HSMMC0
 #define S3C_PA_HSMMC1	    S3C2443_PA_HSMMC

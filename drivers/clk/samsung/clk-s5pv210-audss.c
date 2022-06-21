@@ -13,12 +13,21 @@
  * Driver for Audio Subsystem Clock Controller of S5PV210-compatible SoCs.
 */
 
+<<<<<<< HEAD
 #include <linux/clkdev.h>
 #include <linux/io.h>
 #include <linux/clk-provider.h>
 #include <linux/of_address.h>
 #include <linux/syscore_ops.h>
 #include <linux/module.h>
+=======
+#include <linux/io.h>
+#include <linux/clk.h>
+#include <linux/clk-provider.h>
+#include <linux/of_address.h>
+#include <linux/syscore_ops.h>
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 
 #include <dt-bindings/clock/s5pv210-audss.h>
@@ -194,6 +203,7 @@ unregister:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int s5pv210_audss_clk_remove(struct platform_device *pdev)
 {
 	int i;
@@ -208,6 +218,8 @@ static int s5pv210_audss_clk_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static const struct of_device_id s5pv210_audss_clk_of_match[] = {
 	{ .compatible = "samsung,s5pv210-audss-clock", },
 	{},
@@ -216,11 +228,18 @@ static const struct of_device_id s5pv210_audss_clk_of_match[] = {
 static struct platform_driver s5pv210_audss_clk_driver = {
 	.driver	= {
 		.name = "s5pv210-audss-clk",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = s5pv210_audss_clk_of_match,
 	},
 	.probe = s5pv210_audss_clk_probe,
 	.remove = s5pv210_audss_clk_remove,
+=======
+		.suppress_bind_attrs = true,
+		.of_match_table = s5pv210_audss_clk_of_match,
+	},
+	.probe = s5pv210_audss_clk_probe,
+>>>>>>> v4.9.227
 };
 
 static int __init s5pv210_audss_clk_init(void)
@@ -228,6 +247,7 @@ static int __init s5pv210_audss_clk_init(void)
 	return platform_driver_register(&s5pv210_audss_clk_driver);
 }
 core_initcall(s5pv210_audss_clk_init);
+<<<<<<< HEAD
 
 static void __exit s5pv210_audss_clk_exit(void)
 {
@@ -239,3 +259,5 @@ MODULE_AUTHOR("Tomasz Figa <t.figa@samsung.com>");
 MODULE_DESCRIPTION("S5PV210 Audio Subsystem Clock Controller");
 MODULE_LICENSE("GPL v2");
 MODULE_ALIAS("platform:s5pv210-audss-clk");
+=======
+>>>>>>> v4.9.227

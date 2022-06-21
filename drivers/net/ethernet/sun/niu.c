@@ -3341,8 +3341,12 @@ static int niu_rbr_add_page(struct niu *np, struct rx_ring_info *rp,
 
 	niu_hash_page(rp, page, addr);
 	if (rp->rbr_blocks_per_page > 1)
+<<<<<<< HEAD
 		atomic_add(rp->rbr_blocks_per_page - 1,
 			   &compound_head(page)->_count);
+=======
+		page_ref_add(page, rp->rbr_blocks_per_page - 1);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < rp->rbr_blocks_per_page; i++) {
 		__le32 *rbr = &rp->rbr[start_index + i];
@@ -6431,7 +6435,11 @@ static int niu_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 
 static void niu_netif_stop(struct niu *np)
 {
+<<<<<<< HEAD
 	np->dev->trans_start = jiffies;	/* prevent tx timeout */
+=======
+	netif_trans_update(np->dev);	/* prevent tx timeout */
+>>>>>>> v4.9.227
 
 	niu_disable_napi(np);
 
@@ -6650,6 +6658,7 @@ static netdev_tx_t niu_start_xmit(struct sk_buff *skb,
 		return NETDEV_TX_BUSY;
 	}
 
+<<<<<<< HEAD
 	if (skb->len < ETH_ZLEN) {
 		unsigned int pad_bytes = ETH_ZLEN - skb->len;
 
@@ -6657,16 +6666,25 @@ static netdev_tx_t niu_start_xmit(struct sk_buff *skb,
 			goto out;
 		skb_put(skb, pad_bytes);
 	}
+=======
+	if (eth_skb_pad(skb))
+		goto out;
+>>>>>>> v4.9.227
 
 	len = sizeof(struct tx_pkt_hdr) + 15;
 	if (skb_headroom(skb) < len) {
 		struct sk_buff *skb_new;
 
 		skb_new = skb_realloc_headroom(skb, len);
+<<<<<<< HEAD
 		if (!skb_new) {
 			rp->tx_errors++;
 			goto out_drop;
 		}
+=======
+		if (!skb_new)
+			goto out_drop;
+>>>>>>> v4.9.227
 		kfree_skb(skb);
 		skb = skb_new;
 	} else
@@ -6994,10 +7012,17 @@ static int niu_class_to_ethflow(u64 class, int *flow_type)
 		*flow_type = IP_USER_FLOW;
 		break;
 	default:
+<<<<<<< HEAD
 		return 0;
 	}
 
 	return 1;
+=======
+		return -EINVAL;
+	}
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int niu_ethflow_to_class(int flow_type, u64 *class)
@@ -7203,11 +7228,17 @@ static int niu_get_ethtool_tcam_entry(struct niu *np,
 	class = (tp->key[0] & TCAM_V4KEY0_CLASS_CODE) >>
 		TCAM_V4KEY0_CLASS_CODE_SHIFT;
 	ret = niu_class_to_ethflow(class, &fsp->flow_type);
+<<<<<<< HEAD
 
 	if (ret < 0) {
 		netdev_info(np->dev, "niu%d: niu_class_to_ethflow failed\n",
 			    parent->index);
 		ret = -EINVAL;
+=======
+	if (ret < 0) {
+		netdev_info(np->dev, "niu%d: niu_class_to_ethflow failed\n",
+			    parent->index);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -8131,6 +8162,11 @@ static int niu_pci_vpd_scan_props(struct niu *np, u32 start, u32 end)
 		start += 3;
 
 		prop_len = niu_pci_eeprom_read(np, start + 4);
+<<<<<<< HEAD
+=======
+		if (prop_len < 0)
+			return prop_len;
+>>>>>>> v4.9.227
 		err = niu_pci_vpd_get_propname(np, start + 5, namebuf, 64);
 		if (err < 0)
 			return err;
@@ -8175,8 +8211,17 @@ static int niu_pci_vpd_scan_props(struct niu *np, u32 start, u32 end)
 			netif_printk(np, probe, KERN_DEBUG, np->dev,
 				     "VPD_SCAN: Reading in property [%s] len[%d]\n",
 				     namebuf, prop_len);
+<<<<<<< HEAD
 			for (i = 0; i < prop_len; i++)
 				*prop_buf++ = niu_pci_eeprom_read(np, off + i);
+=======
+			for (i = 0; i < prop_len; i++) {
+				err = niu_pci_eeprom_read(np, off + i);
+				if (err >= 0)
+					*prop_buf = err;
+				++prop_buf;
+			}
+>>>>>>> v4.9.227
 		}
 
 		start += len;
@@ -10184,7 +10229,10 @@ MODULE_DEVICE_TABLE(of, niu_match);
 static struct platform_driver niu_of_driver = {
 	.driver = {
 		.name = "niu",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = niu_match,
 	},
 	.probe		= niu_of_probe,

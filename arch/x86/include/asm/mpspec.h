@@ -6,7 +6,10 @@
 #include <asm/x86_init.h>
 #include <asm/apicdef.h>
 
+<<<<<<< HEAD
 extern int apic_version[];
+=======
+>>>>>>> v4.9.227
 extern int pic_mode;
 
 #ifdef CONFIG_X86_32
@@ -40,6 +43,10 @@ extern int mp_bus_id_to_type[MAX_MP_BUSSES];
 extern DECLARE_BITMAP(mp_bus_not_pci, MAX_MP_BUSSES);
 
 extern unsigned int boot_cpu_physical_apicid;
+<<<<<<< HEAD
+=======
+extern u8 boot_cpu_apic_version;
+>>>>>>> v4.9.227
 extern unsigned long mp_lapic_addr;
 
 #ifdef CONFIG_X86_LOCAL_APIC
@@ -86,6 +93,10 @@ static inline void early_reserve_e820_mpc_new(void) { }
 #endif
 
 int generic_processor_info(int apicid, int version);
+<<<<<<< HEAD
+=======
+int __generic_processor_info(int apicid, int version, bool enabled);
+>>>>>>> v4.9.227
 
 #define PHYSID_ARRAY_SIZE	BITS_TO_LONGS(MAX_LOCAL_APIC)
 

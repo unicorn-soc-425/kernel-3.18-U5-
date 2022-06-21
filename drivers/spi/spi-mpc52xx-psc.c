@@ -42,7 +42,10 @@ struct mpc52xx_psc_spi {
 	u8 bits_per_word;
 	u8 busy;
 
+<<<<<<< HEAD
 	struct workqueue_struct *workqueue;
+=======
+>>>>>>> v4.9.227
 	struct work_struct work;
 
 	struct list_head queue;
@@ -299,7 +302,11 @@ static int mpc52xx_psc_spi_transfer(struct spi_device *spi,
 
 	spin_lock_irqsave(&mps->lock, flags);
 	list_add_tail(&m->queue, &mps->queue);
+<<<<<<< HEAD
 	queue_work(mps->workqueue, &mps->work);
+=======
+	schedule_work(&mps->work);
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&mps->lock, flags);
 
 	return 0;
@@ -425,6 +432,7 @@ static int mpc52xx_psc_spi_do_probe(struct device *dev, u32 regaddr,
 	INIT_WORK(&mps->work, mpc52xx_psc_spi_work);
 	INIT_LIST_HEAD(&mps->queue);
 
+<<<<<<< HEAD
 	mps->workqueue = create_singlethread_workqueue(
 		dev_name(master->dev.parent));
 	if (mps->workqueue == NULL) {
@@ -440,6 +448,14 @@ static int mpc52xx_psc_spi_do_probe(struct device *dev, u32 regaddr,
 
 unreg_master:
 	destroy_workqueue(mps->workqueue);
+=======
+	ret = spi_register_master(master);
+	if (ret < 0)
+		goto free_irq;
+
+	return ret;
+
+>>>>>>> v4.9.227
 free_irq:
 	free_irq(mps->irq, mps);
 free_master:
@@ -484,8 +500,12 @@ static int mpc52xx_psc_spi_of_remove(struct platform_device *op)
 	struct spi_master *master = spi_master_get(platform_get_drvdata(op));
 	struct mpc52xx_psc_spi *mps = spi_master_get_devdata(master);
 
+<<<<<<< HEAD
 	flush_workqueue(mps->workqueue);
 	destroy_workqueue(mps->workqueue);
+=======
+	flush_work(&mps->work);
+>>>>>>> v4.9.227
 	spi_unregister_master(master);
 	free_irq(mps->irq, mps);
 	if (mps->psc)
@@ -508,7 +528,10 @@ static struct platform_driver mpc52xx_psc_spi_of_driver = {
 	.remove = mpc52xx_psc_spi_of_remove,
 	.driver = {
 		.name = "mpc52xx-psc-spi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = mpc52xx_psc_spi_of_match,
 	},
 };

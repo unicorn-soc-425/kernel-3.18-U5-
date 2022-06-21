@@ -8,7 +8,11 @@
  * for more details.
  *
  * Copyright (C) 2001 - 2005 Tensilica Inc.
+<<<<<<< HEAD
  * Copyright (C) 2014 Cadence Design Systems Inc.
+=======
+ * Copyright (C) 2014 - 2016 Cadence Design Systems Inc.
+>>>>>>> v4.9.227
  *
  * Chris Zankel	<chris@zankel.net>
  * Joe Taylor	<joe@tensilica.com, joetylr@yahoo.com>
@@ -25,12 +29,17 @@
 #include <linux/mman.h>
 #include <linux/nodemask.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_fdt.h>
+>>>>>>> v4.9.227
 
 #include <asm/bootparam.h>
 #include <asm/page.h>
 #include <asm/sections.h>
 #include <asm/sysmem.h>
 
+<<<<<<< HEAD
 struct sysmem_info sysmem __initdata;
 
 static void __init sysmem_dump(void)
@@ -229,12 +238,15 @@ int __init mem_reserve(unsigned long start, unsigned long end, int must_exist)
 }
 
 
+=======
+>>>>>>> v4.9.227
 /*
  * Initialize the bootmem system and give it all low memory we have available.
  */
 
 void __init bootmem_init(void)
 {
+<<<<<<< HEAD
 	unsigned long pfn;
 	unsigned long bootmap_start, bootmap_size;
 	int i;
@@ -292,6 +304,32 @@ void __init bootmem_init(void)
 		}
 	}
 
+=======
+	/* Reserve all memory below PHYS_OFFSET, as memory
+	 * accounting doesn't work for pages below that address.
+	 *
+	 * If PHYS_OFFSET is zero reserve page at address 0:
+	 * successfull allocations should never return NULL.
+	 */
+	if (PHYS_OFFSET)
+		memblock_reserve(0, PHYS_OFFSET);
+	else
+		memblock_reserve(0, 1);
+
+	early_init_fdt_scan_reserved_mem();
+
+	if (!memblock_phys_mem_size())
+		panic("No memory found!\n");
+
+	min_low_pfn = PFN_UP(memblock_start_of_DRAM());
+	min_low_pfn = max(min_low_pfn, PFN_UP(PHYS_OFFSET));
+	max_pfn = PFN_DOWN(memblock_end_of_DRAM());
+	max_low_pfn = min(max_pfn, MAX_LOW_PFN);
+
+	memblock_set_current_limit(PFN_PHYS(max_low_pfn));
+
+	memblock_dump_all();
+>>>>>>> v4.9.227
 }
 
 
@@ -307,12 +345,78 @@ void __init zones_init(void)
 	free_area_init_node(0, zones_size, ARCH_PFN_OFFSET, NULL);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HIGHMEM
+static void __init free_area_high(unsigned long pfn, unsigned long end)
+{
+	for (; pfn < end; pfn++)
+		free_highmem_page(pfn_to_page(pfn));
+}
+
+static void __init free_highpages(void)
+{
+	unsigned long max_low = max_low_pfn;
+	struct memblock_region *mem, *res;
+
+	reset_all_zones_managed_pages();
+	/* set highmem page free */
+	for_each_memblock(memory, mem) {
+		unsigned long start = memblock_region_memory_base_pfn(mem);
+		unsigned long end = memblock_region_memory_end_pfn(mem);
+
+		/* Ignore complete lowmem entries */
+		if (end <= max_low)
+			continue;
+
+		if (memblock_is_nomap(mem))
+			continue;
+
+		/* Truncate partial highmem entries */
+		if (start < max_low)
+			start = max_low;
+
+		/* Find and exclude any reserved regions */
+		for_each_memblock(reserved, res) {
+			unsigned long res_start, res_end;
+
+			res_start = memblock_region_reserved_base_pfn(res);
+			res_end = memblock_region_reserved_end_pfn(res);
+
+			if (res_end < start)
+				continue;
+			if (res_start < start)
+				res_start = start;
+			if (res_start > end)
+				res_start = end;
+			if (res_end > end)
+				res_end = end;
+			if (res_start != start)
+				free_area_high(start, res_start);
+			start = res_end;
+			if (start == end)
+				break;
+		}
+
+		/* And now free anything which remains */
+		if (start < end)
+			free_area_high(start, end);
+	}
+}
+#else
+static void __init free_highpages(void)
+{
+}
+#endif
+
+>>>>>>> v4.9.227
 /*
  * Initialize memory pages.
  */
 
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_HIGHMEM
 	unsigned long tmp;
 
@@ -320,6 +424,9 @@ void __init mem_init(void)
 	for (tmp = max_low_pfn; tmp < max_pfn; tmp++)
 		free_highmem_page(pfn_to_page(tmp));
 #endif
+=======
+	free_highpages();
+>>>>>>> v4.9.227
 
 	max_mapnr = max_pfn - ARCH_PFN_OFFSET;
 	high_memory = (void *)__va(max_low_pfn << PAGE_SHIFT);
@@ -332,18 +439,35 @@ void __init mem_init(void)
 		"    pkmap   : 0x%08lx - 0x%08lx  (%5lu kB)\n"
 		"    fixmap  : 0x%08lx - 0x%08lx  (%5lu kB)\n"
 #endif
+<<<<<<< HEAD
 		"    vmalloc : 0x%08x - 0x%08x  (%5u MB)\n"
 		"    lowmem  : 0x%08x - 0x%08lx  (%5lu MB)\n",
+=======
+#ifdef CONFIG_MMU
+		"    vmalloc : 0x%08lx - 0x%08lx  (%5lu MB)\n"
+#endif
+		"    lowmem  : 0x%08lx - 0x%08lx  (%5lu MB)\n",
+>>>>>>> v4.9.227
 #ifdef CONFIG_HIGHMEM
 		PKMAP_BASE, PKMAP_BASE + LAST_PKMAP * PAGE_SIZE,
 		(LAST_PKMAP*PAGE_SIZE) >> 10,
 		FIXADDR_START, FIXADDR_TOP,
 		(FIXADDR_TOP - FIXADDR_START) >> 10,
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+>>>>>>> v4.9.227
 		VMALLOC_START, VMALLOC_END,
 		(VMALLOC_END - VMALLOC_START) >> 20,
 		PAGE_OFFSET, PAGE_OFFSET +
 		(max_low_pfn - min_low_pfn) * PAGE_SIZE,
+<<<<<<< HEAD
+=======
+#else
+		min_low_pfn * PAGE_SIZE, max_low_pfn * PAGE_SIZE,
+#endif
+>>>>>>> v4.9.227
 		((max_low_pfn - min_low_pfn) * PAGE_SIZE) >> 20);
 }
 
@@ -378,16 +502,28 @@ static void __init parse_memmap_one(char *p)
 	switch (*p) {
 	case '@':
 		start_at = memparse(p + 1, &p);
+<<<<<<< HEAD
 		add_sysmem_bank(start_at, start_at + mem_size);
+=======
+		memblock_add(start_at, mem_size);
+>>>>>>> v4.9.227
 		break;
 
 	case '$':
 		start_at = memparse(p + 1, &p);
+<<<<<<< HEAD
 		mem_reserve(start_at, start_at + mem_size, 0);
 		break;
 
 	case 0:
 		mem_reserve(mem_size, 0, 0);
+=======
+		memblock_reserve(start_at, mem_size);
+		break;
+
+	case 0:
+		memblock_reserve(mem_size, -mem_size);
+>>>>>>> v4.9.227
 		break;
 
 	default:

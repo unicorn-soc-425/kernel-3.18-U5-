@@ -34,7 +34,10 @@
 #include <sound/emu10k1.h>
 #include "p16v.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+>>>>>>> v4.9.227
 static void snd_emu10k1_proc_spdif_status(struct snd_emu10k1 * emu,
 					  struct snd_info_buffer *buffer,
 					  char *title,
@@ -656,4 +659,7 @@ int snd_emu10k1_proc_init(struct snd_emu10k1 *emu)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PROC_FS */
+=======
+>>>>>>> v4.9.227

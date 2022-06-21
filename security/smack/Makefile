@@ -5,3 +5,7 @@
 obj-$(CONFIG_SECURITY_SMACK) := smack.o
 
 smack-y := smack_lsm.o smack_access.o smackfs.o
+<<<<<<< HEAD
+=======
+smack-$(CONFIG_SECURITY_SMACK_NETFILTER) += smack_netfilter.o
+>>>>>>> v4.9.227

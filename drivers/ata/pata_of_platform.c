@@ -16,6 +16,15 @@
 #include <linux/ata_platform.h>
 #include <linux/libata.h>
 
+<<<<<<< HEAD
+=======
+#define DRV_NAME "pata_of_platform"
+
+static struct scsi_host_template pata_platform_sht = {
+	ATA_PIO_SHT(DRV_NAME),
+};
+
+>>>>>>> v4.9.227
 static int pata_of_platform_probe(struct platform_device *ofdev)
 {
 	int ret;
@@ -63,7 +72,11 @@ static int pata_of_platform_probe(struct platform_device *ofdev)
 	pio_mask |= (1 << pio_mode) - 1;
 
 	return __pata_platform_probe(&ofdev->dev, &io_res, &ctl_res, irq_res,
+<<<<<<< HEAD
 				     reg_shift, pio_mask);
+=======
+				     reg_shift, pio_mask, &pata_platform_sht);
+>>>>>>> v4.9.227
 }
 
 static struct of_device_id pata_of_platform_match[] = {
@@ -74,8 +87,12 @@ MODULE_DEVICE_TABLE(of, pata_of_platform_match);
 
 static struct platform_driver pata_of_platform_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.name = "pata_of_platform",
 		.owner = THIS_MODULE,
+=======
+		.name = DRV_NAME,
+>>>>>>> v4.9.227
 		.of_match_table = pata_of_platform_match,
 	},
 	.probe		= pata_of_platform_probe,

@@ -122,8 +122,13 @@ void __init prom_setup_cmdline(void)
 void __init prom_init(void)
 {
 	struct ddr_ram __iomem *ddr;
+<<<<<<< HEAD
 	phys_t memsize;
 	phys_t ddrbase;
+=======
+	phys_addr_t memsize;
+	phys_addr_t ddrbase;
+>>>>>>> v4.9.227
 
 	ddr = ioremap_nocache(ddr_reg[0].start,
 			ddr_reg[0].end - ddr_reg[0].start);
@@ -133,8 +138,13 @@ void __init prom_init(void)
 		return;
 	}
 
+<<<<<<< HEAD
 	ddrbase = (phys_t)&ddr->ddrbase;
 	memsize = (phys_t)&ddr->ddrmask;
+=======
+	ddrbase = (phys_addr_t)&ddr->ddrbase;
+	memsize = (phys_addr_t)&ddr->ddrmask;
+>>>>>>> v4.9.227
 	memsize = 0 - memsize;
 
 	prom_setup_cmdline();

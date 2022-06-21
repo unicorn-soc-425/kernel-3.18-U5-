@@ -404,7 +404,11 @@ static void altera_uart_poll_put_char(struct uart_port *port, unsigned char c)
 /*
  *	Define the basic serial functions we support.
  */
+<<<<<<< HEAD
 static struct uart_ops altera_uart_ops = {
+=======
+static const struct uart_ops altera_uart_ops = {
+>>>>>>> v4.9.227
 	.tx_empty	= altera_uart_tx_empty,
 	.get_mctrl	= altera_uart_get_mctrl,
 	.set_mctrl	= altera_uart_set_mctrl,
@@ -493,7 +497,11 @@ console_initcall(altera_uart_console_init);
 
 #define	ALTERA_UART_CONSOLE	NULL
 
+<<<<<<< HEAD
 #endif /* CONFIG_ALTERA_UART_CONSOLE */
+=======
+#endif /* CONFIG_SERIAL_ALTERA_UART_CONSOLE */
+>>>>>>> v4.9.227
 
 /*
  *	Define the altera_uart UART driver structure.
@@ -508,6 +516,7 @@ static struct uart_driver altera_uart_driver = {
 	.cons		= ALTERA_UART_CONSOLE,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 static int altera_uart_get_of_uartclk(struct platform_device *pdev,
 				      struct uart_port *port)
@@ -531,6 +540,8 @@ static int altera_uart_get_of_uartclk(struct platform_device *pdev,
 }
 #endif /* CONFIG_OF */
 
+=======
+>>>>>>> v4.9.227
 static int altera_uart_probe(struct platform_device *pdev)
 {
 	struct altera_uart_platform_uart *platp = dev_get_platdata(&pdev->dev);
@@ -570,7 +581,12 @@ static int altera_uart_probe(struct platform_device *pdev)
 	if (platp)
 		port->uartclk = platp->uartclk;
 	else {
+<<<<<<< HEAD
 		ret = altera_uart_get_of_uartclk(pdev, port);
+=======
+		ret = of_property_read_u32(pdev->dev.of_node, "clock-frequency",
+					   &port->uartclk);
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 	}
@@ -589,6 +605,10 @@ static int altera_uart_probe(struct platform_device *pdev)
 	port->iotype = SERIAL_IO_MEM;
 	port->ops = &altera_uart_ops;
 	port->flags = UPF_BOOT_AUTOCONF;
+<<<<<<< HEAD
+=======
+	port->dev = &pdev->dev;
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, port);
 
@@ -623,7 +643,10 @@ static struct platform_driver altera_uart_platform_driver = {
 	.remove	= altera_uart_remove,
 	.driver	= {
 		.name		= DRV_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= of_match_ptr(altera_uart_match),
 	},
 };

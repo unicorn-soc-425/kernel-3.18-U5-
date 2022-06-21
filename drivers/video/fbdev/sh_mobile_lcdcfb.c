@@ -1461,7 +1461,11 @@ overlay_rop3_store(struct device *dev, struct device_attribute *attr,
 	unsigned int rop3;
 	char *endp;
 
+<<<<<<< HEAD
 	rop3 = !!simple_strtoul(buf, &endp, 10);
+=======
+	rop3 = simple_strtoul(buf, &endp, 10);
+>>>>>>> v4.9.227
 	if (isspace(*endp))
 		endp++;
 
@@ -2181,8 +2185,12 @@ sh_mobile_lcdc_channel_fb_cleanup(struct sh_mobile_lcdc_chan *ch)
 	if (!info || !info->device)
 		return;
 
+<<<<<<< HEAD
 	if (ch->sglist)
 		vfree(ch->sglist);
+=======
+	vfree(ch->sglist);
+>>>>>>> v4.9.227
 
 	fb_dealloc_cmap(&info->cmap);
 	framebuffer_release(info);
@@ -2606,7 +2614,10 @@ sh_mobile_lcdc_channel_init(struct sh_mobile_lcdc_chan *ch)
 	unsigned int max_size;
 	unsigned int i;
 
+<<<<<<< HEAD
 	mutex_init(&ch->open_lock);
+=======
+>>>>>>> v4.9.227
 	ch->notify = sh_mobile_lcdc_display_notify;
 
 	/* Validate the format. */
@@ -2705,7 +2716,11 @@ static int sh_mobile_lcdc_probe(struct platform_device *pdev)
 	struct resource *res;
 	int num_channels;
 	int error;
+<<<<<<< HEAD
 	int i;
+=======
+	int irq, i;
+>>>>>>> v4.9.227
 
 	if (!pdata) {
 		dev_err(&pdev->dev, "no platform data defined\n");
@@ -2713,8 +2728,13 @@ static int sh_mobile_lcdc_probe(struct platform_device *pdev)
 	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	i = platform_get_irq(pdev, 0);
 	if (!res || i < 0) {
+=======
+	irq = platform_get_irq(pdev, 0);
+	if (!res || irq < 0) {
+>>>>>>> v4.9.227
 		dev_err(&pdev->dev, "cannot get platform resources\n");
 		return -ENOENT;
 	}
@@ -2727,16 +2747,28 @@ static int sh_mobile_lcdc_probe(struct platform_device *pdev)
 
 	priv->dev = &pdev->dev;
 	priv->meram_dev = pdata->meram_dev;
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, priv);
 
 	error = request_irq(i, sh_mobile_lcdc_irq, 0,
+=======
+	for (i = 0; i < ARRAY_SIZE(priv->ch); i++)
+		mutex_init(&priv->ch[i].open_lock);
+	platform_set_drvdata(pdev, priv);
+
+	error = request_irq(irq, sh_mobile_lcdc_irq, 0,
+>>>>>>> v4.9.227
 			    dev_name(&pdev->dev), priv);
 	if (error) {
 		dev_err(&pdev->dev, "unable to request irq\n");
 		goto err1;
 	}
 
+<<<<<<< HEAD
 	priv->irq = i;
+=======
+	priv->irq = irq;
+>>>>>>> v4.9.227
 	atomic_set(&priv->hw_usecnt, -1);
 
 	for (i = 0, num_channels = 0; i < ARRAY_SIZE(pdata->ch); i++) {
@@ -2849,7 +2881,10 @@ err1:
 static struct platform_driver sh_mobile_lcdc_driver = {
 	.driver		= {
 		.name		= "sh_mobile_lcdc_fb",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm		= &sh_mobile_lcdc_dev_pm_ops,
 	},
 	.probe		= sh_mobile_lcdc_probe,

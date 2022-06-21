@@ -247,7 +247,11 @@ void smp4m_percpu_timer_interrupt(struct pt_regs *regs)
 
 	ce = &per_cpu(sparc32_clockevent, cpu);
 
+<<<<<<< HEAD
 	if (ce->mode & CLOCK_EVT_MODE_PERIODIC)
+=======
+	if (clockevent_state_periodic(ce))
+>>>>>>> v4.9.227
 		sun4m_clear_profile_irq(cpu);
 	else
 		sparc_config.load_profile_irq(cpu, 0); /* Is this needless? */

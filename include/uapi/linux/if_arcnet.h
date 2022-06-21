@@ -19,7 +19,10 @@
 #include <linux/types.h>
 #include <linux/if_ether.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 /*
  *    These are the defined ARCnet Protocol ID's.
  */
@@ -57,6 +60,7 @@
  * The RFC1201-specific components of an arcnet packet header.
  */
 struct arc_rfc1201 {
+<<<<<<< HEAD
     __u8  proto;		/* protocol ID field - varies		*/
     __u8  split_flag;	/* for use with split packets		*/
     __be16   sequence;		/* sequence number			*/
@@ -65,21 +69,39 @@ struct arc_rfc1201 {
 #define RFC1201_HDR_SIZE 4
 
 
+=======
+	__u8  proto;		/* protocol ID field - varies		*/
+	__u8  split_flag;	/* for use with split packets		*/
+	__be16   sequence;	/* sequence number			*/
+	__u8  payload[0];	/* space remaining in packet (504 bytes)*/
+};
+#define RFC1201_HDR_SIZE 4
+
+>>>>>>> v4.9.227
 /*
  * The RFC1051-specific components.
  */
 struct arc_rfc1051 {
+<<<<<<< HEAD
     __u8 proto;		/* ARC_P_RFC1051_ARP/RFC1051_IP	*/
     __u8 payload[0];		/* 507 bytes			*/
 };
 #define RFC1051_HDR_SIZE 1
 
 
+=======
+	__u8 proto;		/* ARC_P_RFC1051_ARP/RFC1051_IP	*/
+	__u8 payload[0];	/* 507 bytes			*/
+};
+#define RFC1051_HDR_SIZE 1
+
+>>>>>>> v4.9.227
 /*
  * The ethernet-encap-specific components.  We have a real ethernet header
  * and some data.
  */
 struct arc_eth_encap {
+<<<<<<< HEAD
     __u8 proto;		/* Always ARC_P_ETHER			*/
     struct ethhdr eth;		/* standard ethernet header (yuck!)	*/
     __u8 payload[0];		/* 493 bytes				*/
@@ -93,6 +115,21 @@ struct arc_cap {
 	union {
 		__u8 ack;
 		__u8 raw[0];		/* 507 bytes */
+=======
+	__u8 proto;		/* Always ARC_P_ETHER			*/
+	struct ethhdr eth;	/* standard ethernet header (yuck!)	*/
+	__u8 payload[0];	/* 493 bytes				*/
+};
+#define ETH_ENCAP_HDR_SIZE 14
+
+struct arc_cap {
+	__u8 proto;
+	__u8 cookie[sizeof(int)];
+				/* Actually NOT sent over the network */
+	union {
+		__u8 ack;
+		__u8 raw[0];	/* 507 bytes */
+>>>>>>> v4.9.227
 	} mes;
 };
 
@@ -105,9 +142,15 @@ struct arc_cap {
  * driver.
  */
 struct arc_hardware {
+<<<<<<< HEAD
     __u8  source,		/* source ARCnet - filled in automagically */
              dest,		/* destination ARCnet - 0 for broadcast    */
     	     offset[2];		/* offset bytes (some weird semantics)     */
+=======
+	__u8 source;		/* source ARCnet - filled in automagically */
+	__u8 dest;		/* destination ARCnet - 0 for broadcast    */
+	__u8 offset[2];		/* offset bytes (some weird semantics)     */
+>>>>>>> v4.9.227
 };
 #define ARC_HDR_SIZE 4
 
@@ -116,6 +159,7 @@ struct arc_hardware {
  * when you do a raw packet capture).
  */
 struct archdr {
+<<<<<<< HEAD
     /* hardware requirements */
     struct arc_hardware hard;
      
@@ -127,6 +171,19 @@ struct archdr {
 	struct arc_cap       cap;
 	__u8 raw[0];		/* 508 bytes				*/
     } soft;
+=======
+	/* hardware requirements */
+	struct arc_hardware hard;
+
+	/* arcnet encapsulation-specific bits */
+	union {
+		struct arc_rfc1201   rfc1201;
+		struct arc_rfc1051   rfc1051;
+		struct arc_eth_encap eth_encap;
+		struct arc_cap       cap;
+		__u8 raw[0];	/* 508 bytes				*/
+	} soft;
+>>>>>>> v4.9.227
 };
 
 #endif				/* _LINUX_IF_ARCNET_H */

@@ -169,6 +169,7 @@ MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 MODULE_VERSION("0.9.1");
+<<<<<<< HEAD
 
 
 /*
@@ -180,3 +181,5 @@ MODULE_VERSION("0.9.1");
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

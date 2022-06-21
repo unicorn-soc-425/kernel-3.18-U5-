@@ -94,8 +94,12 @@ static int adxl34x_spi_remove(struct spi_device *spi)
 	return adxl34x_remove(ac);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int adxl34x_spi_suspend(struct device *dev)
+=======
+static int __maybe_unused adxl34x_spi_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct spi_device *spi = to_spi_device(dev);
 	struct adxl34x *ac = spi_get_drvdata(spi);
@@ -105,7 +109,11 @@ static int adxl34x_spi_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int adxl34x_spi_resume(struct device *dev)
+=======
+static int __maybe_unused adxl34x_spi_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct spi_device *spi = to_spi_device(dev);
 	struct adxl34x *ac = spi_get_drvdata(spi);
@@ -114,7 +122,10 @@ static int adxl34x_spi_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(adxl34x_spi_pm, adxl34x_spi_suspend,
 			 adxl34x_spi_resume);
@@ -122,7 +133,10 @@ static SIMPLE_DEV_PM_OPS(adxl34x_spi_pm, adxl34x_spi_suspend,
 static struct spi_driver adxl34x_driver = {
 	.driver = {
 		.name = "adxl34x",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &adxl34x_spi_pm,
 	},
 	.probe   = adxl34x_spi_probe,

@@ -8,6 +8,10 @@ struct tso_t {
 	void *data;
 	size_t size;
 	u16 ip_id;
+<<<<<<< HEAD
+=======
+	bool ipv6;
+>>>>>>> v4.9.227
 	u32 tcp_seq;
 };
 

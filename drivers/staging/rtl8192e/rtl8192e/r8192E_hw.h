@@ -6,10 +6,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -119,10 +122,17 @@ enum _RTL8192Pci_HW {
 #define EPROM_CMD_NORMAL 0
 #define EPROM_CMD_LOAD 1
 #define EPROM_CMD_PROGRAM 2
+<<<<<<< HEAD
 #define EPROM_CS_SHIFT 3
 #define EPROM_CK_SHIFT 2
 #define EPROM_W_SHIFT 1
 #define EPROM_R_SHIFT 0
+=======
+#define EPROM_CS_BIT 3
+#define EPROM_CK_BIT 2
+#define EPROM_W_BIT 1
+#define EPROM_R_BIT 0
+>>>>>>> v4.9.227
 
 	AFR			 = 0x010,
 #define AFR_CardBEn		(1<<0)

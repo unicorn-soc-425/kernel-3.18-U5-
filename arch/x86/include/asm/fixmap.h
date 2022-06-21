@@ -19,7 +19,10 @@
 #include <asm/acpi.h>
 #include <asm/apicdef.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pvclock.h>
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_X86_32
 #include <linux/threads.h>
 #include <asm/kmap_types.h>
@@ -69,10 +72,15 @@ enum fixed_addresses {
 #ifdef CONFIG_X86_32
 	FIX_HOLE,
 #else
+<<<<<<< HEAD
 	VSYSCALL_PAGE = (FIXADDR_TOP - VSYSCALL_ADDR) >> PAGE_SHIFT,
 #ifdef CONFIG_PARAVIRT_CLOCK
 	PVCLOCK_FIXMAP_BEGIN,
 	PVCLOCK_FIXMAP_END = PVCLOCK_FIXMAP_BEGIN+PVCLOCK_VSYSCALL_NR_PAGES-1,
+=======
+#ifdef CONFIG_X86_VSYSCALL_EMULATION
+	VSYSCALL_PAGE = (FIXADDR_TOP - VSYSCALL_ADDR) >> PAGE_SHIFT,
+>>>>>>> v4.9.227
 #endif
 #endif
 	FIX_DBGP_BASE,
@@ -136,18 +144,30 @@ enum fixed_addresses {
 extern void reserve_top_address(unsigned long reserve);
 
 #define FIXADDR_SIZE	(__end_of_permanent_fixed_addresses << PAGE_SHIFT)
+<<<<<<< HEAD
 #define FIXADDR_BOOT_SIZE	(__end_of_fixed_addresses << PAGE_SHIFT)
 #define FIXADDR_START		(FIXADDR_TOP - FIXADDR_SIZE)
 #define FIXADDR_BOOT_START	(FIXADDR_TOP - FIXADDR_BOOT_SIZE)
+=======
+#define FIXADDR_START		(FIXADDR_TOP - FIXADDR_SIZE)
+>>>>>>> v4.9.227
 
 extern int fixmaps_set;
 
 extern pte_t *kmap_pte;
+<<<<<<< HEAD
 extern pgprot_t kmap_prot;
 extern pte_t *pkmap_page_table;
 
 void __native_set_fixmap(enum fixed_addresses idx, pte_t pte);
 void native_set_fixmap(enum fixed_addresses idx,
+=======
+#define kmap_prot PAGE_KERNEL
+extern pte_t *pkmap_page_table;
+
+void __native_set_fixmap(enum fixed_addresses idx, pte_t pte);
+void native_set_fixmap(unsigned /* enum fixed_addresses */ idx,
+>>>>>>> v4.9.227
 		       phys_addr_t phys, pgprot_t flags);
 
 #ifndef CONFIG_PARAVIRT

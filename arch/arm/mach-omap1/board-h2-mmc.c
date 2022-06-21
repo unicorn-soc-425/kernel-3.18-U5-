@@ -19,7 +19,11 @@
 #include "board-h2.h"
 #include "mmc.h"
 
+<<<<<<< HEAD
 #if defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MMC_OMAP)
+>>>>>>> v4.9.227
 
 static int mmc_set_power(struct device *dev, int slot, int power_on,
 				int vdd)

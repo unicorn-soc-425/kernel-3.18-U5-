@@ -13,6 +13,7 @@ address is common of all subnode.
 			...
 		};
 
+<<<<<<< HEAD
 		prediv_node {
 			...
 		};
@@ -21,6 +22,8 @@ address is common of all subnode.
 			...
 		};
 
+=======
+>>>>>>> v4.9.227
 		quadfs_node {
 			...
 		};
@@ -29,10 +32,13 @@ address is common of all subnode.
 			...
 		};
 
+<<<<<<< HEAD
 		vcc_node {
 			...
 		};
 
+=======
+>>>>>>> v4.9.227
 		flexgen_node {
 			...
 		};
@@ -40,6 +46,7 @@ address is common of all subnode.
 	};
 
 This binding uses the common clock binding[1].
+<<<<<<< HEAD
 Each subnode should use the binding discribe in [2]..[7]
 
 [1] Documentation/devicetree/bindings/clock/clock-bindings.txt
@@ -48,6 +55,13 @@ Each subnode should use the binding discribe in [2]..[7]
 [4] Documentation/devicetree/bindings/clock/st,clkgen-pll.txt
 [5] Documentation/devicetree/bindings/clock/st,clkgen-prediv.txt
 [6] Documentation/devicetree/bindings/clock/st,vcc.txt
+=======
+Each subnode should use the binding described in [2]..[7]
+
+[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
+[3] Documentation/devicetree/bindings/clock/st,clkgen-mux.txt
+[4] Documentation/devicetree/bindings/clock/st,clkgen-pll.txt
+>>>>>>> v4.9.227
 [7] Documentation/devicetree/bindings/clock/st,quadfs.txt
 [8] Documentation/devicetree/bindings/clock/st,flexgen.txt
 
@@ -57,6 +71,7 @@ Required properties:
 
 Example:
 
+<<<<<<< HEAD
 	clockgen-a@fee62000 {
 
 		reg = <0xfee62000 0xb48>;
@@ -98,3 +113,29 @@ Example:
 		};
 	};
 
+=======
+	clockgen-a@090ff000 {
+		compatible = "st,clkgen-c32";
+		reg = <0x90ff000 0x1000>;
+
+		clk_s_a0_pll: clk-s-a0-pll {
+			#clock-cells = <1>;
+			compatible = "st,clkgen-pll0";
+
+			clocks = <&clk_sysin>;
+
+			clock-output-names = "clk-s-a0-pll-ofd-0";
+		};
+
+		clk_s_a0_flexgen: clk-s-a0-flexgen {
+			compatible = "st,flexgen";
+
+			#clock-cells = <1>;
+
+			clocks = <&clk_s_a0_pll 0>,
+				 <&clk_sysin>;
+
+			clock-output-names = "clk-ic-lmi0";
+		};
+	};
+>>>>>>> v4.9.227

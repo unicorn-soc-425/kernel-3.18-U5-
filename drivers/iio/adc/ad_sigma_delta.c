@@ -62,7 +62,11 @@ int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
 	struct spi_transfer t = {
 		.tx_buf		= data,
 		.len		= size + 1,
+<<<<<<< HEAD
 		.cs_change	= sigma_delta->bus_locked,
+=======
+		.cs_change	= sigma_delta->keep_cs_asserted,
+>>>>>>> v4.9.227
 	};
 	struct spi_message m;
 	int ret;
@@ -121,6 +125,10 @@ static int ad_sd_read_reg_raw(struct ad_sigma_delta *sigma_delta,
 	if (sigma_delta->info->has_registers) {
 		data[0] = reg << sigma_delta->info->addr_shift;
 		data[0] |= sigma_delta->info->read_mask;
+<<<<<<< HEAD
+=======
+		data[0] |= sigma_delta->comm;
+>>>>>>> v4.9.227
 		spi_message_add_tail(&t[0], &m);
 	}
 	spi_message_add_tail(&t[1], &m);
@@ -216,6 +224,10 @@ static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
 
 	spi_bus_lock(sigma_delta->spi->master);
 	sigma_delta->bus_locked = true;
+<<<<<<< HEAD
+=======
+	sigma_delta->keep_cs_asserted = true;
+>>>>>>> v4.9.227
 	reinit_completion(&sigma_delta->completion);
 
 	ret = ad_sigma_delta_set_mode(sigma_delta, mode);
@@ -233,9 +245,16 @@ static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
 		ret = 0;
 	}
 out:
+<<<<<<< HEAD
 	sigma_delta->bus_locked = false;
 	spi_bus_unlock(sigma_delta->spi->master);
 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+=======
+	sigma_delta->keep_cs_asserted = false;
+	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+	sigma_delta->bus_locked = false;
+	spi_bus_unlock(sigma_delta->spi->master);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -287,6 +306,10 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
 
 	spi_bus_lock(sigma_delta->spi->master);
 	sigma_delta->bus_locked = true;
+<<<<<<< HEAD
+=======
+	sigma_delta->keep_cs_asserted = true;
+>>>>>>> v4.9.227
 	reinit_completion(&sigma_delta->completion);
 
 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_SINGLE);
@@ -296,9 +319,12 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
 	ret = wait_for_completion_interruptible_timeout(
 			&sigma_delta->completion, HZ);
 
+<<<<<<< HEAD
 	sigma_delta->bus_locked = false;
 	spi_bus_unlock(sigma_delta->spi->master);
 
+=======
+>>>>>>> v4.9.227
 	if (ret == 0)
 		ret = -EIO;
 	if (ret < 0)
@@ -314,7 +340,14 @@ out:
 		sigma_delta->irq_dis = true;
 	}
 
+<<<<<<< HEAD
 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+=======
+	sigma_delta->keep_cs_asserted = false;
+	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+	sigma_delta->bus_locked = false;
+	spi_bus_unlock(sigma_delta->spi->master);
+>>>>>>> v4.9.227
 	mutex_unlock(&indio_dev->mlock);
 
 	if (ret)
@@ -351,6 +384,11 @@ static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
 
 	spi_bus_lock(sigma_delta->spi->master);
 	sigma_delta->bus_locked = true;
+<<<<<<< HEAD
+=======
+	sigma_delta->keep_cs_asserted = true;
+
+>>>>>>> v4.9.227
 	ret = ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_CONTINUOUS);
 	if (ret)
 		goto err_unlock;
@@ -379,6 +417,10 @@ static int ad_sd_buffer_postdisable(struct iio_dev *indio_dev)
 		sigma_delta->irq_dis = true;
 	}
 
+<<<<<<< HEAD
+=======
+	sigma_delta->keep_cs_asserted = false;
+>>>>>>> v4.9.227
 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
 
 	sigma_delta->bus_locked = false;

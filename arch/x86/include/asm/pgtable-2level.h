@@ -62,6 +62,7 @@ static inline unsigned long pte_bitop(unsigned long value, unsigned int rightshi
 	return ((value >> rightshift) & mask) << leftshift;
 }
 
+<<<<<<< HEAD
 /*
  * Bits _PAGE_BIT_PRESENT, _PAGE_BIT_FILE and _PAGE_BIT_PROTNONE are taken,
  * split up the 29 bits of offset into this range.
@@ -100,6 +101,10 @@ static __always_inline pte_t pgoff_to_pte(pgoff_t off)
 
 /* Encode and de-code a swap entry */
 #define SWP_TYPE_BITS (_PAGE_BIT_FILE - _PAGE_BIT_PRESENT - 1)
+=======
+/* Encode and de-code a swap entry */
+#define SWP_TYPE_BITS 5
+>>>>>>> v4.9.227
 #define SWP_OFFSET_SHIFT (_PAGE_BIT_PROTNONE + 1)
 
 #define MAX_SWAPFILES_CHECK() BUILD_BUG_ON(MAX_SWAPFILES_SHIFT > SWP_TYPE_BITS)
@@ -113,4 +118,24 @@ static __always_inline pte_t pgoff_to_pte(pgoff_t off)
 #define __pte_to_swp_entry(pte)		((swp_entry_t) { (pte).pte_low })
 #define __swp_entry_to_pte(x)		((pte_t) { .pte = (x).val })
 
+<<<<<<< HEAD
+=======
+/* No inverted PFNs on 2 level page tables */
+
+static inline u64 protnone_mask(u64 val)
+{
+	return 0;
+}
+
+static inline u64 flip_protnone_guard(u64 oldval, u64 val, u64 mask)
+{
+	return val;
+}
+
+static inline bool __pte_needs_invert(u64 val)
+{
+	return false;
+}
+
+>>>>>>> v4.9.227
 #endif /* _ASM_X86_PGTABLE_2LEVEL_H */

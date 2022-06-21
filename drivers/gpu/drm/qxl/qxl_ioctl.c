@@ -107,15 +107,23 @@ apply_surf_reloc(struct qxl_device *qdev, struct qxl_reloc_info *info)
 }
 
 /* return holding the reference to this object */
+<<<<<<< HEAD
 static int qxlhw_handle_to_bo(struct qxl_device *qdev,
 			      struct drm_file *file_priv, uint64_t handle,
+=======
+static int qxlhw_handle_to_bo(struct drm_file *file_priv, uint64_t handle,
+>>>>>>> v4.9.227
 			      struct qxl_release *release, struct qxl_bo **qbo_p)
 {
 	struct drm_gem_object *gobj;
 	struct qxl_bo *qobj;
 	int ret;
 
+<<<<<<< HEAD
 	gobj = drm_gem_object_lookup(qdev->ddev, file_priv, handle);
+=======
+	gobj = drm_gem_object_lookup(file_priv, handle);
+>>>>>>> v4.9.227
 	if (!gobj)
 		return -EINVAL;
 
@@ -221,7 +229,11 @@ static int qxl_process_single_command(struct qxl_device *qdev,
 		reloc_info[i].type = reloc.reloc_type;
 
 		if (reloc.dst_handle) {
+<<<<<<< HEAD
 			ret = qxlhw_handle_to_bo(qdev, file_priv, reloc.dst_handle, release,
+=======
+			ret = qxlhw_handle_to_bo(file_priv, reloc.dst_handle, release,
+>>>>>>> v4.9.227
 						 &reloc_info[i].dst_bo);
 			if (ret)
 				goto out_free_bos;
@@ -234,7 +246,11 @@ static int qxl_process_single_command(struct qxl_device *qdev,
 
 		/* reserve and validate the reloc dst bo */
 		if (reloc.reloc_type == QXL_RELOC_TYPE_BO || reloc.src_handle) {
+<<<<<<< HEAD
 			ret = qxlhw_handle_to_bo(qdev, file_priv, reloc.src_handle, release,
+=======
+			ret = qxlhw_handle_to_bo(file_priv, reloc.src_handle, release,
+>>>>>>> v4.9.227
 						 &reloc_info[i].src_bo);
 			if (ret)
 				goto out_free_bos;
@@ -257,11 +273,16 @@ static int qxl_process_single_command(struct qxl_device *qdev,
 			apply_surf_reloc(qdev, &reloc_info[i]);
 	}
 
+<<<<<<< HEAD
 	ret = qxl_push_command_ring_release(qdev, release, cmd->type, true);
 	if (ret)
 		qxl_release_backoff_reserve_list(release);
 	else
 		qxl_release_fence_buffer_objects(release);
+=======
+	qxl_release_fence_buffer_objects(release);
+	ret = qxl_push_command_ring_release(qdev, release, cmd->type, true);
+>>>>>>> v4.9.227
 
 out_free_bos:
 out_free_release:
@@ -314,7 +335,11 @@ static int qxl_update_area_ioctl(struct drm_device *dev, void *data,
 	    update_area->top >= update_area->bottom)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	gobj = drm_gem_object_lookup(dev, file, update_area->handle);
+=======
+	gobj = drm_gem_object_lookup(file, update_area->handle);
+>>>>>>> v4.9.227
 	if (gobj == NULL)
 		return -ENOENT;
 

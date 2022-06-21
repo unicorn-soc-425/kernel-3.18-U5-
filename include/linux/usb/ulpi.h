@@ -12,6 +12,11 @@
 #define __LINUX_USB_ULPI_H
 
 #include <linux/usb/otg.h>
+<<<<<<< HEAD
+=======
+#include <linux/ulpi/regs.h>
+
+>>>>>>> v4.9.227
 /*-------------------------------------------------------------------------*/
 
 /*
@@ -49,6 +54,7 @@
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 /*
  * Macros for Set and Clear
  * See ULPI 1.1 specification to find the registers with Set and Clear offsets
@@ -182,6 +188,8 @@
 
 /*-------------------------------------------------------------------------*/
 
+=======
+>>>>>>> v4.9.227
 #if IS_ENABLED(CONFIG_USB_ULPI)
 struct usb_phy *otg_ulpi_create(struct usb_phy_io_ops *ops,
 					unsigned int flags);

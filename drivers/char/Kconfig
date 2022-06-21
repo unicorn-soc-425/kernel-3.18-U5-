@@ -7,6 +7,7 @@ menu "Character devices"
 source "drivers/tty/Kconfig"
 
 config DEVMEM
+<<<<<<< HEAD
 	bool "Memory device driver"
 	default y
 	help
@@ -18,6 +19,15 @@ config DEVMEM
 	  than physical memory. These devices are standard parts of a Linux
 	  system and most users should say Y here. You might say N if very
 	  security conscience or memory is tight.
+=======
+	bool "/dev/mem virtual device support"
+	default y
+	help
+	  Say Y here if you want to support the /dev/mem device.
+	  The /dev/mem device is used to access areas of physical
+	  memory.
+	  When in doubt, say "Y".
+>>>>>>> v4.9.227
 
 config DEVKMEM
 	bool "/dev/kmem virtual device support"
@@ -52,8 +62,11 @@ config SGI_MBCS
 
 source "drivers/tty/serial/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/char/diag/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 config TTY_PRINTK
 	tristate "TTY driver to output user messages via printk"
 	depends on EXPERT && TTY
@@ -184,6 +197,23 @@ config IBM_BSR
 	  of threads across a large system which avoids bouncing a cacheline
 	  between several cores on a system
 
+<<<<<<< HEAD
+=======
+config POWERNV_OP_PANEL
+	tristate "IBM POWERNV Operator Panel Display support"
+	depends on PPC_POWERNV
+	default m
+	help
+	  If you say Y here, a special character device node, /dev/op_panel,
+	  will be created which exposes the operator panel display on IBM
+	  Power Systems machines with FSPs.
+
+	  If you don't require access to the operator panel display from user
+	  space, say N.
+
+	  If unsure, say M here to build it as a module called powernv-op-panel.
+
+>>>>>>> v4.9.227
 source "drivers/char/ipmi/Kconfig"
 
 config DS1620
@@ -285,8 +315,12 @@ if RTC_LIB=n
 
 config RTC
 	tristate "Enhanced Real Time Clock Support (legacy PC RTC driver)"
+<<<<<<< HEAD
 	depends on !PPC && !PARISC && !IA64 && !M68K && !SPARC && !FRV \
 			&& !ARM && !SUPERH && !S390 && !AVR32 && !BLACKFIN && !UML
+=======
+	depends on ALPHA || (MIPS && MACH_LOONGSON64)
+>>>>>>> v4.9.227
 	---help---
 	  If you say Y here and create a character special file /dev/rtc with
 	  major number 10 and minor number 135 using mknod ("man mknod"), you
@@ -332,6 +366,7 @@ config JS_RTC
 	  To compile this driver as a module, choose M here: the
 	  module will be called js-rtc.
 
+<<<<<<< HEAD
 config GEN_RTC
 	tristate "Generic /dev/rtc emulation"
 	depends on RTC!=y && !IA64 && !ARM && !M32R && !MIPS && !SPARC && !FRV && !S390 && !SUPERH && !AVR32 && !BLACKFIN && !UML
@@ -357,6 +392,8 @@ config GEN_RTC_X
 	  Provides an emulation for RTC_UIE which is required by some programs
 	  and may improve precision of the generic RTC support in some cases.
 
+=======
+>>>>>>> v4.9.227
 config EFI_RTC
 	bool "EFI Real Time Clock Services"
 	depends on IA64
@@ -395,7 +432,11 @@ config XILINX_HWICAP
 
 config R3964
 	tristate "Siemens R3964 line discipline"
+<<<<<<< HEAD
 	depends on TTY
+=======
+	depends on TTY && BROKEN
+>>>>>>> v4.9.227
 	---help---
 	  This driver allows synchronous communication with devices using the
 	  Siemens R3964 packet protocol. Unless you are dealing with special
@@ -598,6 +639,7 @@ config DEVPORT
 
 source "drivers/s390/char/Kconfig"
 
+<<<<<<< HEAD
 config MSM_SMD_PKT
 	bool "Enable device interface for some SMD packet ports"
 	default n
@@ -606,6 +648,8 @@ config MSM_SMD_PKT
 	  Enables userspace clients to read and write to some packet SMD
 	  ports via device interface for MSM chipset.
 
+=======
+>>>>>>> v4.9.227
 config TILE_SROM
 	bool "Character-device access via hypervisor to the Tilera SPI ROM"
 	depends on TILE
@@ -619,6 +663,7 @@ config TILE_SROM
 
 source "drivers/char/xillybus/Kconfig"
 
+<<<<<<< HEAD
 config MSM_ADSPRPC
 	tristate "Qualcomm ADSP RPC driver"
 	depends on MSM_SMD
@@ -643,5 +688,7 @@ config MSM_RDBG
 	  Implements a shared memory based transport mechanism that allows
 	  for a debugger running on a host PC to communicate with a remote
 	  stub running on peripheral subsystems such as the ADSP, MODEM etc.
+=======
+>>>>>>> v4.9.227
 endmenu
 

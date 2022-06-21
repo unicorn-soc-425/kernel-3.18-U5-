@@ -104,6 +104,13 @@ unsigned long __init wii_mmu_mapin_mem2(unsigned long top)
 	/* MEM2 64MB@0x10000000 */
 	delta = wii_hole_start + wii_hole_size;
 	size = top - delta;
+<<<<<<< HEAD
+=======
+
+	if (__map_without_bats)
+		return delta;
+
+>>>>>>> v4.9.227
 	for (bl = 128<<10; bl < max_size; bl <<= 1) {
 		if (bl * 2 > size)
 			break;
@@ -112,7 +119,11 @@ unsigned long __init wii_mmu_mapin_mem2(unsigned long top)
 	return delta + bl;
 }
 
+<<<<<<< HEAD
 static void wii_spin(void)
+=======
+static void __noreturn wii_spin(void)
+>>>>>>> v4.9.227
 {
 	local_irq_disable();
 	for (;;)
@@ -160,7 +171,11 @@ static void __init wii_setup_arch(void)
 	}
 }
 
+<<<<<<< HEAD
 static void wii_restart(char *cmd)
+=======
+static void __noreturn wii_restart(char *cmd)
+>>>>>>> v4.9.227
 {
 	local_irq_disable();
 
@@ -185,18 +200,25 @@ static void wii_power_off(void)
 	wii_spin();
 }
 
+<<<<<<< HEAD
 static void wii_halt(void)
+=======
+static void __noreturn wii_halt(void)
+>>>>>>> v4.9.227
 {
 	if (ppc_md.restart)
 		ppc_md.restart(NULL);
 	wii_spin();
 }
 
+<<<<<<< HEAD
 static void __init wii_init_early(void)
 {
 	ug_udbg_init();
 }
 
+=======
+>>>>>>> v4.9.227
 static void __init wii_pic_probe(void)
 {
 	flipper_pic_probe();
@@ -205,12 +227,22 @@ static void __init wii_pic_probe(void)
 
 static int __init wii_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long dt_root;
 
 	dt_root = of_get_flat_dt_root();
 	if (!of_flat_dt_is_compatible(dt_root, "nintendo,wii"))
 		return 0;
 
+=======
+	if (!of_machine_is_compatible("nintendo,wii"))
+		return 0;
+
+	pm_power_off = wii_power_off;
+
+	ug_udbg_init();
+
+>>>>>>> v4.9.227
 	return 1;
 }
 
@@ -223,10 +255,15 @@ static void wii_shutdown(void)
 define_machine(wii) {
 	.name			= "wii",
 	.probe			= wii_probe,
+<<<<<<< HEAD
 	.init_early		= wii_init_early,
 	.setup_arch		= wii_setup_arch,
 	.restart		= wii_restart,
 	.power_off		= wii_power_off,
+=======
+	.setup_arch		= wii_setup_arch,
+	.restart		= wii_restart,
+>>>>>>> v4.9.227
 	.halt			= wii_halt,
 	.init_IRQ		= wii_pic_probe,
 	.get_irq		= flipper_pic_get_irq,

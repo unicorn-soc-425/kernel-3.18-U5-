@@ -3,6 +3,14 @@
 # Licensed under the GPL
 #
 
+<<<<<<< HEAD
+=======
+# Don't instrument UML-specific code; without this, we may crash when
+# accessing the instrumentation buffer for the first time from the
+# kernel.
+KCOV_INSTRUMENT                := n
+
+>>>>>>> v4.9.227
 CPPFLAGS_vmlinux.lds := -DSTART=$(LDS_START)		\
                         -DELF_ARCH=$(LDS_ELF_ARCH)	\
                         -DELF_FORMAT=$(LDS_ELF_FORMAT)	\
@@ -12,8 +20,13 @@ clean-files :=
 
 obj-y = config.o exec.o exitcode.o irq.o ksyms.o mem.o \
 	physmem.o process.o ptrace.o reboot.o sigio.o \
+<<<<<<< HEAD
 	signal.o smp.o syscall.o sysrq.o time.o tlb.o trap.o \
 	um_arch.o umid.o maccess.o skas/
+=======
+	signal.o syscall.o sysrq.o time.o tlb.o trap.o \
+	um_arch.o umid.o maccess.o kmsg_dump.o skas/
+>>>>>>> v4.9.227
 
 obj-$(CONFIG_BLK_DEV_INITRD) += initrd.o
 obj-$(CONFIG_GPROF)	+= gprof_syms.o

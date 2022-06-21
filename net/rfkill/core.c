@@ -49,7 +49,10 @@
 struct rfkill {
 	spinlock_t		lock;
 
+<<<<<<< HEAD
 	const char		*name;
+=======
+>>>>>>> v4.9.227
 	enum rfkill_type	type;
 
 	unsigned long		state;
@@ -58,6 +61,11 @@ struct rfkill {
 
 	bool			registered;
 	bool			persistent;
+<<<<<<< HEAD
+=======
+	bool			polling_paused;
+	bool			suspended;
+>>>>>>> v4.9.227
 
 	const struct rfkill_ops	*ops;
 	void			*data;
@@ -73,6 +81,10 @@ struct rfkill {
 	struct delayed_work	poll_work;
 	struct work_struct	uevent_work;
 	struct work_struct	sync_work;
+<<<<<<< HEAD
+=======
+	char			name[];
+>>>>>>> v4.9.227
 };
 #define to_rfkill(d)	container_of(d, struct rfkill, dev)
 
@@ -233,6 +245,7 @@ static void rfkill_event(struct rfkill *rfkill)
 	rfkill_send_events(rfkill, RFKILL_OP_CHANGE);
 }
 
+<<<<<<< HEAD
 static bool __rfkill_set_hw_state(struct rfkill *rfkill,
 				  bool blocked, bool *change)
 {
@@ -256,6 +269,8 @@ static bool __rfkill_set_hw_state(struct rfkill *rfkill,
 	return any;
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * rfkill_set_block - wrapper for set_block method
  *
@@ -285,7 +300,11 @@ static void rfkill_set_block(struct rfkill *rfkill, bool blocked)
 	spin_lock_irqsave(&rfkill->lock, flags);
 	prev = rfkill->state & RFKILL_BLOCK_SW;
 
+<<<<<<< HEAD
 	if (rfkill->state & RFKILL_BLOCK_SW)
+=======
+	if (prev)
+>>>>>>> v4.9.227
 		rfkill->state |= RFKILL_BLOCK_SW_PREV;
 	else
 		rfkill->state &= ~RFKILL_BLOCK_SW_PREV;
@@ -303,8 +322,13 @@ static void rfkill_set_block(struct rfkill *rfkill, bool blocked)
 	spin_lock_irqsave(&rfkill->lock, flags);
 	if (err) {
 		/*
+<<<<<<< HEAD
 		 * Failed -- reset status to _prev, this may be different
 		 * from what set set _PREV to earlier in this function
+=======
+		 * Failed -- reset status to _PREV, which may be different
+		 * from what we have set _PREV to earlier in this function
+>>>>>>> v4.9.227
 		 * if rfkill_set_sw_state was invoked.
 		 */
 		if (rfkill->state & RFKILL_BLOCK_SW_PREV)
@@ -323,6 +347,22 @@ static void rfkill_set_block(struct rfkill *rfkill, bool blocked)
 		rfkill_event(rfkill);
 }
 
+<<<<<<< HEAD
+=======
+static void rfkill_update_global_state(enum rfkill_type type, bool blocked)
+{
+	int i;
+
+	if (type != RFKILL_TYPE_ALL) {
+		rfkill_global_states[type].cur = blocked;
+		return;
+	}
+
+	for (i = 0; i < NUM_RFKILL_TYPES; i++)
+		rfkill_global_states[i].cur = blocked;
+}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_RFKILL_INPUT
 static atomic_t rfkill_input_disabled = ATOMIC_INIT(0);
 
@@ -332,8 +372,12 @@ static atomic_t rfkill_input_disabled = ATOMIC_INIT(0);
  * @blocked: the new state
  *
  * This function sets the state of all switches of given type,
+<<<<<<< HEAD
  * unless a specific switch is claimed by userspace (in which case,
  * that switch is left alone) or suspended.
+=======
+ * unless a specific switch is suspended.
+>>>>>>> v4.9.227
  *
  * Caller must have acquired rfkill_global_mutex.
  */
@@ -341,7 +385,11 @@ static void __rfkill_switch_all(const enum rfkill_type type, bool blocked)
 {
 	struct rfkill *rfkill;
 
+<<<<<<< HEAD
 	rfkill_global_states[type].cur = blocked;
+=======
+	rfkill_update_global_state(type, blocked);
+>>>>>>> v4.9.227
 	list_for_each_entry(rfkill, &rfkill_list, node) {
 		if (rfkill->type != type && type != RFKILL_TYPE_ALL)
 			continue;
@@ -469,17 +517,41 @@ bool rfkill_get_global_sw_state(const enum rfkill_type type)
 }
 #endif
 
+<<<<<<< HEAD
 
 bool rfkill_set_hw_state(struct rfkill *rfkill, bool blocked)
 {
 	bool ret, change;
 
 	ret = __rfkill_set_hw_state(rfkill, blocked, &change);
+=======
+bool rfkill_set_hw_state(struct rfkill *rfkill, bool blocked)
+{
+	unsigned long flags;
+	bool ret, prev;
+
+	BUG_ON(!rfkill);
+
+	spin_lock_irqsave(&rfkill->lock, flags);
+	prev = !!(rfkill->state & RFKILL_BLOCK_HW);
+	if (blocked)
+		rfkill->state |= RFKILL_BLOCK_HW;
+	else
+		rfkill->state &= ~RFKILL_BLOCK_HW;
+	ret = !!(rfkill->state & RFKILL_BLOCK_ANY);
+	spin_unlock_irqrestore(&rfkill->lock, flags);
+
+	rfkill_led_trigger_event(rfkill);
+>>>>>>> v4.9.227
 
 	if (!rfkill->registered)
 		return ret;
 
+<<<<<<< HEAD
 	if (change)
+=======
+	if (prev != blocked)
+>>>>>>> v4.9.227
 		schedule_work(&rfkill->uevent_work);
 
 	return ret;
@@ -574,6 +646,37 @@ void rfkill_set_states(struct rfkill *rfkill, bool sw, bool hw)
 }
 EXPORT_SYMBOL(rfkill_set_states);
 
+<<<<<<< HEAD
+=======
+static const char * const rfkill_types[] = {
+	NULL, /* RFKILL_TYPE_ALL */
+	"wlan",
+	"bluetooth",
+	"ultrawideband",
+	"wimax",
+	"wwan",
+	"gps",
+	"fm",
+	"nfc",
+};
+
+enum rfkill_type rfkill_find_type(const char *name)
+{
+	int i;
+
+	BUILD_BUG_ON(ARRAY_SIZE(rfkill_types) != NUM_RFKILL_TYPES);
+
+	if (!name)
+		return RFKILL_TYPE_ALL;
+
+	for (i = 1; i < NUM_RFKILL_TYPES; i++)
+		if (!strcmp(name, rfkill_types[i]))
+			return i;
+	return RFKILL_TYPE_ALL;
+}
+EXPORT_SYMBOL(rfkill_find_type);
+
+>>>>>>> v4.9.227
 static ssize_t name_show(struct device *dev, struct device_attribute *attr,
 			 char *buf)
 {
@@ -583,6 +686,7 @@ static ssize_t name_show(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_RO(name);
 
+<<<<<<< HEAD
 static const char *rfkill_get_type_str(enum rfkill_type type)
 {
 	BUILD_BUG_ON(NUM_RFKILL_TYPES != RFKILL_TYPE_NFC + 1);
@@ -609,12 +713,18 @@ static const char *rfkill_get_type_str(enum rfkill_type type)
 	}
 }
 
+=======
+>>>>>>> v4.9.227
 static ssize_t type_show(struct device *dev, struct device_attribute *attr,
 			 char *buf)
 {
 	struct rfkill *rfkill = to_rfkill(dev);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%s\n", rfkill_get_type_str(rfkill->type));
+=======
+	return sprintf(buf, "%s\n", rfkill_types[rfkill->type]);
+>>>>>>> v4.9.227
 }
 static DEVICE_ATTR_RO(type);
 
@@ -722,6 +832,7 @@ static ssize_t state_store(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_RW(state);
 
+<<<<<<< HEAD
 static ssize_t claim_show(struct device *dev, struct device_attribute *attr,
 			  char *buf)
 {
@@ -729,13 +840,18 @@ static ssize_t claim_show(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_RO(claim);
 
+=======
+>>>>>>> v4.9.227
 static struct attribute *rfkill_dev_attrs[] = {
 	&dev_attr_name.attr,
 	&dev_attr_type.attr,
 	&dev_attr_index.attr,
 	&dev_attr_persistent.attr,
 	&dev_attr_state.attr,
+<<<<<<< HEAD
 	&dev_attr_claim.attr,
+=======
+>>>>>>> v4.9.227
 	&dev_attr_soft.attr,
 	&dev_attr_hard.attr,
 	NULL,
@@ -760,7 +876,11 @@ static int rfkill_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
 	if (error)
 		return error;
 	error = add_uevent_var(env, "RFKILL_TYPE=%s",
+<<<<<<< HEAD
 			       rfkill_get_type_str(rfkill->type));
+=======
+			       rfkill_types[rfkill->type]);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 	spin_lock_irqsave(&rfkill->lock, flags);
@@ -778,6 +898,10 @@ void rfkill_pause_polling(struct rfkill *rfkill)
 	if (!rfkill->ops->poll)
 		return;
 
+<<<<<<< HEAD
+=======
+	rfkill->polling_paused = true;
+>>>>>>> v4.9.227
 	cancel_delayed_work_sync(&rfkill->poll_work);
 }
 EXPORT_SYMBOL(rfkill_pause_polling);
@@ -789,43 +913,88 @@ void rfkill_resume_polling(struct rfkill *rfkill)
 	if (!rfkill->ops->poll)
 		return;
 
+<<<<<<< HEAD
+=======
+	rfkill->polling_paused = false;
+
+	if (rfkill->suspended)
+		return;
+
+>>>>>>> v4.9.227
 	queue_delayed_work(system_power_efficient_wq,
 			   &rfkill->poll_work, 0);
 }
 EXPORT_SYMBOL(rfkill_resume_polling);
 
+<<<<<<< HEAD
 static __maybe_unused int rfkill_suspend(struct device *dev, pm_message_t state)
 {
 	struct rfkill *rfkill = to_rfkill(dev);
 
 	rfkill_pause_polling(rfkill);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int rfkill_suspend(struct device *dev)
+{
+	struct rfkill *rfkill = to_rfkill(dev);
+
+	rfkill->suspended = true;
+	cancel_delayed_work_sync(&rfkill->poll_work);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static __maybe_unused int rfkill_resume(struct device *dev)
+=======
+static int rfkill_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct rfkill *rfkill = to_rfkill(dev);
 	bool cur;
 
+<<<<<<< HEAD
+=======
+	rfkill->suspended = false;
+
+>>>>>>> v4.9.227
 	if (!rfkill->persistent) {
 		cur = !!(rfkill->state & RFKILL_BLOCK_SW);
 		rfkill_set_block(rfkill, cur);
 	}
 
+<<<<<<< HEAD
 	rfkill_resume_polling(rfkill);
+=======
+	if (rfkill->ops->poll && !rfkill->polling_paused)
+		queue_delayed_work(system_power_efficient_wq,
+				   &rfkill->poll_work, 0);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static SIMPLE_DEV_PM_OPS(rfkill_pm_ops, rfkill_suspend, rfkill_resume);
+#define RFKILL_PM_OPS (&rfkill_pm_ops)
+#else
+#define RFKILL_PM_OPS NULL
+#endif
+>>>>>>> v4.9.227
 
 static struct class rfkill_class = {
 	.name		= "rfkill",
 	.dev_release	= rfkill_release,
 	.dev_groups	= rfkill_dev_groups,
 	.dev_uevent	= rfkill_dev_uevent,
+<<<<<<< HEAD
 	.suspend	= IS_ENABLED(CONFIG_RFKILL_PM) ? rfkill_suspend : NULL,
 	.resume		= IS_ENABLED(CONFIG_RFKILL_PM) ? rfkill_resume : NULL,
+=======
+	.pm		= RFKILL_PM_OPS,
+>>>>>>> v4.9.227
 };
 
 bool rfkill_blocked(struct rfkill *rfkill)
@@ -863,14 +1032,22 @@ struct rfkill * __must_check rfkill_alloc(const char *name,
 	if (WARN_ON(type == RFKILL_TYPE_ALL || type >= NUM_RFKILL_TYPES))
 		return NULL;
 
+<<<<<<< HEAD
 	rfkill = kzalloc(sizeof(*rfkill), GFP_KERNEL);
+=======
+	rfkill = kzalloc(sizeof(*rfkill) + strlen(name) + 1, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!rfkill)
 		return NULL;
 
 	spin_lock_init(&rfkill->lock);
 	INIT_LIST_HEAD(&rfkill->node);
 	rfkill->type = type;
+<<<<<<< HEAD
 	rfkill->name = name;
+=======
+	strcpy(rfkill->name, name);
+>>>>>>> v4.9.227
 	rfkill->ops = ops;
 	rfkill->data = ops_data;
 
@@ -928,10 +1105,20 @@ static void rfkill_sync_work(struct work_struct *work)
 int __must_check rfkill_register(struct rfkill *rfkill)
 {
 	static unsigned long rfkill_no;
+<<<<<<< HEAD
 	struct device *dev = &rfkill->dev;
 	int error;
 
 	BUG_ON(!rfkill);
+=======
+	struct device *dev;
+	int error;
+
+	if (!rfkill)
+		return -EINVAL;
+
+	dev = &rfkill->dev;
+>>>>>>> v4.9.227
 
 	mutex_lock(&rfkill_global_mutex);
 
@@ -1129,6 +1316,10 @@ static ssize_t rfkill_fop_write(struct file *file, const char __user *buf,
 {
 	struct rfkill *rfkill;
 	struct rfkill_event ev;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> v4.9.227
 
 	/* we don't need the 'hard' variable but accept it */
 	if (count < RFKILL_EVENT_SIZE_V1 - 1)
@@ -1143,14 +1334,18 @@ static ssize_t rfkill_fop_write(struct file *file, const char __user *buf,
 	if (copy_from_user(&ev, buf, count))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (ev.op != RFKILL_OP_CHANGE && ev.op != RFKILL_OP_CHANGE_ALL)
 		return -EINVAL;
 
+=======
+>>>>>>> v4.9.227
 	if (ev.type >= NUM_RFKILL_TYPES)
 		return -EINVAL;
 
 	mutex_lock(&rfkill_global_mutex);
 
+<<<<<<< HEAD
 	if (ev.op == RFKILL_OP_CHANGE_ALL) {
 		if (ev.type == RFKILL_TYPE_ALL) {
 			enum rfkill_type i;
@@ -1173,6 +1368,33 @@ static ssize_t rfkill_fop_write(struct file *file, const char __user *buf,
 	mutex_unlock(&rfkill_global_mutex);
 
 	return count;
+=======
+	switch (ev.op) {
+	case RFKILL_OP_CHANGE_ALL:
+		rfkill_update_global_state(ev.type, ev.soft);
+		list_for_each_entry(rfkill, &rfkill_list, node)
+			if (rfkill->type == ev.type ||
+			    ev.type == RFKILL_TYPE_ALL)
+				rfkill_set_block(rfkill, ev.soft);
+		ret = 0;
+		break;
+	case RFKILL_OP_CHANGE:
+		list_for_each_entry(rfkill, &rfkill_list, node)
+			if (rfkill->idx == ev.idx &&
+			    (rfkill->type == ev.type ||
+			     ev.type == RFKILL_TYPE_ALL))
+				rfkill_set_block(rfkill, ev.soft);
+		ret = 0;
+		break;
+	default:
+		ret = -EINVAL;
+		break;
+	}
+
+	mutex_unlock(&rfkill_global_mutex);
+
+	return ret ?: count;
+>>>>>>> v4.9.227
 }
 
 static int rfkill_fop_release(struct inode *inode, struct file *file)
@@ -1248,10 +1470,15 @@ static struct miscdevice rfkill_miscdev = {
 static int __init rfkill_init(void)
 {
 	int error;
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < NUM_RFKILL_TYPES; i++)
 		rfkill_global_states[i].cur = !rfkill_default_state;
+=======
+
+	rfkill_update_global_state(RFKILL_TYPE_ALL, !rfkill_default_state);
+>>>>>>> v4.9.227
 
 	error = class_register(&rfkill_class);
 	if (error)

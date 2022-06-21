@@ -31,6 +31,7 @@
 #define ST_OFF (_THREAD_SIZE - 32 - PT_SIZE + PT_STATUS)
 
 /*
+<<<<<<< HEAD
  * FPU context is saved iff the process has used it's FPU in the current
  * time slice as indicated by TIF_USEDFPU.  In any case, the CU1 bit for user
  * space STATUS register should be 0, so that a process *always* starts its
@@ -43,6 +44,10 @@
 /*
  * task_struct *resume(task_struct *prev, task_struct *next,
  *		       struct thread_info *next_ti, int usedfpu)
+=======
+ * task_struct *resume(task_struct *prev, task_struct *next,
+ *		       struct thread_info *next_ti)
+>>>>>>> v4.9.227
  */
 LEAF(resume)
 	mfc0	t1, CP0_STATUS
@@ -50,6 +55,7 @@ LEAF(resume)
 	cpu_save_nonscratch a0
 	sw	ra, THREAD_REG31(a0)
 
+<<<<<<< HEAD
 	beqz	a3, 1f
 
 	PTR_L	t3, TASK_THREAD_INFO(a0)
@@ -66,6 +72,8 @@ LEAF(resume)
 
 1:
 
+=======
+>>>>>>> v4.9.227
 #if defined(CONFIG_CC_STACKPROTECTOR) && !defined(CONFIG_SMP)
 	PTR_LA	t8, __stack_chk_guard
 	LONG_L	t9, TASK_STACK_CANARY(a1)
@@ -115,11 +123,17 @@ LEAF(_restore_fp)
  * the property that no matter whether considered as single or as double
  * precision represents signaling NANS.
  *
+<<<<<<< HEAD
  * We initialize fcr31 to rounding to nearest, no exceptions.
  */
 
 #define FPU_DEFAULT  0x00000000
 
+=======
+ * The value to initialize fcr31 to comes in $a0.
+ */
+
+>>>>>>> v4.9.227
 	.set push
 	SET_HARDFLOAT
 
@@ -129,8 +143,12 @@ LEAF(_init_fpu)
 	or	t0, t1
 	mtc0	t0, CP0_STATUS
 
+<<<<<<< HEAD
 	li	t1, FPU_DEFAULT
 	ctc1	t1, fcr31
+=======
+	ctc1	a0, fcr31
+>>>>>>> v4.9.227
 
 	li	t0, -1
 

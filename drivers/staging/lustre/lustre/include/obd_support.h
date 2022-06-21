@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -27,7 +31,11 @@
  * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
  *
+<<<<<<< HEAD
  * Copyright (c) 2011, 2012, Intel Corporation.
+=======
+ * Copyright (c) 2011, 2015, Intel Corporation.
+>>>>>>> v4.9.227
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
@@ -39,6 +47,7 @@
 
 #include <linux/slab.h>
 #include "../../include/linux/libcfs/libcfs.h"
+<<<<<<< HEAD
 #include "linux/lustre_compat25.h"
 #include "lprocfs_status.h"
 
@@ -50,20 +59,34 @@ enum {
 	OBD_STATS_NUM,
 };
 
+=======
+#include "lustre_compat.h"
+#include "lprocfs_status.h"
+
+/* global variables */
+>>>>>>> v4.9.227
 extern unsigned int obd_debug_peer_on_timeout;
 extern unsigned int obd_dump_on_timeout;
 extern unsigned int obd_dump_on_eviction;
 /* obd_timeout should only be used for recovery, not for
+<<<<<<< HEAD
    networking / disk / timings affected by load (use Adaptive Timeouts) */
 extern unsigned int obd_timeout;	  /* seconds */
 extern unsigned int ldlm_timeout;	 /* seconds */
 extern unsigned int obd_timeout_set;
 extern unsigned int ldlm_timeout_set;
+=======
+ * networking / disk / timings affected by load (use Adaptive Timeouts)
+ */
+extern unsigned int obd_timeout;	  /* seconds */
+extern unsigned int obd_timeout_set;
+>>>>>>> v4.9.227
 extern unsigned int at_min;
 extern unsigned int at_max;
 extern unsigned int at_history;
 extern int at_early_margin;
 extern int at_extra;
+<<<<<<< HEAD
 extern unsigned int obd_sync_filter;
 extern unsigned int obd_max_dirty_pages;
 extern atomic_t obd_dirty_pages;
@@ -75,6 +98,13 @@ extern char obd_jobid_var[];
 int obd_alloc_fail(const void *ptr, const char *name, const char *type,
 		   size_t size, const char *file, int line);
 
+=======
+extern unsigned long obd_max_dirty_pages;
+extern atomic_long_t obd_dirty_pages;
+extern atomic_long_t obd_dirty_transit_pages;
+extern char obd_jobid_var[];
+
+>>>>>>> v4.9.227
 /* Some hash init argument constants */
 #define HASH_POOLS_BKT_BITS 3
 #define HASH_POOLS_CUR_BITS 3
@@ -105,8 +135,11 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
 
 /* Timeout definitions */
 #define OBD_TIMEOUT_DEFAULT	     100
+<<<<<<< HEAD
 #define LDLM_TIMEOUT_DEFAULT	    20
 #define MDS_LDLM_TIMEOUT_DEFAULT	6
+=======
+>>>>>>> v4.9.227
 /* Time to wait for all clients to reconnect during recovery (hard limit) */
 #define OBD_RECOVERY_TIME_HARD	  (obd_timeout * 9)
 /* Time to wait for all clients to reconnect during recovery (soft limit) */
@@ -120,6 +153,7 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
  * failover targets the client only pings one server at a time, and pings
  * can be lost on a loaded network. Since eviction has serious consequences,
  * and there's no urgent need to evict a client just because it's idle, we
+<<<<<<< HEAD
  * should be very conservative here. */
 #define PING_EVICT_TIMEOUT (PING_INTERVAL * 6)
 #define DISK_TIMEOUT 50	  /* Beyond this we warn about disk speed */
@@ -133,16 +167,43 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
    running on a backup server. (If it's too low, import_select_connection
    will increase the timeout anyhow.)  */
 #define INITIAL_CONNECT_TIMEOUT max(CONNECTION_SWITCH_MIN, obd_timeout/20)
+=======
+ * should be very conservative here.
+ */
+#define PING_EVICT_TIMEOUT (PING_INTERVAL * 6)
+#define DISK_TIMEOUT 50	  /* Beyond this we warn about disk speed */
+#define CONNECTION_SWITCH_MIN 5U /* Connection switching rate limiter */
+/* Max connect interval for nonresponsive servers; ~50s to avoid building up
+ * connect requests in the LND queues, but within obd_timeout so we don't
+ * miss the recovery window
+ */
+#define CONNECTION_SWITCH_MAX min(50U, max(CONNECTION_SWITCH_MIN, obd_timeout))
+#define CONNECTION_SWITCH_INC 5  /* Connection timeout backoff */
+/* In general this should be low to have quick detection of a system
+ * running on a backup server. (If it's too low, import_select_connection
+ * will increase the timeout anyhow.)
+ */
+#define INITIAL_CONNECT_TIMEOUT max(CONNECTION_SWITCH_MIN, obd_timeout / 20)
+>>>>>>> v4.9.227
 /* The max delay between connects is SWITCH_MAX + SWITCH_INC + INITIAL */
 #define RECONNECT_DELAY_MAX (CONNECTION_SWITCH_MAX + CONNECTION_SWITCH_INC + \
 			     INITIAL_CONNECT_TIMEOUT)
 /* The min time a target should wait for clients to reconnect in recovery */
+<<<<<<< HEAD
 #define OBD_RECOVERY_TIME_MIN    (2*RECONNECT_DELAY_MAX)
 #define OBD_IR_FACTOR_MIN	 1
 #define OBD_IR_FACTOR_MAX	 10
 #define OBD_IR_FACTOR_DEFAULT    (OBD_IR_FACTOR_MAX/2)
 /* default timeout for the MGS to become IR_FULL */
 #define OBD_IR_MGS_TIMEOUT       (4*obd_timeout)
+=======
+#define OBD_RECOVERY_TIME_MIN    (2 * RECONNECT_DELAY_MAX)
+#define OBD_IR_FACTOR_MIN	 1
+#define OBD_IR_FACTOR_MAX	 10
+#define OBD_IR_FACTOR_DEFAULT    (OBD_IR_FACTOR_MAX / 2)
+/* default timeout for the MGS to become IR_FULL */
+#define OBD_IR_MGS_TIMEOUT       (4 * obd_timeout)
+>>>>>>> v4.9.227
 #define LONG_UNLINK 300	  /* Unlink should happen before now */
 
 /**
@@ -301,6 +362,10 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
 #define OBD_FAIL_OST_ENOINO	      0x229
 #define OBD_FAIL_OST_DQACQ_NET	   0x230
 #define OBD_FAIL_OST_STATFS_EINPROGRESS  0x231
+<<<<<<< HEAD
+=======
+#define OBD_FAIL_OST_SET_INFO_NET		0x232
+>>>>>>> v4.9.227
 
 #define OBD_FAIL_LDLM		    0x300
 #define OBD_FAIL_LDLM_NAMESPACE_NEW      0x301
@@ -331,6 +396,14 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
 #define OBD_FAIL_LDLM_AGL_DELAY	  0x31a
 #define OBD_FAIL_LDLM_AGL_NOLOCK	 0x31b
 #define OBD_FAIL_LDLM_OST_LVB		 0x31c
+<<<<<<< HEAD
+=======
+#define OBD_FAIL_LDLM_ENQUEUE_HANG	 0x31d
+#define OBD_FAIL_LDLM_CP_CB_WAIT2	 0x320
+#define OBD_FAIL_LDLM_CP_CB_WAIT3	 0x321
+#define OBD_FAIL_LDLM_CP_CB_WAIT4	 0x322
+#define OBD_FAIL_LDLM_CP_CB_WAIT5	 0x323
+>>>>>>> v4.9.227
 
 /* LOCKLESS IO */
 #define OBD_FAIL_LDLM_SET_CONTENTION     0x385
@@ -377,6 +450,12 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
 #define OBD_FAIL_PTLRPC_CLIENT_BULK_CB2  0x515
 #define OBD_FAIL_PTLRPC_DELAY_IMP_FULL   0x516
 #define OBD_FAIL_PTLRPC_CANCEL_RESEND    0x517
+<<<<<<< HEAD
+=======
+#define OBD_FAIL_PTLRPC_DROP_BULK	 0x51a
+#define OBD_FAIL_PTLRPC_LONG_REQ_UNLINK	 0x51b
+#define OBD_FAIL_PTLRPC_LONG_BOTH_UNLINK 0x51c
+>>>>>>> v4.9.227
 
 #define OBD_FAIL_OBD_PING_NET	    0x600
 #define OBD_FAIL_OBD_LOG_CANCEL_NET      0x601
@@ -410,6 +489,10 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
 #define OBD_FAIL_MDC_GETATTR_ENQUEUE     0x803
 #define OBD_FAIL_MDC_RPCS_SEM		 0x804
 #define OBD_FAIL_MDC_LIGHTWEIGHT	 0x805
+<<<<<<< HEAD
+=======
+#define OBD_FAIL_MDC_CLOSE		 0x806
+>>>>>>> v4.9.227
 
 #define OBD_FAIL_MGS		     0x900
 #define OBD_FAIL_MGS_ALL_REQUEST_NET     0x901
@@ -432,14 +515,21 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
 
 #define OBD_FAIL_LPROC_REMOVE	    0xB00
 
+<<<<<<< HEAD
 #define OBD_FAIL_GENERAL_ALLOC	   0xC00
 
+=======
+>>>>>>> v4.9.227
 #define OBD_FAIL_SEQ		     0x1000
 #define OBD_FAIL_SEQ_QUERY_NET	   0x1001
 #define OBD_FAIL_SEQ_EXHAUST		 0x1002
 
 #define OBD_FAIL_FLD		     0x1100
 #define OBD_FAIL_FLD_QUERY_NET	   0x1101
+<<<<<<< HEAD
+=======
+#define OBD_FAIL_FLD_READ_NET		0x1102
+>>>>>>> v4.9.227
 
 #define OBD_FAIL_SEC_CTX		 0x1200
 #define OBD_FAIL_SEC_CTX_INIT_NET	0x1201
@@ -466,6 +556,10 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
 #define OBD_FAIL_LOV_INIT			    0x1403
 #define OBD_FAIL_GLIMPSE_DELAY			    0x1404
 #define OBD_FAIL_LLITE_XATTR_ENOMEM		    0x1405
+<<<<<<< HEAD
+=======
+#define OBD_FAIL_GETATTR_DELAY			    0x1409
+>>>>>>> v4.9.227
 
 #define OBD_FAIL_FID_INDIR	0x1501
 #define OBD_FAIL_FID_INLMA	0x1502
@@ -485,11 +579,21 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
 #define OBD_FAIL_LFSCK_CRASH		0x160a
 #define OBD_FAIL_LFSCK_NO_AUTO		0x160b
 #define OBD_FAIL_LFSCK_NO_DOUBLESCAN	0x160c
+<<<<<<< HEAD
+=======
+#define OBD_FAIL_LFSCK_INVALID_PFID	0x1619
+#define OBD_FAIL_LFSCK_BAD_NAME_HASH	0x1628
+>>>>>>> v4.9.227
 
 /* UPDATE */
 #define OBD_FAIL_UPDATE_OBJ_NET			0x1700
 #define OBD_FAIL_UPDATE_OBJ_NET_REP		0x1701
 
+<<<<<<< HEAD
+=======
+/* LMV */
+#define OBD_FAIL_UNKNOWN_LMV_STRIPE		0x1901
+>>>>>>> v4.9.227
 
 /* Assign references to moved code to reduce code changes */
 #define OBD_FAIL_PRECHECK(id)		   CFS_FAIL_PRECHECK(id)
@@ -505,6 +609,7 @@ int obd_alloc_fail(const void *ptr, const char *name, const char *type,
 #define OBD_FAIL_ONCE			   CFS_FAIL_ONCE
 #define OBD_FAILED			      CFS_FAILED
 
+<<<<<<< HEAD
 extern atomic_t libcfs_kmemory;
 
 extern void obd_update_maxusage(void);
@@ -710,6 +815,8 @@ do {									  \
 } while (0)
 
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_DEBUG_SLAB
 #define POISON(ptr, c, s) do {} while (0)
 #define POISON_PTR(ptr)  ((void)0)
@@ -719,12 +826,20 @@ do {									  \
 #endif
 
 #ifdef POISON_BULK
+<<<<<<< HEAD
 #define POISON_PAGE(page, val) do { memset(kmap(page), val, PAGE_CACHE_SIZE);   \
 				    kunmap(page); } while (0)
+=======
+#define POISON_PAGE(page, val) do {		  \
+	memset(kmap(page), val, PAGE_SIZE); \
+	kunmap(page);				  \
+} while (0)
+>>>>>>> v4.9.227
 #else
 #define POISON_PAGE(page, val) do { } while (0)
 #endif
 
+<<<<<<< HEAD
 #define OBD_FREE(ptr, size)						   \
 do {									  \
 	OBD_FREE_PRE(ptr, size, "kfreed");				    \
@@ -733,17 +848,23 @@ do {									  \
 } while (0)
 
 
+=======
+>>>>>>> v4.9.227
 #define OBD_FREE_RCU(ptr, size, handle)					      \
 do {									      \
 	struct portals_handle *__h = (handle);				      \
 									      \
+<<<<<<< HEAD
 	LASSERT(handle != NULL);					      \
+=======
+>>>>>>> v4.9.227
 	__h->h_cookie = (unsigned long)(ptr);				      \
 	__h->h_size = (size);						      \
 	call_rcu(&__h->h_rcu, class_handle_free_cb);			      \
 	POISON_PTR(ptr);						      \
 } while (0)
 
+<<<<<<< HEAD
 
 #define OBD_VFREE(ptr, size)				\
 	do {						\
@@ -858,5 +979,10 @@ do {									  \
 	__free_page(ptr);						   \
 	(ptr) = (void *)0xdeadbeef;					   \
 } while (0)
+=======
+#define KEY_IS(str)					\
+	(keylen >= (sizeof(str) - 1) &&			\
+	memcmp(key, str, (sizeof(str) - 1)) == 0)
+>>>>>>> v4.9.227
 
 #endif

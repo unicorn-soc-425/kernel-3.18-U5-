@@ -21,7 +21,11 @@
 
 struct sh_pfc_gpio_data_reg {
 	const struct pinmux_data_reg *info;
+<<<<<<< HEAD
 	unsigned long shadow;
+=======
+	u32 shadow;
+>>>>>>> v4.9.227
 };
 
 struct sh_pfc_gpio_pin {
@@ -38,6 +42,7 @@ struct sh_pfc_chip {
 	struct sh_pfc_gpio_pin		*pins;
 };
 
+<<<<<<< HEAD
 static struct sh_pfc_chip *gpio_to_pfc_chip(struct gpio_chip *gc)
 {
 	return container_of(gc, struct sh_pfc_chip, gpio_chip);
@@ -46,6 +51,12 @@ static struct sh_pfc_chip *gpio_to_pfc_chip(struct gpio_chip *gc)
 static struct sh_pfc *gpio_to_pfc(struct gpio_chip *gc)
 {
 	return gpio_to_pfc_chip(gc)->pfc;
+=======
+static struct sh_pfc *gpio_to_pfc(struct gpio_chip *gc)
+{
+	struct sh_pfc_chip *chip = gpiochip_get_data(gc);
+	return chip->pfc;
+>>>>>>> v4.9.227
 }
 
 static void gpio_get_data_reg(struct sh_pfc_chip *chip, unsigned int offset,
@@ -59,19 +70,34 @@ static void gpio_get_data_reg(struct sh_pfc_chip *chip, unsigned int offset,
 	*bit = gpio_pin->dbit;
 }
 
+<<<<<<< HEAD
 static unsigned long gpio_read_data_reg(struct sh_pfc_chip *chip,
 					const struct pinmux_data_reg *dreg)
 {
 	void __iomem *mem = dreg->reg - chip->mem->phys + chip->mem->virt;
+=======
+static u32 gpio_read_data_reg(struct sh_pfc_chip *chip,
+			      const struct pinmux_data_reg *dreg)
+{
+	phys_addr_t address = dreg->reg;
+	void __iomem *mem = address - chip->mem->phys + chip->mem->virt;
+>>>>>>> v4.9.227
 
 	return sh_pfc_read_raw_reg(mem, dreg->reg_width);
 }
 
 static void gpio_write_data_reg(struct sh_pfc_chip *chip,
+<<<<<<< HEAD
 				const struct pinmux_data_reg *dreg,
 				unsigned long value)
 {
 	void __iomem *mem = dreg->reg - chip->mem->phys + chip->mem->virt;
+=======
+				const struct pinmux_data_reg *dreg, u32 value)
+{
+	phys_addr_t address = dreg->reg;
+	void __iomem *mem = address - chip->mem->phys + chip->mem->virt;
+>>>>>>> v4.9.227
 
 	sh_pfc_write_raw_reg(mem, dreg->reg_width, value);
 }
@@ -85,7 +111,11 @@ static void gpio_setup_data_reg(struct sh_pfc_chip *chip, unsigned idx)
 	unsigned int bit;
 	unsigned int i;
 
+<<<<<<< HEAD
 	for (i = 0, dreg = pfc->info->data_regs; dreg->reg; ++i, ++dreg) {
+=======
+	for (i = 0, dreg = pfc->info->data_regs; dreg->reg_width; ++i, ++dreg) {
+>>>>>>> v4.9.227
 		for (bit = 0; bit < dreg->reg_width; bit++) {
 			if (dreg->enum_ids[bit] == pin->enum_id) {
 				gpio_pin->dreg = i;
@@ -154,17 +184,28 @@ static void gpio_pin_set_value(struct sh_pfc_chip *chip, unsigned offset,
 			       int value)
 {
 	struct sh_pfc_gpio_data_reg *reg;
+<<<<<<< HEAD
 	unsigned long pos;
 	unsigned int bit;
+=======
+	unsigned int bit;
+	unsigned int pos;
+>>>>>>> v4.9.227
 
 	gpio_get_data_reg(chip, offset, &reg, &bit);
 
 	pos = reg->info->reg_width - (bit + 1);
 
 	if (value)
+<<<<<<< HEAD
 		set_bit(pos, &reg->shadow);
 	else
 		clear_bit(pos, &reg->shadow);
+=======
+		reg->shadow |= BIT(pos);
+	else
+		reg->shadow &= ~BIT(pos);
+>>>>>>> v4.9.227
 
 	gpio_write_data_reg(chip, reg->info, reg->shadow);
 }
@@ -177,17 +218,28 @@ static int gpio_pin_direction_input(struct gpio_chip *gc, unsigned offset)
 static int gpio_pin_direction_output(struct gpio_chip *gc, unsigned offset,
 				    int value)
 {
+<<<<<<< HEAD
 	gpio_pin_set_value(gpio_to_pfc_chip(gc), offset, value);
+=======
+	gpio_pin_set_value(gpiochip_get_data(gc), offset, value);
+>>>>>>> v4.9.227
 
 	return pinctrl_gpio_direction_output(offset);
 }
 
 static int gpio_pin_get(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	struct sh_pfc_chip *chip = gpio_to_pfc_chip(gc);
 	struct sh_pfc_gpio_data_reg *reg;
 	unsigned long pos;
 	unsigned int bit;
+=======
+	struct sh_pfc_chip *chip = gpiochip_get_data(gc);
+	struct sh_pfc_gpio_data_reg *reg;
+	unsigned int bit;
+	unsigned int pos;
+>>>>>>> v4.9.227
 
 	gpio_get_data_reg(chip, offset, &reg, &bit);
 
@@ -198,7 +250,11 @@ static int gpio_pin_get(struct gpio_chip *gc, unsigned offset)
 
 static void gpio_pin_set(struct gpio_chip *gc, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	gpio_pin_set_value(gpio_to_pfc_chip(gc), offset, value);
+=======
+	gpio_pin_set_value(gpiochip_get_data(gc), offset, value);
+>>>>>>> v4.9.227
 }
 
 static int gpio_pin_to_irq(struct gpio_chip *gc, unsigned offset)
@@ -215,6 +271,7 @@ static int gpio_pin_to_irq(struct gpio_chip *gc, unsigned offset)
 		}
 	}
 
+<<<<<<< HEAD
 	return -ENOSYS;
 
 found:
@@ -222,6 +279,12 @@ found:
 		return pfc->irqs[i];
 	else
 		return pfc->info->gpio_irq[i].irq;
+=======
+	return 0;
+
+found:
+	return pfc->irqs[i];
+>>>>>>> v4.9.227
 }
 
 static int gpio_pin_setup(struct sh_pfc_chip *chip)
@@ -248,7 +311,11 @@ static int gpio_pin_setup(struct sh_pfc_chip *chip)
 	gc->to_irq = gpio_pin_to_irq;
 
 	gc->label = pfc->info->name;
+<<<<<<< HEAD
 	gc->dev = pfc->dev;
+=======
+	gc->parent = pfc->dev;
+>>>>>>> v4.9.227
 	gc->owner = THIS_MODULE;
 	gc->base = 0;
 	gc->ngpio = pfc->nr_gpio_pins;
@@ -260,6 +327,10 @@ static int gpio_pin_setup(struct sh_pfc_chip *chip)
  * Function GPIOs
  */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SUPERH
+>>>>>>> v4.9.227
 static int gpio_function_request(struct gpio_chip *gc, unsigned offset)
 {
 	static bool __print_once;
@@ -285,17 +356,23 @@ static int gpio_function_request(struct gpio_chip *gc, unsigned offset)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void gpio_function_free(struct gpio_chip *gc, unsigned offset)
 {
 }
 
+=======
+>>>>>>> v4.9.227
 static int gpio_function_setup(struct sh_pfc_chip *chip)
 {
 	struct sh_pfc *pfc = chip->pfc;
 	struct gpio_chip *gc = &chip->gpio_chip;
 
 	gc->request = gpio_function_request;
+<<<<<<< HEAD
 	gc->free = gpio_function_free;
+=======
+>>>>>>> v4.9.227
 
 	gc->label = pfc->info->name;
 	gc->owner = THIS_MODULE;
@@ -304,6 +381,10 @@ static int gpio_function_setup(struct sh_pfc_chip *chip)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> v4.9.227
 
 /* -----------------------------------------------------------------------------
  * Register/unregister
@@ -327,7 +408,11 @@ sh_pfc_add_gpiochip(struct sh_pfc *pfc, int(*setup)(struct sh_pfc_chip *),
 	if (ret < 0)
 		return ERR_PTR(ret);
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&chip->gpio_chip);
+=======
+	ret = devm_gpiochip_add_data(pfc->dev, &chip->gpio_chip, chip);
+>>>>>>> v4.9.227
 	if (unlikely(ret < 0))
 		return ERR_PTR(ret);
 
@@ -341,8 +426,13 @@ sh_pfc_add_gpiochip(struct sh_pfc *pfc, int(*setup)(struct sh_pfc_chip *),
 int sh_pfc_register_gpiochip(struct sh_pfc *pfc)
 {
 	struct sh_pfc_chip *chip;
+<<<<<<< HEAD
 	unsigned int i;
 	int ret;
+=======
+	phys_addr_t address;
+	unsigned int i;
+>>>>>>> v4.9.227
 
 	if (pfc->info->data_regs == NULL)
 		return 0;
@@ -352,11 +442,20 @@ int sh_pfc_register_gpiochip(struct sh_pfc *pfc)
 	 * that covers the data registers. In that case don't try to handle
 	 * GPIOs.
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < pfc->num_windows; ++i) {
 		struct sh_pfc_window *window = &pfc->windows[i];
 
 		if (pfc->info->data_regs[0].reg >= window->phys &&
 		    pfc->info->data_regs[0].reg < window->phys + window->size)
+=======
+	address = pfc->info->data_regs[0].reg;
+	for (i = 0; i < pfc->num_windows; ++i) {
+		struct sh_pfc_window *window = &pfc->windows[i];
+
+		if (address >= window->phys &&
+		    address < window->phys + window->size)
+>>>>>>> v4.9.227
 			break;
 	}
 
@@ -364,7 +463,11 @@ int sh_pfc_register_gpiochip(struct sh_pfc *pfc)
 		return 0;
 
 	/* If we have IRQ resources make sure their number is correct. */
+<<<<<<< HEAD
 	if (pfc->num_irqs && pfc->num_irqs != pfc->info->gpio_irq_size) {
+=======
+	if (pfc->num_irqs != pfc->info->gpio_irq_size) {
+>>>>>>> v4.9.227
 		dev_err(pfc->dev, "invalid number of IRQ resources\n");
 		return -EINVAL;
 	}
@@ -376,20 +479,41 @@ int sh_pfc_register_gpiochip(struct sh_pfc *pfc)
 
 	pfc->gpio = chip;
 
+<<<<<<< HEAD
 	/* Register the GPIO to pin mappings. As pins with GPIO ports must come
 	 * first in the ranges, skip the pins without GPIO ports by stopping at
 	 * the first range that contains such a pin.
 	 */
 	for (i = 0; i < pfc->nr_ranges; ++i) {
 		const struct sh_pfc_pin_range *range = &pfc->ranges[i];
+=======
+	if (IS_ENABLED(CONFIG_OF) && pfc->dev->of_node)
+		return 0;
+
+#ifdef CONFIG_SUPERH
+	/*
+	 * Register the GPIO to pin mappings. As pins with GPIO ports
+	 * must come first in the ranges, skip the pins without GPIO
+	 * ports by stopping at the first range that contains such a
+	 * pin.
+	 */
+	for (i = 0; i < pfc->nr_ranges; ++i) {
+		const struct sh_pfc_pin_range *range = &pfc->ranges[i];
+		int ret;
+>>>>>>> v4.9.227
 
 		if (range->start >= pfc->nr_gpio_pins)
 			break;
 
 		ret = gpiochip_add_pin_range(&chip->gpio_chip,
+<<<<<<< HEAD
 					     dev_name(pfc->dev),
 					     range->start, range->start,
 					     range->end - range->start + 1);
+=======
+			dev_name(pfc->dev), range->start, range->start,
+			range->end - range->start + 1);
+>>>>>>> v4.9.227
 		if (ret < 0)
 			return ret;
 	}
@@ -401,6 +525,7 @@ int sh_pfc_register_gpiochip(struct sh_pfc *pfc)
 	chip = sh_pfc_add_gpiochip(pfc, gpio_function_setup, NULL);
 	if (IS_ERR(chip))
 		return PTR_ERR(chip);
+<<<<<<< HEAD
 
 	pfc->func = chip;
 
@@ -411,6 +536,9 @@ int sh_pfc_unregister_gpiochip(struct sh_pfc *pfc)
 {
 	gpiochip_remove(&pfc->gpio->gpio_chip);
 	gpiochip_remove(&pfc->func->gpio_chip);
+=======
+#endif /* CONFIG_SUPERH */
+>>>>>>> v4.9.227
 
 	return 0;
 }

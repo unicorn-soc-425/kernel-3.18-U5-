@@ -49,7 +49,10 @@ MODULE_LICENSE(DRIVER_LICENSE);
 struct usb_acecad {
 	char name[128];
 	char phys[64];
+<<<<<<< HEAD
 	struct usb_device *usbdev;
+=======
+>>>>>>> v4.9.227
 	struct usb_interface *intf;
 	struct input_dev *input;
 	struct urb *irq;
@@ -64,6 +67,10 @@ static void usb_acecad_irq(struct urb *urb)
 	unsigned char *data = acecad->data;
 	struct input_dev *dev = acecad->input;
 	struct usb_interface *intf = acecad->intf;
+<<<<<<< HEAD
+=======
+	struct usb_device *udev = interface_to_usbdev(intf);
+>>>>>>> v4.9.227
 	int prox, status;
 
 	switch (urb->status) {
@@ -110,15 +117,24 @@ resubmit:
 	if (status)
 		dev_err(&intf->dev,
 			"can't resubmit intr, %s-%s/input0, status %d\n",
+<<<<<<< HEAD
 			acecad->usbdev->bus->bus_name,
 			acecad->usbdev->devpath, status);
+=======
+			udev->bus->bus_name,
+			udev->devpath, status);
+>>>>>>> v4.9.227
 }
 
 static int usb_acecad_open(struct input_dev *dev)
 {
 	struct usb_acecad *acecad = input_get_drvdata(dev);
 
+<<<<<<< HEAD
 	acecad->irq->dev = acecad->usbdev;
+=======
+	acecad->irq->dev = interface_to_usbdev(acecad->intf);
+>>>>>>> v4.9.227
 	if (usb_submit_urb(acecad->irq, GFP_KERNEL))
 		return -EIO;
 
@@ -172,7 +188,10 @@ static int usb_acecad_probe(struct usb_interface *intf, const struct usb_device_
 		goto fail2;
 	}
 
+<<<<<<< HEAD
 	acecad->usbdev = dev;
+=======
+>>>>>>> v4.9.227
 	acecad->intf = intf;
 	acecad->input = input_dev;
 
@@ -251,12 +270,20 @@ static int usb_acecad_probe(struct usb_interface *intf, const struct usb_device_
 static void usb_acecad_disconnect(struct usb_interface *intf)
 {
 	struct usb_acecad *acecad = usb_get_intfdata(intf);
+<<<<<<< HEAD
+=======
+	struct usb_device *udev = interface_to_usbdev(intf);
+>>>>>>> v4.9.227
 
 	usb_set_intfdata(intf, NULL);
 
 	input_unregister_device(acecad->input);
 	usb_free_urb(acecad->irq);
+<<<<<<< HEAD
 	usb_free_coherent(acecad->usbdev, 8, acecad->data, acecad->data_dma);
+=======
+	usb_free_coherent(udev, 8, acecad->data, acecad->data_dma);
+>>>>>>> v4.9.227
 	kfree(acecad);
 }
 

@@ -50,7 +50,11 @@ static int cmtp_sock_release(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
 
+<<<<<<< HEAD
 	BT_DBG("sock %pK sk %pK", sock, sk);
+=======
+	BT_DBG("sock %p sk %p", sock, sk);
+>>>>>>> v4.9.227
 
 	if (!sk)
 		return 0;
@@ -200,12 +204,20 @@ static int cmtp_sock_create(struct net *net, struct socket *sock, int protocol,
 {
 	struct sock *sk;
 
+<<<<<<< HEAD
 	BT_DBG("sock %pK", sock);
+=======
+	BT_DBG("sock %p", sock);
+>>>>>>> v4.9.227
 
 	if (sock->type != SOCK_RAW)
 		return -ESOCKTNOSUPPORT;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &cmtp_proto);
+=======
+	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &cmtp_proto, kern);
+>>>>>>> v4.9.227
 	if (!sk)
 		return -ENOMEM;
 

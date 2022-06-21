@@ -11,6 +11,10 @@
 
 #ifdef CONFIG_GENERIC_CPU_AUTOPROBE
 
+<<<<<<< HEAD
+=======
+#include <linux/init.h>
+>>>>>>> v4.9.227
 #include <linux/mod_devicetable.h>
 #include <asm/cpufeature.h>
 
@@ -43,6 +47,7 @@
  * For a list of legal values for 'feature', please consult the file
  * 'asm/cpufeature.h' of your favorite architecture.
  */
+<<<<<<< HEAD
 #define module_cpu_feature_match(x, __init)			\
 static struct cpu_feature const cpu_feature_match_ ## x[] =	\
 	{ { .feature = cpu_feature(x) }, { } };			\
@@ -53,6 +58,18 @@ static int cpu_feature_match_ ## x ## _init(void)		\
 	if (!cpu_have_feature(cpu_feature(x)))			\
 		return -ENODEV;					\
 	return __init();					\
+=======
+#define module_cpu_feature_match(x, __initfunc)			\
+static struct cpu_feature const __maybe_unused cpu_feature_match_ ## x[] = \
+	{ { .feature = cpu_feature(x) }, { } };			\
+MODULE_DEVICE_TABLE(cpu, cpu_feature_match_ ## x);		\
+								\
+static int __init cpu_feature_match_ ## x ## _init(void)	\
+{								\
+	if (!cpu_have_feature(cpu_feature(x)))			\
+		return -ENODEV;					\
+	return __initfunc();					\
+>>>>>>> v4.9.227
 }								\
 module_init(cpu_feature_match_ ## x ## _init)
 

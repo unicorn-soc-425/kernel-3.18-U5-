@@ -16,7 +16,11 @@ config INTEGRITY
 if INTEGRITY
 
 config INTEGRITY_SIGNATURE
+<<<<<<< HEAD
 	boolean "Digital signature verification using multiple keyrings"
+=======
+	bool "Digital signature verification using multiple keyrings"
+>>>>>>> v4.9.227
 	depends on KEYS
 	default n
 	select SIGNATURE
@@ -30,17 +34,38 @@ config INTEGRITY_SIGNATURE
 	  usually only added from initramfs.
 
 config INTEGRITY_ASYMMETRIC_KEYS
+<<<<<<< HEAD
 	boolean "Enable asymmetric keys support"
+=======
+	bool "Enable asymmetric keys support"
+>>>>>>> v4.9.227
 	depends on INTEGRITY_SIGNATURE
 	default n
         select ASYMMETRIC_KEY_TYPE
         select ASYMMETRIC_PUBLIC_KEY_SUBTYPE
+<<<<<<< HEAD
         select PUBLIC_KEY_ALGO_RSA
+=======
+        select CRYPTO_RSA
+>>>>>>> v4.9.227
         select X509_CERTIFICATE_PARSER
 	help
 	  This option enables digital signature verification using
 	  asymmetric keys.
 
+<<<<<<< HEAD
+=======
+config INTEGRITY_TRUSTED_KEYRING
+	bool "Require all keys on the integrity keyrings be signed"
+	depends on SYSTEM_TRUSTED_KEYRING
+	depends on INTEGRITY_ASYMMETRIC_KEYS
+	default y
+	help
+	   This option requires that all keys added to the .ima and
+	   .evm keyrings be signed by a key on the system trusted
+	   keyring.
+
+>>>>>>> v4.9.227
 config INTEGRITY_AUDIT
 	bool "Enables integrity auditing support "
 	depends on AUDIT

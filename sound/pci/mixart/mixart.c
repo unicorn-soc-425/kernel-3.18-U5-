@@ -132,7 +132,11 @@ static int mixart_set_pipe_state(struct mixart_mgr *mgr,
 	}
 
 	if(start) {
+<<<<<<< HEAD
 		u32 stat;
+=======
+		u32 stat = 0;
+>>>>>>> v4.9.227
 
 		group_state.pipe_count = 0; /* in case of start same command once again with pipe_count=0 */
 
@@ -922,7 +926,11 @@ static snd_pcm_uframes_t snd_mixart_stream_pointer(struct snd_pcm_substream *sub
 
 
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_mixart_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_mixart_playback_ops = {
+>>>>>>> v4.9.227
 	.open      = snd_mixart_playback_open,
 	.close     = snd_mixart_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -933,7 +941,11 @@ static struct snd_pcm_ops snd_mixart_playback_ops = {
 	.pointer   = snd_mixart_stream_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_mixart_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_mixart_capture_ops = {
+>>>>>>> v4.9.227
 	.open      = snd_mixart_capture_open,
 	.close     = snd_mixart_close,
 	.ioctl     = snd_pcm_lib_ioctl,
@@ -1114,10 +1126,16 @@ static int snd_mixart_free(struct mixart_mgr *mgr)
 	}
 
 	/* release the i/o ports */
+<<<<<<< HEAD
 	for (i = 0; i < 2; i++) {
 		if (mgr->mem[i].virt)
 			iounmap(mgr->mem[i].virt);
 	}
+=======
+	for (i = 0; i < 2; ++i)
+		iounmap(mgr->mem[i].virt);
+
+>>>>>>> v4.9.227
 	pci_release_regions(mgr->pci);
 
 	/* free flowarray */
@@ -1270,7 +1288,11 @@ static int snd_mixart_probe(struct pci_dev *pci,
 	pci_set_master(pci);
 
 	/* check if we can restrict PCI DMA transfers to 32 bits */
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(32)) < 0) {
+=======
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(32)) < 0) {
+>>>>>>> v4.9.227
 		dev_err(&pci->dev,
 			"architecture does not support 32bit PCI busmaster DMA\n");
 		pci_disable_device(pci);

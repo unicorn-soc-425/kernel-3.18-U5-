@@ -17,6 +17,7 @@
 
 #define CPDMA_MAX_CHANNELS	BITS_PER_LONG
 
+<<<<<<< HEAD
 #define tx_chan_num(chan)	(chan)
 #define rx_chan_num(chan)	((chan) + CPDMA_MAX_CHANNELS)
 #define is_rx_chan(chan)	((chan)->chan_num >= CPDMA_MAX_CHANNELS)
@@ -24,6 +25,8 @@
 #define __chan_linear(chan_num)	((chan_num) & (CPDMA_MAX_CHANNELS - 1))
 #define chan_linear(chan)	__chan_linear((chan)->chan_num)
 
+=======
+>>>>>>> v4.9.227
 #define CPDMA_RX_SOURCE_PORT(__status__)	((__status__ >> 16) & 0x7)
 
 #define CPDMA_EOI_RX_THRESH	0x0
@@ -77,6 +80,7 @@ struct cpdma_ctlr *cpdma_ctlr_create(struct cpdma_params *params);
 int cpdma_ctlr_destroy(struct cpdma_ctlr *ctlr);
 int cpdma_ctlr_start(struct cpdma_ctlr *ctlr);
 int cpdma_ctlr_stop(struct cpdma_ctlr *ctlr);
+<<<<<<< HEAD
 int cpdma_ctlr_dump(struct cpdma_ctlr *ctlr);
 
 struct cpdma_chan *cpdma_chan_create(struct cpdma_ctlr *ctlr, int chan_num,
@@ -85,6 +89,15 @@ int cpdma_chan_destroy(struct cpdma_chan *chan);
 int cpdma_chan_start(struct cpdma_chan *chan);
 int cpdma_chan_stop(struct cpdma_chan *chan);
 int cpdma_chan_dump(struct cpdma_chan *chan);
+=======
+
+struct cpdma_chan *cpdma_chan_create(struct cpdma_ctlr *ctlr, int chan_num,
+				     cpdma_handler_fn handler, int rx_type);
+int cpdma_chan_get_rx_buf_num(struct cpdma_chan *chan);
+int cpdma_chan_destroy(struct cpdma_chan *chan);
+int cpdma_chan_start(struct cpdma_chan *chan);
+int cpdma_chan_stop(struct cpdma_chan *chan);
+>>>>>>> v4.9.227
 
 int cpdma_chan_get_stats(struct cpdma_chan *chan,
 			 struct cpdma_chan_stats *stats);
@@ -95,6 +108,11 @@ int cpdma_chan_process(struct cpdma_chan *chan, int quota);
 int cpdma_ctlr_int_ctrl(struct cpdma_ctlr *ctlr, bool enable);
 void cpdma_ctlr_eoi(struct cpdma_ctlr *ctlr, u32 value);
 int cpdma_chan_int_ctrl(struct cpdma_chan *chan, bool enable);
+<<<<<<< HEAD
+=======
+u32 cpdma_ctrl_rxchs_state(struct cpdma_ctlr *ctlr);
+u32 cpdma_ctrl_txchs_state(struct cpdma_ctlr *ctlr);
+>>>>>>> v4.9.227
 bool cpdma_check_free_tx_desc(struct cpdma_chan *chan);
 
 enum cpdma_control {

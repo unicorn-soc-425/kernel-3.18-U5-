@@ -162,13 +162,19 @@
 #define CNS3XXX_L2C_BASE			0x92000000	/* L2 Cache Control */
 
 #define CNS3XXX_PCIE0_MEM_BASE			0xA0000000	/* PCIe Port 0 IO/Memory Space */
+<<<<<<< HEAD
 #define CNS3XXX_PCIE0_MEM_BASE_VIRT		0xE0000000
+=======
+>>>>>>> v4.9.227
 
 #define CNS3XXX_PCIE0_HOST_BASE			0xAB000000	/* PCIe Port 0 RC Base */
 #define CNS3XXX_PCIE0_HOST_BASE_VIRT		0xE1000000
 
 #define CNS3XXX_PCIE0_IO_BASE			0xAC000000	/* PCIe Port 0 */
+<<<<<<< HEAD
 #define CNS3XXX_PCIE0_IO_BASE_VIRT		0xE2000000
+=======
+>>>>>>> v4.9.227
 
 #define CNS3XXX_PCIE0_CFG0_BASE			0xAD000000	/* PCIe Port 0 CFG Type 0 */
 #define CNS3XXX_PCIE0_CFG0_BASE_VIRT		0xE3000000
@@ -177,16 +183,24 @@
 #define CNS3XXX_PCIE0_CFG1_BASE_VIRT		0xE4000000
 
 #define CNS3XXX_PCIE0_MSG_BASE			0xAF000000	/* PCIe Port 0 Message Space */
+<<<<<<< HEAD
 #define CNS3XXX_PCIE0_MSG_BASE_VIRT		0xE5000000
 
 #define CNS3XXX_PCIE1_MEM_BASE			0xB0000000	/* PCIe Port 1 IO/Memory Space */
 #define CNS3XXX_PCIE1_MEM_BASE_VIRT		0xE8000000
+=======
+
+#define CNS3XXX_PCIE1_MEM_BASE			0xB0000000	/* PCIe Port 1 IO/Memory Space */
+>>>>>>> v4.9.227
 
 #define CNS3XXX_PCIE1_HOST_BASE			0xBB000000	/* PCIe Port 1 RC Base */
 #define CNS3XXX_PCIE1_HOST_BASE_VIRT		0xE9000000
 
 #define CNS3XXX_PCIE1_IO_BASE			0xBC000000	/* PCIe Port 1 */
+<<<<<<< HEAD
 #define CNS3XXX_PCIE1_IO_BASE_VIRT		0xEA000000
+=======
+>>>>>>> v4.9.227
 
 #define CNS3XXX_PCIE1_CFG0_BASE			0xBD000000	/* PCIe Port 1 CFG Type 0 */
 #define CNS3XXX_PCIE1_CFG0_BASE_VIRT		0xEB000000
@@ -195,7 +209,10 @@
 #define CNS3XXX_PCIE1_CFG1_BASE_VIRT		0xEC000000
 
 #define CNS3XXX_PCIE1_MSG_BASE			0xBF000000	/* PCIe Port 1 Message Space */
+<<<<<<< HEAD
 #define CNS3XXX_PCIE1_MSG_BASE_VIRT		0xED000000
+=======
+>>>>>>> v4.9.227
 
 /*
  * Testchip peripheral and fpga gic regions

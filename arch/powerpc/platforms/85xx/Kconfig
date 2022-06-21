@@ -8,6 +8,10 @@ menuconfig FSL_SOC_BOOKE
 	select FSL_PCI if PCI
 	select SERIAL_8250_EXTENDED if SERIAL_8250
 	select SERIAL_8250_SHARE_IRQ if SERIAL_8250
+<<<<<<< HEAD
+=======
+	select FSL_CORENET_RCPM if PPC_E500MC
+>>>>>>> v4.9.227
 	default y
 
 if FSL_SOC_BOOKE
@@ -71,7 +75,11 @@ config MPC85xx_CDS
 config MPC85xx_MDS
 	bool "Freescale MPC85xx MDS"
 	select DEFAULT_UIMAGE
+<<<<<<< HEAD
 	select PHYLIB
+=======
+	select PHYLIB if NETDEVICES
+>>>>>>> v4.9.227
 	select HAS_RAPIDIO
 	select SWIOTLB
 	help
@@ -224,7 +232,11 @@ config GE_IMP3A
 	select DEFAULT_UIMAGE
 	select SWIOTLB
 	select MMIO_NVRAM
+<<<<<<< HEAD
 	select ARCH_REQUIRE_GPIOLIB
+=======
+	select GPIOLIB
+>>>>>>> v4.9.227
 	select GE_FPGA
 	help
 	  This option enables support for the GE Intelligent Platforms IMP3A
@@ -241,6 +253,15 @@ config SGY_CTS1000
 	help
 	  Enable this to support functionality in Servergy's CTS-1000 systems.
 
+<<<<<<< HEAD
+=======
+config MVME2500
+	bool "Artesyn MVME2500"
+	select DEFAULT_UIMAGE
+	help
+	  This option enables support for the Emerson/Artesyn MVME2500 board.
+
+>>>>>>> v4.9.227
 endif # PPC32
 
 config PPC_QEMU_E500
@@ -265,7 +286,11 @@ config CORENET_GENERIC
 	select PPC_E500MC
 	select PHYS_64BIT
 	select SWIOTLB
+<<<<<<< HEAD
 	select ARCH_REQUIRE_GPIOLIB
+=======
+	select GPIOLIB
+>>>>>>> v4.9.227
 	select GPIO_MPC8XXX
 	select HAS_RAPIDIO
 	select PPC_EPAPR_HV_PIC
@@ -276,7 +301,11 @@ config CORENET_GENERIC
 	  For 64bit kernel, the following boards are supported:
 	    T208x QDS/RDB, T4240 QDS/RDB and B4 QDS
 	  The following boards are supported for both 32bit and 64bit kernel:
+<<<<<<< HEAD
 	    P5020 DS, P5040 DS and T104xQDS/RDB
+=======
+	    P5020 DS, P5040 DS, T102x QDS/RDB, T104x QDS/RDB
+>>>>>>> v4.9.227
 
 endif # FSL_SOC_BOOKE
 

@@ -1,5 +1,10 @@
 menu "Device Drivers"
 
+<<<<<<< HEAD
+=======
+source "drivers/amba/Kconfig"
+
+>>>>>>> v4.9.227
 source "drivers/base/Kconfig"
 
 source "drivers/bus/Kconfig"
@@ -16,12 +21,20 @@ source "drivers/pnp/Kconfig"
 
 source "drivers/block/Kconfig"
 
+<<<<<<< HEAD
+=======
+source "drivers/nvme/Kconfig"
+
+>>>>>>> v4.9.227
 # misc before ide - BLK_DEV_SGIIOC4 depends on SGI_IOC4
 
 source "drivers/misc/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/staging/samsung/sec_notifier/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 source "drivers/ide/Kconfig"
 
 source "drivers/scsi/Kconfig"
@@ -36,14 +49,22 @@ source "drivers/message/fusion/Kconfig"
 
 source "drivers/firewire/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/message/i2o/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 source "drivers/macintosh/Kconfig"
 
 source "drivers/net/Kconfig"
 
 source "drivers/isdn/Kconfig"
 
+<<<<<<< HEAD
+=======
+source "drivers/lightnvm/Kconfig"
+
+>>>>>>> v4.9.227
 # input before char - char/joystick depends on it. As does USB.
 
 source "drivers/input/Kconfig"
@@ -52,10 +73,13 @@ source "drivers/char/Kconfig"
 
 source "drivers/i2c/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/slimbus/Kconfig"
 
 source "drivers/soundwire/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 source "drivers/spi/Kconfig"
 
 source "drivers/spmi/Kconfig"
@@ -106,8 +130,11 @@ source "drivers/memstick/Kconfig"
 
 source "drivers/leds/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/switch/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 source "drivers/accessibility/Kconfig"
 
 source "drivers/infiniband/Kconfig"
@@ -116,10 +143,17 @@ source "drivers/edac/Kconfig"
 
 source "drivers/rtc/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/esoc/Kconfig"
 
 source "drivers/dma/Kconfig"
 
+=======
+source "drivers/dma/Kconfig"
+
+source "drivers/dma-buf/Kconfig"
+
+>>>>>>> v4.9.227
 source "drivers/dca/Kconfig"
 
 source "drivers/auxdisplay/Kconfig"
@@ -176,28 +210,40 @@ source "drivers/irqchip/Kconfig"
 
 source "drivers/ipack/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/battery/Kconfig"
 
 source "drivers/battery_v2/Kconfig"
 
 source "drivers/battery_v2_legacy/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 source "drivers/reset/Kconfig"
 
 source "drivers/fmc/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/coresight/Kconfig"
 
+=======
+>>>>>>> v4.9.227
 source "drivers/phy/Kconfig"
 
 source "drivers/powercap/Kconfig"
 
 source "drivers/mcb/Kconfig"
 
+<<<<<<< HEAD
+=======
+source "drivers/perf/Kconfig"
+
+>>>>>>> v4.9.227
 source "drivers/ras/Kconfig"
 
 source "drivers/thunderbolt/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/sensors/Kconfig"
 
 source "drivers/firmware/Kconfig"
@@ -223,5 +269,20 @@ source "drivers/security/samsung/five_tee_driver/Kconfig"
 source "drivers/debug/Kconfig"
 
 source "drivers/security/samsung/icdrv/Kconfig"
+=======
+source "drivers/android/Kconfig"
+
+source "drivers/nvdimm/Kconfig"
+
+source "drivers/dax/Kconfig"
+
+source "drivers/nvmem/Kconfig"
+
+source "drivers/hwtracing/stm/Kconfig"
+
+source "drivers/hwtracing/intel_th/Kconfig"
+
+source "drivers/fpga/Kconfig"
+>>>>>>> v4.9.227
 
 endmenu

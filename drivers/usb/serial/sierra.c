@@ -289,6 +289,10 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x68AA, 0xFF, 0xFF, 0xFF),
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
 	},
+<<<<<<< HEAD
+=======
+	{ USB_DEVICE(0x1199, 0x68AB) }, /* Sierra Wireless AR8550 */
+>>>>>>> v4.9.227
 	/* AT&T Direct IP LTE modems */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0F3D, 0x68AA, 0xFF, 0xFF, 0xFF),
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
@@ -775,7 +779,11 @@ static void sierra_close(struct usb_serial_port *port)
 
 	/*
 	 * Need to take susp_lock to make sure port is not already being
+<<<<<<< HEAD
 	 * resumed, but no need to hold it due to ASYNC_INITIALIZED.
+=======
+	 * resumed, but no need to hold it due to initialized
+>>>>>>> v4.9.227
 	 */
 	spin_lock_irq(&intfdata->susp_lock);
 	if (--intfdata->open_ports == 0)
@@ -789,9 +797,15 @@ static void sierra_close(struct usb_serial_port *port)
 		kfree(urb->transfer_buffer);
 		usb_free_urb(urb);
 		usb_autopm_put_interface_async(serial->interface);
+<<<<<<< HEAD
 		spin_lock(&portdata->lock);
 		portdata->outstanding_urbs--;
 		spin_unlock(&portdata->lock);
+=======
+		spin_lock_irq(&portdata->lock);
+		portdata->outstanding_urbs--;
+		spin_unlock_irq(&portdata->lock);
+>>>>>>> v4.9.227
 	}
 
 	sierra_stop_rx_urbs(port);
@@ -1038,7 +1052,11 @@ static int sierra_resume(struct usb_serial *serial)
 	for (i = 0; i < serial->num_ports; i++) {
 		port = serial->port[i];
 
+<<<<<<< HEAD
 		if (!test_bit(ASYNCB_INITIALIZED, &port->port.flags))
+=======
+		if (!tty_port_initialized(&port->port))
+>>>>>>> v4.9.227
 			continue;
 
 		err = sierra_submit_delayed_urbs(port);

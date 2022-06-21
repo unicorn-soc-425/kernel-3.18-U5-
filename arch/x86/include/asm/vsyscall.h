@@ -4,6 +4,7 @@
 #include <linux/seqlock.h>
 #include <uapi/asm/vsyscall.h>
 
+<<<<<<< HEAD
 #define VGETCPU_RDTSCP	1
 #define VGETCPU_LSL	2
 
@@ -13,6 +14,9 @@ extern struct timezone sys_tz;
 
 #include <asm/vvar.h>
 
+=======
+#ifdef CONFIG_X86_VSYSCALL_EMULATION
+>>>>>>> v4.9.227
 extern void map_vsyscall(void);
 
 /*
@@ -20,6 +24,7 @@ extern void map_vsyscall(void);
  * Returns true if handled.
  */
 extern bool emulate_vsyscall(struct pt_regs *regs, unsigned long address);
+<<<<<<< HEAD
 
 #ifdef CONFIG_X86_64
 
@@ -40,5 +45,17 @@ static inline unsigned int __getcpu(void)
 	return p;
 }
 #endif /* CONFIG_X86_64 */
+=======
+extern bool vsyscall_enabled(void);
+#else
+static inline void map_vsyscall(void) {}
+static inline bool emulate_vsyscall(struct pt_regs *regs, unsigned long address)
+{
+	return false;
+}
+static inline bool vsyscall_enabled(void) { return false; }
+#endif
+extern unsigned long vsyscall_pgprot;
+>>>>>>> v4.9.227
 
 #endif /* _ASM_X86_VSYSCALL_H */

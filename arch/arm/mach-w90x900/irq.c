@@ -211,6 +211,10 @@ void __init nuc900_init_irq(void)
 	for (irqno = IRQ_WDT; irqno <= IRQ_ADC; irqno++) {
 		irq_set_chip_and_handler(irqno, &nuc900_irq_chip,
 					 handle_level_irq);
+<<<<<<< HEAD
 		set_irq_flags(irqno, IRQF_VALID);
+=======
+		irq_clear_status_flags(irqno, IRQ_NOREQUEST);
+>>>>>>> v4.9.227
 	}
 }

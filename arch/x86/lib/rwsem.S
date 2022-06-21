@@ -15,7 +15,11 @@
 
 #include <linux/linkage.h>
 #include <asm/alternative-asm.h>
+<<<<<<< HEAD
 #include <asm/dwarf2.h>
+=======
+#include <asm/frame.h>
+>>>>>>> v4.9.227
 
 #define __ASM_HALF_REG(reg)	__ASM_SEL(reg, e##reg)
 #define __ASM_HALF_SIZE(inst)	__ASM_SEL(inst##w, inst##l)
@@ -29,6 +33,7 @@
  * there is contention on the semaphore.
  *
  * %eax contains the semaphore pointer on entry. Save the C-clobbered
+<<<<<<< HEAD
  * registers (%eax, %edx and %ecx) except %eax whish is either a return
  * value or just clobbered..
  */
@@ -38,6 +43,19 @@
 
 #define restore_common_regs \
 	popl_cfi %ecx; CFI_RESTORE ecx
+=======
+ * registers (%eax, %edx and %ecx) except %eax which is either a return
+ * value or just gets clobbered. Same is true for %edx so make sure GCC
+ * reloads it after the slow path, by making it hold a temporary, for
+ * example see ____down_write().
+ */
+
+#define save_common_regs \
+	pushl %ecx
+
+#define restore_common_regs \
+	popl %ecx
+>>>>>>> v4.9.227
 
 	/* Avoid uglifying the argument copying x86-64 needs to do. */
 	.macro movq src, dst
@@ -64,6 +82,7 @@
  */
 
 #define save_common_regs \
+<<<<<<< HEAD
 	pushq_cfi %rdi; CFI_REL_OFFSET rdi, 0; \
 	pushq_cfi %rsi; CFI_REL_OFFSET rsi, 0; \
 	pushq_cfi %rcx; CFI_REL_OFFSET rcx, 0; \
@@ -80,11 +99,30 @@
 	popq_cfi %rcx; CFI_RESTORE rcx; \
 	popq_cfi %rsi; CFI_RESTORE rsi; \
 	popq_cfi %rdi; CFI_RESTORE rdi
+=======
+	pushq %rdi; \
+	pushq %rsi; \
+	pushq %rcx; \
+	pushq %r8;  \
+	pushq %r9;  \
+	pushq %r10; \
+	pushq %r11
+
+#define restore_common_regs \
+	popq %r11; \
+	popq %r10; \
+	popq %r9; \
+	popq %r8; \
+	popq %rcx; \
+	popq %rsi; \
+	popq %rdi
+>>>>>>> v4.9.227
 
 #endif
 
 /* Fix up special calling conventions */
 ENTRY(call_rwsem_down_read_failed)
+<<<<<<< HEAD
 	CFI_STARTPROC
 	save_common_regs
 	__ASM_SIZE(push,_cfi) %__ASM_REG(dx)
@@ -100,16 +138,50 @@ ENDPROC(call_rwsem_down_read_failed)
 
 ENTRY(call_rwsem_down_write_failed)
 	CFI_STARTPROC
+=======
+	FRAME_BEGIN
+	save_common_regs
+	__ASM_SIZE(push,) %__ASM_REG(dx)
+	movq %rax,%rdi
+	call rwsem_down_read_failed
+	__ASM_SIZE(pop,) %__ASM_REG(dx)
+	restore_common_regs
+	FRAME_END
+	ret
+ENDPROC(call_rwsem_down_read_failed)
+
+ENTRY(call_rwsem_down_write_failed)
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 	save_common_regs
 	movq %rax,%rdi
 	call rwsem_down_write_failed
 	restore_common_regs
+<<<<<<< HEAD
 	ret
 	CFI_ENDPROC
 ENDPROC(call_rwsem_down_write_failed)
 
 ENTRY(call_rwsem_wake)
 	CFI_STARTPROC
+=======
+	FRAME_END
+	ret
+ENDPROC(call_rwsem_down_write_failed)
+
+ENTRY(call_rwsem_down_write_failed_killable)
+	FRAME_BEGIN
+	save_common_regs
+	movq %rax,%rdi
+	call rwsem_down_write_failed_killable
+	restore_common_regs
+	FRAME_END
+	ret
+ENDPROC(call_rwsem_down_write_failed_killable)
+
+ENTRY(call_rwsem_wake)
+	FRAME_BEGIN
+>>>>>>> v4.9.227
 	/* do nothing if still outstanding active readers */
 	__ASM_HALF_SIZE(dec) %__ASM_HALF_REG(dx)
 	jnz 1f
@@ -117,6 +189,7 @@ ENTRY(call_rwsem_wake)
 	movq %rax,%rdi
 	call rwsem_wake
 	restore_common_regs
+<<<<<<< HEAD
 1:	ret
 	CFI_ENDPROC
 ENDPROC(call_rwsem_wake)
@@ -133,4 +206,20 @@ ENTRY(call_rwsem_downgrade_wake)
 	restore_common_regs
 	ret
 	CFI_ENDPROC
+=======
+1:	FRAME_END
+	ret
+ENDPROC(call_rwsem_wake)
+
+ENTRY(call_rwsem_downgrade_wake)
+	FRAME_BEGIN
+	save_common_regs
+	__ASM_SIZE(push,) %__ASM_REG(dx)
+	movq %rax,%rdi
+	call rwsem_downgrade_wake
+	__ASM_SIZE(pop,) %__ASM_REG(dx)
+	restore_common_regs
+	FRAME_END
+	ret
+>>>>>>> v4.9.227
 ENDPROC(call_rwsem_downgrade_wake)

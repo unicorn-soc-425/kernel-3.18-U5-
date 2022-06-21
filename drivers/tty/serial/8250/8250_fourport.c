@@ -10,6 +10,7 @@
 #include <linux/init.h>
 #include <linux/serial_8250.h>
 
+<<<<<<< HEAD
 #define PORT(_base,_irq)						\
 	{								\
 		.iobase		= _base,				\
@@ -28,6 +29,22 @@ static struct plat_serial8250_port fourport_data[] = {
 	PORT(0x2a8, 5),
 	PORT(0x2b0, 5),
 	PORT(0x2b8, 5),
+=======
+#include "8250.h"
+
+#define SERIAL8250_FOURPORT(_base, _irq) \
+	SERIAL8250_PORT_FLAGS(_base, _irq, UPF_FOURPORT)
+
+static struct plat_serial8250_port fourport_data[] = {
+	SERIAL8250_FOURPORT(0x1a0, 9),
+	SERIAL8250_FOURPORT(0x1a8, 9),
+	SERIAL8250_FOURPORT(0x1b0, 9),
+	SERIAL8250_FOURPORT(0x1b8, 9),
+	SERIAL8250_FOURPORT(0x2a0, 5),
+	SERIAL8250_FOURPORT(0x2a8, 5),
+	SERIAL8250_FOURPORT(0x2b0, 5),
+	SERIAL8250_FOURPORT(0x2b8, 5),
+>>>>>>> v4.9.227
 	{ },
 };
 

@@ -15,20 +15,30 @@
 #include <linux/sched.h>
 #include <linux/interrupt.h>
 #include <linux/kernel_stat.h>
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 #include <trace/events/irq.h>
 
 #include "internals.h"
 
+<<<<<<< HEAD
 #include <linux/sec_debug.h>
 
 
 /**
  * handle_bad_irq - handle spurious and unhandled irqs
  * @irq:       the interrupt number
+=======
+/**
+ * handle_bad_irq - handle spurious and unhandled irqs
+>>>>>>> v4.9.227
  * @desc:      description of the interrupt
  *
  * Handles spurious and unhandled IRQ's. It also prints a debugmessage.
  */
+<<<<<<< HEAD
 bool handle_bad_irq(unsigned int irq, struct irq_desc *desc)
 {
 	print_irq_desc(irq, desc);
@@ -36,6 +46,17 @@ bool handle_bad_irq(unsigned int irq, struct irq_desc *desc)
 	ack_bad_irq(irq);
 	return true;
 }
+=======
+void handle_bad_irq(struct irq_desc *desc)
+{
+	unsigned int irq = irq_desc_get_irq(desc);
+
+	print_irq_desc(irq, desc);
+	kstat_incr_irqs_this_cpu(desc);
+	ack_bad_irq(irq);
+}
+EXPORT_SYMBOL_GPL(handle_bad_irq);
+>>>>>>> v4.9.227
 
 /*
  * Special, empty irq handler:
@@ -133,6 +154,7 @@ void __irq_wake_thread(struct irq_desc *desc, struct irqaction *action)
 	wake_up_process(action->thread);
 }
 
+<<<<<<< HEAD
 irqreturn_t
 handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 {
@@ -147,6 +169,20 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 		res = action->handler(irq, action->dev_id);
 		trace_irq_handler_exit(irq, action, res);
 		sec_debug_irq_sched_log(irq, action->handler, (char *)action->name, IRQ_EXIT);
+=======
+irqreturn_t __handle_irq_event_percpu(struct irq_desc *desc, unsigned int *flags)
+{
+	irqreturn_t retval = IRQ_NONE;
+	unsigned int irq = desc->irq_data.irq;
+	struct irqaction *action;
+
+	for_each_action_of_desc(desc, action) {
+		irqreturn_t res;
+
+		trace_irq_handler_entry(irq, action);
+		res = action->handler(irq, action->dev_id);
+		trace_irq_handler_exit(irq, action, res);
+>>>>>>> v4.9.227
 
 		if (WARN_ONCE(!irqs_disabled(),"irq %u handler %pF enabled interrupts\n",
 			      irq, action->handler))
@@ -167,7 +203,11 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 
 			/* Fall through to add to randomness */
 		case IRQ_HANDLED:
+<<<<<<< HEAD
 			flags |= action->flags;
+=======
+			*flags |= action->flags;
+>>>>>>> v4.9.227
 			break;
 
 		default:
@@ -175,6 +215,7 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 		}
 
 		retval |= res;
+<<<<<<< HEAD
 		action = action->next;
 	} while (action);
 
@@ -182,19 +223,44 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 
 	if (!noirqdebug)
 		note_interrupt(irq, desc, retval);
+=======
+	}
+
+	return retval;
+}
+
+irqreturn_t handle_irq_event_percpu(struct irq_desc *desc)
+{
+	irqreturn_t retval;
+	unsigned int flags = 0;
+
+	retval = __handle_irq_event_percpu(desc, &flags);
+
+	add_interrupt_randomness(desc->irq_data.irq, flags);
+
+	if (!noirqdebug)
+		note_interrupt(desc, retval);
+>>>>>>> v4.9.227
 	return retval;
 }
 
 irqreturn_t handle_irq_event(struct irq_desc *desc)
 {
+<<<<<<< HEAD
 	struct irqaction *action = desc->action;
+=======
+>>>>>>> v4.9.227
 	irqreturn_t ret;
 
 	desc->istate &= ~IRQS_PENDING;
 	irqd_set(&desc->irq_data, IRQD_IRQ_INPROGRESS);
 	raw_spin_unlock(&desc->lock);
 
+<<<<<<< HEAD
 	ret = handle_irq_event_percpu(desc, action);
+=======
+	ret = handle_irq_event_percpu(desc);
+>>>>>>> v4.9.227
 
 	raw_spin_lock(&desc->lock);
 	irqd_clear(&desc->irq_data, IRQD_IRQ_INPROGRESS);

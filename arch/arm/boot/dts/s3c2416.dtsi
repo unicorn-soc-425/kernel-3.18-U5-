@@ -17,7 +17,11 @@
 	compatible = "samsung,s3c2416";
 
 	aliases {
+<<<<<<< HEAD
 		serial3 = &uart3;
+=======
+		serial3 = &uart_3;
+>>>>>>> v4.9.227
 	};
 
 	cpus {
@@ -25,7 +29,11 @@
 		#size-cells = <0>;
 
 		cpu {
+<<<<<<< HEAD
 			compatible = "arm,arm926ejs";
+=======
+			compatible = "arm,arm926ej-s";
+>>>>>>> v4.9.227
 		};
 	};
 
@@ -48,7 +56,11 @@
 		clock-names = "timers";
 	};
 
+<<<<<<< HEAD
 	serial@50000000 {
+=======
+	uart_0: serial@50000000 {
+>>>>>>> v4.9.227
 		compatible = "samsung,s3c2440-uart";
 		clock-names = "uart", "clk_uart_baud2",
 				"clk_uart_baud3";
@@ -56,7 +68,11 @@
 				<&clocks SCLK_UART>;
 	};
 
+<<<<<<< HEAD
 	serial@50004000 {
+=======
+	uart_1: serial@50004000 {
+>>>>>>> v4.9.227
 		compatible = "samsung,s3c2440-uart";
 		clock-names = "uart", "clk_uart_baud2",
 				"clk_uart_baud3";
@@ -64,7 +80,11 @@
 				<&clocks SCLK_UART>;
 	};
 
+<<<<<<< HEAD
 	serial@50008000 {
+=======
+	uart_2: serial@50008000 {
+>>>>>>> v4.9.227
 		compatible = "samsung,s3c2440-uart";
 		clock-names = "uart", "clk_uart_baud2",
 				"clk_uart_baud3";
@@ -72,7 +92,11 @@
 				<&clocks SCLK_UART>;
 	};
 
+<<<<<<< HEAD
 	uart3: serial@5000C000 {
+=======
+	uart_3: serial@5000C000 {
+>>>>>>> v4.9.227
 		compatible = "samsung,s3c2440-uart";
 		reg = <0x5000C000 0x4000>;
 		interrupts = <1 18 24 4>, <1 18 25 4>;
@@ -83,7 +107,11 @@
 		status = "disabled";
 	};
 
+<<<<<<< HEAD
 	sdhci@4AC00000 {
+=======
+	sdhci_1: sdhci@4AC00000 {
+>>>>>>> v4.9.227
 		compatible = "samsung,s3c6410-sdhci";
 		reg = <0x4AC00000 0x100>;
 		interrupts = <0 0 21 3>;
@@ -94,7 +122,11 @@
 		status = "disabled";
 	};
 
+<<<<<<< HEAD
 	sdhci@4A800000 {
+=======
+	sdhci_0: sdhci@4A800000 {
+>>>>>>> v4.9.227
 		compatible = "samsung,s3c6410-sdhci";
 		reg = <0x4A800000 0x100>;
 		interrupts = <0 0 20 3>;
@@ -105,13 +137,21 @@
 		status = "disabled";
 	};
 
+<<<<<<< HEAD
 	watchdog@53000000 {
+=======
+	watchdog: watchdog@53000000 {
+>>>>>>> v4.9.227
 		interrupts = <1 9 27 3>;
 		clocks = <&clocks PCLK_WDT>;
 		clock-names = "watchdog";
 	};
 
+<<<<<<< HEAD
 	rtc@57000000 {
+=======
+	rtc: rtc@57000000 {
+>>>>>>> v4.9.227
 		compatible = "samsung,s3c2416-rtc";
 		clocks = <&clocks PCLK_RTC>;
 		clock-names = "rtc";

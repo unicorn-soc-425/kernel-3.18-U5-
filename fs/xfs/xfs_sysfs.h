@@ -22,6 +22,10 @@
 extern struct kobj_type xfs_mp_ktype;	/* xfs_mount */
 extern struct kobj_type xfs_dbg_ktype;	/* debug */
 extern struct kobj_type xfs_log_ktype;	/* xlog */
+<<<<<<< HEAD
+=======
+extern struct kobj_type xfs_stats_ktype;	/* stats */
+>>>>>>> v4.9.227
 
 static inline struct xfs_kobj *
 to_kobj(struct kobject *kobject)
@@ -57,4 +61,10 @@ xfs_sysfs_del(
 	wait_for_completion(&kobj->complete);
 }
 
+<<<<<<< HEAD
+=======
+int	xfs_error_sysfs_init(struct xfs_mount *mp);
+void	xfs_error_sysfs_del(struct xfs_mount *mp);
+
+>>>>>>> v4.9.227
 #endif	/* __XFS_SYSFS_H__ */

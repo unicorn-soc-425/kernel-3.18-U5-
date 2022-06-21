@@ -425,7 +425,10 @@ MODULE_DEVICE_TABLE(of, uctrl_match);
 static struct platform_driver uctrl_driver = {
 	.driver = {
 		.name = "uctrl",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = uctrl_match,
 	},
 	.probe		= uctrl_probe,

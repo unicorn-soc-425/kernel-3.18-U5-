@@ -1,5 +1,9 @@
 /*
  * Support for o32 Linux/MIPS ELF binaries.
+<<<<<<< HEAD
+=======
+ * Author: Ralf Baechle (ralf@linux-mips.org)
+>>>>>>> v4.9.227
  *
  * Copyright (C) 1999, 2001 Ralf Baechle
  * Copyright (C) 1999, 2001 Silicon Graphics, Inc.
@@ -28,6 +32,7 @@ typedef double elf_fpreg_t;
 typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 
 /*
+<<<<<<< HEAD
  * In order to be sure that we don't attempt to execute an O32 binary which
  * requires 64 bit FP (FR=1) on a system which does not support it we refuse
  * to execute any binary which has bits specified by the following macro set
@@ -61,6 +66,11 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 									\
 	__res;								\
 })
+=======
+ * This is used to ensure we don't load something for the wrong architecture.
+ */
+#define elf_check_arch elfo32_check_arch
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_KVM_GUEST
 #define TASK32_SIZE		0x3fff8000UL
@@ -72,7 +82,10 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 
 #include <asm/processor.h>
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/elfcore.h>
 #include <linux/compat.h>
 #include <linux/math64.h>
@@ -129,12 +142,15 @@ jiffies_to_compat_timeval(unsigned long jiffies, struct compat_timeval *value)
 	value->tv_usec = rem / NSEC_PER_USEC;
 }
 
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Binary format loader for compatibility with o32 Linux/MIPS binaries");
 MODULE_AUTHOR("Ralf Baechle (ralf@linux-mips.org)");
 
 #undef MODULE_DESCRIPTION
 #undef MODULE_AUTHOR
 
+=======
+>>>>>>> v4.9.227
 #undef TASK_SIZE
 #define TASK_SIZE TASK_SIZE32
 

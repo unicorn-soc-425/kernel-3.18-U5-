@@ -134,6 +134,7 @@ static struct attribute *lp55xx_led_attrs[] = {
 };
 ATTRIBUTE_GROUPS(lp55xx_led);
 
+<<<<<<< HEAD
 static void lp55xx_set_brightness(struct led_classdev *cdev,
 			     enum led_brightness brightness)
 {
@@ -141,6 +142,16 @@ static void lp55xx_set_brightness(struct led_classdev *cdev,
 
 	led->brightness = (u8)brightness;
 	schedule_work(&led->brightness_work);
+=======
+static int lp55xx_set_brightness(struct led_classdev *cdev,
+			     enum led_brightness brightness)
+{
+	struct lp55xx_led *led = cdev_to_lp55xx_led(cdev);
+	struct lp55xx_device_config *cfg = led->chip->cfg;
+
+	led->brightness = (u8)brightness;
+	return cfg->brightness_fn(led);
+>>>>>>> v4.9.227
 }
 
 static int lp55xx_init_led(struct lp55xx_led *led,
@@ -172,7 +183,11 @@ static int lp55xx_init_led(struct lp55xx_led *led,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	led->cdev.brightness_set = lp55xx_set_brightness;
+=======
+	led->cdev.brightness_set_blocking = lp55xx_set_brightness;
+>>>>>>> v4.9.227
 	led->cdev.groups = lp55xx_led_groups;
 
 	if (pdata->led_config[chan].name) {
@@ -200,7 +215,11 @@ static void lp55xx_firmware_loaded(const struct firmware *fw, void *context)
 
 	if (!fw) {
 		dev_err(dev, "firmware request failed\n");
+<<<<<<< HEAD
 		goto out;
+=======
+		return;
+>>>>>>> v4.9.227
 	}
 
 	/* handling firmware data is chip dependent */
@@ -213,9 +232,15 @@ static void lp55xx_firmware_loaded(const struct firmware *fw, void *context)
 
 	mutex_unlock(&chip->lock);
 
+<<<<<<< HEAD
 out:
 	/* firmware should be released for other channel use */
 	release_firmware(chip->fw);
+=======
+	/* firmware should be released for other channel use */
+	release_firmware(chip->fw);
+	chip->fw = NULL;
+>>>>>>> v4.9.227
 }
 
 static int lp55xx_request_firmware(struct lp55xx_chip *chip)
@@ -223,7 +248,11 @@ static int lp55xx_request_firmware(struct lp55xx_chip *chip)
 	const char *name = chip->cl->name;
 	struct device *dev = &chip->cl->dev;
 
+<<<<<<< HEAD
 	return request_firmware_nowait(THIS_MODULE, true, name, dev,
+=======
+	return request_firmware_nowait(THIS_MODULE, false, name, dev,
+>>>>>>> v4.9.227
 				GFP_KERNEL, chip, lp55xx_firmware_loaded);
 }
 
@@ -464,7 +493,11 @@ int lp55xx_register_leds(struct lp55xx_led *led, struct lp55xx_chip *chip)
 	int ret;
 	int i;
 
+<<<<<<< HEAD
 	if (!cfg->brightness_work_fn) {
+=======
+	if (!cfg->brightness_fn) {
+>>>>>>> v4.9.227
 		dev_err(&chip->cl->dev, "empty brightness configuration\n");
 		return -EINVAL;
 	}
@@ -481,8 +514,11 @@ int lp55xx_register_leds(struct lp55xx_led *led, struct lp55xx_chip *chip)
 		if (ret)
 			goto err_init_led;
 
+<<<<<<< HEAD
 		INIT_WORK(&each->brightness_work, cfg->brightness_work_fn);
 
+=======
+>>>>>>> v4.9.227
 		chip->num_leds++;
 		each->chip = chip;
 
@@ -507,7 +543,10 @@ void lp55xx_unregister_leds(struct lp55xx_led *led, struct lp55xx_chip *chip)
 	for (i = 0; i < chip->num_leds; i++) {
 		each = led + i;
 		led_classdev_unregister(&each->cdev);
+<<<<<<< HEAD
 		flush_work(&each->brightness_work);
+=======
+>>>>>>> v4.9.227
 	}
 }
 EXPORT_SYMBOL_GPL(lp55xx_unregister_leds);
@@ -543,7 +582,12 @@ void lp55xx_unregister_sysfs(struct lp55xx_chip *chip)
 }
 EXPORT_SYMBOL_GPL(lp55xx_unregister_sysfs);
 
+<<<<<<< HEAD
 int lp55xx_of_populate_pdata(struct device *dev, struct device_node *np)
+=======
+struct lp55xx_platform_data *lp55xx_of_populate_pdata(struct device *dev,
+						      struct device_node *np)
+>>>>>>> v4.9.227
 {
 	struct device_node *child;
 	struct lp55xx_platform_data *pdata;
@@ -553,17 +597,29 @@ int lp55xx_of_populate_pdata(struct device *dev, struct device_node *np)
 
 	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata)
+<<<<<<< HEAD
 		return -ENOMEM;
+=======
+		return ERR_PTR(-ENOMEM);
+>>>>>>> v4.9.227
 
 	num_channels = of_get_child_count(np);
 	if (num_channels == 0) {
 		dev_err(dev, "no LED channels\n");
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return ERR_PTR(-EINVAL);
+>>>>>>> v4.9.227
 	}
 
 	cfg = devm_kzalloc(dev, sizeof(*cfg) * num_channels, GFP_KERNEL);
 	if (!cfg)
+<<<<<<< HEAD
 		return -ENOMEM;
+=======
+		return ERR_PTR(-ENOMEM);
+>>>>>>> v4.9.227
 
 	pdata->led_config = &cfg[0];
 	pdata->num_channels = num_channels;
@@ -588,9 +644,13 @@ int lp55xx_of_populate_pdata(struct device *dev, struct device_node *np)
 	/* LP8501 specific */
 	of_property_read_u8(np, "pwr-sel", (u8 *)&pdata->pwr_sel);
 
+<<<<<<< HEAD
 	dev->platform_data = pdata;
 
 	return 0;
+=======
+	return pdata;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(lp55xx_of_populate_pdata);
 

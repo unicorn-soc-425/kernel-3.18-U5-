@@ -16,11 +16,14 @@
  * NON INFRINGEMENT.  See the GNU General Public License for more
  * details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  *
+=======
+>>>>>>> v4.9.227
  * ACPI based HotPlug driver that supports Memory Hotplug
  * This driver fields notifications from firmware for memory add
  * and remove operations and alerts the VM of the affected memory
@@ -101,8 +104,13 @@ acpi_memory_get_resource(struct acpi_resource *resource, void *context)
 		/* Can we combine the resource range information? */
 		if ((info->caching == address64.info.mem.caching) &&
 		    (info->write_protect == address64.info.mem.write_protect) &&
+<<<<<<< HEAD
 		    (info->start_addr + info->length == address64.minimum)) {
 			info->length += address64.address_length;
+=======
+		    (info->start_addr + info->length == address64.address.minimum)) {
+			info->length += address64.address.address_length;
+>>>>>>> v4.9.227
 			return AE_OK;
 		}
 	}
@@ -114,8 +122,13 @@ acpi_memory_get_resource(struct acpi_resource *resource, void *context)
 	INIT_LIST_HEAD(&new->list);
 	new->caching = address64.info.mem.caching;
 	new->write_protect = address64.info.mem.write_protect;
+<<<<<<< HEAD
 	new->start_addr = address64.minimum;
 	new->length = address64.address_length;
+=======
+	new->start_addr = address64.address.minimum;
+	new->length = address64.address.address_length;
+>>>>>>> v4.9.227
 	list_add_tail(&new->list, &mem_device->res_list);
 
 	return AE_OK;
@@ -233,7 +246,11 @@ static int acpi_memory_enable_device(struct acpi_memory_device *mem_device)
 		if (node < 0)
 			node = memory_add_physaddr_to_nid(info->start_addr);
 
+<<<<<<< HEAD
 		result = add_memory(node, info->start_addr, info->length);
+=======
+		result = __add_memory(node, info->start_addr, info->length);
+>>>>>>> v4.9.227
 
 		/*
 		 * If the memory block has been used by the kernel, add_memory()

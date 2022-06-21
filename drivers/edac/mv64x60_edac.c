@@ -118,7 +118,10 @@ static int mv64x60_pci_err_probe(struct platform_device *pdev)
 
 	pdata->pci_hose = pdev->id;
 	pdata->name = "mpc85xx_pci_err";
+<<<<<<< HEAD
 	pdata->irq = NO_IRQ;
+=======
+>>>>>>> v4.9.227
 	platform_set_drvdata(pdev, pci);
 	pci->dev = &pdev->dev;
 	pci->dev_name = dev_name(&pdev->dev);
@@ -178,7 +181,11 @@ static int mv64x60_pci_err_probe(struct platform_device *pdev)
 		res = devm_request_irq(&pdev->dev,
 				       pdata->irq,
 				       mv64x60_pci_isr,
+<<<<<<< HEAD
 				       IRQF_DISABLED,
+=======
+				       0,
+>>>>>>> v4.9.227
 				       "[EDAC] PCI err",
 				       pci);
 		if (res < 0) {
@@ -291,7 +298,10 @@ static int mv64x60_sram_err_probe(struct platform_device *pdev)
 
 	pdata = edac_dev->pvt_info;
 	pdata->name = "mv64x60_sram_err";
+<<<<<<< HEAD
 	pdata->irq = NO_IRQ;
+=======
+>>>>>>> v4.9.227
 	edac_dev->dev = &pdev->dev;
 	platform_set_drvdata(pdev, edac_dev);
 	edac_dev->dev_name = dev_name(&pdev->dev);
@@ -345,7 +355,11 @@ static int mv64x60_sram_err_probe(struct platform_device *pdev)
 		res = devm_request_irq(&pdev->dev,
 				       pdata->irq,
 				       mv64x60_sram_isr,
+<<<<<<< HEAD
 				       IRQF_DISABLED,
+=======
+				       0,
+>>>>>>> v4.9.227
 				       "[EDAC] SRAM err",
 				       edac_dev);
 		if (res < 0) {
@@ -459,7 +473,10 @@ static int mv64x60_cpu_err_probe(struct platform_device *pdev)
 
 	pdata = edac_dev->pvt_info;
 	pdata->name = "mv64x60_cpu_err";
+<<<<<<< HEAD
 	pdata->irq = NO_IRQ;
+=======
+>>>>>>> v4.9.227
 	edac_dev->dev = &pdev->dev;
 	platform_set_drvdata(pdev, edac_dev);
 	edac_dev->dev_name = dev_name(&pdev->dev);
@@ -540,7 +557,11 @@ static int mv64x60_cpu_err_probe(struct platform_device *pdev)
 		res = devm_request_irq(&pdev->dev,
 				       pdata->irq,
 				       mv64x60_cpu_isr,
+<<<<<<< HEAD
 				       IRQF_DISABLED,
+=======
+				       0,
+>>>>>>> v4.9.227
 				       "[EDAC] CPU err",
 				       edac_dev);
 		if (res < 0) {
@@ -727,7 +748,10 @@ static int mv64x60_mc_err_probe(struct platform_device *pdev)
 	mci->pdev = &pdev->dev;
 	platform_set_drvdata(pdev, mci);
 	pdata->name = "mv64x60_mc_err";
+<<<<<<< HEAD
 	pdata->irq = NO_IRQ;
+=======
+>>>>>>> v4.9.227
 	mci->dev_name = dev_name(&pdev->dev);
 	pdata->edac_idx = edac_mc_idx++;
 
@@ -789,7 +813,12 @@ static int mv64x60_mc_err_probe(struct platform_device *pdev)
 	ctl = (ctl & 0xff00ffff) | 0x10000;
 	out_le32(pdata->mc_vbase + MV64X60_SDRAM_ERR_ECC_CNTL, ctl);
 
+<<<<<<< HEAD
 	if (edac_mc_add_mc(mci)) {
+=======
+	res = edac_mc_add_mc(mci);
+	if (res) {
+>>>>>>> v4.9.227
 		edac_dbg(3, "failed edac_mc_add_mc()\n");
 		goto err;
 	}
@@ -800,7 +829,11 @@ static int mv64x60_mc_err_probe(struct platform_device *pdev)
 		res = devm_request_irq(&pdev->dev,
 				       pdata->irq,
 				       mv64x60_mc_isr,
+<<<<<<< HEAD
 				       IRQF_DISABLED,
+=======
+				       0,
+>>>>>>> v4.9.227
 				       "[EDAC] MC err",
 				       mci);
 		if (res < 0) {
@@ -846,6 +879,18 @@ static struct platform_driver mv64x60_mc_err_driver = {
 	}
 };
 
+<<<<<<< HEAD
+=======
+static struct platform_driver * const drivers[] = {
+	&mv64x60_mc_err_driver,
+	&mv64x60_cpu_err_driver,
+	&mv64x60_sram_err_driver,
+#ifdef CONFIG_PCI
+	&mv64x60_pci_err_driver,
+#endif
+};
+
+>>>>>>> v4.9.227
 static int __init mv64x60_edac_init(void)
 {
 	int ret = 0;
@@ -862,6 +907,7 @@ static int __init mv64x60_edac_init(void)
 		break;
 	}
 
+<<<<<<< HEAD
 	ret = platform_driver_register(&mv64x60_mc_err_driver);
 	if (ret)
 		printk(KERN_WARNING EDAC_MOD_STR "MC err failed to register\n");
@@ -884,17 +930,24 @@ static int __init mv64x60_edac_init(void)
 #endif
 
 	return ret;
+=======
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 module_init(mv64x60_edac_init);
 
 static void __exit mv64x60_edac_exit(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 	platform_driver_unregister(&mv64x60_pci_err_driver);
 #endif
 	platform_driver_unregister(&mv64x60_sram_err_driver);
 	platform_driver_unregister(&mv64x60_cpu_err_driver);
 	platform_driver_unregister(&mv64x60_mc_err_driver);
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 module_exit(mv64x60_edac_exit);
 

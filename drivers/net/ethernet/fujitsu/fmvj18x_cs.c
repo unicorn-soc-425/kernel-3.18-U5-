@@ -469,8 +469,13 @@ static int fmvj18x_config(struct pcmcia_device *link)
 		    goto failed;
 	    }
 	    /* Read MACID from CIS */
+<<<<<<< HEAD
 	    for (i = 5; i < 11; i++)
 		    dev->dev_addr[i] = buf[i];
+=======
+	    for (i = 0; i < 6; i++)
+		    dev->dev_addr[i] = buf[i + 5];
+>>>>>>> v4.9.227
 	    kfree(buf);
 	} else {
 	    if (pcmcia_get_mac_from_cis(link, dev))
@@ -746,7 +751,11 @@ static irqreturn_t fjn_interrupt(int dummy, void *dev_id)
 	    lp->sent = lp->tx_queue ;
 	    lp->tx_queue = 0;
 	    lp->tx_queue_len = 0;
+<<<<<<< HEAD
 	    dev->trans_start = jiffies;
+=======
+	    netif_trans_update(dev);
+>>>>>>> v4.9.227
 	} else {
 	    lp->tx_started = 0;
 	}

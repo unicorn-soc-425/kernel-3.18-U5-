@@ -239,7 +239,11 @@ xpc_create_gru_mq_uv(unsigned int mq_size, int cpu, char *irq_name,
 	mq->mmr_blade = uv_cpu_to_blade_id(cpu);
 
 	nid = cpu_to_node(cpu);
+<<<<<<< HEAD
 	page = alloc_pages_exact_node(nid,
+=======
+	page = __alloc_pages_node(nid,
+>>>>>>> v4.9.227
 				      GFP_KERNEL | __GFP_ZERO | __GFP_THISNODE,
 				      pg_order);
 	if (page == NULL) {

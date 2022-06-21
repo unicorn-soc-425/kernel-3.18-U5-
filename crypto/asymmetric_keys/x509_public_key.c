@@ -13,14 +13,18 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/err.h>
 #include <linux/mpi.h>
 #include <linux/asn1_decoder.h>
+=======
+>>>>>>> v4.9.227
 #include <keys/asymmetric-subtype.h>
 #include <keys/asymmetric-parser.h>
 #include <keys/system_keyring.h>
 #include <crypto/hash.h>
 #include "asymmetric_keys.h"
+<<<<<<< HEAD
 #include "public_key.h"
 #include "x509_parser.h"
 
@@ -121,20 +125,32 @@ struct key *x509_request_asymmetric_key(struct key *keyring,
 }
 EXPORT_SYMBOL_GPL(x509_request_asymmetric_key);
 
+=======
+#include "x509_parser.h"
+
+>>>>>>> v4.9.227
 /*
  * Set up the signature parameters in an X.509 certificate.  This involves
  * digesting the signed data and extracting the signature.
  */
 int x509_get_sig_params(struct x509_certificate *cert)
 {
+<<<<<<< HEAD
 	struct crypto_shash *tfm;
 	struct shash_desc *desc;
 	size_t digest_size, desc_size;
 	void *digest;
+=======
+	struct public_key_signature *sig = cert->sig;
+	struct crypto_shash *tfm;
+	struct shash_desc *desc;
+	size_t desc_size;
+>>>>>>> v4.9.227
 	int ret;
 
 	pr_devel("==>%s()\n", __func__);
 
+<<<<<<< HEAD
 	if (cert->unsupported_crypto)
 		return -ENOPKG;
 	if (cert->sig.rsa.s)
@@ -144,20 +160,48 @@ int x509_get_sig_params(struct x509_certificate *cert)
 	if (!cert->sig.rsa.s)
 		return -ENOMEM;
 	cert->sig.nr_mpi = 1;
+=======
+	if (!cert->pub->pkey_algo)
+		cert->unsupported_key = true;
+
+	if (!sig->pkey_algo)
+		cert->unsupported_sig = true;
+
+	/* We check the hash if we can - even if we can't then verify it */
+	if (!sig->hash_algo) {
+		cert->unsupported_sig = true;
+		return 0;
+	}
+
+	sig->s = kmemdup(cert->raw_sig, cert->raw_sig_size, GFP_KERNEL);
+	if (!sig->s)
+		return -ENOMEM;
+
+	sig->s_size = cert->raw_sig_size;
+>>>>>>> v4.9.227
 
 	/* Allocate the hashing algorithm we're going to need and find out how
 	 * big the hash operational data will be.
 	 */
+<<<<<<< HEAD
 	tfm = crypto_alloc_shash(hash_algo_name[cert->sig.pkey_hash_algo], 0, 0);
 	if (IS_ERR(tfm)) {
 		if (PTR_ERR(tfm) == -ENOENT) {
 			cert->unsupported_crypto = true;
 			return -ENOPKG;
+=======
+	tfm = crypto_alloc_shash(sig->hash_algo, 0, 0);
+	if (IS_ERR(tfm)) {
+		if (PTR_ERR(tfm) == -ENOENT) {
+			cert->unsupported_sig = true;
+			return 0;
+>>>>>>> v4.9.227
 		}
 		return PTR_ERR(tfm);
 	}
 
 	desc_size = crypto_shash_descsize(tfm) + sizeof(*desc);
+<<<<<<< HEAD
 	digest_size = crypto_shash_digestsize(tfm);
 
 	/* We allocate the hash operational data storage on the end of the
@@ -172,19 +216,42 @@ int x509_get_sig_params(struct x509_certificate *cert)
 	cert->sig.digest_size = digest_size;
 
 	desc = digest + digest_size;
+=======
+	sig->digest_size = crypto_shash_digestsize(tfm);
+
+	ret = -ENOMEM;
+	sig->digest = kmalloc(sig->digest_size, GFP_KERNEL);
+	if (!sig->digest)
+		goto error;
+
+	desc = kzalloc(desc_size, GFP_KERNEL);
+	if (!desc)
+		goto error;
+
+>>>>>>> v4.9.227
 	desc->tfm = tfm;
 	desc->flags = CRYPTO_TFM_REQ_MAY_SLEEP;
 
 	ret = crypto_shash_init(desc);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto error;
 	might_sleep();
 	ret = crypto_shash_finup(desc, cert->tbs, cert->tbs_size, digest);
+=======
+		goto error_2;
+	might_sleep();
+	ret = crypto_shash_finup(desc, cert->tbs, cert->tbs_size, sig->digest);
+
+error_2:
+	kfree(desc);
+>>>>>>> v4.9.227
 error:
 	crypto_free_shash(tfm);
 	pr_devel("<==%s() = %d\n", __func__, ret);
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(x509_get_sig_params);
 
 /*
@@ -239,6 +306,63 @@ static int x509_validate_trust(struct x509_certificate *cert,
 		key_put(key);
 	}
 	return ret;
+=======
+
+/*
+ * Check for self-signedness in an X.509 cert and if found, check the signature
+ * immediately if we can.
+ */
+int x509_check_for_self_signed(struct x509_certificate *cert)
+{
+	int ret = 0;
+
+	pr_devel("==>%s()\n", __func__);
+
+	if (cert->raw_subject_size != cert->raw_issuer_size ||
+	    memcmp(cert->raw_subject, cert->raw_issuer,
+		   cert->raw_issuer_size) != 0)
+		goto not_self_signed;
+
+	if (cert->sig->auth_ids[0] || cert->sig->auth_ids[1]) {
+		/* If the AKID is present it may have one or two parts.  If
+		 * both are supplied, both must match.
+		 */
+		bool a = asymmetric_key_id_same(cert->skid, cert->sig->auth_ids[1]);
+		bool b = asymmetric_key_id_same(cert->id, cert->sig->auth_ids[0]);
+
+		if (!a && !b)
+			goto not_self_signed;
+
+		ret = -EKEYREJECTED;
+		if (((a && !b) || (b && !a)) &&
+		    cert->sig->auth_ids[0] && cert->sig->auth_ids[1])
+			goto out;
+	}
+
+	ret = -EKEYREJECTED;
+	if (strcmp(cert->pub->pkey_algo, cert->sig->pkey_algo) != 0)
+		goto out;
+
+	ret = public_key_verify_signature(cert->pub, cert->sig);
+	if (ret < 0) {
+		if (ret == -ENOPKG) {
+			cert->unsupported_sig = true;
+			ret = 0;
+		}
+		goto out;
+	}
+
+	pr_devel("Cert Self-signature verified");
+	cert->self_signed = true;
+
+out:
+	pr_devel("<==%s() = %d\n", __func__, ret);
+	return ret;
+
+not_self_signed:
+	pr_devel("<==%s() = 0 [not]\n", __func__);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -260,16 +384,21 @@ static int x509_key_preparse(struct key_preparsed_payload *prep)
 	pr_devel("Cert Issuer: %s\n", cert->issuer);
 	pr_devel("Cert Subject: %s\n", cert->subject);
 
+<<<<<<< HEAD
 	if (cert->pub->pkey_algo >= PKEY_ALGO__LAST ||
 	    cert->sig.pkey_algo >= PKEY_ALGO__LAST ||
 	    cert->sig.pkey_hash_algo >= PKEY_HASH__LAST ||
 	    !pkey_algo[cert->pub->pkey_algo] ||
 	    !pkey_algo[cert->sig.pkey_algo] ||
 	    !hash_algo_name[cert->sig.pkey_hash_algo]) {
+=======
+	if (cert->unsupported_key) {
+>>>>>>> v4.9.227
 		ret = -ENOPKG;
 		goto error_free_cert;
 	}
 
+<<<<<<< HEAD
 	pr_devel("Cert Key Algo: %s\n", pkey_algo_name[cert->pub->pkey_algo]);
 	pr_devel("Cert Valid From: %04ld-%02d-%02d %02d:%02d:%02d\n",
 		 cert->valid_from.tm_year + 1900, cert->valid_from.tm_mon + 1,
@@ -296,6 +425,19 @@ static int x509_key_preparse(struct key_preparsed_payload *prep)
 		ret = x509_validate_trust(cert, get_system_trusted_keyring());
 		if (!ret)
 			prep->trusted = 1;
+=======
+	pr_devel("Cert Key Algo: %s\n", cert->pub->pkey_algo);
+	pr_devel("Cert Valid period: %lld-%lld\n", cert->valid_from, cert->valid_to);
+
+	cert->pub->id_type = "X509";
+
+	if (cert->unsupported_sig) {
+		public_key_signature_free(cert->sig);
+		cert->sig = NULL;
+	} else {
+		pr_devel("Cert Signature: %s + %s\n",
+			 cert->sig->pkey_algo, cert->sig->hash_algo);
+>>>>>>> v4.9.227
 	}
 
 	/* Propose a description */
@@ -327,9 +469,16 @@ static int x509_key_preparse(struct key_preparsed_payload *prep)
 
 	/* We're pinning the module by being linked against it */
 	__module_get(public_key_subtype.owner);
+<<<<<<< HEAD
 	prep->type_data[0] = &public_key_subtype;
 	prep->type_data[1] = kids;
 	prep->payload[0] = cert->pub;
+=======
+	prep->payload.data[asym_subtype] = &public_key_subtype;
+	prep->payload.data[asym_key_ids] = kids;
+	prep->payload.data[asym_crypto] = cert->pub;
+	prep->payload.data[asym_auth] = cert->sig;
+>>>>>>> v4.9.227
 	prep->description = desc;
 	prep->quotalen = 100;
 
@@ -337,6 +486,10 @@ static int x509_key_preparse(struct key_preparsed_payload *prep)
 	cert->pub = NULL;
 	cert->id = NULL;
 	cert->skid = NULL;
+<<<<<<< HEAD
+=======
+	cert->sig = NULL;
+>>>>>>> v4.9.227
 	desc = NULL;
 	ret = 0;
 

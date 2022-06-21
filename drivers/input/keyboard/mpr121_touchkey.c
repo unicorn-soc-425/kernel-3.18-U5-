@@ -219,6 +219,7 @@ static int mpr_touchkey_probe(struct i2c_client *client,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	mpr121 = kzalloc(sizeof(struct mpr121_touchkey), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!mpr121 || !input_dev) {
@@ -226,6 +227,16 @@ static int mpr_touchkey_probe(struct i2c_client *client,
 		error = -ENOMEM;
 		goto err_free_mem;
 	}
+=======
+	mpr121 = devm_kzalloc(&client->dev, sizeof(*mpr121),
+			      GFP_KERNEL);
+	if (!mpr121)
+		return -ENOMEM;
+
+	input_dev = devm_input_allocate_device(&client->dev);
+	if (!input_dev)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	mpr121->client = client;
 	mpr121->input_dev = input_dev;
@@ -249,26 +260,42 @@ static int mpr_touchkey_probe(struct i2c_client *client,
 	error = mpr121_phys_init(pdata, mpr121, client);
 	if (error) {
 		dev_err(&client->dev, "Failed to init register\n");
+<<<<<<< HEAD
 		goto err_free_mem;
 	}
 
 	error = request_threaded_irq(client->irq, NULL,
+=======
+		return error;
+	}
+
+	error = devm_request_threaded_irq(&client->dev, client->irq, NULL,
+>>>>>>> v4.9.227
 				     mpr_touchkey_interrupt,
 				     IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
 				     client->dev.driver->name, mpr121);
 	if (error) {
 		dev_err(&client->dev, "Failed to register interrupt\n");
+<<<<<<< HEAD
 		goto err_free_mem;
+=======
+		return error;
+>>>>>>> v4.9.227
 	}
 
 	error = input_register_device(input_dev);
 	if (error)
+<<<<<<< HEAD
 		goto err_free_irq;
+=======
+		return error;
+>>>>>>> v4.9.227
 
 	i2c_set_clientdata(client, mpr121);
 	device_init_wakeup(&client->dev, pdata->wakeup);
 
 	return 0;
+<<<<<<< HEAD
 
 err_free_irq:
 	free_irq(client->irq, mpr121);
@@ -287,6 +314,8 @@ static int mpr_touchkey_remove(struct i2c_client *client)
 	kfree(mpr121);
 
 	return 0;
+=======
+>>>>>>> v4.9.227
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -328,12 +357,18 @@ MODULE_DEVICE_TABLE(i2c, mpr121_id);
 static struct i2c_driver mpr_touchkey_driver = {
 	.driver = {
 		.name	= "mpr121",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &mpr121_touchkey_pm_ops,
 	},
 	.id_table	= mpr121_id,
 	.probe		= mpr_touchkey_probe,
+<<<<<<< HEAD
 	.remove		= mpr_touchkey_remove,
+=======
+>>>>>>> v4.9.227
 };
 
 module_i2c_driver(mpr_touchkey_driver);

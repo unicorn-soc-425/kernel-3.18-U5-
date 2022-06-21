@@ -59,7 +59,11 @@ static int em_ipset_match(struct sk_buff *skb, struct tcf_ematch *em,
 	struct net_device *dev, *indev = NULL;
 	int ret, network_offset;
 
+<<<<<<< HEAD
 	switch (skb->protocol) {
+=======
+	switch (tc_skb_protocol(skb)) {
+>>>>>>> v4.9.227
 	case htons(ETH_P_IP):
 		acpar.family = NFPROTO_IPV4;
 		if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
@@ -92,9 +96,16 @@ static int em_ipset_match(struct sk_buff *skb, struct tcf_ematch *em,
 
 	rcu_read_lock();
 
+<<<<<<< HEAD
 	if (dev && skb->skb_iif)
 		indev = dev_get_by_index_rcu(dev_net(dev), skb->skb_iif);
 
+=======
+	if (skb->skb_iif)
+		indev = dev_get_by_index_rcu(em->net, skb->skb_iif);
+
+	acpar.net     = em->net;
+>>>>>>> v4.9.227
 	acpar.in      = indev ? indev : dev;
 	acpar.out     = dev;
 

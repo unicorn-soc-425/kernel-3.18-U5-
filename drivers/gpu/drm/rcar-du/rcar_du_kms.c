@@ -1,7 +1,11 @@
 /*
  * rcar_du_kms.c  --  R-Car Display Unit Mode Setting
  *
+<<<<<<< HEAD
  * Copyright (C) 2013-2014 Renesas Electronics Corporation
+=======
+ * Copyright (C) 2013-2015 Renesas Electronics Corporation
+>>>>>>> v4.9.227
  *
  * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
  *
@@ -28,6 +32,10 @@
 #include "rcar_du_kms.h"
 #include "rcar_du_lvdsenc.h"
 #include "rcar_du_regs.h"
+<<<<<<< HEAD
+=======
+#include "rcar_du_vsp.h"
+>>>>>>> v4.9.227
 
 /* -----------------------------------------------------------------------------
  * Format helpers
@@ -89,13 +97,51 @@ static const struct rcar_du_format_info rcar_du_format_infos[] = {
 		.pnmr = PnMR_SPIM_TP_OFF | PnMR_DDDF_YC,
 		.edf = PnDDCR4_EDF_NONE,
 	}, {
+<<<<<<< HEAD
 		/* In YUV 4:2:2, only NV16 is supported (NV61 isn't) */
+=======
+>>>>>>> v4.9.227
 		.fourcc = DRM_FORMAT_NV16,
 		.bpp = 16,
 		.planes = 2,
 		.pnmr = PnMR_SPIM_TP_OFF | PnMR_DDDF_YC,
 		.edf = PnDDCR4_EDF_NONE,
 	},
+<<<<<<< HEAD
+=======
+	/* The following formats are not supported on Gen2 and thus have no
+	 * associated .pnmr or .edf settings.
+	 */
+	{
+		.fourcc = DRM_FORMAT_NV61,
+		.bpp = 16,
+		.planes = 2,
+	}, {
+		.fourcc = DRM_FORMAT_YUV420,
+		.bpp = 12,
+		.planes = 3,
+	}, {
+		.fourcc = DRM_FORMAT_YVU420,
+		.bpp = 12,
+		.planes = 3,
+	}, {
+		.fourcc = DRM_FORMAT_YUV422,
+		.bpp = 16,
+		.planes = 3,
+	}, {
+		.fourcc = DRM_FORMAT_YVU422,
+		.bpp = 16,
+		.planes = 3,
+	}, {
+		.fourcc = DRM_FORMAT_YUV444,
+		.bpp = 24,
+		.planes = 3,
+	}, {
+		.fourcc = DRM_FORMAT_YVU444,
+		.bpp = 24,
+		.planes = 3,
+	},
+>>>>>>> v4.9.227
 };
 
 const struct rcar_du_format_info *rcar_du_format_info(u32 fourcc)
@@ -136,13 +182,21 @@ int rcar_du_dumb_create(struct drm_file *file, struct drm_device *dev,
 
 static struct drm_framebuffer *
 rcar_du_fb_create(struct drm_device *dev, struct drm_file *file_priv,
+<<<<<<< HEAD
 		  struct drm_mode_fb_cmd2 *mode_cmd)
+=======
+		  const struct drm_mode_fb_cmd2 *mode_cmd)
+>>>>>>> v4.9.227
 {
 	struct rcar_du_device *rcdu = dev->dev_private;
 	const struct rcar_du_format_info *format;
 	unsigned int max_pitch;
 	unsigned int align;
 	unsigned int bpp;
+<<<<<<< HEAD
+=======
+	unsigned int i;
+>>>>>>> v4.9.227
 
 	format = rcar_du_format_info(mode_cmd->pixel_format);
 	if (format == NULL) {
@@ -155,7 +209,11 @@ rcar_du_fb_create(struct drm_device *dev, struct drm_file *file_priv,
 	 * The pitch and alignment constraints are expressed in pixels on the
 	 * hardware side and in bytes in the DRM API.
 	 */
+<<<<<<< HEAD
 	bpp = format->planes == 2 ? 1 : format->bpp / 8;
+=======
+	bpp = format->planes == 1 ? format->bpp / 8 : 1;
+>>>>>>> v4.9.227
 	max_pitch =  4096 * bpp;
 
 	if (rcar_du_needs(rcdu, RCAR_DU_QUIRK_ALIGN_128B))
@@ -170,8 +228,13 @@ rcar_du_fb_create(struct drm_device *dev, struct drm_file *file_priv,
 		return ERR_PTR(-EINVAL);
 	}
 
+<<<<<<< HEAD
 	if (format->planes == 2) {
 		if (mode_cmd->pitches[1] != mode_cmd->pitches[0]) {
+=======
+	for (i = 1; i < format->planes; ++i) {
+		if (mode_cmd->pitches[i] != mode_cmd->pitches[0]) {
+>>>>>>> v4.9.227
 			dev_dbg(dev->dev,
 				"luma and chroma pitches do not match\n");
 			return ERR_PTR(-EINVAL);
@@ -192,6 +255,7 @@ static void rcar_du_output_poll_changed(struct drm_device *dev)
  * Atomic Check and Update
  */
 
+<<<<<<< HEAD
 /*
  * Atomic hardware plane allocator
  *
@@ -259,10 +323,13 @@ static int rcar_du_plane_hwalloc(unsigned int num_planes, unsigned int free)
 	return i == RCAR_DU_NUM_HW_PLANES ? -EBUSY : i;
 }
 
+=======
+>>>>>>> v4.9.227
 static int rcar_du_atomic_check(struct drm_device *dev,
 				struct drm_atomic_state *state)
 {
 	struct rcar_du_device *rcdu = dev->dev_private;
+<<<<<<< HEAD
 	unsigned int group_freed_planes[RCAR_DU_MAX_GROUPS] = { 0, };
 	unsigned int group_free_planes[RCAR_DU_MAX_GROUPS] = { 0, };
 	bool needs_realloc = false;
@@ -438,6 +505,26 @@ static int rcar_du_atomic_check(struct drm_device *dev,
 	}
 
 	return 0;
+=======
+	int ret;
+
+	ret = drm_atomic_helper_check_modeset(dev, state);
+	if (ret)
+		return ret;
+
+	ret = drm_atomic_normalize_zpos(dev, state);
+	if (ret)
+		return ret;
+
+	ret = drm_atomic_helper_check_planes(dev, state);
+	if (ret)
+		return ret;
+
+	if (rcar_du_has(rcdu, RCAR_DU_FEATURE_VSP1_SOURCE))
+		return 0;
+
+	return rcar_du_atomic_check_planes(dev, state);
+>>>>>>> v4.9.227
 }
 
 struct rcar_du_commit {
@@ -456,7 +543,12 @@ static void rcar_du_atomic_complete(struct rcar_du_commit *commit)
 	/* Apply the atomic update. */
 	drm_atomic_helper_commit_modeset_disables(dev, old_state);
 	drm_atomic_helper_commit_modeset_enables(dev, old_state);
+<<<<<<< HEAD
 	drm_atomic_helper_commit_planes(dev, old_state, false);
+=======
+	drm_atomic_helper_commit_planes(dev, old_state,
+					DRM_PLANE_COMMIT_ACTIVE_ONLY);
+>>>>>>> v4.9.227
 
 	drm_atomic_helper_wait_for_vblanks(dev, old_state);
 
@@ -482,10 +574,20 @@ static void rcar_du_atomic_work(struct work_struct *work)
 }
 
 static int rcar_du_atomic_commit(struct drm_device *dev,
+<<<<<<< HEAD
 				 struct drm_atomic_state *state, bool async)
 {
 	struct rcar_du_device *rcdu = dev->dev_private;
 	struct rcar_du_commit *commit;
+=======
+				 struct drm_atomic_state *state,
+				 bool nonblock)
+{
+	struct rcar_du_device *rcdu = dev->dev_private;
+	struct rcar_du_commit *commit;
+	struct drm_crtc *crtc;
+	struct drm_crtc_state *crtc_state;
+>>>>>>> v4.9.227
 	unsigned int i;
 	int ret;
 
@@ -507,10 +609,15 @@ static int rcar_du_atomic_commit(struct drm_device *dev,
 	/* Wait until all affected CRTCs have completed previous commits and
 	 * mark them as pending.
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < dev->mode_config.num_crtc; ++i) {
 		if (state->crtcs[i])
 			commit->crtcs |= 1 << drm_crtc_index(state->crtcs[i]);
 	}
+=======
+	for_each_crtc_in_state(state, crtc, crtc_state, i)
+		commit->crtcs |= drm_crtc_mask(crtc);
+>>>>>>> v4.9.227
 
 	spin_lock(&rcdu->commit.wait.lock);
 	ret = wait_event_interruptible_locked(rcdu->commit.wait,
@@ -525,9 +632,15 @@ static int rcar_du_atomic_commit(struct drm_device *dev,
 	}
 
 	/* Swap the state, this is the point of no return. */
+<<<<<<< HEAD
 	drm_atomic_helper_swap_state(dev, state);
 
 	if (async)
+=======
+	drm_atomic_helper_swap_state(state, true);
+
+	if (nonblock)
+>>>>>>> v4.9.227
 		schedule_work(&commit->work);
 	else
 		rcar_du_atomic_complete(commit);
@@ -642,6 +755,7 @@ static int rcar_du_encoders_init_one(struct rcar_du_device *rcdu,
 	}
 
 	ret = rcar_du_encoder_init(rcdu, enc_type, output, encoder, connector);
+<<<<<<< HEAD
 	of_node_put(encoder);
 	of_node_put(connector);
 
@@ -649,6 +763,15 @@ static int rcar_du_encoders_init_one(struct rcar_du_device *rcdu,
 		dev_warn(rcdu->dev,
 			 "failed to initialize encoder %s (%d), skipping\n",
 			 encoder->full_name, ret);
+=======
+	if (ret && ret != -EPROBE_DEFER)
+		dev_warn(rcdu->dev,
+			 "failed to initialize encoder %s on output %u (%d), skipping\n",
+			 of_node_full_name(encoder), output, ret);
+
+	of_node_put(encoder);
+	of_node_put(connector);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -725,11 +848,14 @@ static int rcar_du_properties_init(struct rcar_du_device *rcdu)
 	if (rcdu->props.colorkey == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	rcdu->props.zpos =
 		drm_property_create_range(rcdu->ddev, 0, "zpos", 1, 7);
 	if (rcdu->props.zpos == NULL)
 		return -ENOMEM;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -761,6 +887,16 @@ int rcar_du_modeset_init(struct rcar_du_device *rcdu)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
+=======
+	/* Initialize vertical blanking interrupts handling. Start with vblank
+	 * disabled for all CRTCs.
+	 */
+	ret = drm_vblank_init(dev, (1 << rcdu->info->num_crtcs) - 1);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> v4.9.227
 	/* Initialize the groups. */
 	num_groups = DIV_ROUND_UP(rcdu->num_crtcs, 2);
 
@@ -775,6 +911,7 @@ int rcar_du_modeset_init(struct rcar_du_device *rcdu)
 		rgrp->num_crtcs = min(rcdu->num_crtcs - 2 * i, 2U);
 
 		/* If we have more than one CRTCs in this group pre-associate
+<<<<<<< HEAD
 		 * planes 0-3 with CRTC 0 and planes 4-7 with CRTC 1 to minimize
 		 * flicker occurring when the association is changed.
 		 */
@@ -783,6 +920,36 @@ int rcar_du_modeset_init(struct rcar_du_device *rcdu)
 		ret = rcar_du_planes_init(rgrp);
 		if (ret < 0)
 			return ret;
+=======
+		 * the low-order planes with CRTC 0 and the high-order planes
+		 * with CRTC 1 to minimize flicker occurring when the
+		 * association is changed.
+		 */
+		rgrp->dptsr_planes = rgrp->num_crtcs > 1
+				   ? (rcdu->info->gen >= 3 ? 0x04 : 0xf0)
+				   : 0;
+
+		if (!rcar_du_has(rcdu, RCAR_DU_FEATURE_VSP1_SOURCE)) {
+			ret = rcar_du_planes_init(rgrp);
+			if (ret < 0)
+				return ret;
+		}
+	}
+
+	/* Initialize the compositors. */
+	if (rcar_du_has(rcdu, RCAR_DU_FEATURE_VSP1_SOURCE)) {
+		for (i = 0; i < rcdu->num_crtcs; ++i) {
+			struct rcar_du_vsp *vsp = &rcdu->vsps[i];
+
+			vsp->index = i;
+			vsp->dev = rcdu;
+			rcdu->crtcs[i].vsp = vsp;
+
+			ret = rcar_du_vsp_init(vsp);
+			if (ret < 0)
+				return ret;
+		}
+>>>>>>> v4.9.227
 	}
 
 	/* Create the CRTCs. */

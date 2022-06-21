@@ -37,12 +37,24 @@
 #include <core/pci.h>
 #include <core/tegra.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include <nvif/class.h>
+#include <nvif/cl0002.h>
+#include <nvif/cla06f.h>
+#include <nvif/if0004.h>
+
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_dma.h"
 #include "nouveau_ttm.h"
 #include "nouveau_gem.h"
 #include "nouveau_vga.h"
+<<<<<<< HEAD
 #include "nouveau_sysfs.h"
+=======
+>>>>>>> v4.9.227
 #include "nouveau_hwmon.h"
 #include "nouveau_acpi.h"
 #include "nouveau_bios.h"
@@ -192,7 +204,13 @@ nouveau_accel_init(struct nouveau_drm *drm)
 			break;
 		case FERMI_CHANNEL_GPFIFO:
 		case KEPLER_CHANNEL_GPFIFO_A:
+<<<<<<< HEAD
 		case MAXWELL_CHANNEL_GPFIFO_A:
+=======
+		case KEPLER_CHANNEL_GPFIFO_B:
+		case MAXWELL_CHANNEL_GPFIFO_A:
+		case PASCAL_CHANNEL_GPFIFO_A:
+>>>>>>> v4.9.227
 			ret = nvc0_fence_create(drm);
 			break;
 		default:
@@ -209,13 +227,22 @@ nouveau_accel_init(struct nouveau_drm *drm)
 
 	if (device->info.family >= NV_DEVICE_INFO_V0_KEPLER) {
 		ret = nouveau_channel_new(drm, &drm->device,
+<<<<<<< HEAD
 					  KEPLER_CHANNEL_GPFIFO_A_V0_ENGINE_CE0|
 					  KEPLER_CHANNEL_GPFIFO_A_V0_ENGINE_CE1,
+=======
+					  NVA06F_V0_ENGINE_CE0 |
+					  NVA06F_V0_ENGINE_CE1,
+>>>>>>> v4.9.227
 					  0, &drm->cechan);
 		if (ret)
 			NV_ERROR(drm, "failed to create ce channel, %d\n", ret);
 
+<<<<<<< HEAD
 		arg0 = KEPLER_CHANNEL_GPFIFO_A_V0_ENGINE_GR;
+=======
+		arg0 = NVA06F_V0_ENGINE_GR;
+>>>>>>> v4.9.227
 		arg1 = 1;
 	} else
 	if (device->info.chipset >= 0xa3 &&
@@ -256,8 +283,13 @@ nouveau_accel_init(struct nouveau_drm *drm)
 		}
 
 		ret = nvif_notify_init(&drm->nvsw, nouveau_flip_complete,
+<<<<<<< HEAD
 				       false, NVSW_NTFY_UEVENT, NULL, 0, 0,
 				       &drm->flip);
+=======
+				       false, NV04_NVSW_NTFY_UEVENT,
+				       NULL, 0, 0, &drm->flip);
+>>>>>>> v4.9.227
 		if (ret == 0)
 			ret = nvif_notify_get(&drm->flip);
 		if (ret) {
@@ -308,7 +340,23 @@ static int nouveau_drm_probe(struct pci_dev *pdev,
 	bool boot = false;
 	int ret;
 
+<<<<<<< HEAD
 	/* remove conflicting drivers (vesafb, efifb etc) */
+=======
+	if (vga_switcheroo_client_probe_defer(pdev))
+		return -EPROBE_DEFER;
+
+	/* We need to check that the chipset is supported before booting
+	 * fbdev off the hardware, as there's no way to put it back.
+	 */
+	ret = nvkm_device_pci_new(pdev, NULL, "error", true, false, 0, &device);
+	if (ret)
+		return ret;
+
+	nvkm_device_del(&device);
+
+	/* Remove conflicting drivers (vesafb, efifb etc). */
+>>>>>>> v4.9.227
 	aper = alloc_apertures(3);
 	if (!aper)
 		return -ENOMEM;
@@ -333,7 +381,11 @@ static int nouveau_drm_probe(struct pci_dev *pdev,
 	boot = pdev->resource[PCI_ROM_RESOURCE].flags & IORESOURCE_ROM_SHADOW;
 #endif
 	if (nouveau_modeset != 2)
+<<<<<<< HEAD
 		remove_conflicting_framebuffers(aper, "nouveaufb", boot);
+=======
+		drm_fb_helper_remove_conflicting_framebuffers(aper, "nouveaufb", boot);
+>>>>>>> v4.9.227
 	kfree(aper);
 
 	ret = nvkm_device_pci_new(pdev, nouveau_config, nouveau_debug,
@@ -360,7 +412,11 @@ nouveau_get_hdmi_dev(struct nouveau_drm *drm)
 	struct pci_dev *pdev = drm->dev->pdev;
 
 	if (!pdev) {
+<<<<<<< HEAD
 		DRM_INFO("not a PCI device; no HDMI\n");
+=======
+		NV_DEBUG(drm, "not a PCI device; no HDMI\n");
+>>>>>>> v4.9.227
 		drm->hdmi_device = NULL;
 		return;
 	}
@@ -422,6 +478,14 @@ nouveau_drm_load(struct drm_device *dev, unsigned long flags)
 	nouveau_vga_init(drm);
 
 	if (drm->device.info.family >= NV_DEVICE_INFO_V0_TESLA) {
+<<<<<<< HEAD
+=======
+		if (!nvxx_device(&drm->device)->mmu) {
+			ret = -ENOSYS;
+			goto fail_device;
+		}
+
+>>>>>>> v4.9.227
 		ret = nvkm_vm_new(nvxx_device(&drm->device), 0, (1ULL << 40),
 				  0x1000, NULL, &drm->client.vm);
 		if (ret)
@@ -448,7 +512,11 @@ nouveau_drm_load(struct drm_device *dev, unsigned long flags)
 			goto fail_dispinit;
 	}
 
+<<<<<<< HEAD
 	nouveau_sysfs_init(dev);
+=======
+	nouveau_debugfs_init(drm);
+>>>>>>> v4.9.227
 	nouveau_hwmon_init(dev);
 	nouveau_accel_init(drm);
 	nouveau_fbcon_init(dev);
@@ -460,6 +528,12 @@ nouveau_drm_load(struct drm_device *dev, unsigned long flags)
 		pm_runtime_allow(dev->dev);
 		pm_runtime_mark_last_busy(dev->dev);
 		pm_runtime_put(dev->dev);
+<<<<<<< HEAD
+=======
+	} else {
+		/* enable polling for external displays */
+		drm_kms_helper_poll_enable(dev);
+>>>>>>> v4.9.227
 	}
 	return 0;
 
@@ -482,11 +556,23 @@ nouveau_drm_unload(struct drm_device *dev)
 {
 	struct nouveau_drm *drm = nouveau_drm(dev);
 
+<<<<<<< HEAD
 	pm_runtime_get_sync(dev->dev);
 	nouveau_fbcon_fini(dev);
 	nouveau_accel_fini(drm);
 	nouveau_hwmon_fini(dev);
 	nouveau_sysfs_fini(dev);
+=======
+	if (nouveau_runtime_pm != 0) {
+		pm_runtime_get_sync(dev->dev);
+		pm_runtime_forbid(dev->dev);
+	}
+
+	nouveau_fbcon_fini(dev);
+	nouveau_accel_fini(drm);
+	nouveau_hwmon_fini(dev);
+	nouveau_debugfs_fini(drm);
+>>>>>>> v4.9.227
 
 	if (dev->mode_config.num_crtc)
 		nouveau_display_fini(dev);
@@ -734,7 +820,11 @@ nouveau_pmops_runtime_resume(struct device *dev)
 	pci_set_master(pdev);
 
 	ret = nouveau_do_resume(drm_dev, true);
+<<<<<<< HEAD
 	drm_kms_helper_poll_enable(drm_dev);
+=======
+
+>>>>>>> v4.9.227
 	/* do magic */
 	nvif_mask(&device->object, 0x088488, (1 << 25), (1 << 25));
 	vga_switcheroo_set_dynamic_switch(pdev, VGA_SWITCHEROO_ON);
@@ -928,8 +1018,13 @@ driver_stub = {
 	.lastclose = nouveau_vga_lastclose,
 
 #if defined(CONFIG_DEBUG_FS)
+<<<<<<< HEAD
 	.debugfs_init = nouveau_debugfs_init,
 	.debugfs_cleanup = nouveau_debugfs_takedown,
+=======
+	.debugfs_init = nouveau_drm_debugfs_init,
+	.debugfs_cleanup = nouveau_drm_debugfs_cleanup,
+>>>>>>> v4.9.227
 #endif
 
 	.get_vblank_counter = drm_vblank_no_hw_counter,
@@ -954,7 +1049,11 @@ driver_stub = {
 	.gem_prime_vmap = nouveau_gem_prime_vmap,
 	.gem_prime_vunmap = nouveau_gem_prime_vunmap,
 
+<<<<<<< HEAD
 	.gem_free_object = nouveau_gem_object_del,
+=======
+	.gem_free_object_unlocked = nouveau_gem_object_del,
+>>>>>>> v4.9.227
 	.gem_open_object = nouveau_gem_object_open,
 	.gem_close_object = nouveau_gem_object_close,
 
@@ -1003,7 +1102,10 @@ static void nouveau_display_options(void)
 	DRM_DEBUG_DRIVER("... modeset      : %d\n", nouveau_modeset);
 	DRM_DEBUG_DRIVER("... runpm        : %d\n", nouveau_runtime_pm);
 	DRM_DEBUG_DRIVER("... vram_pushbuf : %d\n", nouveau_vram_pushbuf);
+<<<<<<< HEAD
 	DRM_DEBUG_DRIVER("... pstate       : %d\n", nouveau_pstate);
+=======
+>>>>>>> v4.9.227
 }
 
 static const struct dev_pm_ops nouveau_pm_ops = {
@@ -1041,6 +1143,7 @@ nouveau_platform_device_create(const struct nvkm_device_tegra_func *func,
 		goto err_free;
 
 	drm = drm_dev_alloc(&driver_platform, &pdev->dev);
+<<<<<<< HEAD
 	if (!drm) {
 		err = -ENOMEM;
 		goto err_free;
@@ -1050,6 +1153,13 @@ nouveau_platform_device_create(const struct nvkm_device_tegra_func *func,
 	if (err < 0)
 		goto err_free;
 
+=======
+	if (IS_ERR(drm)) {
+		err = PTR_ERR(drm);
+		goto err_free;
+	}
+
+>>>>>>> v4.9.227
 	drm->platformdev = pdev;
 	platform_set_drvdata(pdev, drm);
 
@@ -1067,15 +1177,23 @@ nouveau_drm_init(void)
 	driver_pci = driver_stub;
 	driver_pci.set_busid = drm_pci_set_busid;
 	driver_platform = driver_stub;
+<<<<<<< HEAD
 	driver_platform.set_busid = drm_platform_set_busid;
+=======
+>>>>>>> v4.9.227
 
 	nouveau_display_options();
 
 	if (nouveau_modeset == -1) {
+<<<<<<< HEAD
 #ifdef CONFIG_VGA_CONSOLE
 		if (vgacon_text_force())
 			nouveau_modeset = 0;
 #endif
+=======
+		if (vgacon_text_force())
+			nouveau_modeset = 0;
+>>>>>>> v4.9.227
 	}
 
 	if (!nouveau_modeset)

@@ -33,4 +33,15 @@ void walk_stackframe(unsigned long *sp,
 		int (*fn)(struct stackframe *frame, void *data),
 		void *data);
 
+<<<<<<< HEAD
+=======
+void xtensa_backtrace_kernel(struct pt_regs *regs, unsigned int depth,
+			     int (*kfn)(struct stackframe *frame, void *data),
+			     int (*ufn)(struct stackframe *frame, void *data),
+			     void *data);
+void xtensa_backtrace_user(struct pt_regs *regs, unsigned int depth,
+			   int (*ufn)(struct stackframe *frame, void *data),
+			   void *data);
+
+>>>>>>> v4.9.227
 #endif /* _XTENSA_STACKTRACE_H */

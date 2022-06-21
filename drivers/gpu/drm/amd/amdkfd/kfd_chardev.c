@@ -107,9 +107,15 @@ static int kfd_open(struct inode *inode, struct file *filep)
 	if (iminor(inode) != 0)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	is_32bit_user_mode = is_compat_task();
 
 	if (is_32bit_user_mode == true) {
+=======
+	is_32bit_user_mode = in_compat_syscall();
+
+	if (is_32bit_user_mode) {
+>>>>>>> v4.9.227
 		dev_warn(kfd_device,
 			"Process %d (32-bit) failed to open /dev/kfd\n"
 			"32-bit processes are not supported by amdkfd\n",
@@ -131,12 +137,19 @@ static int kfd_ioctl_get_version(struct file *filep, struct kfd_process *p,
 					void *data)
 {
 	struct kfd_ioctl_get_version_args *args = data;
+<<<<<<< HEAD
 	int err = 0;
+=======
+>>>>>>> v4.9.227
 
 	args->major_version = KFD_IOCTL_MAJOR_VERSION;
 	args->minor_version = KFD_IOCTL_MINOR_VERSION;
 
+<<<<<<< HEAD
 	return err;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int set_queue_properties_from_user(struct queue_properties *q_properties,
@@ -558,6 +571,7 @@ static int kfd_ioctl_dbg_address_watch(struct file *filep,
 		return -EINVAL;
 
 	/* this is the actual buffer to work with */
+<<<<<<< HEAD
 
 	args_buff = kmalloc(args->buf_size_in_bytes -
 					sizeof(*args), GFP_KERNEL);
@@ -572,6 +586,12 @@ static int kfd_ioctl_dbg_address_watch(struct file *filep,
 		kfree(args_buff);
 		return -EINVAL;
 	}
+=======
+	args_buff = memdup_user(cmd_from_user,
+				args->buf_size_in_bytes - sizeof(*args));
+	if (IS_ERR(args_buff))
+		return PTR_ERR(args_buff);
+>>>>>>> v4.9.227
 
 	aw_info.process = p;
 
@@ -677,6 +697,7 @@ static int kfd_ioctl_dbg_wave_control(struct file *filep,
 	if (cmd_from_user == NULL)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* this is the actual buffer to work with */
 
 	args_buff = kmalloc(args->buf_size_in_bytes - sizeof(*args),
@@ -693,6 +714,14 @@ static int kfd_ioctl_dbg_wave_control(struct file *filep,
 		kfree(args_buff);
 		return -EINVAL;
 	}
+=======
+	/* copy the entire buffer from user */
+
+	args_buff = memdup_user(cmd_from_user,
+				args->buf_size_in_bytes - sizeof(*args));
+	if (IS_ERR(args_buff))
+		return PTR_ERR(args_buff);
+>>>>>>> v4.9.227
 
 	/* move ptr to the start of the "pay-load" area */
 	wac_info.process = p;

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* p80211types.h
 *
 * Macros, constants, types, and funcs for p80211 data types
@@ -53,6 +54,64 @@
 * All functions and statics declared here are implemented in p80211types.c
 *   --------------------------------------------------------------------
 */
+=======
+/*
+ * p80211types.h
+ *
+ * Macros, constants, types, and funcs for p80211 data types
+ *
+ * Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
+ * --------------------------------------------------------------------
+ *
+ * linux-wlan
+ *
+ *   The contents of this file are subject to the Mozilla Public
+ *   License Version 1.1 (the "License"); you may not use this file
+ *   except in compliance with the License. You may obtain a copy of
+ *   the License at http://www.mozilla.org/MPL/
+ *
+ *   Software distributed under the License is distributed on an "AS
+ *   IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ *   implied. See the License for the specific language governing
+ *   rights and limitations under the License.
+ *
+ *   Alternatively, the contents of this file may be used under the
+ *   terms of the GNU Public License version 2 (the "GPL"), in which
+ *   case the provisions of the GPL are applicable instead of the
+ *   above.  If you wish to allow the use of your version of this file
+ *   only under the terms of the GPL and not to allow others to use
+ *   your version of this file under the MPL, indicate your decision
+ *   by deleting the provisions above and replace them with the notice
+ *   and other provisions required by the GPL.  If you do not delete
+ *   the provisions above, a recipient may use your version of this
+ *   file under either the MPL or the GPL.
+ *
+ * --------------------------------------------------------------------
+ *
+ * Inquiries regarding the linux-wlan Open Source project can be
+ * made directly to:
+ *
+ * AbsoluteValue Systems Inc.
+ * info@linux-wlan.com
+ * http://www.linux-wlan.com
+ *
+ * --------------------------------------------------------------------
+ *
+ * Portions of the development of this software were funded by
+ * Intersil Corporation as part of PRISM(R) chipset product development.
+ *
+ * --------------------------------------------------------------------
+ *
+ * This file declares some of the constants and types used in various
+ * parts of the linux-wlan system.
+ *
+ * Notes:
+ *   - Constant values are always in HOST byte order.
+ *
+ * All functions and statics declared here are implemented in p80211types.c
+ *   --------------------------------------------------------------------
+ */
+>>>>>>> v4.9.227
 
 #ifndef _P80211TYPES_H
 #define _P80211TYPES_H
@@ -123,6 +182,7 @@
 #define MKENUMNAME(name) p80211enum_ ## name
 
 /*----------------------------------------------------------------
+<<<<<<< HEAD
 * The following constants and macros are used to construct and
 * deconstruct the Data ID codes.  The coding is as follows:
 *
@@ -135,6 +195,20 @@
 *                                           r - Read flag
 *                                           . - Unused
 */
+=======
+ * The following constants and macros are used to construct and
+ * deconstruct the Data ID codes.  The coding is as follows:
+ *
+ *     ...rwtnnnnnnnniiiiiiggggggssssss      s - Section
+ *                                           g - Group
+ *                                           i - Item
+ *                                           n - Index
+ *                                           t - Table flag
+ *                                           w - Write flag
+ *                                           r - Read flag
+ *                                           . - Unused
+ */
+>>>>>>> v4.9.227
 
 #define P80211DID_LSB_SECTION		(0)
 #define P80211DID_LSB_GROUP		(6)
@@ -200,6 +274,7 @@
 /* The following structure types are used for the representation */
 /*  of ENUMint type metadata. */
 
+<<<<<<< HEAD
 typedef struct p80211enumpair {
 	u32 val;
 	char *name;
@@ -209,12 +284,24 @@ typedef struct p80211enum {
 	int nitems;
 	p80211enumpair_t *list;
 } p80211enum_t;
+=======
+struct p80211enumpair {
+	u32 val;
+	char *name;
+};
+
+struct p80211enum {
+	int nitems;
+	struct p80211enumpair *list;
+};
+>>>>>>> v4.9.227
 
 /*----------------------------------------------------------------*/
 /* The following structure types are used to store data items in */
 /*  messages. */
 
 /* Template pascal string */
+<<<<<<< HEAD
 typedef struct p80211pstr {
 	u8 len;
 } __packed p80211pstr_t;
@@ -263,18 +350,76 @@ typedef struct p80211item {
 
 /* prototype template w/ data item */
 typedef struct p80211itemd {
+=======
+struct p80211pstr {
+	u8 len;
+} __packed;
+
+struct p80211pstrd {
+	u8 len;
+	u8 data[0];
+} __packed;
+
+/* Maximum pascal string */
+struct p80211pstr255 {
+	u8 len;
+	u8 data[MAXLEN_PSTR255];
+} __packed;
+
+/* pascal string for macaddress and bssid */
+struct p80211pstr6 {
+	u8 len;
+	u8 data[MAXLEN_PSTR6];
+} __packed;
+
+/* pascal string for channel list */
+struct p80211pstr14 {
+	u8 len;
+	u8 data[MAXLEN_PSTR14];
+} __packed;
+
+/* pascal string for ssid */
+struct p80211pstr32 {
+	u8 len;
+	u8 data[MAXLEN_PSTR32];
+} __packed;
+
+/* MAC address array */
+struct p80211macarray {
+	u32 cnt;
+	u8 data[1][MAXLEN_PSTR6];
+} __packed;
+
+/* prototype template */
+struct p80211item {
+	u32 did;
+	u16 status;
+	u16 len;
+} __packed;
+
+/* prototype template w/ data item */
+struct p80211itemd {
+>>>>>>> v4.9.227
 	u32 did;
 	u16 status;
 	u16 len;
 	u8 data[0];
+<<<<<<< HEAD
 } __packed p80211itemd_t;
 
 /* message data item for int, BOUNDEDINT, ENUMINT */
 typedef struct p80211item_uint32 {
+=======
+} __packed;
+
+/* message data item for int, BOUNDEDINT, ENUMINT */
+struct p80211item_uint32 {
+>>>>>>> v4.9.227
 	u32 did;
 	u16 status;
 	u16 len;
 	u32 data;
+<<<<<<< HEAD
 } __packed p80211item_uint32_t;
 
 /* message data item for OCTETSTR, DISPLAYSTR */
@@ -311,27 +456,83 @@ typedef struct p80211item_pstr255 {
 
 /* message data item for UNK 392, namely mib items */
 typedef struct p80211item_unk392 {
+=======
+} __packed;
+
+/* message data item for OCTETSTR, DISPLAYSTR */
+struct p80211item_pstr6 {
+	u32 did;
+	u16 status;
+	u16 len;
+	struct p80211pstr6 data;
+} __packed;
+
+/* message data item for OCTETSTR, DISPLAYSTR */
+struct p80211item_pstr14 {
+	u32 did;
+	u16 status;
+	u16 len;
+	struct p80211pstr14 data;
+} __packed;
+
+/* message data item for OCTETSTR, DISPLAYSTR */
+struct p80211item_pstr32 {
+	u32 did;
+	u16 status;
+	u16 len;
+	struct p80211pstr32 data;
+} __packed;
+
+/* message data item for OCTETSTR, DISPLAYSTR */
+struct p80211item_pstr255 {
+	u32 did;
+	u16 status;
+	u16 len;
+	struct p80211pstr255 data;
+} __packed;
+
+/* message data item for UNK 392, namely mib items */
+struct p80211item_unk392 {
+>>>>>>> v4.9.227
 	u32 did;
 	u16 status;
 	u16 len;
 	u8 data[MAXLEN_MIBATTRIBUTE];
+<<<<<<< HEAD
 } __packed p80211item_unk392_t;
 
 /* message data item for UNK 1025, namely p2 pdas */
 typedef struct p80211item_unk1024 {
+=======
+} __packed;
+
+/* message data item for UNK 1025, namely p2 pdas */
+struct p80211item_unk1024 {
+>>>>>>> v4.9.227
 	u32 did;
 	u16 status;
 	u16 len;
 	u8 data[1024];
+<<<<<<< HEAD
 } __packed p80211item_unk1024_t;
 
 /* message data item for UNK 4096, namely p2 download chunks */
 typedef struct p80211item_unk4096 {
+=======
+} __packed;
+
+/* message data item for UNK 4096, namely p2 download chunks */
+struct p80211item_unk4096 {
+>>>>>>> v4.9.227
 	u32 did;
 	u16 status;
 	u16 len;
 	u8 data[4096];
+<<<<<<< HEAD
 } __packed p80211item_unk4096_t;
+=======
+} __packed;
+>>>>>>> v4.9.227
 
 struct catlistitem;
 
@@ -351,6 +552,7 @@ typedef u32(*p80211_valid_t) (struct catlistitem *, u32 did, u8 *itembuf);
 /*  The following are the external declarations */
 /*  for all enumerations  */
 
+<<<<<<< HEAD
 extern p80211enum_t MKENUMNAME(truth);
 extern p80211enum_t MKENUMNAME(ifstate);
 extern p80211enum_t MKENUMNAME(powermgmt);
@@ -371,5 +573,27 @@ extern p80211enum_t MKENUMNAME(msgitem_status);
 extern p80211enum_t MKENUMNAME(lnxroam_reason);
 
 extern p80211enum_t MKENUMNAME(p2preamble);
+=======
+extern struct p80211enum MKENUMNAME(truth);
+extern struct p80211enum MKENUMNAME(ifstate);
+extern struct p80211enum MKENUMNAME(powermgmt);
+extern struct p80211enum MKENUMNAME(bsstype);
+extern struct p80211enum MKENUMNAME(authalg);
+extern struct p80211enum MKENUMNAME(phytype);
+extern struct p80211enum MKENUMNAME(temptype);
+extern struct p80211enum MKENUMNAME(regdomain);
+extern struct p80211enum MKENUMNAME(ccamode);
+extern struct p80211enum MKENUMNAME(diversity);
+extern struct p80211enum MKENUMNAME(scantype);
+extern struct p80211enum MKENUMNAME(resultcode);
+extern struct p80211enum MKENUMNAME(reason);
+extern struct p80211enum MKENUMNAME(status);
+extern struct p80211enum MKENUMNAME(msgcode);
+extern struct p80211enum MKENUMNAME(msgitem_status);
+
+extern struct p80211enum MKENUMNAME(lnxroam_reason);
+
+extern struct p80211enum MKENUMNAME(p2preamble);
+>>>>>>> v4.9.227
 
 #endif /* _P80211TYPES_H */

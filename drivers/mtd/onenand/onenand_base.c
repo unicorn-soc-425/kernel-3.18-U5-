@@ -68,6 +68,7 @@ MODULE_PARM_DESC(otp,	"Corresponding behaviour of OneNAND in OTP"
  * flexonenand_oob_128 - oob info for Flex-Onenand with 4KB page
  * For now, we expose only 64 out of 80 ecc bytes
  */
+<<<<<<< HEAD
 static struct nand_ecclayout flexonenand_oob_128 = {
 	.eccbytes	= 64,
 	.eccpos		= {
@@ -83,6 +84,35 @@ static struct nand_ecclayout flexonenand_oob_128 = {
 		{2, 4}, {18, 4}, {34, 4}, {50, 4},
 		{66, 4}, {82, 4}, {98, 4}, {114, 4}
 	}
+=======
+static int flexonenand_ooblayout_ecc(struct mtd_info *mtd, int section,
+				     struct mtd_oob_region *oobregion)
+{
+	if (section > 7)
+		return -ERANGE;
+
+	oobregion->offset = (section * 16) + 6;
+	oobregion->length = 10;
+
+	return 0;
+}
+
+static int flexonenand_ooblayout_free(struct mtd_info *mtd, int section,
+				      struct mtd_oob_region *oobregion)
+{
+	if (section > 7)
+		return -ERANGE;
+
+	oobregion->offset = (section * 16) + 2;
+	oobregion->length = 4;
+
+	return 0;
+}
+
+static const struct mtd_ooblayout_ops flexonenand_ooblayout_ops = {
+	.ecc = flexonenand_ooblayout_ecc,
+	.free = flexonenand_ooblayout_free,
+>>>>>>> v4.9.227
 };
 
 /*
@@ -91,6 +121,7 @@ static struct nand_ecclayout flexonenand_oob_128 = {
  * Based on specification:
  * 4Gb M-die OneNAND Flash (KFM4G16Q4M, KFN8G16Q4M). Rev. 1.3, Apr. 2010
  *
+<<<<<<< HEAD
  * For eccpos we expose only 64 bytes out of 72 (see struct nand_ecclayout)
  *
  * oobfree uses the spare area fields marked as
@@ -141,6 +172,79 @@ static struct nand_ecclayout onenand_oob_32 = {
 		24, 25, 26, 27, 28,
 		},
 	.oobfree	= { {2, 3}, {14, 2}, {18, 3}, {30, 2} }
+=======
+ */
+static int onenand_ooblayout_128_ecc(struct mtd_info *mtd, int section,
+				     struct mtd_oob_region *oobregion)
+{
+	if (section > 7)
+		return -ERANGE;
+
+	oobregion->offset = (section * 16) + 7;
+	oobregion->length = 9;
+
+	return 0;
+}
+
+static int onenand_ooblayout_128_free(struct mtd_info *mtd, int section,
+				      struct mtd_oob_region *oobregion)
+{
+	if (section >= 8)
+		return -ERANGE;
+
+	/*
+	 * free bytes are using the spare area fields marked as
+	 * "Managed by internal ECC logic for Logical Sector Number area"
+	 */
+	oobregion->offset = (section * 16) + 2;
+	oobregion->length = 3;
+
+	return 0;
+}
+
+static const struct mtd_ooblayout_ops onenand_oob_128_ooblayout_ops = {
+	.ecc = onenand_ooblayout_128_ecc,
+	.free = onenand_ooblayout_128_free,
+};
+
+/**
+ * onenand_oob_32_64 - oob info for large (2KB) page
+ */
+static int onenand_ooblayout_32_64_ecc(struct mtd_info *mtd, int section,
+				       struct mtd_oob_region *oobregion)
+{
+	if (section > 3)
+		return -ERANGE;
+
+	oobregion->offset = (section * 16) + 8;
+	oobregion->length = 5;
+
+	return 0;
+}
+
+static int onenand_ooblayout_32_64_free(struct mtd_info *mtd, int section,
+					struct mtd_oob_region *oobregion)
+{
+	int sections = (mtd->oobsize / 32) * 2;
+
+	if (section >= sections)
+		return -ERANGE;
+
+	if (section & 1) {
+		oobregion->offset = ((section - 1) * 16) + 14;
+		oobregion->length = 2;
+	} else  {
+		oobregion->offset = (section * 16) + 2;
+		oobregion->length = 3;
+	}
+
+	return 0;
+}
+
+static const struct mtd_ooblayout_ops onenand_oob_32_64_ooblayout_ops = {
+	.ecc = onenand_ooblayout_32_64_ecc,
+	.free = onenand_ooblayout_32_64_free,
+>>>>>>> v4.9.227
 };
 
 static const unsigned char ffchars[] = {
@@ -1024,6 +1128,7 @@ static int onenand_transfer_auto_oob(struct mtd_info *mtd, uint8_t *buf, int col
 				int thislen)
 {
 	struct onenand_chip *this = mtd->priv;
+<<<<<<< HEAD
 	struct nand_oobfree *free;
 	int readcol = column;
 	int readend = column + thislen;
@@ -1052,6 +1157,17 @@ static int onenand_transfer_auto_oob(struct mtd_info *mtd, uint8_t *buf, int col
 		} else if (column == 0)
 			break;
 	}
+=======
+	int ret;
+
+	this->read_bufferram(mtd, ONENAND_SPARERAM, this->oob_buf, 0,
+			     mtd->oobsize);
+	ret = mtd_ooblayout_get_databytes(mtd, buf, this->oob_buf,
+					  column, thislen);
+	if (ret)
+		return ret;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1124,11 +1240,15 @@ static int onenand_mlc_read_ops_nolock(struct mtd_info *mtd, loff_t from,
 	pr_debug("%s: from = 0x%08x, len = %i\n", __func__, (unsigned int)from,
 			(int)len);
 
+<<<<<<< HEAD
 	if (ops->mode == MTD_OPS_AUTO_OOB)
 		oobsize = this->ecclayout->oobavail;
 	else
 		oobsize = mtd->oobsize;
 
+=======
+	oobsize = mtd_oobavail(mtd, ops);
+>>>>>>> v4.9.227
 	oobcolumn = from & (mtd->oobsize - 1);
 
 	/* Do not allow reads past end of device */
@@ -1229,11 +1349,15 @@ static int onenand_read_ops_nolock(struct mtd_info *mtd, loff_t from,
 	pr_debug("%s: from = 0x%08x, len = %i\n", __func__, (unsigned int)from,
 			(int)len);
 
+<<<<<<< HEAD
 	if (ops->mode == MTD_OPS_AUTO_OOB)
 		oobsize = this->ecclayout->oobavail;
 	else
 		oobsize = mtd->oobsize;
 
+=======
+	oobsize = mtd_oobavail(mtd, ops);
+>>>>>>> v4.9.227
 	oobcolumn = from & (mtd->oobsize - 1);
 
 	/* Do not allow reads past end of device */
@@ -1365,7 +1489,11 @@ static int onenand_read_oob_nolock(struct mtd_info *mtd, loff_t from,
 	ops->oobretlen = 0;
 
 	if (mode == MTD_OPS_AUTO_OOB)
+<<<<<<< HEAD
 		oobsize = this->ecclayout->oobavail;
+=======
+		oobsize = mtd->oobavail;
+>>>>>>> v4.9.227
 	else
 		oobsize = mtd->oobsize;
 
@@ -1743,7 +1871,10 @@ static int onenand_panic_write(struct mtd_info *mtd, loff_t to, size_t len,
 	struct onenand_chip *this = mtd->priv;
 	int column, subpage;
 	int written = 0;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> v4.9.227
 
 	if (this->state == FL_PM_SUSPENDED)
 		return -EBUSY;
@@ -1786,6 +1917,7 @@ static int onenand_panic_write(struct mtd_info *mtd, loff_t to, size_t len,
 		onenand_panic_wait(mtd);
 
 		/* In partial page write we don't update bufferram */
+<<<<<<< HEAD
 		onenand_update_bufferram(mtd, to, !ret && !subpage);
 		if (ONENAND_IS_2PLANE(this)) {
 			ONENAND_SET_BUFFERRAM1(this);
@@ -1795,6 +1927,12 @@ static int onenand_panic_write(struct mtd_info *mtd, loff_t to, size_t len,
 		if (ret) {
 			printk(KERN_ERR "%s: write failed %d\n", __func__, ret);
 			break;
+=======
+		onenand_update_bufferram(mtd, to, !subpage);
+		if (ONENAND_IS_2PLANE(this)) {
+			ONENAND_SET_BUFFERRAM1(this);
+			onenand_update_bufferram(mtd, to + this->writesize, !subpage);
+>>>>>>> v4.9.227
 		}
 
 		written += thislen;
@@ -1808,7 +1946,11 @@ static int onenand_panic_write(struct mtd_info *mtd, loff_t to, size_t len,
 	}
 
 	*retlen = written;
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -1822,6 +1964,7 @@ static int onenand_panic_write(struct mtd_info *mtd, loff_t to, size_t len,
 static int onenand_fill_auto_oob(struct mtd_info *mtd, u_char *oob_buf,
 				  const u_char *buf, int column, int thislen)
 {
+<<<<<<< HEAD
 	struct onenand_chip *this = mtd->priv;
 	struct nand_oobfree *free;
 	int writecol = column;
@@ -1850,6 +1993,9 @@ static int onenand_fill_auto_oob(struct mtd_info *mtd, u_char *oob_buf,
 			break;
 	}
 	return 0;
+=======
+	return mtd_ooblayout_set_databytes(mtd, buf, oob_buf, column, thislen);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -1891,12 +2037,16 @@ static int onenand_write_ops_nolock(struct mtd_info *mtd, loff_t to,
 	/* Check zero length */
 	if (!len)
 		return 0;
+<<<<<<< HEAD
 
 	if (ops->mode == MTD_OPS_AUTO_OOB)
 		oobsize = this->ecclayout->oobavail;
 	else
 		oobsize = mtd->oobsize;
 
+=======
+	oobsize = mtd_oobavail(mtd, ops);
+>>>>>>> v4.9.227
 	oobcolumn = to & (mtd->oobsize - 1);
 
 	column = to & (mtd->writesize - 1);
@@ -2069,7 +2219,11 @@ static int onenand_write_oob_nolock(struct mtd_info *mtd, loff_t to,
 	ops->oobretlen = 0;
 
 	if (mode == MTD_OPS_AUTO_OOB)
+<<<<<<< HEAD
 		oobsize = this->ecclayout->oobavail;
+=======
+		oobsize = mtd->oobavail;
+>>>>>>> v4.9.227
 	else
 		oobsize = mtd->oobsize;
 
@@ -3220,13 +3374,21 @@ static int onenand_otp_walk(struct mtd_info *mtd, loff_t from, size_t len,
 			size_t tmp_retlen;
 
 			ret = action(mtd, from, len, &tmp_retlen, buf);
+<<<<<<< HEAD
+=======
+			if (ret)
+				break;
+>>>>>>> v4.9.227
 
 			buf += tmp_retlen;
 			len -= tmp_retlen;
 			*retlen += tmp_retlen;
 
+<<<<<<< HEAD
 			if (ret)
 				break;
+=======
+>>>>>>> v4.9.227
 		}
 		otp_pages--;
 	}
@@ -4022,22 +4184,37 @@ int onenand_scan(struct mtd_info *mtd, int maxchips)
 	switch (mtd->oobsize) {
 	case 128:
 		if (FLEXONENAND(this)) {
+<<<<<<< HEAD
 			this->ecclayout = &flexonenand_oob_128;
 			mtd->subpage_sft = 0;
 		} else {
 			this->ecclayout = &onenand_oob_128;
+=======
+			mtd_set_ooblayout(mtd, &flexonenand_ooblayout_ops);
+			mtd->subpage_sft = 0;
+		} else {
+			mtd_set_ooblayout(mtd, &onenand_oob_128_ooblayout_ops);
+>>>>>>> v4.9.227
 			mtd->subpage_sft = 2;
 		}
 		if (ONENAND_IS_NOP_1(this))
 			mtd->subpage_sft = 0;
 		break;
 	case 64:
+<<<<<<< HEAD
 		this->ecclayout = &onenand_oob_64;
+=======
+		mtd_set_ooblayout(mtd, &onenand_oob_32_64_ooblayout_ops);
+>>>>>>> v4.9.227
 		mtd->subpage_sft = 2;
 		break;
 
 	case 32:
+<<<<<<< HEAD
 		this->ecclayout = &onenand_oob_32;
+=======
+		mtd_set_ooblayout(mtd, &onenand_oob_32_64_ooblayout_ops);
+>>>>>>> v4.9.227
 		mtd->subpage_sft = 1;
 		break;
 
@@ -4046,7 +4223,11 @@ int onenand_scan(struct mtd_info *mtd, int maxchips)
 			__func__, mtd->oobsize);
 		mtd->subpage_sft = 0;
 		/* To prevent kernel oops */
+<<<<<<< HEAD
 		this->ecclayout = &onenand_oob_32;
+=======
+		mtd_set_ooblayout(mtd, &onenand_oob_32_64_ooblayout_ops);
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -4056,6 +4237,7 @@ int onenand_scan(struct mtd_info *mtd, int maxchips)
 	 * The number of bytes available for a client to place data into
 	 * the out of band area
 	 */
+<<<<<<< HEAD
 	this->ecclayout->oobavail = 0;
 	for (i = 0; i < MTD_MAX_OOBFREE_ENTRIES &&
 	    this->ecclayout->oobfree[i].length; i++)
@@ -4064,6 +4246,14 @@ int onenand_scan(struct mtd_info *mtd, int maxchips)
 	mtd->oobavail = this->ecclayout->oobavail;
 
 	mtd->ecclayout = this->ecclayout;
+=======
+	ret = mtd_ooblayout_count_freebytes(mtd);
+	if (ret < 0)
+		ret = 0;
+
+	mtd->oobavail = ret;
+
+>>>>>>> v4.9.227
 	mtd->ecc_strength = 1;
 
 	/* Fill in remaining MTD driver data */

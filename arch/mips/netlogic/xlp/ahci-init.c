@@ -151,7 +151,11 @@ static void nlm_sata_firmware_init(int node)
 static int __init nlm_ahci_init(void)
 {
 	int node = 0;
+<<<<<<< HEAD
 	int chip = read_c0_prid() & PRID_REV_MASK;
+=======
+	int chip = read_c0_prid() & PRID_IMP_MASK;
+>>>>>>> v4.9.227
 
 	if (chip == PRID_IMP_NETLOGIC_XLP3XX)
 		nlm_sata_firmware_init(node);

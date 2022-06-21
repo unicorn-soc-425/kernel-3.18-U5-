@@ -24,15 +24,26 @@
 #include "priv.h"
 
 #include <core/option.h>
+<<<<<<< HEAD
 
 void
 nvkm_mc_unk260(struct nvkm_mc *mc, u32 data)
 {
 	if (mc->func->unk260)
+=======
+#include <subdev/top.h>
+
+void
+nvkm_mc_unk260(struct nvkm_device *device, u32 data)
+{
+	struct nvkm_mc *mc = device->mc;
+	if (likely(mc) && mc->func->unk260)
+>>>>>>> v4.9.227
 		mc->func->unk260(mc, data);
 }
 
 void
+<<<<<<< HEAD
 nvkm_mc_intr_unarm(struct nvkm_mc *mc)
 {
 	return mc->func->intr_unarm(mc);
@@ -48,12 +59,49 @@ static u32
 nvkm_mc_intr_mask(struct nvkm_mc *mc)
 {
 	u32 intr = mc->func->intr_mask(mc);
+=======
+nvkm_mc_intr_mask(struct nvkm_device *device, enum nvkm_devidx devidx, bool en)
+{
+	struct nvkm_mc *mc = device->mc;
+	const struct nvkm_mc_map *map;
+	if (likely(mc) && mc->func->intr_mask) {
+		u32 mask = nvkm_top_intr_mask(device, devidx);
+		for (map = mc->func->intr; !mask && map->stat; map++) {
+			if (map->unit == devidx)
+				mask = map->stat;
+		}
+		mc->func->intr_mask(mc, mask, en ? mask : 0);
+	}
+}
+
+void
+nvkm_mc_intr_unarm(struct nvkm_device *device)
+{
+	struct nvkm_mc *mc = device->mc;
+	if (likely(mc))
+		mc->func->intr_unarm(mc);
+}
+
+void
+nvkm_mc_intr_rearm(struct nvkm_device *device)
+{
+	struct nvkm_mc *mc = device->mc;
+	if (likely(mc))
+		mc->func->intr_rearm(mc);
+}
+
+static u32
+nvkm_mc_intr_stat(struct nvkm_mc *mc)
+{
+	u32 intr = mc->func->intr_stat(mc);
+>>>>>>> v4.9.227
 	if (WARN_ON_ONCE(intr == 0xffffffff))
 		intr = 0; /* likely fallen off the bus */
 	return intr;
 }
 
 void
+<<<<<<< HEAD
 nvkm_mc_intr(struct nvkm_mc *mc, bool *handled)
 {
 	struct nvkm_device *device = mc->subdev.device;
@@ -63,13 +111,40 @@ nvkm_mc_intr(struct nvkm_mc *mc, bool *handled)
 
 	stat = intr = nvkm_mc_intr_mask(mc);
 	while (map->stat) {
+=======
+nvkm_mc_intr(struct nvkm_device *device, bool *handled)
+{
+	struct nvkm_mc *mc = device->mc;
+	struct nvkm_subdev *subdev;
+	const struct nvkm_mc_map *map;
+	u32 stat, intr;
+	u64 subdevs;
+
+	if (unlikely(!mc))
+		return;
+
+	intr = nvkm_mc_intr_stat(mc);
+	stat = nvkm_top_intr(device, intr, &subdevs);
+	while (subdevs) {
+		enum nvkm_devidx subidx = __ffs64(subdevs);
+		subdev = nvkm_device_subdev(device, subidx);
+		if (subdev)
+			nvkm_subdev_intr(subdev);
+		subdevs &= ~BIT_ULL(subidx);
+	}
+
+	for (map = mc->func->intr; map->stat; map++) {
+>>>>>>> v4.9.227
 		if (intr & map->stat) {
 			subdev = nvkm_device_subdev(device, map->unit);
 			if (subdev)
 				nvkm_subdev_intr(subdev);
 			stat &= ~map->stat;
 		}
+<<<<<<< HEAD
 		map++;
+=======
+>>>>>>> v4.9.227
 	}
 
 	if (stat)
@@ -77,11 +152,69 @@ nvkm_mc_intr(struct nvkm_mc *mc, bool *handled)
 	*handled = intr != 0;
 }
 
+<<<<<<< HEAD
 static int
 nvkm_mc_fini(struct nvkm_subdev *subdev, bool suspend)
 {
 	struct nvkm_mc *mc = nvkm_mc(subdev);
 	nvkm_mc_intr_unarm(mc);
+=======
+static u32
+nvkm_mc_reset_mask(struct nvkm_device *device, bool isauto,
+		   enum nvkm_devidx devidx)
+{
+	struct nvkm_mc *mc = device->mc;
+	const struct nvkm_mc_map *map;
+	u64 pmc_enable = 0;
+	if (likely(mc)) {
+		if (!(pmc_enable = nvkm_top_reset(device, devidx))) {
+			for (map = mc->func->reset; map && map->stat; map++) {
+				if (!isauto || !map->noauto) {
+					if (map->unit == devidx) {
+						pmc_enable = map->stat;
+						break;
+					}
+				}
+			}
+		}
+	}
+	return pmc_enable;
+}
+
+void
+nvkm_mc_reset(struct nvkm_device *device, enum nvkm_devidx devidx)
+{
+	u64 pmc_enable = nvkm_mc_reset_mask(device, true, devidx);
+	if (pmc_enable) {
+		nvkm_mask(device, 0x000200, pmc_enable, 0x00000000);
+		nvkm_mask(device, 0x000200, pmc_enable, pmc_enable);
+		nvkm_rd32(device, 0x000200);
+	}
+}
+
+void
+nvkm_mc_disable(struct nvkm_device *device, enum nvkm_devidx devidx)
+{
+	u64 pmc_enable = nvkm_mc_reset_mask(device, false, devidx);
+	if (pmc_enable)
+		nvkm_mask(device, 0x000200, pmc_enable, 0x00000000);
+}
+
+void
+nvkm_mc_enable(struct nvkm_device *device, enum nvkm_devidx devidx)
+{
+	u64 pmc_enable = nvkm_mc_reset_mask(device, false, devidx);
+	if (pmc_enable) {
+		nvkm_mask(device, 0x000200, pmc_enable, pmc_enable);
+		nvkm_rd32(device, 0x000200);
+	}
+}
+
+static int
+nvkm_mc_fini(struct nvkm_subdev *subdev, bool suspend)
+{
+	nvkm_mc_intr_unarm(subdev->device);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -91,7 +224,11 @@ nvkm_mc_init(struct nvkm_subdev *subdev)
 	struct nvkm_mc *mc = nvkm_mc(subdev);
 	if (mc->func->init)
 		mc->func->init(mc);
+<<<<<<< HEAD
 	nvkm_mc_intr_rearm(mc);
+=======
+	nvkm_mc_intr_rearm(subdev->device);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -108,16 +245,33 @@ nvkm_mc = {
 	.fini = nvkm_mc_fini,
 };
 
+<<<<<<< HEAD
+=======
+void
+nvkm_mc_ctor(const struct nvkm_mc_func *func, struct nvkm_device *device,
+	     int index, struct nvkm_mc *mc)
+{
+	nvkm_subdev_ctor(&nvkm_mc, device, index, &mc->subdev);
+	mc->func = func;
+}
+
+>>>>>>> v4.9.227
 int
 nvkm_mc_new_(const struct nvkm_mc_func *func, struct nvkm_device *device,
 	     int index, struct nvkm_mc **pmc)
 {
 	struct nvkm_mc *mc;
+<<<<<<< HEAD
 
 	if (!(mc = *pmc = kzalloc(sizeof(*mc), GFP_KERNEL)))
 		return -ENOMEM;
 
 	nvkm_subdev_ctor(&nvkm_mc, device, index, 0, &mc->subdev);
 	mc->func = func;
+=======
+	if (!(mc = *pmc = kzalloc(sizeof(*mc), GFP_KERNEL)))
+		return -ENOMEM;
+	nvkm_mc_ctor(func, device, index, *pmc);
+>>>>>>> v4.9.227
 	return 0;
 }

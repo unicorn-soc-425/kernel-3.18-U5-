@@ -247,6 +247,11 @@ static char *pd_errs[17] = { "ERR", "INDEX", "ECC", "DRQ", "SEEK", "WRERR",
 	"IDNF", "MC", "UNC", "???", "TMO"
 };
 
+<<<<<<< HEAD
+=======
+static void *par_drv;		/* reference of parport driver */
+
+>>>>>>> v4.9.227
 static inline int status_reg(struct pd_unit *disk)
 {
 	return pi_read_regr(disk->pi, 1, 6);
@@ -442,7 +447,11 @@ static char *pd_buf;		/* buffer for request in progress */
 
 static enum action do_pd_io_start(void)
 {
+<<<<<<< HEAD
 	if (pd_req->cmd_type == REQ_TYPE_SPECIAL) {
+=======
+	if (pd_req->cmd_type == REQ_TYPE_DRV_PRIV) {
+>>>>>>> v4.9.227
 		phase = pd_special;
 		return pd_special();
 	}
@@ -721,11 +730,19 @@ static int pd_special_command(struct pd_unit *disk,
 	struct request *rq;
 	int err = 0;
 
+<<<<<<< HEAD
 	rq = blk_get_request(disk->gd->queue, READ, __GFP_WAIT);
 	if (IS_ERR(rq))
 		return PTR_ERR(rq);
 
 	rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	rq = blk_get_request(disk->gd->queue, READ, __GFP_RECLAIM);
+	if (IS_ERR(rq))
+		return PTR_ERR(rq);
+
+	rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> v4.9.227
 	rq->special = func;
 
 	err = blk_execute_rq(disk->gd->queue, disk->gd, rq, 0);
@@ -872,6 +889,15 @@ static int pd_detect(void)
 			pd_drive_count++;
 	}
 
+<<<<<<< HEAD
+=======
+	par_drv = pi_register_driver(name);
+	if (!par_drv) {
+		pr_err("failed to register %s driver\n", name);
+		return -1;
+	}
+
+>>>>>>> v4.9.227
 	if (pd_drive_count == 0) { /* nothing spec'd - so autoprobe for 1 */
 		disk = pd;
 		if (pi_init(disk->pi, 1, -1, -1, -1, -1, -1, pd_scratch,
@@ -902,8 +928,15 @@ static int pd_detect(void)
 			found = 1;
 		}
 	}
+<<<<<<< HEAD
 	if (!found)
 		printk("%s: no valid drive found\n", name);
+=======
+	if (!found) {
+		printk("%s: no valid drive found\n", name);
+		pi_unregister_driver(par_drv);
+	}
+>>>>>>> v4.9.227
 	return found;
 }
 

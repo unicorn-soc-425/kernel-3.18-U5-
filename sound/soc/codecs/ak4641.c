@@ -412,7 +412,11 @@ static int ak4641_set_bias_level(struct snd_soc_codec *codec,
 		snd_soc_update_bits(codec, AK4641_DAC, 0x20, 0x20);
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			if (pdata && gpio_is_valid(pdata->gpio_power))
 				gpio_set_value(pdata->gpio_power, 1);
 			mdelay(1);
@@ -439,7 +443,10 @@ static int ak4641_set_bias_level(struct snd_soc_codec *codec,
 		regcache_mark_dirty(ak4641->regmap);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -505,6 +512,7 @@ static struct snd_soc_dai_driver ak4641_dai[] = {
 },
 };
 
+<<<<<<< HEAD
 static int ak4641_suspend(struct snd_soc_codec *codec)
 {
 	ak4641_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -545,6 +553,19 @@ static struct snd_soc_codec_driver soc_codec_dev_ak4641 = {
 	.dapm_routes		= ak4641_audio_map,
 	.num_dapm_routes	= ARRAY_SIZE(ak4641_audio_map),
 	.set_bias_level		= ak4641_set_bias_level,
+=======
+static struct snd_soc_codec_driver soc_codec_dev_ak4641 = {
+	.component_driver = {
+		.controls		= ak4641_snd_controls,
+		.num_controls		= ARRAY_SIZE(ak4641_snd_controls),
+		.dapm_widgets		= ak4641_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(ak4641_dapm_widgets),
+		.dapm_routes		= ak4641_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(ak4641_audio_map),
+	},
+	.set_bias_level		= ak4641_set_bias_level,
+	.suspend_bias_off	= true,
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config ak4641_regmap = {
@@ -641,7 +662,10 @@ MODULE_DEVICE_TABLE(i2c, ak4641_i2c_id);
 static struct i2c_driver ak4641_i2c_driver = {
 	.driver = {
 		.name = "ak4641",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe =    ak4641_i2c_probe,
 	.remove =   ak4641_i2c_remove,

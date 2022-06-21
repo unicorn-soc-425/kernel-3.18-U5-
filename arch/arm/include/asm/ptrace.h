@@ -13,10 +13,26 @@
 #include <uapi/asm/ptrace.h>
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+
+>>>>>>> v4.9.227
 struct pt_regs {
 	unsigned long uregs[18];
 };
 
+<<<<<<< HEAD
+=======
+struct svc_pt_regs {
+	struct pt_regs regs;
+	u32 dacr;
+	u32 addr_limit;
+};
+
+#define to_svc_pt_regs(r) container_of(r, struct svc_pt_regs, regs)
+
+>>>>>>> v4.9.227
 #define user_mode(regs)	\
 	(((regs)->ARM_cpsr & 0xf) == 0)
 
@@ -154,9 +170,14 @@ static inline unsigned long user_stack_pointer(struct pt_regs *regs)
 	return regs->ARM_sp;
 }
 
+<<<<<<< HEAD
 #define current_pt_regs(void) ({				\
 	register unsigned long sp asm ("sp");			\
 	(struct pt_regs *)((sp | (THREAD_SIZE - 1)) - 7) - 1;	\
+=======
+#define current_pt_regs(void) ({ (struct pt_regs *)			\
+		((current_stack_pointer | (THREAD_SIZE - 1)) - 7) - 1;	\
+>>>>>>> v4.9.227
 })
 
 #endif /* __ASSEMBLY__ */

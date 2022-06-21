@@ -31,7 +31,10 @@
 
 struct fsl_upm_nand {
 	struct device *dev;
+<<<<<<< HEAD
 	struct mtd_info mtd;
+=======
+>>>>>>> v4.9.227
 	struct nand_chip chip;
 	int last_ctrl;
 	struct mtd_partition *parts;
@@ -49,7 +52,12 @@ struct fsl_upm_nand {
 
 static inline struct fsl_upm_nand *to_fsl_upm_nand(struct mtd_info *mtdinfo)
 {
+<<<<<<< HEAD
 	return container_of(mtdinfo, struct fsl_upm_nand, mtd);
+=======
+	return container_of(mtd_to_nand(mtdinfo), struct fsl_upm_nand,
+			    chip);
+>>>>>>> v4.9.227
 }
 
 static int fun_chip_ready(struct mtd_info *mtd)
@@ -66,9 +74,16 @@ static int fun_chip_ready(struct mtd_info *mtd)
 static void fun_wait_rnb(struct fsl_upm_nand *fun)
 {
 	if (fun->rnb_gpio[fun->mchip_number] >= 0) {
+<<<<<<< HEAD
 		int cnt = 1000000;
 
 		while (--cnt && !fun_chip_ready(&fun->mtd))
+=======
+		struct mtd_info *mtd = nand_to_mtd(&fun->chip);
+		int cnt = 1000000;
+
+		while (--cnt && !fun_chip_ready(mtd))
+>>>>>>> v4.9.227
 			cpu_relax();
 		if (!cnt)
 			dev_err(fun->dev, "tired waiting for RNB\n");
@@ -79,7 +94,11 @@ static void fun_wait_rnb(struct fsl_upm_nand *fun)
 
 static void fun_cmd_ctrl(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	struct fsl_upm_nand *fun = to_fsl_upm_nand(mtd);
 	u32 mar;
 
@@ -109,7 +128,11 @@ static void fun_cmd_ctrl(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 
 static void fun_select_chip(struct mtd_info *mtd, int mchip_nr)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	struct fsl_upm_nand *fun = to_fsl_upm_nand(mtd);
 
 	if (mchip_nr == -1) {
@@ -157,9 +180,15 @@ static int fun_chip_init(struct fsl_upm_nand *fun,
 			 const struct device_node *upm_np,
 			 const struct resource *io_res)
 {
+<<<<<<< HEAD
 	int ret;
 	struct device_node *flash_np;
 	struct mtd_part_parser_data ppdata;
+=======
+	struct mtd_info *mtd = nand_to_mtd(&fun->chip);
+	int ret;
+	struct device_node *flash_np;
+>>>>>>> v4.9.227
 
 	fun->chip.IO_ADDR_R = fun->io_base;
 	fun->chip.IO_ADDR_W = fun->io_base;
@@ -169,26 +198,42 @@ static int fun_chip_init(struct fsl_upm_nand *fun,
 	fun->chip.read_buf = fun_read_buf;
 	fun->chip.write_buf = fun_write_buf;
 	fun->chip.ecc.mode = NAND_ECC_SOFT;
+<<<<<<< HEAD
+=======
+	fun->chip.ecc.algo = NAND_ECC_HAMMING;
+>>>>>>> v4.9.227
 	if (fun->mchip_count > 1)
 		fun->chip.select_chip = fun_select_chip;
 
 	if (fun->rnb_gpio[0] >= 0)
 		fun->chip.dev_ready = fun_chip_ready;
 
+<<<<<<< HEAD
 	fun->mtd.priv = &fun->chip;
 	fun->mtd.owner = THIS_MODULE;
+=======
+	mtd->dev.parent = fun->dev;
+>>>>>>> v4.9.227
 
 	flash_np = of_get_next_child(upm_np, NULL);
 	if (!flash_np)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	fun->mtd.name = kasprintf(GFP_KERNEL, "0x%llx.%s", (u64)io_res->start,
 				  flash_np->name);
 	if (!fun->mtd.name) {
+=======
+	nand_set_flash_node(&fun->chip, flash_np);
+	mtd->name = kasprintf(GFP_KERNEL, "0x%llx.%s", (u64)io_res->start,
+			      flash_np->name);
+	if (!mtd->name) {
+>>>>>>> v4.9.227
 		ret = -ENOMEM;
 		goto err;
 	}
 
+<<<<<<< HEAD
 	ret = nand_scan(&fun->mtd, fun->mchip_count);
 	if (ret)
 		goto err;
@@ -199,6 +244,17 @@ err:
 	of_node_put(flash_np);
 	if (ret)
 		kfree(fun->mtd.name);
+=======
+	ret = nand_scan(mtd, fun->mchip_count);
+	if (ret)
+		goto err;
+
+	ret = mtd_device_register(mtd, NULL, 0);
+err:
+	of_node_put(flash_np);
+	if (ret)
+		kfree(mtd->name);
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -322,10 +378,18 @@ err1:
 static int fun_remove(struct platform_device *ofdev)
 {
 	struct fsl_upm_nand *fun = dev_get_drvdata(&ofdev->dev);
+<<<<<<< HEAD
 	int i;
 
 	nand_release(&fun->mtd);
 	kfree(fun->mtd.name);
+=======
+	struct mtd_info *mtd = nand_to_mtd(&fun->chip);
+	int i;
+
+	nand_release(mtd);
+	kfree(mtd->name);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < fun->mchip_count; i++) {
 		if (fun->rnb_gpio[i] < 0)
@@ -347,7 +411,10 @@ MODULE_DEVICE_TABLE(of, of_fun_match);
 static struct platform_driver of_fun_driver = {
 	.driver = {
 		.name = "fsl,upm-nand",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_fun_match,
 	},
 	.probe		= fun_probe,

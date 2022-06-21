@@ -361,7 +361,11 @@ unsigned int sysfs_get_idlestate_count(unsigned int cpu)
 
 	snprintf(file, SYSFS_PATH_MAX, PATH_TO_CPU "cpuidle");
 	if (stat(file, &statbuf) != 0 || !S_ISDIR(statbuf.st_mode))
+<<<<<<< HEAD
 		return -ENODEV;
+=======
+		return 0;
+>>>>>>> v4.9.227
 
 	snprintf(file, SYSFS_PATH_MAX, PATH_TO_CPU "cpu%u/cpuidle/state0", cpu);
 	if (stat(file, &statbuf) != 0 || !S_ISDIR(statbuf.st_mode))

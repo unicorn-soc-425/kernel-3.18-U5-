@@ -87,8 +87,11 @@ struct umc_driver {
 
 	int  (*probe)(struct umc_dev *);
 	void (*remove)(struct umc_dev *);
+<<<<<<< HEAD
 	int  (*suspend)(struct umc_dev *, pm_message_t state);
 	int  (*resume)(struct umc_dev *);
+=======
+>>>>>>> v4.9.227
 	int  (*pre_reset)(struct umc_dev *);
 	int  (*post_reset)(struct umc_dev *);
 

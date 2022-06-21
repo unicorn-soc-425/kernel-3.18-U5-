@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,12 +65,17 @@ ACPI_MODULE_NAME("utxface")
  * DESCRIPTION: Shutdown the ACPICA subsystem and release all resources.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status __init acpi_terminate(void)
+=======
+acpi_status ACPI_INIT_FUNCTION acpi_terminate(void)
+>>>>>>> v4.9.227
 {
 	acpi_status status;
 
 	ACPI_FUNCTION_TRACE(acpi_terminate);
 
+<<<<<<< HEAD
 	/* Just exit if subsystem is already shutdown */
 
 	if (acpi_gbl_shutdown) {
@@ -84,6 +93,8 @@ acpi_status __init acpi_terminate(void)
 
 	ACPI_DEBUGGER_EXEC(acpi_gbl_db_terminate_threads = TRUE);
 
+=======
+>>>>>>> v4.9.227
 	/* Shutdown and free all resources */
 
 	acpi_ut_subsystem_shutdown();
@@ -92,6 +103,7 @@ acpi_status __init acpi_terminate(void)
 
 	acpi_ut_mutex_terminate();
 
+<<<<<<< HEAD
 #ifdef ACPI_DEBUGGER
 
 	/* Shut down the debugger */
@@ -99,6 +111,8 @@ acpi_status __init acpi_terminate(void)
 	acpi_db_terminate();
 #endif
 
+=======
+>>>>>>> v4.9.227
 	/* Now we can shutdown the OS-dependent layer */
 
 	status = acpi_os_terminate();
@@ -151,7 +165,11 @@ ACPI_EXPORT_SYMBOL(acpi_subsystem_status)
  *              and the value of out_buffer is undefined.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_get_system_info(struct acpi_buffer * out_buffer)
+=======
+acpi_status acpi_get_system_info(struct acpi_buffer *out_buffer)
+>>>>>>> v4.9.227
 {
 	struct acpi_system_info *info_ptr;
 	acpi_status status;
@@ -178,7 +196,10 @@ acpi_status acpi_get_system_info(struct acpi_buffer * out_buffer)
 	 * Populate the return buffer
 	 */
 	info_ptr = (struct acpi_system_info *)out_buffer->pointer;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	info_ptr->acpi_ca_version = ACPI_CA_VERSION;
 
 	/* System flags (ACPI capabilities) */
@@ -234,13 +255,21 @@ acpi_status acpi_get_statistics(struct acpi_statistics *stats)
 	stats->sci_count = acpi_sci_count;
 	stats->gpe_count = acpi_gpe_count;
 
+<<<<<<< HEAD
 	ACPI_MEMCPY(stats->fixed_event_count, acpi_fixed_event_count,
 		    sizeof(acpi_fixed_event_count));
+=======
+	memcpy(stats->fixed_event_count, acpi_fixed_event_count,
+	       sizeof(acpi_fixed_event_count));
+>>>>>>> v4.9.227
 
 	/* Other counters */
 
 	stats->method_count = acpi_method_count;
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	return_ACPI_STATUS(AE_OK);
 }
 
@@ -277,7 +306,11 @@ acpi_install_initialization_handler(acpi_init_handler handler, u32 function)
 }
 
 ACPI_EXPORT_SYMBOL(acpi_install_initialization_handler)
+<<<<<<< HEAD
 #endif				/*  ACPI_FUTURE_USAGE  */
+=======
+#endif
+>>>>>>> v4.9.227
 
 /*****************************************************************************
  *
@@ -322,7 +355,11 @@ acpi_status acpi_install_interface(acpi_string interface_name)
 
 	/* Parameter validation */
 
+<<<<<<< HEAD
 	if (!interface_name || (ACPI_STRLEN(interface_name) == 0)) {
+=======
+	if (!interface_name || (strlen(interface_name) == 0)) {
+>>>>>>> v4.9.227
 		return (AE_BAD_PARAMETER);
 	}
 
@@ -374,7 +411,11 @@ acpi_status acpi_remove_interface(acpi_string interface_name)
 
 	/* Parameter validation */
 
+<<<<<<< HEAD
 	if (!interface_name || (ACPI_STRLEN(interface_name) == 0)) {
+=======
+	if (!interface_name || (strlen(interface_name) == 0)) {
+>>>>>>> v4.9.227
 		return (AE_BAD_PARAMETER);
 	}
 
@@ -509,7 +550,11 @@ ACPI_EXPORT_SYMBOL(acpi_check_address_range)
  ******************************************************************************/
 acpi_status
 acpi_decode_pld_buffer(u8 *in_buffer,
+<<<<<<< HEAD
 		       acpi_size length, struct acpi_pld_info ** return_buffer)
+=======
+		       acpi_size length, struct acpi_pld_info **return_buffer)
+>>>>>>> v4.9.227
 {
 	struct acpi_pld_info *pld_info;
 	u32 *buffer = ACPI_CAST_PTR(u32, in_buffer);
@@ -517,7 +562,12 @@ acpi_decode_pld_buffer(u8 *in_buffer,
 
 	/* Parameter validation */
 
+<<<<<<< HEAD
 	if (!in_buffer || !return_buffer || (length < 16)) {
+=======
+	if (!in_buffer || !return_buffer
+	    || (length < ACPI_PLD_REV1_BUFFER_SIZE)) {
+>>>>>>> v4.9.227
 		return (AE_BAD_PARAMETER);
 	}
 
@@ -531,7 +581,13 @@ acpi_decode_pld_buffer(u8 *in_buffer,
 	ACPI_MOVE_32_TO_32(&dword, &buffer[0]);
 	pld_info->revision = ACPI_PLD_GET_REVISION(&dword);
 	pld_info->ignore_color = ACPI_PLD_GET_IGNORE_COLOR(&dword);
+<<<<<<< HEAD
 	pld_info->color = ACPI_PLD_GET_COLOR(&dword);
+=======
+	pld_info->red = ACPI_PLD_GET_RED(&dword);
+	pld_info->green = ACPI_PLD_GET_GREEN(&dword);
+	pld_info->blue = ACPI_PLD_GET_BLUE(&dword);
+>>>>>>> v4.9.227
 
 	/* Second 32-bit DWord */
 
@@ -565,7 +621,11 @@ acpi_decode_pld_buffer(u8 *in_buffer,
 	pld_info->rotation = ACPI_PLD_GET_ROTATION(&dword);
 	pld_info->order = ACPI_PLD_GET_ORDER(&dword);
 
+<<<<<<< HEAD
 	if (length >= ACPI_PLD_BUFFER_SIZE) {
+=======
+	if (length >= ACPI_PLD_REV2_BUFFER_SIZE) {
+>>>>>>> v4.9.227
 
 		/* Fifth 32-bit DWord (Revision 2 of _PLD) */
 

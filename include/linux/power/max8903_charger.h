@@ -26,8 +26,13 @@
 struct max8903_pdata {
 	/*
 	 * GPIOs
+<<<<<<< HEAD
 	 * cen, chg, flt, and usus are optional.
 	 * dok, dcm, and uok are not optional depending on the status of
+=======
+	 * cen, chg, flt, dcm and usus are optional.
+	 * dok and uok are not optional depending on the status of
+>>>>>>> v4.9.227
 	 * dc_valid and usb_valid.
 	 */
 	int cen;	/* Charger Enable input */
@@ -41,7 +46,11 @@ struct max8903_pdata {
 	/*
 	 * DC(Adapter/TA) is wired
 	 * When dc_valid is true,
+<<<<<<< HEAD
 	 *	dok and dcm should be valid.
+=======
+	 *	dok should be valid.
+>>>>>>> v4.9.227
 	 *
 	 * At least one of dc_valid or usb_valid should be true.
 	 */

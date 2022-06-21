@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * mcp4725.c - Support for Microchip MCP4725
+=======
+ * mcp4725.c - Support for Microchip MCP4725/6
+>>>>>>> v4.9.227
  *
  * Copyright (C) 2012 Peter Meerwald <pmeerw@pmeerw.net>
  *
@@ -134,6 +138,15 @@ static const char * const mcp4725_powerdown_modes[] = {
 	"500kohm_to_gnd"
 };
 
+<<<<<<< HEAD
+=======
+static const char * const mcp4726_powerdown_modes[] = {
+	"1kohm_to_gnd",
+	"125kohm_to_gnd",
+	"640kohm_to_gnd"
+};
+
+>>>>>>> v4.9.227
 static int mcp4725_get_powerdown_mode(struct iio_dev *indio_dev,
 	const struct iio_chan_spec *chan)
 {
@@ -182,11 +195,32 @@ static ssize_t mcp4725_write_powerdown(struct iio_dev *indio_dev,
 	return len;
 }
 
+<<<<<<< HEAD
 static const struct iio_enum mcp4725_powerdown_mode_enum = {
 	.items = mcp4725_powerdown_modes,
 	.num_items = ARRAY_SIZE(mcp4725_powerdown_modes),
 	.get = mcp4725_get_powerdown_mode,
 	.set = mcp4725_set_powerdown_mode,
+=======
+enum {
+	MCP4725,
+	MCP4726,
+};
+
+static const struct iio_enum mcp472x_powerdown_mode_enum[] = {
+	[MCP4725] = {
+		.items = mcp4725_powerdown_modes,
+		.num_items = ARRAY_SIZE(mcp4725_powerdown_modes),
+		.get = mcp4725_get_powerdown_mode,
+		.set = mcp4725_set_powerdown_mode,
+	},
+	[MCP4726] = {
+		.items = mcp4726_powerdown_modes,
+		.num_items = ARRAY_SIZE(mcp4726_powerdown_modes),
+		.get = mcp4725_get_powerdown_mode,
+		.set = mcp4725_set_powerdown_mode,
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct iio_chan_spec_ext_info mcp4725_ext_info[] = {
@@ -196,6 +230,7 @@ static const struct iio_chan_spec_ext_info mcp4725_ext_info[] = {
 		.write = mcp4725_write_powerdown,
 		.shared = IIO_SEPARATE,
 	},
+<<<<<<< HEAD
 	IIO_ENUM("powerdown_mode", IIO_SEPARATE, &mcp4725_powerdown_mode_enum),
 	IIO_ENUM_AVAILABLE("powerdown_mode", &mcp4725_powerdown_mode_enum),
 	{ },
@@ -209,6 +244,48 @@ static const struct iio_chan_spec mcp4725_channel = {
 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
 	.ext_info	= mcp4725_ext_info,
+=======
+	IIO_ENUM("powerdown_mode", IIO_SEPARATE,
+			&mcp472x_powerdown_mode_enum[MCP4725]),
+	IIO_ENUM_AVAILABLE("powerdown_mode",
+			&mcp472x_powerdown_mode_enum[MCP4725]),
+	{ },
+};
+
+static const struct iio_chan_spec_ext_info mcp4726_ext_info[] = {
+	{
+		.name = "powerdown",
+		.read = mcp4725_read_powerdown,
+		.write = mcp4725_write_powerdown,
+		.shared = IIO_SEPARATE,
+	},
+	IIO_ENUM("powerdown_mode", IIO_SEPARATE,
+			&mcp472x_powerdown_mode_enum[MCP4726]),
+	IIO_ENUM_AVAILABLE("powerdown_mode",
+			&mcp472x_powerdown_mode_enum[MCP4726]),
+	{ },
+};
+
+static const struct iio_chan_spec mcp472x_channel[] = {
+	[MCP4725] = {
+		.type		= IIO_VOLTAGE,
+		.indexed	= 1,
+		.output		= 1,
+		.channel	= 0,
+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+		.ext_info	= mcp4725_ext_info,
+	},
+	[MCP4726] = {
+		.type		= IIO_VOLTAGE,
+		.indexed	= 1,
+		.output		= 1,
+		.channel	= 0,
+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+		.ext_info	= mcp4726_ext_info,
+	},
+>>>>>>> v4.9.227
 };
 
 static int mcp4725_set_value(struct iio_dev *indio_dev, int val)
@@ -302,7 +379,11 @@ static int mcp4725_probe(struct i2c_client *client,
 	indio_dev->dev.parent = &client->dev;
 	indio_dev->name = id->name;
 	indio_dev->info = &mcp4725_info;
+<<<<<<< HEAD
 	indio_dev->channels = &mcp4725_channel;
+=======
+	indio_dev->channels = &mcp472x_channel[id->driver_data];
+>>>>>>> v4.9.227
 	indio_dev->num_channels = 1;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
@@ -316,7 +397,11 @@ static int mcp4725_probe(struct i2c_client *client,
 	}
 	pd = (inbuf[0] >> 1) & 0x3;
 	data->powerdown = pd > 0 ? true : false;
+<<<<<<< HEAD
 	data->powerdown_mode = pd ? pd-1 : 2; /* 500kohm_to_gnd */
+=======
+	data->powerdown_mode = pd ? pd - 1 : 2; /* largest register to gnd */
+>>>>>>> v4.9.227
 	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
 
 	return iio_device_register(indio_dev);
@@ -329,7 +414,12 @@ static int mcp4725_remove(struct i2c_client *client)
 }
 
 static const struct i2c_device_id mcp4725_id[] = {
+<<<<<<< HEAD
 	{ "mcp4725", 0 },
+=======
+	{ "mcp4725", MCP4725 },
+	{ "mcp4726", MCP4726 },
+>>>>>>> v4.9.227
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, mcp4725_id);
@@ -346,5 +436,9 @@ static struct i2c_driver mcp4725_driver = {
 module_i2c_driver(mcp4725_driver);
 
 MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("MCP4725 12-bit DAC");
+=======
+MODULE_DESCRIPTION("MCP4725/6 12-bit DAC");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  *  Copyright IBM Corp. 2012
+=======
+ *  Copyright IBM Corp. 2012,2015
+>>>>>>> v4.9.227
  *
  *  Author(s):
  *    Jan Glauber <jang@linux.vnet.ibm.com>
@@ -23,22 +27,59 @@ EXPORT_SYMBOL_GPL(pci_debug_msg_id);
 debug_info_t *pci_debug_err_id;
 EXPORT_SYMBOL_GPL(pci_debug_err_id);
 
+<<<<<<< HEAD
 static char *pci_perf_names[] = {
 	/* hardware counters */
+=======
+static char *pci_common_names[] = {
+>>>>>>> v4.9.227
 	"Load operations",
 	"Store operations",
 	"Store block operations",
 	"Refresh operations",
+<<<<<<< HEAD
+=======
+};
+
+static char *pci_fmt0_names[] = {
+>>>>>>> v4.9.227
 	"DMA read bytes",
 	"DMA write bytes",
 };
 
+<<<<<<< HEAD
+=======
+static char *pci_fmt1_names[] = {
+	"Received bytes",
+	"Received packets",
+	"Transmitted bytes",
+	"Transmitted packets",
+};
+
+static char *pci_fmt2_names[] = {
+	"Consumed work units",
+	"Maximum work units",
+};
+
+>>>>>>> v4.9.227
 static char *pci_sw_names[] = {
 	"Allocated pages",
 	"Mapped pages",
 	"Unmapped pages",
 };
 
+<<<<<<< HEAD
+=======
+static void pci_fmb_show(struct seq_file *m, char *name[], int length,
+			 u64 *data)
+{
+	int i;
+
+	for (i = 0; i < length; i++, data++)
+		seq_printf(m, "%26s:\t%llu\n", name[i], *data);
+}
+
+>>>>>>> v4.9.227
 static void pci_sw_counter_show(struct seq_file *m)
 {
 	struct zpci_dev *zdev = m->private;
@@ -53,6 +94,7 @@ static void pci_sw_counter_show(struct seq_file *m)
 static int pci_perf_show(struct seq_file *m, void *v)
 {
 	struct zpci_dev *zdev = m->private;
+<<<<<<< HEAD
 	u64 *stat;
 	int i;
 
@@ -60,6 +102,18 @@ static int pci_perf_show(struct seq_file *m, void *v)
 		return 0;
 	if (!zdev->fmb)
 		return seq_printf(m, "FMB statistics disabled\n");
+=======
+
+	if (!zdev)
+		return 0;
+
+	mutex_lock(&zdev->lock);
+	if (!zdev->fmb) {
+		mutex_unlock(&zdev->lock);
+		seq_puts(m, "FMB statistics disabled\n");
+		return 0;
+	}
+>>>>>>> v4.9.227
 
 	/* header */
 	seq_printf(m, "FMB @ %p\n", zdev->fmb);
@@ -67,6 +121,7 @@ static int pci_perf_show(struct seq_file *m, void *v)
 	seq_printf(m, "Samples: %u\n", zdev->fmb->samples);
 	seq_printf(m, "Last update TOD: %Lx\n", zdev->fmb->last_update);
 
+<<<<<<< HEAD
 	/* hardware counters */
 	stat = (u64 *) &zdev->fmb->ld_ops;
 	for (i = 0; i < 4; i++)
@@ -78,6 +133,32 @@ static int pci_perf_show(struct seq_file *m, void *v)
 				   pci_perf_names[i], *(stat + i));
 
 	pci_sw_counter_show(m);
+=======
+	pci_fmb_show(m, pci_common_names, ARRAY_SIZE(pci_common_names),
+		     &zdev->fmb->ld_ops);
+
+	switch (zdev->fmb->format) {
+	case 0:
+		if (!(zdev->fmb->fmt_ind & ZPCI_FMB_DMA_COUNTER_VALID))
+			break;
+		pci_fmb_show(m, pci_fmt0_names, ARRAY_SIZE(pci_fmt0_names),
+			     &zdev->fmb->fmt0.dma_rbytes);
+		break;
+	case 1:
+		pci_fmb_show(m, pci_fmt1_names, ARRAY_SIZE(pci_fmt1_names),
+			     &zdev->fmb->fmt1.rx_bytes);
+		break;
+	case 2:
+		pci_fmb_show(m, pci_fmt2_names, ARRAY_SIZE(pci_fmt2_names),
+			     &zdev->fmb->fmt2.consumed_work_units);
+		break;
+	default:
+		seq_puts(m, "Unknown format\n");
+	}
+
+	pci_sw_counter_show(m);
+	mutex_unlock(&zdev->lock);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -95,6 +176,7 @@ static ssize_t pci_perf_seq_write(struct file *file, const char __user *ubuf,
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	switch (val) {
 	case 0:
 		rc = zpci_fmb_disable_device(zdev);
@@ -108,6 +190,19 @@ static ssize_t pci_perf_seq_write(struct file *file, const char __user *ubuf,
 		break;
 	}
 	return count;
+=======
+	mutex_lock(&zdev->lock);
+	switch (val) {
+	case 0:
+		rc = zpci_fmb_disable_device(zdev);
+		break;
+	case 1:
+		rc = zpci_fmb_enable_device(zdev);
+		break;
+	}
+	mutex_unlock(&zdev->lock);
+	return rc ? rc : count;
+>>>>>>> v4.9.227
 }
 
 static int pci_perf_seq_open(struct inode *inode, struct file *filp)
@@ -124,10 +219,16 @@ static const struct file_operations debugfs_pci_perf_fops = {
 	.release = single_release,
 };
 
+<<<<<<< HEAD
 void zpci_debug_init_device(struct zpci_dev *zdev)
 {
 	zdev->debugfs_dev = debugfs_create_dir(dev_name(&zdev->pdev->dev),
 					       debugfs_root);
+=======
+void zpci_debug_init_device(struct zpci_dev *zdev, const char *name)
+{
+	zdev->debugfs_dev = debugfs_create_dir(name, debugfs_root);
+>>>>>>> v4.9.227
 	if (IS_ERR(zdev->debugfs_dev))
 		zdev->debugfs_dev = NULL;
 
@@ -167,10 +268,15 @@ int __init zpci_debug_init(void)
 
 void zpci_debug_exit(void)
 {
+<<<<<<< HEAD
 	if (pci_debug_msg_id)
 		debug_unregister(pci_debug_msg_id);
 	if (pci_debug_err_id)
 		debug_unregister(pci_debug_err_id);
 
+=======
+	debug_unregister(pci_debug_msg_id);
+	debug_unregister(pci_debug_err_id);
+>>>>>>> v4.9.227
 	debugfs_remove(debugfs_root);
 }

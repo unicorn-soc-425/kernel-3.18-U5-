@@ -69,6 +69,7 @@ unsigned long arch_mmap_rnd(void)
 {
 	unsigned long rnd;
 
+<<<<<<< HEAD
 	if (current->flags & PF_RANDOMIZE) {
 		if (mmap_is_ia32())
 #ifdef CONFIG_COMPAT
@@ -79,6 +80,17 @@ unsigned long arch_mmap_rnd(void)
 		else
 			rnd = get_random_long() & ((1UL << mmap_rnd_bits) - 1);
 	}
+=======
+	if (mmap_is_ia32())
+#ifdef CONFIG_COMPAT
+		rnd = get_random_long() & ((1UL << mmap_rnd_compat_bits) - 1);
+#else
+		rnd = get_random_long() & ((1UL << mmap_rnd_bits) - 1);
+#endif
+	else
+		rnd = get_random_long() & ((1UL << mmap_rnd_bits) - 1);
+
+>>>>>>> v4.9.227
 	return rnd << PAGE_SHIFT;
 }
 
@@ -95,6 +107,7 @@ static unsigned long mmap_base(unsigned long rnd)
 }
 
 /*
+<<<<<<< HEAD
  * Bottom-up (legacy) layout on X86_32 did not support randomization, X86_64
  * does, but not when emulating X86_32
  */
@@ -107,6 +120,8 @@ static unsigned long mmap_legacy_base(unsigned long rnd)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * This function, called very early during the creation of a new
  * process VM image, sets up which VM layout function to use:
  */
@@ -117,7 +132,11 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 	if (current->flags & PF_RANDOMIZE)
 		random_factor = arch_mmap_rnd();
 
+<<<<<<< HEAD
 	mm->mmap_legacy_base = mmap_legacy_base(random_factor);
+=======
+	mm->mmap_legacy_base = TASK_UNMAPPED_BASE + random_factor;
+>>>>>>> v4.9.227
 
 	if (mmap_is_legacy()) {
 		mm->mmap_base = mm->mmap_legacy_base;
@@ -127,3 +146,34 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 		mm->get_unmapped_area = arch_get_unmapped_area_topdown;
 	}
 }
+<<<<<<< HEAD
+=======
+
+const char *arch_vma_name(struct vm_area_struct *vma)
+{
+	if (vma->vm_flags & VM_MPX)
+		return "[mpx]";
+	return NULL;
+}
+
+/*
+ * Only allow root to set high MMIO mappings to PROT_NONE.
+ * This prevents an unpriv. user to set them to PROT_NONE and invert
+ * them, then pointing to valid memory for L1TF speculation.
+ *
+ * Note: for locked down kernels may want to disable the root override.
+ */
+bool pfn_modify_allowed(unsigned long pfn, pgprot_t prot)
+{
+	if (!boot_cpu_has_bug(X86_BUG_L1TF))
+		return true;
+	if (!__pte_needs_invert(pgprot_val(prot)))
+		return true;
+	/* If it's real memory always allow */
+	if (pfn_valid(pfn))
+		return true;
+	if (pfn >= l1tf_pfn_limit() && !capable(CAP_SYS_ADMIN))
+		return false;
+	return true;
+}
+>>>>>>> v4.9.227

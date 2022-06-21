@@ -84,7 +84,11 @@ bttv_risc_packed(struct bttv *btv, struct btcx_riscmem *risc,
 			continue;
 		while (offset && offset >= sg_dma_len(sg)) {
 			offset -= sg_dma_len(sg);
+<<<<<<< HEAD
 			sg++;
+=======
+			sg = sg_next(sg);
+>>>>>>> v4.9.227
 		}
 		if (bpl <= sg_dma_len(sg)-offset) {
 			/* fits into current chunk */
@@ -100,13 +104,21 @@ bttv_risc_packed(struct bttv *btv, struct btcx_riscmem *risc,
 			*(rp++)=cpu_to_le32(sg_dma_address(sg)+offset);
 			todo -= (sg_dma_len(sg)-offset);
 			offset = 0;
+<<<<<<< HEAD
 			sg++;
+=======
+			sg = sg_next(sg);
+>>>>>>> v4.9.227
 			while (todo > sg_dma_len(sg)) {
 				*(rp++)=cpu_to_le32(BT848_RISC_WRITE|
 						    sg_dma_len(sg));
 				*(rp++)=cpu_to_le32(sg_dma_address(sg));
 				todo -= sg_dma_len(sg);
+<<<<<<< HEAD
 				sg++;
+=======
+				sg = sg_next(sg);
+>>>>>>> v4.9.227
 			}
 			*(rp++)=cpu_to_le32(BT848_RISC_WRITE|BT848_RISC_EOL|
 					    todo);
@@ -187,6 +199,7 @@ bttv_risc_planar(struct bttv *btv, struct btcx_riscmem *risc,
 			/* go to next sg entry if needed */
 			while (yoffset && yoffset >= sg_dma_len(ysg)) {
 				yoffset -= sg_dma_len(ysg);
+<<<<<<< HEAD
 				ysg++;
 			}
 			while (uoffset && uoffset >= sg_dma_len(usg)) {
@@ -196,6 +209,17 @@ bttv_risc_planar(struct bttv *btv, struct btcx_riscmem *risc,
 			while (voffset && voffset >= sg_dma_len(vsg)) {
 				voffset -= sg_dma_len(vsg);
 				vsg++;
+=======
+				ysg = sg_next(ysg);
+			}
+			while (uoffset && uoffset >= sg_dma_len(usg)) {
+				uoffset -= sg_dma_len(usg);
+				usg = sg_next(usg);
+			}
+			while (voffset && voffset >= sg_dma_len(vsg)) {
+				voffset -= sg_dma_len(vsg);
+				vsg = sg_next(vsg);
+>>>>>>> v4.9.227
 			}
 
 			/* calculate max number of bytes we can write */
@@ -901,9 +925,12 @@ bttv_overlay_risc(struct bttv *btv,
 	buf->vb.field = ov->field;
 	return 0;
 }
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

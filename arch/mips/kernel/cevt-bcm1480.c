@@ -40,8 +40,13 @@
  * The general purpose timer ticks at 1MHz independent if
  * the rest of the system
  */
+<<<<<<< HEAD
 static void sibyte_set_mode(enum clock_event_mode mode,
 			   struct clock_event_device *evt)
+=======
+
+static int sibyte_set_periodic(struct clock_event_device *evt)
+>>>>>>> v4.9.227
 {
 	unsigned int cpu = smp_processor_id();
 	void __iomem *cfg, *init;
@@ -49,6 +54,7 @@ static void sibyte_set_mode(enum clock_event_mode mode,
 	cfg = IOADDR(A_SCD_TIMER_REGISTER(cpu, R_SCD_TIMER_CFG));
 	init = IOADDR(A_SCD_TIMER_REGISTER(cpu, R_SCD_TIMER_INIT));
 
+<<<<<<< HEAD
 	switch (mode) {
 	case CLOCK_EVT_MODE_PERIODIC:
 		__raw_writeq(0, cfg);
@@ -67,6 +73,24 @@ static void sibyte_set_mode(enum clock_event_mode mode,
 	case CLOCK_EVT_MODE_RESUME:
 		;
 	}
+=======
+	__raw_writeq(0, cfg);
+	__raw_writeq((V_SCD_TIMER_FREQ / HZ) - 1, init);
+	__raw_writeq(M_SCD_TIMER_ENABLE | M_SCD_TIMER_MODE_CONTINUOUS, cfg);
+	return 0;
+}
+
+static int sibyte_shutdown(struct clock_event_device *evt)
+{
+	unsigned int cpu = smp_processor_id();
+	void __iomem *cfg;
+
+	cfg = IOADDR(A_SCD_TIMER_REGISTER(cpu, R_SCD_TIMER_CFG));
+
+	/* Stop the timer until we actually program a shot */
+	__raw_writeq(0, cfg);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int sibyte_next_event(unsigned long delta, struct clock_event_device *cd)
@@ -91,7 +115,11 @@ static irqreturn_t sibyte_counter_handler(int irq, void *dev_id)
 	void __iomem *cfg;
 	unsigned long tmode;
 
+<<<<<<< HEAD
 	if (cd->mode == CLOCK_EVT_MODE_PERIODIC)
+=======
+	if (clockevent_state_periodic(cd))
+>>>>>>> v4.9.227
 		tmode = M_SCD_TIMER_ENABLE | M_SCD_TIMER_MODE_CONTINUOUS;
 	else
 		tmode = 0;
@@ -130,7 +158,13 @@ void sb1480_clockevent_init(void)
 	cd->irq			= irq;
 	cd->cpumask		= cpumask_of(cpu);
 	cd->set_next_event	= sibyte_next_event;
+<<<<<<< HEAD
 	cd->set_mode		= sibyte_set_mode;
+=======
+	cd->set_state_shutdown	= sibyte_shutdown;
+	cd->set_state_periodic	= sibyte_set_periodic;
+	cd->set_state_oneshot	= sibyte_shutdown;
+>>>>>>> v4.9.227
 	clockevents_register_device(cd);
 
 	bcm1480_mask_irq(cpu, irq);

@@ -36,7 +36,11 @@ static struct gpio_chip twl6040gpo_chip;
 
 static int twl6040gpo_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct twl6040 *twl6040 = dev_get_drvdata(chip->dev->parent);
+=======
+	struct twl6040 *twl6040 = dev_get_drvdata(chip->parent->parent);
+>>>>>>> v4.9.227
 	int ret = 0;
 
 	ret = twl6040_reg_read(twl6040, TWL6040_REG_GPOCTL);
@@ -55,7 +59,11 @@ static int twl6040gpo_direction_out(struct gpio_chip *chip, unsigned offset,
 
 static void twl6040gpo_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct twl6040 *twl6040 = dev_get_drvdata(chip->dev->parent);
+=======
+	struct twl6040 *twl6040 = dev_get_drvdata(chip->parent->parent);
+>>>>>>> v4.9.227
 	int ret;
 	u8 gpoctl;
 
@@ -95,12 +103,20 @@ static int gpo_twl6040_probe(struct platform_device *pdev)
 	else
 		twl6040gpo_chip.ngpio = 1; /* twl6041 have 1 GPO */
 
+<<<<<<< HEAD
 	twl6040gpo_chip.dev = &pdev->dev;
+=======
+	twl6040gpo_chip.parent = &pdev->dev;
+>>>>>>> v4.9.227
 #ifdef CONFIG_OF_GPIO
 	twl6040gpo_chip.of_node = twl6040_core_dev->of_node;
 #endif
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&twl6040gpo_chip);
+=======
+	ret = devm_gpiochip_add_data(&pdev->dev, &twl6040gpo_chip, NULL);
+>>>>>>> v4.9.227
 	if (ret < 0) {
 		dev_err(&pdev->dev, "could not register gpiochip, %d\n", ret);
 		twl6040gpo_chip.ngpio = 0;
@@ -109,22 +125,30 @@ static int gpo_twl6040_probe(struct platform_device *pdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int gpo_twl6040_remove(struct platform_device *pdev)
 {
 	gpiochip_remove(&twl6040gpo_chip);
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Note:  this hardware lives inside an I2C-based multi-function device. */
 MODULE_ALIAS("platform:twl6040-gpo");
 
 static struct platform_driver gpo_twl6040_driver = {
 	.driver = {
 		.name	= "twl6040-gpo",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= gpo_twl6040_probe,
 	.remove		= gpo_twl6040_remove,
+=======
+	},
+	.probe		= gpo_twl6040_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(gpo_twl6040_driver);

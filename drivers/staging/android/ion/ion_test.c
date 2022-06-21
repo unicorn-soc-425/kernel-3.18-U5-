@@ -42,7 +42,12 @@ struct ion_test_data {
 };
 
 static int ion_handle_test_dma(struct device *dev, struct dma_buf *dma_buf,
+<<<<<<< HEAD
 		void __user *ptr, size_t offset, size_t size, bool write)
+=======
+			       void __user *ptr, size_t offset, size_t size,
+			       bool write)
+>>>>>>> v4.9.227
 {
 	int ret = 0;
 	struct dma_buf_attachment *attach;
@@ -98,7 +103,11 @@ err:
 }
 
 static int ion_handle_test_kernel(struct dma_buf *dma_buf, void __user *ptr,
+<<<<<<< HEAD
 		size_t offset, size_t size, bool write)
+=======
+				  size_t offset, size_t size, bool write)
+>>>>>>> v4.9.227
 {
 	int ret;
 	unsigned long page_offset = offset >> PAGE_SHIFT;
@@ -109,7 +118,11 @@ static int ion_handle_test_kernel(struct dma_buf *dma_buf, void __user *ptr,
 	if (offset > dma_buf->size || size > dma_buf->size - offset)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = dma_buf_begin_cpu_access(dma_buf, offset, size, dir);
+=======
+	ret = dma_buf_begin_cpu_access(dma_buf, dir);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -139,12 +152,20 @@ static int ion_handle_test_kernel(struct dma_buf *dma_buf, void __user *ptr,
 		copy_offset = 0;
 	}
 err:
+<<<<<<< HEAD
 	dma_buf_end_cpu_access(dma_buf, offset, size, dir);
+=======
+	dma_buf_end_cpu_access(dma_buf, dir);
+>>>>>>> v4.9.227
 	return ret;
 }
 
 static long ion_test_ioctl(struct file *filp, unsigned int cmd,
+<<<<<<< HEAD
 						unsigned long arg)
+=======
+			   unsigned long arg)
+>>>>>>> v4.9.227
 {
 	struct ion_test_data *test_data = filp->private_data;
 	int ret = 0;
@@ -179,17 +200,31 @@ static long ion_test_ioctl(struct file *filp, unsigned int cmd,
 	case ION_IOC_TEST_DMA_MAPPING:
 	{
 		ret = ion_handle_test_dma(test_data->dev, test_data->dma_buf,
+<<<<<<< HEAD
 					u64_to_uptr(data.test_rw.ptr),
 					data.test_rw.offset, data.test_rw.size,
 					data.test_rw.write);
+=======
+					  u64_to_uptr(data.test_rw.ptr),
+					  data.test_rw.offset,
+					  data.test_rw.size,
+					  data.test_rw.write);
+>>>>>>> v4.9.227
 		break;
 	}
 	case ION_IOC_TEST_KERNEL_MAPPING:
 	{
 		ret = ion_handle_test_kernel(test_data->dma_buf,
+<<<<<<< HEAD
 					u64_to_uptr(data.test_rw.ptr),
 					data.test_rw.offset, data.test_rw.size,
 					data.test_rw.write);
+=======
+					     u64_to_uptr(data.test_rw.ptr),
+					     data.test_rw.offset,
+					     data.test_rw.size,
+					     data.test_rw.write);
+>>>>>>> v4.9.227
 		break;
 	}
 	default:
@@ -208,7 +243,11 @@ static int ion_test_open(struct inode *inode, struct file *file)
 	struct ion_test_data *data;
 	struct miscdevice *miscdev = file->private_data;
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(struct ion_test_data), GFP_KERNEL);
+=======
+	data = kzalloc(sizeof(*data), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!data)
 		return -ENOMEM;
 
@@ -242,7 +281,11 @@ static int __init ion_test_probe(struct platform_device *pdev)
 	struct ion_test_device *testdev;
 
 	testdev = devm_kzalloc(&pdev->dev, sizeof(struct ion_test_device),
+<<<<<<< HEAD
 				GFP_KERNEL);
+=======
+			       GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!testdev)
 		return -ENOMEM;
 
@@ -261,7 +304,25 @@ static int __init ion_test_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_driver ion_test_platform_driver = {
+=======
+static int ion_test_remove(struct platform_device *pdev)
+{
+	struct ion_test_device *testdev;
+
+	testdev = platform_get_drvdata(pdev);
+	if (!testdev)
+		return -ENODATA;
+
+	misc_deregister(&testdev->misc);
+	return 0;
+}
+
+static struct platform_device *ion_test_pdev;
+static struct platform_driver ion_test_platform_driver = {
+	.remove = ion_test_remove,
+>>>>>>> v4.9.227
 	.driver = {
 		.name = "ion-test",
 	},
@@ -269,14 +330,30 @@ static struct platform_driver ion_test_platform_driver = {
 
 static int __init ion_test_init(void)
 {
+<<<<<<< HEAD
 	platform_device_register_simple("ion-test", -1, NULL, 0);
+=======
+	ion_test_pdev = platform_device_register_simple("ion-test",
+							-1, NULL, 0);
+	if (IS_ERR(ion_test_pdev))
+		return PTR_ERR(ion_test_pdev);
+
+>>>>>>> v4.9.227
 	return platform_driver_probe(&ion_test_platform_driver, ion_test_probe);
 }
 
 static void __exit ion_test_exit(void)
 {
 	platform_driver_unregister(&ion_test_platform_driver);
+<<<<<<< HEAD
+=======
+	platform_device_unregister(ion_test_pdev);
+>>>>>>> v4.9.227
 }
 
 module_init(ion_test_init);
 module_exit(ion_test_exit);
+<<<<<<< HEAD
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> v4.9.227

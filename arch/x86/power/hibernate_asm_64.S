@@ -21,6 +21,10 @@
 #include <asm/page_types.h>
 #include <asm/asm-offsets.h>
 #include <asm/processor-flags.h>
+<<<<<<< HEAD
+=======
+#include <asm/frame.h>
+>>>>>>> v4.9.227
 
 ENTRY(swsusp_arch_suspend)
 	movq	$saved_context, %rax
@@ -42,13 +46,17 @@ ENTRY(swsusp_arch_suspend)
 	pushfq
 	popq	pt_regs_flags(%rax)
 
+<<<<<<< HEAD
 	/* save the address of restore_registers */
 	movq	$restore_registers, %rax
 	movq	%rax, restore_jump_address(%rip)
+=======
+>>>>>>> v4.9.227
 	/* save cr3 */
 	movq	%cr3, %rax
 	movq	%rax, restore_cr3(%rip)
 
+<<<<<<< HEAD
 	call swsusp_save
 	ret
 
@@ -73,14 +81,50 @@ ENTRY(restore_image)
 
 	/* prepare to copy image data to their original locations */
 	movq	restore_pblist(%rip), %rdx
+=======
+	FRAME_BEGIN
+	call swsusp_save
+	FRAME_END
+	ret
+ENDPROC(swsusp_arch_suspend)
+
+ENTRY(restore_image)
+	/* prepare to jump to the image kernel */
+	movq	restore_jump_address(%rip), %r8
+	movq	restore_cr3(%rip), %r9
+
+	/* prepare to switch to temporary page tables */
+	movq	temp_level4_pgt(%rip), %rax
+	movq	mmu_cr4_features(%rip), %rbx
+
+	/* prepare to copy image data to their original locations */
+	movq	restore_pblist(%rip), %rdx
+
+	/* jump to relocated restore code */
+>>>>>>> v4.9.227
 	movq	relocated_restore_code(%rip), %rcx
 	jmpq	*%rcx
 
 	/* code below has been relocated to a safe page */
 ENTRY(core_restore_code)
+<<<<<<< HEAD
 loop:
 	testq	%rdx, %rdx
 	jz	done
+=======
+	/* switch to temporary page tables */
+	movq	%rax, %cr3
+	/* flush TLB */
+	movq	%rbx, %rcx
+	andq	$~(X86_CR4_PGE), %rcx
+	movq	%rcx, %cr4;  # turn off PGE
+	movq	%cr3, %rcx;  # flush TLB
+	movq	%rcx, %cr3;
+	movq	%rbx, %cr4;  # turn PGE back on
+.Lloop:
+	testq	%rdx, %rdx
+	jz	.Ldone
+>>>>>>> v4.9.227
 
 	/* get addresses from the pbe and copy the page */
 	movq	pbe_address(%rdx), %rsi
@@ -91,6 +135,7 @@ loop:
 
 	/* progress to the next pbe */
 	movq	pbe_next(%rdx), %rdx
+<<<<<<< HEAD
 	jmp	loop
 done:
 	/* jump to the restore_registers address from the image header */
@@ -109,6 +154,19 @@ done:
 ENTRY(restore_registers)
 	/* go back to the original page tables */
 	movq    %rbx, %cr3
+=======
+	jmp	.Lloop
+
+.Ldone:
+	/* jump to the restore_registers address from the image header */
+	jmpq	*%r8
+
+	 /* code below belongs to the image kernel */
+	.align PAGE_SIZE
+ENTRY(restore_registers)
+	/* go back to the original page tables */
+	movq    %r9, %cr3
+>>>>>>> v4.9.227
 
 	/* Flush TLB, including "global" things (vmalloc) */
 	movq	mmu_cr4_features(%rip), %rax
@@ -148,3 +206,7 @@ ENTRY(restore_registers)
 	movq	%rax, in_suspend(%rip)
 
 	ret
+<<<<<<< HEAD
+=======
+ENDPROC(restore_registers)
+>>>>>>> v4.9.227

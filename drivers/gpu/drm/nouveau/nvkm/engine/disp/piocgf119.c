@@ -32,6 +32,7 @@ gf119_disp_pioc_fini(struct nv50_disp_chan *chan)
 	struct nv50_disp *disp = chan->root->disp;
 	struct nvkm_subdev *subdev = &disp->base.engine.subdev;
 	struct nvkm_device *device = subdev->device;
+<<<<<<< HEAD
 	int chid = chan->chid;
 
 	nvkm_mask(device, 0x610490 + (chid * 0x10), 0x00000001, 0x00000000);
@@ -46,6 +47,23 @@ gf119_disp_pioc_fini(struct nv50_disp_chan *chan)
 	/* disable error reporting and completion notification */
 	nvkm_mask(device, 0x610090, 0x00000001 << chid, 0x00000000);
 	nvkm_mask(device, 0x6100a0, 0x00000001 << chid, 0x00000000);
+=======
+	int ctrl = chan->chid.ctrl;
+	int user = chan->chid.user;
+
+	nvkm_mask(device, 0x610490 + (ctrl * 0x10), 0x00000001, 0x00000000);
+	if (nvkm_msec(device, 2000,
+		if (!(nvkm_rd32(device, 0x610490 + (ctrl * 0x10)) & 0x00030000))
+			break;
+	) < 0) {
+		nvkm_error(subdev, "ch %d fini: %08x\n", user,
+			   nvkm_rd32(device, 0x610490 + (ctrl * 0x10)));
+	}
+
+	/* disable error reporting and completion notification */
+	nvkm_mask(device, 0x610090, 0x00000001 << user, 0x00000000);
+	nvkm_mask(device, 0x6100a0, 0x00000001 << user, 0x00000000);
+>>>>>>> v4.9.227
 }
 
 static int
@@ -54,6 +72,7 @@ gf119_disp_pioc_init(struct nv50_disp_chan *chan)
 	struct nv50_disp *disp = chan->root->disp;
 	struct nvkm_subdev *subdev = &disp->base.engine.subdev;
 	struct nvkm_device *device = subdev->device;
+<<<<<<< HEAD
 	int chid = chan->chid;
 
 	/* enable error reporting */
@@ -68,6 +87,23 @@ gf119_disp_pioc_init(struct nv50_disp_chan *chan)
 	) < 0) {
 		nvkm_error(subdev, "ch %d init: %08x\n", chid,
 			   nvkm_rd32(device, 0x610490 + (chid * 0x10)));
+=======
+	int ctrl = chan->chid.ctrl;
+	int user = chan->chid.user;
+
+	/* enable error reporting */
+	nvkm_mask(device, 0x6100a0, 0x00000001 << user, 0x00000001 << user);
+
+	/* activate channel */
+	nvkm_wr32(device, 0x610490 + (ctrl * 0x10), 0x00000001);
+	if (nvkm_msec(device, 2000,
+		u32 tmp = nvkm_rd32(device, 0x610490 + (ctrl * 0x10));
+		if ((tmp & 0x00030000) == 0x00010000)
+			break;
+	) < 0) {
+		nvkm_error(subdev, "ch %d init: %08x\n", user,
+			   nvkm_rd32(device, 0x610490 + (ctrl * 0x10)));
+>>>>>>> v4.9.227
 		return -EBUSY;
 	}
 

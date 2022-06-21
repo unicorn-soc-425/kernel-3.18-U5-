@@ -877,7 +877,11 @@ static inline int lance_reset(struct net_device *dev)
 
 	lance_init_ring(dev);
 	load_csrs(lp);
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> v4.9.227
 	status = init_restart_lance(lp);
 	return status;
 }
@@ -893,7 +897,11 @@ static void lance_tx_timeout(struct net_device *dev)
 	netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
 static int lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct lance_private *lp = netdev_priv(dev);
 	volatile struct lance_regs *ll = lp->ll;
@@ -1030,6 +1038,10 @@ static int dec_lance_probe(struct device *bdev, const int type)
 	int i, ret;
 	unsigned long esar_base;
 	unsigned char *esar;
+<<<<<<< HEAD
+=======
+	const char *desc;
+>>>>>>> v4.9.227
 
 	if (dec_lance_debug && version_printed++ == 0)
 		printk(version);
@@ -1215,6 +1227,7 @@ static int dec_lance_probe(struct device *bdev, const int type)
 	 */
 	switch (type) {
 	case ASIC_LANCE:
+<<<<<<< HEAD
 		printk("%s: IOASIC onboard LANCE", name);
 		break;
 	case PMAD_LANCE:
@@ -1222,12 +1235,26 @@ static int dec_lance_probe(struct device *bdev, const int type)
 		break;
 	case PMAX_LANCE:
 		printk("%s: PMAX onboard LANCE", name);
+=======
+		desc = "IOASIC onboard LANCE";
+		break;
+	case PMAD_LANCE:
+		desc = "PMAD-AA";
+		break;
+	case PMAX_LANCE:
+		desc = "PMAX onboard LANCE";
+>>>>>>> v4.9.227
 		break;
 	}
 	for (i = 0; i < 6; i++)
 		dev->dev_addr[i] = esar[i * 4];
 
+<<<<<<< HEAD
 	printk(", addr = %pM, irq = %d\n", dev->dev_addr, dev->irq);
+=======
+	printk("%s: %s, addr = %pM, irq = %d\n",
+	       name, desc, dev->dev_addr, dev->irq);
+>>>>>>> v4.9.227
 
 	dev->netdev_ops = &lance_netdev_ops;
 	dev->watchdog_timeo = 5*HZ;

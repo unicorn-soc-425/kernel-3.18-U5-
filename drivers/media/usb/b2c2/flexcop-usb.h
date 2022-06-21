@@ -29,6 +29,13 @@ struct flexcop_usb {
 
 	u8 tmp_buffer[1023+190];
 	int tmp_buffer_length;
+<<<<<<< HEAD
+=======
+
+	/* for URB control messages */
+	u8 data[80];
+	struct mutex data_mutex;
+>>>>>>> v4.9.227
 };
 
 #if 0

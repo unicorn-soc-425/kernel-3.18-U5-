@@ -61,6 +61,10 @@ enum ctattr_tuple {
 	CTA_TUPLE_UNSPEC,
 	CTA_TUPLE_IP,
 	CTA_TUPLE_PROTO,
+<<<<<<< HEAD
+=======
+	CTA_TUPLE_ZONE,
+>>>>>>> v4.9.227
 	__CTA_TUPLE_MAX
 };
 #define CTA_TUPLE_MAX (__CTA_TUPLE_MAX - 1)
@@ -115,6 +119,10 @@ enum ctattr_protoinfo_dccp {
 	CTA_PROTOINFO_DCCP_STATE,
 	CTA_PROTOINFO_DCCP_ROLE,
 	CTA_PROTOINFO_DCCP_HANDSHAKE_SEQ,
+<<<<<<< HEAD
+=======
+	CTA_PROTOINFO_DCCP_PAD,
+>>>>>>> v4.9.227
 	__CTA_PROTOINFO_DCCP_MAX,
 };
 #define CTA_PROTOINFO_DCCP_MAX (__CTA_PROTOINFO_DCCP_MAX - 1)
@@ -134,6 +142,10 @@ enum ctattr_counters {
 	CTA_COUNTERS_BYTES,		/* 64bit counters */
 	CTA_COUNTERS32_PACKETS,		/* old 32bit counters, unused */
 	CTA_COUNTERS32_BYTES,		/* old 32bit counters, unused */
+<<<<<<< HEAD
+=======
+	CTA_COUNTERS_PAD,
+>>>>>>> v4.9.227
 	__CTA_COUNTERS_MAX
 };
 #define CTA_COUNTERS_MAX (__CTA_COUNTERS_MAX - 1)
@@ -142,6 +154,10 @@ enum ctattr_tstamp {
 	CTA_TIMESTAMP_UNSPEC,
 	CTA_TIMESTAMP_START,
 	CTA_TIMESTAMP_STOP,
+<<<<<<< HEAD
+=======
+	CTA_TIMESTAMP_PAD,
+>>>>>>> v4.9.227
 	__CTA_TIMESTAMP_MAX
 };
 #define CTA_TIMESTAMP_MAX (__CTA_TIMESTAMP_MAX - 1)
@@ -227,6 +243,7 @@ enum ctattr_secctx {
 
 enum ctattr_stats_cpu {
 	CTA_STATS_UNSPEC,
+<<<<<<< HEAD
 	CTA_STATS_SEARCHED,
 	CTA_STATS_FOUND,
 	CTA_STATS_NEW,
@@ -234,6 +251,15 @@ enum ctattr_stats_cpu {
 	CTA_STATS_IGNORE,
 	CTA_STATS_DELETE,
 	CTA_STATS_DELETE_LIST,
+=======
+	CTA_STATS_SEARCHED,	/* no longer used */
+	CTA_STATS_FOUND,
+	CTA_STATS_NEW,		/* no longer used */
+	CTA_STATS_INVALID,
+	CTA_STATS_IGNORE,
+	CTA_STATS_DELETE,	/* no longer used */
+	CTA_STATS_DELETE_LIST,	/* no longer used */
+>>>>>>> v4.9.227
 	CTA_STATS_INSERT,
 	CTA_STATS_INSERT_FAILED,
 	CTA_STATS_DROP,

@@ -13,10 +13,17 @@
 /*
  * balloon_page_enqueue - allocates a new page and inserts it into the balloon
  *			  page list.
+<<<<<<< HEAD
  * @b_dev_info: balloon device decriptor where we will insert a new page to
  *
  * Driver must call it to properly allocate a new enlisted balloon page
  * before definetively removing it from the guest system.
+=======
+ * @b_dev_info: balloon device descriptor where we will insert a new page to
+ *
+ * Driver must call it to properly allocate a new enlisted balloon page
+ * before definitively removing it from the guest system.
+>>>>>>> v4.9.227
  * This function returns the page address for the recently enqueued page or
  * NULL in the case we fail to allocate a new page this turn.
  */
@@ -70,7 +77,11 @@ struct page *balloon_page_dequeue(struct balloon_dev_info *b_dev_info)
 		 */
 		if (trylock_page(page)) {
 #ifdef CONFIG_BALLOON_COMPACTION
+<<<<<<< HEAD
 			if (!PagePrivate(page)) {
+=======
+			if (PageIsolated(page)) {
+>>>>>>> v4.9.227
 				/* raced with isolation */
 				unlock_page(page);
 				continue;
@@ -106,12 +117,18 @@ EXPORT_SYMBOL_GPL(balloon_page_dequeue);
 
 #ifdef CONFIG_BALLOON_COMPACTION
 
+<<<<<<< HEAD
 static inline void __isolate_balloon_page(struct page *page)
+=======
+bool balloon_page_isolate(struct page *page, isolate_mode_t mode)
+
+>>>>>>> v4.9.227
 {
 	struct balloon_dev_info *b_dev_info = balloon_page_device(page);
 	unsigned long flags;
 
 	spin_lock_irqsave(&b_dev_info->pages_lock, flags);
+<<<<<<< HEAD
 	ClearPagePrivate(page);
 	list_del(&page->lru);
 	b_dev_info->isolated_pages++;
@@ -119,17 +136,31 @@ static inline void __isolate_balloon_page(struct page *page)
 }
 
 static inline void __putback_balloon_page(struct page *page)
+=======
+	list_del(&page->lru);
+	b_dev_info->isolated_pages++;
+	spin_unlock_irqrestore(&b_dev_info->pages_lock, flags);
+
+	return true;
+}
+
+void balloon_page_putback(struct page *page)
+>>>>>>> v4.9.227
 {
 	struct balloon_dev_info *b_dev_info = balloon_page_device(page);
 	unsigned long flags;
 
 	spin_lock_irqsave(&b_dev_info->pages_lock, flags);
+<<<<<<< HEAD
 	SetPagePrivate(page);
+=======
+>>>>>>> v4.9.227
 	list_add(&page->lru, &b_dev_info->pages);
 	b_dev_info->isolated_pages--;
 	spin_unlock_irqrestore(&b_dev_info->pages_lock, flags);
 }
 
+<<<<<<< HEAD
 /* __isolate_lru_page() counterpart for a ballooned page */
 bool balloon_page_isolate(struct page *page)
 {
@@ -218,4 +249,27 @@ int balloon_page_migrate(struct page *newpage,
 	unlock_page(newpage);
 	return rc;
 }
+=======
+
+/* move_to_new_page() counterpart for a ballooned page */
+int balloon_page_migrate(struct address_space *mapping,
+		struct page *newpage, struct page *page,
+		enum migrate_mode mode)
+{
+	struct balloon_dev_info *balloon = balloon_page_device(page);
+
+	VM_BUG_ON_PAGE(!PageLocked(page), page);
+	VM_BUG_ON_PAGE(!PageLocked(newpage), newpage);
+
+	return balloon->migratepage(balloon, newpage, page, mode);
+}
+
+const struct address_space_operations balloon_aops = {
+	.migratepage = balloon_page_migrate,
+	.isolate_page = balloon_page_isolate,
+	.putback_page = balloon_page_putback,
+};
+EXPORT_SYMBOL_GPL(balloon_aops);
+
+>>>>>>> v4.9.227
 #endif /* CONFIG_BALLOON_COMPACTION */

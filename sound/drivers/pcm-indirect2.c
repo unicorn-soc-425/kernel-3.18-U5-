@@ -47,7 +47,11 @@ void snd_pcm_indirect2_stat(struct snd_pcm_substream *substream,
 	int seconds = (rec->lastbytetime - rec->firstbytetime) / HZ;
 
 	snd_printk(KERN_DEBUG "STAT: mul_elapsed: %u, mul_elapsed_real: %d, "
+<<<<<<< HEAD
 		   "irq_occured: %d\n",
+=======
+		   "irq_occurred: %d\n",
+>>>>>>> v4.9.227
 		   rec->mul_elapsed, rec->mul_elapsed_real, rec->irq_occured);
 	snd_printk(KERN_DEBUG "STAT: min_multiple: %d (irqs/period)\n",
 		   rec->min_multiple);

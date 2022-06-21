@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -90,18 +94,29 @@ acpi_ut_remove_allocation(struct acpi_debug_mem_block *address,
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ut_create_list(char *list_name,
+=======
+acpi_ut_create_list(const char *list_name,
+>>>>>>> v4.9.227
 		    u16 object_size, struct acpi_memory_list **return_cache)
 {
 	struct acpi_memory_list *cache;
 
+<<<<<<< HEAD
 	cache = acpi_os_allocate(sizeof(struct acpi_memory_list));
+=======
+	cache = acpi_os_allocate_zeroed(sizeof(struct acpi_memory_list));
+>>>>>>> v4.9.227
 	if (!cache) {
 		return (AE_NO_MEMORY);
 	}
 
+<<<<<<< HEAD
 	ACPI_MEMSET(cache, 0, sizeof(struct acpi_memory_list));
 
+=======
+>>>>>>> v4.9.227
 	cache->list_name = list_name;
 	cache->object_size = object_size;
 
@@ -150,9 +165,15 @@ void *acpi_ut_allocate_and_track(acpi_size size,
 		return (NULL);
 	}
 
+<<<<<<< HEAD
 	status = acpi_ut_track_allocation(allocation, size,
 					  ACPI_MEM_MALLOC, component, module,
 					  line);
+=======
+	status =
+	    acpi_ut_track_allocation(allocation, size, ACPI_MEM_MALLOC,
+				     component, module, line);
+>>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 		acpi_os_free(allocation);
 		return (NULL);
@@ -161,6 +182,10 @@ void *acpi_ut_allocate_and_track(acpi_size size,
 	acpi_gbl_global_list->total_allocated++;
 	acpi_gbl_global_list->total_size += (u32)size;
 	acpi_gbl_global_list->current_total_size += (u32)size;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	if (acpi_gbl_global_list->current_total_size >
 	    acpi_gbl_global_list->max_occupied) {
 		acpi_gbl_global_list->max_occupied =
@@ -223,6 +248,10 @@ void *acpi_ut_allocate_zeroed_and_track(acpi_size size,
 	acpi_gbl_global_list->total_allocated++;
 	acpi_gbl_global_list->total_size += (u32)size;
 	acpi_gbl_global_list->current_total_size += (u32)size;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	if (acpi_gbl_global_list->current_total_size >
 	    acpi_gbl_global_list->max_occupied) {
 		acpi_gbl_global_list->max_occupied =
@@ -269,8 +298,13 @@ acpi_ut_free_and_track(void *allocation,
 	acpi_gbl_global_list->total_freed++;
 	acpi_gbl_global_list->current_total_size -= debug_block->size;
 
+<<<<<<< HEAD
 	status = acpi_ut_remove_allocation(debug_block,
 					   component, module, line);
+=======
+	status =
+	    acpi_ut_remove_allocation(debug_block, component, module, line);
+>>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 		ACPI_EXCEPTION((AE_INFO, status, "Could not free memory"));
 	}
@@ -402,7 +436,11 @@ acpi_ut_track_allocation(struct acpi_debug_mem_block *allocation,
 	allocation->component = component;
 	allocation->line = line;
 
+<<<<<<< HEAD
 	ACPI_STRNCPY(allocation->module, module, ACPI_MAX_MODULE_NAME);
+=======
+	strncpy(allocation->module, module, ACPI_MAX_MODULE_NAME);
+>>>>>>> v4.9.227
 	allocation->module[ACPI_MAX_MODULE_NAME - 1] = 0;
 
 	if (!element) {
@@ -497,7 +535,11 @@ acpi_ut_remove_allocation(struct acpi_debug_mem_block *allocation,
 
 	/* Mark the segment as deleted */
 
+<<<<<<< HEAD
 	ACPI_MEMSET(&allocation->user_space, 0xEA, allocation->size);
+=======
+	memset(&allocation->user_space, 0xEA, allocation->size);
+>>>>>>> v4.9.227
 
 	status = acpi_ut_release_mutex(ACPI_MTX_MEMORY);
 	return (status);
@@ -525,6 +567,7 @@ void acpi_ut_dump_allocation_info(void)
 
 /*
 	ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+<<<<<<< HEAD
 			  ("%30s: %4d (%3d Kb)\n", "Current allocations",
 			  mem_list->current_count,
 			  ROUND_UP_TO_1K (mem_list->current_size)));
@@ -554,6 +597,37 @@ void acpi_ut_dump_allocation_info(void)
 			  acpi_gbl_max_concurrent_node_count,
 			  ROUND_UP_TO_1K ((acpi_gbl_max_concurrent_node_count *
 					 sizeof (struct acpi_namespace_node)))));
+=======
+		("%30s: %4d (%3d Kb)\n", "Current allocations",
+		mem_list->current_count,
+		ROUND_UP_TO_1K (mem_list->current_size)));
+
+	ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+		("%30s: %4d (%3d Kb)\n", "Max concurrent allocations",
+		mem_list->max_concurrent_count,
+		ROUND_UP_TO_1K (mem_list->max_concurrent_size)));
+
+	ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+		("%30s: %4d (%3d Kb)\n", "Total (all) internal objects",
+		running_object_count,
+		ROUND_UP_TO_1K (running_object_size)));
+
+	ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+		("%30s: %4d (%3d Kb)\n", "Total (all) allocations",
+		running_alloc_count,
+		ROUND_UP_TO_1K (running_alloc_size)));
+
+	ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+		("%30s: %4d (%3d Kb)\n", "Current Nodes",
+		acpi_gbl_current_node_count,
+		ROUND_UP_TO_1K (acpi_gbl_current_node_size)));
+
+	ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+		("%30s: %4d (%3d Kb)\n", "Max Nodes",
+		acpi_gbl_max_concurrent_node_count,
+		ROUND_UP_TO_1K ((acpi_gbl_max_concurrent_node_count *
+			sizeof (struct acpi_namespace_node)))));
+>>>>>>> v4.9.227
 */
 	return_VOID;
 }
@@ -595,7 +669,11 @@ void acpi_ut_dump_allocations(u32 component, const char *module)
 	while (element) {
 		if ((element->component & component) &&
 		    ((module == NULL)
+<<<<<<< HEAD
 		     || (0 == ACPI_STRCMP(module, element->module)))) {
+=======
+		     || (0 == strcmp(module, element->module)))) {
+>>>>>>> v4.9.227
 			descriptor =
 			    ACPI_CAST_PTR(union acpi_descriptor,
 					  &element->user_space);
@@ -710,7 +788,11 @@ void acpi_ut_dump_allocations(u32 component, const char *module)
 	/* Print summary */
 
 	if (!num_outstanding) {
+<<<<<<< HEAD
 		ACPI_INFO((AE_INFO, "No outstanding allocations"));
+=======
+		ACPI_INFO(("No outstanding allocations"));
+>>>>>>> v4.9.227
 	} else {
 		ACPI_ERROR((AE_INFO, "%u(0x%X) Outstanding allocations",
 			    num_outstanding, num_outstanding));

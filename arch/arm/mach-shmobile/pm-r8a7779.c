@@ -9,6 +9,7 @@
  * for more details.
  */
 
+<<<<<<< HEAD
 #include <linux/pm.h>
 #include <linux/suspend.h>
 #include <linux/err.h>
@@ -24,12 +25,19 @@
 
 #include "common.h"
 #include "pm-rcar.h"
+=======
+#include <linux/soc/renesas/rcar-sysc.h>
+
+#include <asm/io.h>
+
+>>>>>>> v4.9.227
 #include "r8a7779.h"
 
 /* SYSC */
 #define SYSCIER 0x0c
 #define SYSCIMR 0x10
 
+<<<<<<< HEAD
 struct r8a7779_pm_domain {
 	struct generic_pm_domain genpd;
 	struct rcar_sysc_ch ch;
@@ -40,15 +48,21 @@ static inline struct rcar_sysc_ch *to_r8a7779_ch(struct generic_pm_domain *d)
 	return &container_of(d, struct r8a7779_pm_domain, genpd)->ch;
 }
 
+=======
+>>>>>>> v4.9.227
 #if defined(CONFIG_PM) || defined(CONFIG_SMP)
 
 static void __init r8a7779_sysc_init(void)
 {
+<<<<<<< HEAD
 	void __iomem *base = rcar_sysc_init(0xffd85000);
 
 	/* enable all interrupt sources, but do not use interrupt handler */
 	iowrite32(0x0131000e, base + SYSCIER);
 	iowrite32(0, base + SYSCIMR);
+=======
+	rcar_sysc_init(0xffd85000, 0x0131000e);
+>>>>>>> v4.9.227
 }
 
 #else /* CONFIG_PM || CONFIG_SMP */
@@ -57,6 +71,7 @@ static inline void r8a7779_sysc_init(void) {}
 
 #endif /* CONFIG_PM || CONFIG_SMP */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int pd_power_down(struct generic_pm_domain *genpd)
@@ -135,6 +150,8 @@ void __init r8a7779_init_pm_domains(void)
 
 #endif /* CONFIG_PM */
 
+=======
+>>>>>>> v4.9.227
 void __init r8a7779_pm_init(void)
 {
 	static int once;

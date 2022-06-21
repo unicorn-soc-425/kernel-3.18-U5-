@@ -11,7 +11,12 @@
 #ifndef OMAP_VOUTDEF_H
 #define OMAP_VOUTDEF_H
 
+<<<<<<< HEAD
 #include <video/omapdss.h>
+=======
+#include <media/v4l2-ctrls.h>
+#include <video/omapfb_dss.h>
+>>>>>>> v4.9.227
 #include <video/omapvrfb.h>
 
 #define YUYV_BPP        2
@@ -116,6 +121,10 @@ struct omap_vout_device {
 	struct omapvideo_info vid_info;
 	struct video_device *vfd;
 	struct omap2video_device *vid_dev;
+<<<<<<< HEAD
+=======
+	struct v4l2_ctrl_handler ctrl_handler;
+>>>>>>> v4.9.227
 	int vid;
 	int opened;
 
@@ -149,12 +158,18 @@ struct omap_vout_device {
 	/* Lock to protect the shared data structures in ioctl */
 	struct mutex lock;
 
+<<<<<<< HEAD
 	/* V4L2 control structure for different control id */
 	struct v4l2_control control[MAX_CID];
 	enum dss_rotation rotation;
 	bool mirror;
 	int flicker_filter;
 	/* V4L2 control structure for different control id */
+=======
+	enum dss_rotation rotation;
+	bool mirror;
+	int flicker_filter;
+>>>>>>> v4.9.227
 
 	int bpp; /* bytes per pixel */
 	int vrfb_bpp; /* bytes per pixel with respect to VRFB */

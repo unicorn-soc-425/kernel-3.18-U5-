@@ -6,6 +6,11 @@
  * Copyright (C) 2008 Wind River Systems, Inc.
  */
 
+<<<<<<< HEAD
+=======
+#include <asm/ptrace.h>
+
+>>>>>>> v4.9.227
 /*
  * BUFMAX defines the maximum number of characters in inbound/outbound
  * buffers at least NUMREGBYTES*2 are needed for register packets

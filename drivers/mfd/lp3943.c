@@ -123,6 +123,7 @@ static int lp3943_probe(struct i2c_client *cl, const struct i2c_device_id *id)
 	lp3943->mux_cfg = lp3943_mux_cfg;
 	i2c_set_clientdata(cl, lp3943);
 
+<<<<<<< HEAD
 	return mfd_add_devices(dev, -1, lp3943_devs, ARRAY_SIZE(lp3943_devs),
 			       NULL, 0, NULL);
 }
@@ -133,6 +134,11 @@ static int lp3943_remove(struct i2c_client *cl)
 
 	mfd_remove_devices(lp3943->dev);
 	return 0;
+=======
+	return devm_mfd_add_devices(dev, -1, lp3943_devs,
+				    ARRAY_SIZE(lp3943_devs),
+				    NULL, 0, NULL);
+>>>>>>> v4.9.227
 }
 
 static const struct i2c_device_id lp3943_ids[] = {
@@ -151,10 +157,15 @@ MODULE_DEVICE_TABLE(of, lp3943_of_match);
 
 static struct i2c_driver lp3943_driver = {
 	.probe = lp3943_probe,
+<<<<<<< HEAD
 	.remove = lp3943_remove,
 	.driver = {
 		.name = "lp3943",
 		.owner = THIS_MODULE,
+=======
+	.driver = {
+		.name = "lp3943",
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(lp3943_of_match),
 	},
 	.id_table = lp3943_ids,

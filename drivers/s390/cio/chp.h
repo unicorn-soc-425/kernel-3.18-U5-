@@ -4,7 +4,11 @@
  */
 
 #ifndef S390_CHP_H
+<<<<<<< HEAD
 #define S390_CHP_H S390_CHP_H
+=======
+#define S390_CHP_H
+>>>>>>> v4.9.227
 
 #include <linux/types.h>
 #include <linux/device.h>
@@ -48,7 +52,11 @@ struct channel_path {
 	/* Channel-measurement related stuff: */
 	int cmg;
 	int shared;
+<<<<<<< HEAD
 	void *cmg_chars;
+=======
+	struct cmg_chars cmg_chars;
+>>>>>>> v4.9.227
 };
 
 /* Return channel_path struct for given chpid. */

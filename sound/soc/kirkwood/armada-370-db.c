@@ -130,11 +130,18 @@ static const struct of_device_id a370db_dt_ids[] = {
 	{ .compatible = "marvell,a370db-audio" },
 	{ },
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, a370db_dt_ids);
+>>>>>>> v4.9.227
 
 static struct platform_driver a370db_driver = {
 	.driver		= {
 		.name	= "a370db-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_match_ptr(a370db_dt_ids),
 	},
 	.probe		= a370db_probe,

@@ -23,6 +23,10 @@
 #include <asm/mach/irq.h>
 #include <mach/hardware.h>
 #include <mach/map.h>
+<<<<<<< HEAD
+=======
+#include <mach/irqs.h>
+>>>>>>> v4.9.227
 
 #include <plat/devs.h>
 

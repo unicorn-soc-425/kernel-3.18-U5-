@@ -589,7 +589,10 @@ static void siu_pcm_free(struct snd_pcm *pcm)
 	tasklet_kill(&port_info->playback.tasklet);
 
 	siu_free_port(port_info);
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_free_for_all(pcm);
+=======
+>>>>>>> v4.9.227
 
 	dev_dbg(pcm->card->dev, "%s\n", __func__);
 }

@@ -66,13 +66,20 @@ static int gpio_beeper_probe(struct platform_device *pdev)
 {
 	struct gpio_beeper *beep;
 	struct input_dev *input;
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> v4.9.227
 
 	beep = devm_kzalloc(&pdev->dev, sizeof(*beep), GFP_KERNEL);
 	if (!beep)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	beep->desc = devm_gpiod_get(&pdev->dev, NULL);
+=======
+	beep->desc = devm_gpiod_get(&pdev->dev, NULL, GPIOD_OUT_LOW);
+>>>>>>> v4.9.227
 	if (IS_ERR(beep->desc))
 		return PTR_ERR(beep->desc);
 
@@ -92,10 +99,13 @@ static int gpio_beeper_probe(struct platform_device *pdev)
 
 	input_set_capability(input, EV_SND, SND_BELL);
 
+<<<<<<< HEAD
 	err = gpiod_direction_output(beep->desc, 0);
 	if (err)
 		return err;
 
+=======
+>>>>>>> v4.9.227
 	input_set_drvdata(input, beep);
 
 	return input_register_device(input);
@@ -112,7 +122,10 @@ MODULE_DEVICE_TABLE(of, gpio_beeper_of_match);
 static struct platform_driver gpio_beeper_platform_driver = {
 	.driver	= {
 		.name		= BEEPER_MODNAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= of_match_ptr(gpio_beeper_of_match),
 	},
 	.probe	= gpio_beeper_probe,

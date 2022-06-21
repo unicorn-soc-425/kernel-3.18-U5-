@@ -23,7 +23,11 @@
 #include <linux/io.h>
 
 #include <mach/cputype.h>
+<<<<<<< HEAD
 #include <mach/psc.h>
+=======
+#include "psc.h"
+>>>>>>> v4.9.227
 
 #include "clock.h"
 

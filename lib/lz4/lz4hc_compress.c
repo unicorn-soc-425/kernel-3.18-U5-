@@ -131,7 +131,11 @@ static inline int lz4hc_insertandfindbestmatch(struct lz4hc_data *hc4,
 #endif
 	int nbattempts = MAX_NB_ATTEMPTS;
 	size_t repl = 0, ml = 0;
+<<<<<<< HEAD
 	u16 delta;
+=======
+	u16 delta = 0;
+>>>>>>> v4.9.227
 
 	/* HC4 match finder */
 	lz4hc_insert(hc4, ip);

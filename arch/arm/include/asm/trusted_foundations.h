@@ -26,7 +26,10 @@
 #ifndef __ASM_ARM_TRUSTED_FOUNDATIONS_H
 #define __ASM_ARM_TRUSTED_FOUNDATIONS_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/printk.h>
 #include <linux/bug.h>
 #include <linux/of.h>

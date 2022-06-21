@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -38,6 +42,7 @@
 #ifndef __SELFTEST_TIMER_H__
 #define __SELFTEST_TIMER_H__
 
+<<<<<<< HEAD
 typedef struct {
 	struct list_head	stt_list;
 	unsigned long	stt_expires;
@@ -49,5 +54,18 @@ void stt_add_timer (stt_timer_t *timer);
 int stt_del_timer (stt_timer_t *timer);
 int stt_startup (void);
 void stt_shutdown (void);
+=======
+struct stt_timer {
+	struct list_head stt_list;
+	time64_t	 stt_expires;
+	void		 (*stt_func)(void *);
+	void		 *stt_data;
+};
+
+void stt_add_timer(struct stt_timer *timer);
+int stt_del_timer(struct stt_timer *timer);
+int stt_startup(void);
+void stt_shutdown(void);
+>>>>>>> v4.9.227
 
 #endif /* __SELFTEST_TIMER_H__ */

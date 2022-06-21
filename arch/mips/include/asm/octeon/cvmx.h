@@ -57,6 +57,10 @@ enum cvmx_mips_space {
 #include <asm/octeon/cvmx-sysinfo.h>
 
 #include <asm/octeon/cvmx-ciu-defs.h>
+<<<<<<< HEAD
+=======
+#include <asm/octeon/cvmx-ciu3-defs.h>
+>>>>>>> v4.9.227
 #include <asm/octeon/cvmx-gpio-defs.h>
 #include <asm/octeon/cvmx-iob-defs.h>
 #include <asm/octeon/cvmx-ipd-defs.h>
@@ -189,7 +193,11 @@ static inline uint64_t cvmx_ptr_to_phys(void *ptr)
 static inline void *cvmx_phys_to_ptr(uint64_t physical_address)
 {
 	if (sizeof(void *) == 8) {
+<<<<<<< HEAD
 		/* Just set the top bit, avoiding any TLB uglyness */
+=======
+		/* Just set the top bit, avoiding any TLB ugliness */
+>>>>>>> v4.9.227
 		return CASTPTR(void,
 			       CVMX_ADD_SEG(CVMX_MIPS_SPACE_XKPHYS,
 					    physical_address));
@@ -275,6 +283,14 @@ static inline void cvmx_write_csr(uint64_t csr_addr, uint64_t val)
 		cvmx_read64(CVMX_MIO_BOOT_BIST_STAT);
 }
 
+<<<<<<< HEAD
+=======
+static inline void cvmx_writeq_csr(void __iomem *csr_addr, uint64_t val)
+{
+	cvmx_write_csr((__force uint64_t)csr_addr, val);
+}
+
+>>>>>>> v4.9.227
 static inline void cvmx_write_io(uint64_t io_addr, uint64_t val)
 {
 	cvmx_write64(io_addr, val);
@@ -287,6 +303,13 @@ static inline uint64_t cvmx_read_csr(uint64_t csr_addr)
 	return val;
 }
 
+<<<<<<< HEAD
+=======
+static inline uint64_t cvmx_readq_csr(void __iomem *csr_addr)
+{
+	return cvmx_read_csr((__force uint64_t) csr_addr);
+}
+>>>>>>> v4.9.227
 
 static inline void cvmx_send_single(uint64_t data)
 {
@@ -332,6 +355,24 @@ static inline unsigned int cvmx_get_core_num(void)
 	return core_num;
 }
 
+<<<<<<< HEAD
+=======
+/* Maximum # of bits to define core in node */
+#define CVMX_NODE_NO_SHIFT	7
+#define CVMX_NODE_MASK		0x3
+static inline unsigned int cvmx_get_node_num(void)
+{
+	unsigned int core_num = cvmx_get_core_num();
+
+	return (core_num >> CVMX_NODE_NO_SHIFT) & CVMX_NODE_MASK;
+}
+
+static inline unsigned int cvmx_get_local_core_num(void)
+{
+	return cvmx_get_core_num() & ((1 << CVMX_NODE_NO_SHIFT) - 1);
+}
+
+>>>>>>> v4.9.227
 /**
  * Returns the number of bits set in the provided value.
  * Simple wrapper for POP instruction.
@@ -436,6 +477,7 @@ static inline uint64_t cvmx_get_cycle_global(void)
 
 /***************************************************************************/
 
+<<<<<<< HEAD
 static inline void cvmx_reset_octeon(void)
 {
 	union cvmx_ciu_soft_rst ciu_soft_rst;
@@ -512,6 +554,20 @@ static inline int cvmx_octeon_dfa_present(void)
 static inline int cvmx_octeon_crypto_present(void)
 {
 	return octeon_has_feature(OCTEON_FEATURE_CRYPTO);
+=======
+/* Return the number of cores available in the chip */
+static inline uint32_t cvmx_octeon_num_cores(void)
+{
+	u64 ciu_fuse_reg;
+	u64 ciu_fuse;
+
+	if (OCTEON_IS_OCTEON3() && !OCTEON_IS_MODEL(OCTEON_CN70XX))
+		ciu_fuse_reg = CVMX_CIU3_FUSE;
+	else
+		ciu_fuse_reg = CVMX_CIU_FUSE;
+	ciu_fuse = cvmx_read_csr(ciu_fuse_reg);
+	return cvmx_dpop(ciu_fuse);
+>>>>>>> v4.9.227
 }
 
 #endif /*  __CVMX_H__  */

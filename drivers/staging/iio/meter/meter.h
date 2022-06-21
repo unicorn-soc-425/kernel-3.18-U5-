@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+#ifndef _METER_H
+#define _METER_H
+
+>>>>>>> v4.9.227
 #include <linux/iio/sysfs.h>
 
 /* metering ic types of attribute */
@@ -394,3 +400,7 @@
 #define IIO_EVENT_ATTR_VPKLVL_EXC(_evlist, _show, _store, _mask) \
 	IIO_EVENT_ATTR_SH(vpklvl_exc, _evlist, _show, _store, _mask)
 
+<<<<<<< HEAD
+=======
+#endif /* _METER_H */
+>>>>>>> v4.9.227

@@ -148,16 +148,26 @@ static int xtensa_gpio_probe(struct platform_device *pdev)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&impwire_chip);
 	if (ret)
 		return ret;
 	return gpiochip_add(&expstate_chip);
+=======
+	ret = gpiochip_add_data(&impwire_chip, NULL);
+	if (ret)
+		return ret;
+	return gpiochip_add_data(&expstate_chip, NULL);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver xtensa_gpio_driver = {
 	.driver		= {
 		.name		= "xtensa-gpio",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= xtensa_gpio_probe,
 };

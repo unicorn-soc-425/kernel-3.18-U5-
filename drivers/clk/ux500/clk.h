@@ -10,10 +10,18 @@
 #ifndef __UX500_CLK_H
 #define __UX500_CLK_H
 
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/device.h>
 #include <linux/types.h>
 
+=======
+#include <linux/device.h>
+#include <linux/types.h>
+
+struct clk;
+
+>>>>>>> v4.9.227
 struct clk *clk_reg_prcc_pclk(const char *name,
 			      const char *parent_name,
 			      resource_size_t phy_base,

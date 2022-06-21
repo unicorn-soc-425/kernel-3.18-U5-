@@ -133,7 +133,10 @@ struct ttm_tt {
  * struct ttm_dma_tt
  *
  * @ttm: Base ttm_tt struct.
+<<<<<<< HEAD
  * @cpu_address: The CPU address of the pages
+=======
+>>>>>>> v4.9.227
  * @dma_address: The DMA (bus) addresses of the pages
  * @pages_list: used by some page allocation backend
  *
@@ -143,7 +146,10 @@ struct ttm_tt {
  */
 struct ttm_dma_tt {
 	struct ttm_tt ttm;
+<<<<<<< HEAD
 	void **cpu_address;
+=======
+>>>>>>> v4.9.227
 	dma_addr_t *dma_address;
 	struct list_head pages_list;
 };
@@ -258,8 +264,15 @@ struct ttm_mem_type_manager_func {
  * reserved by the TTM vm system.
  * @io_reserve_lru: Optional lru list for unreserving io mem regions.
  * @io_reserve_fastpath: Only use bdev::driver::io_mem_reserve to obtain
+<<<<<<< HEAD
  * static information. bdev::driver::io_mem_free is never used.
  * @lru: The lru list for this memory type.
+=======
+ * @move_lock: lock for move fence
+ * static information. bdev::driver::io_mem_free is never used.
+ * @lru: The lru list for this memory type.
+ * @move: The fence of the last pipelined move operation.
+>>>>>>> v4.9.227
  *
  * This structure is used to identify and manage memory types for a device.
  * It's set up by the ttm_bo_driver::init_mem_type method.
@@ -286,6 +299,10 @@ struct ttm_mem_type_manager {
 	struct mutex io_reserve_mutex;
 	bool use_io_reserve_lru;
 	bool io_reserve_fastpath;
+<<<<<<< HEAD
+=======
+	spinlock_t move_lock;
+>>>>>>> v4.9.227
 
 	/*
 	 * Protected by @io_reserve_mutex:
@@ -298,6 +315,14 @@ struct ttm_mem_type_manager {
 	 */
 
 	struct list_head lru;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Protected by @move_lock.
+	 */
+	struct fence *move;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -434,6 +459,21 @@ struct ttm_bo_driver {
 	 */
 	int (*io_mem_reserve)(struct ttm_bo_device *bdev, struct ttm_mem_reg *mem);
 	void (*io_mem_free)(struct ttm_bo_device *bdev, struct ttm_mem_reg *mem);
+<<<<<<< HEAD
+=======
+
+	/**
+	 * Optional driver callback for when BO is removed from the LRU.
+	 * Called with LRU lock held immediately before the removal.
+	 */
+	void (*lru_removal)(struct ttm_buffer_object *bo);
+
+	/**
+	 * Return the list_head after which a BO should be inserted in the LRU.
+	 */
+	struct list_head *(*lru_tail)(struct ttm_buffer_object *bo);
+	struct list_head *(*swap_lru_tail)(struct ttm_buffer_object *bo);
+>>>>>>> v4.9.227
 };
 
 /**
@@ -491,9 +531,12 @@ struct ttm_bo_global {
 
 #define TTM_NUM_MEM_TYPES 8
 
+<<<<<<< HEAD
 #define TTM_BO_PRIV_FLAG_MOVING  0	/* Buffer object is moving and needs
 					   idling before CPU mapping */
 #define TTM_BO_PRIV_FLAG_MAX 1
+=======
+>>>>>>> v4.9.227
 /**
  * struct ttm_bo_device - Buffer object driver device-specific data.
  *
@@ -502,7 +545,10 @@ struct ttm_bo_global {
  * @vma_manager: Address space manager
  * lru_lock: Spinlock that protects the buffer+device lru lists and
  * ddestroy lists.
+<<<<<<< HEAD
  * @val_seq: Current validation sequence.
+=======
+>>>>>>> v4.9.227
  * @dev_mapping: A pointer to the struct address_space representing the
  * device address space.
  * @wq: Work queue structure for the delayed delete workqueue.
@@ -528,7 +574,10 @@ struct ttm_bo_device {
 	 * Protected by the global:lru lock.
 	 */
 	struct list_head ddestroy;
+<<<<<<< HEAD
 	uint32_t val_seq;
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * Protected by load / firstopen / lastclose /unload sync.
@@ -753,14 +802,24 @@ extern void ttm_mem_io_unlock(struct ttm_mem_type_manager *man);
 extern void ttm_bo_del_sub_from_lru(struct ttm_buffer_object *bo);
 extern void ttm_bo_add_to_lru(struct ttm_buffer_object *bo);
 
+<<<<<<< HEAD
+=======
+struct list_head *ttm_bo_default_lru_tail(struct ttm_buffer_object *bo);
+struct list_head *ttm_bo_default_swap_lru_tail(struct ttm_buffer_object *bo);
+
+>>>>>>> v4.9.227
 /**
  * __ttm_bo_reserve:
  *
  * @bo: A pointer to a struct ttm_buffer_object.
  * @interruptible: Sleep interruptible if waiting.
  * @no_wait: Don't sleep while trying to reserve, rather return -EBUSY.
+<<<<<<< HEAD
  * @use_ticket: If @bo is already reserved, Only sleep waiting for
  * it to become unreserved if @ticket->stamp is older.
+=======
+ * @ticket: ticket used to acquire the ww_mutex.
+>>>>>>> v4.9.227
  *
  * Will not remove reserved buffers from the lru lists.
  * Otherwise identical to ttm_bo_reserve.
@@ -776,8 +835,12 @@ extern void ttm_bo_add_to_lru(struct ttm_buffer_object *bo);
  * be returned if @use_ticket is set to true.
  */
 static inline int __ttm_bo_reserve(struct ttm_buffer_object *bo,
+<<<<<<< HEAD
 				   bool interruptible,
 				   bool no_wait, bool use_ticket,
+=======
+				   bool interruptible, bool no_wait,
+>>>>>>> v4.9.227
 				   struct ww_acquire_ctx *ticket)
 {
 	int ret = 0;
@@ -806,8 +869,12 @@ static inline int __ttm_bo_reserve(struct ttm_buffer_object *bo,
  * @bo: A pointer to a struct ttm_buffer_object.
  * @interruptible: Sleep interruptible if waiting.
  * @no_wait: Don't sleep while trying to reserve, rather return -EBUSY.
+<<<<<<< HEAD
  * @use_ticket: If @bo is already reserved, Only sleep waiting for
  * it to become unreserved if @ticket->stamp is older.
+=======
+ * @ticket: ticket used to acquire the ww_mutex.
+>>>>>>> v4.9.227
  *
  * Locks a buffer object for validation. (Or prevents other processes from
  * locking it for validation) and removes it from lru lists, while taking
@@ -826,10 +893,17 @@ static inline int __ttm_bo_reserve(struct ttm_buffer_object *bo,
  * reserved, the validation sequence is checked against the validation
  * sequence of the process currently reserving the buffer,
  * and if the current validation sequence is greater than that of the process
+<<<<<<< HEAD
  * holding the reservation, the function returns -EAGAIN. Otherwise it sleeps
  * waiting for the buffer to become unreserved, after which it retries
  * reserving.
  * The caller should, when receiving an -EAGAIN error
+=======
+ * holding the reservation, the function returns -EDEADLK. Otherwise it sleeps
+ * waiting for the buffer to become unreserved, after which it retries
+ * reserving.
+ * The caller should, when receiving an -EDEADLK error
+>>>>>>> v4.9.227
  * release all its buffer reservations, wait for @bo to become unreserved, and
  * then rerun the validation with the same validation sequence. This procedure
  * will always guarantee that the process with the lowest validation sequence
@@ -846,15 +920,23 @@ static inline int __ttm_bo_reserve(struct ttm_buffer_object *bo,
  * be returned if @use_ticket is set to true.
  */
 static inline int ttm_bo_reserve(struct ttm_buffer_object *bo,
+<<<<<<< HEAD
 				 bool interruptible,
 				 bool no_wait, bool use_ticket,
+=======
+				 bool interruptible, bool no_wait,
+>>>>>>> v4.9.227
 				 struct ww_acquire_ctx *ticket)
 {
 	int ret;
 
 	WARN_ON(!atomic_read(&bo->kref.refcount));
 
+<<<<<<< HEAD
 	ret = __ttm_bo_reserve(bo, interruptible, no_wait, use_ticket, ticket);
+=======
+	ret = __ttm_bo_reserve(bo, interruptible, no_wait, ticket);
+>>>>>>> v4.9.227
 	if (likely(ret == 0))
 		ttm_bo_del_sub_from_lru(bo);
 
@@ -947,7 +1029,11 @@ void ttm_mem_io_free(struct ttm_bo_device *bdev,
  * ttm_bo_move_ttm
  *
  * @bo: A pointer to a struct ttm_buffer_object.
+<<<<<<< HEAD
  * @evict: 1: This is an eviction. Don't try to pipeline.
+=======
+ * @interruptible: Sleep interruptible if waiting.
+>>>>>>> v4.9.227
  * @no_wait_gpu: Return immediately if the GPU is busy.
  * @new_mem: struct ttm_mem_reg indicating where to move.
  *
@@ -962,14 +1048,22 @@ void ttm_mem_io_free(struct ttm_bo_device *bdev,
  */
 
 extern int ttm_bo_move_ttm(struct ttm_buffer_object *bo,
+<<<<<<< HEAD
 			   bool evict, bool no_wait_gpu,
+=======
+			   bool interruptible, bool no_wait_gpu,
+>>>>>>> v4.9.227
 			   struct ttm_mem_reg *new_mem);
 
 /**
  * ttm_bo_move_memcpy
  *
  * @bo: A pointer to a struct ttm_buffer_object.
+<<<<<<< HEAD
  * @evict: 1: This is an eviction. Don't try to pipeline.
+=======
+ * @interruptible: Sleep interruptible if waiting.
+>>>>>>> v4.9.227
  * @no_wait_gpu: Return immediately if the GPU is busy.
  * @new_mem: struct ttm_mem_reg indicating where to move.
  *
@@ -984,7 +1078,11 @@ extern int ttm_bo_move_ttm(struct ttm_buffer_object *bo,
  */
 
 extern int ttm_bo_move_memcpy(struct ttm_buffer_object *bo,
+<<<<<<< HEAD
 			      bool evict, bool no_wait_gpu,
+=======
+			      bool interruptible, bool no_wait_gpu,
+>>>>>>> v4.9.227
 			      struct ttm_mem_reg *new_mem);
 
 /**
@@ -1002,7 +1100,10 @@ extern void ttm_bo_free_old_node(struct ttm_buffer_object *bo);
  * @bo: A pointer to a struct ttm_buffer_object.
  * @fence: A fence object that signals when moving is complete.
  * @evict: This is an evict move. Don't return until the buffer is idle.
+<<<<<<< HEAD
  * @no_wait_gpu: Return immediately if the GPU is busy.
+=======
+>>>>>>> v4.9.227
  * @new_mem: struct ttm_mem_reg indicating where to move.
  *
  * Accelerated move function to be called when an accelerated move
@@ -1014,9 +1115,30 @@ extern void ttm_bo_free_old_node(struct ttm_buffer_object *bo);
  */
 
 extern int ttm_bo_move_accel_cleanup(struct ttm_buffer_object *bo,
+<<<<<<< HEAD
 				     struct fence *fence,
 				     bool evict, bool no_wait_gpu,
 				     struct ttm_mem_reg *new_mem);
+=======
+				     struct fence *fence, bool evict,
+				     struct ttm_mem_reg *new_mem);
+
+/**
+ * ttm_bo_pipeline_move.
+ *
+ * @bo: A pointer to a struct ttm_buffer_object.
+ * @fence: A fence object that signals when moving is complete.
+ * @evict: This is an evict move. Don't return until the buffer is idle.
+ * @new_mem: struct ttm_mem_reg indicating where to move.
+ *
+ * Function for pipelining accelerated moves. Either free the memory
+ * immediately or hang it on a temporary buffer object.
+ */
+int ttm_bo_pipeline_move(struct ttm_buffer_object *bo,
+			 struct fence *fence, bool evict,
+			 struct ttm_mem_reg *new_mem);
+
+>>>>>>> v4.9.227
 /**
  * ttm_io_prot
  *
@@ -1030,8 +1152,12 @@ extern pgprot_t ttm_io_prot(uint32_t caching_flags, pgprot_t tmp);
 
 extern const struct ttm_mem_type_manager_func ttm_bo_manager_func;
 
+<<<<<<< HEAD
 #if (defined(CONFIG_AGP) || (defined(CONFIG_AGP_MODULE) && defined(MODULE)))
 #define TTM_HAS_AGP
+=======
+#if IS_ENABLED(CONFIG_AGP)
+>>>>>>> v4.9.227
 #include <linux/agp_backend.h>
 
 /**

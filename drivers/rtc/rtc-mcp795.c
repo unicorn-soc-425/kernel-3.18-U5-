@@ -20,6 +20,10 @@
 #include <linux/printk.h>
 #include <linux/spi/spi.h>
 #include <linux/rtc.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> v4.9.227
 
 /* MCP795 Instructions, see datasheet table 3-1 */
 #define MCP795_EEREAD	0x03
@@ -150,7 +154,11 @@ static int mcp795_read_time(struct device *dev, struct rtc_time *tim)
 	return rtc_valid_tm(tim);
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops mcp795_rtc_ops = {
+=======
+static const struct rtc_class_ops mcp795_rtc_ops = {
+>>>>>>> v4.9.227
 		.read_time = mcp795_read_time,
 		.set_time = mcp795_set_time
 };
@@ -183,10 +191,25 @@ static int mcp795_probe(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct spi_driver mcp795_driver = {
 		.driver = {
 				.name = "rtc-mcp795",
 				.owner = THIS_MODULE,
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id mcp795_of_match[] = {
+	{ .compatible = "maxim,mcp795" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, mcp795_of_match);
+#endif
+
+static struct spi_driver mcp795_driver = {
+		.driver = {
+				.name = "rtc-mcp795",
+				.of_match_table = of_match_ptr(mcp795_of_match),
+>>>>>>> v4.9.227
 		},
 		.probe = mcp795_probe,
 };

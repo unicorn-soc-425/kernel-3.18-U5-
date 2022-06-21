@@ -25,7 +25,11 @@
 #include <asm/exception-64s.h>
 
 #if defined(CONFIG_PPC_BOOK3S_64)
+<<<<<<< HEAD
 #if defined(_CALL_ELF) && _CALL_ELF == 2
+=======
+#ifdef PPC64_ELF_ABI_v2
+>>>>>>> v4.9.227
 #define FUNC(name) 		name
 #else
 #define FUNC(name) 		GLUE(.,name)

@@ -230,6 +230,7 @@ static struct miscdevice bfin_otp_misc_device = {
 	.name     = DRIVER_NAME,
 	.fops     = &bfin_otp_fops,
 };
+<<<<<<< HEAD
 
 /**
  *	bfin_otp_init - Initialize module
@@ -269,6 +270,9 @@ static void __exit bfin_otp_exit(void)
 
 module_init(bfin_otp_init);
 module_exit(bfin_otp_exit);
+=======
+module_misc_device(bfin_otp_misc_device);
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("Mike Frysinger <vapier@gentoo.org>");
 MODULE_DESCRIPTION("Blackfin OTP Memory Interface");

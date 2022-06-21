@@ -9,15 +9,25 @@ config ADIS16201
 	select IIO_ADIS_LIB
 	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
 	help
+<<<<<<< HEAD
 	  Say yes here to build support for Analog Devices adis16201 dual-axis
 	  digital inclinometer and accelerometer.
 
+=======
+	  Say Y here to build support for Analog Devices adis16201 dual-axis
+	  digital inclinometer and accelerometer.
+
+	  To compile this driver as a module, say M here: the module will
+	  be called adis16201.
+
+>>>>>>> v4.9.227
 config ADIS16203
 	tristate "Analog Devices ADIS16203 Programmable 360 Degrees Inclinometer"
 	depends on SPI
 	select IIO_ADIS_LIB
 	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
 	help
+<<<<<<< HEAD
 	  Say yes here to build support for Analog Devices adis16203 Programmable
 	  360 Degrees Inclinometer.
 
@@ -29,6 +39,13 @@ config ADIS16204
 	help
 	  Say yes here to build support for Analog Devices adis16204 Programmable
 	  High-g Digital Impact Sensor and Recorder.
+=======
+	  Say Y here to build support for Analog Devices adis16203 Programmable
+	  360 Degrees Inclinometer.
+
+	  To compile this driver as a module, say M here: the module will be
+	  called adis16203.
+>>>>>>> v4.9.227
 
 config ADIS16209
 	tristate "Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer"
@@ -36,6 +53,7 @@ config ADIS16209
 	select IIO_ADIS_LIB
 	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
 	help
+<<<<<<< HEAD
 	  Say yes here to build support for Analog Devices adis16209 dual-axis digital inclinometer
 	  and accelerometer.
 
@@ -46,6 +64,13 @@ config ADIS16220
 	help
 	  Say yes here to build support for Analog Devices adis16220 programmable
 	  digital vibration sensor.
+=======
+	  Say Y here to build support for Analog Devices adis16209 dual-axis digital inclinometer
+	  and accelerometer.
+
+	  To compile this driver as a module, say M here: the module will be
+	  called adis16209.
+>>>>>>> v4.9.227
 
 config ADIS16240
 	tristate "Analog Devices ADIS16240 Programmable Impact Sensor and Recorder"
@@ -53,6 +78,7 @@ config ADIS16240
 	select IIO_ADIS_LIB
 	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
 	help
+<<<<<<< HEAD
 	  Say yes here to build support for Analog Devices adis16240 programmable
 	  impact Sensor and recorder.
 
@@ -66,13 +92,28 @@ config LIS3L02DQ
 	  Say yes here to build SPI support for the ST microelectronics
 	  accelerometer. The driver supplies direct access via sysfs files
 	  and an event interface via a character device.
+=======
+	  Say Y here to build support for Analog Devices adis16240 programmable
+	  impact Sensor and recorder.
+
+	  To compile this driver as a module, say M here: the module will be
+	  called adis16240.
+>>>>>>> v4.9.227
 
 config SCA3000
 	depends on IIO_BUFFER
 	depends on SPI
 	tristate "VTI SCA3000 series accelerometers"
 	help
+<<<<<<< HEAD
 	  Say yes here to build support for the VTI SCA3000 series of SPI
 	  accelerometers. These devices use a hardware ring buffer.
 
+=======
+	  Say Y here to build support for the VTI SCA3000 series of SPI
+	  accelerometers. These devices use a hardware ring buffer.
+
+	  To compile this driver as a module, say M here: the module will be
+	  called sca3000.
+>>>>>>> v4.9.227
 endmenu

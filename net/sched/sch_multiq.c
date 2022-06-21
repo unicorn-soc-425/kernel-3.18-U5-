@@ -46,7 +46,11 @@ multiq_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
 	int err;
 
 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+<<<<<<< HEAD
 	err = tc_classify(skb, fl, &res);
+=======
+	err = tc_classify(skb, fl, &res, false);
+>>>>>>> v4.9.227
 #ifdef CONFIG_NET_CLS_ACT
 	switch (err) {
 	case TC_ACT_STOLEN:
@@ -65,7 +69,12 @@ multiq_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
 }
 
 static int
+<<<<<<< HEAD
 multiq_enqueue(struct sk_buff *skb, struct Qdisc *sch)
+=======
+multiq_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+	       struct sk_buff **to_free)
+>>>>>>> v4.9.227
 {
 	struct Qdisc *qdisc;
 	int ret;
@@ -76,12 +85,20 @@ multiq_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 
 		if (ret & __NET_XMIT_BYPASS)
 			qdisc_qstats_drop(sch);
+<<<<<<< HEAD
 		kfree_skb(skb);
+=======
+		__qdisc_drop(skb, to_free);
+>>>>>>> v4.9.227
 		return ret;
 	}
 #endif
 
+<<<<<<< HEAD
 	ret = qdisc_enqueue(skb, qdisc);
+=======
+	ret = qdisc_enqueue(skb, qdisc, to_free);
+>>>>>>> v4.9.227
 	if (ret == NET_XMIT_SUCCESS) {
 		sch->q.qlen++;
 		return NET_XMIT_SUCCESS;
@@ -151,6 +168,7 @@ static struct sk_buff *multiq_peek(struct Qdisc *sch)
 
 }
 
+<<<<<<< HEAD
 static unsigned int multiq_drop(struct Qdisc *sch)
 {
 	struct multiq_sched_data *q = qdisc_priv(sch);
@@ -172,6 +190,8 @@ static unsigned int multiq_drop(struct Qdisc *sch)
 }
 
 
+=======
+>>>>>>> v4.9.227
 static void
 multiq_reset(struct Qdisc *sch)
 {
@@ -254,7 +274,11 @@ static int multiq_tune(struct Qdisc *sch, struct nlattr *opt)
 static int multiq_init(struct Qdisc *sch, struct nlattr *opt)
 {
 	struct multiq_sched_data *q = qdisc_priv(sch);
+<<<<<<< HEAD
 	int i, err;
+=======
+	int i;
+>>>>>>> v4.9.227
 
 	q->queues = NULL;
 
@@ -269,12 +293,16 @@ static int multiq_init(struct Qdisc *sch, struct nlattr *opt)
 	for (i = 0; i < q->max_bands; i++)
 		q->queues[i] = &noop_qdisc;
 
+<<<<<<< HEAD
 	err = multiq_tune(sch, opt);
 
 	if (err)
 		kfree(q->queues);
 
 	return err;
+=======
+	return multiq_tune(sch, opt);
+>>>>>>> v4.9.227
 }
 
 static int multiq_dump(struct Qdisc *sch, struct sk_buff *skb)
@@ -356,7 +384,12 @@ static int multiq_dump_class_stats(struct Qdisc *sch, unsigned long cl,
 	struct Qdisc *cl_q;
 
 	cl_q = q->queues[cl - 1];
+<<<<<<< HEAD
 	if (gnet_stats_copy_basic(d, NULL, &cl_q->bstats) < 0 ||
+=======
+	if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch),
+				  d, cl_q->cpu_bstats, &cl_q->bstats) < 0 ||
+>>>>>>> v4.9.227
 	    gnet_stats_copy_queue(d, NULL, &cl_q->qstats, cl_q->q.qlen) < 0)
 		return -1;
 
@@ -415,7 +448,10 @@ static struct Qdisc_ops multiq_qdisc_ops __read_mostly = {
 	.enqueue	=	multiq_enqueue,
 	.dequeue	=	multiq_dequeue,
 	.peek		=	multiq_peek,
+<<<<<<< HEAD
 	.drop		=	multiq_drop,
+=======
+>>>>>>> v4.9.227
 	.init		=	multiq_init,
 	.reset		=	multiq_reset,
 	.destroy	=	multiq_destroy,

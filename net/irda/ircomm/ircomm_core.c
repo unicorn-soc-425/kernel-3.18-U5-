@@ -69,7 +69,12 @@ static int __init ircomm_init(void)
 {
 	ircomm = hashbin_new(HB_LOCK);
 	if (ircomm == NULL) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s(), can't allocate hashbin!\n", __func__);
+=======
+		net_err_ratelimited("%s(), can't allocate hashbin!\n",
+				    __func__);
+>>>>>>> v4.9.227
 		return -ENOMEM;
 	}
 
@@ -83,15 +88,22 @@ static int __init ircomm_init(void)
 	}
 #endif /* CONFIG_PROC_FS */
 
+<<<<<<< HEAD
 	IRDA_MESSAGE("IrCOMM protocol (Dag Brattli)\n");
+=======
+	net_info_ratelimited("IrCOMM protocol (Dag Brattli)\n");
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static void __exit ircomm_cleanup(void)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	hashbin_delete(ircomm, (FREE_FUNC) __ircomm_close);
 
 #ifdef CONFIG_PROC_FS
@@ -110,8 +122,13 @@ struct ircomm_cb *ircomm_open(notify_t *notify, __u8 service_type, int line)
 	struct ircomm_cb *self = NULL;
 	int ret;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), service_type=0x%02x\n", __func__ ,
 		   service_type);
+=======
+	pr_debug("%s(), service_type=0x%02x\n", __func__ ,
+		 service_type);
+>>>>>>> v4.9.227
 
 	IRDA_ASSERT(ircomm != NULL, return NULL;);
 
@@ -154,8 +171,11 @@ EXPORT_SYMBOL(ircomm_open);
  */
 static int __ircomm_close(struct ircomm_cb *self)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	/* Disconnect link if any */
 	ircomm_do_event(self, IRCOMM_DISCONNECT_REQUEST, NULL, NULL);
 
@@ -190,8 +210,11 @@ int ircomm_close(struct ircomm_cb *self)
 	IRDA_ASSERT(self != NULL, return -EIO;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return -EIO;);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	entry = hashbin_remove(ircomm, self->line, NULL);
 
 	IRDA_ASSERT(entry == self, return -1;);
@@ -215,8 +238,11 @@ int ircomm_connect_request(struct ircomm_cb *self, __u8 dlsap_sel,
 	struct ircomm_info info;
 	int ret;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2 , "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	IRDA_ASSERT(self != NULL, return -1;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return -1;);
 
@@ -242,8 +268,11 @@ EXPORT_SYMBOL(ircomm_connect_request);
 void ircomm_connect_indication(struct ircomm_cb *self, struct sk_buff *skb,
 			       struct ircomm_info *info)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * If there are any data hiding in the control channel, we must
 	 * deliver it first. The side effect is that the control channel
@@ -254,7 +283,11 @@ void ircomm_connect_indication(struct ircomm_cb *self, struct sk_buff *skb,
 						info->qos, info->max_data_size,
 						info->max_header_size, skb);
 	else {
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%s(), missing handler\n", __func__ );
+=======
+		pr_debug("%s(), missing handler\n", __func__);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -271,8 +304,11 @@ int ircomm_connect_response(struct ircomm_cb *self, struct sk_buff *userdata)
 	IRDA_ASSERT(self != NULL, return -1;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return -1;);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	ret = ircomm_do_event(self, IRCOMM_CONNECT_RESPONSE, userdata, NULL);
 
 	return ret;
@@ -289,15 +325,22 @@ EXPORT_SYMBOL(ircomm_connect_response);
 void ircomm_connect_confirm(struct ircomm_cb *self, struct sk_buff *skb,
 			    struct ircomm_info *info)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	if (self->notify.connect_confirm )
 		self->notify.connect_confirm(self->notify.instance,
 					     self, info->qos,
 					     info->max_data_size,
 					     info->max_header_size, skb);
 	else {
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%s(), missing handler\n", __func__ );
+=======
+		pr_debug("%s(), missing handler\n", __func__);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -311,8 +354,11 @@ int ircomm_data_request(struct ircomm_cb *self, struct sk_buff *skb)
 {
 	int ret;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	IRDA_ASSERT(self != NULL, return -EFAULT;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return -EFAULT;);
 	IRDA_ASSERT(skb != NULL, return -EFAULT;);
@@ -332,14 +378,21 @@ EXPORT_SYMBOL(ircomm_data_request);
  */
 void ircomm_data_indication(struct ircomm_cb *self, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	IRDA_ASSERT(skb->len > 0, return;);
 
 	if (self->notify.data_indication)
 		self->notify.data_indication(self->notify.instance, self, skb);
 	else {
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%s(), missing handler\n", __func__ );
+=======
+		pr_debug("%s(), missing handler\n", __func__);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -364,8 +417,13 @@ void ircomm_process_data(struct ircomm_cb *self, struct sk_buff *skb)
 	 * fine
 	 */
 	if (unlikely(skb->len < (clen + 1))) {
+<<<<<<< HEAD
 		IRDA_DEBUG(2, "%s() throwing away illegal frame\n",
 			   __func__ );
+=======
+		pr_debug("%s() throwing away illegal frame\n",
+			 __func__);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -383,8 +441,13 @@ void ircomm_process_data(struct ircomm_cb *self, struct sk_buff *skb)
 	if (skb->len)
 		ircomm_data_indication(self, skb);
 	else {
+<<<<<<< HEAD
 		IRDA_DEBUG(4, "%s(), data was control info only!\n",
 			   __func__ );
+=======
+		pr_debug("%s(), data was control info only!\n",
+			 __func__);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -398,8 +461,11 @@ int ircomm_control_request(struct ircomm_cb *self, struct sk_buff *skb)
 {
 	int ret;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	IRDA_ASSERT(self != NULL, return -EFAULT;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return -EFAULT;);
 	IRDA_ASSERT(skb != NULL, return -EFAULT;);
@@ -420,8 +486,11 @@ EXPORT_SYMBOL(ircomm_control_request);
 static void ircomm_control_indication(struct ircomm_cb *self,
 				      struct sk_buff *skb, int clen)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	/* Use udata for delivering data on the control channel */
 	if (self->notify.udata_indication) {
 		struct sk_buff *ctrl_skb;
@@ -441,7 +510,11 @@ static void ircomm_control_indication(struct ircomm_cb *self,
 		 * see ircomm_tty_control_indication(). */
 		dev_kfree_skb(ctrl_skb);
 	} else {
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%s(), missing handler\n", __func__ );
+=======
+		pr_debug("%s(), missing handler\n", __func__);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -456,8 +529,11 @@ int ircomm_disconnect_request(struct ircomm_cb *self, struct sk_buff *userdata)
 	struct ircomm_info info;
 	int ret;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	IRDA_ASSERT(self != NULL, return -1;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return -1;);
 
@@ -477,15 +553,22 @@ EXPORT_SYMBOL(ircomm_disconnect_request);
 void ircomm_disconnect_indication(struct ircomm_cb *self, struct sk_buff *skb,
 				  struct ircomm_info *info)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	IRDA_ASSERT(info != NULL, return;);
 
 	if (self->notify.disconnect_indication) {
 		self->notify.disconnect_indication(self->notify.instance, self,
 						   info->reason, skb);
 	} else {
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%s(), missing handler\n", __func__ );
+=======
+		pr_debug("%s(), missing handler\n", __func__);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -497,8 +580,11 @@ void ircomm_disconnect_indication(struct ircomm_cb *self, struct sk_buff *skb,
  */
 void ircomm_flow_request(struct ircomm_cb *self, LOCAL_FLOW flow)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> v4.9.227
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return;);
 

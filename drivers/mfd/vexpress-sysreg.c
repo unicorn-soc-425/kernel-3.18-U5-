@@ -11,7 +11,11 @@
  * Copyright (C) 2012 ARM Limited
  */
 
+<<<<<<< HEAD
 #include <linux/basic_mmio_gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/mfd/core.h>
@@ -47,6 +51,7 @@
 #define SYS_HBI_MASK		0xfff
 #define SYS_PROCIDx_HBI_SHIFT	0
 
+<<<<<<< HEAD
 #define SYS_MCI_CARDIN		(1 << 0)
 #define SYS_MCI_WPROT		(1 << 1)
 
@@ -112,6 +117,28 @@ void __init vexpress_sysreg_early_init(void __iomem *base)
 }
 
 
+=======
+#define SYS_MISC_MASTERSITE	(1 << 14)
+
+void vexpress_flags_set(u32 data)
+{
+	static void __iomem *base;
+
+	if (!base) {
+		struct device_node *node = of_find_compatible_node(NULL, NULL,
+				"arm,vexpress-sysreg");
+
+		base = of_iomap(node, 0);
+	}
+
+	if (WARN_ON(!base))
+		return;
+
+	writel(~0, base + SYS_FLAGSCLR);
+	writel(data, base + SYS_FLAGSSET);
+}
+
+>>>>>>> v4.9.227
 /* The sysreg block is just a random collection of various functions... */
 
 static struct syscon_platform_data vexpress_sysreg_sys_id_pdata = {
@@ -209,7 +236,12 @@ static int vexpress_sysreg_probe(struct platform_device *pdev)
 {
 	struct resource *mem;
 	void __iomem *base;
+<<<<<<< HEAD
 	struct bgpio_chip *mmc_gpio_chip;
+=======
+	struct gpio_chip *mmc_gpio_chip;
+	int master;
+>>>>>>> v4.9.227
 	u32 dt_hbi;
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -220,11 +252,22 @@ static int vexpress_sysreg_probe(struct platform_device *pdev)
 	if (!base)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	vexpress_config_set_master(vexpress_sysreg_get_master());
 
 	/* Confirm board type against DT property, if available */
 	if (of_property_read_u32(of_root, "arm,hbi", &dt_hbi) == 0) {
 		u32 id = vexpress_get_procid(VEXPRESS_SITE_MASTER);
+=======
+	master = readl(base + SYS_MISC) & SYS_MISC_MASTERSITE ?
+			VEXPRESS_SITE_DB2 : VEXPRESS_SITE_DB1;
+	vexpress_config_set_master(master);
+
+	/* Confirm board type against DT property, if available */
+	if (of_property_read_u32(of_root, "arm,hbi", &dt_hbi) == 0) {
+		u32 id = readl(base + (master == VEXPRESS_SITE_DB1 ?
+				 SYS_PROCID0 : SYS_PROCID1));
+>>>>>>> v4.9.227
 		u32 hbi = (id >> SYS_PROCIDx_HBI_SHIFT) & SYS_HBI_MASK;
 
 		if (WARN_ON(dt_hbi != hbi))
@@ -242,8 +285,13 @@ static int vexpress_sysreg_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	bgpio_init(mmc_gpio_chip, &pdev->dev, 0x4, base + SYS_MCI,
 			NULL, NULL, NULL, NULL, 0);
+<<<<<<< HEAD
 	mmc_gpio_chip->gc.ngpio = 2;
 	gpiochip_add(&mmc_gpio_chip->gc);
+=======
+	mmc_gpio_chip->ngpio = 2;
+	gpiochip_add_data(mmc_gpio_chip, NULL);
+>>>>>>> v4.9.227
 
 	return mfd_add_devices(&pdev->dev, PLATFORM_DEVID_AUTO,
 			vexpress_sysreg_cells,

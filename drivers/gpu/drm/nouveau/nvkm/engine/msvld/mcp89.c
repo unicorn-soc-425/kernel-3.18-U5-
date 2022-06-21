@@ -27,7 +27,10 @@
 
 static const struct nvkm_falcon_func
 mcp89_msvld = {
+<<<<<<< HEAD
 	.pmc_enable = 0x04008000,
+=======
+>>>>>>> v4.9.227
 	.init = g98_msvld_init,
 	.sclass = {
 		{ -1, -1, IGT21A_MSVLD },

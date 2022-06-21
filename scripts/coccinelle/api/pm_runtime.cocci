@@ -1,5 +1,9 @@
 /// Make sure pm_runtime_* calls does not use unnecessary IS_ERR_VALUE
+<<<<<<< HEAD
 //
+=======
+///
+>>>>>>> v4.9.227
 // Keywords: pm_runtime
 // Confidence: Medium
 // Copyright (C) 2013 Texas Instruments Incorporated - GPLv2.
@@ -17,9 +21,16 @@ virtual report
 
 @runtime_bad_err_handle exists@
 expression ret;
+<<<<<<< HEAD
 @@
 (
 ret = \(pm_runtime_idle\|
+=======
+position p;
+@@
+(
+ret@p = \(pm_runtime_idle\|
+>>>>>>> v4.9.227
 	pm_runtime_suspend\|
 	pm_runtime_autosuspend\|
 	pm_runtime_resume\|
@@ -47,12 +58,22 @@ IS_ERR_VALUE(ret)
 //  For context mode
 //----------------------------------------------------------
 
+<<<<<<< HEAD
 @depends on runtime_bad_err_handle && context@
 identifier pm_runtime_api;
 expression ret;
 @@
 (
 ret = pm_runtime_api(...);
+=======
+@depends on context@
+identifier pm_runtime_api;
+expression ret;
+position runtime_bad_err_handle.p;
+@@
+(
+ret@p = pm_runtime_api(...);
+>>>>>>> v4.9.227
 ...
 * IS_ERR_VALUE(ret)
 ...
@@ -62,12 +83,22 @@ ret = pm_runtime_api(...);
 //  For patch mode
 //----------------------------------------------------------
 
+<<<<<<< HEAD
 @depends on runtime_bad_err_handle && patch@
 identifier pm_runtime_api;
 expression ret;
 @@
 (
 ret = pm_runtime_api(...);
+=======
+@depends on patch@
+identifier pm_runtime_api;
+expression ret;
+position runtime_bad_err_handle.p;
+@@
+(
+ret@p = pm_runtime_api(...);
+>>>>>>> v4.9.227
 ...
 - IS_ERR_VALUE(ret)
 + ret < 0
@@ -78,6 +109,7 @@ ret = pm_runtime_api(...);
 //  For org and report mode
 //----------------------------------------------------------
 
+<<<<<<< HEAD
 @r depends on runtime_bad_err_handle exists@
 position p1, p2;
 identifier pm_runtime_api;
@@ -85,6 +117,16 @@ expression ret;
 @@
 (
 ret = pm_runtime_api@p1(...);
+=======
+@r depends on (org || report) exists@
+position p1, p2;
+identifier pm_runtime_api;
+expression ret;
+position runtime_bad_err_handle.p;
+@@
+(
+ret@p = pm_runtime_api@p1(...);
+>>>>>>> v4.9.227
 ...
 IS_ERR_VALUE@p2(ret)
 ...

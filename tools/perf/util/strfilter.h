@@ -29,6 +29,35 @@ struct strfilter {
 struct strfilter *strfilter__new(const char *rules, const char **err);
 
 /**
+<<<<<<< HEAD
+=======
+ * strfilter__or - Append an additional rule by logical-or
+ * @filter: Original string filter
+ * @rules: Filter rule to be appended at left of the root of
+ *         @filter by using logical-or.
+ * @err: Pointer which points an error detected on @rules
+ *
+ * Parse @rules and join it to the @filter by using logical-or.
+ * Return 0 if success, or return the error code.
+ */
+int strfilter__or(struct strfilter *filter,
+		  const char *rules, const char **err);
+
+/**
+ * strfilter__add - Append an additional rule by logical-and
+ * @filter: Original string filter
+ * @rules: Filter rule to be appended at left of the root of
+ *         @filter by using logical-and.
+ * @err: Pointer which points an error detected on @rules
+ *
+ * Parse @rules and join it to the @filter by using logical-and.
+ * Return 0 if success, or return the error code.
+ */
+int strfilter__and(struct strfilter *filter,
+		   const char *rules, const char **err);
+
+/**
+>>>>>>> v4.9.227
  * strfilter__compare - compare given string and a string filter
  * @filter: String filter
  * @str: target string
@@ -45,4 +74,16 @@ bool strfilter__compare(struct strfilter *filter, const char *str);
  */
 void strfilter__delete(struct strfilter *filter);
 
+<<<<<<< HEAD
+=======
+/**
+ * strfilter__string - Reconstruct a rule string from filter
+ * @filter: String filter to reconstruct
+ *
+ * Reconstruct a rule string from @filter. This will be good for
+ * debug messages. Note that returning string must be freed afterward.
+ */
+char *strfilter__string(struct strfilter *filter);
+
+>>>>>>> v4.9.227
 #endif

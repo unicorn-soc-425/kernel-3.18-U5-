@@ -32,8 +32,13 @@ enum pamu_stash_target {
  */
 
 struct pamu_stash_attribute {
+<<<<<<< HEAD
 	u32 	cpu;	/* cpu number */
 	u32 	cache;	/* cache to stash to: L1,L2,L3 */
+=======
+	u32	cpu;	/* cpu number */
+	u32	cache;	/* cache to stash to: L1,L2,L3 */
+>>>>>>> v4.9.227
 };
 
 #endif  /* __FSL_PAMU_STASH_H */

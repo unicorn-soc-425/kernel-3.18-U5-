@@ -546,7 +546,11 @@ static int svc_addparty(struct socket *sock, struct sockaddr *sockaddr,
 		schedule();
 	}
 	finish_wait(sk_sleep(sk), &wait);
+<<<<<<< HEAD
 	error = xchg(&sk->sk_err_soft, 0);
+=======
+	error = -xchg(&sk->sk_err_soft, 0);
+>>>>>>> v4.9.227
 out:
 	release_sock(sk);
 	return error;
@@ -573,7 +577,11 @@ static int svc_dropparty(struct socket *sock, int ep_ref)
 		error = -EUNATCH;
 		goto out;
 	}
+<<<<<<< HEAD
 	error = xchg(&sk->sk_err_soft, 0);
+=======
+	error = -xchg(&sk->sk_err_soft, 0);
+>>>>>>> v4.9.227
 out:
 	release_sock(sk);
 	return error;
@@ -660,7 +668,11 @@ static int svc_create(struct net *net, struct socket *sock, int protocol,
 		return -EAFNOSUPPORT;
 
 	sock->ops = &svc_proto_ops;
+<<<<<<< HEAD
 	error = vcc_create(net, sock, protocol, AF_ATMSVC);
+=======
+	error = vcc_create(net, sock, protocol, AF_ATMSVC, kern);
+>>>>>>> v4.9.227
 	if (error)
 		return error;
 	ATM_SD(sock)->local.sas_family = AF_ATMSVC;

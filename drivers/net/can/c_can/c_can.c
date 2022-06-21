@@ -35,6 +35,10 @@
 #include <linux/list.h>
 #include <linux/io.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
+=======
+#include <linux/pinctrl/consumer.h>
+>>>>>>> v4.9.227
 
 #include <linux/can.h>
 #include <linux/can/dev.h>
@@ -51,6 +55,10 @@
 #define CONTROL_EX_PDR		BIT(8)
 
 /* control register */
+<<<<<<< HEAD
+=======
+#define CONTROL_SWR		BIT(15)
+>>>>>>> v4.9.227
 #define CONTROL_TEST		BIT(7)
 #define CONTROL_CCE		BIT(6)
 #define CONTROL_DISABLE_AR	BIT(5)
@@ -96,6 +104,12 @@
 #define BTR_TSEG2_SHIFT		12
 #define BTR_TSEG2_MASK		(0x7 << BTR_TSEG2_SHIFT)
 
+<<<<<<< HEAD
+=======
+/* interrupt register */
+#define INT_STS_PENDING		0x8000
+
+>>>>>>> v4.9.227
 /* brp extension register */
 #define BRP_EXT_BRPE_MASK	0x0f
 #define BRP_EXT_BRPE_SHIFT	0
@@ -568,6 +582,29 @@ static void c_can_configure_msg_objects(struct net_device *dev)
 				   IF_MCONT_RCV_EOB);
 }
 
+<<<<<<< HEAD
+=======
+static int c_can_software_reset(struct net_device *dev)
+{
+	struct c_can_priv *priv = netdev_priv(dev);
+	int retry = 0;
+
+	if (priv->type != BOSCH_D_CAN)
+		return 0;
+
+	priv->write_reg(priv, C_CAN_CTRL_REG, CONTROL_SWR | CONTROL_INIT);
+	while (priv->read_reg(priv, C_CAN_CTRL_REG) & CONTROL_SWR) {
+		msleep(20);
+		if (retry++ > 100) {
+			netdev_err(dev, "CCTRL: software reset failed\n");
+			return -EIO;
+		}
+	}
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 /*
  * Configure C_CAN chip:
  * - enable/disable auto-retransmission
@@ -577,6 +614,14 @@ static void c_can_configure_msg_objects(struct net_device *dev)
 static int c_can_chip_config(struct net_device *dev)
 {
 	struct c_can_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+	int err;
+
+	err = c_can_software_reset(dev);
+	if (err)
+		return err;
+>>>>>>> v4.9.227
 
 	/* enable automatic retransmission */
 	priv->write_reg(priv, C_CAN_CTRL_REG, CONTROL_ENABLE_AR);
@@ -615,6 +660,10 @@ static int c_can_start(struct net_device *dev)
 {
 	struct c_can_priv *priv = netdev_priv(dev);
 	int err;
+<<<<<<< HEAD
+=======
+	struct pinctrl *p;
+>>>>>>> v4.9.227
 
 	/* basic c_can configuration */
 	err = c_can_chip_config(dev);
@@ -627,6 +676,16 @@ static int c_can_start(struct net_device *dev)
 
 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
 
+<<<<<<< HEAD
+=======
+	/* Attempt to use "active" if available else use "default" */
+	p = pinctrl_get_select(priv->device, "active");
+	if (!IS_ERR(p))
+		pinctrl_put(p);
+	else
+		pinctrl_pm_select_default_state(priv->device);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -639,6 +698,11 @@ static void c_can_stop(struct net_device *dev)
 	/* put ctrl to init on stop to end ongoing transmission */
 	priv->write_reg(priv, C_CAN_CTRL_REG, CONTROL_INIT);
 
+<<<<<<< HEAD
+=======
+	/* deactivate pins */
+	pinctrl_pm_select_sleep_state(dev->dev.parent);
+>>>>>>> v4.9.227
 	priv->can.state = CAN_STATE_STOPPED;
 }
 
@@ -888,7 +952,11 @@ static int c_can_handle_state_change(struct net_device *dev,
 	case C_CAN_BUS_OFF:
 		/* bus-off state */
 		priv->can.state = CAN_STATE_BUS_OFF;
+<<<<<<< HEAD
 		can_bus_off(dev);
+=======
+		priv->can.can_stats.bus_off++;
+>>>>>>> v4.9.227
 		break;
 	default:
 		break;
@@ -975,7 +1043,10 @@ static int c_can_handle_bus_err(struct net_device *dev,
 	 * type of the last error to occur on the CAN bus
 	 */
 	cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
+<<<<<<< HEAD
 	cf->data[2] |= CAN_ERR_PROT_UNSPEC;
+=======
+>>>>>>> v4.9.227
 
 	switch (lec_type) {
 	case LEC_STUFF_ERROR:
@@ -988,8 +1059,12 @@ static int c_can_handle_bus_err(struct net_device *dev,
 		break;
 	case LEC_ACK_ERROR:
 		netdev_dbg(dev, "ack error\n");
+<<<<<<< HEAD
 		cf->data[3] |= (CAN_ERR_PROT_LOC_ACK |
 				CAN_ERR_PROT_LOC_ACK_DEL);
+=======
+		cf->data[3] = CAN_ERR_PROT_LOC_ACK;
+>>>>>>> v4.9.227
 		break;
 	case LEC_BIT1_ERROR:
 		netdev_dbg(dev, "bit1 error\n");
@@ -1001,8 +1076,12 @@ static int c_can_handle_bus_err(struct net_device *dev,
 		break;
 	case LEC_CRC_ERROR:
 		netdev_dbg(dev, "CRC error\n");
+<<<<<<< HEAD
 		cf->data[3] |= (CAN_ERR_PROT_LOC_CRC_SEQ |
 				CAN_ERR_PROT_LOC_CRC_DEL);
+=======
+		cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
+>>>>>>> v4.9.227
 		break;
 	default:
 		break;
@@ -1021,10 +1100,23 @@ static int c_can_poll(struct napi_struct *napi, int quota)
 	u16 curr, last = priv->last_status;
 	int work_done = 0;
 
+<<<<<<< HEAD
 	priv->last_status = curr = priv->read_reg(priv, C_CAN_STS_REG);
 	/* Ack status on C_CAN. D_CAN is self clearing */
 	if (priv->type != BOSCH_D_CAN)
 		priv->write_reg(priv, C_CAN_STS_REG, LEC_UNUSED);
+=======
+	/* Only read the status register if a status interrupt was pending */
+	if (atomic_xchg(&priv->sie_pending, 0)) {
+		priv->last_status = curr = priv->read_reg(priv, C_CAN_STS_REG);
+		/* Ack status on C_CAN. D_CAN is self clearing */
+		if (priv->type != BOSCH_D_CAN)
+			priv->write_reg(priv, C_CAN_STS_REG, LEC_UNUSED);
+	} else {
+		/* no change detected ... */
+		curr = last;
+	}
+>>>>>>> v4.9.227
 
 	/* handle state changes */
 	if ((curr & STATUS_EWARN) && (!(last & STATUS_EWARN))) {
@@ -1075,10 +1167,23 @@ static irqreturn_t c_can_isr(int irq, void *dev_id)
 {
 	struct net_device *dev = (struct net_device *)dev_id;
 	struct c_can_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 
 	if (!priv->read_reg(priv, C_CAN_INT_REG))
 		return IRQ_NONE;
 
+=======
+	int reg_int;
+
+	reg_int = priv->read_reg(priv, C_CAN_INT_REG);
+	if (!reg_int)
+		return IRQ_NONE;
+
+	/* save for later use */
+	if (reg_int & INT_STS_PENDING)
+		atomic_set(&priv->sie_pending, 1);
+
+>>>>>>> v4.9.227
 	/* disable all interrupts and schedule the NAPI */
 	c_can_irq_control(priv, false);
 	napi_schedule(&priv->napi);
@@ -1272,6 +1377,16 @@ int register_c_can_dev(struct net_device *dev)
 	struct c_can_priv *priv = netdev_priv(dev);
 	int err;
 
+<<<<<<< HEAD
+=======
+	/* Deactivate pins to prevent DRA7 DCAN IP from being
+	 * stuck in transition when module is disabled.
+	 * Pins are activated in c_can_start() and deactivated
+	 * in c_can_stop()
+	 */
+	pinctrl_pm_select_sleep_state(dev->dev.parent);
+
+>>>>>>> v4.9.227
 	c_can_pm_runtime_enable(priv);
 
 	dev->flags |= IFF_ECHO;	/* we support local echo */

@@ -18,6 +18,10 @@
 #include <linux/rtc.h>
 #include <linux/spi/spi.h>
 #include <linux/bcd.h>
+<<<<<<< HEAD
+=======
+#include <linux/regmap.h>
+>>>>>>> v4.9.227
 
 /* Registers in ds1347 rtc */
 
@@ -32,6 +36,7 @@
 #define DS1347_STATUS_REG	0x17
 #define DS1347_CLOCK_BURST	0x3F
 
+<<<<<<< HEAD
 static int ds1347_read_reg(struct device *dev, unsigned char address,
 				unsigned char *data)
 {
@@ -53,16 +58,39 @@ static int ds1347_write_reg(struct device *dev, unsigned char address,
 
 	return spi_write_then_read(spi, buf, 2, NULL, 0);
 }
+=======
+static const struct regmap_range ds1347_ranges[] = {
+	{
+		.range_min = DS1347_SECONDS_REG,
+		.range_max = DS1347_STATUS_REG,
+	},
+};
+
+static const struct regmap_access_table ds1347_access_table = {
+	.yes_ranges = ds1347_ranges,
+	.n_yes_ranges = ARRAY_SIZE(ds1347_ranges),
+};
+>>>>>>> v4.9.227
 
 static int ds1347_read_time(struct device *dev, struct rtc_time *dt)
 {
 	struct spi_device *spi = to_spi_device(dev);
+<<<<<<< HEAD
 	int err;
 	unsigned char buf[8];
 
 	buf[0] = DS1347_CLOCK_BURST | 0x80;
 
 	err = spi_write_then_read(spi, buf, 1, buf, 8);
+=======
+	struct regmap *map;
+	int err;
+	unsigned char buf[8];
+
+	map = spi_get_drvdata(spi);
+
+	err = regmap_bulk_read(map, DS1347_CLOCK_BURST, buf, 8);
+>>>>>>> v4.9.227
 	if (err)
 		return err;
 
@@ -80,6 +108,7 @@ static int ds1347_read_time(struct device *dev, struct rtc_time *dt)
 static int ds1347_set_time(struct device *dev, struct rtc_time *dt)
 {
 	struct spi_device *spi = to_spi_device(dev);
+<<<<<<< HEAD
 	unsigned char buf[9];
 
 	buf[0] = DS1347_CLOCK_BURST & 0x7F;
@@ -89,16 +118,37 @@ static int ds1347_set_time(struct device *dev, struct rtc_time *dt)
 	buf[4] = bin2bcd(dt->tm_mday);
 	buf[5] = bin2bcd(dt->tm_mon + 1);
 	buf[6] = bin2bcd(dt->tm_wday + 1);
+=======
+	struct regmap *map;
+	unsigned char buf[8];
+
+	map = spi_get_drvdata(spi);
+
+	buf[0] = bin2bcd(dt->tm_sec);
+	buf[1] = bin2bcd(dt->tm_min);
+	buf[2] = (bin2bcd(dt->tm_hour) & 0x3F);
+	buf[3] = bin2bcd(dt->tm_mday);
+	buf[4] = bin2bcd(dt->tm_mon + 1);
+	buf[5] = bin2bcd(dt->tm_wday + 1);
+>>>>>>> v4.9.227
 
 	/* year in linux is from 1900 i.e in range of 100
 	in rtc it is from 00 to 99 */
 	dt->tm_year = dt->tm_year % 100;
 
+<<<<<<< HEAD
 	buf[7] = bin2bcd(dt->tm_year);
 	buf[8] = bin2bcd(0x00);
 
 	/* write the rtc settings */
 	return spi_write_then_read(spi, buf, 9, NULL, 0);
+=======
+	buf[6] = bin2bcd(dt->tm_year);
+	buf[7] = bin2bcd(0x00);
+
+	/* write the rtc settings */
+	return regmap_bulk_write(map, DS1347_CLOCK_BURST, buf, 8);
+>>>>>>> v4.9.227
 }
 
 static const struct rtc_class_ops ds1347_rtc_ops = {
@@ -109,20 +159,50 @@ static const struct rtc_class_ops ds1347_rtc_ops = {
 static int ds1347_probe(struct spi_device *spi)
 {
 	struct rtc_device *rtc;
+<<<<<<< HEAD
 	unsigned char data;
 	int res;
 
+=======
+	struct regmap_config config;
+	struct regmap *map;
+	unsigned int data;
+	int res;
+
+	memset(&config, 0, sizeof(config));
+	config.reg_bits = 8;
+	config.val_bits = 8;
+	config.read_flag_mask = 0x80;
+	config.max_register = 0x3F;
+	config.wr_table = &ds1347_access_table;
+
+>>>>>>> v4.9.227
 	/* spi setup with ds1347 in mode 3 and bits per word as 8 */
 	spi->mode = SPI_MODE_3;
 	spi->bits_per_word = 8;
 	spi_setup(spi);
 
+<<<<<<< HEAD
 	/* RTC Settings */
 	res = ds1347_read_reg(&spi->dev, DS1347_SECONDS_REG, &data);
+=======
+	map = devm_regmap_init_spi(spi, &config);
+
+	if (IS_ERR(map)) {
+		dev_err(&spi->dev, "ds1347 regmap init spi failed\n");
+		return PTR_ERR(map);
+	}
+
+	spi_set_drvdata(spi, map);
+
+	/* RTC Settings */
+	res = regmap_read(map, DS1347_SECONDS_REG, &data);
+>>>>>>> v4.9.227
 	if (res)
 		return res;
 
 	/* Disable the write protect of rtc */
+<<<<<<< HEAD
 	ds1347_read_reg(&spi->dev, DS1347_CONTROL_REG, &data);
 	data = data & ~(1<<7);
 	ds1347_write_reg(&spi->dev, DS1347_CONTROL_REG, data);
@@ -138,6 +218,23 @@ static int ds1347_probe(struct spi_device *spi)
 	dev_info(&spi->dev, "DS1347 RTC CTRL Reg = 0x%02x\n", data);
 
 	ds1347_read_reg(&spi->dev, DS1347_STATUS_REG, &data);
+=======
+	regmap_read(map, DS1347_CONTROL_REG, &data);
+	data = data & ~(1<<7);
+	regmap_write(map, DS1347_CONTROL_REG, data);
+
+	/* Enable the oscillator , disable the oscillator stop flag,
+	 and glitch filter to reduce current consumption */
+	regmap_read(map, DS1347_STATUS_REG, &data);
+	data = data & 0x1B;
+	regmap_write(map, DS1347_STATUS_REG, data);
+
+	/* display the settings */
+	regmap_read(map, DS1347_CONTROL_REG, &data);
+	dev_info(&spi->dev, "DS1347 RTC CTRL Reg = 0x%02x\n", data);
+
+	regmap_read(map, DS1347_STATUS_REG, &data);
+>>>>>>> v4.9.227
 	dev_info(&spi->dev, "DS1347 RTC Status Reg = 0x%02x\n", data);
 
 	rtc = devm_rtc_device_register(&spi->dev, "ds1347",
@@ -146,15 +243,21 @@ static int ds1347_probe(struct spi_device *spi)
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
 
+<<<<<<< HEAD
 	spi_set_drvdata(spi, rtc);
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static struct spi_driver ds1347_driver = {
 	.driver = {
 		.name = "ds1347",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = ds1347_probe,
 };

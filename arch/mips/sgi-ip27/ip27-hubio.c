@@ -105,7 +105,11 @@ static void hub_setup_prb(nasid_t nasid, int prbnum, int credits)
 	prb.iprb_ff = force_fire_and_forget ? 1 : 0;
 
 	/*
+<<<<<<< HEAD
 	 * Set the appropriate number of PIO cresits for the widget.
+=======
+	 * Set the appropriate number of PIO credits for the widget.
+>>>>>>> v4.9.227
 	 */
 	prb.iprb_xtalkctr = credits;
 

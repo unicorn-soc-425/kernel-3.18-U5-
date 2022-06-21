@@ -243,7 +243,10 @@ static struct platform_driver tegra20_mc_driver = {
 	.probe = tegra20_mc_probe,
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = tegra20_mc_of_match,
 	},
 };

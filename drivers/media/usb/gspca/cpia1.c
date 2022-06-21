@@ -1624,7 +1624,11 @@ static int sd_start(struct gspca_dev *gspca_dev)
 
 static void sd_stopN(struct gspca_dev *gspca_dev)
 {
+<<<<<<< HEAD
 	struct sd *sd = (struct sd *) gspca_dev;
+=======
+	struct sd *sd __maybe_unused = (struct sd *) gspca_dev;
+>>>>>>> v4.9.227
 
 	command_pause(gspca_dev);
 

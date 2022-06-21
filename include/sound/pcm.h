@@ -60,19 +60,29 @@ struct snd_pcm_hardware {
 
 struct snd_pcm_substream;
 
+<<<<<<< HEAD
+=======
+struct snd_pcm_audio_tstamp_config; /* definitions further down */
+struct snd_pcm_audio_tstamp_report;
+
+>>>>>>> v4.9.227
 struct snd_pcm_ops {
 	int (*open)(struct snd_pcm_substream *substream);
 	int (*close)(struct snd_pcm_substream *substream);
 	int (*ioctl)(struct snd_pcm_substream * substream,
 		     unsigned int cmd, void *arg);
+<<<<<<< HEAD
 	int (*compat_ioctl)(struct snd_pcm_substream *substream,
 		     unsigned int cmd, void *arg);
+=======
+>>>>>>> v4.9.227
 	int (*hw_params)(struct snd_pcm_substream *substream,
 			 struct snd_pcm_hw_params *params);
 	int (*hw_free)(struct snd_pcm_substream *substream);
 	int (*prepare)(struct snd_pcm_substream *substream);
 	int (*trigger)(struct snd_pcm_substream *substream, int cmd);
 	snd_pcm_uframes_t (*pointer)(struct snd_pcm_substream *substream);
+<<<<<<< HEAD
 	int (*delay_blk)(struct snd_pcm_substream *substream);
 	int (*wall_clock)(struct snd_pcm_substream *substream,
 			  struct timespec *audio_ts);
@@ -80,12 +90,25 @@ struct snd_pcm_ops {
 		    snd_pcm_uframes_t pos,
 		    void __user *buf, snd_pcm_uframes_t count);
 	int (*silence)(struct snd_pcm_substream *substream, int channel,
+=======
+	int (*get_time_info)(struct snd_pcm_substream *substream,
+			struct timespec *system_ts, struct timespec *audio_ts,
+			struct snd_pcm_audio_tstamp_config *audio_tstamp_config,
+			struct snd_pcm_audio_tstamp_report *audio_tstamp_report);
+	int (*copy)(struct snd_pcm_substream *substream, int channel,
+		    snd_pcm_uframes_t pos,
+		    void __user *buf, snd_pcm_uframes_t count);
+	int (*silence)(struct snd_pcm_substream *substream, int channel, 
+>>>>>>> v4.9.227
 		       snd_pcm_uframes_t pos, snd_pcm_uframes_t count);
 	struct page *(*page)(struct snd_pcm_substream *substream,
 			     unsigned long offset);
 	int (*mmap)(struct snd_pcm_substream *substream, struct vm_area_struct *vma);
 	int (*ack)(struct snd_pcm_substream *substream);
+<<<<<<< HEAD
 	int (*restart)(struct snd_pcm_substream *substream);
+=======
+>>>>>>> v4.9.227
 };
 
 /*
@@ -98,9 +121,12 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_DEVICES	8
 #endif
 
+<<<<<<< HEAD
 #define SNDRV_PCM_IOCTL1_FALSE		((void *)0)
 #define SNDRV_PCM_IOCTL1_TRUE		((void *)1)
 
+=======
+>>>>>>> v4.9.227
 #define SNDRV_PCM_IOCTL1_RESET		0
 /* 1 is absent slot. */
 #define SNDRV_PCM_IOCTL1_CHANNEL_INFO	2
@@ -113,6 +139,7 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_TRIGGER_PAUSE_RELEASE	4
 #define SNDRV_PCM_TRIGGER_SUSPEND	5
 #define SNDRV_PCM_TRIGGER_RESUME	6
+<<<<<<< HEAD
 
 #define SNDRV_PCM_POS_XRUN		((snd_pcm_uframes_t)-1)
 
@@ -122,6 +149,12 @@ struct snd_pcm_ops {
 #define SNDRV_RENDER_RUNNING    (1 << 2)
 
 
+=======
+#define SNDRV_PCM_TRIGGER_DRAIN		7
+
+#define SNDRV_PCM_POS_XRUN		((snd_pcm_uframes_t)-1)
+
+>>>>>>> v4.9.227
 /* If you change this don't forget to change rates[] table in pcm_native.c */
 #define SNDRV_PCM_RATE_5512		(1<<0)		/* 5512Hz */
 #define SNDRV_PCM_RATE_8000		(1<<1)		/* 8000Hz */
@@ -136,8 +169,11 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_RATE_96000		(1<<10)		/* 96000Hz */
 #define SNDRV_PCM_RATE_176400		(1<<11)		/* 176400Hz */
 #define SNDRV_PCM_RATE_192000		(1<<12)		/* 192000Hz */
+<<<<<<< HEAD
 #define SNDRV_PCM_RATE_352800		(1<<13)		/* 352800Hz*/
 #define SNDRV_PCM_RATE_384000		(1<<14)		/* 384000Hz */
+=======
+>>>>>>> v4.9.227
 
 #define SNDRV_PCM_RATE_CONTINUOUS	(1<<30)		/* continuous range */
 #define SNDRV_PCM_RATE_KNOT		(1<<31)		/* supports more non-continuos rates */
@@ -150,10 +186,13 @@ struct snd_pcm_ops {
 					 SNDRV_PCM_RATE_88200|SNDRV_PCM_RATE_96000)
 #define SNDRV_PCM_RATE_8000_192000	(SNDRV_PCM_RATE_8000_96000|SNDRV_PCM_RATE_176400|\
 					 SNDRV_PCM_RATE_192000)
+<<<<<<< HEAD
 #define SNDRV_PCM_RATE_8000_384000	(SNDRV_PCM_RATE_8000_192000|\
 					 SNDRV_PCM_RATE_352800|\
 					 SNDRV_PCM_RATE_384000)
 
+=======
+>>>>>>> v4.9.227
 #define _SNDRV_PCM_FMTBIT(fmt)		(1ULL << (__force int)SNDRV_PCM_FORMAT_##fmt)
 #define SNDRV_PCM_FMTBIT_S8		_SNDRV_PCM_FMTBIT(S8)
 #define SNDRV_PCM_FMTBIT_U8		_SNDRV_PCM_FMTBIT(U8)
@@ -237,9 +276,16 @@ typedef int (*snd_pcm_hw_rule_func_t)(struct snd_pcm_hw_params *params,
 
 struct snd_pcm_hw_rule {
 	unsigned int cond;
+<<<<<<< HEAD
 	snd_pcm_hw_rule_func_t func;
 	int var;
 	int deps[4];
+=======
+	int var;
+	int deps[4];
+
+	snd_pcm_hw_rule_func_t func;
+>>>>>>> v4.9.227
 	void *private;
 };
 
@@ -277,11 +323,16 @@ struct snd_ratden {
 
 struct snd_pcm_hw_constraint_ratnums {
 	int nrats;
+<<<<<<< HEAD
 	struct snd_ratnum *rats;
+=======
+	const struct snd_ratnum *rats;
+>>>>>>> v4.9.227
 };
 
 struct snd_pcm_hw_constraint_ratdens {
 	int nrats;
+<<<<<<< HEAD
 	struct snd_ratden *rats;
 };
 
@@ -292,11 +343,83 @@ struct snd_pcm_hw_constraint_list {
 };
 
 struct snd_pcm_hwptr_log;
+=======
+	const struct snd_ratden *rats;
+};
+
+struct snd_pcm_hw_constraint_list {
+	const unsigned int *list;
+	unsigned int count;
+	unsigned int mask;
+};
+
+struct snd_pcm_hw_constraint_ranges {
+	unsigned int count;
+	const struct snd_interval *ranges;
+	unsigned int mask;
+};
+
+/*
+ * userspace-provided audio timestamp config to kernel,
+ * structure is for internal use only and filled with dedicated unpack routine
+ */
+struct snd_pcm_audio_tstamp_config {
+	/* 5 of max 16 bits used */
+	u32 type_requested:4;
+	u32 report_delay:1; /* add total delay to A/D or D/A */
+};
+
+static inline void snd_pcm_unpack_audio_tstamp_config(__u32 data,
+						struct snd_pcm_audio_tstamp_config *config)
+{
+	config->type_requested = data & 0xF;
+	config->report_delay = (data >> 4) & 1;
+}
+
+/*
+ * kernel-provided audio timestamp report to user-space
+ * structure is for internal use only and read by dedicated pack routine
+ */
+struct snd_pcm_audio_tstamp_report {
+	/* 6 of max 16 bits used for bit-fields */
+
+	/* for backwards compatibility */
+	u32 valid:1;
+
+	/* actual type if hardware could not support requested timestamp */
+	u32 actual_type:4;
+
+	/* accuracy represented in ns units */
+	u32 accuracy_report:1; /* 0 if accuracy unknown, 1 if accuracy field is valid */
+	u32 accuracy; /* up to 4.29s, will be packed in separate field  */
+};
+
+static inline void snd_pcm_pack_audio_tstamp_report(__u32 *data, __u32 *accuracy,
+						const struct snd_pcm_audio_tstamp_report *report)
+{
+	u32 tmp;
+
+	tmp = report->accuracy_report;
+	tmp <<= 4;
+	tmp |= report->actual_type;
+	tmp <<= 1;
+	tmp |= report->valid;
+
+	*data &= 0xffff; /* zero-clear MSBs */
+	*data |= (tmp << 16);
+	*accuracy = report->accuracy;
+}
+
+>>>>>>> v4.9.227
 
 struct snd_pcm_runtime {
 	/* -- Status -- */
 	struct snd_pcm_substream *trigger_master;
 	struct timespec trigger_tstamp;	/* trigger timestamp */
+<<<<<<< HEAD
+=======
+	bool trigger_tstamp_latched;     /* trigger timestamp latched in low-level driver/hardware */
+>>>>>>> v4.9.227
 	int overrange;
 	snd_pcm_uframes_t avail_max;
 	snd_pcm_uframes_t hw_ptr_base;	/* Position at buffer restart */
@@ -323,7 +446,10 @@ struct snd_pcm_runtime {
 	unsigned int rate_num;
 	unsigned int rate_den;
 	unsigned int no_period_wakeup: 1;
+<<<<<<< HEAD
 	unsigned int render_flag;
+=======
+>>>>>>> v4.9.227
 
 	/* -- SW params -- */
 	int tstamp_mode;		/* mmap timestamp is updated */
@@ -358,10 +484,13 @@ struct snd_pcm_runtime {
 	struct snd_pcm_hardware hw;
 	struct snd_pcm_hw_constraints hw_constraints;
 
+<<<<<<< HEAD
 	/* -- interrupt callbacks -- */
 	void (*transfer_ack_begin)(struct snd_pcm_substream *substream);
 	void (*transfer_ack_end)(struct snd_pcm_substream *substream);
 
+=======
+>>>>>>> v4.9.227
 	/* -- timer -- */
 	unsigned int timer_resolution;	/* timer resolution */
 	int tstamp_type;		/* timestamp type */
@@ -373,14 +502,25 @@ struct snd_pcm_runtime {
 
 	struct snd_dma_buffer *dma_buffer_p;	/* allocated buffer */
 
+<<<<<<< HEAD
+=======
+	/* -- audio timestamp config -- */
+	struct snd_pcm_audio_tstamp_config audio_tstamp_config;
+	struct snd_pcm_audio_tstamp_report audio_tstamp_report;
+	struct timespec driver_tstamp;
+
+>>>>>>> v4.9.227
 #if defined(CONFIG_SND_PCM_OSS) || defined(CONFIG_SND_PCM_OSS_MODULE)
 	/* -- OSS things -- */
 	struct snd_pcm_oss_runtime oss;
 #endif
+<<<<<<< HEAD
 
 #ifdef CONFIG_SND_PCM_XRUN_DEBUG
 	struct snd_pcm_hwptr_log *hwptr_log;
 #endif
+=======
+>>>>>>> v4.9.227
 };
 
 struct snd_pcm_group {		/* keep linked substreams */
@@ -407,7 +547,10 @@ struct snd_pcm_substream {
 	const struct snd_pcm_ops *ops;
 	/* -- runtime information -- */
 	struct snd_pcm_runtime *runtime;
+<<<<<<< HEAD
 	spinlock_t runtime_lock;
+=======
+>>>>>>> v4.9.227
         /* -- timer section -- */
 	struct snd_timer *timer;		/* timer */
 	unsigned timer_running: 1;	/* time is running */
@@ -436,10 +579,19 @@ struct snd_pcm_substream {
 	struct snd_info_entry *proc_status_entry;
 	struct snd_info_entry *proc_prealloc_entry;
 	struct snd_info_entry *proc_prealloc_max_entry;
+<<<<<<< HEAD
 #endif
 	/* misc flags */
 	unsigned int hw_opened: 1;
 	unsigned int hw_no_buffer: 1; /* substream may not have a buffer */
+=======
+#ifdef CONFIG_SND_PCM_XRUN_DEBUG
+	struct snd_info_entry *proc_xrun_injection_entry;
+#endif
+#endif /* CONFIG_SND_VERBOSE_PROCFS */
+	/* misc flags */
+	unsigned int hw_opened: 1;
+>>>>>>> v4.9.227
 };
 
 #define SUBSTREAM_BUSY(substream) ((substream)->ref_count > 0)
@@ -465,8 +617,12 @@ struct snd_pcm_str {
 #endif
 #endif
 	struct snd_kcontrol *chmap_kctl; /* channel-mapping controls */
+<<<<<<< HEAD
 	struct snd_kcontrol *vol_kctl; /* volume controls */
 	struct snd_kcontrol *usr_kctl; /* user controls */
+=======
+	struct device dev;
+>>>>>>> v4.9.227
 };
 
 struct snd_pcm {
@@ -483,7 +639,10 @@ struct snd_pcm {
 	wait_queue_head_t open_wait;
 	void *private_data;
 	void (*private_free) (struct snd_pcm *pcm);
+<<<<<<< HEAD
 	struct device *dev; /* actual hw device this belongs to */
+=======
+>>>>>>> v4.9.227
 	bool internal; /* pcm is for internal use only */
 	bool nonatomic; /* whole PCM operations are in non-atomic context */
 #if defined(CONFIG_SND_PCM_OSS) || defined(CONFIG_SND_PCM_OSS_MODULE)
@@ -526,6 +685,10 @@ int snd_pcm_status(struct snd_pcm_substream *substream,
 int snd_pcm_start(struct snd_pcm_substream *substream);
 int snd_pcm_stop(struct snd_pcm_substream *substream, snd_pcm_state_t status);
 int snd_pcm_drain_done(struct snd_pcm_substream *substream);
+<<<<<<< HEAD
+=======
+int snd_pcm_stop_xrun(struct snd_pcm_substream *substream);
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 int snd_pcm_suspend(struct snd_pcm_substream *substream);
 int snd_pcm_suspend_all(struct snd_pcm *pcm);
@@ -537,7 +700,10 @@ void snd_pcm_release_substream(struct snd_pcm_substream *substream);
 int snd_pcm_attach_substream(struct snd_pcm *pcm, int stream, struct file *file,
 			     struct snd_pcm_substream **rsubstream);
 void snd_pcm_detach_substream(struct snd_pcm_substream *substream);
+<<<<<<< HEAD
 void snd_pcm_vma_notify_data(void *client, void *data);
+=======
+>>>>>>> v4.9.227
 int snd_pcm_mmap_data(struct snd_pcm_substream *substream, struct file *file, struct vm_area_struct *area);
 
 
@@ -864,6 +1030,7 @@ static inline const struct snd_interval *hw_param_interval_c(const struct snd_pc
 	return &params->intervals[var - SNDRV_PCM_HW_PARAM_FIRST_INTERVAL];
 }
 
+<<<<<<< HEAD
 #define params_channels(p) \
 	(hw_param_interval_c((p), SNDRV_PCM_HW_PARAM_CHANNELS)->min)
 #define params_rate(p) \
@@ -876,6 +1043,61 @@ static inline const struct snd_interval *hw_param_interval_c(const struct snd_pc
 	(hw_param_interval_c((p), SNDRV_PCM_HW_PARAM_BUFFER_SIZE)->min)
 #define params_buffer_bytes(p) \
 	(hw_param_interval_c((p), SNDRV_PCM_HW_PARAM_BUFFER_BYTES)->min)
+=======
+/**
+ * params_channels - Get the number of channels from the hw params
+ * @p: hw params
+ */
+static inline unsigned int params_channels(const struct snd_pcm_hw_params *p)
+{
+	return hw_param_interval_c(p, SNDRV_PCM_HW_PARAM_CHANNELS)->min;
+}
+
+/**
+ * params_rate - Get the sample rate from the hw params
+ * @p: hw params
+ */
+static inline unsigned int params_rate(const struct snd_pcm_hw_params *p)
+{
+	return hw_param_interval_c(p, SNDRV_PCM_HW_PARAM_RATE)->min;
+}
+
+/**
+ * params_period_size - Get the period size (in frames) from the hw params
+ * @p: hw params
+ */
+static inline unsigned int params_period_size(const struct snd_pcm_hw_params *p)
+{
+	return hw_param_interval_c(p, SNDRV_PCM_HW_PARAM_PERIOD_SIZE)->min;
+}
+
+/**
+ * params_periods - Get the number of periods from the hw params
+ * @p: hw params
+ */
+static inline unsigned int params_periods(const struct snd_pcm_hw_params *p)
+{
+	return hw_param_interval_c(p, SNDRV_PCM_HW_PARAM_PERIODS)->min;
+}
+
+/**
+ * params_buffer_size - Get the buffer size (in frames) from the hw params
+ * @p: hw params
+ */
+static inline unsigned int params_buffer_size(const struct snd_pcm_hw_params *p)
+{
+	return hw_param_interval_c(p, SNDRV_PCM_HW_PARAM_BUFFER_SIZE)->min;
+}
+
+/**
+ * params_buffer_bytes - Get the buffer size (in bytes) from the hw params
+ * @p: hw params
+ */
+static inline unsigned int params_buffer_bytes(const struct snd_pcm_hw_params *p)
+{
+	return hw_param_interval_c(p, SNDRV_PCM_HW_PARAM_BUFFER_BYTES)->min;
+}
+>>>>>>> v4.9.227
 
 int snd_interval_refine(struct snd_interval *i, const struct snd_interval *v);
 void snd_interval_mul(const struct snd_interval *a, const struct snd_interval *b, struct snd_interval *c);
@@ -886,8 +1108,15 @@ void snd_interval_mulkdiv(const struct snd_interval *a, unsigned int k,
 			  const struct snd_interval *b, struct snd_interval *c);
 int snd_interval_list(struct snd_interval *i, unsigned int count,
 		      const unsigned int *list, unsigned int mask);
+<<<<<<< HEAD
 int snd_interval_ratnum(struct snd_interval *i,
 			unsigned int rats_count, struct snd_ratnum *rats,
+=======
+int snd_interval_ranges(struct snd_interval *i, unsigned int count,
+			const struct snd_interval *list, unsigned int mask);
+int snd_interval_ratnum(struct snd_interval *i,
+			unsigned int rats_count, const struct snd_ratnum *rats,
+>>>>>>> v4.9.227
 			unsigned int *nump, unsigned int *denp);
 
 void _snd_pcm_hw_params_any(struct snd_pcm_hw_params *params);
@@ -910,6 +1139,7 @@ int snd_pcm_hw_constraint_list(struct snd_pcm_runtime *runtime,
 			       unsigned int cond,
 			       snd_pcm_hw_param_t var,
 			       const struct snd_pcm_hw_constraint_list *l);
+<<<<<<< HEAD
 int snd_pcm_hw_constraint_ratnums(struct snd_pcm_runtime *runtime, 
 				  unsigned int cond,
 				  snd_pcm_hw_param_t var,
@@ -918,6 +1148,20 @@ int snd_pcm_hw_constraint_ratdens(struct snd_pcm_runtime *runtime,
 				  unsigned int cond,
 				  snd_pcm_hw_param_t var,
 				  struct snd_pcm_hw_constraint_ratdens *r);
+=======
+int snd_pcm_hw_constraint_ranges(struct snd_pcm_runtime *runtime,
+				 unsigned int cond,
+				 snd_pcm_hw_param_t var,
+				 const struct snd_pcm_hw_constraint_ranges *r);
+int snd_pcm_hw_constraint_ratnums(struct snd_pcm_runtime *runtime, 
+				  unsigned int cond,
+				  snd_pcm_hw_param_t var,
+				  const struct snd_pcm_hw_constraint_ratnums *r);
+int snd_pcm_hw_constraint_ratdens(struct snd_pcm_runtime *runtime, 
+				  unsigned int cond,
+				  snd_pcm_hw_param_t var,
+				  const struct snd_pcm_hw_constraint_ratdens *r);
+>>>>>>> v4.9.227
 int snd_pcm_hw_constraint_msbits(struct snd_pcm_runtime *runtime, 
 				 unsigned int cond,
 				 unsigned int width,
@@ -937,6 +1181,25 @@ int snd_pcm_hw_rule_add(struct snd_pcm_runtime *runtime,
 			snd_pcm_hw_rule_func_t func, void *private,
 			int dep, ...);
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_hw_constraint_single() - Constrain parameter to a single value
+ * @runtime: PCM runtime instance
+ * @var: The hw_params variable to constrain
+ * @val: The value to constrain to
+ *
+ * Return: Positive if the value is changed, zero if it's not changed, or a
+ * negative error code.
+ */
+static inline int snd_pcm_hw_constraint_single(
+	struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var,
+	unsigned int val)
+{
+	return snd_pcm_hw_constraint_minmax(runtime, var, val, val);
+}
+
+>>>>>>> v4.9.227
 int snd_pcm_format_signed(snd_pcm_format_t format);
 int snd_pcm_format_unsigned(snd_pcm_format_t format);
 int snd_pcm_format_linear(snd_pcm_format_t format);
@@ -962,11 +1225,15 @@ int snd_pcm_format_physical_width(snd_pcm_format_t format);		/* in bits */
 ssize_t snd_pcm_format_size(snd_pcm_format_t format, size_t samples);
 const unsigned char *snd_pcm_format_silence_64(snd_pcm_format_t format);
 int snd_pcm_format_set_silence(snd_pcm_format_t format, void *buf, unsigned int frames);
+<<<<<<< HEAD
 snd_pcm_format_t snd_pcm_build_linear_format(int width, int unsigned, int big_endian);
+=======
+>>>>>>> v4.9.227
 
 void snd_pcm_set_ops(struct snd_pcm * pcm, int direction,
 		     const struct snd_pcm_ops *ops);
 void snd_pcm_set_sync(struct snd_pcm_substream *substream);
+<<<<<<< HEAD
 int snd_pcm_lib_interleave_len(struct snd_pcm_substream *substream);
 int snd_pcm_lib_ioctl(struct snd_pcm_substream *substream,
 		      unsigned int cmd, void *arg);
@@ -978,6 +1245,13 @@ int snd_pcm_playback_xrun_check(struct snd_pcm_substream *substream);
 int snd_pcm_capture_xrun_check(struct snd_pcm_substream *substream);
 int snd_pcm_playback_xrun_asap(struct snd_pcm_substream *substream);
 int snd_pcm_capture_xrun_asap(struct snd_pcm_substream *substream);
+=======
+int snd_pcm_lib_ioctl(struct snd_pcm_substream *substream,
+		      unsigned int cmd, void *arg);                      
+int snd_pcm_update_state(struct snd_pcm_substream *substream,
+			 struct snd_pcm_runtime *runtime);
+int snd_pcm_update_hw_ptr(struct snd_pcm_substream *substream);
+>>>>>>> v4.9.227
 void snd_pcm_playback_silence(struct snd_pcm_substream *substream, snd_pcm_uframes_t new_hw_ptr);
 void snd_pcm_period_elapsed(struct snd_pcm_substream *substream);
 snd_pcm_sframes_t snd_pcm_lib_write(struct snd_pcm_substream *substream,
@@ -997,6 +1271,11 @@ unsigned int snd_pcm_rate_to_rate_bit(unsigned int rate);
 unsigned int snd_pcm_rate_bit_to_rate(unsigned int rate_bit);
 unsigned int snd_pcm_rate_mask_intersect(unsigned int rates_a,
 					 unsigned int rates_b);
+<<<<<<< HEAD
+=======
+unsigned int snd_pcm_rate_range_to_bits(unsigned int rate_min,
+					unsigned int rate_max);
+>>>>>>> v4.9.227
 
 /**
  * snd_pcm_set_runtime_buffer - Set the PCM runtime buffer
@@ -1027,10 +1306,23 @@ static inline void snd_pcm_set_runtime_buffer(struct snd_pcm_substream *substrea
  *  Timer interface
  */
 
+<<<<<<< HEAD
 void snd_pcm_timer_resolution_change(struct snd_pcm_substream *substream);
 void snd_pcm_timer_init(struct snd_pcm_substream *substream);
 void snd_pcm_timer_done(struct snd_pcm_substream *substream);
 
+=======
+#ifdef CONFIG_SND_PCM_TIMER
+void snd_pcm_timer_resolution_change(struct snd_pcm_substream *substream);
+void snd_pcm_timer_init(struct snd_pcm_substream *substream);
+void snd_pcm_timer_done(struct snd_pcm_substream *substream);
+#else
+static inline void
+snd_pcm_timer_resolution_change(struct snd_pcm_substream *substream) {}
+static inline void snd_pcm_timer_init(struct snd_pcm_substream *substream) {}
+static inline void snd_pcm_timer_done(struct snd_pcm_substream *substream) {}
+#endif
+>>>>>>> v4.9.227
 /**
  * snd_pcm_gettime - Fill the timespec depending on the timestamp mode
  * @runtime: PCM runtime instance
@@ -1072,7 +1364,10 @@ int _snd_pcm_lib_alloc_vmalloc_buffer(struct snd_pcm_substream *substream,
 int snd_pcm_lib_free_vmalloc_buffer(struct snd_pcm_substream *substream);
 struct page *snd_pcm_lib_get_vmalloc_page(struct snd_pcm_substream *substream,
 					  unsigned long offset);
+<<<<<<< HEAD
 #if 0 /* for kernel-doc */
+=======
+>>>>>>> v4.9.227
 /**
  * snd_pcm_lib_alloc_vmalloc_buffer - allocate virtual DMA buffer
  * @substream: the substream to allocate the buffer to
@@ -1085,8 +1380,18 @@ struct page *snd_pcm_lib_get_vmalloc_page(struct snd_pcm_substream *substream,
  * Return: 1 if the buffer was changed, 0 if not changed, or a negative error
  * code.
  */
+<<<<<<< HEAD
 static int snd_pcm_lib_alloc_vmalloc_buffer
 			(struct snd_pcm_substream *substream, size_t size);
+=======
+static inline int snd_pcm_lib_alloc_vmalloc_buffer
+			(struct snd_pcm_substream *substream, size_t size)
+{
+	return _snd_pcm_lib_alloc_vmalloc_buffer(substream, size,
+						 GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO);
+}
+
+>>>>>>> v4.9.227
 /**
  * snd_pcm_lib_alloc_vmalloc_32_buffer - allocate 32-bit-addressable buffer
  * @substream: the substream to allocate the buffer to
@@ -1098,6 +1403,7 @@ static int snd_pcm_lib_alloc_vmalloc_buffer
  * Return: 1 if the buffer was changed, 0 if not changed, or a negative error
  * code.
  */
+<<<<<<< HEAD
 static int snd_pcm_lib_alloc_vmalloc_32_buffer
 			(struct snd_pcm_substream *substream, size_t size);
 #endif
@@ -1107,6 +1413,14 @@ static int snd_pcm_lib_alloc_vmalloc_32_buffer
 #define snd_pcm_lib_alloc_vmalloc_32_buffer(subs, size) \
 	_snd_pcm_lib_alloc_vmalloc_buffer \
 			(subs, size, GFP_KERNEL | GFP_DMA32 | __GFP_ZERO)
+=======
+static inline int snd_pcm_lib_alloc_vmalloc_32_buffer
+			(struct snd_pcm_substream *substream, size_t size)
+{
+	return _snd_pcm_lib_alloc_vmalloc_buffer(substream, size,
+						 GFP_KERNEL | GFP_DMA32 | __GFP_ZERO);
+}
+>>>>>>> v4.9.227
 
 #define snd_pcm_get_dma_buf(substream) ((substream)->runtime->dma_buffer_p)
 
@@ -1296,6 +1610,7 @@ static inline u64 pcm_format_to_bits(snd_pcm_format_t pcm_format)
 	return 1ULL << (__force int) pcm_format;
 }
 
+<<<<<<< HEAD
 /*
  * PCM Volume control API
  */
@@ -1344,6 +1659,8 @@ int snd_pcm_add_usr_ctls(struct snd_pcm *pcm, int stream,
 			 unsigned long private_value,
 			 struct snd_pcm_usr **info_ret);
 
+=======
+>>>>>>> v4.9.227
 /* printk helpers */
 #define pcm_err(pcm, fmt, args...) \
 	dev_err((pcm)->card->dev, fmt, ##args)

@@ -339,7 +339,11 @@ static const struct regmap_config tegra20_i2s_regmap_config = {
 static int tegra20_i2s_platform_probe(struct platform_device *pdev)
 {
 	struct tegra20_i2s *i2s;
+<<<<<<< HEAD
 	struct resource *mem, *memregion;
+=======
+	struct resource *mem;
+>>>>>>> v4.9.227
 	void __iomem *regs;
 	int ret;
 
@@ -362,6 +366,7 @@ static int tegra20_i2s_platform_probe(struct platform_device *pdev)
 	}
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!mem) {
 		dev_err(&pdev->dev, "No memory resource\n");
 		ret = -ENODEV;
@@ -380,6 +385,11 @@ static int tegra20_i2s_platform_probe(struct platform_device *pdev)
 	if (!regs) {
 		dev_err(&pdev->dev, "ioremap failed\n");
 		ret = -ENOMEM;
+=======
+	regs = devm_ioremap_resource(&pdev->dev, mem);
+	if (IS_ERR(regs)) {
+		ret = PTR_ERR(regs);
+>>>>>>> v4.9.227
 		goto err_clk_put;
 	}
 
@@ -464,7 +474,10 @@ static const struct dev_pm_ops tegra20_i2s_pm_ops = {
 static struct platform_driver tegra20_i2s_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = tegra20_i2s_of_match,
 		.pm = &tegra20_i2s_pm_ops,
 	},

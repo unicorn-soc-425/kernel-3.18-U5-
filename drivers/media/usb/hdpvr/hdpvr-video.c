@@ -10,7 +10,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -155,10 +158,15 @@ int hdpvr_alloc_buffers(struct hdpvr_device *dev, uint count)
 		buf->dev = dev;
 
 		urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 		if (!urb) {
 			v4l2_err(&dev->v4l2_dev, "cannot allocate urb\n");
 			goto exit_urb;
 		}
+=======
+		if (!urb)
+			goto exit_urb;
+>>>>>>> v4.9.227
 		buf->urb = urb;
 
 		mem = usb_alloc_coherent(dev->udev, dev->bulk_in_size, GFP_KERNEL,
@@ -316,7 +324,11 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
 	dev->status = STATUS_STREAMING;
 
 	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
+<<<<<<< HEAD
 	queue_work(dev->workqueue, &dev->worker);
+=======
+	schedule_work(&dev->worker);
+>>>>>>> v4.9.227
 
 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
 			"streaming started\n");
@@ -350,7 +362,11 @@ static int hdpvr_stop_streaming(struct hdpvr_device *dev)
 	wake_up_interruptible(&dev->wait_buffer);
 	msleep(50);
 
+<<<<<<< HEAD
 	flush_workqueue(dev->workqueue);
+=======
+	flush_work(&dev->worker);
+>>>>>>> v4.9.227
 
 	mutex_lock(&dev->io_mutex);
 	/* kill the still outstanding urbs */
@@ -462,10 +478,15 @@ static ssize_t hdpvr_read(struct file *file, char __user *buffer, size_t count,
 			}
 
 			if (wait_event_interruptible(dev->wait_data,
+<<<<<<< HEAD
 					      buf->status == BUFSTAT_READY)) {
 				ret = -ERESTARTSYS;
 				goto err;
 			}
+=======
+					      buf->status == BUFSTAT_READY))
+				return -ERESTARTSYS;
+>>>>>>> v4.9.227
 		}
 
 		if (buf->status != BUFSTAT_READY)
@@ -642,7 +663,11 @@ static int vidioc_s_dv_timings(struct file *file, void *_fh,
 	if (dev->status != STATUS_IDLE)
 		return -EBUSY;
 	for (i = 0; i < ARRAY_SIZE(hdpvr_dv_timings); i++)
+<<<<<<< HEAD
 		if (v4l2_match_dv_timings(timings, hdpvr_dv_timings + i, 0))
+=======
+		if (v4l2_match_dv_timings(timings, hdpvr_dv_timings + i, 0, false))
+>>>>>>> v4.9.227
 			break;
 	if (i == ARRAY_SIZE(hdpvr_dv_timings))
 		return -EINVAL;
@@ -797,7 +822,11 @@ static int vidioc_s_input(struct file *file, void *_fh,
 		 * Comment this out for now, but if the legacy mode can be
 		 * removed in the future, then this code should be enabled
 		 * again.
+<<<<<<< HEAD
 		dev->video_dev->tvnorms =
+=======
+		dev->video_dev.tvnorms =
+>>>>>>> v4.9.227
 			(index != HDPVR_COMPONENT) ? V4L2_STD_ALL : 0;
 		 */
 	}
@@ -1125,7 +1154,11 @@ static void hdpvr_device_release(struct video_device *vdev)
 
 	hdpvr_delete(dev);
 	mutex_lock(&dev->io_mutex);
+<<<<<<< HEAD
 	destroy_workqueue(dev->workqueue);
+=======
+	flush_work(&dev->worker);
+>>>>>>> v4.9.227
 	mutex_unlock(&dev->io_mutex);
 
 	v4l2_device_unregister(&dev->v4l2_dev);
@@ -1228,6 +1261,7 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
 	}
 
 	/* setup and register video device */
+<<<<<<< HEAD
 	dev->video_dev = video_device_alloc();
 	if (!dev->video_dev) {
 		v4l2_err(&dev->v4l2_dev, "video_device_alloc() failed\n");
@@ -1241,6 +1275,14 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
 	video_set_drvdata(dev->video_dev, dev);
 
 	res = video_register_device(dev->video_dev, VFL_TYPE_GRABBER, devnum);
+=======
+	dev->video_dev = hdpvr_video_template;
+	strcpy(dev->video_dev.name, "Hauppauge HD PVR");
+	dev->video_dev.v4l2_dev = &dev->v4l2_dev;
+	video_set_drvdata(&dev->video_dev, dev);
+
+	res = video_register_device(&dev->video_dev, VFL_TYPE_GRABBER, devnum);
+>>>>>>> v4.9.227
 	if (res < 0) {
 		v4l2_err(&dev->v4l2_dev, "video_device registration failed\n");
 		goto error;

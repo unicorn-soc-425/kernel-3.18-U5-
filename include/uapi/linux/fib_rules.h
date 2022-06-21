@@ -29,11 +29,14 @@ struct fib_rule_hdr {
 	__u32		flags;
 };
 
+<<<<<<< HEAD
 struct fib_rule_uid_range {
 	__u32		start;
 	__u32		end;
 };
 
+=======
+>>>>>>> v4.9.227
 enum {
 	FRA_UNSPEC,
 	FRA_DST,	/* destination address */
@@ -48,7 +51,11 @@ enum {
 	FRA_UNUSED5,
 	FRA_FWMARK,	/* mark */
 	FRA_FLOW,	/* flow/class id */
+<<<<<<< HEAD
 	FRA_UNUSED6,
+=======
+	FRA_TUN_ID,
+>>>>>>> v4.9.227
 	FRA_SUPPRESS_IFGROUP,
 	FRA_SUPPRESS_PREFIXLEN,
 	FRA_TABLE,	/* Extended table id */
@@ -56,7 +63,10 @@ enum {
 	FRA_OIFNAME,
 	FRA_PAD,
 	FRA_L3MDEV,	/* iif or oif is l3mdev goto its table */
+<<<<<<< HEAD
 	FRA_UID_RANGE,	/* UID range */
+=======
+>>>>>>> v4.9.227
 	__FRA_MAX
 };
 

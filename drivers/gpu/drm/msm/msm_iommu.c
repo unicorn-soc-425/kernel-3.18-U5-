@@ -31,25 +31,44 @@ static int msm_fault_handler(struct iommu_domain *iommu, struct device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int msm_iommu_attach(struct msm_mmu *mmu, const char **names, int cnt)
+=======
+static int msm_iommu_attach(struct msm_mmu *mmu, const char * const *names,
+			    int cnt)
+>>>>>>> v4.9.227
 {
 	struct msm_iommu *iommu = to_msm_iommu(mmu);
 	return iommu_attach_device(iommu->domain, mmu->dev);
 }
 
+<<<<<<< HEAD
 static void msm_iommu_detach(struct msm_mmu *mmu, const char **names, int cnt)
+=======
+static void msm_iommu_detach(struct msm_mmu *mmu, const char * const *names,
+			     int cnt)
+>>>>>>> v4.9.227
 {
 	struct msm_iommu *iommu = to_msm_iommu(mmu);
 	iommu_detach_device(iommu->domain, mmu->dev);
 }
 
+<<<<<<< HEAD
 static int msm_iommu_map(struct msm_mmu *mmu, dma_addr_t iova,
 		struct sg_table *sgt, int prot)
+=======
+static int msm_iommu_map(struct msm_mmu *mmu, uint32_t iova,
+		struct sg_table *sgt, unsigned len, int prot)
+>>>>>>> v4.9.227
 {
 	struct msm_iommu *iommu = to_msm_iommu(mmu);
 	struct iommu_domain *domain = iommu->domain;
 	struct scatterlist *sg;
+<<<<<<< HEAD
 	dma_addr_t da = iova;
+=======
+	unsigned int da = iova;
+>>>>>>> v4.9.227
 	unsigned int i, j;
 	int ret;
 
@@ -60,6 +79,11 @@ static int msm_iommu_map(struct msm_mmu *mmu, dma_addr_t iova,
 		dma_addr_t pa = sg_phys(sg) - sg->offset;
 		size_t bytes = sg->length + sg->offset;
 
+<<<<<<< HEAD
+=======
+		VERB("map[%d]: %08x %08lx(%zx)", i, da, (unsigned long)pa, bytes);
+
+>>>>>>> v4.9.227
 		ret = iommu_map(domain, da, pa, bytes, prot);
 		if (ret)
 			goto fail;
@@ -80,13 +104,22 @@ fail:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int msm_iommu_unmap(struct msm_mmu *mmu, dma_addr_t iova,
 		struct sg_table *sgt)
+=======
+static int msm_iommu_unmap(struct msm_mmu *mmu, uint32_t iova,
+		struct sg_table *sgt, unsigned len)
+>>>>>>> v4.9.227
 {
 	struct msm_iommu *iommu = to_msm_iommu(mmu);
 	struct iommu_domain *domain = iommu->domain;
 	struct scatterlist *sg;
+<<<<<<< HEAD
 	dma_addr_t da = iova;
+=======
+	unsigned int da = iova;
+>>>>>>> v4.9.227
 	int i;
 
 	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
@@ -97,6 +130,11 @@ static int msm_iommu_unmap(struct msm_mmu *mmu, dma_addr_t iova,
 		if (unmapped < bytes)
 			return unmapped;
 
+<<<<<<< HEAD
+=======
+		VERB("unmap[%d]: %08x(%zx)", i, da, bytes);
+
+>>>>>>> v4.9.227
 		BUG_ON(!PAGE_ALIGNED(bytes));
 
 		da += bytes;

@@ -109,7 +109,11 @@ static int m41t81_read(uint8_t addr)
 		return -1;
 	}
 
+<<<<<<< HEAD
 	return (__raw_readq(SMB_CSR(R_SMB_DATA)) & 0xff);
+=======
+	return __raw_readq(SMB_CSR(R_SMB_DATA)) & 0xff;
+>>>>>>> v4.9.227
 }
 
 static int m41t81_write(uint8_t addr, int b)
@@ -229,5 +233,9 @@ int m41t81_probe(void)
 	tmp = m41t81_read(M41T81REG_SC);
 	m41t81_write(M41T81REG_SC, tmp & 0x7f);
 
+<<<<<<< HEAD
 	return (m41t81_read(M41T81REG_SC) != -1);
+=======
+	return m41t81_read(M41T81REG_SC) != -1;
+>>>>>>> v4.9.227
 }

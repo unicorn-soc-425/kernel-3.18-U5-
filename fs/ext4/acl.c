@@ -4,11 +4,14 @@
  * Copyright (C) 2001-2003 Andreas Gruenbacher, <agruen@suse.de>
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/capability.h>
 #include <linux/fs.h>
+=======
+>>>>>>> v4.9.227
 #include "ext4_jbd2.h"
 #include "ext4.h"
 #include "xattr.h"
@@ -177,9 +180,12 @@ ext4_get_acl(struct inode *inode, int type)
 		acl = ERR_PTR(retval);
 	kfree(value);
 
+<<<<<<< HEAD
 	if (!IS_ERR(acl))
 		set_cached_acl(inode, type, acl);
 
+=======
+>>>>>>> v4.9.227
 	return acl;
 }
 

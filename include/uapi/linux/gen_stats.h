@@ -10,6 +10,10 @@ enum {
 	TCA_STATS_QUEUE,
 	TCA_STATS_APP,
 	TCA_STATS_RATE_EST64,
+<<<<<<< HEAD
+=======
+	TCA_STATS_PAD,
+>>>>>>> v4.9.227
 	__TCA_STATS_MAX,
 };
 #define TCA_STATS_MAX (__TCA_STATS_MAX - 1)

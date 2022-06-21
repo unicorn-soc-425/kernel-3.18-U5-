@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ccflags-$(CONFIG_POWER_SUPPLY_DEBUG) := -DDEBUG
 
 power_supply-y				:= power_supply_core.o
@@ -85,3 +86,8 @@ obj-$(CONFIG_POWER_RESET)	+= reset/
 obj-$(CONFIG_ARCH_MSM)		+= qcom/
 obj-$(CONFIG_SEC_PM)		+= sec_pmov.o
 
+=======
+obj-$(CONFIG_POWER_AVS)		+= avs/
+obj-$(CONFIG_POWER_RESET)	+= reset/
+obj-$(CONFIG_POWER_SUPPLY)	+= supply/
+>>>>>>> v4.9.227

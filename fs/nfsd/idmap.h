@@ -37,9 +37,13 @@
 
 #include <linux/in.h>
 #include <linux/sunrpc/svc.h>
+<<<<<<< HEAD
 
 /* XXX from linux/nfs_idmap.h */
 #define IDMAP_NAMESZ 128
+=======
+#include <linux/nfs_idmap.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_NFSD_V4
 int nfsd_idmap_init(struct net *);

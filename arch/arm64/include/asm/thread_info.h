@@ -23,8 +23,15 @@
 
 #include <linux/compiler.h>
 
+<<<<<<< HEAD
 #ifndef CONFIG_ARM64_64K_PAGES
 #define THREAD_SIZE_ORDER	2
+=======
+#ifdef CONFIG_ARM64_4K_PAGES
+#define THREAD_SIZE_ORDER	2
+#elif defined(CONFIG_ARM64_16K_PAGES)
+#define THREAD_SIZE_ORDER	0
+>>>>>>> v4.9.227
 #endif
 
 #define THREAD_SIZE		16384
@@ -33,7 +40,10 @@
 #ifndef __ASSEMBLY__
 
 struct task_struct;
+<<<<<<< HEAD
 struct exec_domain;
+=======
+>>>>>>> v4.9.227
 
 #include <asm/types.h>
 
@@ -46,6 +56,7 @@ typedef unsigned long mm_segment_t;
 struct thread_info {
 	unsigned long		flags;		/* low level flags */
 	mm_segment_t		addr_limit;	/* address limit */
+<<<<<<< HEAD
 #ifndef CONFIG_THREAD_INFO_IN_TASK
 	struct task_struct	*task;		/* main task structure */
 #endif
@@ -70,12 +81,26 @@ struct thread_info {
 {									\
 	.task		= &tsk,						\
 	.exec_domain	= &default_exec_domain,				\
+=======
+	struct task_struct	*task;		/* main task structure */
+	int			preempt_count;	/* 0 => preemptable, <0 => bug */
+	int			cpu;		/* cpu */
+};
+
+#define INIT_THREAD_INFO(tsk)						\
+{									\
+	.task		= &tsk,						\
+>>>>>>> v4.9.227
 	.flags		= 0,						\
 	.preempt_count	= INIT_PREEMPT_COUNT,				\
 	.addr_limit	= KERNEL_DS,					\
 }
 
 #define init_thread_info	(init_thread_union.thread_info)
+<<<<<<< HEAD
+=======
+#define init_stack		(init_thread_union.stack)
+>>>>>>> v4.9.227
 
 /*
  * how to get the current stack pointer from C
@@ -89,6 +114,12 @@ static inline struct thread_info *current_thread_info(void) __attribute_const__;
 
 /*
  * struct thread_info can be accessed directly via sp_el0.
+<<<<<<< HEAD
+=======
+ *
+ * We don't use read_sysreg() as we want the compiler to cache the value where
+ * possible.
+>>>>>>> v4.9.227
  */
 static inline struct thread_info *current_thread_info(void)
 {
@@ -98,9 +129,12 @@ static inline struct thread_info *current_thread_info(void)
 
 	return (struct thread_info *)sp_el0;
 }
+<<<<<<< HEAD
 #endif
 
 #define init_stack		(init_thread_union.stack)
+=======
+>>>>>>> v4.9.227
 
 #define thread_saved_pc(tsk)	\
 	((unsigned long)(tsk->thread.cpu_context.pc))
@@ -126,7 +160,10 @@ static inline struct thread_info *current_thread_info(void)
 #define TIF_NEED_RESCHED	1
 #define TIF_NOTIFY_RESUME	2	/* callback before returning to user */
 #define TIF_FOREIGN_FPSTATE	3	/* CPU's FP state is not current's */
+<<<<<<< HEAD
 #define TIF_FSCHECK		4	/* Check FS is USER_DS on return */
+=======
+>>>>>>> v4.9.227
 #define TIF_NOHZ		7
 #define TIF_SYSCALL_TRACE	8
 #define TIF_SYSCALL_AUDIT	9
@@ -137,8 +174,12 @@ static inline struct thread_info *current_thread_info(void)
 #define TIF_RESTORE_SIGMASK	20
 #define TIF_SINGLESTEP		21
 #define TIF_32BIT		22	/* 32bit process */
+<<<<<<< HEAD
 #define TIF_SWITCH_MM		23	/* deferred switch_mm */
 #define TIF_MM_RELEASED		24
+=======
+#define TIF_SSBD		23	/* Wants SSB mitigation */
+>>>>>>> v4.9.227
 
 #define _TIF_SIGPENDING		(1 << TIF_SIGPENDING)
 #define _TIF_NEED_RESCHED	(1 << TIF_NEED_RESCHED)
@@ -149,12 +190,19 @@ static inline struct thread_info *current_thread_info(void)
 #define _TIF_SYSCALL_AUDIT	(1 << TIF_SYSCALL_AUDIT)
 #define _TIF_SYSCALL_TRACEPOINT	(1 << TIF_SYSCALL_TRACEPOINT)
 #define _TIF_SECCOMP		(1 << TIF_SECCOMP)
+<<<<<<< HEAD
 #define _TIF_FSCHECK		(1 << TIF_FSCHECK)
 #define _TIF_32BIT		(1 << TIF_32BIT)
 
 #define _TIF_WORK_MASK		(_TIF_NEED_RESCHED | _TIF_SIGPENDING | \
 				 _TIF_NOTIFY_RESUME | _TIF_FOREIGN_FPSTATE | \
 				 _TIF_FSCHECK)
+=======
+#define _TIF_32BIT		(1 << TIF_32BIT)
+
+#define _TIF_WORK_MASK		(_TIF_NEED_RESCHED | _TIF_SIGPENDING | \
+				 _TIF_NOTIFY_RESUME | _TIF_FOREIGN_FPSTATE)
+>>>>>>> v4.9.227
 
 #define _TIF_SYSCALL_WORK	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT | \
 				 _TIF_SYSCALL_TRACEPOINT | _TIF_SECCOMP | \

@@ -46,6 +46,17 @@ extern void fstsw_(void);
 extern void fp_nop(void);
 extern void fld_i_(void);
 extern void fxch_i(void);
+<<<<<<< HEAD
+=======
+extern void fcmovb(void);
+extern void fcmove(void);
+extern void fcmovbe(void);
+extern void fcmovu(void);
+extern void fcmovnb(void);
+extern void fcmovne(void);
+extern void fcmovnbe(void);
+extern void fcmovnu(void);
+>>>>>>> v4.9.227
 extern void ffree_(void);
 extern void ffreep(void);
 extern void fst_i_(void);
@@ -108,6 +119,13 @@ extern void fcompp(void);
 extern void fucom_(void);
 extern void fucomp(void);
 extern void fucompp(void);
+<<<<<<< HEAD
+=======
+extern void fcomi_(void);
+extern void fcomip(void);
+extern void fucomi_(void);
+extern void fucomip(void);
+>>>>>>> v4.9.227
 /* reg_constant.c */
 extern void fconst(void);
 /* reg_ld_str.c */

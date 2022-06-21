@@ -12,19 +12,27 @@
 
 #include <linux/pm_domain.h>
 
+<<<<<<< HEAD
 #define DEFAULT_DEV_LATENCY_NS	250000
 
 struct platform_device;
 
+=======
+>>>>>>> v4.9.227
 struct rmobile_pm_domain {
 	struct generic_pm_domain genpd;
 	struct dev_power_governor *gov;
 	int (*suspend)(void);
 	void (*resume)(void);
+<<<<<<< HEAD
+=======
+	void __iomem *base;
+>>>>>>> v4.9.227
 	unsigned int bit_shift;
 	bool no_debug;
 };
 
+<<<<<<< HEAD
 static inline
 struct rmobile_pm_domain *to_rmobile_pd(struct generic_pm_domain *d)
 {
@@ -60,4 +68,6 @@ static inline void rmobile_add_devices_to_domains(struct pm_domain_device d[],
 						  int size) {}
 #endif /* CONFIG_PM_RMOBILE */
 
+=======
+>>>>>>> v4.9.227
 #endif /* PM_RMOBILE_H */

@@ -672,7 +672,11 @@ static int lgs8gxx_write(struct dvb_frontend *fe, const u8 buf[], int len)
 
 static int lgs8gxx_set_fe(struct dvb_frontend *fe)
 {
+<<<<<<< HEAD
 
+=======
+	struct dtv_frontend_properties *fe_params = &fe->dtv_property_cache;
+>>>>>>> v4.9.227
 	struct lgs8gxx_state *priv = fe->demodulator_priv;
 
 	dprintk("%s\n", __func__);
@@ -689,6 +693,7 @@ static int lgs8gxx_set_fe(struct dvb_frontend *fe)
 
 	msleep(10);
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -700,6 +705,9 @@ static int lgs8gxx_get_fe(struct dvb_frontend *fe)
 	/* TODO: get real readings from device */
 	/* inversion status */
 	fe_params->inversion = INVERSION_OFF;
+=======
+	/* TODO: get real readings from device */
+>>>>>>> v4.9.227
 
 	/* bandwidth */
 	fe_params->bandwidth_hz = 8000000;
@@ -732,7 +740,12 @@ int lgs8gxx_get_tune_settings(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lgs8gxx_read_status(struct dvb_frontend *fe, fe_status_t *fe_status)
+=======
+static int lgs8gxx_read_status(struct dvb_frontend *fe,
+			       enum fe_status *fe_status)
+>>>>>>> v4.9.227
 {
 	struct lgs8gxx_state *priv = fe->demodulator_priv;
 	s8 ret;
@@ -1015,7 +1028,10 @@ static struct dvb_frontend_ops lgs8gxx_ops = {
 	.i2c_gate_ctrl = lgs8gxx_i2c_gate_ctrl,
 
 	.set_frontend = lgs8gxx_set_fe,
+<<<<<<< HEAD
 	.get_frontend = lgs8gxx_get_fe,
+=======
+>>>>>>> v4.9.227
 	.get_tune_settings = lgs8gxx_get_tune_settings,
 
 	.read_status = lgs8gxx_read_status,

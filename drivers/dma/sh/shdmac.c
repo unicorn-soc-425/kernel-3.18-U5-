@@ -532,11 +532,16 @@ static int sh_dmae_chan_probe(struct sh_dmae_device *shdev, int id,
 
 	sh_chan = devm_kzalloc(sdev->dma_dev.dev, sizeof(struct sh_dmae_chan),
 			       GFP_KERNEL);
+<<<<<<< HEAD
 	if (!sh_chan) {
 		dev_err(sdev->dma_dev.dev,
 			"No free memory for allocating dma channels!\n");
 		return -ENOMEM;
 	}
+=======
+	if (!sh_chan)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	schan = &sh_chan->shdma_chan;
 	schan->max_xfer_len = SH_DMA_TCR_MAX + 1;
@@ -572,7 +577,10 @@ err_no_irq:
 
 static void sh_dmae_chan_remove(struct sh_dmae_device *shdev)
 {
+<<<<<<< HEAD
 	struct dma_device *dma_dev = &shdev->shdma_dev.dma_dev;
+=======
+>>>>>>> v4.9.227
 	struct shdma_chan *schan;
 	int i;
 
@@ -581,6 +589,7 @@ static void sh_dmae_chan_remove(struct sh_dmae_device *shdev)
 
 		shdma_chan_remove(schan);
 	}
+<<<<<<< HEAD
 	dma_dev->chancnt = 0;
 }
 
@@ -592,6 +601,16 @@ static void sh_dmae_shutdown(struct platform_device *pdev)
 
 static int sh_dmae_runtime_suspend(struct device *dev)
 {
+=======
+}
+
+#ifdef CONFIG_PM
+static int sh_dmae_runtime_suspend(struct device *dev)
+{
+	struct sh_dmae_device *shdev = dev_get_drvdata(dev);
+
+	sh_dmae_ctl_stop(shdev);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -601,10 +620,21 @@ static int sh_dmae_runtime_resume(struct device *dev)
 
 	return sh_dmae_rst(shdev);
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_PM
 static int sh_dmae_suspend(struct device *dev)
 {
+=======
+#endif
+
+#ifdef CONFIG_PM_SLEEP
+static int sh_dmae_suspend(struct device *dev)
+{
+	struct sh_dmae_device *shdev = dev_get_drvdata(dev);
+
+	sh_dmae_ctl_stop(shdev);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -634,6 +664,7 @@ static int sh_dmae_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #else
 #define sh_dmae_suspend NULL
 #define sh_dmae_resume NULL
@@ -644,6 +675,14 @@ static const struct dev_pm_ops sh_dmae_pm = {
 	.resume			= sh_dmae_resume,
 	.runtime_suspend	= sh_dmae_runtime_suspend,
 	.runtime_resume		= sh_dmae_runtime_resume,
+=======
+#endif
+
+static const struct dev_pm_ops sh_dmae_pm = {
+	SET_SYSTEM_SLEEP_PM_OPS(sh_dmae_suspend, sh_dmae_resume)
+	SET_RUNTIME_PM_OPS(sh_dmae_runtime_suspend, sh_dmae_runtime_resume,
+			   NULL)
+>>>>>>> v4.9.227
 };
 
 static dma_addr_t sh_dmae_slave_addr(struct shdma_chan *schan)
@@ -686,6 +725,13 @@ MODULE_DEVICE_TABLE(of, sh_dmae_of_match);
 
 static int sh_dmae_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
+=======
+	const enum dma_slave_buswidth widths =
+		DMA_SLAVE_BUSWIDTH_1_BYTE   | DMA_SLAVE_BUSWIDTH_2_BYTES |
+		DMA_SLAVE_BUSWIDTH_4_BYTES  | DMA_SLAVE_BUSWIDTH_8_BYTES |
+		DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES;
+>>>>>>> v4.9.227
 	const struct sh_dmae_pdata *pdata;
 	unsigned long chan_flag[SH_DMAE_MAX_CHANNELS] = {};
 	int chan_irq[SH_DMAE_MAX_CHANNELS];
@@ -699,7 +745,11 @@ static int sh_dmae_probe(struct platform_device *pdev)
 	struct resource *chan, *dmars, *errirq_res, *chanirq_res;
 
 	if (pdev->dev.of_node)
+<<<<<<< HEAD
 		pdata = of_match_device(sh_dmae_of_match, &pdev->dev)->data;
+=======
+		pdata = of_device_get_match_data(&pdev->dev);
+>>>>>>> v4.9.227
 	else
 		pdata = dev_get_platdata(&pdev->dev);
 
@@ -732,10 +782,15 @@ static int sh_dmae_probe(struct platform_device *pdev)
 
 	shdev = devm_kzalloc(&pdev->dev, sizeof(struct sh_dmae_device),
 			     GFP_KERNEL);
+<<<<<<< HEAD
 	if (!shdev) {
 		dev_err(&pdev->dev, "Not enough memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (!shdev)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	dma_dev = &shdev->shdma_dev.dma_dev;
 
@@ -748,6 +803,14 @@ static int sh_dmae_probe(struct platform_device *pdev)
 			return PTR_ERR(shdev->dmars);
 	}
 
+<<<<<<< HEAD
+=======
+	dma_dev->src_addr_widths = widths;
+	dma_dev->dst_addr_widths = widths;
+	dma_dev->directions = BIT(DMA_MEM_TO_DEV) | BIT(DMA_DEV_TO_MEM);
+	dma_dev->residue_granularity = DMA_RESIDUE_GRANULARITY_DESCRIPTOR;
+
+>>>>>>> v4.9.227
 	if (!pdata->slave_only)
 		dma_cap_set(DMA_MEMCPY, dma_dev->cap_mask);
 	if (pdata->slave && pdata->slave_num)
@@ -924,14 +987,21 @@ static int sh_dmae_remove(struct platform_device *pdev)
 }
 
 static struct platform_driver sh_dmae_driver = {
+<<<<<<< HEAD
 	.driver 	= {
 		.owner	= THIS_MODULE,
+=======
+	.driver		= {
+>>>>>>> v4.9.227
 		.pm	= &sh_dmae_pm,
 		.name	= SH_DMAE_DRV_NAME,
 		.of_match_table = sh_dmae_of_match,
 	},
 	.remove		= sh_dmae_remove,
+<<<<<<< HEAD
 	.shutdown	= sh_dmae_shutdown,
+=======
+>>>>>>> v4.9.227
 };
 
 static int __init sh_dmae_init(void)

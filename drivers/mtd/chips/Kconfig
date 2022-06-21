@@ -16,6 +16,10 @@ config MTD_CFI
 config MTD_JEDECPROBE
 	tristate "Detect non-CFI AMD/JEDEC-compatible flash chips"
 	select MTD_GEN_PROBE
+<<<<<<< HEAD
+=======
+	select MTD_CFI_UTIL
+>>>>>>> v4.9.227
 	help
 	  This option enables JEDEC-style probing of flash chips which are not
 	  compatible with the Common Flash Interface, but will use the common
@@ -66,6 +70,13 @@ endchoice
 config MTD_CFI_GEOMETRY
 	bool "Specific CFI Flash geometry selection"
 	depends on MTD_CFI_ADV_OPTIONS
+<<<<<<< HEAD
+=======
+	select MTD_MAP_BANK_WIDTH_1 if  !(MTD_MAP_BANK_WIDTH_2 || \
+		 MTD_MAP_BANK_WIDTH_4  || MTD_MAP_BANK_WIDTH_8 || \
+		 MTD_MAP_BANK_WIDTH_16 || MTD_MAP_BANK_WIDTH_32)
+	select MTD_CFI_I1 if !(MTD_CFI_I2 || MTD_CFI_I4 || MTD_CFI_I8)
+>>>>>>> v4.9.227
 	help
 	  This option does not affect the code directly, but will enable
 	  some other configuration options which would allow you to reduce

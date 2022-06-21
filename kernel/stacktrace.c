@@ -11,6 +11,7 @@
 #include <linux/kallsyms.h>
 #include <linux/stacktrace.h>
 
+<<<<<<< HEAD
 int snprint_stack_trace(char *buf, int buf_len, struct stack_trace *trace,
 			int spaces)
 {
@@ -34,6 +35,8 @@ int snprint_stack_trace(char *buf, int buf_len, struct stack_trace *trace,
 }
 EXPORT_SYMBOL_GPL(snprint_stack_trace);
 
+=======
+>>>>>>> v4.9.227
 void print_stack_trace(struct stack_trace *trace, int spaces)
 {
 	int i;
@@ -41,6 +44,7 @@ void print_stack_trace(struct stack_trace *trace, int spaces)
 	if (WARN_ON(!trace->entries))
 		return;
 
+<<<<<<< HEAD
 	for (i = 0; i < trace->nr_entries; i++) {
 		printk("%*c", 1 + spaces, ' ');
 		print_ip_sym(trace->entries[i]);
@@ -48,6 +52,43 @@ void print_stack_trace(struct stack_trace *trace, int spaces)
 }
 EXPORT_SYMBOL_GPL(print_stack_trace);
 
+=======
+	for (i = 0; i < trace->nr_entries; i++)
+		printk("%*c%pS\n", 1 + spaces, ' ', (void *)trace->entries[i]);
+}
+EXPORT_SYMBOL_GPL(print_stack_trace);
+
+int snprint_stack_trace(char *buf, size_t size,
+			struct stack_trace *trace, int spaces)
+{
+	int i;
+	int generated;
+	int total = 0;
+
+	if (WARN_ON(!trace->entries))
+		return 0;
+
+	for (i = 0; i < trace->nr_entries; i++) {
+		generated = snprintf(buf, size, "%*c%pS\n", 1 + spaces, ' ',
+				     (void *)trace->entries[i]);
+
+		total += generated;
+
+		/* Assume that generated isn't a negative number */
+		if (generated >= size) {
+			buf += size;
+			size = 0;
+		} else {
+			buf += generated;
+			size -= generated;
+		}
+	}
+
+	return total;
+}
+EXPORT_SYMBOL_GPL(snprint_stack_trace);
+
+>>>>>>> v4.9.227
 /*
  * Architectures that do not implement save_stack_trace_tsk or
  * save_stack_trace_regs get this weak alias and a once-per-bootup warning

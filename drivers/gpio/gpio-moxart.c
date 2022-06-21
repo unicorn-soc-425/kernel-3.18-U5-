@@ -14,20 +14,29 @@
 #include <linux/init.h>
 #include <linux/irq.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/platform_device.h>
 #include <linux/module.h>
+=======
+#include <linux/platform_device.h>
+>>>>>>> v4.9.227
 #include <linux/of_address.h>
 #include <linux/of_gpio.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/delay.h>
 #include <linux/timer.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> v4.9.227
 
 #define GPIO_DATA_OUT		0x00
 #define GPIO_DATA_IN		0x04
 #define GPIO_PIN_DIRECTION	0x08
 
+<<<<<<< HEAD
 struct moxart_gpio_chip {
 	struct gpio_chip gpio;
 	void __iomem *base;
@@ -105,10 +114,13 @@ static struct gpio_chip moxart_template_chip = {
 	.owner			= THIS_MODULE,
 };
 
+=======
+>>>>>>> v4.9.227
 static int moxart_gpio_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct resource *res;
+<<<<<<< HEAD
 	struct moxart_gpio_chip *mgc;
 	int ret;
 
@@ -125,13 +137,48 @@ static int moxart_gpio_probe(struct platform_device *pdev)
 	mgc->gpio.dev = dev;
 
 	ret = gpiochip_add(&mgc->gpio);
+=======
+	struct gpio_chip *gc;
+	void __iomem *base;
+	int ret;
+
+	gc = devm_kzalloc(dev, sizeof(*gc), GFP_KERNEL);
+	if (!gc)
+		return -ENOMEM;
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	base = devm_ioremap_resource(dev, res);
+	if (IS_ERR(base))
+		return PTR_ERR(base);
+
+	ret = bgpio_init(gc, dev, 4, base + GPIO_DATA_IN,
+			 base + GPIO_DATA_OUT, NULL,
+			 base + GPIO_PIN_DIRECTION, NULL,
+			 BGPIOF_READ_OUTPUT_REG_SET);
+	if (ret) {
+		dev_err(&pdev->dev, "bgpio_init failed\n");
+		return ret;
+	}
+
+	gc->label = "moxart-gpio";
+	gc->request = gpiochip_generic_request;
+	gc->free = gpiochip_generic_free;
+	gc->base = 0;
+	gc->owner = THIS_MODULE;
+
+	ret = devm_gpiochip_add_data(dev, gc, NULL);
+>>>>>>> v4.9.227
 	if (ret) {
 		dev_err(dev, "%s: gpiochip_add failed\n",
 			dev->of_node->full_name);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> v4.9.227
 }
 
 static const struct of_device_id moxart_gpio_match[] = {
@@ -142,13 +189,20 @@ static const struct of_device_id moxart_gpio_match[] = {
 static struct platform_driver moxart_gpio_driver = {
 	.driver	= {
 		.name		= "moxart-gpio",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table	= moxart_gpio_match,
 	},
 	.probe	= moxart_gpio_probe,
 };
+<<<<<<< HEAD
 module_platform_driver(moxart_gpio_driver);
 
 MODULE_DESCRIPTION("MOXART GPIO chip driver");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jonas Jensen <jonas.jensen@gmail.com>");
+=======
+builtin_platform_driver(moxart_gpio_driver);
+>>>>>>> v4.9.227

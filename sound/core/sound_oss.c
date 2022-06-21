@@ -19,12 +19,15 @@
  *
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_SND_OSSEMUL
 
 #if !IS_ENABLED(CONFIG_SOUND)
 #error "Enable the OSS soundcore multiplexer (CONFIG_SOUND) in the kernel."
 #endif
 
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/export.h>
 #include <linux/slab.h>
@@ -213,10 +216,14 @@ EXPORT_SYMBOL(snd_unregister_oss_device);
  *  INFO PART
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 
 static struct snd_info_entry *snd_minor_info_oss_entry;
 
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> v4.9.227
 static const char *snd_oss_device_type_name(int type)
 {
 	switch (type) {
@@ -263,6 +270,7 @@ int __init snd_minor_info_oss_init(void)
 	struct snd_info_entry *entry;
 
 	entry = snd_info_create_module_entry(THIS_MODULE, "devices", snd_oss_root);
+<<<<<<< HEAD
 	if (entry) {
 		entry->c.text.read = snd_minor_info_oss_read;
 		if (snd_info_register(entry) < 0) {
@@ -282,3 +290,11 @@ int __exit snd_minor_info_oss_done(void)
 #endif /* CONFIG_PROC_FS */
 
 #endif /* CONFIG_SND_OSSEMUL */
+=======
+	if (!entry)
+		return -ENOMEM;
+	entry->c.text.read = snd_minor_info_oss_read;
+	return snd_info_register(entry); /* freed in error path */
+}
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> v4.9.227

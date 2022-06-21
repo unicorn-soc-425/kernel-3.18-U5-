@@ -246,7 +246,10 @@ static struct platform_driver auok1901fb_driver = {
 	.probe	= auok1901fb_probe,
 	.remove = auok1901fb_remove,
 	.driver	= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "auo_k1901fb",
 		.pm = &auok190x_pm,
 	},

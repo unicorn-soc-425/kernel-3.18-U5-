@@ -19,7 +19,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/time.h>
 #include <sound/core.h>
@@ -182,6 +186,7 @@ static int snd_sbmixer_put_double(struct snd_kcontrol *kcontrol, struct snd_ctl_
 
 static int snd_dt019x_input_sw_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static const char *texts[5] = {
 		"CD", "Mic", "Line", "Synth", "Master"
 	};
@@ -193,6 +198,13 @@ static int snd_dt019x_input_sw_info(struct snd_kcontrol *kcontrol, struct snd_ct
 		uinfo->value.enumerated.item = 4;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[5] = {
+		"CD", "Mic", "Line", "Synth", "Master"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 5, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_dt019x_input_sw_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -275,6 +287,7 @@ static int snd_dt019x_input_sw_put(struct snd_kcontrol *kcontrol, struct snd_ctl
 static int snd_als4k_mono_capture_route_info(struct snd_kcontrol *kcontrol,
 					     struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static const char *texts[3] = {
 		"L chan only", "R chan only", "L ch/2 + R ch/2"
 	};
@@ -287,6 +300,13 @@ static int snd_als4k_mono_capture_route_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {
+		"L chan only", "R chan only", "L ch/2 + R ch/2"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> v4.9.227
 }
 
 static int snd_als4k_mono_capture_route_get(struct snd_kcontrol *kcontrol,
@@ -335,6 +355,7 @@ static int snd_als4k_mono_capture_route_put(struct snd_kcontrol *kcontrol,
 
 static int snd_sb8mixer_info_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static const char *texts[3] = {
 		"Mic", "CD", "Line"
 	};
@@ -346,6 +367,13 @@ static int snd_sb8mixer_info_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 		uinfo->value.enumerated.item = 2;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {
+		"Mic", "CD", "Line"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> v4.9.227
 }
 
 

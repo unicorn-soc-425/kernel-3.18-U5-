@@ -39,7 +39,10 @@ struct unix_skb_parms {
 };
 
 #define UNIXCB(skb) 	(*(struct unix_skb_parms *)&((skb)->cb))
+<<<<<<< HEAD
 #define UNIXSID(skb)	(&UNIXCB((skb)).secid)
+=======
+>>>>>>> v4.9.227
 
 #define unix_state_lock(s)	spin_lock(&unix_sk(s)->lock)
 #define unix_state_unlock(s)	spin_unlock(&unix_sk(s)->lock)
@@ -53,7 +56,11 @@ struct unix_sock {
 	struct sock		sk;
 	struct unix_address     *addr;
 	struct path		path;
+<<<<<<< HEAD
 	struct mutex		readlock;
+=======
+	struct mutex		iolock, bindlock;
+>>>>>>> v4.9.227
 	struct sock		*peer;
 	struct list_head	link;
 	atomic_long_t		inflight;
@@ -66,7 +73,11 @@ struct unix_sock {
 	wait_queue_t		peer_wake;
 };
 
+<<<<<<< HEAD
 static inline struct unix_sock *unix_sk(struct sock *sk)
+=======
+static inline struct unix_sock *unix_sk(const struct sock *sk)
+>>>>>>> v4.9.227
 {
 	return (struct unix_sock *)sk;
 }

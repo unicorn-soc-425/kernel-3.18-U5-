@@ -30,7 +30,11 @@ static inline struct nf_icmp_net *icmp_pernet(struct net *net)
 }
 
 static bool icmp_pkt_to_tuple(const struct sk_buff *skb, unsigned int dataoff,
+<<<<<<< HEAD
 			      struct nf_conntrack_tuple *tuple)
+=======
+			      struct net *net, struct nf_conntrack_tuple *tuple)
+>>>>>>> v4.9.227
 {
 	const struct icmphdr *hp;
 	struct icmphdr _hdr;
@@ -72,6 +76,7 @@ static bool icmp_invert_tuple(struct nf_conntrack_tuple *tuple,
 }
 
 /* Print out the per-protocol part of the tuple. */
+<<<<<<< HEAD
 static int icmp_print_tuple(struct seq_file *s,
 			    const struct nf_conntrack_tuple *tuple)
 {
@@ -79,6 +84,15 @@ static int icmp_print_tuple(struct seq_file *s,
 			  tuple->dst.u.icmp.type,
 			  tuple->dst.u.icmp.code,
 			  ntohs(tuple->src.u.icmp.id));
+=======
+static void icmp_print_tuple(struct seq_file *s,
+			    const struct nf_conntrack_tuple *tuple)
+{
+	seq_printf(s, "type=%u code=%u id=%u ",
+		   tuple->dst.u.icmp.type,
+		   tuple->dst.u.icmp.code,
+		   ntohs(tuple->src.u.icmp.id));
+>>>>>>> v4.9.227
 }
 
 static unsigned int *icmp_get_timeouts(struct net *net)
@@ -134,20 +148,36 @@ icmp_error_message(struct net *net, struct nf_conn *tmpl, struct sk_buff *skb,
 	struct nf_conntrack_tuple innertuple, origtuple;
 	const struct nf_conntrack_l4proto *innerproto;
 	const struct nf_conntrack_tuple_hash *h;
+<<<<<<< HEAD
 	u16 zone = tmpl ? nf_ct_zone(tmpl) : NF_CT_DEFAULT_ZONE;
 
 	NF_CT_ASSERT(skb->nfct == NULL);
+=======
+	const struct nf_conntrack_zone *zone;
+	struct nf_conntrack_zone tmp;
+
+	NF_CT_ASSERT(skb->nfct == NULL);
+	zone = nf_ct_zone_tmpl(tmpl, skb, &tmp);
+>>>>>>> v4.9.227
 
 	/* Are they talking about one of our connections? */
 	if (!nf_ct_get_tuplepr(skb,
 			       skb_network_offset(skb) + ip_hdrlen(skb)
 						       + sizeof(struct icmphdr),
+<<<<<<< HEAD
 			       PF_INET, &origtuple)) {
+=======
+			       PF_INET, net, &origtuple)) {
+>>>>>>> v4.9.227
 		pr_debug("icmp_error_message: failed to get tuple\n");
 		return -NF_ACCEPT;
 	}
 
+<<<<<<< HEAD
 	/* rcu_read_lock()ed by nf_hook_slow */
+=======
+	/* rcu_read_lock()ed by nf_hook_thresh */
+>>>>>>> v4.9.227
 	innerproto = __nf_ct_l4proto_find(PF_INET, origtuple.dst.protonum);
 
 	/* Ordinarily, we'd expect the inverted tupleproto, but it's
@@ -325,6 +355,7 @@ static struct ctl_table icmp_sysctl_table[] = {
 	},
 	{ }
 };
+<<<<<<< HEAD
 #ifdef CONFIG_NF_CONNTRACK_PROC_COMPAT
 static struct ctl_table icmp_compat_sysctl_table[] = {
 	{
@@ -336,6 +367,8 @@ static struct ctl_table icmp_compat_sysctl_table[] = {
 	{ }
 };
 #endif /* CONFIG_NF_CONNTRACK_PROC_COMPAT */
+=======
+>>>>>>> v4.9.227
 #endif /* CONFIG_SYSCTL */
 
 static int icmp_kmemdup_sysctl_table(struct nf_proto_net *pn,
@@ -353,6 +386,7 @@ static int icmp_kmemdup_sysctl_table(struct nf_proto_net *pn,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int icmp_kmemdup_compat_sysctl_table(struct nf_proto_net *pn,
 					    struct nf_icmp_net *in)
 {
@@ -373,11 +407,16 @@ static int icmp_kmemdup_compat_sysctl_table(struct nf_proto_net *pn,
 static int icmp_init_net(struct net *net, u_int16_t proto)
 {
 	int ret;
+=======
+static int icmp_init_net(struct net *net, u_int16_t proto)
+{
+>>>>>>> v4.9.227
 	struct nf_icmp_net *in = icmp_pernet(net);
 	struct nf_proto_net *pn = &in->pn;
 
 	in->timeout = nf_ct_icmp_timeout;
 
+<<<<<<< HEAD
 	ret = icmp_kmemdup_compat_sysctl_table(pn, in);
 	if (ret < 0)
 		return ret;
@@ -387,6 +426,9 @@ static int icmp_init_net(struct net *net, u_int16_t proto)
 		nf_ct_kfree_compat_sysctl_table(pn);
 
 	return ret;
+=======
+	return icmp_kmemdup_sysctl_table(pn, in);
+>>>>>>> v4.9.227
 }
 
 static struct nf_proto_net *icmp_get_net_proto(struct net *net)

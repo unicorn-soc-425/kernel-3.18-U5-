@@ -28,6 +28,17 @@ struct sram_platdata {
 	int granularity;
 };
 
+<<<<<<< HEAD
 extern struct gen_pool *sram_get_gpool(char *pool_name);
+=======
+#ifdef CONFIG_MMP_SRAM
+extern struct gen_pool *sram_get_gpool(char *pool_name);
+#else
+static inline struct gen_pool *sram_get_gpool(char *pool_name)
+{
+	return NULL;
+}
+#endif
+>>>>>>> v4.9.227
 
 #endif /* __DMA_MMP_TDMA_H */

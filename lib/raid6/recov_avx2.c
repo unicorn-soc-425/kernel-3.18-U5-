@@ -8,7 +8,11 @@
  * of the License.
  */
 
+<<<<<<< HEAD
 #if CONFIG_AS_AVX2
+=======
+#ifdef CONFIG_AS_AVX2
+>>>>>>> v4.9.227
 
 #include <linux/raid/pq.h>
 #include "x86.h"

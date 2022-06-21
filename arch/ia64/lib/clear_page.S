@@ -11,6 +11,10 @@
 
 #include <asm/asmmacro.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_ITANIUM
 # define L3_LINE_SIZE	64	// Itanium L3 line size
@@ -74,3 +78,7 @@ GLOBAL_ENTRY(clear_page)
 	mov ar.lc = saved_lc		// restore lc
 	br.ret.sptk.many rp
 END(clear_page)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(clear_page)
+>>>>>>> v4.9.227

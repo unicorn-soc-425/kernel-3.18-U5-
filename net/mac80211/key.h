@@ -18,7 +18,10 @@
 
 #define NUM_DEFAULT_KEYS 4
 #define NUM_DEFAULT_MGMT_KEYS 2
+<<<<<<< HEAD
 #define MAX_PN_LEN 16
+=======
+>>>>>>> v4.9.227
 
 struct ieee80211_local;
 struct ieee80211_sub_if_data;
@@ -30,10 +33,18 @@ struct sta_info;
  * @KEY_FLAG_UPLOADED_TO_HARDWARE: Indicates that this key is present
  *	in the hardware for TX crypto hardware acceleration.
  * @KEY_FLAG_TAINTED: Key is tainted and packets should be dropped.
+<<<<<<< HEAD
+=======
+ * @KEY_FLAG_CIPHER_SCHEME: This key is for a hardware cipher scheme
+>>>>>>> v4.9.227
  */
 enum ieee80211_internal_key_flags {
 	KEY_FLAG_UPLOADED_TO_HARDWARE	= BIT(0),
 	KEY_FLAG_TAINTED		= BIT(1),
+<<<<<<< HEAD
+=======
+	KEY_FLAG_CIPHER_SCHEME		= BIT(2),
+>>>>>>> v4.9.227
 };
 
 enum ieee80211_internal_tkip_state {
@@ -43,13 +54,25 @@ enum ieee80211_internal_tkip_state {
 };
 
 struct tkip_ctx {
+<<<<<<< HEAD
 	u32 iv32;	/* current iv32 */
 	u16 iv16;	/* current iv16 */
+=======
+>>>>>>> v4.9.227
 	u16 p1k[5];	/* p1k cache */
 	u32 p1k_iv32;	/* iv32 for which p1k computed */
 	enum ieee80211_internal_tkip_state state;
 };
 
+<<<<<<< HEAD
+=======
+struct tkip_ctx_rx {
+	struct tkip_ctx ctx;
+	u32 iv32;	/* current iv32 */
+	u16 iv16;	/* current iv16 */
+};
+
+>>>>>>> v4.9.227
 struct ieee80211_key {
 	struct ieee80211_local *local;
 	struct ieee80211_sub_if_data *sdata;
@@ -70,13 +93,20 @@ struct ieee80211_key {
 			struct tkip_ctx tx;
 
 			/* last received RSC */
+<<<<<<< HEAD
 			struct tkip_ctx rx[IEEE80211_NUM_TIDS];
+=======
+			struct tkip_ctx_rx rx[IEEE80211_NUM_TIDS];
+>>>>>>> v4.9.227
 
 			/* number of mic failures */
 			u32 mic_failures;
 		} tkip;
 		struct {
+<<<<<<< HEAD
 			atomic64_t tx_pn;
+=======
+>>>>>>> v4.9.227
 			/*
 			 * Last received packet number. The first
 			 * IEEE80211_NUM_TIDS counters are used with Data
@@ -88,13 +118,17 @@ struct ieee80211_key {
 			u32 replays; /* dot11RSNAStatsCCMPReplays */
 		} ccmp;
 		struct {
+<<<<<<< HEAD
 			atomic64_t tx_pn;
+=======
+>>>>>>> v4.9.227
 			u8 rx_pn[IEEE80211_CMAC_PN_LEN];
 			struct crypto_cipher *tfm;
 			u32 replays; /* dot11RSNAStatsCMACReplays */
 			u32 icverrors; /* dot11RSNAStatsCMACICVErrors */
 		} aes_cmac;
 		struct {
+<<<<<<< HEAD
 			/* generic cipher scheme */
 			u8 rx_pn[IEEE80211_NUM_TIDS + 1][MAX_PN_LEN];
 		} gen;
@@ -103,6 +137,29 @@ struct ieee80211_key {
 	/* number of times this key has been used */
 	int tx_rx_count;
 
+=======
+			u8 rx_pn[IEEE80211_GMAC_PN_LEN];
+			struct crypto_aead *tfm;
+			u32 replays; /* dot11RSNAStatsCMACReplays */
+			u32 icverrors; /* dot11RSNAStatsCMACICVErrors */
+		} aes_gmac;
+		struct {
+			/* Last received packet number. The first
+			 * IEEE80211_NUM_TIDS counters are used with Data
+			 * frames and the last counter is used with Robust
+			 * Management frames.
+			 */
+			u8 rx_pn[IEEE80211_NUM_TIDS + 1][IEEE80211_GCMP_PN_LEN];
+			struct crypto_aead *tfm;
+			u32 replays; /* dot11RSNAStatsGCMPReplays */
+		} gcmp;
+		struct {
+			/* generic cipher scheme */
+			u8 rx_pn[IEEE80211_NUM_TIDS + 1][IEEE80211_MAX_PN_LEN];
+		} gen;
+	} u;
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_MAC80211_DEBUGFS
 	struct {
 		struct dentry *stalink;
@@ -141,6 +198,10 @@ void ieee80211_free_keys(struct ieee80211_sub_if_data *sdata,
 void ieee80211_free_sta_keys(struct ieee80211_local *local,
 			     struct sta_info *sta);
 void ieee80211_enable_keys(struct ieee80211_sub_if_data *sdata);
+<<<<<<< HEAD
+=======
+void ieee80211_reset_crypto_tx_tailroom(struct ieee80211_sub_if_data *sdata);
+>>>>>>> v4.9.227
 
 #define key_mtx_dereference(local, ref) \
 	rcu_dereference_protected(ref, lockdep_is_held(&((local)->key_mtx)))

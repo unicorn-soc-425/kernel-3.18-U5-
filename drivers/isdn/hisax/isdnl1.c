@@ -867,7 +867,11 @@ l1_msg(struct IsdnCardState *cs, int pr, void *arg) {
 			break;
 		default:
 			if (cs->debug)
+<<<<<<< HEAD
 				debugl1(cs, "l1msg %04X unhandled", pr);
+=======
+				debugl1(cs, "%s %04X unhandled", __func__, pr);
+>>>>>>> v4.9.227
 			break;
 		}
 		st = st->next;

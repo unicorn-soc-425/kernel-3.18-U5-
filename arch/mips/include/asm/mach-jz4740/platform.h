@@ -19,7 +19,10 @@
 
 #include <linux/platform_device.h>
 
+<<<<<<< HEAD
 extern struct platform_device jz4740_usb_ohci_device;
+=======
+>>>>>>> v4.9.227
 extern struct platform_device jz4740_udc_device;
 extern struct platform_device jz4740_udc_xceiv_device;
 extern struct platform_device jz4740_mmc_device;
@@ -35,6 +38,9 @@ extern struct platform_device jz4740_wdt_device;
 extern struct platform_device jz4740_pwm_device;
 extern struct platform_device jz4740_dma_device;
 
+<<<<<<< HEAD
 void jz4740_serial_device_register(void);
 
+=======
+>>>>>>> v4.9.227
 #endif

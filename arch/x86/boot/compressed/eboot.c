@@ -20,13 +20,21 @@ static efi_system_table_t *sys_table;
 
 static struct efi_config *efi_early;
 
+<<<<<<< HEAD
 #define efi_call_early(f, ...)						\
 	efi_early->call(efi_early->f, __VA_ARGS__);
+=======
+__pure const struct efi_config *__efi_early(void)
+{
+	return efi_early;
+}
+>>>>>>> v4.9.227
 
 #define BOOT_SERVICES(bits)						\
 static void setup_boot_services##bits(struct efi_config *c)		\
 {									\
 	efi_system_table_##bits##_t *table;				\
+<<<<<<< HEAD
 	efi_boot_services_##bits##_t *bt;				\
 									\
 	table = (typeof(table))sys_table;				\
@@ -43,6 +51,13 @@ static void setup_boot_services##bits(struct efi_config *c)		\
 	c->locate_handle = bt->locate_handle;				\
 	c->handle_protocol = bt->handle_protocol;			\
 	c->exit_boot_services = bt->exit_boot_services;			\
+=======
+									\
+	table = (typeof(table))sys_table;				\
+									\
+	c->boot_services = table->boottime;				\
+	c->text_output = table->con_out;				\
+>>>>>>> v4.9.227
 }
 BOOT_SERVICES(32);
 BOOT_SERVICES(64);
@@ -284,6 +299,7 @@ void efi_char16_printk(efi_system_table_t *table, efi_char16_t *str)
 	}
 }
 
+<<<<<<< HEAD
 #include "../../../../drivers/firmware/efi/libstub/efi-stub-helper.c"
 
 static void find_bits(unsigned long mask, u8 *pos, u8 *size)
@@ -309,6 +325,8 @@ static void find_bits(unsigned long mask, u8 *pos, u8 *size)
 	*size = len;
 }
 
+=======
+>>>>>>> v4.9.227
 static efi_status_t
 __setup_efi_pci32(efi_pci_io_protocol_32 *pci, struct pci_setup_rom **__rom)
 {
@@ -573,6 +591,7 @@ free_handle:
 	efi_call_early(free_pool, pci_handle);
 }
 
+<<<<<<< HEAD
 static void
 setup_pixel_info(struct screen_info *si, u32 pixels_per_scan_line,
 		 struct efi_pixel_bitmask pixel_info, int pixel_format)
@@ -859,6 +878,8 @@ free_handle:
 	return status;
 }
 
+=======
+>>>>>>> v4.9.227
 static efi_status_t
 setup_uga32(void **uga_handle, unsigned long size, u32 *width, u32 *height)
 {
@@ -866,7 +887,11 @@ setup_uga32(void **uga_handle, unsigned long size, u32 *width, u32 *height)
 	efi_guid_t uga_proto = EFI_UGA_PROTOCOL_GUID;
 	unsigned long nr_ugas;
 	u32 *handles = (u32 *)uga_handle;;
+<<<<<<< HEAD
 	efi_status_t status;
+=======
+	efi_status_t status = EFI_INVALID_PARAMETER;
+>>>>>>> v4.9.227
 	int i;
 
 	first_uga = NULL;
@@ -911,7 +936,11 @@ setup_uga64(void **uga_handle, unsigned long size, u32 *width, u32 *height)
 	efi_guid_t uga_proto = EFI_UGA_PROTOCOL_GUID;
 	unsigned long nr_ugas;
 	u64 *handles = (u64 *)uga_handle;;
+<<<<<<< HEAD
 	efi_status_t status;
+=======
+	efi_status_t status = EFI_INVALID_PARAMETER;
+>>>>>>> v4.9.227
 	int i;
 
 	first_uga = NULL;
@@ -1020,7 +1049,11 @@ void setup_graphics(struct boot_params *boot_params)
 				EFI_LOCATE_BY_PROTOCOL,
 				&graphics_proto, NULL, &size, gop_handle);
 	if (status == EFI_BUFFER_TOO_SMALL)
+<<<<<<< HEAD
 		status = setup_gop(si, &graphics_proto, size);
+=======
+		status = efi_setup_gop(NULL, si, &graphics_proto, size);
+>>>>>>> v4.9.227
 
 	if (status != EFI_SUCCESS) {
 		size = 0;
@@ -1043,10 +1076,15 @@ void setup_graphics(struct boot_params *boot_params)
 struct boot_params *make_boot_params(struct efi_config *c)
 {
 	struct boot_params *boot_params;
+<<<<<<< HEAD
 	struct sys_desc_table *sdt;
 	struct apm_bios_info *bi;
 	struct setup_header *hdr;
 	struct efi_info *efi;
+=======
+	struct apm_bios_info *bi;
+	struct setup_header *hdr;
+>>>>>>> v4.9.227
 	efi_loaded_image_t *image;
 	void *options, *handle;
 	efi_guid_t proto = LOADED_IMAGE_PROTOCOL_GUID;
@@ -1089,9 +1127,13 @@ struct boot_params *make_boot_params(struct efi_config *c)
 	memset(boot_params, 0x0, 0x4000);
 
 	hdr = &boot_params->hdr;
+<<<<<<< HEAD
 	efi = &boot_params->efi_info;
 	bi = &boot_params->apm_bios_info;
 	sdt = &boot_params->sys_desc_table;
+=======
+	bi = &boot_params->apm_bios_info;
+>>>>>>> v4.9.227
 
 	/* Copy the second sector to boot_params */
 	memcpy(&hdr->jump, image->image_base + 512, 512);
@@ -1120,8 +1162,11 @@ struct boot_params *make_boot_params(struct efi_config *c)
 	/* Clear APM BIOS info */
 	memset(bi, 0, sizeof(*bi));
 
+<<<<<<< HEAD
 	memset(sdt, 0, sizeof(*sdt));
 
+=======
+>>>>>>> v4.9.227
 	status = efi_parse_options(cmdline_ptr);
 	if (status != EFI_SUCCESS)
 		goto fail2;
@@ -1230,6 +1275,13 @@ static efi_status_t setup_e820(struct boot_params *params,
 			e820_type = E820_NVS;
 			break;
 
+<<<<<<< HEAD
+=======
+		case EFI_PERSISTENT_MEMORY:
+			e820_type = E820_PMEM;
+			break;
+
+>>>>>>> v4.9.227
 		default:
 			continue;
 		}
@@ -1294,6 +1346,7 @@ static efi_status_t alloc_e820ext(u32 nr_desc, struct setup_data **e820ext,
 	return status;
 }
 
+<<<<<<< HEAD
 static efi_status_t exit_boot(struct boot_params *boot_params,
 			      void *handle, bool is64)
 {
@@ -1367,6 +1420,89 @@ get_map:
 		goto get_map;
 	}
 
+=======
+struct exit_boot_struct {
+	struct boot_params *boot_params;
+	struct efi_info *efi;
+	struct setup_data *e820ext;
+	__u32 e820ext_size;
+	bool is64;
+};
+
+static efi_status_t exit_boot_func(efi_system_table_t *sys_table_arg,
+				   struct efi_boot_memmap *map,
+				   void *priv)
+{
+	static bool first = true;
+	const char *signature;
+	__u32 nr_desc;
+	efi_status_t status;
+	struct exit_boot_struct *p = priv;
+
+	if (first) {
+		nr_desc = *map->buff_size / *map->desc_size;
+		if (nr_desc > ARRAY_SIZE(p->boot_params->e820_map)) {
+			u32 nr_e820ext = nr_desc -
+					ARRAY_SIZE(p->boot_params->e820_map);
+
+			status = alloc_e820ext(nr_e820ext, &p->e820ext,
+					       &p->e820ext_size);
+			if (status != EFI_SUCCESS)
+				return status;
+		}
+		first = false;
+	}
+
+	signature = p->is64 ? EFI64_LOADER_SIGNATURE : EFI32_LOADER_SIGNATURE;
+	memcpy(&p->efi->efi_loader_signature, signature, sizeof(__u32));
+
+	p->efi->efi_systab = (unsigned long)sys_table_arg;
+	p->efi->efi_memdesc_size = *map->desc_size;
+	p->efi->efi_memdesc_version = *map->desc_ver;
+	p->efi->efi_memmap = (unsigned long)*map->map;
+	p->efi->efi_memmap_size = *map->map_size;
+
+#ifdef CONFIG_X86_64
+	p->efi->efi_systab_hi = (unsigned long)sys_table_arg >> 32;
+	p->efi->efi_memmap_hi = (unsigned long)*map->map >> 32;
+#endif
+
+	return EFI_SUCCESS;
+}
+
+static efi_status_t exit_boot(struct boot_params *boot_params,
+			      void *handle, bool is64)
+{
+	unsigned long map_sz, key, desc_size, buff_size;
+	efi_memory_desc_t *mem_map;
+	struct setup_data *e820ext;
+	__u32 e820ext_size;
+	efi_status_t status;
+	__u32 desc_version;
+	struct efi_boot_memmap map;
+	struct exit_boot_struct priv;
+
+	map.map =		&mem_map;
+	map.map_size =		&map_sz;
+	map.desc_size =		&desc_size;
+	map.desc_ver =		&desc_version;
+	map.key_ptr =		&key;
+	map.buff_size =		&buff_size;
+	priv.boot_params =	boot_params;
+	priv.efi =		&boot_params->efi_info;
+	priv.e820ext =		NULL;
+	priv.e820ext_size =	0;
+	priv.is64 =		is64;
+
+	/* Might as well exit boot services now */
+	status = efi_exit_boot_services(sys_table, handle, &map, &priv,
+					exit_boot_func);
+	if (status != EFI_SUCCESS)
+		return status;
+
+	e820ext = priv.e820ext;
+	e820ext_size = priv.e820ext_size;
+>>>>>>> v4.9.227
 	/* Historic? */
 	boot_params->alt_mem_k = 32 * 1024;
 
@@ -1375,10 +1511,13 @@ get_map:
 		return status;
 
 	return EFI_SUCCESS;
+<<<<<<< HEAD
 
 free_mem_map:
 	efi_call_early(free_pool, mem_map);
 	return status;
+=======
+>>>>>>> v4.9.227
 }
 
 /*

@@ -132,11 +132,19 @@ static int snd_card_emu10k1_probe(struct pci_dev *pci,
 		goto error;
 	card->private_data = emu;
 	emu->delay_pcm_irq = delay_pcm_irq[dev] & 0x1f;
+<<<<<<< HEAD
 	if ((err = snd_emu10k1_pcm(emu, 0, NULL)) < 0)
 		goto error;
 	if ((err = snd_emu10k1_pcm_mic(emu, 1, NULL)) < 0)
 		goto error;
 	if ((err = snd_emu10k1_pcm_efx(emu, 2, NULL)) < 0)
+=======
+	if ((err = snd_emu10k1_pcm(emu, 0)) < 0)
+		goto error;
+	if ((err = snd_emu10k1_pcm_mic(emu, 1)) < 0)
+		goto error;
+	if ((err = snd_emu10k1_pcm_efx(emu, 2)) < 0)
+>>>>>>> v4.9.227
 		goto error;
 	/* This stores the periods table. */
 	if (emu->card_capabilities->ca0151_chip) { /* P16V */	
@@ -151,10 +159,17 @@ static int snd_card_emu10k1_probe(struct pci_dev *pci,
 	if ((err = snd_emu10k1_timer(emu, 0)) < 0)
 		goto error;
 
+<<<<<<< HEAD
 	if ((err = snd_emu10k1_pcm_multi(emu, 3, NULL)) < 0)
 		goto error;
 	if (emu->card_capabilities->ca0151_chip) { /* P16V */
 		if ((err = snd_p16v_pcm(emu, 4, NULL)) < 0)
+=======
+	if ((err = snd_emu10k1_pcm_multi(emu, 3)) < 0)
+		goto error;
+	if (emu->card_capabilities->ca0151_chip) { /* P16V */
+		if ((err = snd_p16v_pcm(emu, 4)) < 0)
+>>>>>>> v4.9.227
 			goto error;
 	}
 	if (emu->audigy) {
@@ -164,7 +179,11 @@ static int snd_card_emu10k1_probe(struct pci_dev *pci,
 		if ((err = snd_emu10k1_midi(emu)) < 0)
 			goto error;
 	}
+<<<<<<< HEAD
 	if ((err = snd_emu10k1_fx8010_new(emu, 0, NULL)) < 0)
+=======
+	if ((err = snd_emu10k1_fx8010_new(emu, 0)) < 0)
+>>>>>>> v4.9.227
 		goto error;
 #ifdef ENABLE_SYNTH
 	if (snd_seq_device_new(card, 1, SNDRV_SEQ_DEV_ID_EMU10K1_SYNTH,
@@ -212,7 +231,10 @@ static void snd_card_emu10k1_remove(struct pci_dev *pci)
 #ifdef CONFIG_PM_SLEEP
 static int snd_emu10k1_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> v4.9.227
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_emu10k1 *emu = card->private_data;
 
@@ -234,15 +256,19 @@ static int snd_emu10k1_suspend(struct device *dev)
 		snd_p16v_suspend(emu);
 
 	snd_emu10k1_done(emu);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static int snd_emu10k1_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_emu10k1 *emu = card->private_data;
@@ -256,6 +282,11 @@ static int snd_emu10k1_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_emu10k1 *emu = card->private_data;
+
+>>>>>>> v4.9.227
 	snd_emu10k1_resume_init(emu);
 	snd_emu10k1_efx_resume(emu);
 	snd_ac97_resume(emu->ac97);

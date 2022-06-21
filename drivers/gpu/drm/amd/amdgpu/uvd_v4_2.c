@@ -34,6 +34,11 @@
 #include "oss/oss_2_0_d.h"
 #include "oss/oss_2_0_sh_mask.h"
 
+<<<<<<< HEAD
+=======
+#include "bif/bif_4_1_d.h"
+
+>>>>>>> v4.9.227
 static void uvd_v4_2_mc_resume(struct amdgpu_device *adev);
 static void uvd_v4_2_init_cg(struct amdgpu_device *adev);
 static void uvd_v4_2_set_ring_funcs(struct amdgpu_device *adev);
@@ -114,7 +119,11 @@ static int uvd_v4_2_sw_init(void *handle)
 
 	ring = &adev->uvd.ring;
 	sprintf(ring->name, "uvd");
+<<<<<<< HEAD
 	r = amdgpu_ring_init(adev, ring, 4096, CP_PACKET2, 0xf,
+=======
+	r = amdgpu_ring_init(adev, ring, 512, PACKET0(mmUVD_NO_OP, 0), 0xf,
+>>>>>>> v4.9.227
 			     &adev->uvd.irq, 0, AMDGPU_RING_TYPE_UVD);
 
 	return r;
@@ -164,7 +173,11 @@ static int uvd_v4_2_hw_init(void *handle)
 		goto done;
 	}
 
+<<<<<<< HEAD
 	r = amdgpu_ring_lock(ring, 10);
+=======
+	r = amdgpu_ring_alloc(ring, 10);
+>>>>>>> v4.9.227
 	if (r) {
 		DRM_ERROR("amdgpu: ring failed to lock UVD ring (%d).\n", r);
 		goto done;
@@ -189,7 +202,11 @@ static int uvd_v4_2_hw_init(void *handle)
 	amdgpu_ring_write(ring, PACKET0(mmUVD_SEMA_CNTL, 0));
 	amdgpu_ring_write(ring, 3);
 
+<<<<<<< HEAD
 	amdgpu_ring_unlock_commit(ring);
+=======
+	amdgpu_ring_commit(ring);
+>>>>>>> v4.9.227
 
 done:
 	/* lower clocks again */
@@ -224,11 +241,19 @@ static int uvd_v4_2_suspend(void *handle)
 	int r;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
+<<<<<<< HEAD
 	r = amdgpu_uvd_suspend(adev);
 	if (r)
 		return r;
 
 	r = uvd_v4_2_hw_fini(adev);
+=======
+	r = uvd_v4_2_hw_fini(adev);
+	if (r)
+		return r;
+
+	r = amdgpu_uvd_suspend(adev);
+>>>>>>> v4.9.227
 	if (r)
 		return r;
 
@@ -439,6 +464,7 @@ static void uvd_v4_2_ring_emit_fence(struct amdgpu_ring *ring, u64 addr, u64 seq
 }
 
 /**
+<<<<<<< HEAD
  * uvd_v4_2_ring_emit_semaphore - emit semaphore command
  *
  * @ring: amdgpu_ring pointer
@@ -463,6 +489,31 @@ static bool uvd_v4_2_ring_emit_semaphore(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, 0x80 | (emit_wait ? 1 : 0));
 
 	return true;
+=======
+ * uvd_v4_2_ring_emit_hdp_flush - emit an hdp flush
+ *
+ * @ring: amdgpu_ring pointer
+ *
+ * Emits an hdp flush.
+ */
+static void uvd_v4_2_ring_emit_hdp_flush(struct amdgpu_ring *ring)
+{
+	amdgpu_ring_write(ring, PACKET0(mmHDP_MEM_COHERENCY_FLUSH_CNTL, 0));
+	amdgpu_ring_write(ring, 0);
+}
+
+/**
+ * uvd_v4_2_ring_hdp_invalidate - emit an hdp invalidate
+ *
+ * @ring: amdgpu_ring pointer
+ *
+ * Emits an hdp invalidate.
+ */
+static void uvd_v4_2_ring_emit_hdp_invalidate(struct amdgpu_ring *ring)
+{
+	amdgpu_ring_write(ring, PACKET0(mmHDP_DEBUG0, 0));
+	amdgpu_ring_write(ring, 1);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -480,7 +531,11 @@ static int uvd_v4_2_ring_test_ring(struct amdgpu_ring *ring)
 	int r;
 
 	WREG32(mmUVD_CONTEXT_ID, 0xCAFEDEAD);
+<<<<<<< HEAD
 	r = amdgpu_ring_lock(ring, 3);
+=======
+	r = amdgpu_ring_alloc(ring, 3);
+>>>>>>> v4.9.227
 	if (r) {
 		DRM_ERROR("amdgpu: cp failed to lock ring %d (%d).\n",
 			  ring->idx, r);
@@ -488,7 +543,11 @@ static int uvd_v4_2_ring_test_ring(struct amdgpu_ring *ring)
 	}
 	amdgpu_ring_write(ring, PACKET0(mmUVD_CONTEXT_ID, 0));
 	amdgpu_ring_write(ring, 0xDEADBEEF);
+<<<<<<< HEAD
 	amdgpu_ring_unlock_commit(ring);
+=======
+	amdgpu_ring_commit(ring);
+>>>>>>> v4.9.227
 	for (i = 0; i < adev->usec_timeout; i++) {
 		tmp = RREG32(mmUVD_CONTEXT_ID);
 		if (tmp == 0xDEADBEEF)
@@ -516,7 +575,12 @@ static int uvd_v4_2_ring_test_ring(struct amdgpu_ring *ring)
  * Write ring commands to execute the indirect buffer
  */
 static void uvd_v4_2_ring_emit_ib(struct amdgpu_ring *ring,
+<<<<<<< HEAD
 				  struct amdgpu_ib *ib)
+=======
+				  struct amdgpu_ib *ib,
+				  unsigned vm_id, bool ctx_switch)
+>>>>>>> v4.9.227
 {
 	amdgpu_ring_write(ring, PACKET0(mmUVD_RBC_IB_BASE, 0));
 	amdgpu_ring_write(ring, ib->gpu_addr);
@@ -524,6 +588,7 @@ static void uvd_v4_2_ring_emit_ib(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, ib->length_dw);
 }
 
+<<<<<<< HEAD
 /**
  * uvd_v4_2_ring_test_ib - test ib execution
  *
@@ -565,6 +630,20 @@ error:
 	fence_put(fence);
 	amdgpu_asic_set_uvd_clocks(adev, 0, 0);
 	return r;
+=======
+static unsigned uvd_v4_2_ring_get_emit_ib_size(struct amdgpu_ring *ring)
+{
+	return
+		4; /* uvd_v4_2_ring_emit_ib */
+}
+
+static unsigned uvd_v4_2_ring_get_dma_frame_size(struct amdgpu_ring *ring)
+{
+	return
+		2 + /* uvd_v4_2_ring_emit_hdp_flush */
+		2 + /* uvd_v4_2_ring_emit_hdp_invalidate */
+		14; /* uvd_v4_2_ring_emit_fence  x1 no user fence */
+>>>>>>> v4.9.227
 }
 
 /**
@@ -586,12 +665,21 @@ static void uvd_v4_2_mc_resume(struct amdgpu_device *adev)
 	WREG32(mmUVD_VCPU_CACHE_SIZE0, size);
 
 	addr += size;
+<<<<<<< HEAD
 	size = AMDGPU_UVD_STACK_SIZE >> 3;
+=======
+	size = AMDGPU_UVD_HEAP_SIZE >> 3;
+>>>>>>> v4.9.227
 	WREG32(mmUVD_VCPU_CACHE_OFFSET1, addr);
 	WREG32(mmUVD_VCPU_CACHE_SIZE1, size);
 
 	addr += size;
+<<<<<<< HEAD
 	size = AMDGPU_UVD_HEAP_SIZE >> 3;
+=======
+	size = (AMDGPU_UVD_STACK_SIZE +
+	       (AMDGPU_UVD_SESSION_SIZE * adev->uvd.max_handles)) >> 3;
+>>>>>>> v4.9.227
 	WREG32(mmUVD_VCPU_CACHE_OFFSET2, addr);
 	WREG32(mmUVD_VCPU_CACHE_SIZE2, size);
 
@@ -603,6 +691,13 @@ static void uvd_v4_2_mc_resume(struct amdgpu_device *adev)
 	addr = (adev->uvd.gpu_addr >> 32) & 0xFF;
 	WREG32(mmUVD_LMI_EXT40_ADDR, addr | (0x9 << 16) | (0x1 << 31));
 
+<<<<<<< HEAD
+=======
+	WREG32(mmUVD_UDEC_ADDR_CONFIG, adev->gfx.config.gb_addr_config);
+	WREG32(mmUVD_UDEC_DB_ADDR_CONFIG, adev->gfx.config.gb_addr_config);
+	WREG32(mmUVD_UDEC_DBW_ADDR_CONFIG, adev->gfx.config.gb_addr_config);
+
+>>>>>>> v4.9.227
 	uvd_v4_2_init_cg(adev);
 }
 
@@ -611,7 +706,11 @@ static void uvd_v4_2_enable_mgcg(struct amdgpu_device *adev,
 {
 	u32 orig, data;
 
+<<<<<<< HEAD
 	if (enable && (adev->cg_flags & AMDGPU_CG_SUPPORT_UVD_MGCG)) {
+=======
+	if (enable && (adev->cg_flags & AMD_CG_SUPPORT_UVD_MGCG)) {
+>>>>>>> v4.9.227
 		data = RREG32_UVD_CTX(ixUVD_CGC_MEM_CTRL);
 		data = 0xfff;
 		WREG32_UVD_CTX(ixUVD_CGC_MEM_CTRL, data);
@@ -702,6 +801,7 @@ static int uvd_v4_2_soft_reset(void *handle)
 	return uvd_v4_2_start(adev);
 }
 
+<<<<<<< HEAD
 static void uvd_v4_2_print_status(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
@@ -806,6 +906,8 @@ static void uvd_v4_2_print_status(void *handle)
 		 RREG32(mmUVD_CONTEXT_ID));
 }
 
+=======
+>>>>>>> v4.9.227
 static int uvd_v4_2_set_interrupt_state(struct amdgpu_device *adev,
 					struct amdgpu_irq_src *source,
 					unsigned type,
@@ -830,6 +932,12 @@ static int uvd_v4_2_set_clockgating_state(void *handle,
 	bool gate = false;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
+<<<<<<< HEAD
+=======
+	if (!(adev->cg_flags & AMD_CG_SUPPORT_UVD_MGCG))
+		return 0;
+
+>>>>>>> v4.9.227
 	if (state == AMD_CG_STATE_GATE)
 		gate = true;
 
@@ -848,7 +956,14 @@ static int uvd_v4_2_set_powergating_state(void *handle,
 	 * revisit this when there is a cleaner line between
 	 * the smc and the hw blocks
 	 */
+<<<<<<< HEAD
 	 struct amdgpu_device *adev = (struct amdgpu_device *)handle;
+=======
+	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
+
+	if (!(adev->pg_flags & AMD_PG_SUPPORT_UVD))
+		return 0;
+>>>>>>> v4.9.227
 
 	if (state == AMD_PG_STATE_GATE) {
 		uvd_v4_2_stop(adev);
@@ -859,6 +974,10 @@ static int uvd_v4_2_set_powergating_state(void *handle,
 }
 
 const struct amd_ip_funcs uvd_v4_2_ip_funcs = {
+<<<<<<< HEAD
+=======
+	.name = "uvd_v4_2",
+>>>>>>> v4.9.227
 	.early_init = uvd_v4_2_early_init,
 	.late_init = NULL,
 	.sw_init = uvd_v4_2_sw_init,
@@ -870,7 +989,10 @@ const struct amd_ip_funcs uvd_v4_2_ip_funcs = {
 	.is_idle = uvd_v4_2_is_idle,
 	.wait_for_idle = uvd_v4_2_wait_for_idle,
 	.soft_reset = uvd_v4_2_soft_reset,
+<<<<<<< HEAD
 	.print_status = uvd_v4_2_print_status,
+=======
+>>>>>>> v4.9.227
 	.set_clockgating_state = uvd_v4_2_set_clockgating_state,
 	.set_powergating_state = uvd_v4_2_set_powergating_state,
 };
@@ -882,10 +1004,23 @@ static const struct amdgpu_ring_funcs uvd_v4_2_ring_funcs = {
 	.parse_cs = amdgpu_uvd_ring_parse_cs,
 	.emit_ib = uvd_v4_2_ring_emit_ib,
 	.emit_fence = uvd_v4_2_ring_emit_fence,
+<<<<<<< HEAD
 	.emit_semaphore = uvd_v4_2_ring_emit_semaphore,
 	.test_ring = uvd_v4_2_ring_test_ring,
 	.test_ib = uvd_v4_2_ring_test_ib,
 	.insert_nop = amdgpu_ring_insert_nop,
+=======
+	.emit_hdp_flush = uvd_v4_2_ring_emit_hdp_flush,
+	.emit_hdp_invalidate = uvd_v4_2_ring_emit_hdp_invalidate,
+	.test_ring = uvd_v4_2_ring_test_ring,
+	.test_ib = amdgpu_uvd_ring_test_ib,
+	.insert_nop = amdgpu_ring_insert_nop,
+	.pad_ib = amdgpu_ring_generic_pad_ib,
+	.begin_use = amdgpu_uvd_ring_begin_use,
+	.end_use = amdgpu_uvd_ring_end_use,
+	.get_emit_ib_size = uvd_v4_2_ring_get_emit_ib_size,
+	.get_dma_frame_size = uvd_v4_2_ring_get_dma_frame_size,
+>>>>>>> v4.9.227
 };
 
 static void uvd_v4_2_set_ring_funcs(struct amdgpu_device *adev)

@@ -16,8 +16,11 @@ README.FAQ
 	- general info for FAQ.
 README.HiSax
 	- info on the HiSax driver which replaces the old teles.
+<<<<<<< HEAD
 README.act2000
 	- info on driver for IBM ACT-2000 card.
+=======
+>>>>>>> v4.9.227
 README.audio
 	- info for running audio over ISDN.
 README.avmb1
@@ -34,6 +37,7 @@ README.hfc-pci
 	- info on hfc-pci based cards.
 README.hysdn
         - info on driver for Hypercope active HYSDN cards
+<<<<<<< HEAD
 README.icn
 	- info on the ICN-ISDN-card and its driver.
 README.mISDN
@@ -42,6 +46,10 @@ README.pcbit
 	- info on the PCBIT-D ISDN adapter and driver.
 README.sc
 	- info on driver for Spellcaster cards.
+=======
+README.mISDN
+	- info on the Modular ISDN subsystem (mISDN)
+>>>>>>> v4.9.227
 README.syncppp
 	- info on running Sync PPP over ISDN.
 README.x25

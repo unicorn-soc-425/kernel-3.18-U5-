@@ -13,5 +13,9 @@ Example:
 		compatible = "mrvl,mmp-rtc";
 		reg = <0xd4010000 0x1000>;
 		interrupts = <5>, <6>;
+<<<<<<< HEAD
 		interrupt-name = "rtc 1Hz", "rtc alarm";
+=======
+		interrupt-names = "rtc 1Hz", "rtc alarm";
+>>>>>>> v4.9.227
 	};

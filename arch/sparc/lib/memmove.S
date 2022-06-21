@@ -5,6 +5,10 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 	.text
 ENTRY(memmove) /* o0=dst o1=src o2=len */
@@ -57,3 +61,7 @@ ENTRY(memmove) /* o0=dst o1=src o2=len */
 	 stb		%g7, [%o0 - 0x1]
 	ba,a,pt		%xcc, 99b
 ENDPROC(memmove)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(memmove)
+>>>>>>> v4.9.227

@@ -76,6 +76,7 @@ static inline void release_thread(struct task_struct *dead_task)
 }
 
 /*
+<<<<<<< HEAD
  * Free current thread data structures etc..
  */
 static inline void exit_thread(void)
@@ -83,6 +84,8 @@ static inline void exit_thread(void)
 }
 
 /*
+=======
+>>>>>>> v4.9.227
  * Return saved PC of a blocked thread.
  */
 #define thread_saved_pc(tsk)	(tsk->thread.pc)

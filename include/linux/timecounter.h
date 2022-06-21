@@ -58,17 +58,28 @@ struct cyclecounter {
  * @cycle_last:		most recent cycle counter value seen by
  *			timecounter_read()
  * @nsec:		continuously increasing count
+<<<<<<< HEAD
+=======
+ * @mask:		bit mask for maintaining the 'frac' field
+ * @frac:		accumulated fractional nanoseconds
+>>>>>>> v4.9.227
  */
 struct timecounter {
 	const struct cyclecounter *cc;
 	cycle_t cycle_last;
 	u64 nsec;
+<<<<<<< HEAD
+=======
+	u64 mask;
+	u64 frac;
+>>>>>>> v4.9.227
 };
 
 /**
  * cyclecounter_cyc2ns - converts cycle counter cycles to nanoseconds
  * @cc:		Pointer to cycle counter.
  * @cycles:	Cycles
+<<<<<<< HEAD
  *
  * XXX - This could use some mult_lxl_ll() asm optimization. Same code
  * as in cyc2ns, but with unsigned result.
@@ -79,6 +90,28 @@ static inline u64 cyclecounter_cyc2ns(const struct cyclecounter *cc,
 	u64 ret = (u64)cycles;
 	ret = (ret * cc->mult) >> cc->shift;
 	return ret;
+=======
+ * @mask:	bit mask for maintaining the 'frac' field
+ * @frac:	pointer to storage for the fractional nanoseconds.
+ */
+static inline u64 cyclecounter_cyc2ns(const struct cyclecounter *cc,
+				      cycle_t cycles, u64 mask, u64 *frac)
+{
+	u64 ns = (u64) cycles;
+
+	ns = (ns * cc->mult) + *frac;
+	*frac = ns & mask;
+	return ns >> cc->shift;
+}
+
+/**
+ * timecounter_adjtime - Shifts the time of the clock.
+ * @delta:	Desired change in nanoseconds.
+ */
+static inline void timecounter_adjtime(struct timecounter *tc, s64 delta)
+{
+	tc->nsec += delta;
+>>>>>>> v4.9.227
 }
 
 /**

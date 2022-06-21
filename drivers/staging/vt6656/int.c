@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  *
  * File: int.c
  *
@@ -101,7 +104,11 @@ static int vnt_int_report_rate(struct vnt_private *priv, u8 pkt_no, u8 tsr)
 		else if (context->fb_option == AUTO_FB_1)
 			tx_rate = fallback_rate1[tx_rate][retry];
 
+<<<<<<< HEAD
 		if (info->band == IEEE80211_BAND_5GHZ)
+=======
+		if (info->band == NL80211_BAND_5GHZ)
+>>>>>>> v4.9.227
 			idx = tx_rate - RATE_6M;
 		else
 			idx = tx_rate;
@@ -111,9 +118,17 @@ static int vnt_int_report_rate(struct vnt_private *priv, u8 pkt_no, u8 tsr)
 
 	info->status.rates[0].count = tx_retry;
 
+<<<<<<< HEAD
 	if (!(tsr & (TSR_TMO | TSR_RETRYTMO))) {
 		info->status.rates[0].idx = idx;
 		info->flags |= IEEE80211_TX_STAT_ACK;
+=======
+	if (!(tsr & TSR_TMO)) {
+		info->status.rates[0].idx = idx;
+
+		if (!(info->flags & IEEE80211_TX_CTL_NO_ACK))
+			info->flags |= IEEE80211_TX_STAT_ACK;
+>>>>>>> v4.9.227
 	}
 
 	ieee80211_tx_status_irqsafe(priv->hw, context->skb);
@@ -149,10 +164,26 @@ void vnt_int_process_data(struct vnt_private *priv)
 				priv->op_mode == NL80211_IFTYPE_AP)
 			vnt_schedule_command(priv, WLAN_CMD_BECON_SEND);
 
+<<<<<<< HEAD
 		if (int_data->isr0 & ISR_TBTT) {
 			if (priv->hw->conf.flags & IEEE80211_CONF_PS)
 				vnt_schedule_command(priv,
 							WLAN_CMD_TBTT_WAKEUP);
+=======
+		if (int_data->isr0 & ISR_TBTT &&
+		    priv->hw->conf.flags & IEEE80211_CONF_PS) {
+			if (!priv->wake_up_count)
+				priv->wake_up_count =
+					priv->hw->conf.listen_interval;
+
+			if (priv->wake_up_count)
+				--priv->wake_up_count;
+
+			/* Turn on wake up to listen next beacon */
+			if (priv->wake_up_count == 1)
+				vnt_schedule_command(priv,
+						     WLAN_CMD_TBTT_WAKEUP);
+>>>>>>> v4.9.227
 		}
 		priv->current_tsf = le64_to_cpu(int_data->tsf);
 

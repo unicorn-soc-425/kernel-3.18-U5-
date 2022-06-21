@@ -187,12 +187,15 @@ config MEMORY_RESERVE
 	help
 	  Reserve certain memory regions on 68x328 based boards.
 
+<<<<<<< HEAD
 config UCQUICC
 	bool "Lineo uCquicc board support"
 	depends on M68360
 	help
 	  Support for the Lineo uCquicc board.
 
+=======
+>>>>>>> v4.9.227
 config ARN5206
 	bool "Arnewsh 5206 board support"
 	depends on M5206

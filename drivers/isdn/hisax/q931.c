@@ -1179,7 +1179,11 @@ LogFrame(struct IsdnCardState *cs, u_char *buf, int size)
 		dp--;
 		*dp++ = '\n';
 		*dp = 0;
+<<<<<<< HEAD
 		HiSax_putstatus(cs, NULL, "%s", cs->dlog);
+=======
+		HiSax_putstatus(cs, NULL, cs->dlog);
+>>>>>>> v4.9.227
 	} else
 		HiSax_putstatus(cs, "LogFrame: ", "warning Frame too big (%d)", size);
 }
@@ -1246,7 +1250,11 @@ dlogframe(struct IsdnCardState *cs, struct sk_buff *skb, int dir)
 	}
 	if (finish) {
 		*dp = 0;
+<<<<<<< HEAD
 		HiSax_putstatus(cs, NULL, "%s", cs->dlog);
+=======
+		HiSax_putstatus(cs, NULL, cs->dlog);
+>>>>>>> v4.9.227
 		return;
 	}
 	if ((0xfe & buf[0]) == PROTO_DIS_N0) {	/* 1TR6 */
@@ -1509,5 +1517,9 @@ dlogframe(struct IsdnCardState *cs, struct sk_buff *skb, int dir)
 		dp += sprintf(dp, "Unknown protocol %x!", buf[0]);
 	}
 	*dp = 0;
+<<<<<<< HEAD
 	HiSax_putstatus(cs, NULL, "%s", cs->dlog);
+=======
+	HiSax_putstatus(cs, NULL, cs->dlog);
+>>>>>>> v4.9.227
 }

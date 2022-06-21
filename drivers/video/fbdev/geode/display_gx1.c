@@ -208,7 +208,11 @@ static void gx1_set_hw_palette_reg(struct fb_info *info, unsigned regno,
 	writel(val, par->dc_regs + DC_PAL_DATA);
 }
 
+<<<<<<< HEAD
 struct geode_dc_ops gx1_dc_ops = {
+=======
+const struct geode_dc_ops gx1_dc_ops = {
+>>>>>>> v4.9.227
 	.set_mode	 = gx1_set_mode,
 	.set_palette_reg = gx1_set_hw_palette_reg,
 };

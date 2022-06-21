@@ -81,9 +81,13 @@ machine_device_initcall(ppa8548, declare_of_platform_devices);
  */
 static int __init ppa8548_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "ppa8548");
+=======
+	return of_machine_is_compatible("ppa8548");
+>>>>>>> v4.9.227
 }
 
 define_machine(ppa8548) {
@@ -93,7 +97,10 @@ define_machine(ppa8548) {
 	.init_IRQ	= ppa8548_pic_init,
 	.show_cpuinfo	= ppa8548_show_cpuinfo,
 	.get_irq	= mpic_get_irq,
+<<<<<<< HEAD
 	.restart	= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr = generic_calibrate_decr,
 	.progress	= udbg_progress,
 };

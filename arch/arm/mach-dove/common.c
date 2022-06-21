@@ -16,6 +16,10 @@
 #include <linux/platform_data/dma-mv_xor.h>
 #include <linux/platform_data/usb-ehci-orion.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/soc/dove/pmu.h>
+>>>>>>> v4.9.227
 #include <asm/hardware/cache-tauros2.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
@@ -87,8 +91,12 @@ static void __init dove_clk_init(void)
 	struct clk *nand, *camera, *i2s0, *i2s1, *crypto, *ac97, *pdma;
 	struct clk *xor0, *xor1, *ge, *gephy;
 
+<<<<<<< HEAD
 	tclk = clk_register_fixed_rate(NULL, "tclk", NULL, CLK_IS_ROOT,
 				       dove_tclk);
+=======
+	tclk = clk_register_fixed_rate(NULL, "tclk", NULL, 0, dove_tclk);
+>>>>>>> v4.9.227
 
 	usb0 = dove_register_gate("usb0", "tclk", CLOCK_GATING_BIT_USB0);
 	usb1 = dove_register_gate("usb1", "tclk", CLOCK_GATING_BIT_USB1);
@@ -375,6 +383,50 @@ void __init dove_setup_cpu_wins(void)
 				    DOVE_SCRATCHPAD_SIZE);
 }
 
+<<<<<<< HEAD
+=======
+static struct resource orion_wdt_resource[] = {
+		DEFINE_RES_MEM(TIMER_PHYS_BASE, 0x04),
+		DEFINE_RES_MEM(RSTOUTn_MASK_PHYS, 0x04),
+};
+
+static struct platform_device orion_wdt_device = {
+	.name		= "orion_wdt",
+	.id		= -1,
+	.num_resources	= ARRAY_SIZE(orion_wdt_resource),
+	.resource	= orion_wdt_resource,
+};
+
+static void __init __maybe_unused orion_wdt_init(void)
+{
+	platform_device_register(&orion_wdt_device);
+}
+
+static const struct dove_pmu_domain_initdata pmu_domains[] __initconst = {
+	{
+		.pwr_mask = PMU_PWR_VPU_PWR_DWN_MASK,
+		.rst_mask = PMU_SW_RST_VIDEO_MASK,
+		.iso_mask = PMU_ISO_VIDEO_MASK,
+		.name = "vpu-domain",
+	}, {
+		.pwr_mask = PMU_PWR_GPU_PWR_DWN_MASK,
+		.rst_mask = PMU_SW_RST_GPU_MASK,
+		.iso_mask = PMU_ISO_GPU_MASK,
+		.name = "gpu-domain",
+	}, {
+		/* sentinel */
+	},
+};
+
+static const struct dove_pmu_initdata pmu_data __initconst = {
+	.pmc_base = DOVE_PMU_VIRT_BASE,
+	.pmu_base = DOVE_PMU_VIRT_BASE + 0x8000,
+	.irq = IRQ_DOVE_PMU,
+	.irq_domain_start = IRQ_DOVE_PMU_START,
+	.domains = pmu_domains,
+};
+
+>>>>>>> v4.9.227
 void __init dove_init(void)
 {
 	pr_info("Dove 88AP510 SoC, TCLK = %d MHz.\n",
@@ -389,6 +441,10 @@ void __init dove_init(void)
 	dove_clk_init();
 
 	/* internal devices that every board has */
+<<<<<<< HEAD
+=======
+	dove_init_pmu_legacy(&pmu_data);
+>>>>>>> v4.9.227
 	dove_rtc_init();
 	dove_xor0_init();
 	dove_xor1_init();

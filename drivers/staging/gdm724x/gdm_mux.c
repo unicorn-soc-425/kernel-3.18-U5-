@@ -26,8 +26,11 @@
 
 #include "gdm_mux.h"
 
+<<<<<<< HEAD
 static struct workqueue_struct *mux_rx_wq;
 
+=======
+>>>>>>> v4.9.227
 static u16 packet_type[TTY_MAX_COUNT] = {0xF011, 0xF010};
 
 #define USB_DEVICE_CDC_DATA(vid, pid) \
@@ -48,7 +51,10 @@ static const struct usb_device_id id_table[] = {
 	{}
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 MODULE_DEVICE_TABLE(usb, id_table);
 
 static int packet_type_to_index(u16 packetType)
@@ -67,7 +73,11 @@ static struct mux_tx *alloc_mux_tx(int len)
 {
 	struct mux_tx *t = NULL;
 
+<<<<<<< HEAD
 	t = kzalloc(sizeof(struct mux_tx), GFP_ATOMIC);
+=======
+	t = kzalloc(sizeof(*t), GFP_ATOMIC);
+>>>>>>> v4.9.227
 	if (!t)
 		return NULL;
 
@@ -96,7 +106,11 @@ static struct mux_rx *alloc_mux_rx(void)
 {
 	struct mux_rx *r = NULL;
 
+<<<<<<< HEAD
 	r = kzalloc(sizeof(struct mux_rx), GFP_KERNEL);
+=======
+	r = kzalloc(sizeof(*r), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!r)
 		return NULL;
 
@@ -150,10 +164,16 @@ static void put_rx_struct(struct rx_cxt *rx, struct mux_rx *r)
 	spin_unlock_irqrestore(&rx->free_list_lock, flags);
 }
 
+<<<<<<< HEAD
 
 static int up_to_host(struct mux_rx *r)
 {
 	struct mux_dev *mux_dev = (struct mux_dev *)r->mux_dev;
+=======
+static int up_to_host(struct mux_rx *r)
+{
+	struct mux_dev *mux_dev = r->mux_dev;
+>>>>>>> v4.9.227
 	struct mux_pkt_header *mux_header;
 	unsigned int start_flag;
 	unsigned int payload_size;
@@ -220,9 +240,15 @@ static int up_to_host(struct mux_rx *r)
 static void do_rx(struct work_struct *work)
 {
 	struct mux_dev *mux_dev =
+<<<<<<< HEAD
 		container_of(work, struct mux_dev , work_rx.work);
 	struct mux_rx *r;
 	struct rx_cxt *rx = (struct rx_cxt *)&mux_dev->rx;
+=======
+		container_of(work, struct mux_dev, work_rx.work);
+	struct mux_rx *r;
+	struct rx_cxt *rx = &mux_dev->rx;
+>>>>>>> v4.9.227
 	unsigned long flags;
 	int ret = 0;
 
@@ -262,7 +288,11 @@ static void remove_rx_submit_list(struct mux_rx *r, struct rx_cxt *rx)
 static void gdm_mux_rcv_complete(struct urb *urb)
 {
 	struct mux_rx *r = urb->context;
+<<<<<<< HEAD
 	struct mux_dev *mux_dev = (struct mux_dev *)r->mux_dev;
+=======
+	struct mux_dev *mux_dev = r->mux_dev;
+>>>>>>> v4.9.227
 	struct rx_cxt *rx = &mux_dev->rx;
 	unsigned long flags;
 
@@ -270,20 +300,35 @@ static void gdm_mux_rcv_complete(struct urb *urb)
 
 	if (urb->status) {
 		if (mux_dev->usb_state == PM_NORMAL)
+<<<<<<< HEAD
 			pr_err("%s: urb status error %d\n",
 			       __func__, urb->status);
+=======
+			dev_err(&urb->dev->dev, "%s: urb status error %d\n",
+				__func__, urb->status);
+>>>>>>> v4.9.227
 		put_rx_struct(rx, r);
 	} else {
 		r->len = r->urb->actual_length;
 		spin_lock_irqsave(&rx->to_host_lock, flags);
 		list_add_tail(&r->to_host_list, &rx->to_host_list);
+<<<<<<< HEAD
 		queue_work(mux_rx_wq, &mux_dev->work_rx.work);
+=======
+		schedule_work(&mux_dev->work_rx.work);
+>>>>>>> v4.9.227
 		spin_unlock_irqrestore(&rx->to_host_lock, flags);
 	}
 }
 
+<<<<<<< HEAD
 static int gdm_mux_recv(void *priv_dev, int (*cb)(void *data, int len,
 			int tty_index, struct tty_dev *tty_dev, int complete))
+=======
+static int gdm_mux_recv(void *priv_dev,
+			int (*cb)(void *data, int len, int tty_index,
+				  struct tty_dev *tty_dev, int complete))
+>>>>>>> v4.9.227
 {
 	struct mux_dev *mux_dev = priv_dev;
 	struct usb_device *usbdev = mux_dev->usbdev;
@@ -342,7 +387,11 @@ static void gdm_mux_send_complete(struct urb *urb)
 	struct mux_tx *t = urb->context;
 
 	if (urb->status == -ECONNRESET) {
+<<<<<<< HEAD
 		pr_info("CONNRESET\n");
+=======
+		dev_info(&urb->dev->dev, "CONNRESET\n");
+>>>>>>> v4.9.227
 		free_mux_tx(t);
 		return;
 	}
@@ -388,8 +437,13 @@ static int gdm_mux_send(void *priv_dev, void *data, int len, int tty_index,
 	mux_header->payload_size = __cpu_to_le32((u32)len);
 	mux_header->packet_type = __cpu_to_le16(packet_type[tty_index]);
 
+<<<<<<< HEAD
 	memcpy(t->buf+MUX_HEADER_SIZE, data, len);
 	memset(t->buf+MUX_HEADER_SIZE+len, 0, total_len - MUX_HEADER_SIZE -
+=======
+	memcpy(t->buf + MUX_HEADER_SIZE, data, len);
+	memset(t->buf + MUX_HEADER_SIZE + len, 0, total_len - MUX_HEADER_SIZE -
+>>>>>>> v4.9.227
 	       len);
 
 	t->len = total_len;
@@ -437,7 +491,11 @@ static int gdm_mux_send_control(void *priv_dev, int request, int value,
 	if (ret < 0)
 		pr_err("usb_control_msg error: %d\n", ret);
 
+<<<<<<< HEAD
 	return ret < 0 ? ret : 0;
+=======
+	return min(ret, 0);
+>>>>>>> v4.9.227
 }
 
 static void release_usb(struct mux_dev *mux_dev)
@@ -474,7 +532,10 @@ static void release_usb(struct mux_dev *mux_dev)
 	spin_unlock_irqrestore(&rx->to_host_lock, flags);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 static int init_usb(struct mux_dev *mux_dev)
 {
 	struct mux_rx *r;
@@ -492,7 +553,11 @@ static int init_usb(struct mux_dev *mux_dev)
 
 	for (i = 0; i < MAX_ISSUE_NUM * 2; i++) {
 		r = alloc_mux_rx();
+<<<<<<< HEAD
 		if (r == NULL) {
+=======
+		if (!r) {
+>>>>>>> v4.9.227
 			ret = -ENOMEM;
 			break;
 		}
@@ -526,11 +591,19 @@ static int gdm_mux_probe(struct usb_interface *intf,
 	if (bInterfaceNumber != 2)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	mux_dev = kzalloc(sizeof(struct mux_dev), GFP_KERNEL);
 	if (!mux_dev)
 		return -ENOMEM;
 
 	tty_dev = kzalloc(sizeof(struct tty_dev), GFP_KERNEL);
+=======
+	mux_dev = kzalloc(sizeof(*mux_dev), GFP_KERNEL);
+	if (!mux_dev)
+		return -ENOMEM;
+
+	tty_dev = kzalloc(sizeof(*tty_dev), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!tty_dev) {
 		ret = -ENOMEM;
 		goto err_free_mux;
@@ -605,14 +678,24 @@ static int gdm_mux_suspend(struct usb_interface *intf, pm_message_t pm_msg)
 	mux_dev = tty_dev->priv_dev;
 	rx = &mux_dev->rx;
 
+<<<<<<< HEAD
 	if (mux_dev->usb_state != PM_NORMAL) {
 		pr_err("usb suspend - invalid state\n");
+=======
+	cancel_work_sync(&mux_dev->work_rx.work);
+
+	if (mux_dev->usb_state != PM_NORMAL) {
+		dev_err(intf->usb_dev, "usb suspend - invalid state\n");
+>>>>>>> v4.9.227
 		return -1;
 	}
 
 	mux_dev->usb_state = PM_SUSPEND;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&rx->submit_list_lock, flags);
 	list_for_each_entry_safe(r, r_next, &rx->rx_submit_list,
 				 rx_submit_list) {
@@ -635,7 +718,11 @@ static int gdm_mux_resume(struct usb_interface *intf)
 	mux_dev = tty_dev->priv_dev;
 
 	if (mux_dev->usb_state != PM_SUSPEND) {
+<<<<<<< HEAD
 		pr_err("usb resume - invalid state\n");
+=======
+		dev_err(intf->usb_dev, "usb resume - invalid state\n");
+>>>>>>> v4.9.227
 		return -1;
 	}
 
@@ -660,6 +747,7 @@ static struct usb_driver gdm_mux_driver = {
 
 static int __init gdm_usb_mux_init(void)
 {
+<<<<<<< HEAD
 
 	mux_rx_wq = create_workqueue("mux_rx_wq");
 	if (mux_rx_wq == NULL) {
@@ -667,6 +755,8 @@ static int __init gdm_usb_mux_init(void)
 		return -1;
 	}
 
+=======
+>>>>>>> v4.9.227
 	register_lte_tty_driver();
 
 	return usb_register(&gdm_mux_driver);
@@ -674,11 +764,14 @@ static int __init gdm_usb_mux_init(void)
 
 static void __exit gdm_usb_mux_exit(void)
 {
+<<<<<<< HEAD
 	if (mux_rx_wq) {
 		flush_workqueue(mux_rx_wq);
 		destroy_workqueue(mux_rx_wq);
 	}
 
+=======
+>>>>>>> v4.9.227
 	usb_deregister(&gdm_mux_driver);
 	unregister_lte_tty_driver();
 }

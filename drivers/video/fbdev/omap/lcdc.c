@@ -612,8 +612,13 @@ static void lcdc_dma_handler(u16 status, void *data)
 
 static int alloc_palette_ram(void)
 {
+<<<<<<< HEAD
 	lcdc.palette_virt = dma_alloc_writecombine(lcdc.fbdev->dev,
 		MAX_PALETTE_SIZE, &lcdc.palette_phys, GFP_KERNEL);
+=======
+	lcdc.palette_virt = dma_alloc_wc(lcdc.fbdev->dev, MAX_PALETTE_SIZE,
+					 &lcdc.palette_phys, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (lcdc.palette_virt == NULL) {
 		dev_err(lcdc.fbdev->dev, "failed to alloc palette memory\n");
 		return -ENOMEM;
@@ -625,8 +630,13 @@ static int alloc_palette_ram(void)
 
 static void free_palette_ram(void)
 {
+<<<<<<< HEAD
 	dma_free_writecombine(lcdc.fbdev->dev, MAX_PALETTE_SIZE,
 			lcdc.palette_virt, lcdc.palette_phys);
+=======
+	dma_free_wc(lcdc.fbdev->dev, MAX_PALETTE_SIZE, lcdc.palette_virt,
+		    lcdc.palette_phys);
+>>>>>>> v4.9.227
 }
 
 static int alloc_fbmem(struct omapfb_mem_region *region)
@@ -642,8 +652,13 @@ static int alloc_fbmem(struct omapfb_mem_region *region)
 	if (region->size > frame_size)
 		frame_size = region->size;
 	lcdc.vram_size = frame_size;
+<<<<<<< HEAD
 	lcdc.vram_virt = dma_alloc_writecombine(lcdc.fbdev->dev,
 			lcdc.vram_size, &lcdc.vram_phys, GFP_KERNEL);
+=======
+	lcdc.vram_virt = dma_alloc_wc(lcdc.fbdev->dev, lcdc.vram_size,
+				      &lcdc.vram_phys, GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (lcdc.vram_virt == NULL) {
 		dev_err(lcdc.fbdev->dev, "unable to allocate FB DMA memory\n");
 		return -ENOMEM;
@@ -660,8 +675,13 @@ static int alloc_fbmem(struct omapfb_mem_region *region)
 
 static void free_fbmem(void)
 {
+<<<<<<< HEAD
 	dma_free_writecombine(lcdc.fbdev->dev, lcdc.vram_size,
 			      lcdc.vram_virt, lcdc.vram_phys);
+=======
+	dma_free_wc(lcdc.fbdev->dev, lcdc.vram_size, lcdc.vram_virt,
+		    lcdc.vram_phys);
+>>>>>>> v4.9.227
 }
 
 static int setup_fbmem(struct omapfb_mem_desc *req_md)

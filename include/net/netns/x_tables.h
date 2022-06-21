@@ -2,13 +2,21 @@
 #define __NETNS_X_TABLES_H
 
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
+=======
+#include <linux/netfilter_defs.h>
+>>>>>>> v4.9.227
 
 struct ebt_table;
 
 struct netns_xt {
 	struct list_head tables[NFPROTO_NUMPROTO];
 	bool notrack_deprecated_warning;
+<<<<<<< HEAD
+=======
+	bool clusterip_deprecated_warning;
+>>>>>>> v4.9.227
 #if defined(CONFIG_BRIDGE_NF_EBTABLES) || \
     defined(CONFIG_BRIDGE_NF_EBTABLES_MODULE)
 	struct ebt_table *broute_table;

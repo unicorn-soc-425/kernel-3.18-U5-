@@ -10,6 +10,10 @@
 
 extern char *strndup_user(const char __user *, long);
 extern void *memdup_user(const void __user *, size_t);
+<<<<<<< HEAD
+=======
+extern void *memdup_user_nul(const void __user *, size_t);
+>>>>>>> v4.9.227
 
 /*
  * Include machine specific inline routines
@@ -26,7 +30,11 @@ extern char * strncpy(char *,const char *, __kernel_size_t);
 size_t strlcpy(char *, const char *, size_t);
 #endif
 #ifndef __HAVE_ARCH_STRSCPY
+<<<<<<< HEAD
 ssize_t __must_check strscpy(char *, const char *, size_t);
+=======
+ssize_t strscpy(char *, const char *, size_t);
+>>>>>>> v4.9.227
 #endif
 #ifndef __HAVE_ARCH_STRCAT
 extern char * strcat(char *, const char *);
@@ -43,9 +51,12 @@ extern int strcmp(const char *,const char *);
 #ifndef __HAVE_ARCH_STRNCMP
 extern int strncmp(const char *,const char *,__kernel_size_t);
 #endif
+<<<<<<< HEAD
 #ifndef __HAVE_ARCH_STRNICMP
 #define strnicmp strncasecmp
 #endif
+=======
+>>>>>>> v4.9.227
 #ifndef __HAVE_ARCH_STRCASECMP
 extern int strcasecmp(const char *s1, const char *s2);
 #endif
@@ -113,13 +124,26 @@ extern void * memscan(void *,int,__kernel_size_t);
 #ifndef __HAVE_ARCH_MEMCMP
 extern int memcmp(const void *,const void *,__kernel_size_t);
 #endif
+<<<<<<< HEAD
+=======
+#ifndef __HAVE_ARCH_BCMP
+extern int bcmp(const void *,const void *,__kernel_size_t);
+#endif
+>>>>>>> v4.9.227
 #ifndef __HAVE_ARCH_MEMCHR
 extern void * memchr(const void *,int,__kernel_size_t);
 #endif
 void *memchr_inv(const void *s, int c, size_t n);
 char *strreplace(char *s, char old, char new);
 
+<<<<<<< HEAD
 extern char *kstrdup(const char *s, gfp_t gfp);
+=======
+extern void kfree_const(const void *x);
+
+extern char *kstrdup(const char *s, gfp_t gfp) __malloc;
+extern const char *kstrdup_const(const char *s, gfp_t gfp);
+>>>>>>> v4.9.227
 extern char *kstrndup(const char *s, size_t len, gfp_t gfp);
 extern void *kmemdup(const void *src, size_t len, gfp_t gfp);
 extern char *kmemdup_nul(const char *s, size_t len, gfp_t gfp);
@@ -128,6 +152,7 @@ extern char **argv_split(gfp_t gfp, const char *str, int *argcp);
 extern void argv_free(char **argv);
 
 extern bool sysfs_streq(const char *s1, const char *s2);
+<<<<<<< HEAD
 extern int strtobool(const char *s, bool *res);
 
 int match_string(const char * const *array, size_t n, const char *string);
@@ -141,6 +166,15 @@ int __sysfs_match_string(const char * const *array, size_t n, const char *s);
  * Helper for __sysfs_match_string(). Calculates the size of @a automatically.
  */
 #define sysfs_match_string(_a, _s) __sysfs_match_string(_a, ARRAY_SIZE(_a), _s)
+=======
+extern int kstrtobool(const char *s, bool *res);
+static inline int strtobool(const char *s, bool *res)
+{
+	return kstrtobool(s, res);
+}
+
+int match_string(const char * const *array, size_t n, const char *string);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_BINARY_PRINTF
 int vbin_printf(u32 *bin_buf, size_t size, const char *fmt, va_list args);

@@ -213,8 +213,16 @@ struct e1000_rx_ring {
 };
 
 #define E1000_DESC_UNUSED(R)						\
+<<<<<<< HEAD
 	((((R)->next_to_clean > (R)->next_to_use)			\
 	  ? 0 : (R)->count) + (R)->next_to_clean - (R)->next_to_use - 1)
+=======
+({									\
+	unsigned int clean = smp_load_acquire(&(R)->next_to_clean);	\
+	unsigned int use = READ_ONCE((R)->next_to_use);			\
+	(clean > use ? 0 : (R)->count) + clean - use - 1;		\
+})
+>>>>>>> v4.9.227
 
 #define E1000_RX_DESC_EXT(R, i)						\
 	(&(((union e1000_rx_desc_extended *)((R).desc))[i]))
@@ -356,6 +364,11 @@ struct net_device *e1000_get_hw_dev(struct e1000_hw *hw);
 extern char e1000_driver_name[];
 extern const char e1000_driver_version[];
 
+<<<<<<< HEAD
+=======
+int e1000_open(struct net_device *netdev);
+int e1000_close(struct net_device *netdev);
+>>>>>>> v4.9.227
 int e1000_up(struct e1000_adapter *adapter);
 void e1000_down(struct e1000_adapter *adapter);
 void e1000_reinit_locked(struct e1000_adapter *adapter);

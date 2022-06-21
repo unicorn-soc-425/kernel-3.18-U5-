@@ -1736,6 +1736,7 @@ char *addr_to_string(struct fddi_addr *addr)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef	AM29K
 int smt_ifconfig(int argc, char *argv[])
 {
@@ -1748,6 +1749,8 @@ int smt_ifconfig(int argc, char *argv[])
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 /*
  * return static mac index
  */

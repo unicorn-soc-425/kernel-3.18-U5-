@@ -27,7 +27,10 @@
 #include "seq_clientmgr.h"
 #include "seq_timer.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+>>>>>>> v4.9.227
 static struct snd_info_entry *queues_entry;
 static struct snd_info_entry *clients_entry;
 static struct snd_info_entry *timer_entry;
@@ -51,6 +54,16 @@ create_info_entry(char *name, void (*read)(struct snd_info_entry *,
 	return entry;
 }
 
+<<<<<<< HEAD
+=======
+static void free_info_entries(void)
+{
+	snd_info_free_entry(queues_entry);
+	snd_info_free_entry(clients_entry);
+	snd_info_free_entry(timer_entry);
+}
+
+>>>>>>> v4.9.227
 /* create all our /proc entries */
 int __init snd_seq_info_init(void)
 {
@@ -59,14 +72,30 @@ int __init snd_seq_info_init(void)
 	clients_entry = create_info_entry("clients",
 					  snd_seq_info_clients_read);
 	timer_entry = create_info_entry("timer", snd_seq_info_timer_read);
+<<<<<<< HEAD
 	return 0;
+=======
+	if (!queues_entry || !clients_entry || !timer_entry)
+		goto error;
+	return 0;
+
+ error:
+	free_info_entries();
+	return -ENOMEM;
+>>>>>>> v4.9.227
 }
 
 int __exit snd_seq_info_done(void)
 {
+<<<<<<< HEAD
 	snd_info_free_entry(queues_entry);
 	snd_info_free_entry(clients_entry);
 	snd_info_free_entry(timer_entry);
 	return 0;
 }
 #endif
+=======
+	free_info_entries();
+	return 0;
+}
+>>>>>>> v4.9.227

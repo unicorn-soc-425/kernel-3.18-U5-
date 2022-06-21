@@ -92,6 +92,10 @@ struct mfc6_cache {
 			unsigned long bytes;
 			unsigned long pkt;
 			unsigned long wrong_if;
+<<<<<<< HEAD
+=======
+			unsigned long lastuse;
+>>>>>>> v4.9.227
 			unsigned char ttls[MAXMIFS];	/* TTL thresholds		*/
 		} res;
 	} mfc_un;

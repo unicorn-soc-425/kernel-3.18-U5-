@@ -445,32 +445,56 @@ void divasa_unmap_pci_bar(void __iomem *bar)
 /*********************************************************
  ** I/O port access
  *********************************************************/
+<<<<<<< HEAD
 byte __inline__ inpp(void __iomem *addr)
+=======
+inline byte inpp(void __iomem *addr)
+>>>>>>> v4.9.227
 {
 	return (inb((unsigned long) addr));
 }
 
+<<<<<<< HEAD
 word __inline__ inppw(void __iomem *addr)
+=======
+inline word inppw(void __iomem *addr)
+>>>>>>> v4.9.227
 {
 	return (inw((unsigned long) addr));
 }
 
+<<<<<<< HEAD
 void __inline__ inppw_buffer(void __iomem *addr, void *P, int length)
+=======
+inline void inppw_buffer(void __iomem *addr, void *P, int length)
+>>>>>>> v4.9.227
 {
 	insw((unsigned long) addr, (word *) P, length >> 1);
 }
 
+<<<<<<< HEAD
 void __inline__ outppw_buffer(void __iomem *addr, void *P, int length)
+=======
+inline void outppw_buffer(void __iomem *addr, void *P, int length)
+>>>>>>> v4.9.227
 {
 	outsw((unsigned long) addr, (word *) P, length >> 1);
 }
 
+<<<<<<< HEAD
 void __inline__ outppw(void __iomem *addr, word w)
+=======
+inline void outppw(void __iomem *addr, word w)
+>>>>>>> v4.9.227
 {
 	outw(w, (unsigned long) addr);
 }
 
+<<<<<<< HEAD
 void __inline__ outpp(void __iomem *addr, word p)
+=======
+inline void outpp(void __iomem *addr, word p)
+>>>>>>> v4.9.227
 {
 	outb(p, (unsigned long) addr);
 }

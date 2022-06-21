@@ -18,10 +18,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> v4.9.227
  */
 
 #include <linux/kernel.h>
@@ -37,7 +40,12 @@
 
 #include "apei-internal.h"
 
+<<<<<<< HEAD
 #define EINJ_PFX "EINJ: "
+=======
+#undef pr_fmt
+#define pr_fmt(fmt) "EINJ: " fmt
+>>>>>>> v4.9.227
 
 #define SPIN_UNIT		100			/* 100ns */
 /* Firmware should respond within 1 milliseconds */
@@ -183,8 +191,12 @@ static int einj_get_available_error_type(u32 *type)
 static int einj_timedout(u64 *t)
 {
 	if ((s64)*t < SPIN_UNIT) {
+<<<<<<< HEAD
 		pr_warning(FW_WARN EINJ_PFX
 			   "Firmware does not respond in time\n");
+=======
+		pr_warning(FW_WARN "Firmware does not respond in time\n");
+>>>>>>> v4.9.227
 		return 1;
 	}
 	*t -= SPIN_UNIT;
@@ -311,8 +323,12 @@ static int __einj_error_trigger(u64 trigger_paddr, u32 type,
 	r = request_mem_region(trigger_paddr, sizeof(*trigger_tab),
 			       "APEI EINJ Trigger Table");
 	if (!r) {
+<<<<<<< HEAD
 		pr_err(EINJ_PFX
 	"Can not request [mem %#010llx-%#010llx] for Trigger table\n",
+=======
+		pr_err("Can not request [mem %#010llx-%#010llx] for Trigger table\n",
+>>>>>>> v4.9.227
 		       (unsigned long long)trigger_paddr,
 		       (unsigned long long)trigger_paddr +
 			    sizeof(*trigger_tab) - 1);
@@ -320,13 +336,21 @@ static int __einj_error_trigger(u64 trigger_paddr, u32 type,
 	}
 	trigger_tab = ioremap_cache(trigger_paddr, sizeof(*trigger_tab));
 	if (!trigger_tab) {
+<<<<<<< HEAD
 		pr_err(EINJ_PFX "Failed to map trigger table!\n");
+=======
+		pr_err("Failed to map trigger table!\n");
+>>>>>>> v4.9.227
 		goto out_rel_header;
 	}
 	rc = einj_check_trigger_header(trigger_tab);
 	if (rc) {
+<<<<<<< HEAD
 		pr_warning(FW_BUG EINJ_PFX
 			   "The trigger error action table is invalid\n");
+=======
+		pr_warning(FW_BUG "Invalid trigger error action table.\n");
+>>>>>>> v4.9.227
 		goto out_rel_header;
 	}
 
@@ -340,8 +364,12 @@ static int __einj_error_trigger(u64 trigger_paddr, u32 type,
 			       table_size - sizeof(*trigger_tab),
 			       "APEI EINJ Trigger Table");
 	if (!r) {
+<<<<<<< HEAD
 		pr_err(EINJ_PFX
 "Can not request [mem %#010llx-%#010llx] for Trigger Table Entry\n",
+=======
+		pr_err("Can not request [mem %#010llx-%#010llx] for Trigger Table Entry\n",
+>>>>>>> v4.9.227
 		       (unsigned long long)trigger_paddr + sizeof(*trigger_tab),
 		       (unsigned long long)trigger_paddr + table_size - 1);
 		goto out_rel_header;
@@ -349,7 +377,11 @@ static int __einj_error_trigger(u64 trigger_paddr, u32 type,
 	iounmap(trigger_tab);
 	trigger_tab = ioremap_cache(trigger_paddr, table_size);
 	if (!trigger_tab) {
+<<<<<<< HEAD
 		pr_err(EINJ_PFX "Failed to map trigger table!\n");
+=======
+		pr_err("Failed to map trigger table!\n");
+>>>>>>> v4.9.227
 		goto out_rel_entry;
 	}
 	trigger_entry = (struct acpi_whea_header *)
@@ -523,7 +555,11 @@ static int einj_error_inject(u32 type, u32 flags, u64 param1, u64 param2,
 			     u64 param3, u64 param4)
 {
 	int rc;
+<<<<<<< HEAD
 	unsigned long pfn;
+=======
+	u64 base_addr, size;
+>>>>>>> v4.9.227
 
 	/* If user manually set "flags", make sure it is legal */
 	if (flags && (flags &
@@ -549,10 +585,24 @@ static int einj_error_inject(u32 type, u32 flags, u64 param1, u64 param2,
 	/*
 	 * Disallow crazy address masks that give BIOS leeway to pick
 	 * injection address almost anywhere. Insist on page or
+<<<<<<< HEAD
 	 * better granularity and that target address is normal RAM.
 	 */
 	pfn = PFN_DOWN(param1 & param2);
 	if (!page_is_ram(pfn) || ((param2 & PAGE_MASK) != PAGE_MASK))
+=======
+	 * better granularity and that target address is normal RAM or
+	 * NVDIMM.
+	 */
+	base_addr = param1 & param2;
+	size = ~param2 + 1;
+
+	if (((param2 & PAGE_MASK) != PAGE_MASK) ||
+	    ((region_intersects(base_addr, size, IORESOURCE_SYSTEM_RAM, IORES_DESC_NONE)
+				!= REGION_INTERSECTS) &&
+	     (region_intersects(base_addr, size, IORESOURCE_MEM, IORES_DESC_PERSISTENT_MEMORY)
+				!= REGION_INTERSECTS)))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 inject:
@@ -692,6 +742,7 @@ static int __init einj_init(void)
 	struct dentry *fentry;
 	struct apei_exec_context ctx;
 
+<<<<<<< HEAD
 	if (acpi_disabled)
 		return -ENODEV;
 
@@ -702,24 +753,56 @@ static int __init einj_init(void)
 	else if (ACPI_FAILURE(status)) {
 		const char *msg = acpi_format_exception(status);
 		pr_err(EINJ_PFX "Failed to get table, %s\n", msg);
+=======
+	if (acpi_disabled) {
+		pr_warn("ACPI disabled.\n");
+		return -ENODEV;
+	}
+
+	status = acpi_get_table(ACPI_SIG_EINJ, 0,
+				(struct acpi_table_header **)&einj_tab);
+	if (status == AE_NOT_FOUND) {
+		pr_warn("EINJ table not found.\n");
+		return -ENODEV;
+	}
+	else if (ACPI_FAILURE(status)) {
+		pr_err("Failed to get EINJ table: %s\n",
+				acpi_format_exception(status));
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
 	rc = einj_check_table(einj_tab);
 	if (rc) {
+<<<<<<< HEAD
 		pr_warning(FW_BUG EINJ_PFX "EINJ table is invalid\n");
+=======
+		pr_warn(FW_BUG "Invalid EINJ table.n");
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 
 	rc = -ENOMEM;
 	einj_debug_dir = debugfs_create_dir("einj", apei_get_debugfs_dir());
+<<<<<<< HEAD
 	if (!einj_debug_dir)
 		goto err_cleanup;
+=======
+	if (!einj_debug_dir) {
+		pr_err("Error creating debugfs node.\n");
+		goto err_cleanup;
+	}
+
+>>>>>>> v4.9.227
 	fentry = debugfs_create_file("available_error_type", S_IRUSR,
 				     einj_debug_dir, NULL,
 				     &available_error_type_fops);
 	if (!fentry)
 		goto err_cleanup;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	fentry = debugfs_create_file("error_type", S_IRUSR | S_IWUSR,
 				     einj_debug_dir, NULL, &error_type_fops);
 	if (!fentry)
@@ -732,6 +815,7 @@ static int __init einj_init(void)
 	apei_resources_init(&einj_resources);
 	einj_exec_ctx_init(&ctx);
 	rc = apei_exec_collect_resources(&ctx, &einj_resources);
+<<<<<<< HEAD
 	if (rc)
 		goto err_fini;
 	rc = apei_resources_request(&einj_resources, "APEI EINJ");
@@ -740,6 +824,24 @@ static int __init einj_init(void)
 	rc = apei_exec_pre_map_gars(&ctx);
 	if (rc)
 		goto err_release;
+=======
+	if (rc) {
+		pr_err("Error collecting EINJ resources.\n");
+		goto err_fini;
+	}
+
+	rc = apei_resources_request(&einj_resources, "APEI EINJ");
+	if (rc) {
+		pr_err("Error requesting memory/port resources.\n");
+		goto err_fini;
+	}
+
+	rc = apei_exec_pre_map_gars(&ctx);
+	if (rc) {
+		pr_err("Error pre-mapping GARs.\n");
+		goto err_release;
+	}
+>>>>>>> v4.9.227
 
 	rc = -ENOMEM;
 	einj_param = einj_get_parameter_address();
@@ -784,7 +886,11 @@ static int __init einj_init(void)
 			goto err_unmap;
 	}
 
+<<<<<<< HEAD
 	pr_info(EINJ_PFX "Error INJection is initialized.\n");
+=======
+	pr_info("Error INJection is initialized.\n");
+>>>>>>> v4.9.227
 
 	return 0;
 
@@ -795,6 +901,10 @@ err_unmap:
 			sizeof(struct einj_parameter);
 
 		acpi_os_unmap_iomem(einj_param, size);
+<<<<<<< HEAD
+=======
+		pr_err("Error creating param extension debugfs nodes.\n");
+>>>>>>> v4.9.227
 	}
 	apei_exec_post_unmap_gars(&ctx);
 err_release:
@@ -802,6 +912,10 @@ err_release:
 err_fini:
 	apei_resources_fini(&einj_resources);
 err_cleanup:
+<<<<<<< HEAD
+=======
+	pr_err("Error creating primary debugfs nodes.\n");
+>>>>>>> v4.9.227
 	debugfs_remove_recursive(einj_debug_dir);
 
 	return rc;

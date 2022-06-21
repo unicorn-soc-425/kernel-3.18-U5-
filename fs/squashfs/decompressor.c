@@ -24,8 +24,12 @@
 #include <linux/types.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/highmem.h>
 #include <linux/fs.h>
+=======
+#include <linux/buffer_head.h>
+>>>>>>> v4.9.227
 
 #include "squashfs_fs.h"
 #include "squashfs_fs_sb.h"
@@ -95,6 +99,7 @@ const struct squashfs_decompressor *squashfs_lookup_decompressor(int id)
 static void *get_comp_opts(struct super_block *sb, unsigned short flags)
 {
 	struct squashfs_sb_info *msblk = sb->s_fs_info;
+<<<<<<< HEAD
 	void *comp_opts, *buffer = NULL;
 	struct page *page;
 	struct squashfs_page_actor *actor = NULL;
@@ -133,6 +138,42 @@ read_error:
 	squashfs_page_actor_free(actor, 0);
 actor_error:
 	__free_page(page);
+=======
+	void *buffer = NULL, *comp_opts;
+	struct squashfs_page_actor *actor = NULL;
+	int length = 0;
+
+	/*
+	 * Read decompressor specific options from file system if present
+	 */
+	if (SQUASHFS_COMP_OPTS(flags)) {
+		buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
+		if (buffer == NULL) {
+			comp_opts = ERR_PTR(-ENOMEM);
+			goto out;
+		}
+
+		actor = squashfs_page_actor_init(&buffer, 1, 0);
+		if (actor == NULL) {
+			comp_opts = ERR_PTR(-ENOMEM);
+			goto out;
+		}
+
+		length = squashfs_read_data(sb,
+			sizeof(struct squashfs_super_block), 0, NULL, actor);
+
+		if (length < 0) {
+			comp_opts = ERR_PTR(length);
+			goto out;
+		}
+	}
+
+	comp_opts = squashfs_comp_opts(msblk, buffer, length);
+
+out:
+	kfree(actor);
+	kfree(buffer);
+>>>>>>> v4.9.227
 	return comp_opts;
 }
 

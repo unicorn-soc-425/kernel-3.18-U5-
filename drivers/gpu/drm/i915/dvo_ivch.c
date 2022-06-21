@@ -490,7 +490,11 @@ static void ivch_destroy(struct intel_dvo_device *dvo)
 	}
 }
 
+<<<<<<< HEAD
 struct intel_dvo_dev_ops ivch_ops = {
+=======
+const struct intel_dvo_dev_ops ivch_ops = {
+>>>>>>> v4.9.227
 	.init = ivch_init,
 	.dpms = ivch_dpms,
 	.get_hw_state = ivch_get_hw_state,

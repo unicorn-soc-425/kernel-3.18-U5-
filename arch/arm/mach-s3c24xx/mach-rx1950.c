@@ -250,9 +250,16 @@ static void rx1950_disable_charger(void)
 
 static DEFINE_SPINLOCK(rx1950_blink_spin);
 
+<<<<<<< HEAD
 static int rx1950_led_blink_set(unsigned gpio, int state,
 	unsigned long *delay_on, unsigned long *delay_off)
 {
+=======
+static int rx1950_led_blink_set(struct gpio_desc *desc, int state,
+	unsigned long *delay_on, unsigned long *delay_off)
+{
+	int gpio = desc_to_gpio(desc);
+>>>>>>> v4.9.227
 	int blink_gpio, check_gpio;
 
 	switch (gpio) {
@@ -374,6 +381,14 @@ static struct s3c2410fb_mach_info rx1950_lcd_cfg = {
 
 };
 
+<<<<<<< HEAD
+=======
+static struct pwm_lookup rx1950_pwm_lookup[] = {
+	PWM_LOOKUP("samsung-pwm", 0, "pwm-backlight.0", NULL, 48000,
+		   PWM_POLARITY_NORMAL),
+};
+
+>>>>>>> v4.9.227
 static struct pwm_device *lcd_pwm;
 
 static void rx1950_lcd_power(int enable)
@@ -490,6 +505,15 @@ static int rx1950_backlight_init(struct device *dev)
 		return PTR_ERR(lcd_pwm);
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * FIXME: pwm_apply_args() should be removed when switching to
+	 * the atomic PWM API.
+	 */
+	pwm_apply_args(lcd_pwm);
+
+>>>>>>> v4.9.227
 	rx1950_lcd_power(1);
 	rx1950_bl_power(1);
 
@@ -519,10 +543,15 @@ static int rx1950_backlight_notify(struct device *dev, int brightness)
 }
 
 static struct platform_pwm_backlight_data rx1950_backlight_data = {
+<<<<<<< HEAD
 	.pwm_id = 0,
 	.max_brightness = 24,
 	.dft_brightness = 4,
 	.pwm_period_ns = 48000,
+=======
+	.max_brightness = 24,
+	.dft_brightness = 4,
+>>>>>>> v4.9.227
 	.enable_gpio = -1,
 	.init = rx1950_backlight_init,
 	.notify = rx1950_backlight_notify,
@@ -791,6 +820,10 @@ static void __init rx1950_init_machine(void)
 	gpio_direction_output(S3C2410_GPA(4), 0);
 	gpio_direction_output(S3C2410_GPJ(6), 0);
 
+<<<<<<< HEAD
+=======
+	pwm_add_table(rx1950_pwm_lookup, ARRAY_SIZE(rx1950_pwm_lookup));
+>>>>>>> v4.9.227
 	platform_add_devices(rx1950_devices, ARRAY_SIZE(rx1950_devices));
 
 	i2c_register_board_info(0, rx1950_i2c_devices,

@@ -12,10 +12,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> v4.9.227
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -29,8 +32,13 @@
 
 #include "rtl_core.h"
 
+<<<<<<< HEAD
 static void rtl819x_ethtool_get_drvinfo(struct net_device *dev,
 		struct ethtool_drvinfo *info)
+=======
+static void _rtl92e_ethtool_get_drvinfo(struct net_device *dev,
+					struct ethtool_drvinfo *info)
+>>>>>>> v4.9.227
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
 
@@ -39,7 +47,11 @@ static void rtl819x_ethtool_get_drvinfo(struct net_device *dev,
 	strlcpy(info->bus_info, pci_name(priv->pdev), sizeof(info->bus_info));
 }
 
+<<<<<<< HEAD
 static u32 rtl819x_ethtool_get_link(struct net_device *dev)
+=======
+static u32 _rtl92e_ethtool_get_link(struct net_device *dev)
+>>>>>>> v4.9.227
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
 
@@ -48,6 +60,11 @@ static u32 rtl819x_ethtool_get_link(struct net_device *dev)
 }
 
 const struct ethtool_ops rtl819x_ethtool_ops = {
+<<<<<<< HEAD
 	.get_drvinfo = rtl819x_ethtool_get_drvinfo,
 	.get_link = rtl819x_ethtool_get_link,
+=======
+	.get_drvinfo = _rtl92e_ethtool_get_drvinfo,
+	.get_link = _rtl92e_ethtool_get_link,
+>>>>>>> v4.9.227
 };

@@ -23,6 +23,10 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+<<<<<<< HEAD
+=======
+#include <linux/crypto.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/fs.h>
@@ -68,6 +72,7 @@ str_to_key(unsigned char *str, unsigned char *key)
 static int
 smbhash(unsigned char *out, const unsigned char *in, unsigned char *key)
 {
+<<<<<<< HEAD
 	int rc;
 	unsigned char key2[8];
 	struct crypto_blkcipher *tfm_des;
@@ -97,6 +102,24 @@ smbhash(unsigned char *out, const unsigned char *in, unsigned char *key)
 	crypto_free_blkcipher(tfm_des);
 smbhash_err:
 	return rc;
+=======
+	unsigned char key2[8];
+	struct crypto_cipher *tfm_des;
+
+	str_to_key(key, key2);
+
+	tfm_des = crypto_alloc_cipher("des", 0, 0);
+	if (IS_ERR(tfm_des)) {
+		cifs_dbg(VFS, "could not allocate des crypto API\n");
+		return PTR_ERR(tfm_des);
+	}
+
+	crypto_cipher_setkey(tfm_des, key2, 8);
+	crypto_cipher_encrypt_one(tfm_des, out, in);
+	crypto_free_cipher(tfm_des);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int
@@ -221,7 +244,11 @@ E_md4hash(const unsigned char *passwd, unsigned char *p16,
 	}
 
 	rc = mdfour(p16, (unsigned char *) wpwd, len * sizeof(__le16));
+<<<<<<< HEAD
 	memset(wpwd, 0, 129 * sizeof(__le16));
+=======
+	memzero_explicit(wpwd, sizeof(wpwd));
+>>>>>>> v4.9.227
 
 	return rc;
 }

@@ -180,7 +180,11 @@ MODULE_PARM_DESC(enable, "Enable the EMU10K1X soundcard.");
 
 /* From 0x50 - 0x5f, last samples captured */
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> v4.9.227
  * The hardware has 3 channels for playback and 1 for capture.
  *  - channel 0 is the front channel
  *  - channel 1 is the rear channel
@@ -548,7 +552,11 @@ snd_emu10k1x_pcm_pointer(struct snd_pcm_substream *substream)
 }
 
 /* operators */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1x_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_emu10k1x_playback_ops = {
+>>>>>>> v4.9.227
 	.open =        snd_emu10k1x_playback_open,
 	.close =       snd_emu10k1x_playback_close,
 	.ioctl =       snd_pcm_lib_ioctl,
@@ -694,7 +702,11 @@ snd_emu10k1x_pcm_pointer_capture(struct snd_pcm_substream *substream)
 	return ptr;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1x_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_emu10k1x_capture_ops = {
+>>>>>>> v4.9.227
 	.open =        snd_emu10k1x_pcm_open_capture,
 	.close =       snd_emu10k1x_pcm_close_capture,
 	.ioctl =       snd_pcm_lib_ioctl,
@@ -847,15 +859,22 @@ static const struct snd_pcm_chmap_elem clfe_map[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static int snd_emu10k1x_pcm(struct emu10k1x *emu, int device, struct snd_pcm **rpcm)
+=======
+static int snd_emu10k1x_pcm(struct emu10k1x *emu, int device)
+>>>>>>> v4.9.227
 {
 	struct snd_pcm *pcm;
 	const struct snd_pcm_chmap_elem *map = NULL;
 	int err;
 	int capture = 0;
   
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
+=======
+>>>>>>> v4.9.227
 	if (device == 0)
 		capture = 1;
 	
@@ -896,6 +915,7 @@ static int snd_emu10k1x_pcm(struct emu10k1x *emu, int device, struct snd_pcm **r
 					      snd_dma_pci_data(emu->pci), 
 					      32*1024, 32*1024);
   
+<<<<<<< HEAD
 	err = snd_pcm_add_chmap_ctls(pcm, SNDRV_PCM_STREAM_PLAYBACK, map, 2,
 				     1 << 2, NULL);
 	if (err < 0)
@@ -905,6 +925,10 @@ static int snd_emu10k1x_pcm(struct emu10k1x *emu, int device, struct snd_pcm **r
 		*rpcm = pcm;
   
 	return 0;
+=======
+	return snd_pcm_add_chmap_ctls(pcm, SNDRV_PCM_STREAM_PLAYBACK, map, 2,
+				     1 << 2, NULL);
+>>>>>>> v4.9.227
 }
 
 static int snd_emu10k1x_create(struct snd_card *card,
@@ -1583,6 +1607,7 @@ static int snd_emu10k1x_probe(struct pci_dev *pci,
 		return err;
 	}
 
+<<<<<<< HEAD
 	if ((err = snd_emu10k1x_pcm(chip, 0, NULL)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -1592,6 +1617,17 @@ static int snd_emu10k1x_probe(struct pci_dev *pci,
 		return err;
 	}
 	if ((err = snd_emu10k1x_pcm(chip, 2, NULL)) < 0) {
+=======
+	if ((err = snd_emu10k1x_pcm(chip, 0)) < 0) {
+		snd_card_free(card);
+		return err;
+	}
+	if ((err = snd_emu10k1x_pcm(chip, 1)) < 0) {
+		snd_card_free(card);
+		return err;
+	}
+	if ((err = snd_emu10k1x_pcm(chip, 2)) < 0) {
+>>>>>>> v4.9.227
 		snd_card_free(card);
 		return err;
 	}

@@ -17,6 +17,10 @@
 #include <linux/serial_8250.h>
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+>>>>>>> v4.9.227
 #include <linux/spi/spi.h>
 #include <linux/platform_data/edma.h>
 #include <linux/platform_data/gpio-davinci.h>
@@ -26,7 +30,11 @@
 #include <asm/mach/map.h>
 
 #include <mach/cputype.h>
+<<<<<<< HEAD
 #include <mach/psc.h>
+=======
+#include "psc.h"
+>>>>>>> v4.9.227
 #include <mach/mux.h>
 #include <mach/irqs.h>
 #include <mach/time.h>
@@ -646,6 +654,10 @@ static struct davinci_spi_platform_data dm365_spi0_pdata = {
 	.version 	= SPI_VERSION_1,
 	.num_chipselect = 2,
 	.dma_event_q	= EVENTQ_3,
+<<<<<<< HEAD
+=======
+	.prescaler_limit = 1,
+>>>>>>> v4.9.227
 };
 
 static struct resource dm365_spi0_resources[] = {
@@ -852,8 +864,12 @@ static u8 dm365_default_priorities[DAVINCI_N_AINTC_IRQ] = {
 };
 
 /* Four Transfer Controllers on DM365 */
+<<<<<<< HEAD
 static s8
 dm365_queue_priority_mapping[][2] = {
+=======
+static s8 dm365_queue_priority_mapping[][2] = {
+>>>>>>> v4.9.227
 	/* {event queue no, Priority} */
 	{0, 7},
 	{1, 7},
@@ -862,6 +878,7 @@ dm365_queue_priority_mapping[][2] = {
 	{-1, -1},
 };
 
+<<<<<<< HEAD
 static struct edma_soc_info edma_cc0_info = {
 	.queue_priority_mapping	= dm365_queue_priority_mapping,
 	.default_queue		= EVENTQ_3,
@@ -869,46 +886,100 @@ static struct edma_soc_info edma_cc0_info = {
 
 static struct edma_soc_info *dm365_edma_info[EDMA_MAX_CC] = {
 	&edma_cc0_info,
+=======
+static const struct dma_slave_map dm365_edma_map[] = {
+	{ "davinci-mcbsp", "tx", EDMA_FILTER_PARAM(0, 2) },
+	{ "davinci-mcbsp", "rx", EDMA_FILTER_PARAM(0, 3) },
+	{ "davinci_voicecodec", "tx", EDMA_FILTER_PARAM(0, 2) },
+	{ "davinci_voicecodec", "rx", EDMA_FILTER_PARAM(0, 3) },
+	{ "spi_davinci.2", "tx", EDMA_FILTER_PARAM(0, 10) },
+	{ "spi_davinci.2", "rx", EDMA_FILTER_PARAM(0, 11) },
+	{ "spi_davinci.1", "tx", EDMA_FILTER_PARAM(0, 14) },
+	{ "spi_davinci.1", "rx", EDMA_FILTER_PARAM(0, 15) },
+	{ "spi_davinci.0", "tx", EDMA_FILTER_PARAM(0, 16) },
+	{ "spi_davinci.0", "rx", EDMA_FILTER_PARAM(0, 17) },
+	{ "spi_davinci.3", "tx", EDMA_FILTER_PARAM(0, 18) },
+	{ "spi_davinci.3", "rx", EDMA_FILTER_PARAM(0, 19) },
+	{ "dm6441-mmc.0", "rx", EDMA_FILTER_PARAM(0, 26) },
+	{ "dm6441-mmc.0", "tx", EDMA_FILTER_PARAM(0, 27) },
+	{ "dm6441-mmc.1", "rx", EDMA_FILTER_PARAM(0, 30) },
+	{ "dm6441-mmc.1", "tx", EDMA_FILTER_PARAM(0, 31) },
+};
+
+static struct edma_soc_info dm365_edma_pdata = {
+	.queue_priority_mapping	= dm365_queue_priority_mapping,
+	.default_queue		= EVENTQ_3,
+	.slave_map		= dm365_edma_map,
+	.slavecnt		= ARRAY_SIZE(dm365_edma_map),
+>>>>>>> v4.9.227
 };
 
 static struct resource edma_resources[] = {
 	{
+<<<<<<< HEAD
 		.name	= "edma_cc0",
+=======
+		.name	= "edma3_cc",
+>>>>>>> v4.9.227
 		.start	= 0x01c00000,
 		.end	= 0x01c00000 + SZ_64K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma_tc0",
+=======
+		.name	= "edma3_tc0",
+>>>>>>> v4.9.227
 		.start	= 0x01c10000,
 		.end	= 0x01c10000 + SZ_1K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma_tc1",
+=======
+		.name	= "edma3_tc1",
+>>>>>>> v4.9.227
 		.start	= 0x01c10400,
 		.end	= 0x01c10400 + SZ_1K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma_tc2",
+=======
+		.name	= "edma3_tc2",
+>>>>>>> v4.9.227
 		.start	= 0x01c10800,
 		.end	= 0x01c10800 + SZ_1K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma_tc3",
+=======
+		.name	= "edma3_tc3",
+>>>>>>> v4.9.227
 		.start	= 0x01c10c00,
 		.end	= 0x01c10c00 + SZ_1K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma0",
+=======
+		.name	= "edma3_ccint",
+>>>>>>> v4.9.227
 		.start	= IRQ_CCINT0,
 		.flags	= IORESOURCE_IRQ,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma0_err",
+=======
+		.name	= "edma3_ccerrint",
+>>>>>>> v4.9.227
 		.start	= IRQ_CCERRINT,
 		.flags	= IORESOURCE_IRQ,
 	},
@@ -918,7 +989,11 @@ static struct resource edma_resources[] = {
 static struct platform_device dm365_edma_device = {
 	.name			= "edma",
 	.id			= 0,
+<<<<<<< HEAD
 	.dev.platform_data	= dm365_edma_info,
+=======
+	.dev.platform_data	= &dm365_edma_pdata,
+>>>>>>> v4.9.227
 	.num_resources		= ARRAY_SIZE(edma_resources),
 	.resource		= edma_resources,
 };
@@ -1120,7 +1195,11 @@ static struct davinci_soc_info davinci_soc_info_dm365 = {
 	.sram_len		= SZ_32K,
 };
 
+<<<<<<< HEAD
 void __init dm365_init_asp(struct snd_platform_data *pdata)
+=======
+void __init dm365_init_asp(void)
+>>>>>>> v4.9.227
 {
 	davinci_cfg_reg(DM365_MCBSP0_BDX);
 	davinci_cfg_reg(DM365_MCBSP0_X);
@@ -1130,6 +1209,7 @@ void __init dm365_init_asp(struct snd_platform_data *pdata)
 	davinci_cfg_reg(DM365_MCBSP0_BFSR);
 	davinci_cfg_reg(DM365_EVT2_ASP_TX);
 	davinci_cfg_reg(DM365_EVT3_ASP_RX);
+<<<<<<< HEAD
 	dm365_asp_device.dev.platform_data = pdata;
 	platform_device_register(&dm365_asp_device);
 }
@@ -1139,6 +1219,15 @@ void __init dm365_init_vc(struct snd_platform_data *pdata)
 	davinci_cfg_reg(DM365_EVT2_VC_TX);
 	davinci_cfg_reg(DM365_EVT3_VC_RX);
 	dm365_vc_device.dev.platform_data = pdata;
+=======
+	platform_device_register(&dm365_asp_device);
+}
+
+void __init dm365_init_vc(void)
+{
+	davinci_cfg_reg(DM365_EVT2_VC_TX);
+	davinci_cfg_reg(DM365_EVT3_VC_RX);
+>>>>>>> v4.9.227
 	platform_device_register(&dm365_vc_device);
 }
 
@@ -1158,6 +1247,10 @@ void __init dm365_init(void)
 {
 	davinci_common_init(&davinci_soc_info_dm365);
 	davinci_map_sysmod();
+<<<<<<< HEAD
+=======
+	davinci_clk_init(davinci_soc_info_dm365.cpu_clks);
+>>>>>>> v4.9.227
 }
 
 static struct resource dm365_vpss_resources[] = {
@@ -1306,16 +1399,27 @@ static struct resource dm365_v4l2_disp_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static int dm365_vpbe_setup_pinmux(enum v4l2_mbus_pixelcode if_type,
 			    int field)
 {
 	switch (if_type) {
 	case V4L2_MBUS_FMT_SGRBG8_1X8:
+=======
+static int dm365_vpbe_setup_pinmux(u32 if_type, int field)
+{
+	switch (if_type) {
+	case MEDIA_BUS_FMT_SGRBG8_1X8:
+>>>>>>> v4.9.227
 		davinci_cfg_reg(DM365_VOUT_FIELD_G81);
 		davinci_cfg_reg(DM365_VOUT_COUTL_EN);
 		davinci_cfg_reg(DM365_VOUT_COUTH_EN);
 		break;
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_YUYV10_1X20:
+=======
+	case MEDIA_BUS_FMT_YUYV10_1X20:
+>>>>>>> v4.9.227
 		if (field)
 			davinci_cfg_reg(DM365_VOUT_FIELD);
 		else

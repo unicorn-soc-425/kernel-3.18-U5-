@@ -34,12 +34,15 @@
 #include "avc_ss.h"
 #include "classmap.h"
 
+<<<<<<< HEAD
 // [ SEC_SELINUX_PORTING_COMMON
 #ifdef SEC_SELINUX_DEBUG
 #include <linux/signal.h>
 #endif
 // ] SEC_SELINUX_PORTING_COMMON
 
+=======
+>>>>>>> v4.9.227
 #define AVC_CACHE_SLOTS			512
 #define AVC_DEF_CACHE_THRESHOLD		512
 #define AVC_CACHE_RECLAIM		16
@@ -122,6 +125,10 @@ static void avc_dump_av(struct audit_buffer *ab, u16 tclass, u32 av)
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+	BUG_ON(!tclass || tclass >= ARRAY_SIZE(secclass_map));
+>>>>>>> v4.9.227
 	perms = secclass_map[tclass-1].perms;
 
 	audit_log_format(ab, " {");
@@ -170,7 +177,11 @@ static void avc_dump_query(struct audit_buffer *ab, u32 ssid, u32 tsid, u16 tcla
 		kfree(scontext);
 	}
 
+<<<<<<< HEAD
 	BUG_ON(tclass >= ARRAY_SIZE(secclass_map));
+=======
+	BUG_ON(!tclass || tclass >= ARRAY_SIZE(secclass_map));
+>>>>>>> v4.9.227
 	audit_log_format(ab, " tclass=%s", secclass_map[tclass-1].name);
 }
 
@@ -353,27 +364,43 @@ static struct avc_xperms_decision_node
 	struct avc_xperms_decision_node *xpd_node;
 	struct extended_perms_decision *xpd;
 
+<<<<<<< HEAD
 	xpd_node = kmem_cache_zalloc(avc_xperms_decision_cachep,
 				GFP_ATOMIC | __GFP_NOMEMALLOC);
+=======
+	xpd_node = kmem_cache_zalloc(avc_xperms_decision_cachep, GFP_NOWAIT);
+>>>>>>> v4.9.227
 	if (!xpd_node)
 		return NULL;
 
 	xpd = &xpd_node->xpd;
 	if (which & XPERMS_ALLOWED) {
 		xpd->allowed = kmem_cache_zalloc(avc_xperms_data_cachep,
+<<<<<<< HEAD
 						GFP_ATOMIC | __GFP_NOMEMALLOC);
+=======
+						GFP_NOWAIT);
+>>>>>>> v4.9.227
 		if (!xpd->allowed)
 			goto error;
 	}
 	if (which & XPERMS_AUDITALLOW) {
 		xpd->auditallow = kmem_cache_zalloc(avc_xperms_data_cachep,
+<<<<<<< HEAD
 						GFP_ATOMIC | __GFP_NOMEMALLOC);
+=======
+						GFP_NOWAIT);
+>>>>>>> v4.9.227
 		if (!xpd->auditallow)
 			goto error;
 	}
 	if (which & XPERMS_DONTAUDIT) {
 		xpd->dontaudit = kmem_cache_zalloc(avc_xperms_data_cachep,
+<<<<<<< HEAD
 						GFP_ATOMIC | __GFP_NOMEMALLOC);
+=======
+						GFP_NOWAIT);
+>>>>>>> v4.9.227
 		if (!xpd->dontaudit)
 			goto error;
 	}
@@ -401,8 +428,12 @@ static struct avc_xperms_node *avc_xperms_alloc(void)
 {
 	struct avc_xperms_node *xp_node;
 
+<<<<<<< HEAD
 	xp_node = kmem_cache_zalloc(avc_xperms_cachep,
 				GFP_ATOMIC|__GFP_NOMEMALLOC);
+=======
+	xp_node = kmem_cache_zalloc(avc_xperms_cachep, GFP_NOWAIT);
+>>>>>>> v4.9.227
 	if (!xp_node)
 		return xp_node;
 	INIT_LIST_HEAD(&xp_node->xpd_head);
@@ -555,7 +586,11 @@ static struct avc_node *avc_alloc_node(void)
 {
 	struct avc_node *node;
 
+<<<<<<< HEAD
 	node = kmem_cache_zalloc(avc_node_cachep, GFP_ATOMIC|__GFP_NOMEMALLOC);
+=======
+	node = kmem_cache_zalloc(avc_node_cachep, GFP_NOWAIT);
+>>>>>>> v4.9.227
 	if (!node)
 		goto out;
 
@@ -684,11 +719,15 @@ static struct avc_node *avc_insert(u32 ssid, u32 tsid, u16 tclass,
 		avc_node_populate(node, ssid, tsid, tclass, avd);
 		rc = avc_xperms_populate(node, xp_node);
 		if (rc) {
+<<<<<<< HEAD
 //[SEC_SELINUX_PORTING_COMMON
 // P191014-03912 - avc_cache.active_nodes is not decresed when "avc_alloc_node-success"&"avc_xperms_populate-fail"
 //			kmem_cache_free(avc_node_cachep, node);
 			avc_node_kill(node);
 //]SEC_SELINUX_PORTING_COMMON
+=======
+			kmem_cache_free(avc_node_cachep, node);
+>>>>>>> v4.9.227
 			return NULL;
 		}
 		head = &avc_cache.slots[hvalue];
@@ -813,11 +852,14 @@ out:
 	return rc;
 }
 
+<<<<<<< HEAD
 static inline int avc_sidcmp(u32 x, u32 y)
 {
 	return (x == y || x == SECSID_WILD || y == SECSID_WILD);
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * avc_update_node Update an AVC entry
  * @event : Updating event
@@ -881,11 +923,15 @@ static int avc_update_node(u32 event, u32 perms, u8 driver, u8 xperm, u32 ssid,
 	if (orig->ae.xp_node) {
 		rc = avc_xperms_populate(node, orig->ae.xp_node);
 		if (rc) {
+<<<<<<< HEAD
 //[SEC_SELINUX_PORTING_COMMON
 // P191014-03912 - avc_cache.active_nodes is not decresed when "avc_alloc_node-success"&"avc_xperms_populate-fail"
 //			kmem_cache_free(avc_node_cachep, node);
 			avc_node_kill(node);
 //]SEC_SELINUX_PORTING_COMMON
+=======
+			avc_node_kill(node);
+>>>>>>> v4.9.227
 			goto out_unlock;
 		}
 	}
@@ -1004,6 +1050,7 @@ static noinline int avc_denied(u32 ssid, u32 tsid,
 	if (flags & AVC_STRICT)
 		return -EACCES;
 
+<<<<<<< HEAD
 // [ SEC_SELINUX_PORTING_COMMON
 #ifdef SEC_SELINUX_DEBUG
 
@@ -1059,6 +1106,9 @@ static noinline int avc_denied(u32 ssid, u32 tsid,
 	if (selinux_enforcing && !(avd->flags & AVD_FLAGS_PERMISSIVE))
 #endif
 // ] SEC_SELINUX_PORTING_COMMON
+=======
+	if (selinux_enforcing && !(avd->flags & AVD_FLAGS_PERMISSIVE))
+>>>>>>> v4.9.227
 		return -EACCES;
 
 	avc_update_node(AVC_CALLBACK_GRANT, requested, driver, xperm, ssid,
@@ -1219,7 +1269,27 @@ int avc_has_perm(u32 ssid, u32 tsid, u16 tclass,
 
 	rc = avc_has_perm_noaudit(ssid, tsid, tclass, requested, 0, &avd);
 
+<<<<<<< HEAD
 	rc2 = avc_audit(ssid, tsid, tclass, requested, &avd, rc, auditdata);
+=======
+	rc2 = avc_audit(ssid, tsid, tclass, requested, &avd, rc, auditdata, 0);
+	if (rc2)
+		return rc2;
+	return rc;
+}
+
+int avc_has_perm_flags(u32 ssid, u32 tsid, u16 tclass,
+		       u32 requested, struct common_audit_data *auditdata,
+		       int flags)
+{
+	struct av_decision avd;
+	int rc, rc2;
+
+	rc = avc_has_perm_noaudit(ssid, tsid, tclass, requested, 0, &avd);
+
+	rc2 = avc_audit(ssid, tsid, tclass, requested, &avd, rc,
+			auditdata, flags);
+>>>>>>> v4.9.227
 	if (rc2)
 		return rc2;
 	return rc;

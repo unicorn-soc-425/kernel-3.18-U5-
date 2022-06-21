@@ -11,10 +11,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+>>>>>>> v4.9.227
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -22,6 +25,7 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
+<<<<<<< HEAD
 #include "common.h"
 
 static struct map_desc emev2_io_desc[] __initdata = {
@@ -42,15 +46,27 @@ static void __init emev2_map_io(void)
 }
 
 static const char *emev2_boards_compat_dt[] __initconst = {
+=======
+
+#include "common.h"
+#include "emev2.h"
+
+static const char *const emev2_boards_compat_dt[] __initconst = {
+>>>>>>> v4.9.227
 	"renesas,emev2",
 	NULL,
 };
 
+<<<<<<< HEAD
 extern struct smp_operations emev2_smp_ops;
 
 DT_MACHINE_START(EMEV2_DT, "Generic Emma Mobile EV2 (Flattened Device Tree)")
 	.smp		= smp_ops(emev2_smp_ops),
 	.map_io		= emev2_map_io,
+=======
+DT_MACHINE_START(EMEV2_DT, "Generic Emma Mobile EV2 (Flattened Device Tree)")
+	.smp		= smp_ops(emev2_smp_ops),
+>>>>>>> v4.9.227
 	.init_early	= shmobile_init_delay,
 	.init_late	= shmobile_init_late,
 	.dt_compat	= emev2_boards_compat_dt,

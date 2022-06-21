@@ -315,7 +315,10 @@ static struct platform_driver sgiwd93_driver = {
 	.remove = sgiwd93_remove,
 	.driver = {
 		.name   = "sgiwd93",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	}
 };
 

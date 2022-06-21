@@ -21,6 +21,23 @@
 /*
  * Components of space reservations.
  */
+<<<<<<< HEAD
+=======
+
+/* Worst case number of rmaps that can be held in a block. */
+#define XFS_MAX_CONTIG_RMAPS_PER_BLOCK(mp)    \
+		(((mp)->m_rmap_mxr[0]) - ((mp)->m_rmap_mnr[0]))
+
+/* Adding one rmap could split every level up to the top of the tree. */
+#define XFS_RMAPADD_SPACE_RES(mp) ((mp)->m_rmap_maxlevels)
+
+/* Blocks we might need to add "b" rmaps to a tree. */
+#define XFS_NRMAPADD_SPACE_RES(mp, b)\
+	(((b + XFS_MAX_CONTIG_RMAPS_PER_BLOCK(mp) - 1) / \
+	  XFS_MAX_CONTIG_RMAPS_PER_BLOCK(mp)) * \
+	  XFS_RMAPADD_SPACE_RES(mp))
+
+>>>>>>> v4.9.227
 #define XFS_MAX_CONTIG_EXTENTS_PER_BLOCK(mp)    \
 		(((mp)->m_alloc_mxr[0]) - ((mp)->m_alloc_mnr[0]))
 #define	XFS_EXTENTADD_SPACE_RES(mp,w)	(XFS_BM_MAXLEVELS(mp,w) - 1)
@@ -28,6 +45,15 @@
 	(((b + XFS_MAX_CONTIG_EXTENTS_PER_BLOCK(mp) - 1) / \
 	  XFS_MAX_CONTIG_EXTENTS_PER_BLOCK(mp)) * \
 	  XFS_EXTENTADD_SPACE_RES(mp,w))
+<<<<<<< HEAD
+=======
+
+/* Blocks we might need to add "b" mappings & rmappings to a file. */
+#define XFS_SWAP_RMAP_SPACE_RES(mp,b,w)\
+	(XFS_NEXTENTADD_SPACE_RES((mp), (b), (w)) + \
+	 XFS_NRMAPADD_SPACE_RES((mp), (b)))
+
+>>>>>>> v4.9.227
 #define	XFS_DAENTER_1B(mp,w)	\
 	((w) == XFS_DATA_FORK ? (mp)->m_dir_geo->fsbcount : 1)
 #define	XFS_DAENTER_DBS(mp,w)	\
@@ -67,7 +93,11 @@
 #define	XFS_DIOSTRAT_SPACE_RES(mp, v)	\
 	(XFS_EXTENTADD_SPACE_RES(mp, XFS_DATA_FORK) + (v))
 #define	XFS_GROWFS_SPACE_RES(mp)	\
+<<<<<<< HEAD
 	(2 * XFS_AG_MAXLEVELS(mp))
+=======
+	(2 * (mp)->m_ag_maxlevels)
+>>>>>>> v4.9.227
 #define	XFS_GROWFSRT_SPACE_RES(mp,b)	\
 	((b) + XFS_EXTENTADD_SPACE_RES(mp, XFS_DATA_FORK))
 #define	XFS_LINK_SPACE_RES(mp,nl)	\

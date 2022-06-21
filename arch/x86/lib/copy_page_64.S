@@ -1,6 +1,7 @@
 /* Written 2003 by Andi Kleen, based on a kernel by Evandro Menezes */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/dwarf2.h>
 #include <asm/alternative-asm.h>
 
@@ -26,6 +27,31 @@ ENTRY(copy_page)
 	CFI_REL_OFFSET rbx, 0
 	movq	%r12,	1*8(%rsp)
 	CFI_REL_OFFSET r12, 1*8
+=======
+#include <asm/cpufeatures.h>
+#include <asm/alternative-asm.h>
+#include <asm/export.h>
+
+/*
+ * Some CPUs run faster using the string copy instructions (sane microcode).
+ * It is also a lot simpler. Use this when possible. But, don't use streaming
+ * copy unless the CPU indicates X86_FEATURE_REP_GOOD. Could vary the
+ * prefetch distance based on SMP/UP.
+ */
+	ALIGN
+ENTRY(copy_page)
+	ALTERNATIVE "jmp copy_page_regs", "", X86_FEATURE_REP_GOOD
+	movl	$4096/8, %ecx
+	rep	movsq
+	ret
+ENDPROC(copy_page)
+EXPORT_SYMBOL(copy_page)
+
+ENTRY(copy_page_regs)
+	subq	$2*8,	%rsp
+	movq	%rbx,	(%rsp)
+	movq	%r12,	1*8(%rsp)
+>>>>>>> v4.9.227
 
 	movl	$(4096/64)-5,	%ecx
 	.p2align 4
@@ -84,6 +110,7 @@ ENTRY(copy_page)
 	jnz	.Loop2
 
 	movq	(%rsp), %rbx
+<<<<<<< HEAD
 	CFI_RESTORE rbx
 	movq	1*8(%rsp), %r12
 	CFI_RESTORE r12
@@ -108,3 +135,9 @@ ENDPROC(copy_page)
 	altinstruction_entry copy_page, 1b, X86_FEATURE_REP_GOOD,	\
 		.Lcopy_page_end-copy_page, 2b-1b
 	.previous
+=======
+	movq	1*8(%rsp), %r12
+	addq	$2*8, %rsp
+	ret
+ENDPROC(copy_page_regs)
+>>>>>>> v4.9.227

@@ -26,6 +26,7 @@
 #include <linux/notifier.h>
 #include <linux/irqreturn.h>
 #include <linux/dmaengine.h>
+<<<<<<< HEAD
 #include <linux/mic_bus.h>
 
 #include "mic_intr.h"
@@ -41,6 +42,15 @@ enum mic_hw_family {
 	MIC_FAMILY_UNKNOWN
 };
 
+=======
+#include <linux/miscdevice.h>
+#include <linux/mic_bus.h>
+#include "../bus/scif_bus.h"
+#include "../bus/vop_bus.h"
+#include "../bus/cosm_bus.h"
+#include "mic_intr.h"
+
+>>>>>>> v4.9.227
 /**
  * enum mic_stepping - MIC stepping ids.
  */
@@ -51,6 +61,11 @@ enum mic_stepping {
 	MIC_C0_STEP = 0x20,
 };
 
+<<<<<<< HEAD
+=======
+extern struct cosm_hw_ops cosm_hw_ops;
+
+>>>>>>> v4.9.227
 /**
  * struct mic_device -  MIC device information for each card.
  *
@@ -60,8 +75,12 @@ enum mic_stepping {
  * @ops: MIC HW specific operations.
  * @id: The unique device id for this MIC device.
  * @stepping: Stepping ID.
+<<<<<<< HEAD
  * @attr_group: Pointer to list of sysfs attribute groups.
  * @sdev: Device for sysfs entries.
+=======
+ * @pdev: Underlying PCI device.
+>>>>>>> v4.9.227
  * @mic_mutex: Mutex for synchronizing access to mic_device.
  * @intr_ops: HW specific interrupt operations.
  * @smpt_ops: Hardware specific SMPT operations.
@@ -69,6 +88,7 @@ enum mic_stepping {
  * @intr_info: H/W specific interrupt information.
  * @irq_info: The OS specific irq information
  * @dbg_dir: debugfs directory of this MIC device.
+<<<<<<< HEAD
  * @cmdline: Kernel command line.
  * @firmware: Firmware file name.
  * @ramdisk: Ramdisk file name.
@@ -91,6 +111,17 @@ enum mic_stepping {
  * @pm_notifier: Handles PM notifications from the OS.
  * @dma_mbdev: MIC BUS DMA device.
  * @dma_ch: DMA channel reserved by this driver for use by virtio devices.
+=======
+ * @bootaddr: MIC boot address.
+ * @dp: virtio device page
+ * @dp_dma_addr: virtio device page DMA address.
+ * @dma_mbdev: MIC BUS DMA device.
+ * @dma_ch - Array of DMA channels
+ * @num_dma_ch - Number of DMA channels available
+ * @scdev: SCIF device on the SCIF virtual bus.
+ * @vpdev: Virtio over PCIe device on the VOP virtual bus.
+ * @cosm_dev: COSM device
+>>>>>>> v4.9.227
  */
 struct mic_device {
 	struct mic_mw mmio;
@@ -99,8 +130,12 @@ struct mic_device {
 	struct mic_hw_ops *ops;
 	int id;
 	enum mic_stepping stepping;
+<<<<<<< HEAD
 	const struct attribute_group **attr_group;
 	struct device *sdev;
+=======
+	struct pci_dev *pdev;
+>>>>>>> v4.9.227
 	struct mutex mic_mutex;
 	struct mic_hw_intr_ops *intr_ops;
 	struct mic_smpt_ops *smpt_ops;
@@ -108,6 +143,7 @@ struct mic_device {
 	struct mic_intr_info *intr_info;
 	struct mic_irq_info irq_info;
 	struct dentry *dbg_dir;
+<<<<<<< HEAD
 	char *cmdline;
 	char *firmware;
 	char *ramdisk;
@@ -130,6 +166,17 @@ struct mic_device {
 	struct notifier_block pm_notifier;
 	struct mbus_device *dma_mbdev;
 	struct dma_chan *dma_ch;
+=======
+	u32 bootaddr;
+	void *dp;
+	dma_addr_t dp_dma_addr;
+	struct mbus_device *dma_mbdev;
+	struct dma_chan *dma_ch[MIC_MAX_DMA_CHAN];
+	int num_dma_ch;
+	struct scif_hw_dev *scdev;
+	struct vop_device *vpdev;
+	struct cosm_device *cosm_dev;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -195,6 +242,7 @@ mic_mmio_write(struct mic_mw *mw, u32 val, u32 offset)
 	iowrite32(val, mw->va + offset);
 }
 
+<<<<<<< HEAD
 static inline struct dma_chan *mic_request_dma_chan(struct mic_device *mdev)
 {
 	dma_cap_mask_t mask;
@@ -221,11 +269,17 @@ void mic_shutdown_work(struct work_struct *work);
 void mic_bootparam_init(struct mic_device *mdev);
 void mic_set_state(struct mic_device *mdev, u8 state);
 void mic_set_shutdown_status(struct mic_device *mdev, u8 status);
+=======
+void mic_bootparam_init(struct mic_device *mdev);
+>>>>>>> v4.9.227
 void mic_create_debug_dir(struct mic_device *dev);
 void mic_delete_debug_dir(struct mic_device *dev);
 void __init mic_init_debugfs(void);
 void mic_exit_debugfs(void);
+<<<<<<< HEAD
 void mic_prepare_suspend(struct mic_device *mdev);
 void mic_complete_resume(struct mic_device *mdev);
 void mic_suspend(struct mic_device *mdev);
+=======
+>>>>>>> v4.9.227
 #endif

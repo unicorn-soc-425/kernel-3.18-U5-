@@ -43,7 +43,11 @@
 static void
 mic_x100_write_spad(struct mic_device *mdev, unsigned int idx, u32 val)
 {
+<<<<<<< HEAD
 	dev_dbg(mdev->sdev->parent, "Writing 0x%x to scratch pad index %d\n",
+=======
+	dev_dbg(&mdev->pdev->dev, "Writing 0x%x to scratch pad index %d\n",
+>>>>>>> v4.9.227
 		val, idx);
 	mic_mmio_write(&mdev->mmio, val,
 		       MIC_X100_SBOX_BASE_ADDRESS +
@@ -66,7 +70,11 @@ mic_x100_read_spad(struct mic_device *mdev, unsigned int idx)
 		MIC_X100_SBOX_BASE_ADDRESS +
 		MIC_X100_SBOX_SPAD0 + idx * 4);
 
+<<<<<<< HEAD
 	dev_dbg(mdev->sdev->parent,
+=======
+	dev_dbg(&mdev->pdev->dev,
+>>>>>>> v4.9.227
 		"Reading 0x%x from scratch pad index %d\n", val, idx);
 	return val;
 }
@@ -126,7 +134,11 @@ static void mic_x100_disable_interrupts(struct mic_device *mdev)
  * @mdev: pointer to mic_device instance
  */
 static void mic_x100_send_sbox_intr(struct mic_device *mdev,
+<<<<<<< HEAD
 			int doorbell)
+=======
+				    int doorbell)
+>>>>>>> v4.9.227
 {
 	struct mic_mw *mw = &mdev->mmio;
 	u64 apic_icr_offset = MIC_X100_SBOX_APICICR0 + doorbell * 8;
@@ -147,7 +159,11 @@ static void mic_x100_send_sbox_intr(struct mic_device *mdev,
  * @mdev: pointer to mic_device instance
  */
 static void mic_x100_send_rdmasr_intr(struct mic_device *mdev,
+<<<<<<< HEAD
 			int doorbell)
+=======
+				      int doorbell)
+>>>>>>> v4.9.227
 {
 	int rdmasr_offset = MIC_X100_SBOX_RDMASR0 + (doorbell << 2);
 	/* Ensure that the interrupt is ordered w.r.t. previous stores. */
@@ -167,8 +183,12 @@ static void mic_x100_send_intr(struct mic_device *mdev, int doorbell)
 	if (doorbell < MIC_X100_NUM_SBOX_IRQ) {
 		mic_x100_send_sbox_intr(mdev, doorbell);
 	} else {
+<<<<<<< HEAD
 		rdmasr_db = doorbell - MIC_X100_NUM_SBOX_IRQ +
 			MIC_X100_RDMASR_IRQ_BASE;
+=======
+		rdmasr_db = doorbell - MIC_X100_NUM_SBOX_IRQ;
+>>>>>>> v4.9.227
 		mic_x100_send_rdmasr_intr(mdev, rdmasr_db);
 	}
 }
@@ -360,6 +380,7 @@ mic_x100_load_command_line(struct mic_device *mdev, const struct firmware *fw)
 
 	boot_mem = mdev->aper.len >> 20;
 	buf = kzalloc(CMDLINE_SIZE, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!buf) {
 		dev_err(mdev->sdev->parent,
 			"%s %d allocation failed\n", __func__, __LINE__);
@@ -369,6 +390,16 @@ mic_x100_load_command_line(struct mic_device *mdev, const struct firmware *fw)
 		" mem=%dM", boot_mem);
 	if (mdev->cmdline)
 		snprintf(buf + len, CMDLINE_SIZE - len, " %s", mdev->cmdline);
+=======
+	if (!buf)
+		return -ENOMEM;
+
+	len += snprintf(buf, CMDLINE_SIZE - len,
+		" mem=%dM", boot_mem);
+	if (mdev->cosm_dev->cmdline)
+		snprintf(buf + len, CMDLINE_SIZE - len, " %s",
+			 mdev->cosm_dev->cmdline);
+>>>>>>> v4.9.227
 	memcpy_toio(cmd_line_va, buf, strlen(buf) + 1);
 	kfree(buf);
 	return 0;
@@ -387,12 +418,20 @@ mic_x100_load_ramdisk(struct mic_device *mdev)
 	int rc;
 	struct boot_params __iomem *bp = mdev->aper.va + mdev->bootaddr;
 
+<<<<<<< HEAD
 	rc = request_firmware(&fw,
 			mdev->ramdisk, mdev->sdev->parent);
 	if (rc < 0) {
 		dev_err(mdev->sdev->parent,
 			"ramdisk request_firmware failed: %d %s\n",
 			rc, mdev->ramdisk);
+=======
+	rc = request_firmware(&fw, mdev->cosm_dev->ramdisk, &mdev->pdev->dev);
+	if (rc < 0) {
+		dev_err(&mdev->pdev->dev,
+			"ramdisk request_firmware failed: %d %s\n",
+			rc, mdev->cosm_dev->ramdisk);
+>>>>>>> v4.9.227
 		goto error;
 	}
 	/*
@@ -424,10 +463,17 @@ mic_x100_get_boot_addr(struct mic_device *mdev)
 
 	scratch2 = mdev->ops->read_spad(mdev, MIC_X100_DOWNLOAD_INFO);
 	boot_addr = MIC_X100_SPAD2_DOWNLOAD_ADDR(scratch2);
+<<<<<<< HEAD
 	dev_dbg(mdev->sdev->parent, "%s %d boot_addr 0x%x\n",
 		__func__, __LINE__, boot_addr);
 	if (boot_addr > (1 << 31)) {
 		dev_err(mdev->sdev->parent,
+=======
+	dev_dbg(&mdev->pdev->dev, "%s %d boot_addr 0x%x\n",
+		__func__, __LINE__, boot_addr);
+	if (boot_addr > (1 << 31)) {
+		dev_err(&mdev->pdev->dev,
+>>>>>>> v4.9.227
 			"incorrect bootaddr 0x%x\n",
 			boot_addr);
 		rc = -EINVAL;
@@ -453,6 +499,7 @@ mic_x100_load_firmware(struct mic_device *mdev, const char *buf)
 
 	rc = mic_x100_get_boot_addr(mdev);
 	if (rc)
+<<<<<<< HEAD
 		goto error;
 	/* load OS */
 	rc = request_firmware(&fw, mdev->firmware, mdev->sdev->parent);
@@ -467,26 +514,64 @@ mic_x100_load_firmware(struct mic_device *mdev, const char *buf)
 		dev_err(mdev->sdev->parent, "%s %d rc %d bootaddr 0x%x\n",
 			__func__, __LINE__, rc, mdev->bootaddr);
 		release_firmware(fw);
+=======
+		return rc;
+	/* load OS */
+	rc = request_firmware(&fw, mdev->cosm_dev->firmware, &mdev->pdev->dev);
+	if (rc < 0) {
+		dev_err(&mdev->pdev->dev,
+			"ramdisk request_firmware failed: %d %s\n",
+			rc, mdev->cosm_dev->firmware);
+		return rc;
+	}
+	if (mdev->bootaddr > mdev->aper.len - fw->size) {
+		rc = -EINVAL;
+		dev_err(&mdev->pdev->dev, "%s %d rc %d bootaddr 0x%x\n",
+			__func__, __LINE__, rc, mdev->bootaddr);
+>>>>>>> v4.9.227
 		goto error;
 	}
 	memcpy_toio(mdev->aper.va + mdev->bootaddr, fw->data, fw->size);
 	mdev->ops->write_spad(mdev, MIC_X100_FW_SIZE, fw->size);
+<<<<<<< HEAD
 	if (!strcmp(mdev->bootmode, "elf"))
 		goto done;
 	/* load command line */
 	rc = mic_x100_load_command_line(mdev, fw);
 	if (rc) {
 		dev_err(mdev->sdev->parent, "%s %d rc %d\n",
+=======
+	if (!strcmp(mdev->cosm_dev->bootmode, "flash")) {
+		rc = -EINVAL;
+		dev_err(&mdev->pdev->dev, "%s %d rc %d\n",
+			__func__, __LINE__, rc);
+		goto error;
+	}
+	/* load command line */
+	rc = mic_x100_load_command_line(mdev, fw);
+	if (rc) {
+		dev_err(&mdev->pdev->dev, "%s %d rc %d\n",
+>>>>>>> v4.9.227
 			__func__, __LINE__, rc);
 		goto error;
 	}
 	release_firmware(fw);
 	/* load ramdisk */
+<<<<<<< HEAD
 	if (mdev->ramdisk)
 		rc = mic_x100_load_ramdisk(mdev);
 error:
 	dev_dbg(mdev->sdev->parent, "%s %d rc %d\n", __func__, __LINE__, rc);
 done:
+=======
+	if (mdev->cosm_dev->ramdisk)
+		rc = mic_x100_load_ramdisk(mdev);
+
+	return rc;
+
+error:
+	release_firmware(fw);
+>>>>>>> v4.9.227
 	return rc;
 }
 

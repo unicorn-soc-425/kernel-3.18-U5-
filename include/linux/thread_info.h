@@ -13,6 +13,13 @@
 struct timespec;
 struct compat_timespec;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_THREAD_INFO_IN_TASK
+#define current_thread_info() ((struct thread_info *)current)
+#endif
+
+>>>>>>> v4.9.227
 /*
  * System call restart block.
  */
@@ -55,11 +62,15 @@ extern long do_no_restart_syscall(struct restart_block *parm);
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_STACK_USAGE
 # define THREADINFO_GFP		(GFP_KERNEL | __GFP_NOTRACK | __GFP_ZERO)
 #else
 # define THREADINFO_GFP		(GFP_KERNEL | __GFP_NOTRACK)
 #endif
+=======
+#define THREADINFO_GFP	(GFP_KERNEL_ACCOUNT | __GFP_NOTRACK | __GFP_ZERO)
+>>>>>>> v4.9.227
 
 /*
  * flag set/clear/test wrappers
@@ -104,6 +115,7 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
 
 #define tif_need_resched() test_thread_flag(TIF_NEED_RESCHED)
 
+<<<<<<< HEAD
 #if defined TIF_RESTORE_SIGMASK && !defined HAVE_SET_RESTORE_SIGMASK
 /*
  * An arch can define its own version of set_restore_sigmask() to get the
@@ -145,6 +157,8 @@ static inline bool test_and_clear_restore_sigmask(void)
 #error "no set_restore_sigmask() provided and default one won't work"
 #endif
 
+=======
+>>>>>>> v4.9.227
 #ifndef CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES
 static inline int arch_within_stack_frames(const void * const stack,
 					   const void * const stackend,

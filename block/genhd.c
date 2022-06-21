@@ -8,6 +8,10 @@
 #include <linux/kdev_t.h>
 #include <linux/kernel.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
+=======
+#include <linux/backing-dev.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/spinlock.h>
 #include <linux/proc_fs.h>
@@ -19,12 +23,16 @@
 #include <linux/idr.h>
 #include <linux/log2.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
 
 #ifdef CONFIG_BLOCK_SUPPORT_STLOG
 #include <linux/fslog.h>
 #else
 #define ST_LOG(fmt,...)
 #endif
+=======
+#include <linux/badblocks.h>
+>>>>>>> v4.9.227
 
 #include "blk.h"
 
@@ -510,7 +518,11 @@ static int exact_lock(dev_t devt, void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void register_disk(struct gendisk *disk)
+=======
+static void register_disk(struct device *parent, struct gendisk *disk)
+>>>>>>> v4.9.227
 {
 	struct device *ddev = disk_to_dev(disk);
 	struct block_device *bdev;
@@ -518,12 +530,16 @@ static void register_disk(struct gendisk *disk)
 	struct hd_struct *part;
 	int err;
 
+<<<<<<< HEAD
 #ifdef CONFIG_BLOCK_SUPPORT_STLOG
 	int major		= disk->major;
 	int first_minor		= disk->first_minor;
 #endif
 
 	ddev->parent = disk->driverfs_dev;
+=======
+	ddev->parent = parent;
+>>>>>>> v4.9.227
 
 	dev_set_name(ddev, "%s", disk->disk_name);
 
@@ -573,6 +589,7 @@ exit:
 	/* announce disk after possible partitions are created */
 	dev_set_uevent_suppress(ddev, 0);
 	kobject_uevent(&ddev->kobj, KOBJ_ADD);
+<<<<<<< HEAD
 	ST_LOG("<%s> KOBJ_ADD %d:%d",__func__,major,first_minor);
 
 	/* announce possible partitions */
@@ -581,11 +598,23 @@ exit:
 		kobject_uevent(&part_to_dev(part)->kobj, KOBJ_ADD);
 		ST_LOG("<%s> KOBJ_ADD %d:%d",__func__,major,first_minor+part->partno);
 	}
+=======
+
+	/* announce possible partitions */
+	disk_part_iter_init(&piter, disk, 0);
+	while ((part = disk_part_iter_next(&piter)))
+		kobject_uevent(&part_to_dev(part)->kobj, KOBJ_ADD);
+>>>>>>> v4.9.227
 	disk_part_iter_exit(&piter);
 }
 
 /**
+<<<<<<< HEAD
  * add_disk - add partitioning information to kernel list
+=======
+ * device_add_disk - add partitioning information to kernel list
+ * @parent: parent device for the disk
+>>>>>>> v4.9.227
  * @disk: per-device partitioning information
  *
  * This function registers the partitioning information in @disk
@@ -593,7 +622,11 @@ exit:
  *
  * FIXME: error handling
  */
+<<<<<<< HEAD
 void add_disk(struct gendisk *disk)
+=======
+void device_add_disk(struct device *parent, struct gendisk *disk)
+>>>>>>> v4.9.227
 {
 	struct backing_dev_info *bdi;
 	dev_t devt;
@@ -625,11 +658,19 @@ void add_disk(struct gendisk *disk)
 
 	/* Register BDI before referencing it from bdev */
 	bdi = &disk->queue->backing_dev_info;
+<<<<<<< HEAD
 	bdi_register_dev(bdi, disk_devt(disk));
 
 	blk_register_region(disk_devt(disk), disk->minors, NULL,
 			    exact_match, exact_lock, disk);
 	register_disk(disk);
+=======
+	bdi_register_owner(bdi, disk_to_dev(disk));
+
+	blk_register_region(disk_devt(disk), disk->minors, NULL,
+			    exact_match, exact_lock, disk);
+	register_disk(parent, disk);
+>>>>>>> v4.9.227
 	blk_register_queue(disk);
 
 	/*
@@ -643,18 +684,28 @@ void add_disk(struct gendisk *disk)
 	WARN_ON(retval);
 
 	disk_add_events(disk);
+<<<<<<< HEAD
 }
 EXPORT_SYMBOL(add_disk);
+=======
+	blk_integrity_add(disk);
+}
+EXPORT_SYMBOL(device_add_disk);
+>>>>>>> v4.9.227
 
 void del_gendisk(struct gendisk *disk)
 {
 	struct disk_part_iter piter;
 	struct hd_struct *part;
 
+<<<<<<< HEAD
 #ifdef CONFIG_BLOCK_SUPPORT_STLOG	
 	struct device *dev;
 #endif
 
+=======
+	blk_integrity_del(disk);
+>>>>>>> v4.9.227
 	disk_del_events(disk);
 
 	/* invalidate stuff */
@@ -671,7 +722,10 @@ void del_gendisk(struct gendisk *disk)
 	disk->flags &= ~GENHD_FL_UP;
 
 	sysfs_remove_link(&disk_to_dev(disk)->kobj, "bdi");
+<<<<<<< HEAD
 	bdi_unregister(&disk->queue->backing_dev_info);
+=======
+>>>>>>> v4.9.227
 	blk_unregister_queue(disk);
 	blk_unregister_region(disk_devt(disk), disk->minors);
 
@@ -680,6 +734,7 @@ void del_gendisk(struct gendisk *disk)
 
 	kobject_put(disk->part0.holder_dir);
 	kobject_put(disk->slave_dir);
+<<<<<<< HEAD
 	disk->driverfs_dev = NULL;
 	if (!sysfs_deprecated)
 		sysfs_remove_link(block_depr, dev_name(disk_to_dev(disk)));
@@ -689,10 +744,43 @@ void del_gendisk(struct gendisk *disk)
 	ST_LOG("<%s> KOBJ_REMOVE %d:%d %s",
 	__func__,MAJOR(dev->devt),MINOR(dev->devt),dev->kobj.name);
 #endif
+=======
+	if (!sysfs_deprecated)
+		sysfs_remove_link(block_depr, dev_name(disk_to_dev(disk)));
+	pm_runtime_set_memalloc_noio(disk_to_dev(disk), false);
+>>>>>>> v4.9.227
 	device_del(disk_to_dev(disk));
 }
 EXPORT_SYMBOL(del_gendisk);
 
+<<<<<<< HEAD
+=======
+/* sysfs access to bad-blocks list. */
+static ssize_t disk_badblocks_show(struct device *dev,
+					struct device_attribute *attr,
+					char *page)
+{
+	struct gendisk *disk = dev_to_disk(dev);
+
+	if (!disk->bb)
+		return sprintf(page, "\n");
+
+	return badblocks_show(disk->bb, page, 0);
+}
+
+static ssize_t disk_badblocks_store(struct device *dev,
+					struct device_attribute *attr,
+					const char *page, size_t len)
+{
+	struct gendisk *disk = dev_to_disk(dev);
+
+	if (!disk->bb)
+		return -ENXIO;
+
+	return badblocks_store(disk->bb, page, len, 0);
+}
+
+>>>>>>> v4.9.227
 /**
  * get_gendisk - get partitioning information for a given device
  * @devt: device to get partitioning information for
@@ -795,10 +883,16 @@ void __init printk_all_partitions(void)
 			       , disk_name(disk, part->partno, name_buf),
 			       part->info ? part->info->uuid : "");
 			if (is_part0) {
+<<<<<<< HEAD
 				if (disk->driverfs_dev != NULL &&
 				    disk->driverfs_dev->driver != NULL)
 					printk(" driver: %s\n",
 					      disk->driverfs_dev->driver->name);
+=======
+				if (dev->parent && dev->parent->driver)
+					printk(" driver: %s\n",
+					      dev->parent->driver->name);
+>>>>>>> v4.9.227
 				else
 					printk(" (driver?)\n");
 			} else
@@ -910,6 +1004,7 @@ static const struct file_operations proc_partitions_operations = {
 	.llseek		= seq_lseek,
 	.release	= seq_release,
 };
+<<<<<<< HEAD
 
 static void *show_iodevs_start(struct seq_file *seqf, loff_t *pos)
 {
@@ -970,6 +1065,8 @@ static const struct file_operations proc_iodevs_operations = {
 	.llseek     = seq_lseek,
 	.release    = seq_release,
 };
+=======
+>>>>>>> v4.9.227
 #endif
 
 
@@ -1061,6 +1158,7 @@ static ssize_t disk_discard_alignment_show(struct device *dev,
 	return sprintf(buf, "%d\n", queue_discard_alignment(disk->queue));
 }
 
+<<<<<<< HEAD
 #undef DISCARD
 
 #define DISCARD	(WRITE + 1)
@@ -1125,6 +1223,8 @@ static ssize_t disk_ios_show(struct device *dev,
 }
 #undef DISCARD
 
+=======
+>>>>>>> v4.9.227
 static DEVICE_ATTR(range, S_IRUGO, disk_range_show, NULL);
 static DEVICE_ATTR(ext_range, S_IRUGO, disk_ext_range_show, NULL);
 static DEVICE_ATTR(removable, S_IRUGO, disk_removable_show, NULL);
@@ -1136,7 +1236,12 @@ static DEVICE_ATTR(discard_alignment, S_IRUGO, disk_discard_alignment_show,
 static DEVICE_ATTR(capability, S_IRUGO, disk_capability_show, NULL);
 static DEVICE_ATTR(stat, S_IRUGO, part_stat_show, NULL);
 static DEVICE_ATTR(inflight, S_IRUGO, part_inflight_show, NULL);
+<<<<<<< HEAD
 static DEVICE_ATTR(diskios, 0600, disk_ios_show, NULL);
+=======
+static DEVICE_ATTR(badblocks, S_IRUGO | S_IWUSR, disk_badblocks_show,
+		disk_badblocks_store);
+>>>>>>> v4.9.227
 #ifdef CONFIG_FAIL_MAKE_REQUEST
 static struct device_attribute dev_attr_fail =
 	__ATTR(make-it-fail, S_IRUGO|S_IWUSR, part_fail_show, part_fail_store);
@@ -1158,7 +1263,11 @@ static struct attribute *disk_attrs[] = {
 	&dev_attr_capability.attr,
 	&dev_attr_stat.attr,
 	&dev_attr_inflight.attr,
+<<<<<<< HEAD
 	&dev_attr_diskios.attr,
+=======
+	&dev_attr_badblocks.attr,
+>>>>>>> v4.9.227
 #ifdef CONFIG_FAIL_MAKE_REQUEST
 	&dev_attr_fail.attr,
 #endif
@@ -1260,12 +1369,17 @@ static void disk_release(struct device *dev)
 	disk_release_events(disk);
 	kfree(disk->random);
 	disk_replace_part_tbl(disk, NULL);
+<<<<<<< HEAD
 	free_part_stats(&disk->part0);
 	free_part_info(&disk->part0);
+=======
+	hd_free_part(&disk->part0);
+>>>>>>> v4.9.227
 	if (disk->queue)
 		blk_put_queue(disk->queue);
 	kfree(disk);
 }
+<<<<<<< HEAD
 
 static int disk_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
@@ -1289,6 +1403,8 @@ static int disk_uevent(struct device *dev, struct kobj_uevent_env *env)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 struct class block_class = {
 	.name		= "block",
 };
@@ -1308,7 +1424,10 @@ static struct device_type disk_type = {
 	.groups		= disk_attr_groups,
 	.release	= disk_release,
 	.devnode	= block_devnode,
+<<<<<<< HEAD
 	.uevent		= disk_uevent,
+=======
+>>>>>>> v4.9.227
 };
 
 #ifdef CONFIG_PROC_FS
@@ -1381,6 +1500,7 @@ static const struct file_operations proc_diskstats_operations = {
 	.release	= seq_release,
 };
 
+<<<<<<< HEAD
 #define PG2KB(x) ((unsigned long)((x) << (PAGE_SHIFT - 10)))
 static int iostats_show(struct seq_file *seqf, void *v)
 {
@@ -1484,6 +1604,11 @@ static int __init proc_genhd_init(void)
 	proc_create("iostats", 0, NULL, &proc_iostats_operations);
 	proc_create("diskstats", 0, NULL, &proc_diskstats_operations);
 	proc_create("iodevs", 0, NULL, &proc_iodevs_operations);
+=======
+static int __init proc_genhd_init(void)
+{
+	proc_create("diskstats", 0, NULL, &proc_diskstats_operations);
+>>>>>>> v4.9.227
 	proc_create("partitions", 0, NULL, &proc_partitions_operations);
 	return 0;
 }
@@ -1559,7 +1684,15 @@ struct gendisk *alloc_disk_node(int minors, int node_id)
 		 * converted to make use of bd_mutex and sequence counters.
 		 */
 		seqcount_init(&disk->part0.nr_sects_seq);
+<<<<<<< HEAD
 		hd_ref_init(&disk->part0);
+=======
+		if (hd_ref_init(&disk->part0)) {
+			hd_free_part(&disk->part0);
+			kfree(disk);
+			return NULL;
+		}
+>>>>>>> v4.9.227
 
 		disk->minors = minors;
 		rand_initialize_disk(disk);
@@ -1690,7 +1823,11 @@ static DEFINE_MUTEX(disk_events_mutex);
 static LIST_HEAD(disk_events);
 
 /* disable in-kernel polling by default */
+<<<<<<< HEAD
 static unsigned long disk_events_dfl_poll_msecs	= 0;
+=======
+static unsigned long disk_events_dfl_poll_msecs;
+>>>>>>> v4.9.227
 
 static unsigned long disk_events_poll_jiffies(struct gendisk *disk)
 {
@@ -1764,12 +1901,16 @@ static void __disk_unblock_events(struct gendisk *disk, bool check_now)
 	if (--ev->block)
 		goto out_unlock;
 
+<<<<<<< HEAD
 	/*
 	 * Not exactly a latency critical operation, set poll timer
 	 * slack to 25% and kick event check.
 	 */
 	intv = disk_events_poll_jiffies(disk);
 	set_timer_slack(&ev->dwork.timer, intv / 4);
+=======
+	intv = disk_events_poll_jiffies(disk);
+>>>>>>> v4.9.227
 	if (check_now)
 		queue_delayed_work(system_freezable_power_efficient_wq,
 				&ev->dwork, 0);
@@ -1900,6 +2041,7 @@ static void disk_check_events(struct disk_events *ev,
 	unsigned long intv;
 	int nr_events = 0, i;
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_STORAGE_DETECT
 	events = 0;
 	if (disk->interfaces != GENHD_IF_USB)
@@ -1909,6 +2051,10 @@ static void disk_check_events(struct disk_events *ev,
 	/* check events */
 	events = disk->fops->check_events(disk, clearing);
 #endif
+=======
+	/* check events */
+	events = disk->fops->check_events(disk, clearing);
+>>>>>>> v4.9.227
 
 	/* accumulate pending events and schedule next poll if necessary */
 	spin_lock_irq(&ev->lock);
@@ -1933,6 +2079,7 @@ static void disk_check_events(struct disk_events *ev,
 		if (events & disk->events & (1 << i))
 			envp[nr_events++] = disk_uevents[i];
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_STORAGE_DETECT
 	if (nr_events && disk->interfaces != GENHD_IF_USB)
 		kobject_uevent_env(&disk_to_dev(disk)->kobj, KOBJ_CHANGE, envp);
@@ -1940,6 +2087,10 @@ static void disk_check_events(struct disk_events *ev,
 	if (nr_events)
 		kobject_uevent_env(&disk_to_dev(disk)->kobj, KOBJ_CHANGE, envp);
 #endif
+=======
+	if (nr_events)
+		kobject_uevent_env(&disk_to_dev(disk)->kobj, KOBJ_CHANGE, envp);
+>>>>>>> v4.9.227
 }
 
 /*

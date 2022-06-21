@@ -79,8 +79,13 @@ struct dcon_priv {
 
 	/* Variables used during switches */
 	bool switched;
+<<<<<<< HEAD
 	struct timespec irq_time;
 	struct timespec load_time;
+=======
+	ktime_t irq_time;
+	ktime_t load_time;
+>>>>>>> v4.9.227
 
 	/* Current output type; true == mono, false == color */
 	bool mono;
@@ -98,7 +103,11 @@ struct dcon_platform_data {
 
 #include <linux/interrupt.h>
 
+<<<<<<< HEAD
 extern irqreturn_t dcon_interrupt(int irq, void *id);
+=======
+irqreturn_t dcon_interrupt(int irq, void *id);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_FB_OLPC_DCON_1
 extern struct dcon_platform_data dcon_pdata_xo_1;

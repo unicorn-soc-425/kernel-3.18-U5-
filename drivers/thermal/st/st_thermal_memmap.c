@@ -42,7 +42,12 @@ static irqreturn_t st_mmap_thermal_trip_handler(int irq, void *sdata)
 {
 	struct st_thermal_sensor *sensor = sdata;
 
+<<<<<<< HEAD
 	thermal_zone_device_update(sensor->thermal_dev);
+=======
+	thermal_zone_device_update(sensor->thermal_dev,
+				   THERMAL_EVENT_UNSPECIFIED);
+>>>>>>> v4.9.227
 
 	return IRQ_HANDLED;
 }
@@ -157,7 +162,11 @@ static const struct st_thermal_sensor_ops st_mmap_sensor_ops = {
 };
 
 /* Compatible device data stih416 mpe thermal sensor */
+<<<<<<< HEAD
 const struct st_thermal_compat_data st_416mpe_cdata = {
+=======
+static const struct st_thermal_compat_data st_416mpe_cdata = {
+>>>>>>> v4.9.227
 	.reg_fields		= st_mmap_thermal_regfields,
 	.ops			= &st_mmap_sensor_ops,
 	.calibration_val	= 14,
@@ -166,7 +175,11 @@ const struct st_thermal_compat_data st_416mpe_cdata = {
 };
 
 /* Compatible device data stih407 thermal sensor */
+<<<<<<< HEAD
 const struct st_thermal_compat_data st_407_cdata = {
+=======
+static const struct st_thermal_compat_data st_407_cdata = {
+>>>>>>> v4.9.227
 	.reg_fields		= st_mmap_thermal_regfields,
 	.ops			= &st_mmap_sensor_ops,
 	.calibration_val	= 16,
@@ -174,19 +187,31 @@ const struct st_thermal_compat_data st_407_cdata = {
 	.crit_temp		= 120,
 };
 
+<<<<<<< HEAD
 static struct of_device_id st_mmap_thermal_of_match[] = {
+=======
+static const struct of_device_id st_mmap_thermal_of_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "st,stih416-mpe-thermal", .data = &st_416mpe_cdata },
 	{ .compatible = "st,stih407-thermal",     .data = &st_407_cdata },
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, st_mmap_thermal_of_match);
 
+<<<<<<< HEAD
 int st_mmap_probe(struct platform_device *pdev)
+=======
+static int st_mmap_probe(struct platform_device *pdev)
+>>>>>>> v4.9.227
 {
 	return st_thermal_register(pdev,  st_mmap_thermal_of_match);
 }
 
+<<<<<<< HEAD
 int st_mmap_remove(struct platform_device *pdev)
+=======
+static int st_mmap_remove(struct platform_device *pdev)
+>>>>>>> v4.9.227
 {
 	return st_thermal_unregister(pdev);
 }
@@ -194,7 +219,10 @@ int st_mmap_remove(struct platform_device *pdev)
 static struct platform_driver st_mmap_thermal_driver = {
 	.driver = {
 		.name	= "st_thermal_mmap",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm     = &st_thermal_pm_ops,
 		.of_match_table = st_mmap_thermal_of_match,
 	},

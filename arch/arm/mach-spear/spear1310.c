@@ -4,7 +4,11 @@
  * SPEAr1310 machine source file
  *
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -14,7 +18,10 @@
 #define pr_fmt(fmt) "SPEAr1310: " fmt
 
 #include <linux/amba/pl022.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/pata_arasan_cf_data.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
@@ -27,7 +34,10 @@
 
 static void __init spear1310_dt_init(void)
 {
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+=======
+>>>>>>> v4.9.227
 	platform_device_register_simple("spear-cpufreq", -1, NULL, 0);
 }
 

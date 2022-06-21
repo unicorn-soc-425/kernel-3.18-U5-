@@ -42,7 +42,11 @@ struct host1x_job;
  */
 
 struct push_buffer {
+<<<<<<< HEAD
 	u32 *mapped;			/* mapped pushbuffer memory */
+=======
+	void *mapped;			/* mapped pushbuffer memory */
+>>>>>>> v4.9.227
 	dma_addr_t phys;		/* physical address of pushbuffer */
 	u32 fence;			/* index we've written */
 	u32 pos;			/* index to write to */

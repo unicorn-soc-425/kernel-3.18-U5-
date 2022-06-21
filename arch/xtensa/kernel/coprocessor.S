@@ -17,7 +17,11 @@
 #include <asm/processor.h>
 #include <asm/coprocessor.h>
 #include <asm/thread_info.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <asm/asm-uaccess.h>
+>>>>>>> v4.9.227
 #include <asm/unistd.h>
 #include <asm/ptrace.h>
 #include <asm/current.h>

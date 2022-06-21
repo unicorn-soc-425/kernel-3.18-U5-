@@ -41,6 +41,10 @@
 #include <linux/irqdomain.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/irqchip/arm-gic.h>
 
 #include <asm/irq.h>
@@ -48,7 +52,10 @@
 #include <asm/smp_plat.h>
 
 #include "irq-gic-common.h"
+<<<<<<< HEAD
 #include "irqchip.h"
+=======
+>>>>>>> v4.9.227
 
 #define HIP04_MAX_IRQS		510
 
@@ -179,8 +186,12 @@ static void __exception_irq_entry hip04_handle_irq(struct pt_regs *regs)
 		irqnr = irqstat & GICC_IAR_INT_ID_MASK;
 
 		if (likely(irqnr > 15 && irqnr <= HIP04_MAX_IRQS)) {
+<<<<<<< HEAD
 			irqnr = irq_find_mapping(hip04_data.domain, irqnr);
 			handle_IRQ(irqnr, regs);
+=======
+			handle_domain_irq(hip04_data.domain, irqnr, regs);
+>>>>>>> v4.9.227
 			continue;
 		}
 		if (irqnr < 16) {
@@ -203,6 +214,12 @@ static struct irq_chip hip04_irq_chip = {
 #ifdef CONFIG_SMP
 	.irq_set_affinity	= hip04_irq_set_affinity,
 #endif
+<<<<<<< HEAD
+=======
+	.flags			= IRQCHIP_SET_TYPE_MASKED |
+				  IRQCHIP_SKIP_SET_WAKE |
+				  IRQCHIP_MASK_ON_SUSPEND,
+>>>>>>> v4.9.227
 };
 
 static u16 hip04_get_cpumask(struct hip04_irq_data *intc)
@@ -305,11 +322,19 @@ static int hip04_irq_domain_map(struct irq_domain *d, unsigned int irq,
 		irq_set_percpu_devid(irq);
 		irq_set_chip_and_handler(irq, &hip04_irq_chip,
 					 handle_percpu_devid_irq);
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID | IRQF_NOAUTOEN);
 	} else {
 		irq_set_chip_and_handler(irq, &hip04_irq_chip,
 					 handle_fasteoi_irq);
 		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+		irq_set_status_flags(irq, IRQ_NOAUTOEN);
+	} else {
+		irq_set_chip_and_handler(irq, &hip04_irq_chip,
+					 handle_fasteoi_irq);
+		irq_set_probe(irq);
+>>>>>>> v4.9.227
 	}
 	irq_set_chip_data(irq, d->host_data);
 	return 0;
@@ -323,7 +348,11 @@ static int hip04_irq_domain_xlate(struct irq_domain *d,
 {
 	unsigned long ret = 0;
 
+<<<<<<< HEAD
 	if (d->of_node != controller)
+=======
+	if (irq_domain_get_of_node(d) != controller)
+>>>>>>> v4.9.227
 		return -EINVAL;
 	if (intsize < 3)
 		return -EINVAL;
@@ -340,6 +369,7 @@ static int hip04_irq_domain_xlate(struct irq_domain *d,
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 static int hip04_irq_secondary_init(struct notifier_block *nfb,
 				    unsigned long action,
@@ -360,6 +390,14 @@ static struct notifier_block hip04_irq_cpu_notifier = {
 };
 #endif
 
+=======
+static int hip04_irq_starting_cpu(unsigned int cpu)
+{
+	hip04_irq_cpu_init(&hip04_data);
+	return 0;
+}
+
+>>>>>>> v4.9.227
 static const struct irq_domain_ops hip04_irq_domain_ops = {
 	.map	= hip04_irq_domain_map,
 	.xlate	= hip04_irq_domain_xlate,
@@ -385,7 +423,11 @@ hip04_of_init(struct device_node *node, struct device_node *parent)
 	 * It will be refined as each CPU probes its ID.
 	 */
 	for (i = 0; i < NR_HIP04_CPU_IF; i++)
+<<<<<<< HEAD
 		hip04_cpu_map[i] = 0xff;
+=======
+		hip04_cpu_map[i] = 0xffff;
+>>>>>>> v4.9.227
 
 	/*
 	 * Find out how many interrupts are supported.
@@ -400,7 +442,11 @@ hip04_of_init(struct device_node *node, struct device_node *parent)
 	nr_irqs -= hwirq_base; /* calculate # of irqs to allocate */
 
 	irq_base = irq_alloc_descs(-1, hwirq_base, nr_irqs, numa_node_id());
+<<<<<<< HEAD
 	if (IS_ERR_VALUE(irq_base)) {
+=======
+	if (irq_base < 0) {
+>>>>>>> v4.9.227
 		pr_err("failed to allocate IRQ numbers\n");
 		return -EINVAL;
 	}
@@ -415,13 +461,21 @@ hip04_of_init(struct device_node *node, struct device_node *parent)
 
 #ifdef CONFIG_SMP
 	set_smp_cross_call(hip04_raise_softirq);
+<<<<<<< HEAD
 	register_cpu_notifier(&hip04_irq_cpu_notifier);
+=======
+>>>>>>> v4.9.227
 #endif
 	set_handle_irq(hip04_handle_irq);
 
 	hip04_irq_dist_init(&hip04_data);
+<<<<<<< HEAD
 	hip04_irq_cpu_init(&hip04_data);
 
+=======
+	cpuhp_setup_state(CPUHP_AP_IRQ_HIP04_STARTING, "AP_IRQ_HIP04_STARTING",
+			  hip04_irq_starting_cpu, NULL);
+>>>>>>> v4.9.227
 	return 0;
 }
 IRQCHIP_DECLARE(hip04_intc, "hisilicon,hip04-intc", hip04_of_init);

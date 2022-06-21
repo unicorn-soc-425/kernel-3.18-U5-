@@ -196,6 +196,7 @@ static inline int gpio_export_link(struct device *dev, const char *name,
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static inline int gpio_sysfs_set_active_low(unsigned gpio, int value)
 {
 	/* GPIO can never have been requested */
@@ -203,6 +204,8 @@ static inline int gpio_sysfs_set_active_low(unsigned gpio, int value)
 	return -EINVAL;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void gpio_unexport(unsigned gpio)
 {
 	/* GPIO can never have been exported */
@@ -216,14 +219,24 @@ static inline int gpio_to_irq(unsigned gpio)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static inline int gpio_lock_as_irq(struct gpio_chip *chip, unsigned int offset)
+=======
+static inline int gpiochip_lock_as_irq(struct gpio_chip *chip,
+				       unsigned int offset)
+>>>>>>> v4.9.227
 {
 	WARN_ON(1);
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static inline void gpio_unlock_as_irq(struct gpio_chip *chip,
 				      unsigned int offset)
+=======
+static inline void gpiochip_unlock_as_irq(struct gpio_chip *chip,
+					  unsigned int offset)
+>>>>>>> v4.9.227
 {
 	WARN_ON(1);
 }
@@ -235,6 +248,7 @@ static inline int irq_to_gpio(unsigned irq)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static inline int
 gpiochip_add_pin_range(struct gpio_chip *chip, const char *pinctl_name,
 		       unsigned int gpio_offset, unsigned int pin_offset,
@@ -259,6 +273,8 @@ gpiochip_remove_pin_ranges(struct gpio_chip *chip)
 	WARN_ON(1);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int devm_gpio_request(struct device *dev, unsigned gpio,
 				    const char *label)
 {

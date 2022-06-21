@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> v4.9.227
  *
  * File: baseband.h
  *
@@ -88,10 +91,17 @@ struct vnt_phy_field {
 } __packed;
 
 unsigned int vnt_get_frame_time(u8 preamble_type, u8 pkt_type,
+<<<<<<< HEAD
 	unsigned int frame_length, u16 tx_rate);
 
 void vnt_get_phy_field(struct vnt_private *, u32 frame_length,
 	u16 tx_rate, u8 pkt_type, struct vnt_phy_field *);
+=======
+				unsigned int frame_length, u16 tx_rate);
+
+void vnt_get_phy_field(struct vnt_private *, u32 frame_length,
+		       u16 tx_rate, u8 pkt_type, struct vnt_phy_field *);
+>>>>>>> v4.9.227
 
 void vnt_set_short_slot_time(struct vnt_private *);
 void vnt_set_vga_gain_offset(struct vnt_private *, u8);

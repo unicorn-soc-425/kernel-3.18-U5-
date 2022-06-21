@@ -3,6 +3,11 @@
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
+=======
+#define ARCH_HAS_IOREMAP_WT
+
+>>>>>>> v4.9.227
 #include <asm/virtconvert.h>
 #include <asm-generic/iomap.h>
 
@@ -40,10 +45,13 @@ static inline unsigned int _swapl(volatile unsigned long v)
 #define readl(addr) \
     ({ unsigned int __v = (*(volatile unsigned int *) (addr)); __v; })
 
+<<<<<<< HEAD
 #define readb_relaxed(addr) readb(addr)
 #define readw_relaxed(addr) readw(addr)
 #define readl_relaxed(addr) readl(addr)
 
+=======
+>>>>>>> v4.9.227
 #define writeb(b,addr) (void)((*(volatile unsigned char *) (addr)) = (b))
 #define writew(b,addr) (void)((*(volatile unsigned short *) (addr)) = (b))
 #define writel(b,addr) (void)((*(volatile unsigned int *) (addr)) = (b))
@@ -157,7 +165,11 @@ static inline void *ioremap_nocache(unsigned long physaddr, unsigned long size)
 {
 	return __ioremap(physaddr, size, IOMAP_NOCACHE_SER);
 }
+<<<<<<< HEAD
 static inline void *ioremap_writethrough(unsigned long physaddr, unsigned long size)
+=======
+static inline void *ioremap_wt(unsigned long physaddr, unsigned long size)
+>>>>>>> v4.9.227
 {
 	return __ioremap(physaddr, size, IOMAP_WRITETHROUGH);
 }

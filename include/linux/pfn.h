@@ -3,6 +3,18 @@
 
 #ifndef __ASSEMBLY__
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+
+/*
+ * pfn_t: encapsulates a page-frame number that is optionally backed
+ * by memmap (struct page).  Whether a pfn_t has a 'struct page'
+ * backing is indicated by flags in the high bits of the value.
+ */
+typedef struct {
+	u64 val;
+} pfn_t;
+>>>>>>> v4.9.227
 #endif
 
 #define PFN_ALIGN(x)	(((unsigned long)(x) + (PAGE_SIZE - 1)) & PAGE_MASK)

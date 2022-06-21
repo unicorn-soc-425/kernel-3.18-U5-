@@ -2,6 +2,10 @@
 #define _XT_TPROXY_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/netfilter.h>
+>>>>>>> v4.9.227
 
 /* TPROXY target is capable of marking the packet to perform
  * redirection. We can get rid of that whenever we get support for

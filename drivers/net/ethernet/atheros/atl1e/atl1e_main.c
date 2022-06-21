@@ -478,7 +478,13 @@ static void atl1e_mdio_write(struct net_device *netdev, int phy_id,
 {
 	struct atl1e_adapter *adapter = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	atl1e_write_phy_reg(&adapter->hw, reg_num & MDIO_REG_ADDR_MASK, val);
+=======
+	if (atl1e_write_phy_reg(&adapter->hw,
+				reg_num & MDIO_REG_ADDR_MASK, val))
+		netdev_err(netdev, "write phy register failed\n");
+>>>>>>> v4.9.227
 }
 
 static int atl1e_mii_ioctl(struct net_device *netdev,
@@ -648,7 +654,10 @@ static int atl1e_sw_init(struct atl1e_adapter *adapter)
 
 	atomic_set(&adapter->irq_sem, 1);
 	spin_lock_init(&adapter->mdio_lock);
+<<<<<<< HEAD
 	spin_lock_init(&adapter->tx_lock);
+=======
+>>>>>>> v4.9.227
 
 	set_bit(__AT_DOWN, &adapter->flags);
 
@@ -1866,7 +1875,10 @@ static netdev_tx_t atl1e_xmit_frame(struct sk_buff *skb,
 					  struct net_device *netdev)
 {
 	struct atl1e_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> v4.9.227
 	u16 tpd_req = 1;
 	struct atl1e_tpd_desc *tpd;
 
@@ -1880,20 +1892,31 @@ static netdev_tx_t atl1e_xmit_frame(struct sk_buff *skb,
 		return NETDEV_TX_OK;
 	}
 	tpd_req = atl1e_cal_tdp_req(skb);
+<<<<<<< HEAD
 	if (!spin_trylock_irqsave(&adapter->tx_lock, flags))
 		return NETDEV_TX_LOCKED;
+=======
+>>>>>>> v4.9.227
 
 	if (atl1e_tpd_avail(adapter) < tpd_req) {
 		/* no enough descriptor, just stop queue */
 		netif_stop_queue(netdev);
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+>>>>>>> v4.9.227
 		return NETDEV_TX_BUSY;
 	}
 
 	tpd = atl1e_get_tpd(adapter);
 
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb)) {
 		u16 vlan_tag = vlan_tx_tag_get(skb);
+=======
+	if (skb_vlan_tag_present(skb)) {
+		u16 vlan_tag = skb_vlan_tag_get(skb);
+>>>>>>> v4.9.227
 		u16 atl1e_vlan_tag;
 
 		tpd->word3 |= 1 << TPD_INS_VL_TAG_SHIFT;
@@ -1910,7 +1933,10 @@ static netdev_tx_t atl1e_xmit_frame(struct sk_buff *skb,
 
 	/* do TSO and check sum */
 	if (atl1e_tso_csum(adapter, skb, tpd) != 0) {
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+>>>>>>> v4.9.227
 		dev_kfree_skb_any(skb);
 		return NETDEV_TX_OK;
 	}
@@ -1921,10 +1947,14 @@ static netdev_tx_t atl1e_xmit_frame(struct sk_buff *skb,
 	}
 
 	atl1e_tx_queue(adapter, tpd_req, tpd);
+<<<<<<< HEAD
 
 	netdev->trans_start = jiffies; /* NETIF_F_LLTX driver :( */
 out:
 	spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+out:
+>>>>>>> v4.9.227
 	return NETDEV_TX_OK;
 }
 
@@ -2285,8 +2315,12 @@ static int atl1e_init_netdev(struct net_device *netdev, struct pci_dev *pdev)
 
 	netdev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_TSO |
 			      NETIF_F_HW_VLAN_CTAG_RX;
+<<<<<<< HEAD
 	netdev->features = netdev->hw_features | NETIF_F_LLTX |
 			   NETIF_F_HW_VLAN_CTAG_TX;
+=======
+	netdev->features = netdev->hw_features | NETIF_F_HW_VLAN_CTAG_TX;
+>>>>>>> v4.9.227
 	/* not enabled by default */
 	netdev->hw_features |= NETIF_F_RXALL | NETIF_F_RXFCS;
 	return 0;
@@ -2373,9 +2407,14 @@ static int atl1e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	netif_napi_add(netdev, &adapter->napi, atl1e_clean, 64);
 
+<<<<<<< HEAD
 	init_timer(&adapter->phy_config_timer);
 	adapter->phy_config_timer.function = atl1e_phy_config;
 	adapter->phy_config_timer.data = (unsigned long) adapter;
+=======
+	setup_timer(&adapter->phy_config_timer, atl1e_phy_config,
+		    (unsigned long)adapter);
+>>>>>>> v4.9.227
 
 	/* get user settings */
 	atl1e_check_options(adapter);

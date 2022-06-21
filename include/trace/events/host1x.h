@@ -29,6 +29,11 @@
 #include <linux/ktime.h>
 #include <linux/tracepoint.h>
 
+<<<<<<< HEAD
+=======
+struct host1x_bo;
+
+>>>>>>> v4.9.227
 DECLARE_EVENT_CLASS(host1x,
 	TP_PROTO(const char *name),
 	TP_ARGS(name),
@@ -79,6 +84,7 @@ TRACE_EVENT(host1x_cdma_push,
 );
 
 TRACE_EVENT(host1x_cdma_push_gather,
+<<<<<<< HEAD
 	TP_PROTO(const char *name, u32 mem_id,
 			u32 words, u32 offset, void *cmdbuf),
 
@@ -87,6 +93,16 @@ TRACE_EVENT(host1x_cdma_push_gather,
 	TP_STRUCT__entry(
 		__field(const char *, name)
 		__field(u32, mem_id)
+=======
+	TP_PROTO(const char *name, struct host1x_bo *bo,
+			u32 words, u32 offset, void *cmdbuf),
+
+	TP_ARGS(name, bo, words, offset, cmdbuf),
+
+	TP_STRUCT__entry(
+		__field(const char *, name)
+		__field(struct host1x_bo *, bo)
+>>>>>>> v4.9.227
 		__field(u32, words)
 		__field(u32, offset)
 		__field(bool, cmdbuf)
@@ -100,13 +116,22 @@ TRACE_EVENT(host1x_cdma_push_gather,
 		}
 		__entry->cmdbuf = cmdbuf;
 		__entry->name = name;
+<<<<<<< HEAD
 		__entry->mem_id = mem_id;
+=======
+		__entry->bo = bo;
+>>>>>>> v4.9.227
 		__entry->words = words;
 		__entry->offset = offset;
 	),
 
+<<<<<<< HEAD
 	TP_printk("name=%s, mem_id=%08x, words=%u, offset=%d, contents=[%s]",
 	  __entry->name, __entry->mem_id,
+=======
+	TP_printk("name=%s, bo=%p, words=%u, offset=%d, contents=[%s]",
+	  __entry->name, __entry->bo,
+>>>>>>> v4.9.227
 	  __entry->words, __entry->offset,
 	  __print_hex(__get_dynamic_array(cmdbuf),
 		  __entry->cmdbuf ? __entry->words * 4 : 0))
@@ -221,12 +246,22 @@ TRACE_EVENT(host1x_syncpt_load_min,
 );
 
 TRACE_EVENT(host1x_syncpt_wait_check,
+<<<<<<< HEAD
 	TP_PROTO(void *mem_id, u32 offset, u32 syncpt_id, u32 thresh, u32 min),
 
 	TP_ARGS(mem_id, offset, syncpt_id, thresh, min),
 
 	TP_STRUCT__entry(
 		__field(void *, mem_id)
+=======
+	TP_PROTO(struct host1x_bo *bo, u32 offset, u32 syncpt_id, u32 thresh,
+		 u32 min),
+
+	TP_ARGS(bo, offset, syncpt_id, thresh, min),
+
+	TP_STRUCT__entry(
+		__field(struct host1x_bo *, bo)
+>>>>>>> v4.9.227
 		__field(u32, offset)
 		__field(u32, syncpt_id)
 		__field(u32, thresh)
@@ -234,15 +269,24 @@ TRACE_EVENT(host1x_syncpt_wait_check,
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->mem_id = mem_id;
+=======
+		__entry->bo = bo;
+>>>>>>> v4.9.227
 		__entry->offset = offset;
 		__entry->syncpt_id = syncpt_id;
 		__entry->thresh = thresh;
 		__entry->min = min;
 	),
 
+<<<<<<< HEAD
 	TP_printk("mem_id=%p, offset=%05x, id=%d, thresh=%d, current=%d",
 		__entry->mem_id, __entry->offset,
+=======
+	TP_printk("bo=%p, offset=%05x, id=%d, thresh=%d, current=%d",
+		__entry->bo, __entry->offset,
+>>>>>>> v4.9.227
 		__entry->syncpt_id, __entry->thresh,
 		__entry->min)
 );

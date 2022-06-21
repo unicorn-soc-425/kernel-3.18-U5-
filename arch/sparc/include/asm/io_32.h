@@ -4,10 +4,13 @@
 #include <linux/kernel.h>
 #include <linux/ioport.h>  /* struct resource */
 
+<<<<<<< HEAD
 #define readb_relaxed(__addr)	readb(__addr)
 #define readw_relaxed(__addr)	readw(__addr)
 #define readl_relaxed(__addr)	readl(__addr)
 
+=======
+>>>>>>> v4.9.227
 #define IO_SPACE_LIMIT 0xffffffff
 
 #define memset_io(d,c,sz)     _memset_io(d,c,sz)
@@ -133,6 +136,10 @@ static inline void sbus_memcpy_toio(volatile void __iomem *dst,
 void __iomem *ioremap(unsigned long offset, unsigned long size);
 #define ioremap_nocache(X,Y)	ioremap((X),(Y))
 #define ioremap_wc(X,Y)		ioremap((X),(Y))
+<<<<<<< HEAD
+=======
+#define ioremap_wt(X,Y)		ioremap((X),(Y))
+>>>>>>> v4.9.227
 void iounmap(volatile void __iomem *addr);
 
 /* Create a virtual mapping cookie for an IO port range */
@@ -143,6 +150,7 @@ void ioport_unmap(void __iomem *);
 struct pci_dev;
 void pci_iounmap(struct pci_dev *dev, void __iomem *);
 
+<<<<<<< HEAD
 
 
 /*
@@ -153,6 +161,8 @@ void pci_iounmap(struct pci_dev *dev, void __iomem *);
 #define RTC_PORT(x)   (rtc_port + (x))
 #define RTC_ALWAYS_BCD  0
 
+=======
+>>>>>>> v4.9.227
 static inline int sbus_can_dma_64bit(void)
 {
 	return 0; /* actually, sparc_cpu_model==sun4d */

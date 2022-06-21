@@ -69,9 +69,15 @@ Description
 
   IMPORTANT NOTE : in the code some length checks are missing because certain
   instructions are called under the assumption that a certain number of bytes
+<<<<<<< HEAD
   follow because it has already been garanteed before parsing the instructions.
   They just have to "refill" this credit if they consume extra bytes. This is
   an implementation design choice independant on the algorithm or encoding.
+=======
+  follow because it has already been guaranteed before parsing the instructions.
+  They just have to "refill" this credit if they consume extra bytes. This is
+  an implementation design choice independent on the algorithm or encoding.
+>>>>>>> v4.9.227
 
 Byte sequences
 

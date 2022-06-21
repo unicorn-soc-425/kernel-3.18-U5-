@@ -83,7 +83,11 @@ static void rfcomm_dev_destruct(struct tty_port *port)
 	struct rfcomm_dev *dev = container_of(port, struct rfcomm_dev, port);
 	struct rfcomm_dlc *dlc = dev->dlc;
 
+<<<<<<< HEAD
 	BT_DBG("dev %pK dlc %pK", dev, dlc);
+=======
+	BT_DBG("dev %p dlc %p", dev, dlc);
+>>>>>>> v4.9.227
 
 	rfcomm_dlc_lock(dlc);
 	/* Detach DLC if it's owned by this dev */
@@ -178,7 +182,11 @@ static void rfcomm_reparent_device(struct rfcomm_dev *dev)
 	struct hci_dev *hdev;
 	struct hci_conn *conn;
 
+<<<<<<< HEAD
 	hdev = hci_get_route(&dev->dst, &dev->src);
+=======
+	hdev = hci_get_route(&dev->dst, &dev->src, BDADDR_BREDR);
+>>>>>>> v4.9.227
 	if (!hdev)
 		return;
 
@@ -396,7 +404,11 @@ static int __rfcomm_create_dev(struct sock *sk, void __user *arg)
 	if (copy_from_user(&req, arg, sizeof(req)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	BT_DBG("sk %pK dev_id %d flags 0x%x", sk, req.dev_id, req.flags);
+=======
+	BT_DBG("sk %p dev_id %d flags 0x%x", sk, req.dev_id, req.flags);
+>>>>>>> v4.9.227
 
 	if (req.flags != NOCAP_FLAGS && !capable(CAP_NET_ADMIN))
 		return -EPERM;
@@ -413,10 +425,15 @@ static int __rfcomm_create_dev(struct sock *sk, void __user *arg)
 		dlc = rfcomm_dlc_exists(&req.src, &req.dst, req.channel);
 		if (IS_ERR(dlc))
 			return PTR_ERR(dlc);
+<<<<<<< HEAD
 		else if (dlc) {
 			rfcomm_dlc_put(dlc);
 			return -EBUSY;
 		}
+=======
+		if (dlc)
+			return -EBUSY;
+>>>>>>> v4.9.227
 		dlc = rfcomm_dlc_alloc(GFP_KERNEL);
 		if (!dlc)
 			return -ENOMEM;
@@ -581,7 +598,11 @@ static int rfcomm_get_dev_info(void __user *arg)
 
 int rfcomm_dev_ioctl(struct sock *sk, unsigned int cmd, void __user *arg)
 {
+<<<<<<< HEAD
 	BT_DBG("cmd %d arg %pK", cmd, arg);
+=======
+	BT_DBG("cmd %d arg %p", cmd, arg);
+>>>>>>> v4.9.227
 
 	switch (cmd) {
 	case RFCOMMCREATEDEV:
@@ -615,7 +636,11 @@ static void rfcomm_dev_data_ready(struct rfcomm_dlc *dlc, struct sk_buff *skb)
 		return;
 	}
 
+<<<<<<< HEAD
 	BT_DBG("dlc %pK len %d", dlc, skb->len);
+=======
+	BT_DBG("dlc %p len %d", dlc, skb->len);
+>>>>>>> v4.9.227
 
 	tty_insert_flip_string(&dev->port, skb->data, skb->len);
 	tty_flip_buffer_push(&dev->port);
@@ -629,7 +654,11 @@ static void rfcomm_dev_state_change(struct rfcomm_dlc *dlc, int err)
 	if (!dev)
 		return;
 
+<<<<<<< HEAD
 	BT_DBG("dlc %pK dev %pK err %d", dlc, dev, err);
+=======
+	BT_DBG("dlc %p dev %p err %d", dlc, dev, err);
+>>>>>>> v4.9.227
 
 	dev->err = err;
 	if (dlc->state == BT_CONNECTED) {
@@ -646,7 +675,11 @@ static void rfcomm_dev_modem_status(struct rfcomm_dlc *dlc, u8 v24_sig)
 	if (!dev)
 		return;
 
+<<<<<<< HEAD
 	BT_DBG("dlc %pK dev %pK v24_sig 0x%02x", dlc, dev, v24_sig);
+=======
+	BT_DBG("dlc %p dev %p v24_sig 0x%02x", dlc, dev, v24_sig);
+>>>>>>> v4.9.227
 
 	if ((dev->modem_status & TIOCM_CD) && !(v24_sig & RFCOMM_V24_DV))
 		tty_port_tty_hangup(&dev->port, true);
@@ -664,7 +697,11 @@ static void rfcomm_tty_copy_pending(struct rfcomm_dev *dev)
 	struct sk_buff *skb;
 	int inserted = 0;
 
+<<<<<<< HEAD
 	BT_DBG("dev %pK", dev);
+=======
+	BT_DBG("dev %p", dev);
+>>>>>>> v4.9.227
 
 	rfcomm_dlc_lock(dev->dlc);
 
@@ -749,9 +786,15 @@ static int rfcomm_tty_open(struct tty_struct *tty, struct file *filp)
 	struct rfcomm_dev *dev = tty->driver_data;
 	int err;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK id %d", tty, tty->index);
 
 	BT_DBG("dev %pK dst %pMR channel %d opened %d", dev, &dev->dst,
+=======
+	BT_DBG("tty %p id %d", tty, tty->index);
+
+	BT_DBG("dev %p dst %pMR channel %d opened %d", dev, &dev->dst,
+>>>>>>> v4.9.227
 	       dev->channel, dev->port.count);
 
 	err = tty_port_open(&dev->port, tty, filp);
@@ -774,8 +817,13 @@ static void rfcomm_tty_close(struct tty_struct *tty, struct file *filp)
 {
 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK dev %pK dlc %pK opened %d", tty, dev, dev->dlc,
 	       dev->port.count);
+=======
+	BT_DBG("tty %p dev %p dlc %p opened %d", tty, dev, dev->dlc,
+						dev->port.count);
+>>>>>>> v4.9.227
 
 	tty_port_close(&dev->port, tty, filp);
 }
@@ -787,7 +835,11 @@ static int rfcomm_tty_write(struct tty_struct *tty, const unsigned char *buf, in
 	struct sk_buff *skb;
 	int sent = 0, size;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK count %d", tty, count);
+=======
+	BT_DBG("tty %p count %d", tty, count);
+>>>>>>> v4.9.227
 
 	while (count) {
 		size = min_t(uint, count, dlc->mtu);
@@ -817,14 +869,22 @@ static int rfcomm_tty_write_room(struct tty_struct *tty)
 	if (dev && dev->dlc)
 		room = rfcomm_room(dev);
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK room %d", tty, room);
+=======
+	BT_DBG("tty %p room %d", tty, room);
+>>>>>>> v4.9.227
 
 	return room;
 }
 
 static int rfcomm_tty_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
 {
+<<<<<<< HEAD
 	BT_DBG("tty %pK cmd 0x%02x", tty, cmd);
+=======
+	BT_DBG("tty %p cmd 0x%02x", tty, cmd);
+>>>>>>> v4.9.227
 
 	switch (cmd) {
 	case TCGETS:
@@ -878,7 +938,11 @@ static void rfcomm_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
 
 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK termios %pK", tty, old);
+=======
+	BT_DBG("tty %p termios %p", tty, old);
+>>>>>>> v4.9.227
 
 	if (!dev || !dev->dlc || !dev->dlc->session)
 		return;
@@ -1010,7 +1074,11 @@ static void rfcomm_tty_throttle(struct tty_struct *tty)
 {
 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK dev %pK", tty, dev);
+=======
+	BT_DBG("tty %p dev %p", tty, dev);
+>>>>>>> v4.9.227
 
 	rfcomm_dlc_throttle(dev->dlc);
 }
@@ -1019,7 +1087,11 @@ static void rfcomm_tty_unthrottle(struct tty_struct *tty)
 {
 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK dev %pK", tty, dev);
+=======
+	BT_DBG("tty %p dev %p", tty, dev);
+>>>>>>> v4.9.227
 
 	rfcomm_dlc_unthrottle(dev->dlc);
 }
@@ -1028,7 +1100,11 @@ static int rfcomm_tty_chars_in_buffer(struct tty_struct *tty)
 {
 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK dev %pK", tty, dev);
+=======
+	BT_DBG("tty %p dev %p", tty, dev);
+>>>>>>> v4.9.227
 
 	if (!dev || !dev->dlc)
 		return 0;
@@ -1043,7 +1119,11 @@ static void rfcomm_tty_flush_buffer(struct tty_struct *tty)
 {
 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK dev %pK", tty, dev);
+=======
+	BT_DBG("tty %p dev %p", tty, dev);
+>>>>>>> v4.9.227
 
 	if (!dev || !dev->dlc)
 		return;
@@ -1054,19 +1134,31 @@ static void rfcomm_tty_flush_buffer(struct tty_struct *tty)
 
 static void rfcomm_tty_send_xchar(struct tty_struct *tty, char ch)
 {
+<<<<<<< HEAD
 	BT_DBG("tty %pK ch %c", tty, ch);
+=======
+	BT_DBG("tty %p ch %c", tty, ch);
+>>>>>>> v4.9.227
 }
 
 static void rfcomm_tty_wait_until_sent(struct tty_struct *tty, int timeout)
 {
+<<<<<<< HEAD
 	BT_DBG("tty %pK timeout %d", tty, timeout);
+=======
+	BT_DBG("tty %p timeout %d", tty, timeout);
+>>>>>>> v4.9.227
 }
 
 static void rfcomm_tty_hangup(struct tty_struct *tty)
 {
 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK dev %pK", tty, dev);
+=======
+	BT_DBG("tty %p dev %p", tty, dev);
+>>>>>>> v4.9.227
 
 	tty_port_hangup(&dev->port);
 }
@@ -1075,7 +1167,11 @@ static int rfcomm_tty_tiocmget(struct tty_struct *tty)
 {
 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK dev %pK", tty, dev);
+=======
+	BT_DBG("tty %p dev %p", tty, dev);
+>>>>>>> v4.9.227
 
 	return dev->modem_status;
 }
@@ -1086,7 +1182,11 @@ static int rfcomm_tty_tiocmset(struct tty_struct *tty, unsigned int set, unsigne
 	struct rfcomm_dlc *dlc = dev->dlc;
 	u8 v24_sig;
 
+<<<<<<< HEAD
 	BT_DBG("tty %pK dev %pK set 0x%02x clear 0x%02x", tty, dev, set, clear);
+=======
+	BT_DBG("tty %p dev %p set 0x%02x clear 0x%02x", tty, dev, set, clear);
+>>>>>>> v4.9.227
 
 	rfcomm_dlc_get_modem_status(dlc, &v24_sig);
 

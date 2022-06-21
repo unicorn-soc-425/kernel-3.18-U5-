@@ -32,6 +32,10 @@
 #define DRIVER_DESC		"USB Video Class driver"
 
 unsigned int uvc_clock_param = CLOCK_MONOTONIC;
+<<<<<<< HEAD
+=======
+unsigned int uvc_hw_timestamps_param;
+>>>>>>> v4.9.227
 unsigned int uvc_no_drop_param;
 static unsigned int uvc_quirks_param = -1;
 unsigned int uvc_trace_param;
@@ -138,10 +142,41 @@ static struct uvc_format_desc uvc_fmts[] = {
 		.fcc		= V4L2_PIX_FMT_RGB565,
 	},
 	{
+<<<<<<< HEAD
+=======
+		.name		= "BGR 8:8:8 (BGR3)",
+		.guid		= UVC_GUID_FORMAT_BGR3,
+		.fcc		= V4L2_PIX_FMT_BGR24,
+	},
+	{
+>>>>>>> v4.9.227
 		.name		= "H.264",
 		.guid		= UVC_GUID_FORMAT_H264,
 		.fcc		= V4L2_PIX_FMT_H264,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.name		= "Greyscale 8 L/R (Y8I)",
+		.guid		= UVC_GUID_FORMAT_Y8I,
+		.fcc		= V4L2_PIX_FMT_Y8I,
+	},
+	{
+		.name		= "Greyscale 12 L/R (Y12I)",
+		.guid		= UVC_GUID_FORMAT_Y12I,
+		.fcc		= V4L2_PIX_FMT_Y12I,
+	},
+	{
+		.name		= "Depth data 16-bit (Z16)",
+		.guid		= UVC_GUID_FORMAT_Z16,
+		.fcc		= V4L2_PIX_FMT_Z16,
+	},
+	{
+		.name		= "Bayer 10-bit (SRGGB10P)",
+		.guid		= UVC_GUID_FORMAT_RW10,
+		.fcc		= V4L2_PIX_FMT_SRGGB10P,
+	},
+>>>>>>> v4.9.227
 };
 
 /* ------------------------------------------------------------------------
@@ -331,6 +366,10 @@ static int uvc_parse_format(struct uvc_device *dev,
 	struct uvc_format_desc *fmtdesc;
 	struct uvc_frame *frame;
 	const unsigned char *start = buffer;
+<<<<<<< HEAD
+=======
+	unsigned int width_multiplier = 1;
+>>>>>>> v4.9.227
 	unsigned int interval;
 	unsigned int i, n;
 	__u8 ftype;
@@ -366,6 +405,23 @@ static int uvc_parse_format(struct uvc_device *dev,
 		}
 
 		format->bpp = buffer[21];
+<<<<<<< HEAD
+=======
+
+		/* Some devices report a format that doesn't match what they
+		 * really send.
+		 */
+		if (dev->quirks & UVC_QUIRK_FORCE_Y8) {
+			if (format->fcc == V4L2_PIX_FMT_YUYV) {
+				strlcpy(format->name, "Greyscale 8-bit (Y8  )",
+					sizeof(format->name));
+				format->fcc = V4L2_PIX_FMT_GREY;
+				format->bpp = 8;
+				width_multiplier = 2;
+			}
+		}
+
+>>>>>>> v4.9.227
 		if (buffer[2] == UVC_VS_FORMAT_UNCOMPRESSED) {
 			ftype = UVC_VS_FRAME_UNCOMPRESSED;
 		} else {
@@ -474,7 +530,12 @@ static int uvc_parse_format(struct uvc_device *dev,
 
 		frame->bFrameIndex = buffer[3];
 		frame->bmCapabilities = buffer[4];
+<<<<<<< HEAD
 		frame->wWidth = get_unaligned_le16(&buffer[5]);
+=======
+		frame->wWidth = get_unaligned_le16(&buffer[5])
+			      * width_multiplier;
+>>>>>>> v4.9.227
 		frame->wHeight = get_unaligned_le16(&buffer[7]);
 		frame->dwMinBitRate = get_unaligned_le32(&buffer[9]);
 		frame->dwMaxBitRate = get_unaligned_le32(&buffer[13]);
@@ -826,7 +887,11 @@ static struct uvc_entity *uvc_alloc_entity(u16 type, u8 id,
 	unsigned int size;
 	unsigned int i;
 
+<<<<<<< HEAD
 	extra_size = ALIGN(extra_size, sizeof(*entity->pads));
+=======
+	extra_size = roundup(extra_size, sizeof(*entity->pads));
+>>>>>>> v4.9.227
 	num_inputs = (type & UVC_TERM_OUTPUT) ? num_pads : num_pads - 1;
 	size = sizeof(*entity) + extra_size + sizeof(*entity->pads) * num_pads
 	     + num_inputs;
@@ -987,7 +1052,11 @@ static int uvc_parse_standard_control(struct uvc_device *dev,
 		 *   direction flag.
 		 *
 		 * Other unknown types are accepted.
+<<<<<<< HEAD
  		 */
+=======
+		 */
+>>>>>>> v4.9.227
 		type = get_unaligned_le16(&buffer[4]);
 		if ((type & 0x7f00) == 0 || (type & 0x8000) != 0) {
 			uvc_trace(UVC_TRACE_DESCR, "device %d videocontrol "
@@ -1369,6 +1438,14 @@ static int uvc_scan_chain_forward(struct uvc_video_chain *chain,
 			break;
 		if (forward == prev)
 			continue;
+<<<<<<< HEAD
+=======
+		if (forward->chain.next || forward->chain.prev) {
+			uvc_trace(UVC_TRACE_DESCR, "Found reference to "
+				"entity %d already in chain.\n", forward->id);
+			return -EINVAL;
+		}
+>>>>>>> v4.9.227
 
 		switch (UVC_ENTITY_TYPE(forward)) {
 		case UVC_VC_EXTENSION_UNIT:
@@ -1450,6 +1527,16 @@ static int uvc_scan_chain_backward(struct uvc_video_chain *chain,
 				return -1;
 			}
 
+<<<<<<< HEAD
+=======
+			if (term->chain.next || term->chain.prev) {
+				uvc_trace(UVC_TRACE_DESCR, "Found reference to "
+					"entity %d already in chain.\n",
+					term->id);
+				return -EINVAL;
+			}
+
+>>>>>>> v4.9.227
 			if (uvc_trace_param & UVC_TRACE_PROBE)
 				printk(" %d", term->id);
 
@@ -1746,8 +1833,14 @@ static void uvc_delete(struct uvc_device *dev)
 	if (dev->vdev.dev)
 		v4l2_device_unregister(&dev->vdev);
 #ifdef CONFIG_MEDIA_CONTROLLER
+<<<<<<< HEAD
 	if (media_devnode_is_registered(&dev->mdev.devnode))
 		media_device_unregister(&dev->mdev);
+=======
+	if (media_devnode_is_registered(dev->mdev.devnode))
+		media_device_unregister(&dev->mdev);
+	media_device_cleanup(&dev->mdev);
+>>>>>>> v4.9.227
 #endif
 
 	list_for_each_safe(p, n, &dev->chains) {
@@ -1762,10 +1855,13 @@ static void uvc_delete(struct uvc_device *dev)
 #ifdef CONFIG_MEDIA_CONTROLLER
 		uvc_mc_cleanup_entity(entity);
 #endif
+<<<<<<< HEAD
 		if (entity->vdev) {
 			video_device_release(entity->vdev);
 			entity->vdev = NULL;
 		}
+=======
+>>>>>>> v4.9.227
 		kfree(entity);
 	}
 
@@ -1810,11 +1906,18 @@ static void uvc_unregister_video(struct uvc_device *dev)
 	atomic_inc(&dev->nstreams);
 
 	list_for_each_entry(stream, &dev->streams, list) {
+<<<<<<< HEAD
 		if (stream->vdev == NULL)
 			continue;
 
 		video_unregister_device(stream->vdev);
 		stream->vdev = NULL;
+=======
+		if (!video_is_registered(&stream->vdev))
+			continue;
+
+		video_unregister_device(&stream->vdev);
+>>>>>>> v4.9.227
 
 		uvc_debugfs_cleanup_stream(stream);
 	}
@@ -1829,9 +1932,20 @@ static void uvc_unregister_video(struct uvc_device *dev)
 static int uvc_register_video(struct uvc_device *dev,
 		struct uvc_streaming *stream)
 {
+<<<<<<< HEAD
 	struct video_device *vdev;
 	int ret;
 
+=======
+	struct video_device *vdev = &stream->vdev;
+	int ret;
+
+	/* Initialize the video buffers queue. */
+	ret = uvc_queue_init(&stream->queue, stream->type, !uvc_no_drop_param);
+	if (ret)
+		return ret;
+
+>>>>>>> v4.9.227
 	/* Initialize the streaming interface with default streaming
 	 * parameters.
 	 */
@@ -1845,12 +1959,15 @@ static int uvc_register_video(struct uvc_device *dev,
 	uvc_debugfs_init_stream(stream);
 
 	/* Register the device with V4L. */
+<<<<<<< HEAD
 	vdev = video_device_alloc();
 	if (vdev == NULL) {
 		uvc_printk(KERN_ERR, "Failed to allocate video device (%d).\n",
 			   ret);
 		return -ENOMEM;
 	}
+=======
+>>>>>>> v4.9.227
 
 	/* We already hold a reference to dev->udev. The video device will be
 	 * unregistered before the reference is released, so we don't need to
@@ -1858,6 +1975,10 @@ static int uvc_register_video(struct uvc_device *dev,
 	 */
 	vdev->v4l2_dev = &dev->vdev;
 	vdev->fops = &uvc_fops;
+<<<<<<< HEAD
+=======
+	vdev->ioctl_ops = &uvc_ioctl_ops;
+>>>>>>> v4.9.227
 	vdev->release = uvc_release;
 	vdev->prio = &stream->chain->prio;
 	if (stream->type == V4L2_BUF_TYPE_VIDEO_OUTPUT)
@@ -1867,15 +1988,21 @@ static int uvc_register_video(struct uvc_device *dev,
 	/* Set the driver data before calling video_register_device, otherwise
 	 * uvc_v4l2_open might race us.
 	 */
+<<<<<<< HEAD
 	stream->vdev = vdev;
+=======
+>>>>>>> v4.9.227
 	video_set_drvdata(vdev, stream);
 
 	ret = video_register_device(vdev, VFL_TYPE_GRABBER, -1);
 	if (ret < 0) {
 		uvc_printk(KERN_ERR, "Failed to register video device (%d).\n",
 			   ret);
+<<<<<<< HEAD
 		stream->vdev = NULL;
 		video_device_release(vdev);
+=======
+>>>>>>> v4.9.227
 		return ret;
 	}
 
@@ -1914,7 +2041,11 @@ static int uvc_register_terms(struct uvc_device *dev,
 		if (ret < 0)
 			return ret;
 
+<<<<<<< HEAD
 		term->vdev = stream->vdev;
+=======
+		term->vdev = &stream->vdev;
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -1986,6 +2117,24 @@ static int uvc_probe(struct usb_interface *intf,
 			le16_to_cpu(udev->descriptor.idVendor),
 			le16_to_cpu(udev->descriptor.idProduct));
 
+<<<<<<< HEAD
+=======
+	/* Initialize the media device. */
+#ifdef CONFIG_MEDIA_CONTROLLER
+	dev->mdev.dev = &intf->dev;
+	strscpy(dev->mdev.model, dev->name, sizeof(dev->mdev.model));
+	if (udev->serial)
+		strscpy(dev->mdev.serial, udev->serial,
+			sizeof(dev->mdev.serial));
+	usb_make_path(udev, dev->mdev.bus_info, sizeof(dev->mdev.bus_info));
+	dev->mdev.hw_revision = le16_to_cpu(udev->descriptor.bcdDevice);
+	dev->mdev.driver_version = LINUX_VERSION_CODE;
+	media_device_init(&dev->mdev);
+
+	dev->vdev.mdev = &dev->mdev;
+#endif
+
+>>>>>>> v4.9.227
 	/* Parse the Video Class control descriptor. */
 	if (uvc_parse_control(dev) < 0) {
 		uvc_trace(UVC_TRACE_PROBE, "Unable to parse UVC "
@@ -2006,6 +2155,7 @@ static int uvc_probe(struct usb_interface *intf,
 			"linux-uvc-devel mailing list.\n");
 	}
 
+<<<<<<< HEAD
 	/* Register the media and V4L2 devices. */
 #ifdef CONFIG_MEDIA_CONTROLLER
 	dev->mdev.dev = &intf->dev;
@@ -2021,6 +2171,9 @@ static int uvc_probe(struct usb_interface *intf,
 
 	dev->vdev.mdev = &dev->mdev;
 #endif
+=======
+	/* Register the V4L2 device. */
+>>>>>>> v4.9.227
 	if (v4l2_device_register(&intf->dev, &dev->vdev) < 0)
 		goto error;
 
@@ -2036,6 +2189,14 @@ static int uvc_probe(struct usb_interface *intf,
 	if (uvc_register_chains(dev) < 0)
 		goto error;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MEDIA_CONTROLLER
+	/* Register the media device node */
+	if (media_device_register(&dev->mdev) < 0)
+		goto error;
+#endif
+>>>>>>> v4.9.227
 	/* Save our data pointer in the interface data. */
 	usb_set_intfdata(intf, dev);
 
@@ -2068,8 +2229,11 @@ static void uvc_disconnect(struct usb_interface *intf)
 	    UVC_SC_VIDEOSTREAMING)
 		return;
 
+<<<<<<< HEAD
 	dev->state |= UVC_DEV_DISCONNECTED;
 
+=======
+>>>>>>> v4.9.227
 	uvc_unregister_video(dev);
 }
 
@@ -2105,14 +2269,21 @@ static int __uvc_resume(struct usb_interface *intf, int reset)
 {
 	struct uvc_device *dev = usb_get_intfdata(intf);
 	struct uvc_streaming *stream;
+<<<<<<< HEAD
+=======
+	int ret = 0;
+>>>>>>> v4.9.227
 
 	uvc_trace(UVC_TRACE_SUSPEND, "Resuming interface %u\n",
 		intf->cur_altsetting->desc.bInterfaceNumber);
 
 	if (intf->cur_altsetting->desc.bInterfaceSubClass ==
 	    UVC_SC_VIDEOCONTROL) {
+<<<<<<< HEAD
 		int ret = 0;
 
+=======
+>>>>>>> v4.9.227
 		if (reset) {
 			ret = uvc_ctrl_restore_values(dev);
 			if (ret < 0)
@@ -2128,8 +2299,18 @@ static int __uvc_resume(struct usb_interface *intf, int reset)
 	}
 
 	list_for_each_entry(stream, &dev->streams, list) {
+<<<<<<< HEAD
 		if (stream->intf == intf)
 			return uvc_video_resume(stream, reset);
+=======
+		if (stream->intf == intf) {
+			ret = uvc_video_resume(stream, reset);
+			if (ret < 0)
+				uvc_queue_streamoff(&stream->queue,
+						    stream->queue.queue.type);
+			return ret;
+		}
+>>>>>>> v4.9.227
 	}
 
 	uvc_trace(UVC_TRACE_SUSPEND, "Resume: video streaming USB interface "
@@ -2177,6 +2358,11 @@ static int uvc_clock_param_set(const char *val, struct kernel_param *kp)
 module_param_call(clock, uvc_clock_param_set, uvc_clock_param_get,
 		  &uvc_clock_param, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(clock, "Video buffers timestamp clock");
+<<<<<<< HEAD
+=======
+module_param_named(hwtimestamps, uvc_hw_timestamps_param, uint, S_IRUGO|S_IWUSR);
+MODULE_PARM_DESC(hwtimestamps, "Use hardware timestamps");
+>>>>>>> v4.9.227
 module_param_named(nodrop, uvc_no_drop_param, uint, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(nodrop, "Don't drop incomplete frames");
 module_param_named(quirks, uvc_quirks_param, uint, S_IRUGO|S_IWUSR);
@@ -2544,6 +2730,17 @@ static struct usb_device_id uvc_ids[] = {
 	  .bInterfaceProtocol	= 0,
 	  .driver_info		= UVC_QUIRK_PROBE_MINMAX
 				| UVC_QUIRK_PROBE_EXTRAFIELDS },
+<<<<<<< HEAD
+=======
+	/* Aveo Technology USB 2.0 Camera (Tasco USB Microscope) */
+	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
+				| USB_DEVICE_ID_MATCH_INT_INFO,
+	  .idVendor		= 0x1871,
+	  .idProduct		= 0x0516,
+	  .bInterfaceClass	= USB_CLASS_VENDOR_SPEC,
+	  .bInterfaceSubClass	= 1,
+	  .bInterfaceProtocol	= 0 },
+>>>>>>> v4.9.227
 	/* Ecamm Pico iMage */
 	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
 				| USB_DEVICE_ID_MATCH_INT_INFO,
@@ -2618,8 +2815,23 @@ static struct usb_device_id uvc_ids[] = {
 	  .bInterfaceProtocol	= 0,
 	  .driver_info		= UVC_QUIRK_PROBE_MINMAX
 				| UVC_QUIRK_IGNORE_SELECTOR_UNIT },
+<<<<<<< HEAD
 	/* Generic USB Video Class */
 	{ USB_INTERFACE_INFO(USB_CLASS_VIDEO, 1, 0) },
+=======
+	/* Oculus VR Positional Tracker DK2 */
+	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
+				| USB_DEVICE_ID_MATCH_INT_INFO,
+	  .idVendor		= 0x2833,
+	  .idProduct		= 0x0201,
+	  .bInterfaceClass	= USB_CLASS_VIDEO,
+	  .bInterfaceSubClass	= 1,
+	  .bInterfaceProtocol	= 0,
+	  .driver_info		= UVC_QUIRK_FORCE_Y8 },
+	/* Generic USB Video Class */
+	{ USB_INTERFACE_INFO(USB_CLASS_VIDEO, 1, UVC_PC_PROTOCOL_UNDEFINED) },
+	{ USB_INTERFACE_INFO(USB_CLASS_VIDEO, 1, UVC_PC_PROTOCOL_15) },
+>>>>>>> v4.9.227
 	{}
 };
 

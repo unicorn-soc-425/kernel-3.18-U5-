@@ -15,7 +15,12 @@
 #include <linux/platform_device.h>
 #include <linux/clk.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
 #include <plat/map-base.h>
+=======
+#include <linux/mfd/syscon.h>
+#include <linux/regmap.h>
+>>>>>>> v4.9.227
 
 #include <drm/drmP.h>
 #include <drm/exynos_drm.h>
@@ -126,6 +131,10 @@ struct gsc_capability {
  * @ippdrv: prepare initialization using ippdrv.
  * @regs_res: register resources.
  * @regs: memory mapped io registers.
+<<<<<<< HEAD
+=======
+ * @sysreg: handle to SYSREG block regmap.
+>>>>>>> v4.9.227
  * @lock: locking of operations.
  * @gsc_clk: gsc gate clock.
  * @sc: scaler infomations.
@@ -138,6 +147,10 @@ struct gsc_context {
 	struct exynos_drm_ippdrv	ippdrv;
 	struct resource	*regs_res;
 	void __iomem	*regs;
+<<<<<<< HEAD
+=======
+	struct regmap	*sysreg;
+>>>>>>> v4.9.227
 	struct mutex	lock;
 	struct clk	*gsc_clk;
 	struct gsc_scaler	sc;
@@ -437,9 +450,18 @@ static int gsc_sw_reset(struct gsc_context *ctx)
 
 static void gsc_set_gscblk_fimd_wb(struct gsc_context *ctx, bool enable)
 {
+<<<<<<< HEAD
 	u32 gscblk_cfg;
 
 	gscblk_cfg = readl(SYSREG_GSCBLK_CFG1);
+=======
+	unsigned int gscblk_cfg;
+
+	if (!ctx->sysreg)
+		return;
+
+	regmap_read(ctx->sysreg, SYSREG_GSCBLK_CFG1, &gscblk_cfg);
+>>>>>>> v4.9.227
 
 	if (enable)
 		gscblk_cfg |= GSC_BLK_DISP1WB_DEST(ctx->id) |
@@ -448,7 +470,11 @@ static void gsc_set_gscblk_fimd_wb(struct gsc_context *ctx, bool enable)
 	else
 		gscblk_cfg |= GSC_BLK_PXLASYNC_LO_MASK_WB(ctx->id);
 
+<<<<<<< HEAD
 	writel(gscblk_cfg, SYSREG_GSCBLK_CFG1);
+=======
+	regmap_write(ctx->sysreg, SYSREG_GSCBLK_CFG1, gscblk_cfg);
+>>>>>>> v4.9.227
 }
 
 static void gsc_handle_irq(struct gsc_context *ctx, bool enable,
@@ -1226,10 +1252,17 @@ static int gsc_clk_ctrl(struct gsc_context *ctx, bool enable)
 	DRM_DEBUG_KMS("enable[%d]\n", enable);
 
 	if (enable) {
+<<<<<<< HEAD
 		clk_enable(ctx->gsc_clk);
 		ctx->suspended = false;
 	} else {
 		clk_disable(ctx->gsc_clk);
+=======
+		clk_prepare_enable(ctx->gsc_clk);
+		ctx->suspended = false;
+	} else {
+		clk_disable_unprepare(ctx->gsc_clk);
+>>>>>>> v4.9.227
 		ctx->suspended = true;
 	}
 
@@ -1674,6 +1707,18 @@ static int gsc_probe(struct platform_device *pdev)
 	if (!ctx)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	if (dev->of_node) {
+		ctx->sysreg = syscon_regmap_lookup_by_phandle(dev->of_node,
+							"samsung,sysreg");
+		if (IS_ERR(ctx->sysreg)) {
+			dev_warn(dev, "failed to get system register.\n");
+			ctx->sysreg = NULL;
+		}
+	}
+
+>>>>>>> v4.9.227
 	/* clock control */
 	ctx->gsc_clk = devm_clk_get(dev, "gscl");
 	if (IS_ERR(ctx->gsc_clk)) {
@@ -1719,12 +1764,19 @@ static int gsc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	DRM_DEBUG_KMS("id[%d]ippdrv[0x%x]\n", ctx->id, (int)ippdrv);
+=======
+	DRM_DEBUG_KMS("id[%d]ippdrv[%p]\n", ctx->id, ippdrv);
+>>>>>>> v4.9.227
 
 	mutex_init(&ctx->lock);
 	platform_set_drvdata(pdev, ctx);
 
+<<<<<<< HEAD
 	pm_runtime_set_active(dev);
+=======
+>>>>>>> v4.9.227
 	pm_runtime_enable(dev);
 
 	ret = exynos_drm_ippdrv_register(ippdrv);
@@ -1757,6 +1809,7 @@ static int gsc_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int gsc_suspend(struct device *dev)
 {
@@ -1785,6 +1838,9 @@ static int gsc_resume(struct device *dev)
 
 #ifdef CONFIG_PM
 static int gsc_runtime_suspend(struct device *dev)
+=======
+static int __maybe_unused gsc_runtime_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct gsc_context *ctx = get_gsc_context(dev);
 
@@ -1793,7 +1849,11 @@ static int gsc_runtime_suspend(struct device *dev)
 	return  gsc_clk_ctrl(ctx, false);
 }
 
+<<<<<<< HEAD
 static int gsc_runtime_resume(struct device *dev)
+=======
+static int __maybe_unused gsc_runtime_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct gsc_context *ctx = get_gsc_context(dev);
 
@@ -1801,6 +1861,7 @@ static int gsc_runtime_resume(struct device *dev)
 
 	return  gsc_clk_ctrl(ctx, true);
 }
+<<<<<<< HEAD
 #endif
 
 static const struct dev_pm_ops gsc_pm_ops = {
@@ -1808,6 +1869,21 @@ static const struct dev_pm_ops gsc_pm_ops = {
 	SET_RUNTIME_PM_OPS(gsc_runtime_suspend, gsc_runtime_resume, NULL)
 };
 
+=======
+
+static const struct dev_pm_ops gsc_pm_ops = {
+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+				pm_runtime_force_resume)
+	SET_RUNTIME_PM_OPS(gsc_runtime_suspend, gsc_runtime_resume, NULL)
+};
+
+static const struct of_device_id exynos_drm_gsc_of_match[] = {
+	{ .compatible = "samsung,exynos5-gsc" },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, exynos_drm_gsc_of_match);
+
+>>>>>>> v4.9.227
 struct platform_driver gsc_driver = {
 	.probe		= gsc_probe,
 	.remove		= gsc_remove,
@@ -1815,6 +1891,10 @@ struct platform_driver gsc_driver = {
 		.name	= "exynos-drm-gsc",
 		.owner	= THIS_MODULE,
 		.pm	= &gsc_pm_ops,
+<<<<<<< HEAD
+=======
+		.of_match_table = of_match_ptr(exynos_drm_gsc_of_match),
+>>>>>>> v4.9.227
 	},
 };
 

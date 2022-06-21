@@ -23,11 +23,17 @@
 
 const struct file_operations adfs_file_operations = {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.read		= new_sync_read,
 	.read_iter	= generic_file_read_iter,
 	.mmap		= generic_file_mmap,
 	.fsync		= generic_file_fsync,
 	.write		= new_sync_write,
+=======
+	.read_iter	= generic_file_read_iter,
+	.mmap		= generic_file_mmap,
+	.fsync		= generic_file_fsync,
+>>>>>>> v4.9.227
 	.write_iter	= generic_file_write_iter,
 	.splice_read	= generic_file_splice_read,
 };

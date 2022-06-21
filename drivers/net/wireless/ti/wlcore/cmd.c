@@ -35,7 +35,10 @@
 #include "wl12xx_80211.h"
 #include "cmd.h"
 #include "event.h"
+<<<<<<< HEAD
 #include "ps.h"
+=======
+>>>>>>> v4.9.227
 #include "tx.h"
 #include "hw_ops.h"
 
@@ -65,6 +68,12 @@ static int __wlcore_cmd_send(struct wl1271 *wl, u16 id, void *buf,
 		     id != CMD_STOP_FWLOGGER))
 		return -EIO;
 
+<<<<<<< HEAD
+=======
+	if (WARN_ON_ONCE(len < sizeof(*cmd)))
+		return -EIO;
+
+>>>>>>> v4.9.227
 	cmd = buf;
 	cmd->id = cpu_to_le16(id);
 	cmd->status = 0;
@@ -129,8 +138,14 @@ static int __wlcore_cmd_send(struct wl1271 *wl, u16 id, void *buf,
  * send command to fw and return cmd status on success
  * valid_rets contains a bitmap of allowed error codes
  */
+<<<<<<< HEAD
 int wlcore_cmd_send_failsafe(struct wl1271 *wl, u16 id, void *buf, size_t len,
 			     size_t res_len, unsigned long valid_rets)
+=======
+static int wlcore_cmd_send_failsafe(struct wl1271 *wl, u16 id, void *buf,
+				    size_t len, size_t res_len,
+				    unsigned long valid_rets)
+>>>>>>> v4.9.227
 {
 	int ret = __wlcore_cmd_send(wl, id, buf, len, res_len);
 
@@ -151,7 +166,10 @@ fail:
 	wl12xx_queue_recovery_work(wl);
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(wl1271_cmd_send);
+=======
+>>>>>>> v4.9.227
 
 /*
  * wrapper for wlcore_cmd_send that accept only CMD_STATUS_SUCCESS
@@ -166,6 +184,10 @@ int wl1271_cmd_send(struct wl1271 *wl, u16 id, void *buf, size_t len,
 		return ret;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(wl1271_cmd_send);
+>>>>>>> v4.9.227
 
 /*
  * Poll the mailbox event field until any of the bits in the mask is set or a
@@ -188,10 +210,13 @@ int wlcore_cmd_wait_for_event_or_timeout(struct wl1271 *wl,
 
 	timeout_time = jiffies + msecs_to_jiffies(WL1271_EVENT_TIMEOUT);
 
+<<<<<<< HEAD
 	ret = wl1271_ps_elp_wakeup(wl);
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	do {
 		if (time_after(jiffies, timeout_time)) {
 			wl1271_debug(DEBUG_CMD, "timeout waiting for event %d",
@@ -223,7 +248,10 @@ int wlcore_cmd_wait_for_event_or_timeout(struct wl1271 *wl,
 	} while (!event);
 
 out:
+<<<<<<< HEAD
 	wl1271_ps_elp_sleep(wl);
+=======
+>>>>>>> v4.9.227
 	kfree(events_vector);
 	return ret;
 }
@@ -369,7 +397,11 @@ void wl12xx_free_link(struct wl1271 *wl, struct wl12xx_vif *wlvif, u8 *hlid)
 	wl->links[*hlid].allocated_pkts = 0;
 	wl->links[*hlid].prev_freed_pkts = 0;
 	wl->links[*hlid].ba_bitmap = 0;
+<<<<<<< HEAD
 	memset(wl->links[*hlid].addr, 0, ETH_ALEN);
+=======
+	eth_zero_addr(wl->links[*hlid].addr);
+>>>>>>> v4.9.227
 
 	/*
 	 * At this point op_tx() will not add more packets to the queues. We
@@ -425,7 +457,11 @@ EXPORT_SYMBOL_GPL(wlcore_get_native_channel_type);
 
 static int wl12xx_cmd_role_start_dev(struct wl1271 *wl,
 				     struct wl12xx_vif *wlvif,
+<<<<<<< HEAD
 				     enum ieee80211_band band,
+=======
+				     enum nl80211_band band,
+>>>>>>> v4.9.227
 				     int channel)
 {
 	struct wl12xx_cmd_role_start *cmd;
@@ -440,7 +476,11 @@ static int wl12xx_cmd_role_start_dev(struct wl1271 *wl,
 	wl1271_debug(DEBUG_CMD, "cmd role start dev %d", wlvif->dev_role_id);
 
 	cmd->role_id = wlvif->dev_role_id;
+<<<<<<< HEAD
 	if (band == IEEE80211_BAND_5GHZ)
+=======
+	if (band == NL80211_BAND_5GHZ)
+>>>>>>> v4.9.227
 		cmd->band = WLCORE_BAND_5GHZ;
 	cmd->channel = channel;
 
@@ -526,7 +566,11 @@ int wl12xx_cmd_role_start_sta(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	wl1271_debug(DEBUG_CMD, "cmd role start sta %d", wlvif->role_id);
 
 	cmd->role_id = wlvif->role_id;
+<<<<<<< HEAD
 	if (wlvif->band == IEEE80211_BAND_5GHZ)
+=======
+	if (wlvif->band == NL80211_BAND_5GHZ)
+>>>>>>> v4.9.227
 		cmd->band = WLCORE_BAND_5GHZ;
 	cmd->channel = wlvif->channel;
 	cmd->sta.basic_rate_set = cpu_to_le32(wlvif->basic_rate_set);
@@ -631,11 +675,22 @@ int wl12xx_cmd_role_start_ap(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 
 	wl1271_debug(DEBUG_CMD, "cmd role start ap %d", wlvif->role_id);
 
+<<<<<<< HEAD
 	/* trying to use hidden SSID with an old hostapd version */
 	if (wlvif->ssid_len == 0 && !bss_conf->hidden_ssid) {
 		wl1271_error("got a null SSID from beacon/bss");
 		ret = -EINVAL;
 		goto out;
+=======
+	/* If MESH --> ssid_len is always 0 */
+	if (!ieee80211_vif_is_mesh(vif)) {
+		/* trying to use hidden SSID with an old hostapd version */
+		if (wlvif->ssid_len == 0 && !bss_conf->hidden_ssid) {
+			wl1271_error("got a null SSID from beacon/bss");
+			ret = -EINVAL;
+			goto out;
+		}
+>>>>>>> v4.9.227
 	}
 
 	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
@@ -695,10 +750,17 @@ int wl12xx_cmd_role_start_ap(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	cmd->ap.local_rates = cpu_to_le32(supported_rates);
 
 	switch (wlvif->band) {
+<<<<<<< HEAD
 	case IEEE80211_BAND_2GHZ:
 		cmd->band = WLCORE_BAND_2_4GHZ;
 		break;
 	case IEEE80211_BAND_5GHZ:
+=======
+	case NL80211_BAND_2GHZ:
+		cmd->band = WLCORE_BAND_2_4GHZ;
+		break;
+	case NL80211_BAND_5GHZ:
+>>>>>>> v4.9.227
 		cmd->band = WLCORE_BAND_5GHZ;
 		break;
 	default:
@@ -775,7 +837,11 @@ int wl12xx_cmd_role_start_ibss(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	wl1271_debug(DEBUG_CMD, "cmd role start ibss %d", wlvif->role_id);
 
 	cmd->role_id = wlvif->role_id;
+<<<<<<< HEAD
 	if (wlvif->band == IEEE80211_BAND_5GHZ)
+=======
+	if (wlvif->band == NL80211_BAND_5GHZ)
+>>>>>>> v4.9.227
 		cmd->band = WLCORE_BAND_5GHZ;
 	cmd->channel = wlvif->channel;
 	cmd->ibss.basic_rate_set = cpu_to_le32(wlvif->basic_rate_set);
@@ -898,6 +964,12 @@ int wlcore_cmd_configure_failsafe(struct wl1271 *wl, u16 id, void *buf,
 
 	wl1271_debug(DEBUG_CMD, "cmd configure (%d)", id);
 
+<<<<<<< HEAD
+=======
+	if (WARN_ON_ONCE(len < sizeof(*acx)))
+		return -EIO;
+
+>>>>>>> v4.9.227
 	acx->id = cpu_to_le16(id);
 
 	/* payload length, does not include any headers */
@@ -1145,7 +1217,11 @@ int wl12xx_cmd_build_probe_req(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 
 	wl1271_debug(DEBUG_SCAN, "build probe request band %d", band);
 
+<<<<<<< HEAD
 	skb = ieee80211_probereq_get(wl->hw, vif, ssid, ssid_len,
+=======
+	skb = ieee80211_probereq_get(wl->hw, vif->addr, ssid, ssid_len,
+>>>>>>> v4.9.227
 				     ie0_len + ie1_len);
 	if (!skb) {
 		ret = -ENOMEM;
@@ -1163,7 +1239,11 @@ int wl12xx_cmd_build_probe_req(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	}
 
 	rate = wl1271_tx_min_rate_get(wl, wlvif->bitrate_masks[band]);
+<<<<<<< HEAD
 	if (band == IEEE80211_BAND_2GHZ)
+=======
+	if (band == NL80211_BAND_2GHZ)
+>>>>>>> v4.9.227
 		ret = wl1271_cmd_template_set(wl, role_id,
 					      template_id_2_4,
 					      skb->data, skb->len, 0, rate);
@@ -1194,7 +1274,11 @@ struct sk_buff *wl1271_cmd_build_ap_probe_req(struct wl1271 *wl,
 	wl1271_debug(DEBUG_SCAN, "set ap probe request template");
 
 	rate = wl1271_tx_min_rate_get(wl, wlvif->bitrate_masks[wlvif->band]);
+<<<<<<< HEAD
 	if (wlvif->band == IEEE80211_BAND_2GHZ)
+=======
+	if (wlvif->band == NL80211_BAND_2GHZ)
+>>>>>>> v4.9.227
 		ret = wl1271_cmd_template_set(wl, wlvif->role_id,
 					      CMD_TEMPL_CFG_PROBE_REQ_2_4,
 					      skb->data, skb->len, 0, rate);
@@ -1292,7 +1376,11 @@ int wl1271_cmd_build_arp_rsp(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	hdr->frame_control = cpu_to_le16(fc);
 	memcpy(hdr->addr1, vif->bss_conf.bssid, ETH_ALEN);
 	memcpy(hdr->addr2, vif->addr, ETH_ALEN);
+<<<<<<< HEAD
 	memset(hdr->addr3, 0xff, ETH_ALEN);
+=======
+	eth_broadcast_addr(hdr->addr3);
+>>>>>>> v4.9.227
 
 	ret = wl1271_cmd_template_set(wl, wlvif->role_id, CMD_TEMPL_ARP_RSP,
 				      skb->data, skb->len, 0,
@@ -1565,6 +1653,16 @@ int wl12xx_cmd_add_peer(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 		cpu_to_le32(wl1271_tx_enabled_rates_get(wl, sta_rates,
 							wlvif->band));
 
+<<<<<<< HEAD
+=======
+	if (!cmd->supported_rates) {
+		wl1271_debug(DEBUG_CMD,
+			     "peer has no supported rates yet, configuring basic rates: 0x%x",
+			     wlvif->basic_rate_set);
+		cmd->supported_rates = cpu_to_le32(wlvif->basic_rate_set);
+	}
+
+>>>>>>> v4.9.227
 	wl1271_debug(DEBUG_CMD, "new peer rates=0x%x queues=0x%x",
 		     cmd->supported_rates, sta->uapsd_queues);
 
@@ -1627,19 +1725,31 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int wlcore_get_reg_conf_ch_idx(enum ieee80211_band band, u16 ch)
+=======
+static int wlcore_get_reg_conf_ch_idx(enum nl80211_band band, u16 ch)
+>>>>>>> v4.9.227
 {
 	/*
 	 * map the given band/channel to the respective predefined
 	 * bit expected by the fw
 	 */
 	switch (band) {
+<<<<<<< HEAD
 	case IEEE80211_BAND_2GHZ:
+=======
+	case NL80211_BAND_2GHZ:
+>>>>>>> v4.9.227
 		/* channels 1..14 are mapped to 0..13 */
 		if (ch >= 1 && ch <= 14)
 			return ch - 1;
 		break;
+<<<<<<< HEAD
 	case IEEE80211_BAND_5GHZ:
+=======
+	case NL80211_BAND_5GHZ:
+>>>>>>> v4.9.227
 		switch (ch) {
 		case 8 ... 16:
 			/* channels 8,12,16 are mapped to 18,19,20 */
@@ -1669,7 +1779,11 @@ static int wlcore_get_reg_conf_ch_idx(enum ieee80211_band band, u16 ch)
 }
 
 void wlcore_set_pending_regdomain_ch(struct wl1271 *wl, u16 channel,
+<<<<<<< HEAD
 				     enum ieee80211_band band)
+=======
+				     enum nl80211_band band)
+>>>>>>> v4.9.227
 {
 	int ch_bit_idx = 0;
 
@@ -1686,9 +1800,13 @@ int wlcore_cmd_regdomain_config_locked(struct wl1271 *wl)
 {
 	struct wl12xx_cmd_regdomain_dfs_config *cmd = NULL;
 	int ret = 0, i, b, ch_bit_idx;
+<<<<<<< HEAD
 	struct ieee80211_channel *channel;
 	u32 tmp_ch_bitmap[2];
 	u16 ch;
+=======
+	u32 tmp_ch_bitmap[2];
+>>>>>>> v4.9.227
 	struct wiphy *wiphy = wl->hw->wiphy;
 	struct ieee80211_supported_band *band;
 	bool timeout = false;
@@ -1700,6 +1818,7 @@ int wlcore_cmd_regdomain_config_locked(struct wl1271 *wl)
 
 	memset(tmp_ch_bitmap, 0, sizeof(tmp_ch_bitmap));
 
+<<<<<<< HEAD
 	for (b = IEEE80211_BAND_2GHZ; b <= IEEE80211_BAND_5GHZ; b++) {
 		band = wiphy->bands[b];
 		for (i = 0; i < band->n_channels; i++) {
@@ -1709,6 +1828,21 @@ int wlcore_cmd_regdomain_config_locked(struct wl1271 *wl)
 			if (channel->flags & (IEEE80211_CHAN_DISABLED |
 					      IEEE80211_CHAN_RADAR |
 					      IEEE80211_CHAN_NO_IR))
+=======
+	for (b = NL80211_BAND_2GHZ; b <= NL80211_BAND_5GHZ; b++) {
+		band = wiphy->bands[b];
+		for (i = 0; i < band->n_channels; i++) {
+			struct ieee80211_channel *channel = &band->channels[i];
+			u16 ch = channel->hw_value;
+			u32 flags = channel->flags;
+
+			if (flags & (IEEE80211_CHAN_DISABLED |
+				     IEEE80211_CHAN_NO_IR))
+				continue;
+
+			if ((flags & IEEE80211_CHAN_RADAR) &&
+			    channel->dfs_state != NL80211_DFS_AVAILABLE)
+>>>>>>> v4.9.227
 				continue;
 
 			ch_bit_idx = wlcore_get_reg_conf_ch_idx(b, ch);
@@ -1733,6 +1867,10 @@ int wlcore_cmd_regdomain_config_locked(struct wl1271 *wl)
 
 	cmd->ch_bit_map1 = cpu_to_le32(tmp_ch_bitmap[0]);
 	cmd->ch_bit_map2 = cpu_to_le32(tmp_ch_bitmap[1]);
+<<<<<<< HEAD
+=======
+	cmd->dfs_region = wl->dfs_region;
+>>>>>>> v4.9.227
 
 	wl1271_debug(DEBUG_CMD,
 		     "cmd reg domain bitmap1: 0x%08x, bitmap2: 0x%08x",
@@ -1847,7 +1985,11 @@ out:
 }
 
 static int wl12xx_cmd_roc(struct wl1271 *wl, struct wl12xx_vif *wlvif,
+<<<<<<< HEAD
 			  u8 role_id, enum ieee80211_band band, u8 channel)
+=======
+			  u8 role_id, enum nl80211_band band, u8 channel)
+>>>>>>> v4.9.227
 {
 	struct wl12xx_cmd_roc *cmd;
 	int ret = 0;
@@ -1866,10 +2008,17 @@ static int wl12xx_cmd_roc(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	cmd->role_id = role_id;
 	cmd->channel = channel;
 	switch (band) {
+<<<<<<< HEAD
 	case IEEE80211_BAND_2GHZ:
 		cmd->band = WLCORE_BAND_2_4GHZ;
 		break;
 	case IEEE80211_BAND_5GHZ:
+=======
+	case NL80211_BAND_2GHZ:
+		cmd->band = WLCORE_BAND_2_4GHZ;
+		break;
+	case NL80211_BAND_5GHZ:
+>>>>>>> v4.9.227
 		cmd->band = WLCORE_BAND_5GHZ;
 		break;
 	default:
@@ -1921,7 +2070,11 @@ out:
 }
 
 int wl12xx_roc(struct wl1271 *wl, struct wl12xx_vif *wlvif, u8 role_id,
+<<<<<<< HEAD
 	       enum ieee80211_band band, u8 channel)
+=======
+	       enum nl80211_band band, u8 channel)
+>>>>>>> v4.9.227
 {
 	int ret = 0;
 
@@ -1991,7 +2144,11 @@ out:
 
 /* start dev role and roc on its channel */
 int wl12xx_start_dev(struct wl1271 *wl, struct wl12xx_vif *wlvif,
+<<<<<<< HEAD
 		     enum ieee80211_band band, int channel)
+=======
+		     enum nl80211_band band, int channel)
+>>>>>>> v4.9.227
 {
 	int ret;
 
@@ -2061,3 +2218,36 @@ int wl12xx_stop_dev(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 out:
 	return ret;
 }
+<<<<<<< HEAD
+=======
+
+int wlcore_cmd_generic_cfg(struct wl1271 *wl, struct wl12xx_vif *wlvif,
+			   u8 feature, u8 enable, u8 value)
+{
+	struct wlcore_cmd_generic_cfg *cmd;
+	int ret;
+
+	wl1271_debug(DEBUG_CMD,
+		     "cmd generic cfg (role %d feature %d enable %d value %d)",
+		     wlvif->role_id, feature, enable, value);
+
+	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+	if (!cmd)
+		return -ENOMEM;
+
+	cmd->role_id = wlvif->role_id;
+	cmd->feature = feature;
+	cmd->enable = enable;
+	cmd->value = value;
+
+	ret = wl1271_cmd_send(wl, CMD_GENERIC_CFG, cmd, sizeof(*cmd), 0);
+	if (ret < 0) {
+		wl1271_error("failed to send generic cfg command");
+		goto out_free;
+	}
+out_free:
+	kfree(cmd);
+	return ret;
+}
+EXPORT_SYMBOL_GPL(wlcore_cmd_generic_cfg);
+>>>>>>> v4.9.227

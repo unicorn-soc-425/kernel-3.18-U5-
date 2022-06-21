@@ -173,7 +173,11 @@ static void __init imx6q_enet_phy_init(void)
 				ksz9021rn_phy_fixup);
 		phy_register_fixup_for_uid(PHY_ID_KSZ9031, MICREL_PHY_ID_MASK,
 				ksz9031rn_phy_fixup);
+<<<<<<< HEAD
 		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffff,
+=======
+		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffef,
+>>>>>>> v4.9.227
 				ar8031_phy_fixup);
 		phy_register_fixup_for_uid(PHY_ID_AR8035, 0xffffffef,
 				ar8035_phy_fixup);
@@ -211,15 +215,25 @@ static void __init imx6q_1588_init(void)
 	 * set bit IOMUXC_GPR1[21].  Or the PTP clock must be from pad
 	 * (external OSC), and we need to clear the bit.
 	 */
+<<<<<<< HEAD
 	clksel = ptp_clk == enet_ref ? IMX6Q_GPR1_ENET_CLK_SEL_ANATOP :
 				       IMX6Q_GPR1_ENET_CLK_SEL_PAD;
+=======
+	clksel = clk_is_match(ptp_clk, enet_ref) ?
+				IMX6Q_GPR1_ENET_CLK_SEL_ANATOP :
+				IMX6Q_GPR1_ENET_CLK_SEL_PAD;
+>>>>>>> v4.9.227
 	gpr = syscon_regmap_lookup_by_compatible("fsl,imx6q-iomuxc-gpr");
 	if (!IS_ERR(gpr))
 		regmap_update_bits(gpr, IOMUXC_GPR1,
 				IMX6Q_GPR1_ENET_CLK_SEL_MASK,
 				clksel);
 	else
+<<<<<<< HEAD
 		pr_err("failed to find fsl,imx6q-iomux-gpr regmap\n");
+=======
+		pr_err("failed to find fsl,imx6q-iomuxc-gpr regmap\n");
+>>>>>>> v4.9.227
 
 	clk_put(enet_ref);
 put_ptp_clk:
@@ -265,8 +279,16 @@ static void __init imx6q_init_machine(void)
 {
 	struct device *parent;
 
+<<<<<<< HEAD
 	imx_print_silicon_rev(cpu_is_imx6dl() ? "i.MX6DL" : "i.MX6Q",
 			      imx_get_soc_revision());
+=======
+	if (cpu_is_imx6q() && imx_get_soc_revision() == IMX_CHIP_REVISION_2_0)
+		imx_print_silicon_rev("i.MX6QP", IMX_CHIP_REVISION_1_0);
+	else
+		imx_print_silicon_rev(cpu_is_imx6dl() ? "i.MX6DL" : "i.MX6Q",
+				imx_get_soc_revision());
+>>>>>>> v4.9.227
 
 	parent = imx_soc_device_init();
 	if (parent == NULL)
@@ -274,7 +296,11 @@ static void __init imx6q_init_machine(void)
 
 	imx6q_enet_phy_init();
 
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, parent);
+=======
+	of_platform_default_populate(NULL, NULL, parent);
+>>>>>>> v4.9.227
 
 	imx_anatop_init();
 	cpu_is_imx6q() ?  imx6q_pm_init() : imx6dl_pm_init();
@@ -392,15 +418,28 @@ static void __init imx6q_init_irq(void)
 	imx_init_l2cache();
 	imx_src_init();
 	irqchip_init();
+<<<<<<< HEAD
+=======
+	imx6_pm_ccm_init("fsl,imx6q-ccm");
+>>>>>>> v4.9.227
 }
 
 static const char * const imx6q_dt_compat[] __initconst = {
 	"fsl,imx6dl",
 	"fsl,imx6q",
+<<<<<<< HEAD
+=======
+	"fsl,imx6qp",
+>>>>>>> v4.9.227
 	NULL,
 };
 
 DT_MACHINE_START(IMX6Q, "Freescale i.MX6 Quad/DualLite (Device Tree)")
+<<<<<<< HEAD
+=======
+	.l2c_aux_val 	= 0,
+	.l2c_aux_mask	= ~0,
+>>>>>>> v4.9.227
 	.smp		= smp_ops(imx_smp_ops),
 	.map_io		= imx6q_map_io,
 	.init_irq	= imx6q_init_irq,

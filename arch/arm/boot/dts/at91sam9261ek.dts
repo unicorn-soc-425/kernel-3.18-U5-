@@ -13,7 +13,12 @@
 	compatible = "atmel,at91sam9261ek", "atmel,at91sam9261", "atmel,at91sam9";
 
 	chosen {
+<<<<<<< HEAD
 		bootargs = "console=ttyS0,115200 rootfstype=ubifs ubi.mtd=5 root=ubi0:rootfs rw";
+=======
+		bootargs = "rootfstype=ubifs ubi.mtd=5 root=ubi0:rootfs rw";
+		stdout-path = "serial0:115200n8";
+>>>>>>> v4.9.227
 	};
 
 	memory {
@@ -21,6 +26,7 @@
 	};
 
 	clocks {
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
@@ -30,6 +36,8 @@
 			clock-frequency = <18432000>;
 		};
 
+=======
+>>>>>>> v4.9.227
 		slow_xtal {
 			clock-frequency = <32768>;
 		};
@@ -148,7 +156,11 @@
 					ti,debounce-tol = /bits/ 16 <65535>;
 					ti,debounce-max = /bits/ 16 <1>;
 
+<<<<<<< HEAD
 					linux,wakeup;
+=======
+					wakeup-source;
+>>>>>>> v4.9.227
 				};
 			};
 
@@ -192,28 +204,44 @@
 			label = "button_0";
 			gpios = <&pioA 27 GPIO_ACTIVE_LOW>;
 			linux,code = <256>;
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 
 		button_1 {
 			label = "button_1";
 			gpios = <&pioA 26 GPIO_ACTIVE_LOW>;
 			linux,code = <257>;
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 
 		button_2 {
 			label = "button_2";
 			gpios = <&pioA 25 GPIO_ACTIVE_LOW>;
 			linux,code = <258>;
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 
 		button_3 {
 			label = "button_3";
 			gpios = <&pioA 24 GPIO_ACTIVE_LOW>;
 			linux,code = <259>;
+<<<<<<< HEAD
 			gpio-key,wakeup;
+=======
+			wakeup-source;
+>>>>>>> v4.9.227
 		};
 	};
 };

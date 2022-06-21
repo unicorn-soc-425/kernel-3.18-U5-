@@ -186,6 +186,7 @@ static inline int atomic_futex_op_xchg_xor(int oparg, u32 __user *uaddr, int *_o
 /*
  * do the futex operations
  */
+<<<<<<< HEAD
 int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 {
 	int op = (encoded_op >> 28) & 7;
@@ -200,6 +201,12 @@ int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
 		return -EFAULT;
 
+=======
+int arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
+{
+	int oldval = 0, ret;
+
+>>>>>>> v4.9.227
 	pagefault_disable();
 
 	switch (op) {
@@ -225,6 +232,7 @@ int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 
 	pagefault_enable();
 
+<<<<<<< HEAD
 	if (!ret) {
 		switch (cmp) {
 		case FUTEX_OP_CMP_EQ: ret = (oldval == cmparg); break;
@@ -240,3 +248,11 @@ int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 	return ret;
 
 } /* end futex_atomic_op_inuser() */
+=======
+	if (!ret)
+		*oval = oldval;
+
+	return ret;
+
+} /* end arch_futex_atomic_op_inuser() */
+>>>>>>> v4.9.227

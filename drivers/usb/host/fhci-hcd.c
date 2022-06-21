@@ -31,7 +31,11 @@
 #include <linux/of_platform.h>
 #include <linux/of_gpio.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/qe.h>
+=======
+#include <soc/fsl/qe/qe.h>
+>>>>>>> v4.9.227
 #include <asm/fsl_gtm.h>
 #include "fhci.h"
 
@@ -310,10 +314,15 @@ static struct fhci_usb *fhci_create_lld(struct fhci_hcd *fhci)
 
 	/* allocate memory for SCC data structure */
 	usb = kzalloc(sizeof(*usb), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!usb) {
 		fhci_err(fhci, "no memory for SCC data struct\n");
 		return NULL;
 	}
+=======
+	if (!usb)
+		return NULL;
+>>>>>>> v4.9.227
 
 	usb->fhci = fhci;
 	usb->hc_list = fhci->hc_list;
@@ -821,7 +830,10 @@ MODULE_DEVICE_TABLE(of, of_fhci_match);
 static struct platform_driver of_fhci_driver = {
 	.driver = {
 		.name = "fsl,usb-fhci",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = of_fhci_match,
 	},
 	.probe		= of_fhci_probe,

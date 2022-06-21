@@ -17,7 +17,11 @@
 #include "trace.h"
 
 static RADIX_TREE(pids, GFP_ATOMIC);
+<<<<<<< HEAD
 static struct mutex pids_lock;
+=======
+static spinlock_t pids_lock;
+>>>>>>> v4.9.227
 static struct last_io_info last_io;
 
 static inline void __print_last_io(void)
@@ -59,25 +63,48 @@ void f2fs_trace_pid(struct page *page)
 	pid_t pid = task_pid_nr(current);
 	void *p;
 
+<<<<<<< HEAD
 	set_page_private(page, (unsigned long)pid);
 
 	if (radix_tree_preload(GFP_NOFS))
 		return;
 
 	mutex_lock(&pids_lock);
+=======
+	page->private = pid;
+
+retry:
+	if (radix_tree_preload(GFP_NOFS))
+		return;
+
+	spin_lock(&pids_lock);
+>>>>>>> v4.9.227
 	p = radix_tree_lookup(&pids, pid);
 	if (p == current)
 		goto out;
 	if (p)
 		radix_tree_delete(&pids, pid);
 
+<<<<<<< HEAD
 	f2fs_radix_tree_insert(&pids, pid, current);
+=======
+	if (radix_tree_insert(&pids, pid, current)) {
+		spin_unlock(&pids_lock);
+		radix_tree_preload_end();
+		cond_resched();
+		goto retry;
+	}
+>>>>>>> v4.9.227
 
 	trace_printk("%3x:%3x %4x %-16s\n",
 			MAJOR(inode->i_sb->s_dev), MINOR(inode->i_sb->s_dev),
 			pid, current->comm);
 out:
+<<<<<<< HEAD
 	mutex_unlock(&pids_lock);
+=======
+	spin_unlock(&pids_lock);
+>>>>>>> v4.9.227
 	radix_tree_preload_end();
 }
 
@@ -122,7 +149,11 @@ void f2fs_trace_ios(struct f2fs_io_info *fio, int flush)
 
 void f2fs_build_trace_ios(void)
 {
+<<<<<<< HEAD
 	mutex_init(&pids_lock);
+=======
+	spin_lock_init(&pids_lock);
+>>>>>>> v4.9.227
 }
 
 #define PIDVEC_SIZE	128
@@ -138,7 +169,11 @@ static unsigned int gang_lookup_pids(pid_t *results, unsigned long first_index,
 
 	radix_tree_for_each_slot(slot, &pids, &iter, first_index) {
 		results[ret] = iter.index;
+<<<<<<< HEAD
 		if (++ret == max_items)
+=======
+		if (++ret == PIDVEC_SIZE)
+>>>>>>> v4.9.227
 			break;
 	}
 	return ret;
@@ -150,7 +185,11 @@ void f2fs_destroy_trace_ios(void)
 	pid_t next_pid = 0;
 	unsigned int found;
 
+<<<<<<< HEAD
 	mutex_lock(&pids_lock);
+=======
+	spin_lock(&pids_lock);
+>>>>>>> v4.9.227
 	while ((found = gang_lookup_pids(pid, next_pid, PIDVEC_SIZE))) {
 		unsigned idx;
 
@@ -158,5 +197,9 @@ void f2fs_destroy_trace_ios(void)
 		for (idx = 0; idx < found; idx++)
 			radix_tree_delete(&pids, pid[idx]);
 	}
+<<<<<<< HEAD
 	mutex_unlock(&pids_lock);
+=======
+	spin_unlock(&pids_lock);
+>>>>>>> v4.9.227
 }

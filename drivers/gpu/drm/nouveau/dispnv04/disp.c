@@ -25,7 +25,11 @@
 #include <drm/drmP.h>
 #include <drm/drm_crtc_helper.h>
 
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_reg.h"
 #include "hw.h"
 #include "nouveau_encoder.h"
@@ -39,7 +43,12 @@ nv04_display_create(struct drm_device *dev)
 	struct dcb_table *dcb = &drm->vbios.dcb;
 	struct drm_connector *connector, *ct;
 	struct drm_encoder *encoder;
+<<<<<<< HEAD
 	struct drm_crtc *crtc;
+=======
+	struct nouveau_encoder *nv_encoder;
+	struct nouveau_crtc *crtc;
+>>>>>>> v4.9.227
 	struct nv04_display *disp;
 	int i, ret;
 
@@ -107,6 +116,7 @@ nv04_display_create(struct drm_device *dev)
 	}
 
 	/* Save previous state */
+<<<<<<< HEAD
 	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head)
 		crtc->funcs->save(crtc);
 
@@ -115,6 +125,13 @@ nv04_display_create(struct drm_device *dev)
 
 		func->save(encoder);
 	}
+=======
+	list_for_each_entry(crtc, &dev->mode_config.crtc_list, base.head)
+		crtc->save(&crtc->base);
+
+	list_for_each_entry(nv_encoder, &dev->mode_config.encoder_list, base.base.head)
+		nv_encoder->enc_save(&nv_encoder->base.base);
+>>>>>>> v4.9.227
 
 	nouveau_overlay_init(dev);
 
@@ -126,6 +143,7 @@ nv04_display_destroy(struct drm_device *dev)
 {
 	struct nv04_display *disp = nv04_display(dev);
 	struct nouveau_drm *drm = nouveau_drm(dev);
+<<<<<<< HEAD
 	struct drm_encoder *encoder;
 	struct drm_crtc *crtc;
 
@@ -147,6 +165,17 @@ nv04_display_destroy(struct drm_device *dev)
 
 	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head)
 		crtc->funcs->restore(crtc);
+=======
+	struct nouveau_encoder *encoder;
+	struct nouveau_crtc *nv_crtc;
+
+	/* Restore state */
+	list_for_each_entry(encoder, &dev->mode_config.encoder_list, base.base.head)
+		encoder->enc_restore(&encoder->base.base);
+
+	list_for_each_entry(nv_crtc, &dev->mode_config.crtc_list, base.head)
+		nv_crtc->restore(&nv_crtc->base);
+>>>>>>> v4.9.227
 
 	nouveau_hw_save_vga_fonts(dev, 0);
 
@@ -159,8 +188,13 @@ nv04_display_destroy(struct drm_device *dev)
 int
 nv04_display_init(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_encoder *encoder;
 	struct drm_crtc *crtc;
+=======
+	struct nouveau_encoder *encoder;
+	struct nouveau_crtc *crtc;
+>>>>>>> v4.9.227
 
 	/* meh.. modeset apparently doesn't setup all the regs and depends
 	 * on pre-existing state, for now load the state of the card *before*
@@ -170,6 +204,7 @@ nv04_display_init(struct drm_device *dev)
 	 * save/restore "pre-load" state, but more general so we can save
 	 * on suspend too.
 	 */
+<<<<<<< HEAD
 	list_for_each_entry(encoder, &dev->mode_config.encoder_list, head) {
 		const struct drm_encoder_helper_funcs *func = encoder->helper_private;
 
@@ -178,6 +213,13 @@ nv04_display_init(struct drm_device *dev)
 
 	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head)
 		crtc->funcs->restore(crtc);
+=======
+	list_for_each_entry(crtc, &dev->mode_config.crtc_list, base.head)
+		crtc->save(&crtc->base);
+
+	list_for_each_entry(encoder, &dev->mode_config.encoder_list, base.base.head)
+		encoder->enc_save(&encoder->base.base);
+>>>>>>> v4.9.227
 
 	return 0;
 }

@@ -27,7 +27,11 @@ static int adp5520_gpio_get_value(struct gpio_chip *chip, unsigned off)
 	struct adp5520_gpio *dev;
 	uint8_t reg_val;
 
+<<<<<<< HEAD
 	dev = container_of(chip, struct adp5520_gpio, gpio_chip);
+=======
+	dev = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	/*
 	 * There are dedicated registers for GPIO IN/OUT.
@@ -46,7 +50,11 @@ static void adp5520_gpio_set_value(struct gpio_chip *chip,
 		unsigned off, int val)
 {
 	struct adp5520_gpio *dev;
+<<<<<<< HEAD
 	dev = container_of(chip, struct adp5520_gpio, gpio_chip);
+=======
+	dev = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	if (val)
 		adp5520_set_bits(dev->master, ADP5520_GPIO_OUT, dev->lut[off]);
@@ -57,7 +65,11 @@ static void adp5520_gpio_set_value(struct gpio_chip *chip,
 static int adp5520_gpio_direction_input(struct gpio_chip *chip, unsigned off)
 {
 	struct adp5520_gpio *dev;
+<<<<<<< HEAD
 	dev = container_of(chip, struct adp5520_gpio, gpio_chip);
+=======
+	dev = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	clear_bit(off, &dev->output);
 
@@ -70,7 +82,11 @@ static int adp5520_gpio_direction_output(struct gpio_chip *chip,
 {
 	struct adp5520_gpio *dev;
 	int ret = 0;
+<<<<<<< HEAD
 	dev = container_of(chip, struct adp5520_gpio, gpio_chip);
+=======
+	dev = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	set_bit(off, &dev->output);
 
@@ -153,7 +169,11 @@ static int adp5520_gpio_probe(struct platform_device *pdev)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&dev->gpio_chip);
+=======
+	ret = devm_gpiochip_add_data(&pdev->dev, &dev->gpio_chip, dev);
+>>>>>>> v4.9.227
 	if (ret)
 		goto err;
 
@@ -164,6 +184,7 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int adp5520_gpio_remove(struct platform_device *pdev)
 {
 	struct adp5520_gpio *dev;
@@ -181,6 +202,13 @@ static struct platform_driver adp5520_gpio_driver = {
 	},
 	.probe		= adp5520_gpio_probe,
 	.remove		= adp5520_gpio_remove,
+=======
+static struct platform_driver adp5520_gpio_driver = {
+	.driver	= {
+		.name	= "adp5520-gpio",
+	},
+	.probe		= adp5520_gpio_probe,
+>>>>>>> v4.9.227
 };
 
 module_platform_driver(adp5520_gpio_driver);

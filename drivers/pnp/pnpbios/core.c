@@ -46,7 +46,10 @@
  */
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/linkage.h>
 #include <linux/kernel.h>
@@ -61,6 +64,10 @@
 #include <linux/delay.h>
 #include <linux/acpi.h>
 #include <linux/freezer.h>
+<<<<<<< HEAD
+=======
+#include <linux/kmod.h>
+>>>>>>> v4.9.227
 #include <linux/kthread.h>
 
 #include <asm/page.h>
@@ -181,7 +188,12 @@ static int pnp_dock_thread(void *unused)
 			break;
 		default:
 			pnpbios_print_status("pnp_dock_thread", status);
+<<<<<<< HEAD
 			continue;
+=======
+			printk(KERN_WARNING "PnPBIOS: disabling dock monitoring.\n");
+			complete_and_exit(&unload_sem, 0);
+>>>>>>> v4.9.227
 		}
 		if (d != docked) {
 			if (pnp_dock_event(d, &now) == 0) {
@@ -520,10 +532,18 @@ static int __init pnpbios_init(void)
 	int ret;
 
 	if (pnpbios_disabled || dmi_check_system(pnpbios_dmi_table) ||
+<<<<<<< HEAD
 	    paravirt_enabled()) {
 		printk(KERN_INFO "PnPBIOS: Disabled\n");
 		return -ENODEV;
 	}
+=======
+	    arch_pnpbios_disabled()) {
+		printk(KERN_INFO "PnPBIOS: Disabled\n");
+		return -ENODEV;
+	}
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_PNPACPI
 	if (!acpi_disabled && !pnpacpi_disabled) {
 		pnpbios_disabled = 1;
@@ -585,6 +605,10 @@ static int __init pnpbios_thread_init(void)
 }
 
 /* Start the kernel thread later: */
+<<<<<<< HEAD
 module_init(pnpbios_thread_init);
+=======
+device_initcall(pnpbios_thread_init);
+>>>>>>> v4.9.227
 
 EXPORT_SYMBOL(pnpbios_protocol);

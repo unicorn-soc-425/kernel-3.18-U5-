@@ -572,9 +572,15 @@ static int convert_type86_ica(struct zcrypt_device *zdev,
 			return -EINVAL;
 		zdev->online = 0;
 		pr_err("Cryptographic device %x failed and was set offline\n",
+<<<<<<< HEAD
 		       zdev->ap_dev->qid);
 		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%drc%d",
 			       zdev->ap_dev->qid, zdev->online,
+=======
+		       AP_QID_DEVICE(zdev->ap_dev->qid));
+		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%drc%d",
+			       AP_QID_DEVICE(zdev->ap_dev->qid), zdev->online,
+>>>>>>> v4.9.227
 			       msg->hdr.reply_code);
 		return -EAGAIN;	/* repeat the request on a different device. */
 	}
@@ -715,9 +721,15 @@ static int convert_response_ica(struct zcrypt_device *zdev,
 	default: /* Unknown response type, this should NEVER EVER happen */
 		zdev->online = 0;
 		pr_err("Cryptographic device %x failed and was set offline\n",
+<<<<<<< HEAD
 		       zdev->ap_dev->qid);
 		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%dfail",
 			       zdev->ap_dev->qid, zdev->online);
+=======
+		       AP_QID_DEVICE(zdev->ap_dev->qid));
+		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%dfail",
+			       AP_QID_DEVICE(zdev->ap_dev->qid), zdev->online);
+>>>>>>> v4.9.227
 		return -EAGAIN;	/* repeat the request on a different device. */
 	}
 }
@@ -747,9 +759,15 @@ static int convert_response_xcrb(struct zcrypt_device *zdev,
 		xcRB->status = 0x0008044DL; /* HDD_InvalidParm */
 		zdev->online = 0;
 		pr_err("Cryptographic device %x failed and was set offline\n",
+<<<<<<< HEAD
 		       zdev->ap_dev->qid);
 		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%dfail",
 			       zdev->ap_dev->qid, zdev->online);
+=======
+		       AP_QID_DEVICE(zdev->ap_dev->qid));
+		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%dfail",
+			       AP_QID_DEVICE(zdev->ap_dev->qid), zdev->online);
+>>>>>>> v4.9.227
 		return -EAGAIN;	/* repeat the request on a different device. */
 	}
 }
@@ -773,9 +791,15 @@ static int convert_response_ep11_xcrb(struct zcrypt_device *zdev,
 	default: /* Unknown response type, this should NEVER EVER happen */
 		zdev->online = 0;
 		pr_err("Cryptographic device %x failed and was set offline\n",
+<<<<<<< HEAD
 		       zdev->ap_dev->qid);
 		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%dfail",
 			       zdev->ap_dev->qid, zdev->online);
+=======
+		       AP_QID_DEVICE(zdev->ap_dev->qid));
+		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%dfail",
+			       AP_QID_DEVICE(zdev->ap_dev->qid), zdev->online);
+>>>>>>> v4.9.227
 		return -EAGAIN; /* repeat the request on a different device. */
 	}
 }
@@ -800,9 +824,15 @@ static int convert_response_rng(struct zcrypt_device *zdev,
 	default: /* Unknown response type, this should NEVER EVER happen */
 		zdev->online = 0;
 		pr_err("Cryptographic device %x failed and was set offline\n",
+<<<<<<< HEAD
 		       zdev->ap_dev->qid);
 		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%dfail",
 			       zdev->ap_dev->qid, zdev->online);
+=======
+		       AP_QID_DEVICE(zdev->ap_dev->qid));
+		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%dfail",
+			       AP_QID_DEVICE(zdev->ap_dev->qid), zdev->online);
+>>>>>>> v4.9.227
 		return -EAGAIN;	/* repeat the request on a different device. */
 	}
 }
@@ -829,10 +859,15 @@ static void zcrypt_msgtype6_receive(struct ap_device *ap_dev,
 	int length;
 
 	/* Copy the reply message to the request message buffer. */
+<<<<<<< HEAD
 	if (IS_ERR(reply)) {
 		memcpy(msg->message, &error_reply, sizeof(error_reply));
 		goto out;
 	}
+=======
+	if (!reply)
+		goto out;	/* ap_msg->rc indicates the error */
+>>>>>>> v4.9.227
 	t86r = reply->message;
 	if (t86r->hdr.type == TYPE86_RSP_CODE &&
 		 t86r->cprbx.cprb_ver_id == 0x02) {
@@ -880,10 +915,15 @@ static void zcrypt_msgtype6_receive_ep11(struct ap_device *ap_dev,
 	int length;
 
 	/* Copy the reply message to the request message buffer. */
+<<<<<<< HEAD
 	if (IS_ERR(reply)) {
 		memcpy(msg->message, &error_reply, sizeof(error_reply));
 		goto out;
 	}
+=======
+	if (!reply)
+		goto out;	/* ap_msg->rc indicates the error */
+>>>>>>> v4.9.227
 	t86r = reply->message;
 	if (t86r->hdr.type == TYPE86_RSP_CODE &&
 	    t86r->cprbx.cprb_ver_id == 0x04) {
@@ -935,10 +975,20 @@ static long zcrypt_msgtype6_modexpo(struct zcrypt_device *zdev,
 	init_completion(&resp_type.work);
 	ap_queue_message(zdev->ap_dev, &ap_msg);
 	rc = wait_for_completion_interruptible(&resp_type.work);
+<<<<<<< HEAD
 	if (rc == 0)
 		rc = convert_response_ica(zdev, &ap_msg, mex->outputdata,
 					  mex->outputdatalength);
 	else
+=======
+	if (rc == 0) {
+		rc = ap_msg.rc;
+		if (rc == 0)
+			rc = convert_response_ica(zdev, &ap_msg,
+						  mex->outputdata,
+						  mex->outputdatalength);
+	} else
+>>>>>>> v4.9.227
 		/* Signal pending. */
 		ap_cancel_message(zdev->ap_dev, &ap_msg);
 out_free:
@@ -976,10 +1026,20 @@ static long zcrypt_msgtype6_modexpo_crt(struct zcrypt_device *zdev,
 	init_completion(&resp_type.work);
 	ap_queue_message(zdev->ap_dev, &ap_msg);
 	rc = wait_for_completion_interruptible(&resp_type.work);
+<<<<<<< HEAD
 	if (rc == 0)
 		rc = convert_response_ica(zdev, &ap_msg, crt->outputdata,
 					  crt->outputdatalength);
 	else
+=======
+	if (rc == 0) {
+		rc = ap_msg.rc;
+		if (rc == 0)
+			rc = convert_response_ica(zdev, &ap_msg,
+						  crt->outputdata,
+						  crt->outputdatalength);
+	} else
+>>>>>>> v4.9.227
 		/* Signal pending. */
 		ap_cancel_message(zdev->ap_dev, &ap_msg);
 out_free:
@@ -1017,9 +1077,17 @@ static long zcrypt_msgtype6_send_cprb(struct zcrypt_device *zdev,
 	init_completion(&resp_type.work);
 	ap_queue_message(zdev->ap_dev, &ap_msg);
 	rc = wait_for_completion_interruptible(&resp_type.work);
+<<<<<<< HEAD
 	if (rc == 0)
 		rc = convert_response_xcrb(zdev, &ap_msg, xcRB);
 	else
+=======
+	if (rc == 0) {
+		rc = ap_msg.rc;
+		if (rc == 0)
+			rc = convert_response_xcrb(zdev, &ap_msg, xcRB);
+	} else
+>>>>>>> v4.9.227
 		/* Signal pending. */
 		ap_cancel_message(zdev->ap_dev, &ap_msg);
 out_free:
@@ -1057,9 +1125,18 @@ static long zcrypt_msgtype6_send_ep11_cprb(struct zcrypt_device *zdev,
 	init_completion(&resp_type.work);
 	ap_queue_message(zdev->ap_dev, &ap_msg);
 	rc = wait_for_completion_interruptible(&resp_type.work);
+<<<<<<< HEAD
 	if (rc == 0)
 		rc = convert_response_ep11_xcrb(zdev, &ap_msg, xcrb);
 	else /* Signal pending. */
+=======
+	if (rc == 0) {
+		rc = ap_msg.rc;
+		if (rc == 0)
+			rc = convert_response_ep11_xcrb(zdev, &ap_msg, xcrb);
+	} else
+		/* Signal pending. */
+>>>>>>> v4.9.227
 		ap_cancel_message(zdev->ap_dev, &ap_msg);
 
 out_free:
@@ -1096,9 +1173,17 @@ static long zcrypt_msgtype6_rng(struct zcrypt_device *zdev,
 	init_completion(&resp_type.work);
 	ap_queue_message(zdev->ap_dev, &ap_msg);
 	rc = wait_for_completion_interruptible(&resp_type.work);
+<<<<<<< HEAD
 	if (rc == 0)
 		rc = convert_response_rng(zdev, &ap_msg, buffer);
 	else
+=======
+	if (rc == 0) {
+		rc = ap_msg.rc;
+		if (rc == 0)
+			rc = convert_response_rng(zdev, &ap_msg, buffer);
+	} else
+>>>>>>> v4.9.227
 		/* Signal pending. */
 		ap_cancel_message(zdev->ap_dev, &ap_msg);
 	kfree(ap_msg.message);
@@ -1110,6 +1195,10 @@ static long zcrypt_msgtype6_rng(struct zcrypt_device *zdev,
  */
 static struct zcrypt_ops zcrypt_msgtype6_norng_ops = {
 	.owner = THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.name = MSGTYPE06_NAME,
+>>>>>>> v4.9.227
 	.variant = MSGTYPE06_VARIANT_NORNG,
 	.rsa_modexpo = zcrypt_msgtype6_modexpo,
 	.rsa_modexpo_crt = zcrypt_msgtype6_modexpo_crt,
@@ -1118,6 +1207,10 @@ static struct zcrypt_ops zcrypt_msgtype6_norng_ops = {
 
 static struct zcrypt_ops zcrypt_msgtype6_ops = {
 	.owner = THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.name = MSGTYPE06_NAME,
+>>>>>>> v4.9.227
 	.variant = MSGTYPE06_VARIANT_DEFAULT,
 	.rsa_modexpo = zcrypt_msgtype6_modexpo,
 	.rsa_modexpo_crt = zcrypt_msgtype6_modexpo_crt,
@@ -1127,6 +1220,10 @@ static struct zcrypt_ops zcrypt_msgtype6_ops = {
 
 static struct zcrypt_ops zcrypt_msgtype6_ep11_ops = {
 	.owner = THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.name = MSGTYPE06_NAME,
+>>>>>>> v4.9.227
 	.variant = MSGTYPE06_VARIANT_EP11,
 	.rsa_modexpo = NULL,
 	.rsa_modexpo_crt = NULL,

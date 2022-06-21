@@ -27,8 +27,11 @@
 #include <linux/pm_runtime.h>
 #include <linux/of_device.h>
 
+<<<<<<< HEAD
 #include "pwm-tipwmss.h"
 
+=======
+>>>>>>> v4.9.227
 /* EHRPWM registers and bits definitions */
 
 /* Time base module registers */
@@ -385,6 +388,11 @@ static void ehrpwm_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 	}
 
 	/* Update shadow register first before modifying active register */
+<<<<<<< HEAD
+=======
+	ehrpwm_modify(pc->mmio_base, AQSFRC, AQSFRC_RLDCSF_MASK,
+		      AQSFRC_RLDCSF_ZRO);
+>>>>>>> v4.9.227
 	ehrpwm_modify(pc->mmio_base, AQCSFRC, aqcsfrc_mask, aqcsfrc_val);
 	/*
 	 * Changes to immediate action on Action Qualifier. This puts
@@ -409,7 +417,11 @@ static void ehrpwm_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
 {
 	struct ehrpwm_pwm_chip *pc = to_ehrpwm_pwm_chip(chip);
 
+<<<<<<< HEAD
 	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+=======
+	if (pwm_is_enabled(pwm)) {
+>>>>>>> v4.9.227
 		dev_warn(chip->dev, "Removing PWM device without disabling\n");
 		pm_runtime_put_sync(chip->dev);
 	}
@@ -428,6 +440,10 @@ static const struct pwm_ops ehrpwm_pwm_ops = {
 };
 
 static const struct of_device_id ehrpwm_of_match[] = {
+<<<<<<< HEAD
+=======
+	{ .compatible	= "ti,am3352-ehrpwm" },
+>>>>>>> v4.9.227
 	{ .compatible	= "ti,am33xx-ehrpwm" },
 	{},
 };
@@ -435,11 +451,18 @@ MODULE_DEVICE_TABLE(of, ehrpwm_of_match);
 
 static int ehrpwm_pwm_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
+=======
+	struct device_node *np = pdev->dev.of_node;
+>>>>>>> v4.9.227
 	int ret;
 	struct resource *r;
 	struct clk *clk;
 	struct ehrpwm_pwm_chip *pc;
+<<<<<<< HEAD
 	u16 status;
+=======
+>>>>>>> v4.9.227
 
 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
 	if (!pc)
@@ -447,6 +470,16 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
 
 	clk = devm_clk_get(&pdev->dev, "fck");
 	if (IS_ERR(clk)) {
+<<<<<<< HEAD
+=======
+		if (of_device_is_compatible(np, "ti,am33xx-ecap")) {
+			dev_warn(&pdev->dev, "Binding is obsolete.\n");
+			clk = devm_clk_get(pdev->dev.parent, "fck");
+		}
+	}
+
+	if (IS_ERR(clk)) {
+>>>>>>> v4.9.227
 		dev_err(&pdev->dev, "failed to get clock\n");
 		return PTR_ERR(clk);
 	}
@@ -489,6 +522,7 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
 	}
 
 	pm_runtime_enable(&pdev->dev);
+<<<<<<< HEAD
 	pm_runtime_get_sync(&pdev->dev);
 
 	status = pwmss_submodule_state_change(pdev->dev.parent,
@@ -510,6 +544,11 @@ pwmss_clk_failure:
 	pwmchip_remove(&pc->chip);
 	clk_unprepare(pc->tbclk);
 	return ret;
+=======
+
+	platform_set_drvdata(pdev, pc);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int ehrpwm_pwm_remove(struct platform_device *pdev)
@@ -518,6 +557,7 @@ static int ehrpwm_pwm_remove(struct platform_device *pdev)
 
 	clk_unprepare(pc->tbclk);
 
+<<<<<<< HEAD
 	pm_runtime_get_sync(&pdev->dev);
 	/*
 	 * Due to hardware misbehaviour, acknowledge of the stop_req
@@ -526,6 +566,8 @@ static int ehrpwm_pwm_remove(struct platform_device *pdev)
 	pwmss_submodule_state_change(pdev->dev.parent, PWMSS_EPWMCLK_STOP_REQ);
 	pm_runtime_put_sync(&pdev->dev);
 
+=======
+>>>>>>> v4.9.227
 	pm_runtime_put_sync(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
 	return pwmchip_remove(&pc->chip);
@@ -567,7 +609,11 @@ static int ehrpwm_pwm_suspend(struct device *dev)
 	for (i = 0; i < pc->chip.npwm; i++) {
 		struct pwm_device *pwm = &pc->chip.pwms[i];
 
+<<<<<<< HEAD
 		if (!test_bit(PWMF_ENABLED, &pwm->flags))
+=======
+		if (!pwm_is_enabled(pwm))
+>>>>>>> v4.9.227
 			continue;
 
 		/* Disable explicitly if PWM is running */
@@ -584,7 +630,11 @@ static int ehrpwm_pwm_resume(struct device *dev)
 	for (i = 0; i < pc->chip.npwm; i++) {
 		struct pwm_device *pwm = &pc->chip.pwms[i];
 
+<<<<<<< HEAD
 		if (!test_bit(PWMF_ENABLED, &pwm->flags))
+=======
+		if (!pwm_is_enabled(pwm))
+>>>>>>> v4.9.227
 			continue;
 
 		/* Enable explicitly if PWM was running */
@@ -601,7 +651,10 @@ static SIMPLE_DEV_PM_OPS(ehrpwm_pwm_pm_ops, ehrpwm_pwm_suspend,
 static struct platform_driver ehrpwm_pwm_driver = {
 	.driver = {
 		.name	= "ehrpwm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ehrpwm_of_match,
 		.pm	= &ehrpwm_pwm_pm_ops,
 	},

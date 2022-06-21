@@ -83,6 +83,14 @@ static int hpfs_get_block(struct inode *inode, sector_t iblock, struct buffer_he
 	if (s) {
 		if (bh_result->b_size >> 9 < n_secs)
 			n_secs = bh_result->b_size >> 9;
+<<<<<<< HEAD
+=======
+		n_secs = hpfs_search_hotfix_map_for_range(inode->i_sb, s, n_secs);
+		if (unlikely(!n_secs)) {
+			s = hpfs_search_hotfix_map(inode->i_sb, s);
+			n_secs = 1;
+		}
+>>>>>>> v4.9.227
 		map_bh(bh_result, inode->i_sb, s);
 		bh_result->b_size = n_secs << 9;
 		goto ret_0;
@@ -101,7 +109,11 @@ static int hpfs_get_block(struct inode *inode, sector_t iblock, struct buffer_he
 	inode->i_blocks++;
 	hpfs_i(inode)->mmu_private += 512;
 	set_buffer_new(bh_result);
+<<<<<<< HEAD
 	map_bh(bh_result, inode->i_sb, s);
+=======
+	map_bh(bh_result, inode->i_sb, hpfs_search_hotfix_map(inode->i_sb, s));
+>>>>>>> v4.9.227
 	ret_0:
 	r = 0;
 	ret_r:
@@ -181,7 +193,16 @@ static int hpfs_write_end(struct file *file, struct address_space *mapping,
 
 static sector_t _hpfs_bmap(struct address_space *mapping, sector_t block)
 {
+<<<<<<< HEAD
 	return generic_block_bmap(mapping,block,hpfs_get_block);
+=======
+	return generic_block_bmap(mapping, block, hpfs_get_block);
+}
+
+static int hpfs_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo, u64 start, u64 len)
+{
+	return generic_block_fiemap(inode, fieinfo, start, len, hpfs_get_block);
+>>>>>>> v4.9.227
 }
 
 const struct address_space_operations hpfs_aops = {
@@ -197,17 +218,29 @@ const struct address_space_operations hpfs_aops = {
 const struct file_operations hpfs_file_ops =
 {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.read		= new_sync_read,
 	.read_iter	= generic_file_read_iter,
 	.write		= new_sync_write,
+=======
+	.read_iter	= generic_file_read_iter,
+>>>>>>> v4.9.227
 	.write_iter	= generic_file_write_iter,
 	.mmap		= generic_file_mmap,
 	.release	= hpfs_file_release,
 	.fsync		= hpfs_file_fsync,
 	.splice_read	= generic_file_splice_read,
+<<<<<<< HEAD
+=======
+	.unlocked_ioctl	= hpfs_ioctl,
+>>>>>>> v4.9.227
 };
 
 const struct inode_operations hpfs_file_iops =
 {
 	.setattr	= hpfs_setattr,
+<<<<<<< HEAD
+=======
+	.fiemap		= hpfs_fiemap,
+>>>>>>> v4.9.227
 };

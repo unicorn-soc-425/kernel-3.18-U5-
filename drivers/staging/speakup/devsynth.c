@@ -22,7 +22,11 @@ static ssize_t speakup_file_write(struct file *fp, const char __user *buffer,
 	unsigned long flags;
 	u_char buf[256];
 
+<<<<<<< HEAD
 	if (synth == NULL)
+=======
+	if (!synth)
+>>>>>>> v4.9.227
 		return -ENODEV;
 	while (count > 0) {
 		bytes = min(count, sizeof(buf));
@@ -34,7 +38,11 @@ static ssize_t speakup_file_write(struct file *fp, const char __user *buffer,
 		synth_write(buf, bytes);
 		spin_unlock_irqrestore(&speakup_info.spinlock, flags);
 	}
+<<<<<<< HEAD
 	return (ssize_t) nbytes;
+=======
+	return (ssize_t)nbytes;
+>>>>>>> v4.9.227
 }
 
 static ssize_t speakup_file_read(struct file *fp, char __user *buf,
@@ -45,7 +53,11 @@ static ssize_t speakup_file_read(struct file *fp, char __user *buf,
 
 static int speakup_file_open(struct inode *ip, struct file *fp)
 {
+<<<<<<< HEAD
 	if (synth == NULL)
+=======
+	if (!synth)
+>>>>>>> v4.9.227
 		return -ENODEV;
 	if (xchg(&dev_opened, 1))
 		return -EBUSY;
@@ -76,9 +88,15 @@ void speakup_register_devsynth(void)
 	if (misc_registered != 0)
 		return;
 /* zero it so if register fails, deregister will not ref invalid ptrs */
+<<<<<<< HEAD
 	if (misc_register(&synth_device))
 		pr_warn("Couldn't initialize miscdevice /dev/synth.\n");
 	else {
+=======
+	if (misc_register(&synth_device)) {
+		pr_warn("Couldn't initialize miscdevice /dev/synth.\n");
+	} else {
+>>>>>>> v4.9.227
 		pr_info("initialized device: /dev/synth, node (MAJOR %d, MINOR %d)\n",
 			MISC_MAJOR, SYNTH_MINOR);
 		misc_registered = 1;

@@ -20,7 +20,11 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-fh.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> v4.9.227
 
 struct go7007;
 
@@ -136,7 +140,11 @@ struct go7007_hpi_ops {
 #define	GO7007_BUF_SIZE		(GO7007_BUF_PAGES << PAGE_SHIFT)
 
 struct go7007_buffer {
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head list;
 	unsigned int frame_offset;
 	u32 modet_active;
@@ -250,7 +258,11 @@ struct go7007 {
 	struct i2c_adapter i2c_adapter;
 
 	/* HPI driver */
+<<<<<<< HEAD
 	struct go7007_hpi_ops *hpi_ops;
+=======
+	const struct go7007_hpi_ops *hpi_ops;
+>>>>>>> v4.9.227
 	void *hpi_context;
 	int interrupt_available;
 	wait_queue_head_t interrupt_waitq;

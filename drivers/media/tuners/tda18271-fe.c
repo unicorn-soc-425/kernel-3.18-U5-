@@ -18,11 +18,20 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+<<<<<<< HEAD
 #include <linux/delay.h>
 #include <linux/videodev2.h>
 #include "tda18271-priv.h"
 #include "tda8290.h"
 
+=======
+#include "tda18271-priv.h"
+#include "tda8290.h"
+
+#include <linux/delay.h>
+#include <linux/videodev2.h>
+
+>>>>>>> v4.9.227
 int tda18271_debug;
 module_param_named(debug, tda18271_debug, int, 0644);
 MODULE_PARM_DESC(debug, "set debug level "
@@ -646,7 +655,11 @@ static int tda18271_calc_rf_filter_curve(struct dvb_frontend *fe)
 	unsigned int i;
 	int ret;
 
+<<<<<<< HEAD
 	tda_info("tda18271: performing RF tracking filter calibration\n");
+=======
+	tda_info("performing RF tracking filter calibration\n");
+>>>>>>> v4.9.227
 
 	/* wait for die temperature stabilization */
 	msleep(200);
@@ -692,12 +705,20 @@ static int tda18271c2_rf_cal_init(struct dvb_frontend *fe)
 	if (tda_fail(ret))
 		goto fail;
 
+<<<<<<< HEAD
 	tda_info("tda18271: RF tracking filter calibration complete\n");
+=======
+	tda_info("RF tracking filter calibration complete\n");
+>>>>>>> v4.9.227
 
 	priv->cal_initialized = true;
 	goto end;
 fail:
+<<<<<<< HEAD
 	tda_info("tda18271: RF tracking filter calibration failed!\n");
+=======
+	tda_info("RF tracking filter calibration failed!\n");
+>>>>>>> v4.9.227
 end:
 	return ret;
 }
@@ -1355,6 +1376,7 @@ MODULE_DESCRIPTION("NXP TDA18271HD analog / digital tuner driver");
 MODULE_AUTHOR("Michael Krufky <mkrufky@linuxtv.org>");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("0.4");
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -1363,3 +1385,5 @@ MODULE_VERSION("0.4");
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

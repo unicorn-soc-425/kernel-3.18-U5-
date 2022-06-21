@@ -20,6 +20,10 @@
 #include <linux/delay.h>
 #include <linux/kthread.h>
 #include <linux/irqreturn.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> v4.9.227
 
 #include <linux/mei.h>
 
@@ -28,6 +32,12 @@
 #include "client.h"
 #include "hbm.h"
 
+<<<<<<< HEAD
+=======
+#include "mei-trace.h"
+
+
+>>>>>>> v4.9.227
 /**
  * mei_txe_reg_read - Reads 32bit data from the txe device
  *
@@ -424,7 +434,11 @@ static void mei_txe_intr_disable(struct mei_device *dev)
 	mei_txe_br_reg_write(hw, HIER_REG, 0);
 }
 /**
+<<<<<<< HEAD
  * mei_txe_intr_disable - enable all interrupts
+=======
+ * mei_txe_intr_enable - enable all interrupts
+>>>>>>> v4.9.227
  *
  * @dev: the device structure
  */
@@ -640,8 +654,16 @@ static int mei_txe_fw_status(struct mei_device *dev,
 
 	fw_status->count = fw_src->count;
 	for (i = 0; i < fw_src->count && i < MEI_FW_STATUS_MAX; i++) {
+<<<<<<< HEAD
 		ret = pci_read_config_dword(pdev,
 			fw_src->status[i], &fw_status->status[i]);
+=======
+		ret = pci_read_config_dword(pdev, fw_src->status[i],
+					    &fw_status->status[i]);
+		trace_mei_pci_cfg_read(dev->dev, "PCI_CFG_HSF_X",
+				       fw_src->status[i],
+				       fw_status->status[i]);
+>>>>>>> v4.9.227
 		if (ret)
 			return ret;
 	}
@@ -712,11 +734,18 @@ static int mei_txe_write(struct mei_device *dev,
 	mei_txe_input_ready_interrupt_enable(dev);
 
 	if (!mei_txe_is_input_ready(dev)) {
+<<<<<<< HEAD
 		struct mei_fw_status fw_status;
 
 		mei_fw_status(dev, &fw_status);
 		dev_err(dev->dev, "Input is not ready " FW_STS_FMT "\n",
 			FW_STS_PRM(fw_status));
+=======
+		char fw_sts_str[MEI_FW_STATUS_STR_SZ];
+
+		mei_fw_status_str(dev, fw_sts_str, MEI_FW_STATUS_STR_SZ);
+		dev_err(dev->dev, "Input is not ready %s\n", fw_sts_str);
+>>>>>>> v4.9.227
 		return -EAGAIN;
 	}
 
@@ -930,6 +959,11 @@ static int mei_txe_hw_start(struct mei_device *dev)
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	pm_runtime_set_active(dev->dev);
+
+>>>>>>> v4.9.227
 	/* enable input ready interrupts:
 	 * SEC_IPC_HOST_INT_MASK.IPC_INPUT_READY_INT_MASK
 	 */

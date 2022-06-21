@@ -3,7 +3,11 @@
  *
  * Copyright (C) 2014 Samsung Electrnoics
  * Chanwoo Choi <cw00.choi@samsung.com>
+<<<<<<< HEAD
  * Krzysztof Kozlowski <k.kozlowski@samsung.com>
+=======
+ * Krzysztof Kozlowski <krzk@kernel.org>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

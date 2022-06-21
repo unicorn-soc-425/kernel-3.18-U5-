@@ -17,6 +17,11 @@
 #include <linux/module.h>
 
 #define DM_MSG_PREFIX "multipath round-robin"
+<<<<<<< HEAD
+=======
+#define RR_MIN_IO     1
+#define RR_VERSION    "1.2.0"
+>>>>>>> v4.9.227
 
 /*-----------------------------------------------------------------
  * Path-handling code, paths are held in lists
@@ -41,11 +46,18 @@ static void free_paths(struct list_head *paths)
  * Round-robin selector
  *---------------------------------------------------------------*/
 
+<<<<<<< HEAD
 #define RR_MIN_IO		1000
 
 struct selector {
 	struct list_head valid_paths;
 	struct list_head invalid_paths;
+=======
+struct selector {
+	struct list_head valid_paths;
+	struct list_head invalid_paths;
+	spinlock_t lock;
+>>>>>>> v4.9.227
 };
 
 static struct selector *alloc_selector(void)
@@ -55,6 +67,10 @@ static struct selector *alloc_selector(void)
 	if (s) {
 		INIT_LIST_HEAD(&s->valid_paths);
 		INIT_LIST_HEAD(&s->invalid_paths);
+<<<<<<< HEAD
+=======
+		spin_lock_init(&s->lock);
+>>>>>>> v4.9.227
 	}
 
 	return s;
@@ -74,7 +90,11 @@ static int rr_create(struct path_selector *ps, unsigned argc, char **argv)
 
 static void rr_destroy(struct path_selector *ps)
 {
+<<<<<<< HEAD
 	struct selector *s = (struct selector *) ps->context;
+=======
+	struct selector *s = ps->context;
+>>>>>>> v4.9.227
 
 	free_paths(&s->valid_paths);
 	free_paths(&s->invalid_paths);
@@ -111,10 +131,18 @@ static int rr_status(struct path_selector *ps, struct dm_path *path,
 static int rr_add_path(struct path_selector *ps, struct dm_path *path,
 		       int argc, char **argv, char **error)
 {
+<<<<<<< HEAD
 	struct selector *s = (struct selector *) ps->context;
 	struct path_info *pi;
 	unsigned repeat_count = RR_MIN_IO;
 	char dummy;
+=======
+	struct selector *s = ps->context;
+	struct path_info *pi;
+	unsigned repeat_count = RR_MIN_IO;
+	char dummy;
+	unsigned long flags;
+>>>>>>> v4.9.227
 
 	if (argc > 1) {
 		*error = "round-robin ps: incorrect number of arguments";
@@ -127,6 +155,14 @@ static int rr_add_path(struct path_selector *ps, struct dm_path *path,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (repeat_count > 1) {
+		DMWARN_LIMIT("repeat_count > 1 is deprecated, using 1 instead");
+		repeat_count = 1;
+	}
+
+>>>>>>> v4.9.227
 	/* allocate the path */
 	pi = kmalloc(sizeof(*pi), GFP_KERNEL);
 	if (!pi) {
@@ -139,29 +175,56 @@ static int rr_add_path(struct path_selector *ps, struct dm_path *path,
 
 	path->pscontext = pi;
 
+<<<<<<< HEAD
 	list_add_tail(&pi->list, &s->valid_paths);
+=======
+	spin_lock_irqsave(&s->lock, flags);
+	list_add_tail(&pi->list, &s->valid_paths);
+	spin_unlock_irqrestore(&s->lock, flags);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static void rr_fail_path(struct path_selector *ps, struct dm_path *p)
 {
+<<<<<<< HEAD
 	struct selector *s = (struct selector *) ps->context;
 	struct path_info *pi = p->pscontext;
 
 	list_move(&pi->list, &s->invalid_paths);
+=======
+	unsigned long flags;
+	struct selector *s = ps->context;
+	struct path_info *pi = p->pscontext;
+
+	spin_lock_irqsave(&s->lock, flags);
+	list_move(&pi->list, &s->invalid_paths);
+	spin_unlock_irqrestore(&s->lock, flags);
+>>>>>>> v4.9.227
 }
 
 static int rr_reinstate_path(struct path_selector *ps, struct dm_path *p)
 {
+<<<<<<< HEAD
 	struct selector *s = (struct selector *) ps->context;
 	struct path_info *pi = p->pscontext;
 
 	list_move(&pi->list, &s->valid_paths);
+=======
+	unsigned long flags;
+	struct selector *s = ps->context;
+	struct path_info *pi = p->pscontext;
+
+	spin_lock_irqsave(&s->lock, flags);
+	list_move(&pi->list, &s->valid_paths);
+	spin_unlock_irqrestore(&s->lock, flags);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dm_path *rr_select_path(struct path_selector *ps,
 				      unsigned *repeat_count, size_t nr_bytes)
 {
@@ -173,6 +236,20 @@ static struct dm_path *rr_select_path(struct path_selector *ps,
 		list_move_tail(&pi->list, &s->valid_paths);
 		*repeat_count = pi->repeat_count;
 	}
+=======
+static struct dm_path *rr_select_path(struct path_selector *ps, size_t nr_bytes)
+{
+	unsigned long flags;
+	struct selector *s = ps->context;
+	struct path_info *pi = NULL;
+
+	spin_lock_irqsave(&s->lock, flags);
+	if (!list_empty(&s->valid_paths)) {
+		pi = list_entry(s->valid_paths.next, struct path_info, list);
+		list_move_tail(&pi->list, &s->valid_paths);
+	}
+	spin_unlock_irqrestore(&s->lock, flags);
+>>>>>>> v4.9.227
 
 	return pi ? pi->path : NULL;
 }
@@ -198,7 +275,11 @@ static int __init dm_rr_init(void)
 	if (r < 0)
 		DMERR("register failed %d", r);
 
+<<<<<<< HEAD
 	DMINFO("version 1.0.0 loaded");
+=======
+	DMINFO("version " RR_VERSION " loaded");
+>>>>>>> v4.9.227
 
 	return r;
 }

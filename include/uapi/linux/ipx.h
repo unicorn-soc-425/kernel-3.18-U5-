@@ -1,11 +1,19 @@
 #ifndef _IPX_H_
 #define _IPX_H_
+<<<<<<< HEAD
+=======
+#include <linux/libc-compat.h>	/* for compatibility with glibc netipx/ipx.h */
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/sockios.h>
 #include <linux/socket.h>
 #define IPX_NODE_LEN	6
 #define IPX_MTU		576
 
+<<<<<<< HEAD
+=======
+#if __UAPI_DEF_SOCKADDR_IPX
+>>>>>>> v4.9.227
 struct sockaddr_ipx {
 	__kernel_sa_family_t sipx_family;
 	__be16		sipx_port;
@@ -14,6 +22,10 @@ struct sockaddr_ipx {
 	__u8		sipx_type;
 	unsigned char	sipx_zero;	/* 16 byte fill */
 };
+<<<<<<< HEAD
+=======
+#endif /* __UAPI_DEF_SOCKADDR_IPX */
+>>>>>>> v4.9.227
 
 /*
  * So we can fit the extra info for SIOCSIFADDR into the address nicely
@@ -23,12 +35,22 @@ struct sockaddr_ipx {
 #define IPX_DLTITF	0
 #define IPX_CRTITF	1
 
+<<<<<<< HEAD
+=======
+#if __UAPI_DEF_IPX_ROUTE_DEFINITION
+>>>>>>> v4.9.227
 struct ipx_route_definition {
 	__be32        ipx_network;
 	__be32        ipx_router_network;
 	unsigned char ipx_router_node[IPX_NODE_LEN];
 };
+<<<<<<< HEAD
 
+=======
+#endif /* __UAPI_DEF_IPX_ROUTE_DEFINITION */
+
+#if __UAPI_DEF_IPX_INTERFACE_DEFINITION
+>>>>>>> v4.9.227
 struct ipx_interface_definition {
 	__be32        ipx_network;
 	unsigned char ipx_device[16];
@@ -45,16 +67,30 @@ struct ipx_interface_definition {
 #define IPX_INTERNAL		2
 	unsigned char ipx_node[IPX_NODE_LEN];
 };
+<<<<<<< HEAD
 	
+=======
+#endif /* __UAPI_DEF_IPX_INTERFACE_DEFINITION */
+
+#if __UAPI_DEF_IPX_CONFIG_DATA
+>>>>>>> v4.9.227
 struct ipx_config_data {
 	unsigned char	ipxcfg_auto_select_primary;
 	unsigned char	ipxcfg_auto_create_interfaces;
 };
+<<<<<<< HEAD
+=======
+#endif /* __UAPI_DEF_IPX_CONFIG_DATA */
+>>>>>>> v4.9.227
 
 /*
  * OLD Route Definition for backward compatibility.
  */
 
+<<<<<<< HEAD
+=======
+#if __UAPI_DEF_IPX_ROUTE_DEF
+>>>>>>> v4.9.227
 struct ipx_route_def {
 	__be32		ipx_network;
 	__be32		ipx_router_network;
@@ -67,6 +103,10 @@ struct ipx_route_def {
 #define IPX_RT_BLUEBOOK		2
 #define IPX_RT_ROUTED		1
 };
+<<<<<<< HEAD
+=======
+#endif /* __UAPI_DEF_IPX_ROUTE_DEF */
+>>>>>>> v4.9.227
 
 #define SIOCAIPXITFCRT		(SIOCPROTOPRIVATE)
 #define SIOCAIPXPRISLT		(SIOCPROTOPRIVATE + 1)

@@ -7,6 +7,11 @@
  * (at your option) any later version.
  */
 
+<<<<<<< HEAD
+=======
+#define __ARCH_WANT_RENAMEAT
+
+>>>>>>> v4.9.227
 /* Use the standard ABI for syscalls. */
 #include <asm-generic/unistd.h>
 

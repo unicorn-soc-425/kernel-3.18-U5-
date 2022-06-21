@@ -39,18 +39,24 @@ NESTED(handle_sys64, PT_SIZE, sp)
 	.set	at
 #endif
 
+<<<<<<< HEAD
 	dsubu	t0, v0, __NR_64_Linux	# check syscall number
 	sltiu	t0, t0, __NR_64_Linux_syscalls + 1
+=======
+>>>>>>> v4.9.227
 #if !defined(CONFIG_MIPS32_O32) && !defined(CONFIG_MIPS32_N32)
 	ld	t1, PT_EPC(sp)		# skip syscall on return
 	daddiu	t1, 4			# skip to next instruction
 	sd	t1, PT_EPC(sp)
 #endif
+<<<<<<< HEAD
 	beqz	t0, illegal_syscall
 
 	dsll	t0, v0, 3		# offset into table
 	ld	t2, (sys_call_table - (__NR_64_Linux * 8))(t0)
 					# syscall routine
+=======
+>>>>>>> v4.9.227
 
 	sd	a3, PT_R26(sp)		# save a3 for syscall restarting
 
@@ -59,6 +65,20 @@ NESTED(handle_sys64, PT_SIZE, sp)
 	and	t0, t1, t0
 	bnez	t0, syscall_trace_entry
 
+<<<<<<< HEAD
+=======
+syscall_common:
+	dsubu	t2, v0, __NR_64_Linux
+	sltiu   t0, t2, __NR_64_Linux_syscalls + 1
+	beqz	t0, illegal_syscall
+
+	dsll	t0, t2, 3		# offset into table
+	dla	t2, sys_call_table
+	daddu	t0, t2, t0
+	ld	t2, (t0)		# syscall routine
+	beqz	t2, illegal_syscall
+
+>>>>>>> v4.9.227
 	jalr	t2			# Do The Real Thing (TM)
 
 	li	t0, -EMAXERRNO - 1	# error?
@@ -78,21 +98,32 @@ n64_syscall_exit:
 
 syscall_trace_entry:
 	SAVE_STATIC
+<<<<<<< HEAD
 	move	s0, t2
+=======
+>>>>>>> v4.9.227
 	move	a0, sp
 	move	a1, v0
 	jal	syscall_trace_enter
 
+<<<<<<< HEAD
 	bltz	v0, 2f			# seccomp failed? Skip syscall
 
 	move	t0, s0
 	RESTORE_STATIC
+=======
+	bltz	v0, 1f			# seccomp failed? Skip syscall
+
+	RESTORE_STATIC
+	ld	v0, PT_R2(sp)		# Restore syscall (maybe modified)
+>>>>>>> v4.9.227
 	ld	a0, PT_R4(sp)		# Restore argument registers
 	ld	a1, PT_R5(sp)
 	ld	a2, PT_R6(sp)
 	ld	a3, PT_R7(sp)
 	ld	a4, PT_R8(sp)
 	ld	a5, PT_R9(sp)
+<<<<<<< HEAD
 	jalr	t0
 
 	li	t0, -EMAXERRNO - 1	# error?
@@ -106,6 +137,11 @@ syscall_trace_entry:
 1:	sd	v0, PT_R2(sp)		# result
 
 2:	j	syscall_exit
+=======
+	j	syscall_common
+
+1:	j	syscall_exit
+>>>>>>> v4.9.227
 
 illegal_syscall:
 	/* This also isn't a 64-bit syscall, throw an error.  */
@@ -435,4 +471,17 @@ EXPORT(sys_call_table)
 	PTR	sys_getrandom
 	PTR	sys_memfd_create
 	PTR	sys_bpf				/* 5315 */
+<<<<<<< HEAD
+=======
+	PTR	sys_execveat
+	PTR	sys_userfaultfd
+	PTR	sys_membarrier
+	PTR	sys_mlock2
+	PTR	sys_copy_file_range		/* 5320 */
+	PTR	sys_preadv2
+	PTR	sys_pwritev2
+	PTR	sys_pkey_mprotect
+	PTR	sys_pkey_alloc
+	PTR	sys_pkey_free			/* 5325 */
+>>>>>>> v4.9.227
 	.size	sys_call_table,.-sys_call_table

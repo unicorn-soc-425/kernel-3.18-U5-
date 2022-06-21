@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -123,7 +127,11 @@ acpi_hw_derive_pci_id(struct acpi_pci_id *pci_id,
 		      acpi_handle root_pci_device, acpi_handle pci_region)
 {
 	acpi_status status;
+<<<<<<< HEAD
 	struct acpi_pci_device *list_head = NULL;
+=======
+	struct acpi_pci_device *list_head;
+>>>>>>> v4.9.227
 
 	ACPI_FUNCTION_TRACE(hw_derive_pci_id);
 
@@ -177,13 +185,20 @@ acpi_hw_build_pci_list(acpi_handle root_pci_device,
 	acpi_handle parent_device;
 	acpi_status status;
 	struct acpi_pci_device *list_element;
+<<<<<<< HEAD
 	struct acpi_pci_device *list_head = NULL;
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * Ascend namespace branch until the root_pci_device is reached, building
 	 * a list of device nodes. Loop will exit when either the PCI device is
 	 * found, or the root of the namespace is reached.
 	 */
+<<<<<<< HEAD
+=======
+	*return_list_head = NULL;
+>>>>>>> v4.9.227
 	current_device = pci_region;
 	while (1) {
 		status = acpi_get_parent(current_device, &parent_device);
@@ -198,7 +213,10 @@ acpi_hw_build_pci_list(acpi_handle root_pci_device,
 		/* Finished when we reach the PCI root device (PNP0A03 or PNP0A08) */
 
 		if (parent_device == root_pci_device) {
+<<<<<<< HEAD
 			*return_list_head = list_head;
+=======
+>>>>>>> v4.9.227
 			return (AE_OK);
 		}
 
@@ -213,9 +231,15 @@ acpi_hw_build_pci_list(acpi_handle root_pci_device,
 
 		/* Put new element at the head of the list */
 
+<<<<<<< HEAD
 		list_element->next = list_head;
 		list_element->device = parent_device;
 		list_head = list_element;
+=======
+		list_element->next = *return_list_head;
+		list_element->device = parent_device;
+		*return_list_head = list_element;
+>>>>>>> v4.9.227
 
 		current_device = parent_device;
 	}

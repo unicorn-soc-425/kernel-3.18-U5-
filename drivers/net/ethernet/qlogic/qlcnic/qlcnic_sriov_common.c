@@ -5,10 +5,18 @@
  * See LICENSE.qlcnic for copyright and licensing details.
  */
 
+<<<<<<< HEAD
 #include "qlcnic_sriov.h"
 #include "qlcnic.h"
 #include "qlcnic_83xx_hw.h"
 #include <linux/types.h>
+=======
+#include <linux/types.h>
+
+#include "qlcnic_sriov.h"
+#include "qlcnic.h"
+#include "qlcnic_83xx_hw.h"
+>>>>>>> v4.9.227
 
 #define QLC_BC_COMMAND	0
 #define QLC_BC_RESPONSE	1
@@ -28,6 +36,10 @@
 #define QLC_83XX_VF_RESET_FAIL_THRESH	8
 #define QLC_BC_CMD_MAX_RETRY_CNT	5
 
+<<<<<<< HEAD
+=======
+static void qlcnic_sriov_handle_async_issue_cmd(struct work_struct *work);
+>>>>>>> v4.9.227
 static void qlcnic_sriov_vf_free_mac_list(struct qlcnic_adapter *);
 static int qlcnic_sriov_alloc_bc_mbx_args(struct qlcnic_cmd_args *, u32);
 static void qlcnic_sriov_vf_poll_dev_state(struct work_struct *);
@@ -75,6 +87,11 @@ static struct qlcnic_hardware_ops qlcnic_sriov_vf_hw_ops = {
 	.free_mac_list			= qlcnic_sriov_vf_free_mac_list,
 	.enable_sds_intr		= qlcnic_83xx_enable_sds_intr,
 	.disable_sds_intr		= qlcnic_83xx_disable_sds_intr,
+<<<<<<< HEAD
+=======
+	.encap_rx_offload               = qlcnic_83xx_encap_rx_offload,
+	.encap_tx_offload               = qlcnic_83xx_encap_tx_offload,
+>>>>>>> v4.9.227
 };
 
 static struct qlcnic_nic_template qlcnic_sriov_vf_ops = {
@@ -178,7 +195,14 @@ int qlcnic_sriov_init(struct qlcnic_adapter *adapter, int num_vfs)
 	}
 
 	bc->bc_async_wq =  wq;
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&bc->async_list);
+=======
+	INIT_LIST_HEAD(&bc->async_cmd_list);
+	INIT_WORK(&bc->vf_async_work, qlcnic_sriov_handle_async_issue_cmd);
+	spin_lock_init(&bc->queue_lock);
+	bc->adapter = adapter;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < num_vfs; i++) {
 		vf = &sriov->vf_info[i];
@@ -730,8 +754,11 @@ static int qlcnic_sriov_alloc_bc_mbx_args(struct qlcnic_cmd_args *mbx, u32 type)
 				mbx->req.arg = NULL;
 				return -ENOMEM;
 			}
+<<<<<<< HEAD
 			memset(mbx->req.arg, 0, sizeof(u32) * mbx->req.num);
 			memset(mbx->rsp.arg, 0, sizeof(u32) * mbx->rsp.num);
+=======
+>>>>>>> v4.9.227
 			mbx->req.arg[0] = (type | (mbx->req.num << 16) |
 					   (3 << 29));
 			mbx->rsp.arg[0] = (type & 0xffff) | mbx->rsp.num << 16;
@@ -1491,7 +1518,12 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void qlcnic_vf_add_mc_list(struct net_device *netdev, const u8 *mac)
+=======
+static void qlcnic_vf_add_mc_list(struct net_device *netdev, const u8 *mac,
+				  enum qlcnic_mac_type mac_type)
+>>>>>>> v4.9.227
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 	struct qlcnic_sriov *sriov = adapter->ahw->sriov;
@@ -1502,22 +1534,36 @@ static void qlcnic_vf_add_mc_list(struct net_device *netdev, const u8 *mac)
 	vf = &adapter->ahw->sriov->vf_info[0];
 
 	if (!qlcnic_sriov_check_any_vlan(vf)) {
+<<<<<<< HEAD
 		qlcnic_nic_add_mac(adapter, mac, 0);
+=======
+		qlcnic_nic_add_mac(adapter, mac, 0, mac_type);
+>>>>>>> v4.9.227
 	} else {
 		spin_lock(&vf->vlan_list_lock);
 		for (i = 0; i < sriov->num_allowed_vlans; i++) {
 			vlan_id = vf->sriov_vlans[i];
 			if (vlan_id)
+<<<<<<< HEAD
 				qlcnic_nic_add_mac(adapter, mac, vlan_id);
 		}
 		spin_unlock(&vf->vlan_list_lock);
 		if (qlcnic_84xx_check(adapter))
 			qlcnic_nic_add_mac(adapter, mac, 0);
+=======
+				qlcnic_nic_add_mac(adapter, mac, vlan_id,
+						   mac_type);
+		}
+		spin_unlock(&vf->vlan_list_lock);
+		if (qlcnic_84xx_check(adapter))
+			qlcnic_nic_add_mac(adapter, mac, 0, mac_type);
+>>>>>>> v4.9.227
 	}
 }
 
 void qlcnic_sriov_cleanup_async_list(struct qlcnic_back_channel *bc)
 {
+<<<<<<< HEAD
 	struct list_head *head = &bc->async_list;
 	struct qlcnic_async_work_list *entry;
 
@@ -1529,6 +1575,23 @@ void qlcnic_sriov_cleanup_async_list(struct qlcnic_back_channel *bc)
 		list_del(&entry->list);
 		kfree(entry);
 	}
+=======
+	struct list_head *head = &bc->async_cmd_list;
+	struct qlcnic_async_cmd *entry;
+
+	flush_workqueue(bc->bc_async_wq);
+	cancel_work_sync(&bc->vf_async_work);
+
+	spin_lock(&bc->queue_lock);
+	while (!list_empty(head)) {
+		entry = list_entry(head->next, struct qlcnic_async_cmd,
+				   list);
+		list_del(&entry->list);
+		kfree(entry->cmd);
+		kfree(entry);
+	}
+	spin_unlock(&bc->queue_lock);
+>>>>>>> v4.9.227
 }
 
 void qlcnic_sriov_vf_set_multi(struct net_device *netdev)
@@ -1551,10 +1614,19 @@ void qlcnic_sriov_vf_set_multi(struct net_device *netdev)
 		   (netdev_mc_count(netdev) > ahw->max_mc_count)) {
 		mode = VPORT_MISS_MODE_ACCEPT_MULTI;
 	} else {
+<<<<<<< HEAD
 		qlcnic_vf_add_mc_list(netdev, bcast_addr);
 		if (!netdev_mc_empty(netdev)) {
 			netdev_for_each_mc_addr(ha, netdev)
 				qlcnic_vf_add_mc_list(netdev, ha->addr);
+=======
+		qlcnic_vf_add_mc_list(netdev, bcast_addr, QLCNIC_BROADCAST_MAC);
+		if (!netdev_mc_empty(netdev)) {
+			qlcnic_flush_mcast_mac(adapter);
+			netdev_for_each_mc_addr(ha, netdev)
+				qlcnic_vf_add_mc_list(netdev, ha->addr,
+						      QLCNIC_MULTICAST_MAC);
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -1565,7 +1637,12 @@ void qlcnic_sriov_vf_set_multi(struct net_device *netdev)
 		mode = VPORT_MISS_MODE_ACCEPT_ALL;
 	} else if (!netdev_uc_empty(netdev)) {
 		netdev_for_each_uc_addr(ha, netdev)
+<<<<<<< HEAD
 			qlcnic_vf_add_mc_list(netdev, ha->addr);
+=======
+			qlcnic_vf_add_mc_list(netdev, ha->addr,
+					      QLCNIC_UNICAST_MAC);
+>>>>>>> v4.9.227
 	}
 
 	if (adapter->pdev->is_virtfn) {
@@ -1585,6 +1662,7 @@ void qlcnic_sriov_vf_set_multi(struct net_device *netdev)
 
 static void qlcnic_sriov_handle_async_issue_cmd(struct work_struct *work)
 {
+<<<<<<< HEAD
 	struct qlcnic_async_work_list *entry;
 	struct qlcnic_adapter *adapter;
 	struct qlcnic_cmd_args *cmd;
@@ -1618,11 +1696,55 @@ qlcnic_sriov_get_free_node_async_work(struct qlcnic_back_channel *bc)
 			return NULL;
 		list_add_tail(&entry->list, &bc->async_list);
 	}
+=======
+	struct qlcnic_async_cmd *entry, *tmp;
+	struct qlcnic_back_channel *bc;
+	struct qlcnic_cmd_args *cmd;
+	struct list_head *head;
+	LIST_HEAD(del_list);
+
+	bc = container_of(work, struct qlcnic_back_channel, vf_async_work);
+	head = &bc->async_cmd_list;
+
+	spin_lock(&bc->queue_lock);
+	list_splice_init(head, &del_list);
+	spin_unlock(&bc->queue_lock);
+
+	list_for_each_entry_safe(entry, tmp, &del_list, list) {
+		list_del(&entry->list);
+		cmd = entry->cmd;
+		__qlcnic_sriov_issue_cmd(bc->adapter, cmd);
+		kfree(entry);
+	}
+
+	if (!list_empty(head))
+		queue_work(bc->bc_async_wq, &bc->vf_async_work);
+
+	return;
+}
+
+static struct qlcnic_async_cmd *
+qlcnic_sriov_alloc_async_cmd(struct qlcnic_back_channel *bc,
+			     struct qlcnic_cmd_args *cmd)
+{
+	struct qlcnic_async_cmd *entry = NULL;
+
+	entry = kzalloc(sizeof(*entry), GFP_ATOMIC);
+	if (!entry)
+		return NULL;
+
+	entry->cmd = cmd;
+
+	spin_lock(&bc->queue_lock);
+	list_add_tail(&entry->list, &bc->async_cmd_list);
+	spin_unlock(&bc->queue_lock);
+>>>>>>> v4.9.227
 
 	return entry;
 }
 
 static void qlcnic_sriov_schedule_async_cmd(struct qlcnic_back_channel *bc,
+<<<<<<< HEAD
 					    work_func_t func, void *data,
 					    struct qlcnic_cmd_args *cmd)
 {
@@ -1636,6 +1758,20 @@ static void qlcnic_sriov_schedule_async_cmd(struct qlcnic_back_channel *bc,
 	entry->cmd = cmd;
 	INIT_WORK(&entry->work, func);
 	queue_work(bc->bc_async_wq, &entry->work);
+=======
+					    struct qlcnic_cmd_args *cmd)
+{
+	struct qlcnic_async_cmd *entry = NULL;
+
+	entry = qlcnic_sriov_alloc_async_cmd(bc, cmd);
+	if (!entry) {
+		qlcnic_free_mbx_args(cmd);
+		kfree(cmd);
+		return;
+	}
+
+	queue_work(bc->bc_async_wq, &bc->vf_async_work);
+>>>>>>> v4.9.227
 }
 
 static int qlcnic_sriov_async_issue_cmd(struct qlcnic_adapter *adapter,
@@ -1647,8 +1783,13 @@ static int qlcnic_sriov_async_issue_cmd(struct qlcnic_adapter *adapter,
 	if (adapter->need_fw_reset)
 		return -EIO;
 
+<<<<<<< HEAD
 	qlcnic_sriov_schedule_async_cmd(bc, qlcnic_sriov_handle_async_issue_cmd,
 					adapter, cmd);
+=======
+	qlcnic_sriov_schedule_async_cmd(bc, cmd);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 

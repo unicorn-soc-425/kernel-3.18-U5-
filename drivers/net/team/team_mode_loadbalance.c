@@ -14,9 +14,29 @@
 #include <linux/init.h>
 #include <linux/errno.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
 #include <linux/filter.h>
 #include <linux/if_team.h>
 
+=======
+#include <linux/etherdevice.h>
+#include <linux/filter.h>
+#include <linux/if_team.h>
+
+static rx_handler_result_t lb_receive(struct team *team, struct team_port *port,
+				      struct sk_buff *skb)
+{
+	if (unlikely(skb->protocol == htons(ETH_P_SLOW))) {
+		/* LACPDU packets should go to exact delivery */
+		const unsigned char *dest = eth_hdr(skb)->h_dest;
+
+		if (is_link_local_ether_addr(dest) && dest[5] == 0x02)
+			return RX_HANDLER_EXACT;
+	}
+	return RX_HANDLER_ANOTHER;
+}
+
+>>>>>>> v4.9.227
 struct lb_priv;
 
 typedef struct team_port *lb_select_tx_port_func_t(struct team *,
@@ -305,6 +325,23 @@ static int lb_bpf_func_set(struct team *team, struct team_gsetter_ctx *ctx)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void lb_bpf_func_free(struct team *team)
+{
+	struct lb_priv *lb_priv = get_lb_priv(team);
+	struct bpf_prog *fp;
+
+	if (!lb_priv->ex->orig_fprog)
+		return;
+
+	__fprog_destroy(lb_priv->ex->orig_fprog);
+	fp = rcu_dereference_protected(lb_priv->fp,
+				       lockdep_is_held(&team->lock));
+	bpf_prog_destroy(fp);
+}
+
+>>>>>>> v4.9.227
 static int lb_tx_method_get(struct team *team, struct team_gsetter_ctx *ctx)
 {
 	struct lb_priv *lb_priv = get_lb_priv(team);
@@ -619,6 +656,10 @@ static void lb_exit(struct team *team)
 
 	team_options_unregister(team, lb_options,
 				ARRAY_SIZE(lb_options));
+<<<<<<< HEAD
+=======
+	lb_bpf_func_free(team);
+>>>>>>> v4.9.227
 	cancel_delayed_work_sync(&lb_priv->ex->stats.refresh_dw);
 	free_percpu(lb_priv->pcpu_stats);
 	kfree(lb_priv->ex);
@@ -652,6 +693,10 @@ static const struct team_mode_ops lb_mode_ops = {
 	.port_enter		= lb_port_enter,
 	.port_leave		= lb_port_leave,
 	.port_disabled		= lb_port_disabled,
+<<<<<<< HEAD
+=======
+	.receive		= lb_receive,
+>>>>>>> v4.9.227
 	.transmit		= lb_transmit,
 };
 
@@ -661,6 +706,10 @@ static const struct team_mode lb_mode = {
 	.priv_size	= sizeof(struct lb_priv),
 	.port_priv_size	= sizeof(struct lb_port_priv),
 	.ops		= &lb_mode_ops,
+<<<<<<< HEAD
+=======
+	.lag_tx_type	= NETDEV_LAG_TX_TYPE_HASH,
+>>>>>>> v4.9.227
 };
 
 static int __init lb_init_module(void)

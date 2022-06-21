@@ -56,6 +56,10 @@ u64 notrace trace_clock(void)
 {
 	return local_clock();
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(trace_clock);
+>>>>>>> v4.9.227
 
 /*
  * trace_jiffy_clock(): Simply use jiffies as a clock counter.
@@ -68,6 +72,10 @@ u64 notrace trace_clock_jiffies(void)
 {
 	return jiffies_64_to_clock_t(jiffies_64 - INITIAL_JIFFIES);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(trace_clock_jiffies);
+>>>>>>> v4.9.227
 
 /*
  * trace_clock_global(): special globally coherent trace clock
@@ -123,6 +131,10 @@ u64 notrace trace_clock_global(void)
 
 	return now;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(trace_clock_global);
+>>>>>>> v4.9.227
 
 static atomic64_t trace_counter;
 

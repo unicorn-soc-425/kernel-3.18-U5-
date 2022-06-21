@@ -17,7 +17,11 @@
 #include <asm/sizes.h>
 
 /*
+<<<<<<< HEAD
  * Clocks are derived from MCLK, which is 25Mhz
+=======
+ * Clocks are derived from MCLK, which is 25MHz
+>>>>>>> v4.9.227
  */
 #define KS8695_CLOCK_RATE	25000000
 

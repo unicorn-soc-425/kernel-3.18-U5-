@@ -60,7 +60,11 @@ extern unsigned long get_zero_page_fast(void);
 
 extern void __bad_pte(pmd_t *pmd);
 
+<<<<<<< HEAD
 extern inline pgd_t *get_pgd_slow(void)
+=======
+static inline pgd_t *get_pgd_slow(void)
+>>>>>>> v4.9.227
 {
 	pgd_t *ret;
 
@@ -70,7 +74,11 @@ extern inline pgd_t *get_pgd_slow(void)
 	return ret;
 }
 
+<<<<<<< HEAD
 extern inline pgd_t *get_pgd_fast(void)
+=======
+static inline pgd_t *get_pgd_fast(void)
+>>>>>>> v4.9.227
 {
 	unsigned long *ret;
 
@@ -84,14 +92,22 @@ extern inline pgd_t *get_pgd_fast(void)
 	return (pgd_t *)ret;
 }
 
+<<<<<<< HEAD
 extern inline void free_pgd_fast(pgd_t *pgd)
+=======
+static inline void free_pgd_fast(pgd_t *pgd)
+>>>>>>> v4.9.227
 {
 	*(unsigned long **)pgd = pgd_quicklist;
 	pgd_quicklist = (unsigned long *) pgd;
 	pgtable_cache_size++;
 }
 
+<<<<<<< HEAD
 extern inline void free_pgd_slow(pgd_t *pgd)
+=======
+static inline void free_pgd_slow(pgd_t *pgd)
+>>>>>>> v4.9.227
 {
 	free_page((unsigned long)pgd);
 }
@@ -116,9 +132,15 @@ static inline struct page *pte_alloc_one(struct mm_struct *mm,
 	struct page *ptepage;
 
 #ifdef CONFIG_HIGHPTE
+<<<<<<< HEAD
 	int flags = GFP_KERNEL | __GFP_HIGHMEM | __GFP_REPEAT;
 #else
 	int flags = GFP_KERNEL | __GFP_REPEAT;
+=======
+	int flags = GFP_KERNEL | __GFP_HIGHMEM;
+#else
+	int flags = GFP_KERNEL;
+>>>>>>> v4.9.227
 #endif
 
 	ptepage = alloc_pages(flags, 0);
@@ -146,19 +168,31 @@ static inline pte_t *pte_alloc_one_fast(struct mm_struct *mm,
 	return (pte_t *)ret;
 }
 
+<<<<<<< HEAD
 extern inline void pte_free_fast(pte_t *pte)
+=======
+static inline void pte_free_fast(pte_t *pte)
+>>>>>>> v4.9.227
 {
 	*(unsigned long **)pte = pte_quicklist;
 	pte_quicklist = (unsigned long *) pte;
 	pgtable_cache_size++;
 }
 
+<<<<<<< HEAD
 extern inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
+=======
+static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
+>>>>>>> v4.9.227
 {
 	free_page((unsigned long)pte);
 }
 
+<<<<<<< HEAD
 extern inline void pte_free_slow(struct page *ptepage)
+=======
+static inline void pte_free_slow(struct page *ptepage)
+>>>>>>> v4.9.227
 {
 	__free_page(ptepage);
 }

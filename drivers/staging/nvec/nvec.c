@@ -14,8 +14,11 @@
  *
  */
 
+<<<<<<< HEAD
 /* #define DEBUG */
 
+=======
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/atomic.h>
@@ -40,6 +43,7 @@
 #include "nvec.h"
 
 #define I2C_CNFG			0x00
+<<<<<<< HEAD
 #define I2C_CNFG_PACKET_MODE_EN		(1<<10)
 #define I2C_CNFG_NEW_MASTER_SFM		(1<<11)
 #define I2C_CNFG_DEBOUNCE_CNT_SHIFT	12
@@ -52,6 +56,20 @@
 #define END_TRANS		(1<<4)
 #define RCVD			(1<<2)
 #define RNW			(1<<1)
+=======
+#define I2C_CNFG_PACKET_MODE_EN		BIT(10)
+#define I2C_CNFG_NEW_MASTER_SFM		BIT(11)
+#define I2C_CNFG_DEBOUNCE_CNT_SHIFT	12
+
+#define I2C_SL_CNFG		0x20
+#define I2C_SL_NEWSL		BIT(2)
+#define I2C_SL_NACK		BIT(1)
+#define I2C_SL_RESP		BIT(0)
+#define I2C_SL_IRQ		BIT(3)
+#define END_TRANS		BIT(4)
+#define RCVD			BIT(2)
+#define RNW			BIT(1)
+>>>>>>> v4.9.227
 
 #define I2C_SL_RCVD		0x24
 #define I2C_SL_STATUS		0x28
@@ -85,23 +103,37 @@ static struct nvec_chip *nvec_power_handle;
 static const struct mfd_cell nvec_devices[] = {
 	{
 		.name = "nvec-kbd",
+<<<<<<< HEAD
 		.id = 1,
 	},
 	{
 		.name = "nvec-mouse",
 		.id = 1,
+=======
+	},
+	{
+		.name = "nvec-mouse",
+	},
+	{
+		.name = "nvec-power",
+		.id = 0,
+>>>>>>> v4.9.227
 	},
 	{
 		.name = "nvec-power",
 		.id = 1,
 	},
 	{
+<<<<<<< HEAD
 		.name = "nvec-power",
 		.id = 2,
 	},
 	{
 		.name = "nvec-paz00",
 		.id = 1,
+=======
+		.name = "nvec-paz00",
+>>>>>>> v4.9.227
 	},
 };
 
@@ -146,14 +178,22 @@ static int nvec_status_notifier(struct notifier_block *nb,
 {
 	struct nvec_chip *nvec = container_of(nb, struct nvec_chip,
 						nvec_status_notifier);
+<<<<<<< HEAD
 	unsigned char *msg = (unsigned char *)data;
+=======
+	unsigned char *msg = data;
+>>>>>>> v4.9.227
 
 	if (event_type != NVEC_CNTL)
 		return NOTIFY_DONE;
 
 	dev_warn(nvec->dev, "unhandled msg type %ld\n", event_type);
 	print_hex_dump(KERN_WARNING, "payload: ", DUMP_PREFIX_NONE, 16, 1,
+<<<<<<< HEAD
 		msg, msg[1] + 2, true);
+=======
+		       msg, msg[1] + 2, true);
+>>>>>>> v4.9.227
 
 	return NOTIFY_OK;
 }
@@ -259,17 +299,28 @@ static void nvec_gpio_set_value(struct nvec_chip *nvec, int value)
  * and return immediately.
  *
  * Returns: 0 on success, a negative error code on failure. If a failure
+<<<<<<< HEAD
  * occured, the nvec driver may print an error.
  */
 int nvec_write_async(struct nvec_chip *nvec, const unsigned char *data,
 			short size)
+=======
+ * occurred, the nvec driver may print an error.
+ */
+int nvec_write_async(struct nvec_chip *nvec, const unsigned char *data,
+		     short size)
+>>>>>>> v4.9.227
 {
 	struct nvec_msg *msg;
 	unsigned long flags;
 
 	msg = nvec_msg_alloc(nvec, NVEC_MSG_TX);
 
+<<<<<<< HEAD
 	if (msg == NULL)
+=======
+	if (!msg)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	msg->data[0] = size;
@@ -291,12 +342,17 @@ EXPORT_SYMBOL(nvec_write_async);
  * @nvec: An &struct nvec_chip
  * @data: The data to write
  * @size: The size of @data
+<<<<<<< HEAD
+=======
+ * @msg:  The response message received
+>>>>>>> v4.9.227
  *
  * This is similar to nvec_write_async(), but waits for the
  * request to be answered before returning. This function
  * uses a mutex and can thus not be called from e.g.
  * interrupt handlers.
  *
+<<<<<<< HEAD
  * Returns: A pointer to the response message on success,
  * %NULL on failure. Free with nvec_msg_free() once no longer
  * used.
@@ -308,10 +364,25 @@ struct nvec_msg *nvec_write_sync(struct nvec_chip *nvec,
 
 	mutex_lock(&nvec->sync_write_mutex);
 
+=======
+ * Returns: 0 on success, a negative error code on failure.
+ * The response message is returned in @msg. Shall be freed with
+ * with nvec_msg_free() once no longer used.
+ *
+ */
+int nvec_write_sync(struct nvec_chip *nvec,
+		    const unsigned char *data, short size,
+		    struct nvec_msg **msg)
+{
+	mutex_lock(&nvec->sync_write_mutex);
+
+	*msg = NULL;
+>>>>>>> v4.9.227
 	nvec->sync_write_pending = (data[1] << 8) + data[0];
 
 	if (nvec_write_async(nvec, data, size) < 0) {
 		mutex_unlock(&nvec->sync_write_mutex);
+<<<<<<< HEAD
 		return NULL;
 	}
 
@@ -322,15 +393,36 @@ struct nvec_msg *nvec_write_sync(struct nvec_chip *nvec,
 		dev_warn(nvec->dev, "timeout waiting for sync write to complete\n");
 		mutex_unlock(&nvec->sync_write_mutex);
 		return NULL;
+=======
+		return -ENOMEM;
+	}
+
+	dev_dbg(nvec->dev, "nvec_sync_write: 0x%04x\n",
+		nvec->sync_write_pending);
+	if (!(wait_for_completion_timeout(&nvec->sync_write,
+					  msecs_to_jiffies(2000)))) {
+		dev_warn(nvec->dev,
+			 "timeout waiting for sync write to complete\n");
+		mutex_unlock(&nvec->sync_write_mutex);
+		return -ETIMEDOUT;
+>>>>>>> v4.9.227
 	}
 
 	dev_dbg(nvec->dev, "nvec_sync_write: pong!\n");
 
+<<<<<<< HEAD
 	msg = nvec->last_sync_msg;
 
 	mutex_unlock(&nvec->sync_write_mutex);
 
 	return msg;
+=======
+	*msg = nvec->last_sync_msg;
+
+	mutex_unlock(&nvec->sync_write_mutex);
+
+	return 0;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(nvec_write_sync);
 
@@ -425,8 +517,13 @@ static int parse_msg(struct nvec_chip *nvec, struct nvec_msg *msg)
 
 	if ((msg->data[0] >> 7) == 1 && (msg->data[0] & 0x0f) == 5)
 		print_hex_dump(KERN_WARNING, "ec system event ",
+<<<<<<< HEAD
 				DUMP_PREFIX_NONE, 16, 1, msg->data,
 				msg->data[1] + 2, true);
+=======
+			       DUMP_PREFIX_NONE, 16, 1, msg->data,
+			       msg->data[1] + 2, true);
+>>>>>>> v4.9.227
 
 	atomic_notifier_call_chain(&nvec->notifier_list, msg->data[0] & 0x8f,
 				   msg->data);
@@ -496,8 +593,13 @@ static void nvec_rx_completed(struct nvec_chip *nvec)
 {
 	if (nvec->rx->pos != nvec_msg_size(nvec->rx)) {
 		dev_err(nvec->dev, "RX incomplete: Expected %u bytes, got %u\n",
+<<<<<<< HEAD
 			   (uint) nvec_msg_size(nvec->rx),
 			   (uint) nvec->rx->pos);
+=======
+			(uint)nvec_msg_size(nvec->rx),
+			(uint)nvec->rx->pos);
+>>>>>>> v4.9.227
 
 		nvec_msg_free(nvec, nvec->rx);
 		nvec->state = 0;
@@ -511,8 +613,15 @@ static void nvec_rx_completed(struct nvec_chip *nvec)
 
 	spin_lock(&nvec->rx_lock);
 
+<<<<<<< HEAD
 	/* add the received data to the work list
 	   and move the ring buffer pointer to the next entry */
+=======
+	/*
+	 * Add the received data to the work list and move the ring buffer
+	 * pointer to the next entry.
+	 */
+>>>>>>> v4.9.227
 	list_add_tail(&nvec->rx->node, &nvec->rx_data);
 
 	spin_unlock(&nvec->rx_lock);
@@ -620,7 +729,11 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		} else {
 			nvec->rx = nvec_msg_alloc(nvec, NVEC_MSG_RX);
 			/* Should not happen in a normal world */
+<<<<<<< HEAD
 			if (unlikely(nvec->rx == NULL)) {
+=======
+			if (unlikely(!nvec->rx)) {
+>>>>>>> v4.9.227
 				nvec->state = 0;
 				break;
 			}
@@ -641,11 +754,17 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 			nvec_msg_free(nvec, nvec->rx);
 			nvec->state = 3;
 			nvec_tx_set(nvec);
+<<<<<<< HEAD
 			BUG_ON(nvec->tx->size < 1);
 			to_send = nvec->tx->data[0];
 			nvec->tx->pos = 1;
 		} else if (status == (I2C_SL_IRQ)) {
 			BUG_ON(nvec->rx == NULL);
+=======
+			to_send = nvec->tx->data[0];
+			nvec->tx->pos = 1;
+		} else if (status == (I2C_SL_IRQ)) {
+>>>>>>> v4.9.227
 			nvec->rx->data[1] = received;
 			nvec->rx->pos = 2;
 			nvec->state = 4;
@@ -661,10 +780,18 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		} else if (nvec->tx && nvec->tx->pos < nvec->tx->size) {
 			to_send = nvec->tx->data[nvec->tx->pos++];
 		} else {
+<<<<<<< HEAD
 			dev_err(nvec->dev, "tx buffer underflow on %p (%u > %u)\n",
 				nvec->tx,
 				(uint) (nvec->tx ? nvec->tx->pos : 0),
 				(uint) (nvec->tx ? nvec->tx->size : 0));
+=======
+			dev_err(nvec->dev,
+				"tx buffer underflow on %p (%u > %u)\n",
+				nvec->tx,
+				(uint)(nvec->tx ? nvec->tx->pos : 0),
+				(uint)(nvec->tx ? nvec->tx->size : 0));
+>>>>>>> v4.9.227
 			nvec->state = 0;
 		}
 		break;
@@ -689,8 +816,13 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 	if ((status & (RCVD | RNW)) == RCVD) {
 		if (received != nvec->i2c_addr)
 			dev_err(nvec->dev,
+<<<<<<< HEAD
 			"received address 0x%02x, expected 0x%02x\n",
 			received, nvec->i2c_addr);
+=======
+				"received address 0x%02x, expected 0x%02x\n",
+				received, nvec->i2c_addr);
+>>>>>>> v4.9.227
 		nvec->state = 1;
 	}
 
@@ -713,7 +845,10 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		status & RCVD ? " RCVD" : "",
 		status & RNW ? " RNW" : "");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227
 	/*
 	 * TODO: A correct fix needs to be found for this.
 	 *
@@ -744,7 +879,11 @@ static void tegra_init_i2c_slave(struct nvec_chip *nvec)
 	writel(I2C_SL_NEWSL, nvec->base + I2C_SL_CNFG);
 	writel(0x1E, nvec->base + I2C_SL_DELAY_COUNT);
 
+<<<<<<< HEAD
 	writel(nvec->i2c_addr>>1, nvec->base + I2C_SL_ADDR1);
+=======
+	writel(nvec->i2c_addr >> 1, nvec->base + I2C_SL_ADDR1);
+>>>>>>> v4.9.227
 	writel(0, nvec->base + I2C_SL_ADDR2);
 
 	enable_irq(nvec->irq);
@@ -780,7 +919,11 @@ static int nvec_i2c_parse_dt_pdata(struct nvec_chip *nvec)
 	}
 
 	if (of_property_read_u32(nvec->dev->of_node, "slave-addr",
+<<<<<<< HEAD
 				&nvec->i2c_addr)) {
+=======
+				 &nvec->i2c_addr)) {
+>>>>>>> v4.9.227
 		dev_err(nvec->dev, "no i2c address specified");
 		return -ENODEV;
 	}
@@ -806,7 +949,11 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 	}
 
 	nvec = devm_kzalloc(&pdev->dev, sizeof(struct nvec_chip), GFP_KERNEL);
+<<<<<<< HEAD
 	if (nvec == NULL)
+=======
+	if (!nvec)
+>>>>>>> v4.9.227
 		return -ENOMEM;
 
 	platform_set_drvdata(pdev, nvec);
@@ -856,14 +1003,22 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 	INIT_WORK(&nvec->tx_work, nvec_request_master);
 
 	err = devm_gpio_request_one(&pdev->dev, nvec->gpio, GPIOF_OUT_INIT_HIGH,
+<<<<<<< HEAD
 					"nvec gpio");
+=======
+				    "nvec gpio");
+>>>>>>> v4.9.227
 	if (err < 0) {
 		dev_err(nvec->dev, "couldn't request gpio\n");
 		return -ENODEV;
 	}
 
 	err = devm_request_irq(&pdev->dev, nvec->irq, nvec_interrupt, 0,
+<<<<<<< HEAD
 				"nvec", nvec);
+=======
+			       "nvec", nvec);
+>>>>>>> v4.9.227
 	if (err) {
 		dev_err(nvec->dev, "couldn't request irq\n");
 		return -ENODEV;
@@ -882,16 +1037,30 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 	pm_power_off = nvec_power_off;
 
 	/* Get Firmware Version */
+<<<<<<< HEAD
 	msg = nvec_write_sync(nvec, get_firmware_version, 2);
 
 	if (msg) {
 		dev_warn(nvec->dev, "ec firmware version %02x.%02x.%02x / %02x\n",
 			msg->data[4], msg->data[5], msg->data[6], msg->data[7]);
+=======
+	err = nvec_write_sync(nvec, get_firmware_version, 2, &msg);
+
+	if (!err) {
+		dev_warn(nvec->dev,
+			 "ec firmware version %02x.%02x.%02x / %02x\n",
+			 msg->data[4], msg->data[5],
+			 msg->data[6], msg->data[7]);
+>>>>>>> v4.9.227
 
 		nvec_msg_free(nvec, msg);
 	}
 
+<<<<<<< HEAD
 	ret = mfd_add_devices(nvec->dev, -1, nvec_devices,
+=======
+	ret = mfd_add_devices(nvec->dev, 0, nvec_devices,
+>>>>>>> v4.9.227
 			      ARRAY_SIZE(nvec_devices), NULL, 0, NULL);
 	if (ret)
 		dev_err(nvec->dev, "error adding subdevices\n");
@@ -919,7 +1088,11 @@ static int tegra_nvec_remove(struct platform_device *pdev)
 	nvec_unregister_notifier(nvec, &nvec->nvec_status_notifier);
 	cancel_work_sync(&nvec->rx_work);
 	cancel_work_sync(&nvec->tx_work);
+<<<<<<< HEAD
 	/* FIXME: needs check wether nvec is responsible for power off */
+=======
+	/* FIXME: needs check whether nvec is responsible for power off */
+>>>>>>> v4.9.227
 	pm_power_off = NULL;
 
 	return 0;
@@ -928,6 +1101,10 @@ static int tegra_nvec_remove(struct platform_device *pdev)
 #ifdef CONFIG_PM_SLEEP
 static int nvec_suspend(struct device *dev)
 {
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> v4.9.227
 	struct platform_device *pdev = to_platform_device(dev);
 	struct nvec_chip *nvec = platform_get_drvdata(pdev);
 	struct nvec_msg *msg;
@@ -938,8 +1115,14 @@ static int nvec_suspend(struct device *dev)
 	/* keep these sync or you'll break suspend */
 	nvec_toggle_global_events(nvec, false);
 
+<<<<<<< HEAD
 	msg = nvec_write_sync(nvec, ap_suspend, sizeof(ap_suspend));
 	nvec_msg_free(nvec, msg);
+=======
+	err = nvec_write_sync(nvec, ap_suspend, sizeof(ap_suspend), &msg);
+	if (!err)
+		nvec_msg_free(nvec, msg);
+>>>>>>> v4.9.227
 
 	nvec_disable_i2c_slave(nvec);
 
@@ -973,7 +1156,10 @@ static struct platform_driver nvec_device_driver = {
 	.remove  = tegra_nvec_remove,
 	.driver  = {
 		.name = "nvec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &nvec_pm_ops,
 		.of_match_table = nvidia_nvec_of_match,
 	}

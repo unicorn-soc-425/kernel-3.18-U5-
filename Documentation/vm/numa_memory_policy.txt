@@ -9,7 +9,11 @@ document attempts to describe the concepts and APIs of the 2.6 memory policy
 support.
 
 Memory policies should not be confused with cpusets
+<<<<<<< HEAD
 (Documentation/cgroups/cpusets.txt)
+=======
+(Documentation/cgroup-v1/cpusets.txt)
+>>>>>>> v4.9.227
 which is an administrative mechanism for restricting the nodes from which
 memory may be allocated by a set of processes. Memory policies are a
 programming interface that a NUMA-aware application can take advantage of.  When

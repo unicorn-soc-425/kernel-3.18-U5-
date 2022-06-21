@@ -28,8 +28,13 @@
 #include <engine/fifo/chan.h>
 #include <subdev/bar.h>
 
+<<<<<<< HEAD
 #include <nvif/event.h>
 #include <nvif/ioctl.h>
+=======
+#include <nvif/class.h>
+#include <nvif/event.h>
+>>>>>>> v4.9.227
 
 /*******************************************************************************
  * software context
@@ -136,7 +141,11 @@ static const struct nvkm_sw_func
 nv50_sw = {
 	.chan_new = nv50_sw_chan_new,
 	.sclass = {
+<<<<<<< HEAD
 		{ nvkm_nvsw_new, { -1, -1, NVIF_IOCTL_NEW_V0_SW_NV50 } },
+=======
+		{ nvkm_nvsw_new, { -1, -1, NVIF_CLASS_SW_NV50 } },
+>>>>>>> v4.9.227
 		{}
 	}
 };

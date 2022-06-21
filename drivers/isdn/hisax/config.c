@@ -1896,7 +1896,11 @@ static void EChannel_proc_rcv(struct hisax_d_if *d_if)
 				ptr--;
 				*ptr++ = '\n';
 				*ptr = 0;
+<<<<<<< HEAD
 				HiSax_putstatus(cs, NULL, "%s", cs->dlog);
+=======
+				HiSax_putstatus(cs, NULL, cs->dlog);
+>>>>>>> v4.9.227
 			} else
 				HiSax_putstatus(cs, "LogEcho: ",
 						"warning Frame too big (%d)",

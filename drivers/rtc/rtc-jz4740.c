@@ -174,7 +174,11 @@ static int jz4740_rtc_alarm_irq_enable(struct device *dev, unsigned int enable)
 	return jz4740_rtc_ctrl_set_bits(rtc, JZ_RTC_CTRL_AF_IRQ, enable);
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops jz4740_rtc_ops = {
+=======
+static const struct rtc_class_ops jz4740_rtc_ops = {
+>>>>>>> v4.9.227
 	.read_time	= jz4740_rtc_read_time,
 	.set_mmss	= jz4740_rtc_set_mmss,
 	.read_alarm	= jz4740_rtc_read_alarm,
@@ -299,7 +303,10 @@ static struct platform_driver jz4740_rtc_driver = {
 	.probe	 = jz4740_rtc_probe,
 	.driver	 = {
 		.name  = "jz4740-rtc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm    = JZ4740_RTC_PM_OPS,
 	},
 };

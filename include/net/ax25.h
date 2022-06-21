@@ -12,6 +12,11 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <net/neighbour.h>
+#include <net/sock.h>
+>>>>>>> v4.9.227
 
 #define	AX25_T1CLAMPLO  		1
 #define	AX25_T1CLAMPHI 			(30 * HZ)
@@ -197,6 +202,21 @@ static inline void ax25_hold_route(ax25_route *ax25_rt)
 
 void __ax25_put_route(ax25_route *ax25_rt);
 
+<<<<<<< HEAD
+=======
+extern rwlock_t ax25_route_lock;
+
+static inline void ax25_route_lock_use(void)
+{
+	read_lock(&ax25_route_lock);
+}
+
+static inline void ax25_route_lock_unuse(void)
+{
+	read_unlock(&ax25_route_lock);
+}
+
+>>>>>>> v4.9.227
 static inline void ax25_put_route(ax25_route *ax25_rt)
 {
 	if (atomic_dec_and_test(&ax25_rt->refcount))
@@ -245,7 +265,24 @@ typedef struct ax25_cb {
 	atomic_t		refcount;
 } ax25_cb;
 
+<<<<<<< HEAD
 #define ax25_sk(__sk) ((ax25_cb *)(__sk)->sk_protinfo)
+=======
+struct ax25_sock {
+	struct sock		sk;
+	struct ax25_cb		*cb;
+};
+
+static inline struct ax25_sock *ax25_sk(const struct sock *sk)
+{
+	return (struct ax25_sock *) sk;
+}
+
+static inline struct ax25_cb *sk_to_ax25(const struct sock *sk)
+{
+	return ax25_sk(sk)->cb;
+}
+>>>>>>> v4.9.227
 
 #define ax25_for_each(__ax25, list) \
 	hlist_for_each_entry(__ax25, list, ax25_node)
@@ -366,9 +403,13 @@ int ax25_kiss_rcv(struct sk_buff *, struct net_device *, struct packet_type *,
 		  struct net_device *);
 
 /* ax25_ip.c */
+<<<<<<< HEAD
 int ax25_hard_header(struct sk_buff *, struct net_device *, unsigned short,
 		     const void *, const void *, unsigned int);
 int ax25_rebuild_header(struct sk_buff *);
+=======
+netdev_tx_t ax25_ip_xmit(struct sk_buff *skb);
+>>>>>>> v4.9.227
 extern const struct header_ops ax25_header_ops;
 
 /* ax25_out.c */

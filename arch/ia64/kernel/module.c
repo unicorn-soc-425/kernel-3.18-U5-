@@ -305,6 +305,7 @@ plt_target (struct plt_entry *plt)
 #endif /* !USE_BRL */
 
 void
+<<<<<<< HEAD
 module_free (struct module *mod, void *module_region)
 {
 	if (mod && mod->arch.init_unw_table &&
@@ -313,6 +314,14 @@ module_free (struct module *mod, void *module_region)
 		mod->arch.init_unw_table = NULL;
 	}
 	vfree(module_region);
+=======
+module_arch_freeing_init (struct module *mod)
+{
+	if (mod->arch.init_unw_table) {
+		unw_remove_unwind_table(mod->arch.init_unw_table);
+		mod->arch.init_unw_table = NULL;
+	}
+>>>>>>> v4.9.227
 }
 
 /* Have we already seen one of these relocations? */
@@ -441,6 +450,7 @@ module_frob_arch_sections (Elf_Ehdr *ehdr, Elf_Shdr *sechdrs, char *secstrings,
 			mod->arch.opd = s;
 		else if (strcmp(".IA_64.unwind", secstrings + s->sh_name) == 0)
 			mod->arch.unwind = s;
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT
 		else if (strcmp(".paravirt_bundles",
 				secstrings + s->sh_name) == 0)
@@ -449,6 +459,8 @@ module_frob_arch_sections (Elf_Ehdr *ehdr, Elf_Shdr *sechdrs, char *secstrings,
 				secstrings + s->sh_name) == 0)
 			mod->arch.paravirt_insts = s;
 #endif
+=======
+>>>>>>> v4.9.227
 
 	if (!mod->arch.core_plt || !mod->arch.init_plt || !mod->arch.got || !mod->arch.opd) {
 		printk(KERN_ERR "%s: sections missing\n", mod->name);
@@ -496,13 +508,21 @@ module_frob_arch_sections (Elf_Ehdr *ehdr, Elf_Shdr *sechdrs, char *secstrings,
 static inline int
 in_init (const struct module *mod, uint64_t addr)
 {
+<<<<<<< HEAD
 	return addr - (uint64_t) mod->module_init < mod->init_size;
+=======
+	return addr - (uint64_t) mod->init_layout.base < mod->init_layout.size;
+>>>>>>> v4.9.227
 }
 
 static inline int
 in_core (const struct module *mod, uint64_t addr)
 {
+<<<<<<< HEAD
 	return addr - (uint64_t) mod->module_core < mod->core_size;
+=======
+	return addr - (uint64_t) mod->core_layout.base < mod->core_layout.size;
+>>>>>>> v4.9.227
 }
 
 static inline int
@@ -685,7 +705,11 @@ do_reloc (struct module *mod, uint8_t r_type, Elf64_Sym *sym, uint64_t addend,
 		break;
 
 	      case RV_BDREL:
+<<<<<<< HEAD
 		val -= (uint64_t) (in_init(mod, val) ? mod->module_init : mod->module_core);
+=======
+		val -= (uint64_t) (in_init(mod, val) ? mod->init_layout.base : mod->core_layout.base);
+>>>>>>> v4.9.227
 		break;
 
 	      case RV_LTV:
@@ -820,15 +844,26 @@ apply_relocate_add (Elf64_Shdr *sechdrs, const char *strtab, unsigned int symind
 		 *     addresses have been selected...
 		 */
 		uint64_t gp;
+<<<<<<< HEAD
 		if (mod->core_size > MAX_LTOFF)
+=======
+		if (mod->core_layout.size > MAX_LTOFF)
+>>>>>>> v4.9.227
 			/*
 			 * This takes advantage of fact that SHF_ARCH_SMALL gets allocated
 			 * at the end of the module.
 			 */
+<<<<<<< HEAD
 			gp = mod->core_size - MAX_LTOFF / 2;
 		else
 			gp = mod->core_size / 2;
 		gp = (uint64_t) mod->module_core + ((gp + 7) & -8);
+=======
+			gp = mod->core_layout.size - MAX_LTOFF / 2;
+		else
+			gp = mod->core_layout.size / 2;
+		gp = (uint64_t) mod->core_layout.base + ((gp + 7) & -8);
+>>>>>>> v4.9.227
 		mod->arch.gp = gp;
 		DEBUGP("%s: placing gp at 0x%lx\n", __func__, gp);
 	}
@@ -916,6 +951,7 @@ module_finalize (const Elf_Ehdr *hdr, const Elf_Shdr *sechdrs, struct module *mo
 	DEBUGP("%s: init: entry=%p\n", __func__, mod->init);
 	if (mod->arch.unwind)
 		register_unwind_table(mod);
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT
         if (mod->arch.paravirt_bundles) {
                 struct paravirt_patch_site_bundle *start =
@@ -940,14 +976,27 @@ module_finalize (const Elf_Ehdr *hdr, const Elf_Shdr *sechdrs, struct module *mo
                 paravirt_patch_apply_inst(start, end);
         }
 #endif
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 void
 module_arch_cleanup (struct module *mod)
 {
+<<<<<<< HEAD
 	if (mod->arch.init_unw_table)
 		unw_remove_unwind_table(mod->arch.init_unw_table);
 	if (mod->arch.core_unw_table)
 		unw_remove_unwind_table(mod->arch.core_unw_table);
+=======
+	if (mod->arch.init_unw_table) {
+		unw_remove_unwind_table(mod->arch.init_unw_table);
+		mod->arch.init_unw_table = NULL;
+	}
+	if (mod->arch.core_unw_table) {
+		unw_remove_unwind_table(mod->arch.core_unw_table);
+		mod->arch.core_unw_table = NULL;
+	}
+>>>>>>> v4.9.227
 }

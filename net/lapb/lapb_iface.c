@@ -73,6 +73,10 @@ static void __lapb_remove_cb(struct lapb_cb *lapb)
 		lapb_put(lapb);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_register);
+>>>>>>> v4.9.227
 
 /*
  *	Add a socket to the bound sockets list.
@@ -181,6 +185,10 @@ int lapb_unregister(struct net_device *dev)
 	lapb = __lapb_devtostruct(dev);
 	if (!lapb)
 		goto out;
+<<<<<<< HEAD
+=======
+	lapb_put(lapb);
+>>>>>>> v4.9.227
 
 	lapb_stop_t1timer(lapb);
 	lapb_stop_t2timer(lapb);
@@ -195,6 +203,10 @@ out:
 	write_unlock_bh(&lapb_list_lock);
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_unregister);
+>>>>>>> v4.9.227
 
 int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
 {
@@ -227,6 +239,10 @@ int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
 out:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_getparms);
+>>>>>>> v4.9.227
 
 int lapb_setparms(struct net_device *dev, struct lapb_parms_struct *parms)
 {
@@ -262,6 +278,10 @@ out_put:
 out:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_setparms);
+>>>>>>> v4.9.227
 
 int lapb_connect_request(struct net_device *dev)
 {
@@ -290,6 +310,10 @@ out_put:
 out:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_connect_request);
+>>>>>>> v4.9.227
 
 int lapb_disconnect_request(struct net_device *dev)
 {
@@ -334,6 +358,10 @@ out_put:
 out:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_disconnect_request);
+>>>>>>> v4.9.227
 
 int lapb_data_request(struct net_device *dev, struct sk_buff *skb)
 {
@@ -355,6 +383,10 @@ out_put:
 out:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_data_request);
+>>>>>>> v4.9.227
 
 int lapb_data_received(struct net_device *dev, struct sk_buff *skb)
 {
@@ -369,6 +401,10 @@ int lapb_data_received(struct net_device *dev, struct sk_buff *skb)
 
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_data_received);
+>>>>>>> v4.9.227
 
 void lapb_connect_confirmation(struct lapb_cb *lapb, int reason)
 {
@@ -415,6 +451,7 @@ int lapb_data_transmit(struct lapb_cb *lapb, struct sk_buff *skb)
 	return used;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(lapb_register);
 EXPORT_SYMBOL(lapb_unregister);
 EXPORT_SYMBOL(lapb_getparms);
@@ -424,6 +461,8 @@ EXPORT_SYMBOL(lapb_disconnect_request);
 EXPORT_SYMBOL(lapb_data_request);
 EXPORT_SYMBOL(lapb_data_received);
 
+=======
+>>>>>>> v4.9.227
 static int __init lapb_init(void)
 {
 	return 0;

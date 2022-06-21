@@ -99,7 +99,11 @@ static ssize_t path_show(struct pci_slot *pci_slot, char *buf)
 	if (!slot)
 		return retval;
 
+<<<<<<< HEAD
 	retval = sprintf (buf, "%s\n", slot->physical_path);
+=======
+	retval = sprintf(buf, "%s\n", slot->physical_path);
+>>>>>>> v4.9.227
 	return retval;
 }
 
@@ -313,7 +317,11 @@ static int sn_slot_disable(struct hotplug_slot *bss_hotplug_slot,
 	}
 
 	if ((action == PCI_REQ_SLOT_DISABLE) && rc) {
+<<<<<<< HEAD
 		dev_dbg(&slot->pci_bus->self->dev,"remove failed rc = %d\n", rc);
+=======
+		dev_dbg(&slot->pci_bus->self->dev, "remove failed rc = %d\n", rc);
+>>>>>>> v4.9.227
 	}
 
 	return rc;
@@ -475,7 +483,11 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 	struct slot *slot = bss_hotplug_slot->private;
 	struct pci_dev *dev, *temp;
 	int rc;
+<<<<<<< HEAD
 	acpi_owner_id ssdt_id = 0;
+=======
+	acpi_handle ssdt_hdl = NULL;
+>>>>>>> v4.9.227
 
 	/* Acquire update access to the bus */
 	mutex_lock(&sn_hotplug_mutex);
@@ -488,7 +500,11 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 
 	/* free the ACPI resources for the slot */
 	if (SN_ACPI_BASE_SUPPORT() &&
+<<<<<<< HEAD
             PCI_CONTROLLER(slot->pci_bus)->companion) {
+=======
+		PCI_CONTROLLER(slot->pci_bus)->companion) {
+>>>>>>> v4.9.227
 		unsigned long long adr;
 		struct acpi_device *device;
 		acpi_handle phandle;
@@ -522,7 +538,11 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 			if (ACPI_SUCCESS(ret) &&
 			    (adr>>16) == (slot->device_num + 1)) {
 				/* retain the owner id */
+<<<<<<< HEAD
 				acpi_get_id(chandle, &ssdt_id);
+=======
+				ssdt_hdl = chandle;
+>>>>>>> v4.9.227
 
 				ret = acpi_bus_get_device(chandle,
 							  &device);
@@ -547,12 +567,22 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 	pci_unlock_rescan_remove();
 
 	/* Remove the SSDT for the slot from the ACPI namespace */
+<<<<<<< HEAD
 	if (SN_ACPI_BASE_SUPPORT() && ssdt_id) {
 		acpi_status ret;
 		ret = acpi_unload_table_id(ssdt_id);
 		if (ACPI_FAILURE(ret)) {
 			printk(KERN_ERR "%s: acpi_unload_table_id failed (0x%x) for id %d\n",
 			       __func__, ret, ssdt_id);
+=======
+	if (SN_ACPI_BASE_SUPPORT() && ssdt_hdl) {
+		acpi_status ret;
+		ret = acpi_unload_parent_table(ssdt_hdl);
+		if (ACPI_FAILURE(ret)) {
+			acpi_handle_err(ssdt_hdl,
+					"%s: acpi_unload_parent_table failed (0x%x)\n",
+					__func__, ret);
+>>>>>>> v4.9.227
 			/* try to continue on */
 		}
 	}

@@ -138,6 +138,10 @@ int snd_seq_fifo_event_in(struct snd_seq_fifo *f,
 	f->tail = cell;
 	if (f->head == NULL)
 		f->head = cell;
+<<<<<<< HEAD
+=======
+	cell->next = NULL;
+>>>>>>> v4.9.227
 	f->cells++;
 	spin_unlock_irqrestore(&f->lock, flags);
 
@@ -217,6 +221,11 @@ void snd_seq_fifo_cell_putback(struct snd_seq_fifo *f,
 		spin_lock_irqsave(&f->lock, flags);
 		cell->next = f->head;
 		f->head = cell;
+<<<<<<< HEAD
+=======
+		if (!f->tail)
+			f->tail = cell;
+>>>>>>> v4.9.227
 		f->cells++;
 		spin_unlock_irqrestore(&f->lock, flags);
 	}
@@ -275,3 +284,23 @@ int snd_seq_fifo_resize(struct snd_seq_fifo *f, int poolsize)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+/* get the number of unused cells safely */
+int snd_seq_fifo_unused_cells(struct snd_seq_fifo *f)
+{
+	unsigned long flags;
+	int cells;
+
+	if (!f)
+		return 0;
+
+	snd_use_lock_use(&f->use_lock);
+	spin_lock_irqsave(&f->lock, flags);
+	cells = snd_seq_unused_cells(f->pool);
+	spin_unlock_irqrestore(&f->lock, flags);
+	snd_use_lock_free(&f->use_lock);
+	return cells;
+}
+>>>>>>> v4.9.227

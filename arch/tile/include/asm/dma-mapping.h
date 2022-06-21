@@ -59,8 +59,11 @@ static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
 
 static inline void dma_mark_clean(void *addr, size_t size) {}
 
+<<<<<<< HEAD
 #include <asm-generic/dma-mapping-common.h>
 
+=======
+>>>>>>> v4.9.227
 static inline void set_dma_ops(struct device *dev, struct dma_map_ops *ops)
 {
 	dev->archdata.dma_ops = ops;
@@ -74,6 +77,7 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
 	return addr + size - 1 <= *dev->dma_mask;
 }
 
+<<<<<<< HEAD
 static inline int
 dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 {
@@ -145,6 +149,10 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
 #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_attrs(d, s, h, f, NULL)
 #define dma_free_coherent(d, s, v, h) dma_free_attrs(d, s, v, h, NULL)
 #define dma_free_noncoherent(d, s, v, h) dma_free_attrs(d, s, v, h, NULL)
+=======
+#define HAVE_ARCH_DMA_SET_MASK 1
+int dma_set_mask(struct device *dev, u64 mask);
+>>>>>>> v4.9.227
 
 /*
  * dma_alloc_noncoherent() is #defined to return coherent memory,

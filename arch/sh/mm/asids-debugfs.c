@@ -17,7 +17,10 @@
  * for more details.
  */
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/spinlock.h>
@@ -70,6 +73,10 @@ static int __init asids_debugfs_init(void)
 
 	return PTR_ERR_OR_ZERO(asids_dentry);
 }
+<<<<<<< HEAD
 module_init(asids_debugfs_init);
 
 MODULE_LICENSE("GPL v2");
+=======
+device_initcall(asids_debugfs_init);
+>>>>>>> v4.9.227

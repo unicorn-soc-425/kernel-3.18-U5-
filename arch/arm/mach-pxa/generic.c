@@ -63,6 +63,15 @@ EXPORT_SYMBOL(get_clock_tick_rate);
  */
 void __init pxa_timer_init(void)
 {
+<<<<<<< HEAD
+=======
+	if (cpu_is_pxa25x())
+		pxa25x_clocks_init();
+	if (cpu_is_pxa27x())
+		pxa27x_clocks_init();
+	if (cpu_is_pxa3xx())
+		pxa3xx_clocks_init();
+>>>>>>> v4.9.227
 	pxa_timer_nodt_init(IRQ_OST0, io_p2v(0x40a00000),
 			    get_clock_tick_rate());
 }

@@ -11,6 +11,10 @@
 #include <linux/string.h>
 #include <linux/utsname.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/kmsg_dump.h>
+>>>>>>> v4.9.227
 #include <asm/pgtable.h>
 #include <asm/processor.h>
 #include <asm/sections.h>
@@ -66,12 +70,15 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 {
 	int index = 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	index = (struct cpuinfo_um *) v - cpu_data;
 	if (!cpu_online(index))
 		return 0;
 #endif
 
+=======
+>>>>>>> v4.9.227
 	seq_printf(m, "processor\t: %d\n", index);
 	seq_printf(m, "vendor_id\t: User Mode Linux\n");
 	seq_printf(m, "model name\t: UML\n");
@@ -168,6 +175,7 @@ __uml_setup("debug", no_skas_debug_setup,
 "    this flag is not needed to run gdb on UML in skas mode\n\n"
 );
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 static int __init uml_ncpus_setup(char *line, int *add)
 {
@@ -185,6 +193,8 @@ __uml_setup("ncpus=", uml_ncpus_setup,
 );
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int __init Usage(char *line, int *add)
 {
 	const char **p;
@@ -234,6 +244,10 @@ static void __init uml_postsetup(void)
 static int panic_exit(struct notifier_block *self, unsigned long unused1,
 		      void *unused2)
 {
+<<<<<<< HEAD
+=======
+	kmsg_dump(KMSG_DUMP_PANIC);
+>>>>>>> v4.9.227
 	bust_spinlocks(1);
 	bust_spinlocks(0);
 	uml_exitcode = 1;
@@ -247,6 +261,19 @@ static struct notifier_block panic_exit_notifier = {
 	.priority 		= 0
 };
 
+<<<<<<< HEAD
+=======
+void uml_finishsetup(void)
+{
+	atomic_notifier_chain_register(&panic_notifier_list,
+				       &panic_exit_notifier);
+
+	uml_postsetup();
+
+	new_thread_handler();
+}
+
+>>>>>>> v4.9.227
 /* Set during early boot */
 unsigned long task_size;
 EXPORT_SYMBOL(task_size);
@@ -259,8 +286,11 @@ EXPORT_SYMBOL(end_iomem);
 
 #define MIN_VMALLOC (32 * 1024 * 1024)
 
+<<<<<<< HEAD
 extern char __binary_start;
 
+=======
+>>>>>>> v4.9.227
 int __init linux_main(int argc, char **argv)
 {
 	unsigned long avail, diff;
@@ -268,7 +298,10 @@ int __init linux_main(int argc, char **argv)
 	unsigned long stack;
 	unsigned int i;
 	int add;
+<<<<<<< HEAD
 	char * mode;
+=======
+>>>>>>> v4.9.227
 
 	for (i = 1; i < argc; i++) {
 		if ((i == 1) && (argv[i][0] == ' '))
@@ -291,6 +324,7 @@ int __init linux_main(int argc, char **argv)
 	/* OS sanity checks that need to happen before the kernel runs */
 	os_early_checks();
 
+<<<<<<< HEAD
 	can_do_skas();
 
 	if (proc_mm && ptrace_faultinfo)
@@ -300,6 +334,8 @@ int __init linux_main(int argc, char **argv)
 
 	printf("UML running in %s mode\n", mode);
 
+=======
+>>>>>>> v4.9.227
 	brk_start = (unsigned long) sbrk(0);
 
 	/*
@@ -315,7 +351,11 @@ int __init linux_main(int argc, char **argv)
 		physmem_size += UML_ROUND_UP(brk_start) - UML_ROUND_UP(&_end);
 	}
 
+<<<<<<< HEAD
 	uml_physmem = (unsigned long) &__binary_start & PAGE_MASK;
+=======
+	uml_physmem = (unsigned long) __binary_start & PAGE_MASK;
+>>>>>>> v4.9.227
 
 	/* Reserve up to 4M after the current brk */
 	uml_reserved = ROUND_4M(brk_start) + (1 << 22);
@@ -334,11 +374,14 @@ int __init linux_main(int argc, char **argv)
 	if (physmem_size + iomem_size > max_physmem) {
 		highmem = physmem_size + iomem_size - max_physmem;
 		physmem_size -= highmem;
+<<<<<<< HEAD
 #ifndef CONFIG_HIGHMEM
 		highmem = 0;
 		printf("CONFIG_HIGHMEM not enabled - physical memory shrunk "
 		       "to %Lu bytes\n", physmem_size);
 #endif
+=======
+>>>>>>> v4.9.227
 	}
 
 	high_physmem = uml_physmem + physmem_size;
@@ -347,9 +390,12 @@ int __init linux_main(int argc, char **argv)
 
 	start_vm = VMALLOC_START;
 
+<<<<<<< HEAD
 	setup_physmem(uml_physmem, uml_reserved, physmem_size, highmem);
 	mem_total_pages(physmem_size, iomem_size, highmem);
 
+=======
+>>>>>>> v4.9.227
 	virtmem_size = physmem_size;
 	stack = (unsigned long) argv;
 	stack &= ~(1024 * 1024 - 1);
@@ -362,19 +408,37 @@ int __init linux_main(int argc, char **argv)
 		printf("Kernel virtual memory size shrunk to %lu bytes\n",
 		       virtmem_size);
 
+<<<<<<< HEAD
 	atomic_notifier_chain_register(&panic_notifier_list,
 				       &panic_exit_notifier);
 
 	uml_postsetup();
 
 	stack_protections((unsigned long) &init_thread_info);
+=======
+>>>>>>> v4.9.227
 	os_flush_stdout();
 
 	return start_uml();
 }
 
+<<<<<<< HEAD
 void __init setup_arch(char **cmdline_p)
 {
+=======
+int __init __weak read_initrd(void)
+{
+	return 0;
+}
+
+void __init setup_arch(char **cmdline_p)
+{
+	stack_protections((unsigned long) &init_thread_info);
+	setup_physmem(uml_physmem, uml_reserved, physmem_size, highmem);
+	mem_total_pages(physmem_size, iomem_size, highmem);
+	read_initrd();
+
+>>>>>>> v4.9.227
 	paging_init();
 	strlcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
 	*cmdline_p = command_line;
@@ -390,6 +454,7 @@ void __init check_bugs(void)
 void apply_alternatives(struct alt_instr *start, struct alt_instr *end)
 {
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_SMP
 void alternatives_smp_module_add(struct module *mod, char *name,
@@ -402,3 +467,5 @@ void alternatives_smp_module_del(struct module *mod)
 {
 }
 #endif
+=======
+>>>>>>> v4.9.227

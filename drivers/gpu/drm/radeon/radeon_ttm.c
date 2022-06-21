@@ -213,8 +213,13 @@ static void radeon_evict_flags(struct ttm_buffer_object *bo,
 			rbo->placement.num_busy_placement = 0;
 			for (i = 0; i < rbo->placement.num_placement; i++) {
 				if (rbo->placements[i].flags & TTM_PL_FLAG_VRAM) {
+<<<<<<< HEAD
 					if (rbo->placements[0].fpfn < fpfn)
 						rbo->placements[0].fpfn = fpfn;
+=======
+					if (rbo->placements[i].fpfn < fpfn)
+						rbo->placements[i].fpfn = fpfn;
+>>>>>>> v4.9.227
 				} else {
 					rbo->placement.busy_placement =
 						&rbo->placements[i];
@@ -237,7 +242,12 @@ static int radeon_verify_access(struct ttm_buffer_object *bo, struct file *filp)
 
 	if (radeon_ttm_tt_has_userptr(bo->ttm))
 		return -EPERM;
+<<<<<<< HEAD
 	return drm_vma_node_verify_access(&rbo->gem_base.vma_node, filp);
+=======
+	return drm_vma_node_verify_access(&rbo->gem_base.vma_node,
+					  filp->private_data);
+>>>>>>> v4.9.227
 }
 
 static void radeon_move_null(struct ttm_buffer_object *bo,
@@ -300,8 +310,12 @@ static int radeon_move_blit(struct ttm_buffer_object *bo,
 	if (IS_ERR(fence))
 		return PTR_ERR(fence);
 
+<<<<<<< HEAD
 	r = ttm_bo_move_accel_cleanup(bo, &fence->base,
 				      evict, no_wait_gpu, new_mem);
+=======
+	r = ttm_bo_move_accel_cleanup(bo, &fence->base, evict, new_mem);
+>>>>>>> v4.9.227
 	radeon_fence_unref(&fence);
 	return r;
 }
@@ -347,7 +361,11 @@ static int radeon_move_vram_ram(struct ttm_buffer_object *bo,
 	if (unlikely(r)) {
 		goto out_cleanup;
 	}
+<<<<<<< HEAD
 	r = ttm_bo_move_ttm(bo, true, no_wait_gpu, new_mem);
+=======
+	r = ttm_bo_move_ttm(bo, interruptible, no_wait_gpu, new_mem);
+>>>>>>> v4.9.227
 out_cleanup:
 	ttm_bo_mem_put(bo, &tmp_mem);
 	return r;
@@ -380,7 +398,11 @@ static int radeon_move_ram_vram(struct ttm_buffer_object *bo,
 	if (unlikely(r)) {
 		return r;
 	}
+<<<<<<< HEAD
 	r = ttm_bo_move_ttm(bo, true, no_wait_gpu, &tmp_mem);
+=======
+	r = ttm_bo_move_ttm(bo, interruptible, no_wait_gpu, &tmp_mem);
+>>>>>>> v4.9.227
 	if (unlikely(r)) {
 		goto out_cleanup;
 	}
@@ -399,9 +421,25 @@ static int radeon_bo_move(struct ttm_buffer_object *bo,
 			struct ttm_mem_reg *new_mem)
 {
 	struct radeon_device *rdev;
+<<<<<<< HEAD
 	struct ttm_mem_reg *old_mem = &bo->mem;
 	int r;
 
+=======
+	struct radeon_bo *rbo;
+	struct ttm_mem_reg *old_mem = &bo->mem;
+	int r;
+
+	r = ttm_bo_wait(bo, interruptible, no_wait_gpu);
+	if (r)
+		return r;
+
+	/* Can't move a pinned BO */
+	rbo = container_of(bo, struct radeon_bo, tbo);
+	if (WARN_ON_ONCE(rbo->pin_count > 0))
+		return -EINVAL;
+
+>>>>>>> v4.9.227
 	rdev = radeon_get_rdev(bo->bdev);
 	if (old_mem->mem_type == TTM_PL_SYSTEM && bo->ttm == NULL) {
 		radeon_move_null(bo, new_mem);
@@ -435,7 +473,11 @@ static int radeon_bo_move(struct ttm_buffer_object *bo,
 
 	if (r) {
 memcpy:
+<<<<<<< HEAD
 		r = ttm_bo_move_memcpy(bo, evict, no_wait_gpu, new_mem);
+=======
+		r = ttm_bo_move_memcpy(bo, interruptible, no_wait_gpu, new_mem);
+>>>>>>> v4.9.227
 		if (r) {
 			return r;
 		}
@@ -556,8 +598,13 @@ static int radeon_ttm_tt_pin_userptr(struct ttm_tt *ttm)
 		uint64_t userptr = gtt->userptr + pinned * PAGE_SIZE;
 		struct page **pages = ttm->pages + pinned;
 
+<<<<<<< HEAD
 		r = get_user_pages(current, current->mm, userptr, num_pages,
 				   write, 0, pages, NULL);
+=======
+		r = get_user_pages(userptr, num_pages, write ? FOLL_WRITE : 0,
+				   pages, NULL);
+>>>>>>> v4.9.227
 		if (r < 0)
 			goto release_pages;
 
@@ -612,7 +659,11 @@ static void radeon_ttm_tt_unpin_userptr(struct ttm_tt *ttm)
 			set_page_dirty(page);
 
 		mark_page_accessed(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> v4.9.227
 	}
 
 	sg_free_table(ttm->sg);
@@ -860,6 +911,11 @@ static struct ttm_bo_driver radeon_bo_driver = {
 	.fault_reserve_notify = &radeon_bo_fault_reserve_notify,
 	.io_mem_reserve = &radeon_ttm_io_mem_reserve,
 	.io_mem_free = &radeon_ttm_io_mem_free,
+<<<<<<< HEAD
+=======
+	.lru_tail = &ttm_bo_default_lru_tail,
+	.swap_lru_tail = &ttm_bo_default_swap_lru_tail,
+>>>>>>> v4.9.227
 };
 
 int radeon_ttm_init(struct radeon_device *rdev)

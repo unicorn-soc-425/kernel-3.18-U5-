@@ -243,9 +243,15 @@ static int apply_frontend_param(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+=======
+static int get_frontend(struct dvb_frontend *fe,
+			struct dtv_frontend_properties *p)
+{
+>>>>>>> v4.9.227
 	struct l64781_state* state = fe->demodulator_priv;
 	int tmp;
 
@@ -359,7 +365,11 @@ static int get_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int l64781_read_status(struct dvb_frontend* fe, fe_status_t* status)
+=======
+static int l64781_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> v4.9.227
 {
 	struct l64781_state* state = fe->demodulator_priv;
 	int sync = l64781_readreg (state, 0x32);

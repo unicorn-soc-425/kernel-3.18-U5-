@@ -154,7 +154,11 @@
   *
   * The Darwin I2C driver is less subtle though. On any non-success status
   * from the response command, it waits 5ms and tries again up to 20 times,
+<<<<<<< HEAD
   * it doesn't differenciate between fatal errors or "busy" status.
+=======
+  * it doesn't differentiate between fatal errors or "busy" status.
+>>>>>>> v4.9.227
   *
   * This driver provides an asynchronous paramblock based i2c command
   * interface to be used either directly by low level code or by a higher
@@ -185,7 +189,11 @@
  *  x = processor mask
  *  y = op. point index
  *  z = processor freq. step index
+<<<<<<< HEAD
  * I haven't yet decyphered result codes
+=======
+ * I haven't yet deciphered result codes
+>>>>>>> v4.9.227
  *
  */
 #define SMU_CMD_POWER_COMMAND			0xaa
@@ -471,6 +479,7 @@ extern int smu_get_rtc_time(struct rtc_time *time, int spinwait);
 extern int smu_set_rtc_time(struct rtc_time *time, int spinwait);
 
 /*
+<<<<<<< HEAD
  * SMU command buffer absolute address, exported by pmac_setup,
  * this is allocated very early during boot.
  */
@@ -479,6 +488,9 @@ extern unsigned long smu_cmdbuf_abs;
 
 /*
  * Kenrel asynchronous i2c interface
+=======
+ * Kernel asynchronous i2c interface
+>>>>>>> v4.9.227
  */
 
 #define SMU_I2C_READ_MAX	0x1d

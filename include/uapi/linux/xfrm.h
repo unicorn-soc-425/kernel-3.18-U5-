@@ -1,6 +1,10 @@
 #ifndef _LINUX_XFRM_H
 #define _LINUX_XFRM_H
 
+<<<<<<< HEAD
+=======
+#include <linux/in6.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 
 /* All of the structures in this file may not change size as they are
@@ -13,6 +17,10 @@
 typedef union {
 	__be32		a4;
 	__be32		a6[4];
+<<<<<<< HEAD
+=======
+	struct in6_addr	in6;
+>>>>>>> v4.9.227
 } xfrm_address_t;
 
 /* Ident of a specific xfrm_state. It is used on input to lookup
@@ -296,13 +304,20 @@ enum xfrm_attr_type_t {
 	XFRMA_ALG_AUTH_TRUNC,	/* struct xfrm_algo_auth */
 	XFRMA_MARK,		/* struct xfrm_mark */
 	XFRMA_TFCPAD,		/* __u32 */
+<<<<<<< HEAD
 	XFRMA_REPLAY_ESN_VAL,	/* struct xfrm_replay_esn */
+=======
+	XFRMA_REPLAY_ESN_VAL,	/* struct xfrm_replay_state_esn */
+>>>>>>> v4.9.227
 	XFRMA_SA_EXTRA_FLAGS,	/* __u32 */
 	XFRMA_PROTO,		/* __u8 */
 	XFRMA_ADDRESS_FILTER,	/* struct xfrm_address_filter */
 	XFRMA_PAD,
+<<<<<<< HEAD
 	XFRMA_OFFLOAD_DEV,	/* struct xfrm_state_offload */
 	XFRMA_OUTPUT_MARK,	/* __u32 */
+=======
+>>>>>>> v4.9.227
 	__XFRMA_MAX
 
 #define XFRMA_MAX (__XFRMA_MAX - 1)

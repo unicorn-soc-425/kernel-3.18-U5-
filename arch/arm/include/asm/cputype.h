@@ -55,11 +55,19 @@
 
 #define MPIDR_LEVEL_BITS 8
 #define MPIDR_LEVEL_MASK ((1 << MPIDR_LEVEL_BITS) - 1)
+<<<<<<< HEAD
+=======
+#define MPIDR_LEVEL_SHIFT(level) (MPIDR_LEVEL_BITS * level)
+>>>>>>> v4.9.227
 
 #define MPIDR_AFFINITY_LEVEL(mpidr, level) \
 	((mpidr >> (MPIDR_LEVEL_BITS * level)) & MPIDR_LEVEL_MASK)
 
 #define ARM_CPU_IMP_ARM			0x41
+<<<<<<< HEAD
+=======
+#define ARM_CPU_IMP_DEC			0x44
+>>>>>>> v4.9.227
 #define ARM_CPU_IMP_INTEL		0x69
 
 /* ARM implemented processors */
@@ -74,14 +82,46 @@
 #define ARM_CPU_PART_CORTEX_A12		0x4100c0d0
 #define ARM_CPU_PART_CORTEX_A17		0x4100c0e0
 #define ARM_CPU_PART_CORTEX_A15		0x4100c0f0
+<<<<<<< HEAD
 #define ARM_CPU_PART_MASK		0xff00fff0
 
+=======
+#define ARM_CPU_PART_CORTEX_A53		0x4100d030
+#define ARM_CPU_PART_CORTEX_A57		0x4100d070
+#define ARM_CPU_PART_CORTEX_A72		0x4100d080
+#define ARM_CPU_PART_CORTEX_A73		0x4100d090
+#define ARM_CPU_PART_CORTEX_A75		0x4100d0a0
+#define ARM_CPU_PART_MASK		0xff00fff0
+
+/* Broadcom cores */
+#define ARM_CPU_PART_BRAHMA_B15		0x420000f0
+
+/* DEC implemented cores */
+#define ARM_CPU_PART_SA1100		0x4400a110
+
+/* Intel implemented cores */
+#define ARM_CPU_PART_SA1110		0x6900b110
+#define ARM_CPU_REV_SA1110_A0		0
+#define ARM_CPU_REV_SA1110_B0		4
+#define ARM_CPU_REV_SA1110_B1		5
+#define ARM_CPU_REV_SA1110_B2		6
+#define ARM_CPU_REV_SA1110_B4		8
+
+>>>>>>> v4.9.227
 #define ARM_CPU_XSCALE_ARCH_MASK	0xe000
 #define ARM_CPU_XSCALE_ARCH_V1		0x2000
 #define ARM_CPU_XSCALE_ARCH_V2		0x4000
 #define ARM_CPU_XSCALE_ARCH_V3		0x6000
 
+<<<<<<< HEAD
 extern unsigned int processor_id;
+=======
+/* Qualcomm implemented cores */
+#define ARM_CPU_PART_SCORPION		0x510002d0
+
+extern unsigned int processor_id;
+struct proc_info_list *lookup_processor(u32 midr);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_CPU_CP15
 #define read_cpuid(reg)							\
@@ -152,6 +192,14 @@ static inline unsigned int __attribute_const__ read_cpuid_id(void)
 	return read_cpuid(CPUID_ID);
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned int __attribute_const__ read_cpuid_cachetype(void)
+{
+	return read_cpuid(CPUID_CACHETYPE);
+}
+
+>>>>>>> v4.9.227
 #elif defined(CONFIG_CPU_V7M)
 
 static inline unsigned int __attribute_const__ read_cpuid_id(void)
@@ -159,6 +207,14 @@ static inline unsigned int __attribute_const__ read_cpuid_id(void)
 	return readl(BASEADDR_V7M_SCB + V7M_SCB_CPUID);
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned int __attribute_const__ read_cpuid_cachetype(void)
+{
+	return readl(BASEADDR_V7M_SCB + V7M_SCB_CTR);
+}
+
+>>>>>>> v4.9.227
 #else /* ifdef CONFIG_CPU_CP15 / elif defined(CONFIG_CPU_V7M) */
 
 static inline unsigned int __attribute_const__ read_cpuid_id(void)
@@ -173,6 +229,14 @@ static inline unsigned int __attribute_const__ read_cpuid_implementor(void)
 	return (read_cpuid_id() & 0xFF000000) >> 24;
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned int __attribute_const__ read_cpuid_revision(void)
+{
+	return read_cpuid_id() & 0x0000000f;
+}
+
+>>>>>>> v4.9.227
 /*
  * The CPU part number is meaningless without referring to the CPU
  * implementer: implementers are free to define their own part numbers
@@ -193,11 +257,14 @@ static inline unsigned int __attribute_const__ xscale_cpu_arch_version(void)
 	return read_cpuid_id() & ARM_CPU_XSCALE_ARCH_MASK;
 }
 
+<<<<<<< HEAD
 static inline unsigned int __attribute_const__ read_cpuid_cachetype(void)
 {
 	return read_cpuid(CPUID_CACHETYPE);
 }
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned int __attribute_const__ read_cpuid_tcmstatus(void)
 {
 	return read_cpuid(CPUID_TCM);
@@ -208,6 +275,13 @@ static inline unsigned int __attribute_const__ read_cpuid_mpidr(void)
 	return read_cpuid(CPUID_MPIDR);
 }
 
+<<<<<<< HEAD
+=======
+/* StrongARM-11x0 CPUs */
+#define cpu_is_sa1100() (read_cpuid_part() == ARM_CPU_PART_SA1100)
+#define cpu_is_sa1110() (read_cpuid_part() == ARM_CPU_PART_SA1110)
+
+>>>>>>> v4.9.227
 /*
  * Intel's XScale3 core supports some v6 features (supersections, L2)
  * but advertises itself as v5 as it does not support the v6 ISA.  For
@@ -228,10 +302,33 @@ static inline int cpu_is_xsc3(void)
 }
 #endif
 
+<<<<<<< HEAD
 #if !defined(CONFIG_CPU_XSCALE) && !defined(CONFIG_CPU_XSC3)
 #define	cpu_is_xscale()	0
 #else
 #define	cpu_is_xscale()	1
+=======
+#if !defined(CONFIG_CPU_XSCALE) && !defined(CONFIG_CPU_XSC3) && \
+    !defined(CONFIG_CPU_MOHAWK)
+#define	cpu_is_xscale_family() 0
+#else
+static inline int cpu_is_xscale_family(void)
+{
+	unsigned int id;
+	id = read_cpuid_id() & 0xffffe000;
+
+	switch (id) {
+	case 0x69052000: /* Intel XScale 1 */
+	case 0x69054000: /* Intel XScale 2 */
+	case 0x69056000: /* Intel XScale 3 */
+	case 0x56056000: /* Marvell XScale 3 */
+	case 0x56158000: /* Marvell Mohawk */
+		return 1;
+	}
+
+	return 0;
+}
+>>>>>>> v4.9.227
 #endif
 
 /*

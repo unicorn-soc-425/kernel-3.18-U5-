@@ -362,12 +362,17 @@ static void __init pca100_init(void)
 	if (ret)
 		printk(KERN_ERR "pca100: Failed to setup pins (%d)\n", ret);
 
+<<<<<<< HEAD
 	imx27_add_imx_ssi(0, &pca100_ssi_pdata);
 
 	imx27_add_imx_uart0(&uart_pdata);
 
 	imx27_add_mxc_mmc(1, &sdhc_pdata);
 
+=======
+	imx27_add_imx_uart0(&uart_pdata);
+
+>>>>>>> v4.9.227
 	imx27_add_mxc_nand(&pca100_nand_board_info);
 
 	/* only the i2c master 1 is used on this CPU card */
@@ -382,6 +387,22 @@ static void __init pca100_init(void)
 				ARRAY_SIZE(pca100_spi_board_info));
 	imx27_add_spi_imx0(&pca100_spi0_data);
 
+<<<<<<< HEAD
+=======
+	imx27_add_imx_fb(&pca100_fb_data);
+
+	imx27_add_fec(NULL);
+	imx27_add_imx2_wdt();
+	imx27_add_mxc_w1();
+}
+
+static void __init pca100_late_init(void)
+{
+	imx27_add_imx_ssi(0, &pca100_ssi_pdata);
+
+	imx27_add_mxc_mmc(1, &sdhc_pdata);
+
+>>>>>>> v4.9.227
 	gpio_request(OTG_PHY_CS_GPIO, "usb-otg-cs");
 	gpio_direction_output(OTG_PHY_CS_GPIO, 1);
 	gpio_request(USBH2_PHY_CS_GPIO, "usb-host2-cs");
@@ -403,12 +424,15 @@ static void __init pca100_init(void)
 
 	if (usbh2_pdata.otg)
 		imx27_add_mxc_ehci_hs(2, &usbh2_pdata);
+<<<<<<< HEAD
 
 	imx27_add_imx_fb(&pca100_fb_data);
 
 	imx27_add_fec(NULL);
 	imx27_add_imx2_wdt();
 	imx27_add_mxc_w1();
+=======
+>>>>>>> v4.9.227
 }
 
 static void __init pca100_timer_init(void)
@@ -421,7 +445,12 @@ MACHINE_START(PCA100, "phyCARD-i.MX27")
 	.map_io = mx27_map_io,
 	.init_early = imx27_init_early,
 	.init_irq = mx27_init_irq,
+<<<<<<< HEAD
 	.init_machine = pca100_init,
+=======
+	.init_machine	= pca100_init,
+	.init_late	= pca100_late_init,
+>>>>>>> v4.9.227
 	.init_time	= pca100_timer_init,
 	.restart	= mxc_restart,
 MACHINE_END

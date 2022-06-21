@@ -94,7 +94,10 @@ MODULE_DEVICE_TABLE(i2c, ov7640_id);
 
 static struct i2c_driver ov7640_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= "ov7640",
 	},
 	.probe = ov7640_probe,

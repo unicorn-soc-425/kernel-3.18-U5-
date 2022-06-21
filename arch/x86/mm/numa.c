@@ -1,4 +1,8 @@
 /* Common code for 32 and 64-bit NUMA */
+<<<<<<< HEAD
+=======
+#include <linux/acpi.h>
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/string.h>
@@ -7,7 +11,10 @@
 #include <linux/memblock.h>
 #include <linux/mmzone.h>
 #include <linux/ctype.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/nodemask.h>
 #include <linux/sched.h>
 #include <linux/topology.h>
@@ -15,7 +22,10 @@
 #include <asm/e820.h>
 #include <asm/proto.h>
 #include <asm/dma.h>
+<<<<<<< HEAD
 #include <asm/acpi.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/amd_nb.h>
 
 #include "numa_internal.h"
@@ -246,8 +256,15 @@ int __init numa_cleanup_meminfo(struct numa_meminfo *mi)
 		bi->start = max(bi->start, low);
 		bi->end = min(bi->end, high);
 
+<<<<<<< HEAD
 		/* and there's no empty block */
 		if (bi->start >= bi->end)
+=======
+		/* and there's no empty or non-exist block */
+		if (bi->start >= bi->end ||
+		    !memblock_overlaps_region(&memblock.memory,
+			bi->start, bi->end - bi->start))
+>>>>>>> v4.9.227
 			numa_remove_memblk_from(i--, mi);
 	}
 
@@ -463,6 +480,7 @@ static bool __init numa_meminfo_cover_memory(const struct numa_meminfo *mi)
 	return true;
 }
 
+<<<<<<< HEAD
 static void __init numa_clear_kernel_node_hotplug(void)
 {
 	int i, nid;
@@ -496,6 +514,69 @@ static void __init numa_clear_kernel_node_hotplug(void)
 		end = numa_meminfo.blk[i].end;
 
 		memblock_clear_hotplug(start, end - start);
+=======
+/*
+ * Mark all currently memblock-reserved physical memory (which covers the
+ * kernel's own memory ranges) as hot-unswappable.
+ */
+static void __init numa_clear_kernel_node_hotplug(void)
+{
+	nodemask_t reserved_nodemask = NODE_MASK_NONE;
+	struct memblock_region *mb_region;
+	int i;
+
+	/*
+	 * We have to do some preprocessing of memblock regions, to
+	 * make them suitable for reservation.
+	 *
+	 * At this time, all memory regions reserved by memblock are
+	 * used by the kernel, but those regions are not split up
+	 * along node boundaries yet, and don't necessarily have their
+	 * node ID set yet either.
+	 *
+	 * So iterate over all memory known to the x86 architecture,
+	 * and use those ranges to set the nid in memblock.reserved.
+	 * This will split up the memblock regions along node
+	 * boundaries and will set the node IDs as well.
+	 */
+	for (i = 0; i < numa_meminfo.nr_blks; i++) {
+		struct numa_memblk *mb = numa_meminfo.blk + i;
+		int ret;
+
+		ret = memblock_set_node(mb->start, mb->end - mb->start, &memblock.reserved, mb->nid);
+		WARN_ON_ONCE(ret);
+	}
+
+	/*
+	 * Now go over all reserved memblock regions, to construct a
+	 * node mask of all kernel reserved memory areas.
+	 *
+	 * [ Note, when booting with mem=nn[kMG] or in a kdump kernel,
+	 *   numa_meminfo might not include all memblock.reserved
+	 *   memory ranges, because quirks such as trim_snb_memory()
+	 *   reserve specific pages for Sandy Bridge graphics. ]
+	 */
+	for_each_memblock(reserved, mb_region) {
+		if (mb_region->nid != MAX_NUMNODES)
+			node_set(mb_region->nid, reserved_nodemask);
+	}
+
+	/*
+	 * Finally, clear the MEMBLOCK_HOTPLUG flag for all memory
+	 * belonging to the reserved node mask.
+	 *
+	 * Note that this will include memory regions that reside
+	 * on nodes that contain kernel memory - entire nodes
+	 * become hot-unpluggable:
+	 */
+	for (i = 0; i < numa_meminfo.nr_blks; i++) {
+		struct numa_memblk *mb = numa_meminfo.blk + i;
+
+		if (!node_isset(mb->nid, reserved_nodemask))
+			continue;
+
+		memblock_clear_hotplug(mb->start, mb->end - mb->start);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -587,9 +668,13 @@ static void __init numa_init_array(void)
 		if (early_cpu_to_node(i) != NUMA_NO_NODE)
 			continue;
 		numa_set_node(i, rr);
+<<<<<<< HEAD
 		rr = next_node(rr, node_online_map);
 		if (rr == MAX_NUMNODES)
 			rr = first_node(node_online_map);
+=======
+		rr = next_node_in(rr, node_online_map);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -695,6 +780,7 @@ void __init x86_numa_init(void)
 	numa_init(dummy_numa_init);
 }
 
+<<<<<<< HEAD
 static __init int find_near_online_node(int node)
 {
 	int n, val;
@@ -711,6 +797,21 @@ static __init int find_near_online_node(int node)
 	}
 
 	return best_node;
+=======
+static void __init init_memory_less_node(int nid)
+{
+	unsigned long zones_size[MAX_NR_ZONES] = {0};
+	unsigned long zholes_size[MAX_NR_ZONES] = {0};
+
+	/* Allocate and initialize node data. Memory-less node is now online.*/
+	alloc_node_data(nid);
+	free_area_init_node(nid, zones_size, 0, zholes_size);
+
+	/*
+	 * All zonelists will be built later in start_kernel() after per cpu
+	 * areas are initialized.
+	 */
+>>>>>>> v4.9.227
 }
 
 /*
@@ -739,8 +840,15 @@ void __init init_cpu_to_node(void)
 
 		if (node == NUMA_NO_NODE)
 			continue;
+<<<<<<< HEAD
 		if (!node_online(node))
 			node = find_near_online_node(node);
+=======
+
+		if (!node_online(node))
+			init_memory_less_node(node);
+
+>>>>>>> v4.9.227
 		numa_set_node(cpu, node);
 	}
 }
@@ -794,7 +902,10 @@ int early_cpu_to_node(int cpu)
 void debug_cpumask_set_cpu(int cpu, int node, bool enable)
 {
 	struct cpumask *mask;
+<<<<<<< HEAD
 	char buf[64];
+=======
+>>>>>>> v4.9.227
 
 	if (node == NUMA_NO_NODE) {
 		/* early_cpu_to_node() already emits a warning and trace */
@@ -812,10 +923,16 @@ void debug_cpumask_set_cpu(int cpu, int node, bool enable)
 	else
 		cpumask_clear_cpu(cpu, mask);
 
+<<<<<<< HEAD
 	cpulist_scnprintf(buf, sizeof(buf), mask);
 	printk(KERN_DEBUG "%s cpu %d node %d: mask now %s\n",
 		enable ? "numa_add_cpu" : "numa_remove_cpu",
 		cpu, node, buf);
+=======
+	printk(KERN_DEBUG "%s cpu %d node %d: mask now %*pbl\n",
+		enable ? "numa_add_cpu" : "numa_remove_cpu",
+		cpu, node, cpumask_pr_args(mask));
+>>>>>>> v4.9.227
 	return;
 }
 

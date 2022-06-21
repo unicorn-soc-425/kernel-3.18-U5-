@@ -71,7 +71,11 @@ struct fsl_dma_domain {
 	u32				stash_id;
 	struct pamu_stash_attribute	dma_stash;
 	u32				snoop_id;
+<<<<<<< HEAD
 	struct iommu_domain		*iommu_domain;
+=======
+	struct iommu_domain		iommu_domain;
+>>>>>>> v4.9.227
 	spinlock_t			domain_lock;
 };
 

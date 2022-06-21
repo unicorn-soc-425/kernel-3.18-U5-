@@ -12,6 +12,13 @@
 #ifndef _ASM_CHECKSUM_H
 #define _ASM_CHECKSUM_H
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_GENERIC_CSUM
+#include <asm-generic/checksum.h>
+#else
+
+>>>>>>> v4.9.227
 #include <linux/in6.h>
 
 #include <asm/uaccess.h>
@@ -99,10 +106,15 @@ __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len,
  */
 __wsum csum_partial_copy_nocheck(const void *src, void *dst,
 				       int len, __wsum sum);
+<<<<<<< HEAD
+=======
+#define csum_partial_copy_nocheck csum_partial_copy_nocheck
+>>>>>>> v4.9.227
 
 /*
  *	Fold a partial checksum without adding pseudo headers
  */
+<<<<<<< HEAD
 static inline __sum16 csum_fold(__wsum sum)
 {
 	__asm__(
@@ -120,6 +132,20 @@ static inline __sum16 csum_fold(__wsum sum)
 
 	return (__force __sum16)sum;
 }
+=======
+static inline __sum16 csum_fold(__wsum csum)
+{
+	u32 sum = (__force u32)csum;;
+
+	sum += (sum << 16);
+	csum = (sum < csum);
+	sum >>= 16;
+	sum += csum;
+
+	return (__force __sum16)~sum;
+}
+#define csum_fold csum_fold
+>>>>>>> v4.9.227
 
 /*
  *	This is a version of ip_compute_csum() optimized for IP headers,
@@ -158,10 +184,18 @@ static inline __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 
 	return csum_fold(csum);
 }
+<<<<<<< HEAD
 
 static inline __wsum csum_tcpudp_nofold(__be32 saddr,
 	__be32 daddr, unsigned short len, unsigned short proto,
 	__wsum sum)
+=======
+#define ip_fast_csum ip_fast_csum
+
+static inline __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
+					__u32 len, __u8 proto,
+					__wsum sum)
+>>>>>>> v4.9.227
 {
 	__asm__(
 	"	.set	push		# csum_tcpudp_nofold\n"
@@ -185,7 +219,13 @@ static inline __wsum csum_tcpudp_nofold(__be32 saddr,
 	"	daddu	%0, %4		\n"
 	"	dsll32	$1, %0, 0	\n"
 	"	daddu	%0, $1		\n"
+<<<<<<< HEAD
 	"	dsra32	%0, %0, 0	\n"
+=======
+	"	sltu	$1, %0, $1	\n"
+	"	dsra32	%0, %0, 0	\n"
+	"	addu	%0, $1		\n"
+>>>>>>> v4.9.227
 #endif
 	"	.set	pop"
 	: "=r" (sum)
@@ -200,6 +240,7 @@ static inline __wsum csum_tcpudp_nofold(__be32 saddr,
 
 	return sum;
 }
+<<<<<<< HEAD
 
 /*
  * computes the checksum of the TCP/UDP pseudo-header
@@ -212,6 +253,9 @@ static inline __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
 {
 	return csum_fold(csum_tcpudp_nofold(saddr, daddr, len, proto, sum));
 }
+=======
+#define csum_tcpudp_nofold csum_tcpudp_nofold
+>>>>>>> v4.9.227
 
 /*
  * this routine is used for miscellaneous IP-like checksums, mainly
@@ -225,9 +269,17 @@ static inline __sum16 ip_compute_csum(const void *buff, int len)
 #define _HAVE_ARCH_IPV6_CSUM
 static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 					  const struct in6_addr *daddr,
+<<<<<<< HEAD
 					  __u32 len, unsigned short proto,
 					  __wsum sum)
 {
+=======
+					  __u32 len, __u8 proto,
+					  __wsum sum)
+{
+	__wsum tmp;
+
+>>>>>>> v4.9.227
 	__asm__(
 	"	.set	push		# csum_ipv6_magic\n"
 	"	.set	noreorder	\n"
@@ -280,11 +332,23 @@ static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 
 	"	addu	%0, $1		# Add final carry\n"
 	"	.set	pop"
+<<<<<<< HEAD
 	: "=r" (sum), "=r" (proto)
 	: "r" (saddr), "r" (daddr),
 	  "0" (htonl(len)), "1" (htonl(proto)), "r" (sum));
+=======
+	: "=&r" (sum), "=&r" (tmp)
+	: "r" (saddr), "r" (daddr),
+	  "0" (htonl(len)), "r" (htonl(proto)), "r" (sum));
+>>>>>>> v4.9.227
 
 	return csum_fold(sum);
 }
 
+<<<<<<< HEAD
+=======
+#include <asm-generic/checksum.h>
+#endif /* CONFIG_GENERIC_CSUM */
+
+>>>>>>> v4.9.227
 #endif /* _ASM_CHECKSUM_H */

@@ -26,7 +26,11 @@
 #include <linux/device-mapper.h>
 #include <linux/dm-kcopyd.h>
 
+<<<<<<< HEAD
 #include "dm.h"
+=======
+#include "dm-core.h"
+>>>>>>> v4.9.227
 
 #define SUB_JOB_SIZE	128
 #define SPLIT_COUNT	8
@@ -55,6 +59,7 @@ struct dm_kcopyd_client {
 	struct dm_kcopyd_throttle *throttle;
 
 /*
+<<<<<<< HEAD
  * We maintain three lists of jobs:
  *
  * i)   jobs waiting for pages
@@ -64,6 +69,19 @@ struct dm_kcopyd_client {
  * All three of these are protected by job_lock.
  */
 	spinlock_t job_lock;
+=======
+ * We maintain four lists of jobs:
+ *
+ * i)   jobs waiting for pages
+ * ii)  jobs that have pages, and are waiting for the io to be issued.
+ * iii) jobs that don't need to do any IO and just run a callback
+ * iv) jobs that have completed.
+ *
+ * All four of these are protected by job_lock.
+ */
+	spinlock_t job_lock;
+	struct list_head callback_jobs;
+>>>>>>> v4.9.227
 	struct list_head complete_jobs;
 	struct list_head io_jobs;
 	struct list_head pages_jobs;
@@ -244,7 +262,11 @@ static int kcopyd_get_pages(struct dm_kcopyd_client *kc,
 	*pages = NULL;
 
 	do {
+<<<<<<< HEAD
 		pl = alloc_pl(__GFP_NOWARN | __GFP_NORETRY);
+=======
+		pl = alloc_pl(__GFP_NOWARN | __GFP_NORETRY | __GFP_KSWAPD_RECLAIM);
+>>>>>>> v4.9.227
 		if (unlikely(!pl)) {
 			/* Use reserved pages */
 			pl = kc->pages;
@@ -467,7 +489,11 @@ static void complete_io(unsigned long error, void *context)
 	io_job_finish(kc->throttle);
 
 	if (error) {
+<<<<<<< HEAD
 		if (job->rw & WRITE)
+=======
+		if (op_is_write(job->rw))
+>>>>>>> v4.9.227
 			job->write_err |= error;
 		else
 			job->read_err = 1;
@@ -479,7 +505,11 @@ static void complete_io(unsigned long error, void *context)
 		}
 	}
 
+<<<<<<< HEAD
 	if (job->rw & WRITE)
+=======
+	if (op_is_write(job->rw))
+>>>>>>> v4.9.227
 		push(&kc->complete_jobs, job);
 
 	else {
@@ -498,7 +528,12 @@ static int run_io_job(struct kcopyd_job *job)
 {
 	int r;
 	struct dm_io_request io_req = {
+<<<<<<< HEAD
 		.bi_rw = job->rw,
+=======
+		.bi_op = job->rw,
+		.bi_op_flags = 0,
+>>>>>>> v4.9.227
 		.mem.type = DM_IO_PAGE_LIST,
 		.mem.ptr.pl = job->pages,
 		.mem.offset = 0,
@@ -552,7 +587,11 @@ static int process_jobs(struct list_head *jobs, struct dm_kcopyd_client *kc,
 
 		if (r < 0) {
 			/* error this rogue job */
+<<<<<<< HEAD
 			if (job->rw & WRITE)
+=======
+			if (op_is_write(job->rw))
+>>>>>>> v4.9.227
 				job->write_err = (unsigned long) -1L;
 			else
 				job->read_err = 1;
@@ -583,6 +622,10 @@ static void do_work(struct work_struct *work)
 	struct dm_kcopyd_client *kc = container_of(work,
 					struct dm_kcopyd_client, kcopyd_work);
 	struct blk_plug plug;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> v4.9.227
 
 	/*
 	 * The order that these are called is *very* important.
@@ -591,6 +634,13 @@ static void do_work(struct work_struct *work)
 	 * list.  io jobs call wake when they complete and it all
 	 * starts again.
 	 */
+<<<<<<< HEAD
+=======
+	spin_lock_irqsave(&kc->job_lock, flags);
+	list_splice_tail_init(&kc->callback_jobs, &kc->complete_jobs);
+	spin_unlock_irqrestore(&kc->job_lock, flags);
+
+>>>>>>> v4.9.227
 	blk_start_plug(&plug);
 	process_jobs(&kc->complete_jobs, kc, run_complete_job);
 	process_jobs(&kc->pages_jobs, kc, run_pages_job);
@@ -608,7 +658,11 @@ static void dispatch_job(struct kcopyd_job *job)
 	struct dm_kcopyd_client *kc = job->kc;
 	atomic_inc(&kc->nr_jobs);
 	if (unlikely(!job->source.count))
+<<<<<<< HEAD
 		push(&kc->complete_jobs, job);
+=======
+		push(&kc->callback_jobs, job);
+>>>>>>> v4.9.227
 	else if (job->pages == &zero_page_list)
 		push(&kc->io_jobs, job);
 	else
@@ -736,7 +790,11 @@ int dm_kcopyd_copy(struct dm_kcopyd_client *kc, struct dm_io_region *from,
 		/*
 		 * Use WRITE SAME to optimize zeroing if all dests support it.
 		 */
+<<<<<<< HEAD
 		job->rw = WRITE | REQ_WRITE_SAME;
+=======
+		job->rw = REQ_OP_WRITE_SAME;
+>>>>>>> v4.9.227
 		for (i = 0; i < job->num_dests; i++)
 			if (!bdev_write_same(job->dests[i].bdev)) {
 				job->rw = WRITE;
@@ -795,7 +853,11 @@ void dm_kcopyd_do_callback(void *j, int read_err, unsigned long write_err)
 	job->read_err = read_err;
 	job->write_err = write_err;
 
+<<<<<<< HEAD
 	push(&kc->complete_jobs, job);
+=======
+	push(&kc->callback_jobs, job);
+>>>>>>> v4.9.227
 	wake(kc);
 }
 EXPORT_SYMBOL(dm_kcopyd_do_callback);
@@ -820,11 +882,19 @@ struct dm_kcopyd_client *dm_kcopyd_client_create(struct dm_kcopyd_throttle *thro
 	int r = -ENOMEM;
 	struct dm_kcopyd_client *kc;
 
+<<<<<<< HEAD
 	kc = kmalloc(sizeof(*kc), GFP_KERNEL);
+=======
+	kc = kzalloc(sizeof(*kc), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!kc)
 		return ERR_PTR(-ENOMEM);
 
 	spin_lock_init(&kc->job_lock);
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&kc->callback_jobs);
+>>>>>>> v4.9.227
 	INIT_LIST_HEAD(&kc->complete_jobs);
 	INIT_LIST_HEAD(&kc->io_jobs);
 	INIT_LIST_HEAD(&kc->pages_jobs);
@@ -874,6 +944,10 @@ void dm_kcopyd_client_destroy(struct dm_kcopyd_client *kc)
 	/* Wait for completion of all jobs submitted by this client. */
 	wait_event(kc->destroyq, !atomic_read(&kc->nr_jobs));
 
+<<<<<<< HEAD
+=======
+	BUG_ON(!list_empty(&kc->callback_jobs));
+>>>>>>> v4.9.227
 	BUG_ON(!list_empty(&kc->complete_jobs));
 	BUG_ON(!list_empty(&kc->io_jobs));
 	BUG_ON(!list_empty(&kc->pages_jobs));

@@ -56,6 +56,7 @@ static int read_eeprom_byte(struct mantis_pci *mantis, u8 *data, u8 length)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int write_eeprom_byte(struct mantis_pci *mantis, u8 *data, u8 length)
 {
 	int err;
@@ -79,6 +80,8 @@ static int write_eeprom_byte(struct mantis_pci *mantis, u8 *data, u8 length)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int get_mac_address(struct mantis_pci *mantis)
 {
 	int err;

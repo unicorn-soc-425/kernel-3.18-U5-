@@ -10,8 +10,11 @@
 
 #include "bpf_jit.h"
 
+<<<<<<< HEAD
 int bpf_jit_enable __read_mostly;
 
+=======
+>>>>>>> v4.9.227
 static inline bool is_simm13(unsigned int value)
 {
 	return value + 0x1000 < 0x2000;
@@ -351,7 +354,11 @@ do {	*prog++ = BR_OPC | WDISP22(OFF);		\
  *
  * Sometimes we need to emit a branch earlier in the code
  * sequence.  And in these situations we adjust "destination"
+<<<<<<< HEAD
  * to accomodate this difference.  For example, if we needed
+=======
+ * to accommodate this difference.  For example, if we needed
+>>>>>>> v4.9.227
  * to emit a branch (and it's delay slot) right before the
  * final instruction emitted for a BPF opcode, we'd use
  * "destination + 4" instead of just plain "destination" above.
@@ -794,12 +801,20 @@ cond_branch:			f_offset = addrs[i + filter[i].jf];
 	}
 
 	if (bpf_jit_enable > 1)
+<<<<<<< HEAD
 		bpf_jit_dump(flen, proglen, pass, image);
+=======
+		bpf_jit_dump(flen, proglen, pass + 1, image);
+>>>>>>> v4.9.227
 
 	if (image) {
 		bpf_flush_icache(image, image + proglen);
 		fp->bpf_func = (void *)image;
+<<<<<<< HEAD
 		fp->jited = true;
+=======
+		fp->jited = 1;
+>>>>>>> v4.9.227
 	}
 out:
 	kfree(addrs);

@@ -8,8 +8,15 @@
 
 #include "./bebob.h"
 
+<<<<<<< HEAD
 static char *const phase88_rack_clk_src_labels[] = {
 	SND_BEBOB_CLOCK_INTERNAL, "Digital In", "Word Clock"
+=======
+static enum snd_bebob_clock_type phase88_rack_clk_src_types[] = {
+	SND_BEBOB_CLOCK_TYPE_INTERNAL,
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* S/PDIF */
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* Word Clock */
+>>>>>>> v4.9.227
 };
 static int
 phase88_rack_clk_src_get(struct snd_bebob *bebob, unsigned int *id)
@@ -34,6 +41,7 @@ end:
 	return err;
 }
 
+<<<<<<< HEAD
 static char *const phase24_series_clk_src_labels[] = {
 	SND_BEBOB_CLOCK_INTERNAL, "Digital In"
 };
@@ -44,21 +52,34 @@ phase24_series_clk_src_get(struct snd_bebob *bebob, unsigned int *id)
 }
 
 static struct snd_bebob_rate_spec phase_series_rate_spec = {
+=======
+static const struct snd_bebob_rate_spec phase_series_rate_spec = {
+>>>>>>> v4.9.227
 	.get	= &snd_bebob_stream_get_rate,
 	.set	= &snd_bebob_stream_set_rate,
 };
 
 /* PHASE 88 Rack FW */
+<<<<<<< HEAD
 static struct snd_bebob_clock_spec phase88_rack_clk = {
 	.num	= ARRAY_SIZE(phase88_rack_clk_src_labels),
 	.labels	= phase88_rack_clk_src_labels,
 	.get	= &phase88_rack_clk_src_get,
 };
 struct snd_bebob_spec phase88_rack_spec = {
+=======
+static const struct snd_bebob_clock_spec phase88_rack_clk = {
+	.num	= ARRAY_SIZE(phase88_rack_clk_src_types),
+	.types	= phase88_rack_clk_src_types,
+	.get	= &phase88_rack_clk_src_get,
+};
+const struct snd_bebob_spec phase88_rack_spec = {
+>>>>>>> v4.9.227
 	.clock	= &phase88_rack_clk,
 	.rate	= &phase_series_rate_spec,
 	.meter	= NULL
 };
+<<<<<<< HEAD
 
 /* 'PHASE 24 FW' and 'PHASE X24 FW' */
 static struct snd_bebob_clock_spec phase24_series_clk = {
@@ -71,3 +92,5 @@ struct snd_bebob_spec phase24_series_spec = {
 	.rate	= &phase_series_rate_spec,
 	.meter	= NULL
 };
+=======
+>>>>>>> v4.9.227

@@ -23,6 +23,10 @@
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
+=======
+#include <linux/cpu.h>
+>>>>>>> v4.9.227
 #include <linux/gfp.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -238,6 +242,7 @@ static ssize_t host_control_on_shutdown_store(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 /**
  * dcdbas_smi_request: generate SMI request
  *
@@ -265,6 +270,16 @@ int dcdbas_smi_request(struct smi_cmd *smi_cmd)
 			__func__);
 		ret = -EBUSY;
 		goto out;
+=======
+static int raise_smi(void *par)
+{
+	struct smi_cmd *smi_cmd = par;
+
+	if (smp_processor_id() != 0) {
+		dev_dbg(&dcdbas_pdev->dev, "%s: failed to get CPU 0\n",
+			__func__);
+		return -EBUSY;
+>>>>>>> v4.9.227
 	}
 
 	/* generate SMI */
@@ -280,9 +295,34 @@ int dcdbas_smi_request(struct smi_cmd *smi_cmd)
 		: "memory"
 	);
 
+<<<<<<< HEAD
 out:
 	set_cpus_allowed_ptr(current, old_mask);
 	free_cpumask_var(old_mask);
+=======
+	return 0;
+}
+/**
+ * dcdbas_smi_request: generate SMI request
+ *
+ * Called with smi_data_lock.
+ */
+int dcdbas_smi_request(struct smi_cmd *smi_cmd)
+{
+	int ret;
+
+	if (smi_cmd->magic != SMI_CMD_MAGIC) {
+		dev_info(&dcdbas_pdev->dev, "%s: invalid magic value\n",
+			 __func__);
+		return -EBADR;
+	}
+
+	/* SMI requires CPU 0 */
+	get_online_cpus();
+	ret = smp_call_on_cpu(0, raise_smi, smi_cmd, true);
+	put_online_cpus();
+
+>>>>>>> v4.9.227
 	return ret;
 }
 
@@ -578,7 +618,10 @@ static int dcdbas_remove(struct platform_device *dev)
 static struct platform_driver dcdbas_driver = {
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= dcdbas_probe,
 	.remove		= dcdbas_remove,

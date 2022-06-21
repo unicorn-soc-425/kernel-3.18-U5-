@@ -252,8 +252,17 @@ void wil_p2p_search_expired(struct work_struct *work)
 	mutex_unlock(&wil->mutex);
 
 	if (started) {
+<<<<<<< HEAD
 		mutex_lock(&wil->p2p_wdev_mutex);
 		cfg80211_scan_done(wil->scan_request, 0);
+=======
+		struct cfg80211_scan_info info = {
+			.aborted = false,
+		};
+
+		mutex_lock(&wil->p2p_wdev_mutex);
+		cfg80211_scan_done(wil->scan_request, &info);
+>>>>>>> v4.9.227
 		wil->scan_request = NULL;
 		wil->radio_wdev = wil->wdev;
 		mutex_unlock(&wil->p2p_wdev_mutex);
@@ -263,6 +272,12 @@ void wil_p2p_search_expired(struct work_struct *work)
 void wil_p2p_stop_radio_operations(struct wil6210_priv *wil)
 {
 	struct wil_p2p_info *p2p = &wil->p2p;
+<<<<<<< HEAD
+=======
+	struct cfg80211_scan_info info = {
+		.aborted = true,
+	};
+>>>>>>> v4.9.227
 
 	lockdep_assert_held(&wil->mutex);
 
@@ -275,7 +290,11 @@ void wil_p2p_stop_radio_operations(struct wil6210_priv *wil)
 		/* Regular scan on the p2p device */
 		if (wil->scan_request &&
 		    wil->scan_request->wdev == wil->p2p_wdev) {
+<<<<<<< HEAD
 			cfg80211_scan_done(wil->scan_request, 1);
+=======
+			cfg80211_scan_done(wil->scan_request, &info);
+>>>>>>> v4.9.227
 			wil->scan_request = NULL;
 		}
 		goto out;
@@ -288,7 +307,11 @@ void wil_p2p_stop_radio_operations(struct wil6210_priv *wil)
 
 	if (wil->scan_request) {
 		/* search */
+<<<<<<< HEAD
 		cfg80211_scan_done(wil->scan_request, 1);
+=======
+		cfg80211_scan_done(wil->scan_request, &info);
+>>>>>>> v4.9.227
 		wil->scan_request = NULL;
 	} else {
 		/* listen */

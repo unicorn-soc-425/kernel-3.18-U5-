@@ -22,7 +22,10 @@
 
 #include "i2s.h"
 #include "idma.h"
+<<<<<<< HEAD
 #include "dma.h"
+=======
+>>>>>>> v4.9.227
 #include "i2s-regs.h"
 
 #define ST_RUNNING		(1<<0)
@@ -418,7 +421,10 @@ static int asoc_idma_platform_probe(struct platform_device *pdev)
 static struct platform_driver asoc_idma_driver = {
 	.driver = {
 		.name = "samsung-idma",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 
 	.probe = asoc_idma_platform_probe,

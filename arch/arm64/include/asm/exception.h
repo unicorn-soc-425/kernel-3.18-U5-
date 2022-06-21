@@ -18,7 +18,18 @@
 #ifndef __ASM_EXCEPTION_H
 #define __ASM_EXCEPTION_H
 
+<<<<<<< HEAD
 #define __exception	__attribute__((section(".exception.text")))
 #define __exception_irq_entry	__exception
+=======
+#include <linux/interrupt.h>
+
+#define __exception	__attribute__((section(".exception.text")))
+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+#define __exception_irq_entry	__irq_entry
+#else
+#define __exception_irq_entry	__exception
+#endif
+>>>>>>> v4.9.227
 
 #endif	/* __ASM_EXCEPTION_H */

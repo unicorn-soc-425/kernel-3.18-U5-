@@ -18,6 +18,12 @@
 
 #define LP872X_MAX_REGULATORS		9
 
+<<<<<<< HEAD
+=======
+#define LP8720_ENABLE_DELAY		200
+#define LP8725_ENABLE_DELAY		30000
+
+>>>>>>> v4.9.227
 enum lp872x_regulator_id {
 	LP8720_ID_BASE,
 	LP8720_ID_LDO1 = LP8720_ID_BASE,
@@ -79,12 +85,20 @@ struct lp872x_regulator_data {
  * @update_config     : if LP872X_GENERAL_CFG register is updated, set true
  * @regulator_data    : platform regulator id and init data
  * @dvs               : dvs data for buck voltage control
+<<<<<<< HEAD
+=======
+ * @enable_gpio       : gpio pin number for enable control
+>>>>>>> v4.9.227
  */
 struct lp872x_platform_data {
 	u8 general_config;
 	bool update_config;
 	struct lp872x_regulator_data regulator_data[LP872X_MAX_REGULATORS];
 	struct lp872x_dvs *dvs;
+<<<<<<< HEAD
+=======
+	int enable_gpio;
+>>>>>>> v4.9.227
 };
 
 #endif

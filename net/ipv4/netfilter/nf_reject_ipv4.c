@@ -11,8 +11,14 @@
 #include <net/tcp.h>
 #include <net/route.h>
 #include <net/dst.h>
+<<<<<<< HEAD
 #include <linux/netfilter_ipv4.h>
 #include <net/netfilter/ipv4/nf_reject.h>
+=======
+#include <net/netfilter/ipv4/nf_reject.h>
+#include <linux/netfilter_ipv4.h>
+#include <linux/netfilter_bridge.h>
+>>>>>>> v4.9.227
 
 const struct tcphdr *nf_reject_ip_tcphdr_get(struct sk_buff *oldskb,
 					     struct tcphdr *_oth, int hook)
@@ -23,6 +29,12 @@ const struct tcphdr *nf_reject_ip_tcphdr_get(struct sk_buff *oldskb,
 	if (ip_hdr(oldskb)->frag_off & htons(IP_OFFSET))
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	if (ip_hdr(oldskb)->protocol != IPPROTO_TCP)
+		return NULL;
+
+>>>>>>> v4.9.227
 	oth = skb_header_pointer(oldskb, ip_hdrlen(oldskb),
 				 sizeof(struct tcphdr), _oth);
 	if (oth == NULL)
@@ -42,7 +54,11 @@ EXPORT_SYMBOL_GPL(nf_reject_ip_tcphdr_get);
 
 struct iphdr *nf_reject_iphdr_put(struct sk_buff *nskb,
 				  const struct sk_buff *oldskb,
+<<<<<<< HEAD
 				  __be16 protocol, int ttl)
+=======
+				  __u8 protocol, int ttl)
+>>>>>>> v4.9.227
 {
 	struct iphdr *niph, *oiph = ip_hdr(oldskb);
 
@@ -97,7 +113,11 @@ void nf_reject_ip_tcphdr_put(struct sk_buff *nskb, const struct sk_buff *oldskb,
 EXPORT_SYMBOL_GPL(nf_reject_ip_tcphdr_put);
 
 /* Send RST reply */
+<<<<<<< HEAD
 void nf_send_reset(struct sk_buff *oldskb, int hook)
+=======
+void nf_send_reset(struct net *net, struct sk_buff *oldskb, int hook)
+>>>>>>> v4.9.227
 {
 	struct sk_buff *nskb;
 	const struct iphdr *oiph;
@@ -122,12 +142,21 @@ void nf_send_reset(struct sk_buff *oldskb, int hook)
 	/* ip_route_me_harder expects skb->dst to be set */
 	skb_dst_set_noref(nskb, skb_dst(oldskb));
 
+<<<<<<< HEAD
+=======
+	nskb->mark = IP4_REPLY_MARK(net, oldskb->mark);
+
+>>>>>>> v4.9.227
 	skb_reserve(nskb, LL_MAX_HEADER);
 	niph = nf_reject_iphdr_put(nskb, oldskb, IPPROTO_TCP,
 				   ip4_dst_hoplimit(skb_dst(nskb)));
 	nf_reject_ip_tcphdr_put(nskb, oldskb, oth);
 
+<<<<<<< HEAD
 	if (ip_route_me_harder(nskb, RTN_UNSPEC))
+=======
+	if (ip_route_me_harder(net, nskb, RTN_UNSPEC))
+>>>>>>> v4.9.227
 		goto free_nskb;
 
 	/* "Never happens" */
@@ -145,7 +174,12 @@ void nf_send_reset(struct sk_buff *oldskb, int hook)
 	 */
 	if (oldskb->nf_bridge) {
 		struct ethhdr *oeth = eth_hdr(oldskb);
+<<<<<<< HEAD
 		nskb->dev = oldskb->nf_bridge->physindev;
+=======
+
+		nskb->dev = nf_bridge_get_physindev(oldskb);
+>>>>>>> v4.9.227
 		niph->tot_len = htons(nskb->len);
 		ip_send_check(niph);
 		if (dev_hard_header(nskb, nskb->dev, ntohs(nskb->protocol),
@@ -154,7 +188,11 @@ void nf_send_reset(struct sk_buff *oldskb, int hook)
 		dev_queue_xmit(nskb);
 	} else
 #endif
+<<<<<<< HEAD
 		ip_local_out(nskb);
+=======
+		ip_local_out(net, nskb->sk, nskb);
+>>>>>>> v4.9.227
 
 	return;
 
@@ -163,4 +201,30 @@ void nf_send_reset(struct sk_buff *oldskb, int hook)
 }
 EXPORT_SYMBOL_GPL(nf_send_reset);
 
+<<<<<<< HEAD
+=======
+void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
+{
+	struct iphdr *iph = ip_hdr(skb_in);
+	u8 proto;
+
+	if (skb_in->csum_bad || iph->frag_off & htons(IP_OFFSET))
+		return;
+
+	if (skb_csum_unnecessary(skb_in)) {
+		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
+		return;
+	}
+
+	if (iph->protocol == IPPROTO_TCP || iph->protocol == IPPROTO_UDP)
+		proto = iph->protocol;
+	else
+		proto = 0;
+
+	if (nf_ip_checksum(skb_in, hook, ip_hdrlen(skb_in), proto) == 0)
+		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
+}
+EXPORT_SYMBOL_GPL(nf_send_unreach);
+
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");

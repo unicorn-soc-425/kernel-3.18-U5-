@@ -14,6 +14,10 @@
  *   more details.
  */
 
+<<<<<<< HEAD
+=======
+#define __ARCH_WANT_RENAMEAT
+>>>>>>> v4.9.227
 #define __ARCH_WANT_SYS_CLONE
 
 /* Use the standard ABI for syscalls. */

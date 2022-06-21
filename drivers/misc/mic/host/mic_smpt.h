@@ -78,6 +78,10 @@ void mic_unmap_single(struct mic_device *mdev,
 dma_addr_t mic_map(struct mic_device *mdev,
 	dma_addr_t dma_addr, size_t size);
 void mic_unmap(struct mic_device *mdev, dma_addr_t mic_addr, size_t size);
+<<<<<<< HEAD
+=======
+dma_addr_t mic_to_dma_addr(struct mic_device *mdev, dma_addr_t mic_addr);
+>>>>>>> v4.9.227
 
 /**
  * mic_map_error - Check a MIC address for errors.

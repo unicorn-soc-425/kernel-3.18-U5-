@@ -8,6 +8,10 @@
 #include <linux/security.h>
 #include <linux/file.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
+=======
+#include <linux/fs.h>
+>>>>>>> v4.9.227
 
 #include <linux/proc_fs.h>
 
@@ -30,7 +34,11 @@ static int seq_show(struct seq_file *m, void *v)
 	put_task_struct(task);
 
 	if (files) {
+<<<<<<< HEAD
 		int fd = proc_fd(m->private);
+=======
+		unsigned int fd = proc_fd(m->private);
+>>>>>>> v4.9.227
 
 		spin_lock(&files->file_lock);
 		file = fcheck_files(files, fd);
@@ -48,6 +56,7 @@ static int seq_show(struct seq_file *m, void *v)
 		put_files_struct(files);
 	}
 
+<<<<<<< HEAD
 	if (!ret) {
 		seq_printf(m, "pos:\t%lli\nflags:\t0%o\nmnt_id:\t%i\n",
 			   (long long)file->f_pos, f_flags,
@@ -58,6 +67,25 @@ static int seq_show(struct seq_file *m, void *v)
 	}
 
 	return ret;
+=======
+	if (ret)
+		return ret;
+
+	seq_printf(m, "pos:\t%lli\nflags:\t0%o\nmnt_id:\t%i\n",
+		   (long long)file->f_pos, f_flags,
+		   real_mount(file->f_path.mnt)->mnt_id);
+
+	show_fd_locks(m, file, files);
+	if (seq_has_overflowed(m))
+		goto out;
+
+	if (file->f_op->show_fdinfo)
+		file->f_op->show_fdinfo(m, file);
+
+out:
+	fput(file);
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int seq_fdinfo_open(struct inode *inode, struct file *file)
@@ -78,12 +106,20 @@ static int tid_fd_revalidate(struct dentry *dentry, unsigned int flags)
 	struct task_struct *task;
 	const struct cred *cred;
 	struct inode *inode;
+<<<<<<< HEAD
 	int fd;
+=======
+	unsigned int fd;
+>>>>>>> v4.9.227
 
 	if (flags & LOOKUP_RCU)
 		return -ECHILD;
 
+<<<<<<< HEAD
 	inode = dentry->d_inode;
+=======
+	inode = d_inode(dentry);
+>>>>>>> v4.9.227
 	task = get_proc_task(inode);
 	fd = proc_fd(inode);
 
@@ -143,14 +179,22 @@ static int proc_fd_link(struct dentry *dentry, struct path *path)
 	struct task_struct *task;
 	int ret = -ENOENT;
 
+<<<<<<< HEAD
 	task = get_proc_task(dentry->d_inode);
+=======
+	task = get_proc_task(d_inode(dentry));
+>>>>>>> v4.9.227
 	if (task) {
 		files = get_files_struct(task);
 		put_task_struct(task);
 	}
 
 	if (files) {
+<<<<<<< HEAD
 		int fd = proc_fd(dentry->d_inode);
+=======
+		unsigned int fd = proc_fd(d_inode(dentry));
+>>>>>>> v4.9.227
 		struct file *fd_file;
 
 		spin_lock(&files->file_lock);
@@ -245,11 +289,19 @@ static int proc_readfd_common(struct file *file, struct dir_context *ctx,
 			continue;
 		rcu_read_unlock();
 
+<<<<<<< HEAD
 		len = snprintf(name, sizeof(name), "%d", fd);
+=======
+		len = snprintf(name, sizeof(name), "%u", fd);
+>>>>>>> v4.9.227
 		if (!proc_fill_cache(file, ctx,
 				     name, len, instantiate, p,
 				     (void *)(unsigned long)fd))
 			goto out_fd_loop;
+<<<<<<< HEAD
+=======
+		cond_resched();
+>>>>>>> v4.9.227
 		rcu_read_lock();
 	}
 	rcu_read_unlock();
@@ -267,8 +319,13 @@ static int proc_readfd(struct file *file, struct dir_context *ctx)
 
 const struct file_operations proc_fd_operations = {
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.iterate	= proc_readfd,
 	.llseek		= default_llseek,
+=======
+	.iterate_shared	= proc_readfd,
+	.llseek		= generic_file_llseek,
+>>>>>>> v4.9.227
 };
 
 static struct dentry *proc_lookupfd(struct inode *dir, struct dentry *dentry,
@@ -352,6 +409,11 @@ const struct inode_operations proc_fdinfo_inode_operations = {
 
 const struct file_operations proc_fdinfo_operations = {
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.iterate	= proc_readfdinfo,
 	.llseek		= default_llseek,
+=======
+	.iterate_shared	= proc_readfdinfo,
+	.llseek		= generic_file_llseek,
+>>>>>>> v4.9.227
 };

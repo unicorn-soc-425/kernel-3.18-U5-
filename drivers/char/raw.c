@@ -12,6 +12,10 @@
 #include <linux/fs.h>
 #include <linux/major.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
+=======
+#include <linux/backing-dev.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/raw.h>
 #include <linux/capability.h>
@@ -70,7 +74,11 @@ static int raw_open(struct inode *inode, struct file *filp)
 	err = -ENODEV;
 	if (!bdev)
 		goto out;
+<<<<<<< HEAD
 	igrab(bdev->bd_inode);
+=======
+	bdgrab(bdev);
+>>>>>>> v4.9.227
 	err = blkdev_get(bdev, filp->f_mode | FMODE_EXCL, raw_open);
 	if (err)
 		goto out;
@@ -104,11 +112,17 @@ static int raw_release(struct inode *inode, struct file *filp)
 
 	mutex_lock(&raw_mutex);
 	bdev = raw_devices[minor].binding;
+<<<<<<< HEAD
 	if (--raw_devices[minor].inuse == 0) {
 		/* Here  inode->i_mapping == bdev->bd_inode->i_mapping  */
 		inode->i_mapping = &inode->i_data;
 		inode->i_mapping->backing_dev_info = &default_backing_dev_info;
 	}
+=======
+	if (--raw_devices[minor].inuse == 0)
+		/* Here  inode->i_mapping == bdev->bd_inode->i_mapping  */
+		inode->i_mapping = &inode->i_data;
+>>>>>>> v4.9.227
 	mutex_unlock(&raw_mutex);
 
 	blkdev_put(bdev, filp->f_mode | FMODE_EXCL);
@@ -284,9 +298,13 @@ static long raw_ctl_compat_ioctl(struct file *file, unsigned int cmd,
 #endif
 
 static const struct file_operations raw_fops = {
+<<<<<<< HEAD
 	.read		= new_sync_read,
 	.read_iter	= blkdev_read_iter,
 	.write		= new_sync_write,
+=======
+	.read_iter	= blkdev_read_iter,
+>>>>>>> v4.9.227
 	.write_iter	= blkdev_write_iter,
 	.fsync		= blkdev_fsync,
 	.open		= raw_open,
@@ -337,10 +355,15 @@ static int __init raw_init(void)
 
 	cdev_init(&raw_cdev, &raw_fops);
 	ret = cdev_add(&raw_cdev, dev, max_raw_minors);
+<<<<<<< HEAD
 	if (ret) {
 		goto error_region;
 	}
 
+=======
+	if (ret)
+		goto error_region;
+>>>>>>> v4.9.227
 	raw_class = class_create(THIS_MODULE, "raw");
 	if (IS_ERR(raw_class)) {
 		printk(KERN_ERR "Error creating raw class.\n");

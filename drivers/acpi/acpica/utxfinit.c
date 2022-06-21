@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +57,12 @@
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utxfinit")
 
+<<<<<<< HEAD
+=======
+/* For acpi_exec only */
+void ae_do_object_overrides(void);
+
+>>>>>>> v4.9.227
 /*******************************************************************************
  *
  * FUNCTION:    acpi_initialize_subsystem
@@ -65,7 +75,12 @@ ACPI_MODULE_NAME("utxfinit")
  *              called, so any early initialization belongs here.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status __init acpi_initialize_subsystem(void)
+=======
+
+acpi_status ACPI_INIT_FUNCTION acpi_initialize_subsystem(void)
+>>>>>>> v4.9.227
 {
 	acpi_status status;
 
@@ -120,6 +135,7 @@ acpi_status __init acpi_initialize_subsystem(void)
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
 	/* If configured, initialize the AML debugger */
 
 #ifdef ACPI_DEBUGGER
@@ -131,6 +147,8 @@ acpi_status __init acpi_initialize_subsystem(void)
 	}
 #endif
 
+=======
+>>>>>>> v4.9.227
 	return_ACPI_STATUS(AE_OK);
 }
 
@@ -148,12 +166,26 @@ ACPI_EXPORT_SYMBOL_INIT(acpi_initialize_subsystem)
  *              Puts system into ACPI mode if it isn't already.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status __init acpi_enable_subsystem(u32 flags)
+=======
+acpi_status ACPI_INIT_FUNCTION acpi_enable_subsystem(u32 flags)
+>>>>>>> v4.9.227
 {
 	acpi_status status = AE_OK;
 
 	ACPI_FUNCTION_TRACE(acpi_enable_subsystem);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * The early initialization phase is complete. The namespace is loaded,
+	 * and we can now support address spaces other than Memory, I/O, and
+	 * PCI_Config.
+	 */
+	acpi_gbl_early_initialization = FALSE;
+
+>>>>>>> v4.9.227
 #if (!ACPI_REDUCED_HARDWARE)
 
 	/* Enable ACPI mode */
@@ -182,6 +214,7 @@ acpi_status __init acpi_enable_subsystem(u32 flags)
 			return_ACPI_STATUS(status);
 		}
 	}
+<<<<<<< HEAD
 #endif				/* !ACPI_REDUCED_HARDWARE */
 
 	/*
@@ -200,6 +233,10 @@ acpi_status __init acpi_enable_subsystem(u32 flags)
 	}
 #if (!ACPI_REDUCED_HARDWARE)
 	/*
+=======
+
+	/*
+>>>>>>> v4.9.227
 	 * Initialize ACPI Event handling (Fixed and General Purpose)
 	 *
 	 * Note1: We must have the hardware and events initialized before we can
@@ -255,12 +292,17 @@ ACPI_EXPORT_SYMBOL_INIT(acpi_enable_subsystem)
  *              objects and executing AML code for Regions, buffers, etc.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status __init acpi_initialize_objects(u32 flags)
+=======
+acpi_status ACPI_INIT_FUNCTION acpi_initialize_objects(u32 flags)
+>>>>>>> v4.9.227
 {
 	acpi_status status = AE_OK;
 
 	ACPI_FUNCTION_TRACE(acpi_initialize_objects);
 
+<<<<<<< HEAD
 	/*
 	 * Run all _REG methods
 	 *
@@ -277,6 +319,15 @@ acpi_status __init acpi_initialize_objects(u32 flags)
 			return_ACPI_STATUS(status);
 		}
 	}
+=======
+#ifdef ACPI_EXEC_APP
+	/*
+	 * This call implements the "initialization file" option for acpi_exec.
+	 * This is the precise point that we want to perform the overrides.
+	 */
+	ae_do_object_overrides();
+#endif
+>>>>>>> v4.9.227
 
 	/*
 	 * Execute any module-level code that was detected during the table load
@@ -285,6 +336,7 @@ acpi_status __init acpi_initialize_objects(u32 flags)
 	 * outside of any control method is wrapped with a temporary control
 	 * method object and placed on a global list. The methods on this list
 	 * are executed below.
+<<<<<<< HEAD
 	 */
 	acpi_ns_exec_module_code_list();
 
@@ -300,10 +352,33 @@ acpi_status __init acpi_initialize_objects(u32 flags)
 		status = acpi_ns_initialize_objects();
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
+=======
+	 *
+	 * This case executes the module-level code for all tables only after
+	 * all of the tables have been loaded. It is a legacy option and is
+	 * not compatible with other ACPI implementations. See acpi_ns_load_table.
+	 */
+	if (!acpi_gbl_parse_table_as_term_list
+	    && acpi_gbl_group_module_level_code) {
+		acpi_ns_exec_module_code_list();
+
+		/*
+		 * Initialize the objects that remain uninitialized. This
+		 * runs the executable AML that may be part of the
+		 * declaration of these objects:
+		 * operation_regions, buffer_fields, Buffers, and Packages.
+		 */
+		if (!(flags & ACPI_NO_OBJECT_INIT)) {
+			status = acpi_ns_initialize_objects();
+			if (ACPI_FAILURE(status)) {
+				return_ACPI_STATUS(status);
+			}
+>>>>>>> v4.9.227
 		}
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Initialize all device objects in the namespace. This runs the device
 	 * _STA and _INI methods.
 	 */
@@ -312,6 +387,13 @@ acpi_status __init acpi_initialize_objects(u32 flags)
 				  "[Init] Initializing ACPI Devices\n"));
 
 		status = acpi_ns_initialize_devices();
+=======
+	 * Initialize all device/region objects in the namespace. This runs
+	 * the device _STA and _INI methods and region _REG methods.
+	 */
+	if (!(flags & (ACPI_NO_DEVICE_INIT | ACPI_NO_ADDRESS_SPACE_INIT))) {
+		status = acpi_ns_initialize_devices(flags);
+>>>>>>> v4.9.227
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}

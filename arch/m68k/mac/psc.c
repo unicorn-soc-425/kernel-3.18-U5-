@@ -27,8 +27,13 @@
 
 #define DEBUG_PSC
 
+<<<<<<< HEAD
 int psc_present;
 volatile __u8 *psc;
+=======
+volatile __u8 *psc;
+EXPORT_SYMBOL_GPL(psc);
+>>>>>>> v4.9.227
 
 /*
  * Debugging dump, used in various places to see what's going on.
@@ -38,7 +43,13 @@ static void psc_debug_dump(void)
 {
 	int	i;
 
+<<<<<<< HEAD
 	if (!psc_present) return;
+=======
+	if (!psc)
+		return;
+
+>>>>>>> v4.9.227
 	for (i = 0x30 ; i < 0x70 ; i += 0x10) {
 		printk("PSC #%d:  IFR = 0x%02X IER = 0x%02X\n",
 			i >> 4,
@@ -80,7 +91,10 @@ void __init psc_init(void)
 	 && macintosh_config->ident != MAC_MODEL_Q840)
 	{
 		psc = NULL;
+<<<<<<< HEAD
 		psc_present = 0;
+=======
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -90,7 +104,10 @@ void __init psc_init(void)
 	 */
 
 	psc = (void *) PSC_BASE;
+<<<<<<< HEAD
 	psc_present = 1;
+=======
+>>>>>>> v4.9.227
 
 	printk("PSC detected at %p\n", psc);
 
@@ -113,9 +130,16 @@ void __init psc_init(void)
  * PSC interrupt handler. It's a lot like the VIA interrupt handler.
  */
 
+<<<<<<< HEAD
 static void psc_irq(unsigned int irq, struct irq_desc *desc)
 {
 	unsigned int offset = (unsigned int)irq_desc_get_handler_data(desc);
+=======
+static void psc_irq(struct irq_desc *desc)
+{
+	unsigned int offset = (unsigned int)irq_desc_get_handler_data(desc);
+	unsigned int irq = irq_desc_get_irq(desc);
+>>>>>>> v4.9.227
 	int pIFR	= pIFRbase + offset;
 	int pIER	= pIERbase + offset;
 	int irq_num;
@@ -148,6 +172,7 @@ static void psc_irq(unsigned int irq, struct irq_desc *desc)
 
 void __init psc_register_interrupts(void)
 {
+<<<<<<< HEAD
 	irq_set_chained_handler(IRQ_AUTO_3, psc_irq);
 	irq_set_handler_data(IRQ_AUTO_3, (void *)0x30);
 	irq_set_chained_handler(IRQ_AUTO_4, psc_irq);
@@ -156,6 +181,12 @@ void __init psc_register_interrupts(void)
 	irq_set_handler_data(IRQ_AUTO_5, (void *)0x50);
 	irq_set_chained_handler(IRQ_AUTO_6, psc_irq);
 	irq_set_handler_data(IRQ_AUTO_6, (void *)0x60);
+=======
+	irq_set_chained_handler_and_data(IRQ_AUTO_3, psc_irq, (void *)0x30);
+	irq_set_chained_handler_and_data(IRQ_AUTO_4, psc_irq, (void *)0x40);
+	irq_set_chained_handler_and_data(IRQ_AUTO_5, psc_irq, (void *)0x50);
+	irq_set_chained_handler_and_data(IRQ_AUTO_6, psc_irq, (void *)0x60);
+>>>>>>> v4.9.227
 }
 
 void psc_irq_enable(int irq) {

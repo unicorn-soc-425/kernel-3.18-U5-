@@ -67,6 +67,12 @@ static inline void __iomem *ioremap(unsigned long offset, unsigned long size)
 
 extern void iounmap(volatile void __iomem *addr);
 #define ioremap_nocache(off,size) ioremap(off,size)
+<<<<<<< HEAD
+=======
+#define ioremap_wc ioremap_nocache
+#define ioremap_wt ioremap_nocache
+#define ioremap_uc ioremap_nocache
+>>>>>>> v4.9.227
 
 /*
  * IO bus memory addresses are also 1:1 with the physical address
@@ -161,14 +167,38 @@ static inline void _writel(unsigned long l, unsigned long addr)
 #define __raw_writeb writeb
 #define __raw_writew writew
 #define __raw_writel writel
+<<<<<<< HEAD
 
 #define ioread8 read
+=======
+#define writeb_relaxed writeb
+#define writew_relaxed writew
+#define writel_relaxed writel
+
+#define ioread8 readb
+>>>>>>> v4.9.227
 #define ioread16 readw
 #define ioread32 readl
 #define iowrite8 writeb
 #define iowrite16 writew
 #define iowrite32 writel
 
+<<<<<<< HEAD
+=======
+#define ioread8_rep(p, dst, count) insb((unsigned long)(p), (dst), (count))
+#define ioread16_rep(p, dst, count) insw((unsigned long)(p), (dst), (count))
+#define ioread32_rep(p, dst, count) insl((unsigned long)(p), (dst), (count))
+
+#define iowrite8_rep(p, src, count) outsb((unsigned long)(p), (src), (count))
+#define iowrite16_rep(p, src, count) outsw((unsigned long)(p), (src), (count))
+#define iowrite32_rep(p, src, count) outsl((unsigned long)(p), (src), (count))
+
+#define ioread16be(addr)	be16_to_cpu(readw(addr))
+#define ioread32be(addr)	be32_to_cpu(readl(addr))
+#define iowrite16be(v, addr)	writew(cpu_to_be16(v), (addr))
+#define iowrite32be(v, addr)	writel(cpu_to_be32(v), (addr))
+
+>>>>>>> v4.9.227
 #define mmiowb()
 
 #define flush_write_buffers() do { } while (0)  /* M32R_FIXME */

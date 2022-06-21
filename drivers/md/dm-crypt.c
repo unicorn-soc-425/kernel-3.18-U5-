@@ -1,7 +1,11 @@
 /*
  * Copyright (C) 2003 Jana Saout <jana@saout.de>
  * Copyright (C) 2004 Clemens Fruhwirth <clemens@endorphin.org>
+<<<<<<< HEAD
  * Copyright (C) 2006-2009 Red Hat, Inc. All rights reserved.
+=======
+ * Copyright (C) 2006-2015 Red Hat, Inc. All rights reserved.
+>>>>>>> v4.9.227
  * Copyright (C) 2013 Milan Broz <gmazyland@gmail.com>
  *
  * This file is released under the GPL.
@@ -28,6 +32,10 @@
 #include <crypto/hash.h>
 #include <crypto/md5.h>
 #include <crypto/algapi.h>
+<<<<<<< HEAD
+=======
+#include <crypto/skcipher.h>
+>>>>>>> v4.9.227
 
 #include <linux/device-mapper.h>
 
@@ -44,7 +52,11 @@ struct convert_context {
 	struct bvec_iter iter_out;
 	sector_t cc_sector;
 	atomic_t cc_pending;
+<<<<<<< HEAD
 	struct ablkcipher_request *req;
+=======
+	struct skcipher_request *req;
+>>>>>>> v4.9.227
 };
 
 /*
@@ -86,7 +98,11 @@ struct crypt_iv_operations {
 };
 
 struct iv_essiv_private {
+<<<<<<< HEAD
 	struct crypto_hash *hash_tfm;
+=======
+	struct crypto_ahash *hash_tfm;
+>>>>>>> v4.9.227
 	u8 *salt;
 };
 
@@ -152,13 +168,21 @@ struct crypt_config {
 
 	/* ESSIV: struct crypto_cipher *essiv_tfm */
 	void *iv_private;
+<<<<<<< HEAD
 	struct crypto_ablkcipher **tfms;
+=======
+	struct crypto_skcipher **tfms;
+>>>>>>> v4.9.227
 	unsigned tfms_count;
 
 	/*
 	 * Layout of each crypto request:
 	 *
+<<<<<<< HEAD
 	 *   struct ablkcipher_request
+=======
+	 *   struct skcipher_request
+>>>>>>> v4.9.227
 	 *      context
 	 *      padding
 	 *   struct dm_crypt_request
@@ -179,7 +203,11 @@ struct crypt_config {
 	u8 key[0];
 };
 
+<<<<<<< HEAD
 #define MIN_IOS        16
+=======
+#define MIN_IOS        64
+>>>>>>> v4.9.227
 
 static void clone_init(struct dm_crypt_io *, struct bio *);
 static void kcryptd_queue_crypt(struct dm_crypt_io *io);
@@ -188,7 +216,11 @@ static u8 *iv_of_dmreq(struct crypt_config *cc, struct dm_crypt_request *dmreq);
 /*
  * Use this to access cipher attributes that are the same for each CPU.
  */
+<<<<<<< HEAD
 static struct crypto_ablkcipher *any_tfm(struct crypt_config *cc)
+=======
+static struct crypto_skcipher *any_tfm(struct crypt_config *cc)
+>>>>>>> v4.9.227
 {
 	return cc->tfms[0];
 }
@@ -262,23 +294,40 @@ static int crypt_iv_plain64_gen(struct crypt_config *cc, u8 *iv,
 static int crypt_iv_essiv_init(struct crypt_config *cc)
 {
 	struct iv_essiv_private *essiv = &cc->iv_gen_private.essiv;
+<<<<<<< HEAD
 	struct hash_desc desc;
+=======
+	AHASH_REQUEST_ON_STACK(req, essiv->hash_tfm);
+>>>>>>> v4.9.227
 	struct scatterlist sg;
 	struct crypto_cipher *essiv_tfm;
 	int err;
 
 	sg_init_one(&sg, cc->key, cc->key_size);
+<<<<<<< HEAD
 	desc.tfm = essiv->hash_tfm;
 	desc.flags = CRYPTO_TFM_REQ_MAY_SLEEP;
 
 	err = crypto_hash_digest(&desc, &sg, cc->key_size, essiv->salt);
+=======
+	ahash_request_set_tfm(req, essiv->hash_tfm);
+	ahash_request_set_callback(req, CRYPTO_TFM_REQ_MAY_SLEEP, NULL, NULL);
+	ahash_request_set_crypt(req, &sg, essiv->salt, cc->key_size);
+
+	err = crypto_ahash_digest(req);
+	ahash_request_zero(req);
+>>>>>>> v4.9.227
 	if (err)
 		return err;
 
 	essiv_tfm = cc->iv_private;
 
 	err = crypto_cipher_setkey(essiv_tfm, essiv->salt,
+<<<<<<< HEAD
 			    crypto_hash_digestsize(essiv->hash_tfm));
+=======
+			    crypto_ahash_digestsize(essiv->hash_tfm));
+>>>>>>> v4.9.227
 	if (err)
 		return err;
 
@@ -289,7 +338,11 @@ static int crypt_iv_essiv_init(struct crypt_config *cc)
 static int crypt_iv_essiv_wipe(struct crypt_config *cc)
 {
 	struct iv_essiv_private *essiv = &cc->iv_gen_private.essiv;
+<<<<<<< HEAD
 	unsigned salt_size = crypto_hash_digestsize(essiv->hash_tfm);
+=======
+	unsigned salt_size = crypto_ahash_digestsize(essiv->hash_tfm);
+>>>>>>> v4.9.227
 	struct crypto_cipher *essiv_tfm;
 	int r, err = 0;
 
@@ -319,7 +372,11 @@ static struct crypto_cipher *setup_essiv_cpu(struct crypt_config *cc,
 	}
 
 	if (crypto_cipher_blocksize(essiv_tfm) !=
+<<<<<<< HEAD
 	    crypto_ablkcipher_ivsize(any_tfm(cc))) {
+=======
+	    crypto_skcipher_ivsize(any_tfm(cc))) {
+>>>>>>> v4.9.227
 		ti->error = "Block size of ESSIV cipher does "
 			    "not match IV size of block cipher";
 		crypto_free_cipher(essiv_tfm);
@@ -341,7 +398,11 @@ static void crypt_iv_essiv_dtr(struct crypt_config *cc)
 	struct crypto_cipher *essiv_tfm;
 	struct iv_essiv_private *essiv = &cc->iv_gen_private.essiv;
 
+<<<<<<< HEAD
 	crypto_free_hash(essiv->hash_tfm);
+=======
+	crypto_free_ahash(essiv->hash_tfm);
+>>>>>>> v4.9.227
 	essiv->hash_tfm = NULL;
 
 	kzfree(essiv->salt);
@@ -359,7 +420,11 @@ static int crypt_iv_essiv_ctr(struct crypt_config *cc, struct dm_target *ti,
 			      const char *opts)
 {
 	struct crypto_cipher *essiv_tfm = NULL;
+<<<<<<< HEAD
 	struct crypto_hash *hash_tfm = NULL;
+=======
+	struct crypto_ahash *hash_tfm = NULL;
+>>>>>>> v4.9.227
 	u8 *salt = NULL;
 	int err;
 
@@ -369,14 +434,22 @@ static int crypt_iv_essiv_ctr(struct crypt_config *cc, struct dm_target *ti,
 	}
 
 	/* Allocate hash algorithm */
+<<<<<<< HEAD
 	hash_tfm = crypto_alloc_hash(opts, 0, CRYPTO_ALG_ASYNC);
+=======
+	hash_tfm = crypto_alloc_ahash(opts, 0, CRYPTO_ALG_ASYNC);
+>>>>>>> v4.9.227
 	if (IS_ERR(hash_tfm)) {
 		ti->error = "Error initializing ESSIV hash";
 		err = PTR_ERR(hash_tfm);
 		goto bad;
 	}
 
+<<<<<<< HEAD
 	salt = kzalloc(crypto_hash_digestsize(hash_tfm), GFP_KERNEL);
+=======
+	salt = kzalloc(crypto_ahash_digestsize(hash_tfm), GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!salt) {
 		ti->error = "Error kmallocing salt storage in ESSIV";
 		err = -ENOMEM;
@@ -387,7 +460,11 @@ static int crypt_iv_essiv_ctr(struct crypt_config *cc, struct dm_target *ti,
 	cc->iv_gen_private.essiv.hash_tfm = hash_tfm;
 
 	essiv_tfm = setup_essiv_cpu(cc, ti, salt,
+<<<<<<< HEAD
 				crypto_hash_digestsize(hash_tfm));
+=======
+				crypto_ahash_digestsize(hash_tfm));
+>>>>>>> v4.9.227
 	if (IS_ERR(essiv_tfm)) {
 		crypt_iv_essiv_dtr(cc);
 		return PTR_ERR(essiv_tfm);
@@ -398,7 +475,11 @@ static int crypt_iv_essiv_ctr(struct crypt_config *cc, struct dm_target *ti,
 
 bad:
 	if (hash_tfm && !IS_ERR(hash_tfm))
+<<<<<<< HEAD
 		crypto_free_hash(hash_tfm);
+=======
+		crypto_free_ahash(hash_tfm);
+>>>>>>> v4.9.227
 	kfree(salt);
 	return err;
 }
@@ -418,7 +499,11 @@ static int crypt_iv_essiv_gen(struct crypt_config *cc, u8 *iv,
 static int crypt_iv_benbi_ctr(struct crypt_config *cc, struct dm_target *ti,
 			      const char *opts)
 {
+<<<<<<< HEAD
 	unsigned bs = crypto_ablkcipher_blocksize(any_tfm(cc));
+=======
+	unsigned bs = crypto_skcipher_blocksize(any_tfm(cc));
+>>>>>>> v4.9.227
 	int log = ilog2(bs);
 
 	/* we need to calculate how far we must shift the sector count
@@ -679,7 +764,11 @@ static int crypt_iv_tcw_whitening(struct crypt_config *cc,
 				  u8 *data)
 {
 	struct iv_tcw_private *tcw = &cc->iv_gen_private.tcw;
+<<<<<<< HEAD
 	u64 sector = cpu_to_le64((u64)dmreq->iv_sector);
+=======
+	__le64 sector = cpu_to_le64(dmreq->iv_sector);
+>>>>>>> v4.9.227
 	u8 buf[TCW_WHITENING_SIZE];
 	SHASH_DESC_ON_STACK(desc, tcw->crc32_tfm);
 	int i, r;
@@ -718,7 +807,11 @@ static int crypt_iv_tcw_gen(struct crypt_config *cc, u8 *iv,
 			    struct dm_crypt_request *dmreq)
 {
 	struct iv_tcw_private *tcw = &cc->iv_gen_private.tcw;
+<<<<<<< HEAD
 	u64 sector = cpu_to_le64((u64)dmreq->iv_sector);
+=======
+	__le64 sector = cpu_to_le64(dmreq->iv_sector);
+>>>>>>> v4.9.227
 	u8 *src;
 	int r = 0;
 
@@ -815,27 +908,46 @@ static void crypt_convert_init(struct crypt_config *cc,
 }
 
 static struct dm_crypt_request *dmreq_of_req(struct crypt_config *cc,
+<<<<<<< HEAD
 					     struct ablkcipher_request *req)
+=======
+					     struct skcipher_request *req)
+>>>>>>> v4.9.227
 {
 	return (struct dm_crypt_request *)((char *)req + cc->dmreq_start);
 }
 
+<<<<<<< HEAD
 static struct ablkcipher_request *req_of_dmreq(struct crypt_config *cc,
 					       struct dm_crypt_request *dmreq)
 {
 	return (struct ablkcipher_request *)((char *)dmreq - cc->dmreq_start);
+=======
+static struct skcipher_request *req_of_dmreq(struct crypt_config *cc,
+					       struct dm_crypt_request *dmreq)
+{
+	return (struct skcipher_request *)((char *)dmreq - cc->dmreq_start);
+>>>>>>> v4.9.227
 }
 
 static u8 *iv_of_dmreq(struct crypt_config *cc,
 		       struct dm_crypt_request *dmreq)
 {
 	return (u8 *)ALIGN((unsigned long)(dmreq + 1),
+<<<<<<< HEAD
 		crypto_ablkcipher_alignmask(any_tfm(cc)) + 1);
+=======
+		crypto_skcipher_alignmask(any_tfm(cc)) + 1);
+>>>>>>> v4.9.227
 }
 
 static int crypt_convert_block(struct crypt_config *cc,
 			       struct convert_context *ctx,
+<<<<<<< HEAD
 			       struct ablkcipher_request *req)
+=======
+			       struct skcipher_request *req)
+>>>>>>> v4.9.227
 {
 	struct bio_vec bv_in = bio_iter_iovec(ctx->bio_in, ctx->iter_in);
 	struct bio_vec bv_out = bio_iter_iovec(ctx->bio_out, ctx->iter_out);
@@ -865,6 +977,7 @@ static int crypt_convert_block(struct crypt_config *cc,
 			return r;
 	}
 
+<<<<<<< HEAD
 	ablkcipher_request_set_crypt(req, &dmreq->sg_in, &dmreq->sg_out,
 				     1 << SECTOR_SHIFT, iv);
 
@@ -872,6 +985,15 @@ static int crypt_convert_block(struct crypt_config *cc,
 		r = crypto_ablkcipher_encrypt(req);
 	else
 		r = crypto_ablkcipher_decrypt(req);
+=======
+	skcipher_request_set_crypt(req, &dmreq->sg_in, &dmreq->sg_out,
+				   1 << SECTOR_SHIFT, iv);
+
+	if (bio_data_dir(ctx->bio_in) == WRITE)
+		r = crypto_skcipher_encrypt(req);
+	else
+		r = crypto_skcipher_decrypt(req);
+>>>>>>> v4.9.227
 
 	if (!r && cc->iv_gen_ops && cc->iv_gen_ops->post)
 		r = cc->iv_gen_ops->post(cc, iv, dmreq);
@@ -890,18 +1012,36 @@ static void crypt_alloc_req(struct crypt_config *cc,
 	if (!ctx->req)
 		ctx->req = mempool_alloc(cc->req_pool, GFP_NOIO);
 
+<<<<<<< HEAD
 	ablkcipher_request_set_tfm(ctx->req, cc->tfms[key_index]);
 	ablkcipher_request_set_callback(ctx->req,
+=======
+	skcipher_request_set_tfm(ctx->req, cc->tfms[key_index]);
+
+	/*
+	 * Use REQ_MAY_BACKLOG so a cipher driver internally backlogs
+	 * requests if driver request queue is full.
+	 */
+	skcipher_request_set_callback(ctx->req,
+>>>>>>> v4.9.227
 	    CRYPTO_TFM_REQ_MAY_BACKLOG | CRYPTO_TFM_REQ_MAY_SLEEP,
 	    kcryptd_async_done, dmreq_of_req(cc, ctx->req));
 }
 
 static void crypt_free_req(struct crypt_config *cc,
+<<<<<<< HEAD
 			   struct ablkcipher_request *req, struct bio *base_bio)
 {
 	struct dm_crypt_io *io = dm_per_bio_data(base_bio, cc->per_bio_data_size);
 
 	if ((struct ablkcipher_request *)(io + 1) != req)
+=======
+			   struct skcipher_request *req, struct bio *base_bio)
+{
+	struct dm_crypt_io *io = dm_per_bio_data(base_bio, cc->per_bio_data_size);
+
+	if ((struct skcipher_request *)(io + 1) != req)
+>>>>>>> v4.9.227
 		mempool_free(req, cc->req_pool);
 }
 
@@ -924,24 +1064,49 @@ static int crypt_convert(struct crypt_config *cc,
 		r = crypt_convert_block(cc, ctx, ctx->req);
 
 		switch (r) {
+<<<<<<< HEAD
 		/* async */
 		case -EBUSY:
 			wait_for_completion(&ctx->restart);
 			reinit_completion(&ctx->restart);
 			/* fall through*/
+=======
+		/*
+		 * The request was queued by a crypto driver
+		 * but the driver request queue is full, let's wait.
+		 */
+		case -EBUSY:
+			wait_for_completion(&ctx->restart);
+			reinit_completion(&ctx->restart);
+			/* fall through */
+		/*
+		 * The request is queued and processed asynchronously,
+		 * completion function kcryptd_async_done() will be called.
+		 */
+>>>>>>> v4.9.227
 		case -EINPROGRESS:
 			ctx->req = NULL;
 			ctx->cc_sector++;
 			continue;
+<<<<<<< HEAD
 
 		/* sync */
+=======
+		/*
+		 * The request was already processed (synchronously).
+		 */
+>>>>>>> v4.9.227
 		case 0:
 			atomic_dec(&ctx->cc_pending);
 			ctx->cc_sector++;
 			cond_resched();
 			continue;
 
+<<<<<<< HEAD
 		/* error */
+=======
+		/* There was an error while processing the request. */
+>>>>>>> v4.9.227
 		default:
 			atomic_dec(&ctx->cc_pending);
 			return r;
@@ -955,7 +1120,12 @@ static void crypt_free_buffer_pages(struct crypt_config *cc, struct bio *clone);
 
 /*
  * Generate a new unfragmented bio with the given size
+<<<<<<< HEAD
  * This should never violate the device limitations
+=======
+ * This should never violate the device limitations (but only because
+ * max_segment_size is being constrained to PAGE_SIZE).
+>>>>>>> v4.9.227
  *
  * This function may be called concurrently. If we allocate from the mempool
  * concurrently, there is a possibility of deadlock. For example, if we have
@@ -980,7 +1150,11 @@ static struct bio *crypt_alloc_buffer(struct dm_crypt_io *io, unsigned size)
 	struct bio_vec *bvec;
 
 retry:
+<<<<<<< HEAD
 	if (unlikely(gfp_mask & __GFP_WAIT))
+=======
+	if (unlikely(gfp_mask & __GFP_DIRECT_RECLAIM))
+>>>>>>> v4.9.227
 		mutex_lock(&cc->bio_alloc_lock);
 
 	clone = bio_alloc_bioset(GFP_NOIO, nr_iovecs, cc->bs);
@@ -996,7 +1170,11 @@ retry:
 		if (!page) {
 			crypt_free_buffer_pages(cc, clone);
 			bio_put(clone);
+<<<<<<< HEAD
 			gfp_mask |= __GFP_WAIT;
+=======
+			gfp_mask |= __GFP_DIRECT_RECLAIM;
+>>>>>>> v4.9.227
 			goto retry;
 		}
 
@@ -1013,7 +1191,11 @@ retry:
 	}
 
 return_clone:
+<<<<<<< HEAD
 	if (unlikely(gfp_mask & __GFP_WAIT))
+=======
+	if (unlikely(gfp_mask & __GFP_DIRECT_RECLAIM))
+>>>>>>> v4.9.227
 		mutex_unlock(&cc->bio_alloc_lock);
 
 	return clone;
@@ -1063,7 +1245,12 @@ static void crypt_dec_pending(struct dm_crypt_io *io)
 	if (io->ctx.req)
 		crypt_free_req(cc, io->ctx.req, base_bio);
 
+<<<<<<< HEAD
 	bio_endio(base_bio, error);
+=======
+	base_bio->bi_error = error;
+	bio_endio(base_bio);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -1083,14 +1270,22 @@ static void crypt_dec_pending(struct dm_crypt_io *io)
  * The work is done per CPU global for all dm-crypt instances.
  * They should not depend on each other and do not block.
  */
+<<<<<<< HEAD
 static void crypt_endio(struct bio *clone, int error)
+=======
+static void crypt_endio(struct bio *clone)
+>>>>>>> v4.9.227
 {
 	struct dm_crypt_io *io = clone->bi_private;
 	struct crypt_config *cc = io->cc;
 	unsigned rw = bio_data_dir(clone);
+<<<<<<< HEAD
 
 	if (unlikely(!bio_flagged(clone, BIO_UPTODATE) && !error))
 		error = -EIO;
+=======
+	int error;
+>>>>>>> v4.9.227
 
 	/*
 	 * free the processed pages
@@ -1098,6 +1293,10 @@ static void crypt_endio(struct bio *clone, int error)
 	if (rw == WRITE)
 		crypt_free_buffer_pages(cc, clone);
 
+<<<<<<< HEAD
+=======
+	error = clone->bi_error;
+>>>>>>> v4.9.227
 	bio_put(clone);
 
 	if (rw == READ && !error) {
@@ -1118,10 +1317,14 @@ static void clone_init(struct dm_crypt_io *io, struct bio *clone)
 	clone->bi_private = io;
 	clone->bi_end_io  = crypt_endio;
 	clone->bi_bdev    = cc->dev->bdev;
+<<<<<<< HEAD
 	clone->bi_rw      = io->base_bio->bi_rw;
 #ifdef CONFIG_JOURNAL_DATA_TAG
 	clone->bi_flags   |= io->base_bio->bi_flags & BIO_JOURNAL_TAG_MASK;
 #endif
+=======
+	bio_set_op_attrs(clone, bio_op(io->base_bio), bio_flags(io->base_bio));
+>>>>>>> v4.9.227
 }
 
 static int kcryptd_io_read(struct dm_crypt_io *io, gfp_t gfp)
@@ -1192,7 +1395,11 @@ continue_locked:
 		if (!RB_EMPTY_ROOT(&cc->write_tree))
 			goto pop_from_list;
 
+<<<<<<< HEAD
 		__set_current_state(TASK_INTERRUPTIBLE);
+=======
+		set_current_state(TASK_INTERRUPTIBLE);
+>>>>>>> v4.9.227
 		__add_wait_queue(&cc->write_thread_wait, &wait);
 
 		spin_unlock_irq(&cc->write_thread_wait.lock);
@@ -1252,6 +1459,14 @@ static void kcryptd_crypt_write_io_submit(struct dm_crypt_io *io, int async)
 
 	clone->bi_iter.bi_sector = cc->start + io->sector;
 
+<<<<<<< HEAD
+=======
+	if (likely(!async) && test_bit(DM_CRYPT_NO_OFFLOAD, &cc->flags)) {
+		generic_make_request(clone);
+		return;
+	}
+
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&cc->write_thread_wait.lock, flags);
 	rbp = &cc->write_tree.rb_node;
 	parent = NULL;
@@ -1344,6 +1559,14 @@ static void kcryptd_async_done(struct crypto_async_request *async_req,
 	struct dm_crypt_io *io = container_of(ctx, struct dm_crypt_io, ctx);
 	struct crypt_config *cc = io->cc;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * A request from crypto driver backlog is going to be processed now,
+	 * finish the completion and continue in crypt_convert().
+	 * (Callback will be called for the second time for this request.)
+	 */
+>>>>>>> v4.9.227
 	if (error == -EINPROGRESS) {
 		complete(&ctx->restart);
 		return;
@@ -1417,7 +1640,11 @@ static void crypt_free_tfms(struct crypt_config *cc)
 
 	for (i = 0; i < cc->tfms_count; i++)
 		if (cc->tfms[i] && !IS_ERR(cc->tfms[i])) {
+<<<<<<< HEAD
 			crypto_free_ablkcipher(cc->tfms[i]);
+=======
+			crypto_free_skcipher(cc->tfms[i]);
+>>>>>>> v4.9.227
 			cc->tfms[i] = NULL;
 		}
 
@@ -1430,13 +1657,21 @@ static int crypt_alloc_tfms(struct crypt_config *cc, char *ciphermode)
 	unsigned i;
 	int err;
 
+<<<<<<< HEAD
 	cc->tfms = kzalloc(cc->tfms_count * sizeof(struct crypto_ablkcipher *),
+=======
+	cc->tfms = kzalloc(cc->tfms_count * sizeof(struct crypto_skcipher *),
+>>>>>>> v4.9.227
 			   GFP_KERNEL);
 	if (!cc->tfms)
 		return -ENOMEM;
 
 	for (i = 0; i < cc->tfms_count; i++) {
+<<<<<<< HEAD
 		cc->tfms[i] = crypto_alloc_ablkcipher(ciphermode, 0, 0);
+=======
+		cc->tfms[i] = crypto_alloc_skcipher(ciphermode, 0, 0);
+>>>>>>> v4.9.227
 		if (IS_ERR(cc->tfms[i])) {
 			err = PTR_ERR(cc->tfms[i]);
 			crypt_free_tfms(cc);
@@ -1456,9 +1691,15 @@ static int crypt_setkey_allcpus(struct crypt_config *cc)
 	subkey_size = (cc->key_size - cc->key_extra_size) >> ilog2(cc->tfms_count);
 
 	for (i = 0; i < cc->tfms_count; i++) {
+<<<<<<< HEAD
 		r = crypto_ablkcipher_setkey(cc->tfms[i],
 					     cc->key + (i * subkey_size),
 					     subkey_size);
+=======
+		r = crypto_skcipher_setkey(cc->tfms[i],
+					   cc->key + (i * subkey_size),
+					   subkey_size);
+>>>>>>> v4.9.227
 		if (r)
 			err = r;
 	}
@@ -1526,10 +1767,15 @@ static void crypt_dtr(struct dm_target *ti)
 	if (cc->bs)
 		bioset_free(cc->bs);
 
+<<<<<<< HEAD
 	if (cc->page_pool)
 		mempool_destroy(cc->page_pool);
 	if (cc->req_pool)
 		mempool_destroy(cc->req_pool);
+=======
+	mempool_destroy(cc->page_pool);
+	mempool_destroy(cc->req_pool);
+>>>>>>> v4.9.227
 
 	if (cc->iv_gen_ops && cc->iv_gen_ops->dtr)
 		cc->iv_gen_ops->dtr(cc);
@@ -1625,7 +1871,11 @@ static int crypt_ctr_cipher(struct dm_target *ti,
 	}
 
 	/* Initialize IV */
+<<<<<<< HEAD
 	cc->iv_size = crypto_ablkcipher_ivsize(any_tfm(cc));
+=======
+	cc->iv_size = crypto_skcipher_ivsize(any_tfm(cc));
+>>>>>>> v4.9.227
 	if (cc->iv_size)
 		/* at least a 64 bit sector number should fit in our buffer */
 		cc->iv_size = max(cc->iv_size,
@@ -1743,6 +1993,7 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	if (ret < 0)
 		goto bad;
 
+<<<<<<< HEAD
 	cc->dmreq_start = sizeof(struct ablkcipher_request);
 	cc->dmreq_start += crypto_ablkcipher_reqsize(any_tfm(cc));
 	cc->dmreq_start = ALIGN(cc->dmreq_start, __alignof__(struct dm_crypt_request));
@@ -1751,13 +2002,27 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		/* Allocate the padding exactly */
 		iv_size_padding = -(cc->dmreq_start + sizeof(struct dm_crypt_request))
 				& crypto_ablkcipher_alignmask(any_tfm(cc));
+=======
+	cc->dmreq_start = sizeof(struct skcipher_request);
+	cc->dmreq_start += crypto_skcipher_reqsize(any_tfm(cc));
+	cc->dmreq_start = ALIGN(cc->dmreq_start, __alignof__(struct dm_crypt_request));
+
+	if (crypto_skcipher_alignmask(any_tfm(cc)) < CRYPTO_MINALIGN) {
+		/* Allocate the padding exactly */
+		iv_size_padding = -(cc->dmreq_start + sizeof(struct dm_crypt_request))
+				& crypto_skcipher_alignmask(any_tfm(cc));
+>>>>>>> v4.9.227
 	} else {
 		/*
 		 * If the cipher requires greater alignment than kmalloc
 		 * alignment, we don't know the exact position of the
 		 * initialization vector. We must assume worst case.
 		 */
+<<<<<<< HEAD
 		iv_size_padding = crypto_ablkcipher_alignmask(any_tfm(cc));
+=======
+		iv_size_padding = crypto_skcipher_alignmask(any_tfm(cc));
+>>>>>>> v4.9.227
 	}
 
 	ret = -ENOMEM;
@@ -1768,7 +2033,11 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto bad;
 	}
 
+<<<<<<< HEAD
 	cc->per_bio_data_size = ti->per_bio_data_size =
+=======
+	cc->per_bio_data_size = ti->per_io_data_size =
+>>>>>>> v4.9.227
 		ALIGN(sizeof(struct dm_crypt_io) + cc->dmreq_start +
 		      sizeof(struct dm_crypt_request) + iv_size_padding + cc->iv_size,
 		      ARCH_KMALLOC_MINALIGN);
@@ -1794,11 +2063,20 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	}
 	cc->iv_offset = tmpll;
 
+<<<<<<< HEAD
 	if (dm_get_device(ti, argv[3], dm_table_get_mode(ti->table), &cc->dev)) {
+=======
+	ret = dm_get_device(ti, argv[3], dm_table_get_mode(ti->table), &cc->dev);
+	if (ret) {
+>>>>>>> v4.9.227
 		ti->error = "Device lookup failed";
 		goto bad;
 	}
 
+<<<<<<< HEAD
+=======
+	ret = -EINVAL;
+>>>>>>> v4.9.227
 	if (sscanf(argv[4], "%llu%c", &tmpll, &dummy) != 1) {
 		ti->error = "Invalid device sector";
 		goto bad;
@@ -1842,19 +2120,31 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	}
 
 	ret = -ENOMEM;
+<<<<<<< HEAD
 	cc->io_queue = alloc_workqueue("kcryptd_io",
 				       WQ_HIGHPRI |
 				       WQ_MEM_RECLAIM,
 				       1);
+=======
+	cc->io_queue = alloc_workqueue("kcryptd_io", WQ_MEM_RECLAIM, 1);
+>>>>>>> v4.9.227
 	if (!cc->io_queue) {
 		ti->error = "Couldn't create kcryptd io queue";
 		goto bad;
 	}
 
+<<<<<<< HEAD
 	cc->crypt_queue = alloc_workqueue("kcryptd",
 					  WQ_HIGHPRI |
 					  WQ_MEM_RECLAIM |
 					  WQ_UNBOUND, num_online_cpus());
+=======
+	if (test_bit(DM_CRYPT_SAME_CPU, &cc->flags))
+		cc->crypt_queue = alloc_workqueue("kcryptd", WQ_CPU_INTENSIVE | WQ_MEM_RECLAIM, 1);
+	else
+		cc->crypt_queue = alloc_workqueue("kcryptd", WQ_CPU_INTENSIVE | WQ_MEM_RECLAIM | WQ_UNBOUND,
+						  num_online_cpus());
+>>>>>>> v4.9.227
 	if (!cc->crypt_queue) {
 		ti->error = "Couldn't create kcryptd queue";
 		goto bad;
@@ -1888,11 +2178,20 @@ static int crypt_map(struct dm_target *ti, struct bio *bio)
 	struct crypt_config *cc = ti->private;
 
 	/*
+<<<<<<< HEAD
 	 * If bio is REQ_FLUSH or REQ_DISCARD, just bypass crypt queues.
 	 * - for REQ_FLUSH device-mapper core ensures that no IO is in-flight
 	 * - for REQ_DISCARD caller must use flush if IO ordering matters
 	 */
 	if (unlikely(bio->bi_rw & (REQ_FLUSH | REQ_DISCARD))) {
+=======
+	 * If bio is REQ_PREFLUSH or REQ_OP_DISCARD, just bypass crypt queues.
+	 * - for REQ_PREFLUSH device-mapper core ensures that no IO is in-flight
+	 * - for REQ_OP_DISCARD caller must use flush if IO ordering matters
+	 */
+	if (unlikely(bio->bi_opf & REQ_PREFLUSH ||
+	    bio_op(bio) == REQ_OP_DISCARD)) {
+>>>>>>> v4.9.227
 		bio->bi_bdev = cc->dev->bdev;
 		if (bio_sectors(bio))
 			bio->bi_iter.bi_sector = cc->start +
@@ -1909,7 +2208,11 @@ static int crypt_map(struct dm_target *ti, struct bio *bio)
 
 	io = dm_per_bio_data(bio, cc->per_bio_data_size);
 	crypt_io_init(io, cc, bio, dm_target_offset(ti, bio->bi_iter.bi_sector));
+<<<<<<< HEAD
 	io->ctx.req = (struct ablkcipher_request *)(io + 1);
+=======
+	io->ctx.req = (struct skcipher_request *)(io + 1);
+>>>>>>> v4.9.227
 
 	if (bio_data_dir(io->base_bio) == READ) {
 		if (kcryptd_io_read(io, GFP_NOWAIT))
@@ -2027,6 +2330,7 @@ error:
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int crypt_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
 		       struct bio_vec *biovec, int max_size)
 {
@@ -2042,6 +2346,8 @@ static int crypt_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
 	return min(max_size, q->merge_bvec_fn(q, bvm, biovec));
 }
 
+=======
+>>>>>>> v4.9.227
 static int crypt_iterate_devices(struct dm_target *ti,
 				 iterate_devices_callout_fn fn, void *data)
 {
@@ -2050,9 +2356,26 @@ static int crypt_iterate_devices(struct dm_target *ti,
 	return fn(ti, cc->dev, cc->start, ti->len, data);
 }
 
+<<<<<<< HEAD
 static struct target_type crypt_target = {
 	.name   = "crypt",
 	.version = {1, 14, 0},
+=======
+static void crypt_io_hints(struct dm_target *ti, struct queue_limits *limits)
+{
+	/*
+	 * Unfortunate constraint that is required to avoid the potential
+	 * for exceeding underlying device's max_segments limits -- due to
+	 * crypt_alloc_buffer() possibly allocating pages for the encryption
+	 * bio that are not as physically contiguous as the original bio.
+	 */
+	limits->max_segment_size = PAGE_SIZE;
+}
+
+static struct target_type crypt_target = {
+	.name   = "crypt",
+	.version = {1, 14, 1},
+>>>>>>> v4.9.227
 	.module = THIS_MODULE,
 	.ctr    = crypt_ctr,
 	.dtr    = crypt_dtr,
@@ -2062,8 +2385,13 @@ static struct target_type crypt_target = {
 	.preresume = crypt_preresume,
 	.resume = crypt_resume,
 	.message = crypt_message,
+<<<<<<< HEAD
 	.merge  = crypt_merge,
 	.iterate_devices = crypt_iterate_devices,
+=======
+	.iterate_devices = crypt_iterate_devices,
+	.io_hints = crypt_io_hints,
+>>>>>>> v4.9.227
 };
 
 static int __init dm_crypt_init(void)

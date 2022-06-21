@@ -37,16 +37,26 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
+=======
+#include "pxa27x.h"
+>>>>>>> v4.9.227
 #include <mach/audio.h>
 #include <mach/palmtx.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/irda-pxaficp.h>
 #include <linux/platform_data/keypad-pxa27x.h>
+<<<<<<< HEAD
 #include <mach/udc.h>
 #include <linux/platform_data/asoc-palm27x.h>
 #include <mach/palm27x.h>
+=======
+#include "udc.h"
+#include <linux/platform_data/asoc-palm27x.h>
+#include "palm27x.h"
+>>>>>>> v4.9.227
 
 #include "generic.h"
 #include "devices.h"
@@ -250,7 +260,11 @@ static inline void palmtx_keys_init(void) {}
 static void palmtx_nand_cmd_ctl(struct mtd_info *mtd, int cmd,
 				 unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	char __iomem *nandaddr = this->IO_ADDR_W;
 
 	if (cmd == NAND_CMD_NONE)

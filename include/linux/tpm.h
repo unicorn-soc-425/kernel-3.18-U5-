@@ -30,8 +30,20 @@
 #define	TPM_ANY_NUM 0xFFFF
 
 struct tpm_chip;
+<<<<<<< HEAD
 
 struct tpm_class_ops {
+=======
+struct trusted_key_payload;
+struct trusted_key_options;
+
+enum TPM_OPS_FLAGS {
+	TPM_OPS_AUTO_STARTUP = BIT(0),
+};
+
+struct tpm_class_ops {
+	unsigned int flags;
+>>>>>>> v4.9.227
 	const u8 req_complete_mask;
 	const u8 req_complete_val;
 	bool (*req_canceled)(struct tpm_chip *chip, u8 status);
@@ -46,11 +58,29 @@ struct tpm_class_ops {
 
 #if defined(CONFIG_TCG_TPM) || defined(CONFIG_TCG_TPM_MODULE)
 
+<<<<<<< HEAD
+=======
+extern int tpm_is_tpm2(u32 chip_num);
+>>>>>>> v4.9.227
 extern int tpm_pcr_read(u32 chip_num, int pcr_idx, u8 *res_buf);
 extern int tpm_pcr_extend(u32 chip_num, int pcr_idx, const u8 *hash);
 extern int tpm_send(u32 chip_num, void *cmd, size_t buflen);
 extern int tpm_get_random(u32 chip_num, u8 *data, size_t max);
+<<<<<<< HEAD
 #else
+=======
+extern int tpm_seal_trusted(u32 chip_num,
+			    struct trusted_key_payload *payload,
+			    struct trusted_key_options *options);
+extern int tpm_unseal_trusted(u32 chip_num,
+			      struct trusted_key_payload *payload,
+			      struct trusted_key_options *options);
+#else
+static inline int tpm_is_tpm2(u32 chip_num)
+{
+	return -ENODEV;
+}
+>>>>>>> v4.9.227
 static inline int tpm_pcr_read(u32 chip_num, int pcr_idx, u8 *res_buf) {
 	return -ENODEV;
 }
@@ -63,5 +93,21 @@ static inline int tpm_send(u32 chip_num, void *cmd, size_t buflen) {
 static inline int tpm_get_random(u32 chip_num, u8 *data, size_t max) {
 	return -ENODEV;
 }
+<<<<<<< HEAD
+=======
+
+static inline int tpm_seal_trusted(u32 chip_num,
+				   struct trusted_key_payload *payload,
+				   struct trusted_key_options *options)
+{
+	return -ENODEV;
+}
+static inline int tpm_unseal_trusted(u32 chip_num,
+				     struct trusted_key_payload *payload,
+				     struct trusted_key_options *options)
+{
+	return -ENODEV;
+}
+>>>>>>> v4.9.227
 #endif
 #endif

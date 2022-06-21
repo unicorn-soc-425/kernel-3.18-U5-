@@ -266,6 +266,20 @@ static inline int alchemy_gpio1_to_irq(int gpio)
 	return -ENXIO;
 }
 
+<<<<<<< HEAD
+=======
+/* On Au1000, Au1500 and Au1100 GPIOs won't work as inputs before
+ * SYS_PININPUTEN is written to at least once.  On Au1550/Au1200/Au1300 this
+ * register enables use of GPIOs as wake source.
+ */
+static inline void alchemy_gpio1_input_enable(void)
+{
+	void __iomem *base = (void __iomem *)KSEG1ADDR(AU1000_SYS_PHYS_ADDR);
+	__raw_writel(0, base + 0x110);		/* the write op is key */
+	wmb();
+}
+
+>>>>>>> v4.9.227
 /*
  * GPIO2 block macros for common linux GPIO functions. The 'gpio'
  * parameter must be in range of ALCHEMY_GPIO2_BASE..ALCHEMY_GPIO2_MAX.
@@ -518,6 +532,7 @@ static inline int alchemy_irq_to_gpio(int irq)
 	return -ENXIO;
 }
 
+<<<<<<< HEAD
 /**********************************************************************/
 
 /* Linux gpio framework integration.
@@ -655,4 +670,6 @@ static inline void gpio_unexport(unsigned gpio)
 
 #endif	/* !CONFIG_GPIOLIB */
 
+=======
+>>>>>>> v4.9.227
 #endif /* _ALCHEMY_GPIO_AU1000_H_ */

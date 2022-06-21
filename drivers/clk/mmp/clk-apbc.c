@@ -10,7 +10,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/io.h>
 #include <linux/err.h>
 #include <linux/delay.h>
@@ -115,7 +118,11 @@ static void clk_apbc_unprepare(struct clk_hw *hw)
 		spin_unlock_irqrestore(apbc->lock, flags);
 }
 
+<<<<<<< HEAD
 struct clk_ops clk_apbc_ops = {
+=======
+static struct clk_ops clk_apbc_ops = {
+>>>>>>> v4.9.227
 	.prepare = clk_apbc_prepare,
 	.unprepare = clk_apbc_unprepare,
 };

@@ -1,7 +1,10 @@
 00-INDEX
 	- this file
+<<<<<<< HEAD
 3c505.txt
 	- information on the 3Com EtherLink Plus (3c505) driver.
+=======
+>>>>>>> v4.9.227
 3c509.txt
 	- information on the 3Com Etherlink III Series Ethernet cards.
 6pack.txt
@@ -12,8 +15,11 @@ LICENSE.qlge
 	- GPLv2 for QLogic Linux qlge NIC Driver
 LICENSE.qlcnic
 	- GPLv2 for QLogic Linux qlcnic NIC Driver
+<<<<<<< HEAD
 Makefile
 	- Makefile for docsrc.
+=======
+>>>>>>> v4.9.227
 PLIP.txt
 	- PLIP: The Parallel Line Internet Protocol device driver
 README.ipw2100
@@ -24,6 +30,11 @@ README.sb1000
 	- info on General Instrument/NextLevel SURFboard1000 cable modem.
 alias.txt
 	- info on using alias network devices.
+<<<<<<< HEAD
+=======
+altera_tse.txt
+	- Altera Triple-Speed Ethernet controller.
+>>>>>>> v4.9.227
 arcnet-hardware.txt
 	- tons of info on ARCnet, hubs, jumper settings for ARCnet cards, etc.
 arcnet.txt
@@ -42,6 +53,13 @@ bridge.txt
 	- where to get user space programs for ethernet bridging with Linux.
 can.txt
 	- documentation on CAN protocol family.
+<<<<<<< HEAD
+=======
+cdc_mbim.txt
+	- 3G/LTE USB modem (Mobile Broadband Interface Model)
+checksum-offloads.txt
+	- Explanation of checksum offloads; LCO, RCO
+>>>>>>> v4.9.227
 cops.txt
 	- info on the COPS LocalTalk Linux driver
 cs89x0.txt
@@ -54,6 +72,11 @@ cxgb.txt
 	- Release Notes for the Chelsio N210 Linux device driver.
 dccp.txt
 	- the Datagram Congestion Control Protocol (DCCP) (RFC 4340..42).
+<<<<<<< HEAD
+=======
+dctcp.txt
+	- DataCenter TCP congestion control
+>>>>>>> v4.9.227
 de4x5.txt
 	- the Digital EtherWORKS DE4?? and DE5?? PCI Ethernet driver
 decnet.txt
@@ -68,6 +91,11 @@ dns_resolver.txt
 	- The DNS resolver module allows kernel servies to make DNS queries.
 driver.txt
 	- Softnet driver issues.
+<<<<<<< HEAD
+=======
+ena.txt
+	- info on Amazon's Elastic Network Adapter (ENA)
+>>>>>>> v4.9.227
 e100.txt
 	- info on Intel's EtherExpress PRO/100 line of 10/100 boards
 e1000.txt

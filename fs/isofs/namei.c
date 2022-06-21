@@ -22,7 +22,11 @@ isofs_cmp(struct dentry *dentry, const char *compare, int dlen)
 	qstr.len = dlen;
 	if (likely(!dentry->d_op))
 		return dentry->d_name.len != dlen || memcmp(dentry->d_name.name, compare, dlen);
+<<<<<<< HEAD
 	return dentry->d_op->d_compare(NULL, NULL, dentry->d_name.len, dentry->d_name.name, &qstr);
+=======
+	return dentry->d_op->d_compare(NULL, dentry->d_name.len, dentry->d_name.name, &qstr);
+>>>>>>> v4.9.227
 }
 
 /*

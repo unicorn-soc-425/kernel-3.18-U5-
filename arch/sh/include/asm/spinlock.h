@@ -11,6 +11,7 @@
 #ifndef __ASM_SH_SPINLOCK_H
 #define __ASM_SH_SPINLOCK_H
 
+<<<<<<< HEAD
 /*
  * The only locking implemented here uses SH-4A opcodes. For others,
  * split this out as per atomic-*.h.
@@ -223,4 +224,14 @@ static inline int arch_write_trylock(arch_rwlock_t *rw)
 #define arch_read_relax(lock)	cpu_relax()
 #define arch_write_relax(lock)	cpu_relax()
 
+=======
+#if defined(CONFIG_CPU_SH4A)
+#include <asm/spinlock-llsc.h>
+#elif defined(CONFIG_CPU_J2)
+#include <asm/spinlock-cas.h>
+#else
+#error "The configured cpu type does not support spinlocks"
+#endif
+
+>>>>>>> v4.9.227
 #endif /* __ASM_SH_SPINLOCK_H */

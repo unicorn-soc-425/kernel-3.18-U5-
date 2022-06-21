@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* 
+=======
+/*
+>>>>>>> v4.9.227
  * Authors:    Bjorn Wesen (bjornw@axis.com)
  *	       Hans-Peter Nilsson (hp@axis.com)
  */
@@ -35,7 +39,11 @@
 #define MAKE_MM_SEG(s)	((mm_segment_t) { (s) })
 
 /* addr_limit is the maximum accessible address for the task. we misuse
+<<<<<<< HEAD
  * the KERNEL_DS and USER_DS values to both assign and compare the 
+=======
+ * the KERNEL_DS and USER_DS values to both assign and compare the
+>>>>>>> v4.9.227
  * addr_limit values through the equally misnamed get/set_fs macros.
  * (see above)
  */
@@ -47,12 +55,22 @@
 #define get_fs()	(current_thread_info()->addr_limit)
 #define set_fs(x)	(current_thread_info()->addr_limit = (x))
 
+<<<<<<< HEAD
 #define segment_eq(a,b)	((a).seg == (b).seg)
 
 #define __kernel_ok (segment_eq(get_fs(), KERNEL_DS))
 #define __user_ok(addr,size) (((size) <= TASK_SIZE)&&((addr) <= TASK_SIZE-(size)))
 #define __access_ok(addr,size) (__kernel_ok || __user_ok((addr),(size)))
 #define access_ok(type,addr,size) __access_ok((unsigned long)(addr),(size))
+=======
+#define segment_eq(a, b)	((a).seg == (b).seg)
+
+#define __kernel_ok (segment_eq(get_fs(), KERNEL_DS))
+#define __user_ok(addr, size) \
+	(((size) <= TASK_SIZE) && ((addr) <= TASK_SIZE-(size)))
+#define __access_ok(addr, size) (__kernel_ok || __user_ok((addr), (size)))
+#define access_ok(type, addr, size) __access_ok((unsigned long)(addr), (size))
+>>>>>>> v4.9.227
 
 #include <arch/uaccess.h>
 
@@ -69,8 +87,12 @@
  * on our cache or tlb entries.
  */
 
+<<<<<<< HEAD
 struct exception_table_entry
 {
+=======
+struct exception_table_entry {
+>>>>>>> v4.9.227
 	unsigned long insn, fixup;
 };
 
@@ -92,6 +114,7 @@ struct exception_table_entry
  * CRIS, we can just do these as direct assignments.  (Of course, the
  * exception handling means that it's no longer "just"...)
  */
+<<<<<<< HEAD
 #define get_user(x,ptr) \
   __get_user_check((x),(ptr),sizeof(*(ptr)))
 #define put_user(x,ptr) \
@@ -142,6 +165,76 @@ do {								\
 	if (access_ok(VERIFY_WRITE,__pu_addr,size))		\
 		__put_user_size((x),__pu_addr,(size),__pu_err);	\
 	__pu_err;						\
+=======
+#define get_user(x, ptr) \
+	__get_user_check((x), (ptr), sizeof(*(ptr)))
+#define put_user(x, ptr) \
+	__put_user_check((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)))
+
+#define __get_user(x, ptr) \
+	__get_user_nocheck((x), (ptr), sizeof(*(ptr)))
+#define __put_user(x, ptr) \
+	__put_user_nocheck((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)))
+
+extern long __put_user_bad(void);
+
+#define __put_user_size(x, ptr, size, retval)				\
+do {									\
+	retval = 0;							\
+	switch (size) {							\
+	case 1:								\
+		__put_user_asm(x, ptr, retval, "move.b");		\
+		break;							\
+	case 2:								\
+		__put_user_asm(x, ptr, retval, "move.w");		\
+		break;							\
+	case 4:								\
+		__put_user_asm(x, ptr, retval, "move.d");		\
+		break;							\
+	case 8:								\
+		__put_user_asm_64(x, ptr, retval);			\
+		break;							\
+	default:							\
+		__put_user_bad();					\
+	}								\
+} while (0)
+
+#define __get_user_size(x, ptr, size, retval)				\
+do {									\
+	retval = 0;							\
+	switch (size) {							\
+	case 1:								\
+		__get_user_asm(x, ptr, retval, "move.b");		\
+		break;							\
+	case 2:								\
+		__get_user_asm(x, ptr, retval, "move.w");		\
+		break;							\
+	case 4:								\
+		__get_user_asm(x, ptr, retval, "move.d");		\
+		break;							\
+	case 8:								\
+		__get_user_asm_64(x, ptr, retval);			\
+		break;							\
+	default:							\
+		(x) = __get_user_bad();					\
+	}								\
+} while (0)
+
+#define __put_user_nocheck(x, ptr, size)		\
+({							\
+	long __pu_err;					\
+	__put_user_size((x), (ptr), (size), __pu_err);	\
+	__pu_err;					\
+})
+
+#define __put_user_check(x, ptr, size)					\
+({									\
+	long __pu_err = -EFAULT;					\
+	__typeof__(*(ptr)) *__pu_addr = (ptr);				\
+	if (access_ok(VERIFY_WRITE, __pu_addr, size))			\
+		__put_user_size((x), __pu_addr, (size), __pu_err);	\
+	__pu_err;							\
+>>>>>>> v4.9.227
 })
 
 struct __large_struct { unsigned long buf[100]; };
@@ -149,6 +242,7 @@ struct __large_struct { unsigned long buf[100]; };
 
 
 
+<<<<<<< HEAD
 #define __get_user_nocheck(x,ptr,size)				\
 ({								\
 	long __gu_err, __gu_val;				\
@@ -164,6 +258,23 @@ struct __large_struct { unsigned long buf[100]; };
 	if (access_ok(VERIFY_READ,__gu_addr,size))			\
 		__get_user_size(__gu_val,__gu_addr,(size),__gu_err);	\
 	(x) = (__typeof__(*(ptr)))__gu_val;				\
+=======
+#define __get_user_nocheck(x, ptr, size)			\
+({								\
+	long __gu_err, __gu_val;				\
+	__get_user_size(__gu_val, (ptr), (size), __gu_err);	\
+	(x) = (__force __typeof__(*(ptr)))__gu_val;		\
+	__gu_err;						\
+})
+
+#define __get_user_check(x, ptr, size)					\
+({									\
+	long __gu_err = -EFAULT, __gu_val = 0;				\
+	const __typeof__(*(ptr)) *__gu_addr = (ptr);			\
+	if (access_ok(VERIFY_READ, __gu_addr, size))			\
+		__get_user_size(__gu_val, __gu_addr, (size), __gu_err);	\
+	(x) = (__force __typeof__(*(ptr)))__gu_val;			\
+>>>>>>> v4.9.227
 	__gu_err;							\
 })
 
@@ -176,6 +287,7 @@ extern unsigned long __copy_user(void __user *to, const void *from, unsigned lon
 extern unsigned long __copy_user_zeroing(void *to, const void __user *from, unsigned long n);
 extern unsigned long __do_clear_user(void __user *to, unsigned long n);
 
+<<<<<<< HEAD
 static inline unsigned long
 __generic_copy_to_user(void __user *to, const void *from, unsigned long n)
 {
@@ -200,6 +312,8 @@ __generic_clear_user(void __user *to, unsigned long n)
 	return n;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline long
 __strncpy_from_user(char *dst, const char __user *src, long count)
 {
@@ -210,6 +324,10 @@ static inline long
 strncpy_from_user(char *dst, const char __user *src, long count)
 {
 	long res = -EFAULT;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	if (access_ok(VERIFY_READ, src, 1))
 		res = __do_strncpy_from_user(dst, src, count);
 	return res;
@@ -223,6 +341,10 @@ static inline unsigned long
 __constant_copy_from_user(void *to, const void __user *from, unsigned long n)
 {
 	unsigned long ret = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	if (n == 0)
 		;
 	else if (n == 1)
@@ -262,7 +384,11 @@ __constant_copy_from_user(void *to, const void __user *from, unsigned long n)
 	else if (n == 24)
 		__asm_copy_from_user_24(to, from, ret);
 	else
+<<<<<<< HEAD
 		ret = __generic_copy_from_user(to, from, n);
+=======
+		ret = __copy_user_zeroing(to, from, n);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -273,6 +399,10 @@ static inline unsigned long
 __constant_copy_to_user(void __user *to, const void *from, unsigned long n)
 {
 	unsigned long ret = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	if (n == 0)
 		;
 	else if (n == 1)
@@ -312,7 +442,11 @@ __constant_copy_to_user(void __user *to, const void *from, unsigned long n)
 	else if (n == 24)
 		__asm_copy_to_user_24(to, from, ret);
 	else
+<<<<<<< HEAD
 		ret = __generic_copy_to_user(to, from, n);
+=======
+		ret = __copy_user(to, from, n);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -323,6 +457,10 @@ static inline unsigned long
 __constant_clear_user(void __user *to, unsigned long n)
 {
 	unsigned long ret = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	if (n == 0)
 		;
 	else if (n == 1)
@@ -344,12 +482,17 @@ __constant_clear_user(void __user *to, unsigned long n)
 	else if (n == 24)
 		__asm_clear_24(to, ret);
 	else
+<<<<<<< HEAD
 		ret = __generic_clear_user(to, n);
+=======
+		ret = __do_clear_user(to, n);
+>>>>>>> v4.9.227
 
 	return ret;
 }
 
 
+<<<<<<< HEAD
 #define clear_user(to, n)			\
 (__builtin_constant_p(n) ?			\
  __constant_clear_user(to, n) :			\
@@ -364,6 +507,39 @@ __constant_clear_user(void __user *to, unsigned long n)
 (__builtin_constant_p(n) ?			\
  __constant_copy_to_user(to, from, n) :		\
  __generic_copy_to_user(to, from, n))
+=======
+static inline size_t clear_user(void __user *to, size_t n)
+{
+	if (unlikely(!access_ok(VERIFY_WRITE, to, n)))
+		return n;
+	if (__builtin_constant_p(n))
+		return __constant_clear_user(to, n);
+	else
+		return __do_clear_user(to, n);
+}
+
+static inline size_t copy_from_user(void *to, const void __user *from, size_t n)
+{
+	if (unlikely(!access_ok(VERIFY_READ, from, n))) {
+		memset(to, 0, n);
+		return n;
+	}
+	if (__builtin_constant_p(n))
+		return __constant_copy_from_user(to, from, n);
+	else
+		return __copy_user_zeroing(to, from, n);
+}
+
+static inline size_t copy_to_user(void __user *to, const void *from, size_t n)
+{
+	if (unlikely(!access_ok(VERIFY_WRITE, to, n)))
+		return n;
+	if (__builtin_constant_p(n))
+		return __constant_copy_to_user(to, from, n);
+	else
+		return __copy_user(to, from, n);
+}
+>>>>>>> v4.9.227
 
 /* We let the __ versions of copy_from/to_user inline, because they're often
  * used in fast paths and have only a small space overhead.
@@ -373,29 +549,51 @@ static inline unsigned long
 __generic_copy_from_user_nocheck(void *to, const void __user *from,
 				 unsigned long n)
 {
+<<<<<<< HEAD
 	return __copy_user_zeroing(to,from,n);
+=======
+	return __copy_user_zeroing(to, from, n);
+>>>>>>> v4.9.227
 }
 
 static inline unsigned long
 __generic_copy_to_user_nocheck(void __user *to, const void *from,
 			       unsigned long n)
 {
+<<<<<<< HEAD
 	return __copy_user(to,from,n);
+=======
+	return __copy_user(to, from, n);
+>>>>>>> v4.9.227
 }
 
 static inline unsigned long
 __generic_clear_user_nocheck(void __user *to, unsigned long n)
 {
+<<<<<<< HEAD
 	return __do_clear_user(to,n);
+=======
+	return __do_clear_user(to, n);
+>>>>>>> v4.9.227
 }
 
 /* without checking */
 
+<<<<<<< HEAD
 #define __copy_to_user(to,from,n)   __generic_copy_to_user_nocheck((to),(from),(n))
 #define __copy_from_user(to,from,n) __generic_copy_from_user_nocheck((to),(from),(n))
 #define __copy_to_user_inatomic __copy_to_user
 #define __copy_from_user_inatomic __copy_from_user
 #define __clear_user(to,n) __generic_clear_user_nocheck((to),(n))
+=======
+#define __copy_to_user(to, from, n) \
+	__generic_copy_to_user_nocheck((to), (from), (n))
+#define __copy_from_user(to, from, n) \
+	__generic_copy_from_user_nocheck((to), (from), (n))
+#define __copy_to_user_inatomic __copy_to_user
+#define __copy_from_user_inatomic __copy_from_user
+#define __clear_user(to, n) __generic_clear_user_nocheck((to), (n))
+>>>>>>> v4.9.227
 
 #define strlen_user(str)	strnlen_user((str), 0x7ffffffe)
 

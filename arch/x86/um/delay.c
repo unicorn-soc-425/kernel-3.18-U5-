@@ -7,7 +7,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <asm/param.h>

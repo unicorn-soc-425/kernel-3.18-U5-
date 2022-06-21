@@ -11,6 +11,10 @@
 #include <linux/init.h>
 #include <linux/clk.h>
 #include <linux/serial_8250.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+>>>>>>> v4.9.227
 #include <linux/platform_device.h>
 #include <linux/platform_data/edma.h>
 #include <linux/platform_data/gpio-davinci.h>
@@ -19,7 +23,11 @@
 
 #include <mach/cputype.h>
 #include <mach/irqs.h>
+<<<<<<< HEAD
 #include <mach/psc.h>
+=======
+#include "psc.h"
+>>>>>>> v4.9.227
 #include <mach/mux.h>
 #include <mach/time.h>
 #include <mach/serial.h>
@@ -498,14 +506,19 @@ static u8 dm644x_default_priorities[DAVINCI_N_AINTC_IRQ] = {
 
 /*----------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static s8
 queue_priority_mapping[][2] = {
+=======
+static s8 queue_priority_mapping[][2] = {
+>>>>>>> v4.9.227
 	/* {event queue no, Priority} */
 	{0, 3},
 	{1, 7},
 	{-1, -1},
 };
 
+<<<<<<< HEAD
 static struct edma_soc_info edma_cc0_info = {
 	.queue_priority_mapping	= queue_priority_mapping,
 	.default_queue		= EVENTQ_1,
@@ -513,46 +526,93 @@ static struct edma_soc_info edma_cc0_info = {
 
 static struct edma_soc_info *dm644x_edma_info[EDMA_MAX_CC] = {
 	&edma_cc0_info,
+=======
+static const struct dma_slave_map dm644x_edma_map[] = {
+	{ "davinci-mcbsp", "tx", EDMA_FILTER_PARAM(0, 2) },
+	{ "davinci-mcbsp", "rx", EDMA_FILTER_PARAM(0, 3) },
+	{ "spi_davinci", "tx", EDMA_FILTER_PARAM(0, 16) },
+	{ "spi_davinci", "rx", EDMA_FILTER_PARAM(0, 17) },
+	{ "dm6441-mmc.0", "rx", EDMA_FILTER_PARAM(0, 26) },
+	{ "dm6441-mmc.0", "tx", EDMA_FILTER_PARAM(0, 27) },
+};
+
+static struct edma_soc_info dm644x_edma_pdata = {
+	.queue_priority_mapping	= queue_priority_mapping,
+	.default_queue		= EVENTQ_1,
+	.slave_map		= dm644x_edma_map,
+	.slavecnt		= ARRAY_SIZE(dm644x_edma_map),
+>>>>>>> v4.9.227
 };
 
 static struct resource edma_resources[] = {
 	{
+<<<<<<< HEAD
 		.name	= "edma_cc0",
+=======
+		.name	= "edma3_cc",
+>>>>>>> v4.9.227
 		.start	= 0x01c00000,
 		.end	= 0x01c00000 + SZ_64K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma_tc0",
+=======
+		.name	= "edma3_tc0",
+>>>>>>> v4.9.227
 		.start	= 0x01c10000,
 		.end	= 0x01c10000 + SZ_1K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma_tc1",
+=======
+		.name	= "edma3_tc1",
+>>>>>>> v4.9.227
 		.start	= 0x01c10400,
 		.end	= 0x01c10400 + SZ_1K - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma0",
+=======
+		.name	= "edma3_ccint",
+>>>>>>> v4.9.227
 		.start	= IRQ_CCINT0,
 		.flags	= IORESOURCE_IRQ,
 	},
 	{
+<<<<<<< HEAD
 		.name	= "edma0_err",
+=======
+		.name	= "edma3_ccerrint",
+>>>>>>> v4.9.227
 		.start	= IRQ_CCERRINT,
 		.flags	= IORESOURCE_IRQ,
 	},
 	/* not using TC*_ERR */
 };
 
+<<<<<<< HEAD
 static struct platform_device dm644x_edma_device = {
 	.name			= "edma",
 	.id			= 0,
 	.dev.platform_data	= dm644x_edma_info,
 	.num_resources		= ARRAY_SIZE(edma_resources),
 	.resource		= edma_resources,
+=======
+static const struct platform_device_info dm644x_edma_device __initconst = {
+	.name		= "edma",
+	.id		= 0,
+	.dma_mask	= DMA_BIT_MASK(32),
+	.res		= edma_resources,
+	.num_res	= ARRAY_SIZE(edma_resources),
+	.data		= &dm644x_edma_pdata,
+	.size_data	= sizeof(dm644x_edma_pdata),
+>>>>>>> v4.9.227
 };
 
 /* DM6446 EVM uses ASP0; line-out is a pair of RCA jacks */
@@ -912,10 +972,16 @@ static struct davinci_soc_info davinci_soc_info_dm644x = {
 	.sram_len		= SZ_16K,
 };
 
+<<<<<<< HEAD
 void __init dm644x_init_asp(struct snd_platform_data *pdata)
 {
 	davinci_cfg_reg(DM644X_MCBSP);
 	dm644x_asp_device.dev.platform_data = pdata;
+=======
+void __init dm644x_init_asp(void)
+{
+	davinci_cfg_reg(DM644X_MCBSP);
+>>>>>>> v4.9.227
 	platform_device_register(&dm644x_asp_device);
 }
 
@@ -923,6 +989,10 @@ void __init dm644x_init(void)
 {
 	davinci_common_init(&davinci_soc_info_dm644x);
 	davinci_map_sysmod();
+<<<<<<< HEAD
+=======
+	davinci_clk_init(davinci_soc_info_dm644x.cpu_clks);
+>>>>>>> v4.9.227
 }
 
 int __init dm644x_init_video(struct vpfe_config *vpfe_cfg,
@@ -950,12 +1020,24 @@ int __init dm644x_init_video(struct vpfe_config *vpfe_cfg,
 
 static int __init dm644x_init_devices(void)
 {
+<<<<<<< HEAD
+=======
+	struct platform_device *edma_pdev;
+>>>>>>> v4.9.227
 	int ret = 0;
 
 	if (!cpu_is_davinci_dm644x())
 		return 0;
 
+<<<<<<< HEAD
 	platform_device_register(&dm644x_edma_device);
+=======
+	edma_pdev = platform_device_register_full(&dm644x_edma_device);
+	if (IS_ERR(edma_pdev)) {
+		pr_warn("%s: Failed to register eDMA\n", __func__);
+		return PTR_ERR(edma_pdev);
+	}
+>>>>>>> v4.9.227
 
 	platform_device_register(&dm644x_mdio_device);
 	platform_device_register(&dm644x_emac_device);

@@ -1,6 +1,7 @@
 #ifndef __PERF_CACHE_H
 #define __PERF_CACHE_H
 
+<<<<<<< HEAD
 #include <stdbool.h>
 #include "util.h"
 #include "strbuf.h"
@@ -32,12 +33,28 @@ extern void setup_pager(void);
 extern const char *pager_program;
 extern int pager_in_use(void);
 extern int pager_use_color;
+=======
+#include "strbuf.h"
+#include <subcmd/pager.h>
+#include "../ui/ui.h"
+
+#include <linux/string.h>
+
+#define CMD_EXEC_PATH "--exec-path"
+#define CMD_DEBUGFS_DIR "--debugfs-dir="
+
+#define EXEC_PATH_ENVIRONMENT "PERF_EXEC_PATH"
+#define PERF_DEBUGFS_ENVIRONMENT "PERF_DEBUGFS_DIR"
+#define PERF_TRACEFS_ENVIRONMENT "PERF_TRACEFS_DIR"
+#define PERF_PAGER_ENVIRONMENT "PERF_PAGER"
+>>>>>>> v4.9.227
 
 char *alias_lookup(const char *alias);
 int split_cmdline(char *cmdline, const char ***argv);
 
 #define alloc_nr(x) (((x)+16)*3/2)
 
+<<<<<<< HEAD
 /*
  * Realloc the buffer pointed at by variable 'x' so that it can hold
  * at least 'nr' entries; the number of entries currently allocated
@@ -57,11 +74,14 @@ int split_cmdline(char *cmdline, const char ***argv);
 	} while(0)
 
 
+=======
+>>>>>>> v4.9.227
 static inline int is_absolute_path(const char *path)
 {
 	return path[0] == '/';
 }
 
+<<<<<<< HEAD
 const char *make_nonrelative_path(const char *path);
 char *strip_path_suffix(const char *path, const char *suffix);
 
@@ -73,5 +93,8 @@ extern char *perf_pathdup(const char *fmt, ...)
 
 /* Matches the libc/libbsd function attribute so we declare this unconditionally: */
 extern size_t strlcpy(char *dest, const char *src, size_t size);
+=======
+char *mkpath(const char *fmt, ...) __attribute__((format (printf, 1, 2)));
+>>>>>>> v4.9.227
 
 #endif /* __PERF_CACHE_H */

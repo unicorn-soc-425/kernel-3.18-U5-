@@ -26,7 +26,11 @@
 
 #include <drm/drmP.h>
 #include <drm/drm_crtc_helper.h>
+<<<<<<< HEAD
 #include "nouveau_drm.h"
+=======
+#include "nouveau_drv.h"
+>>>>>>> v4.9.227
 #include "nouveau_reg.h"
 #include "nouveau_encoder.h"
 #include "nouveau_connector.h"
@@ -749,6 +753,7 @@ static int nv17_tv_set_property(struct drm_encoder *encoder,
 
 		/* Disable the crtc to ensure a full modeset is
 		 * performed whenever it's turned on again. */
+<<<<<<< HEAD
 		if (crtc) {
 			struct drm_mode_set modeset = {
 				.crtc = crtc,
@@ -756,6 +761,12 @@ static int nv17_tv_set_property(struct drm_encoder *encoder,
 
 			drm_mode_set_config_internal(&modeset);
 		}
+=======
+		if (crtc)
+			drm_crtc_helper_set_mode(crtc, &crtc->mode,
+						 crtc->x, crtc->y,
+						 crtc->primary->fb);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -769,10 +780,15 @@ static void nv17_tv_destroy(struct drm_encoder *encoder)
 	kfree(tv_enc);
 }
 
+<<<<<<< HEAD
 static struct drm_encoder_helper_funcs nv17_tv_helper_funcs = {
 	.dpms = nv17_tv_dpms,
 	.save = nv17_tv_save,
 	.restore = nv17_tv_restore,
+=======
+static const struct drm_encoder_helper_funcs nv17_tv_helper_funcs = {
+	.dpms = nv17_tv_dpms,
+>>>>>>> v4.9.227
 	.mode_fixup = nv17_tv_mode_fixup,
 	.prepare = nv17_tv_prepare,
 	.commit = nv17_tv_commit,
@@ -780,14 +796,22 @@ static struct drm_encoder_helper_funcs nv17_tv_helper_funcs = {
 	.detect = nv17_tv_detect,
 };
 
+<<<<<<< HEAD
 static struct drm_encoder_slave_funcs nv17_tv_slave_funcs = {
+=======
+static const struct drm_encoder_slave_funcs nv17_tv_slave_funcs = {
+>>>>>>> v4.9.227
 	.get_modes = nv17_tv_get_modes,
 	.mode_valid = nv17_tv_mode_valid,
 	.create_resources = nv17_tv_create_resources,
 	.set_property = nv17_tv_set_property,
 };
 
+<<<<<<< HEAD
 static struct drm_encoder_funcs nv17_tv_funcs = {
+=======
+static const struct drm_encoder_funcs nv17_tv_funcs = {
+>>>>>>> v4.9.227
 	.destroy = nv17_tv_destroy,
 };
 
@@ -816,10 +840,21 @@ nv17_tv_create(struct drm_connector *connector, struct dcb_output *entry)
 	tv_enc->base.dcb = entry;
 	tv_enc->base.or = ffs(entry->or) - 1;
 
+<<<<<<< HEAD
 	drm_encoder_init(dev, encoder, &nv17_tv_funcs, DRM_MODE_ENCODER_TVDAC);
 	drm_encoder_helper_add(encoder, &nv17_tv_helper_funcs);
 	to_encoder_slave(encoder)->slave_funcs = &nv17_tv_slave_funcs;
 
+=======
+	drm_encoder_init(dev, encoder, &nv17_tv_funcs, DRM_MODE_ENCODER_TVDAC,
+			 NULL);
+	drm_encoder_helper_add(encoder, &nv17_tv_helper_funcs);
+	to_encoder_slave(encoder)->slave_funcs = &nv17_tv_slave_funcs;
+
+	tv_enc->base.enc_save = nv17_tv_save;
+	tv_enc->base.enc_restore = nv17_tv_restore;
+
+>>>>>>> v4.9.227
 	encoder->possible_crtcs = entry->heads;
 	encoder->possible_clones = 0;
 

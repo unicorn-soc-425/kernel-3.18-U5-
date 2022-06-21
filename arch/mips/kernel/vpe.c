@@ -134,7 +134,11 @@ void release_vpe(struct vpe *v)
 {
 	list_del(&v->list);
 	if (v->load_addr)
+<<<<<<< HEAD
 		release_progmem(v);
+=======
+		release_progmem(v->load_addr);
+>>>>>>> v4.9.227
 	kfree(v);
 }
 
@@ -205,11 +209,19 @@ static void layout_sections(struct module *mod, const Elf_Ehdr *hdr,
 			    || s->sh_entsize != ~0UL)
 				continue;
 			s->sh_entsize =
+<<<<<<< HEAD
 				get_offset((unsigned long *)&mod->core_size, s);
 		}
 
 		if (m == 0)
 			mod->core_text_size = mod->core_size;
+=======
+				get_offset((unsigned long *)&mod->core_layout.size, s);
+		}
+
+		if (m == 0)
+			mod->core_layout.text_size = mod->core_layout.size;
+>>>>>>> v4.9.227
 
 	}
 }
@@ -641,7 +653,11 @@ static int vpe_elfload(struct vpe *v)
 		layout_sections(&mod, hdr, sechdrs, secstrings);
 	}
 
+<<<<<<< HEAD
 	v->load_addr = alloc_progmem(mod.core_size);
+=======
+	v->load_addr = alloc_progmem(mod.core_layout.size);
+>>>>>>> v4.9.227
 	if (!v->load_addr)
 		return -ENOMEM;
 
@@ -817,6 +833,10 @@ static int vpe_open(struct inode *inode, struct file *filp)
 
 static int vpe_release(struct inode *inode, struct file *filp)
 {
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_MIPS_VPE_LOADER_MT) || defined(CONFIG_MIPS_VPE_LOADER_CMP)
+>>>>>>> v4.9.227
 	struct vpe *v;
 	Elf_Ehdr *hdr;
 	int ret = 0;
@@ -827,7 +847,11 @@ static int vpe_release(struct inode *inode, struct file *filp)
 
 	hdr = (Elf_Ehdr *) v->pbuffer;
 	if (memcmp(hdr->e_ident, ELFMAG, SELFMAG) == 0) {
+<<<<<<< HEAD
 		if ((vpe_elfload(v) >= 0) && vpe_run) {
+=======
+		if (vpe_elfload(v) >= 0) {
+>>>>>>> v4.9.227
 			vpe_run(v);
 		} else {
 			pr_warn("VPE loader: ELF load failed.\n");
@@ -850,6 +874,13 @@ static int vpe_release(struct inode *inode, struct file *filp)
 	v->plen = 0;
 
 	return ret;
+<<<<<<< HEAD
+=======
+#else
+	pr_warn("VPE loader: ELF load failed.\n");
+	return -ENOEXEC;
+#endif
+>>>>>>> v4.9.227
 }
 
 static ssize_t vpe_write(struct file *file, const char __user *buffer,

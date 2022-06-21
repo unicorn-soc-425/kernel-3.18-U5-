@@ -221,6 +221,10 @@ static int pcd_busy;		/* request being processed ? */
 static int pcd_sector;		/* address of next requested sector */
 static int pcd_count;		/* number of blocks still to do */
 static char *pcd_buf;		/* buffer for request in progress */
+<<<<<<< HEAD
+=======
+static void *par_drv;		/* reference of parport driver */
+>>>>>>> v4.9.227
 
 /* kernel glue structures */
 
@@ -692,6 +696,15 @@ static int pcd_detect(void)
 	printk("%s: %s version %s, major %d, nice %d\n",
 	       name, name, PCD_VERSION, major, nice);
 
+<<<<<<< HEAD
+=======
+	par_drv = pi_register_driver(name);
+	if (!par_drv) {
+		pr_err("failed to register %s driver\n", name);
+		return -1;
+	}
+
+>>>>>>> v4.9.227
 	k = 0;
 	if (pcd_drive_count == 0) { /* nothing spec'd - so autoprobe for 1 */
 		cd = pcd;
@@ -725,6 +738,10 @@ static int pcd_detect(void)
 	printk("%s: No CD-ROM drive found\n", name);
 	for (unit = 0, cd = pcd; unit < PCD_UNITS; unit++, cd++)
 		put_disk(cd->disk);
+<<<<<<< HEAD
+=======
+	pi_unregister_driver(par_drv);
+>>>>>>> v4.9.227
 	return -1;
 }
 
@@ -986,6 +1003,10 @@ static void __exit pcd_exit(void)
 	}
 	blk_cleanup_queue(pcd_queue);
 	unregister_blkdev(major, name);
+<<<<<<< HEAD
+=======
+	pi_unregister_driver(par_drv);
+>>>>>>> v4.9.227
 }
 
 MODULE_LICENSE("GPL");

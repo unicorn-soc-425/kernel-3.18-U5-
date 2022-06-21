@@ -49,7 +49,11 @@
 static void snappercl15_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 				      unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	static u16 nand_state = SNAPPERCL15_NAND_WPN;
 	u16 set;
 
@@ -76,7 +80,11 @@ static void snappercl15_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 
 static int snappercl15_nand_dev_ready(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 
 	return !!(__raw_readw(NAND_CTRL_ADDR(chip)) & SNAPPERCL15_NAND_RDY);
 }
@@ -144,8 +152,11 @@ static struct i2c_board_info __initdata snappercl15_i2c_data[] = {
 };
 
 static struct ep93xxfb_mach_info __initdata snappercl15_fb_info = {
+<<<<<<< HEAD
 	.num_modes		= EP93XXFB_USE_MODEDB,
 	.bpp			= 16,
+=======
+>>>>>>> v4.9.227
 };
 
 static struct platform_device snappercl15_audio_device = {

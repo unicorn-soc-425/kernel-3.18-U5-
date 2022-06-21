@@ -34,8 +34,12 @@
  */
 
 #define EXT4_SINGLEDATA_TRANS_BLOCKS(sb)				\
+<<<<<<< HEAD
 	(EXT4_HAS_INCOMPAT_FEATURE(sb, EXT4_FEATURE_INCOMPAT_EXTENTS)   \
 	 ? 20U : 8U)
+=======
+	(ext4_has_feature_extents(sb) ? 20U : 8U)
+>>>>>>> v4.9.227
 
 /* Extended attribute operations touch at most two data buffers,
  * two bitmap buffers, and two group summaries, in addition to the inode
@@ -84,17 +88,29 @@
 /* Amount of blocks needed for quota update - we know that the structure was
  * allocated so we need to update only data block */
 #define EXT4_QUOTA_TRANS_BLOCKS(sb) ((test_opt(sb, QUOTA) ||\
+<<<<<<< HEAD
 		EXT4_HAS_RO_COMPAT_FEATURE(sb, EXT4_FEATURE_RO_COMPAT_QUOTA)) ?\
 		1 : 0)
 /* Amount of blocks needed for quota insert/delete - we do some block writes
  * but inode, sb and group updates are done only once */
 #define EXT4_QUOTA_INIT_BLOCKS(sb) ((test_opt(sb, QUOTA) ||\
 		EXT4_HAS_RO_COMPAT_FEATURE(sb, EXT4_FEATURE_RO_COMPAT_QUOTA)) ?\
+=======
+		ext4_has_feature_quota(sb)) ? 1 : 0)
+/* Amount of blocks needed for quota insert/delete - we do some block writes
+ * but inode, sb and group updates are done only once */
+#define EXT4_QUOTA_INIT_BLOCKS(sb) ((test_opt(sb, QUOTA) ||\
+		ext4_has_feature_quota(sb)) ?\
+>>>>>>> v4.9.227
 		(DQUOT_INIT_ALLOC*(EXT4_SINGLEDATA_TRANS_BLOCKS(sb)-3)\
 		 +3+DQUOT_INIT_REWRITE) : 0)
 
 #define EXT4_QUOTA_DEL_BLOCKS(sb) ((test_opt(sb, QUOTA) ||\
+<<<<<<< HEAD
 		EXT4_HAS_RO_COMPAT_FEATURE(sb, EXT4_FEATURE_RO_COMPAT_QUOTA)) ?\
+=======
+		ext4_has_feature_quota(sb)) ?\
+>>>>>>> v4.9.227
 		(DQUOT_DEL_ALLOC*(EXT4_SINGLEDATA_TRANS_BLOCKS(sb)-3)\
 		 +3+DQUOT_DEL_REWRITE) : 0)
 #else
@@ -177,6 +193,16 @@ struct ext4_journal_cb_entry {
  * There is no guaranteed calling order of multiple registered callbacks on
  * the same transaction.
  */
+<<<<<<< HEAD
+=======
+static inline void _ext4_journal_callback_add(handle_t *handle,
+			struct ext4_journal_cb_entry *jce)
+{
+	/* Add the jce to transaction's private list */
+	list_add_tail(&jce->jce_list, &handle->h_transaction->t_private_list);
+}
+
+>>>>>>> v4.9.227
 static inline void ext4_journal_callback_add(handle_t *handle,
 			void (*func)(struct super_block *sb,
 				     struct ext4_journal_cb_entry *jce,
@@ -189,10 +215,18 @@ static inline void ext4_journal_callback_add(handle_t *handle,
 	/* Add the jce to transaction's private list */
 	jce->jce_func = func;
 	spin_lock(&sbi->s_md_lock);
+<<<<<<< HEAD
 	list_add_tail(&jce->jce_list, &handle->h_transaction->t_private_list);
 	spin_unlock(&sbi->s_md_lock);
 }
 
+=======
+	_ext4_journal_callback_add(handle, jce);
+	spin_unlock(&sbi->s_md_lock);
+}
+
+
+>>>>>>> v4.9.227
 /**
  * ext4_journal_callback_del: delete a registered callback
  * @handle: active journal transaction handle on which callback was registered
@@ -361,10 +395,28 @@ static inline int ext4_journal_force_commit(journal_t *journal)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int ext4_jbd2_file_inode(handle_t *handle, struct inode *inode)
 {
 	if (ext4_handle_valid(handle))
 		return jbd2_journal_file_inode(handle, EXT4_I(inode)->jinode);
+=======
+static inline int ext4_jbd2_inode_add_write(handle_t *handle,
+					    struct inode *inode)
+{
+	if (ext4_handle_valid(handle))
+		return jbd2_journal_inode_add_write(handle,
+						    EXT4_I(inode)->jinode);
+	return 0;
+}
+
+static inline int ext4_jbd2_inode_add_wait(handle_t *handle,
+					   struct inode *inode)
+{
+	if (ext4_handle_valid(handle))
+		return jbd2_journal_inode_add_wait(handle,
+						   EXT4_I(inode)->jinode);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -374,7 +426,11 @@ static inline void ext4_update_inode_fsync_trans(handle_t *handle,
 {
 	struct ext4_inode_info *ei = EXT4_I(inode);
 
+<<<<<<< HEAD
 	if (ext4_handle_valid(handle)) {
+=======
+	if (ext4_handle_valid(handle) && !is_handle_aborted(handle)) {
+>>>>>>> v4.9.227
 		ei->i_sync_tid = handle->h_transaction->t_tid;
 		if (datasync)
 			ei->i_datasync_tid = handle->h_transaction->t_tid;
@@ -397,17 +453,32 @@ static inline int ext4_inode_journal_mode(struct inode *inode)
 		return EXT4_INODE_WRITEBACK_DATA_MODE;	/* writeback */
 	/* We do not support data journalling with delayed allocation */
 	if (!S_ISREG(inode->i_mode) ||
+<<<<<<< HEAD
 	    test_opt(inode->i_sb, DATA_FLAGS) == EXT4_MOUNT_JOURNAL_DATA)
 		return EXT4_INODE_JOURNAL_DATA_MODE;	/* journal data */
 	if (ext4_test_inode_flag(inode, EXT4_INODE_JOURNAL_DATA) &&
 	    !test_opt(inode->i_sb, DELALLOC))
 		return EXT4_INODE_JOURNAL_DATA_MODE;	/* journal data */
+=======
+	    test_opt(inode->i_sb, DATA_FLAGS) == EXT4_MOUNT_JOURNAL_DATA ||
+	    (ext4_test_inode_flag(inode, EXT4_INODE_JOURNAL_DATA) &&
+	    !test_opt(inode->i_sb, DELALLOC))) {
+		/* We do not support data journalling for encrypted data */
+		if (S_ISREG(inode->i_mode) && ext4_encrypted_inode(inode))
+			return EXT4_INODE_ORDERED_DATA_MODE;  /* ordered */
+		return EXT4_INODE_JOURNAL_DATA_MODE;	/* journal data */
+	}
+>>>>>>> v4.9.227
 	if (test_opt(inode->i_sb, DATA_FLAGS) == EXT4_MOUNT_ORDERED_DATA)
 		return EXT4_INODE_ORDERED_DATA_MODE;	/* ordered */
 	if (test_opt(inode->i_sb, DATA_FLAGS) == EXT4_MOUNT_WRITEBACK_DATA)
 		return EXT4_INODE_WRITEBACK_DATA_MODE;	/* writeback */
+<<<<<<< HEAD
 	else
 		BUG();
+=======
+	BUG();
+>>>>>>> v4.9.227
 }
 
 static inline int ext4_should_journal_data(struct inode *inode)

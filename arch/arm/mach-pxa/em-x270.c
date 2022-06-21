@@ -14,7 +14,11 @@
 #include <linux/delay.h>
 
 #include <linux/dm9000.h>
+<<<<<<< HEAD
 #include <linux/rtc-v3020.h>
+=======
+#include <linux/platform_data/rtc-v3020.h>
+>>>>>>> v4.9.227
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/physmap.h>
@@ -39,14 +43,23 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
 #include <mach/pxa27x-udc.h>
+=======
+#include "pxa27x.h"
+#include "pxa27x-udc.h"
+>>>>>>> v4.9.227
 #include <mach/audio.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/keypad-pxa27x.h>
+<<<<<<< HEAD
 #include <linux/platform_data/camera-pxa.h>
+=======
+#include <linux/platform_data/media/camera-pxa.h>
+>>>>>>> v4.9.227
 
 #include "generic.h"
 #include "devices.h"
@@ -289,7 +302,11 @@ static void nand_cs_off(void)
 static void em_x270_nand_cmd_ctl(struct mtd_info *mtd, int dat,
 				 unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 	unsigned long nandaddr = (unsigned long)this->IO_ADDR_W;
 
 	dsb();
@@ -378,7 +395,11 @@ static void __init em_x270_init_nand(void)
 
 	err = gpio_request(GPIO11_NAND_CS, "NAND CS");
 	if (err) {
+<<<<<<< HEAD
 		pr_warning("EM-X270: failed to request NAND CS gpio\n");
+=======
+		pr_warn("EM-X270: failed to request NAND CS gpio\n");
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -386,7 +407,11 @@ static void __init em_x270_init_nand(void)
 
 	err = gpio_request(nand_rb, "NAND R/B");
 	if (err) {
+<<<<<<< HEAD
 		pr_warning("EM-X270: failed to request NAND R/B gpio\n");
+=======
+		pr_warn("EM-X270: failed to request NAND R/B gpio\n");
+>>>>>>> v4.9.227
 		gpio_free(GPIO11_NAND_CS);
 		return;
 	}
@@ -1306,6 +1331,11 @@ static void __init em_x270_init(void)
 	em_x270_init_i2c();
 	em_x270_init_camera();
 	em_x270_userspace_consumers_init();
+<<<<<<< HEAD
+=======
+
+	regulator_has_full_constraints();
+>>>>>>> v4.9.227
 }
 
 MACHINE_START(EM_X270, "Compulab EM-X270")

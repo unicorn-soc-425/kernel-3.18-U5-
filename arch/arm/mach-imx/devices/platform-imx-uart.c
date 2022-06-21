@@ -27,6 +27,7 @@
 		.irq = soc ## _INT_UART ## _hwid,			\
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX1
 const struct imx_imx_uart_3irq_data imx1_imx_uart_data[] __initconst = {
 #define imx1_imx_uart_data_entry(_id, _hwid)				\
@@ -36,6 +37,8 @@ const struct imx_imx_uart_3irq_data imx1_imx_uart_data[] __initconst = {
 };
 #endif /* ifdef CONFIG_SOC_IMX1 */
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_SOC_IMX21
 const struct imx_imx_uart_1irq_data imx21_imx_uart_data[] __initconst = {
 #define imx21_imx_uart_data_entry(_id, _hwid)				\
@@ -47,6 +50,7 @@ const struct imx_imx_uart_1irq_data imx21_imx_uart_data[] __initconst = {
 };
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX25
 const struct imx_imx_uart_1irq_data imx25_imx_uart_data[] __initconst = {
 #define imx25_imx_uart_data_entry(_id, _hwid)				\
@@ -59,6 +63,8 @@ const struct imx_imx_uart_1irq_data imx25_imx_uart_data[] __initconst = {
 };
 #endif /* ifdef CONFIG_SOC_IMX25 */
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_SOC_IMX27
 const struct imx_imx_uart_1irq_data imx27_imx_uart_data[] __initconst = {
 #define imx27_imx_uart_data_entry(_id, _hwid)				\
@@ -94,6 +100,7 @@ const struct imx_imx_uart_1irq_data imx35_imx_uart_data[] __initconst = {
 };
 #endif /* ifdef CONFIG_SOC_IMX35 */
 
+<<<<<<< HEAD
 struct platform_device *__init imx_add_imx_uart_3irq(
 		const struct imx_imx_uart_3irq_data *data,
 		const struct imxuart_platform_data *pdata)
@@ -122,6 +129,8 @@ struct platform_device *__init imx_add_imx_uart_3irq(
 			ARRAY_SIZE(res), pdata, sizeof(*pdata));
 }
 
+=======
+>>>>>>> v4.9.227
 struct platform_device *__init imx_add_imx_uart_1irq(
 		const struct imx_imx_uart_1irq_data *data,
 		const struct imxuart_platform_data *pdata)

@@ -115,7 +115,10 @@ static int _pwrdm_register(struct powerdomain *pwrdm)
 	}
 	pwrdm->voltdm.ptr = voltdm;
 	INIT_LIST_HEAD(&pwrdm->voltdm_node);
+<<<<<<< HEAD
 	voltdm_add_pwrdm(voltdm, pwrdm);
+=======
+>>>>>>> v4.9.227
 skip_voltdm:
 	spin_lock_init(&pwrdm->_lock);
 
@@ -187,8 +190,14 @@ static int _pwrdm_state_switch(struct powerdomain *pwrdm, int flag)
 			trace_state = (PWRDM_TRACE_STATES_FLAG |
 				       ((next & OMAP_POWERSTATE_MASK) << 8) |
 				       ((prev & OMAP_POWERSTATE_MASK) << 0));
+<<<<<<< HEAD
 			trace_power_domain_target(pwrdm->name, trace_state,
 						  smp_processor_id());
+=======
+			trace_power_domain_target_rcuidle(pwrdm->name,
+							  trace_state,
+							  smp_processor_id());
+>>>>>>> v4.9.227
 		}
 		break;
 	default:
@@ -223,7 +232,10 @@ static int _pwrdm_post_transition_cb(struct powerdomain *pwrdm, void *unused)
  * @pwrdm: struct powerdomain * to operate on
  * @curr_pwrst: current power state of @pwrdm
  * @pwrst: power state to switch to
+<<<<<<< HEAD
  * @hwsup: ptr to a bool to return whether the clkdm is hardware-supervised
+=======
+>>>>>>> v4.9.227
  *
  * Determine whether the powerdomain needs to be turned on before
  * attempting to switch power states.  Called by
@@ -234,8 +246,12 @@ static int _pwrdm_post_transition_cb(struct powerdomain *pwrdm, void *unused)
  * "Types of sleep_switch" comment above).
  */
 static u8 _pwrdm_save_clkdm_state_and_activate(struct powerdomain *pwrdm,
+<<<<<<< HEAD
 					       u8 curr_pwrst, u8 pwrst,
 					       bool *hwsup)
+=======
+					       u8 curr_pwrst, u8 pwrst)
+>>>>>>> v4.9.227
 {
 	u8 sleep_switch;
 
@@ -245,8 +261,12 @@ static u8 _pwrdm_save_clkdm_state_and_activate(struct powerdomain *pwrdm,
 		    arch_pwrdm->pwrdm_set_lowpwrstchange) {
 			sleep_switch = LOWPOWERSTATE_SWITCH;
 		} else {
+<<<<<<< HEAD
 			*hwsup = clkdm_in_hwsup(pwrdm->pwrdm_clkdms[0]);
 			clkdm_wakeup_nolock(pwrdm->pwrdm_clkdms[0]);
+=======
+			clkdm_deny_idle_nolock(pwrdm->pwrdm_clkdms[0]);
+>>>>>>> v4.9.227
 			sleep_switch = FORCEWAKEUP_SWITCH;
 		}
 	} else {
@@ -260,7 +280,10 @@ static u8 _pwrdm_save_clkdm_state_and_activate(struct powerdomain *pwrdm,
  * _pwrdm_restore_clkdm_state - restore the clkdm hwsup state after pwrst change
  * @pwrdm: struct powerdomain * to operate on
  * @sleep_switch: return value from _pwrdm_save_clkdm_state_and_activate()
+<<<<<<< HEAD
  * @hwsup: should @pwrdm's first clockdomain be set to hardware-supervised mode?
+=======
+>>>>>>> v4.9.227
  *
  * Restore the clockdomain state perturbed by
  * _pwrdm_save_clkdm_state_and_activate(), and call the power state
@@ -271,6 +294,7 @@ static u8 _pwrdm_save_clkdm_state_and_activate(struct powerdomain *pwrdm,
  * software-supervised sleep.  No return value.
  */
 static void _pwrdm_restore_clkdm_state(struct powerdomain *pwrdm,
+<<<<<<< HEAD
 				       u8 sleep_switch, bool hwsup)
 {
 	switch (sleep_switch) {
@@ -279,6 +303,13 @@ static void _pwrdm_restore_clkdm_state(struct powerdomain *pwrdm,
 			clkdm_allow_idle_nolock(pwrdm->pwrdm_clkdms[0]);
 		else
 			clkdm_sleep_nolock(pwrdm->pwrdm_clkdms[0]);
+=======
+				       u8 sleep_switch)
+{
+	switch (sleep_switch) {
+	case FORCEWAKEUP_SWITCH:
+		clkdm_allow_idle_nolock(pwrdm->pwrdm_clkdms[0]);
+>>>>>>> v4.9.227
 		break;
 	case LOWPOWERSTATE_SWITCH:
 		if (pwrdm->flags & PWRDM_HAS_LOWPOWERSTATECHANGE &&
@@ -484,6 +515,7 @@ pac_exit:
 }
 
 /**
+<<<<<<< HEAD
  * pwrdm_del_clkdm - remove a clockdomain from a powerdomain
  * @pwrdm: struct powerdomain * to add the clockdomain to
  * @clkdm: struct clockdomain * to associate with a powerdomain
@@ -565,6 +597,8 @@ struct voltagedomain *pwrdm_get_voltdm(struct powerdomain *pwrdm)
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * pwrdm_get_mem_bank_count - get number of memory banks in this powerdomain
  * @pwrdm: struct powerdomain *
  *
@@ -605,8 +639,13 @@ int pwrdm_set_next_pwrst(struct powerdomain *pwrdm, u8 pwrst)
 
 	if (arch_pwrdm && arch_pwrdm->pwrdm_set_next_pwrst) {
 		/* Trace the pwrdm desired target state */
+<<<<<<< HEAD
 		trace_power_domain_target(pwrdm->name, pwrst,
 					  smp_processor_id());
+=======
+		trace_power_domain_target_rcuidle(pwrdm->name, pwrst,
+						  smp_processor_id());
+>>>>>>> v4.9.227
 		/* Program the pwrdm desired target state */
 		ret = arch_pwrdm->pwrdm_set_next_pwrst(pwrdm, pwrst);
 	}
@@ -1174,7 +1213,10 @@ int omap_set_pwrdm_state(struct powerdomain *pwrdm, u8 pwrst)
 	u8 next_pwrst, sleep_switch;
 	int curr_pwrst;
 	int ret = 0;
+<<<<<<< HEAD
 	bool hwsup = false;
+=======
+>>>>>>> v4.9.227
 
 	if (!pwrdm || IS_ERR(pwrdm))
 		return -EINVAL;
@@ -1198,14 +1240,22 @@ int omap_set_pwrdm_state(struct powerdomain *pwrdm, u8 pwrst)
 		goto osps_out;
 
 	sleep_switch = _pwrdm_save_clkdm_state_and_activate(pwrdm, curr_pwrst,
+<<<<<<< HEAD
 							    pwrst, &hwsup);
+=======
+							    pwrst);
+>>>>>>> v4.9.227
 
 	ret = pwrdm_set_next_pwrst(pwrdm, pwrst);
 	if (ret)
 		pr_err("%s: unable to set power state of powerdomain: %s\n",
 		       __func__, pwrdm->name);
 
+<<<<<<< HEAD
 	_pwrdm_restore_clkdm_state(pwrdm, sleep_switch, hwsup);
+=======
+	_pwrdm_restore_clkdm_state(pwrdm, sleep_switch);
+>>>>>>> v4.9.227
 
 osps_out:
 	pwrdm_unlock(pwrdm);

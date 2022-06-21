@@ -112,12 +112,31 @@ enum {
 #define TCP_FASTOPEN		23	/* Enable FastOpen on listeners */
 #define TCP_TIMESTAMP		24
 #define TCP_NOTSENT_LOWAT	25	/* limit number of unsent bytes in write queue */
+<<<<<<< HEAD
+=======
+#define TCP_CC_INFO		26	/* Get Congestion Control (optional) info */
+#define TCP_SAVE_SYN		27	/* Record SYN headers for new connections */
+#define TCP_SAVED_SYN		28	/* Get SYN headers recorded for connection */
+#define TCP_REPAIR_WINDOW	29	/* Get/set window parameters */
+>>>>>>> v4.9.227
 
 struct tcp_repair_opt {
 	__u32	opt_code;
 	__u32	opt_val;
 };
 
+<<<<<<< HEAD
+=======
+struct tcp_repair_window {
+	__u32	snd_wl1;
+	__u32	snd_wnd;
+	__u32	max_window;
+
+	__u32	rcv_wnd;
+	__u32	rcv_wup;
+};
+
+>>>>>>> v4.9.227
 enum {
 	TCP_NO_QUEUE,
 	TCP_RECV_QUEUE,
@@ -154,7 +173,11 @@ struct tcp_info {
 	__u8	tcpi_backoff;
 	__u8	tcpi_options;
 	__u8	tcpi_snd_wscale : 4, tcpi_rcv_wscale : 4;
+<<<<<<< HEAD
 	__u8	tcpi_count;
+=======
+	__u8	tcpi_delivery_rate_app_limited:1;
+>>>>>>> v4.9.227
 
 	__u32	tcpi_rto;
 	__u32	tcpi_ato;
@@ -190,6 +213,20 @@ struct tcp_info {
 
 	__u64	tcpi_pacing_rate;
 	__u64	tcpi_max_pacing_rate;
+<<<<<<< HEAD
+=======
+	__u64	tcpi_bytes_acked;    /* RFC4898 tcpEStatsAppHCThruOctetsAcked */
+	__u64	tcpi_bytes_received; /* RFC4898 tcpEStatsAppHCThruOctetsReceived */
+	__u32	tcpi_segs_out;	     /* RFC4898 tcpEStatsPerfSegsOut */
+	__u32	tcpi_segs_in;	     /* RFC4898 tcpEStatsPerfSegsIn */
+
+	__u32	tcpi_notsent_bytes;
+	__u32	tcpi_min_rtt;
+	__u32	tcpi_data_segs_in;	/* RFC4898 tcpEStatsDataSegsIn */
+	__u32	tcpi_data_segs_out;	/* RFC4898 tcpEStatsDataSegsOut */
+
+	__u64   tcpi_delivery_rate;
+>>>>>>> v4.9.227
 };
 
 /* for TCP_MD5SIG socket option */

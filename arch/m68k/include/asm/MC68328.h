@@ -798,7 +798,11 @@
 
 /**********
  *
+<<<<<<< HEAD
  * 0xFFFFF7xx -- Serial Periferial Interface Slave (SPIS)
+=======
+ * 0xFFFFF7xx -- Serial Peripheral Interface Slave (SPIS)
+>>>>>>> v4.9.227
  *
  **********/
 
@@ -824,7 +828,11 @@
 
 /**********
  *
+<<<<<<< HEAD
  * 0xFFFFF8xx -- Serial Periferial Interface Master (SPIM)
+=======
+ * 0xFFFFF8xx -- Serial Peripheral Interface Master (SPIM)
+>>>>>>> v4.9.227
  *
  **********/
 
@@ -904,7 +912,11 @@
 
 #define UBAUD_PRESCALER_MASK	0x003f	/* Actual divisor is 65 - PRESCALER */
 #define UBAUD_PRESCALER_SHIFT	0
+<<<<<<< HEAD
 #define UBAUD_DIVIDE_MASK	0x0700	/* Baud Rate freq. divizor */
+=======
+#define UBAUD_DIVIDE_MASK	0x0700	/* Baud Rate freq. divisor */
+>>>>>>> v4.9.227
 #define UBAUD_DIVIDE_SHIFT	8
 #define UBAUD_BAUD_SRC		0x0800	/* Baud Rate Source */
 #define UBAUD_GPIOSRC		0x1000	/* GPIO source */

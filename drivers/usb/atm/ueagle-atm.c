@@ -173,10 +173,17 @@ struct uea_softc {
 	const struct firmware *dsp_firm;
 	struct urb *urb_int;
 
+<<<<<<< HEAD
 	void (*dispatch_cmv) (struct uea_softc *, struct intr_pkt *);
 	void (*schedule_load_page) (struct uea_softc *, struct intr_pkt *);
 	int (*stat) (struct uea_softc *);
 	int (*send_cmvs) (struct uea_softc *);
+=======
+	void (*dispatch_cmv)(struct uea_softc *, struct intr_pkt *);
+	void (*schedule_load_page)(struct uea_softc *, struct intr_pkt *);
+	int (*stat)(struct uea_softc *);
+	int (*send_cmvs)(struct uea_softc *);
+>>>>>>> v4.9.227
 
 	/* keep in sync with eaglectl */
 	struct uea_stats {
@@ -952,7 +959,11 @@ static void uea_load_page_e1(struct work_struct *work)
 	int i;
 
 	/* reload firmware when reboot start and it's loaded already */
+<<<<<<< HEAD
 	if (ovl == 0 && pageno == 0 && sc->dsp_firm) {
+=======
+	if (ovl == 0 && pageno == 0) {
+>>>>>>> v4.9.227
 		release_firmware(sc->dsp_firm);
 		sc->dsp_firm = NULL;
 	}
@@ -1074,7 +1085,11 @@ static void uea_load_page_e4(struct work_struct *work)
 	uea_dbg(INS_TO_USBDEV(sc), "sending DSP page %u\n", pageno);
 
 	/* reload firmware when reboot start and it's loaded already */
+<<<<<<< HEAD
 	if (pageno == 0 && sc->dsp_firm) {
+=======
+	if (pageno == 0) {
+>>>>>>> v4.9.227
 		release_firmware(sc->dsp_firm);
 		sc->dsp_firm = NULL;
 	}
@@ -1599,7 +1614,11 @@ static void cmvs_file_name(struct uea_softc *sc, char *const cmv_name, int ver)
 	char file_arr[] = "CMVxy.bin";
 	char *file;
 
+<<<<<<< HEAD
 	kparam_block_sysfs_write(cmv_file);
+=======
+	kernel_param_lock(THIS_MODULE);
+>>>>>>> v4.9.227
 	/* set proper name corresponding modem version and line type */
 	if (cmv_file[sc->modem_index] == NULL) {
 		if (UEA_CHIP_VERSION(sc) == ADI930)
@@ -1618,7 +1637,11 @@ static void cmvs_file_name(struct uea_softc *sc, char *const cmv_name, int ver)
 	strlcat(cmv_name, file, UEA_FW_NAME_MAX);
 	if (ver == 2)
 		strlcat(cmv_name, ".v2", UEA_FW_NAME_MAX);
+<<<<<<< HEAD
 	kparam_unblock_sysfs_write(cmv_file);
+=======
+	kernel_param_unlock(THIS_MODULE);
+>>>>>>> v4.9.227
 }
 
 static int request_cmvs_old(struct uea_softc *sc,
@@ -2167,10 +2190,18 @@ resubmit:
 /*
  * Start the modem : init the data and start kernel thread
  */
+<<<<<<< HEAD
 static int uea_boot(struct uea_softc *sc)
 {
 	int ret, size;
 	struct intr_pkt *intr;
+=======
+static int uea_boot(struct uea_softc *sc, struct usb_interface *intf)
+{
+	struct intr_pkt *intr;
+	int ret = -ENOMEM;
+	int size;
+>>>>>>> v4.9.227
 
 	uea_enters(INS_TO_USBDEV(sc));
 
@@ -2195,6 +2226,7 @@ static int uea_boot(struct uea_softc *sc)
 	if (UEA_CHIP_VERSION(sc) == ADI930)
 		load_XILINX_firmware(sc);
 
+<<<<<<< HEAD
 	intr = kmalloc(size, GFP_KERNEL);
 	if (!intr) {
 		uea_err(INS_TO_USBDEV(sc),
@@ -2207,12 +2239,30 @@ static int uea_boot(struct uea_softc *sc)
 		uea_err(INS_TO_USBDEV(sc), "cannot allocate interrupt URB\n");
 		goto err1;
 	}
+=======
+	if (intf->cur_altsetting->desc.bNumEndpoints < 1) {
+		ret = -ENODEV;
+		goto err0;
+	}
+
+	intr = kmalloc(size, GFP_KERNEL);
+	if (!intr)
+		goto err0;
+
+	sc->urb_int = usb_alloc_urb(0, GFP_KERNEL);
+	if (!sc->urb_int)
+		goto err1;
+>>>>>>> v4.9.227
 
 	usb_fill_int_urb(sc->urb_int, sc->usb_dev,
 			 usb_rcvintpipe(sc->usb_dev, UEA_INTR_PIPE),
 			 intr, size, uea_intr, sc,
+<<<<<<< HEAD
 			 sc->usb_dev->actconfig->interface[0]->altsetting[0].
 			 endpoint[0].desc.bInterval);
+=======
+			 intf->cur_altsetting->endpoint[0].desc.bInterval);
+>>>>>>> v4.9.227
 
 	ret = usb_submit_urb(sc->urb_int, GFP_KERNEL);
 	if (ret < 0) {
@@ -2227,6 +2277,10 @@ static int uea_boot(struct uea_softc *sc)
 	sc->kthread = kthread_create(uea_kthread, sc, "ueagle-atm");
 	if (IS_ERR(sc->kthread)) {
 		uea_err(INS_TO_USBDEV(sc), "failed to create thread\n");
+<<<<<<< HEAD
+=======
+		ret = PTR_ERR(sc->kthread);
+>>>>>>> v4.9.227
 		goto err2;
 	}
 
@@ -2241,7 +2295,11 @@ err1:
 	kfree(intr);
 err0:
 	uea_leaves(INS_TO_USBDEV(sc));
+<<<<<<< HEAD
 	return -ENOMEM;
+=======
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -2454,7 +2512,11 @@ UEA_ATTR(firmid, 0);
 
 /* Retrieve the device End System Identifier (MAC) */
 
+<<<<<<< HEAD
 static int uea_getesi(struct uea_softc *sc, u_char * esi)
+=======
+static int uea_getesi(struct uea_softc *sc, u_char *esi)
+>>>>>>> v4.9.227
 {
 	unsigned char mac_str[2 * ETH_ALEN + 1];
 	int i;
@@ -2561,10 +2623,15 @@ static int uea_bind(struct usbatm_data *usbatm, struct usb_interface *intf,
 	}
 
 	sc = kzalloc(sizeof(struct uea_softc), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!sc) {
 		uea_err(usb, "uea_init: not enough memory !\n");
 		return -ENOMEM;
 	}
+=======
+	if (!sc)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 
 	sc->usb_dev = usb;
 	usbatm->driver_data = sc;
@@ -2604,7 +2671,11 @@ static int uea_bind(struct usbatm_data *usbatm, struct usb_interface *intf,
 	if (ret < 0)
 		goto error;
 
+<<<<<<< HEAD
 	ret = uea_boot(sc);
+=======
+	ret = uea_boot(sc, intf);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto error_rm_grp;
 

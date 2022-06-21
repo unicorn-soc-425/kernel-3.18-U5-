@@ -101,7 +101,11 @@
 
 /* WR status is at the same position as retval in a CMD header */
 #define csio_wr_status(_wr)		\
+<<<<<<< HEAD
 		(FW_CMD_RETVAL_GET(ntohl(((struct fw_cmd_hdr *)(_wr))->lo)))
+=======
+		(FW_CMD_RETVAL_G(ntohl(((struct fw_cmd_hdr *)(_wr))->lo)))
+>>>>>>> v4.9.227
 
 struct csio_hw;
 

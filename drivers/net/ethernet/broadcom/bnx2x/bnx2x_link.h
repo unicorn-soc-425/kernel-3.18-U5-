@@ -1,4 +1,5 @@
 /* Copyright 2008-2013 Broadcom Corporation
+<<<<<<< HEAD
  *
  * Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -8,6 +9,19 @@
  * Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a
  * license other than the GPL, without Broadcom's express prior written
+=======
+ * Copyright (c) 2014 QLogic Corporation
+ * All rights reserved
+ *
+ * Unless you and QLogic execute a separate written software license
+ * agreement governing use of this software, this software is licensed to you
+ * under the terms of the GNU General Public License version 2, available
+ * at http://www.gnu.org/licenses/gpl-2.0.html (the "GPL").
+ *
+ * Notwithstanding the above, under no circumstances may you combine this
+ * software in any way with any other Qlogic software provided under a
+ * license other than the GPL, without Qlogic's express prior written
+>>>>>>> v4.9.227
  * consent.
  *
  * Written by Yaniv Rosner
@@ -60,6 +74,10 @@
 #define SFP_EEPROM_DIAG_TYPE_ADDR		0x5c
 #define SFP_EEPROM_DIAG_TYPE_SIZE		1
 #define SFP_EEPROM_DIAG_ADDR_CHANGE_REQ		(1<<2)
+<<<<<<< HEAD
+=======
+#define SFP_EEPROM_DDM_IMPLEMENTED		(1<<6)
+>>>>>>> v4.9.227
 #define SFP_EEPROM_SFF_8472_COMP_ADDR		0x5e
 #define SFP_EEPROM_SFF_8472_COMP_SIZE		1
 

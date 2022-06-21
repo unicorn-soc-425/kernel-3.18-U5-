@@ -276,11 +276,14 @@ static int _setcolreg(struct fb_info *info, u_int regno, u_int red, u_int green,
 		if (r != 0)
 			break;
 
+<<<<<<< HEAD
 		if (regno < 0) {
 			r = -EINVAL;
 			break;
 		}
 
+=======
+>>>>>>> v4.9.227
 		if (regno < 16) {
 			u16 pal;
 			pal = ((red >> (16 - var->red.length)) <<
@@ -599,6 +602,7 @@ static int set_fb_var(struct fb_info *fbi,
 }
 
 
+<<<<<<< HEAD
 /* Set rotation (0, 90, 180, 270 degree), and switch to the new mode. */
 static void omapfb_rotate(struct fb_info *fbi, int rotate)
 {
@@ -620,6 +624,8 @@ static void omapfb_rotate(struct fb_info *fbi, int rotate)
 	omapfb_rqueue_unlock(fbdev);
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * Set new x,y offsets in the virtual display for the visible area and switch
  * to the new mode.
@@ -1261,7 +1267,10 @@ static struct fb_ops omapfb_ops = {
 	.fb_ioctl	= omapfb_ioctl,
 	.fb_check_var	= omapfb_check_var,
 	.fb_set_par	= omapfb_set_par,
+<<<<<<< HEAD
 	.fb_rotate	= omapfb_rotate,
+=======
+>>>>>>> v4.9.227
 	.fb_pan_display = omapfb_pan_display,
 };
 
@@ -1869,7 +1878,10 @@ static struct platform_driver omapfb_driver = {
 	.resume		= omapfb_resume,
 	.driver		= {
 		.name	= MODULE_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

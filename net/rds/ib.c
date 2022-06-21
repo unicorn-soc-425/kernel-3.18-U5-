@@ -40,6 +40,7 @@
 #include <linux/slab.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #include "rds.h"
 #include "ib.h"
 
@@ -51,6 +52,21 @@ module_param(fmr_pool_size, int, 0444);
 MODULE_PARM_DESC(fmr_pool_size, " Max number of fmr per HCA");
 module_param(fmr_message_size, int, 0444);
 MODULE_PARM_DESC(fmr_message_size, " Max size of a RDMA transfer");
+=======
+#include "rds_single_path.h"
+#include "rds.h"
+#include "ib.h"
+#include "ib_mr.h"
+
+unsigned int rds_ib_mr_1m_pool_size = RDS_MR_1M_POOL_SIZE;
+unsigned int rds_ib_mr_8k_pool_size = RDS_MR_8K_POOL_SIZE;
+unsigned int rds_ib_retry_count = RDS_IB_DEFAULT_RETRY_COUNT;
+
+module_param(rds_ib_mr_1m_pool_size, int, 0444);
+MODULE_PARM_DESC(rds_ib_mr_1m_pool_size, " Max number of 1M mr per HCA");
+module_param(rds_ib_mr_8k_pool_size, int, 0444);
+MODULE_PARM_DESC(rds_ib_mr_8k_pool_size, " Max number of 8K mr per HCA");
+>>>>>>> v4.9.227
 module_param(rds_ib_retry_count, int, 0444);
 MODULE_PARM_DESC(rds_ib_retry_count, " Number of hw retries before reporting an error");
 
@@ -97,10 +113,17 @@ static void rds_ib_dev_free(struct work_struct *work)
 	struct rds_ib_device *rds_ibdev = container_of(work,
 					struct rds_ib_device, free_work);
 
+<<<<<<< HEAD
 	if (rds_ibdev->mr_pool)
 		rds_ib_destroy_mr_pool(rds_ibdev->mr_pool);
 	if (rds_ibdev->mr)
 		ib_dereg_mr(rds_ibdev->mr);
+=======
+	if (rds_ibdev->mr_8k_pool)
+		rds_ib_destroy_mr_pool(rds_ibdev->mr_8k_pool);
+	if (rds_ibdev->mr_1m_pool)
+		rds_ib_destroy_mr_pool(rds_ibdev->mr_1m_pool);
+>>>>>>> v4.9.227
 	if (rds_ibdev->pd)
 		ib_dealloc_pd(rds_ibdev->pd);
 
@@ -122,12 +145,16 @@ void rds_ib_dev_put(struct rds_ib_device *rds_ibdev)
 static void rds_ib_add_one(struct ib_device *device)
 {
 	struct rds_ib_device *rds_ibdev;
+<<<<<<< HEAD
 	struct ib_device_attr *dev_attr;
+=======
+>>>>>>> v4.9.227
 
 	/* Only handle IB (no iWARP) devices */
 	if (device->node_type != RDMA_NODE_IB_CA)
 		return;
 
+<<<<<<< HEAD
 	dev_attr = kmalloc(sizeof *dev_attr, GFP_KERNEL);
 	if (!dev_attr)
 		return;
@@ -141,11 +168,18 @@ static void rds_ib_add_one(struct ib_device *device)
 				 ibdev_to_node(device));
 	if (!rds_ibdev)
 		goto free_attr;
+=======
+	rds_ibdev = kzalloc_node(sizeof(struct rds_ib_device), GFP_KERNEL,
+				 ibdev_to_node(device));
+	if (!rds_ibdev)
+		return;
+>>>>>>> v4.9.227
 
 	spin_lock_init(&rds_ibdev->spinlock);
 	atomic_set(&rds_ibdev->refcount, 1);
 	INIT_WORK(&rds_ibdev->free_work, rds_ib_dev_free);
 
+<<<<<<< HEAD
 	rds_ibdev->max_wrs = dev_attr->max_qp_wr;
 	rds_ibdev->max_sge = min(dev_attr->max_sge, RDS_IB_MAX_SGE);
 
@@ -159,11 +193,40 @@ static void rds_ib_add_one(struct ib_device *device)
 
 	rds_ibdev->dev = device;
 	rds_ibdev->pd = ib_alloc_pd(device);
+=======
+	INIT_LIST_HEAD(&rds_ibdev->ipaddr_list);
+	INIT_LIST_HEAD(&rds_ibdev->conn_list);
+
+	rds_ibdev->max_wrs = device->attrs.max_qp_wr;
+	rds_ibdev->max_sge = min(device->attrs.max_sge, RDS_IB_MAX_SGE);
+
+	rds_ibdev->has_fr = (device->attrs.device_cap_flags &
+				  IB_DEVICE_MEM_MGT_EXTENSIONS);
+	rds_ibdev->has_fmr = (device->alloc_fmr && device->dealloc_fmr &&
+			    device->map_phys_fmr && device->unmap_fmr);
+	rds_ibdev->use_fastreg = (rds_ibdev->has_fr && !rds_ibdev->has_fmr);
+
+	rds_ibdev->fmr_max_remaps = device->attrs.max_map_per_fmr?: 32;
+	rds_ibdev->max_1m_mrs = device->attrs.max_mr ?
+		min_t(unsigned int, (device->attrs.max_mr / 2),
+		      rds_ib_mr_1m_pool_size) : rds_ib_mr_1m_pool_size;
+
+	rds_ibdev->max_8k_mrs = device->attrs.max_mr ?
+		min_t(unsigned int, ((device->attrs.max_mr / 2) * RDS_MR_8K_SCALE),
+		      rds_ib_mr_8k_pool_size) : rds_ib_mr_8k_pool_size;
+
+	rds_ibdev->max_initiator_depth = device->attrs.max_qp_init_rd_atom;
+	rds_ibdev->max_responder_resources = device->attrs.max_qp_rd_atom;
+
+	rds_ibdev->dev = device;
+	rds_ibdev->pd = ib_alloc_pd(device, 0);
+>>>>>>> v4.9.227
 	if (IS_ERR(rds_ibdev->pd)) {
 		rds_ibdev->pd = NULL;
 		goto put_dev;
 	}
 
+<<<<<<< HEAD
 	rds_ibdev->mr = ib_get_dma_mr(rds_ibdev->pd, IB_ACCESS_LOCAL_WRITE);
 	if (IS_ERR(rds_ibdev->mr)) {
 		rds_ibdev->mr = NULL;
@@ -178,6 +241,30 @@ static void rds_ib_add_one(struct ib_device *device)
 
 	INIT_LIST_HEAD(&rds_ibdev->ipaddr_list);
 	INIT_LIST_HEAD(&rds_ibdev->conn_list);
+=======
+	rds_ibdev->mr_1m_pool =
+		rds_ib_create_mr_pool(rds_ibdev, RDS_IB_MR_1M_POOL);
+	if (IS_ERR(rds_ibdev->mr_1m_pool)) {
+		rds_ibdev->mr_1m_pool = NULL;
+		goto put_dev;
+	}
+
+	rds_ibdev->mr_8k_pool =
+		rds_ib_create_mr_pool(rds_ibdev, RDS_IB_MR_8K_POOL);
+	if (IS_ERR(rds_ibdev->mr_8k_pool)) {
+		rds_ibdev->mr_8k_pool = NULL;
+		goto put_dev;
+	}
+
+	rdsdebug("RDS/IB: max_mr = %d, max_wrs = %d, max_sge = %d, fmr_max_remaps = %d, max_1m_mrs = %d, max_8k_mrs = %d\n",
+		 device->attrs.max_fmr, rds_ibdev->max_wrs, rds_ibdev->max_sge,
+		 rds_ibdev->fmr_max_remaps, rds_ibdev->max_1m_mrs,
+		 rds_ibdev->max_8k_mrs);
+
+	pr_info("RDS/IB: %s: %s supported and preferred\n",
+		device->name,
+		rds_ibdev->use_fastreg ? "FRMR" : "FMR");
+>>>>>>> v4.9.227
 
 	down_write(&rds_ib_devices_lock);
 	list_add_tail_rcu(&rds_ibdev->list, &rds_ib_devices);
@@ -191,8 +278,11 @@ static void rds_ib_add_one(struct ib_device *device)
 
 put_dev:
 	rds_ib_dev_put(rds_ibdev);
+<<<<<<< HEAD
 free_attr:
 	kfree(dev_attr);
+=======
+>>>>>>> v4.9.227
 }
 
 /*
@@ -230,11 +320,18 @@ struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device)
  *
  * This can be called at any time and can be racing with any other RDS path.
  */
+<<<<<<< HEAD
 static void rds_ib_remove_one(struct ib_device *device)
 {
 	struct rds_ib_device *rds_ibdev;
 
 	rds_ibdev = ib_get_client_data(device, &rds_ib_client);
+=======
+static void rds_ib_remove_one(struct ib_device *device, void *client_data)
+{
+	struct rds_ib_device *rds_ibdev = client_data;
+
+>>>>>>> v4.9.227
 	if (!rds_ibdev)
 		return;
 
@@ -317,7 +414,11 @@ static void rds_ib_ic_info(struct socket *sock, unsigned int len,
  * allowed to influence which paths have priority.  We could call userspace
  * asserting this policy "routing".
  */
+<<<<<<< HEAD
 static int rds_ib_laddr_check(__be32 addr)
+=======
+static int rds_ib_laddr_check(struct net *net, __be32 addr)
+>>>>>>> v4.9.227
 {
 	int ret;
 	struct rdma_cm_id *cm_id;
@@ -326,7 +427,12 @@ static int rds_ib_laddr_check(__be32 addr)
 	/* Create a CMA ID and try to bind it. This catches both
 	 * IB and iWARP capable NICs.
 	 */
+<<<<<<< HEAD
 	cm_id = rdma_create_id(NULL, NULL, RDMA_PS_TCP, IB_QPT_RC);
+=======
+	cm_id = rdma_create_id(&init_net, rds_rdma_cm_event_handler,
+			       NULL, RDMA_PS_TCP, IB_QPT_RC);
+>>>>>>> v4.9.227
 	if (IS_ERR(cm_id))
 		return PTR_ERR(cm_id);
 
@@ -366,10 +472,15 @@ void rds_ib_exit(void)
 	rds_ib_sysctl_exit();
 	rds_ib_recv_exit();
 	rds_trans_unregister(&rds_ib_transport);
+<<<<<<< HEAD
+=======
+	rds_ib_mr_exit();
+>>>>>>> v4.9.227
 }
 
 struct rds_transport rds_ib_transport = {
 	.laddr_check		= rds_ib_laddr_check,
+<<<<<<< HEAD
 	.xmit_complete		= rds_ib_xmit_complete,
 	.xmit			= rds_ib_xmit,
 	.xmit_rdma		= rds_ib_xmit_rdma,
@@ -379,6 +490,17 @@ struct rds_transport rds_ib_transport = {
 	.conn_free		= rds_ib_conn_free,
 	.conn_connect		= rds_ib_conn_connect,
 	.conn_shutdown		= rds_ib_conn_shutdown,
+=======
+	.xmit_path_complete	= rds_ib_xmit_path_complete,
+	.xmit			= rds_ib_xmit,
+	.xmit_rdma		= rds_ib_xmit_rdma,
+	.xmit_atomic		= rds_ib_xmit_atomic,
+	.recv_path		= rds_ib_recv_path,
+	.conn_alloc		= rds_ib_conn_alloc,
+	.conn_free		= rds_ib_conn_free,
+	.conn_path_connect	= rds_ib_conn_path_connect,
+	.conn_path_shutdown	= rds_ib_conn_path_shutdown,
+>>>>>>> v4.9.227
 	.inc_copy_to_user	= rds_ib_inc_copy_to_user,
 	.inc_free		= rds_ib_inc_free,
 	.cm_initiate_connect	= rds_ib_cm_initiate_connect,
@@ -401,10 +523,21 @@ int rds_ib_init(void)
 
 	INIT_LIST_HEAD(&rds_ib_devices);
 
+<<<<<<< HEAD
 	ret = ib_register_client(&rds_ib_client);
 	if (ret)
 		goto out;
 
+=======
+	ret = rds_ib_mr_init();
+	if (ret)
+		goto out;
+
+	ret = ib_register_client(&rds_ib_client);
+	if (ret)
+		goto out_mr_exit;
+
+>>>>>>> v4.9.227
 	ret = rds_ib_sysctl_init();
 	if (ret)
 		goto out_ibreg;
@@ -427,6 +560,11 @@ out_sysctl:
 	rds_ib_sysctl_exit();
 out_ibreg:
 	rds_ib_unregister_client();
+<<<<<<< HEAD
+=======
+out_mr_exit:
+	rds_ib_mr_exit();
+>>>>>>> v4.9.227
 out:
 	return ret;
 }

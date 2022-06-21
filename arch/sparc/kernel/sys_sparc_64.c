@@ -337,10 +337,17 @@ SYSCALL_DEFINE6(sparc_ipc, unsigned int, call, int, first, unsigned long, second
 		switch (call) {
 		case SEMOP:
 			err = sys_semtimedop(first, ptr,
+<<<<<<< HEAD
 					     (unsigned)second, NULL);
 			goto out;
 		case SEMTIMEDOP:
 			err = sys_semtimedop(first, ptr, (unsigned)second,
+=======
+					     (unsigned int)second, NULL);
+			goto out;
+		case SEMTIMEDOP:
+			err = sys_semtimedop(first, ptr, (unsigned int)second,
+>>>>>>> v4.9.227
 				(const struct timespec __user *)
 					     (unsigned long) fifth);
 			goto out;

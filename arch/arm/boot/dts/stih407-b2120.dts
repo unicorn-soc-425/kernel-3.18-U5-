@@ -8,12 +8,20 @@
  */
 /dts-v1/;
 #include "stih407.dtsi"
+<<<<<<< HEAD
+=======
+#include "stihxxx-b2120.dtsi"
+>>>>>>> v4.9.227
 / {
 	model = "STiH407 B2120";
 	compatible = "st,stih407-b2120", "st,stih407";
 
 	chosen {
+<<<<<<< HEAD
 		bootargs = "console=ttyAS0,115200";
+=======
+		bootargs = "console=ttyAS0,115200 clk_ignore_unused";
+>>>>>>> v4.9.227
 		linux,stdout-path = &sbc_serial0;
 	};
 
@@ -24,6 +32,7 @@
 
 	aliases {
 		ttyAS0 = &sbc_serial0;
+<<<<<<< HEAD
 	};
 
 	soc {
@@ -75,4 +84,9 @@
 			st,i2c-min-sda-pulse-width-us = <5>;
 		};
 	};
+=======
+		ethernet0 = &ethernet0;
+	};
+
+>>>>>>> v4.9.227
 };

@@ -199,7 +199,11 @@ static const struct clk_coeff coeff_div[] = {
 	{12288000, 48000, 0xc, 0x0, 0x30, 0x0, 0x4},
 };
 
+<<<<<<< HEAD
 static struct reg_default ml26124_reg[] = {
+=======
+static const struct reg_default ml26124_reg[] = {
+>>>>>>> v4.9.227
 	/* CLOCK control Register */
 	{0x00, 0x00 },	/* Sampling Rate */
 	{0x02, 0x00},	/* PLL NL */
@@ -341,6 +345,10 @@ static int ml26124_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_codec *codec = dai->codec;
 	struct ml26124_priv *priv = snd_soc_codec_get_drvdata(codec);
 	int i = get_coeff(priv->mclk, params_rate(hw_params));
+<<<<<<< HEAD
+=======
+	int srate;
+>>>>>>> v4.9.227
 
 	if (i < 0)
 		return i;
@@ -370,6 +378,7 @@ static int ml26124_hw_params(struct snd_pcm_substream *substream,
 				    BIT(0) | BIT(1), 0);
 	}
 
+<<<<<<< HEAD
 	switch (params_rate(hw_params)) {
 	case 16000:
 		snd_soc_update_bits(codec, ML26124_SMPLING_RATE, 0xf,
@@ -417,6 +426,18 @@ static int ml26124_hw_params(struct snd_pcm_substream *substream,
 		pr_err("%s:this rate is no support for ml26124\n", __func__);
 		return -EINVAL;
 	}
+=======
+	srate = get_srate(params_rate(hw_params));
+	if (srate < 0)
+		return srate;
+
+	snd_soc_update_bits(codec, ML26124_SMPLING_RATE, 0xf, srate);
+	snd_soc_update_bits(codec, ML26124_PLLNL, 0xff, coeff_div[i].pllnl);
+	snd_soc_update_bits(codec, ML26124_PLLNH, 0x1, coeff_div[i].pllnh);
+	snd_soc_update_bits(codec, ML26124_PLLML, 0xff, coeff_div[i].pllml);
+	snd_soc_update_bits(codec, ML26124_PLLMH, 0x3f, coeff_div[i].pllmh);
+	snd_soc_update_bits(codec, ML26124_PLLDIV, 0x1f, coeff_div[i].plldiv);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -523,7 +544,11 @@ static int ml26124_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	case SND_SOC_BIAS_STANDBY:
 		/* VMID ON */
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			snd_soc_update_bits(codec, ML26124_PW_REF_PW_MNG,
 					    ML26124_VMID, ML26124_VMID);
 			msleep(500);
@@ -536,7 +561,10 @@ static int ml26124_set_bias_level(struct snd_soc_codec *codec,
 				    ML26124_VMID, 0);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -578,12 +606,23 @@ static struct snd_soc_codec_driver soc_codec_dev_ml26124 = {
 	.probe =	ml26124_probe,
 	.set_bias_level = ml26124_set_bias_level,
 	.suspend_bias_off = true,
+<<<<<<< HEAD
 	.dapm_widgets = ml26124_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(ml26124_dapm_widgets),
 	.dapm_routes = ml26124_intercon,
 	.num_dapm_routes = ARRAY_SIZE(ml26124_intercon),
 	.controls = ml26124_snd_controls,
 	.num_controls = ARRAY_SIZE(ml26124_snd_controls),
+=======
+	.component_driver = {
+		.controls		= ml26124_snd_controls,
+		.num_controls		= ARRAY_SIZE(ml26124_snd_controls),
+		.dapm_widgets		= ml26124_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(ml26124_dapm_widgets),
+		.dapm_routes		= ml26124_intercon,
+		.num_dapm_routes	= ARRAY_SIZE(ml26124_intercon),
+	},
+>>>>>>> v4.9.227
 };
 
 static const struct regmap_config ml26124_i2c_regmap = {
@@ -634,7 +673,10 @@ MODULE_DEVICE_TABLE(i2c, ml26124_i2c_id);
 static struct i2c_driver ml26124_i2c_driver = {
 	.driver = {
 		.name = "ml26124",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = ml26124_i2c_probe,
 	.remove = ml26124_i2c_remove,

@@ -30,9 +30,12 @@ EXPORT_SYMBOL(__cpuc_flush_user_all);
 EXPORT_SYMBOL(__cpuc_flush_user_range);
 EXPORT_SYMBOL(__cpuc_coherent_kern_range);
 EXPORT_SYMBOL(__cpuc_flush_dcache_area);
+<<<<<<< HEAD
 EXPORT_SYMBOL(dmac_inv_range);
 EXPORT_SYMBOL(dmac_clean_range);
 EXPORT_SYMBOL(dmac_flush_range);
+=======
+>>>>>>> v4.9.227
 #else
 EXPORT_SYMBOL(cpu_cache);
 #endif

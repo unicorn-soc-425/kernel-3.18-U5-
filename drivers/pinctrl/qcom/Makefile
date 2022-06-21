@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ccflags-y := $(KBUILD_FP_SENSOR_CFLAGS)
 
 # Qualcomm pin control drivers
@@ -18,3 +19,22 @@ obj-$(CONFIG_PINCTRL_MDM9607)	+= pinctrl-mdm9607.o
 obj-$(CONFIG_PINCTRL_MDM9650)   += pinctrl-mdm9650.o
 obj-$(CONFIG_PINCTRL_SDX20)   += pinctrl-sdx20.o
 obj-$(CONFIG_PINCTRL_MSM8909)	+= pinctrl-msm8909.o
+=======
+# Qualcomm pin control drivers
+obj-$(CONFIG_PINCTRL_MSM)	+= pinctrl-msm.o
+obj-$(CONFIG_PINCTRL_APQ8064)	+= pinctrl-apq8064.o
+obj-$(CONFIG_PINCTRL_APQ8084)	+= pinctrl-apq8084.o
+obj-$(CONFIG_PINCTRL_IPQ4019)	+= pinctrl-ipq4019.o
+obj-$(CONFIG_PINCTRL_IPQ8064)	+= pinctrl-ipq8064.o
+obj-$(CONFIG_PINCTRL_MSM8660)	+= pinctrl-msm8660.o
+obj-$(CONFIG_PINCTRL_MSM8960)	+= pinctrl-msm8960.o
+obj-$(CONFIG_PINCTRL_MSM8X74)	+= pinctrl-msm8x74.o
+obj-$(CONFIG_PINCTRL_MSM8916)	+= pinctrl-msm8916.o
+obj-$(CONFIG_PINCTRL_MSM8996)   += pinctrl-msm8996.o
+obj-$(CONFIG_PINCTRL_QDF2XXX)	+= pinctrl-qdf2xxx.o
+obj-$(CONFIG_PINCTRL_MDM9615)	+= pinctrl-mdm9615.o
+obj-$(CONFIG_PINCTRL_QCOM_SPMI_PMIC) += pinctrl-spmi-gpio.o
+obj-$(CONFIG_PINCTRL_QCOM_SPMI_PMIC) += pinctrl-spmi-mpp.o
+obj-$(CONFIG_PINCTRL_QCOM_SSBI_PMIC) += pinctrl-ssbi-gpio.o
+obj-$(CONFIG_PINCTRL_QCOM_SSBI_PMIC) += pinctrl-ssbi-mpp.o
+>>>>>>> v4.9.227

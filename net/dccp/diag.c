@@ -49,13 +49,23 @@ static void dccp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
 }
 
 static void dccp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+<<<<<<< HEAD
 		struct inet_diag_req_v2 *r, struct nlattr *bc)
+=======
+			   const struct inet_diag_req_v2 *r, struct nlattr *bc)
+>>>>>>> v4.9.227
 {
 	inet_diag_dump_icsk(&dccp_hashinfo, skb, cb, r, bc);
 }
 
+<<<<<<< HEAD
 static int dccp_diag_dump_one(struct sk_buff *in_skb, const struct nlmsghdr *nlh,
 		struct inet_diag_req_v2 *req)
+=======
+static int dccp_diag_dump_one(struct sk_buff *in_skb,
+			      const struct nlmsghdr *nlh,
+			      const struct inet_diag_req_v2 *req)
+>>>>>>> v4.9.227
 {
 	return inet_diag_dump_one_icsk(&dccp_hashinfo, in_skb, nlh, req);
 }
@@ -65,6 +75,10 @@ static const struct inet_diag_handler dccp_diag_handler = {
 	.dump_one	 = dccp_diag_dump_one,
 	.idiag_get_info	 = dccp_diag_get_info,
 	.idiag_type	 = IPPROTO_DCCP,
+<<<<<<< HEAD
+=======
+	.idiag_info_size = sizeof(struct tcp_info),
+>>>>>>> v4.9.227
 };
 
 static int __init dccp_diag_init(void)

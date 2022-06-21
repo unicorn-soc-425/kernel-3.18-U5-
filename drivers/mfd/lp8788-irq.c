@@ -112,7 +112,11 @@ static irqreturn_t lp8788_irq_handler(int irq, void *ptr)
 	struct lp8788_irq_data *irqd = ptr;
 	struct lp8788 *lp = irqd->lp;
 	u8 status[NUM_REGS], addr, mask;
+<<<<<<< HEAD
 	bool handled;
+=======
+	bool handled = false;
+>>>>>>> v4.9.227
 	int i;
 
 	if (lp8788_read_multi_bytes(lp, LP8788_INT_1, status, NUM_REGS))
@@ -141,17 +145,25 @@ static int lp8788_irq_map(struct irq_domain *d, unsigned int virq,
 	irq_set_chip_data(virq, irqd);
 	irq_set_chip_and_handler(virq, chip, handle_edge_irq);
 	irq_set_nested_thread(virq, 1);
+<<<<<<< HEAD
 
 #ifdef CONFIG_ARM
 	set_irq_flags(virq, IRQF_VALID);
 #else
 	irq_set_noprobe(virq);
 #endif
+=======
+	irq_set_noprobe(virq);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops lp8788_domain_ops = {
+=======
+static const struct irq_domain_ops lp8788_domain_ops = {
+>>>>>>> v4.9.227
 	.map = lp8788_irq_map,
 };
 

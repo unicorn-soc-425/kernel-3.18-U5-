@@ -47,8 +47,11 @@
 #define FLOAT_TWO	0x40000000
 #define FLOAT_MINUS_5	0xc0a00000
 
+<<<<<<< HEAD
 #define UNSOL_TAG_HP	0x10
 #define UNSOL_TAG_AMIC1	0x12
+=======
+>>>>>>> v4.9.227
 #define UNSOL_TAG_DSP	0x16
 
 #define DSP_DMA_WRITE_BUFLEN_INIT (1UL<<18)
@@ -707,8 +710,13 @@ struct ca0132_spec {
 	unsigned int num_mixers;
 	const struct hda_verb *base_init_verbs;
 	const struct hda_verb *base_exit_verbs;
+<<<<<<< HEAD
 	const struct hda_verb *init_verbs[5];
 	unsigned int num_init_verbs;  /* exclude base init verbs */
+=======
+	const struct hda_verb *chip_init_verbs;
+	struct hda_verb *spec_init_verbs;
+>>>>>>> v4.9.227
 	struct auto_pin_cfg autocfg;
 
 	/* Nodes configurations */
@@ -723,7 +731,12 @@ struct ca0132_spec {
 	unsigned int num_inputs;
 	hda_nid_t shared_mic_nid;
 	hda_nid_t shared_out_nid;
+<<<<<<< HEAD
 	struct hda_pcm pcm_rec[5]; /* PCM information */
+=======
+	hda_nid_t unsol_tag_hp;
+	hda_nid_t unsol_tag_amic1;
+>>>>>>> v4.9.227
 
 	/* chip access */
 	struct mutex chipio_mutex; /* chip access mutex */
@@ -753,6 +766,10 @@ struct ca0132_spec {
 
 	struct hda_codec *codec;
 	struct delayed_work unsol_hp_work;
+<<<<<<< HEAD
+=======
+	int quirk;
+>>>>>>> v4.9.227
 
 #ifdef ENABLE_TUNING_CONTROLS
 	long cur_ctl_vals[TUNING_CTLS_COUNT];
@@ -760,6 +777,38 @@ struct ca0132_spec {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * CA0132 quirks table
+ */
+enum {
+	QUIRK_NONE,
+	QUIRK_ALIENWARE,
+};
+
+static const struct hda_pintbl alienware_pincfgs[] = {
+	{ 0x0b, 0x90170110 }, /* Builtin Speaker */
+	{ 0x0c, 0x411111f0 }, /* N/A */
+	{ 0x0d, 0x411111f0 }, /* N/A */
+	{ 0x0e, 0x411111f0 }, /* N/A */
+	{ 0x0f, 0x0321101f }, /* HP */
+	{ 0x10, 0x411111f0 }, /* Headset?  disabled for now */
+	{ 0x11, 0x03a11021 }, /* Mic */
+	{ 0x12, 0xd5a30140 }, /* Builtin Mic */
+	{ 0x13, 0x411111f0 }, /* N/A */
+	{ 0x18, 0x411111f0 }, /* N/A */
+	{}
+};
+
+static const struct snd_pci_quirk ca0132_quirks[] = {
+	SND_PCI_QUIRK(0x1028, 0x0685, "Alienware 15 2015", QUIRK_ALIENWARE),
+	SND_PCI_QUIRK(0x1028, 0x0688, "Alienware 17 2015", QUIRK_ALIENWARE),
+	SND_PCI_QUIRK(0x1028, 0x0708, "Alienware 15 R2 2016", QUIRK_ALIENWARE),
+	{}
+};
+
+/*
+>>>>>>> v4.9.227
  * CA0132 codec access
  */
 static unsigned int codec_send_command(struct hda_codec *codec, hda_nid_t nid,
@@ -1271,13 +1320,23 @@ struct scp_msg {
 
 static void dspio_clear_response_queue(struct hda_codec *codec)
 {
+<<<<<<< HEAD
 	unsigned int dummy = 0;
 	int status = -1;
+=======
+	unsigned long timeout = jiffies + msecs_to_jiffies(1000);
+	unsigned int dummy = 0;
+	int status;
+>>>>>>> v4.9.227
 
 	/* clear all from the response queue */
 	do {
 		status = dspio_read(codec, &dummy);
+<<<<<<< HEAD
 	} while (status == 0);
+=======
+	} while (status == 0 && time_before(jiffies, timeout));
+>>>>>>> v4.9.227
 }
 
 static int dspio_get_response_data(struct hda_codec *codec)
@@ -1457,6 +1516,12 @@ static int dspio_scp(struct hda_codec *codec,
 		} else if (ret_size != reply_data_size) {
 			codec_dbg(codec, "RetLen and HdrLen .NE.\n");
 			return -EINVAL;
+<<<<<<< HEAD
+=======
+		} else if (!reply) {
+			codec_dbg(codec, "NULL reply\n");
+			return -EINVAL;
+>>>>>>> v4.9.227
 		} else {
 			*reply_len = ret_size*sizeof(unsigned int);
 			memcpy(reply, scp_reply.data, *reply_len);
@@ -2057,11 +2122,16 @@ static int dma_convert_to_hda_format(struct hda_codec *codec,
 {
 	unsigned int format_val;
 
+<<<<<<< HEAD
 	format_val = snd_hda_calc_stream_format(codec,
 				sample_rate,
 				channels,
 				SNDRV_PCM_FORMAT_S32_LE,
 				32, 0);
+=======
+	format_val = snd_hdac_calc_stream_format(sample_rate,
+				channels, SNDRV_PCM_FORMAT_S32_LE, 32, 0);
+>>>>>>> v4.9.227
 
 	if (hda_format)
 		*hda_format = (unsigned short)format_val;
@@ -2421,7 +2491,11 @@ static int dspxfr_one_seg(struct hda_codec *codec,
  * @reloc: Relocation address for loading single-segment overlays, or 0 for
  *	   no relocation
  * @sample_rate: sampling rate of the stream used for DSP download
+<<<<<<< HEAD
  * @number_channels: channels of the stream used for DSP download
+=======
+ * @channels: channels of the stream used for DSP download
+>>>>>>> v4.9.227
  * @ovly: TRUE if overlay format is required
  *
  * Returns zero or a negative error code.
@@ -2560,10 +2634,14 @@ static void dspload_post_setup(struct hda_codec *codec)
 }
 
 /**
+<<<<<<< HEAD
  * Download DSP from a DSP Image Fast Load structure. This structure is a
  * linear, non-constant sized element array of structures, each of which
  * contain the count of the data to be loaded, the data itself, and the
  * corresponding starting chip address of the starting data location.
+=======
+ * dspload_image - Download DSP from a DSP Image Fast Load structure.
+>>>>>>> v4.9.227
  *
  * @codec: the HDA codec
  * @fls: pointer to a fast load image
@@ -2574,6 +2652,13 @@ static void dspload_post_setup(struct hda_codec *codec)
  * @router_chans: number of audio router channels to be allocated (0 means use
  *		  internal defaults; max is 32)
  *
+<<<<<<< HEAD
+=======
+ * Download DSP from a DSP Image Fast Load structure. This structure is a
+ * linear, non-constant sized element array of structures, each of which
+ * contain the count of the data to be loaded, the data itself, and the
+ * corresponding starting chip address of the starting data location.
+>>>>>>> v4.9.227
  * Returns zero or a negative error code.
  */
 static int dspload_image(struct hda_codec *codec,
@@ -2652,13 +2737,21 @@ static bool dspload_wait_loaded(struct hda_codec *codec)
 
 	do {
 		if (dspload_is_loaded(codec)) {
+<<<<<<< HEAD
 			pr_info("ca0132 DOWNLOAD OK :-) DSP IS RUNNING.\n");
+=======
+			codec_info(codec, "ca0132 DSP downloaded and running\n");
+>>>>>>> v4.9.227
 			return true;
 		}
 		msleep(20);
 	} while (time_before(jiffies, timeout));
 
+<<<<<<< HEAD
 	pr_err("ca0132 DOWNLOAD FAILED!!! DSP IS NOT RUNNING.\n");
+=======
+	codec_err(codec, "ca0132 failed to download DSP\n");
+>>>>>>> v4.9.227
 	return false;
 }
 
@@ -3135,12 +3228,20 @@ static int ca0132_select_out(struct hda_codec *codec)
 
 	codec_dbg(codec, "ca0132_select_out\n");
 
+<<<<<<< HEAD
 	snd_hda_power_up(codec);
+=======
+	snd_hda_power_up_pm(codec);
+>>>>>>> v4.9.227
 
 	auto_jack = spec->vnode_lswitch[VNID_HP_ASEL - VNODE_START_NID];
 
 	if (auto_jack)
+<<<<<<< HEAD
 		jack_present = snd_hda_jack_detect(codec, spec->out_pins[1]);
+=======
+		jack_present = snd_hda_jack_detect(codec, spec->unsol_tag_hp);
+>>>>>>> v4.9.227
 	else
 		jack_present =
 			spec->vnode_lswitch[VNID_HP_SEL - VNODE_START_NID];
@@ -3219,7 +3320,11 @@ static int ca0132_select_out(struct hda_codec *codec)
 	}
 
 exit:
+<<<<<<< HEAD
 	snd_hda_power_down(codec);
+=======
+	snd_hda_power_down_pm(codec);
+>>>>>>> v4.9.227
 
 	return err < 0 ? err : 0;
 }
@@ -3231,7 +3336,11 @@ static void ca0132_unsol_hp_delayed(struct work_struct *work)
 	struct hda_jack_tbl *jack;
 
 	ca0132_select_out(spec->codec);
+<<<<<<< HEAD
 	jack = snd_hda_jack_tbl_get(spec->codec, UNSOL_TAG_HP);
+=======
+	jack = snd_hda_jack_tbl_get(spec->codec, spec->unsol_tag_hp);
+>>>>>>> v4.9.227
 	if (jack) {
 		jack->block_report = 0;
 		snd_hda_jack_report_sync(spec->codec);
@@ -3297,12 +3406,20 @@ static int ca0132_select_mic(struct hda_codec *codec)
 
 	codec_dbg(codec, "ca0132_select_mic\n");
 
+<<<<<<< HEAD
 	snd_hda_power_up(codec);
+=======
+	snd_hda_power_up_pm(codec);
+>>>>>>> v4.9.227
 
 	auto_jack = spec->vnode_lswitch[VNID_AMIC1_ASEL - VNODE_START_NID];
 
 	if (auto_jack)
+<<<<<<< HEAD
 		jack_present = snd_hda_jack_detect(codec, spec->input_pins[0]);
+=======
+		jack_present = snd_hda_jack_detect(codec, spec->unsol_tag_amic1);
+>>>>>>> v4.9.227
 	else
 		jack_present =
 			spec->vnode_lswitch[VNID_AMIC1_SEL - VNODE_START_NID];
@@ -3330,7 +3447,11 @@ static int ca0132_select_mic(struct hda_codec *codec)
 		ca0132_effects_set(codec, VOICE_FOCUS, 0);
 	}
 
+<<<<<<< HEAD
 	snd_hda_power_down(codec);
+=======
+	snd_hda_power_down_pm(codec);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -3996,7 +4117,11 @@ static int ca0132_build_controls(struct hda_codec *codec)
 /*
  * PCM
  */
+<<<<<<< HEAD
 static struct hda_pcm_stream ca0132_pcm_analog_playback = {
+=======
+static const struct hda_pcm_stream ca0132_pcm_analog_playback = {
+>>>>>>> v4.9.227
 	.substreams = 1,
 	.channels_min = 2,
 	.channels_max = 6,
@@ -4007,7 +4132,11 @@ static struct hda_pcm_stream ca0132_pcm_analog_playback = {
 	},
 };
 
+<<<<<<< HEAD
 static struct hda_pcm_stream ca0132_pcm_analog_capture = {
+=======
+static const struct hda_pcm_stream ca0132_pcm_analog_capture = {
+>>>>>>> v4.9.227
 	.substreams = 1,
 	.channels_min = 2,
 	.channels_max = 2,
@@ -4018,7 +4147,11 @@ static struct hda_pcm_stream ca0132_pcm_analog_capture = {
 	},
 };
 
+<<<<<<< HEAD
 static struct hda_pcm_stream ca0132_pcm_digital_playback = {
+=======
+static const struct hda_pcm_stream ca0132_pcm_digital_playback = {
+>>>>>>> v4.9.227
 	.substreams = 1,
 	.channels_min = 2,
 	.channels_max = 2,
@@ -4030,7 +4163,11 @@ static struct hda_pcm_stream ca0132_pcm_digital_playback = {
 	},
 };
 
+<<<<<<< HEAD
 static struct hda_pcm_stream ca0132_pcm_digital_capture = {
+=======
+static const struct hda_pcm_stream ca0132_pcm_digital_capture = {
+>>>>>>> v4.9.227
 	.substreams = 1,
 	.channels_min = 2,
 	.channels_max = 2,
@@ -4039,12 +4176,20 @@ static struct hda_pcm_stream ca0132_pcm_digital_capture = {
 static int ca0132_build_pcms(struct hda_codec *codec)
 {
 	struct ca0132_spec *spec = codec->spec;
+<<<<<<< HEAD
 	struct hda_pcm *info = spec->pcm_rec;
 
 	codec->pcm_info = info;
 	codec->num_pcms = 0;
 
 	info->name = "CA0132 Analog";
+=======
+	struct hda_pcm *info;
+
+	info = snd_hda_codec_pcm_new(codec, "CA0132 Analog");
+	if (!info)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	info->stream[SNDRV_PCM_STREAM_PLAYBACK] = ca0132_pcm_analog_playback;
 	info->stream[SNDRV_PCM_STREAM_PLAYBACK].nid = spec->dacs[0];
 	info->stream[SNDRV_PCM_STREAM_PLAYBACK].channels_max =
@@ -4052,6 +4197,7 @@ static int ca0132_build_pcms(struct hda_codec *codec)
 	info->stream[SNDRV_PCM_STREAM_CAPTURE] = ca0132_pcm_analog_capture;
 	info->stream[SNDRV_PCM_STREAM_CAPTURE].substreams = 1;
 	info->stream[SNDRV_PCM_STREAM_CAPTURE].nid = spec->adcs[0];
+<<<<<<< HEAD
 	codec->num_pcms++;
 
 	info++;
@@ -4067,12 +4213,34 @@ static int ca0132_build_pcms(struct hda_codec *codec)
 	info->stream[SNDRV_PCM_STREAM_CAPTURE].substreams = 1;
 	info->stream[SNDRV_PCM_STREAM_CAPTURE].nid = spec->adcs[2];
 	codec->num_pcms++;
+=======
+
+	info = snd_hda_codec_pcm_new(codec, "CA0132 Analog Mic-In2");
+	if (!info)
+		return -ENOMEM;
+	info->stream[SNDRV_PCM_STREAM_CAPTURE] = ca0132_pcm_analog_capture;
+	info->stream[SNDRV_PCM_STREAM_CAPTURE].substreams = 1;
+	info->stream[SNDRV_PCM_STREAM_CAPTURE].nid = spec->adcs[1];
+
+	info = snd_hda_codec_pcm_new(codec, "CA0132 What U Hear");
+	if (!info)
+		return -ENOMEM;
+	info->stream[SNDRV_PCM_STREAM_CAPTURE] = ca0132_pcm_analog_capture;
+	info->stream[SNDRV_PCM_STREAM_CAPTURE].substreams = 1;
+	info->stream[SNDRV_PCM_STREAM_CAPTURE].nid = spec->adcs[2];
+>>>>>>> v4.9.227
 
 	if (!spec->dig_out && !spec->dig_in)
 		return 0;
 
+<<<<<<< HEAD
 	info++;
 	info->name = "CA0132 Digital";
+=======
+	info = snd_hda_codec_pcm_new(codec, "CA0132 Digital");
+	if (!info)
+		return -ENOMEM;
+>>>>>>> v4.9.227
 	info->pcm_type = HDA_PCM_TYPE_SPDIF;
 	if (spec->dig_out) {
 		info->stream[SNDRV_PCM_STREAM_PLAYBACK] =
@@ -4084,7 +4252,10 @@ static int ca0132_build_pcms(struct hda_codec *codec)
 			ca0132_pcm_digital_capture;
 		info->stream[SNDRV_PCM_STREAM_CAPTURE].nid = spec->dig_in;
 	}
+<<<<<<< HEAD
 	codec->num_pcms++;
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -4249,6 +4420,7 @@ static void ca0132_refresh_widget_caps(struct hda_codec *codec)
 {
 	struct ca0132_spec *spec = codec->spec;
 	int i;
+<<<<<<< HEAD
 	hda_nid_t nid;
 
 	codec_dbg(codec, "ca0132_refresh_widget_caps.\n");
@@ -4256,6 +4428,11 @@ static void ca0132_refresh_widget_caps(struct hda_codec *codec)
 	for (i = 0; i < codec->num_nodes; i++, nid++)
 		codec->wcaps[i] = snd_hda_param_read(codec, nid,
 						     AC_PAR_AUDIO_WIDGET_CAP);
+=======
+
+	codec_dbg(codec, "ca0132_refresh_widget_caps.\n");
+	snd_hda_codec_update_widgets(codec);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < spec->multiout.num_dacs; i++)
 		refresh_amp_caps(codec, spec->dacs[i], HDA_OUTPUT);
@@ -4355,12 +4532,20 @@ static bool ca0132_download_dsp_images(struct hda_codec *codec)
 	const struct dsp_image_seg *dsp_os_image;
 	const struct firmware *fw_entry;
 
+<<<<<<< HEAD
 	if (request_firmware(&fw_entry, EFX_FILE, codec->bus->card->dev) != 0)
+=======
+	if (request_firmware(&fw_entry, EFX_FILE, codec->card->dev) != 0)
+>>>>>>> v4.9.227
 		return false;
 
 	dsp_os_image = (struct dsp_image_seg *)(fw_entry->data);
 	if (dspload_image(codec, dsp_os_image, 0, 0, true, 0)) {
+<<<<<<< HEAD
 		pr_err("ca0132 dspload_image failed.\n");
+=======
+		codec_err(codec, "ca0132 DSP load image failed\n");
+>>>>>>> v4.9.227
 		goto exit_download;
 	}
 
@@ -4400,25 +4585,45 @@ static void ca0132_process_dsp_response(struct hda_codec *codec,
 	struct ca0132_spec *spec = codec->spec;
 
 	codec_dbg(codec, "ca0132_process_dsp_response\n");
+<<<<<<< HEAD
+=======
+	snd_hda_power_up_pm(codec);
+>>>>>>> v4.9.227
 	if (spec->wait_scp) {
 		if (dspio_get_response_data(codec) >= 0)
 			spec->wait_scp = 0;
 	}
 
 	dspio_clear_response_queue(codec);
+<<<<<<< HEAD
+=======
+	snd_hda_power_down_pm(codec);
+>>>>>>> v4.9.227
 }
 
 static void hp_callback(struct hda_codec *codec, struct hda_jack_callback *cb)
 {
 	struct ca0132_spec *spec = codec->spec;
+<<<<<<< HEAD
+=======
+	struct hda_jack_tbl *tbl;
+>>>>>>> v4.9.227
 
 	/* Delay enabling the HP amp, to let the mic-detection
 	 * state machine run.
 	 */
+<<<<<<< HEAD
 	cancel_delayed_work_sync(&spec->unsol_hp_work);
 	queue_delayed_work(codec->bus->workq, &spec->unsol_hp_work,
 			   msecs_to_jiffies(500));
 	cb->tbl->block_report = 1;
+=======
+	cancel_delayed_work(&spec->unsol_hp_work);
+	schedule_delayed_work(&spec->unsol_hp_work, msecs_to_jiffies(500));
+	tbl = snd_hda_jack_tbl_get(codec, cb->nid);
+	if (tbl)
+		tbl->block_report = 1;
+>>>>>>> v4.9.227
 }
 
 static void amic_callback(struct hda_codec *codec, struct hda_jack_callback *cb)
@@ -4428,8 +4633,14 @@ static void amic_callback(struct hda_codec *codec, struct hda_jack_callback *cb)
 
 static void ca0132_init_unsol(struct hda_codec *codec)
 {
+<<<<<<< HEAD
 	snd_hda_jack_detect_enable_callback(codec, UNSOL_TAG_HP, hp_callback);
 	snd_hda_jack_detect_enable_callback(codec, UNSOL_TAG_AMIC1,
+=======
+	struct ca0132_spec *spec = codec->spec;
+	snd_hda_jack_detect_enable_callback(codec, spec->unsol_tag_hp, hp_callback);
+	snd_hda_jack_detect_enable_callback(codec, spec->unsol_tag_amic1,
+>>>>>>> v4.9.227
 					    amic_callback);
 	snd_hda_jack_detect_enable_callback(codec, UNSOL_TAG_DSP,
 					    ca0132_process_dsp_response);
@@ -4490,6 +4701,7 @@ static struct hda_verb ca0132_init_verbs0[] = {
 	{}
 };
 
+<<<<<<< HEAD
 static struct hda_verb ca0132_init_verbs1[] = {
 	{0x10, AC_VERB_SET_UNSOLICITED_ENABLE, AC_USRSP_EN | UNSOL_TAG_HP},
 	{0x12, AC_VERB_SET_UNSOLICITED_ENABLE, AC_USRSP_EN | UNSOL_TAG_AMIC1},
@@ -4501,6 +4713,8 @@ static struct hda_verb ca0132_init_verbs1[] = {
 	{}
 };
 
+=======
+>>>>>>> v4.9.227
 static void ca0132_init_chip(struct hda_codec *codec)
 {
 	struct ca0132_spec *spec = codec->spec;
@@ -4557,7 +4771,11 @@ static int ca0132_init(struct hda_codec *codec)
 		spec->dsp_state = DSP_DOWNLOAD_INIT;
 	spec->curr_chip_addx = INVALID_CHIP_ADDRESS;
 
+<<<<<<< HEAD
 	snd_hda_power_up(codec);
+=======
+	snd_hda_power_up_pm(codec);
+>>>>>>> v4.9.227
 
 	ca0132_init_unsol(codec);
 
@@ -4580,15 +4798,24 @@ static int ca0132_init(struct hda_codec *codec)
 
 	init_input(codec, cfg->dig_in_pin, spec->dig_in);
 
+<<<<<<< HEAD
 	for (i = 0; i < spec->num_init_verbs; i++)
 		snd_hda_sequence_write(codec, spec->init_verbs[i]);
+=======
+	snd_hda_sequence_write(codec, spec->chip_init_verbs);
+	snd_hda_sequence_write(codec, spec->spec_init_verbs);
+>>>>>>> v4.9.227
 
 	ca0132_select_out(codec);
 	ca0132_select_mic(codec);
 
 	snd_hda_jack_report_sync(codec);
 
+<<<<<<< HEAD
 	snd_hda_power_down(codec);
+=======
+	snd_hda_power_down_pm(codec);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -4602,10 +4829,18 @@ static void ca0132_free(struct hda_codec *codec)
 	snd_hda_sequence_write(codec, spec->base_exit_verbs);
 	ca0132_exit_chip(codec);
 	snd_hda_power_down(codec);
+<<<<<<< HEAD
 	kfree(codec->spec);
 }
 
 static struct hda_codec_ops ca0132_patch_ops = {
+=======
+	kfree(spec->spec_init_verbs);
+	kfree(codec->spec);
+}
+
+static const struct hda_codec_ops ca0132_patch_ops = {
+>>>>>>> v4.9.227
 	.build_controls = ca0132_build_controls,
 	.build_pcms = ca0132_build_pcms,
 	.init = ca0132_init,
@@ -4626,6 +4861,7 @@ static void ca0132_config(struct hda_codec *codec)
 	spec->multiout.num_dacs = 3;
 	spec->multiout.max_channels = 2;
 
+<<<<<<< HEAD
 	spec->num_outputs = 2;
 	spec->out_pins[0] = 0x0b; /* speaker out */
 	spec->out_pins[1] = 0x10; /* headphone out */
@@ -4650,12 +4886,111 @@ static void ca0132_config(struct hda_codec *codec)
 	spec->dig_in = 0x09;
 	cfg->dig_in_pin = 0x0e;
 	cfg->dig_in_type = HDA_PCM_TYPE_SPDIF;
+=======
+	if (spec->quirk == QUIRK_ALIENWARE) {
+		codec_dbg(codec, "ca0132_config: QUIRK_ALIENWARE applied.\n");
+		snd_hda_apply_pincfgs(codec, alienware_pincfgs);
+
+		spec->num_outputs = 2;
+		spec->out_pins[0] = 0x0b; /* speaker out */
+		spec->out_pins[1] = 0x0f;
+		spec->shared_out_nid = 0x2;
+		spec->unsol_tag_hp = 0x0f;
+
+		spec->adcs[0] = 0x7; /* digital mic / analog mic1 */
+		spec->adcs[1] = 0x8; /* analog mic2 */
+		spec->adcs[2] = 0xa; /* what u hear */
+
+		spec->num_inputs = 3;
+		spec->input_pins[0] = 0x12;
+		spec->input_pins[1] = 0x11;
+		spec->input_pins[2] = 0x13;
+		spec->shared_mic_nid = 0x7;
+		spec->unsol_tag_amic1 = 0x11;
+	} else {
+		spec->num_outputs = 2;
+		spec->out_pins[0] = 0x0b; /* speaker out */
+		spec->out_pins[1] = 0x10; /* headphone out */
+		spec->shared_out_nid = 0x2;
+		spec->unsol_tag_hp = spec->out_pins[1];
+
+		spec->adcs[0] = 0x7; /* digital mic / analog mic1 */
+		spec->adcs[1] = 0x8; /* analog mic2 */
+		spec->adcs[2] = 0xa; /* what u hear */
+
+		spec->num_inputs = 3;
+		spec->input_pins[0] = 0x12;
+		spec->input_pins[1] = 0x11;
+		spec->input_pins[2] = 0x13;
+		spec->shared_mic_nid = 0x7;
+		spec->unsol_tag_amic1 = spec->input_pins[0];
+
+		/* SPDIF I/O */
+		spec->dig_out = 0x05;
+		spec->multiout.dig_out_nid = spec->dig_out;
+		cfg->dig_out_pins[0] = 0x0c;
+		cfg->dig_outs = 1;
+		cfg->dig_out_type[0] = HDA_PCM_TYPE_SPDIF;
+		spec->dig_in = 0x09;
+		cfg->dig_in_pin = 0x0e;
+		cfg->dig_in_type = HDA_PCM_TYPE_SPDIF;
+	}
+}
+
+static int ca0132_prepare_verbs(struct hda_codec *codec)
+{
+/* Verbs + terminator (an empty element) */
+#define NUM_SPEC_VERBS 4
+	struct ca0132_spec *spec = codec->spec;
+
+	spec->chip_init_verbs = ca0132_init_verbs0;
+	spec->spec_init_verbs = kzalloc(sizeof(struct hda_verb) * NUM_SPEC_VERBS, GFP_KERNEL);
+	if (!spec->spec_init_verbs)
+		return -ENOMEM;
+
+	/* HP jack autodetection */
+	spec->spec_init_verbs[0].nid = spec->unsol_tag_hp;
+	spec->spec_init_verbs[0].param = AC_VERB_SET_UNSOLICITED_ENABLE;
+	spec->spec_init_verbs[0].verb = AC_USRSP_EN | spec->unsol_tag_hp;
+
+	/* MIC1 jack autodetection */
+	spec->spec_init_verbs[1].nid = spec->unsol_tag_amic1;
+	spec->spec_init_verbs[1].param = AC_VERB_SET_UNSOLICITED_ENABLE;
+	spec->spec_init_verbs[1].verb = AC_USRSP_EN | spec->unsol_tag_amic1;
+
+	/* config EAPD */
+	spec->spec_init_verbs[2].nid = 0x0b;
+	spec->spec_init_verbs[2].param = 0x78D;
+	spec->spec_init_verbs[2].verb = 0x00;
+
+	/* Previously commented configuration */
+	/*
+	spec->spec_init_verbs[3].nid = 0x0b;
+	spec->spec_init_verbs[3].param = AC_VERB_SET_EAPD_BTLENABLE;
+	spec->spec_init_verbs[3].verb = 0x02;
+
+	spec->spec_init_verbs[4].nid = 0x10;
+	spec->spec_init_verbs[4].param = 0x78D;
+	spec->spec_init_verbs[4].verb = 0x02;
+
+	spec->spec_init_verbs[5].nid = 0x10;
+	spec->spec_init_verbs[5].param = AC_VERB_SET_EAPD_BTLENABLE;
+	spec->spec_init_verbs[5].verb = 0x02;
+	*/
+
+	/* Terminator: spec->spec_init_verbs[NUM_SPEC_VERBS-1] */
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int patch_ca0132(struct hda_codec *codec)
 {
 	struct ca0132_spec *spec;
 	int err;
+<<<<<<< HEAD
+=======
+	const struct snd_pci_quirk *quirk;
+>>>>>>> v4.9.227
 
 	codec_dbg(codec, "patch_ca0132\n");
 
@@ -4665,15 +5000,32 @@ static int patch_ca0132(struct hda_codec *codec)
 	codec->spec = spec;
 	spec->codec = codec;
 
+<<<<<<< HEAD
+=======
+	codec->patch_ops = ca0132_patch_ops;
+	codec->pcm_format_first = 1;
+	codec->no_sticky_stream = 1;
+
+	/* Detect codec quirk */
+	quirk = snd_pci_quirk_lookup(codec->bus->pci, ca0132_quirks);
+	if (quirk)
+		spec->quirk = quirk->value;
+	else
+		spec->quirk = QUIRK_NONE;
+
+>>>>>>> v4.9.227
 	spec->dsp_state = DSP_DOWNLOAD_INIT;
 	spec->num_mixers = 1;
 	spec->mixers[0] = ca0132_mixer;
 
 	spec->base_init_verbs = ca0132_base_init_verbs;
 	spec->base_exit_verbs = ca0132_base_exit_verbs;
+<<<<<<< HEAD
 	spec->init_verbs[0] = ca0132_init_verbs0;
 	spec->init_verbs[1] = ca0132_init_verbs1;
 	spec->num_init_verbs = 2;
+=======
+>>>>>>> v4.9.227
 
 	INIT_DELAYED_WORK(&spec->unsol_hp_work, ca0132_unsol_hp_delayed);
 
@@ -4681,6 +5033,7 @@ static int patch_ca0132(struct hda_codec *codec)
 
 	ca0132_config(codec);
 
+<<<<<<< HEAD
 	err = snd_hda_parse_pin_def_config(codec, &spec->autocfg, NULL);
 	if (err < 0)
 		return err;
@@ -4688,6 +5041,15 @@ static int patch_ca0132(struct hda_codec *codec)
 	codec->patch_ops = ca0132_patch_ops;
 	codec->pcm_format_first = 1;
 	codec->no_sticky_stream = 1;
+=======
+	err = ca0132_prepare_verbs(codec);
+	if (err < 0)
+		return err;
+
+	err = snd_hda_parse_pin_def_config(codec, &spec->autocfg, NULL);
+	if (err < 0)
+		return err;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -4695,16 +5057,25 @@ static int patch_ca0132(struct hda_codec *codec)
 /*
  * patch entries
  */
+<<<<<<< HEAD
 static struct hda_codec_preset snd_hda_preset_ca0132[] = {
 	{ .id = 0x11020011, .name = "CA0132",     .patch = patch_ca0132 },
 	{} /* terminator */
 };
 
 MODULE_ALIAS("snd-hda-codec-id:11020011");
+=======
+static struct hda_device_id snd_hda_id_ca0132[] = {
+	HDA_CODEC_ENTRY(0x11020011, "CA0132", patch_ca0132),
+	{} /* terminator */
+};
+MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_ca0132);
+>>>>>>> v4.9.227
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Creative Sound Core3D codec");
 
+<<<<<<< HEAD
 static struct hda_codec_preset_list ca0132_list = {
 	.preset = snd_hda_preset_ca0132,
 	.owner = THIS_MODULE,
@@ -4722,3 +5093,10 @@ static void __exit patch_ca0132_exit(void)
 
 module_init(patch_ca0132_init)
 module_exit(patch_ca0132_exit)
+=======
+static struct hda_codec_driver ca0132_driver = {
+	.id = snd_hda_id_ca0132,
+};
+
+module_hda_codec_driver(ca0132_driver);
+>>>>>>> v4.9.227

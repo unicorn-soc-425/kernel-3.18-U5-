@@ -291,7 +291,11 @@ static struct scsi_host_template powertecscsi_template = {
 
 	.can_queue			= 8,
 	.this_id			= 7,
+<<<<<<< HEAD
 	.sg_tablesize			= SCSI_MAX_SG_CHAIN_SEGMENTS,
+=======
+	.sg_tablesize			= SG_MAX_SEGMENTS,
+>>>>>>> v4.9.227
 	.dma_boundary			= IOMD_DMA_BOUNDARY,
 	.cmd_per_lun			= 2,
 	.use_clustering			= ENABLE_CLUSTERING,

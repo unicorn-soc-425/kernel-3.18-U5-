@@ -9,7 +9,10 @@ obj-y   := entry.o traps.o irq.o debugport.o \
 	   process.o ptrace.o setup.o signal.o traps.o time.o \
 	   cache.o cacheflush.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_SMP) += smp.o
+=======
+>>>>>>> v4.9.227
 obj-$(CONFIG_ETRAX_KGDB) += kgdb.o kgdb_asm.o
 obj-$(CONFIG_ETRAX_FAST_TIMER) += fasttimer.o
 obj-$(CONFIG_MODULES)    += crisksyms.o

@@ -32,6 +32,11 @@
  * Fix stop command
  */
 
+<<<<<<< HEAD
+=======
+#include "smscoreapi.h"
+
+>>>>>>> v4.9.227
 #include <linux/moduleparam.h>
 #include <linux/slab.h>
 #include <linux/firmware.h>
@@ -41,7 +46,10 @@
 #include <linux/mmc/sdio_ids.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #include "smscoreapi.h"
+=======
+>>>>>>> v4.9.227
 #include "sms-cards.h"
 #include "smsendian.h"
 
@@ -141,14 +149,22 @@ static void smssdio_interrupt(struct sdio_func *func)
 	 */
 	(void)sdio_readb(func, SMSSDIO_INT, &ret);
 	if (ret) {
+<<<<<<< HEAD
 		sms_err("Unable to read interrupt register!\n");
+=======
+		pr_err("Unable to read interrupt register!\n");
+>>>>>>> v4.9.227
 		return;
 	}
 
 	if (smsdev->split_cb == NULL) {
 		cb = smscore_getbuffer(smsdev->coredev);
 		if (!cb) {
+<<<<<<< HEAD
 			sms_err("Unable to allocate data buffer!\n");
+=======
+			pr_err("Unable to allocate data buffer!\n");
+>>>>>>> v4.9.227
 			return;
 		}
 
@@ -157,7 +173,11 @@ static void smssdio_interrupt(struct sdio_func *func)
 					 SMSSDIO_DATA,
 					 SMSSDIO_BLOCK_SIZE);
 		if (ret) {
+<<<<<<< HEAD
 			sms_err("Error %d reading initial block!\n", ret);
+=======
+			pr_err("Error %d reading initial block!\n", ret);
+>>>>>>> v4.9.227
 			return;
 		}
 
@@ -198,7 +218,11 @@ static void smssdio_interrupt(struct sdio_func *func)
 					 size);
 		if (ret && ret != -EINVAL) {
 			smscore_putbuffer(smsdev->coredev, cb);
+<<<<<<< HEAD
 			sms_err("Error %d reading data from card!\n", ret);
+=======
+			pr_err("Error %d reading data from card!\n", ret);
+>>>>>>> v4.9.227
 			return;
 		}
 
@@ -216,8 +240,13 @@ static void smssdio_interrupt(struct sdio_func *func)
 						  smsdev->func->cur_blksize);
 				if (ret) {
 					smscore_putbuffer(smsdev->coredev, cb);
+<<<<<<< HEAD
 					sms_err("Error %d reading "
 						"data from card!\n", ret);
+=======
+					pr_err("Error %d reading data from card!\n",
+					       ret);
+>>>>>>> v4.9.227
 					return;
 				}
 
@@ -278,7 +307,11 @@ static int smssdio_probe(struct sdio_func *func,
 		goto free;
 	}
 
+<<<<<<< HEAD
 	ret = smscore_register_device(&params, &smsdev->coredev);
+=======
+	ret = smscore_register_device(&params, &smsdev->coredev, NULL);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		goto free;
 

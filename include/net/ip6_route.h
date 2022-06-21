@@ -18,9 +18,17 @@ struct route_info {
 	__u8			prefix[0];	/* 0,8 or 16 */
 };
 
+<<<<<<< HEAD
 #include <net/flow.h>
 #include <net/ip6_fib.h>
 #include <net/sock.h>
+=======
+#include <net/addrconf.h>
+#include <net/flow.h>
+#include <net/ip6_fib.h>
+#include <net/sock.h>
+#include <net/lwtunnel.h>
+>>>>>>> v4.9.227
 #include <linux/ip.h>
 #include <linux/ipv6.h>
 #include <linux/route.h>
@@ -31,6 +39,10 @@ struct route_info {
 #define RT6_LOOKUP_F_SRCPREF_TMP	0x00000008
 #define RT6_LOOKUP_F_SRCPREF_PUBLIC	0x00000010
 #define RT6_LOOKUP_F_SRCPREF_COA	0x00000020
+<<<<<<< HEAD
+=======
+#define RT6_LOOKUP_F_IGNORE_LINKSTATE	0x00000040
+>>>>>>> v4.9.227
 
 /* We do not (yet ?) support IPv6 jumbograms (RFC 2675)
  * Unlike IPv4, hdr->seg_len doesn't include the IPv6 header
@@ -63,11 +75,32 @@ static inline bool rt6_need_strict(const struct in6_addr *daddr)
 }
 
 void ip6_route_input(struct sk_buff *skb);
+<<<<<<< HEAD
 
 struct dst_entry *ip6_route_output(struct net *net, const struct sock *sk,
 				   struct flowi6 *fl6);
 struct dst_entry *ip6_route_lookup(struct net *net, struct flowi6 *fl6,
 				   int flags);
+=======
+struct dst_entry *ip6_route_input_lookup(struct net *net,
+					 struct net_device *dev,
+					 struct flowi6 *fl6, int flags);
+
+struct dst_entry *ip6_route_output_flags(struct net *net, const struct sock *sk,
+					 struct flowi6 *fl6, int flags);
+
+static inline struct dst_entry *ip6_route_output(struct net *net,
+						 const struct sock *sk,
+						 struct flowi6 *fl6)
+{
+	return ip6_route_output_flags(net, sk, fl6, 0);
+}
+
+struct dst_entry *ip6_route_lookup(struct net *net, struct flowi6 *fl6,
+				   int flags);
+struct rt6_info *ip6_pol_route(struct net *net, struct fib6_table *table,
+			       int ifindex, struct flowi6 *fl6, int flags);
+>>>>>>> v4.9.227
 
 void ip6_route_init_special_entries(void);
 int ip6_route_init(void);
@@ -79,9 +112,29 @@ int ip6_route_add(struct fib6_config *cfg);
 int ip6_ins_rt(struct rt6_info *);
 int ip6_del_rt(struct rt6_info *);
 
+<<<<<<< HEAD
 int ip6_route_get_saddr(struct net *net, struct rt6_info *rt,
 			const struct in6_addr *daddr, unsigned int prefs,
 			struct in6_addr *saddr);
+=======
+static inline int ip6_route_get_saddr(struct net *net, struct rt6_info *rt,
+				      const struct in6_addr *daddr,
+				      unsigned int prefs,
+				      struct in6_addr *saddr)
+{
+	struct inet6_dev *idev =
+			rt ? ip6_dst_idev((struct dst_entry *)rt) : NULL;
+	int err = 0;
+
+	if (rt && rt->rt6i_prefsrc.plen)
+		*saddr = rt->rt6i_prefsrc.addr;
+	else
+		err = ipv6_dev_get_saddr(net, idev ? idev->dev : NULL,
+					 daddr, prefs, saddr);
+
+	return err;
+}
+>>>>>>> v4.9.227
 
 struct rt6_info *rt6_lookup(struct net *net, const struct in6_addr *daddr,
 			    const struct in6_addr *saddr, int oif, int flags);
@@ -94,6 +147,12 @@ void fib6_force_start_gc(struct net *net);
 struct rt6_info *addrconf_dst_alloc(struct inet6_dev *idev,
 				    const struct in6_addr *addr, bool anycast);
 
+<<<<<<< HEAD
+=======
+struct rt6_info *ip6_dst_alloc(struct net *net, struct net_device *dev,
+			       int flags);
+
+>>>>>>> v4.9.227
 /*
  *	support functions for ND
  *
@@ -109,10 +168,16 @@ int rt6_route_rcv(struct net_device *dev, u8 *opt, int len,
 		  const struct in6_addr *gwaddr);
 
 void ip6_update_pmtu(struct sk_buff *skb, struct net *net, __be32 mtu, int oif,
+<<<<<<< HEAD
 		     u32 mark, kuid_t uid);
 void ip6_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, __be32 mtu);
 void ip6_redirect(struct sk_buff *skb, struct net *net, int oif, u32 mark,
 		  kuid_t uid);
+=======
+		     u32 mark);
+void ip6_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, __be32 mtu);
+void ip6_redirect(struct sk_buff *skb, struct net *net, int oif, u32 mark);
+>>>>>>> v4.9.227
 void ip6_redirect_no_header(struct sk_buff *skb, struct net *net, int oif,
 			    u32 mark);
 void ip6_sk_redirect(struct sk_buff *skb, struct sock *sk);
@@ -135,6 +200,7 @@ void rt6_clean_tohost(struct net *net, struct in6_addr *gateway);
 /*
  *	Store a destination cache entry in a socket
  */
+<<<<<<< HEAD
 static inline void __ip6_dst_store(struct sock *sk, struct dst_entry *dst,
 				   const struct in6_addr *daddr,
 				   const struct in6_addr *saddr)
@@ -142,11 +208,21 @@ static inline void __ip6_dst_store(struct sock *sk, struct dst_entry *dst,
 	struct ipv6_pinfo *np = inet6_sk(sk);
 	struct rt6_info *rt = (struct rt6_info *) dst;
 
+=======
+static inline void ip6_dst_store(struct sock *sk, struct dst_entry *dst,
+				 const struct in6_addr *daddr,
+				 const struct in6_addr *saddr)
+{
+	struct ipv6_pinfo *np = inet6_sk(sk);
+
+	np->dst_cookie = rt6_get_cookie((struct rt6_info *)dst);
+>>>>>>> v4.9.227
 	sk_setup_caps(sk, dst);
 	np->daddr_cache = daddr;
 #ifdef CONFIG_IPV6_SUBTREES
 	np->saddr_cache = saddr;
 #endif
+<<<<<<< HEAD
 	np->dst_cookie = rt->rt6i_node ? rt->rt6i_node->fn_sernum : 0;
 }
 
@@ -156,6 +232,8 @@ static inline void ip6_dst_store(struct sock *sk, struct dst_entry *dst,
 	spin_lock(&sk->sk_dst_lock);
 	__ip6_dst_store(sk, dst, daddr, saddr);
 	spin_unlock(&sk->sk_dst_lock);
+=======
+>>>>>>> v4.9.227
 }
 
 static inline bool ipv6_unicast_destination(const struct sk_buff *skb)
@@ -165,6 +243,7 @@ static inline bool ipv6_unicast_destination(const struct sk_buff *skb)
 	return rt->rt6i_flags & RTF_LOCAL;
 }
 
+<<<<<<< HEAD
 static inline bool ipv6_anycast_destination(const struct sk_buff *skb)
 {
 	struct rt6_info *rt = (struct rt6_info *) skb_dst(skb);
@@ -173,6 +252,21 @@ static inline bool ipv6_anycast_destination(const struct sk_buff *skb)
 }
 
 int ip6_fragment(struct sk_buff *skb, int (*output)(struct sk_buff *));
+=======
+static inline bool ipv6_anycast_destination(const struct dst_entry *dst,
+					    const struct in6_addr *daddr)
+{
+	struct rt6_info *rt = (struct rt6_info *)dst;
+
+	return rt->rt6i_flags & RTF_ANYCAST ||
+		(rt->rt6i_dst.plen != 128 &&
+		 !(rt->rt6i_flags & (RTF_GATEWAY | RTF_NONEXTHOP)) &&
+		 ipv6_addr_equal(&rt->rt6i_dst.addr, daddr));
+}
+
+int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
+		 int (*output)(struct net *, struct sock *, struct sk_buff *));
+>>>>>>> v4.9.227
 
 static inline int ip6_skb_dst_mtu(struct sk_buff *skb)
 {
@@ -195,9 +289,30 @@ static inline bool ip6_sk_ignore_df(const struct sock *sk)
 	       inet6_sk(sk)->pmtudisc == IPV6_PMTUDISC_OMIT;
 }
 
+<<<<<<< HEAD
 static inline struct in6_addr *rt6_nexthop(struct rt6_info *rt)
 {
 	return &rt->rt6i_gateway;
 }
 
+=======
+static inline struct in6_addr *rt6_nexthop(struct rt6_info *rt,
+					   struct in6_addr *daddr)
+{
+	if (rt->rt6i_flags & RTF_GATEWAY)
+		return &rt->rt6i_gateway;
+	else if (unlikely(rt->rt6i_flags & RTF_CACHE))
+		return &rt->rt6i_dst.addr;
+	else
+		return daddr;
+}
+
+static inline bool rt6_duplicate_nexthop(struct rt6_info *a, struct rt6_info *b)
+{
+	return a->dst.dev == b->dst.dev &&
+	       a->rt6i_idev == b->rt6i_idev &&
+	       ipv6_addr_equal(&a->rt6i_gateway, &b->rt6i_gateway) &&
+	       !lwtunnel_cmp_encap(a->dst.lwtstate, b->dst.lwtstate);
+}
+>>>>>>> v4.9.227
 #endif

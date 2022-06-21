@@ -11,7 +11,11 @@
 #define R_METAG_RELBRANCH                4
 #define R_METAG_GETSETOFF                5
 
+<<<<<<< HEAD
 /* Backward compatability */
+=======
+/* Backward compatibility */
+>>>>>>> v4.9.227
 #define R_METAG_REG32OP1                 6
 #define R_METAG_REG32OP2                 7
 #define R_METAG_REG32OP3                 8

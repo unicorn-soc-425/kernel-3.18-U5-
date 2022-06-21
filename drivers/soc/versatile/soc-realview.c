@@ -31,6 +31,7 @@ static const struct of_device_id realview_soc_of_match[] = {
 
 static u32 realview_coreid;
 
+<<<<<<< HEAD
 static const char *realview_board_str(u32 id)
 {
 	switch ((id >> 16) & 0xfff) {
@@ -44,6 +45,13 @@ static const char *realview_board_str(u32 id)
 static const char *realview_arch_str(u32 id)
 {
 	switch ((id >> 8) & 0xf) {
+=======
+static const char *realview_arch_str(u32 id)
+{
+	switch ((id >> 8) & 0xf) {
+	case 0x04:
+		return "AHB";
+>>>>>>> v4.9.227
 	case 0x05:
 		return "Multi-layer AXI";
 	default:
@@ -65,7 +73,11 @@ static ssize_t realview_get_board(struct device *dev,
 			      struct device_attribute *attr,
 			      char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "%s\n", realview_board_str(realview_coreid));
+=======
+	return sprintf(buf, "HBI-%03x\n", ((realview_coreid >> 16) & 0xfff));
+>>>>>>> v4.9.227
 }
 
 static struct device_attribute realview_board_attr =
@@ -129,8 +141,14 @@ static int realview_soc_probe(struct platform_device *pdev)
 	device_create_file(soc_device_to_device(soc_dev), &realview_arch_attr);
 	device_create_file(soc_device_to_device(soc_dev), &realview_build_attr);
 
+<<<<<<< HEAD
 	dev_info(&pdev->dev, "RealView Syscon Core ID: 0x%08x\n",
 		 realview_coreid);
+=======
+	dev_info(&pdev->dev, "RealView Syscon Core ID: 0x%08x, HBI-%03x\n",
+		 realview_coreid,
+		 ((realview_coreid >> 16) & 0xfff));
+>>>>>>> v4.9.227
 	/* FIXME: add attributes for SoC to sysfs */
 	return 0;
 }
@@ -142,4 +160,8 @@ static struct platform_driver realview_soc_driver = {
 		.of_match_table = realview_soc_of_match,
 	},
 };
+<<<<<<< HEAD
 module_platform_driver(realview_soc_driver);
+=======
+builtin_platform_driver(realview_soc_driver);
+>>>>>>> v4.9.227

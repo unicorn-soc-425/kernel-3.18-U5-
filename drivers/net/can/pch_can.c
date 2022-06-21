@@ -505,6 +505,10 @@ static void pch_can_error(struct net_device *ndev, u32 status)
 		pch_can_set_rx_all(priv, 0);
 		state = CAN_STATE_BUS_OFF;
 		cf->can_id |= CAN_ERR_BUSOFF;
+<<<<<<< HEAD
+=======
+		priv->can.can_stats.bus_off++;
+>>>>>>> v4.9.227
 		can_bus_off(ndev);
 	}
 
@@ -558,8 +562,12 @@ static void pch_can_error(struct net_device *ndev, u32 status)
 		stats->rx_errors++;
 		break;
 	case PCH_CRC_ERR:
+<<<<<<< HEAD
 		cf->data[3] |= CAN_ERR_PROT_LOC_CRC_SEQ |
 			       CAN_ERR_PROT_LOC_CRC_DEL;
+=======
+		cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
+>>>>>>> v4.9.227
 		priv->can.can_stats.bus_error++;
 		stats->rx_errors++;
 		break;

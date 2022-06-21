@@ -77,7 +77,11 @@ static struct usb_function *f_uvc;
 static struct usb_device_descriptor webcam_device_descriptor = {
 	.bLength		= USB_DT_DEVICE_SIZE,
 	.bDescriptorType	= USB_DT_DEVICE,
+<<<<<<< HEAD
 	.bcdUSB			= cpu_to_le16(0x0200),
+=======
+	/* .bcdUSB = DYNAMIC */
+>>>>>>> v4.9.227
 	.bDeviceClass		= USB_CLASS_MISC,
 	.bDeviceSubClass	= 0x02,
 	.bDeviceProtocol	= 0x01,
@@ -334,7 +338,11 @@ static const struct uvc_descriptor_header * const uvc_ss_streaming_cls[] = {
  * USB configuration
  */
 
+<<<<<<< HEAD
 static int __init
+=======
+static int
+>>>>>>> v4.9.227
 webcam_config_bind(struct usb_configuration *c)
 {
 	int status = 0;
@@ -358,7 +366,11 @@ static struct usb_configuration webcam_config_driver = {
 	.MaxPower		= CONFIG_USB_GADGET_VBUS_DRAW,
 };
 
+<<<<<<< HEAD
 static int /* __init_or_exit */
+=======
+static int
+>>>>>>> v4.9.227
 webcam_unbind(struct usb_composite_dev *cdev)
 {
 	if (!IS_ERR_OR_NULL(f_uvc))
@@ -368,7 +380,11 @@ webcam_unbind(struct usb_composite_dev *cdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __init
+=======
+static int
+>>>>>>> v4.9.227
 webcam_bind(struct usb_composite_dev *cdev)
 {
 	struct f_uvc_opts *uvc_opts;
@@ -422,7 +438,11 @@ error:
  * Driver
  */
 
+<<<<<<< HEAD
 static __refdata struct usb_composite_driver webcam_driver = {
+=======
+static struct usb_composite_driver webcam_driver = {
+>>>>>>> v4.9.227
 	.name		= "g_webcam",
 	.dev		= &webcam_device_descriptor,
 	.strings	= webcam_device_strings,

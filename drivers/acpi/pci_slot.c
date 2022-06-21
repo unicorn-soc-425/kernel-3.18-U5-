@@ -20,6 +20,7 @@
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
@@ -28,6 +29,13 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+=======
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/kernel.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/types.h>
@@ -37,6 +45,7 @@
 #include <linux/dmi.h>
 #include <linux/pci-acpi.h>
 
+<<<<<<< HEAD
 static bool debug;
 static int check_sta_before_sun;
 
@@ -61,6 +70,13 @@ ACPI_MODULE_NAME("pci_slot");
 			pr_debug("%s: " format,	MY_NAME , ## arg); \
 	} while (0)
 
+=======
+static int check_sta_before_sun;
+
+#define _COMPONENT		ACPI_PCI_COMPONENT
+ACPI_MODULE_NAME("pci_slot");
+
+>>>>>>> v4.9.227
 #define SLOT_NAME_SIZE 21		/* Inspired by #define in acpiphp.h */
 
 struct acpi_pci_slot {
@@ -80,7 +96,11 @@ check_slot(acpi_handle handle, unsigned long long *sun)
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
 
 	acpi_get_name(handle, ACPI_FULL_PATHNAME, &buffer);
+<<<<<<< HEAD
 	dbg("Checking slot on path: %s\n", (char *)buffer.pointer);
+=======
+	pr_debug("Checking slot on path: %s\n", (char *)buffer.pointer);
+>>>>>>> v4.9.227
 
 	if (check_sta_before_sun) {
 		/* If SxFy doesn't have _STA, we just assume it's there */
@@ -91,14 +111,24 @@ check_slot(acpi_handle handle, unsigned long long *sun)
 
 	status = acpi_evaluate_integer(handle, "_ADR", NULL, &adr);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		dbg("_ADR returned %d on %s\n", status, (char *)buffer.pointer);
+=======
+		pr_debug("_ADR returned %d on %s\n",
+			 status, (char *)buffer.pointer);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
 	/* No _SUN == not a slot == bail */
 	status = acpi_evaluate_integer(handle, "_SUN", NULL, sun);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		dbg("_SUN returned %d on %s\n", status, (char *)buffer.pointer);
+=======
+		pr_debug("_SUN returned %d on %s\n",
+			 status, (char *)buffer.pointer);
+>>>>>>> v4.9.227
 		goto out;
 	}
 
@@ -136,15 +166,24 @@ register_slot(acpi_handle handle, u32 lvl, void *context, void **rv)
 	}
 
 	slot = kmalloc(sizeof(*slot), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!slot) {
 		err("%s: cannot allocate memory\n", __func__);
 		return AE_OK;
 	}
+=======
+	if (!slot)
+		return AE_OK;
+>>>>>>> v4.9.227
 
 	snprintf(name, sizeof(name), "%llu", sun);
 	pci_slot = pci_create_slot(pci_bus, device, name, NULL);
 	if (IS_ERR(pci_slot)) {
+<<<<<<< HEAD
 		err("pci_create_slot returned %ld\n", PTR_ERR(pci_slot));
+=======
+		pr_err("pci_create_slot returned %ld\n", PTR_ERR(pci_slot));
+>>>>>>> v4.9.227
 		kfree(slot);
 		return AE_OK;
 	}
@@ -154,8 +193,13 @@ register_slot(acpi_handle handle, u32 lvl, void *context, void **rv)
 
 	get_device(&pci_bus->dev);
 
+<<<<<<< HEAD
 	dbg("pci_slot: %p, pci_bus: %x, device: %d, name: %s\n",
 		pci_slot, pci_bus->number, device, name);
+=======
+	pr_debug("%p, pci_bus: %x, device: %d, name: %s\n",
+		 pci_slot, pci_bus->number, device, name);
+>>>>>>> v4.9.227
 
 	return AE_OK;
 }
@@ -190,7 +234,12 @@ void acpi_pci_slot_remove(struct pci_bus *bus)
 
 static int do_sta_before_sun(const struct dmi_system_id *d)
 {
+<<<<<<< HEAD
 	info("%s detected: will evaluate _STA before calling _SUN\n", d->ident);
+=======
+	pr_info("%s detected: will evaluate _STA before calling _SUN\n",
+		d->ident);
+>>>>>>> v4.9.227
 	check_sta_before_sun = 1;
 	return 0;
 }

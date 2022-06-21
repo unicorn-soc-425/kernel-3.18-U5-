@@ -9,5 +9,9 @@
 extern __u16 crc_t10dif_generic(__u16 crc, const unsigned char *buffer,
 				size_t len);
 extern __u16 crc_t10dif(unsigned char const *, size_t);
+<<<<<<< HEAD
+=======
+extern __u16 crc_t10dif_update(__u16 crc, unsigned char const *, size_t);
+>>>>>>> v4.9.227
 
 #endif

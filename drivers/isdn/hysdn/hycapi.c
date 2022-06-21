@@ -501,7 +501,11 @@ static char *hycapi_procinfo(struct capi_ctr *ctrl)
 {
 	hycapictrl_info *cinfo = (hycapictrl_info *)(ctrl->driverdata);
 #ifdef HYCAPI_PRINTFNAMES
+<<<<<<< HEAD
 	printk(KERN_NOTICE "hycapi_proc_info\n");
+=======
+	printk(KERN_NOTICE "%s\n", __func__);
+>>>>>>> v4.9.227
 #endif
 	if (!cinfo)
 		return "";

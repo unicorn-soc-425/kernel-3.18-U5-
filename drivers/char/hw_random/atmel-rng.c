@@ -67,7 +67,11 @@ static int atmel_trng_probe(struct platform_device *pdev)
 	if (IS_ERR(trng->clk))
 		return PTR_ERR(trng->clk);
 
+<<<<<<< HEAD
 	ret = clk_enable(trng->clk);
+=======
+	ret = clk_prepare_enable(trng->clk);
+>>>>>>> v4.9.227
 	if (ret)
 		return ret;
 
@@ -95,7 +99,11 @@ static int atmel_trng_remove(struct platform_device *pdev)
 	hwrng_unregister(&trng->rng);
 
 	writel(TRNG_KEY, trng->base + TRNG_CR);
+<<<<<<< HEAD
 	clk_disable(trng->clk);
+=======
+	clk_disable_unprepare(trng->clk);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -105,7 +113,11 @@ static int atmel_trng_suspend(struct device *dev)
 {
 	struct atmel_trng *trng = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	clk_disable(trng->clk);
+=======
+	clk_disable_unprepare(trng->clk);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -114,7 +126,11 @@ static int atmel_trng_resume(struct device *dev)
 {
 	struct atmel_trng *trng = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return clk_enable(trng->clk);
+=======
+	return clk_prepare_enable(trng->clk);
+>>>>>>> v4.9.227
 }
 
 static const struct dev_pm_ops atmel_trng_pm_ops = {
@@ -123,15 +139,31 @@ static const struct dev_pm_ops atmel_trng_pm_ops = {
 };
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id atmel_trng_dt_ids[] = {
+	{ .compatible = "atmel,at91sam9g45-trng" },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, atmel_trng_dt_ids);
+
+>>>>>>> v4.9.227
 static struct platform_driver atmel_trng_driver = {
 	.probe		= atmel_trng_probe,
 	.remove		= atmel_trng_remove,
 	.driver		= {
 		.name	= "atmel-trng",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 #ifdef CONFIG_PM
 		.pm	= &atmel_trng_pm_ops,
 #endif /* CONFIG_PM */
+=======
+#ifdef CONFIG_PM
+		.pm	= &atmel_trng_pm_ops,
+#endif /* CONFIG_PM */
+		.of_match_table = atmel_trng_dt_ids,
+>>>>>>> v4.9.227
 	},
 };
 

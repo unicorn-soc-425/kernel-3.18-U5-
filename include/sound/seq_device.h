@@ -25,16 +25,20 @@
  * registered device information
  */
 
+<<<<<<< HEAD
 #define ID_LEN	32
 
 /* status flag */
 #define SNDRV_SEQ_DEVICE_FREE		0
 #define SNDRV_SEQ_DEVICE_REGISTERED	1
 
+=======
+>>>>>>> v4.9.227
 struct snd_seq_device {
 	/* device info */
 	struct snd_card *card;	/* sound card */
 	int device;		/* device number */
+<<<<<<< HEAD
 	char id[ID_LEN];	/* driver id */
 	char name[80];		/* device name */
 	int argsize;		/* size of the argument */
@@ -48,6 +52,24 @@ struct snd_seq_device {
 
 /* driver operators
  * init_device:
+=======
+	const char *id;		/* driver id */
+	char name[80];		/* device name */
+	int argsize;		/* size of the argument */
+	void *driver_data;	/* private data for driver */
+	void *private_data;	/* private data for the caller */
+	void (*private_free)(struct snd_seq_device *device);
+	struct device dev;
+};
+
+#define to_seq_dev(_dev) \
+	container_of(_dev, struct snd_seq_device, dev)
+
+/* sequencer driver */
+
+/* driver operators
+ * probe:
+>>>>>>> v4.9.227
  *	Initialize the device with given parameters.
  *	Typically,
  *		1. call snd_hwdep_new
@@ -55,6 +77,7 @@ struct snd_seq_device {
  *		3. call snd_hwdep_register
  *		4. store the instance to dev->driver_data pointer.
  *		
+<<<<<<< HEAD
  * free_device:
  *	Release the private data.
  *	Typically, call snd_device_free(dev->card, dev->driver_data)
@@ -74,6 +97,42 @@ int snd_seq_device_unregister_driver(char *id);
 
 #define SNDRV_SEQ_DEVICE_ARGPTR(dev) (void *)((char *)(dev) + sizeof(struct snd_seq_device))
 
+=======
+ * remove:
+ *	Release the private data.
+ *	Typically, call snd_device_free(dev->card, dev->driver_data)
+ */
+struct snd_seq_driver {
+	struct device_driver driver;
+	char *id;
+	int argsize;
+};
+
+#define to_seq_drv(_drv) \
+	container_of(_drv, struct snd_seq_driver, driver)
+
+/*
+ * prototypes
+ */
+#ifdef CONFIG_MODULES
+void snd_seq_device_load_drivers(void);
+#else
+#define snd_seq_device_load_drivers()
+#endif
+int snd_seq_device_new(struct snd_card *card, int device, const char *id,
+		       int argsize, struct snd_seq_device **result);
+
+#define SNDRV_SEQ_DEVICE_ARGPTR(dev) (void *)((char *)(dev) + sizeof(struct snd_seq_device))
+
+int __must_check __snd_seq_driver_register(struct snd_seq_driver *drv,
+					   struct module *mod);
+#define snd_seq_driver_register(drv) \
+	__snd_seq_driver_register(drv, THIS_MODULE)
+void snd_seq_driver_unregister(struct snd_seq_driver *drv);
+
+#define module_snd_seq_driver(drv) \
+	module_driver(drv, snd_seq_driver_register, snd_seq_driver_unregister)
+>>>>>>> v4.9.227
 
 /*
  * id strings for generic devices

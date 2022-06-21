@@ -23,7 +23,11 @@ typedef unsigned long machreg_t;
 static arch_spinlock_t nmi_lock = __ARCH_SPIN_LOCK_UNLOCKED;
 
 /*
+<<<<<<< HEAD
  * Lets see what else we need to do here. Set up sp, gp?
+=======
+ * Let's see what else we need to do here. Set up sp, gp?
+>>>>>>> v4.9.227
  */
 void nmi_dump(void)
 {

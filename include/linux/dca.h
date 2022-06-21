@@ -34,7 +34,11 @@ void dca_unregister_notify(struct notifier_block *nb);
 
 struct dca_provider {
 	struct list_head	node;
+<<<<<<< HEAD
 	struct dca_ops		*ops;
+=======
+	const struct dca_ops	*ops;
+>>>>>>> v4.9.227
 	struct device 		*cd;
 	int			 id;
 };
@@ -53,7 +57,12 @@ struct dca_ops {
 	int	(*dev_managed)      (struct dca_provider *, struct device *);
 };
 
+<<<<<<< HEAD
 struct dca_provider *alloc_dca_provider(struct dca_ops *ops, int priv_size);
+=======
+struct dca_provider *alloc_dca_provider(const struct dca_ops *ops,
+					int priv_size);
+>>>>>>> v4.9.227
 void free_dca_provider(struct dca_provider *dca);
 int register_dca_provider(struct dca_provider *dca, struct device *dev);
 void unregister_dca_provider(struct dca_provider *dca, struct device *dev);

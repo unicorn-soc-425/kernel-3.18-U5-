@@ -687,7 +687,10 @@ static struct pccard_operations pcc_operations = {
 static struct platform_driver pcc_driver = {
 	.driver = {
 		.name		= "cfc",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 
@@ -755,6 +758,7 @@ static int __init init_m32r_pcc(void)
 		ret = pcmcia_register_socket(&socket[i].socket);
 		if (!ret)
 			socket[i].flags |= IS_REGISTERED;
+<<<<<<< HEAD
 
 #if 0	/* driver model ordering issue */
 		class_device_create_file(&socket[i].socket.dev,
@@ -762,6 +766,8 @@ static int __init init_m32r_pcc(void)
 		class_device_create_file(&socket[i].socket.dev,
 					 &class_device_attr_exca);
 #endif
+=======
+>>>>>>> v4.9.227
 	}
 
 	/* Finally, schedule a polling interrupt */

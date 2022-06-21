@@ -112,6 +112,10 @@ MODULE_ALIAS("sound-layout-100");
 
 MODULE_ALIAS("aoa-device-id-14");
 MODULE_ALIAS("aoa-device-id-22");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("aoa-device-id-31");
+>>>>>>> v4.9.227
 MODULE_ALIAS("aoa-device-id-35");
 MODULE_ALIAS("aoa-device-id-44");
 
@@ -362,6 +366,16 @@ static struct layout layouts[] = {
 		.connections = tas_connections_nolineout,
 	  },
 	},
+<<<<<<< HEAD
+=======
+	/* PowerBook6,1 */
+	{ .device_id = 31,
+	  .codecs[0] = {
+		.name = "tas",
+		.connections = tas_connections_nolineout,
+	  },
+	},
+>>>>>>> v4.9.227
 	/* PowerBook6,5 */
 	{ .device_id = 44,
 	  .codecs[0] = {
@@ -1120,10 +1134,17 @@ static int aoa_fabric_layout_remove(struct soundbus_dev *sdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int aoa_fabric_layout_suspend(struct soundbus_dev *sdev, pm_message_t state)
 {
 	struct layout_dev *ldev = dev_get_drvdata(&sdev->ofdev.dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int aoa_fabric_layout_suspend(struct device *dev)
+{
+	struct layout_dev *ldev = dev_get_drvdata(dev);
+>>>>>>> v4.9.227
 
 	if (ldev->gpio.methods && ldev->gpio.methods->all_amps_off)
 		ldev->gpio.methods->all_amps_off(&ldev->gpio);
@@ -1131,15 +1152,28 @@ static int aoa_fabric_layout_suspend(struct soundbus_dev *sdev, pm_message_t sta
 	return 0;
 }
 
+<<<<<<< HEAD
 static int aoa_fabric_layout_resume(struct soundbus_dev *sdev)
 {
 	struct layout_dev *ldev = dev_get_drvdata(&sdev->ofdev.dev);
+=======
+static int aoa_fabric_layout_resume(struct device *dev)
+{
+	struct layout_dev *ldev = dev_get_drvdata(dev);
+>>>>>>> v4.9.227
 
 	if (ldev->gpio.methods && ldev->gpio.methods->all_amps_restore)
 		ldev->gpio.methods->all_amps_restore(&ldev->gpio);
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+static SIMPLE_DEV_PM_OPS(aoa_fabric_layout_pm_ops,
+	aoa_fabric_layout_suspend, aoa_fabric_layout_resume);
+
+>>>>>>> v4.9.227
 #endif
 
 static struct soundbus_driver aoa_soundbus_driver = {
@@ -1147,23 +1181,35 @@ static struct soundbus_driver aoa_soundbus_driver = {
 	.owner = THIS_MODULE,
 	.probe = aoa_fabric_layout_probe,
 	.remove = aoa_fabric_layout_remove,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	.suspend = aoa_fabric_layout_suspend,
 	.resume = aoa_fabric_layout_resume,
 #endif
 	.driver = {
 		.owner = THIS_MODULE,
+=======
+	.driver = {
+		.owner = THIS_MODULE,
+#ifdef CONFIG_PM_SLEEP
+		.pm = &aoa_fabric_layout_pm_ops,
+#endif
+>>>>>>> v4.9.227
 	}
 };
 
 static int __init aoa_fabric_layout_init(void)
 {
+<<<<<<< HEAD
 	int err;
 
 	err = soundbus_register_driver(&aoa_soundbus_driver);
 	if (err)
 		return err;
 	return 0;
+=======
+	return soundbus_register_driver(&aoa_soundbus_driver);
+>>>>>>> v4.9.227
 }
 
 static void __exit aoa_fabric_layout_exit(void)

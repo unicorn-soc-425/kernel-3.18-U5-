@@ -1,7 +1,11 @@
 /*
  * Nvidia AGPGART routines.
  * Based upon a 2.4 agpgart diff by the folks from NVIDIA, and hacked up
+<<<<<<< HEAD
  * to work in 2.5 by Dave Jones <davej@redhat.com>
+=======
+ * to work in 2.5 by Dave Jones.
+>>>>>>> v4.9.227
  */
 
 #include <linux/module.h>

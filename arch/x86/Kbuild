@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+obj-y += entry/
+
+obj-$(CONFIG_PERF_EVENTS) += events/
+
+>>>>>>> v4.9.227
 obj-$(CONFIG_KVM) += kvm/
 
 # Xen paravirtualization support
@@ -11,7 +18,11 @@ obj-y += kernel/
 obj-y += mm/
 
 obj-y += crypto/
+<<<<<<< HEAD
 obj-y += vdso/
+=======
+
+>>>>>>> v4.9.227
 obj-$(CONFIG_IA32_EMULATION) += ia32/
 
 obj-y += platform/

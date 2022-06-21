@@ -9,6 +9,7 @@
 #ifndef _IIO_EVENTS_H_
 #define _IIO_EVENTS_H_
 
+<<<<<<< HEAD
 #include <linux/ioctl.h>
 #include <linux/types.h>
 #include <linux/iio/types.h>
@@ -25,6 +26,10 @@ struct iio_event_data {
 };
 
 #define IIO_GET_EVENT_FD_IOCTL _IOR('i', 0x90, int)
+=======
+#include <linux/iio/types.h>
+#include <uapi/linux/iio/events.h>
+>>>>>>> v4.9.227
 
 /**
  * IIO_EVENT_CODE() - create event identifier
@@ -70,6 +75,7 @@ struct iio_event_data {
 #define IIO_UNMOD_EVENT_CODE(chan_type, number, type, direction)	\
 	IIO_EVENT_CODE(chan_type, 0, 0, direction, type, number, 0, 0)
 
+<<<<<<< HEAD
 #define IIO_EVENT_CODE_EXTRACT_TYPE(mask) ((mask >> 56) & 0xFF)
 
 #define IIO_EVENT_CODE_EXTRACT_DIR(mask) ((mask >> 48) & 0x7F)
@@ -84,4 +90,6 @@ struct iio_event_data {
 #define IIO_EVENT_CODE_EXTRACT_MODIFIER(mask) ((mask >> 40) & 0xFF)
 #define IIO_EVENT_CODE_EXTRACT_DIFF(mask) (((mask) >> 55) & 0x1)
 
+=======
+>>>>>>> v4.9.227
 #endif

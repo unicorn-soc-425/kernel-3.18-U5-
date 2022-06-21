@@ -13,11 +13,23 @@
 #include <asm/hardware/cache-l2x0.h>
 
 static const char * const vf610_dt_compat[] __initconst = {
+<<<<<<< HEAD
 	"fsl,vf610",
 	NULL,
 };
 
 DT_MACHINE_START(VYBRID_VF610, "Freescale Vybrid VF610 (Device Tree)")
+=======
+	"fsl,vf500",
+	"fsl,vf510",
+	"fsl,vf600",
+	"fsl,vf610",
+	"fsl,vf610m4",
+	NULL,
+};
+
+DT_MACHINE_START(VYBRID_VF610, "Freescale Vybrid VF5xx/VF6xx (Device Tree)")
+>>>>>>> v4.9.227
 	.l2c_aux_val	= 0,
 	.l2c_aux_mask	= ~0,
 	.dt_compat	= vf610_dt_compat,

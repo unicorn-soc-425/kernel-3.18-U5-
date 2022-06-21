@@ -236,7 +236,10 @@ static struct platform_driver ehci_hcd_xilinx_of_driver = {
 	.shutdown	= usb_hcd_platform_shutdown,
 	.driver = {
 		.name = "xilinx-of-ehci",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = ehci_hcd_xilinx_of_match,
 	},
 };

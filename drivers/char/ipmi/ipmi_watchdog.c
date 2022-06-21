@@ -153,6 +153,12 @@ static int timeout = 10;
 /* The pre-timeout is disabled by default. */
 static int pretimeout;
 
+<<<<<<< HEAD
+=======
+/* Default timeout to set on panic */
+static int panic_wdt_timeout = 255;
+
+>>>>>>> v4.9.227
 /* Default action is to reset the board on a timeout. */
 static unsigned char action_val = WDOG_TIMEOUT_RESET;
 
@@ -208,7 +214,11 @@ static int set_param_timeout(const char *val, const struct kernel_param *kp)
 	return rv;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_timeout = {
+=======
+static const struct kernel_param_ops param_ops_timeout = {
+>>>>>>> v4.9.227
 	.set = set_param_timeout,
 	.get = param_get_int,
 };
@@ -270,14 +280,22 @@ static int set_param_wdog_ifnum(const char *val, const struct kernel_param *kp)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_wdog_ifnum = {
+=======
+static const struct kernel_param_ops param_ops_wdog_ifnum = {
+>>>>>>> v4.9.227
 	.set = set_param_wdog_ifnum,
 	.get = param_get_int,
 };
 
 #define param_check_wdog_ifnum param_check_int
 
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_str = {
+=======
+static const struct kernel_param_ops param_ops_str = {
+>>>>>>> v4.9.227
 	.set = set_param_str,
 	.get = get_param_str,
 };
@@ -293,6 +311,12 @@ MODULE_PARM_DESC(timeout, "Timeout value in seconds.");
 module_param(pretimeout, timeout, 0644);
 MODULE_PARM_DESC(pretimeout, "Pretimeout value in seconds.");
 
+<<<<<<< HEAD
+=======
+module_param(panic_wdt_timeout, timeout, 0644);
+MODULE_PARM_DESC(timeout, "Timeout value on kernel panic in seconds.");
+
+>>>>>>> v4.9.227
 module_param_cb(action, &param_ops_str, action_op, 0644);
 MODULE_PARM_DESC(action, "Timeout action. One of: "
 		 "reset, none, power_cycle, power_off.");
@@ -1134,7 +1158,11 @@ ipmi_nmi(unsigned int val, struct pt_regs *regs)
 		   the timer.   So do so. */
 		pretimeout_since_last_heartbeat = 1;
 		if (atomic_inc_and_test(&preop_panic_excl))
+<<<<<<< HEAD
 			panic(PFX "pre-timeout");
+=======
+			nmi_panic(regs, PFX "pre-timeout");
+>>>>>>> v4.9.227
 	}
 
 	return NMI_HANDLED;
@@ -1190,7 +1218,11 @@ static int wdog_panic_handler(struct notifier_block *this,
 		/* Make sure we do this only once. */
 		panic_event_handled = 1;
 
+<<<<<<< HEAD
 		timeout = 255;
+=======
+		timeout = panic_wdt_timeout;
+>>>>>>> v4.9.227
 		pretimeout = 0;
 		panic_halt_ipmi_set_timeout();
 	}

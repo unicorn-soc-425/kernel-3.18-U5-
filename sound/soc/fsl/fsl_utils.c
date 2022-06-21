@@ -75,6 +75,10 @@ int fsl_asoc_get_dma_channel(struct device_node *ssi_np,
 	iprop = of_get_property(dma_np, "cell-index", NULL);
 	if (!iprop) {
 		of_node_put(dma_np);
+<<<<<<< HEAD
+=======
+		of_node_put(dma_channel_np);
+>>>>>>> v4.9.227
 		return -EINVAL;
 	}
 	*dma_id = be32_to_cpup(iprop);
@@ -86,6 +90,7 @@ int fsl_asoc_get_dma_channel(struct device_node *ssi_np,
 }
 EXPORT_SYMBOL(fsl_asoc_get_dma_channel);
 
+<<<<<<< HEAD
 /**
  * fsl_asoc_xlate_tdm_slot_mask - generate TDM slot TX/RX mask.
  *
@@ -113,6 +118,8 @@ int fsl_asoc_xlate_tdm_slot_mask(unsigned int slots,
 }
 EXPORT_SYMBOL_GPL(fsl_asoc_xlate_tdm_slot_mask);
 
+=======
+>>>>>>> v4.9.227
 MODULE_AUTHOR("Timur Tabi <timur@freescale.com>");
 MODULE_DESCRIPTION("Freescale ASoC utility code");
 MODULE_LICENSE("GPL v2");

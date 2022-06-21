@@ -127,6 +127,11 @@ struct mfld_jack_data {
 	struct snd_soc_jack *mfld_jack;
 };
 
+<<<<<<< HEAD
 extern void sn95031_jack_detection(struct mfld_jack_data *jack_data);
+=======
+extern void sn95031_jack_detection(struct snd_soc_codec *codec,
+	struct mfld_jack_data *jack_data);
+>>>>>>> v4.9.227
 
 #endif

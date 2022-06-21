@@ -99,6 +99,7 @@ extern int __put_user_bad(void);
 static inline void set_fs(mm_segment_t fs)
 {
 	current_thread_info()->addr_limit = fs;
+<<<<<<< HEAD
 	modify_domain(DOMAIN_KERNEL, fs ? DOMAIN_CLIENT : DOMAIN_MANAGER);
 }
 
@@ -114,6 +115,23 @@ static inline void set_fs(mm_segment_t fs)
 
 /* We use 33-bit arithmetic here... */
 #define __range_ok(addr,size) ({ \
+=======
+
+	/*
+	 * Prevent a mispredicted conditional call to set_fs from forwarding
+	 * the wrong address limit to access_ok under speculation.
+	 */
+	dsb(nsh);
+	isb();
+
+	modify_domain(DOMAIN_KERNEL, fs ? DOMAIN_CLIENT : DOMAIN_MANAGER);
+}
+
+#define segment_eq(a, b)	((a) == (b))
+
+/* We use 33-bit arithmetic here... */
+#define __range_ok(addr, size) ({ \
+>>>>>>> v4.9.227
 	unsigned long flag, roksum; \
 	__chk_user_ptr(addr);	\
 	__asm__("adds %1, %2, %3; sbcccs %1, %1, %0; movcc %0, #0" \
@@ -123,6 +141,42 @@ static inline void set_fs(mm_segment_t fs)
 	flag; })
 
 /*
+<<<<<<< HEAD
+=======
+ * This is a type: either unsigned long, if the argument fits into
+ * that type, or otherwise unsigned long long.
+ */
+#define __inttype(x) \
+	__typeof__(__builtin_choose_expr(sizeof(x) > sizeof(0UL), 0ULL, 0UL))
+
+/*
+ * Sanitise a uaccess pointer such that it becomes NULL if addr+size
+ * is above the current addr_limit.
+ */
+#define uaccess_mask_range_ptr(ptr, size)			\
+	((__typeof__(ptr))__uaccess_mask_range_ptr(ptr, size))
+static inline void __user *__uaccess_mask_range_ptr(const void __user *ptr,
+						    size_t size)
+{
+	void __user *safe_ptr = (void __user *)ptr;
+	unsigned long tmp;
+
+	asm volatile(
+	"	sub	%1, %3, #1\n"
+	"	subs	%1, %1, %0\n"
+	"	addhs	%1, %1, #1\n"
+	"	subhss	%1, %1, %2\n"
+	"	movlo	%0, #0\n"
+	: "+r" (safe_ptr), "=&r" (tmp)
+	: "r" (size), "r" (current_thread_info()->addr_limit)
+	: "cc");
+
+	csdb();
+	return safe_ptr;
+}
+
+/*
+>>>>>>> v4.9.227
  * Single-value transfer routines.  They automatically use the right
  * size if we just have the right pointer type.  Note that the functions
  * which read from user space (*get_*) need to take care not to leak
@@ -152,7 +206,11 @@ extern int __get_user_64t_4(void *);
 #define __GUP_CLOBBER_32t_8 "lr", "cc"
 #define __GUP_CLOBBER_8	"lr", "cc"
 
+<<<<<<< HEAD
 #define __get_user_x(__r2,__p,__e,__l,__s)				\
+=======
+#define __get_user_x(__r2, __p, __e, __l, __s)				\
+>>>>>>> v4.9.227
 	   __asm__ __volatile__ (					\
 		__asmeq("%0", "r0") __asmeq("%1", "r2")			\
 		__asmeq("%3", "r1")					\
@@ -163,7 +221,11 @@ extern int __get_user_64t_4(void *);
 
 /* narrowing a double-word get into a single 32bit word register: */
 #ifdef __ARMEB__
+<<<<<<< HEAD
 #define __get_user_x_32t(__r2, __p, __e, __l, __s)				\
+=======
+#define __get_user_x_32t(__r2, __p, __e, __l, __s)			\
+>>>>>>> v4.9.227
 	__get_user_x(__r2, __p, __e, __l, 32t_8)
 #else
 #define __get_user_x_32t __get_user_x
@@ -187,11 +249,19 @@ extern int __get_user_64t_4(void *);
 #endif
 
 
+<<<<<<< HEAD
 #define __get_user_check(x,p)							\
 	({								\
 		unsigned long __limit = current_thread_info()->addr_limit - 1; \
 		register const typeof(*(p)) __user *__p asm("r0") = (p);\
 		register typeof(x) __r2 asm("r2");			\
+=======
+#define __get_user_check(x, p)						\
+	({								\
+		unsigned long __limit = current_thread_info()->addr_limit - 1; \
+		register const typeof(*(p)) __user *__p asm("r0") = (p);\
+		register __inttype(x) __r2 asm("r2");			\
+>>>>>>> v4.9.227
 		register unsigned long __l asm("r1") = __limit;		\
 		register int __e asm("r0");				\
 		unsigned int __ua_flags = uaccess_save_and_enable();	\
@@ -227,10 +297,17 @@ extern int __get_user_64t_4(void *);
 		__e;							\
 	})
 
+<<<<<<< HEAD
 #define get_user(x,p)							\
 	({								\
 		might_fault();						\
 		__get_user_check(x,p);					\
+=======
+#define get_user(x, p)							\
+	({								\
+		might_fault();						\
+		__get_user_check(x, p);					\
+>>>>>>> v4.9.227
 	 })
 
 extern int __put_user_1(void *, unsigned int);
@@ -238,6 +315,7 @@ extern int __put_user_2(void *, unsigned int);
 extern int __put_user_4(void *, unsigned int);
 extern int __put_user_8(void *, unsigned long long);
 
+<<<<<<< HEAD
 #define __put_user_x(__r2,__p,__e,__l,__s)				\
 	   __asm__ __volatile__ (					\
 		__asmeq("%0", "r0") __asmeq("%2", "r2")			\
@@ -281,6 +359,25 @@ extern int __put_user_8(void *, unsigned long long);
 		__put_user_check(x,p);					\
 	 })
 
+=======
+#define __put_user_check(__pu_val, __ptr, __err, __s)			\
+	({								\
+		unsigned long __limit = current_thread_info()->addr_limit - 1; \
+		register typeof(__pu_val) __r2 asm("r2") = __pu_val;	\
+		register const void __user *__p asm("r0") = __ptr;	\
+		register unsigned long __l asm("r1") = __limit;		\
+		register int __e asm("r0");				\
+		__asm__ __volatile__ (					\
+			__asmeq("%0", "r0") __asmeq("%2", "r2")		\
+			__asmeq("%3", "r1")				\
+			"bl	__put_user_" #__s			\
+			: "=&r" (__e)					\
+			: "0" (__p), "r" (__r2), "r" (__l)		\
+			: "ip", "lr", "cc");				\
+		__err = __e;						\
+	})
+
+>>>>>>> v4.9.227
 #else /* CONFIG_MMU */
 
 /*
@@ -288,25 +385,53 @@ extern int __put_user_8(void *, unsigned long long);
  */
 #define USER_DS			KERNEL_DS
 
+<<<<<<< HEAD
 #define segment_eq(a,b)		(1)
 #define __addr_ok(addr)		((void)(addr),1)
 #define __range_ok(addr,size)	((void)(addr),0)
+=======
+#define segment_eq(a, b)		(1)
+#define __addr_ok(addr)		((void)(addr), 1)
+#define __range_ok(addr, size)	((void)(addr), 0)
+>>>>>>> v4.9.227
 #define get_fs()		(KERNEL_DS)
 
 static inline void set_fs(mm_segment_t fs)
 {
 }
 
+<<<<<<< HEAD
 #define get_user(x,p)	__get_user(x,p)
 #define put_user(x,p)	__put_user(x,p)
 
 #endif /* CONFIG_MMU */
 
 #define access_ok(type,addr,size)	(__range_ok(addr,size) == 0)
+=======
+#define get_user(x, p)	__get_user(x, p)
+#define __put_user_check __put_user_nocheck
+
+#endif /* CONFIG_MMU */
+
+#define access_ok(type, addr, size)	(__range_ok(addr, size) == 0)
+>>>>>>> v4.9.227
 
 #define user_addr_max() \
 	(segment_eq(get_fs(), KERNEL_DS) ? ~0UL : get_fs())
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_SPECTRE
+/*
+ * When mitigating Spectre variant 1, it is not worth fixing the non-
+ * verifying accessors, because we need to add verification of the
+ * address space there.  Force these to use the standard get_user()
+ * version instead.
+ */
+#define __get_user(x, ptr) get_user(x, ptr)
+#else
+
+>>>>>>> v4.9.227
 /*
  * The "__xxx" versions of the user access functions do not verify the
  * address space - it must have been done previously with a separate
@@ -316,6 +441,7 @@ static inline void set_fs(mm_segment_t fs)
  * error occurs, and leave it unchanged on success.  Note that these
  * versions are void (ie, don't return a value as such).
  */
+<<<<<<< HEAD
 #define __get_user(x,ptr)						\
 ({									\
 	long __gu_err = 0;						\
@@ -330,6 +456,16 @@ static inline void set_fs(mm_segment_t fs)
 })
 
 #define __get_user_err(x,ptr,err)					\
+=======
+#define __get_user(x, ptr)						\
+({									\
+	long __gu_err = 0;						\
+	__get_user_err((x), (ptr), __gu_err);				\
+	__gu_err;							\
+})
+
+#define __get_user_err(x, ptr, err)					\
+>>>>>>> v4.9.227
 do {									\
 	unsigned long __gu_addr = (unsigned long)(ptr);			\
 	unsigned long __gu_val;						\
@@ -338,20 +474,34 @@ do {									\
 	might_fault();							\
 	__ua_flags = uaccess_save_and_enable();				\
 	switch (sizeof(*(ptr))) {					\
+<<<<<<< HEAD
 	case 1:	__get_user_asm_byte(__gu_val,__gu_addr,err);	break;	\
 	case 2:	__get_user_asm_half(__gu_val,__gu_addr,err);	break;	\
 	case 4:	__get_user_asm_word(__gu_val,__gu_addr,err);	break;	\
+=======
+	case 1:	__get_user_asm_byte(__gu_val, __gu_addr, err);	break;	\
+	case 2:	__get_user_asm_half(__gu_val, __gu_addr, err);	break;	\
+	case 4:	__get_user_asm_word(__gu_val, __gu_addr, err);	break;	\
+>>>>>>> v4.9.227
 	default: (__gu_val) = __get_user_bad();				\
 	}								\
 	uaccess_restore(__ua_flags);					\
 	(x) = (__typeof__(*(ptr)))__gu_val;				\
 } while (0)
 
+<<<<<<< HEAD
 #define __get_user_asm_byte(x,addr,err)				\
 	__asm__ __volatile__(					\
 	"1:	" TUSER(ldrb) "	%1,[%2],#0\n"			\
 	"2:\n"							\
 	"	.pushsection .fixup,\"ax\"\n"			\
+=======
+#define __get_user_asm(x, addr, err, instr)			\
+	__asm__ __volatile__(					\
+	"1:	" TUSER(instr) " %1, [%2], #0\n"		\
+	"2:\n"							\
+	"	.pushsection .text.fixup,\"ax\"\n"		\
+>>>>>>> v4.9.227
 	"	.align	2\n"					\
 	"3:	mov	%0, %3\n"				\
 	"	mov	%1, #0\n"				\
@@ -365,8 +515,23 @@ do {									\
 	: "r" (addr), "i" (-EFAULT)				\
 	: "cc")
 
+<<<<<<< HEAD
 #ifndef __ARMEB__
 #define __get_user_asm_half(x,__gu_addr,err)			\
+=======
+#define __get_user_asm_byte(x, addr, err)			\
+	__get_user_asm(x, addr, err, ldrb)
+
+#if __LINUX_ARM_ARCH__ >= 6
+
+#define __get_user_asm_half(x, addr, err)			\
+	__get_user_asm(x, addr, err, ldrh)
+
+#else
+
+#ifndef __ARMEB__
+#define __get_user_asm_half(x, __gu_addr, err)			\
+>>>>>>> v4.9.227
 ({								\
 	unsigned long __b1, __b2;				\
 	__get_user_asm_byte(__b1, __gu_addr, err);		\
@@ -374,7 +539,11 @@ do {									\
 	(x) = __b1 | (__b2 << 8);				\
 })
 #else
+<<<<<<< HEAD
 #define __get_user_asm_half(x,__gu_addr,err)			\
+=======
+#define __get_user_asm_half(x, __gu_addr, err)			\
+>>>>>>> v4.9.227
 ({								\
 	unsigned long __b1, __b2;				\
 	__get_user_asm_byte(__b1, __gu_addr, err);		\
@@ -383,6 +552,7 @@ do {									\
 })
 #endif
 
+<<<<<<< HEAD
 #define __get_user_asm_word(x,addr,err)				\
 	__asm__ __volatile__(					\
 	"1:	" TUSER(ldr) "	%1,[%2],#0\n"			\
@@ -437,6 +607,70 @@ do {									\
 	"1:	" TUSER(strb) "	%1,[%2],#0\n"			\
 	"2:\n"							\
 	"	.pushsection .fixup,\"ax\"\n"			\
+=======
+#endif /* __LINUX_ARM_ARCH__ >= 6 */
+
+#define __get_user_asm_word(x, addr, err)			\
+	__get_user_asm(x, addr, err, ldr)
+#endif
+
+
+#define __put_user_switch(x, ptr, __err, __fn)				\
+	do {								\
+		const __typeof__(*(ptr)) __user *__pu_ptr = (ptr);	\
+		__typeof__(*(ptr)) __pu_val = (x);			\
+		unsigned int __ua_flags;				\
+		might_fault();						\
+		__ua_flags = uaccess_save_and_enable();			\
+		switch (sizeof(*(ptr))) {				\
+		case 1: __fn(__pu_val, __pu_ptr, __err, 1); break;	\
+		case 2:	__fn(__pu_val, __pu_ptr, __err, 2); break;	\
+		case 4:	__fn(__pu_val, __pu_ptr, __err, 4); break;	\
+		case 8:	__fn(__pu_val, __pu_ptr, __err, 8); break;	\
+		default: __err = __put_user_bad(); break;		\
+		}							\
+		uaccess_restore(__ua_flags);				\
+	} while (0)
+
+#define put_user(x, ptr)						\
+({									\
+	int __pu_err = 0;						\
+	__put_user_switch((x), (ptr), __pu_err, __put_user_check);	\
+	__pu_err;							\
+})
+
+#ifdef CONFIG_CPU_SPECTRE
+/*
+ * When mitigating Spectre variant 1.1, all accessors need to include
+ * verification of the address space.
+ */
+#define __put_user(x, ptr) put_user(x, ptr)
+
+#else
+#define __put_user(x, ptr)						\
+({									\
+	long __pu_err = 0;						\
+	__put_user_switch((x), (ptr), __pu_err, __put_user_nocheck);	\
+	__pu_err;							\
+})
+
+#define __put_user_nocheck(x, __pu_ptr, __err, __size)			\
+	do {								\
+		unsigned long __pu_addr = (unsigned long)__pu_ptr;	\
+		__put_user_nocheck_##__size(x, __pu_addr, __err);	\
+	} while (0)
+
+#define __put_user_nocheck_1 __put_user_asm_byte
+#define __put_user_nocheck_2 __put_user_asm_half
+#define __put_user_nocheck_4 __put_user_asm_word
+#define __put_user_nocheck_8 __put_user_asm_dword
+
+#define __put_user_asm(x, __pu_addr, err, instr)		\
+	__asm__ __volatile__(					\
+	"1:	" TUSER(instr) " %1, [%2], #0\n"		\
+	"2:\n"							\
+	"	.pushsection .text.fixup,\"ax\"\n"		\
+>>>>>>> v4.9.227
 	"	.align	2\n"					\
 	"3:	mov	%0, %3\n"				\
 	"	b	2b\n"					\
@@ -449,22 +683,46 @@ do {									\
 	: "r" (x), "r" (__pu_addr), "i" (-EFAULT)		\
 	: "cc")
 
+<<<<<<< HEAD
 #ifndef __ARMEB__
 #define __put_user_asm_half(x,__pu_addr,err)			\
 ({								\
 	unsigned long __temp = (unsigned long)(x);		\
+=======
+#define __put_user_asm_byte(x, __pu_addr, err)			\
+	__put_user_asm(x, __pu_addr, err, strb)
+
+#if __LINUX_ARM_ARCH__ >= 6
+
+#define __put_user_asm_half(x, __pu_addr, err)			\
+	__put_user_asm(x, __pu_addr, err, strh)
+
+#else
+
+#ifndef __ARMEB__
+#define __put_user_asm_half(x, __pu_addr, err)			\
+({								\
+	unsigned long __temp = (__force unsigned long)(x);	\
+>>>>>>> v4.9.227
 	__put_user_asm_byte(__temp, __pu_addr, err);		\
 	__put_user_asm_byte(__temp >> 8, __pu_addr + 1, err);	\
 })
 #else
+<<<<<<< HEAD
 #define __put_user_asm_half(x,__pu_addr,err)			\
 ({								\
 	unsigned long __temp = (unsigned long)(x);		\
+=======
+#define __put_user_asm_half(x, __pu_addr, err)			\
+({								\
+	unsigned long __temp = (__force unsigned long)(x);	\
+>>>>>>> v4.9.227
 	__put_user_asm_byte(__temp >> 8, __pu_addr, err);	\
 	__put_user_asm_byte(__temp, __pu_addr + 1, err);	\
 })
 #endif
 
+<<<<<<< HEAD
 #define __put_user_asm_word(x,__pu_addr,err)			\
 	__asm__ __volatile__(					\
 	"1:	" TUSER(str) "	%1,[%2],#0\n"			\
@@ -481,6 +739,12 @@ do {									\
 	: "+r" (err)						\
 	: "r" (x), "r" (__pu_addr), "i" (-EFAULT)		\
 	: "cc")
+=======
+#endif /* __LINUX_ARM_ARCH__ >= 6 */
+
+#define __put_user_asm_word(x, __pu_addr, err)			\
+	__put_user_asm(x, __pu_addr, err, str)
+>>>>>>> v4.9.227
 
 #ifndef __ARMEB__
 #define	__reg_oper0	"%R2"
@@ -490,14 +754,22 @@ do {									\
 #define	__reg_oper1	"%R2"
 #endif
 
+<<<<<<< HEAD
 #define __put_user_asm_dword(x,__pu_addr,err)			\
+=======
+#define __put_user_asm_dword(x, __pu_addr, err)			\
+>>>>>>> v4.9.227
 	__asm__ __volatile__(					\
  ARM(	"1:	" TUSER(str) "	" __reg_oper1 ", [%1], #4\n"	) \
  ARM(	"2:	" TUSER(str) "	" __reg_oper0 ", [%1]\n"	) \
  THUMB(	"1:	" TUSER(str) "	" __reg_oper1 ", [%1]\n"	) \
  THUMB(	"2:	" TUSER(str) "	" __reg_oper0 ", [%1, #4]\n"	) \
 	"3:\n"							\
+<<<<<<< HEAD
 	"	.pushsection .fixup,\"ax\"\n"			\
+=======
+	"	.pushsection .text.fixup,\"ax\"\n"		\
+>>>>>>> v4.9.227
 	"	.align	2\n"					\
 	"4:	mov	%0, %3\n"				\
 	"	b	3b\n"					\
@@ -511,17 +783,28 @@ do {									\
 	: "r" (x), "i" (-EFAULT)				\
 	: "cc")
 
+<<<<<<< HEAD
+=======
+#endif /* !CONFIG_CPU_SPECTRE */
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_MMU
 extern unsigned long __must_check
 arm_copy_from_user(void *to, const void __user *from, unsigned long n);
 
 static inline unsigned long __must_check
+<<<<<<< HEAD
 __copy_from_user(void *to, const void __user *from, unsigned long n)
 {
 	unsigned int __ua_flags;
 
 	check_object_size(to, n, false);
+=======
+__arch_copy_from_user(void *to, const void __user *from, unsigned long n)
+{
+	unsigned int __ua_flags;
+
+>>>>>>> v4.9.227
 	__ua_flags = uaccess_save_and_enable();
 	n = arm_copy_from_user(to, from, n);
 	uaccess_restore(__ua_flags);
@@ -534,18 +817,28 @@ extern unsigned long __must_check
 __copy_to_user_std(void __user *to, const void *from, unsigned long n);
 
 static inline unsigned long __must_check
+<<<<<<< HEAD
 __copy_to_user(void __user *to, const void *from, unsigned long n)
 {
 #ifndef CONFIG_UACCESS_WITH_MEMCPY
 	unsigned int __ua_flags;
 
 	check_object_size(from, n, true);
+=======
+__arch_copy_to_user(void __user *to, const void *from, unsigned long n)
+{
+#ifndef CONFIG_UACCESS_WITH_MEMCPY
+	unsigned int __ua_flags;
+>>>>>>> v4.9.227
 	__ua_flags = uaccess_save_and_enable();
 	n = arm_copy_to_user(to, from, n);
 	uaccess_restore(__ua_flags);
 	return n;
 #else
+<<<<<<< HEAD
 	check_object_size(from, n, true);
+=======
+>>>>>>> v4.9.227
 	return arm_copy_to_user(to, from, n);
 #endif
 }
@@ -565,6 +858,7 @@ __clear_user(void __user *addr, unsigned long n)
 }
 
 #else
+<<<<<<< HEAD
 #define __copy_from_user(to,from,n)	(memcpy(to, (void __force *)from, n), 0)
 #define __copy_to_user(to,from,n)	(memcpy((void __force *)to, from, n), 0)
 #define __clear_user(addr,n)		(memset((void __force *)addr, 0, n), 0)
@@ -583,6 +877,51 @@ static inline unsigned long __must_check copy_to_user(void __user *to, const voi
 {
 	if (access_ok(VERIFY_WRITE, to, n))
 		n = __copy_to_user(to, from, n);
+=======
+#define __arch_copy_from_user(to, from, n)	\
+					(memcpy(to, (void __force *)from, n), 0)
+#define __arch_copy_to_user(to, from, n)	\
+					(memcpy((void __force *)to, from, n), 0)
+#define __clear_user(addr, n)		(memset((void __force *)addr, 0, n), 0)
+#endif
+
+static inline unsigned long __must_check
+__copy_from_user(void *to, const void __user *from, unsigned long n)
+{
+	check_object_size(to, n, false);
+	return __arch_copy_from_user(to, from, n);
+}
+
+static inline unsigned long __must_check
+copy_from_user(void *to, const void __user *from, unsigned long n)
+{
+	unsigned long res = n;
+
+	check_object_size(to, n, false);
+
+	if (likely(access_ok(VERIFY_READ, from, n)))
+		res = __arch_copy_from_user(to, from, n);
+	if (unlikely(res))
+		memset(to + (n - res), 0, res);
+	return res;
+}
+
+static inline unsigned long __must_check
+__copy_to_user(void __user *to, const void *from, unsigned long n)
+{
+	check_object_size(from, n, true);
+
+	return __arch_copy_to_user(to, from, n);
+}
+
+static inline unsigned long __must_check
+copy_to_user(void __user *to, const void *from, unsigned long n)
+{
+	check_object_size(from, n, true);
+
+	if (access_ok(VERIFY_WRITE, to, n))
+		n = __arch_copy_to_user(to, from, n);
+>>>>>>> v4.9.227
 	return n;
 }
 

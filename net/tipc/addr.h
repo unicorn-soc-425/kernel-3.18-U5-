@@ -37,10 +37,25 @@
 #ifndef _TIPC_ADDR_H
 #define _TIPC_ADDR_H
 
+<<<<<<< HEAD
 #include "core.h"
 
 #define TIPC_ZONE_MASK		0xff000000u
 #define TIPC_CLUSTER_MASK	0xfffff000u
+=======
+#include <linux/types.h>
+#include <linux/tipc.h>
+#include <net/net_namespace.h>
+#include <net/netns/generic.h>
+#include "core.h"
+
+static inline u32 tipc_own_addr(struct net *net)
+{
+	struct tipc_net *tn = net_generic(net, tipc_net_id);
+
+	return tn->own_addr;
+}
+>>>>>>> v4.9.227
 
 static inline u32 tipc_zone_mask(u32 addr)
 {
@@ -49,6 +64,7 @@ static inline u32 tipc_zone_mask(u32 addr)
 
 static inline u32 tipc_cluster_mask(u32 addr)
 {
+<<<<<<< HEAD
 	return addr & TIPC_CLUSTER_MASK;
 }
 
@@ -88,9 +104,23 @@ static inline u32 addr_domain(u32 sc)
 	return tipc_zone_mask(tipc_own_addr);
 }
 
+=======
+	return addr & TIPC_ZONE_CLUSTER_MASK;
+}
+
+u32 tipc_own_addr(struct net *net);
+int in_own_cluster(struct net *net, u32 addr);
+int in_own_cluster_exact(struct net *net, u32 addr);
+int in_own_node(struct net *net, u32 addr);
+u32 addr_domain(struct net *net, u32 sc);
+>>>>>>> v4.9.227
 int tipc_addr_domain_valid(u32);
 int tipc_addr_node_valid(u32 addr);
 int tipc_in_scope(u32 domain, u32 addr);
 int tipc_addr_scope(u32 domain);
 char *tipc_addr_string_fill(char *string, u32 addr);
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 #endif

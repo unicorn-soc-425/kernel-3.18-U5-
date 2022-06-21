@@ -41,7 +41,11 @@ static const char *wm8993_supply_names[WM8993_NUM_SUPPLIES] = {
 	"SPKVDD",
 };
 
+<<<<<<< HEAD
 static struct reg_default wm8993_reg_defaults[] = {
+=======
+static const struct reg_default wm8993_reg_defaults[] = {
+>>>>>>> v4.9.227
 	{ 1,   0x0000 },     /* R1   - Power Management (1) */
 	{ 2,   0x6000 },     /* R2   - Power Management (2) */
 	{ 3,   0x0000 },     /* R3   - Power Management (3) */
@@ -628,11 +632,18 @@ static const DECLARE_TLV_DB_SCALE(sidetone_tlv, -3600, 300, 0);
 static const DECLARE_TLV_DB_SCALE(drc_comp_threash, -4500, 75, 0);
 static const DECLARE_TLV_DB_SCALE(drc_comp_amp, -2250, 75, 0);
 static const DECLARE_TLV_DB_SCALE(drc_min_tlv, -1800, 600, 0);
+<<<<<<< HEAD
 static const unsigned int drc_max_tlv[] = {
 	TLV_DB_RANGE_HEAD(2),
 	0, 2, TLV_DB_SCALE_ITEM(1200, 600, 0),
 	3, 3, TLV_DB_SCALE_ITEM(3600, 0, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(drc_max_tlv,
+	0, 2, TLV_DB_SCALE_ITEM(1200, 600, 0),
+	3, 3, TLV_DB_SCALE_ITEM(3600, 0, 0)
+);
+>>>>>>> v4.9.227
 static const DECLARE_TLV_DB_SCALE(drc_qr_tlv, 1200, 600, 0);
 static const DECLARE_TLV_DB_SCALE(drc_startup_tlv, -1800, 300, 0);
 static const DECLARE_TLV_DB_SCALE(eq_tlv, -1200, 100, 0);
@@ -810,7 +821,11 @@ SOC_SINGLE_TLV("EQ5 Volume", WM8993_EQ6, 0, 24, 0, eq_tlv),
 static int clk_sys_event(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -992,7 +1007,11 @@ static int wm8993_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			ret = regulator_bulk_enable(ARRAY_SIZE(wm8993->supplies),
 						    wm8993->supplies);
 			if (ret != 0)
@@ -1065,8 +1084,11 @@ static int wm8993_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1485,8 +1507,12 @@ static struct snd_soc_dai_driver wm8993_dai = {
 static int wm8993_probe(struct snd_soc_codec *codec)
 {
 	struct wm8993_priv *wm8993 = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 	int ret;
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> v4.9.227
 
 	wm8993->hubs_data.hp_startup_mode = 1;
 	wm8993->hubs_data.dcs_codes_l = -2;
@@ -1518,10 +1544,13 @@ static int wm8993_probe(struct snd_soc_codec *codec)
 				      wm8993->pdata.micbias1_lvl,
 				      wm8993->pdata.micbias2_lvl);
 
+<<<<<<< HEAD
 	ret = wm8993_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 	if (ret != 0)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	snd_soc_add_codec_controls(codec, wm8993_snd_controls,
 			     ARRAY_SIZE(wm8993_snd_controls));
 	if (wm8993->pdata.num_retune_configs != 0) {
@@ -1544,18 +1573,25 @@ static int wm8993_probe(struct snd_soc_codec *codec)
 	 * VMID as an output and can disable it.
 	 */
 	if (wm8993->pdata.lineout1_diff && wm8993->pdata.lineout2_diff)
+<<<<<<< HEAD
 		codec->dapm.idle_bias_off = 1;
+=======
+		dapm->idle_bias_off = 1;
+>>>>>>> v4.9.227
 
 	return 0;
 
 }
 
+<<<<<<< HEAD
 static int wm8993_remove(struct snd_soc_codec *codec)
 {
 	wm8993_set_bias_level(codec, SND_SOC_BIAS_OFF);
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PM
 static int wm8993_suspend(struct snd_soc_codec *codec)
 {
@@ -1574,7 +1610,11 @@ static int wm8993_suspend(struct snd_soc_codec *codec)
 	wm8993->fll_fout = fll_fout;
 	wm8993->fll_fref = fll_fref;
 
+<<<<<<< HEAD
 	wm8993_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+	snd_soc_codec_force_bias_level(codec, SND_SOC_BIAS_OFF);
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -1584,7 +1624,11 @@ static int wm8993_resume(struct snd_soc_codec *codec)
 	struct wm8993_priv *wm8993 = snd_soc_codec_get_drvdata(codec);
 	int ret;
 
+<<<<<<< HEAD
 	wm8993_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
+=======
+	snd_soc_codec_force_bias_level(codec, SND_SOC_BIAS_STANDBY);
+>>>>>>> v4.9.227
 
 	/* Restart the FLL? */
 	if (wm8993->fll_fout) {
@@ -1608,7 +1652,11 @@ static int wm8993_resume(struct snd_soc_codec *codec)
 #endif
 
 /* Tune DC servo configuration */
+<<<<<<< HEAD
 static struct reg_default wm8993_regmap_patch[] = {
+=======
+static const struct reg_sequence wm8993_regmap_patch[] = {
+>>>>>>> v4.9.227
 	{ 0x44, 3 },
 	{ 0x56, 3 },
 	{ 0x44, 0 },
@@ -1627,9 +1675,14 @@ static const struct regmap_config wm8993_regmap = {
 	.num_reg_defaults = ARRAY_SIZE(wm8993_reg_defaults),
 };
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_wm8993 = {
 	.probe = 	wm8993_probe,
 	.remove = 	wm8993_remove,
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8993 = {
+	.probe = 	wm8993_probe,
+>>>>>>> v4.9.227
 	.suspend =	wm8993_suspend,
 	.resume =	wm8993_resume,
 	.set_bias_level = wm8993_set_bias_level,
@@ -1756,7 +1809,10 @@ MODULE_DEVICE_TABLE(i2c, wm8993_i2c_id);
 static struct i2c_driver wm8993_i2c_driver = {
 	.driver = {
 		.name = "wm8993",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe =    wm8993_i2c_probe,
 	.remove =   wm8993_i2c_remove,

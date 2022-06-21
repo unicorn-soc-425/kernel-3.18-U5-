@@ -190,7 +190,11 @@ static int therm_throt_process(bool new_event, int event, int level)
 	/* if we just entered the thermal event */
 	if (new_event) {
 		if (event == THERMAL_THROTTLING_EVENT)
+<<<<<<< HEAD
 			printk(KERN_CRIT "CPU%d: %s temperature above threshold, cpu clock throttled (total events = %lu)\n",
+=======
+			pr_warn("CPU%d: %s temperature above threshold, cpu clock throttled (total events = %lu)\n",
+>>>>>>> v4.9.227
 				this_cpu,
 				level == CORE_LEVEL ? "Core" : "Package",
 				state->count);
@@ -198,8 +202,12 @@ static int therm_throt_process(bool new_event, int event, int level)
 	}
 	if (old_event) {
 		if (event == THERMAL_THROTTLING_EVENT)
+<<<<<<< HEAD
 			printk(KERN_INFO "CPU%d: %s temperature/speed normal\n",
 				this_cpu,
+=======
+			pr_info("CPU%d: %s temperature/speed normal\n", this_cpu,
+>>>>>>> v4.9.227
 				level == CORE_LEVEL ? "Core" : "Package");
 		return 1;
 	}
@@ -385,6 +393,12 @@ static void intel_thermal_interrupt(void)
 {
 	__u64 msr_val;
 
+<<<<<<< HEAD
+=======
+	if (static_cpu_has(X86_FEATURE_HWP))
+		wrmsrl_safe(MSR_HWP_STATUS, 0);
+
+>>>>>>> v4.9.227
 	rdmsrl(MSR_IA32_THERM_STATUS, msr_val);
 
 	/* Check for violation of core thermal thresholds*/
@@ -417,8 +431,13 @@ static void intel_thermal_interrupt(void)
 
 static void unexpected_thermal_interrupt(void)
 {
+<<<<<<< HEAD
 	printk(KERN_ERR "CPU%d: Unexpected LVT thermal interrupt!\n",
 			smp_processor_id());
+=======
+	pr_err("CPU%d: Unexpected LVT thermal interrupt!\n",
+		smp_processor_id());
+>>>>>>> v4.9.227
 }
 
 static void (*smp_thermal_vector)(void) = unexpected_thermal_interrupt;
@@ -429,14 +448,24 @@ static inline void __smp_thermal_interrupt(void)
 	smp_thermal_vector();
 }
 
+<<<<<<< HEAD
 asmlinkage __visible void smp_thermal_interrupt(struct pt_regs *regs)
+=======
+asmlinkage __visible void __irq_entry
+smp_thermal_interrupt(struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	entering_irq();
 	__smp_thermal_interrupt();
 	exiting_ack_irq();
 }
 
+<<<<<<< HEAD
 asmlinkage __visible void smp_trace_thermal_interrupt(struct pt_regs *regs)
+=======
+asmlinkage __visible void __irq_entry
+smp_trace_thermal_interrupt(struct pt_regs *regs)
+>>>>>>> v4.9.227
 {
 	entering_irq();
 	trace_thermal_apic_entry(THERMAL_APIC_VECTOR);
@@ -448,7 +477,11 @@ asmlinkage __visible void smp_trace_thermal_interrupt(struct pt_regs *regs)
 /* Thermal monitoring depends on APIC, ACPI and clock modulation */
 static int intel_thermal_supported(struct cpuinfo_x86 *c)
 {
+<<<<<<< HEAD
 	if (!cpu_has_apic)
+=======
+	if (!boot_cpu_has(X86_FEATURE_APIC))
+>>>>>>> v4.9.227
 		return 0;
 	if (!cpu_has(c, X86_FEATURE_ACPI) || !cpu_has(c, X86_FEATURE_ACC))
 		return 0;
@@ -499,6 +532,7 @@ void intel_init_thermal(struct cpuinfo_x86 *c)
 
 	if ((l & MSR_IA32_MISC_ENABLE_TM1) && (h & APIC_DM_SMI)) {
 		if (system_state == SYSTEM_BOOTING)
+<<<<<<< HEAD
 			printk(KERN_DEBUG "CPU%d: Thermal monitoring handled by SMI\n", cpu);
 		return;
 	}
@@ -508,6 +542,9 @@ void intel_init_thermal(struct cpuinfo_x86 *c)
 		printk(KERN_DEBUG
 		       "CPU%d: Thermal LVT vector (%#x) already installed\n",
 		       cpu, (h & APIC_VECTOR_MASK));
+=======
+			pr_debug("CPU%d: Thermal monitoring handled by SMI\n", cpu);
+>>>>>>> v4.9.227
 		return;
 	}
 
@@ -565,8 +602,13 @@ void intel_init_thermal(struct cpuinfo_x86 *c)
 	l = apic_read(APIC_LVTTHMR);
 	apic_write(APIC_LVTTHMR, l & ~APIC_LVT_MASKED);
 
+<<<<<<< HEAD
 	printk_once(KERN_INFO "CPU0: Thermal monitoring enabled (%s)\n",
 		       tm2 ? "TM2" : "TM1");
+=======
+	pr_info_once("CPU0: Thermal monitoring enabled (%s)\n",
+		      tm2 ? "TM2" : "TM1");
+>>>>>>> v4.9.227
 
 	/* enable thermal throttle processing */
 	atomic_set(&therm_throt_en, 1);

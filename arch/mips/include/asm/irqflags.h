@@ -15,9 +15,16 @@
 
 #include <linux/compiler.h>
 #include <linux/stringify.h>
+<<<<<<< HEAD
 #include <asm/hazards.h>
 
 #ifdef CONFIG_CPU_MIPSR2
+=======
+#include <asm/compiler.h>
+#include <asm/hazards.h>
+
+#if defined(CONFIG_CPU_MIPSR2) || defined (CONFIG_CPU_MIPSR6)
+>>>>>>> v4.9.227
 
 static inline void arch_local_irq_disable(void)
 {
@@ -40,7 +47,16 @@ static inline unsigned long arch_local_irq_save(void)
 	"	.set	push						\n"
 	"	.set	reorder						\n"
 	"	.set	noat						\n"
+<<<<<<< HEAD
 	"	di	%[flags]					\n"
+=======
+#if defined(CONFIG_CPU_LOONGSON3)
+	"	mfc0	%[flags], $12					\n"
+	"	di							\n"
+#else
+	"	di	%[flags]					\n"
+#endif
+>>>>>>> v4.9.227
 	"	andi	%[flags], 1					\n"
 	"	" __stringify(__irq_disable_hazard) "			\n"
 	"	.set	pop						\n"
@@ -59,7 +75,11 @@ static inline void arch_local_irq_restore(unsigned long flags)
 	"	.set	push						\n"
 	"	.set	noreorder					\n"
 	"	.set	noat						\n"
+<<<<<<< HEAD
 #if defined(CONFIG_IRQ_CPU)
+=======
+#if defined(CONFIG_IRQ_MIPS_CPU)
+>>>>>>> v4.9.227
 	/*
 	 * Slow, but doesn't suffer from a relatively unlikely race
 	 * condition we're having since days 1.
@@ -83,6 +103,7 @@ static inline void arch_local_irq_restore(unsigned long flags)
 	: "memory");
 }
 
+<<<<<<< HEAD
 static inline void __arch_local_irq_restore(unsigned long flags)
 {
 	__asm__ __volatile__(
@@ -112,13 +133,19 @@ static inline void __arch_local_irq_restore(unsigned long flags)
 	: "0" (flags)
 	: "memory");
 }
+=======
+>>>>>>> v4.9.227
 #else
 /* Functions that require preempt_{dis,en}able() are in mips-atomic.c */
 void arch_local_irq_disable(void);
 unsigned long arch_local_irq_save(void);
 void arch_local_irq_restore(unsigned long flags);
+<<<<<<< HEAD
 void __arch_local_irq_restore(unsigned long flags);
 #endif /* CONFIG_CPU_MIPSR2 */
+=======
+#endif /* CONFIG_CPU_MIPSR2 || CONFIG_CPU_MIPSR6 */
+>>>>>>> v4.9.227
 
 static inline void arch_local_irq_enable(void)
 {
@@ -126,7 +153,11 @@ static inline void arch_local_irq_enable(void)
 	"	.set	push						\n"
 	"	.set	reorder						\n"
 	"	.set	noat						\n"
+<<<<<<< HEAD
 #if   defined(CONFIG_CPU_MIPSR2)
+=======
+#if   defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_CPU_MIPSR6)
+>>>>>>> v4.9.227
 	"	ei							\n"
 #else
 	"	mfc0	$1,$12						\n"

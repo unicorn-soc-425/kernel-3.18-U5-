@@ -186,8 +186,11 @@ static int booke_wdt_stop(struct watchdog_device *wdog)
 static int booke_wdt_set_timeout(struct watchdog_device *wdt_dev,
 				 unsigned int timeout)
 {
+<<<<<<< HEAD
 	if (timeout > MAX_WDT_TIMEOUT)
 		return -EINVAL;
+=======
+>>>>>>> v4.9.227
 	wdt_dev->timeout = timeout;
 	booke_wdt_set(wdt_dev);
 
@@ -211,7 +214,10 @@ static struct watchdog_device booke_wdt_dev = {
 	.info = &booke_wdt_info,
 	.ops = &booke_wdt_ops,
 	.min_timeout = 1,
+<<<<<<< HEAD
 	.max_timeout = 0xFFFF
+=======
+>>>>>>> v4.9.227
 };
 
 static void __exit booke_wdt_exit(void)
@@ -229,6 +235,10 @@ static int __init booke_wdt_init(void)
 	booke_wdt_set_timeout(&booke_wdt_dev,
 			      period_to_sec(booke_wdt_period));
 	watchdog_set_nowayout(&booke_wdt_dev, nowayout);
+<<<<<<< HEAD
+=======
+	booke_wdt_dev.max_timeout = MAX_WDT_TIMEOUT;
+>>>>>>> v4.9.227
 	if (booke_wdt_enabled)
 		booke_wdt_start(&booke_wdt_dev);
 

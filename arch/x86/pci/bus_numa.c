@@ -31,7 +31,11 @@ void x86_pci_root_bus_resources(int bus, struct list_head *resources)
 {
 	struct pci_root_info *info = x86_find_pci_root_info(bus);
 	struct pci_root_res *root_res;
+<<<<<<< HEAD
 	struct pci_host_bridge_window *window;
+=======
+	struct resource_entry *window;
+>>>>>>> v4.9.227
 	bool found = false;
 
 	if (!info)
@@ -41,7 +45,11 @@ void x86_pci_root_bus_resources(int bus, struct list_head *resources)
 	       bus);
 
 	/* already added by acpi ? */
+<<<<<<< HEAD
 	list_for_each_entry(window, resources, list)
+=======
+	resource_list_for_each_entry(window, resources)
+>>>>>>> v4.9.227
 		if (window->res->flags & IORESOURCE_BUS) {
 			found = true;
 			break;
@@ -50,6 +58,7 @@ void x86_pci_root_bus_resources(int bus, struct list_head *resources)
 	if (!found)
 		pci_add_resource(resources, &info->busn);
 
+<<<<<<< HEAD
 	list_for_each_entry(root_res, &info->resources, list) {
 		struct resource *res;
 		struct resource *root;
@@ -62,6 +71,11 @@ void x86_pci_root_bus_resources(int bus, struct list_head *resources)
 			root = &iomem_resource;
 		insert_resource(root, res);
 	}
+=======
+	list_for_each_entry(root_res, &info->resources, list)
+		pci_add_resource(resources, &root_res->res);
+
+>>>>>>> v4.9.227
 	return;
 
 default_resources:

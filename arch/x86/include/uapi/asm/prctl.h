@@ -6,4 +6,11 @@
 #define ARCH_GET_FS 0x1003
 #define ARCH_GET_GS 0x1004
 
+<<<<<<< HEAD
+=======
+#define ARCH_MAP_VDSO_X32	0x2001
+#define ARCH_MAP_VDSO_32	0x2002
+#define ARCH_MAP_VDSO_64	0x2003
+
+>>>>>>> v4.9.227
 #endif /* _ASM_X86_PRCTL_H */

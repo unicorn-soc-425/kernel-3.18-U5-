@@ -3058,7 +3058,10 @@ static void cas_init_mac(struct cas *cp)
 	/* setup core arbitration weight register */
 	writel(CAWR_RR_DIS, cp->regs + REG_CAWR);
 
+<<<<<<< HEAD
 	/* XXX Use pci_dma_burst_advice() */
+=======
+>>>>>>> v4.9.227
 #if !defined(CONFIG_SPARC64) && !defined(CONFIG_ALPHA)
 	/* set the infinite burst register for chips that don't have
 	 * pci issues.
@@ -4530,9 +4533,12 @@ static void cas_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info
 	strlcpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info, pci_name(cp->pdev), sizeof(info->bus_info));
+<<<<<<< HEAD
 	info->regdump_len = cp->casreg_len < CAS_MAX_REGS ?
 		cp->casreg_len : CAS_MAX_REGS;
 	info->n_stats = CAS_NUM_STAT_KEYS;
+=======
+>>>>>>> v4.9.227
 }
 
 static int cas_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
@@ -4984,7 +4990,11 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 					  cas_cacheline_size)) {
 			dev_err(&pdev->dev, "Could not set PCI cache "
 			       "line size\n");
+<<<<<<< HEAD
 			goto err_write_cacheline;
+=======
+			goto err_out_free_res;
+>>>>>>> v4.9.227
 		}
 	}
 #endif
@@ -5155,7 +5165,10 @@ err_out_iounmap:
 err_out_free_res:
 	pci_release_regions(pdev);
 
+<<<<<<< HEAD
 err_write_cacheline:
+=======
+>>>>>>> v4.9.227
 	/* Try to restore it in case the error occurred after we
 	 * set it.
 	 */
@@ -5179,8 +5192,12 @@ static void cas_remove_one(struct pci_dev *pdev)
 	cp = netdev_priv(dev);
 	unregister_netdev(dev);
 
+<<<<<<< HEAD
 	if (cp->fw_data)
 		vfree(cp->fw_data);
+=======
+	vfree(cp->fw_data);
+>>>>>>> v4.9.227
 
 	mutex_lock(&cp->pm_mutex);
 	cancel_work_sync(&cp->reset_task);

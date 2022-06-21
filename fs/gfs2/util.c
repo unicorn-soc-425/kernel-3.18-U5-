@@ -27,7 +27,11 @@ struct kmem_cache *gfs2_inode_cachep __read_mostly;
 struct kmem_cache *gfs2_bufdata_cachep __read_mostly;
 struct kmem_cache *gfs2_rgrpd_cachep __read_mostly;
 struct kmem_cache *gfs2_quotad_cachep __read_mostly;
+<<<<<<< HEAD
 struct kmem_cache *gfs2_rsrv_cachep __read_mostly;
+=======
+struct kmem_cache *gfs2_qadata_cachep __read_mostly;
+>>>>>>> v4.9.227
 mempool_t *gfs2_page_pool __read_mostly;
 
 void gfs2_assert_i(struct gfs2_sbd *sdp)
@@ -68,6 +72,10 @@ int gfs2_lm_withdraw(struct gfs2_sbd *sdp, const char *fmt, ...)
 			fs_err(sdp, "telling LM to unmount\n");
 			lm->lm_unmount(sdp);
 		}
+<<<<<<< HEAD
+=======
+		set_bit(SDF_SKIP_DLM_UNLOCK, &sdp->sd_flags);
+>>>>>>> v4.9.227
 		fs_err(sdp, "withdrawn\n");
 		dump_stack();
 	}

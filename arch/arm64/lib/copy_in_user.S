@@ -18,8 +18,16 @@
 
 #include <linux/linkage.h>
 
+<<<<<<< HEAD
 #include <asm/cache.h>
 #include <asm/uaccess.h>
+=======
+#include <asm/alternative.h>
+#include <asm/assembler.h>
+#include <asm/cache.h>
+#include <asm/cpufeature.h>
+#include <asm/sysreg.h>
+>>>>>>> v4.9.227
 
 /*
  * Copy from user space to user space (alignment handled by the hardware)
@@ -64,6 +72,7 @@
 	.endm
 
 end	.req	x5
+<<<<<<< HEAD
 ENTRY(__copy_in_user)
 	uaccess_enable_not_uao x3, x4, x5
 	add	end, x0, x2
@@ -72,9 +81,26 @@ ENTRY(__copy_in_user)
 	mov	x0, #0
 	ret
 ENDPROC(__copy_in_user)
+=======
+ENTRY(__arch_copy_in_user)
+ALTERNATIVE("nop", __stringify(SET_PSTATE_PAN(0)), ARM64_ALT_PAN_NOT_UAO, \
+	    CONFIG_ARM64_PAN)
+	add	end, x0, x2
+#include "copy_template.S"
+ALTERNATIVE("nop", __stringify(SET_PSTATE_PAN(1)), ARM64_ALT_PAN_NOT_UAO, \
+	    CONFIG_ARM64_PAN)
+	mov	x0, #0
+	ret
+ENDPROC(__arch_copy_in_user)
+>>>>>>> v4.9.227
 
 	.section .fixup,"ax"
 	.align	2
 9998:	sub	x0, end, dst			// bytes not copied
+<<<<<<< HEAD
+=======
+ALTERNATIVE("nop", __stringify(SET_PSTATE_PAN(1)), ARM64_ALT_PAN_NOT_UAO, \
+	    CONFIG_ARM64_PAN)
+>>>>>>> v4.9.227
 	ret
 	.previous

@@ -12,7 +12,11 @@ Required properties:
 
 Optional properties:
 - ti,dmic: phandle for the OMAP dmic node if the machine have it connected
+<<<<<<< HEAD
 - ti,jack_detection: Need to be present if the board capable to detect jack
+=======
+- ti,jack-detection: Need to be present if the board capable to detect jack
+>>>>>>> v4.9.227
   insertion, removal.
 
 Available audio endpoints for the audio-routing table:

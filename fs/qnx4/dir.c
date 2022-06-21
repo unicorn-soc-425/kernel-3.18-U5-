@@ -71,7 +71,11 @@ const struct file_operations qnx4_dir_operations =
 {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.iterate	= qnx4_readdir,
+=======
+	.iterate_shared	= qnx4_readdir,
+>>>>>>> v4.9.227
 	.fsync		= generic_file_fsync,
 };
 

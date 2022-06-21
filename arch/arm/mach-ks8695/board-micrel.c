@@ -19,7 +19,11 @@
 #include <asm/mach/irq.h>
 
 #include <mach/gpio-ks8695.h>
+<<<<<<< HEAD
 #include <mach/devices.h>
+=======
+#include "devices.h"
+>>>>>>> v4.9.227
 
 #include "generic.h"
 

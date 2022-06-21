@@ -13,6 +13,7 @@ struct mem_cgroup;
 struct task_struct;
 
 /*
+<<<<<<< HEAD
  * Types of limitations to the nodes from which allocations may occur
  */
 enum oom_constraint {
@@ -35,22 +36,71 @@ enum oom_scan_t {
 static inline void set_current_oom_origin(void)
 {
 	current->signal->oom_flags |= OOM_FLAG_ORIGIN;
+=======
+ * Details of the page allocation that triggered the oom killer that are used to
+ * determine what should be killed.
+ */
+struct oom_control {
+	/* Used to determine cpuset */
+	struct zonelist *zonelist;
+
+	/* Used to determine mempolicy */
+	nodemask_t *nodemask;
+
+	/* Memory cgroup in which oom is invoked, or NULL for global oom */
+	struct mem_cgroup *memcg;
+
+	/* Used to determine cpuset and node locality requirement */
+	const gfp_t gfp_mask;
+
+	/*
+	 * order == -1 means the oom kill is required by sysrq, otherwise only
+	 * for display purposes.
+	 */
+	const int order;
+
+	/* Used by oom implementation, do not set */
+	unsigned long totalpages;
+	struct task_struct *chosen;
+	unsigned long chosen_points;
+};
+
+extern struct mutex oom_lock;
+
+static inline void set_current_oom_origin(void)
+{
+	current->signal->oom_flag_origin = true;
+>>>>>>> v4.9.227
 }
 
 static inline void clear_current_oom_origin(void)
 {
+<<<<<<< HEAD
 	current->signal->oom_flags &= ~OOM_FLAG_ORIGIN;
+=======
+	current->signal->oom_flag_origin = false;
+>>>>>>> v4.9.227
 }
 
 static inline bool oom_task_origin(const struct task_struct *p)
 {
+<<<<<<< HEAD
 	return !!(p->signal->oom_flags & OOM_FLAG_ORIGIN);
+=======
+	return p->signal->oom_flag_origin;
+}
+
+static inline bool tsk_is_oom_victim(struct task_struct * tsk)
+{
+	return tsk->signal->oom_mm;
+>>>>>>> v4.9.227
 }
 
 extern unsigned long oom_badness(struct task_struct *p,
 		struct mem_cgroup *memcg, const nodemask_t *nodemask,
 		unsigned long totalpages);
 
+<<<<<<< HEAD
 extern int oom_kills_count(void);
 extern void note_oom_kill(void);
 extern void oom_kill_process(struct task_struct *p, gfp_t gfp_mask, int order,
@@ -95,6 +145,20 @@ extern struct task_struct *find_lock_task_mm(struct task_struct *p);
 extern void dump_tasks(const struct mem_cgroup *memcg,
 		const nodemask_t *nodemask);
 
+=======
+extern bool out_of_memory(struct oom_control *oc);
+
+extern void exit_oom_victim(void);
+
+extern int register_oom_notifier(struct notifier_block *nb);
+extern int unregister_oom_notifier(struct notifier_block *nb);
+
+extern bool oom_killer_disable(signed long timeout);
+extern void oom_killer_enable(void);
+
+extern struct task_struct *find_lock_task_mm(struct task_struct *p);
+
+>>>>>>> v4.9.227
 /* sysctls */
 extern int sysctl_oom_dump_tasks;
 extern int sysctl_oom_kill_allocating_task;

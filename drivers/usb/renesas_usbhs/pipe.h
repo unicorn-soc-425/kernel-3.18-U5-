@@ -38,7 +38,11 @@ struct usbhs_pipe {
 #define USBHS_PIPE_FLAGS_IS_DIR_HOST		(1 << 2)
 #define USBHS_PIPE_FLAGS_IS_RUNNING		(1 << 3)
 
+<<<<<<< HEAD
 	struct usbhs_pkt_handle *handler;
+=======
+	const struct usbhs_pkt_handle *handler;
+>>>>>>> v4.9.227
 
 	void *mod_private;
 };
@@ -46,9 +50,15 @@ struct usbhs_pipe {
 struct usbhs_pipe_info {
 	struct usbhs_pipe *pipe;
 	int size;	/* array size of "pipe" */
+<<<<<<< HEAD
 	int bufnmb_last;	/* FIXME : driver needs good allocator */
 
 	int (*dma_map_ctrl)(struct usbhs_pkt *pkt, int map);
+=======
+
+	int (*dma_map_ctrl)(struct device *dma_dev, struct usbhs_pkt *pkt,
+			    int map);
+>>>>>>> v4.9.227
 };
 
 /*
@@ -85,10 +95,19 @@ int usbhs_pipe_is_running(struct usbhs_pipe *pipe);
 void usbhs_pipe_running(struct usbhs_pipe *pipe, int running);
 
 void usbhs_pipe_init(struct usbhs_priv *priv,
+<<<<<<< HEAD
 		     int (*dma_map_ctrl)(struct usbhs_pkt *pkt, int map));
 int usbhs_pipe_get_maxpacket(struct usbhs_pipe *pipe);
 void usbhs_pipe_clear(struct usbhs_pipe *pipe);
 int usbhs_pipe_is_accessible(struct usbhs_pipe *pipe);
+=======
+		     int (*dma_map_ctrl)(struct device *dma_dev,
+					 struct usbhs_pkt *pkt, int map));
+int usbhs_pipe_get_maxpacket(struct usbhs_pipe *pipe);
+void usbhs_pipe_clear(struct usbhs_pipe *pipe);
+int usbhs_pipe_is_accessible(struct usbhs_pipe *pipe);
+bool usbhs_pipe_contains_transmittable_data(struct usbhs_pipe *pipe);
+>>>>>>> v4.9.227
 void usbhs_pipe_enable(struct usbhs_pipe *pipe);
 void usbhs_pipe_disable(struct usbhs_pipe *pipe);
 void usbhs_pipe_stall(struct usbhs_pipe *pipe);
@@ -97,6 +116,10 @@ void usbhs_pipe_set_trans_count_if_bulk(struct usbhs_pipe *pipe, int len);
 void usbhs_pipe_select_fifo(struct usbhs_pipe *pipe, struct usbhs_fifo *fifo);
 void usbhs_pipe_config_update(struct usbhs_pipe *pipe, u16 devsel,
 			      u16 epnum, u16 maxp);
+<<<<<<< HEAD
+=======
+void usbhs_pipe_config_change_bfre(struct usbhs_pipe *pipe, int enable);
+>>>>>>> v4.9.227
 
 #define usbhs_pipe_sequence_data0(pipe)	usbhs_pipe_data_sequence(pipe, 0)
 #define usbhs_pipe_sequence_data1(pipe)	usbhs_pipe_data_sequence(pipe, 1)

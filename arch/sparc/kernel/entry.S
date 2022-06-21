@@ -29,6 +29,10 @@
 #include <asm/unistd.h>
 
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 #define curptr      g6
 
@@ -1207,6 +1211,11 @@ delay_continue:
 	
 	ret
 	restore
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__udelay)
+EXPORT_SYMBOL(__ndelay)
+>>>>>>> v4.9.227
 
 	/* Handle a software breakpoint */
 	/* We have to inform parent that child has stopped */
@@ -1225,20 +1234,33 @@ breakpoint_trap:
 	RESTORE_ALL
 
 #ifdef CONFIG_KGDB
+<<<<<<< HEAD
 	.align	4
 	.globl	kgdb_trap_low
 	.type	kgdb_trap_low,#function
 kgdb_trap_low:
+=======
+	ENTRY(kgdb_trap_low)
+>>>>>>> v4.9.227
 	rd	%wim,%l3
 	SAVE_ALL
 	wr 	%l0, PSR_ET, %psr
 	WRITE_PAUSE
 
+<<<<<<< HEAD
 	call	kgdb_trap
 	 add	%sp, STACKFRAME_SZ, %o0
 
 	RESTORE_ALL
 	.size	kgdb_trap_low,.-kgdb_trap_low
+=======
+	mov	%l7, %o0		! trap_level
+	call	kgdb_trap
+	 add	%sp, STACKFRAME_SZ, %o1	! struct pt_regs *regs
+
+	RESTORE_ALL
+	ENDPROC(kgdb_trap_low)
+>>>>>>> v4.9.227
 #endif
 
 	.align	4
@@ -1255,7 +1277,11 @@ flush_patch_exception:
 kuw_patch1_7win:	sll	%o3, 6, %o3
 
 	/* No matter how much overhead this routine has in the worst
+<<<<<<< HEAD
 	 * case scenerio, it is several times better than taking the
+=======
+	 * case scenario, it is several times better than taking the
+>>>>>>> v4.9.227
 	 * traps with the old method of just doing flush_user_windows().
 	 */
 kill_user_windows:

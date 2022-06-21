@@ -11,6 +11,7 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
@@ -19,6 +20,13 @@
  ******************************************************************************/
 #define _RTW_WLAN_UTIL_C_
 
+=======
+ ******************************************************************************/
+#define _RTW_WLAN_UTIL_C_
+
+#include <linux/ieee80211.h>
+
+>>>>>>> v4.9.227
 #include <osdep_service.h>
 #include <drv_types.h>
 #include <wifi.h>
@@ -88,6 +96,7 @@ int cckratesonly_included(unsigned char *rate, int ratelen)
 
 unsigned char networktype_to_raid(unsigned char network_type)
 {
+<<<<<<< HEAD
 	unsigned char raid;
 
 	switch (network_type) {
@@ -117,6 +126,27 @@ unsigned char networktype_to_raid(unsigned char network_type)
 		break;
 	}
 	return raid;
+=======
+	switch (network_type) {
+	case WIRELESS_11B:
+		return RATR_INX_WIRELESS_B;
+	case WIRELESS_11A:
+	case WIRELESS_11G:
+		return RATR_INX_WIRELESS_G;
+	case WIRELESS_11BG:
+		return RATR_INX_WIRELESS_GB;
+	case WIRELESS_11_24N:
+	case WIRELESS_11_5N:
+		return RATR_INX_WIRELESS_N;
+	case WIRELESS_11A_5N:
+	case WIRELESS_11G_24N:
+		return  RATR_INX_WIRELESS_NG;
+	case WIRELESS_11BG_24N:
+		return RATR_INX_WIRELESS_NGB;
+	default:
+		return RATR_INX_WIRELESS_GB;
+	}
+>>>>>>> v4.9.227
 }
 
 u8 judge_network_type(struct adapter *padapter, unsigned char *rate, int ratelen)
@@ -146,6 +176,7 @@ u8 judge_network_type(struct adapter *padapter, unsigned char *rate, int ratelen
 
 static unsigned char ratetbl_val_2wifirate(unsigned char rate)
 {
+<<<<<<< HEAD
 	unsigned char val = 0;
 
 	switch (rate & 0x7f) {
@@ -187,6 +218,36 @@ static unsigned char ratetbl_val_2wifirate(unsigned char rate)
 		break;
 	}
 	return val;
+=======
+	switch (rate & 0x7f) {
+	case 0:
+		return IEEE80211_CCK_RATE_1MB;
+	case 1:
+		return IEEE80211_CCK_RATE_2MB;
+	case 2:
+		return IEEE80211_CCK_RATE_5MB;
+	case 3:
+		return IEEE80211_CCK_RATE_11MB;
+	case 4:
+		return IEEE80211_OFDM_RATE_6MB;
+	case 5:
+		return IEEE80211_OFDM_RATE_9MB;
+	case 6:
+		return IEEE80211_OFDM_RATE_12MB;
+	case 7:
+		return IEEE80211_OFDM_RATE_18MB;
+	case 8:
+		return IEEE80211_OFDM_RATE_24MB;
+	case 9:
+		return IEEE80211_OFDM_RATE_36MB;
+	case 10:
+		return IEEE80211_OFDM_RATE_48MB;
+	case 11:
+		return IEEE80211_OFDM_RATE_54MB;
+	default:
+		return 0;
+	}
+>>>>>>> v4.9.227
 }
 
 static int is_basicrate(struct adapter *padapter, unsigned char rate)
@@ -367,9 +428,12 @@ void set_channel_bwmode(struct adapter *padapter, unsigned char channel, unsigne
 {
 	u8 center_ch;
 
+<<<<<<< HEAD
 	if (padapter->bNotifyChannelChange)
 		DBG_88E("[%s] ch = %d, offset = %d, bwmode = %d\n", __func__, channel, channel_offset, bwmode);
 
+=======
+>>>>>>> v4.9.227
 	if ((bwmode == HT_CHANNEL_WIDTH_20) ||
 	    (channel_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE)) {
 		/* SelectChannel(padapter, channel); */
@@ -405,11 +469,14 @@ int get_bsstype(unsigned short capability)
 		return 0;
 }
 
+<<<<<<< HEAD
 __inline u8 *get_my_bssid(struct wlan_bssid_ex *pnetwork)
 {
 	return pnetwork->MacAddress;
 }
 
+=======
+>>>>>>> v4.9.227
 u16 get_beacon_interval(struct wlan_bssid_ex *bss)
 {
 	__le16 val;
@@ -490,6 +557,7 @@ void write_cam(struct adapter *padapter, u8 entry, u16 ctrl, u8 *mac, u8 *key)
 	for (j = 5; j >= 0; j--) {
 		switch (j) {
 		case 0:
+<<<<<<< HEAD
 			val = (ctrl | (mac[0] << 16) | (mac[1] << 24));
 			break;
 		case 1:
@@ -498,6 +566,16 @@ void write_cam(struct adapter *padapter, u8 entry, u16 ctrl, u8 *mac, u8 *key)
 		default:
 			i = (j - 2) << 2;
 			val = (key[i] | (key[i+1] << 8) | (key[i+2] << 16) | (key[i+3] << 24));
+=======
+			val = ctrl | (mac[0] << 16) | (mac[1] << 24);
+			break;
+		case 1:
+			val = mac[2] | (mac[3] << 8) | (mac[4] << 16) | (mac[5] << 24);
+			break;
+		default:
+			i = (j - 2) << 2;
+			val = key[i] | (key[i+1] << 8) | (key[i+2] << 16) | (key[i+3] << 24);
+>>>>>>> v4.9.227
 			break;
 		}
 
@@ -592,7 +670,11 @@ void WMMOnAssocRsp(struct adapter *padapter)
 		/* AIFS = AIFSN * slot time + SIFS - r2t phy delay */
 		AIFS = (pmlmeinfo->WMM_param.ac_param[i].ACI_AIFSN & 0x0f) * pmlmeinfo->slotTime + aSifsTime;
 
+<<<<<<< HEAD
 		ECWMin = (pmlmeinfo->WMM_param.ac_param[i].CW & 0x0f);
+=======
+		ECWMin = pmlmeinfo->WMM_param.ac_param[i].CW & 0x0f;
+>>>>>>> v4.9.227
 		ECWMax = (pmlmeinfo->WMM_param.ac_param[i].CW & 0xf0) >> 4;
 		TXOP = le16_to_cpu(pmlmeinfo->WMM_param.ac_param[i].TXOP_limit);
 
@@ -631,7 +713,11 @@ void WMMOnAssocRsp(struct adapter *padapter)
 	inx[0] = 0; inx[1] = 1; inx[2] = 2; inx[3] = 3;
 
 	if (pregpriv->wifi_spec == 1) {
+<<<<<<< HEAD
 		u32	j, tmp, change_inx = false;
+=======
+		u32	j, change_inx = false;
+>>>>>>> v4.9.227
 
 		/* entry indx: 0->vo, 1->vi, 2->be, 3->bk. */
 		for (i = 0; i < 4; i++) {
@@ -646,6 +732,7 @@ void WMMOnAssocRsp(struct adapter *padapter)
 				}
 
 				if (change_inx) {
+<<<<<<< HEAD
 					tmp = edca[i];
 					edca[i] = edca[j];
 					edca[j] = tmp;
@@ -654,6 +741,10 @@ void WMMOnAssocRsp(struct adapter *padapter)
 					inx[i] = inx[j];
 					inx[j] = tmp;
 
+=======
+					swap(edca[i], edca[j]);
+					swap(inx[i], inx[j]);
+>>>>>>> v4.9.227
 					change_inx = false;
 				}
 			}
@@ -664,8 +755,11 @@ void WMMOnAssocRsp(struct adapter *padapter)
 		pxmitpriv->wmm_para_seq[i] = inx[i];
 		DBG_88E("wmm_para_seq(%d): %d\n", i, pxmitpriv->wmm_para_seq[i]);
 	}
+<<<<<<< HEAD
 
 	return;
+=======
+>>>>>>> v4.9.227
 }
 
 static void bwmode_update_check(struct adapter *padapter, struct ndis_802_11_var_ie *pIE)
@@ -755,6 +849,10 @@ void HT_caps_handler(struct adapter *padapter, struct ndis_802_11_var_ie *pIE)
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 	struct ht_priv			*phtpriv = &pmlmepriv->htpriv;
+<<<<<<< HEAD
+=======
+	u8 *HT_cap = (u8 *)(&pmlmeinfo->HT_caps);
+>>>>>>> v4.9.227
 
 	if (pIE == NULL)
 		return;
@@ -767,6 +865,7 @@ void HT_caps_handler(struct adapter *padapter, struct ndis_802_11_var_ie *pIE)
 	for (i = 0; i < (pIE->Length); i++) {
 		if (i != 2) {
 			/*	Got the endian issue here. */
+<<<<<<< HEAD
 			pmlmeinfo->HT_caps.u.HT_cap[i] &= (pIE->data[i]);
 		} else {
 			/* modify from  fw by Thomas 2010/11/17 */
@@ -781,6 +880,22 @@ void HT_caps_handler(struct adapter *padapter, struct ndis_802_11_var_ie *pIE)
 				min_MPDU_spacing = (pIE->data[i] & 0x1c);
 
 			pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para = max_AMPDU_len | min_MPDU_spacing;
+=======
+			HT_cap[i] &= (pIE->data[i]);
+		} else {
+			/* modify from  fw by Thomas 2010/11/17 */
+			if ((pmlmeinfo->HT_caps.ampdu_params_info & 0x3) > (pIE->data[i] & 0x3))
+				max_AMPDU_len = pIE->data[i] & 0x3;
+			else
+				max_AMPDU_len = pmlmeinfo->HT_caps.ampdu_params_info & 0x3;
+
+			if ((pmlmeinfo->HT_caps.ampdu_params_info & 0x1c) > (pIE->data[i] & 0x1c))
+				min_MPDU_spacing = pmlmeinfo->HT_caps.ampdu_params_info & 0x1c;
+			else
+				min_MPDU_spacing = pIE->data[i] & 0x1c;
+
+			pmlmeinfo->HT_caps.ampdu_params_info = max_AMPDU_len | min_MPDU_spacing;
+>>>>>>> v4.9.227
 		}
 	}
 
@@ -789,11 +904,18 @@ void HT_caps_handler(struct adapter *padapter, struct ndis_802_11_var_ie *pIE)
 	/* update the MCS rates */
 	for (i = 0; i < 16; i++) {
 		if ((rf_type == RF_1T1R) || (rf_type == RF_1T2R))
+<<<<<<< HEAD
 			pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate[i] &= MCS_rate_1R[i];
 		else
 			pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate[i] &= MCS_rate_2R[i];
 	}
 	return;
+=======
+			((u8 *)&pmlmeinfo->HT_caps.mcs)[i] &= MCS_rate_1R[i];
+		else
+			((u8 *)&pmlmeinfo->HT_caps.mcs)[i] &= MCS_rate_2R[i];
+	}
+>>>>>>> v4.9.227
 }
 
 void HT_info_handler(struct adapter *padapter, struct ndis_802_11_var_ie *pIE)
@@ -814,7 +936,10 @@ void HT_info_handler(struct adapter *padapter, struct ndis_802_11_var_ie *pIE)
 
 	pmlmeinfo->HT_info_enable = 1;
 	memcpy(&(pmlmeinfo->HT_info), pIE->data, pIE->Length);
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> v4.9.227
 }
 
 void HTOnAssocRsp(struct adapter *padapter)
@@ -839,9 +964,15 @@ void HTOnAssocRsp(struct adapter *padapter)
 		AMPDU_para [1:0]:Max AMPDU Len => 0:8k , 1:16k, 2:32k, 3:64k
 		AMPDU_para [4:2]:Min MPDU Start Spacing
 	*/
+<<<<<<< HEAD
 	max_AMPDU_len = pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x03;
 
 	min_MPDU_spacing = (pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x1c) >> 2;
+=======
+	max_AMPDU_len = pmlmeinfo->HT_caps.ampdu_params_info & 0x03;
+
+	min_MPDU_spacing = (pmlmeinfo->HT_caps.ampdu_params_info & 0x1c) >> 2;
+>>>>>>> v4.9.227
 
 	rtw_hal_set_hwreg(padapter, HW_VAR_AMPDU_MIN_SPACE, (u8 *)(&min_MPDU_spacing));
 
@@ -913,7 +1044,10 @@ int rtw_check_bcn_info(struct adapter  *Adapter, u8 *pframe, u32 packet_len)
 	u32 wpa_ielen = 0;
 	u8 *pbssid = GetAddr3Ptr(pframe);
 	struct HT_info_element *pht_info = NULL;
+<<<<<<< HEAD
 	struct rtw_ieee80211_ht_cap *pht_cap = NULL;
+=======
+>>>>>>> v4.9.227
 	u32 bcn_channel;
 	unsigned short	ht_cap_info;
 	unsigned char	ht_info_infos_0;
@@ -922,7 +1056,11 @@ int rtw_check_bcn_info(struct adapter  *Adapter, u8 *pframe, u32 packet_len)
 	if (is_client_associated_to_ap(Adapter) == false)
 		return true;
 
+<<<<<<< HEAD
 	len = packet_len - sizeof(struct rtw_ieee80211_hdr_3addr);
+=======
+	len = packet_len - sizeof(struct ieee80211_hdr_3addr);
+>>>>>>> v4.9.227
 
 	if (len > MAX_IE_SZ) {
 		DBG_88E("%s IE too long for survey event\n", __func__);
@@ -936,6 +1074,11 @@ int rtw_check_bcn_info(struct adapter  *Adapter, u8 *pframe, u32 packet_len)
 	}
 
 	bssid = kzalloc(sizeof(struct wlan_bssid_ex), GFP_ATOMIC);
+<<<<<<< HEAD
+=======
+	if (!bssid)
+		return _FAIL;
+>>>>>>> v4.9.227
 
 	subtype = GetFrameSubType(pframe) >> 4;
 
@@ -946,14 +1089,25 @@ int rtw_check_bcn_info(struct adapter  *Adapter, u8 *pframe, u32 packet_len)
 
 	/* below is to copy the information element */
 	bssid->IELength = len;
+<<<<<<< HEAD
 	memcpy(bssid->IEs, (pframe + sizeof(struct rtw_ieee80211_hdr_3addr)), bssid->IELength);
+=======
+	memcpy(bssid->IEs, (pframe + sizeof(struct ieee80211_hdr_3addr)), bssid->IELength);
+>>>>>>> v4.9.227
 
 	/* check bw and channel offset */
 	/* parsing HT_CAP_IE */
 	p = rtw_get_ie(bssid->IEs + _FIXED_IE_LENGTH_, _HT_CAPABILITY_IE_, &len, bssid->IELength - _FIXED_IE_LENGTH_);
 	if (p && len > 0) {
+<<<<<<< HEAD
 		pht_cap = (struct rtw_ieee80211_ht_cap *)(p + 2);
 		ht_cap_info = pht_cap->cap_info;
+=======
+		struct ieee80211_ht_cap *ht_cap =
+			(struct ieee80211_ht_cap *)(p + 2);
+
+		ht_cap_info = le16_to_cpu(ht_cap->cap_info);
+>>>>>>> v4.9.227
 	} else {
 		ht_cap_info = 0;
 	}
@@ -1224,11 +1378,15 @@ unsigned int is_ap_in_wep(struct adapter *padapter)
 
 static int wifirate2_ratetbl_inx(unsigned char rate)
 {
+<<<<<<< HEAD
 	int	inx = 0;
+=======
+>>>>>>> v4.9.227
 	rate = rate & 0x7f;
 
 	switch (rate) {
 	case 54*2:
+<<<<<<< HEAD
 		inx = 11;
 		break;
 	case 48*2:
@@ -1266,6 +1424,34 @@ static int wifirate2_ratetbl_inx(unsigned char rate)
 		break;
 	}
 	return inx;
+=======
+		return 11;
+	case 48*2:
+		return 10;
+	case 36*2:
+		return 9;
+	case 24*2:
+		return 8;
+	case 18*2:
+		return 7;
+	case 12*2:
+		return 6;
+	case 9*2:
+		return 5;
+	case 6*2:
+		return 4;
+	case 11*2:
+		return 3;
+	case 11:
+		return 2;
+	case 2*2:
+		return 1;
+	case 1*2:
+		return 0;
+	default:
+		return 0;
+	}
+>>>>>>> v4.9.227
 }
 
 unsigned int update_basic_rate(unsigned char *ptn, unsigned int ptn_sz)
@@ -1273,7 +1459,11 @@ unsigned int update_basic_rate(unsigned char *ptn, unsigned int ptn_sz)
 	unsigned int i, num_of_rate;
 	unsigned int mask = 0;
 
+<<<<<<< HEAD
 	num_of_rate = (ptn_sz > NumRates) ? NumRates : ptn_sz;
+=======
+	num_of_rate = min_t(unsigned int, ptn_sz, NumRates);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < num_of_rate; i++) {
 		if ((*(ptn + i)) & 0x80)
@@ -1287,23 +1477,40 @@ unsigned int update_supported_rate(unsigned char *ptn, unsigned int ptn_sz)
 	unsigned int i, num_of_rate;
 	unsigned int mask = 0;
 
+<<<<<<< HEAD
 	num_of_rate = (ptn_sz > NumRates) ? NumRates : ptn_sz;
+=======
+	num_of_rate = min_t(unsigned int, ptn_sz, NumRates);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < num_of_rate; i++)
 		mask |= 0x1 << wifirate2_ratetbl_inx(*(ptn + i));
 	return mask;
 }
 
+<<<<<<< HEAD
 unsigned int update_MSC_rate(struct HT_caps_element *pHT_caps)
 {
 	unsigned int mask = 0;
 
 	mask = ((pHT_caps->u.HT_cap_element.MCS_rate[0] << 12) | (pHT_caps->u.HT_cap_element.MCS_rate[1] << 20));
+=======
+unsigned int update_MSC_rate(struct ieee80211_ht_cap *pHT_caps)
+{
+	unsigned int mask = 0;
+
+	mask = (pHT_caps->mcs.rx_mask[0] << 12) |
+	       (pHT_caps->mcs.rx_mask[1] << 20);
+>>>>>>> v4.9.227
 
 	return mask;
 }
 
+<<<<<<< HEAD
 int support_short_GI(struct adapter *padapter, struct HT_caps_element *pHT_caps)
+=======
+int support_short_GI(struct adapter *padapter, struct ieee80211_ht_cap *pHT_caps)
+>>>>>>> v4.9.227
 {
 	unsigned char					bit_offset;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -1312,12 +1519,20 @@ int support_short_GI(struct adapter *padapter, struct HT_caps_element *pHT_caps)
 	if (!(pmlmeinfo->HT_enable))
 		return _FAIL;
 
+<<<<<<< HEAD
 	if ((pmlmeinfo->assoc_AP_vendor == HT_IOT_PEER_RALINK))
+=======
+	if (pmlmeinfo->assoc_AP_vendor == HT_IOT_PEER_RALINK)
+>>>>>>> v4.9.227
 		return _FAIL;
 
 	bit_offset = (pmlmeext->cur_bwmode & HT_CHANNEL_WIDTH_40) ? 6 : 5;
 
+<<<<<<< HEAD
 	if (__le16_to_cpu(pHT_caps->u.HT_cap_element.HT_caps_info) & (0x1 << bit_offset))
+=======
+	if (__le16_to_cpu(pHT_caps->cap_info) & (0x1 << bit_offset))
+>>>>>>> v4.9.227
 		return _SUCCESS;
 	else
 		return _FAIL;
@@ -1394,7 +1609,10 @@ unsigned char check_assoc_AP(u8 *pframe, uint len)
 				DBG_88E("link to Artheros AP\n");
 				return HT_IOT_PEER_ATHEROS;
 			} else if ((!memcmp(pIE->data, BROADCOM_OUI1, 3)) ||
+<<<<<<< HEAD
 				   (!memcmp(pIE->data, BROADCOM_OUI2, 3)) ||
+=======
+>>>>>>> v4.9.227
 				   (!memcmp(pIE->data, BROADCOM_OUI2, 3))) {
 				DBG_88E("link to Broadcom AP\n");
 				return HT_IOT_PEER_BROADCOM;
@@ -1421,7 +1639,11 @@ unsigned char check_assoc_AP(u8 *pframe, uint len)
 				epigram_vendor_flag = 1;
 				if (ralink_vendor_flag) {
 					DBG_88E("link to Tenda W311R AP\n");
+<<<<<<< HEAD
 					 return HT_IOT_PEER_TENDA;
+=======
+					return HT_IOT_PEER_TENDA;
+>>>>>>> v4.9.227
 				} else {
 					DBG_88E("Capture EPIGRAM_OUI\n");
 				}
@@ -1461,13 +1683,23 @@ void update_IOT_info(struct adapter *padapter)
 		pmlmeinfo->turboMode_cts2self = 0;
 		pmlmeinfo->turboMode_rtsen = 1;
 		/* disable high power */
+<<<<<<< HEAD
 		Switch_DM_Func(padapter, (~DYNAMIC_BB_DYNAMIC_TXPWR), false);
+=======
+		Switch_DM_Func(padapter, (u32)(~DYNAMIC_BB_DYNAMIC_TXPWR),
+			       false);
+>>>>>>> v4.9.227
 		break;
 	case HT_IOT_PEER_REALTEK:
 		/* rtw_write16(padapter, 0x4cc, 0xffff); */
 		/* rtw_write16(padapter, 0x546, 0x01c0); */
 		/* disable high power */
+<<<<<<< HEAD
 		Switch_DM_Func(padapter, (~DYNAMIC_BB_DYNAMIC_TXPWR), false);
+=======
+		Switch_DM_Func(padapter, (u32)(~DYNAMIC_BB_DYNAMIC_TXPWR),
+			       false);
+>>>>>>> v4.9.227
 		break;
 	default:
 		pmlmeinfo->turboMode_cts2self = 0;
@@ -1558,7 +1790,11 @@ void update_wireless_mode(struct adapter *padapter)
 	SIFS_Timer = 0x0a0a0808;/* 0x0808 -> for CCK, 0x0a0a -> for OFDM */
 				/* change this value if having IOT issues. */
 
+<<<<<<< HEAD
 	padapter->HalFunc.SetHwRegHandler(padapter, HW_VAR_RESP_SIFS,  (u8 *)&SIFS_Timer);
+=======
+	rtw_hal_set_hwreg(padapter, HW_VAR_RESP_SIFS,  (u8 *)&SIFS_Timer);
+>>>>>>> v4.9.227
 
 	if (pmlmeext->cur_wireless_mode & WIRELESS_11B)
 		update_mgnt_tx_rate(padapter, IEEE80211_CCK_RATE_1MB);
@@ -1624,7 +1860,12 @@ void process_addba_req(struct adapter *padapter, u8 *paddba_req, u8 *addr)
 		tid = (param>>2)&0x0f;
 		preorder_ctrl = &psta->recvreorder_ctrl[tid];
 		preorder_ctrl->indicate_seq = 0xffff;
+<<<<<<< HEAD
 		preorder_ctrl->enable = (pmlmeinfo->bAcceptAddbaReq) ? true : false;
+=======
+		preorder_ctrl->enable = (pmlmeinfo->accept_addba_req) ? true
+								      : false;
+>>>>>>> v4.9.227
 	}
 }
 
@@ -1633,7 +1874,11 @@ void update_TSF(struct mlme_ext_priv *pmlmeext, u8 *pframe, uint len)
 	u8 *pIE;
 	__le32 *pbuf;
 
+<<<<<<< HEAD
 	pIE = pframe + sizeof(struct rtw_ieee80211_hdr_3addr);
+=======
+	pIE = pframe + sizeof(struct ieee80211_hdr_3addr);
+>>>>>>> v4.9.227
 	pbuf = (__le32 *)pIE;
 
 	pmlmeext->TSFValue = le32_to_cpu(*(pbuf+1));

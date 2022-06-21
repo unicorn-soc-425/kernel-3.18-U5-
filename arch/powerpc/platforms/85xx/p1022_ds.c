@@ -16,6 +16,10 @@
  * kind, whether express or implied.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/fsl/guts.h>
+>>>>>>> v4.9.227
 #include <linux/pci.h>
 #include <linux/of_platform.h>
 #include <asm/div64.h>
@@ -25,7 +29,10 @@
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
 #include <asm/udbg.h>
+<<<<<<< HEAD
 #include <asm/fsl_guts.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/fsl_lbc.h>
 #include "smp.h"
 
@@ -555,9 +562,13 @@ machine_arch_initcall(p1022_ds, swiotlb_setup_bus_notifier);
  */
 static int __init p1022_ds_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,p1022ds");
+=======
+	return of_machine_is_compatible("fsl,p1022ds");
+>>>>>>> v4.9.227
 }
 
 define_machine(p1022_ds) {
@@ -570,7 +581,10 @@ define_machine(p1022_ds) {
 	.pcibios_fixup_phb	= fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> v4.9.227
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };

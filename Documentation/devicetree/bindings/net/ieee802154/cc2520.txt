@@ -13,11 +13,21 @@ Required properties:
 	- cca-gpio:		GPIO spec for the CCA pin
 	- vreg-gpio:		GPIO spec for the VREG pin
 	- reset-gpio:		GPIO spec for the RESET pin
+<<<<<<< HEAD
+=======
+Optional properties:
+	- amplified:		include if the CC2520 is connected to a CC2591 amplifier
+
+>>>>>>> v4.9.227
 Example:
 	cc2520@0 {
 		compatible = "ti,cc2520";
 		reg = <0>;
 		spi-max-frequency = <4000000>;
+<<<<<<< HEAD
+=======
+		amplified;
+>>>>>>> v4.9.227
 		pinctrl-names = "default";
 		pinctrl-0 = <&cc2520_cape_pins>;
 		fifo-gpio = <&gpio1 18 0>;

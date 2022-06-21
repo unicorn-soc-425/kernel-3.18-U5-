@@ -32,6 +32,7 @@
 		compatible = "gpio-keys";
 		#address-cells = <1>;
 		#size-cells = <0>;
+<<<<<<< HEAD
 		button0@121 {
 			label = "button0";
 			linux,code = <BTN_0>;
@@ -41,6 +42,17 @@
 	};
 
 	hdmi0: connector@0 {
+=======
+		button0 {
+			label = "button0";
+			linux,code = <BTN_0>;
+			gpios = <&gpio4 25 GPIO_ACTIVE_LOW>;	/* gpio_121 */
+			wakeup-source;
+		};
+	};
+
+	hdmi0: connector {
+>>>>>>> v4.9.227
 		compatible = "hdmi-connector";
 		label = "hdmi";
 
@@ -177,6 +189,10 @@
 
 &hdmi {
 	status = "ok";
+<<<<<<< HEAD
+=======
+	vdda-supply = <&vdac>;
+>>>>>>> v4.9.227
 
 	pinctrl-names = "default";
 	pinctrl-0 = <&dss_hdmi_pins>;
@@ -188,3 +204,10 @@
 	};
 };
 
+<<<<<<< HEAD
+=======
+&uart3 {
+	interrupts-extended = <&wakeupgen GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH
+			       &omap4_pmx_core OMAP4_UART3_RX>;
+};
+>>>>>>> v4.9.227

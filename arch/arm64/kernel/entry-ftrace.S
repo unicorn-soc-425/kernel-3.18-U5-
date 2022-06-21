@@ -78,7 +78,10 @@
 	.macro mcount_get_lr reg
 	ldr	\reg, [x29]
 	ldr	\reg, [\reg, #8]
+<<<<<<< HEAD
 	mcount_adjust_addr	\reg, \reg
+=======
+>>>>>>> v4.9.227
 	.endm
 
 	.macro mcount_get_lr_addr reg
@@ -98,8 +101,13 @@
 ENTRY(_mcount)
 	mcount_enter
 
+<<<<<<< HEAD
 	ldr	x0, =ftrace_trace_function
 	ldr	x2, [x0]
+=======
+	adrp	x0, ftrace_trace_function
+	ldr	x2, [x0, #:lo12:ftrace_trace_function]
+>>>>>>> v4.9.227
 	adr	x0, ftrace_stub
 	cmp	x0, x2			// if (ftrace_trace_function
 	b.eq	skip_ftrace_call	//     != ftrace_stub) {
@@ -115,6 +123,7 @@ skip_ftrace_call:			//   return;
 	mcount_exit			//   return;
 					// }
 skip_ftrace_call:
+<<<<<<< HEAD
 	ldr	x1, =ftrace_graph_return
 	ldr	x2, [x1]		//   if ((ftrace_graph_return
 	cmp	x0, x2			//        != ftrace_stub)
@@ -123,6 +132,17 @@ skip_ftrace_call:
 	ldr	x1, =ftrace_graph_entry	//     || (ftrace_graph_entry
 	ldr	x2, [x1]		//        != ftrace_graph_entry_stub))
 	ldr	x0, =ftrace_graph_entry_stub
+=======
+	adrp	x1, ftrace_graph_return
+	ldr	x2, [x1, #:lo12:ftrace_graph_return]
+	cmp	x0, x2			//   if ((ftrace_graph_return
+	b.ne	ftrace_graph_caller	//        != ftrace_stub)
+
+	adrp	x1, ftrace_graph_entry	//     || (ftrace_graph_entry
+	adrp	x0, ftrace_graph_entry_stub //     != ftrace_graph_entry_stub))
+	ldr	x2, [x1, #:lo12:ftrace_graph_entry]
+	add	x0, x0, #:lo12:ftrace_graph_entry_stub
+>>>>>>> v4.9.227
 	cmp	x0, x2
 	b.ne	ftrace_graph_caller	//     ftrace_graph_caller();
 
@@ -218,7 +238,11 @@ ENDPROC(ftrace_graph_caller)
  *
  * Run ftrace_return_to_handler() before going back to parent.
  * @fp is checked against the value passed by ftrace_graph_caller()
+<<<<<<< HEAD
  * only when CONFIG_HAVE_FUNCTION_GRAPH_FP_TEST is enabled.
+=======
+ * only when HAVE_FUNCTION_GRAPH_FP_TEST is enabled.
+>>>>>>> v4.9.227
  */
 ENTRY(return_to_handler)
 	save_return_regs

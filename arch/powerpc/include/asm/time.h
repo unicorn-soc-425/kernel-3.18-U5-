@@ -18,6 +18,10 @@
 #include <linux/percpu.h>
 
 #include <asm/processor.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu_has_feature.h>
+>>>>>>> v4.9.227
 
 /* time.c */
 extern unsigned long tb_ticks_per_jiffy;
@@ -27,13 +31,19 @@ extern struct clock_event_device decrementer_clockevent;
 
 struct rtc_time;
 extern void to_tm(int tim, struct rtc_time * tm);
+<<<<<<< HEAD
 extern void GregorianDay(struct rtc_time *tm);
+=======
+>>>>>>> v4.9.227
 extern void tick_broadcast_ipi_handler(void);
 
 extern void generic_calibrate_decr(void);
 
+<<<<<<< HEAD
 extern void set_dec_cpu6(unsigned int val);
 
+=======
+>>>>>>> v4.9.227
 /* Some sane defaults: 125 MHz timebase, 1GHz processor */
 extern unsigned long ppc_proc_freq;
 #define DEFAULT_PROC_FREQ	(DEFAULT_TB_FREQ * 8)
@@ -106,7 +116,11 @@ static inline u64 get_vtb(void)
 {
 #ifdef CONFIG_PPC_BOOK3S_64
 	if (cpu_has_feature(CPU_FTR_ARCH_207S))
+<<<<<<< HEAD
 		return mfvtb();
+=======
+		return mfspr(SPRN_VTB);
+>>>>>>> v4.9.227
 #endif
 	return 0;
 }
@@ -149,7 +163,11 @@ static inline void set_tb(unsigned int upper, unsigned int lower)
  * in auto-reload mode.  The problem is PIT stops counting when it
  * hits zero.  If it would wrap, we could use it just like a decrementer.
  */
+<<<<<<< HEAD
 static inline unsigned int get_dec(void)
+=======
+static inline u64 get_dec(void)
+>>>>>>> v4.9.227
 {
 #if defined(CONFIG_40x)
 	return (mfspr(SPRN_PIT));
@@ -163,18 +181,29 @@ static inline unsigned int get_dec(void)
  * in when the decrementer generates its interrupt: on the 1 to 0
  * transition for Book E/4xx, but on the 0 to -1 transition for others.
  */
+<<<<<<< HEAD
 static inline void set_dec(int val)
 {
 #if defined(CONFIG_40x)
 	mtspr(SPRN_PIT, val);
 #elif defined(CONFIG_8xx_CPU6)
 	set_dec_cpu6(val - 1);
+=======
+static inline void set_dec(u64 val)
+{
+#if defined(CONFIG_40x)
+	mtspr(SPRN_PIT, (u32) val);
+>>>>>>> v4.9.227
 #else
 #ifndef CONFIG_BOOKE
 	--val;
 #endif
 	mtspr(SPRN_DEC, val);
+<<<<<<< HEAD
 #endif /* not 40x or 8xx_CPU6 */
+=======
+#endif /* not 40x */
+>>>>>>> v4.9.227
 }
 
 static inline unsigned long tb_ticks_since(unsigned long tstamp)
@@ -211,5 +240,11 @@ extern void secondary_cpu_time_init(void);
 
 DECLARE_PER_CPU(u64, decrementers_next_tb);
 
+<<<<<<< HEAD
+=======
+/* Convert timebase ticks to nanoseconds */
+unsigned long long tb_to_ns(unsigned long long tb_ticks);
+
+>>>>>>> v4.9.227
 #endif /* __KERNEL__ */
 #endif /* __POWERPC_TIME_H */

@@ -66,7 +66,10 @@ struct mpc52xx_fec_priv {
 	/* MDIO link details */
 	unsigned int mdio_speed;
 	struct device_node *phy_node;
+<<<<<<< HEAD
 	struct phy_device *phydev;
+=======
+>>>>>>> v4.9.227
 	enum phy_state link;
 	int seven_wire_mode;
 };
@@ -165,7 +168,11 @@ static int mpc52xx_fec_alloc_rx_buffers(struct net_device *dev, struct bcom_task
 static void mpc52xx_fec_adjust_link(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = priv->phydev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> v4.9.227
 	int new_state = 0;
 
 	if (phydev->link != PHY_DOWN) {
@@ -215,6 +222,7 @@ static void mpc52xx_fec_adjust_link(struct net_device *dev)
 static int mpc52xx_fec_open(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	int err = -EBUSY;
 
 	if (priv->phy_node) {
@@ -225,6 +233,19 @@ static int mpc52xx_fec_open(struct net_device *dev)
 			return -ENODEV;
 		}
 		phy_start(priv->phydev);
+=======
+	struct phy_device *phydev = NULL;
+	int err = -EBUSY;
+
+	if (priv->phy_node) {
+		phydev = of_phy_connect(priv->ndev, priv->phy_node,
+					mpc52xx_fec_adjust_link, 0, 0);
+		if (!phydev) {
+			dev_err(&dev->dev, "of_phy_connect failed\n");
+			return -ENODEV;
+		}
+		phy_start(phydev);
+>>>>>>> v4.9.227
 	}
 
 	if (request_irq(dev->irq, mpc52xx_fec_interrupt, IRQF_SHARED,
@@ -268,10 +289,16 @@ static int mpc52xx_fec_open(struct net_device *dev)
  free_ctrl_irq:
 	free_irq(dev->irq, dev);
  free_phy:
+<<<<<<< HEAD
 	if (priv->phydev) {
 		phy_stop(priv->phydev);
 		phy_disconnect(priv->phydev);
 		priv->phydev = NULL;
+=======
+	if (phydev) {
+		phy_stop(phydev);
+		phy_disconnect(phydev);
+>>>>>>> v4.9.227
 	}
 
 	return err;
@@ -280,6 +307,10 @@ static int mpc52xx_fec_open(struct net_device *dev)
 static int mpc52xx_fec_close(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> v4.9.227
 
 	netif_stop_queue(dev);
 
@@ -291,11 +322,18 @@ static int mpc52xx_fec_close(struct net_device *dev)
 	free_irq(priv->r_irq, dev);
 	free_irq(priv->t_irq, dev);
 
+<<<<<<< HEAD
 	if (priv->phydev) {
 		/* power down phy */
 		phy_stop(priv->phydev);
 		phy_disconnect(priv->phydev);
 		priv->phydev = NULL;
+=======
+	if (phydev) {
+		/* power down phy */
+		phy_stop(phydev);
+		phy_disconnect(phydev);
+>>>>>>> v4.9.227
 	}
 
 	return 0;
@@ -763,6 +801,7 @@ static void mpc52xx_fec_reset(struct net_device *dev)
 
 /* ethtool interface */
 
+<<<<<<< HEAD
 static int mpc52xx_fec_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
@@ -783,6 +822,8 @@ static int mpc52xx_fec_set_settings(struct net_device *dev, struct ethtool_cmd *
 	return phy_ethtool_sset(priv->phydev, cmd);
 }
 
+=======
+>>>>>>> v4.9.227
 static u32 mpc52xx_fec_get_msglevel(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
@@ -796,23 +837,40 @@ static void mpc52xx_fec_set_msglevel(struct net_device *dev, u32 level)
 }
 
 static const struct ethtool_ops mpc52xx_fec_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings = mpc52xx_fec_get_settings,
 	.set_settings = mpc52xx_fec_set_settings,
+=======
+>>>>>>> v4.9.227
 	.get_link = ethtool_op_get_link,
 	.get_msglevel = mpc52xx_fec_get_msglevel,
 	.set_msglevel = mpc52xx_fec_set_msglevel,
 	.get_ts_info = ethtool_op_get_ts_info,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> v4.9.227
 };
 
 
 static int mpc52xx_fec_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
+<<<<<<< HEAD
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
 
 	if (!priv->phydev)
 		return -ENOTSUPP;
 
 	return phy_mii_ioctl(priv->phydev, rq, cmd);
+=======
+	struct phy_device *phydev = dev->phydev;
+
+	if (!phydev)
+		return -ENOTSUPP;
+
+	return phy_mii_ioctl(phydev, rq, cmd);
+>>>>>>> v4.9.227
 }
 
 static const struct net_device_ops mpc52xx_fec_netdev_ops = {
@@ -1057,7 +1115,11 @@ static int mpc52xx_fec_of_resume(struct platform_device *op)
 }
 #endif
 
+<<<<<<< HEAD
 static struct of_device_id mpc52xx_fec_match[] = {
+=======
+static const struct of_device_id mpc52xx_fec_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible = "fsl,mpc5200b-fec", },
 	{ .compatible = "fsl,mpc5200-fec", },
 	{ .compatible = "mpc5200-fec", },
@@ -1069,7 +1131,10 @@ MODULE_DEVICE_TABLE(of, mpc52xx_fec_match);
 static struct platform_driver mpc52xx_fec_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = mpc52xx_fec_match,
 	},
 	.probe		= mpc52xx_fec_probe,
@@ -1085,6 +1150,7 @@ static struct platform_driver mpc52xx_fec_driver = {
 /* Module                                                                   */
 /* ======================================================================== */
 
+<<<<<<< HEAD
 static int __init
 mpc52xx_fec_init(void)
 {
@@ -1097,15 +1163,32 @@ mpc52xx_fec_init(void)
 	}
 #endif
 	return platform_driver_register(&mpc52xx_fec_driver);
+=======
+static struct platform_driver * const drivers[] = {
+#ifdef CONFIG_FEC_MPC52xx_MDIO
+	&mpc52xx_fec_mdio_driver,
+#endif
+	&mpc52xx_fec_driver,
+};
+
+static int __init
+mpc52xx_fec_init(void)
+{
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 
 static void __exit
 mpc52xx_fec_exit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&mpc52xx_fec_driver);
 #ifdef CONFIG_FEC_MPC52xx_MDIO
 	platform_driver_unregister(&mpc52xx_fec_mdio_driver);
 #endif
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> v4.9.227
 }
 
 

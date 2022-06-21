@@ -26,13 +26,20 @@
 #include <asm/mmu_context.h>
 #include <asm/asm-offsets.h>
 #include <asm/pal.h>
+<<<<<<< HEAD
 #include <asm/paravirt.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/pgtable.h>
 #include <asm/processor.h>
 #include <asm/ptrace.h>
 #include <asm/mca_asm.h>
 #include <linux/init.h>
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_HOTPLUG_CPU
 #define SAL_PSR_BITS_TO_SET				\
@@ -169,6 +176,10 @@ RestRR:											\
 	__PAGE_ALIGNED_DATA
 
 	.global empty_zero_page
+<<<<<<< HEAD
+=======
+EXPORT_DATA_SYMBOL_GPL(empty_zero_page)
+>>>>>>> v4.9.227
 empty_zero_page:
 	.skip PAGE_SIZE
 
@@ -394,6 +405,7 @@ start_ap:
 	;;
 (isBP)	st8 [r2]=r28		// save the address of the boot param area passed by the bootloader
 
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT
 
 	movl r14=hypervisor_setup_hooks
@@ -429,6 +441,8 @@ num_hypervisor_hooks = (. - hypervisor_setup_hooks) / 8
 
 #endif
 
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_SMP
 (isAP)	br.call.sptk.many rp=start_secondary
 .ret0:
@@ -1063,12 +1077,15 @@ GLOBAL_ENTRY(ia64_native_sched_clock)
 	shrp r8=r9,r8,IA64_NSEC_PER_CYC_SHIFT
 	br.ret.sptk.many rp
 END(ia64_native_sched_clock)
+<<<<<<< HEAD
 #ifndef CONFIG_PARAVIRT
 	//unsigned long long
 	//sched_clock(void) __attribute__((alias("ia64_native_sched_clock")));
 	.global sched_clock
 sched_clock = ia64_native_sched_clock
 #endif
+=======
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
 GLOBAL_ENTRY(cycle_to_cputime)

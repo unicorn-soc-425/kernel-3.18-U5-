@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
     module/range.c
     comedi routines for voltage ranges
 
@@ -15,6 +16,24 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
+=======
+ * comedi/range.c
+ * comedi routines for voltage ranges
+ *
+ * COMEDI - Linux Control and Measurement Device Interface
+ * Copyright (C) 1997-8 David A. Schleef <ds@schleef.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+>>>>>>> v4.9.227
 
 #include <linux/uaccess.h>
 #include "comedidev.h"
@@ -42,6 +61,7 @@ const struct comedi_lrange range_unknown = { 1, {{0, 1000000, UNIT_none} } };
 EXPORT_SYMBOL_GPL(range_unknown);
 
 /*
+<<<<<<< HEAD
 	COMEDI_RANGEINFO
 	range information ioctl
 
@@ -54,6 +74,20 @@ EXPORT_SYMBOL_GPL(range_unknown);
 	writes:
 		n struct comedi_krange structures to rangeinfo->range_ptr
 */
+=======
+ * COMEDI_RANGEINFO ioctl
+ * range information
+ *
+ * arg:
+ *	pointer to comedi_rangeinfo structure
+ *
+ * reads:
+ *	comedi_rangeinfo structure
+ *
+ * writes:
+ *	array of comedi_krange structures to rangeinfo->range_ptr pointer
+ */
+>>>>>>> v4.9.227
 int do_rangeinfo_ioctl(struct comedi_device *dev,
 		       struct comedi_rangeinfo __user *arg)
 {
@@ -97,6 +131,7 @@ int do_rangeinfo_ioctl(struct comedi_device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int aref_invalid(struct comedi_subdevice *s, unsigned int chanspec)
 {
 	unsigned int aref;
@@ -130,12 +165,29 @@ static int aref_invalid(struct comedi_subdevice *s, unsigned int chanspec)
 	return 1;
 }
 
+=======
+>>>>>>> v4.9.227
 /**
  * comedi_check_chanlist() - Validate each element in a chanlist.
  * @s: comedi_subdevice struct
  * @n: number of elements in the chanlist
  * @chanlist: the chanlist to validate
+<<<<<<< HEAD
 */
+=======
+ *
+ * Each element consists of a channel number, a range index, an analog
+ * reference type and some flags, all packed into an unsigned int.
+ *
+ * This checks that the channel number and range index are supported by
+ * the comedi subdevice.  It does not check whether the analog reference
+ * type and the flags are supported.  Drivers that care should check those
+ * themselves.
+ *
+ * Return: %0 if all @chanlist elements are valid (success),
+ *         %-EINVAL if one or more elements are invalid.
+ */
+>>>>>>> v4.9.227
 int comedi_check_chanlist(struct comedi_subdevice *s, int n,
 			  unsigned int *chanlist)
 {
@@ -153,8 +205,12 @@ int comedi_check_chanlist(struct comedi_subdevice *s, int n,
 		else
 			range_len = 0;
 		if (chan >= s->n_chan ||
+<<<<<<< HEAD
 		    CR_RANGE(chanspec) >= range_len ||
 		    aref_invalid(s, chanspec)) {
+=======
+		    CR_RANGE(chanspec) >= range_len) {
+>>>>>>> v4.9.227
 			dev_warn(dev->class_dev,
 				 "bad chanlist[%d]=0x%08x chan=%d range length=%d\n",
 				 i, chanspec, chan, range_len);

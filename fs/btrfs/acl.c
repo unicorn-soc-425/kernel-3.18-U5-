@@ -37,10 +37,17 @@ struct posix_acl *btrfs_get_acl(struct inode *inode, int type)
 
 	switch (type) {
 	case ACL_TYPE_ACCESS:
+<<<<<<< HEAD
 		name = POSIX_ACL_XATTR_ACCESS;
 		break;
 	case ACL_TYPE_DEFAULT:
 		name = POSIX_ACL_XATTR_DEFAULT;
+=======
+		name = XATTR_NAME_POSIX_ACL_ACCESS;
+		break;
+	case ACL_TYPE_DEFAULT:
+		name = XATTR_NAME_POSIX_ACL_DEFAULT;
+>>>>>>> v4.9.227
 		break;
 	default:
 		BUG();
@@ -48,24 +55,35 @@ struct posix_acl *btrfs_get_acl(struct inode *inode, int type)
 
 	size = __btrfs_getxattr(inode, name, "", 0);
 	if (size > 0) {
+<<<<<<< HEAD
 		value = kzalloc(size, GFP_NOFS);
+=======
+		value = kzalloc(size, GFP_KERNEL);
+>>>>>>> v4.9.227
 		if (!value)
 			return ERR_PTR(-ENOMEM);
 		size = __btrfs_getxattr(inode, name, value, size);
 	}
 	if (size > 0) {
 		acl = posix_acl_from_xattr(&init_user_ns, value, size);
+<<<<<<< HEAD
 	} else if (size == -ENOENT || size == -ENODATA || size == 0) {
 		/* FIXME, who returns -ENOENT?  I think nobody */
+=======
+	} else if (size == -ERANGE || size == -ENODATA || size == 0) {
+>>>>>>> v4.9.227
 		acl = NULL;
 	} else {
 		acl = ERR_PTR(-EIO);
 	}
 	kfree(value);
 
+<<<<<<< HEAD
 	if (!IS_ERR(acl))
 		set_cached_acl(inode, type, acl);
 
+=======
+>>>>>>> v4.9.227
 	return acl;
 }
 
@@ -81,6 +99,7 @@ static int __btrfs_set_acl(struct btrfs_trans_handle *trans,
 
 	switch (type) {
 	case ACL_TYPE_ACCESS:
+<<<<<<< HEAD
 		name = POSIX_ACL_XATTR_ACCESS;
 		if (acl) {
 			ret = posix_acl_update_mode(inode, &inode->i_mode, &acl);
@@ -88,11 +107,18 @@ static int __btrfs_set_acl(struct btrfs_trans_handle *trans,
 				return ret;
 		}
 		ret = 0;
+=======
+		name = XATTR_NAME_POSIX_ACL_ACCESS;
+>>>>>>> v4.9.227
 		break;
 	case ACL_TYPE_DEFAULT:
 		if (!S_ISDIR(inode->i_mode))
 			return acl ? -EINVAL : 0;
+<<<<<<< HEAD
 		name = POSIX_ACL_XATTR_DEFAULT;
+=======
+		name = XATTR_NAME_POSIX_ACL_DEFAULT;
+>>>>>>> v4.9.227
 		break;
 	default:
 		return -EINVAL;
@@ -100,7 +126,11 @@ static int __btrfs_set_acl(struct btrfs_trans_handle *trans,
 
 	if (acl) {
 		size = posix_acl_xattr_size(acl->a_count);
+<<<<<<< HEAD
 		value = kmalloc(size, GFP_NOFS);
+=======
+		value = kmalloc(size, GFP_KERNEL);
+>>>>>>> v4.9.227
 		if (!value) {
 			ret = -ENOMEM;
 			goto out;
@@ -123,7 +153,22 @@ out:
 
 int btrfs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 {
+<<<<<<< HEAD
 	return __btrfs_set_acl(NULL, inode, acl, type);
+=======
+	int ret;
+	umode_t old_mode = inode->i_mode;
+
+	if (type == ACL_TYPE_ACCESS && acl) {
+		ret = posix_acl_update_mode(inode, &inode->i_mode, &acl);
+		if (ret)
+			return ret;
+	}
+	ret = __btrfs_set_acl(NULL, inode, acl, type);
+	if (ret)
+		inode->i_mode = old_mode;
+	return ret;
+>>>>>>> v4.9.227
 }
 
 /*

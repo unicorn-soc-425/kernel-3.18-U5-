@@ -36,8 +36,13 @@
 #include <scsi/scsi_host.h>
 #include <linux/libata.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <asm/dma.h>
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+#include <asm/dma.h>
+>>>>>>> v4.9.227
 #include <asm/portmux.h>
 
 #define DRV_NAME		"pata-bf54x"
@@ -1657,7 +1662,10 @@ static struct platform_driver bfin_atapi_driver = {
 	.resume			= bfin_atapi_resume,
 	.driver = {
 		.name		= DRV_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

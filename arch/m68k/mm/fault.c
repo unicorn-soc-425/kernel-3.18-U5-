@@ -10,10 +10,17 @@
 #include <linux/ptrace.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #include <asm/setup.h>
 #include <asm/traps.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+
+#include <asm/setup.h>
+#include <asm/traps.h>
+>>>>>>> v4.9.227
 #include <asm/pgalloc.h>
 
 extern void die_if_kernel(char *, struct pt_regs *, long);
@@ -81,7 +88,11 @@ int do_page_fault(struct pt_regs *regs, unsigned long address,
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (faulthandler_disabled() || !mm)
+>>>>>>> v4.9.227
 		goto no_context;
 
 	if (user_mode(regs))
@@ -136,7 +147,11 @@ good_area:
 	 * the fault.
 	 */
 
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> v4.9.227
 	pr_debug("handle_mm_fault returns %d\n", fault);
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))

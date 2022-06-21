@@ -30,9 +30,15 @@ iommu_fill_pdir(struct ioc *ioc, struct scatterlist *startsg, int nents,
 		unsigned long vaddr;
 		long size;
 
+<<<<<<< HEAD
 		DBG_RUN_SG(" %d : %08lx/%05x %08lx/%05x\n", nents,
 			   (unsigned long)sg_dma_address(startsg), cnt,
 			   sg_virt_addr(startsg), startsg->length
+=======
+		DBG_RUN_SG(" %d : %08lx/%05x %p/%05x\n", nents,
+			   (unsigned long)sg_dma_address(startsg), cnt,
+			   sg_virt(startsg), startsg->length
+>>>>>>> v4.9.227
 		);
 
 
@@ -66,7 +72,11 @@ iommu_fill_pdir(struct ioc *ioc, struct scatterlist *startsg, int nents,
 		
 		BUG_ON(pdirp == NULL);
 		
+<<<<<<< HEAD
 		vaddr = sg_virt_addr(startsg);
+=======
+		vaddr = (unsigned long)sg_virt(startsg);
+>>>>>>> v4.9.227
 		sg_dma_len(dma_sg) += startsg->length;
 		size = startsg->length + dma_offset;
 		dma_offset = 0;
@@ -104,7 +114,15 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 	struct scatterlist *contig_sg;	   /* contig chunk head */
 	unsigned long dma_offset, dma_len; /* start/len of DMA stream */
 	unsigned int n_mappings = 0;
+<<<<<<< HEAD
 	unsigned int max_seg_size = dma_get_max_seg_size(dev);
+=======
+	unsigned int max_seg_size = min(dma_get_max_seg_size(dev),
+					(unsigned)DMA_CHUNK_SIZE);
+	unsigned int max_seg_boundary = dma_get_seg_boundary(dev) + 1;
+	if (max_seg_boundary)	/* check if the addition above didn't overflow */
+		max_seg_size = min(max_seg_size, max_seg_boundary);
+>>>>>>> v4.9.227
 
 	while (nents > 0) {
 
@@ -113,7 +131,11 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 		*/
 		contig_sg = startsg;
 		dma_len = startsg->length;
+<<<<<<< HEAD
 		dma_offset = sg_virt_addr(startsg) & ~IOVP_MASK;
+=======
+		dma_offset = startsg->offset;
+>>>>>>> v4.9.227
 
 		/* PARANOID: clear entries */
 		sg_dma_address(startsg) = 0;
@@ -124,6 +146,7 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 		** it's always looking one "ahead".
 		*/
 		while(--nents > 0) {
+<<<<<<< HEAD
 			unsigned long prevstartsg_end, startsg_end;
 
 			prevstartsg_end = sg_virt_addr(startsg) +
@@ -132,6 +155,15 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 			startsg++;
 			startsg_end = sg_virt_addr(startsg) + 
 				startsg->length;
+=======
+			unsigned long prev_end, sg_start;
+
+			prev_end = (unsigned long)sg_virt(startsg) +
+							startsg->length;
+
+			startsg++;
+			sg_start = (unsigned long)sg_virt(startsg);
+>>>>>>> v4.9.227
 
 			/* PARANOID: clear entries */
 			sg_dma_address(startsg) = 0;
@@ -139,6 +171,7 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 
 			/*
 			** First make sure current dma stream won't
+<<<<<<< HEAD
 			** exceed DMA_CHUNK_SIZE if we coalesce the
 			** next entry.
 			*/   
@@ -154,6 +187,23 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 			** it must end on one page and begin on another
 			*/
 			if (unlikely(((prevstartsg_end | sg_virt_addr(startsg)) & ~PAGE_MASK) != 0))
+=======
+			** exceed max_seg_size if we coalesce the
+			** next entry.
+			*/   
+			if (unlikely(ALIGN(dma_len + dma_offset + startsg->length, IOVP_SIZE) >
+				     max_seg_size))
+				break;
+
+			/*
+			* Next see if we can append the next chunk (i.e.
+			* it must end on one page and begin on another, or
+			* it must start on the same address as the previous
+			* entry ended.
+			*/
+			if (unlikely((prev_end != sg_start) ||
+				((prev_end | sg_start) & ~PAGE_MASK)))
+>>>>>>> v4.9.227
 				break;
 			
 			dma_len += startsg->length;

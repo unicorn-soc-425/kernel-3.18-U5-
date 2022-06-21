@@ -187,6 +187,10 @@ enum {
 	MODEL_DIGITIZER_II	= 0x5544, /* UD */
 	MODEL_GRAPHIRE		= 0x4554, /* ET */
 	MODEL_PENPARTNER	= 0x4354, /* CT */
+<<<<<<< HEAD
+=======
+	MODEL_ARTPAD_II		= 0x4B54, /* KT */
+>>>>>>> v4.9.227
 };
 
 static void wacom_handle_model_response(struct wacom *wacom)
@@ -245,6 +249,10 @@ static void wacom_handle_model_response(struct wacom *wacom)
 		wacom->flags = F_HAS_STYLUS2 | F_HAS_SCROLLWHEEL;
 		break;
 
+<<<<<<< HEAD
+=======
+	case MODEL_ARTPAD_II:
+>>>>>>> v4.9.227
 	case MODEL_DIGITIZER_II:
 		wacom->dev->name = "Wacom Digitizer II";
 		wacom->dev->id.version = MODEL_DIGITIZER_II;

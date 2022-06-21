@@ -121,7 +121,11 @@
 		display0 = &lcd0;
 	};
 
+<<<<<<< HEAD
 	lcd0: display@0 {
+=======
+	lcd0: display {
+>>>>>>> v4.9.227
 		compatible = "panel-dpi";
 		label = "lcd";
 

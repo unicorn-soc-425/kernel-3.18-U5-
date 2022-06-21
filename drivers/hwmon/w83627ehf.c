@@ -1937,6 +1937,7 @@ static inline void w83627ehf_init_device(struct w83627ehf_data *data,
 static void w82627ehf_swap_tempreg(struct w83627ehf_data *data,
 				   int r1, int r2)
 {
+<<<<<<< HEAD
 	u16 tmp;
 
 	tmp = data->temp_src[r1];
@@ -1958,6 +1959,13 @@ static void w82627ehf_swap_tempreg(struct w83627ehf_data *data,
 	tmp = data->reg_temp_config[r1];
 	data->reg_temp_config[r1] = data->reg_temp_config[r2];
 	data->reg_temp_config[r2] = tmp;
+=======
+	swap(data->temp_src[r1], data->temp_src[r2]);
+	swap(data->reg_temp[r1], data->reg_temp[r2]);
+	swap(data->reg_temp_over[r1], data->reg_temp_over[r2]);
+	swap(data->reg_temp_hyst[r1], data->reg_temp_hyst[r2]);
+	swap(data->reg_temp_config[r1], data->reg_temp_config[r2]);
+>>>>>>> v4.9.227
 }
 
 static void
@@ -2705,7 +2713,10 @@ static const struct dev_pm_ops w83627ehf_dev_pm_ops = {
 
 static struct platform_driver w83627ehf_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.name	= DRVNAME,
 		.pm	= W83627EHF_DEV_PM_OPS,
 	},

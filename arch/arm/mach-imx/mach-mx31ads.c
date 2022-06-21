@@ -154,14 +154,23 @@ static inline void mxc_init_imx_uart(void)
 	imx31_add_imx_uart0(&uart_pdata);
 }
 
+<<<<<<< HEAD
 static void mx31ads_expio_irq_handler(u32 irq, struct irq_desc *desc)
+=======
+static void mx31ads_expio_irq_handler(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	u32 imr_val;
 	u32 int_valid;
 	u32 expio_irq;
 
+<<<<<<< HEAD
 	imr_val = __raw_readw(PBC_INTMASK_SET_REG);
 	int_valid = __raw_readw(PBC_INTSTATUS_REG) & imr_val;
+=======
+	imr_val = imx_readw(PBC_INTMASK_SET_REG);
+	int_valid = imx_readw(PBC_INTSTATUS_REG) & imr_val;
+>>>>>>> v4.9.227
 
 	expio_irq = 0;
 	for (; int_valid != 0; int_valid >>= 1, expio_irq++) {
@@ -180,8 +189,13 @@ static void expio_mask_irq(struct irq_data *d)
 {
 	u32 expio = d->hwirq;
 	/* mask the interrupt */
+<<<<<<< HEAD
 	__raw_writew(1 << expio, PBC_INTMASK_CLEAR_REG);
 	__raw_readw(PBC_INTMASK_CLEAR_REG);
+=======
+	imx_writew(1 << expio, PBC_INTMASK_CLEAR_REG);
+	imx_readw(PBC_INTMASK_CLEAR_REG);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -192,7 +206,11 @@ static void expio_ack_irq(struct irq_data *d)
 {
 	u32 expio = d->hwirq;
 	/* clear the interrupt status */
+<<<<<<< HEAD
 	__raw_writew(1 << expio, PBC_INTSTATUS_REG);
+=======
+	imx_writew(1 << expio, PBC_INTSTATUS_REG);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -203,7 +221,11 @@ static void expio_unmask_irq(struct irq_data *d)
 {
 	u32 expio = d->hwirq;
 	/* unmask the interrupt */
+<<<<<<< HEAD
 	__raw_writew(1 << expio, PBC_INTMASK_SET_REG);
+=======
+	imx_writew(1 << expio, PBC_INTMASK_SET_REG);
+>>>>>>> v4.9.227
 }
 
 static struct irq_chip expio_irq_chip = {
@@ -226,8 +248,13 @@ static void __init mx31ads_init_expio(void)
 	mxc_iomux_alloc_pin(IOMUX_MODE(MX31_PIN_GPIO1_4, IOMUX_CONFIG_GPIO), "expio");
 
 	/* disable the interrupt and clear the status */
+<<<<<<< HEAD
 	__raw_writew(0xFFFF, PBC_INTMASK_CLEAR_REG);
 	__raw_writew(0xFFFF, PBC_INTSTATUS_REG);
+=======
+	imx_writew(0xFFFF, PBC_INTMASK_CLEAR_REG);
+	imx_writew(0xFFFF, PBC_INTSTATUS_REG);
+>>>>>>> v4.9.227
 
 	irq_base = irq_alloc_descs(-1, 0, MXC_MAX_EXP_IO_LINES, numa_node_id());
 	WARN_ON(irq_base < 0);
@@ -238,7 +265,11 @@ static void __init mx31ads_init_expio(void)
 
 	for (i = irq_base; i < irq_base + MXC_MAX_EXP_IO_LINES; i++) {
 		irq_set_chip_and_handler(i, &expio_irq_chip, handle_level_irq);
+<<<<<<< HEAD
 		set_irq_flags(i, IRQF_VALID);
+=======
+		irq_clear_status_flags(i, IRQ_NOREQUEST);
+>>>>>>> v4.9.227
 	}
 	irq = gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO1_4));
 	irq_set_irq_type(irq, IRQ_TYPE_LEVEL_HIGH);
@@ -554,20 +585,35 @@ static void __init mx31ads_map_io(void)
 	iotable_init(mx31ads_io_desc, ARRAY_SIZE(mx31ads_io_desc));
 }
 
+<<<<<<< HEAD
 static void __init mx31ads_init_irq(void)
 {
 	mx31_init_irq();
 	mx31ads_init_expio();
 }
 
+=======
+>>>>>>> v4.9.227
 static void __init mx31ads_init(void)
 {
 	imx31_soc_init();
 
+<<<<<<< HEAD
 	mxc_init_extuart();
 	mxc_init_imx_uart();
 	mxc_init_i2c();
 	mxc_init_audio();
+=======
+	mxc_init_imx_uart();
+	mxc_init_audio();
+}
+
+static void __init mx31ads_late(void)
+{
+	mx31ads_init_expio();
+	mxc_init_extuart();
+	mxc_init_i2c();
+>>>>>>> v4.9.227
 	mxc_init_ext_ethernet();
 }
 
@@ -581,8 +627,15 @@ MACHINE_START(MX31ADS, "Freescale MX31ADS")
 	.atag_offset = 0x100,
 	.map_io = mx31ads_map_io,
 	.init_early = imx31_init_early,
+<<<<<<< HEAD
 	.init_irq = mx31ads_init_irq,
 	.init_time	= mx31ads_timer_init,
 	.init_machine = mx31ads_init,
+=======
+	.init_irq	= mx31_init_irq,
+	.init_time	= mx31ads_timer_init,
+	.init_machine = mx31ads_init,
+	.init_late	= mx31ads_late,
+>>>>>>> v4.9.227
 	.restart	= mxc_restart,
 MACHINE_END

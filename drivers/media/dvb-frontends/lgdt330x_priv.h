@@ -69,9 +69,12 @@ enum I2C_REG {
 };
 
 #endif /* _LGDT330X_PRIV_ */
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> v4.9.227

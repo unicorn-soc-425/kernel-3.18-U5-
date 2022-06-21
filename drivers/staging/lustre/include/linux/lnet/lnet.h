@@ -15,21 +15,34 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
 /*
  * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
  * Use is subject to license terms.
+<<<<<<< HEAD
  */
 /*
  * This file is part of Lustre, http://www.lustre.org/
  * Lustre is a trademark of Sun Microsystems, Inc.
+=======
+ *
+ * Copyright (c) 2012 - 2015, Intel Corporation.
+ */
+/*
+ * This file is part of Lustre, http://www.lustre.org/
+ * Lustre is a trademark of Seagate, Inc.
+>>>>>>> v4.9.227
  */
 
 #ifndef __LNET_H__
@@ -40,6 +53,7 @@
  *
  * User application interface file
  */
+<<<<<<< HEAD
 #include "linux/lnet.h"
 
 #include "types.h"
@@ -47,5 +61,9 @@
 
 #define LNET_NIDSTR_COUNT  1024    /* # of nidstrings */
 #define LNET_NIDSTR_SIZE   32      /* size of each one (see below for usage) */
+=======
+#include "types.h"
+#include "nidstr.h"
+>>>>>>> v4.9.227
 
 #endif

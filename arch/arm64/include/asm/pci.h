@@ -7,8 +7,11 @@
 #include <linux/dma-mapping.h>
 
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm-generic/pci-bridge.h>
 #include <asm-generic/pci-dma-compat.h>
+=======
+>>>>>>> v4.9.227
 
 #define PCIBIOS_MIN_IO		0x1000
 #define PCIBIOS_MIN_MEM		0
@@ -27,6 +30,15 @@
 extern int isa_dma_bridge_buggy;
 
 #ifdef CONFIG_PCI
+<<<<<<< HEAD
+=======
+static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
+{
+	/* no legacy IRQ on arm64 */
+	return -ENODEV;
+}
+
+>>>>>>> v4.9.227
 static inline int pci_proc_domain(struct pci_bus *bus)
 {
 	return 1;
@@ -35,8 +47,11 @@ static inline int pci_proc_domain(struct pci_bus *bus)
 
 #endif  /* __KERNEL__ */
 #endif  /* __ASM_PCI_H */
+<<<<<<< HEAD
 
 #ifdef CONFIG_PCI_MSM
 #define arch_setup_msi_irqs arch_setup_msi_irqs
 #define arch_teardown_msi_irqs arch_teardown_msi_irqs
 #endif
+=======
+>>>>>>> v4.9.227

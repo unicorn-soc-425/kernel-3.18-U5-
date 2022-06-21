@@ -32,7 +32,13 @@
  * - trigger (input)
  *     A level change indicates the shut-down trigger. If it's state reverts
  *     within the time-out defined by trigger_delay, the shut down is not
+<<<<<<< HEAD
  *     executed.
+=======
+ *     executed. If no pin is assigned to this input, the driver will start the
+ *     watchdog toggle immediately. The chip will only power off the system if
+ *     it is requested to do so through the kill line.
+>>>>>>> v4.9.227
  *
  * - watchdog (output)
  *     Once a shut down is triggered, the driver will toggle this signal,
@@ -63,7 +69,11 @@
 #include <linux/gpio/consumer.h>
 #include <linux/reboot.h>
 
+<<<<<<< HEAD
 struct ltc2952_poweroff_data {
+=======
+struct ltc2952_poweroff {
+>>>>>>> v4.9.227
 	struct hrtimer timer_trigger;
 	struct hrtimer timer_wde;
 
@@ -72,6 +82,7 @@ struct ltc2952_poweroff_data {
 
 	struct device *dev;
 
+<<<<<<< HEAD
 	unsigned int virq;
 
 	/**
@@ -88,6 +99,23 @@ static struct ltc2952_poweroff_data *ltc2952_data;
 #define POWERPATH_IO_TRIGGER	0
 #define POWERPATH_IO_WATCHDOG	1
 #define POWERPATH_IO_KILL	2
+=======
+	struct gpio_desc *gpio_trigger;
+	struct gpio_desc *gpio_watchdog;
+	struct gpio_desc *gpio_kill;
+
+	bool kernel_panic;
+	struct notifier_block panic_notifier;
+};
+
+#define to_ltc2952(p, m) container_of(p, struct ltc2952_poweroff, m)
+
+/*
+ * This global variable is only needed for pm_power_off. We should
+ * remove it entirely once we don't need the global state anymore.
+ */
+static struct ltc2952_poweroff *ltc2952_data;
+>>>>>>> v4.9.227
 
 /**
  * ltc2952_poweroff_timer_wde - Timer callback
@@ -103,6 +131,7 @@ static enum hrtimer_restart ltc2952_poweroff_timer_wde(struct hrtimer *timer)
 	ktime_t now;
 	int state;
 	unsigned long overruns;
+<<<<<<< HEAD
 
 	if (ltc2952_poweroff_panic)
 		return HRTIMER_NORESTART;
@@ -112,10 +141,23 @@ static enum hrtimer_restart ltc2952_poweroff_timer_wde(struct hrtimer *timer)
 
 	now = hrtimer_cb_get_time(timer);
 	overruns = hrtimer_forward(timer, now, ltc2952_data->wde_interval);
+=======
+	struct ltc2952_poweroff *data = to_ltc2952(timer, timer_wde);
+
+	if (data->kernel_panic)
+		return HRTIMER_NORESTART;
+
+	state = gpiod_get_value(data->gpio_watchdog);
+	gpiod_set_value(data->gpio_watchdog, !state);
+
+	now = hrtimer_cb_get_time(timer);
+	overruns = hrtimer_forward(timer, now, data->wde_interval);
+>>>>>>> v4.9.227
 
 	return HRTIMER_RESTART;
 }
 
+<<<<<<< HEAD
 static enum hrtimer_restart ltc2952_poweroff_timer_trigger(
 	struct hrtimer *timer)
 {
@@ -138,6 +180,20 @@ static enum hrtimer_restart ltc2952_poweroff_timer_trigger(
 
 	dev_info(ltc2952_data->dev, "executing shutdown\n");
 
+=======
+static void ltc2952_poweroff_start_wde(struct ltc2952_poweroff *data)
+{
+	hrtimer_start(&data->timer_wde, data->wde_interval, HRTIMER_MODE_REL);
+}
+
+static enum hrtimer_restart
+ltc2952_poweroff_timer_trigger(struct hrtimer *timer)
+{
+	struct ltc2952_poweroff *data = to_ltc2952(timer, timer_trigger);
+
+	ltc2952_poweroff_start_wde(data);
+	dev_info(data->dev, "executing shutdown\n");
+>>>>>>> v4.9.227
 	orderly_poweroff(true);
 
 	return HRTIMER_NORESTART;
@@ -154,6 +210,7 @@ static enum hrtimer_restart ltc2952_poweroff_timer_trigger(
  */
 static irqreturn_t ltc2952_poweroff_handler(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	int ret;
 	struct ltc2952_poweroff_data *data = dev_id;
 
@@ -177,11 +234,27 @@ static irqreturn_t ltc2952_poweroff_handler(int irq, void *dev_id)
 	}
 
 irq_ok:
+=======
+	struct ltc2952_poweroff *data = dev_id;
+
+	if (data->kernel_panic || hrtimer_active(&data->timer_wde)) {
+		/* shutdown is already triggered, nothing to do any more */
+		return IRQ_HANDLED;
+	}
+
+	if (gpiod_get_value(data->gpio_trigger)) {
+		hrtimer_start(&data->timer_trigger, data->trigger_delay,
+			      HRTIMER_MODE_REL);
+	} else {
+		hrtimer_cancel(&data->timer_trigger);
+	}
+>>>>>>> v4.9.227
 	return IRQ_HANDLED;
 }
 
 static void ltc2952_poweroff_kill(void)
 {
+<<<<<<< HEAD
 	gpiod_set_value(ltc2952_data->gpio[POWERPATH_IO_KILL], 1);
 }
 
@@ -203,18 +276,33 @@ static void ltc2952_poweroff_default(struct ltc2952_poweroff_data *data)
 	for (i = 0; i < ARRAY_SIZE(data->gpio); i++)
 		data->gpio[i] = NULL;
 
+=======
+	gpiod_set_value(ltc2952_data->gpio_kill, 1);
+}
+
+static void ltc2952_poweroff_default(struct ltc2952_poweroff *data)
+{
+>>>>>>> v4.9.227
 	data->wde_interval = ktime_set(0, 300L*1E6L);
 	data->trigger_delay = ktime_set(2, 500L*1E6L);
 
 	hrtimer_init(&data->timer_trigger, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+<<<<<<< HEAD
 	data->timer_trigger.function = &ltc2952_poweroff_timer_trigger;
 
 	hrtimer_init(&data->timer_wde, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	data->timer_wde.function = &ltc2952_poweroff_timer_wde;
+=======
+	data->timer_trigger.function = ltc2952_poweroff_timer_trigger;
+
+	hrtimer_init(&data->timer_wde, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+	data->timer_wde.function = ltc2952_poweroff_timer_wde;
+>>>>>>> v4.9.227
 }
 
 static int ltc2952_poweroff_init(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int ret, virq;
 	unsigned int i;
 	struct ltc2952_poweroff_data *data;
@@ -281,17 +369,97 @@ err_io:
 			gpiod_put(ltc2952_data->gpio[i]);
 
 	return ret;
+=======
+	int ret;
+	struct ltc2952_poweroff *data = platform_get_drvdata(pdev);
+
+	ltc2952_poweroff_default(data);
+
+	data->gpio_watchdog = devm_gpiod_get(&pdev->dev, "watchdog",
+					     GPIOD_OUT_LOW);
+	if (IS_ERR(data->gpio_watchdog)) {
+		ret = PTR_ERR(data->gpio_watchdog);
+		dev_err(&pdev->dev, "unable to claim gpio \"watchdog\"\n");
+		return ret;
+	}
+
+	data->gpio_kill = devm_gpiod_get(&pdev->dev, "kill", GPIOD_OUT_LOW);
+	if (IS_ERR(data->gpio_kill)) {
+		ret = PTR_ERR(data->gpio_kill);
+		dev_err(&pdev->dev, "unable to claim gpio \"kill\"\n");
+		return ret;
+	}
+
+	data->gpio_trigger = devm_gpiod_get_optional(&pdev->dev, "trigger",
+						     GPIOD_IN);
+	if (IS_ERR(data->gpio_trigger)) {
+		/*
+		 * It's not a problem if the trigger gpio isn't available, but
+		 * it is worth a warning if its use was defined in the device
+		 * tree.
+		 */
+		dev_err(&pdev->dev, "unable to claim gpio \"trigger\"\n");
+		data->gpio_trigger = NULL;
+	}
+
+	if (devm_request_irq(&pdev->dev, gpiod_to_irq(data->gpio_trigger),
+			     ltc2952_poweroff_handler,
+			     (IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING),
+			     "ltc2952-poweroff",
+			     data)) {
+		/*
+		 * Some things may have happened:
+		 * - No trigger input was defined
+		 * - Claiming the GPIO failed
+		 * - We could not map to an IRQ
+		 * - We couldn't register an interrupt handler
+		 *
+		 * None of these really are problems, but all of them
+		 * disqualify the push button from controlling the power.
+		 *
+		 * It is therefore important to note that if the ltc2952
+		 * detects a button press for long enough, it will still start
+		 * its own powerdown window and cut the power on us if we don't
+		 * start the watchdog trigger.
+		 */
+		if (data->gpio_trigger) {
+			dev_warn(&pdev->dev,
+				 "unable to configure the trigger interrupt\n");
+			devm_gpiod_put(&pdev->dev, data->gpio_trigger);
+			data->gpio_trigger = NULL;
+		}
+		dev_info(&pdev->dev,
+			 "power down trigger input will not be used\n");
+		ltc2952_poweroff_start_wde(data);
+	}
+
+	return 0;
+}
+
+static int ltc2952_poweroff_notify_panic(struct notifier_block *nb,
+					 unsigned long code, void *unused)
+{
+	struct ltc2952_poweroff *data = to_ltc2952(nb, panic_notifier);
+
+	data->kernel_panic = true;
+	return NOTIFY_DONE;
+>>>>>>> v4.9.227
 }
 
 static int ltc2952_poweroff_probe(struct platform_device *pdev)
 {
 	int ret;
+<<<<<<< HEAD
+=======
+	struct ltc2952_poweroff *data;
+>>>>>>> v4.9.227
 
 	if (pm_power_off) {
 		dev_err(&pdev->dev, "pm_power_off already registered");
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
 	ltc2952_data = kzalloc(sizeof(*ltc2952_data), GFP_KERNEL);
 	if (!ltc2952_data)
 		return -ENOMEM;
@@ -311,10 +479,34 @@ static int ltc2952_poweroff_probe(struct platform_device *pdev)
 err:
 	kfree(ltc2952_data);
 	return ret;
+=======
+	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->dev = &pdev->dev;
+	platform_set_drvdata(pdev, data);
+
+	ret = ltc2952_poweroff_init(pdev);
+	if (ret)
+		return ret;
+
+	/* TODO: remove ltc2952_data */
+	ltc2952_data = data;
+	pm_power_off = ltc2952_poweroff_kill;
+
+	data->panic_notifier.notifier_call = ltc2952_poweroff_notify_panic;
+	atomic_notifier_chain_register(&panic_notifier_list,
+				       &data->panic_notifier);
+	dev_info(&pdev->dev, "probe successful\n");
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int ltc2952_poweroff_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	unsigned int i;
 
 	pm_power_off = NULL;
@@ -328,6 +520,15 @@ static int ltc2952_poweroff_remove(struct platform_device *pdev)
 		kfree(ltc2952_data);
 	}
 
+=======
+	struct ltc2952_poweroff *data = platform_get_drvdata(pdev);
+
+	pm_power_off = NULL;
+	hrtimer_cancel(&data->timer_trigger);
+	hrtimer_cancel(&data->timer_wde);
+	atomic_notifier_chain_unregister(&panic_notifier_list,
+					 &data->panic_notifier);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -342,6 +543,7 @@ static struct platform_driver ltc2952_poweroff_driver = {
 	.remove = ltc2952_poweroff_remove,
 	.driver = {
 		.name = "ltc2952-poweroff",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = of_ltc2952_poweroff_match,
 	},
@@ -380,6 +582,13 @@ static void __exit ltc2952_poweroff_platform_exit(void)
 
 module_init(ltc2952_poweroff_platform_init);
 module_exit(ltc2952_poweroff_platform_exit);
+=======
+		.of_match_table = of_ltc2952_poweroff_match,
+	},
+};
+
+module_platform_driver(ltc2952_poweroff_driver);
+>>>>>>> v4.9.227
 
 MODULE_AUTHOR("René Moll <rene.moll@xsens.com>");
 MODULE_DESCRIPTION("LTC PowerPath power-off driver");

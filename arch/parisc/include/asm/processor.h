@@ -192,6 +192,7 @@ void show_trace(struct task_struct *task, unsigned long *stack);
  */
 typedef unsigned int elf_caddr_t;
 
+<<<<<<< HEAD
 #define start_thread_som(regs, new_pc, new_sp) do {	\
 	unsigned long *sp = (unsigned long *)new_sp;	\
 	__u32 spaceid = (__u32)current->mm->context;	\
@@ -219,6 +220,8 @@ typedef unsigned int elf_caddr_t;
 	get_user(regs->gr[23],&sp[-3]); 		\
 } while(0)
 
+=======
+>>>>>>> v4.9.227
 /* The ELF abi wants things done a "wee bit" differently than
  * som does.  Supporting this behavior here avoids
  * having our own version of create_elf_tables.
@@ -330,8 +333,11 @@ struct mm_struct;
 /* Free all resources held by a thread. */
 extern void release_thread(struct task_struct *);
 
+<<<<<<< HEAD
 extern void map_hpux_gateway_page(struct task_struct *tsk, struct mm_struct *mm);
 
+=======
+>>>>>>> v4.9.227
 extern unsigned long get_wchan(struct task_struct *p);
 
 #define KSTK_EIP(tsk)	((tsk)->thread.regs.iaoq[0])
@@ -340,6 +346,7 @@ extern unsigned long get_wchan(struct task_struct *p);
 #define cpu_relax()	barrier()
 #define cpu_relax_lowlatency() cpu_relax()
 
+<<<<<<< HEAD
 /* Used as a macro to identify the combined VIPT/PIPT cached
  * CPUs which require a guarantee of coherency (no inequivalent
  * aliases with different data, whether clean or not) to operate */
@@ -352,6 +359,21 @@ static inline int parisc_requires_coherency(void)
 	return 0;
 #endif
 }
+=======
+/*
+ * parisc_requires_coherency() is used to identify the combined VIPT/PIPT
+ * cached CPUs which require a guarantee of coherency (no inequivalent aliases
+ * with different data, whether clean or not) to operate
+ */
+#ifdef CONFIG_PA8X00
+extern int _parisc_requires_coherency;
+#define parisc_requires_coherency()	_parisc_requires_coherency
+#else
+#define parisc_requires_coherency()	(0)
+#endif
+
+extern int running_on_qemu;
+>>>>>>> v4.9.227
 
 #endif /* __ASSEMBLY__ */
 

@@ -23,13 +23,21 @@
 #include <linux/pl320-ipc.h>
 #include <linux/of.h>
 #include <linux/of_irq.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/of_address.h>
 #include <linux/reboot.h>
 #include <linux/amba/bus.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 
 #include <asm/psci.h>
+=======
+#include <linux/psci.h>
+
+>>>>>>> v4.9.227
 #include <asm/hardware/cache-l2x0.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
@@ -163,13 +171,20 @@ static void __init highbank_init(void)
 
 	pl320_ipc_register_notifier(&hb_keys_nb);
 
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
 
+=======
+>>>>>>> v4.9.227
 	if (psci_ops.cpu_suspend)
 		platform_device_register(&highbank_cpuidle_device);
 }
 
+<<<<<<< HEAD
 static const char *highbank_match[] __initconst = {
+=======
+static const char *const highbank_match[] __initconst = {
+>>>>>>> v4.9.227
 	"calxeda,highbank",
 	"calxeda,ecx-2000",
 	NULL,

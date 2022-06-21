@@ -47,7 +47,11 @@ static void ics_rtas_unmask_irq(struct irq_data *d)
 	if (hw_irq == XICS_IPI || hw_irq == XICS_IRQ_SPURIOUS)
 		return;
 
+<<<<<<< HEAD
 	server = xics_get_irq_server(d->irq, d->affinity, 0);
+=======
+	server = xics_get_irq_server(d->irq, irq_data_get_affinity_mask(d), 0);
+>>>>>>> v4.9.227
 
 	call_status = rtas_call(ibm_set_xive, 3, 1, NULL, hw_irq, server,
 				DEFAULT_PRIORITY);
@@ -75,7 +79,11 @@ static unsigned int ics_rtas_startup(struct irq_data *d)
 	 * card, using the MSI mask bits. Firmware doesn't appear to unmask
 	 * at that level, so we do it here by hand.
 	 */
+<<<<<<< HEAD
 	if (d->msi_desc)
+=======
+	if (irq_data_get_msi_desc(d))
+>>>>>>> v4.9.227
 		pci_msi_unmask_irq(d);
 #endif
 	/* unmask it */
@@ -140,11 +148,16 @@ static int ics_rtas_set_affinity(struct irq_data *d,
 
 	irq_server = xics_get_irq_server(d->irq, cpumask, 1);
 	if (irq_server == -1) {
+<<<<<<< HEAD
 		char cpulist[128];
 		cpumask_scnprintf(cpulist, sizeof(cpulist), cpumask);
 		printk(KERN_WARNING
 			"%s: No online cpus in the mask %s for irq %d\n",
 			__func__, cpulist, d->irq);
+=======
+		pr_warning("%s: No online cpus in the mask %*pb for irq %d\n",
+			   __func__, cpumask_pr_args(cpumask), d->irq);
+>>>>>>> v4.9.227
 		return -1;
 	}
 
@@ -166,7 +179,13 @@ static struct irq_chip ics_rtas_irq_chip = {
 	.irq_mask = ics_rtas_mask_irq,
 	.irq_unmask = ics_rtas_unmask_irq,
 	.irq_eoi = NULL, /* Patched at init time */
+<<<<<<< HEAD
 	.irq_set_affinity = ics_rtas_set_affinity
+=======
+	.irq_set_affinity = ics_rtas_set_affinity,
+	.irq_set_type = xics_set_irq_type,
+	.irq_retrigger = xics_retrigger,
+>>>>>>> v4.9.227
 };
 
 static int ics_rtas_map(struct ics *ics, unsigned int virq)

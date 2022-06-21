@@ -359,6 +359,7 @@ static void shmob_drm_crtc_dpms(struct drm_crtc *crtc, int mode)
 	scrtc->dpms = mode;
 }
 
+<<<<<<< HEAD
 static bool shmob_drm_crtc_mode_fixup(struct drm_crtc *crtc,
 				      const struct drm_display_mode *mode,
 				      struct drm_display_mode *adjusted_mode)
@@ -366,6 +367,8 @@ static bool shmob_drm_crtc_mode_fixup(struct drm_crtc *crtc,
 	return true;
 }
 
+=======
+>>>>>>> v4.9.227
 static void shmob_drm_crtc_mode_prepare(struct drm_crtc *crtc)
 {
 	shmob_drm_crtc_dpms(crtc, DRM_MODE_DPMS_OFF);
@@ -431,13 +434,17 @@ static int shmob_drm_crtc_mode_set_base(struct drm_crtc *crtc, int x, int y,
 
 static const struct drm_crtc_helper_funcs crtc_helper_funcs = {
 	.dpms = shmob_drm_crtc_dpms,
+<<<<<<< HEAD
 	.mode_fixup = shmob_drm_crtc_mode_fixup,
+=======
+>>>>>>> v4.9.227
 	.prepare = shmob_drm_crtc_mode_prepare,
 	.commit = shmob_drm_crtc_mode_commit,
 	.mode_set = shmob_drm_crtc_mode_set,
 	.mode_set_base = shmob_drm_crtc_mode_set_base,
 };
 
+<<<<<<< HEAD
 void shmob_drm_crtc_cancel_page_flip(struct shmob_drm_crtc *scrtc,
 				     struct drm_file *file)
 {
@@ -458,6 +465,8 @@ void shmob_drm_crtc_cancel_page_flip(struct shmob_drm_crtc *scrtc,
 	spin_unlock_irqrestore(&dev->event_lock, flags);
 }
 
+=======
+>>>>>>> v4.9.227
 void shmob_drm_crtc_finish_page_flip(struct shmob_drm_crtc *scrtc)
 {
 	struct drm_pending_vblank_event *event;
@@ -468,8 +477,13 @@ void shmob_drm_crtc_finish_page_flip(struct shmob_drm_crtc *scrtc)
 	event = scrtc->event;
 	scrtc->event = NULL;
 	if (event) {
+<<<<<<< HEAD
 		drm_send_vblank_event(dev, 0, event);
 		drm_vblank_put(dev, 0);
+=======
+		drm_crtc_send_vblank_event(&scrtc->crtc, event);
+		drm_crtc_vblank_put(&scrtc->crtc);
+>>>>>>> v4.9.227
 	}
 	spin_unlock_irqrestore(&dev->event_lock, flags);
 }
@@ -495,7 +509,11 @@ static int shmob_drm_crtc_page_flip(struct drm_crtc *crtc,
 
 	if (event) {
 		event->pipe = 0;
+<<<<<<< HEAD
 		drm_vblank_get(dev, 0);
+=======
+		drm_crtc_vblank_get(&scrtc->crtc);
+>>>>>>> v4.9.227
 		spin_lock_irqsave(&dev->event_lock, flags);
 		scrtc->event = event;
 		spin_unlock_irqrestore(&dev->event_lock, flags);
@@ -613,7 +631,11 @@ int shmob_drm_encoder_create(struct shmob_drm_device *sdev)
 	encoder->possible_crtcs = 1;
 
 	ret = drm_encoder_init(sdev->ddev, encoder, &encoder_funcs,
+<<<<<<< HEAD
 			       DRM_MODE_ENCODER_LVDS);
+=======
+			       DRM_MODE_ENCODER_LVDS, NULL);
+>>>>>>> v4.9.227
 	if (ret < 0)
 		return ret;
 
@@ -739,8 +761,11 @@ int shmob_drm_connector_create(struct shmob_drm_device *sdev,
 	if (ret < 0)
 		goto err_backlight;
 
+<<<<<<< HEAD
 	connector->encoder = encoder;
 
+=======
+>>>>>>> v4.9.227
 	drm_helper_connector_dpms(connector, DRM_MODE_DPMS_OFF);
 	drm_object_property_set_value(&connector->base,
 		sdev->ddev->mode_config.dpms_property, DRM_MODE_DPMS_OFF);

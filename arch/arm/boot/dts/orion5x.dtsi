@@ -144,9 +144,16 @@
 
 			wdt: wdt@20300 {
 				compatible = "marvell,orion-wdt";
+<<<<<<< HEAD
 				reg = <0x20300 0x28>;
 				interrupt-parent = <&bridge_intc>;
 				interrupts = <3>;
+=======
+				reg = <0x20300 0x28>, <0x20108 0x4>;
+				interrupt-parent = <&bridge_intc>;
+				interrupts = <3>;
+				clocks = <&core_clk 0>;
+>>>>>>> v4.9.227
 				status = "okay";
 			};
 
@@ -212,6 +219,19 @@
 				status = "disabled";
 			};
 
+<<<<<<< HEAD
+=======
+			cesa: crypto@90000 {
+				compatible = "marvell,orion-crypto";
+				reg = <0x90000 0x10000>;
+				reg-names = "regs";
+				interrupts = <28>;
+				marvell,crypto-srams = <&crypto_sram>;
+				marvell,crypto-sram-size = <0x800>;
+				status = "okay";
+			};
+
+>>>>>>> v4.9.227
 			ehci1: ehci@a0000 {
 				compatible = "marvell,orion-ehci";
 				reg = <0xa0000 0x1000>;
@@ -220,6 +240,7 @@
 			};
 		};
 
+<<<<<<< HEAD
 		cesa: crypto@90000 {
 			compatible = "marvell,orion-crypto";
 			reg = <MBUS_ID(0xf0, 0x01) 0x90000 0x10000>,
@@ -227,6 +248,13 @@
 			reg-names = "regs", "sram";
 			interrupts = <28>;
 			status = "okay";
+=======
+		crypto_sram: sa-sram {
+			compatible = "mmio-sram";
+			reg = <MBUS_ID(0x09, 0x00) 0x0 0x800>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+>>>>>>> v4.9.227
 		};
 	};
 };

@@ -595,4 +595,8 @@ module_init(agp_via_init);
 module_exit(agp_via_cleanup);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+MODULE_AUTHOR("Dave Jones");
+>>>>>>> v4.9.227

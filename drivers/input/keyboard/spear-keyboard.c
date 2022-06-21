@@ -3,7 +3,11 @@
  * Based on omap-keypad driver
  *
  * Copyright (C) 2010 ST Microelectronics
+<<<<<<< HEAD
  * Rajeev Kumar<rajeev-dlh.kumar@st.com>
+=======
+ * Rajeev Kumar <rajeevkumar.linux@gmail.com>
+>>>>>>> v4.9.227
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -288,8 +292,12 @@ static int spear_kbd_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int spear_kbd_suspend(struct device *dev)
+=======
+static int __maybe_unused spear_kbd_suspend(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct spear_kbd *kbd = platform_get_drvdata(pdev);
@@ -342,7 +350,11 @@ static int spear_kbd_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int spear_kbd_resume(struct device *dev)
+=======
+static int __maybe_unused spear_kbd_resume(struct device *dev)
+>>>>>>> v4.9.227
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct spear_kbd *kbd = platform_get_drvdata(pdev);
@@ -368,7 +380,10 @@ static int spear_kbd_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v4.9.227
 
 static SIMPLE_DEV_PM_OPS(spear_kbd_pm_ops, spear_kbd_suspend, spear_kbd_resume);
 
@@ -385,7 +400,10 @@ static struct platform_driver spear_kbd_driver = {
 	.remove		= spear_kbd_remove,
 	.driver		= {
 		.name	= "keyboard",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm	= &spear_kbd_pm_ops,
 		.of_match_table = of_match_ptr(spear_kbd_id_table),
 	},

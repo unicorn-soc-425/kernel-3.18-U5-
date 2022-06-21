@@ -62,6 +62,13 @@
 		pinctrl-0 = <&pmx_gpio_19>;
 		pinctrl-names = "default";
 	};
+<<<<<<< HEAD
+=======
+
+	gpu-subsystem {
+		status = "okay";
+	};
+>>>>>>> v4.9.227
 };
 
 &uart0 { status = "okay"; };
@@ -74,11 +81,22 @@
 	reg = <1>;
 };
 
+<<<<<<< HEAD
+=======
+&gpu {
+	status = "okay";
+};
+
+>>>>>>> v4.9.227
 &i2c0 {
 	status = "okay";
 	clock-frequency = <100000>;
 
+<<<<<<< HEAD
 	si5351: clock-generator {
+=======
+	si5351: clock-generator@60 {
+>>>>>>> v4.9.227
 		compatible = "silabs,si5351a-msop";
 		reg = <0x60>;
 		#address-cells = <1>;
@@ -87,6 +105,10 @@
 
 		/* connect xtal input to 25MHz reference */
 		clocks = <&ref25>;
+<<<<<<< HEAD
+=======
+		clock-names = "xtal";
+>>>>>>> v4.9.227
 
 		/* connect xtal input as source of pll0 and pll1 */
 		silabs,pll-source = <0 0>, <1 0>;

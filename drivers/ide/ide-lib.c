@@ -148,8 +148,13 @@ u8 ide_dump_status(ide_drive_t *drive, const char *msg, u8 stat)
 			printk(KERN_CONT "DataRequest ");
 		if (stat & ATA_CORR)
 			printk(KERN_CONT "CorrectedError ");
+<<<<<<< HEAD
 		if (stat & ATA_IDX)
 			printk(KERN_CONT "Index ");
+=======
+		if (stat & ATA_SENSE)
+			printk(KERN_CONT "Sense ");
+>>>>>>> v4.9.227
 		if (stat & ATA_ERR)
 			printk(KERN_CONT "Error ");
 	}

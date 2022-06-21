@@ -31,12 +31,17 @@
 
 static void i915_save_display(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_i915_private *dev_priv = dev->dev_private;
+=======
+	struct drm_i915_private *dev_priv = to_i915(dev);
+>>>>>>> v4.9.227
 
 	/* Display arbitration control */
 	if (INTEL_INFO(dev)->gen <= 4)
 		dev_priv->regfile.saveDSPARB = I915_READ(DSPARB);
 
+<<<<<<< HEAD
 	/* LVDS state */
 	if (HAS_PCH_IBX(dev) || HAS_PCH_CPT(dev))
 		dev_priv->regfile.saveLVDS = I915_READ(PCH_LVDS);
@@ -56,6 +61,8 @@ static void i915_save_display(struct drm_device *dev)
 		dev_priv->regfile.savePP_DIVISOR = I915_READ(PP_DIVISOR);
 	}
 
+=======
+>>>>>>> v4.9.227
 	/* save FBC interval */
 	if (HAS_FBC(dev) && INTEL_INFO(dev)->gen <= 4 && !IS_G4X(dev))
 		dev_priv->regfile.saveFBC_CONTROL = I915_READ(FBC_CONTROL);
@@ -63,13 +70,18 @@ static void i915_save_display(struct drm_device *dev)
 
 static void i915_restore_display(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_i915_private *dev_priv = dev->dev_private;
 	u32 mask = 0xffffffff;
+=======
+	struct drm_i915_private *dev_priv = to_i915(dev);
+>>>>>>> v4.9.227
 
 	/* Display arbitration */
 	if (INTEL_INFO(dev)->gen <= 4)
 		I915_WRITE(DSPARB, dev_priv->regfile.saveDSPARB);
 
+<<<<<<< HEAD
 	mask = ~LVDS_PORT_EN;
 
 	/* LVDS state */
@@ -93,6 +105,10 @@ static void i915_restore_display(struct drm_device *dev)
 
 	/* only restore FBC info on the platform that supports FBC*/
 	intel_fbc_disable(dev_priv);
+=======
+	/* only restore FBC info on the platform that supports FBC*/
+	intel_fbc_global_disable(dev_priv);
+>>>>>>> v4.9.227
 
 	/* restore FBC interval */
 	if (HAS_FBC(dev) && INTEL_INFO(dev)->gen <= 4 && !IS_G4X(dev))
@@ -103,7 +119,12 @@ static void i915_restore_display(struct drm_device *dev)
 
 int i915_save_state(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_i915_private *dev_priv = dev->dev_private;
+=======
+	struct drm_i915_private *dev_priv = to_i915(dev);
+	struct pci_dev *pdev = dev_priv->drm.pdev;
+>>>>>>> v4.9.227
 	int i;
 
 	mutex_lock(&dev->struct_mutex);
@@ -111,7 +132,11 @@ int i915_save_state(struct drm_device *dev)
 	i915_save_display(dev);
 
 	if (IS_GEN4(dev))
+<<<<<<< HEAD
 		pci_read_config_word(dev->pdev, GCDGMBUS,
+=======
+		pci_read_config_word(pdev, GCDGMBUS,
+>>>>>>> v4.9.227
 				     &dev_priv->regfile.saveGCDGMBUS);
 
 	/* Cache mode state */
@@ -148,7 +173,12 @@ int i915_save_state(struct drm_device *dev)
 
 int i915_restore_state(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_i915_private *dev_priv = dev->dev_private;
+=======
+	struct drm_i915_private *dev_priv = to_i915(dev);
+	struct pci_dev *pdev = dev_priv->drm.pdev;
+>>>>>>> v4.9.227
 	int i;
 
 	mutex_lock(&dev->struct_mutex);
@@ -156,7 +186,11 @@ int i915_restore_state(struct drm_device *dev)
 	i915_gem_restore_fences(dev);
 
 	if (IS_GEN4(dev))
+<<<<<<< HEAD
 		pci_write_config_word(dev->pdev, GCDGMBUS,
+=======
+		pci_write_config_word(pdev, GCDGMBUS,
+>>>>>>> v4.9.227
 				      dev_priv->regfile.saveGCDGMBUS);
 	i915_restore_display(dev);
 

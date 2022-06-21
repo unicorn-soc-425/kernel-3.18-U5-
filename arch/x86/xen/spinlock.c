@@ -8,6 +8,10 @@
 #include <linux/log2.h>
 #include <linux/gfp.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/atomic.h>
+>>>>>>> v4.9.227
 
 #include <asm/paravirt.h>
 
@@ -17,6 +21,7 @@
 #include "xen-ops.h"
 #include "debugfs.h"
 
+<<<<<<< HEAD
 enum xen_contention_stat {
 	TAKEN_SLOW,
 	TAKEN_SLOW_PICKUP,
@@ -211,6 +216,50 @@ static void xen_unlock_kick(struct arch_spinlock *lock, __ticket_t next)
 			break;
 		}
 	}
+=======
+static DEFINE_PER_CPU(int, lock_kicker_irq) = -1;
+static DEFINE_PER_CPU(char *, irq_name);
+static DEFINE_PER_CPU(atomic_t, xen_qlock_wait_nest);
+static bool xen_pvspin = true;
+
+#include <asm/qspinlock.h>
+
+static void xen_qlock_kick(int cpu)
+{
+	int irq = per_cpu(lock_kicker_irq, cpu);
+
+	/* Don't kick if the target's kicker interrupt is not initialized. */
+	if (irq == -1)
+		return;
+
+	xen_send_IPI_one(cpu, XEN_SPIN_UNLOCK_VECTOR);
+}
+
+/*
+ * Halt the current CPU & release it back to the host
+ */
+static void xen_qlock_wait(u8 *byte, u8 val)
+{
+	int irq = __this_cpu_read(lock_kicker_irq);
+	atomic_t *nest_cnt = this_cpu_ptr(&xen_qlock_wait_nest);
+
+	/* If kicker interrupts not initialized yet, just spin */
+	if (irq == -1 || in_nmi())
+		return;
+
+	/* Detect reentry. */
+	atomic_inc(nest_cnt);
+
+	/* If irq pending already and no nested call clear it. */
+	if (atomic_read(nest_cnt) == 1 && xen_test_irq_pending(irq)) {
+		xen_clear_irq_pending(irq);
+	} else if (READ_ONCE(*byte) == val) {
+		/* Block until irq becomes pending (or a spurious wakeup) */
+		xen_poll_irq(irq);
+	}
+
+	atomic_dec(nest_cnt);
+>>>>>>> v4.9.227
 }
 
 static irqreturn_t dummy_handler(int irq, void *dev_id)
@@ -275,8 +324,17 @@ void __init xen_init_spinlocks(void)
 		return;
 	}
 	printk(KERN_DEBUG "xen: PV spinlocks enabled\n");
+<<<<<<< HEAD
 	pv_lock_ops.lock_spinning = PV_CALLEE_SAVE(xen_lock_spinning);
 	pv_lock_ops.unlock_kick = xen_unlock_kick;
+=======
+
+	__pv_init_lock_hash();
+	pv_lock_ops.queued_spin_lock_slowpath = __pv_queued_spin_lock_slowpath;
+	pv_lock_ops.queued_spin_unlock = PV_CALLEE_SAVE(__pv_queued_spin_unlock);
+	pv_lock_ops.wait = xen_qlock_wait;
+	pv_lock_ops.kick = xen_qlock_kick;
+>>>>>>> v4.9.227
 }
 
 /*
@@ -305,6 +363,7 @@ static __init int xen_parse_nopvspin(char *arg)
 }
 early_param("xen_nopvspin", xen_parse_nopvspin);
 
+<<<<<<< HEAD
 #ifdef CONFIG_XEN_DEBUG_FS
 
 static struct dentry *d_spin_debug;
@@ -346,3 +405,5 @@ static int __init xen_spinlock_debugfs(void)
 fs_initcall(xen_spinlock_debugfs);
 
 #endif	/* CONFIG_XEN_DEBUG_FS */
+=======
+>>>>>>> v4.9.227

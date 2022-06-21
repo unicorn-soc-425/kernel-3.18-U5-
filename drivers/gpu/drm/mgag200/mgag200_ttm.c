@@ -150,7 +150,12 @@ static int mgag200_bo_verify_access(struct ttm_buffer_object *bo, struct file *f
 {
 	struct mgag200_bo *mgabo = mgag200_bo(bo);
 
+<<<<<<< HEAD
 	return drm_vma_node_verify_access(&mgabo->gem.vma_node, filp);
+=======
+	return drm_vma_node_verify_access(&mgabo->gem.vma_node,
+					  filp->private_data);
+>>>>>>> v4.9.227
 }
 
 static int mgag200_ttm_io_mem_reserve(struct ttm_bo_device *bdev,
@@ -186,6 +191,7 @@ static void mgag200_ttm_io_mem_free(struct ttm_bo_device *bdev, struct ttm_mem_r
 {
 }
 
+<<<<<<< HEAD
 static int mgag200_bo_move(struct ttm_buffer_object *bo,
 		       bool evict, bool interruptible,
 		       bool no_wait_gpu,
@@ -197,6 +203,8 @@ static int mgag200_bo_move(struct ttm_buffer_object *bo,
 }
 
 
+=======
+>>>>>>> v4.9.227
 static void mgag200_ttm_backend_destroy(struct ttm_tt *tt)
 {
 	ttm_tt_fini(tt);
@@ -241,10 +249,19 @@ struct ttm_bo_driver mgag200_bo_driver = {
 	.ttm_tt_unpopulate = mgag200_ttm_tt_unpopulate,
 	.init_mem_type = mgag200_bo_init_mem_type,
 	.evict_flags = mgag200_bo_evict_flags,
+<<<<<<< HEAD
 	.move = mgag200_bo_move,
 	.verify_access = mgag200_bo_verify_access,
 	.io_mem_reserve = &mgag200_ttm_io_mem_reserve,
 	.io_mem_free = &mgag200_ttm_io_mem_free,
+=======
+	.move = NULL,
+	.verify_access = mgag200_bo_verify_access,
+	.io_mem_reserve = &mgag200_ttm_io_mem_reserve,
+	.io_mem_free = &mgag200_ttm_io_mem_free,
+	.lru_tail = &ttm_bo_default_lru_tail,
+	.swap_lru_tail = &ttm_bo_default_swap_lru_tail,
+>>>>>>> v4.9.227
 };
 
 int mgag200_mm_init(struct mga_device *mdev)
@@ -274,6 +291,12 @@ int mgag200_mm_init(struct mga_device *mdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	arch_io_reserve_memtype_wc(pci_resource_start(dev->pdev, 0),
+				   pci_resource_len(dev->pdev, 0));
+
+>>>>>>> v4.9.227
 	mdev->fb_mtrr = arch_phys_wc_add(pci_resource_start(dev->pdev, 0),
 					 pci_resource_len(dev->pdev, 0));
 
@@ -282,10 +305,20 @@ int mgag200_mm_init(struct mga_device *mdev)
 
 void mgag200_mm_fini(struct mga_device *mdev)
 {
+<<<<<<< HEAD
+=======
+	struct drm_device *dev = mdev->dev;
+
+>>>>>>> v4.9.227
 	ttm_bo_device_release(&mdev->ttm.bdev);
 
 	mgag200_ttm_global_release(mdev);
 
+<<<<<<< HEAD
+=======
+	arch_io_free_memtype_wc(pci_resource_start(dev->pdev, 0),
+				pci_resource_len(dev->pdev, 0));
+>>>>>>> v4.9.227
 	arch_phys_wc_del(mdev->fb_mtrr);
 	mdev->fb_mtrr = 0;
 }

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Author: Anil Kumar <anilk4.v@gmail.com>
+=======
+ * Author: Anthoine Bourgeois <anthoine.bourgeois@gmail.com>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -7,11 +11,16 @@
  */
 /dts-v1/;
 
+<<<<<<< HEAD
 #include "omap34xx.dtsi"
+=======
+#include "omap3-devkit8000-common.dtsi"
+>>>>>>> v4.9.227
 / {
 	model = "TimLL OMAP3 Devkit8000";
 	compatible = "timll,omap3-devkit8000", "ti,omap3";
 
+<<<<<<< HEAD
 	memory {
 		device_type = "memory";
 		reg = <0x80000000 0x10000000>;	/* 256 MB */
@@ -154,5 +163,10 @@
 			label = "File System";
 			reg = <0x680000 0xf980000>;
 		};
+=======
+	aliases {
+		display1 = &dvi0;
+		display2 = &tv0;
+>>>>>>> v4.9.227
 	};
 };

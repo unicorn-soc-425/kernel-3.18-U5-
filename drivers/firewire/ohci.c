@@ -689,8 +689,12 @@ static void ar_context_release(struct ar_context *ctx)
 {
 	unsigned int i;
 
+<<<<<<< HEAD
 	if (ctx->buffer)
 		vm_unmap_ram(ctx->buffer, AR_BUFFERS + AR_WRAPAROUND_PAGES);
+=======
+	vunmap(ctx->buffer);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < AR_BUFFERS; i++)
 		if (ctx->pages[i]) {
@@ -719,11 +723,14 @@ static inline unsigned int ar_next_buffer_index(unsigned int index)
 	return (index + 1) % AR_BUFFERS;
 }
 
+<<<<<<< HEAD
 static inline unsigned int ar_prev_buffer_index(unsigned int index)
 {
 	return (index - 1 + AR_BUFFERS) % AR_BUFFERS;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline unsigned int ar_first_buffer_index(struct ar_context *ctx)
 {
 	return ar_next_buffer_index(ctx->last_buffer_index);
@@ -1018,8 +1025,12 @@ static int ar_context_init(struct ar_context *ctx, struct fw_ohci *ohci,
 		pages[i]              = ctx->pages[i];
 	for (i = 0; i < AR_WRAPAROUND_PAGES; i++)
 		pages[AR_BUFFERS + i] = ctx->pages[i];
+<<<<<<< HEAD
 	ctx->buffer = vm_map_ram(pages, AR_BUFFERS + AR_WRAPAROUND_PAGES,
 				 -1, PAGE_KERNEL);
+=======
+	ctx->buffer = vmap(pages, ARRAY_SIZE(pages), VM_MAP, PAGE_KERNEL);
+>>>>>>> v4.9.227
 	if (!ctx->buffer)
 		goto out_of_memory;
 
@@ -2291,9 +2302,16 @@ static int ohci_enable(struct fw_card *card,
 	u32 lps, version, irqs;
 	int i, ret;
 
+<<<<<<< HEAD
 	if (software_reset(ohci)) {
 		ohci_err(ohci, "failed to reset ohci card\n");
 		return -EBUSY;
+=======
+	ret = software_reset(ohci);
+	if (ret < 0) {
+		ohci_err(ohci, "failed to reset ohci card\n");
+		return ret;
+>>>>>>> v4.9.227
 	}
 
 	/*

@@ -134,6 +134,19 @@ void __init check_wait(void)
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * MIPSr6 specifies that masked interrupts should unblock an executing
+	 * wait instruction, and thus that it is safe for us to use
+	 * r4k_wait_irqoff. Yippee!
+	 */
+	if (cpu_has_mips_r6) {
+		cpu_wait = r4k_wait_irqoff;
+		return;
+	}
+
+>>>>>>> v4.9.227
 	switch (current_cpu_type()) {
 	case CPU_R3081:
 	case CPU_R3081E:
@@ -155,12 +168,19 @@ void __init check_wait(void)
 	case CPU_4KEC:
 	case CPU_4KSC:
 	case CPU_5KC:
+<<<<<<< HEAD
+=======
+	case CPU_5KE:
+>>>>>>> v4.9.227
 	case CPU_25KF:
 	case CPU_PR4450:
 	case CPU_BMIPS3300:
 	case CPU_BMIPS4350:
 	case CPU_BMIPS4380:
+<<<<<<< HEAD
 	case CPU_BMIPS5000:
+=======
+>>>>>>> v4.9.227
 	case CPU_CAVIUM_OCTEON:
 	case CPU_CAVIUM_OCTEON_PLUS:
 	case CPU_CAVIUM_OCTEON2:
@@ -171,11 +191,36 @@ void __init check_wait(void)
 	case CPU_XLP:
 		cpu_wait = r4k_wait;
 		break;
+<<<<<<< HEAD
 
+=======
+	case CPU_LOONGSON3:
+		if ((c->processor_id & PRID_REV_MASK) >= PRID_REV_LOONGSON3A_R2)
+			cpu_wait = r4k_wait;
+		break;
+
+	case CPU_BMIPS5000:
+		cpu_wait = r4k_wait_irqoff;
+		break;
+>>>>>>> v4.9.227
 	case CPU_RM7000:
 		cpu_wait = rm7k_wait_irqoff;
 		break;
 
+<<<<<<< HEAD
+=======
+	case CPU_PROAPTIV:
+	case CPU_P5600:
+		/*
+		 * Incoming Fast Debug Channel (FDC) data during a wait
+		 * instruction causes the wait never to resume, even if an
+		 * interrupt is received. Avoid using wait at all if FDC data is
+		 * likely to be received.
+		 */
+		if (IS_ENABLED(CONFIG_MIPS_EJTAG_FDC_TTY))
+			break;
+		/* fall through */
+>>>>>>> v4.9.227
 	case CPU_M14KC:
 	case CPU_M14KEC:
 	case CPU_24K:
@@ -183,9 +228,14 @@ void __init check_wait(void)
 	case CPU_1004K:
 	case CPU_1074K:
 	case CPU_INTERAPTIV:
+<<<<<<< HEAD
 	case CPU_PROAPTIV:
 	case CPU_P5600:
 	case CPU_M5150:
+=======
+	case CPU_M5150:
+	case CPU_QEMU_GENERIC:
+>>>>>>> v4.9.227
 		cpu_wait = r4k_wait;
 		if (read_c0_config7() & MIPS_CONF7_WII)
 			cpu_wait = r4k_wait_irqoff;

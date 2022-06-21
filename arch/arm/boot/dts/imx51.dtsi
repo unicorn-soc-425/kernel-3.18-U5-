@@ -214,7 +214,13 @@
 					compatible = "fsl,imx51-ssi", "fsl,imx21-ssi";
 					reg = <0x70014000 0x4000>;
 					interrupts = <30>;
+<<<<<<< HEAD
 					clocks = <&clks IMX5_CLK_SSI2_IPG_GATE>;
+=======
+					clocks = <&clks IMX5_CLK_SSI2_IPG_GATE>,
+						 <&clks IMX5_CLK_SSI2_ROOT_GATE>;
+					clock-names = "ipg", "baud";
+>>>>>>> v4.9.227
 					dmas = <&sdma 24 1 0>,
 					       <&sdma 25 1 0>;
 					dma-names = "rx", "tx";
@@ -263,6 +269,10 @@
 				interrupts = <14>;
 				clocks = <&clks IMX5_CLK_USBOH3_GATE>;
 				fsl,usbmisc = <&usbmisc 1>;
+<<<<<<< HEAD
+=======
+				dr_mode = "host";
+>>>>>>> v4.9.227
 				status = "disabled";
 			};
 
@@ -272,6 +282,10 @@
 				interrupts = <16>;
 				clocks = <&clks IMX5_CLK_USBOH3_GATE>;
 				fsl,usbmisc = <&usbmisc 2>;
+<<<<<<< HEAD
+=======
+				dr_mode = "host";
+>>>>>>> v4.9.227
 				status = "disabled";
 			};
 
@@ -281,6 +295,10 @@
 				interrupts = <17>;
 				clocks = <&clks IMX5_CLK_USBOH3_GATE>;
 				fsl,usbmisc = <&usbmisc 3>;
+<<<<<<< HEAD
+=======
+				dr_mode = "host";
+>>>>>>> v4.9.227
 				status = "disabled";
 			};
 
@@ -504,7 +522,13 @@
 				compatible = "fsl,imx51-ssi", "fsl,imx21-ssi";
 				reg = <0x83fcc000 0x4000>;
 				interrupts = <29>;
+<<<<<<< HEAD
 				clocks = <&clks IMX5_CLK_SSI1_IPG_GATE>;
+=======
+				clocks = <&clks IMX5_CLK_SSI1_IPG_GATE>,
+					 <&clks IMX5_CLK_SSI1_ROOT_GATE>;
+				clock-names = "ipg", "baud";
+>>>>>>> v4.9.227
 				dmas = <&sdma 28 0 0>,
 				       <&sdma 29 0 0>;
 				dma-names = "rx", "tx";
@@ -560,7 +584,13 @@
 				compatible = "fsl,imx51-ssi", "fsl,imx21-ssi";
 				reg = <0x83fe8000 0x4000>;
 				interrupts = <96>;
+<<<<<<< HEAD
 				clocks = <&clks IMX5_CLK_SSI3_IPG_GATE>;
+=======
+				clocks = <&clks IMX5_CLK_SSI3_IPG_GATE>,
+					 <&clks IMX5_CLK_SSI3_ROOT_GATE>;
+				clock-names = "ipg", "baud";
+>>>>>>> v4.9.227
 				dmas = <&sdma 46 0 0>,
 				       <&sdma 47 0 0>;
 				dma-names = "rx", "tx";

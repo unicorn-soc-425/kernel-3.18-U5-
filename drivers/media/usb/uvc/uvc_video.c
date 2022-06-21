@@ -119,6 +119,17 @@ static void uvc_fixup_video_ctrl(struct uvc_streaming *stream,
 		ctrl->dwMaxVideoFrameSize =
 			frame->dwMaxVideoFrameBufferSize;
 
+<<<<<<< HEAD
+=======
+	/* The "TOSHIBA Web Camera - 5M" Chicony device (04f2:b50b) seems to
+	 * compute the bandwidth on 16 bits and erroneously sign-extend it to
+	 * 32 bits, resulting in a huge bandwidth value. Detect and fix that
+	 * condition by setting the 16 MSBs to 0 when they're all equal to 1.
+	 */
+	if ((ctrl->dwMaxPayloadTransferSize & 0xffff0000) == 0xffff0000)
+		ctrl->dwMaxPayloadTransferSize &= ~0xffff0000;
+
+>>>>>>> v4.9.227
 	if (!(format->flags & UVC_FMT_FLAG_COMPRESSED) &&
 	    stream->dev->quirks & UVC_QUIRK_FIX_BANDWIDTH &&
 	    stream->intf->num_altsetting > 1) {
@@ -610,7 +621,11 @@ static u16 uvc_video_clock_host_sof(const struct uvc_clock_sample *sample)
  * timestamp of the sliding window to 1s.
  */
 void uvc_video_clock_update(struct uvc_streaming *stream,
+<<<<<<< HEAD
 			    struct v4l2_buffer *v4l2_buf,
+=======
+			    struct vb2_v4l2_buffer *vbuf,
+>>>>>>> v4.9.227
 			    struct uvc_buffer *buf)
 {
 	struct uvc_clock *clock = &stream->clock;
@@ -627,6 +642,20 @@ void uvc_video_clock_update(struct uvc_streaming *stream,
 	u32 rem;
 	u64 y;
 
+<<<<<<< HEAD
+=======
+	if (!uvc_hw_timestamps_param)
+		return;
+
+	/*
+	 * We will get called from __vb2_queue_cancel() if there are buffers
+	 * done but not dequeued by the user, but the sample array has already
+	 * been released at that time. Just bail out in that case.
+	 */
+	if (!clock->samples)
+		return;
+
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&clock->lock, flags);
 
 	if (clock->count < clock->size)
@@ -695,6 +724,7 @@ void uvc_video_clock_update(struct uvc_streaming *stream,
 		ts.tv_nsec -= NSEC_PER_SEC;
 	}
 
+<<<<<<< HEAD
 	uvc_trace(UVC_TRACE_CLOCK, "%s: SOF %u.%06llu y %llu ts %lu.%06lu "
 		  "buf ts %lu.%06lu (x1 %u/%u/%u x2 %u/%u/%u y1 %u y2 %u)\n",
 		  stream->dev->name,
@@ -702,15 +732,29 @@ void uvc_video_clock_update(struct uvc_streaming *stream,
 		  y, ts.tv_sec, ts.tv_nsec / NSEC_PER_USEC,
 		  v4l2_buf->timestamp.tv_sec,
 		  (unsigned long)v4l2_buf->timestamp.tv_usec,
+=======
+	uvc_trace(UVC_TRACE_CLOCK, "%s: SOF %u.%06llu y %llu ts %llu "
+		  "buf ts %llu (x1 %u/%u/%u x2 %u/%u/%u y1 %u y2 %u)\n",
+		  stream->dev->name,
+		  sof >> 16, div_u64(((u64)sof & 0xffff) * 1000000LLU, 65536),
+		  y, timespec_to_ns(&ts), vbuf->vb2_buf.timestamp,
+>>>>>>> v4.9.227
 		  x1, first->host_sof, first->dev_sof,
 		  x2, last->host_sof, last->dev_sof, y1, y2);
 
 	/* Update the V4L2 buffer. */
+<<<<<<< HEAD
 	v4l2_buf->timestamp.tv_sec = ts.tv_sec;
 	v4l2_buf->timestamp.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
 
 done:
 	spin_unlock_irqrestore(&stream->clock.lock, flags);
+=======
+	vbuf->vb2_buf.timestamp = timespec_to_ns(&ts);
+
+done:
+	spin_unlock_irqrestore(&clock->lock, flags);
+>>>>>>> v4.9.227
 }
 
 /* ------------------------------------------------------------------------
@@ -1033,10 +1077,16 @@ static int uvc_video_decode_start(struct uvc_streaming *stream,
 
 		uvc_video_get_ts(&ts);
 
+<<<<<<< HEAD
 		buf->buf.v4l2_buf.sequence = stream->sequence;
 		buf->buf.v4l2_buf.timestamp.tv_sec = ts.tv_sec;
 		buf->buf.v4l2_buf.timestamp.tv_usec =
 			ts.tv_nsec / NSEC_PER_USEC;
+=======
+		buf->buf.field = V4L2_FIELD_NONE;
+		buf->buf.sequence = stream->sequence;
+		buf->buf.vb2_buf.timestamp = timespec_to_ns(&ts);
+>>>>>>> v4.9.227
 
 		/* TODO: Handle PTS and SCR. */
 		buf->state = UVC_BUF_STATE_ACTIVE;
@@ -1308,7 +1358,11 @@ static void uvc_video_encode_bulk(struct urb *urb, struct uvc_streaming *stream,
 		if (buf->bytesused == stream->queue.buf_used) {
 			stream->queue.buf_used = 0;
 			buf->state = UVC_BUF_STATE_READY;
+<<<<<<< HEAD
 			buf->buf.v4l2_buf.sequence = ++stream->sequence;
+=======
+			buf->buf.sequence = ++stream->sequence;
+>>>>>>> v4.9.227
 			uvc_queue_next_buffer(&stream->queue, buf);
 			stream->last_fid ^= UVC_STREAM_FID;
 		}
@@ -1475,6 +1529,10 @@ static unsigned int uvc_endpoint_max_bpi(struct usb_device *dev,
 
 	switch (dev->speed) {
 	case USB_SPEED_SUPER:
+<<<<<<< HEAD
+=======
+	case USB_SPEED_SUPER_PLUS:
+>>>>>>> v4.9.227
 		return le16_to_cpu(ep->ss_ep_comp.wBytesPerInterval);
 	case USB_SPEED_HIGH:
 		psize = usb_endpoint_maxp(&ep->desc);
@@ -1745,6 +1803,7 @@ int uvc_video_resume(struct uvc_streaming *stream, int reset)
 
 	uvc_video_clock_reset(stream);
 
+<<<<<<< HEAD
 	ret = uvc_commit_video(stream, &stream->ctrl);
 	if (ret < 0) {
 		uvc_queue_enable(&stream->queue, 0);
@@ -1759,6 +1818,16 @@ int uvc_video_resume(struct uvc_streaming *stream, int reset)
 		uvc_queue_enable(&stream->queue, 0);
 
 	return ret;
+=======
+	if (!uvc_queue_streaming(&stream->queue))
+		return 0;
+
+	ret = uvc_commit_video(stream, &stream->ctrl);
+	if (ret < 0)
+		return ret;
+
+	return uvc_init_video(stream, GFP_NOIO);
+>>>>>>> v4.9.227
 }
 
 /* ------------------------------------------------------------------------
@@ -1790,11 +1859,14 @@ int uvc_video_init(struct uvc_streaming *stream)
 
 	atomic_set(&stream->active, 0);
 
+<<<<<<< HEAD
 	/* Initialize the video buffers queue. */
 	ret = uvc_queue_init(&stream->queue, stream->type, !uvc_no_drop_param);
 	if (ret)
 		return ret;
 
+=======
+>>>>>>> v4.9.227
 	/* Alternate setting 0 should be the default, yet the XBox Live Vision
 	 * Cam (and possibly other devices) crash or otherwise misbehave if
 	 * they don't receive a SET_INTERFACE request before any other video
@@ -1901,7 +1973,10 @@ int uvc_video_enable(struct uvc_streaming *stream, int enable)
 			usb_clear_halt(stream->dev->udev, pipe);
 		}
 
+<<<<<<< HEAD
 		uvc_queue_enable(&stream->queue, 0);
+=======
+>>>>>>> v4.9.227
 		uvc_video_clock_cleanup(stream);
 		return 0;
 	}
@@ -1910,10 +1985,13 @@ int uvc_video_enable(struct uvc_streaming *stream, int enable)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	ret = uvc_queue_enable(&stream->queue, 1);
 	if (ret < 0)
 		goto error_queue;
 
+=======
+>>>>>>> v4.9.227
 	/* Commit the streaming parameters. */
 	ret = uvc_commit_video(stream, &stream->ctrl);
 	if (ret < 0)
@@ -1928,8 +2006,11 @@ int uvc_video_enable(struct uvc_streaming *stream, int enable)
 error_video:
 	usb_set_interface(stream->dev->udev, stream->intfnum, 0);
 error_commit:
+<<<<<<< HEAD
 	uvc_queue_enable(&stream->queue, 0);
 error_queue:
+=======
+>>>>>>> v4.9.227
 	uvc_video_clock_cleanup(stream);
 
 	return ret;

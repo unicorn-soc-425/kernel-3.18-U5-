@@ -33,6 +33,7 @@
 #include <asm/mach/pci.h>
 #include <mach/hardware.h>
 
+<<<<<<< HEAD
 #include <mach/devices.h>
 #include <mach/regs-pci.h>
 
@@ -40,6 +41,13 @@
 static int pci_dbg;
 static int pci_cfg_dbg;
 
+=======
+#include "devices.h"
+#include "regs-pci.h"
+
+
+static int pci_dbg;
+>>>>>>> v4.9.227
 
 static void ks8695_pci_setupconfig(unsigned int bus_nr, unsigned int devfn, unsigned int where)
 {
@@ -59,6 +67,7 @@ static void ks8695_pci_setupconfig(unsigned int bus_nr, unsigned int devfn, unsi
 	}
 }
 
+<<<<<<< HEAD
 
 /*
  * The KS8695 datasheet prohibits anything other than 32bit accesses
@@ -128,6 +137,13 @@ static int ks8695_pci_writeconfig(struct pci_bus *bus,
 	}
 
 	return PCIBIOS_SUCCESSFUL;
+=======
+static void __iomem *ks8695_pci_map_bus(struct pci_bus *bus, unsigned int devfn,
+					int where)
+{
+	ks8695_pci_setupconfig(bus->number, devfn, where);
+	return KS8695_PCI_VA +  KS8695_PBCD;
+>>>>>>> v4.9.227
 }
 
 static void ks8695_local_writeconfig(int where, u32 value)
@@ -137,8 +153,14 @@ static void ks8695_local_writeconfig(int where, u32 value)
 }
 
 static struct pci_ops ks8695_pci_ops = {
+<<<<<<< HEAD
 	.read	= ks8695_pci_readconfig,
 	.write	= ks8695_pci_writeconfig,
+=======
+	.map_bus = ks8695_pci_map_bus,
+	.read	= pci_generic_config_read32,
+	.write	= pci_generic_config_write32,
+>>>>>>> v4.9.227
 };
 
 static struct resource pci_mem = {

@@ -30,6 +30,10 @@
 
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
+=======
+#include <linux/kfifo.h>
+>>>>>>> v4.9.227
 #include <linux/sched.h>
 #include <linux/export.h>
 #include <linux/slab.h>
@@ -165,6 +169,10 @@ static const struct hid_usage_entry hid_usage_table[] = {
     {0, 0x53, "DeviceIndex"},
     {0, 0x54, "ContactCount"},
     {0, 0x55, "ContactMaximumNumber"},
+<<<<<<< HEAD
+=======
+    {0, 0x59, "ButtonType"},
+>>>>>>> v4.9.227
     {0, 0x5A, "SecondaryBarrelSwitch"},
     {0, 0x5B, "TransducerSerialNumber"},
   { 15, 0, "PhysicalInterfaceDevice" },
@@ -454,7 +462,11 @@ static char *resolv_usage_page(unsigned page, struct seq_file *f) {
 	char *buf = NULL;
 
 	if (!f) {
+<<<<<<< HEAD
 		buf = kzalloc(sizeof(char) * HID_DEBUG_BUFSIZE, GFP_ATOMIC);
+=======
+		buf = kzalloc(HID_DEBUG_BUFSIZE, GFP_ATOMIC);
+>>>>>>> v4.9.227
 		if (!buf)
 			return ERR_PTR(-ENOMEM);
 	}
@@ -658,17 +670,25 @@ EXPORT_SYMBOL_GPL(hid_dump_device);
 /* enqueue string to 'events' ring buffer */
 void hid_debug_event(struct hid_device *hdev, char *buf)
 {
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> v4.9.227
 	struct hid_debug_list *list;
 	unsigned long flags;
 
 	spin_lock_irqsave(&hdev->debug_list_lock, flags);
+<<<<<<< HEAD
 	list_for_each_entry(list, &hdev->debug_list, node) {
 		for (i = 0; i < strlen(buf); i++)
 			list->hid_debug_buf[(list->tail + i) % HID_DEBUG_BUFSIZE] =
 				buf[i];
 		list->tail = (list->tail + i) % HID_DEBUG_BUFSIZE;
         }
+=======
+	list_for_each_entry(list, &hdev->debug_list, node)
+		kfifo_in(&list->hid_debug_fifo, buf, strlen(buf));
+>>>>>>> v4.9.227
 	spin_unlock_irqrestore(&hdev->debug_list_lock, flags);
 
 	wake_up_interruptible(&hdev->debug_wait);
@@ -719,8 +739,12 @@ void hid_dump_input(struct hid_device *hdev, struct hid_usage *usage, __s32 valu
 	hid_debug_event(hdev, buf);
 
 	kfree(buf);
+<<<<<<< HEAD
         wake_up_interruptible(&hdev->debug_wait);
 
+=======
+	wake_up_interruptible(&hdev->debug_wait);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(hid_dump_input);
 
@@ -814,7 +838,11 @@ static const char *keys[KEY_MAX + 1] = {
 	[KEY_DELETEFILE] = "DeleteFile",	[KEY_XFER] = "X-fer",
 	[KEY_PROG1] = "Prog1",			[KEY_PROG2] = "Prog2",
 	[KEY_WWW] = "WWW",			[KEY_MSDOS] = "MSDOS",
+<<<<<<< HEAD
 	[KEY_COFFEE] = "Coffee",		[KEY_DIRECTION] = "Direction",
+=======
+	[KEY_COFFEE] = "Coffee",		[KEY_ROTATE_DISPLAY] = "RotateDisplay",
+>>>>>>> v4.9.227
 	[KEY_CYCLEWINDOWS] = "CycleWindows",	[KEY_MAIL] = "Mail",
 	[KEY_BOOKMARKS] = "Bookmarks",		[KEY_COMPUTER] = "Computer",
 	[KEY_BACK] = "Back",			[KEY_FORWARD] = "Forward",
@@ -1062,10 +1090,21 @@ static int hid_debug_rdesc_show(struct seq_file *f, void *p)
 	seq_printf(f, "\n\n");
 
 	/* dump parsed data and input mappings */
+<<<<<<< HEAD
+=======
+	if (down_interruptible(&hdev->driver_input_lock))
+		return 0;
+
+>>>>>>> v4.9.227
 	hid_dump_device(hdev, f);
 	seq_printf(f, "\n");
 	hid_dump_input_mapping(hdev, f);
 
+<<<<<<< HEAD
+=======
+	up(&hdev->driver_input_lock);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -1085,8 +1124,13 @@ static int hid_debug_events_open(struct inode *inode, struct file *file)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (!(list->hid_debug_buf = kzalloc(sizeof(char) * HID_DEBUG_BUFSIZE, GFP_KERNEL))) {
 		err = -ENOMEM;
+=======
+	err = kfifo_alloc(&list->hid_debug_fifo, HID_DEBUG_FIFOSIZE, GFP_KERNEL);
+	if (err) {
+>>>>>>> v4.9.227
 		kfree(list);
 		goto out;
 	}
@@ -1106,6 +1150,7 @@ static ssize_t hid_debug_events_read(struct file *file, char __user *buffer,
 		size_t count, loff_t *ppos)
 {
 	struct hid_debug_list *list = file->private_data;
+<<<<<<< HEAD
 	int ret = 0, len;
 	DECLARE_WAITQUEUE(wait, current);
 
@@ -1176,6 +1221,59 @@ copy_rest:
 		}
 
 	}
+=======
+	int ret = 0, copied;
+	DECLARE_WAITQUEUE(wait, current);
+
+	mutex_lock(&list->read_mutex);
+	if (kfifo_is_empty(&list->hid_debug_fifo)) {
+		add_wait_queue(&list->hdev->debug_wait, &wait);
+		set_current_state(TASK_INTERRUPTIBLE);
+
+		while (kfifo_is_empty(&list->hid_debug_fifo)) {
+			if (file->f_flags & O_NONBLOCK) {
+				ret = -EAGAIN;
+				break;
+			}
+
+			if (signal_pending(current)) {
+				ret = -ERESTARTSYS;
+				break;
+			}
+
+			/* if list->hdev is NULL we cannot remove_wait_queue().
+			 * if list->hdev->debug is 0 then hid_debug_unregister()
+			 * was already called and list->hdev is being destroyed.
+			 * if we add remove_wait_queue() here we can hit a race.
+			 */
+			if (!list->hdev || !list->hdev->debug) {
+				ret = -EIO;
+				set_current_state(TASK_RUNNING);
+				goto out;
+			}
+
+			/* allow O_NONBLOCK from other threads */
+			mutex_unlock(&list->read_mutex);
+			schedule();
+			mutex_lock(&list->read_mutex);
+			set_current_state(TASK_INTERRUPTIBLE);
+		}
+
+		__set_current_state(TASK_RUNNING);
+		remove_wait_queue(&list->hdev->debug_wait, &wait);
+
+		if (ret)
+			goto out;
+	}
+
+	/* pass the fifo content to userspace, locking is not needed with only
+	 * one concurrent reader and one concurrent writer
+	 */
+	ret = kfifo_to_user(&list->hid_debug_fifo, buffer, count, &copied);
+	if (ret)
+		goto out;
+	ret = copied;
+>>>>>>> v4.9.227
 out:
 	mutex_unlock(&list->read_mutex);
 	return ret;
@@ -1186,7 +1284,11 @@ static unsigned int hid_debug_events_poll(struct file *file, poll_table *wait)
 	struct hid_debug_list *list = file->private_data;
 
 	poll_wait(file, &list->hdev->debug_wait, wait);
+<<<<<<< HEAD
 	if (list->head != list->tail)
+=======
+	if (!kfifo_is_empty(&list->hid_debug_fifo))
+>>>>>>> v4.9.227
 		return POLLIN | POLLRDNORM;
 	if (!list->hdev->debug)
 		return POLLERR | POLLHUP;
@@ -1201,7 +1303,11 @@ static int hid_debug_events_release(struct inode *inode, struct file *file)
 	spin_lock_irqsave(&list->hdev->debug_list_lock, flags);
 	list_del(&list->node);
 	spin_unlock_irqrestore(&list->hdev->debug_list_lock, flags);
+<<<<<<< HEAD
 	kfree(list->hid_debug_buf);
+=======
+	kfifo_free(&list->hid_debug_fifo);
+>>>>>>> v4.9.227
 	kfree(list);
 
 	return 0;
@@ -1252,4 +1358,7 @@ void hid_debug_exit(void)
 {
 	debugfs_remove_recursive(hid_debug_root);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4.9.227

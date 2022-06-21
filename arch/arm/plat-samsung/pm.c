@@ -23,6 +23,7 @@
 #include <asm/cacheflush.h>
 #include <asm/suspend.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_SAMSUNG_ATAGS
 #include <mach/map.h>
 #ifndef CONFIG_ARCH_EXYNOS
@@ -31,6 +32,12 @@
 #endif
 #include <mach/irqs.h>
 #endif
+=======
+#include <mach/map.h>
+#include <mach/regs-clock.h>
+#include <mach/regs-irq.h>
+#include <mach/irqs.h>
+>>>>>>> v4.9.227
 
 #include <asm/irq.h>
 
@@ -65,6 +72,7 @@ int s3c_irqext_wake(struct irq_data *data, unsigned int state)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* s3c2410_pm_show_resume_irqs
  *
  * print any IRQs asserted at resume time (ie, we woke from)
@@ -85,6 +93,8 @@ static void __maybe_unused s3c_pm_show_resume_irqs(int start,
 }
 
 
+=======
+>>>>>>> v4.9.227
 void (*pm_cpu_prep)(void);
 int (*pm_cpu_sleep)(unsigned long);
 

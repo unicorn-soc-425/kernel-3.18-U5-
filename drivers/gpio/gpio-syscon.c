@@ -59,6 +59,7 @@ struct syscon_gpio_priv {
 	u32				dir_reg_offset;
 };
 
+<<<<<<< HEAD
 static inline struct syscon_gpio_priv *to_syscon_gpio(struct gpio_chip *chip)
 {
 	return container_of(chip, struct syscon_gpio_priv, chip);
@@ -67,6 +68,11 @@ static inline struct syscon_gpio_priv *to_syscon_gpio(struct gpio_chip *chip)
 static int syscon_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
 	struct syscon_gpio_priv *priv = to_syscon_gpio(chip);
+=======
+static int syscon_gpio_get(struct gpio_chip *chip, unsigned offset)
+{
+	struct syscon_gpio_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned int val, offs;
 	int ret;
 
@@ -82,7 +88,11 @@ static int syscon_gpio_get(struct gpio_chip *chip, unsigned offset)
 
 static void syscon_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 {
+<<<<<<< HEAD
 	struct syscon_gpio_priv *priv = to_syscon_gpio(chip);
+=======
+	struct syscon_gpio_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned int offs;
 
 	offs = priv->dreg_offset + priv->data->dat_bit_offset + offset;
@@ -95,7 +105,11 @@ static void syscon_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 
 static int syscon_gpio_dir_in(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct syscon_gpio_priv *priv = to_syscon_gpio(chip);
+=======
+	struct syscon_gpio_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	if (priv->data->flags & GPIO_SYSCON_FEAT_DIR) {
 		unsigned int offs;
@@ -113,7 +127,11 @@ static int syscon_gpio_dir_in(struct gpio_chip *chip, unsigned offset)
 
 static int syscon_gpio_dir_out(struct gpio_chip *chip, unsigned offset, int val)
 {
+<<<<<<< HEAD
 	struct syscon_gpio_priv *priv = to_syscon_gpio(chip);
+=======
+	struct syscon_gpio_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 
 	if (priv->data->flags & GPIO_SYSCON_FEAT_DIR) {
 		unsigned int offs;
@@ -127,14 +145,22 @@ static int syscon_gpio_dir_out(struct gpio_chip *chip, unsigned offset, int val)
 				   BIT(offs % SYSCON_REG_BITS));
 	}
 
+<<<<<<< HEAD
 	priv->data->set(chip, offset, val);
+=======
+	chip->set(chip, offset, val);
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
 static const struct syscon_gpio_data clps711x_mctrl_gpio = {
 	/* ARM CLPS711X SYSFLG1 Bits 8-10 */
+<<<<<<< HEAD
 	.compatible	= "cirrus,clps711x-syscon1",
+=======
+	.compatible	= "cirrus,ep7209-syscon1",
+>>>>>>> v4.9.227
 	.flags		= GPIO_SYSCON_FEAT_IN,
 	.bit_count	= 3,
 	.dat_bit_offset	= 0x40 * 8 + 8,
@@ -144,7 +170,11 @@ static const struct syscon_gpio_data clps711x_mctrl_gpio = {
 
 static void keystone_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 {
+<<<<<<< HEAD
 	struct syscon_gpio_priv *priv = to_syscon_gpio(chip);
+=======
+	struct syscon_gpio_priv *priv = gpiochip_get_data(chip);
+>>>>>>> v4.9.227
 	unsigned int offs;
 	int ret;
 
@@ -159,7 +189,11 @@ static void keystone_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 			BIT(offs % SYSCON_REG_BITS) | KEYSTONE_LOCK_BIT,
 			BIT(offs % SYSCON_REG_BITS) | KEYSTONE_LOCK_BIT);
 	if (ret < 0)
+<<<<<<< HEAD
 		dev_err(chip->dev, "gpio write failed ret(%d)\n", ret);
+=======
+		dev_err(chip->parent, "gpio write failed ret(%d)\n", ret);
+>>>>>>> v4.9.227
 }
 
 static const struct syscon_gpio_data keystone_dsp_gpio = {
@@ -173,7 +207,11 @@ static const struct syscon_gpio_data keystone_dsp_gpio = {
 
 static const struct of_device_id syscon_gpio_ids[] = {
 	{
+<<<<<<< HEAD
 		.compatible	= "cirrus,clps711x-mctrl-gpio",
+=======
+		.compatible	= "cirrus,ep7209-mctrl-gpio",
+>>>>>>> v4.9.227
 		.data		= &clps711x_mctrl_gpio,
 	},
 	{
@@ -187,11 +225,22 @@ MODULE_DEVICE_TABLE(of, syscon_gpio_ids);
 static int syscon_gpio_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
+<<<<<<< HEAD
 	const struct of_device_id *of_id = of_match_device(syscon_gpio_ids, dev);
+=======
+	const struct of_device_id *of_id;
+>>>>>>> v4.9.227
 	struct syscon_gpio_priv *priv;
 	struct device_node *np = dev->of_node;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	of_id = of_match_device(syscon_gpio_ids, dev);
+	if (!of_id)
+		return -ENODEV;
+
+>>>>>>> v4.9.227
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
@@ -219,12 +268,20 @@ static int syscon_gpio_probe(struct platform_device *pdev)
 		ret = of_property_read_u32_index(np, "gpio,syscon-dev", 2,
 						 &priv->dir_reg_offset);
 		if (ret)
+<<<<<<< HEAD
 			dev_err(dev, "can't read the dir register offset!\n");
+=======
+			dev_dbg(dev, "can't read the dir register offset!\n");
+>>>>>>> v4.9.227
 
 		priv->dir_reg_offset <<= 3;
 	}
 
+<<<<<<< HEAD
 	priv->chip.dev = dev;
+=======
+	priv->chip.parent = dev;
+>>>>>>> v4.9.227
 	priv->chip.owner = THIS_MODULE;
 	priv->chip.label = dev_name(dev);
 	priv->chip.base = -1;
@@ -239,6 +296,7 @@ static int syscon_gpio_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, priv);
 
+<<<<<<< HEAD
 	return gpiochip_add(&priv->chip);
 }
 
@@ -248,16 +306,25 @@ static int syscon_gpio_remove(struct platform_device *pdev)
 
 	gpiochip_remove(&priv->chip);
 	return 0;
+=======
+	return devm_gpiochip_add_data(&pdev->dev, &priv->chip, priv);
+>>>>>>> v4.9.227
 }
 
 static struct platform_driver syscon_gpio_driver = {
 	.driver	= {
 		.name		= "gpio-syscon",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 		.of_match_table	= syscon_gpio_ids,
 	},
 	.probe	= syscon_gpio_probe,
 	.remove	= syscon_gpio_remove,
+=======
+		.of_match_table	= syscon_gpio_ids,
+	},
+	.probe	= syscon_gpio_probe,
+>>>>>>> v4.9.227
 };
 module_platform_driver(syscon_gpio_driver);
 

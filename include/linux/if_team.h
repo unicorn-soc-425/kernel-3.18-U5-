@@ -24,6 +24,10 @@ struct team_pcpu_stats {
 	struct u64_stats_sync	syncp;
 	u32			rx_dropped;
 	u32			tx_dropped;
+<<<<<<< HEAD
+=======
+	u32			rx_nohandler;
+>>>>>>> v4.9.227
 };
 
 struct team;
@@ -164,6 +168,10 @@ struct team_mode {
 	size_t priv_size;
 	size_t port_priv_size;
 	const struct team_mode_ops *ops;
+<<<<<<< HEAD
+=======
+	enum netdev_lag_tx_type lag_tx_type;
+>>>>>>> v4.9.227
 };
 
 #define TEAM_PORT_HASHBITS 4
@@ -243,7 +251,11 @@ static inline struct team_port *team_get_port_by_index(struct team *team,
 	return NULL;
 }
 
+<<<<<<< HEAD
 static inline int team_num_to_port_index(struct team *team, int num)
+=======
+static inline int team_num_to_port_index(struct team *team, unsigned int num)
+>>>>>>> v4.9.227
 {
 	int en_port_count = ACCESS_ONCE(team->en_port_count);
 

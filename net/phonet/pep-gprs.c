@@ -203,8 +203,12 @@ static netdev_tx_t gprs_xmit(struct sk_buff *skb, struct net_device *dev)
 	len = skb->len;
 	err = pep_write(sk, skb);
 	if (err) {
+<<<<<<< HEAD
 		LIMIT_NETDEBUG(KERN_WARNING"%s: TX error (%d)\n",
 				dev->name, err);
+=======
+		net_dbg_ratelimited("%s: TX error (%d)\n", dev->name, err);
+>>>>>>> v4.9.227
 		dev->stats.tx_aborted_errors++;
 		dev->stats.tx_errors++;
 	} else {

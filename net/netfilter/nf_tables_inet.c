@@ -57,7 +57,11 @@ err:
 
 static void __net_exit nf_tables_inet_exit_net(struct net *net)
 {
+<<<<<<< HEAD
 	nft_unregister_afinfo(net->nft.inet);
+=======
+	nft_unregister_afinfo(net, net->nft.inet);
+>>>>>>> v4.9.227
 	kfree(net->nft.inet);
 }
 
@@ -82,7 +86,14 @@ static int __init nf_tables_inet_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	nft_register_chain_type(&filter_inet);
+=======
+	ret = nft_register_chain_type(&filter_inet);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> v4.9.227
 	ret = register_pernet_subsys(&nf_tables_inet_net_ops);
 	if (ret < 0)
 		nft_unregister_chain_type(&filter_inet);

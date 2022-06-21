@@ -94,7 +94,10 @@ void __init paging_init(void)
 	high_memory = (void *) end_mem;
 
 	empty_zero_page = alloc_bootmem_pages(PAGE_SIZE);
+<<<<<<< HEAD
 	memset(empty_zero_page, 0, PAGE_SIZE);
+=======
+>>>>>>> v4.9.227
 
 	/*
 	 * Set up SFC/DFC registers (user data space).

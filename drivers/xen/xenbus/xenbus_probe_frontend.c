@@ -31,7 +31,10 @@
 #include "xenbus_probe.h"
 
 
+<<<<<<< HEAD
 static struct workqueue_struct *xenbus_frontend_wq;
+=======
+>>>>>>> v4.9.227
 
 /* device/<type>/<id> => <type>-<id> */
 static int frontend_bus_id(char bus_id[XEN_BUS_ID_SIZE], const char *nodename)
@@ -109,6 +112,7 @@ static int xenbus_frontend_dev_resume(struct device *dev)
 	if (xen_store_domain_type == XS_LOCAL) {
 		struct xenbus_device *xdev = to_xenbus_device(dev);
 
+<<<<<<< HEAD
 		if (!xenbus_frontend_wq) {
 			pr_err("%s: no workqueue to process delayed resume\n",
 			       xdev->nodename);
@@ -116,6 +120,9 @@ static int xenbus_frontend_dev_resume(struct device *dev)
 		}
 
 		queue_work(xenbus_frontend_wq, &xdev->work);
+=======
+		schedule_work(&xdev->work);
+>>>>>>> v4.9.227
 
 		return 0;
 	}
@@ -342,7 +349,13 @@ static int backend_state;
 static void xenbus_reset_backend_state_changed(struct xenbus_watch *w,
 					const char **v, unsigned int l)
 {
+<<<<<<< HEAD
 	xenbus_scanf(XBT_NIL, v[XS_WATCH_PATH], "", "%i", &backend_state);
+=======
+	if (xenbus_scanf(XBT_NIL, v[XS_WATCH_PATH], "", "%i",
+			 &backend_state) != 1)
+		backend_state = XenbusStateUnknown;
+>>>>>>> v4.9.227
 	printk(KERN_DEBUG "XENBUS: backend %s %s\n",
 			v[XS_WATCH_PATH], xenbus_strstate(backend_state));
 	wake_up(&backend_state_wq);
@@ -485,12 +498,15 @@ static int __init xenbus_probe_frontend_init(void)
 
 	register_xenstore_notifier(&xenstore_notifier);
 
+<<<<<<< HEAD
 	if (xen_store_domain_type == XS_LOCAL) {
 		xenbus_frontend_wq = create_workqueue("xenbus_frontend");
 		if (!xenbus_frontend_wq)
 			pr_warn("create xenbus frontend workqueue failed, S3 resume is likely to fail\n");
 	}
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 subsys_initcall(xenbus_probe_frontend_init);

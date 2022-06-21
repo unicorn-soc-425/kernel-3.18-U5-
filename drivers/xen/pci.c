@@ -19,6 +19,10 @@
 
 #include <linux/pci.h>
 #include <linux/acpi.h>
+<<<<<<< HEAD
+=======
+#include <linux/pci-acpi.h>
+>>>>>>> v4.9.227
 #include <xen/xen.h>
 #include <xen/interface/physdev.h>
 #include <xen/interface/xen.h>
@@ -28,6 +32,11 @@
 #include "../pci/pci.h"
 #ifdef CONFIG_PCI_MMCONFIG
 #include <asm/pci_x86.h>
+<<<<<<< HEAD
+=======
+
+static int xen_mcfg_late(void);
+>>>>>>> v4.9.227
 #endif
 
 static bool __read_mostly pci_seg_supported = true;
@@ -39,7 +48,22 @@ static int xen_add_device(struct device *dev)
 #ifdef CONFIG_PCI_IOV
 	struct pci_dev *physfn = pci_dev->physfn;
 #endif
+<<<<<<< HEAD
 
+=======
+#ifdef CONFIG_PCI_MMCONFIG
+	static bool pci_mcfg_reserved = false;
+	/*
+	 * Reserve MCFG areas in Xen on first invocation due to this being
+	 * potentially called from inside of acpi_init immediately after
+	 * MCFG table has been finally parsed.
+	 */
+	if (!pci_mcfg_reserved) {
+		xen_mcfg_late();
+		pci_mcfg_reserved = true;
+	}
+#endif
+>>>>>>> v4.9.227
 	if (pci_seg_supported) {
 		struct {
 			struct physdev_pci_device_add add;
@@ -67,12 +91,30 @@ static int xen_add_device(struct device *dev)
 
 #ifdef CONFIG_ACPI
 		handle = ACPI_HANDLE(&pci_dev->dev);
+<<<<<<< HEAD
 		if (!handle && pci_dev->bus->bridge)
 			handle = ACPI_HANDLE(pci_dev->bus->bridge);
+=======
+>>>>>>> v4.9.227
 #ifdef CONFIG_PCI_IOV
 		if (!handle && pci_dev->is_virtfn)
 			handle = ACPI_HANDLE(physfn->bus->bridge);
 #endif
+<<<<<<< HEAD
+=======
+		if (!handle) {
+			/*
+			 * This device was not listed in the ACPI name space at
+			 * all. Try to get acpi handle of parent pci bus.
+			 */
+			struct pci_bus *pbus;
+			for (pbus = pci_dev->bus; pbus; pbus = pbus->parent) {
+				handle = acpi_pci_get_bridge_handle(pbus);
+				if (handle)
+					break;
+			}
+		}
+>>>>>>> v4.9.227
 		if (handle) {
 			acpi_status status;
 
@@ -202,7 +244,11 @@ static int __init register_xen_pci_notifier(void)
 arch_initcall(register_xen_pci_notifier);
 
 #ifdef CONFIG_PCI_MMCONFIG
+<<<<<<< HEAD
 static int __init xen_mcfg_late(void)
+=======
+static int xen_mcfg_late(void)
+>>>>>>> v4.9.227
 {
 	struct pci_mmcfg_region *cfg;
 	int rc;
@@ -241,8 +287,11 @@ static int __init xen_mcfg_late(void)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 /*
  * Needs to be done after acpi_init which are subsys_initcall.
  */
 subsys_initcall_sync(xen_mcfg_late);
+=======
+>>>>>>> v4.9.227
 #endif

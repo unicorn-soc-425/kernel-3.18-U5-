@@ -1288,7 +1288,13 @@ struct vp_rpt_id_entry_24xx {
 
 	uint8_t vp_idx_map[16];
 
+<<<<<<< HEAD
 	uint8_t reserved_4[32];
+=======
+	uint8_t reserved_4[24];
+	uint16_t bbcr;
+	uint8_t reserved_5[6];
+>>>>>>> v4.9.227
 };
 
 #define VF_EVFP_IOCB_TYPE       0x26    /* Exchange Virtual Fabric Parameters entry. */
@@ -1393,6 +1399,19 @@ struct qla_flt_header {
 #define FLT_REG_FCOE_NVRAM_0	0xAA
 #define FLT_REG_FCOE_NVRAM_1	0xAC
 
+<<<<<<< HEAD
+=======
+/* 27xx */
+#define FLT_REG_IMG_PRI_27XX	0x95
+#define FLT_REG_IMG_SEC_27XX	0x96
+#define FLT_REG_FW_SEC_27XX	0x02
+#define FLT_REG_BOOTLOAD_SEC_27XX	0x9
+#define FLT_REG_VPD_SEC_27XX_0	0x50
+#define FLT_REG_VPD_SEC_27XX_1	0x52
+#define FLT_REG_VPD_SEC_27XX_2	0xD8
+#define FLT_REG_VPD_SEC_27XX_3	0xDA
+
+>>>>>>> v4.9.227
 struct qla_flt_region {
 	uint32_t code;
 	uint32_t size;

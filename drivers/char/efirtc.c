@@ -30,7 +30,10 @@
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/rtc.h>
 #include <linux/proc_fs.h>
@@ -395,6 +398,7 @@ efi_rtc_init(void)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 
 static void __exit
 efi_rtc_exit(void)
@@ -406,3 +410,10 @@ module_init(efi_rtc_init);
 module_exit(efi_rtc_exit);
 
 MODULE_LICENSE("GPL");
+=======
+device_initcall(efi_rtc_init);
+
+/*
+MODULE_LICENSE("GPL");
+*/
+>>>>>>> v4.9.227

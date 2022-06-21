@@ -15,11 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; If not, see
+<<<<<<< HEAD
  * http://www.sun.com/software/products/lustre/docs/GPLv2.pdf
  *
  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
+=======
+ * http://www.gnu.org/licenses/gpl-2.0.html
+>>>>>>> v4.9.227
  *
  * GPL HEADER END
  */
@@ -44,8 +48,11 @@
 #define __LIBCFS_STRING_H__
 
 /* libcfs_string.c */
+<<<<<<< HEAD
 /* string comparison ignoring case */
 int cfs_strncasecmp(const char *s1, const char *s2, size_t n);
+=======
+>>>>>>> v4.9.227
 /* Convert a text string to a bitmask */
 int cfs_str2mask(const char *str, const char *(*bit2str)(int bit),
 		 int *oldmask, int minmask, int allmask);
@@ -83,6 +90,11 @@ int cfs_gettok(struct cfs_lstr *next, char delim, struct cfs_lstr *res);
 int cfs_str2num_check(char *str, int nob, unsigned *num,
 		      unsigned min, unsigned max);
 int cfs_expr_list_match(__u32 value, struct cfs_expr_list *expr_list);
+<<<<<<< HEAD
+=======
+int cfs_expr_list_print(char *buffer, int count,
+			struct cfs_expr_list *expr_list);
+>>>>>>> v4.9.227
 int cfs_expr_list_values(struct cfs_expr_list *expr_list,
 			 int max, __u32 **values);
 static inline void
@@ -98,10 +110,13 @@ void cfs_expr_list_free(struct cfs_expr_list *expr_list);
 int cfs_expr_list_parse(char *str, int len, unsigned min, unsigned max,
 			struct cfs_expr_list **elpp);
 void cfs_expr_list_free_list(struct list_head *list);
+<<<<<<< HEAD
 int cfs_ip_addr_parse(char *str, int len, struct list_head *list);
 int cfs_ip_addr_match(__u32 addr, struct list_head *list);
 void cfs_ip_addr_free(struct list_head *list);
 
 #define	strtoul(str, endp, base)	simple_strtoul(str, endp, base)
+=======
+>>>>>>> v4.9.227
 
 #endif

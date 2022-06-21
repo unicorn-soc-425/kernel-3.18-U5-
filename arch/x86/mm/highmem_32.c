@@ -1,5 +1,9 @@
 #include <linux/highmem.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/swap.h> /* for totalram_pages */
 #include <linux/bootmem.h>
 
@@ -35,7 +39,11 @@ void *kmap_atomic_prot(struct page *page, pgprot_t prot)
 	unsigned long vaddr;
 	int idx, type;
 
+<<<<<<< HEAD
 	/* even !CONFIG_PREEMPT needs this, for in_atomic in do_page_fault */
+=======
+	preempt_disable();
+>>>>>>> v4.9.227
 	pagefault_disable();
 
 	if (!PageHighMem(page))
@@ -100,6 +108,7 @@ void __kunmap_atomic(void *kvaddr)
 #endif
 
 	pagefault_enable();
+<<<<<<< HEAD
 }
 EXPORT_SYMBOL(__kunmap_atomic);
 
@@ -117,6 +126,12 @@ struct page *kmap_atomic_to_page(void *ptr)
 }
 EXPORT_SYMBOL(kmap_atomic_to_page);
 
+=======
+	preempt_enable();
+}
+EXPORT_SYMBOL(__kunmap_atomic);
+
+>>>>>>> v4.9.227
 void __init set_highmem_pages_init(void)
 {
 	struct zone *zone;

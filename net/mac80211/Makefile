@@ -3,6 +3,10 @@ obj-$(CONFIG_MAC80211) += mac80211.o
 # mac80211 objects
 mac80211-y := \
 	main.o status.o \
+<<<<<<< HEAD
+=======
+	driver-ops.o \
+>>>>>>> v4.9.227
 	sta_info.o \
 	wep.o \
 	wpa.o \
@@ -15,7 +19,13 @@ mac80211-y := \
 	michael.o \
 	tkip.o \
 	aes_ccm.o \
+<<<<<<< HEAD
 	aes_cmac.o \
+=======
+	aes_gcm.o \
+	aes_cmac.o \
+	aes_gmac.o \
+>>>>>>> v4.9.227
 	cfg.o \
 	ethtool.o \
 	rx.o \
@@ -24,10 +34,17 @@ mac80211-y := \
 	key.o \
 	util.o \
 	wme.o \
+<<<<<<< HEAD
 	event.o \
 	chan.o \
 	trace.o mlme.o \
 	tdls.o
+=======
+	chan.o \
+	trace.o mlme.o \
+	tdls.o \
+	ocb.o
+>>>>>>> v4.9.227
 
 mac80211-$(CONFIG_MAC80211_LEDS) += led.o
 mac80211-$(CONFIG_MAC80211_DEBUGFS) += \

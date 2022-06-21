@@ -106,7 +106,11 @@ static void __init pcibios_allocate_bus_resources(struct list_head *bus_list)
 				if (!r->flags)
 					continue;
 				if (!r->start ||
+<<<<<<< HEAD
 				    pci_claim_resource(dev, idx) < 0) {
+=======
+				    pci_claim_bridge_resource(dev, idx) < 0) {
+>>>>>>> v4.9.227
 					printk(KERN_ERR "PCI:"
 					       " Cannot allocate resource"
 					       " region %d of bridge %s\n",
@@ -183,6 +187,7 @@ static int __init pcibios_assign_resources(void)
 	struct pci_dev *dev = NULL;
 	struct resource *r;
 
+<<<<<<< HEAD
 	if (!(pci_probe & PCI_ASSIGN_ROMS)) {
 		/* Try to use BIOS settings for ROMs, otherwise let
 		   pci_assign_unassigned_resources() allocate the new
@@ -195,6 +200,18 @@ static int __init pcibios_assign_resources(void)
 				r->end -= r->start;
 				r->start = 0;
 			}
+=======
+	/* Try to use BIOS settings for ROMs, otherwise let
+	   pci_assign_unassigned_resources() allocate the new
+	   addresses. */
+	for_each_pci_dev(dev) {
+		r = &dev->resource[PCI_ROM_RESOURCE];
+		if (!r->flags || !r->start)
+			continue;
+		if (pci_claim_resource(dev, PCI_ROM_RESOURCE) < 0) {
+			r->end -= r->start;
+			r->start = 0;
+>>>>>>> v4.9.227
 		}
 	}
 

@@ -39,8 +39,13 @@
 #include <linux/spi/max7301.h>
 #include <linux/spi/mc33880.h>
 
+<<<<<<< HEAD
 #include <media/timb_radio.h>
 #include <media/timb_video.h>
+=======
+#include <linux/platform_data/media/timb_radio.h>
+#include <linux/platform_data/media/timb_video.h>
+>>>>>>> v4.9.227
 
 #include <linux/timb_dma.h>
 

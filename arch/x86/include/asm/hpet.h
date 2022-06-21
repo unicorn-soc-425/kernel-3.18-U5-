@@ -63,10 +63,17 @@
 /* hpet memory map physical address */
 extern unsigned long hpet_address;
 extern unsigned long force_hpet_address;
+<<<<<<< HEAD
 extern int boot_hpet_disable;
 extern u8 hpet_blockid;
 extern int hpet_force_user;
 extern u8 hpet_msi_disable;
+=======
+extern bool boot_hpet_disable;
+extern u8 hpet_blockid;
+extern bool hpet_force_user;
+extern bool hpet_msi_disable;
+>>>>>>> v4.9.227
 extern int is_hpet_enabled(void);
 extern int hpet_enable(void);
 extern void hpet_disable(void);
@@ -74,6 +81,7 @@ extern unsigned int hpet_readl(unsigned int a);
 extern void force_hpet_resume(void);
 
 struct irq_data;
+<<<<<<< HEAD
 extern void hpet_msi_unmask(struct irq_data *data);
 extern void hpet_msi_mask(struct irq_data *data);
 struct hpet_dev;
@@ -88,6 +96,18 @@ static inline int default_setup_hpet_msi(unsigned int irq, unsigned int id)
 	return -EINVAL;
 }
 #endif
+=======
+struct hpet_dev;
+struct irq_domain;
+
+extern void hpet_msi_unmask(struct irq_data *data);
+extern void hpet_msi_mask(struct irq_data *data);
+extern void hpet_msi_write(struct hpet_dev *hdev, struct msi_msg *msg);
+extern void hpet_msi_read(struct hpet_dev *hdev, struct msi_msg *msg);
+extern struct irq_domain *hpet_create_irq_domain(int hpet_id);
+extern int hpet_assign_irq(struct irq_domain *domain,
+			   struct hpet_dev *dev, int dev_num);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_HPET_EMULATE_RTC
 

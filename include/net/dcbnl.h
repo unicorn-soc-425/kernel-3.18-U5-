@@ -49,6 +49,12 @@ struct dcbnl_rtnl_ops {
 	int (*ieee_setets) (struct net_device *, struct ieee_ets *);
 	int (*ieee_getmaxrate) (struct net_device *, struct ieee_maxrate *);
 	int (*ieee_setmaxrate) (struct net_device *, struct ieee_maxrate *);
+<<<<<<< HEAD
+=======
+	int (*ieee_getqcn) (struct net_device *, struct ieee_qcn *);
+	int (*ieee_setqcn) (struct net_device *, struct ieee_qcn *);
+	int (*ieee_getqcnstats) (struct net_device *, struct ieee_qcn_stats *);
+>>>>>>> v4.9.227
 	int (*ieee_getpfc) (struct net_device *, struct ieee_pfc *);
 	int (*ieee_setpfc) (struct net_device *, struct ieee_pfc *);
 	int (*ieee_getapp) (struct net_device *, struct dcb_app *);

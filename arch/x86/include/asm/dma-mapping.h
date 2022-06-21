@@ -9,10 +9,15 @@
 #include <linux/kmemcheck.h>
 #include <linux/scatterlist.h>
 #include <linux/dma-debug.h>
+<<<<<<< HEAD
 #include <linux/dma-attrs.h>
 #include <asm/io.h>
 #include <asm/swiotlb.h>
 #include <asm-generic/dma-coherent.h>
+=======
+#include <asm/io.h>
+#include <asm/swiotlb.h>
+>>>>>>> v4.9.227
 #include <linux/dma-contiguous.h>
 
 #ifdef CONFIG_ISA
@@ -41,6 +46,7 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 #endif
 }
 
+<<<<<<< HEAD
 #include <asm-generic/dma-mapping-common.h>
 
 /* Make sure we keep the same behaviour */
@@ -67,6 +73,21 @@ extern void *dma_generic_alloc_coherent(struct device *dev, size_t size,
 extern void dma_generic_free_coherent(struct device *dev, size_t size,
 				      void *vaddr, dma_addr_t dma_addr,
 				      struct dma_attrs *attrs);
+=======
+bool arch_dma_alloc_attrs(struct device **dev, gfp_t *gfp);
+#define arch_dma_alloc_attrs arch_dma_alloc_attrs
+
+#define HAVE_ARCH_DMA_SUPPORTED 1
+extern int dma_supported(struct device *hwdev, u64 mask);
+
+extern void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+					dma_addr_t *dma_addr, gfp_t flag,
+					unsigned long attrs);
+
+extern void dma_generic_free_coherent(struct device *dev, size_t size,
+				      void *vaddr, dma_addr_t dma_addr,
+				      unsigned long attrs);
+>>>>>>> v4.9.227
 
 #ifdef CONFIG_X86_DMA_REMAP /* Platform code defines bridge-specific code */
 extern bool dma_capable(struct device *dev, dma_addr_t addr, size_t size);
@@ -125,6 +146,7 @@ static inline gfp_t dma_alloc_coherent_gfp_flags(struct device *dev, gfp_t gfp)
        return gfp;
 }
 
+<<<<<<< HEAD
 #define dma_alloc_coherent(d,s,h,f)	dma_alloc_attrs(d,s,h,f,NULL)
 
 static inline void *
@@ -173,4 +195,6 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
 		ops->free(dev, size, vaddr, bus, attrs);
 }
 
+=======
+>>>>>>> v4.9.227
 #endif

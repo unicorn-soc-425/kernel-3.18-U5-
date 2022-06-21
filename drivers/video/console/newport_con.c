@@ -574,6 +574,7 @@ static int newport_font_set(struct vc_data *vc, struct console_font *font, unsig
 	return newport_set_font(vc->vc_num, font);
 }
 
+<<<<<<< HEAD
 static int newport_set_palette(struct vc_data *vc, unsigned char *table)
 {
 	return -EINVAL;
@@ -585,6 +586,8 @@ static int newport_scrolldelta(struct vc_data *vc, int lines)
 	return 0;
 }
 
+=======
+>>>>>>> v4.9.227
 static int newport_scroll(struct vc_data *vc, int t, int b, int dir,
 			  int lines)
 {
@@ -684,6 +687,7 @@ static int newport_scroll(struct vc_data *vc, int t, int b, int dir,
 	return 1;
 }
 
+<<<<<<< HEAD
 static void newport_bmove(struct vc_data *vc, int sy, int sx, int dy,
 			  int dx, int h, int w)
 {
@@ -714,6 +718,8 @@ static void newport_bmove(struct vc_data *vc, int sy, int sx, int dy,
 	npregs->go.xymove = (xoffs << 16) | yoffs;
 }
 
+=======
+>>>>>>> v4.9.227
 static int newport_dummy(struct vc_data *c)
 {
 	return 0;
@@ -731,13 +737,19 @@ const struct consw newport_con = {
 	.con_putcs	  = newport_putcs,
 	.con_cursor	  = newport_cursor,
 	.con_scroll	  = newport_scroll,
+<<<<<<< HEAD
 	.con_bmove 	  = newport_bmove,
+=======
+>>>>>>> v4.9.227
 	.con_switch	  = newport_switch,
 	.con_blank	  = newport_blank,
 	.con_font_set	  = newport_font_set,
 	.con_font_default = newport_font_default,
+<<<<<<< HEAD
 	.con_set_palette  = newport_set_palette,
 	.con_scrolldelta  = newport_scrolldelta,
+=======
+>>>>>>> v4.9.227
 	.con_set_origin	  = DUMMY,
 	.con_save_screen  = DUMMY
 };

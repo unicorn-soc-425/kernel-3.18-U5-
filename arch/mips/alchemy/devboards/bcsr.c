@@ -8,6 +8,10 @@
  */
 
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip/chained_irq.h>
+>>>>>>> v4.9.227
 #include <linux/module.h>
 #include <linux/spinlock.h>
 #include <linux/irq.h>
@@ -85,6 +89,7 @@ EXPORT_SYMBOL_GPL(bcsr_mod);
 /*
  * DB1200/PB1200 CPLD IRQ muxer
  */
+<<<<<<< HEAD
 static void bcsr_csc_handler(unsigned int irq, struct irq_desc *d)
 {
 	unsigned short bisr = __raw_readw(bcsr_virt + BCSR_REG_INTSTAT);
@@ -92,6 +97,16 @@ static void bcsr_csc_handler(unsigned int irq, struct irq_desc *d)
 	disable_irq_nosync(irq);
 	generic_handle_irq(bcsr_csc_base + __ffs(bisr));
 	enable_irq(irq);
+=======
+static void bcsr_csc_handler(struct irq_desc *d)
+{
+	unsigned short bisr = __raw_readw(bcsr_virt + BCSR_REG_INTSTAT);
+	struct irq_chip *chip = irq_desc_get_chip(d);
+
+	chained_irq_enter(chip, d);
+	generic_handle_irq(bcsr_csc_base + __ffs(bisr));
+	chained_irq_exit(chip, d);
+>>>>>>> v4.9.227
 }
 
 static void bcsr_irq_mask(struct irq_data *d)

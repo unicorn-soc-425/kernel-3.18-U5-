@@ -47,20 +47,29 @@ static ssize_t wm831x_unique_id_show(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {
 	struct wm831x *wm831x = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	int i, rval;
 	char id[WM831X_UNIQUE_ID_LEN];
 	ssize_t ret = 0;
+=======
+	int rval;
+	char id[WM831X_UNIQUE_ID_LEN];
+>>>>>>> v4.9.227
 
 	rval = wm831x_unique_id_read(wm831x, id);
 	if (rval < 0)
 		return 0;
 
+<<<<<<< HEAD
 	for (i = 0; i < WM831X_UNIQUE_ID_LEN; i++)
 		ret += sprintf(&buf[ret], "%02x", buf[i]);
 
 	ret += sprintf(&buf[ret], "\n");
 
 	return ret;
+=======
+	return sprintf(buf, "%*phN\n", WM831X_UNIQUE_ID_LEN, id);
+>>>>>>> v4.9.227
 }
 
 static DEVICE_ATTR(unique_id, 0444, wm831x_unique_id_show, NULL);

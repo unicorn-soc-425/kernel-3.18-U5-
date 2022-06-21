@@ -78,8 +78,13 @@ static void __free_dma_pages(unsigned long addr, unsigned int pages)
 	spin_unlock_irqrestore(&dma_page_lock, flags);
 }
 
+<<<<<<< HEAD
 void *dma_alloc_coherent(struct device *dev, size_t size,
 			 dma_addr_t *dma_handle, gfp_t gfp)
+=======
+static void *bfin_dma_alloc(struct device *dev, size_t size,
+		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	void *ret;
 
@@ -92,6 +97,7 @@ void *dma_alloc_coherent(struct device *dev, size_t size,
 
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(dma_alloc_coherent);
 
 void
@@ -101,6 +107,14 @@ dma_free_coherent(struct device *dev, size_t size, void *vaddr,
 	__free_dma_pages((unsigned long)vaddr, get_pages(size));
 }
 EXPORT_SYMBOL(dma_free_coherent);
+=======
+
+static void bfin_dma_free(struct device *dev, size_t size, void *vaddr,
+		  dma_addr_t dma_handle, unsigned long attrs)
+{
+	__free_dma_pages((unsigned long)vaddr, get_pages(size));
+}
+>>>>>>> v4.9.227
 
 /*
  * Streaming DMA mappings
@@ -112,9 +126,15 @@ void __dma_sync(dma_addr_t addr, size_t size,
 }
 EXPORT_SYMBOL(__dma_sync);
 
+<<<<<<< HEAD
 int
 dma_map_sg(struct device *dev, struct scatterlist *sg_list, int nents,
 	   enum dma_data_direction direction)
+=======
+static int bfin_dma_map_sg(struct device *dev, struct scatterlist *sg_list,
+		int nents, enum dma_data_direction direction,
+		unsigned long attrs)
+>>>>>>> v4.9.227
 {
 	struct scatterlist *sg;
 	int i;
@@ -126,10 +146,17 @@ dma_map_sg(struct device *dev, struct scatterlist *sg_list, int nents,
 
 	return nents;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(dma_map_sg);
 
 void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg_list,
 			    int nelems, enum dma_data_direction direction)
+=======
+
+static void bfin_dma_sync_sg_for_device(struct device *dev,
+		struct scatterlist *sg_list, int nelems,
+		enum dma_data_direction direction)
+>>>>>>> v4.9.227
 {
 	struct scatterlist *sg;
 	int i;
@@ -139,4 +166,35 @@ void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg_list,
 		__dma_sync(sg_dma_address(sg), sg_dma_len(sg), direction);
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(dma_sync_sg_for_device);
+=======
+
+static dma_addr_t bfin_dma_map_page(struct device *dev, struct page *page,
+		unsigned long offset, size_t size, enum dma_data_direction dir,
+		unsigned long attrs)
+{
+	dma_addr_t handle = (dma_addr_t)(page_address(page) + offset);
+
+	_dma_sync(handle, size, dir);
+	return handle;
+}
+
+static inline void bfin_dma_sync_single_for_device(struct device *dev,
+		dma_addr_t handle, size_t size, enum dma_data_direction dir)
+{
+	_dma_sync(handle, size, dir);
+}
+
+struct dma_map_ops bfin_dma_ops = {
+	.alloc			= bfin_dma_alloc,
+	.free			= bfin_dma_free,
+
+	.map_page		= bfin_dma_map_page,
+	.map_sg			= bfin_dma_map_sg,
+
+	.sync_single_for_device	= bfin_dma_sync_single_for_device,
+	.sync_sg_for_device	= bfin_dma_sync_sg_for_device,
+};
+EXPORT_SYMBOL(bfin_dma_ops);
+>>>>>>> v4.9.227

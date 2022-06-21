@@ -355,13 +355,20 @@ static int sq_dev_add(struct device *dev, struct subsys_interface *sif)
 	return error;
 }
 
+<<<<<<< HEAD
 static int sq_dev_remove(struct device *dev, struct subsys_interface *sif)
+=======
+static void sq_dev_remove(struct device *dev, struct subsys_interface *sif)
+>>>>>>> v4.9.227
 {
 	unsigned int cpu = dev->id;
 	struct kobject *kobj = sq_kobject[cpu];
 
 	kobject_put(kobj);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> v4.9.227
 }
 
 static struct subsys_interface sq_interface = {

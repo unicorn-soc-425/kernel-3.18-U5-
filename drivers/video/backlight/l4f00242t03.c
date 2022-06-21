@@ -255,7 +255,10 @@ static void l4f00242t03_shutdown(struct spi_device *spi)
 static struct spi_driver l4f00242t03_driver = {
 	.driver = {
 		.name	= "l4f00242t03",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= l4f00242t03_probe,
 	.remove		= l4f00242t03_remove,

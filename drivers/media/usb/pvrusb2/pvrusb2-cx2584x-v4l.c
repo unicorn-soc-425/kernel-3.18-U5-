@@ -32,7 +32,11 @@
 
 #include "pvrusb2-hdw-internal.h"
 #include "pvrusb2-debug.h"
+<<<<<<< HEAD
 #include <media/cx25840.h>
+=======
+#include <media/drv-intf/cx25840.h>
+>>>>>>> v4.9.227
 #include <linux/videodev2.h>
 #include <media/v4l2-common.h>
 #include <linux/errno.h>
@@ -152,6 +156,7 @@ void pvr2_cx25840_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)
 		sd->ops->audio->s_routing(sd, (u32)aud_input, 0, 0);
 	}
 }
+<<<<<<< HEAD
 
 
 
@@ -164,3 +169,5 @@ void pvr2_cx25840_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> v4.9.227

@@ -84,7 +84,11 @@ typedef struct user_fpu_struct elf_fpregset_t;
    the loader.  We need to make sure that it is out of the way of the program
    that it will "exec", and that there is sufficient room for the brk.  */
 
+<<<<<<< HEAD
 #define ELF_ET_DYN_BASE         (2 * TASK_SIZE / 3)
+=======
+#define ELF_ET_DYN_BASE         (TASK_SIZE / 3 * 2)
+>>>>>>> v4.9.227
 
 
 /* This yields a mask that user programs can use to figure out what

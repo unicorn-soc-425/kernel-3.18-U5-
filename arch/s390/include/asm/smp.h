@@ -16,6 +16,12 @@
 #define raw_smp_processor_id()	(S390_lowcore.cpu_nr)
 
 extern struct mutex smp_cpu_state_mutex;
+<<<<<<< HEAD
+=======
+extern unsigned int smp_cpu_mt_shift;
+extern unsigned int smp_cpu_mtid;
+extern __vector128 __initdata boot_cpu_vector_save_area[__NUM_VXRS];
+>>>>>>> v4.9.227
 
 extern int __cpu_up(unsigned int cpu, struct task_struct *tidle);
 
@@ -27,6 +33,10 @@ extern void smp_call_ipl_cpu(void (*func)(void *), void *);
 
 extern int smp_find_processor_id(u16 address);
 extern int smp_store_status(int cpu);
+<<<<<<< HEAD
+=======
+extern void smp_save_dump_cpus(void);
+>>>>>>> v4.9.227
 extern int smp_vcpu_scheduled(int cpu);
 extern void smp_yield_cpu(int cpu);
 extern void smp_cpu_set_polarization(int cpu, int val);
@@ -35,6 +45,11 @@ extern void smp_fill_possible_mask(void);
 
 #else /* CONFIG_SMP */
 
+<<<<<<< HEAD
+=======
+#define smp_cpu_mtid	0
+
+>>>>>>> v4.9.227
 static inline void smp_call_ipl_cpu(void (*func)(void *), void *data)
 {
 	func(data);

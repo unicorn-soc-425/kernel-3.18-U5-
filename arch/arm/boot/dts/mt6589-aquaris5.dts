@@ -21,10 +21,27 @@
 	compatible = "mundoreader,bq-aquaris5", "mediatek,mt6589";
 
 	chosen {
+<<<<<<< HEAD
 		bootargs = "earlyprintk";
+=======
+		bootargs = "console=ttyS0,921600n8 earlyprintk";
+		stdout-path = &uart0;
+>>>>>>> v4.9.227
 	};
 
 	memory {
 		reg = <0x80000000 0x40000000>;
 	};
+<<<<<<< HEAD
+=======
+
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart3 {
+	status = "okay";
+>>>>>>> v4.9.227
 };

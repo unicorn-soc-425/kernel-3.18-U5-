@@ -1,7 +1,10 @@
 /*
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
+<<<<<<< HEAD
  * Copyright (c) 2016-2017 The Linux Foundation. All rights reserved.
+=======
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
@@ -19,9 +22,17 @@
 #ifndef __MSM_DRM_H__
 #define __MSM_DRM_H__
 
+<<<<<<< HEAD
 #include <stddef.h>
 #include <drm/drm.h>
 #include <drm/sde_drm.h>
+=======
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+>>>>>>> v4.9.227
 
 /* Please note that modifications to all structs defined here are
  * subject to backwards-compatibility constraints:
@@ -41,6 +52,18 @@
 #define MSM_PIPE_2D1         0x02
 #define MSM_PIPE_3D0         0x10
 
+<<<<<<< HEAD
+=======
+/* The pipe-id just uses the lower bits, so can be OR'd with flags in
+ * the upper 16 bits (which could be extended further, if needed, maybe
+ * we extend/overload the pipe-id some day to deal with multiple rings,
+ * but even then I don't think we need the full lower 16 bits).
+ */
+#define MSM_PIPE_ID_MASK     0xffff
+#define MSM_PIPE_ID(x)       ((x) & MSM_PIPE_ID_MASK)
+#define MSM_PIPE_FLAGS(x)    ((x) & ~MSM_PIPE_ID_MASK)
+
+>>>>>>> v4.9.227
 /* timeouts are specified in clock-monotonic absolute times (to simplify
  * restarting interrupted ioctls).  The following struct is logically the
  * same as 'struct timespec' but 32/64b ABI safe.
@@ -53,6 +76,11 @@ struct drm_msm_timespec {
 #define MSM_PARAM_GPU_ID     0x01
 #define MSM_PARAM_GMEM_SIZE  0x02
 #define MSM_PARAM_CHIP_ID    0x03
+<<<<<<< HEAD
+=======
+#define MSM_PARAM_MAX_FREQ   0x04
+#define MSM_PARAM_TIMESTAMP  0x05
+>>>>>>> v4.9.227
 
 struct drm_msm_param {
 	__u32 pipe;           /* in, MSM_PIPE_x */
@@ -72,6 +100,7 @@ struct drm_msm_param {
 #define MSM_BO_WC            0x00020000
 #define MSM_BO_UNCACHED      0x00040000
 
+<<<<<<< HEAD
 #define MSM_BO_CONTIGUOUS    0x00100000
 
 #define MSM_BO_FLAGS         (MSM_BO_SCANOUT | \
@@ -80,6 +109,13 @@ struct drm_msm_param {
 				MSM_BO_WC | \
 				MSM_BO_UNCACHED | \
 				MSM_BO_CONTIGUOUS)
+=======
+#define MSM_BO_FLAGS         (MSM_BO_SCANOUT | \
+                              MSM_BO_GPU_READONLY | \
+                              MSM_BO_CACHED | \
+                              MSM_BO_WC | \
+                              MSM_BO_UNCACHED)
+>>>>>>> v4.9.227
 
 struct drm_msm_gem_new {
 	__u64 size;           /* in */
@@ -89,7 +125,11 @@ struct drm_msm_gem_new {
 
 struct drm_msm_gem_info {
 	__u32 handle;         /* in */
+<<<<<<< HEAD
 	__u32 hint;           /* in, 0: mmap offset; 1: GPU iova */
+=======
+	__u32 pad;
+>>>>>>> v4.9.227
 	__u64 offset;         /* out, offset to pass to mmap() */
 };
 
@@ -126,12 +166,17 @@ struct drm_msm_gem_cpu_fini {
  */
 struct drm_msm_gem_submit_reloc {
 	__u32 submit_offset;  /* in, offset from submit_bo */
+<<<<<<< HEAD
 #ifdef __cplusplus
 	__u32 or_val;
 #else
 	__u32 or;             /* in, value OR'd with result */
 #endif
 	__s32  shift;          /* in, amount of left shift (can be negative) */
+=======
+	__u32 or;             /* in, value OR'd with result */
+	__s32 shift;          /* in, amount of left shift (can be negative) */
+>>>>>>> v4.9.227
 	__u32 reloc_idx;      /* in, index of reloc_bo buffer */
 	__u64 reloc_offset;   /* in, offset from start of reloc_bo */
 };
@@ -179,17 +224,35 @@ struct drm_msm_gem_submit_bo {
 	__u64 presumed;       /* in/out, presumed buffer address */
 };
 
+<<<<<<< HEAD
+=======
+/* Valid submit ioctl flags: */
+#define MSM_SUBMIT_NO_IMPLICIT   0x80000000 /* disable implicit sync */
+#define MSM_SUBMIT_FENCE_FD_IN   0x40000000 /* enable input fence_fd */
+#define MSM_SUBMIT_FENCE_FD_OUT  0x20000000 /* enable output fence_fd */
+#define MSM_SUBMIT_FLAGS                ( \
+		MSM_SUBMIT_NO_IMPLICIT   | \
+		MSM_SUBMIT_FENCE_FD_IN   | \
+		MSM_SUBMIT_FENCE_FD_OUT  | \
+		0)
+
+>>>>>>> v4.9.227
 /* Each cmdstream submit consists of a table of buffers involved, and
  * one or more cmdstream buffers.  This allows for conditional execution
  * (context-restore), and IB buffers needed for per tile/bin draw cmds.
  */
 struct drm_msm_gem_submit {
+<<<<<<< HEAD
 	__u32 pipe;           /* in, MSM_PIPE_x */
+=======
+	__u32 flags;          /* MSM_PIPE_x | MSM_SUBMIT_x */
+>>>>>>> v4.9.227
 	__u32 fence;          /* out */
 	__u32 nr_bos;         /* in, number of submit_bo's */
 	__u32 nr_cmds;        /* in, number of submit_cmd's */
 	__u64 __user bos;     /* in, ptr to array of submit_bo's */
 	__u64 __user cmds;    /* in, ptr to array of submit_cmd's */
+<<<<<<< HEAD
 };
 
 struct drm_msm_context_submit {
@@ -199,6 +262,9 @@ struct drm_msm_context_submit {
 	__u32 nr_cmds;        /* in, number of submit_cmd's */
 	__u64 __user bos;     /* in, ptr to array of submit_bo's */
 	__u64 __user cmds;    /* in, ptr to array of submit_cmd's */
+=======
+	__s32 fence_fd;       /* in/out fence fd (see MSM_SUBMIT_FENCE_FD_IN/OUT) */
+>>>>>>> v4.9.227
 };
 
 /* The normal way to synchronize with the GPU is just to CPU_PREP on
@@ -214,6 +280,7 @@ struct drm_msm_wait_fence {
 	struct drm_msm_timespec timeout;   /* in */
 };
 
+<<<<<<< HEAD
 /*
  * User space can get the last fence processed by the GPU
  * */
@@ -344,6 +411,27 @@ struct drm_msm_gem_close {
 	__u32 context_id; /* in, context id */
 	__u32 timestamp;  /* in, timestamp to free the GEM object */
 	__u32 pad;
+=======
+/* madvise provides a way to tell the kernel in case a buffers contents
+ * can be discarded under memory pressure, which is useful for userspace
+ * bo cache where we want to optimistically hold on to buffer allocate
+ * and potential mmap, but allow the pages to be discarded under memory
+ * pressure.
+ *
+ * Typical usage would involve madvise(DONTNEED) when buffer enters BO
+ * cache, and madvise(WILLNEED) if trying to recycle buffer from BO cache.
+ * In the WILLNEED case, 'retained' indicates to userspace whether the
+ * backing pages still exist.
+ */
+#define MSM_MADV_WILLNEED 0       /* backing pages are needed, status returned in 'retained' */
+#define MSM_MADV_DONTNEED 1       /* backing pages not needed */
+#define __MSM_MADV_PURGED 2       /* internal state */
+
+struct drm_msm_gem_madvise {
+	__u32 handle;         /* in, GEM handle */
+	__u32 madv;           /* in, MSM_MADV_x */
+	__u32 retained;       /* out, whether backing store still exists */
+>>>>>>> v4.9.227
 };
 
 #define DRM_MSM_GET_PARAM              0x00
@@ -356,6 +444,7 @@ struct drm_msm_gem_close {
 #define DRM_MSM_GEM_CPU_FINI           0x05
 #define DRM_MSM_GEM_SUBMIT             0x06
 #define DRM_MSM_WAIT_FENCE             0x07
+<<<<<<< HEAD
 #define DRM_MSM_GET_LAST_FENCE         0x08
 #define DRM_SDE_WB_CONFIG              0x09
 #define DRM_MSM_PERFCOUNTER_READ       0x0A
@@ -369,6 +458,10 @@ struct drm_msm_gem_close {
 #define DRM_MSM_CONTEXT_SUBMIT         0x12
 #define DRM_MSM_GEM_CLOSE              0x13
 #define DRM_MSM_NUM_IOCTLS             0x14
+=======
+#define DRM_MSM_GEM_MADVISE            0x08
+#define DRM_MSM_NUM_IOCTLS             0x09
+>>>>>>> v4.9.227
 
 #define DRM_IOCTL_MSM_GET_PARAM        DRM_IOWR(DRM_COMMAND_BASE + DRM_MSM_GET_PARAM, struct drm_msm_param)
 #define DRM_IOCTL_MSM_GEM_NEW          DRM_IOWR(DRM_COMMAND_BASE + DRM_MSM_GEM_NEW, struct drm_msm_gem_new)
@@ -377,6 +470,7 @@ struct drm_msm_gem_close {
 #define DRM_IOCTL_MSM_GEM_CPU_FINI     DRM_IOW (DRM_COMMAND_BASE + DRM_MSM_GEM_CPU_FINI, struct drm_msm_gem_cpu_fini)
 #define DRM_IOCTL_MSM_GEM_SUBMIT       DRM_IOWR(DRM_COMMAND_BASE + DRM_MSM_GEM_SUBMIT, struct drm_msm_gem_submit)
 #define DRM_IOCTL_MSM_WAIT_FENCE       DRM_IOW (DRM_COMMAND_BASE + DRM_MSM_WAIT_FENCE, struct drm_msm_wait_fence)
+<<<<<<< HEAD
 #define DRM_IOCTL_MSM_GET_LAST_FENCE \
 	(DRM_IOR((DRM_COMMAND_BASE + DRM_MSM_GET_LAST_FENCE), \
 	struct drm_msm_get_last_fence))
@@ -462,5 +556,12 @@ struct drm_msm_gem_close {
 
 #define DRM_MSM_PERFCOUNTER_NOT_USED 0xFFFFFFFF
 #define DRM_MSM_PERFCOUNTER_BROKEN 0xFFFFFFFE
+=======
+#define DRM_IOCTL_MSM_GEM_MADVISE      DRM_IOWR(DRM_COMMAND_BASE + DRM_MSM_GEM_MADVISE, struct drm_msm_gem_madvise)
+
+#if defined(__cplusplus)
+}
+#endif
+>>>>>>> v4.9.227
 
 #endif /* __MSM_DRM_H__ */

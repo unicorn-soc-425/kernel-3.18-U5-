@@ -5,11 +5,17 @@
 config NET_VENDOR_TI
 	bool "Texas Instruments (TI) devices"
 	default y
+<<<<<<< HEAD
 	depends on PCI || EISA || AR7 || (ARM && (ARCH_DAVINCI || ARCH_OMAP3 || SOC_AM33XX || ARCH_KEYSTONE))
 	---help---
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	depends on PCI || EISA || AR7 || ARCH_DAVINCI || ARCH_OMAP2PLUS || ARCH_KEYSTONE
+	---help---
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> v4.9.227
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -32,7 +38,11 @@ config TI_DAVINCI_EMAC
 
 config TI_DAVINCI_MDIO
 	tristate "TI DaVinci MDIO Support"
+<<<<<<< HEAD
 	depends on ARM && ( ARCH_DAVINCI || ARCH_OMAP3 || SOC_AM33XX || ARCH_KEYSTONE )
+=======
+	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || ARCH_KEYSTONE
+>>>>>>> v4.9.227
 	select PHYLIB
 	---help---
 	  This driver supports TI's DaVinci MDIO module.
@@ -42,7 +52,11 @@ config TI_DAVINCI_MDIO
 
 config TI_DAVINCI_CPDMA
 	tristate "TI DaVinci CPDMA Support"
+<<<<<<< HEAD
 	depends on ARM && ( ARCH_DAVINCI || ARCH_OMAP3 || SOC_AM33XX )
+=======
+	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS
+>>>>>>> v4.9.227
 	---help---
 	  This driver supports TI's DaVinci CPDMA dma engine.
 
@@ -50,18 +64,37 @@ config TI_DAVINCI_CPDMA
 	  will be called davinci_cpdma.  This is recommended.
 
 config TI_CPSW_PHY_SEL
+<<<<<<< HEAD
 	boolean "TI CPSW Switch Phy sel Support"
 	depends on TI_CPSW
+=======
+	bool
+>>>>>>> v4.9.227
 	---help---
 	  This driver supports configuring of the phy mode connected to
 	  the CPSW.
 
+<<<<<<< HEAD
 config TI_CPSW
 	tristate "TI CPSW Switch Support"
 	depends on ARM && (ARCH_DAVINCI || SOC_AM33XX)
 	select TI_DAVINCI_CPDMA
 	select TI_DAVINCI_MDIO
 	select TI_CPSW_PHY_SEL
+=======
+config TI_CPSW_ALE
+	tristate "TI CPSW ALE Support"
+	---help---
+	  This driver supports TI's CPSW ALE module.
+
+config TI_CPSW
+	tristate "TI CPSW Switch Support"
+	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS
+	select TI_DAVINCI_CPDMA
+	select TI_DAVINCI_MDIO
+	select TI_CPSW_PHY_SEL
+	select TI_CPSW_ALE
+>>>>>>> v4.9.227
 	select MFD_SYSCON
 	select REGMAP
 	---help---
@@ -71,7 +104,11 @@ config TI_CPSW
 	  will be called cpsw.
 
 config TI_CPTS
+<<<<<<< HEAD
 	boolean "TI Common Platform Time Sync (CPTS) Support"
+=======
+	bool "TI Common Platform Time Sync (CPTS) Support"
+>>>>>>> v4.9.227
 	depends on TI_CPSW
 	select PTP_1588_CLOCK
 	---help---
@@ -79,14 +116,41 @@ config TI_CPTS
 	  the CPSW Ethernet Switch. The unit can time stamp PTP UDP/IPv4
 	  and Layer 2 packets, and the driver offers a PTP Hardware Clock.
 
+<<<<<<< HEAD
+=======
+config TI_KEYSTONE_NETCP
+	tristate "TI Keystone NETCP Core Support"
+	select TI_CPSW_ALE
+	select TI_DAVINCI_MDIO
+	depends on OF
+	depends on KEYSTONE_NAVIGATOR_DMA && KEYSTONE_NAVIGATOR_QMSS
+	---help---
+	  This driver supports TI's Keystone NETCP Core.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called keystone_netcp.
+
+config TI_KEYSTONE_NETCP_ETHSS
+	depends on TI_KEYSTONE_NETCP
+	tristate "TI Keystone NETCP Ethernet subsystem Support"
+	---help---
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called keystone_netcp_ethss.
+
+>>>>>>> v4.9.227
 config TLAN
 	tristate "TI ThunderLAN support"
 	depends on (PCI || EISA)
 	---help---
 	  If you have a PCI Ethernet network card based on the ThunderLAN chip
+<<<<<<< HEAD
 	  which is supported by this driver, say Y and read the
 	  Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	  which is supported by this driver, say Y here.
+>>>>>>> v4.9.227
 
 	  Devices currently supported by this driver are Compaq Netelligent,
 	  Compaq NetFlex and Olicom cards.  Please read the file

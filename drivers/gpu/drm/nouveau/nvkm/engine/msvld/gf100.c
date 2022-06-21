@@ -35,7 +35,10 @@ gf100_msvld_init(struct nvkm_falcon *msvld)
 
 static const struct nvkm_falcon_func
 gf100_msvld = {
+<<<<<<< HEAD
 	.pmc_enable = 0x00008000,
+=======
+>>>>>>> v4.9.227
 	.init = gf100_msvld_init,
 	.sclass = {
 		{ -1, -1, GF100_MSVLD },

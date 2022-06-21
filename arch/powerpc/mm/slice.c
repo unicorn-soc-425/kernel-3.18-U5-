@@ -37,8 +37,13 @@
 #include <asm/hugetlb.h>
 
 /* some sanity checks */
+<<<<<<< HEAD
 #if (PGTABLE_RANGE >> 43) > SLICE_MASK_SIZE
 #error PGTABLE_RANGE exceeds slice_mask high_slices size
+=======
+#if (H_PGTABLE_RANGE >> 43) > SLICE_MASK_SIZE
+#error H_PGTABLE_RANGE exceeds slice_mask high_slices size
+>>>>>>> v4.9.227
 #endif
 
 static DEFINE_SPINLOCK(slice_convert_lock);
@@ -185,8 +190,12 @@ static void slice_flush_segments(void *parm)
 	if (mm != current->active_mm)
 		return;
 
+<<<<<<< HEAD
 	/* update the paca copy of the context struct */
 	get_paca()->context = current->active_mm->context;
+=======
+	copy_mm_to_paca(&current->active_mm->context);
+>>>>>>> v4.9.227
 
 	local_irq_save(flags);
 	slb_flush_and_rebolt();
@@ -396,6 +405,10 @@ unsigned long slice_get_unmapped_area(unsigned long addr, unsigned long len,
 
 	/* Sanity checks */
 	BUG_ON(mm->task_size == 0);
+<<<<<<< HEAD
+=======
+	VM_BUG_ON(radix_enabled());
+>>>>>>> v4.9.227
 
 	slice_dbg("slice_get_unmapped_area(mm=%p, psize=%d...\n", mm, psize);
 	slice_dbg(" addr=%lx, len=%lx, flags=%lx, topdown=%d\n",
@@ -569,6 +582,19 @@ unsigned int get_slice_psize(struct mm_struct *mm, unsigned long addr)
 	unsigned char *hpsizes;
 	int index, mask_index;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Radix doesn't use slice, but can get enabled along with MMU_SLICE
+	 */
+	if (radix_enabled()) {
+#ifdef CONFIG_PPC_64K_PAGES
+		return MMU_PAGE_64K;
+#else
+		return MMU_PAGE_4K;
+#endif
+	}
+>>>>>>> v4.9.227
 	if (addr < SLICE_LOW_TOP) {
 		u64 lpsizes;
 		lpsizes = mm->context.low_slices_psize;
@@ -606,6 +632,10 @@ void slice_set_user_psize(struct mm_struct *mm, unsigned int psize)
 
 	slice_dbg("slice_set_user_psize(mm=%p, psize=%d)\n", mm, psize);
 
+<<<<<<< HEAD
+=======
+	VM_BUG_ON(radix_enabled());
+>>>>>>> v4.9.227
 	spin_lock_irqsave(&slice_convert_lock, flags);
 
 	old_psize = mm->context.user_psize;
@@ -645,6 +675,7 @@ void slice_set_user_psize(struct mm_struct *mm, unsigned int psize)
 	spin_unlock_irqrestore(&slice_convert_lock, flags);
 }
 
+<<<<<<< HEAD
 void slice_set_psize(struct mm_struct *mm, unsigned long address,
 		     unsigned int psize)
 {
@@ -674,11 +705,17 @@ void slice_set_psize(struct mm_struct *mm, unsigned long address,
 	copro_flush_all_slbs(mm);
 }
 
+=======
+>>>>>>> v4.9.227
 void slice_set_range_psize(struct mm_struct *mm, unsigned long start,
 			   unsigned long len, unsigned int psize)
 {
 	struct slice_mask mask = slice_range_to_mask(start, len);
 
+<<<<<<< HEAD
+=======
+	VM_BUG_ON(radix_enabled());
+>>>>>>> v4.9.227
 	slice_convert(mm, mask, psize);
 }
 
@@ -708,6 +745,12 @@ int is_hugepage_only_range(struct mm_struct *mm, unsigned long addr,
 	struct slice_mask mask, available;
 	unsigned int psize = mm->context.user_psize;
 
+<<<<<<< HEAD
+=======
+	if (radix_enabled())
+		return 0;
+
+>>>>>>> v4.9.227
 	mask = slice_range_to_mask(addr, len);
 	available = slice_mask_for_size(mm, psize);
 #ifdef CONFIG_PPC_64K_PAGES

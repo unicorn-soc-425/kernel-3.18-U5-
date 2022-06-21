@@ -61,6 +61,11 @@ static void gfar_gdrvinfo(struct net_device *dev,
 			  struct ethtool_drvinfo *drvinfo);
 
 static const char stat_gstrings[][ETH_GSTRING_LEN] = {
+<<<<<<< HEAD
+=======
+	/* extra stats */
+	"rx-allocation-errors",
+>>>>>>> v4.9.227
 	"rx-large-frame-errors",
 	"rx-short-frame-errors",
 	"rx-non-octet-errors",
@@ -72,8 +77,13 @@ static const char stat_gstrings[][ETH_GSTRING_LEN] = {
 	"ethernet-bus-error",
 	"tx-babbling-errors",
 	"tx-underrun-errors",
+<<<<<<< HEAD
 	"rx-skb-missing-errors",
 	"tx-timeout-errors",
+=======
+	"tx-timeout-errors",
+	/* rmon stats */
+>>>>>>> v4.9.227
 	"tx-rx-64-frames",
 	"tx-rx-65-127-frames",
 	"tx-rx-128-255-frames",
@@ -180,6 +190,7 @@ static void gfar_gdrvinfo(struct net_device *dev,
 		sizeof(drvinfo->version));
 	strlcpy(drvinfo->fw_version, "N/A", sizeof(drvinfo->fw_version));
 	strlcpy(drvinfo->bus_info, "N/A", sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->regdump_len = 0;
 	drvinfo->eedump_len = 0;
 }
@@ -216,6 +227,8 @@ static int gfar_gsettings(struct net_device *dev, struct ethtool_cmd *cmd)
 	cmd->maxrxpkt = get_icft_value(rx_queue->rxic);
 
 	return phy_ethtool_gset(phydev, cmd);
+=======
+>>>>>>> v4.9.227
 }
 
 /* Return the length of the register structure */
@@ -242,10 +255,19 @@ static void gfar_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 static unsigned int gfar_usecs2ticks(struct gfar_private *priv,
 				     unsigned int usecs)
 {
+<<<<<<< HEAD
 	unsigned int count;
 
 	/* The timer is different, depending on the interface speed */
 	switch (priv->phydev->speed) {
+=======
+	struct net_device *ndev = priv->ndev;
+	struct phy_device *phydev = ndev->phydev;
+	unsigned int count;
+
+	/* The timer is different, depending on the interface speed */
+	switch (phydev->speed) {
+>>>>>>> v4.9.227
 	case SPEED_1000:
 		count = GFAR_GBIT_TIME;
 		break;
@@ -267,10 +289,19 @@ static unsigned int gfar_usecs2ticks(struct gfar_private *priv,
 static unsigned int gfar_ticks2usecs(struct gfar_private *priv,
 				     unsigned int ticks)
 {
+<<<<<<< HEAD
 	unsigned int count;
 
 	/* The timer is different, depending on the interface speed */
 	switch (priv->phydev->speed) {
+=======
+	struct net_device *ndev = priv->ndev;
+	struct phy_device *phydev = ndev->phydev;
+	unsigned int count;
+
+	/* The timer is different, depending on the interface speed */
+	switch (phydev->speed) {
+>>>>>>> v4.9.227
 	case SPEED_1000:
 		count = GFAR_GBIT_TIME;
 		break;
@@ -304,7 +335,11 @@ static int gfar_gcoalesce(struct net_device *dev,
 	if (!(priv->device_flags & FSL_GIANFAR_DEV_HAS_COALESCE))
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	if (NULL == priv->phydev)
+=======
+	if (!dev->phydev)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	rx_queue = priv->rx_queue[0];
@@ -365,7 +400,11 @@ static int gfar_scoalesce(struct net_device *dev,
 	if (!(priv->device_flags & FSL_GIANFAR_DEV_HAS_COALESCE))
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	if (NULL == priv->phydev)
+=======
+	if (!dev->phydev)
+>>>>>>> v4.9.227
 		return -ENODEV;
 
 	/* Check the bounds of the values */
@@ -529,7 +568,11 @@ static int gfar_spauseparam(struct net_device *dev,
 			    struct ethtool_pauseparam *epause)
 {
 	struct gfar_private *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = priv->phydev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> v4.9.227
 	struct gfar __iomem *regs = priv->gfargrp[0].regs;
 	u32 oldadv, newadv;
 
@@ -579,8 +622,18 @@ static int gfar_spauseparam(struct net_device *dev,
 			u32 tempval;
 			tempval = gfar_read(&regs->maccfg1);
 			tempval &= ~(MACCFG1_TX_FLOW | MACCFG1_RX_FLOW);
+<<<<<<< HEAD
 			if (priv->tx_pause_en)
 				tempval |= MACCFG1_TX_FLOW;
+=======
+
+			priv->tx_actual_en = 0;
+			if (priv->tx_pause_en) {
+				priv->tx_actual_en = 1;
+				tempval |= MACCFG1_TX_FLOW;
+			}
+
+>>>>>>> v4.9.227
 			if (priv->rx_pause_en)
 				tempval |= MACCFG1_RX_FLOW;
 			gfar_write(&regs->maccfg1, tempval);
@@ -637,17 +690,35 @@ static void gfar_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
 	struct gfar_private *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if (priv->device_flags & FSL_GIANFAR_DEV_HAS_MAGIC_PACKET) {
 		wol->supported = WAKE_MAGIC;
 		wol->wolopts = priv->wol_en ? WAKE_MAGIC : 0;
 	} else {
 		wol->supported = wol->wolopts = 0;
 	}
+=======
+	wol->supported = 0;
+	wol->wolopts = 0;
+
+	if (priv->wol_supported & GFAR_WOL_MAGIC)
+		wol->supported |= WAKE_MAGIC;
+
+	if (priv->wol_supported & GFAR_WOL_FILER_UCAST)
+		wol->supported |= WAKE_UCAST;
+
+	if (priv->wol_opts & GFAR_WOL_MAGIC)
+		wol->wolopts |= WAKE_MAGIC;
+
+	if (priv->wol_opts & GFAR_WOL_FILER_UCAST)
+		wol->wolopts |= WAKE_UCAST;
+>>>>>>> v4.9.227
 }
 
 static int gfar_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
 	struct gfar_private *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (!(priv->device_flags & FSL_GIANFAR_DEV_HAS_MAGIC_PACKET) &&
@@ -662,6 +733,32 @@ static int gfar_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	spin_lock_irqsave(&priv->bflock, flags);
 	priv->wol_en =  !!device_may_wakeup(&dev->dev);
 	spin_unlock_irqrestore(&priv->bflock, flags);
+=======
+	u16 wol_opts = 0;
+	int err;
+
+	if (!priv->wol_supported && wol->wolopts)
+		return -EINVAL;
+
+	if (wol->wolopts & ~(WAKE_MAGIC | WAKE_UCAST))
+		return -EINVAL;
+
+	if (wol->wolopts & WAKE_MAGIC) {
+		wol_opts |= GFAR_WOL_MAGIC;
+	} else {
+		if (wol->wolopts & WAKE_UCAST)
+			wol_opts |= GFAR_WOL_FILER_UCAST;
+	}
+
+	wol_opts &= priv->wol_supported;
+	priv->wol_opts = 0;
+
+	err = device_set_wakeup_enable(priv->dev, wol_opts);
+	if (err)
+		return err;
+
+	priv->wol_opts = wol_opts;
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -672,14 +769,22 @@ static void ethflow_to_filer_rules (struct gfar_private *priv, u64 ethflow)
 	u32 fcr = 0x0, fpr = FPR_FILER_MASK;
 
 	if (ethflow & RXH_L2DA) {
+<<<<<<< HEAD
 		fcr = RQFCR_PID_DAH |RQFCR_CMP_NOMATCH |
+=======
+		fcr = RQFCR_PID_DAH | RQFCR_CMP_NOMATCH |
+>>>>>>> v4.9.227
 		      RQFCR_HASH | RQFCR_AND | RQFCR_HASHTBL_0;
 		priv->ftp_rqfpr[priv->cur_filer_idx] = fpr;
 		priv->ftp_rqfcr[priv->cur_filer_idx] = fcr;
 		gfar_write_filer(priv, priv->cur_filer_idx, fcr, fpr);
 		priv->cur_filer_idx = priv->cur_filer_idx - 1;
 
+<<<<<<< HEAD
 		fcr = RQFCR_PID_DAL | RQFCR_AND | RQFCR_CMP_NOMATCH |
+=======
+		fcr = RQFCR_PID_DAL | RQFCR_CMP_NOMATCH |
+>>>>>>> v4.9.227
 		      RQFCR_HASH | RQFCR_AND | RQFCR_HASHTBL_0;
 		priv->ftp_rqfpr[priv->cur_filer_idx] = fpr;
 		priv->ftp_rqfcr[priv->cur_filer_idx] = fcr;
@@ -898,6 +1003,7 @@ static int gfar_check_filer_hardware(struct gfar_private *priv)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int gfar_comp_asc(const void *a, const void *b)
 {
 	return memcmp(a, b, 4);
@@ -919,6 +1025,8 @@ static void gfar_swap(void *a, void *b, int size)
 	swap(_a[3], _b[3]);
 }
 
+=======
+>>>>>>> v4.9.227
 /* Write a mask to filer cache */
 static void gfar_set_mask(u32 mask, struct filer_table *tab)
 {
@@ -1268,6 +1376,7 @@ static int gfar_convert_to_filer(struct ethtool_rx_flow_spec *rule,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Copy size filer entries */
 static void gfar_copy_filer_entries(struct gfar_filer_entry dst[0],
 				    struct gfar_filer_entry src[0], s32 size)
@@ -1572,6 +1681,8 @@ end:	kfree(temp_table);
 	return ret;
 }
 
+=======
+>>>>>>> v4.9.227
 /* Write the bit-pattern from software's buffer to hardware registers */
 static int gfar_write_filer_table(struct gfar_private *priv,
 				  struct filer_table *tab)
@@ -1581,11 +1692,18 @@ static int gfar_write_filer_table(struct gfar_private *priv,
 		return -EBUSY;
 
 	/* Fill regular entries */
+<<<<<<< HEAD
 	for (; i < MAX_FILER_IDX - 1 && (tab->fe[i].ctrl | tab->fe[i].ctrl);
 	     i++)
 		gfar_write_filer(priv, i, tab->fe[i].ctrl, tab->fe[i].prop);
 	/* Fill the rest with fall-troughs */
 	for (; i < MAX_FILER_IDX - 1; i++)
+=======
+	for (; i < MAX_FILER_IDX && (tab->fe[i].ctrl | tab->fe[i].prop); i++)
+		gfar_write_filer(priv, i, tab->fe[i].ctrl, tab->fe[i].prop);
+	/* Fill the rest with fall-troughs */
+	for (; i < MAX_FILER_IDX; i++)
+>>>>>>> v4.9.227
 		gfar_write_filer(priv, i, 0x60, 0xFFFFFFFF);
 	/* Last entry must be default accept
 	 * because that's what people expect
@@ -1619,7 +1737,10 @@ static int gfar_process_filer_changes(struct gfar_private *priv)
 {
 	struct ethtool_flow_spec_container *j;
 	struct filer_table *tab;
+<<<<<<< HEAD
 	s32 i = 0;
+=======
+>>>>>>> v4.9.227
 	s32 ret = 0;
 
 	/* So index is set to zero, too! */
@@ -1644,6 +1765,7 @@ static int gfar_process_filer_changes(struct gfar_private *priv)
 		}
 	}
 
+<<<<<<< HEAD
 	i = tab->index;
 
 	/* Optimizations to save entries */
@@ -1655,6 +1777,8 @@ static int gfar_process_filer_changes(struct gfar_private *priv)
 		 "\tCompression rate: %d%%\n",
 		 tab->index, 100 - (100 * tab->index) / i);
 
+=======
+>>>>>>> v4.9.227
 	/* Write everything to hardware */
 	ret = gfar_write_filer_table(priv, tab);
 	if (ret == -EBUSY) {
@@ -1720,6 +1844,7 @@ static int gfar_add_cls(struct gfar_private *priv,
 	}
 
 process:
+<<<<<<< HEAD
 	ret = gfar_process_filer_changes(priv);
 	if (ret)
 		goto clean_list;
@@ -1727,6 +1852,16 @@ process:
 	return ret;
 
 clean_list:
+=======
+	priv->rx_list.count++;
+	ret = gfar_process_filer_changes(priv);
+	if (ret)
+		goto clean_list;
+	return ret;
+
+clean_list:
+	priv->rx_list.count--;
+>>>>>>> v4.9.227
 	list_del(&temp->list);
 clean_mem:
 	kfree(temp);
@@ -1879,8 +2014,11 @@ static int gfar_get_ts_info(struct net_device *dev,
 }
 
 const struct ethtool_ops gfar_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings = gfar_gsettings,
 	.set_settings = gfar_ssettings,
+=======
+>>>>>>> v4.9.227
 	.get_drvinfo = gfar_gdrvinfo,
 	.get_regs_len = gfar_reglen,
 	.get_regs = gfar_get_regs,
@@ -1903,4 +2041,9 @@ const struct ethtool_ops gfar_ethtool_ops = {
 	.set_rxnfc = gfar_set_nfc,
 	.get_rxnfc = gfar_get_nfc,
 	.get_ts_info = gfar_get_ts_info,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> v4.9.227
 };

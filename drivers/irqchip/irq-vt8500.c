@@ -27,6 +27,10 @@
 #include <linux/slab.h>
 #include <linux/io.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/irqdomain.h>
 #include <linux/interrupt.h>
 #include <linux/bitops.h>
@@ -39,8 +43,11 @@
 #include <asm/exception.h>
 #include <asm/mach/irq.h>
 
+<<<<<<< HEAD
 #include "irqchip.h"
 
+=======
+>>>>>>> v4.9.227
 #define VT8500_ICPC_IRQ		0x20
 #define VT8500_ICPC_FIQ		0x24
 #define VT8500_ICDC		0x40		/* Destination Control 64*u32 */
@@ -127,6 +134,7 @@ static int vt8500_irq_set_type(struct irq_data *d, unsigned int flow_type)
 		return -EINVAL;
 	case IRQF_TRIGGER_HIGH:
 		dctr |= VT8500_TRIGGER_HIGH;
+<<<<<<< HEAD
 		__irq_set_handler_locked(d->irq, handle_level_irq);
 		break;
 	case IRQF_TRIGGER_FALLING:
@@ -136,6 +144,17 @@ static int vt8500_irq_set_type(struct irq_data *d, unsigned int flow_type)
 	case IRQF_TRIGGER_RISING:
 		dctr |= VT8500_TRIGGER_RISING;
 		__irq_set_handler_locked(d->irq, handle_edge_irq);
+=======
+		irq_set_handler_locked(d, handle_level_irq);
+		break;
+	case IRQF_TRIGGER_FALLING:
+		dctr |= VT8500_TRIGGER_FALLING;
+		irq_set_handler_locked(d, handle_edge_irq);
+		break;
+	case IRQF_TRIGGER_RISING:
+		dctr |= VT8500_TRIGGER_RISING;
+		irq_set_handler_locked(d, handle_edge_irq);
+>>>>>>> v4.9.227
 		break;
 	}
 	writeb(dctr, base + VT8500_ICDC + d->hwirq);
@@ -168,12 +187,19 @@ static int vt8500_irq_map(struct irq_domain *h, unsigned int virq,
 							irq_hw_number_t hw)
 {
 	irq_set_chip_and_handler(virq, &vt8500_irq_chip, handle_level_irq);
+<<<<<<< HEAD
 	set_irq_flags(virq, IRQF_VALID);
+=======
+>>>>>>> v4.9.227
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops vt8500_irq_domain_ops = {
+=======
+static const struct irq_domain_ops vt8500_irq_domain_ops = {
+>>>>>>> v4.9.227
 	.map = vt8500_irq_map,
 	.xlate = irq_domain_xlate_onecell,
 };

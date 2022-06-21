@@ -17,10 +17,17 @@
 
 #include "xfs.h"
 #include "xfs_fs.h"
+<<<<<<< HEAD
 #include "xfs_log_format.h"
 #include "xfs_trans_resv.h"
 #include "xfs_sb.h"
 #include "xfs_ag.h"
+=======
+#include "xfs_error.h"
+#include "xfs_format.h"
+#include "xfs_log_format.h"
+#include "xfs_trans_resv.h"
+>>>>>>> v4.9.227
 #include "xfs_mount.h"
 
 /*
@@ -44,6 +51,10 @@ void func(const struct xfs_mount *mp, const char *fmt, ...)	\
 {								\
 	struct va_format	vaf;				\
 	va_list			args;				\
+<<<<<<< HEAD
+=======
+	int			level;				\
+>>>>>>> v4.9.227
 								\
 	va_start(args, fmt);					\
 								\
@@ -52,6 +63,14 @@ void func(const struct xfs_mount *mp, const char *fmt, ...)	\
 								\
 	__xfs_printk(kern_level, mp, &vaf);			\
 	va_end(args);						\
+<<<<<<< HEAD
+=======
+								\
+	if (!kstrtoint(kern_level, 0, &level) &&		\
+	    level <= LOGLEVEL_ERR &&				\
+	    xfs_error_level >= XFS_ERRLEVEL_HIGH)		\
+		xfs_stack_trace();				\
+>>>>>>> v4.9.227
 }								\
 
 define_xfs_printk_level(xfs_emerg, KERN_EMERG);

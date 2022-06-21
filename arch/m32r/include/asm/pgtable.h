@@ -53,7 +53,11 @@ extern unsigned long empty_zero_page[1024];
 #define PGDIR_MASK	(~(PGDIR_SIZE - 1))
 
 #define USER_PTRS_PER_PGD	(TASK_SIZE / PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> v4.9.227
 
 #ifndef __ASSEMBLY__
 /* Just any arbitrary offset to the start of the vmalloc VM area: the
@@ -80,8 +84,11 @@ extern unsigned long empty_zero_page[1024];
  */
 
 #define _PAGE_BIT_DIRTY		0	/* software: page changed */
+<<<<<<< HEAD
 #define _PAGE_BIT_FILE		0	/* when !present: nonlinear file
 					   mapping */
+=======
+>>>>>>> v4.9.227
 #define _PAGE_BIT_PRESENT	1	/* Valid: page is valid */
 #define _PAGE_BIT_GLOBAL	2	/* Global */
 #define _PAGE_BIT_LARGE		3	/* Large */
@@ -93,7 +100,10 @@ extern unsigned long empty_zero_page[1024];
 #define _PAGE_BIT_PROTNONE	9	/* software: if not present */
 
 #define _PAGE_DIRTY		(1UL << _PAGE_BIT_DIRTY)
+<<<<<<< HEAD
 #define _PAGE_FILE		(1UL << _PAGE_BIT_FILE)
+=======
+>>>>>>> v4.9.227
 #define _PAGE_PRESENT		(1UL << _PAGE_BIT_PRESENT)
 #define _PAGE_GLOBAL		(1UL << _PAGE_BIT_GLOBAL)
 #define _PAGE_LARGE		(1UL << _PAGE_BIT_LARGE)
@@ -206,6 +216,7 @@ static inline int pte_write(pte_t pte)
 	return pte_val(pte) & _PAGE_WRITE;
 }
 
+<<<<<<< HEAD
 /*
  * The following only works if pte_present() is not true.
  */
@@ -214,6 +225,8 @@ static inline int pte_file(pte_t pte)
 	return pte_val(pte) & _PAGE_FILE;
 }
 
+=======
+>>>>>>> v4.9.227
 static inline int pte_special(pte_t pte)
 {
 	return 0;

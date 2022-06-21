@@ -14,7 +14,11 @@ extern const char bad_pmd_string[];
 extern inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm,
 	unsigned long address)
 {
+<<<<<<< HEAD
 	unsigned long page = __get_free_page(GFP_DMA|__GFP_REPEAT);
+=======
+	unsigned long page = __get_free_page(GFP_DMA);
+>>>>>>> v4.9.227
 
 	if (!page)
 		return NULL;
@@ -52,7 +56,11 @@ static inline void __pte_free_tlb(struct mmu_gather *tlb, pgtable_t page,
 static inline struct page *pte_alloc_one(struct mm_struct *mm,
 	unsigned long address)
 {
+<<<<<<< HEAD
 	struct page *page = alloc_pages(GFP_DMA|__GFP_REPEAT, 0);
+=======
+	struct page *page = alloc_pages(GFP_DMA, 0);
+>>>>>>> v4.9.227
 	pte_t *pte;
 
 	if (!page)

@@ -22,7 +22,11 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> v4.9.227
  */
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -45,7 +49,11 @@ struct lnbp21 {
 };
 
 static int lnbp21_set_voltage(struct dvb_frontend *fe,
+<<<<<<< HEAD
 					fe_sec_voltage_t voltage)
+=======
+			      enum fe_sec_voltage voltage)
+>>>>>>> v4.9.227
 {
 	struct lnbp21 *lnbp21 = (struct lnbp21 *) fe->sec_priv;
 	struct i2c_msg msg = {	.addr = lnbp21->i2c_addr, .flags = 0,
@@ -92,7 +100,11 @@ static int lnbp21_enable_high_lnb_voltage(struct dvb_frontend *fe, long arg)
 }
 
 static int lnbp21_set_tone(struct dvb_frontend *fe,
+<<<<<<< HEAD
 				fe_sec_tone_mode_t tone)
+=======
+			   enum fe_sec_tone_mode tone)
+>>>>>>> v4.9.227
 {
 	struct lnbp21 *lnbp21 = (struct lnbp21 *) fe->sec_priv;
 	struct i2c_msg msg = {	.addr = lnbp21->i2c_addr, .flags = 0,

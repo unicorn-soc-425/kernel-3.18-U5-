@@ -614,7 +614,11 @@ typedef enum {
 /* Assume contoller gets data 10 times the maximum processing time */
 #define  REPEAT_CNT			10
 
+<<<<<<< HEAD
 /* amd8111e decriptor flag definitions */
+=======
+/* amd8111e descriptor flag definitions */
+>>>>>>> v4.9.227
 typedef enum {
 
 	OWN_BIT		=	(1 << 15),

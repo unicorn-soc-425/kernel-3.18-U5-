@@ -96,6 +96,12 @@ struct port_info {
 	s16 xact_addr_filt;		/* index of our MAC address filter */
 	u16 rss_size;			/* size of VI's RSS table slice */
 	u8 pidx;			/* index into adapter port[] */
+<<<<<<< HEAD
+=======
+	s8 mdio_addr;
+	u8 port_type;			/* firmware port type */
+	u8 mod_type;			/* firmware module type */
+>>>>>>> v4.9.227
 	u8 port_id;			/* physical port ID */
 	u8 nqsets;			/* # of "Queue Sets" */
 	u8 first_qset;			/* index of first "Queue Set" */
@@ -138,6 +144,11 @@ struct sge_fl {
 	struct rx_sw_desc *sdesc;	/* address of SW RX descriptor ring */
 	__be64 *desc;			/* address of HW RX descriptor ring */
 	dma_addr_t addr;		/* PCI bus address of hardware ring */
+<<<<<<< HEAD
+=======
+	void __iomem *bar2_addr;	/* address of BAR2 Queue registers */
+	unsigned int bar2_qid;		/* Queue ID for BAR2 Queue registers */
+>>>>>>> v4.9.227
 };
 
 /*
@@ -178,6 +189,11 @@ struct sge_rspq {
 	u16 abs_id;			/* SGE abs QID for the response Q */
 	__be64 *desc;			/* address of hardware response ring */
 	dma_addr_t phys_addr;		/* PCI bus address of ring */
+<<<<<<< HEAD
+=======
+	void __iomem *bar2_addr;	/* address of BAR2 Queue registers */
+	unsigned int bar2_qid;		/* Queue ID for BAR2 Queue registers */
+>>>>>>> v4.9.227
 	unsigned int iqe_len;		/* entry size */
 	unsigned int size;		/* capcity of response Q */
 	struct adapter *adapter;	/* our adapter */
@@ -240,6 +256,11 @@ struct sge_txq {
 	struct tx_sw_desc *sdesc;	/* address of SW TX descriptor ring */
 	struct sge_qstat *stat;		/* queue status entry */
 	dma_addr_t phys_addr;		/* PCI bus address of hardware ring */
+<<<<<<< HEAD
+=======
+	void __iomem *bar2_addr;	/* address of BAR2 Queue registers */
+	unsigned int bar2_qid;		/* Queue ID for BAR2 Queue registers */
+>>>>>>> v4.9.227
 };
 
 /*
@@ -339,12 +360,28 @@ struct sge {
 #define for_each_ethrxq(sge, iter) \
 	for (iter = 0; iter < (sge)->ethqsets; iter++)
 
+<<<<<<< HEAD
+=======
+struct hash_mac_addr {
+	struct list_head list;
+	u8 addr[ETH_ALEN];
+};
+
+struct mbox_list {
+	struct list_head list;
+};
+
+>>>>>>> v4.9.227
 /*
  * Per-"adapter" (Virtual Function) information.
  */
 struct adapter {
 	/* PCI resources */
 	void __iomem *regs;
+<<<<<<< HEAD
+=======
+	void __iomem *bar2;
+>>>>>>> v4.9.227
 	struct pci_dev *pdev;
 	struct device *pdev_dev;
 
@@ -371,6 +408,20 @@ struct adapter {
 
 	/* various locks */
 	spinlock_t stats_lock;
+<<<<<<< HEAD
+=======
+
+	/* lock for mailbox cmd list */
+	spinlock_t mbox_lock;
+	struct mbox_list mlist;
+
+	/* support for mailbox command/reply logging */
+#define T4VF_OS_LOG_MBOX_CMDS 256
+	struct mbox_cmd_log *mbox_log;
+
+	/* list of MAC addresses in MPS Hash */
+	struct list_head mac_hlist;
+>>>>>>> v4.9.227
 };
 
 enum { /* adapter flags */
@@ -515,6 +566,10 @@ static inline struct adapter *netdev2adap(const struct net_device *dev)
  * is "contracted" to provide for the common code.
  */
 void t4vf_os_link_changed(struct adapter *, int, int);
+<<<<<<< HEAD
+=======
+void t4vf_os_portmod_changed(struct adapter *, int);
+>>>>>>> v4.9.227
 
 /*
  * SGE function prototype declarations.

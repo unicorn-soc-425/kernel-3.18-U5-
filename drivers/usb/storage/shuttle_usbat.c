@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Driver for SCM Microsystems (a.k.a. Shuttle) USB-ATAPI cable
+=======
+/*
+ * Driver for SCM Microsystems (a.k.a. Shuttle) USB-ATAPI cable
+>>>>>>> v4.9.227
  *
  * Current development and maintenance by:
  *   (c) 2000, 2001 Robert Baruch (autophile@starband.net)
@@ -53,6 +58,12 @@
 #include "transport.h"
 #include "protocol.h"
 #include "debug.h"
+<<<<<<< HEAD
+=======
+#include "scsiglue.h"
+
+#define DRV_NAME "ums-usbat"
+>>>>>>> v4.9.227
 
 MODULE_DESCRIPTION("Driver for SCM Microsystems (a.k.a. Shuttle) USB-ATAPI cable");
 MODULE_AUTHOR("Daniel Drake <dsd@gentoo.org>, Robert Baruch <autophile@starband.net>");
@@ -405,7 +416,12 @@ static int usbat_wait_not_busy(struct us_data *us, int minutes)
 	int result;
 	unsigned char *status = us->iobuf;
 
+<<<<<<< HEAD
 	/* Synchronizing cache on a CDR could take a heck of a long time,
+=======
+	/*
+	 * Synchronizing cache on a CDR could take a heck of a long time,
+>>>>>>> v4.9.227
 	 * but probably not more than 10 minutes or so. On the other hand,
 	 * doing a full blank on a CDRW at speed 1 will take about 75
 	 * minutes!
@@ -1567,9 +1583,16 @@ static int usbat_hp8200e_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	len = scsi_bufflen(srb);
 
+<<<<<<< HEAD
 	/* Send A0 (ATA PACKET COMMAND).
 	   Note: I guess we're never going to get any of the ATA
 	   commands... just ATA Packet Commands.
+=======
+	/*
+	 * Send A0 (ATA PACKET COMMAND).
+	 * Note: I guess we're never going to get any of the ATA
+	 * commands... just ATA Packet Commands.
+>>>>>>> v4.9.227
  	 */
 
 	registers[0] = USBAT_ATA_FEATURES;
@@ -1834,6 +1857,11 @@ static int init_usbat_flash(struct us_data *us)
 	return init_usbat(us, USBAT_DEV_FLASH);
 }
 
+<<<<<<< HEAD
+=======
+static struct scsi_host_template usbat_host_template;
+
+>>>>>>> v4.9.227
 static int usbat_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
@@ -1841,11 +1869,21 @@ static int usbat_probe(struct usb_interface *intf,
 	int result;
 
 	result = usb_stor_probe1(&us, intf, id,
+<<<<<<< HEAD
 			(id - usbat_usb_ids) + usbat_unusual_dev_list);
 	if (result)
 		return result;
 
 	/* The actual transport will be determined later by the
+=======
+			(id - usbat_usb_ids) + usbat_unusual_dev_list,
+			&usbat_host_template);
+	if (result)
+		return result;
+
+	/*
+	 * The actual transport will be determined later by the
+>>>>>>> v4.9.227
 	 * initialization routine; this is just a placeholder.
 	 */
 	us->transport_name = "Shuttle USBAT";
@@ -1858,7 +1896,11 @@ static int usbat_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver usbat_driver = {
+<<<<<<< HEAD
 	.name =		"ums-usbat",
+=======
+	.name =		DRV_NAME,
+>>>>>>> v4.9.227
 	.probe =	usbat_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -1871,4 +1913,8 @@ static struct usb_driver usbat_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(usbat_driver);
+=======
+module_usb_stor_driver(usbat_driver, usbat_host_template, DRV_NAME);
+>>>>>>> v4.9.227

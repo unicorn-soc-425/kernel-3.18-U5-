@@ -4,7 +4,11 @@
 # Copyright 2010, 2011 Texas Instruments Incorporated
 #
 
+<<<<<<< HEAD
 obj-y = platform.o cache.o megamod-pic.o pll.o plldata.o timer64.o
+=======
+obj-y = cache.o megamod-pic.o pll.o plldata.o timer64.o
+>>>>>>> v4.9.227
 obj-y += dscr.o
 
 # SoC objects

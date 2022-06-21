@@ -63,17 +63,33 @@ static int iio_hwmon_probe(struct platform_device *pdev)
 	struct iio_hwmon_state *st;
 	struct sensor_device_attribute *a;
 	int ret, i;
+<<<<<<< HEAD
 	int in_i = 1, temp_i = 1, curr_i = 1;
 	enum iio_chan_type type;
 	struct iio_channel *channels;
 	const char *name = "iio_hwmon";
+=======
+	int in_i = 1, temp_i = 1, curr_i = 1, humidity_i = 1;
+	enum iio_chan_type type;
+	struct iio_channel *channels;
+	const char *name = "iio_hwmon";
+	char *sname;
+>>>>>>> v4.9.227
 
 	if (dev->of_node && dev->of_node->name)
 		name = dev->of_node->name;
 
 	channels = iio_channel_get_all(dev);
+<<<<<<< HEAD
 	if (IS_ERR(channels))
 		return PTR_ERR(channels);
+=======
+	if (IS_ERR(channels)) {
+		if (PTR_ERR(channels) == -ENODEV)
+			return -EPROBE_DEFER;
+		return PTR_ERR(channels);
+	}
+>>>>>>> v4.9.227
 
 	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
 	if (st == NULL) {
@@ -109,6 +125,7 @@ static int iio_hwmon_probe(struct platform_device *pdev)
 
 		switch (type) {
 		case IIO_VOLTAGE:
+<<<<<<< HEAD
 			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
 							  "in%d_input",
 							  in_i++);
@@ -122,6 +139,26 @@ static int iio_hwmon_probe(struct platform_device *pdev)
 			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
 							  "curr%d_input",
 							  curr_i++);
+=======
+			a->dev_attr.attr.name = devm_kasprintf(dev, GFP_KERNEL,
+							       "in%d_input",
+							       in_i++);
+			break;
+		case IIO_TEMP:
+			a->dev_attr.attr.name = devm_kasprintf(dev, GFP_KERNEL,
+							       "temp%d_input",
+							       temp_i++);
+			break;
+		case IIO_CURRENT:
+			a->dev_attr.attr.name = devm_kasprintf(dev, GFP_KERNEL,
+							       "curr%d_input",
+							       curr_i++);
+			break;
+		case IIO_HUMIDITYRELATIVE:
+			a->dev_attr.attr.name = devm_kasprintf(dev, GFP_KERNEL,
+							       "humidity%d_input",
+							       humidity_i++);
+>>>>>>> v4.9.227
 			break;
 		default:
 			ret = -EINVAL;
@@ -139,7 +176,19 @@ static int iio_hwmon_probe(struct platform_device *pdev)
 
 	st->attr_group.attrs = st->attrs;
 	st->groups[0] = &st->attr_group;
+<<<<<<< HEAD
 	st->hwmon_dev = hwmon_device_register_with_groups(dev, name, st,
+=======
+
+	sname = devm_kstrdup(dev, name, GFP_KERNEL);
+	if (!sname) {
+		ret = -ENOMEM;
+		goto error_release_channels;
+	}
+
+	strreplace(sname, '-', '_');
+	st->hwmon_dev = hwmon_device_register_with_groups(dev, sname, st,
+>>>>>>> v4.9.227
 							  st->groups);
 	if (IS_ERR(st->hwmon_dev)) {
 		ret = PTR_ERR(st->hwmon_dev);
@@ -172,7 +221,10 @@ MODULE_DEVICE_TABLE(of, iio_hwmon_of_match);
 static struct platform_driver __refdata iio_hwmon_driver = {
 	.driver = {
 		.name = "iio_hwmon",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.of_match_table = iio_hwmon_of_match,
 	},
 	.probe = iio_hwmon_probe,

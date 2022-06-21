@@ -1,9 +1,19 @@
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+#include <linux/spinlock_types.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <asm/page.h>
 #include <asm/setup.h>
 #include <asm/io.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpufeature.h>
+#include <asm/special_insns.h>
+>>>>>>> v4.9.227
 #include <asm/pgtable.h>
 #include <asm/olpc_ofw.h>
 

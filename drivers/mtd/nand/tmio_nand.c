@@ -103,7 +103,10 @@
 /*--------------------------------------------------------------------------*/
 
 struct tmio_nand {
+<<<<<<< HEAD
 	struct mtd_info mtd;
+=======
+>>>>>>> v4.9.227
 	struct nand_chip chip;
 
 	struct platform_device *dev;
@@ -119,7 +122,14 @@ struct tmio_nand {
 	unsigned read_good:1;
 };
 
+<<<<<<< HEAD
 #define mtd_to_tmio(m)			container_of(m, struct tmio_nand, mtd)
+=======
+static inline struct tmio_nand *mtd_to_tmio(struct mtd_info *mtd)
+{
+	return container_of(mtd_to_nand(mtd), struct tmio_nand, chip);
+}
+>>>>>>> v4.9.227
 
 
 /*--------------------------------------------------------------------------*/
@@ -128,7 +138,11 @@ static void tmio_nand_hwcontrol(struct mtd_info *mtd, int cmd,
 				   unsigned int ctrl)
 {
 	struct tmio_nand *tmio = mtd_to_tmio(mtd);
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> v4.9.227
 
 	if (ctrl & NAND_CTRL_CHANGE) {
 		u8 mode;
@@ -378,10 +392,17 @@ static int tmio_probe(struct platform_device *dev)
 	tmio->dev = dev;
 
 	platform_set_drvdata(dev, tmio);
+<<<<<<< HEAD
 	mtd = &tmio->mtd;
 	nand_chip = &tmio->chip;
 	mtd->priv = nand_chip;
 	mtd->name = "tmio-nand";
+=======
+	nand_chip = &tmio->chip;
+	mtd = nand_to_mtd(nand_chip);
+	mtd->name = "tmio-nand";
+	mtd->dev.parent = &dev->dev;
+>>>>>>> v4.9.227
 
 	tmio->ccr = devm_ioremap(&dev->dev, ccr->start, resource_size(ccr));
 	if (!tmio->ccr)
@@ -455,7 +476,11 @@ static int tmio_remove(struct platform_device *dev)
 {
 	struct tmio_nand *tmio = platform_get_drvdata(dev);
 
+<<<<<<< HEAD
 	nand_release(&tmio->mtd);
+=======
+	nand_release(nand_to_mtd(&tmio->chip));
+>>>>>>> v4.9.227
 	tmio_hw_stop(dev, tmio);
 	return 0;
 }

@@ -62,8 +62,16 @@ kmem_flags_convert(xfs_km_flags_t flags)
 
 extern void *kmem_alloc(size_t, xfs_km_flags_t);
 extern void *kmem_zalloc_large(size_t size, xfs_km_flags_t);
+<<<<<<< HEAD
 extern void *kmem_realloc(const void *, size_t, size_t, xfs_km_flags_t);
 extern void  kmem_free(const void *);
+=======
+extern void *kmem_realloc(const void *, size_t, xfs_km_flags_t);
+static inline void  kmem_free(const void *ptr)
+{
+	kvfree(ptr);
+}
+>>>>>>> v4.9.227
 
 
 static inline void *
@@ -79,6 +87,10 @@ kmem_zalloc(size_t size, xfs_km_flags_t flags)
 #define KM_ZONE_HWALIGN	SLAB_HWCACHE_ALIGN
 #define KM_ZONE_RECLAIM	SLAB_RECLAIM_ACCOUNT
 #define KM_ZONE_SPREAD	SLAB_MEM_SPREAD
+<<<<<<< HEAD
+=======
+#define KM_ZONE_ACCOUNT	SLAB_ACCOUNT
+>>>>>>> v4.9.227
 
 #define kmem_zone	kmem_cache
 #define kmem_zone_t	struct kmem_cache

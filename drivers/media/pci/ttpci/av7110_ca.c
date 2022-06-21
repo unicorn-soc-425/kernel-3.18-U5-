@@ -25,7 +25,11 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org/ 
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> v4.9.227
  */
 
 #include <linux/kernel.h>
@@ -378,7 +382,11 @@ static struct dvb_device dvbdev_ca = {
 int av7110_ca_register(struct av7110 *av7110)
 {
 	return dvb_register_device(&av7110->dvb_adapter, &av7110->ca_dev,
+<<<<<<< HEAD
 				   &dvbdev_ca, av7110, DVB_DEVICE_CA);
+=======
+				   &dvbdev_ca, av7110, DVB_DEVICE_CA, 0);
+>>>>>>> v4.9.227
 }
 
 void av7110_ca_unregister(struct av7110 *av7110)

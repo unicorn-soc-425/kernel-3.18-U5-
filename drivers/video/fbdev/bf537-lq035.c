@@ -554,6 +554,7 @@ static int bfin_lq035_fb_check_var(struct fb_var_screeninfo *var,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* fb_rotate
  * Rotate the display of this angle. This doesn't seems to be used by the core,
  * but as our hardware supports it, so why not implementing it...
@@ -576,6 +577,8 @@ static void bfin_lq035_fb_rotate(struct fb_info *fbi, int angle)
 #endif
 }
 
+=======
+>>>>>>> v4.9.227
 static int bfin_lq035_fb_cursor(struct fb_info *info, struct fb_cursor *cursor)
 {
 	if (nocursor)
@@ -623,7 +626,10 @@ static struct fb_ops bfin_lq035_fb_ops = {
 	.fb_open		= bfin_lq035_fb_open,
 	.fb_release		= bfin_lq035_fb_release,
 	.fb_check_var		= bfin_lq035_fb_check_var,
+<<<<<<< HEAD
 	.fb_rotate		= bfin_lq035_fb_rotate,
+=======
+>>>>>>> v4.9.227
 	.fb_fillrect		= cfb_fillrect,
 	.fb_copyarea		= cfb_copyarea,
 	.fb_imageblit		= cfb_imageblit,
@@ -894,7 +900,10 @@ static struct platform_driver bfin_lq035_driver = {
 	.resume = bfin_lq035_resume,
 	.driver = {
 		.name = KBUILD_MODNAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

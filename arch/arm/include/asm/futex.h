@@ -13,7 +13,11 @@
 	"	.align	3\n"					\
 	"	.long	1b, 4f, 2b, 4f\n"			\
 	"	.popsection\n"					\
+<<<<<<< HEAD
 	"	.pushsection .fixup,\"ax\"\n"			\
+=======
+	"	.pushsection .text.fixup,\"ax\"\n"		\
+>>>>>>> v4.9.227
 	"	.align	2\n"					\
 	"4:	mov	%0, " err_reg "\n"			\
 	"	b	3b\n"					\
@@ -128,6 +132,7 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 #endif /* !SMP */
 
 static inline int
+<<<<<<< HEAD
 futex_atomic_op_inuser (int encoded_op, u32 __user *uaddr)
 {
 	int op = (encoded_op >> 28) & 7;
@@ -142,6 +147,12 @@ futex_atomic_op_inuser (int encoded_op, u32 __user *uaddr)
 	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
 		return -EFAULT;
 
+=======
+arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
+{
+	int oldval = 0, ret, tmp;
+
+>>>>>>> v4.9.227
 #ifndef CONFIG_SMP
 	preempt_disable();
 #endif
@@ -172,6 +183,7 @@ futex_atomic_op_inuser (int encoded_op, u32 __user *uaddr)
 	preempt_enable();
 #endif
 
+<<<<<<< HEAD
 	if (!ret) {
 		switch (cmp) {
 		case FUTEX_OP_CMP_EQ: ret = (oldval == cmparg); break;
@@ -183,6 +195,16 @@ futex_atomic_op_inuser (int encoded_op, u32 __user *uaddr)
 		default: ret = -ENOSYS;
 		}
 	}
+=======
+	/*
+	 * Store unconditionally. If ret != 0 the extra store is the least
+	 * of the worries but GCC cannot figure out that __futex_atomic_op()
+	 * is either setting ret to -EFAULT or storing the old value in
+	 * oldval which results in a uninitialized warning at the call site.
+	 */
+	*oval = oldval;
+
+>>>>>>> v4.9.227
 	return ret;
 }
 

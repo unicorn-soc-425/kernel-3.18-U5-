@@ -11,7 +11,10 @@
  * for more details.
  */
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/profile.h>
 #include <linux/timex.h>
@@ -50,6 +53,7 @@ int update_persistent_clock(struct timespec now)
 }
 #endif
 
+<<<<<<< HEAD
 unsigned int get_rtc_time(struct rtc_time *tm)
 {
 	if (rtc_sh_get_time != null_rtc_get_time) {
@@ -64,13 +68,39 @@ unsigned int get_rtc_time(struct rtc_time *tm)
 EXPORT_SYMBOL(get_rtc_time);
 
 int set_rtc_time(struct rtc_time *tm)
+=======
+static int rtc_generic_get_time(struct device *dev, struct rtc_time *tm)
+{
+	struct timespec tv;
+
+	rtc_sh_get_time(&tv);
+	rtc_time_to_tm(tv.tv_sec, tm);
+	return 0;
+}
+
+static int rtc_generic_set_time(struct device *dev, struct rtc_time *tm)
+>>>>>>> v4.9.227
 {
 	unsigned long secs;
 
 	rtc_tm_to_time(tm, &secs);
+<<<<<<< HEAD
 	return rtc_sh_set_time(secs);
 }
 EXPORT_SYMBOL(set_rtc_time);
+=======
+	if ((rtc_sh_set_time == null_rtc_set_time) ||
+	    (rtc_sh_set_time(secs) < 0))
+		return -EOPNOTSUPP;
+
+	return 0;
+}
+
+static const struct rtc_class_ops rtc_generic_ops = {
+	.read_time = rtc_generic_get_time,
+	.set_time = rtc_generic_set_time,
+};
+>>>>>>> v4.9.227
 
 static int __init rtc_generic_init(void)
 {
@@ -79,11 +109,22 @@ static int __init rtc_generic_init(void)
 	if (rtc_sh_get_time == null_rtc_get_time)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	pdev = platform_device_register_simple("rtc-generic", -1, NULL, 0);
 
 	return PTR_ERR_OR_ZERO(pdev);
 }
 module_init(rtc_generic_init);
+=======
+	pdev = platform_device_register_data(NULL, "rtc-generic", -1,
+					     &rtc_generic_ops,
+					     sizeof(rtc_generic_ops));
+
+
+	return PTR_ERR_OR_ZERO(pdev);
+}
+device_initcall(rtc_generic_init);
+>>>>>>> v4.9.227
 
 void (*board_time_init)(void);
 

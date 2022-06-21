@@ -36,6 +36,10 @@ static inline struct nf_icmp_net *icmpv6_pernet(struct net *net)
 
 static bool icmpv6_pkt_to_tuple(const struct sk_buff *skb,
 				unsigned int dataoff,
+<<<<<<< HEAD
+=======
+				struct net *net,
+>>>>>>> v4.9.227
 				struct nf_conntrack_tuple *tuple)
 {
 	const struct icmp6hdr *hp;
@@ -56,12 +60,20 @@ static const u_int8_t invmap[] = {
 	[ICMPV6_ECHO_REQUEST - 128]	= ICMPV6_ECHO_REPLY + 1,
 	[ICMPV6_ECHO_REPLY - 128]	= ICMPV6_ECHO_REQUEST + 1,
 	[ICMPV6_NI_QUERY - 128]		= ICMPV6_NI_REPLY + 1,
+<<<<<<< HEAD
 	[ICMPV6_NI_REPLY - 128]		= ICMPV6_NI_QUERY +1
+=======
+	[ICMPV6_NI_REPLY - 128]		= ICMPV6_NI_QUERY + 1
+>>>>>>> v4.9.227
 };
 
 static const u_int8_t noct_valid_new[] = {
 	[ICMPV6_MGM_QUERY - 130] = 1,
+<<<<<<< HEAD
 	[ICMPV6_MGM_REPORT -130] = 1,
+=======
+	[ICMPV6_MGM_REPORT - 130] = 1,
+>>>>>>> v4.9.227
 	[ICMPV6_MGM_REDUCTION - 130] = 1,
 	[NDISC_ROUTER_SOLICITATION - 130] = 1,
 	[NDISC_ROUTER_ADVERTISEMENT - 130] = 1,
@@ -84,6 +96,7 @@ static bool icmpv6_invert_tuple(struct nf_conntrack_tuple *tuple,
 }
 
 /* Print out the per-protocol part of the tuple. */
+<<<<<<< HEAD
 static int icmpv6_print_tuple(struct seq_file *s,
 			      const struct nf_conntrack_tuple *tuple)
 {
@@ -91,6 +104,15 @@ static int icmpv6_print_tuple(struct seq_file *s,
 			  tuple->dst.u.icmp.type,
 			  tuple->dst.u.icmp.code,
 			  ntohs(tuple->src.u.icmp.id));
+=======
+static void icmpv6_print_tuple(struct seq_file *s,
+			      const struct nf_conntrack_tuple *tuple)
+{
+	seq_printf(s, "type=%u code=%u id=%u ",
+		   tuple->dst.u.icmp.type,
+		   tuple->dst.u.icmp.code,
+		   ntohs(tuple->src.u.icmp.id));
+>>>>>>> v4.9.227
 }
 
 static unsigned int *icmpv6_get_timeouts(struct net *net)
@@ -150,7 +172,11 @@ icmpv6_error_message(struct net *net, struct nf_conn *tmpl,
 	struct nf_conntrack_tuple intuple, origtuple;
 	const struct nf_conntrack_tuple_hash *h;
 	const struct nf_conntrack_l4proto *inproto;
+<<<<<<< HEAD
 	u16 zone = tmpl ? nf_ct_zone(tmpl) : NF_CT_DEFAULT_ZONE;
+=======
+	struct nf_conntrack_zone tmp;
+>>>>>>> v4.9.227
 
 	NF_CT_ASSERT(skb->nfct == NULL);
 
@@ -159,12 +185,20 @@ icmpv6_error_message(struct net *net, struct nf_conn *tmpl,
 			       skb_network_offset(skb)
 				+ sizeof(struct ipv6hdr)
 				+ sizeof(struct icmp6hdr),
+<<<<<<< HEAD
 			       PF_INET6, &origtuple)) {
+=======
+			       PF_INET6, net, &origtuple)) {
+>>>>>>> v4.9.227
 		pr_debug("icmpv6_error: Can't get tuple\n");
 		return -NF_ACCEPT;
 	}
 
+<<<<<<< HEAD
 	/* rcu_read_lock()ed by nf_hook_slow */
+=======
+	/* rcu_read_lock()ed by nf_hook_thresh */
+>>>>>>> v4.9.227
 	inproto = __nf_ct_l4proto_find(PF_INET6, origtuple.dst.protonum);
 
 	/* Ordinarily, we'd expect the inverted tupleproto, but it's
@@ -177,7 +211,12 @@ icmpv6_error_message(struct net *net, struct nf_conn *tmpl,
 
 	*ctinfo = IP_CT_RELATED;
 
+<<<<<<< HEAD
 	h = nf_conntrack_find_get(net, zone, &intuple);
+=======
+	h = nf_conntrack_find_get(net, nf_ct_zone_tmpl(tmpl, skb, &tmp),
+				  &intuple);
+>>>>>>> v4.9.227
 	if (!h) {
 		pr_debug("icmpv6_error: no match\n");
 		return -NF_ACCEPT;

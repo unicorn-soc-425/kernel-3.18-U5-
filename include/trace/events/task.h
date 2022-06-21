@@ -46,7 +46,11 @@ TRACE_EVENT(task_rename,
 	TP_fast_assign(
 		__entry->pid = task->pid;
 		memcpy(entry->oldcomm, task->comm, TASK_COMM_LEN);
+<<<<<<< HEAD
 		memcpy(entry->newcomm, comm, TASK_COMM_LEN);
+=======
+		strlcpy(entry->newcomm, comm, TASK_COMM_LEN);
+>>>>>>> v4.9.227
 		__entry->oom_score_adj = task->signal->oom_score_adj;
 	),
 

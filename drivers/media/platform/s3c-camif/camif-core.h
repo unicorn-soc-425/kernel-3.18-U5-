@@ -25,8 +25,13 @@
 #include <media/v4l2-dev.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-mediabus.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
 #include <media/s3c_camif.h>
+=======
+#include <media/videobuf2-v4l2.h>
+#include <media/drv-intf/s3c_camif.h>
+>>>>>>> v4.9.227
 
 #define S3C_CAMIF_DRIVER_NAME	"s3c-camif"
 #define CAMIF_REQ_BUFS_MIN	3
@@ -254,7 +259,10 @@ struct camif_vp {
  * @ctrl_handler: v4l2 control handler (owned by @subdev)
  * @test_pattern: test pattern controls
  * @vp:           video path (DMA) description (codec/preview)
+<<<<<<< HEAD
  * @alloc_ctx:    memory buffer allocator context
+=======
+>>>>>>> v4.9.227
  * @variant:      variant information for this device
  * @dev:	  pointer to the CAMIF device struct
  * @pdata:	  a copy of the driver's platform data
@@ -291,7 +299,10 @@ struct camif_dev {
 	u8				colorfx_cr;
 
 	struct camif_vp			vp[CAMIF_VP_NUM];
+<<<<<<< HEAD
 	struct vb2_alloc_ctx		*alloc_ctx;
+=======
+>>>>>>> v4.9.227
 
 	const struct s3c_camif_variant	*variant;
 	struct device			*dev;
@@ -322,7 +333,11 @@ struct camif_addr {
  * @index: an identifier of this buffer at the DMA engine
  */
 struct camif_buffer {
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> v4.9.227
 	struct list_head list;
 	struct camif_addr paddr;
 	unsigned int index;

@@ -6,7 +6,11 @@
  * outb_p/inb_p API uses.
  */
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> v4.9.227
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/dmi.h>

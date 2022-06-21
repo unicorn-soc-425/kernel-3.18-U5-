@@ -35,6 +35,10 @@
 
 #include <asm/processor.h>
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> v4.9.227
 
 /*
  * Inputs:
@@ -94,3 +98,7 @@ GLOBAL_ENTRY(esi_call_phys)
 	mov gp=loc2
 	br.ret.sptk.many rp
 END(esi_call_phys)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(esi_call_phys)
+>>>>>>> v4.9.227

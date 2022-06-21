@@ -12,6 +12,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/rculist.h>
+<<<<<<< HEAD
+=======
+#include <net/switchdev.h>
+>>>>>>> v4.9.227
 
 #include "br_private.h"
 #include "br_private_stp.h"
@@ -29,6 +33,7 @@ static const char *const br_port_state_names[] = {
 	[BR_STATE_BLOCKING] = "blocking",
 };
 
+<<<<<<< HEAD
 void br_log_state(const struct net_bridge_port *p)
 {
 	br_info(p->br, "port %u(%s) entered %s state\n",
@@ -39,6 +44,27 @@ void br_log_state(const struct net_bridge_port *p)
 void br_set_state(struct net_bridge_port *p, unsigned int state)
 {
 	p->state = state;
+=======
+void br_set_state(struct net_bridge_port *p, unsigned int state)
+{
+	struct switchdev_attr attr = {
+		.orig_dev = p->dev,
+		.id = SWITCHDEV_ATTR_ID_PORT_STP_STATE,
+		.flags = SWITCHDEV_F_DEFER,
+		.u.stp_state = state,
+	};
+	int err;
+
+	p->state = state;
+	err = switchdev_port_attr_set(p->dev, &attr);
+	if (err && err != -EOPNOTSUPP)
+		br_warn(p->br, "error setting offload STP state on port %u(%s)\n",
+				(unsigned int) p->port_no, p->dev->name);
+	else
+		br_info(p->br, "port %u(%s) entered %s state\n",
+				(unsigned int) p->port_no, p->dev->name,
+				br_port_state_names[p->state]);
+>>>>>>> v4.9.227
 }
 
 /* called under bridge lock */
@@ -113,7 +139,10 @@ static void br_root_port_block(const struct net_bridge *br,
 		  (unsigned int) p->port_no, p->dev->name);
 
 	br_set_state(p, BR_STATE_LISTENING);
+<<<<<<< HEAD
 	br_log_state(p);
+=======
+>>>>>>> v4.9.227
 	br_ifinfo_notify(RTM_NEWLINK, p);
 
 	if (br->forward_delay > 0)
@@ -198,8 +227,14 @@ void br_transmit_config(struct net_bridge_port *p)
 		br_send_config_bpdu(p, &bpdu);
 		p->topology_change_ack = 0;
 		p->config_pending = 0;
+<<<<<<< HEAD
 		mod_timer(&p->hold_timer,
 			  round_jiffies(jiffies + BR_HOLD_TIME));
+=======
+		if (p->br->stp_enabled == BR_KERNEL_STP)
+			mod_timer(&p->hold_timer,
+				  round_jiffies(jiffies + BR_HOLD_TIME));
+>>>>>>> v4.9.227
 	}
 }
 
@@ -393,7 +428,10 @@ static void br_make_blocking(struct net_bridge_port *p)
 			br_topology_change_detection(p->br);
 
 		br_set_state(p, BR_STATE_BLOCKING);
+<<<<<<< HEAD
 		br_log_state(p);
+=======
+>>>>>>> v4.9.227
 		br_ifinfo_notify(RTM_NEWLINK, p);
 
 		del_timer(&p->forward_delay_timer);
@@ -417,8 +455,11 @@ static void br_make_forwarding(struct net_bridge_port *p)
 	else
 		br_set_state(p, BR_STATE_LEARNING);
 
+<<<<<<< HEAD
 	br_multicast_enable_port(p);
 	br_log_state(p);
+=======
+>>>>>>> v4.9.227
 	br_ifinfo_notify(RTM_NEWLINK, p);
 
 	if (br->forward_delay != 0)
@@ -451,6 +492,15 @@ void br_port_state_selection(struct net_bridge *br)
 			}
 		}
 
+<<<<<<< HEAD
+=======
+		if (p->state != BR_STATE_BLOCKING)
+			br_multicast_enable_port(p);
+		/* Multicast is not disabled for the port when it goes in
+		 * blocking state because the timers will expire and stop by
+		 * themselves without sending more queries.
+		 */
+>>>>>>> v4.9.227
 		if (p->state == BR_STATE_FORWARDING)
 			++liveports;
 	}
@@ -549,6 +599,38 @@ int br_set_max_age(struct net_bridge *br, unsigned long val)
 
 }
 
+<<<<<<< HEAD
+=======
+/* Set time interval that dynamic forwarding entries live
+ * For pure software bridge, allow values outside the 802.1
+ * standard specification for special cases:
+ *  0 - entry never ages (all permanant)
+ *  1 - entry disappears (no persistance)
+ *
+ * Offloaded switch entries maybe more restrictive
+ */
+int br_set_ageing_time(struct net_bridge *br, clock_t ageing_time)
+{
+	struct switchdev_attr attr = {
+		.orig_dev = br->dev,
+		.id = SWITCHDEV_ATTR_ID_BRIDGE_AGEING_TIME,
+		.flags = SWITCHDEV_F_SKIP_EOPNOTSUPP,
+		.u.ageing_time = ageing_time,
+	};
+	unsigned long t = clock_t_to_jiffies(ageing_time);
+	int err;
+
+	err = switchdev_port_attr_set(br->dev, &attr);
+	if (err && err != -EOPNOTSUPP)
+		return err;
+
+	br->ageing_time = t;
+	mod_timer(&br->gc_timer, jiffies);
+
+	return 0;
+}
+
+>>>>>>> v4.9.227
 void __br_set_forward_delay(struct net_bridge *br, unsigned long t)
 {
 	br->bridge_forward_delay = t;

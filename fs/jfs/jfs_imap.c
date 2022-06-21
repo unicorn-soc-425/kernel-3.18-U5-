@@ -534,8 +534,12 @@ void diWriteSpecial(struct inode *ip, int secondary)
 	/* read the page of fixed disk inode (AIT) in raw mode */
 	mp = read_metapage(ip, address << sbi->l2nbperpage, PSIZE, 1);
 	if (mp == NULL) {
+<<<<<<< HEAD
 		jfs_err("diWriteSpecial: failed to read aggregate inode "
 			"extent!");
+=======
+		jfs_err("diWriteSpecial: failed to read aggregate inode extent!");
+>>>>>>> v4.9.227
 		return;
 	}
 

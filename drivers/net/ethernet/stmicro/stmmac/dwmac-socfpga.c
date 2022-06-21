@@ -23,13 +23,31 @@
 #include <linux/regmap.h>
 #include <linux/reset.h>
 #include <linux/stmmac.h>
+<<<<<<< HEAD
 #include "stmmac.h"
+=======
+
+#include "stmmac.h"
+#include "stmmac_platform.h"
+
+#include "altr_tse_pcs.h"
+
+#define SGMII_ADAPTER_CTRL_REG                          0x00
+#define SGMII_ADAPTER_DISABLE                           0x0001
+>>>>>>> v4.9.227
 
 #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
 #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
 #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII 0x2
 #define SYSMGR_EMACGRP_CTRL_PHYSEL_WIDTH 2
 #define SYSMGR_EMACGRP_CTRL_PHYSEL_MASK 0x00000003
+<<<<<<< HEAD
+=======
+#define SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK 0x00000010
+
+#define SYSMGR_FPGAGRP_MODULE_REG  0x00000028
+#define SYSMGR_FPGAGRP_MODULE_EMAC 0x00000004
+>>>>>>> v4.9.227
 
 #define EMAC_SPLITTER_CTRL_REG			0x0
 #define EMAC_SPLITTER_CTRL_SPEED_MASK		0x3
@@ -44,13 +62,21 @@ struct socfpga_dwmac {
 	struct	device *dev;
 	struct regmap *sys_mgr_base_addr;
 	struct reset_control *stmmac_rst;
+<<<<<<< HEAD
 	void __iomem *splitter_base;
+=======
+	struct reset_control *stmmac_ocp_rst;
+	void __iomem *splitter_base;
+	bool f2h_ptp_ref_clk;
+	struct tse_pcs pcs;
+>>>>>>> v4.9.227
 };
 
 static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
 {
 	struct socfpga_dwmac *dwmac = (struct socfpga_dwmac *)priv;
 	void __iomem *splitter_base = dwmac->splitter_base;
+<<<<<<< HEAD
 	u32 val;
 
 	if (!splitter_base)
@@ -74,6 +100,41 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
 	}
 
 	writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
+=======
+	void __iomem *tse_pcs_base = dwmac->pcs.tse_pcs_base;
+	void __iomem *sgmii_adapter_base = dwmac->pcs.sgmii_adapter_base;
+	struct device *dev = dwmac->dev;
+	struct net_device *ndev = dev_get_drvdata(dev);
+	struct phy_device *phy_dev = ndev->phydev;
+	u32 val;
+
+	if ((tse_pcs_base) && (sgmii_adapter_base))
+		writew(SGMII_ADAPTER_DISABLE,
+		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+
+	if (splitter_base) {
+		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
+		val &= ~EMAC_SPLITTER_CTRL_SPEED_MASK;
+
+		switch (speed) {
+		case 1000:
+			val |= EMAC_SPLITTER_CTRL_SPEED_1000;
+			break;
+		case 100:
+			val |= EMAC_SPLITTER_CTRL_SPEED_100;
+			break;
+		case 10:
+			val |= EMAC_SPLITTER_CTRL_SPEED_10;
+			break;
+		default:
+			return;
+		}
+		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
+	}
+
+	if (tse_pcs_base && sgmii_adapter_base)
+		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
+>>>>>>> v4.9.227
 }
 
 static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *dev)
@@ -81,6 +142,7 @@ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *
 	struct device_node *np = dev->of_node;
 	struct regmap *sys_mgr_base_addr;
 	u32 reg_offset, reg_shift;
+<<<<<<< HEAD
 	int ret;
 	struct device_node *np_splitter;
 	struct resource res_splitter;
@@ -91,6 +153,14 @@ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *
 		dev_info(dev, "Could not get reset control!\n");
 		return -EINVAL;
 	}
+=======
+	int ret, index;
+	struct device_node *np_splitter = NULL;
+	struct device_node *np_sgmii_adapter = NULL;
+	struct resource res_splitter;
+	struct resource res_tse_pcs;
+	struct resource res_sgmii_adapter;
+>>>>>>> v4.9.227
 
 	dwmac->interface = of_get_phy_mode(np);
 
@@ -112,9 +182,19 @@ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	np_splitter = of_parse_phandle(np, "altr,emac-splitter", 0);
 	if (np_splitter) {
 		if (of_address_to_resource(np_splitter, 0, &res_splitter)) {
+=======
+	dwmac->f2h_ptp_ref_clk = of_property_read_bool(np, "altr,f2h_ptp_ref_clk");
+
+	np_splitter = of_parse_phandle(np, "altr,emac-splitter", 0);
+	if (np_splitter) {
+		ret = of_address_to_resource(np_splitter, 0, &res_splitter);
+		of_node_put(np_splitter);
+		if (ret) {
+>>>>>>> v4.9.227
 			dev_info(dev, "Missing emac splitter address\n");
 			return -EINVAL;
 		}
@@ -126,21 +206,110 @@ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	np_sgmii_adapter = of_parse_phandle(np,
+					    "altr,gmii-to-sgmii-converter", 0);
+	if (np_sgmii_adapter) {
+		index = of_property_match_string(np_sgmii_adapter, "reg-names",
+						 "hps_emac_interface_splitter_avalon_slave");
+
+		if (index >= 0) {
+			if (of_address_to_resource(np_sgmii_adapter, index,
+						   &res_splitter)) {
+				dev_err(dev,
+					"%s: ERROR: missing emac splitter address\n",
+					__func__);
+				ret = -EINVAL;
+				goto err_node_put;
+			}
+
+			dwmac->splitter_base =
+			    devm_ioremap_resource(dev, &res_splitter);
+
+			if (IS_ERR(dwmac->splitter_base)) {
+				ret = PTR_ERR(dwmac->splitter_base);
+				goto err_node_put;
+			}
+		}
+
+		index = of_property_match_string(np_sgmii_adapter, "reg-names",
+						 "gmii_to_sgmii_adapter_avalon_slave");
+
+		if (index >= 0) {
+			if (of_address_to_resource(np_sgmii_adapter, index,
+						   &res_sgmii_adapter)) {
+				dev_err(dev,
+					"%s: ERROR: failed mapping adapter\n",
+					__func__);
+				ret = -EINVAL;
+				goto err_node_put;
+			}
+
+			dwmac->pcs.sgmii_adapter_base =
+			    devm_ioremap_resource(dev, &res_sgmii_adapter);
+
+			if (IS_ERR(dwmac->pcs.sgmii_adapter_base)) {
+				ret = PTR_ERR(dwmac->pcs.sgmii_adapter_base);
+				goto err_node_put;
+			}
+		}
+
+		index = of_property_match_string(np_sgmii_adapter, "reg-names",
+						 "eth_tse_control_port");
+
+		if (index >= 0) {
+			if (of_address_to_resource(np_sgmii_adapter, index,
+						   &res_tse_pcs)) {
+				dev_err(dev,
+					"%s: ERROR: failed mapping tse control port\n",
+					__func__);
+				ret = -EINVAL;
+				goto err_node_put;
+			}
+
+			dwmac->pcs.tse_pcs_base =
+			    devm_ioremap_resource(dev, &res_tse_pcs);
+
+			if (IS_ERR(dwmac->pcs.tse_pcs_base)) {
+				ret = PTR_ERR(dwmac->pcs.tse_pcs_base);
+				goto err_node_put;
+			}
+		}
+	}
+>>>>>>> v4.9.227
 	dwmac->reg_offset = reg_offset;
 	dwmac->reg_shift = reg_shift;
 	dwmac->sys_mgr_base_addr = sys_mgr_base_addr;
 	dwmac->dev = dev;
+<<<<<<< HEAD
 
 	return 0;
 }
 
 static int socfpga_dwmac_setup(struct socfpga_dwmac *dwmac)
+=======
+	of_node_put(np_sgmii_adapter);
+
+	return 0;
+
+err_node_put:
+	of_node_put(np_sgmii_adapter);
+	return ret;
+}
+
+static int socfpga_dwmac_set_phy_mode(struct socfpga_dwmac *dwmac)
+>>>>>>> v4.9.227
 {
 	struct regmap *sys_mgr_base_addr = dwmac->sys_mgr_base_addr;
 	int phymode = dwmac->interface;
 	u32 reg_offset = dwmac->reg_offset;
 	u32 reg_shift = dwmac->reg_shift;
+<<<<<<< HEAD
 	u32 ctrl, val;
+=======
+	u32 ctrl, val, module;
+>>>>>>> v4.9.227
 
 	switch (phymode) {
 	case PHY_INTERFACE_MODE_RGMII:
@@ -149,6 +318,10 @@ static int socfpga_dwmac_setup(struct socfpga_dwmac *dwmac)
 		break;
 	case PHY_INTERFACE_MODE_MII:
 	case PHY_INTERFACE_MODE_GMII:
+<<<<<<< HEAD
+=======
+	case PHY_INTERFACE_MODE_SGMII:
+>>>>>>> v4.9.227
 		val = SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII;
 		break;
 	default:
@@ -163,10 +336,18 @@ static int socfpga_dwmac_setup(struct socfpga_dwmac *dwmac)
 	if (dwmac->splitter_base)
 		val = SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII;
 
+<<<<<<< HEAD
+=======
+	/* Assert reset to the enet controller before changing the phy mode */
+	reset_control_assert(dwmac->stmmac_ocp_rst);
+	reset_control_assert(dwmac->stmmac_rst);
+
+>>>>>>> v4.9.227
 	regmap_read(sys_mgr_base_addr, reg_offset, &ctrl);
 	ctrl &= ~(SYSMGR_EMACGRP_CTRL_PHYSEL_MASK << reg_shift);
 	ctrl |= val << reg_shift;
 
+<<<<<<< HEAD
 	regmap_write(sys_mgr_base_addr, reg_offset, ctrl);
 	return 0;
 }
@@ -225,12 +406,117 @@ static int socfpga_dwmac_init(struct platform_device *pdev, void *priv)
 	 * devicetree configuration
 	 */
 	ret = socfpga_dwmac_setup(dwmac);
+=======
+	if (dwmac->f2h_ptp_ref_clk) {
+		ctrl |= SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2);
+		regmap_read(sys_mgr_base_addr, SYSMGR_FPGAGRP_MODULE_REG,
+			    &module);
+		module |= (SYSMGR_FPGAGRP_MODULE_EMAC << (reg_shift / 2));
+		regmap_write(sys_mgr_base_addr, SYSMGR_FPGAGRP_MODULE_REG,
+			     module);
+	} else {
+		ctrl &= ~(SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2));
+	}
+
+	regmap_write(sys_mgr_base_addr, reg_offset, ctrl);
+>>>>>>> v4.9.227
 
 	/* Deassert reset for the phy configuration to be sampled by
 	 * the enet controller, and operation to start in requested mode
 	 */
+<<<<<<< HEAD
 	if (dwmac->stmmac_rst)
 		reset_control_deassert(dwmac->stmmac_rst);
+=======
+	reset_control_deassert(dwmac->stmmac_ocp_rst);
+	reset_control_deassert(dwmac->stmmac_rst);
+	if (phymode == PHY_INTERFACE_MODE_SGMII) {
+		if (tse_pcs_init(dwmac->pcs.tse_pcs_base, &dwmac->pcs) != 0) {
+			dev_err(dwmac->dev, "Unable to initialize TSE PCS");
+			return -EINVAL;
+		}
+	}
+
+	return 0;
+}
+
+static int socfpga_dwmac_probe(struct platform_device *pdev)
+{
+	struct plat_stmmacenet_data *plat_dat;
+	struct stmmac_resources stmmac_res;
+	struct device		*dev = &pdev->dev;
+	int			ret;
+	struct socfpga_dwmac	*dwmac;
+	struct net_device	*ndev;
+	struct stmmac_priv	*stpriv;
+
+	ret = stmmac_get_platform_resources(pdev, &stmmac_res);
+	if (ret)
+		return ret;
+
+	plat_dat = stmmac_probe_config_dt(pdev, &stmmac_res.mac);
+	if (IS_ERR(plat_dat))
+		return PTR_ERR(plat_dat);
+
+	dwmac = devm_kzalloc(dev, sizeof(*dwmac), GFP_KERNEL);
+	if (!dwmac) {
+		ret = -ENOMEM;
+		goto err_remove_config_dt;
+	}
+
+	dwmac->stmmac_ocp_rst = devm_reset_control_get_optional(dev, "stmmaceth-ocp");
+	if (IS_ERR(dwmac->stmmac_ocp_rst)) {
+		ret = PTR_ERR(dwmac->stmmac_ocp_rst);
+		dev_err(dev, "error getting reset control of ocp %d\n", ret);
+		goto err_remove_config_dt;
+	}
+
+	reset_control_deassert(dwmac->stmmac_ocp_rst);
+
+	ret = socfpga_dwmac_parse_data(dwmac, dev);
+	if (ret) {
+		dev_err(dev, "Unable to parse OF data\n");
+		goto err_remove_config_dt;
+	}
+
+	plat_dat->bsp_priv = dwmac;
+	plat_dat->fix_mac_speed = socfpga_dwmac_fix_mac_speed;
+
+	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+	if (ret)
+		goto err_remove_config_dt;
+
+	ndev = platform_get_drvdata(pdev);
+	stpriv = netdev_priv(ndev);
+
+	/* The socfpga driver needs to control the stmmac reset to set the phy
+	 * mode. Create a copy of the core reset handle so it can be used by
+	 * the driver later.
+	 */
+	dwmac->stmmac_rst = stpriv->stmmac_rst;
+
+	ret = socfpga_dwmac_set_phy_mode(dwmac);
+	if (ret)
+		goto err_dvr_remove;
+
+	return 0;
+
+err_dvr_remove:
+	stmmac_dvr_remove(&pdev->dev);
+err_remove_config_dt:
+	stmmac_remove_config_dt(pdev, plat_dat);
+
+	return ret;
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int socfpga_dwmac_resume(struct device *dev)
+{
+	struct net_device *ndev = dev_get_drvdata(dev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
+
+	socfpga_dwmac_set_phy_mode(priv->plat->bsp_priv);
+>>>>>>> v4.9.227
 
 	/* Before the enet controller is suspended, the phy is suspended.
 	 * This causes the phy clock to be gated. The enet controller is
@@ -247,6 +533,7 @@ static int socfpga_dwmac_init(struct platform_device *pdev, void *priv)
 	 * control register 0, and can be modified by the phy driver
 	 * framework.
 	 */
+<<<<<<< HEAD
 	if (stpriv && stpriv->phydev)
 		phy_resume(stpriv->phydev);
 
@@ -259,3 +546,33 @@ const struct stmmac_of_data socfpga_gmac_data = {
 	.exit = socfpga_dwmac_exit,
 	.fix_mac_speed = socfpga_dwmac_fix_mac_speed,
 };
+=======
+	if (priv->phydev)
+		phy_resume(priv->phydev);
+
+	return stmmac_resume(dev);
+}
+#endif /* CONFIG_PM_SLEEP */
+
+static SIMPLE_DEV_PM_OPS(socfpga_dwmac_pm_ops, stmmac_suspend,
+					       socfpga_dwmac_resume);
+
+static const struct of_device_id socfpga_dwmac_match[] = {
+	{ .compatible = "altr,socfpga-stmmac" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, socfpga_dwmac_match);
+
+static struct platform_driver socfpga_dwmac_driver = {
+	.probe  = socfpga_dwmac_probe,
+	.remove = stmmac_pltfr_remove,
+	.driver = {
+		.name           = "socfpga-dwmac",
+		.pm		= &socfpga_dwmac_pm_ops,
+		.of_match_table = socfpga_dwmac_match,
+	},
+};
+module_platform_driver(socfpga_dwmac_driver);
+
+MODULE_LICENSE("GPL v2");
+>>>>>>> v4.9.227

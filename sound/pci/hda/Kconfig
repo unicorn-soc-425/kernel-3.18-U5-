@@ -4,7 +4,12 @@ config SND_HDA
 	tristate
 	select SND_PCM
 	select SND_VMASTER
+<<<<<<< HEAD
 	select SND_KCTL_JACK
+=======
+	select SND_JACK
+	select SND_HDA_CORE
+>>>>>>> v4.9.227
 
 config SND_HDA_INTEL
 	tristate "HD Audio PCI"
@@ -37,6 +42,7 @@ config SND_HDA_TEGRA
 
 if SND_HDA
 
+<<<<<<< HEAD
 config SND_HDA_DSP_LOADER
 	bool
 
@@ -53,6 +59,8 @@ config SND_HDA_PREALLOC_SIZE
 	  Note that the pre-allocation size can be changed dynamically
 	  via a proc file (/proc/asound/card*/pcm*/sub*/prealloc), too.
 
+=======
+>>>>>>> v4.9.227
 config SND_HDA_HWDEP
 	bool "Build hwdep interface for HD-audio driver"
 	select SND_HWDEP
@@ -65,9 +73,19 @@ config SND_HDA_RECONFIG
 	bool "Allow dynamic codec reconfiguration"
 	help
 	  Say Y here to enable the HD-audio codec re-configuration feature.
+<<<<<<< HEAD
 	  This adds the sysfs interfaces to allow user to clear the whole
 	  codec configuration, change the codec setup, add extra verbs,
 	  and re-configure the codec dynamically.
+=======
+	  It allows user to clear the whole codec configuration, change the
+	  codec setup, add extra verbs, and re-configure the codec dynamically.
+
+	  Note that this item alone doesn't provide the sysfs interface, but
+	  enables the feature just for the patch loader below.
+	  If you need the traditional sysfs entries for the manual interaction,
+	  turn on CONFIG_SND_HDA_HWDEP as well.
+>>>>>>> v4.9.227
 
 config SND_HDA_INPUT_BEEP
 	bool "Support digital beep via input layer"
@@ -86,6 +104,7 @@ config SND_HDA_INPUT_BEEP_MODE
 	  Set 1 to always enable the digital beep interface for HD-audio by
 	  default.
 
+<<<<<<< HEAD
 config SND_HDA_INPUT_JACK
 	bool "Support jack plugging notification via input layer"
 	depends on INPUT=y || INPUT=SND
@@ -94,6 +113,8 @@ config SND_HDA_INPUT_JACK
 	  Say Y here to enable the jack plugging notification via
 	  input layer.
 
+=======
+>>>>>>> v4.9.227
 config SND_HDA_PATCH_LOADER
 	bool "Support initialization patch loading for HD-audio"
 	select FW_LOADER
@@ -154,11 +175,14 @@ config SND_HDA_CODEC_HDMI
 comment "Set to Y if you want auto-loading the codec driver"
 	depends on SND_HDA=y && SND_HDA_CODEC_HDMI=m
 
+<<<<<<< HEAD
 config SND_HDA_I915
 	bool
 	default y
 	depends on DRM_I915
 
+=======
+>>>>>>> v4.9.227
 config SND_HDA_CODEC_CIRRUS
 	tristate "Build Cirrus Logic codec support"
 	select SND_HDA_GENERIC

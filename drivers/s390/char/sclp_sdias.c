@@ -21,7 +21,10 @@
 #define TRACE(x...) debug_sprintf_event(sdias_dbf, 1, x)
 
 #define SDIAS_RETRIES 300
+<<<<<<< HEAD
 #define SDIAS_SLEEP_TICKS 50
+=======
+>>>>>>> v4.9.227
 
 static struct debug_info *sdias_dbf;
 
@@ -68,7 +71,11 @@ static int sdias_sclp_send(struct sclp_req *req)
 			/* not initiated, wait some time and retry */
 			set_current_state(TASK_INTERRUPTIBLE);
 			TRACE("add request failed: rc = %i\n",rc);
+<<<<<<< HEAD
 			schedule_timeout(SDIAS_SLEEP_TICKS);
+=======
+			schedule_timeout(msecs_to_jiffies(500));
+>>>>>>> v4.9.227
 			continue;
 		}
 		/* initiated, wait for completion of service call */
@@ -178,11 +185,15 @@ int sclp_sdias_copy(void *dest, int start_blk, int nr_blks)
 	sccb.evbuf.event_qual = SDIAS_EQ_STORE_DATA;
 	sccb.evbuf.data_id = SDIAS_DI_FCP_DUMP;
 	sccb.evbuf.event_id = 4712;
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 	sccb.evbuf.asa_size = SDIAS_ASA_SIZE_64;
 #else
 	sccb.evbuf.asa_size = SDIAS_ASA_SIZE_32;
 #endif
+=======
+	sccb.evbuf.asa_size = SDIAS_ASA_SIZE_64;
+>>>>>>> v4.9.227
 	sccb.evbuf.event_status = 0;
 	sccb.evbuf.blk_cnt = nr_blks;
 	sccb.evbuf.asa = (unsigned long)dest;

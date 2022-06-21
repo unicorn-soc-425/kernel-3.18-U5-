@@ -48,7 +48,11 @@ static inline void atomic_set(atomic_t *v, int new)
  *
  * Assumes all word reads on our architecture are atomic.
  */
+<<<<<<< HEAD
 #define atomic_read(v)		((v)->counter)
+=======
+#define atomic_read(v)		READ_ONCE((v)->counter)
+>>>>>>> v4.9.227
 
 /**
  * atomic_xchg - atomic
@@ -103,14 +107,22 @@ static inline void atomic_##op(int i, atomic_t *v)			\
 		"1:	%0 = memw_locked(%1);\n"			\
 		"	%0 = "#op "(%0,%2);\n"				\
 		"	memw_locked(%1,P3)=%0;\n"			\
+<<<<<<< HEAD
 		"	if !P3 jump 1b;\n"				\
+=======
+		"	if (!P3) jump 1b;\n"				\
+>>>>>>> v4.9.227
 		: "=&r" (output)					\
 		: "r" (&v->counter), "r" (i)				\
 		: "memory", "p3"					\
 	);								\
 }									\
 
+<<<<<<< HEAD
 #define ATOMIC_OP_RETURN(op)							\
+=======
+#define ATOMIC_OP_RETURN(op)						\
+>>>>>>> v4.9.227
 static inline int atomic_##op##_return(int i, atomic_t *v)		\
 {									\
 	int output;							\
@@ -119,7 +131,11 @@ static inline int atomic_##op##_return(int i, atomic_t *v)		\
 		"1:	%0 = memw_locked(%1);\n"			\
 		"	%0 = "#op "(%0,%2);\n"				\
 		"	memw_locked(%1,P3)=%0;\n"			\
+<<<<<<< HEAD
 		"	if !P3 jump 1b;\n"				\
+=======
+		"	if (!P3) jump 1b;\n"				\
+>>>>>>> v4.9.227
 		: "=&r" (output)					\
 		: "r" (&v->counter), "r" (i)				\
 		: "memory", "p3"					\
@@ -127,12 +143,44 @@ static inline int atomic_##op##_return(int i, atomic_t *v)		\
 	return output;							\
 }
 
+<<<<<<< HEAD
 #define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_OP_RETURN(op)
+=======
+#define ATOMIC_FETCH_OP(op)						\
+static inline int atomic_fetch_##op(int i, atomic_t *v)			\
+{									\
+	int output, val;						\
+									\
+	__asm__ __volatile__ (						\
+		"1:	%0 = memw_locked(%2);\n"			\
+		"	%1 = "#op "(%0,%3);\n"				\
+		"	memw_locked(%2,P3)=%1;\n"			\
+		"	if (!P3) jump 1b;\n"				\
+		: "=&r" (output), "=&r" (val)				\
+		: "r" (&v->counter), "r" (i)				\
+		: "memory", "p3"					\
+	);								\
+	return output;							\
+}
+
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_OP_RETURN(op) ATOMIC_FETCH_OP(op)
+>>>>>>> v4.9.227
 
 ATOMIC_OPS(add)
 ATOMIC_OPS(sub)
 
 #undef ATOMIC_OPS
+<<<<<<< HEAD
+=======
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_FETCH_OP(op)
+
+ATOMIC_OPS(and)
+ATOMIC_OPS(or)
+ATOMIC_OPS(xor)
+
+#undef ATOMIC_OPS
+#undef ATOMIC_FETCH_OP
+>>>>>>> v4.9.227
 #undef ATOMIC_OP_RETURN
 #undef ATOMIC_OP
 
@@ -160,7 +208,11 @@ static inline int __atomic_add_unless(atomic_t *v, int a, int u)
 		"	}"
 		"	memw_locked(%2, p3) = %1;"
 		"	{"
+<<<<<<< HEAD
 		"		if !p3 jump 1b;"
+=======
+		"		if (!p3) jump 1b;"
+>>>>>>> v4.9.227
 		"	}"
 		"2:"
 		: "=&r" (__oldval), "=&r" (tmp)

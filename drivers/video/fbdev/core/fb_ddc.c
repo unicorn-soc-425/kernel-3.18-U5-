@@ -67,6 +67,7 @@ unsigned char *fb_ddc_read(struct i2c_adapter *adapter)
 		msleep(13);
 
 		algo_data->setscl(algo_data->data, 1);
+<<<<<<< HEAD
 		for (j = 0; j < 5; j++) {
 			msleep(10);
 			if (algo_data->getscl(algo_data->data))
@@ -74,6 +75,19 @@ unsigned char *fb_ddc_read(struct i2c_adapter *adapter)
 		}
 		if (j == 5)
 			continue;
+=======
+		if (algo_data->getscl) {
+			for (j = 0; j < 5; j++) {
+				msleep(10);
+				if (algo_data->getscl(algo_data->data))
+					break;
+			}
+			if (j == 5)
+				continue;
+		} else {
+			udelay(algo_data->udelay);
+		}
+>>>>>>> v4.9.227
 
 		algo_data->setsda(algo_data->data, 0);
 		msleep(15);
@@ -89,10 +103,21 @@ unsigned char *fb_ddc_read(struct i2c_adapter *adapter)
 		msleep(15);
 
 		algo_data->setscl(algo_data->data, 1);
+<<<<<<< HEAD
 		for (j = 0; j < 10; j++) {
 			msleep(10);
 			if (algo_data->getscl(algo_data->data))
 				break;
+=======
+		if (algo_data->getscl) {
+			for (j = 0; j < 10; j++) {
+				msleep(10);
+				if (algo_data->getscl(algo_data->data))
+					break;
+			}
+		} else {
+			udelay(algo_data->udelay);
+>>>>>>> v4.9.227
 		}
 
 		algo_data->setsda(algo_data->data, 1);

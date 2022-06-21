@@ -322,7 +322,10 @@ static int davinci_ks_remove(struct platform_device *pdev)
 static struct platform_driver davinci_ks_driver = {
 	.driver	= {
 		.name = "davinci_keyscan",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.remove	= davinci_ks_remove,
 };

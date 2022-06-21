@@ -175,7 +175,11 @@
 
 /include/ "pq3-gpio-0.dtsi"
 
+<<<<<<< HEAD
 	display@10000 {
+=======
+	display: display@10000 {
+>>>>>>> v4.9.227
 		compatible = "fsl,diu", "fsl,p1022-diu";
 		reg = <0x10000 1000>;
 		interrupts = <64 2 0 0>;
@@ -224,10 +228,18 @@
 
 /include/ "pq3-etsec2-0.dtsi"
 	enet0: enet0_grp2: ethernet@b0000 {
+<<<<<<< HEAD
+=======
+		fsl,wake-on-filer;
+>>>>>>> v4.9.227
 	};
 
 /include/ "pq3-etsec2-1.dtsi"
 	enet1: enet1_grp2: ethernet@b1000 {
+<<<<<<< HEAD
+=======
+		fsl,wake-on-filer;
+>>>>>>> v4.9.227
 	};
 
 	global-utilities@e0000 {

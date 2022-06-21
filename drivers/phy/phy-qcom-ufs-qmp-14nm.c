@@ -15,11 +15,16 @@
 #include "phy-qcom-ufs-qmp-14nm.h"
 
 #define UFS_PHY_NAME "ufs_phy_qmp_14nm"
+<<<<<<< HEAD
+=======
+#define UFS_PHY_VDDA_PHY_UV	(925000)
+>>>>>>> v4.9.227
 
 static
 int ufs_qcom_phy_qmp_14nm_phy_calibrate(struct ufs_qcom_phy *ufs_qcom_phy,
 					bool is_rate_B)
 {
+<<<<<<< HEAD
 	int err;
 	int tbl_size_A, tbl_size_B;
 	struct ufs_qcom_phy_calibration *tbl_A, *tbl_B;
@@ -58,6 +63,15 @@ int ufs_qcom_phy_qmp_14nm_phy_calibrate(struct ufs_qcom_phy *ufs_qcom_phy,
 		writel_relaxed(ufs_qcom_phy->vco_tune1_mode1,
 			ufs_qcom_phy->mmio + QSERDES_COM_VCO_TUNE1_MODE1);
 out:
+=======
+	int tbl_size_A = ARRAY_SIZE(phy_cal_table_rate_A);
+	int tbl_size_B = ARRAY_SIZE(phy_cal_table_rate_B);
+	int err;
+
+	err = ufs_qcom_phy_calibrate(ufs_qcom_phy, phy_cal_table_rate_A,
+		tbl_size_A, phy_cal_table_rate_B, tbl_size_B, is_rate_B);
+
+>>>>>>> v4.9.227
 	if (err)
 		dev_err(ufs_qcom_phy->dev,
 			"%s: ufs_qcom_phy_calibrate() failed %d\n",
@@ -68,6 +82,7 @@ out:
 static
 void ufs_qcom_phy_qmp_14nm_advertise_quirks(struct ufs_qcom_phy *phy_common)
 {
+<<<<<<< HEAD
 	u8 major = phy_common->host_ctrl_rev_major;
 	u16 minor = phy_common->host_ctrl_rev_minor;
 	u16 step = phy_common->host_ctrl_rev_step;
@@ -77,6 +92,10 @@ void ufs_qcom_phy_qmp_14nm_advertise_quirks(struct ufs_qcom_phy *phy_common)
 			UFS_QCOM_PHY_QUIRK_HIBERN8_EXIT_AFTER_PHY_PWR_COLLAPSE |
 			UFS_QCOM_PHY_QUIRK_SVS_MODE |
 			UFS_QCOM_PHY_QUIRK_VCO_MANUAL_TUNING;
+=======
+	phy_common->quirks =
+		UFS_QCOM_PHY_QUIRK_HIBERN8_EXIT_AFTER_PHY_PWR_COLLAPSE;
+>>>>>>> v4.9.227
 }
 
 static int ufs_qcom_phy_qmp_14nm_init(struct phy *generic_phy)
@@ -98,6 +117,7 @@ static int ufs_qcom_phy_qmp_14nm_init(struct phy *generic_phy)
 			__func__, err);
 		goto out;
 	}
+<<<<<<< HEAD
 
 	ufs_qcom_phy_qmp_14nm_advertise_quirks(phy_common);
 
@@ -108,11 +128,19 @@ static int ufs_qcom_phy_qmp_14nm_init(struct phy *generic_phy)
 			__func__, phy_common->vco_tune1_mode1);
 	}
 
+=======
+	phy_common->vdda_phy.max_uV = UFS_PHY_VDDA_PHY_UV;
+	phy_common->vdda_phy.min_uV = UFS_PHY_VDDA_PHY_UV;
+
+	ufs_qcom_phy_qmp_14nm_advertise_quirks(phy_common);
+
+>>>>>>> v4.9.227
 out:
 	return err;
 }
 
 static
+<<<<<<< HEAD
 void ufs_qcom_phy_qmp_14nm_power_control(struct ufs_qcom_phy *phy,
 					 bool power_ctrl)
 {
@@ -158,6 +186,16 @@ void ufs_qcom_phy_qmp_14nm_power_control(struct ufs_qcom_phy *phy,
 			mb();
 		}
 	}
+=======
+void ufs_qcom_phy_qmp_14nm_power_control(struct ufs_qcom_phy *phy, bool val)
+{
+	writel_relaxed(val ? 0x1 : 0x0, phy->mmio + UFS_PHY_POWER_DOWN_CONTROL);
+	/*
+	 * Before any transactions involving PHY, ensure PHY knows
+	 * that it's analog rail is powered ON (or OFF).
+	 */
+	mb();
+>>>>>>> v4.9.227
 }
 
 static inline
@@ -169,6 +207,7 @@ void ufs_qcom_phy_qmp_14nm_set_tx_lane_enable(struct ufs_qcom_phy *phy, u32 val)
 	 */
 }
 
+<<<<<<< HEAD
 static
 void ufs_qcom_phy_qmp_14nm_ctrl_rx_linecfg(struct ufs_qcom_phy *phy, bool ctrl)
 {
@@ -186,6 +225,8 @@ void ufs_qcom_phy_qmp_14nm_ctrl_rx_linecfg(struct ufs_qcom_phy *phy, bool ctrl)
 	mb();
 }
 
+=======
+>>>>>>> v4.9.227
 static inline void ufs_qcom_phy_qmp_14nm_start_serdes(struct ufs_qcom_phy *phy)
 {
 	u32 tmp;
@@ -205,6 +246,7 @@ static int ufs_qcom_phy_qmp_14nm_is_pcs_ready(struct ufs_qcom_phy *phy_common)
 
 	err = readl_poll_timeout(phy_common->mmio + UFS_PHY_PCS_READY_STATUS,
 		val, (val & MASK_PCS_READY), 10, 1000000);
+<<<<<<< HEAD
 	if (err) {
 		dev_err(phy_common->dev, "%s: poll for pcs failed err = %d\n",
 			__func__, err);
@@ -227,6 +269,15 @@ out:
 }
 
 struct phy_ops ufs_qcom_phy_qmp_14nm_phy_ops = {
+=======
+	if (err)
+		dev_err(phy_common->dev, "%s: poll for pcs failed err = %d\n",
+			__func__, err);
+	return err;
+}
+
+static const struct phy_ops ufs_qcom_phy_qmp_14nm_phy_ops = {
+>>>>>>> v4.9.227
 	.init		= ufs_qcom_phy_qmp_14nm_init,
 	.exit		= ufs_qcom_phy_exit,
 	.power_on	= ufs_qcom_phy_power_on,
@@ -234,12 +285,19 @@ struct phy_ops ufs_qcom_phy_qmp_14nm_phy_ops = {
 	.owner		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 struct ufs_qcom_phy_specific_ops phy_14nm_ops = {
+=======
+static struct ufs_qcom_phy_specific_ops phy_14nm_ops = {
+>>>>>>> v4.9.227
 	.calibrate_phy		= ufs_qcom_phy_qmp_14nm_phy_calibrate,
 	.start_serdes		= ufs_qcom_phy_qmp_14nm_start_serdes,
 	.is_physical_coding_sublayer_ready = ufs_qcom_phy_qmp_14nm_is_pcs_ready,
 	.set_tx_lane_enable	= ufs_qcom_phy_qmp_14nm_set_tx_lane_enable,
+<<<<<<< HEAD
 	.ctrl_rx_linecfg	= ufs_qcom_phy_qmp_14nm_ctrl_rx_linecfg,
+=======
+>>>>>>> v4.9.227
 	.power_control		= ufs_qcom_phy_qmp_14nm_power_control,
 };
 
@@ -252,7 +310,10 @@ static int ufs_qcom_phy_qmp_14nm_probe(struct platform_device *pdev)
 
 	phy = devm_kzalloc(dev, sizeof(*phy), GFP_KERNEL);
 	if (!phy) {
+<<<<<<< HEAD
 		dev_err(dev, "%s: failed to allocate phy\n", __func__);
+=======
+>>>>>>> v4.9.227
 		err = -ENOMEM;
 		goto out;
 	}
@@ -303,7 +364,10 @@ static struct platform_driver ufs_qcom_phy_qmp_14nm_driver = {
 	.driver = {
 		.of_match_table = ufs_qcom_phy_qmp_14nm_of_match,
 		.name = "ufs_qcom_phy_qmp_14nm",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

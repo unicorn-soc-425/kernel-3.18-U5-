@@ -23,6 +23,10 @@
 #include <linux/bitops.h>
 #include <linux/wait.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> v4.9.227
 #include <asm/byteorder.h>
 #include <asm/string.h>
 #include <asm/io.h>
@@ -125,7 +129,11 @@ static unsigned long dummy[2] = {0,0};
 #define zin_n(r) inl(zatm_dev->base+r*4)
 #define zin(r) inl(zatm_dev->base+uPD98401_##r*4)
 #define zout(v,r) outl(v,zatm_dev->base+uPD98401_##r*4)
+<<<<<<< HEAD
 #define zwait while (zin(CMR) & uPD98401_BUSY)
+=======
+#define zwait() do {} while (zin(CMR) & uPD98401_BUSY)
+>>>>>>> v4.9.227
 
 /* RX0, RX1, TX0, TX1 */
 static const int mbx_entries[NR_MBX] = { 1024,1024,1024,1024 };
@@ -139,7 +147,11 @@ static const int mbx_esize[NR_MBX] = { 16,16,4,4 }; /* entry size in bytes */
 
 static void zpokel(struct zatm_dev *zatm_dev,u32 value,u32 addr)
 {
+<<<<<<< HEAD
 	zwait;
+=======
+	zwait();
+>>>>>>> v4.9.227
 	zout(value,CER);
 	zout(uPD98401_IND_ACC | uPD98401_IA_BALL |
 	    (uPD98401_IA_TGT_CM << uPD98401_IA_TGT_SHIFT) | addr,CMR);
@@ -148,10 +160,17 @@ static void zpokel(struct zatm_dev *zatm_dev,u32 value,u32 addr)
 
 static u32 zpeekl(struct zatm_dev *zatm_dev,u32 addr)
 {
+<<<<<<< HEAD
 	zwait;
 	zout(uPD98401_IND_ACC | uPD98401_IA_BALL | uPD98401_IA_RW |
 	  (uPD98401_IA_TGT_CM << uPD98401_IA_TGT_SHIFT) | addr,CMR);
 	zwait;
+=======
+	zwait();
+	zout(uPD98401_IND_ACC | uPD98401_IA_BALL | uPD98401_IA_RW |
+	  (uPD98401_IA_TGT_CM << uPD98401_IA_TGT_SHIFT) | addr,CMR);
+	zwait();
+>>>>>>> v4.9.227
 	return zin(CER);
 }
 
@@ -240,7 +259,11 @@ static void refill_pool(struct atm_dev *dev,int pool)
 	}
 	if (first) {
 		spin_lock_irqsave(&zatm_dev->lock, flags);
+<<<<<<< HEAD
 		zwait;
+=======
+		zwait();
+>>>>>>> v4.9.227
 		zout(virt_to_bus(first),CER);
 		zout(uPD98401_ADD_BAT | (pool << uPD98401_POOL_SHIFT) | count,
 		    CMR);
@@ -507,9 +530,15 @@ static int open_rx_first(struct atm_vcc *vcc)
 	}
 	if (zatm_vcc->pool < 0) return -EMSGSIZE;
 	spin_lock_irqsave(&zatm_dev->lock, flags);
+<<<<<<< HEAD
 	zwait;
 	zout(uPD98401_OPEN_CHAN,CMR);
 	zwait;
+=======
+	zwait();
+	zout(uPD98401_OPEN_CHAN,CMR);
+	zwait();
+>>>>>>> v4.9.227
 	DPRINTK("0x%x 0x%x\n",zin(CMR),zin(CER));
 	chan = (zin(CMR) & uPD98401_CHAN_ADDR) >> uPD98401_CHAN_ADDR_SHIFT;
 	spin_unlock_irqrestore(&zatm_dev->lock, flags);
@@ -570,13 +599,20 @@ static void close_rx(struct atm_vcc *vcc)
 		pos = vcc->vci >> 1;
 		shift = (1-(vcc->vci & 1)) << 4;
 		zpokel(zatm_dev,zpeekl(zatm_dev,pos) & ~(0xffff << shift),pos);
+<<<<<<< HEAD
 		zwait;
 		zout(uPD98401_NOP,CMR);
 		zwait;
+=======
+		zwait();
+		zout(uPD98401_NOP,CMR);
+		zwait();
+>>>>>>> v4.9.227
 		zout(uPD98401_NOP,CMR);
 		spin_unlock_irqrestore(&zatm_dev->lock, flags);
 	}
 	spin_lock_irqsave(&zatm_dev->lock, flags);
+<<<<<<< HEAD
 	zwait;
 	zout(uPD98401_DEACT_CHAN | uPD98401_CHAN_RT | (zatm_vcc->rx_chan <<
 	    uPD98401_CHAN_ADDR_SHIFT),CMR);
@@ -585,6 +621,16 @@ static void close_rx(struct atm_vcc *vcc)
 	zout(uPD98401_CLOSE_CHAN | uPD98401_CHAN_RT | (zatm_vcc->rx_chan <<
 	    uPD98401_CHAN_ADDR_SHIFT),CMR);
 	zwait;
+=======
+	zwait();
+	zout(uPD98401_DEACT_CHAN | uPD98401_CHAN_RT | (zatm_vcc->rx_chan <<
+	    uPD98401_CHAN_ADDR_SHIFT),CMR);
+	zwait();
+	udelay(10); /* why oh why ... ? */
+	zout(uPD98401_CLOSE_CHAN | uPD98401_CHAN_RT | (zatm_vcc->rx_chan <<
+	    uPD98401_CHAN_ADDR_SHIFT),CMR);
+	zwait();
+>>>>>>> v4.9.227
 	if (!(zin(CMR) & uPD98401_CHAN_ADDR))
 		printk(KERN_CRIT DEV_LABEL "(itf %d): can't close RX channel "
 		    "%d\n",vcc->dev->number,zatm_vcc->rx_chan);
@@ -598,12 +644,22 @@ static void close_rx(struct atm_vcc *vcc)
 static int start_rx(struct atm_dev *dev)
 {
 	struct zatm_dev *zatm_dev;
+<<<<<<< HEAD
 	int size,i;
 
 DPRINTK("start_rx\n");
 	zatm_dev = ZATM_DEV(dev);
 	size = sizeof(struct atm_vcc *)*zatm_dev->chans;
 	zatm_dev->rx_map =  kzalloc(size,GFP_KERNEL);
+=======
+	int i;
+
+	DPRINTK("start_rx\n");
+	zatm_dev = ZATM_DEV(dev);
+	zatm_dev->rx_map = kcalloc(zatm_dev->chans,
+				   sizeof(*zatm_dev->rx_map),
+				   GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!zatm_dev->rx_map) return -ENOMEM;
 	/* set VPI/VCI split (use all VCIs and give what's left to VPIs) */
 	zpokel(zatm_dev,(1 << dev->ci_range.vci_bits)-1,uPD98401_VRR);
@@ -697,7 +753,11 @@ printk("NONONONOO!!!!\n");
 	skb_queue_tail(&zatm_vcc->tx_queue,skb);
 	DPRINTK("QRP=0x%08lx\n",zpeekl(zatm_dev,zatm_vcc->tx_chan*VC_SIZE/4+
 	  uPD98401_TXVC_QRP));
+<<<<<<< HEAD
 	zwait;
+=======
+	zwait();
+>>>>>>> v4.9.227
 	zout(uPD98401_TX_READY | (zatm_vcc->tx_chan <<
 	    uPD98401_CHAN_ADDR_SHIFT),CMR);
 	spin_unlock_irqrestore(&zatm_dev->lock, flags);
@@ -889,12 +949,21 @@ static void close_tx(struct atm_vcc *vcc)
 	}
 	spin_lock_irqsave(&zatm_dev->lock, flags);
 #if 0
+<<<<<<< HEAD
 	zwait;
 	zout(uPD98401_DEACT_CHAN | (chan << uPD98401_CHAN_ADDR_SHIFT),CMR);
 #endif
 	zwait;
 	zout(uPD98401_CLOSE_CHAN | (chan << uPD98401_CHAN_ADDR_SHIFT),CMR);
 	zwait;
+=======
+	zwait();
+	zout(uPD98401_DEACT_CHAN | (chan << uPD98401_CHAN_ADDR_SHIFT),CMR);
+#endif
+	zwait();
+	zout(uPD98401_CLOSE_CHAN | (chan << uPD98401_CHAN_ADDR_SHIFT),CMR);
+	zwait();
+>>>>>>> v4.9.227
 	if (!(zin(CMR) & uPD98401_CHAN_ADDR))
 		printk(KERN_CRIT DEV_LABEL "(itf %d): can't close TX channel "
 		    "%d\n",vcc->dev->number,chan);
@@ -924,9 +993,15 @@ static int open_tx_first(struct atm_vcc *vcc)
 	zatm_vcc->tx_chan = 0;
 	if (vcc->qos.txtp.traffic_class == ATM_NONE) return 0;
 	spin_lock_irqsave(&zatm_dev->lock, flags);
+<<<<<<< HEAD
 	zwait;
 	zout(uPD98401_OPEN_CHAN,CMR);
 	zwait;
+=======
+	zwait();
+	zout(uPD98401_OPEN_CHAN,CMR);
+	zwait();
+>>>>>>> v4.9.227
 	DPRINTK("0x%x 0x%x\n",zin(CMR),zin(CER));
 	chan = (zin(CMR) & uPD98401_CHAN_ADDR) >> uPD98401_CHAN_ADDR_SHIFT;
 	spin_unlock_irqrestore(&zatm_dev->lock, flags);
@@ -998,8 +1073,14 @@ static int start_tx(struct atm_dev *dev)
 
 	DPRINTK("start_tx\n");
 	zatm_dev = ZATM_DEV(dev);
+<<<<<<< HEAD
 	zatm_dev->tx_map = kmalloc(sizeof(struct atm_vcc *)*
 	    zatm_dev->chans,GFP_KERNEL);
+=======
+	zatm_dev->tx_map = kmalloc_array(zatm_dev->chans,
+					 sizeof(*zatm_dev->tx_map),
+					 GFP_KERNEL);
+>>>>>>> v4.9.227
 	if (!zatm_dev->tx_map) return -ENOMEM;
 	zatm_dev->tx_bw = ATM_OC3_PCR;
 	zatm_dev->free_shapers = (1 << NR_SHAPERS)-1;
@@ -1306,19 +1387,32 @@ static int zatm_start(struct atm_dev *dev)
 
 		if (!mbx_entries[i])
 			continue;
+<<<<<<< HEAD
 		mbx = pci_alloc_consistent(pdev, 2*MBX_SIZE(i), &mbx_dma);
+=======
+		mbx = dma_alloc_coherent(&pdev->dev,
+					 2 * MBX_SIZE(i), &mbx_dma, GFP_KERNEL);
+>>>>>>> v4.9.227
 		if (!mbx) {
 			error = -ENOMEM;
 			goto out;
 		}
 		/*
+<<<<<<< HEAD
 		 * Alignment provided by pci_alloc_consistent() isn't enough
+=======
+		 * Alignment provided by dma_alloc_coherent() isn't enough
+>>>>>>> v4.9.227
 		 * for this device.
 		 */
 		if (((unsigned long)mbx ^ mbx_dma) & 0xffff) {
 			printk(KERN_ERR DEV_LABEL "(itf %d): system "
 			       "bus incompatible with driver\n", dev->number);
+<<<<<<< HEAD
 			pci_free_consistent(pdev, 2*MBX_SIZE(i), mbx, mbx_dma);
+=======
+			dma_free_coherent(&pdev->dev, 2*MBX_SIZE(i), mbx, mbx_dma);
+>>>>>>> v4.9.227
 			error = -ENODEV;
 			goto out;
 		}
@@ -1354,9 +1448,15 @@ out_tx:
 	kfree(zatm_dev->tx_map);
 out:
 	while (i-- > 0) {
+<<<<<<< HEAD
 		pci_free_consistent(pdev, 2*MBX_SIZE(i), 
 				    (void *)zatm_dev->mbx_start[i],
 				    zatm_dev->mbx_dma[i]);
+=======
+		dma_free_coherent(&pdev->dev, 2 * MBX_SIZE(i),
+				  (void *)zatm_dev->mbx_start[i],
+				  zatm_dev->mbx_dma[i]);
+>>>>>>> v4.9.227
 	}
 	free_irq(zatm_dev->irq, dev);
 	goto done;
@@ -1397,7 +1497,11 @@ static int zatm_open(struct atm_vcc *vcc)
 	DPRINTK(DEV_LABEL "(itf %d): open %d.%d\n",vcc->dev->number,vcc->vpi,
 	    vcc->vci);
 	if (!test_bit(ATM_VF_PARTIAL,&vcc->flags)) {
+<<<<<<< HEAD
 		zatm_vcc = kmalloc(sizeof(struct zatm_vcc),GFP_KERNEL);
+=======
+		zatm_vcc = kmalloc(sizeof(*zatm_vcc), GFP_KERNEL);
+>>>>>>> v4.9.227
 		if (!zatm_vcc) {
 			clear_bit(ATM_VF_ADDR,&vcc->flags);
 			return -ENOMEM;
@@ -1455,6 +1559,11 @@ static int zatm_ioctl(struct atm_dev *dev,unsigned int cmd,void __user *arg)
 					return -EFAULT;
 				if (pool < 0 || pool > ZATM_LAST_POOL)
 					return -EINVAL;
+<<<<<<< HEAD
+=======
+				pool = array_index_nospec(pool,
+							  ZATM_LAST_POOL + 1);
+>>>>>>> v4.9.227
 				spin_lock_irqsave(&zatm_dev->lock, flags);
 				info = zatm_dev->pool_info[pool];
 				if (cmd == ZATM_GETPOOLZ) {
@@ -1477,6 +1586,11 @@ static int zatm_ioctl(struct atm_dev *dev,unsigned int cmd,void __user *arg)
 					return -EFAULT;
 				if (pool < 0 || pool > ZATM_LAST_POOL)
 					return -EINVAL;
+<<<<<<< HEAD
+=======
+				pool = array_index_nospec(pool,
+							  ZATM_LAST_POOL + 1);
+>>>>>>> v4.9.227
 				if (copy_from_user(&info,
 				    &((struct zatm_pool_req __user *) arg)->info,
 				    sizeof(info))) return -EFAULT;
@@ -1551,7 +1665,11 @@ static void zatm_phy_put(struct atm_dev *dev,unsigned char value,
 	struct zatm_dev *zatm_dev;
 
 	zatm_dev = ZATM_DEV(dev);
+<<<<<<< HEAD
 	zwait;
+=======
+	zwait();
+>>>>>>> v4.9.227
 	zout(value,CER);
 	zout(uPD98401_IND_ACC | uPD98401_IA_B0 |
 	    (uPD98401_IA_TGT_PHY << uPD98401_IA_TGT_SHIFT) | addr,CMR);
@@ -1563,10 +1681,17 @@ static unsigned char zatm_phy_get(struct atm_dev *dev,unsigned long addr)
 	struct zatm_dev *zatm_dev;
 
 	zatm_dev = ZATM_DEV(dev);
+<<<<<<< HEAD
 	zwait;
 	zout(uPD98401_IND_ACC | uPD98401_IA_B0 | uPD98401_IA_RW |
 	  (uPD98401_IA_TGT_PHY << uPD98401_IA_TGT_SHIFT) | addr,CMR);
 	zwait;
+=======
+	zwait();
+	zout(uPD98401_IND_ACC | uPD98401_IA_B0 | uPD98401_IA_RW |
+	  (uPD98401_IA_TGT_PHY << uPD98401_IA_TGT_SHIFT) | addr,CMR);
+	zwait();
+>>>>>>> v4.9.227
 	return zin(CER) & 0xff;
 }
 
@@ -1608,6 +1733,13 @@ static int zatm_init_one(struct pci_dev *pci_dev,
 	if (ret < 0)
 		goto out_disable;
 
+<<<<<<< HEAD
+=======
+	ret = dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(32));
+	if (ret < 0)
+		goto out_disable;
+
+>>>>>>> v4.9.227
 	zatm_dev->pci_dev = pci_dev;
 	dev->dev_data = zatm_dev;
 	zatm_dev->copper = (int)ent->driver_data;

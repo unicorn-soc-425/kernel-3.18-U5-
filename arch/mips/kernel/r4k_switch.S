@@ -15,7 +15,10 @@
 #include <asm/fpregdef.h>
 #include <asm/mipsregs.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
 #include <asm/pgtable-bits.h>
+=======
+>>>>>>> v4.9.227
 #include <asm/regdef.h>
 #include <asm/stackframe.h>
 #include <asm/thread_info.h>
@@ -34,7 +37,11 @@
 #ifndef USE_ALTERNATE_RESUME_IMPL
 /*
  * task_struct *resume(task_struct *prev, task_struct *next,
+<<<<<<< HEAD
  *		       struct thread_info *next_ti, s32 fp_save)
+=======
+ *		       struct thread_info *next_ti)
+>>>>>>> v4.9.227
  */
 	.align	5
 	LEAF(resume)
@@ -43,6 +50,7 @@
 	cpu_save_nonscratch a0
 	LONG_S	ra, THREAD_REG31(a0)
 
+<<<<<<< HEAD
 	/*
 	 * Check whether we need to save any FP context. FP context is saved
 	 * iff the process has used the context with the scalar FPU or the MSA
@@ -82,6 +90,8 @@
 						# clobbers t1
 2:
 
+=======
+>>>>>>> v4.9.227
 #if defined(CONFIG_CC_STACKPROTECTOR) && !defined(CONFIG_SMP)
 	PTR_LA	t8, __stack_chk_guard
 	LONG_L	t9, TASK_STACK_CANARY(a1)
@@ -115,7 +125,12 @@
  * Save a thread's fp context.
  */
 LEAF(_save_fp)
+<<<<<<< HEAD
 #if defined(CONFIG_64BIT) || defined(CONFIG_CPU_MIPS32_R2)
+=======
+#if defined(CONFIG_64BIT) || defined(CONFIG_CPU_MIPS32_R2) || \
+		defined(CONFIG_CPU_MIPS32_R6)
+>>>>>>> v4.9.227
 	mfc0	t0, CP0_STATUS
 #endif
 	fpu_save_double a0 t0 t1		# clobbers t1
@@ -126,7 +141,12 @@ LEAF(_save_fp)
  * Restore a thread's fp context.
  */
 LEAF(_restore_fp)
+<<<<<<< HEAD
 #if defined(CONFIG_64BIT) || defined(CONFIG_CPU_MIPS32_R2)
+=======
+#if defined(CONFIG_64BIT) || defined(CONFIG_CPU_MIPS32_R2) || \
+		defined(CONFIG_CPU_MIPS32_R6)
+>>>>>>> v4.9.227
 	mfc0	t0, CP0_STATUS
 #endif
 	fpu_restore_double a0 t0 t1		# clobbers t1
@@ -163,11 +183,17 @@ LEAF(_init_msa_upper)
  * the property that no matter whether considered as single or as double
  * precision represents signaling NANS.
  *
+<<<<<<< HEAD
  * We initialize fcr31 to rounding to nearest, no exceptions.
  */
 
 #define FPU_DEFAULT  0x00000000
 
+=======
+ * The value to initialize fcr31 to comes in $a0.
+ */
+
+>>>>>>> v4.9.227
 	.set push
 	SET_HARDFLOAT
 
@@ -178,8 +204,12 @@ LEAF(_init_fpu)
 	mtc0	t0, CP0_STATUS
 	enable_fpu_hazard
 
+<<<<<<< HEAD
 	li	t1, FPU_DEFAULT
 	ctc1	t1, fcr31
+=======
+	ctc1	a0, fcr31
+>>>>>>> v4.9.227
 
 	li	t1, -1				# SNaN
 
@@ -240,9 +270,15 @@ LEAF(_init_fpu)
 	mtc1	t1, $f30
 	mtc1	t1, $f31
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_MIPS32_R2
 	.set    push
 	.set    mips32r2
+=======
+#if defined(CONFIG_CPU_MIPS32_R2) || defined(CONFIG_CPU_MIPS32_R6)
+	.set    push
+	.set    MIPS_ISA_LEVEL_RAW
+>>>>>>> v4.9.227
 	.set	fp=64
 	sll     t0, t0, 5			# is Status.FR set?
 	bgez    t0, 1f				# no: skip setting upper 32b
@@ -280,9 +316,15 @@ LEAF(_init_fpu)
 	mthc1   t1, $f30
 	mthc1   t1, $f31
 1:	.set    pop
+<<<<<<< HEAD
 #endif /* CONFIG_CPU_MIPS32_R2 */
 #else
 	.set	arch=r4000
+=======
+#endif /* CONFIG_CPU_MIPS32_R2 || CONFIG_CPU_MIPS32_R6 */
+#else
+	.set	MIPS_ISA_ARCH_LEVEL_RAW
+>>>>>>> v4.9.227
 	dmtc1	t1, $f0
 	dmtc1	t1, $f2
 	dmtc1	t1, $f4

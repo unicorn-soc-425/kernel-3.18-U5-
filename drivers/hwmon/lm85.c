@@ -34,6 +34,10 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/util_macros.h>
+>>>>>>> v4.9.227
 
 /* Addresses to scan */
 static const unsigned short normal_i2c[] = { 0x2c, 0x2d, 0x2e, I2C_CLIENT_END };
@@ -190,6 +194,7 @@ static const int lm85_range_map[] = {
 
 static int RANGE_TO_REG(long range)
 {
+<<<<<<< HEAD
 	int i;
 
 	/* Find the closest match */
@@ -199,6 +204,9 @@ static int RANGE_TO_REG(long range)
 	}
 
 	return i;
+=======
+	return find_closest(range, lm85_range_map, ARRAY_SIZE(lm85_range_map));
+>>>>>>> v4.9.227
 }
 #define RANGE_FROM_REG(val)	lm85_range_map[(val) & 0x0f]
 
@@ -209,6 +217,7 @@ static const int lm85_freq_map[8] = { /* 1 Hz */
 static const int adm1027_freq_map[8] = { /* 1 Hz */
 	11, 15, 22, 29, 35, 44, 59, 88
 };
+<<<<<<< HEAD
 
 static int FREQ_TO_REG(const int *map, unsigned long freq)
 {
@@ -219,6 +228,14 @@ static int FREQ_TO_REG(const int *map, unsigned long freq)
 		if (freq <= (map[i] + map[i + 1]) / 2)
 			break;
 	return i;
+=======
+#define FREQ_MAP_LEN	8
+
+static int FREQ_TO_REG(const int *map,
+		       unsigned int map_size, unsigned long freq)
+{
+	return find_closest(freq, map, map_size);
+>>>>>>> v4.9.227
 }
 
 static int FREQ_FROM_REG(const int *map, u8 reg)
@@ -828,7 +845,12 @@ static ssize_t set_pwm_freq(struct device *dev,
 		data->cfg5 &= ~ADT7468_HFPWM;
 		lm85_write_value(client, ADT7468_REG_CFG5, data->cfg5);
 	} else {					/* Low freq. mode */
+<<<<<<< HEAD
 		data->pwm_freq[nr] = FREQ_TO_REG(data->freq_map, val);
+=======
+		data->pwm_freq[nr] = FREQ_TO_REG(data->freq_map,
+						 FREQ_MAP_LEN, val);
+>>>>>>> v4.9.227
 		lm85_write_value(client, LM85_REG_AFAN_RANGE(nr),
 				 (data->zone[nr].range << 4)
 				 | data->pwm_freq[nr]);

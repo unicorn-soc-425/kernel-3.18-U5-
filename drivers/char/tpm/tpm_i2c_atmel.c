@@ -51,8 +51,13 @@ struct priv_data {
 
 static int i2c_atmel_send(struct tpm_chip *chip, u8 *buf, size_t len)
 {
+<<<<<<< HEAD
 	struct priv_data *priv = chip->vendor.priv;
 	struct i2c_client *client = to_i2c_client(chip->dev);
+=======
+	struct priv_data *priv = dev_get_drvdata(&chip->dev);
+	struct i2c_client *client = to_i2c_client(chip->dev.parent);
+>>>>>>> v4.9.227
 	s32 status;
 
 	priv->len = 0;
@@ -62,16 +67,36 @@ static int i2c_atmel_send(struct tpm_chip *chip, u8 *buf, size_t len)
 
 	status = i2c_master_send(client, buf, len);
 
+<<<<<<< HEAD
 	dev_dbg(chip->dev,
 		"%s(buf=%*ph len=%0zx) -> sts=%d\n", __func__,
 		(int)min_t(size_t, 64, len), buf, len, status);
 	return status;
+=======
+	dev_dbg(&chip->dev,
+		"%s(buf=%*ph len=%0zx) -> sts=%d\n", __func__,
+		(int)min_t(size_t, 64, len), buf, len, status);
+
+	if (status < 0)
+		return status;
+
+	/* The upper layer does not support incomplete sends. */
+	if (status != len)
+		return -E2BIG;
+
+	return 0;
+>>>>>>> v4.9.227
 }
 
 static int i2c_atmel_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct priv_data *priv = chip->vendor.priv;
 	struct i2c_client *client = to_i2c_client(chip->dev);
+=======
+	struct priv_data *priv = dev_get_drvdata(&chip->dev);
+	struct i2c_client *client = to_i2c_client(chip->dev.parent);
+>>>>>>> v4.9.227
 	struct tpm_output_header *hdr =
 		(struct tpm_output_header *)priv->buffer;
 	u32 expected_len;
@@ -88,7 +113,11 @@ static int i2c_atmel_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 		return -ENOMEM;
 
 	if (priv->len >= expected_len) {
+<<<<<<< HEAD
 		dev_dbg(chip->dev,
+=======
+		dev_dbg(&chip->dev,
+>>>>>>> v4.9.227
 			"%s early(buf=%*ph count=%0zx) -> ret=%d\n", __func__,
 			(int)min_t(size_t, 64, expected_len), buf, count,
 			expected_len);
@@ -97,7 +126,11 @@ static int i2c_atmel_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 	}
 
 	rc = i2c_master_recv(client, buf, expected_len);
+<<<<<<< HEAD
 	dev_dbg(chip->dev,
+=======
+	dev_dbg(&chip->dev,
+>>>>>>> v4.9.227
 		"%s reread(buf=%*ph count=%0zx) -> ret=%d\n", __func__,
 		(int)min_t(size_t, 64, expected_len), buf, count,
 		expected_len);
@@ -106,13 +139,22 @@ static int i2c_atmel_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 
 static void i2c_atmel_cancel(struct tpm_chip *chip)
 {
+<<<<<<< HEAD
 	dev_err(chip->dev, "TPM operation cancellation was requested, but is not supported");
+=======
+	dev_err(&chip->dev, "TPM operation cancellation was requested, but is not supported");
+>>>>>>> v4.9.227
 }
 
 static u8 i2c_atmel_read_status(struct tpm_chip *chip)
 {
+<<<<<<< HEAD
 	struct priv_data *priv = chip->vendor.priv;
 	struct i2c_client *client = to_i2c_client(chip->dev);
+=======
+	struct priv_data *priv = dev_get_drvdata(&chip->dev);
+	struct i2c_client *client = to_i2c_client(chip->dev.parent);
+>>>>>>> v4.9.227
 	int rc;
 
 	/* The TPM fails the I2C read until it is ready, so we do the entire
@@ -125,7 +167,11 @@ static u8 i2c_atmel_read_status(struct tpm_chip *chip)
 	/* Once the TPM has completed the command the command remains readable
 	 * until another command is issued. */
 	rc = i2c_master_recv(client, priv->buffer, sizeof(priv->buffer));
+<<<<<<< HEAD
 	dev_dbg(chip->dev,
+=======
+	dev_dbg(&chip->dev,
+>>>>>>> v4.9.227
 		"%s: sts=%d", __func__, rc);
 	if (rc <= 0)
 		return 0;
@@ -141,6 +187,10 @@ static bool i2c_atmel_req_canceled(struct tpm_chip *chip, u8 status)
 }
 
 static const struct tpm_class_ops i2c_atmel = {
+<<<<<<< HEAD
+=======
+	.flags = TPM_OPS_AUTO_STARTUP,
+>>>>>>> v4.9.227
 	.status = i2c_atmel_read_status,
 	.recv = i2c_atmel_recv,
 	.send = i2c_atmel_send,
@@ -153,13 +203,20 @@ static const struct tpm_class_ops i2c_atmel = {
 static int i2c_atmel_probe(struct i2c_client *client,
 			   const struct i2c_device_id *id)
 {
+<<<<<<< HEAD
 	int rc;
 	struct tpm_chip *chip;
 	struct device *dev = &client->dev;
+=======
+	struct tpm_chip *chip;
+	struct device *dev = &client->dev;
+	struct priv_data *priv;
+>>>>>>> v4.9.227
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	chip = tpm_register_hardware(dev, &i2c_atmel);
 	if (!chip) {
 		dev_err(dev, "%s() error in tpm_register_hardware\n", __func__);
@@ -179,10 +236,28 @@ static int i2c_atmel_probe(struct i2c_client *client,
 	chip->vendor.timeout_c = msecs_to_jiffies(TPM_I2C_SHORT_TIMEOUT);
 	chip->vendor.timeout_d = msecs_to_jiffies(TPM_I2C_SHORT_TIMEOUT);
 	chip->vendor.irq = 0;
+=======
+	chip = tpmm_chip_alloc(dev, &i2c_atmel);
+	if (IS_ERR(chip))
+		return PTR_ERR(chip);
+
+	priv = devm_kzalloc(dev, sizeof(struct priv_data), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	/* Default timeouts */
+	chip->timeout_a = msecs_to_jiffies(TPM_I2C_SHORT_TIMEOUT);
+	chip->timeout_b = msecs_to_jiffies(TPM_I2C_LONG_TIMEOUT);
+	chip->timeout_c = msecs_to_jiffies(TPM_I2C_SHORT_TIMEOUT);
+	chip->timeout_d = msecs_to_jiffies(TPM_I2C_SHORT_TIMEOUT);
+
+	dev_set_drvdata(&chip->dev, priv);
+>>>>>>> v4.9.227
 
 	/* There is no known way to probe for this device, and all version
 	 * information seems to be read via TPM commands. Thus we rely on the
 	 * TPM startup process in the common code to detect the device. */
+<<<<<<< HEAD
 	if (tpm_get_timeouts(chip)) {
 		rc = -ENODEV;
 		goto out_err;
@@ -199,17 +274,25 @@ out_err:
 	tpm_dev_vendor_release(chip);
 	tpm_remove_hardware(chip->dev);
 	return rc;
+=======
+
+	return tpm_chip_register(chip);
+>>>>>>> v4.9.227
 }
 
 static int i2c_atmel_remove(struct i2c_client *client)
 {
 	struct device *dev = &(client->dev);
 	struct tpm_chip *chip = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
 	if (chip)
 		tpm_dev_vendor_release(chip);
 	tpm_remove_hardware(dev);
 	kfree(chip);
+=======
+	tpm_chip_unregister(chip);
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -235,7 +318,10 @@ static struct i2c_driver i2c_atmel_driver = {
 	.remove = i2c_atmel_remove,
 	.driver = {
 		.name = I2C_DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = &i2c_atmel_pm_ops,
 		.of_match_table = of_match_ptr(i2c_atmel_of_match),
 	},

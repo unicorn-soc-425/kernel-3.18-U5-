@@ -19,11 +19,15 @@
 #include <linux/nodemask.h>
 #include <linux/of.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
+=======
+>>>>>>> v4.9.227
 
 #include <asm/cputype.h>
 #include <asm/topology.h>
 
+<<<<<<< HEAD
 /*
  * cpu power table
  * This per cpu data structure describes the relative capacity of each core.
@@ -47,6 +51,8 @@ static void set_power_scale(unsigned int cpu, unsigned long power)
 	per_cpu(cpu_scale, cpu) = power;
 }
 
+=======
+>>>>>>> v4.9.227
 static int __init get_cpu_for_node(struct device_node *node)
 {
 	struct device_node *cpu_node;
@@ -185,6 +191,7 @@ static int __init parse_cluster(struct device_node *cluster, int depth)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct cpu_efficiency {
 	const char *compatible;
 	unsigned long efficiency;
@@ -226,6 +233,8 @@ unsigned long arch_get_cpu_efficiency(int cpu)
  * 'average' CPU is of middle power. Also see the comments near
  * table_efficiency[] and update_cpu_power().
  */
+=======
+>>>>>>> v4.9.227
 static int __init parse_dt_topology(void)
 {
 	struct device_node *cn, *map;
@@ -265,6 +274,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __init parse_dt_cpu_power(void)
 {
 	const struct cpu_efficiency *cpu_eff;
@@ -366,6 +376,8 @@ static void update_cpu_power(unsigned int cpu)
 		cpu, arch_scale_freq_power(NULL, cpu));
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * cpu topology table
  */
@@ -421,12 +433,23 @@ void store_cpu_topology(unsigned int cpuid)
 		/* Multiprocessor system : Multi-threads per core */
 		cpuid_topo->thread_id  = MPIDR_AFFINITY_LEVEL(mpidr, 0);
 		cpuid_topo->core_id    = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+<<<<<<< HEAD
 		cpuid_topo->cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 2);
+=======
+		cpuid_topo->cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 2) |
+					 MPIDR_AFFINITY_LEVEL(mpidr, 3) << 8;
+>>>>>>> v4.9.227
 	} else {
 		/* Multiprocessor system : Single-thread per core */
 		cpuid_topo->thread_id  = -1;
 		cpuid_topo->core_id    = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+<<<<<<< HEAD
 		cpuid_topo->cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+=======
+		cpuid_topo->cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 1) |
+					 MPIDR_AFFINITY_LEVEL(mpidr, 2) << 8 |
+					 MPIDR_AFFINITY_LEVEL(mpidr, 3) << 16;
+>>>>>>> v4.9.227
 	}
 
 	pr_debug("CPU%u: cluster %d core %d thread %d mpidr %#016llx\n",
@@ -435,7 +458,10 @@ void store_cpu_topology(unsigned int cpuid)
 
 topology_populated:
 	update_siblings_masks(cpuid);
+<<<<<<< HEAD
 	update_cpu_power(cpuid);
+=======
+>>>>>>> v4.9.227
 }
 
 static void __init reset_cpu_topology(void)
@@ -456,6 +482,7 @@ static void __init reset_cpu_topology(void)
 	}
 }
 
+<<<<<<< HEAD
 static void __init reset_cpu_power(void)
 {
 	unsigned int cpu;
@@ -468,12 +495,17 @@ void __init init_cpu_topology(void)
 {
 	int cpu;
 
+=======
+void __init init_cpu_topology(void)
+{
+>>>>>>> v4.9.227
 	reset_cpu_topology();
 
 	/*
 	 * Discard anything that was parsed if we hit an error so we
 	 * don't use partial information.
 	 */
+<<<<<<< HEAD
 	if (parse_dt_topology()) {
 		reset_cpu_topology();
 	} else {
@@ -483,4 +515,8 @@ void __init init_cpu_topology(void)
 
 	reset_cpu_power();
 	parse_dt_cpu_power();
+=======
+	if (of_have_populated_dt() && parse_dt_topology())
+		reset_cpu_topology();
+>>>>>>> v4.9.227
 }

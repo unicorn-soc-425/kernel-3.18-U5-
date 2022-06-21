@@ -76,11 +76,25 @@ enum alx_device_quirks {
 	ALX_DEV_QUIRK_MSI_INTX_DISABLE_BUG = BIT(0),
 };
 
+<<<<<<< HEAD
+=======
+#define ALX_FLAG_USING_MSIX	BIT(0)
+#define ALX_FLAG_USING_MSI	BIT(1)
+
+>>>>>>> v4.9.227
 struct alx_priv {
 	struct net_device *dev;
 
 	struct alx_hw hw;
 
+<<<<<<< HEAD
+=======
+	/* msi-x vectors */
+	int num_vec;
+	struct msix_entry *msix_entries;
+	char irq_lbl[IFNAMSIZ + 8];
+
+>>>>>>> v4.9.227
 	/* all descriptor memory */
 	struct {
 		dma_addr_t dma;
@@ -105,7 +119,11 @@ struct alx_priv {
 
 	u16 msg_enable;
 
+<<<<<<< HEAD
 	bool msi;
+=======
+	int flags;
+>>>>>>> v4.9.227
 
 	/* protects hw.stats */
 	spinlock_t stats_lock;

@@ -134,7 +134,11 @@
 			};
 
 			rtc@68 {
+<<<<<<< HEAD
 				compatible = "stm,m41t00",
+=======
+				compatible = "st,m41t00",
+>>>>>>> v4.9.227
 					     "dallas,ds1338";
 				reg = <0x68>;
 			};

@@ -4,6 +4,17 @@
 	model = "Qualcomm IPQ8064/AP148";
 	compatible = "qcom,ipq8064-ap148", "qcom,ipq8064";
 
+<<<<<<< HEAD
+=======
+	aliases {
+		serial0 = &gsbi4_serial;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+>>>>>>> v4.9.227
 	reserved-memory {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -87,6 +98,10 @@
 		};
 
 		sata@29000000 {
+<<<<<<< HEAD
+=======
+			ports-implemented = <0x1>;
+>>>>>>> v4.9.227
 			status = "ok";
 		};
 	};

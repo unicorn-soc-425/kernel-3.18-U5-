@@ -7,7 +7,10 @@
 
 #include <asm-generic/siginfo.h>
 
+<<<<<<< HEAD
 #undef NSIGTRAP
 #define NSIGTRAP	4
 
+=======
+>>>>>>> v4.9.227
 #endif

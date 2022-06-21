@@ -112,7 +112,11 @@ static const unsigned long vcpu_reg_offsets[VCPU_NR_MODES][15] = {
  */
 unsigned long *vcpu_reg(struct kvm_vcpu *vcpu, u8 reg_num)
 {
+<<<<<<< HEAD
 	unsigned long *reg_array = (unsigned long *)&vcpu->arch.regs;
+=======
+	unsigned long *reg_array = (unsigned long *)&vcpu->arch.ctxt.gp_regs;
+>>>>>>> v4.9.227
 	unsigned long mode = *vcpu_cpsr(vcpu) & MODE_MASK;
 
 	switch (mode) {
@@ -147,6 +151,7 @@ unsigned long *vcpu_spsr(struct kvm_vcpu *vcpu)
 	unsigned long mode = *vcpu_cpsr(vcpu) & MODE_MASK;
 	switch (mode) {
 	case SVC_MODE:
+<<<<<<< HEAD
 		return &vcpu->arch.regs.KVM_ARM_SVC_spsr;
 	case ABT_MODE:
 		return &vcpu->arch.regs.KVM_ARM_ABT_spsr;
@@ -156,11 +161,23 @@ unsigned long *vcpu_spsr(struct kvm_vcpu *vcpu)
 		return &vcpu->arch.regs.KVM_ARM_IRQ_spsr;
 	case FIQ_MODE:
 		return &vcpu->arch.regs.KVM_ARM_FIQ_spsr;
+=======
+		return &vcpu->arch.ctxt.gp_regs.KVM_ARM_SVC_spsr;
+	case ABT_MODE:
+		return &vcpu->arch.ctxt.gp_regs.KVM_ARM_ABT_spsr;
+	case UND_MODE:
+		return &vcpu->arch.ctxt.gp_regs.KVM_ARM_UND_spsr;
+	case IRQ_MODE:
+		return &vcpu->arch.ctxt.gp_regs.KVM_ARM_IRQ_spsr;
+	case FIQ_MODE:
+		return &vcpu->arch.ctxt.gp_regs.KVM_ARM_FIQ_spsr;
+>>>>>>> v4.9.227
 	default:
 		BUG();
 	}
 }
 
+<<<<<<< HEAD
 /*
  * A conditional instruction is allowed to trap, even though it
  * wouldn't be executed.  So let's re-implement the hardware, in
@@ -260,14 +277,21 @@ void kvm_skip_instr(struct kvm_vcpu *vcpu, bool is_wide_instr)
 }
 
 
+=======
+>>>>>>> v4.9.227
 /******************************************************************************
  * Inject exceptions into the guest
  */
 
 static u32 exc_vector_base(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	u32 sctlr = vcpu->arch.cp15[c1_SCTLR];
 	u32 vbar = vcpu->arch.cp15[c12_VBAR];
+=======
+	u32 sctlr = vcpu_cp15(vcpu, c1_SCTLR);
+	u32 vbar = vcpu_cp15(vcpu, c12_VBAR);
+>>>>>>> v4.9.227
 
 	if (sctlr & SCTLR_V)
 		return 0xffff0000;
@@ -275,6 +299,43 @@ static u32 exc_vector_base(struct kvm_vcpu *vcpu)
 		return vbar;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Switch to an exception mode, updating both CPSR and SPSR. Follow
+ * the logic described in AArch32.EnterMode() from the ARMv8 ARM.
+ */
+static void kvm_update_psr(struct kvm_vcpu *vcpu, unsigned long mode)
+{
+	unsigned long cpsr = *vcpu_cpsr(vcpu);
+	u32 sctlr = vcpu_cp15(vcpu, c1_SCTLR);
+
+	*vcpu_cpsr(vcpu) = (cpsr & ~MODE_MASK) | mode;
+
+	switch (mode) {
+	case FIQ_MODE:
+		*vcpu_cpsr(vcpu) |= PSR_F_BIT;
+		/* Fall through */
+	case ABT_MODE:
+	case IRQ_MODE:
+		*vcpu_cpsr(vcpu) |= PSR_A_BIT;
+		/* Fall through */
+	default:
+		*vcpu_cpsr(vcpu) |= PSR_I_BIT;
+	}
+
+	*vcpu_cpsr(vcpu) &= ~(PSR_IT_MASK | PSR_J_BIT | PSR_E_BIT | PSR_T_BIT);
+
+	if (sctlr & SCTLR_TE)
+		*vcpu_cpsr(vcpu) |= PSR_T_BIT;
+	if (sctlr & SCTLR_EE)
+		*vcpu_cpsr(vcpu) |= PSR_E_BIT;
+
+	/* Note: These now point to the mode banked copies */
+	*vcpu_spsr(vcpu) = cpsr;
+}
+
+>>>>>>> v4.9.227
 /**
  * kvm_inject_undefined - inject an undefined exception into the guest
  * @vcpu: The VCPU to receive the undefined exception
@@ -286,14 +347,19 @@ static u32 exc_vector_base(struct kvm_vcpu *vcpu)
  */
 void kvm_inject_undefined(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	unsigned long new_lr_value;
 	unsigned long new_spsr_value;
 	unsigned long cpsr = *vcpu_cpsr(vcpu);
 	u32 sctlr = vcpu->arch.cp15[c1_SCTLR];
+=======
+	unsigned long cpsr = *vcpu_cpsr(vcpu);
+>>>>>>> v4.9.227
 	bool is_thumb = (cpsr & PSR_T_BIT);
 	u32 vect_offset = 4;
 	u32 return_offset = (is_thumb) ? 2 : 4;
 
+<<<<<<< HEAD
 	new_spsr_value = cpsr;
 	new_lr_value = *vcpu_pc(vcpu) - return_offset;
 
@@ -309,6 +375,10 @@ void kvm_inject_undefined(struct kvm_vcpu *vcpu)
 	/* Note: These now point to UND banked copies */
 	*vcpu_spsr(vcpu) = cpsr;
 	*vcpu_reg(vcpu, 14) = new_lr_value;
+=======
+	kvm_update_psr(vcpu, UND_MODE);
+	*vcpu_reg(vcpu, 14) = *vcpu_pc(vcpu) + return_offset;
+>>>>>>> v4.9.227
 
 	/* Branch to exception vector */
 	*vcpu_pc(vcpu) = exc_vector_base(vcpu) + vect_offset;
@@ -320,6 +390,7 @@ void kvm_inject_undefined(struct kvm_vcpu *vcpu)
  */
 static void inject_abt(struct kvm_vcpu *vcpu, bool is_pabt, unsigned long addr)
 {
+<<<<<<< HEAD
 	unsigned long new_lr_value;
 	unsigned long new_spsr_value;
 	unsigned long cpsr = *vcpu_cpsr(vcpu);
@@ -344,6 +415,14 @@ static void inject_abt(struct kvm_vcpu *vcpu, bool is_pabt, unsigned long addr)
 	/* Note: These now point to ABT banked copies */
 	*vcpu_spsr(vcpu) = cpsr;
 	*vcpu_reg(vcpu, 14) = new_lr_value;
+=======
+	u32 vect_offset;
+	u32 return_offset = (is_pabt) ? 4 : 8;
+	bool is_lpae;
+
+	kvm_update_psr(vcpu, ABT_MODE);
+	*vcpu_reg(vcpu, 14) = *vcpu_pc(vcpu) + return_offset;
+>>>>>>> v4.9.227
 
 	if (is_pabt)
 		vect_offset = 12;
@@ -355,6 +434,7 @@ static void inject_abt(struct kvm_vcpu *vcpu, bool is_pabt, unsigned long addr)
 
 	if (is_pabt) {
 		/* Set IFAR and IFSR */
+<<<<<<< HEAD
 		vcpu->arch.cp15[c6_IFAR] = addr;
 		is_lpae = (vcpu->arch.cp15[c2_TTBCR] >> 31);
 		/* Always give debug fault for now - should give guest a clue */
@@ -371,6 +451,24 @@ static void inject_abt(struct kvm_vcpu *vcpu, bool is_pabt, unsigned long addr)
 			vcpu->arch.cp15[c5_DFSR] = 1 << 9 | 0x22;
 		else
 			vcpu->arch.cp15[c5_DFSR] = 2;
+=======
+		vcpu_cp15(vcpu, c6_IFAR) = addr;
+		is_lpae = (vcpu_cp15(vcpu, c2_TTBCR) >> 31);
+		/* Always give debug fault for now - should give guest a clue */
+		if (is_lpae)
+			vcpu_cp15(vcpu, c5_IFSR) = 1 << 9 | 0x22;
+		else
+			vcpu_cp15(vcpu, c5_IFSR) = 2;
+	} else { /* !iabt */
+		/* Set DFAR and DFSR */
+		vcpu_cp15(vcpu, c6_DFAR) = addr;
+		is_lpae = (vcpu_cp15(vcpu, c2_TTBCR) >> 31);
+		/* Always give debug fault for now - should give guest a clue */
+		if (is_lpae)
+			vcpu_cp15(vcpu, c5_DFSR) = 1 << 9 | 0x22;
+		else
+			vcpu_cp15(vcpu, c5_DFSR) = 2;
+>>>>>>> v4.9.227
 	}
 
 }
@@ -400,3 +498,18 @@ void kvm_inject_pabt(struct kvm_vcpu *vcpu, unsigned long addr)
 {
 	inject_abt(vcpu, true, addr);
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * kvm_inject_vabt - inject an async abort / SError into the guest
+ * @vcpu: The VCPU to receive the exception
+ *
+ * It is assumed that this code is called from the VCPU thread and that the
+ * VCPU therefore is not currently executing guest code.
+ */
+void kvm_inject_vabt(struct kvm_vcpu *vcpu)
+{
+	vcpu_set_hcr(vcpu, vcpu_get_hcr(vcpu) | HCR_VA);
+}
+>>>>>>> v4.9.227

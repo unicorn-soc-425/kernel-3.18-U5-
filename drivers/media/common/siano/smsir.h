@@ -30,8 +30,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <linux/input.h>
 #include <media/rc-core.h>
 
+<<<<<<< HEAD
 #define IR_DEFAULT_TIMEOUT		100
 
+=======
+>>>>>>> v4.9.227
 struct smscore_device_t;
 
 struct ir_t {

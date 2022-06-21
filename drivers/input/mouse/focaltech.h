@@ -2,6 +2,10 @@
  * Focaltech TouchPad PS/2 mouse driver
  *
  * Copyright (c) 2014 Red Hat Inc.
+<<<<<<< HEAD
+=======
+ * Copyright (c) 2014 Mathias Gottschlag <mgottschlag@gmail.com>
+>>>>>>> v4.9.227
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +21,18 @@
 #define _FOCALTECH_H
 
 int focaltech_detect(struct psmouse *psmouse, bool set_properties);
+<<<<<<< HEAD
 int focaltech_init(struct psmouse *psmouse);
+=======
+
+#ifdef CONFIG_MOUSE_PS2_FOCALTECH
+int focaltech_init(struct psmouse *psmouse);
+#else
+static inline int focaltech_init(struct psmouse *psmouse)
+{
+	return -ENOSYS;
+}
+#endif
+>>>>>>> v4.9.227
 
 #endif

@@ -95,7 +95,11 @@ struct lp55xx_reg {
  * @enable             : Chip specific enable command
  * @max_channel        : Maximum number of channels
  * @post_init_device   : Chip specific initialization code
+<<<<<<< HEAD
  * @brightness_work_fn : Brightness work function
+=======
+ * @brightness_fn      : Brightness function
+>>>>>>> v4.9.227
  * @set_led_current    : LED current set function
  * @firmware_cb        : Call function when the firmware is loaded
  * @run_engine         : Run internal engine for pattern
@@ -110,7 +114,11 @@ struct lp55xx_device_config {
 	int (*post_init_device) (struct lp55xx_chip *chip);
 
 	/* access brightness register */
+<<<<<<< HEAD
 	void (*brightness_work_fn)(struct work_struct *work);
+=======
+	int (*brightness_fn)(struct lp55xx_led *led);
+>>>>>>> v4.9.227
 
 	/* current setting function */
 	void (*set_led_current) (struct lp55xx_led *led, u8 led_current);
@@ -164,7 +172,10 @@ struct lp55xx_chip {
  * @cdev            : LED class device
  * @led_current     : Current setting at each led channel
  * @max_current     : Maximun current at each led channel
+<<<<<<< HEAD
  * @brightness_work : Workqueue for brightness control
+=======
+>>>>>>> v4.9.227
  * @brightness      : Brightness value
  * @chip            : The lp55xx chip data
  */
@@ -173,7 +184,10 @@ struct lp55xx_led {
 	struct led_classdev cdev;
 	u8 led_current;
 	u8 max_current;
+<<<<<<< HEAD
 	struct work_struct brightness_work;
+=======
+>>>>>>> v4.9.227
 	u8 brightness;
 	struct lp55xx_chip *chip;
 };
@@ -202,7 +216,12 @@ extern int lp55xx_register_sysfs(struct lp55xx_chip *chip);
 extern void lp55xx_unregister_sysfs(struct lp55xx_chip *chip);
 
 /* common device tree population function */
+<<<<<<< HEAD
 extern int lp55xx_of_populate_pdata(struct device *dev,
 				    struct device_node *np);
+=======
+extern struct lp55xx_platform_data
+*lp55xx_of_populate_pdata(struct device *dev, struct device_node *np);
+>>>>>>> v4.9.227
 
 #endif /* _LEDS_LP55XX_COMMON_H */

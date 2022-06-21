@@ -19,16 +19,30 @@
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/screen_info.h>
+<<<<<<< HEAD
 
 #include <video/vga.h>
 #include <asm/io.h>
 #include <asm/mtrr.h>
+=======
+#include <linux/io.h>
+
+#include <video/vga.h>
+>>>>>>> v4.9.227
 
 #define dac_reg	(0x3c8)
 #define dac_val	(0x3c9)
 
 /* --------------------------------------------------------------------- */
 
+<<<<<<< HEAD
+=======
+struct vesafb_par {
+	u32 pseudo_palette[256];
+	int wc_cookie;
+};
+
+>>>>>>> v4.9.227
 static struct fb_var_screeninfo vesafb_defined = {
 	.activate	= FB_ACTIVATE_NOW,
 	.height		= -1,
@@ -175,7 +189,14 @@ static int vesafb_setcolreg(unsigned regno, unsigned red, unsigned green,
 
 static void vesafb_destroy(struct fb_info *info)
 {
+<<<<<<< HEAD
 	fb_dealloc_cmap(&info->cmap);
+=======
+	struct vesafb_par *par = info->par;
+
+	fb_dealloc_cmap(&info->cmap);
+	arch_phys_wc_del(par->wc_cookie);
+>>>>>>> v4.9.227
 	if (info->screen_base)
 		iounmap(info->screen_base);
 	release_mem_region(info->apertures->ranges[0].base, info->apertures->ranges[0].size);
@@ -228,6 +249,10 @@ static int vesafb_setup(char *options)
 static int vesafb_probe(struct platform_device *dev)
 {
 	struct fb_info *info;
+<<<<<<< HEAD
+=======
+	struct vesafb_par *par;
+>>>>>>> v4.9.227
 	int i, err;
 	unsigned int size_vmode;
 	unsigned int size_remap;
@@ -291,14 +316,23 @@ static int vesafb_probe(struct platform_device *dev)
 		   spaces our resource handlers simply don't know about */
 	}
 
+<<<<<<< HEAD
 	info = framebuffer_alloc(sizeof(u32) * 256, &dev->dev);
+=======
+	info = framebuffer_alloc(sizeof(struct vesafb_par), &dev->dev);
+>>>>>>> v4.9.227
 	if (!info) {
 		release_mem_region(vesafb_fix.smem_start, size_total);
 		return -ENOMEM;
 	}
 	platform_set_drvdata(dev, info);
+<<<<<<< HEAD
 	info->pseudo_palette = info->par;
 	info->par = NULL;
+=======
+	par = info->par;
+	info->pseudo_palette = par->pseudo_palette;
+>>>>>>> v4.9.227
 
 	/* set vesafb aperture size for generic probing */
 	info->apertures = alloc_apertures(1);
@@ -404,6 +438,7 @@ static int vesafb_probe(struct platform_device *dev)
 	 * region already (FIXME) */
 	request_region(0x3c0, 32, "vesafb");
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	if (mtrr) {
 		unsigned int temp_size = size_total;
@@ -458,6 +493,29 @@ static int vesafb_probe(struct platform_device *dev)
 		info->screen_base = ioremap(vesafb_fix.smem_start, vesafb_fix.smem_len);
 		break;
 	}
+=======
+	if (mtrr == 3) {
+		unsigned int temp_size = size_total;
+
+		/* Find the largest power-of-two */
+		temp_size = roundup_pow_of_two(temp_size);
+
+		/* Try and find a power of two to add */
+		do {
+			par->wc_cookie =
+				arch_phys_wc_add(vesafb_fix.smem_start,
+						 temp_size);
+			temp_size >>= 1;
+		} while (temp_size >= PAGE_SIZE && par->wc_cookie < 0);
+
+		info->screen_base = ioremap_wc(vesafb_fix.smem_start, vesafb_fix.smem_len);
+	} else {
+		if (mtrr && mtrr != 3)
+			WARN_ONCE(1, "Only MTRR_TYPE_WRCOMB (3) make sense\n");
+		info->screen_base = ioremap(vesafb_fix.smem_start, vesafb_fix.smem_len);
+	}
+
+>>>>>>> v4.9.227
 	if (!info->screen_base) {
 		printk(KERN_ERR
 		       "vesafb: abort, cannot ioremap video memory 0x%x @ 0x%lx\n",
@@ -492,6 +550,10 @@ static int vesafb_probe(struct platform_device *dev)
 	fb_info(info, "%s frame buffer device\n", info->fix.id);
 	return 0;
 err:
+<<<<<<< HEAD
+=======
+	arch_phys_wc_del(par->wc_cookie);
+>>>>>>> v4.9.227
 	if (info->screen_base)
 		iounmap(info->screen_base);
 	framebuffer_release(info);
@@ -512,7 +574,10 @@ static int vesafb_remove(struct platform_device *pdev)
 static struct platform_driver vesafb_driver = {
 	.driver = {
 		.name = "vesa-framebuffer",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe = vesafb_probe,
 	.remove = vesafb_remove,

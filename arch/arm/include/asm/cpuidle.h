@@ -1,6 +1,11 @@
 #ifndef __ASM_ARM_CPUIDLE_H
 #define __ASM_ARM_CPUIDLE_H
 
+<<<<<<< HEAD
+=======
+#include <asm/proc-fns.h>
+
+>>>>>>> v4.9.227
 #ifdef CONFIG_CPU_IDLE
 extern int arm_cpuidle_simple_enter(struct cpuidle_device *dev,
 		struct cpuidle_driver *drv, int index);
@@ -15,7 +20,10 @@ static inline int arm_cpuidle_simple_enter(struct cpuidle_device *dev,
 	.exit_latency           = 1,\
 	.target_residency       = 1,\
 	.power_usage		= p,\
+<<<<<<< HEAD
 	.flags                  = CPUIDLE_FLAG_TIME_VALID,\
+=======
+>>>>>>> v4.9.227
 	.name                   = "WFI",\
 	.desc                   = "ARM WFI",\
 }
@@ -26,4 +34,28 @@ static inline int arm_cpuidle_simple_enter(struct cpuidle_device *dev,
  */
 #define ARM_CPUIDLE_WFI_STATE ARM_CPUIDLE_WFI_STATE_PWR(UINT_MAX)
 
+<<<<<<< HEAD
+=======
+struct device_node;
+
+struct cpuidle_ops {
+	int (*suspend)(unsigned long arg);
+	int (*init)(struct device_node *, int cpu);
+};
+
+struct of_cpuidle_method {
+	const char *method;
+	const struct cpuidle_ops *ops;
+};
+
+#define CPUIDLE_METHOD_OF_DECLARE(name, _method, _ops)			\
+	static const struct of_cpuidle_method __cpuidle_method_of_table_##name \
+	__used __section(__cpuidle_method_of_table)			\
+	= { .method = _method, .ops = _ops }
+
+extern int arm_cpuidle_suspend(int index);
+
+extern int arm_cpuidle_init(int cpu);
+
+>>>>>>> v4.9.227
 #endif

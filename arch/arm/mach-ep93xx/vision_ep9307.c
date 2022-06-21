@@ -29,6 +29,11 @@
 #include <linux/spi/mmc_spi.h>
 #include <linux/mmc/host.h>
 
+<<<<<<< HEAD
+=======
+#include <sound/cs4271.h>
+
+>>>>>>> v4.9.227
 #include <mach/hardware.h>
 #include <linux/platform_data/video-ep93xx.h>
 #include <linux/platform_data/spi-ep93xx.h>
@@ -104,8 +109,11 @@ static void vision_lcd_blank(int blank_mode, struct fb_info *info)
 }
 
 static struct ep93xxfb_mach_info ep93xxfb_info __initdata = {
+<<<<<<< HEAD
 	.num_modes	= EP93XXFB_USE_MODEDB,
 	.bpp		= 16,
+=======
+>>>>>>> v4.9.227
 	.flags		= EP93XXFB_USE_SDCSN0 | EP93XXFB_PCLK_FALLING,
 	.setup		= vision_lcd_setup,
 	.teardown	= vision_lcd_teardown,
@@ -169,6 +177,38 @@ static struct i2c_board_info vision_i2c_info[] __initdata = {
 };
 
 /*************************************************************************
+<<<<<<< HEAD
+=======
+ * SPI CS4271 Audio Codec
+ *************************************************************************/
+static struct cs4271_platform_data vision_cs4271_data = {
+	.gpio_nreset	= EP93XX_GPIO_LINE_H(2),
+};
+
+static int vision_cs4271_hw_setup(struct spi_device *spi)
+{
+	return gpio_request_one(EP93XX_GPIO_LINE_EGPIO6,
+				GPIOF_OUT_INIT_HIGH, spi->modalias);
+}
+
+static void vision_cs4271_hw_cleanup(struct spi_device *spi)
+{
+	gpio_free(EP93XX_GPIO_LINE_EGPIO6);
+}
+
+static void vision_cs4271_hw_cs_control(struct spi_device *spi, int value)
+{
+	gpio_set_value(EP93XX_GPIO_LINE_EGPIO6, value);
+}
+
+static struct ep93xx_spi_chip_ops vision_cs4271_hw = {
+	.setup		= vision_cs4271_hw_setup,
+	.cleanup	= vision_cs4271_hw_cleanup,
+	.cs_control	= vision_cs4271_hw_cs_control,
+};
+
+/*************************************************************************
+>>>>>>> v4.9.227
  * SPI Flash
  *************************************************************************/
 #define VISION_SPI_FLASH_CS	EP93XX_GPIO_LINE_EGPIO7
@@ -262,12 +302,27 @@ static struct ep93xx_spi_chip_ops vision_spi_mmc_hw = {
  *************************************************************************/
 static struct spi_board_info vision_spi_board_info[] __initdata = {
 	{
+<<<<<<< HEAD
+=======
+		.modalias		= "cs4271",
+		.platform_data		= &vision_cs4271_data,
+		.controller_data	= &vision_cs4271_hw,
+		.max_speed_hz		= 6000000,
+		.bus_num		= 0,
+		.chip_select		= 0,
+		.mode			= SPI_MODE_3,
+	}, {
+>>>>>>> v4.9.227
 		.modalias		= "sst25l",
 		.platform_data		= &vision_spi_flash_data,
 		.controller_data	= &vision_spi_flash_hw,
 		.max_speed_hz		= 20000000,
 		.bus_num		= 0,
+<<<<<<< HEAD
 		.chip_select		= 0,
+=======
+		.chip_select		= 1,
+>>>>>>> v4.9.227
 		.mode			= SPI_MODE_3,
 	}, {
 		.modalias		= "mmc_spi",
@@ -275,16 +330,42 @@ static struct spi_board_info vision_spi_board_info[] __initdata = {
 		.controller_data	= &vision_spi_mmc_hw,
 		.max_speed_hz		= 20000000,
 		.bus_num		= 0,
+<<<<<<< HEAD
 		.chip_select		= 1,
+=======
+		.chip_select		= 2,
+>>>>>>> v4.9.227
 		.mode			= SPI_MODE_3,
 	},
 };
 
 static struct ep93xx_spi_info vision_spi_master __initdata = {
+<<<<<<< HEAD
 	.num_chipselect		= ARRAY_SIZE(vision_spi_board_info),
 };
 
 /*************************************************************************
+=======
+	.num_chipselect	= ARRAY_SIZE(vision_spi_board_info),
+	.use_dma	= 1,
+};
+
+/*************************************************************************
+ * I2S Audio
+ *************************************************************************/
+static struct platform_device vision_audio_device = {
+	.name		= "edb93xx-audio",
+	.id		= -1,
+};
+
+static void __init vision_register_i2s(void)
+{
+	ep93xx_register_i2s();
+	platform_device_register(&vision_audio_device);
+}
+
+/*************************************************************************
+>>>>>>> v4.9.227
  * Machine Initialization
  *************************************************************************/
 static void __init vision_init_machine(void)
@@ -309,6 +390,10 @@ static void __init vision_init_machine(void)
 				ARRAY_SIZE(vision_i2c_info));
 	ep93xx_register_spi(&vision_spi_master, vision_spi_board_info,
 				ARRAY_SIZE(vision_spi_board_info));
+<<<<<<< HEAD
+=======
+	vision_register_i2s();
+>>>>>>> v4.9.227
 }
 
 MACHINE_START(VISION_EP9307, "Vision Engraving Systems EP9307")

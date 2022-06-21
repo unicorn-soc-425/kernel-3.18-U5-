@@ -22,13 +22,20 @@
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> v4.9.227
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
 #include <linux/of_platform.h>
 #include <linux/io.h>
 #include <linux/slab.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include "irqchip.h"
+=======
+>>>>>>> v4.9.227
 
 #define AB_IRQCTL_INT_ENABLE   0x00
 #define AB_IRQCTL_INT_STATUS   0x04
@@ -97,9 +104,16 @@ static int tb10x_irq_set_type(struct irq_data *data, unsigned int flow_type)
 	return IRQ_SET_MASK_OK;
 }
 
+<<<<<<< HEAD
 static void tb10x_irq_cascade(unsigned int irq, struct irq_desc *desc)
 {
 	struct irq_domain *domain = irq_desc_get_handler_data(desc);
+=======
+static void tb10x_irq_cascade(struct irq_desc *desc)
+{
+	struct irq_domain *domain = irq_desc_get_handler_data(desc);
+	unsigned int irq = irq_desc_get_irq(desc);
+>>>>>>> v4.9.227
 
 	generic_handle_irq(irq_find_mapping(domain, irq));
 }
@@ -173,8 +187,13 @@ static int __init of_tb10x_init_irq(struct device_node *ictl,
 	for (i = 0; i < nrirqs; i++) {
 		unsigned int irq = irq_of_parse_and_map(ictl, i);
 
+<<<<<<< HEAD
 		irq_set_handler_data(irq, domain);
 		irq_set_chained_handler(irq, tb10x_irq_cascade);
+=======
+		irq_set_chained_handler_and_data(irq, tb10x_irq_cascade,
+						 domain);
+>>>>>>> v4.9.227
 	}
 
 	ab_irqctl_writereg(gc, AB_IRQCTL_INT_ENABLE, 0);

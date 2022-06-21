@@ -15,8 +15,12 @@
  * Based from clk-highbank.c
  *
  */
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/clkdev.h>
+=======
+#include <linux/slab.h>
+>>>>>>> v4.9.227
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/of.h>
@@ -92,7 +96,10 @@ static __init struct clk *__socfpga_pll_init(struct device_node *node,
 	struct clk_init_data init;
 	struct device_node *clkmgr_np;
 	int rc;
+<<<<<<< HEAD
 	int i = 0;
+=======
+>>>>>>> v4.9.227
 
 	of_property_read_u32(node, "reg", &reg);
 
@@ -102,6 +109,10 @@ static __init struct clk *__socfpga_pll_init(struct device_node *node,
 
 	clkmgr_np = of_find_compatible_node(NULL, NULL, "altr,clk-mgr");
 	clk_mgr_base_addr = of_iomap(clkmgr_np, 0);
+<<<<<<< HEAD
+=======
+	of_node_put(clkmgr_np);
+>>>>>>> v4.9.227
 	BUG_ON(!clk_mgr_base_addr);
 	pll_clk->hw.reg = clk_mgr_base_addr + reg;
 
@@ -111,11 +122,15 @@ static __init struct clk *__socfpga_pll_init(struct device_node *node,
 	init.ops = ops;
 	init.flags = 0;
 
+<<<<<<< HEAD
 	while (i < SOCFPGA_MAX_PARENTS && (parent_name[i] =
 			of_clk_get_parent_name(node, i)) != NULL)
 		i++;
 
 	init.num_parents = i;
+=======
+	init.num_parents = of_clk_parent_fill(node, parent_name, SOCFPGA_MAX_PARENTS);
+>>>>>>> v4.9.227
 	init.parent_names = parent_name;
 	pll_clk->hw.hw.init = &init;
 

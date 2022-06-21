@@ -239,7 +239,11 @@ out:
 	of_node_put(np);
 }
 
+<<<<<<< HEAD
 static void briq_restart(char *cmd)
+=======
+static void __noreturn briq_restart(char *cmd)
+>>>>>>> v4.9.227
 {
 	local_irq_disable();
 	if (briq_SPOR)
@@ -253,7 +257,11 @@ static void briq_restart(char *cmd)
  * But unfortunately, the firmware does not connect /chosen/{stdin,stdout}
  * the the built-in serial node. Instead, a /failsafe node is created.
  */
+<<<<<<< HEAD
 static void chrp_init_early(void)
+=======
+static __init void chrp_init(void)
+>>>>>>> v4.9.227
 {
 	struct device_node *node;
 	const char *property;
@@ -363,12 +371,20 @@ void __init chrp_setup_arch(void)
 	if (ppc_md.progress) ppc_md.progress("Linux/PPC "UTS_RELEASE"\n", 0x0);
 }
 
+<<<<<<< HEAD
 static void chrp_8259_cascade(unsigned int irq, struct irq_desc *desc)
+=======
+static void chrp_8259_cascade(struct irq_desc *desc)
+>>>>>>> v4.9.227
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int cascade_irq = i8259_irq();
 
+<<<<<<< HEAD
 	if (cascade_irq != NO_IRQ)
+=======
+	if (cascade_irq)
+>>>>>>> v4.9.227
 		generic_handle_irq(cascade_irq);
 
 	chip->irq_eoi(&desc->irq_data);
@@ -514,7 +530,11 @@ static void __init chrp_find_8259(void)
 	}
 	if (chrp_mpic != NULL) {
 		cascade_irq = irq_of_parse_and_map(pic, 0);
+<<<<<<< HEAD
 		if (cascade_irq == NO_IRQ)
+=======
+		if (!cascade_irq)
+>>>>>>> v4.9.227
 			printk(KERN_ERR "i8259: failed to map cascade irq\n");
 		else
 			irq_set_chained_handler(cascade_irq,
@@ -585,6 +605,13 @@ static int __init chrp_probe(void)
 	DMA_MODE_READ = 0x44;
 	DMA_MODE_WRITE = 0x48;
 
+<<<<<<< HEAD
+=======
+	pm_power_off = rtas_power_off;
+
+	chrp_init();
+
+>>>>>>> v4.9.227
 	return 1;
 }
 
@@ -593,11 +620,17 @@ define_machine(chrp) {
 	.probe			= chrp_probe,
 	.setup_arch		= chrp_setup_arch,
 	.init			= chrp_init2,
+<<<<<<< HEAD
 	.init_early		= chrp_init_early,
 	.show_cpuinfo		= chrp_show_cpuinfo,
 	.init_IRQ		= chrp_init_IRQ,
 	.restart		= rtas_restart,
 	.power_off		= rtas_power_off,
+=======
+	.show_cpuinfo		= chrp_show_cpuinfo,
+	.init_IRQ		= chrp_init_IRQ,
+	.restart		= rtas_restart,
+>>>>>>> v4.9.227
 	.halt			= rtas_halt,
 	.time_init		= chrp_time_init,
 	.set_rtc_time		= chrp_set_rtc_time,

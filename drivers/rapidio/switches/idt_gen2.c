@@ -436,10 +436,18 @@ static int idtg2_probe(struct rio_dev *rdev, const struct rio_device_id *id)
 				    RIO_STD_RTE_DEFAULT_PORT, IDT_NO_ROUTE);
 	}
 
+<<<<<<< HEAD
 	/* Create device-specific sysfs attributes */
 	idtg2_sysfs(rdev, true);
 
 	spin_unlock(&rdev->rswitch->lock);
+=======
+	spin_unlock(&rdev->rswitch->lock);
+
+	/* Create device-specific sysfs attributes */
+	idtg2_sysfs(rdev, true);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -452,11 +460,17 @@ static void idtg2_remove(struct rio_dev *rdev)
 		return;
 	}
 	rdev->rswitch->ops = NULL;
+<<<<<<< HEAD
 
 	/* Remove device-specific sysfs attributes */
 	idtg2_sysfs(rdev, false);
 
 	spin_unlock(&rdev->rswitch->lock);
+=======
+	spin_unlock(&rdev->rswitch->lock);
+	/* Remove device-specific sysfs attributes */
+	idtg2_sysfs(rdev, false);
+>>>>>>> v4.9.227
 }
 
 static struct rio_device_id idtg2_id_table[] = {

@@ -4,6 +4,7 @@
 #ifndef __ASSEMBLY__
 extern void mcount(void);
 
+<<<<<<< HEAD
 /*
  * Stack of return addresses for functions of a thread.
  * Used in struct thread_info
@@ -21,6 +22,11 @@ struct ftrace_ret_stack {
  */
 extern void return_to_handler(void);
 
+=======
+#define MCOUNT_INSN_SIZE 4
+
+extern unsigned long sys_call_table[];
+>>>>>>> v4.9.227
 
 extern unsigned long return_address(unsigned int);
 

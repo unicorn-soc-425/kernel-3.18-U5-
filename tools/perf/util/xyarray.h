@@ -6,11 +6,19 @@
 struct xyarray {
 	size_t row_size;
 	size_t entry_size;
+<<<<<<< HEAD
+=======
+	size_t entries;
+>>>>>>> v4.9.227
 	char contents[];
 };
 
 struct xyarray *xyarray__new(int xlen, int ylen, size_t entry_size);
 void xyarray__delete(struct xyarray *xy);
+<<<<<<< HEAD
+=======
+void xyarray__reset(struct xyarray *xy);
+>>>>>>> v4.9.227
 
 static inline void *xyarray__entry(struct xyarray *xy, int x, int y)
 {

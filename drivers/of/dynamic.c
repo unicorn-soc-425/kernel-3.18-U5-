@@ -6,6 +6,11 @@
  * device tree nodes.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt)	"OF: " fmt
+
+>>>>>>> v4.9.227
 #include <linux/of.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
@@ -96,13 +101,21 @@ int of_reconfig_notify(unsigned long action, struct of_reconfig_data *p)
 	switch (action) {
 	case OF_RECONFIG_ATTACH_NODE:
 	case OF_RECONFIG_DETACH_NODE:
+<<<<<<< HEAD
 		pr_debug("of/notify %-15s %s\n", action_names[action],
+=======
+		pr_debug("notify %-15s %s\n", action_names[action],
+>>>>>>> v4.9.227
 			pr->dn->full_name);
 		break;
 	case OF_RECONFIG_ADD_PROPERTY:
 	case OF_RECONFIG_REMOVE_PROPERTY:
 	case OF_RECONFIG_UPDATE_PROPERTY:
+<<<<<<< HEAD
 		pr_debug("of/notify %-15s %s:%s\n", action_names[action],
+=======
+		pr_debug("notify %-15s %s:%s\n", action_names[action],
+>>>>>>> v4.9.227
 			pr->dn->full_name, pr->prop->name);
 		break;
 
@@ -225,7 +238,11 @@ void __of_attach_node(struct device_node *np)
 	phandle = __of_get_property(np, "phandle", &sz);
 	if (!phandle)
 		phandle = __of_get_property(np, "linux,phandle", &sz);
+<<<<<<< HEAD
 	if (IS_ENABLED(PPC_PSERIES) && !phandle)
+=======
+	if (IS_ENABLED(CONFIG_PPC_PSERIES) && !phandle)
+>>>>>>> v4.9.227
 		phandle = __of_get_property(np, "ibm,phandle", &sz);
 	np->phandle = (phandle && (sz >= 4)) ? be32_to_cpup(phandle) : 0;
 
@@ -311,6 +328,10 @@ int of_detach_node(struct device_node *np)
 
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(of_detach_node);
+>>>>>>> v4.9.227
 
 /**
  * of_node_release() - release a dynamically allocated node
@@ -459,12 +480,20 @@ static void __of_changeset_entry_dump(struct of_changeset_entry *ce)
 	case OF_RECONFIG_ADD_PROPERTY:
 	case OF_RECONFIG_REMOVE_PROPERTY:
 	case OF_RECONFIG_UPDATE_PROPERTY:
+<<<<<<< HEAD
 		pr_debug("of/cset<%p> %-15s %s/%s\n", ce, action_names[ce->action],
+=======
+		pr_debug("cset<%p> %-15s %s/%s\n", ce, action_names[ce->action],
+>>>>>>> v4.9.227
 			ce->np->full_name, ce->prop->name);
 		break;
 	case OF_RECONFIG_ATTACH_NODE:
 	case OF_RECONFIG_DETACH_NODE:
+<<<<<<< HEAD
 		pr_debug("of/cset<%p> %-15s %s\n", ce, action_names[ce->action],
+=======
+		pr_debug("cset<%p> %-15s %s\n", ce, action_names[ce->action],
+>>>>>>> v4.9.227
 			ce->np->full_name);
 		break;
 	}
@@ -497,6 +526,14 @@ static void __of_changeset_entry_invert(struct of_changeset_entry *ce,
 	case OF_RECONFIG_UPDATE_PROPERTY:
 		rce->old_prop = ce->prop;
 		rce->prop = ce->old_prop;
+<<<<<<< HEAD
+=======
+		/* update was used but original property did not exist */
+		if (!rce->prop) {
+			rce->action = OF_RECONFIG_REMOVE_PROPERTY;
+			rce->prop = ce->prop;
+		}
+>>>>>>> v4.9.227
 		break;
 	}
 }
@@ -525,13 +562,21 @@ static void __of_changeset_entry_notify(struct of_changeset_entry *ce, bool reve
 		ret = of_property_notify(ce->action, ce->np, ce->prop, ce->old_prop);
 		break;
 	default:
+<<<<<<< HEAD
 		pr_err("%s: invalid devicetree changeset action: %i\n", __func__,
+=======
+		pr_err("invalid devicetree changeset action: %i\n",
+>>>>>>> v4.9.227
 			(int)ce->action);
 		return;
 	}
 
 	if (ret)
+<<<<<<< HEAD
 		pr_err("%s: notifier error @%s\n", __func__, ce->np->full_name);
+=======
+		pr_err("changeset notifier error @%s\n", ce->np->full_name);
+>>>>>>> v4.9.227
 }
 
 static int __of_changeset_entry_apply(struct of_changeset_entry *ce)
@@ -562,8 +607,13 @@ static int __of_changeset_entry_apply(struct of_changeset_entry *ce)
 
 		ret = __of_add_property(ce->np, ce->prop);
 		if (ret) {
+<<<<<<< HEAD
 			pr_err("%s: add_property failed @%s/%s\n",
 				__func__, ce->np->full_name,
+=======
+			pr_err("changeset: add_property failed @%s/%s\n",
+				ce->np->full_name,
+>>>>>>> v4.9.227
 				ce->prop->name);
 			break;
 		}
@@ -571,8 +621,13 @@ static int __of_changeset_entry_apply(struct of_changeset_entry *ce)
 	case OF_RECONFIG_REMOVE_PROPERTY:
 		ret = __of_remove_property(ce->np, ce->prop);
 		if (ret) {
+<<<<<<< HEAD
 			pr_err("%s: remove_property failed @%s/%s\n",
 				__func__, ce->np->full_name,
+=======
+			pr_err("changeset: remove_property failed @%s/%s\n",
+				ce->np->full_name,
+>>>>>>> v4.9.227
 				ce->prop->name);
 			break;
 		}
@@ -590,8 +645,13 @@ static int __of_changeset_entry_apply(struct of_changeset_entry *ce)
 
 		ret = __of_update_property(ce->np, ce->prop, &old_prop);
 		if (ret) {
+<<<<<<< HEAD
 			pr_err("%s: update_property failed @%s/%s\n",
 				__func__, ce->np->full_name,
+=======
+			pr_err("changeset: update_property failed @%s/%s\n",
+				ce->np->full_name,
+>>>>>>> v4.9.227
 				ce->prop->name);
 			break;
 		}
@@ -646,6 +706,10 @@ void of_changeset_init(struct of_changeset *ocs)
 	memset(ocs, 0, sizeof(*ocs));
 	INIT_LIST_HEAD(&ocs->entries);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(of_changeset_init);
+>>>>>>> v4.9.227
 
 /**
  * of_changeset_destroy - Destroy a changeset
@@ -662,6 +726,38 @@ void of_changeset_destroy(struct of_changeset *ocs)
 	list_for_each_entry_safe_reverse(ce, cen, &ocs->entries, node)
 		__of_changeset_entry_destroy(ce);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(of_changeset_destroy);
+
+int __of_changeset_apply(struct of_changeset *ocs)
+{
+	struct of_changeset_entry *ce;
+	int ret;
+
+	/* perform the rest of the work */
+	pr_debug("changeset: applying...\n");
+	list_for_each_entry(ce, &ocs->entries, node) {
+		ret = __of_changeset_entry_apply(ce);
+		if (ret) {
+			pr_err("Error applying changeset (%d)\n", ret);
+			list_for_each_entry_continue_reverse(ce, &ocs->entries, node)
+				__of_changeset_entry_revert(ce);
+			return ret;
+		}
+	}
+	pr_debug("changeset: applied, emitting notifiers.\n");
+
+	/* drop the global lock while emitting notifiers */
+	mutex_unlock(&of_mutex);
+	list_for_each_entry(ce, &ocs->entries, node)
+		__of_changeset_entry_notify(ce, 0);
+	mutex_lock(&of_mutex);
+	pr_debug("changeset: notifiers sent.\n");
+
+	return 0;
+}
+>>>>>>> v4.9.227
 
 /**
  * of_changeset_apply - Applies a changeset
@@ -670,13 +766,18 @@ void of_changeset_destroy(struct of_changeset *ocs)
  *
  * Applies a changeset to the live tree.
  * Any side-effects of live tree state changes are applied here on
+<<<<<<< HEAD
  * sucess, like creation/destruction of devices and side-effects
+=======
+ * success, like creation/destruction of devices and side-effects
+>>>>>>> v4.9.227
  * like creation of sysfs properties and directories.
  * Returns 0 on success, a negative error value in case of an error.
  * On error the partially applied effects are reverted.
  */
 int of_changeset_apply(struct of_changeset *ocs)
 {
+<<<<<<< HEAD
 	struct of_changeset_entry *ce;
 	int ret;
 
@@ -699,6 +800,41 @@ int of_changeset_apply(struct of_changeset *ocs)
 		__of_changeset_entry_notify(ce, 0);
 	mutex_lock(&of_mutex);
 	pr_debug("of_changeset: notifiers sent.\n");
+=======
+	int ret;
+
+	mutex_lock(&of_mutex);
+	ret = __of_changeset_apply(ocs);
+	mutex_unlock(&of_mutex);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(of_changeset_apply);
+
+int __of_changeset_revert(struct of_changeset *ocs)
+{
+	struct of_changeset_entry *ce;
+	int ret;
+
+	pr_debug("changeset: reverting...\n");
+	list_for_each_entry_reverse(ce, &ocs->entries, node) {
+		ret = __of_changeset_entry_revert(ce);
+		if (ret) {
+			pr_err("Error reverting changeset (%d)\n", ret);
+			list_for_each_entry_continue(ce, &ocs->entries, node)
+				__of_changeset_entry_apply(ce);
+			return ret;
+		}
+	}
+	pr_debug("changeset: reverted, emitting notifiers.\n");
+
+	/* drop the global lock while emitting notifiers */
+	mutex_unlock(&of_mutex);
+	list_for_each_entry_reverse(ce, &ocs->entries, node)
+		__of_changeset_entry_notify(ce, 1);
+	mutex_lock(&of_mutex);
+	pr_debug("changeset: notifiers sent.\n");
+>>>>>>> v4.9.227
 
 	return 0;
 }
@@ -716,6 +852,7 @@ int of_changeset_apply(struct of_changeset *ocs)
  */
 int of_changeset_revert(struct of_changeset *ocs)
 {
+<<<<<<< HEAD
 	struct of_changeset_entry *ce;
 	int ret;
 
@@ -740,6 +877,17 @@ int of_changeset_revert(struct of_changeset *ocs)
 
 	return 0;
 }
+=======
+	int ret;
+
+	mutex_lock(&of_mutex);
+	ret = __of_changeset_revert(ocs);
+	mutex_unlock(&of_mutex);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(of_changeset_revert);
+>>>>>>> v4.9.227
 
 /**
  * of_changeset_action - Perform a changeset action
@@ -763,10 +911,16 @@ int of_changeset_action(struct of_changeset *ocs, unsigned long action,
 	struct of_changeset_entry *ce;
 
 	ce = kzalloc(sizeof(*ce), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!ce) {
 		pr_err("%s: Failed to allocate\n", __func__);
 		return -ENOMEM;
 	}
+=======
+	if (!ce)
+		return -ENOMEM;
+
+>>>>>>> v4.9.227
 	/* get a reference to the node */
 	ce->action = action;
 	ce->np = of_node_get(np);
@@ -779,3 +933,7 @@ int of_changeset_action(struct of_changeset *ocs, unsigned long action,
 	list_add_tail(&ce->node, &ocs->entries);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(of_changeset_action);
+>>>>>>> v4.9.227

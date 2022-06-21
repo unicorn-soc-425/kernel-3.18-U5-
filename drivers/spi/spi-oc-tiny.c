@@ -207,8 +207,12 @@ static int tiny_spi_of_probe(struct platform_device *pdev)
 	struct tiny_spi *hw = platform_get_drvdata(pdev);
 	struct device_node *np = pdev->dev.of_node;
 	unsigned int i;
+<<<<<<< HEAD
 	const __be32 *val;
 	int len;
+=======
+	u32 val;
+>>>>>>> v4.9.227
 
 	if (!np)
 		return 0;
@@ -226,6 +230,7 @@ static int tiny_spi_of_probe(struct platform_device *pdev)
 			return -ENODEV;
 	}
 	hw->bitbang.master->dev.of_node = pdev->dev.of_node;
+<<<<<<< HEAD
 	val = of_get_property(pdev->dev.of_node,
 			      "clock-frequency", &len);
 	if (val && len >= sizeof(__be32))
@@ -233,6 +238,12 @@ static int tiny_spi_of_probe(struct platform_device *pdev)
 	val = of_get_property(pdev->dev.of_node, "baud-width", &len);
 	if (val && len >= sizeof(__be32))
 		hw->baudwidth = be32_to_cpup(val);
+=======
+	if (!of_property_read_u32(np, "clock-frequency", &val))
+		hw->freq = val;
+	if (!of_property_read_u32(np, "baud-width", &val))
+		hw->baudwidth = val;
+>>>>>>> v4.9.227
 	return 0;
 }
 #else /* !CONFIG_OF */
@@ -351,7 +362,10 @@ static struct platform_driver tiny_spi_driver = {
 	.remove = tiny_spi_remove,
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 		.pm = NULL,
 		.of_match_table = of_match_ptr(tiny_spi_match),
 	},

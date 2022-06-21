@@ -14,8 +14,16 @@
 
 #include <linux/io.h>
 #include <linux/irqdomain.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 
+=======
+#include <linux/regmap.h>
+#include <linux/spinlock.h>
+
+extern spinlock_t pmc_pcr_lock;
+
+>>>>>>> v4.9.227
 struct clk_range {
 	unsigned long min;
 	unsigned long max;
@@ -23,6 +31,7 @@ struct clk_range {
 
 #define CLK_RANGE(MIN, MAX) {.min = MIN, .max = MAX,}
 
+<<<<<<< HEAD
 struct at91_pmc_caps {
 	u32 available_irqs;
 };
@@ -125,4 +134,9 @@ extern void __init of_sama5d4_clk_h32mx_setup(struct device_node *np,
 					      struct at91_pmc *pmc);
 #endif
 
+=======
+int of_at91_get_clk_range(struct device_node *np, const char *propname,
+			  struct clk_range *range);
+
+>>>>>>> v4.9.227
 #endif /* __PMC_H_ */

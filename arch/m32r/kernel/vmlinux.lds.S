@@ -31,6 +31,10 @@ SECTIONS
 	HEAD_TEXT
 	TEXT_TEXT
 	SCHED_TEXT
+<<<<<<< HEAD
+=======
+	CPUIDLE_TEXT
+>>>>>>> v4.9.227
 	LOCK_TEXT
 	*(.fixup)
 	*(.gnu.warning)

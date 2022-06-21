@@ -27,11 +27,16 @@
 typedef struct snd_seq_real_time snd_seq_real_time_t;
 typedef union snd_seq_timestamp snd_seq_timestamp_t;
 
+<<<<<<< HEAD
 /* maximum number of events dequeued per schedule interval */
 #define SNDRV_SEQ_MAX_DEQUEUE		50
 
 /* maximum number of queues */
 #define SNDRV_SEQ_MAX_QUEUES		8
+=======
+/* maximum number of queues */
+#define SNDRV_SEQ_MAX_QUEUES		32
+>>>>>>> v4.9.227
 
 /* max number of concurrent clients */
 #define SNDRV_SEQ_MAX_CLIENTS 		192
@@ -42,9 +47,12 @@ typedef union snd_seq_timestamp snd_seq_timestamp_t;
 /* max number of events in memory pool */
 #define SNDRV_SEQ_MAX_EVENTS		2000
 
+<<<<<<< HEAD
 /* default number of events in memory chunk */
 #define SNDRV_SEQ_DEFAULT_CHUNK_EVENTS	64
 
+=======
+>>>>>>> v4.9.227
 /* default number of events in memory pool */
 #define SNDRV_SEQ_DEFAULT_EVENTS	500
 
@@ -71,7 +79,10 @@ struct snd_seq_port_callback {
 	int (*unuse)(void *private_data, struct snd_seq_port_subscribe *info);
 	int (*event_input)(struct snd_seq_event *ev, int direct, void *private_data, int atomic, int hop);
 	void (*private_free)(void *private_data);
+<<<<<<< HEAD
 	unsigned int callback_all;	/* call subscribe callbacks at each connection/disconnection */
+=======
+>>>>>>> v4.9.227
 	/*...*/
 };
 
@@ -107,11 +118,19 @@ int snd_seq_event_port_attach(int client, struct snd_seq_port_callback *pcbp,
 int snd_seq_event_port_detach(int client, int port);
 
 #ifdef CONFIG_MODULES
+<<<<<<< HEAD
 void snd_seq_autoload_lock(void);
 void snd_seq_autoload_unlock(void);
 #else
 #define snd_seq_autoload_lock()
 #define snd_seq_autoload_unlock()
+=======
+void snd_seq_autoload_init(void);
+void snd_seq_autoload_exit(void);
+#else
+#define snd_seq_autoload_init()
+#define snd_seq_autoload_exit()
+>>>>>>> v4.9.227
 #endif
 
 #endif /* __SOUND_SEQ_KERNEL_H */

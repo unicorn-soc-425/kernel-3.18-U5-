@@ -44,7 +44,11 @@ static irqreturn_t ipi_resched_interrupt(int irq, void *dev_id)
 
 static irqreturn_t ipi_call_interrupt(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	smp_call_function_interrupt();
+=======
+	generic_smp_call_function_interrupt();
+>>>>>>> v4.9.227
 
 	return IRQ_HANDLED;
 }

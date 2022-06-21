@@ -96,7 +96,11 @@ static int do_read(void)
 		if (offs + len > mtd->erasesize)
 			len = mtd->erasesize - offs;
 	}
+<<<<<<< HEAD
 	addr = eb * mtd->erasesize + offs;
+=======
+	addr = (loff_t)eb * mtd->erasesize + offs;
+>>>>>>> v4.9.227
 	return mtdtest_read(mtd, addr, len, readbuf);
 }
 
@@ -124,7 +128,11 @@ static int do_write(void)
 			offsets[eb + 1] = 0;
 		}
 	}
+<<<<<<< HEAD
 	addr = eb * mtd->erasesize + offs;
+=======
+	addr = (loff_t)eb * mtd->erasesize + offs;
+>>>>>>> v4.9.227
 	err = mtdtest_write(mtd, addr, len, writebuf);
 	if (unlikely(err))
 		return err;
@@ -221,7 +229,14 @@ static int __init mtd_stresstest_init(void)
 		err = do_operation();
 		if (err)
 			goto out;
+<<<<<<< HEAD
 		cond_resched();
+=======
+
+		err = mtdtest_relax();
+		if (err)
+			goto out;
+>>>>>>> v4.9.227
 	}
 	pr_info("finished, %d operations done\n", op);
 

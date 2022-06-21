@@ -43,7 +43,11 @@ struct da732x_priv {
 /*
  * da732x register cache - default settings
  */
+<<<<<<< HEAD
 static struct reg_default da732x_reg_cache[] = {
+=======
+static const struct reg_default da732x_reg_cache[] = {
+>>>>>>> v4.9.227
 	{ DA732X_REG_REF1		, 0x02 },
 	{ DA732X_REG_BIAS_EN		, 0x80 },
 	{ DA732X_REG_BIAS1		, 0x00 },
@@ -334,7 +338,11 @@ static int da732x_hpf_set(struct snd_kcontrol *kcontrol,
 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
 	struct soc_enum *enum_ctrl = (struct soc_enum *)kcontrol->private_value;
 	unsigned int reg = enum_ctrl->reg;
+<<<<<<< HEAD
 	unsigned int sel = ucontrol->value.integer.value[0];
+=======
+	unsigned int sel = ucontrol->value.enumerated.item[0];
+>>>>>>> v4.9.227
 	unsigned int bits;
 
 	switch (sel) {
@@ -368,6 +376,7 @@ static int da732x_hpf_get(struct snd_kcontrol *kcontrol,
 
 	switch (val) {
 	case DA732X_HPF_VOICE_EN:
+<<<<<<< HEAD
 		ucontrol->value.integer.value[0] = DA732X_HPF_VOICE;
 		break;
 	case DA732X_HPF_MUSIC_EN:
@@ -375,6 +384,15 @@ static int da732x_hpf_get(struct snd_kcontrol *kcontrol,
 		break;
 	default:
 		ucontrol->value.integer.value[0] = DA732X_HPF_DISABLED;
+=======
+		ucontrol->value.enumerated.item[0] = DA732X_HPF_VOICE;
+		break;
+	case DA732X_HPF_MUSIC_EN:
+		ucontrol->value.enumerated.item[0] = DA732X_HPF_MUSIC;
+		break;
+	default:
+		ucontrol->value.enumerated.item[0] = DA732X_HPF_DISABLED;
+>>>>>>> v4.9.227
 		break;
 	}
 
@@ -609,7 +627,11 @@ static const struct snd_kcontrol_new da732x_snd_controls[] = {
 static int da732x_adc_event(struct snd_soc_dapm_widget *w,
 			    struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
@@ -663,7 +685,11 @@ static int da732x_adc_event(struct snd_soc_dapm_widget *w,
 static int da732x_out_pga_event(struct snd_soc_dapm_widget *w,
 				struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> v4.9.227
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
@@ -1196,6 +1222,7 @@ static int da732x_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
 #define	DA732X_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE | \
 			SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops da732x_dai1_ops = {
 	.hw_params	= da732x_hw_params,
 	.set_fmt	= da732x_set_dai_fmt,
@@ -1203,6 +1230,9 @@ static struct snd_soc_dai_ops da732x_dai1_ops = {
 };
 
 static struct snd_soc_dai_ops da732x_dai2_ops = {
+=======
+static const struct snd_soc_dai_ops da732x_dai_ops = {
+>>>>>>> v4.9.227
 	.hw_params	= da732x_hw_params,
 	.set_fmt	= da732x_set_dai_fmt,
 	.set_sysclk	= da732x_set_dai_sysclk,
@@ -1227,7 +1257,11 @@ static struct snd_soc_dai_driver da732x_dai[] = {
 			.rates = DA732X_RATES,
 			.formats = DA732X_FORMATS,
 		},
+<<<<<<< HEAD
 		.ops = &da732x_dai1_ops,
+=======
+		.ops = &da732x_dai_ops,
+>>>>>>> v4.9.227
 	},
 	{
 		.name	= "DA732X_AIFB",
@@ -1247,7 +1281,11 @@ static struct snd_soc_dai_driver da732x_dai[] = {
 			.rates = DA732X_RATES,
 			.formats = DA732X_FORMATS,
 		},
+<<<<<<< HEAD
 		.ops = &da732x_dai2_ops,
+=======
+		.ops = &da732x_dai_ops,
+>>>>>>> v4.9.227
 	},
 };
 
@@ -1432,7 +1470,11 @@ static int da732x_set_bias_level(struct snd_soc_codec *codec,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> v4.9.227
 			/* Init Codec */
 			snd_soc_write(codec, DA732X_REG_REF1,
 				      DA732X_VMID_FASTCHG);
@@ -1502,19 +1544,33 @@ static int da732x_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> v4.9.227
 	return 0;
 }
 
 static struct snd_soc_codec_driver soc_codec_dev_da732x = {
 	.set_bias_level		= da732x_set_bias_level,
+<<<<<<< HEAD
 	.controls		= da732x_snd_controls,
 	.num_controls		= ARRAY_SIZE(da732x_snd_controls),
 	.dapm_widgets		= da732x_dapm_widgets,
 	.num_dapm_widgets	= ARRAY_SIZE(da732x_dapm_widgets),
 	.dapm_routes		= da732x_dapm_routes,
 	.num_dapm_routes	= ARRAY_SIZE(da732x_dapm_routes),
+=======
+	.component_driver = {
+		.controls		= da732x_snd_controls,
+		.num_controls		= ARRAY_SIZE(da732x_snd_controls),
+		.dapm_widgets		= da732x_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(da732x_dapm_widgets),
+		.dapm_routes		= da732x_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(da732x_dapm_routes),
+	},
+>>>>>>> v4.9.227
 	.set_pll		= da732x_set_dai_pll,
 };
 
@@ -1574,7 +1630,10 @@ MODULE_DEVICE_TABLE(i2c, da732x_i2c_id);
 static struct i2c_driver da732x_i2c_driver = {
 	.driver		= {
 		.name	= "da7320",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 	.probe		= da732x_i2c_probe,
 	.remove		= da732x_i2c_remove,

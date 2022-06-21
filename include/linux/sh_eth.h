@@ -4,7 +4,11 @@
 #include <linux/phy.h>
 #include <linux/if_ether.h>
 
+<<<<<<< HEAD
 enum {EDMAC_LITTLE_ENDIAN, EDMAC_BIG_ENDIAN};
+=======
+enum {EDMAC_LITTLE_ENDIAN};
+>>>>>>> v4.9.227
 
 struct sh_eth_plat_data {
 	int phy;

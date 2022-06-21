@@ -36,6 +36,7 @@ extern struct omap_hwmod_ocp_if am33xx_l4_per__gpio3;
 extern struct omap_hwmod_ocp_if am33xx_cpgmac0__mdio;
 extern struct omap_hwmod_ocp_if am33xx_l4_ls__elm;
 extern struct omap_hwmod_ocp_if am33xx_l4_ls__epwmss0;
+<<<<<<< HEAD
 extern struct omap_hwmod_ocp_if am33xx_epwmss0__ecap0;
 extern struct omap_hwmod_ocp_if am33xx_epwmss0__eqep0;
 extern struct omap_hwmod_ocp_if am33xx_epwmss0__ehrpwm0;
@@ -47,6 +48,10 @@ extern struct omap_hwmod_ocp_if am33xx_l4_ls__epwmss2;
 extern struct omap_hwmod_ocp_if am33xx_epwmss2__ecap2;
 extern struct omap_hwmod_ocp_if am33xx_epwmss2__eqep2;
 extern struct omap_hwmod_ocp_if am33xx_epwmss2__ehrpwm2;
+=======
+extern struct omap_hwmod_ocp_if am33xx_l4_ls__epwmss1;
+extern struct omap_hwmod_ocp_if am33xx_l4_ls__epwmss2;
+>>>>>>> v4.9.227
 extern struct omap_hwmod_ocp_if am33xx_l3_s__gpmc;
 extern struct omap_hwmod_ocp_if am33xx_l4_per__i2c2;
 extern struct omap_hwmod_ocp_if am33xx_l4_per__i2c3;
@@ -98,6 +103,7 @@ extern struct omap_hwmod am33xx_dcan0_hwmod;
 extern struct omap_hwmod am33xx_dcan1_hwmod;
 extern struct omap_hwmod am33xx_elm_hwmod;
 extern struct omap_hwmod am33xx_epwmss0_hwmod;
+<<<<<<< HEAD
 extern struct omap_hwmod am33xx_ecap0_hwmod;
 extern struct omap_hwmod am33xx_eqep0_hwmod;
 extern struct omap_hwmod am33xx_ehrpwm0_hwmod;
@@ -109,6 +115,10 @@ extern struct omap_hwmod am33xx_epwmss2_hwmod;
 extern struct omap_hwmod am33xx_ecap2_hwmod;
 extern struct omap_hwmod am33xx_eqep2_hwmod;
 extern struct omap_hwmod am33xx_ehrpwm2_hwmod;
+=======
+extern struct omap_hwmod am33xx_epwmss1_hwmod;
+extern struct omap_hwmod am33xx_epwmss2_hwmod;
+>>>>>>> v4.9.227
 extern struct omap_hwmod am33xx_gpio1_hwmod;
 extern struct omap_hwmod am33xx_gpio2_hwmod;
 extern struct omap_hwmod am33xx_gpio3_hwmod;
@@ -145,6 +155,10 @@ extern struct omap_hwmod am33xx_uart5_hwmod;
 extern struct omap_hwmod am33xx_uart6_hwmod;
 extern struct omap_hwmod am33xx_wd_timer1_hwmod;
 
+<<<<<<< HEAD
+=======
+extern struct omap_hwmod_class am33xx_emif_hwmod_class;
+>>>>>>> v4.9.227
 extern struct omap_hwmod_class am33xx_l4_hwmod_class;
 extern struct omap_hwmod_class am33xx_wkup_m3_hwmod_class;
 extern struct omap_hwmod_class am33xx_control_hwmod_class;

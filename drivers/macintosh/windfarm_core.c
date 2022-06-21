@@ -72,7 +72,11 @@ static inline void wf_notify(int event, void *param)
 	blocking_notifier_call_chain(&wf_client_list, event, param);
 }
 
+<<<<<<< HEAD
 int wf_critical_overtemp(void)
+=======
+static int wf_critical_overtemp(void)
+>>>>>>> v4.9.227
 {
 	static char * critical_overtemp_path = "/sbin/critical_overtemp";
 	char *argv[] = { critical_overtemp_path, NULL };
@@ -84,7 +88,10 @@ int wf_critical_overtemp(void)
 	return call_usermodehelper(critical_overtemp_path,
 				   argv, envp, UMH_WAIT_EXEC);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(wf_critical_overtemp);
+=======
+>>>>>>> v4.9.227
 
 static int wf_thread_func(void *data)
 {
@@ -255,6 +262,7 @@ void wf_unregister_control(struct wf_control *ct)
 }
 EXPORT_SYMBOL_GPL(wf_unregister_control);
 
+<<<<<<< HEAD
 struct wf_control * wf_find_control(const char *name)
 {
 	struct wf_control *ct;
@@ -273,6 +281,8 @@ struct wf_control * wf_find_control(const char *name)
 }
 EXPORT_SYMBOL_GPL(wf_find_control);
 
+=======
+>>>>>>> v4.9.227
 int wf_get_control(struct wf_control *ct)
 {
 	if (!try_module_get(ct->ops->owner))
@@ -368,6 +378,7 @@ void wf_unregister_sensor(struct wf_sensor *sr)
 }
 EXPORT_SYMBOL_GPL(wf_unregister_sensor);
 
+<<<<<<< HEAD
 struct wf_sensor * wf_find_sensor(const char *name)
 {
 	struct wf_sensor *sr;
@@ -386,6 +397,8 @@ struct wf_sensor * wf_find_sensor(const char *name)
 }
 EXPORT_SYMBOL_GPL(wf_find_sensor);
 
+=======
+>>>>>>> v4.9.227
 int wf_get_sensor(struct wf_sensor *sr)
 {
 	if (!try_module_get(sr->ops->owner))
@@ -474,12 +487,15 @@ void wf_clear_overtemp(void)
 }
 EXPORT_SYMBOL_GPL(wf_clear_overtemp);
 
+<<<<<<< HEAD
 int wf_is_overtemp(void)
 {
 	return (wf_overtemp != 0);
 }
 EXPORT_SYMBOL_GPL(wf_is_overtemp);
 
+=======
+>>>>>>> v4.9.227
 static int __init windfarm_core_init(void)
 {
 	DBG("wf: core loaded\n");

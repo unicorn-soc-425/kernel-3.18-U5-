@@ -37,8 +37,11 @@
 
 #include <drm/drm_pciids.h>
 
+<<<<<<< HEAD
 static int mga_driver_device_is_agp(struct drm_device *dev);
 
+=======
+>>>>>>> v4.9.227
 static struct pci_device_id pciidlist[] = {
 	mga_PCI_IDS
 };
@@ -58,7 +61,11 @@ static const struct file_operations mga_driver_fops = {
 
 static struct drm_driver driver = {
 	.driver_features =
+<<<<<<< HEAD
 	    DRIVER_USE_AGP | DRIVER_PCI_DMA |
+=======
+	    DRIVER_USE_AGP | DRIVER_PCI_DMA | DRIVER_LEGACY |
+>>>>>>> v4.9.227
 	    DRIVER_HAVE_DMA | DRIVER_HAVE_IRQ | DRIVER_IRQ_SHARED,
 	.dev_priv_size = sizeof(drm_mga_buf_priv_t),
 	.load = mga_driver_load,
@@ -66,7 +73,10 @@ static struct drm_driver driver = {
 	.lastclose = mga_driver_lastclose,
 	.set_busid = drm_pci_set_busid,
 	.dma_quiescent = mga_driver_dma_quiescent,
+<<<<<<< HEAD
 	.device_is_agp = mga_driver_device_is_agp,
+=======
+>>>>>>> v4.9.227
 	.get_vblank_counter = mga_get_vblank_counter,
 	.enable_vblank = mga_enable_vblank,
 	.disable_vblank = mga_disable_vblank,
@@ -107,6 +117,7 @@ module_exit(mga_exit);
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL and additional rights");
+<<<<<<< HEAD
 
 /**
  * Determine if the device really is AGP or not.
@@ -141,3 +152,5 @@ static int mga_driver_device_is_agp(struct drm_device *dev)
 
 	return 2;
 }
+=======
+>>>>>>> v4.9.227

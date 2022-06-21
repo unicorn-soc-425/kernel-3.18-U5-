@@ -6,8 +6,11 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/fs.h>
 #include <linux/debugfs.h>
+=======
+>>>>>>> v4.9.227
 #include <linux/ftrace.h>
 
 #include "trace.h"
@@ -58,7 +61,11 @@ static void nop_trace_reset(struct trace_array *tr)
 }
 
 /* It only serves as a signal handler and a callback to
+<<<<<<< HEAD
  * accept or refuse tthe setting of a flag.
+=======
+ * accept or refuse the setting of a flag.
+>>>>>>> v4.9.227
  * If you don't implement it, then the flag setting will be
  * automatically accepted.
  */
@@ -77,7 +84,11 @@ static int nop_set_flag(struct trace_array *tr, u32 old_flags, u32 bit, int set)
 
 	if (bit == TRACE_NOP_OPT_REFUSE) {
 		printk(KERN_DEBUG "nop_test_refuse flag set to %d: we refuse."
+<<<<<<< HEAD
 			"Now cat trace_options to see the result\n",
+=======
+			" Now cat trace_options to see the result\n",
+>>>>>>> v4.9.227
 			set);
 		return -EINVAL;
 	}

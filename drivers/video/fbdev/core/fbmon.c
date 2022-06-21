@@ -33,10 +33,13 @@
 #include <video/edid.h>
 #include <video/of_videomode.h>
 #include <video/videomode.h>
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_OF
 #include <asm/prom.h>
 #include <asm/pci-bridge.h>
 #endif
+=======
+>>>>>>> v4.9.227
 #include "../edid.h"
 
 /*
@@ -496,6 +499,7 @@ static int get_est_timing(unsigned char *block, struct fb_videomode *mode)
 }
 
 static int get_std_timing(unsigned char *block, struct fb_videomode *mode,
+<<<<<<< HEAD
 		int ver, int rev)
 {
 	int xres, yres = 0, refresh, ratio, i;
@@ -541,11 +545,77 @@ static int get_std_timing(unsigned char *block, struct fb_videomode *mode,
 
 static int get_dst_timing(unsigned char *block,
 			  struct fb_videomode *mode, int ver, int rev)
+=======
+			  int ver, int rev, const struct fb_monspecs *specs)
+{
+	int i;
+
+	for (i = 0; i < DMT_SIZE; i++) {
+		u32 std_2byte_code = block[0] << 8 | block[1];
+		if (std_2byte_code == dmt_modes[i].std_2byte_code)
+			break;
+	}
+
+	if (i < DMT_SIZE && dmt_modes[i].mode) {
+		/* DMT mode found */
+		*mode = *dmt_modes[i].mode;
+		mode->flag |= FB_MODE_IS_STANDARD;
+		DPRINTK("        DMT id=%d\n", dmt_modes[i].dmt_id);
+
+	} else {
+		int xres, yres = 0, refresh, ratio;
+
+		xres = (block[0] + 31) * 8;
+		if (xres <= 256)
+			return 0;
+
+		ratio = (block[1] & 0xc0) >> 6;
+		switch (ratio) {
+		case 0:
+			/* in EDID 1.3 the meaning of 0 changed to 16:10 (prior 1:1) */
+			if (ver < 1 || (ver == 1 && rev < 3))
+				yres = xres;
+			else
+				yres = (xres * 10)/16;
+			break;
+		case 1:
+			yres = (xres * 3)/4;
+			break;
+		case 2:
+			yres = (xres * 4)/5;
+			break;
+		case 3:
+			yres = (xres * 9)/16;
+			break;
+		}
+		refresh = (block[1] & 0x3f) + 60;
+		DPRINTK("      %dx%d@%dHz\n", xres, yres, refresh);
+
+		calc_mode_timings(xres, yres, refresh, mode);
+	}
+
+	/* Check the mode we got is within valid spec of the monitor */
+	if (specs && specs->dclkmax
+	    && PICOS2KHZ(mode->pixclock) * 1000 > specs->dclkmax) {
+		DPRINTK("        mode exceed max DCLK\n");
+		return 0;
+	}
+
+	return 1;
+}
+
+static int get_dst_timing(unsigned char *block, struct fb_videomode *mode,
+			  int ver, int rev, const struct fb_monspecs *specs)
+>>>>>>> v4.9.227
 {
 	int j, num = 0;
 
 	for (j = 0; j < 6; j++, block += STD_TIMING_DESCRIPTION_SIZE)
+<<<<<<< HEAD
 		num += get_std_timing(block, &mode[num], ver, rev);
+=======
+		num += get_std_timing(block, &mode[num], ver, rev, specs);
+>>>>>>> v4.9.227
 
 	return num;
 }
@@ -601,16 +671,24 @@ static void get_detailed_timing(unsigned char *block,
  * This function builds a mode database using the contents of the EDID
  * data
  */
+<<<<<<< HEAD
 static struct fb_videomode *fb_create_modedb(unsigned char *edid, int *dbsize)
+=======
+static struct fb_videomode *fb_create_modedb(unsigned char *edid, int *dbsize,
+					     const struct fb_monspecs *specs)
+>>>>>>> v4.9.227
 {
 	struct fb_videomode *mode, *m;
 	unsigned char *block;
 	int num = 0, i, first = 1;
 	int ver, rev;
 
+<<<<<<< HEAD
 	ver = edid[EDID_STRUCT_VERSION];
 	rev = edid[EDID_STRUCT_REVISION];
 
+=======
+>>>>>>> v4.9.227
 	mode = kzalloc(50 * sizeof(struct fb_videomode), GFP_KERNEL);
 	if (mode == NULL)
 		return NULL;
@@ -621,6 +699,12 @@ static struct fb_videomode *fb_create_modedb(unsigned char *edid, int *dbsize)
 		return NULL;
 	}
 
+<<<<<<< HEAD
+=======
+	ver = edid[EDID_STRUCT_VERSION];
+	rev = edid[EDID_STRUCT_REVISION];
+
+>>>>>>> v4.9.227
 	*dbsize = 0;
 
 	DPRINTK("   Detailed Timings\n");
@@ -643,12 +727,21 @@ static struct fb_videomode *fb_create_modedb(unsigned char *edid, int *dbsize)
 	DPRINTK("   Standard Timings\n");
 	block = edid + STD_TIMING_DESCRIPTIONS_START;
 	for (i = 0; i < STD_TIMING; i++, block += STD_TIMING_DESCRIPTION_SIZE)
+<<<<<<< HEAD
 		num += get_std_timing(block, &mode[num], ver, rev);
+=======
+		num += get_std_timing(block, &mode[num], ver, rev, specs);
+>>>>>>> v4.9.227
 
 	block = edid + DETAILED_TIMING_DESCRIPTIONS_START;
 	for (i = 0; i < 4; i++, block+= DETAILED_TIMING_DESCRIPTION_SIZE) {
 		if (block[0] == 0x00 && block[1] == 0x00 && block[3] == 0xfa)
+<<<<<<< HEAD
 			num += get_dst_timing(block + 5, &mode[num], ver, rev);
+=======
+			num += get_dst_timing(block + 5, &mode[num],
+					      ver, rev, specs);
+>>>>>>> v4.9.227
 	}
 
 	/* Yikes, EDID data is totally useless */
@@ -707,7 +800,11 @@ static int fb_get_monitor_limits(unsigned char *edid, struct fb_monspecs *specs)
 		int num_modes, hz, hscan, pixclock;
 		int vtotal, htotal;
 
+<<<<<<< HEAD
 		modes = fb_create_modedb(edid, &num_modes);
+=======
+		modes = fb_create_modedb(edid, &num_modes, specs);
+>>>>>>> v4.9.227
 		if (!modes) {
 			DPRINTK("None Available\n");
 			return 1;
@@ -964,7 +1061,11 @@ void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 	DPRINTK("   Display Characteristics:\n");
 	get_monspecs(edid, specs);
 
+<<<<<<< HEAD
 	specs->modedb = fb_create_modedb(edid, &specs->modedb_len);
+=======
+	specs->modedb = fb_create_modedb(edid, &specs->modedb_len, specs);
+>>>>>>> v4.9.227
 
 	/*
 	 * Workaround for buggy EDIDs that sets that the first
@@ -984,6 +1085,7 @@ void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 	DPRINTK("========================================\n");
 }
 
+<<<<<<< HEAD
 /**
  * fb_edid_add_monspecs() - add monitor video modes from E-EDID data
  * @edid:	128 byte array with an E-EDID block
@@ -1075,6 +1177,8 @@ void fb_edid_add_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 	specs->modedb_len = specs->modedb_len + num + svd_n;
 }
 
+=======
+>>>>>>> v4.9.227
 /*
  * VESA Generalized Timing Formula (GTF)
  */
@@ -1462,7 +1566,13 @@ int of_get_fb_videomode(struct device_node *np, struct fb_videomode *fb,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	fb_videomode_from_videomode(&vm, fb);
+=======
+	ret = fb_videomode_from_videomode(&vm, fb);
+	if (ret)
+		return ret;
+>>>>>>> v4.9.227
 
 	pr_debug("%s: got %dx%d display mode from %s\n",
 		of_node_full_name(np), vm.hactive, vm.vactive, np->name);
@@ -1481,10 +1591,13 @@ int fb_parse_edid(unsigned char *edid, struct fb_var_screeninfo *var)
 }
 void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 {
+<<<<<<< HEAD
 	specs = NULL;
 }
 void fb_edid_add_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 {
+=======
+>>>>>>> v4.9.227
 }
 void fb_destroy_modedb(struct fb_videomode *modedb)
 {
@@ -1593,7 +1706,10 @@ EXPORT_SYMBOL(fb_firmware_edid);
 
 EXPORT_SYMBOL(fb_parse_edid);
 EXPORT_SYMBOL(fb_edid_to_monspecs);
+<<<<<<< HEAD
 EXPORT_SYMBOL(fb_edid_add_monspecs);
+=======
+>>>>>>> v4.9.227
 EXPORT_SYMBOL(fb_get_mode);
 EXPORT_SYMBOL(fb_validate_mode);
 EXPORT_SYMBOL(fb_destroy_modedb);

@@ -26,6 +26,12 @@
 #include <linux/acpi.h>
 #include <linux/clk/clk-conf.h>
 #include <linux/limits.h>
+<<<<<<< HEAD
+=======
+#include <linux/property.h>
+#include <linux/kmemleak.h>
+#include <linux/types.h>
+>>>>>>> v4.9.227
 
 #include "base.h"
 #include "power/power.h"
@@ -66,7 +72,11 @@ void __weak arch_setup_pdev_archdata(struct platform_device *pdev)
 struct resource *platform_get_resource(struct platform_device *dev,
 				       unsigned int type, unsigned int num)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	u32 i;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < dev->num_resources; i++) {
 		struct resource *r = &dev->resource[i];
@@ -96,7 +106,11 @@ int platform_get_irq(struct platform_device *dev, unsigned int num)
 		int ret;
 
 		ret = of_irq_get(dev->dev.of_node, num);
+<<<<<<< HEAD
 		if (ret >= 0 || ret == -EPROBE_DEFER)
+=======
+		if (ret > 0 || ret == -EPROBE_DEFER)
+>>>>>>> v4.9.227
 			return ret;
 	}
 
@@ -107,9 +121,20 @@ int platform_get_irq(struct platform_device *dev, unsigned int num)
 	 * IORESOURCE_BITS correspond 1-to-1 to the IRQF_TRIGGER*
 	 * settings.
 	 */
+<<<<<<< HEAD
 	if (r && r->flags & IORESOURCE_BITS)
 		irqd_set_trigger_type(irq_get_irq_data(r->start),
 				      r->flags & IORESOURCE_BITS);
+=======
+	if (r && r->flags & IORESOURCE_BITS) {
+		struct irq_data *irqd;
+
+		irqd = irq_get_irq_data(r->start);
+		if (!irqd)
+			return -ENXIO;
+		irqd_set_trigger_type(irqd, r->flags & IORESOURCE_BITS);
+	}
+>>>>>>> v4.9.227
 
 	return r ? r->start : -ENXIO;
 #endif
@@ -117,6 +142,29 @@ int platform_get_irq(struct platform_device *dev, unsigned int num)
 EXPORT_SYMBOL_GPL(platform_get_irq);
 
 /**
+<<<<<<< HEAD
+=======
+ * platform_irq_count - Count the number of IRQs a platform device uses
+ * @dev: platform device
+ *
+ * Return: Number of IRQs a platform device uses or EPROBE_DEFER
+ */
+int platform_irq_count(struct platform_device *dev)
+{
+	int ret, nr = 0;
+
+	while ((ret = platform_get_irq(dev, nr)) >= 0)
+		nr++;
+
+	if (ret == -EPROBE_DEFER)
+		return ret;
+
+	return nr;
+}
+EXPORT_SYMBOL_GPL(platform_irq_count);
+
+/**
+>>>>>>> v4.9.227
  * platform_get_resource_byname - get a resource for a device by name
  * @dev: platform device
  * @type: resource type
@@ -126,7 +174,11 @@ struct resource *platform_get_resource_byname(struct platform_device *dev,
 					      unsigned int type,
 					      const char *name)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	u32 i;
+>>>>>>> v4.9.227
 
 	for (i = 0; i < dev->num_resources; i++) {
 		struct resource *r = &dev->resource[i];
@@ -154,7 +206,11 @@ int platform_get_irq_byname(struct platform_device *dev, const char *name)
 		int ret;
 
 		ret = of_irq_get_byname(dev->dev.of_node, name);
+<<<<<<< HEAD
 		if (ret >= 0 || ret == -EPROBE_DEFER)
+=======
+		if (ret > 0 || ret == -EPROBE_DEFER)
+>>>>>>> v4.9.227
 			return ret;
 	}
 
@@ -299,6 +355,25 @@ int platform_device_add_data(struct platform_device *pdev, const void *data,
 EXPORT_SYMBOL_GPL(platform_device_add_data);
 
 /**
+<<<<<<< HEAD
+=======
+ * platform_device_add_properties - add built-in properties to a platform device
+ * @pdev: platform device to add properties to
+ * @properties: null terminated array of properties to add
+ *
+ * The function will take deep copy of @properties and attach the copy to the
+ * platform device. The memory associated with properties will be freed when the
+ * platform device is released.
+ */
+int platform_device_add_properties(struct platform_device *pdev,
+				   struct property_entry *properties)
+{
+	return device_add_properties(&pdev->dev, properties);
+}
+EXPORT_SYMBOL_GPL(platform_device_add_properties);
+
+/**
+>>>>>>> v4.9.227
  * platform_device_add - add a platform device to device hierarchy
  * @pdev: platform device we're adding
  *
@@ -307,7 +382,12 @@ EXPORT_SYMBOL_GPL(platform_device_add_data);
  */
 int platform_device_add(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int i, ret;
+=======
+	u32 i;
+	int ret;
+>>>>>>> v4.9.227
 
 	if (!pdev)
 		return -EINVAL;
@@ -373,7 +453,11 @@ int platform_device_add(struct platform_device *pdev)
 		pdev->id = PLATFORM_DEVID_AUTO;
 	}
 
+<<<<<<< HEAD
 	while (--i >= 0) {
+=======
+	while (i--) {
+>>>>>>> v4.9.227
 		struct resource *r = &pdev->resource[i];
 		if (r->parent)
 			release_resource(r);
@@ -394,9 +478,16 @@ EXPORT_SYMBOL_GPL(platform_device_add);
  */
 void platform_device_del(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int i;
 
 	if (pdev) {
+=======
+	u32 i;
+
+	if (pdev) {
+		device_remove_properties(&pdev->dev);
+>>>>>>> v4.9.227
 		device_del(&pdev->dev);
 
 		if (pdev->id_auto) {
@@ -459,7 +550,11 @@ struct platform_device *platform_device_register_full(
 		goto err_alloc;
 
 	pdev->dev.parent = pdevinfo->parent;
+<<<<<<< HEAD
 	ACPI_COMPANION_SET(&pdev->dev, pdevinfo->acpi_node.companion);
+=======
+	pdev->dev.fwnode = pdevinfo->fwnode;
+>>>>>>> v4.9.227
 
 	if (pdevinfo->dma_mask) {
 		/*
@@ -473,6 +568,11 @@ struct platform_device *platform_device_register_full(
 		if (!pdev->dev.dma_mask)
 			goto err;
 
+<<<<<<< HEAD
+=======
+		kmemleak_ignore(pdev->dev.dma_mask);
+
+>>>>>>> v4.9.227
 		*pdev->dev.dma_mask = pdevinfo->dma_mask;
 		pdev->dev.coherent_dma_mask = pdevinfo->dma_mask;
 	}
@@ -487,6 +587,16 @@ struct platform_device *platform_device_register_full(
 	if (ret)
 		goto err;
 
+<<<<<<< HEAD
+=======
+	if (pdevinfo->properties) {
+		ret = platform_device_add_properties(pdev,
+						     pdevinfo->properties);
+		if (ret)
+			goto err;
+	}
+
+>>>>>>> v4.9.227
 	ret = platform_device_add(pdev);
 	if (ret) {
 err:
@@ -514,9 +624,20 @@ static int platform_drv_probe(struct device *_dev)
 
 	ret = dev_pm_domain_attach(_dev, true);
 	if (ret != -EPROBE_DEFER) {
+<<<<<<< HEAD
 		ret = drv->probe(dev);
 		if (ret)
 			dev_pm_domain_detach(_dev, true);
+=======
+		if (drv->probe) {
+			ret = drv->probe(dev);
+			if (ret)
+				dev_pm_domain_detach(_dev, true);
+		} else {
+			/* don't fail if just dev_pm_domain_attach failed */
+			ret = 0;
+		}
+>>>>>>> v4.9.227
 	}
 
 	if (drv->prevent_deferred_probe && ret == -EPROBE_DEFER) {
@@ -536,9 +657,16 @@ static int platform_drv_remove(struct device *_dev)
 {
 	struct platform_driver *drv = to_platform_driver(_dev->driver);
 	struct platform_device *dev = to_platform_device(_dev);
+<<<<<<< HEAD
 	int ret;
 
 	ret = drv->remove(dev);
+=======
+	int ret = 0;
+
+	if (drv->remove)
+		ret = drv->remove(dev);
+>>>>>>> v4.9.227
 	dev_pm_domain_detach(_dev, true);
 
 	return ret;
@@ -549,8 +677,13 @@ static void platform_drv_shutdown(struct device *_dev)
 	struct platform_driver *drv = to_platform_driver(_dev->driver);
 	struct platform_device *dev = to_platform_device(_dev);
 
+<<<<<<< HEAD
 	drv->shutdown(dev);
 	dev_pm_domain_detach(_dev, true);
+=======
+	if (drv->shutdown)
+		drv->shutdown(dev);
+>>>>>>> v4.9.227
 }
 
 /**
@@ -563,12 +696,18 @@ int __platform_driver_register(struct platform_driver *drv,
 {
 	drv->driver.owner = owner;
 	drv->driver.bus = &platform_bus_type;
+<<<<<<< HEAD
 	if (drv->probe)
 		drv->driver.probe = platform_drv_probe;
 	if (drv->remove)
 		drv->driver.remove = platform_drv_remove;
 	if (drv->shutdown)
 		drv->driver.shutdown = platform_drv_shutdown;
+=======
+	drv->driver.probe = platform_drv_probe;
+	drv->driver.remove = platform_drv_remove;
+	drv->driver.shutdown = platform_drv_shutdown;
+>>>>>>> v4.9.227
 
 	return driver_register(&drv->driver);
 }
@@ -585,9 +724,16 @@ void platform_driver_unregister(struct platform_driver *drv)
 EXPORT_SYMBOL_GPL(platform_driver_unregister);
 
 /**
+<<<<<<< HEAD
  * platform_driver_probe - register driver for non-hotpluggable device
  * @drv: platform driver structure
  * @probe: the driver probe routine, probably from an __init section
+=======
+ * __platform_driver_probe - register driver for non-hotpluggable device
+ * @drv: platform driver structure
+ * @probe: the driver probe routine, probably from an __init section
+ * @module: module which will be the owner of the driver
+>>>>>>> v4.9.227
  *
  * Use this instead of platform_driver_register() when you know the device
  * is not hotpluggable and has already been registered, and you want to
@@ -603,11 +749,32 @@ EXPORT_SYMBOL_GPL(platform_driver_unregister);
  * Returns zero if the driver registered and bound to a device, else returns
  * a negative error code and with the driver not registered.
  */
+<<<<<<< HEAD
 int __init_or_module platform_driver_probe(struct platform_driver *drv,
 		int (*probe)(struct platform_device *))
 {
 	int retval, code;
 
+=======
+int __init_or_module __platform_driver_probe(struct platform_driver *drv,
+		int (*probe)(struct platform_device *), struct module *module)
+{
+	int retval, code;
+
+	if (drv->driver.probe_type == PROBE_PREFER_ASYNCHRONOUS) {
+		pr_err("%s: drivers registered with %s can not be probed asynchronously\n",
+			 drv->driver.name, __func__);
+		return -EINVAL;
+	}
+
+	/*
+	 * We have to run our probes synchronously because we check if
+	 * we find any devices to bind to and exit with error if there
+	 * are any.
+	 */
+	drv->driver.probe_type = PROBE_FORCE_SYNCHRONOUS;
+
+>>>>>>> v4.9.227
 	/*
 	 * Prevent driver from requesting probe deferral to avoid further
 	 * futile probe attempts.
@@ -619,7 +786,11 @@ int __init_or_module platform_driver_probe(struct platform_driver *drv,
 
 	/* temporary section violation during probe() */
 	drv->probe = probe;
+<<<<<<< HEAD
 	retval = code = platform_driver_register(drv);
+=======
+	retval = code = __platform_driver_register(drv, module);
+>>>>>>> v4.9.227
 
 	/*
 	 * Fixup that section violation, being paranoid about code scanning
@@ -638,27 +809,46 @@ int __init_or_module platform_driver_probe(struct platform_driver *drv,
 		platform_driver_unregister(drv);
 	return retval;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(platform_driver_probe);
 
 /**
  * platform_create_bundle - register driver and create corresponding device
+=======
+EXPORT_SYMBOL_GPL(__platform_driver_probe);
+
+/**
+ * __platform_create_bundle - register driver and create corresponding device
+>>>>>>> v4.9.227
  * @driver: platform driver structure
  * @probe: the driver probe routine, probably from an __init section
  * @res: set of resources that needs to be allocated for the device
  * @n_res: number of resources
  * @data: platform specific data for this platform device
  * @size: size of platform specific data
+<<<<<<< HEAD
+=======
+ * @module: module which will be the owner of the driver
+>>>>>>> v4.9.227
  *
  * Use this in legacy-style modules that probe hardware directly and
  * register a single platform device and corresponding platform driver.
  *
  * Returns &struct platform_device pointer on success, or ERR_PTR() on error.
  */
+<<<<<<< HEAD
 struct platform_device * __init_or_module platform_create_bundle(
 			struct platform_driver *driver,
 			int (*probe)(struct platform_device *),
 			struct resource *res, unsigned int n_res,
 			const void *data, size_t size)
+=======
+struct platform_device * __init_or_module __platform_create_bundle(
+			struct platform_driver *driver,
+			int (*probe)(struct platform_device *),
+			struct resource *res, unsigned int n_res,
+			const void *data, size_t size, struct module *module)
+>>>>>>> v4.9.227
 {
 	struct platform_device *pdev;
 	int error;
@@ -681,7 +871,11 @@ struct platform_device * __init_or_module platform_create_bundle(
 	if (error)
 		goto err_pdev_put;
 
+<<<<<<< HEAD
 	error = platform_driver_probe(driver, probe);
+=======
+	error = __platform_driver_probe(driver, probe, module);
+>>>>>>> v4.9.227
 	if (error)
 		goto err_pdev_del;
 
@@ -694,7 +888,72 @@ err_pdev_put:
 err_out:
 	return ERR_PTR(error);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(platform_create_bundle);
+=======
+EXPORT_SYMBOL_GPL(__platform_create_bundle);
+
+/**
+ * __platform_register_drivers - register an array of platform drivers
+ * @drivers: an array of drivers to register
+ * @count: the number of drivers to register
+ * @owner: module owning the drivers
+ *
+ * Registers platform drivers specified by an array. On failure to register a
+ * driver, all previously registered drivers will be unregistered. Callers of
+ * this API should use platform_unregister_drivers() to unregister drivers in
+ * the reverse order.
+ *
+ * Returns: 0 on success or a negative error code on failure.
+ */
+int __platform_register_drivers(struct platform_driver * const *drivers,
+				unsigned int count, struct module *owner)
+{
+	unsigned int i;
+	int err;
+
+	for (i = 0; i < count; i++) {
+		pr_debug("registering platform driver %ps\n", drivers[i]);
+
+		err = __platform_driver_register(drivers[i], owner);
+		if (err < 0) {
+			pr_err("failed to register platform driver %ps: %d\n",
+			       drivers[i], err);
+			goto error;
+		}
+	}
+
+	return 0;
+
+error:
+	while (i--) {
+		pr_debug("unregistering platform driver %ps\n", drivers[i]);
+		platform_driver_unregister(drivers[i]);
+	}
+
+	return err;
+}
+EXPORT_SYMBOL_GPL(__platform_register_drivers);
+
+/**
+ * platform_unregister_drivers - unregister an array of platform drivers
+ * @drivers: an array of drivers to unregister
+ * @count: the number of drivers to unregister
+ *
+ * Unegisters platform drivers specified by an array. This is typically used
+ * to complement an earlier call to platform_register_drivers(). Drivers are
+ * unregistered in the reverse order in which they were registered.
+ */
+void platform_unregister_drivers(struct platform_driver * const *drivers,
+				 unsigned int count)
+{
+	while (count--) {
+		pr_debug("unregistering platform driver %ps\n", drivers[count]);
+		platform_driver_unregister(drivers[count]);
+	}
+}
+EXPORT_SYMBOL_GPL(platform_unregister_drivers);
+>>>>>>> v4.9.227
 
 /* modalias support enables more hands-off userspace setup:
  * (a) environment variable lets new-style hotplug events work once system is
@@ -730,7 +989,11 @@ static ssize_t driver_override_store(struct device *dev,
 	char *driver_override, *old, *cp;
 
 	/* We need to keep extra room for a newline */
+<<<<<<< HEAD
     if (count >= (PAGE_SIZE - 1))
+=======
+	if (count >= (PAGE_SIZE - 1))
+>>>>>>> v4.9.227
 		return -EINVAL;
 
 	driver_override = kstrndup(buf, count, GFP_KERNEL);

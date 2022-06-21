@@ -22,8 +22,12 @@
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+>>>>>>> v4.9.227
 
 #include <mach/hardware.h>
 #include <mach/mux.h>
@@ -126,7 +130,10 @@ static struct platform_driver osk_panel_driver = {
 	.resume		= osk_panel_resume,
 	.driver		= {
 		.name	= "lcd_osk",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

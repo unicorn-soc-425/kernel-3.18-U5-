@@ -27,14 +27,40 @@
 
 #define PSTATE_FAULT_BITS_64 	(PSR_MODE_EL1h | PSR_A_BIT | PSR_F_BIT | \
 				 PSR_I_BIT | PSR_D_BIT)
+<<<<<<< HEAD
 #define EL1_EXCEPT_SYNC_OFFSET	0x200
+=======
+
+#define CURRENT_EL_SP_EL0_VECTOR	0x0
+#define CURRENT_EL_SP_ELx_VECTOR	0x200
+#define LOWER_EL_AArch64_VECTOR		0x400
+#define LOWER_EL_AArch32_VECTOR		0x600
+
+/*
+ * Table taken from ARMv8 ARM DDI0487B-B, table G1-10.
+ */
+static const u8 return_offsets[8][2] = {
+	[0] = { 0, 0 },		/* Reset, unused */
+	[1] = { 4, 2 },		/* Undefined */
+	[2] = { 0, 0 },		/* SVC, unused */
+	[3] = { 4, 4 },		/* Prefetch abort */
+	[4] = { 8, 8 },		/* Data abort */
+	[5] = { 0, 0 },		/* HVC, unused */
+	[6] = { 4, 4 },		/* IRQ, unused */
+	[7] = { 4, 4 },		/* FIQ, unused */
+};
+>>>>>>> v4.9.227
 
 static void prepare_fault32(struct kvm_vcpu *vcpu, u32 mode, u32 vect_offset)
 {
 	unsigned long cpsr;
 	unsigned long new_spsr_value = *vcpu_cpsr(vcpu);
 	bool is_thumb = (new_spsr_value & COMPAT_PSR_T_BIT);
+<<<<<<< HEAD
 	u32 return_offset = (is_thumb) ? 4 : 0;
+=======
+	u32 return_offset = return_offsets[vect_offset >> 2][is_thumb];
+>>>>>>> v4.9.227
 	u32 sctlr = vcpu_cp15(vcpu, c1_SCTLR);
 
 	cpsr = mode | COMPAT_PSR_I_BIT;
@@ -48,7 +74,11 @@ static void prepare_fault32(struct kvm_vcpu *vcpu, u32 mode, u32 vect_offset)
 
 	/* Note: These now point to the banked copies */
 	*vcpu_spsr(vcpu) = new_spsr_value;
+<<<<<<< HEAD
 	*vcpu_reg(vcpu, 14) = *vcpu_pc(vcpu) + return_offset;
+=======
+	*vcpu_reg32(vcpu, 14) = *vcpu_pc(vcpu) + return_offset;
+>>>>>>> v4.9.227
 
 	/* Branch to exception vector */
 	if (sctlr & (1 << 13))
@@ -97,6 +127,7 @@ static void inject_abt32(struct kvm_vcpu *vcpu, bool is_pabt,
 		*fsr = 0x14;
 }
 
+<<<<<<< HEAD
 static void inject_abt64(struct kvm_vcpu *vcpu, bool is_iabt, unsigned long addr)
 {
 	unsigned long cpsr = *vcpu_cpsr(vcpu);
@@ -110,6 +141,47 @@ static void inject_abt64(struct kvm_vcpu *vcpu, bool is_iabt, unsigned long addr
 
 	*vcpu_cpsr(vcpu) = PSTATE_FAULT_BITS_64;
 	*vcpu_pc(vcpu) = vcpu_sys_reg(vcpu, VBAR_EL1) + EL1_EXCEPT_SYNC_OFFSET;
+=======
+enum exception_type {
+	except_type_sync	= 0,
+	except_type_irq		= 0x80,
+	except_type_fiq		= 0x100,
+	except_type_serror	= 0x180,
+};
+
+static u64 get_except_vector(struct kvm_vcpu *vcpu, enum exception_type type)
+{
+	u64 exc_offset;
+
+	switch (*vcpu_cpsr(vcpu) & (PSR_MODE_MASK | PSR_MODE32_BIT)) {
+	case PSR_MODE_EL1t:
+		exc_offset = CURRENT_EL_SP_EL0_VECTOR;
+		break;
+	case PSR_MODE_EL1h:
+		exc_offset = CURRENT_EL_SP_ELx_VECTOR;
+		break;
+	case PSR_MODE_EL0t:
+		exc_offset = LOWER_EL_AArch64_VECTOR;
+		break;
+	default:
+		exc_offset = LOWER_EL_AArch32_VECTOR;
+	}
+
+	return vcpu_sys_reg(vcpu, VBAR_EL1) + exc_offset + type;
+}
+
+static void inject_abt64(struct kvm_vcpu *vcpu, bool is_iabt, unsigned long addr)
+{
+	unsigned long cpsr = *vcpu_cpsr(vcpu);
+	bool is_aarch32 = vcpu_mode_is_32bit(vcpu);
+	u32 esr = 0;
+
+	*vcpu_elr_el1(vcpu) = *vcpu_pc(vcpu);
+	*vcpu_pc(vcpu) = get_except_vector(vcpu, except_type_sync);
+
+	*vcpu_cpsr(vcpu) = PSTATE_FAULT_BITS_64;
+	*vcpu_spsr(vcpu) = cpsr;
+>>>>>>> v4.9.227
 
 	vcpu_sys_reg(vcpu, FAR_EL1) = addr;
 
@@ -118,13 +190,18 @@ static void inject_abt64(struct kvm_vcpu *vcpu, bool is_iabt, unsigned long addr
 	 * instruction set. Report an external synchronous abort.
 	 */
 	if (kvm_vcpu_trap_il_is32bit(vcpu))
+<<<<<<< HEAD
 		esr |= ESR_EL1_IL;
+=======
+		esr |= ESR_ELx_IL;
+>>>>>>> v4.9.227
 
 	/*
 	 * Here, the guest runs in AArch64 mode when in EL1. If we get
 	 * an AArch32 fault, it means we managed to trap an EL0 fault.
 	 */
 	if (is_aarch32 || (cpsr & PSR_MODE_MASK) == PSR_MODE_EL0t)
+<<<<<<< HEAD
 		esr |= (ESR_EL1_EC_IABT_EL0 << ESR_EL1_EC_SHIFT);
 	else
 		esr |= (ESR_EL1_EC_IABT_EL1 << ESR_EL1_EC_SHIFT);
@@ -133,11 +210,22 @@ static void inject_abt64(struct kvm_vcpu *vcpu, bool is_iabt, unsigned long addr
 		esr |= ESR_EL1_EC_DABT_EL0;
 
 	vcpu_sys_reg(vcpu, ESR_EL1) = esr | ESR_EL2_EC_xABT_xFSR_EXTABT;
+=======
+		esr |= (ESR_ELx_EC_IABT_LOW << ESR_ELx_EC_SHIFT);
+	else
+		esr |= (ESR_ELx_EC_IABT_CUR << ESR_ELx_EC_SHIFT);
+
+	if (!is_iabt)
+		esr |= ESR_ELx_EC_DABT_LOW << ESR_ELx_EC_SHIFT;
+
+	vcpu_sys_reg(vcpu, ESR_EL1) = esr | ESR_ELx_FSC_EXTABT;
+>>>>>>> v4.9.227
 }
 
 static void inject_undef64(struct kvm_vcpu *vcpu)
 {
 	unsigned long cpsr = *vcpu_cpsr(vcpu);
+<<<<<<< HEAD
 	u32 esr = (ESR_EL1_EC_UNKNOWN << ESR_EL1_EC_SHIFT);
 
 	*vcpu_spsr(vcpu) = cpsr;
@@ -145,13 +233,26 @@ static void inject_undef64(struct kvm_vcpu *vcpu)
 
 	*vcpu_cpsr(vcpu) = PSTATE_FAULT_BITS_64;
 	*vcpu_pc(vcpu) = vcpu_sys_reg(vcpu, VBAR_EL1) + EL1_EXCEPT_SYNC_OFFSET;
+=======
+	u32 esr = (ESR_ELx_EC_UNKNOWN << ESR_ELx_EC_SHIFT);
+
+	*vcpu_elr_el1(vcpu) = *vcpu_pc(vcpu);
+	*vcpu_pc(vcpu) = get_except_vector(vcpu, except_type_sync);
+
+	*vcpu_cpsr(vcpu) = PSTATE_FAULT_BITS_64;
+	*vcpu_spsr(vcpu) = cpsr;
+>>>>>>> v4.9.227
 
 	/*
 	 * Build an unknown exception, depending on the instruction
 	 * set.
 	 */
 	if (kvm_vcpu_trap_il_is32bit(vcpu))
+<<<<<<< HEAD
 		esr |= ESR_EL1_IL;
+=======
+		esr |= ESR_ELx_IL;
+>>>>>>> v4.9.227
 
 	vcpu_sys_reg(vcpu, ESR_EL1) = esr;
 }
@@ -201,3 +302,18 @@ void kvm_inject_undefined(struct kvm_vcpu *vcpu)
 	else
 		inject_undef64(vcpu);
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * kvm_inject_vabt - inject an async abort / SError into the guest
+ * @vcpu: The VCPU to receive the exception
+ *
+ * It is assumed that this code is called from the VCPU thread and that the
+ * VCPU therefore is not currently executing guest code.
+ */
+void kvm_inject_vabt(struct kvm_vcpu *vcpu)
+{
+	vcpu_set_hcr(vcpu, vcpu_get_hcr(vcpu) | HCR_VSE);
+}
+>>>>>>> v4.9.227

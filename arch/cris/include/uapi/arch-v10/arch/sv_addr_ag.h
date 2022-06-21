@@ -61,7 +61,11 @@
 #define IO_WIDTH(reg, field) IO_WIDTH_ (reg##_, field##_)
 #define IO_WIDTH_(reg_, field_) (reg_##_##field_##_WIDTH)
 
+<<<<<<< HEAD
 /*--- Obsolete. Kept for backw compatibility. ---*/
+=======
+/*--- Obsolete. Kept for backward compatibility. ---*/
+>>>>>>> v4.9.227
 /* Reads (or writes) a byte/uword/udword from the specified mode
    register. */
 #define IO_RD(reg) (*(volatile u32*)(reg))

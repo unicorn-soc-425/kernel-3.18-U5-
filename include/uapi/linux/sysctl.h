@@ -26,8 +26,11 @@
 #include <linux/types.h>
 #include <linux/compiler.h>
 
+<<<<<<< HEAD
 struct completion;
 
+=======
+>>>>>>> v4.9.227
 #define CTL_MAXNAME 10		/* how many path components do we allow in a
 				   call to sysctl?   In other words, what is
 				   the largest acceptable value for the nlen
@@ -153,7 +156,11 @@ enum
 	KERN_MAX_LOCK_DEPTH=74, /* int: rtmutex's maximum lock depth */
 	KERN_NMI_WATCHDOG=75, /* int: enable/disable nmi watchdog */
 	KERN_PANIC_ON_NMI=76, /* int: whether we will panic on an unrecovered */
+<<<<<<< HEAD
 	KERN_COLD_BOOT = 78, /* int: identify if system cold booted */
+=======
+	KERN_PANIC_ON_WARN=77, /* int: call panic() in WARN() functions */
+>>>>>>> v4.9.227
 };
 
 
@@ -570,7 +577,10 @@ enum {
 	NET_IPV6_PROXY_NDP=23,
 	NET_IPV6_ACCEPT_SOURCE_ROUTE=25,
 	NET_IPV6_ACCEPT_RA_FROM_LOCAL=26,
+<<<<<<< HEAD
 	NET_IPV6_ACCEPT_RA_RT_INFO_MIN_PLEN=27,
+=======
+>>>>>>> v4.9.227
 	__NET_IPV6_MAX
 };
 

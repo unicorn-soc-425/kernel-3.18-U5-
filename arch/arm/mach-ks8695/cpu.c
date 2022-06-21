@@ -30,11 +30,19 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/regs-sys.h>
 #include <mach/regs-misc.h>
 
 
 static struct __initdata map_desc ks8695_io_desc[] = {
+=======
+#include "regs-sys.h"
+#include <mach/regs-misc.h>
+
+
+static struct map_desc ks8695_io_desc[] __initdata = {
+>>>>>>> v4.9.227
 	{
 		.virtual	= (unsigned long)KS8695_IO_VA,
 		.pfn		= __phys_to_pfn(KS8695_IO_PA),

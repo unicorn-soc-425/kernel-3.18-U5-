@@ -28,14 +28,23 @@
  * SUCH DAMAGES.
  */
 
+<<<<<<< HEAD
+=======
+#include <crypto/skcipher.h>
+>>>>>>> v4.9.227
 #include <linux/types.h>
 #include <linux/jiffies.h>
 #include <linux/sunrpc/gss_krb5.h>
 #include <linux/random.h>
 #include <linux/pagemap.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
 
 #ifdef RPC_DEBUG
+=======
+
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> v4.9.227
 # define RPCDBG_FACILITY	RPCDBG_AUTH
 #endif
 
@@ -79,9 +88,15 @@ gss_krb5_remove_padding(struct xdr_buf *buf, int blocksize)
 		len -= buf->head[0].iov_len;
 	if (len <= buf->page_len) {
 		unsigned int last = (buf->page_base + len - 1)
+<<<<<<< HEAD
 					>>PAGE_CACHE_SHIFT;
 		unsigned int offset = (buf->page_base + len - 1)
 					& (PAGE_CACHE_SIZE - 1);
+=======
+					>>PAGE_SHIFT;
+		unsigned int offset = (buf->page_base + len - 1)
+					& (PAGE_SIZE - 1);
+>>>>>>> v4.9.227
 		ptr = kmap_atomic(buf->pages[last]);
 		pad = *(ptr + offset);
 		kunmap_atomic(ptr);
@@ -174,7 +189,11 @@ gss_wrap_kerberos_v1(struct krb5_ctx *kctx, int offset,
 
 	now = get_seconds();
 
+<<<<<<< HEAD
 	blocksize = crypto_blkcipher_blocksize(kctx->enc);
+=======
+	blocksize = crypto_skcipher_blocksize(kctx->enc);
+>>>>>>> v4.9.227
 	gss_krb5_add_padding(buf, offset, blocksize);
 	BUG_ON((buf->len - offset) % blocksize);
 	plainlen = conflen + buf->len - offset;
@@ -239,10 +258,17 @@ gss_wrap_kerberos_v1(struct krb5_ctx *kctx, int offset,
 		return GSS_S_FAILURE;
 
 	if (kctx->enctype == ENCTYPE_ARCFOUR_HMAC) {
+<<<<<<< HEAD
 		struct crypto_blkcipher *cipher;
 		int err;
 		cipher = crypto_alloc_blkcipher(kctx->gk5e->encrypt_name, 0,
 						CRYPTO_ALG_ASYNC);
+=======
+		struct crypto_skcipher *cipher;
+		int err;
+		cipher = crypto_alloc_skcipher(kctx->gk5e->encrypt_name, 0,
+					       CRYPTO_ALG_ASYNC);
+>>>>>>> v4.9.227
 		if (IS_ERR(cipher))
 			return GSS_S_FAILURE;
 
@@ -250,7 +276,11 @@ gss_wrap_kerberos_v1(struct krb5_ctx *kctx, int offset,
 
 		err = gss_encrypt_xdr_buf(cipher, buf,
 					  offset + headlen - conflen, pages);
+<<<<<<< HEAD
 		crypto_free_blkcipher(cipher);
+=======
+		crypto_free_skcipher(cipher);
+>>>>>>> v4.9.227
 		if (err)
 			return GSS_S_FAILURE;
 	} else {
@@ -327,18 +357,30 @@ gss_unwrap_kerberos_v1(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 		return GSS_S_BAD_SIG;
 
 	if (kctx->enctype == ENCTYPE_ARCFOUR_HMAC) {
+<<<<<<< HEAD
 		struct crypto_blkcipher *cipher;
 		int err;
 
 		cipher = crypto_alloc_blkcipher(kctx->gk5e->encrypt_name, 0,
 						CRYPTO_ALG_ASYNC);
+=======
+		struct crypto_skcipher *cipher;
+		int err;
+
+		cipher = crypto_alloc_skcipher(kctx->gk5e->encrypt_name, 0,
+					       CRYPTO_ALG_ASYNC);
+>>>>>>> v4.9.227
 		if (IS_ERR(cipher))
 			return GSS_S_FAILURE;
 
 		krb5_rc4_setup_enc_key(kctx, cipher, seqnum);
 
 		err = gss_decrypt_xdr_buf(cipher, buf, crypt_offset);
+<<<<<<< HEAD
 		crypto_free_blkcipher(cipher);
+=======
+		crypto_free_skcipher(cipher);
+>>>>>>> v4.9.227
 		if (err)
 			return GSS_S_DEFECTIVE_TOKEN;
 	} else {
@@ -371,7 +413,11 @@ gss_unwrap_kerberos_v1(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 	/* Copy the data back to the right position.  XXX: Would probably be
 	 * better to copy and encrypt at the same time. */
 
+<<<<<<< HEAD
 	blocksize = crypto_blkcipher_blocksize(kctx->enc);
+=======
+	blocksize = crypto_skcipher_blocksize(kctx->enc);
+>>>>>>> v4.9.227
 	data_start = ptr + (GSS_KRB5_TOK_HDR_LEN + kctx->gk5e->cksumlength) +
 					conflen;
 	orig_start = buf->head[0].iov_base + offset;
@@ -473,7 +519,11 @@ gss_wrap_kerberos_v2(struct krb5_ctx *kctx, u32 offset,
 	*ptr++ = 0xff;
 	be16ptr = (__be16 *)ptr;
 
+<<<<<<< HEAD
 	blocksize = crypto_blkcipher_blocksize(kctx->acceptor_enc);
+=======
+	blocksize = crypto_skcipher_blocksize(kctx->acceptor_enc);
+>>>>>>> v4.9.227
 	*be16ptr++ = 0;
 	/* "inner" token header always uses 0 for RRC */
 	*be16ptr++ = 0;

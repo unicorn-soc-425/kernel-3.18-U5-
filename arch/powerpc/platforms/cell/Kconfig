@@ -25,7 +25,11 @@ config PPC_CELL_NATIVE
 
 config PPC_IBM_CELL_BLADE
 	bool "IBM Cell Blade"
+<<<<<<< HEAD
 	depends on PPC64 && PPC_BOOK3S
+=======
+	depends on PPC64 && PPC_BOOK3S && CPU_BIG_ENDIAN
+>>>>>>> v4.9.227
 	select PPC_CELL_NATIVE
 	select PPC_OF_PLATFORM_PCI
 	select PCI
@@ -33,6 +37,7 @@ config PPC_IBM_CELL_BLADE
 	select PPC_UDBG_16550
 	select UDBG_RTAS_CONSOLE
 
+<<<<<<< HEAD
 config PPC_CELLEB
 	bool "Toshiba's Cell Reference Set 'Celleb' Architecture"
 	depends on PPC64 && PPC_BOOK3S
@@ -49,6 +54,8 @@ config PPC_CELL_QPACE
 	depends on PPC64 && PPC_BOOK3S
 	select PPC_CELL_COMMON
 
+=======
+>>>>>>> v4.9.227
 config AXON_MSI
 	bool
 	depends on PPC_IBM_CELL_BLADE && PCI_MSI
@@ -68,6 +75,7 @@ config SPU_FS
 	  Units on machines implementing the Broadband Processor
 	  Architecture.
 
+<<<<<<< HEAD
 config SPU_FS_64K_LS
 	bool "Use 64K pages to map SPE local  store"
 	# we depend on PPC_MM_SLICES for now rather than selecting
@@ -83,6 +91,8 @@ config SPU_FS_64K_LS
 	  uses 4K pages. This can improve performances of applications
 	  using multiple SPEs by lowering the TLB pressure on them.
 
+=======
+>>>>>>> v4.9.227
 config SPU_BASE
 	bool
 	default n

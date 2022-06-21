@@ -24,20 +24,30 @@
 #include <linux/ata.h>
 #include <linux/libata.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+#include <linux/dma/pxa-dma.h>
+>>>>>>> v4.9.227
 #include <linux/gpio.h>
 #include <linux/slab.h>
 #include <linux/completion.h>
 
 #include <scsi/scsi_host.h>
 
+<<<<<<< HEAD
 #include <mach/pxa2xx-regs.h>
 #include <linux/platform_data/ata-pxa.h>
 #include <mach/dma.h>
+=======
+#include <linux/platform_data/ata-pxa.h>
+>>>>>>> v4.9.227
 
 #define DRV_NAME	"pata_pxa"
 #define DRV_VERSION	"0.1"
 
 struct pata_pxa_data {
+<<<<<<< HEAD
 	uint32_t		dma_channel;
 	struct pxa_dma_desc	*dma_desc;
 	dma_addr_t		dma_desc_addr;
@@ -50,10 +60,15 @@ struct pata_pxa_data {
 	/* DMA DCSR register value */
 	uint32_t		dma_dcsr;
 
+=======
+	struct dma_chan		*dma_chan;
+	dma_cookie_t		dma_cookie;
+>>>>>>> v4.9.227
 	struct completion	dma_done;
 };
 
 /*
+<<<<<<< HEAD
  * Setup the DMA descriptors. The size is transfer capped at 4k per descriptor,
  * if the transfer is longer, it is split into multiple chained descriptors.
  */
@@ -97,6 +112,18 @@ static void pxa_load_dmac(struct scatterlist *sg, struct ata_queued_cmd *qc)
 	/* Should not happen */
 	if (seg_len & 0x1f)
 		DALGN |= (1 << pd->dma_dreq);
+=======
+ * DMA interrupt handler.
+ */
+static void pxa_ata_dma_irq(void *d)
+{
+	struct pata_pxa_data *pd = d;
+	enum dma_status status;
+
+	status = dmaengine_tx_status(pd->dma_chan, pd->dma_cookie, NULL);
+	if (status == DMA_ERROR || status == DMA_COMPLETE)
+		complete(&pd->dma_done);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -105,12 +132,18 @@ static void pxa_load_dmac(struct scatterlist *sg, struct ata_queued_cmd *qc)
 static void pxa_qc_prep(struct ata_queued_cmd *qc)
 {
 	struct pata_pxa_data *pd = qc->ap->private_data;
+<<<<<<< HEAD
 	int si = 0;
 	struct scatterlist *sg;
+=======
+	struct dma_async_tx_descriptor *tx;
+	enum dma_transfer_direction dir;
+>>>>>>> v4.9.227
 
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
 		return;
 
+<<<<<<< HEAD
 	pd->dma_desc_id = 0;
 
 	DCSR(pd->dma_channel) = 0;
@@ -127,6 +160,18 @@ static void pxa_qc_prep(struct ata_queued_cmd *qc)
 	DDADR(pd->dma_channel) = pd->dma_desc_addr;
 	DRCMR(pd->dma_dreq) = DRCMR_MAPVLD | pd->dma_channel;
 
+=======
+	dir = (qc->dma_dir == DMA_TO_DEVICE ? DMA_MEM_TO_DEV : DMA_DEV_TO_MEM);
+	tx = dmaengine_prep_slave_sg(pd->dma_chan, qc->sg, qc->n_elem, dir,
+				     DMA_PREP_INTERRUPT);
+	if (!tx) {
+		ata_dev_err(qc->dev, "prep_slave_sg() failed\n");
+		return;
+	}
+	tx->callback = pxa_ata_dma_irq;
+	tx->callback_param = pd;
+	pd->dma_cookie = dmaengine_submit(tx);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -145,7 +190,11 @@ static void pxa_bmdma_start(struct ata_queued_cmd *qc)
 {
 	struct pata_pxa_data *pd = qc->ap->private_data;
 	init_completion(&pd->dma_done);
+<<<<<<< HEAD
 	DCSR(pd->dma_channel) = DCSR_RUN;
+=======
+	dma_async_issue_pending(pd->dma_chan);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -154,12 +203,23 @@ static void pxa_bmdma_start(struct ata_queued_cmd *qc)
 static void pxa_bmdma_stop(struct ata_queued_cmd *qc)
 {
 	struct pata_pxa_data *pd = qc->ap->private_data;
+<<<<<<< HEAD
 
 	if ((DCSR(pd->dma_channel) & DCSR_RUN) &&
 		wait_for_completion_timeout(&pd->dma_done, HZ))
 		dev_err(qc->ap->dev, "Timeout waiting for DMA completion!");
 
 	DCSR(pd->dma_channel) = 0;
+=======
+	enum dma_status status;
+
+	status = dmaengine_tx_status(pd->dma_chan, pd->dma_cookie, NULL);
+	if (status != DMA_ERROR && status != DMA_COMPLETE &&
+	    wait_for_completion_timeout(&pd->dma_done, HZ))
+		ata_dev_err(qc->dev, "Timeout waiting for DMA completion!");
+
+	dmaengine_terminate_all(pd->dma_chan);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -170,8 +230,16 @@ static unsigned char pxa_bmdma_status(struct ata_port *ap)
 {
 	struct pata_pxa_data *pd = ap->private_data;
 	unsigned char ret = ATA_DMA_INTR;
+<<<<<<< HEAD
 
 	if (pd->dma_dcsr & DCSR_BUSERR)
+=======
+	struct dma_tx_state state;
+	enum dma_status status;
+
+	status = dmaengine_tx_status(pd->dma_chan, pd->dma_cookie, &state);
+	if (status != DMA_COMPLETE)
+>>>>>>> v4.9.227
 		ret |= ATA_DMA_ERR;
 
 	return ret;
@@ -213,6 +281,7 @@ static struct ata_port_operations pxa_ata_port_ops = {
 	.qc_prep		= pxa_qc_prep,
 };
 
+<<<<<<< HEAD
 /*
  * DMA interrupt handler.
  */
@@ -228,6 +297,8 @@ static void pxa_ata_dma_irq(int dma, void *port)
 		complete(&pd->dma_done);
 }
 
+=======
+>>>>>>> v4.9.227
 static int pxa_ata_probe(struct platform_device *pdev)
 {
 	struct ata_host *host;
@@ -238,6 +309,12 @@ static int pxa_ata_probe(struct platform_device *pdev)
 	struct resource *dma_res;
 	struct resource *irq_res;
 	struct pata_pxa_pdata *pdata = dev_get_platdata(&pdev->dev);
+<<<<<<< HEAD
+=======
+	struct dma_slave_config	config;
+	dma_cap_mask_t mask;
+	struct pxad_param param;
+>>>>>>> v4.9.227
 	int ret = 0;
 
 	/*
@@ -333,6 +410,7 @@ static int pxa_ata_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	ap->private_data = data;
+<<<<<<< HEAD
 	data->dma_dreq = pdata->dma_dreq;
 	data->dma_io_addr = dma_res->start;
 
@@ -343,10 +421,25 @@ static int pxa_ata_probe(struct platform_device *pdev)
 					&data->dma_desc_addr, GFP_KERNEL);
 	if (!data->dma_desc)
 		return -EINVAL;
+=======
+
+	dma_cap_zero(mask);
+	dma_cap_set(DMA_SLAVE, mask);
+	param.prio = PXAD_PRIO_LOWEST;
+	param.drcmr = pdata->dma_dreq;
+	memset(&config, 0, sizeof(config));
+	config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+	config.src_addr = dma_res->start;
+	config.dst_addr = dma_res->start;
+	config.src_maxburst = 32;
+	config.dst_maxburst = 32;
+>>>>>>> v4.9.227
 
 	/*
 	 * Request the DMA channel
 	 */
+<<<<<<< HEAD
 	data->dma_channel = pxa_request_dma(DRV_NAME, DMA_PRIO_LOW,
 						pxa_ata_dma_irq, ap);
 	if (data->dma_channel < 0)
@@ -356,6 +449,18 @@ static int pxa_ata_probe(struct platform_device *pdev)
 	 * Stop and clear the DMA channel
 	 */
 	DCSR(data->dma_channel) = 0;
+=======
+	data->dma_chan =
+		dma_request_slave_channel_compat(mask, pxad_filter_fn,
+						 &param, &pdev->dev, "data");
+	if (!data->dma_chan)
+		return -EBUSY;
+	ret = dmaengine_slave_config(data->dma_chan, &config);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "dma configuration failed: %d\n", ret);
+		return ret;
+	}
+>>>>>>> v4.9.227
 
 	/*
 	 * Activate the ATA host
@@ -363,7 +468,11 @@ static int pxa_ata_probe(struct platform_device *pdev)
 	ret = ata_host_activate(host, irq_res->start, ata_sff_interrupt,
 				pdata->irq_flags, &pxa_ata_sht);
 	if (ret)
+<<<<<<< HEAD
 		pxa_free_dma(data->dma_channel);
+=======
+		dma_release_channel(data->dma_chan);
+>>>>>>> v4.9.227
 
 	return ret;
 }
@@ -373,7 +482,11 @@ static int pxa_ata_remove(struct platform_device *pdev)
 	struct ata_host *host = platform_get_drvdata(pdev);
 	struct pata_pxa_data *data = host->ports[0]->private_data;
 
+<<<<<<< HEAD
 	pxa_free_dma(data->dma_channel);
+=======
+	dma_release_channel(data->dma_chan);
+>>>>>>> v4.9.227
 
 	ata_host_detach(host);
 
@@ -385,7 +498,10 @@ static struct platform_driver pxa_ata_driver = {
 	.remove		= pxa_ata_remove,
 	.driver		= {
 		.name		= DRV_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> v4.9.227
 	},
 };
 

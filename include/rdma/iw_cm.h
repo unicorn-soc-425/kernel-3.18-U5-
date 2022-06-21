@@ -83,14 +83,26 @@ struct iw_cm_id {
 	iw_cm_handler		cm_handler;      /* client callback function */
 	void		        *context;	 /* client cb context */
 	struct ib_device	*device;
+<<<<<<< HEAD
 	struct sockaddr_storage local_addr;
 	struct sockaddr_storage	remote_addr;
+=======
+	struct sockaddr_storage local_addr;      /* local addr */
+	struct sockaddr_storage	remote_addr;
+	struct sockaddr_storage m_local_addr;	 /* nmapped local addr */
+	struct sockaddr_storage	m_remote_addr;	 /* nmapped rem addr */
+>>>>>>> v4.9.227
 	void			*provider_data;	 /* provider private data */
 	iw_event_handler        event_handler;   /* cb for provider
 						    events */
 	/* Used by provider to add and remove refs on IW cm_id */
 	void (*add_ref)(struct iw_cm_id *);
 	void (*rem_ref)(struct iw_cm_id *);
+<<<<<<< HEAD
+=======
+	u8  tos;
+	bool mapped;
+>>>>>>> v4.9.227
 };
 
 struct iw_cm_conn_param {
@@ -122,6 +134,10 @@ struct iw_cm_verbs {
 					 int backlog);
 
 	int		(*destroy_listen)(struct iw_cm_id *cm_id);
+<<<<<<< HEAD
+=======
+	char		ifname[IFNAMSIZ];
+>>>>>>> v4.9.227
 };
 
 /**

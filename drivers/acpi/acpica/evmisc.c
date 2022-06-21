@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2014, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,6 +72,10 @@ static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context);
 
 u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
 {
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 	switch (node->type) {
 	case ACPI_TYPE_DEVICE:
 	case ACPI_TYPE_PROCESSOR:
@@ -98,8 +106,12 @@ u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ev_queue_notify_request(struct acpi_namespace_node * node,
 			     u32 notify_value)
+=======
+acpi_ev_queue_notify_request(struct acpi_namespace_node *node, u32 notify_value)
+>>>>>>> v4.9.227
 {
 	union acpi_operand_object *obj_desc;
 	union acpi_operand_object *handler_list_head = NULL;
@@ -170,8 +182,13 @@ acpi_ev_queue_notify_request(struct acpi_namespace_node * node,
 			  acpi_ut_get_notify_name(notify_value, ACPI_TYPE_ANY),
 			  node));
 
+<<<<<<< HEAD
 	status = acpi_os_execute(OSL_NOTIFY_HANDLER, acpi_ev_notify_dispatch,
 				 info);
+=======
+	status = acpi_os_execute(OSL_NOTIFY_HANDLER,
+				 acpi_ev_notify_dispatch, info);
+>>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 		acpi_ut_delete_generic_state(info);
 	}

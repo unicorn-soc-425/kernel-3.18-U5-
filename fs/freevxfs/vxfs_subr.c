@@ -50,7 +50,11 @@ inline void
 vxfs_put_page(struct page *pp)
 {
 	kunmap(pp);
+<<<<<<< HEAD
 	page_cache_release(pp);
+=======
+	put_page(pp);
+>>>>>>> v4.9.227
 }
 
 /**

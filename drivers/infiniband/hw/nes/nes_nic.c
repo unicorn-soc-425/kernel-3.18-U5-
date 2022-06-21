@@ -356,7 +356,11 @@ static int nes_netdev_stop(struct net_device *netdev)
 /**
  * nes_nic_send
  */
+<<<<<<< HEAD
 static int nes_nic_send(struct sk_buff *skb, struct net_device *netdev)
+=======
+static bool nes_nic_send(struct sk_buff *skb, struct net_device *netdev)
+>>>>>>> v4.9.227
 {
 	struct nes_vnic *nesvnic = netdev_priv(netdev);
 	struct nes_device *nesdev = nesvnic->nesdev;
@@ -373,11 +377,19 @@ static int nes_nic_send(struct sk_buff *skb, struct net_device *netdev)
 	wqe_fragment_length = (__le16 *)&nic_sqe->wqe_words[NES_NIC_SQ_WQE_LENGTH_0_TAG_IDX];
 
 	/* setup the VLAN tag if present */
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb)) {
 		nes_debug(NES_DBG_NIC_TX, "%s: VLAN packet to send... VLAN = %08X\n",
 				netdev->name, vlan_tx_tag_get(skb));
 		wqe_misc = NES_NIC_SQ_WQE_TAGVALUE_ENABLE;
 		wqe_fragment_length[0] = (__force __le16) vlan_tx_tag_get(skb);
+=======
+	if (skb_vlan_tag_present(skb)) {
+		nes_debug(NES_DBG_NIC_TX, "%s: VLAN packet to send... VLAN = %08X\n",
+				netdev->name, skb_vlan_tag_get(skb));
+		wqe_misc = NES_NIC_SQ_WQE_TAGVALUE_ENABLE;
+		wqe_fragment_length[0] = (__force __le16) skb_vlan_tag_get(skb);
+>>>>>>> v4.9.227
 	} else
 		wqe_misc = 0;
 
@@ -413,7 +425,11 @@ static int nes_nic_send(struct sk_buff *skb, struct net_device *netdev)
 					netdev->name, skb_shinfo(skb)->nr_frags + 2, skb_headlen(skb));
 			kfree_skb(skb);
 			nesvnic->tx_sw_dropped++;
+<<<<<<< HEAD
 			return NETDEV_TX_LOCKED;
+=======
+			return false;
+>>>>>>> v4.9.227
 		}
 		set_bit(nesnic->sq_head, nesnic->first_frag_overflow);
 		bus_address = pci_map_single(nesdev->pcidev, skb->data + NES_FIRST_FRAG_SIZE,
@@ -454,8 +470,12 @@ static int nes_nic_send(struct sk_buff *skb, struct net_device *netdev)
 	set_wqe_32bit_value(nic_sqe->wqe_words, NES_NIC_SQ_WQE_MISC_IDX, wqe_misc);
 	nesnic->sq_head++;
 	nesnic->sq_head &= nesnic->sq_size - 1;
+<<<<<<< HEAD
 
 	return NETDEV_TX_OK;
+=======
+	return true;
+>>>>>>> v4.9.227
 }
 
 
@@ -479,7 +499,10 @@ static int nes_netdev_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	u32 tso_wqe_length;
 	u32 curr_tcp_seq;
 	u32 wqe_count=1;
+<<<<<<< HEAD
 	u32 send_rc;
+=======
+>>>>>>> v4.9.227
 	struct iphdr *iph;
 	__le16 *wqe_fragment_length;
 	u32 nr_frags;
@@ -500,9 +523,12 @@ static int nes_netdev_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	 *		skb_shinfo(skb)->nr_frags, skb_is_gso(skb));
 	 */
 
+<<<<<<< HEAD
 	if (!netif_carrier_ok(netdev))
 		return NETDEV_TX_OK;
 
+=======
+>>>>>>> v4.9.227
 	if (netif_queue_stopped(netdev))
 		return NETDEV_TX_BUSY;
 
@@ -576,11 +602,20 @@ tso_sq_no_longer_full:
 				wqe_fragment_length =
 						(__le16 *)&nic_sqe->wqe_words[NES_NIC_SQ_WQE_LENGTH_0_TAG_IDX];
 				/* setup the VLAN tag if present */
+<<<<<<< HEAD
 				if (vlan_tx_tag_present(skb)) {
 					nes_debug(NES_DBG_NIC_TX, "%s: VLAN packet to send... VLAN = %08X\n",
 							netdev->name, vlan_tx_tag_get(skb) );
 					wqe_misc = NES_NIC_SQ_WQE_TAGVALUE_ENABLE;
 					wqe_fragment_length[0] = (__force __le16) vlan_tx_tag_get(skb);
+=======
+				if (skb_vlan_tag_present(skb)) {
+					nes_debug(NES_DBG_NIC_TX, "%s: VLAN packet to send... VLAN = %08X\n",
+							netdev->name,
+						  skb_vlan_tag_get(skb));
+					wqe_misc = NES_NIC_SQ_WQE_TAGVALUE_ENABLE;
+					wqe_fragment_length[0] = (__force __le16) skb_vlan_tag_get(skb);
+>>>>>>> v4.9.227
 				} else
 					wqe_misc = 0;
 
@@ -672,6 +707,7 @@ tso_sq_no_longer_full:
 			skb_linearize(skb);
 			skb_set_transport_header(skb, hoffset);
 			skb_set_network_header(skb, nhoffset);
+<<<<<<< HEAD
 			send_rc = nes_nic_send(skb, netdev);
 			if (send_rc != NETDEV_TX_OK)
 				return NETDEV_TX_OK;
@@ -679,6 +715,13 @@ tso_sq_no_longer_full:
 	} else {
 		send_rc = nes_nic_send(skb, netdev);
 		if (send_rc != NETDEV_TX_OK)
+=======
+			if (!nes_nic_send(skb, netdev))
+				return NETDEV_TX_OK;
+		}
+	} else {
+		if (!nes_nic_send(skb, netdev))
+>>>>>>> v4.9.227
 			return NETDEV_TX_OK;
 	}
 
@@ -688,7 +731,11 @@ tso_sq_no_longer_full:
 		nes_write32(nesdev->regs+NES_WQE_ALLOC,
 				(wqe_count << 24) | (1 << 23) | nesvnic->nic.qp_id);
 
+<<<<<<< HEAD
 	netdev->trans_start = jiffies;
+=======
+	netif_trans_update(netdev);
+>>>>>>> v4.9.227
 
 	return NETDEV_TX_OK;
 }
@@ -1084,9 +1131,12 @@ static const char nes_ethtool_stringset[][ETH_GSTRING_LEN] = {
 	"Free 4Kpbls",
 	"Free 256pbls",
 	"Timer Inits",
+<<<<<<< HEAD
 	"LRO aggregated",
 	"LRO flushed",
 	"LRO no_desc",
+=======
+>>>>>>> v4.9.227
 	"PAU CreateQPs",
 	"PAU DestroyQPs",
 };
@@ -1301,9 +1351,12 @@ static void nes_netdev_get_ethtool_stats(struct net_device *netdev,
 	target_stat_values[++index] = nesadapter->free_4kpbl;
 	target_stat_values[++index] = nesadapter->free_256pbl;
 	target_stat_values[++index] = int_mod_timer_init;
+<<<<<<< HEAD
 	target_stat_values[++index] = nesvnic->lro_mgr.stats.aggregated;
 	target_stat_values[++index] = nesvnic->lro_mgr.stats.flushed;
 	target_stat_values[++index] = nesvnic->lro_mgr.stats.no_desc;
+=======
+>>>>>>> v4.9.227
 	target_stat_values[++index] = atomic_read(&pau_qps_created);
 	target_stat_values[++index] = atomic_read(&pau_qps_destroyed);
 }
@@ -1324,9 +1377,12 @@ static void nes_netdev_get_drvinfo(struct net_device *netdev,
 		 "%u.%u", nesadapter->firmware_version >> 16,
 		 nesadapter->firmware_version & 0x000000ff);
 	strlcpy(drvinfo->version, DRV_VERSION, sizeof(drvinfo->version));
+<<<<<<< HEAD
 	drvinfo->testinfo_len = 0;
 	drvinfo->eedump_len = 0;
 	drvinfo->regdump_len = 0;
+=======
+>>>>>>> v4.9.227
 }
 
 
@@ -1711,7 +1767,10 @@ struct net_device *nes_netdev_init(struct nes_device *nesdev,
 		netdev->hw_features |= NETIF_F_TSO;
 
 	netdev->features = netdev->hw_features | NETIF_F_HIGHDMA | NETIF_F_HW_VLAN_CTAG_TX;
+<<<<<<< HEAD
 	netdev->hw_features |= NETIF_F_LRO;
+=======
+>>>>>>> v4.9.227
 
 	nes_debug(NES_DBG_INIT, "nesvnic = %p, reported features = 0x%lX, QPid = %d,"
 			" nic_index = %d, logical_port = %d, mac_index = %d.\n",

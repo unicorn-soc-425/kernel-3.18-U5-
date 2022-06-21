@@ -13,7 +13,12 @@
 #include <linux/sched.h>
 #include <linux/cpuidle.h>
 #include <linux/cpumask.h>
+<<<<<<< HEAD
 #include <linux/clockchips.h>
+=======
+#include <linux/tick.h>
+#include <linux/cpu.h>
+>>>>>>> v4.9.227
 
 #include "cpuidle.h"
 
@@ -60,16 +65,22 @@ static inline void __cpuidle_unset_driver(struct cpuidle_driver *drv)
  * __cpuidle_set_driver - set per CPU driver variables for the given driver.
  * @drv: a valid pointer to a struct cpuidle_driver
  *
+<<<<<<< HEAD
  * For each CPU in the driver's cpumask, unset the registered driver per CPU
  * to @drv.
  *
  * Returns 0 on success, -EBUSY if the CPUs have driver(s) already.
+=======
+ * Returns 0 on success, -EBUSY if any CPU in the cpumask have a driver
+ * different from drv already.
+>>>>>>> v4.9.227
  */
 static inline int __cpuidle_set_driver(struct cpuidle_driver *drv)
 {
 	int cpu;
 
 	for_each_cpu(cpu, drv->cpumask) {
+<<<<<<< HEAD
 
 		if (__cpuidle_get_cpu_driver(cpu)) {
 			__cpuidle_unset_driver(drv);
@@ -79,6 +90,18 @@ static inline int __cpuidle_set_driver(struct cpuidle_driver *drv)
 		per_cpu(cpuidle_drivers, cpu) = drv;
 	}
 
+=======
+		struct cpuidle_driver *old_drv;
+
+		old_drv = __cpuidle_get_cpu_driver(cpu);
+		if (old_drv && old_drv != drv)
+			return -EBUSY;
+	}
+
+	for_each_cpu(cpu, drv->cpumask)
+		per_cpu(cpuidle_drivers, cpu) = drv;
+
+>>>>>>> v4.9.227
 	return 0;
 }
 
@@ -130,6 +153,7 @@ static inline void __cpuidle_unset_driver(struct cpuidle_driver *drv)
 #endif
 
 /**
+<<<<<<< HEAD
  * cpuidle_setup_broadcast_timer - enable/disable the broadcast timer
  * @arg: a void pointer used to match the SMP cross call API
  *
@@ -145,6 +169,22 @@ static void cpuidle_setup_broadcast_timer(void *arg)
 {
 	int cpu = smp_processor_id();
 	clockevents_notify((long)(arg), &cpu);
+=======
+ * cpuidle_setup_broadcast_timer - enable/disable the broadcast timer on a cpu
+ * @arg: a void pointer used to match the SMP cross call API
+ *
+ * If @arg is NULL broadcast is disabled otherwise enabled
+ *
+ * This function is executed per CPU by an SMP cross call.  It's not
+ * supposed to be called directly.
+ */
+static void cpuidle_setup_broadcast_timer(void *arg)
+{
+	if (arg)
+		tick_broadcast_enable();
+	else
+		tick_broadcast_disable();
+>>>>>>> v4.9.227
 }
 
 /**
@@ -179,8 +219,13 @@ static void __cpuidle_driver_init(struct cpuidle_driver *drv)
 }
 
 #ifdef CONFIG_ARCH_HAS_CPU_RELAX
+<<<<<<< HEAD
 static int poll_idle(struct cpuidle_device *dev,
 		struct cpuidle_driver *drv, int index)
+=======
+static int __cpuidle poll_idle(struct cpuidle_device *dev,
+			       struct cpuidle_driver *drv, int index)
+>>>>>>> v4.9.227
 {
 	local_irq_enable();
 	if (!current_set_polling_and_test()) {
@@ -201,7 +246,10 @@ static void poll_idle_init(struct cpuidle_driver *drv)
 	state->exit_latency = 0;
 	state->target_residency = 0;
 	state->power_usage = -1;
+<<<<<<< HEAD
 	state->flags = CPUIDLE_FLAG_TIME_VALID;
+=======
+>>>>>>> v4.9.227
 	state->enter = poll_idle;
 	state->disabled = false;
 }
@@ -229,6 +277,13 @@ static int __cpuidle_register_driver(struct cpuidle_driver *drv)
 	if (!drv || !drv->state_count)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	ret = cpuidle_coupled_state_verify(drv);
+	if (ret)
+		return ret;
+
+>>>>>>> v4.9.227
 	if (cpuidle_disabled())
 		return -ENODEV;
 
@@ -240,7 +295,11 @@ static int __cpuidle_register_driver(struct cpuidle_driver *drv)
 
 	if (drv->bctimer)
 		on_each_cpu_mask(drv->cpumask, cpuidle_setup_broadcast_timer,
+<<<<<<< HEAD
 				 (void *)CLOCK_EVT_NOTIFY_BROADCAST_ON, 1);
+=======
+				 (void *)1, 1);
+>>>>>>> v4.9.227
 
 	poll_idle_init(drv);
 
@@ -264,7 +323,11 @@ static void __cpuidle_unregister_driver(struct cpuidle_driver *drv)
 	if (drv->bctimer) {
 		drv->bctimer = 0;
 		on_each_cpu_mask(drv->cpumask, cpuidle_setup_broadcast_timer,
+<<<<<<< HEAD
 				 (void *)CLOCK_EVT_NOTIFY_BROADCAST_OFF, 1);
+=======
+				 NULL, 1);
+>>>>>>> v4.9.227
 	}
 
 	__cpuidle_unset_driver(drv);

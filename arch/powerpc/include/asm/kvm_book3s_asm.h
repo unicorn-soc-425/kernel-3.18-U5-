@@ -25,6 +25,15 @@
 #define XICS_MFRR		0xc
 #define XICS_IPI		2	/* interrupt source # for IPIs */
 
+<<<<<<< HEAD
+=======
+/* Maximum number of threads per physical core */
+#define MAX_SMT_THREADS		8
+
+/* Maximum number of subcores per physical core */
+#define MAX_SUBCORES		4
+
+>>>>>>> v4.9.227
 #ifdef __ASSEMBLY__
 
 #ifdef CONFIG_KVM_BOOK3S_HANDLER
@@ -65,6 +74,22 @@ kvmppc_resume_\intno:
 
 #else  /*__ASSEMBLY__ */
 
+<<<<<<< HEAD
+=======
+struct kvmppc_vcore;
+
+/* Struct used for coordinating micro-threading (split-core) mode changes */
+struct kvm_split_mode {
+	unsigned long	rpr;
+	unsigned long	pmmar;
+	unsigned long	ldbar;
+	u8		subcore_size;
+	u8		do_nap;
+	u8		napped[MAX_SMT_THREADS];
+	struct kvmppc_vcore *master_vcs[MAX_SUBCORES];
+};
+
+>>>>>>> v4.9.227
 /*
  * This struct goes in the PACA on 64-bit processors.  It is used
  * to store host state that needs to be saved when we enter a guest
@@ -100,6 +125,10 @@ struct kvmppc_host_state {
 	u64 host_spurr;
 	u64 host_dscr;
 	u64 dec_expires;
+<<<<<<< HEAD
+=======
+	struct kvm_split_mode *kvm_split_mode;
+>>>>>>> v4.9.227
 #endif
 #ifdef CONFIG_PPC_BOOK3S_64
 	u64 cfar;
@@ -112,7 +141,11 @@ struct kvmppc_book3s_shadow_vcpu {
 	bool in_use;
 	ulong gpr[14];
 	u32 cr;
+<<<<<<< HEAD
 	u32 xer;
+=======
+	ulong xer;
+>>>>>>> v4.9.227
 	ulong ctr;
 	ulong lr;
 	ulong pc;
@@ -142,7 +175,11 @@ struct kvmppc_book3s_shadow_vcpu {
 
 /* Values for kvm_state */
 #define KVM_HWTHREAD_IN_KERNEL	0
+<<<<<<< HEAD
 #define KVM_HWTHREAD_IN_NAP	1
+=======
+#define KVM_HWTHREAD_IN_IDLE	1
+>>>>>>> v4.9.227
 #define KVM_HWTHREAD_IN_KVM	2
 
 #endif /* __ASM_KVM_BOOK3S_ASM_H__ */

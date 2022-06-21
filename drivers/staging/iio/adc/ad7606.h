@@ -28,6 +28,7 @@
  */
 
 struct ad7606_platform_data {
+<<<<<<< HEAD
 	unsigned			default_os;
 	unsigned			default_range;
 	unsigned			gpio_convst;
@@ -38,6 +39,18 @@ struct ad7606_platform_data {
 	unsigned			gpio_os2;
 	unsigned			gpio_frstdata;
 	unsigned			gpio_stby;
+=======
+	unsigned int			default_os;
+	unsigned int			default_range;
+	unsigned int			gpio_convst;
+	unsigned int			gpio_reset;
+	unsigned int			gpio_range;
+	unsigned int			gpio_os0;
+	unsigned int			gpio_os1;
+	unsigned int			gpio_os2;
+	unsigned int			gpio_frstdata;
+	unsigned int			gpio_stby;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -52,7 +65,11 @@ struct ad7606_chip_info {
 	const char			*name;
 	u16				int_vref_mv;
 	const struct iio_chan_spec	*channels;
+<<<<<<< HEAD
 	unsigned			num_channels;
+=======
+	unsigned int			num_channels;
+>>>>>>> v4.9.227
 };
 
 /**
@@ -67,8 +84,13 @@ struct ad7606_state {
 	struct work_struct		poll_work;
 	wait_queue_head_t		wq_data_avail;
 	const struct ad7606_bus_ops	*bops;
+<<<<<<< HEAD
 	unsigned			range;
 	unsigned			oversampling;
+=======
+	unsigned int			range;
+	unsigned int			oversampling;
+>>>>>>> v4.9.227
 	bool				done;
 	void __iomem			*base_address;
 
@@ -85,10 +107,15 @@ struct ad7606_bus_ops {
 	int (*read_block)(struct device *, int, void *);
 };
 
+<<<<<<< HEAD
 void ad7606_suspend(struct iio_dev *indio_dev);
 void ad7606_resume(struct iio_dev *indio_dev);
 struct iio_dev *ad7606_probe(struct device *dev, int irq,
 			      void __iomem *base_address, unsigned id,
+=======
+struct iio_dev *ad7606_probe(struct device *dev, int irq,
+			      void __iomem *base_address, unsigned int id,
+>>>>>>> v4.9.227
 			      const struct ad7606_bus_ops *bops);
 int ad7606_remove(struct iio_dev *indio_dev, int irq);
 int ad7606_reset(struct ad7606_state *st);
@@ -101,4 +128,15 @@ enum ad7606_supported_device_ids {
 
 int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev);
 void ad7606_ring_cleanup(struct iio_dev *indio_dev);
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_PM_SLEEP
+extern const struct dev_pm_ops ad7606_pm_ops;
+#define AD7606_PM_OPS (&ad7606_pm_ops)
+#else
+#define AD7606_PM_OPS NULL
+#endif
+
+>>>>>>> v4.9.227
 #endif /* IIO_ADC_AD7606_H_ */

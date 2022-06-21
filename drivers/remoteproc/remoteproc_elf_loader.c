@@ -166,18 +166,30 @@ rproc_elf_load_segments(struct rproc *rproc, const struct firmware *fw)
 			continue;
 
 		dev_dbg(dev, "phdr: type %d da 0x%x memsz 0x%x filesz 0x%x\n",
+<<<<<<< HEAD
 					phdr->p_type, da, memsz, filesz);
 
 		if (filesz > memsz) {
 			dev_err(dev, "bad phdr filesz 0x%x memsz 0x%x\n",
 							filesz, memsz);
+=======
+			phdr->p_type, da, memsz, filesz);
+
+		if (filesz > memsz) {
+			dev_err(dev, "bad phdr filesz 0x%x memsz 0x%x\n",
+				filesz, memsz);
+>>>>>>> v4.9.227
 			ret = -EINVAL;
 			break;
 		}
 
 		if (offset + filesz > fw->size) {
 			dev_err(dev, "truncated fw: need 0x%x avail 0x%zx\n",
+<<<<<<< HEAD
 					offset + filesz, fw->size);
+=======
+				offset + filesz, fw->size);
+>>>>>>> v4.9.227
 			ret = -EINVAL;
 			break;
 		}

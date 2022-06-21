@@ -85,6 +85,7 @@ static int rdc321x_sb_probe(struct pci_dev *pdev,
 	rdc321x_gpio_pdata.sb_pdev = pdev;
 	rdc321x_wdt_pdata.sb_pdev = pdev;
 
+<<<<<<< HEAD
 	return mfd_add_devices(&pdev->dev, -1,
 			       rdc321x_sb_cells, ARRAY_SIZE(rdc321x_sb_cells),
 			       NULL, 0, NULL);
@@ -93,6 +94,12 @@ static int rdc321x_sb_probe(struct pci_dev *pdev,
 static void rdc321x_sb_remove(struct pci_dev *pdev)
 {
 	mfd_remove_devices(&pdev->dev);
+=======
+	return devm_mfd_add_devices(&pdev->dev, -1,
+				    rdc321x_sb_cells,
+				    ARRAY_SIZE(rdc321x_sb_cells),
+				    NULL, 0, NULL);
+>>>>>>> v4.9.227
 }
 
 static const struct pci_device_id rdc321x_sb_table[] = {
@@ -105,7 +112,10 @@ static struct pci_driver rdc321x_sb_driver = {
 	.name		= "RDC321x Southbridge",
 	.id_table	= rdc321x_sb_table,
 	.probe		= rdc321x_sb_probe,
+<<<<<<< HEAD
 	.remove		= rdc321x_sb_remove,
+=======
+>>>>>>> v4.9.227
 };
 
 module_pci_driver(rdc321x_sb_driver);

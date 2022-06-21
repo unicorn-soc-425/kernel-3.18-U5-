@@ -61,7 +61,11 @@ static int powernv_rng_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id powernv_rng_match[] = {
+=======
+static const struct of_device_id powernv_rng_match[] = {
+>>>>>>> v4.9.227
 	{ .compatible	= "ibm,power-rng",},
 	{},
 };

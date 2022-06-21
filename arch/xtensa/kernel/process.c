@@ -24,6 +24,10 @@
 #include <linux/unistd.h>
 #include <linux/ptrace.h>
 #include <linux/elf.h>
+<<<<<<< HEAD
+=======
+#include <linux/hw_breakpoint.h>
+>>>>>>> v4.9.227
 #include <linux/init.h>
 #include <linux/prctl.h>
 #include <linux/init_task.h>
@@ -43,6 +47,10 @@
 #include <linux/atomic.h>
 #include <asm/asm-offsets.h>
 #include <asm/regs.h>
+<<<<<<< HEAD
+=======
+#include <asm/hw_breakpoint.h>
+>>>>>>> v4.9.227
 
 extern void ret_from_fork(void);
 extern void ret_from_kernel_thread(void);
@@ -83,18 +91,32 @@ void coprocessor_release_all(struct thread_info *ti)
 
 void coprocessor_flush_all(struct thread_info *ti)
 {
+<<<<<<< HEAD
 	unsigned long cpenable;
+=======
+	unsigned long cpenable, old_cpenable;
+>>>>>>> v4.9.227
 	int i;
 
 	preempt_disable();
 
+<<<<<<< HEAD
 	cpenable = ti->cpenable;
+=======
+	RSR_CPENABLE(old_cpenable);
+	cpenable = ti->cpenable;
+	WSR_CPENABLE(cpenable);
+>>>>>>> v4.9.227
 
 	for (i = 0; i < XCHAL_CP_MAX; i++) {
 		if ((cpenable & 1) != 0 && coprocessor_owner[i] == ti)
 			coprocessor_flush(ti, i);
 		cpenable >>= 1;
 	}
+<<<<<<< HEAD
+=======
+	WSR_CPENABLE(old_cpenable);
+>>>>>>> v4.9.227
 
 	preempt_enable();
 }
@@ -113,10 +135,17 @@ void arch_cpu_idle(void)
 /*
  * This is called when the thread calls exit().
  */
+<<<<<<< HEAD
 void exit_thread(void)
 {
 #if XTENSA_HAVE_COPROCESSORS
 	coprocessor_release_all(current_thread_info());
+=======
+void exit_thread(struct task_struct *tsk)
+{
+#if XTENSA_HAVE_COPROCESSORS
+	coprocessor_release_all(task_thread_info(tsk));
+>>>>>>> v4.9.227
 #endif
 }
 
@@ -131,6 +160,10 @@ void flush_thread(void)
 	coprocessor_flush_all(ti);
 	coprocessor_release_all(ti);
 #endif
+<<<<<<< HEAD
+=======
+	flush_ptrace_hw_breakpoint(current);
+>>>>>>> v4.9.227
 }
 
 /*
@@ -273,6 +306,11 @@ int copy_thread(unsigned long clone_flags, unsigned long usp_thread_fn,
 	ti->cpenable = 0;
 #endif
 
+<<<<<<< HEAD
+=======
+	clear_ptrace_hw_breakpoint(p);
+
+>>>>>>> v4.9.227
 	return 0;
 }
 

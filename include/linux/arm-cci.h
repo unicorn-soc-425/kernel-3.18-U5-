@@ -24,16 +24,32 @@
 #include <linux/errno.h>
 #include <linux/types.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/arm-cci.h>
+
+>>>>>>> v4.9.227
 struct device_node;
 
 #ifdef CONFIG_ARM_CCI
 extern bool cci_probed(void);
+<<<<<<< HEAD
+=======
+#else
+static inline bool cci_probed(void) { return false; }
+#endif
+
+#ifdef CONFIG_ARM_CCI400_PORT_CTRL
+>>>>>>> v4.9.227
 extern int cci_ace_get_port(struct device_node *dn);
 extern int cci_disable_port_by_cpu(u64 mpidr);
 extern int __cci_control_port_by_device(struct device_node *dn, bool enable);
 extern int __cci_control_port_by_index(u32 port, bool enable);
 #else
+<<<<<<< HEAD
 static inline bool cci_probed(void) { return false; }
+=======
+>>>>>>> v4.9.227
 static inline int cci_ace_get_port(struct device_node *dn)
 {
 	return -ENODEV;
@@ -49,6 +65,10 @@ static inline int __cci_control_port_by_index(u32 port, bool enable)
 	return -ENODEV;
 }
 #endif
+<<<<<<< HEAD
+=======
+
+>>>>>>> v4.9.227
 #define cci_disable_port_by_device(dev) \
 	__cci_control_port_by_device(dev, false)
 #define cci_enable_port_by_device(dev) \

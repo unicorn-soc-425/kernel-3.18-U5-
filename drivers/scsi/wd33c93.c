@@ -2143,15 +2143,23 @@ wd33c93_show_info(struct seq_file *m, struct Scsi_Host *instance)
 		seq_printf(m, "\nclock_freq=%02x no_sync=%02x no_dma=%d"
 			" dma_mode=%02x fast=%d",
 			hd->clock_freq, hd->no_sync, hd->no_dma, hd->dma_mode, hd->fast);
+<<<<<<< HEAD
 		seq_printf(m, "\nsync_xfer[] =       ");
 		for (x = 0; x < 7; x++)
 			seq_printf(m, "\t%02x", hd->sync_xfer[x]);
 		seq_printf(m, "\nsync_stat[] =       ");
+=======
+		seq_puts(m, "\nsync_xfer[] =       ");
+		for (x = 0; x < 7; x++)
+			seq_printf(m, "\t%02x", hd->sync_xfer[x]);
+		seq_puts(m, "\nsync_stat[] =       ");
+>>>>>>> v4.9.227
 		for (x = 0; x < 7; x++)
 			seq_printf(m, "\t%02x", hd->sync_stat[x]);
 	}
 #ifdef PROC_STATISTICS
 	if (hd->proc & PR_STATISTICS) {
+<<<<<<< HEAD
 		seq_printf(m, "\ncommands issued:    ");
 		for (x = 0; x < 7; x++)
 			seq_printf(m, "\t%ld", hd->cmd_cnt[x]);
@@ -2159,6 +2167,15 @@ wd33c93_show_info(struct seq_file *m, struct Scsi_Host *instance)
 		for (x = 0; x < 7; x++)
 			seq_printf(m, "\t%ld", hd->disc_allowed_cnt[x]);
 		seq_printf(m, "\ndisconnects done:   ");
+=======
+		seq_puts(m, "\ncommands issued:    ");
+		for (x = 0; x < 7; x++)
+			seq_printf(m, "\t%ld", hd->cmd_cnt[x]);
+		seq_puts(m, "\ndisconnects allowed:");
+		for (x = 0; x < 7; x++)
+			seq_printf(m, "\t%ld", hd->disc_allowed_cnt[x]);
+		seq_puts(m, "\ndisconnects done:   ");
+>>>>>>> v4.9.227
 		for (x = 0; x < 7; x++)
 			seq_printf(m, "\t%ld", hd->disc_done_cnt[x]);
 		seq_printf(m,
@@ -2167,7 +2184,11 @@ wd33c93_show_info(struct seq_file *m, struct Scsi_Host *instance)
 	}
 #endif
 	if (hd->proc & PR_CONNECTED) {
+<<<<<<< HEAD
 		seq_printf(m, "\nconnected:     ");
+=======
+		seq_puts(m, "\nconnected:     ");
+>>>>>>> v4.9.227
 		if (hd->connected) {
 			cmd = (struct scsi_cmnd *) hd->connected;
 			seq_printf(m, " %d:%llu(%02x)",
@@ -2175,7 +2196,11 @@ wd33c93_show_info(struct seq_file *m, struct Scsi_Host *instance)
 		}
 	}
 	if (hd->proc & PR_INPUTQ) {
+<<<<<<< HEAD
 		seq_printf(m, "\ninput_Q:       ");
+=======
+		seq_puts(m, "\ninput_Q:       ");
+>>>>>>> v4.9.227
 		cmd = (struct scsi_cmnd *) hd->input_Q;
 		while (cmd) {
 			seq_printf(m, " %d:%llu(%02x)",
@@ -2184,7 +2209,11 @@ wd33c93_show_info(struct seq_file *m, struct Scsi_Host *instance)
 		}
 	}
 	if (hd->proc & PR_DISCQ) {
+<<<<<<< HEAD
 		seq_printf(m, "\ndisconnected_Q:");
+=======
+		seq_puts(m, "\ndisconnected_Q:");
+>>>>>>> v4.9.227
 		cmd = (struct scsi_cmnd *) hd->disconnected_Q;
 		while (cmd) {
 			seq_printf(m, " %d:%llu(%02x)",
@@ -2192,7 +2221,11 @@ wd33c93_show_info(struct seq_file *m, struct Scsi_Host *instance)
 			cmd = (struct scsi_cmnd *) cmd->host_scribble;
 		}
 	}
+<<<<<<< HEAD
 	seq_printf(m, "\n");
+=======
+	seq_putc(m, '\n');
+>>>>>>> v4.9.227
 	spin_unlock_irq(&hd->lock);
 #endif				/* PROC_INTERFACE */
 	return 0;

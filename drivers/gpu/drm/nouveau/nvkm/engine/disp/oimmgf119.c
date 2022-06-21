@@ -33,5 +33,9 @@ gf119_disp_oimm_oclass = {
 	.base.maxver = 0,
 	.ctor = nv50_disp_oimm_new,
 	.func = &gf119_disp_pioc_func,
+<<<<<<< HEAD
 	.chid = 9,
+=======
+	.chid = { 9, 9 },
+>>>>>>> v4.9.227
 };

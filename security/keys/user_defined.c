@@ -74,7 +74,11 @@ int user_preparse(struct key_preparsed_payload *prep)
 
 	/* attach the data */
 	prep->quotalen = datalen;
+<<<<<<< HEAD
 	prep->payload[0] = upayload;
+=======
+	prep->payload.data[0] = upayload;
+>>>>>>> v4.9.227
 	upayload->datalen = datalen;
 	memcpy(upayload->data, prep->data, datalen);
 	return 0;
@@ -86,7 +90,11 @@ EXPORT_SYMBOL_GPL(user_preparse);
  */
 void user_free_preparse(struct key_preparsed_payload *prep)
 {
+<<<<<<< HEAD
 	kfree(prep->payload[0]);
+=======
+	kfree(prep->payload.data[0]);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL_GPL(user_free_preparse);
 
@@ -96,6 +104,7 @@ EXPORT_SYMBOL_GPL(user_free_preparse);
  */
 int user_update(struct key *key, struct key_preparsed_payload *prep)
 {
+<<<<<<< HEAD
 	struct user_key_payload *upayload, *zap;
 	size_t datalen = prep->datalen;
 	int ret;
@@ -135,6 +144,27 @@ error:
 	return ret;
 }
 
+=======
+	struct user_key_payload *zap = NULL;
+	int ret;
+
+	/* check the quota and attach the new data */
+	ret = key_payload_reserve(key, prep->datalen);
+	if (ret < 0)
+		return ret;
+
+	/* attach the new data, displacing the old */
+	key->expiry = prep->expiry;
+	if (key_is_positive(key))
+		zap = rcu_dereference_key(key);
+	rcu_assign_keypointer(key, prep->payload.data[0]);
+	prep->payload.data[0] = NULL;
+
+	if (zap)
+		kfree_rcu(zap, rcu);
+	return ret;
+}
+>>>>>>> v4.9.227
 EXPORT_SYMBOL_GPL(user_update);
 
 /*
@@ -143,7 +173,11 @@ EXPORT_SYMBOL_GPL(user_update);
  */
 void user_revoke(struct key *key)
 {
+<<<<<<< HEAD
 	struct user_key_payload *upayload = key->payload.data;
+=======
+	struct user_key_payload *upayload = key->payload.data[0];
+>>>>>>> v4.9.227
 
 	/* clear the quota */
 	key_payload_reserve(key, 0);
@@ -161,6 +195,7 @@ EXPORT_SYMBOL(user_revoke);
  */
 void user_destroy(struct key *key)
 {
+<<<<<<< HEAD
 	struct user_key_payload *upayload = key->payload.data;
 
 #ifdef CONFIG_CRYPTO_FIPS
@@ -169,6 +204,10 @@ void user_destroy(struct key *key)
 		memset(upayload->data, 0, upayload->datalen);
 	}
 #endif
+=======
+	struct user_key_payload *upayload = key->payload.data[0];
+
+>>>>>>> v4.9.227
 	kfree(upayload);
 }
 
@@ -180,7 +219,11 @@ EXPORT_SYMBOL_GPL(user_destroy);
 void user_describe(const struct key *key, struct seq_file *m)
 {
 	seq_puts(m, key->description);
+<<<<<<< HEAD
 	if (key_is_instantiated(key))
+=======
+	if (key_is_positive(key))
+>>>>>>> v4.9.227
 		seq_printf(m, ": %u", key->datalen);
 }
 
@@ -192,10 +235,17 @@ EXPORT_SYMBOL_GPL(user_describe);
  */
 long user_read(const struct key *key, char __user *buffer, size_t buflen)
 {
+<<<<<<< HEAD
 	struct user_key_payload *upayload;
 	long ret;
 
 	upayload = rcu_dereference_key(key);
+=======
+	const struct user_key_payload *upayload;
+	long ret;
+
+	upayload = user_key_payload(key);
+>>>>>>> v4.9.227
 	ret = upayload->datalen;
 
 	/* we can return the data as is */

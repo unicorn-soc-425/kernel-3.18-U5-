@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
 * @section LICENSE
  * (C) Copyright 2011~2015 Bosch Sensortec GmbH All Rights Reserved
@@ -11837,3 +11838,15 @@ struct bmi160_t *bmi160_get_ptr(void);
 
 #endif
 
+=======
+#ifndef BMI160_H_
+#define BMI160_H_
+
+extern const struct regmap_config bmi160_regmap_config;
+
+int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+		      const char *name, bool use_spi);
+void bmi160_core_remove(struct device *dev);
+
+#endif  /* BMI160_H_ */
+>>>>>>> v4.9.227

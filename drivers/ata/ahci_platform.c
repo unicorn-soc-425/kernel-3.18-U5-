@@ -20,8 +20,17 @@
 #include <linux/platform_device.h>
 #include <linux/libata.h>
 #include <linux/ahci_platform.h>
+<<<<<<< HEAD
 #include "ahci.h"
 
+=======
+#include <linux/acpi.h>
+#include <linux/pci_ids.h>
+#include "ahci.h"
+
+#define DRV_NAME "ahci"
+
+>>>>>>> v4.9.227
 static const struct ata_port_info ahci_port_info = {
 	.flags		= AHCI_FLAG_COMMON,
 	.pio_mask	= ATA_PIO4,
@@ -29,6 +38,13 @@ static const struct ata_port_info ahci_port_info = {
 	.port_ops	= &ahci_platform_ops,
 };
 
+<<<<<<< HEAD
+=======
+static struct scsi_host_template ahci_platform_sht = {
+	AHCI_SHT(DRV_NAME),
+};
+
+>>>>>>> v4.9.227
 static int ahci_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -49,7 +65,12 @@ static int ahci_probe(struct platform_device *pdev)
 	if (of_device_is_compatible(dev->of_node, "hisilicon,hisi-ahci"))
 		hpriv->flags |= AHCI_HFLAG_NO_FBS | AHCI_HFLAG_NO_NCQ;
 
+<<<<<<< HEAD
 	rc = ahci_platform_init_host(pdev, hpriv, &ahci_port_info);
+=======
+	rc = ahci_platform_init_host(pdev, hpriv, &ahci_port_info,
+				     &ahci_platform_sht);
+>>>>>>> v4.9.227
 	if (rc)
 		goto disable_resources;
 
@@ -70,17 +91,36 @@ static const struct of_device_id ahci_of_match[] = {
 	{ .compatible = "ibm,476gtr-ahci", },
 	{ .compatible = "snps,dwc-ahci", },
 	{ .compatible = "hisilicon,hisi-ahci", },
+<<<<<<< HEAD
+=======
+	{ .compatible = "cavium,octeon-7130-ahci", },
+>>>>>>> v4.9.227
 	{},
 };
 MODULE_DEVICE_TABLE(of, ahci_of_match);
 
+<<<<<<< HEAD
+=======
+static const struct acpi_device_id ahci_acpi_match[] = {
+	{ ACPI_DEVICE_CLASS(PCI_CLASS_STORAGE_SATA_AHCI, 0xffffff) },
+	{},
+};
+MODULE_DEVICE_TABLE(acpi, ahci_acpi_match);
+
+>>>>>>> v4.9.227
 static struct platform_driver ahci_driver = {
 	.probe = ahci_probe,
 	.remove = ata_platform_remove_one,
 	.driver = {
+<<<<<<< HEAD
 		.name = "ahci",
 		.owner = THIS_MODULE,
 		.of_match_table = ahci_of_match,
+=======
+		.name = DRV_NAME,
+		.of_match_table = ahci_of_match,
+		.acpi_match_table = ahci_acpi_match,
+>>>>>>> v4.9.227
 		.pm = &ahci_pm_ops,
 	},
 };

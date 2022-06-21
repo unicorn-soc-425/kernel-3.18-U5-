@@ -471,14 +471,22 @@ static struct snd_kcontrol_new vx_control_output_level = {
  */
 static int vx_audio_src_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts_mic[3] = {
 		"Digital", "Line", "Mic"
 	};
 	static char *texts_vx2[2] = {
+=======
+	static const char * const texts_mic[3] = {
+		"Digital", "Line", "Mic"
+	};
+	static const char * const texts_vx2[2] = {
+>>>>>>> v4.9.227
 		"Digital", "Analog"
 	};
 	struct vx_core *chip = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	if (chip->type >= VX_TYPE_VXPOCKET) {
@@ -495,6 +503,12 @@ static int vx_audio_src_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_
 		       texts_vx2[uinfo->value.enumerated.item]);
 	}
 	return 0;
+=======
+	if (chip->type >= VX_TYPE_VXPOCKET)
+		return snd_ctl_enum_info(uinfo, 1, 3, texts_mic);
+	else
+		return snd_ctl_enum_info(uinfo, 1, 2, texts_vx2);
+>>>>>>> v4.9.227
 }
 
 static int vx_audio_src_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -539,6 +553,7 @@ static struct snd_kcontrol_new vx_control_audio_src = {
  */
 static int vx_clock_mode_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[3] = {
 		"Auto", "Internal", "External"
 	};
@@ -551,6 +566,13 @@ static int vx_clock_mode_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {
+		"Auto", "Internal", "External"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> v4.9.227
 }
 
 static int vx_clock_mode_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)

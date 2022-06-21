@@ -86,11 +86,35 @@
 #define SET_PSTATE_UAO(x) __inst_arm(0xd5000000 | REG_PSTATE_UAO_IMM |\
 				     (!!x)<<8 | 0x1f)
 
+<<<<<<< HEAD
 /* SCTLR_EL1 */
 #define SCTLR_EL1_CP15BEN	(0x1 << 5)
 #define SCTLR_EL1_SED		(0x1 << 8)
 #define SCTLR_EL1_SPAN		(0x1 << 23)
 
+=======
+/* Common SCTLR_ELx flags. */
+#define SCTLR_ELx_EE    (1 << 25)
+#define SCTLR_ELx_I	(1 << 12)
+#define SCTLR_ELx_SA	(1 << 3)
+#define SCTLR_ELx_C	(1 << 2)
+#define SCTLR_ELx_A	(1 << 1)
+#define SCTLR_ELx_M	1
+
+#define SCTLR_EL2_RES1	((1 << 4)  | (1 << 5)  | (1 << 11) | (1 << 16) | \
+			 (1 << 16) | (1 << 18) | (1 << 22) | (1 << 23) | \
+			 (1 << 28) | (1 << 29))
+
+#define SCTLR_ELx_FLAGS	(SCTLR_ELx_M | SCTLR_ELx_A | SCTLR_ELx_C | \
+			 SCTLR_ELx_SA | SCTLR_ELx_I)
+
+/* SCTLR_EL1 specific flags. */
+#define SCTLR_EL1_UCI		(1 << 26)
+#define SCTLR_EL1_SPAN		(1 << 23)
+#define SCTLR_EL1_UCT		(1 << 15)
+#define SCTLR_EL1_SED		(1 << 8)
+#define SCTLR_EL1_CP15BEN	(1 << 5)
+>>>>>>> v4.9.227
 
 /* id_aa64isar0 */
 #define ID_AA64ISAR0_RDM_SHIFT		28
@@ -101,7 +125,13 @@
 #define ID_AA64ISAR0_AES_SHIFT		4
 
 /* id_aa64pfr0 */
+<<<<<<< HEAD
 #define ID_AA64PFR0_CSV2_SHIFT		56
+=======
+#define ID_AA64PFR0_CSV3_SHIFT		60
+#define ID_AA64PFR0_CSV2_SHIFT		56
+#define ID_AA64PFR0_SVE_SHIFT		32
+>>>>>>> v4.9.227
 #define ID_AA64PFR0_GIC_SHIFT		24
 #define ID_AA64PFR0_ASIMD_SHIFT		20
 #define ID_AA64PFR0_FP_SHIFT		16
@@ -116,6 +146,10 @@
 #define ID_AA64PFR0_ASIMD_SUPPORTED	0x0
 #define ID_AA64PFR0_EL1_64BIT_ONLY	0x1
 #define ID_AA64PFR0_EL0_64BIT_ONLY	0x1
+<<<<<<< HEAD
+=======
+#define ID_AA64PFR0_EL0_32BIT_64BIT	0x2
+>>>>>>> v4.9.227
 
 /* id_aa64mmfr0 */
 #define ID_AA64MMFR0_TGRAN4_SHIFT	28
@@ -142,8 +176,20 @@
 #define ID_AA64MMFR1_VMIDBITS_SHIFT	4
 #define ID_AA64MMFR1_HADBS_SHIFT	0
 
+<<<<<<< HEAD
 /* id_aa64mmfr2 */
 #define ID_AA64MMFR2_UAO_SHIFT		4
+=======
+#define ID_AA64MMFR1_VMIDBITS_8		0
+#define ID_AA64MMFR1_VMIDBITS_16	2
+
+/* id_aa64mmfr2 */
+#define ID_AA64MMFR2_LVA_SHIFT		16
+#define ID_AA64MMFR2_IESB_SHIFT		12
+#define ID_AA64MMFR2_LSM_SHIFT		8
+#define ID_AA64MMFR2_UAO_SHIFT		4
+#define ID_AA64MMFR2_CNP_SHIFT		0
+>>>>>>> v4.9.227
 
 /* id_aa64dfr0 */
 #define ID_AA64DFR0_CTX_CMPS_SHIFT	28
@@ -179,6 +225,7 @@
 #define MVFR1_FPFTZ_SHIFT		0
 
 
+<<<<<<< HEAD
 #ifdef __ASSEMBLY__
 
 	.irp	num,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30
@@ -192,6 +239,43 @@
 
 	.macro	msr_s, sreg, rt
 	.inst	0xd5000000|(\sreg)|(__reg_num_\rt)
+=======
+#define ID_AA64MMFR0_TGRAN4_SHIFT	28
+#define ID_AA64MMFR0_TGRAN64_SHIFT	24
+#define ID_AA64MMFR0_TGRAN16_SHIFT	20
+
+#define ID_AA64MMFR0_TGRAN4_NI		0xf
+#define ID_AA64MMFR0_TGRAN4_SUPPORTED	0x0
+#define ID_AA64MMFR0_TGRAN64_NI		0xf
+#define ID_AA64MMFR0_TGRAN64_SUPPORTED	0x0
+#define ID_AA64MMFR0_TGRAN16_NI		0x0
+#define ID_AA64MMFR0_TGRAN16_SUPPORTED	0x1
+
+#if defined(CONFIG_ARM64_4K_PAGES)
+#define ID_AA64MMFR0_TGRAN_SHIFT	ID_AA64MMFR0_TGRAN4_SHIFT
+#define ID_AA64MMFR0_TGRAN_SUPPORTED	ID_AA64MMFR0_TGRAN4_SUPPORTED
+#elif defined(CONFIG_ARM64_16K_PAGES)
+#define ID_AA64MMFR0_TGRAN_SHIFT	ID_AA64MMFR0_TGRAN16_SHIFT
+#define ID_AA64MMFR0_TGRAN_SUPPORTED	ID_AA64MMFR0_TGRAN16_SUPPORTED
+#elif defined(CONFIG_ARM64_64K_PAGES)
+#define ID_AA64MMFR0_TGRAN_SHIFT	ID_AA64MMFR0_TGRAN64_SHIFT
+#define ID_AA64MMFR0_TGRAN_SUPPORTED	ID_AA64MMFR0_TGRAN64_SUPPORTED
+#endif
+
+#ifdef __ASSEMBLY__
+
+	.irp	num,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30
+	.equ	.L__reg_num_x\num, \num
+	.endr
+	.equ	.L__reg_num_xzr, 31
+
+	.macro	mrs_s, rt, sreg
+	.inst	0xd5200000|(\sreg)|(.L__reg_num_\rt)
+	.endm
+
+	.macro	msr_s, sreg, rt
+	.inst	0xd5000000|(\sreg)|(.L__reg_num_\rt)
+>>>>>>> v4.9.227
 	.endm
 
 #else
@@ -200,6 +284,7 @@
 
 asm(
 "	.irp	num,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30\n"
+<<<<<<< HEAD
 "	.equ	__reg_num_x\\num, \\num\n"
 "	.endr\n"
 "	.equ	__reg_num_xzr, 31\n"
@@ -223,6 +308,21 @@ static inline void config_sctlr_el1(u32 clear, u32 set)
 	asm volatile("msr sctlr_el1, %0" : : "r" (val));
 }
 
+=======
+"	.equ	.L__reg_num_x\\num, \\num\n"
+"	.endr\n"
+"	.equ	.L__reg_num_xzr, 31\n"
+"\n"
+"	.macro	mrs_s, rt, sreg\n"
+"	.inst	0xd5200000|(\\sreg)|(.L__reg_num_\\rt)\n"
+"	.endm\n"
+"\n"
+"	.macro	msr_s, sreg, rt\n"
+"	.inst	0xd5000000|(\\sreg)|(.L__reg_num_\\rt)\n"
+"	.endm\n"
+);
+
+>>>>>>> v4.9.227
 /*
  * Unlike read_cpuid, calls to read_sysreg are never expected to be
  * optimized away or replaced with synthetic values.
@@ -233,12 +333,50 @@ static inline void config_sctlr_el1(u32 clear, u32 set)
 	__val;							\
 })
 
+<<<<<<< HEAD
 #define write_sysreg(v, r) do {					\
 	u64 __val = (u64)v;					\
 	asm volatile("msr " __stringify(r) ", %0"		\
 		     : : "r" (__val));				\
 } while (0)
 
+=======
+/*
+ * The "Z" constraint normally means a zero immediate, but when combined with
+ * the "%x0" template means XZR.
+ */
+#define write_sysreg(v, r) do {					\
+	u64 __val = (u64)v;					\
+	asm volatile("msr " __stringify(r) ", %x0"		\
+		     : : "rZ" (__val));				\
+} while (0)
+
+/*
+ * For registers without architectural names, or simply unsupported by
+ * GAS.
+ */
+#define read_sysreg_s(r) ({						\
+	u64 __val;							\
+	asm volatile("mrs_s %0, " __stringify(r) : "=r" (__val));	\
+	__val;								\
+})
+
+#define write_sysreg_s(v, r) do {					\
+	u64 __val = (u64)v;						\
+	asm volatile("msr_s " __stringify(r) ", %x0" : : "rZ" (__val));	\
+} while (0)
+
+static inline void config_sctlr_el1(u32 clear, u32 set)
+{
+	u32 val;
+
+	val = read_sysreg(sctlr_el1);
+	val &= ~clear;
+	val |= set;
+	write_sysreg(val, sctlr_el1);
+}
+
+>>>>>>> v4.9.227
 #endif
 
 #endif	/* __ASM_SYSREG_H */

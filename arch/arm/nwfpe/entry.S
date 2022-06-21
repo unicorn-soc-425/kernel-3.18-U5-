@@ -114,7 +114,11 @@ next:
 	@ to fault.  Emit the appropriate exception gunk to fix things up.
 	@ ??? For some reason, faults can happen at .Lx2 even with a
 	@ plain LDR instruction.  Weird, but it seems harmless.
+<<<<<<< HEAD
 	.pushsection .fixup,"ax"
+=======
+	.pushsection .text.fixup,"ax"
+>>>>>>> v4.9.227
 	.align	2
 .Lfix:	ret	r9			@ let the user eat segfaults
 	.popsection

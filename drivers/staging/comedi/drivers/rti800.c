@@ -19,8 +19,12 @@
 /*
  * Driver: rti800
  * Description: Analog Devices RTI-800/815
+<<<<<<< HEAD
  * Devices: (Analog Devices) RTI-800 [rti800]
  *	    (Analog Devices) RTI-815 [rti815]
+=======
+ * Devices: [Analog Devices] RTI-800 (rti800), RTI-815 (rti815)
+>>>>>>> v4.9.227
  * Author: David A. Schleef <ds@schleef.org>
  * Status: unknown
  * Updated: Fri, 05 Sep 2008 14:50:44 +0100
@@ -58,6 +62,7 @@
  * Register map
  */
 #define RTI800_CSR		0x00
+<<<<<<< HEAD
 #define RTI800_CSR_BUSY		(1 << 7)
 #define RTI800_CSR_DONE		(1 << 6)
 #define RTI800_CSR_OVERRUN	(1 << 5)
@@ -66,6 +71,16 @@
 #define RTI800_CSR_INTR_TC	(1 << 2)
 #define RTI800_CSR_INTR_EC	(1 << 1)
 #define RTI800_CSR_INTR_OVRN	(1 << 0)
+=======
+#define RTI800_CSR_BUSY		BIT(7)
+#define RTI800_CSR_DONE		BIT(6)
+#define RTI800_CSR_OVERRUN	BIT(5)
+#define RTI800_CSR_TCR		BIT(4)
+#define RTI800_CSR_DMA_ENAB	BIT(3)
+#define RTI800_CSR_INTR_TC	BIT(2)
+#define RTI800_CSR_INTR_EC	BIT(1)
+#define RTI800_CSR_INTR_OVRN	BIT(0)
+>>>>>>> v4.9.227
 #define RTI800_MUXGAIN		0x01
 #define RTI800_CONVERT		0x02
 #define RTI800_ADCLO		0x03
@@ -190,17 +205,32 @@ static int rti800_ai_insn_read(struct comedi_device *dev,
 	}
 
 	for (i = 0; i < insn->n; i++) {
+<<<<<<< HEAD
+=======
+		unsigned int val;
+
+>>>>>>> v4.9.227
 		outb(0, dev->iobase + RTI800_CONVERT);
 
 		ret = comedi_timeout(dev, s, insn, rti800_ai_eoc, 0);
 		if (ret)
 			return ret;
 
+<<<<<<< HEAD
 		data[i] = inb(dev->iobase + RTI800_ADCLO);
 		data[i] |= (inb(dev->iobase + RTI800_ADCHI) & 0xf) << 8;
 
 		if (devpriv->adc_2comp)
 			data[i] ^= 0x800;
+=======
+		val = inb(dev->iobase + RTI800_ADCLO);
+		val |= (inb(dev->iobase + RTI800_ADCHI) & 0xf) << 8;
+
+		if (devpriv->adc_2comp)
+			val = comedi_offset_munge(s, val);
+
+		data[i] = val;
+>>>>>>> v4.9.227
 	}
 
 	return insn->n;
@@ -223,7 +253,11 @@ static int rti800_ao_insn_write(struct comedi_device *dev,
 		s->readback[chan] = val;
 
 		if (devpriv->dac_2comp[chan])
+<<<<<<< HEAD
 			val ^= 0x800;
+=======
+			val = comedi_offset_munge(s, val);
+>>>>>>> v4.9.227
 
 		outb(val & 0xff, dev->iobase + reg_lo);
 		outb((val >> 8) & 0xff, dev->iobase + reg_hi);
@@ -313,7 +347,10 @@ static int rti800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 				? rti800_ao_ranges[it->options[7]]
 				: &range_unknown;
 		s->insn_write	= rti800_ao_insn_write;
+<<<<<<< HEAD
 		s->insn_read	= comedi_readback_insn_read;
+=======
+>>>>>>> v4.9.227
 
 		ret = comedi_alloc_subdev_readback(s);
 		if (ret)

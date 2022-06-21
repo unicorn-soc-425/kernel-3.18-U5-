@@ -98,6 +98,7 @@ EXPORT_SYMBOL(scsi_sd_probe_domain);
 ASYNC_DOMAIN_EXCLUSIVE(scsi_sd_pm_domain);
 EXPORT_SYMBOL(scsi_sd_pm_domain);
 
+<<<<<<< HEAD
 /* NB: These are exposed through /proc/scsi/scsi and form part of the ABI.
  * You may not alter any existing entry (although adding new ones is
  * encouraged once assigned by ANSI/INCITS T10
@@ -144,6 +145,8 @@ const char * scsi_device_type(unsigned type)
 
 EXPORT_SYMBOL(scsi_device_type);
 
+=======
+>>>>>>> v4.9.227
 struct scsi_host_cmd_pool {
 	struct kmem_cache	*cmd_slab;
 	struct kmem_cache	*sense_slab;
@@ -527,16 +530,25 @@ void scsi_log_send(struct scsi_cmnd *cmd)
 	 *
 	 * 1: nothing (match completion)
 	 *
+<<<<<<< HEAD
 	 * 2: log opcode + command of all commands
 	 *
 	 * 3: same as 2 plus dump cmd address
 	 *
 	 * 4: same as 3 plus dump extra junk
+=======
+	 * 2: log opcode + command of all commands + cmd address
+	 *
+	 * 3: same as 2
+	 *
+	 * 4: same as 3
+>>>>>>> v4.9.227
 	 */
 	if (unlikely(scsi_logging_level)) {
 		level = SCSI_LOG_LEVEL(SCSI_LOG_MLQUEUE_SHIFT,
 				       SCSI_LOG_MLQUEUE_BITS);
 		if (level > 1) {
+<<<<<<< HEAD
 			scmd_printk(KERN_INFO, cmd, "Send: ");
 			if (level > 2)
 				printk("0x%p ", cmd);
@@ -549,6 +561,11 @@ void scsi_log_send(struct scsi_cmnd *cmd)
 					cmd->device->host->hostt->queuecommand);
 
 			}
+=======
+			scmd_printk(KERN_INFO, cmd,
+				    "Send: scmd 0x%p\n", cmd);
+			scsi_print_command(cmd);
+>>>>>>> v4.9.227
 		}
 	}
 }
@@ -565,7 +582,11 @@ void scsi_log_completion(struct scsi_cmnd *cmd, int disposition)
 	 *
 	 * 2: same as 1 but for all command completions.
 	 *
+<<<<<<< HEAD
 	 * 3: same as 2 plus dump cmd address
+=======
+	 * 3: same as 2
+>>>>>>> v4.9.227
 	 *
 	 * 4: same as 3 plus dump extra junk
 	 */
@@ -574,6 +595,7 @@ void scsi_log_completion(struct scsi_cmnd *cmd, int disposition)
 				       SCSI_LOG_MLCOMPLETE_BITS);
 		if (((level > 0) && (cmd->result || disposition != SUCCESS)) ||
 		    (level > 1)) {
+<<<<<<< HEAD
 			scmd_printk(KERN_INFO, cmd, "Done: ");
 			if (level > 2)
 				printk("0x%p ", cmd);
@@ -607,6 +629,12 @@ void scsi_log_completion(struct scsi_cmnd *cmd, int disposition)
 			scsi_print_command(cmd);
 			if (status_byte(cmd->result) & CHECK_CONDITION)
 				scsi_print_sense("", cmd);
+=======
+			scsi_print_result(cmd, "Done", disposition);
+			scsi_print_command(cmd);
+			if (status_byte(cmd->result) & CHECK_CONDITION)
+				scsi_print_sense(cmd);
+>>>>>>> v4.9.227
 			if (level > 3)
 				scmd_printk(KERN_INFO, cmd,
 					    "scsi host busy %d failed %d\n",
@@ -634,6 +662,7 @@ void scsi_cmd_get_serial(struct Scsi_Host *host, struct scsi_cmnd *cmd)
 EXPORT_SYMBOL(scsi_cmd_get_serial);
 
 /**
+<<<<<<< HEAD
  * scsi_dispatch_command - Dispatch a command to the low-level driver.
  * @cmd: command block we are dispatching.
  *
@@ -715,6 +744,8 @@ int scsi_dispatch_cmd(struct scsi_cmnd *cmd)
 }
 
 /**
+=======
+>>>>>>> v4.9.227
  * scsi_finish_command - cleanup and pass command back to upper layer
  * @cmd: the command
  *
@@ -773,6 +804,7 @@ void scsi_finish_command(struct scsi_cmnd *cmd)
 }
 
 /**
+<<<<<<< HEAD
  * scsi_adjust_queue_depth - Let low level drivers change a device's queue depth
  * @sdev: SCSI Device in question
  * @tagged: Do we use tagged queueing (non-0) or do we treat
@@ -842,6 +874,24 @@ void scsi_adjust_queue_depth(struct scsi_device *sdev, int tagged, int tags)
 	spin_unlock_irqrestore(sdev->request_queue->queue_lock, flags);
 }
 EXPORT_SYMBOL(scsi_adjust_queue_depth);
+=======
+ * scsi_change_queue_depth - change a device's queue depth
+ * @sdev: SCSI Device in question
+ * @depth: number of commands allowed to be queued to the driver
+ *
+ * Sets the device queue depth and returns the new value.
+ */
+int scsi_change_queue_depth(struct scsi_device *sdev, int depth)
+{
+	if (depth > 0) {
+		sdev->queue_depth = depth;
+		wmb();
+	}
+
+	return sdev->queue_depth;
+}
+EXPORT_SYMBOL(scsi_change_queue_depth);
+>>>>>>> v4.9.227
 
 /**
  * scsi_track_queue_full - track QUEUE_FULL events to adjust queue depth
@@ -883,6 +933,7 @@ int scsi_track_queue_full(struct scsi_device *sdev, int depth)
 
 	if (sdev->last_queue_full_count <= 10)
 		return 0;
+<<<<<<< HEAD
 	if (sdev->last_queue_full_depth < 8) {
 		/* Drop back to untagged */
 		scsi_adjust_queue_depth(sdev, 0, sdev->host->cmd_per_lun);
@@ -894,6 +945,10 @@ int scsi_track_queue_full(struct scsi_device *sdev, int depth)
 	else
 		scsi_adjust_queue_depth(sdev, MSG_SIMPLE_TAG, depth);
 	return depth;
+=======
+
+	return scsi_change_queue_depth(sdev, depth);
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(scsi_track_queue_full);
 
@@ -1009,10 +1064,18 @@ void scsi_attach_vpd(struct scsi_device *sdev)
 	int vpd_len = SCSI_VPD_PG_LEN;
 	int pg80_supported = 0;
 	int pg83_supported = 0;
+<<<<<<< HEAD
 	unsigned char *vpd_buf;
 
 	if (sdev->skip_vpd_pages)
 		return;
+=======
+	unsigned char __rcu *vpd_buf, *orig_vpd_buf = NULL;
+
+	if (!scsi_device_supports_vpd(sdev))
+		return;
+
+>>>>>>> v4.9.227
 retry_pg0:
 	vpd_buf = kmalloc(vpd_len, GFP_KERNEL);
 	if (!vpd_buf)
@@ -1055,8 +1118,21 @@ retry_pg80:
 			kfree(vpd_buf);
 			goto retry_pg80;
 		}
+<<<<<<< HEAD
 		sdev->vpd_pg80_len = result;
 		sdev->vpd_pg80 = vpd_buf;
+=======
+		mutex_lock(&sdev->inquiry_mutex);
+		orig_vpd_buf = sdev->vpd_pg80;
+		sdev->vpd_pg80_len = result;
+		rcu_assign_pointer(sdev->vpd_pg80, vpd_buf);
+		mutex_unlock(&sdev->inquiry_mutex);
+		synchronize_rcu();
+		if (orig_vpd_buf) {
+			kfree(orig_vpd_buf);
+			orig_vpd_buf = NULL;
+		}
+>>>>>>> v4.9.227
 		vpd_len = SCSI_VPD_PG_LEN;
 	}
 
@@ -1076,8 +1152,19 @@ retry_pg83:
 			kfree(vpd_buf);
 			goto retry_pg83;
 		}
+<<<<<<< HEAD
 		sdev->vpd_pg83_len = result;
 		sdev->vpd_pg83 = vpd_buf;
+=======
+		mutex_lock(&sdev->inquiry_mutex);
+		orig_vpd_buf = sdev->vpd_pg83;
+		sdev->vpd_pg83_len = result;
+		rcu_assign_pointer(sdev->vpd_pg83, vpd_buf);
+		mutex_unlock(&sdev->inquiry_mutex);
+		synchronize_rcu();
+		if (orig_vpd_buf)
+			kfree(orig_vpd_buf);
+>>>>>>> v4.9.227
 	}
 }
 
@@ -1132,6 +1219,7 @@ EXPORT_SYMBOL(scsi_report_opcode);
  * Description: Gets a reference to the scsi_device and increments the use count
  * of the underlying LLDD module.  You must hold host_lock of the
  * parent Scsi_Host or already have a reference when calling this.
+<<<<<<< HEAD
  */
 int scsi_device_get(struct scsi_device *sdev)
 {
@@ -1144,6 +1232,26 @@ int scsi_device_get(struct scsi_device *sdev)
 	try_module_get(sdev->host->hostt->module);
 
 	return 0;
+=======
+ *
+ * This will fail if a device is deleted or cancelled, or when the LLD module
+ * is in the process of being unloaded.
+ */
+int scsi_device_get(struct scsi_device *sdev)
+{
+	if (sdev->sdev_state == SDEV_DEL || sdev->sdev_state == SDEV_CANCEL)
+		goto fail;
+	if (!get_device(&sdev->sdev_gendev))
+		goto fail;
+	if (!try_module_get(sdev->host->hostt->module))
+		goto fail_put_device;
+	return 0;
+
+fail_put_device:
+	put_device(&sdev->sdev_gendev);
+fail:
+	return -ENXIO;
+>>>>>>> v4.9.227
 }
 EXPORT_SYMBOL(scsi_device_get);
 
@@ -1157,6 +1265,7 @@ EXPORT_SYMBOL(scsi_device_get);
  */
 void scsi_device_put(struct scsi_device *sdev)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_MODULE_UNLOAD
 	struct module *module = sdev->host->hostt->module;
 
@@ -1165,6 +1274,9 @@ void scsi_device_put(struct scsi_device *sdev)
 	if (module && module_refcount(module) != 0)
 		module_put(module);
 #endif
+=======
+	module_put(sdev->host->hostt->module);
+>>>>>>> v4.9.227
 	put_device(&sdev->sdev_gendev);
 }
 EXPORT_SYMBOL(scsi_device_put);

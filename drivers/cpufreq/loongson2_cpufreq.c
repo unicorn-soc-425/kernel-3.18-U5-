@@ -3,13 +3,23 @@
  *
  * The 2E revision of loongson processor not support this feature.
  *
+<<<<<<< HEAD
  * Copyright (C) 2006 - 2008 Lemote Inc. & Insititute of Computing Technology
+=======
+ * Copyright (C) 2006 - 2008 Lemote Inc. & Institute of Computing Technology
+>>>>>>> v4.9.227
  * Author: Yanhua, yanh@lemote.com
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> v4.9.227
 #include <linux/cpufreq.h>
 #include <linux/module.h>
 #include <linux/err.h>
@@ -20,7 +30,11 @@
 #include <asm/clock.h>
 #include <asm/idle.h>
 
+<<<<<<< HEAD
 #include <asm/mach-loongson/loongson.h>
+=======
+#include <asm/mach-loongson64/loongson.h>
+>>>>>>> v4.9.227
 
 static uint nowait;
 
@@ -76,7 +90,11 @@ static int loongson2_cpufreq_cpu_init(struct cpufreq_policy *policy)
 
 	cpuclk = clk_get(NULL, "cpu_clk");
 	if (IS_ERR(cpuclk)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "cpufreq: couldn't get CPU clk\n");
+=======
+		pr_err("couldn't get CPU clk\n");
+>>>>>>> v4.9.227
 		return PTR_ERR(cpuclk);
 	}
 
@@ -163,7 +181,11 @@ static int __init cpufreq_init(void)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	pr_info("cpufreq: Loongson-2F CPU frequency driver.\n");
+=======
+	pr_info("Loongson-2F CPU frequency driver\n");
+>>>>>>> v4.9.227
 
 	cpufreq_register_notifier(&loongson2_cpufreq_notifier_block,
 				  CPUFREQ_TRANSITION_NOTIFIER);

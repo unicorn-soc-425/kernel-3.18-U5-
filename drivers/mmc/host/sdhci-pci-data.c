@@ -3,3 +3,9 @@
 
 struct sdhci_pci_data *(*sdhci_pci_get_data)(struct pci_dev *pdev, int slotno);
 EXPORT_SYMBOL_GPL(sdhci_pci_get_data);
+<<<<<<< HEAD
+=======
+
+int sdhci_pci_spt_drive_strength;
+EXPORT_SYMBOL_GPL(sdhci_pci_spt_drive_strength);
+>>>>>>> v4.9.227

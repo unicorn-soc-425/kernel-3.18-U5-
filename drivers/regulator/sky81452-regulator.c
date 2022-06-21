@@ -5,9 +5,14 @@
  * Author : Gyungoh Yoo <jack.yoo@skyworksinc.com>
  *
  * This program is free software; you can redistribute it and/or modify it
+<<<<<<< HEAD
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2, or (at your option) any
  * later version.
+=======
+ * under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+>>>>>>> v4.9.227
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,6 +57,11 @@ static const struct regulator_linear_range sky81452_reg_ranges[] = {
 
 static const struct regulator_desc sky81452_reg = {
 	.name = "LOUT",
+<<<<<<< HEAD
+=======
+	.of_match = of_match_ptr("lout"),
+	.regulators_node = of_match_ptr("regulator"),
+>>>>>>> v4.9.227
 	.ops = &sky81452_reg_ops,
 	.type = REGULATOR_VOLTAGE,
 	.owner = THIS_MODULE,
@@ -64,6 +74,7 @@ static const struct regulator_desc sky81452_reg = {
 	.enable_mask = SKY81452_LEN,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 static struct regulator_init_data *sky81452_reg_parse_dt(struct device *dev)
 {
@@ -88,6 +99,8 @@ static struct regulator_init_data *sky81452_reg_parse_dt(struct device *dev)
 }
 #endif
 
+=======
+>>>>>>> v4.9.227
 static int sky81452_reg_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -95,6 +108,7 @@ static int sky81452_reg_probe(struct platform_device *pdev)
 	struct regulator_config config = { };
 	struct regulator_dev *rdev;
 
+<<<<<<< HEAD
 	if (!init_data) {
 		init_data = sky81452_reg_parse_dt(dev);
 		if (IS_ERR(init_data))
@@ -102,13 +116,23 @@ static int sky81452_reg_probe(struct platform_device *pdev)
 	}
 
 	config.dev = dev;
+=======
+	config.dev = dev->parent;
+>>>>>>> v4.9.227
 	config.init_data = init_data;
 	config.of_node = dev->of_node;
 	config.regmap = dev_get_drvdata(dev->parent);
 
 	rdev = devm_regulator_register(dev, &sky81452_reg, &config);
+<<<<<<< HEAD
 	if (IS_ERR(rdev))
 		return PTR_ERR(rdev);
+=======
+	if (IS_ERR(rdev)) {
+		dev_err(dev, "failed to register. err=%ld\n", PTR_ERR(rdev));
+		return PTR_ERR(rdev);
+	}
+>>>>>>> v4.9.227
 
 	platform_set_drvdata(pdev, rdev);
 
@@ -126,5 +150,9 @@ module_platform_driver(sky81452_reg_driver);
 
 MODULE_DESCRIPTION("Skyworks SKY81452 Regulator driver");
 MODULE_AUTHOR("Gyungoh Yoo <jack.yoo@skyworksinc.com>");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
 MODULE_VERSION("1.0");
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> v4.9.227

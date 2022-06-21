@@ -21,9 +21,13 @@
 #include <linux/mailbox_client.h>
 #include <linux/mailbox_controller.h>
 
+<<<<<<< HEAD
 #define TXDONE_BY_IRQ	BIT(0) /* controller has remote RTR irq */
 #define TXDONE_BY_POLL	BIT(1) /* controller can read status of last TX */
 #define TXDONE_BY_ACK	BIT(2) /* S/W ACK recevied by Client ticks the TX */
+=======
+#include "mailbox.h"
+>>>>>>> v4.9.227
 
 static LIST_HEAD(mbox_cons);
 static DEFINE_MUTEX(con_mutex);
@@ -60,7 +64,11 @@ static void msg_submit(struct mbox_chan *chan)
 	unsigned count, idx;
 	unsigned long flags;
 	void *data;
+<<<<<<< HEAD
 	int err;
+=======
+	int err = -EBUSY;
+>>>>>>> v4.9.227
 
 	spin_lock_irqsave(&chan->lock, flags);
 
@@ -76,6 +84,11 @@ static void msg_submit(struct mbox_chan *chan)
 
 	data = chan->msg_data[idx];
 
+<<<<<<< HEAD
+=======
+	if (chan->cl->tx_prepare)
+		chan->cl->tx_prepare(chan->cl, data);
+>>>>>>> v4.9.227
 	/* Try to submit a message to the MBOX controller */
 	err = chan->mbox->ops->send_data(chan, data);
 	if (!err) {
@@ -84,6 +97,14 @@ static void msg_submit(struct mbox_chan *chan)
 	}
 exit:
 	spin_unlock_irqrestore(&chan->lock, flags);
+<<<<<<< HEAD
+=======
+
+	if (!err && (chan->txdone_method & TXDONE_BY_POLL))
+		/* kick start the timer immediately to avoid delays */
+		hrtimer_start(&chan->mbox->poll_hrt, ktime_set(0, 0),
+			      HRTIMER_MODE_REL);
+>>>>>>> v4.9.227
 }
 
 static void tx_tick(struct mbox_chan *chan, int r)
@@ -110,9 +131,16 @@ static void tx_tick(struct mbox_chan *chan, int r)
 		complete(&chan->tx_complete);
 }
 
+<<<<<<< HEAD
 static void poll_txdone(unsigned long data)
 {
 	struct mbox_controller *mbox = (struct mbox_controller *)data;
+=======
+static enum hrtimer_restart txdone_hrtimer(struct hrtimer *hrtimer)
+{
+	struct mbox_controller *mbox =
+		container_of(hrtimer, struct mbox_controller, poll_hrt);
+>>>>>>> v4.9.227
 	bool txdone, resched = false;
 	int i;
 
@@ -120,6 +148,7 @@ static void poll_txdone(unsigned long data)
 		struct mbox_chan *chan = &mbox->chans[i];
 
 		if (chan->active_req && chan->cl) {
+<<<<<<< HEAD
 			resched = true;
 			txdone = chan->mbox->ops->last_tx_done(chan);
 			if (txdone)
@@ -130,6 +159,21 @@ static void poll_txdone(unsigned long data)
 	if (resched)
 		mod_timer(&mbox->poll, jiffies +
 				msecs_to_jiffies(mbox->txpoll_period));
+=======
+			txdone = chan->mbox->ops->last_tx_done(chan);
+			if (txdone)
+				tx_tick(chan, 0);
+			else
+				resched = true;
+		}
+	}
+
+	if (resched) {
+		hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
+		return HRTIMER_RESTART;
+	}
+	return HRTIMER_NORESTART;
+>>>>>>> v4.9.227
 }
 
 /**
@@ -255,9 +299,12 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
 
 	msg_submit(chan);
 
+<<<<<<< HEAD
 	if (chan->txdone_method	== TXDONE_BY_POLL)
 		poll_txdone((unsigned long)chan->mbox);
 
+=======
+>>>>>>> v4.9.227
 	if (chan->cl->tx_block) {
 		unsigned long wait;
 		int ret;
@@ -318,7 +365,11 @@ struct mbox_chan *mbox_request_channel(struct mbox_client *cl, int index)
 		return ERR_PTR(-ENODEV);
 	}
 
+<<<<<<< HEAD
 	chan = NULL;
+=======
+	chan = ERR_PTR(-EPROBE_DEFER);
+>>>>>>> v4.9.227
 	list_for_each_entry(mbox, &mbox_cons, node)
 		if (mbox->dev->of_node == spec.np) {
 			chan = mbox->of_xlate(mbox, &spec);
@@ -327,7 +378,16 @@ struct mbox_chan *mbox_request_channel(struct mbox_client *cl, int index)
 
 	of_node_put(spec.np);
 
+<<<<<<< HEAD
 	if (!chan || chan->cl || !try_module_get(mbox->dev->driver->owner)) {
+=======
+	if (IS_ERR(chan)) {
+		mutex_unlock(&con_mutex);
+		return chan;
+	}
+
+	if (chan->cl || !try_module_get(mbox->dev->driver->owner)) {
+>>>>>>> v4.9.227
 		dev_dbg(dev, "%s: mailbox not free\n", __func__);
 		mutex_unlock(&con_mutex);
 		return ERR_PTR(-EBUSY);
@@ -357,6 +417,40 @@ struct mbox_chan *mbox_request_channel(struct mbox_client *cl, int index)
 }
 EXPORT_SYMBOL_GPL(mbox_request_channel);
 
+<<<<<<< HEAD
+=======
+struct mbox_chan *mbox_request_channel_byname(struct mbox_client *cl,
+					      const char *name)
+{
+	struct device_node *np = cl->dev->of_node;
+	struct property *prop;
+	const char *mbox_name;
+	int index = 0;
+
+	if (!np) {
+		dev_err(cl->dev, "%s() currently only supports DT\n", __func__);
+		return ERR_PTR(-EINVAL);
+	}
+
+	if (!of_get_property(np, "mbox-names", NULL)) {
+		dev_err(cl->dev,
+			"%s() requires an \"mbox-names\" property\n", __func__);
+		return ERR_PTR(-EINVAL);
+	}
+
+	of_property_for_each_string(np, "mbox-names", prop, mbox_name) {
+		if (!strncmp(name, mbox_name, strlen(name)))
+			return mbox_request_channel(cl, index);
+		index++;
+	}
+
+	dev_err(cl->dev, "%s() could not locate channel named \"%s\"\n",
+		__func__, name);
+	return ERR_PTR(-EINVAL);
+}
+EXPORT_SYMBOL_GPL(mbox_request_channel_byname);
+
+>>>>>>> v4.9.227
 /**
  * mbox_free_channel - The client relinquishes control of a mailbox
  *			channel by this call.
@@ -390,7 +484,11 @@ of_mbox_index_xlate(struct mbox_controller *mbox,
 	int ind = sp->args[0];
 
 	if (ind >= mbox->num_chans)
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-EINVAL);
+>>>>>>> v4.9.227
 
 	return &mbox->chans[ind];
 }
@@ -417,9 +515,15 @@ int mbox_controller_register(struct mbox_controller *mbox)
 		txdone = TXDONE_BY_ACK;
 
 	if (txdone == TXDONE_BY_POLL) {
+<<<<<<< HEAD
 		mbox->poll.function = &poll_txdone;
 		mbox->poll.data = (unsigned long)mbox;
 		init_timer(&mbox->poll);
+=======
+		hrtimer_init(&mbox->poll_hrt, CLOCK_MONOTONIC,
+			     HRTIMER_MODE_REL);
+		mbox->poll_hrt.function = txdone_hrtimer;
+>>>>>>> v4.9.227
 	}
 
 	for (i = 0; i < mbox->num_chans; i++) {
@@ -461,7 +565,11 @@ void mbox_controller_unregister(struct mbox_controller *mbox)
 		mbox_free_channel(&mbox->chans[i]);
 
 	if (mbox->txdone_poll)
+<<<<<<< HEAD
 		del_timer_sync(&mbox->poll);
+=======
+		hrtimer_cancel(&mbox->poll_hrt);
+>>>>>>> v4.9.227
 
 	mutex_unlock(&con_mutex);
 }

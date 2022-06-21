@@ -59,14 +59,24 @@
 #define LDCW		ldcw,co
 #define BL		b,l
 # ifdef CONFIG_64BIT
+<<<<<<< HEAD
 #  define LEVEL		2.0w
 # else
 #  define LEVEL		2.0
+=======
+#  define PA_ASM_LEVEL	2.0w
+# else
+#  define PA_ASM_LEVEL	2.0
+>>>>>>> v4.9.227
 # endif
 #else
 #define LDCW		ldcw
 #define BL		bl
+<<<<<<< HEAD
 #define LEVEL		1.1
+=======
+#define PA_ASM_LEVEL	1.1
+>>>>>>> v4.9.227
 #endif
 
 #ifdef __ASSEMBLY__
@@ -523,7 +533,11 @@
 	 */
 #define ASM_EXCEPTIONTABLE_ENTRY(fault_addr, except_addr)	\
 	.section __ex_table,"aw"			!	\
+<<<<<<< HEAD
 	ASM_ULONG_INSN	fault_addr, except_addr		!	\
+=======
+	.word (fault_addr - .), (except_addr - .)	!	\
+>>>>>>> v4.9.227
 	.previous
 
 

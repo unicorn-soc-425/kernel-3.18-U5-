@@ -4,8 +4,13 @@
  * Copyright 2012 Dialog Semiconductors Ltd.
  * Copyright 2013 Philipp Zabel, Pengutronix
  *
+<<<<<<< HEAD
  * Author: Krystian Garbaciak <krystian.garbaciak@diasemi.com>,
  *         Michal Hajduk <michal.hajduk@diasemi.com>
+=======
+ * Author: Krystian Garbaciak, Dialog Semiconductor
+ * Author: Michal Hajduk, Dialog Semiconductor
+>>>>>>> v4.9.227
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
@@ -60,6 +65,10 @@ static struct resource da9063_rtc_resources[] = {
 
 static struct resource da9063_onkey_resources[] = {
 	{
+<<<<<<< HEAD
+=======
+		.name	= "ONKEY",
+>>>>>>> v4.9.227
 		.start	= DA9063_IRQ_ONKEY,
 		.end	= DA9063_IRQ_ONKEY,
 		.flags	= IORESOURCE_IRQ,
@@ -86,6 +95,10 @@ static const struct mfd_cell da9063_devs[] = {
 	},
 	{
 		.name		= DA9063_DRVNAME_WATCHDOG,
+<<<<<<< HEAD
+=======
+		.of_compatible	= "dlg,da9063-watchdog",
+>>>>>>> v4.9.227
 	},
 	{
 		.name		= DA9063_DRVNAME_HWMON,
@@ -96,29 +109,99 @@ static const struct mfd_cell da9063_devs[] = {
 		.name		= DA9063_DRVNAME_ONKEY,
 		.num_resources	= ARRAY_SIZE(da9063_onkey_resources),
 		.resources	= da9063_onkey_resources,
+<<<<<<< HEAD
+=======
+		.of_compatible = "dlg,da9063-onkey",
+>>>>>>> v4.9.227
 	},
 	{
 		.name		= DA9063_DRVNAME_RTC,
 		.num_resources	= ARRAY_SIZE(da9063_rtc_resources),
 		.resources	= da9063_rtc_resources,
+<<<<<<< HEAD
+=======
+		.of_compatible	= "dlg,da9063-rtc",
+>>>>>>> v4.9.227
 	},
 	{
 		.name		= DA9063_DRVNAME_VIBRATION,
 	},
 };
 
+<<<<<<< HEAD
+=======
+static int da9063_clear_fault_log(struct da9063 *da9063)
+{
+	int ret = 0;
+	int fault_log = 0;
+
+	ret = regmap_read(da9063->regmap, DA9063_REG_FAULT_LOG, &fault_log);
+	if (ret < 0) {
+		dev_err(da9063->dev, "Cannot read FAULT_LOG.\n");
+		return -EIO;
+	}
+
+	if (fault_log) {
+		if (fault_log & DA9063_TWD_ERROR)
+			dev_dbg(da9063->dev,
+				"Fault log entry detected: DA9063_TWD_ERROR\n");
+		if (fault_log & DA9063_POR)
+			dev_dbg(da9063->dev,
+				"Fault log entry detected: DA9063_POR\n");
+		if (fault_log & DA9063_VDD_FAULT)
+			dev_dbg(da9063->dev,
+				"Fault log entry detected: DA9063_VDD_FAULT\n");
+		if (fault_log & DA9063_VDD_START)
+			dev_dbg(da9063->dev,
+				"Fault log entry detected: DA9063_VDD_START\n");
+		if (fault_log & DA9063_TEMP_CRIT)
+			dev_dbg(da9063->dev,
+				"Fault log entry detected: DA9063_TEMP_CRIT\n");
+		if (fault_log & DA9063_KEY_RESET)
+			dev_dbg(da9063->dev,
+				"Fault log entry detected: DA9063_KEY_RESET\n");
+		if (fault_log & DA9063_NSHUTDOWN)
+			dev_dbg(da9063->dev,
+				"Fault log entry detected: DA9063_NSHUTDOWN\n");
+		if (fault_log & DA9063_WAIT_SHUT)
+			dev_dbg(da9063->dev,
+				"Fault log entry detected: DA9063_WAIT_SHUT\n");
+	}
+
+	ret = regmap_write(da9063->regmap,
+			   DA9063_REG_FAULT_LOG,
+			   fault_log);
+	if (ret < 0)
+		dev_err(da9063->dev,
+			"Cannot reset FAULT_LOG values %d\n", ret);
+
+	return ret;
+}
+
+>>>>>>> v4.9.227
 int da9063_device_init(struct da9063 *da9063, unsigned int irq)
 {
 	struct da9063_pdata *pdata = da9063->dev->platform_data;
 	int model, variant_id, variant_code;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	ret = da9063_clear_fault_log(da9063);
+	if (ret < 0)
+		dev_err(da9063->dev, "Cannot clear fault log\n");
+
+>>>>>>> v4.9.227
 	if (pdata) {
 		da9063->flags = pdata->flags;
 		da9063->irq_base = pdata->irq_base;
 	} else {
 		da9063->flags = 0;
+<<<<<<< HEAD
 		da9063->irq_base = 0;
+=======
+		da9063->irq_base = -1;
+>>>>>>> v4.9.227
 	}
 	da9063->chip_irq = irq;
 
@@ -168,6 +251,11 @@ int da9063_device_init(struct da9063 *da9063, unsigned int irq)
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	da9063->irq_base = regmap_irq_chip_get_base(da9063->regmap_irq);
+
+>>>>>>> v4.9.227
 	ret = mfd_add_devices(da9063->dev, -1, da9063_devs,
 			      ARRAY_SIZE(da9063_devs), NULL, da9063->irq_base,
 			      NULL);
@@ -184,5 +272,10 @@ void da9063_device_exit(struct da9063 *da9063)
 }
 
 MODULE_DESCRIPTION("PMIC driver for Dialog DA9063");
+<<<<<<< HEAD
 MODULE_AUTHOR("Krystian Garbaciak <krystian.garbaciak@diasemi.com>, Michal Hajduk <michal.hajduk@diasemi.com>");
+=======
+MODULE_AUTHOR("Krystian Garbaciak");
+MODULE_AUTHOR("Michal Hajduk");
+>>>>>>> v4.9.227
 MODULE_LICENSE("GPL");
